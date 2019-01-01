@@ -20,7 +20,6 @@ generate_static_network() {
 			uci -q batch <<-EOF
 				delete network.globals
 				set network.globals='globals'
-				set network.globals.ula_prefix='auto'
 			EOF
 		}
 
