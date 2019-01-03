@@ -221,13 +221,15 @@ endef
 ifneq ($(CONFIG_VDI_IMAGES),)
   define Image/Build/vdi
 	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vdi || true
-	qemu-img convert -f raw -O vdi \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vdi \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vdi
+	# XXX: VBoxManage insists on setting perms to 0600
+	chmod 0644 $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vdi
   endef
   define Image/Build/vdi_efi
 	rm $(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vdi || true
-	qemu-img convert -f raw -O vdi \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vdi \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vdi
 	# XXX: VBoxManage insists on setting perms to 0600
@@ -238,13 +240,19 @@ endif
 ifneq ($(CONFIG_VMDK_IMAGES),)
   define Image/Build/vmdk
 	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vmdk || true
-	qemu-img convert -f raw -O vmdk \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vmdk -o adapter_type=lsilogic \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vmdk
+	#build the ESXI VMDK with
+	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1)-esxi.vmdk || true
+	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1)-esxi-flat.vmdk || true
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vmdk -o adapter_type=lsilogic,subformat=monolithicFlat \
+		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
+		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1)-esxi.vmdk
   endef
   define Image/Build/vmdk_efi
 	rm $(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vmdk || true
-	qemu-img convert -f raw -O vmdk \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vmdk -o adapter_type=lsilogic \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vmdk
   endef
@@ -253,13 +261,13 @@ endif
 ifneq ($(CONFIG_VHD_IMAGES),)
   define Image/Build/vhd
 	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vhdx || true
-	/usr/bin/qemu-img convert -O vhdx \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -O vhdx \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vhdx
   endef
   define Image/Build/vhd_efi
 	rm $(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vhdx || true
-	/usr/bin/qemu-img convert -O vhdx \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -O vhdx \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vhdx
   endef
@@ -268,13 +276,13 @@ endif
 ifneq ($(CONFIG_QCOW2_IMAGES),)
   define Image/Build/qcow2
 	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).qcow2 || true
-	/usr/bin/qemu-img convert -O qcow2 \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O qcow2 \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).qcow2
   endef
   define Image/Build/qcow2_efi
 	rm $(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).qcow2 || true
-	/usr/bin/qemu-img convert -O qcow2 \
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O qcow2 \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).qcow2
   endef
