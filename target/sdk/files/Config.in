@@ -56,7 +56,7 @@ menu "Advanced configuration options (for developers)"
 
 	config CCACHE
 		bool "Use ccache"
-		default n
+		default y
 		help
 		  Compiler cache; see https://ccache.samba.org/
 
