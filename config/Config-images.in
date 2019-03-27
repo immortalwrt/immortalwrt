@@ -257,14 +257,9 @@ menu "Target Images"
 		select PACKAGE_kmod-e1000
 		default y
 
-	config TARGET_IMAGES_PAD
-		bool "Pad images to filesystem size (for JFFS2)"
-		depends on GRUB_IMAGES || EFI_IMAGES
-		default y
-
 	config TARGET_IMAGES_GZIP
 		bool "GZip images"
-		depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS || TARGET_x86
+		depends on TARGET_ROOTFS_EXT4FS || TARGET_x86
 		default y
 		default n if TARGET_x86
 
