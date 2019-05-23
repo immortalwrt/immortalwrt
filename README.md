@@ -14,7 +14,7 @@ sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git
 
 ## Clone the source
 ```bash
-git clone https://github.com/shell-script/lede-openwrt && cd lede-openwrt
+git clone https://github.com/shell-script/lede && cd lede
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 
@@ -33,5 +33,5 @@ make -j1 V=s
 ## Default username is root and password is password, login address: 192.168.1.1
 
 # License
-[GPL v3](https://github.com/shell-script/lede-openwrt/blob/master/LICENSE)<br>
+[GPL v3](https://github.com/shell-script/lede/blob/master/LICENSE)<br>
 Origin source: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)
