@@ -2,10 +2,10 @@
 Origin source: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)
 
 # How to make it
-## OS require:
-Ubuntu 14.04 LTS **x86\_64** (16.04 LTS is OK)
-At least 2G RAM & 2 CPU Cores
-At least 25G HDD
+## OS require
+Ubuntu 14.04 LTS **x86\_64** (16.04 LTS is OK)<br>
+At least 2G RAM & 2 CPU Cores<br>
+At least 25G HDD<br>
 
 ## Install the necessary software
 ```bash
@@ -29,8 +29,8 @@ make -j1 V=s
 ```
 
 # TIPS
-You'd better not use ***root*** to make it, or you may be not able to use it.
-Default username is ****root*** and password is ***password***, login address: 192.168.1.1
+You'd better not use ***root*** to make it, or you may be not able to use it.<br>
+Default username is ***root*** and password is ***password***, login address: 192.168.1.1
 
 # License
 [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)<br>
