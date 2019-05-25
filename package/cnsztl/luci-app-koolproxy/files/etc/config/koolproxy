@@ -1,0 +1,18 @@
+
+config global
+	option time_update '4'
+	option koolproxy_port '0'
+	option startup_delay '5'
+	option koolproxy_acl_default '0'
+	option koolproxy_mode '2'
+	option koolproxy_host '1'
+	option koolproxy_rules 'koolproxy.txt daily.txt kp.dat user.txt'
+	option enabled '0'
+
+config rss_rule
+	option name '乘风广告过滤规则'
+	option url 'https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/ABP-FX.txt'
+	option file 'ABP-FX.txt'
+	option load '0'
+	option time '2019-04-28 20:58'
+

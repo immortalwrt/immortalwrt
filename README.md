@@ -35,3 +35,4 @@ Default username is **root** and password is **password**, login address: 192.16
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
 ### Origin source: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).
+### luci-app-koolproxy source" [openwrt-develop/luci-app-koolproxy](https://github.com/openwrt-develop/luci-app-koolproxy)
