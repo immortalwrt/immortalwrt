@@ -29,7 +29,7 @@ make -j1 V=s
 ```
 
 # TIPS
-You'd better not use **root** to make it, or you may be not able to use it.<br/>
+You'd better not use **root** to make it, or you may be not able to use.<br/>
 Default username is **root** and password is **password**, login address: 192.168.1.1.
 
 # License
