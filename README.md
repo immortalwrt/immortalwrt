@@ -1,5 +1,9 @@
 # A OpenWRT firmware based on Lean's source
-### Welcome to my Telegram Group: [@openwrt_discuss](https://t.me/openwrt_discuss).
+### Welcome to my Telegram Group: [@openwrt\_discuss](https://t.me/openwrt_discuss).
+
+# Tips
+You'd better not use **root** to make it, or you may be not able to use.<br/>
+Default username is **root** and password is **password**, login address: 192.168.1.1.
 
 # How to make it
 ## OS require
@@ -28,11 +32,10 @@ make menuconfig
 make -j1 V=s
 ```
 
-# TIPS
-You'd better not use **root** to make it, or you may be not able to use.<br/>
-Default username is **root** and password is **password**, login address: 192.168.1.1.
+# Origin source
+### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
+luci-app-koolproxy source: [openwrt-develop/luci-app-koolproxy](https://github.com/openwrt-develop/luci-app-koolproxy).<br/>
+luci-app-udp2raw source: [luci-app-udp2raw](https://github.com/sensec/luci-app-udp2raw)
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
-### Origin source: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).
-### luci-app-koolproxy source: [openwrt-develop/luci-app-koolproxy](https://github.com/openwrt-develop/luci-app-koolproxy).
