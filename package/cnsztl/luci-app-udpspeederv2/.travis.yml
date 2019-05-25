@@ -1,0 +1,30 @@
+dist: trusty
+sudo: true
+language: c
+env:
+    PACKAGE_NAME=`grep "PKG_NAME:=" Makefile | sed 's/.*:=//'`
+    PACKAGE_VERSION=`grep "PKG_VERSION:=" Makefile | sed 's/.*:=//'`
+    PACKAGE_RELEASE=`grep "PKG_RELEASE:=" Makefile | sed 's/.*:=//'`
+    PACKAGE_ARCH=`grep "PKGARCH:=" Makefile | sed 's/.*:=//'`
+before_script:
+- wget https://downloads.openwrt.org/releases/18.06.1/targets/bcm53xx/generic/openwrt-sdk-18.06.1-bcm53xx_gcc-7.3.0_musl_eabi.Linux-x86_64.tar.xz
+- tar xf openwrt-sdk-18.06.1-bcm53xx_gcc-7.3.0_musl_eabi.Linux-x86_64.tar.xz
+- mkdir -p openwrt-sdk-18.06.1-bcm53xx_gcc-7.3.0_musl_eabi.Linux-x86_64/package/${PACKAGE_NAME}
+- mv files tools Makefile openwrt-sdk-18.06.1-bcm53xx_gcc-7.3.0_musl_eabi.Linux-x86_64/package/${PACKAGE_NAME}/
+- cd openwrt-sdk-18.06.1-bcm53xx_gcc-7.3.0_musl_eabi.Linux-x86_64
+- pushd package/${PACKAGE_NAME}/tools/po2lmo
+- make
+- sudo make install
+- popd
+- make defconfig
+script:
+- make package/${PACKAGE_NAME}/compile V=s
+deploy:
+  provider: releases
+  api_key:
+    secure: kfupsEOntxxx5xjIrXIctCuPwPPh9eMLz1EYqeQl39mSBh6fCg1PpQoOemv/IeDMZh8u5XYRCMgelJ0F/IbF6rktLbrjbiEwV4QJzD1ReQRT2y1zFrNYrhy/kc9ptrSTMOk/Y15mf36i585nAtc3I+OCpnpdCaVxq4V6lIVf2p4mIEhYaz4f/Dv6rRrEDfkfgcinUOCsxIl3/s0OMZlvNE7GLoRCzbWO4MRyIRzqmIcAbvSLFXJ6PybJy1lniJZ69FgDJBxgq2H6iQTC/bdHPOd4h50VqR31naUZL6UBcprqxJjt4fEBvjXviPtTeJlsx8ajvgLGqS3AXS3Lcs8oc/h2Yj04/7fOqwxUYdAQVE0EXPAMVz1tGS2apDGlaalNWowF9rhN02+woEVewZLKCzSdWhU/Cv+hs4ClCbooR+MCT8Fm9lQS5LnoRd/bomXbU5bPBbznQs8HNUIzL9snUYC0n/ZavIi46ejK6Dkw28QDv2XeeLSgT6kjlQdwPrswZ8tgkOR1ZGk7iW3WAVgH2+dxfvCelm0Fsax/o3447huFAEXKATQ9t8UTZOXmvCHrajRYQuHJL4+bqykQGsPbhIoPL2SUOvZXMCnRkb8BiD7pBKtS4cYtyxh+slTEQOmHMgR2lotszHUVJAqmrTbB06E2ZrDpwp3LPRY/3h3JsTI=
+  file: bin/packages/arm_cortex-a9/base/${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${PACKAGE_ARCH}.ipk
+  skip_cleanup: true
+  on:
+    repo: haodong/${PACKAGE_NAME}
+    tags: true

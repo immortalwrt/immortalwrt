@@ -35,7 +35,9 @@ make -j1 V=s
 # Origin source
 ### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 luci-app-koolproxy source: [openwrt-develop/luci-app-koolproxy](https://github.com/openwrt-develop/luci-app-koolproxy).<br/>
-luci-app-udp2raw source: [luci-app-udp2raw](https://github.com/sensec/luci-app-udp2raw)
+luci-app-udp2raw source: [sensec/luci-app-udp2raw](https://github.com/sensec/luci-app-udp2raw).<br/>
+luci-app-haproxy source: [AlexZhuo/luci-app-haproxy-tcp](https://github.com/AlexZhuo/luci-app-haproxy-tcp).<br/>
+luci-app-udpspeederv2 source: [haodong/luci-app-speederv2](https://github.com/haodong/luci-app-speederv2).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
