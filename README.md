@@ -37,7 +37,8 @@ make -j1 V=s
 luci-app-koolproxy source: [openwrt-develop/luci-app-koolproxy](https://github.com/openwrt-develop/luci-app-koolproxy).<br/>
 luci-app-udp2raw source: [sensec/luci-app-udp2raw](https://github.com/sensec/luci-app-udp2raw).<br/>
 luci-app-haproxy source: [AlexZhuo/luci-app-haproxy-tcp](https://github.com/AlexZhuo/luci-app-haproxy-tcp).<br/>
-luci-app-udpspeederv2 source: [haodong/luci-app-speederv2](https://github.com/haodong/luci-app-speederv2).
+luci-app-udpspeederv2 source: [haodong/luci-app-speederv2](https://github.com/haodong/luci-app-speederv2).<br/>
+luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear)
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
