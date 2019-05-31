@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-app-haproxy-tcp
+PKG_NAME:=luci-app-haproxy
 PKG_VERSION=1.5
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Alex Zhuo <1886090@gmail.com>
