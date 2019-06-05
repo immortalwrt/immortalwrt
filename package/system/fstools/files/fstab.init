@@ -16,6 +16,10 @@ restart() {
 	/sbin/block mount
 }
 
+restart() {
+	start
+}
+
 stop() {
 	/sbin/block umount
 }
