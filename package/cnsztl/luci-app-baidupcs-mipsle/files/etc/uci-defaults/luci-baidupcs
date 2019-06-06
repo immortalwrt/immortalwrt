@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@baidupcs[-1]
+	add ucitrack baidupcs
+	set ucitrack.@baidupcs[-1].init=baidupcs
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0
