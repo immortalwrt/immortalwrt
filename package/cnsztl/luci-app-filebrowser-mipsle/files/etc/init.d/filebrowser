@@ -1,0 +1,25 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2015 By Wind
+
+START=91
+STOP=91
+
+start() {
+	config_load filebrowser
+	enabled=$(uci get filebrowser.config.enabled)
+	port=$(uci get filebrowser.config.port)
+	path=$(uci get filebrowser.config.path)
+	scope=$(uci get filebrowser.config.scope)
+
+	[ "$enabled" == "1" ] || return
+
+	if [ ! -f "$path/filebrowser" ];then
+		wget -O $path/filebrowser https://openwrt-cdn.netlify.com/download/bin/mipsle/filebrowser && cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>/dev/null &
+	else
+		cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>/dev/null &
+	fi
+}
+
+stop() {
+	killall filebrowser >/dev/null 2>/dev/null &
+}
