@@ -16,10 +16,10 @@ start() {
 	if [ ! -f "$path/filebrowser" ];then
 		wget -O $path/filebrowser https://openwrt-cdn.netlify.com/download/bin/mipsle/filebrowser && cd $path && ./filebrowser --port $port --scope $scope 2>&1 >/dev/null &
 	else
-		cd $path && ./filebrowser --port $port --scope $scope 2>&1 >/dev/null &
+		cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
 	fi
 }
 
 stop() {
-	killall filebrowser >/dev/null 2>/dev/null &
+	killall filebrowser >/dev/null 2>&1 &
 }
