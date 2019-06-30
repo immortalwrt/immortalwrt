@@ -13,7 +13,7 @@ start() {
 	[ "$enabled" == "1" ] || return
 
 	if [ ! -f "$path/baidupcs" ];then
-		wget -O $path/baidupcs https://openwrt-cdn.netlify.com/download/bin/mipsle/baidupcs-go && cd $path && ./baidupcs web --port $port --access >/dev/null 2>&1 &
+		wget -O $path/baidupcs https://mirror.router.ctcgfw.generalcdn.top/download/mipsle/baidupcs-go && cd $path && ./baidupcs web --port $port --access >/dev/null 2>&1 &
 	else
 		$path/baidupcs web --port $port --access >/dev/null 2>&1 &
 	fi
