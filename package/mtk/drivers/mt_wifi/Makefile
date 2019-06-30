@@ -9,10 +9,8 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=mt_wifi
 P4REV:=
 PKG_VERSION:=5.0.2.0
-PKG_SOURCE:=MT7621_7615.tar.xz
 #PKG_SOURCE:=MT7615_MT7622_LinuxAP.tar.bz2
 #PKG_SOURCE:=MT7615_MT7622_LinuxAP_$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \
 	AP_SUPPORT \
@@ -213,17 +211,13 @@ endef
 define KernelPackage/mt_wifi/install
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_DIR) $(1)/lib/wifi/
-	$(INSTALL_DIR) $(1)/etc/wireless/mediatek/
-	$(INSTALL_DIR) $(1)/etc/Wireless/RT2860/
 	$(INSTALL_DIR) $(1)/etc/wireless/mt7615/
-	$(INSTALL_DIR) $(1)/etc/RT2860/
+	$(INSTALL_DIR) $(1)/etc_ro/Wireless/RT2860AP/
 	$(INSTALL_BIN) ./files/mt7615.1.2G.dat $(1)/etc/wireless/mt7615/
 	$(INSTALL_BIN) ./files/mt7615.1.5G.dat $(1)/etc/wireless/mt7615/
-	$(INSTALL_BIN) ./files/mt7615e-sku.dat $(1)/etc/wireless/mediatek/
-	$(INSTALL_BIN) ./files/mt7615e-sku-bf.dat $(1)/etc/wireless/mediatek/
-	echo $(PKG_VERSION) > $(1)/etc/wireless/mediatek/version
-	$(INSTALL_BIN) ./files/mt7615e*.lua $(1)/lib/wifi/
-	$(INSTALL_BIN) ./files/wifi_services.lua $(1)/lib/wifi/
+	$(INSTALL_BIN) ./files/SingleSKU.dat $(1)/etc_ro/Wireless/RT2860AP/
+	$(INSTALL_BIN) ./files/SingleSKU_BF.dat $(1)/etc_ro/Wireless/RT2860AP/
+	$(INSTALL_BIN) ./files/mt7615.lua $(1)/lib/wifi
 	$(INSTALL_BIN) ./files/firmware.sh $(1)/etc/init.d/
 
 endef

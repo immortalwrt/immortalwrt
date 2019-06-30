@@ -72,7 +72,7 @@ endif
 
 menuconfig second_card
 	bool "2nd card"
-	default y
+	default n
 
 if second_card
 
@@ -141,7 +141,7 @@ endif
 
 menuconfig third_card
 	bool "3rd card"
-	default y
+	default n
 
 if third_card
 

@@ -209,12 +209,12 @@ config MTK_BRCM_256QAM_SUPPORT
 	bool "BRCM 2.4G 256QAM support"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_G_BAND_256QAM_SUPPORT
-	default n
+	default y
 
 config MTK_VHT_TXBF_2G_EPIGRAM_IE_SUPPORT
     bool "BRCM 2.4G VHT Sounding support"
 	depends on MTK_WIFI_DRIVER
-	default n
+	default y
 		
 config MTK_TPC_SUPPORT
 	bool "802.11h TPC Support"
@@ -279,7 +279,7 @@ config MTK_DEFAULT_5G_PROFILE
 	bool "5G default profile for DBDC"
 	depends on MTK_DBDC_MODE
 #	depends on MTK_MULTI_PROFILE_SUPPORT
-	default y
+	default n
 
 config MTK_WSC_INCLUDED
 	bool "WSC (WiFi Simple Config)"
@@ -475,7 +475,7 @@ config MTK_UAPSD
 config MTK_TCP_RACK_SUPPORT
 	bool "TCP Reduced ACK  support"
 	depends on MTK_WIFI_DRIVER
-	default n
+	default y
 
 #### PA_LNA_Type choice
 
