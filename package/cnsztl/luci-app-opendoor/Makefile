@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016-2017 WindTech <admin@windtech.top>
+# Copyright (C) 2019 CTCGFW 
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
