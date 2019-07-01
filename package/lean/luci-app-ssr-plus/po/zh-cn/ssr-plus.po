@@ -389,6 +389,18 @@ msgstr "访问国外域名DNS服务器"
 msgid "Use Pdnsd tcp query and cache"
 msgstr "使用PDNSD TCP查询并缓存"
 
+msgid "Use Pdnsd udp query and cache"
+msgstr "使用PDNSD UDP查询并缓存"
+
+msgid "Use dnsforwarder tcp query and cache"
+msgstr "使用DNSForwarder TCP查询并缓存"
+
+msgid "Use dnsforwarder udp query and cache"
+msgstr "使用DNSForwarder UDP查询并缓存"
+
+msgid "Use dnscrypt-proxy query and cache"
+msgstr "使用DNSCrypt-Proxy查询并缓存"
+
 msgid "DNS Server IP:Port"
 msgstr "DNS服务器 IP:Port"
 
