@@ -60,8 +60,16 @@ o:value("oversea", translate("Oversea Mode"))
 o.default = gfw
 
 o = s:option(ListValue, "pdnsd_enable", translate("Resolve Dns Mode"))
-o:value("1", translate("Use Pdnsd tcp query and cache"))
 o:value("0", translate("Use Local DNS Service listen port 5335"))
+o:value("1", translate("Use Pdnsd tcp query and cache"))
+o:value("2", translate("Use Pdnsd udp query and cache"))
+if nixio.fs.access("/usr/sbin/dnsforwarder") then
+	o:value("3", translate("Use dnsforwarder tcp query and cache"))
+	o:value("4", translate("Use dnsforwarder udp query and cache"))
+end
+if nixio.fs.access("/usr/sbin/dnscrypt-proxy") then
+	o:value("5", translate("Use dnscrypt-proxy query and cache"))
+end
 o.default = 1
 
 o = s:option(ListValue, "tunnel_forward", translate("Anti-pollution DNS Server"))
@@ -79,5 +87,23 @@ o:value("1.1.1.1:53", translate("Cloudflare DNS (1.1.1.1)"))
 o:value("114.114.114.114:53", translate("Oversea Mode DNS-1 (114.114.114.114)"))
 o:value("114.114.115.115:53", translate("Oversea Mode DNS-2 (114.114.115.115)"))
 o:depends("pdnsd_enable", "1")
+o:depends("pdnsd_enable", "2")
+o:depends("pdnsd_enable", "3")
+o:depends("pdnsd_enable", "4")
+
+aaaa = s:option(Flag, "filter_aaaa", translate("Filter AAAA"))
+aaaa.default = 0
+aaaa.rmempty = false
+aaaa.description = translate("Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network")
+
+o = s:option(Flag, "bt", translate("Kill BT"))
+o.default = 0
+o.rmempty = false
+o.description = translate("Prohibit downloading tool ports through proxy")
+
+o = s:option(Value, "bt_port", translate("BT Port"))
+o.default = "51413,8437,12551"
+o.rmempty = true
+o:depends("bt", "1")
 
 return m

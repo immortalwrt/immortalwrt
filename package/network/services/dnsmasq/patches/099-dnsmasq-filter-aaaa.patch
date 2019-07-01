@@ -1,0 +1,74 @@
+From 966471712184cfb3b067f2ae8dad9d8e2a896cae Mon Sep 17 00:00:00 2001
+From: Bearice Ren <bearice@icybear.net>
+Date: Tue, 20 Sep 2016 11:52:08 +0800
+Subject: [PATCH] add filter-aaaa option
+
+---
+ src/dnsmasq.h | 3 ++-
+ src/option.c  | 3 +++
+ src/rfc1035.c | 9 +++++++++
+ 3 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index 1896a64..e10d6c4 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -238,7 +238,8 @@ struct event_desc {
+ #define OPT_SCRIPT_ARP     53
+ #define OPT_MAC_B64        54
+ #define OPT_MAC_HEX        55
+-#define OPT_LAST           56
++#define OPT_FILTER_AAAA    56
++#define OPT_LAST           57
+
+ /* extra flags for my_syslog, we use a couple of facilities since they are known
+    not to occupy the same bits as priorities, no matter how syslog.h is set up. */
+diff --git a/src/option.c b/src/option.c
+index d8c57d6..1cc65bf 100644
+--- a/src/option.c
++++ b/src/option.c
+@@ -159,6 +159,7 @@ struct myoption {
+ #define LOPT_SCRIPT_ARP    347
+ #define LOPT_DHCPTTL       348
+ #define LOPT_TFTP_MTU      349
++#define LOPT_FILTER_AAAA   350
+
+ #ifdef HAVE_GETOPT_LONG
+ static const struct option opts[] =
+@@ -323,6 +324,7 @@ static const struct myoption opts[] =
+     { "dns-loop-detect", 0, 0, LOPT_LOOP_DETECT },
+     { "script-arp", 0, 0, LOPT_SCRIPT_ARP },
+     { "dhcp-ttl", 1, 0 , LOPT_DHCPTTL },
++    { "filter-aaaa", 0, 0, LOPT_FILTER_AAAA },
+     { NULL, 0, 0, 0 }
+   };
+
+@@ -494,6 +496,7 @@ static struct {
+   { LOPT_LOOP_DETECT, OPT_LOOP_DETECT, NULL, gettext_noop("Detect and remove DNS forwarding loops."), NULL },
+   { LOPT_IGNORE_ADDR, ARG_DUP, "<ipaddr>", gettext_noop("Ignore DNS responses containing ipaddr."), NULL },
+   { LOPT_DHCPTTL, ARG_ONE, "<ttl>", gettext_noop("Set TTL in DNS responses with DHCP-derived addresses."), NULL },
++  { LOPT_FILTER_AAAA, OPT_FILTER_AAAA, NULL, gettext_noop("Filter all AAAA requests."), NULL },
+   { 0, 0, NULL, NULL, NULL }
+ };
+
+diff --git a/src/rfc1035.c b/src/rfc1035.c
+index 24d08c1..1594962 100644
+--- a/src/rfc1035.c
++++ b/src/rfc1035.c
+@@ -1783,6 +1783,15 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
+            }
+        }
+
++      //patch to filter aaaa forwards
++      if (qtype == T_AAAA && option_bool(OPT_FILTER_AAAA) ){
++        //return a null reply
++        ans = 1;
++        if (!dryrun) log_query(F_CONFIG | F_IPV6 | F_NEG, name, &addr, NULL);
++        break;
++      }
++      //end of patch
++
+       if (!ans)
+        return 0; /* failed to answer a question */
+     }
+--

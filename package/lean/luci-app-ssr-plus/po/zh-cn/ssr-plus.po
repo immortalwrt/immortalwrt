@@ -499,3 +499,18 @@ msgstr "4 线程"
 
 msgid "8 Threads"
 msgstr "8 线程"
+
+msgid "Filter AAAA"
+msgstr "屏蔽AAAA记录"
+
+msgid "Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network."
+msgstr "Dnsmasq不返回ipv6解析结果，优化国内复杂双栈网络。"
+
+msgid "Kill BT"
+msgstr "阻止BT流量通过代理"
+
+msgid "Prohibit downloading tool ports through proxy."
+msgstr "禁止BT相关端口的流量通过代理进行传输，以避免不必要的麻烦。"
+
+msgid "BT Port"
+msgstr "欲封禁的BT端口"
