@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=openwrt-dnsforwarder
+PKG_NAME:=dnsforwarder
 PKG_VERSION:=6
 PKG_RELEASE:=3
 
@@ -15,7 +15,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/dnsforwarder
+define Package/openwrt-dnsforwarder
   SECTION:=net
   CATEGORY:=Network
   TITLE:=A simple DNS forwarder
