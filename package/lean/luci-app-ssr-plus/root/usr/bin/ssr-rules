@@ -125,6 +125,9 @@ fw_rule() {
   $IPT -A SS_SPEC_WAN_FW -d 192.168.0.0/16 -j RETURN
   $IPT -A SS_SPEC_WAN_FW -d 224.0.0.0/4 -j RETURN
   $IPT -A SS_SPEC_WAN_FW -d 240.0.0.0/4 -j RETURN
+  if [ $bt -eq 1 ] ;then
+    $IPT -A SS_SPEC_WAN_FW -p tcp --dport $bt_port -j RETURN
+  fi
 	$IPT -A SS_SPEC_WAN_FW -p tcp \
 		-j REDIRECT --to-ports $local_port 2>/dev/null || {
 		loger 3 "Can't redirect, please check the iptables."
@@ -186,6 +189,9 @@ tp_rule() {
   $ipt -A SS_SPEC_TPROXY -p udp -d 192.168.0.0/16 -j RETURN
   $ipt -A SS_SPEC_TPROXY -p udp -d 224.0.0.0/4 -j RETURN
   $ipt -A SS_SPEC_TPROXY -p udp -d 240.0.0.0/4 -j RETURN
+  if [ $bt -eq 1 ] ;then
+    $IPT -A SS_SPEC_TPROXY -p udp --dport $bt_port -j RETURN
+  fi
   $ipt -A SS_SPEC_TPROXY -p udp -d $SERVER -j RETURN
   
   $ipt -A SS_SPEC_TPROXY -p udp -m set --match-set fplan src \
