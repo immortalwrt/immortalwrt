@@ -71,14 +71,7 @@ if nixio.fs.access("/usr/bin/dnsforwarder") then
 o:value("3", translate("Use dnsforwarder tcp query and cache"))
 o:value("4", translate("Use dnsforwarder udp query and cache"))
 end
-if nixio.fs.access("/usr/sbin/dnsforwarder") then
-o:value("3", translate("Use dnsforwarder tcp query and cache"))
-o:value("4", translate("Use dnsforwarder udp query and cache"))
-end
 if nixio.fs.access("/usr/bin/dnscrypt-proxy") then
-o:value("5", translate("Use dnscrypt-proxy query and cache"))
-end
-if nixio.fs.access("/usr/sbin/dnscrypt-proxy") then
 o:value("5", translate("Use dnscrypt-proxy query and cache"))
 end
 o.default = 1
