@@ -13,6 +13,9 @@ uci -q batch <<-EOF >/dev/null
 	commit firewall
 EOF
 
+/etc/init.d/dnscrypt-proxy stop
+/etc/init.d/dnscrypt-proxy disable
+
 /usr/share/shadowsocksr/gfw2ipset.sh
 rm -f /tmp/luci-indexcache
 exit 0

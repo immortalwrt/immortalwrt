@@ -34,8 +34,38 @@ msgstr "DNS 加速"
 msgid "Enable DNS Cache Acceleration and anti ISP DNS pollution"
 msgstr "启用DNS多线程查询、缓存，并防止ISP的DNS广告和域名劫持"
 
+msgid "Resolve Dns Mode"
+msgstr "DNS解析方式"
+
+msgid "Use Pdnsd query and cache"
+msgstr "使用pdnsd解析"
+
+msgid "Use dnsforwarder query and cache"
+msgstr "使用dnsforwarder解析"
+
+msgid "Use AdGuardHome query and cache"
+msgstr "使用AdGuardHome解析去广告"
+
 msgid "Upsteam DNS Server"
 msgstr "上游 DNS 服务器(国内)"
 
+msgid "Upsteam IPV6 DNS Server"
+msgstr "上游 IPV6 DNS 服务器"
+
 msgid "Muitiple DNS server can saperate with ','"
 msgstr "支持多个上游DNS服务器，用','分隔（注意用英文逗号).请填写您最快的DNS服务器"
+
+msgid "Muitiple IPV6 DNS server can saperate with ','"
+msgstr "支持dnsforwarder解析多个上游IPV6 DNS服务器，用','分隔（注意用英文逗号).请填写您最快的DNS服务器"
+
+msgid "Enable dnsmasq killqqad"
+msgstr "启用dnsmasq去广告"
+
+msgid "dnsmasq killqqad"
+msgstr "dnsmasq去广告"
+
+msgid "AdGuardHome After setting up, shut down DNS acceleration normally and save configuration file"
+msgstr "AdGuardHome设置完后正常关闭dns加速即可保存配置文件.AdGuardHome管理页面IP:3000 管理账号密码：AdGuardHome"
+
+msgid "Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network"
+msgstr "dnsmasq不返回ipv6解析结果,优化国内复杂双栈网络"

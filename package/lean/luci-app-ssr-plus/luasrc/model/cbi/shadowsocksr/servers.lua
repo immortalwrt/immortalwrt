@@ -20,6 +20,8 @@ o = s:option(Flag, "auto_update", translate("Auto Update"))
 o.rmempty = false
 o.description = translate("Auto Update Server subscription, GFW list and CHN route")
 
+o = s:option(Flag, "v2ray_update", translate("Enable V2ray Update"))
+o.rmempty = false
 
 o = s:option(ListValue, "auto_update_time", translate("Update time (every day)"))
 for t = 0,23 do
@@ -86,7 +88,7 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
-if nixio.fs.access("/usr/bin/kcptun-client") then
+if nixio.fs.access("/usr/bin/ssr-kcptun") then
 
 o = s:option(DummyValue, "kcp_enable", translate("KcpTun"))
 function o.cfgvalue(...)
@@ -99,5 +101,15 @@ o = s:option(DummyValue, "switch_enable", translate("Auto Switch"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "0"
 end
+
+o = s:option(DummyValue, "weight", translate("weight"))
+function o.cfgvalue(...)
+	return Value.cfgvalue(...) or "0"
+end
+
+o = s:option(DummyValue,"server",translate("Ping Latency"))
+o.template="shadowsocksr/ping"
+
+m:append(Template("shadowsocksr/server_list"))
 
 return m

@@ -6,9 +6,9 @@ chnroute_data=$(wget -O- -t 3 -T 3 http://ftp.apnic.net/apnic/stats/apnic/delega
 }
 
 if [ -s "/tmp/china_ssr.txt" ];then
-  if ( ! cmp -s /tmp/china_ssr.txt /etc/china_ssr.txt );then
-    mv /tmp/china_ssr.txt /etc/china_ssr.txt
-  fi
+	if ( ! cmp -s /tmp/china_ssr.txt /etc/china_ssr.txt );then
+		mv /tmp/china_ssr.txt /etc/china_ssr.txt
+	fi
 fi
 
 /usr/share/shadowsocksr/chinaipset.sh
@@ -17,10 +17,10 @@ wget-ssl --no-check-certificate https://raw.githubusercontent.com/gfwlist/gfwlis
 /usr/bin/ssr-gfw
 
 if [ -s "/tmp/gfwnew.txt" ];then
-  if ( ! cmp -s /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf );then
-    mv /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf
-    echo "copy"
-  fi
+	if ( ! cmp -s /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf );then
+		mv /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf
+		echo "copy"
+	fi
 fi
 
 /etc/init.d/shadowsocksr restart

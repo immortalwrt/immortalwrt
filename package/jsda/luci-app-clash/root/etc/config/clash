@@ -1,0 +1,11 @@
+config clash 'config'
+	option proxy_port '7892'
+	option enable '0'
+	option dns '0'
+	option auto_update '0'	
+	option auto_update_time '0'
+	option cn_port '9090'
+	option dnsserver '101.132.183.99'
+	option dnsserver_d '208.67.222.222'
+	option dnsmodel 'gfw'
+

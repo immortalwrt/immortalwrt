@@ -1,0 +1,29 @@
+
+<fieldset class="cbi-section">
+	<table width="100%" cellspacing="10">
+		<tr><td id="_web"><em> <%:Collecting data...%> </em></td></tr>
+		<tr><td width="33%"> Clash 客户端 </td><td id="_clash"><em><%:Collecting data...%></em></td></tr>
+		<tr><td width="33%"> BBR 加速 </td><td id="_bbr"><em><%:Collecting data...%></em></td></tr>
+		<tr><td width="33%"> 国外DNS加速</td><td id="_pdnsd"><em><%:Collecting data...%></em></td></tr>
+		<tr><td width="33%"> 国内DNS加速</td><td id="_dnscache"><em><%:Collecting data...%></em></td></tr>
+	</table>
+</fieldset>
+
+<script type="text/javascript">//<![CDATA[
+	var web = document.getElementById('_web');
+	var clash = document.getElementById('_clash');
+	var bbr = document.getElementById('_bbr');
+	var pdnsd = document.getElementById('_pdnsd');
+	var dnscache = document.getElementById('_dnscache');
+	XHR.poll(5, '<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
+		if ( x && x.status == 200 ) {
+			web.innerHTML = status.web ? '<em><b><a type="button" class="btn" style="background-color:black;color:white;padding: 5px;"  href="http://'+window.location.hostname+'/clash" target="_blank"/> 打开本地管理页面 </a><a type="button" class="btn" style="background-color:black;color:white;padding: 5px;"  href="http://yacd.haishan.me" target="_blank"/> 打开在线管理页面 </a></b></em>' : '<em><b><font color=red></font></b></em>';
+			clash.innerHTML = status.clash ? '<em><b><font color=green><%:RUNNING%></font> </b></em>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
+			bbr.innerHTML = status.bbr ? '<em><b><font color=green><%:RUNNING%></font></b></em>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
+			pdnsd.innerHTML = status.pdnsd ? '<em><b><font color=green><%:RUNNING%></font></b></em>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
+			dnscache.innerHTML = status.dnscache ? '<em><b><font color=green><%:RUNNING%></font></b></em>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
+		}
+	});
+//]]></script>
+
+

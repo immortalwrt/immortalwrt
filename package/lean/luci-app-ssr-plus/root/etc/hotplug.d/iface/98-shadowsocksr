@@ -1,0 +1,21 @@
+#!/bin/sh
+# Copyright (C) 2007 OpenWrt.org
+
+/etc/init.d/shadowsocksr enabled && {
+
+	[ "$ACTION" = "ifup" ] && {
+	local_server=`uci get shadowsocksr.@global[0].global_server 2>/dev/null`
+	
+	if [ "$local_server" = "nil" ] ;then
+		echo "$(date "+%Y-%m-%d %H:%M:%S") Shadowsocks/ShadowsocksR/v2ray not running!" >> /tmp/ssrplus.log 
+	else
+		icount=`ps -w | grep ssr-retcp |grep -v grep| wc -l`
+		if [ $icount = 0 ] ;then
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Shadowsocks/ShadowsocksR/v2ray error.restart!" >> /tmp/ssrplus.log 
+			/etc/init.d/shadowsocksr restart 
+			exit 0
+		fi
+	fi
+	}
+
+}

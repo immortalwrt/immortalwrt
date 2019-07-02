@@ -1,0 +1,44 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "VPN Setting"
+msgstr "VPN 设置"
+
+msgid "VPN Server"
+msgstr "VPN Server"
+
+msgid "VPN Bridge"
+msgstr "VPN Bridge"
+
+msgid "VPN Client"
+msgstr "VPN Client"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "General Settings"
+msgstr "基本设置"
+
+msgid "Save and restart the service after setup"
+msgstr "设置完后保存重启服务生效"
+
+msgid "VPN Server Enabled"
+msgstr "启用VPN Server"
+
+msgid "VPN Bridge Enabled"
+msgstr "启用VPN Bridge"
+
+msgid "VPN Client Enabled"
+msgstr "启用VPN Client"
+
+msgid "VPN Server Settings"
+msgstr "VPN Server设置"
+
+msgid "VPN Bridge Settings"
+msgstr "VPN Bridge设置"
+
+msgid "VPN Client Settings"
+msgstr "VPN Client设置"

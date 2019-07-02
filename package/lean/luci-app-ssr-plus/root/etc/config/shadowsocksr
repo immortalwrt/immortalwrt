@@ -3,7 +3,7 @@ config global
 	option tunnel_forward '8.8.4.4:53'
 	option tunnel_address '0.0.0.0'
 	option run_mode 'gfw'
-	option pdnsd_enable '1'
+	option pdnsd_enable '5'
 	option monitor_enable '1'
 	option global_server 'nil'
 	option enable_switch '1'
@@ -14,6 +14,12 @@ config socks5_proxy
 	option server 'nil'
 	option local_port '1080'
 	option local_address '0.0.0.0'
+	
+config global_haproxy
+	option admin_enable '1'
+	option admin_port '1111'
+	option admin_user 'admin'
+	option admin_password 'root'
 
 config access_control
 	option wan_bp_list '/etc/china_ssr.txt'
@@ -32,6 +38,12 @@ config server_subscribe
 	option proxy '0'
 	option auto_update_time '2'
 	option auto_update '1'
+	
+config domain_white_list
+	option domain_names 'youdao.com'
+
+config domain_white_list
+	option domain_names 'gov.cn'
 
 
 

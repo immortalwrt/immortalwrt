@@ -1,46 +1,64 @@
 #!/bin/bash
 # Copyright (C) 2017 XiaoShan https://www.mivm.cn
-
+# Copyright (C) 2019 Jerryk jerrykuku@qq.com
 . /usr/share/libubox/jshn.sh
 
 urlsafe_b64decode() {
-    local d="====" data=$(echo $1 | sed 's/_/\//g; s/-/+/g')
-    local mod4=$((${#data}%4))
-    [ $mod4 -gt 0 ] && data=${data}${d:mod4}
-    echo $data | base64 -d
+	local d="====" data=$(echo $1 | sed 's/_/\//g; s/-/+/g')
+	local mod4=$((${#data}%4))
+	[ $mod4 -gt 0 ] && data=$data${d:mod4}
+	echo $data | base64 -d
 }
 
 echo_date(){
-	echo $(TZ=UTC-8 date -R +%Y-%m-%d\ %X):$1
+	echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:$1
+}
+
+CheckIPAddr() {
+	echo $1 | grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" >/dev/null 2>&1
+	[ $? -ne 0 ] && return 1
+	local ipaddr=($(echo $1 | sed 's/\./ /g'))
+	[ ${#ipaddr[@]} -ne 4 ] && return 1
+	for ((i=0;i<${#ipaddr[@]};i++))
+	do
+		[ ${ipaddr[i]} -gt 255 -a ${ipaddr[i]} -lt 0 ] && return 1
+	done
+	return 0
 }
 
 Server_Update() {
-    local uci_set="uci -q set $name.$1."
-    ${uci_set}alias="[$ssr_group] $ssr_remarks"
-    ${uci_set}auth_enable="0"
-    ${uci_set}switch_enable="1"
-    ${uci_set}type="$ssr_type"
-    ${uci_set}server="$ssr_host"
-    ${uci_set}server_port="$ssr_port"
-    ${uci_set}local_port="1234"
-    uci -q get $name.@servers[$1].timeout >/dev/null || ${uci_set}timeout="60"
-    ${uci_set}password="$ssr_passwd"
-    ${uci_set}encrypt_method="$ssr_method"
-    ${uci_set}protocol="$ssr_protocol"
-    ${uci_set}protocol_param="$ssr_protoparam"
-    ${uci_set}obfs="$ssr_obfs"
-    ${uci_set}obfs_param="$ssr_obfsparam"
-    ${uci_set}fast_open="0"
-    ${uci_set}kcp_enable="0"
-    ${uci_set}kcp_port="0"
-    ${uci_set}kcp_param="--nocomp"
-    
-    #v2ray
-    ${uci_set}alter_id="$ssr_alter_id"
-    ${uci_set}vmess_id="$ssr_vmess_id"
-    ${uci_set}security="$ssr_security"
-    ${uci_set}transport="$ssr_transport"
-    ${uci_set}tcp_guise="$ssr_tcp_guise"
+	local uci_set="uci -q set $name.$1."
+	${uci_set}alias="[$ssr_group] $ssr_remarks"
+	${uci_set}auth_enable="0"
+	${uci_set}switch_enable="1"
+	${uci_set}type="$ssr_type"
+	${uci_set}server="$ssr_host"
+	${uci_set}server_port="$ssr_port"
+	${uci_set}local_port="1234"
+	uci -q get $name.@servers[$1].timeout >/dev/null || ${uci_set}timeout="60"
+	${uci_set}password="$ssr_passwd"
+	${uci_set}encrypt_method="$ssr_method"
+	${uci_set}protocol="$ssr_protocol"
+	${uci_set}protocol_param="$ssr_protoparam"
+	${uci_set}obfs="$ssr_obfs"
+	${uci_set}obfs_param="$ssr_obfsparam"
+	${uci_set}fast_open="0"
+	${uci_set}weight="10"
+	${uci_set}kcp_enable="0"
+	${uci_set}kcp_port="0"
+	${uci_set}kcp_param="--nocomp"
+
+	#v2ray
+	${uci_set}alter_id="$ssr_alter_id"
+	${uci_set}vmess_id="$ssr_vmess_id"
+	${uci_set}security="$ssr_security"
+	${uci_set}transport="$ssr_transport"
+	${uci_set}ws_host="$ssr_ws_host"
+	${uci_set}ws_path="$ssr_ws_path"
+	if [ "$ssr_tls" = "tls" ];then
+	${uci_set}tls="1"
+	fi
+	${uci_set}tcp_guise="$ssr_tcp_guise"
 }
 
 name=shadowsocksr
@@ -48,8 +66,13 @@ subscribe_url=($(uci get $name.@server_subscribe[0].subscribe_url))
 [ ${#subscribe_url[@]} -eq 0 ] && exit 1
 [ $(uci -q get $name.@server_subscribe[0].proxy || echo 0) -eq 0 ] && /etc/init.d/$name stop >/dev/null 2>&1
 log_name=${name}_subscribe
+echo_date "开始订阅"
+echo_date "==================================================="
+echo_date "                 服务器订阅程序"
+echo_date "==================================================="
 for ((o=0;o<${#subscribe_url[@]};o++))
 do
+
 	echo_date "从 ${subscribe_url[o]} 获取订阅"
 	echo_date "开始更新在线订阅列表..."
 	echo_date "开始下载订阅链接到本地临时文件，请稍等..."
@@ -140,13 +163,16 @@ do
 				temp_info=$(urlsafe_b64decode ${ssr_url[temp_x]//vmess:\/\//}) # 解码 Vmess 链接
 				ssr_type="v2ray"
 				json_load "$temp_info"
+				json_get_var ssr_remarks ps
 				json_get_var ssr_host add
 				json_get_var ssr_port port
 				json_get_var ssr_alter_id aid
 				json_get_var ssr_vmess_id id
 				json_get_var ssr_security type
 				json_get_var ssr_transport net
-				json_get_var ssr_remarks ps
+				json_get_var ssr_ws_host host
+				json_get_var ssr_ws_path path
+				json_get_var ssr_tls tls
 				ssr_tcp_guise="none"
 			fi
 

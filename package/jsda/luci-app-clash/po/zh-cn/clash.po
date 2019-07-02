@@ -1,0 +1,156 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "clash"
+msgstr "clash"
+
+msgid "Clash Client"
+msgstr "Clash 客户端"
+
+msgid "Server Configuration"
+msgstr "配置文件"
+
+msgid "Server logs"
+msgstr "服务器日志"
+
+msgid "Logs"
+msgstr "服务器日志"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Enable Clash"
+msgstr "启用 Clash"
+
+msgid "DNS Server 1"
+msgstr "上游 DNS 服务器(国内)"
+
+msgid "DNS Server 2"
+msgstr "上游 DNS 服务器(国际)"
+
+msgid "Enable BBR"
+msgstr "启用 BBR"
+
+msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
+msgstr ""
+"BBR拥塞控制算法可以加强TCP应用表现，但会降低路由器本机上的WIFI吞吐性能"
+
+msgid "Enable DNS"
+msgstr "启用 DNS 加速"
+
+msgid "DNS Acceleration & Forwarder"
+msgstr "DNS 加速 & 代理"
+
+msgid "DNS Settings"
+msgstr "DNS 设置"
+
+msgid "Server Config"
+msgstr "服务器配置"
+
+msgid "Upload Clash Configuration"
+msgstr "上传 Clash 配置"
+
+msgid ""
+"NB: Rename your config file to config.yml before upload. file will save to /"
+"etc/clash"
+msgstr ""
+"注意：上传之前，请将配置文件重命名为config.yml。文件将保存到 /etc/clash"
+
+msgid "Enable DNS Cache Acceleration and anti ISP DNS pollution"
+msgstr "启用DNS多线程查询、缓存，并防止ISP的DNS广告和域名劫持"
+
+msgid "Domestic DNS Server"
+msgstr "国内上游DNS服务器"
+
+msgid "Global DNS Server"
+msgstr "国外上游DNS服务器"
+
+msgid "* Clash Redir Port"
+msgstr "* 转发端口"
+
+msgid "* Domestic DNS Fowarder"
+msgstr "* 国内代理DNS服务器"
+
+msgid "* Global DNS Fowarder"
+msgstr "* 国外代理DNS服务器"
+
+msgid "Subcription Url"
+msgstr "订阅URL"
+
+msgid "Update Subcription"
+msgstr "更新订阅配置"
+
+msgid "Update Configuration"
+msgstr "更新配置文件"
+
+msgid "Update time (every day)"
+msgstr "更新时间 (每天)"
+
+msgid "Auto Update"
+msgstr "自动更新"
+
+msgid "After clash start running, wait a moment for servers to resolve,enjoy"
+msgstr "运行后，等待服务器传播"
+
+msgid "Clash config redir-port"
+msgstr "转发端口"
+
+msgid "Domestic DNS Server Fowarder"
+msgstr "国内DNS代理服务器地址"
+
+msgid "Global DNS Server Fowarder"
+msgstr "国外DNS代理服务器地址"
+
+msgid "Server Subscription Address"
+msgstr "服务器订阅地址"
+
+msgid "Auto Update Server subscription"
+msgstr "自动更新服务器订阅"
+
+msgid "Daily Server subscription update time"
+msgstr "每日服务器订阅更新时间"
+
+msgid "Under Server Config you can manually upload configuration from pc"
+msgstr "在服务器配置可以选择手动上载配置"
+
+msgid "Changes to config file must be made from source"
+msgstr "必须从源文件更改配置文件"
+
+msgid "DNS Servers located in China"
+msgstr "选择国内上游DNS服务器"
+
+msgid "DNS Servers located Overseas"
+msgstr "选择国外上游DNS服务器"
+
+msgid "Dashboard Secret"
+msgstr "管理页面秘密"
+
+msgid "Dashboard hostname is Your router local address. eg, 192.168.1.1"
+msgstr "管理页面主机名是您的路由器本地地址。例如，192.168.1.1"
+
+msgid "Dashboard Port"
+msgstr "管理页面端口"
+
+msgid "Self Defined GFW_List"
+msgstr "添加自定义GFW地址"
+
+msgid "GFW List Mode"
+msgstr "GFW列表模式"
+
+msgid "Oversea Mode"
+msgstr "海外用户回国模式"
+
+msgid "Please modify the file here."
+msgstr "填写时请按照模板格式"
+
+msgid "Apply Modify List"
+msgstr "应用自定义GFW列表"
+
+msgid "Choose DNS Resolve Model"
+msgstr "运行模式"
+
+msgid "Choose DNS Resolve With White or Black List Model"
+msgstr "选择DNS解析模式"
+
+msgid "Update GFW List"
+msgstr "更新GFW列表"

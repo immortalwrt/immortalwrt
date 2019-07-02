@@ -1,0 +1,14 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@qos_gargoyle[-1]
+	add ucitrack qos_gargoyle
+	set ucitrack.@qos_gargoyle[-1].init=qos_gargoyle
+	commit ucitrack
+EOF
+
+/etc/init.d/qos_gargoyle stop
+/etc/init.d/qos_gargoyle disable
+
+rm -rf /tmp/luci-modulecache /tmp/luci-indexcache
+exit 0

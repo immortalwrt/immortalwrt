@@ -1,0 +1,62 @@
+#!/bin/sh /etc/rc.common
+
+START=90
+
+vpn_server_enabled=$(uci get softethervpn5.config.vpn_server_enabled 2>/dev/null)
+vpn_bridge_enabled=$(uci get softethervpn5.config.vpn_bridge_enabled 2>/dev/null)
+vpn_client_enabled=$(uci get softethervpn5.config.vpn_client_enabled 2>/dev/null)
+lang=$(uci get softethervpn5.config.lang 2>/dev/null)
+
+start(){
+
+	cat > /usr/libexec/softethervpn/lang.config <<EOF
+# Specify a Language ID here.
+$lang
+EOF
+
+	if [ $vpn_server_enabled -eq 1 ]; then
+		/etc/init.d/softethervpnserver enable
+		/etc/init.d/softethervpnserver start
+	fi
+
+	if [ $vpn_bridge_enabled -eq 1 ]; then
+		/etc/init.d/softethervpnbridge enable
+		/etc/init.d/softethervpnbridge start
+	fi
+
+	if [ $vpn_client_enabled -eq 1 ]; then
+		/etc/init.d/softethervpnclient enable
+		/etc/init.d/softethervpnclient start
+	fi
+
+}
+
+stop(){
+
+	rm -rf /tmp/softethervpn
+
+	if [ $vpn_server_enabled -ne 1 ]; then
+		/etc/init.d/softethervpnserver stop
+		/etc/init.d/softethervpnserver disable
+		kill $(pidof vpnserver) >/dev/null 2>&1 || kill -9 $(ps | grep vpnserver | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
+	fi
+
+	if [ $vpn_bridge_enabled -ne 1 ]; then
+		/etc/init.d/softethervpnbridge stop
+		/etc/init.d/softethervpnbridge disable
+		kill $(pidof vpnbridge) >/dev/null 2>&1 || kill -9 $(ps | grep vpnbridge | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
+	fi
+
+	if [ $vpn_client_enabled -ne 1 ]; then
+		/etc/init.d/softethervpnclient stop
+		/etc/init.d/softethervpnclient disable
+		kill $(pidof vpnclient) >/dev/null 2>&1 || kill -9 $(ps | grep vpnclient | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
+	fi
+
+}
+
+restart(){
+	stop
+	sleep 5
+	start
+}
