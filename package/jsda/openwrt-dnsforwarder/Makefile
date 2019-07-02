@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=dnsforwarder
+PKG_NAME:=openwrt-dnsforwarder
 PKG_VERSION:=6
 PKG_RELEASE:=3
 

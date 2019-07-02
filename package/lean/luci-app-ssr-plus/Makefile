@@ -74,7 +74,7 @@ define Package/luci-app-ssr-plus
             +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks:shadowsocksr-libev-ssr-local \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks:shadowsocks-libev-ss-local \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy:dnscrypt-proxy-full \
-			+PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder \
+			+PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:openwrt-dnsforwarder \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy
 endef
 
