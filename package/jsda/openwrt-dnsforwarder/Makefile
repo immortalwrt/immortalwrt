@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=dnsforwarder
+PKG_NAME:=openwrt-dnsforwarder
 PKG_VERSION:=6
 PKG_RELEASE:=3
 
@@ -15,7 +15,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/openwrt-dnsforwarder
+define Package/$(PKG_NAME)
   SECTION:=net
   CATEGORY:=Network
   TITLE:=A simple DNS forwarder
@@ -23,7 +23,7 @@ define Package/openwrt-dnsforwarder
   DEPENDS:=+wget +ipset +dnsmasq-full +libpthread +coreutils-base64
 endef
 
-define Package/dnsforwarder/description
+define Package/$(PKG_NAME)/description
 Forwarding queries to customized domains (and their subdomains) to specified servers over a specified protocol (UDP or TCP). non-standard ports are supported.
 endef
 
@@ -33,7 +33,7 @@ define Package/$(PKG_NAME)/postinst
 rm -rf /tmp/luci*
 endef
 
-define Package/dnsforwarder/conffiles
+define Package/$(PKG_NAME)/conffiles
 /etc/dnsforwarder/dnsforwarder.conf
 /etc/dnsforwarder/china-banned
 /etc/dnsforwarder/base-gfwlist.txt
@@ -50,7 +50,7 @@ endef
 CONFIGURE_ARGS += --enable-downloader=wget
 
 
-define Package/dnsforwarder/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/dnsforwarder $(1)/usr/bin/dnsforwarder
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
@@ -58,4 +58,4 @@ define Package/dnsforwarder/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,dnsforwarder))
+$(eval $(call BuildPackage,$(PKG_NAME)))
