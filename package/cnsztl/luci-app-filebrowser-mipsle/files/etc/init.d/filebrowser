@@ -14,6 +14,7 @@ start() {
 	[ "$enabled" == "1" ] || return
 
 	if [ ! -f "$path/filebrowser" ];then
+		mkdir -p $path
 		wget -O $path/filebrowser https://mirror.router.ctcgfw.generalcdn.top/download/mipsle/filebrowser && cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
 	else
 		cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
