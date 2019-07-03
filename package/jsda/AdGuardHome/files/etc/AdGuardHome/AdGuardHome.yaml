@@ -1,4 +1,4 @@
-bind_host: 10.10.10.10
+bind_host: 0.0.0.0 
 bind_port: 3000
 auth_name: AdGuardHome
 auth_pass: AdGuardHome
