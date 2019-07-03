@@ -16,7 +16,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=AdGuardHome
-	DEPENDS:=
+	DEPENDS:=+dnsforwarder
 	URL:=https://github.com/AdguardTeam/AdGuardHome/releases
 endef
 

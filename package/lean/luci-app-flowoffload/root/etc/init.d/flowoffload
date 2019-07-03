@@ -105,7 +105,7 @@ server {
 
 server {  
     label = "special";                  # 这个随便写  
-    ip = 208.67.222.222,208.67.220.220; # 这里为备用DNS服务器的 ip 地址  
+    ip = 117.50.10.10,52.80.52.52,119.29.29.29; # 这里为备用DNS服务器的 ip 地址  
     port = 5353;                        # 推荐使用53以外的端口（DNS服务器必须支持） 
     proxy_only = on;
     timeout = 5;  
@@ -232,9 +232,10 @@ start_service(){
 		sleep 1
 		if [ $dnscache_enable = "1" ];  then
 			start_pdnsd
-		elif [ $dnscache_enable = "2" ] || [ $dnscache_enable = "3" ];  then
+		elif [ $dnscache_enable = "2" ];  then
 			start_dnsforwarder
 		elif [ $dnscache_enable = "3" ];  then
+			start_dnsforwarder
 			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome -h 0.0.0.0 -p 3000 >/dev/null 2>&1 &
 		fi
 		change_dns
