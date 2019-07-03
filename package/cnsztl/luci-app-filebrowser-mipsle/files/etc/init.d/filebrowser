@@ -15,9 +15,9 @@ start() {
 
 	if [ ! -f "$path/filebrowser" ];then
 		mkdir -p $path
-		wget -O $path/filebrowser https://mirror.router.ctcgfw.generalcdn.top/download/mipsle/filebrowser && cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
+		wget -O $path/filebrowser https://mirror.router.ctcgfw.generalcdn.top/download/mipsle/filebrowser && cd $path && chmod +x $path/filebrowser  && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
 	else
-		cd $path && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
+		cd $path && chmod +x $path/filebrowser  && ./filebrowser --port $port --scope $scope >/dev/null 2>&1 &
 	fi
 }
 
