@@ -116,10 +116,6 @@ filters:
   name: AdGuard Mobile Ads filter
   id: 1562167037
 - enabled: true
-  url: https://easylist.to/easylist/easylist.txt
-  name: EasyList
-  id: 1562167038
-- enabled: true
   url: https://filters.adtidy.org/extension/ublock/filters/3.txt
   name: AdGuard Tracking Protection filter
   id: 1562167039
@@ -151,14 +147,6 @@ filters:
   url: https://easylist.to/easylist/fanboy-annoyance.txt
   name: Fanboy's Annoyance List
   id: 1562167046
-- enabled: true
-  url: https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjxlist.txt
-  name: CJX's EasyList Lite
-  id: 1562167047
-- enabled: true
-  url: https://easylist-downloads.adblockplus.org/easylistchina.txt
-  name: EasyList China
-  id: 1562167048
 - enabled: true
   url: https://raw.githubusercontent.com/reek/anti-adblock-killer/master/anti-adblock-killer-filters.txt
   name: AakList (Anti-Adblock Killer)
