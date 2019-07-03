@@ -1,30 +1,37 @@
-bind_host: 0.0.0.0
+bind_host: 10.10.10.10
 bind_port: 3000
 auth_name: AdGuardHome
 auth_pass: AdGuardHome
 language: zh-cn
+rlimit_nofile: 0
 dns:
   bind_host: 0.0.0.0
   port: 5333
   protection_enabled: true
   filtering_enabled: true
+  blocking_mode: nxdomain
   blocked_response_ttl: 10
   querylog_enabled: true
   ratelimit: 20
   ratelimit_whitelist: []
   refuse_any: true
-  bootstrap_dns: 8.8.4.4:53
+  bootstrap_dns:
+  - 1.0.0.1:53
   all_servers: true
+  allowed_clients: []
+  disallowed_clients: []
+  blocked_hosts: []
+  filtering_temp_filename: ""
   parental_sensitivity: 0
   parental_enabled: false
   safesearch_enabled: false
   safebrowsing_enabled: false
+  resolveraddress: ""
   upstream_dns:
-  - 127.0.0.1:5383
+  - 117.50.10.10
+  - 52.80.52.52
   - tls://1dot1dot1dot1.cloudflare-dns.com
-  - https://cloudflare-dns.com/dns-query
   - https://1.0.0.1/dns-query
-  - https://dns.quad9.net/dns-query
   - tcp://8.8.8.8
   - tcp://8.8.4.4
 tls:
@@ -54,11 +61,11 @@ filters:
   id: 4
 - enabled: true
   url: https://raw.githubusercontent.com/523860169/list/master/ad.txt
-  name: Diablo AdFilters
+  name: My AdFilters
   id: 1553073381
 - enabled: true
   url: http://tools.yiclear.com/ChinaList2.0.txt
-  name: ChinaListV2.0[20190224001]
+  name: ChinaListV2.0[20190703003]
   id: 1553073382
 - enabled: true
   url: https://easylist-downloads.adblockplus.org/antiadblockfilters.txt
@@ -88,6 +95,74 @@ filters:
   url: http://sub.adtchrome.com/adt-chinalist-easylist.txt
   name: ChinaList+EasyList(修正)
   id: 1553073405
+- enabled: true
+  url: https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
+  name: uBlock filters
+  id: 1562167033
+- enabled: true
+  url: https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
+  name: uBlock filters – Privacy
+  id: 1562167034
+- enabled: true
+  url: https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt
+  name: uBlock filters – Resource abuse
+  id: 1562167035
+- enabled: true
+  url: https://filters.adtidy.org/extension/ublock/filters/2_without_easylist.txt
+  name: AdGuard Base filter
+  id: 1562167036
+- enabled: true
+  url: https://filters.adtidy.org/extension/ublock/filters/11.txt
+  name: AdGuard Mobile Ads filter
+  id: 1562167037
+- enabled: true
+  url: https://easylist.to/easylist/easylist.txt
+  name: EasyList
+  id: 1562167038
+- enabled: true
+  url: https://filters.adtidy.org/extension/ublock/filters/3.txt
+  name: AdGuard Tracking Protection filter
+  id: 1562167039
+- enabled: true
+  url: https://easylist.to/easylist/easyprivacy.txt
+  name: EasyPrivacy
+  id: 1562167040
+- enabled: true
+  url: https://www.fanboy.co.nz/enhancedstats.txt
+  name: Fanboy's Enhanced Tracking List
+  id: 1562167041
+- enabled: true
+  url: https://raw.githubusercontent.com/Spam404/lists/master/adblock-list.txt
+  name: Spam404
+  id: 1562167042
+- enabled: true
+  url: https://filters.adtidy.org/extension/ublock/filters/14.txt
+  name: AdGuard Annoyances filter
+  id: 1562167043
+- enabled: true
+  url: https://fanboy.co.nz/fanboy-antifacebook.txt
+  name: Anti-Facebook List
+  id: 1562167044
+- enabled: true
+  url: https://secure.fanboy.co.nz/fanboy-cookiemonster.txt
+  name: Fanboy's Cookie List
+  id: 1562167045
+- enabled: true
+  url: https://easylist.to/easylist/fanboy-annoyance.txt
+  name: Fanboy's Annoyance List
+  id: 1562167046
+- enabled: true
+  url: https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjxlist.txt
+  name: CJX's EasyList Lite
+  id: 1562167047
+- enabled: true
+  url: https://easylist-downloads.adblockplus.org/easylistchina.txt
+  name: EasyList China
+  id: 1562167048
+- enabled: true
+  url: https://raw.githubusercontent.com/reek/anti-adblock-killer/master/anti-adblock-killer-filters.txt
+  name: AakList (Anti-Adblock Killer)
+  id: 1562167049
 user_rules: []
 dhcp:
   enabled: false
@@ -97,6 +172,8 @@ dhcp:
   range_start: ""
   range_end: ""
   lease_duration: 0
+  icmp_timeout_msec: 1000
+clients: []
 log_file: ""
 verbose: false
-schema_version: 2
+schema_version: 3
