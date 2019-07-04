@@ -18,7 +18,8 @@ dns:
   bootstrap_dns:
   - 1.0.0.1:53
   all_servers: true
-  allowed_clients: []
+  allowed_clients:
+  - 127.0.0.1
   disallowed_clients: []
   blocked_hosts: []
   filtering_temp_filename: ""
