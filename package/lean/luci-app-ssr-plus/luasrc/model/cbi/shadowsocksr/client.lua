@@ -74,6 +74,7 @@ end
 if nixio.fs.access("/usr/bin/dnscrypt-proxy") then
 o:value("5", translate("Use dnscrypt-proxy query and cache"))
 end
+o:value("6", translate("Use system settings"))
 o.default = 1
 
 o = s:option(Value, "tunnel_forward", translate("Anti-pollution DNS Server"))

@@ -881,38 +881,29 @@ start() {
 
 	if rules ;then
 		[ $HAPROXY_MODE = "1" ] && start_haproxy && haproxy_enable=1
-		
 		start_redir
-  
 		mkdir -p /tmp/dnsmasq.d
-
-		if ! [ "$run_mode" = "oversea" ]; then
-	for domain_names in $(uci -X show shadowsocksr | grep domain_white_list | awk -F'[.=]' '{print $2}'); do
-		local DOMAIN_NANES=$(uci_get_by_name $domain_names domain_names)
-
-		sed -i "/$DOMAIN_NANES/d" /etc/dnsmasq.ssr/custom_forward.conf
-		sed -i "/$DOMAIN_NANES/d" /etc/dnsmasq.ssr/gfw_base.conf
-		sed -i "/$DOMAIN_NANES/d" /etc/dnsmasq.ssr/gfw_list.conf
-	done
-
-	sleep 2
-
-		cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
+		if ! [ "$(uci_get_by_type global pdnsd_enable)" = "6" ] ;then
+			if ! [ "$run_mode" = "oversea" ]; then
+				for domain_names in $(uci -X show shadowsocksr | grep domain_white_list | awk -F'[.=]' '{print $2}'); do
+					local DOMAIN_NANES=$(uci_get_by_name $domain_names domain_names)
+					sed -i "/$DOMAIN_NANES/d" /etc/dnsmasq.ssr/custom_forward.conf
+					sed -i "/$DOMAIN_NANES/d" /etc/dnsmasq.ssr/gfw_base.conf
+					sed -i "/$DOMAIN_NANES/d" /etc/dnsmasq.ssr/gfw_list.conf
+				done
+				sleep 2
+				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
 conf-dir=/var/dnsmasq.ssr
 EOF
-
-			cp -a /etc/dnsmasq.ssr /var
-
-		else
-		cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
+				cp -a /etc/dnsmasq.ssr /var
+			else
+				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
 conf-dir=/var/dnsmasq.oversea
 EOF
-
-			cp -a /etc/dnsmasq.oversea /var
-
+				cp -a /etc/dnsmasq.oversea /var
+			fi
+			/etc/init.d/dnsmasq restart >/dev/null 2>&1
 		fi
-
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
 
 	start_server	
