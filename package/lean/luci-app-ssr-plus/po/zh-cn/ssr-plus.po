@@ -473,6 +473,9 @@ msgstr "服务器节点"
 msgid "Use Local DNS Service listen port 5335"
 msgstr "使用本机端口为5335的DNS服务"
 
+msgid "Use system settings"
+msgstr "跟随系统设置"
+
 msgid "Server Node Type"
 msgstr "服务器节点类型"
 

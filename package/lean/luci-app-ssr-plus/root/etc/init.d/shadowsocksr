@@ -475,20 +475,20 @@ start() {
 	switch_enable=1
 	fi
 	if rules ;then
-	start_redir
-  
-  mkdir -p /tmp/dnsmasq.d
-	if ! [ "$run_mode" = "oversea" ] ;then
-		cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
+		start_redir
+		if ! [ "$(uci_get_by_type global pdnsd_enable)" = "2" ] ;then
+			mkdir -p /tmp/dnsmasq.d
+			if ! [ "$run_mode" = "oversea" ] ;then
+				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
 conf-dir=/etc/dnsmasq.ssr
 EOF
-  else
-		cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
+			else
+				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
 conf-dir=/etc/dnsmasq.oversea
 EOF
-	fi
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1
-	
+			fi
+			/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		fi
 	fi
 	start_server	
 	start_local
