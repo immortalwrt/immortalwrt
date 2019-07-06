@@ -1,5 +1,5 @@
 # A OpenWRT firmware based on Lean's source
-### Welcome to my Telegram Group: [@openwrt\_discuss](https://t.me/openwrt_discuss).
+### Welcome to my Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
 
 # Tips
 You'd better not use **root** to make it, or you may be not able to use.<br/>
