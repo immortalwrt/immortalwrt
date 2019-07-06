@@ -36,7 +36,8 @@ make -j1 V=s
 ### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 
 Packages jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
-luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).
+luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).<br>
+MTK Properties source: [Nossiac/mtk-openwrt-feeds](https://github.com/Nossiac/mtk-openwrt-feeds).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
