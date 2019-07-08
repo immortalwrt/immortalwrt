@@ -17,6 +17,7 @@ dns:
   refuse_any: true
   bootstrap_dns:
   - 1.0.0.1:53
+  - 2606:4700:4700::1001:53
   all_servers: true
   allowed_clients:
   - 127.0.0.1
@@ -29,12 +30,18 @@ dns:
   safebrowsing_enabled: false
   resolveraddress: ""
   upstream_dns:
+  - https://dns.nextdns.io/26a5c6
+  - tls://26a5c6.dns.nextdns.io
+  - sdns://AgEAAAAAAAAACjQ1LjkwLjI4LjAADmRucy5uZXh0ZG5zLmlvBy8yNmE1YzY
   - 117.50.10.10
-  - 52.80.52.52
-  - tls://1dot1dot1dot1.cloudflare-dns.com
-  - https://1.0.0.1/dns-query
+  - 119.29.29.29
+  - 223.5.5.5
   - tcp://8.8.8.8
-  - tcp://8.8.4.4
+  - tcp://208.67.222.222
+  - tcp://1.1.1.1
+  - https://cloudflare-dns.com/dns-query
+  - 2a07:a8c0::26:a5c6
+  - 2a07:a8c1::26:a5c6
 tls:
   enabled: false
   server_name: ""
@@ -62,11 +69,11 @@ filters:
   id: 4
 - enabled: true
   url: https://raw.githubusercontent.com/523860169/list/master/ad.txt
-  name: My AdFilters
+  name: Diablo AdFilters
   id: 1553073381
 - enabled: true
   url: http://tools.yiclear.com/ChinaList2.0.txt
-  name: ChinaListV2.0[20190703003]
+  name: ChinaListV2.0[20190224001]
   id: 1553073382
 - enabled: true
   url: https://easylist-downloads.adblockplus.org/antiadblockfilters.txt
@@ -96,62 +103,6 @@ filters:
   url: http://sub.adtchrome.com/adt-chinalist-easylist.txt
   name: ChinaList+EasyList(修正)
   id: 1553073405
-- enabled: true
-  url: https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
-  name: uBlock filters
-  id: 1562167033
-- enabled: true
-  url: https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
-  name: uBlock filters – Privacy
-  id: 1562167034
-- enabled: true
-  url: https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt
-  name: uBlock filters – Resource abuse
-  id: 1562167035
-- enabled: true
-  url: https://filters.adtidy.org/extension/ublock/filters/2_without_easylist.txt
-  name: AdGuard Base filter
-  id: 1562167036
-- enabled: true
-  url: https://filters.adtidy.org/extension/ublock/filters/11.txt
-  name: AdGuard Mobile Ads filter
-  id: 1562167037
-- enabled: true
-  url: https://filters.adtidy.org/extension/ublock/filters/3.txt
-  name: AdGuard Tracking Protection filter
-  id: 1562167039
-- enabled: true
-  url: https://easylist.to/easylist/easyprivacy.txt
-  name: EasyPrivacy
-  id: 1562167040
-- enabled: true
-  url: https://www.fanboy.co.nz/enhancedstats.txt
-  name: Fanboy's Enhanced Tracking List
-  id: 1562167041
-- enabled: true
-  url: https://raw.githubusercontent.com/Spam404/lists/master/adblock-list.txt
-  name: Spam404
-  id: 1562167042
-- enabled: true
-  url: https://filters.adtidy.org/extension/ublock/filters/14.txt
-  name: AdGuard Annoyances filter
-  id: 1562167043
-- enabled: true
-  url: https://fanboy.co.nz/fanboy-antifacebook.txt
-  name: Anti-Facebook List
-  id: 1562167044
-- enabled: true
-  url: https://secure.fanboy.co.nz/fanboy-cookiemonster.txt
-  name: Fanboy's Cookie List
-  id: 1562167045
-- enabled: true
-  url: https://easylist.to/easylist/fanboy-annoyance.txt
-  name: Fanboy's Annoyance List
-  id: 1562167046
-- enabled: true
-  url: https://raw.githubusercontent.com/reek/anti-adblock-killer/master/anti-adblock-killer-filters.txt
-  name: AakList (Anti-Adblock Killer)
-  id: 1562167049
 user_rules: []
 dhcp:
   enabled: false
