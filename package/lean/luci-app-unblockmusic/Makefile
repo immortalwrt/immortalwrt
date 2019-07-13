@@ -10,7 +10,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for Unblock NeteaseCloudMusic
-LUCI_DEPENDS:=+node
+LUCI_DEPENDS:=+node +bash
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-unblockmusic
 PKG_VERSION:=1
