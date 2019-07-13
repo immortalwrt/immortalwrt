@@ -13,6 +13,7 @@ enabled.default = 0
 enabled.rmempty = false
 
 enabled = s:option(Flag, "strict_mode", translate("启用严格模式"))
+enabled.description = translate("若将服务部署到公网，强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求")
 enabled.default = 0
 enabled.rmempty = false
 
