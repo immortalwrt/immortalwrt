@@ -37,7 +37,7 @@ make -j1 V=s
 
 Packages jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).<br>
-MTK Properties source: [Nossiac/mtk-openwrt-feeds](https://github.com/Nossiac/mtk-openwrt-feeds).
+luci-app-serverchan source: [zxlhhyccc/luci-app-serverchan](https://github.com/zxlhhyccc/luci-app-serverchan).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
