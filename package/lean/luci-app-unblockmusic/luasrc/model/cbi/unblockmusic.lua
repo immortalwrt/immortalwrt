@@ -16,6 +16,13 @@ enabled = s:option(Flag, "strict_mode", translate("启用严格模式"))
 enabled.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求")
 enabled.default = 0
 enabled.rmempty = false
+enabled:depends("enabled", 1)
+
+enabled = s:option(Flag, "enable_ipsec_forward", translate("启用IPSec转发相关流量"))
+enabled.description = translate("开启后，所有网易云音乐流量都会重定向到UnblockNeteaseMusic进行处理，但会导致无法正常访问云音乐网页端")
+enabled.default = 0
+enabled.rmempty = false
+enabled:depends("enabled", 1)
 
 speedtype = s:option(ListValue, "musicapptype", translate("音源选择"))
 speedtype:value("default", translate("默认"))
@@ -28,14 +35,17 @@ speedtype:value("kuwo", translate("酷我音乐"))
 speedtype:value("migu", translate("咕咪音乐"))
 speedtype:value("joox", translate("JOOX音乐"))
 speedtype:value("all", translate("所有平台"))
+speedtype:depends("enabled", 1)
 
 account = s:option(Value, "port", translate("端口号"))
 account.datatype = "string"
+account:depends("enabled", 1)
 
 enabled = s:option(Flag, "set_netease_server_ip", translate("自定义网易云服务器IP"))
 enabled.description = translate("自定义网易云服务器IP地址；如使用Hosts方式则必选，否则将会导致连接死循环")
 enabled.default = 0
 enabled.rmempty = false
+enabled:depends("enabled", 1)
 
 account = s:option(Value, "netease_server_ip", translate("网易云服务器IP"))
 account.description = translate("通过 ping music.163.com 即可获得IP地址，仅限填写一个")
@@ -47,6 +57,7 @@ enabled = s:option(Flag, "enable_proxy", translate("使用代理服务器"))
 enabled.description = translate("如您的OpenWRT系统部署在海外，则此选项必选，否则可能无法正常使用")
 enabled.default = 0
 enabled.rmempty = false
+enabled:depends("enabled", 1)
 
 account = s:option(Value, "proxy_server_ip", translate("代理服务器IP"))
 account.description = translate("具体格式请参考：https://github.com/nondanee/UnblockNeteaseMusic")

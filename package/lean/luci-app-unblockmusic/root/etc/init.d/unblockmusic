@@ -25,12 +25,31 @@ start()
 	else
 		node /usr/share/unblockmusic/app.js -p ${port} -o ${type} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockmusic.log 2>&1 &
 	fi
-
-	/usr/share/unblockmusic/logcheck.sh >/dev/null 2>&1 &
+	
+	if [ "$(uci get unblockmusic.@unblockmusic[0].enable_ipsec_forward)" -ne "0" ]; then
+		echo -e "ipset=/.music.163.com/music" >> /etc/dnsmasq.conf
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	
+		mkdir -p /var/etc
+		cat > "/var/etc/unblockmusic.include" <<-EOF
+if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
+iptables -t nat -N cloud_music
+iptables -t nat -A cloud_music -i br-lan -p tcp -j REDIRECT --to-ports ${port}
+iptables -t nat -A prerouting_rule -i br-lan -p tcp -m set --match-set music dst -j cloud_music
+		EOF
+		/etc/init.d/firewall restart >/dev/null 2>&1
+	
+		/usr/share/unblockmusic/logcheck.sh >/dev/null 2>&1 &
+	fi
 }
 
 stop()
 {
 	kill -9 "$(ps | grep app.js | grep -v grep | awk '{print $1}')" >/dev/null 2>&1
 	kill -9 "$(ps | grep logcheck.sh | grep -v grep | awk '{print $1}')" >/dev/null 2>&1
+	rm -f /tmp/unblockmusic.log
+	echo "" > /var/etc/unblockmusic.include
+	/etc/init.d/firewall reload >/dev/null 2>&1
+	sed -i '/ipset=\/.music.163.com\/music/d' /etc/dnsmasq.conf
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
