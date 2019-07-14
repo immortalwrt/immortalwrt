@@ -6,4 +6,5 @@ config unblockmusic
 	option musicapptype 'all'
 	option port '5200'
 	option set_netease_server_ip '0'
+	option netease_server_ip '59.111.181.38'
 	option enable_proxy '0'

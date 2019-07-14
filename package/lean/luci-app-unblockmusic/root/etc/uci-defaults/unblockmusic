@@ -11,7 +11,6 @@ uci -q batch <<-EOF >/dev/null
 	set firewall.unblockmusic.path=/var/etc/unblockmusic.include
 	set firewall.unblockmusic.reload=1
 	commit firewall
-
 EOF
 
 rm -f /tmp/luci-indexcache
