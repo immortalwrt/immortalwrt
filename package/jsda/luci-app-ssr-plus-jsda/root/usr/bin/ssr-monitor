@@ -34,6 +34,7 @@ ssrserver_process=$11
 v2rayserver_process=$12
 haproxy_process=$13
 privoxy_process=$14
+chinadns_process=$14
 if  [ -z "$pdnsd_process" ] ;then
 	pdnsd_process=0
 fi
@@ -49,6 +50,12 @@ kcp_param=$(uci_get_by_name $GLOBAL_SERVER kcp_param)
 [ "$password" != "" ] && password="--key "${password}
 
 sock5_port=$(uci_get_by_type socks5_proxy local_port 1080)
+
+if [ "$(uci_get_by_type global chinadns_enable)" = "0" ] ;then
+	dnsstrs="$(uci_get_by_type global tunnel_forward 8.8.4.4:53)"
+else
+	dnsstrs="0.0.0.0:5337"
+fi
 
 if echo $server|grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null; then         
 	server=${server}
@@ -222,6 +229,17 @@ do
 			( /usr/sbin/pdnsd -c /var/etc/pdnsd.conf -d &)
 		fi   
 	fi
+#chiandns
+	if [ $chinadns_process -gt 0 ] ;then
+		icount=`ps -w  | grep chinadns |grep -v grep| wc -l`
+		if [ $icount -lt $chinadns_process ]; then
+			logger -t "$NAME" "chinadns tunnel error.restart!"
+			echo "$(date "+%Y-%m-%d %H:%M:%S") chinadns tunnel error.restart!" >> ${logfile}
+			kill -9 $(ps | grep chinadns | grep -v grep | awk '{print $1}') >/dev/null 2>&1 
+
+			(nohup /usr/bin/chinadns -p 5335 -c /etc/china_ssr.txt -m -d -s $dnsstrs >/dev/null 2>&1 &)
+		fi   
+	fi 
 #haproxy
 	if [ $haproxy_process -gt 0 ] ;then
 		icount=`ps -w  | grep haproxy |grep -v grep| wc -l`
@@ -229,9 +247,7 @@ do
 		then
 			logger -t "$NAME" "haproxy error.restart!"
 			echo "$(date "+%Y-%m-%d %H:%M:%S") haproxy error.restart!" >> ${logfile}
-			killall -q -9 haproxy
-
-			/usr/sbin/haproxy -q -D -f /var/etc/haproxy.cfg -p /var/run/haproxy.pid
+			/etc/init.d/shadowsocksr restart
 		fi
 	fi
 done

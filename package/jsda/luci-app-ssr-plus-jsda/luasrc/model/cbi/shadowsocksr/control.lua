@@ -14,6 +14,9 @@ o.datatype = "ip4addr"
 o = s:taboption("wan_ac", DynamicList, "wan_fw_ips", translate("WAN Force Proxy IP"))
 o.datatype = "ip4addr"
 
+o = s:taboption("wan_ac", DynamicList, "wan_fk_ips", translate("WAN Fk Proxy IP"))
+o.datatype = "ip4addr"
+
 -- Part of LAN
 s:tab("lan_ac", translate("LAN IP AC"))
 

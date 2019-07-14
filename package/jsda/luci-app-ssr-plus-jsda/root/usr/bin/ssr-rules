@@ -30,6 +30,7 @@ usage() {
 		    -w <wan_ips>            wan ip of will be forwarded
 		    -p <fp_lan_ips>         lan ip of will be global proxy
 		    -G <gm_lan_ips>         lan ip of will be game mode proxy
+			-k <wan_fk_ips>         wan ip of will be forwarded
 		    -e <extra_options>      extra options for iptables
 		    -o                      apply the rules to the OUTPUT chain
 		    -O                      apply the global rules to the OUTPUT chain
@@ -100,9 +101,9 @@ EOF
 
 	elif [ "$RUNMODE" = "oversea" ] ;then
 		ipset -N oversea hash:net 2>/dev/null
-		for ip in $WAN_FW_IP; do ipset -! add oversea $ip ; done
+		for ip in $WAN_FK_IP; do ipset -! add oversea $ip ; done
 			$IPT -N SS_SPEC_WAN_AC
-			$IPT -A SS_SPEC_WAN_AC -m set --match-set oversea dst -j SS_SPEC_WAN_FW	
+			$IPT -A SS_SPEC_WAN_AC -m set --match-set oversea dst -j SS_SPEC_WAN_FW
 			ipset -N gmlan hash:net 2>/dev/null
 
 		for ip in $LAN_GM_IP; do ipset -! add gmlan $ip ; done
@@ -110,12 +111,16 @@ EOF
 			$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN	
 
 	elif [ "$RUNMODE" = "routers" ] ;then
+		ipset -! -R <<-EOF || return 1
+		create ss_spec_wan_ac hash:net
+		$(gen_iplist | sed -e "s/^/add ss_spec_wan_ac /")
+		$(for ip in $WAN_FK_IP; do echo "add ss_spec_wan_ac $ip nomatch"; done)
+EOF
 		ipset -N oversea hash:net 2>/dev/null
-		$IPT -N SS_SPEC_WAN_AC
-		ipset -N gmlan hash:net 2>/dev/null
-		for ip in $LAN_GM_IP; do ipset -! add gmlan $ip ; done
-			$IPT -A SS_SPEC_WAN_AC -m set --match-set china dst -j SS_SPEC_WAN_FW
-			$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN
+		$IPT -N SS_SPEC_WAN_AC 
+		$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN
+		$IPT -A SS_SPEC_WAN_AC -m set ! --match-set ss_spec_wan_ac dst -j RETURN
+		$IPT -A SS_SPEC_WAN_AC -j SS_SPEC_WAN_FW
 
 	elif [ "$RUNMODE" = "all" ] ;then
 		$IPT -N SS_SPEC_WAN_AC
@@ -314,7 +319,7 @@ EOF
 	return 0
 }
 
-while getopts ":s:l:S:L:i:e:a:b:w:p:G:oOuUfgrRczh" arg; do
+while getopts ":s:l:S:L:i:e:a:b:w:p:G:k:oOuUfgrRczh" arg; do
 	case "$arg" in
 		s)
 			server=$OPTARG
@@ -348,7 +353,10 @@ while getopts ":s:l:S:L:i:e:a:b:w:p:G:oOuUfgrRczh" arg; do
 			;;	
 		G)
 			LAN_GM_IP=$OPTARG
-			;;	
+			;;
+		k)
+			WAN_FK_IP=$OPTARG
+			;;
 		o)
 			OUTPUT=1
 			;;

@@ -74,8 +74,25 @@ end
 if nixio.fs.access("/usr/bin/dnscrypt-proxy") then
 o:value("5", translate("Use dnscrypt-proxy query and cache"))
 end
-o:value("6", translate("Use system settings"))
+if nixio.fs.access("/usr/bin/chinadns") then
+o:value("6", translate("Use chinadns query and cache"))
+end
+o:value("7", translate("Use system settings"))
 o.default = 1
+
+o = s:option(ListValue, "chinadns_enable", translate("Chinadns Resolve Dns Mode"))
+o:value("0", translate("Use Local DNS Service"))
+o:value("1", translate("Use Pdnsd tcp query and cache"))
+o:value("2", translate("Use Pdnsd udp query and cache"))
+if nixio.fs.access("/usr/bin/dnsforwarder") then
+o:value("3", translate("Use dnsforwarder tcp query and cache"))
+o:value("4", translate("Use dnsforwarder udp query and cache"))
+end
+if nixio.fs.access("/usr/bin/dnscrypt-proxy") then
+o:value("5", translate("Use dnscrypt-proxy query and cache"))
+end
+o.default = 1
+o:depends("pdnsd_enable", "6")
 
 o = s:option(Value, "tunnel_forward", translate("Anti-pollution DNS Server"))
 o:value("8.8.4.4:53", translate("Google Public DNS (8.8.4.4)"))
@@ -95,6 +112,8 @@ o:depends("pdnsd_enable", "1")
 o:depends("pdnsd_enable", "2")
 o:depends("pdnsd_enable", "3")
 o:depends("pdnsd_enable", "4")
+o:depends("pdnsd_enable", "6")
+o.default = "8.8.4.4:53"
 
 o = s:option(Flag, "bt", translate("Kill BT"))
 o.default = 0

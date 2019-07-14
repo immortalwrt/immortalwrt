@@ -1,35 +1,62 @@
 
 config global
-	option tunnel_forward '8.8.4.4:53'
 	option tunnel_address '0.0.0.0'
-	option run_mode 'gfw'
-	option pdnsd_enable '5'
 	option monitor_enable '1'
-	option global_server 'nil'
 	option enable_switch '1'
 	option switch_timeout '5'
 	option switch_time '667'
+	option threads '0'
+	option run_mode 'router'
+	option filter_aaaa '0'
+	option bt '0'
+	option pdnsd_enable '5'
+	option global_server 'cfg0b4a8f'
 
 config socks5_proxy
 	option server 'nil'
 	option local_port '1080'
 	option local_address '0.0.0.0'
-	
-config global_haproxy
-	option admin_enable '1'
-	option admin_port '1111'
-	option admin_user 'admin'
-	option admin_password 'root'
 
 config access_control
 	option wan_bp_list '/etc/china_ssr.txt'
 	option lan_ac_mode 'b'
 	option router_proxy '1'
+	list wan_bp_ips '114.114.114.114'
+	list wan_bp_ips '119.29.29.29'
+	list lan_ac_ips '192.168.10.254'
+	list lan_ac_ips '192.168.10.51'
+	list lan_ac_ips '192.168.10.52'
+	list lan_ac_ips '192.168.10.53'
+	list lan_ac_ips '192.168.10.54'
+	list lan_ac_ips '192.168.10.55'
+	list lan_ac_ips '192.168.10.56'
+	list lan_ac_ips '192.168.10.57'
+	list lan_ac_ips '192.168.10.58'
+	list lan_ac_ips '192.168.10.59'
+	list lan_ac_ips '192.168.10.60'
+	list lan_ac_ips '192.168.10.61'
+	list lan_ac_ips '192.168.10.62'
+	list lan_ac_ips '192.168.10.63'
+	list lan_ac_ips '192.168.10.64'
+	list lan_ac_ips '192.168.10.65'
+	list lan_ac_ips '192.168.10.66'
+	list lan_ac_ips '192.168.10.67'
+	list lan_ac_ips '192.168.10.68'
+	list lan_ac_ips '192.168.10.69'
+	list lan_ac_ips '192.168.10.70'
+	list lan_ac_ips '192.168.10.71'
+	list lan_ac_ips '192.168.10.72'
+	list lan_ac_ips '192.168.10.73'
+	list lan_ac_ips '192.168.10.74'
+	list lan_ac_ips '192.168.10.75'
+	list wan_fw_ips '1.0.0.1'
+	list wan_fw_ips '1.1.1.1'
+	list wan_fw_ips '109.239.140.0/24'
 	list wan_fw_ips '149.154.160.0/20'
 	list wan_fw_ips '67.198.55.0/24'
 	list wan_fw_ips '91.108.4.0/22'
 	list wan_fw_ips '91.108.56.0/22'
-	list wan_fw_ips '109.239.140.0/24'
+	list wan_fw_ips '192.168.10.0/24'
 
 config server_global
 	option enable_server '0'
@@ -37,13 +64,5 @@ config server_global
 config server_subscribe
 	option proxy '0'
 	option auto_update_time '2'
-	option auto_update '1'
-	
-config domain_white_list
-	option domain_names 'youdao.com'
-
-config domain_white_list
-	option domain_names 'gov.cn'
-
-
-
+	option auto_update '0'
+	option v2ray_update '0'
