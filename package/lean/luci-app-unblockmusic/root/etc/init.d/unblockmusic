@@ -38,9 +38,9 @@ iptables -t nat -A cloud_music -i br-lan -p tcp -j REDIRECT --to-ports ${port}
 iptables -t nat -A prerouting_rule -i br-lan -p tcp -m set --match-set music dst -j cloud_music
 		EOF
 		/etc/init.d/firewall restart >/dev/null 2>&1
-	
-		/usr/share/unblockmusic/logcheck.sh >/dev/null 2>&1 &
 	fi
+
+	/usr/share/unblockmusic/logcheck.sh >/dev/null 2>&1 &
 }
 
 stop()
