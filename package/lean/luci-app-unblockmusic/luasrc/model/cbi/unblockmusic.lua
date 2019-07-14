@@ -18,7 +18,7 @@ enabled.default = 0
 enabled.rmempty = false
 enabled:depends("enabled", 1)
 
-enabled = s:option(Flag, "enable_ipsec_forward", translate("启用IPSec转发相关流量"))
+enabled = s:option(Flag, "enable_ipset_forward", translate("启用IPSet转发相关流量"))
 enabled.description = translate("开启后，所有网易云音乐流量都会重定向到UnblockNeteaseMusic进行处理，但会导致无法正常访问云音乐网页端")
 enabled.default = 0
 enabled.rmempty = false

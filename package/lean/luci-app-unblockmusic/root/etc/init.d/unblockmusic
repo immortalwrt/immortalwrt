@@ -26,7 +26,7 @@ start()
 		node /usr/share/unblockmusic/app.js -p ${port} -o ${type} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockmusic.log 2>&1 &
 	fi
 	
-	if [ "$(uci get unblockmusic.@unblockmusic[0].enable_ipsec_forward)" -ne "0" ]; then
+	if [ "$(uci get unblockmusic.@unblockmusic[0].enable_ipset_forward)" -ne "0" ]; then
 		echo -e "ipset=/.music.163.com/music" >> /etc/dnsmasq.conf
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	
