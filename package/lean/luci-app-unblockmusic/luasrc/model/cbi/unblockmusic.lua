@@ -38,6 +38,7 @@ speedtype:value("all", translate("所有平台"))
 speedtype:depends("enabled", 1)
 
 account = s:option(Value, "port", translate("端口号"))
+account.default = "5200"
 account.datatype = "string"
 account:depends("enabled", 1)
 
