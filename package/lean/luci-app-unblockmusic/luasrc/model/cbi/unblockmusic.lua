@@ -1,6 +1,6 @@
 
 mp = Map("unblockmusic", translate("解锁网易云灰色歌曲"))
-mp.description = translate("原理：采用 [网易云旧链/QQ/虾米/百度/酷狗/酷我/咕咪/JOOX]等音源，替换网易云变灰歌曲链接<br/>具体使用方法可查看GitHub：https://github.com/shell-script/luci-app-unblockmusic")
+mp.description = translate("原理：采用 [网易云旧链/QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云变灰歌曲链接<br/>具体使用方法可查看GitHub：https://github.com/shell-script/luci-app-unblockmusic")
 
 mp:section(SimpleSection).template  = "unblockmusic/unblockmusic_status"
 
