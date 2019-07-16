@@ -108,7 +108,7 @@ upload_conf.template = "cbi/ssr_other_upload2"
 upload_conf:depends("use_conf_file", 1)	
 
 um = s:option(DummyValue, "", nil)	
-um.template = "cbi/other_dvalue"	
+um.template = "cbi/ssr_other_dvalue"	
 um:depends("use_conf_file", 1)	
 
 local conf_dir, fd	
