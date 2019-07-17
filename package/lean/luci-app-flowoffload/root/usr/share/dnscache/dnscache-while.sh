@@ -14,10 +14,11 @@ if [ $logrow -ge 500 ];then
 fi
 if [ $dnscache_enable = "3" ];then
 	adg_logrow=$(grep -c "" ${adg_logfile})
-	if [ $logrow -ge 500 ];then
+	if [ $adg_logrow -ge 500 ];then
 		cat /dev/null > ${adg_logfile}
 		echo "$curtime Log条数超限，清空处理！" >> ${adg_logfile}
 	fi
+fi
 }
 
 while [ $dns_enable -eq 1 ];
