@@ -231,6 +231,8 @@ start_service(){
 	if [ $dns -eq 1 ];  then
 		stop_dnscache
 		sleep 1
+		rm -f /var/log/dnscache.file
+		rm -f /etc/AdGuardHome/data/querylog.json*
 		if [ $dnscache_enable = "1" ];  then
 			start_pdnsd
 		elif [ $dnscache_enable = "2" ];  then
