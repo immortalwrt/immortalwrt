@@ -8,7 +8,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=ChinaDNS
+PKG_NAME:=openwrt_chinadns
 PKG_VERSION:=2.0.1
 PKG_RELEASE:=1
 
