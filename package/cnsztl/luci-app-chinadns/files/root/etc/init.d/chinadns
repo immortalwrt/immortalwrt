@@ -1,0 +1,62 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (C) 2017 Jian Chang <aa65535@live.com>, Ian Li
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
+START=90
+
+SERVICE_USE_PID=1
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+
+xappend() {
+	parms="$parms $1"
+}
+
+append_bool() {
+	local section="$1"
+	local option="$2"
+	local value="$3"
+	local _loctmp
+	config_get_bool _loctmp "$section" "$option"
+	[ "$_loctmp" = 1 ] || return 0
+	xappend "$value"
+}
+
+append_parm() {
+	local section="$1"
+	local option="$2"
+	local switch="$3"
+	local _loctmp
+	config_get _loctmp "$section" "$option"
+	[ -z "$_loctmp" ] && return 0
+	xappend "$switch $_loctmp"
+}
+
+start_chinadns() {
+	local enable
+	local local_subnet=$(echo `ifstatus wan | grep \"address\" | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.'`0)
+	local foreign_subnet
+	config_get_bool enable $1 enable
+	[ "$enable" = 1 ] || return 0
+	config_get foreign_subnet $1 foreign_subnet
+	append_parm $1 port "-p"
+	append_parm $1 server "-s"
+	append_parm $1 chnroute "-c"
+	xappend "-e $local_subnet,$foreign_subnet"
+	service_start /usr/sbin/chinadns \
+		$parms
+	return $?
+}
+
+start() {
+	config_load chinadns
+	config_foreach start_chinadns chinadns
+}
+
+stop() {
+	service_stop /usr/bin/chinadns
+}

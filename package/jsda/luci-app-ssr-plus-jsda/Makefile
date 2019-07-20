@@ -46,6 +46,10 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks
 	bool "Include Shadowsocks Socks and Tunnel"
 	default n
 
+config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS
+	bool "ChinaDNS"
+	default n
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy
 	bool "dnscrypt-proxy-full"
 	default n
@@ -73,6 +77,7 @@ define Package/luci-app-ssr-plus-jsda
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server:shadowsocks-libev-ss-server \
             +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks:shadowsocksr-libev-ssr-local \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks:shadowsocks-libev-ss-local \
+			+PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns
 			+PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy:dnscrypt-proxy-full \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:openwrt-dnsforwarder \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy
