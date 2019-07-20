@@ -721,7 +721,7 @@ start_redir() {
 			else
 				dnsstrs="$(uci_get_by_type global tunnel_forward 8.8.4.4:53)"
 			fi
-			nohup /usr/bin/chinadns -p 5335 -c /etc/china_ssr.txt -m -d -s $dnsstrs >/dev/null 2>&1 &
+			/usr/bin/chinadns -p 5335 -c /etc/china_ssr.txt -m -d -s $dnsstrs >/dev/null 2>&1 &
 			chinadns_enable_flag=1
 		fi
 
