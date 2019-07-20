@@ -17,6 +17,11 @@ s.anonymous   = true
 o = s:option(Flag, "enable", translate("Enable"))
 o.rmempty     = false
 
+o = s:option(Flag, "yn_use_proxy", 
+	translate("Used a proxy or not")
+	translate("If you used a proxy like shadowsocks, please tick this option."))
+o.rmenpty     = false
+
 o = s:option(Value, "port", translate("Local Port"))
 o.placeholder = 5353
 o.default     = 5353
@@ -31,11 +36,12 @@ o.rmempty     = false
 
 o = s:option(Value, "foreign_subnet",
 	translate("Foreign Subnet"),
-	translate("Just foreign subnet. The subnet of interface WAN will be used as local subnet."))
+	translate("Just foreign subnet. The local subnet will be automatically obtained."))
 o.placeholder = "45.76.96.0"
 o.default     = "45.76.96.0"
 o.datatype    = "ipaddr"
 o.rmempty     = false
+o:depends("yn_use_proxy", 0)
 
 o = s:option(Value, "server",
 	translate("Upstream Server"),

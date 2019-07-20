@@ -8,8 +8,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-chinadns
-PKG_VERSION:=2.0.0
-PKG_RELEASE:=beta
+PKG_VERSION:=2.0.1
+PKG_RELEASE:=1
 
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE

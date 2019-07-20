@@ -10,11 +10,17 @@ msgstr "国内路由表"
 msgid "Enable"
 msgstr "启用"
 
+msgid "Used a proxy or not"
+msgstr "是否使用了代理服务器"
+
+msgid "If you used a proxy like shadowsocks, please tick this option."
+msgstr "如果您使用了类似SS的代理程序，请勾选此选项"
+
 msgid "Foreign Subnet"
 msgstr "外网子网"
 
-msgid "Just foreign subnet. The subnet of interface WAN will be used as local subnet."
-msgstr "仅填写外网子网地址即可。接口WAN的子网地址将被用作本地子网地址。"
+msgid "Just foreign subnet. The local subnet will be automatically obtained."
+msgstr "仅填写外网子网地址即可，本地子网地址会自动获取。"
 
 msgid "General Setting"
 msgstr "基本设置"
