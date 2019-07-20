@@ -37,5 +37,5 @@ msgstr "运行中"
 msgid "Upstream Server"
 msgstr "上游服务器"
 
-msgid "A DNS server with edns-client-subnet support required."
-msgstr "需要具有edns-client-subnet支持的DNS服务器。"
+msgid "A DNS server with edns-client-subnet support required, fill one only!"
+msgstr "需要具有edns-client-subnet支持的DNS服务器，仅限填写一个！"

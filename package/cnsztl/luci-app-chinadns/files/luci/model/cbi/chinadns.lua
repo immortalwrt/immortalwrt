@@ -3,13 +3,8 @@
 -- Copyright (C) 2017 Ian Li <OpenSource@ianli.xyz>
 -- Licensed to the public under the GNU General Public License v3.
 
-local m, s, o
-
-if luci.sys.call("pidof chinadns >/dev/null") == 0 then
-	m = Map("chinadns", translate("ChinaDNS"), "%s - %s" %{translate("ChinaDNS"), translate("RUNNING")})
-else
-	m = Map("chinadns", translate("ChinaDNS"), "%s - %s" %{translate("ChinaDNS"), translate("NOT RUNNING")})
-end
+m = Map("chinadns", translate("ChinaDNS"))
+m:section(SimpleSection).template  = "chinadns/chinadns_status"
 
 s = m:section(TypedSection, "chinadns", translate("General Setting"))
 s.anonymous   = true
@@ -44,7 +39,7 @@ o:depends("yn_use_proxy", 0)
 
 o = s:option(Value, "server",
 	translate("Upstream Server"),
-	translate("A DNS server with edns-client-subnet support required."))
+	translate("A DNS server with edns-client-subnet support required, fill one only!"))
 o.placeholder = "8.8.8.8"
 o.default     = "8.8.8.8"
 o.datatype    = "ipaddr"

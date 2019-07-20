@@ -25,7 +25,7 @@ define Package/luci-app-chinadns
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for ChinaDNS
 	PKGARCH:=all
-	DEPENDS:=+ChinaDNS
+	DEPENDS:=+ChinaDNS +curl
 endef
 
 define Package/luci-app-chinadns/description
@@ -66,6 +66,8 @@ define Package/luci-app-chinadns/conffiles
 endef
 
 define Package/luci-app-chinadns/install
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/chinadns
+	$(INSTALL_DATA) ./files/luci/view/chinadns/chinadns_status.htm $(1)/usr/lib/lua/view/chinadns/chinadns_status.htm
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/chinadns.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller

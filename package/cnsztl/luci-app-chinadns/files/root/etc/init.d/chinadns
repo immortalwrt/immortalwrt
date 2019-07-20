@@ -1,67 +1,25 @@
 #!/bin/sh /etc/rc.common
-#
-# Copyright (C) 2017 Jian Chang <aa65535@live.com>, Ian Li
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
 
-START=90
+START=99
+STOP=10
 
-SERVICE_USE_PID=1
-SERVICE_WRITE_PID=1
-SERVICE_DAEMONIZE=1
+chnroute="$(uci get chinadns.@chinadns[0].chnroute)"
+enable="$(uci get chinadns.@chinadns[0].enable)"
+port="$(uci get chinadns.@chinadns[0].port)"
+server="$(uci get chinadns.@chinadns[0].server)"
+yn_use_proxy="$(uci get chinadns.@chinadns[0].yn_use_proxy)"
 
-xappend() {
-	parms="$parms $1"
-}
+local_subnet="$(curl -4 -s members.3322.org/dyndns/getip | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.')0"
+[ "${yn_use_proxy}" -eq "1" ] && foreign_subnet="$(curl -4 -s ip.sb | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.')0)" || foreign_subnet="$(uci get chinadns.@chinadns[0].foreign_subnet)"
 
-append_bool() {
-	local section="$1"
-	local option="$2"
-	local value="$3"
-	local _loctmp
-	config_get_bool _loctmp "$section" "$option"
-	[ "$_loctmp" = 1 ] || return 0
-	xappend "$value"
-}
-
-append_parm() {
-	local section="$1"
-	local option="$2"
-	local switch="$3"
-	local _loctmp
-	config_get _loctmp "$section" "$option"
-	[ -z "$_loctmp" ] && return 0
-	xappend "$switch $_loctmp"
-}
-
-start_chinadns() {
-	local enable
-	local yn_use_proxy
-	local local_subnet
-	local foreign_subnet
-
-	local local_subnet=$(echo `curl -4 -s members.3322.org/dyndns/getip | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.'`0)
-	config_get_bool enable $1 enable
-	[ "$enable" = 1 ] || return 0
-	config_get_bool yn_use_proxy $1 yn_use_proxy
-	[ "$yn_use_proxy" = 1 ] && local foreign_subnet=$(echo `curl -4 -s ip.sb | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.'`0) || config_get foreign_subnet $1 foreign_subnet
-	append_parm $1 port "-p"
-	append_parm $1 server "-s"
-	append_parm $1 chnroute "-c"
-	xappend "-e $local_subnet,$foreign_subnet"
-	service_start /usr/sbin/chinadns \
-		$parms
-	return $?
-}
-
-start() {
+start()
+{
 	stop
-	config_load chinadns
-	config_foreach start_chinadns chinadns
+	[ "${enable}" -eq "0" ] && exit 0
+	/usr/sbin/chinadns -p "${port}" -s "${server}" -c "${chnroute}" -e "${local_subnet},${foreign_subnet}"
 }
 
-stop() {
-	service_stop /usr/sbin/chinadns
+stop()
+{
+	kill -9 "$(ps | grep "/usr/sbin/chinadns" | grep -v grep | awk '{print $1}')" >/dev/null 2>&1
 }
