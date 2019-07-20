@@ -29,20 +29,20 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/ChinaDNS
+define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=Protect yourself against DNS poisoning in China.
 	URL:=https://github.com/shadowsocks/ChinaDNS
 endef
 
-define Package/ChinaDNS/description
+define Package/$(PKG_NAME)/description
 Protect yourself against DNS poisoning in China.
 endef
 
-define Package/ChinaDNS/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/chinadns $(1)/usr/bin
 endef
 
-$(eval $(call BuildPackage,ChinaDNS))
+$(eval $(call BuildPackage,$(PKG_NAME)))
