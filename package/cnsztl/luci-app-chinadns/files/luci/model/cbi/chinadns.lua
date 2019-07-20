@@ -18,7 +18,7 @@ o = s:option(Flag, "enable", translate("Enable"))
 o.rmempty     = false
 
 o = s:option(Flag, "yn_use_proxy", 
-	translate("Used a proxy or not")
+	translate("Used a proxy or not"),
 	translate("If you used a proxy like shadowsocks, please tick this option."))
 o.rmenpty     = false
 
@@ -40,7 +40,6 @@ o = s:option(Value, "foreign_subnet",
 o.placeholder = "45.76.96.0"
 o.default     = "45.76.96.0"
 o.datatype    = "ipaddr"
-o.rmempty     = false
 o:depends("yn_use_proxy", 0)
 
 o = s:option(Value, "server",

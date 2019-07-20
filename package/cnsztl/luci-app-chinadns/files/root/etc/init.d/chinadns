@@ -44,7 +44,7 @@ start_chinadns() {
 	[ "$enable" = 1 ] || return 0
 	config_get_bool yn_use_proxy $1 yn_use_proxy
 	[ "$yn_use_proxy" = 0 ] && local foreign_subnet && config_get foreign_subnet $1 foreign_subnet
-	[ "$yn_use_proxy" = 1 ] && local foregin_subnet=$(echo `curl -4 -s ip.sb | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.'`0)
+	[ "$yn_use_proxy" = 1 ] && local foreign_subnet=$(echo `curl -4 -s ip.sb | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.'`0)
 	append_parm $1 port "-p"
 	append_parm $1 server "-s"
 	append_parm $1 chnroute "-c"
