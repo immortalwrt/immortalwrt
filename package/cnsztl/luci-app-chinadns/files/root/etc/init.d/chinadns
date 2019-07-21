@@ -16,7 +16,7 @@ start()
 {
 	stop
 	[ "${enable}" -eq "0" ] && exit 0
-	/usr/sbin/chinadns -p "${port}" -s "${server}" -c "${chnroute}" -e "${local_subnet},${foreign_subnet}"
+	/usr/sbin/chinadns -p "${port}" -s "${server}" -c "${chnroute}" -e "${local_subnet},${foreign_subnet}" >/dev/null 2>&1 &
 }
 
 stop()
