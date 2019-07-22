@@ -36,8 +36,9 @@ make -j1 V=s
 ### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 
 Packages jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
-luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).<br>
-luci-app-serverchan source: [zxlhhyccc/luci-app-serverchan](https://github.com/zxlhhyccc/luci-app-serverchan).
+luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).<br/>
+luci-app-serverchan source: [zxlhhyccc/luci-app-serverchan](https://github.com/zxlhhyccc/luci-app-serverchan).<br/>
+OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter)
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
