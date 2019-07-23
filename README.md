@@ -18,7 +18,7 @@ sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git
 
 ## Clone the source
 ```bash
-git clone https://github.com/shell-script/lede && cd lede
+git clone https://github.com/project-openwrt/lede && cd lede
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 

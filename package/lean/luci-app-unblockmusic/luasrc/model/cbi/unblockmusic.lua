@@ -1,6 +1,6 @@
 
 mp = Map("unblockmusic", translate("恢复网易云音乐无版权歌曲"))
-mp.description = translate("原理：采用 [网易云旧链/QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云音乐无版权歌曲链接<br/>具体使用方法参见：https://github.com/shell-script/luci-app-unblockmusic")
+mp.description = translate("原理：采用 [网易云旧链/QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云音乐无版权歌曲链接<br/>具体使用方法参见：https://github.com/project-openwrt/luci-app-unblockmusic")
 
 mp:section(SimpleSection).template  = "unblockmusic/unblockmusic_status"
 
