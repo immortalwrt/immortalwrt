@@ -10,8 +10,8 @@ include $(INCLUDE_DIR)/package.mk
 PKG_AUTOLOAD:=oaf
 
 define KernelPackage/oaf
-  SECTION:=Derry Apps
-  CATEGORY:=Derry Apps
+  SECTION:=net
+  CATEGORY:=Network
   TITLE:=open app filter kernel module
   FILES:=$(PKG_BUILD_DIR)/oaf.ko 
   KCONFIG:=
