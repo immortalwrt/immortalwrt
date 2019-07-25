@@ -10,8 +10,9 @@ include $(INCLUDE_DIR)/package.mk
 PKG_AUTOLOAD:=oaf
 
 define KernelPackage/oaf
-  SECTION:=net
-  CATEGORY:=Network
+  SECTION:=Kernel
+  CATEGORY:=Kernel modules
+  SUBMENU:=Netfilter Extensions
   TITLE:=open app filter kernel module
   FILES:=$(PKG_BUILD_DIR)/oaf.ko 
   KCONFIG:=

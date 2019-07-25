@@ -9,15 +9,7 @@ LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-appfilter
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
-
-define Package/$(PKG_NAME)
-	SECTION:=luci
-	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
-	TITLE:=LuCI Support for oaf
-	PKGARCH:=all
-	DEPENDS:=+oaf +appfilter
-endef
+LUCI_DEPENDS:=+kmod-oaf +appfilter
 
 include $(TOPDIR)/feeds/luci/luci.mk
 # call BuildPackage - OpenWrt buildroot signature

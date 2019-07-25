@@ -1,8 +1,8 @@
 #!/bin/sh
 uci -q batch <<-EOF >/dev/null
-	delete ucitrack.@ChinaDNS[-1]
-	add ucitrack ChinaDNS
-	set ucitrack.@ChinaDNS[-1].init=ChinaDNS
+	delete ucitrack.@chinands[-1]
+	add ucitrack chinadns
+	set ucitrack.@chinadns[-1].init=chinadns
 	commit ucitrack
 EOF
 exit 0
