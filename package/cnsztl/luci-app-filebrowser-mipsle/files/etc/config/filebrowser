@@ -1,7 +1,0 @@
-
-config filebrowser 'config'
-	option enabled '0'
-	option port '8989'
-	option scope '/'
-	option path '/mnt/sda1/filebrowser'
-
