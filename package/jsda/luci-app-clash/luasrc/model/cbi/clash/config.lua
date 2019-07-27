@@ -8,15 +8,15 @@ local UTIL = require "luci.util"
 
 local http = luci.http
 
-ful = SimpleForm("upload", translate("Server Configuration"), nil)
+ful = Form("upload", nil)
 ful.reset = false
 ful.submit = false
 
 sul =ful:section(SimpleSection, "", translate(""))
 o = sul:option(FileUpload, "")
-o.title = translate("Upload Clash Configuration")
+o.title = translate("Upload Config")
 o.template = "clash/clash_upload"
-o.description = translate("NB: Rename your config file to config.yml before upload. file will save to /etc/clash")
+o.description = translate("NB: Rename your config file to config.yaml before upload. file will save to /etc/clash")
 um = sul:option(DummyValue, "", nil)
 um.template = "clash/clash_dvalue"
 
@@ -41,6 +41,7 @@ http.setfilehandler(
 			fd:close()
 			fd = nil
 			um.value = translate("File saved to") .. ' "/etc/clash/' .. meta.file .. '"'
+			os.execute("/etc/init.d/clash restart >/dev/null 2>&1 &")
 		end
 	end
 )
@@ -61,10 +62,12 @@ s.anonymous = true
 s.addremove=false
 
 
-local conf = "/etc/clash/config.yml"
+local conf = "/etc/clash/config.yaml"
 sev = s:option(TextValue, "conf")
 sev.readonly=true
-sev.description = translate("Changes to config file must be made from source")
+--update_time = SYS.exec("ls -l --full-time /etc/clash/config.yaml|awk '{print $6,$7;}'")
+--sev.description = update_time
+--sev.description = translate("Changes to config file must be made from source")
 sev.rows = 20
 sev.wrap = "off"
 sev.cfgvalue = function(self, section)
@@ -73,6 +76,12 @@ end
 sev.write = function(self, section, value)
 end
 
+
+o = s:option(Button,"configrm")
+o.inputtitle = translate("Delete Config")
+o.write = function()
+  os.execute("rm -rf /etc/clash/config.yaml")
+end
 
 
 return ful , m

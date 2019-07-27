@@ -1,87 +1,183 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "enabled"
+msgstr "启用"
+
+msgid "Subcription Type"
+msgstr "服务器订阅类型"
+
+msgid "Select Subcription Type, enter only your subcription url without https://tgbot.lbyczf.com/*?"
+msgstr "选择服务器订阅类型,输入服务器订阅不要带https://tgbot.lbyczf.com/*?"
+
+msgid "disabled"
+msgstr "停用"
+
+msgid "Access Control"
+msgstr "访问控制"
+
+msgid "Proxy Ports"
+msgstr "代理端口设置"
+
+msgid "DNS Settings"
+msgstr "DNS设置"
+
+msgid "Http Port"
+msgstr "http代理端口"
+
+msgid "Socks Port"
+msgstr "socks代理端口"
+
+msgid "Redir Port"
+msgstr "redir代理端口"
+
+msgid "No New Version"
+msgstr "已安装最新本"
+
+msgid "Log level"
+msgstr "日志级别"
+
+msgid "Choose Log Level"
+msgstr "选择日志级别"
+
+msgid "Overview"
+msgstr "概览"
+
+msgid "Download"
+msgstr "下载新版本"
+
+msgid "Checking..."
+msgstr "正在检查..."
+
+msgid "Rule-based Custom Proxy Client"
+msgstr "基于规则的自定义代理客户端"
+
+msgid "Check Error!"
+msgstr "检查错误"
+
+msgid "New Version"
+msgstr "最新版本"
+
+msgid "Current Version"
+msgstr "当前版本"
+
+msgid "Return Check"
+msgstr "返回检查"
+
+msgid "Check Update"
+msgstr "检查更新"
+
+msgid "DNS Forwarding"
+msgstr "DNS转发"
+
+msgid "Set custom DNS forwarder in DHCP and DNS Settings"
+msgstr "在DHCP和DNS设置自定义DNS转发"
+
+msgid "Proxy Lan IP"
+msgstr "走代理的局域网IP"
+
+msgid "Only selected IPs will be proxied if enabled"
+msgstr "如果启用，仅选择IP只走代理"
+
+msgid "Proxy Lan List"
+msgstr "走代理的IP列表"
+
+msgid "Only selected IPs will be proxied"
+msgstr "选择IP只走代理"
+
+msgid "Bypass Lan IP"
+msgstr "不走代理的局域网IP"
+
+msgid "Selected IPs will not be proxied if enabled"
+msgstr "如果启用，仅选择IP只不走代理"
+
+msgid "Bypass Lan List"
+msgstr "不走代理的IP列表"
+
+msgid "Selected IPs will not be proxied"
+msgstr "选择LAN IP只不走代理"
+
+msgid "Enabling Custom DNS will Overwrite your config.yaml dns section"
+msgstr "启用自定义DNS会覆盖config.yaml dns"
+
+msgid "Dashboard Host"
+msgstr "外部控制Host"
+
+msgid "Dashboard Port"
+msgstr "外部控制端口"
+
+msgid "Clear Logs"
+msgstr "清理日志"
+
+msgid "Dashboard Secret"
+msgstr "外部控制密钥"
+
+msgid "Google"
+msgstr "谷歌网"
+
+msgid "Youtube"
+msgstr "Youtube网"
+
+msgid "Baidu"
+msgstr "百度网"
+
+msgid "Taobao"
+msgstr "淘宝网"
+
+msgid "CONNECT OK"
+msgstr "连接正常"
+
+msgid "TIMEOUT"
+msgstr "连接超时"
+
+msgid "NOT SET"
+msgstr "未设置"
+
+msgid "NO ACCESS"
+msgstr "无法访问"
+
+msgid "Domestic IP"
+msgstr "国内网IP"
+
+msgid "Global IP"
+msgstr "国外网IP"
 
 msgid "clash"
 msgstr "clash"
 
-msgid "Clash Client"
-msgstr "Clash 客户端"
+msgid "OPEN DASHBOARD"
+msgstr "打开外部控制"
 
-msgid "Server Configuration"
+msgid "Clash Dashboard"
+msgstr "Clash外部控制"
+
+msgid "Yacd Dashboard"
+msgstr "Yacd外部控制"
+
+msgid "Client"
+msgstr "客户端"
+
+msgid "Clash Client"
+msgstr "客户端"
+
+msgid "Configuration"
 msgstr "配置文件"
 
-msgid "Server logs"
-msgstr "服务器日志"
+msgid "logs"
+msgstr "日志"
+
+msgid "Custom DNS"
+msgstr "自定义DNS"
+
+msgid "Modify yaml DNS"
+msgstr "修改 DNS"
 
 msgid "Logs"
-msgstr "服务器日志"
+msgstr "日志"
 
 msgid "Enable"
 msgstr "启用"
 
-msgid "Enable Clash"
-msgstr "启用 Clash"
-
-msgid "DNS Server 1"
-msgstr "上游 DNS 服务器(国内)"
-
-msgid "DNS Server 2"
-msgstr "上游 DNS 服务器(国际)"
-
-msgid "Enable BBR"
-msgstr "启用 BBR"
-
-msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
-msgstr ""
-"BBR拥塞控制算法可以加强TCP应用表现，但会降低路由器本机上的WIFI吞吐性能"
-
-msgid "Enable DNS"
-msgstr "启用 DNS 加速"
-
-msgid "DNS Acceleration & Forwarder"
-msgstr "DNS 加速 & 代理"
-
-msgid "DNS Settings"
-msgstr "DNS 设置"
-
-msgid "Server Config"
-msgstr "服务器配置"
-
-msgid "Upload Clash Configuration"
-msgstr "上传 Clash 配置"
-
-msgid ""
-"NB: Rename your config file to config.yml before upload. file will save to /"
-"etc/clash"
-msgstr ""
-"注意：上传之前，请将配置文件重命名为config.yml。文件将保存到 /etc/clash"
-
-msgid "Enable DNS Cache Acceleration and anti ISP DNS pollution"
-msgstr "启用DNS多线程查询、缓存，并防止ISP的DNS广告和域名劫持"
-
-msgid "Domestic DNS Server"
-msgstr "国内上游DNS服务器"
-
-msgid "Global DNS Server"
-msgstr "国外上游DNS服务器"
-
-msgid "* Clash Redir Port"
-msgstr "* 转发端口"
-
-msgid "* Domestic DNS Fowarder"
-msgstr "* 国内代理DNS服务器"
-
-msgid "* Global DNS Fowarder"
-msgstr "* 国外代理DNS服务器"
-
-msgid "Subcription Url"
-msgstr "订阅URL"
-
-msgid "Update Subcription"
-msgstr "更新订阅配置"
-
-msgid "Update Configuration"
-msgstr "更新配置文件"
+msgid "Settings"
+msgstr "设置"
 
 msgid "Update time (every day)"
 msgstr "更新时间 (每天)"
@@ -89,68 +185,50 @@ msgstr "更新时间 (每天)"
 msgid "Auto Update"
 msgstr "自动更新"
 
-msgid "After clash start running, wait a moment for servers to resolve,enjoy"
-msgstr "运行后，等待服务器传播"
-
-msgid "Clash config redir-port"
-msgstr "转发端口"
-
-msgid "Domestic DNS Server Fowarder"
-msgstr "国内DNS代理服务器地址"
-
-msgid "Global DNS Server Fowarder"
-msgstr "国外DNS代理服务器地址"
-
-msgid "Server Subscription Address"
-msgstr "服务器订阅地址"
-
 msgid "Auto Update Server subscription"
 msgstr "自动更新服务器订阅"
 
 msgid "Daily Server subscription update time"
 msgstr "每日服务器订阅更新时间"
 
-msgid "Under Server Config you can manually upload configuration from pc"
-msgstr "在服务器配置可以选择手动上载配置"
+msgid "Enable"
+msgstr "启用"
+
+msgid "Delete Config"
+msgstr "删除配置"
+
+msgid "Config"
+msgstr "配置"
+
+msgid "NB: press ENTER to create a blank line at the end of input."
+msgstr "填写时请按照模板格式, 按Enter键在输入结束时创建一行空行"
+
+msgid "GEOIP Database"
+msgstr "GEOIP数据库"
+
+msgid "Update GEOIP Database"
+msgstr "更新GEOIP数据库"
+
+msgid "Upload Config"
+msgstr "上传配置"
+
+msgid "NB: Rename your config file to config.yaml before upload. file will save to /etc/clash"
+msgstr "注意：上传之前，请将配置文件重命名为config.yaml。文件将保存到 /etc/clash"
+
+msgid "Subcription Url"
+msgstr "订阅URL"
+
+msgid "Update Subcription"
+msgstr "更新订阅配置"
+
+msgid "Update"
+msgstr "更新"
+
+msgid "Enable Client"
+msgstr "启用客户端"
+
+msgid "Server Subscription Address"
+msgstr "服务器订阅地址"
 
 msgid "Changes to config file must be made from source"
 msgstr "必须从源文件更改配置文件"
-
-msgid "DNS Servers located in China"
-msgstr "选择国内上游DNS服务器"
-
-msgid "DNS Servers located Overseas"
-msgstr "选择国外上游DNS服务器"
-
-msgid "Dashboard Secret"
-msgstr "管理页面秘密"
-
-msgid "Dashboard hostname is Your router local address. eg, 192.168.1.1"
-msgstr "管理页面主机名是您的路由器本地地址。例如，192.168.1.1"
-
-msgid "Dashboard Port"
-msgstr "管理页面端口"
-
-msgid "Self Defined GFW_List"
-msgstr "添加自定义GFW地址"
-
-msgid "GFW List Mode"
-msgstr "GFW列表模式"
-
-msgid "Oversea Mode"
-msgstr "海外用户回国模式"
-
-msgid "Please modify the file here."
-msgstr "填写时请按照模板格式"
-
-msgid "Apply Modify List"
-msgstr "应用自定义GFW列表"
-
-msgid "Choose DNS Resolve Model"
-msgstr "运行模式"
-
-msgid "Choose DNS Resolve With White or Black List Model"
-msgstr "选择DNS解析模式"
-
-msgid "Update GFW List"
-msgstr "更新GFW列表"

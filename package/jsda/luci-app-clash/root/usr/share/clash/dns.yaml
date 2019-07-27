@@ -1,0 +1,24 @@
+#experimental:
+#  ignore-resolve-fail: true
+
+#local SOCKS5/HTTP(S) server
+#authentication:
+# - "user1:pass1"
+# - "user2:pass2"
+
+dns:
+ enable: true
+ # ipv6: false
+ listen: 0.0.0.0:5300
+ enhanced-mode: fake-ip
+ #fake-ip-range: 198.18.0.1/16
+ nameserver: 
+  - 101.132.183.99
+  - 119.29.29.29 
+  - 114.114.114.114
+  - 114.114.115.115    
+  - tls://dns.rubyfish.cn:853
+  - https://1.1.1.1/dns-query
+# fallback:
+#  - tls://1.1.1.1:853
+

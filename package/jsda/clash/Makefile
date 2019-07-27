@@ -1,14 +1,39 @@
-#
-# Copyright (C) 2015-2016 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v3.
-#
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clash
-PKG_VERSION:=0.14.0
+PKG_VERSION:=0.15.0
+PKG_RELEASE:=1
+PKG_MAINTAINER:=frainzy1477
+
+ifeq ($(ARCH),mipsel)
+	PKG_ARCH:=mipsle
+endif
+ifeq ($(ARCH),mips)
+	PKG_ARCH:=mips64
+endif
+ifeq ($(ARCH),i386)
+	PKG_ARCH:=386
+endif
+ifeq ($(ARCH),x86_64)
+	PKG_ARCH:=amd64
+endif
+ifeq ($(ARCH),arm)
+PKG_ARCH:=armv6
+  ifneq ($(BOARD),bcm53xx)
+	PKG_ARCH:=armv7
+  endif
+  ifeq ($(BOARD),kirkwood)
+	PKG_ARCH:=armv5
+  endif
+endif
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH:=armv8
+endif
+
+PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
+PKG_SOURCE_URL:=https://github.com/Dreamacro/clash/releases/download/v$(PKG_VERSION)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -21,48 +46,20 @@ define Package/$(PKG_NAME)
 endef
 
 define Package/$(PKG_NAME)/description
-clash is a cross-platform proxy software
+	clash is a cross-platform proxy software
 endef
-
-ifeq ($(ARCH),x86_64)
-	PKG_ARCH_CLASH:=linux-amd64
-endif
-ifeq ($(ARCH),i386)
-	PKG_ARCH_CLASH:=linux-386
-endif
-ifeq ($(ARCH),mipsel)
-	PKG_ARCH_CLASH:=linux-mipsle
-endif
-ifeq ($(ARCH),mips)
-	PKG_ARCH_CLASH:=linux-mips-hardfloat
-endif
-ifeq ($(ARCH),arm)
-	PKG_ARCH_CLASH:=linux-armv6
-endif
-ifeq ($(ARCH),aarch64)
-	PKG_ARCH_CLASH:=linux-armv8
-endif
 
 define Build/Prepare
-	#[ ! -f $(PKG_BUILD_DIR)/clash-v$(PKG_VERSION)-$(PKG_ARCH_CLASH).tar.gz ] && wget  https://github.com/Dreamacro/clash/releases/download/v$(PKG_VERSION)/clash-$(PKG_ARCH_CLASH).tar.gz -O $(PKG_BUILD_DIR)/clash-v$(PKG_VERSION)-$(PKG_ARCH_CLASH).tar.gz
-	#tar -xzvf $(PKG_BUILD_DIR)/clash-v$(PKG_VERSION)-$(PKG_ARCH_CLASH).tar.gz -C $(PKG_BUILD_DIR)
-	[ ! -f $(PKG_BUILD_DIR)/clash-$(PKG_ARCH_CLASH).gz ] && wget  https://github.com/Dreamacro/clash/releases/download/v$(PKG_VERSION)/clash-$(PKG_ARCH_CLASH)-v$(PKG_VERSION).gz -O $(PKG_BUILD_DIR)/clash-$(PKG_ARCH_CLASH).gz
-	gunzip $(PKG_BUILD_DIR)/clash-$(PKG_ARCH_CLASH).gz
-endef
-
-define Build/Configure
+	gzip -dc "$(DL_DIR)/$(PKG_SOURCE)" > $(PKG_BUILD_DIR)/clash-linux-$(PKG_ARCH)
 endef
 
 define Build/Compile
-	#chmod +x $(PKG_BUILD_DIR)/clash-v$(PKG_VERSION)-$(PKG_ARCH_CLASH) && upx --ultra-brute $(PKG_BUILD_DIR)/clash-v$(PKG_VERSION)-$(PKG_ARCH_CLASH)
-	#echo "$(PKG_VERSION)" > $(PKG_BUILD_DIR)/clash_version
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/clash
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/clash-$(PKG_ARCH_CLASH) $(1)/etc/clash/clash
-	#$(INSTALL_DIR) $(1)/usr/share/clash
-	#$(INSTALL_DATA) $(PKG_BUILD_DIR)/clash_version $(1)/usr/share/clash/clash_version
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/clash-linux-$(PKG_ARCH) $(1)/etc/clash/clash
 endef
+
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
