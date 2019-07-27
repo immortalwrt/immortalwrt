@@ -4,18 +4,16 @@ local http = require "luci.http"
 
 local o,t,e
 local v=luci.sys.exec("/usr/share/koolproxy/koolproxy -v")
-local s=luci.sys.exec("head -3 /usr/share/koolproxy/data/rules/koolproxy.txt | grep rules | awk -F' ' '{print $3,$4}'")
-local u=luci.sys.exec("head -4 /usr/share/koolproxy/data/rules/koolproxy.txt | grep video | awk -F' ' '{print $3,$4}'")
-local p=luci.sys.exec("head -3 /usr/share/koolproxy/data/rules/daily.txt | grep rules | awk -F' ' '{print $3,$4}'")
-local l=luci.sys.exec("grep -v !x /usr/share/koolproxy/data/rules/koolproxy.txt | wc -l")
-local q=luci.sys.exec("grep -v !x /usr/share/koolproxy/data/rules/daily.txt | wc -l")
+local s=luci.sys.exec("grep -v !x /usr/share/koolproxy/data/rules/easylistchina.txt | wc -l")
+local u=luci.sys.exec("grep -v !x /usr/share/koolproxy/data/rules/fanboy.txt | wc -l")
+local p=luci.sys.exec("grep -v !x /usr/share/koolproxy/data/rules/yhosts.txt | wc -l")
 local h=luci.sys.exec("grep -v '^!' /usr/share/koolproxy/data/rules/user.txt | wc -l")
 local i=luci.sys.exec("cat /usr/share/koolproxy/dnsmasq.adblock | wc -l")
 
 if luci.sys.call("pidof koolproxy >/dev/null") == 0 then
-	status = translate("<strong><font color=\"green\">KoolProxy is Running</font></strong>")
+	status = translate("<strong><font color=\"green\">KoolProxy 运行中</font></strong>")
 else
-	status = translate("<strong><font color=\"red\">KoolProxy is Not Running</font></strong>")
+	status = translate("<strong><font color=\"red\">KoolProxy 已停止</font></strong>")
 end
 
 o = Map("koolproxy", translate("KoolProxy"), translate("A powerful advertisement blocker. <br /><font color=\"red\">Adblock Plus Host list + koolproxy Blacklist mode runs without loss of bandwidth due to performance issues.<br /></font>"))
@@ -52,8 +50,9 @@ e:value(3, translate("视频模式"))
 e = t:taboption("base", MultiValue, "koolproxy_rules", translate("内置规则"))
 e.optional = false
 e.rmempty = false
-e:value("koolproxy.txt", translate("静态规则"))
-e:value("daily.txt", translate("每日规则"))
+e:value("easylistchina.txt", translate("ABP规则"))
+e:value("fanboy.txt", translate("fanboy规则"))
+e:value("yhosts.txt", translate("yhosts规则"))
 e:value("kp.dat", translate("视频规则"))
 e:value("user.txt", translate("自定义规则"))
 
@@ -68,7 +67,7 @@ e:depends("koolproxy_port", "1")
 e.rmempty = false
 e.description = translate(string.format("<font color=\"red\"><strong>单端口:80&nbsp;&nbsp;多端口:80,443</strong></font>"))
 
-e=t:taboption("base",Flag,"koolproxy_host",translate("开启Adblock Plus Host"))
+e=t:taboption("base",Flag,"koolproxy_host",translate("开启Adblock Plus Hosts"))
 e.default=0
 e:depends("koolproxy_mode","2")
 
@@ -77,9 +76,9 @@ e = t:taboption("base", ListValue, "koolproxy_acl_default", translate("默认访
 e.default = 1
 e.rmempty = false
 e:value(0, translate("不过滤"))
-e:value(1, translate("http only"))
-e:value(2, translate("http + https"))
-e:value(3, translate("full port"))
+e:value(1, translate("过滤HTTP协议"))
+e:value(2, translate("过滤HTTP(S)协议"))
+e:value(3, translate("全部过滤"))
 e.description = translate(string.format("<font color=\"blue\"><strong>访问控制设置中其他主机的默认规则</strong></font>"))
 
 e = t:taboption("base", ListValue, "time_update", translate("定时更新"))
@@ -88,7 +87,7 @@ for t = 0,23 do
 end
 e.default = 0
 e.rmempty = false
-e.description = translate(string.format("<font color=\"red\"><strong>定时更新订阅规则与Adblock Plus Host</strong></font>"))
+e.description = translate(string.format("<font color=\"red\"><strong>定时更新订阅规则与Adblock Plus Hosts</strong></font>"))
 
 e = t:taboption("base", Button, "restart", translate("规则状态"))
 e.inputtitle = translate("更新规则")
@@ -97,7 +96,7 @@ e.write = function()
 	luci.sys.call("/usr/share/koolproxy/kpupdate 2>&1 >/dev/null")
 	luci.http.redirect(luci.dispatcher.build_url("admin","services","koolproxy"))
 end
-e.description = translate(string.format("<font color=\"red\"><strong>更新订阅规则与Adblock Plus Host</strong></font><br /><font color=\"green\">静态规则: %s / %s条 视频规则: %s<br />每日规则: %s / %s条 自定义规则: %s条<br />Host: %s条</font><br />", s, l, u, p, q, h, i))
+e.description = translate(string.format("<font color=\"red\"><strong>更新订阅规则与Adblock Plus Hosts</strong></font><br /><font color=\"green\">ABP规则: %s条<br />fanboy规则: %s条<br />yhosts规则: %s条<br />自定义规则: %s条<br />Host: %s条</font><br />", s, u, p, h, i))
 t:tab("cert",translate("Certificate Management"))
 
 e=t:taboption("cert",DummyValue,"c1status",translate("<div align=\"left\">Certificate Restore</div>"))

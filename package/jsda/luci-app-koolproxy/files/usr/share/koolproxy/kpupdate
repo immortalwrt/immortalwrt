@@ -107,6 +107,18 @@ update_rss_rules() {
 	config_foreach __update_rule rss_rule
 }
 
+update_rules() {
+	echo $(date "+%F %T"): ------------------- 内置规则更新 ------------------- >>$LOGFILE
+	wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR/master/koolproxyR/koolproxyR/data/rules/kp.dat' -q -O $KP_DIR/data/rules/kp.dat
+	wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR/master/koolproxyR/koolproxyR/data/rules/yhosts.txt' -q -O $KP_DIR/data/rules/yhosts.txt
+	wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR/master/koolproxyR/koolproxyR/data/rules/fanboy-annoyance.txt' -q -O $KP_DIR/data/rules/fanboy.txt
+	wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR/master/koolproxyR/koolproxyR/data/rules/easylistchina.txt' -q -O $KP_DIR/data/rules/easylistchina.txt
+
+	wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR/master/koolproxyR/koolproxyR/data/koolproxyR_ipset.conf' -q -O $KP_DIR/koolproxy_ipset.conf
+	echo $(date "+%F %T"): ------------------- 内置规则更新成功！ ------------------- >>$LOGFILE
+RESTART_KOOLPROXY=true
+}
+
 update_adb_host() {
 	/usr/sbin/adblockplus >>$LOGFILE 2>&1 &
 	if [ "$?" == "0" ]; then
@@ -117,6 +129,9 @@ update_adb_host() {
 # main process
 init_env
 limit_log $LOGFILE
+
+# update rules
+update_rules
 
 # update user rules
 update_rss_rules
