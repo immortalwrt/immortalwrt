@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+START=95
+
+boot() {
+	return 0
+}
+
+start() {
+	/usr/lib/smartinfo/smart_checker.sh > /dev/null 2>&1 &
+}
+
+stop() {
+	killall -9 smart_checker.sh
+}
+
