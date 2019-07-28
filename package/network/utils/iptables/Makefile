@@ -170,6 +170,39 @@ Includes support for:
 
 endef
 
+define Package/iptables-mod-imq
+$(call Package/iptables/Module, +kmod-ipt-imq)
+  TITLE:=IMQ support
+endef
+
+define Package/iptables-mod-imq/description
+iptables extension for IMQ support.
+
+Targets:
+  - IMQ
+
+endef
+
+define Package/iptables-mod-bandwidth
+$(call Package/iptables/Module, +kmod-ipt-bandwidth)
+  TITLE:=bandwidth
+endef
+
+define Package/iptables-mod-timerange
+$(call Package/iptables/Module, +kmod-ipt-timerange)
+  TITLE:=timerange
+endef
+
+define Package/iptables-mod-webmon
+$(call Package/iptables/Module, +kmod-ipt-webmon)
+  TITLE:=webmon
+endef
+
+define Package/iptables-mod-weburl
+$(call Package/iptables/Module, +kmod-ipt-weburl)
+  TITLE:=weburl
+endef
+
 define Package/iptables-mod-ipopt
 $(call Package/iptables/Module, +kmod-ipt-ipopt)
   TITLE:=IP/Packet option extensions
@@ -679,6 +712,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
 $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
 $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
+$(eval $(call BuildPlugin,iptables-mod-imq,$(IPT_IMQ-m)))
+$(eval $(call BuildPlugin,iptables-mod-bandwidth,$(IPT_BANDWIDTH-m)))
+$(eval $(call BuildPlugin,iptables-mod-timerange,$(IPT_TIMERANGE-m)))
+$(eval $(call BuildPlugin,iptables-mod-webmon,$(IPT_WEBMON-m)))
+$(eval $(call BuildPlugin,iptables-mod-weburl,$(IPT_WEBURL-m)))
 $(eval $(call BuildPlugin,iptables-mod-ipopt,$(IPT_IPOPT-m)))
 $(eval $(call BuildPlugin,iptables-mod-ipsec,$(IPT_IPSEC-m)))
 $(eval $(call BuildPlugin,iptables-mod-nat-extra,$(IPT_NAT_EXTRA-m)))
