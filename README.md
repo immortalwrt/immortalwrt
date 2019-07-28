@@ -42,7 +42,8 @@ OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenA
 luci-app-smartinfo source: [animefansxj/luci-app-smartinfo](https://github.com/animefansxj/luci-app-smartinfo).<br/>
 luci-app-koolproxy source: [Baozisoftware/luci-app-koolproxy](https://github.com/Baozisoftware/luci-app-koolproxy).<br/>
 luci-app-k3screenctrl source: [Hill-98/luci-app-k3screenctrl](https://github.com/Hill-98/luci-app-k3screenctrl).<br/>
-luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/luci-app-smstool-master).
+luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/luci-app-smstool-master).<br/>
+luci-app-airwhu source: [KyleRicardo/luci-app-airwhu](https://github.com/KyleRicardo/luci-app-airwhu).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
