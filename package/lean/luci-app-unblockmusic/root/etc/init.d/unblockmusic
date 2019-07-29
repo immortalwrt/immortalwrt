@@ -51,7 +51,7 @@ set_hosts(){
 
 		cfg_name="$(uci add dhcp domain)"
 		uci set dhcp."${cfg_name}".name='music.httpdns.c.163.com'
-		uci set dhcp."${cfg_name}".ip="$(127.0.0.1)"
+		uci set dhcp."${cfg_name}".ip="127.0.0.1"
 		uci commit dhcp
 
 		ip route add 223.252.199.10 dev lo
