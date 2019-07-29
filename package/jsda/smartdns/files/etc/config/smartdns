@@ -1,2 +1,3 @@
 config 'smartdns'
 	option 'enabled' '0'
+	

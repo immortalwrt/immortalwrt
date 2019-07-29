@@ -15,7 +15,7 @@ define Package/$(PKG_NAME)
     CATEGORY:=Network
     TITLE:=smartdns
     URL:=
-    DEPENDS:=@x86_64
+    DEPENDS:=+libopenssl
 endef
 
 define Package/$(PKG_NAME)/description
@@ -28,14 +28,31 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(CP) ./files/usr/sbin/smartdns $(1)/usr/sbin/smartdns
+ifeq ($(ARCH),i386)
+	$(INSTALL_BIN) ./files/usr/sbin/x86 $(1)/usr/sbin/smartdns
+endif
+ifeq ($(ARCH),x86_64)
+	$(INSTALL_BIN) ./files/usr/sbin/x86_64 $(1)/usr/sbin/smartdns
+endif
+ifeq ($(ARCH),arm)
+	$(INSTALL_BIN) ./files/usr/sbin/arm $(1)/usr/sbin/smartdns
+endif
+ifeq ($(ARCH),aarch64)
+	$(INSTALL_BIN) ./files/usr/sbin/aarch64 $(1)/usr/sbin/smartdns
+endif
+ifeq ($(ARCH),mips)
+	$(INSTALL_BIN) ./files/usr/sbin/mips $(1)/usr/sbin/smartdns
+endif
+ifeq ($(ARCH),mipsel)
+	$(INSTALL_BIN) ./files/usr/sbin/mips $(1)/usr/sbin/smartdns
+endif
 	$(INSTALL_DIR) $(1)/etc/config
-	$(CP) ./files/etc/config/smartdns $(1)/etc/config/smartdns
+	$(INSTALL_CONF) ./files/etc/config/smartdns $(1)/etc/config/smartdns
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(CP) ./files/etc/init.d/smartdns $(1)/etc/init.d/smartdns
+	$(INSTALL_BIN) ./files/etc/init.d/smartdns $(1)/etc/init.d/smartdns
 	$(INSTALL_DIR) $(1)/etc/smartdns
-	$(CP) ./files/etc/smartdns/address.conf $(1)/etc/smartdns/address.conf
-	$(CP) ./files/etc/smartdns/smartdns.conf $(1)/etc/smartdns/smartdns.conf
+	$(INSTALL_CONF) ./files/etc/smartdns/address.conf $(1)/etc/smartdns/address.conf
+	$(INSTALL_CONF) ./files/etc/smartdns/smartdns.conf $(1)/etc/smartdns/smartdns.conf
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
