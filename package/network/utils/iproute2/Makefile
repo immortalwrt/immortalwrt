@@ -39,7 +39,7 @@ $(call Package/iproute2/Default)
  VARIANT:=tiny
  PROVIDES:=ip
  ALTERNATIVES:=200:/sbin/ip:/usr/libexec/ip-tiny
- DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+ DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf
 endef
 
 define Package/ip-full
@@ -48,49 +48,49 @@ $(call Package/iproute2/Default)
  VARIANT:=full
  PROVIDES:=ip
  ALTERNATIVES:=300:/sbin/ip:/usr/libexec/ip-full
- DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+ DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf
 endef
 
 define Package/tc
 $(call Package/iproute2/Default)
   TITLE:=Traffic control utility
-  DEPENDS:=+kmod-sched-core +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf1
+  DEPENDS:=+kmod-sched-core +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf1 +libelf
 endef
 
 define Package/genl
 $(call Package/iproute2/Default)
   TITLE:=General netlink utility frontend
-  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf
 endef
 
 define Package/ip-bridge
 $(call Package/iproute2/Default)
   TITLE:=Bridge configuration utility from iproute2
-  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf
 endef
 
 define Package/ss
 $(call Package/iproute2/Default)
   TITLE:=Socket statistics utility
-  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf
 endef
 
 define Package/nstat
 $(call Package/iproute2/Default)
   TITLE:=Network statistics utility
-  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libelf
 endef
 
 define Package/devlink
 $(call Package/iproute2/Default)
   TITLE:=Network devlink utility
-  DEPENDS:=+libmnl
+  DEPENDS:=+libmnl +libelf
 endef
 
 define Package/rdma
 $(call Package/iproute2/Default)
   TITLE:=Network rdma utility
-  DEPENDS:=+libmnl
+  DEPENDS:=+libmnl +libelf
 endef
 
 ifeq ($(BUILD_VARIANT),tiny)
