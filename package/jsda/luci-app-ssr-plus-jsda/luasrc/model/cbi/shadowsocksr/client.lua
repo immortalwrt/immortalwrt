@@ -77,7 +77,7 @@ end
 if nixio.fs.access("/usr/bin/chinadns") then
 o:value("6", translate("Use chinadns query and cache"))
 end
-o:value("7", translate("Use system settings"))
+o:value("7", translate("使用系统DNS"))
 o.default = 1
 
 o = s:option(ListValue, "chinadns_enable", translate("Chinadns Resolve Dns Mode"))
