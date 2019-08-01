@@ -3,7 +3,7 @@
 START=99
 STOP=10
 
-[ "$(uci get unblockmusic.@unblockmusic[0].strict_mode)" -eq "0" ] || strict_mode="-s"
+[ "$(uci get unblockmusic.@unblockmusic[0].strict_mode)" -eq "1" ] && strict_mode="-s"
 [ "$(uci get unblockmusic.@unblockmusic[0].set_netease_server_ip)" -ne "0" ] && netease_server_ip="-f $(uci get unblockmusic.@unblockmusic[0].netease_server_ip)"
 [ "$(uci get unblockmusic.@unblockmusic[0].enable_proxy)" -ne "0" ] && proxy_server_ip="-u $(uci get unblockmusic.@unblockmusic[0].proxy_server_ip)"
 [ "$(uci get unblockmusic.@unblockmusic[0].pub_access)" -ne "0" ] && addr="0.0.0.0" || addr="$(uci get network.lan.ipaddr)"

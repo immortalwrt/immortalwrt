@@ -8,7 +8,7 @@ s = mp:section(TypedSection, "unblockmusic")
 s.anonymous=true
 s.addremove=false
 
-enabled = s:option(Flag, "enabled", translate("启用UnblockNeteaseMusic"))
+enabled = s:option(Flag, "enabled", translate("使用UnblockNeteaseMusic"))
 enabled.description = translate("启用本插件以恢复网易云音乐无版权歌曲")
 enabled.default = 0
 enabled.rmempty = false
