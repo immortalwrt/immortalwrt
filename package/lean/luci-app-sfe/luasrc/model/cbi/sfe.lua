@@ -61,11 +61,12 @@ o:depends("dns", 1)
 o = s:option(Value, "dns_server", translate("Upsteam DNS Server"))
 o.default = "114.114.114.114,114.114.115.115,223.5.5.5,223.6.6.6,180.76.76.76,119.29.29.29,119.28.28.28,1.2.4.8,210.2.4.8"
 o.description = translate("Muitiple DNS server can saperate with ','")
+o:depends("dnscache_enable", 1)
+o:depends("dnscache_enable", 2)
 
 o = s:option(Value, "ipv6dns_server", translate("Upsteam IPV6 DNS Server"))
 o.default = "2001:4860:4860::8888,2001:4860:4860::8844,2001:2001::1111,2001:2001::1001,2400:da00::6666,240C::6666,240C::6644"
 o.description = translate("Muitiple IPV6 DNS server can saperate with ','")
 o:depends("dnscache_enable", 2)
-o:depends("dnscache_enable", 3)
 
 return m

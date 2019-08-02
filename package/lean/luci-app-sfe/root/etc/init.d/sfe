@@ -252,9 +252,11 @@ start_service() {
 		kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 		stop_dnscache
 		sleep 1
+		rm -f /var/log/dnscache.file
+		rm -f /etc/AdGuardHome/data/querylog.json*
 		if [ $dnscache_enable = "1" ];  then
 			start_pdnsd
-		elif [ $dnscache_enable = "2" ] || [ $dnscache_enable = "3" ];  then
+		elif [ $dnscache_enable = "2" ];  then
 			start_dnsforwarder
 		elif [ $dnscache_enable = "3" ];  then
 			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome >/dev/null 2>&1 &
