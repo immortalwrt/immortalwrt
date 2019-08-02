@@ -14,9 +14,7 @@ PO2LMO:=./po2lmo
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)/config
-menu "Configuration"
-	
+define Package/$(PKG_NAME)/config	
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
 	bool "Include Shadowsocks Redir (ss-redir)"
 	default n
@@ -64,12 +62,11 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks
 config PACKAGE_$(PKG_NAME)_INCLUDE_dns-forwarder
 	bool "Include dns-forwarder"
 	default n
-
-endmenu
 endef
 
 define Package/$(PKG_NAME)
-  CATEGORY:=LuCI for Lienol
+  SECTION:=luci
+  CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI support for PassWall(fanqiang) By Lienol
   PKGARCH:=all
