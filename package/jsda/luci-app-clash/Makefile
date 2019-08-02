@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=0.30.0
+PKG_VERSION:=0.31.0
 PKG_RELEASE:=1
 PKG_MAINTAINER:=frainzy1477
 
@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/luci-app-clash
 	SECTION:=luci
 	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
+	SUBMENU:=2. Services
 	TITLE:=LuCI app for clash
 	DEPENDS:=+bash +coreutils-nohup +wget
 	PKGARCH:=all
@@ -38,18 +38,14 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/clash
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/clash
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DIR) $(1)/etc/clash
-	
 	$(INSTALL_DIR) $(1)/www
-	
 	$(INSTALL_DIR) $(1)/usr/share/clash
 	$(INSTALL_DIR) $(1)/usr/share/clash/web
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard
@@ -68,8 +64,8 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/clash_version $(1)/usr/share/clash/
 	$(INSTALL_BIN) ./root/usr/share/clash/check_version.sh $(1)/usr/share/clash/
 	
-	$(INSTALL_BIN) ./root/usr/share/clash/web/* $(1)/usr/share/clash/web
 	
+	$(INSTALL_BIN) ./root/usr/share/clash/web/* $(1)/usr/share/clash/web
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/usr/share/clash/dashboard/
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.d32d2df9dcc55f57282d.css $(1)/usr/share/clash/dashboard/
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/img/33343e6117c37aaef8886179007ba6b5.png $(1)/usr/share/clash/dashboard/img/
@@ -78,11 +74,8 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.d32d2df9dcc55f57282d.min.js $(1)/usr/share/clash/dashboard/js/
         
 	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
-	
 	$(INSTALL_DATA) ./luasrc/model/cbi/clash/*.lua $(1)/usr/lib/lua/luci/model/cbi/clash/
-	
 	$(INSTALL_DATA) ./luasrc/view/clash/* $(1)/usr/lib/lua/luci/view/clash/
-	
 	$(INSTALL_DATA) ./po/zh-cn/clash.zh-cn.lmo $(1)/usr/lib/lua/luci/i18n/
 	
 endef

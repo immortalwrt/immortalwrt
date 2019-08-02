@@ -1,3 +1,17 @@
+msgid "Update Config"
+msgstr "更新配置"
+
+msgid "Enable/Start/Restart Client"
+msgstr "启用/启动/重新启动客户端"
+
+msgid "Disable/Stop Client"
+msgstr "禁用/停止客户端"
+
+msgid "Stop Client"
+msgstr "停用客户端"
+
+msgid "Start Client"
+msgstr "启用客户端"
 
 msgid "enabled"
 msgstr "启用"
