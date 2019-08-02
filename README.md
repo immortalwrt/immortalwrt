@@ -44,8 +44,7 @@ luci-app-koolproxy source: [Baozisoftware/luci-app-koolproxy](https://github.com
 luci-app-k3screenctrl source: [Hill-98/luci-app-k3screenctrl](https://github.com/Hill-98/luci-app-k3screenctrl).<br/>
 luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/luci-app-smstool-master).<br/>
 luci-app-airwhu source: [KyleRicardo/luci-app-airwhu](https://github.com/KyleRicardo/luci-app-airwhu).<br/>
-Openwrt-BBR source: [anshi233/Openwrt-BBR](https://github.com/anshi233/Openwrt-BBR).
-Packages Lienol: [Lienol/openwrt-package](https://github.com/Lienol/openwrt-package)
+Packages Lienol: [Lienol/openwrt-package](https://github.com/Lienol/openwrt-package).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
