@@ -247,11 +247,11 @@ start_service(){
 		revert_dns
 	fi
 
-	if [ "$bbr" = "default" ]; then
-		sysctl -w net.ipv4.tcp_congestion_control=cubic
+	if [ $bbr -eq 1 ];  then
+		sysctl -w net.ipv4.tcp_congestion_control=bbr
 	else
-		sysctl -w net.ipv4.tcp_congestion_control=$bbr
-	fi
+		sysctl -w net.ipv4.tcp_congestion_control=cubic
+	fi	
 
 	uci set firewall.@defaults[0].flow_offloading=$(uci get flowoffload.@flow[0].flow_offloading)
 	uci set firewall.@defaults[0].flow_offloading_hw=$(uci get flowoffload.@flow[0].flow_offloading_hw)

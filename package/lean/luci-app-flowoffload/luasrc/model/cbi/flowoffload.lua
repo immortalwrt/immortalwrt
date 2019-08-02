@@ -26,24 +26,8 @@ hw.rmempty = true
 hw.description = translate("Enable Hardware NAT (depends on hw capability like MTK 762x)")
 hw:depends("flow_offloading", 1)
 
-bbr = s:option(ListValue, "bbr", translate("TCP Congestion Control Algorithm"))
-bbr:value("default", translate("default"))
-bbr:value("bbr", translate("BBR"))
-bbr:value("tcp_bbr_mod", translate("BBR_mod"))
---bbr:value("tcp_bbr_bbrplus", translate("bbr_bbrplus"))
---bbr:value("tcp_bbr_tsunami", translate("bbr_tsunami"))
-bbr:value("nanqinlang", translate("bbr_nanqinlang"))
-bbr:value("bic", translate("bic"))
-bbr:value("highspeed", translate("hstcp"))
-bbr:value("htcp", translate("htcp"))
-bbr:value("hybla", translate("hybla"))
-bbr:value("illinois", translate("illinois"))
-bbr:value("lp", translate("lp"))
-bbr:value("scalable", translate("scalable"))
-bbr:value("vegas", translate("vegas"))
-bbr:value("westwood", translate("westwood"))
-bbr:value("yeah", translate("yeah"))
-bbr.default = "cubic"
+bbr = s:option(Flag, "bbr", translate("Enable BBR"))
+bbr.default = 0
 bbr.rmempty = false
 bbr.description = translate("Bottleneck Bandwidth and Round-trip propagation time (BBR)")
 
