@@ -8,16 +8,10 @@ s = mp:section(TypedSection, "unblockmusic")
 s.anonymous=true
 s.addremove=false
 
-enabled = s:option(Flag, "enabled", translate("使用UnblockNeteaseMusic"))
+enabled = s:option(Flag, "enabled", translate("启用UnblockNeteaseMusic"))
 enabled.description = translate("启用本插件以恢复网易云音乐无版权歌曲")
 enabled.default = 0
 enabled.rmempty = false
-
-enabled = s:option(Flag, "enable_ipset_forward", translate("启用IPSet劫持相关请求"))
-enabled.description = translate("开启后，网易云音乐相关请求会被强制劫持到UnblockNeteaseMusic进行处理")
-enabled.default = 1
-enabled.rmempty = false
-enabled:depends("enabled", 1)
 
 account = s:option(Value, "http_port", translate("[HTTP] 监听端口"))
 account.description = translate("UnblockNeteaseMusic监听的HTTP端口，不可与其他程序/HTTPS共用一个端口")
@@ -33,6 +27,18 @@ account.default = "5201"
 account.datatype = "port"
 account:depends("enabled", 1)
 
+enabled = s:option(Flag, "enable_ipset_forward", translate("使用IPSet劫持相关请求"))
+enabled.description = translate("开启后，网易云音乐相关请求会被强制劫持到UnblockNeteaseMusic进行处理")
+enabled.default = 1
+enabled.rmempty = false
+enabled:depends("enabled", 1)
+
+enabled = s:option(Flag, "use_hosts", translate("使用Hosts劫持相关请求"))
+enabled.description = translate("[仅限HTTP:HTTPS端口设置为80:443时可用] 开启后，网易云音乐相关请求会被劫持到UnblockNeteaseMusic进行处理")
+enabled.default = 0
+enabled.rmempty = false
+enabled:depends("enabled", 1)
+
 speedtype = s:option(ListValue, "musicapptype", translate("音源接口"))
 speedtype:value("default", translate("默认"))
 speedtype:value("netease", translate("网易云音乐"))
@@ -45,7 +51,7 @@ speedtype:value("migu", translate("咕咪音乐"))
 speedtype:value("joox", translate("JOOX音乐"))
 speedtype:value("all", translate("所有平台"))
 speedtype.description = translate("音源调用接口")
-speedtype.default = "all"
+speedtype.default = "default"
 speedtype:depends("enabled", 1)
 
 enabled = s:option(Flag, "advanced_mode", translate("启用进阶设置"))
@@ -72,14 +78,8 @@ enabled.default = 0
 enabled.rmempty = false
 enabled:depends("advanced_mode", 1)
 
-enabled = s:option(Flag, "use_hosts", translate("使用Hosts劫持相关请求"))
-enabled.description = translate("[仅限HTTP:HTTPS端口设置为80:443时可用，不可与IPSet方式同时使用] 开启后，网易云音乐相关请求会被劫持到UnblockNeteaseMusic进行处理")
-enabled.default = 0
-enabled.rmempty = false
-enabled:depends("advanced_mode", 1)
-
 enabled = s:option(Flag, "set_netease_server_ip", translate("自定义网易云服务器IP"))
-enabled.description = translate("如使用Hosts方式劫持网易云音乐则必选，否则将会导致连接死循环")
+enabled.description = translate("如手动更改了Hosts文件则必选，否则将会导致连接死循环")
 enabled.default = 0
 enabled.rmempty = false
 enabled:depends("advanced_mode", 1)
