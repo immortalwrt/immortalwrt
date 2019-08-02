@@ -13,12 +13,12 @@ if [ "$URL_TYPE" == "V2ray" ]; then
 elif [ "$URL_TYPE" == "surge" ]; then
    echo "开始下载Surge配置文件..." >$START_LOG
    subscribe_url=`echo $subscribe_url |sed 's/{/%7B/g;s/}/%7D/g;s/:/%3A/g;s/\"/%22/g;s/,/%2C/g;s/?/%3F/g;s/=/%3D/g;s/&/%26/g;s/\//%2F/g'`
-   wget-ssl --no-check-certificate --timeout=10 --debug --tries=2 https://tgbot.lbyczf.com/surge2clash?url="$subscribe_url" -O /tmp/config.yaml
+   wget-ssl --no-check-certificate --quiet --timeout=10 --tries=2 https://tgbot.lbyczf.com/surge2clash?url="$subscribe_url" -O /tmp/config.yaml
 else
    echo "开始下载Clash配置文件..." >$START_LOG
    wget-ssl --no-check-certificate --quiet --timeout=10 --tries=2 "$subscribe_url" -O /tmp/config.yaml
 fi
-if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/config.yaml |awk '{print int($5/1024)}')" -ne 0 ]; then
+if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/config.yaml |awk '{print int($5/1024)}')" -ne 0 ] && [ "$(awk '/Proxy Group:/,/Rule:/{print}' /tmp/config.yaml 2>/dev/null |egrep '^ {0,}-' |grep name: |sed 's/,.*//' |awk -F 'name: ' '{print $2}' |sed 's/\"//g' |wc -l)" -gt 0 ]; then
    echo "配置文件下载成功，检查是否有更新..." >$START_LOG
    if [ -f "$CONFIG_FILE" ]; then
       cmp -s "$BACKPACK_FILE" /tmp/config.yaml
@@ -27,8 +27,8 @@ if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/config.yaml |awk '{print int($5/1024)}')"
             mv /tmp/config.yaml "$CONFIG_FILE" 2>/dev/null\
             && cp "$CONFIG_FILE" "$BACKPACK_FILE"\
             && echo "配置文件替换成功，开始启动 OpenClash ..." >$START_LOG\
+            && echo "${LOGTIME} Config Update Successful" >>$LOG_FILE\
             && /etc/init.d/openclash restart 2>/dev/null
-            echo "${LOGTIME} Config Update Successful" >>$LOG_FILE
          else
             echo "配置文件没有任何更新，停止继续操作..." >$START_LOG
             rm -rf /tmp/config.yaml
@@ -41,13 +41,13 @@ if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/config.yaml |awk '{print int($5/1024)}')"
       mv /tmp/config.yaml "$CONFIG_FILE" 2>/dev/null\
       && cp "$CONFIG_FILE" "$BACKPACK_FILE"\
       && echo "配置文件创建成功，开始启动 OpenClash ..." >$START_LOG\
+      && echo "${LOGTIME} Config Update Successful" >>$LOG_FILE\
       && /etc/init.d/openclash restart 2>/dev/null
-      echo "${LOGTIME} Config Update Successful" >>$LOG_FILE
    fi
 else
    echo "配置文件下载失败，请检查网络或稍后再试！" >$START_LOG
    echo "${LOGTIME} Config Update Error" >>$LOG_FILE
-   #rm -rf /tmp/config.yaml 2>/dev/null
+   rm -rf /tmp/config.yaml 2>/dev/null
    sleep 10
    echo "" >$START_LOG
 fi
