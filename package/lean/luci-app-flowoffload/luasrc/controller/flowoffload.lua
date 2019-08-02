@@ -17,7 +17,7 @@ local function is_running()
 end
 
 local function is_bbr()
-	return luci.sys.call("[ `cat /proc/sys/net/ipv4/tcp_congestion_control 2>/dev/null` = `uci get flowoffload.@flow[0].bbr 2>/dev/null` ] 2>/dev/null") == 0
+	return luci.sys.call("[ `cat /proc/sys/net/ipv4/tcp_congestion_control 2>/dev/null` = bbr ] 2>/dev/null") == 0
 end
 
 local function is_fullcone()
