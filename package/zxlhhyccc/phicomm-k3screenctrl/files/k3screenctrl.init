@@ -1,0 +1,27 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=99
+
+SCRIPTS_BASE=/lib/k3screenctrl/
+TEMP_DIR=/tmp/k3screenctrl
+
+start() {
+    [ -z "$(grep "/lib/k3screenctrl/oui/update_oui.sh" /etc/crontabs/root)" ] && echo "0 6 * * * /lib/k3screenctrl/oui/update_oui.sh" >> /etc/crontabs/root
+    mkdir -p $TEMP_DIR
+    mkdir -p $TEMP_DIR/device_speed
+    [ -z "$(iptables --list | grep K3_SEREEN_U)" ] && iptables -N K3_SEREEN_U
+    [ -z "$(iptables --list | grep K3_SEREEN_D)" ] && iptables -N K3_SEREEN_D
+    $SCRIPTS_BASE"device_custom.sh"
+    $SCRIPTS_BASE"device_online.sh" &
+    # [ -z "$(grep "/lib/k3screenctrl/device_online.sh" /etc/crontabs/root)" ] && echo "*/5 * * * * /lib/k3screenctrl/device_online.sh" >> /etc/crontabs/root
+    m=$(uci get k3screenctrl.@general[0].screen_time) && [ $m -lt 10 ] && m=10
+    d=$(uci get k3screenctrl.@general[0].refresh_time) && [ $d -lt 2 ] && d=2
+    /usr/bin/k3screenctrl -m $m -d $d &
+}
+
+stop() {
+    killall k3screenctrl device_online.sh
+    kill -9 $(pidof device_online.sh) >/dev/null 2>&1
+    rm -rf $TEMP_DIR
+}
