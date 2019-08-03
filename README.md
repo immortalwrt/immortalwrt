@@ -46,7 +46,8 @@ luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/
 luci-app-airwhu source: [KyleRicardo/luci-app-airwhu](https://github.com/KyleRicardo/luci-app-airwhu).<br/>
 Packages Lienol: [Lienol/openwrt-package](https://github.com/Lienol/openwrt-package).<br/>
 luci-app-bbr-mod source: [ntlf9t/luci-app-bbr-mod](https://github.com/ntlf9t/luci-app-bbr-mod).<br/>
-Package Openwrt-BBR: [anshi233/Openwrt-BBR](https://github.com/anshi233/Openwrt-BBR).
+Package Openwrt-BBR: [anshi233/Openwrt-BBR](https://github.com/anshi233/Openwrt-BBR).<br/>
+simple-obfs source: [aa65535/openwrt-simple-obfs](https://github.com/aa65535/openwrt-simple-obfs).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
