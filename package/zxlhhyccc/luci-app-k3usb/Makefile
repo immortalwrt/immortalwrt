@@ -19,7 +19,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for k3usb3.0 on or off
-	DEPENDS:=
+	DEPENDS:=@TARGET_bcm53xx_DEVICE_phicomm-k3
 endef
 
 define Package/$(PKG_NAME)/description
