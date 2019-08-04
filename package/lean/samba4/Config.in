@@ -1,7 +1,6 @@
 config SAMBA4_SERVER_ACL
 	bool "ACL support (xattr)"
 	depends on PACKAGE_samba4-server
-	select PACKAGE_acl
 	help
 		installs: sharesec
 			modules: vfs_acl_xattr vfs_acl_tdb vfs_posixacl
@@ -12,13 +11,9 @@ config SAMBA4_SERVER_ACL
 config SAMBA4_SERVER_AD_DC
 	bool "Active Directory Domain Controller support (requires krb5-server) (EXPERIMENTAL)"
 	depends on PACKAGE_samba4-server
-	select PACKAGE_python-base
 	select PACKAGE_python-crypto
-	select PACKAGE_libopenssl
-	select PACKAGE_libgnutls
-	select PACKAGE_libopenldap
 	help
-		installs: samba (meta-daemon) python-crypt ntlm_auth
+		installs: samba (meta-daemon) python-crypto ntlm_auth
 			scripts: samba-tool
 
 		Run as a Active Directory Domain Controller
@@ -31,7 +26,6 @@ config SAMBA4_SERVER_AVAHI
 	bool "Avahi support"
 	depends on PACKAGE_samba4-server
 	select SAMBA4_SERVER_VFS
-	select PACKAGE_libavahi-client
 	help
 		Announce Samba resources via DNS/DNS-SD using the Avahi daemon, for Linux/Mac clients.
 	default y
@@ -76,12 +70,11 @@ config SAMBA4_SERVER_NETBIOS
 		WSD (Web Services for Devices) replaces the functionality of NetBIOS and is provided by the wsdd2 package (selected by default).
 		Note: As of Windows 10 Fall Creators Update (1709) NetBIOS isn't supported unless the old SMB1 feature is reinstalled (not recommended).
 		Network shares can be directly accessed via network paths '\\hostname\sharename' and mounted via 'map network drive' without NetBIOS or WSD.
-	default n
+	default y
 
 config SAMBA4_SERVER_WINBIND
 	bool "Winbind support"
 	depends on PACKAGE_samba4-server
-	depends on SAMBA4_SERVER_AD_DC
 	help
 		installs: winbindd (daemon) wbinfo
 

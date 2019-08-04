@@ -1,17 +1,17 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-10 03:41+0200\n"
-"PO-Revision-Date: 2012-08-22 17:45+0200\n"
+"PO-Revision-Date: 2019-03-01 18:06-0300\n"
 "Last-Translator: José Vicente <josevteg@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.6\n"
+"X-Generator: Poedit 2.2.1\n"
+"Language-Team: \n"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:78
 msgid "Allow guests"
@@ -20,8 +20,8 @@ msgstr "Permitir invitados"
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:15
 msgid "Allow system users to reach their home directories via network shares"
 msgstr ""
-"Permitir a los usuarios acceder a sus directorios de inicio vía "
-"comparticiones de red"
+"Permitir que los usuarios del sistema lleguen a sus carpetas personales a "
+"través de Samba"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:75
 msgid "Allowed users"
@@ -29,11 +29,11 @@ msgstr "Usuarios permitidos"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:106
 msgid "Apple Time-machine share"
-msgstr ""
+msgstr "Compartir como Apple Time-Machine"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:63
 msgid "Browse-able"
-msgstr ""
+msgstr "Navegable"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:93
 msgid "Create mask"
@@ -45,19 +45,19 @@ msgstr "Descripción"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:98
 msgid "Directory mask"
-msgstr "Máscara de directorio"
+msgstr "Máscara de carpeta"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:27
 msgid "Disable Active Directory Domain Controller"
-msgstr ""
+msgstr "Deshabilitar el controlador de dominio de carpeta activa"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:24
 msgid "Disable Netbios"
-msgstr ""
+msgstr "Deshabilitar Netbios"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:30
 msgid "Disable Winbind"
-msgstr ""
+msgstr "Deshabilitar Winbind"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:9
 msgid "Edit Template"
@@ -69,33 +69,35 @@ msgstr "Editar la plantilla usada para generar la configuración de samba."
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:19
 msgid "Enable macOS compatible shares"
-msgstr ""
+msgstr "Habilitar compatibilidad de Samba con macOS"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:20
 msgid ""
 "Enables Apple's AAPL extension globally and adds macOS compatibility options "
 "to all shares."
 msgstr ""
+"Habilita la extensión AAPL de Apple globalmente y agrega opciones de "
+"compatibilidad de macOS a todos los recursos compartidos."
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:73
 msgid "Force Root"
-msgstr ""
+msgstr "Forzar Root"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:8
 msgid "General Settings"
-msgstr "Configuración general"
+msgstr "Ajustes generales"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:83
 msgid "Guests only"
-msgstr ""
+msgstr "Sólo invitados"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:11
 msgid "Hostname"
-msgstr "Nombre de máquina"
+msgstr "Nombre del dispositivo"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:88
 msgid "Inherit owner"
-msgstr ""
+msgstr "Heredar dueño"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:57
 msgid "Name"
@@ -104,7 +106,7 @@ msgstr "Nombre"
 #: applications/luci-app-samba4/luasrc/controller/samba4.lua:12
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:3
 msgid "Network Shares"
-msgstr "Comparticiones de red"
+msgstr "Samba"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:58
 msgid "Path"
@@ -115,18 +117,20 @@ msgid ""
 "Please add directories to share. Each directory refers to a folder on a "
 "mounted device."
 msgstr ""
+"Por favor agregue carpetas para compartir. Cada carpeta se refiere a una "
+"carpeta en un dispositivo montado."
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:68
 msgid "Read-only"
-msgstr "Solo lectura"
+msgstr "Sólo lectura"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:14
 msgid "Share home-directories"
-msgstr "Compartir directorios personales"
+msgstr "Compartir carpetas personales"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:51
 msgid "Shared Directories"
-msgstr "Directorios compartidos"
+msgstr "Carpetas compartidos"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:35
 msgid ""
@@ -141,11 +145,11 @@ msgstr ""
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:108
 msgid "Time-machine size in GB"
-msgstr ""
+msgstr "Tamaño del Time-Machine en GB"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:103
 msgid "Vfs objects"
-msgstr ""
+msgstr "Objetos vfs"
 
 #: applications/luci-app-samba4/luasrc/model/cbi/samba4.lua:13
 msgid "Workgroup"
