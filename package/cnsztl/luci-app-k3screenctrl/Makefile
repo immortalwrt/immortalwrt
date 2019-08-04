@@ -25,7 +25,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for k3screenctrl
-	DEPENDS:=@PACKAGE_phicomm-k3screenctrl +phicomm-k3screenctrl
+	DEPENDS:=@PACKAGE_phicomm-k3screenctrl +phicomm-k3screenctrl +@BUSYBOX_CONFIG_ARPING
 endef
 
 define Package/$(PKG_NAME)/description
