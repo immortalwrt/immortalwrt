@@ -198,6 +198,26 @@ s = m:section(TypedSection, "global_other", translate("Other Settings"))
 s.anonymous = true
 s.addremove = false
 
+---- TCP Servers Number Option
+o = s:option(ListValue, "tcp_redir_server_num",
+             translate("TCP Redir Server Number"), translate(
+                 "You can only set up a maximum of 3 servers for the time being"))
+o.default = "1"
+o.rmempty = false
+o:value("1")
+o:value("2")
+o:value("3")
+
+---- UDP Servers Number Option
+o = s:option(ListValue, "udp_redir_server_num",
+             translate("UDP Redir Server Number"), translate(
+                 "You can only set up a maximum of 3 servers for the time being"))
+o.default = "1"
+o.rmempty = false
+o:value("1")
+o:value("2")
+o:value("3")
+
 ---- Hide Menu
 o = s:option(Button, "hide", translate("Hide Menu"), translate(
                  "After the hidden to the display, type in the address bar enter the admin/vpn/passwall/show, such as: http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"))

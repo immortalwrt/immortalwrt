@@ -34,6 +34,12 @@ msgstr "使用IPv6"
 msgid "Parsing IP"
 msgstr "域名解析IP"
 
+msgid "TCP Server"
+msgstr "TCP服务器"
+
+msgid "UDP Server"
+msgstr "UDP服务器"
+
 msgid "Basic Settings"
 msgstr "基本设置"
 
@@ -666,6 +672,15 @@ msgstr "<br>none：默认值，不进行伪装，发送的数据是没有特征�
 
 msgid "A legal file path. This file must not exist before running V2Ray."
 msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
+
+msgid "TCP Redir Server Number"
+msgstr "TCP转发服务器数量"
+
+msgid "UDP Redir Server Number"
+msgstr "UDP转发服务器数量"
+
+msgid "You can only set up a maximum of 3 servers for the time being"
+msgstr "目前最多只能设置3个服务器"
 
 msgid "Hide Menu"
 msgstr "隐藏菜单"

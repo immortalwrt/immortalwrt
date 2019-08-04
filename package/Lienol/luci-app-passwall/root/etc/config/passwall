@@ -31,14 +31,16 @@ config global_forwarding
 	option process '1'
 
 config global_proxy
-	option tcp_redir_port '1031'
-	option udp_redir_port '1032'
-	option socks5_port '1033'
+	option tcp_redir_port '1041'
+	option udp_redir_port '1041'
+	option socks5_port '1051'
 	option kcptun_port '11183'
 	option proxy_ipv6 '0'
 	
 config global_other
 	option auto_ping '1'
+	option tcp_redir_server_num '1'
+	option udp_redir_server_num '1'
 
 config global_rules
 	option gfwlist_update '1'

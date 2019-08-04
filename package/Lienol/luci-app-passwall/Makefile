@@ -7,14 +7,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=2.0
-PKG_RELEASE:=76-20190731
+PKG_RELEASE:=78-20190803
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PO2LMO:=./po2lmo
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)/config	
+define Package/$(PKG_NAME)/config
+menu "Configuration"
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
 	bool "Include Shadowsocks Redir (ss-redir)"
 	default n
@@ -62,12 +64,14 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks
 config PACKAGE_$(PKG_NAME)_INCLUDE_dns-forwarder
 	bool "Include dns-forwarder"
 	default n
+
+endmenu
 endef
 
 define Package/$(PKG_NAME)
   SECTION:=luci
   CATEGORY:=LuCI
-  SUBMENU:=3. Applications
+  SUBMENU:=3. Applications 
   TITLE:=LuCI support for PassWall(fanqiang) By Lienol
   PKGARCH:=all
   DEPENDS:=+curl +libcurl +libmbedtls +ca-bundle +ca-certificates +resolveip +iptables-mod-tproxy +kmod-ipt-tproxy +iptables-mod-ipopt +kmod-ipt-ipopt +ip +ipset +coreutils +coreutils-base64 +coreutils-nohup +luci-lib-jsonc +unzip \
@@ -80,7 +84,7 @@ define Package/$(PKG_NAME)
   +PACKAGE_$(PKG_NAME)_INCLUDE_Brook:brook \
   +PACKAGE_$(PKG_NAME)_INCLUDE_kcptun:kcptun-client \
   +PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:ChinaDNS \
   +PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd:pdnsd-alt \
   +PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks:dns2socks \
   +PACKAGE_$(PKG_NAME)_INCLUDE_dns-forwarder:dns-forwarder

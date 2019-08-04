@@ -87,6 +87,28 @@ TCP_REDIR_SERVER=$(config_t_get global tcp_redir_server nil)
 UDP_REDIR_SERVER=$(config_t_get global udp_redir_server nil)
 [ "$UDP_REDIR_SERVER" == "default" ] && UDP_REDIR_SERVER=$TCP_REDIR_SERVER
 
+TCP_REDIR_SERVER2=
+TCP_REDIR_SERVER3=
+UDP_REDIR_SERVER2=
+UDP_REDIR_SERVER3=
+TCP_REDIR_SERVER_NUM=$(config_t_get global_other tcp_redir_server_num 1)
+UDP_REDIR_SERVER_NUM=$(config_t_get global_other udp_redir_server_num 1)
+
+if [ "$TCP_REDIR_SERVER_NUM" -ge 2 ] ;then
+	for i in $(seq 2 $TCP_REDIR_SERVER_NUM)
+	do
+		eval TCP_REDIR_SERVER$i=$(config_t_get global tcp_redir_server$i nil)
+	done
+fi
+
+if [ "$UDP_REDIR_SERVER_NUM" -ge 2 ] ;then
+	for i in $(seq 2 $UDP_REDIR_SERVER_NUM)
+	do
+		eval UDP_REDIR_SERVER$i=$(config_t_get global udp_redir_server$i nil)
+	done
+fi
+
+
 TCP_REDIR_SERVER_IP=""
 UDP_REDIR_SERVER_IP=""
 SOCKS5_PROXY_SERVER_IP=""
@@ -136,19 +158,20 @@ load_config() {
 	config_load $CONFIG
 	[ "$TCP_REDIR_SERVER" != "nil" ] && {
 		TCP_REDIR_SERVER_TYPE=`echo $(config_get $TCP_REDIR_SERVER server_type) | tr 'A-Z' 'a-z'`
-		gen_config_file $TCP_REDIR_SERVER TCP
+		gen_config_file $TCP_REDIR_SERVER $TCP_REDIR_PORT TCP $CONFIG_TCP_FILE
 		echo "$TCP_REDIR_SERVER" > $CONFIG_PATH/tcp_server_id
 	}
 	[ "$UDP_REDIR_SERVER" != "nil" ] && {
 		UDP_REDIR_SERVER_TYPE=`echo $(config_get $UDP_REDIR_SERVER server_type) | tr 'A-Z' 'a-z'`
-		gen_config_file $UDP_REDIR_SERVER UDP
+		gen_config_file $UDP_REDIR_SERVER $UDP_REDIR_PORT UDP $CONFIG_UDP_FILE
 		echo "$UDP_REDIR_SERVER" > $CONFIG_PATH/udp_server_id
 	}
 	[ "$SOCKS5_PROXY_SERVER" != "nil" ] && {
 		SOCKS5_PROXY_SERVER_TYPE=`echo $(config_get $SOCKS5_PROXY_SERVER server_type) | tr 'A-Z' 'a-z'`
-		gen_config_file $SOCKS5_PROXY_SERVER Socks5
+		gen_config_file $SOCKS5_PROXY_SERVER $SOCKS5_PROXY_PORT Socks5 $CONFIG_SOCKS5_FILE
 		echo "$SOCKS5_PROXY_SERVER" > $CONFIG_PATH/socks5_server_id
 	}
+
 	return 0
 }
 
@@ -193,17 +216,21 @@ gen_ss_ssr_config_file() {
 }
 
 gen_config_file() {
-	local server_host server_ip server_port server_type use_ipv6 network_type
-	server_host=$(config_get $1 server)
-	use_ipv6=$(config_get $1 use_ipv6)
+	local server local_port redir_type config_file_path server_host server_ip server_port server_type use_ipv6 network_type
+	server=$1
+	local_port=$2
+	redir_type=$3
+	config_file_path=$4
+	server_host=$(config_get $server server)
+	use_ipv6=$(config_get $server use_ipv6)
 	network_type="ipv4"
 	[ "$use_ipv6" == "1" ] && network_type="ipv6"
 	server_ip=$(get_host_ip $network_type $server_host)
-	server_port=$(config_get $1 server_port)
-	server_type=`echo $(config_get $1 server_type) | tr 'A-Z' 'a-z'`
-	echolog "$2服务器IP地址:$server_ip"
+	server_port=$(config_get $server server_port)
+	server_type=`echo $(config_get $server server_type) | tr 'A-Z' 'a-z'`
+	echolog "$redir_type服务器IP地址:$server_ip"
 	
-	if [ "$2" == "Socks5" ]; then
+	if [ "$redir_type" == "Socks5" ]; then
 		if [ "$network_type" == "ipv6" ];then
 			SOCKS5_PROXY_SERVER_IPV6=$server_ip
 		else
@@ -211,17 +238,17 @@ gen_config_file() {
 		fi
 		SOCKS5_PROXY_SERVER_PORT=$server_port
 		if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
-			gen_ss_ssr_config_file $server_type $SOCKS5_PROXY_PORT 0 $SOCKS5_PROXY_SERVER $CONFIG_SOCKS5_FILE
+			gen_ss_ssr_config_file $server_type $local_port 0 $server $config_file_path
 		fi
 		if [ "$server_type" == "v2ray" ]; then
-			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $SOCKS5_PROXY_SERVER nil nil $SOCKS5_PROXY_PORT > $CONFIG_SOCKS5_FILE
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $server nil nil $local_port > $config_file_path
 		fi
 		if [ "$server_type" == "brook" ]; then
-			BROOK_SOCKS5_CMD="client -l 0.0.0.0:$SOCKS5_PROXY_PORT -i 0.0.0.0 -s $server_ip:$server_port -p $(config_get $SOCKS5_PROXY_SERVER password)"
+			BROOK_SOCKS5_CMD="client -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_ip:$server_port -p $(config_get $server password)"
 		fi
 	fi
 	
-	if [ "$2" == "UDP" ]; then
+	if [ "$redir_type" == "UDP" ]; then
 		if [ "$network_type" == "ipv6" ];then
 			UDP_REDIR_SERVER_IPV6=$server_ip
 		else
@@ -229,17 +256,17 @@ gen_config_file() {
 		fi
 		UDP_REDIR_SERVER_PORT=$server_port
 		if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
-			gen_ss_ssr_config_file $server_type $UDP_REDIR_PORT 0 $UDP_REDIR_SERVER $CONFIG_UDP_FILE
+			gen_ss_ssr_config_file $server_type $local_port 0 $server $config_file_path
 		fi
 		if [ "$server_type" == "v2ray" ]; then
-			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $UDP_REDIR_SERVER udp $UDP_REDIR_PORT nil > $CONFIG_UDP_FILE
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $server udp $local_port nil > $config_file_path
 		fi
 		if [ "$server_type" == "brook" ]; then
-			BROOK_UDP_CMD="tproxy -l 0.0.0.0:$UDP_REDIR_PORT -s $server_ip:$server_port -p $(config_get $UDP_REDIR_SERVER password)"
+			BROOK_UDP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$server_port -p $(config_get $server password)"
 		fi
 	fi
 	
-	if [ "$2" == "TCP" ]; then
+	if [ "$redir_type" == "TCP" ]; then
 		if [ "$network_type" == "ipv6" ];then
 			TCP_REDIR_SERVER_IPV6=$server_ip
 		else
@@ -247,13 +274,13 @@ gen_config_file() {
 		fi
 		TCP_REDIR_SERVER_PORT=$server_port
 		if [ "$server_type" == "v2ray" ]; then
-			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $TCP_REDIR_SERVER tcp $TCP_REDIR_PORT nil > $CONFIG_TCP_FILE
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $server tcp $local_port nil > $config_file_path
 		else
 			local kcptun_use kcptun_server_host kcptun_port kcptun_config
-			kcptun_use=$(config_get $1 use_kcp)
-			kcptun_server_host=$(config_get $1 kcp_server)
-			kcptun_port=$(config_get $1 kcp_port)
-			kcptun_config=$(config_get $1 kcp_opts)
+			kcptun_use=$(config_get $server use_kcp)
+			kcptun_server_host=$(config_get $server kcp_server)
+			kcptun_port=$(config_get $server kcp_port)
+			kcptun_config=$(config_get $server kcp_opts)
 			kcptun_path=""
 			lbenabled=$(config_t_get global_haproxy balancing_enable 0)
 			if [ "$kcptun_use" == "1" ] && ([ -z "$kcptun_port" ] || [ -z "$kcptun_config" ]); then
@@ -280,7 +307,7 @@ gen_config_file() {
 				if [ -z "$kcptun_server_host" ]; then
 					start_kcptun "$kcptun_path" $server_ip $kcptun_port "$kcptun_config"
 				else
-					kcptun_use_ipv6=$(config_get $1 kcp_use_ipv6)
+					kcptun_use_ipv6=$(config_get $server kcp_use_ipv6)
 					network_type="ipv4"
 					[ "$kcptun_use_ipv6" == "1" ] && network_type="ipv6"
 					kcptun_server_ip=$(get_host_ip $network_type $kcptun_server_host)
@@ -290,17 +317,17 @@ gen_config_file() {
 				fi
 				echolog "运行Kcptun..." 
 				if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
-					gen_ss_ssr_config_file $server_type $TCP_REDIR_PORT 1 $TCP_REDIR_SERVER $CONFIG_TCP_FILE
+					gen_ss_ssr_config_file $server_type $local_port 1 $server $config_file_path
 				fi
 				if [ "$server_type" == "brook" ]; then
-					BROOK_TCP_CMD="tproxy -l 0.0.0.0:$TCP_REDIR_PORT -s 127.0.0.1:$KCPTUN_REDIR_PORT -p $(config_get $TCP_REDIR_SERVER password)"
+					BROOK_TCP_CMD="tproxy -l 0.0.0.0:$local_port -s 127.0.0.1:$KCPTUN_REDIR_PORT -p $(config_get $server password)"
 				fi
 			else
 				if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
-					gen_ss_ssr_config_file $server_type $TCP_REDIR_PORT 0 $TCP_REDIR_SERVER $CONFIG_TCP_FILE
+					gen_ss_ssr_config_file $server_type $local_port 0 $server $config_file_path
 				fi
 				if [ "$server_type" == "brook" ]; then
-					BROOK_TCP_CMD="tproxy -l 0.0.0.0:$TCP_REDIR_PORT -s $server_ip:$server_port -p $(config_get $TCP_REDIR_SERVER password)"
+					BROOK_TCP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$server_port -p $(config_get $server password)"
 				fi
 			fi
 		fi
@@ -317,9 +344,73 @@ start_kcptun() {
 	fi
 }
 
+start_tcp_redir_other() {
+	if [ "$TCP_REDIR_SERVER_NUM" -ge 2 ] ;then
+		for i in $(seq 2 $TCP_REDIR_SERVER_NUM)
+		do
+			eval temp_server=\$TCP_REDIR_SERVER$i
+			[ "$temp_server" != "nil" ] && {
+				TYPE=`echo $(config_get $temp_server server_type) | tr 'A-Z' 'a-z'`
+				local config_file=$CONFIG_PATH/TCP$i.json
+				gen_config_file $temp_server 104$i TCP $config_file
+				if [ "$TYPE" == "v2ray" ]; then
+					v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
+					if [ -f "${v2ray_path}/v2ray" ];then
+						${v2ray_path}/v2ray -config=$config_file > /dev/null &
+					else
+						v2ray_bin=$(find_bin V2ray)
+						[ -n "$v2ray_bin" ] && $v2ray_bin -config=$config_file > /dev/null &
+					fi
+				elif [ "$TYPE" == "brook" ]; then
+					brook_bin=$(find_bin Brook)
+					[ -n "$brook_bin" ] && $brook_bin $BROOK_TCP_CMD &>/dev/null &
+				else
+					ss_bin=$(find_bin "$TYPE"-redir)
+					[ -n "$ss_bin" ] && {
+						for k in $(seq 1 $process)
+						do
+							$ss_bin -c $config_file -f $RUN_PID_PATH/tcp_${TYPE}_$k_$i > /dev/null 2>&1 &
+						done
+					}
+				fi
+			}
+		done
+	fi
+}
+
+start_udp_redir_other() {
+	if [ "$UDP_REDIR_SERVER_NUM" -ge 2 ] ;then
+		for i in $(seq 2 $UDP_REDIR_SERVER_NUM)
+		do
+			eval temp_server=\$UDP_REDIR_SERVER$i
+			[ "$temp_server" != "nil" ] && {
+				TYPE=`echo $(config_get $temp_server server_type) | tr 'A-Z' 'a-z'`
+				local config_file=$CONFIG_PATH/UDP$i.json
+				gen_config_file $temp_server 104$i UDP $config_file
+				if [ "$TYPE" == "v2ray" ]; then
+					v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
+					if [ -f "${v2ray_path}/v2ray" ];then
+						${v2ray_path}/v2ray -config=$config_file > /dev/null &
+					else
+						v2ray_bin=$(find_bin V2ray)
+						[ -n "$v2ray_bin" ] && $v2ray_bin -config=$config_file > /dev/null &
+					fi
+				elif [ "$TYPE" == "brook" ]; then
+					brook_bin=$(find_bin brook)
+					[ -n "$brook_bin" ] && $brook_bin $BROOK_UDP_CMD &>/dev/null &
+				else
+					ss_bin=$(find_bin "$TYPE"-redir)
+					[ -n "$ss_bin" ] && {
+						$ss_bin -c $config_file -f $RUN_PID_PATH/udp_${TYPE}_1_$i -U > /dev/null 2>&1 &
+					}
+				fi
+			}
+		done
+	fi
+}
+
 start_tcp_redir() {
 	if [ "$TCP_REDIR_SERVER" != "nil" ];then
-		echolog "运行TCP透明代理..."
 		if [ "$TCP_REDIR_SERVER_TYPE" == "v2ray" ]; then
 			v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
 			if [ -f "${v2ray_path}/v2ray" ];then
@@ -345,7 +436,6 @@ start_tcp_redir() {
 
 start_udp_redir() {
 	if [ "$UDP_REDIR_SERVER" != "nil" ];then
-		echolog "运行UDP透明代理..." 
 		if [ "$UDP_REDIR_SERVER_TYPE" == "v2ray" ]; then
 			v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
 			if [ -f "${v2ray_path}/v2ray" ];then
@@ -368,7 +458,6 @@ start_udp_redir() {
 
 start_socks5_proxy() {
 	if [ "$SOCKS5_PROXY_SERVER" != "nil" ];then
-		echolog "运行Socks5代理..."
 		if [ "$SOCKS5_PROXY_SERVER_TYPE" == "v2ray" ]; then
 			v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
 			if [ -f "${v2ray_path}/v2ray" ];then
@@ -939,6 +1028,8 @@ start() {
 	start_tcp_redir
 	start_udp_redir
 	start_socks5_proxy
+	start_tcp_redir_other
+	start_udp_redir_other
 	start_dns
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
@@ -957,8 +1048,9 @@ stop() {
 	clean_log
 	source $APP_PATH/iptables.sh stop
 	del_vps_port
-	kill_all pdnsd Pcap_DNSProxy brook dns2socks haproxy dns-forwarder chinadns dnsproxy redsocks2
+	kill_all pdnsd Pcap_DNSProxy brook dns2socks haproxy dns-forwarder chinadns dnsproxy
 	ps -w | grep -E "$CONFIG_TCP_FILE|$CONFIG_UDP_FILE|$CONFIG_SOCKS5_FILE" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	ps -w | grep -E "$CONFIG_PATH" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep "kcptun_client" | grep "$KCPTUN_REDIR_PORT" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf /var/pdnsd/pdnsd.cache
 	rm -rf $TMP_DNSMASQ_PATH
