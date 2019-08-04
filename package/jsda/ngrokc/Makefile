@@ -1,59 +1,35 @@
-#
-# Copyright (C) 2015-2016 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v3.
-#
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ngrokc
-PKG_VERSION:=4.18
-PKG_RELEASE:=20190217
+PKG_VERSION:=b3e3877
+PKG_RELEASE:=1
+PKG_REV:=b3e38775aa8c89236c8ca2dcb07260285d9c15ee
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://github.com/dosgo/ngrok-c.git
+PKG_SOURCE_VERSION:=$(PKG_REV)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/ngrokc
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Web Servers/Proxies
-	TITLE:=Secure tunnels to localhost.
+	TITLE:=Secure tunnels to localhost(C++ port)
+	URL:=https://github.com/dosgo/ngrok-c
 	DEPENDS:=+libc +libpthread +libopenssl +libstdcpp
-	URL:=https://github.com/dosgo/ngrok-c.git
-endef
-
-define Package/$(PKG_NAME)/description
-Secure tunnels to localhost.
 endef
 
 define Build/Prepare
+	$(call Build/Prepare/Default,)
+	$(CP) $(PKG_BUILD_DIR)/Makefile.openssl $(PKG_BUILD_DIR)/Makefile
 endef
 
-define Build/Configure
+define Package/ngrokc/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ngrokc $(1)/usr/bin
 endef
 
-define Build/Compile
-endef
-
-define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/bin/
-ifeq ($(ARCH),mipsel)
-	$(INSTALL_BIN) ./files/7620n/ngrokc $(1)/usr/bin/
-endif
-ifeq ($(ARCH),mips)
-	$(INSTALL_BIN) ./files/ar71xx/ngrokc $(1)/usr/bin/
-endif
-ifeq ($(ARCH),i386)
-	$(INSTALL_BIN) ./files/x86/ngrokc $(1)/usr/bin/
-endif
-ifeq ($(ARCH),x86_64)
-	$(INSTALL_BIN) ./files/x86_64/ngrokc $(1)/usr/bin/
-endif
-ifeq ($(ARCH),arm)
-	$(INSTALL_BIN) ./files/arm/ngrokc $(1)/usr/bin/
-endif
-ifeq ($(ARCH),aarch64)
-	$(INSTALL_BIN) ./files/armv7/ngrokc $(1)/usr/bin/
-endif
-endef
-
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,ngrokc))
