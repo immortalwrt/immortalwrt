@@ -124,6 +124,7 @@ load_config() {
 	koolproxy_acl_default=$(config_t_get global koolproxy_acl_default 1)
 	koolproxy_port=$(config_t_get global koolproxy_port 0)
 	koolproxy_bp_port=$(config_t_get global koolproxy_bp_port)
+	koolproxy_ipv6=$(config_t_get global koolproxy_ipv6 0)
 	config_load $CONFIG
 	return 1
 }
@@ -317,6 +318,7 @@ load_nat() {
 	else
 		iptables -t nat -A KP_ALL_PORT -p tcp -m set --match-set kp_full_port dst -j REDIRECT --to-ports 3000
 	fi
+	[ "$koolproxy_ipv6" == "1" ] && ip6tables -t nat -I PREROUTING -p tcp -j REDIRECT --to-ports 3000
 	# 局域网控制
 	lan_acess_control
 	# 剩余流量转发到缺省规则定义的链中
@@ -359,6 +361,7 @@ flush_nat() {
 	iptables -t nat -X KP_ALL_PORT > /dev/null 2>&1
 	ipset -F black_koolproxy > /dev/null 2>&1 && ipset -X black_koolproxy > /dev/null 2>&1
 	ipset -F white_kp_list > /dev/null 2>&1 && ipset -X white_kp_list > /dev/null 2>&1
+	ip6tables -t nat -D PREROUTING -p tcp -j REDIRECT --to-ports 3000 > /dev/null 2>&1
 }
 
 export_ipt_rules() {
@@ -425,6 +428,7 @@ start_service() {
 	procd_set_param command /usr/share/koolproxy/koolproxy
 	procd_append_param command --mark
 	procd_append_param command --ttl 160
+	procd_append_param command --ipv6
 
 	procd_set_param respawn
 
