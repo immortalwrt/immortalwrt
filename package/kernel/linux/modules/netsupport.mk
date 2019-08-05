@@ -133,6 +133,7 @@ define KernelPackage/nsh
   DEPENDS:=
   KCONFIG:=CONFIG_NET_NSH
   FILES:=$(LINUX_DIR)/net/nsh/nsh.ko@ge4.14
+endef
 
 define KernelPackage/capi
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
