@@ -1,0 +1,28 @@
+From b6df5202306bd71158b482f25ca2e6919645d4dd Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Thu, 4 Jun 2015 20:55:06 -0700
+Subject: [PATCH 4/4] Don't include sys/io.h on arm
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+Upstream-Status: Pending
+
+ src/linux_sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/linux_sysfs.c b/src/linux_sysfs.c
+index 3f95e53..1e3aad3 100644
+--- a/src/linux_sysfs.c
++++ b/src/linux_sysfs.c
+@@ -50,7 +50,7 @@
+ #include <dirent.h>
+ #include <errno.h>
+ 
+-#if defined(__i386__) || defined(__x86_64__) || defined(__arm__)
++#if defined(__i386__) || defined(__x86_64__)
+ #include <sys/io.h>
+ #else
+ #define inb(x) -1
+-- 
+2.1.4
+
