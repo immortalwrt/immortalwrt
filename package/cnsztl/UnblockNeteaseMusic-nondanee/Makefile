@@ -25,6 +25,7 @@ define Package/$(PKG_NAME)
 	TITLE:=Revive unavailable songs for Netease Cloud Music on OpenWRT
 	URL:=https://github.com/nondanee/UnblockNeteaseMusic
 	DEPENDS:=+node
+	PKGARCH:=all
 endef
 
 define Package/$(PKG_NAME)/description
