@@ -1,0 +1,127 @@
+#!/bin/sh /etc/rc.common
+# Created By [CTCGFW]Project OpenWRT
+# https://github.com/project-openwrt
+
+START=99
+STOP=10
+
+lan_addr="$(uci get network.lan.ipaddr)"
+
+enable="$(uci get unblockneteasemusic.@unblockneteasemusic[0].enabled)"
+http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].http_port)"
+https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].https_port)"
+type="$(uci get unblockneteasemusic.@unblockneteasemusic[0].musicapptype)"
+[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable_hijack)" -eq "1" ] && hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
+
+[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access)" -ne "0" ] && addr="0.0.0.0" || addr="${lan_addr}"
+[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode)" -eq "1" ] && strict_mode="-s"
+[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].set_netease_server_ip)" -ne "0" ] && netease_server_ip="-f $(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip)"
+[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable_proxy)" -ne "0" ] && proxy_server_ip="-u $(uci get unblockneteasemusic.@unblockneteasemusic[0].proxy_server_ip)"
+
+
+set_ipset(){
+	if [ "${set_type}" = "start" ]; then
+		mkdir -p "/tmp/dnsmasq.d"
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		echo "dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac" > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		echo "ipset=/.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		echo "ipset=/interface.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+
+		mkdir -p /var/etc
+		cat > "/var/etc/unblockneteasemusic.include" <<-EOF
+if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
+iptables -t nat -N cloud_music
+iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
+iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
+iptables -t nat -A cloud_music -d 127.0.0.0/8 -j RETURN
+iptables -t nat -A cloud_music -d 169.254.0.0/16 -j RETURN
+iptables -t nat -A cloud_music -d 172.16.0.0/12 -j RETURN
+iptables -t nat -A cloud_music -d 192.168.0.0/16 -j RETURN
+iptables -t nat -A cloud_music -d 224.0.0.0/4 -j RETURN
+iptables -t nat -A cloud_music -d 240.0.0.0/4 -j RETURN
+iptables -t nat -A cloud_music -i br-lan -p tcp --dport 80 -j DNAT --to ${lan_addr}:${http_port}
+iptables -t nat -A cloud_music -i br-lan -p tcp --dport 443 -j DNAT --to ${lan_addr}:${https_port}
+iptables -t nat -A prerouting_rule -i br-lan -p tcp -m set --match-set music dst -j cloud_music
+		EOF
+		/etc/init.d/firewall restart >/dev/null 2>&1
+	elif [ "${set_type}" = "stop" ]; then
+		echo "" > /var/etc/unblockneteasemusic.include
+		/etc/init.d/firewall restart >/dev/null 2>&1
+
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	fi
+}
+
+set_hosts(){
+	if [ "${set_type}" = "start" ]; then
+		cfg_name="$(uci add dhcp domain)"
+		uci set dhcp."${cfg_name}".name='music.163.com'
+		uci set dhcp."${cfg_name}".ip="$(uci get network.lan.ipaddr)"
+		uci commit dhcp
+
+		cfg_name="$(uci add dhcp domain)"
+		uci set dhcp."${cfg_name}".name='interface.music.163.com'
+		uci set dhcp."${cfg_name}".ip="$(uci get network.lan.ipaddr)"
+		uci commit dhcp
+
+		cfg_name="$(uci add dhcp domain)"
+		uci set dhcp."${cfg_name}".name='music.httpdns.c.163.com'
+		uci set dhcp."${cfg_name}".ip="127.0.0.1"
+		uci commit dhcp
+
+		ip route add 223.252.199.10 dev lo
+	elif [ "${set_type}" = "stop" ]; then
+		music_id1="$(uci show dhcp| grep "interface.music.163.com"| grep -Eo "domain\[[0-9]+\]"| grep -Eo "[0-9]+")"
+		uci delete dhcp.@domain["${music_id1}"]
+		uci commit dhcp
+
+		music_id2="$(uci show dhcp| grep "music.httpdns.c.163.com"| grep -Eo "domain\[[0-9]+\]"| grep -Eo "[0-9]+")"
+		uci delete dhcp.@domain["${music_id2}"]
+		uci commit dhcp
+
+		music_id3="$(uci show dhcp| grep "music.163.com"| grep -Eo "domain\[[0-9]+\]"| grep -Eo "[0-9]+")"
+		uci delete dhcp.@domain["${music_id3}"]
+		uci commit dhcp
+
+		ip route del 223.252.199.10
+	fi
+}
+
+start()
+{
+	stop
+
+	[ "${enable}" -eq "0" ] && exit 0
+
+	if [ "${type}" = "default" ]; then
+		node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+	elif [ "${type}" = "all" ]; then
+		node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} -o kuwo migu xiami kugou qq joox netease ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+	else
+		node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} -o ${type} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+	fi
+
+	if [ "*${hijack_ways}*" = "*use_ipset*" ]; then
+		set_type="start"
+		set_ipset
+	elif [ "*${hijack_ways}*" = "*use_hosts*" ]; then
+		set_type="start"
+		set_hosts
+	fi
+
+	/usr/share/unblockneteasemusic/logcheck.sh >/dev/null 2>&1 &
+}
+
+stop()
+{
+	kill -9 "$(ps |grep unblockneteasemusic |grep app.js |grep -v grep |awk '{print $1}')" >/dev/null 2>&1
+	kill -9 "$(ps |grep unblockneteasemusic |grep logcheck.sh |grep -v grep |awk '{print $1}')" >/dev/null 2>&1
+
+	rm -f /tmp/unblockneteasemusic.log
+
+	set_type="stop"
+	set_ipset
+	set_hosts
+}
