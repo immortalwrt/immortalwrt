@@ -27,6 +27,7 @@ endef
 
 ifeq ($(ARCH),i386)
 	PKG_ARCH_SMARTDNS:=x86
+endif
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH_SMARTDNS:=amd64
 endif
