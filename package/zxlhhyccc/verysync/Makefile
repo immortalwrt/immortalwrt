@@ -26,8 +26,8 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_NAME:=verysync
-PKG_VERSION:=v1.0.10
-PKG_RELEASE:=2
+PKG_VERSION:=v1.1.1
+PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://releases-cdn.verysync.com/releases/$(PKG_VERSION)/
