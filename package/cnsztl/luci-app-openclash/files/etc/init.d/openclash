@@ -42,6 +42,21 @@ del_cron()
    /etc/init.d/cron restart
 }
 
+change_dns() {
+   uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#"$dns_port"
+   uci delete dhcp.@dnsmasq[0].resolvfile
+   uci set dhcp.@dnsmasq[0].noresolv=1
+   uci commit dhcp
+}
+
+revert_dns() {
+	 dns_port=$(uci get openclash.config.dns_port 2>/dev/null)
+   uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#"$dns_port" >/dev/null 2>&1
+   uci set dhcp.@dnsmasq[0].resolvfile=/tmp/resolv.conf.auto
+   uci set dhcp.@dnsmasq[0].noresolv=0
+   uci commit dhcp
+}
+
 yml_check()
 {
    #创建启动备份
@@ -117,6 +132,8 @@ yml_dns_check()
    else
       sed -i "/^dns:/a\  listen: 0.0.0.0:${dns_port}" "$CONFIG_FILE" 2>/dev/null
    fi
+   
+   uci set openclash.config.dns_port="$dns_port" && uci commit openclash
 
 }
 
@@ -307,6 +324,8 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
     ipv6_enable=$(uci get openclash.config.ipv6_enable 2>/dev/null)
     http_port=$(uci get openclash.config.http_port 2>/dev/null)
     socks_port=$(uci get openclash.config.socks_port 2>/dev/null)
+    enable_redirect_dns=$(uci get openclash.config.enable_redirect_dns 2>/dev/null)
+    lan_ip=$(uci get network.lan.ipaddr 2>/dev/null)
     echo "第二步: 配置文件检查..." >$START_LOG
     yml_check "$en_mode" "$enable_custom_dns" "$CONFIG_FILE" "$BACKUP_FILE" "$START_BACKUP"
     grep "^ \{0,\}Proxy:" $CONFIG_FILE >/dev/null 2>&1 && grep "^ \{0,\}Proxy Group:" $CONFIG_FILE >/dev/null 2>&1 && grep "^ \{0,\}Rule:" $CONFIG_FILE >/dev/null 2>&1
@@ -325,7 +344,7 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
     yml_cut "$CHANGE_FILE" "$RULE_FILE" "$DNS_FILE" "$CONFIG_FILE" "$PROXY_FILE"
     yml_dns_custom "$enable_custom_dns" "$DNS_FILE"
     yml_hosts_custom "$CHANGE_FILE" "$HOSTS_FILE"
-    sh /usr/share/openclash/yml_change.sh "$LOGTIME" "$en_mode" "$enable_custom_dns" "$da_password" "$cn_port" "$proxy_port" "$CHANGE_FILE" "$ipv6_enable" "$http_port" "$socks_port" &
+    sh /usr/share/openclash/yml_change.sh "$LOGTIME" "$en_mode" "$enable_custom_dns" "$da_password" "$cn_port" "$proxy_port" "$CHANGE_FILE" "$ipv6_enable" "$http_port" "$socks_port" "$lan_ip" &
     sh /usr/share/openclash/yml_rules_change.sh "$LOGTIME" "$rule_source" "$enable_custom_clash_rules" "$RULE_FILE" &
     wait
     cat $CHANGE_FILE $DNS_FILE $PROXY_FILE $RULE_FILE > $CONFIG_FILE 2>/dev/null
@@ -344,20 +363,9 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
        echo "第六步: 设置 OpenClash 防火墙规则..." >$START_LOG
        ln -s /usr/share/openclash/yacd /www/openclash 2>/dev/null
 
-       pre_line=`iptables  -t  nat -nL PREROUTING --line-number |grep dpt:53 2>/dev/null |awk '{print $1}' 2>/dev/null |head -1`
-       
-       if [ -z "$pre_line" ] || [ "$pre_line" -lt 1 ]; then
-       	pre_line=`expr $(iptables  -t  nat -nL PREROUTING --line-number |grep zone_lan_prerouting 2>/dev/null |awk '{print $1}' 2>/dev/null |head -1) + 1 2>/dev/null`
-       fi
-       
-       if [ -z "$pre_line" ]; then
-       	pre_line=1
-       fi
-
        mkdir -p /var/etc
        cat > "/var/etc/openclash.include" <<-EOF
 iptables -t nat -N openclash
-iptables -t nat -N openclash_dns
 iptables -t nat -A openclash -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A openclash -d 10.0.0.0/8 -j RETURN
 iptables -t nat -A openclash -d 127.0.0.0/8 -j RETURN
@@ -367,28 +375,31 @@ iptables -t nat -A openclash -d 192.168.0.0/16 -j RETURN
 iptables -t nat -A openclash -d 224.0.0.0/4 -j RETURN
 iptables -t nat -A openclash -d 240.0.0.0/4 -j RETURN
 iptables -t nat -A openclash -p tcp --dport 22 -j ACCEPT
-iptables -t nat -A openclash_dns -p udp -j REDIRECT --to-ports "$dns_port"
-iptables -t nat -A openclash_dns -p tcp -j REDIRECT --to-ports "$dns_port"
 iptables -t nat -A openclash -p tcp -j REDIRECT --to-ports "$proxy_port"
-iptables -t nat -I PREROUTING "$pre_line" -p tcp --dport 53 -j openclash_dns
-iptables -t nat -I PREROUTING "$pre_line" -p udp --dport 53 -j openclash_dns
 iptables -t nat -A PREROUTING -p tcp -j openclash
+iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "$proxy_port"
 EOF
+
 if [ "$ipv6_enable" -eq 1 ]; then
    cat >> "/var/etc/openclash.include" <<-EOF
 ip6tables -t nat -N openclash
-ip6tables -t nat -N openclash_dns
-ip6tables -t nat -A openclash_dns -p udp -j REDIRECT --to-ports "$dns_port"
-ip6tables -t nat -A openclash_dns -p tcp -j REDIRECT --to-ports "$dns_port"
 ip6tables -t nat -A openclash -p tcp -j REDIRECT --to-ports "$proxy_port"
-ip6tables -t nat -I PREROUTING "$pre_line" -p tcp --dport 53 -j openclash_dns
-ip6tables -t nat -I PREROUTING "$pre_line" -p udp --dport 53 -j openclash_dns
 ip6tables -t nat -A PREROUTING -p tcp -j openclash
 EOF
 fi
 
        /etc/init.d/firewall restart >/dev/null 2>&1
+       
        echo "第七步: 重启 Dnsmasq 程序..." >$START_LOG
+       if [ "$(iptables -t nat -nL PREROUTING --line-number |grep dpt:53 |wc -l)" -gt 2 ]; then
+          echo "发现53端口被劫持，请将OpenClash设置为劫持53端口程序的上游DNS服务器！" >$START_LOG
+          echo "${LOGTIME} Warring: OpenClash May Can Not Take Over DNS, Please Use OpenClash for Upstream DNS Resolve Server" >> $LOG_FILE
+       	  sleep 5
+       fi
+       ipset flush music 2>/dev/null
+       [ "$enable_redirect_dns" != "0" ] && {
+       	change_dns
+       }
        /etc/init.d/dnsmasq restart >/dev/null 2>&1
        if pidof clash >/dev/null; then
           echo "第八步: 添加 OpenClash 计划任务,启动进程守护程序..." >$START_LOG
@@ -407,9 +418,10 @@ fi
              cat /etc/openclash/configrules.bak >> "$CONFIG_FILE"
              rm -rf /etc/openclash/configrules.bak
              nohup $CLASH -d "$CLASH_CONFIG" >> $LOG_FILE 2>&1 &
+             sleep 3
              if pidof clash >/dev/null; then
                 add_cron
-                echo "OpenClash 使用备份规则启动成功，请更新、检查第三方规则后重试！" >$START_LOG
+                echo "OpenClash 使用备份规则启动成功，请更新、检查变动的规则后重试！" >$START_LOG
                 echo "${LOGTIME} OpenClash Start Successful With Backup Rules Config, Please Check Or Update Other Rules And Retry" >> $LOG_FILE
                 sleep 5
                 echo "" >$START_LOG
@@ -466,19 +478,18 @@ stop()
     kill -9 "$(pidof clash|sed 's/$//g')" 2>/dev/null
     
     echo "第四步: 重启 Dnsmasq 程序..." >$START_LOG
+    revert_dns
     /etc/init.d/dnsmasq restart >/dev/null 2>&1
 
     echo "第五步：删除 OpenClash 残留文件..." >$START_LOG
-    rule_source=$(uci get openclash.config.rule_source 2>/dev/null)
-    if [ "$rule_source" != 0 ]; then
-       rm -rf /tmp/Proxy_Group >/dev/null 2>&1
-    fi
     enable=$(uci get openclash.config.enable 2>/dev/null)
     if [ "$enable" -eq 0 ]; then
+       ipset flush music 2>/dev/null
        rm -rf $LOG_FILE 2>/dev/null
        rm -rf /www/openclash 2>/dev/null
        rm -rf /tmp/openclash_last_version 2>/dev/null
        rm -rf /tmp/clash_last_version 2>/dev/null
+       rm -rf /tmp/Proxy_Group 2>/dev/null
        echo "OpenClash 关闭成功！" >$START_LOG
        sleep 5
        rm -rf $START_LOG

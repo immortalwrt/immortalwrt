@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-openclash
-PKG_VERSION:=0.33.3
+PKG_VERSION:=0.33.6
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=vernesong <https://github.com/vernesong/OpenClash>
 
@@ -14,7 +14,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=3. Applications
 	TITLE:=LuCI support for clash
 	PKGARCH:=all
-	DEPENDS:=+luci +luci-base +iptables +coreutils +coreutils-nohup +bash +wget
+	DEPENDS:=+luci +luci-base +iptables +dnsmasq-full +coreutils +coreutils-nohup +bash +wget
 	MAINTAINER:=vernesong
 endef
 
@@ -39,7 +39,6 @@ endef
 define Package/$(PKG_NAME)/preinst
 #!/bin/sh
 if [ -f "/etc/config/openclash" ]; then
-	uci set openclash.config.enable=0 && uci commit openclash
 	cp "/etc/config/openclash" "/tmp/openclash.bak" 2>/dev/null
 	cp "/etc/config/openclash_custom_rules.list" "/tmp/openclash_custom_rules.list.bak" 2>/dev/null
 	cp "/etc/config/openclash_custom_hosts.list" "/tmp/openclash_custom_hosts.list.bak" 2>/dev/null
@@ -48,10 +47,19 @@ endef
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
-rm -rf /tmp/luci*
+uci delete ucitrack.@openclash[-1] >/dev/null 2>&1
+uci add ucitrack openclash >/dev/null 2>&1
+uci set ucitrack.@openclash[-1].init=openclash >/dev/null 2>&1
+uci commit ucitrack >/dev/null 2>&1
+uci delete firewall.openclash >/dev/null 2>&1
+uci set firewall.openclash=include >/dev/null 2>&1
+uci set firewall.openclash.type=script >/dev/null 2>&1
+uci set firewall.openclash.path=/var/etc/openclash.include >/dev/null 2>&1
+uci set firewall.openclash.reload=1 >/dev/null 2>&1
+uci commit firewall >/dev/null 2>&1
 if [ -f "/tmp/openclash.bak" ]; then
 	mv "/tmp/openclash.bak" "/etc/config/openclash" 2>/dev/null
-	mv "/tmp/openclash_custom_rules.list.bak" "/etc/config/openclash_custom_rules.list" 2>/dev/null
+	#mv "/tmp/openclash_custom_rules.list.bak" "/etc/config/openclash_custom_rules.list" 2>/dev/null
 	mv "/tmp/openclash_custom_hosts.list.bak" "/etc/config/openclash_custom_hosts.list" 2>/dev/null
 fi
 if [ -f "/tmp/config.yaml" ]; then
@@ -59,16 +67,14 @@ if [ -f "/tmp/config.yaml" ]; then
 elif [ -f "/tmp/config.yml" ]; then
 	mv "/tmp/config.yml" "/etc/openclash/config.yaml" 2>/dev/null
 fi
+uci set openclash.config.enable=0 && uci commit openclash
+rm -rf /tmp/luci*
 endef
 
 define Package/$(PKG_NAME)/prerm
 #!/bin/sh
-update=$(uci get openclash.config.update 2>/dev/null)
-if [ "$update" != 1 ]; then
+if [ ! -f "/tmp/openclash_update.sh" ]; then
 	rm -rf /etc/openclash/clash 2>/dev/null
-	uci set openclash.config.enable=0 && uci commit openclash
-else
-	uci set openclash.config.enable=1 && uci commit openclash
 fi
 	cp "/etc/config/openclash" "/tmp/openclash.bak" 2>/dev/null
 	cp "/etc/config/openclash_custom_rules.list" "/tmp/openclash_custom_rules.list.bak" 2>/dev/null
@@ -90,10 +96,11 @@ fi
 	rm -rf /tmp/Proxy_Group 2>/dev/null
 	rm -rf /tmp/openclash_last_version 2>/dev/null
 	rm -rf /tmp/clash_last_version 2>/dev/null
-	uci delete firewall.openclash
-	uci commit firewall
-	uci delete ucitrack.@openclash[-1]
-	uci commit ucitrack
+	uci delete firewall.openclash >/dev/null 2>&1
+	uci commit firewall >/dev/null 2>&1
+	uci delete ucitrack.@openclash[-1] >/dev/null 2>&1
+	uci commit ucitrack >/dev/null 2>&1
+rm -rf /tmp/luci*
 endef
 
 define Package/$(PKG_NAME)/install

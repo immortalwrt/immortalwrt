@@ -14,13 +14,13 @@ msgstr "将按照以下设置本地化配置文件和获取订阅"
 msgid "Technical Support"
 msgstr "技术支持"
 
-msgid "Overview"
+msgid "Overviews"
 msgstr "运行状态"
 
 msgid "Takeover Settings"
 msgstr "接管设置"
 
-msgid "General Settings"
+msgid "General-Settings"
 msgstr "全局设置"
 
 msgid "Config Update"
@@ -87,13 +87,19 @@ msgid "Select Mode"
 msgstr "OpenClash 运行模式"
 
 msgid "redir-host"
-msgstr "Redir-Host 模式"
+msgstr "Redir-Host（兼容）模式"
 
 msgid "fake-ip"
-msgstr "Fake-IP 模式"
+msgstr "Fake-IP（增强）模式"
 
 msgid "Select Mode For OpenClash Work, Network Error Try Flush DNS Cache"
-msgstr "选择运行模式，如客户端的网络无法连接请尝试清除DNS缓存"
+msgstr "选择运行模式，在兼容模式下无法代理路由器自身流量，如客户端的网络无法连接请尝试清除DNS缓存"
+
+msgid "Redirect Local DNS Setting"
+msgstr "本地DNS劫持"
+
+msgid "Set Local DNS Redirect"
+msgstr "默认启用，将自动设置Dnsmasq的上游服务器，如和其他插件冲突可停用，但须将OpenClash作为冲突插件的唯一上游服务器"
 
 msgid "Custom DNS Setting"
 msgstr "自定义上游DNS服务器"
@@ -319,8 +325,8 @@ msgstr "指定流量(策略)的代理方式，只支持选择（服务器组）�
 msgid "Custom Clash Rules"
 msgstr "自定义规则(访问控制)"
 
-msgid "Custom Rules Here, For More Go Github:https://github.com/Dreamacro/clash/blob/master/README.md"
-msgstr "设置自定义规则，详细信息请前往Github( https://github.com/Dreamacro/clash/blob/master/README.md )查询"
+msgid "Custom Rules Here, For More Go Github:https://github.com/Dreamacro/clash/blob/master/README.md, IP To CIDR: http://ip2cidr.com"
+msgstr "设置自定义规则，详细信息请前往Github( https://github.com/Dreamacro/clash/blob/master/README.md )查询，在线IP段转CIDR地址：http://ip2cidr.com"
 
 msgid "Custom Hosts Here, For More Go Github:https://github.com/Dreamacro/clash/blob/master/README.md"
 msgstr "设置自定义Hosts，详细信息请前往Github( https://github.com/Dreamacro/clash/blob/master/README.md )查询"

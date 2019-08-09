@@ -7,7 +7,7 @@ function index()
 
 
 	entry({"admin", "services", "openclash"},alias("admin", "services", "openclash", "client"), _("OpenClash"), 50).dependent = true
-	entry({"admin", "services", "openclash", "client"},form("openclash/client"),_("Overview"), 20).leaf = true
+	entry({"admin", "services", "openclash", "client"},form("openclash/client"),_("Overviews"), 20).leaf = true
 	entry({"admin", "services", "openclash", "status"},call("action_status")).leaf=true
 	entry({"admin", "services", "openclash", "state"},call("action_state")).leaf=true
 	entry({"admin", "services", "openclash", "startlog"},call("action_start")).leaf=true
@@ -166,11 +166,11 @@ local function oplv()
 end
 
 local function opup()
-   return luci.sys.exec("uci set openclash.config.update=1 && uci commit openclash && rm -rf /tmp/openclash_last_version 2>/dev/null && sh /usr/share/openclash/openclash_version.sh && sh /usr/share/openclash/openclash_update.sh 2>/dev/null")
+   return luci.sys.exec("rm -rf /tmp/*_last_version 2>/dev/null && sh /usr/share/openclash/openclash_version.sh && sh /usr/share/openclash/openclash_update.sh >/dev/null 2>&1 &")
 end
 
 local function coreup()
-   return luci.sys.exec("uci set openclash.config.enable=1 && uci commit openclash && rm -rf /tmp/clash_last_version 2>/dev/null && sh /usr/share/openclash/clash_version.sh && sh /usr/share/openclash/openclash_core.sh 2>/dev/null")
+   return luci.sys.exec("uci set openclash.config.enable=1 && uci commit openclash && rm -rf /tmp/*_last_version 2>/dev/null && sh /usr/share/openclash/clash_version.sh && sh /usr/share/openclash/openclash_core.sh >/dev/null 2>&1 &")
 end
 
 local function corever()
