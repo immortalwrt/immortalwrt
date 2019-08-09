@@ -29,13 +29,13 @@ ifeq ($(ARCH),i386)
 	PKG_ARCH_SMARTDNS:=x86
 endif
 ifeq ($(ARCH),x86_64)
-	PKG_ARCH_SMARTDNS:=amd64
+	PKG_ARCH_SMARTDNS:=x86_64
 endif
 ifeq ($(ARCH),mips)
 	PKG_ARCH_SMARTDNS:=mips
 endif
 ifeq ($(ARCH),mipsel)
-	PKG_ARCH_SMARTDNS:=mipsle
+	PKG_ARCH_SMARTDNS:=mipsel
 endif
 ifeq ($(ARCH),arm)
 	PKG_ARCH_SMARTDNS:=arm
