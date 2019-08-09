@@ -25,27 +25,33 @@ endef
 define Build/Compile
 endef
 
+ifeq ($(ARCH),i386)
+	PKG_ARCH_SMARTDNS:=x86
+ifeq ($(ARCH),x86_64)
+	PKG_ARCH_SMARTDNS:=amd64
+endif
+ifeq ($(ARCH),mips)
+	PKG_ARCH_SMARTDNS:=mips
+endif
+ifeq ($(ARCH),mipsel)
+	PKG_ARCH_SMARTDNS:=mipsle
+endif
+ifeq ($(ARCH),arm)
+	PKG_ARCH_SMARTDNS:=arm
+endif
+ifeq ($(ARCH),arm64)
+	PKG_ARCH_SMARTDNS:=arm64
+endif
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH_SMARTDNS:=arm64
+endif
+ifeq ($(BOARD),bcm53xx)
+	PKG_ARCH_SMARTDNS:=bcm53xx
+endif
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-ifeq ($(ARCH),i386)
-	$(INSTALL_BIN) ./files/usr/sbin/x86 $(1)/usr/sbin/smartdns
-endif
-ifeq ($(ARCH),x86_64)
-	$(INSTALL_BIN) ./files/usr/sbin/x86_64 $(1)/usr/sbin/smartdns
-endif
-ifeq ($(ARCH),arm)
-	$(INSTALL_BIN) ./files/usr/sbin/arm $(1)/usr/sbin/smartdns
-endif
-ifeq ($(ARCH),aarch64)
-	$(INSTALL_BIN) ./files/usr/sbin/aarch64 $(1)/usr/sbin/smartdns
-endif
-ifeq ($(ARCH),mips)
-	$(INSTALL_BIN) ./files/usr/sbin/mips $(1)/usr/sbin/smartdns
-endif
-ifeq ($(ARCH),mipsel)
-	$(INSTALL_BIN) ./files/usr/sbin/mipsel $(1)/usr/sbin/smartdns
-endif
+	$(INSTALL_BIN) ./files/usr/sbin/$(PKG_ARCH_SMARTDNS) $(1)/usr/sbin/smartdns
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/etc/config/smartdns $(1)/etc/config/smartdns
 	$(INSTALL_DIR) $(1)/etc/init.d
