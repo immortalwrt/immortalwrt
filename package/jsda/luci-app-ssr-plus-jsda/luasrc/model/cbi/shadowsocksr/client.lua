@@ -125,4 +125,6 @@ o.default = "1236:65535"
 o.rmempty = true
 o:depends("bt", "1")
 
+m:section(SimpleSection).template  = "shadowsocksr/ip_info"
+
 return m

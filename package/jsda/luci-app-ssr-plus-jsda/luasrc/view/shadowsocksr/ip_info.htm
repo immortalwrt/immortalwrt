@@ -1,0 +1,284 @@
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-dns-prefetch-control" content="on">
+	<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+	<link rel="dns-prefetch" href="//ipv4.ip.sb">
+	<link rel="dns-prefetch" href="//myip.ipip.net">
+	<link rel="dns-prefetch" href="//api.ipify.org">
+	<link rel="dns-prefetch" href="//api.ttt.sh">
+	<link rel="dns-prefetch" href="//api.skk.moe">
+	<link rel="dns-prefetch" href="//dt.skk.moe">
+	<link rel="preconnect" href="https://ipv4.ip.sb">
+	<link rel="preconnect" href="https://myip.ipip.net">
+	<script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+	<link rel="preconnect" href="https://api.ipify.org">
+	<link rel="preconnect" href="https://api.ttt.sh">
+	<link rel="preconnect" href="https://api.skk.moe">
+	<link rel="preconnect" href="https://dt.skk.moe">
+	<link rel="shortcut icon" type="image/ico" href="https://cdn.jsdelivr.net/npm/skx@0.0.1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui">
+	<style>
+		.ip-title {
+			font-weight: bold;
+			color: #444;
+			font-size:15px;
+			display: inline-block;
+			width: 25%;
+			vertical-align:bottom;
+		}
+		
+		.ip-state_title {
+			font-weight: bold;
+			color: #444;
+			font-size:15px;
+			display: inline-block;
+			width: 52%;
+			vertical-align:bottom;
+			transform:translateY(10%);
+		}
+		
+		.ip-result {
+			color: #444;
+			font-size:16px;
+			white-space: nowrap;  /*强制span不换行*/
+			display: inline-block;  /*将span当做块级元素对待*/
+			width: 29%;  /*限制宽度*/
+			overflow: hidden;  /*超出宽度部分隐藏*/
+			text-overflow: ellipsis;  /*超出部分以点号代替*/
+			vertical-align:bottom;
+			transform:translateY(8%);
+		}
+		
+		.ip-geo {
+			color: #444;
+			font-size:15px;
+			white-space: nowrap;  /*强制span不换行*/
+			display: inline-block;  /*将span当做块级元素对待*/
+			width: 40%;  /*限制宽度*/
+			overflow: hidden;  /*超出宽度部分隐藏*/
+			text-overflow: ellipsis;  /*超出部分以点号代替*/
+			vertical-align:bottom;
+			transform:translateY(2%);
+		}
+		
+		.ip-checking {
+			color: #444;
+			font-size:15px;
+			display: inline-block;
+			vertical-align:bottom;
+			width: 29%;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			transform:translateY(10%);
+		}
+
+		.sk-text-success {
+			color: #32b643;
+			font-size:15px;
+			display: inline-block;
+			vertical-align:bottom;
+			width: 48%;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			text-align: left;
+			transform:translateY(10%);
+		}
+
+		.sk-text-error {
+			color: #e85600;
+			font-size:15px;
+			display: inline-block;
+			vertical-align:bottom;
+			width: 48%;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			text-align: left;
+			transform:translateY(10%);
+		}
+
+		h3 {
+			margin: 5px 0 6px;
+		}
+
+		p {
+			margin: 10px 0;
+		}
+
+		a {
+			text-decoration: none;
+			color: #666;
+		}
+
+	</style>
+</head>
+<fieldset class="cbi-section">
+	<table>
+	 <tr><td width="100%">
+<body onLoad="myip_Load()">
+	<div style="display: flex;">
+		<div style="width: 51%">
+			<h3>IP 地址</h3>
+			<p>
+				<span class="ip-title">IPIP&nbsp;&nbsp;&nbsp;&nbsp;国内:</span><span class="ip-result" id="ip-ipipnet"></span> <span class="ip-geo" id="ip-ipipnet-geo"></span>
+			</p>
+			<p>
+				<span class="ip-title">搜狐&nbsp;&nbsp;&nbsp;&nbsp;国内:</span><span class="ip-result" id="ip-sohu"></span> <span class="ip-geo" id="ip-sohu-ipip"></span>
+			</p>
+			<p>
+				<span class="ip-title">IP.SB&nbsp;&nbsp;海外:</span><span class="ip-result" id="ip-ipsb"></span> <span class="ip-geo" id="ip-ipsb-geo"></span>
+			</p>
+			<p>
+				<span class="ip-title">IPAPI&nbsp;&nbsp;海外:</span><span class="ip-result" id="ip-ipapi"></span> <span class="ip-geo" id="ip-ipapi-geo"></span>
+			</p>
+		</div>
+		<div style="width: 49%">
+			<h3>网站访问检查</h3>
+			<p>
+				<span class="ip-state_title">百度搜索:</span><span id="http-baidu"></span>
+			</p>
+			<p>
+				<span class="ip-state_title">网易云音乐:</span><span id="http-163"></span>
+			</p>
+			<p>
+				<span class="ip-state_title">GitHub:</span><span id="http-github"></span>
+			</p>
+			<p>
+				<span class="ip-state_title">YouTube:</span><span id="http-youtube"></span>
+			</p>
+		</div>
+	</div>
+	<div>
+		<p style="float: right; margin-top: 3px; font-size:15px; padding-right: 10px">Powered by <a onclick="return ip_skk()" href="javascript:void(0);">ip.skk.moe</a></p>
+	</div>
+	</td></tr>
+	</table>
+</fieldset>
+	<script>
+		function ip_skk()
+	   {
+		url2='https://ip.skk.moe';
+		window.open(url2);
+	   }
+		const $$ = document;
+		$$.getElementById('ip-sohu').innerHTML = '查询中...';
+		$$.getElementById('ip-ipapi').innerHTML = '查询中...';
+		$$.getElementById('ip-ipipnet').innerHTML = '查询中...';
+		$$.getElementById('ip-ipsb').innerHTML = '查询中...';
+		let random = parseInt(Math.random() * 100000000);
+		let IP = {
+			get: (url, type) =>
+				fetch(url, { method: 'GET' }).then((resp) => {
+					if (type === 'text')
+						return Promise.all([resp.ok, resp.status, resp.text(), resp.headers]);
+					else {
+						return Promise.all([resp.ok, resp.status, resp.json(), resp.headers]);
+					}
+				}).then(([ok, status, data, headers]) => {
+					if (ok) {
+						let json = {
+							ok,
+							status,
+							data,
+							headers
+						}
+						return json;
+					} else {
+						throw new Error(JSON.stringify(json.error));
+					}
+				}).catch(error => {
+					throw error;
+				}),
+			parseIPIpip: (ip, elID) => {
+				IP.get(`https://api.skk.moe/network/parseIp/ipip/${ip}`, 'json')
+					.then(resp => {
+						let x = '';
+						for (let i of resp.data) {
+							x += (i !== '') ? `${i} ` : '';
+						}
+						$$.getElementById(elID).innerHTML = x;
+						//$$.getElementById(elID).innerHTML = `${resp.data.country} ${resp.data.regionName} ${resp.data.city} ${resp.data.isp}`;
+					})
+			},
+			getIpipnetIP: () => {
+				IP.get(`https://myip.ipip.net/?z=${random}`, 'text')
+					.then((resp) => {
+						let data = resp.data.replace('当前 IP：', '').split(' 来自于：');
+						$$.getElementById('ip-ipipnet').innerHTML = `${data[0]}`;
+						$$.getElementById('ip-ipipnet-geo').innerHTML = `${data[1]}`;
+					});
+			},
+			getSohuIP: (data) => {
+				$$.getElementById('ip-sohu').innerHTML = returnCitySN.cip;
+				IP.parseIPIpip(returnCitySN.cip, 'ip-sohu-ipip');
+			},
+			getIpsbIP: (data) => {
+				$$.getElementById('ip-ipsb').innerHTML = data.address;
+				$$.getElementById('ip-ipsb-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
+			},
+			getIPApiIP: () => {
+				IP.get(`https://ipapi.co/json?z=${random}`, 'json')
+					.then(resp => {
+						$$.getElementById('ip-ipapi').innerHTML = resp.data.ip;
+						IP.parseIPIpip(resp.data.ip, 'ip-ipapi-geo');
+					})
+			}
+		};
+
+		window.ipCallback = (data) => IP.getTaobaoIP(data);
+		$$.getElementById('http-baidu').innerHTML = '<span class="ip-checking">检测中...</span>';
+		$$.getElementById('http-163').innerHTML =  '<span class="ip-checking">检测中...</span>';
+		$$.getElementById('http-github').innerHTML = '<span class="ip-checking">检测中...</span>';
+		$$.getElementById('http-youtube').innerHTML = '<span class="ip-checking">检测中...</span>';
+		let HTTP = {
+			checker: (domain, cbElID) => {
+				let img = new Image;
+				let timeout = setTimeout(() => {
+					img.onerror = img.onload = null;
+					$$.getElementById(cbElID).innerHTML = '<span class="sk-text-error">连接超时</span>'
+				}, 5000);
+
+				img.onerror = () => {
+					clearTimeout(timeout);
+					$$.getElementById(cbElID).innerHTML = '<span class="sk-text-error">无法访问</span>'
+				}
+
+				img.onload = () => {
+					clearTimeout(timeout);
+					$$.getElementById(cbElID).innerHTML = '<span class="sk-text-success">连接正常</span>'
+				}
+
+				img.src = `https://${domain}/favicon.ico?${+(new Date)}`
+			},
+			runcheck: () => {
+				HTTP.checker('www.baidu.com', 'http-baidu');
+				HTTP.checker('s1.music.126.net/style', 'http-163');
+				HTTP.checker('github.com', 'http-github');
+				HTTP.checker('www.youtube.com', 'http-youtube');
+			}
+		};
+		
+		  function myip_Load()
+		  {
+
+			 var sbip = document.getElementsByTagName('HEAD').item(0);
+			 var sbipScript= document.createElement("script");
+			 sbipScript.defer = "defer";
+			 sbipScript.src='https://ipv4.ip.sb/addrinfo?callback=IP.getIpsbIP';
+			 sbip.appendChild( sbipScript);
+
+			 const $$ = document;
+			 random = parseInt(Math.random() * 100000000);
+			 window.ipCallback = (data) => IP.getTaobaoIP(data);
+			   IP.getIpipnetIP();
+			   IP.getSohuIP();
+			   IP.getIPApiIP();
+			   HTTP.runcheck();
+	   	   setTimeout("myip_Load()",1000*8);
+		   }
+
+	</script>
+	<script defer="defer" src="https://cdn.jsdelivr.net/npm/@giuem/ga-proxy" async></script>
+</body>
