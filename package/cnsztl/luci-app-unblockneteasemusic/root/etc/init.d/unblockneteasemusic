@@ -40,14 +40,15 @@ iptables -t nat -A cloud_music -d 172.16.0.0/12 -j RETURN
 iptables -t nat -A cloud_music -d 192.168.0.0/16 -j RETURN
 iptables -t nat -A cloud_music -d 224.0.0.0/4 -j RETURN
 iptables -t nat -A cloud_music -d 240.0.0.0/4 -j RETURN
-iptables -t nat -A cloud_music -i br-lan -p tcp --dport 80 -j DNAT --to ${lan_addr}:${http_port}
-iptables -t nat -A cloud_music -i br-lan -p tcp --dport 443 -j DNAT --to ${lan_addr}:${https_port}
-iptables -t nat -A prerouting_rule -i br-lan -p tcp -m set --match-set music dst -j cloud_music
+iptables -t nat -A cloud_music -p tcp --dport 80 -j REDIRECT --to-ports ${http_port}
+iptables -t nat -A cloud_music -p tcp --dport 443 -j REDIRECT --to-ports ${https_port}
+iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j cloud_music
 		EOF
 		/etc/init.d/firewall restart >/dev/null 2>&1
 	elif [ "${set_type}" = "stop" ]; then
 		echo "" > /var/etc/unblockneteasemusic.include
 		/etc/init.d/firewall restart >/dev/null 2>&1
+		ipset destroy music
 
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1

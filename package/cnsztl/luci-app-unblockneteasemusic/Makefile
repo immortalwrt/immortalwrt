@@ -12,7 +12,7 @@ LUCI_DEPENDS:=+UnblockNeteaseMusic-nondanee +bash +dnsmasq-full +ipset
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-unblockneteasemusic
 PKG_VERSION:=1.5
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_MAINTAINER:=<https://github.com/project-openwrt/UnblockNeteaseMusic>
 
