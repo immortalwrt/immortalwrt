@@ -27,7 +27,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mentohust
 	SECTION:=net
 	CATEGORY:=Network
-	DEPENDS:=+libpcap
+	DEPENDS:=+libpcap +libintl-full
 	TITLE:=An CERNET client daemon
 	URL:=https://github.com/hyrathb/mentohust
 	SUBMENU:=CERNET
