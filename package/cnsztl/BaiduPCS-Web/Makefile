@@ -1,34 +1,65 @@
 #
-# Copyright (C) 2014-2018 OpenWrt-dist
-# Copyright (C) 2019 [CTCGFW] Project OpenWRT
+# Copyright (C) 2019 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
 #
+# By https://github.com/KFERMercer/openwrt-baidupcs-web
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=BaiduPCS-Web
-PKG_VERSION:=1.0.0
+PKG_NAME:=baidupcs-web
+PKG_VERSION:=3.6.8
 PKG_RELEASE:=1
-
-PKG_LICENSE:=GPLv3
-PKG_MAINTAINER:=[CTCGFW] Project OpenWRT
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=LuCI Support for BaiduPCS-Web.
+	TITLE:=BaiduPCS-Web is a web controller for BaiduPCS-Go
 	URL:=https://github.com/liuzhuoling2011/baidupcs-web
 endef
 
+
 define Package/$(PKG_NAME)/description
-LuCI Support for BaiduPCS-Web.
+BaiduPCS-Web is a web controller for BaiduPCS-Go
 endef
 
+STRIP:=true
+
+ifeq ($(ARCH),x86_64)
+	PKG_ARCH_BAIDUPCS-WEB:=amd64
+endif
+
+ifeq ($(ARCH),mipsel)
+	PKG_ARCH_BAIDUPCS-WEB:=mipsle
+endif
+
+ifeq ($(ARCH),i386)
+	PKG_ARCH_BAIDUPCS-WEB:=86
+endif
+
+ifeq ($(ARCH),arm)
+	PKG_ARCH_BAIDUPCS-WEB:=arm
+endif
+
+ifeq ($(ARCH),arm64)
+	PKG_ARCH_BAIDUPCS-WEB:=arm64
+endif
+
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH_BAIDUPCS-WEB:=arm64
+endif
+
+BAIDUPCS-WEB_ZIP_NAME:=BaiduPCS-Go-$(PKG_VERSION)-linux-$(PKG_ARCH_BAIDUPCS-WEB)
+PKG_SOURCE:=$(BAIDUPCS-WEB_ZIP_NAME).zip
+PKG_SOURCE_URL:=https://github.com/liuzhuoling2011/baidupcs-web/releases/download/$(PKG_VERSION)/
+UNZIP_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/$(PKG_NAME)-unzip/$(PKG_ARCH_BAIDUPCS-WEB)
+PKG_HASH:=skip
+
 define Build/Prepare
+	mkdir -vp $(UNZIP_DIR)
+	unzip -od $(UNZIP_DIR) $(DL_DIR)/$(BAIDUPCS-WEB_ZIP_NAME).zip
 endef
 
 define Build/Configure
@@ -39,21 +70,8 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-ifeq ($(ARCH),i386)
-	$(INSTALL_BIN) ./files/i386 $(1)/usr/bin/baidupcs-web
-endif
-ifeq ($(ARCH),x86_64)
-	$(INSTALL_BIN) ./files/x86_64 $(1)/usr/bin/baidupcs-web
-endif
-ifeq ($(ARCH),arm)
-	$(INSTALL_BIN) ./files/arm $(1)/usr/bin/baidupcs-web
-endif
-ifeq ($(ARCH),arm64)
-	$(INSTALL_BIN) ./files/arm64 $(1)/usr/bin/baidupcs-web
-endif
-ifeq ($(ARCH),mipsel)
-	$(INSTALL_BIN) ./files/mipsel $(1)/usr/bin/baidupcs-web
-endif
+	$(INSTALL_BIN) $(UNZIP_DIR)/$(BAIDUPCS-WEB_ZIP_NAME)/BaiduPCS-Go $(1)/usr/bin/$(PKG_NAME)
+	chmod 755 $(1)/usr/bin/$(PKG_NAME)
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
