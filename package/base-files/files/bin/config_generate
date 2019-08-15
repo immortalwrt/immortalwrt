@@ -20,6 +20,7 @@ generate_static_network() {
 			uci -q batch <<-EOF
 				delete network.globals
 				set network.globals='globals'
+				set network.globals.ula_prefix='auto'
 			EOF
 		}
 
@@ -254,6 +255,11 @@ generate_static_system() {
 			local hostname
 			if json_get_var hostname hostname; then
 				uci -q set "system.@system[-1].hostname=$hostname"
+			fi
+
+			local label_macaddr
+			if json_get_var label_macaddr label_macaddr; then
+				uci -q set "system.@system[-1].label_macaddr=$label_macaddr"
 			fi
 
 			if json_is_a ntpserver array; then
