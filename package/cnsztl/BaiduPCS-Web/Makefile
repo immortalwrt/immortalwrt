@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=baidupcs-web
+PKG_NAME:=BaiduPCS-Web
 PKG_VERSION:=3.6.8
 PKG_RELEASE:=1
 
