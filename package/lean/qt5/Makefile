@@ -42,6 +42,7 @@ endef
 define Package/qt5-core
   $(call Package/qt5/Default)
   TITLE+=core
+  DEPENDS:=+icu-full-data
 endef
 
 define Package/qt5-concurrent
