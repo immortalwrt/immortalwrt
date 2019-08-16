@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=7.63.0
+PKG_VERSION:=7.65.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -16,7 +16,7 @@ PKG_SOURCE_URL:=https://dl.uxnr.de/mirror/curl/ \
 	https://curl.mirror.anstey.ca/ \
 	https://curl.askapache.com/download/ \
 	https://curl.haxx.se/download/
-PKG_HASH:=9600234c794bfb8a0d3f138e9294d60a20e7a5f10e35ece8cf518e2112d968c4
+PKG_HASH:=f2d98854813948d157f6a91236ae34ca4a1b4cb302617cebad263d79b0235fea
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -91,6 +91,7 @@ define Package/libcurl
   DEPENDS += +LIBCURL_SSH2:libssh2 +LIBCURL_NGHTTP2:libnghttp2 +ca-bundle
   TITLE:=A client-side URL transfer library
   MENU:=1
+  ABI_VERSION:=4
 endef
 
 define Package/libcurl/config
