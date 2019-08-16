@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nftables
 PKG_VERSION:=0.9.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://netfilter.org/projects/$(PKG_NAME)/files
@@ -34,20 +34,9 @@ define Package/nftables
   CATEGORY:=Network
   SUBMENU:=Firewall
   TITLE:=nftables packet filtering userspace utility
-  DEPENDS:=+kmod-nft-core +libnftnl +PACKAGE_NFT_WITH_JSON:jansson
+  DEPENDS:=+kmod-nft-core +libnftnl
   URL:=http://netfilter.org/projects/nftables/
 endef
-
-define Package/nftables/config
-	config PACKAGE_NFT_WITH_JSON
-		bool "Build nftables with json support"
-		depends on PACKAGE_nftables
-		default n
-endef
-
-ifeq ($(CONFIG_PACKAGE_NFT_WITH_JSON),y)
-CONFIGURE_ARGS += --with-json
-endif
 
 define Package/nftables/install
 	$(INSTALL_DIR) $(1)/usr/sbin
