@@ -20,13 +20,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
 static char default_pattern[] = "12345678";
-static int is_hex_pattern;
 
 
 int xor_data(uint8_t *data, size_t len, const uint8_t *pattern, int p_len, int p_off)
@@ -45,7 +43,7 @@ void usage(void) __attribute__ (( __noreturn__ ));
 
 void usage(void)
 {
-	fprintf(stderr, "Usage: xorimage [-i infile] [-o outfile] [-p <pattern>] [-x]\n");
+	fprintf(stderr, "Usage: xorimage [-i infile] [-o outfile] [-p <pattern>]\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -58,14 +56,12 @@ int main(int argc, char **argv)
 	char *ifn = NULL;
 	char *ofn = NULL;
 	const char *pattern = default_pattern;
-	char hex_pattern[128];
-	unsigned int hex_buf;
 	int c;
 	int v0, v1, v2;
 	size_t n;
 	int p_len, p_off = 0;
 
-	while ((c = getopt(argc, argv, "i:o:p:xh")) != -1) {
+	while ((c = getopt(argc, argv, "i:o:p:h")) != -1) {
 		switch (c) {
 			case 'i':
 				ifn = optarg;
@@ -75,9 +71,6 @@ int main(int argc, char **argv)
 				break;
 			case 'p':
 				pattern = optarg;
-				break;
-			case 'x':
-				is_hex_pattern = true;
 				break;
 			case 'h':
 			default:
@@ -107,27 +100,6 @@ int main(int argc, char **argv)
 		usage();
 	}
 
-	if (is_hex_pattern) {
-		int i;
-
-		if ((p_len / 2) > sizeof(hex_pattern)) {
-			fprintf(stderr, "provided hex pattern is too long\n");
-			usage();
-		}
-
-		if (p_len % 2 != 0) {
-			fprintf(stderr, "the number of characters (hex) is incorrect\n");
-			usage();
-		}
-
-		for (i = 0; i < (p_len / 2); i++) {
-			if (sscanf(pattern + (i * 2), "%2x", &hex_buf) < 0) {
-				fprintf(stderr, "invalid hex digit around %d\n", i * 2);
-				usage();
-			}
-			hex_pattern[i] = (char)hex_buf;
-		}
-	}
 
 	while ((n = fread(buf, 1, sizeof(buf), in)) > 0) {
 		if (n < sizeof(buf)) {
@@ -138,12 +110,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if (is_hex_pattern) {
-			p_off = xor_data(buf, n, hex_pattern, (p_len / 2),
-					 p_off);
-		} else {
-			p_off = xor_data(buf, n, pattern, p_len, p_off);
-		}
+		p_off = xor_data(buf, n, pattern, p_len, p_off);
 
 		if (!fwrite(buf, n, 1, out)) {
 		FWRITE_ERROR:
