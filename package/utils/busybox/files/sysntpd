@@ -29,14 +29,14 @@ get_dhcp_ntp_servers() {
 }
 
 validate_ntp_section() {
-	uci_load_validate system timeserver "$1" "$2" \
+	uci_validate_section system timeserver "${1}" \
 		'server:list(host)' 'enabled:bool:1' 'enable_server:bool:0' 'use_dhcp:bool:1' 'dhcp_interface:list(string)'
 }
 
-start_ntpd_instance() {
-	local peer
+start_service() {
+	local server enabled enable_server use_dhcp dhcp_interface peer
 
-	[ "$2" = 0 ] || {
+	validate_ntp_section ntp || {
 		echo "validation failed"
 		return 1
 	}
@@ -56,10 +56,6 @@ start_ntpd_instance() {
 	done
 	procd_set_param respawn
 	procd_close_instance
-}
-
-start_service() {
-	validate_ntp_section ntp start_ntpd_instance
 }
 
 service_triggers() {
