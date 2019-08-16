@@ -10,9 +10,9 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_SOURCE_URL:=https://github.com/chunkeey/FritzBox-4040-UBOOT
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=5da78cca60814ea31065a50376d9c905425b03a1
-PKG_SOURCE_DATE:=2018-12-09
-PKG_MIRROR_HASH:=ff7bc2498de1066dde24d7ef68e440c3847244a5b8bb35ce4275e3918f230aa3
+PKG_SOURCE_VERSION:=6946ebbaf7b12a4a092d763c8f0c87a25984f103
+PKG_SOURCE_DATE:=2017-01-29
+PKG_MIRROR_HASH:=4f3f5d9e3f047910d2bbd31325cc622c3dd64662c20ea740b27ac4bef9736a34
 
 PKG_RELEASE:=1
 
@@ -21,11 +21,12 @@ include $(INCLUDE_DIR)/package.mk
 
 define U-Boot/Default
   BUILD_TARGET:=ipq40xx
-  UBOOT_IMAGE:=uboot-fritz4040.bin
 endef
 
 define U-Boot/fritz4040
   NAME:=FritzBox 4040
+  UBOOT_IMAGE:=uboot-fritz4040.bin
+  BUILD_DEVICES:=avm_fritzbox-4040
 endef
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
@@ -34,9 +35,10 @@ export DTC
 
 define Build/Configure
 	$(Build/Configure/U-Boot)
-	$(HOSTCC) -o $(PKG_BUILD_DIR)/fritz/lzma2eva $(PKG_BUILD_DIR)/fritz/src/lzma2eva.c
-	$(HOSTCC) -o $(PKG_BUILD_DIR)/fritz/tichksum $(PKG_BUILD_DIR)/fritz/src/tichksum.c
+	$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) -o $(PKG_BUILD_DIR)/fritz/lzma2eva $(PKG_BUILD_DIR)/fritz/src/lzma2eva.c -lz
+	$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) -o $(PKG_BUILD_DIR)/fritz/tichksum $(PKG_BUILD_DIR)/fritz/src/tichksum.c
 	ln -sf $(STAGING_DIR_HOST)/bin/lzma $(PKG_BUILD_DIR)/fritz
+	ln -sf compiler-gcc5.h $(PKG_BUILD_DIR)/include/linux/compiler-gcc7.h
 endef
 
 define Build/Compile
@@ -44,9 +46,14 @@ define Build/Compile
 	(cd $(PKG_BUILD_DIR); ./fritz/fritzcreator.sh;)
 endef
 
+define Build/InstallDev
+	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
+	$(CP) $(PKG_BUILD_DIR)/$(UBOOT_IMAGE) $(STAGING_DIR_IMAGE)/$(UBOOT_IMAGE)
+endef
+
 define Package/u-boot/install
 	$(Package/u-boot/install/default)
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/upload-to-f4040.sh $(1)/
+	$(INSTALL_BIN) ./files/upload-to-f4040.sh $(1)/
 endef
 
 UBOOT_TARGETS := fritz4040
