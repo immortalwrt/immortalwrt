@@ -37,7 +37,7 @@ make -j1 V=s
 
 Package jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).<br/>
-luci-app-serverchan source: [zxlhhyccc/luci-app-serverchan](https://github.com/zxlhhyccc/luci-app-serverchan).<br/>
+luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
 luci-app-smartinfo source: [animefansxj/luci-app-smartinfo](https://github.com/animefansxj/luci-app-smartinfo).<br/>
 luci-app-koolproxy source: [Baozisoftware/luci-app-koolproxy](https://github.com/Baozisoftware/luci-app-koolproxy).<br/>
@@ -50,7 +50,7 @@ Package Openwrt-BBR: [anshi233/Openwrt-BBR](https://github.com/anshi233/Openwrt-
 simple-obfs source: [aa65535/openwrt-simple-obfs](https://github.com/aa65535/openwrt-simple-obfs).<br/>
 v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/openwrt-v2ray-plugin).<br/>
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
-luci-theme-argon source: [Meroser/luci-theme-argon](https://github.com/Meroser/luci-theme-argon).
+luci-theme-argonv3 source: [Meroser/luci-theme-argon](https://github.com/Meroser/luci-theme-argon).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
