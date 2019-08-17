@@ -49,7 +49,8 @@ luci-app-bbr-mod source: [ntlf9t/luci-app-bbr-mod](https://github.com/ntlf9t/luc
 Package Openwrt-BBR: [anshi233/Openwrt-BBR](https://github.com/anshi233/Openwrt-BBR).<br/>
 simple-obfs source: [aa65535/openwrt-simple-obfs](https://github.com/aa65535/openwrt-simple-obfs).<br/>
 v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/openwrt-v2ray-plugin).<br/>
-Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).
+Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
+luci-theme-argon source: [Meroser/luci-theme-argon](https://github.com/Meroser/luci-theme-argon).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
