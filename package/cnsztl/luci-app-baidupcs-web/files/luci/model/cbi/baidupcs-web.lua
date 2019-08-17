@@ -7,7 +7,7 @@ local uci = require "luci.model.uci".cursor()
 
 local m, s
 
-local running=(luci.sys.call("pidof baidupcs-web > /dev/null") == 0)
+local running=(luci.sys.call("pidof BaiduPCS-Web > /dev/null") == 0)
 
 local button = ""
 local state_msg = ""
