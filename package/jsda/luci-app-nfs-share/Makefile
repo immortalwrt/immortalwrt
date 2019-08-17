@@ -4,7 +4,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Network Shares - NFS module
-LUCI_DEPENDS:=nfs-kernel-server
+LUCI_DEPENDS:=+nfs-kernel-server
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
