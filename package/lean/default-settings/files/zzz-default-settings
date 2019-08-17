@@ -55,11 +55,7 @@ sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 wifi up
 
 sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-<<<<<<< HEAD
 echo "DISTRIB_REVISION='R9.8.17 By Lean & CTCGFW'" >> /etc/openwrt_release
-=======
-echo "DISTRIB_REVISION='R9.8.17'" >> /etc/openwrt_release
->>>>>>> d576be2120315f6d953351d7fd664609e599434b
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 
