@@ -1,4 +1,0 @@
-
-config serverchan 'config'
-	option enabled '0'
-
