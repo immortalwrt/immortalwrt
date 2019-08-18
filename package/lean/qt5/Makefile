@@ -43,13 +43,13 @@ define Package/qt5/Default
   SUBMENU:=Qt5
   TITLE:=qt5
   URL:=http://qt-project.org
-  DEPENDS:=+librt +zlib +libstdcpp +libpcre16 +libpthread +libatomic +libmysqlclient @!LINUX_2_6
+  DEPENDS:=+librt +zlib +libstdcpp +libpcre16 +libpthread +libopenssl @!LINUX_2_6
 endef
 
 define Package/qt5-core
   $(call Package/qt5/Default)
   TITLE+=core
-  DEPENDS+=+icu
+  DEPENDS+=+icu +libatomic
 endef
 
 define Package/qt5-concurrent
@@ -73,7 +73,7 @@ endef
 define Package/qt5-sql
   $(call Package/qt5/Default)
   TITLE+=sql
-  DEPENDS+=+qt5-core
+  DEPENDS+=+qt5-core +libmariadbclient
 endef
 
 define Package/qt5-xml
