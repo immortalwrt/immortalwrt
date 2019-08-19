@@ -1,9 +1,8 @@
 #
 # Copyright (C) 2013 Riccardo Ferrazzo <f.riccardo87@gmail.com>
 # Copyright (C) 2017 Paweł Knioła <pawel.kn@gmail.com>
-# Copyright (C) 2019 Yaroslav Petrov <info@lank.me>
 #
-# This is free software, licensed under the GNU General Public License v3.
+# This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 
@@ -21,13 +20,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 PKG_BUILD_DEPENDS:=libiconv
 
-PKG_MAINTAINER:=Yaroslav Petrov <info@lank.me>
-
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/nls.mk
-#include $(TARGET_LDFLAGS)/nls.mk
-
-#-include $(if $(DUMP),,./files/qmake.mk)
 
 # not using sstrip here as this fucks up the .so's somehow
 STRIP:=/bin/true
@@ -43,13 +36,13 @@ define Package/qt5/Default
   SUBMENU:=Qt5
   TITLE:=qt5
   URL:=http://qt-project.org
-  DEPENDS:=+librt +zlib +libstdcpp +libpcre16 +libpthread +libopenssl @!LINUX_2_6
+  DEPENDS:=+libatomic +libstdcpp +libopenssl +zlib @!LINUX_2_6
 endef
 
 define Package/qt5-core
   $(call Package/qt5/Default)
   TITLE+=core
-  DEPENDS+=+icu +libatomic
+  DEPENDS:=+icu +libatomic
 endef
 
 define Package/qt5-concurrent
@@ -101,38 +94,20 @@ define Package/qt5-test
 endef
 
 define Build/Configure
-	$(INSTALL_DIR) $(PKG_BUILD_DIR)/qtbase/lib/fonts
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++
-	$(CP) ./files/fonts/* $(PKG_BUILD_DIR)/qtbase/lib/fonts/
 	$(CP) ./files/qplatformdefs.h $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++/qplatformdefs.h
 	$(CP) ./files/qmake.conf $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++/qmake.conf
 	$(SED) 's@$$$$(TARGET_CROSS)@$(TARGET_CROSS)@g' $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++/qmake.conf
 	( cd $(PKG_BUILD_DIR) ; \
-		TARGET_CC="$(TARGET_CROSS)gcc" \
-		TARGET_CXX="$(TARGET_CROSS)g++" \
-		TARGET_AR="$(TARGET_CROSS)ar cqs" \
-		TARGET_OBJCOPY="$(TARGET_CROSS)objcopy" \
-		TARGET_RANLIB="$(TARGET_CROSS)ranlib" \
-		TARGET_CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		TARGET_CXXFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		TARGET_LDFLAGS="$(TARGET_LDFLAGS) $(EXTRA_LDFLAGS) -lpthread -lrt" \
-		TARGET_INCDIRS="$(TARGET_INCDIRS)" \
-		TARGET_LIBDIRS="$(TARGET_LIBDIRS) $(STAGING_DIR)/usr/lib/" \
-		CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS)" \
-		CXXFLAGS= \
-		LDFLAGS= \
 		./configure \
-			-prefix /usr \
-			-extprefix $(TOOLCHAIN_DIR) \
-			-sysroot $(TOOLCHAIN_DIR) \
-			-plugindir /usr/lib/Qt/plugins \
+			-prefix $(TOOLCHAIN_DIR) \
 			-xplatform linux-openwrt-g++ \
 			-opensource \
 			-confirm-license \
-			-force-asserts \
 			-no-iconv \
 			-no-pch \
 			-no-rpath \
+			-no-qml-debug \
 			-no-strip \
 			-no-cups \
 			-no-dbus \
@@ -143,9 +118,11 @@ define Build/Configure
 			-no-xcb \
 			-no-ssl \
 			-qt-zlib \
+			-qt-pcre \
 			-qt-freetype \
 			-make libs \
 			-nomake examples \
+			-nomake tools \
 			-nomake tests \
 			-skip qtdeclarative \
 			-skip qtmultimedia \
@@ -159,21 +136,7 @@ define Build/Configure
 endef
 
 define Build/Compile
-	TARGET_CC="$(TARGET_CROSS)gcc" \
-	TARGET_CXX="$(TARGET_CROSS)g++" \
-	TARGET_AR="$(TARGET_CROSS)ar cqs" \
-	TARGET_OBJCOPY="$(TARGET_CROSS)objcopy" \
-	TARGET_RANLIB="$(TARGET_CROSS)ranlib" \
-	TARGET_CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-	TARGET_CXXFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-	TARGET_LDFLAGS="$(TARGET_LDFLAGS) $(EXTRA_LDFLAGS) -ldl -lpthread -lrt" \
-	TARGET_INCDIRS="$(TARGET_INCDIRS)" \
-	TARGET_LIBDIRS="$(TARGET_LIBDIRS) $(STAGING_DIR)/usr/lib/" \
-	STAGING_DIR="$(STAGING_DIR)" \
-	STAGING_DIR_HOST="$(STAGING_DIR)/../host" \
-	PKG_CONFIG_SYSROOT="$(STAGING_DIR)" \
-        CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS)" \
-	$(MAKE) -j4 -C $(PKG_BUILD_DIR)
+	$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/InstallDev
