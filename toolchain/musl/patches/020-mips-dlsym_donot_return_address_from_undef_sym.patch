@@ -19,16 +19,13 @@ Using common code path for all symbol lookups fixes three dlsym issues:
 
 always_inline is used to avoid relocation performance regression, the
 code generation for find_sym should not be affected.
-
-BAckported to 1.1.19
-
 ---
  ldso/dynlink.c | 84 +++++++++++++++++++-------------------------------
  1 file changed, 31 insertions(+), 53 deletions(-)
 
 --- a/ldso/dynlink.c
 +++ b/ldso/dynlink.c
-@@ -257,12 +257,16 @@ static Sym *gnu_lookup_filtered(uint32_t
+@@ -283,12 +283,16 @@ static Sym *gnu_lookup_filtered(uint32_t
  #define ARCH_SYM_REJECT_UND(s) 0
  #endif
  
@@ -47,9 +44,9 @@ BAckported to 1.1.19
  		Sym *sym;
  		if ((ght = dso->ghashtab)) {
  			sym = gnu_lookup_filtered(gh, ght, dso, s, gho, ghm);
-@@ -290,6 +294,11 @@ static struct symdef find_sym(struct dso
- __attribute__((__visibility__("hidden")))
- ptrdiff_t __tlsdesc_static(), __tlsdesc_dynamic();
+@@ -313,6 +317,11 @@ static struct symdef find_sym(struct dso
+ 	return def;
+ }
  
 +static struct symdef find_sym(struct dso *dso, const char *s, int need_def)
 +{
@@ -59,7 +56,7 @@ BAckported to 1.1.19
  static void do_relocs(struct dso *dso, size_t *rel, size_t rel_size, size_t stride)
  {
  	unsigned char *base = dso->base;
-@@ -1872,58 +1881,27 @@ void *__tls_get_addr(tls_mod_off_t *);
+@@ -2118,58 +2127,27 @@ static void *addr2dso(size_t a)
  
  static void *do_dlsym(struct dso *p, const char *s, void *ra)
  {
@@ -77,7 +74,7 @@ BAckported to 1.1.19
 -		struct symdef def = find_sym(p, s, 0);
 -		if (!def.sym) goto failed;
 -		if ((def.sym->st_info&0xf) == STT_TLS)
--			return __tls_get_addr((tls_mod_off_t []){def.dso->tls_id, def.sym->st_value});
+-			return __tls_get_addr((tls_mod_off_t []){def.dso->tls_id, def.sym->st_value-DTP_OFFSET});
 -		if (DL_FDPIC && (def.sym->st_info&0xf) == STT_FUNC)
 -			return def.dso->funcdescs + (def.sym - def.dso->syms);
 -		return laddr(def.dso, def.sym->st_value);
@@ -91,7 +88,7 @@ BAckported to 1.1.19
 +		if (!p) p=head;
 +		p = p->next;
 +	} else if (__dl_invalid_handle(p)) {
-+ 		return 0;
++		return 0;
 +	} else
 +		use_deps = 1;
 +	struct symdef def = find_sym2(p, s, 0, use_deps);
@@ -104,9 +101,9 @@ BAckported to 1.1.19
 -	} else {
 -		h = sysv_hash(s);
 -		sym = sysv_lookup(s, h, p);
- 	}
+-	}
 -	if (sym && (sym->st_info&0xf) == STT_TLS)
--		return __tls_get_addr((tls_mod_off_t []){p->tls_id, sym->st_value});
+-		return __tls_get_addr((tls_mod_off_t []){p->tls_id, sym->st_value-DTP_OFFSET});
 -	if (DL_FDPIC && sym && sym->st_shndx && (sym->st_info&0xf) == STT_FUNC)
 -		return p->funcdescs + (sym - p->syms);
 -	if (sym && sym->st_value && (1<<(sym->st_info&0xf) & OK_TYPES))
@@ -120,12 +117,12 @@ BAckported to 1.1.19
 -			sym = sysv_lookup(s, h, p->deps[i]);
 -		}
 -		if (sym && (sym->st_info&0xf) == STT_TLS)
--			return __tls_get_addr((tls_mod_off_t []){p->deps[i]->tls_id, sym->st_value});
+-			return __tls_get_addr((tls_mod_off_t []){p->deps[i]->tls_id, sym->st_value-DTP_OFFSET});
 -		if (DL_FDPIC && sym && sym->st_shndx && (sym->st_info&0xf) == STT_FUNC)
 -			return p->deps[i]->funcdescs + (sym - p->deps[i]->syms);
 -		if (sym && sym->st_value && (1<<(sym->st_info&0xf) & OK_TYPES))
 -			return laddr(p->deps[i], sym->st_value);
--	}
+ 	}
 -failed:
 -	error("Symbol not found: %s", s);
 -	return 0;
@@ -136,4 +133,4 @@ BAckported to 1.1.19
 +	return laddr(def.dso, def.sym->st_value);
  }
  
- int dladdr(const void *addr, Dl_info *info)
+ int dladdr(const void *addr_arg, Dl_info *info)
