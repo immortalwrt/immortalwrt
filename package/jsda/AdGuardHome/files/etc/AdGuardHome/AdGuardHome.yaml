@@ -30,18 +30,29 @@ dns:
   safebrowsing_enabled: false
   resolveraddress: ""
   upstream_dns:
-  - https://dns.nextdns.io/26a5c6
-  - tls://26a5c6.dns.nextdns.io
-  - sdns://AgEAAAAAAAAACjQ1LjkwLjI4LjAADmRucy5uZXh0ZG5zLmlvBy8yNmE1YzY
+  - 202.141.178.13:5353
+  - 202.38.93.153:5353
+  - 202.141.162.123:5353
+  - https://https://neatdns.ustclug.org/resolve
+  - 1.1.1.1
+  - 1.0.0.1
+  - 9.9.9.9
   - 117.50.10.10
   - 119.29.29.29
+  - 114.114.114.114
   - 223.5.5.5
+  - 223.6.6.6
+  - 208.67.222.222:5353
+  - 208.67.220.220:5353
+  - 2606:4700:4700::1111
+  - 2606:4700:4700::1001
   - tcp://8.8.8.8
-  - tcp://208.67.222.222
-  - tcp://1.1.1.1
-  - https://cloudflare-dns.com/dns-query
-  - 2a07:a8c0::26:a5c6
-  - 2a07:a8c1::26:a5c6
+  - tcp://8.8.4.4
+  - tcp://2001:4860:4860::8888
+  - tcp://2001:4860:4860::8844
+  - tls://dns.google
+  - tls://1dot1dot1dot1.cloudflare-dns.com
+  - https://dns9.quad9.net/dns-query
 tls:
   enabled: false
   server_name: ""
