@@ -1,5 +1,5 @@
 bind_host: 0.0.0.0 
-bind_port: 3000
+bind_port: 3001
 auth_name: AdGuardHome
 auth_pass: AdGuardHome
 language: zh-cn

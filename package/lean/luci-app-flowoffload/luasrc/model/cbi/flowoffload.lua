@@ -1,6 +1,6 @@
 local m,s,o
 local SYS  = require "luci.sys"
-local trport = 3000
+local trport = 3001
 local button = ""
 if luci.sys.call("pidof AdGuardHome >/dev/null") == 0 then
 	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('http://'+window.location.hostname+':" .. trport .. "')\"/>"
