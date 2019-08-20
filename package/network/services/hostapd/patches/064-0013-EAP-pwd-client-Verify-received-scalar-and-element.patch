@@ -24,7 +24,7 @@ Signed-off-by: Mathy Vanhoef <mathy.vanhoef@nyu.edu>
 
 --- a/src/eap_peer/eap_pwd.c
 +++ b/src/eap_peer/eap_pwd.c
-@@ -436,6 +436,26 @@ eap_pwd_perform_commit_exchange(struct e
+@@ -594,6 +594,26 @@ eap_pwd_perform_commit_exchange(struct e
  		goto fin;
  	}
  

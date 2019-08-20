@@ -22,7 +22,7 @@ Signed-off-by: Mathy Vanhoef <mathy.vanhoef@nyu.edu>
 
 --- a/src/eap_server/eap_server_pwd.c
 +++ b/src/eap_server/eap_server_pwd.c
-@@ -688,6 +688,15 @@ eap_pwd_process_commit_resp(struct eap_s
+@@ -753,6 +753,15 @@ eap_pwd_process_commit_resp(struct eap_s
  		}
  	}
  

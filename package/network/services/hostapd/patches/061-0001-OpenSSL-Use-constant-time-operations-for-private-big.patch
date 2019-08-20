@@ -31,7 +31,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
 
 --- a/src/crypto/crypto_openssl.c
 +++ b/src/crypto/crypto_openssl.c
-@@ -548,7 +548,8 @@ int crypto_mod_exp(const u8 *base, size_
+@@ -549,7 +549,8 @@ int crypto_mod_exp(const u8 *base, size_
  	    bn_result == NULL)
  		goto error;
  
@@ -41,7 +41,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  		goto error;
  
  	*result_len = BN_bn2bin(bn_result, result);
-@@ -1294,8 +1295,9 @@ int crypto_bignum_exptmod(const struct c
+@@ -1295,8 +1296,9 @@ int crypto_bignum_exptmod(const struct c
  	bnctx = BN_CTX_new();
  	if (bnctx == NULL)
  		return -1;
@@ -53,7 +53,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	BN_CTX_free(bnctx);
  
  	return res ? 0 : -1;
-@@ -1314,6 +1316,11 @@ int crypto_bignum_inverse(const struct c
+@@ -1315,6 +1317,11 @@ int crypto_bignum_inverse(const struct c
  	bnctx = BN_CTX_new();
  	if (bnctx == NULL)
  		return -1;
@@ -65,7 +65,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	res = BN_mod_inverse((BIGNUM *) c, (const BIGNUM *) a,
  			     (const BIGNUM *) b, bnctx);
  	BN_CTX_free(bnctx);
-@@ -1347,6 +1354,9 @@ int crypto_bignum_div(const struct crypt
+@@ -1348,6 +1355,9 @@ int crypto_bignum_div(const struct crypt
  	bnctx = BN_CTX_new();
  	if (bnctx == NULL)
  		return -1;
@@ -75,7 +75,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	res = BN_div((BIGNUM *) c, NULL, (const BIGNUM *) a,
  		     (const BIGNUM *) b, bnctx);
  	BN_CTX_free(bnctx);
-@@ -1438,8 +1448,8 @@ int crypto_bignum_legendre(const struct
+@@ -1439,8 +1449,8 @@ int crypto_bignum_legendre(const struct
  	    /* exp = (p-1) / 2 */
  	    !BN_sub(exp, (const BIGNUM *) p, BN_value_one()) ||
  	    !BN_rshift1(exp, exp) ||

@@ -25,7 +25,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  #include "wpabuf.h"
  #include "dh_group5.h"
  #include "sha1.h"
-@@ -1434,6 +1435,7 @@ int crypto_bignum_legendre(const struct
+@@ -1435,6 +1436,7 @@ int crypto_bignum_legendre(const struct
  	BN_CTX *bnctx;
  	BIGNUM *exp = NULL, *tmp = NULL;
  	int res = -2;
@@ -33,7 +33,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  
  	if (TEST_FAIL())
  		return -2;
-@@ -1452,12 +1454,13 @@ int crypto_bignum_legendre(const struct
+@@ -1453,12 +1455,13 @@ int crypto_bignum_legendre(const struct
  				       (const BIGNUM *) p, bnctx, NULL))
  		goto fail;
  

@@ -135,7 +135,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
 +}
 --- a/src/eap_common/eap_pwd_common.h
 +++ b/src/eap_common/eap_pwd_common.h
-@@ -64,5 +64,8 @@ int compute_keys(EAP_PWD_group *grp, con
+@@ -67,5 +67,8 @@ int compute_keys(EAP_PWD_group *grp, con
  struct crypto_hash * eap_pwd_h_init(void);
  void eap_pwd_h_update(struct crypto_hash *hash, const u8 *data, size_t len);
  void eap_pwd_h_final(struct crypto_hash *hash, u8 *digest);
@@ -146,16 +146,16 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  #endif  /* EAP_PWD_COMMON_H */
 --- a/src/eap_peer/eap_pwd.c
 +++ b/src/eap_peer/eap_pwd.c
-@@ -344,7 +344,7 @@ eap_pwd_perform_commit_exchange(struct e
+@@ -308,7 +308,7 @@ eap_pwd_perform_commit_exchange(struct e
  				const struct wpabuf *reqData,
  				const u8 *payload, size_t payload_len)
  {
 -	struct crypto_ec_point *K = NULL, *point = NULL;
 +	struct crypto_ec_point *K = NULL;
  	struct crypto_bignum *mask = NULL, *cofactor = NULL;
- 	const u8 *ptr;
+ 	const u8 *ptr = payload;
  	u8 *scalar = NULL, *element = NULL;
-@@ -413,8 +413,7 @@ eap_pwd_perform_commit_exchange(struct e
+@@ -572,63 +572,27 @@ eap_pwd_perform_commit_exchange(struct e
  	/* process the request */
  	data->k = crypto_bignum_init();
  	K = crypto_ec_point_init(data->grp->group);
@@ -165,10 +165,9 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  		wpa_printf(MSG_INFO, "EAP-PWD (peer): peer data allocation "
  			   "fail");
  		goto fin;
-@@ -422,55 +421,20 @@ eap_pwd_perform_commit_exchange(struct e
+ 	}
  
  	/* element, x then y, followed by scalar */
- 	ptr = payload;
 -	data->server_element = crypto_ec_point_from_bin(data->grp->group, ptr);
 +	data->server_element = eap_pwd_get_element(data->grp, ptr);
  	if (!data->server_element) {
@@ -223,7 +222,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	/* compute the shared key, k */
  	if (crypto_ec_point_mul(data->grp->group, data->grp->pwe,
  				data->server_scalar, K) < 0 ||
-@@ -544,7 +508,6 @@ fin:
+@@ -702,7 +666,6 @@ fin:
  	crypto_bignum_deinit(mask, 1);
  	crypto_bignum_deinit(cofactor, 1);
  	crypto_ec_point_deinit(K, 1);
@@ -233,7 +232,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	else
 --- a/src/eap_server/eap_server_pwd.c
 +++ b/src/eap_server/eap_server_pwd.c
-@@ -604,7 +604,7 @@ eap_pwd_process_commit_resp(struct eap_s
+@@ -669,7 +669,7 @@ eap_pwd_process_commit_resp(struct eap_s
  {
  	const u8 *ptr;
  	struct crypto_bignum *cofactor = NULL;
@@ -242,7 +241,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	int res = 0;
  	size_t prime_len, order_len;
  
-@@ -623,9 +623,8 @@ eap_pwd_process_commit_resp(struct eap_s
+@@ -688,9 +688,8 @@ eap_pwd_process_commit_resp(struct eap_s
  
  	data->k = crypto_bignum_init();
  	cofactor = crypto_bignum_init();
@@ -253,7 +252,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  		wpa_printf(MSG_INFO, "EAP-PWD (server): peer data allocation "
  			   "fail");
  		goto fin;
-@@ -639,55 +638,20 @@ eap_pwd_process_commit_resp(struct eap_s
+@@ -704,55 +703,20 @@ eap_pwd_process_commit_resp(struct eap_s
  
  	/* element, x then y, followed by scalar */
  	ptr = payload;
@@ -311,7 +310,7 @@ Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
  	/* detect reflection attacks */
  	if (crypto_bignum_cmp(data->my_scalar, data->peer_scalar) == 0 ||
  	    crypto_ec_point_cmp(data->grp->group, data->my_element,
-@@ -739,7 +703,6 @@ eap_pwd_process_commit_resp(struct eap_s
+@@ -804,7 +768,6 @@ eap_pwd_process_commit_resp(struct eap_s
  
  fin:
  	crypto_ec_point_deinit(K, 1);
