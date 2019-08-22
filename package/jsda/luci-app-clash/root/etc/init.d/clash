@@ -55,6 +55,7 @@ yml_change(){
 		dash_port=$(uci get clash.config.dash_port 2>/dev/null)
 		log_level=$(uci get clash.config.level 2>/dev/null)
 		subtype=$(uci get clash.config.subcri 2>/dev/null)
+		
 if [ $mode -eq 1 ];  then	
 		
 		sed -i "/Proxy:/i\#clash-openwrt" $CONFIG_YAML
@@ -86,11 +87,14 @@ else
 		mv $CONFIG_YAML /etc/clash/dns.yaml
 		cat /usr/share/clash/dns.yaml /etc/clash/dns.yaml > $CONFIG_YAML 
 		rm -rf /etc/clash/dns.yaml
+
 		else
+
 		sed -i "/dns:/i\#clash-openwrt" $CONFIG_YAML
                sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML
 		sed -i '1,/#clash-openwrt/d' $CONFIG_YAML
 		fi
+
 		sed -i "1i\port: ${http_port}" $CONFIG_YAML
 		sed -i "2i\socks-port: ${socks_port}" $CONFIG_YAML
 		sed -i "3i\redir-port: ${redir_port}" $CONFIG_YAML
@@ -235,8 +239,10 @@ lan=$(uci get clash.config.proxylan 2>/dev/null)
 lanac=$(uci get clash.config.rejectlan 2>/dev/null)
 
 if [ $enable -eq 1 ]; then
-
-if [ $size -ne 0 ]; then
+if [ ! -f /etc/clash/clash ]; then
+	echo "===============================$(date "+%Y-%m-%d %H:%M:%S")  /etc/clash/clash not found, download and install clash ipk =====================================" >> /tmp/clash.log
+else
+if [ $size -ne 0 ] && [ -f /etc/clash/clash ]; then
 
 	
 	if [ $lan ]; then
@@ -275,6 +281,7 @@ else
 	echo "===============================$(date "+%Y-%m-%d %H:%M:%S")  problem with config.yaml,  config.yaml is either empty or not found =====================================" >> /tmp/clash.log
 
 
+fi
 fi
 
 

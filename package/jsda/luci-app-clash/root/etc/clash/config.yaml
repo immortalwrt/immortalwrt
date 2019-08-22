@@ -1,36 +1,81 @@
-  - name: "Overseas"
-    type: select
-    proxies: 
-      - "Proxy"
-      - "DIRECT"
-  - name: "GlobalTV"
-    type: select 
-    proxies: 
-      - "Proxy"
-      - "DIRECT"
-  - name: AsianTV 
-    type: select 
-    proxies: 
-      - "DIRECT"
-      - "Proxy"     
-  - name: AdBlock 
-    type: select 
-    proxies: 
-      - "REJECT" 
+port: 7890
+socks-port: 7891
+redir-port: 7892
+allow-lan: true
+mode: Rule
+log-level: info
+external-controller: 0.0.0.0:1477
+secret: '123456'
+external-ui: /usr/share/clash/dashboard
+ 
+ 
+#experimental:
+#  ignore-resolve-fail: true
+
+#local SOCKS5/HTTP(S) server
+#authentication:
+# - "user1:pass1"
+# - "user2:pass2"
+
+dns:
+ enable: true
+ listen: 0.0.0.0:5300
+ enhanced-mode: fake-ip
+ # # experimental hosts, support wildcard
+ # (e.g. *.clash.dev Even *.foo.*.example.com)
+ # # static domain has a higher priority
+ # than wildcard domain (foo.example.com > *.example.com)
+ # # NOTE: hosts don't work with `fake-ip`
+ # hosts:
+ #   '*.clash.dev': 127.0.0.1
+ #   'alpha.clash.dev': '::1'
+ nameserver: 
+  - 119.29.29.29 
+  - 114.114.114.114
+  - 114.114.115.115    
+  - tls://dns.rubyfish.cn:853
+ 
+Proxy:
+- {"name":"[SS] HK-A","type":"ss","server":"sv3.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] HK-B, NF","type":"ss","server":"sv25.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] HK-C, NF","type":"ss","server":"sv26.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] JP-A, NF","type":"ss","server":"sv2.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] JP-B","type":"ss","server":"sv10.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] JP-C, NF","type":"ss","server":"sv18.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] SG-A, NF","type":"ss","server":"sv21.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] SG-B, NF","type":"ss","server":"sv8.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] UK, NF","type":"ss","server":"sv6.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] US-A","type":"ss","server":"sv1.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] US-B","type":"ss","server":"sv9.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[SS] US-C","type":"ss","server":"sv7.xx.net","port":10001,"cipher":"aes-256-gcm","password":"uBl2kZ","udp":true,"plugin":"obfs","plugin-opts":{"mode":"http","host":"jd.hk"}}
+- {"name":"[V2] HK-A","type":"vmess","server":"sv3.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] HK-B, NF","type":"vmess","server":"sv25.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] HK-C, NF","type":"vmess","server":"sv26.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] JP-A, NF","type":"vmess","server":"sv2.xx.net","port":2333,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] JP-B","type":"vmess","server":"sv10.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] JP-C, NF","type":"vmess","server":"sv18.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] SG-A, NF","type":"vmess","server":"sv21.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] SG-B, NF","type":"vmess","server":"sv8.xx.net","port":2333,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] UK, NF","type":"vmess","server":"sv6.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] US-A","type":"vmess","server":"sv1.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] US-B","type":"vmess","server":"sv9.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+- {"name":"[V2] US-C","type":"vmess","server":"sv7.xx.net","port":8080,"uuid":"0320c5ae-0abe-322f-aba9-58fcab5f36ce","alterId":2,"cipher":"auto"}
+
+
+Proxy Group:
+- { name: "Proxy", type: select, proxies: ["[SS] HK-A","[SS] HK-B, NF","[SS] HK-C, NF","[SS] JP-A, NF","[SS] JP-B","[SS] JP-C, NF","[SS] SG-A, NF","[SS] SG-B, NF","[SS] UK, NF","[SS] US-A","[SS] US-B","[SS] US-C","[V2] HK-A","[V2] HK-B, NF","[V2] HK-C, NF","[V2] JP-A, NF","[V2] JP-B","[V2] JP-C, NF","[V2] SG-A, NF","[V2] SG-B, NF","[V2] UK, NF","[V2] US-A","[V2] US-B","[V2] US-C"] }
+- { name: "Others", type: select, proxies: ["Proxy","DIRECT"]}
+- { name: "Media", type: select, proxies: ["Proxy","DIRECT"]}
+- { name: "AsianTV", type: select, proxies: ["DIRECT","Proxy"]}
+- { name: "AdBlock", type: select, proxies: ["REJECT"]} 
+
 
 Rule:
-- DOMAIN-SUFFIX,zjhu.edu.cn,DIRECT
 - DOMAIN,gs.apple.com,Proxy
 - DOMAIN-SUFFIX,mzstatic.com,DIRECT
 - DOMAIN-SUFFIX,akadns.net,DIRECT
 - DOMAIN-SUFFIX,aaplimg.com,DIRECT
 - DOMAIN-SUFFIX,cdn-apple.com,DIRECT
-
-- DOMAIN-SUFFIX,hbo.com,Proxy
-- DOMAIN-SUFFIX,hbogo.com,Proxy
-- DOMAIN-SUFFIX,hboasia.com,Proxy
-- DOMAIN-SUFFIX,hbogo.com,Proxy
-- DOMAIN-SUFFIX,hbogoasia.hk,Proxy
 
 - DOMAIN,itunes.apple.com, DIRECT
 - DOMAIN,beta.itunes.apple.com, DIRECT
@@ -38,6 +83,7 @@ Rule:
 - DOMAIN-SUFFIX,icloud.com,DIRECT
 - DOMAIN-SUFFIX,icloud-content.com,DIRECT
 - DOMAIN,e.crashlytics.com,REJECT
+- DOMAIN-KEYWORD,zjhu,DIRECT
 
 - DOMAIN-KEYWORD,bilibili,DIRECT
 - DOMAIN-SUFFIX,acgvideo.com,DIRECT
@@ -64,61 +110,61 @@ Rule:
 - IP-CIDR,106.11.0.0/16,DIRECT
 
 
-- DOMAIN-SUFFIX,edgedatg.com,Overseas
-- DOMAIN-SUFFIX,go.com,Overseas
+- DOMAIN-SUFFIX,edgedatg.com,Proxy
+- DOMAIN-SUFFIX,go.com,Proxy
 
-- DOMAIN,linear-abematv.akamaized.net,Overseas
-- DOMAIN-SUFFIX,abema.io,Overseas
-- DOMAIN-SUFFIX,abema.tv,Overseas
-- DOMAIN-SUFFIX,akamaized.net,Overseas
-- DOMAIN-SUFFIX,ameba.jp,Overseas
-- DOMAIN-SUFFIX,hayabusa.io,Overseas
+- DOMAIN,linear-abematv.akamaized.net,Proxy
+- DOMAIN-SUFFIX,abema.io,Proxy
+- DOMAIN-SUFFIX,abema.tv,Proxy
+- DOMAIN-SUFFIX,akamaized.net,Proxy
+- DOMAIN-SUFFIX,ameba.jp,Proxy
+- DOMAIN-SUFFIX,hayabusa.io,Proxy
 
-- DOMAIN-SUFFIX,amazonaws.com,Overseas
+- DOMAIN-SUFFIX,amazonaws.com,Proxy
 
-- DOMAIN-SUFFIX,bahamut.com.tw,Overseas
-- DOMAIN-SUFFIX,gamer.com.tw,Overseas
-- DOMAIN-SUFFIX,hinet.net,Overseas
+- DOMAIN-SUFFIX,bahamut.com.tw,Proxy
+- DOMAIN-SUFFIX,gamer.com.tw,Proxy
+- DOMAIN-SUFFIX,hinet.net,Proxy
 
-- DOMAIN-KEYWORD,bbcfmt,Overseas
-- DOMAIN-KEYWORD,co.uk,Overseas
-- DOMAIN-KEYWORD,uk-live,Overseas
-- DOMAIN-SUFFIX,bbc.co,Overseas
-- DOMAIN-SUFFIX,bbc.co.uk,Overseas
-- DOMAIN-SUFFIX,bbc.com,Overseas
-- DOMAIN-SUFFIX,bbci.co,Overseas
-- DOMAIN-SUFFIX,bbci.co.uk,Overseas
+- DOMAIN-KEYWORD,bbcfmt,Proxy
+- DOMAIN-KEYWORD,co.uk,Proxy
+- DOMAIN-KEYWORD,uk-live,Proxy
+- DOMAIN-SUFFIX,bbc.co,Proxy
+- DOMAIN-SUFFIX,bbc.co.uk,Proxy
+- DOMAIN-SUFFIX,bbc.com,Proxy
+- DOMAIN-SUFFIX,bbci.co,Proxy
+- DOMAIN-SUFFIX,bbci.co.uk,Proxy
 
-- DOMAIN-SUFFIX,chocotv.com.tw,Overseas
+- DOMAIN-SUFFIX,chocotv.com.tw,Proxy
 
-- DOMAIN-KEYWORD,epicgames,Overseas
-- DOMAIN-SUFFIX,helpshift.com,Overseas
+- DOMAIN-KEYWORD,epicgames,Proxy
+- DOMAIN-SUFFIX,helpshift.com,Proxy
 
-- DOMAIN-KEYWORD,foxplus,Overseas
-- DOMAIN-SUFFIX,config.fox.com,Overseas
-- DOMAIN-SUFFIX,emome.net,Overseas
-- DOMAIN-SUFFIX,fox.com,Overseas
-- DOMAIN-SUFFIX,foxdcg.com,Overseas
-- DOMAIN-SUFFIX,foxnow.com,Overseas
-- DOMAIN-SUFFIX,foxplus.com,Overseas
-- DOMAIN-SUFFIX,foxplay.com,Overseas
-- DOMAIN-SUFFIX,ipinfo.io,Overseas
-- DOMAIN-SUFFIX,mstage.io,Overseas
-- DOMAIN-SUFFIX,now.com,Overseas
-- DOMAIN-SUFFIX,theplatform.com,Overseas
+- DOMAIN-KEYWORD,foxplus,Proxy
+- DOMAIN-SUFFIX,config.fox.com,Proxy
+- DOMAIN-SUFFIX,emome.net,Proxy
+- DOMAIN-SUFFIX,fox.com,Proxy
+- DOMAIN-SUFFIX,foxdcg.com,Proxy
+- DOMAIN-SUFFIX,foxnow.com,Proxy
+- DOMAIN-SUFFIX,foxplus.com,Proxy
+- DOMAIN-SUFFIX,foxplay.com,Proxy
+- DOMAIN-SUFFIX,ipinfo.io,Proxy
+- DOMAIN-SUFFIX,mstage.io,Proxy
+- DOMAIN-SUFFIX,now.com,Proxy
+- DOMAIN-SUFFIX,theplatform.com,Proxy
 
-- DOMAIN-SUFFIX,hbo.com,Overseas
-- DOMAIN-SUFFIX,hbogo.com,Overseas
+- DOMAIN-SUFFIX,hbo.com,Proxy
+- DOMAIN-SUFFIX,hbogo.com,Proxy
 
-- DOMAIN-SUFFIX,hbogoasia.hk,Overseas
+- DOMAIN-SUFFIX,hbogoasia.hk,Proxy
 
-- DOMAIN-SUFFIX,happyon.jp,Overseas
-- DOMAIN-SUFFIX,hulu.com,Overseas
-- DOMAIN-SUFFIX,huluim.com,Overseas
+- DOMAIN-SUFFIX,happyon.jp,Proxy
+- DOMAIN-SUFFIX,hulu.com,Proxy
+- DOMAIN-SUFFIX,huluim.com,Proxy
 
-- DOMAIN-SUFFIX,imkan.tv,Overseas
+- DOMAIN-SUFFIX,imkan.tv,Proxy
 
-- DOMAIN-SUFFIX,joox.com,Overseas
+- DOMAIN-SUFFIX,joox.com,Proxy
 
 - DOMAIN-SUFFIX,netflix.com,Proxy
 - DOMAIN-SUFFIX,netflix.net,Proxy
@@ -128,16 +174,16 @@ Rule:
 - DOMAIN-SUFFIX,nflxso.net,Proxy
 - DOMAIN-SUFFIX,nflxvideo.net,Proxy
 
-- DOMAIN-KEYWORD,spotify,Overseas
-- DOMAIN-SUFFIX,scdn.co,Overseas
-- DOMAIN-SUFFIX,spoti.fi,Overseas
+- DOMAIN-KEYWORD,spotify,Proxy
+- DOMAIN-SUFFIX,scdn.co,Proxy
+- DOMAIN-SUFFIX,spoti.fi,Proxy
 
-- DOMAIN-SUFFIX,viu.tv,Overseas
+- DOMAIN-SUFFIX,viu.tv,Proxy
 
-- DOMAIN-KEYWORD,youtube,Overseas
-- DOMAIN-SUFFIX,googlevideo.com,Overseas
-- DOMAIN-SUFFIX,gvt2.com,Overseas
-- DOMAIN-SUFFIX,youtu.be,Overseas
+- DOMAIN-KEYWORD,youtube,Proxy
+- DOMAIN-SUFFIX,googlevideo.com,Proxy
+- DOMAIN-SUFFIX,gvt2.com,Proxy
+- DOMAIN-SUFFIX,youtu.be,Proxy
 
 
 - DOMAIN-SUFFIX,cn,DIRECT
@@ -568,60 +614,60 @@ Rule:
 - DOMAIN-KEYWORD,tracker,DIRECT
 - DOMAIN-SUFFIX,smtp,DIRECT
 
-- DOMAIN-SUFFIX,edgedatg.com,GlobalTV
-- DOMAIN-SUFFIX,go.com,GlobalTV
-- DOMAIN,linear-abematv.akamaized.net,GlobalTV
-- DOMAIN-SUFFIX,abema.io,GlobalTV
-- DOMAIN-SUFFIX,abema.tv,GlobalTV
-- DOMAIN-SUFFIX,akamaized.net,GlobalTV
-- DOMAIN-SUFFIX,ameba.jp,GlobalTV
-- DOMAIN-SUFFIX,hayabusa.io,GlobalTV
-- DOMAIN-SUFFIX,aiv-cdn.net,GlobalTV
-- DOMAIN-SUFFIX,amazonaws.com,GlobalTV
-- DOMAIN-SUFFIX,amazonvideo.com,GlobalTV
-- DOMAIN-SUFFIX,llnwd.net,GlobalTV
-- DOMAIN-SUFFIX,bahamut.com.tw,GlobalTV
-- DOMAIN-SUFFIX,gamer.com.tw,GlobalTV
-- DOMAIN-SUFFIX,hinet.net,GlobalTV
-- DOMAIN-KEYWORD,bbcfmt,GlobalTV
-- DOMAIN-KEYWORD,co.uk,GlobalTV
-- DOMAIN-KEYWORD,uk-live,GlobalTV
-- DOMAIN-SUFFIX,bbc.co,GlobalTV
-- DOMAIN-SUFFIX,bbc.co.uk,GlobalTV
-- DOMAIN-SUFFIX,bbc.com,GlobalTV
-- DOMAIN-SUFFIX,bbci.co,GlobalTV
-- DOMAIN-SUFFIX,bbci.co.uk,GlobalTV
-- DOMAIN-SUFFIX,chocotv.com.tw,GlobalTV
-- DOMAIN-KEYWORD,epicgames,GlobalTV
-- DOMAIN-SUFFIX,helpshift.com,GlobalTV
-- DOMAIN-KEYWORD,foxplus,GlobalTV
-- DOMAIN-SUFFIX,config.fox.com,GlobalTV
-- DOMAIN-SUFFIX,emome.net,GlobalTV
-- DOMAIN-SUFFIX,fox.com,GlobalTV
-- DOMAIN-SUFFIX,foxdcg.com,GlobalTV
-- DOMAIN-SUFFIX,foxnow.com,GlobalTV
-- DOMAIN-SUFFIX,foxplus.com,GlobalTV
-- DOMAIN-SUFFIX,foxplay.com,GlobalTV
-- DOMAIN-SUFFIX,ipinfo.io,GlobalTV
-- DOMAIN-SUFFIX,mstage.io,GlobalTV
-- DOMAIN-SUFFIX,now.com,GlobalTV
-- DOMAIN-SUFFIX,theplatform.com,GlobalTV
-- DOMAIN-SUFFIX,urlload.net,GlobalTV
-- DOMAIN-SUFFIX,execute-api.ap-southeast-1.amazonaws.com,GlobalTV
-- DOMAIN-SUFFIX,hbo.com,GlobalTV
-- DOMAIN-SUFFIX,hboasia.com,GlobalTV
-- DOMAIN-SUFFIX,hbogo.com,GlobalTV
-- DOMAIN-SUFFIX,hbogoasia.hk,GlobalTV
-- DOMAIN-SUFFIX,happyon.jp,GlobalTV
-- DOMAIN-SUFFIX,hulu.com,GlobalTV
-- DOMAIN-SUFFIX,huluim.com,GlobalTV
-- DOMAIN-SUFFIX,hulustream.com,GlobalTV
-- DOMAIN-SUFFIX,imkan.tv,GlobalTV
-- DOMAIN-SUFFIX,joox.com,GlobalTV
-- DOMAIN-KEYWORD,nowtv100,GlobalTV
-- DOMAIN-KEYWORD,rthklive,GlobalTV
-- DOMAIN-SUFFIX,mytvsuper.com,GlobalTV
-- DOMAIN-SUFFIX,tvb.com,GlobalTV
+- DOMAIN-SUFFIX,edgedatg.com,Media
+- DOMAIN-SUFFIX,go.com,Media
+- DOMAIN,linear-abematv.akamaized.net,Media
+- DOMAIN-SUFFIX,abema.io,Media
+- DOMAIN-SUFFIX,abema.tv,Media
+- DOMAIN-SUFFIX,akamaized.net,Media
+- DOMAIN-SUFFIX,ameba.jp,Media
+- DOMAIN-SUFFIX,hayabusa.io,Media
+- DOMAIN-SUFFIX,aiv-cdn.net,Media
+- DOMAIN-SUFFIX,amazonaws.com,Media
+- DOMAIN-SUFFIX,amazonvideo.com,Media
+- DOMAIN-SUFFIX,llnwd.net,Media
+- DOMAIN-SUFFIX,bahamut.com.tw,Media
+- DOMAIN-SUFFIX,gamer.com.tw,Media
+- DOMAIN-SUFFIX,hinet.net,Media
+- DOMAIN-KEYWORD,bbcfmt,Media
+- DOMAIN-KEYWORD,co.uk,Media
+- DOMAIN-KEYWORD,uk-live,Media
+- DOMAIN-SUFFIX,bbc.co,Media
+- DOMAIN-SUFFIX,bbc.co.uk,Media
+- DOMAIN-SUFFIX,bbc.com,Media
+- DOMAIN-SUFFIX,bbci.co,Media
+- DOMAIN-SUFFIX,bbci.co.uk,Media
+- DOMAIN-SUFFIX,chocotv.com.tw,Media
+- DOMAIN-KEYWORD,epicgames,Media
+- DOMAIN-SUFFIX,helpshift.com,Media
+- DOMAIN-KEYWORD,foxplus,Media
+- DOMAIN-SUFFIX,config.fox.com,Media
+- DOMAIN-SUFFIX,emome.net,Media
+- DOMAIN-SUFFIX,fox.com,Media
+- DOMAIN-SUFFIX,foxdcg.com,Media
+- DOMAIN-SUFFIX,foxnow.com,Media
+- DOMAIN-SUFFIX,foxplus.com,Media
+- DOMAIN-SUFFIX,foxplay.com,Media
+- DOMAIN-SUFFIX,ipinfo.io,Media
+- DOMAIN-SUFFIX,mstage.io,Media
+- DOMAIN-SUFFIX,now.com,Media
+- DOMAIN-SUFFIX,theplatform.com,Media
+- DOMAIN-SUFFIX,urlload.net,Media
+- DOMAIN-SUFFIX,execute-api.ap-southeast-1.amazonaws.com,Media
+- DOMAIN-SUFFIX,hbo.com,Media
+- DOMAIN-SUFFIX,hboasia.com,Media
+- DOMAIN-SUFFIX,hbogo.com,Media
+- DOMAIN-SUFFIX,hbogoasia.hk,Media
+- DOMAIN-SUFFIX,happyon.jp,Media
+- DOMAIN-SUFFIX,hulu.com,Media
+- DOMAIN-SUFFIX,huluim.com,Media
+- DOMAIN-SUFFIX,hulustream.com,Media
+- DOMAIN-SUFFIX,imkan.tv,Media
+- DOMAIN-SUFFIX,joox.com,Media
+- DOMAIN-KEYWORD,nowtv100,Media
+- DOMAIN-KEYWORD,rthklive,Media
+- DOMAIN-SUFFIX,mytvsuper.com,Media
+- DOMAIN-SUFFIX,tvb.com,Media
 - DOMAIN-SUFFIX,netflix.com,Proxy
 - DOMAIN-SUFFIX,netflix.net,Proxy
 - DOMAIN-SUFFIX,nflxext.com,Proxy
@@ -629,17 +675,17 @@ Rule:
 - DOMAIN-SUFFIX,nflximg.net,Proxy
 - DOMAIN-SUFFIX,nflxso.net,Proxy
 - DOMAIN-SUFFIX,nflxvideo.net,Proxy
-- DOMAIN-SUFFIX,pandora.com,GlobalTV
-- DOMAIN-SUFFIX,sky.com,GlobalTV
-- DOMAIN-SUFFIX,skygo.co.nz,GlobalTV
-- DOMAIN-KEYWORD,spotify,GlobalTV
-- DOMAIN-SUFFIX,scdn.co,GlobalTV
-- DOMAIN-SUFFIX,spoti.fi,GlobalTV
-- DOMAIN-SUFFIX,viu.tv,GlobalTV
-- DOMAIN-KEYWORD,youtube,GlobalTV
-- DOMAIN-SUFFIX,googlevideo.com,GlobalTV
-- DOMAIN-SUFFIX,gvt2.com,GlobalTV
-- DOMAIN-SUFFIX,youtu.be,GlobalTV
+- DOMAIN-SUFFIX,pandora.com,Media
+- DOMAIN-SUFFIX,sky.com,Media
+- DOMAIN-SUFFIX,skygo.co.nz,Media
+- DOMAIN-KEYWORD,spotify,Media
+- DOMAIN-SUFFIX,scdn.co,Media
+- DOMAIN-SUFFIX,spoti.fi,Media
+- DOMAIN-SUFFIX,viu.tv,Media
+- DOMAIN-KEYWORD,youtube,Media
+- DOMAIN-SUFFIX,googlevideo.com,Media
+- DOMAIN-SUFFIX,gvt2.com,Media
+- DOMAIN-SUFFIX,youtu.be,Media
 - DOMAIN-KEYWORD,bilibili,AsianTV
 - DOMAIN-SUFFIX,acg.tv,AsianTV
 - DOMAIN-SUFFIX,acgvideo.com,AsianTV
@@ -1862,4 +1908,5 @@ Rule:
 - IP-CIDR,209.237.192.0/19,Proxy
 
 - GEOIP,CN,DIRECT
-- MATCH,Overseas
+- MATCH,Others
+

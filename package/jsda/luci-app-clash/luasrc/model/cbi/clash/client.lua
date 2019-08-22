@@ -34,6 +34,11 @@ o:value("v2rayn2clash", translate("v2rayn2clash"))
 o:value("surge2clash", translate("surge2clash"))
 o.description = translate("Select Subcription Type, enter only your subcription url without https://tgbot.lbyczf.com/*?")
 
+md = s:option(Flag, "cusrule", translate("Enabled Custom Rule"))
+md.default = 1
+md.rmempty = false
+md.description = translate("Enabled Custom Rule")
+md:depends("subcri", 'v2rayn2clash')
 
 o = s:option(Value, "subscribe_url")
 o.title = translate("Subcription Url")

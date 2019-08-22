@@ -26,8 +26,8 @@
 <fieldset class="cbi-section">
 	<table width="100%" cellspacing="10">
 	
-	    <tr><td class="align-left" width="50%"><span><%:Global IP%> </span>&nbsp;:&nbsp;<span id="ip-gb"></span> <span id="ip-geo"></span></td>  <td class="align-right" width="25%">  <span><%:Google%></span>&nbsp;:&nbsp;<span id="_google"><em><%:Collecting data...%></em></span></td><td class="align-right"><%:Youtube%> </span>&nbsp;:&nbsp;<span id="_youtube"><em><%:Collecting data...%></em></span></td></tr>    
-	    <tr><td class="align-left" width="50%"><span><%:Domestic IP%> </span>&nbsp;:&nbsp;<span id="d-ip"></span></td>  <td class="align-right" width="25%"> <span><%:Baidu%></span>&nbsp;:&nbsp;<span  id="_baidu"><em><%:Collecting data...%></em></span></td> <td class="align-right"><%:Taobao%> </span>&nbsp;:&nbsp;<span id="_taobao"><em><%:Collecting data...%></em></span></td></tr>
+	    <tr><td class="align-left" width="50%"><span><%:Global IP%> </span>&nbsp;:&nbsp;<span id="ip-ipify"><font color=red><%:Checking...%></font></span> <span id="ip-ipify-ipip"></span></td>  <td class="align-right" width="25%">  <span><%:Google%></span>&nbsp;:&nbsp;<span id="_google"><em><%:Collecting data...%></em></span></td><td class="align-right"><%:Youtube%> </span>&nbsp;:&nbsp;<span id="_youtube"><em><%:Collecting data...%></em></span></td></tr>    
+	    <tr><td class="align-left" width="50%"><span><%:Domestic IP%> </span>&nbsp;:&nbsp;<span id="d-ip"><font color=red><%:Checking...%></font></span></td>  <td class="align-right" width="25%"> <span><%:Baidu%></span>&nbsp;:&nbsp;<span  id="_baidu"><em><%:Collecting data...%></em></span></td> <td class="align-right"><%:Taobao%> </span>&nbsp;:&nbsp;<span id="_taobao"><em><%:Collecting data...%></em></span></td></tr>
 	</table>
 </fieldset>
 
@@ -59,7 +59,17 @@ let IP = {
                 }).catch(error => {
                     throw error;
                 }),
-          
+          parseIPIpip: (ip, elID) => {
+                IP.get(`https://api.skk.moe/network/parseIp/ipip/${ip}`, 'json')
+                    .then(resp => {
+                        let x = '';
+                        for (let i of resp.data) {
+                            x += (i !== '') ? `${i} ` : '';
+                        }
+                        document.getElementById(elID).innerHTML = x;
+                        //$$.getElementById(elID).innerHTML = `${resp.data.country} ${resp.data.regionName} ${resp.data.city} ${resp.data.isp}`;
+                    })
+            },
 
             getIpipnetIP: () => {
                 IP.get(`https://myip.ipip.net/?z=${random}`, 'text')
@@ -68,16 +78,20 @@ let IP = {
                         document.getElementById('d-ip').innerHTML = `${data[0]} ${data[1]}`;
                     });
             },
-	
-	getIpsbIP: (data) => {
-                document.getElementById('ip-gb').innerHTML = data.address;
-                document.getElementById('ip-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
-         },
-			
+	getIpifyIP: () => {
+                IP.get(`https://api.ipify.org/?format=json&z=${random}`, 'json')
+                .then(resp => {
+                document.getElementById('ip-ipify').innerHTML = resp.data.ip;
+                return resp.data.ip;
+                })
+                .then(ip => {
+                IP.parseIPIpip(ip, 'ip-ipify-ipip');
+                })
+            }
+				
            
 }
 
-IP.getIpipnetIP();
 
 			
 var HTTP = {
@@ -101,6 +115,26 @@ var HTTP = {
 
 }
 
+          function Load()
+	      {
+	         var tbip = document.getElementsByTagName('HEAD').item(0);
+	         var tbipScript= document.createElement("script");
+	         tbipScript.async = "async";
+	         tbipScript.src='https://myip.ipip.net/?z=${random}';
+	         tbip.appendChild( tbipScript);
+
+	         var sbip = document.getElementsByTagName('HEAD').item(0);
+	         var sbipScript= document.createElement("script");
+	         sbipScript.async = "async";
+	         sbipScript.src='https://api.skk.moe/network/parseIp/ipip';
+	         sbip.appendChild( sbipScript);
+
+	         const $$ = document;
+	         random = parseInt(Math.random() * 100000000);
+		     IP.getIpifyIP();
+			IP.getIpipnetIP();
+       	     setTimeout("Load()",1000*8);
+		   }
 	var web = document.getElementById('_web');
 	var webb = document.getElementById('_webb');
 	var clash = document.getElementById('_clash');
@@ -130,86 +164,24 @@ var HTTP = {
 	});
 
 
-	XHR.poll(5, '<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
+	XHR.poll(1, '<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
 		if ( x && x.status == 200 ) {
+			IP.getIpifyIP();
 			IP.getIpipnetIP();
-			getip();	
+			//getip();	
 		}
 	});
 
-
-	XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', status.current_version, function(x, status) {
+	XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
 		if ( x && x.status == 200 ) {
-			version.innerHTML = status.current_version ? '<b><font color=green><%:Current Version%>'+'&nbsp;:&nbsp;v'+status.current_version+'</font> </b><br><center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check Update%>" onclick="return version_check(this)"/></center>' : '<em><b><font color=red>NOT SET</font></b></em>';
-
+			version.innerHTML = status.current_version ? '<b><font color=green><%:Current Version%>'+'&nbsp;:&nbsp;v'+status.current_version+'</font> </b>' : '<em><b><font color=red>NOT SET</font></b></em>';
+		
 		}
 	});
 
-function version_check(btn)
-{
-    btn.disabled = true;
-    btn.value    = '<%:Checking...%>';
-    XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
-   if(status.new_version > status.current_version)
-   {
-	version.innerHTML ='<font color="green"><b>'+'<%:New Version%>'+'&nbsp;:&nbsp;v'+status.new_version+'</b></font><br><center>' + '<input type="button" class="cbi-button cbi-button-apply" value="<%:Download%>" onclick="return download_update(this)"/>' + '&nbsp;&nbsp;&nbsp;' + '<input type="button" class="cbi-button cbi-button-reset" value="<%:Return Check%>" onclick="return check_return(this)"/></center>';
-	 }
-	
-   else if(status.new_version==0)
-   {
-	version.innerHTML ='<font color="red"><b>'+'<%:Check Error!%>'+'</b></font>'+'<br><center><input type="button" class="cbi-button cbi-button-reset" value="<%:Return Check%>" onclick="return check_return(this)"/></center>';
-  
-	}
-	else if(status.current_version >= status.new_version)
-    {
-        version.innerHTML ='<font color="green"><b>'+'<%:No New Version%>'+'</b></font>'+'<br><center><input type="button" class="cbi-button cbi-button-reset" value="<%:Return Check%>" onclick="return check_return(this)"/></center>';
-    }
-	return false;
-   });
-}
 
-function download_update(btn)
-{
-XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
-        btn.disabled = true;
-        btn.value    = '<%:Download%>';
-        url='https://github.com/frainzy1477/luci-app-clash/releases/download/v'+status.new_version+'/luci-app-clash_'+status.new_version+'-1_all.ipk';
-        window.open(url);
-        btn.disabled = false;
-        return false;
- });
-}
-
-
-
-
-function check_return(btn)
-{
-    XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', status.current_version, function(x, status) {
-       btn.disabled = true;
-       btn.value    = '<%:Return Check%>';
-	   version.innerHTML = '<b><font color="green">'+'<%:Current Version%>'+'&nbsp;:&nbsp;v'+status.current_version+'</font></b>'+'<br><center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check Update%>" onclick="return version_check(this)"/></center>';
-   });
-    
-}
 
 //]]></script>
-<script src="https://ipv4.ip.sb/addrinfo?callback=IP.getIpsbIP"></script>
-
-<script type="application/javascript">
-
-function getip() {
-    $.getJSON("https://ipv4.ip.sb/addrinfo?callback=?",
-        function(json) {
-		console.log(json)
-	        document.getElementById('ip-gb').innerHTML = json.address;
-               document.getElementById('ip-geo').innerHTML = `${json.country} ${json.province}  ${json.city} ${json.isp.name}`
-        }
-    );
-}
-</script>
-
-
 
 
 

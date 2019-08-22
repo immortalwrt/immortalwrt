@@ -8,17 +8,19 @@
 
 dns:
  enable: true
- # ipv6: false
  listen: 0.0.0.0:5300
  enhanced-mode: fake-ip
- #fake-ip-range: 198.18.0.1/16
+ # # experimental hosts, support wildcard
+ # (e.g. *.clash.dev Even *.foo.*.example.com)
+ # # static domain has a higher priority
+ # than wildcard domain (foo.example.com > *.example.com)
+ # # NOTE: hosts don't work with `fake-ip`
+ # hosts:
+ #   '*.clash.dev': 127.0.0.1
+ #   'alpha.clash.dev': '::1'
  nameserver: 
-  - 101.132.183.99
   - 119.29.29.29 
   - 114.114.114.114
   - 114.114.115.115    
   - tls://dns.rubyfish.cn:853
   - https://1.1.1.1/dns-query
-# fallback:
-#  - tls://1.1.1.1:853
-

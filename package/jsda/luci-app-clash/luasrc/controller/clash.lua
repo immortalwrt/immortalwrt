@@ -16,6 +16,7 @@ function index()
 	entry({"admin", "services", "clash", "config"},cbi("clash/config"),_("Config"), 140).leaf = true
 	entry({"admin","services","clash","status"},call("action_status")).leaf=true
 	entry({"admin", "services", "clash", "log"},cbi("clash/log"),_("Logs"), 150).leaf = true
+	entry({"admin", "services", "clash", "update"},cbi("clash/update"),_("Update"), 160).leaf = true
 	entry({"admin","services","clash","check_status"},call("check_status")).leaf=true
 
 	
@@ -44,6 +45,10 @@ local function check_version()
 	return luci.sys.exec("sh /usr/share/clash/check_version.sh")
 end
 
+local function check_core()
+	return luci.sys.exec("sh /usr/share/clash/check_core_version.sh")
+end
+
 local function current_version()
 	return luci.sys.exec("sed -n 1p /usr/share/clash/clash_version")
 end
@@ -52,12 +57,23 @@ local function new_version()
 	return luci.sys.exec("sed -n 1p /usr/share/clash/new_version")
 end
 
+local function new_core_version()
+	return luci.sys.exec("sed -n 1p /usr/share/clash/new_core_version")
+end
+
+local function clash_core()
+	return luci.sys.exec("sh /usr/share/clash/installed_core.sh && sed -n 1p /usr/share/clash/installed_core")
+end
+
 function check_status()
 	luci.http.prepare_content("application/json")
 	luci.http.write_json({
 		check_version = check_version(),
+		check_core = check_core(),
 		current_version = current_version(),
-		new_version = new_version()
+		new_version = new_version(),
+		clash_core = clash_core(),
+		new_core_version = new_core_version()
 
 	})
 end
@@ -70,7 +86,9 @@ function action_status()
 		dash_port = dash_port(),
 		current_version = current_version(),
 		new_version = new_version(),
-		dash_pass = dash_pass()
+		dash_pass = dash_pass(),
+		clash_core = clash_core(),
+		new_core_version = new_core_version()
 
 	})
 end

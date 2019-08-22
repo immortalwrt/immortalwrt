@@ -1,6 +1,12 @@
 msgid "Update Config"
 msgstr "更新配置"
 
+msgid "Enabled Custom Rule"
+msgstr "启用自定义规则"
+
+msgid "Download Config"
+msgstr "下载配置"
+
 msgid "Enable/Start/Restart Client"
 msgstr "启用/启动/重新启动客户端"
 
@@ -43,8 +49,8 @@ msgstr "socks代理端口"
 msgid "Redir Port"
 msgstr "redir代理端口"
 
-msgid "No New Version"
-msgstr "已安装最新本"
+msgid "No Update | Return"
+msgstr "已安装最新本 | 返回"
 
 msgid "Log level"
 msgstr "日志级别"
@@ -61,23 +67,32 @@ msgstr "下载新版本"
 msgid "Checking..."
 msgstr "正在检查..."
 
+msgid "Not Installed"
+msgstr "未安装"
+
+msgid "Installed Version"
+msgstr "已安装版本"
+
+msgid "App Name"
+msgstr "应用程序名称"
+
 msgid "Rule-based Custom Proxy Client"
 msgstr "基于规则的自定义代理客户端"
 
-msgid "Check Error!"
-msgstr "检查错误"
-
-msgid "New Version"
-msgstr "最新版本"
+msgid "Error Occured | Return"
+msgstr "检查错误 | 返回"
 
 msgid "Current Version"
 msgstr "当前版本"
 
-msgid "Return Check"
+msgid "Return"
 msgstr "返回检查"
 
 msgid "Check Update"
 msgstr "检查更新"
+
+msgid "Check"
+msgstr "检查"
 
 msgid "DNS Forwarding"
 msgstr "DNS转发"

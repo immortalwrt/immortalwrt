@@ -5,7 +5,7 @@ local HTTP = require "luci.http"
 local DISP = require "luci.dispatcher"
 local UTIL = require "luci.util"
 local uci = require("luci.model.uci").cursor()
-
+local fs = require "luci.clash"
 local http = luci.http
 
 ful = Form("upload", nil)
@@ -83,5 +83,34 @@ o.write = function()
   os.execute("rm -rf /etc/clash/config.yaml")
 end
 
+o = s:option(Button, "Download") 
+o.inputtitle = translate("Download Config")
+o.inputstyle = "apply"
+o.write = function ()
+	local sPath, sFile, fd, block
+	sPath = "/etc/clash/config.yaml"
+	sFile = NXFS.basename(sPath)
+	if fs.isdirectory(sPath) then
+		fd = io.popen('tar -C "%s" -cz .' % {sPath}, "r")
+		sFile = sFile .. ".tar.gz"
+	else
+		fd = nixio.open(sPath, "r")
+	end
+	if not fd then
+		return
+	end
+	HTTP.header('Content-Disposition', 'attachment; filename="%s"' % {sFile})
+	HTTP.prepare_content("application/octet-stream")
+	while true do
+		block = fd:read(nixio.const.buffersize)
+		if (not block) or (#block ==0) then
+			break
+		else
+			HTTP.write(block)
+		end
+	end
+	fd:close()
+	HTTP.close()
+end
 
 return ful , m
