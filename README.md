@@ -50,7 +50,7 @@ Package Openwrt-BBR: [anshi233/Openwrt-BBR](https://github.com/anshi233/Openwrt-
 simple-obfs source: [aa65535/openwrt-simple-obfs](https://github.com/aa65535/openwrt-simple-obfs).<br/>
 v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/openwrt-v2ray-plugin).<br/>
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
-luci-theme-argonv3 source: [Meroser/luci-theme-argon](https://github.com/Meroser/luci-theme-argon).<br/>
+luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).
 
 # License

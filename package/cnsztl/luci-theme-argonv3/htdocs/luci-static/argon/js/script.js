@@ -1,5 +1,5 @@
 /**
- *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-bootstrap and MUI and Argon Template
+ *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
  *  luci-theme-argon
  *      Copyright 2019 Jerrykuku <jerrykuku@qq.com>
@@ -14,8 +14,16 @@
  *
  *  MUI:
  *      https://github.com/muicss/mui
+ *
+ *  luci-theme-material:
+ *      https://github.com/LuttyYang/luci-theme-material/
+ *
  *  Agron Theme
- *	https://demos.creative-tim.com/argon-dashboard/index.html
+ *	    https://demos.creative-tim.com/argon-dashboard/index.html
+ *
+ *  Login background
+ *      https://unsplash.com/
+ *
  *  Licensed to the public under the Apache License 2.0
  */
 
