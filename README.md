@@ -7,9 +7,9 @@ Default username is **root** and password is **password**, login address: 192.16
 
 # How to make it
 ## OS require
-Ubuntu 14.04 LTS x86\_64 (16.04 LTS is OK)<br>
-At least 2G RAM & 2 CPU Cores<br>
-At least 25G HDD<br>
+Ubuntu 14.04 LTS x86\_64 (16.04 LTS is OK)<br/>
+At least 2G RAM & 2 CPU Cores<br/>
+At least 25G HDD<br/>
 
 ## Install the necessary packages 
 ```bash
@@ -18,7 +18,7 @@ sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git
 
 ## Clone the source
 ```bash
-git clone https://github.com/project-openwrt/lede && cd lede
+git clone https://github.com/project-openwrt/openwrt -b master && cd openwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 
