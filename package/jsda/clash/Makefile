@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clash
-PKG_VERSION:=0.15.0
+PKG_VERSION:=0.15.1
 PKG_RELEASE:=1
 PKG_MAINTAINER:=frainzy1477
 
@@ -31,7 +31,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
-PKG_SOURCE_URL:=https://github.com/Dreamacro/clash/releases/download/v$(PKG_VERSION)/
+PKG_SOURCE_URL:=https://github.com/frainzy1477/clash_dev/releases/download/v$(PKG_VERSION)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_HASH:=skip
 
@@ -42,7 +42,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	TITLE:=clash is a cross-platform proxy software
 	DEPENDS:=
-	URL:=https://github.com/Dreamacro/clash/releases
+	URL:=https://github.com/frainzy1477/clash_dev/releases
 endef
 
 define Package/$(PKG_NAME)/description
