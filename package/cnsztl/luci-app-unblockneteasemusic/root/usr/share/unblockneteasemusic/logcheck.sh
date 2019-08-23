@@ -8,6 +8,6 @@ log_file="/tmp/unblockneteasemusic.log"
 while true
 do
 	(( log_size = "$(ls -l "${log_file}" | awk -F ' ' '{print $5}')" / "1024" ))
-	(( "${log_size}" >= "${log_max_size}" )) && rm -f "${log_file}"
+	(( "${log_size}" >= "${log_max_size}" )) && echo "" > "${log_file}"
 	sleep 5m
 done
