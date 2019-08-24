@@ -18,8 +18,8 @@ PKG_MAINTAINER:=[CTCGFW] Project OpenWRT
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-	SECTION:=net
-	CATEGORY:=Network
+	SECTION:=utils
+	CATEGORY:=Utilities
 	TITLE:=LuCI Support for FileBrowser.
 	URL:=https://github.com/filebrowser/filebrowser
 endef
