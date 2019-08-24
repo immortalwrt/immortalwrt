@@ -5,6 +5,6 @@ function index()
 		return
 	end
 	local page
-	page = entry({"admin", "services", "baidupcs-web"}, cbi("baidupcs-web"), _("百度网盘管理"), 100)
+	page = entry({"admin", "nas", "baidupcs-web"}, cbi("baidupcs-web"), _("百度网盘管理"), 100)
 	page.dependent = true
 end
