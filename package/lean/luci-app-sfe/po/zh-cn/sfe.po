@@ -77,7 +77,7 @@ msgid "Muitiple IPV6 DNS server can saperate with ','"
 msgstr "支持dnsforwarder解析多个上游IPV6 DNS服务器，用','分隔（注意用英文逗号).请填写您最快的DNS服务器"
 
 msgid "AdGuardHome After setting up, shut down DNS acceleration normally and save configuration file"
-msgstr "AdGuardHome设置完后正常关闭dns加速即可保存配置文件.AdGuardHome管理页面IP:3000 管理账号密码：AdGuardHome"
+msgstr "AdGuardHome设置完后正常关闭dns加速即可保存配置文件.AdGuardHome管理页面IP:3001 管理账号密码：AdGuardHome"
 
 msgid "Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network"
 msgstr "dnsmasq不返回ipv6解析结果,优化国内复杂双栈网络"
