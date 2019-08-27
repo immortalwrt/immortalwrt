@@ -283,7 +283,8 @@ define Device/u25awf-h1
   DTS := U25AWF-H1
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := Kimax U25AWF-H1
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-storage kmod-scsi-core \
+  		     kmod-fs-ext4 kmod-fs-vfat block-mount
 endef
 TARGET_DEVICES += u25awf-h1
 
@@ -331,7 +332,8 @@ define Device/kimax_u35wf
   DTS := U35WF
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := Kimax U35WF
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-storage kmod-scsi-core \
+  		     kmod-fs-ext4 kmod-fs-vfat block-mount
 endef
 TARGET_DEVICES += kimax_u35wf
 
