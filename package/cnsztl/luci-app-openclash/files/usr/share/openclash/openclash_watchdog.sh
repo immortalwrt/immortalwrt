@@ -23,9 +23,10 @@ fi
     
 ## 端口转发重启
    zone_line=`iptables -t nat -nL PREROUTING --line-number |grep "zone" 2>/dev/null |awk '{print $1}' 2>/dev/null |awk 'END {print}'`
-   op_line=`iptables -t nat -nL PREROUTING --line-number |grep "openclash" 2>/dev/null |awk '{print $1}' 2>/dev/null |awk 'END {print}'`
+   op_line=`iptables -t nat -nL PREROUTING --line-number |grep "openclash" 2>/dev/null |awk '{print $1}' 2>/dev/null |head -1`
    if [ "$zone_line" -gt "$op_line" ]; then
       /etc/init.d/firewall restart >/dev/null 2>&1
+      /etc/init.d/miniupnpd restart >/dev/null 2>&1
       echo "[$LOGTIME] Watchdog: Restart Firewall For Enable Redirect." > /tmp/openclash.log
    fi
    sleep 60
