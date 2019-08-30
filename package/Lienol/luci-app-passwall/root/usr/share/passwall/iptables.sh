@@ -250,6 +250,7 @@ EOF
 			local local_port=104$k
 			local ttl=14$k
 			eval temp_server=\$TCP_REDIR_SERVER$k
+			eval local_port=\$TCP_REDIR_PORT$k
 			[ "$k" == 1 ] && {
 				local_port=$TCP_REDIR_PORT
 				temp_server=$TCP_REDIR_SERVER
@@ -370,6 +371,7 @@ EOF
 			local local_port=104$k
 			local ttl=14$k
 			eval temp_server=\$UDP_REDIR_SERVER$k
+			eval local_port=\$UDP_REDIR_PORT$k
 			[ "$k" == 1 ] && {
 				local_port=$UDP_REDIR_PORT
 				temp_server=$UDP_REDIR_SERVER

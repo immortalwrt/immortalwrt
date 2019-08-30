@@ -48,8 +48,8 @@ config global_rules
 	option Pcap_Routing_update '1'
 	option Pcap_WhiteList_update '1'
 	option auto_update '0'
-	option chnroute_version '2019-07-13'
-	option gfwlist_version '2019-07-16'
+	option gfwlist_version '2019-08-14'
+	option chnroute_version '2019-08-14'
 	
 config global_app
 	option v2ray_client_file '/usr/bin/v2ray/'

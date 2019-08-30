@@ -82,6 +82,39 @@ get_host_ip() {
 	echo $ip
 }
 
+check_port_exists(){
+	port=$1
+	protocol=$2
+	result=
+	if [ "$protocol" = "tcp" ];then
+		result=`netstat -tlpn | grep "\<$port\>"`
+	elif [ "$protocol" = "udp" ];then
+		result=`netstat -ulpn | grep "\<$port\>"`
+	fi
+	if [ -n "$result" ];then
+		echo 1
+	else
+		echo 0
+	fi
+}
+
+get_not_exists_port_after(){
+	port=$1
+	protocol=$2
+	result=$(check_port_exists $port $protocol)
+	if [ "$result" = 1 ];then
+		temp=
+		if [ "$port" -lt 65535 ];then
+			temp=`expr $port + 1`
+		elif [ "$port" -gt 1 ];then
+			temp=`expr $port - 1`
+		fi
+		get_not_exists_port_after $temp $protocol
+	else
+		echo $port
+	fi
+}
+
 SOCKS5_PROXY_SERVER=$(config_t_get global socks5_proxy_server nil)
 TCP_REDIR_SERVER=$(config_t_get global tcp_redir_server nil)
 UDP_REDIR_SERVER=$(config_t_get global udp_redir_server nil)
@@ -150,9 +183,13 @@ load_config() {
 	DNS_FORWARD_PORT=$(echo "$DNS_FORWARD" | awk -F':' '{print $2}')
 	DNS1=$(config_t_get global_dns dns_1)
 	DNS2=$(config_t_get global_dns dns_2)
-	TCP_REDIR_PORT=$(config_t_get global_proxy tcp_redir_port 1031)
-	UDP_REDIR_PORT=$(config_t_get global_proxy udp_redir_port 1032)
-	SOCKS5_PROXY_PORT=$(config_t_get global_proxy socks5_proxy_port 1033)
+	TCP_REDIR_PORT=$(config_t_get global_proxy tcp_redir_port 1041)
+	UDP_REDIR_PORT=$(config_t_get global_proxy udp_redir_port 1042)
+	TCP_REDIR_PORT2=
+	UDP_REDIR_PORT2=
+	TCP_REDIR_PORT3=
+	UDP_REDIR_PORT3=
+	SOCKS5_PROXY_PORT=$(config_t_get global_proxy socks5_proxy_port 1043)
 	PROXY_IPV6=$(config_t_get global_proxy proxy_ipv6 0)
 	mkdir -p /var/etc $CONFIG_PATH $RUN_PID_PATH
 	config_load $CONFIG
@@ -352,7 +389,10 @@ start_tcp_redir_other() {
 			[ "$temp_server" != "nil" ] && {
 				TYPE=`echo $(config_get $temp_server server_type) | tr 'A-Z' 'a-z'`
 				local config_file=$CONFIG_PATH/TCP$i.json
-				gen_config_file $temp_server 104$i TCP $config_file
+				local port_temp=`expr $TCP_REDIR_PORT + 1 `
+				local port=`echo $(get_not_exists_port_after $port_temp tcp)`
+				eval TCP_REDIR_PORT$i=$port
+				gen_config_file $temp_server $port TCP $config_file
 				if [ "$TYPE" == "v2ray" ]; then
 					v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
 					if [ -f "${v2ray_path}/v2ray" ];then
@@ -386,7 +426,10 @@ start_udp_redir_other() {
 			[ "$temp_server" != "nil" ] && {
 				TYPE=`echo $(config_get $temp_server server_type) | tr 'A-Z' 'a-z'`
 				local config_file=$CONFIG_PATH/UDP$i.json
-				gen_config_file $temp_server 104$i UDP $config_file
+				local port_temp=`expr $TCP_REDIR_PORT + 1 `
+				local port=`echo $(get_not_exists_port_after $port_temp udp)`
+				eval UDP_REDIR_PORT$i=$port
+				gen_config_file $temp_server $port UDP $config_file
 				if [ "$TYPE" == "v2ray" ]; then
 					v2ray_path=$(config_t_get global_v2ray v2ray_client_file)
 					if [ -f "${v2ray_path}/v2ray" ];then
