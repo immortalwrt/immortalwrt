@@ -339,3 +339,6 @@ msgstr "忽略许可验证"
 
 msgid "None"
 msgstr "未配置"
+
+msgid "NB: Attention to Proxy Group and Rule when making changes to this section"
+msgstr "注意：更改时，请注意代理组和规则"

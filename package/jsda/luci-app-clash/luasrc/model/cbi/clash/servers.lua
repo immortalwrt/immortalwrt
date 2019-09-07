@@ -1,7 +1,30 @@
+local NXFS = require "nixio.fs"
+local SYS  = require "luci.sys"
+local HTTP = require "luci.http"
+local DISP = require "luci.dispatcher"
+local UTIL = require "luci.util"
+local uci = require("luci.model.uci").cursor()
+local fs = require "luci.clash"
 
 local clash = "clash"
-local SYS  = require "luci.sys"
-local uci = luci.model.uci.cursor()
+
+m = Map("clash")
+s = m:section(TypedSection, "clash")
+s.anonymous = true
+s.addremove=false
+
+local rule = "/usr/share/clash/custom_rule.yaml"
+sev = s:option(TextValue, "rule")
+sev.description = translate("NB: Attention to Proxy Group and Rule when making changes to this section")
+sev.rows = 20
+sev.wrap = "off"
+sev.cfgvalue = function(self, section)
+	return NXFS.readfile(rule) or ""
+end
+sev.write = function(self, section, value)
+	NXFS.writefile(rule, value:gsub("\r\n", "\n"))
+end
+
 
 k = Map(clash)
 --k.pageaction = false
@@ -76,4 +99,7 @@ function o.cfgvalue(...)
 end
 
 
-return k
+
+
+
+return k, m
