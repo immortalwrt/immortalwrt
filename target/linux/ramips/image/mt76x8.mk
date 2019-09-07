@@ -97,7 +97,7 @@ define Device/miwifi-nano
   DTS := MIWIFI-NANO
   IMAGE_SIZE := $(ralink_default_fw_size_16M)
   DEVICE_TITLE := Xiaomi MiWiFi Nano
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES := uboot-envtools
 endef
 TARGET_DEVICES += miwifi-nano
 
