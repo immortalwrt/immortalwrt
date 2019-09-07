@@ -13,10 +13,11 @@ function index()
 	entry({"admin", "services", "clash", "settings", "port"},cbi("clash/port"),_("Proxy Ports"), 100).leaf = true
 	entry({"admin", "services", "clash", "settings", "dns"},cbi("clash/dns"),_("DNS Settings"), 120).leaf = true
 	entry({"admin", "services", "clash", "settings", "access"},cbi("clash/access"),_("Access Control"), 130).leaf = true
-	entry({"admin", "services", "clash", "config"},cbi("clash/config"),_("Config"), 140).leaf = true
+	entry({"admin", "services", "clash", "servers"}, arcombine(cbi("clash/servers"),cbi("clash/servers-config")),_("Servers"), 140).leaf = true
+	entry({"admin", "services", "clash", "config"},cbi("clash/config"),_("Config"), 150).leaf = true
 	entry({"admin","services","clash","status"},call("action_status")).leaf=true
-	entry({"admin", "services", "clash", "log"},cbi("clash/log"),_("Logs"), 150).leaf = true
-	entry({"admin", "services", "clash", "update"},cbi("clash/update"),_("Update"), 160).leaf = true
+	entry({"admin", "services", "clash", "log"},cbi("clash/log"),_("Logs"), 160).leaf = true
+	entry({"admin", "services", "clash", "update"},cbi("clash/update"),_("Update"), 170).leaf = true
 	entry({"admin","services","clash","check_status"},call("check_status")).leaf=true
 
 	
@@ -61,6 +62,10 @@ local function new_core_version()
 	return luci.sys.exec("sed -n 1p /usr/share/clash/new_core_version")
 end
 
+local function e_mode()
+	return luci.sys.exec("grep enhanced-mode: /etc/clash/config.yaml |awk -F ':' '{print $2}'")
+end
+
 local function clash_core()
 	return luci.sys.exec("sh /usr/share/clash/installed_core.sh && sed -n 1p /usr/share/clash/installed_core")
 end
@@ -73,7 +78,8 @@ function check_status()
 		current_version = current_version(),
 		new_version = new_version(),
 		clash_core = clash_core(),
-		new_core_version = new_core_version()
+		new_core_version = new_core_version(),
+		e_mode = e_mode()
 
 	})
 end
@@ -88,7 +94,8 @@ function action_status()
 		new_version = new_version(),
 		dash_pass = dash_pass(),
 		clash_core = clash_core(),
-		new_core_version = new_core_version()
+		new_core_version = new_core_version(),
+		e_mode = e_mode()
 
 	})
 end

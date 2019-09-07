@@ -16,7 +16,7 @@ sul =ful:section(SimpleSection, "", translate(""))
 o = sul:option(FileUpload, "")
 o.title = translate("Upload Config")
 o.template = "clash/clash_upload"
-o.description = translate("NB: Rename your config file to config.yaml before upload. file will save to /etc/clash")
+o.description = translate("NB: Only upload file with name config.yml or config.yaml")
 um = sul:option(DummyValue, "", nil)
 um.template = "clash/clash_dvalue"
 
@@ -40,7 +40,12 @@ http.setfilehandler(
 		if eof and fd then
 			fd:close()
 			fd = nil
-			um.value = translate("File saved to") .. ' "/etc/clash/' .. meta.file .. '"'
+			local clash_conf = "/etc/clash/config.yml"
+			if NXFS.access(clash_conf) then
+				  os.execute("mv /etc/clash/config.yml /etc/clash/config.yaml")
+				  os.execute("rm -rf /etc/clash/config.yml")
+			end
+			um.value = translate("File saved to") .. ' "/etc/clash/config.yaml"'
 			os.execute("/etc/init.d/clash restart >/dev/null 2>&1 &")
 		end
 	end

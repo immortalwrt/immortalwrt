@@ -70,8 +70,14 @@ msgstr "正在检查..."
 msgid "Not Installed"
 msgstr "未安装"
 
-msgid "Installed Version"
+msgid "Version"
 msgstr "已安装版本"
+
+msgid "NO CONFIG"
+msgstr "没配置"
+
+msgid "Clash Mode"
+msgstr "Clash模式"
 
 msgid "App Name"
 msgstr "应用程序名称"
@@ -241,8 +247,8 @@ msgstr "更新GEOIP数据库"
 msgid "Upload Config"
 msgstr "上传配置"
 
-msgid "NB: Rename your config file to config.yaml before upload. file will save to /etc/clash"
-msgstr "注意：上传之前，请将配置文件重命名为config.yaml。文件将保存到 /etc/clash"
+msgid "NB: Only upload file with name config.yml or config.yaml"
+msgstr "注意：仅上载名为config.yml或config.yaml的文件"
 
 msgid "Subcription Url"
 msgstr "订阅URL"
@@ -261,3 +267,75 @@ msgstr "服务器订阅地址"
 
 msgid "Changes to config file must be made from source"
 msgstr "必须从源文件更改配置文件"
+
+msgid "Servers"
+msgstr "自定义节点"
+
+msgid "Enable to create custom config.yaml. Note that this will overide any configuration you already have"
+msgstr "启用以创建自定义config.yaml。注意，这会覆盖/etc/clash/config.yaml"
+
+msgid "Create Config"
+msgstr "创建配置"
+
+msgid "host"
+msgstr "主机名"
+
+msgid "Enable Create Config"
+msgstr "启用创建配置"
+
+msgid "Perform this action to delete all servers"
+msgstr "执行此操作以删除所有服务器"
+
+msgid "Perform this action to generate new configuration"
+msgstr "执行此操作以生成新配置"
+
+msgid "Delete Severs"
+msgstr "清空节点"
+
+msgid "Type"
+msgstr "节点类型"
+
+msgid "Alias"
+msgstr "节点别名"
+
+msgid "Server Address"
+msgstr "服务器地址"
+
+msgid "Server Port"
+msgstr "服务器端口"
+
+msgid "Edit Server"
+msgstr "编辑服务器配置"
+
+msgid "Server Node Type"
+msgstr "服务器节点类型"
+
+msgid "Using incorrect encryption mothod may causes service fail to start"
+msgstr "输入不正确的参数组合可能会导致服务无法启动"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Encrypt Method"
+msgstr "加密方式"
+
+msgid "UDP"
+msgstr "UDP"
+
+msgid "obfs-mode"
+msgstr "传输协议"
+
+msgid "obfs-hosts"
+msgstr "混淆参数"
+
+msgid "Auth Username"
+msgstr "登录用户名"
+
+msgid "Auth Password"
+msgstr "登录密码"
+
+msgid "Skip Cert Verify"
+msgstr "忽略许可验证"
+
+msgid "None"
+msgstr "未配置"

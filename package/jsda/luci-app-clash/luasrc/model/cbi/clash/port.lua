@@ -51,4 +51,13 @@ o:value("warning", "warning")
 o:value("error", "error")
 o:value("debug", "debug")
 
+local clash_conf = "/etc/clash/config.yaml"
+if NXFS.access(clash_conf) then
+local apply = luci.http.formvalue("cbi.apply")
+if apply then
+	SYS.call("sh /usr/share/clash/yum_change.sh 2>&1 &")
+	SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
+end
+end
+
 return m

@@ -8,6 +8,7 @@
 <fieldset class="cbi-section">
 	<table width="100%" cellspacing="10">
 		<tr><td width="50%"><span><%:Clash Client%></span></td><td id="_clash"><em><%:Collecting data...%></em></td> </tr>
+		<tr><td width="50%"><span><%:Clash Mode%></span></td><td id="_emode"><em><%:Collecting data...%></em></td> </tr>
 		<tr><td width="50%"><span><%:Clash Dashboard%></span></td><td id="_web"><em> <%:Collecting data...%> </em></td> </tr>
 		<tr><td width="50%"><span><%:Yacd Dashboard%></span></td><td id="_webb"><em> <%:Collecting data...%> </em></td> </tr>
 	</table>
@@ -141,17 +142,19 @@ var HTTP = {
 	var ip = document.getElementById('_ip');
 	var port = document.getElementById('_port');
 	var secret = document.getElementById('_secret');
+	var emode = document.getElementById('_emode');
 	var version = document.getElementById('_version');
 	var logo = document.getElementById('_logo');
 	XHR.poll(1, '<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
 		if ( x && x.status == 200 ) {
-			web.innerHTML = status.web ? '<a type="button" class="btn" style="background-color:black;padding: 5px;"  href="http://'+window.location.hostname+':'+status.dash_port+'/ui" target="_blank"/><b><font color=green><%:OPEN DASHBOARD%></font></b></a>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
-			webb.innerHTML = status.web ? '<a type="button" class="btn" style="background-color:black;padding: 5px;"  href="http://'+window.location.hostname+'/clash" target="_blank"/><b><font color=green><%:OPEN DASHBOARD%></font></b></a>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
-			clash.innerHTML = status.clash ? '<b><font color=green><%:RUNNING%></font> </b>' : '<em><b><font color=red><%:NOT RUNNING%></font></b></em>';
+			web.innerHTML = status.web ? '<a type="button" class="btn" style="background-color:black;padding: 5px;"  href="http://'+window.location.hostname+':'+status.dash_port+'/ui" target="_blank"/><b><font color=green><%:OPEN DASHBOARD%></font></b></a>' : '<b><font color=red><%:NOT RUNNING%></font></b>';
+			webb.innerHTML = status.web ? '<a type="button" class="btn" style="background-color:black;padding: 5px;"  href="http://'+window.location.hostname+'/clash" target="_blank"/><b><font color=green><%:OPEN DASHBOARD%></font></b></a>' : '<b><font color=red><%:NOT RUNNING%></font></b>';
+			clash.innerHTML = status.clash ? '<b><font color=green><%:RUNNING%></font> </b>' : '<b><font color=red><%:NOT RUNNING%></font></b>';
 			ip.innerHTML = status.localip ? '<b><font color=green>'+status.localip+'</font> </b>' : '<em><b><font color=red><%:NOT SET%></font></b></em>';
 			logo.innerHTML = status.localip ? '<img id="logo" src="http://'+window.location.hostname+'/logo.png" width="150" onclick="return homepage()">' : '<em><b><font color=red><%:NOT SET%></font></b></em>';
 			port.innerHTML = status.dash_port ? '<b><font color=green>'+status.dash_port+'</font> </b>' : '<em><b><font color=red><%:NOT SET%></font></b></em>';
 			secret.innerHTML = status.dash_pass ? '<b><font color=green>'+status.dash_pass+'</font> </b>' : '<em><b><font color=red><%:NOT SET%></font></b></em>';
+			emode.innerHTML = status.e_mode ? '<b><font color=green style="text-transform: uppercase;">'+status.e_mode+'</font> </b>' : '<b><font color=red><%:NO CONFIG%></font></b>';
 			HTTP.checker('www.baidu.com', '_baidu');
 			HTTP.checker('www.google.com', '_google');
 			HTTP.checker('www.youtube.com', '_youtube');

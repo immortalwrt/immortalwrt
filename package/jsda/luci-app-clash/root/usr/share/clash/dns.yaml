@@ -10,15 +10,12 @@ dns:
  enable: true
  listen: 0.0.0.0:5300
  enhanced-mode: fake-ip
- # # experimental hosts, support wildcard
- # (e.g. *.clash.dev Even *.foo.*.example.com)
- # # static domain has a higher priority
- # than wildcard domain (foo.example.com > *.example.com)
- # # NOTE: hosts don't work with `fake-ip`
  # hosts:
  #   '*.clash.dev': 127.0.0.1
  #   'alpha.clash.dev': '::1'
  nameserver: 
+  - 101.132.183.99
+  - 8.8.8.8
   - 119.29.29.29 
   - 114.114.114.114
   - 114.114.115.115    

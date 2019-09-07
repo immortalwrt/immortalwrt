@@ -1,8 +1,3 @@
-  - name: "Overseas"
-    type: select
-    proxies: 
-      - "Proxy"
-      - "DIRECT"
   - name: "GlobalTV"
     type: select 
     proxies: 
@@ -19,107 +14,82 @@
       - "REJECT" 
 
 Rule:
-- DOMAIN-SUFFIX,zjhu.edu.cn,DIRECT
 - DOMAIN,gs.apple.com,Proxy
 - DOMAIN-SUFFIX,mzstatic.com,DIRECT
 - DOMAIN-SUFFIX,akadns.net,DIRECT
 - DOMAIN-SUFFIX,aaplimg.com,DIRECT
 - DOMAIN-SUFFIX,cdn-apple.com,DIRECT
-
 - DOMAIN-SUFFIX,hbo.com,Proxy
 - DOMAIN-SUFFIX,hbogo.com,Proxy
 - DOMAIN-SUFFIX,hboasia.com,Proxy
 - DOMAIN-SUFFIX,hbogo.com,Proxy
 - DOMAIN-SUFFIX,hbogoasia.hk,Proxy
-
 - DOMAIN,itunes.apple.com, DIRECT
 - DOMAIN,beta.itunes.apple.com, DIRECT
 - DOMAIN-SUFFIX,apple.com, DIRECT
 - DOMAIN-SUFFIX,icloud.com,DIRECT
 - DOMAIN-SUFFIX,icloud-content.com,DIRECT
 - DOMAIN,e.crashlytics.com,REJECT
-
 - DOMAIN-KEYWORD,bilibili,DIRECT
 - DOMAIN-SUFFIX,acgvideo.com,DIRECT
 - DOMAIN-SUFFIX,hdslb.com,DIRECT
-
 - DOMAIN-KEYWORD,qiyi,DIRECT
 - DOMAIN-SUFFIX,qy.net,DIRECT
 - IP-CIDR,101.227.0.0/16,DIRECT
 - IP-CIDR,101.224.0.0/13,DIRECT
 - IP-CIDR,119.176.0.0/12,DIRECT
-
 - DOMAIN-SUFFIX,api.mob.app.letv.com,DIRECT
-
 - DOMAIN-KEYWORD,nowtv100,DIRECT
 - DOMAIN-KEYWORD,rthklive,DIRECT
 - DOMAIN-SUFFIX,mytvsuper.com,DIRECT
 - DOMAIN-SUFFIX,tvb.com,DIRECT
-
 - DOMAIN-SUFFIX,music.126.net,DIRECT
 - DOMAIN-SUFFIX,music.163.com,DIRECT
-
 - DOMAIN-SUFFIX,vv.video.qq.com,DIRECT
-
 - IP-CIDR,106.11.0.0/16,DIRECT
-
-
-- DOMAIN-SUFFIX,edgedatg.com,Overseas
-- DOMAIN-SUFFIX,go.com,Overseas
-
-- DOMAIN,linear-abematv.akamaized.net,Overseas
-- DOMAIN-SUFFIX,abema.io,Overseas
-- DOMAIN-SUFFIX,abema.tv,Overseas
-- DOMAIN-SUFFIX,akamaized.net,Overseas
-- DOMAIN-SUFFIX,ameba.jp,Overseas
-- DOMAIN-SUFFIX,hayabusa.io,Overseas
-
-- DOMAIN-SUFFIX,amazonaws.com,Overseas
-
-- DOMAIN-SUFFIX,bahamut.com.tw,Overseas
-- DOMAIN-SUFFIX,gamer.com.tw,Overseas
-- DOMAIN-SUFFIX,hinet.net,Overseas
-
-- DOMAIN-KEYWORD,bbcfmt,Overseas
-- DOMAIN-KEYWORD,co.uk,Overseas
-- DOMAIN-KEYWORD,uk-live,Overseas
-- DOMAIN-SUFFIX,bbc.co,Overseas
-- DOMAIN-SUFFIX,bbc.co.uk,Overseas
-- DOMAIN-SUFFIX,bbc.com,Overseas
-- DOMAIN-SUFFIX,bbci.co,Overseas
-- DOMAIN-SUFFIX,bbci.co.uk,Overseas
-
-- DOMAIN-SUFFIX,chocotv.com.tw,Overseas
-
-- DOMAIN-KEYWORD,epicgames,Overseas
-- DOMAIN-SUFFIX,helpshift.com,Overseas
-
-- DOMAIN-KEYWORD,foxplus,Overseas
-- DOMAIN-SUFFIX,config.fox.com,Overseas
-- DOMAIN-SUFFIX,emome.net,Overseas
-- DOMAIN-SUFFIX,fox.com,Overseas
-- DOMAIN-SUFFIX,foxdcg.com,Overseas
-- DOMAIN-SUFFIX,foxnow.com,Overseas
-- DOMAIN-SUFFIX,foxplus.com,Overseas
-- DOMAIN-SUFFIX,foxplay.com,Overseas
-- DOMAIN-SUFFIX,ipinfo.io,Overseas
-- DOMAIN-SUFFIX,mstage.io,Overseas
-- DOMAIN-SUFFIX,now.com,Overseas
-- DOMAIN-SUFFIX,theplatform.com,Overseas
-
-- DOMAIN-SUFFIX,hbo.com,Overseas
-- DOMAIN-SUFFIX,hbogo.com,Overseas
-
-- DOMAIN-SUFFIX,hbogoasia.hk,Overseas
-
-- DOMAIN-SUFFIX,happyon.jp,Overseas
-- DOMAIN-SUFFIX,hulu.com,Overseas
-- DOMAIN-SUFFIX,huluim.com,Overseas
-
-- DOMAIN-SUFFIX,imkan.tv,Overseas
-
-- DOMAIN-SUFFIX,joox.com,Overseas
-
+- DOMAIN-SUFFIX,edgedatg.com,Proxy
+- DOMAIN-SUFFIX,go.com,Proxy
+- DOMAIN,linear-abematv.akamaized.net,Proxy
+- DOMAIN-SUFFIX,abema.io,Proxy
+- DOMAIN-SUFFIX,abema.tv,Proxy
+- DOMAIN-SUFFIX,akamaized.net,Proxy
+- DOMAIN-SUFFIX,ameba.jp,Proxy
+- DOMAIN-SUFFIX,hayabusa.io,Proxy
+- DOMAIN-SUFFIX,amazonaws.com,Proxy
+- DOMAIN-SUFFIX,bahamut.com.tw,Proxy
+- DOMAIN-SUFFIX,gamer.com.tw,Proxy
+- DOMAIN-SUFFIX,hinet.net,Proxy
+- DOMAIN-KEYWORD,bbcfmt,Proxy
+- DOMAIN-KEYWORD,co.uk,Proxy
+- DOMAIN-KEYWORD,uk-live,Proxy
+- DOMAIN-SUFFIX,bbc.co,Proxy
+- DOMAIN-SUFFIX,bbc.co.uk,Proxy
+- DOMAIN-SUFFIX,bbc.com,Proxy
+- DOMAIN-SUFFIX,bbci.co,Proxy
+- DOMAIN-SUFFIX,bbci.co.uk,Proxy
+- DOMAIN-SUFFIX,chocotv.com.tw,Proxy
+- DOMAIN-KEYWORD,epicgames,Proxy
+- DOMAIN-SUFFIX,helpshift.com,Proxy
+- DOMAIN-KEYWORD,foxplus,Proxy
+- DOMAIN-SUFFIX,config.fox.com,Proxy
+- DOMAIN-SUFFIX,emome.net,Proxy
+- DOMAIN-SUFFIX,fox.com,Proxy
+- DOMAIN-SUFFIX,foxdcg.com,Proxy
+- DOMAIN-SUFFIX,foxnow.com,Proxy
+- DOMAIN-SUFFIX,foxplus.com,Proxy
+- DOMAIN-SUFFIX,foxplay.com,Proxy
+- DOMAIN-SUFFIX,ipinfo.io,Proxy
+- DOMAIN-SUFFIX,mstage.io,Proxy
+- DOMAIN-SUFFIX,now.com,Proxy
+- DOMAIN-SUFFIX,theplatform.com,Proxy
+- DOMAIN-SUFFIX,hbo.com,Proxy
+- DOMAIN-SUFFIX,hbogo.com,Proxy
+- DOMAIN-SUFFIX,hbogoasia.hk,Proxy
+- DOMAIN-SUFFIX,happyon.jp,Proxy
+- DOMAIN-SUFFIX,hulu.com,Proxy
+- DOMAIN-SUFFIX,huluim.com,Proxy
+- DOMAIN-SUFFIX,imkan.tv,Proxy
+- DOMAIN-SUFFIX,joox.com,Proxy
 - DOMAIN-SUFFIX,netflix.com,Proxy
 - DOMAIN-SUFFIX,netflix.net,Proxy
 - DOMAIN-SUFFIX,nflxext.com,Proxy
@@ -127,21 +97,15 @@ Rule:
 - DOMAIN-SUFFIX,nflximg.net,Proxy
 - DOMAIN-SUFFIX,nflxso.net,Proxy
 - DOMAIN-SUFFIX,nflxvideo.net,Proxy
-
-- DOMAIN-KEYWORD,spotify,Overseas
-- DOMAIN-SUFFIX,scdn.co,Overseas
-- DOMAIN-SUFFIX,spoti.fi,Overseas
-
-- DOMAIN-SUFFIX,viu.tv,Overseas
-
-- DOMAIN-KEYWORD,youtube,Overseas
-- DOMAIN-SUFFIX,googlevideo.com,Overseas
-- DOMAIN-SUFFIX,gvt2.com,Overseas
-- DOMAIN-SUFFIX,youtu.be,Overseas
-
-
+- DOMAIN-KEYWORD,spotify,Proxy
+- DOMAIN-SUFFIX,scdn.co,Proxy
+- DOMAIN-SUFFIX,spoti.fi,Proxy
+- DOMAIN-SUFFIX,viu.tv,Proxy
+- DOMAIN-KEYWORD,youtube,Proxy
+- DOMAIN-SUFFIX,googlevideo.com,Proxy
+- DOMAIN-SUFFIX,gvt2.com,Proxy
+- DOMAIN-SUFFIX,youtu.be,Proxy
 - DOMAIN-SUFFIX,cn,DIRECT
-
 - DOMAIN-SUFFIX,126.com,DIRECT
 - DOMAIN-SUFFIX,126.net,DIRECT
 - DOMAIN-SUFFIX,127.net,DIRECT
@@ -259,7 +223,6 @@ Rule:
 - DOMAIN-SUFFIX,zealer.com,DIRECT
 - DOMAIN-SUFFIX,zhihu.com,DIRECT
 - DOMAIN-SUFFIX,zhimg.com,DIRECT
-
 - DOMAIN-KEYWORD,amazon,Proxy
 - DOMAIN-KEYWORD,google,Proxy
 - DOMAIN-KEYWORD,gmail,Proxy
@@ -274,7 +237,6 @@ Rule:
 - DOMAIN-KEYWORD,blogspot,Proxy
 - DOMAIN-SUFFIX,youtu.be,Proxy
 - DOMAIN-KEYWORD,whatsapp,Proxy
-
 - DOMAIN-SUFFIX,9to5mac.com,Proxy
 - DOMAIN-SUFFIX,abpchina.org,Proxy
 - DOMAIN-SUFFIX,adblockplus.org,Proxy
@@ -546,7 +508,6 @@ Rule:
 - DOMAIN-SUFFIX,ying.com,Proxy
 - DOMAIN-SUFFIX,yoyo.org,Proxy
 - DOMAIN-SUFFIX,ytimg.com,Proxy
-
 - DOMAIN-SUFFIX,telegra.ph,Proxy
 - DOMAIN-SUFFIX,telegram.org,Proxy
 - IP-CIDR,91.108.56.0/22,Proxy
@@ -555,7 +516,6 @@ Rule:
 - IP-CIDR,109.239.140.0/24,Proxy
 - IP-CIDR,149.154.160.0/20,Proxy
 - IP-CIDR,149.154.164.0/22,Proxy
-
 - DOMAIN-SUFFIX,local,DIRECT
 - IP-CIDR,127.0.0.0/8,DIRECT
 - IP-CIDR,172.16.0.0/12,DIRECT
@@ -567,7 +527,6 @@ Rule:
 - DOMAIN-KEYWORD,torrent,DIRECT
 - DOMAIN-KEYWORD,tracker,DIRECT
 - DOMAIN-SUFFIX,smtp,DIRECT
-
 - DOMAIN-SUFFIX,edgedatg.com,GlobalTV
 - DOMAIN-SUFFIX,go.com,GlobalTV
 - DOMAIN,linear-abematv.akamaized.net,GlobalTV
@@ -891,13 +850,11 @@ Rule:
 - DOMAIN,ad.qingting.fm,AdBlock
 - DOMAIN,ad-cn.jovcloud.com,AdBlock
 - DOMAIN,adsapi.manhuaren.com,AdBlock
-
 - DOMAIN,adclick.g.doubleclick.net,AdBlock
 - DOMAIN,googleads.g.doubleclick.net,AdBlock
 - DOMAIN,www.googleadservices.com,AdBlock
 - DOMAIN,googleadservices.com,AdBlock
 - DOMAIN,googleads.g.doubleclick.net,AdBlock
-
 - DOMAIN,adsdk.dmzj.com,AdBlock
 - DOMAIN,ads.daydaycook.com.cn,AdBlock
 - DOMAIN,adui.tg.meitu.com,AdBlock
@@ -1301,6 +1258,7 @@ Rule:
 - DOMAIN-SUFFIX,com-hs-hkdy.com,DIRECT
 - DOMAIN-SUFFIX,czybjz.com,DIRECT
 - DOMAIN-SUFFIX,dandanzan.com,DIRECT
+- DOMAIN-SUFFIX,zjhu.edu.cn,DIRECT
 - DOMAIN-SUFFIX,fjhps.com,DIRECT
 - DOMAIN-SUFFIX,kuyunbo.club,DIRECT
 - DOMAIN-SUFFIX,baidu.com,DIRECT
@@ -1860,6 +1818,5 @@ Rule:
 - IP-CIDR,199.96.56.0/21,Proxy
 - IP-CIDR,202.160.128.0/22,Proxy
 - IP-CIDR,209.237.192.0/19,Proxy
-
 - GEOIP,CN,DIRECT
-- MATCH,Overseas
+- MATCH,Proxy
