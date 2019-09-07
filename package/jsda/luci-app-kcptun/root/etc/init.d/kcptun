@@ -71,7 +71,7 @@ gen_client_config_file() {
 	add_configs "string" key crypt mode
 	add_configs "int" conn autoexpire mtu sndwnd rcvwnd datashard parityshard dscp \
 		nodelay interval resend nc sockbuf keepalive scavengettl snmpperiod
-	add_configs "boolean" nocomp acknodelay
+	add_configs "boolean" nocomp acknodelay quiet tcp
 
 	if [ -n "$log_file" ]; then
 		json_add_string "log" "$log_file"
@@ -82,38 +82,20 @@ gen_client_config_file() {
 	json_dump -i >"$config_file"
 }
 
-setup_iptables_chain() {
-	if ! ( iptables -nL "$KCPTUN" >/dev/null 2>&1 ); then
-		iptables -N "$KCPTUN" 2>/dev/null
-	fi
-
-	iptables -C OUTPUT -j "$KCPTUN" 2>/dev/null || \
-		iptables -A OUTPUT -j "$KCPTUN" 2>/dev/null
-	iptables -C INPUT -j "$KCPTUN" 2>/dev/null || \
-		iptables -A INPUT -j "$KCPTUN" 2>/dev/null
-}
-
-clear_iptables_chain() {
-	iptables -F "$KCPTUN" >/dev/null 2>&1
-}
-
 add_iptables_rule() {
 	local port="$1"
-	local type="$2"
 
-	if [ "$type" = "client" ]; then
-		( iptables -C "$KCPTUN" -p tcp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
+	iptables-restore --noflush <<-EOF 2>/dev/null
+		*nat
+		:KCPTUN -
+		-A KCPTUN -p tcp --dport $port -j ACCEPT
+		-A INPUT -p tcp -j KCPTUN
+		COMMIT
+	EOF
+}
 
-		iptables -A "$KCPTUN" -p tcp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null
-	elif [ "$type" = "server" ]; then
-		( iptables -C "$KCPTUN" -p udp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
-
-		iptables -A "$KCPTUN" -p udp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null
-	fi
+clear_iptables_rule() {
+	iptables-save --counters | grep -vi "KCPTUN" | iptables-restore --counters
 }
 
 validate_config_section() {
@@ -144,6 +126,8 @@ validate_server_section() {
 		'parityshard:uinteger' \
 		'dscp:uinteger' \
 		'nocomp:or("true", "false")' \
+		'quiet:or("true", "false")' \
+		'tcp:or("true", "false")' \
 		'nodelay:bool' \
 		'interval:uinteger' \
 		'resend:range(0,2)' \
@@ -161,7 +145,7 @@ validate_client_file() {
 		return 1
 	fi
 
-	[ -x "$file" ] || chmod 755 "$file"
+	test -x "$file" || chmod 755 "$file"
 
 	( $file -v 2>/dev/null | grep -q "$KCPTUN" )
 }
@@ -200,23 +184,23 @@ start_kcptun_instance() {
 	is_ipv6_address "$server_addr" && server_addr="[${server_addr}]"
 	is_ipv6_address "$listen_addr" && listen_addr="[${listen_addr}]"
 
-	[ -d "$CONFIG_FOLDER" ] || mkdir -p "$CONFIG_FOLDER"
+	test -d "$CONFIG_FOLDER" || mkdir -p "$CONFIG_FOLDER"
 
 	log_file=""
-	if [ "$enable_logging" = "1" ]; then
+	if [ "x$enable_logging" = "x1" ]; then
 		mkdir -p "$log_folder"
 		chown -R "$daemon_user" "$log_folder"
 		log_file="${log_folder}/client.${section}.log"
 	fi
 
-	local config_file=${CONFIG_FOLDER}/client.${section}.json
+	local config_file="${CONFIG_FOLDER}/client.${section}.json"
 
 	if ! ( gen_client_config_file "$config_file" ); then
 		_log "err" "Can't create config file".
 		return 1
 	fi
 
-	add_iptables_rule "$listen_port" "client"
+	add_iptables_rule "$listen_port"
 
 	procd_open_instance
 	procd_set_param command "$client_file"
@@ -232,13 +216,12 @@ service_triggers() {
 }
 
 start_service() {
-	clear_iptables_chain
-	setup_iptables_chain
+	clear_iptables_rule
 
 	config_load "$KCPTUN"
 	config_foreach start_kcptun_instance "general"
 }
 
 stop_service() {
-	clear_iptables_chain
+	clear_iptables_rule
 }

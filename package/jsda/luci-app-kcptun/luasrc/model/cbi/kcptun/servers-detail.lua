@@ -130,6 +130,16 @@ o.enabled = "true"
 o.disabled = "false"
 o.rmempty = false
 
+o = s:option(Flag, "quiet", translate("quiet"), translate("Suppress the 'stream open/close' messages"))
+o.enabled = "true"
+o.disabled = "false"
+o.rmempty = false
+
+o = s:option(Flag, "tcp", translate("tcp"), translate("TCP transmission"))
+o.enabled = "true"
+o.disabled = "false"
+o.rmempty = false
+
 o = s:option(Flag, "acknodelay", translate("acknodelay"))
 o.enabled = "true"
 o.disabled = "false"

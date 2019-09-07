@@ -6,14 +6,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-kcptun
-PKG_VERSION:=1.5.0
+PKG_VERSION:=1.5.1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=Apache-2.0
 PKG_MAINTAINER:=Xingwang Liao <kuoruan@gmail.com>
 
 LUCI_TITLE:=LuCI support for Kcptun
-LUCI_DEPENDS:=+jshn
+LUCI_DEPENDS:=+jshn +iptables +iptables-mod-tproxy
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/conffiles
@@ -26,9 +26,11 @@ define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	( . /etc/uci-defaults/40_luci-kcptun ) && rm -f /etc/uci-defaults/40_luci-kcptun
-	chmod 755 /etc/init.d/kcptun >/dev/null 2>&1
-	/etc/init.d/kcptun enable >/dev/null 2>&1
 fi
+
+chmod 755 $${IPKG_INSTROOT}/etc/init.d/kcptun >/dev/null 2>&1
+ln -sf $${IPKG_INSTROOT}/etc/init.d/kcptun \
+	$${IPKG_INSTROOT}/etc/rc.d/S99kcptun >/dev/null 2>&1
 exit 0
 endef
 
