@@ -1,0 +1,11 @@
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -46,7 +46,7 @@ obj-$(CONFIG_PI433)		+= pi433/
+ obj-$(CONFIG_SOC_MT7621)	+= mt7621-pci/
+ obj-$(CONFIG_SOC_MT7621)	+= mt7621-pinctrl/
+ obj-$(CONFIG_SOC_MT7621)	+= mt7621-spi/
+-obj-$(CONFIG_SOC_MT7621)	+= mt7621-dma/
++obj-y				+= mt7621-dma/
+ obj-$(CONFIG_SOC_MT7621)	+= mt7621-mmc/
+ obj-$(CONFIG_SOC_MT7621)	+= mt7621-eth/
+ obj-$(CONFIG_SOC_MT7621)	+= mt7621-dts/
