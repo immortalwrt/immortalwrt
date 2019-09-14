@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-openclash
-PKG_VERSION:=0.34.0
+PKG_VERSION:=0.34.2
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=vernesong <https://github.com/vernesong/OpenClash>
 
@@ -14,7 +14,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=3. Applications
 	TITLE:=LuCI support for clash
 	PKGARCH:=all
-	DEPENDS:=+luci +luci-base +iptables +dnsmasq-full +coreutils +coreutils-nohup +bash +wget
+	DEPENDS:=+iptables +dnsmasq-full +coreutils +coreutils-nohup +bash +wget
 	MAINTAINER:=vernesong
 endef
 
@@ -28,6 +28,9 @@ endef
 define Build/Prepare
 	$(foreach po,$(wildcard ${CURDIR}/i18n/zh-cn/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+	chmod 0755 ${CURDIR}/files/etc/init.d/openclash
+	chmod -R 0755 ${CURDIR}/files/usr/share/openclash/
+	chmod -R 0755 ${CURDIR}/files/usr/lib/lua/luci/model/cbi/openclash/
 endef
 
 define Build/Configure
@@ -69,7 +72,7 @@ if [ -f "/tmp/config.yaml" ]; then
 elif [ -f "/tmp/config.yml" ]; then
 	mv "/tmp/config.yml" "/etc/openclash/config.yaml" 2>/dev/null
 fi
-uci set openclash.config.enable=0 && uci commit openclash
+uci set openclash.config.enable=0 2>/dev/null && uci commit openclash 2>/dev/null
 rm -rf /tmp/luci*
 endef
 
