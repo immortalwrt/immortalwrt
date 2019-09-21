@@ -10,11 +10,6 @@ local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
 
 local encrypt_methods_ss = {
-	-- aead
-	"AEAD_AES_128_GCM",
-	"AEAD_AES_192_GCM",
-	"AEAD_AES_256_GCM",
-	"AEAD_CHACHA20_POLY1305",
 	
 	-- stream
 	"rc4-md5",
@@ -29,6 +24,7 @@ local encrypt_methods_ss = {
 	"aes-256-gcm",
 	"chacha20",
 	"chacha20-ietf",
+	"xchacha20",
 	"chacha20-ietf-poly1305",
 	"xchacha20-ietf-poly1305",
 }
@@ -62,7 +58,7 @@ o:value("http", translate("HTTP(S)"))
 
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
-o = s:option(Value, "name", translate("Alias"))
+o = s:option(Value, "name", translate("Server Alias"))
 o.rmempty = false
 
 o = s:option(Value, "server", translate("Server Address"))
@@ -75,7 +71,7 @@ o.rmempty = false
 
 o = s:option(Value, "password", translate("Password"))
 o.password = true
-o.rmempty = true
+o.rmempty = false
 o:depends("type", "ss")
 
 o = s:option(ListValue, "cipher", translate("Encrypt Method"))
@@ -89,14 +85,14 @@ o.rmempty = true
 o:depends("type", "vmess")
 
 o = s:option(ListValue, "udp", translate("UDP Enable"))
-o.rmempty = false
+o.rmempty = true
 o.default = "false"
 o:value("true")
 o:value("false")
 o:depends("type", "ss")
 
 o = s:option(ListValue, "obfs", translate("obfs-mode"))
-o.rmempty = false
+o.rmempty = true
 o.default = "none"
 o:value("none")
 o:value("tls")
@@ -105,7 +101,7 @@ o:value("websocket", translate("websocket (ws)"))
 o:depends("type", "ss")
 
 o = s:option(ListValue, "obfs_vmess", translate("obfs-mode"))
-o.rmempty = false
+o.rmempty = true
 o.default = "none"
 o:value("none")
 o:value("websocket", translate("websocket (ws)"))
@@ -116,6 +112,7 @@ o.datatype = "host"
 o.rmempty = true
 o:depends("obfs", "tls")
 o:depends("obfs", "http")
+o:depends("obfs", "websocket")
 
 o = s:option(Value, "custom", translate("ws-headers"))
 o.rmempty = true
@@ -125,7 +122,7 @@ o:depends("obfs_vmess", "websocket")
 -- [[ WS部分 ]]--
 
 -- WS路径
-o = s:option(Value, "path", translate("ws-Path"))
+o = s:option(Value, "path", translate("ws-path"))
 o.rmempty = true
 o:depends("obfs", "websocket")
 o:depends("obfs_vmess", "websocket")
@@ -161,7 +158,8 @@ o.rmempty = true
 o.default = "false"
 o:value("true")
 o:value("false")
-o:depends("type", "vmess")
+o:depends("obfs", "websocket")
+o:depends("obfs_vmess", "websocket")
 o:depends("type", "socks5")
 o:depends("type", "http")
 
@@ -171,7 +169,8 @@ o.rmempty = true
 o.default = "false"
 o:value("true")
 o:value("false")
-o:depends("type", "vmess")
+o:depends("obfs", "websocket")
+o:depends("obfs_vmess", "websocket")
 o:depends("type", "socks5")
 o:depends("type", "http")
 
