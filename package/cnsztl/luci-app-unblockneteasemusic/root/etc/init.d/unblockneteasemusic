@@ -97,11 +97,11 @@ start()
 	[ "${enable}" -eq "0" ] && exit 0
 
 	if [ "${type}" = "default" ]; then
-		node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
 	elif [ "${type}" = "all" ]; then
-		node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} -o kuwo migu xiami kugou qq joox netease ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} -o kuwo migu xiami kugou qq joox netease ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
 	else
-		node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} -o ${type} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/app.js -a ${addr} -p ${http_port}:${https_port} -o ${type} ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
 	fi
 
 	if [ "*${hijack_ways}*" = "*use_ipset*" ]; then
@@ -112,13 +112,13 @@ start()
 		set_hosts
 	fi
 
-	/usr/share/unblockneteasemusic/logcheck.sh >/dev/null 2>&1 &
+	nohup /usr/share/unblockneteasemusic/logcheck.sh >/dev/null 2>&1 &
 }
 
 stop()
 {
-	kill -9 "$(ps |grep unblockneteasemusic |grep app.js |grep -v grep |awk '{print $1}')" >/dev/null 2>&1
-	kill -9 "$(ps |grep unblockneteasemusic |grep logcheck.sh |grep -v grep |awk '{print $1}')" >/dev/null 2>&1
+	{ ps |grep "unblockneteasemusic" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } >/dev/null 2>&1
+	{ ps |grep "unblockneteasemusic" |grep "logcheck.sh" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } >/dev/null 2>&1
 
 	rm -f /tmp/unblockneteasemusic.log
 

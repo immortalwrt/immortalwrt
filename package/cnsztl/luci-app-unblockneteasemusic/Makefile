@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for UnblockNeteaseMusic-nondanee
-LUCI_DEPENDS:=+UnblockNeteaseMusic-nondanee +bash +dnsmasq-full +ipset
+LUCI_DEPENDS:=+UnblockNeteaseMusic-nondanee +bash +dnsmasq-full +ipset +coreutils-nohup
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-unblockneteasemusic
-PKG_VERSION:=1.5
-PKG_RELEASE:=2
+PKG_VERSION:=1.6
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=<https://github.com/project-openwrt/UnblockNeteaseMusic>
 
