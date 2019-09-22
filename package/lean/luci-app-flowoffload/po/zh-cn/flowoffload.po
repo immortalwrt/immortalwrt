@@ -64,8 +64,8 @@ msgstr "启用dnsmasq去广告"
 msgid "dnsmasq killqqad"
 msgstr "dnsmasq去广告"
 
-msgid "AdGuardHome After setting up, shut down DNS acceleration normally and save configuration file"
-msgstr "AdGuardHome设置完后正常关闭dns加速即可保存配置文件.AdGuardHome管理页面IP:3001 管理账号密码：AdGuardHome"
+msgid "AdGuardHome's login username/passwd: AdGuardHome, web console addr: IP:3001"
+msgstr "AdGuardHome 网页控制台地址：IP:3001 登录账号/密码：AdGuardHome"
 
 msgid "Filter AAAA"
 msgstr "忽略域名的IPv6地址"
