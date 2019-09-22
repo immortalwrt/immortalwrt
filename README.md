@@ -51,7 +51,8 @@ simple-obfs source: [aa65535/openwrt-simple-obfs](https://github.com/aa65535/ope
 v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/openwrt-v2ray-plugin).<br/>
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
 luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
-luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).
+luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
+luci-app-koolproxyR source: [tzxiaozhen88/koolproxyR](https://github.com/tzxiaozhen88/koolproxyR).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
