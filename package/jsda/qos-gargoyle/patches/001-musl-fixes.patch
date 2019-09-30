@@ -36,6 +36,16 @@
  
  /* use_names is required when linking to tc_util.o */
  bool use_names = false;
+@@ -379,8 +382,7 @@ int use_iec = 0;
+ int resolve_hosts = 0;
+ 
+ 
+-int print_class(const struct sockaddr_nl *who,
+-               struct nlmsghdr *n, void *arg)
++int print_class(struct nlmsghdr *n, void *arg)
+ {
+     struct tcmsg *t = NLMSG_DATA(n);
+     int len = n->nlmsg_len;
 @@ -630,7 +633,7 @@ int tc_class_modify(__u32 rate)
      }
  
