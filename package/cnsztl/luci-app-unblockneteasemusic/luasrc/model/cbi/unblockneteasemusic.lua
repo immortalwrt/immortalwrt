@@ -1,5 +1,5 @@
 mp = Map("unblockneteasemusic", translate("解除网易云音乐播放限制"))
-mp.description = translate("原理：采用 [QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>具体使用方法参见：https://github.com/project-openwrt/UnblockNeteaseMusic")
+mp.description = translate("原理：采用 [QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>具体使用方法参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic")
 
 mp:section(SimpleSection).template  = "unblockneteasemusic/unblockneteasemusic_status"
 
@@ -40,7 +40,7 @@ speedtype.default = "default"
 speedtype.rmempty = false
 
 hijack = s:option(ListValue, "hijack_ways", translate("劫持方法"))
-hijack:value("dont_hijack", translate("不启用劫持功能"))
+hijack:value("dont_hijack", translate("不开启劫持"))
 hijack:value("use_ipset", translate("使用IPSet劫持"))
 hijack:value("use_hosts", translate("使用Hosts劫持"))
 hijack.description = translate("如果使用Hosts劫持，请将HTTP/HTTPS端口设置为80/443")
