@@ -52,7 +52,8 @@ v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/ope
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
 luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
-luci-app-koolproxyR source: [tzxiaozhen88/koolproxyR](https://github.com/tzxiaozhen88/koolproxyR).
+luci-app-koolproxyR source: [tzxiaozhen88/koolproxyR](https://github.com/tzxiaozhen88/koolproxyR).<br/>
+openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
