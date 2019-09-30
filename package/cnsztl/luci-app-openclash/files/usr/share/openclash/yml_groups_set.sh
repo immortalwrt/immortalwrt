@@ -57,6 +57,8 @@ yml_groups_set()
       return
    fi
    
+   echo "正在写入【$type】-【$name】策略组到配置文件..." >$START_LOG
+   
    echo "- name: $name" >>$GROUP_FILE
    echo "  type: $type" >>$GROUP_FILE
    echo "  proxies:" >>$GROUP_FILE
@@ -84,7 +86,7 @@ create_config=$(uci get openclash.config.create_config 2>/dev/null)
 if [ "$create_config" = "0" ]; then
 
    if [ -z "$(grep "^ \{0,\}Proxy:" /etc/openclash/config.yaml)" ] || [ -z "$(grep "^ \{0,\}Proxy Group:" /etc/openclash/config.yaml)" ]; then
-      echo "未找到配置文件，开始使用ConnersHua规则创建..." >$START_LOG
+      echo "配置文件不完整，开始使用ConnersHua规则创建..." >$START_LOG
       uci set openclash.config.create_config=1
       uci set openclash.config.rule_sources="ConnersHua"
       uci set openclash.config.rule_source="ConnersHua"
@@ -98,4 +100,4 @@ if [ "$create_config" = "0" ]; then
    fi
 
 fi
-echo "配置文件策略组创建完成！" >$START_LOG
+echo "配置文件策略组写入完成！" >$START_LOG

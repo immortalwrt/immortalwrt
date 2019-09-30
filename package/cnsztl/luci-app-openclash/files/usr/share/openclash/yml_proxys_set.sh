@@ -5,7 +5,6 @@ status=$(ps|grep -c /usr/share/openclash/yml_proxys_set.sh)
 START_LOG="/tmp/openclash_start.log"
 SERVER_FILE="/tmp/yaml_servers.yaml"
 
-
 #写入服务器节点到配置文件
 yml_servers_set()
 {
@@ -22,6 +21,7 @@ yml_servers_set()
    config_get "obfs" "$section" "obfs" ""
    config_get "obfs_vmess" "$section" "obfs_vmess" ""
    config_get "host" "$section" "host" ""
+   config_get "mux" "$section" "mux" ""
    config_get "custom" "$section" "custom" ""
    config_get "tls" "$section" "tls" ""
    config_get "skip_cert_verify" "$section" "skip_cert_verify" ""
@@ -36,6 +36,10 @@ yml_servers_set()
       return
    fi
    
+   if [ -z "$name" ]; then
+      return
+   fi
+   
    if [ -z "$server" ]; then
       return
    fi
@@ -47,6 +51,8 @@ yml_servers_set()
    if [ -z "$password" ] && [ "$type" = "ss" ]; then
       return
    fi
+   
+   echo "正在写入【$type】-【$name】节点到配置文件..." >$START_LOG
    
    if [ "$obfs" != "none" ]; then
       if [ "$obfs" = "websocket" ]; then
@@ -133,6 +139,11 @@ cat >> "$SERVER_FILE" <<-EOF
     $path
 EOF
   fi
+  if [ ! -z "$mux" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    mux: $mux
+EOF
+  fi
   if [ ! -z "$custom" ]; then
 cat >> "$SERVER_FILE" <<-EOF
     headers:
@@ -160,7 +171,7 @@ config_foreach yml_servers_set "servers"
 echo "Proxy Group:" >>$SERVER_FILE
 rule_sources=$(uci get openclash.config.rule_sources 2>/dev/null)
 create_config=$(uci get openclash.config.create_config 2>/dev/null)
-egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >/tmp/Proxy_Server 2>&1
+egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' 2>/dev/null >/tmp/Proxy_Server 2>&1
 sed -i "s/^ \{0,\}/  - /" /tmp/Proxy_Server 2>/dev/null #添加参数
 
 
@@ -310,18 +321,21 @@ uci set openclash.config.Others="Others"
 fi
 if [ "$create_config" != "0" ]; then
    echo "Rule:" >>$SERVER_FILE
-   uci commit openclash
+   echo "服务器节点写入配置文件完成，开始更新配置文件..." >$START_LOG
    cat "$SERVER_FILE" > "/etc/openclash/config.yaml" 2>/dev/null
+   /usr/share/openclash/yml_groups_get.sh >/dev/null 2>&1
 else
-   echo "正在更新配置文件服务器节点信息..." >$START_LOG
-   /usr/share/openclash/yml_groups_set.sh
+   echo "正在更新配置文件..." >$START_LOG
+   /usr/share/openclash/yml_groups_set.sh >/dev/null 2>&1
    sed -i '/^ \{0,\}Proxy:/i\#change server#' "/etc/openclash/config.yaml" 2>/dev/null
    sed -i '/^ \{0,\}Proxy:/,/^ \{0,\}Rule:/d' "/etc/openclash/config.yaml" 2>/dev/null
    sed -i '/#change server#/r/tmp/yaml_servers.yaml' "/etc/openclash/config.yaml" 2>/dev/null
    sed -i '/Proxy Group:/r/tmp/yaml_groups.yaml' "/etc/openclash/config.yaml" 2>/dev/null
    sed -i '/#change server#/d' "/etc/openclash/config.yaml" 2>/dev/null
 fi
-echo "配置文件更新完成！" >$START_LOG
+echo "配置文件服务器节点写入完成！" >$START_LOG
 rm -rf $SERVER_FILE 2>/dev/null
 rm -rf /tmp/Proxy_Server 2>/dev/null
 rm -rf /tmp/yaml_groups.yaml 2>/dev/null
+uci set openclash.config.enable=1 2>/dev/null
+/etc/init.d/openclash restart >/dev/null 2>&1

@@ -37,7 +37,7 @@ local function is_web()
 end
 
 local function is_watchdog()
-	return luci.sys.exec("ps |grep openclash_watchdog.sh |grep -v grep 2>/dev/null")
+	return luci.sys.exec("ps |grep openclash_watchdog.sh |grep -v grep 2>/dev/null |sed -n 1p")
 end
 
 local function config_check()
@@ -141,11 +141,11 @@ local function startlog()
 end
 
 local function coremodel()
-  local coremodel = luci.sys.exec("cat /proc/cpuinfo |grep 'cpu model'  2>/dev/null |awk -F ': ' '{print $2}' 2>/dev/null")
-  if (coremodel ~= "") then
-      return coremodel
-  else
+  local coremodel = luci.sys.exec("cat /proc/cpuinfo |grep 'cpu model' 2>/dev/null |awk -F ': ' '{print $2}' 2>/dev/null")
+  if not coremodel or coremodel == "" then
      return luci.sys.exec("opkg status libc 2>/dev/null |grep 'Architecture' |awk -F ': ' '{print $2}' 2>/dev/null")
+  else
+     return coremodel
   end
 end
 
@@ -252,10 +252,10 @@ function action_update()
 			coremodel = coremodel(),
 			coremodel2 = coremodel2(),
 			corecv = corecv(),
-			corelv = corelv(),
 			opcv = opcv(),
 			corever = corever(),
 			upchecktime = upchecktime(),
+			corelv = corelv(),
 			oplv = oplv();
 	})
 end

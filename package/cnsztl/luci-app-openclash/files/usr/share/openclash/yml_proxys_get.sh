@@ -2,13 +2,17 @@
 status=$(ps|grep -c /usr/share/openclash/yml_proxys_get.sh)
 [ "$status" -gt "3" ] && exit 0
 
+START_LOG="/tmp/openclash_start.log"
+
 if [ ! -f "/etc/openclash/config.yml" ] && [ ! -f "/etc/openclash/config.yaml" ]; then
   exit 0
 elif [ ! -f "/etc/openclash/config.yaml" ] && [ "$(ls -l /etc/openclash/config.yml 2>/dev/null |awk '{print int($5/1024)}')" -gt 0 ]; then
    mv "/etc/openclash/config.yml" "/etc/openclash/config.yaml"
 fi
 
-awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' /etc/openclash/config.yaml 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
+echo "开始更新服务器节点配置..." >$START_LOG
+
+awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' /etc/openclash/config.yaml 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
 
 server_file="/tmp/yaml_proxy.yaml"
 single_server="/tmp/servers.yaml"
@@ -19,13 +23,7 @@ num=$(grep -c "^ \{0,\}-" $server_file)
 
 cfg_get()
 {
-	echo "$(grep "$1" $single_server |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' |sed 's/,.*//' |sed 's/\"//g' |sed 's/^ \{0,\}//g' |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}$//g' 2>/dev/null)"
-	
-}
-
-cfg_get_host()
-{
-	echo "$(grep "$1" $single_server |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' |sed 's/}.*//' |sed 's/,.*//' |sed 's/\"//g' |sed 's/^ \{0,\}//g' |sed 's/ \{0,\}$//g')"
+	echo "$(grep "$1" $single_server 2>/dev/null |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null)"
 }
 
 for n in $line
@@ -73,10 +71,12 @@ do
    tls="$(cfg_get "tls:")"
    #skip-cert-verify:
    verify="$(cfg_get "skip-cert-verify:")"
+   #mux:
+   mux="$(cfg_get "mux:")"
    #host:
    host="$(cfg_get "host:")"
    #Host:
-   Host="$(cfg_get_host "Host:")"
+   Host="$(cfg_get "Host:")"
    #path:
    path="$(cfg_get "path:")"
    #ws-path:
@@ -91,6 +91,8 @@ do
    network="$(cfg_get "network:")"
    #username
    username="$(cfg_get "username:")"
+   
+   echo "正在读取【$server_type】-【$server_name】服务器节点配置..." >$START_LOG
    
    name=openclash
    uci_name_tmp=$(uci add $name servers)
@@ -118,6 +120,7 @@ do
    ${uci_set}skip_cert_verify="$verify"
    ${uci_set}path="$path"
    [ -z "$path" ] && ${uci_set}path="$ws_path"
+   ${uci_set}mux="$mux"
    ${uci_set}custom="$headers"
    [ -z "$headers" ] && ${uci_set}custom="$Host"
     
@@ -134,19 +137,18 @@ do
      ${uci_set}password="$password"
 	fi
 	
-	server_name_change=$(echo "$server_name" |sed 's/\\/#d#/g' 2>/dev/null |sed 's/ /#spas#/g' |sed 's/\t/#tab#/g' 2>/dev/null) #替换斜杠和空格
 	for ((i=1;i<=$group_num;i++)) #循环加入策略组
 	do
 	   single_group="/tmp/group_$i.yaml"
-	   sed -i -e 's/\\/#d#/g' -e 's/ /#spas#/g' -e 's/\t/#tab#/g' "$single_group" 2>/dev/null #替换斜杠和空格
-     if [ ! -z "$(grep "$server_name_change" "$single_group")" ]; then
-        group_name=$(grep "name:" $single_group |sed 's/#d#/\\/g' |sed 's/#spas#/ /g' |sed 's/#tab#/	/g' |awk -F 'name: ' '{print $2}' |sed 's/,.*//' 2>/dev/null |sed 's/\"//g' 2>/dev/null)
+     if [ ! -z "$(grep -F "$server_name" "$single_group")" ]; then
+        group_name=$(grep "name:" $single_group 2>/dev/null |awk -F 'name:' '{print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null)
         ${uci_add}groups="$group_name"
      fi
 	done
-
 done
-
+echo "配置文件读取完成！" >$START_LOG
+sleep 3
+echo "" >$START_LOG
 uci commit openclash
 rm -rf /tmp/servers.yaml 2>/dev/null
 rm -rf /tmp/yaml_proxy.yaml 2>/dev/null

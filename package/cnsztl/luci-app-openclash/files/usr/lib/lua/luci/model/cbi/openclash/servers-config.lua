@@ -1,5 +1,3 @@
--- Copyright (C) 2017 yushi studio <ywb94@qq.com> github.com/ywb94
--- Licensed to the public under the GNU General Public License v3.
 
 local m, s, o
 local openclash = "openclash"
@@ -10,7 +8,7 @@ local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
 
 local encrypt_methods_ss = {
-	
+
 	-- stream
 	"rc4-md5",
 	"aes-128-cfb",
@@ -80,7 +78,7 @@ o.rmempty = true
 o:depends("type", "ss")
 
 o = s:option(ListValue, "securitys", translate("Encrypt Method"))
-for _, v in ipairs(securitys) do o:value(v, v:upper()) end
+for _, v in ipairs(securitys) do o:value(v) end
 o.rmempty = true
 o:depends("type", "vmess")
 
@@ -152,8 +150,16 @@ o:depends("type", "socks5")
 o:depends("type", "http")
 o.rmempty = true
 
+-- [[ MUX ]]--
+o = s:option(ListValue, "mux", translate("mux"))
+o.rmempty = true
+o.default = "false"
+o:value("true")
+o:value("false")
+o:depends("obfs", "websocket")
+
 -- [[ skip-cert-verify ]]--
-o = s:option(ListValue, "skip_cert_verify", translate("Skip Cert Verify"))
+o = s:option(ListValue, "skip_cert_verify", translate("Skip-Cert-Verify"))
 o.rmempty = true
 o.default = "false"
 o:value("true")
@@ -177,7 +183,7 @@ o:depends("type", "http")
 o = s:option(DynamicList, "groups", translate("Proxy Group"))
 o.description = translate("No Need Set when Config Create, The added Proxy Groups Must Exist")
 o.rmempty = true
-uci:foreach("openclash", "groups",
+m.uci:foreach("openclash", "groups",
 		function(s)
 			o:value(s.name)
 		end)
@@ -191,16 +197,16 @@ o = a:option(Button,"Commit")
 o.inputtitle = translate("Commit Configurations")
 o.inputstyle = "apply"
 o.write = function()
-   uci:commit(openclash, sid)
-   luci.http.redirect(luci.dispatcher.build_url("admin", "services", "openclash", "servers"))
+   m.uci:commit(openclash)
+   luci.http.redirect(m.redirect)
 end
 
 o = a:option(Button,"Back")
 o.inputtitle = translate("Back Configurations")
 o.inputstyle = "reset"
 o.write = function()
-   uci:revert(openclash, sid)
-   luci.http.redirect(luci.dispatcher.build_url("admin", "services", "openclash", "servers"))
+   m.uci:revert(openclash)
+   luci.http.redirect(m.redirect)
 end
 
 return m
