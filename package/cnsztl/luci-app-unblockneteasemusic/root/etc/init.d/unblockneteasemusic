@@ -45,6 +45,14 @@ set_ipset(){
 		cat > "/var/etc/unblockneteasemusic.include" <<-EOF
 if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
 iptables -t nat -N cloud_music
+iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
+iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
+iptables -t nat -A cloud_music -d 127.0.0.0/8 -j RETURN
+iptables -t nat -A cloud_music -d 169.254.0.0/16 -j RETURN
+iptables -t nat -A cloud_music -d 172.16.0.0/12 -j RETURN
+iptables -t nat -A cloud_music -d 192.168.0.0/16 -j RETURN
+iptables -t nat -A cloud_music -d 224.0.0.0/4 -j RETURN
+iptables -t nat -A cloud_music -d 240.0.0.0/4 -j RETURN
 iptables -t nat -A cloud_music -p tcp --dport 80 -j REDIRECT --to-ports ${http_port}
 iptables -t nat -A cloud_music -p tcp --dport 443 -j REDIRECT --to-ports ${https_port}
 iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j cloud_music
