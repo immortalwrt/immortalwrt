@@ -1,5 +1,3 @@
--- Copyright (C) 2017 yushi studio <ywb94@qq.com> github.com/ywb94
--- Licensed to the public under the GNU General Public License v3.
 
 local m, s, o
 local clash = "clash"
@@ -14,13 +12,7 @@ local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
 local server_table = {}
 
 local encrypt_methods_ss = {
-	-- aead
-	"AEAD_AES_128_GCM",
-	"AEAD_AES_192_GCM",
-	"AEAD_AES_256_GCM",
-	"AEAD_CHACHA20_POLY1305",
-	
-	-- stream
+
 	"rc4-md5",
 	"aes-128-cfb",
 	"aes-192-cfb",
@@ -33,6 +25,7 @@ local encrypt_methods_ss = {
 	"aes-256-gcm",
 	"chacha20",
 	"chacha20-ietf",
+	"xchacha20",
 	"chacha20-ietf-poly1305",
 	"xchacha20-ietf-poly1305",
 }
@@ -93,7 +86,6 @@ o:depends("type", "vmess")
 
 
 o = s:option(ListValue, "obfs", translate("obfs-mode"))
-o.rmempty = false
 o.default = " "
 o:value(" ", translate("none"))
 o:value("tls")
@@ -102,7 +94,6 @@ o:value("websocket", translate("websocket (ws)"))
 o:depends("type", "ss")
 
 o = s:option(ListValue, "obfs_vmess", translate("obfs-mode"))
-o.rmempty = false
 o.default = "none"
 o:value("none")
 o:value("websocket", translate("websocket (ws)"))
@@ -115,14 +106,11 @@ o:depends("obfs", "tls")
 o:depends("obfs", "http")
 
 o = s:option(ListValue, "udp", translate("udp"))
-o.rmempty = false
-o.default = "false"
 o:value("true")
 o:value("false")
 o:depends("type", "ss")
 
 o = s:option(ListValue, "tls_custom", translate("tls"))
-o.rmempty = false
 o.default = "false"
 o:value("true")
 o:value("false")
@@ -142,6 +130,11 @@ o.rmempty = true
 o:depends("obfs", "websocket")
 o:depends("obfs_vmess", "websocket")
 
+o = s:option(ListValue, "mux", translate("Mux"))
+o.default = "false"
+o:value("true")
+o:value("false")
+o:depends("obfs", "websocket")
 
 o = s:option(Value, "custom", translate("headers"))
 o.rmempty = true

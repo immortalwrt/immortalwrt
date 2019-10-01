@@ -1,5 +1,38 @@
+msgid "Custom List DNS"
+msgstr "自定义列表DNS"
+
+msgid "Apply Custom List"
+msgstr "应用自定义列表"
+
+msgid "Custom List"
+msgstr "自定义列表"
+
+msgid "Allow Lan"
+msgstr "允许局域网"
+
+msgid "Bind All IP Addresses"
+msgstr "绑定所有IP地址"
+
+msgid "Bind Address"
+msgstr "绑定地址"
+
+msgid "enabled to create custom configuration"
+msgstr "已启用以创建自定义配置"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Click to create custom server configuration"
+msgstr "单击以创建自定义服务器配置"
+
+msgid "Log"
+msgstr "日志"
+
 msgid "Update Config"
 msgstr "更新配置"
+
+msgid "NOT RUNNING"
+msgstr "末运行"
 
 msgid "Enabled Custom Rule"
 msgstr "启用自定义规则"
@@ -109,8 +142,8 @@ msgstr "在DHCP和DNS设置自定义DNS转发"
 msgid "Proxy Lan IP"
 msgstr "走代理的局域网IP"
 
-msgid "Only selected IPs will be proxied if enabled"
-msgstr "如果启用，仅选择IP只走代理"
+msgid "Only selected IPs will be proxied if enabled. fake-ip mode not supported"
+msgstr "如果启用，仅选择IP只走代理,不支持fake-ip模式"
 
 msgid "Proxy Lan List"
 msgstr "走代理的IP列表"
@@ -121,8 +154,8 @@ msgstr "选择IP只走代理"
 msgid "Bypass Lan IP"
 msgstr "不走代理的局域网IP"
 
-msgid "Selected IPs will not be proxied if enabled"
-msgstr "如果启用，仅选择IP只不走代理"
+msgid "Selected IPs will not be proxied if enabled. fake-ip mode not supported"
+msgstr "如果启用，仅选择IP只不走代理,不支持fake-ip模式"
 
 msgid "Bypass Lan List"
 msgstr "不走代理的IP列表"
@@ -149,19 +182,25 @@ msgid "Google"
 msgstr "谷歌网"
 
 msgid "Youtube"
-msgstr "Youtube网"
+msgstr "Youtube"
 
 msgid "Baidu"
 msgstr "百度网"
 
+msgid "Github"
+msgstr "Github"
+
+msgid "Music.163"
+msgstr "网易云音乐"
+
 msgid "Taobao"
 msgstr "淘宝网"
 
-msgid "CONNECT OK"
-msgstr "连接正常"
+msgid "NORMAL"
+msgstr "正常"
 
 msgid "TIMEOUT"
-msgstr "连接超时"
+msgstr "超时"
 
 msgid "NOT SET"
 msgstr "未设置"
@@ -184,7 +223,7 @@ msgstr "打开外部控制"
 msgid "Clash Dashboard"
 msgstr "Clash外部控制"
 
-msgid "Yacd Dashboard"
+msgid "Yac Dashboard"
 msgstr "Yacd外部控制"
 
 msgid "Client"
@@ -204,9 +243,6 @@ msgstr "自定义DNS"
 
 msgid "Modify yaml DNS"
 msgstr "修改 DNS"
-
-msgid "Logs"
-msgstr "日志"
 
 msgid "Enable"
 msgstr "启用"
@@ -262,6 +298,9 @@ msgstr "更新"
 msgid "Enable Client"
 msgstr "启用客户端"
 
+msgid "Config In Use"
+msgstr "使用中的配置"
+
 msgid "Server Subscription Address"
 msgstr "服务器订阅地址"
 
@@ -291,6 +330,9 @@ msgstr "执行此操作以生成新配置"
 
 msgid "Delete Severs"
 msgstr "清空节点"
+
+msgid "Load Servers"
+msgstr "读取节点"
 
 msgid "Type"
 msgstr "节点类型"
@@ -342,3 +384,120 @@ msgstr "未配置"
 
 msgid "NB: Attention to Proxy Group and Rule when making changes to this section"
 msgstr "注意：更改时，请注意代理组和规则"
+
+msgid "Subscription Config"
+msgstr "订阅配置"
+
+msgid "Subscribe Config"
+msgstr "订阅配置"
+
+msgid "Uploaded Config"
+msgstr "上传的配置"
+
+msgid "Custom Config"
+msgstr "自定义配置"
+
+msgid "Custom"
+msgstr "自定义"
+
+msgid "Config Type"
+msgstr "配置类型"
+
+msgid "Select Configuration type"
+msgstr "选择配置类型”"
+
+msgid "Create Config"
+msgstr "一键生成配置文件"
+
+msgid "Create Config By One-Click Only Need Proxys"
+msgstr "一键生成配置文件功能只需要配置服务器节点信息"
+
+msgid "Proxy Groups(No Need Set when Config Create)"
+msgstr "策略组配置（使用一键生成配置文件功能时无需设置）"
+
+msgid "Proxies"
+msgstr "代理"
+
+msgid "Edit Group"
+msgstr "编辑策略组配置"
+
+msgid "Group Type"
+msgstr "策略组类型"
+
+msgid "Choose The Operation Mode"
+msgstr "设置策略组挑选服务器节点的工作方式"
+
+msgid "Group Name"
+msgstr "策略组别名（请勿重名）"
+
+msgid "Test URL"
+msgstr "检测地址（URL）"
+
+msgid "Test Interval(s)"
+msgstr "检测频率（秒）"
+
+msgid "Select"
+msgstr "手动选择"
+
+msgid "URL-Test"
+msgstr "最低延迟"
+
+msgid "Fallback"
+msgstr "故障切换"
+
+msgid "Load-Balance"
+msgstr "负载均衡"
+
+msgid "Other Group"
+msgstr "包含其他策略组"
+
+msgid "Proxy Groups Must Exist In Rule"
+msgstr "添加的策略组必须存在规则创建"
+
+msgid "Policy Groups"
+msgstr "添加到策略组"
+
+msgid "Rule"
+msgstr "规则"
+
+msgid "Custom Rule Url"
+msgstr "自定义规则URL"
+
+msgid "Download Rule"
+msgstr "下载规则"
+
+msgid "Insert your custom rule Url and click download"
+msgstr "输入自定义规则URL并单击下载"
+
+msgid "Delete Rule"
+msgstr "删除规则"
+
+msgid "Latency"
+msgstr "延迟"
+
+msgid "Delete Groups"
+msgstr "删除策略组"
+
+msgid "Perform this action to delete all policy groups"
+msgstr "执行此操作以删除所有策略组"
+
+msgid "Upload Config"
+msgstr "上传配置文件"
+
+msgid "Upload"
+msgstr "上传"
+
+msgid "File saved to"
+msgstr "文件已成功上传到"
+
+msgid "upload file error."
+msgstr "文件上传失败"
+
+msgid "Load Config From"
+msgstr "从哪读取自定义节点"
+
+msgid "Select from which configuration custom server should be loaded from"
+msgstr "选择从哪个配置文件读取自定义节点"
+
+msgid "Servers"
+msgstr "服务器"

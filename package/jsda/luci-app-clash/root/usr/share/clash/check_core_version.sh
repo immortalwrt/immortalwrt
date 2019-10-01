@@ -8,3 +8,4 @@ echo $new_core_version > /usr/share/clash/new_core_version 2>&1 & >/dev/null
 elif [ $new_core_version =="" ]; then
 echo 0 > /usr/share/clash/new_core_version 2>&1 & >/dev/null
 fi
+ 

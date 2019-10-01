@@ -1,5 +1,5 @@
 #!/bin/sh
- 
+  
 sleeptime=300
 logfile="/tmp/clash.log"
 CLASH="/etc/clash/clash"

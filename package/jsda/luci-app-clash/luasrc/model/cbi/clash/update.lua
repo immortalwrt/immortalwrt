@@ -1,16 +1,16 @@
-
+local NXFS = require "nixio.fs"
+local SYS  = require "luci.sys"
+local HTTP = require "luci.http"
+local DISP = require "luci.dispatcher"
+local UTIL = require "luci.util"
+local uci = require("luci.model.uci").cursor()
 local m
-local sys = require "luci.sys"
-local uci = luci.model.uci.cursor()
-
-ful = Form("upload", nil)
-ful.reset = false
-ful.submit = false
 
 
 m = Map("clash")
 m:section(SimpleSection).template  = "clash/update"
+m.pageaction = false
 
 
-return m, ful
+return m
 

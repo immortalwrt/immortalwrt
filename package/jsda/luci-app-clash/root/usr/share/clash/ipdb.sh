@@ -6,3 +6,4 @@
       && mv /tmp/GeoLite2-Country_*/GeoLite2-Country.mmdb /etc/clash/Country.mmdb\
       && rm -rf /tmp/GeoLite2-Country_* >/dev/null 2>&1
    fi
+ 

@@ -10,10 +10,60 @@ config clash 'config'
 	option auto_update_time '0'
 	option level 'info'
 	option proxylan '0'
+	option allow_lan 'true'
+	option bind_addr '*'
 	option rejectlan '0'
 	option dnsforwader '0'
 	option subcri 'clash'
+	option cus_list '1'
+	option custom_dns '114.114.114.114'
 	option v2ray 'https://tgbot.lbyczf.com/v2rayn2clash?url='
 	option surge 'https://tgbot.lbyczf.com/surge2clash?url='
 	option cusrule '0'
-	option enable_servers '0'
+	option cus_servers '1'
+	option config_type 'sub'
+	option loadservers 'sub'
+	
+
+config groups
+	option old_name '❌AdBlock'
+	option old_name_cfg '❌AdBlock'
+	option type 'select'
+	list other_group 'REJECT'
+	option name '❌AdBlock'
+
+config groups
+	option old_name '🖥️AsianTV'
+	option old_name_cfg '🖥️AsianTV'
+	option type 'select'
+	option name '🖥️AsianTV'
+	list other_group 'DIRECT'
+	list other_group '🔑Proxy'
+
+config groups
+	option old_name '📺GlobalTV'
+	option old_name_cfg '📺GlobalTV'
+	option type 'select'
+	option name '📺GlobalTV'
+	list other_group '🔑Proxy'
+	list other_group 'DIRECT'
+
+config groups
+	option type 'select'
+	option name '🔑Proxy'
+	list other_group '⚙️LoadBalance'
+	list other_group '✈️UrlTest'
+
+config groups
+	option old_name '✈️UrlTest'
+	option old_name_cfg '✈️UrlTest'
+	option test_url 'http://www.gstatic.com/generate_204'
+	option type 'url-test'
+	option test_interval '600'
+	option name '✈️UrlTest'
+
+config groups
+	option type 'load-balance'
+	option test_url 'http://www.gstatic.com/generate_204'
+	option test_interval '300'
+	option name '⚙️LoadBalance'

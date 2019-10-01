@@ -7,6 +7,7 @@ local uci = require("luci.model.uci").cursor()
 
 m = Map("clash")
 s = m:section(TypedSection, "clash")
+--m.pageaction = false
 s.anonymous = true
 
 o = s:option(Value, "http_port")
@@ -30,6 +31,34 @@ o.datatype = "port"
 o.rmempty = false
 o.description = translate("Redir Port")
 
+
+o = s:option(ListValue, "allow_lan")
+o.title = translate("Allow Lan")
+o.default = true
+o.rmempty = false
+o:value("true", "true")
+o:value("false", "false")
+o.description = translate("Allow Lan")
+
+
+o = s:option(Value, "bind_addr")
+o.title = translate("Bind Address")
+o:value("*",  translate("Bind All IP Addresses"))
+luci.ip.neighbors({ family = 4 }, function(entry)
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
+end)
+luci.ip.neighbors({ family = 6 }, function(entry)
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
+end)
+o.description = translate("Bind Address")
+o:depends("allow_lan", "true")
+
+
+
 o = s:option(Value, "dash_port")
 o.title = translate("Dashboard Port")
 o.default = 9191
@@ -52,11 +81,14 @@ o:value("error", "error")
 o:value("debug", "debug")
 
 local clash_conf = "/etc/clash/config.yaml"
-if NXFS.access(clash_conf) then
 local apply = luci.http.formvalue("cbi.apply")
 if apply then
+if NXFS.access(clash_conf) then
+	uci:commit("clash")
 	SYS.call("sh /usr/share/clash/yum_change.sh 2>&1 &")
+	if luci.sys.call("pidof clash >/dev/null") == 0 then
 	SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
+	end
 end
 end
 

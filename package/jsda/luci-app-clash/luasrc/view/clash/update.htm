@@ -4,17 +4,17 @@
 		<tr>
 			<th align="center"><%:App Name%></th>
 			<th align="center"><%:Version%></th>
-			<th align="center"><%:Check Update%></th>
+			<th align="center"><%:Check Update%></th> 
 											   
 		</tr>
 	</thead>
 	<tbody> 
 		
 		<tr>
-			<td align="center" width="35%">Clash</td> <td align="center" width="35%" id="_core"><%:Collecting data...%></td> <td width="35%" align="center" id="_corebutt"></td> 
+			<td align="center" width="35%">clash</td> <td align="center" width="35%" id="_core"><%:Collecting data...%></td> <td width="35%" align="center" id="_corebutt"></td> 
 		</tr>
 		<tr>
-			<td align="center" width="35%">Luci-app-clash</td> <td align="center" width="35%" id="_version"><%:Collecting data...%> </td> <td width="35%" align="center" id="_versionbutt"></td>
+			<td align="center" width="35%">luci-app-clash</td> <td align="center" width="35%" id="_version"><%:Collecting data...%> </td> <td width="35%" align="center" id="_versionbutt"></td>
 		</tr>
 
 		
@@ -36,25 +36,19 @@
 		if ( x && x.status == 200 ) {
 			core_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return core_check(this)"/></center>' : '<em></em>';
 			version_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return version_check(this)"/></center>' : '<em></em>';
-			
-		}
-	});
-	
-	XHR.poll(1, '<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
-		if ( x && x.status == 200 ) {
 			if(status.clash_core==0){
 			core.innerHTML = status.clash_core ? '<b><font color=red><%:Not Installed%></font> </b>' : '<em><b><font color=red><%:Checking...%></font></b></em>';
 			}
 			else
 			{
 			core.innerHTML = status.clash_core ? '<b><font color=green>'+status.clash_core+'</font> </b>' : '<em><b><font color=red><%:Checking...%></font></b></em>';
-			}
-
-			
+			}	
 			version.innerHTML = status.current_version ? '<b><font color=green>'+status.current_version+'</font> </b>' : '<em><b><font color=red><%:Checking...%></font></b></em>';
-			
+						
 		}
 	});
+	
+
 	
 
 function version_check(btn)
@@ -69,7 +63,7 @@ function version_check(btn)
 	
    else if(status.new_version==0)
    {
-	version_butt.innerHTML ='<center><input type="button" class="cbi-button cbi-button-reset" value="<%:Error Occured | Return%>" onclick="return check_return(this)"/></center>';
+	version_butt.innerHTML ='<center><input type="button" class="cbi-button cbi-button-reset" value="<%:Error Occured  |Return%>" onclick="return check_return(this)"/></center>';
   
 	}
 	else if(status.current_version >= status.new_version)
@@ -110,7 +104,7 @@ function download_update(btn)
 XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
         btn.disabled = true;
         btn.value    = '<%:Download%>';
-        url='https://github.com/frainzy1477/luci-app-clash/releases/download/v'+status.new_version+'/luci-app-clash_'+status.new_version+'-1_all.ipk';
+        url='https://github.com/frainzy1477/luci-app-clash/releases/download/v'+status.new_version+'/luci-app-clash_'+status.new_version+'-2_all.ipk';
         window.open(url);
         btn.disabled = false;
         return false;

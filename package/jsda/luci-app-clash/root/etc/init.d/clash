@@ -10,6 +10,11 @@ CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
 CONFIG_YAML_OLD="/etc/clash/config.yml"
 
+CONFIG_YAML_SUB="/usr/share/clash/config/sub/config.yaml"
+CONFIG_YAML_UPL="/usr/share/clash/config/upload/config.yaml"
+CONFIG_YAML_CUS="/usr/share/clash/config/custom/config.yaml"
+
+
 
 revert_dns() {
 #=========================================================================================================================== 
@@ -24,13 +29,16 @@ revert_dns() {
 }
 
 add_cron(){
+config_type=$(uci get clash.config.config_type 2>/dev/null)
 #=========================================================================================================================== 
 	sed -i '/clash.log/d' $CRON_FILE
 	echo '0 0 * * 0 echo "" > /tmp/clash.log' >> $CRON_FILE
+	if [ $config_type == "sub" ];then 
 	[ -n "$(grep -w "/usr/share/clash/clash.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/clash.sh/d' $CRON_FILE
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
 	if [ $auto -eq 1 ]; then
 	[ -z "$(grep -w "/usr/share/clash/clash.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/clash.sh" >> $CRON_FILE
+	fi
 	fi
 	crontab $CRON_FILE
 #=========================================================================================================================== 	
@@ -45,29 +53,54 @@ del_cron(){
 }
 
 
-yml_change() {
-	sh /usr/share/clash/yum_change.sh >/dev/null 2>&1
+select_config(){
+#=========================================================================================================================== 
+config_type=$(uci get clash.config.config_type 2>/dev/null)
+
+
+if [ $config_type == "sub" ];then 
+if [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB|awk '{print int($5/1024)}')" -ne 0 ];then
+	cp $CONFIG_YAML_SUB $CONFIG_YAML
+fi
+elif [ $config_type == "upl" ];then 
+if [  -f $CONFIG_YAML_UPL ] && [ "$(ls -l $CONFIG_YAML_UPL|awk '{print int($5/1024)}')" -ne 0 ];then
+	cp $CONFIG_YAML_UPL $CONFIG_YAML
+fi
+elif [ $config_type == "cus" ];then 
+if [  -f $CONFIG_YAML_CUS ] && [ "$(ls -l $CONFIG_YAML_CUS|awk '{print int($5/1024)}')" -ne 0 ];then
+	cp $CONFIG_YAML_CUS $CONFIG_YAML
+fi
+fi
+
+#=========================================================================================================================== 
 }
 
+
+
+yml_change() {
+#=========================================================================================================================== 
+	sh /usr/share/clash/yum_change.sh >/dev/null 2>&1
+#=========================================================================================================================== 
+}
 
 
 
 yml_dns_change(){
 #=========================================================================================================================== 
-	dns_port=$(grep listen: $CONFIG_YAML |awk -F ':' '{print $3}' |tr -cd "[0-9]")
+	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 	dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
 	
+	
 	if [ $dns_port -eq 53 ]; then
-	          sed -i '/listen:/ d' $CONFIG_YAML
-	          sed -i "/nameserver:/i\  listen: 0.0.0.0:5300" $CONFIG_YAML
+			sed -i 's/0.0.0.0:53/0.0.0.0:5300/g' $CONFIG_YAML
 	fi	
 
-	if [ $dnsforwader -eq 1 ]; then	
+	if [ $dnsforwader -ne 0 ]; then	
 	   if [ $dns_port -eq 53 ]; then
 		  dns_serve1=$(uci get dhcp.@dnsmasq[0].server 2>/dev/null)
 		  if [ $dns_serve1 ]; then
 			uci del dhcp.@dnsmasq[-1].server
-		  fi
+		  fi	
 	          uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#5300 >/dev/null 2>&1
 	          uci delete dhcp.@dnsmasq[0].resolvfile
 	          uci set dhcp.@dnsmasq[0].noresolv=1
@@ -76,8 +109,8 @@ yml_dns_change(){
 		  dns_serve1=$(uci get dhcp.@dnsmasq[0].server 2>/dev/null)
 		  if [ $dns_serve1 ]; then
 			uci del dhcp.@dnsmasq[-1].server
-		  fi
-	          uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1
+		  fi 	
+	          uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1 
 	          uci delete dhcp.@dnsmasq[0].resolvfile
 	          uci set dhcp.@dnsmasq[0].noresolv=1
 	          uci commit dhcp
@@ -148,7 +181,7 @@ rules(){
 
 		iptables -t nat -A PREROUTING -p tcp -j clash_tcp
 		
-		iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/24 -j REDIRECT --to-ports $redir_port
+		iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/24 -j REDIRECT --to-ports $redir_port			
 		
 	
 		
@@ -157,32 +190,66 @@ rules(){
 
 yml_yaml(){
 #===========================================================================================================================
-subscribe_url=$(uci get clash.config.subscribe_url 2>/dev/null)
-size=$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')
-if [ -f $CONFIG_YAML_OLD ] && [ ! -f $CONFIG_YAML ] || [ -f $CONFIG_YAML_OLD ] && [ -f $CONFIG_YAML ] && [ $size -eq 0 ];then
+
+if [ -f $CONFIG_YAML_OLD ] && [ ! -f $CONFIG_YAML ];then
 	mv $CONFIG_YAML_OLD $CONFIG_YAML
-elif [ ! -f $CONFIG_YAML ] && [ $subscribe_url ];then
-	sh /usr/share/clash/clash.sh >>/tmp/clash.log >/dev/null 2>&1
+
+elif [ -f $CONFIG_YAML_OLD ] && [ -f $CONFIG_YAML  ] && [  "$(ls -l $CONFIG_YAML_OLD|awk '{print int($5/1024)}')" -ne 0 ];then
+	mv $CONFIG_YAML_OLD $CONFIG_YAML
 fi
 #===========================================================================================================================
 }
 
+
+
+yml_sub(){
+#===========================================================================================================================
+subscribe_url=$(uci get clash.config.subscribe_url 2>/dev/null)
+config_type=$(uci get clash.config.config_type 2>/dev/null)
+if [ $config_type == "sub" ];then 
+if [ ! -f $CONFIG_YAML_SUB ] && [ $subscribe_url ];then 
+	rm -rf /tmp/clash.log
+	sh /usr/share/clash/clash.sh >>/tmp/clash.log 	
+elif [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB | awk '{print int($5/1024)}')" -eq 0 ] && [ $subscribe_url ];then
+	rm -rf /tmp/clash.log
+	sh /usr/share/clash/clash.sh >>/tmp/clash.log 	
+fi
+fi
+#===========================================================================================================================
+}
+
+custom_list() {
+	(/usr/share/clash/list.sh && sleep 2 >/dev/null 2>&1) &
+}
+
+
 start(){
+lang=$(uci get luci.main.lang 2>/dev/null)
 #=========================================================================================================================== 
 if pidof clash >/dev/null; then
 	kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 fi
+
 enable=$(uci get clash.config.enable 2>/dev/null)
+
 yml_yaml
-size=$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')
+
+yml_sub
+
+select_config
+
 lan=$(uci get clash.config.proxylan 2>/dev/null)
 lanac=$(uci get clash.config.rejectlan 2>/dev/null)
 
 if [ $enable -eq 1 ]; then
 if [ ! -f /etc/clash/clash ]; then
-	echo "===============================$(date "+%Y-%m-%d %H:%M:%S")  /etc/clash/clash not found, download and install clash ipk =====================================" >> /tmp/clash.log
+	if [ $lang == "en" ];then
+		echo "$(date "+%Y-%m-%d %H:%M:%S") - /etc/clash/clash not found, from "https://github.com/frainzy1477/clash/releases" , download and install clash ipk  " >> /tmp/clash.log
+	elif [ $lang == "zh_cn" ];then
+		echo "$(date "+%Y-%m-%d %H:%M:%S")  - 找不到 /etc/clash/clash 请，从"https://github.com/frainzy1477/clash/releases" , 下载然后安装Clash ipk" >> /tmp/clash.log
+	fi
 else
-if [ $size -ne 0 ] && [ -f /etc/clash/clash ]; then
+if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')" -ne 0 ] && [ -f /etc/clash/clash ]; then
 
 	
 	if [ $lan ]; then
@@ -197,11 +264,10 @@ if [ $size -ne 0 ] && [ -f /etc/clash/clash ]; then
 
 	yml_dns_change
 	
-        nohup $CLASH -d "$CLASH_CONFIG" > /tmp/clash.log 2>&1 &	
-	  
-	ln -s /usr/share/clash/web /www/clash
-			
-	uci set firewall.@defaults[0].flow_offloading=1
+    nohup $CLASH -d "$CLASH_CONFIG" > /tmp/clash.log 2>&1 &	
+	
+	ln -s /usr/share/clash/yac /www/clash
+	  		
 	uci commit firewall	
 	/etc/init.d/firewall restart >/dev/null 2>&1
 		
@@ -209,8 +275,9 @@ if [ $size -ne 0 ] && [ -f /etc/clash/clash ]; then
 	
 	killall -1 dnsmasq
 	
+	custom_list
+	
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
-
 	
 	if pidof clash >/dev/null; then
 		add_cron
@@ -218,8 +285,12 @@ if [ $size -ne 0 ] && [ -f /etc/clash/clash ]; then
 	
 	fi
 else
-	echo "===============================$(date "+%Y-%m-%d %H:%M:%S")  problem with config.yaml,  config.yaml is either empty or not found =====================================" >> /tmp/clash.log
-
+	if [ $lang == "en" ];then
+		echo "$(date "+%Y-%m-%d %H:%M:%S") -  problem with config.yaml,  config.yaml is either empty or not found " >> /tmp/clash.log
+	elif [ $lang == "zh_cn" ];then
+		echo "$(date "+%Y-%m-%d %H:%M:%S")  - 你的config.yaml有问题还是为了空 0kb " >> /tmp/clash.log
+	fi
+	
 
 fi
 fi
@@ -233,6 +304,7 @@ fi
 
 
 stop(){
+lang=$(uci get luci.main.lang 2>/dev/null)
 #=========================================================================================================================== 
 		iptables -t nat -F clash_tcp >/dev/null 2>&1
 		iptables -t nat -X clash_tcp >/dev/null 2>&1
@@ -240,6 +312,7 @@ stop(){
 		iptables -t nat -X clash_udp >/dev/null 2>&1
 		iptables -t nat -D PREROUTING -p tcp -j clash_tcp >/dev/null 2>&1
 		iptables -t nat -D PREROUTING -p udp -j clash_udp >/dev/null 2>&1
+		
 
 		ipset -! flush clash_lan_ac >/dev/null 2>&1
 		ipset -! flush clash_lan >/dev/null 2>&1
@@ -250,19 +323,23 @@ stop(){
 
 	   	revert_dns
 	
-	  	uci set firewall.@defaults[0].flow_offloading=1
   	  	uci commit firewall
 	  	/etc/init.d/firewall restart >/dev/null 2>&1
 	
   	  	/etc/init.d/dnsmasq restart >/dev/null 2>&1
     
-  	  	rm -rf /www/clash 2> /dev/null
-	
   	  	del_cron
 
+		rm -rf /www/clash 2> /dev/null
+		
 	 	rm -rf /tmp/clash.log
-	
-	       echo "===============================$(date "+%Y-%m-%d %H:%M:%S")  CLIENT IS DISABLED =====================================" >> /tmp/clash.log
+		
+		if [ $lang == "en" ];then
+			echo "$(date "+%Y-%m-%d %H:%M:%S") - CLIENT IS DISABLED " >> /tmp/clash.log
+		elif [ $lang == "zh_cn" ];then
+			echo "$(date "+%Y-%m-%d %H:%M:%S")  - 客户端被禁用 " >> /tmp/clash.log
+		fi		
+	       
 
 #=========================================================================================================================== 	
 }
@@ -275,10 +352,8 @@ restart(){
 			stop 
 			start
 		else
-		    	start
+		    start
 		fi	
 
 #=========================================================================================================================== 
 }
-
-
