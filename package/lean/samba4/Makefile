@@ -69,7 +69,7 @@ endef
 define Package/samba4-server
   $(call Package/samba4/Default)
   TITLE+= server
-  DEPENDS:= +samba4-libs
+  DEPENDS:= +samba4-libs +libgcrypt
   EXTRA_DEPENDS:=$(if $(CONFIG_SAMBA4_SERVER_AD_DC),python-crypto,)
 endef
 
