@@ -13,7 +13,7 @@ PKG_LICENSE:=Apache-2.0
 PKG_MAINTAINER:=Xingwang Liao <kuoruan@gmail.com>
 
 LUCI_TITLE:=LuCI support for Kcptun
-LUCI_DEPENDS:=+jshn +iptables +iptables-mod-tproxy
+LUCI_DEPENDS:=+jshn +iptables +iptables-mod-tproxy +kcptun-client
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/conffiles
