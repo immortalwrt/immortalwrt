@@ -12,25 +12,16 @@ http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].http_port)"
 https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].https_port)"
 type="$(uci get unblockneteasemusic.@unblockneteasemusic[0].musicapptype)"
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
-[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access)" -ne "0" ] && addr="0.0.0.0" || addr="${lan_addr}"
-[ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode)" -eq "1" ] && strict_mode="-s"
+auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
+[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>/dev/null)*" = "*1*" ] && addr="0.0.0.0" || addr="${lan_addr}"
+[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode 2>/dev/null)*" = "*1*" ] && strict_mode="-s"
 
-netease_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip)"
+netease_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip 2>/dev/null)"
 [ -n "${netease_server_ip}" ] && netease_server_ip="-f ${netease_server_ip}"
-endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url)"
+endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url 2>/dev/null)"
 [ -n "${endpoint_url}" ] && endpoint_url="-e ${endpoint_url}"
-proxy_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].proxy_server_ip)"
+proxy_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].proxy_server_ip 2>/dev/null)"
 [ -n "${proxy_server_ip}" ] && proxy_server_ip="-u ${proxy_server_ip}"
-
-update_core(){
-	mkdir -p "/usr/share/unblockneteasemusic/core" >/dev/null 2>&1
-	rm -rf /usr/share/unblockneteasemusic/core/* >/dev/null 2>&1
-	curl -L "https://github.com/nondanee/UnblockNeteaseMusic/archive/master.tar.gz" -o "/usr/share/unblockneteasemusic/core/core.tar.gz" >/dev/null 2>&1
-	tar -zxf "/usr/share/unblockneteasemusic/core/core.tar.gz" -C "/usr/share/unblockneteasemusic/core/" >/dev/null 2>&1
-	mv /usr/share/unblockneteasemusic/core/UnblockNeteaseMusic-master/* "/usr/share/unblockneteasemusic/core/"
-	rm -rf "/usr/share/unblockneteasemusic/core/core.tar.gz /usr/share/unblockneteasemusic/core/UnblockNeteaseMusic-master" >/dev/null 2>&1
-	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && echo "Failed to download core." && exit 1
-}
 
 set_ipset(){
 	if [ "${set_type}" = "start" ]; then
@@ -124,35 +115,41 @@ start()
 
 	[ "${enable}" -eq "0" ] && exit 0
 
-	update_core
+	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && bash /usr/share/unblockneteasemusic/update_core.sh && [ $? -eq 1 ] && exit 1
 
 	if [ "${type}" = "default" ]; then
-		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
 	elif [ "${type}" = "all" ]; then
-		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "kuwo migu qq xiami kugou joox" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "kuwo migu qq xiami kugou joox" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
 	else
-		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "${type}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "${type}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
 	fi
 
 	if [ "*${hijack_ways}*" = "*use_ipset*" ]; then
 		set_type="start"
-		set_ipset
+		set_ipset >/dev/null 2>&1
 	elif [ "*${hijack_ways}*" = "*use_hosts*" ]; then
 		set_type="start"
-		set_hosts
+		set_hosts >/dev/null 2>&1
 	fi
 
-	nohup /usr/share/unblockneteasemusic/logcheck.sh >/dev/null 2>&1 &
+	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
+	[ "${auto_update}" -eq "1" ] && echo "30 3 * * * /usr/share/unblockneteasemusic/update_core.sh" >> "/etc/crontabs/root"
+	echo "*/5 * * * * /usr/share/unblockneteasemusic/log_check.sh" >> "/etc/crontabs/root"
+	/etc/init.d/cron restart >/dev/null 2>&1
 }
 
 stop()
 {
 	{ ps |grep "unblockneteasemusic" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } >/dev/null 2>&1
-	{ ps |grep "unblockneteasemusic" |grep "logcheck.sh" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } >/dev/null 2>&1
+
+ 
+	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
+	/etc/init.d/cron restart >/dev/null 2>&1
 
 	rm -f /tmp/unblockneteasemusic.log
 
 	set_type="stop"
-	set_ipset
-	set_hosts
+	set_ipset >/dev/null 2>&1
+	set_hosts >/dev/null 2>&1
 }
