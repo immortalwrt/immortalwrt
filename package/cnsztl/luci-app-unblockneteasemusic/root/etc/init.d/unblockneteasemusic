@@ -41,8 +41,22 @@ set_ipset(){
 		echo "ipset=/interface.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
+		if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
+		iptables -t nat -N cloud_music
+		iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
+		iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
+		iptables -t nat -A cloud_music -d 127.0.0.0/8 -j RETURN
+		iptables -t nat -A cloud_music -d 169.254.0.0/16 -j RETURN
+		iptables -t nat -A cloud_music -d 172.16.0.0/12 -j RETURN
+		iptables -t nat -A cloud_music -d 192.168.0.0/16 -j RETURN
+		iptables -t nat -A cloud_music -d 224.0.0.0/4 -j RETURN
+		iptables -t nat -A cloud_music -d 240.0.0.0/4 -j RETURN
+		iptables -t nat -A cloud_music -p tcp --dport 80 -j REDIRECT --to-ports "${http_port}"
+		iptables -t nat -A cloud_music -p tcp --dport 443 -j REDIRECT --to-ports "${https_port}"
+		iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j cloud_music
+
 		mkdir -p /var/etc
-		cat > "/var/etc/unblockneteasemusic.include" <<-EOF
+		cat <<-EOF > "/var/etc/unblockneteasemusic.include"
 if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
 iptables -t nat -N cloud_music
 iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
@@ -57,12 +71,13 @@ iptables -t nat -A cloud_music -p tcp --dport 80 -j REDIRECT --to-ports ${http_p
 iptables -t nat -A cloud_music -p tcp --dport 443 -j REDIRECT --to-ports ${https_port}
 iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j cloud_music
 		EOF
-		/etc/init.d/firewall restart >/dev/null 2>&1
 	elif [ "${set_type}" = "stop" ]; then
-		echo "" > /var/etc/unblockneteasemusic.include
-		/etc/init.d/firewall restart >/dev/null 2>&1
+		iptables -t nat -D PREROUTING -p tcp -m set --match-set music dst -j cloud_music
+		iptables -t nat -F cloud_music
+		iptables -t nat -X cloud_music
 		ipset destroy music
 
+		echo "" > "/var/etc/unblockneteasemusic.include"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
