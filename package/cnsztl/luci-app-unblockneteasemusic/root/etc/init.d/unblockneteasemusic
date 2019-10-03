@@ -142,7 +142,6 @@ start()
 stop()
 {
 	{ ps |grep "unblockneteasemusic" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } >/dev/null 2>&1
-
  
 	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
 	/etc/init.d/cron restart >/dev/null 2>&1
