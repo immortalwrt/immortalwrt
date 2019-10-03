@@ -16,7 +16,7 @@ function clean_log(){
 }
 
 function check_latest_version(){
-	latest_ver="$(curl -s https://github.com/nondanee/UnblockNeteaseMusic/commits/master |tr -d '\n' | grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g')"
+	latest_ver="$(curl -s https://github.com/nondanee/UnblockNeteaseMusic/commits/master |tr -d '\n' |grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g')"
 	[ -z "${latest_ver}" ] && echo -e "\nFailed to check latest version, please try again later." >>/tmp/unblockneteasemusic.log && exit 1
 	if [ ! -e "/usr/share/unblockneteasemusic/local_ver" ]; then
 		clean_log

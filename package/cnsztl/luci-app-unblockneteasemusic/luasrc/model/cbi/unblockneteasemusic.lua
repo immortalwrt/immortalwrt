@@ -13,7 +13,7 @@ enabled.default = 0
 enabled.rmempty = false
 
 button_update_core = s:option (Button, "_button_update_core", translate("更新主程序"))
-button_update_core.description = translate("更新完毕后会自动重启插件；更新插件需要一点时间，请不要反复点击按钮")
+button_update_core.description = translate("更新完毕后会自动重启插件；更新主程序需要一点时间，请不要反复点击按钮")
 local latest_ver = luci.sys.exec("/bin/bash /usr/share/unblockneteasemusic/check_update.sh")
 button_update_core.inputtitle = translate (latest_ver)
 button_update_core.inputstyle = "apply"

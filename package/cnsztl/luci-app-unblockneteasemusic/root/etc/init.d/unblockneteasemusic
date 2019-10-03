@@ -33,6 +33,7 @@ set_ipset(){
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
 		if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
+		bash <(curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=p2.music.126.net,interface.music.163.com,interface3.music.163.com,clientlog.music.163.com,apm.music.163.com,apm3.music.163.com,p1.music.126.net,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}') >/dev/null 2>&1
 		iptables -t nat -N cloud_music
 		iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
 		iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
@@ -49,6 +50,7 @@ set_ipset(){
 		mkdir -p /var/etc
 		cat <<-EOF > "/var/etc/unblockneteasemusic.include"
 if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
+bash <(curl -s http://httpdns.n.netease.com/httpdns/v2/d?domain=p2.music.126.net,interface.music.163.com,interface3.music.163.com,clientlog.music.163.com,apm.music.163.com,apm3.music.163.com,p1.music.126.net,clientlog3.music.163.com |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}') >/dev/null 2>&1
 iptables -t nat -N cloud_music
 iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
