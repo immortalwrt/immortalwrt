@@ -44,19 +44,25 @@ ifeq ($(ARCH),aarch64)
 endif
 
 define Build/Prepare
-	[ ! -f $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz ] && wget https://github.com/AdguardTeam/AdGuardHome/releases/download/$(PKG_VERSION)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -O $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz
-	tar -xzvf $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -C $(PKG_BUILD_DIR)
+	ifeq ($(BOARD),bcm53xx)
+		mkdir -p $(PKG_BUILD_DIR)/AdGuardHome
+		$(CP) -f ./files/bin/adg_bcm53xx $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
+	else
+		[ ! -f $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz ] && wget https://github.com/AdguardTeam/AdGuardHome/releases/download/$(PKG_VERSION)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -O $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz
+		$(RM) -rf $(PKG_BUILD_DIR)/AdGuardHome
+		tar -xzvf $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -C $(PKG_BUILD_DIR)
+		endif
 endef
 
 define Build/Configure
 endef
 
 define Build/Compile
-	chmod +x $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome && upx --lzma $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
 	ifeq ($(BOARD),bcm53xx)
-		$(RM) -f $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
-		$(CP) -f ./files/bin/adg_bcm53xx $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
 		chmod 0755 $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome 
+	else
+		chmod 0755 $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
+		upx --lzma $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
 	endif
 endef
 
