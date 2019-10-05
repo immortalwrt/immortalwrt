@@ -47,7 +47,6 @@ define Build/Prepare
 	[ ! -e "$(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz" ] && curl --location https://github.com/AdguardTeam/AdGuardHome/releases/download/$(PKG_VERSION)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -o $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz
 	$(RM) $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
 	tar -xzf $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -C $(PKG_BUILD_DIR)
-
 endef
 
 define Build/Configure
