@@ -30,6 +30,9 @@ set_ipset(){
 		echo "dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac" > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		echo "ipset=/.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		echo "ipset=/interface.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		echo "ipset=/interface3.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		echo "ipset=/apm.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		echo "ipset=/apm3.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
 		if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
@@ -144,7 +147,7 @@ start()
 stop()
 {
 	{ ps |grep "unblockneteasemusic" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } >/dev/null 2>&1
- 
+
 	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
 	/etc/init.d/cron restart >/dev/null 2>&1
 
