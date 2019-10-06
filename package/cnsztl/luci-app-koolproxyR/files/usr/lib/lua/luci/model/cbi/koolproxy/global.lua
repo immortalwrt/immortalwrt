@@ -71,7 +71,7 @@ e.rmempty = false
 e:value(0, translate("关闭"))
 e:value(1, translate("开启"))
 
-e = t:taboption("base", ListValue, "koolproxy_ipv6", translate("IPv6支持(一刀切,有副作用)"))
+e = t:taboption("base", ListValue, "koolproxy_ipv6", translate("IPv6支持"))
 e.default = 0
 e.rmempty = false
 e:value(0, translate("关闭"))
