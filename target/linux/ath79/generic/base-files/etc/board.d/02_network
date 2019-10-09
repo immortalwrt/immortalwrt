@@ -216,7 +216,8 @@ ath79_setup_interfaces()
 	iodata,wn-ag300dgr|\
 	pcs,cr5000|\
 	sitecom,wlr-7100|\
-	wd,mynet-n750)
+	wd,mynet-n750|\
+	xwrt,csac)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan"
 		;;
@@ -570,6 +571,10 @@ ath79_setup_macs()
 		;;
 	wd,mynet-wifi-rangeextender)
 		lan_mac=$(nvram get et0macaddr)
+		;;
+	xwrt,csac)
+		wan_mac=$(mtd_get_mac_binary art 0)
+		lan_mac=$(mtd_get_mac_binary art 6)
 		;;
 	zyxel,nbg6616)
 		label_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
