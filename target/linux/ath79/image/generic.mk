@@ -1551,6 +1551,15 @@ define Device/xiaomi_mi-router-4q
 endef
 TARGET_DEVICES += xiaomi_mi-router-4q
 
+define Device/xwrt_csac
+  SOC := qca9563
+  DEVICE_VENDOR := XWRT
+  DEVICE_MODEL := CSAC
+  IMAGE_SIZE := 16000k
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct kmod-usb2
+endef
+TARGET_DEVICES += xwrt_csac
+
 define Device/yuncore_a770
   SOC := qca9531
   DEVICE_VENDOR := YunCore
