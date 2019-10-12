@@ -19,10 +19,10 @@ if [ -n "$update" ];then
 	[ -n "$(echo $update | grep "Pcap_Routing_update")" ] && Pcap_Routing_update=1
 	[ -n "$(echo $update | grep "Pcap_WhiteList_update")" ] && Pcap_WhiteList_update=1
 else
-	gfwlist_update=uci get $CONFIG.@global_rules[0].gfwlist_update
-	chnroute_update=uci get $CONFIG.@global_rules[0].chnroute_update
-	Pcap_Routing_update=uci get $CONFIG.@global_rules[0].Pcap_Routing_update
-	Pcap_WhiteList_update=uci get $CONFIG.@global_rules[0].Pcap_WhiteList_update
+	gfwlist_update=`uci get $CONFIG.@global_rules[0].gfwlist_update`
+	chnroute_update=`uci get $CONFIG.@global_rules[0].chnroute_update`
+	Pcap_Routing_update=`uci get $CONFIG.@global_rules[0].Pcap_Routing_update`
+	Pcap_WhiteList_update=`uci get $CONFIG.@global_rules[0].Pcap_WhiteList_update`
 fi
 
 if [ "$gfwlist_update" == 0 -a "$chnroute_update" == 0 -a "$Pcap_Routing_update" == 0 -a "$Pcap_WhiteList_update" == 0 ];then
