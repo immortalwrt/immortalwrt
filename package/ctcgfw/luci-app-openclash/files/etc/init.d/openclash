@@ -161,8 +161,8 @@ yml_dns_check()
    
    [ -z "$(grep '^ \{0,\}nameserver:' $CONFIG_FILE)" ] && {
       sed -i '/^Proxy:/i\  nameserver:' "$CONFIG_FILE" 2>/dev/null
-      sed -i "/nameserver:/a\  - tls://8.8.8.8:853" "$CONFIG_FILE" 2>/dev/null
-      sed -i "/nameserver:/a\  - 114.114.114.114" "$CONFIG_FILE" 2>/dev/null
+      sed -i "/^ \{0,\}nameserver:/a\  - tls://8.8.8.8:853" "$CONFIG_FILE" 2>/dev/null
+      sed -i "/^ \{0,\}nameserver:/a\  - 114.114.114.114" "$CONFIG_FILE" 2>/dev/null
    }
 
    dns_port=$(grep "^ \{0,\}listen:" $CONFIG_FILE |awk -F ':' '{print $3}' |awk -F '#' '{print $1}' |tr -cd "[0-9]" 2>/dev/null)
@@ -379,6 +379,8 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
     lan_ip=$(uci get network.lan.ipaddr 2>/dev/null)
     direct_dns=$(uci get openclash.config.direct_dns 2>/dev/null)
     disable_masq_cache=$(uci get openclash.config.disable_masq_cache 2>/dev/null)
+    log_level=$(uci get openclash.config.log_level 2>/dev/null)
+    proxy_mode=$(uci get openclash.config.proxy_mode 2>/dev/null)
     echo "第二步: 配置文件检查..." >$START_LOG
     yml_check "$en_mode" "$enable_custom_dns" "$CONFIG_FILE" "$BACKUP_FILE" "$START_BACKUP"
     grep "^ \{0,\}Proxy:" $CONFIG_FILE >/dev/null 2>&1 && grep "^ \{0,\}Proxy Group:" $CONFIG_FILE >/dev/null 2>&1 && grep "^ \{0,\}Rule:" $CONFIG_FILE >/dev/null 2>&1
@@ -396,7 +398,7 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
        yml_auth_custom "$CONFIG_FILE"
        yml_cut "$CHANGE_FILE" "$RULE_FILE" "$DNS_FILE" "$CONFIG_FILE" "$PROXY_FILE"
        yml_dns_custom "$enable_custom_dns" "$DNS_FILE"
-       sh /usr/share/openclash/yml_change.sh "$LOGTIME" "$en_mode" "$enable_custom_dns" "$da_password" "$cn_port" "$proxy_port" "$CHANGE_FILE" "$ipv6_enable" "$http_port" "$socks_port" "$lan_ip" &
+       sh /usr/share/openclash/yml_change.sh "$LOGTIME" "$en_mode" "$enable_custom_dns" "$da_password" "$cn_port" "$proxy_port" "$CHANGE_FILE" "$ipv6_enable" "$http_port" "$socks_port" "$lan_ip" "$log_level" "$proxy_mode" &
        sh /usr/share/openclash/yml_rules_change.sh "$LOGTIME" "$rule_source" "$enable_custom_clash_rules" "$RULE_FILE" &
        wait
        cat "$CHANGE_FILE" "$DNS_FILE" "$PROXY_FILE" "$RULE_FILE" >$CONFIG_FILE 2>/dev/null
@@ -455,7 +457,7 @@ EOF
         
           echo "第八步: 重启 Dnsmasq 程序..." >$START_LOG
           if [ "$(iptables -t nat -nL PREROUTING --line-number |grep dpt:53 |wc -l)" -gt 2 ]; then
-             echo "发现53端口被劫持，请将OpenClash设置为劫持53端口程序的上游DNS服务器！" >$START_LOG
+             echo "发现53端口被劫持，如连接异常请将OpenClash设置为劫持53端口程序的上游DNS服务器！" >$START_LOG
              echo "${LOGTIME} Warring: OpenClash May Can Not Take Over DNS, Please Use OpenClash for Upstream DNS Resolve Server" >> $LOG_FILE
              sleep 5
           fi
@@ -465,9 +467,15 @@ EOF
           if pidof clash >/dev/null; then
              echo "第九步: 添加 OpenClash 计划任务,启动进程守护程序..." >$START_LOG
              add_cron
-             echo "OpenClash 启动成功，请等待服务器上线！" >$START_LOG
-             echo "${LOGTIME} OpenClash Start Successful" >> $LOG_FILE
-             sleep 5
+             if [ -z "$(uci get dhcp.lan.dhcpv6 2>/dev/null)" ]; then
+                echo "OpenClash 启动成功，请等待服务器上线！" >$START_LOG
+                echo "${LOGTIME} OpenClash Start Successful" >> $LOG_FILE
+                sleep 5
+             else
+                echo "OpenClash 启动成功，检测到您启用了IPV6的DHCP服务，可能会造成连接异常！" >$START_LOG
+                echo "${LOGTIME} OpenClash Start Successful, Please Note That Network May Abnormal With IPV6's DHCP Server" >> $LOG_FILE
+                sleep 10
+             fi
              echo "" >$START_LOG
           else
              if [ "$rule_source" != 0 ] || [ "$enable_custom_clash_rules" != 0 ]; then
@@ -482,9 +490,18 @@ EOF
                 sleep 3
                 if pidof clash >/dev/null; then
                    add_cron
-                   echo "OpenClash 使用备份规则启动成功，请更新、检查变动的规则后重试！" >$START_LOG
-                   echo "${LOGTIME} OpenClash Start Successful With Backup Rules Config, Please Check Or Update Other Rules And Retry" >> $LOG_FILE
-                   sleep 5
+                   if [ -z "$(uci get dhcp.lan.dhcpv6 2>/dev/null)" ]; then
+                      echo "OpenClash 使用备份规则启动成功，请更新、检查变动的规则后重试！" >$START_LOG
+                      echo "${LOGTIME} OpenClash Start Successful With Backup Rules Config, Please Check Or Update Other Rules And Retry" >> $LOG_FILE
+                      sleep 10
+                   else
+                      echo "OpenClash 使用备份规则启动成功，请更新、检查变动的规则后重试！" >$START_LOG
+                      echo "${LOGTIME} OpenClash Start Successful With Backup Rules Config, Please Check Or Update Other Rules And Retry" >> $LOG_FILE
+                      sleep 10
+                      echo "OpenClash 启动成功，检测到您启用了IPV6的DHCP服务，可能会造成连接异常！" >$START_LOG
+                      echo "${LOGTIME} OpenClash Start Successful, Please Note That Network May Abnormal With IPV6's DHCP Server" >> $LOG_FILE
+                      sleep 10
+                   fi
                    echo "" >$START_LOG
                 else
                    echo "错误: OpenClash 启动失败，请到日志页面查看详细错误信息！" >$START_LOG
