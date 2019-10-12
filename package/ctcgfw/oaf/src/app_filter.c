@@ -11,6 +11,7 @@
 #include <net/tcp.h>
 #include <linux/netfilter.h>
 #include <net/netfilter/nf_conntrack.h>
+#include <net/netfilter/nf_conntrack_acct.h>
 #include <linux/skbuff.h>
 #include <net/ip.h>
 #include <linux/types.h>
@@ -36,7 +37,8 @@ DEFINE_RWLOCK(af_feature_lock);
 #define feature_list_read_unlock() 		read_unlock_bh(&af_feature_lock);
 #define feature_list_write_lock() 		write_lock_bh(&af_feature_lock);
 #define feature_list_write_unlock()		write_unlock_bh(&af_feature_lock);
-
+// 注意有重传报文
+#define MAX_PARSE_PKT_NUM 16
 #define MIN_HTTP_DATA_LEN 16
 #define MAX_APP_NAME_LEN 64
 #define MAX_FEATURE_NUM_PER_APP 16 
@@ -771,6 +773,7 @@ int app_filter_match(flow_info_t *flow)
 	return AF_FALSE;
 }
 
+#define APP_FILTER_DROP_BITS 0xf0000000
 
 /* 在netfilter框架注册的钩子 */
 
@@ -786,24 +789,57 @@ static u_int32_t app_filter_hook(unsigned int hook,
 					           const struct net_device *out,
 					           int (*okfn)(struct sk_buff *)){
 #endif
+	unsigned long long total_packets = 0;
+	flow_info_t flow;
 // 4.10-->4.11 nfct-->_nfct
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
 	struct nf_conn *ct = (struct nf_conn *)skb->_nfct;
 #else
 	struct nf_conn *ct = (struct nf_conn *)skb->nfct;
 #endif
+
 	if (ct == NULL) {
 		//AF_ERROR("ct is null\n");
         return NF_ACCEPT;
     }
-	flow_info_t flow;
+
+#if defined(CONFIG_NF_CONNTRACK_MARK)
+	if (ct->mark != 0)
+	if (APP_FILTER_DROP_BITS == (ct->mark & APP_FILTER_DROP_BITS)){
+		return NF_DROP;
+	}
+#endif
+// 3.12.74-->3.13-rc1
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)
+	struct nf_conn_acct *acct;
+	acct = nf_conn_acct_find(ct);
+	if (!acct)
+		return NF_ACCEPT;
+	total_packets = (unsigned long long)atomic64_read(&acct->counter[IP_CT_DIR_ORIGINAL].packets) 
+		+ (unsigned long long)atomic64_read(&acct->counter[IP_CT_DIR_REPLY].packets);
+#else
+	struct nf_conn_counter *counter;
+	counter = nf_conn_acct_find(ct);
+	if (!counter)
+		return NF_ACCEPT;	
+	total_packets = (unsigned long long)atomic64_read(&counter[IP_CT_DIR_ORIGINAL].packets) 
+		+ (unsigned long long)atomic64_read(&counter[IP_CT_DIR_REPLY].packets);
+#endif
+	if (total_packets > MAX_PARSE_PKT_NUM){
+		return NF_ACCEPT;
+	}
 	memset((char *)&flow, 0x0, sizeof(flow_info_t));
 	parse_flow_base(skb, &flow);
 	parse_http_proto(&flow);
 	parse_https_proto(&flow);
 	//dump_flow_info(&flow);
-	if (app_filter_match(&flow))
+	if (app_filter_match(&flow)){
+		
+#if defined(CONFIG_NF_CONNTRACK_MARK)
+		ct->mark |= APP_FILTER_DROP_BITS;
+#endif
 		return NF_DROP;
+	}
 	return NF_ACCEPT;
 }
 
