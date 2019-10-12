@@ -10,16 +10,17 @@ include $(INCLUDE_DIR)/package.mk
 PKG_AUTOLOAD:=oaf
 
 define KernelPackage/oaf
-  SECTION:=Derry Apps
-  CATEGORY:=Derry Apps
+  SECTION:=Kernel
+  CATEGORY:=Kernel modules
+  SUBMENU:=Netfilter Extensions
   TITLE:=open app filter kernel module
-  FILES:=$(PKG_BUILD_DIR)/oaf.ko 
+  FILES:=$(PKG_BUILD_DIR)/oaf.ko
   KCONFIG:=
   AUTOLOAD:=$(call AutoLoad,0,$(PKG_AUTOLOAD))
 endef
 
 define KernelPackage/oaf/description
-  open appfilter kernel module 
+  open appfilter kernel module
 endef
 
 
