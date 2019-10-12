@@ -26,21 +26,27 @@ endef
 
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH_AdGuardHome:=linux_amd64
+	ADG_CONF_NAME:=big_space
 endif
 ifeq ($(ARCH),i386)
 	PKG_ARCH_AdGuardHome:=linux_386
+	ADG_CONF_NAME:=big_space
 endif
 ifeq ($(ARCH),mipsel)
 	PKG_ARCH_AdGuardHome:=linux_mipsle
+	ADG_CONF_NAME:=small_flash
 endif
 ifeq ($(ARCH),mips)
 	PKG_ARCH_AdGuardHome:=linux_mips
+	ADG_CONF_NAME:=small_flash
 endif
 ifeq ($(ARCH),arm)
 	PKG_ARCH_AdGuardHome:=linux_arm
+	ADG_CONF_NAME:=big_space
 endif
 ifeq ($(ARCH),aarch64)
 	PKG_ARCH_AdGuardHome:=linux_arm64
+	ADG_CONF_NAME:=big_space
 endif
 
 define Build/Prepare
@@ -65,7 +71,7 @@ else
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome $(1)/usr/bin/AdGuardHome
 endif
 	$(INSTALL_DIR) $(1)/etc/AdGuardHome
-	$(CP) ./files/etc/AdGuardHome $(1)/etc
+	$(INSTALL_CONF) ./files/conf/$(ADG_CONF_NAME).yaml $(1)/etc/AdGuardHome/AdGuardHome.yaml
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
