@@ -26,4 +26,4 @@ non Linux hosts.
 +#endif
  
  #define __packed   __attribute__((packed))
- 
+
