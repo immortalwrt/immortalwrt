@@ -36,7 +36,7 @@ set_ipset(){
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
 		if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
-		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=p2.music.126.net,interface.music.163.com,interface3.music.163.com,clientlog.music.163.com,apm.music.163.com,apm3.music.163.com,p1.music.126.net,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |bash >/dev/null 2>&1
+		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |bash >/dev/null 2>&1
 		iptables -t nat -N cloud_music
 		iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
 		iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
@@ -53,7 +53,7 @@ set_ipset(){
 		mkdir -p /var/etc
 		cat <<-EOF > "/var/etc/unblockneteasemusic.include"
 if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
-curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=p2.music.126.net,interface.music.163.com,interface3.music.163.com,clientlog.music.163.com,apm.music.163.com,apm3.music.163.com,p1.music.126.net,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |bash >/dev/null 2>&1
+curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |bash >/dev/null 2>&1
 iptables -t nat -N cloud_music
 iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
 iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
@@ -125,7 +125,7 @@ start()
 	if [ "${type}" = "default" ]; then
 		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
 	elif [ "${type}" = "all" ]; then
-		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "kuwo migu qq xiami kugou joox" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
+		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "kuwo qq xiami baidu kugou migu joox" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
 	else
 		nohup node /usr/share/unblockneteasemusic/core/app.js -a "${addr}" -p "${http_port}":"${https_port}" -o "${type}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >>/tmp/unblockneteasemusic.log 2>&1 &
 	fi
