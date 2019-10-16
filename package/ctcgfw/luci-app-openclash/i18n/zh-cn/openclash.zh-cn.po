@@ -6,7 +6,7 @@ msgid "OpenClash"
 msgstr "OpenClash"
 
 msgid "A Clash Client For OpenWrt"
-msgstr "一个运行在OpenWrt上的Clash客户端，兼容Shadowsocks、Vmess等协议，根据灵活的规则配置实现策略代理"
+msgstr "一个运行在OpenWrt上的Clash客户端，兼容Shadowsocks、Vmess、Snell等协议，根据灵活的规则配置实现策略代理"
 
 msgid "Global Settings(Will Modify The Config File Or Subscribe According To The Settings On This Page)"
 msgstr "全局设置（将按照本页设置自动修改配置文件和获取订阅）"
@@ -87,7 +87,7 @@ msgid "Download Configurations"
 msgstr "下载配置"
 
 msgid "Select Mode"
-msgstr "运行模式"
+msgstr "*运行模式"
 
 msgid "redir-host"
 msgstr "Redir-Host（兼容）模式"
@@ -99,28 +99,43 @@ msgid "Select Mode For OpenClash Work, Network Error Try Flush DNS Cache"
 msgstr "选择运行模式，在兼容模式下无法代理路由器自身流量，如客户端的网络无法连接请尝试清除DNS缓存"
 
 msgid "Proxy Mode"
-msgstr "代理模式"
+msgstr "*代理模式"
 
 msgid "Select Proxy Mode"
 msgstr "选择默认代理模式"
 
-msgid "Rule Mode"
+msgid "Rule Proxy Mode"
 msgstr "Rule【策略代理】"
 
-msgid "Global Mode"
+msgid "Global Proxy Mode"
 msgstr "Global【全局代理（需前往控制面板手动指定节点）】"
 
-msgid "Direct Mode"
+msgid "Direct Proxy Mode"
 msgstr "Direct【全局直连】"
 
 msgid "Log Level"
 msgstr "日志等级"
 
+msgid "Info Mode"
+msgstr "Info【信息】"
+
+msgid "Warning Mode"
+msgstr "Warning【警告】"
+
+msgid "Error Mode"
+msgstr "Error【错误】"
+
+msgid "Debug Mode"
+msgstr "Debug【调试】"
+
+msgid "Silent Mode"
+msgstr "Silent【静默】"
+
 msgid "Select Core's Log Level"
 msgstr "选择内核日志的默认输出模式"
 
 msgid "Redirect Local DNS Setting"
-msgstr "本地DNS劫持"
+msgstr "*本地DNS劫持"
 
 msgid "Set Local DNS Redirect"
 msgstr "默认启用，将自动设置Dnsmasq的上游服务器，如和其他插件冲突可停用，但须将OpenClash作为冲突插件的唯一上游服务器"
@@ -159,7 +174,7 @@ msgid "Specify DNS Server"
 msgstr "（Fake-IP模式）黑名单DNS服务器"
 
 msgid "Specify DNS Server For List, Only One IP Server Address Support"
-msgstr "指定下方列表中域名的DNS服务器，只支持填写一个IP地址，更改后点击下方按钮生效"
+msgstr "指定下方列表中域名的DNS服务器，只支持填写一个IP地址"
 
 msgid "Domain Names In The List Do Not Return Fake-IP, One rule per line"
 msgstr "每行请只填写一个域名，列表中的域名在（Fake-IP模式）下查询DNS时将返回真实IP地址，更改后点击上方按钮生效"
@@ -199,7 +214,7 @@ msgstr "IPV6类型DNS解析"
 
 msgid "Force Enable to Resolve ipv6 DNS Requests"
 msgstr ""
-"固件须配置好IPV6的NAT，如果您没有公网IPV6地址但开启了IPV6的DHCP服务，客户端连接可能会出现异常"
+"固件须配置好IPV6的NAT，如你不使用IPV6请关闭固件的相关服务，避免客户端连接出现异常"
 
 msgid "Rules Setting"
 msgstr "规则设置（访问控制）"
@@ -230,7 +245,7 @@ msgid "Keyword Matching Setting"
 msgstr "筛选节点"
 
 msgid "Only Keep Servers which Matching Keywords, eg: hk or tw&bgp"
-msgstr "仅订阅名字与以上任意关键字匹配的节点，不区分大小写。格式示例：香港、台湾&bgp"
+msgstr "仅订阅名字与以上任意一行关键字匹配的节点，不区分大小写，条件且请用（&）表示。格式示例：香港、台湾&bgp"
 
 msgid "Please Make Sure Ports Available"
 msgstr "请确保端口可用"
@@ -241,8 +256,8 @@ msgstr "订阅地址"
 msgid "Update Url Type"
 msgstr "订阅地址类型"
 
-msgid "Power By fndroid，Use Other Rules If V2ray Subcription"
-msgstr "API提供：Fndroid，V2ray类型的订阅可配合第三方规则使用"
+msgid "Power By fndroid，Use Other Rules If V2rayN Subcription"
+msgstr "API提供：Fndroid，V2rayN类型的订阅可配合第三方规则使用"
 
 msgid "Update Subcription"
 msgstr "更新订阅配置"
@@ -422,7 +437,7 @@ msgid "<New>"
 msgstr "<可更新>"
 
 msgid "Chose to Download"
-msgstr "选择内核编译版本"
+msgstr "*选择内核编译版本"
 
 msgid "Select Based On Your CPU Model For Core Update, Wrong Version Will Not Work"
 msgstr "请根据处理器架构选择以便下载、更新对应内核，错误的版本将不能正常运行"
@@ -454,7 +469,7 @@ msgid "Load Config"
 msgstr "读取配置"
 
 msgid "Delete Unused Servers"
-msgstr "删除未选中节点"
+msgstr "删除未启用节点"
 
 msgid "Delete Severs"
 msgstr "清空服务器配置"
@@ -478,7 +493,7 @@ msgid "New Servers Group"
 msgstr "新节点默认策略组"
 
 msgid "Set The New Subscribe Server's Default Proxy Groups"
-msgstr "选择符合订阅要求的新节点的默认策略组"
+msgstr "选择符合订阅要求的新节点的默认策略组（请勿重复添加）"
 
 msgid "Choose Template For Create Config"
 msgstr "选择配置文件模板"
@@ -500,6 +515,9 @@ msgstr "服务器地址"
 
 msgid "Server Port"
 msgstr "服务器端口"
+
+msgid "Ping Latency"
+msgstr "服务器延迟"
 
 msgid "Edit Server"
 msgstr "编辑服务器配置"
@@ -579,8 +597,8 @@ msgstr "负载均衡（Load-Balance）"
 msgid "Other Group"
 msgstr "包含其他策略组（请勿重复添加）"
 
-msgid "The added Proxy Groups Must Exist"
-msgstr "注意：修改配置文件前添加的策略组必须已创建"
+msgid "The Added Proxy Groups Must Exist Except 'DIRECT' & 'REJECT'"
+msgstr "注意：除'DIRECT'和'REJECT'外，修改配置文件前添加的其他策略组必须已创建"
 
 msgid "Proxy Group"
 msgstr "添加到策略组（请勿重复添加）"

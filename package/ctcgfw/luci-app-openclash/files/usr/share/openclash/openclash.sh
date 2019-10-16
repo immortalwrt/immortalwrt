@@ -12,11 +12,14 @@ subscribe_url=$(uci get openclash.config.subscribe_url 2>/dev/null)
 en_mode=$(uci get openclash.config.en_mode 2>/dev/null)
 servers_update=$(uci get openclash.config.servers_update 2>/dev/null)
 servers_update_keyword=$(uci get openclash.config.servers_update_keyword 2>/dev/null)
-
-config_dawnload()
+dns_port=$(uci get openclash.config.dns_port 2>/dev/null)
+enable_redirect_dns=$(uci get openclash.config.enable_redirect_dns 2>/dev/null)
+disable_masq_cache=$(uci get openclash.config.disable_masq_cache 2>/dev/null)
+      
+config_download()
 {
-if [ "$URL_TYPE" == "V2ray" ]; then
-   echo "开始下载v2ray配置文件..." >$START_LOG
+if [ "$URL_TYPE" == "v2rayn" ]; then
+   echo "开始下载V2rayN配置文件..." >$START_LOG
    subscribe_url=`echo $subscribe_url |sed 's/{/%7B/g;s/}/%7D/g;s/:/%3A/g;s/\"/%22/g;s/,/%2C/g;s/?/%3F/g;s/=/%3D/g;s/&/%26/g;s/\//%2F/g'`
    wget-ssl --no-check-certificate --quiet --timeout=10 --tries=2 https://tgbot.lbyczf.com/v2rayn2clash?url="$subscribe_url" -O /tmp/config.yaml
 elif [ "$URL_TYPE" == "surge" ]; then
@@ -33,6 +36,7 @@ config_cus_up()
 {
 	if [ "$servers_update" -eq "1" ] || [ ! -z "$servers_update_keyword" ]; then
 	   echo "配置文件替换成功，开始挑选节点..." >$START_LOG
+	   echo "${LOGTIME} Config Update Successful" >>$LOG_FILE
 	   uci set openclash.config.servers_if_update=1
 	   uci commit openclash
 	   /usr/share/openclash/yml_groups_get.sh
@@ -59,6 +63,7 @@ config_su_check()
          else
             echo "配置文件没有任何更新，停止继续操作..." >$START_LOG
             rm -rf /tmp/config.yaml
+            change_dns
             echo "${LOGTIME} Updated Config No Change, Do Nothing" >>$LOG_FILE
             sleep 5
             echo "" >$START_LOG
@@ -80,34 +85,53 @@ config_error()
    echo "" >$START_LOG
 }
 
-config_dawnload
+change_dns()
+{
+   if pidof clash >/dev/null; then
+      if [ "$enable_redirect_dns" -ne "0" ]; then
+         uci del dhcp.@dnsmasq[-1].server >/dev/null 2>&1
+         uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#"$dns_port"
+         uci delete dhcp.@dnsmasq[0].resolvfile
+         uci set dhcp.@dnsmasq[0].noresolv=1
+         [ "$disable_masq_cache" -eq "1" ] && {
+            uci set dhcp.@dnsmasq[0].cachesize=0
+         }
+         uci commit dhcp
+         /etc/init.d/dnsmasq restart >/dev/null 2>&1
+      fi
+      nohup /usr/share/openclash/openclash_watchdog.sh &
+   fi
+}
+
+config_download
 
 if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/config.yaml |awk '{print int($5/1024)}')" -ne 0 ]; then
    config_su_check
 else
    if pidof clash >/dev/null; then
       echo "配置文件下载失败，尝试不使用代理下载配置文件..." >$START_LOG
-      if [ "$en_mode" = "fake-ip"]; then
-         resolve_sub_ips=$(nslookup "$subscribe_url" 114.114.114.114 |grep Address |awk -F ': ' '{print $2}')
-      else
-         resolve_sub_ips=$(nslookup "$subscribe_url" 127.0.0.1 |grep Address |awk -F ': ' '{print $2}')
-      fi
       
-      for resolve_sub_ip in $resolve_sub_ips; do
-        iptables -t nat -I openclash -d "$resolve_sub_ip" -j RETURN >/dev/null 2>&1
+      watchdog_pids=$(ps |grep openclash_watchdog.sh |grep -v grep |awk '{print $1}' 2>/dev/null)
+      for watchdog_pid in $watchdog_pids; do
+         kill -9 "$watchdog_pid" >/dev/null 2>&1
       done
+
+      uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#"$dns_port" >/dev/null 2>&1
+      uci set dhcp.@dnsmasq[0].resolvfile=/tmp/resolv.conf.auto
+      uci set dhcp.@dnsmasq[0].noresolv=0
+      uci delete dhcp.@dnsmasq[0].cachesize
+      uci commit dhcp
+      /etc/init.d/dnsmasq restart >/dev/null 2>&1
+      sleep 3
       
-      config_dawnload
+      config_download
       
       if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/config.yaml |awk '{print int($5/1024)}')" -ne 0 ]; then
          config_su_check
       else
+         change_dns
          config_error
       fi
-      
-      for resolve_sub_ip in $resolve_sub_ips; do
-        iptables -t nat -D openclash -d "$resolve_sub_ip" -j RETURN >/dev/null 2>&1
-      done
    else
       config_error
    fi
