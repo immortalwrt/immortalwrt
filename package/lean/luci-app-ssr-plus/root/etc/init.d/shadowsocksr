@@ -486,6 +486,7 @@ start() {
 		start_redir
 		if ! [ "$(uci_get_by_type global pdnsd_enable)" = "2" ] ;then
 			mkdir -p /tmp/dnsmasq.d
+			/usr/share/shadowsocksr/gfw2ipset.sh
 			if ! [ "$run_mode" = "oversea" ] ;then
 				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
 conf-dir=/etc/dnsmasq.ssr
