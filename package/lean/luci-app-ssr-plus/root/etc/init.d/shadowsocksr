@@ -485,18 +485,18 @@ start() {
 	if rules ;then
 		start_redir
 		if ! [ "$(uci_get_by_type global pdnsd_enable)" = "2" ] ;then
-			mkdir -p /tmp/dnsmasq.d
-			/usr/share/shadowsocksr/gfw2ipset.sh
+			mkdir -p /tmp/dnsmasq.d && cp -a /etc/dnsmasq.ssr /tmp/ && cp -a /etc/dnsmasq.oversea /tmp/
 			if ! [ "$run_mode" = "oversea" ] ;then
 				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
-conf-dir=/etc/dnsmasq.ssr
+conf-dir=/tmp/dnsmasq.ssr
 EOF
 			else
 				cat > /tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
-conf-dir=/etc/dnsmasq.oversea
+conf-dir=/tmp/dnsmasq.oversea
 EOF
 			fi
 			/etc/init.d/dnsmasq restart >/dev/null 2>&1
+			/usr/share/shadowsocksr/gfw2ipset.sh
 		fi
 	fi
 	start_server	
