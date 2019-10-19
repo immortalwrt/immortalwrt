@@ -17,11 +17,8 @@ ifeq ($(ARCH),x86_64)
 	PKG_ARCH:=amd64
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH:=armv6
+	PKG_ARCH:=armv7
 	ifneq ($(BOARD),bcm53xx)
-		PKG_ARCH:=armv7
-	endif
-	ifeq ($(BOARD),kirkwood)
 		PKG_ARCH:=armv5
 	endif
 endif
