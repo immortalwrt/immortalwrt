@@ -35,7 +35,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=clash is a cross-platform proxy software
-	DEPENDS:=
+	DEPENDS:=+libc +GCC_LIBSSP:libssp +USE_GLIBC:librt +USE_GLIBC:libpthread
 	URL:=https://github.com/frainzy1477/clash_dev/releases
 endef
 
