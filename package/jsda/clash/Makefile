@@ -5,26 +5,31 @@ PKG_VERSION:=0.16.0
 PKG_MAINTAINER:=frainzy1477
 
 ifeq ($(ARCH),mipsel)
-	PKG_ARCH:=mipsle
-	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-softfloat-v$(PKG_VERSION).gz
+	PKG_ARCH:=mipsle-softfloat
 endif
 ifeq ($(ARCH),mips)
-	PKG_ARCH:=mips
-	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-softfloat-v$(PKG_VERSION).gz
+	PKG_ARCH:=mips-softfloat
+endif
+ifeq ($(ARCH),i386)
+	PKG_ARCH:=386
 endif
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH:=amd64
-	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH:=armv7
-	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
+	PKG_ARCH:=armv6
+	ifneq ($(BOARD),bcm53xx)
+		PKG_ARCH:=armv7
+	endif
+	ifeq ($(BOARD),kirkwood)
+		PKG_ARCH:=armv5
+	endif
 endif
 ifeq ($(ARCH),aarch64)
 	PKG_ARCH:=armv8
-	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 endif
 
+PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 PKG_SOURCE_URL:=https://github.com/frainzy1477/clash_dev/releases/download/v$(PKG_VERSION)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_HASH:=skip
@@ -35,7 +40,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=clash is a cross-platform proxy software
-	DEPENDS:=+libc +GCC_LIBSSP:libssp +USE_GLIBC:librt +USE_GLIBC:libpthread
+	DEPENDS:=
 	URL:=https://github.com/frainzy1477/clash_dev/releases
 endef
 
