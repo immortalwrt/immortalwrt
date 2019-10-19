@@ -1,35 +1,30 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clash
-PKG_VERSION:=0.15.5
+PKG_VERSION:=0.16.0
 PKG_MAINTAINER:=frainzy1477
 
 ifeq ($(ARCH),mipsel)
 	PKG_ARCH:=mipsle
+	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-softfloat-v$(PKG_VERSION).gz
 endif
 ifeq ($(ARCH),mips)
 	PKG_ARCH:=mips
-endif
-ifeq ($(ARCH),i386)
-	PKG_ARCH:=386
+	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-softfloat-v$(PKG_VERSION).gz
 endif
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH:=amd64
+	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH:=armv6
-	ifneq ($(BOARD),bcm53xx)
-		PKG_ARCH:=armv7
-	endif
-	ifeq ($(BOARD),kirkwood)
-		PKG_ARCH:=armv5
-	endif
+	PKG_ARCH:=armv7
+	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 endif
 ifeq ($(ARCH),aarch64)
 	PKG_ARCH:=armv8
+	PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 endif
 
-PKG_SOURCE:=clash-linux-$(PKG_ARCH)-v$(PKG_VERSION).gz
 PKG_SOURCE_URL:=https://github.com/frainzy1477/clash_dev/releases/download/v$(PKG_VERSION)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_HASH:=skip
