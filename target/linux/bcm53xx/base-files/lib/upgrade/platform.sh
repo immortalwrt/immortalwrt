@@ -266,6 +266,8 @@ platform_pre_upgrade() {
 	case "$file_type" in
 		"chk")		platform_pre_upgrade_trx "$1" $((0x$(get_magic_long_at "$1" 4)));;
 		"cybertan")	platform_pre_upgrade_trx "$1" 32;;
+		"lxl")		platform_do_upgrade_nand_trx "$1" $(get_le_long_at "$1" 8);;
+		"lxlold")	platform_do_upgrade_nand_trx "$1" 64;;
 		"seama")	platform_pre_upgrade_seama "$1";;
 		"trx")		platform_pre_upgrade_trx "$1";;
 	esac
