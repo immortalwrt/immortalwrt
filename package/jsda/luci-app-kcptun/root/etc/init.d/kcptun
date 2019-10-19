@@ -70,7 +70,7 @@ gen_client_config_file() {
 
 	add_configs "string" key crypt mode
 	add_configs "int" conn autoexpire mtu sndwnd rcvwnd datashard parityshard dscp \
-		nodelay interval resend nc sockbuf keepalive scavengettl snmpperiod
+		nodelay interval resend nc sockbuf smuxver smuxbuf streambuf keepalive scavengettl snmpperiod
 	add_configs "boolean" nocomp acknodelay quiet tcp
 
 	if [ -n "$log_file" ]; then
@@ -134,6 +134,9 @@ validate_server_section() {
 		'nc:bool' \
 		'acknodelay:or("true", "false")' \
 		'sockbuf:uinteger' \
+		'smuxver:or("1", "2")' \
+		'smuxbuf:uinteger' \
+		'streambuf:uinteger' \
 		'keepalive:uinteger' \
 		'snmpperiod:min(1)'
 }

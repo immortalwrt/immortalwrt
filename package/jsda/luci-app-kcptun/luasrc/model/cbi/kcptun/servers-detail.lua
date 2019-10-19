@@ -179,6 +179,52 @@ o.write = function(self, section, value)
 	end
 end
 
+o = s:option(Value, "smuxver", "%s (%s)" % { translate("smuxver"), translate("optional") },
+	translate("Specify smux version, available 1,2, default: 1"))
+o:value("1")
+o:value("2")
+o.default = "1"
+
+o = s:option(Value, "smuxbuf", "%s (%s)" % { translate("smuxbuf"), translate("optional") },
+	translate("The overall de-mux buffer, default unit is MB."))
+o.datatype = "uinteger"
+o.placeholder = "4"
+o.cfgvalue = function(...)
+	local value = Value.cfgvalue(...)
+
+	if value then
+		return tonumber(value) / 1024 / 1024
+	end
+end
+o.write = function(self, section, value)
+	local number = tonumber(value)
+	if number then
+		Value.write(self, section, number * 1024 * 1024)
+	else
+		Value.remove(self, section)
+	end
+end
+
+o = s:option(Value, "streambuf", "%s (%s)" % { translate("streambuf"), translate("optional") },
+	translate("Per stream receive buffer, default unit is MB."))
+o.datatype = "uinteger"
+o.placeholder = "2"
+o.cfgvalue = function(...)
+	local value = Value.cfgvalue(...)
+
+	if value then
+		return tonumber(value) / 1024 / 1024
+	end
+end
+o.write = function(self, section, value)
+	local number = tonumber(value)
+	if number then
+		Value.write(self, section, number * 1024 * 1024)
+	else
+		Value.remove(self, section)
+	end
+end
+
 o = s:option(Value, "keepalive", "%s (%s)" % { translate("keepalive"), translate("optional") },
 	translate("NAT keepalive interval to prevent your router from removing port mapping, default unit is seconds."))
 o.datatype = "uinteger"
