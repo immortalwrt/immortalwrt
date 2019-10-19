@@ -8,14 +8,14 @@ rlimit_nofile: 0
 dns:
   bind_host: 0.0.0.0
   port: 5333
-  statistics_interval: 1
+  statistics_interval: 30
   protection_enabled: true
   filtering_enabled: true
   filters_update_interval: 24
   blocking_mode: nxdomain
   blocked_response_ttl: 3000
   querylog_enabled: true
-  querylog_interval: 1
+  querylog_interval: 30
   ratelimit: 0
   ratelimit_whitelist: []
   refuse_any: false
