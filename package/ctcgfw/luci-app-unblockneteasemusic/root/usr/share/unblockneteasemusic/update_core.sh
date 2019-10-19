@@ -50,6 +50,7 @@ function update_core(){
 		echo -e "Failed to download core." >>/tmp/unblockneteasemusic.log
 		exit 1
 	else
+		[ "${luci_update}" == "y" ] && touch "/usr/share/unblockneteasemusic/update_successfully"
 		echo -e "${latest_ver}" > /usr/share/unblockneteasemusic/local_ver
 		/etc/init.d/unblockneteasemusic restart
 	fi
@@ -64,4 +65,5 @@ function main(){
 	check_latest_version
 }
 
-main
+	[ "$1" == "luci_update" ] && luci_update="y"
+	main

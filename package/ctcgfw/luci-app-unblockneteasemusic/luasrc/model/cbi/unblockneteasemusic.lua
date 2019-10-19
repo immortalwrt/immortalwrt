@@ -1,7 +1,7 @@
 mp = Map("unblockneteasemusic", translate("解除网易云音乐播放限制"))
 mp.description = translate("原理：采用 [QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>具体使用方法参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic")
 
-mp:section(SimpleSection).template  = "unblockneteasemusic/unblockneteasemusic_status"
+mp:section(SimpleSection).template = "unblockneteasemusic/unblockneteasemusic_status"
 
 s = mp:section(TypedSection, "unblockneteasemusic")
 s.anonymous=true
@@ -11,15 +11,6 @@ enabled = s:option(Flag, "enabled", translate("启用本插件"))
 enabled.description = translate("启用本插件以解除网易云音乐播放限制")
 enabled.default = 0
 enabled.rmempty = false
-
-button_update_core = s:option (Button, "_button_update_core", translate("更新主程序"))
-button_update_core.description = translate("更新完毕后会自动重启插件；更新主程序需要一点时间，请不要反复点击按钮")
-local latest_ver = luci.sys.exec("/bin/bash /usr/share/unblockneteasemusic/check_update.sh")
-button_update_core.inputtitle = translate (latest_ver)
-button_update_core.inputstyle = "apply"
-function button_update_core.write (self, section, value)
-	luci.sys.call ("/bin/bash /usr/share/unblockneteasemusic/update_core.sh &")
-end
 
 account = s:option(Value, "http_port", translate("[HTTP] 监听端口"))
 account.description = translate("本插件监听的HTTP端口，不可与其他程序/HTTPS共用一个端口")
