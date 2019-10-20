@@ -45,7 +45,7 @@ define Package/mysql-server
   DEPENDS:=+libmysqlclient +libpthread +libncursesw +libreadline
   TITLE:=MySQL Server
   URL:=http://dev.mysql.com/
-  SUBMENU:=database
+  SUBMENU:=Database
 endef
 
 define Package/libmysqlclient
