@@ -1,0 +1,17 @@
+--- a/ppdc/Makefile
++++ b/ppdc/Makefile
+@@ -238,13 +238,7 @@ framedhelp:
+ 
+ genstrings:		genstrings.o libcupsppdc.a ../cups/$(LIBCUPSSTATIC) \
+ 			sample.drv ../data/media.defs
+-	echo Linking $@...
+-	$(CXX) $(ARCHFLAGS) $(LDFLAGS) -o genstrings genstrings.o \
+-		libcupsppdc.a ../cups/$(LIBCUPSSTATIC) $(LIBGSSAPI) $(SSLLIBS) \
+-		$(DNSSDLIBS) $(COMMONLIBS) $(LIBZ)
+-	echo Generating localization strings...
+-	./genstrings >sample.c
+-
++	echo Not Linking $@...
+ 
+ #
+ # ppdc, the PPD compiler.

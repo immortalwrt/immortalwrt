@@ -1,0 +1,11 @@
+--- a/configure
++++ b/configure
+@@ -5896,7 +5896,7 @@ fi
+ 
+ case "$COMPONENTS" in
+ 	all)
+-		BUILDDIRS="filter backend berkeley cgi-bin monitor notifier ppdc scheduler systemv conf data desktop locale man doc examples templates"
++		BUILDDIRS="filter backend berkeley cgi-bin monitor ppdc scheduler systemv conf data desktop locale doc examples templates"
+ 		;;
+ 
+ 	core)
