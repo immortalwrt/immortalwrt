@@ -536,6 +536,7 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary factory 57350)
 		;;
 	gl-mt300n-v2|\
+	miwifi-mini|\
 	whr-g300n)
 		wan_mac=$(mtd_get_mac_binary factory 4)
 		;;
@@ -573,10 +574,6 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary Factory 0xe000)
 		;;
 	xiaomi,miwifi-r3|\
-	miwifi-mini)
-		wan_mac=$(cat /sys/class/net/eth0/address)
-		lan_mac=$(macaddr_setbit_la "$wan_mac")
-		;;
 	k2p)
 		lan_mac=$(mtd_get_mac_binary factory 0xe000)
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)
