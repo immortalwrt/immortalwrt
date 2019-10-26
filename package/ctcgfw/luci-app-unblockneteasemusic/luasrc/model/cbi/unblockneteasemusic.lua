@@ -17,13 +17,14 @@ account.description = translate("本插件监听的HTTP端口，不可与其他�
 account.placeholder = "5200"
 account.default = "5200"
 account.datatype = "port"
-enabled.rmempty = false
+account.rmempty = false
+
 account = s:option(Value, "https_port", translate("[HTTPS] 监听端口"))
 account.description = translate("本插件监听的HTTPS端口，不可与其他程序/HTTP共用一个端口")
 account.placeholder = "5201"
 account.default = "5201"
 account.datatype = "port"
-enabled.rmempty = false
+account.rmempty = false
 
 speedtype = s:option(ListValue, "musicapptype", translate("音源接口"))
 speedtype:value("default", translate("默认"))

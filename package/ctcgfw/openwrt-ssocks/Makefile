@@ -1,0 +1,48 @@
+#
+# Copyright (C) 2017-2018 Jian Chang <aa65535@live.com>
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=ssocks
+PKG_VERSION:=0.0.14
+PKG_RELEASE:=1
+
+PKG_SOURCE:=ssocks-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=http://download.sourceforge.net/project/ssocks/
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_HASH:=skip
+
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=y0ug
+
+PKG_INSTALL:=1
+PKG_FIXUP:=autoreconf
+PKG_USE_MIPS16:=0
+PKG_BUILD_PARALLEL:=1
+PKG_BUILD_DEPENDS:=+zlib
+
+include $(INCLUDE_DIR)/package.mk
+
+define Package/$(PKG_NAME)
+	SECTION:=net
+	CATEGORY:=Network
+	TITLE:=sSocks
+	URL:=https://sourceforge.net/projects/ssocks
+	DEPENDS:=+zlib
+endef
+
+define Package/$(PKG_NAME)/description
+sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) and RFC 1929 (Authentication for SOCKS V5), a reverse socks server and client, a netcat like tool and a socks5 relay.
+endef
+
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocksd $(1)/usr/bin/ssocks
+endef
+
+$(eval $(call BuildPackage,$(PKG_NAME)))

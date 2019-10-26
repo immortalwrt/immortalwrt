@@ -52,6 +52,9 @@ msgstr "用于压缩内存数据的CPU并发线程数"
 msgid "Swap"
 msgstr "虚拟内存"
 
+msgid "Base Setting"
+msgstr "基本设置"
+
 msgid "Force 40MHz mode"
 msgstr "强制40MHz频宽"
 
