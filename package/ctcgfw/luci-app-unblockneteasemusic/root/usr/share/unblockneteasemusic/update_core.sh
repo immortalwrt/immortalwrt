@@ -40,7 +40,7 @@ function update_core(){
 	curl -L "https://github.com/nondanee/UnblockNeteaseMusic/archive/master.tar.gz" -o "/usr/share/unblockneteasemusic/core/core.tar.gz" >/dev/null 2>&1
 	tar -zxf "/usr/share/unblockneteasemusic/core/core.tar.gz" -C "/usr/share/unblockneteasemusic/core/" >/dev/null 2>&1
 	mv /usr/share/unblockneteasemusic/core/UnblockNeteaseMusic-master/* "/usr/share/unblockneteasemusic/core/"
-	rm -rf "/usr/share/unblockneteasemusic/core/core.tar.gz /usr/share/unblockneteasemusic/core/UnblockNeteaseMusic-master" >/dev/null 2>&1
+	rm -rf "/usr/share/unblockneteasemusic/core/core.tar.gz" "/usr/share/unblockneteasemusic/core/UnblockNeteaseMusic-master" >/dev/null 2>&1
 
 	if [ ! -e "/usr/share/unblockneteasemusic/core/app.js" ]; then
 		echo -e "Failed to download core." >>/tmp/unblockneteasemusic.log
