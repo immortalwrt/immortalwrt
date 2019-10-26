@@ -55,6 +55,9 @@ msgstr "虚拟内存"
 msgid "Base Setting"
 msgstr "基本设置"
 
+msgid "Log"
+msgstr "日志"
+
 msgid "Force 40MHz mode"
 msgstr "强制40MHz频宽"
 
