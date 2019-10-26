@@ -19,7 +19,7 @@ start()
 
 	mkdir -p "/tmp/"
 	mkdir -p "/var/etc/"
-	[ "${bind_addr}" == "LAN" ] && bind_address="${lan_addr}" || bind_address="0.0.0.0"
+	[ "${bind_addr}" == "lan" ] && bind_address="${lan_addr}" || bind_address="0.0.0.0"
 	if [ -n "${username}" ] && [ -n "${password}" ]; then
 		rm -f /etc/config/ssocks-authorization
 		echo "${username}:${password}" > /etc/config/ssocks-authorization
