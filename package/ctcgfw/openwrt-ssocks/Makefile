@@ -45,7 +45,9 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocksd $(1)/usr/bin/ssocks
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build/bin/ssocksd $(1)/usr/bin/ssocks
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build/lib/libsocks.a $(1)/usr/lib/libsocks.a
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
