@@ -11,7 +11,6 @@ function index()
 
 	entry({"admin", "services", "ssocks"},firstchild(), _("sSocks Server"), 50).dependent = false
 	entry({"admin", "services", "ssocks", "general"},cbi("ssocks"), _("Base Setting"), 1)
-	entry({"admin", "services", "ssocks", "log"},form("ssocks_log"), _("Log"), 2)
 	entry({"admin", "services", "ssocks", "status"},call("act_status")).leaf=true
 end
 
