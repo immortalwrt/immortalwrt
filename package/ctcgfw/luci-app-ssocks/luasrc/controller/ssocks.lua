@@ -10,7 +10,7 @@ function index()
 	end
 	local page
 	page = entry({"admin", "services", "ssocks"}, cbi("ssocks"), _("sSocks Server"), 100)
-	page.i18n = "vlmcsd"
+	page.i18n = "ssocks"
 	page.dependent = true
 	entry({"admin", "services", "ssocks", "status"},call("act_status")).leaf=true
 end
