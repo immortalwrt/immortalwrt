@@ -18,9 +18,9 @@ PKG_SOURCE_URL:=http://download.qt-project.org/archive/qt/$(PKG_VERSION)/$(PKG_V
 PKG_BUILD_DIR=$(BUILD_DIR)/qt-everywhere-src-$(PKG_VERSION).$(PKG_RELEASE)
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
-PKG_BUILD_DEPENDS:=libiconv
 
 include $(INCLUDE_DIR)/package.mk
+-include $(if $(DUMP),,./files/qmake.mk)
 
 # not using sstrip here as this fucks up the .so's somehow
 STRIP:=/bin/true
@@ -36,13 +36,12 @@ define Package/qt5/Default
   SUBMENU:=Qt5
   TITLE:=qt5
   URL:=http://qt-project.org
-  DEPENDS:=+libatomic +libstdcpp +libopenssl +zlib +icu @!LINUX_2_6
+  DEPENDS:=+icu +librt +zlib +libpcre2-16 +libstdcpp +libpthread +libatomic +libopenssl @!LINUX_2_6
 endef
 
 define Package/qt5-core
   $(call Package/qt5/Default)
   TITLE+=core
-  DEPENDS:=+icu +libatomic
 endef
 
 define Package/qt5-concurrent
@@ -66,18 +65,12 @@ endef
 define Package/qt5-sql
   $(call Package/qt5/Default)
   TITLE+=sql
-  DEPENDS+=+qt5-core +libmariadbclient
+  DEPENDS+=+qt5-core
 endef
 
 define Package/qt5-xml
   $(call Package/qt5/Default)
   TITLE+=xml
-  DEPENDS+=+qt5-core
-endef
-
-define Package/qt5-serialport
-  $(call Package/qt5/Default)
-  TITLE+=serialport
   DEPENDS+=+qt5-core
 endef
 
@@ -94,13 +87,31 @@ define Package/qt5-test
 endef
 
 define Build/Configure
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)/qtbase/lib/fonts
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++
+	$(CP) ./files/fonts/* $(PKG_BUILD_DIR)/qtbase/lib/fonts/
 	$(CP) ./files/qplatformdefs.h $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++/qplatformdefs.h
 	$(CP) ./files/qmake.conf $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++/qmake.conf
 	$(SED) 's@$$$$(TARGET_CROSS)@$(TARGET_CROSS)@g' $(PKG_BUILD_DIR)/qtbase/mkspecs/linux-openwrt-g++/qmake.conf
 	( cd $(PKG_BUILD_DIR) ; \
+		TARGET_CC="$(TARGET_CROSS)gcc" \
+		TARGET_CXX="$(TARGET_CROSS)g++" \
+		TARGET_AR="$(TARGET_CROSS)ar cqs" \
+		TARGET_OBJCOPY="$(TARGET_CROSS)objcopy" \
+		TARGET_RANLIB="$(TARGET_CROSS)ranlib" \
+		TARGET_CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
+		TARGET_CXXFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
+		TARGET_LDFLAGS="$(TARGET_LDFLAGS) $(EXTRA_LDFLAGS) -lpthread -lrt" \
+		TARGET_INCDIRS="$(TARGET_INCDIRS)" \
+		TARGET_LIBDIRS="$(TARGET_LIBDIRS) $(STAGING_DIR)/usr/lib/" \
+		CFLAGS= \
+		CXXFLAGS= \
+		LDFLAGS= \
 		./configure \
-			-prefix $(TOOLCHAIN_DIR) \
+			-prefix /usr \
+			-extprefix $(TOOLCHAIN_DIR) \
+			-sysroot $(TOOLCHAIN_DIR) \
+			-plugindir /usr/lib/Qt/plugins \
 			-xplatform linux-openwrt-g++ \
 			-opensource \
 			-confirm-license \
@@ -115,13 +126,11 @@ define Build/Configure
 			-no-opengl \
 			-no-directfb \
 			-no-xcb \
-			-no-ssl \
+			-openssl-runtime \
 			-qt-zlib \
-			-qt-pcre \
 			-qt-freetype \
 			-make libs \
 			-nomake examples \
-			-nomake tools \
 			-nomake tests \
 			-skip qtdeclarative \
 			-skip qtmultimedia \
@@ -135,7 +144,20 @@ define Build/Configure
 endef
 
 define Build/Compile
-	$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)
+	TARGET_CC="$(TARGET_CROSS)gcc" \
+	TARGET_CXX="$(TARGET_CROSS)g++" \
+	TARGET_AR="$(TARGET_CROSS)ar cqs" \
+	TARGET_OBJCOPY="$(TARGET_CROSS)objcopy" \
+	TARGET_RANLIB="$(TARGET_CROSS)ranlib" \
+	TARGET_CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
+	TARGET_CXXFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
+	TARGET_LDFLAGS="$(TARGET_LDFLAGS) $(EXTRA_LDFLAGS) -ldl -lpthread -lrt" \
+	TARGET_INCDIRS="$(TARGET_INCDIRS)" \
+	TARGET_LIBDIRS="$(TARGET_LIBDIRS) $(STAGING_DIR)/usr/lib/" \
+	STAGING_DIR="$(STAGING_DIR)" \
+	STAGING_DIR_HOST="$(STAGING_DIR)/../host" \
+	PKG_CONFIG_SYSROOT="$(STAGING_DIR)" \
+	$(MAKE) -j4 -C $(PKG_BUILD_DIR)
 endef
 
 define Build/InstallDev
@@ -202,13 +224,6 @@ define Package/qt5-xml/install
 	$(CP) $(PKG_BUILD_DIR)/qtbase/lib/libQt5Xml.la 	$(1)/usr/lib/
 endef
 
-define Package/qt5-serialport/install
-	$(INSTALL_DIR) $(1)/usr/lib/
-	$(CP) $(PKG_BUILD_DIR)/qtserialport/lib/libQt5SerialPort.so* $(1)/usr/lib/
-	$(CP) $(PKG_BUILD_DIR)/qtserialport/lib/libQt5SerialPort.prl $(1)/usr/lib/
-	$(CP) $(PKG_BUILD_DIR)/qtserialport/lib/libQt5SerialPort.la 	$(1)/usr/lib/
-endef
-
 define Package/qt5-xmlpatterns/install
 	$(INSTALL_DIR) $(1)/usr/lib/
 	$(CP) $(PKG_BUILD_DIR)/qtxmlpatterns/lib/libQt5XmlPatterns.so* $(1)/usr/lib/
@@ -229,6 +244,5 @@ $(eval $(call BuildPackage,qt5-network))
 $(eval $(call BuildPackage,qt5-widgets))
 $(eval $(call BuildPackage,qt5-sql))
 $(eval $(call BuildPackage,qt5-xml))
-$(eval $(call BuildPackage,qt5-serialport))
 $(eval $(call BuildPackage,qt5-xmlpatterns))
 $(eval $(call BuildPackage,qt5-test))
