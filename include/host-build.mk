@@ -190,7 +190,7 @@ ifndef DUMP
   host-install: host-compile
 
   host-clean-build: FORCE
-  	$(call Host/Uninstall)
+	$(call Host/Uninstall)
 	rm -rf $(HOST_BUILD_DIR) $(HOST_STAMP_BUILT)
 
   host-clean: host-clean-build
