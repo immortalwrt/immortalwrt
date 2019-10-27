@@ -8,9 +8,10 @@ function index()
 	if not nixio.fs.access("/etc/config/ssocks") then
 		return
 	end
-
-	entry({"admin", "services", "ssocks"},firstchild(), _("sSocks Server"), 50).dependent = false
-	entry({"admin", "services", "ssocks", "general"},cbi("ssocks"), _("Base Setting"), 1)
+	local page
+	page = entry({"admin", "services", "ssocks"}, cbi("ssocks"), _("sSocks Server"), 100)
+	page.i18n = "vlmcsd"
+	page.dependent = true
 	entry({"admin", "services", "ssocks", "status"},call("act_status")).leaf=true
 end
 
