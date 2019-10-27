@@ -65,7 +65,7 @@ endef
 define Package/qt5-sql
   $(call Package/qt5/Default)
   TITLE+=sql
-  DEPENDS+=+qt5-core
+  DEPENDS+=+qt5-core +libmariadbclient
 endef
 
 define Package/qt5-xml
