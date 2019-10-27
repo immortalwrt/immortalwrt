@@ -1,6 +1,9 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8\n"
 
+msgid "Base Setting"
+msgstr "基本设置"
+
 msgid "sSocks Server"
 msgstr "sSocks服务端"
 
