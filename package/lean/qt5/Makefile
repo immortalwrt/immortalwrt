@@ -126,7 +126,8 @@ define Build/Configure
 			-no-opengl \
 			-no-directfb \
 			-no-xcb \
-			-openssl-runtime \
+			-no-ssl \
+			-qt-pcre \
 			-qt-zlib \
 			-qt-freetype \
 			-make libs \
@@ -157,7 +158,7 @@ define Build/Compile
 	STAGING_DIR="$(STAGING_DIR)" \
 	STAGING_DIR_HOST="$(STAGING_DIR)/../host" \
 	PKG_CONFIG_SYSROOT="$(STAGING_DIR)" \
-	$(MAKE) -j4 -C $(PKG_BUILD_DIR)
+	$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/InstallDev
