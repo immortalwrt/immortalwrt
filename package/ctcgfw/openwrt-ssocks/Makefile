@@ -26,7 +26,6 @@ PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_DEPENDS:=zlib
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -35,8 +34,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=sSocks
-	URL:=https://sourceforge.net/projects/ssocks
-	DEPENDS:=+zlib
+	URL:=https://github.com/david378/ssocks
 endef
 
 define Package/$(PKG_NAME)/description
