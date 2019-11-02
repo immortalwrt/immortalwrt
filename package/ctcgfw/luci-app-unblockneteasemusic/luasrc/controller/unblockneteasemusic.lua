@@ -16,7 +16,7 @@ function index()
 	entry({"admin", "services", "unblockneteasemusic", "log"},form("unblockneteasemusiclog"), _("日志"), 3)
 
 	entry({"admin", "services", "unblockneteasemusic", "status"},call("act_status")).leaf=true
-	entry({"admin", "services", "unblockneteasemusic", "update_core"},call("act_update_core"))
+	entry({"admin", "services", "unblockneteasemusic", "upgrade_core"},call("act_update_core"))
 end
 
 function act_status()
