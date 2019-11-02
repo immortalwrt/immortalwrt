@@ -160,6 +160,7 @@ load_server()
 	config_get "port" "$section" "port" ""
 	config_get "type" "$section" "type" "udp"
 	config_get "ip" "$section" "ip" ""
+	config_get "tls_host_verify" "$section" "tls_host_verify" ""
 	config_get "host_name" "$section" "host_name" ""
 	config_get "http_host" "$section" "http_host" ""
 	config_get "server_group" "$section" "server_group" ""
@@ -189,6 +190,10 @@ load_server()
 		if [ -z "`echo $ip | grep "\["`" ]; then
 			ip="[$ip]"
 		fi
+	fi
+
+	if [ ! -z "$tls_host_verify" ]; then
+		ADDITIONAL_ARGS="$ADDITIONAL_ARGS -tls-host-verify $tls_host_verify"
 	fi
 
 	if [ ! -z "$host_name" ]; then
@@ -228,7 +233,75 @@ load_server()
 	conf_append "$SERVER" "$DNS_ADDRESS $ADDITIONAL_ARGS $addition_arg"
 }
 
-load_service() {
+load_second_server() 
+{
+	local section="$1"
+	local ARGS=""
+	local ADDR=""
+
+	config_get_bool "seconddns_enabled" "$section" "seconddns_enabled" "0"
+	if [ "$seconddns_enabled" = "0" ]; then
+		return
+	fi
+
+	config_get "seconddns_port" "$section" "seconddns_port" "7053"
+
+	config_get_bool "seconddns_no_speed_check" "$section" "seconddns_no_speed_check" "0"
+	if [ "$seconddns_no_speed_check" = "1" ]; then
+		ARGS="$ARGS -no-speed-check"
+	fi
+
+	config_get "seconddns_server_group" "$section" "seconddns_server_group" ""
+	if [ ! -z "$seconddns_server_group" ]; then
+		ARGS="$ARGS -group $seconddns_server_group"
+	fi
+
+	config_get_bool "seconddns_no_rule_addr" "$section" "seconddns_no_rule_addr" "0"
+	if [ "$seconddns_no_rule_addr" = "1" ]; then
+		ARGS="$ARGS -no-rule-addr"
+	fi
+
+	config_get_bool "seconddns_no_rule_nameserver" "$section" "seconddns_no_rule_nameserver" "0"
+	if [ "$seconddns_no_rule_nameserver" = "1" ]; then
+		ARGS="$ARGS -no-rule-nameserver"
+	fi
+
+	config_get_bool "seconddns_no_rule_ipset" "$section" "seconddns_no_rule_ipset" "0"
+	if [ "$seconddns_no_rule_ipset" = "1" ]; then
+		ARGS="$ARGS -no-rule-ipset"
+	fi
+
+	config_get_bool "seconddns_no_rule_soa" "$section" "seconddns_no_rule_soa" "0"
+	if [ "$seconddns_no_rule_soa" = "1" ]; then
+		ARGS="$ARGS -no-rule-soa"
+	fi
+
+	config_get_bool "seconddns_no_dualstack_selection" "$section" "seconddns_no_dualstack_selection" "0"
+	if [ "$seconddns_no_dualstack_selection" = "1" ]; then
+		ARGS="$ARGS -no-dualstack-selection"
+	fi
+
+	config_get_bool "seconddns_no_cache" "$section" "seconddns_no_cache" "0"
+	if [ "$seconddns_no_cache" = "1" ]; then
+		ARGS="$ARGS -no-cache"
+	fi
+
+	config_get "ipv6_server" "$section" "ipv6_server" "1"
+	if [ "$ipv6_server" = "1" ]; then
+		ADDR="[::]"
+	else
+		ADDR=""
+	fi
+
+	conf_append "bind" "$ADDR:$seconddns_port $ARGS"
+	config_get_bool "seconddns_tcp_server" "$section" "seconddns_tcp_server" "1"
+	if [ "$seconddns_tcp_server" = "1" ]; then
+		conf_append "bind-tcp" "$ADDR:$seconddns_port $ARGS"
+	fi
+}
+
+load_service() 
+{
 	local section="$1"
 	args=""
 
@@ -347,6 +420,8 @@ load_service() {
 		set_forward_dnsmasq "$SMARTDNS_PORT"
 	fi
 
+	load_second_server $section
+
 	config_foreach load_server "server"
 
 	echo "conf-file $ADDRESS_CONF" >> $SMARTDNS_CONF_TMP
@@ -373,12 +448,14 @@ load_service() {
 	procd_close_instance
 }
 
-start_service() {
+start_service() 
+{
 	config_load "smartdns"
 	config_foreach load_service "smartdns"
 }
 
-reload_service(){
+reload_service()
+{
 	stop
 	start
 }

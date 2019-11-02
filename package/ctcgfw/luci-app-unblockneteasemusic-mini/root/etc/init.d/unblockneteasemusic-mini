@@ -24,7 +24,7 @@ ipset=/interface.music.163.com/music
 ipset=/interface3.music.163.com/music
 ipset=/apm.music.163.com/music
 ipset=/apm3.music.163.com/music
-EOF
+		EOF
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
 		if ! ipset list music >/dev/null; then ipset create music hash:ip; fi

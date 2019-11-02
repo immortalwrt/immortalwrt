@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=smartdns
-PKG_VERSION:=1
+PKG_VERSION:=2019.11.02
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -14,8 +14,6 @@ define Package/$(PKG_NAME)
     SECTION:=net
     CATEGORY:=Network
     TITLE:=smartdns
-    URL:=
-    DEPENDS:=+libopenssl
 endef
 
 define Package/$(PKG_NAME)/description
@@ -45,9 +43,6 @@ ifeq ($(ARCH),arm64)
 endif
 ifeq ($(ARCH),aarch64)
 	PKG_ARCH_SMARTDNS:=arm64
-endif
-ifeq ($(BOARD),bcm53xx)
-	PKG_ARCH_SMARTDNS:=bcm53xx
 endif
 
 define Package/$(PKG_NAME)/install
