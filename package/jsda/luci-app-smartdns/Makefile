@@ -8,6 +8,8 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for smartdns
 LUCI_DEPENDS:=+smartdns
+PKG_VERSION:=2019.11.02
+PKG_RELEASE:=1
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

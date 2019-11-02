@@ -39,8 +39,16 @@ o:value("https", translate("https"))
 o.default     = "udp"
 o.rempty      = false
 
+---- TLS host verify
+o = s:option(Value, "tls_host_verify", translate("TLS Hostname Verify"), translate("Set TLS hostname to verify."))
+o.default     = ""
+o.datatype    = "string"
+o.rempty      = true
+o:depends("type", "tls")
+o:depends("type", "https")
+
 ---- SNI host name
-o = s:option(Value, "host_name", translate("TLS SNI name"), translate("Sets the server name indication"))
+o = s:option(Value, "host_name", translate("TLS SNI name"), translate("Sets the server name indication for query."))
 o.default     = ""
 o.datatype    = "hostname"
 o.rempty      = true
@@ -55,7 +63,7 @@ o.rempty      = true
 o:depends("type", "https")
 
 ---- server group
-o = s:option(Value, "server_group", translate("Server Group"), translate("DNS Server group belongs to, used with nameserver, such as offlce, home."))
+o = s:option(Value, "server_group", translate("Server Group"), translate("DNS Server group belongs to, used with nameserver, such as office, home."))
 o.rmempty     = true
 o.placeholder = "default"
 o.datatype    = "hostname"

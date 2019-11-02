@@ -16,6 +16,7 @@ s = m:section(TypedSection, "smartdns", translate("Settings"), translate("Genera
 s.anonymous = true
 
 s:tab("settings", translate("General Settings"))
+s:tab("seconddns", translate("Second Server Settings"))
 s:tab("custom", translate("Custom Settings"))
 
 ---- Eanble
@@ -92,9 +93,91 @@ o.placeholder = "300"
 o.default     = 300
 o.optional    = true
 
+---- second dns server
 ---- rr-ttl-max
 o = s:taboption("settings", Value, "rr_ttl_max", translate("Domain TTL Max"), translate("Maximum TTL for all domain result."))
 o.rempty      = true
+
+---- Eanble
+o = s:taboption("seconddns", Flag, "seconddns_enabled", translate("Enable"), translate("Enable or disable second DNS server."))
+o.default     = o.disabled
+o.rempty      = false
+
+---- Port
+o = s:taboption("seconddns", Value, "seconddns_port", translate("Local Port"), translate("Smartdns local server port"))
+o.placeholder = 7053
+o.default     = 7053
+o.datatype    = "port"
+o.rempty      = false
+
+---- Enable TCP server
+o = s:taboption("seconddns", Flag, "seconddns_tcp_server", translate("TCP Server"), translate("Enable TCP DNS Server"))
+o.rmempty     = false
+o.default     = o.enabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "1"
+end
+
+o = s:taboption("seconddns", Flag, "seconddns_no_speed_check", translate("Skip Speed Check"), translate("Do not check speed."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+---- dns server group
+o = s:taboption("seconddns", Value, "seconddns_server_group", translate("Server Group"), translate("Query DNS through specific dns server group, such as office, home."))
+o.rmempty     = true
+o.placeholder = "default"
+o.datatype    = "hostname"
+o.rempty      = true
+
+---- skip address rules
+o = s:taboption("seconddns", Flag, "seconddns_no_rule_addr", translate("Skip Address Rules"), translate("Skip address rules."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+---- skip name server rules
+o = s:taboption("seconddns", Flag, "seconddns_no_rule_nameserver", translate("Skip Nameserver Rule"), translate("Skip nameserver rules."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+---- skip ipset rules
+o = s:taboption("seconddns", Flag, "seconddns_no_rule_ipset", translate("Skip Ipset Rule"), translate("Skip ipset rules."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+---- skip soa address rule
+o = s:taboption("seconddns", Flag, "seconddns_no_rule_soa", translate("Skip SOA Address Rule"), translate("Skip SOA address rules."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+o = s:taboption("seconddns", Flag, "seconddns_no_dualstack_selection", translate("Skip Dualstack Selection"), translate("Skip Sualstack Selection."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+---- skip cache
+o = s:taboption("seconddns", Flag, "seconddns_no_cache", translate("Skip Cache"), translate("Skip Cache."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
 
 ----- custom settings
 custom = s:taboption("custom", Value, "Custom Settings",
