@@ -68,10 +68,7 @@ s = m:section(TypedSection, "global_subscribe", translate("Server Subscribe"))
 s.anonymous = true
 
 ---- Subscribe URL
-o = s:option(DynamicList, "baseurl_ssr", translate("SSR Subscribe URL"),
-             translate(
-                 "Servers unsubscribed will be deleted in next update; Please summit the Subscribe URL first before manually update."))
-o = s:option(DynamicList, "baseurl_v2ray", translate("V2ray Subscribe URL"),
+o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"),
              translate(
                  "Servers unsubscribed will be deleted in next update; Please summit the Subscribe URL first before manually update."))
 

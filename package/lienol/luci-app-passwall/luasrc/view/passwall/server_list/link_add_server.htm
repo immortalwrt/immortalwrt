@@ -23,10 +23,9 @@ local dsp = require "luci.dispatcher"
 
 <script type="text/javascript">
 	//<![CDATA[
-	function ajax_add_server(type,link) {
-		if(type && link) {
+	function ajax_add_server(link) {
+		if (link) {
 			XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_add_server")%>', {
-				'type': type,
 				'link': link
 			},
 			function(x, data) {
@@ -50,13 +49,9 @@ local dsp = require "luci.dispatcher"
 	}
 	
 	function add_server() {
-		var servers_type_dom = document.getElementById("servers_type");
-		var servers_type_dom_index = servers_type_dom.selectedIndex;
-		
-		var servers_type = servers_type_dom.options[servers_type_dom_index].value;
 		var servers_link = document.getElementById("servers_link").value;
 		if (servers_link.trim() != "") {
-			ajax_add_server(servers_type,servers_link);
+			ajax_add_server(servers_link);
 		}
 		else {
 			alert("<%:Please Enter The Link%>");
@@ -74,17 +69,8 @@ local dsp = require "luci.dispatcher"
 </div>
 
 <div id="div1">
-	<div class="cbi-value" data-index="1" data-depends="[]">
-	<label class="cbi-value-title"><%:Server Type%></label>
-		<div class="cbi-value-field">
-			<select id="servers_type" class="cbi-input-select" size="1">
-				<option value="SSR" selected="selected">SSR</option>
-				<option value="V2ray">V2ray</option>
-			</select>
-		</div>
-	</div>
 	<div class="cbi-value">
-		<label class="cbi-value-title"><%:Please Enter The Link%></label>
+		<label class="cbi-value-title"><%:Please Enter The SS/SSR/V2ray Link%></label>
 		<div class="cbi-value-field">
 			<textarea id="servers_link" rows="5" cols="50"></textarea>
 		</div>

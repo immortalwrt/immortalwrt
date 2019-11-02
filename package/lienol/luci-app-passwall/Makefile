@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=2.0
-PKG_RELEASE:=86-20191024
+PKG_RELEASE:=89-20191101
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PO2LMO:=./po2lmo
@@ -15,6 +15,7 @@ PO2LMO:=./po2lmo
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)/config
+menu "Configuration"
 	
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
 	bool "Include Shadowsocks Redir (ss-redir)"
@@ -64,10 +65,10 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dns-forwarder
 	bool "Include dns-forwarder"
 	default n
 
+endmenu
 endef
 
 define Package/$(PKG_NAME)
-  SECTION:=luci
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI support for PassWall(fanqiang) By Lienol

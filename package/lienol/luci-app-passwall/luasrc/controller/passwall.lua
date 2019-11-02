@@ -91,23 +91,16 @@ function hide_menu()
 end
 
 function link_add_server()
-    local type = luci.http.formvalue("type")
     local link = luci.http.formvalue("link")
-    if type == "SSR" then
-        luci.sys.call('rm -f /tmp/ssr_links.conf && echo "' .. link ..
-                          '" >> /tmp/ssr_links.conf')
-        luci.sys.call("/usr/share/passwall/subscription_ssr.sh add >/dev/null")
-    elseif type == "V2ray" then
-        luci.sys.call('rm -f /tmp/v2ray_links.conf && echo "' .. link ..
-                          '" >> /tmp/v2ray_links.conf')
-        luci.sys
-            .call("/usr/share/passwall/subscription_v2ray.sh add >/dev/null")
-    end
+    luci.sys.call('rm -f /tmp/links.conf && echo "' .. link ..
+                      '" >> /tmp/links.conf')
+    luci.sys.call("/usr/share/passwall/subscription.sh add >/dev/null")
 end
 
 function get_log()
     -- luci.sys.exec("[ -f /var/log/passwall.log ] && sed '1!G;h;$!d' /var/log/passwall.log > /var/log/passwall_show.log")
-    luci.http.write(luci.sys.exec("[ -f '/var/log/passwall.log' ] && cat /var/log/passwall.log"))
+    luci.http.write(luci.sys.exec(
+                        "[ -f '/var/log/passwall.log' ] && cat /var/log/passwall.log"))
 end
 
 function clear_log() luci.sys.call("echo '' > /var/log/passwall.log") end

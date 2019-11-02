@@ -13,6 +13,9 @@ msgstr "V2ray 服务器"
 msgid "Brook Server"
 msgstr "Brook 服务器"
 
+msgid "Trojan Server"
+msgstr "Trojan 服务器"
+
 msgid "Auto"
 msgstr "自动"
 
@@ -193,8 +196,8 @@ msgstr "本机"
 msgid "Danger"
 msgstr "危险"
 
-msgid "Please Enter The Link"
-msgstr "请输入链接"
+msgid "Please Enter The SS/SSR/V2ray Link"
+msgstr "请输入SS/SSR/V2ray链接"
 
 msgid "Add Server"
 msgstr "添加服务器"
@@ -505,11 +508,8 @@ msgstr "如果你希望从内存中运行，请更改路径，例如/tmp/brook�
 msgid "Server Subscribe"
 msgstr "服务器订阅"
 
-msgid "SSR Subscribe URL"
-msgstr "SSR订阅网址"
-
-msgid "V2ray Subscribe URL"
-msgstr "V2ray订阅网址"
+msgid "Subscribe URL"
+msgstr "订阅网址"
 
 msgid "Servers unsubscribed will be deleted in next update; Please summit the Subscribe URL first before manually update."
 msgstr "取消订阅的服务器将在下次更新时删除，请先输入订阅网址保存提交之后再更新。"

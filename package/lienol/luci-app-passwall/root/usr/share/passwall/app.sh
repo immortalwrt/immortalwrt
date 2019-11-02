@@ -272,12 +272,12 @@ gen_config_file() {
 		SOCKS5_PROXY_SERVER_PORT=$server_port
 		if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
 			gen_ss_ssr_config_file $server_type $local_port 0 $server $config_file_path
-		fi
-		if [ "$server_type" == "v2ray" ]; then
+		elif [ "$server_type" == "v2ray" ]; then
 			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $server nil nil $local_port >$config_file_path
-		fi
-		if [ "$server_type" == "brook" ]; then
+		elif [ "$server_type" == "brook" ]; then
 			BROOK_SOCKS5_CMD="client -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_ip:$server_port -p $(config_get $server password)"
+		elif [ "$server_type" == "trojan" ]; then
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $server nil nil $local_port >$config_file_path
 		fi
 	fi
 
@@ -290,11 +290,9 @@ gen_config_file() {
 		UDP_REDIR_SERVER_PORT=$server_port
 		if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
 			gen_ss_ssr_config_file $server_type $local_port 0 $server $config_file_path
-		fi
-		if [ "$server_type" == "v2ray" ]; then
+		elif [ "$server_type" == "v2ray" ]; then
 			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $server udp $local_port nil >$config_file_path
-		fi
-		if [ "$server_type" == "brook" ]; then
+		elif [ "$server_type" == "brook" ]; then
 			BROOK_UDP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$server_port -p $(config_get $server password)"
 		fi
 	fi
@@ -358,8 +356,7 @@ gen_config_file() {
 			else
 				if [ "$server_type" == "ss" -o "$server_type" == "ssr" ]; then
 					gen_ss_ssr_config_file $server_type $local_port 0 $server $config_file_path
-				fi
-				if [ "$server_type" == "brook" ]; then
+				elif [ "$server_type" == "brook" ]; then
 					BROOK_TCP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$server_port -p $(config_get $server password)"
 				fi
 			fi
@@ -399,6 +396,10 @@ start_tcp_redir_other() {
 				elif [ "$TYPE" == "brook" ]; then
 					brook_bin=$(find_bin Brook)
 					[ -n "$brook_bin" ] && $brook_bin $BROOK_TCP_CMD &>/dev/null &
+				elif [ "$TYPE" == "trojan" ]; then
+					#trojan_bin=$(find_bin trojan)
+					#[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null &
+					echolog "目前暂不支持Trojan透明代理，请使用Socks5代理"
 				else
 					ss_bin=$(find_bin "$TYPE"-redir)
 					[ -n "$ss_bin" ] && {
@@ -434,6 +435,10 @@ start_udp_redir_other() {
 				elif [ "$TYPE" == "brook" ]; then
 					brook_bin=$(find_bin brook)
 					[ -n "$brook_bin" ] && $brook_bin $BROOK_UDP_CMD &>/dev/null &
+				elif [ "$TYPE" == "trojan" ]; then
+					#trojan_bin=$(find_bin trojan)
+					#[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null &
+					echolog "目前暂不支持Trojan透明代理，请使用Socks5代理"
 				else
 					ss_bin=$(find_bin "$TYPE"-redir)
 					[ -n "$ss_bin" ] && {
@@ -458,6 +463,10 @@ start_tcp_redir() {
 		elif [ "$TCP_REDIR_SERVER_TYPE" == "brook" ]; then
 			brook_bin=$(find_bin Brook)
 			[ -n "$brook_bin" ] && $brook_bin $BROOK_TCP_CMD &>/dev/null &
+		elif [ "$TCP_REDIR_SERVER_TYPE" == "trojan" ]; then
+			#trojan_bin=$(find_bin trojan)
+			#[ -n "$trojan_bin" ] && $trojan_bin -c $CONFIG_TCP_FILE >/dev/null &
+			echolog "目前暂不支持Trojan透明代理，请使用Socks5代理"
 		else
 			ss_bin=$(find_bin "$TCP_REDIR_SERVER_TYPE"-redir)
 			[ -n "$ss_bin" ] && {
@@ -482,6 +491,10 @@ start_udp_redir() {
 		elif [ "$UDP_REDIR_SERVER_TYPE" == "brook" ]; then
 			brook_bin=$(find_bin brook)
 			[ -n "$brook_bin" ] && $brook_bin $BROOK_UDP_CMD &>/dev/null &
+		elif [ "$UDP_REDIR_SERVER_TYPE" == "trojan" ]; then
+			#trojan_bin=$(find_bin trojan)
+			#[ -n "$trojan_bin" ] && $trojan_bin -c $CONFIG_UDP_FILE >/dev/null &
+			echolog "目前暂不支持Trojan透明代理，请使用Socks5代理"
 		else
 			ss_bin=$(find_bin "$UDP_REDIR_SERVER_TYPE"-redir)
 			[ -n "$ss_bin" ] && {
@@ -504,6 +517,9 @@ start_socks5_proxy() {
 		elif [ "$SOCKS5_PROXY_SERVER_TYPE" == "brook" ]; then
 			brook_bin=$(find_bin brook)
 			[ -n "$brook_bin" ] && $brook_bin $BROOK_SOCKS5_CMD &>/dev/null &
+		elif [ "$SOCKS5_PROXY_SERVER_TYPE" == "trojan" ]; then
+			trojan_bin=$(find_bin trojan)
+			[ -n "$trojan_bin" ] && $trojan_bin -c $CONFIG_SOCKS5_FILE >/dev/null &
 		else
 			ss_bin=$(find_bin "$SOCKS5_PROXY_SERVER_TYPE"-local)
 			[ -n "$ss_bin" ] && $ss_bin -c $CONFIG_SOCKS5_FILE -b 0.0.0.0 >/dev/null 2>&1 &
@@ -782,9 +798,9 @@ EOF
 	subscribe_by_ss=$(config_t_get global_subscribe subscribe_by_ss)
 	[ -z "$subscribe_by_ss" ] && subscribe_by_ss=0
 	[ "$subscribe_by_ss" -eq 1 ] && {
-		baseurl=$(config_t_get global_subscribe baseurl)
-		[ -n "$baseurl" ] && {
-			for url in $baseurl; do
+		subscribe_url=$(config_t_get global_subscribe subscribe_url)
+		[ -n "$subscribe_url" ] && {
+			for url in $subscribe_url; do
 				if [ -n "$(echo -n "$url" | grep "//")" ]; then
 					echo -n "$url" | awk -F'/' '{print $3}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#7913/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
 					echo -n "$url" | awk -F'/' '{print $3}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/router/g" >>$TMP_DNSMASQ_PATH/subscribe.conf

@@ -14,7 +14,7 @@ config global_haproxy
 
 config global_delay
 	option auto_on '0'
-	option start_daemon '1'
+	option start_daemon '0'
 	option start_delay '20'
 
 config global_dns
@@ -48,8 +48,8 @@ config global_rules
 	option Pcap_Routing_update '0'
 	option Pcap_WhiteList_update '0'
 	option auto_update '0'
-	option gfwlist_version '2019-10-18'
 	option chnroute_version '2019-10-18'
+	option gfwlist_version '2019-10-28'
 	
 config global_app
 	option v2ray_client_file '/usr/bin/v2ray/'

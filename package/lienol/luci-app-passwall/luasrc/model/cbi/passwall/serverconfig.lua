@@ -70,6 +70,9 @@ end
 if is_installed("brook") or is_finded("brook") then
     serverType:value("Brook", translate("Brook Server"))
 end
+if is_installed("trojan") or is_finded("trojan") then
+    serverType:value("Trojan", translate("Trojan Server"))
+end
 
 o = s:option(ListValue, "v2ray_protocol", translate("V2ray Protocol"))
 o:value("vmess", translate("Vmess"))
@@ -92,6 +95,7 @@ o.rmempty = false
 o:depends("server_type", "SS")
 o:depends("server_type", "SSR")
 o:depends("server_type", "Brook")
+o:depends("server_type", "Trojan")
 
 o = s:option(ListValue, "ss_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(ss_encrypt_method) do o:value(t) end
