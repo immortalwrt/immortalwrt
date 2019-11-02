@@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/$(PKG_NAME)
 	SUBMENU:=Network Support
 	TITLE:=Modified bbr tcp congestion control
-	DEPENDS:=@LINUX_4_14
+	DEPENDS:=@!LINUX_3_18
 	FILES:=$(PKG_BUILD_DIR)/tcp_bbr_tsunami.ko
 	KCONFIG:=
 endef
