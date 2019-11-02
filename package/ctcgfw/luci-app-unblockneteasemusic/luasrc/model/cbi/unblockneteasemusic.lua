@@ -40,6 +40,11 @@ music_source.description = translate("音源调用接口")
 music_source.default = "default"
 music_source.rmempty = false
 
+youtube_key = s:option(Value, "youtube_key", translate("Youtube API Key"))
+youtube_key.description = translate("API Key申请地址：https://developers.google.com/youtube/v3/getting-started#before-you-start")
+youtube_key.datatype = "string"
+youtube_key:depends("music_source", "youtube")
+
 hijack = s:option(ListValue, "hijack_ways", translate("劫持方法"))
 hijack:value("dont_hijack", translate("不开启劫持"))
 hijack:value("use_ipset", translate("使用IPSet劫持"))
@@ -59,13 +64,13 @@ advanced_mode.default = 0
 advanced_mode.rmempty = false
 
 pub_access = s:option(Flag, "pub_access", translate("部署到公网"))
-pub_access.description = translate("默认仅监听局域网，如需提供公开访问请勾选此选项；与此同时，建议勾选“启用严格模式”")
+pub_access.description = translate("默认仅监听局域网，如需提供公开访问请勾选此选项")
 pub_access.default = 0
 pub_access.rmempty = false
 pub_access:depends("advanced_mode", 1)
 
 strict_mode = s:option(Flag, "strict_mode", translate("启用严格模式"))
-strict_mode.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求")
+strict_mode.description = translate("[慎用] 若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求")
 strict_mode.default = 0
 strict_mode.rmempty = false
 strict_mode:depends("advanced_mode", 1)
