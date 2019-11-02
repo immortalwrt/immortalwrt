@@ -27,12 +27,14 @@ set_ipset(){
 	if [ "${set_type}" = "start" ]; then
 		mkdir -p "/tmp/dnsmasq.d"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-		echo "dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac" > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-		echo "ipset=/.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-		echo "ipset=/interface.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-		echo "ipset=/interface3.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-		echo "ipset=/apm.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-		echo "ipset=/apm3.music.163.com/music" >> "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac
+ipset=/.music.163.com/music
+ipset=/interface.music.163.com/music
+ipset=/interface3.music.163.com/music
+ipset=/apm.music.163.com/music
+ipset=/apm3.music.163.com/music
+		EOF
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
 		if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
