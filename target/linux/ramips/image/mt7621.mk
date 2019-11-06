@@ -511,7 +511,7 @@ TARGET_DEVICES += telco-electronics_x1
 define Device/timecloud
   DTS := Timecloud
   DEVICE_TITLE := Thunder Timecloud
-  DEVICE_PACKAGES := kmod-usb3
+  DEVICE_PACKAGES := kmod-usb3 kmod-sdhci-mt7620
 endef
 TARGET_DEVICES += timecloud
 
