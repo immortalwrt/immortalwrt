@@ -13,7 +13,7 @@ define Build/elecom-header
 	) | mkhash md5 > $(KDIR)/v_0.0.0.md5
 	$(STAGING_DIR_HOST)/bin/tar -c \
 		$(if $(SOURCE_DATE_EPOCH),--mtime=@$(SOURCE_DATE_EPOCH)) \
-		-f $@ -C $(KDIR) v_0.0.0.bin v_0.0.0.md5
+		--owner=0 --group=0 -f $@ -C $(KDIR) v_0.0.0.bin v_0.0.0.md5
 endef
 
 define Device/aigale_ai-br100
@@ -983,6 +983,17 @@ define Device/zbtlink_zbt-we1026-5g-16m
   SUPPORTED_DEVICES += we1026-5g-16m zbtlink,we1026-5g-16m
 endef
 TARGET_DEVICES += zbtlink_zbt-we1026-5g-16m
+
+define Device/zbtlink_zbt-we1026-h-32m
+  MTK_SOC := mt7620a
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := Zbtlink
+  DEVICE_MODEL := ZBT-WE1026-H
+  DEVICE_VARIANT := 32M
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 \
+	kmod-ledtrig-netdev
+endef
+TARGET_DEVICES += zbtlink_zbt-we1026-h-32m
 
 define Device/zbtlink_zbt-we2026
   MTK_SOC := mt7620n
