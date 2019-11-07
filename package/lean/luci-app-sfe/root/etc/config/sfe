@@ -1,5 +1,4 @@
-
-config sfe 'config'
+config sfe
 	option enabled '0'
 	option ipv6 '0'
 	option wifi '0'
