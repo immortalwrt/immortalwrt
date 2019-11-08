@@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/$(PKG_NAME)
 	SUBMENU:=Network Support
 	TITLE:=Modified bbr tcp congestion control
-	DEPENDS:=@!LINUX_3_18
+	DEPENDS:=@LINUX_4_14
 	FILES:=$(PKG_BUILD_DIR)/tcp_bbr_nanqinlang.ko
 	AUTOLOAD:=$(call AutoLoad,99,tcp-bbr-nanqinlang)
 	KCONFIG:=
