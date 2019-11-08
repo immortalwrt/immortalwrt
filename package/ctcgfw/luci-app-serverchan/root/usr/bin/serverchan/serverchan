@@ -391,7 +391,7 @@ function send(){
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""     内存占用：`free -m | sed -n '2p' | awk '{print""($3/$2)*100"%"}'`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""`cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     运行时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`";fi
 	router_temp=`uci get serverchan.serverchan.router_temp` >/dev/null 2>&1
-		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`cut -c1-2 /sys/class/thermal/thermal_zone0/temp`%e2%84%83";fi
+		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`cut -c1-2 /sys/class/thermal/thermal_zone1/temp`%e2%84%83";fi
 	router_wan=`uci get serverchan.serverchan.router_wan` >/dev/null 2>&1
 		send_wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 		send_hostIP=$(curl -k -s  "http://members.3322.org/dyndns/getip")
@@ -735,8 +735,6 @@ function rand_geturl(){
 			if [ ! -z "$cpuload" ] && [ `expr $cpu_fuzai \> $cpuload` -eq "1" ] ; then
 				cpuload_n=$(($cpuload_n+1))
 				echo "`date "+%H:%M:%S"` 【！！警报！！】当前 CPU 负载过高: ${cpu_fuzai}" >> ${logfile}
-			elif [ "$cpuload_n" -ge "5" ] ;then
-				cpuload_n=$(($cpuload_n+1))
 			else
 				cpuload_n=0
 				if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then  echo "`date "+%H:%M:%S"`  CPU 负载正常：$cpu_fuzai" >> ${logfile};fi
@@ -745,11 +743,7 @@ function rand_geturl(){
 			if [ "$cpuload_n" -eq "5" ] ;then
 				if [ -f "${dir}title" ] ; then title=`cat ${dir}title` ;fi
 				if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
-				if ( echo ${title} | grep -q "设备报警" ) || [ -z "$title" ] ; then
-					title="CPU 负载过高！"
-				else
-					title="设备报警！"
-				fi
+				title="CPU 负载过高！"
 				echo "`date "+%H:%M:%S"` 【微信推送】当前 CPU 负载过高: ${cpu_fuzai}" >> ${logfile}
 				content="%0D%0A%0D%0A---%0D%0A%0D%0A""####CPU 负载过高%0D%0A%0D%0A>CPU 负载已连续五分钟超过预设%0D%0A%0D%0A>接下来一小时不再提示%0D%0A%0D%0A>当前负载：${cpu_fuzai}"
 				echo $title >${dir}title
@@ -758,7 +752,7 @@ function rand_geturl(){
 				cpuload_n=0
 			fi
 		fi
-		
+
 		#温度状态报警
 		if [ ! -z "$temperature_enable" ] && [ "$temperature_enable" -eq "1" ] ; then
 			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then  echo "`date "+%H:%M:%S"` 【温度】正在检测 CPU 温度" >> ${logfile};fi
@@ -767,8 +761,6 @@ function rand_geturl(){
 			if [ ! -z "$temperature" ] && [ "$cpu_wendu" -gt "$temperature" ] ; then
 				Temperature_n=$(($Temperature_n+1))
 				echo "`date "+%H:%M:%S"` 【！！警报！！】当前 CPU 温度过高: ${cpu_wendu}" >> ${logfile}
-			elif [ "$Temperature_n" -ge "5" ] ;then
-				Temperature_n=$(($Temperature_n+1))
 			else
 				Temperature_n=0
 				if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then  echo "`date "+%H:%M:%S"`  CPU 温度正常：$cpu_wendu" >> ${logfile};fi
@@ -776,10 +768,10 @@ function rand_geturl(){
 			if [ "$Temperature_n" -eq "5" ] ;then
 				if [ -f "${dir}title" ] ; then title=`cat ${dir}title` ;fi
 				if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
-				if ( echo ${title} | grep -q "设备报警" ) || [ -z "$title" ] ; then
-					title="CPU 温度过高！"
-				else
+				if [ ! -z "$title" ] && ( echo ${title} | grep -q "过高" ) ; then
 					title="设备报警！"
+				else
+					title="CPU 温度过高！"
 				fi
 				echo "`date "+%H:%M:%S"`  【微信推送】当前 CPU 温度过高: ${cpu_wendu}" >> ${logfile}
 				content="%0D%0A%0D%0A---%0D%0A%0D%0A""####CPU 温度过高%0D%0A%0D%0A>CPU 温度已连续五分钟超过预设%0D%0A%0D%0A>接下来一小时不再提示%0D%0A%0D%0A>当前温度：${cpu_wendu}"
@@ -824,6 +816,8 @@ function serverchan_send(){
 	if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
 	if [ ! -z "$title" ] && [ ! -z "$content" ] ; then
 		nowtime=`date "+%Y-%m-%d %H:%M:%S"`
+		title=$( echo $title | sed $'s/\ /%20/g'| sed $'s/\"/%22/g'| sed $'s/\#/%23/g'| sed $'s/\&/%26/g'| sed $'s/\,/%2C/g'| sed $'s/\//%2F/g'| sed $'s/\:/%3A/g'| sed $'s/\;/%3B/g'| sed $'s/\=/%3D/g'| sed $'s/\@/%40/g')
+	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then  echo "`date "+%H:%M:%S"`  进行 URL 编码，标题=$title" >> ${logfile};fi
 		curl -s "http://sc.ftqq.com/$serverchan_sckey.send?text=${title}" -d "&desp=${nowtime}%0D%0A%0D%0A${content}" >/dev/null
 		unset title
 		unset content
