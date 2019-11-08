@@ -22,7 +22,7 @@ sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git
 
 ## Clone the source
 ```bash
-git clone https://github.com/project-openwrt/openwrt-latest && cd openwrt
+git clone https://github.com/project-openwrt/openwrt-latest && cd openwrt-latest
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 
