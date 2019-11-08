@@ -917,7 +917,7 @@ start_haproxy() {
 		haproxy_bin=$(find_bin haproxy)
 		[ -n "$haproxy_bin" ] && {
 			bport=$(config_t_get global_haproxy haproxy_port)
-			cat <<-EOF >$HAPROXY_FILE
+			cat <<-EOF > $HAPROXY_FILE
 				global
 				    log         127.0.0.1 local2
 				    chroot      /usr/bin
@@ -926,6 +926,7 @@ start_haproxy() {
 				    stats socket  $RUN_PID_PATH/haproxy.sock
 				    user        root
 				    daemon
+					
 				defaults
 				    mode                    tcp
 				    log                     global
@@ -943,7 +944,8 @@ start_haproxy() {
 				    timeout http-keep-alive 10s
 				    timeout check           10s
 				    maxconn                 3000
-				listen shadowsocks
+					
+				listen passwall
 				    bind 0.0.0.0:$bport
 				    mode tcp
 			EOF
@@ -958,20 +960,20 @@ start_haproxy() {
 				fi
 				if [ "$bbackup" = "1" ]; then
 					bbackup=" backup"
-					echolog "添加故障转移备服务器$bips"
+					echolog "添加故障转移备服务器:$bips"
 				else
 					bbackup=""
-					echolog "添加负载均衡主服务器$bips"
+					echolog "添加负载均衡主服务器:$bips"
 				fi
-				si=$(echo $bips | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
-				if [ -z "$si" ]; then
-					bips=$(resolveip -4 -t 2 $bips | awk 'NR==1{print}')
-					if [ -z "$bips" ]; then
-						bips=$(nslookup $bips localhost | sed '1,4d' | awk '{print $3}' | grep -v : | awk 'NR==1{print}')
-					fi
-					echolog "服务器IP为：$bips"
-				fi
-				echo "    server ss$i $bips:$bports weight $bweight check inter 1500 rise 1 fall 3 $bbackup" >>$HAPROXY_FILE
+				#si=$(echo $bips | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
+				#if [ -z "$si" ]; then
+				#	bips=$(resolveip -4 -t 2 $bips | awk 'NR==1{print}')
+				#	if [ -z "$bips" ]; then
+				#		bips=$(nslookup $bips localhost | sed '1,4d' | awk '{print $3}' | grep -v : | awk 'NR==1{print}')
+				#	fi
+				#	echolog "负载均衡${i} IP为：$bips"
+				#fi
+				echo "    server server_$i $bips:$bports weight $bweight check inter 1500 rise 1 fall 3 $bbackup" >> $HAPROXY_FILE
 				if [ "$exports" != "0" ]; then
 					failcount=0
 					while [ "$failcount" -lt "10" ]; do
@@ -996,15 +998,16 @@ start_haproxy() {
 				adminport=$(config_t_get global_haproxy admin_port)
 				adminuser=$(config_t_get global_haproxy admin_user)
 				adminpassword=$(config_t_get global_haproxy admin_password)
-				cat <<-EOF >>$HAPROXY_FILE
+				cat <<-EOF >> $HAPROXY_FILE
+					
 					listen status
-						bind 0.0.0.0:$adminport
-						mode http                   
-						stats refresh 30s
-						stats uri  /  
-						stats auth $adminuser:$adminpassword
-						#stats hide-version
-						stats admin if TRUE
+					    bind 0.0.0.0:$adminport
+					    mode http                   
+					    stats refresh 30s
+					    stats uri  /  
+					    stats auth $adminuser:$adminpassword
+					    #stats hide-version
+					    stats admin if TRUE
 				EOF
 			fi
 			nohup $haproxy_bin -f $HAPROXY_FILE 2>&1

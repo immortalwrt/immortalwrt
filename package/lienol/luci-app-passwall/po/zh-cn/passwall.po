@@ -667,6 +667,9 @@ msgstr "传输层加密"
 msgid "Whether or not transport layer encryption is enabled, the supported options are \"none\" for unencrypted (default) and \"TLS\" for using TLS."
 msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密（默认值），\"tls\" 表示使用 TLS。"
 
+msgid "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."
+msgstr "是否允许不安全连接。当勾选时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。"
+
 msgid "<br>none: default, no masquerade, data sent is packets with no characteristics.<br>srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br>utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br>wechat-video: packets disguised as WeChat video calls.<br>dtls: disguised as DTLS 1.2 packet.<br>wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)"
 msgstr "<br>none：默认值，不进行伪装，发送的数据是没有特征的数据包。<br>srtp：伪装成 SRTP 数据包，会被识别为视频通话数据（如 FaceTime）。<br>utp：伪装成 uTP 数据包，会被识别为 BT 下载数据。<br>wechat-video：伪装成微信视频通话的数据包。<br>dtls：伪装成 DTLS 1.2 数据包。<br>wireguard：伪装成 WireGuard 数据包。(并不是真正的 WireGuard 协议)"
 

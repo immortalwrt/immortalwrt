@@ -60,7 +60,11 @@ local v2ray = {
         streamSettings = {
             network = server.v2ray_transport,
             security = server.v2ray_stream_security,
-            tlsSettings = (server.v2ray_tls) and {} or nil,
+            tlsSettings = (server.v2ray_stream_security == "tls") and {
+                serverName = server.tls_serverName,
+                allowInsecure = (server.tls_allowInsecure == "1") and true or
+                    false
+            } or nil,
             kcpSettings = (server.v2ray_transport == "mkcp") and {
                 mtu = tonumber(server.v2ray_mkcp_mtu),
                 tti = tonumber(server.v2ray_mkcp_tti),

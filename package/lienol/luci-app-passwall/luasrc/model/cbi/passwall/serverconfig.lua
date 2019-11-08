@@ -11,8 +11,8 @@ end
 local function is_installed(e) return ipkg.installed(e) end
 
 local ss_encrypt_method = {
-    "rc4-md5", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb",
-    "aes-128-ctr", "aes-192-ctr", "aes-256-ctr", "bf-cfb", "camellia-128-cfb",
+    "rc4-md5", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "aes-128-ctr",
+    "aes-192-ctr", "aes-256-ctr", "bf-cfb", "camellia-128-cfb",
     "camellia-192-cfb", "camellia-256-cfb", "salsa20", "chacha20",
     "chacha20-ietf", -- aead
     "aes-128-gcm", "aes-192-gcm", "aes-256-gcm", "chacha20-ietf-poly1305",
@@ -183,6 +183,16 @@ o = s:option(ListValue, "v2ray_stream_security",
 o:value("none", "none")
 o:value("tls", "tls")
 o:depends("server_type", "V2ray")
+
+-- [[ TLS部分 ]] --
+o = s:option(Value, "tls_serverName", translate("Domain"))
+o:depends("v2ray_stream_security", "tls")
+
+o = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate(
+                 "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."))
+o.default = "0"
+o.rmempty = false
+o:depends("v2ray_stream_security", "tls")
 
 o = s:option(ListValue, "v2ray_transport", translate("Transport"))
 o:value("tcp", "TCP")
