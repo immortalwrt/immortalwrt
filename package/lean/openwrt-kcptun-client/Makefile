@@ -31,7 +31,7 @@ ifeq ($(ARCH),aarch64)
 	PKG_ARCH_KCPTUN:=arm64
 endif
 
-PKG_NAME:=kcptun-client
+PKG_NAME:=openwrt-kcptun-client
 PKG_VERSION:=20190924
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
