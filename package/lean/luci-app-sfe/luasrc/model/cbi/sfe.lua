@@ -20,6 +20,11 @@ enable.default = 0
 enable.rmempty = false
 enable.description = translate("Enable Fast Path offloading for connections. (decrease cpu load / increase routing throughput)")
 
+fc = s:option(Flag, "fullcone_nat", translate("Fullcone NAT"))
+fc.default = 1
+fc.rmempty = false
+fc.description = translate("Enable Fullcone NAT")
+
 wifi = s:option(Flag, "wifi", translate("Bridge Acceleration"))
 wifi.default = 0
 wifi.rmempty = false

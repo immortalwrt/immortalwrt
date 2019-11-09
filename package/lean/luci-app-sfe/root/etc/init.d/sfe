@@ -275,8 +275,12 @@ start_service() {
 		sysctl -w net.ipv4.tcp_congestion_control=cubic
 	fi
 
+	uci set firewall.@defaults[0].fullcone=$(uci get sfe@sfe[0].fullcone_nat)
+	uci commit firewall
+
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart
+		/etc/init.d/firewall restart
 	fi
 }
 
@@ -288,6 +292,7 @@ stop_service(){
 	kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart
+		/etc/init.d/firewall restart
 	fi
 }
 
@@ -296,4 +301,5 @@ restart(){
 	stop
 	start
 	/etc/init.d/dnsmasq restart && echo "DNSMASQ restart"
+	/etc/init.d/firewall restart
 }

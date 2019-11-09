@@ -1,5 +1,6 @@
 config sfe
 	option enabled '0'
+	option fullcone_nat '1'
 	option ipv6 '0'
 	option wifi '0'
 	option bbr '0'

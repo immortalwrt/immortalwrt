@@ -22,6 +22,9 @@ msgstr "开启 Flow Offloading 转发加速. (降低CPU占用 / 增强路由转�
 msgid "Enable Hardware NAT (depends on hw capability like MTK 762x)"
 msgstr "启用硬件HWNAT加速（依赖特定的硬件，例如 MTK 762x 系列）"
 
+msgid "Enable Fullcone NAT"
+msgstr "启用 Fullcone NAT"
+
 msgid "Enable BBR"
 msgstr "启用 BBR"
 

@@ -255,6 +255,7 @@ start_service(){
 
 	uci set firewall.@defaults[0].flow_offloading=$(uci get flowoffload.@flow[0].flow_offloading)
 	uci set firewall.@defaults[0].flow_offloading_hw=$(uci get flowoffload.@flow[0].flow_offloading_hw)
+	uci set firewall.@defaults[0].fullcone=$(uci get flowoffload.@flow[0].fullcone_nat)
 	uci commit firewall
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart && echo "DNSMASQ change"

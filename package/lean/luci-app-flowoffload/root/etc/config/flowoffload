@@ -2,6 +2,7 @@
 config flow
 	option flow_offloading '0'
 	option flow_offloading_hw '0'
+	option fullcone_nat '1'
 	option bbr '0'
 	option dns '0'
 	option dnscache_enable '1'
