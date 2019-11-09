@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mbedtls
 PKG_VERSION:=2.16.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_USE_MIPS16:=0
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-gpl.tgz
@@ -20,7 +20,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_LICENSE:=GPL-2.0+
 PKG_CPE_ID:=cpe:/a:arm:mbed_tls
 
-PKG_CONFIG_DEPENDS:=CONFIG_LIBMBEDTLS_DEBUG_C
+PKG_CONFIG_DEPENDS:=CONFIG_LIBMBEDTLS_DEBUG_C CONFIG_LIBMBEDTLS_HAVE_SSE2
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -56,6 +56,19 @@ config LIBMBEDTLS_DEBUG_C
 	 by around 60 KiB (for an ARMv5 platform).
 
 	 Usually, you don't need this, so don't select this if you're unsure.
+config LIBMBEDTLS_HAVE_SSE2
+	depends on PACKAGE_libmbedtls
+	bool
+	default y if !TARGET_x86_legacy && !TARGET_x86_geode
+	prompt "Enable use of x86 SSE2 instructions"
+	depends on x86_64 || i386
+	help
+		Use of SSE2 instructions greatly increase performance (up to
+		3x faster) with a minimum (~0.2%, or 23KB) increase in package
+		size, but it will bring no benefit if your hardware does not
+		support them, such as Geode GX and LX.  In this case you may
+		save 23KB by saying yes here.  AMD Geode NX, and Intel
+		Pentium 4 and above support SSE2.
 endef
 
 define Package/mbedtls-util
@@ -92,6 +105,7 @@ define Build/Configure
 
 	awk 'BEGIN { rc = 1 } \
 	     /#define MBEDTLS_DEBUG_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_DEBUG_C),,// )#define MBEDTLS_DEBUG_C"; rc = 0 } \
+	     /#define MBEDTLS_HAVE_SSE2/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_HAVE_SSE2),,// )#define MBEDTLS_HAVE_SSE2"; rc = 0 } \
 	     { print } \
 	     END { exit(rc) }' $(PKG_BUILD_DIR)/include/mbedtls/config.h \
 	     >$(PKG_BUILD_DIR)/include/mbedtls/config.h.new && \
