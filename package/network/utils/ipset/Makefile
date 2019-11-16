@@ -1,3 +1,4 @@
+
 # Copyright (C) 2009-2012 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -8,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ipset
-PKG_VERSION:=7.3
+PKG_VERSION:=7.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=http://ipset.netfilter.org
-PKG_HASH:=4644c7c5005e90a9b6385d625283eb0b69b34de7192301428665dd909fdaa35a
+PKG_HASH:=4a974176e57fe4b7e2984abb231c4a18af2291bdc41536ef64e4b8ec4d4a1884
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=GPL-2.0
