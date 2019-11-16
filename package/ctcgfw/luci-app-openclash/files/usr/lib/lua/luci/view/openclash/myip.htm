@@ -304,8 +304,9 @@
 	      IP.getWebrtcIP();
 	      
 	      function getPcolIP(data){
+                let pcisp = data.addr.split(' ');
                 $$.getElementById('ip-pcol').innerHTML = data.ip;
-		$$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
+                $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
         };
         function getIpsbIP(data){
                 $$.getElementById('ip-ipsb').innerHTML = data.address;
@@ -334,7 +335,7 @@
 		       IP.getIpipnetIP();
 		       IP.getIpifyIP();
 		       IP.getWebrtcIP();
-
+		       
 		       function getPcolIP(data){
 		            let pcisp = data.addr.split(' ');
                 $$.getElementById('ip-pcol').innerHTML = data.ip;
