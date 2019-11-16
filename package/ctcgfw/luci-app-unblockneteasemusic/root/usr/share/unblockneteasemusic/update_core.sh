@@ -52,7 +52,7 @@ function update_core(){
 	fi
 
 	echo -e "Succeeded in updating core." >/tmp/unblockneteasemusic.log
-	echo -e "Local version: $(cat /usr/share/unblockneteasemusic/local_ver 2>/dev/null), cloud version: ${latest_ver}.\n" >>/tmp/unblockneteasemusic.log
+	echo -e "Current version: ${latest_ver}.\n" >>/tmp/unblockneteasemusic.log
 }
 
 function main(){
