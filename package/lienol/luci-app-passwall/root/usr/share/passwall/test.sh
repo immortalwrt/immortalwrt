@@ -30,7 +30,7 @@ test_proxy() {
 
 test_auto_switch() {
 	if [ -f "/var/etc/passwall/tcp_server_id" ]; then
-		TCP_REDIR_SERVER=$(cat /var/etc/passwall/tcp_server_id)
+		TCP_REDIR_SERVER1=$(cat /var/etc/passwall/tcp_server_id)
 	else
 		rm -f $LOCK_FILE
 		exit 1
@@ -48,16 +48,16 @@ test_auto_switch() {
 			[ "$failcount" -ge 6 ] && {
 				echo "$(get_date): 自动切换检测：检测异常，切换节点" >>/var/log/passwall.log
 				TCP_REDIR_SERVERS=$(uci get passwall.@auto_switch[0].tcp_redir_server)
-				has_backup_server=$(echo $TCP_REDIR_SERVERS | grep $TCP_REDIR_SERVER)
+				has_backup_server=$(echo $TCP_REDIR_SERVERS | grep $TCP_REDIR_SERVER1)
 				setserver=
 				if [ -z "$has_backup_server" ]; then
 					setserver=$(echo $TCP_REDIR_SERVERS | awk -F ' ' '{print $1}')
 				else
-					setserver=$TCP_REDIR_SERVER
+					setserver=$TCP_REDIR_SERVER1
 					flag=0
 					for server in $has_backup_server; do
 						if [ "$flag" == 0 ]; then
-							if [ "$TCP_REDIR_SERVER" == "$server" ]; then
+							if [ "$TCP_REDIR_SERVER1" == "$server" ]; then
 								flag=1
 								continue
 							fi

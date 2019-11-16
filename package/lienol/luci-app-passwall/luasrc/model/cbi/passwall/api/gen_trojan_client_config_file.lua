@@ -1,15 +1,14 @@
 local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
 local server_section = arg[1]
-local proto = arg[2]
-local redir_port = arg[3]
-local socks5_proxy_port = arg[4]
+local run_type = arg[2]
+local proxy_port = arg[3]
 local server = ucursor:get_all("passwall", server_section)
 
 local trojan = {
-    run_type = "client",
+    run_type = run_type,
     local_addr = "0.0.0.0",
-    local_port = socks5_proxy_port,
+    local_port = proxy_port,
     remote_addr = server.server,
     remote_port = tonumber(server.server_port),
     password = {server.password},
@@ -28,7 +27,7 @@ local trojan = {
     tcp = {
         no_delay = true,
         keep_alive = true,
-        fast_open = false,
+        fast_open = (server.fast_open == "true") and true or false,
         fast_open_qlen = 20
     }
 }

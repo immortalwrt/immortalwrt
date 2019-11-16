@@ -207,14 +207,14 @@ del_config(){
 del_all_config(){
 	get_server_index
 	[ "`uci show $CONFIG | grep -c 'sub_server'`" -eq 0 ] && exit 0
-	current_tcp_redir_server=$(config_t_get global tcp_redir_server)
-	is_sub_server=`uci -q get $CONFIG.$current_tcp_redir_server.group`
+	current_tcp_redir_server1=$(config_t_get global tcp_redir_server1)
+	is_sub_server=`uci -q get $CONFIG.$current_tcp_redir_server1.group`
 	for i in `seq $servers_index -1 1`
 	do
 		[ "$(uci show $CONFIG.@servers[$(($i-1))] | grep -c 'sub_server')" -eq 1 ] && uci delete $CONFIG.@servers[$(($i-1))] && uci commit $CONFIG
 	done
 	[ -n "$is_sub_server" ] && {
-		uci set $CONFIG.global[0].tcp_redir_server="nil"
+		uci set $CONFIG.global[0].tcp_redir_server1="nil"
 		uci commit $CONFIG && /etc/init.d/$CONFIG stop
 	}
 }

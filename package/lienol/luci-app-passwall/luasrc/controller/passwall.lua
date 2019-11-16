@@ -21,8 +21,8 @@ function index()
           _("Basic Settings"), 1).dependent = true
     entry({"admin", "vpn", "passwall", "server_list"},
           cbi("passwall/server_list"), _("Server List"), 2).dependent = true
-    entry({"admin", "vpn", "passwall", "auto_switch"},
-          cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
+    -- entry({"admin", "vpn", "passwall", "auto_switch"},
+    --      cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
     entry({"admin", "vpn", "passwall", "other"}, cbi("passwall/other"),
           _("Other Settings"), 94).leaf = true
     if nixio.fs.access("/usr/sbin/haproxy") then
@@ -106,27 +106,8 @@ end
 function clear_log() luci.sys.call("echo '' > /var/log/passwall.log") end
 
 function server_status()
-    local tcp_redir_port = luci.sys.exec(
-                               "echo -n `uci get " .. appname ..
-                                   ".@global_proxy[0].tcp_redir_port`")
-    local udp_redir_port = luci.sys.exec(
-                               "echo -n `uci get " .. appname ..
-                                   ".@global_proxy[0].udp_redir_port`")
     -- local dns_mode = luci.sys.exec("echo -n `uci get " .. appname .. ".@global[0].dns_mode`")
     local e = {}
-    e.tcp_redir_status = luci.sys.call("ps -w | grep -v grep | grep -i -E '" ..
-                                           appname ..
-                                           "/TCP|brook tproxy -l 0.0.0.0:" ..
-                                           tcp_redir_port .. "' >/dev/null") ==
-                             0
-    e.udp_redir_status = luci.sys.call("ps -w | grep -v grep | grep -i -E '" ..
-                                           appname ..
-                                           "/UDP|brook tproxy -l 0.0.0.0:" ..
-                                           udp_redir_port .. "' >/dev/null") ==
-                             0
-    e.socks5_proxy_status = luci.sys.call(
-                                "ps -w | grep -v grep | grep -i -E '" .. appname ..
-                                    "/SOCKS5|brook client' >/dev/null") == 0
     e.dns_mode_status = luci.sys.call("netstat -apn | grep 7913 >/dev/null") ==
                             0
     e.haproxy_status = luci.sys.call(
@@ -135,6 +116,48 @@ function server_status()
     e.kcptun_status = luci.sys.call(
                           "ps -w | grep -v grep | grep -i 'log /var/etc/" ..
                               appname .. "/kcptun' >/dev/null") == 0
+
+    local tcp_redir_server_num = luci.sys.exec(
+                                     "echo -n `uci get %s.@global_other[0].tcp_redir_server_num`" %
+                                         appname)
+    for i = 1, tcp_redir_server_num, 1 do
+        local listen_port = luci.sys.exec(
+                                string.format(
+                                    "[ -f '/var/etc/passwall/port/TCP_%s' ] && echo -n `cat /var/etc/passwall/port/TCP_%s`",
+                                    i, i))
+        e["tcp_redir_server%s_status" % i] =
+            luci.sys.call(string.format(
+                              "ps -w | grep -v grep | grep -i -E '%s/TCP_%s|brook tproxy -l 0.0.0.0:%s' >/dev/null",
+                              appname, i, listen_port)) == 0
+    end
+
+    local udp_redir_server_num = luci.sys.exec(
+                                     "echo -n `uci get %s.@global_other[0].udp_redir_server_num`" %
+                                         appname)
+    for i = 1, udp_redir_server_num, 1 do
+        local listen_port = luci.sys.exec(
+                                string.format(
+                                    "[ -f '/var/etc/passwall/port/UDP_%s' ] && echo -n `cat /var/etc/passwall/port/UDP_%s`",
+                                    i, i))
+        e["udp_redir_server%s_status" % i] =
+            luci.sys.call(string.format(
+                              "ps -w | grep -v grep | grep -i -E '%s/UDP_%s|brook tproxy -l 0.0.0.0:%s' >/dev/null",
+                              appname, i, listen_port)) == 0
+    end
+
+    local socks5_proxy_server_num = luci.sys.exec(
+                                        "echo -n `uci get %s.@global_other[0].socks5_proxy_server_num`" %
+                                            appname)
+    for i = 1, socks5_proxy_server_num, 1 do
+        local listen_port = luci.sys.exec(
+                                string.format(
+                                    "[ -f '/var/etc/passwall/port/Socks5_%s' ] && echo -n `cat /var/etc/passwall/port/Socks5_%s`",
+                                    i, i))
+        e["socks5_proxy_server%s_status" % i] =
+            luci.sys.call(string.format(
+                              "ps -w | grep -v grep | grep -i -E '%s/Socks5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
+                              appname, i, listen_port)) == 0
+    end
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
@@ -177,15 +200,22 @@ end
 function set_server()
     local e = {}
     local protocol = luci.http.formvalue("protocol")
+    local number = luci.http.formvalue("number")
     local section = luci.http.formvalue("section")
     if protocol == "tcp" then
         luci.sys.call(
-            "uci set passwall.@global[0].tcp_redir_server=" .. section ..
+            "uci set passwall.@global[0].tcp_redir_server" .. number .. "=" ..
+                section ..
                 " && uci commit passwall && /etc/init.d/passwall restart")
     elseif protocol == "udp" then
         luci.sys.call(
-            "uci set passwall.@global[0].udp_redir_server=" .. section ..
+            "uci set passwall.@global[0].udp_redir_server" .. number .. "=" ..
+                section ..
                 " && uci commit passwall && /etc/init.d/passwall restart")
+    elseif protocol == "socks5" then
+        luci.sys.call("uci set passwall.@global[0].socks5_proxy_server" ..
+                          number .. "=" .. section ..
+                          " && uci commit passwall && /etc/init.d/passwall restart")
     end
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)

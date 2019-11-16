@@ -43,7 +43,7 @@ s.anonymous = true
 s.addremove = false
 
 ---- TCP Redir Server
-o = s:option(ListValue, "tcp_redir_server", translate("TCP Redir Server"),
+o = s:option(ListValue, "tcp_redir_server1", translate("TCP Redir Server"),
              translate("For used to surf the Internet."))
 o:value("nil", translate("Close"))
 for _, key in pairs(key_table) do o:value(key, n[key]) end
@@ -61,7 +61,7 @@ end
 
 ---- UDP Redir Server
 if has_udp_relay() then
-    o = s:option(ListValue, "udp_redir_server", translate("UDP Redir Server"),
+    o = s:option(ListValue, "udp_redir_server1", translate("UDP Redir Server"),
                  translate("For Game Mode or DNS resolution and more.") ..
                      translate("The selected server will not use Kcptun."))
     o:value("nil", translate("Close"))
@@ -81,22 +81,32 @@ if has_udp_relay() then
 end
 
 ---- Socks5 Proxy Server
-o = s:option(ListValue, "socks5_proxy_server", translate("Socks5 Proxy Server"),
+o = s:option(ListValue, "socks5_proxy_server1",
+             translate("Socks5 Proxy Server"),
              translate("The client can use the router's Socks5 proxy"))
 o:value("nil", translate("Close"))
 for _, key in pairs(key_table) do o:value(key, n[key]) end
+
+local socks5_proxy_server_num = uci:get(appname, "@global_other[0]",
+                                        "socks5_proxy_server_num")
+if socks5_proxy_server_num and tonumber(socks5_proxy_server_num) >= 2 then
+    for i = 2, socks5_proxy_server_num, 1 do
+        o = s:option(ListValue, "socks5_proxy_server" .. i,
+                     translate("Socks5 Proxy Server") .. " " .. i)
+        o:value("nil", translate("Close"))
+        for _, key in pairs(key_table) do o:value(key, n[key]) end
+    end
+end
 
 ---- DNS Forward Mode
 o = s:option(ListValue, "dns_mode", translate("DNS Forward Mode"))
 o.rmempty = false
 o:reset_values()
-if is_installed("ChinaDNS") or is_finded("chinadns") then
+if is_installed("openwrt_chinadns") or is_finded("chinadns") then
     o:value("chinadns", "ChinaDNS")
 end
-if (is_installed("dns2socks") or is_finded("dns2socks")) and
-    (is_finded("ss-local") or is_finded("ssr-local")) then
-    o:value("dns2socks",
-            "dns2socks " .. translate("Only SS/R servers are supported"))
+if is_installed("dns2socks") or is_finded("dns2socks") then
+    o:value("dns2socks", "dns2socks " .. translate("Need Socks5 server"))
 end
 if is_installed("pcap-dnsproxy") or is_finded("Pcap_DNSProxy") then
     o:value("Pcap_DNSProxy", "Pcap_DNSProxy")

@@ -7,6 +7,9 @@ msgstr "ShadowSocks 服务器"
 msgid "ShadowsocksR Server"
 msgstr "ShadowSocksR 服务器"
 
+msgid "Socks5 Server"
+msgstr "Socks5 服务器"
+
 msgid "V2ray Server"
 msgstr "V2ray 服务器"
 
@@ -148,8 +151,8 @@ msgstr "DNS服务器"
 msgid "example: 114.114.114.114,208.67.222.222:443,8.8.8.8<br>Need at least one,Other DNS services can be used as upstream, such as smartdns."
 msgstr "例：114.114.114.114,208.67.222.222:443,8.8.8.8<br>需要至少一个服务器，其他DNS服务可以作为上游使用，比如：smartdns。"
 
-msgid "Only SS/R servers are supported"
-msgstr "仅支持SS/R服务器"
+msgid "Need Socks5 server"
+msgstr "需要Socks5"
 
 msgid "Multi Process Option"
 msgstr "多进程并发转发"
@@ -682,8 +685,11 @@ msgstr "TCP转发服务器数量"
 msgid "UDP Redir Server Number"
 msgstr "UDP转发服务器数量"
 
-msgid "You can only set up a maximum of 3 servers for the time being"
-msgstr "目前最多只能设置3个服务器"
+msgid "Socks5 Proxy Server Number"
+msgstr "Socks5代理服务器数量"
+
+msgid "You can only set up a maximum of %s servers for the time being"
+msgstr "目前最多只能设置%s个服务器"
 
 msgid "Hide Menu"
 msgstr "隐藏菜单"

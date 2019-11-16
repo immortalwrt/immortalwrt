@@ -3,9 +3,9 @@ config global
 	option proxy_mode 'chnroute'
 	option dns_mode 'chinadns'
 	option up_chinadns_mode 'OpenDNS_1'
-	option socks5_proxy_server 'nil'
-	option udp_redir_server 'nil'
-	option tcp_redir_server 'nil'
+	option socks5_proxy_server1 'nil'
+	option udp_redir_server1 'nil'
+	option tcp_redir_server1 'nil'
 	option localhost_proxy_mode 'default'
 
 config global_haproxy
@@ -32,8 +32,8 @@ config global_forwarding
 
 config global_proxy
 	option tcp_redir_port '1041'
-	option udp_redir_port '1041'
-	option socks5_port '1051'
+	option udp_redir_port '1051'
+	option socks5_proxy_port '1061'
 	option kcptun_port '11183'
 	option proxy_ipv6 '0'
 	
@@ -41,6 +41,7 @@ config global_other
 	option auto_ping '1'
 	option tcp_redir_server_num '1'
 	option udp_redir_server_num '1'
+	option socks5_proxy_server_num '1'
 
 config global_rules
 	option gfwlist_update '1'
