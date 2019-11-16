@@ -19,6 +19,9 @@ engenius,ecb1750|\
 glinet,gl-ar300m-lite|\
 glinet,gl-ar300m-nand|\
 glinet,gl-ar300m-nor|\
+glinet,gl-ar300m16|\
+glinet,gl-ar750s-nor|\
+glinet,gl-ar750s-nor-nand|\
 librerouter,librerouter-v1|\
 netgear,ex6400|\
 netgear,ex7300|\
@@ -39,6 +42,7 @@ buffalo,wzr-hp-ag300h)
 netgear,wndr3700)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x10000"
 	;;
+netgear,wndr3700-v4|\
 netgear,wndr4300)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x40000" "0x20000"
 	;;

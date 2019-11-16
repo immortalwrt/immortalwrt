@@ -45,21 +45,66 @@ define Device/aerohive_hiveap-121
 endef
 TARGET_DEVICES += aerohive_hiveap-121
 
-define Device/glinet_gl-ar300m-nand
+define Device/glinet_gl-ar300m-common-nand
   ATH_SOC := qca9531
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := GL-AR300M
-  DEVICE_VARIANT := NAND
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-storage kmod-usb-ledtrig-usbport
-  KERNEL_SIZE := 2048k
-  BLOCKSIZE := 128k
+  DEVICE_PACKAGES := kmod-usb2
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 16000k
   PAGESIZE := 2048
-  VID_HDR_OFFSET := 512
-  IMAGES += factory.ubi
-  IMAGE/sysupgrade.bin := sysupgrade-tar
-  IMAGE/factory.ubi := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi
+  VID_HDR_OFFSET := 2048
+endef
+
+define Device/glinet_gl-ar300m-nand
+  $(Device/glinet_gl-ar300m-common-nand)
+  DEVICE_VARIANT := NAND
+  BLOCKSIZE := 128k
+  IMAGES += factory.img
+  IMAGE/factory.img := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  SUPPORTED_DEVICES += glinet,gl-ar300m-nor
 endef
 TARGET_DEVICES += glinet_gl-ar300m-nand
+
+define Device/glinet_gl-ar300m-nor
+  $(Device/glinet_gl-ar300m-common-nand)
+  DEVICE_VARIANT := NOR
+  BLOCKSIZE := 64k
+  SUPPORTED_DEVICES += glinet,gl-ar300m-nand gl-ar300m
+endef
+TARGET_DEVICES += glinet_gl-ar300m-nor
+
+define Device/glinet_gl-ar750s-common
+  ATH_SOC := qca9563
+  DEVICE_VENDOR := GL.iNet
+  DEVICE_MODEL := GL-AR750S
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct \
+			kmod-usb2 kmod-usb-storage block-mount
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 16000k
+  PAGESIZE := 2048
+  VID_HDR_OFFSET := 2048
+endef
+
+define Device/glinet_gl-ar750s-nor-nand
+  $(Device/glinet_gl-ar750s-common)
+  DEVICE_VARIANT := NOR/NAND
+  BLOCKSIZE := 128k
+  IMAGES += factory.img
+  IMAGE/factory.img := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  SUPPORTED_DEVICES += glinet,gl-ar750s-nor
+endef
+TARGET_DEVICES += glinet_gl-ar750s-nor-nand
+
+define Device/glinet_gl-ar750s-nor
+  $(Device/glinet_gl-ar750s-common)
+  DEVICE_VARIANT := NOR
+  BLOCKSIZE := 64k
+  SUPPORTED_DEVICES += gl-ar750s glinet,gl-ar750s glinet,gl-ar750s-nor-nand
+endef
+TARGET_DEVICES += glinet_gl-ar750s-nor
 
 # fake rootfs is mandatory, pad-offset 129 equals (2 * uimage_header + 0xff)
 define Device/netgear_ath79_nand
@@ -79,6 +124,18 @@ define Device/netgear_ath79_nand
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata | check-size $$$$(IMAGE_SIZE)
   UBINIZE_OPTS := -E 5
 endef
+
+define Device/netgear_wndr3700-v4
+  ATH_SOC := ar9344
+  DEVICE_MODEL := WNDR3700
+  DEVICE_VARIANT := v4
+  NETGEAR_KERNEL_MAGIC := 0x33373033
+  NETGEAR_BOARD_ID := WNDR3700v4
+  NETGEAR_HW_ID := 29763948+128+128
+  SUPPORTED_DEVICES += wndr3700v4
+  $(Device/netgear_ath79_nand)
+endef
+TARGET_DEVICES += netgear_wndr3700-v4
 
 define Device/netgear_wndr4300
   ATH_SOC := ar9344

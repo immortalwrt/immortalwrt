@@ -4,6 +4,6 @@
 #include "ar9344_netgear_wndr.dtsi"
 
 / {
-	compatible = "netgear,wndr4300", "qca,ar9344";
-	model = "Netgear WNDR4300";
+	compatible = "netgear,wndr3700-v4", "qca,ar9344";
+	model = "Netgear WNDR3700 v4";
 };

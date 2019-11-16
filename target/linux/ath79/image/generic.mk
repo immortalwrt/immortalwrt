@@ -562,11 +562,11 @@ define Device/glinet_gl-ar300m-lite
 endef
 TARGET_DEVICES += glinet_gl-ar300m-lite
 
-define Device/glinet_gl-ar300m-nor
+define Device/glinet_gl-ar300m16
   $(Device/glinet_gl-ar300m-common-nor)
-  DEVICE_MODEL := GL-AR300M
+  DEVICE_MODEL := GL-AR300M16
 endef
-TARGET_DEVICES += glinet_gl-ar300m-nor
+TARGET_DEVICES += glinet_gl-ar300m16
 
 define Device/glinet_gl-ar750
   ATH_SOC := qca9531
@@ -577,16 +577,6 @@ define Device/glinet_gl-ar750
   SUPPORTED_DEVICES += gl-ar750
 endef
 TARGET_DEVICES += glinet_gl-ar750
-
-define Device/glinet_gl-ar750s
-  ATH_SOC := qca9563
-  DEVICE_VENDOR := GL.iNet
-  DEVICE_MODEL := GL-AR750S
-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9887-ct block-mount
-  IMAGE_SIZE := 16000k
-  SUPPORTED_DEVICES += gl-ar750s
-endef
-TARGET_DEVICES += glinet_gl-ar750s
 
 define Device/glinet_gl-x750
   ATH_SOC := qca9531
@@ -768,7 +758,7 @@ define Device/netgear_wndr3700v2
   NETGEAR_BOARD_ID := WNDR3700v2
   NETGEAR_HW_ID := 29763654+16+64
   IMAGE_SIZE := 15872k
-  SUPPORTED_DEVICES += wndr3700v2
+  SUPPORTED_DEVICES += wndr3700
 endef
 TARGET_DEVICES += netgear_wndr3700v2
 
@@ -779,7 +769,7 @@ define Device/netgear_wndr3800
   NETGEAR_BOARD_ID := WNDR3800
   NETGEAR_HW_ID := 29763654+16+128
   IMAGE_SIZE := 15872k
-  SUPPORTED_DEVICES += wndr3800
+  SUPPORTED_DEVICES += wndr3700
 endef
 TARGET_DEVICES += netgear_wndr3800
 
@@ -790,7 +780,7 @@ define Device/netgear_wndr3800ch
   NETGEAR_BOARD_ID := WNDR3800CH
   NETGEAR_HW_ID := 29763654+16+128
   IMAGE_SIZE := 15872k
-  SUPPORTED_DEVICES += wndr3800ch
+  SUPPORTED_DEVICES += wndr3700
 endef
 TARGET_DEVICES += netgear_wndr3800ch
 
