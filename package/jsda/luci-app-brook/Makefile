@@ -37,6 +37,7 @@ BROOK_NAME:=brook_linux_arm7
 endif
 ifeq ($(BOARD),bcm53xx)
 BROOK_NAME:=brook_linux_arm5
+endif
 ifeq ($(ARCH),aarch64)
 BROOK_NAME:=brook_linux_arm64
 endif
