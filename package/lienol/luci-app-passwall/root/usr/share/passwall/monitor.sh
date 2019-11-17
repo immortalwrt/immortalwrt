@@ -48,7 +48,7 @@ for i in $(seq 1 $TCP_REDIR_SERVER_NUM); do
 			fi
 		fi
 		[ -f "/var/etc/passwall/port/TCP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/TCP_$i`)
-		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/TCP_${i}|brook tproxy -l 0.0.0.0:${listen_port}" | wc -l)
+		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/TCP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -T -l ${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart
 			exit 0
@@ -63,7 +63,7 @@ for i in $(seq 1 $UDP_REDIR_SERVER_NUM); do
 	if [ "$temp_server" != "nil" ]; then
 		[ "$temp_server" == "default" ] && temp_server=$TCP_REDIR_SERVER1
 		[ -f "/var/etc/passwall/port/UDP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/UDP_$i`)
-		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/UDP_${i}|brook tproxy -l 0.0.0.0:${listen_port}" | wc -l)
+		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/UDP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -U -l ${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart
 			exit 0

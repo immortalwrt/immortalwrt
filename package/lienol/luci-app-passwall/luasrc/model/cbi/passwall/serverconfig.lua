@@ -58,7 +58,8 @@ remarks.default = translate("Node Remarks")
 remarks.rmempty = false
 
 server_type = s:option(ListValue, "server_type", translate("Server Type"))
-if is_installed("redsocks2") or is_finded("redsocks2") then
+if ((is_installed("redsocks2") or is_finded("redsocks2")) or
+    (is_installed("ipt2socks") or is_finded("ipt2socks"))) then
     server_type:value("Socks5", translate("Socks5 Server"))
 end
 if is_finded("ss-redir") then
@@ -352,8 +353,6 @@ server_type.validate = function(self, value)
     return value
 end
 
-v2ray_transport.validate = function(self, value)
-    return value
-end
+v2ray_transport.validate = function(self, value) return value end
 
 return m

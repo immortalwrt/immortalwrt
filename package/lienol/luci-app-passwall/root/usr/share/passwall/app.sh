@@ -388,16 +388,20 @@ start_tcp_redir() {
 				trojan_bin=$(find_bin trojan)
 				[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
 			elif [ "$TYPE" == "socks5" ]; then
-				redsocks_bin=$(find_bin redsocks2)
-				[ -n "$redsocks_bin" ] && {
-					local server=$(config_get $temp_server server)
-					local server_port=$(config_get $temp_server server_port)
-					local server_username=$(config_get $temp_server username)
-					local server_password=$(config_get $temp_server password)
-					local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
-					gen_redsocks_config $redsocks_config_file tcp $port $server $server_port $server_username $server_password
-					$redsocks_bin -c $redsocks_config_file >/dev/null &
+				local server=$(config_get $temp_server server)
+				local server_port=$(config_get $temp_server server_port)
+				local server_username=$(config_get $temp_server username)
+				local server_password=$(config_get $temp_server password)
+				ipt2socks_bin=$(find_bin ipt2socks)
+				[ -n "$ipt2socks_bin" ] && {
+					$ipt2socks_bin -T -l $port -b 0.0.0.0 -s $server -p $server_port -R >/dev/null &
 				}
+				#redsocks_bin=$(find_bin redsocks2)
+				#[ -n "$redsocks_bin" ] && {
+				#	local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
+				#	gen_redsocks_config $redsocks_config_file tcp $port $server $server_port $server_username $server_password
+				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
+				#}
 			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
 				ss_bin=$(find_bin "$TYPE"-redir)
 				[ -n "$ss_bin" ] && {
@@ -435,23 +439,36 @@ start_udp_redir() {
 			elif [ "$TYPE" == "trojan" ]; then
 				trojan_bin=$(find_bin trojan)
 				[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
-				redsocks_bin=$(find_bin redsocks2)
-				[ -n "$redsocks_bin" ] && {
-					local redsocks_config_file=$CONFIG_PATH/redsocks_UDP_$i.conf
-					gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
-					$redsocks_bin -c $redsocks_config_file >/dev/null &
+				local server=$(config_get $temp_server server)
+				local server_port=$(config_get $temp_server server_port)
+				local server_username=$(config_get $temp_server username)
+				local server_password=$(config_get $temp_server password)
+				ipt2socks_bin=$(find_bin ipt2socks)
+				[ -n "$ipt2socks_bin" ] && {
+					$ipt2socks_bin -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R >/dev/null &
 				}
+				
+				#redsocks_bin=$(find_bin redsocks2)
+				#[ -n "$redsocks_bin" ] && {
+				#	local redsocks_config_file=$CONFIG_PATH/redsocks_UDP_$i.conf
+				#	gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
+				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
+				#}
 			elif [ "$TYPE" == "socks5" ]; then
-				redsocks_bin=$(find_bin redsocks2)
-				[ -n "$redsocks_bin" ] && {
-					local server=$(config_get $temp_server server)
-					local server_port=$(config_get $temp_server server_port)
-					local server_username=$(config_get $temp_server username)
-					local server_password=$(config_get $temp_server password)
-					local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
-					gen_redsocks_config $redsocks_config_file udp $port $server $server_port $server_username $server_password
-					$redsocks_bin -c $redsocks_config_file >/dev/null &
+				local server=$(config_get $temp_server server)
+				local server_port=$(config_get $temp_server server_port)
+				local server_username=$(config_get $temp_server username)
+				local server_password=$(config_get $temp_server password)
+				ipt2socks_bin=$(find_bin ipt2socks)
+				[ -n "$ipt2socks_bin" ] && {
+					$ipt2socks_bin -U -l $port -b 0.0.0.0 -s $server -p $server_port -R >/dev/null &
 				}
+				#redsocks_bin=$(find_bin redsocks2)
+				#[ -n "$redsocks_bin" ] && {
+				#	local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
+				#	gen_redsocks_config $redsocks_config_file udp $port $server $server_port $server_username $server_password
+				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
+				#}
 			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
 				ss_bin=$(find_bin "$TYPE"-redir)
 				[ -n "$ss_bin" ] && {
@@ -1130,7 +1147,7 @@ stop() {
 	clean_log
 	source $APP_PATH/iptables.sh stop
 	del_vps_port
-	kill_all pdnsd Pcap_DNSProxy brook dns2socks haproxy dns-forwarder chinadns dnsproxy
+	kill_all pdnsd Pcap_DNSProxy brook dns2socks haproxy dns-forwarder chinadns dnsproxy ipt2socks
 	ps -w | grep -E "$CONFIG_TCP_FILE|$CONFIG_UDP_FILE|$CONFIG_SOCKS5_FILE" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -E "$CONFIG_PATH" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep "kcptun_client" | grep "$KCPTUN_REDIR_PORT" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
