@@ -102,7 +102,7 @@ end
 o = s:option(ListValue, "dns_mode", translate("DNS Forward Mode"))
 o.rmempty = false
 o:reset_values()
-if is_installed("ChinaDNS") or is_finded("chinadns") then
+if is_installed("openwrt_chinadns") or is_finded("chinadns") then
     o:value("chinadns", "ChinaDNS")
 end
 if is_installed("dns2socks") or is_finded("dns2socks") then
