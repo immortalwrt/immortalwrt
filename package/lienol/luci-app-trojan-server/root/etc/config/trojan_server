@@ -1,0 +1,13 @@
+
+config global
+	option enable '0'
+
+config user
+	option enable '1'
+	option remarks '测试'
+	option port '45443'
+	option tcp_fast_open 'false'
+	option ssl_certFile '/etc/config/ssl/fullchain.pem'
+	option ssl_keyFile '/etc/config/ssl/private.key'
+	list password '123456'
+

@@ -118,8 +118,8 @@ add_servers(){
 	get_server_index
 	uci_set="uci set $CONFIG.@servers[$servers_index]."
 	uci add $CONFIG servers > /dev/null
-	[ -z "$2" ] && ${uci_set}group="$group"
-	if [ "$1" == "ss" ]; then
+	[ -z "$3" ] && ${uci_set}group="$group"
+	if [ "$2" == "ss" ]; then
 		${uci_set}remarks="$remarks"
 		${uci_set}server_type="SSR"
 		${uci_set}server="$server_host"
@@ -129,8 +129,14 @@ add_servers(){
 		${uci_set}ssr_encrypt_method="$ssr_encrypt_method"
 		${uci_set}timeout=300
 		${uci_set}fast_open=false
-		let addnum_ss+=1
-	elif [ "$1" == "ssr" ]; then
+		
+		if [ "$1" == "add" ]; then
+			let addnum_ss+=1
+		elif [ "$1" == "update" ]; then
+			let updatenum_ss+=1
+		fi
+		
+	elif [ "$2" == "ssr" ]; then
 		${uci_set}remarks="$remarks"
 		${uci_set}server_type="SSR"
 		${uci_set}server="$server_host"
@@ -144,8 +150,14 @@ add_servers(){
 		${uci_set}obfs_param="$obfsparam"
 		${uci_set}timeout=300
 		${uci_set}fast_open=false
-		let addnum_ssr+=1
-	elif [ "$1" == "v2ray" ]; then
+		
+		if [ "$1" == "add" ]; then
+			let addnum_ssr+=1
+		elif [ "$1" == "update" ]; then
+			let updatenum_ssr+=1
+		fi
+		
+	elif [ "$2" == "v2ray" ]; then
 		${uci_set}remarks="$remarks"
 		${uci_set}server_type="V2ray"
 		${uci_set}v2ray_protocol="vmess"
@@ -163,21 +175,28 @@ add_servers(){
 		${uci_set}v2ray_ws_path="$json_path"
 		${uci_set}v2ray_h2_host="$json_host"
 		${uci_set}v2ray_h2_path="$json_path"
-		let addnum_v2ray+=1
+		
+		if [ "$1" == "add" ]; then
+			let addnum_v2ray+=1
+		elif [ "$1" == "update" ]; then
+			let updatenum_v2ray+=1
+		fi
+		
 	fi
 	uci commit $CONFIG
 }
 
 update_config(){
-	isadded_server=$(uci show $CONFIG | grep -c "server='$server_host'")
+	isadded_server=$(uci show $CONFIG | grep -c "remarks='$remarks'")
 	if [ "$isadded_server" -eq 0 ]; then
-		add_servers $link_type
+		add_servers add "$link_type"
 	else
-		index=$(uci show $CONFIG | grep -w "server='$server_host'" | cut -d '[' -f2|cut -d ']' -f1)
+		index=$(uci show $CONFIG | grep -w "remarks='$remarks'" | cut -d '[' -f2|cut -d ']' -f1)
 		local_server_port=$(config_t_get servers server_port $index)
 		local_vmess_id=$(config_t_get servers v2ray_VMess_id $index)
-		# To Do
 		
+		uci delete $CONFIG.@servers[$index]
+		add_servers update "$link_type"
 	fi
 }
 
@@ -227,22 +246,20 @@ add() {
 		mkdir -p /usr/share/${CONFIG}/sub && rm -f /usr/share/${CONFIG}/sub/*
 		for link in $LINKS
 		do
-			if [ -n "`echo -n "$link" | grep 'ss://'`" ]; then
+			if expr "$link" : "ss://";then
 				link_type="ss"
-				new_link=`echo -n "$link" | sed 's/ss:\/\///g'`
-			elif [ -n "`echo -n "$link" | grep 'ssr://'`" ]; then
+				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+			elif expr "$link" : "ssr://";then
 				link_type="ssr"
-				new_link=`echo -n "$link" | sed 's/ssr:\/\///g'`
-			elif [ -n "`echo -n "$link" | grep 'vmess://'`" ]; then
+				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+			elif expr "$link" : "vmess://";then
 				link_type="v2ray"
-				new_link=`echo -n "$link" | sed 's/vmess:\/\///g'`
+				new_link=$(echo -n "$link" | sed 's/vmess:\/\///g')
 			fi
 			[ -z "$link_type" ] && continue
 			decode_link=$(decode_url_link $new_link 1)
 			get_remote_config "$link_type" "$decode_link" 1
-			is_added=$(uci show $CONFIG | grep -v "sub_server" | grep -c "server='$server_host'")
-			[ "$is_added" -gt 0 ] && continue
-			add_servers "$link_type" 1
+			update_config
 		done
 		[ -f "/usr/share/${CONFIG}/sub/all_onlineservers" ] && rm -f /usr/share/${CONFIG}/sub/all_onlineservers
 	}

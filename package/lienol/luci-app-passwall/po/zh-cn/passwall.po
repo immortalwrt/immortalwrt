@@ -199,11 +199,17 @@ msgstr "本机"
 msgid "Danger"
 msgstr "危险"
 
+msgid "Add Server"
+msgstr "添加服务器"
+
+msgid "Add the server via the link"
+msgstr "通过链接添加服务器"
+
 msgid "Please Enter The SS/SSR/V2ray Link"
 msgstr "请输入SS/SSR/V2ray链接"
 
-msgid "Add Server"
-msgstr "添加服务器"
+msgid "Please enter the correct link, ss:// ssr:// vmess://"
+msgstr "请输入正确的链接，ss:// ssr:// vmess://"
 
 msgid "Are you sure set to"
 msgstr "你确定要设为"
@@ -282,6 +288,9 @@ msgstr "不指定"
 
 msgid "DNS Hijack"
 msgstr "接管局域网DNS解析"
+
+msgid "If the GFW mode cannot be used normally, please enable it"
+msgstr "如果GFW模式不能正常使用，请启用"
 
 msgid "Designated Export for Client"
 msgstr "客户端指定出口"
@@ -525,12 +534,6 @@ msgstr "通过代理订阅"
 
 msgid "Enable auto update subscribe"
 msgstr "开启自动更新订阅"
-
-msgid "Add the server via the link"
-msgstr "通过链接添加服务器"
-
-msgid "Add Server"
-msgstr "添加服务器"
 
 msgid "Add"
 msgstr "添加"

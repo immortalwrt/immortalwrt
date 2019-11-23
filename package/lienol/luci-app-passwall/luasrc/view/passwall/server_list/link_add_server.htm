@@ -51,7 +51,12 @@ local dsp = require "luci.dispatcher"
 	function add_server() {
 		var servers_link = document.getElementById("servers_link").value;
 		if (servers_link.trim() != "") {
-			ajax_add_server(servers_link);
+			if (servers_link.indexOf("ss://") == 0 || servers_link.indexOf("ssr://") == 0 || servers_link.indexOf("vmess://") == 0) {
+				ajax_add_server(servers_link);
+			}
+			else {
+				alert("<%:Please enter the correct link, ss:// ssr:// vmess://%>");
+			}
 		}
 		else {
 			alert("<%:Please Enter The Link%>");

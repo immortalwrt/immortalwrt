@@ -427,6 +427,7 @@ add_firewall_rule() {
 				[ "$TCP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p tcp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
 				[ "$UDP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p udp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
 			else
+				$iptables_mangle -A SS_ACL -p tcp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "$Default" -j TTL --ttl-set 14$k
 				[ "$PROXY_MODE" == "gfwlist" ] && dns_hijack "force"
 				[ "$TCP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p tcp -m multiport --dport $TCP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)$k
 				[ "$UDP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p udp -m multiport --dport $UDP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)$k

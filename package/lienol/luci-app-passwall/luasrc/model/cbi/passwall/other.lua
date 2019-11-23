@@ -125,8 +125,9 @@ for _, iface in ipairs(ifaces) do
 end
 
 ---- DNS Hijack
-o = s:option(Flag, "dns_53", translate("DNS Hijack"))
-o.default = 0
+o = s:option(Flag, "dns_53", translate("DNS Hijack"), translate(
+                 "If the GFW mode cannot be used normally, please enable it"))
+o.default = 1
 o.rmempty = false
 
 -- [[ Forwarding Settings ]]--

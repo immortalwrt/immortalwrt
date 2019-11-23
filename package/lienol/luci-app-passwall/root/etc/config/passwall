@@ -20,7 +20,7 @@ config global_delay
 config global_dns
 	option dns_port '0'
 	option wan_port '0'
-	option dns_53 '0'
+	option dns_53 '1'
 	option dns_forward '8.8.4.4:53'
 	option dns_1 '114.114.114.114'
 	option dns_2 '119.29.29.29'
