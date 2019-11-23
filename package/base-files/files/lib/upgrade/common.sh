@@ -2,8 +2,6 @@
 
 RAM_ROOT=/tmp/root
 
-export BACKUP_FILE=sysupgrade.tgz	# file extracted by preinit
-
 [ -x /usr/bin/ldd ] || ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; }
 libs() { ldd $* 2>/dev/null | sed -r 's/(.* => )?(.*) .*/\2/'; }
 
@@ -103,53 +101,53 @@ get_magic_long() {
 }
 
 export_bootdevice() {
-	local cmdline bootdisk rootpart uuid blockdev uevent line class
+	local cmdline uuid disk uevent line
 	local MAJOR MINOR DEVNAME DEVTYPE
 
 	if read cmdline < /proc/cmdline; then
 		case "$cmdline" in
 			*block2mtd=*)
-				bootdisk="${cmdline##*block2mtd=}"
-				bootdisk="${bootdisk%%,*}"
+				disk="${cmdline##*block2mtd=}"
+				disk="${disk%%,*}"
 			;;
 			*root=*)
-				rootpart="${cmdline##*root=}"
-				rootpart="${rootpart%% *}"
+				disk="${cmdline##*root=}"
+				disk="${disk%% *}"
 			;;
 		esac
 
-		case "$bootdisk" in
-			/dev/*)
-				uevent="/sys/class/block/${bootdisk##*/}/uevent"
+		case "$disk" in
+			PARTUUID=[A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9]0002)
+				uuid="${disk#PARTUUID=}"
+				uuid="${uuid%0002}0002"
+				for disk in $(find /dev -type b); do
+					set -- $(dd if=$disk bs=1 skip=$((2*512+256+128+16)) count=16 2>/dev/null | hexdump -v -e '4/1 "%02x"' | awk '{ \
+							for(i=1;i<9;i=i+2) first=substr($0,i,1) substr($0,i+1,1) first; \
+							for(i=9;i<13;i=i+2) second=substr($0,i,1) substr($0,i+1,1) second; \
+							for(i=13;i<16;i=i+2) third=substr($0,i,1) substr($0,i+1,1) third; \
+							fourth = substr($0,17,4); \
+							five = substr($0,21,12); \
+						} END { print toupper(first"-"second"-"third"-"fourth"-"five) }')
+					if [ "$1" = "$uuid" ]; then
+						uevent="/sys/class/block/${disk##*/}/uevent"
+						export SAVE_PARTITIONS=0
+						break
+					fi
+				done
 			;;
-		esac
-
-		case "$rootpart" in
-			PARTUUID=[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-[a-f0-9][a-f0-9])
-				uuid="${rootpart#PARTUUID=}"
-				uuid="${uuid%-[a-f0-9][a-f0-9]}"
-				for blockdev in $(find /dev -type b); do
-					set -- $(dd if=$blockdev bs=1 skip=440 count=4 2>/dev/null | hexdump -v -e '4/1 "%02x "')
+			PARTUUID=[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-02)
+				uuid="${disk#PARTUUID=}"
+				uuid="${uuid%-02}"
+				for disk in $(find /dev -type b); do
+					set -- $(dd if=$disk bs=1 skip=440 count=4 2>/dev/null | hexdump -v -e '4/1 "%02x "')
 					if [ "$4$3$2$1" = "$uuid" ]; then
-						uevent="/sys/class/block/${blockdev##*/}/uevent"
+						uevent="/sys/class/block/${disk##*/}/uevent"
 						break
 					fi
 				done
 			;;
 			/dev/*)
-				uevent="/sys/class/block/${rootpart##*/}/../uevent"
-			;;
-			0x[a-f0-9][a-f0-9][a-f0-9] | 0x[a-f0-9][a-f0-9][a-f0-9][a-f0-9] | \
-			[a-f0-9][a-f0-9][a-f0-9] | [a-f0-9][a-f0-9][a-f0-9][a-f0-9])
-				rootpart=0x${rootpart#0x}
-				for class in /sys/class/block/*; do
-					while read line; do
-						export -n "$line"
-					done < "$class/uevent"
-					if [ $((rootpart/256)) = $MAJOR -a $((rootpart%256)) = $MINOR ]; then
-						uevent="$class/../uevent"
-					fi
-				done
+				uevent="/sys/class/block/${disk##*/}/uevent"
 			;;
 		esac
 
@@ -221,6 +219,16 @@ get_partitions() { # <device> <filename>
 	fi
 }
 
+jffs2_copy_config() {
+	if grep rootfs_data /proc/mtd >/dev/null; then
+		# squashfs+jffs2
+		mtd -e rootfs_data jffs2write "$CONF_TAR" rootfs_data
+	else
+		# jffs2
+		mtd jffs2write "$CONF_TAR" rootfs
+	fi
+}
+
 indicate_upgrade() {
 	. /etc/diag.sh
 	set_state upgrade
@@ -232,10 +240,34 @@ indicate_upgrade() {
 # $(2): (optional) pipe command to extract firmware, e.g. dd bs=n skip=m
 default_do_upgrade() {
 	sync
-	if [ -n "$UPGRADE_BACKUP" ]; then
-		get_image "$1" "$2" | mtd $MTD_ARGS $MTD_CONFIG_ARGS -j "$UPGRADE_BACKUP" write - "${PART_NAME:-image}"
+	if [ "$SAVE_CONFIG" -eq 1 ]; then
+		get_image "$1" "$2" | mtd $MTD_CONFIG_ARGS -j "$CONF_TAR" write - "${PART_NAME:-image}"
 	else
-		get_image "$1" "$2" | mtd $MTD_ARGS write - "${PART_NAME:-image}"
+		get_image "$1" "$2" | mtd write - "${PART_NAME:-image}"
 	fi
 	[ $? -ne 0 ] && exit 1
+}
+
+do_upgrade_stage2() {
+	v "Performing system upgrade..."
+	if [ -n "$do_upgrade" ]; then
+		eval "$do_upgrade"
+	elif type 'platform_do_upgrade' >/dev/null 2>/dev/null; then
+		platform_do_upgrade "$IMAGE"
+	else
+		default_do_upgrade "$IMAGE"
+	fi
+
+	if [ "$SAVE_CONFIG" -eq 1 ] && type 'platform_copy_config' >/dev/null 2>/dev/null; then
+		platform_copy_config
+	fi
+
+	v "Upgrade completed"
+	sleep 1
+
+	v "Rebooting system..."
+	umount -a
+	reboot -f
+	sleep 5
+	echo b 2>/dev/null >/proc/sysrq-trigger
 }
