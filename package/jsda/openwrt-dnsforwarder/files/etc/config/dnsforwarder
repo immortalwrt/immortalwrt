@@ -1,5 +1,0 @@
-
-config arguments
-	option enabled '0'
-	option redir '0'
-
