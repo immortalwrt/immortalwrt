@@ -106,9 +106,7 @@ mac80211_hostapd_setup_base() {
 	json_get_vars noscan ht_coex vendor_vht
 	json_get_values ht_capab_list ht_capab tx_burst
 
-	set_default noscan 0
-
-	[ "$noscan" -gt 0 ] && hostapd_noscan=1
+	[ -n "$noscan" -a "$noscan" -gt 0 ] && hostapd_noscan=1
 	[ "$tx_burst" = 0 ] && tx_burst=
 
 	ieee80211n=1
