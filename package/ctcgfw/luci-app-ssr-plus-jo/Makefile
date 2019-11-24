@@ -58,7 +58,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_privoxy
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs
-	bool "simple-obfsl"
+	bool "simple-obfs-local"
 	default n
 	
 config PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server
