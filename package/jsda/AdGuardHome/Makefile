@@ -15,13 +15,12 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=AdGuardHome
-	DEPENDS:=
-	URL:=https://github.com/AdguardTeam/AdGuardHome/releases
+	TITLE:=Network-wide ads & trackers blocking DNS server
+	URL:=https://github.com/AdguardTeam/AdGuardHome
 endef
 
 define Package/$(PKG_NAME)/description
-	AdGuardHome
+	Network-wide ads & trackers blocking DNS server
 endef
 
 ifeq ($(ARCH),x86_64)
@@ -60,7 +59,6 @@ endef
 
 define Build/Compile
 	chmod 0755 $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
-	upx --lzma $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
 endef
 
 define Package/$(PKG_NAME)/install
