@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rblibtorrent
-PKG_VERSION:=1.2.2
-PKG_RELEASE=1
+PKG_VERSION:=1.1.13
+PKG_RELEASE=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/arvidn/libtorrent.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=9c970550e385df7e5c9dd2950275466f1a1dd8c4
+PKG_SOURCE_VERSION:=6f1250c6535730897909240ea0f4f2a81937d21a
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_LICENSE:=BSD
@@ -41,12 +41,15 @@ EXTRA_CXXFLAGS += $(if $(CONFIG_GCC_VERSION_4_8),-std=gnu++11,-std=gnu++14)
 TARGET_LDFLAGS += -lstdc++
 
 CONFIGURE_ARGS += \
-	--prefix /usr \
-	--enable-shared \
-	--enable-static \
 	--disable-debug \
+	--disable-rpath \
 	--enable-encryption \
-	--with-boost=$(STAGING_DIR)/usr
+	--enable-deprecated-functions \
+	--with-gnu-ld \
+	--with-openssl=$(STAGING_DIR)/usr \
+	--with-boost=$(STAGING_DIR)/usr \
+	--with-libiconv \
+	--with-libiconv-prefix=$(ICONV_PREFIX)
 
 define Build/Configure
 	cd $(PKG_BUILD_DIR) ; \
