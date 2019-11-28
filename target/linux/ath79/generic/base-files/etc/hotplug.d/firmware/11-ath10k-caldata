@@ -12,6 +12,15 @@ case "$FIRMWARE" in
 	case $board in
 	comfast,cf-wr650ac-v1|\
 	comfast,cf-wr650ac-v2|\
+	ubnt,unifiac-lite|\
+	ubnt,unifiac-lr|\
+	ubnt,unifiac-mesh|\
+	ubnt,unifiac-mesh-pro|\
+	ubnt,lap-120|\
+	ubnt,nanobeam-ac|\
+	ubnt,nanostation-ac|\
+	ubnt,nanostation-ac-loco|\
+	ubnt,unifiac-pro|\
 	yuncore,a770)
 		caldata_extract "art" 0x5000 0x844
 		;;
@@ -101,17 +110,6 @@ case "$FIRMWARE" in
 		caldata_extract "art" 0x5000 0x844
 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary info 0x8) +1)
 		;;
-	ubnt,unifiac-lite|\
-	ubnt,unifiac-lr|\
-	ubnt,unifiac-mesh|\
-	ubnt,unifiac-mesh-pro|\
-	ubnt,lap-120|\
-	ubnt,nanobeam-ac|\
-	ubnt,nanostation-ac|\
-	ubnt,nanostation-ac-loco|\
-	ubnt,unifiac-pro)
-		caldata_extract "EEPROM" 0x5000 0x844
-		;;
 	esac
 	;;
 "ath10k/pre-cal-pci-0000:00:00.0.bin")
@@ -148,7 +146,8 @@ case "$FIRMWARE" in
 	tplink,archer-c59-v2|\
 	tplink,archer-c60-v1|\
 	tplink,archer-c60-v2|\
-	tplink,archer-c6-v2)
+	tplink,archer-c6-v2|\
+	tplink,archer-c6-v2-us)
 		caldata_extract "art" 0x5000 0x2f20
 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary mac 0x8) -1)
 		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
