@@ -391,7 +391,7 @@ function send(){
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""     内存占用：`free -m | sed -n '2p' | awk '{print""($3/$2)*100"%"}'`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""`cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     运行时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`";fi
 	router_temp=`uci get serverchan.serverchan.router_temp` >/dev/null 2>&1
-		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`cut -c1-2 /sys/class/thermal/thermal_zone1/temp`%e2%84%83";fi
+		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`cut -c1-2 /sys/class/thermal/thermal_zone0/temp`%e2%84%83";fi
 	router_wan=`uci get serverchan.serverchan.router_wan` >/dev/null 2>&1
 		send_wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 		send_hostIP=$(curl -k -s  "http://members.3322.org/dyndns/getip")
