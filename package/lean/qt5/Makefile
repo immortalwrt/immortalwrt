@@ -15,7 +15,7 @@ PKG_VERSION:=5.9.8
 PKG_RELEASE:=1
 
 PKG_SOURCE:=qt-everywhere-opensource-src-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=http://mirrors.tuna.tsinghua.edu.cn/qt/archive/qt/5.9/$(PKG_VERSION)/single
+PKG_SOURCE_URL:=https://mirrors.ustc.edu.cn/qtproject/archive/qt/5.9/$(PKG_VERSION)/single
 PKG_HASH:=86aca7dc37f161fc730a9d4f6bddf684962ca560327682e282ff61bf8b859c36
 
 PKG_BUILD_PARALLEL:=1
