@@ -42,6 +42,7 @@ Package/gq-server = $(call Package/GoQuiet/Default)
 
 define Package/gq-client/description
 A shadowsocks plugin that obfuscates the traffic as normal HTTPS traffic and disguises the proxy server as a normal webserver.
+endef
 
 Package/gq-server/description = $(Package/simple-obfs/description)
 
