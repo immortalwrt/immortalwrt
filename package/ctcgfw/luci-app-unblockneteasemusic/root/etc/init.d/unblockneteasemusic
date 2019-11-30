@@ -83,34 +83,24 @@ iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j cloud_music
 
 set_hosts(){
 	if [ "${set_type}" = "start" ]; then
-		cfg_name="$(uci add dhcp domain)"
-		uci set dhcp."${cfg_name}".name='music.163.com'
-		uci set dhcp."${cfg_name}".ip="$(uci get network.lan.ipaddr)"
-		uci commit dhcp
+		mkdir -p "/tmp/dnsmasq.d"
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac
+address=/music.163.com/${lan_addr}
+address=/interface.music.163.com/${lan_addr}
+address=/music.httpdns.c.163.com/0.0.0.0
+		EOF
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
-		cfg_name="$(uci add dhcp domain)"
-		uci set dhcp."${cfg_name}".name='interface.music.163.com'
-		uci set dhcp."${cfg_name}".ip="$(uci get network.lan.ipaddr)"
-		uci commit dhcp
-
-		cfg_name="$(uci add dhcp domain)"
-		uci set dhcp."${cfg_name}".name='music.httpdns.c.163.com'
-		uci set dhcp."${cfg_name}".ip="127.0.0.1"
-		uci commit dhcp
+		echo "" > "/var/etc/unblockneteasemusic.include"
 
 		ip route add 223.252.199.10 dev lo
 	elif [ "${set_type}" = "stop" ]; then
-		music_id1="$(uci show dhcp| grep "interface.music.163.com"| grep -Eo "domain\[[0-9]+\]"| grep -Eo "[0-9]+")"
-		uci delete dhcp.@domain["${music_id1}"]
-		uci commit dhcp
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 
-		music_id2="$(uci show dhcp| grep "music.httpdns.c.163.com"| grep -Eo "domain\[[0-9]+\]"| grep -Eo "[0-9]+")"
-		uci delete dhcp.@domain["${music_id2}"]
-		uci commit dhcp
-
-		music_id3="$(uci show dhcp| grep "music.163.com"| grep -Eo "domain\[[0-9]+\]"| grep -Eo "[0-9]+")"
-		uci delete dhcp.@domain["${music_id3}"]
-		uci commit dhcp
+		echo "" > "/var/etc/unblockneteasemusic.include"
 
 		ip route del 223.252.199.10
 	fi
@@ -120,15 +110,21 @@ set_ports(){
 	if [ "${set_type}" = "start" ]; then
 		iptables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
 		iptables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
+		ip6tables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
+		ip6tables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
 
 		mkdir -p /var/etc
 		cat <<-EOF >> "/var/etc/unblockneteasemusic.include"
 iptables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
 iptables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
+ip6tables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
+ip6tables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
 		EOF
 	elif [ "${set_type}" = "stop" ]; then
 		iptables -D INPUT -p tcp --dport "${http_port}" -j ACCEPT
 		iptables -D INPUT -p tcp --dport "${https_port}" -j ACCEPT
+		ip6tables -D INPUT -p tcp --dport "${http_port}" -j ACCEPT
+		ip6tables -D INPUT -p tcp --dport "${https_port}" -j ACCEPT
 
 		echo "" > "/var/etc/unblockneteasemusic.include"
 	fi
