@@ -1,8 +1,5 @@
 -- Licensed to the public under the GNU General Public License v3.
-local d = require "luci.dispatcher"
-local fs = require "nixio.fs"
-local sys = require "luci.sys"
-local uci = require "luci.model.uci".cursor()
+
 local m, s, o
 local shadowsocksr = "shadowsocksr"
 
@@ -12,30 +9,29 @@ uci:foreach("shadowsocksr", "servers", function(s)
   server_count = server_count + 1
 end)
 
-m = Map(shadowsocksr)
+local fs  = require "nixio.fs"
+local sys = require "luci.sys"
 
-
+m = Map(shadowsocksr,  translate("Servers subscription and manage"))
 m:section(SimpleSection).template  = "shadowsocksr/status"
+
+
 -- [[ Servers Manage ]]--
 s = m:section(TypedSection, "servers")
 s.anonymous = true
 s.addremove = true
+s.description = string.format(translate("Server Count") ..  ": %d", server_count)
 s.sortable = true
 s.template = "cbi/tblsection"
-s.description = string.format(translate("Server Count") ..  ": %d", server_count)
-s.extedit = d.build_url("admin", "services", "shadowsocksr", "servers", "%s")
-
-function s.create(e, t)
-    local e = TypedSection.create(e, t)
-    luci.http.redirect(
-        d.build_url("admin", "services", "shadowsocksr", "servers", e))
+s.extedit = luci.dispatcher.build_url("admin/services/shadowsocksr/servers/%s")
+function s.create(...)
+	local sid = TypedSection.create(...)
+	if sid then
+		luci.http.redirect(s.extedit % sid)
+		return
+	end
 end
 
-function s.remove(t, a)
-    s.map.proceed = true
-    s.map:del(a)
-    luci.http.redirect(d.build_url("admin", "services", "shadowsocksr", "servers"))
-end
 o = s:option(DummyValue, "type", translate("Type"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or translate("")
@@ -51,34 +47,23 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
-o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
-o.width="10%"
-
-
 o = s:option(DummyValue, "server_port", translate("Server Port"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
-if nixio.fs.access("/usr/bin/kcptun-client") then
+o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
+o.width="10%"
 
-o = s:option(Flag, "kcp_enable", translate("KcpTun"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "?"
-end
+o = s:option(DummyValue, "protocol", translate("Protocol"))
+o.width="10%"
 
-end
-
-o = s:option(DummyValue, "switch_enable", translate("Auto Switch"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "0"
-end
-
-
+o = s:option(DummyValue, "obfs", translate("Obfs"))
+o.width="10%"
 o = s:option(DummyValue,"server",translate("Ping Latency"))
 o.template="shadowsocksr/ping"
 o.width="10%"
 
-
 m:append(Template("shadowsocksr/server_list"))
+
 return m

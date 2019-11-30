@@ -49,7 +49,7 @@ end
 table.sort(key_table)  
 
 -- [[ Global Setting ]]--
-s = m:section(TypedSection, "global")
+s = m:section(TypedSection, "global", translate("Server settings"))
 s.anonymous = true
 
 o = s:option(ListValue, "global_server", translate("Main Server"))
@@ -157,6 +157,11 @@ o = s:option(Button,"gfw_data",translate("GFW List Data"))
 o.rawhtml  = true
 o.template = "shadowsocksr/refresh"
 o.value =tostring(math.ceil(gfw_count)) .. " " .. translate("Records")
+
+o = s:option(Button,"ad_data",translate("Advertising Data")) 
+o .rawhtml  = true
+o .template = "shadowsocksr/refresh"
+o .value =tostring(math.ceil(ad_count)) .. " " .. translate("Records")
 
 o = s:option(Button,"ip_data",translate("China IP Data"))
 o.rawhtml  = true

@@ -6,7 +6,7 @@ local shadowsocksr = "shadowsocksr"
 local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
-m = Map(shadowsocksr, translate("ShadowSocksR Server"))
+m = Map(shadowsocksr)
 
 local type = {
 	"ssr",
@@ -62,6 +62,8 @@ local obfs = {
 	"tls1.2_ticket_fastauth",
 }
 
+
+m:section(SimpleSection).template  = "shadowsocksr/status2"
 -- [[ Global Setting ]]--
 sec = m:section(TypedSection, "server_global", translate("Global Setting"))
 sec.anonymous = true
@@ -73,6 +75,7 @@ o.rmempty = false
 sec = m:section(TypedSection, "server_config", translate("Server Setting"))
 sec.anonymous = true
 sec.addremove = true
+sec.sortable =  true
 sec.template = "cbi/tblsection"
 sec.extedit = luci.dispatcher.build_url("admin/services/shadowsocksr/server/%s")
 function sec.create(...)
@@ -100,19 +103,13 @@ function o.cfgvalue(...)
 end
 
 o = sec:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
-function o.cfgvalue(...)
-	local v = Value.cfgvalue(...)
-	return v and v:upper() or "?"
-end
+o.width="10%"
 
 o = sec:option(DummyValue, "protocol", translate("Protocol"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "?"
-end
+o.width="10%"
 
 o = sec:option(DummyValue, "obfs", translate("Obfs"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "?"
-end
+o.width="10%"
 
+m:append(Template("shadowsocksr/server_list"))
 return m

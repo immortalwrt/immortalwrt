@@ -1,6 +1,6 @@
-</DIV>
+
 <head>
- <meta charset="utf-8">
+    <meta charset="utf-8">
     <meta http-equiv="x-dns-prefetch-control" content="on">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//whois.pconline.com.cn">
@@ -117,13 +117,12 @@
     </style>
 </head>
 <fieldset class="cbi-section">
-
 	<table>
      <tr><td width="100%">
 <body>
     <div style="display: flex;">
         <div style="width: 51%">
-            <h1><font color="#2E8B57"><B>IP 地址查询</B></font></h1>
+            <h3><font color="#2E8B57"><B>IP 地址查询</B></font></h3>
             <p>
                 <span class="ip-title">IP&nbsp;&nbsp;&nbsp;登录设备:</span><span class="ip-result" id="ip-webrtc"></span> <span class="ip-geo" id="ip-webrtc-cz88"></span>
             </p>
@@ -131,7 +130,7 @@
                 <span class="ip-title">IPIP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;国内:</span><span class="ip-result" id="ip-ipipnet"></span> <span class="ip-geo" id="ip-ipipnet-geo"></span>
             </p>
             <p>
-                <span class="ip-title">太平洋&nbsp;&nbsp;国内:</span><span class="ip-result" id="ip-pcol"></span> <span class="ip-geo" id="ip-pcol-ipip"></span>
+                <span class="ip-title">IP.PC&nbsp;&nbsp;&nbsp;&nbsp;国内:</span><span class="ip-result" id="ip-pcol"></span> <span class="ip-geo" id="ip-pcol-ipip"></span>
             </p>
             <p>
                 <span class="ip-title">IP.SB&nbsp;&nbsp;&nbsp;&nbsp;海外:</span><span class="ip-result" id="ip-ipsb"></span> <span class="ip-geo" id="ip-ipsb-geo"></span>
@@ -141,9 +140,9 @@
             </p>
         </div>
         <div style="width: 49%">
-            <h1><font color="#2E8B57"><B>网站访问检查</B></font></h1>
-            <p>
-          <span class="ip-state_title">百度搜索:</span><span id="http-baidu"></span>
+            <h3><font color="#2E8B57"><B>网站访问检查</B></font></h3>
+                <p>
+                <span class="ip-state_title">百度搜索:</span><span id="http-baidu"></span>
             </p>
             <p>
                 <span class="ip-state_title">网易云音乐:</span><span id="http-163"></span>
@@ -160,9 +159,9 @@
         </div>
     </div>
     <div>
-       <p style="float: right; margin-top: 4px; font-size:15px; padding-right: 10px">由 <a onclick="return ip_skk()" href="javascript:void(0);">ip.skk.moe 提供支持</a></p>
+        <p style="float: right; margin-top: 4px; font-size:15px; padding-right: 10px">由 <a onclick="return ip_skk()" href="javascript:void(0);">ip.skk.moe 提供支持</a></p>
     </div>
-    </td></tr>
+   </td></tr>
 	</table>
 </fieldset>
     <script>
@@ -202,7 +201,8 @@
                     throw error;
                 }),
             parseIPIpip: (ip, elID) => {
-                IP.get(`https://api.skk.moe/network/parseIp/ipip/${ip}`, 'json')
+                
+                 IP.get(`https://api.skk.moe/network/parseIp/ipip/v3/${ip}`, 'json')
                     .then(resp => {
                         let x = '';
                         for (let i of resp.data) {
@@ -214,9 +214,8 @@
             },
             getWebrtcIP: () => {
                 window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-                        let pc = new RTCPeerConnection({ iceServers: [] }),
+                let pc = new RTCPeerConnection({ iceServers: [] }),
                 noop = () => { };
-
                 pc.createDataChannel('');
                 pc.createOffer(pc.setLocalDescription.bind(pc), noop);
                 pc.onicecandidate = (ice) => {
@@ -297,8 +296,9 @@
 	      IP.getWebrtcIP();
 	      
 	      function getPcolIP(data){
+                let pcisp = data.addr.split(' ');
                 $$.getElementById('ip-pcol').innerHTML = data.ip;
-                IP.parseIPIpip(data.ip, 'ip-pcol-ipip');
+                $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
         };
         function getIpsbIP(data){
                 $$.getElementById('ip-ipsb').innerHTML = data.address;
@@ -327,8 +327,18 @@
 		       IP.getIpipnetIP();
 		       IP.getIpifyIP();
 		       IP.getWebrtcIP();
+		       
+		       function getPcolIP(data){
+		            let pcisp = data.addr.split(' ');
+                $$.getElementById('ip-pcol').innerHTML = data.ip;
+                $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
+		       };
+		       function getIpsbIP(data){
+                $$.getElementById('ip-ipsb').innerHTML = data.address;
+                $$.getElementById('ip-ipsb-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
+		       };
 
-       	   setTimeout("myip_Load()",1000*20);
+       	   setTimeout("myip_Load()",1000*10);
 		   }
 
     </script>
