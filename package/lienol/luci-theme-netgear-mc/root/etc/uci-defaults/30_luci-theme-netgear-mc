@@ -1,0 +1,6 @@
+#!/bin/sh
+uci batch <<-EOF
+	set luci.themes.Netgear_MC=/luci-static/netgear_mc
+	commit luci
+EOF
+exit 0
