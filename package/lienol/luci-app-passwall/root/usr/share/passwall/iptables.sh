@@ -101,70 +101,70 @@ gen_laniplist() {
 
 load_acl() {
 	local enabled
-	local aclremarks
-	local ipaddr
-	local macaddr
+	local remarks
+	local ip
+	local mac
 	local proxy_mode
-	local tcp_redir_server
-	local udp_redir_server
+	local tcp_node
+	local udp_node
 	local tcp_redir_ports
 	local udp_redir_ports
 	config_get enabled $1 enabled
-	config_get aclremarks $1 aclremarks
-	config_get ipaddr $1 ipaddr
-	config_get macaddr $1 macaddr
+	config_get remarks $1 remarks
+	config_get ip $1 ip
+	config_get mac $1 mac
 	config_get proxy_mode $1 proxy_mode
-	config_get tcp_redir_server $1 tcp_redir_server
-	config_get udp_redir_server $1 udp_redir_server
+	config_get tcp_node $1 tcp_node
+	config_get udp_node $1 udp_node
 	config_get tcp_redir_ports $1 tcp_redir_ports
 	config_get udp_redir_ports $1 udp_redir_ports
 	[ -z "$proxy_mode" -o "$proxy_mode" = "default" ] && proxy_mode=$PROXY_MODE
 	[ -z "$tcp_redir_ports" -o "$tcp_redir_ports" = "default" ] && tcp_redir_ports=$TCP_REDIR_PORTS
 	[ -z "$udp_redir_ports" -o "$udp_redir_ports" = "default" ] && udp_redir_ports=$UDP_REDIR_PORTS
-	eval TCP_REDIR_SERVER=\$TCP_REDIR_SERVER$tcp_redir_server
-	eval UDP_REDIR_SERVER=\$UDP_REDIR_SERVER$tcp_redir_server
-	local ip_mark=$(get_ip_mark $ipaddr)
+	eval TCP_NODE=\$TCP_NODE$tcp_node
+	eval UDP_NODE=\$UDP_NODE$udp_node
+	local ip_mark=$(get_ip_mark $ip)
 	[ "$enabled" == "1" -a -n "$proxy_mode" ] && {
-		if [ -n "$ipaddr" ] || [ -n "$macaddr" ]; then
-			if [ -n "$ipaddr" -a -n "$macaddr" ]; then
-				echolog "访问控制：IP：$ipaddr，MAC：$macaddr，代理模式：$(get_action_chain_name $proxy_mode)"
+		if [ -n "$ip" ] || [ -n "$mac" ]; then
+			if [ -n "$ip" -a -n "$mac" ]; then
+				echolog "访问控制：IP：$ip，MAC：$mac，代理模式：$(get_action_chain_name $proxy_mode)"
 			else
-				[ -n "$ipaddr" ] && echolog "访问控制：IP：$ipaddr，代理模式：$(get_action_chain_name $proxy_mode)"
-				[ -n "$macaddr" ] && echolog "访问控制：MAC：$macaddr，代理模式：$(get_action_chain_name $proxy_mode)"
+				[ -n "$ip" ] && echolog "访问控制：IP：$ip，代理模式：$(get_action_chain_name $proxy_mode)"
+				[ -n "$mac" ] && echolog "访问控制：MAC：$mac，代理模式：$(get_action_chain_name $proxy_mode)"
 			fi
-			[ "$TCP_REDIR_SERVER" != "nil" ] && {
-				#local TCP_REDIR_SERVER_TYPE=$(echo $(config_get $TCP_REDIR_SERVER server_type) | tr 'A-Z' 'a-z')
-				$iptables_mangle -A SS_ACL $(factor $ipaddr "-s") -p tcp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "$aclremarks" -j TTL --ttl-set 14$tcp_redir_server
-				$iptables_mangle -A SS_ACL $(factor $ipaddr "-s") -p tcp $(factor $macaddr "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") -m comment --comment "$aclremarks" -$(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)$tcp_redir_server
+			[ "$TCP_NODE" != "nil" ] && {
+				#local TCP_NODE_TYPE=$(echo $(config_get $TCP_NODE type) | tr 'A-Z' 'a-z')
+				$iptables_mangle -A SS_ACL $(factor $ip "-s") -p tcp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "$remarks" -j TTL --ttl-set 14$tcp_node
+				$iptables_mangle -A SS_ACL $(factor $ip "-s") -p tcp $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") -m comment --comment "$remarks" -$(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)$tcp_node
 			}
-			[ "$UDP_REDIR_SERVER" != "nil" ] && {
-				#local UDP_REDIR_SERVER_TYPE=$(echo $(config_get $UDP_REDIR_SERVER server_type) | tr 'A-Z' 'a-z')
-				eval udp_redir_port=\$UDP_REDIR_PORT$udp_redir_server
-				$iptables_mangle -A SS_ACL $(factor $ipaddr "-s") -p udp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "$aclremarks" -j TPROXY --on-port $udp_redir_port --tproxy-mark 0x1/0x1
-				$iptables_mangle -A SS_ACL $(factor $ipaddr "-s") -p udp $(factor $macaddr "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") -m comment --comment "$aclremarks" -$(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)$udp_redir_server
+			[ "$UDP_NODE" != "nil" ] && {
+				#local UDP_NODE_TYPE=$(echo $(config_get $UDP_NODE type) | tr 'A-Z' 'a-z')
+				eval udp_redir_port=\$UDP_REDIR_PORT$udp_node
+				$iptables_mangle -A SS_ACL $(factor $ip "-s") -p udp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "$remarks" -j TPROXY --on-port $udp_redir_port --tproxy-mark 0x1/0x1
+				$iptables_mangle -A SS_ACL $(factor $ip "-s") -p udp $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") -m comment --comment "$remarks" -$(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)$udp_node
 			}
-			[ -z "$ipaddr" ] && {
-				lower_macaddr=$(echo $macaddr | tr '[A-Z]' '[a-z]')
-				ipaddr=$(ip neigh show | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | grep $lower_macaddr | awk '{print $1}')
-				[ -z "$ipaddr" ] && {
-					dhcp_index=$(uci show dhcp | grep $lower_macaddr | awk -F'.' '{print $2}')
-					ipaddr=$(uci -q get dhcp.$dhcp_index.ip)
+			[ -z "$ip" ] && {
+				lower_mac=$(echo $mac | tr '[A-Z]' '[a-z]')
+				ip=$(ip neigh show | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | grep $lower_mac | awk '{print $1}')
+				[ -z "$ip" ] && {
+					dhcp_index=$(uci show dhcp | grep $lower_mac | awk -F'.' '{print $2}')
+					ip=$(uci -q get dhcp.$dhcp_index.ip)
 				}
-				[ -z "$ipaddr" ] && ipaddr=$(cat /tmp/dhcp.leases | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep $lower_macaddr | awk '{print $3}')
+				[ -z "$ip" ] && ip=$(cat /tmp/dhcp.leases | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep $lower_mac | awk '{print $3}')
 			}
 		fi
 	}
 }
 
 filter_vpsip() {
-	local server_host server_ip use_ipv6 network_type
-	server_host=$(config_get $1 server)
+	local address server_ip use_ipv6 network_type
+	address=$(config_get $1 address)
 	use_ipv6=$(config_get $1 use_ipv6)
 	network_type="ipv4"
 	[ "$use_ipv6" == "1" ] && network_type="ipv6"
-	server_ip=$(get_host_ip $network_type $server_host)
+	server_ip=$(get_host_ip $network_type $address)
 
-	[ -n "$server_ip" -a "$server_ip" != "$TCP_REDIR_SERVER_IP" ] && {
+	[ -n "$server_ip" -a "$server_ip" != "$TCP_NODE_IP" ] && {
 		[ "$network_type" == "ipv4" ] && ipset add $IPSET_VPSIPLIST $server_ip >/dev/null 2>&1 &
 	}
 }
@@ -221,7 +221,7 @@ add_firewall_rule() {
 	[ -n "$lan_ipv4" ] && ipset add $IPSET_LANIPLIST $lan_ipv4 >/dev/null 2>&1 &
 
 	#  过滤所有节点IP
-	config_foreach filter_vpsip "servers"
+	config_foreach filter_vpsip "nodes"
 
 	$iptables_mangle -N SS
 	$iptables_mangle -A SS -m set --match-set $IPSET_LANIPLIST dst -j RETURN
@@ -229,9 +229,9 @@ add_firewall_rule() {
 	$iptables_mangle -A SS -m set --match-set $IPSET_WHITELIST dst -j RETURN
 	$iptables_mangle -N SS_ACL
 
-	if [[ "$TCP_REDIR_SERVER_NUM" -ge 1 ]] || [[ "$UDP_REDIR_SERVER_NUM" -ge 1 ]]; then
+	if [[ "$TCP_NODE_NUM" -ge 1 ]] || [[ "$UDP_NODE_NUM" -ge 1 ]]; then
 		local max_num=1
-		[ "$TCP_REDIR_SERVER_NUM" -ge "$UDP_REDIR_SERVER_NUM" ] && max_num=$TCP_REDIR_SERVER_NUM
+		[ "$TCP_NODE_NUM" -ge "$UDP_NODE_NUM" ] && max_num=$TCP_NODE_NUM
 		if [ "$max_num" -ge 1 ]; then
 			for i in $(seq 1 $max_num); do
 				$iptables_mangle -N SS_GLO$i
@@ -246,34 +246,34 @@ add_firewall_rule() {
 		fi
 	fi
 
-	if [ "$SOCKS5_PROXY_SERVER_NUM" -ge 1 ]; then
-		for i in $(seq 1 $SOCKS5_PROXY_SERVER_NUM); do
+	if [ "$SOCKS5_NODE_NUM" -ge 1 ]; then
+		for i in $(seq 1 $SOCKS5_NODE_NUM); do
 			local k=$i
-			eval temp_server=\$SOCKS5_PROXY_SERVER$k
+			eval temp_server=\$SOCKS5_NODE$k
 			if [ "$temp_server" != "nil" ]; then
-				local server_host=$(config_get $temp_server server)
-				local SOCKS5_PROXY_SERVER_PORT=$(config_get $temp_server server_port)
-				local SOCKS5_PROXY_SERVER_IP=$(get_host_ip "ipv4" $server_host)
-				[ -n "$SOCKS5_PROXY_SERVER_IP" -a -n "$SOCKS5_PROXY_SERVER_PORT" ] && $iptables_mangle -A SS -p tcp -d $SOCKS5_PROXY_SERVER_IP -m multiport --dports $SOCKS5_PROXY_SERVER_PORT -j RETURN
+				local address=$(config_get $temp_server address)
+				local SOCKS5_NODE_PORT=$(config_get $temp_server port)
+				local SOCKS5_NODE_IP=$(get_host_ip "ipv4" $address)
+				[ -n "$SOCKS5_NODE_IP" -a -n "$SOCKS5_NODE_PORT" ] && $iptables_mangle -A SS -p tcp -d $SOCKS5_NODE_IP -m multiport --dports $SOCKS5_NODE_PORT -j RETURN
 			fi
 		done
 	fi
 
-	if [ "$TCP_REDIR_SERVER_NUM" -ge 1 ]; then
-		for i in $(seq 1 $TCP_REDIR_SERVER_NUM); do
+	if [ "$TCP_NODE_NUM" -ge 1 ]; then
+		for i in $(seq 1 $TCP_NODE_NUM); do
 			local k=$i
 			local local_port=104$k
 			local ttl=14$k
-			eval temp_server=\$TCP_REDIR_SERVER$k
+			eval temp_server=\$TCP_NODE$k
 			eval local_port=\$TCP_REDIR_PORT$k
 			# 生成TCP转发规则
 			if [ "$temp_server" != "nil" ]; then
-				local server_host=$(config_get $temp_server server)
-				local TCP_REDIR_SERVER_PORT=$(config_get $temp_server server_port)
-				local TCP_REDIR_SERVER_IP=$(get_host_ip "ipv4" $server_host)
-				local TCP_REDIR_SERVER_TYPE=$(echo $(config_get $temp_server server_type) | tr 'A-Z' 'a-z')
-				[ -n "$TCP_REDIR_SERVER_IP" -a -n "$TCP_REDIR_SERVER_PORT" ] && $iptables_mangle -A SS -p tcp -d $TCP_REDIR_SERVER_IP -m multiport --dports $TCP_REDIR_SERVER_PORT -j RETURN
-				if [ "$TCP_REDIR_SERVER_TYPE" == "brook" ]; then
+				local address=$(config_get $temp_server address)
+				local TCP_NODE_PORT=$(config_get $temp_server port)
+				local TCP_NODE_IP=$(get_host_ip "ipv4" $address)
+				local TCP_NODE_TYPE=$(echo $(config_get $temp_server type) | tr 'A-Z' 'a-z')
+				[ -n "$TCP_NODE_IP" -a -n "$TCP_NODE_PORT" ] && $iptables_mangle -A SS -p tcp -d $TCP_NODE_IP -m multiport --dports $TCP_NODE_PORT -j RETURN
+				if [ "$TCP_NODE_TYPE" == "brook" ]; then
 					$iptables_mangle -A SS_ACL -p tcp -m socket -j MARK --set-mark 1
 
 					# $iptables_mangle -A SS$k -p tcp -m set --match-set $IPSET_BLACKLIST dst -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
@@ -366,26 +366,46 @@ add_firewall_rule() {
 					$iptables_nat -A SS -p tcp -m ttl --ttl-eq $ttl -j REDIRECT --to $local_port
 					echolog "IPv4 防火墙TCP转发规则加载完成！"
 				fi
+				if [ "$PROXY_IPV6" == "1" ]; then
+					lan_ipv6=$(ip address show br-lan | grep -w "inet6" | awk '{print $2}') #当前LAN IPv6段
+					$ip6tables_nat -N SS
+					$ip6tables_nat -N SS_ACL
+					$ip6tables_nat -A PREROUTING -j SS
+					[ -n "$lan_ipv6" ] && {
+						for ip in $lan_ipv6; do
+							$ip6tables_nat -A SS -d $ip -j RETURN
+						done
+					}
+					[ "$use_ipv6" == "1" -a -n "$server_ip" ] && $ip6tables_nat -A SS -d $server_ip -j RETURN
+					$ip6tables_nat -N SS_GLO$k
+					$ip6tables_nat -N SS_GFW$k
+					$ip6tables_nat -N SS_CHN$k
+					$ip6tables_nat -N SS_HOME$k
+					$ip6tables_nat -A SS_GLO$k -p tcp -j REDIRECT --to $TCP_REDIR_PORT
+					$ip6tables_nat -A SS -j SS_GLO$k
+					#$ip6tables_nat -I OUTPUT -p tcp -j SS
+					echolog "IPv6防火墙规则加载完成！"
+				fi
 			fi
 		done
 	else
 		echolog "主服务器未选择，无法转发TCP！"
 	fi
 
-	if [ "$UDP_REDIR_SERVER_NUM" -ge 1 ]; then
-		for i in $(seq 1 $UDP_REDIR_SERVER_NUM); do
+	if [ "$UDP_NODE_NUM" -ge 1 ]; then
+		for i in $(seq 1 $UDP_NODE_NUM); do
 			local k=$i
 			local local_port=104$k
-			eval temp_server=\$UDP_REDIR_SERVER$k
+			eval temp_server=\$UDP_NODE$k
 			eval local_port=\$UDP_REDIR_PORT$k
 			#  生成UDP转发规则
 			if [ "$temp_server" != "nil" ]; then
-				local server_host=$(config_get $temp_server server)
-				local UDP_REDIR_SERVER_PORT=$(config_get $temp_server server_port)
-				local UDP_REDIR_SERVER_IP=$(get_host_ip "ipv4" $server_host)
-				local UDP_REDIR_SERVER_TYPE=$(echo $(config_get $temp_server server_type) | tr 'A-Z' 'a-z')
-				[ -n "$UDP_REDIR_SERVER_IP" -a -n "$UDP_REDIR_SERVER_PORT" ] && $iptables_mangle -A SS -p udp -d $UDP_REDIR_SERVER_IP -m multiport --dports $UDP_REDIR_SERVER_PORT -j RETURN
-				[ "$UDP_REDIR_SERVER_TYPE" == "brook" ] && $iptables_mangle -A SS_ACL -p udp -m socket -j MARK --set-mark 1
+				local address=$(config_get $temp_server address)
+				local UDP_NODE_PORT=$(config_get $temp_server port)
+				local UDP_NODE_IP=$(get_host_ip "ipv4" $address)
+				local UDP_NODE_TYPE=$(echo $(config_get $temp_server type) | tr 'A-Z' 'a-z')
+				[ -n "$UDP_NODE_IP" -a -n "$UDP_NODE_PORT" ] && $iptables_mangle -A SS -p udp -d $UDP_NODE_IP -m multiport --dports $UDP_NODE_PORT -j RETURN
+				[ "$UDP_NODE_TYPE" == "brook" ] && $iptables_mangle -A SS_ACL -p udp -m socket -j MARK --set-mark 1
 				#  全局模式
 				$iptables_mangle -A SS_GLO$k -p udp -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
 
@@ -413,47 +433,23 @@ add_firewall_rule() {
 
 	$iptables_mangle -A PREROUTING -j SS
 	$iptables_mangle -A SS -j SS_ACL
+	
+	#  加载ACLS
+	config_foreach load_acl "acl_rule"
 
-	local max_num=1
-	[ "$TCP_REDIR_SERVER_NUM" -ge "$UDP_REDIR_SERVER_NUM" ] && max_num=$TCP_REDIR_SERVER_NUM
-	if [ "$max_num" -ge 1 ]; then
-		for i in $(seq 1 $max_num); do
-			local k=$i
-			#  加载ACLS
-			[ "$k" == 1 ] && config_foreach load_acl "acl_rule"
-
-			#  加载默认代理模式
-			if [ "$PROXY_MODE" == "disable" ]; then
-				[ "$TCP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p tcp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
-				[ "$UDP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p udp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
-			else
-				$iptables_mangle -A SS_ACL -p tcp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "$Default" -j TTL --ttl-set 14$k
-				[ "$PROXY_MODE" == "gfwlist" ] && dns_hijack "force"
-				[ "$TCP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p tcp -m multiport --dport $TCP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)$k
-				[ "$UDP_REDIR_SERVER" != "nil" ] && $iptables_mangle -A SS_ACL -p udp -m multiport --dport $UDP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)$k
-			fi
-
-			if [ "$PROXY_IPV6" == "1" ]; then
-				lan_ipv6=$(ip address show br-lan | grep -w "inet6" | awk '{print $2}') #当前LAN IPv6段
-				$ip6tables_nat -N SS
-				$ip6tables_nat -N SS_ACL
-				$ip6tables_nat -A PREROUTING -j SS
-				[ -n "$lan_ipv6" ] && {
-					for ip in $lan_ipv6; do
-						$ip6tables_nat -A SS -d $ip -j RETURN
-					done
-				}
-				[ "$use_ipv6" == "1" -a -n "$server_ip" ] && $ip6tables_nat -A SS -d $server_ip -j RETURN
-				$ip6tables_nat -N SS_GLO$k
-				$ip6tables_nat -N SS_GFW$k
-				$ip6tables_nat -N SS_CHN$k
-				$ip6tables_nat -N SS_HOME$k
-				$ip6tables_nat -A SS_GLO$k -p tcp -j REDIRECT --to $TCP_REDIR_PORT
-				$ip6tables_nat -A SS -j SS_GLO$k
-				#$ip6tables_nat -I OUTPUT -p tcp -j SS
-				echolog "IPv6防火墙规则加载完成！"
-			fi
-		done
+	#  加载默认代理模式
+	if [ "$PROXY_MODE" == "disable" ]; then
+		[ "$TCP_NODE1" != "nil" ] && $iptables_mangle -A SS_ACL -p tcp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
+		[ "$UDP_NODE1" != "nil" ] && $iptables_mangle -A SS_ACL -p udp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
+	else
+		[ "$TCP_NODE1" != "nil" ] && {
+			$iptables_mangle -A SS_ACL -p tcp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "Default" -j TTL --ttl-set 141
+			$iptables_mangle -A SS_ACL -p tcp -m multiport --dport $TCP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)1
+		}
+		[ "$UDP_NODE1" != "nil" ] && {
+			$iptables_mangle -A SS_ACL -p udp -m set --match-set $IPSET_BLACKLIST dst -m comment --comment "Default" -j TPROXY --on-port $UDP_REDIR_PORT1 --tproxy-mark 0x1/0x1
+			$iptables_mangle -A SS_ACL -p udp -m multiport --dport $UDP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)1
+		}
 	fi
 }
 
@@ -499,7 +495,7 @@ del_firewall_rule() {
 	$ip6tables_nat -F SS 2>/dev/null && $ip6tables_nat -X SS 2>/dev/null
 	$ip6tables_nat -F SS_ACL 2>/dev/null && $ip6tables_nat -X SS_ACL 2>/dev/null
 
-	local max_num=10
+	local max_num=5
 	if [ "$max_num" -ge 1 ]; then
 		for i in $(seq 1 $max_num); do
 			local k=$i

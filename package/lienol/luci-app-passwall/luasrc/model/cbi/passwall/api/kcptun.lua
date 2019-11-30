@@ -1,7 +1,6 @@
 module("luci.model.cbi.passwall.api.kcptun", package.seeall)
 local fs = require "nixio.fs"
 local sys = require "luci.sys"
-local uci = require"luci.model.uci".cursor()
 local util = require "luci.util"
 local i18n = require "luci.i18n"
 local api = require "luci.model.cbi.passwall.api.api"
@@ -18,9 +17,7 @@ local LEDE_BOARD = nil
 local DISTRIB_TARGET = nil
 
 function get_kcptun_file_path()
-    return uci:get("passwall", "global_app", "kcptun_client_file") or
-               luci.sys.exec(
-                   "echo -n `uci get passwall.@global_app[0].kcptun_client_file`")
+    return api.uci_get_type("global_app", "kcptun_client_file")
 end
 
 function get_kcptun_version(file)

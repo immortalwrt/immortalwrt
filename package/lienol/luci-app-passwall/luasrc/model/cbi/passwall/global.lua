@@ -3,6 +3,7 @@ local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local ipkg = require("luci.model.ipkg")
 local uci = require"luci.model.uci".cursor()
+local api = require "luci.model.cbi.passwall.api.api"
 local appname = "passwall"
 
 local function is_installed(e) return ipkg.installed(e) end
@@ -13,19 +14,14 @@ local function is_finded(e)
             false
 end
 
-local function has_udp_relay()
-    return sys.call("lsmod | grep TPROXY >/dev/null") == 0
-end
-
 local n = {}
-uci:foreach(appname, "servers", function(e)
-    if e.server_type and e.server and e.remarks then
+uci:foreach(appname, "nodes", function(e)
+    if e.type and e.address and e.remarks then
         if e.use_kcp and e.use_kcp == "1" then
             n[e[".name"]] = "%s+%s：[%s] %s" %
-                                {e.server_type, "Kcptun", e.remarks, e.server}
+                                {e.type, "Kcptun", e.remarks, e.address}
         else
-            n[e[".name"]] = "%s：[%s] %s" %
-                                {e.server_type, e.remarks, e.server}
+            n[e[".name"]] = "%s：[%s] %s" % {e.type, e.remarks, e.address}
         end
     end
 end)
@@ -35,67 +31,62 @@ for key, _ in pairs(n) do table.insert(key_table, key) end
 table.sort(key_table)
 
 m = Map(appname)
-m:append(Template("passwall/global/status"))
+local status_use_big_icon = api.uci_get_type("global_other",
+                                             "status_use_big_icon")
+if status_use_big_icon and status_use_big_icon == "1" then
+    m:append(Template("passwall/global/status"))
+else
+    m:append(Template("passwall/global/status2"))
+end
 
 -- [[ Global Settings ]]--
 s = m:section(TypedSection, "global", translate("Global Settings"))
 s.anonymous = true
 s.addremove = false
 
----- TCP Redir Server
-o = s:option(ListValue, "tcp_redir_server1", translate("TCP Redir Server"),
-             translate("For used to surf the Internet."))
-o:value("nil", translate("Close"))
-for _, key in pairs(key_table) do o:value(key, n[key]) end
-
-local tcp_redir_server_num = uci:get(appname, "@global_other[0]",
-                                     "tcp_redir_server_num")
-if tcp_redir_server_num and tonumber(tcp_redir_server_num) >= 2 then
-    for i = 2, tcp_redir_server_num, 1 do
-        o = s:option(ListValue, "tcp_redir_server" .. i,
-                     translate("TCP Redir Server") .. " " .. i)
-        o:value("nil", translate("Close"))
-        for _, key in pairs(key_table) do o:value(key, n[key]) end
+---- TCP Node
+local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num")
+for i = 1, tcp_node_num, 1 do
+    if i == 1 then
+        o = s:option(ListValue, "tcp_node" .. i, translate("TCP Node"),
+                     translate("For used to surf the Internet."))
+    else
+        o = s:option(ListValue, "tcp_node" .. i,
+                     translate("TCP Node") .. " " .. i)
     end
-end
-
----- UDP Redir Server
-if has_udp_relay() then
-    o = s:option(ListValue, "udp_redir_server1", translate("UDP Redir Server"),
-                 translate("For Game Mode or DNS resolution and more.") ..
-                     translate("The selected server will not use Kcptun."))
     o:value("nil", translate("Close"))
-    o:value("default", translate("Same as the tcp redir server"))
     for _, key in pairs(key_table) do o:value(key, n[key]) end
-
-    local udp_redir_server_num = uci:get(appname, "@global_other[0]",
-                                         "udp_redir_server_num")
-    if udp_redir_server_num and tonumber(udp_redir_server_num) >= 2 then
-        for i = 2, udp_redir_server_num, 1 do
-            o = s:option(ListValue, "udp_redir_server" .. i,
-                         translate("UDP Redir Server") .. " " .. i)
-            o:value("nil", translate("Close"))
-            for _, key in pairs(key_table) do o:value(key, n[key]) end
-        end
-    end
 end
 
----- Socks5 Proxy Server
-o = s:option(ListValue, "socks5_proxy_server1",
-             translate("Socks5 Proxy Server"),
-             translate("The client can use the router's Socks5 proxy"))
-o:value("nil", translate("Close"))
-for _, key in pairs(key_table) do o:value(key, n[key]) end
-
-local socks5_proxy_server_num = uci:get(appname, "@global_other[0]",
-                                        "socks5_proxy_server_num")
-if socks5_proxy_server_num and tonumber(socks5_proxy_server_num) >= 2 then
-    for i = 2, socks5_proxy_server_num, 1 do
-        o = s:option(ListValue, "socks5_proxy_server" .. i,
-                     translate("Socks5 Proxy Server") .. " " .. i)
+---- UDP Node
+local udp_node_num = api.uci_get_type("global_other", "udp_node_num")
+for i = 1, udp_node_num, 1 do
+    if i == 1 then
+        o = s:option(ListValue, "udp_node" .. i, translate("UDP Node"),
+                     translate("For Game Mode or DNS resolution and more.") ..
+                         translate("The selected server will not use Kcptun."))
         o:value("nil", translate("Close"))
-        for _, key in pairs(key_table) do o:value(key, n[key]) end
+        o:value("default", translate("Same as the tcp node"))
+    else
+        o = s:option(ListValue, "udp_node" .. i,
+                     translate("UDP Node") .. " " .. i)
+        o:value("nil", translate("Close"))
     end
+    for _, key in pairs(key_table) do o:value(key, n[key]) end
+end
+
+---- Socks5 Node
+local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num")
+for i = 1, socks5_node_num, 1 do
+    if i == 1 then
+        o = s:option(ListValue, "socks5_node" .. i, translate("Socks5 Node"),
+                     translate("The client can use the router's Socks5 proxy"))
+    else
+        o = s:option(ListValue, "socks5_node" .. i,
+                     translate("Socks5 Node") .. " " .. i)
+    end
+    o:value("nil", translate("Close"))
+    for _, key in pairs(key_table) do o:value(key, n[key]) end
 end
 
 ---- DNS Forward Mode

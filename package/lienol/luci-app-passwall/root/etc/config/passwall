@@ -1,15 +1,14 @@
 
 config global
-	option proxy_mode 'chnroute'
+	option tcp_node1 'nil'
+	option udp_node1 'nil'
+	option socks5_node1 'nil'
 	option dns_mode 'chinadns'
 	option up_chinadns_mode 'OpenDNS_1'
-	option socks5_proxy_server1 'nil'
-	option udp_redir_server1 'nil'
-	option tcp_redir_server1 'nil'
+	option proxy_mode 'chnroute'
 	option localhost_proxy_mode 'default'
 
 config global_haproxy
-	option admin_enable '0'
 	option balancing_enable '0'
 
 config global_delay
@@ -27,7 +26,7 @@ config global_dns
 
 config global_forwarding
 	option udp_redir_ports '1:65535'
-	option tcp_redir_ports '1:65535'
+	option tcp_redir_ports '80,443'
 	option process '1'
 
 config global_proxy
@@ -39,23 +38,22 @@ config global_proxy
 	
 config global_other
 	option auto_ping '1'
-	option tcp_redir_server_num '1'
-	option udp_redir_server_num '1'
-	option socks5_proxy_server_num '1'
+	option tcp_node_num '1'
+	option udp_node_num '1'
+	option socks5_node_num '1'
+	option status_use_big_icon '1'
 
 config global_rules
+	option auto_update '0'
 	option gfwlist_update '1'
 	option chnroute_update '1'
-	option Pcap_Routing_update '0'
-	option Pcap_WhiteList_update '0'
-	option auto_update '0'
 	option chnroute_version '2019-10-18'
-	option gfwlist_version '2019-11-16'
+	option gfwlist_version '2019-11-27'
 	
 config global_app
-	option v2ray_client_file '/usr/bin/v2ray/'
+	option v2ray_file '/usr/bin/v2ray/'
 	option kcptun_client_file '/usr/bin/kcptun-client'
-	option brook_client_file '/usr/bin/brook'
+	option brook_file '/usr/bin/brook'
 
 config global_subscribe
 	option subscribe_by_ss '0'

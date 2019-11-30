@@ -19,8 +19,8 @@ function index()
     end
     entry({"admin", "vpn", "passwall", "settings"}, cbi("passwall/global"),
           _("Basic Settings"), 1).dependent = true
-    entry({"admin", "vpn", "passwall", "server_list"},
-          cbi("passwall/server_list"), _("Server List"), 2).dependent = true
+    entry({"admin", "vpn", "passwall", "node_list"}, cbi("passwall/node_list"),
+          _("Node List"), 2).dependent = true
     -- entry({"admin", "vpn", "passwall", "auto_switch"},
     --      cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
     entry({"admin", "vpn", "passwall", "other"}, cbi("passwall/other"),
@@ -33,31 +33,30 @@ function index()
           _("Rule Update"), 96).leaf = true
     entry({"admin", "vpn", "passwall", "acl"}, cbi("passwall/acl"),
           _("Access control"), 97).leaf = true
-    entry({"admin", "vpn", "passwall", "rulelist"}, cbi("passwall/rulelist"),
+    entry({"admin", "vpn", "passwall", "rule_list"}, cbi("passwall/rule_list"),
           _("Set Blacklist And Whitelist"), 98).leaf = true
     entry({"admin", "vpn", "passwall", "log"}, cbi("passwall/log"),
           _("Watch Logs"), 99).leaf = true
-    entry({"admin", "vpn", "passwall", "serverconfig"},
-          cbi("passwall/serverconfig")).leaf = true
+    entry({"admin", "vpn", "passwall", "node_config"},
+          cbi("passwall/node_config")).leaf = true
 
-    entry({"admin", "vpn", "passwall", "link_add_server"},
-          call("link_add_server")).leaf = true
+    entry({"admin", "vpn", "passwall", "link_add_node"}, call("link_add_node")).leaf =
+        true
     entry({"admin", "vpn", "passwall", "get_log"}, call("get_log")).leaf = true
     entry({"admin", "vpn", "passwall", "clear_log"}, call("clear_log")).leaf =
         true
-    entry({"admin", "vpn", "passwall", "server_status"}, call("server_status")).leaf =
-        true
+    entry({"admin", "vpn", "passwall", "status"}, call("status")).leaf = true
     entry({"admin", "vpn", "passwall", "connect_status"}, call("connect_status")).leaf =
         true
     entry({"admin", "vpn", "passwall", "check_port"}, call("check_port")).leaf =
         true
-    entry({"admin", "vpn", "passwall", "auto_ping_server"},
-          call("auto_ping_server")).leaf = true
-    entry({"admin", "vpn", "passwall", "ping_server"}, call("ping_server")).leaf =
+    entry({"admin", "vpn", "passwall", "auto_ping_node"}, call("auto_ping_node")).leaf =
         true
-    entry({"admin", "vpn", "passwall", "set_server"}, call("set_server")).leaf =
+    entry({"admin", "vpn", "passwall", "ping_node"}, call("ping_node")).leaf =
         true
-    entry({"admin", "vpn", "passwall", "copy_server"}, call("copy_server")).leaf =
+    entry({"admin", "vpn", "passwall", "set_node"}, call("set_node")).leaf =
+        true
+    entry({"admin", "vpn", "passwall", "copy_node"}, call("copy_node")).leaf =
         true
     entry({"admin", "vpn", "passwall", "update_rules"}, call("update_rules")).leaf =
         true
@@ -90,7 +89,7 @@ function hide_menu()
     luci.http.redirect(luci.dispatcher.build_url("admin", "status", "overview"))
 end
 
-function link_add_server()
+function link_add_node()
     local link = luci.http.formvalue("link")
     luci.sys.call('rm -f /tmp/links.conf && echo "' .. link ..
                       '" >> /tmp/links.conf')
@@ -105,8 +104,8 @@ end
 
 function clear_log() luci.sys.call("echo '' > /var/log/passwall.log") end
 
-function server_status()
-    -- local dns_mode = luci.sys.exec("echo -n `uci get " .. appname .. ".@global[0].dns_mode`")
+function status()
+    -- local dns_mode = luci.sys.exec("echo -n `uci -q get " .. appname .. ".@global[0].dns_mode`")
     local e = {}
     e.dns_mode_status = luci.sys.call("netstat -apn | grep 7913 >/dev/null") ==
                             0
@@ -117,46 +116,48 @@ function server_status()
                           "ps -w | grep -v grep | grep -i 'log /var/etc/" ..
                               appname .. "/kcptun' >/dev/null") == 0
 
-    local tcp_redir_server_num = luci.sys.exec(
-                                     "echo -n `uci get %s.@global_other[0].tcp_redir_server_num`" %
-                                         appname)
-    for i = 1, tcp_redir_server_num, 1 do
+    local tcp_node_num = luci.sys.exec(
+                             "echo -n `uci -q get %s.@global_other[0].tcp_node_num`" %
+                                 appname)
+    for i = 1, tcp_node_num, 1 do
         local listen_port = luci.sys.exec(
                                 string.format(
                                     "[ -f '/var/etc/passwall/port/TCP_%s' ] && echo -n `cat /var/etc/passwall/port/TCP_%s`",
                                     i, i))
-        e["tcp_redir_server%s_status" % i] =
-            luci.sys.call(string.format(
-                              "ps -w | grep -v grep | grep -i -E '%s/TCP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -T -l %s' >/dev/null",
-                              appname, i, listen_port, listen_port)) == 0
+        e["tcp_node%s_status" % i] = luci.sys.call(
+                                         string.format(
+                                             "ps -w | grep -v grep | grep -i -E '%s/TCP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -T -l %s' >/dev/null",
+                                             appname, i, listen_port,
+                                             listen_port)) == 0
     end
 
-    local udp_redir_server_num = luci.sys.exec(
-                                     "echo -n `uci get %s.@global_other[0].udp_redir_server_num`" %
-                                         appname)
-    for i = 1, udp_redir_server_num, 1 do
+    local udp_node_num = luci.sys.exec(
+                             "echo -n `uci -q get %s.@global_other[0].udp_node_num`" %
+                                 appname)
+    for i = 1, udp_node_num, 1 do
         local listen_port = luci.sys.exec(
                                 string.format(
                                     "[ -f '/var/etc/passwall/port/UDP_%s' ] && echo -n `cat /var/etc/passwall/port/UDP_%s`",
                                     i, i))
-        e["udp_redir_server%s_status" % i] =
-            luci.sys.call(string.format(
-                              "ps -w | grep -v grep | grep -i -E '%s/UDP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -U -l %s' >/dev/null",
-                              appname, i, listen_port, listen_port)) == 0
+        e["udp_node%s_status" % i] = luci.sys.call(
+                                         string.format(
+                                             "ps -w | grep -v grep | grep -i -E '%s/UDP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -U -l %s' >/dev/null",
+                                             appname, i, listen_port,
+                                             listen_port)) == 0
     end
 
-    local socks5_proxy_server_num = luci.sys.exec(
-                                        "echo -n `uci get %s.@global_other[0].socks5_proxy_server_num`" %
-                                            appname)
-    for i = 1, socks5_proxy_server_num, 1 do
+    local socks5_node_num = luci.sys.exec(
+                                "echo -n `uci -q get %s.@global_other[0].socks5_node_num`" %
+                                    appname)
+    for i = 1, socks5_node_num, 1 do
         local listen_port = luci.sys.exec(
                                 string.format(
                                     "[ -f '/var/etc/passwall/port/Socks5_%s' ] && echo -n `cat /var/etc/passwall/port/Socks5_%s`",
                                     i, i))
-        e["socks5_proxy_server%s_status" % i] =
-            luci.sys.call(string.format(
-                              "ps -w | grep -v grep | grep -i -E '%s/Socks5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
-                              appname, i, listen_port)) == 0
+        e["socks5_node%s_status" % i] = luci.sys.call(
+                                            string.format(
+                                                "ps -w | grep -v grep | grep -i -E '%s/Socks5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
+                                                appname, i, listen_port)) == 0
     end
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
@@ -177,7 +178,7 @@ function connect_status()
     luci.http.write_json(e)
 end
 
-function auto_ping_server()
+function auto_ping_node()
     local e = {}
     e.index = luci.http.formvalue("index")
     e.ping = luci.sys.exec(
@@ -187,41 +188,40 @@ function auto_ping_server()
     luci.http.write_json(e)
 end
 
-function ping_server()
+function ping_node()
     local e = {}
-    local server = luci.http.formvalue("server")
+    local node = luci.http.formvalue("node")
     e.ping = luci.sys.exec(
                  "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
-                     server)
+                     node)
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
 
-function set_server()
+function set_node()
     local e = {}
     local protocol = luci.http.formvalue("protocol")
     local number = luci.http.formvalue("number")
     local section = luci.http.formvalue("section")
     if protocol == "tcp" then
-        luci.sys.call(
-            "uci set passwall.@global[0].tcp_redir_server" .. number .. "=" ..
-                section ..
-                " && uci commit passwall && /etc/init.d/passwall restart")
-    elseif protocol == "udp" then
-        luci.sys.call(
-            "uci set passwall.@global[0].udp_redir_server" .. number .. "=" ..
-                section ..
-                " && uci commit passwall && /etc/init.d/passwall restart")
-    elseif protocol == "socks5" then
-        luci.sys.call("uci set passwall.@global[0].socks5_proxy_server" ..
-                          number .. "=" .. section ..
+        luci.sys.call("uci set passwall.@global[0].tcp_node" .. number .. "=" ..
+                          section ..
                           " && uci commit passwall && /etc/init.d/passwall restart")
+    elseif protocol == "udp" then
+        luci.sys.call("uci set passwall.@global[0].udp_node" .. number .. "=" ..
+                          section ..
+                          " && uci commit passwall && /etc/init.d/passwall restart")
+    elseif protocol == "socks5" then
+        luci.sys.call(
+            "uci set passwall.@global[0].socks5_node" .. number .. "=" ..
+                section ..
+                " && uci commit passwall && /etc/init.d/passwall restart")
     end
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
 
-function copy_server()
+function copy_node()
     local e = {}
     local section = luci.http.formvalue("section")
     luci.http.prepare_content("application/json")
@@ -233,41 +233,38 @@ function check_port()
     retstring = retstring ..
                     "<font color='red'>暂时不支持UDP检测</font><br />"
     local s
-    local server_name = ""
+    local node_name = ""
     local uci = luci.model.uci.cursor()
 
-    uci:foreach("passwall", "servers", function(s)
+    uci:foreach("passwall", "nodes", function(s)
         local ret = ""
         local tcp_socket
         local udp_socket
         if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
-            (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.server_port) then
-            --[[local port = (s.use_kcp == "1" and s.kcp_port) and s.kcp_port or (s.v2ray_transport == "mkcp" and s.server_port) and s.server_port or nil
+            (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
+            --[[local port = (s.use_kcp == "1" and s.kcp_port) and s.kcp_port or (s.v2ray_transport == "mkcp" and s.port) and s.port or nil
 			if port then
 				udp_socket = nixio.socket("inet", "dgram")
 				udp_socket:setopt("socket", "rcvtimeo", 3)
 				udp_socket:setopt("socket", "sndtimeo", 3)
-				udp_socket:sendto("test", s.server, port)
+				udp_socket:sendto("test", s.address, port)
 				r,c,d=udp_socket:recvfrom(10)
 				ret=""
 			end--]]
         else
-            if s.server_type and s.server and s.server_port and s.remarks then
-                server_name = "%s：[%s] %s:%s" %
-                                  {
-                        s.server_type, s.remarks, s.server, s.server_port
-                    }
+            if s.type and s.address and s.port and s.remarks then
+                node_name = "%s：[%s] %s:%s" %
+                                {s.type, s.remarks, s.address, s.port}
             end
             tcp_socket = nixio.socket("inet", "stream")
             tcp_socket:setopt("socket", "rcvtimeo", 3)
             tcp_socket:setopt("socket", "sndtimeo", 3)
-            ret = tcp_socket:connect(s.server, s.server_port)
+            ret = tcp_socket:connect(s.address, s.port)
             if tostring(ret) == "true" then
-                retstring =
-                    retstring .. "<font color='green'>" .. server_name ..
-                        "   OK.</font><br />"
+                retstring = retstring .. "<font color='green'>" .. node_name ..
+                                "   OK.</font><br />"
             else
-                retstring = retstring .. "<font color='red'>" .. server_name ..
+                retstring = retstring .. "<font color='red'>" .. node_name ..
                                 "   Error.</font><br />"
             end
             ret = ""

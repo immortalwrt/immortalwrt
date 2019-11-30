@@ -1,11 +1,12 @@
 local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
-local server_section = arg[1]
+local node_section = arg[1]
 local proto = arg[2]
 local redir_port = arg[3]
 local socks5_proxy_port = arg[4]
-local server = ucursor:get_all("passwall", server_section)
+local node = ucursor:get_all("passwall", node_section)
 local inbound_json = {}
+local inboundDetour_json = nil
 
 if socks5_proxy_port ~= "nil" then
     inbound_json = {
@@ -23,6 +24,25 @@ if redir_port ~= "nil" then
         settings = {network = proto, followRedirect = true},
         sniffing = {enabled = true, destOverride = {"http", "tls"}}
     }
+    if proto == "tcp" and node.v2ray_tcp_socks == "1" then
+        inboundDetour_json = {
+            {
+                listen = "0.0.0.0",
+                port = tonumber(node.v2ray_tcp_socks_port),
+                protocol = "socks",
+                settings = {
+                    auth = node.v2ray_tcp_socks_auth,
+                    accounts = (node.v2ray_tcp_socks_auth == "password") and {
+                        {
+                            user = node.v2ray_tcp_socks_auth_username,
+                            pass = node.v2ray_tcp_socks_auth_password
+                        }
+                    } or nil,
+                    udp = true
+                }
+            }
+        }
+    end
 end
 
 local v2ray = {
@@ -32,64 +52,64 @@ local v2ray = {
     },
     -- 传入连接
     inbound = inbound_json,
+    inboundDetour = inboundDetour_json,
     -- 传出连接
     outbound = {
-        protocol = server.v2ray_protocol,
+        protocol = node.v2ray_protocol,
         settings = {
             vnext = {
                 {
-                    address = server.server,
-                    port = tonumber(server.server_port),
+                    address = node.address,
+                    port = tonumber(node.port),
                     users = {
                         {
-                            id = server.v2ray_VMess_id,
-                            alterId = tonumber(server.v2ray_VMess_alterId),
-                            level = tonumber(server.v2ray_VMess_level),
-                            security = server.v2ray_security
+                            id = node.v2ray_VMess_id,
+                            alterId = tonumber(node.v2ray_VMess_alterId),
+                            level = tonumber(node.v2ray_VMess_level),
+                            security = node.v2ray_security
                         }
                     }
                 }
             }
         },
         mux = {
-            enabled = (server.v2ray_mux == "1") and true or false,
-            concurrency = (server.v2ray_mux_concurrency) and
-                tonumber(server.v2ray_mux_concurrency) or 8
+            enabled = (node.v2ray_mux == "1") and true or false,
+            concurrency = (node.v2ray_mux_concurrency) and
+                tonumber(node.v2ray_mux_concurrency) or 8
         },
         -- 底层传输配置
         streamSettings = {
-            network = server.v2ray_transport,
-            security = server.v2ray_stream_security,
-            tlsSettings = (server.v2ray_stream_security == "tls") and {
-                serverName = server.tls_serverName,
-                allowInsecure = (server.tls_allowInsecure == "1") and true or
+            network = node.v2ray_transport,
+            security = node.v2ray_stream_security,
+            tlsSettings = (node.v2ray_stream_security == "tls") and {
+                serverName = node.tls_serverName,
+                allowInsecure = (node.tls_allowInsecure == "1") and true or
                     false
             } or nil,
-            kcpSettings = (server.v2ray_transport == "mkcp") and {
-                mtu = tonumber(server.v2ray_mkcp_mtu),
-                tti = tonumber(server.v2ray_mkcp_tti),
-                uplinkCapacity = tonumber(server.v2ray_mkcp_uplinkCapacity),
-                downlinkCapacity = tonumber(server.v2ray_mkcp_downlinkCapacity),
-                congestion = (server.v2ray_mkcp_congestion == "1") and true or
+            kcpSettings = (node.v2ray_transport == "mkcp") and {
+                mtu = tonumber(node.v2ray_mkcp_mtu),
+                tti = tonumber(node.v2ray_mkcp_tti),
+                uplinkCapacity = tonumber(node.v2ray_mkcp_uplinkCapacity),
+                downlinkCapacity = tonumber(node.v2ray_mkcp_downlinkCapacity),
+                congestion = (node.v2ray_mkcp_congestion == "1") and true or
                     false,
-                readBufferSize = tonumber(server.v2ray_mkcp_readBufferSize),
-                writeBufferSize = tonumber(server.v2ray_mkcp_writeBufferSize),
-                header = {type = server.v2ray_mkcp_guise}
+                readBufferSize = tonumber(node.v2ray_mkcp_readBufferSize),
+                writeBufferSize = tonumber(node.v2ray_mkcp_writeBufferSize),
+                header = {type = node.v2ray_mkcp_guise}
             } or nil,
-            wsSettings = (server.v2ray_transport == "ws") and {
-                path = server.v2ray_ws_path,
-                headers = (server.v2ray_ws_host ~= nil) and
-                    {Host = server.v2ray_ws_host} or nil
+            wsSettings = (node.v2ray_transport == "ws") and {
+                path = node.v2ray_ws_path,
+                headers = (node.v2ray_ws_host ~= nil) and
+                    {Host = node.v2ray_ws_host} or nil
             } or nil,
-            httpSettings = (server.v2ray_transport == "h2") and
-                {path = server.v2ray_h2_path, host = server.v2ray_h2_host} or
-                nil,
-            dsSettings = (server.v2ray_transport == "ds") and
-                {path = server.v2ray_ds_path} or nil,
-            quicSettings = (server.v2ray_transport == "quic") and {
-                security = server.v2ray_quic_security,
-                key = server.v2ray_quic_key,
-                header = {type = server.v2ray_quic_guise}
+            httpSettings = (node.v2ray_transport == "h2") and
+                {path = node.v2ray_h2_path, host = node.v2ray_h2_host} or nil,
+            dsSettings = (node.v2ray_transport == "ds") and
+                {path = node.v2ray_ds_path} or nil,
+            quicSettings = (node.v2ray_transport == "quic") and {
+                security = node.v2ray_quic_security,
+                key = node.v2ray_quic_key,
+                header = {type = node.v2ray_quic_guise}
             } or nil
         }
     },

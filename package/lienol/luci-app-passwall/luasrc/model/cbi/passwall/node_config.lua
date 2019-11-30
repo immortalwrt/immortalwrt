@@ -44,117 +44,109 @@ local v2ray_header_type_list = {
     "none", "srtp", "utp", "wechat-video", "dtls", "wireguard"
 }
 
-m = Map(appname, translate("ShadowSocks Server Config"),
-        translate("TCP quick open server does not support do not open.") ..
-            translate("HAProxy cannot be used with KCP."))
+m = Map(appname, translate("Node Config"))
 m.redirect = d.build_url("admin", "vpn", "passwall")
 
-s = m:section(NamedSection, arg[1], "servers", "")
+s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false
 s.dynamic = false
 
 remarks = s:option(Value, "remarks", translate("Node Remarks"))
-remarks.default = translate("Node Remarks")
+remarks.default = translate("Remarks")
 remarks.rmempty = false
 
-server_type = s:option(ListValue, "server_type", translate("Server Type"))
+type = s:option(ListValue, "type", translate("Type"))
 if ((is_installed("redsocks2") or is_finded("redsocks2")) or
     (is_installed("ipt2socks") or is_finded("ipt2socks"))) then
-    server_type:value("Socks5", translate("Socks5 Server"))
+    type:value("Socks5", translate("Socks5"))
 end
-if is_finded("ss-redir") then
-    server_type:value("SS", translate("Shadowsocks Server"))
-end
-if is_finded("ssr-redir") then
-    server_type:value("SSR", translate("ShadowsocksR Server"))
-end
-if is_installed("v2ray") then
-    server_type:value("V2ray", translate("V2ray Server"))
-end
+if is_finded("ss-redir") then type:value("SS", translate("Shadowsocks")) end
+if is_finded("ssr-redir") then type:value("SSR", translate("ShadowsocksR")) end
+if is_installed("v2ray") then type:value("V2ray", translate("V2ray")) end
 if is_installed("brook") or is_finded("brook") then
-    server_type:value("Brook", translate("Brook Server"))
+    type:value("Brook", translate("Brook"))
 end
 if is_installed("trojan") or is_finded("trojan") then
-    server_type:value("Trojan", translate("Trojan Server"))
+    type:value("Trojan", translate("Trojan"))
 end
 
 v2ray_protocol = s:option(ListValue, "v2ray_protocol",
                           translate("V2ray Protocol"))
 v2ray_protocol:value("vmess", translate("Vmess"))
-v2ray_protocol:depends("server_type", "V2ray")
+v2ray_protocol:depends("type", "V2ray")
 
-server = s:option(Value, "server",
-                  translate("Server Address (Support Domain Name)"))
-server.rmempty = false
+address = s:option(Value, "address", translate("Address (Support Domain Name)"))
+address.rmempty = false
 
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
 use_ipv6.default = 0
 
-server_port = s:option(Value, "server_port", translate("Server Port"))
-server_port.datatype = "port"
-server_port.rmempty = false
+port = s:option(Value, "port", translate("Port"))
+port.datatype = "port"
+port.rmempty = false
 
 username = s:option(Value, "username", translate("Username"))
-username:depends("server_type", "Socks5")
+username:depends("type", "Socks5")
 
 password = s:option(Value, "password", translate("Password"))
 password.password = true
-password:depends("server_type", "Socks5")
-password:depends("server_type", "SS")
-password:depends("server_type", "SSR")
-password:depends("server_type", "Brook")
-password:depends("server_type", "Trojan")
+password:depends("type", "Socks5")
+password:depends("type", "SS")
+password:depends("type", "SSR")
+password:depends("type", "Brook")
+password:depends("type", "Trojan")
 
 ss_encrypt_method = s:option(ListValue, "ss_encrypt_method",
                              translate("Encrypt Method"))
 for a, t in ipairs(ss_encrypt_method_list) do ss_encrypt_method:value(t) end
-ss_encrypt_method:depends("server_type", "SS")
+ss_encrypt_method:depends("type", "SS")
 
 ssr_encrypt_method = s:option(ListValue, "ssr_encrypt_method",
                               translate("Encrypt Method"))
 for a, t in ipairs(ssr_encrypt_method_list) do ssr_encrypt_method:value(t) end
-ssr_encrypt_method:depends("server_type", "SSR")
+ssr_encrypt_method:depends("type", "SSR")
 
 v2ray_security = s:option(ListValue, "v2ray_security",
                           translate("Encrypt Method"))
 for a, t in ipairs(v2ray_security_list) do v2ray_security:value(t) end
-v2ray_security:depends("server_type", "V2ray")
+v2ray_security:depends("type", "V2ray")
 
 protocol = s:option(ListValue, "protocol", translate("Protocol"))
 for a, t in ipairs(ssr_protocol_list) do protocol:value(t) end
-protocol:depends("server_type", "SSR")
+protocol:depends("type", "SSR")
 
 protocol_param = s:option(Value, "protocol_param", translate("Protocol_param"))
-protocol_param:depends("server_type", "SSR")
+protocol_param:depends("type", "SSR")
 
 obfs = s:option(ListValue, "obfs", translate("Obfs"))
 for a, t in ipairs(ssr_obfs_list) do obfs:value(t) end
-obfs:depends("server_type", "SSR")
+obfs:depends("type", "SSR")
 
 obfs_param = s:option(Value, "obfs_param", translate("Obfs_param"))
-obfs_param:depends("server_type", "SSR")
+obfs_param:depends("type", "SSR")
 
 timeout = s:option(Value, "timeout", translate("Connection Timeout"))
 timeout.datatype = "uinteger"
 timeout.default = 300
-timeout:depends("server_type", "SS")
-timeout:depends("server_type", "SSR")
+timeout:depends("type", "SS")
+timeout:depends("type", "SSR")
 
-fast_open = s:option(ListValue, "fast_open", translate("Fast_open"))
-fast_open:value("false")
-fast_open:value("true")
-fast_open:depends("server_type", "SS")
-fast_open:depends("server_type", "SSR")
-fast_open:depends("server_type", "Trojan")
+tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"),
+                         translate("Need node support required"))
+tcp_fast_open:value("false")
+tcp_fast_open:value("true")
+tcp_fast_open:depends("type", "SS")
+tcp_fast_open:depends("type", "SSR")
+tcp_fast_open:depends("type", "Trojan")
 
 use_kcp = s:option(Flag, "use_kcp", translate("Use Kcptun"),
                    "<span style='color:red'>" .. translate(
                        "Please confirm whether the Kcptun is installed. If not, please go to Rule Update download installation.") ..
                        "</span>")
 use_kcp.default = 0
-use_kcp:depends("server_type", "SS")
-use_kcp:depends("server_type", "SSR")
-use_kcp:depends("server_type", "Brook")
+use_kcp:depends("type", "SS")
+use_kcp:depends("type", "SSR")
+use_kcp:depends("type", "Brook")
 
 kcp_server = s:option(Value, "kcp_server", translate("Kcptun Server"))
 kcp_server.placeholder = translate("Default:Current Server")
@@ -186,7 +178,7 @@ v2ray_VMess_alterId:depends("v2ray_protocol", "vmess")
 v2ray_VMess_level =
     s:option(Value, "v2ray_VMess_level", translate("User Level"))
 v2ray_VMess_level.default = 1
-v2ray_VMess_level:depends("server_type", "V2ray")
+v2ray_VMess_level:depends("type", "V2ray")
 
 v2ray_stream_security = s:option(ListValue, "v2ray_stream_security",
                                  translate("Transport Layer Encryption"),
@@ -194,7 +186,7 @@ v2ray_stream_security = s:option(ListValue, "v2ray_stream_security",
                                      'Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
 v2ray_stream_security:value("none", "none")
 v2ray_stream_security:value("tls", "tls")
-v2ray_stream_security:depends("server_type", "V2ray")
+v2ray_stream_security:depends("type", "V2ray")
 
 -- [[ TLS部分 ]] --
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
@@ -214,7 +206,7 @@ v2ray_transport:value("ws", "WebSocket")
 v2ray_transport:value("h2", "HTTP/2")
 v2ray_transport:value("ds", "DomainSocket")
 v2ray_transport:value("quic", "QUIC")
-v2ray_transport:depends("server_type", "V2ray")
+v2ray_transport:depends("type", "V2ray")
 
 -- [[ TCP部分 ]]--
 
@@ -311,35 +303,75 @@ v2ray_quic_guise:depends("v2ray_transport", "quic")
 -- [[ 其它 ]]--
 
 v2ray_mux = s:option(Flag, "v2ray_mux", translate("Mux"))
-v2ray_mux:depends("server_type", "V2ray")
+v2ray_mux:depends("type", "V2ray")
 
 v2ray_mux_concurrency = s:option(Value, "v2ray_mux_concurrency",
                                  translate("Mux Concurrency"))
 v2ray_mux_concurrency.default = 8
 v2ray_mux_concurrency:depends("v2ray_mux", "1")
 
+-- [[ 当作为TCP节点时，是否同时开启socks代理 ]]
+v2ray_tcp_socks = s:option(Flag, "v2ray_tcp_socks", translate("TCP Open Socks"),
+                           translate(
+                               "When using this TCP node, whether to open the socks proxy at the same time"))
+v2ray_tcp_socks.default = 0
+v2ray_tcp_socks:depends("type", "V2ray")
+
+v2ray_tcp_socks_port = s:option(Value, "v2ray_tcp_socks_port",
+                                "Socks5 " .. translate("Port"),
+                                translate("Do not conflict with other ports"))
+v2ray_tcp_socks_port.datatype = "port"
+v2ray_tcp_socks_port.default = 1080
+v2ray_tcp_socks_port:depends("v2ray_tcp_socks", "1")
+
+v2ray_tcp_socks_auth = s:option(ListValue, "v2ray_tcp_socks_auth",
+                                translate("Socks for authentication"),
+                                translate(
+                                    'Socks protocol authentication, support anonymous and password.'))
+v2ray_tcp_socks_auth:value("noauth", translate("anonymous"))
+v2ray_tcp_socks_auth:value("password", translate("User Password"))
+v2ray_tcp_socks_auth:depends("v2ray_tcp_socks", "1")
+
+v2ray_tcp_socks_auth_username = s:option(Value, "v2ray_tcp_socks_auth_username",
+                                         "Socks5 " .. translate("Username"))
+v2ray_tcp_socks_auth_username:depends("v2ray_tcp_socks_auth", "password")
+
+v2ray_tcp_socks_auth_password = s:option(Value, "v2ray_tcp_socks_auth_password",
+                                         "Socks5 " .. translate("Password"))
+v2ray_tcp_socks_auth_password:depends("v2ray_tcp_socks_auth", "password")
+
+-- [[ Trojan Cert ]]--
+trojan_verify_cert = s:option(Flag, "trojan_verify_cert",
+                              translate("Trojan Verify Cert"))
+trojan_verify_cert:depends("type", "Trojan")
+
+trojan_cert_path = s:option(Value, "trojan_cert_path",
+                            translate("Trojan Cert Path"))
+trojan_cert_path.default = ""
+trojan_cert_path:depends("trojan_verify_cert", "1")
+
 -- v2ray_insecure = s:option(Flag, "v2ray_insecure", translate("allowInsecure"))
--- v2ray_insecure:depends("server_type", "V2ray")
+-- v2ray_insecure:depends("type", "V2ray")
 
 function rmempty_restore()
     password.rmempty = true
     timeout.rmempty = true
-    fast_open.rmempty = true
+    tcp_fast_open.rmempty = true
     v2ray_protocol.rmempty = true
     v2ray_VMess_id.rmempty = true
     v2ray_VMess_alterId.rmempty = true
 end
 
-server_type.validate = function(self, value)
+type.validate = function(self, value)
     rmempty_restore()
     if value == "SS" then
         password.rmempty = false
         timeout.rmempty = false
-        fast_open.rmempty = false
+        tcp_fast_open.rmempty = false
     elseif value == "SSR" then
         password.rmempty = false
         timeout.rmempty = false
-        fast_open.rmempty = false
+        tcp_fast_open.rmempty = false
     elseif value == "V2ray" then
         v2ray_protocol.rmempty = false
         v2ray_VMess_id.rmempty = false
@@ -348,7 +380,7 @@ server_type.validate = function(self, value)
         password.rmempty = false
     elseif value == "Trojan" then
         password.rmempty = false
-        fast_open.rmempty = false
+        tcp_fast_open.rmempty = false
     end
     return value
 end

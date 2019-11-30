@@ -1,10 +1,10 @@
-local uci = require "luci.model.uci".cursor()
+local uci = require"luci.model.uci".cursor()
 local appname = "passwall"
 
 local n = {}
-uci:foreach(appname, "servers", function(e)
-    if e.server_type and e.server and e.remarks then
-        n[e[".name"]] = "%s：[%s] %s" % {e.server_type, e.remarks, e.server}
+uci:foreach(appname, "nodes", function(e)
+    if e.type and e.address and e.remarks then
+        n[e[".name"]] = "%s：[%s] %s" % {e.type, e.remarks, e.address}
     end
 end)
 
@@ -30,7 +30,7 @@ o.default = "10"
 
 ---- Tcp Redir Server
 o = s:option(DynamicList, "tcp_redir_server",
-             translate("List of alternate TCP forwarding servers"), translate(
+             translate("List of alternate TCP forwarding nodes"), translate(
                  "When there is no server, an automatic reconnect scheme is used"))
 for _, key in pairs(key_table) do o:value(key, n[key]) end
 

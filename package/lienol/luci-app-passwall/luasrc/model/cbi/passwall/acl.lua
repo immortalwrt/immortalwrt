@@ -1,16 +1,16 @@
 local sys = require "luci.sys"
 local webadmin = require "luci.tools.webadmin"
 local uci = require"luci.model.uci".cursor()
+local api = require "luci.model.cbi.passwall.api.api"
 local appname = "passwall"
 
 local n = {}
-uci:foreach(appname, "servers", function(e)
-    if e.server_type and e.server and e.remarks then
+uci:foreach(appname, "nodes", function(e)
+    if e.type and e.address and e.remarks then
         if e.use_kcp and e.use_kcp == "1" then
-            n[e[".name"]] = "%s+%s：[%s]" %
-                                {e.server_type, "Kcptun", e.remarks}
+            n[e[".name"]] = "%s+%s：[%s]" % {e.type, "Kcptun", e.remarks}
         else
-            n[e[".name"]] = "%s：[%s]" % {e.server_type, e.remarks}
+            n[e[".name"]] = "%s：[%s]" % {e.type, e.remarks}
         end
     end
 end)
@@ -23,7 +23,7 @@ m = Map("passwall")
 
 -- [[ ACLs Settings ]]--
 s = m:section(TypedSection, "acl_rule", translate("ACLs"), translate(
-                  "ACLs is a tools which used to designate specific IP proxy mode"))
+                  "ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered."))
 s.template = "cbi/tblsection"
 s.sortable = true
 s.anonymous = true
@@ -33,12 +33,12 @@ s.addremove = true
 o = s:option(Flag, "enabled", translate("Enable"))
 o.rmempty = false
 
----- ACL Remarks
-o = s:option(Value, "aclremarks", translate("ACL Remarks"))
+---- Remarks
+o = s:option(Value, "remarks", translate("Remarks"))
 o.rmempty = true
 
 ---- IP Address
-o = s:option(Value, "ipaddr", translate("IP Address"))
+o = s:option(Value, "ip", translate("IP"))
 o.datatype = "ip4addr"
 o.rmempty = true
 
@@ -54,27 +54,19 @@ for index, key in pairs(ips) do o:value(key, temp[key]) end
 -- webadmin.cbi_add_knownips(o)
 
 ---- MAC Address
-o = s:option(Value, "macaddr", translate("MAC Address"))
+o = s:option(Value, "mac", translate("MAC"))
 o.rmempty = true
 sys.net.mac_hints(function(e, t) o:value(e, "%s " % {e}) end)
 
----- TCP Redir Server
-local tcp_redir_server_num = uci:get(appname, "@global_other[0]",
-                                     "tcp_redir_server_num")
-o = s:option(ListValue, "tcp_redir_server", translate("TCP Server"))
-o:value("1",translate("TCP Redir Server").." 1")
-if tcp_redir_server_num and tonumber(tcp_redir_server_num) >= 2 then
-    for i = 2, tcp_redir_server_num, 1 do o:value(i,translate("TCP Redir Server").." "..i) end
-end
+---- TCP Node
+local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num")
+o = s:option(ListValue, "tcp_node", translate("TCP Node"))
+for i = 1, tcp_node_num, 1 do o:value(i, "TCP_" .. i) end
 
----- UDP Redir Server
-local udp_redir_server_num = uci:get(appname, "@global_other[0]",
-                                     "udp_redir_server_num")
-o = s:option(ListValue, "udp_redir_server", translate("UDP Server"))
-o:value("1",translate("UDP Redir Server").." 1")
-if udp_redir_server_num and tonumber(udp_redir_server_num) >= 2 then
-    for i = 2, udp_redir_server_num, 1 do o:value(i,translate("UDP Redir Server").." "..i) end
-end
+---- UDP Node
+local udp_node_num = api.uci_get_type("global_other", "udp_node_num")
+o = s:option(ListValue, "udp_node", translate("UDP Node"))
+for i = 1, udp_node_num, 1 do o:value(i, "UDP_" .. i) end
 
 ---- Proxy Mode
 o = s:option(ListValue, "proxy_mode", translate("Proxy Mode"))

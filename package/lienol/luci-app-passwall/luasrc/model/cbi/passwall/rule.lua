@@ -27,50 +27,14 @@ for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update", 1)
 
--- [[ V2ray Settings ]]--
-s = m:section(TypedSection, "global_app", translate("App Update"),
-              translate("Please confirm that your firmware supports FPU."))
-s.anonymous = true
-s:append(Template("passwall/rule/v2ray_version"))
-s:append(Template("passwall/rule/kcptun_version"))
-s:append(Template("passwall/rule/brook_version"))
-
----- V2ray client path
-o = s:option(Value, "v2ray_client_file", translate("V2ray client path"),
-             translate(
-                 "if you want to run from memory, change the path, such as /tmp/v2ray/, Then save the application and update it manually."))
-o.default = "/usr/bin/v2ray/"
-o.rmempty = false
-
----- Kcptun client path
-o = s:option(Value, "kcptun_client_file", translate("Kcptun client path"),
-             translate(
-                 "if you want to run from memory, change the path, such as /tmp/kcptun-client, Then save the application and update it manually."))
-o.default = "/usr/bin/kcptun-client"
-o.rmempty = false
-
---[[
-o = s:option(Button,  "_check_kcptun",  translate("Manually update"), translate("Make sure there is enough space to install Kcptun"))
-o.template = "passwall/kcptun"
-o.inputstyle = "apply"
-o.btnclick = "onBtnClick_kcptun(this);"
-o.id = "_kcptun-check_btn"]] --
-
----- Brook client path
-o = s:option(Value, "brook_client_file", translate("Brook client path"),
-             translate(
-                 "if you want to run from memory, change the path, such as /tmp/brook, Then save the application and update it manually."))
-o.default = "/usr/bin/brook"
-o.rmempty = false
-
 -- [[ Subscribe Settings ]]--
-s = m:section(TypedSection, "global_subscribe", translate("Server Subscribe"))
+s = m:section(TypedSection, "global_subscribe", translate("Node Subscribe"))
 s.anonymous = true
 
 ---- Subscribe URL
 o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"),
              translate(
-                 "Servers unsubscribed will be deleted in next update; Please summit the Subscribe URL first before manually update."))
+                 "Please input the subscription url first, save and submit before updating. If you subscribe to update, it is recommended to delete all subscriptions and then re-subscribe."))
 
 ---- Subscribe Manually update
 o = s:option(Button, "_update", translate("Manually update"))
@@ -83,7 +47,7 @@ function o.write(e, e)
 end
 
 ---- Subscribe Delete All
-o = s:option(Button, "_stop", translate("Delete All Subscribe"))
+o = s:option(Button, "_stop", translate("Delete All Subscribe Node"))
 o.inputstyle = "remove"
 function o.write(e, e)
     luci.sys.call(
@@ -116,5 +80,39 @@ o = s:option(ListValue, "time_update_subscribe", translate("Day update rules"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update_subscribe", 1)
+
+-- [[ App Settings ]]--
+s = m:section(TypedSection, "global_app", translate("App Update"),
+              translate("Please confirm that your firmware supports FPU."))
+s.anonymous = true
+s:append(Template("passwall/rule/v2ray_version"))
+s:append(Template("passwall/rule/kcptun_version"))
+s:append(Template("passwall/rule/brook_version"))
+
+---- V2ray Path
+o = s:option(Value, "v2ray_file", translate("V2ray Path"), translate(
+                 "if you want to run from memory, change the path, such as /tmp/v2ray/, Then save the application and update it manually."))
+o.default = "/usr/bin/v2ray/"
+o.rmempty = false
+
+---- Kcptun client Path
+o = s:option(Value, "kcptun_client_file", translate("Kcptun Client Path"),
+             translate(
+                 "if you want to run from memory, change the path, such as /tmp/kcptun-client, Then save the application and update it manually."))
+o.default = "/usr/bin/kcptun-client"
+o.rmempty = false
+
+--[[
+o = s:option(Button,  "_check_kcptun",  translate("Manually update"), translate("Make sure there is enough space to install Kcptun"))
+o.template = "passwall/kcptun"
+o.inputstyle = "apply"
+o.btnclick = "onBtnClick_kcptun(this);"
+o.id = "_kcptun-check_btn"]] --
+
+---- Brook Path
+o = s:option(Value, "brook_file", translate("Brook Path"), translate(
+                 "if you want to run from memory, change the path, such as /tmp/brook, Then save the application and update it manually."))
+o.default = "/usr/bin/brook"
+o.rmempty = false
 
 return m

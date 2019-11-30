@@ -1,7 +1,6 @@
 module("luci.model.cbi.passwall.api.v2ray", package.seeall)
 local fs = require "nixio.fs"
 local sys = require "luci.sys"
-local uci = require"luci.model.uci".cursor()
 local util = require "luci.util"
 local i18n = require "luci.i18n"
 local ipkg = require("luci.model.ipkg")
@@ -20,9 +19,7 @@ local DISTRIB_TARGET = nil
 local is_armv7 = false
 
 function get_v2ray_file_path()
-    return uci:get("passwall", "global_app", "v2ray_client_file") or
-               sys.exec(
-                   "echo -n `uci get passwall.@global_app[0].v2ray_client_file`")
+    return api.uci_get_type("global_app", "v2ray_file")
 end
 
 function get_v2ray_version()

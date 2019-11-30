@@ -29,22 +29,22 @@ decode_url_link() {
 	fi
 }
 
-get_server_index(){
+get_node_index(){
 	[ -f "/etc/config/$CONFIG" ] && {
-        servers_index=$(uci show $CONFIG | grep -c "=servers")
+        nodes_index=$(uci show $CONFIG | grep -c "=nodes")
 	}	
 }
 
-get_local_servers(){
-	[ -f "/etc/config/$CONFIG" ] && [ "`uci show $CONFIG | grep -c 'sub_server'`" -gt 0 ] && {
-		get_server_index
-		for i in `seq $servers_index -1 1`
+get_local_nodes(){
+	[ -f "/etc/config/$CONFIG" ] && [ "`uci show $CONFIG | grep -c 'sub_node'`" -gt 0 ] && {
+		get_node_index
+		for i in `seq $nodes_index -1 1`
 		do
-			[ "$(uci show $CONFIG.@servers[$(($i-1))]|grep -c "sub_server")" -eq 1 ] && {
-				if [ ! -f "/usr/share/${CONFIG}/sub/all_localservers" ]; then
-					echo $(config_t_get servers server $(($i-1))) > /usr/share/${CONFIG}/sub/all_localservers
+			[ "$(uci show $CONFIG.@nodes[$(($i-1))]|grep -c "sub_node")" -eq 1 ] && {
+				if [ ! -f "/usr/share/${CONFIG}/sub/all_localnodes" ]; then
+					echo $(config_t_get nodes address $(($i-1))) > /usr/share/${CONFIG}/sub/all_localnodes
 				else
-					echo $(config_t_get servers server $(($i-1))) >> /usr/share/${CONFIG}/sub/all_localservers
+					echo $(config_t_get nodes address $(($i-1))) >> /usr/share/${CONFIG}/sub/all_localnodes
 				fi
 			}
 		done
@@ -52,20 +52,19 @@ get_local_servers(){
 }
 
 get_remote_config(){
-	remarks="(订阅)"
-	[ -n "$3" ] && remarks="(导入)"
-	group="sub_server"
+	add_mode="订阅"
+	[ -n "$3" ] && add_mode="导入"
+	group="sub_node"
 	if [ "$1" == "ss" ]; then
 		decode_link="$2"
-		server=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $2}')
-		server_port=$(echo "$decode_link" | awk -F ':' '{print $3}')
+		node_address=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $2}')
+		node_port=$(echo "$decode_link" | awk -F ':' '{print $3}')
 		ssr_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		password=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $1}')
-		server_host=$server
 	elif [ "$1" == "ssr" ]; then
 		decode_link="$2"
-		server=$(echo "$decode_link" | awk -F ':' '{print $1}')
-		server_port=$(echo "$decode_link" | awk -F ':' '{print $2}')
+		node_address=$(echo "$decode_link" | awk -F ':' '{print $1}')
+		node_port=$(echo "$decode_link" | awk -F ':' '{print $2}')
 		protocol=$(echo "$decode_link" | awk -F ':' '{print $3}')
 		ssr_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $4}')
 		obfs=$(echo "$decode_link" | awk -F ':' '{print $5}')
@@ -78,13 +77,12 @@ get_remote_config(){
 		remarks_temp=$(echo "$decode_link" |grep -Eo "remarks.+" |sed 's/remarks=//g'|awk -F'&' '{print $1}')
 		[ -n "$remarks_temp" ] && remarks="${remarks}$(decode_url_link $remarks_temp 0)"
 		group_temp=$(echo "$decode_link" |grep -Eo "group.+" |sed 's/group=//g'|awk -F'&' '{print $1}')
-		server_host=$server
 	elif [ "$1" == "v2ray" ]; then
 		json_load "$2"
 		json_get_var json_v v
 		json_get_var json_ps ps
-		json_get_var json_server add
-		json_get_var json_server_port port
+		json_get_var json_node_address add
+		json_get_var json_node_port port
 		json_get_var json_id id
 		json_get_var json_aid aid
 		json_get_var json_security security
@@ -101,34 +99,35 @@ get_remote_config(){
 			json_tls="none"
 		fi
 		
-		remarks="${remarks}${json_ps}"
-		server_host=$json_server
+		remarks="${json_ps}"
+		node_address=$json_node_address
 	fi
 	
-	# 把全部服务器节点写入文件 /usr/share/${CONFIG}/sub/all_onlineservers
-	if [ ! -f "/usr/share/${CONFIG}/sub/all_onlineservers" ]; then
-		echo $server_host > /usr/share/${CONFIG}/sub/all_onlineservers
+	# 把全部服务器节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
+	if [ ! -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ]; then
+		echo $node_address > /usr/share/${CONFIG}/sub/all_onlinenodes
 	else
-		echo $server_host >> /usr/share/${CONFIG}/sub/all_onlineservers
+		echo $node_address >> /usr/share/${CONFIG}/sub/all_onlinenodes
 	fi
 	
 }
 
-add_servers(){
-	get_server_index
-	uci_set="uci set $CONFIG.@servers[$servers_index]."
-	uci add $CONFIG servers > /dev/null
+add_nodes(){
+	get_node_index
+	uci_set="uci set $CONFIG.@nodes[$nodes_index]."
+	uci add $CONFIG nodes > /dev/null
 	[ -z "$3" ] && ${uci_set}group="$group"
 	if [ "$2" == "ss" ]; then
+		${uci_set}add_mode="$add_mode"
 		${uci_set}remarks="$remarks"
-		${uci_set}server_type="SSR"
-		${uci_set}server="$server_host"
+		${uci_set}type="SSR"
+		${uci_set}address="$node_address"
 		${uci_set}use_ipv6=0
-		${uci_set}server_port="$server_port"
+		${uci_set}port="$node_port"
 		${uci_set}password="$password"
 		${uci_set}ssr_encrypt_method="$ssr_encrypt_method"
 		${uci_set}timeout=300
-		${uci_set}fast_open=false
+		${uci_set}tcp_fast_open=false
 		
 		if [ "$1" == "add" ]; then
 			let addnum_ss+=1
@@ -137,11 +136,12 @@ add_servers(){
 		fi
 		
 	elif [ "$2" == "ssr" ]; then
+		${uci_set}add_mode="$add_mode"
 		${uci_set}remarks="$remarks"
-		${uci_set}server_type="SSR"
-		${uci_set}server="$server_host"
+		${uci_set}type="SSR"
+		${uci_set}address="$node_address"
 		${uci_set}use_ipv6=0
-		${uci_set}server_port="$server_port"
+		${uci_set}port="$node_port"
 		${uci_set}password="$password"
 		${uci_set}ssr_encrypt_method="$ssr_encrypt_method"
 		${uci_set}protocol="$protocol"
@@ -149,7 +149,7 @@ add_servers(){
 		${uci_set}obfs="$obfs"
 		${uci_set}obfs_param="$obfsparam"
 		${uci_set}timeout=300
-		${uci_set}fast_open=false
+		${uci_set}tcp_fast_open=false
 		
 		if [ "$1" == "add" ]; then
 			let addnum_ssr+=1
@@ -158,12 +158,13 @@ add_servers(){
 		fi
 		
 	elif [ "$2" == "v2ray" ]; then
+		${uci_set}add_mode="$add_mode"
 		${uci_set}remarks="$remarks"
-		${uci_set}server_type="V2ray"
+		${uci_set}type="V2ray"
 		${uci_set}v2ray_protocol="vmess"
-		${uci_set}server="$json_server"
+		${uci_set}address="$node_address"
 		${uci_set}use_ipv6=0
-		${uci_set}server_port="$json_server_port"
+		${uci_set}port="$json_node_port"
 		${uci_set}v2ray_security="auto"
 		${uci_set}v2ray_VMess_id="$json_id"
 		${uci_set}v2ray_VMess_alterId="$json_aid"
@@ -187,34 +188,34 @@ add_servers(){
 }
 
 update_config(){
-	isadded_server=$(uci show $CONFIG | grep -c "remarks='$remarks'")
-	if [ "$isadded_server" -eq 0 ]; then
-		add_servers add "$link_type"
+	isadded_address=$(uci show $CONFIG | grep -c "remarks='$remarks'")
+	if [ "$isadded_address" -eq 0 ]; then
+		add_nodes add "$link_type"
 	else
 		index=$(uci show $CONFIG | grep -w "remarks='$remarks'" | cut -d '[' -f2|cut -d ']' -f1)
-		local_server_port=$(config_t_get servers server_port $index)
-		local_vmess_id=$(config_t_get servers v2ray_VMess_id $index)
+		local_port=$(config_t_get nodes port $index)
+		local_vmess_id=$(config_t_get nodes v2ray_VMess_id $index)
 		
-		uci delete $CONFIG.@servers[$index]
-		add_servers update "$link_type"
+		uci delete $CONFIG.@nodes[$index]
+		add_nodes update "$link_type"
 	fi
 }
 
 del_config(){
 	# 删除订阅服务器已经不存在的节点
-	for localserver in $(cat /usr/share/${CONFIG}/sub/all_localservers)
+	for localaddress in $(cat /usr/share/${CONFIG}/sub/all_localnodes)
 	do
-		[ "`cat /usr/share/${CONFIG}/sub/all_onlineservers |grep -c "$localserver"`" -eq 0 ] && {
-			for localindex in $(uci show $CONFIG|grep -w "$localserver" |grep -w "server=" |cut -d '[' -f2|cut -d ']' -f1)
+		[ "`cat /usr/share/${CONFIG}/sub/all_onlinenodes |grep -c "$localaddress"`" -eq 0 ] && {
+			for localindex in $(uci show $CONFIG|grep -w "$localaddress" |grep -w "address=" |cut -d '[' -f2|cut -d ']' -f1)
 			do
-				del_server_type=$(uci get $CONFIG.@servers[$localindex].server_type)
-				uci delete $CONFIG.@servers[$localindex]
+				del_type=$(uci get $CONFIG.@nodes[$localindex].type)
+				uci delete $CONFIG.@nodes[$localindex]
 				uci commit $CONFIG
-				if [ "$del_server_type" == "SS" ]; then
+				if [ "$del_type" == "SS" ]; then
 					let delnum_ss+=1 #删除该节点
-				elif [ "$del_server_type" == "SSR" ]; then
+				elif [ "$del_type" == "SSR" ]; then
 					let delnum_ssr+=1 #删除该节点
-				elif [ "$del_server_type" == "V2ray" ]; then
+				elif [ "$del_type" == "V2ray" ]; then
 					let delnum_v2ray+=1 #删除该节点
 				fi
 				
@@ -224,16 +225,16 @@ del_config(){
 }
 
 del_all_config(){
-	get_server_index
-	[ "`uci show $CONFIG | grep -c 'sub_server'`" -eq 0 ] && exit 0
-	current_tcp_redir_server1=$(config_t_get global tcp_redir_server1)
-	is_sub_server=`uci -q get $CONFIG.$current_tcp_redir_server1.group`
-	for i in `seq $servers_index -1 1`
+	get_node_index
+	[ "`uci show $CONFIG | grep -c 'sub_node'`" -eq 0 ] && exit 0
+	current_tcp_node1=$(config_t_get global tcp_node1)
+	is_sub_node=`uci -q get $CONFIG.$current_tcp_node1.group`
+	for i in `seq $nodes_index -1 1`
 	do
-		[ "$(uci show $CONFIG.@servers[$(($i-1))] | grep -c 'sub_server')" -eq 1 ] && uci delete $CONFIG.@servers[$(($i-1))] && uci commit $CONFIG
+		[ "$(uci show $CONFIG.@nodes[$(($i-1))] | grep -c 'sub_node')" -eq 1 ] && uci delete $CONFIG.@nodes[$(($i-1))] && uci commit $CONFIG
 	done
-	[ -n "$is_sub_server" ] && {
-		uci set $CONFIG.global[0].tcp_redir_server1="nil"
+	[ -n "$is_sub_node" ] && {
+		uci set $CONFIG.global[0].tcp_node1="nil"
 		uci commit $CONFIG && /etc/init.d/$CONFIG stop
 	}
 }
@@ -261,7 +262,7 @@ add() {
 			get_remote_config "$link_type" "$decode_link" 1
 			update_config
 		done
-		[ -f "/usr/share/${CONFIG}/sub/all_onlineservers" ] && rm -f /usr/share/${CONFIG}/sub/all_onlineservers
+		[ -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ] && rm -f /usr/share/${CONFIG}/sub/all_onlinenodes
 	}
 	rm -f /tmp/links.conf
 	rm -f "$LOCK_FILE"
@@ -290,7 +291,7 @@ start() {
 	[ ! -d "/var/${CONFIG}_sub" ] || [ "$(ls /var/${CONFIG}_sub | wc -l)" -eq 0 ] && echo "$Date: 订阅链接下载失败，请重试！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
 	
 	mkdir -p /usr/share/${CONFIG}/sub && rm -f /usr/share/${CONFIG}/sub/*
-	get_local_servers
+	get_local_nodes
 	for file in /var/${CONFIG}_sub/*
 	do
 		[ -z "$(du -sh $file 2> /dev/null)" ] && echo "$Date: 订阅链接下载 $file 失败，请重试！" >> $LOG_FILE && continue
@@ -321,7 +322,7 @@ start() {
 			update_config
 		done
 	done
-	[ -f "/usr/share/${CONFIG}/sub/all_localservers" ] && del_config
+	[ -f "/usr/share/${CONFIG}/sub/all_localnodes" ] && del_config
 	echo "$Date: 本次更新，SS新增服务器节点 $addnum_ss 个，修改 $updatenum_ss 个，删除 $delnum_ss 个。" >> $LOG_FILE
 	echo "$Date: 本次更新，SSR新增服务器节点 $addnum_ssr 个，修改 $updatenum_ssr 个，删除 $delnum_ssr 个。" >> $LOG_FILE
 	echo "$Date: 本次更新，V2ray新增服务器节点 $addnum_v2ray 个，修改 $updatenum_v2ray 个，删除 $delnum_v2ray 个。" >> $LOG_FILE
@@ -331,7 +332,7 @@ start() {
 }
 
 stop() {
-	[ "`uci show $CONFIG | grep -c 'sub_server'`" -gt 0 ] && {
+	[ "`uci show $CONFIG | grep -c 'sub_node'`" -gt 0 ] && {
 		echo "$Date: 在线订阅节点已全部删除" >> $LOG_FILE
 		del_all_config
 	}

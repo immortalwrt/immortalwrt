@@ -6,8 +6,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
-PKG_VERSION:=2.0
-PKG_RELEASE:=103-20191120
+PKG_VERSION:=3.0
+PKG_RELEASE:=113-20191129
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PO2LMO:=./po2lmo
@@ -77,7 +77,7 @@ endmenu
 endef
 
 define Package/$(PKG_NAME)
-  CATEGORY:=LuCI
+  CATEGORY:=LuCI for Lienol
   SUBMENU:=3. Applications
   TITLE:=LuCI support for PassWall By Lienol
   PKGARCH:=all

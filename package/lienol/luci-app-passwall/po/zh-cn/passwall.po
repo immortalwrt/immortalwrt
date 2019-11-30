@@ -34,6 +34,12 @@ msgstr "连接正常"
 msgid "Problem detected!"
 msgstr "连接失败"
 
+msgid "Touch Check"
+msgstr "点我检测"
+
+msgid "Kernel Unsupported"
+msgstr "内核不支持"
+
 msgid "Use IPv6"
 msgstr "使用IPv6"
 
@@ -46,11 +52,14 @@ msgstr "TCP服务器"
 msgid "UDP Server"
 msgstr "UDP服务器"
 
+msgid "Global Settings"
+msgstr "全局设置"
+
 msgid "Basic Settings"
 msgstr "基本设置"
 
-msgid "Server List"
-msgstr "服务端列表"
+msgid "Node List"
+msgstr "节点列表"
 
 msgid "Other Settings"
 msgstr "高级设置"
@@ -73,14 +82,11 @@ msgstr "白名单设置"
 msgid "Watch Logs"
 msgstr "查看日志"
 
-msgid "ShadowSocks Server Config"
-msgstr "服务器配置"
+msgid "Node Config"
+msgstr "节点配置"
 
 msgid "Running Status"
 msgstr "运行状态"
-
-msgid "Kcptun Client"
-msgstr "Kcptun客户端"
 
 msgid "Baidu Connection"
 msgstr "百度连接"
@@ -100,29 +106,17 @@ msgstr "清除"
 msgid "Global Setting"
 msgstr "全局配置"
 
-msgid "TCP Redir Server"
-msgstr "TCP转发服务器"
+msgid "TCP Node"
+msgstr "TCP节点"
 
-msgid "UDP Redir Server"
-msgstr "UDP转发服务器"
+msgid "UDP Node"
+msgstr "UDP节点"
 
-msgid "Same as the tcp redir server"
-msgstr "与TCP转发服务器相同"
+msgid "Socks5 Node"
+msgstr "Socks5节点"
 
-msgid "Start the TCP redir"
-msgstr "TCP转发"
-
-msgid "Start the UDP redir"
-msgstr "UDP转发"
-
-msgid "Start the Socks5 Proxy"
-msgstr "Socks5代理"
-
-msgid "The client can use the router's Socks5 proxy"
-msgstr "客户端可以使用路由器的Socks5代理"
-
-msgid "Socks5 Proxy Server"
-msgstr "Socks5代理服务器"
+msgid "Same as the tcp node"
+msgstr "与TCP节点相同"
 
 msgid "For used to surf the Internet."
 msgstr "用于科学上网。"
@@ -132,6 +126,9 @@ msgstr "用于游戏模式或DNS解析等。"
 
 msgid "The selected server will not use Kcptun."
 msgstr "选中的服务器不会使用Kcptun。"
+
+msgid "The client can use the router's Socks5 proxy"
+msgstr "客户端可以使用路由器的Socks5代理"
 
 msgid "Use Local 7913 Port"
 msgstr "使用本机7913端口"
@@ -199,11 +196,11 @@ msgstr "本机"
 msgid "Danger"
 msgstr "危险"
 
-msgid "Add Server"
-msgstr "添加服务器"
+msgid "Add Node"
+msgstr "添加节点"
 
-msgid "Add the server via the link"
-msgstr "通过链接添加服务器"
+msgid "Add the node via the link"
+msgstr "通过链接添加节点"
 
 msgid "Please Enter The SS/SSR/V2ray Link"
 msgstr "请输入SS/SSR/V2ray链接"
@@ -220,23 +217,26 @@ msgstr "服务器吗？"
 msgid "The server client can also use this rule to scientifically surf the Internet"
 msgstr "本机服务器的客户端也可以使用这个代理模式上网"
 
-msgid "Servers List"
-msgstr "服务器列表"
-
 msgid "Node Remarks"
 msgstr "节点备注"
 
-msgid "Server Type"
+msgid "Add Mode"
+msgstr "添加方式"
+
+msgid "Type"
 msgstr "类型"
 
-msgid "Server Address"
+msgid "Address"
 msgstr "地址"
 
-msgid "Server Address (Support Domain Name)"
+msgid "Address (Support Domain Name)"
 msgstr "地址（支持域名）"
 
-msgid "Server Port"
-msgstr "端口"
+msgid "Trojan Verify Cert"
+msgstr "验证证书"
+
+msgid "Trojan Cert Path"
+msgstr "证书路径"
 
 msgid "Encrypt Method"
 msgstr "加密"
@@ -253,11 +253,14 @@ msgstr "Ping值"
 msgid "Auto Ping"
 msgstr "自动Ping"
 
-msgid "This will automatically ping the server for latency"
-msgstr "选中后保存应用后刷新即可自动Ping服务器"
+msgid "This will automatically ping the node for latency"
+msgstr "选中后保存应用后刷新即可自动Ping节点"
 
 msgid "Apply"
 msgstr "应用"
+
+msgid "Use"
+msgstr "使用"
 
 msgid "DNS Settings"
 msgstr "DNS配置"
@@ -283,17 +286,20 @@ msgstr "百度"
 msgid "DNS Export Of Multi WAN"
 msgstr "国内DNS指定解析出口"
 
+msgid "Node Export Of Multi WAN"
+msgstr "节点指定出口"
+
+msgid "Only support Multi Wan. If no effect, please go to mwan3 to set."
+msgstr "只有多线接入才有效，如果设置后还是无效，请到mwan3设置。"
+
 msgid "Not Specify"
 msgstr "不指定"
 
 msgid "DNS Hijack"
-msgstr "接管局域网DNS解析"
+msgstr "DNS劫持"
 
 msgid "If the GFW mode cannot be used normally, please enable it"
 msgstr "如果GFW模式不能正常使用，请启用"
-
-msgid "Designated Export for Client"
-msgstr "客户端指定出口"
 
 msgid "Delay Settings"
 msgstr "定时配置"
@@ -326,10 +332,10 @@ msgid "Forwarding Settings"
 msgstr "转发配置"
 
 msgid "TCP Redir Ports"
-msgstr "TCP代理转发端口"
+msgstr "TCP转发端口"
 
 msgid "UDP Redir Ports"
-msgstr "UDP代理转发端口"
+msgstr "UDP转发端口"
 
 msgid "All"
 msgstr "所有"
@@ -367,9 +373,6 @@ msgstr "自定义Dnsmasq设置"
 msgid "Setting a parameter error will cause dnsmasq fail to start."
 msgstr "参数设置错误将会导致Dnsmasq无法启动。"
 
-msgid "Click here to setting your Load Balancing"
-msgstr "点击这里查看负载均衡设置教程。"
-
 msgid "Auto Switch"
 msgstr "自动切换"
 
@@ -388,50 +391,53 @@ msgstr "备用TCP转发服务器的列表"
 msgid "Load Balancing Setting"
 msgstr "负载均衡设置"
 
-msgid "Enable or Disable Load Balancing"
-msgstr "开启或关闭负载均衡"
+msgid "Click here to setting your Load Balancing"
+msgstr "点击这里查看负载均衡设置教程。"
 
-msgid "Haproxy port setting"
-msgstr "负载均衡服务器端口"
+msgid "Enable Load Balancing"
+msgstr "开启负载均衡"
 
-msgid "Admin Status"
-msgstr "负载均衡控制台"
+msgid "Console Username"
+msgstr "控制台账号"
+
+msgid "Console Password"
+msgstr "控制台密码"
+
+msgid "Console Port"
+msgstr "控制台端口"
 
 msgid "In the browser input routing IP plus port access, such as:192.168.1.1:1188"
 msgstr "在浏览器输入路由IP加端口访问，如：192.168.1.1:1188"
 
-msgid "Enable Admin Status"
-msgstr "开启控制台"
+msgid "Haproxy Port"
+msgstr "负载均衡端口"
 
-msgid "Admin Status port setting"
-msgstr "控制台端口"
+msgid "Load Balancing Setting"
+msgstr "负载均衡设置"
 
-msgid "Admin Status User"
-msgstr "登陆用户名"
+msgid "Add a node, Export Of Multi WAN Only support Multi Wan. If no effect, please go to mwan3 to set. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"
+msgstr "添加节点，指定出口功能是为多WAN用户准备的，如果设置后还是无效，请到mwan3设置。负载比重范围1-256。多个主服务器可以负载均衡，备用只有在主服务器离线时才会启用！"
 
-msgid "Admin Status Password"
-msgstr "登陆密码"
+msgid "Node Address"
+msgstr "节点地址"
 
-msgid "Load Balancing Server Setting"
-msgstr "负载均衡服务器设置"
+msgid "Node Port"
+msgstr "节点端口"
 
-msgid "Add a load balancing server, note reading above requirements."
-msgstr "添加负载均衡服务器，指定出口功能是为多WAN用户准备的。负载比重范围1-256。多个主服务器可以负载均衡，备服务器只有在主服务器离线时才会启用！"
-
-msgid "Server weight"
+msgid "Node Weight"
 msgstr "负载比重"
 
 msgid "Export Of Multi WAN"
 msgstr "多WAN指定出口"
 
-msgid "Server Mode"
-msgstr "服务器模式"
+msgid "Mode"
+msgstr "模式"
 
-msgid "Primary Server"
-msgstr "主服务器"
+msgid "Primary"
+msgstr "主要"
 
-msgid "Standby Server"
-msgstr "备服务器"
+msgid "Standby"
+msgstr "备用"
 
 msgid "Manually update"
 msgstr "手动更新"
@@ -496,13 +502,13 @@ msgstr "更新主程序"
 msgid "Please confirm that your firmware supports FPU."
 msgstr "请确认你的固件支持FPU。"
 
-msgid "V2ray client path"
-msgstr "V2ray客户端路径"
+msgid "V2ray Path"
+msgstr "V2ray路径"
 
 msgid "if you want to run from memory, change the path, such as /tmp/v2ray/, Then save the application and update it manually."
 msgstr "如果你希望从内存中运行，请更改路径，例如/tmp/v2ray/，然后保存应用后，再手动更新。"
 
-msgid "Kcptun client path"
+msgid "Kcptun Client Path"
 msgstr "Kcptun客户端路径"
 
 msgid "if you want to run from memory, change the path, such as /tmp/kcptun-client, Then save the application and update it manually."
@@ -511,23 +517,23 @@ msgstr "如果你希望从内存中运行，请更改路径，例如/tmp/kcptun-
 msgid "Make sure there is enough space to install Kcptun"
 msgstr "确保有足够的空间安装Kcptun"
 
-msgid "Brook client path"
-msgstr "Brook客户端路径"
+msgid "Brook Path"
+msgstr "Brook路径"
 
 msgid "if you want to run from memory, change the path, such as /tmp/brook, Then save the application and update it manually."
 msgstr "如果你希望从内存中运行，请更改路径，例如/tmp/brook，然后保存应用后，再手动更新。"
 
-msgid "Server Subscribe"
-msgstr "服务器订阅"
+msgid "Node Subscribe"
+msgstr "节点订阅"
 
 msgid "Subscribe URL"
 msgstr "订阅网址"
 
-msgid "Servers unsubscribed will be deleted in next update; Please summit the Subscribe URL first before manually update."
-msgstr "取消订阅的服务器将在下次更新时删除，请先输入订阅网址保存提交之后再更新。"
+msgid "Please input the subscription url first, save and submit before updating. If you subscribe to update, it is recommended to delete all subscriptions and then re-subscribe."
+msgstr "请输入订阅网址保存应用后再更新，如果订阅节点更新了，建议删除所有订阅，然后重新订阅。"
 
-msgid "Delete All Subscribe"
-msgstr "删除所有订阅"
+msgid "Delete All Subscribe Node"
+msgstr "删除所有订阅节点"
 
 msgid "Subscribe via proxy"
 msgstr "通过代理订阅"
@@ -541,17 +547,11 @@ msgstr "添加"
 msgid "ACLs"
 msgstr "访问控制"
 
-msgid "ACLs is a tools which used to designate specific IP proxy mode"
+msgid "ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered."
 msgstr "访问控制列表是用于指定特殊IP代理模式的工具。IP、MAC地址可只填写一项。"
 
-msgid "ACL Remarks"
-msgstr "主机备注"
-
-msgid "IP Address"
-msgstr "内部IP地址"
-
-msgid "MAC Address"
-msgstr "MAC地址"
+msgid "Remarks"
+msgstr "备注"
 
 msgid "Set Blacklist And Whitelist"
 msgstr "黑白名单"
@@ -592,8 +592,8 @@ msgstr "这里显示的是最近的日志。"
 msgid "Clear logs"
 msgstr "清空日志"
 
-msgid "TCP quick open server does not support do not open."
-msgstr "TCP快速打开服务器不支持不要打开。"
+msgid "Need node support required"
+msgstr "需要节点支持"
 
 msgid "HAProxy cannot be used with KCP."
 msgstr "HAProxy不能和KCP一起使用"
@@ -607,8 +607,11 @@ msgstr "连接超时时间"
 msgid "Local Port"
 msgstr "本地端口"
 
-msgid "Fast_open"
+msgid "TCP Fast Open"
 msgstr "TCP快速打开"
+
+msgid "Need node support required"
+msgstr "需要节点支持"
 
 msgid "Protocol"
 msgstr "协议名称"
@@ -673,6 +676,9 @@ msgstr "传输层加密"
 msgid "Whether or not transport layer encryption is enabled, the supported options are \"none\" for unencrypted (default) and \"TLS\" for using TLS."
 msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密（默认值），\"tls\" 表示使用 TLS。"
 
+msgid "Domain"
+msgstr "域名"
+
 msgid "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."
 msgstr "是否允许不安全连接。当勾选时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。"
 
@@ -682,17 +688,35 @@ msgstr "<br>none：默认值，不进行伪装，发送的数据是没有特征�
 msgid "A legal file path. This file must not exist before running V2Ray."
 msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
 
-msgid "TCP Redir Server Number"
-msgstr "TCP转发服务器数量"
+msgid "TCP Open Socks"
+msgstr "开启Socks"
 
-msgid "UDP Redir Server Number"
-msgstr "UDP转发服务器数量"
+msgid "When using this TCP node, whether to open the socks proxy at the same time"
+msgstr "使用此TCP节点时，是否同时打开socks代理"
 
-msgid "Socks5 Proxy Server Number"
-msgstr "Socks5代理服务器数量"
+msgid "Do not conflict with other ports"
+msgstr "端口不能冲突"
 
-msgid "You can only set up a maximum of %s servers for the time being"
-msgstr "目前最多只能设置%s个服务器"
+msgid "Socks for authentication"
+msgstr "Socks认证方式"
+
+msgid "Socks protocol authentication, support anonymous and password."
+msgstr "Socks 协议的认证方式，支持匿名方式和账号密码方式。"
+
+msgid "anonymous"
+msgstr "匿名"
+
+msgid "User Password"
+msgstr "账号密码"
+
+msgid "Node Number"
+msgstr "节点数量"
+
+msgid "You can only set up a maximum of %s nodes for the time being"
+msgstr "目前最多只能设置%s个节点"
+
+msgid "Status Use Big Icon"
+msgstr "状态信息使用大图标"
 
 msgid "Hide Menu"
 msgstr "隐藏菜单"
@@ -729,9 +753,3 @@ msgstr "客户端文件不适合当前设备。"
 
 msgid "Can't move new file to path: %s"
 msgstr "无法移动新文件到：%s"
-
-msgid "NOT RUNNING"
-msgstr "未运行"
-
-msgid "RUNNING"
-msgstr "运行中"

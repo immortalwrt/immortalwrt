@@ -1,17 +1,12 @@
 <%
-local appname = "passwall"
-local ipkg = require "luci.model.ipkg"
+local api = require "luci.model.cbi.passwall.api.api"
 local dsp = require "luci.dispatcher"
-local uci = require "luci.model.uci".cursor()
-local gfwlist_version = uci:get(appname,"@global_rules[0]","gfwlist_version")
-local chnroute_version = uci:get(appname,"@global_rules[0]","chnroute_version")
-local Pcap_Routing_version = uci:get(appname,"@global_rules[0]","pcap_Routing_version")
-local Pcap_WhiteList_version = uci:get(appname,"@global_rules[0]","pcap_WhiteList_version")
 
-local gfwlist_update = uci:get(appname,"@global_rules[0]","gfwlist_update")=="1" and "checked='checked'" or ""
-local chnroute_update = uci:get(appname,"@global_rules[0]","chnroute_update")=="1" and "checked='checked'" or ""
-local Pcap_Routing_update = uci:get(appname,"@global_rules[0]","pcap_Routing_update")=="1" and "checked='checked'" or ""
-local Pcap_WhiteList_update = uci:get(appname,"@global_rules[0]","pcap_WhiteList_update")=="1" and "checked='checked'" or ""
+local gfwlist_version = api.uci_get_type("global_rules", "gfwlist_version")
+local chnroute_version = api.uci_get_type("global_rules", "chnroute_version")
+
+local gfwlist_update = api.uci_get_type("global_rules", "gfwlist_update") == "1" and "checked='checked'" or ""
+local chnroute_update = api.uci_get_type("global_rules", "chnroute_update") == "1" and "checked='checked'" or ""
 -%>
 
 <script type="text/javascript">
@@ -73,34 +68,6 @@ local Pcap_WhiteList_update = uci:get(appname,"@global_rules[0]","pcap_WhiteList
 				</div>
 			</div>
 		</div>
-
-		<% if ipkg.installed("pcap-dnsproxy") then %>
-		<div class="cbi-value">
-			<label class="cbi-value-title">Pcap_Routing
-				<%:Version%>
-			</label>
-			<div class="cbi-value-field">
-				<div class="cbi-value-description">
-					<img src="/luci-static/resources/cbi/help.gif">
-					<span>【 <%=Pcap_Routing_version%> 】</span>
-					<input type="checkbox" name="Pcap_Routing_update" value="1" <%=Pcap_Routing_update%> />
-				</div>
-			</div>
-		</div>
-
-		<div class="cbi-value">
-			<label class="cbi-value-title">Pcap_WhiteList
-				<%:Version%>
-			</label>
-			<div class="cbi-value-field">
-				<div class="cbi-value-description">
-					<img src="/luci-static/resources/cbi/help.gif">
-					<span>【 <%=Pcap_WhiteList_version%> 】</span>
-					<input type="checkbox" name="Pcap_WhiteList_update" value="1" <%=Pcap_WhiteList_update%> />
-				</div>
-			</div>
-		</div>
-		<% end %>
 
 		<div class="cbi-value">
 			<label class="cbi-value-title">
