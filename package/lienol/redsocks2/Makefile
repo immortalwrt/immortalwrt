@@ -27,7 +27,7 @@ define Package/redsocks2
 	CATEGORY:=Network
 	TITLE:=Redirect any TCP connection to a SOCKS or HTTPS proxy server
 	URL:=https://github.com/semigodking/redsocks
-	DEPENDS:=+libevent2 +libopenssl
+	DEPENDS:=+libevent2 +libpolarssl
 endef
 
 define Package/redsocks2/description
@@ -40,9 +40,9 @@ define Package/redsocks2/conffiles
 /etc/config/redsocks2
 endef
 
-#define Build/Compile
-#	$(call Build/Compile/Default,ENABLE_HTTPS_PROXY=true)
-#endef
+define Build/Compile
+	$(call Build/Compile/Default,USE_CRYPTO_POLARSSL=true)
+endef
 
 define Package/redsocks2/install
 	$(INSTALL_DIR) $(1)/usr/sbin
