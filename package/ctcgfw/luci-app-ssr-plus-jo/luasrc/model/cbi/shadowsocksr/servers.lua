@@ -12,7 +12,7 @@ end)
 local fs  = require "nixio.fs"
 local sys = require "luci.sys"
 
-m = Map(shadowsocksr,  translate("Servers subscription and manage"))
+m = Map(shadowsocksr)
 m:section(SimpleSection).template  = "shadowsocksr/status"
 
 
