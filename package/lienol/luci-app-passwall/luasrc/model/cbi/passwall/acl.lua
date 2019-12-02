@@ -59,12 +59,12 @@ o.rmempty = true
 sys.net.mac_hints(function(e, t) o:value(e, "%s " % {e}) end)
 
 ---- TCP Node
-local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num")
+local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 o = s:option(ListValue, "tcp_node", translate("TCP Node"))
 for i = 1, tcp_node_num, 1 do o:value(i, "TCP_" .. i) end
 
 ---- UDP Node
-local udp_node_num = api.uci_get_type("global_other", "udp_node_num")
+local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 o = s:option(ListValue, "udp_node", translate("UDP Node"))
 for i = 1, udp_node_num, 1 do o:value(i, "UDP_" .. i) end
 

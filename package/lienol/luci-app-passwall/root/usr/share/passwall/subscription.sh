@@ -52,6 +52,7 @@ get_local_nodes(){
 }
 
 get_remote_config(){
+	isAdd=1
 	add_mode="订阅"
 	[ -n "$3" ] && add_mode="导入"
 	group="sub_node"
@@ -64,6 +65,8 @@ get_remote_config(){
 	elif [ "$1" == "ssr" ]; then
 		decode_link="$2"
 		node_address=$(echo "$decode_link" | awk -F ':' '{print $1}')
+		node_address=$(echo $node_address |awk '{print gensub(/[^!-~]/,"","g",$0)}')
+		[ -z "$node_address" -o "$node_address" == "" ] && isAdd=0
 		node_port=$(echo "$decode_link" | awk -F ':' '{print $2}')
 		protocol=$(echo "$decode_link" | awk -F ':' '{print $3}')
 		ssr_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $4}')
@@ -75,7 +78,7 @@ get_remote_config(){
 		protoparam_temp=$(echo "$decode_link" |grep -Eo "protoparam.+" |sed 's/protoparam=//g'|awk -F'&' '{print $1}')
 		[ -n "$protoparam_temp" ] && protoparam=$(decode_url_link $protoparam_temp 0) || protoparam=''
 		remarks_temp=$(echo "$decode_link" |grep -Eo "remarks.+" |sed 's/remarks=//g'|awk -F'&' '{print $1}')
-		[ -n "$remarks_temp" ] && remarks="${remarks}$(decode_url_link $remarks_temp 0)"
+		[ -n "$remarks_temp" ] && remarks="$(decode_url_link $remarks_temp 0)"
 		group_temp=$(echo "$decode_link" |grep -Eo "group.+" |sed 's/group=//g'|awk -F'&' '{print $1}')
 	elif [ "$1" == "v2ray" ]; then
 		json_load "$2"
@@ -188,17 +191,19 @@ add_nodes(){
 }
 
 update_config(){
-	isadded_address=$(uci show $CONFIG | grep -c "remarks='$remarks'")
-	if [ "$isadded_address" -eq 0 ]; then
-		add_nodes add "$link_type"
-	else
-		index=$(uci show $CONFIG | grep -w "remarks='$remarks'" | cut -d '[' -f2|cut -d ']' -f1)
-		local_port=$(config_t_get nodes port $index)
-		local_vmess_id=$(config_t_get nodes v2ray_VMess_id $index)
-		
-		uci delete $CONFIG.@nodes[$index]
-		add_nodes update "$link_type"
-	fi
+	[ "$isAdd" == 1 ] && {
+		isadded_address=$(uci show $CONFIG | grep -c "remarks='$remarks'")
+		if [ "$isadded_address" -eq 0 ]; then
+			add_nodes add "$link_type"
+		else
+			index=$(uci show $CONFIG | grep -w "remarks='$remarks'" | cut -d '[' -f2|cut -d ']' -f1)
+			local_port=$(config_t_get nodes port $index)
+			local_vmess_id=$(config_t_get nodes v2ray_VMess_id $index)
+			
+			uci delete $CONFIG.@nodes[$index]
+			add_nodes update "$link_type"
+		fi
+	}
 }
 
 del_config(){

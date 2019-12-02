@@ -32,7 +32,7 @@ table.sort(key_table)
 
 m = Map(appname)
 local status_use_big_icon = api.uci_get_type("global_other",
-                                             "status_use_big_icon")
+                                             "status_use_big_icon", 1)
 if status_use_big_icon and status_use_big_icon == "1" then
     m:append(Template("passwall/global/status"))
 else
@@ -45,7 +45,7 @@ s.anonymous = true
 s.addremove = false
 
 ---- TCP Node
-local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num")
+local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 for i = 1, tcp_node_num, 1 do
     if i == 1 then
         o = s:option(ListValue, "tcp_node" .. i, translate("TCP Node"),
@@ -59,7 +59,7 @@ for i = 1, tcp_node_num, 1 do
 end
 
 ---- UDP Node
-local udp_node_num = api.uci_get_type("global_other", "udp_node_num")
+local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 for i = 1, udp_node_num, 1 do
     if i == 1 then
         o = s:option(ListValue, "udp_node" .. i, translate("UDP Node"),
@@ -76,7 +76,7 @@ for i = 1, udp_node_num, 1 do
 end
 
 ---- Socks5 Node
-local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num")
+local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 for i = 1, socks5_node_num, 1 do
     if i == 1 then
         o = s:option(ListValue, "socks5_node" .. i, translate("Socks5 Node"),

@@ -5,8 +5,8 @@ local dsp = require "luci.dispatcher"
 local gfwlist_version = api.uci_get_type("global_rules", "gfwlist_version")
 local chnroute_version = api.uci_get_type("global_rules", "chnroute_version")
 
-local gfwlist_update = api.uci_get_type("global_rules", "gfwlist_update") == "1" and "checked='checked'" or ""
-local chnroute_update = api.uci_get_type("global_rules", "chnroute_update") == "1" and "checked='checked'" or ""
+local gfwlist_update = api.uci_get_type("global_rules", "gfwlist_update", "1") == "1" and "checked='checked'" or ""
+local chnroute_update = api.uci_get_type("global_rules", "chnroute_update", "1") == "1" and "checked='checked'" or ""
 -%>
 
 <script type="text/javascript">

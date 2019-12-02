@@ -2,9 +2,9 @@
 	local api = require "luci.model.cbi.passwall.api.api"
 	local dsp = require "luci.dispatcher"
 	
-	local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num")
-	local udp_node_num = api.uci_get_type("global_other", "udp_node_num")
-	local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num")
+	local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
+	local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
+	local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 -%>
 
 <style>

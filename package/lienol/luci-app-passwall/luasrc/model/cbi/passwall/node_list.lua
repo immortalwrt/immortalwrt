@@ -80,7 +80,7 @@ end--]]
 
 ---- Ping
 o = s:option(DummyValue, "address", translate("Ping"))
-if api.uci_get_type("global_other", "auto_ping") == "0" then
+if api.uci_get_type("global_other", "auto_ping", "0") == "0" then
     o.template = "passwall/node_list/ping"
 else
     o.template = "passwall/node_list/auto_ping"
