@@ -29,6 +29,10 @@ gehua,ghl-r-001)
 dlink,dir-860l-b1)
 	ucidef_set_led_netdev "wan" "wan" "$boardname:green:net" "eth0.2"
 	;;
+dlink,dir-878-a1)
+	ucidef_set_led_switch "wan-green" "WAN 1Ghz" "$boardname:green:net" "switch0" "0x10" "0x08"
+	ucidef_set_led_switch "wan-orange" "WAN 10/100Mhz" "$boardname:orange:net" "switch0" "0x10" "0x06"
+	;;
 gnubee,gb-pc1|\
 gnubee,gb-pc2)
 	ucidef_set_led_switch "lan1" "lan1" "$boardname:green:lan1" "switch0" "0x01"
