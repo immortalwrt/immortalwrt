@@ -1,0 +1,37 @@
+--- a/mac80211.c
++++ b/mac80211.c
+@@ -156,7 +156,7 @@ static void mt76_init_stream_cap(struct
+ void mt76_set_stream_caps(struct mt76_dev *dev, bool vht)
+ {
+ 	if (dev->cap.has_2ghz)
+-		mt76_init_stream_cap(dev, &dev->phy.sband_2g.sband, false);
++		mt76_init_stream_cap(dev, &dev->phy.sband_2g.sband, vht);
+ 	if (dev->cap.has_5ghz)
+ 		mt76_init_stream_cap(dev, &dev->phy.sband_5g.sband, vht);
+ }
+@@ -219,14 +219,14 @@ mt76_init_sband(struct mt76_dev *dev, st
+ 
+ static int
+ mt76_init_sband_2g(struct mt76_dev *dev, struct ieee80211_rate *rates,
+-		   int n_rates)
++		   int n_rates, bool vht)
+ {
+ 	dev->hw->wiphy->bands[NL80211_BAND_2GHZ] = &dev->phy.sband_2g.sband;
+ 
+ 	return mt76_init_sband(dev, &dev->phy.sband_2g,
+ 			       mt76_channels_2ghz,
+ 			       ARRAY_SIZE(mt76_channels_2ghz),
+-			       rates, n_rates, false);
++			       rates, n_rates, vht);
+ }
+ 
+ static int
+@@ -446,7 +446,7 @@ int mt76_register_device(struct mt76_dev
+ 	mt76_phy_init(dev, hw);
+ 
+ 	if (dev->cap.has_2ghz) {
+-		ret = mt76_init_sband_2g(dev, rates, n_rates);
++		ret = mt76_init_sband_2g(dev, rates, n_rates, vht);
+ 		if (ret)
+ 			return ret;
+ 	}
