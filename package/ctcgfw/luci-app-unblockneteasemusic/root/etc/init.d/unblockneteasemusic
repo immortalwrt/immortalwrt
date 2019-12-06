@@ -14,6 +14,7 @@ music_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_source
 youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2>/dev/null)"
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
 auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
+update_time="$(uci get unblockneteasemusic.@unblockneteasemusic[0].update_time)"
 [ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>/dev/null)*" = "*1*" ] && addr="0.0.0.0" || addr="${lan_addr}"
 [ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode 2>/dev/null)*" = "*1*" ] && strict_mode="-s"
 netease_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip 2>/dev/null)"
@@ -110,21 +111,15 @@ set_ports(){
 	if [ "${set_type}" = "start" ]; then
 		iptables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
 		iptables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
-		ip6tables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
-		ip6tables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
 
 		mkdir -p /var/etc
 		cat <<-EOF >> "/var/etc/unblockneteasemusic.include"
 iptables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
 iptables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
-ip6tables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
-ip6tables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
 		EOF
 	elif [ "${set_type}" = "stop" ]; then
 		iptables -D INPUT -p tcp --dport "${http_port}" -j ACCEPT
 		iptables -D INPUT -p tcp --dport "${https_port}" -j ACCEPT
-		ip6tables -D INPUT -p tcp --dport "${http_port}" -j ACCEPT
-		ip6tables -D INPUT -p tcp --dport "${https_port}" -j ACCEPT
 
 		echo "" > "/var/etc/unblockneteasemusic.include"
 	fi
@@ -160,7 +155,7 @@ start()
 	[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>/dev/null)*" = "*1*" ] && set_ports >/dev/null 2>&1
 
 	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
-	[ "${auto_update}" -eq "1" ] && echo "30 3 * * * /usr/share/unblockneteasemusic/update_core.sh" >> "/etc/crontabs/root"
+	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/unblockneteasemusic/update_core.sh" >> "/etc/crontabs/root"
 	echo "*/5 * * * * /usr/share/unblockneteasemusic/log_check.sh" >> "/etc/crontabs/root"
 	/etc/init.d/cron restart >/dev/null 2>&1
 }
