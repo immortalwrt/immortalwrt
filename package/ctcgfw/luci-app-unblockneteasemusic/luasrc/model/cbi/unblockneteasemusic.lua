@@ -58,7 +58,7 @@ auto_update.description = translate("启用后会在每天设定的时间自动�
 auto_update.default = 0
 auto_update.rmempty = false
 
-update_time = s:option(ListValue, "update_time", translate("自动更新时间"))
+update_time = s:option(ListValue, "update_time", translate("检查更新时间"))
 for update_time_hour = 0,23 do
 	update_time:value(update_time_hour, update_time_hour..":00")
 end
