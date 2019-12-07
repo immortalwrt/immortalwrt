@@ -540,7 +540,10 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary factory 57350)
 		;;
 	gl-mt300n-v2|\
+<<<<<<< HEAD
 	miwifi-mini|\
+=======
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 	whr-g300n)
 		wan_mac=$(mtd_get_mac_binary factory 4)
 		;;
@@ -578,6 +581,13 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary Factory 0xe000)
 		;;
 	xiaomi,miwifi-r3|\
+<<<<<<< HEAD
+=======
+	miwifi-mini)
+		wan_mac=$(cat /sys/class/net/eth0/address)
+		lan_mac=$(macaddr_setbit_la "$wan_mac")
+		;;
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 	k2p)
 		lan_mac=$(mtd_get_mac_binary factory 0xe000)
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)

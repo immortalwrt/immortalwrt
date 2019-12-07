@@ -57,12 +57,17 @@
 &pinctrl {
 	state_default: pinctrl0 {
 		gpio {
+<<<<<<< HEAD
 			ralink,group = "gpio", "refclk", "wdt", "wled_an";
+=======
+			ralink,group = "refclk", "wled_an", "gpio";
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 			ralink,function = "gpio";
 		};
 	};
 };
 
+<<<<<<< HEAD
 &ehci {
 	status = "disabled";
 };
@@ -71,6 +76,8 @@
 	status = "disabled";
 };
 
+=======
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 &wmac {
 	status = "okay";
 	ralink,mtd-eeprom = <&factory 0x4>;
@@ -86,7 +93,11 @@
 	m25p80@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
+<<<<<<< HEAD
 		spi-max-frequency = <40000000>;
+=======
+		spi-max-frequency = <10000000>;
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 		m25p,chunked-io = <32>;
 
 		partitions {
@@ -97,6 +108,10 @@
 			partition@0 {
 				label = "u-boot";
 				reg = <0x0 0x30000>;
+<<<<<<< HEAD
+=======
+				read-only;
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 			};
 
 			partition@30000 {

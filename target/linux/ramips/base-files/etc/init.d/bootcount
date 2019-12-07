@@ -1,4 +1,5 @@
 #!/bin/sh /etc/rc.common
+<<<<<<< HEAD
 START=99
 boot() {
 	case $(board_name) in
@@ -9,4 +10,16 @@ boot() {
 		fw_setenv flag_boot_success 1
 		;;
 	esac
+=======
+
+START=99
+
+start() {
+	. /lib/functions.sh
+
+	local board=$(board_name)
+	if [ $board = "sk-wb8" ]; then
+		fw_setenv bootcount 0
+	fi
+>>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 }
