@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lua
 PKG_VERSION:=5.1.5
-PKG_RELEASE:=4
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.lua.org/ftp/ \
@@ -46,7 +46,6 @@ $(call Package/lua/Default)
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE+= (libraries)
-  ABI_VERSION:=5.1.5
 endef
 
 define Package/liblua/description
@@ -154,14 +153,12 @@ endef
 
 define Package/lua/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lua5.1 $(1)/usr/bin/
-	$(LN) lua5.1 $(1)/usr/bin/lua
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lua $(1)/usr/bin/
 endef
 
 define Package/luac/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/luac5.1 $(1)/usr/bin/
-	$(LN) luac5.1 $(1)/usr/bin/luac
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/luac $(1)/usr/bin/
 endef
 
 define Package/lua-examples/install
