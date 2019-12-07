@@ -1,4 +1,6 @@
-/* Reset */
+html,body {
+	height: 100%;
+}
 
 body {
 	background: #ffffff;
@@ -1243,6 +1245,10 @@ footer a:hover {
 /* login */
 body.node-main-login {
     background: url(bg.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    padding-top: unset;
 }
 
 body.node-main-login > header {
