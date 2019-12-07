@@ -10,7 +10,7 @@ LUCI_TITLE:=LuCI support for Trojan Server
 LUCI_DEPENDS:=+luci-lib-jsonc +trojan 
 LUCI_PKGARCH:=all
 PKG_VERSION:=1.0
-PKG_RELEASE:=1-20191120
+PKG_RELEASE:=2-20191207
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
