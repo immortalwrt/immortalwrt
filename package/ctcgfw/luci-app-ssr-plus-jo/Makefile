@@ -61,7 +61,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS
-	bool "chinadns"
+	bool "chiandns"
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_haproxy
@@ -73,7 +73,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_privoxy
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs
-	bool "simple-obfs-local"
+	bool "simple-obfsl"
 	default n
 	
 config PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server
