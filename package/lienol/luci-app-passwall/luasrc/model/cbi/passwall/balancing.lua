@@ -17,10 +17,7 @@ end)
 m = Map("passwall")
 
 -- [[ Haproxy Settings ]]--
-s = m:section(TypedSection, "global_haproxy", translate("Load Balancing"),
-              "<input type='button' class='cbi-button cbi-input-reload' value='" ..
-                  translate("Click here to setting your Load Balancing") ..
-                  "' onclick=javascript:window.open('http://koolshare.cn/thread-65561-1-1.html','target'); />")
+s = m:section(TypedSection, "global_haproxy", translate("Load Balancing"))
 s.anonymous = true
 
 ---- Balancing Enable
@@ -46,7 +43,8 @@ o.default = "1188"
 o:depends("balancing_enable", 1)
 
 ---- Haproxy Port
-o = s:option(Value, "haproxy_port", translate("Haproxy Port"))
+o = s:option(Value, "haproxy_port", translate("Haproxy Port"), translate(
+    "Configure this node with 127.0.0.1: this port"))
 o.default = "1181"
 o:depends("balancing_enable", 1)
 

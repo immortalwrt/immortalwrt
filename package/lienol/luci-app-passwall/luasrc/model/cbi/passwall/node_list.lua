@@ -79,7 +79,7 @@ o.cfgvalue = function(t, n)
 end--]]
 
 ---- Ping
-o = s:option(DummyValue, "address", translate("Ping"))
+o = s:option(DummyValue, "ping", translate("Ping"))
 if api.uci_get_type("global_other", "auto_ping", "0") == "0" then
     o.template = "passwall/node_list/ping"
 else

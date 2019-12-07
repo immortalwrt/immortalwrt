@@ -51,11 +51,11 @@ local dsp = require "luci.dispatcher"
 	function add_node() {
 		var nodes_link = document.getElementById("nodes_link").value;
 		if (nodes_link.trim() != "") {
-			if (nodes_link.indexOf("ss://") == 0 || nodes_link.indexOf("ssr://") == 0 || nodes_link.indexOf("vmess://") == 0) {
+			if (nodes_link.indexOf("ss://") == 0 || nodes_link.indexOf("ssr://") == 0 || nodes_link.indexOf("vmess://") == 0 || nodes_link.indexOf("trojan://") == 0) {
 				ajax_add_node(nodes_link);
 			}
 			else {
-				alert("<%:Please enter the correct link, ss:// ssr:// vmess://%>");
+				alert("<%:Please enter the correct link, ss:// ssr:// vmess:// trojan://%>");
 			}
 		}
 		else {
@@ -75,7 +75,7 @@ local dsp = require "luci.dispatcher"
 
 <div id="add_link_div">
 	<div class="cbi-value">
-		<label class="cbi-value-title"><%:Please Enter The SS/SSR/V2ray Link%></label>
+		<label class="cbi-value-title"><%:Please Enter The SS/SSR/V2ray/Trojan Link%></label>
 		<div class="cbi-value-field">
 			<textarea id="nodes_link" rows="5" cols="50"></textarea>
 		</div>

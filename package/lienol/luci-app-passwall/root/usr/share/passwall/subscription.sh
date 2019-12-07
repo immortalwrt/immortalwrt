@@ -104,6 +104,12 @@ get_remote_config(){
 		
 		remarks="${json_ps}"
 		node_address=$json_node_address
+	elif [ "$1" == "trojan" ]; then
+		link="$2"
+		node_password=$(echo "$link" | sed 's/trojan:\/\///g' | awk -F '@' '{print $1}')
+		node_address=$(echo "$link" | sed 's/trojan:\/\///g' | awk -F '@' '{print $2}' | awk -F ':' '{print $1}')
+		node_port=$(echo "$link" | sed 's/trojan:\/\///g' | awk -F '@' '{print $2}' | awk -F ':' '{print $2}')
+		remarks="${node_address}:${node_port}"
 	fi
 	
 	# 把全部服务器节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
@@ -186,6 +192,20 @@ add_nodes(){
 			let updatenum_v2ray+=1
 		fi
 		
+	elif [ "$2" == "trojan" ]; then
+		${uci_set}add_mode="$add_mode"
+		${uci_set}remarks="$remarks"
+		${uci_set}type="Trojan"
+		${uci_set}address="$node_address"
+		${uci_set}port="$node_port"
+		${uci_set}password="$node_password"
+		
+		if [ "$1" == "add" ]; then
+			let addnum_trojan+=1
+		elif [ "$1" == "update" ]; then
+			let updatenum_trojan+=1
+		fi
+		
 	fi
 	uci commit $CONFIG
 }
@@ -222,6 +242,8 @@ del_config(){
 					let delnum_ssr+=1 #删除该节点
 				elif [ "$del_type" == "V2ray" ]; then
 					let delnum_v2ray+=1 #删除该节点
+				elif [ "$del_type" == "Trojan" ]; then
+					let delnum_trojan=1 #删除该节点
 				fi
 				
 			done
@@ -252,6 +274,7 @@ add() {
 		mkdir -p /usr/share/${CONFIG}/sub && rm -f /usr/share/${CONFIG}/sub/*
 		for link in $LINKS
 		do
+			is_decode=1
 			if expr "$link" : "ss://";then
 				link_type="ss"
 				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
@@ -261,10 +284,14 @@ add() {
 			elif expr "$link" : "vmess://";then
 				link_type="v2ray"
 				new_link=$(echo -n "$link" | sed 's/vmess:\/\///g')
+			elif expr "$link" : "trojan://";then
+				link_type="trojan"
+				new_link=$(echo -n "$link" | sed 's/trojan:\/\///g')
+				is_decode=0
 			fi
 			[ -z "$link_type" ] && continue
-			decode_link=$(decode_url_link $new_link 1)
-			get_remote_config "$link_type" "$decode_link" 1
+			[ "$is_decode" == 1 ] && new_link=$(decode_url_link $new_link 1)
+			get_remote_config "$link_type" "$new_link" 1
 			update_config
 		done
 		[ -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ] && rm -f /usr/share/${CONFIG}/sub/all_onlinenodes
@@ -287,13 +314,17 @@ start() {
 	addnum_v2ray=0
 	updatenum_v2ray=0
 	delnum_v2ray=0
+	addnum_trojan=0
+	updatenum_trojan=0
+	delnum_trojan=0
 	subscribe_url=$(uci get $CONFIG.@global_subscribe[0].subscribe_url)  # 订阅地址
 	[ -z "$subscribe_url" ] && echo "$Date: 订阅地址为空，订阅失败！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
 	
 	echo "$Date: 开始订阅..." >> $LOG_FILE
 	mkdir -p /var/${CONFIG}_sub && rm -f /var/${CONFIG}_sub/*
-	/usr/bin/wget --no-check-certificate --timeout=8 -t 2 $subscribe_url -P /var/${CONFIG}_sub
-	[ ! -d "/var/${CONFIG}_sub" ] || [ "$(ls /var/${CONFIG}_sub | wc -l)" -eq 0 ] && echo "$Date: 订阅链接下载失败，请重试！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
+	#/usr/bin/wget --no-check-certificate --timeout=8 -t 2 $subscribe_url -P /var/${CONFIG}_sub
+	status=$(curl -w %{http_code} --connect-timeout 10 $subscribe_url --silent -o /var/${CONFIG}_sub/sub)
+	[ -z "$status" ] || [ "$status" == "404" ] || [ ! -d "/var/${CONFIG}_sub" ] || [ "$(ls /var/${CONFIG}_sub | wc -l)" -eq 0 ] && echo "$Date: 订阅链接下载失败，请重试！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
 	
 	mkdir -p /usr/share/${CONFIG}/sub && rm -f /usr/share/${CONFIG}/sub/*
 	get_local_nodes
@@ -311,19 +342,24 @@ start() {
 		[ -z "$decode_link" ] && continue
 		for link in $decode_link
 		do
+			is_decode=1
 			if expr "$link" : "ss://";then
 				link_type="ss"
-				link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
 			elif expr "$link" : "ssr://";then
 				link_type="ssr"
-				link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
 			elif expr "$link" : "vmess://";then
 				link_type="v2ray"
-				link=$(echo -n "$link" | sed 's/vmess:\/\///g')
+				new_link=$(echo -n "$link" | sed 's/vmess:\/\///g')
+			elif expr "$link" : "trojan://";then
+				link_type="trojan"
+				new_link=$(echo -n "$link" | sed 's/trojan:\/\///g')
+				is_decode=0
 			fi
 			[ -z "$link_type" ] && continue
-			decode_link2=$(decode_url_link $link 1)
-			get_remote_config "$link_type" "$decode_link2"
+			[ "$is_decode" == 1 ] && new_link=$(decode_url_link $new_link 1)
+			get_remote_config "$link_type" "$new_link"
 			update_config
 		done
 	done
@@ -331,6 +367,7 @@ start() {
 	echo "$Date: 本次更新，SS新增服务器节点 $addnum_ss 个，修改 $updatenum_ss 个，删除 $delnum_ss 个。" >> $LOG_FILE
 	echo "$Date: 本次更新，SSR新增服务器节点 $addnum_ssr 个，修改 $updatenum_ssr 个，删除 $delnum_ssr 个。" >> $LOG_FILE
 	echo "$Date: 本次更新，V2ray新增服务器节点 $addnum_v2ray 个，修改 $updatenum_v2ray 个，删除 $delnum_v2ray 个。" >> $LOG_FILE
+	echo "$Date: 本次更新，Trojan新增服务器节点 $addnum_trojan 个，修改 $updatenum_trojan 个，删除 $delnum_trojan 个。" >> $LOG_FILE
 	echo "$Date: 订阅完毕..." >> $LOG_FILE
 	rm -f "$LOCK_FILE"
 	exit 0

@@ -200,9 +200,9 @@ add_firewall_rule() {
 	ipset -! create $IPSET_BLACKLIST nethash && ipset flush $IPSET_BLACKLIST
 	ipset -! create $IPSET_WHITELIST nethash && ipset flush $IPSET_WHITELIST
 
-	sed -e "s/^/add $IPSET_CHN &/g" $APP_PATH_RULE/chnroute | awk '{print $0} END{print "COMMIT"}' | ipset -R
-	sed -e "s/^/add $IPSET_BLACKLIST &/g" $APP_PATH_RULE/blacklist_ip | awk '{print $0} END{print "COMMIT"}' | ipset -R
-	sed -e "s/^/add $IPSET_WHITELIST &/g" $APP_PATH_RULE/whitelist_ip | awk '{print $0} END{print "COMMIT"}' | ipset -R
+	sed -e "s/^/add $IPSET_CHN &/g" $RULE_PATH/chnroute | awk '{print $0} END{print "COMMIT"}' | ipset -R
+	sed -e "s/^/add $IPSET_BLACKLIST &/g" $RULE_PATH/blacklist_ip | awk '{print $0} END{print "COMMIT"}' | ipset -R
+	sed -e "s/^/add $IPSET_WHITELIST &/g" $RULE_PATH/whitelist_ip | awk '{print $0} END{print "COMMIT"}' | ipset -R
 
 	ipset -! -R <<-EOF || return 1
 		$(gen_laniplist | sed -e "s/^/add $IPSET_LANIPLIST /")

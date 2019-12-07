@@ -56,6 +56,10 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 		font-size:.9rem;
         color: #fb6340;
     }
+	.yellow{
+		font-size:.9rem;
+        color: #b9b90b;
+    }
 	
 	.sk-text-success{
         color: #2dce89;
@@ -352,13 +356,32 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 				var div = s.parentNode.parentNode.parentNode.parentNode;
 				div.removeAttribute('onclick');
 				s.innerHTML = '<%:Check...%>';
+				var sendDate = (new Date()).getTime();
 				XHR.get('<%=dsp.build_url("admin/vpn/passwall/connect_status")%>', {
 						type: type
 					},
 					function(x, rv) {
 						if (rv.status) {
-							s.className="green";
-							s.innerHTML = '<%:Working...%>';
+							var receiveDate = (new Date()).getTime();
+							var responseTimeMs = receiveDate - sendDate;
+							var speed = "";
+							if (responseTimeMs < 300) {
+								s.className="green";
+								speed = "<%:very good%>";
+							} else if (responseTimeMs < 600) {
+								s.className="green";
+								speed = "<%:good%>";
+							}  else if (responseTimeMs < 2000) {
+								s.className="yellow";
+								speed = "<%:general%>";
+							} else if (responseTimeMs < 5000) {
+								s.className="red";
+								speed = "<%:bad%>";
+							} else if (responseTimeMs >= 5000) {
+								s.className="red";
+								speed = "<%:very bad%>";
+							}
+							s.innerHTML = speed;
 						}
 						else {
 							s.className="red";

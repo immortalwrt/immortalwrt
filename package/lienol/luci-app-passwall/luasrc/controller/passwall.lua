@@ -179,21 +179,37 @@ function connect_status()
 end
 
 function auto_ping_node()
+    local index = luci.http.formvalue("index")
+    local address = luci.http.formvalue("address")
+    local port = luci.http.formvalue("port")
     local e = {}
-    e.index = luci.http.formvalue("index")
-    e.ping = luci.sys.exec(
-                 "ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'" %
-                     luci.http.formvalue("domain"))
+    e.index = index
+    if luci.sys.exec("echo -n `command -v tcping`") ~= "" then
+        e.ping = luci.sys.exec("tcping -q -c 1 -i 3 -p " .. port .. " " ..
+                                   address ..
+                                   " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'")
+    else
+        e.ping = luci.sys.exec(
+                     "ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'" %
+                         address)
+    end
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
 
 function ping_node()
     local e = {}
-    local node = luci.http.formvalue("node")
-    e.ping = luci.sys.exec(
-                 "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
-                     node)
+    local address = luci.http.formvalue("address")
+    local port = luci.http.formvalue("port")
+    if luci.sys.exec("echo -n `command -v tcping`") ~= "" then
+        e.ping = luci.sys.exec("tcping -q -c 1 -i 3 -p " .. port .. " " ..
+                                   address ..
+                                   " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'")
+    else
+        e.ping = luci.sys.exec(
+                     "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
+                         address)
+    end
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
@@ -229,20 +245,53 @@ function copy_node()
 end
 
 function check_port()
-    local retstring = "<br />"
-    retstring = retstring ..
-                    "<font color='red'>暂时不支持UDP检测</font><br />"
     local s
     local node_name = ""
     local uci = luci.model.uci.cursor()
 
-    uci:foreach("passwall", "nodes", function(s)
-        local ret = ""
-        local tcp_socket
-        local udp_socket
-        if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
-            (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
-            --[[local port = (s.use_kcp == "1" and s.kcp_port) and s.kcp_port or (s.v2ray_transport == "mkcp" and s.port) and s.port or nil
+    local retstring = "<br />"
+    retstring = retstring ..
+                    "<font color='red'>暂时不支持UDP检测</font><br />"
+
+    if luci.sys.exec("echo -n `command -v tcping`") ~= "" then
+        retstring = retstring ..
+                        "<font color='green'>使用tcping检测端口延迟</font><br />"
+        uci:foreach("passwall", "nodes", function(s)
+            local ret = ""
+            local tcp_socket
+            if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
+                (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
+            else
+                if s.type and s.address and s.port and s.remarks then
+                    node_name = "[%s] [%s:%s]" %
+                                    {s.remarks, s.address, s.port}
+                end
+
+                result = luci.sys.exec("tcping -q -c 1 -i 3 -p " .. s.port ..
+                                           " " .. s.address ..
+                                           " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'")
+                if result and result ~= "" then
+                    retstring =
+                        retstring .. "<font color='green'>" .. node_name ..
+                            "   " .. result .. "ms.</font><br />"
+                else
+                    retstring =
+                        retstring .. "<font color='red'>" .. node_name ..
+                            "   Error.</font><br />"
+                end
+                ret = ""
+            end
+        end)
+    else
+        retstring = retstring ..
+                        "<font color='green'>使用socket检测端口是否打开</font><br />"
+        uci:foreach("passwall", "nodes", function(s)
+            local ret = ""
+            local tcp_socket
+            local udp_socket
+            if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
+                (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
+                --[[local port = (s.use_kcp == "1" and s.kcp_port) and s.kcp_port or (s.v2ray_transport == "mkcp" and s.port) and s.port or nil
 			if port then
 				udp_socket = nixio.socket("inet", "dgram")
 				udp_socket:setopt("socket", "rcvtimeo", 3)
@@ -251,27 +300,30 @@ function check_port()
 				r,c,d=udp_socket:recvfrom(10)
 				ret=""
 			end--]]
-        else
-            if s.type and s.address and s.port and s.remarks then
-                node_name = "%s：[%s] %s:%s" %
-                                {s.type, s.remarks, s.address, s.port}
-            end
-            tcp_socket = nixio.socket("inet", "stream")
-            tcp_socket:setopt("socket", "rcvtimeo", 3)
-            tcp_socket:setopt("socket", "sndtimeo", 3)
-            ret = tcp_socket:connect(s.address, s.port)
-            if tostring(ret) == "true" then
-                retstring = retstring .. "<font color='green'>" .. node_name ..
-                                "   OK.</font><br />"
             else
-                retstring = retstring .. "<font color='red'>" .. node_name ..
-                                "   Error.</font><br />"
+                if s.type and s.address and s.port and s.remarks then
+                    node_name = "%s：[%s] %s:%s" %
+                                    {s.type, s.remarks, s.address, s.port}
+                end
+                tcp_socket = nixio.socket("inet", "stream")
+                tcp_socket:setopt("socket", "rcvtimeo", 3)
+                tcp_socket:setopt("socket", "sndtimeo", 3)
+                ret = tcp_socket:connect(s.address, s.port)
+                if tostring(ret) == "true" then
+                    retstring =
+                        retstring .. "<font color='green'>" .. node_name ..
+                            "   OK.</font><br />"
+                else
+                    retstring =
+                        retstring .. "<font color='red'>" .. node_name ..
+                            "   Error.</font><br />"
+                end
+                ret = ""
             end
-            ret = ""
-        end
-        if tcp_socket then tcp_socket:close() end
-        if udp_socket then udp_socket:close() end
-    end)
+            if tcp_socket then tcp_socket:close() end
+            if udp_socket then udp_socket:close() end
+        end)
+    end
     luci.http.prepare_content("application/json")
     luci.http.write_json({ret = retstring})
 end

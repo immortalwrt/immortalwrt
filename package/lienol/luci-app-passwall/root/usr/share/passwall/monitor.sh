@@ -85,10 +85,12 @@ for i in $(seq 1 $SOCKS5_NODE_NUM); do
 done
 
 #dns
-icount=$(netstat -apn | grep 7913 | wc -l)
-if [ $icount = 0 ]; then
-	/etc/init.d/passwall restart
-	exit 0
+if [ "$dns_mode" != "nonuse" ]; then
+	icount=$(netstat -apn | grep 7913 | wc -l)
+	if [ $icount = 0 ]; then
+		/etc/init.d/passwall restart
+		exit 0
+	fi
 fi
 
 #haproxy

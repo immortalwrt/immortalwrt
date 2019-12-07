@@ -90,7 +90,8 @@ for i = 1, socks5_node_num, 1 do
 end
 
 ---- DNS Forward Mode
-o = s:option(ListValue, "dns_mode", translate("DNS Forward Mode"))
+o = s:option(ListValue, "dns_mode", translate("DNS Forward Mode"),
+             translate("if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq"))
 o.rmempty = false
 o:reset_values()
 if is_installed("openwrt_chinadns") or is_finded("chinadns") then
@@ -106,6 +107,7 @@ if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
     o:value("pdnsd", "pdnsd")
 end
 o:value("local_7913", translate("Use local port 7913 as DNS"))
+o:value("nonuse", translate("No patterns are used"))
 
 ---- upstreamm DNS Server for ChinaDNS
 o = s:option(ListValue, "up_chinadns_mode",
