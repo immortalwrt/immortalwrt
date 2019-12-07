@@ -97,11 +97,7 @@ define Device/miwifi-nano
   DTS := MIWIFI-NANO
   IMAGE_SIZE := $(ralink_default_fw_size_16M)
   DEVICE_TITLE := Xiaomi MiWiFi Nano
-<<<<<<< HEAD
   DEVICE_PACKAGES := uboot-envtools
-=======
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
->>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 endef
 TARGET_DEVICES += miwifi-nano
 

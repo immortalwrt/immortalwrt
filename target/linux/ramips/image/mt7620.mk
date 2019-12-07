@@ -283,12 +283,8 @@ define Device/u25awf-h1
   DTS := U25AWF-H1
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := Kimax U25AWF-H1
-<<<<<<< HEAD
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-storage kmod-scsi-core \
   		     kmod-fs-ext4 kmod-fs-vfat block-mount
-=======
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
->>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 endef
 TARGET_DEVICES += u25awf-h1
 
@@ -336,12 +332,8 @@ define Device/kimax_u35wf
   DTS := U35WF
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := Kimax U35WF
-<<<<<<< HEAD
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-storage kmod-scsi-core \
   		     kmod-fs-ext4 kmod-fs-vfat block-mount
-=======
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
->>>>>>> parent of 5d51ba13... ramips: delete MTK 762x support
 endef
 TARGET_DEVICES += kimax_u35wf
 
