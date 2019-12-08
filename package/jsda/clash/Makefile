@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clash
-PKG_VERSION:=0.16.3
+PKG_VERSION:=0.16.5
 PKG_MAINTAINER:=frainzy1477
 
 ifeq ($(ARCH),mipsel)
