@@ -28,7 +28,7 @@ echo "$curtime online! "
 if [ $dns_enable -eq 1 ]; then
 	if [ $dnscache_enable = "3" ];then
 		if ! pidof AdGuardHome>/dev/null;then
-			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome >/dev/null 2>&1 &
+			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome 2>&1 &
 			echo "$curtime 重启服务！" >> ${logfile}
 		fi
 	else
