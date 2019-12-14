@@ -39,7 +39,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_SOURCE:=filebrowser_$(PKG_ARCH_filebrowser).tar.gz
-PKG_SOURCE_URL:=https://package.project-openwrt.eu.org/package/utils/filebrowser/$(PKG_RELEASE)/
+PKG_SOURCE_URL:=https://package.project-openwrt.eu.org/utils/filebrowser/$(PKG_RELEASE)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
 PKG_HASH:=skip
 
