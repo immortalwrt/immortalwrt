@@ -59,7 +59,9 @@ luci-app-koolproxyR source: [Ameykyl/luci-app-koolproxyR](https://github.com/Ame
 openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).<br/>
 luci-app-ssr-plus-jo source: [brokeld/luci-app-ssr-plus-jo](https://github.com/brokeld/luci-app-ssr-plus-jo).<br/>
 openwrt-udpspeeder source: [pexcn/openwrt-udpspeeder](https://github.com/pexcn/openwrt-udpspeeder).<br/>
-luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).
+luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).<br/>
+luci-app-dockerman source: [lisaac/luci-app-dockerman](https://github.com/lisaac/luci-app-dockerman).<br/>
+luci-lib-docker source: [luci-lib-docker](https://github.com/lisaac/luci-lib-docker).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
