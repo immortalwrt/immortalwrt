@@ -9,61 +9,67 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=FileBrowser
-PKG_VERSION:=1.0.0
-PKG_RELEASE:=1
+PKG_VERSION:=snapshot
+PKG_RELEASE:=118071b
 
 PKG_LICENSE:=GPLv3
 PKG_MAINTAINER:=[CTCGFW] Project OpenWRT
+
+ifeq ($(ARCH),x86_64)
+	PKG_ARCH_filebrowser:=linux_amd64
+endif
+ifeq ($(ARCH),i386)
+	PKG_ARCH_filebrowser:=linux_386
+endif
+ifeq ($(ARCH),mipsel)
+	PKG_ARCH_filebrowser:=linux_mipsle
+endif
+ifeq ($(ARCH),mips)
+	PKG_ARCH_filebrowser:=linux_mips
+endif
+ifeq ($(ARCH),arm)
+ifeq ($(BOARD),bcm53xx)
+	PKG_ARCH_filebrowser:=linux_arm5
+else
+	PKG_ARCH_filebrowser:=linux_arm7
+endif
+endif
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH_filebrowser:=linux_arm64
+endif
+
+PKG_SOURCE:=filebrowser_$(PKG_ARCH_filebrowser).tar.gz
+PKG_SOURCE_URL:=https://package.project-openwrt.eu.org/package/utils/filebrowser/118071b/
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
+PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=utils
 	CATEGORY:=Utilities
-	TITLE:=LuCI Support for FileBrowser.
+	TITLE:=OpenWrt Support for FileBrowser.
 	URL:=https://github.com/filebrowser/filebrowser
 endef
 
 define Package/$(PKG_NAME)/description
-LuCI Support for FileBrowser.
+OpenWrt Support for FileBrowser.
 endef
 
 define Build/Prepare
+	tar -xzf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/Configure
 endef
 
 define Build/Compile
+	chmod 0755 $(PKG_BUILD_DIR)/filebrowser
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-ifeq ($(ARCH),i386)
-	$(INSTALL_BIN) ./files/i386 $(1)/usr/bin/filebrowser
-endif
-ifeq ($(ARCH),x86_64)
-	$(INSTALL_BIN) ./files/x86_64 $(1)/usr/bin/filebrowser
-endif
-ifeq ($(ARCH),arm)
-ifeq ($(BOARD),bcm53xx)
-	 $(INSTALL_BIN) ./files/armv7 $(1)/usr/bin/filebrowser
-else
-	 $(INSTALL_BIN) ./files/arm $(1)/usr/bin/filebrowser
-endif
-endif
-ifeq ($(ARCH),arm64)
-	$(INSTALL_BIN) ./files/arm64 $(1)/usr/bin/filebrowser
-endif
-ifeq ($(ARCH),aarch64)
-	$(INSTALL_BIN) ./files/arm64 $(1)/usr/bin/filebrowser
-endif
-ifeq ($(ARCH),mips)
-	$(INSTALL_BIN) ./files/mips $(1)/usr/bin/filebrowser
-endif
-ifeq ($(ARCH),mipsel)
-	$(INSTALL_BIN) ./files/mipsel $(1)/usr/bin/filebrowser
-endif
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/filebrowser $(1)/usr/bin/filebrowser
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
