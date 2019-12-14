@@ -57,7 +57,7 @@ luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerry
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
 luci-app-koolproxyR source: [Ameykyl/luci-app-koolproxyR](https://github.com/Ameykyl/luci-app-koolproxyR).<br/>
 openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).<br/>
-luci-app-ssr-plus-jo source: [brokeld/luci-app-ssr-plus-jo](https://github.com/brokeld/luci-app-ssr-plus-jo).<br/>
+luci-app-ssr-plus-jo source: [Leo-Jo/luci-app-ssr-plus-jo](https://github.com/Leo-Jo/luci-app-ssr-plus-jo).<br/>
 openwrt-udpspeeder source: [pexcn/openwrt-udpspeeder](https://github.com/pexcn/openwrt-udpspeeder).<br/>
 luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).<br/>
 luci-app-dockerman source: [lisaac/luci-app-dockerman](https://github.com/lisaac/luci-app-dockerman).<br/>
