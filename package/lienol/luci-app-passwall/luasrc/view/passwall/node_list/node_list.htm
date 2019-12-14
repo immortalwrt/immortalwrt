@@ -19,7 +19,7 @@ table td, .table .td {
 #set_node_div{
 	display: none;
 	width: 30rem;
-	position: absolute;
+	position: fixed;
 	left:50%;
 	top:50%;
 	transform: translate(-50%, -50%);
@@ -37,10 +37,13 @@ table td, .table .td {
 	function open_set_node_div(cbi_id) {
 		section = cbi_id;
 		document.getElementById("set_node_div").style.display="block";
+		var node_name = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
+		document.getElementById("set_node_name").innerHTML = node_name;
 	}
 	
 	function close_set_node_div() {
 		document.getElementById("set_node_div").style.display="none";
+		document.getElementById("set_node_name").innerHTML = "";
 	}
 	
 	
@@ -65,10 +68,11 @@ table td, .table .td {
 			XHR.get('<%=dsp.build_url("admin/vpn/passwall/set_node")%>', { "protocol" : protocol , "number" : number , "section" : section },
 				function(x, result) {
 					if(x && x.status == 200) {
-						window.location.href = '<%=dsp.build_url("admin/vpn/passwall/log")%>'
+						//window.location.href = '<%=dsp.build_url("admin/vpn/passwall/log")%>'
 					}
 				}
 			);
+			window.location.href = '<%=dsp.build_url("admin/vpn/passwall/log")%>'
 		}
 	}
 	
@@ -93,6 +97,7 @@ table td, .table .td {
 </script>
 
 <div id="set_node_div">
+	<div class="cbi-value">您选择的服务器是：<span id="set_node_name"></span></div>
 	<div class="cbi-value">
 		<% if tcp_node_num and tonumber(tcp_node_num) >= 1 then %>
 			<% for i = 1, tcp_node_num, 1 do %>

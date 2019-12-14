@@ -8,7 +8,10 @@ get_date() {
 }
 
 test_url() {
-	status=$(curl -I -o /dev/null -s --connect-timeout 5 -w %{http_code} "$1" | grep 200)
+	status=$(/usr/bin/curl -I -o /dev/null -s --connect-timeout 3 -w %{http_code} "$1" | grep 200)
+	[ "$?" != 0 ] && {
+		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=3 "$1")
+	}
 	echo $status
 }
 
@@ -97,7 +100,7 @@ test_reconnection() {
 			echo "$(get_date): 掉线重连检测：第$failcount次检测异常" >>/var/log/passwall.log
 			let "failcount++"
 			[ "$failcount" -ge 6 ] && {
-				echo "$(get_date): 掉线重连检测：检测异常，重启服务" >>/var/log/passwall.log
+				echo "$(get_date): 掉线重连检测：检测异常，重启程序" >>/var/log/passwall.log
 				rm -f $LOCK_FILE
 				/etc/init.d/passwall restart
 				exit 1
@@ -110,19 +113,30 @@ test_reconnection() {
 	done
 }
 
-#防止并发执行
-if [ -f "$LOCK_FILE" ]; then
-	exit 1
-else
-	touch $LOCK_FILE
-fi
+start() {
+	#防止并发执行
+	if [ -f "$LOCK_FILE" ]; then
+		exit 1
+	else
+		touch $LOCK_FILE
+	fi
 
-is_auto_switch=$(uci show $CONFIG.@auto_switch[0] | grep "tcp_node")
-if [ -z "$is_auto_switch" ]; then
-	test_reconnection
-else
-	test_auto_switch
-fi
+	is_auto_switch=$(uci show $CONFIG.@auto_switch[0] | grep "tcp_node")
+	if [ -z "$is_auto_switch" ]; then
+		test_reconnection
+	else
+		test_auto_switch
+	fi
 
-rm -f $LOCK_FILE
-exit
+	rm -f $LOCK_FILE
+	exit
+}
+
+case $1 in
+test_url)
+	test_url $2
+	;;
+*)
+	start
+	;;
+esac

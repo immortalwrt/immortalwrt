@@ -109,8 +109,8 @@ msgstr "百度连接"
 msgid "Google Connection"
 msgstr "谷歌连接"
 
-msgid "Server Check"
-msgstr "服务器检测"
+msgid "Node Check"
+msgstr "节点检测"
 
 msgid "Check..."
 msgstr "检测中..."
@@ -220,8 +220,8 @@ msgstr "添加节点"
 msgid "Add the node via the link"
 msgstr "通过链接添加节点"
 
-msgid "Please Enter The SS/SSR/V2ray/Trojan Link"
-msgstr "请输入SS/SSR/V2ray/Trojan链接"
+msgid "SS/SSR/V2ray/Trojan Link"
+msgstr "SS/SSR/V2ray/Trojan链接"
 
 msgid "Please enter the correct link, ss:// ssr:// vmess:// trojan://"
 msgstr "请输入正确的链接，ss:// ssr:// vmess:// trojan://"
@@ -268,11 +268,17 @@ msgstr "Ping延迟"
 msgid "Ping Value"
 msgstr "Ping值"
 
+msgid "Use TCPing"
+msgstr "使用TCPing"
+
+msgid "This will use tcping replace ping detection of node"
+msgstr "选中后保存应用后即使用tcping替换ping检测节点"
+
 msgid "Auto Ping"
 msgstr "自动Ping"
 
 msgid "This will automatically ping the node for latency"
-msgstr "选中后保存应用后刷新即可自动Ping节点"
+msgstr "选中后保存应用后即自动Ping节点"
 
 msgid "Apply"
 msgstr "应用"

@@ -167,7 +167,6 @@ local kcptun_version = luci.sys.exec("[ -f '" .. kcptun_path .. "' ] && " .. kcp
 	</label>
 	<div class="cbi-value-field">
 		<div class="cbi-value-description">
-			<img src="/luci-static/resources/cbi/help.gif">
 			<span>【 <%=kcptun_version%>】</span>
 			<input class="cbi-button cbi-input-apply" type="submit" id="_kcptun-check_btn" onclick="onBtnClick_kcptun(this);" value="<%:Manually update%>">
 			<span id="_kcptun-check_btn-detail"></span>

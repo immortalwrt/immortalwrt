@@ -11,6 +11,11 @@ m = Map(appname)
 s = m:section(TypedSection, "global_other")
 s.anonymous = true
 
+---- Use TCPing
+o = s:option(Flag, "use_tcping", translate("Use TCPing"),
+             translate("This will use tcping replace ping detection of node"))
+o.default = 1
+
 ---- Auto Ping
 o = s:option(Flag, "auto_ping", translate("Auto Ping"),
              translate("This will automatically ping the node for latency"))

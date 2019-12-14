@@ -389,7 +389,7 @@ add_firewall_rule() {
 			fi
 		done
 	else
-		echolog "主服务器未选择，无法转发TCP！"
+		echolog "主节点未选择，无法转发TCP！"
 	fi
 
 	if [ "$UDP_NODE_NUM" -ge 1 ]; then
@@ -428,7 +428,7 @@ add_firewall_rule() {
 			fi
 		done
 	else
-		echolog "UDP服务器未选择，无法转发UDP！"
+		echolog "UDP节点未选择，无法转发UDP！"
 	fi
 
 	$iptables_mangle -A PREROUTING -j SS

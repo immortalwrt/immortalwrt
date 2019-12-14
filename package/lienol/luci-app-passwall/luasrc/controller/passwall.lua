@@ -167,11 +167,11 @@ function connect_status()
     local e = {}
     if luci.http.formvalue("type") == "google" then
         e.status = luci.sys.call(
-                       "echo `curl -I -o /dev/null -s -m 10 --connect-timeout 5 -w %{http_code} 'https://www.google.com'` | grep 200 >/dev/null") ==
+                       "echo `/usr/share/passwall/test.sh test_url 'https://www.google.com'` | grep 200 >/dev/null") ==
                        0
     else
         e.status = luci.sys.call(
-                       "echo `curl -I -o /dev/null -s -m 10 --connect-timeout 2 -w %{http_code} 'http://www.baidu.com'` | grep 200 >/dev/null") ==
+                       "echo `/usr/share/passwall/test.sh test_url 'https://www.baidu.com'` | grep 200 >/dev/null") ==
                        0
     end
     luci.http.prepare_content("application/json")
@@ -184,13 +184,16 @@ function auto_ping_node()
     local port = luci.http.formvalue("port")
     local e = {}
     e.index = index
-    if luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        e.ping = luci.sys.exec("tcping -q -c 1 -i 3 -p " .. port .. " " ..
-                                   address ..
-                                   " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'")
+    if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
+                         appname) == "1" and
+        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
+        e.ping = luci.sys.exec(
+                     "echo -n `tcping -q -c 1 -i 3 -p " .. port .. " " ..
+                         address ..
+                         " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
     else
         e.ping = luci.sys.exec(
-                     "ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'" %
+                     "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
                          address)
     end
     luci.http.prepare_content("application/json")
@@ -201,10 +204,13 @@ function ping_node()
     local e = {}
     local address = luci.http.formvalue("address")
     local port = luci.http.formvalue("port")
-    if luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        e.ping = luci.sys.exec("tcping -q -c 1 -i 3 -p " .. port .. " " ..
-                                   address ..
-                                   " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'")
+    if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
+                         appname) == "1" and
+        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
+        e.ping = luci.sys.exec(
+                     "echo -n `tcping -q -c 1 -i 3 -p " .. port .. " " ..
+                         address ..
+                         " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
     else
         e.ping = luci.sys.exec(
                      "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
@@ -253,7 +259,9 @@ function check_port()
     retstring = retstring ..
                     "<font color='red'>暂时不支持UDP检测</font><br />"
 
-    if luci.sys.exec("echo -n `command -v tcping`") ~= "" then
+    if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
+                         appname) == "1" and
+        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
         retstring = retstring ..
                         "<font color='green'>使用tcping检测端口延迟</font><br />"
         uci:foreach("passwall", "nodes", function(s)
@@ -263,13 +271,12 @@ function check_port()
                 (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
             else
                 if s.type and s.address and s.port and s.remarks then
-                    node_name = "[%s] [%s:%s]" %
-                                    {s.remarks, s.address, s.port}
+                    node_name = "[%s] [%s:%s]" % {s.remarks, s.address, s.port}
                 end
 
-                result = luci.sys.exec("tcping -q -c 1 -i 3 -p " .. s.port ..
-                                           " " .. s.address ..
-                                           " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'")
+                result = luci.sys.exec("echo -n `tcping -q -c 1 -i 3 -p " ..
+                                           s.port .. " " .. s.address ..
+                                           " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
                 if result and result ~= "" then
                     retstring =
                         retstring .. "<font color='green'>" .. node_name ..
@@ -291,15 +298,6 @@ function check_port()
             local udp_socket
             if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
                 (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
-                --[[local port = (s.use_kcp == "1" and s.kcp_port) and s.kcp_port or (s.v2ray_transport == "mkcp" and s.port) and s.port or nil
-			if port then
-				udp_socket = nixio.socket("inet", "dgram")
-				udp_socket:setopt("socket", "rcvtimeo", 3)
-				udp_socket:setopt("socket", "sndtimeo", 3)
-				udp_socket:sendto("test", s.address, port)
-				r,c,d=udp_socket:recvfrom(10)
-				ret=""
-			end--]]
             else
                 if s.type and s.address and s.port and s.remarks then
                     node_name = "%s：[%s] %s:%s" %

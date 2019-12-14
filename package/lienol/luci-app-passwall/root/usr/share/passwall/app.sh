@@ -158,7 +158,7 @@ PROXY_MODE=$(config_t_get global proxy_mode gfwlist)
 
 load_config() {
 	[ "$TCP_NODE1" == "nil" -a "$UDP_NODE1" == "nil" -a "$SOCKS5_NODE1" == "nil" ] && {
-		echolog "没有选择服务器！"
+		echolog "没有选择节点！"
 		return 1
 	}
 	DNS_MODE=$(config_t_get global dns_mode ChinaDNS)
@@ -236,6 +236,7 @@ gen_config_file() {
 	local_port=$2
 	redir_type=$3
 	config_file_path=$4
+	remarks=$(config_n_get $node remarks)
 	server_host=$(config_n_get $node address)
 	use_ipv6=$(config_n_get $node use_ipv6)
 	network_type="ipv4"
@@ -243,7 +244,8 @@ gen_config_file() {
 	server_ip=$(get_host_ip $network_type $server_host)
 	port=$(config_n_get $node port)
 	type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
-	echolog "$redir_type服务器IP地址:$server_ip"
+	echolog "$redir_type节点：$remarks"
+	echolog "$redir_type节点IP：$server_ip"
 
 	if [ "$redir_type" == "Socks5" ]; then
 		if [ "$network_type" == "ipv6" ]; then
@@ -330,7 +332,7 @@ gen_config_file() {
 					network_type="ipv4"
 					[ "$kcptun_use_ipv6" == "1" ] && network_type="ipv6"
 					kcptun_server_ip=$(get_host_ip $network_type $kcptun_server_host)
-					echolog "KCP服务器IP地址:$kcptun_server_ip"
+					echolog "KCP节点IP地址:$kcptun_server_ip"
 					TCP_NODE1_IP=$kcptun_server_ip
 					start_kcptun "$kcptun_path" $kcptun_server_ip $kcptun_port "$kcptun_config"
 				fi
@@ -396,16 +398,16 @@ start_tcp_redir() {
 				local port=$(config_n_get $temp_server port)
 				local server_username=$(config_n_get $temp_server username)
 				local server_password=$(config_n_get $temp_server password)
-				#ipt2socks_bin=$(find_bin ipt2socks)
-				#[ -n "$ipt2socks_bin" ] && {
-				#	$ipt2socks_bin -T -l $port -b 0.0.0.0 -s $address -p $port -R >/dev/null &
-				#}
-				redsocks_bin=$(find_bin redsocks2)
-				[ -n "$redsocks_bin" ] && {
-					local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
-					gen_redsocks_config $redsocks_config_file tcp $port $address $port $server_username $server_password
-					$redsocks_bin -c $redsocks_config_file >/dev/null &
+				ipt2socks_bin=$(find_bin ipt2socks)
+				[ -n "$ipt2socks_bin" ] && {
+					$ipt2socks_bin -T -l $port -b 0.0.0.0 -s $address -p $port -R >/dev/null &
 				}
+				#redsocks_bin=$(find_bin redsocks2)
+				#[ -n "$redsocks_bin" ] && {
+				#	local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
+				#	gen_redsocks_config $redsocks_config_file tcp $port $address $port $server_username $server_password
+				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
+				#}
 			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
 				ss_bin=$(find_bin "$TYPE"-redir)
 				[ -n "$ss_bin" ] && {
@@ -452,33 +454,33 @@ start_udp_redir() {
 				local port=$(config_n_get $temp_server port)
 				local server_username=$(config_n_get $temp_server username)
 				local server_password=$(config_n_get $temp_server password)
-				#ipt2socks_bin=$(find_bin ipt2socks)
-				#[ -n "$ipt2socks_bin" ] && {
-				#	$ipt2socks_bin -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R >/dev/null &
-				#}
-				
-				redsocks_bin=$(find_bin redsocks2)
-				[ -n "$redsocks_bin" ] && {
-					local redsocks_config_file=$CONFIG_PATH/redsocks_UDP_$i.conf
-					gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
-					$redsocks_bin -c $redsocks_config_file >/dev/null &
+				ipt2socks_bin=$(find_bin ipt2socks)
+				[ -n "$ipt2socks_bin" ] && {
+					$ipt2socks_bin -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R >/dev/null &
 				}
+				
+				#redsocks_bin=$(find_bin redsocks2)
+				#[ -n "$redsocks_bin" ] && {
+				#	local redsocks_config_file=$CONFIG_PATH/redsocks_UDP_$i.conf
+				#	gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
+				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
+				#}
 			elif [ "$TYPE" == "socks5" ]; then
 				local address=$(config_n_get $temp_server address)
 				local port=$(config_n_get $temp_server port)
 				local server_username=$(config_n_get $temp_server username)
 				local server_password=$(config_n_get $temp_server password)
-				#ipt2socks_bin=$(find_bin ipt2socks)
-				#[ -n "$ipt2socks_bin" ] && {
-				#	$ipt2socks_bin -U -l $port -b 0.0.0.0 -s $address -p $port -R >/dev/null &
-				#}
-				
-				redsocks_bin=$(find_bin redsocks2)
-				[ -n "$redsocks_bin" ] && {
-					local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
-					gen_redsocks_config $redsocks_config_file udp $port $address $port $server_username $server_password
-					$redsocks_bin -c $redsocks_config_file >/dev/null &
+				ipt2socks_bin=$(find_bin ipt2socks)
+				[ -n "$ipt2socks_bin" ] && {
+					$ipt2socks_bin -U -l $port -b 0.0.0.0 -s $address -p $port -R >/dev/null &
 				}
+				
+				#redsocks_bin=$(find_bin redsocks2)
+				#[ -n "$redsocks_bin" ] && {
+				#	local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
+				#	gen_redsocks_config $redsocks_config_file udp $port $address $port $server_username $server_password
+				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
+				#}
 			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
 				ss_bin=$(find_bin "$TYPE"-redir)
 				[ -n "$ss_bin" ] && {
@@ -520,7 +522,7 @@ start_socks5_proxy() {
 				trojan_bin=$(find_bin trojan)
 				[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
 			elif [ "$TYPE" == "socks5" ]; then
-				echolog "Socks5服务器不能使用Socks5代理服务器！"
+				echolog "Socks5节点不能使用Socks5代理节点！"
 			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
 				ss_bin=$(find_bin "$TYPE"-local)
 				[ -n "$ss_bin" ] && $ss_bin -c $config_file -b 0.0.0.0 >/dev/null 2>&1 &
@@ -560,10 +562,10 @@ set_cru() {
 	if [ "$autoupdatesubscribe" = "1" ]; then
 		if [ "$weekupdatesubscribe" = "7" ]; then
 			echo "0 $dayupdatesubscribe * * * $APP_PATH/subscription.sh" >>/etc/crontabs/root
-			echolog "设置服务器订阅自动更新规则在每天 $dayupdatesubscribe 点。"
+			echolog "设置节点订阅自动更新规则在每天 $dayupdatesubscribe 点。"
 		else
 			echo "0 $dayupdatesubscribe * * $weekupdate $APP_PATH/subscription.sh" >>/etc/crontabs/root
-			echolog "设置服务器订阅自动更新规则在星期 $weekupdate 的 $dayupdatesubscribe 点。"
+			echolog "设置节点订阅自动更新规则在星期 $weekupdate 的 $dayupdatesubscribe 点。"
 		fi
 	else
 		sed -i '/subscription.sh/d' /etc/crontabs/root >/dev/null 2>&1 &
@@ -628,7 +630,7 @@ start_dns() {
 				echolog "运行DNS转发模式：dns2socks..."
 			}
 		else
-			echolog "dns2socks模式需要使用Socks5代理服务器，请开启！"
+			echolog "dns2socks模式需要使用Socks5代理节点，请开启！"
 		fi
 	;;
 	Pcap_DNSProxy)
@@ -647,7 +649,7 @@ start_dns() {
 		}
 	;;
 	local_7913)
-		echolog "运行DNS转发模式：使用本机7913端口DNS服务解析域名..."
+		echolog "运行DNS转发模式：使用本机7913端口DNS服务器解析域名..."
 	;;
 	chinadns)
 		chinadns_bin=$(find_bin ChinaDNS)
@@ -980,7 +982,7 @@ stop_dnsmasq() {
 		rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 		rm -rf $TMP_DNSMASQ_PATH
 		/etc/init.d/dnsmasq restart 2>/dev/null
-		echolog "没有选择服务器！"
+		echolog "没有选择节点！"
 	fi
 }
 
@@ -1033,10 +1035,10 @@ start_haproxy() {
 				fi
 				if [ "$bbackup" = "1" ]; then
 					bbackup=" backup"
-					echolog "添加故障转移备服务器:$bips"
+					echolog "添加故障转移备节点:$bips"
 				else
 					bbackup=""
-					echolog "添加负载均衡主服务器:$bips"
+					echolog "添加负载均衡主节点:$bips"
 				fi
 				#si=$(echo $bips | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 				#if [ -z "$si" ]; then
@@ -1081,7 +1083,7 @@ start_haproxy() {
 				    stats admin if TRUE
 			EOF
 			nohup $haproxy_bin -f $HAPROXY_FILE 2>&1
-			echolog "负载均衡服务运行成功！"
+			echolog "负载均衡运行成功！"
 		}
 	}
 }
@@ -1134,13 +1136,13 @@ boot() {
 }
 
 start() {
+	#防止并发启动
+	[ -f "$LOCK_FILE" ] && return 3
+	touch "$LOCK_FILE"
 	echolog "开始运行脚本！"
 	! load_config && return 1
 	add_vps_port
 	start_haproxy
-	#防止并发开启服务
-	[ -f "$LOCK_FILE" ] && return 3
-	touch "$LOCK_FILE"
 	start_socks5_proxy
 	start_tcp_redir
 	start_udp_redir
@@ -1171,7 +1173,7 @@ stop() {
 	rm -rf $CONFIG_PATH
 	stop_dnsmasq
 	stop_crontab
-	echolog "关闭相关服务，清理相关文件和缓存完成。\n"
+	echolog "关闭相关程序，清理相关文件和缓存完成。\n"
 	sleep 1s
 }
 

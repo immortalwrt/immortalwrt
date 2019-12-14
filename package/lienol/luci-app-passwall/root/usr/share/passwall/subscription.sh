@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . /usr/share/libubox/jshn.sh
 
@@ -15,6 +15,8 @@ config_t_get() {
 	echo $ret
 }
 
+urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
 decode_url_link() {
 	link=$1
 	num=$2
@@ -23,9 +25,25 @@ decode_url_link() {
 	if [ "$mod4" -gt 0 ]; then
 		var="===="
 		newlink=${link}${var:$mod4}
-		echo -n "$newlink" | sed 's/-/+/g; s/_/\//g' | /usr/bin/base64 -d -i 2> /dev/null
+		echo -n "$newlink" | sed 's/-/+/g; s/_/\//g' | base64 -d -i 2> /dev/null
 	else
-		echo -n "$link" | sed 's/-/+/g; s/_/\//g' | /usr/bin/base64 -d -i 2> /dev/null
+		echo -n "$link" | sed 's/-/+/g; s/_/\//g' | base64 -d -i 2> /dev/null
+	fi
+}
+
+ss_decode() {
+	temp_link=$1
+	if [[ "$(echo $temp_link | grep "@")" != "" ]]; then
+		link1=$(decode_url_link $(echo -n "$temp_link" | awk -F '@' '{print $1}') 1)
+		link2=$(echo -n "$temp_link" | awk -F '@' '{print $2}')
+		echo -n "${link1}@${link2}"
+	elif [[ "$(echo $temp_link | grep "#")" != "" ]]; then
+		link1=$(decode_url_link $(echo -n "$temp_link" | awk -F '#' '{print $1}') 1)
+		link2=$(echo -n "$temp_link" | awk -F '#' '{print $2}')
+		echo -n "${link1}#${link2}"
+	else
+		link1=$(decode_url_link $(echo -n "$temp_link" ) 1)
+		echo -n "$link1"
 	fi
 }
 
@@ -58,12 +76,15 @@ get_remote_config(){
 	group="sub_node"
 	if [ "$1" == "ss" ]; then
 		decode_link="$2"
-		node_address=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $2}')
-		node_port=$(echo "$decode_link" | awk -F ':' '{print $3}')
-		ssr_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $1}')
+		decode_link=$(ss_decode $decode_link)
+		ss_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		password=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $1}')
+		node_address=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $2}')
+		node_port=$(echo "$decode_link" | awk -F '@' '{print $2}' | awk -F '#' '{print $1}' | awk -F ':' '{print $2}')
+		remarks=$(urldecode $(echo "$decode_link" | awk -F '#' '{print $2}'))
 	elif [ "$1" == "ssr" ]; then
 		decode_link="$2"
+		decode_link=$(decode_url_link $decode_link 1)
 		node_address=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		node_address=$(echo $node_address |awk '{print gensub(/[^!-~]/,"","g",$0)}')
 		[ -z "$node_address" -o "$node_address" == "" ] && isAdd=0
@@ -81,7 +102,8 @@ get_remote_config(){
 		[ -n "$remarks_temp" ] && remarks="$(decode_url_link $remarks_temp 0)"
 		group_temp=$(echo "$decode_link" |grep -Eo "group.+" |sed 's/group=//g'|awk -F'&' '{print $1}')
 	elif [ "$1" == "v2ray" ]; then
-		json_load "$2"
+		decode_link=$(decode_url_link $2 1)
+		json_load "$decode_link"
 		json_get_var json_v v
 		json_get_var json_ps ps
 		json_get_var json_node_address add
@@ -96,7 +118,7 @@ get_remote_config(){
 		json_get_var json_host host
 		json_get_var json_path path
 		
-		if [ "$json_tls" == "1" ]; then
+		if [ "$json_tls" == "tls" -o "$json_tls" == "1" ]; then
 			json_tls="tls"
 		else
 			json_tls="none"
@@ -112,7 +134,7 @@ get_remote_config(){
 		remarks="${node_address}:${node_port}"
 	fi
 	
-	# 把全部服务器节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
+	# 把全部节点节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
 	if [ ! -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ]; then
 		echo $node_address > /usr/share/${CONFIG}/sub/all_onlinenodes
 	else
@@ -129,12 +151,12 @@ add_nodes(){
 	if [ "$2" == "ss" ]; then
 		${uci_set}add_mode="$add_mode"
 		${uci_set}remarks="$remarks"
-		${uci_set}type="SSR"
+		${uci_set}type="SS"
 		${uci_set}address="$node_address"
 		${uci_set}use_ipv6=0
 		${uci_set}port="$node_port"
 		${uci_set}password="$password"
-		${uci_set}ssr_encrypt_method="$ssr_encrypt_method"
+		${uci_set}ss_encrypt_method="$ss_encrypt_method"
 		${uci_set}timeout=300
 		${uci_set}tcp_fast_open=false
 		
@@ -227,7 +249,7 @@ update_config(){
 }
 
 del_config(){
-	# 删除订阅服务器已经不存在的节点
+	# 删除订阅节点已经不存在的节点
 	for localaddress in $(cat /usr/share/${CONFIG}/sub/all_localnodes)
 	do
 		[ "`cat /usr/share/${CONFIG}/sub/all_onlinenodes |grep -c "$localaddress"`" -eq 0 ] && {
@@ -254,19 +276,64 @@ del_config(){
 del_all_config(){
 	get_node_index
 	[ "`uci show $CONFIG | grep -c 'sub_node'`" -eq 0 ] && exit 0
-	current_tcp_node1=$(config_t_get global tcp_node1)
-	is_sub_node=`uci -q get $CONFIG.$current_tcp_node1.group`
+	TCP_NODE_NUM=$(uci get $CONFIG.@global_other[0].tcp_node_num)
+	for i in $(seq 1 $TCP_NODE_NUM); do
+		eval TCP_NODE$i=$(config_t_get global tcp_node$i)
+	done
+
+	UDP_NODE_NUM=$(uci get $CONFIG.@global_other[0].udp_node_num)
+	for i in $(seq 1 $UDP_NODE_NUM); do
+		eval UDP_NODE$i=$(config_t_get global udp_node$i)
+	done
+
+	SOCKS5_NODE_NUM=$(uci get $CONFIG.@global_other[0].socks5_node_num)
+	for i in $(seq 1 $SOCKS5_NODE_NUM); do
+		eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i)
+	done
+	
+	[ "$UDP_NODE1" == "default" ] && UDP_NODE1=$TCP_NODE1
+	
+	for i in $(seq 1 $TCP_NODE_NUM); do
+		eval node=\$TCP_NODE$i
+		[ -n "$node" -a "$node" != "nil" ] && {
+			is_sub_node=`uci -q get $CONFIG.$node.group`
+			[ -n "$is_sub_node" ] && {
+				uci set $CONFIG.@global[0].tcp_node$i="nil" && uci commit $CONFIG
+			}
+		}
+	done
+	
+	for i in $(seq 1 $UDP_NODE_NUM); do
+		eval node=\$UDP_NODE$i
+		[ "$node" != "nil" ] && {
+			is_sub_node=`uci -q get $CONFIG.$node.group`
+			[ -n "$is_sub_node" ] && {
+				uci set $CONFIG.@global[0].udp_node$i="nil" && uci commit $CONFIG
+			}
+		}
+	done
+	
+	for i in $(seq 1 $SOCKS5_NODE_NUM); do
+		eval node=\$SOCKS5_NODE$i
+		[ "$node" != "nil" ] && {
+			is_sub_node=`uci -q get $CONFIG.$node.group`
+			[ -n "$is_sub_node" ] && {
+				uci set $CONFIG.@global[0].socks5_node$i="nil" && uci commit $CONFIG
+			}
+		}
+	done
+	
 	for i in `seq $nodes_index -1 1`
 	do
 		[ "$(uci show $CONFIG.@nodes[$(($i-1))] | grep -c 'sub_node')" -eq 1 ] && uci delete $CONFIG.@nodes[$(($i-1))] && uci commit $CONFIG
 	done
-	[ -n "$is_sub_node" ] && {
-		uci set $CONFIG.global[0].tcp_node1="nil"
-		uci commit $CONFIG && /etc/init.d/$CONFIG stop
-	}
+	
+	/etc/init.d/$CONFIG stop
 }
 
 add() {
+	base64=$(command -v base64)
+	[ -z "$base64" ] && echo "$Date: 找不到Base64程序，请安装后重试！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
 	LINKS=$(cat /tmp/links.conf 2>/dev/null)
 	[ -n "$LINKS" ] && {
 		[ -f "$LOCK_FILE" ] && return 3
@@ -274,10 +341,9 @@ add() {
 		mkdir -p /usr/share/${CONFIG}/sub && rm -f /usr/share/${CONFIG}/sub/*
 		for link in $LINKS
 		do
-			is_decode=1
 			if expr "$link" : "ss://";then
 				link_type="ss"
-				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+				new_link=$(echo -n "$link" | sed 's/ss:\/\///g')
 			elif expr "$link" : "ssr://";then
 				link_type="ssr"
 				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
@@ -287,10 +353,8 @@ add() {
 			elif expr "$link" : "trojan://";then
 				link_type="trojan"
 				new_link=$(echo -n "$link" | sed 's/trojan:\/\///g')
-				is_decode=0
 			fi
 			[ -z "$link_type" ] && continue
-			[ "$is_decode" == 1 ] && new_link=$(decode_url_link $new_link 1)
 			get_remote_config "$link_type" "$new_link" 1
 			update_config
 		done
@@ -305,6 +369,8 @@ start() {
 	# 防止并发开启服务
 	[ -f "$LOCK_FILE" ] && return 3
 	touch "$LOCK_FILE"
+	base64=$(command -v base64)
+	[ -z "$base64" ] && echo "$Date: 找不到Base64程序，请安装后重试！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
 	addnum_ss=0
 	updatenum_ss=0
 	delnum_ss=0
@@ -322,16 +388,25 @@ start() {
 	
 	echo "$Date: 开始订阅..." >> $LOG_FILE
 	mkdir -p /var/${CONFIG}_sub && rm -f /var/${CONFIG}_sub/*
-	#/usr/bin/wget --no-check-certificate --timeout=8 -t 2 $subscribe_url -P /var/${CONFIG}_sub
-	status=$(curl -w %{http_code} --connect-timeout 10 $subscribe_url --silent -o /var/${CONFIG}_sub/sub)
-	[ -z "$status" ] || [ "$status" == "404" ] || [ ! -d "/var/${CONFIG}_sub" ] || [ "$(ls /var/${CONFIG}_sub | wc -l)" -eq 0 ] && echo "$Date: 订阅链接下载失败，请重试！" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
-	
+	index=0
+	for url in $subscribe_url
+	do
+		let index+=1
+		echo "$Date: 正在订阅：$url" >> $LOG_FILE
+		result=$(/usr/bin/curl --connect-timeout 10 -sL $url)
+		[ "$?" != 0 ] || [ -z "$result" ] && {
+			result=$(/usr/bin/wget --no-check-certificate --timeout=8 -t 1 -O- $url)
+			[ "$?" != 0 ] || [ -z "$result" ] && echo "$Date: 订阅失败：$url，请检测订阅链接是否正常或使用代理尝试！" >> $LOG_FILE && continue
+		}
+		echo "$result" > /var/${CONFIG}_sub/$index
+	done
+	[ ! -d "/var/${CONFIG}_sub" ] || [ "$(ls /var/${CONFIG}_sub | wc -l)" -eq 0 ] && echo "$Date: 订阅失败" >> $LOG_FILE && rm -f "$LOCK_FILE" && exit 0
 	mkdir -p /usr/share/${CONFIG}/sub && rm -f /usr/share/${CONFIG}/sub/*
 	get_local_nodes
 	for file in /var/${CONFIG}_sub/*
 	do
-		[ -z "$(du -sh $file 2> /dev/null)" ] && echo "$Date: 订阅链接下载 $file 失败，请重试！" >> $LOG_FILE && continue
-		decode_link=$(cat "$file" | /usr/bin/base64 -d 2> /dev/null)
+		[ -z "$(du -sh $file 2> /dev/null)" ] && echo "$Date: 订阅失败：$url，解密失败！" >> $LOG_FILE && continue
+		decode_link=$(cat "$file" | base64 -d 2> /dev/null)
 		maxnum=$(echo -n "$decode_link" | grep "MAX=" | awk -F"=" '{print $2}')
 		if [ -n "$maxnum" ]; then
 			decode_link=$(echo -n "$decode_link" | sed '/MAX=/d' | shuf -n${maxnum})
@@ -342,10 +417,9 @@ start() {
 		[ -z "$decode_link" ] && continue
 		for link in $decode_link
 		do
-			is_decode=1
 			if expr "$link" : "ss://";then
 				link_type="ss"
-				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+				new_link=$(echo -n "$link" | sed 's/ss:\/\///g')
 			elif expr "$link" : "ssr://";then
 				link_type="ssr"
 				new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
@@ -355,19 +429,17 @@ start() {
 			elif expr "$link" : "trojan://";then
 				link_type="trojan"
 				new_link=$(echo -n "$link" | sed 's/trojan:\/\///g')
-				is_decode=0
 			fi
 			[ -z "$link_type" ] && continue
-			[ "$is_decode" == 1 ] && new_link=$(decode_url_link $new_link 1)
 			get_remote_config "$link_type" "$new_link"
 			update_config
 		done
 	done
 	[ -f "/usr/share/${CONFIG}/sub/all_localnodes" ] && del_config
-	echo "$Date: 本次更新，SS新增服务器节点 $addnum_ss 个，修改 $updatenum_ss 个，删除 $delnum_ss 个。" >> $LOG_FILE
-	echo "$Date: 本次更新，SSR新增服务器节点 $addnum_ssr 个，修改 $updatenum_ssr 个，删除 $delnum_ssr 个。" >> $LOG_FILE
-	echo "$Date: 本次更新，V2ray新增服务器节点 $addnum_v2ray 个，修改 $updatenum_v2ray 个，删除 $delnum_v2ray 个。" >> $LOG_FILE
-	echo "$Date: 本次更新，Trojan新增服务器节点 $addnum_trojan 个，修改 $updatenum_trojan 个，删除 $delnum_trojan 个。" >> $LOG_FILE
+	echo "$Date: 本次更新，SS节点新增 $addnum_ss 个，修改 $updatenum_ss 个，删除 $delnum_ss 个。" >> $LOG_FILE
+	echo "$Date: 本次更新，SSR节点新增 $addnum_ssr 个，修改 $updatenum_ssr 个，删除 $delnum_ssr 个。" >> $LOG_FILE
+	echo "$Date: 本次更新，V2ray节点新增 $addnum_v2ray 个，修改 $updatenum_v2ray 个，删除 $delnum_v2ray 个。" >> $LOG_FILE
+	echo "$Date: 本次更新，Trojan节点新增 $addnum_trojan 个，修改 $updatenum_trojan 个，删除 $delnum_trojan 个。" >> $LOG_FILE
 	echo "$Date: 订阅完毕..." >> $LOG_FILE
 	rm -f "$LOCK_FILE"
 	exit 0
@@ -375,8 +447,8 @@ start() {
 
 stop() {
 	[ "`uci show $CONFIG | grep -c 'sub_node'`" -gt 0 ] && {
-		echo "$Date: 在线订阅节点已全部删除" >> $LOG_FILE
 		del_all_config
+		echo "$Date: 在线订阅节点已全部删除" >> $LOG_FILE
 	}
 	rm -rf /var/${CONFIG}_sub
 	rm -rf /usr/share/${CONFIG}/sub
@@ -395,3 +467,4 @@ add)
 	start
 	;;
 esac
+

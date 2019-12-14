@@ -49,7 +49,7 @@ local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 		padding-top: unset;
 	}
 
-	#_server_status > font {
+	#_node_status > font {
 		display: block;
 	}
 }
@@ -148,11 +148,11 @@ local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 		</div>
 		<div class="cbi-value">
 			<label class="cbi-value-title">
-				<%:Server Check%>
+				<%:Node Check%>
 			</label>
 			<div class="cbi-value-field">
 				<input type="button" class="cbi-button cbi-input-apply" value="<%:Check%>" onclick="return check_port(this)" />
-				<font id="_server_status"></font>
+				<font id="_node_status"></font>
 				<input id="clear_check_port_btn" type="button" class="cbi-button cbi-button-remove" style="display:none" value="<%:Clear%>" onclick="return clear_check_port(this)" />
 			</div>
 		</div>
@@ -258,7 +258,7 @@ local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 		btn.value = '<%:Check...%>';
 		XHR.get('<%=dsp.build_url("admin/vpn/passwall/check_port")%>', null,
 			function(x, rv) {
-				var s = document.getElementById('_server_status');
+				var s = document.getElementById('_node_status');
 				if(s) {
 					s.innerHTML = rv.ret;
 					var clear_btn = document.getElementById('clear_check_port_btn');
@@ -273,7 +273,7 @@ local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 
 	function clear_check_port(btn) {
 		btn.style.display = 'none';
-		var s = document.getElementById('_server_status');
+		var s = document.getElementById('_node_status');
 		s.innerHTML = "";
 		return false;
 	}

@@ -37,6 +37,7 @@ config global_proxy
 	option proxy_ipv6 '0'
 	
 config global_other
+	option use_tcping '1'
 	option auto_ping '0'
 	option tcp_node_num '1'
 	option udp_node_num '1'
@@ -47,7 +48,7 @@ config global_rules
 	option auto_update '0'
 	option gfwlist_update '1'
 	option chnroute_update '1'
-	option gfwlist_version '2019-12-01'
+	option gfwlist_version '2019-12-10'
 	option chnroute_version '2019-12-05'
 	
 config global_app
