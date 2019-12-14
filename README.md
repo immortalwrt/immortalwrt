@@ -1,4 +1,4 @@
-# A OpenWRT firmware based on Lean's source
+# A OpenWrt firmware based on Lean's source
 ### Welcome to my Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
 
 # Tips
@@ -61,7 +61,7 @@ luci-app-ssr-plus-jo source: [Leo-Jo/luci-app-ssr-plus-jo](https://github.com/Le
 openwrt-udpspeeder source: [pexcn/openwrt-udpspeeder](https://github.com/pexcn/openwrt-udpspeeder).<br/>
 luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).<br/>
 luci-app-dockerman source: [lisaac/luci-app-dockerman](https://github.com/lisaac/luci-app-dockerman).<br/>
-luci-lib-docker source: [luci-lib-docker](https://github.com/lisaac/luci-lib-docker).<br/>
+luci-lib-docker source: [lisaac/luci-lib-docker](https://github.com/lisaac/luci-lib-docker).<br/>
 openwrt-iptvhelper source: [riverscn/openwrt-iptvhelper](https://github.com/riverscn/openwrt-iptvhelper).
 
 # License
