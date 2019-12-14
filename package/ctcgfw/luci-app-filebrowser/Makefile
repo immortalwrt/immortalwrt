@@ -22,7 +22,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for FileBrowser
 	PKGARCH:=all
-	DEPENDS:=+FileBrowser +wget +openssl-util
+	DEPENDS:=+filebrowser +wget +openssl-util
 endef
 
 define Package/$(PKG_NAME)/description

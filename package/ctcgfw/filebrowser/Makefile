@@ -8,7 +8,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=FileBrowser
+PKG_NAME:=filebrowser
 PKG_VERSION:=snapshot
 PKG_RELEASE:=118071b
 
