@@ -40,7 +40,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_SOURCE:=AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz
-PKG_SOURCE_URL:=https://package.project-openwrt.eu.org/package/network/services/AdGuardHome/d9ee9b8/
+PKG_SOURCE_URL:=https://package.project-openwrt.eu.org/package/network/services/AdGuardHome/$(PKG_RELEASE)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
 PKG_HASH:=skip
 
