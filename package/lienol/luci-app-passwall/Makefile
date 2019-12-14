@@ -77,7 +77,7 @@ endmenu
 endef
 
 define Package/$(PKG_NAME)
-  CATEGORY:=LuCI for Lienol
+  CATEGORY:=LuCI
   SUBMENU:=3. Applications
   TITLE:=LuCI support for PassWall By Lienol
   PKGARCH:=all
