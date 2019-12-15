@@ -267,7 +267,7 @@ server {
 }
 EOF
 
-	/usr/sbin/pdnsd -c /var/etc/pdnsd.conf -d
+	/usr/sbin/pdnsd -c /var/etc/pdnsd.conf &
 }
 
 
@@ -556,11 +556,7 @@ stop() {
 	killall -q -9 ssr-server
 	killall -q -9 kcptun-client
 	killall -q -9 ssr-local
-	if [ -f /var/run/pdnsd.pid ] ;then
-    kill $(cat /var/run/pdnsd.pid) >/dev/null 2>&1
-  else 
-    kill -9 $(busybox ps -w | grep pdnsd | grep -v grep | awk '{print $1}') >/dev/null 2>&1 
-	fi
+	killall -q -9 pdnsd
 	
 	if [ -f "/tmp/dnsmasq.d/dnsmasq-ssr.conf" ]; then
 		rm -f /tmp/dnsmasq.d/dnsmasq-ssr.conf
