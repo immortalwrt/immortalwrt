@@ -259,7 +259,7 @@ start_service() {
 		elif [ $dnscache_enable = "2" ];  then
 			start_dnsforwarder
 		elif [ $dnscache_enable = "3" ];  then
-			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome >/dev/null 2>&1 &
+			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome 2>&1 &
 		fi
 		change_dns
 		nohup /usr/share/dnscache/dnscache-while.sh > /var/log/dnscache.file 2>&1 &
