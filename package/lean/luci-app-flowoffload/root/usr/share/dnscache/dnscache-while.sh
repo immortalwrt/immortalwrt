@@ -34,9 +34,9 @@ if [ $dns_enable -eq 1 ]; then
 	else
 		if ! pidof dnscache>/dev/null; then
 			if [ $dnscache_enable = "1" ];then
-				/usr/sbin/dnscache -c /var/etc/dnscache.conf -d
+				/usr/sbin/dnscache -c /var/etc/dnscache.conf &
 			elif [ $dnscache_enable = "2" ];then
-				dnscache -f /var/run/dnscache/dnscache.conf -d
+				dnscache -f /var/run/dnscache/dnscache.conf &
 			fi
 			echo "$curtime 重启服务！" >> ${logfile}
 		fi

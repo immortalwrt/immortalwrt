@@ -29,15 +29,15 @@ echo "$curtime online! "
 if [ $dns_enable -eq 1 ]; then
 	if [ $dnscache_enable = "3" ];  then
 		if ! pidof AdGuardHome>/dev/null; then
-			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome 2>&1 &
+			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome &
 			echo "$curtime 重启服务！" >> ${logfile}
 		fi
 	else
 		if ! pidof dnscache>/dev/null; then
 			if [ $dnscache_enable = "1" ];  then
-			/usr/sbin/dnscache -c /var/etc/dnscache.conf -d
+			/usr/sbin/dnscache -c /var/etc/dnscache.conf &
 			elif [ $dnscache_enable = "2" ];  then
-			dnscache -f /var/run/dnscache/dnscache.conf -d
+			dnscache -f /var/run/dnscache/dnscache.conf &
 			fi
 			echo "$curtime 重启服务！" >> ${logfile}
 		fi
