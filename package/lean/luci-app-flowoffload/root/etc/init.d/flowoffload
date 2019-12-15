@@ -129,7 +129,7 @@ EOF
 
 	[ -d /var/sbin ] || mkdir -p /var/sbin
 	[ -f /var/sbin/dnscache ] || cp -a /usr/sbin/pdnsd /var/sbin/dnscache
-	/usr/sbin/dnscache -c /var/etc/dnscache.conf -d
+	/usr/sbin/dnscache -c /var/etc/dnscache.conf &
 	echo "Start DNS Cache"
 }
 
@@ -185,8 +185,8 @@ DomainStatisticTempletFile
 StatisticUpdateInterval 29
 EOF
 	
-	dnscache -f $DNSCACHE_CONF -d
-	echo dnscache running pid is $pid
+	dnscache -f $DNSCACHE_CONF &
+	echo "Start DNS Cache"
 
 }
 
@@ -238,7 +238,7 @@ start_service(){
 		elif [ $dnscache_enable = "2" ];  then
 			start_dnsforwarder
 		elif [ $dnscache_enable = "3" ];  then
-			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome -h ${lan_addr} -p 3001 2>&1 &
+			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome -h ${lan_addr} -p 3001 &
 		fi
 		change_dns
 		nohup /usr/share/dnscache/dnscache-while.sh > /var/log/dnscache.file 2>&1 &
