@@ -27,8 +27,10 @@ ifeq ($(ARCH),mips)
 	ADG_CONF_NAME:=small_flash
 endif
 ifeq ($(ARCH),arm)
-ifeq ($(BOARD),bcm53xx)
+ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_AdGuardHome:=linux_arm5
+else ifeq ($(BOARD),bcm53xx)
+	PKG_ARCH_AdGuardHome:=linux_arm6
 else
 	PKG_ARCH_AdGuardHome:=linux_arm7
 endif

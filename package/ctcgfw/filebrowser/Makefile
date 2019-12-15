@@ -28,8 +28,10 @@ ifeq ($(ARCH),mips)
 	PKG_ARCH_filebrowser:=linux_mips
 endif
 ifeq ($(ARCH),arm)
-ifeq ($(BOARD),bcm53xx)
+ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_filebrowser:=linux_arm5
+else ifeq ($(BOARD),bcm53xx)
+	PKG_ARCH_filebrowser:=linux_arm6
 else
 	PKG_ARCH_filebrowser:=linux_arm7
 endif
