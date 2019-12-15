@@ -186,7 +186,7 @@ StatisticUpdateInterval 29
 EOF
 	
 	dnscache -f $DNSCACHE_CONF &
-	echo dnscache running pid is $pid
+	echo "Start DNS Cache"
 
 }
 

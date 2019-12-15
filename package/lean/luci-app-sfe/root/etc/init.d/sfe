@@ -186,7 +186,7 @@ StatisticUpdateInterval 29
 EOF
 	
 	dnscache -f $DNSCACHE_CONF &
-	logger -t alex the pid of dnscache is $PID_PATH/$PID_FILE $pid
+	echo "Start DNS Cache"
 
 }
 
