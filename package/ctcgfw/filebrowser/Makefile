@@ -31,7 +31,7 @@ ifeq ($(ARCH),arm)
 ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_filebrowser:=linux_arm5
 else ifeq ($(BOARD),bcm53xx)
-	PKG_ARCH_filebrowser:=linux_arm6
+	PKG_ARCH_filebrowser:=linux_arm5
 else
 	PKG_ARCH_filebrowser:=linux_arm7
 endif
