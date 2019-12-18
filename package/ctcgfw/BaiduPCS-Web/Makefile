@@ -43,10 +43,6 @@ ifeq ($(ARCH),arm)
 	PKG_ARCH_BAIDUPCS-WEB:=arm
 endif
 
-ifeq ($(ARCH),arm64)
-	PKG_ARCH_BAIDUPCS-WEB:=arm64
-endif
-
 ifeq ($(ARCH),aarch64)
 	PKG_ARCH_BAIDUPCS-WEB:=arm64
 endif
