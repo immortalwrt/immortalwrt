@@ -54,7 +54,7 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	tar -xzvf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
+	tar -zxf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/Configure
