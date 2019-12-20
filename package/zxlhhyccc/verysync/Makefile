@@ -22,7 +22,7 @@ ifeq ($(ARCH),arm)
 	PKG_ARCH_VERYSYNC:=arm7
 endif
 ifeq ($(BOARD),bcm53xx)
-	PKG_ARCH_VERYSYNC:=arm
+	PKG_ARCH_VERYSYNC:=arm6
 endif
 ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_VERYSYNC:=arm
@@ -54,6 +54,7 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
+	tar -xzvf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/Configure
