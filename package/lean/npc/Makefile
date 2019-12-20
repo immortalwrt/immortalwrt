@@ -25,7 +25,7 @@ endif
 ifeq ($(ARCH),arm)
 	NPC_ARCH:=arm_v7
 	ifeq ($(BOARD),bcm53xx)
-		NPC_ARCH:=arm_v6
+		NPC_ARCH:=arm_v5
   endif
 	ifeq ($(BOARD),kirkwood)
 		NPC_ARCH:=arm_v5

@@ -19,7 +19,7 @@ ifeq ($(ARCH),i386)
 	PKG_ARCH_VERYSYNC:=386
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH_VERYSYNC:=arm
+	PKG_ARCH_VERYSYNC:=arm7
 endif
 ifeq ($(BOARD),bcm53xx)
 	PKG_ARCH_VERYSYNC:=arm6
