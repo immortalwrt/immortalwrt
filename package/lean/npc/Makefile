@@ -59,6 +59,7 @@ npc is a fast reverse proxy to help you expose a local server behind a NAT or fi
 endef
 
 define Build/Prepare
+	tar -zxf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/Configure
