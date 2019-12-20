@@ -44,8 +44,6 @@ PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) -xzf $(DL_DIR)/$(PKG_SOURCE)
-
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
@@ -61,7 +59,6 @@ npc is a fast reverse proxy to help you expose a local server behind a NAT or fi
 endef
 
 define Build/Prepare
-	$(PKG_UNPACK)
 endef
 
 define Build/Configure
