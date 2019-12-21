@@ -8,7 +8,7 @@
 local util = require "luci.util"
 local function online_data()
 	local rv = { }
-	local fd = util.execi("/usr/bin/awk 'NR==FNR{a[$2]=$4}NR!=FNR&&!a[$4]{a[$4]=\"\?\"}NR!=FNR&&/0x[26]/{print a[$4],$1,$4,$6}' /tmp/dhcp.leases /proc/net/arp")
+	local fd = util.execi('/usr/bin/awk \'BEGIN{while ((getline < "/tmp/dhcp.leases") > 0){a[$2]=$4;}while ((getline < "/proc/net/arp") > 0){if (!a[$4]){a[$4]="\?";}if (match($3,"0x[26]")){"ping -q -c 1 "$1" &";if (b[$4]){b[$4]=b[$4]"/"$1;}else{b[$4]=$1;}c[$4]=$6;}}while (("ip -6 neighbor show | grep -v fe80" | getline) > 0){if (b[$5]) {"ping -q -c 1 "$1" &";b[$5]=b[$5]"/"$1;}}for (mac in b){print(a[mac],b[mac],mac,c[mac]);}}\' ')
 	while true do
 		local ln = fd()
 		if ln == nil then break end
@@ -59,7 +59,7 @@ end
 						tr.className = 'cbi-section-table-row cbi-rowstyle-' + ((i % 2) + 1);
 
 					tr.insertCell(-1).innerHTML = info.onlines[i].hostname ? info.onlines[i].hostname : '?';
-					tr.insertCell(-1).innerHTML = info.onlines[i].ipaddr;
+					tr.insertCell(-1).innerHTML = info.onlines[i].ipaddr.split("/").join("<br>");
 					tr.insertCell(-1).innerHTML = info.onlines[i].macaddr;
 					tr.insertCell(-1).innerHTML = info.onlines[i].device;
 				}

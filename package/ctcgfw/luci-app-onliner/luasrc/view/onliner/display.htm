@@ -57,7 +57,18 @@
 	tbody td {
 		border-bottom-color: #ccc;
 	}
-
+	tbody td:nth-last-child(4) {
+		width: 10%;
+	}
+	tbody td:nth-last-child(3) {
+		width: 10%;
+	}
+	tbody td:nth-last-child(2) {
+		width: 10%;
+	}
+	tbody td:nth-last-child(1) {
+		width: 10%;
+	}	
 	tbody td[rowspan] {
 		border-bottom-color: #999;
 	}
@@ -373,7 +384,12 @@ function fetchData(period)
 		for (var i = 0; i < addrs.length; i++)
 			if (ipAddrs.indexOf(addrs[i].ip) < 0)
 				ipAddrs.push(addrs[i].ip);
-
+		if (hostNames.length == 0){
+			XHR.get('<%=url("admin/nlbw/ptr")%>/' + ipAddrs.join('/'), null, function(xhr, res) {
+				if (res !== null && typeof(res) === 'object')
+					hostNames = res;
+			});
+		}
 		renderHostData();
 		renderLayer7Data();
 		renderIPv6Data();
@@ -480,7 +496,7 @@ function formatHostname(dns)
 	dns = dns.split('.')[0];
 
 	if (dns.length > 12)
-		return '<span title="%q">%h…</span>'.format(dns, dns.substr(0, 12));
+		return '<span title="%q">%q</span>'.format(dns, dns);
 
 	return '%h'.format(dns);
 }
@@ -823,11 +839,11 @@ function bubbleDismiss()
 	</div>
 	<table id="host-data">
 		<tr>
-			<th width="10%" class="hostname"><%:Host%></th>
-			<th width="5%"><%:MAC%></th>
-			<th width="5%"><%:Connections%></th>
-			<th width="30%" colspan="2"><%:Download (Bytes / Packets)%></th>
-			<th width="30%" colspan="2"><%:Upload (Bytes / Packets)%></th>
+			<th width="20%" class="hostname"><%:Host%></th>
+			<th width="10%"><%:MAC%></th>
+			<th width="10%"><%:Connections%></th>
+			<th width="20%" colspan="2"><%:Download (Bytes / Packets)%></th>
+			<th width="20%" colspan="2"><%:Upload (Bytes / Packets)%></th>
 		</tr>
 	</table>
 </div>
@@ -845,7 +861,7 @@ function bubbleDismiss()
 	</div>
 	<table id="layer7-data">
 		<tr>
-			<th width="20%"><%:Application%></th>
+			<th width="10%"><%:Application%></th>
 			<th width="10%"><%:Connections%></th>
 			<th width="30%" colspan="2"><%:Download (Bytes / Packets)%></th>
 			<th width="30%" colspan="2"><%:Upload (Bytes / Packets)%></th>
@@ -867,11 +883,11 @@ function bubbleDismiss()
 	</div>
 	<table id="ipv6-data">
 		<tr>
-			<th width="10%" class="hostname"><%:Host%></th>
-			<th width="5%"><%:MAC%></th>
-			<th width="5%"><%:Family%></th>
-			<th width="40%" colspan="2"><%:Download (Bytes / Packets)%></th>
-			<th width="40%" colspan="2"><%:Upload (Bytes / Packets)%></th>
+			<th width="20%" class="hostname"><%:Host%></th>
+			<th width="10%"><%:MAC%></th>
+			<th width="10%"><%:Family%></th>
+			<th width="20%" colspan="2"><%:Download (Bytes / Packets)%></th>
+			<th width="20%" colspan="2"><%:Upload (Bytes / Packets)%></th>
 		</tr>
 	</table>
 </div>
