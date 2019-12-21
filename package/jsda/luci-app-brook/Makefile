@@ -11,36 +11,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-brook
 PKG_VERSION:=1.0.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=WouldChar
 
 PKG_BUILD_PARALLEL:=1
-RELEASE_VERSION:=v20190601
-
-ifeq ($(ARCH),mipsel)
-BROOK_NAME:=brook_linux_mipsle
-endif
-ifeq ($(ARCH),mips)
-BROOK_NAME:=brook_linux_mips
-endif
-ifeq ($(ARCH),i386)
-BROOK_NAME:=brook_linux_386
-endif
-ifeq ($(ARCH),x86_64)
-BROOK_NAME:=brook
-endif
-ifeq ($(ARCH),arm)
-BROOK_NAME:=brook_linux_arm7
-endif
-ifeq ($(BOARD),bcm53xx)
-BROOK_NAME:=brook_linux_arm5
-endif
-ifeq ($(ARCH),aarch64)
-BROOK_NAME:=brook_linux_arm64
-endif
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -54,7 +31,7 @@ define Package/$(PKG_NAME)/Default
 	PKGARCH:=all
 endef
 
-Package/$(PKG_NAME) = $(call Package/$(PKG_NAME)/Default,+ipset +ip +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64)
+Package/$(PKG_NAME) = $(call Package/$(PKG_NAME)/Default,+ipset +ip +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +brook)
 
 define Package/$(PKG_NAME)/description
 	LuCI Support for Brook.
@@ -63,8 +40,6 @@ endef
 define Build/Prepare
 	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-
-	wget -O $(PKG_BUILD_DIR)/brook https://github.com/txthinking/brook/releases/download/$(RELEASE_VERSION)/$(BROOK_NAME)
 endef
 
 define Build/Configure
@@ -134,7 +109,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) ./files/root/usr/bin/brook-gfw $(1)/usr/bin/brook-gfw
 	$(INSTALL_BIN) ./files/root/usr/bin/brook-ad $(1)/usr/bin/brook-ad
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/brook $(1)/usr/bin/brook
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
