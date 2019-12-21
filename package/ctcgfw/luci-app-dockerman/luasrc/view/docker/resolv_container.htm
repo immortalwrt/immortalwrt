@@ -1,0 +1,19 @@
+<%+cbi/valueheader%>
+<script type="text/javascript">
+  function resolv_container(op) {
+    let s = document.getElementById(op + '-status');
+    if (!s) return;
+    let cmd_line = prompt("Plese input <docker create> command line:", "");
+    if (cmd_line == null || cmd_line == "") {
+      s.innerHTML = "<font color='red'>Canceled</font>";
+      return;
+    }
+    let re = /\/admin\/docker\/newcontainer\//
+	  let p = window.location.href
+	  let path = p.split(re)
+    window.location = path[0] + "/admin/docker/newcontainer/" + encodeURI(cmd_line)
+  }
+</script>
+<input type="button" class="cbi-button cbi-button-apply" value="Command line" onclick="resolv_container('<%=self.option%>')" />
+<span id="<%=self.option%>-status"></span>
+<%+cbi/valuefooter%>

@@ -65,6 +65,7 @@ d.default = 0
 d:depends("dirver", "overlay")
 
 d = s:option(DynamicList, "options", translate("Options"))
+d.template = "cbi/xdynlist"
 d.rmempty = true
 d.placeholder="com.docker.network.driver.mtu=1500"
 
@@ -90,6 +91,7 @@ d.placeholder="10.1.1.0/24"
 d.datatype="ip4addr"
 
 d = s:option(DynamicList, "aux_address", translate("Exclude IPs"))
+d.template = "cbi/xdynlist"
 d.rmempty = true
 d.placeholder="my-route=10.1.1.1"
 

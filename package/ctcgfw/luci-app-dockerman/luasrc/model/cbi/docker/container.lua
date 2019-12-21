@@ -24,8 +24,8 @@ if res.code < 300 then networks = res.body else return end
 
 local get_ports = function(d)
   local data
-  if d.NetworkSettings and d.NetworkSettings.Ports then
-    for inter, out in pairs(d.NetworkSettings.Ports) do
+  if d.HostConfig and d.HostConfig.PortBindings then
+    for inter, out in pairs(d.HostConfig.PortBindings) do
       data = (data and (data .. "<br>") or "") .. out[1]["HostPort"] .. ":" .. inter 
     end
   end
@@ -62,6 +62,15 @@ local get_mounts = function(d)
   return data
 end
 
+local get_device = function(d)
+  local data
+  if d.HostConfig and d.HostConfig.Devices then
+    for _,v in ipairs(d.HostConfig.Devices) do
+      data = (data and (data .. "<br>") or "") .. v["PathOnHost"] .. ":" .. v["PathInContainer"] .. (v["CgroupPermissions"] ~= "" and (":" .. v["CgroupPermissions"]) or "")
+    end
+  end
+  return data
+end
 
 local get_links = function(d)
   local data
@@ -84,19 +93,25 @@ local get_networks = function(d)
 end
 
 
-local start_stop_remove = function(m,cmd)
+local start_stop_remove = function(m, cmd)
   docker:clear_status()
   docker:append_status("Containers: " .. cmd .. " " .. container_id .. "...")
-  local res = dk.containers[cmd](dk, container_id)
+  local res
+  if cmd ~= "upgrade" then
+    res = dk.containers[cmd](dk, container_id)
+  else
+    res = dk.containers_upgrade(dk, container_id)
+  end
   if res and res.code >= 300 then
     docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
-  else
-    docker:clear_status()
-  end
-  if cmd ~= "remove" then
     luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id))
   else
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+    docker:clear_status()
+    if cmd ~= "remove" and cmd ~= "upgrade" then
+      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id))
+    else
+      luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+    end
   end
 end
 
@@ -131,6 +146,16 @@ btnstop.template="cbi/inlinebutton"
 btnstop.inputtitle=translate("Stop")
 btnstop.inputstyle = "reset"
 btnstop.forcewrite = true
+btnupgrade=action_section:option(Button, "_upgrade")
+btnupgrade.template="cbi/inlinebutton"
+btnupgrade.inputtitle=translate("Upgrade")
+btnupgrade.inputstyle = "reload"
+btnstop.forcewrite = true
+btnduplicate=action_section:option(Button, "_duplicate")
+btnduplicate.template="cbi/inlinebutton"
+btnduplicate.inputtitle=translate("Duplicate")
+btnduplicate.inputstyle = "add"
+btnstop.forcewrite = true
 btnremove=action_section:option(Button, "_remove")
 btnremove.template="cbi/inlinebutton"
 btnremove.inputtitle=translate("Remove")
@@ -143,11 +168,17 @@ end
 btnrestart.write = function(self, section)
   start_stop_remove(m,"restart")
 end
+btnupgrade.write = function(self, section)
+  start_stop_remove(m,"upgrade")
+end
 btnremove.write = function(self, section)
   start_stop_remove(m,"remove")
 end
 btnstop.write = function(self, section)
   start_stop_remove(m,"stop")
+end
+btnduplicate.write = function(self, section)
+  luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer/duplicate/"..container_id))
 end
 
 tab_section = m:section(SimpleSection)
@@ -166,7 +197,9 @@ if action == "info" then
   table_info["06start"] = container_info.State.Status == "running" and {_key = translate("Start Time"),  _value = container_info.State and container_info.State.StartedAt or "-"} or {_key = translate("Finish Time"),  _value = container_info.State and container_info.State.FinishedAt or "-"}
   table_info["07healthy"] = {_key = translate("Healthy"),  _value = container_info.State and container_info.State.Health and container_info.State.Health.Status or "-"}
   table_info["08restart"] = {_key = translate("Restart Policy"),  _value = container_info.HostConfig and container_info.HostConfig.RestartPolicy and container_info.HostConfig.RestartPolicy.Name or "-", _button=translate("Update")}
+  table_info["09device"] = {_key = translate("Device"),  _value = get_device(container_info)  or "-"}
   table_info["09mount"] = {_key = translate("Mount/Volume"),  _value = get_mounts(container_info)  or "-"}
+
   table_info["10cmd"] = {_key = translate("Command"),  _value = get_command(container_info) or "-"}
   table_info["11env"] = {_key = translate("Env"),  _value = get_env(container_info)  or "-"}
   table_info["12ports"] = {_key = translate("Ports"),  _value = get_ports(container_info) or "-"}
