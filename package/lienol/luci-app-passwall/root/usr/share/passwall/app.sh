@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2018-2019 Lienol <lawlienol@gmail.com>
+# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
 
 . $IPKG_INSTROOT/lib/functions.sh
 . $IPKG_INSTROOT/lib/functions/service.sh
@@ -14,7 +14,7 @@ REDSOCKS_CONFIG_UDP_FILE=$CONFIG_PATH/redsocks_UDP.conf
 CONFIG_TCP_FILE=$CONFIG_PATH/TCP.json
 CONFIG_UDP_FILE=$CONFIG_PATH/UDP.json
 CONFIG_SOCKS5_FILE=$CONFIG_PATH/SOCKS5.json
-LOCK_FILE=$CONFIG_PATH/$CONFIG.lock
+LOCK_FILE=/var/lock/$CONFIG.lock
 LOG_FILE=/var/log/$CONFIG.log
 RULE_PATH=/etc/config/${CONFIG}_rule
 APP_PATH=/usr/share/$CONFIG
@@ -117,6 +117,24 @@ get_not_exists_port_after() {
 	fi
 }
 
+set_subscribe_proxy() {
+	local enabled
+	local url
+	config_get enabled $1 enabled
+	config_get url $1 url
+	[ "$enabled" == "1" ] && {
+		[ -n "$url" -a "$url" != "" ] && {
+			if [ -n "$(echo -n "$url" | grep "//")" ]; then
+				echo -n "$url" | awk -F'/' '{print $3}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
+				echo -n "$url" | awk -F'/' '{print $3}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/router/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
+			else
+				echo -n "$url" | awk -F'/' '{print $1}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
+				echo -n "$url" | awk -F'/' '{print $1}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/router/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
+			fi
+		}
+	}
+}
+
 TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
 for i in $(seq 1 $TCP_NODE_NUM); do
 	eval TCP_NODE$i=$(config_t_get global tcp_node$i nil)
@@ -170,9 +188,6 @@ load_config() {
 		process=$(config_t_get global_forwarding process)
 	fi
 	LOCALHOST_PROXY_MODE=$(config_t_get global localhost_proxy_mode default)
-	DNS_FORWARD=$(config_t_get global_dns dns_forward 208.67.222.222:443)
-	DNS_FORWARD_IP=$(echo "$DNS_FORWARD" | awk -F':' '{print $1}')
-	DNS_FORWARD_PORT=$(echo "$DNS_FORWARD" | awk -F':' '{print $2}')
 	DNS1=$(config_t_get global_dns dns_1)
 	DNS2=$(config_t_get global_dns dns_2)
 	TCP_REDIR_PORT1=$(config_t_get global_proxy tcp_redir_port 1041)
@@ -622,23 +637,20 @@ start_dns() {
 	nonuse)
 		echolog "不使用任何DNS转发模式，将会直接将WAN口DNS给dnsmasq上游！"
 	;;
+	local_7913)
+		echolog "运行DNS转发模式：使用本机7913端口DNS服务器解析域名..."
+	;;
 	dns2socks)
 		if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
 			dns2socks_bin=$(find_bin dns2socks)
 			[ -n "$dns2socks_bin" ] && {
-				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS_FORWARD 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
+				local dns=$(config_t_get global dns2socks_forward 8.8.4.4)
+				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 ${dns}:53 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
 				echolog "运行DNS转发模式：dns2socks..."
 			}
 		else
 			echolog "dns2socks模式需要使用Socks5代理节点，请开启！"
 		fi
-	;;
-	Pcap_DNSProxy)
-		Pcap_DNSProxy_bin=$(find_bin Pcap_DNSProxy)
-		[ -n "$Pcap_DNSProxy_bin" ] && {
-			nohup $Pcap_DNSProxy_bin -c /etc/pcap-dnsproxy >/dev/null 2>&1 &
-			echolog "运行DNS转发模式：Pcap_DNSProxy..."
-		}
 	;;
 	pdnsd)
 		pdnsd_bin=$(find_bin pdnsd)
@@ -648,16 +660,14 @@ start_dns() {
 			echolog "运行DNS转发模式：Pdnsd..."
 		}
 	;;
-	local_7913)
-		echolog "运行DNS转发模式：使用本机7913端口DNS服务器解析域名..."
-	;;
 	chinadns)
 		chinadns_bin=$(find_bin ChinaDNS)
 		[ -n "$chinadns_bin" ] && {
 			other=1
+			other_port=$(expr $DNS_PORT + 1)
 			echolog "运行DNS转发模式：ChinaDNS..."
-			dns1=$(config_t_get global_dns dns_1)
-			[ "$dns1" = "dnsbyisp" ] && dns1=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | sort -u | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '2P')
+			local dns1=$DNS1
+			[ "$DNS1" = "dnsbyisp" ] && dns1=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '1P')
 			case "$UP_CHINADNS_MODE" in
 			OpenDNS_1)
 				other=0
@@ -675,23 +685,9 @@ start_dns() {
 				nohup $chinadns_bin -p $DNS_PORT -c $RULE_PATH/chnroute -m -d -s $UP_CHINADNS_CUSTOM >/dev/null 2>&1 &
 				echolog "运行ChinaDNS上游转发模式：$UP_CHINADNS_CUSTOM..."
 				;;
-			dnsproxy)
-				dnsproxy_bin=$(find_bin dnsproxy)
-				[ -n "$dnsproxy_bin" ] && {
-					nohup $dnsproxy_bin -d -T -p $DNS_PORT -R $DNS_FORWARD_IP -P $DNS_FORWARD_PORT >/dev/null 2>&1 &
-					echolog "运行ChinaDNS上游转发模式：dnsproxy..."
-				}
-				;;
-			dns-forwarder)
-				dnsforwarder_bin=$(find_bin dns-forwarder)
-				[ -n "$dnsforwarder_bin" ] && {
-					nohup $dnsforwarder_bin -p $DNS_PORT -s $DNS_FORWARD >/dev/null 2>&1 &
-					echolog "运行ChinaDNS上游转发模式：dns-forwarder..."
-				}
-				;;
 			esac
 			if [ "$other" = "1" ]; then
-				nohup $chinadns_bin -p 7923 -c $RULE_PATH/chnroute -m -d -s $dns1,127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
+				nohup $chinadns_bin -p $DNS_PORT -c $RULE_PATH/chnroute -m -d -s $dns1,127.0.0.1:$other_port >/dev/null 2>&1 &
 			fi
 		}
 	;;
@@ -717,7 +713,6 @@ EOF
 		echolog "生成Dnsmasq配置文件。"
 
 		if [ "$dnsport" != "0" ]; then
-			isp_dns=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | sort -u | grep -v 0.0.0.0 | grep -v 127.0.0.1)
 			failcount=0
 			while [ "$failcount" -lt "10" ]; do
 				interface=$(ifconfig | grep "$dnsport" | awk '{print $1}')
@@ -727,13 +722,6 @@ EOF
 					[ "$failcount" -ge 10 ] && exit 0
 					sleep 1m
 				else
-					[ -n "$isp_dns" ] && {
-						for isp_ip in $isp_dns; do
-							echo server=$isp_ip >>/etc/dnsmasq.conf
-							route add -host ${isp_ip} dev ${dnsport}
-							echolog "添加运营商DNS出口路由表：$dnsport"
-						done
-					}
 					[ "$DNS1" != "dnsbyisp" ] && {
 						route add -host ${DNS1} dev ${dnsport}
 						echolog "添加DNS1出口路由表：$dnsport"
@@ -748,10 +736,10 @@ EOF
 				fi
 			done
 		else
-			isp_dns=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | sort -u | grep -v 0.0.0.0 | grep -v 127.0.0.1)
-			[ -n "$isp_dns" ] && {
-				for isp_ip in $isp_dns; do
-					echo server=$isp_ip >>/etc/dnsmasq.conf
+			isp_dnss=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | sort -u | grep -v 0.0.0.0 | grep -v 127.0.0.1)
+			[ -n "$isp_dnss" ] && {
+				for isp_dns in $isp_dnss; do
+					echo server=$isp_dns >>/etc/dnsmasq.conf
 				done
 			}
 			[ "$DNS1" != "dnsbyisp" ] && {
@@ -805,22 +793,10 @@ EOF
 	# done
 	# fi
 
-	subscribe_by_ss=$(config_t_get global_subscribe subscribe_by_ss)
-	[ -z "$subscribe_by_ss" ] && subscribe_by_ss=0
-	[ "$subscribe_by_ss" -eq 1 ] && {
-		subscribe_url=$(config_t_get global_subscribe subscribe_url)
-		[ -n "$subscribe_url" ] && {
-			for url in $subscribe_url; do
-				if [ -n "$(echo -n "$url" | grep "//")" ]; then
-					echo -n "$url" | awk -F'/' '{print $3}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
-					echo -n "$url" | awk -F'/' '{print $3}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/router/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
-				else
-					echo -n "$url" | awk -F'/' '{print $1}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
-					echo -n "$url" | awk -F'/' '{print $1}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/router/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
-				fi
-			done
-			restdns=1
-		}
+	subscribe_proxy=$(config_t_get global_subscribe subscribe_proxy 0)
+	[ "$subscribe_proxy" -eq 1 ] && {
+		config_foreach set_subscribe_proxy "subscribe_list"
+		restdns=1
 	}
 
 	if [ ! -f "$TMP_DNSMASQ_PATH/gfwlist.conf" -a "$DNS_MODE" != "nonuse" ]; then
@@ -977,13 +953,10 @@ gen_pdnsd_config() {
 }
 
 stop_dnsmasq() {
-	if [ "$TCP_NODE1" == "nil" ]; then
-		rm -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf
-		rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
-		rm -rf $TMP_DNSMASQ_PATH
-		/etc/init.d/dnsmasq restart 2>/dev/null
-		echolog "没有选择节点！"
-	fi
+	rm -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf
+	rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
+	rm -rf $TMP_DNSMASQ_PATH
+	/etc/init.d/dnsmasq restart 2>/dev/null
 }
 
 start_haproxy() {
@@ -1136,11 +1109,9 @@ boot() {
 }
 
 start() {
-	#防止并发启动
+	! load_config && return 1
 	[ -f "$LOCK_FILE" ] && return 3
 	touch "$LOCK_FILE"
-	echolog "开始运行脚本！"
-	! load_config && return 1
 	add_vps_port
 	start_haproxy
 	start_socks5_proxy
@@ -1164,7 +1135,7 @@ stop() {
 	clean_log
 	source $APP_PATH/iptables.sh stop
 	del_vps_port
-	kill_all pdnsd Pcap_DNSProxy brook dns2socks haproxy dns-forwarder chinadns dnsproxy ipt2socks
+	kill_all pdnsd brook dns2socks haproxy chinadns ipt2socks
 	ps -w | grep -E "$CONFIG_TCP_FILE|$CONFIG_UDP_FILE|$CONFIG_SOCKS5_FILE" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -E "$CONFIG_PATH" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep "kcptun_client" | grep "$KCPTUN_REDIR_PORT" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &

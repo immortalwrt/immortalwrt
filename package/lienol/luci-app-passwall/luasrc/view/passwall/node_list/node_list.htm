@@ -5,6 +5,7 @@
 	local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 	local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 	local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
+	local compact_display_nodes = api.uci_get_type("global_other", "compact_display_nodes", 1)
 -%>
 
 <style>
@@ -33,6 +34,52 @@ table td, .table .td {
 
 <script type="text/javascript">
 	//<![CDATA[
+	var ajax = {
+		post: function(url, data, fn_success, fn_timeout) {
+			var xhr = new XMLHttpRequest();
+			var code = ajax.encode(data);
+			xhr.open("POST", url, true);
+			xhr.timeout = 2000;
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.ontimeout = function() {
+				fn_timeout(xhr);
+			}
+			xhr.onreadystatechange = function() {
+				if(xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 304)) {
+					var json = null;
+					if (xhr.getResponseHeader("Content-Type") == "application/json") {
+						try {
+							json = eval('(' + xhr.responseText + ')');
+						}
+						catch(e) {
+							json = null;
+						}
+					}
+					fn_success(xhr, json);
+				}
+			};
+			xhr.send(code);
+		},
+		encode: function(obj) {
+			obj = obj ? obj : { };
+			obj['_'] = Math.random();
+
+			if (typeof obj == 'object')
+			{
+				var code = '';
+				var self = this;
+
+				for (var k in obj)
+					code += (code ? '&' : '') +
+						k + '=' + encodeURIComponent(obj[k]);
+
+				return code;
+			}
+
+			return obj;
+		}
+	}
+	
 	var section = "";
 	function open_set_node_div(cbi_id) {
 		section = cbi_id;
@@ -46,58 +93,93 @@ table td, .table .td {
 		document.getElementById("set_node_name").innerHTML = "";
 	}
 	
-	
-	var auto_ping_value = document.getElementsByClassName('auto_ping_value');
-	for(var i = 0; i < auto_ping_value.length; i++) {
-		var cbi_id = auto_ping_value[i].getAttribute("cbiid");
-		var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
-		var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
-		XHR.get('<%=dsp.build_url("admin/vpn/passwall/auto_ping_node")%>', {
-				index: i,
-				address: address,
-				port: port
-			},
-			function(x, result) {
-				auto_ping_value[result.index].innerHTML = (result.ping ? result.ping : "--") + " ms";
-			}
-		);
-	}
-	
 	function set_node(protocol,number) {
 		if (confirm('<%:Are you sure set to%> ' + protocol.toUpperCase() + "_" + number + '<%:the server?%>')==true){
-			XHR.get('<%=dsp.build_url("admin/vpn/passwall/set_node")%>', { "protocol" : protocol , "number" : number , "section" : section },
-				function(x, result) {
-					if(x && x.status == 200) {
-						//window.location.href = '<%=dsp.build_url("admin/vpn/passwall/log")%>'
-					}
-				}
-			);
-			window.location.href = '<%=dsp.build_url("admin/vpn/passwall/log")%>'
+			window.location.href = '<%=dsp.build_url("admin/vpn/passwall/set_node")%>?protocol=' + protocol + '&number=' + number + '&section=' + section;
 		}
 	}
 	
 	function ping_node(cbi_id,dom) {
-		var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
-		var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
-		XHR.get('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+		<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
+			var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
+			var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
+			var address = address_full.substring(0, address_full.lastIndexOf(":"));
+			var port = address_full.substring(address_full.lastIndexOf(":") + 1);
+		<% else %>
+			var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
+			var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
+		<% end %>
+		if ((address != null && address != "") && (port != null && port != "")) {
+			XHR.get('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+					address: address,
+					port: port
+				},
+				function(x, result) {
+					if(x && x.status == 200) {
+						if (result.ping != null && result.ping != "")
+							dom.outerHTML = result.ping + " ms";
+						else
+							dom.outerHTML = "--";
+					}
+				}
+			);
+		}
+	}
+	
+	/* 自动Ping */
+	var node_list = [];
+	var auto_ping_value = document.getElementsByClassName('auto_ping_value');
+	for(var i = 0; i < auto_ping_value.length; i++) {
+		var cbi_id = auto_ping_value[i].getAttribute("cbiid");
+		<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
+			var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
+			var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
+			var address = address_full.substring(0, address_full.lastIndexOf(":"));
+			var port = address_full.substring(address_full.lastIndexOf(":") + 1);
+		<% else %>
+			var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
+			var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
+		<% end %>
+		if ((address != null && address != "") && (port != null && port != "")) {
+			var data = {
+				index: i,
 				address: address,
 				port: port
+			};
+			node_list.push(data);
+		}
+	}
+	
+	var index = 0;
+	function auto_ping() {
+		if (index >= node_list.length){ 
+			return;
+		}
+		var json = JSON.stringify(node_list[index]);
+		ajax.post('<%=dsp.build_url("admin/vpn/passwall/auto_ping_node_list")%>', {
+				json: json
 			},
 			function(x, result) {
 				if(x && x.status == 200) {
-					if (result.ping != null && result.ping != "")
-						dom.outerHTML = result.ping + " ms";
-					else
-						dom.outerHTML = "--";
+					auto_ping_value[result.index].innerHTML = (result.ping ? result.ping : "--") + " ms";
 				}
-			}
+				index++;
+				auto_ping();
+			},
+			function(x) {
+				index++;
+				auto_ping();
+			},
 		);
 	}
+	
+	auto_ping();
+	
 	//]]>
 </script>
 
 <div id="set_node_div">
-	<div class="cbi-value">您选择的服务器是：<span id="set_node_name"></span></div>
+	<div class="cbi-value"><%:You choose node is:%><span id="set_node_name"></span></div>
 	<div class="cbi-value">
 		<% if tcp_node_num and tonumber(tcp_node_num) >= 1 then %>
 			<% for i = 1, tcp_node_num, 1 do %>

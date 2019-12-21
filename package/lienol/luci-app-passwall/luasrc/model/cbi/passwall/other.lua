@@ -51,19 +51,6 @@ s = m:section(TypedSection, "global_dns", translate("DNS Settings"))
 s.anonymous = true
 s.addremove = false
 
----- DNS Forward Address
-o = s:option(Value, "dns_forward", translate("DNS Forward Address"))
-o.rmempty = false
-o.default = "8.8.4.4:53"
-o:value("8.8.4.4:53", "8.8.4.4:53(Google DNS1)")
-o:value("8.8.8.8:53", "8.8.8.8:53(Google DNS2)")
-o:value("208.67.222.222:53", "208.67.222.222:53(OpenDNS DNS1_53)")
-o:value("208.67.222.222:5353", "208.67.222.222:5353(OpenDNS DNS1_5353)")
-o:value("208.67.222.222:443", "208.67.222.222:443(OpenDNS DNS1_443)")
-o:value("208.67.220.220:53", "208.67.220.220:53(OpenDNS DNS2_53)")
-o:value("208.67.220.220:5353", "208.67.220.220:5353(OpenDNS DNS2_5353)")
-o:value("208.67.220.220:443", "208.67.220.220:443(OpenDNS DNS2_443)")
-
 ---- Mainland DNS Sever 1
 o = s:option(Value, "dns_1", translate("Mainland DNS Sever 1"))
 o.rmempty = false

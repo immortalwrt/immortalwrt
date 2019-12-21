@@ -90,8 +90,8 @@ for i = 1, socks5_node_num, 1 do
 end
 
 ---- DNS Forward Mode
-o = s:option(ListValue, "dns_mode", translate("DNS Forward Mode"),
-             translate("if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq"))
+o = s:option(ListValue, "dns_mode", translate("DNS Forward Mode"), translate(
+                 "if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq"))
 o.rmempty = false
 o:reset_values()
 if is_installed("openwrt_chinadns") or is_finded("chinadns") then
@@ -100,14 +100,19 @@ end
 if is_installed("dns2socks") or is_finded("dns2socks") then
     o:value("dns2socks", "dns2socks " .. translate("Need Socks5 server"))
 end
-if is_installed("pcap-dnsproxy") or is_finded("Pcap_DNSProxy") then
-    o:value("Pcap_DNSProxy", "Pcap_DNSProxy")
-end
 if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
     o:value("pdnsd", "pdnsd")
 end
 o:value("local_7913", translate("Use local port 7913 as DNS"))
 o:value("nonuse", translate("No patterns are used"))
+
+o = s:option(Value, "dns2socks_forward", translate("DNS Forward Address"))
+o.default = "8.8.4.4"
+o:value("8.8.4.4", "8.8.4.4(Google DNS1)")
+o:value("8.8.8.8", "8.8.8.8(Google DNS2)")
+o:value("208.67.222.222", "208.67.222.222(OpenDNS DNS1)")
+o:value("208.67.220.220", "208.67.220.220(OpenDNS DNS2)")
+o:depends("dns_mode", "dns2socks")
 
 ---- upstreamm DNS Server for ChinaDNS
 o = s:option(ListValue, "up_chinadns_mode",
@@ -115,12 +120,6 @@ o = s:option(ListValue, "up_chinadns_mode",
                  "Domestic DNS server 1 in advanced Settings is used as domestic DNS by default"))
 o.default = "OpenDNS_1"
 o:depends("dns_mode", "chinadns")
-if is_installed("dnsproxy") or is_finded("dnsproxy") then
-    o:value("dnsproxy", "dnsproxy")
-end
-if is_installed("dns-forwarder") or is_finded("dns-forwarder") then
-    o:value("dns-forwarder", "dns-forwarder")
-end
 o:value("OpenDNS_1", "OpenDNS_1")
 o:value("OpenDNS_2", "OpenDNS_2")
 o:value("custom", translate("custom"))

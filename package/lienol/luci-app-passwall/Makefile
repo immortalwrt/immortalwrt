@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2019 Lienol
+# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
 #
 # This is free software, licensed under the Apache License, Version 2.0 .
 #
@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.0
-PKG_RELEASE:=127-20191214
+PKG_RELEASE:=135-20191220
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PO2LMO:=./po2lmo
@@ -67,11 +67,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd
 	
 config PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks
 	bool "Include dns2socks"
-	default n
-	
-config PACKAGE_$(PKG_NAME)_INCLUDE_dns-forwarder
-	bool "Include dns-forwarder"
-	default n
+	default y
 
 endmenu
 endef
@@ -95,8 +91,7 @@ define Package/$(PKG_NAME)
   +PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy \
   +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns \
   +PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd:pdnsd-alt \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks:dns2socks \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_dns-forwarder:dns-forwarder
+  +PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks:dns2socks
 endef
 
 define Build/Prepare

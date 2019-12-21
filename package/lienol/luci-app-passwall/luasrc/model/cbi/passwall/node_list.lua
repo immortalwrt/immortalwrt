@@ -19,7 +19,11 @@ o.default = 1
 ---- Auto Ping
 o = s:option(Flag, "auto_ping", translate("Auto Ping"),
              translate("This will automatically ping the node for latency"))
-o.default = 0
+o.default = 1
+
+---- Concise display nodes
+o = s:option(Flag, "compact_display_nodes", translate("Concise display nodes"))
+o.default = 1
 
 -- [[ Add the node via the link ]]--
 s:append(Template("passwall/node_list/link_add_node"))
@@ -27,7 +31,6 @@ s:append(Template("passwall/node_list/link_add_node"))
 -- [[ Node List ]]--
 s = m:section(TypedSection, "nodes")
 s.anonymous = true
-s.sortable = true
 s.addremove = true
 s.template = "cbi/tblsection"
 s.extedit = d.build_url("admin", "vpn", "passwall", "node_config", "%s")
@@ -43,32 +46,62 @@ function s.remove(t, a)
     luci.http.redirect(d.build_url("admin", "vpn", "passwall", "node_list"))
 end
 
----- Remarks
-o = s:option(DummyValue, "remarks", translate("Remarks"))
-
----- Add Mode
-o = s:option(DummyValue, "add_mode", translate("Add Mode"))
-o.cfgvalue = function(t, n)
-    local v = Value.cfgvalue(t, n)
-    if v and v ~= '' then
-        return v
-    else
-        return '手动'
+-- 简洁模式
+if api.uci_get_type("global_other", "compact_display_nodes", "1") == "1" then
+    o = s:option(DummyValue, "group", translate("Group"))
+    o.width = "25%"
+    o.cfgvalue = function(t, n)
+        local group = api.uci_get_type_id(n, "group") or "无"
+        return group ~= "" and group or "无"
     end
-    return str
-end
 
----- Type
-o = s:option(DummyValue, "type", translate("Type"))
+    o = s:option(DummyValue, "remarks", translate("Remarks"))
+    o.cfgvalue = function(t, n)
+        local str = ""
+        local is_sub = api.uci_get_type_id(n, "is_sub") or ""
+        local group = api.uci_get_type_id(n, "group") or ""
+        local remarks = api.uci_get_type_id(n, "remarks") or ""
+        local type = api.uci_get_type_id(n, "type") or ""
+        local address = api.uci_get_type_id(n, "address") or ""
+        local port = api.uci_get_type_id(n, "port") or ""
+        if is_sub == "" and group == "" then
+            str = str .. type .. "："
+        end
+        str = str .. remarks
+        if address ~= "" and port ~= "" then
+            local s = " （" .. address .. ":" .. port .. "）"
+            str = str .. s
+        end
+        return str
+    end
+else
+    s.sortable = true
+    ---- Remarks
+    o = s:option(DummyValue, "remarks", translate("Remarks"))
 
----- Address
-o = s:option(DummyValue, "address", translate("Address"))
+    ---- Add Mode
+    o = s:option(DummyValue, "add_mode", translate("Add Mode"))
+    o.cfgvalue = function(t, n)
+        local v = Value.cfgvalue(t, n)
+        if v and v ~= '' then
+            return v
+        else
+            return '手动'
+        end
+        return str
+    end
 
----- Port
-o = s:option(DummyValue, "port", translate("Port"))
+    ---- Type
+    o = s:option(DummyValue, "type", translate("Type"))
 
----- Encrypt Method
---[[ o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
+    ---- Address
+    o = s:option(DummyValue, "address", translate("Address"))
+
+    ---- Port
+    o = s:option(DummyValue, "port", translate("Port"))
+
+    ---- Encrypt Method
+    --[[ o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
 o.width = "15%"
 o.cfgvalue = function(t, n)
     local str = "无"
@@ -82,9 +115,11 @@ o.cfgvalue = function(t, n)
     end
     return str
 end--]]
+end
 
 ---- Ping
 o = s:option(DummyValue, "ping", translate("Ping"))
+o.width = "10%"
 if api.uci_get_type("global_other", "auto_ping", "0") == "0" then
     o.template = "passwall/node_list/ping"
 else

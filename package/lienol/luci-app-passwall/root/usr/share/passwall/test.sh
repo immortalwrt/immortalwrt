@@ -11,6 +11,7 @@ test_url() {
 	status=$(/usr/bin/curl -I -o /dev/null -s --connect-timeout 3 -w %{http_code} "$1" | grep 200)
 	[ "$?" != 0 ] && {
 		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=3 "$1")
+		[ "$?" == 0 ] && status=200
 	}
 	echo $status
 }

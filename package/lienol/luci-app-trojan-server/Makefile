@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Lienol
+# Copyright (C) 2019-2020 Lienol
 #
 # This is free software, licensed under the Apache License, Version 2.0 .
 #
@@ -10,9 +10,9 @@ LUCI_TITLE:=LuCI support for Trojan Server
 LUCI_DEPENDS:=+luci-lib-jsonc +trojan 
 LUCI_PKGARCH:=all
 PKG_VERSION:=1.0
-PKG_RELEASE:=2-20191207
+PKG_RELEASE:=3-20191220
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../luci_my.mk
 
 # call BuildPackage - OpenWrt buildroot signature
 

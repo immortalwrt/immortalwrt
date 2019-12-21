@@ -28,36 +28,13 @@ o.default = 0
 o:depends("auto_update", 1)
 
 -- [[ Subscribe Settings ]]--
-s = m:section(TypedSection, "global_subscribe", translate("Node Subscribe"))
+s = m:section(TypedSection, "global_subscribe", translate("Node Subscribe"),
+              translate(
+                  "Please input the subscription url first, save and submit before updating. If you subscribe to update, it is recommended to delete all subscriptions and then re-subscribe."))
 s.anonymous = true
 
----- Subscribe URL
-o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"),
-             translate(
-                 "Please input the subscription url first, save and submit before updating. If you subscribe to update, it is recommended to delete all subscriptions and then re-subscribe."))
-
----- Subscribe Manually update
-o = s:option(Button, "_update", translate("Manually update"))
-o.inputstyle = "apply"
-function o.write(e, e)
-    luci.sys
-        .call("nohup /usr/share/passwall/subscription.sh > /dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
-                                                 "log"))
-end
-
----- Subscribe Delete All
-o = s:option(Button, "_stop", translate("Delete All Subscribe Node"))
-o.inputstyle = "remove"
-function o.write(e, e)
-    luci.sys.call(
-        "nohup /usr/share/passwall/subscription.sh stop > /dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
-                                                 "log"))
-end
-
 ---- Subscribe via proxy
-o = s:option(Flag, "subscribe_by_ss", translate("Subscribe via proxy"))
+o = s:option(Flag, "subscribe_proxy", translate("Subscribe via proxy"))
 o.default = 0
 o.rmempty = false
 
@@ -80,6 +57,43 @@ o = s:option(ListValue, "time_update_subscribe", translate("Day update rules"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update_subscribe", 1)
+
+---- Subscribe Manually update
+o = s:option(Button, "_update", translate("Manually update"))
+o.inputstyle = "apply"
+function o.write(e, e)
+    luci.sys
+        .call("nohup /usr/share/passwall/subscription.sh > /dev/null 2>&1 &")
+    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
+                                                 "log"))
+end
+
+---- Subscribe Delete All
+o = s:option(Button, "_stop", translate("Delete All Subscribe Node"))
+o.inputstyle = "remove"
+function o.write(e, e)
+    luci.sys.call(
+        "nohup /usr/share/passwall/subscription.sh stop > /dev/null 2>&1 &")
+    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
+                                                 "log"))
+end
+
+s = m:section(TypedSection, "subscribe_list")
+s.addremove = true
+s.anonymous = true
+s.sortable = true
+s.template = "cbi/tblsection"
+
+o = s:option(Flag, "enabled", translate("Enabled"))
+o.rmempty = false
+
+o = s:option(Value, "remark", translate("Subscribe Remark"))
+o.width = "auto"
+o.rmempty = false
+
+o = s:option(Value, "url", translate("Subscribe URL"))
+o.width = "auto"
+o.rmempty = false
 
 -- [[ App Settings ]]--
 s = m:section(TypedSection, "global_app", translate("App Update"),

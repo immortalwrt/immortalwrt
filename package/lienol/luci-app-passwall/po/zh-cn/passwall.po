@@ -232,6 +232,9 @@ msgstr "你确定要设为"
 msgid "the server?"
 msgstr "服务器吗？"
 
+msgid "You choose node is:"
+msgstr "你选择的节点是："
+
 msgid "The server client can also use this rule to scientifically surf the Internet"
 msgstr "本机服务器的客户端也可以使用这个代理模式上网"
 
@@ -268,6 +271,9 @@ msgstr "Ping延迟"
 msgid "Ping Value"
 msgstr "Ping值"
 
+msgid "Group"
+msgstr "组"
+
 msgid "Use TCPing"
 msgstr "使用TCPing"
 
@@ -279,6 +285,9 @@ msgstr "自动Ping"
 
 msgid "This will automatically ping the node for latency"
 msgstr "选中后保存应用后即自动Ping节点"
+
+msgid "Concise display nodes"
+msgstr "简洁显示节点"
 
 msgid "Apply"
 msgstr "应用"
@@ -546,6 +555,9 @@ msgstr "如果你希望从内存中运行，请更改路径，例如/tmp/brook�
 
 msgid "Node Subscribe"
 msgstr "节点订阅"
+
+msgid "Subscribe Remark"
+msgstr "订阅备注（机场）"
 
 msgid "Subscribe URL"
 msgstr "订阅网址"

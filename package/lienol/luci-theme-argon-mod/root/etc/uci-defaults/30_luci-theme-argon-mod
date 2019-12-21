@@ -1,0 +1,11 @@
+#!/bin/sh
+uci batch <<-EOF
+	set luci.themes.Argon_Light=/luci-static/argon_light
+	set luci.themes.Argon_Light_Green=/luci-static/argon_light_green
+	set luci.themes.Argon_Dark=/luci-static/argon_dark
+	set luci.themes.Argon_Dark_Purple=/luci-static/argon_dark_purple
+	delete luci.themes.Argon_MC1
+	delete luci.themes.Argon_MC2
+	commit luci
+EOF
+exit 0
