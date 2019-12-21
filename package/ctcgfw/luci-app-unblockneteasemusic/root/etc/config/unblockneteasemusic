@@ -8,6 +8,8 @@ config unblockneteasemusic
 	option auto_update '1'
 	option update_time '3'
 	option advanced_mode '0'
+	option daemon_enable '0'
+	option keep_core_when_upgrade '0'
 	option pub_access '0'
 	option strict_mode '0'
 	option netease_server_ip '59.111.181.38'

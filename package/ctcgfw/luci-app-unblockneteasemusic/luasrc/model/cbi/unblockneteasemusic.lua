@@ -71,6 +71,18 @@ advanced_mode.description = translate("仅推荐高级玩家使用")
 advanced_mode.default = 0
 advanced_mode.rmempty = false
 
+daemon_enable = s:option(Flag, "daemon_enable", translate("启用进程守护"))
+daemon_enable.description = translate("开启后，附属程序会自动检测主程序运行状态，在主程序退出时自动重启")
+daemon_enable.default = 0
+daemon_enable.rmempty = false
+daemon_enable:depends("advanced_mode", 1)
+
+keep_core_when_upgrade = s:option(Flag, "keep_core_when_upgrade", translate("升级时保留核心程序"))
+keep_core_when_upgrade.description = translate("默认情况下，在OpenWrt升级后会导致核心程序丢失，开启此选项后会保留当前下载的核心程序")
+keep_core_when_upgrade.default = 0
+keep_core_when_upgrade.rmempty = false
+keep_core_when_upgrade:depends("advanced_mode", 1)
+
 pub_access = s:option(Flag, "pub_access", translate("部署到公网"))
 pub_access.description = translate("默认仅监听局域网，如需提供公开访问请勾选此选项")
 pub_access.default = 0
@@ -78,7 +90,7 @@ pub_access.rmempty = false
 pub_access:depends("advanced_mode", 1)
 
 strict_mode = s:option(Flag, "strict_mode", translate("启用严格模式"))
-strict_mode.description = translate("[慎用] 若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求")
+strict_mode.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求；注意：该模式下只能使用 IPSet方式进行劫持和PAC方式进行代理")
 strict_mode.default = 0
 strict_mode.rmempty = false
 strict_mode:depends("advanced_mode", 1)
