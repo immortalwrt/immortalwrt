@@ -90,7 +90,7 @@ pub_access.rmempty = false
 pub_access:depends("advanced_mode", 1)
 
 strict_mode = s:option(Flag, "strict_mode", translate("启用严格模式"))
-strict_mode.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求；注意：该模式下只能使用 IPSet方式进行劫持和PAC方式进行代理")
+strict_mode.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求；注意：该模式下只能使用PAC方式进行代理")
 strict_mode.default = 0
 strict_mode.rmempty = false
 strict_mode:depends("advanced_mode", 1)
