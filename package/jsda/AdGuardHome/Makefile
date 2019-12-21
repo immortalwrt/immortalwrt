@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=AdGuardHome
 PKG_VERSION:=snapshot
-PKG_RELEASE:=d9ee9b8
+PKG_RELEASE:=r1740-32f7803
 
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH_AdGuardHome:=linux_amd64
@@ -70,7 +70,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome $(1)/usr/bin/AdGuardHome
 	$(INSTALL_DIR) $(1)/etc/AdGuardHome
-	$(INSTALL_CONF) ./files/conf/$(ADG_CONF_NAME).yaml $(1)/etc/AdGuardHome/AdGuardHome.yaml
+	$(INSTALL_CONF) ./conf/$(ADG_CONF_NAME).yaml $(1)/etc/AdGuardHome/AdGuardHome.yaml
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

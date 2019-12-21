@@ -1,0 +1,150 @@
+bind_host: 0.0.0.0
+bind_port: 3001
+users:
+- name: AdGuardHome
+  password: $2y$05$r.WXZfS0JbDj01xXmScIiuFPirVYB2FXmH0o1CUgyECxPNMlkWorq
+language: zh-cn
+rlimit_nofile: 61500
+web_session_ttl: 720
+dns:
+  bind_host: 0.0.0.0
+  port: 5333
+  statistics_interval: 30
+  querylog_enabled: true
+  querylog_interval: 30
+  querylog_memsize: 0
+  protection_enabled: true
+  blocking_mode: nxdomain
+  blocking_ipv4: ""
+  blocking_ipv6: ""
+  blocked_response_ttl: 3000
+  ratelimit: 0
+  ratelimit_whitelist: []
+  refuse_any: false
+  bootstrap_dns:
+  - 1.0.0.1:53
+  - 2606:4700:4700::1001:53
+  all_servers: true
+  edns_client_subnet: true
+  allowed_clients:
+  - 127.0.0.1
+  disallowed_clients: []
+  blocked_hosts: []
+  parental_block_host: family-block.dns.adguard.com
+  safebrowsing_block_host: standard-block.dns.adguard.com
+  cache_size: 100000
+  upstream_dns:
+  - 202.141.178.13:5353
+  - 202.38.93.153:5353
+  - 202.141.162.123:5353
+  - https://neatdns.ustclug.org/resolve
+  - https://dns.rubyfish.cn/dns-query
+  - https://ndns.233py.com/dns-query
+  - https://edns.233py.com/dns-query
+  - https://wdns.233py.com/dns-query
+  - https://sdns.233py.com/dns-query
+  - 1.1.1.1
+  - 9.9.9.9
+  - 117.50.10.10
+  - 119.29.29.29
+  - 114.114.114.114
+  - 223.5.5.5
+  - 208.67.222.222:5353
+  - 2606:4700:4700::1111
+  - 2606:4700:4700::1001
+  - tcp://8.8.8.8
+  - tcp://8.8.4.4
+  - tcp://2001:4860:4860::8888
+  - tcp://2001:4860:4860::8844
+  - tls://dns.google
+  - tls://1dot1dot1dot1.cloudflare-dns.com
+  - https://dns9.quad9.net/dns-query
+  filtering_enabled: true
+  filters_update_interval: 24
+  parental_sensitivity: 0
+  parental_enabled: false
+  safesearch_enabled: false
+  safebrowsing_enabled: false
+  safebrowsing_cache_size: 1048576
+  safesearch_cache_size: 1048576
+  parental_cache_size: 1048576
+  cache_time: 30
+  rewrites: []
+  blocked_services: []
+tls:
+  enabled: false
+  server_name: ""
+  force_https: false
+  port_https: 443
+  port_dns_over_tls: 853
+  certificate_chain: ""
+  private_key: ""
+  certificate_path: ""
+  private_key_path: ""
+filters:
+- enabled: true
+  url: https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+  name: AdGuard Simplified Domain Names filter
+  id: 1
+- enabled: true
+  url: https://adaway.org/hosts.txt
+  name: AdAway
+  id: 2
+- enabled: true
+  url: https://hosts-file.net/ad_servers.txt
+  name: hpHosts - Ad and Tracking servers only
+  id: 3
+- enabled: true
+  url: http://www.malwaredomainlist.com/hostslist/hosts.txt
+  name: MalwareDomainList.com Hosts List
+  id: 4
+- enabled: true
+  url: https://raw.githubusercontent.com/523860169/list/master/ad.txt
+  name: My AdFilters
+  id: 1553073381
+- enabled: true
+  url: http://tools.yiclear.com/ChinaList2.0.txt
+  name: ChinaListV2.0[20191126000]
+  id: 1553073382
+- enabled: true
+  url: https://easylist-downloads.adblockplus.org/antiadblockfilters.txt
+  name: Adblock Warning Removal List
+  id: 1553073383
+- enabled: true
+  url: https://fanboy.co.nz/fanboy-problematic-sites.txt
+  name: Fanboy's problematic-sites
+  id: 1553073384
+- enabled: true
+  url: https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/ABP-FX.txt
+  name: "5"
+  id: 1553073385
+- enabled: true
+  url: https://raw.githubusercontent.com/adbyby/xwhyc-rules/master/lazy.txt
+  name: "6"
+  id: 1553073386
+- enabled: true
+  url: https://hosts.nfz.moe/127.0.0.1/full/hosts
+  name: "7"
+  id: 1553073387
+- enabled: true
+  url: https://raw.githubusercontent.com/vokins/yhosts/master/hosts
+  name: "8"
+  id: 1553073388
+- enabled: true
+  url: http://sub.adtchrome.com/adt-chinalist-easylist.txt
+  name: ChinaList+EasyList(修正)
+  id: 1553073405
+user_rules: []
+dhcp:
+  enabled: false
+  interface_name: ""
+  gateway_ip: ""
+  subnet_mask: ""
+  range_start: ""
+  range_end: ""
+  lease_duration: 0
+  icmp_timeout_msec: 1000
+clients: []
+log_file: ""
+verbose: false
+schema_version: 6
