@@ -49,14 +49,17 @@ network_table = m:section(Table, network_list, translate("Networks"))
 network_table.nodescr=true
 
 network_selecter = network_table:option(Flag, "_selected","")
+network_selecter.template = "cbi/xfvalue"
 network_id = network_table:option(DummyValue, "_id", translate("ID"))
 network_selecter.disabled = 0
 network_selecter.enabled = 1
 network_selecter.default = 0
-for k, v in pairs(network_list) do
-  if v["_name"] ~= "bridge" and v["_name"] ~= "none" and v["_name"] ~= "host" then
-    network_selecter:depends("_name", v["_name"])
+network_selecter.render = function(self, section, scope)
+  self.disable = 0
+  if network_list[section]["_name"] == "bridge" or network_list[section]["_name"] == "none" or network_list[section]["_name"] == "host" then
+    self.disable = 1
   end
+  Flag.render(self, section, scope)
 end
 
 network_name = network_table:option(DummyValue, "_name", translate("Name"))

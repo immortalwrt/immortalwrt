@@ -3,9 +3,13 @@
   function resolv_container(op) {
     let s = document.getElementById(op + '-status');
     if (!s) return;
-    let cmd_line = prompt("Plese input <docker create> command line:", "");
+    let cmd_line = prompt("Plese input <docker create/run> command line:", "");
     if (cmd_line == null || cmd_line == "") {
       s.innerHTML = "<font color='red'>Canceled</font>";
+      return;
+    }
+    if (! cmd_line.match("^docker")) {
+      s.innerHTML = "<font color='red'>Command line Error</font>";
       return;
     }
     let re = /\/admin\/docker\/newcontainer\//

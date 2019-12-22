@@ -32,13 +32,23 @@ if cmd_line and cmd_line:match("^docker.+") then
     -- skip '\'
     if w == '\\' then
     -- start with '-'
-    elseif w:match("^%-+(.+)") and cursor <= 1 then
-      local v = w:match("^%-+.-=(.+)")
-      if v then
-        key = w:match("^%-+(.-)=.+"):lower()
-      else
-        key = w:match("^%-+(.+)"):lower()
+    elseif w:match("^%-+.+") and cursor <= 1 then
+      --key=value
+      local val
+      key, val = w:match("^%-%-(.-)=(.+)")
+      -- -dit
+      if not key then key = w:match("^%-%-(.+)") end
+      
+      if not key then
+        key = w:match("^%-(.+)")
+        if key:match("i") or key:match("t") or key:match("d") then
+          if key:match("i") then default_config["interactive"] = true end
+          if key:match("t") then default_config["tty"] = true end
+          -- clear key
+          key = nil
+        end
       end
+      
       if key == "v" or key == "volume" then
         key = "mount"
       elseif key == "p" then
@@ -55,24 +65,28 @@ if cmd_line and cmd_line:match("^docker.+") then
         key = "blkioweight"
       elseif key == "privileged" then
         default_config["privileged"] = 1
+        key = nil
       end
-      if v then
+      --key=value
+      if val then
         if key == "mount" or key == "link" or key == "env" or key == "port" or key == "device" or key == "tmpfs" then
           if not default_config[key] then default_config[key] = {} end
-          table.insert( default_config[key], v )
+          table.insert( default_config[key], val )
         else
-          default_config[key] = v
+          default_config[key] = val
         end
+        -- clear key
+        key = nil
       end
+      cursor = 1
     -- value
-    elseif key and type(key) == "string" then
+    elseif key and type(key) == "string" and cursor == 1 then
       if key == "mount" or key == "link" or key == "env" or key == "port" or key == "device" or key == "tmpfs" then
         if not default_config[key] then default_config[key] = {} end
         table.insert( default_config[key], w )
       else
         default_config[key] = w
       end
-
       if key == "cpus" or key == "cpushare" or key == "memory" or key == "blkioweight" or key == "device" or key == "tmpfs" then
         default_config["advance"] = 1
       end
@@ -95,6 +109,8 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
   if next(create_body) ~= nil then
     default_config.name = nil
     default_config.image = create_body.Image
+    default_config.tty = create_body.Tty
+    default_config.interactive = create_body.OpenStdin
     default_config.privileged = create_body.HostConfig.Privileged and 1 or 0
     default_config.restart =  create_body.HostConfig.RestartPolicy and create_body.HostConfig.RestartPolicy.name or nil
     default_config.network = create_body.HostConfig.NetworkMode == "default" and "bridge" or create_body.HostConfig.NetworkMode
@@ -151,6 +167,19 @@ d.template = "docker/resolv_container"
 
 d = s:option(Value, "name", translate("Container Name"))
 d.rmempty = true
+d.default = default_config.name or nil
+
+d = s:option(Flag, "interactive", translate("Interactive (-i)"))
+d.rmempty = true
+d.disabled = 0
+d.enabled = 1
+d.default = default_config.interactive and 1 or 0
+
+d = s:option(Flag, "tty", translate("TTY (-t)"))
+d.rmempty = true
+d.disabled = 0
+d.enabled = 1
+d.default = default_config.tty and 1 or 0
 
 d = s:option(Flag, "_force_pull", translate("Always pull image first"))
 d.rmempty = true
@@ -158,7 +187,6 @@ d.disabled = 0
 d.enabled = 1
 d.default = 0
 
-d.default = default_config.name or nil
 d = s:option(Value, "image", translate("Docker Image"))
 d.rmempty = true
 d.default = default_config.image or nil
@@ -296,6 +324,8 @@ m.handle = function(self, state, data)
   if state == FORM_VALID then
     local tmp
     local name = data.name
+    local tty = data.tty
+    local interactive = data.interactive
     local image = data.image
     local user = data.user
     if not image:match(".-:.+") then
@@ -385,6 +415,8 @@ m.handle = function(self, state, data)
     end
 
     create_body.Hostname = name
+    create_body.Tty = tty and true or false
+    create_body.OpenStdin = interactive and true or false
     create_body.User = user
     create_body.Cmd = (#command ~= 0) and command or nil
     create_body.Env = env
