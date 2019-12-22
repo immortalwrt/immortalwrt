@@ -13,9 +13,10 @@ gre_generic_setup() {
 	local local="$3"
 	local remote="$4"
 	local link="$5"
-	local mtu ipv6 ttl tos zone ikey okey icsum ocsum iseqno oseqno multicast
-	json_get_vars mtu ipv6 ttl tos zone ikey okey icsum ocsum iseqno oseqno multicast
+	local mtu ttl tos zone ikey okey icsum ocsum iseqno oseqno multicast
+	json_get_vars mtu ttl tos zone ikey okey icsum ocsum iseqno oseqno multicast
 
+	[ -z "$zone" ] && zone="wan"
 	[ -z "$multicast" ] && multicast=1
 
 	proto_init_update "$link" 1
@@ -23,7 +24,6 @@ gre_generic_setup() {
 	proto_add_tunnel
 	json_add_string mode "$mode"
 	json_add_int mtu "${mtu:-1280}"
-	json_add_boolean ipv6 "${ipv6:-1}"
 	[ -n "$df" ] && json_add_boolean df "$df"
 	[ -n "$ttl" ] && json_add_int ttl "$ttl"
 	[ -n "$tos" ] && json_add_string tos "$tos"
@@ -57,7 +57,7 @@ gre_setup() {
 	local remoteip
 
 	local ipaddr peeraddr
-	json_get_vars df ipaddr peeraddr tunlink nohostroute
+	json_get_vars df ipaddr peeraddr tunlink
 
 	[ -z "$peeraddr" ] && {
 		proto_notify_error "$cfg" "MISSING_PEER_ADDRESS"
@@ -77,9 +77,7 @@ gre_setup() {
 		break
 	done
 
-	if [ "${nohostroute}" != "1" ]; then
-		( proto_add_host_dependency "$cfg" "$peeraddr" "$tunlink" )
-	fi
+	( proto_add_host_dependency "$cfg" "$peeraddr" "$tunlink" )
 
 	[ -z "$ipaddr" ] && {
 		local wanif="$tunlink"
@@ -136,7 +134,7 @@ grev6_setup() {
 	local remoteip6
 
 	local ip6addr peer6addr weakif
-	json_get_vars ip6addr peer6addr tunlink weakif encaplimit nohostroute
+	json_get_vars ip6addr peer6addr tunlink weakif encaplimit
 
 	[ -z "$peer6addr" ] && {
 		proto_notify_error "$cfg" "MISSING_PEER_ADDRESS"
@@ -156,9 +154,7 @@ grev6_setup() {
 		break
 	done
 
-	if [ "${nohostroute}" != "1" ]; then
-		( proto_add_host_dependency "$cfg" "$peer6addr" "$tunlink" )
-	fi
+	( proto_add_host_dependency "$cfg" "$peer6addr" "$tunlink" )
 
 	[ -z "$ip6addr" ] && {
 		local wanif="$tunlink"
@@ -249,7 +245,6 @@ gre_generic_init_config() {
 	available=1
 
 	proto_config_add_int "mtu"
-	proto_config_add_boolean "ipv6"
 	proto_config_add_int "ttl"
 	proto_config_add_string "tos"
 	proto_config_add_string "tunlink"
@@ -268,7 +263,6 @@ proto_gre_init_config() {
 	proto_config_add_string "ipaddr"
 	proto_config_add_string "peeraddr"
 	proto_config_add_boolean "df"
-	proto_config_add_boolean "nohostroute"
 }
 
 proto_gretap_init_config() {
@@ -282,7 +276,6 @@ proto_grev6_init_config() {
 	proto_config_add_string "peer6addr"
 	proto_config_add_string "weakif"
 	proto_config_add_string "encaplimit"
-	proto_config_add_boolean "nohostroute"
 }
 
 proto_grev6tap_init_config() {
