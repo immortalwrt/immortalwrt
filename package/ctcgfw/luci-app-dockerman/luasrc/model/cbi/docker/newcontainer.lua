@@ -64,7 +64,7 @@ if cmd_line and cmd_line:match("^docker.+") then
       elseif key == "blkio-weight" then
         key = "blkioweight"
       elseif key == "privileged" then
-        default_config["privileged"] = 1
+        default_config["privileged"] = true
         key = nil
       end
       --key=value
@@ -109,9 +109,9 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
   if next(create_body) ~= nil then
     default_config.name = nil
     default_config.image = create_body.Image
-    default_config.tty = create_body.Tty
-    default_config.interactive = create_body.OpenStdin
-    default_config.privileged = create_body.HostConfig.Privileged and 1 or 0
+    default_config.tty = create_body.Tty and true or false
+    default_config.interactive = create_body.OpenStdin and true or false
+    default_config.privileged = create_body.HostConfig.Privileged and true or false
     default_config.restart =  create_body.HostConfig.RestartPolicy and create_body.HostConfig.RestartPolicy.name or nil
     default_config.network = create_body.HostConfig.NetworkMode == "default" and "bridge" or create_body.HostConfig.NetworkMode
     default_config.ip = default_config.network and default_config.network ~= "bridge" and default_config.network ~= "host" and default_config.network ~= "null" and create_body.NetworkingConfig.EndpointsConfig[default_config.network].IPAMConfig and create_body.NetworkingConfig.EndpointsConfig[default_config.network].IPAMConfig.IPv4Address or nil
@@ -200,7 +200,7 @@ d = s:option(Flag, "privileged", translate("Privileged"))
 d.rmempty = true
 d.disabled = 0
 d.enabled = 1
-d.default = default_config.privileged or 0
+d.default = default_config.privileged and 1 or 0
 
 d = s:option(ListValue, "restart", translate("Restart policy"))
 d.rmempty = true
@@ -321,182 +321,181 @@ for _, v in ipairs (networks) do
 end
 
 m.handle = function(self, state, data)
-  if state == FORM_VALID then
-    local tmp
-    local name = data.name
-    local tty = data.tty
-    local interactive = data.interactive
-    local image = data.image
-    local user = data.user
-    if not image:match(".-:.+") then
-      image = image .. ":latest"
-    end
-    local privileged = data.privileged
-    local restart = data.restart
-    local env = data.env
-    local network = data.network
-    local ip = (network ~= "bridge" and network ~= "host" and network ~= "none") and data.ip or nil
-    local mount = data.mount
-    local memory = data.memory or 0
-    local cpushares = data.cpushares or 0
-    local cpus = data.cpus or 0
-    local blkioweight = data.blkioweight or 500
+  if state ~= FORM_VALID then return end
+  local tmp
+  local name = data.name
+  local tty = type(data.tty) == "number" and (data.tty == 1 and true or false) or default_config.tty or false
+  local interactive = type(data.interactive) == "number" and (data.interactive == 1 and true or false) or default_config.interactive or false
+  local image = data.image
+  local user = data.user
+  if not image:match(".-:.+") then
+    image = image .. ":latest"
+  end
+  local privileged = type(data.privileged) == "number" and (data.privileged == 1 and true or false) or default_config.privileged or false
+  local restart = data.restart
+  local env = data.env
+  local network = data.network
+  local ip = (network ~= "bridge" and network ~= "host" and network ~= "none") and data.ip or nil
+  local mount = data.mount
+  local memory = data.memory or 0
+  local cpushares = data.cpushares or 0
+  local cpus = data.cpus or 0
+  local blkioweight = data.blkioweight or 500
 
-    local portbindings = {}
-    local exposedports = {}
-    local tmpfs = {}
-    tmp = data.tmpfs
-    if type(tmp) == "table" then
-      for i, v in ipairs(tmp)do
-        local _,_, k,v1 = v:find("(.-):(.+)")
-        if k and v1 then
-          tmpfs[k]=v1
-        end
+  local portbindings = {}
+  local exposedports = {}
+  local tmpfs = {}
+  tmp = data.tmpfs
+  if type(tmp) == "table" then
+    for i, v in ipairs(tmp)do
+      local _,_, k,v1 = v:find("(.-):(.+)")
+      if k and v1 then
+        tmpfs[k]=v1
       end
     end
+  end
 
-    local device = {}
-    tmp = data.device
-    if type(tmp) == "table" then
-      for i, v in ipairs(tmp) do
-        local t = {}
-        local _,_, h, c, p = v:find("(.-):(.-):(.+)")
+  local device = {}
+  tmp = data.device
+  if type(tmp) == "table" then
+    for i, v in ipairs(tmp) do
+      local t = {}
+      local _,_, h, c, p = v:find("(.-):(.-):(.+)")
+      if h and c then
+        t['PathOnHost'] = h
+        t['PathInContainer'] = c
+        t['CgroupPermissions'] = p or nil
+      else
+        local _,_, h, c = v:find("(.-):(.+)")
         if h and c then
           t['PathOnHost'] = h
           t['PathInContainer'] = c
-          t['CgroupPermissions'] = p or nil
-        else
-          local _,_, h, c = v:find("(.-):(.+)")
-          if h and c then
-            t['PathOnHost'] = h
-            t['PathInContainer'] = c
-          end
-        end
-        if next(t) ~= nil then
-          table.insert( device, t )
         end
       end
-    end
-
-    tmp = data.port or {}
-    for i, v in ipairs(tmp) do
-      for v1 ,v2 in string.gmatch(v, "(%d+):([^%s]+)") do
-        local _,_,p= v2:find("^%d+/(%w+)")
-        if p == nil then
-          v2=v2..'/tcp'
-        end
-        portbindings[v2] = {{HostPort=v1}}
-        exposedports[v2] = {HostPort=v1}
+      if next(t) ~= nil then
+        table.insert( device, t )
       end
     end
+  end
 
-    local link = data.link
-    tmp = data.command
-    local command = {}
-    if tmp ~= nil then
-      for v in string.gmatch(tmp, "[^%s]+") do
-        command[#command+1] = v
-      end 
-    end
-    if memory ~= 0 then
-      _,_,n,unit = memory:find("([%d%.]+)([%l%u]+)")
-      if n then
-        unit = unit and unit:sub(1,1):upper() or "B"
-        if  unit == "M" then
-          memory = tonumber(n) * 1024 * 1024
-        elseif unit == "G" then
-          memory = tonumber(n) * 1024 * 1024 * 1024
-        elseif unit == "K" then
-          memory = tonumber(n) * 1024
-        else
-          memory = tonumber(n)
-        end
+  tmp = data.port or {}
+  for i, v in ipairs(tmp) do
+    for v1 ,v2 in string.gmatch(v, "(%d+):([^%s]+)") do
+      local _,_,p= v2:find("^%d+/(%w+)")
+      if p == nil then
+        v2=v2..'/tcp'
       end
+      portbindings[v2] = {{HostPort=v1}}
+      exposedports[v2] = {HostPort=v1}
     end
+  end
 
-    create_body.Hostname = name
-    create_body.Tty = tty and true or false
-    create_body.OpenStdin = interactive and true or false
-    create_body.User = user
-    create_body.Cmd = (#command ~= 0) and command or nil
-    create_body.Env = env
-    create_body.Image = image
-    create_body.ExposedPorts = (next(exposedports) ~= nil) and exposedports or nil
-    create_body.HostConfig = create_body.HostConfig or {}
-    create_body.HostConfig.Binds = (#mount ~= 0) and mount or nil
-    create_body.HostConfig.NetworkMode = network
-    create_body.HostConfig.RestartPolicy = { Name = restart, MaximumRetryCount = 0 }
-    create_body.HostConfig.Privileged = privileged and true or false
-    create_body.HostConfig.PortBindings = (next(portbindings) ~= nil) and portbindings or nil
-    create_body.HostConfig.Memory = tonumber(memory)
-    create_body.HostConfig.CpuShares = tonumber(cpushares)
-    create_body.HostConfig.NanoCPUs = tonumber(cpus) * 10 ^ 9
-    create_body.HostConfig.BlkioWeight = tonumber(blkioweight)
-    if ip then
-      if create_body.NetworkingConfig and create_body.NetworkingConfig.EndpointsConfig and type(create_body.NetworkingConfig.EndpointsConfig) == "table" then
-        for k, v in pairs (create_body.NetworkingConfig.EndpointsConfig) do
-          if k == network and v.IPAMConfig and v.IPAMConfig.IPv4Address then
-            v.IPAMConfig.IPv4Address = ip
-          else
-            create_body.NetworkingConfig.EndpointsConfig = { [network] = { IPAMConfig = { IPv4Address = ip } } }
-          end
-          break
-        end
+  local link = data.link
+  tmp = data.command
+  local command = {}
+  if tmp ~= nil then
+    for v in string.gmatch(tmp, "[^%s]+") do
+      command[#command+1] = v
+    end 
+  end
+  if memory ~= 0 then
+    _,_,n,unit = memory:find("([%d%.]+)([%l%u]+)")
+    if n then
+      unit = unit and unit:sub(1,1):upper() or "B"
+      if  unit == "M" then
+        memory = tonumber(n) * 1024 * 1024
+      elseif unit == "G" then
+        memory = tonumber(n) * 1024 * 1024 * 1024
+      elseif unit == "K" then
+        memory = tonumber(n) * 1024
       else
-        create_body.NetworkingConfig = { EndpointsConfig = { [network] = { IPAMConfig = { IPv4Address = ip } } } }
-      end
-    elseif not create_body.NetworkingConfig then
-      create_body.NetworkingConfig = nil
-    end
-
-    if next(tmpfs) ~= nil then
-      create_body["HostConfig"]["Tmpfs"] = tmpfs
-    end
-    if next(device) ~= nil then
-      create_body["HostConfig"]["Devices"] = device
-    end
-
-    if network == "bridge" and next(link) ~= nil then
-      create_body["HostConfig"]["Links"] = link
-    end
-    local pull_image = function(image)
-      local server = "index.docker.io"
-      local json_stringify = luci.json and luci.json.encode or luci.jsonc.stringify
-      docker:append_status("Images: " .. "pulling" .. " " .. image .. "...")
-      local x_auth = nixio.bin.b64encode(json_stringify({serveraddress= server}))
-      local res = dk.images:create(nil, {fromImage=image,_header={["X-Registry-Auth"]=x_auth}})
-      if res and res.code < 300 then
-        docker:append_status("done<br>")
-      else
-        docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "<br>")
-        luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+        memory = tonumber(n)
       end
     end
-    docker:clear_status()
-    local exist_image = false
-    if image then
-      for _, v in ipairs (images) do
-        if v.RepoTags and v.RepoTags[1] == image then
-          exist_image = true
-          break
+  end
+
+  create_body.Hostname = name
+  create_body.Tty = tty and true or false
+  create_body.OpenStdin = interactive and true or false
+  create_body.User = user
+  create_body.Cmd = (#command ~= 0) and command or nil
+  create_body.Env = env
+  create_body.Image = image
+  create_body.ExposedPorts = (next(exposedports) ~= nil) and exposedports or nil
+  create_body.HostConfig = create_body.HostConfig or {}
+  create_body.HostConfig.Binds = (#mount ~= 0) and mount or nil
+  create_body.HostConfig.NetworkMode = network
+  create_body.HostConfig.RestartPolicy = { Name = restart, MaximumRetryCount = 0 }
+  create_body.HostConfig.Privileged = privileged and true or false
+  create_body.HostConfig.PortBindings = (next(portbindings) ~= nil) and portbindings or nil
+  create_body.HostConfig.Memory = tonumber(memory)
+  create_body.HostConfig.CpuShares = tonumber(cpushares)
+  create_body.HostConfig.NanoCPUs = tonumber(cpus) * 10 ^ 9
+  create_body.HostConfig.BlkioWeight = tonumber(blkioweight)
+  if ip then
+    if create_body.NetworkingConfig and create_body.NetworkingConfig.EndpointsConfig and type(create_body.NetworkingConfig.EndpointsConfig) == "table" then
+      for k, v in pairs (create_body.NetworkingConfig.EndpointsConfig) do
+        if k == network and v.IPAMConfig and v.IPAMConfig.IPv4Address then
+          v.IPAMConfig.IPv4Address = ip
+        else
+          create_body.NetworkingConfig.EndpointsConfig = { [network] = { IPAMConfig = { IPv4Address = ip } } }
         end
+        break
       end
-      if not exist_image then
-        pull_image(image)
-      elseif data._force_pull == 1 then
-        pull_image(image)
-      end
-    end
-
-    docker:append_status("Container: " .. "create" .. " " .. name .. "...")
-    local res = dk.containers:create(name, nil, create_body)
-    if res and res.code == 201 then
-      docker:clear_status()
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
     else
-      docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
+      create_body.NetworkingConfig = { EndpointsConfig = { [network] = { IPAMConfig = { IPv4Address = ip } } } }
+    end
+  elseif not create_body.NetworkingConfig then
+    create_body.NetworkingConfig = nil
+  end
+
+  if next(tmpfs) ~= nil then
+    create_body["HostConfig"]["Tmpfs"] = tmpfs
+  end
+  if next(device) ~= nil then
+    create_body["HostConfig"]["Devices"] = device
+  end
+
+  if network == "bridge" and next(link) ~= nil then
+    create_body["HostConfig"]["Links"] = link
+  end
+  local pull_image = function(image)
+    local server = "index.docker.io"
+    local json_stringify = luci.json and luci.json.encode or luci.jsonc.stringify
+    docker:append_status("Images: " .. "pulling" .. " " .. image .. "...")
+    local x_auth = nixio.bin.b64encode(json_stringify({serveraddress= server}))
+    local res = dk.images:create(nil, {fromImage=image,_header={["X-Registry-Auth"]=x_auth}})
+    if res and res.code < 300 then
+      docker:append_status("done<br>")
+    else
+      docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "<br>")
       luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
     end
+  end
+  docker:clear_status()
+  local exist_image = false
+  if image then
+    for _, v in ipairs (images) do
+      if v.RepoTags and v.RepoTags[1] == image then
+        exist_image = true
+        break
+      end
+    end
+    if not exist_image then
+      pull_image(image)
+    elseif data._force_pull == 1 then
+      pull_image(image)
+    end
+  end
+
+  docker:append_status("Container: " .. "create" .. " " .. name .. "...")
+  local res = dk.containers:create(name, nil, create_body)
+  if res and res.code == 201 then
+    docker:clear_status()
+    luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+  else
+    docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
+    luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
   end
 end
 
