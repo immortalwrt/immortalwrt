@@ -43,7 +43,8 @@ endef
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
 
 CONFIGURE_ARGS += \
-	--with-cachedir=/var/pdnsd
+	--with-cachedir=/var/pdnsd \
+	--with-target=Linux
 
 define Package/pdnsd-alt/install
 	$(INSTALL_DIR) $(1)/usr/sbin
