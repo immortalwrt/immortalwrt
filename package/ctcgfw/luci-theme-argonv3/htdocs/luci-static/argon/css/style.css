@@ -2912,7 +2912,7 @@ header > .container > .pull-right > * {
     border-radius: 60px;
     border: #fff 3px solid;
 
-    background-image:url(../img/head-icon.png);
+    background-image:url(../head-icon.jpg);
     background-size:cover;
     box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4);
 
