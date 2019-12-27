@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support arp online
-LUCI_DEPENDS:=+luci-app-nlbwmon
+LUCI_DEPENDS:=+luci-app-wrtbwmon
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-onliner
 PKG_VERSION:=1.1
