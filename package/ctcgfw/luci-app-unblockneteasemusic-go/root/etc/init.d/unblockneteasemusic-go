@@ -12,7 +12,6 @@ http_port="$(uci get unblockneteasemusic-go.@unblockneteasemusic-go[0].http_port
 https_port="$(uci get unblockneteasemusic-go.@unblockneteasemusic-go[0].https_port)"
 music_source="$(uci get unblockneteasemusic-go.@unblockneteasemusic-go[0].music_source)"
 hijack_ways="$(uci get unblockneteasemusic-go.@unblockneteasemusic-go[0].hijack_ways)"
-[
 
 set_ipset(){
 	if [ "${set_type}" = "start" ]; then
@@ -25,7 +24,7 @@ ipset=/interface3.music.163.com/musicgo
 ipset=/apm.music.163.com/musicgo
 ipset=/apm3.music.163.com/musicgo
 		EOF
-		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
 
 		if ! ipset list musicgo > "/dev/null"; then ipset create musicgo hash:ip; fi
 		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add musicgo "$1}' |bash > "/dev/null" 2>&1
@@ -54,7 +53,7 @@ ipset=/apm3.music.163.com/musicgo
 
 		echo "" > "/var/etc/unblockneteasemusic-go.include"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic-go.conf"
-		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
 	fi
 }
 
@@ -70,16 +69,12 @@ address=/apm.music.163.com/${lan_addr}
 address=/apm3.music.163.com/${lan_addr}
 address=/music.httpdns.c.163.com/0.0.0.0
 		EOF
-		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
-
-		echo "" > "/var/etc/unblockneteasemusic-go.include"
+		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
 
 		ip route add 223.252.199.10 dev lo
 	elif [ "${set_type}" = "stop" ]; then
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic-go.conf"
-		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
-
-		echo "" > "/var/etc/unblockneteasemusic-go.include"
+		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
 
 		ip route del 223.252.199.10
 	fi
@@ -90,8 +85,6 @@ start()
 	stop
 
 	[ "${enable}" -ne "1" ] && exit 0
-UnblockNeteaseMusic -m 0 -c /usr/share/UnblockNeteaseMusic-Go/server.crt -k /usr/share/UnblockNeteaseMusic-Go/server.key -p 5200 -sp 5201 -o migu:kugou
-
 	if [ "${music_source}" = "default" ]; then
 		nohup UnblockNeteaseMusic -p "${http_port}" -sp "${https_port}" -m "0" -c "/usr/share/UnblockNeteaseMusic-Go/server.crt" -k "/usr/share/UnblockNeteaseMusic-Go/server.key" > "/tmp/unblockneteasemusic-go.log" 2>&1 &
 	else
@@ -99,9 +92,9 @@ UnblockNeteaseMusic -m 0 -c /usr/share/UnblockNeteaseMusic-Go/server.crt -k /usr
 	fi
 
 	set_type="start"
-	if [ "*${hijack_ways}*" = "*use_ipset*" ]; then
+	if [ "${hijack_ways}" = "use_ipset" ]; then
 		set_ipset > "/dev/null" 2>&1
-	elif [ "*${hijack_ways}*" = "*use_hosts*" ]; then
+	elif [ "${hijack_ways}" = "use_hosts" ]; then
 		set_hosts > "/dev/null" 2>&1
 	fi
 
@@ -114,10 +107,10 @@ stop()
 {
 	killall -9 "UnblockNeteaseMusic" > "/dev/null" 2>&1
 
-	sed -i '/unblockneteasemusic-go/d' "/etc/crontabs/root"
+	sed -i '/UnblockNeteaseMusic-Go/d' "/etc/crontabs/root"
 	/etc/init.d/cron restart > "/dev/null" 2>&1
 
-	rm -f "/tmp/unblockneteasemusic.log"
+	rm -f "/tmp/unblockneteasemusic-go.log"
 
 	set_type="stop"
 	set_ipset > "/dev/null" 2>&1

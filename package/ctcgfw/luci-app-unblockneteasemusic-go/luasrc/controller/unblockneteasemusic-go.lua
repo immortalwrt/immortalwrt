@@ -15,12 +15,11 @@ function index()
 	entry({"admin", "services", "unblockneteasemusic-go", "log"},form("unblockneteasemusicgo_log"), _("日志"), 2)
 
 	entry({"admin", "services", "unblockneteasemusic-go", "status"},call("act_status")).leaf=true
-	entry({"admin", "services", "unblockneteasemusic-go", "update_core"},call("act_update_core"))
 end
 
 function act_status()
 	local e={}
-	e.running=luci.sys.call("ps |grep UnblockNeteaseMusic-Go |grep -v grep >/dev/null")==0
+	e.running=luci.sys.call("pidof UnblockNeteaseMusic >/dev/null")==0
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end
