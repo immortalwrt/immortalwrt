@@ -85,14 +85,11 @@ address=/music.httpdns.c.163.com/0.0.0.0
 		EOF
 		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
 
-		echo "" > "/var/etc/unblockneteasemusic.include"
 
 		ip route add 223.252.199.10 dev lo
 	elif [ "${set_type}" = "stop" ]; then
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
-
-		echo "" > "/var/etc/unblockneteasemusic.include"
 
 		ip route del 223.252.199.10
 	fi
