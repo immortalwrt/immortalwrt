@@ -4,7 +4,8 @@ config global
 	option udp_node1 'nil'
 	option socks5_node1 'nil'
 	option dns_mode 'pdnsd'
-	option dns2socks_forward '8.8.4.4'
+	option dns_forward '8.8.4.4'
+	option use_tcp_node_resolve_dns '1'
 	option proxy_mode 'chnroute'
 	option localhost_proxy_mode 'gfwlist'
 
@@ -42,14 +43,18 @@ config global_other
 	option udp_node_num '1'
 	option socks5_node_num '1'
 	option status_use_big_icon '1'
-	option compact_display_nodes '1'
+	option compact_display_nodes '0'
+	option show_group '0'
+	option show_add_mode '0'
 
 config global_rules
 	option auto_update '0'
 	option gfwlist_update '1'
 	option chnroute_update '1'
+	option chnlist_update '1'
 	option gfwlist_version '2019-12-10'
 	option chnroute_version '2019-12-05'
+	option chnlist_version '2019-12-27'
 	
 config global_app
 	option v2ray_file '/usr/bin/v2ray/'

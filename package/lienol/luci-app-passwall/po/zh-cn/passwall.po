@@ -118,8 +118,8 @@ msgstr "检测中..."
 msgid "Clear"
 msgstr "清除"
 
-msgid "Global Setting"
-msgstr "全局配置"
+msgid "If you can use it, very stable. If not, GG !!!"
+msgstr "如果你会用，稳得一批。否则，GG！！！"
 
 msgid "TCP Node"
 msgstr "TCP节点"
@@ -157,20 +157,26 @@ msgstr "不使用"
 msgid "if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq"
 msgstr "如果您没有使用任何模式，则会使用WAN的DNS"
 
-msgid "upstreamm DNS Server for ChinaDNS"
-msgstr "ChinaDNS的上游服务器"
+msgid "Use TCP Node Resolve DNS"
+msgstr "使用TCP节点解析DNS"
 
-msgid "Domestic DNS server 1 in advanced Settings is used as domestic DNS by default"
-msgstr "默认使用高级设置里的国内DNS服务器1作为国内DNS"
+msgid "If checked, DNS is resolved using the TCP node."
+msgstr "如果勾选，则使用TCP节点解析DNS解决污染。"
+
+msgid "upstreamm DNS Server for ChinaDNS-NG"
+msgstr "ChinaDNS-NG的上游服务器"
+
+msgid "Domestic DNS server in advanced Settings is used as domestic DNS by default"
+msgstr "默认使用高级设置里的国内DNS服务器作为国内DNS"
+
+msgid "example: 127.0.0.1#5335<br>Need at least one,Other DNS services can be used as upstream, such as dns2socks."
+msgstr "例：127.0.0.1#5335<br>需要至少一个服务器，其他DNS服务可以作为上游使用，比如：dns2socks。"
 
 msgid "custom"
 msgstr "自定义"
 
 msgid "DNS Server"
 msgstr "DNS服务器"
-
-msgid "example: 114.114.114.114,208.67.222.222:443,8.8.8.8<br>Need at least one,Other DNS services can be used as upstream, such as smartdns."
-msgstr "例：114.114.114.114,208.67.222.222:443,8.8.8.8<br>需要至少一个服务器，其他DNS服务可以作为上游使用，比如：smartdns。"
 
 msgid "Need Socks5 server"
 msgstr "需要Socks5"
@@ -270,6 +276,12 @@ msgstr "Ping延迟"
 
 msgid "Ping Value"
 msgstr "Ping值"
+
+msgid "Show Add Mode"
+msgstr "显示添加方式"
+
+msgid "Show Group"
+msgstr "显示组"
 
 msgid "Group"
 msgstr "组"
@@ -645,6 +657,12 @@ msgstr "TCP快速打开"
 
 msgid "Need node support required"
 msgstr "需要节点支持"
+
+msgid "plugin"
+msgstr "插件"
+
+msgid "opts"
+msgstr "插件选项"
 
 msgid "Protocol"
 msgstr "协议名称"

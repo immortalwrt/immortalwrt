@@ -179,8 +179,9 @@ load_config() {
 		echolog "没有选择节点！"
 		return 1
 	}
-	DNS_MODE=$(config_t_get global dns_mode ChinaDNS)
-	UP_CHINADNS_MODE=$(config_t_get global up_chinadns_mode OpenDNS_1)
+	DNS_MODE=$(config_t_get global dns_mode pdnsd)
+	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4)
+	use_tcp_node_resolve_dns=$(config_t_get global use_tcp_node_resolve_dns 0)
 	process=1
 	if [ "$(config_t_get global_forwarding process 0)" = "0" ]; then
 		process=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
@@ -259,8 +260,7 @@ gen_config_file() {
 	server_ip=$(get_host_ip $network_type $server_host)
 	port=$(config_n_get $node port)
 	type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
-	echolog "$redir_type节点：$remarks"
-	echolog "$redir_type节点IP：$server_ip"
+	echolog "$redir_type节点：$remarks，节点地址端口：${server_ip}:${port}"
 
 	if [ "$redir_type" == "Socks5" ]; then
 		if [ "$network_type" == "ipv6" ]; then
@@ -340,18 +340,22 @@ gen_config_file() {
 			fi
 
 			if [ "$kcptun_use" == "1" -a -n "$kcptun_port" -a -n "$kcptun_config" -a "$lbenabled" == "0" -a -n "$kcptun_path" ]; then
-				if [ -z "$kcptun_server_host" ]; then
-					start_kcptun "$kcptun_path" $server_ip $kcptun_port "$kcptun_config"
-				else
+				local run_kcptun_ip=$server_ip
+				if [ -n "$kcptun_server_host" ]; then
 					kcptun_use_ipv6=$(config_n_get $node kcp_use_ipv6)
 					network_type="ipv4"
 					[ "$kcptun_use_ipv6" == "1" ] && network_type="ipv6"
 					kcptun_server_ip=$(get_host_ip $network_type $kcptun_server_host)
-					echolog "KCP节点IP地址:$kcptun_server_ip"
 					TCP_NODE1_IP=$kcptun_server_ip
-					start_kcptun "$kcptun_path" $kcptun_server_ip $kcptun_port "$kcptun_config"
+					run_kcptun_ip=$kcptun_server_ip
+					echolog "KCP节点IP地址:$kcptun_server_ip"
 				fi
-				echolog "运行Kcptun..."
+				if [ -z "$kcptun_path" ]; then
+					echolog "找不到Kcptun客户端主程序，无法启用！！！"
+				else
+					$kcptun_bin --log $CONFIG_PATH/kcptun -l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port "$kcptun_config" >/dev/null 2>&1 &
+					echolog "运行Kcptun..."
+				fi
 				if [ "$type" == "ss" -o "$type" == "ssr" ]; then
 					gen_ss_ssr_config_file $type $local_port 1 $node $config_file_path
 				fi
@@ -368,15 +372,6 @@ gen_config_file() {
 		fi
 	fi
 	return 0
-}
-
-start_kcptun() {
-	kcptun_bin=$1
-	if [ -z "$kcptun_bin" ]; then
-		echolog "找不到Kcptun客户端主程序，无法启用！！！"
-	else
-		$kcptun_bin --log $CONFIG_PATH/kcptun -l 0.0.0.0:$KCPTUN_REDIR_PORT -r $2:$3 $4 >/dev/null 2>&1 &
-	fi
 }
 
 start_tcp_redir() {
@@ -423,11 +418,33 @@ start_tcp_redir() {
 				#	gen_redsocks_config $redsocks_config_file tcp $port $address $port $server_username $server_password
 				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
 				#}
-			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
-				ss_bin=$(find_bin "$TYPE"-redir)
-				[ -n "$ss_bin" ] && {
+			elif [ "$TYPE" == "ssr" ]; then
+				ssr_bin=$(find_bin ssr-redir)
+				[ -n "$ssr_bin" ] && {
 					for k in $(seq 1 $process); do
-						$ss_bin -c $config_file -f $RUN_PID_PATH/tcp_${TYPE}_$k_$i >/dev/null 2>&1 &
+						$ssr_bin -c $config_file -f $RUN_PID_PATH/tcp_${TYPE}_$k_$i >/dev/null 2>&1 &
+					done
+				}
+			elif [ "$TYPE" == "ss" ]; then
+				ss_bin=$(find_bin ss-redir)
+				[ -n "$ss_bin" ] && {
+					local plugin_params=""
+					local plugin=$(config_n_get $temp_server ss_plugin)
+					if [ "$plugin" != "none" ]; then
+						[ "$plugin" == "v2ray-plugin" ] && {
+							plugin_params="--plugin "
+							plugin_params="${plugin_params}v2ray-plugin"
+							local opts=$(config_n_get $temp_server ss_plugin_v2ray_opts)
+							local address=$(config_n_get $temp_server address)
+							if [ "$opts" == "https" ]; then
+								plugin_params="${plugin_params} --plugin-opts \"tls;host=${address}\""
+							elif [ "$opts" == "quic" ]; then
+								plugin_params="${plugin_params} --plugin-opts \"mode=quic;host=${address}\""
+							fi
+						}
+					fi
+					for k in $(seq 1 $process); do
+						$ss_bin -c $config_file -f $RUN_PID_PATH/tcp_${TYPE}_$k_$i $plugin_params >/dev/null 2>&1 &
 					done
 				}
 			fi
@@ -496,10 +513,28 @@ start_udp_redir() {
 				#	gen_redsocks_config $redsocks_config_file udp $port $address $port $server_username $server_password
 				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
 				#}
-			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
-				ss_bin=$(find_bin "$TYPE"-redir)
+			elif [ "$TYPE" == "ssr" ]; then
+				ssr_bin=$(find_bin ssr-redir)
+				[ -n "$ssr_bin" ] && $ssr_bin -c $config_file -f $RUN_PID_PATH/udp_${TYPE}_1_$i -U >/dev/null 2>&1 &
+			elif [ "$TYPE" == "ss" ]; then
+				ss_bin=$(find_bin ss-redir)
 				[ -n "$ss_bin" ] && {
-					$ss_bin -c $config_file -f $RUN_PID_PATH/udp_${TYPE}_1_$i -U >/dev/null 2>&1 &
+					local plugin_params=""
+					local plugin=$(config_n_get $temp_server ss_plugin)
+					if [ "$plugin" != "none" ]; then
+						[ "$plugin" == "v2ray-plugin" ] && {
+							plugin_params="--plugin "
+							plugin_params="${plugin_params}v2ray-plugin"
+							local opts=$(config_n_get $temp_server ss_plugin_v2ray_opts)
+							local address=$(config_n_get $temp_server address)
+							if [ "$opts" == "https" ]; then
+								plugin_params="${plugin_params} --plugin-opts \"tls;host=${address}\""
+							elif [ "$opts" == "quic" ]; then
+								plugin_params="${plugin_params} --plugin-opts \"mode=quic;host=${address}\""
+							fi
+						}
+					fi
+					$ss_bin -c $config_file -f $RUN_PID_PATH/udp_${TYPE}_1_$i -U $plugin_params >/dev/null 2>&1 &
 				}
 			fi
 			echo $port > $CONFIG_PATH/port/UDP_${i}
@@ -538,9 +573,29 @@ start_socks5_proxy() {
 				[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
 			elif [ "$TYPE" == "socks5" ]; then
 				echolog "Socks5节点不能使用Socks5代理节点！"
-			elif [ "$TYPE" == "ss" -o "$TYPE" == "ssr" ]; then
-				ss_bin=$(find_bin "$TYPE"-local)
-				[ -n "$ss_bin" ] && $ss_bin -c $config_file -b 0.0.0.0 >/dev/null 2>&1 &
+			elif [ "$TYPE" == "ssr" ]; then
+				ssr_bin=$(find_bin ssr-local)
+				[ -n "$ssr_bin" ] && $ssr_bin -c $config_file -b 0.0.0.0 >/dev/null 2>&1 &
+			elif [ "$TYPE" == "ss" ]; then
+				ss_bin=$(find_bin ss-local)
+				[ -n "$ss_bin" ] && {
+					local plugin_params=""
+					local plugin=$(config_n_get $temp_server ss_plugin)
+					if [ "$plugin" != "none" ]; then
+						[ "$plugin" == "v2ray-plugin" ] && {
+							plugin_params="--plugin "
+							plugin_params="${plugin_params}v2ray-plugin"
+							local opts=$(config_n_get $temp_server ss_plugin_v2ray_opts)
+							local address=$(config_n_get $temp_server address)
+							if [ "$opts" == "https" ]; then
+								plugin_params="${plugin_params} --plugin-opts \"tls;host=${address}\""
+							elif [ "$opts" == "quic" ]; then
+								plugin_params="${plugin_params} --plugin-opts \"mode=quic;host=${address}\""
+							fi
+						}
+					fi
+					$ss_bin -c $config_file -b 0.0.0.0 $plugin_params >/dev/null 2>&1 &
+				}
 			fi
 			echo $port > $CONFIG_PATH/port/Socks5_${i}
 		fi
@@ -644,8 +699,7 @@ start_dns() {
 		if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
 			dns2socks_bin=$(find_bin dns2socks)
 			[ -n "$dns2socks_bin" ] && {
-				local dns=$(config_t_get global dns2socks_forward 8.8.4.4)
-				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 ${dns}:53 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
+				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 ${DNS_FORWARD}:53 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
 				echolog "运行DNS转发模式：dns2socks..."
 			}
 		else
@@ -656,39 +710,51 @@ start_dns() {
 		pdnsd_bin=$(find_bin pdnsd)
 		[ -n "$pdnsd_bin" ] && {
 			gen_pdnsd_config
-			nohup $pdnsd_bin --daemon -c $CACHEDIR/pdnsd.conf -p $RUN_PID_PATH/pdnsd.pid -d >/dev/null 2>&1 &
+			nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
 			echolog "运行DNS转发模式：Pdnsd..."
 		}
 	;;
-	chinadns)
-		chinadns_bin=$(find_bin ChinaDNS)
-		[ -n "$chinadns_bin" ] && {
-			other=1
-			other_port=$(expr $DNS_PORT + 1)
-			echolog "运行DNS转发模式：ChinaDNS..."
+	chinadns-ng)
+		chinadns_ng_bin=$(find_bin chinadns-ng)
+		[ -n "$chinadns_ng_bin" ] && {
 			local dns1=$DNS1
 			[ "$DNS1" = "dnsbyisp" ] && dns1=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '1P')
-			case "$UP_CHINADNS_MODE" in
-			OpenDNS_1)
-				other=0
-				nohup $chinadns_bin -p $DNS_PORT -c $RULE_PATH/chnroute -m -d -s $dns1,208.67.222.222:443,208.67.222.222:5353 >/dev/null 2>&1 &
-				echolog "运行ChinaDNS上游转发模式：$dns1,208.67.222.222..."
+			local dns2=$DNS2
+			[ "$DNS2" = "dnsbyisp" ] && dns2=$(cat /tmp/resolv.conf.auto 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '2P')
+			other_port=$(expr $DNS_PORT + 1)
+			cat $RULE_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $CONFIG_PATH/gfwlist_chinadns_ng.txt
+			[ -f "$CONFIG_PATH/gfwlist_chinadns_ng.txt" ] && local gfwlist_param="-g $CONFIG_PATH/gfwlist_chinadns_ng.txt"
+			[ -f "$RULE_PATH/chnlist" ] && local chnlist_param="-m $RULE_PATH/chnlist -M"
+			up_chinadns_ng_mode=$(config_t_get global up_chinadns_ng_mode "208.67.222.222")
+			case "$up_chinadns_ng_mode" in
+			208.67.222.222)
+				DNS_FORWARD=$up_chinadns_ng_mode
+				nohup $chinadns_ng_bin -l $DNS_PORT -c $dns1,$dns2 -t 208.67.222.222#443,208.67.222.222#5353 $gfwlist_param $chnlist_param >/dev/null 2>&1 &
+				echolog "运行DNS转发模式：ChinaDNS-NG，国内DNS：$dns1, $dns2，可信DNS：208.67.222.222"
 				;;
-			OpenDNS_2)
-				other=0
-				nohup $chinadns_bin -p $DNS_PORT -c $RULE_PATH/chnroute -m -d -s $dns1,208.67.220.220:443,208.67.220.220:5353 >/dev/null 2>&1 &
-				echolog "运行ChinaDNS上游转发模式：$dns1,208.67.220.220..."
+			208.67.220.220)
+				DNS_FORWARD=$up_chinadns_ng_mode
+				nohup $chinadns_ng_bin -l $DNS_PORT -c $dns1,$dns2 -t 208.67.220.220#443,208.67.220.220#5353 $gfwlist_param $chnlist_param >/dev/null 2>&1 &
+				echolog "运行DNS转发模式：ChinaDNS-NG，国内DNS：$dns1, $dns2，可信DNS：208.67.220.220"
 				;;
+			dns2socks)
+				if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
+					dns2socks_bin=$(find_bin dns2socks)
+					[ -n "$dns2socks_bin" ] && {
+						nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 ${DNS_FORWARD}:53 127.0.0.1:$other_port >/dev/null 2>&1 &
+						nohup $chinadns_ng_bin -l $DNS_PORT -c $dns1,$dns2 -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
+						echolog "运行DNS转发模式：ChinaDNS-NG + dns2socks，国内DNS：$dns1, $dns2"
+					}
+				else
+					echolog "dns2socks模式需要使用Socks5代理节点，请开启！"
+				fi
+			;;
 			custom)
-				other=0
-				UP_CHINADNS_CUSTOM=$(config_t_get global up_chinadns_custom '114.114.114.114,208.67.222.222:5353')
-				nohup $chinadns_bin -p $DNS_PORT -c $RULE_PATH/chnroute -m -d -s $UP_CHINADNS_CUSTOM >/dev/null 2>&1 &
-				echolog "运行ChinaDNS上游转发模式：$UP_CHINADNS_CUSTOM..."
+				up_chinadns_ng_custom=$(config_t_get global up_chinadns_ng_custom '208.67.222.222#443,208.67.222.222#5353')
+				nohup $chinadns_ng_bin -l $DNS_PORT -c $dns1,$dns2 -t $up_chinadns_ng_custom $gfwlist_param $chnlist_param >/dev/null 2>&1 &
+				echolog "运行DNS转发模式：ChinaDNS-NG，国内DNS：$dns1, $dns2，可信DNS：$up_chinadns_ng_custom"
 				;;
 			esac
-			if [ "$other" = "1" ]; then
-				nohup $chinadns_bin -p $DNS_PORT -c $RULE_PATH/chnroute -m -d -s $dns1,127.0.0.1:$other_port >/dev/null 2>&1 &
-			fi
 		}
 	;;
 	esac
@@ -908,47 +974,77 @@ gen_redsocks_config() {
 }
 
 gen_pdnsd_config() {
-	CACHEDIR=/var/pdnsd
-	CACHE=$CACHEDIR/pdnsd.cache
-	if ! test -f "$CACHE"; then
-		mkdir -p $(dirname $CACHE)
-		touch $CACHE
-		chown -R root.nogroup $CACHEDIR
-	fi
-	cat >$CACHEDIR/pdnsd.conf <<-EOF
+	pdnsd_dir=$CONFIG_PATH/pdnsd
+	mkdir -p $pdnsd_dir
+	touch $pdnsd_dir/pdnsd.cache
+	chown -R root.nogroup $pdnsd_dir
+	cat > $pdnsd_dir/pdnsd.conf <<-EOF
 		global {
-			perm_cache=1024;
-			cache_dir="/var/pdnsd";
-			run_as="root";
-			server_ip = 127.0.0.1;
-			server_port=$DNS_PORT;
-			status_ctl = on;
-			query_method=tcp_only;
-			min_ttl=1d;
-			max_ttl=1w;
-			timeout=10;
-			tcp_qtimeout=1;
-			par_queries=2;
-			neg_domain_pol=on;
-			udpbufsize=1024;
-			}
+		    perm_cache = 1024;
+		    cache_dir = "$pdnsd_dir";
+		    pid_file = "$RUN_PID_PATH/pdnsd.pid";
+		    run_as = "root";
+		    server_ip = 127.0.0.1;
+		    server_port = $DNS_PORT;
+		    status_ctl = on;
+		    query_method = tcp_only;
+		    min_ttl = 1d;
+		    max_ttl = 1w;
+		    timeout = 10;
+		    tcp_qtimeout = 1;
+		    par_queries = 2;
+		    neg_domain_pol = on;
+		    udpbufsize = 1024;
+		}
+		
+		EOF
+		
+	[ "$use_tcp_node_resolve_dns" == 1 ] && {
+		cat >> $pdnsd_dir/pdnsd.conf <<-EOF
 		server {
-			label = "opendns";
-			ip = 208.67.222.222, 208.67.220.220;
-			edns_query=on;
-			port = 5353;
-			timeout = 4;
-			interval=60;
-			uptest = none;
-			purge_cache=off;
-			caching=on;
-			}
+		    label = "node";
+		    ip = $DNS_FORWARD;
+		    edns_query = on;
+		    port = 53;
+		    timeout = 4;
+		    interval = 60;
+		    uptest = none;
+		    purge_cache = off;
+		    caching = on;
+		}
+		
+		EOF
+	}
+	
+	cat >> $pdnsd_dir/pdnsd.conf <<-EOF
+		server {
+		    label = "opendns";
+		    ip = 208.67.222.222, 208.67.220.220;
+		    edns_query = on;
+		    port = 443;
+		    timeout = 4;
+		    interval = 60;
+		    uptest = none;
+		    purge_cache = off;
+		    caching = on;
+		}
+		server {
+		    label = "opendns";
+		    ip = 208.67.222.222, 208.67.220.220;
+		    edns_query = on;
+		    port = 5353;
+		    timeout = 4;
+		    interval = 60;
+		    uptest = none;
+		    purge_cache = off;
+		    caching = on;
+		}
 		source {
-			ttl=86400;
-			owner="localhost.";
-			serve_aliases=on;
-			file="/etc/hosts";
-			}
+		    ttl = 86400;
+		    owner = "localhost.";
+		    serve_aliases = on;
+		    file = "/etc/hosts";
+		}
 	EOF
 }
 
@@ -1135,7 +1231,7 @@ stop() {
 	clean_log
 	source $APP_PATH/iptables.sh stop
 	del_vps_port
-	kill_all pdnsd brook dns2socks haproxy chinadns ipt2socks
+	kill_all brook dns2socks haproxy chinadns-ng ipt2socks v2ray-plugin
 	ps -w | grep -E "$CONFIG_TCP_FILE|$CONFIG_UDP_FILE|$CONFIG_SOCKS5_FILE" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -E "$CONFIG_PATH" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep "kcptun_client" | grep "$KCPTUN_REDIR_PORT" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &

@@ -1,13 +1,13 @@
 # Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
 #
-# This is free software, licensed under the Apache License, Version 2.0 .
+# This is free software, licensed under the GNU General Public License v3.
 #
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.0
-PKG_RELEASE:=135-20191220
+PKG_RELEASE:=142-20191228
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PO2LMO:=./po2lmo
@@ -57,16 +57,16 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_haproxy
 	bool "Include haproxy"
 	default n
 	
-config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS
-	bool "Include ChinaDNS"
-	default y
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd
-	bool "Include pdnsd"
+config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS_NG
+	bool "Include ChinaDNS-NG"
 	default y
 	
 config PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks
 	bool "Include dns2socks"
+	default y
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd
+	bool "Include pdnsd"
 	default y
 
 endmenu
@@ -89,7 +89,7 @@ define Package/$(PKG_NAME)
   +PACKAGE_$(PKG_NAME)_INCLUDE_Brook:brook \
   +PACKAGE_$(PKG_NAME)_INCLUDE_kcptun:kcptun-client \
   +PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS_NG:chinadns-ng \
   +PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd:pdnsd-alt \
   +PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks:dns2socks
 endef

@@ -23,6 +23,14 @@ o.default = 1
 
 ---- Concise display nodes
 o = s:option(Flag, "compact_display_nodes", translate("Concise display nodes"))
+o.default = 0
+
+---- Show Add Mode
+o = s:option(Flag, "show_add_mode", translate("Show Add Mode"))
+o.default = 1
+
+---- Show group
+o = s:option(Flag, "show_group", translate("Show Group"))
 o.default = 1
 
 -- [[ Add the node via the link ]]--
@@ -46,15 +54,17 @@ function s.remove(t, a)
     luci.http.redirect(d.build_url("admin", "vpn", "passwall", "node_list"))
 end
 
--- 简洁模式
-if api.uci_get_type("global_other", "compact_display_nodes", "1") == "1" then
-    o = s:option(DummyValue, "group", translate("Group"))
-    o.width = "25%"
-    o.cfgvalue = function(t, n)
+if api.uci_get_type("global_other", "show_group", "1") == "1" then
+    show_group = s:option(DummyValue, "group", translate("Group"))
+    show_group.cfgvalue = function(t, n)
         local group = api.uci_get_type_id(n, "group") or "无"
         return group ~= "" and group or "无"
     end
+end
 
+-- 简洁模式
+if api.uci_get_type("global_other", "compact_display_nodes", "0") == "1" then
+    if show_group then show_group.width = "25%" end
     o = s:option(DummyValue, "remarks", translate("Remarks"))
     o.cfgvalue = function(t, n)
         local str = ""
@@ -64,9 +74,7 @@ if api.uci_get_type("global_other", "compact_display_nodes", "1") == "1" then
         local type = api.uci_get_type_id(n, "type") or ""
         local address = api.uci_get_type_id(n, "address") or ""
         local port = api.uci_get_type_id(n, "port") or ""
-        if is_sub == "" and group == "" then
-            str = str .. type .. "："
-        end
+        if is_sub == "" and group == "" then str = str .. type .. "：" end
         str = str .. remarks
         if address ~= "" and port ~= "" then
             local s = " （" .. address .. ":" .. port .. "）"
@@ -80,15 +88,17 @@ else
     o = s:option(DummyValue, "remarks", translate("Remarks"))
 
     ---- Add Mode
-    o = s:option(DummyValue, "add_mode", translate("Add Mode"))
-    o.cfgvalue = function(t, n)
-        local v = Value.cfgvalue(t, n)
-        if v and v ~= '' then
-            return v
-        else
-            return '手动'
+    if api.uci_get_type("global_other", "show_add_mode", "1") == "1" then
+        o = s:option(DummyValue, "add_mode", translate("Add Mode"))
+        o.cfgvalue = function(t, n)
+            local v = Value.cfgvalue(t, n)
+            if v and v ~= '' then
+                return v
+            else
+                return '手动'
+            end
+            return str
         end
-        return str
     end
 
     ---- Type
@@ -131,9 +141,5 @@ o = s:option(DummyValue, "apply", translate("Apply"))
 o.template = "passwall/node_list/apply"
 
 m:append(Template("passwall/node_list/node_list"))
-
-if luci.http.formvalue("cbi.apply") then
-    luci.http.redirect(d.build_url("admin", "vpn", "passwall", "node_list"))
-end
 
 return m

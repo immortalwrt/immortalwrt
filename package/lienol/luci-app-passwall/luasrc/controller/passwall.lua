@@ -19,8 +19,9 @@ function index()
     end
     entry({"admin", "vpn", "passwall", "settings"}, cbi("passwall/global"),
           _("Basic Settings"), 1).dependent = true
-    entry({"admin", "vpn", "passwall", "node_list"}, cbi("passwall/node_list"),
-          _("Node List"), 2).dependent = true
+    entry({"admin", "vpn", "passwall", "node_list"},
+          cbi("passwall/node_list", {autoapply = true}), _("Node List"), 2).dependent =
+        true
     -- entry({"admin", "vpn", "passwall", "auto_switch"},
     --      cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
     entry({"admin", "vpn", "passwall", "other"}, cbi("passwall/other"),

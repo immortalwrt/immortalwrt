@@ -351,6 +351,7 @@ add_firewall_rule() {
 						# 用于本机流量转发，默认只走router
 						#$iptables_nat -I OUTPUT -j SS
 						$iptables_nat -A OUTPUT -m set --match-set $IPSET_LANIPLIST dst -m comment --comment "PassWall" -j RETURN
+						[ "$use_tcp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && $iptables_nat -A OUTPUT -p tcp -d $DNS_FORWARD -m multiport --dport 1:65535 -m comment --comment "PassWall" -j REDIRECT --to-ports $TCP_REDIR_PORT1
 						$iptables_nat -A OUTPUT -m set --match-set $IPSET_VPSIPLIST dst -m comment --comment "PassWall" -j RETURN
 						$iptables_nat -A OUTPUT -m set --match-set $IPSET_WHITELIST dst -m comment --comment "PassWall" -j RETURN
 						$iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS -m set --match-set $IPSET_ROUTER dst -m comment --comment "PassWall" -j REDIRECT --to-ports $TCP_REDIR_PORT1
