@@ -41,7 +41,7 @@ PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/$(PKG_NAME)-client
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=Kcptun is a cross-platform proxy software
@@ -49,8 +49,12 @@ define Package/$(PKG_NAME)
 	URL:=https://github.com/xtaci/kcptun
 endef
 
-define Package/$(PKG_NAME)/description
-  Kcptun is a Fast and Reliable ARQ Protocol tunnel
+define Package/$(PKG_NAME)-server
+	SECTION:=net
+	CATEGORY:=Network
+	TITLE:=Kcptun is a cross-platform proxy software
+	DEPENDS:=
+	URL:=https://github.com/xtaci/kcptun
 endef
 
 define Build/Prepare
