@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@autoipsetadder[-1]
+	add ucitrack autoipsetadder
+	set ucitrack.@autoipsetadder[-1].init=autoipsetadder
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0
