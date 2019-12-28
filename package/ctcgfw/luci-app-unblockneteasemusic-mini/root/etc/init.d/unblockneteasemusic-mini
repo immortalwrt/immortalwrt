@@ -44,20 +44,7 @@ ipset=/apm3.music.163.com/music
 
 		mkdir -p /var/etc
 		cat <<-EOF >> "/var/etc/unblockneteasemusic-mini.include"
-if ! ipset list music >/dev/null; then ipset create music hash:ip; fi
-wget -O- "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |sh
-		iptables -t nat -N unblock_netease_music
-		iptables -t nat -A unblock_netease_music -d 0.0.0.0/8 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 10.0.0.0/8 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 127.0.0.0/8 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 169.254.0.0/16 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 172.16.0.0/12 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 192.168.0.0/16 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 224.0.0.0/4 -j RETURN
-		iptables -t nat -A unblock_netease_music -d 240.0.0.0/4 -j RETURN
-		iptables -t nat -A unblock_netease_music -p tcp --dport 80 -j DNAT --to ${unblock_server_ip}:${unblock_server_http_port}
-		iptables -t nat -A unblock_netease_music -p tcp --dport 443 -j DNAT --to ${unblock_server_ip}:${unblock_server_https_port}
-		iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j unblock_netease_music
+/etc/init.d/luci-app-unblockneteasemusic-mini restart
 		EOF
 	elif [ "${set_type}" = "stop" ]; then
 		iptables -t nat -D PREROUTING -p tcp -m set --match-set music dst -j unblock_netease_music
