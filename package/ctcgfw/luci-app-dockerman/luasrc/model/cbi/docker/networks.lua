@@ -41,7 +41,7 @@ end
 local network_list = get_networks()
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -49,7 +49,7 @@ network_table = m:section(Table, network_list, translate("Networks"))
 network_table.nodescr=true
 
 network_selecter = network_table:option(Flag, "_selected","")
-network_selecter.template = "cbi/xfvalue"
+network_selecter.template = "docker/cbi/xfvalue"
 network_id = network_table:option(DummyValue, "_id", translate("ID"))
 network_selecter.disabled = 0
 network_selecter.enabled = 1
@@ -83,7 +83,7 @@ action.rowcolors=false
 action.template="cbi/nullsection"
 btnnew=action:option(Button, "_new")
 btnnew.inputtitle= translate("New")
-btnnew.template="cbi/inlinebutton"
+btnnew.template="docker/cbi/inlinebutton"
 btnnew.notitle=true
 btnnew.inputstyle = "add"
 btnnew.forcewrite = true
@@ -92,7 +92,7 @@ btnnew.write = function(self, section)
 end
 btnremove = action:option(Button, "_remove")
 btnremove.inputtitle= translate("Remove")
-btnremove.template="cbi/inlinebutton"
+btnremove.template="docker/cbi/inlinebutton"
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
 btnremove.write = function(self, section)

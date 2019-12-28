@@ -14,7 +14,7 @@ local docker = require "luci.model.docker"
 local dk = docker.new()
 
 m = SimpleForm("docker", translate("Docker"))
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.redirect = luci.dispatcher.build_url("admin", "docker", "networks")
 
 docker_status = m:section(SimpleSection)
@@ -65,7 +65,7 @@ d.default = 0
 d:depends("dirver", "overlay")
 
 d = s:option(DynamicList, "options", translate("Options"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.rmempty = true
 d.placeholder="com.docker.network.driver.mtu=1500"
 
@@ -91,7 +91,7 @@ d.placeholder="10.1.1.0/24"
 d.datatype="ip4addr"
 
 d = s:option(DynamicList, "aux_address", translate("Exclude IPs"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.rmempty = true
 d.placeholder="my-route=10.1.1.1"
 

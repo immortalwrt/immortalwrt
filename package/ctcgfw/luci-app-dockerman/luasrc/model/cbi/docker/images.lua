@@ -50,7 +50,7 @@ local image_list = get_images()
 
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -58,14 +58,14 @@ local pull_value={{_image_tag_name="", _registry="index.docker.io"}}
 local pull_section = m:section(Table,pull_value, "Pull Image")
 pull_section.template="cbi/nullsection"
 local tag_name = pull_section:option(Value, "_image_tag_name")
-tag_name.template="cbi/inlinevalue"
+tag_name.template="docker/cbi/inlinevalue"
 tag_name.placeholder="lisaac/luci:latest"
 local registry = pull_section:option(Value, "_registry")
-registry.template="cbi/inlinevalue"
+registry.template="docker/cbi/inlinevalue"
 registry:value("index.docker.io", "DockerHub")
 local action_pull = pull_section:option(Button, "_pull")
 action_pull.inputtitle= translate("Pull")
-action_pull.template="cbi/inlinebutton"
+action_pull.template="docker/cbi/inlinebutton"
 action_pull.inputstyle = "add"
 tag_name.write = function(self, section,value)
   local hastag = value:find(":")
@@ -160,7 +160,7 @@ action.template="cbi/nullsection"
 
 btnremove = action:option(Button, "remove")
 btnremove.inputtitle= translate("Remove")
-btnremove.template="cbi/inlinebutton"
+btnremove.template="docker/cbi/inlinebutton"
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
 btnremove.write = function(self, section)
@@ -169,7 +169,7 @@ end
 
 btnforceremove = action:option(Button, "forceremove")
 btnforceremove.inputtitle= translate("Force Remove")
-btnforceremove.template="cbi/inlinebutton"
+btnforceremove.template="docker/cbi/inlinebutton"
 btnforceremove.inputstyle = "remove"
 btnforceremove.forcewrite = true
 btnforceremove.write = function(self, section)

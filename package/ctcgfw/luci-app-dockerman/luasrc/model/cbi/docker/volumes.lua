@@ -55,7 +55,7 @@ local volume_list = get_volumes()
 
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -87,7 +87,7 @@ action.rowcolors=false
 action.template="cbi/nullsection"
 btnremove = action:option(Button, "remove")
 btnremove.inputtitle= translate("Remove")
-btnremove.template="cbi/inlinebutton"
+btnremove.template="docker/cbi/inlinebutton"
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
 btnremove.write = function(self, section)

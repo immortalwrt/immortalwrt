@@ -73,7 +73,7 @@ local c_lists = get_containers()
 -- list Containers
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -96,7 +96,7 @@ container_id = c_table:option(DummyValue, "_id", translate("ID"))
 container_id.width="10%"
 container_name = c_table:option(DummyValue, "_name", translate("Name"))
 container_name.width="20%"
-container_name.template="cbi/dummyvalue"
+container_name.template="docker/cbi/dummyvalue"
 container_name.href = function (self, section)
   return luci.dispatcher.build_url("admin/docker/container/" .. urlencode(container_id:cfgvalue(section)))
 end
@@ -108,7 +108,7 @@ container_ip.width="15%"
 container_ports = c_table:option(DummyValue, "_ports", translate("Ports"))
 container_ports.width="10%"
 container_image = c_table:option(DummyValue, "_image", translate("Image"))
-container_image.template="cbi/dummyvalue"
+container_image.template="docker/cbi/dummyvalue"
 container_image.width="10%"
 -- container_image.href = function (self, section)
 --   return luci.dispatcher.build_url("admin/docker/image/" .. urlencode(c_lists[section]._image_id))
@@ -161,26 +161,26 @@ action_section.template="cbi/nullsection"
 
 btnnew=action_section:option(Button, "_new")
 btnnew.inputtitle= translate("New")
-btnnew.template="cbi/inlinebutton"
+btnnew.template="docker/cbi/inlinebutton"
 btnnew.inputstyle = "add"
 btnnew.forcewrite = true
 btnstart=action_section:option(Button, "_start")
-btnstart.template="cbi/inlinebutton"
+btnstart.template="docker/cbi/inlinebutton"
 btnstart.inputtitle=translate("Start")
 btnstart.inputstyle = "apply"
 btnstart.forcewrite = true
 btnrestart=action_section:option(Button, "_restart")
-btnrestart.template="cbi/inlinebutton"
+btnrestart.template="docker/cbi/inlinebutton"
 btnrestart.inputtitle=translate("Restart")
 btnrestart.inputstyle = "reload"
 btnrestart.forcewrite = true
 btnstop=action_section:option(Button, "_stop")
-btnstop.template="cbi/inlinebutton"
+btnstop.template="docker/cbi/inlinebutton"
 btnstop.inputtitle=translate("Stop")
 btnstop.inputstyle = "reset"
 btnstop.forcewrite = true
 btnremove=action_section:option(Button, "_remove")
-btnremove.template="cbi/inlinebutton"
+btnremove.template="docker/cbi/inlinebutton"
 btnremove.inputtitle=translate("Remove")
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true

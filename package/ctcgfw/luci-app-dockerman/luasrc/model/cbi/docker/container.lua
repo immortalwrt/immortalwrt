@@ -116,7 +116,7 @@ local start_stop_remove = function(m, cmd)
 end
 
 m=SimpleForm("docker", container_info.Name:sub(2), translate("Docker Contaienr") )
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.redirect = luci.dispatcher.build_url("admin/docker/containers")
 -- m:append(Template("docker/container"))
 docker_status = m:section(SimpleSection)
@@ -132,32 +132,32 @@ action_section.rowcolors=false
 action_section.template="cbi/nullsection"
 
 btnstart=action_section:option(Button, "_start")
-btnstart.template="cbi/inlinebutton"
+btnstart.template="docker/cbi/inlinebutton"
 btnstart.inputtitle=translate("Start")
 btnstart.inputstyle = "apply"
 btnstart.forcewrite = true
 btnrestart=action_section:option(Button, "_restart")
-btnrestart.template="cbi/inlinebutton"
+btnrestart.template="docker/cbi/inlinebutton"
 btnrestart.inputtitle=translate("Restart")
 btnrestart.inputstyle = "reload"
 btnrestart.forcewrite = true
 btnstop=action_section:option(Button, "_stop")
-btnstop.template="cbi/inlinebutton"
+btnstop.template="docker/cbi/inlinebutton"
 btnstop.inputtitle=translate("Stop")
 btnstop.inputstyle = "reset"
 btnstop.forcewrite = true
 btnupgrade=action_section:option(Button, "_upgrade")
-btnupgrade.template="cbi/inlinebutton"
+btnupgrade.template="docker/cbi/inlinebutton"
 btnupgrade.inputtitle=translate("Upgrade")
 btnupgrade.inputstyle = "reload"
 btnstop.forcewrite = true
 btnduplicate=action_section:option(Button, "_duplicate")
-btnduplicate.template="cbi/inlinebutton"
+btnduplicate.template="docker/cbi/inlinebutton"
 btnduplicate.inputtitle=translate("Duplicate")
 btnduplicate.inputstyle = "add"
 btnstop.forcewrite = true
 btnremove=action_section:option(Button, "_remove")
-btnremove.template="cbi/inlinebutton"
+btnremove.template="docker/cbi/inlinebutton"
 btnremove.inputtitle=translate("Remove")
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
@@ -312,7 +312,7 @@ if action == "info" then
       self.template = "cbi/button"
       Button.render(self, section, scope)
     else 
-      self.template = "cbi/dummyvalue"
+      self.template = "docker/cbi/dummyvalue"
       self.default=""
       DummyValue.render(self, section, scope)
     end

@@ -146,7 +146,7 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
 end
 
 local m = SimpleForm("docker", translate("Docker"))
-m.tempalte = "cbi/xsimpleform"
+m.template = "docker/cbi/xsimpleform"
 m.redirect = luci.dispatcher.build_url("admin", "docker", "containers")
 -- m.reset = false
 -- m.submit = false
@@ -226,26 +226,26 @@ d.rmempty = true
 d.default = default_config.user or nil
 
 d = s:option(DynamicList, "link", translate("Links with other containers"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.placeholder = "container_name:alias"
 d.rmempty = true
 d:depends("network", "bridge")
 d.default = default_config.link or nil
 
 d = s:option(DynamicList, "env", translate("Environmental Variable"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.placeholder = "TZ=Asia/Shanghai"
 d.rmempty = true
 d.default = default_config.env or nil
 
 d = s:option(DynamicList, "mount", translate("Bind Mount"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.placeholder = "/media:/media:slave"
 d.rmempty = true
 d.default = default_config.mount or nil
 
 local d_ports = s:option(DynamicList, "port", translate("Exposed Ports"))
-d_ports.template = "cbi/xdynlist"
+d_ports.template = "docker/cbi/xdynlist"
 d_ports.placeholder = "2200:22/tcp"
 d_ports.rmempty = true
 d_ports.default = default_config.port or nil
@@ -289,14 +289,14 @@ d.datatype="uinteger"
 d.default = default_config.blkioweight or nil
 
 d = s:option(DynamicList, "device", translate("Device"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.placeholder = "/dev/sda:/dev/xvdc:rwm"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.device or nil
 
 d = s:option(DynamicList, "tmpfs", translate("Tmpfs"), translate("Mount tmpfs filesystems"))
-d.template = "cbi/xdynlist"
+d.template = "docker/cbi/xdynlist"
 d.placeholder = "/run:rw,noexec,nosuid,size=65536k"
 d.rmempty = true
 d:depends("advance", 1)
