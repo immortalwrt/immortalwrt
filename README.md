@@ -57,12 +57,14 @@ luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerry
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
 luci-app-koolproxyR source: [Ameykyl/luci-app-koolproxyR](https://github.com/Ameykyl/luci-app-koolproxyR).<br/>
 openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).<br/>
-luci-app-ssr-plus-jo source: [Leo-Jo/luci-app-ssr-plus-jo](https://github.com/Leo-Jo/luci-app-ssr-plus-jo).<br/>
+luci-app-ssr-plus-Jo source: [Leo-Jo-My/luci-app-ssr-plus-Jo](https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo).<br/>
 openwrt-udpspeeder source: [pexcn/openwrt-udpspeeder](https://github.com/pexcn/openwrt-udpspeeder).<br/>
 luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).<br/>
 luci-app-dockerman source: [lisaac/luci-app-dockerman](https://github.com/lisaac/luci-app-dockerman).<br/>
 luci-lib-docker source: [lisaac/luci-lib-docker](https://github.com/lisaac/luci-lib-docker).<br/>
-openwrt-iptvhelper source: [riverscn/openwrt-iptvhelper](https://github.com/riverscn/openwrt-iptvhelper).
+openwrt-iptvhelper source: [riverscn/openwrt-iptvhelper](https://github.com/riverscn/openwrt-iptvhelper).<br>
+luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://github.com/rufengsuixing/luci-app-autoipsetadder).<br>
+luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
