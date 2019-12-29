@@ -34,17 +34,16 @@ end
 if not fs.access(binpath) then
 	e=e.." "..translate("no core")
 else
-	local version
+	local version=uci:get("AdGuardHome","AdGuardHome","version")
 	local testtime=fs.stat(binpath,"mtime")
-	if testtime~=tonumber(binmtime) then
-		local tmp=luci.sys.exec("touch /var/run/AdGfakeconfig;"..binpath.." -c /var/run/AdGfakeconfig --check-config 2>&1| grep -m 1 -E 'v[0-9.]+' -o ;rm /var/run/AdGfakeconfig")
+	if testtime~=tonumber(binmtime) or version==nil then
+		local tmp=luci.sys.exec(binpath.." -c /dev/null --check-config 2>&1| grep -m 1 -E 'v[0-9.]+' -o")
 		version=string.sub(tmp, 1, -2)
+		if version=="" then version="core error" end
 		uci:set("AdGuardHome","AdGuardHome","version",version)
 		uci:set("AdGuardHome","AdGuardHome","binmtime",testtime)
 		uci:save("AdGuardHome")
 		uci:commit("AdGuardHome")
-	else
-		version=uci:get("AdGuardHome","AdGuardHome","version")
 	end
 	e=version..e
 end
