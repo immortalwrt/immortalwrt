@@ -6,7 +6,7 @@
 		btn.disabled = true;
 		btn.value    = '<%:Check...%>';
 		murl=urlname;
-		XHR.get('<%=luci.dispatcher.build_url("admin", "vpn", "shadowsocksr","check")%>',
+		XHR.get('<%=luci.dispatcher.build_url("admin", "service", "shadowsocksr","check")%>',
 			{ set:murl },
 			function(x,rv)
 			{
