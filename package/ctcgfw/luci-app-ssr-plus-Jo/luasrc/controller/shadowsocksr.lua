@@ -7,37 +7,37 @@ function index()
         return
     end
     if nixio.fs.access("/usr/bin/ssr-redir") then
-        entry({"admin", "service", "shadowsocksr"},alias("admin", "service", "shadowsocksr", "client"), _("ShadowSocksR Plus+"),10).dependent = true
-        entry({"admin", "service", "shadowsocksr", "client"},cbi("shadowsocksr/client"),_("SSR Client"),10).leaf = true
-        entry({"admin", "service", "shadowsocksr", "servers"}, cbi("shadowsocksr/servers"), _("Severs Nodes"), 11).leaf = true
-        entry({"admin", "service", "shadowsocksr", "servers"},arcombine(cbi("shadowsocksr/servers"), cbi("shadowsocksr/client-config")),_("Severs Nodes"), 11).leaf = true
+        entry({"admin", "vpn", "shadowsocksr"},alias("admin", "vpn", "shadowsocksr", "client"), _("ShadowSocksR Plus+"),10).dependent = true
+        entry({"admin", "vpn", "shadowsocksr", "client"},cbi("shadowsocksr/client"),_("SSR Client"),10).leaf = true
+        entry({"admin", "vpn", "shadowsocksr", "servers"}, cbi("shadowsocksr/servers"), _("Severs Nodes"), 11).leaf = true
+        entry({"admin", "vpn", "shadowsocksr", "servers"},arcombine(cbi("shadowsocksr/servers"), cbi("shadowsocksr/client-config")),_("Severs Nodes"), 11).leaf = true
 
- entry({"admin", "service", "shadowsocksr", "subscription"},cbi("shadowsocksr/subscription"), _("Subscription Managenent"),12).leaf = true
-        entry({"admin", "service", "shadowsocksr", "control"},cbi("shadowsocksr/control"),_("Access Control"),13).leaf = true
+ entry({"admin", "vpn", "shadowsocksr", "subscription"},cbi("shadowsocksr/subscription"), _("Subscription Managenent"),12).leaf = true
+        entry({"admin", "vpn", "shadowsocksr", "control"},cbi("shadowsocksr/control"),_("Access Control"),13).leaf = true
 
-        entry({"admin", "service", "shadowsocksr", "list"},cbi("shadowsocksr/list"),_("GFW List"),15).leaf = true
-entry({"admin", "service", "shadowsocksr", "appointlist"},form("shadowsocksr/appointlist"),_("Appointlist List"), 17).leaf = true
+        entry({"admin", "vpn", "shadowsocksr", "list"},cbi("shadowsocksr/list"),_("GFW List"),15).leaf = true
+entry({"admin", "vpn", "shadowsocksr", "appointlist"},form("shadowsocksr/appointlist"),_("Appointlist List"), 17).leaf = true
           
- entry({"admin", "service", "shadowsocksr", "automatic"},cbi("shadowsocksr/automatic"), _("Automatic Switching"),20).leaf = true
-        entry({"admin", "service", "shadowsocksr", "advanced"},cbi("shadowsocksr/advanced"), _("Advanced Settings"),21).leaf = true
+ entry({"admin", "vpn", "shadowsocksr", "automatic"},cbi("shadowsocksr/automatic"), _("Automatic Switching"),20).leaf = true
+        entry({"admin", "vpn", "shadowsocksr", "advanced"},cbi("shadowsocksr/advanced"), _("Advanced Settings"),21).leaf = true
     elseif nixio.fs.access("/usr/bin/ssr-server") then
-        entry({"admin", "service", "shadowsocksr"},alias("admin", "service", "shadowsocksr", "server"), _("ShadowSocksR"),10).dependent = true
+        entry({"admin", "vpn", "shadowsocksr"},alias("admin", "vpn", "shadowsocksr", "server"), _("ShadowSocksR"),10).dependent = true
     else
         return
     end
     if nixio.fs.access("/usr/bin/ssr-server") then
-        entry({"admin", "service", "shadowsocksr", "server"},arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")),_("SSR Server"),22).leaf = true
+        entry({"admin", "vpn", "shadowsocksr", "server"},arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")),_("SSR Server"),22).leaf = true
     end
-    entry({"admin", "service", "shadowsocksr", "status"},form("shadowsocksr/status"),_("Status"), 23).leaf = true
-    entry({"admin", "service", "shadowsocksr", "log"}, cbi("shadowsocksr/log"), _("Log"), 30).leaf = true
+    entry({"admin", "vpn", "shadowsocksr", "status"},form("shadowsocksr/status"),_("Status"), 23).leaf = true
+    entry({"admin", "vpn", "shadowsocksr", "log"}, cbi("shadowsocksr/log"), _("Log"), 30).leaf = true
 
-    entry({"admin", "service", "shadowsocksr", "refresh"}, call("refresh_data"))
-    entry({"admin", "service", "shadowsocksr", "checkport"}, call("check_port"))
-    entry({"admin", "service", "shadowsocksr", "checkports"}, call("check_ports"))
-    entry({"admin", "service", "shadowsocksr", "run"}, call("act_status"))
-    entry({"admin", "service", "shadowsocksr", "change"}, call("change_node"))
-    entry({"admin", "service", "shadowsocksr", "allserver"}, call("get_servers"))
-    entry({"admin", "service", "shadowsocksr", "ping"}, call("act_ping")).leaf=true
+    entry({"admin", "vpn", "shadowsocksr", "refresh"}, call("refresh_data"))
+    entry({"admin", "vpn", "shadowsocksr", "checkport"}, call("check_port"))
+    entry({"admin", "vpn", "shadowsocksr", "checkports"}, call("check_ports"))
+    entry({"admin", "vpn", "shadowsocksr", "run"}, call("act_status"))
+    entry({"admin", "vpn", "shadowsocksr", "change"}, call("change_node"))
+    entry({"admin", "vpn", "shadowsocksr", "allserver"}, call("get_servers"))
+    entry({"admin", "vpn", "shadowsocksr", "ping"}, call("act_ping")).leaf=true
 end
 
 

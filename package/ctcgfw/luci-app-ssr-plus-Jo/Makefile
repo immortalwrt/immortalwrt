@@ -13,7 +13,7 @@ PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Chinadns \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_haproxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_privoxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs\
@@ -66,8 +66,8 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
 	bool "dnsforwarder"
 	default n
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_Chinadns
-	bool "chiandns"
+config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS
+	bool "chinadns"
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_haproxy
@@ -120,7 +120,7 @@ define Package/luci-app-ssr-plus-Jo
             +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks:shadowsocks-libev-ss-local \
             +PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy:dnscrypt-proxy-full \
             +PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder \
-            +PACKAGE_$(PKG_NAME)_INCLUDE_Chinadns:openwrt_chinadns \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns \
             +PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy \
             +PACKAGE_$(PKG_NAME)_INCLUDE_privoxy:privoxy \
             +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs:simple-obfs \
