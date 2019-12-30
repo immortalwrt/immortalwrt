@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
 PKG_VERSION:=snapshot
-PKG_RELEASE:=r24-ea031c9
+PKG_RELEASE:=r27-5d46065
 
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH_UnblockNeteaseMusic:=linux_amd64
