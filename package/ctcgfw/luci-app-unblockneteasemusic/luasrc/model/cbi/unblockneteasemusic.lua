@@ -40,6 +40,12 @@ music_source.description = translate("音源调用接口")
 music_source.default = "default"
 music_source.rmempty = false
 
+qq_cookie = s:option(Value, "qq_cookie", translate("QQ Cookie"))
+qq_cookie.description = translate("在 y.qq.com 获取，需要uin和qm_keyst值")
+qq_cookie.placeholder = "uin=; qm_keyst="
+qq_cookie.datatype = "string"
+qq_cookie:depends("music_source", "qq")
+
 youtube_key = s:option(Value, "youtube_key", translate("Youtube API Key"))
 youtube_key.description = translate("API Key申请地址：https://developers.google.com/youtube/v3/getting-started#before-you-start")
 youtube_key.datatype = "string"

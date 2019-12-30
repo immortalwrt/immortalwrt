@@ -11,6 +11,7 @@ enable="$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable)"
 http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].http_port)"
 https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].https_port)"
 music_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_source)"
+qq_cookie="$(uci get unblockneteasemusic.@unblockneteasemusic[0].qq_cookie 2> "/dev/null")"
 youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2> "/dev/null")"
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
 auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
@@ -121,7 +122,12 @@ start()
 	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && rm -f "/usr/share/unblockneteasemusic/local_ver" && bash "/usr/share/unblockneteasemusic/update_core.sh"
 	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && echo "Core Not Found, please download it before starting." >> "/tmp/unblockneteasemusic.log" && exit 1
 
-	if [ "${music_source}" = "youtube" ];then
+	if [ "${music_source}" = "qq" ];then
+		[ -z "${qq_cookie}" ] && echo "QQ cookie is not exsit, please enter it before starting." && exit 1
+		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/provider/qq.js")"
+		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/provider/qq.js"
+		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/provider/qq.js"
+	elif [ "${music_source}" = "youtube" ];then
 		[ -z "${youtube_key}" ] && echo "Youtube API Key is not exsit, please enter it before starting." && exit 1
 		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/provider/youtube.js"
 		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/provider/youtube.js"
