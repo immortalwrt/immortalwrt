@@ -1,3 +1,4 @@
+
 Rule:
 # (GlobalTV)
 # > ABC
@@ -895,7 +896,8 @@ Rule:
 - DOMAIN-SUFFIX,chinanetcenter.com,DIRECT
 - DOMAIN-SUFFIX,wangsu.com,DIRECT
 # > CloudFlare
-- DOMAIN-SUFFIX,cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,cloudflare.com,🔑Proxy
+- DOMAIN-KEYWORD,cloudflare,🔑Proxy
 # > IP Query
 - DOMAIN-SUFFIX,ipip.net,DIRECT
 - DOMAIN-SUFFIX,ip.cn,DIRECT
@@ -932,8 +934,9 @@ Rule:
 - DOMAIN-SUFFIX,myzaker.com,DIRECT
 - DOMAIN-SUFFIX,ourbits.club,DIRECT
 - DOMAIN-SUFFIX,passthepopcorn.me,DIRECT
-- DOMAIN-SUFFIX,paypal.com,DIRECT
-- DOMAIN-SUFFIX,paypalobjects.com,DIRECT
+- DOMAIN-SUFFIX,paypal.com,🔑Proxy
+- DOMAIN-KEYWORD,paypal,🔑Proxy
+- DOMAIN-SUFFIX,paypalobjects.com,🔑Proxy
 - DOMAIN-SUFFIX,privatehd.to,DIRECT
 - DOMAIN-SUFFIX,redacted.ch,DIRECT
 - DOMAIN-SUFFIX,ruguoapp.com,DIRECT
@@ -1108,8 +1111,6 @@ Rule:
 - DOMAIN-SUFFIX,jiji.com,🔑Proxy
 - DOMAIN-SUFFIX,jinx.com,🔑Proxy
 - DOMAIN-SUFFIX,jkforum.net,🔑Proxy
-- DOMAIN-SUFFIX,cloudflare.com,🔑Proxy
-- DOMAIN-KEYWORD,cloudflare,🔑Proxy
 - DOMAIN-SUFFIX,joinmastodon.org,🔑Proxy
 - DOMAIN-SUFFIX,kakao.com,🔑Proxy
 - DOMAIN-SUFFIX,lihkg.com,🔑Proxy
@@ -1508,9 +1509,26 @@ Rule:
 - IP-CIDR,202.160.128.0/22,🔑Proxy
 - IP-CIDR,209.237.192.0/19,🔑Proxy
 
-#- SRC-IP-CIDR,192.168.1.201/32,DIRECT
+# > CloudFlare
+- IP-CIDR,173.245.48.0/20,🔑Proxy
+- IP-CIDR,103.21.244.0/22,🔑Proxy
+- IP-CIDR,103.22.200.0/22,🔑Proxy
+- IP-CIDR,103.31.4.0/22,🔑Proxy
+- IP-CIDR,141.101.64.0/18,🔑Proxy
+- IP-CIDR,108.162.192.0/18,🔑Proxy
+- IP-CIDR,190.93.240.0/20,🔑Proxy
+- IP-CIDR,188.114.96.0/20,🔑Proxy
+- IP-CIDR,197.234.240.0/22,🔑Proxy
+- IP-CIDR,198.41.128.0/17,🔑Proxy
+- IP-CIDR,162.158.0.0/15,🔑Proxy
+- IP-CIDR,104.16.0.0/12,🔑Proxy
+- IP-CIDR,172.64.0.0/13,🔑Proxy
+- IP-CIDR,131.0.72.0/22,🔑Proxy
+
 #- DST-PORT,80,DIRECT
 #- DST-PORT,443,DIRECT
-
+# GeoIP China
 - GEOIP,CN,DIRECT
+
 - MATCH,🔑Proxy
+

@@ -1,3 +1,51 @@
+msgid "Do not edit Policy Group with Group Name Proxy or proxy and or 🔑Proxy and it's other policy group"
+msgstr "不要编辑策略组别名Proxy或proxy或🔑proxy和它的其他策略组"
+
+msgid "Enable Lan DNS"
+msgstr "启用局域网DNS"
+
+msgid "Enabling will set custom DNS Servers for Lan"
+msgstr "启用将为自定义局域网DNS服务器"
+
+msgid "Lan DNS servers"
+msgstr "局域网DNS服务器"
+
+msgid "Set custom DNS Servers for Lan"
+msgstr "设置自定义局域网DNS服务器"
+
+msgid "Cache DNS"
+msgstr "缓存的DNS"
+
+msgid "Fake IP Range"
+msgstr "假IP范围"
+
+msgid "Ip range will be added to iptables"
+msgstr "Ip范围将添加到iptables"
+
+msgid "New Version :"
+msgstr "新版本："
+
+msgid "Core Type"
+msgstr "内核类型"
+
+msgid "Select Core"
+msgstr "选择内核"
+
+msgid "Obfs"
+msgstr "混淆"
+
+msgid "Obfs Param"
+msgstr "混淆参数"
+
+msgid "Protocol"
+msgstr "协议"
+
+msgid "Protocol Param"
+msgstr "协议参数"
+
+msgid "Servers"
+msgstr "服务器"
+
 msgid "Custom List DNS"
 msgstr "自定义列表DNS"
 
@@ -58,8 +106,8 @@ msgstr "启用"
 msgid "Subcription Type"
 msgstr "服务器订阅类型"
 
-msgid "Select Subcription Type, enter only your subcription url without https://tgbot.lbyczf.com/*?"
-msgstr "选择服务器订阅类型,输入服务器订阅不要带https://tgbot.lbyczf.com/*?"
+msgid "Select Subcription Type"
+msgstr "选择服务器订阅类型"
 
 msgid "disabled"
 msgstr "停用"
@@ -136,8 +184,8 @@ msgstr "检查"
 msgid "DNS Forwarding"
 msgstr "DNS转发"
 
-msgid "Set custom DNS forwarder in DHCP and DNS Settings"
-msgstr "在DHCP和DNS设置自定义DNS转发"
+msgid "Set custom DNS forwarder in DHCP and DNS Settings and forward all dns traffic to clash"
+msgstr "在DHCP和DNS设置自定义DNS转发,转发所有dns流量到clash"
 
 msgid "Proxy Lan IP"
 msgstr "走代理的局域网IP"
@@ -284,7 +332,7 @@ msgid "Upload Config"
 msgstr "上传配置"
 
 msgid "NB: Only upload file with name config.yml or config.yaml"
-msgstr "注意：仅上载名为config.yml或config.yaml的文件"
+msgstr "注意：上载config.yml或config.yaml的文件"
 
 msgid "Subcription Url"
 msgstr "订阅URL"
@@ -304,17 +352,21 @@ msgstr "使用中的配置"
 msgid "Server Subscription Address"
 msgstr "服务器订阅地址"
 
+msgid "Clash Subscription Address"
+msgstr "Clash订阅地址"
+
+msgid "V2/SSR Subscription Address, Only input your subscription address without any api conversion url"
+msgstr "V2/SSR订阅地址,输入订阅地址不要添加api转换地址"
+
 msgid "Changes to config file must be made from source"
 msgstr "必须从源文件更改配置文件"
 
-msgid "Servers"
-msgstr "自定义节点"
+msgid "Import Config"
+msgstr "导入配置"
 
 msgid "Enable to create custom config.yaml. Note that this will overide any configuration you already have"
 msgstr "启用以创建自定义config.yaml。注意，这会覆盖/etc/clash/config.yaml"
 
-msgid "Create Config"
-msgstr "创建配置"
 
 msgid "host"
 msgstr "主机名"
@@ -331,8 +383,26 @@ msgstr "执行此操作以生成新配置"
 msgid "Delete Severs"
 msgstr "清空节点"
 
+msgid "Load Config"
+msgstr "读取配置"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "Load Groups"
+msgstr "读取代理组"
+
 msgid "Load Servers"
 msgstr "读取节点"
+
+msgid "Load From"
+msgstr "从读取"
+
+msgid "Enable to read servers"
+msgstr "启用读取节点"
+
+msgid "Enable to read policy group"
+msgstr "启用读取代理组"
 
 msgid "Type"
 msgstr "节点类型"
@@ -344,7 +414,7 @@ msgid "Server Address"
 msgstr "服务器地址"
 
 msgid "Server Port"
-msgstr "服务器端口"
+msgstr "端口"
 
 msgid "Edit Server"
 msgstr "编辑服务器配置"
@@ -407,7 +477,7 @@ msgid "Select Configuration type"
 msgstr "选择配置类型”"
 
 msgid "Create Config"
-msgstr "一键生成配置文件"
+msgstr "创建配置"
 
 msgid "Create Config By One-Click Only Need Proxys"
 msgstr "一键生成配置文件功能只需要配置服务器节点信息"
@@ -499,5 +569,38 @@ msgstr "从哪读取自定义节点"
 msgid "Select from which configuration custom server should be loaded from"
 msgstr "选择从哪个配置文件读取自定义节点"
 
-msgid "Servers"
-msgstr "服务器"
+msgid "All Servers"
+msgstr "所有节点"
+
+msgid "Core"
+msgstr "内核"
+
+msgid "Select core, clashr support ssr while clash does not."
+msgstr "选择内核clash不支持ssr, clashr支持ssr"
+
+msgid "Downloading..."
+msgstr "正在下载。。。"
+
+msgid "Remove Lan DNS"
+msgstr "删除局域网DNS"
+
+msgid "Remove Lan custom DNS Servers when client is disabled"
+msgstr "禁用客户端时删除局域网自定义DNS服务器"
+
+msgid "Enable ipv6"
+msgstr "启用ipv6"
+
+msgid "Allow ipv6 traffic through clash"
+msgstr "允许ipv6流量通过clash"
+
+msgid "NB: Upload GEOIP Database file Country.mmdb"
+msgstr "注意：上传GEOIP数据库文件Country.mmdb"
+
+msgid "Download logs"
+msgstr "下载日志"
+
+msgid "Enable Create"
+msgstr "启用创建"
+
+msgid "Enable to create configuration"
+msgstr "启用以创建配置"

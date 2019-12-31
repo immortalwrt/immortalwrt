@@ -9,7 +9,7 @@ local sid = arg[1]
 
 m = Map(clash, translate("Edit Group"))
 --m.pageaction = false
-m.redirect = luci.dispatcher.build_url("admin/services/clash/servers")
+m.redirect = luci.dispatcher.build_url("admin/services/clash/create")
 if m.uci:get(clash, sid) ~= "groups" then
 	luci.http.redirect(m.redirect)
 	return
@@ -46,7 +46,15 @@ o:depends("type", "fallback")
 o:depends("type", "load-balance")
 
 o = s:option(DynamicList, "other_group", translate("Other Group"))
+o.rmempty = false
 o.description = translate("Proxy Groups Must Exist In Rule")
+o:value("ALL", translate("All Servers"))
+uci:foreach("clash", "servers",
+		function(s)
+		  if s.name ~= "" and s.name ~= nil and s.name ~= m.uci:get(clash, sid, "name") then
+			   o:value(s.name)
+			end
+		end)
 uci:foreach("clash", "groups",
 		function(s)
 		  if s.name ~= "" and s.name ~= nil and s.name ~= m.uci:get(clash, sid, "name") then
@@ -55,14 +63,13 @@ uci:foreach("clash", "groups",
 		end)
 o:value("DIRECT")
 o:value("REJECT")
-o:depends("type", "select")
-o.rmempty = true
+
 
 
 local apply = luci.http.formvalue("cbi.apply")
 if apply then
-    uci:commit(clash, sid) 
-	sys.call("/usr/share/clash/groups.sh start")
+    m.uci:commit(clash, sid) 
+    sys.call("sh /usr/share/clash/groups.sh start")
 end
 
 return m

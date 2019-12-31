@@ -1,20 +1,18 @@
 #!/bin/sh /etc/rc.common
 . /lib/functions.sh
-enable_create=$(uci get clash.config.cus_servers 2>/dev/null)
 
-if [ "$enable_create" == "1" ];then
-
+REAL_LOG="/usr/share/clash/clash_real.txt"
+lang=$(uci get luci.main.lang 2>/dev/null)
 config_type=$(uci get clash.config.config_type 2>/dev/null)
-if [ $config_type == "cus" ];then 
-if pidof clash >/dev/null; then
-/etc/init.d/clash stop 2>/dev/null
-fi
-fi
+create=$(uci get clash.config.create 2>/dev/null)
+if [ "${create}" -eq 1 ];then
 
-
-status=$(ps|grep -c /usr/share/clash/proxy.sh)
-[ "$status" -gt "3" ] && exit 0
-
+ 	if [ $lang == "en" ] || [ $lang == "auto" ];then
+		echo "Strating to Create Custom Config.. " >$REAL_LOG 
+	elif [ $lang == "zh_cn" ];then
+    	 echo "开始创建自定义配置..." >$REAL_LOG
+	fi
+	sleep 1
 CONFIG_YAML_RULE="/usr/share/clash/custom_rule.yaml"
 SERVER_FILE="/tmp/servers.yaml"
 CONFIG_YAML="/usr/share/clash/config/custom/config.yaml"
@@ -25,6 +23,22 @@ CONFIG_FILE="/tmp/y_groups"
 CFG_FILE="/etc/config/clash"
 DNS_FILE="/usr/share/clash/dns.yaml" 
 
+
+   servcount=$( grep -c "config servers" $CFG_FILE 2>/dev/null)
+   gcount=$( grep -c "config groups" $CFG_FILE 2>/dev/null)
+   if [ $servcount -eq 0 ] || [ $gcount -eq 0 ];then
+ 	if [ $lang == "en" ] || [ $lang == "auto" ];then
+		echo "No servers or group. Aborting Operation .." >$REAL_LOG 
+		sleep 2
+		echo "Clash for OpenWRT" >$REAL_LOG
+	elif [ $lang == "zh_cn" ];then
+    	 echo "找不到代理或策略组。中止操作..." >$REAL_LOG
+		 sleep 2
+		echo "Clash for OpenWRT" >$REAL_LOG
+	fi
+	exit 0	
+   fi
+sleep 2
 servers_set()
 {
    local section="$1"
@@ -40,7 +54,6 @@ servers_set()
    config_get "obfs_vmess" "$section" "obfs_vmess" ""
    config_get "host" "$section" "host" ""
    config_get "custom" "$section" "custom" ""
-   config_get "custom_host" "$section" "custom_host" ""
    config_get "tls" "$section" "tls" ""
    config_get "tls_custom" "$section" "tls_custom" ""
    config_get "skip_cert_verify" "$section" "skip_cert_verify" ""
@@ -50,11 +63,41 @@ servers_set()
    config_get "auth_name" "$section" "auth_name" ""
    config_get "auth_pass" "$section" "auth_pass" ""
    config_get "mux" "$section" "mux" ""
-   
+   config_get "protocol" "$section" "protocol" ""
+   config_get "protocolparam" "$section" "protocolparam" ""
+   config_get "obfsparam" "$section" "obfsparam" ""
+   config_get "obfs_ssr" "$section" "obfs_ssr" ""
+   config_get "cipher_ssr" "$section" "cipher_ssr" ""
+   config_get "psk" "$section" "psk" ""
+   config_get "obfs_snell" "$section" "obfs_snell" ""
 	
    if [ -z "$type" ]; then
       return
    fi
+   
+	if [ ! -z "$protocolparam" ];then
+	  pro_param=", protocolparam: $protocolparam"	
+	else
+	  pro_param=", protocolparam: ''" 
+	fi
+
+	if [ ! -z "$protocol" ] && [ "$type" = "ssr" ];then
+	  protol=", protocol: $protocol"
+	else
+	  protol=", protocol: origin"	 
+	fi
+	
+	if [ ! -z "$obfs_ssr" ];then
+	 ssr_obfs=", obfs: $obfs_ssr"
+	else
+	 ssr_obfs=", obfs: plain"
+	fi
+	
+	if [ ! -z "$obfsparam" ];then
+	 obfs_param=", obfsparam: $obfsparam"
+         else
+	obfs_param=", obfsparam: ''"
+	fi 
    
    if [ -z "$server" ]; then
       return
@@ -62,6 +105,9 @@ servers_set()
 
    if [ ! -z "$mux" ]; then
       muxx="mux: $mux"
+   fi
+   if [ "$obfs_snell" = "none" ]; then
+      obfs_snell=""
    fi
    
    if [ -z "$name" ]; then
@@ -76,39 +122,36 @@ servers_set()
       udpp=", udp: $udp"
    fi
    
-   if [ "$obfs" != "none" ]; then
+   if [ "$obfs" != "none" ] && [ "$type" = "ss" ]; then
       if [ "$obfs" = "websocket" ]; then
          obfss="plugin: v2ray-plugin"
       else
          obfss="plugin: obfs"
       fi
-   else
-      obfs=""
    fi
    
-   if [ "$obfs_vmess" = "websocket" ]; then
+   if [ "$obfs_vmess" = "none" ] && [ "$type" = "vmess" ]; then
+      	obfs_vmesss=""
+   elif [ "$obfs_vmess" != "none" ] && [ "$type" = "vmess" ]; then 
       	obfs_vmesss=", network: ws"
-   else	
-		obfs_vmesss=" "
-   fi   
+   fi  
    
-   if [ ! -z "$host" ]; then
-      host="host: $host"
-   fi
+
    
    if [ ! -z "$custom" ] && [ "$type" = "vmess" ]; then
       custom=", ws-headers: { Host: $custom }"
    fi
    
-   if [ "$tls" ]; then
+   if [ ! "$tls" ] && [ "$type" = "vmess" ]; then
+       tlss=""
+   elif [ "$tls" ] && [ "$type" = "vmess" ]; then
       tlss=", tls: $tls"
-   elif [ ! "$tls" ]; then
-	  tlss=""
-   elif [ "$tls" = "true" ] && [ "$type" = "http" ]; then
+   elif [ "$tls" ] && [ "$type" = "http" ]; then
 	  tls_hs=", tls: $tls" 
-   elif [ "$tls" = "true" ] && [ "$type" = "socks5" ]; then
+   elif [ "$tls" ] && [ "$type" = "socks5" ]; then
 	  tls_hs=", tls: $tls"	  
    fi
+
    
    if [ ! -z "$path" ]; then
       if [ "$type" != "vmess" ]; then
@@ -141,21 +184,20 @@ cat >> "$SERVER_FILE" <<-EOF
   udp: $udp
 EOF
   fi
-  if [ ! -z "$obfss" ] && [ ! "$host" ]; then
+  if [ ! -z "$obfss" ]; then
 cat >> "$SERVER_FILE" <<-EOF
   $obfss
   plugin-opts:
     mode: $obfs
 EOF
   fi
-  if [ ! -z "$obfss" ] && [ "$host" ]; then
+  
+   if [ "$host" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-  $obfss
-  plugin-opts:
-    mode: $obfs
-    $host
+    host: $host
 EOF
-  fi
+  fi 
+  
   if [ "$tls_custom" = "true" ] && [ "$type" = "ss" ]; then
 cat >> "$SERVER_FILE" <<-EOF
     tls: true
@@ -164,13 +206,6 @@ EOF
    if [ "$skip_cert_verify" = "true" ] && [ "$type" = "ss" ]; then
 cat >> "$SERVER_FILE" <<-EOF
     skip_cert_verify: true
-EOF
-  fi
-
-
-  if [ ! -z "$custom_host" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    host: $custom_host
 EOF
   fi
 
@@ -201,6 +236,28 @@ EOF
    if [ "$type" = "socks5" ] || [ "$type" = "http" ]; then
       echo "- { name: \"$name\", type: $type, server: $server, port: $port, username: $auth_name, password: $auth_pass$skip_cert_verify$tls_hs }" >>$SERVER_FILE
    fi
+   
+    if [ "$type" = "ssr" ]; then
+      echo "- { name: \"$name\", type: $type, server: $server, port: $port, cipher: $cipher_ssr, password: "$password"$protol$pro_param$ssr_obfs$obfs_param}" >>$SERVER_FILE
+    fi
+
+   if [ "$type" = "snell" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+- name: "$name"
+  type: $type
+  server: $server
+  port: $port
+  psk: $psk
+EOF
+  if [ "$obfs_snell" != "none" ] && [ ! -z "$host" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  obfs-opts:
+    mode: $obfs_snell
+    $host
+EOF
+  fi
+   fi
+
 }
 
 config_load clash
@@ -208,8 +265,8 @@ config_foreach servers_set "servers"
 
 if [ "$(ls -l $SERVER_FILE|awk '{print $5}')" -ne 0 ]; then
 
-sed -i "1i\   " $SERVER_FILE
-sed -i "2i\Proxy:" $SERVER_FILE
+sed -i "1i\   " $SERVER_FILE 2>/dev/null 
+sed -i "2i\Proxy:" $SERVER_FILE 2>/dev/null 
 
 egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
 sed -i "s/^ \{0,\}/    - /" $Proxy_Group 2>/dev/null 
@@ -228,7 +285,7 @@ set_groups()
 {
 
 	if [ "$1" = "$3" ]; then
-	   echo "    - \"${2}\"" >>$GROUP_FILE
+	   echo "    - \"${2}\"" >>$GROUP_FILE 2>/dev/null 
 	fi
 
 }
@@ -236,7 +293,13 @@ set_groups()
 set_other_groups()
 {
 
-   echo "    - ${1}" >>$GROUP_FILE
+   if [ "${1}" = "DIRECT" ]||[ "${1}" = "REJECT" ];then
+   echo "    - ${1}" >>$GROUP_FILE 2>/dev/null 
+   elif [ "${1}" = "ALL" ];then
+   cat $Proxy_Group >> $GROUP_FILE 2>/dev/null
+   else
+   echo "    - \"${1}\"" >>$GROUP_FILE 2>/dev/null 
+   fi
 
 }
 
@@ -258,15 +321,15 @@ yml_groups_set()
       return
    fi
    
-   echo "- name: $name" >>$GROUP_FILE
-   echo "  type: $type" >>$GROUP_FILE
+   echo "- name: $name" >>$GROUP_FILE 2>/dev/null 
+   echo "  type: $type" >>$GROUP_FILE 2>/dev/null 
 
-   if [ "$type" == "url-test" ] || [ "$type" == "load-balance" ] || [ "$name" == "Proxy" ] || [ "$name" == "🔑Proxy" ]; then
-      echo "  proxies:" >>$GROUP_FILE
-      cat $Proxy_Group >> $GROUP_FILE 2>/dev/null
+  if [ "$type" == "url-test" ] || [ "$type" == "load-balance" ] || [ "$type" == "fallback" ] ; then
+      echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
+      #cat $Proxy_Group >> $GROUP_FILE 2>/dev/null
    else
-      echo "  proxies:" >>$GROUP_FILE
-   fi   
+      echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
+   fi       
  
    if [ "$name" != "$old_name" ]; then
       sed -i "s/,${old_name}$/,${name}#d/g" $CONFIG_FILE 2>/dev/null
@@ -279,10 +342,10 @@ yml_groups_set()
    config_foreach yml_servers_add "servers" "$name" 
    
    [ ! -z "$test_url" ] && {
-   	echo "  url: $test_url" >>$GROUP_FILE
+   	echo "  url: $test_url" >>$GROUP_FILE 2>/dev/null 
    }
    [ ! -z "$test_interval" ] && {
-   echo "  interval: \"$test_interval\"" >>$GROUP_FILE
+   echo "  interval: \"$test_interval\"" >>$GROUP_FILE 2>/dev/null 
    }
 }
 
@@ -292,8 +355,8 @@ config_foreach yml_groups_set "groups"
 
 
 if [ "$(ls -l $GROUP_FILE|awk '{print $5}')" -ne 0 ]; then
-sed -i "1i\  " $GROUP_FILE
-sed -i "2i\Proxy Group:" $GROUP_FILE
+sed -i "1i\  " $GROUP_FILE 2>/dev/null 
+sed -i "2i\Proxy Group:" $GROUP_FILE 2>/dev/null 
 fi
 
 
@@ -314,23 +377,27 @@ cat >> "$TEMP_FILE" <<-EOF
 #config-start-here
 EOF
 
-		sed -i "1i\port: ${http_port}" $TEMP_FILE
-		sed -i "2i\socks-port: ${socks_port}" $TEMP_FILE
-		sed -i "3i\redir-port: ${redir_port}" $TEMP_FILE
-		sed -i "4i\allow-lan: ${allow_lan}" $TEMP_FILE
-		if [ $allow_lan == "true" ];  then	
-		sed -i "5i\bind-address: '${bind_addr}'" $TEMP_FILE
+		sed -i "1i\port: ${http_port}" $TEMP_FILE 2>/dev/null
+		sed -i "/port: ${http_port}/a\socks-port: ${socks_port}" $TEMP_FILE 2>/dev/null 
+		sed -i "/socks-port: ${socks_port}/a\redir-port: ${redir_port}" $TEMP_FILE 2>/dev/null 
+		sed -i "/redir-port: ${redir_port}/a\allow-lan: ${allow_lan}" $TEMP_FILE 2>/dev/null 
+		if [ $allow_lan == "true" ];  then
+		sed -i "/allow-lan: ${allow_lan}/a\bind-address: \"${bind_addr}\"" $TEMP_FILE 2>/dev/null 
+		sed -i "/bind-address: \"${bind_addr}\"/a\mode: Rule" $TEMP_FILE 2>/dev/null
+		sed -i "/mode: Rule/a\log-level: ${log_level}" $TEMP_FILE 2>/dev/null 
+		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $TEMP_FILE 2>/dev/null 
+		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $TEMP_FILE 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $TEMP_FILE 2>/dev/null 
+		sed -i "external-ui: \"/usr/share/clash/dashboard\"/a\  " $TEMP_FILE 2>/dev/null 
+		sed -i "   /a\   " $TEMP_FILE 2>/dev/null
 		else
-		sed -i "5i\#bind-address: " $TEMP_FILE
+		sed -i "/allow-lan: ${allow_lan}/a\mode: Rule" $TEMP_FILE 2>/dev/null
+		sed -i "/mode: Rule/a\log-level: ${log_level}" $TEMP_FILE 2>/dev/null 
+		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $TEMP_FILE 2>/dev/null 
+		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $TEMP_FILE 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $TEMP_FILE 2>/dev/null 
 		fi
-		sed -i "6i\mode: Rule" $TEMP_FILE
-		sed -i "7i\log-level: ${log_level}" $TEMP_FILE
-		sed -i "8i\external-controller: 0.0.0.0:${dash_port}" $TEMP_FILE
-		sed -i "9i\secret: '${da_password}'" $TEMP_FILE
-		sed -i "10i\external-ui: "/usr/share/clash/dashboard"" $TEMP_FILE
-		sed -i "11i\ " $TEMP_FILE
-		sed -i "12i\ " $TEMP_FILE
-		sed -i '/#config-start-here/ d' $TEMP_FILE
+		sed -i '/#config-start-here/ d' $TEMP_FILE 2>/dev/null
 
 		
 cat $DNS_FILE >> $TEMP_FILE  2>/dev/null
@@ -343,16 +410,33 @@ if [ -f $CONFIG_YAML ];then
 	rm -rf $CONFIG_YAML
 fi
 
-sed -i "1i\ " $CONFIG_YAML_RULE
-sed -i "2i\ " $CONFIG_YAML_RULE
+cat $TEMP_FILE $CONFIG_YAML_RULE > $CONFIG_YAML 2>/dev/null
 
-cat $TEMP_FILE $CONFIG_YAML_RULE > $CONFIG_YAML
+sed -i "/Rule:/i\     " $CONFIG_YAML 2>/dev/null
 
 rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE
 
+ 	if [ $lang == "en" ] || [ $lang == "auto" ];then
+		echo "Completed Creating Custom Config.. " >$REAL_LOG 
+		 sleep 2
+			echo "Clash for OpenWRT" >$REAL_LOG
+	elif [ $lang == "zh_cn" ];then
+    	 echo "创建自定义配置完成..." >$REAL_LOG
+		  sleep 2
+			echo "Clash for OpenWRT" >$REAL_LOG
+	fi
+	
+
+
+
 if [ $config_type == "cus" ];then 
+if pidof clash >/dev/null; then
 /etc/init.d/clash restart 2>/dev/null
 fi
 fi
-rm -rf $SERVER_FILE
+
 fi
+rm -rf $SERVER_FILE
+
+fi
+

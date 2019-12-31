@@ -24,7 +24,7 @@ do
 		clean_log
 	fi
 	if ! pidof clash>/dev/null; then
-		nohup $CLASH -d $CLASH_CONFIG > /tmp/clash.log 2>&1 &
+		/etc/init.d/clash restart 2>&1 &
 		echo "$curtime Clash Is Restarting！" >> ${logfile}
 	fi
 
