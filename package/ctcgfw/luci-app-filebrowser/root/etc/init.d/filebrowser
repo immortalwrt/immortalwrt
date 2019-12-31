@@ -11,8 +11,6 @@ db_name="$(uci get filebrowser.config.db_name| sed 's#/##g')"
 enabled="$(uci get filebrowser.config.enabled)"
 port="$(uci get filebrowser.config.port)"
 root_dir="$(uci get filebrowser.config.root_dir)"
-username="$(uci get filebrowser.config.username)"
-password="$(filebrowser hash "$(uci get filebrowser.config.password)"| sed 's/$/\$/g')"
 
 if [ "${addr_type}" == "local" ];then
 	addr="127.0.0.1"
@@ -27,9 +25,9 @@ start() {
 	[ "$enabled" == "1" ] || exit 0
 	mkdir -p "${root_dir}"
 	mkdir -p "${db_dir}"
-	filebrowser -a "${addr}" -d "${db_dir}/${db_name}" -p "${port}" -r "${root_dir}" --username "${username}" --password "${password}" >/dev/null 2>&1 &
+	filebrowser -a "${addr}" -d "${db_dir}/${db_name}" -p "${port}" -r "${root_dir}" >/dev/null 2>&1 &
 }
 
 stop() {
-	killall filebrowser >/dev/null 2>&1
+	killall -9 filebrowser >/dev/null 2>&1
 }

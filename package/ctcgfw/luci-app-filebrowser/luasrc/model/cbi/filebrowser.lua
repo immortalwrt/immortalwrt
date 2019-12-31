@@ -50,17 +50,6 @@ o.placeholder = "/"
 o.default     = "/"
 o.rmempty     = false
 
-o = s:option(Value, "username", translate("管理员用户名"))
-o.placeholder = "admin"
-o.default     = "admin"
-o.rmempty     = false
-
-o = s:option(Value, "password", translate("管理员密码"))
-o.password    = true
-o.placeholder = "admin"
-o.default     = "admin"
-o.rmempty     = false
-
 o = s:option(Value, "db_dir", translate("数据库目录"))
 o.placeholder = "/etc"
 o.default     = "/etc"
