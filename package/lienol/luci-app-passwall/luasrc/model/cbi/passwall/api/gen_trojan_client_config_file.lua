@@ -2,13 +2,14 @@ local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
 local node_section = arg[1]
 local run_type = arg[2]
-local proxy_port = arg[3]
+local local_addr = arg[3]
+local local_port = arg[4]
 local node = ucursor:get_all("passwall", node_section)
 
 local trojan = {
     run_type = run_type,
-    local_addr = "0.0.0.0",
-    local_port = proxy_port,
+    local_addr = local_addr,
+    local_port = local_port,
     remote_addr = node.address,
     remote_port = tonumber(node.port),
     password = {node.password},

@@ -276,7 +276,7 @@ gen_config_file() {
 		elif [ "$type" == "brook" ]; then
 			BROOK_SOCKS5_CMD="client -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_ip:$port -p $(config_n_get $node password)"
 		elif [ "$type" == "trojan" ]; then
-			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $node client $local_port >$config_file_path
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $node client "0.0.0.0" $local_port >$config_file_path
 		fi
 	fi
 
@@ -294,9 +294,10 @@ gen_config_file() {
 		elif [ "$type" == "brook" ]; then
 			BROOK_UDP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$port -p $(config_n_get $node password)"
 		elif [ "$type" == "trojan" ]; then
-			local_port=$(get_not_exists_port_after $SOCKS5_PROXY_PORT1 tcp)
+			SOCKS5_PROXY_PORT4=$(expr $SOCKS5_PROXY_PORT3 + 1)
+			local_port=$(get_not_exists_port_after $SOCKS5_PROXY_PORT4 tcp)
 			socks5_port=$local_port
-			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $node client $socks5_port >$config_file_path
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $node client "127.0.0.1" $socks5_port >$config_file_path
 		fi
 	fi
 
@@ -310,7 +311,7 @@ gen_config_file() {
 		if [ "$type" == "v2ray" ]; then
 			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua $node tcp $local_port nil >$config_file_path
 		elif [ "$type" == "trojan" ]; then
-			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $node nat $local_port >$config_file_path
+			lua /usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua $node nat "0.0.0.0" $local_port >$config_file_path
 		else
 			local kcptun_use kcptun_server_host kcptun_port kcptun_config
 			kcptun_use=$(config_n_get $node use_kcp)
@@ -389,7 +390,7 @@ start_tcp_redir() {
 				if [ -f "${v2ray_path}/v2ray" ]; then
 					${v2ray_path}/v2ray -config=$config_file >/dev/null &
 				else
-					v2ray_bin=$(find_bin V2ray)
+					v2ray_bin=$(find_bin v2ray)
 					[ -n "$v2ray_bin" ] && $v2ray_bin -config=$config_file >/dev/null &
 				fi
 			elif [ "$TYPE" == "brook" ]; then
@@ -397,25 +398,25 @@ start_tcp_redir() {
 				if [ -f "$brook_bin" ]; then
 					$brook_bin $BROOK_TCP_CMD &>/dev/null &
 				else
-					brook_bin=$(find_bin Brook)
+					brook_bin=$(find_bin brook)
 					[ -n "$brook_bin" ] && $brook_bin $BROOK_TCP_CMD &>/dev/null &
 				fi
 			elif [ "$TYPE" == "trojan" ]; then
 				trojan_bin=$(find_bin trojan)
 				[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
 			elif [ "$TYPE" == "socks5" ]; then
-				local address=$(config_n_get $temp_server address)
-				local port=$(config_n_get $temp_server port)
+				local node_address=$(config_n_get $temp_server address)
+				local node_port=$(config_n_get $temp_server port)
 				local server_username=$(config_n_get $temp_server username)
 				local server_password=$(config_n_get $temp_server password)
 				ipt2socks_bin=$(find_bin ipt2socks)
 				[ -n "$ipt2socks_bin" ] && {
-					$ipt2socks_bin -T -l $port -b 0.0.0.0 -s $address -p $port -R >/dev/null &
+					$ipt2socks_bin -T -l $port -b 0.0.0.0 -s $node_address -p $socks5_port -R >/dev/null &
 				}
 				#redsocks_bin=$(find_bin redsocks2)
 				#[ -n "$redsocks_bin" ] && {
 				#	local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
-				#	gen_redsocks_config $redsocks_config_file tcp $port $address $port $server_username $server_password
+				#	gen_redsocks_config $redsocks_config_file tcp $port $node_address $socks5_port $server_username $server_password
 				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
 				#}
 			elif [ "$TYPE" == "ssr" ]; then
@@ -468,7 +469,7 @@ start_udp_redir() {
 				if [ -f "${v2ray_path}/v2ray" ]; then
 					${v2ray_path}/v2ray -config=$config_file >/dev/null &
 				else
-					v2ray_bin=$(find_bin V2ray)
+					v2ray_bin=$(find_bin v2ray)
 					[ -n "$v2ray_bin" ] && $v2ray_bin -config=$config_file >/dev/null &
 				fi
 			elif [ "$TYPE" == "brook" ]; then
@@ -476,14 +477,14 @@ start_udp_redir() {
 				if [ -f "$brook_bin" ]; then
 					$brook_bin $BROOK_UDP_CMD >/dev/null &
 				else
-					brook_bin=$(find_bin Brook)
+					brook_bin=$(find_bin brook)
 					[ -n "$brook_bin" ] && $brook_bin $BROOK_UDP_CMD >/dev/null &
 				fi
 			elif [ "$TYPE" == "trojan" ]; then
 				trojan_bin=$(find_bin trojan)
 				[ -n "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
-				local address=$(config_n_get $temp_server address)
-				local port=$(config_n_get $temp_server port)
+				local node_address=$(config_n_get $temp_server address)
+				local node_port=$(config_n_get $temp_server port)
 				local server_username=$(config_n_get $temp_server username)
 				local server_password=$(config_n_get $temp_server password)
 				ipt2socks_bin=$(find_bin ipt2socks)
@@ -498,19 +499,19 @@ start_udp_redir() {
 				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
 				#}
 			elif [ "$TYPE" == "socks5" ]; then
-				local address=$(config_n_get $temp_server address)
-				local port=$(config_n_get $temp_server port)
+				local node_address=$(config_n_get $temp_server address)
+				local node_port=$(config_n_get $temp_server port)
 				local server_username=$(config_n_get $temp_server username)
 				local server_password=$(config_n_get $temp_server password)
 				ipt2socks_bin=$(find_bin ipt2socks)
 				[ -n "$ipt2socks_bin" ] && {
-					$ipt2socks_bin -U -l $port -b 0.0.0.0 -s $address -p $port -R >/dev/null &
+					$ipt2socks_bin -U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R >/dev/null &
 				}
 				
 				#redsocks_bin=$(find_bin redsocks2)
 				#[ -n "$redsocks_bin" ] && {
 				#	local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
-				#	gen_redsocks_config $redsocks_config_file udp $port $address $port $server_username $server_password
+				#	gen_redsocks_config $redsocks_config_file udp $port $node_address $node_port $server_username $server_password
 				#	$redsocks_bin -c $redsocks_config_file >/dev/null &
 				#}
 			elif [ "$TYPE" == "ssr" ]; then
@@ -557,7 +558,7 @@ start_socks5_proxy() {
 				if [ -f "${v2ray_path}/v2ray" ]; then
 					${v2ray_path}/v2ray -config=$config_file >/dev/null &
 				else
-					v2ray_bin=$(find_bin V2ray)
+					v2ray_bin=$(find_bin v2ray)
 					[ -n "$v2ray_bin" ] && $v2ray_bin -config=$config_file >/dev/null &
 				fi
 			elif [ "$TYPE" == "brook" ]; then
@@ -565,7 +566,7 @@ start_socks5_proxy() {
 				if [ -f "$brook_bin" ]; then
 					$brook_bin $BROOK_SOCKS5_CMD >/dev/null &
 				else
-					brook_bin=$(find_bin Brook)
+					brook_bin=$(find_bin brook)
 					[ -n "$brook_bin" ] && $brook_bin $BROOK_SOCKS5_CMD >/dev/null &
 				fi
 			elif [ "$TYPE" == "trojan" ]; then
@@ -575,7 +576,7 @@ start_socks5_proxy() {
 				echolog "Socks5节点不能使用Socks5代理节点！"
 			elif [ "$TYPE" == "ssr" ]; then
 				ssr_bin=$(find_bin ssr-local)
-				[ -n "$ssr_bin" ] && $ssr_bin -c $config_file -b 0.0.0.0 >/dev/null 2>&1 &
+				[ -n "$ssr_bin" ] && $ssr_bin -c $config_file -b 0.0.0.0 -u >/dev/null 2>&1 &
 			elif [ "$TYPE" == "ss" ]; then
 				ss_bin=$(find_bin ss-local)
 				[ -n "$ss_bin" ] && {
@@ -594,7 +595,7 @@ start_socks5_proxy() {
 							fi
 						}
 					fi
-					$ss_bin -c $config_file -b 0.0.0.0 $plugin_params >/dev/null 2>&1 &
+					$ss_bin -c $config_file -b 0.0.0.0 -u $plugin_params >/dev/null 2>&1 &
 				}
 			fi
 			echo $port > $CONFIG_PATH/port/Socks5_${i}

@@ -39,7 +39,7 @@ table td, .table .td {
 			var xhr = new XMLHttpRequest();
 			var code = ajax.encode(data);
 			xhr.open("POST", url, true);
-			xhr.timeout = 2000;
+			xhr.timeout = 1000;
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			xhr.ontimeout = function() {
 				fn_timeout(xhr);
@@ -102,9 +102,13 @@ table td, .table .td {
 	function ping_node(cbi_id,dom) {
 		<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
 			var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
-			var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
-			var address = address_full.substring(0, address_full.lastIndexOf(":"));
-			var port = address_full.substring(address_full.lastIndexOf(":") + 1);
+			var address = null;
+			var port = null;
+			if (remarks.lastIndexOf("（") != -1 && remarks.lastIndexOf("）") != -1) {
+				var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
+				address = address_full.substring(0, address_full.lastIndexOf(":"));
+				port = address_full.substring(address_full.lastIndexOf(":") + 1);
+			}
 		<% else %>
 			var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
 			var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
@@ -133,9 +137,13 @@ table td, .table .td {
 		var cbi_id = auto_ping_value[i].getAttribute("cbiid");
 		<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
 			var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
-			var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
-			var address = address_full.substring(0, address_full.lastIndexOf(":"));
-			var port = address_full.substring(address_full.lastIndexOf(":") + 1);
+			var address = null;
+			var port = null;
+			if (remarks.lastIndexOf("（") != -1 && remarks.lastIndexOf("）") != -1) {
+				var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
+				address = address_full.substring(0, address_full.lastIndexOf(":"));
+				port = address_full.substring(address_full.lastIndexOf(":") + 1);
+			}
 		<% else %>
 			var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
 			var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
@@ -167,6 +175,7 @@ table td, .table .td {
 				auto_ping();
 			},
 			function(x) {
+				auto_ping_value[index].innerHTML = "<font style='color:red'><%:Timeout%></font>";
 				index++;
 				auto_ping();
 			},
