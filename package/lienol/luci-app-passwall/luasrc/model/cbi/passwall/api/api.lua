@@ -5,17 +5,12 @@ local uci = require"luci.model.uci".cursor()
 local util = require "luci.util"
 local i18n = require "luci.i18n"
 
-local appname = "passwall"
-
-local wget = "/usr/bin/wget"
-local wget_args = {
-    "--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"
-}
-local curl = "/usr/bin/curl"
-local command_timeout = 300
-
-local LEDE_BOARD = nil
-local DISTRIB_TARGET = nil
+appname = "passwall"
+wget = "/usr/bin/wget"
+wget_args = {"--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"}
+command_timeout = 300
+LEDE_BOARD = nil
+DISTRIB_TARGET = nil
 
 function uci_get_type(type, config, default)
     value = uci:get(appname, "@" .. type .. "[0]", config) or sys.exec(
@@ -180,7 +175,7 @@ function get_api_json(url)
     --	function(chunk) output[#output + 1] = chunk end)
     -- local json_content = util.trim(table.concat(output))
 
-    local json_content = luci.sys.exec(curl .. " -sL " .. url)
+    local json_content = luci.sys.exec(wget .. " --no-check-certificate --timeout=10 -t 1 -O- " .. url)
 
     if json_content == "" then return {} end
 

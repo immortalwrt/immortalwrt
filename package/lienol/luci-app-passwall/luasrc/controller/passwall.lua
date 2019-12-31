@@ -205,26 +205,23 @@ end
 
 function auto_ping_node_list()
     local e = {}
-    local json_str = luci.http.formvalue("json")
-    local json = luci.jsonc.parse(json_str)
-    local index = json["index"]
-    local address = json["address"]
-    local port = json["port"]
+    local index = luci.http.formvalue("index")
+    local address = luci.http.formvalue("address")
+    local port = luci.http.formvalue("port")
 
-    local obj = {}
-    obj.index = index
+    e.index = index
     if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
                          appname) == "1" and
         luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        obj.ping = luci.sys.exec("echo -n `tcping -q -c 1 -i 1 -p " .. port ..
-                                     " " .. address ..
-                                     " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
+        e.ping = luci.sys.exec(
+                     "echo -n `tcping -q -c 1 -i 1 -p " .. port .. " " ..
+                         address ..
+                         " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
     else
-        obj.ping = luci.sys.exec(
-                       "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
-                           address)
+        e.ping = luci.sys.exec(
+                     "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
+                         address)
     end
-    e = obj
 
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)

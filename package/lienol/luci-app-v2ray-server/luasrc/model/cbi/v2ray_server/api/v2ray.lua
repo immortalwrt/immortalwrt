@@ -6,13 +6,13 @@ local util = require "luci.util"
 local i18n = require "luci.i18n"
 local ipkg = require "luci.model.ipkg"
 
+local appname = "v2ray_server"
 local v2ray_api =
     "https://api.github.com/repos/v2ray/v2ray-core/releases/latest"
 local wget = "/usr/bin/wget"
 local wget_args = {
     "--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"
 }
-local curl = "/usr/bin/curl"
 local command_timeout = 300
 
 local LEDE_BOARD = nil
@@ -162,7 +162,9 @@ local function get_api_json(url)
     --	function(chunk) output[#output + 1] = chunk end)
     -- local json_content = util.trim(table.concat(output))
 
-    local json_content = luci.sys.exec(curl .. " -sL " .. url)
+    local json_content = luci.sys.exec(wget ..
+                                           " --no-check-certificate --timeout=10 -t 1 -O- " ..
+                                           url)
 
     if json_content == "" then return {} end
 

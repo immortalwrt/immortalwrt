@@ -5,6 +5,7 @@ local uci = require"luci.model.uci".cursor()
 local util = require "luci.util"
 local i18n = require "luci.i18n"
 
+local appname = "brook_server"
 local brook_api =
     "https://api.github.com/repos/txthinking/brook/releases/latest"
 
@@ -12,12 +13,21 @@ local wget = "/usr/bin/wget"
 local wget_args = {
     "--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"
 }
-local curl = "/usr/bin/curl"
 local command_timeout = 300
 
 local LEDE_BOARD = nil
 local DISTRIB_TARGET = nil
 local is_armv7 = false
+
+function uci_get_type(type, config, default)
+    value = uci:get(appname, "@" .. type .. "[0]", config) or sys.exec(
+                "echo -n `uci -q get " .. appname .. ".@" .. type .. "[0]." ..
+                    config .. "`")
+    if (value == nil or value == "") and (default and default ~= "") then
+        value = default
+    end
+    return value
+end
 
 local function _unpack(t, i)
     i = i or 1
@@ -161,7 +171,9 @@ function get_api_json(url)
     --	function(chunk) output[#output + 1] = chunk end)
     -- local json_content = util.trim(table.concat(output))
 
-    local json_content = luci.sys.exec(curl .. " -sL " .. url)
+    local json_content = luci.sys.exec(wget ..
+                                           " --no-check-certificate --timeout=10 -t 1 -O- " ..
+                                           url)
 
     if json_content == "" then return {} end
 
@@ -169,9 +181,7 @@ function get_api_json(url)
 end
 
 function get_brook_file_path()
-    return uci:get("brook_server", "global", "brook_path") or
-               luci.sys.exec(
-                   "echo -n `uci get brook_server.@global[0].brook_path`")
+    return uci_get_type("global", "brook_path", "/usr/bin/brook")
 end
 
 function get_brook_version(file)

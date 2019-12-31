@@ -8,15 +8,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 local brook_api =
     "https://api.github.com/repos/txthinking/brook/releases/latest"
 
-local wget = "/usr/bin/wget"
-local wget_args = {
-    "--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"
-}
-local command_timeout = 300
-
-local LEDE_BOARD = nil
-local DISTRIB_TARGET = nil
-
 function get_brook_file_path()
     return api.uci_get_type("global_app", "brook_file")
 end
@@ -112,8 +103,8 @@ function to_download(url)
 
     local tmp_file = util.trim(util.exec("mktemp -u -t brook_download.XXXXXX"))
 
-    local result = api.exec(wget, {"-O", tmp_file, url, api._unpack(wget_args)},
-                            nil, command_timeout) == 0
+    local result = api.exec(api.wget, {"-O", tmp_file, url, api._unpack(api.wget_args)},
+                            nil, api.command_timeout) == 0
 
     if not result then
         api.exec("/bin/rm", {"-f", tmp_file})
@@ -151,7 +142,7 @@ function to_move(file)
     end
 
     local result = api.exec("/bin/mv", {"-f", file, client_file}, nil,
-                            command_timeout) == 0
+                            api.command_timeout) == 0
 
     if not result or not fs.access(client_file) then
         sys.call("/bin/rm -rf /tmp/brook_download.*")
