@@ -249,6 +249,12 @@ ifneq ($(CONFIG_VMDK_IMAGES),)
 	/usr/bin/qemu-img convert -f raw -O vmdk -o adapter_type=lsilogic \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
 		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).vmdk
+	#build the ESXI VMDK with
+	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1)-esxi.vmdk || true
+	rm $(BIN_DIR)/$(IMG_PREFIX)-combined-$(1)-esxi-flat.vmdk || true
+	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vmdk -o adapter_type=lsilogic,subformat=monolithicFlat \
+		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1).img \
+		$(BIN_DIR)/$(IMG_PREFIX)-combined-$(1)-esxi.vmdk
   endef
   define Image/Build/vmdk_efi
 	rm $(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).vmdk || true
