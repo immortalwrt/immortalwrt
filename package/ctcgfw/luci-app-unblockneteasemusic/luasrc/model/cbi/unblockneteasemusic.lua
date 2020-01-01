@@ -12,20 +12,6 @@ enable.description = translate("启用本插件以解除网易云音乐播放限
 enable.default = 0
 enable.rmempty = false
 
-http_port = s:option(Value, "http_port", translate("[HTTP] 监听端口"))
-http_port.description = translate("本插件监听的HTTP端口，不可与其他程序/HTTPS共用一个端口")
-http_port.placeholder = "5200"
-http_port.default = "5200"
-http_port.datatype = "port"
-http_port.rmempty = false
-
-https_port = s:option(Value, "https_port", translate("[HTTPS] 监听端口"))
-https_port.description = translate("本插件监听的HTTPS端口，不可与其他程序/HTTP共用一个端口")
-https_port.placeholder = "5201"
-https_port.default = "5201"
-https_port.datatype = "port"
-https_port.rmempty = false
-
 music_source = s:option(ListValue, "music_source", translate("音源接口"))
 music_source:value("default", translate("默认"))
 music_source:value("qq", translate("QQ音乐"))
@@ -51,11 +37,17 @@ youtube_key.description = translate("API Key申请地址：https://developers.go
 youtube_key.datatype = "string"
 youtube_key:depends("music_source", "youtube")
 
+endpoint_url = s:option(Value, "endpoint_url", translate("EndPoint"))
+endpoint_url.description = translate("具体说明参见：https://github.com/nondanee/UnblockNeteaseMusic")
+endpoint_url.placeholder = "https://music.163.com"
+endpoint_url.datatype = "string"
+endpoint_url.rmempty = false
+
 hijack = s:option(ListValue, "hijack_ways", translate("劫持方法"))
 hijack:value("dont_hijack", translate("不开启劫持"))
 hijack:value("use_ipset", translate("使用IPSet劫持"))
 hijack:value("use_hosts", translate("使用Hosts劫持"))
-hijack.description = translate("如果使用Hosts劫持，请将HTTP/HTTPS端口设置为80/443")
+hijack.description = translate("如果使用Hosts劫持，主实例的HTTP/HTTPS端口将被锁定为80/443")
 hijack.default = "dont_hijack"
 hijack.rmempty = false
 
@@ -76,6 +68,34 @@ advanced_mode = s:option(Flag, "advanced_mode", translate("启用进阶设置"))
 advanced_mode.description = translate("仅推荐高级玩家使用")
 advanced_mode.default = 0
 advanced_mode.rmempty = false
+
+http_port = s:option(Value, "http_port", translate("主实例 [HTTP] 监听端口"))
+http_port.description = translate("主实例监听的HTTP端口，不可与苹果实例/其他程序/HTTPS共用一个端口")
+http_port.placeholder = "5200"
+http_port.default = "5200"
+http_port.datatype = "port"
+http_port:depends("advanced_mode", 1)
+
+https_port = s:option(Value, "https_port", translate("主实例 [HTTPS] 监听端口"))
+https_port.description = translate("主实例监听的HTTPS端口，不可与苹果实例/其他程序/HTTP共用一个端口")
+https_port.placeholder = "5201"
+https_port.default = "5201"
+https_port.datatype = "port"
+https_port:depends("advanced_mode", 1)
+
+apple_http_port = s:option(Value, "apple_http_port", translate("苹果实例 [HTTP] 监听端口"))
+apple_http_port.description = translate("苹果实例监听的HTTP端口，不可与主实例/其他程序/HTTPS共用一个端口")
+apple_http_port.placeholder = "5202"
+apple_http_port.default = "5202"
+apple_http_port.datatype = "port"
+apple_http_port:depends("advanced_mode", 1)
+
+apple_https_port = s:option(Value, "apple_https_port", translate("苹果实例 [HTTPS] 监听端口"))
+apple_https_port.description = translate("苹果实例监听的HTTPS端口，不可与主实例/其他程序/HTTP共用一个端口")
+apple_https_port.placeholder = "5203"
+apple_https_port.default = "5203"
+apple_https_port.datatype = "port"
+apple_https_port:depends("advanced_mode", 1)
 
 daemon_enable = s:option(Flag, "daemon_enable", translate("启用进程守护"))
 daemon_enable.description = translate("开启后，附属程序会自动检测主程序运行状态，在主程序退出时自动重启")
@@ -107,12 +127,6 @@ netease_server_ip.placeholder = "59.111.181.38"
 netease_server_ip.datatype = "ipaddr"
 netease_server_ip:depends("set_netease_server_ip", 1)
 netease_server_ip:depends("advanced_mode", 1)
-
-endpoint_url = s:option(Value, "endpoint_url", translate("EndPoint"))
-endpoint_url.description = translate("具体说明参见：https://github.com/nondanee/UnblockNeteaseMusic")
-endpoint_url.placeholder = "https://music.163.com"
-endpoint_url.datatype = "string"
-endpoint_url:depends("advanced_mode", 1)
 
 proxy_server_ip = s:option(Value, "proxy_server_ip", translate("代理服务器地址"))
 proxy_server_ip.description = translate("使用代理服务器获取音乐信息")

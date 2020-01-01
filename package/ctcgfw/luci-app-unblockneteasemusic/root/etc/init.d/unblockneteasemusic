@@ -8,22 +8,29 @@ STOP=10
 lan_addr="$(uci get network.lan.ipaddr)"
 
 enable="$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable)"
-http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].http_port)"
-https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].https_port)"
+
 music_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_source)"
-qq_cookie="$(uci get unblockneteasemusic.@unblockneteasemusic[0].qq_cookie 2> "/dev/null")"
-youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2> "/dev/null")"
+qq_cookie="$(uci get unblockneteasemusic.@unblockneteasemusic[0].qq_cookie 2>"/dev/null")"
+youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2>"/dev/null")"
+
+endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url)"
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
+
 auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
 update_time="$(uci get unblockneteasemusic.@unblockneteasemusic[0].update_time)"
-keep_core_when_upgrade="$(uci get unblockneteasemusic.@unblockneteasemusic[0].keep_core_when_upgrade 2> "/dev/null")"
-[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2> "/dev/null")*" = "*1*" ] && addr="0.0.0.0" || addr="${lan_addr}"
-[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode 2> "/dev/null")*" = "*1*" ] && strict_mode="-s"
-netease_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip 2> "/dev/null")"
+
+http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].http_port 2>"/dev/null" || echo "5200")"
+https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].https_port 2>"/dev/null" || echo "5201")"
+apple_http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].apple_http_port 2>"/dev/null" || echo "5202")"
+apple_https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].apple_https_port 2>"/dev/null" || echo "5203")"
+
+keep_core_when_upgrade="$(uci get unblockneteasemusic.@unblockneteasemusic[0].keep_core_when_upgrade 2>"/dev/null")"
+[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>"/dev/null")*" = "*1*" ] && addr="0.0.0.0" || addr="${lan_addr}"
+[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode 2>"/dev/null")*" = "*1*" ] && strict_mode="-s"
+
+netease_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip 2>"/dev/null")"
 [ -n "${netease_server_ip}" ] && netease_server_ip="-f ${netease_server_ip}"
-endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url 2> "/dev/null")"
-[ -n "${endpoint_url}" ] && endpoint_url="-e ${endpoint_url}"
-proxy_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].proxy_server_ip 2> "/dev/null")"
+proxy_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].proxy_server_ip 2>"/dev/null")"
 [ -n "${proxy_server_ip}" ] && proxy_server_ip="-u ${proxy_server_ip}"
 
 set_ipset(){
@@ -31,7 +38,7 @@ set_ipset(){
 		mkdir -p "/tmp/dnsmasq.d"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac
+dhcp-option=252,http://${lan_addr}:${apple_http_port}/proxy.pac
 ipset=/.music.163.com/music
 ipset=/interface.music.163.com/music
 ipset=/interface3.music.163.com/music
@@ -76,7 +83,7 @@ set_hosts(){
 		mkdir -p "/tmp/dnsmasq.d"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac
+dhcp-option=252,http://${lan_addr}:${apple_http_port}/proxy.pac
 address=/music.163.com/${lan_addr}
 address=/interface.music.163.com/${lan_addr}
 address=/interface3.music.163.com/${lan_addr}
@@ -133,19 +140,22 @@ start()
 		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/provider/youtube.js"
 	fi
 
+	[ "${hijack_ways}" = "use_hosts" ] && { http_port="80"; https_port="443"; }
 	if [ "${music_source}" = "default" ]; then
-		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" ${netease_server_ip} ${proxy_server_ip} ${endpoint_url} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
+		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
+		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${apple_http_port}":"${apple_https_port}" -e "${endpoint_url}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
 	else
-		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" -o "${music_source}" ${netease_server_ip} ${proxy_server_ip} ${endpoint_url} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
+		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" -o "${music_source}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
+		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${apple_http_port}":"${apple_https_port}" -o "${music_source}" -e "${endpoint_url}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
 	fi
 
 	set_type="start"
-	if [ "*${hijack_ways}*" = "*use_ipset*" ]; then
+	if [ "${hijack_ways}" = "use_ipset" ]; then
 		set_ipset > "/dev/null" 2>&1
-	elif [ "*${hijack_ways}*" = "*use_hosts*" ]; then
+	elif [ "${hijack_ways}" = "use_hosts" ]; then
 		set_hosts > "/dev/null" 2>&1
 	fi
-	[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2> "/dev/null")*" = "*1*" ] && set_ports > "/dev/null" 2>&1
+	[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>"/dev/null")*" = "*1*" ] && set_ports > "/dev/null" 2>&1
 
 	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
 	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/unblockneteasemusic/update_core.sh" >> "/etc/crontabs/root"
