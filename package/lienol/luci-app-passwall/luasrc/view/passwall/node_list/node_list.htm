@@ -152,7 +152,7 @@ table td, .table .td {
 			var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
 		<% end %>
 		var json = JSON.stringify(auto_ping_value[index]);
-		ajax.post('<%=dsp.build_url("admin/vpn/passwall/auto_ping_node_list")%>', {
+		ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
 				index: index,
 				address: address,
 				port: port

@@ -8,6 +8,7 @@ get_date() {
 }
 
 test_url() {
+	ps -ef | grep "$1" | grep -v grep | awk '{print $1}' | xargs kill -9
 	status=$(/usr/bin/curl -I -o /dev/null -s --connect-timeout 3 -w %{http_code} "$1" | grep 200)
 	[ "$?" != 0 ] && {
 		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=3 "$1")

@@ -51,10 +51,6 @@ function index()
         true
     entry({"admin", "vpn", "passwall", "check_port"}, call("check_port")).leaf =
         true
-    entry({"admin", "vpn", "passwall", "auto_ping_node"}, call("auto_ping_node")).leaf =
-        true
-    entry({"admin", "vpn", "passwall", "auto_ping_node_list"},
-          call("auto_ping_node_list")).leaf = true
     entry({"admin", "vpn", "passwall", "ping_node"}, call("ping_node")).leaf =
         true
     entry({"admin", "vpn", "passwall", "set_node"}, call("set_node")).leaf =
@@ -170,67 +166,23 @@ function connect_status()
     local e = {}
     if luci.http.formvalue("type") == "google" then
         e.status = luci.sys.call(
-                       "echo `/usr/share/passwall/test.sh test_url 'https://www.google.com'` | grep 200 >/dev/null") ==
+                       "echo `/usr/share/passwall/test.sh test_url 'www.google.com'` | grep 200 >/dev/null") ==
                        0
     else
         e.status = luci.sys.call(
-                       "echo `/usr/share/passwall/test.sh test_url 'https://www.baidu.com'` | grep 200 >/dev/null") ==
+                       "echo `/usr/share/passwall/test.sh test_url 'www.baidu.com'` | grep 200 >/dev/null") ==
                        0
     end
-    luci.http.prepare_content("application/json")
-    luci.http.write_json(e)
-end
-
-function auto_ping_node()
-    local index = luci.http.formvalue("index")
-    local address = luci.http.formvalue("address")
-    local port = luci.http.formvalue("port")
-    local e = {}
-    e.index = index
-    if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
-                         appname) == "1" and
-        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        e.ping = luci.sys.exec(
-                     "echo -n `tcping -q -c 1 -i 1 -p " .. port .. " " ..
-                         address ..
-                         " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
-    else
-        e.ping = luci.sys.exec(
-                     "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
-                         address)
-    end
-    luci.http.prepare_content("application/json")
-    luci.http.write_json(e)
-end
-
-function auto_ping_node_list()
-    local e = {}
-    local index = luci.http.formvalue("index")
-    local address = luci.http.formvalue("address")
-    local port = luci.http.formvalue("port")
-
-    e.index = index
-    if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
-                         appname) == "1" and
-        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        e.ping = luci.sys.exec(
-                     "echo -n `tcping -q -c 1 -i 1 -p " .. port .. " " ..
-                         address ..
-                         " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
-    else
-        e.ping = luci.sys.exec(
-                     "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
-                         address)
-    end
-
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
 
 function ping_node()
-    local e = {}
+    local index = luci.http.formvalue("index")
     local address = luci.http.formvalue("address")
     local port = luci.http.formvalue("port")
+    local e = {}
+    e.index = index
     if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
                          appname) == "1" and
         luci.sys.exec("echo -n `command -v tcping`") ~= "" then
