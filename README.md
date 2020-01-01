@@ -64,7 +64,8 @@ luci-app-dockerman source: [lisaac/luci-app-dockerman](https://github.com/lisaac
 luci-lib-docker source: [lisaac/luci-lib-docker](https://github.com/lisaac/luci-lib-docker).<br/>
 openwrt-iptvhelper source: [riverscn/openwrt-iptvhelper](https://github.com/riverscn/openwrt-iptvhelper).<br>
 luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://github.com/rufengsuixing/luci-app-autoipsetadder).<br>
-luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).
+luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).<br/>
+Rclone-OpenWrt source:[ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-OpenWrt).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
