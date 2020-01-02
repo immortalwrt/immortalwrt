@@ -117,9 +117,6 @@ if [ -f "/etc/init.d/clash" ]; then
 	/etc/init.d/clash disable 2>/dev/null
 fi
 
-	echo "0" > /usr/share/clash/logstatus_check 2>/dev/null
-
-
 endef
 
 define Package/$(PKG_NAME)/install
