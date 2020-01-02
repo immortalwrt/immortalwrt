@@ -6,6 +6,7 @@ config unblockneteasemusic
 	option youtube_key ''
 	option endpoint_url 'https://music.163.com'
 	option hijack_ways 'use_ipset'
+	option hijack_ways_apple 'use_dnsmasq'
 	option auto_update '1'
 	option update_time '3'
 	option advanced_mode '0'

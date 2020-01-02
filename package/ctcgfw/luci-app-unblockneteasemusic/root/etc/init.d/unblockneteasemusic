@@ -15,6 +15,7 @@ youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2
 
 endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url)"
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
+hijack_ways_apple="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways_apple)"
 
 auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
 update_time="$(uci get unblockneteasemusic.@unblockneteasemusic[0].update_time)"
@@ -38,7 +39,6 @@ set_ipset(){
 		mkdir -p "/tmp/dnsmasq.d"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-dhcp-option=252,http://${lan_addr}:${apple_http_port}/proxy.pac
 ipset=/.music.163.com/music
 ipset=/interface.music.163.com/music
 ipset=/interface3.music.163.com/music
@@ -64,7 +64,7 @@ ipset=/apm3.music.163.com/music
 
 		mkdir -p /var/etc
 		cat <<-EOF > "/var/etc/unblockneteasemusic.include"
-/etc/init.d/unblockneteasemusic
+/etc/init.d/unblockneteasemusic restart
 		EOF
 	elif [ "${set_type}" = "stop" ]; then
 		iptables -t nat -D PREROUTING -p tcp -m set --match-set music dst -j cloud_music
@@ -83,7 +83,6 @@ set_hosts(){
 		mkdir -p "/tmp/dnsmasq.d"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
-dhcp-option=252,http://${lan_addr}:${apple_http_port}/proxy.pac
 address=/music.163.com/${lan_addr}
 address=/interface.music.163.com/${lan_addr}
 address=/interface3.music.163.com/${lan_addr}
@@ -93,13 +92,26 @@ address=/music.httpdns.c.163.com/0.0.0.0
 		EOF
 		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
 
-
 		ip route add 223.252.199.10 dev lo
 	elif [ "${set_type}" = "stop" ]; then
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
 
 		ip route del 223.252.199.10
+	fi
+}
+
+set_dnsmasq(){
+	if [ "${set_type}" = "start" ]; then
+		mkdir -p "/tmp/dnsmasq.d"
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic-apple.conf"
+		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic-apple.conf"
+dhcp-option=252,http://${lan_addr}:${apple_http_port}/proxy.pac
+		EOF
+		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+	elif [ "${set_type}" = "stop" ]; then
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic-apple.conf"
+		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
 	fi
 }
 
@@ -155,6 +167,8 @@ start()
 	elif [ "${hijack_ways}" = "use_hosts" ]; then
 		set_hosts > "/dev/null" 2>&1
 	fi
+	[ "${hijack_ways_apple}" = "use_dnsmasq" ] && set_dnsmasq > "/dev/null" 2>&1
+
 	[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>"/dev/null")*" = "*1*" ] && set_ports > "/dev/null" 2>&1
 
 	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
@@ -178,5 +192,6 @@ stop()
 	set_type="stop"
 	set_ipset > "/dev/null" 2>&1
 	set_hosts > "/dev/null" 2>&1
+	set_dnsmasq > "/dev/null" 2>&1
 	set_ports > "/dev/null" 2>&1
 }
