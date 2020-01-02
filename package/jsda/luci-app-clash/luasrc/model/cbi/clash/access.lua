@@ -37,6 +37,11 @@ o:depends("proxylan", 1)
 
 o = s:option(FileUpload, "",translate("Update GEOIP Database"))
 o.description = translate("NB: Upload GEOIP Database file Country.mmdb")
+.."<br />"
+..translate("https://github.com/Dreamacro/maxmind-geoip/releases")
+.."<br />"
+..translate("https://static.clash.to/GeoIP2/GeoIP2-Country.tar.gz")
+
 o.title = translate("Update GEOIP Database")
 o.template = "clash/clash_upload"
 um = s:option(DummyValue, "", nil)

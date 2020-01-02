@@ -458,14 +458,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		uci set network.lan.dns="${landns}" && uci commit network && /etc/init.d/network reload >/dev/null 2>&1
 	fi
 
-
 	yml_dns_change >/dev/null 2>&1
-	
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S")  - Starting Client..." >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S")  - 启动客户端..." >$REAL_LOG
-		fi
 
         if [ "${core}" -eq 1 ];then
         nohup $CLASH -d "$CLASH_CONFIG" > /tmp/clash.txt 2>&1 &	
@@ -619,9 +612,9 @@ lang=$(uci get luci.main.lang 2>/dev/null)
 		done
 		
 		fake=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.0\/16/=' |sort -r)
-        for fake in $fake; do
-          iptables -t nat -D OUTPUT $fake >/dev/null 2>&1
-        done
+       		for fake in $fake; do
+          		iptables -t nat -D OUTPUT $fake >/dev/null 2>&1
+        	done
 
 		# flush iptables rules
 		ip6tables -t nat -F clash_ipv6 >/dev/null 2>&1 && ip6tables -t nat -X clash_ipv6 >/dev/null 2>&1
@@ -665,7 +658,7 @@ lang=$(uci get luci.main.lang 2>/dev/null)
 		revert_dns >/dev/null 2>&1
 		
   	  	/etc/init.d/dnsmasq restart >/dev/null 2>&1
-   	    sleep 1
+   	    	sleep 1
 	
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 				echo "Deleting Cron Job" >$REAL_LOG 
@@ -674,7 +667,7 @@ lang=$(uci get luci.main.lang 2>/dev/null)
 		fi
 		
   	  	del_cron >/dev/null 2>&1
-	    sleep 1
+	    	sleep 1
 		
 		
 	 	echo "" >/tmp/clash.txt >/dev/null 2>&1

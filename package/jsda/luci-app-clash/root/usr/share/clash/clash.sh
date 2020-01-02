@@ -14,7 +14,7 @@ CONFIG_YAML="/usr/share/clash/config/sub/config.yaml"
 			sleep 1
 			
 	if pidof clash >/dev/null; then
-		if [ $subtype == "clash" ];then
+		if [ $subtype == "clash" ];then 
 			wget --no-check-certificate --user-agent="Clash/OpenWRT" $subscribe_url -O 2>&1 >1 $CONFIG_YAML
 		fi
 			if [ $lang == "en" ] || [ $lang == "auto" ];then
