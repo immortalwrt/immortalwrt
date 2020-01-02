@@ -43,7 +43,7 @@ endpoint_url.default = "https://music.163.com"
 endpoint_url.placeholder = "https://music.163.com"
 endpoint_url.datatype = "string"
 endpoint_url.rmempty = false
-m
+
 hijack = s:option(ListValue, "hijack_ways", translate("[主实例] 劫持方法"))
 hijack:value("dont_hijack", translate("不开启劫持"))
 hijack:value("use_ipset", translate("使用IPSet劫持"))
