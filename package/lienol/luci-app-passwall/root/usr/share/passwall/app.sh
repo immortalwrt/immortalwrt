@@ -433,15 +433,8 @@ start_tcp_redir() {
 					local plugin=$(config_n_get $temp_server ss_plugin)
 					if [ "$plugin" != "none" ]; then
 						[ "$plugin" == "v2ray-plugin" ] && {
-							plugin_params="--plugin "
-							plugin_params="${plugin_params}v2ray-plugin"
 							local opts=$(config_n_get $temp_server ss_plugin_v2ray_opts)
-							local address=$(config_n_get $temp_server address)
-							if [ "$opts" == "https" ]; then
-								plugin_params="${plugin_params} --plugin-opts \"tls;host=${address}\""
-							elif [ "$opts" == "quic" ]; then
-								plugin_params="${plugin_params} --plugin-opts \"mode=quic;host=${address}\""
-							fi
+							plugin_params="--plugin v2ray-plugin --plugin-opts \"$opts\""
 						}
 					fi
 					for k in $(seq 1 $process); do
@@ -524,15 +517,8 @@ start_udp_redir() {
 					local plugin=$(config_n_get $temp_server ss_plugin)
 					if [ "$plugin" != "none" ]; then
 						[ "$plugin" == "v2ray-plugin" ] && {
-							plugin_params="--plugin "
-							plugin_params="${plugin_params}v2ray-plugin"
 							local opts=$(config_n_get $temp_server ss_plugin_v2ray_opts)
-							local address=$(config_n_get $temp_server address)
-							if [ "$opts" == "https" ]; then
-								plugin_params="${plugin_params} --plugin-opts \"tls;host=${address}\""
-							elif [ "$opts" == "quic" ]; then
-								plugin_params="${plugin_params} --plugin-opts \"mode=quic;host=${address}\""
-							fi
+							plugin_params="--plugin v2ray-plugin --plugin-opts \"$opts\""
 						}
 					fi
 					$ss_bin -c $config_file -f $RUN_PID_PATH/udp_${TYPE}_1_$i -U $plugin_params >/dev/null 2>&1 &
@@ -584,15 +570,8 @@ start_socks5_proxy() {
 					local plugin=$(config_n_get $temp_server ss_plugin)
 					if [ "$plugin" != "none" ]; then
 						[ "$plugin" == "v2ray-plugin" ] && {
-							plugin_params="--plugin "
-							plugin_params="${plugin_params}v2ray-plugin"
 							local opts=$(config_n_get $temp_server ss_plugin_v2ray_opts)
-							local address=$(config_n_get $temp_server address)
-							if [ "$opts" == "https" ]; then
-								plugin_params="${plugin_params} --plugin-opts \"tls;host=${address}\""
-							elif [ "$opts" == "quic" ]; then
-								plugin_params="${plugin_params} --plugin-opts \"mode=quic;host=${address}\""
-							fi
+							plugin_params="--plugin v2ray-plugin --plugin-opts \"$opts\""
 						}
 					fi
 					$ss_bin -c $config_file -b 0.0.0.0 -u $plugin_params >/dev/null 2>&1 &

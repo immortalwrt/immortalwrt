@@ -307,13 +307,15 @@ add_nodes(){
 
 update_config(){
 	[ "$isAdd" == 1 ] && {
-		isadded_remarks=$(uci show $CONFIG | grep -c "remarks='$remarks'")
+		isadded_remarks=$(uci show $CONFIG | grep "@nodes" | grep "remarks" | grep -c -F "$remarks")
 		if [ "$isadded_remarks" -eq 0 ]; then
 			add_nodes add "$link_type"
 		else
-			index=$(uci show $CONFIG | grep -w "remarks='$remarks'" | cut -d '[' -f2|cut -d ']' -f1)
-			uci delete $CONFIG.@nodes[$index]
-			add_nodes update "$link_type"
+			index=$(uci show $CONFIG | grep "@nodes" | grep "remarks" | grep -w -F "$remarks" | cut -d '[' -f2|cut -d ']' -f1)
+			[ "$?" == 0 ] && {
+				uci delete $CONFIG.@nodes[$index]
+				add_nodes update "$link_type"
+			}
 		fi
 	}
 }
@@ -323,7 +325,7 @@ del_config(){
 	for localaddress in $(cat /usr/share/${CONFIG}/sub/all_localnodes)
 	do
 		[ "`cat /usr/share/${CONFIG}/sub/all_onlinenodes |grep -c "$localaddress"`" -eq 0 ] && {
-			for localindex in $(uci show $CONFIG|grep -w "$localaddress" |grep -w "address=" |cut -d '[' -f2|cut -d ']' -f1)
+			for localindex in $(uci show $CONFIG | grep -w "$localaddress" | grep -w "address=" |cut -d '[' -f2|cut -d ']' -f1)
 			do
 				del_type=$(uci get $CONFIG.@nodes[$localindex].type)
 				uci delete $CONFIG.@nodes[$localindex]

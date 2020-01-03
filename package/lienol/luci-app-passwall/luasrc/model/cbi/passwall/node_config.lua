@@ -144,10 +144,7 @@ ss_plugin:value("none", translate("none"))
 if is_finded("v2ray-plugin") then ss_plugin:value("v2ray-plugin") end
 ss_plugin:depends("type", "SS")
 
-ss_plugin_v2ray_opts = s:option(ListValue, "ss_plugin_v2ray_opts", translate("opts"))
-ss_plugin_v2ray_opts:value("http", translate("HTTP"))
-ss_plugin_v2ray_opts:value("https", translate("HTTPS"))
-ss_plugin_v2ray_opts:value("quic", translate("QUIC"))
+ss_plugin_v2ray_opts = s:option(Value, "ss_plugin_v2ray_opts", translate("opts"))
 ss_plugin_v2ray_opts:depends("ss_plugin", "v2ray-plugin")
 
 use_kcp = s:option(Flag, "use_kcp", translate("Use Kcptun"),

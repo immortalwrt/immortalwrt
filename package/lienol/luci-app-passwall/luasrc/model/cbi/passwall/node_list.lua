@@ -37,7 +37,8 @@ o.default = 1
 s:append(Template("passwall/node_list/link_add_node"))
 
 -- [[ Node List ]]--
-s = m:section(TypedSection, "nodes")
+s = m:section(TypedSection, "nodes", translate(""), translate(
+                  "Support for more than 10,000 ping nodes and luci does not crash and not slow."))
 s.anonymous = true
 s.addremove = true
 s.template = "cbi/tblsection"

@@ -304,6 +304,9 @@ msgstr "选中后保存应用后即自动Ping节点"
 msgid "Concise display nodes"
 msgstr "简洁显示节点"
 
+msgid "Support for more than 10,000 ping nodes and luci does not crash and not slow."
+msgstr "支持超过10000个节点，而LuCI却不会卡死，更不会崩溃。"
+
 msgid "Apply"
 msgstr "应用"
 
