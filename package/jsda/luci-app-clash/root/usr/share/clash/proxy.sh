@@ -142,14 +142,20 @@ servers_set()
       custom=", ws-headers: { Host: $custom }"
    fi
    
-   if [ ! "$tls" ] && [ "$type" = "vmess" ]; then
-       tlss=""
-   elif [ "$tls" ] && [ "$type" = "vmess" ]; then
-      tlss=", tls: $tls"
-   elif [ "$tls" ] && [ "$type" = "http" ]; then
-	  tls_hs=", tls: $tls" 
-   elif [ "$tls" ] && [ "$type" = "socks5" ]; then
-	  tls_hs=", tls: $tls"	  
+   if [ "$tls" = "false" ] && [ "$type" = "vmess" ]; then
+          tls=", tls: $tls"
+   elif [ "$tls" = "true" ] && [ "$type" = "vmess" ]; then
+          tls=", tls: $tls"
+   elif [ "$tls" = "false" ] && [ "$type" = "http" ];then
+	  tls=", tls: $tls"
+   elif [ "$tls" = "false" ] && [ "$type" = "socks5" ]; then
+	  tls=", tls: $tls"
+   elif [ "$tls" = "true" ] && [ "$type" = "http" ]; then
+	  tls=", tls: $tls" 
+   elif [ "$tls" = "true" ] && [ "$type" = "socks5" ]; then
+	  tls=", tls: $tls"
+   elif [ -z "$tls" ] && [ "$type" != "ss" ]; then
+	  tls=""	  
    fi
 
    
@@ -161,11 +167,22 @@ servers_set()
       fi
    fi
 
-   if [ "$skip_cert_verify" = "true" ] && [ "$type" != "ss" ]; then
+   if [ "$skip_cert_verify" = "true" ] && [ "$type" = "vmess" ]; then
       skip_cert_verifys=", skip-cert-verify: $skip_cert_verify"
-  elif [ ! "$skip_cert_verify" ]; then
+   elif [ "$skip_cert_verify" = "false" ] && [ "$type" = "vmess" ]; then
+      skip_cert_verifys=", skip-cert-verify: $skip_cert_verify"
+   elif [ "$skip_cert_verify" = "true" ] && [ "$type" = "http" ]; then
+      skip_cert_verifys=", skip-cert-verify: $skip_cert_verify"
+   elif [ "$skip_cert_verify" = "true" ] && [ "$type" = "socks5" ]; then
+      skip_cert_verifys=", skip-cert-verify: $skip_cert_verify"
+   elif [ "$skip_cert_verify" = "false" ] && [ "$type" = "http" ]; then
+      skip_cert_verifys=", skip-cert-verify: $skip_cert_verify"
+   elif [ "$skip_cert_verify" = "false" ] && [ "$type" = "socks5" ]; then
+      skip_cert_verifys=", skip-cert-verify: $skip_cert_verify"
+   elif [ -z "$skip_cert_verify" ]; then
       skip_cert_verifys=""	  
    fi
+
 
    
    if [ "$type" = "ss" ] && [ "$obfs" = " " ]; then
@@ -230,11 +247,11 @@ EOF
    fi
    
    if [ "$type" = "vmess" ]; then
-      echo "- { name: \"$name\", type: $type, server: $server, port: $port, uuid: $uuid, alterId: $alterId, cipher: $securitys$obfs_vmesss$path$custom$tlss$skip_cert_verifys }" >>$SERVER_FILE
+      echo "- { name: \"$name\", type: $type, server: $server, port: $port, uuid: $uuid, alterId: $alterId, cipher: $securitys$obfs_vmesss$path$custom$tls$skip_cert_verifys }" >>$SERVER_FILE
    fi
    
    if [ "$type" = "socks5" ] || [ "$type" = "http" ]; then
-      echo "- { name: \"$name\", type: $type, server: $server, port: $port, username: $auth_name, password: $auth_pass$skip_cert_verify$tls_hs }" >>$SERVER_FILE
+      echo "- { name: \"$name\", type: $type, server: $server, port: $port, username: $auth_name, password: $auth_pass$skip_cert_verifys$tls }" >>$SERVER_FILE
    fi
    
     if [ "$type" = "ssr" ]; then
