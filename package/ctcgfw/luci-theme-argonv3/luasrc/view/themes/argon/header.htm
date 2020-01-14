@@ -174,9 +174,12 @@
 		-- calculate the number of unsaved changes
 		if tree.nodes[category] and tree.nodes[category].ucidata then
 			local ucichanges = 0
-			local i, j
 			for i, j in pairs(require("luci.model.uci").cursor():changes()) do
-				ucichanges = ucichanges + #j
+				for k, l in pairs(j) do
+					for m, n in pairs(l) do
+						ucichanges = ucichanges + 1;
+					end
+				end
 			end
 
 			if ucichanges > 0 then
