@@ -43,7 +43,6 @@ else
 		uci:set("AdGuardHome","AdGuardHome","version",version)
 		uci:set("AdGuardHome","AdGuardHome","binmtime",testtime)
 		uci:save("AdGuardHome")
-		uci:commit("AdGuardHome")
 	end
 	e=version..e
 end
@@ -192,12 +191,20 @@ o.default     = ""
 o.datatype    = "string"
 o.template = "AdGuardHome/AdGuardHome_chpass"
 o.optional = true
----- database protect
-o = s:option(Flag, "keepdb", translate("Keep database when system upgrade"))
-o.default = 0
-o.optional = true
+---- upgrade protect
+o = s:option(MultiValue, "upprotect", translate("Keep files when system upgrade"))
+o:value("$binpath",translate("core bin"))
+o:value("$configpath",translate("config file"))
+o:value("$logfile",translate("log file"))
+o:value("$workdir/data/sessions.db",translate("sessions.db"))
+o:value("$workdir/data/stats.db",translate("stats.db"))
+o:value("$workdir/data/querylog.json",translate("querylog.json"))
+o:value("$workdir/data/filters",translate("filters"))
+o.widget = "checkbox"
+o.default = nil
+o.optional=true
 ---- wait net on boot
-o = s:option(Flag, "waitonboot", translate("Boot delay until network ok"))
+o = s:option(Flag, "waitonboot", translate("On boot when network ok restart"))
 o.default = 1
 o.optional = true
 ---- backup workdir on shutdown
@@ -208,13 +215,15 @@ local name
 o:value("filters","filters")
 o:value("stats.db","stats.db")
 o:value("querylog.json","querylog.json")
+o:value("sessions.db","sessions.db")
 o1:depends ("backupfile", "filters")
 o1:depends ("backupfile", "stats.db")
 o1:depends ("backupfile", "querylog.json")
+o1:depends ("backupfile", "sessions.db")
 for name in fs.glob(workdir.."/data/*")
 do
 	name=fs.basename (name)
-	if name~="filters" and name~="stats.db" and name~="querylog.json" then
+	if name~="filters" and name~="stats.db" and name~="querylog.json" and name~="sessions.db" then
 		o:value(name,name)
 		o1:depends ("backupfile", name)
 	end
@@ -260,7 +269,6 @@ o = s:option(TextValue, "downloadlinks",translate("Download links for update"))
 o.optional = false
 o.rows = 4
 o.wrap = "soft"
-o.size=111
 o.cfgvalue = function(self, section)
 	return fs.readfile("/usr/share/AdGuardHome/links.txt")
 end
@@ -269,17 +277,21 @@ o.write = function(self, section, value)
 end
 fs.writefile("/var/run/lucilogpos","0")
 function m.on_commit(map)
+	if (fs.access("/var/run/AdGserverdis")) then
+		io.popen("/etc/init.d/AdGuardHome reload &")
+		return
+	end
 	local ucitracktest=uci:get("AdGuardHome","AdGuardHome","ucitracktest")
 	if ucitracktest=="1" then
 		return
 	elseif ucitracktest=="0" then
 		io.popen("/etc/init.d/AdGuardHome reload &")
 	else
-		if (fs.access("/var/run/AdGucitest")) then
+		if (fs.access("/var/run/AdGlucitest")) then
 			uci:set("AdGuardHome","AdGuardHome","ucitracktest","0")
 			io.popen("/etc/init.d/AdGuardHome reload &")
 		else
-			fs.writefile("/var/run/AdGucitest","")
+			fs.writefile("/var/run/AdGlucitest","")
 			if (ucitracktest=="2") then
 				uci:set("AdGuardHome","AdGuardHome","ucitracktest","1")
 			else
@@ -287,7 +299,6 @@ function m.on_commit(map)
 			end
 		end
 		uci:save("AdGuardHome")
-		uci:commit("AdGuardHome")
 	end
 end
 return m

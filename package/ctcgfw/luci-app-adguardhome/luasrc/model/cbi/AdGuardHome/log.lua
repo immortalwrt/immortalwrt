@@ -12,5 +12,5 @@ t.readonly="readonly"
 local logfile=uci:get("AdGuardHome","AdGuardHome","logfile") or ""
 t.timereplace=(logfile~="syslog" and logfile~="" )
 t.pollcheck=logfile~=""
-fs.writefile("/var/run/lucilogpos","0")
+fs.writefile("/var/run/lucilogreload","")
 return f

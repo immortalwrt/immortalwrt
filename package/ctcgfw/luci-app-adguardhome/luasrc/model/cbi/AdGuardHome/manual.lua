@@ -91,7 +91,7 @@ function m.on_commit(map)
 	elseif ucitracktest=="0" then
 		io.popen("/etc/init.d/AdGuardHome reload &")
 	else
-		fs.writefile("/var/run/AdGucitest","")
+		fs.writefile("/var/run/AdGlucitest","")
 	end
 end
 return m

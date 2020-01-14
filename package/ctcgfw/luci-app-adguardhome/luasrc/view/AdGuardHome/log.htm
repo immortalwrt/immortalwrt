@@ -59,19 +59,21 @@ function p(s) {
 function line_tolocal(str){
 var strt=new Array();
 str.trim().split('\n').forEach(function(v, i) {
-if (v==""){strt[i]="";return;}
 var dt = new Date(v.substring(0,19)+" UTC");
-  strt[i]=dt.getFullYear()+"/"+p(dt.getMonth()+1)+"/"+p(dt.getDate())+" "+p(dt.getHours())+":"+p(dt.getMinutes())+":"+p(dt.getSeconds())+v.substring(19)
-})
+if (dt != "Invalid Date"){
+  strt[i]=dt.getFullYear()+"/"+p(dt.getMonth()+1)+"/"+p(dt.getDate())+" "+p(dt.getHours())+":"+p(dt.getMinutes())+":"+p(dt.getSeconds())+v.substring(19);
+}else{
+  strt[i]=v;}})
 return strt
 }
 function line_toUTC(str){
 var strt=new Array();
 str.trim().split('\n').forEach(function(v, i) {
-if (v==""){strt[i]="";return;}
 var dt = new Date(v.substring(0,19))
-  strt[i]=dt.getUTCFullYear()+"/"+p(dt.getUTCMonth()+1)+"/"+p(dt.getUTCDate())+" "+p(dt.getUTCHours())+":"+p(dt.getUTCMinutes())+":"+p(dt.getUTCSeconds())+v.substring(19)
-})
+if (dt != "Invalid Date"){
+  strt[i]=dt.getUTCFullYear()+"/"+p(dt.getUTCMonth()+1)+"/"+p(dt.getUTCDate())+" "+p(dt.getUTCHours())+":"+p(dt.getUTCMinutes())+":"+p(dt.getUTCSeconds())+v.substring(19);
+}else{
+  strt[i]=v;}})
 return strt
 }
 function poll_check(){

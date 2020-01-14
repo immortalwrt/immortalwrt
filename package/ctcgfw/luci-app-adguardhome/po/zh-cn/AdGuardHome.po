@@ -170,11 +170,23 @@ msgstr "为空"
 msgid "Press load culculate model and culculate finally save/apply"
 msgstr "按载入计算模块 然后计算 最后保存/提交"
 #
-msgid "Keep database when system upgrade"
-msgstr "系统升级时保留数据"
+msgid "Keep files when system upgrade"
+msgstr "系统升级时保留文件"
+#checkbox
+msgid "core bin"
+msgstr "核心执行文件"
 
-msgid "Boot delay until network ok"
-msgstr "开机时直到网络准备好再启动"
+msgid "config file"
+msgstr "配置文件"
+
+msgid "log file"
+msgstr "日志文件"
+
+msgid "querylog.json"
+msgstr "审计日志.json"
+#
+msgid "On boot when network ok restart"
+msgstr "开机后网络准备好时重启"
 
 msgid "Backup workdir files when shutdown"
 msgstr "在关机时备份工作目录文件"
@@ -232,6 +244,8 @@ msgstr "使用模板"
 msgid "Reload Config"
 msgstr "重新载入配置"
 
+msgid "WARNING!!! no bin found apply config will not be test"
+msgstr "警告！！！未找到执行文件，提交配置将不会进行校验"
 #unused
 msgid "Change browser management username"
 msgstr "改变网页登录用户名"
@@ -244,3 +258,9 @@ msgstr "检查配置"
 
 msgid "unknown"
 msgstr "未知"
+
+msgid "Keep database when system upgrade"
+msgstr "系统升级时保留数据"
+
+msgid "Boot delay until network ok"
+msgstr "开机时直到网络准备好再启动"

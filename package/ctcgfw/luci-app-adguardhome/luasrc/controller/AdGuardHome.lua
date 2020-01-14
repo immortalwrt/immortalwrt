@@ -89,7 +89,13 @@ function get_log()
 		return
 	end
 	http.prepare_content("text/plain; charset=utf-8")
-	local fdp=tonumber(fs.readfile("/var/run/lucilogpos")) or 0
+	local fdp
+	if fs.access("/var/run/lucilogreload") then
+		fdp=0
+		fs.remove("/var/run/lucilogreload")
+	else
+		fdp=tonumber(fs.readfile("/var/run/lucilogpos")) or 0
+	end
 	local f=io.open(logfile, "r+")
 	f:seek("set",fdp)
 	local a=f:read(2048000) or ""
