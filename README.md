@@ -67,7 +67,8 @@ luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://
 luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).<br/>
 Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-OpenWrt).<br/>
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
-luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).
+luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
+luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).
 
 # License
 ### [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).

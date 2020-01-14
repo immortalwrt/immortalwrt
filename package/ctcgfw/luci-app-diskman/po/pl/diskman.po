@@ -1,0 +1,128 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "DiskMan"
+msgstr "Menadżer Dysków"
+
+msgid "Manage Disks over LuCI."
+msgstr "Zarządzaj dyskami z poziomu LuCI."
+
+msgid "Rescan Disks"
+msgstr "Reskan Dysków"
+
+msgid "Disks"
+msgstr "Dyski"
+
+msgid "Path"
+msgstr "Ścieżka"
+
+msgid "Serial Number"
+msgstr "Nr Seryjny"
+
+msgid "Temp"
+msgstr "Temperatura"
+
+msgid "Partition Table"
+msgstr "Tabela Partycji"
+
+msgid "SATA Version"
+msgstr "Wersja SATA"
+
+msgid "Health"
+msgstr "Kondycja"
+
+msgid "File System"
+msgstr "System Plików"
+
+msgid "Mount Options"
+msgstr "Opcje Montowania"
+
+msgid "Mount"
+msgstr "Montuj"
+
+msgid "Umount"
+msgstr "Odmontuj"
+
+msgid "Eject"
+msgstr "Wysuń"
+
+msgid "New"
+msgstr "Nowy(a)"
+
+msgid "Remove"
+msgstr "Usuń"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Start Sector"
+msgstr "Sektor Początku"
+
+msgid "End Sector"
+msgstr "Sektor Końca"
+
+msgid "Useage"
+msgstr "Użycie"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Size"
+msgstr "Rozmiar"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Mount Point"
+msgstr "Punkt Montowania"
+
+msgid "Sector Size"
+msgstr "Rozmiar Sektora"
+
+msgid "Rotation Rate"
+msgstr "Obroty"
+
+msgid "RAID Devices"
+msgstr "Urządzenia RAID"
+
+msgid "RAID mode"
+msgstr "Tryb RAID"
+
+msgid "Members"
+msgstr "Członkowie"
+
+msgid "Active"
+msgstr "Aktywny"
+
+msgid "RAID Creation"
+msgstr "Kreator RAID"
+
+msgid "Raid Name"
+msgstr "Nazwa RAID"
+
+msgid "Raid Level"
+msgstr "Poziom RAID"
+
+msgid "Raid Member"
+msgstr "Członek RAID"
+
+msgid "Create Raid"
+msgstr "Utwórz RAID"
+
+msgid "Partition Management"
+msgstr "Menadżer Partycji"
+
+msgid "Partition Disk over LuCI."
+msgstr "Zarządzaj Partycjami z poziomu LuCI."
+
+msgid "Device Info"
+msgstr "Informacja o Urządzeniu"
+
+msgid "Disk Man"
+msgstr "Menadżer Dysków"
+
+msgid "Partitions Info"
+msgstr "Informacja o Partycjach"
+
+msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
+msgstr "Domyślnie 2048 ustawienie sektora, obsługiwane +rozmiar{b,k,m,g,t} w Sektorze Końcowym"
