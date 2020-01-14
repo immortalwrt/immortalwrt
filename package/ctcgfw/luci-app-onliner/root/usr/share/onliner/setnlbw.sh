@@ -2,7 +2,7 @@
 PATH="/usr/sbin:/usr/bin:/sbin:/bin"
 echo "1">/var/run/onsetnlbw
 interval=$(uci get nlbwmon.@nlbwmon[0].refresh_interval)
-uci set nlbwmon.@nlbwmon[0].refresh_interval=2
+uci set nlbwmon.@nlbwmon[0].refresh_interval="2s"
 /etc/init.d/nlbwmon reload
 while true
 do
