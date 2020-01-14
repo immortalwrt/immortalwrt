@@ -113,6 +113,16 @@ o.write = function()
   luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash", "create"))
 end
 
+o = b:option(Button,"Delete_Provider")
+o.inputtitle = translate("Delete Provider")
+o.inputstyle = "reset"
+o.write = function()
+  krk.uci:delete_all("clash", "provider", function(s) return true end)
+  krk.uci:commit("clash")
+  luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash", "create"))
+end
+
+
 o = b:option(Button,"Delete_Groups")
 o.inputtitle = translate("Delete Groups")
 o.inputstyle = "reset"
@@ -162,6 +172,41 @@ end
 o = s:option(DummyValue, "server" ,translate("Latency"))
 o.template="clash/ping"
 o.width="10%"
+
+
+
+-- [[ Proxy-Provider Manage ]]--
+s = krk:section(TypedSection, "provider", translate("Proxy Provider"))
+s.anonymous = true
+s.addremove = true
+s.sortable = false
+s.template = "cbi/tblsection"
+s.extedit = luci.dispatcher.build_url("admin/services/clash/provider-config/%s")
+function s.create(...)
+	local sid = TypedSection.create(...)
+	if sid then
+		luci.http.redirect(s.extedit % sid)
+		return
+	end
+end
+
+
+
+o = s:option(DummyValue, "name", translate("Provider Name"))
+function o.cfgvalue(...)
+	return Value.cfgvalue(...) or translate("None")
+end
+
+o = s:option(DummyValue, "type", translate("Provider Type"))
+function o.cfgvalue(...)
+	return Value.cfgvalue(...) or translate("None")
+end
+
+o = s:option(DummyValue, "path", translate("Provider Path"))
+function o.cfgvalue(...)
+	return Value.cfgvalue(...) or translate("None")
+end
+
 
 r = krk:section(TypedSection, "groups", translate("Policy Groups"))
 r.anonymous = true

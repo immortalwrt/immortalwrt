@@ -25,23 +25,4 @@ config groups
 	option type 'select'
 	option name '🔑Proxy'
 	list other_group 'ALL'
-	list other_group '⚙️LoadBalance'
-	list other_group '✈️UrlTest'
 
-config groups
-	option name '✈️UrlTest'
-	option old_name '✈️UrlTest'
-	option old_name_cfg '✈️UrlTest'
-	option type 'url-test'
-	option test_url 'http://www.gstatic.com/generate_204'
-	option test_interval '600'
-	list other_group 'ALL'
-
-config groups
-	option name '⚙️LoadBalance'
-	option old_name '⚙️LoadBalance'
-	option old_name_cfg '⚙️LoadBalance'
-	option type 'load-balance'
-	option test_url 'http://www.gstatic.com/generate_204'
-	option test_interval '600'
-	list other_group 'ALL'

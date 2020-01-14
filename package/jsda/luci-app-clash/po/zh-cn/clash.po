@@ -241,8 +241,8 @@ msgstr "Github"
 msgid "Music.163"
 msgstr "网易云音乐"
 
-msgid "Taobao"
-msgstr "淘宝网"
+msgid "iQiyi"
+msgstr "爱奇艺"
 
 msgid "NORMAL"
 msgstr "正常"
@@ -525,7 +525,7 @@ msgid "Proxy Groups Must Exist In Rule"
 msgstr "添加的策略组必须存在规则创建"
 
 msgid "Policy Groups"
-msgstr "添加到策略组"
+msgstr "策略组"
 
 msgid "Rule"
 msgstr "规则"
@@ -604,3 +604,60 @@ msgstr "启用创建"
 
 msgid "Enable to create configuration"
 msgstr "启用以创建配置"
+
+msgid "Proxy-Provider"
+msgstr "代理集管理"
+
+msgid "Edit Proxy Provider"
+msgstr "编辑代理集配置"
+
+msgid "Provider Type"
+msgstr "代理集类型
+
+msgid "Provider Type"
+msgstr "代理集的类型"
+
+msgid "Provider Name"
+msgstr "代理集别名"
+
+msgid "Provider Path"
+msgstr "代理集路径（Path）"
+
+msgid "【HTTP】./hk.yaml or 【File】/etc/clash/hk.yaml"
+msgstr "【HTTP】./hk.yaml，【文件】/etc/clash/hk.yaml"
+
+msgid "Provider URL"
+msgstr "代理集URL"
+
+msgid "Provider Interval"
+msgstr "代理集更新间隔"
+
+msgid "Provider Health Check"
+msgstr "代理集状态检查"
+
+msgid "Health Check URL"
+msgstr "状态检查URL"
+
+msgid "Health Check Interval"
+msgstr "状态检查间隔"
+
+msgid "Delete Provider"
+msgstr "清空节点集"
+
+msgid "Policy Group"
+msgstr "策略组"
+
+msgid "Proxy Provider"
+msgstr "代理集"
+
+msgid "Tun Mode"
+msgstr "Tun模式"
+
+msgid "Select Tun Mode"
+msgstr "选Tun模式"
+
+msgid "Tun Mode DNS"
+msgstr "Tun模式DNS"
+
+msgid "Select Tun Mode, Enable Tun custom DNS and make sure you are using tun supported core"
+msgstr "选择Tun模式，启用Tun自定义DNS,并确保使用支持的Tun内核"

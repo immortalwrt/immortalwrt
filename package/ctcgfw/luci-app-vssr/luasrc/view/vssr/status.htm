@@ -1,0 +1,110 @@
+<%
+math.randomseed(os.time())
+-%>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/luci-static/vssr/css/vssr.css??v=<%=math.random(1,100000)%>">
+</head>
+
+<body>
+    <div class="pure-g status">
+        <div class="pure-u-1-4">
+            <div class="block pure-g">
+                <div class="pure-u-3-5">
+                    <h4 id="vssr_status"><%:Client%><br /><span class="red"><%:Not Running%></span></h4>
+                </div>
+                <div class="pure-u-2-5">
+                    <div class="img-con">
+                        <img src="/luci-static/vssr/img/client.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pure-u-1-4">
+            <div class="block pure-g">
+                <div class="pure-u-3-5">
+                    <h4 id="game_status"><%:Game Mode%><br /><span class="red"><%:Not Running%></span></h4>
+                </div>
+                <div class="pure-u-2-5">
+                    <div class="img-con">
+                        <img src="/luci-static/vssr/img/udp.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pure-u-1-4">
+            <div class="block pure-g">
+                <div class="pure-u-3-5">
+                    <h4 id="pdnsd_status">PDNSD<br /><span class="red"><%:Not Running%></span></h4>
+                </div>
+                <div class="pure-u-2-5">
+                    <div class="img-con">
+                        <img src="/luci-static/vssr/img/pdnsd.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pure-u-1-4">
+            <div class="block pure-g">
+                <div class="pure-u-3-5">
+                    <h4 id="socks5_status">SOCKS5<br /><span class="red"><%:Not Running%></span></h4>
+                </div>
+                <div class="pure-u-2-5">
+                    <div class="img-con">
+                        <img src="/luci-static/vssr/img/socks5.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const $$ = document;
+
+        function get_state(){
+            $.get('<%=url([[admin]], [[services]], [[vssr]], [[run]])%>',
+            function (data) {
+                console.log(data);
+            }, "json");
+        }
+        //get_state();
+        //<![CDATA[
+        XHR.poll(5, '<%=url([[admin]], [[services]], [[vssr]], [[run]])%>', null,
+            function (x, data) {
+                var tb = document.getElementById('vssr_status');
+                var tb1 = document.getElementById('google_status');
+                var tb2 = document.getElementById('baidu_status');
+                var tb3 = document.getElementById('game_status');
+                var tb4 = document.getElementById('pdnsd_status');
+                var tb5 = document.getElementById('socks5_status');
+                if (data && tb) {
+                    if (data.global) {
+                        tb.innerHTML = '<%:Client%><br><span class="green"><%:Running%></span>';
+                    } else {
+                        tb.innerHTML = '<%:Client%><br><span class="red"><%:Not Running%></span>';
+                    }
+                    if (data.game) {
+                        tb3.innerHTML = '<%:Game Mode%><br><span class="green"><%:Running%></span>';
+                    } else {
+                        tb3.innerHTML = '<%:Game Mode%><br><span class="red"><%:Not Running%></span>';
+                    }
+                    if (data.pdnsd) {
+                        tb4.innerHTML = 'PDNSD<br><span class="green"><%:Running%></span>';
+                    } else {
+                        tb4.innerHTML = 'PDNSD<br><span class="red"><%:Not Running%></span>';
+                    }
+                    if (data.socks5) {
+                        tb5.innerHTML = 'SOCKS5<br><span class="green"><%:Running%></span>';
+                    } else {
+                        tb5.innerHTML = 'SOCKS5<br><span class="red"><%:Not Running%></span>';
+                    }
+                }
+            }
+        );
+        
+//]]>
+    </script>
+</body>
+
+</html>

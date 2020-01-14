@@ -5,6 +5,8 @@ REAL_LOG="/usr/share/clash/clash_real.txt"
 lang=$(uci get luci.main.lang 2>/dev/null)
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 create=$(uci get clash.config.create 2>/dev/null)
+
+
 if [ "${create}" -eq 1 ];then
 
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
@@ -22,7 +24,7 @@ GROUP_FILE="/tmp/groups.yaml"
 CONFIG_FILE="/tmp/y_groups"
 CFG_FILE="/etc/config/clash"
 DNS_FILE="/usr/share/clash/dns.yaml" 
-
+PROVIDER_FILE="/tmp/yaml_provider.yaml"
 
    servcount=$( grep -c "config servers" $CFG_FILE 2>/dev/null)
    gcount=$( grep -c "config groups" $CFG_FILE 2>/dev/null)
@@ -39,6 +41,68 @@ DNS_FILE="/usr/share/clash/dns.yaml"
 	exit 0	
    fi
 sleep 2
+
+
+
+yml_proxy_provider_set()
+{
+   local section="$1"
+
+   config_get "type" "$section" "type" ""
+   config_get "name" "$section" "name" ""
+   config_get "path" "$section" "path" ""
+   config_get "provider_url" "$section" "provider_url" ""
+   config_get "provider_interval" "$section" "provider_interval" ""
+   config_get "health_check" "$section" "health_check" ""
+   config_get "health_check_url" "$section" "health_check_url" ""
+   config_get "health_check_interval" "$section" "health_check_interval" ""
+   
+
+
+   if [ -z "$type" ]; then
+      return
+   fi
+   
+   if [ -z "$name" ]; then
+      return
+   fi
+   
+   if [ -z "$path" ]; then
+      return
+   fi
+   
+   if [ -z "$health_check" ]; then
+      return
+   fi
+   if [ $lang == "en" ] || [ $lang == "auto" ];then
+   echo "Now Reading 【$type】-【$name】 Proxy Provider ..." >$REAL_LOG
+   elif [ $lang == "zh_cn" ];then
+   echo "正在写入【$type】-【$name】代理集到配置文件【$CONFIG_NAME】..." >$REAL_LOG
+   fi
+   
+   echo "$name" >> /tmp/Proxy_Provider
+   
+cat >> "$PROVIDER_FILE" <<-EOF
+  $name:
+    type: $type
+    path: $path
+EOF
+   if [ ! -z "$provider_url" ]; then
+cat >> "$PROVIDER_FILE" <<-EOF
+    url: $provider_url
+    interval: $provider_interval
+EOF
+   fi
+cat >> "$PROVIDER_FILE" <<-EOF
+    health-check:
+      enable: $health_check
+      url: $health_check_url
+      interval: $health_check_interval
+EOF
+
+}
+
+
 servers_set()
 {
    local section="$1"
@@ -277,8 +341,23 @@ EOF
 
 }
 
+
+
+config_load "clash"
+config_foreach yml_proxy_provider_set "provider"
+
+if [ -f $PROVIDER_FILE ];then 
+sed -i "1i\   " $PROVIDER_FILE 2>/dev/null 
+sed -i "2i\proxy-provider:" $PROVIDER_FILE 2>/dev/null
+#echo "proxy-provider:" >$PROVIDER_FILE
+rm -rf /tmp/Proxy_Provider
+
+fi
+
+
 config_load clash
 config_foreach servers_set "servers"
+
 
 if [ "$(ls -l $SERVER_FILE|awk '{print $5}')" -ne 0 ]; then
 
@@ -300,16 +379,20 @@ yml_servers_add()
 
 set_groups()
 {
+	if [ -z "$1" ]; then
+		 return
+	fi
 
 	if [ "$1" = "$3" ]; then
-	   echo "    - \"${2}\"" >>$GROUP_FILE 2>/dev/null 
+		set_group=1
+		echo "    - \"${2}\"" >>$GROUP_FILE 2>/dev/null 
 	fi
 
 }
 
 set_other_groups()
 {
-
+set_group=1
    if [ "${1}" = "DIRECT" ]||[ "${1}" = "REJECT" ];then
    echo "    - ${1}" >>$GROUP_FILE 2>/dev/null 
    elif [ "${1}" = "ALL" ];then
@@ -319,6 +402,28 @@ set_other_groups()
    fi
 
 }
+
+set_proxy_provider()
+{
+	local section="$1"
+	config_get "name" "$section" "name" ""
+	config_list_foreach "$section" "groups" set_provider_groups "$name" "$2"
+
+}
+
+set_provider_groups()
+{
+	if [ -z "$1" ]; then
+		return
+	fi
+
+	if [ "$1" = "$3" ]; then
+	   set_proxy_provider=1
+	   echo "    - ${2}" >>$GROUP_FILE
+	fi
+
+}
+
 
 yml_groups_set()
 {
@@ -340,6 +445,9 @@ yml_groups_set()
    
    echo "- name: $name" >>$GROUP_FILE 2>/dev/null 
    echo "  type: $type" >>$GROUP_FILE 2>/dev/null 
+   
+   group_name="$name"
+   #echo "  proxies: $group_name" >>$GROUP_FILE
 
   if [ "$type" == "url-test" ] || [ "$type" == "load-balance" ] || [ "$type" == "fallback" ] ; then
       echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
@@ -355,8 +463,32 @@ yml_groups_set()
       config_load "clash"
    fi
    
+   set_group=0
+   set_proxy_provider=0   
+   
    config_list_foreach "$section" "other_group" set_other_groups 
    config_foreach yml_servers_add "servers" "$name" 
+   
+   if [ "$( grep -c "config provider" $CFG_FILE )" -ne 0 ];then
+   
+	echo "  use: $group_name" >>$GROUP_FILE
+   
+   config_foreach set_proxy_provider "provider" "$group_name" 
+
+   if [ "$set_group" -eq 1 ]; then
+      sed -i "/^ \{0,\}proxies: ${group_name}/c\  proxies:" $GROUP_FILE
+   else
+      sed -i "/proxies: ${group_name}/d" $GROUP_FILE 2>/dev/null
+   fi
+
+   if [ "$set_proxy_provider" -eq 1 ]; then
+      sed -i "/^ \{0,\}use: ${group_name}/c\  use:" $GROUP_FILE
+   else
+      sed -i "/use: ${group_name}/d" $GROUP_FILE 2>/dev/null
+   fi
+   
+   fi
+   
    
    [ ! -z "$test_url" ] && {
    	echo "  url: $test_url" >>$GROUP_FILE 2>/dev/null 
@@ -423,6 +555,10 @@ cat $SERVER_FILE >> $TEMP_FILE  2>/dev/null
 
 cat $GROUP_FILE >> $TEMP_FILE 2>/dev/null
 
+if [ -f $PROVIDER_FILE ];then 
+cat $PROVIDER_FILE >> $TEMP_FILE 2>/dev/null
+fi
+
 if [ -f $CONFIG_YAML ];then
 	rm -rf $CONFIG_YAML
 fi
@@ -431,16 +567,16 @@ cat $TEMP_FILE $CONFIG_YAML_RULE > $CONFIG_YAML 2>/dev/null
 
 sed -i "/Rule:/i\     " $CONFIG_YAML 2>/dev/null
 
-rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE
+rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE $PROVIDER_FILE
 
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Completed Creating Custom Config.. " >$REAL_LOG 
 		 sleep 2
 			echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ $lang == "zh_cn" ];then
-    	 echo "创建自定义配置完成..." >$REAL_LOG
-		  sleep 2
-			echo "Clash for OpenWRT" >$REAL_LOG
+    	echo "创建自定义配置完成..." >$REAL_LOG
+		sleep 2
+		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
 	
 
@@ -454,6 +590,12 @@ fi
 
 fi
 rm -rf $SERVER_FILE
+rm -rf /tmp/match_servers.list 2>/dev/null
+rm -rf /tmp/yaml_provider.yaml 2>/dev/null
+rm -rf /tmp/provider.yaml 2>/dev/null
+rm -rf /tmp/provider_gen.yaml 2>/dev/null
+rm -rf /tmp/provider_che.yaml 2>/dev/null
+rm -rf /tmp/match_provider.list 2>/dev/null
 
 fi
 

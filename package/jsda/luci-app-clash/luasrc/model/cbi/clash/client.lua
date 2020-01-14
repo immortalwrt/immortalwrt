@@ -18,6 +18,8 @@ o.default = 0
 o.rmempty = false
 o.description = translate("Enable")
 
+
+
 o = s:option(ListValue, "core", translate("Core"))
 o.default = "clashcore"
 if nixio.fs.access("/etc/clash/clash") then
@@ -26,8 +28,22 @@ end
 if nixio.fs.access("/usr/bin/clash") then
 o:value("2", translate("Clashr"))
 end
+if nixio.fs.access("/etc/clash/clashtun/clash") then
+o:value("3", translate("ClashTun"))
+luci.sys.exec('uci set clash.config.mode="0"')
+luci.sys.exec('uci commit clash')
+end
 o.description = translate("Select core, clashr support ssr while clash does not.")
 
+
+o = s:option(ListValue, "tun_mode", translate("Tun Mode"))
+o.default = "1"
+o:value("0", translate("Disable"))
+o:value("1", translate("Fake-IP(Dreamacro Tun)"))
+o:value("2", translate("Fake-IP(comzyh Tun)"))
+o:value("3", translate("Redir-Host(comzyh Tun)"))
+o.description = translate("Select Tun Mode")
+o:depends("core",3)
 
 o = s:option(ListValue, "config_type", translate("Config Type"))
 o.default = "sub"

@@ -16,14 +16,14 @@ function index()
 	entry({"admin", "services", "clash", "client"},cbi("clash/client"),_("Client"), 20).leaf = true
 	entry({"admin", "services", "clash", "import"},cbi("clash/import"),_("Import Config"), 30).leaf = true
 	entry({"admin", "services", "clash", "create"},cbi("clash/create"),_("Create Config"), 40).leaf = true
-    	entry({"admin", "services", "clash", "servers-config"},cbi("clash/servers-config"), nil).leaf = true
-    	entry({"admin", "services", "clash", "groups"},cbi("clash/groups"), nil).leaf = true
+    entry({"admin", "services", "clash", "servers-config"},cbi("clash/servers-config"), nil).leaf = true
+	entry({"admin", "services", "clash", "provider-config"},cbi("clash/provider-config"), nil).leaf = true
+    entry({"admin", "services", "clash", "groups"},cbi("clash/groups"), nil).leaf = true
 
 	entry({"admin", "services", "clash", "settings"}, firstchild(),_("Settings"), 50)
 	entry({"admin", "services", "clash", "settings", "port"},cbi("clash/port"),_("Proxy Ports"), 60).leaf = true
 	entry({"admin", "services", "clash", "settings", "dns"},cbi("clash/dns"),_("DNS Settings"), 70).leaf = true
 	entry({"admin", "services", "clash", "settings", "list"},cbi("clash/list"),_("Custom List"), 80).leaf = true
-	entry({"admin", "services", "clash", "settings", "access"},cbi("clash/access"),_("Access Control"), 90).leaf = true
 			
 	entry({"admin", "services", "clash", "config"},firstchild(),_("Config"), 100)
 	entry({"admin", "services", "clash", "config", "actconfig"},cbi("clash/actconfig"),_("Config In Use"), 110).leaf = true
@@ -102,16 +102,24 @@ end
 
 
 local function clash_core()
-	if nixio.fs.access("/usr/share/clash/core_version") then
-		return luci.sys.exec("sed -n 1p /usr/share/clash/core_version")
+	if nixio.fs.access("/etc/clash/clash") then
+		return luci.sys.exec("/etc/clash/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
 	else
 		return "0"
 	end
 end
 
 local function clashr_core()
-	if nixio.fs.access("/usr/share/clash/corer_version") then
-		return luci.sys.exec("sed -n 1p /usr/share/clash/corer_version")
+	if nixio.fs.access("/usr/bin/clash") then
+		return luci.sys.exec("/usr/bin/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+	else
+		return "0"
+	end
+end
+
+local function clashtun_core()
+	if nixio.fs.access("/etc/clash/clashtun/clash") then
+		return luci.sys.exec("/etc/clash/clashtun/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
 	else
 		return "0"
 	end
@@ -157,6 +165,7 @@ function check_status()
 		new_clashr_core_version = new_clashr_core_version(),
 		clash_core = clash_core(),
 		clashr_core = clashr_core(),
+		clashtun_core = clashtun_core(),
 		new_core_version = new_core_version()
 		
 
@@ -173,6 +182,7 @@ function action_status()
 		clash_core = clash_core(),
 		clashr_core = clashr_core(),
 		dash_pass = dash_pass(),
+		clashtun_core = clashtun_core(),
 		e_mode = e_mode()
 
 	})
