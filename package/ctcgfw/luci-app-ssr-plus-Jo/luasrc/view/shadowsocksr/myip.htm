@@ -163,7 +163,7 @@
         url2='https://ip.skk.moe';
         window.open(url2);
        }
-        const $$ = document;
+         const $$ = document;
         $$.getElementById('ip-webrtc').innerHTML = '查询中...';
         $$.getElementById('ip-pcol').innerHTML = '查询中...';
         $$.getElementById('ip-ipify').innerHTML = '查询中...';
@@ -194,8 +194,7 @@
                     throw error;
                 }),
             parseIPIpip: (ip, elID) => {
-                
-                 IP.get(`https://api.skk.moe/network/parseIp/ipip/v3/${ip}`, 'json')
+                IP.get(`https://api.skk.moe/network/parseIp/ipip/v3/${ip}`, 'json')
                     .then(resp => {
                         let x = '';
                         for (let i of resp.data) {
@@ -261,14 +260,17 @@
                     img.onerror = img.onload = null;
                     $$.getElementById(cbElID).innerHTML = '<span class="sk-text-error">连接超时</span>'
                 }, 5000);
+
                 img.onerror = () => {
                     clearTimeout(timeout);
                     $$.getElementById(cbElID).innerHTML = '<span class="sk-text-error">无法访问</span>'
                 }
+
                 img.onload = () => {
                     clearTimeout(timeout);
                     $$.getElementById(cbElID).innerHTML = '<span class="sk-text-success">连接正常</span>'
                 }
+
                 img.src = `https://${domain}/favicon.ico?${+(new Date)}`
             },
             runcheck: () => {
@@ -279,6 +281,7 @@
                 HTTP.checker('www.youtube.com', 'http-youtube');
             }
         };
+
 	      HTTP.runcheck();
 	      IP.getIpipnetIP();
 	      IP.getIpifyIP();
@@ -290,9 +293,10 @@
                 $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
         };
         function getIpsbIP(data){
-                $$.getElementById('ip-ipsb').innerHTML = data.address;
-                $$.getElementById('ip-ipsb-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
+                $$.getElementById('ip-ipsb').innerHTML = data.ip;
+                IP.parseIPIpip(data.ip, 'ip-ipsb-geo');
         };
+
 	      window.onload=myip_Load();
 	      
 	      function myip_Load()
@@ -306,7 +310,7 @@
 	         var sbip = document.getElementsByTagName('HEAD').item(0);
 	         var sbipScript= document.createElement("script");
 	         sbipScript.defer = "defer";
-	         sbipScript.src='https://ip.sb/addrinfo?callback=getIpsbIP';
+	         sbipScript.src='https://api-ipv4.ip.sb/jsonip?callback=getIpsbIP';
 	         sbip.appendChild(sbipScript);
 	         
 	         const $$ = document;
@@ -322,14 +326,15 @@
                 $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
 		       };
 		       function getIpsbIP(data){
-                $$.getElementById('ip-ipsb').innerHTML = data.address;
-                $$.getElementById('ip-ipsb-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
+                $$.getElementById('ip-ipsb').innerHTML = data.ip;
+                IP.parseIPIpip(data.ip, 'ip-ipsb-geo');
 		       };
+
        	   setTimeout("myip_Load()",1000*10);
 		   }
+
     </script>
     <script defer="defer" src="https://whois.pconline.com.cn/ipJson.jsp?callback=getPcolIP"></script>
-    <script defer="defer" src="https://ip.sb/addrinfo?callback=getIpsbIP"></script>
+    <script defer="defer" src="https://api-ipv4.ip.sb/jsonip?callback=getIpsbIP"></script>
 </body>
-
 </html>

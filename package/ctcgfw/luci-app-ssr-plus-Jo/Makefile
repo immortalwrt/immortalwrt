@@ -67,7 +67,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS
-	bool "chinadns"
+	bool "chiandns"
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_haproxy
