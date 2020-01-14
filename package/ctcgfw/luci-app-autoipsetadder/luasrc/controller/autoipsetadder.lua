@@ -33,14 +33,24 @@ end
 luci.http.write(a)
 end
 function get_log()
-	local logfile=uci:get("autoipsetadder","autoipsetadder","logfile") or "/tmp/addlist.log"
+	local logfile,fdp
+	logfile=uci:get("autoipsetadder","autoipsetadder","logfile") or "/tmp/addlist.log"
 	luci.http.prepare_content("text/plain; charset=utf-8")
-	local fdp=tonumber(fs.readfile("/var/run/lucilogpos_ipset")) or 0
+	if not fs.access(logfile) then
+		luci.http.write("")
+		return
+	end
+	if fs.access("/var/run/lucilogreload") then
+		fdp=0
+		fs.remove("/var/run/lucilogreload")
+	else
+		fdp=tonumber(fs.readfile("/var/run/lucilogpos")) or 0
+	end
 	local f=io.open(logfile, "r+")
 	f:seek("set",fdp)
 	local a=f:read(2048000) or ""
 	fdp=f:seek()
-	fs.writefile("/var/run/lucilogpos_ipset",tostring(fdp))
+	fs.writefile("/var/run/lucilogpos",tostring(fdp))
 	f:close()
 	luci.http.write(a)
 end

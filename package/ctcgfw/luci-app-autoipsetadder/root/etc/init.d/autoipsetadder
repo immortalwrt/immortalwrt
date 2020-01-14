@@ -31,11 +31,12 @@ stop_dnsmasq_log()
 reload_service()
 {
 	rm -f /var/run/AdGucitest 2>/dev/null
-	procd_kill $CONFIGURATION
 	kill $(cat /var/run/autoipsetadder.pid)
 	start
 }
-
+service_triggers() {
+	procd_add_reload_trigger "$CONFIGURATION"
+}
 start_service() {
 	# Reading config
 	config_load "${CONFIGURATION}"
@@ -70,26 +71,26 @@ stop_service()
 }
 do_crontab(){
 	config_get_bool enabled $CONFIGURATION enabled 0
-	config_get logfile $CONFIGURATION logfile "/tmp/addlist.log"
-	config_get dnslogfile $CONFIGURATION dnslogfile "/tmp/dnsmasq.log"
+	#config_get logfile $CONFIGURATION logfile "/tmp/addlist.log"
+	#config_get dnslogfile $CONFIGURATION dnslogfile "/tmp/dnsmasq.log"
 	config_get crontab $CONFIGURATION crontab ""
 	cronreload=0
-	findstr="echo qingkong > $dnslogfile"
-	default="0 * * * * echo qingkong > $dnslogfile"
-	[ -n "$lastdnslogfile" ] && findstr="echo qingkong > $lastdnslogfile" && [ "$lastdnslogfile" != "$dnslogfile" ] && replace="${lastdnslogfile//\//\\/}/${dnslogfile//\//\\/}"
+	findstr="echo qingkong > \$(uci get autoipsetadder.autoipsetadder.dnslogfile)"
+	default="0 * * * * echo qingkong > \$(uci get autoipsetadder.autoipsetadder.dnslogfile)"
+	#[ -n "$lastdnslogfile" ] && findstr="echo qingkong > $lastdnslogfile" && [ "$lastdnslogfile" != "$dnslogfile" ] && replace="${lastdnslogfile//\//\\/}/${dnslogfile//\//\\/}"
 	[ "$enabled" == "0" ] || [ "${crontab//autodeldnslog/}" == "$crontab" ] && cronenable=0 || cronenable=1
 	crontab_editor
-	[ "$lastdnslogfile" != "$dnslogfile" ] && uci set autoipsetadder.autoipsetadder.lastdnslogfile="$dnslogfile" && commit=1
+	#[ "$lastdnslogfile" != "$dnslogfile" ] && uci set autoipsetadder.autoipsetadder.lastdnslogfile="$dnslogfile" && commit=1
 	
-	findstr="/usr/bin/autoipsetadder/tailto.sh [0-9]* $logfile"
-	default="0 0 * * * /usr/bin/autoipsetadder/tailto.sh 2000 $logfile"
-	[ -n "$lastlogfile" ] && findstr="/usr/bin/autoipsetadder/tailto.sh [0-9]* $lastlogfile" && [ "$lastlogfile" != "$logfile" ] && replace="${lastlogfile//\//\\/}/${logfile//\//\\/}"
+	findstr="/usr/bin/autoipsetadder/tailto.sh [0-9]* \$(uci get autoipsetadder.autoipsetadder.logfile)"
+	default="0 0 * * * /usr/bin/autoipsetadder/tailto.sh 2000 \$(uci get autoipsetadder.autoipsetadder.logfile)"
+	#[ -n "$lastlogfile" ] && findstr="/usr/bin/autoipsetadder/tailto.sh [0-9]* $lastlogfile" && [ "$lastlogfile" != "$logfile" ] && replace="${lastlogfile//\//\\/}/${logfile//\//\\/}"
 	[ "$enabled" == "0" ] || [ "${crontab//autotaillog/}" == "$crontab" ] && cronenable=0 || cronenable=1
 	crontab_editor
-	[ -n "$logfile" ] && [ "$lastlogfile" != "$logfile" ] && uci set autoipsetadder.autoipsetadder.lastlogfile="$logfile" && commit=1
+	#[ -n "$logfile" ] && [ "$lastlogfile" != "$logfile" ] && uci set autoipsetadder.autoipsetadder.lastlogfile="$logfile" && commit=1
 	
 	[ "$cronreload" -gt 0 ] && /etc/init.d/cron restart
-	[ "$commit" -gt 0 ] && uci commit autoipsetadder
+	#[ "$commit" -gt 0 ] && uci commit autoipsetadder
 }
 crontab_editor(){
 	local testline reload

@@ -71,7 +71,7 @@ o.widget = "checkbox"
 o.default = "nochina pingadd packetpass"
 o.rmempty=true
 ---- apply
-nixio.fs.writefile("/var/run/lucilogpos_ipset","0")
+nixio.fs.writefile("/var/run/lucilogreload","")
 function m.on_commit(map)
 	local ucitracktest=uci:get("autoipsetadder","autoipsetadder","ucitracktest")
 	if ucitracktest=="1" then

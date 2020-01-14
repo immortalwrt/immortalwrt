@@ -7,7 +7,7 @@ dnslogfile=$(uci get autoipsetadder.autoipsetadder.dnslogfile)
 config=$(uci get autoipsetadder.autoipsetadder.config 2>/dev/null)
 [ "${config//nochina/}" == "$config" ] && nochina="0" || nochina="1"
 [ "${config//packetpass/}" == "$config" ] && packetpass="0" || packetpass="1"
-( stdbuf -oL tail -F $dnslogfile & echo $! >/var/run/autoipsetadder.pid ) | awk -v nochina="$nochina" -v packetpass="$packetpass" -F "[, ]+" '/reply/{
+(tail -F $dnslogfile & echo $! >/var/run/autoipsetadder.pid ) | awk -v nochina="$nochina" -v packetpass="$packetpass" -F "[, ]+" '/reply/{
 ip=$8;
 if (ip=="" || ip=="127.0.0.1"|| ip=="0.0.0.0")
 {
