@@ -1,0 +1,99 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"Last-Translator: ElonH <elonhhuang@gmail.com>\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:31
+msgid "Installed Web Interface"
+msgstr "已安装Web界面"
+
+#: luci-app-rclone/luasrc/controller/rclone.lua:7
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:24
+msgid "Rclone"
+msgstr "Rclone"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:25
+msgid ""
+"Rclone (\"rsync for cloud storage\") is a command line program to sync root/"
+"usr/bin and directories to and from different cloud storage providers."
+msgstr ""
+"Rclone是一款的命令行工具，支持在不同对象存储、网盘间同步、上传、下载数据。"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:33
+msgid "Webui React"
+msgstr "Webui React"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:51
+msgid "all address"
+msgstr "全部地址"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:44
+msgid "configure"
+msgstr "配置"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:37
+msgid "global"
+msgstr "全局"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:48
+msgid "listen address"
+msgstr "监听地址"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:55
+msgid "listen port"
+msgstr "监听端口"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:50
+msgid "local network address"
+msgstr "局域网地址"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:49
+msgid "localhost address"
+msgstr "本机地址"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:77
+msgid "log"
+msgstr "日志"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:71
+msgid "password"
+msgstr "密码"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:81
+msgid "path"
+msgstr "路径"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:61
+msgid "rclone configuration file path"
+msgstr "rclone 配置文件地址"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:18
+msgid "rclone not run"
+msgstr "rclone未运行"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:16
+msgid "rclone running"
+msgstr "rclone 运行中"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:27
+msgid "rclone state"
+msgstr "rclone 状态"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:41
+msgid "run Rclone as daemon"
+msgstr "启动 rclone 后台服务"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:66
+msgid "username"
+msgstr "用户名"
+
+#~ msgid "run Rclone in daeman"
+#~ msgstr "启动 rclone 后台服务"
