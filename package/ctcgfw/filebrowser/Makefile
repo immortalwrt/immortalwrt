@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=filebrowser
 PKG_VERSION:=snapshot
-PKG_RELEASE:=118071b
+PKG_RELEASE:=6ce44f7
 
 PKG_LICENSE:=GPLv3
 PKG_MAINTAINER:=[CTCGFW] Project OpenWRT
