@@ -365,7 +365,7 @@ elseif action == "edit" then
   d.datatype="ufloat"
   d.default = container_info.HostConfig.NanoCpus / (10^9)
 
-  d = editsection:option(Value, "cpushares", translate("CPU Shares Weight"), translate("CPU shares (relative weight, if 0 is set, the system will ignore the value and use the default of 1024."))
+  d = editsection:option(Value, "cpushares", translate("CPU Shares Weight"), translate("CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."))
   d.placeholder = "1024"
   d.rmempty = true
   d.datatype="uinteger"

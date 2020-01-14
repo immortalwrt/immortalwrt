@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-dockerman
-PKG_VERSION:=v0.1.7
+PKG_VERSION:=v0.1.8
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-dockerman>
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -38,6 +38,8 @@ define Package/$(PKG_NAME)/install
 	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci
 	$(INSTALL_DIR) $(1)/
 	cp -pR ./root/* $(1)/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/dockerman.po $(1)/usr/lib/lua/luci/i18n/dockerman.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
