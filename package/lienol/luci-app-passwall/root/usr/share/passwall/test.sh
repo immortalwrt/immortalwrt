@@ -1,16 +1,21 @@
 #!/bin/sh
 
 CONFIG=passwall
-LOCK_FILE=/var/lock/passwall_test.lock
+LOCK_FILE=/var/lock/${CONFIG}_test.lock
+LOG_FILE=/var/log/$CONFIG.log
 
 get_date() {
 	echo "$(date "+%Y-%m-%d %H:%M:%S")"
 }
 
+echolog() {
+	echo -e "$(get_date): $1" >> $LOG_FILE
+}
+
 test_url() {
-	status=$(/usr/bin/curl -I -o /dev/null -s --connect-timeout 2 -w %{http_code} "$1" | grep 200)
+	status=$(/usr/bin/curl -I -o /dev/null -s --connect-timeout 2 --retry 1 -w %{http_code} "$1" | grep 200)
 	[ "$?" != 0 ] && {
-		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=2 "$1")
+		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=2 --tries 1 "$1")
 		[ "$?" == 0 ] && status=200
 	}
 	echo $status
@@ -33,25 +38,25 @@ test_proxy() {
 }
 
 test_auto_switch() {
-	if [ -f "/var/etc/passwall/tcp_server_id" ]; then
-		TCP_NODES1=$(cat /var/etc/passwall/tcp_server_id)
+	if [ -f "/var/etc/$CONFIG/tcp_server_id" ]; then
+		TCP_NODES1=$(cat /var/etc/$CONFIG/tcp_server_id)
 	else
 		rm -f $LOCK_FILE
 		exit 1
 	fi
 
 	failcount=1
-	while [ "$failcount" -lt "6" ]; do
+	while [ "$failcount" -le 5 ]; do
 		status=$(test_proxy)
 		if [ "$status" == 2 ]; then
-			echo "$(get_date): 自动切换检测：无法连接到网络，请检查网络是否正常！" >>/var/log/passwall.log
+			echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"
 			break
 		elif [ "$status" == 1 ]; then
-			echo "$(get_date): 自动切换检测：第$failcount次检测异常" >>/var/log/passwall.log
+			echolog "自动切换检测：第$failcount次检测异常"
 			let "failcount++"
-			[ "$failcount" -ge 6 ] && {
-				echo "$(get_date): 自动切换检测：检测异常，切换节点" >>/var/log/passwall.log
-				TCP_NODES=$(uci get passwall.@auto_switch[0].tcp_node)
+			[ "$failcount" -ge 5 ] && {
+				echolog "自动切换检测：检测异常，切换节点"
+				TCP_NODES=$(uci get $CONFIG.@auto_switch[0].tcp_node)
 				has_backup_server=$(echo $TCP_NODES | grep $TCP_NODES1)
 				setserver=
 				if [ -z "$has_backup_server" ]; then
@@ -77,14 +82,14 @@ test_auto_switch() {
 					done
 				fi
 				rm -f $LOCK_FILE
-				uci set passwall.@global[0].tcp_node=$setserver
-				uci commit passwall
-				/etc/init.d/passwall restart
+				uci set $CONFIG.@global[0].tcp_node=$setserver
+				uci commit $CONFIG
+				/etc/init.d/$CONFIG restart
 				exit 1
 			}
 			sleep 5s
 		elif [ "$status" == 0 ]; then
-			echo "$(get_date): 自动切换检测：检测正常" >>/var/log/passwall.log
+			echolog "自动切换检测：检测正常"
 			break
 		fi
 	done
@@ -92,23 +97,23 @@ test_auto_switch() {
 
 test_reconnection() {
 	failcount=1
-	while [ "$failcount" -lt "6" ]; do
+	while [ "$failcount" -le 5 ]; do
 		status=$(test_proxy)
 		if [ "$status" == 2 ]; then
-			echo "$(get_date): 掉线重连检测：无法连接到网络，请检查网络是否正常！" >>/var/log/passwall.log
+			echolog "掉线重连检测：无法连接到网络，请检查网络是否正常！"
 			break
 		elif [ "$status" == 1 ]; then
-			echo "$(get_date): 掉线重连检测：第$failcount次检测异常" >>/var/log/passwall.log
+			echolog "掉线重连检测：第$failcount次检测异常"
 			let "failcount++"
-			[ "$failcount" -ge 6 ] && {
-				echo "$(get_date): 掉线重连检测：检测异常，重启程序" >>/var/log/passwall.log
+			[ "$failcount" -ge 5 ] && {
+				echolog "掉线重连检测：检测异常，重启程序"
 				rm -f $LOCK_FILE
-				/etc/init.d/passwall restart
+				/etc/init.d/$CONFIG restart
 				exit 1
 			}
 			sleep 5s
 		elif [ "$status" == 0 ]; then
-			echo "$(get_date): 掉线重连检测：检测正常" >>/var/log/passwall.log
+			echolog "掉线重连检测：检测正常"
 			break
 		fi
 	done

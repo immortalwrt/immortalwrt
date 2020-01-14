@@ -46,81 +46,6 @@ o:depends("auto_on", "1")
 o:value(nil, translate("Disable"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 
--- [[ DNS Settings ]]--
-s = m:section(TypedSection, "global_dns", translate("DNS Settings"))
-s.anonymous = true
-s.addremove = false
-
----- Mainland DNS Sever 1
-o = s:option(Value, "dns_1", translate("Mainland DNS Sever 1"))
-o.rmempty = false
-o.default = "dnsbyisp"
-o:value("dnsbyisp", translate("dnsbyisp"))
-o:value("223.5.5.5", "223.5.5.5(" .. translate("Ali") .. "DNS1)")
-o:value("223.6.6.6", "223.6.6.6(" .. translate("Ali") .. "DNS2)")
-o:value("114.114.114.114", "114.114.114.114(114DNS1)")
-o:value("114.114.115.115", "114.114.115.115(114DNS2)")
-o:value("119.29.29.29", "119.29.29.29(DNSPOD DNS1)")
-o:value("182.254.116.116", "182.254.116.116(DNSPOD DNS2)")
-o:value("1.2.4.8", "1.2.4.8(CNNIC DNS1)")
-o:value("210.2.4.8", "210.2.4.8(CNNIC DNS2)")
-o:value("180.76.76.76", "180.76.76.76(" .. translate("Baidu") .. "DNS)")
-
----- Mainland DNS Sever 2
-o = s:option(Value, "dns_2", translate("Mainland DNS Sever 2"))
-o.rmempty = false
-o.default = "223.5.5.5"
-o:value("dnsbyisp", translate("dnsbyisp"))
-o:value("223.5.5.5", "223.5.5.5(" .. translate("Ali") .. "DNS1)")
-o:value("223.6.6.6", "223.6.6.6(" .. translate("Ali") .. "DNS2)")
-o:value("114.114.114.114", "114.114.114.114(114DNS1)")
-o:value("114.114.115.115", "114.114.115.115(114DNS2)")
-o:value("119.29.29.29", "119.29.29.29(DNSPOD DNS1)")
-o:value("182.254.116.116", "182.254.116.116(DNSPOD DNS2)")
-o:value("1.2.4.8", "1.2.4.8(CNNIC DNS1)")
-o:value("210.2.4.8", "210.2.4.8(CNNIC DNS2)")
-o:value("180.76.76.76", "180.76.76.76(" .. translate("Baidu") .. "DNS)")
-
----- DNS Export Of Multi WAN
-o = s:option(ListValue, "dns_port", translate("DNS Export Of Multi WAN"),
-             translate(
-                 "Only support Multi Wan. If no effect, please go to mwan3 to set."))
-o.rmempty = false
-o.default = 0
-o:value(0, translate("Auto"))
-for _, iface in ipairs(ifaces) do
-    if (iface:match("^pppoe*")) then
-        local nets = net:get_interface(iface)
-        nets = nets and nets:get_networks() or {}
-        for k, v in pairs(nets) do nets[k] = nets[k].sid end
-        nets = table.concat(nets, ",")
-        o:value(iface, ((#nets > 0) and "%s (%s)" % {iface, nets} or iface))
-    end
-end
-
----- Node Export Of Multi WAN
-o = s:option(ListValue, "wan_port", translate("Node Export Of Multi WAN"),
-             translate(
-                 "Only support Multi Wan. If no effect, please go to mwan3 to set."))
-o.default = 0
-o.rmempty = false
-o:value(0, translate("Auto"))
-for _, iface in ipairs(ifaces) do
-    if (iface:match("^pppoe*")) then
-        local nets = net:get_interface(iface)
-        nets = nets and nets:get_networks() or {}
-        for k, v in pairs(nets) do nets[k] = nets[k].sid end
-        nets = table.concat(nets, ",")
-        o:value(iface, ((#nets > 0) and "%s (%s)" % {iface, nets} or iface))
-    end
-end
-
----- DNS Hijack
-o = s:option(Flag, "dns_53", translate("DNS Hijack"), translate(
-                 "If the GFW mode cannot be used normally, please enable it"))
-o.default = 1
-o.rmempty = false
-
 -- [[ Forwarding Settings ]]--
 s = m:section(TypedSection, "global_forwarding",
               translate("Forwarding Settings"))
@@ -142,7 +67,7 @@ o:value("1:65535", translate("All"))
 o:value("53", "53")
 
 ---- Multi SS/SSR Process Option
-o = s:option(Value, "process", translate("Multi Process Option"),
+--[[ o = s:option(Value, "process", translate("Multi Process Option"),
              translate("you can start SS/SSR with multiple process"))
 o.default = "0"
 o.rmempty = false
@@ -151,6 +76,7 @@ o:value("1", translate("1 Process"))
 o:value("2", "2 " .. translate("Process"))
 o:value("3", "3 " .. translate("Process"))
 o:value("4", "4 " .. translate("Process"))
+--]]
 
 -- [[ Proxy Settings ]]--
 s = m:section(TypedSection, "global_proxy", translate("Proxy Settings"))
@@ -187,15 +113,15 @@ o = s:option(Flag, "proxy_ipv6", translate("Proxy IPv6"),
 o.default = 0
 
 -- [[ Other Settings ]]--
-s = m:section(TypedSection, "global_other", translate("Other Settings"))
+s = m:section(TypedSection, "global_other", translate("Other Settings"),
+              translatef(
+                  "You can only set up a maximum of %s nodes for the time being",
+                  "3"))
 s.anonymous = true
 s.addremove = false
 
 ---- TCP Node Number Option
-o = s:option(ListValue, "tcp_node_num", "TCP" .. translate("Node Number"),
-             translatef(
-                 "You can only set up a maximum of %s nodes for the time being",
-                 "3"))
+o = s:option(ListValue, "tcp_node_num", "TCP" .. translate("Node Number"))
 o.default = "1"
 o.rmempty = false
 o:value("1")
@@ -203,10 +129,7 @@ o:value("2")
 o:value("3")
 
 ---- UDP Node Number Option
-o = s:option(ListValue, "udp_node_num", "UDP" .. translate("Node Number"),
-             translatef(
-                 "You can only set up a maximum of %s nodes for the time being",
-                 "3"))
+o = s:option(ListValue, "udp_node_num", "UDP" .. translate("Node Number"))
 o.default = "1"
 o.rmempty = false
 o:value("1")
@@ -214,47 +137,35 @@ o:value("2")
 o:value("3")
 
 ---- Socks5 Node Number Option
-o = s:option(ListValue, "socks5_node_num", "Socks5" .. translate("Node Number"),
-             translatef(
-                 "You can only set up a maximum of %s nodes for the time being",
-                 "5"))
+o = s:option(ListValue, "socks5_node_num", "Socks5" .. translate("Node Number"))
 o.default = "1"
 o.rmempty = false
 o:value("1")
 o:value("2")
 o:value("3")
-o:value("4")
-o:value("5")
 
 ---- 状态使用大图标
 o = s:option(Flag, "status_use_big_icon", translate("Status Use Big Icon"))
+o.default = "1"
+o.rmempty = false
+
+---- 显示节点检测
+o = s:option(Flag, "status_show_check_port", translate("Status Show Check Port"))
+o.default = "0"
+o.rmempty = false
+
+---- 显示IP111
+o = s:option(Flag, "status_show_ip111", translate("Status Show IP111"))
 o.default = "0"
 o.rmempty = false
 
 ---- Hide Menu
 o = s:option(Button, "hide", translate("Hide Menu"), translate(
-                 "After the hidden to the display, type in the address bar enter the admin/vpn/passwall/show, such as: http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"))
+                 "After the hidden to the display, type in the address bar enter the admin/vpn/passwall/show.<br />such as: http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"))
 o.inputstyle = "remove"
 function o.write(e, e)
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
                                                  "hide"))
 end
-
--- [[ Custom Dnsmasq Settings ]]--
---[[
-s = m:section(TypedSection, "global", translate("Custom Dnsmasq"))
-s.anonymous = true
-local e = "/usr/share/passwall/dnsmasq.d/user.conf"
-o = s:option(TextValue, "userconf")
-o.description = translate("Setting a parameter error will cause dnsmasq fail to start.")
-o.rows = 15
-o.wrap = "off"
-o.cfgvalue = function(a, a)
-return fs.readfile(e)or""
-end
-o.write = function(o, o, a)
-fs.writefile(e, a:gsub("\r\n", "\n"))
-end
-]] --
 
 return m

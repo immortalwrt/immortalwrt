@@ -1,11 +1,14 @@
 
 config global
+	option enabled '0'
 	option tcp_node1 'nil'
 	option udp_node1 'nil'
 	option socks5_node1 'nil'
 	option dns_mode 'pdnsd'
+	option up_china_dns '114.114.114.114'
 	option dns_forward '8.8.4.4'
 	option use_tcp_node_resolve_dns '1'
+	option dns_53 '1'
 	option proxy_mode 'chnroute'
 	option localhost_proxy_mode 'gfwlist'
 
@@ -16,13 +19,6 @@ config global_delay
 	option auto_on '0'
 	option start_daemon '0'
 	option start_delay '20'
-
-config global_dns
-	option dns_port '0'
-	option wan_port '0'
-	option dns_53 '1'
-	option dns_1 '114.114.114.114'
-	option dns_2 '119.29.29.29'
 
 config global_forwarding
 	option udp_redir_ports '1:65535'
@@ -43,6 +39,8 @@ config global_other
 	option udp_node_num '1'
 	option socks5_node_num '1'
 	option status_use_big_icon '1'
+	option status_show_check_port '0'
+	option status_show_ip111 '0'
 	option compact_display_nodes '0'
 	option show_group '0'
 	option show_add_mode '0'
@@ -54,7 +52,7 @@ config global_rules
 	option chnlist_update '1'
 	option gfwlist_version '2019-12-10'
 	option chnroute_version '2019-12-05'
-	option chnlist_version '2019-12-31'
+	option chnlist_version '2020-01-06'
 	
 config global_app
 	option v2ray_file '/usr/bin/v2ray/'
@@ -66,5 +64,5 @@ config global_subscribe
 	option auto_update_subscribe '0'
 
 config auto_switch
-	option testing_time '50'
+	option testing_time '3'
 	option enable '0'

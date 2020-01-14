@@ -7,8 +7,10 @@ local trojan = {
     run_type = "server",
     local_addr = "0.0.0.0",
     local_port = tonumber(server.port),
-    --remote_addr = "127.0.0.1",
-    --remote_port = 80,
+    remote_addr = (server.remote_enable == "1" and server.remote_address) and
+        server.remote_address or nil,
+    remote_port = (server.remote_enable == "1" and server.remote_port) and
+        server.remote_port or nil,
     password = server.password,
     log_level = 1,
     ssl = {

@@ -906,12 +906,12 @@ button {
     border-radius: 6px !important;
     display: inline-block;
     background: #fff;
-    border: 2px solid #99d;
+    border: 2px solid #118af3;
     border-radius: 2px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, .05);
     color: #333;
     line-height: 16px;
-    padding: 4px 8px;
+    padding: 0.5em;
     cursor: pointer;
     margin-left: 0.2em;
 }
@@ -1499,6 +1499,8 @@ body.modal-overlay-active #modal_overlay>.modal {
 .cbi-page-actions .cbi-button-apply,
 .cbi-section-actions .cbi-button-edit {
     color: #fff;
+    background: #118af3;
+    border: 1px solid #118af3;
 }
 
 .cbi-dropdown {

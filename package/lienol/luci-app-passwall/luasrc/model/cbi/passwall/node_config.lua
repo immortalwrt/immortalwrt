@@ -3,8 +3,12 @@ local ipkg = require("luci.model.ipkg")
 
 local appname = "passwall"
 
+local function get_customed_path(e)
+    return luci.model.cbi.passwall.api.api.uci_get_type("global_app", e .. "_file")
+end
+
 local function is_finded(e)
-    return luci.sys.exec("find /usr/*bin -iname " .. e .. " -type f") ~= "" and
+    return luci.sys.exec("find /usr/*bin %s -iname %s -type f" % {get_customed_path(e), e}) ~= "" and
                true or false
 end
 
@@ -62,7 +66,9 @@ if ((is_installed("redsocks2") or is_finded("redsocks2")) or
 end
 if is_finded("ss-redir") then type:value("SS", translate("Shadowsocks")) end
 if is_finded("ssr-redir") then type:value("SSR", translate("ShadowsocksR")) end
-if is_installed("v2ray") then type:value("V2ray", translate("V2ray")) end
+if is_installed("v2ray") or is_finded("v2ray") then
+    type:value("V2ray", translate("V2ray"))
+end
 if is_installed("brook") or is_finded("brook") then
     type:value("Brook", translate("Brook"))
 end
@@ -239,7 +245,7 @@ v2ray_tcp_guise_http_path:depends("v2ray_tcp_guise", "http")
 
 v2ray_mkcp_guise = s:option(ListValue, "v2ray_mkcp_guise",
                             translate("Camouflage Type"), translate(
-                                '<br>none: default, no masquerade, data sent is packets with no characteristics.<br>srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br>utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br>wechat-video: packets disguised as WeChat video calls.<br>dtls: disguised as DTLS 1.2 packet.<br>wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)'))
+                                '<br />none: default, no masquerade, data sent is packets with no characteristics.<br />srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br />utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br />wechat-video: packets disguised as WeChat video calls.<br />dtls: disguised as DTLS 1.2 packet.<br />wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)'))
 for a, t in ipairs(v2ray_header_type_list) do v2ray_mkcp_guise:value(t) end
 v2ray_mkcp_guise:depends("v2ray_transport", "mkcp")
 

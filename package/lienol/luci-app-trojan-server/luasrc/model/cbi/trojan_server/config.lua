@@ -28,13 +28,27 @@ tcp_fast_open = t:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"),
 tcp_fast_open:value("false")
 tcp_fast_open:value("true")
 
--- [[ SSL部分 ]] --
+remote_enable = t:option(Flag, "remote_enable", translate("Enable Remote"),
+                         translate(
+                             "You can forward to Nginx/Caddy/V2ray WebSocket and more."))
+remote_enable.default = "1"
+remote_enable.rmempty = false
+
+remote_address = t:option(Value, "remote_address", translate("Remote Address"))
+remote_address.default = "127.0.0.1"
+remote_address:depends("remote_enable", 1)
+
+remote_port = t:option(Value, "remote_port", translate("Remote Port"))
+remote_port.datatype = "port"
+remote_port.default = "80"
+remote_port:depends("remote_enable", 1)
+
 tls_certFile = t:option(Value, "ssl_certFile",
-                        translate("Public key absolute path"),
+                        "HTTPS" .. translate("Public key absolute path"),
                         translate("as:") .. "/etc/ssl/fullchain.pem")
 
 tls_keyFile = t:option(Value, "ssl_keyFile",
-                       translate("Private key absolute path"),
+                       "HTTPS" .. translate("Private key absolute path"),
                        translate("as:") .. "/etc/ssl/private.key")
 
 return map

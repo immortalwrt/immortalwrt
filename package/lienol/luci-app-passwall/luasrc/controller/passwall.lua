@@ -19,13 +19,13 @@ function index()
     end
     entry({"admin", "vpn", "passwall", "settings"}, cbi("passwall/global"),
           _("Basic Settings"), 1).dependent = true
-    entry({"admin", "vpn", "passwall", "node_list"},
-          cbi("passwall/node_list", {autoapply = true}), _("Node List"), 2).dependent =
-        true
+    entry({"admin", "vpn", "passwall", "node_list"}, cbi("passwall/node_list"),
+          _("Node List"), 2).dependent = true
     -- entry({"admin", "vpn", "passwall", "auto_switch"},
     --      cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
-    entry({"admin", "vpn", "passwall", "other"}, cbi("passwall/other"),
-          _("Other Settings"), 94).leaf = true
+    entry({"admin", "vpn", "passwall", "other"},
+          cbi("passwall/other", {autoapply = true}), _("Other Settings"), 94).leaf =
+        true
     if nixio.fs.access("/usr/sbin/haproxy") then
         entry({"admin", "vpn", "passwall", "balancing"},
               cbi("passwall/balancing"), _("Load Balancing"), 95).leaf = true
@@ -34,10 +34,12 @@ function index()
           _("Rule Update"), 96).leaf = true
     entry({"admin", "vpn", "passwall", "acl"}, cbi("passwall/acl"),
           _("Access control"), 97).leaf = true
-    entry({"admin", "vpn", "passwall", "rule_list"}, cbi("passwall/rule_list"),
+    entry({"admin", "vpn", "passwall", "rule_list"},
+          cbi("passwall/rule_list", {autoapply = true}),
           _("Set Blacklist And Whitelist"), 98).leaf = true
-    entry({"admin", "vpn", "passwall", "log"}, cbi("passwall/log"),
-          _("Watch Logs"), 99).leaf = true
+    entry({"admin", "vpn", "passwall", "log"},
+          cbi("passwall/log", {autoapply = true}), _("Watch Logs"), 99).leaf =
+        true
     entry({"admin", "vpn", "passwall", "node_config"},
           cbi("passwall/node_config")).leaf = true
 

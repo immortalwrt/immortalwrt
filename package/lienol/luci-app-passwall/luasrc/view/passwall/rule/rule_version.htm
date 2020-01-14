@@ -39,7 +39,6 @@ local chnlist_update = api.uci_get_type("global_rules", "chnlist_update", "1") =
 				}
 			}
 		);
-		return false;
 	}
 	//]]>
 </script>
@@ -86,7 +85,7 @@ local chnlist_update = api.uci_get_type("global_rules", "chnlist_update", "1") =
 				<%:Manually update%>
 			</label>
 			<div class="cbi-value-field">
-				<input class="cbi-button cbi-input-apply" type="submit" id="update_rules_btn" onclick="update_rules(this)" value="<%:Manually update%>">
+				<input class="cbi-button cbi-input-apply" type="button" id="update_rules_btn" onclick="update_rules(this)" value="<%:Manually update%>" />
 			</div>
 		</div>
 		

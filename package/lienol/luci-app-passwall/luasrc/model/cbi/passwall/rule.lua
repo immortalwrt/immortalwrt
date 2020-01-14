@@ -58,8 +58,8 @@ for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update_subscribe", 1)
 
----- Subscribe Manually update
-o = s:option(Button, "_update", translate("Manually update"))
+---- Manual subscription
+o = s:option(Button, "_update", translate("Manual subscription"))
 o.inputstyle = "apply"
 function o.write(e, e)
     luci.sys
@@ -72,8 +72,7 @@ end
 o = s:option(Button, "_stop", translate("Delete All Subscribe Node"))
 o.inputstyle = "remove"
 function o.write(e, e)
-    luci.sys.call(
-        "nohup /usr/share/passwall/subscription.sh stop > /dev/null 2>&1 &")
+    luci.sys.call("/usr/share/passwall/subscription.sh stop")
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
                                                  "log"))
 end

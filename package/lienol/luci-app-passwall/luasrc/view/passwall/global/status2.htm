@@ -14,6 +14,9 @@ end
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
+
+local status_show_check_port = api.uci_get_type("global_other", "status_show_check_port", 0)
+local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 0)
 -%>
 
 <style>
@@ -146,6 +149,7 @@ local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 				<font id="_google_status"></font>
 			</div>
 		</div>
+		<% if tonumber(status_show_check_port) == 1 then %>
 		<div class="cbi-value">
 			<label class="cbi-value-title">
 				<%:Node Check%>
@@ -156,12 +160,15 @@ local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
 				<input id="clear_check_port_btn" type="button" class="cbi-button cbi-button-remove" style="display:none" value="<%:Clear%>" onclick="return clear_check_port(this)" />
 			</div>
 		</div>
+		<% end %>
+		<% if tonumber(status_show_ip111) == 1 then %>
 		<div class="cbi-value">
 			<label class="cbi-value-title"></label>
 			<div class="cbi-value-field">
 				<input type="button" class="cbi-button cbi-input-reload" value="IP111.cn" onclick="javascript:window.open('http://www.ip111.cn/','target');" />
 			</div>
 		</div>
+		<% end %>
 	</fieldset>
 </fieldset>
 

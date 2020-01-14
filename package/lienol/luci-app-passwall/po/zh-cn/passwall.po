@@ -1,5 +1,5 @@
 msgid "Pass Wall"
-msgstr "科学上网"
+msgstr "正确上网姿势 √"
 
 msgid "Shadowsocks Server"
 msgstr "ShadowSocks 服务器"
@@ -82,6 +82,9 @@ msgstr "高级设置"
 msgid "Load Balancing"
 msgstr "负载均衡"
 
+msgid "Enter interface"
+msgstr "进入界面"
+
 msgid "Rule Update"
 msgstr "自动更新"
 
@@ -121,6 +124,9 @@ msgstr "清除"
 msgid "If you can use it, very stable. If not, GG !!!"
 msgstr "如果你会用，稳得一批。否则，GG！！！"
 
+msgid "Main switch"
+msgstr "总开关"
+
 msgid "TCP Node"
 msgstr "TCP节点"
 
@@ -142,11 +148,11 @@ msgstr "用于游戏模式或DNS解析等。"
 msgid "The selected server will not use Kcptun."
 msgstr "选中的服务器不会使用Kcptun。"
 
-msgid "The client can use the router's Socks5 proxy"
-msgstr "客户端可以使用路由器的Socks5代理"
+msgid "The client can use the router's Socks5 proxy."
+msgstr "客户端可以使用路由器的Socks5代理。"
 
-msgid "DNS Forward Mode"
-msgstr "DNS转发模式"
+msgid "DNS Mode"
+msgstr "DNS模式"
 
 msgid "Use local port 7913 as DNS"
 msgstr "使用本机7913端口的DNS"
@@ -154,8 +160,8 @@ msgstr "使用本机7913端口的DNS"
 msgid "No patterns are used"
 msgstr "不使用"
 
-msgid "if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq"
-msgstr "如果您没有使用任何模式，则会使用WAN的DNS"
+msgid "if has problem, please try another mode.<br />if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq."
+msgstr "如果有问题，请尝试其他模式。<br />如果您没有使用任何模式，则会使用WAN的DNS。"
 
 msgid "Use TCP Node Resolve DNS"
 msgstr "使用TCP节点解析DNS"
@@ -163,14 +169,53 @@ msgstr "使用TCP节点解析DNS"
 msgid "If checked, DNS is resolved using the TCP node."
 msgstr "如果勾选，则使用TCP节点解析DNS解决污染。"
 
-msgid "upstreamm DNS Server for ChinaDNS-NG"
-msgstr "ChinaDNS-NG的上游服务器"
+msgid "DNS Address"
+msgstr "DNS地址"
 
-msgid "Domestic DNS server in advanced Settings is used as domestic DNS by default"
-msgstr "默认使用高级设置里的国内DNS服务器作为国内DNS"
+msgid "China DNS Server"
+msgstr "国内DNS服务器"
 
-msgid "example: 127.0.0.1#5335<br>Need at least one,Other DNS services can be used as upstream, such as dns2socks."
-msgstr "例：127.0.0.1#5335<br>需要至少一个服务器，其他DNS服务可以作为上游使用，比如：dns2socks。"
+msgid "Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as smartdns,AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash!"
+msgstr "例：127.0.0.1#6053 使用本机的6053端口的DNS服务。例：smartdns，AdGuardHome等等。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。<br />如果你使用自定义，除非你知道你在做什么，否则设置不当会直接导致卡到崩溃！"
+
+msgid "Upstream trust DNS Server for ChinaDNS-NG"
+msgstr "ChinaDNS-NG可信DNS"
+
+msgid "Example: 127.0.0.1#5353 ,such as dns2socks,dns-forwarder...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
+msgstr "例：127.0.0.1#5353 例：dns2socks，dns-forwarder等等。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
+
+msgid "The server client can also use this rule to scientifically surf the Internet.<br /> Global and continental whitelist are not recommended for non-special cases!"
+msgstr "本机服务器的客户端也可以使用这个代理模式上网。<br />非特殊情况不推荐使用全局和大陆白名单！"
+
+msgid "Tips"
+msgstr "小提示"
+
+msgid "You can use load balancing for failover."
+msgstr "可以使用负载均衡实现故障切换功能。"
+
+msgid "dnsbyisp"
+msgstr "运营商DNS(自动分配)"
+
+msgid "Ali"
+msgstr "阿里"
+
+msgid "Baidu"
+msgstr "百度"
+
+msgid "DNS Export Of Multi WAN"
+msgstr "国内DNS指定解析出口"
+
+msgid "Node Export Of Multi WAN"
+msgstr "节点指定出口"
+
+msgid "Only support Multi Wan."
+msgstr "只有多线接入才有效。"
+
+msgid "Not Specify"
+msgstr "不指定"
+
+msgid "DNS Hijack"
+msgstr "DNS劫持"
 
 msgid "custom"
 msgstr "自定义"
@@ -195,6 +240,9 @@ msgstr "单进程"
 
 msgid "Proxy Mode"
 msgstr "代理模式"
+
+msgid "If using GFW mode is not available, try clearing the native cache."
+msgstr "如果使用GFW模式无法使用，请尝试清除本机缓存。"
 
 msgid "No Proxy"
 msgstr "不代理"
@@ -244,9 +292,6 @@ msgstr "你选择的节点是："
 msgid "Timeout"
 msgstr "超时"
 
-msgid "The server client can also use this rule to scientifically surf the Internet"
-msgstr "本机服务器的客户端也可以使用这个代理模式上网"
-
 msgid "Node Remarks"
 msgstr "节点备注"
 
@@ -274,11 +319,8 @@ msgstr "加密"
 msgid "Kcptun Switch"
 msgstr "Kcptun开关"
 
-msgid "Ping Latency"
-msgstr "Ping延迟"
-
-msgid "Ping Value"
-msgstr "Ping值"
+msgid "Latency"
+msgstr "延迟"
 
 msgid "Show Add Mode"
 msgstr "显示添加方式"
@@ -289,17 +331,17 @@ msgstr "显示组"
 msgid "Group"
 msgstr "组"
 
-msgid "Use TCPing"
-msgstr "使用TCPing"
-
-msgid "This will use tcping replace ping detection of node"
-msgstr "选中后保存应用后即使用tcping替换ping检测节点"
-
 msgid "Auto Ping"
 msgstr "自动Ping"
 
 msgid "This will automatically ping the node for latency"
 msgstr "选中后保存应用后即自动Ping节点"
+
+msgid "Use TCP Detection delay"
+msgstr "使用TCP检测延迟"
+
+msgid "This will use tcping replace ping detection of node"
+msgstr "选中后保存应用后即使用tcping替换ping检测节点"
 
 msgid "Concise display nodes"
 msgstr "简洁显示节点"
@@ -312,45 +354,6 @@ msgstr "应用"
 
 msgid "Use"
 msgstr "使用"
-
-msgid "DNS Settings"
-msgstr "DNS配置"
-
-msgid "DNS Forward Address"
-msgstr "DNS转发地址"
-
-msgid "Mainland DNS Sever 1"
-msgstr "国内DNS服务器1"
-
-msgid "Mainland DNS Sever 2"
-msgstr "国内DNS服务器2"
-
-msgid "dnsbyisp"
-msgstr "运营商DNS(自动分配)"
-
-msgid "Ali"
-msgstr "阿里"
-
-msgid "Baidu"
-msgstr "百度"
-
-msgid "DNS Export Of Multi WAN"
-msgstr "国内DNS指定解析出口"
-
-msgid "Node Export Of Multi WAN"
-msgstr "节点指定出口"
-
-msgid "Only support Multi Wan. If no effect, please go to mwan3 to set."
-msgstr "只有多线接入才有效，如果设置后还是无效，请到mwan3设置。"
-
-msgid "Not Specify"
-msgstr "不指定"
-
-msgid "DNS Hijack"
-msgstr "DNS劫持"
-
-msgid "If the GFW mode cannot be used normally, please enable it"
-msgstr "如果GFW模式不能正常使用，请启用"
 
 msgid "Delay Settings"
 msgstr "定时配置"
@@ -436,8 +439,11 @@ msgstr "检测时间"
 msgid "Automatic switching cannot be used when this option is checked"
 msgstr "当勾选此选项时，不能使用自动切换"
 
-msgid "List of alternate TCP forwarding servers"
-msgstr "备用TCP转发服务器的列表"
+msgid "List of backup nodes"
+msgstr "备用节点的列表"
+
+msgid "List of backup nodes, the first of which must be the primary node and the others the standby node."
+msgstr "备用节点的列表，第一个必须是主节点，其他是备用节点。"
 
 msgid "Configure this node with 127.0.0.1: this port"
 msgstr "使用127.0.0.1和此端口配置节点"
@@ -463,8 +469,8 @@ msgstr "负载均衡端口"
 msgid "Load Balancing Setting"
 msgstr "负载均衡设置"
 
-msgid "Add a node, Export Of Multi WAN Only support Multi Wan. If no effect, please go to mwan3 to set. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"
-msgstr "添加节点，指定出口功能是为多WAN用户准备的，如果设置后还是无效，请到mwan3设置。负载比重范围1-256。多个主服务器可以负载均衡，备用只有在主服务器离线时才会启用！"
+msgid "Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"
+msgstr "添加节点，指定出口功能是为多WAN用户准备的。负载比重范围1-256。多个主服务器可以负载均衡，备用只有在主服务器离线时才会启用！"
 
 msgid "Node Address"
 msgstr "节点地址"
@@ -583,14 +589,17 @@ msgstr "订阅网址"
 msgid "Please input the subscription url first, save and submit before updating. If you subscribe to update, it is recommended to delete all subscriptions and then re-subscribe."
 msgstr "请输入订阅网址保存应用后再更新，如果订阅节点更新了，建议删除所有订阅，然后重新订阅。"
 
-msgid "Delete All Subscribe Node"
-msgstr "删除所有订阅节点"
-
 msgid "Subscribe via proxy"
 msgstr "通过代理订阅"
 
 msgid "Enable auto update subscribe"
 msgstr "开启自动更新订阅"
+
+msgid "Manual subscription"
+msgstr "手动订阅"
+
+msgid "Delete All Subscribe Node"
+msgstr "删除所有订阅节点"
 
 msgid "Add"
 msgstr "添加"
@@ -739,8 +748,8 @@ msgstr "域名"
 msgid "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."
 msgstr "是否允许不安全连接。当勾选时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。"
 
-msgid "<br>none: default, no masquerade, data sent is packets with no characteristics.<br>srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br>utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br>wechat-video: packets disguised as WeChat video calls.<br>dtls: disguised as DTLS 1.2 packet.<br>wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)"
-msgstr "<br>none：默认值，不进行伪装，发送的数据是没有特征的数据包。<br>srtp：伪装成 SRTP 数据包，会被识别为视频通话数据（如 FaceTime）。<br>utp：伪装成 uTP 数据包，会被识别为 BT 下载数据。<br>wechat-video：伪装成微信视频通话的数据包。<br>dtls：伪装成 DTLS 1.2 数据包。<br>wireguard：伪装成 WireGuard 数据包。(并不是真正的 WireGuard 协议)"
+msgid "<br />none: default, no masquerade, data sent is packets with no characteristics.<br />srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br />utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br />wechat-video: packets disguised as WeChat video calls.<br />dtls: disguised as DTLS 1.2 packet.<br />wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)"
+msgstr "<br />none：默认值，不进行伪装，发送的数据是没有特征的数据包。<br />srtp：伪装成 SRTP 数据包，会被识别为视频通话数据（如 FaceTime）。<br />utp：伪装成 uTP 数据包，会被识别为 BT 下载数据。<br />wechat-video：伪装成微信视频通话的数据包。<br />dtls：伪装成 DTLS 1.2 数据包。<br />wireguard：伪装成 WireGuard 数据包。(并不是真正的 WireGuard 协议)"
 
 msgid "A legal file path. This file must not exist before running V2Ray."
 msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
@@ -775,11 +784,17 @@ msgstr "目前最多只能设置%s个节点"
 msgid "Status Use Big Icon"
 msgstr "状态信息使用大图标"
 
+msgid "Status Show Check Port"
+msgstr "状态信息显示节点检测"
+
+msgid "Status Show IP111"
+msgstr "状态信息显示IP111"
+
 msgid "Hide Menu"
 msgstr "隐藏菜单"
 
-msgid "After the hidden to the display, type in the address bar enter the admin/vpn/passwall/show, such as: http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"
-msgstr "当你隐藏后想再次显示，在地址栏后面输入admin/vpn/passwall/show，例如:http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"
+msgid "After the hidden to the display, type in the address bar enter the admin/vpn/passwall/show.<br />such as: http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"
+msgstr "当你隐藏后想再次显示，在地址栏后面输入admin/vpn/passwall/show<br />例如:http://192.168.1.1/cgi-bin/luci/admin/vpn/passwall/show"
 
 msgid "Can't determine ARCH, or ARCH not supported."
 msgstr "无法确认ARCH架构，或是不支持。"

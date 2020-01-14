@@ -4,21 +4,26 @@ local net = require"luci.model.network".init()
 local uci = require"luci.model.uci".cursor()
 local ifaces = e.net:devices()
 local appname = "passwall"
-local nodes_name = {}
-local nodes_port = {}
 
+local n = {}
 uci:foreach(appname, "nodes", function(e)
-    if e.address and e.port and e.address ~= "127.0.0.1" then
-        nodes_name[e[".name"]] = "%s" % {e.address}
-        nodes_port[e[".name"]] = "%s" % {e.port}
+    if e.remarks and e.address and e.port and e.address ~= "127.0.0.1" then
+        e.remark = "[%s] %s:%s" % {e.remarks, e.address, e.port}
+        n[e[".name"]] = e
     end
 end)
 
-m = Map("passwall")
+local key_table = {}
+for key, _ in pairs(n) do table.insert(key_table, key) end
+table.sort(key_table)
+
+m = Map(appname)
 
 -- [[ Haproxy Settings ]]--
 s = m:section(TypedSection, "global_haproxy", translate("Load Balancing"))
 s.anonymous = true
+
+s:append(Template("passwall/haproxy/status"))
 
 ---- Balancing Enable
 o = s:option(Flag, "balancing_enable", translate("Enable Load Balancing"))
@@ -43,15 +48,15 @@ o.default = "1188"
 o:depends("balancing_enable", 1)
 
 ---- Haproxy Port
-o = s:option(Value, "haproxy_port", translate("Haproxy Port"), translate(
-    "Configure this node with 127.0.0.1: this port"))
+o = s:option(Value, "haproxy_port", translate("Haproxy Port"),
+             translate("Configure this node with 127.0.0.1: this port"))
 o.default = "1181"
 o:depends("balancing_enable", 1)
 
 -- [[ Balancing Settings ]]--
 s = m:section(TypedSection, "balancing", translate("Load Balancing Setting"),
               translate(
-                  "Add a node, Export Of Multi WAN Only support Multi Wan. If no effect, please go to mwan3 to set. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"))
+                  "Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"))
 s.template = "cbi/tblsection"
 s.sortable = true
 s.anonymous = true
@@ -59,12 +64,14 @@ s.addremove = true
 
 ---- Node Address
 o = s:option(Value, "lbss", translate("Node Address"))
-for m, s in pairs(nodes_name) do o:value(s) end
+for _, key in pairs(key_table) do
+    o:value(n[key].address .. ":" .. n[key].port, n[key].remark)
+end
 o.rmempty = false
 
 ---- Node Port
 o = s:option(Value, "lbort", translate("Node Port"))
-for m, s in pairs(nodes_port) do o:value(s) end
+o:value("default", translate("Default"))
 o.rmempty = false
 
 ---- Node Weight

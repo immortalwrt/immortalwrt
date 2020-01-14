@@ -11,14 +11,14 @@ m = Map(appname)
 s = m:section(TypedSection, "global_other")
 s.anonymous = true
 
----- Use TCPing
-o = s:option(Flag, "use_tcping", translate("Use TCPing"),
-             translate("This will use tcping replace ping detection of node"))
-o.default = 1
-
 ---- Auto Ping
 o = s:option(Flag, "auto_ping", translate("Auto Ping"),
              translate("This will automatically ping the node for latency"))
+o.default = 1
+
+---- Use TCP Detection delay
+o = s:option(Flag, "use_tcping", translate("Use TCP Detection delay"),
+             translate("This will use tcping replace ping detection of node"))
 o.default = 1
 
 ---- Concise display nodes
@@ -37,8 +37,8 @@ o.default = 1
 s:append(Template("passwall/node_list/link_add_node"))
 
 -- [[ Node List ]]--
-s = m:section(TypedSection, "nodes", translate(""), translate(
-                  "Support for more than 10,000 ping nodes and luci does not crash and not slow."))
+s = m:section(TypedSection, "nodes")
+-- s.description = translate("Support for more than 10,000 ping nodes and luci does not crash and not slow.")
 s.anonymous = true
 s.addremove = true
 s.template = "cbi/tblsection"
@@ -85,9 +85,6 @@ if api.uci_get_type("global_other", "compact_display_nodes", "0") == "1" then
     end
 else
     s.sortable = true
-    ---- Remarks
-    o = s:option(DummyValue, "remarks", translate("Remarks"))
-
     ---- Add Mode
     if api.uci_get_type("global_other", "show_add_mode", "1") == "1" then
         o = s:option(DummyValue, "add_mode", translate("Add Mode"))
@@ -101,6 +98,8 @@ else
             return str
         end
     end
+    ---- Remarks
+    o = s:option(DummyValue, "remarks", translate("Remarks"))
 
     ---- Type
     o = s:option(DummyValue, "type", translate("Type"))
@@ -129,17 +128,12 @@ end--]]
 end
 
 ---- Ping
-o = s:option(DummyValue, "ping", translate("Ping"))
-o.width = "10%"
+o = s:option(DummyValue, "ping", translate("Latency"))
 if api.uci_get_type("global_other", "auto_ping", "0") == "0" then
     o.template = "passwall/node_list/ping"
 else
     o.template = "passwall/node_list/auto_ping"
 end
-
----- Apply
-o = s:option(DummyValue, "apply", translate("Apply"))
-o.template = "passwall/node_list/apply"
 
 m:append(Template("passwall/node_list/node_list"))
 

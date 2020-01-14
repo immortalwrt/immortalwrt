@@ -54,9 +54,9 @@ start_subscribe() {
 			config_get subscrib_remark $1 remark
 			let index+=1
 			echo "$Date: 正在订阅：$url" >> $LOG_FILE
-			result=$(/usr/bin/curl --connect-timeout 10 -sL $url)
+			result=$(/usr/bin/curl --connect-timeout 5 --retry 1 -sL $url)
 			[ "$?" != 0 ] || [ -z "$result" ] && {
-				result=$(/usr/bin/wget --no-check-certificate --timeout=8 -t 1 -O- $url)
+				result=$(/usr/bin/wget --no-check-certificate --timeout=5 -t 1 -O- $url)
 				[ "$?" != 0 ] || [ -z "$result" ] && echo "$Date: 订阅失败：$url，请检测订阅链接是否正常或使用代理尝试！" >> $LOG_FILE && continue
 			}
 			file="/var/${CONFIG}_sub/$index"
@@ -64,36 +64,42 @@ start_subscribe() {
 			
 			get_local_nodes
 			
-			[ -z "$(du -sh $file 2> /dev/null)" ] && echo "$Date: 订阅失败：$url，解密失败！" >> $LOG_FILE && continue
-			decode_link=$(cat "$file" | base64 -d 2> /dev/null)
-			maxnum=$(echo -n "$decode_link" | grep "MAX=" | awk -F"=" '{print $2}')
-			if [ -n "$maxnum" ]; then
-				decode_link=$(echo -n "$decode_link" | sed '/MAX=/d' | shuf -n${maxnum})
-			else
-				decode_link=$(echo -n "$decode_link")
-			fi
-			
-			[ -z "$decode_link" ] && continue
-			for link in $decode_link
-			do
-				if expr "$link" : "ss://";then
-					link_type="ss"
-					new_link=$(echo -n "$link" | sed 's/ss:\/\///g')
-				elif expr "$link" : "ssr://";then
-					link_type="ssr"
-					new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
-				elif expr "$link" : "vmess://";then
-					link_type="v2ray"
-					new_link=$(echo -n "$link" | sed 's/vmess:\/\///g')
-				elif expr "$link" : "trojan://";then
-					link_type="trojan"
-					new_link=$(echo -n "$link" | sed 's/trojan:\/\///g')
+			if [ $(expr "$result" : "ssd://") == 0 ];then
+				[ -z "$(du -sh $file 2> /dev/null)" ] && echo "$Date: 订阅失败：$url，解密失败！" >> $LOG_FILE && continue
+				decode_link=$(cat "$file" | base64 -d 2> /dev/null)
+				maxnum=$(echo -n "$decode_link" | grep "MAX=" | awk -F"=" '{print $2}')
+				if [ -n "$maxnum" ]; then
+					decode_link=$(echo -n "$decode_link" | sed '/MAX=/d' | shuf -n${maxnum})
+				else
+					decode_link=$(echo -n "$decode_link")
 				fi
+				
+				[ -z "$decode_link" ] && continue
+				for link in $decode_link
+				do
+					if expr "$link" : "ss://";then
+						link_type="ss"
+						new_link=$(echo -n "$link" | sed 's/ss:\/\///g')
+					elif expr "$link" : "ssr://";then
+						link_type="ssr"
+						new_link=$(echo -n "$link" | sed 's/ssr:\/\///g')
+					elif expr "$link" : "vmess://";then
+						link_type="v2ray"
+						new_link=$(echo -n "$link" | sed 's/vmess:\/\///g')
+					elif expr "$link" : "trojan://";then
+						link_type="trojan"
+						new_link=$(echo -n "$link" | sed 's/trojan:\/\///g')
+					fi
+					[ -z "$link_type" ] && continue
+					get_remote_config "$link_type" "$new_link"
+				done
+			else
+				link=$result
+				link_type="ssd"
+				new_link=$(echo -n "$link" | sed 's/ssd:\/\///g')
 				[ -z "$link_type" ] && continue
 				get_remote_config "$link_type" "$new_link"
-				update_config
-			done
-			
+			fi
 			[ "$addnum_ss" -gt 0 ] || [ "$updatenum_ss" -gt 0 ] || [ "$delnum_ss" -gt 0 ] && echo "$Date: $subscrib_remark： SS节点新增 $addnum_ss 个，修改 $updatenum_ss 个，删除 $delnum_ss 个。" >> $LOG_FILE
 			[ "$addnum_ssr" -gt 0 ] || [ "$updatenum_ssr" -gt 0 ] || [ "$delnum_ssr" -gt 0 ] && echo "$Date: $subscrib_remark： SSR节点新增 $addnum_ssr 个，修改 $updatenum_ssr 个，删除 $delnum_ssr 个。" >> $LOG_FILE
 			[ "$addnum_v2ray" -gt 0 ] || [ "$updatenum_v2ray" -gt 0 ] || [ "$delnum_v2ray" -gt 0 ] && echo "$Date: $subscrib_remark： V2ray节点新增 $addnum_v2ray 个，修改 $updatenum_v2ray 个，删除 $delnum_v2ray 个。" >> $LOG_FILE
@@ -141,11 +147,11 @@ get_local_nodes(){
 }
 
 get_remote_config(){
-	isAdd=1
 	add_mode="$subscrib_remark"
 	[ -n "$3" ] && add_mode="导入"
+	new_node_type=$(echo $1 | tr '[a-z]' '[A-Z]')
+	decode_link="$2"
 	if [ "$1" == "ss" ]; then
-		decode_link="$2"
 		decode_link=$(ss_decode $decode_link)
 		ss_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		password=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $1}')
@@ -153,7 +159,6 @@ get_remote_config(){
 		node_port=$(echo "$decode_link" | awk -F '@' '{print $2}' | awk -F '#' '{print $1}' | awk -F ':' '{print $2}')
 		remarks=$(urldecode $(echo "$decode_link" | awk -F '#' '{print $2}'))
 	elif [ "$1" == "ssr" ]; then
-		decode_link="$2"
 		decode_link=$(decode_url_link $decode_link 1)
 		node_address=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		node_port=$(echo "$decode_link" | awk -F ':' '{print $2}')
@@ -195,16 +200,80 @@ get_remote_config(){
 		
 		remarks="${json_ps}"
 		node_address=$json_node_address
+		node_port=$json_node_port
 	elif [ "$1" == "trojan" ]; then
 		link="$2"
 		node_password=$(echo "$link" | sed 's/trojan:\/\///g' | awk -F '@' '{print $1}')
 		node_address=$(echo "$link" | sed 's/trojan:\/\///g' | awk -F '@' '{print $2}' | awk -F ':' '{print $1}')
 		node_port=$(echo "$link" | sed 's/trojan:\/\///g' | awk -F '@' '{print $2}' | awk -F ':' '{print $2}')
 		remarks="${node_address}:${node_port}"
+	elif [ "$1" == "ssd" ]; then
+		link_type="ss"
+		new_node_type=$(echo $link_type | tr '[a-z]' '[A-Z]')
+		decode_link=$(decode_url_link $2 1)
+		json_load "$decode_link"
+		json_get_var json_airport airport
+		json_get_var json_port port
+		json_get_var json_encryption encryption
+		json_get_var json_password password
+		json_get_var json_traffic_used traffic_used
+		json_get_var json_traffic_total traffic_total
+		json_get_var json_expiry expiry
+		json_get_var json_url url
+		json_get_var json_plugin plugin
+		json_get_var json_plugin_options plugin_options
+		
+		ss_encrypt_method=$json_encryption
+		password=$json_password
+		plugin=$json_plugin
+		plugin_options=$json_plugin_options
+		
+		[ -n "$plugin" -a "$plugin" == "simple-obfs" ] && echo "$Date: 不支持simple-obfs插件，导入失败！" >> $LOG_FILE && return
+
+		if json_get_type Type servers && [ "$Type" == array ]
+		then
+			json_select servers
+			idx=1
+			while json_get_type Type "$idx" && [ "$Type" == object ]
+			do
+				json_select $idx
+				json_get_var json_server server
+				json_get_var json_server_id id
+				json_get_var json_server_ratio ratio
+				json_get_var json_server_remarks remarks
+				
+				remarks="${json_server_remarks}"
+				node_address=$json_server
+				node_port=$json_port
+				
+				idx=$(expr $idx + 1)
+				json_select ..
+				
+				node_address=$(echo -n $node_address | awk '{print gensub(/[^!-~]/,"","g",$0)}')
+				node_address=$(echo -n $node_address | grep -F ".")
+				[ -z "$node_address" -o "$node_address" == "" ] && return
+				
+				[ -z "$remarks" -o "$remarks" == "" ] && remarks="${node_address}:${node_port}"
+				
+				# 把全部节点节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
+				if [ ! -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ]; then
+					echo $node_address > /usr/share/${CONFIG}/sub/all_onlinenodes
+				else
+					echo $node_address >> /usr/share/${CONFIG}/sub/all_onlinenodes
+				fi
+				
+				update_config
+			done
+			return
+		fi
+	
 	fi
 	
-	node_address=$(echo $node_address |awk '{print gensub(/[^!-~]/,"","g",$0)}')
-	#[ -z "$node_address" -o "$node_address" == "" ] && isAdd=0
+	node_address=$(echo -n $node_address | awk '{print gensub(/[^!-~]/,"","g",$0)}')
+	node_address=$(echo -n $node_address | grep -F ".")
+	[ -z "$node_address" -o "$node_address" == "" ] && return
+	
+	[ -z "$remarks" -o "$remarks" == "" ] && remarks="${node_address}:${node_port}"
 	
 	# 把全部节点节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
 	if [ ! -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ]; then
@@ -213,13 +282,18 @@ get_remote_config(){
 		echo $node_address >> /usr/share/${CONFIG}/sub/all_onlinenodes
 	fi
 	
+	update_config
 }
 
 add_nodes(){
-	get_node_index
+	if [ "$1" == "add" ]; then
+		get_node_index
+		uci add $CONFIG nodes
+	elif [ "$1" == "update" ]; then
+		nodes_index=$update_index
+	fi
 	uci_set="uci set $CONFIG.@nodes[$nodes_index]."
-	uci add $CONFIG nodes > /dev/null
-	[ -z "$3" ] && ${uci_set}is_sub="is_sub"
+	[ "$add_mode" != "导入" ] && ${uci_set}is_sub="is_sub"
 	if [ "$2" == "ss" ]; then
 		${uci_set}add_mode="$add_mode"
 		${uci_set}remarks="$remarks"
@@ -231,6 +305,8 @@ add_nodes(){
 		${uci_set}ss_encrypt_method="$ss_encrypt_method"
 		${uci_set}timeout=300
 		${uci_set}tcp_fast_open=false
+		[ -n "$plugin" ] && ${uci_set}ss_plugin="$plugin"
+		[ -n "$plugin_options" ] && ${uci_set}ss_plugin_v2ray_opts="$plugin_options"
 		
 		if [ "$1" == "add" ]; then
 			let addnum_ss+=1
@@ -306,18 +382,29 @@ add_nodes(){
 }
 
 update_config(){
-	[ "$isAdd" == 1 ] && {
-		isadded_remarks=$(uci show $CONFIG | grep "@nodes" | grep "remarks" | grep -c -F "$remarks")
-		if [ "$isadded_remarks" -eq 0 ]; then
+	[ -z "$remarks" -o "$remarks" == "" ] && return
+	indexs=$(uci show $CONFIG | grep "@nodes" | grep "remarks=" | grep -F "$remarks" | cut -d '[' -f2|cut -d ']' -f1)
+	if [ -z "$indexs" ]; then
+		add_nodes add "$link_type"
+	else
+		action="add"
+		for index in $indexs
+		do
+			local is_sub=$(uci -q get $CONFIG.@nodes[$index].is_sub)
+			[ -z "$is_sub" -o "$is_sub" == "" ] && return
+			local old_node_type=$(uci -q get $CONFIG.@nodes[$index].type | tr '[a-z]' '[A-Z]')
+			if [ -n "$old_node_type" -a "$old_node_type" == "$new_node_type" ]; then
+				action="update"
+				update_index=$index
+				break
+			fi
+		done
+		if [ "$action" == "add" ]; then
 			add_nodes add "$link_type"
-		else
-			index=$(uci show $CONFIG | grep "@nodes" | grep "remarks" | grep -w -F "$remarks" | cut -d '[' -f2|cut -d ']' -f1)
-			[ "$?" == 0 ] && {
-				uci delete $CONFIG.@nodes[$index]
-				add_nodes update "$link_type"
-			}
+		elif [ "$action" == "update" ]; then
+			add_nodes update "$link_type"
 		fi
-	}
+	fi
 }
 
 del_config(){
@@ -433,7 +520,6 @@ add() {
 			fi
 			[ -z "$link_type" ] && continue
 			get_remote_config "$link_type" "$new_link" 1
-			update_config
 		done
 		[ -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ] && rm -f /usr/share/${CONFIG}/sub/all_onlinenodes
 	}

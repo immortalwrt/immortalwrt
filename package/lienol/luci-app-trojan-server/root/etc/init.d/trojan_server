@@ -17,6 +17,10 @@ gen_trojan_config_file() {
 	[ "$enable" = "0" ] && return 0
 	config_get remarks $1 remarks
 	config_get port $1 port
+	config_get ssl_certFile $1 ssl_certFile
+	config_get ssl_keyFile $1 ssl_keyFile
+	[ ! -f "$ssl_certFile" ] && echolog "$remarks $port 找不到HTTPS公钥文件，运行失败！" && exit 
+	[ ! -f "$ssl_keyFile" ] && echolog "$remarks $port 找不到HTTPS私钥文件，运行失败！" && exit 
 	lua /usr/lib/lua/luci/model/cbi/trojan_server/api/gen_trojan_config_file.lua $1 > $CONFIG_PATH/$1.json
 	echolog "$remarks $port 生成并运行 Trojan 配置文件 - $CONFIG_PATH/$1.json" 
 	trojan -c $CONFIG_PATH/$1.json >/dev/null 2>&1 &

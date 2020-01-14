@@ -36,9 +36,9 @@ uci_get_by_type() {
 get_url() {
 	local url=$1
 	local save_path=$2
-	status=$(/usr/bin/curl -w %{http_code} --connect-timeout 10 $url --silent -o $save_path)
+	status=$(/usr/bin/curl -w %{http_code} --connect-timeout 5 --retry 1 $url --silent -o $save_path)
 	[ "$?" != 0 ] && {
-		status=$(/usr/bin/wget -q --no-check-certificate --timeout=15 $url -O $save_path)
+		status=$(/usr/bin/wget -q --no-check-certificate --timeout=5 --tries 1 $url -O $save_path)
 		[ "$?" == 0 ] && status=200
 	}
 	echo $status

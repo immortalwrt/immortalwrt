@@ -3,10 +3,10 @@ module("luci.controller.mia", package.seeall)
 function index()
     if not nixio.fs.access("/etc/config/mia") then return end
 
-    entry({"admin", "network"}, firstchild(), "Control", 44).dependent = false
-    entry({"admin", "network", "mia"}, cbi("mia"), _("时间控制"), 10).dependent =
+    entry({"admin", "control"}, firstchild(), "Control", 44).dependent = false
+    entry({"admin", "control", "mia"}, cbi("mia"), _("时间控制"), 10).dependent =
         true
-    entry({"admin", "network", "mia", "status"}, call("status")).leaf = true
+    entry({"admin", "control", "mia", "status"}, call("status")).leaf = true
 end
 
 function status()
