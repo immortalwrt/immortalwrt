@@ -227,10 +227,10 @@ msgid "Need Socks5 server"
 msgstr "需要Socks5"
 
 msgid "Multi Process Option"
-msgstr "多进程并发转发"
+msgstr "多进程并发"
 
 msgid "you can start SS/SSR with multiple process"
-msgstr "当使用SS/SSR时可使用多个进程并发转发"
+msgstr "当使用SS/SSR时可使用多进程并发"
 
 msgid "Process"
 msgstr "进程"

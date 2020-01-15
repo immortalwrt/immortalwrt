@@ -727,7 +727,7 @@ start_dns() {
 			other_port=$(expr $DNS_PORT + 1)
 			cat $RULE_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $CONFIG_PATH/gfwlist_chinadns_ng.txt
 			[ -f "$CONFIG_PATH/gfwlist_chinadns_ng.txt" ] && local gfwlist_param="-g $CONFIG_PATH/gfwlist_chinadns_ng.txt"
-			[ -f "$RULE_PATH/chnlist" ] && local chnlist_param="-m $RULE_PATH/chnlist -M"
+			[ -f "$RULE_PATH/chnlist" ] && local chnlist_param="-m $RULE_PATH/chnlist"
 			
 			up_trust_chinadns_ng_dns=$(config_t_get global up_trust_chinadns_ng_dns "8.8.4.4,8.8.8.8")
 			if [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
@@ -772,33 +772,27 @@ add_dnsmasq() {
 	subscribe_proxy=$(config_t_get global_subscribe subscribe_proxy 0)
 	[ "$subscribe_proxy" -eq 1 ] && {
 		config_foreach set_subscribe_proxy "subscribe_list"
-		restdns=1
 	}
 
 	if [ ! -f "$TMP_DNSMASQ_PATH/gfwlist.conf" -a "$DNS_MODE" != "nonuse" ]; then
 		ln -s $RULE_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
-		restdns=1
 	fi
 
 	if [ ! -f "$TMP_DNSMASQ_PATH/blacklist_host.conf" -a "$DNS_MODE" != "nonuse" ]; then
 		cat $RULE_PATH/blacklist_host | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' >>$TMP_DNSMASQ_PATH/blacklist_host.conf
-		restdns=1
 	fi
 
 	if [ ! -f "$TMP_DNSMASQ_PATH/whitelist_host.conf" ]; then
 		cat $RULE_PATH/whitelist_host | sed "s/^/ipset=&\/./g" | sed "s/$/\/&whitelist/g" | sort | awk '{if ($0!=line) print;line=$0}' >$TMP_DNSMASQ_PATH/whitelist_host.conf
-		restdns=1
 	fi
 
 	if [ ! -f "$TMP_DNSMASQ_PATH/router.conf" -a "$DNS_MODE" != "nonuse" ]; then
 		cat $RULE_PATH/router | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/router"}' >>$TMP_DNSMASQ_PATH/router.conf
-		restdns=1
 	fi
 
 	userconf=$(grep -c "" $RULE_PATH/user.conf)
 	if [ "$userconf" -gt 0 ]; then
 		ln -s $RULE_PATH/user.conf $TMP_DNSMASQ_PATH/user.conf
-		restdns=1
 	fi
 
 	backhome=$(config_t_get global proxy_mode gfwlist)
@@ -806,27 +800,26 @@ add_dnsmasq() {
 		rm -rf $TMP_DNSMASQ_PATH/gfwlist.conf
 		rm -rf $TMP_DNSMASQ_PATH/blacklist_host.conf
 		rm -rf $TMP_DNSMASQ_PATH/whitelist_host.conf
-		restdns=1
 	fi
 
 	echo "" > /etc/dnsmasq.conf
 	server="server=127.0.0.1#$DNS_PORT"
-	local china_dns1=$(echo $UP_CHINA_DNS | awk -F "," '{print $1}')
-	local china_dns2=$(echo $UP_CHINA_DNS | awk -F "," '{print $2}')
-	[ -n "$china_dns1" ] && server="server=$china_dns1"
-	[ -n "$china_dns2" ] && server="${server}\n${server_2}"
+	[ "$DNS_MODE" != "chinadns-ng" ] && {
+		local china_dns1=$(echo $UP_CHINA_DNS | awk -F "," '{print $1}')
+		local china_dns2=$(echo $UP_CHINA_DNS | awk -F "," '{print $2}')
+		[ -n "$china_dns1" ] && server="server=$china_dns1"
+		[ -n "$china_dns2" ] && server="${server}\n${server_2}"
+		server="${server}\nno-resolv"
+	}
 	cat <<-EOF > /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 			$(echo -e $server)
 			all-servers
 			no-poll
-			no-resolv
 			conf-dir=$TMP_DNSMASQ_PATH
 	EOF
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
-	if [ "$restdns" == 1 ]; then
-		echolog "dnsmasq：生成配置文件并重启服务。"
-		/etc/init.d/dnsmasq restart 2>/dev/null
-	fi
+	echolog "dnsmasq：生成配置文件并重启服务。"
+	/etc/init.d/dnsmasq restart 2>/dev/null
 }
 
 gen_redsocks_config() {

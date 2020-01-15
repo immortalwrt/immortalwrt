@@ -302,25 +302,25 @@ add_firewall_rule() {
 				if [ "$TCP_NODE_TYPE" == "brook" ]; then
 					$iptables_mangle -A PSW_ACL -p tcp -m socket -j MARK --set-mark 1
 
-					# $iptables_mangle -A PSW$k -p tcp $(get_dst_list $IPSET_BLACKLIST) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+					# $iptables_mangle -A PSW$k -p tcp $(get_dst_list $IPSET_BLACKLIST) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 					# 全局模式
 					$iptables_mangle -A PSW_GLO$k -p tcp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# GFWLIST模式
-					$iptables_mangle -A PSW_GFW$k -p tcp $(get_dst_list $IPSET_GFW) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+					$iptables_mangle -A PSW_GFW$k -p tcp $(get_dst_list $IPSET_GFW) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# 大陆白名单模式
 					$iptables_mangle -A PSW_CHN$k -p tcp $(get_dst_list $IPSET_CHN) -j RETURN
-					$iptables_mangle -A PSW_CHN$k -p tcp -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+					$iptables_mangle -A PSW_CHN$k -p tcp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# 回国模式
-					$iptables_mangle -A PSW_HOME$k -p tcp $(get_dst_list $IPSET_CHN) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+					$iptables_mangle -A PSW_HOME$k -p tcp $(get_dst_list $IPSET_CHN) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# 游戏模式
 					$iptables_mangle -A PSW_GAME$k -p tcp $(get_dst_list $IPSET_CHN) -j RETURN
 
 					# 用于本机流量转发，默认只走router
-					$iptables_mangle -A PSW -s $lan_ip -p tcp $(get_dst_list $IPSET_ROUTER) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+					$iptables_mangle -A PSW -s $lan_ip -p tcp $(get_dst_list $IPSET_ROUTER) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 					$iptables_mangle -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(get_dst_list $IPSET_ROUTER) $iptables_comment -j MARK --set-mark 1
 				else
 					# 全局模式
@@ -434,31 +434,30 @@ add_firewall_rule() {
 				[ -n "$UDP_NODE_IP" -a -n "$UDP_NODE_PORT" ] && $iptables_mangle -A PSW -p udp -d $UDP_NODE_IP -m multiport --dports $UDP_NODE_PORT -j RETURN
 				[ "$UDP_NODE_TYPE" == "brook" ] && $iptables_mangle -A PSW_ACL -p udp -m socket -j MARK --set-mark 1
 				#  全局模式
-				$iptables_mangle -A PSW_GLO$k -p udp -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+				$iptables_mangle -A PSW_GLO$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  GFWLIST模式
-				$iptables_mangle -A PSW_GFW$k -p udp $(get_dst_list $IPSET_ROUTER) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
-				$iptables_mangle -A PSW_GFW$k -p udp $(get_dst_list $IPSET_GFW) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+				$iptables_mangle -A PSW_GFW$k -p udp $(get_dst_list $IPSET_ROUTER) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+				$iptables_mangle -A PSW_GFW$k -p udp $(get_dst_list $IPSET_GFW) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  大陆白名单模式
 				$iptables_mangle -A PSW_CHN$k -p udp $(get_dst_list $IPSET_CHN) -j RETURN
-				$iptables_mangle -A PSW_CHN$k -p udp -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+				$iptables_mangle -A PSW_CHN$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  回国模式
-				$iptables_mangle -A PSW_HOME$k -p udp $(get_dst_list $IPSET_CHN) -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+				$iptables_mangle -A PSW_HOME$k -p udp $(get_dst_list $IPSET_CHN) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  游戏模式
 				$iptables_mangle -A PSW_GAME$k -p udp $(get_dst_list $IPSET_CHN) -j RETURN
-				$iptables_mangle -A PSW_GAME$k -p udp -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+				$iptables_mangle -A PSW_GAME$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 				
 				# 用于本机流量转发，默认只走router
-				#$iptables_mangle -I OUTPUT -j PSW
 				$iptables_mangle -A OUTPUT -p udp $(get_dst_list $IPSET_LANIPLIST) $iptables_comment -j RETURN
 				[ "$use_udp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && {
 					for dns in $DNS_FORWARD
 					do
-						$iptables_mangle -A OUTPUT -p udp -d $dns -m multiport --dport 1:65535 $iptables_comment -j MARK --set-mark 1
-						$iptables_mangle -I PSW 2 -p udp -d $dns -m multiport --dport 1:65535 $iptables_comment -j TPROXY --on-port $local_port --tproxy-mark 0x1/0x1
+						$iptables_mangle -A OUTPUT -p udp -d $dns $iptables_comment -j MARK --set-mark 1
+						$iptables_mangle -I PSW 2 -p udp -d $dns $iptables_comment -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 					done
 				}
 				$iptables_mangle -A OUTPUT -p udp $(get_dst_list $IPSET_VPSIPLIST) $iptables_comment -j RETURN

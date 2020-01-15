@@ -1,10 +1,11 @@
 local d = require "luci.dispatcher"
 local ipkg = require("luci.model.ipkg")
+local api = require "luci.model.cbi.passwall.api.api"
 
 local appname = "passwall"
 
 local function get_customed_path(e)
-    return luci.model.cbi.passwall.api.api.uci_get_type("global_app", e .. "_file")
+    return api.uci_get_type("global_app", e .. "_file")
 end
 
 local function is_finded(e)

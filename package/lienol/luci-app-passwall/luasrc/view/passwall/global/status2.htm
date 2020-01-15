@@ -186,29 +186,29 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 					<% for i = 1, tcp_node_num, 1 do %>
 						var tcp_node<%=i%>_status = document.getElementById('_tcp_node<%=i%>_status');
 						if(tcp_node<%=i%>_status)
-							tcp_node<%=i%>_status.innerHTML = json.tcp_node<%=i%>_status ? '<font color=green><%:RUNNING%> ✓</font>' : '<font color=red><%:NOT RUNNING%> X</font>';
+							tcp_node<%=i%>_status.innerHTML = json.tcp_node<%=i%>_status ? '<font color="green"><%:RUNNING%> ✓</font>' : '<font color="red"><%:NOT RUNNING%> X</font>';
 					<% end %>
 				<% end %>
 				<% if udp_node_num and tonumber(udp_node_num) >= 1 then %>
 					<% for i = 1, udp_node_num, 1 do %>
 						var udp_node<%=i%>_status = document.getElementById('_udp_node<%=i%>_status');
 						if(udp_node<%=i%>_status)
-							udp_node<%=i%>_status.innerHTML = json.udp_node<%=i%>_status ? '<font color=green><%:RUNNING%> ✓</font>' : '<font color=red><%:NOT RUNNING%> X</font>';
+							udp_node<%=i%>_status.innerHTML = json.udp_node<%=i%>_status ? '<font color="green"><%:RUNNING%> ✓</font>' : '<font color="red"><%:NOT RUNNING%> X</font>';
 					<% end %>
 				<% end %>
 				<% if socks5_node_num and tonumber(socks5_node_num) >= 1 then %>
 					<% for i = 1, socks5_node_num, 1 do %>
 						var socks5_node<%=i%>_status = document.getElementById('_socks5_node<%=i%>_status');
 						if(socks5_node<%=i%>_status)
-							socks5_node<%=i%>_status.innerHTML = json.socks5_node<%=i%>_status ? '<font color=green><%:RUNNING%> ✓</font>' : '<font color=red><%:NOT RUNNING%> X</font>';
+							socks5_node<%=i%>_status.innerHTML = json.socks5_node<%=i%>_status ? '<font color="green"><%:RUNNING%> ✓</font>' : '<font color="red"><%:NOT RUNNING%> X</font>';
 					<% end %>
 				<% end %>
 				if(dns_mode_status)
-					dns_mode_status.innerHTML = json.dns_mode_status ? '<font color=green><%:RUNNING%> ✓</font>' : '<font color=red><%:NOT RUNNING%> X</font>';
+					dns_mode_status.innerHTML = json.dns_mode_status ? '<font color="green"><%:RUNNING%> ✓</font>' : '<font color="red"><%:NOT RUNNING%> X</font>';
 				if(haproxy_status)
-					haproxy_status.innerHTML = json.haproxy_status ? '<font color=green><%:RUNNING%> ✓</font>' : '<font color=red><%:NOT RUNNING%> X</font>';
+					haproxy_status.innerHTML = json.haproxy_status ? '<font color="green"><%:RUNNING%> ✓</font>' : '<font color="red"><%:NOT RUNNING%> X</font>';
 				if(kcptun_status)
-					kcptun_status.innerHTML = json.kcptun_status ? '<font color=green><%:RUNNING%> ✓</font>' : '<font color=red><%:NOT RUNNING%> X</font>';
+					kcptun_status.innerHTML = json.kcptun_status ? '<font color="green"><%:RUNNING%> ✓</font>' : '<font color="red"><%:NOT RUNNING%> X</font>';
 			}
 		});
 
