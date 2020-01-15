@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcryptopp
-PKG_VERSION:=8.2.0
+PKG_VERSION:=5.6.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=cryptopp$(subst .,,$(PKG_VERSION)).zip
 PKG_SOURCE_URL:=http://www.cryptopp.com/
-PKG_MD5SUM:=8a8bcb436af83e16d2227bd4ac642243
+PKG_MD5SUM:=4ee7e5cdd4a45a14756c169eaf2a77fc
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -36,15 +36,20 @@ define Package/package/libcryptopp
   abstract base classes.
 endef
 
+#CONFIGURE_ARGS += \
+#	--enable-static \
+#	--enable-shared
+
+#TARGET_LDFLAGS += \
+#	-lpthread
 CMAKE_OPTIONS += -DCMAKE_CXX_FLAGS="$(FPIC)"
 CMAKE_OPTIONS += -DBUILD_STATIC=ON
 CMAKE_OPTIONS += -DBUILD_SHARED=ON
 
 UNPACK_CMD=cd $(PKG_BUILD_DIR) && unzip "$(DL_DIR)/$(PKG_SOURCE)"
 define Build/Prepare
-	[ ! -f $(BUILD_DIR)/$(PKG_NAME)/CRYPTOPP_8_2_0.zip ] && wget https://github.com/noloader/cryptopp-cmake/archive/CRYPTOPP_8_2_0.zip -O $(BUILD_DIR)/$(PKG_NAME)/CRYPTOPP_8_2_0.zip && unzip -o $(BUILD_DIR)/$(PKG_NAME)/CRYPTOPP_8_2_0.zip -d $(BUILD_DIR)/$(PKG_NAME) && cd $(BUILD_DIR)/$(PKG_NAME)/cryptopp-cmake-CRYPTOPP_8_2_0 && cp CMakeLists.txt cryptopp-config.cmake $(PKG_BUILD_DIR)
 	$(Build/Prepare/Default)
-	cd $(PKG_BUILD_DIR) && rm -f GNUmakefile GNUmakefile-cross
+	cd $(PKG_BUILD_DIR) && rm -f GNUmakefile GNUmakefile-cross 
 endef
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/cryptopp
