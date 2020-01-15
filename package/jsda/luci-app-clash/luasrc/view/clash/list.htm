@@ -12,7 +12,7 @@ local dsp = require "luci.dispatcher"
 				domain: pings[i].getAttribute("hint")
 			},
 			function(x, result) {
-				pings[result.index].innerHTML = (result.ping ? "<b><font color=green>"+result.ping+"</font></b> ms" : "<b><font color=red><%:Error%></font></b>");
+				pings[result.index].innerHTML = (result.ping ? '<b><font color="green">'+result.ping+'</font></b> ms' : '<b><font color="red"><%:Error%></font></b>');
 			}
 		);
 		
@@ -22,7 +22,7 @@ local dsp = require "luci.dispatcher"
 				domain: pings[i].getAttribute("hint")
 			},
 			function(x, result) {
-				pings[result.index].innerHTML = (result.ping ? "<b><font color=green>"+result.ping+"</font></b> ms" : "<b><font color=red><%:Error%></font></b>");
+				pings[result.index].innerHTML = (result.ping ? '<b><font color="green">'+result.ping+'</font></b> ms' : '<b><font color="red"><%:Error%></font></b>');
 			}
 		);
 	}

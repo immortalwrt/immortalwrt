@@ -58,7 +58,6 @@ o.description = translate("Bind Address")
 o:depends("allow_lan", "true")
 
 
-
 o = s:option(Value, "dash_port")
 o.title = translate("Dashboard Port")
 o.default = 9191

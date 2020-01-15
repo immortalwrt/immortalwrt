@@ -10,7 +10,6 @@ local clash = "clash"
 local http = luci.http
 
 
-
 kr = Map(clash)
 s = kr:section(TypedSection, "clash", translate("Subscription Config"))
 s.anonymous = true

@@ -24,7 +24,6 @@ endef
 define Build/Prepare
 	chmod 777 -R ${CURDIR}/tools/po2lmo
 	${CURDIR}/tools/po2lmo/src/po2lmo ${CURDIR}/po/zh-cn/clash.po ${CURDIR}/po/zh-cn/clash.zh-cn.lmo
-
 endef
 
 define Build/Configure
@@ -35,6 +34,8 @@ endef
 
 define Package/$(PKG_NAME)/preinst
 #!/bin/sh
+
+[ -z "$${IPKG_INSTROOT}" ] && exit 0
 
 mkdir -p /usr/share/clashbackup 2>/dev/null
 
@@ -90,6 +91,9 @@ endef
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
+
+[ -z "$${IPKG_INSTROOT}" ] && exit 0
+
 rm -rf /tmp/luci*  
 
 if [ -f "/etc/config/clash.bak" ]; then

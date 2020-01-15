@@ -19,7 +19,6 @@ o.rmempty = false
 o.description = translate("Enable")
 
 
-
 o = s:option(ListValue, "core", translate("Core"))
 o.default = "clashcore"
 if nixio.fs.access("/etc/clash/clash") then
