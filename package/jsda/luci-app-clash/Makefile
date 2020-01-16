@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk 
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=1.4.5
+PKG_VERSION:=1.4.6
 PKG_MAINTAINER:=frainzy1477
 
 
@@ -12,7 +12,7 @@ define Package/luci-app-clash
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI app for clash
-	DEPENDS:=+luci +luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util +kmod-tun
+	DEPENDS:=+luci +luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util
 	PKGARCH:=all
 	MAINTAINER:=frainzy1477
 endef
@@ -22,8 +22,7 @@ define Package/luci-app-clash/description
 endef
 
 define Build/Prepare
-	chmod 777 -R ${CURDIR}/tools/po2lmo
-	${CURDIR}/tools/po2lmo/src/po2lmo ${CURDIR}/po/zh-cn/clash.po ${CURDIR}/po/zh-cn/clash.zh-cn.lmo
+	po2lmo ${CURDIR}/po/zh-cn/clash.po ${CURDIR}/po/zh-cn/clash.zh-cn.lmo
 endef
 
 define Build/Configure
@@ -32,91 +31,61 @@ endef
 define Build/Compile
 endef
 
+define Package/$(PKG_NAME)/conffiles
+/etc/config/clash
+endef
+
+define Package/$(PKG_NAME)/prerm
+#!/bin/sh
+# check if we are on real system
+if [ -z "$${IPKG_INSTROOT}" ]; then
+    echo "Removing rc.d symlink for clash"
+     /etc/init.d/clash disable
+     /etc/init.d/clash stop
+    echo "Removing firewall rule for clash"
+	  uci -q batch <<-EOF >/dev/null
+		delete firewall.clash
+		commit firewall
+EOF
+fi
+
+exit 0
+endef
+
 define Package/$(PKG_NAME)/preinst
 #!/bin/sh
 
-[ -z "$${IPKG_INSTROOT}" ] && exit 0
-
-mkdir -p /usr/share/clashbackup 2>/dev/null
-
-if [ -f "/tmp/dnsmasq.d/custom_list.conf" ]; then
+if [ -z "$${IPKG_INSTROOT}" ]; then
 	rm -rf /tmp/dnsmasq.d/custom_list.conf 2>/dev/null
-fi
-
-if [ -d "/tmp/dnsmasq.clash" ]; then
 	rm -rf /tmp/dnsmasq.clash 2>/dev/null
-fi
-
-if [ -f "/etc/config/clash" ]; then
 	mv /etc/config/clash /etc/config/clash.bak 2>/dev/null
-fi
-
-if [ -d "/usr/lib/lua/luci/model/cbi/clash" ]; then
 	rm -rf /usr/lib/lua/luci/model/cbi/clash 2>/dev/null
-fi	
-
-if [ -d "/usr/lib/lua/luci/view/clash" ]; then
 	rm -rf /usr/lib/lua/luci/view/clash 2>/dev/null
-fi
-
-if [ -f /usr/share/clash/new_core_version ]; then
 	rm -rf /usr/share/clash/new_core_version 2>/dev/null
-fi
-
-if [ -f /usr/share/clash/new_clashr_core_version ]; then
 	rm -rf /usr/share/clash/new_clashr_core_version 2>/dev/null
-fi
-
-if [ -f /usr/share/clash/new_luci_version ]; then
 	rm -rf /usr/share/clash/new_luci_version 2>/dev/null
-fi
-
-if [  -d /usr/share/clash/web ]; then
 	rm -rf /usr/share/clash/web 2>/dev/null
-fi
-
-if [  -f /usr/share/clash/config/sub/config.yaml ];then
 	mv /usr/share/clash/config/sub/config.yaml /usr/share/clashbackup/config.bak1 2>/dev/null
-fi
-
-if [  -f /usr/share/clash/config/upload/config.yaml ];then
 	mv /usr/share/clash/config/upload/config.yaml /usr/share/clashbackup/config.bak2 2>/dev/null
-fi
- 
-if [  -f /usr/share/clash/config/custom/config.yaml ];then
 	mv /usr/share/clash/config/custom/config.yaml /usr/share/clashbackup/config.bak3 2>/dev/null
 fi
 
+exit 0
 endef
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 
-[ -z "$${IPKG_INSTROOT}" ] && exit 0
-
-rm -rf /tmp/luci*  
-
-if [ -f "/etc/config/clash.bak" ]; then
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	rm -rf /tmp/luci*
 	mv /etc/config/clash.bak /etc/config/clash 2>/dev/null
-fi
-
-if [  -f /usr/share/clashbackup/config.bak1 ];then
 	mv /usr/share/clashbackup/config.bak1 /usr/share/clash/config/sub/config.yaml 2>/dev/null
-fi
-
-if [  -f /usr/share/clashbackup/config.bak2 ];then
 	mv /usr/share/clashbackup/config.bak2 /usr/share/clash/config/upload/config.yaml 2>/dev/null
-fi
- 
-if [  -f /usr/share/clashbackup/config.bak3 ];then
 	mv /usr/share/clashbackup/config.bak3 /usr/share/clash/config/custom/config.yaml 2>/dev/null
-fi
-
-if [ -f "/etc/init.d/clash" ]; then
 	/etc/init.d/clash disable 2>/dev/null
 fi
 
-mkdir -p /etc/clash/clashtun 2>/dev/null
+exit 0
 endef
 
 define Package/$(PKG_NAME)/install
@@ -134,6 +103,9 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard/img
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard/js
+	$(INSTALL_DIR) $(1)/etc/clash/clashtun
+	$(INSTALL_DIR) $(1)/usr/share/clashbackup
+	$(INSTALL_DIR) $(1)/etc/clash/provider
 	
 	$(INSTALL_DIR) $(1)/usr/share/clash/config
 	$(INSTALL_DIR) $(1)/usr/share/clash/config/sub

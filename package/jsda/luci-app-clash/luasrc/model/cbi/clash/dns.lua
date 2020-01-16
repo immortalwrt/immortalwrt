@@ -97,6 +97,9 @@ o:value("3", translate("Redir-Host(comzyh Tun)"))
 o.description = translate("Select Tun Mode, Enable Tun custom DNS and make sure you are using tun supported core")
 o:depends("mode", 0)
 
+
+
+
 md = s:option(Flag, "mode", translate("Custom DNS"))
 md.default = 1
 md.rmempty = false
@@ -116,6 +119,53 @@ o.write = function(self, section, value)
 end
 o.description = translate("NB: press ENTER to create a blank line at the end of input.")
 o:depends("mode", 1)
+
+
+local dns1 = "/usr/share/clash/tundns_1.yaml"
+o = s:option(TextValue, "dns1",translate("Modify Tun DNS"))
+o.template = "clash/tvalue"
+o.rows = 26
+o.wrap = "off"
+o.cfgvalue = function(self, section)
+	return NXFS.readfile(dns1) or ""
+end
+o.write = function(self, section, value)
+	NXFS.writefile(dns1, value:gsub("\r\n", "\n"))
+end
+o.description = translate("NB: press ENTER to create a blank line at the end of input.")
+o:depends("tun_mode", 1)
+
+
+local dns2 = "/usr/share/clash/tundns_2.yaml"
+o = s:option(TextValue, "dns2",translate("Modify Tun DNS"))
+o.template = "clash/tvalue"
+o.rows = 26
+o.wrap = "off"
+o.cfgvalue = function(self, section)
+	return NXFS.readfile(dns2) or ""
+end
+o.write = function(self, section, value)
+	NXFS.writefile(dns2, value:gsub("\r\n", "\n"))
+end
+o.description = translate("NB: press ENTER to create a blank line at the end of input.")
+o:depends("tun_mode", 2)
+
+
+
+local dns3 = "/usr/share/clash/tundns_3.yaml"
+o = s:option(TextValue, "dns3",translate("Modify Tun DNS"))
+o.template = "clash/tvalue"
+o.rows = 26
+o.wrap = "off"
+o.cfgvalue = function(self, section)
+	return NXFS.readfile(dns3) or ""
+end
+o.write = function(self, section, value)
+	NXFS.writefile(dns3, value:gsub("\r\n", "\n"))
+end
+o.description = translate("NB: press ENTER to create a blank line at the end of input.")
+o:depends("tun_mode", 3)
+
 
 o = s:option(Button, "Apply")
 o.title = translate("Save & Apply")

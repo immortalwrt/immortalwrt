@@ -1,4 +1,4 @@
-#!/bin/sh /etc/rc.common
+#!/bin/bash /etc/rc.common
 . /lib/functions.sh
 
 lang=$(uci get luci.main.lang 2>/dev/null)
@@ -6,6 +6,7 @@ loadgroups=$(uci get clash.config.loadgroups 2>/dev/null)
 loadservers=$(uci get clash.config.loadservers 2>/dev/null)
 load_from=$(uci get clash.config.loadfrom 2>/dev/null)
 
+run_load(){
 
 if [ "$load_from" == "sub" ];then 
         load="/usr/share/clash/config/sub/config.yaml"	
@@ -13,20 +14,18 @@ elif [ "$load_from" == "upl" ];then
 	    load="/usr/share/clash/config/upload/config.yaml"
 fi
 
+
+if [ ! -f $load ] && [ ! -f $load ]; then 
+  exit 0
+fi
+
+
 CFG_FILE="/etc/config/clash"
 REAL_LOG="/usr/share/clash/clash_real.txt"
 
 
-rm -rf /tmp/group_*.yaml /tmp/yaml_group.yaml /tmp/Proxy_Group 
+rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml /tmp/yaml_group.yaml /tmp/match_servers.list /tmp/yaml_provider.yaml /tmp/provider.yaml /tmp/provider_gen.yaml /tmp/provider_che.yaml /tmp/match_provider.list 2>/dev/null
 
-
-if [ $loadgroups -eq 1 ];then
-
-
-
-if [ ! -f $load ] && [ ! -f $load ]; then
-  exit 0
-fi
 
 	if [ $lang == "zh_cn" ];then
 		echo "开始更新策略组配置..." >$REAL_LOG 
@@ -35,7 +34,7 @@ fi
 	fi
 
 	sleep 3
-if [ -f "$load" ]; then
+
 	 [ ! -z "$(grep "^ \{0,\}'Proxy':" "$load")" ] || [ ! -z "$(grep '^ \{0,\}"Proxy":' "$load")" ] && {
 	    sed -i "/^ \{0,\}\'Proxy\':/c\Proxy:" "$load"
 	    sed -i '/^ \{0,\}\"Proxy\":/c\Proxy:' "$load"
@@ -67,6 +66,7 @@ if [ -f "$load" ]; then
    provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' "$load" 2>/dev/null)
    if [ "$provider_len" -ge "$group_len" ]; then
        awk '/Proxy:/,/proxy-provider:/{print}' "$load" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep name: |awk -F 'name:' '{print $2}' |sed 's/,.*//' |sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null >/tmp/Proxy_Group 2>&1
+       sed -i "s/proxy-provider://g" /tmp/Proxy_Group 2>&1
    else
        awk '/Proxy:/,/Rule:/{print}' "$load" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep name: |awk -F 'name:' '{print $2}' |sed 's/,.*//' |sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null >/tmp/Proxy_Group 2>&1
    fi  
@@ -83,33 +83,7 @@ if [ -f "$load" ]; then
 			echo '读取错误，配置文件异常！' >/tmp/Proxy_Group
 		fi
    fi
-else
-	  	if [ $lang == "en" ] || [ $lang == "auto" ];then
-			echo "Read error, configuration file exception!" >/tmp/Proxy_Group
-		elif [ $lang == "zh_cn" ];then
-			echo '读取错误，配置文件异常！' >/tmp/Proxy_Group
-		fi
-fi
 
-
-if [ $lang == "en" ] || [ $lang == "auto" ];then
-[ ! -z "$(grep "Read error" /tmp/Proxy_Group)"] && {
-	echo "Read error, configuration file exception!" >$REAL_LOG
-	uci commit clash
-	sleep 5
-	echo "" >$REAL_LOG
-	exit 0
-}
-elif [ $lang == "zh_cn" ];then
-[ ! -z "$(grep "读取错误" /tmp/Proxy_Group)"] && {
-	echo "读取错误，配置文件异常！" >$REAL_LOG
-	uci commit clash
-	sleep 5
-	echo "" >$REAL_LOG
-	exit 0
-}
-fi
-		
 
 
 #awk '/Proxy Group:/,/Rule:/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
@@ -118,34 +92,20 @@ group_len=$(sed -n '/^ \{0,\}Proxy Group:/=' "$load" 2>/dev/null)
 provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' "$load" 2>/dev/null)
 if [ "$provider_len" -ge "$group_len" ]; then
    awk '/Proxy Group:/,/proxy-provider:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
+   sed -i "s/proxy-provider://g" /tmp/yaml_group.yaml 2>&1
 else
    awk '/Proxy Group:/,/Rule:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
 fi
 
-if [ -f /tmp/yaml_group.yaml ] && [ "$(ls -l /tmp/yaml_group.yaml | awk '{print int($5)}')" -eq 0 ];then
 
- 	if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "No policy group found. Aborting Operation .." >$REAL_LOG 
-		sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-	elif [ $lang == "zh_cn" ];then
-    	 	echo "找不到策略组。中止操作..." >$REAL_LOG
-		 sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-	fi
-	exit 0	
-else
+#######READ GROUPS START
+if [ $loadgroups -eq 1 ];then
+
+if [ -f /tmp/yaml_group.yaml ];then
 	while [[ "$( grep -c "config groups" $CFG_FILE )" -ne 0 ]] 
 	do
       uci delete clash.@groups[0] && uci commit clash >/dev/null 2>&1
 	done
-   
-   
-
-
-fi
-
-
 
 
 
@@ -160,6 +120,8 @@ cfg_get()
 {
 	echo "$(grep "$1" "$2" 2>/dev/null |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null)"
 }
+
+
 
 for n in $line
 do
@@ -275,18 +237,19 @@ uci commit clash
 
 		
 awk '/^ {0,}Rule:/,/^ {0,}##END/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/rule.yaml 2>&1
-	rm -rf /usr/shar/clash/custom_rule.yaml 2>/dev/null
-	mv /tmp/rule.yaml /usr/share/clash/custom_rule.yaml 2>/dev/null
-	rm -rf /tmp/rule.yaml 2>&1  
+rm -rf /usr/shar/clash/custom_rule.yaml 2>/dev/null
+mv /tmp/rule.yaml /usr/share/clash/custom_rule.yaml 2>/dev/null
+rm -rf /tmp/rule.yaml 2>&1  
 
 fi
-
+fi
+#######READ GROUPS END
 
    
 #awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
 
- 
- rm -rf /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/yaml_provider.yaml 2>/dev/null
+ if [ $loadservers -eq 1 ];then
+
  
 proxy_len=$(sed -n '/^ \{0,\}Proxy:/=' $load 2>/dev/null)
 group_len=$(sed -n '/^ \{0,\}Proxy Group:/=' "$load" 2>/dev/null)
@@ -295,12 +258,18 @@ provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' $load 2>/dev/null)
 if [ ! -z "$provider_len" ] && [ "$provider_len" -ge "$proxy_len" ] && [ "$provider_len" -le "$group_len" ]; then
    awk '/^ {0,}Proxy:/,/^ {0,}proxy-provider:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
    awk '/^ {0,}proxy-provider:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
+   	sed -i "s/Proxy Group://g" /tmp/yaml_provider.yaml 2>&1
+	sed -i "s/proxy-provider://g" /tmp/yaml_proxy.yaml 2>&1	
 elif [ ! -z "$provider_len" ] && [ "$provider_len" -le "$proxy_len" ]; then
    awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
    awk '/^ {0,}proxy-provider:/,/^ {0,}Proxy:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
+   sed -i "s/Proxy://g" /tmp/yaml_provider.yaml 2>&1
+   sed -i "s/Proxy Group://g" /tmp/yaml_proxy.yaml 2>&1
 elif [ ! -z "$provider_len" ] && [ "$provider_len" -ge "$group_len" ]; then
-	 awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
-     awk '/^ {0,}proxy-provider:/,/^ {0,}Rule:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
+   awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
+   awk '/^ {0,}proxy-provider:/,/^ {0,}Rule:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
+   sed -i "s/Rule://g" /tmp/yaml_provider.yaml 2>&1
+   sed -i "s/Proxy Group://g" /tmp/yaml_proxy.yaml 2>&1
 else
    awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
 fi
@@ -312,40 +281,11 @@ single_provider_gen="/tmp/provider_gen.yaml"
 single_provider_che="/tmp/provider_che.yaml"
 provider_file="/tmp/yaml_provider.yaml"
 group_num=$(grep -c "name:" /tmp/yaml_group.yaml)
-
-
-
-if [ $loadservers -eq 1 ];then
-
-   while [[ "$( grep -c "config servers" $CFG_FILE )" -ne 0 ]] 
-   do
-      uci delete clash.@servers[0] && uci commit clash >/dev/null 2>&1
-   done
-   
-   
-   
-if [ -f /tmp/yaml_proxy.yaml ] && [ "$(ls -l /tmp/yaml_proxy.yaml | awk '{print int($5)}')" -eq 0 ];then
-
- 	if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "No proxies found. Aborting Operation .." >$REAL_LOG 
-		sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-	elif [ $lang == "zh_cn" ];then
-    	 	echo "找不到代理。中止操作..." >$REAL_LOG
-		 sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-	fi
-	exit 0	
-else
-   while [[ "$( grep -c "config servers" $CFG_FILE )" -ne 0 ]] 
-   do
-      uci delete clash.@servers[0] && uci commit clash >/dev/null 2>&1
-   done
-
-fi
+match_servers="/tmp/match_servers.list"
 
 server_file="/tmp/yaml_proxy.yaml"
 single_server="/tmp/servers.yaml"
+
 
 line=$(sed -n '/^ \{0,\}-/=' $server_file)
 num=$(grep -c "^ \{0,\}-" $server_file)
@@ -359,12 +299,21 @@ provider_num=$(grep -c "^ \{0,\}type:" $provider_file)
 provider_count=1
 
 
-
-
 cfg_get()
 {
-	echo "$(grep "$1" $single_server 2>/dev/null |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null)"
+	echo "$(grep "$1" "$2" 2>/dev/null |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null)"
 }
+
+cfg_gett()
+{
+	echo "$(grep "$1" $single_server 2>/dev/null |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null)"
+}  
+#######READ SERVERS START   
+if [ -f /tmp/yaml_proxy.yaml ];then
+   while [[ "$( grep -c "config servers" $CFG_FILE )" -ne 0 ]] 
+   do
+      uci delete clash.@servers[0] && uci commit clash >/dev/null 2>&1
+   done
 
 
 
@@ -386,63 +335,63 @@ do
    startLine=$(expr "$endLine" + 1)
    
    #type
-   server_type="$(cfg_get "type:")"
+   server_type="$(cfg_gett "type:")"
    #name
-   server_name="$(cfg_get "name:")"
+   server_name="$(cfg_gett "name:")"
    #server
-   server="$(cfg_get "server:")"
+   server="$(cfg_gett "server:")"
    #port
-   port="$(cfg_get "port:")"
+   port="$(cfg_gett "port:")"
    #cipher
-   cipher="$(cfg_get "cipher:")"
+   cipher="$(cfg_gett "cipher:")"
    #password
-   password="$(cfg_get "password:")"
+   password="$(cfg_gett "password:")"
    #protocol
-   protocol="$(cfg_get "protocol:")"
+   protocol="$(cfg_gett "protocol:")"
    #protocolparam
-   protocolparam="$(cfg_get "protocolparam:")"
+   protocolparam="$(cfg_gett "protocolparam:")"
    #obfsparam
-   obfsparam="$(cfg_get "obfsparam:")"
+   obfsparam="$(cfg_gett "obfsparam:")"
    #udp
-   udp="$(cfg_get "udp:")"
+   udp="$(cfg_gett "udp:")"
    #plugin:
-   plugin="$(cfg_get "plugin:")"
+   plugin="$(cfg_gett "plugin:")"
    #plugin-opts:
-   plugin_opts="$(cfg_get "plugin-opts:")"
+   plugin_opts="$(cfg_gett "plugin-opts:")"
    #obfs:
-   obfs="$(cfg_get "obfs:")"
+   obfs="$(cfg_gett "obfs:")"
    #obfs-host:
-   obfs_host="$(cfg_get "obfs-host:")"
+   obfs_host="$(cfg_gett "obfs-host:")"
    #psk:
-   psk="$(cfg_get "psk:")"
+   psk="$(cfg_gett "psk:")"
    #mode:
-   mode="$(cfg_get "mode:")"
+   mode="$(cfg_gett "mode:")"
    #tls:
-   tls="$(cfg_get "tls:")"
+   tls="$(cfg_gett "tls:")"
    #skip-cert-verify:
-   verify="$(cfg_get "skip-cert-verify:")"
+   verify="$(cfg_gett "skip-cert-verify:")"
    #mux:
-   mux="$(cfg_get "mux:")"
+   mux="$(cfg_gett "mux:")"
    #host:
-   host="$(cfg_get "host:")"
+   host="$(cfg_gett "host:")"
    #Host:
-   Host="$(cfg_get "Host:")"
+   Host="$(cfg_gett "Host:")"
    #path:
-   path="$(cfg_get "path:")"
+   path="$(cfg_gett "path:")"
    #ws-path:
-   ws_path="$(cfg_get "ws-path:")"
+   ws_path="$(cfg_gett "ws-path:")"
    #headers_custom:
-   headers="$(cfg_get "custom:")"
+   headers="$(cfg_gett "custom:")"
    #uuid:
-   uuid="$(cfg_get "uuid:")"
+   uuid="$(cfg_gett "uuid:")"
    #alterId:
-   alterId="$(cfg_get "alterId:")"
+   alterId="$(cfg_gett "alterId:")"
    #network
-   network="$(cfg_get "network:")"
+   network="$(cfg_gett "network:")"
    #username
-   username="$(cfg_get "username:")"
+   username="$(cfg_gett "username:")"
    #tls_custom:
-   tls_custom="$(cfg_get "tls:")"
+   tls_custom="$(cfg_gett "tls:")"
    
    
  	  	if [ $lang == "en" ] || [ $lang == "auto" ];then
@@ -532,34 +481,60 @@ do
    fi
 	
 done
-
-sleep 2
-
 uci commit clash
 
- 	  	if [ $lang == "en" ] || [ $lang == "auto" ];then
+
+ if [ $lang == "en" ] || [ $lang == "auto" ];then
 			echo "Reading Server Completed" >$REAL_LOG
 			sleep 2
 			echo "Clash for OpenWRT" >$REAL_LOG			
-		elif [ $lang == "zh_cn" ];then
+elif [ $lang == "zh_cn" ];then
 			echo "读取代理配置完成" >$REAL_LOG
 			sleep 2
 			echo "Clash for OpenWRT" >$REAL_LOG			
-		fi
-
 fi
+fi
+#######READ SERVERS END  
+
+#######READ PROVIDER START
+
+if [ -f /tmp/yaml_provider.yaml ];then
+
+while [[ "$( grep -c "config provider" $CFG_FILE )" -ne 0 ]] 
+do
+	uci delete clash.@provider[0] && uci commit clash 2>/dev/null	       
+done
+	
+	
+
+echo "" >"$match_provider"
+provider_nums=0
+config_load "clash"
+config_foreach yml_provider_name_get "provider"
 
 
+yml_provider_name_get()
+{
+   local section="$1"
+   config_get "name" "$section" "name" ""
+   [ ! -z "$name" ] && {
+      echo "$provider_nums"."$name" >>"$match_provider"
+   }
+   provider_nums=$(( $provider_nums + 1 ))
+}
 
 
+	
+cfg_new_provider_groups_get()
+{
+	 if [ -z "$1" ]; then
+      return
+   fi
+   
+   ${uci_add}groups="${1}"
+}
 
-if [ -f /tmp/yaml_provider.yaml ] && [ "$(ls -l /tmp/yaml_provider.yaml | awk '{print int($5)}')" -eq 0 ];then
 
-
-    while [[ "$( grep -c "config provider" $CFG_FILE )" -ne 0 ]] 
-	do
-	     uci delete clash.@provider[0] && uci commit clash 2>/dev/null	       
-	done
 
 
 for n in $provider_line
@@ -590,7 +565,7 @@ do
    
    #path
    provider_path="$(cfg_get "path:" "$single_provider_gen")"
-   
+
    #gen_url
    provider_gen_url="$(cfg_get "url:" "$single_provider_gen")"
    
@@ -606,16 +581,13 @@ do
    #che_interval
    provider_che_interval="$(cfg_get "interval:" "$single_provider_che")"
    
-   
   
     	if [ $lang == "en" ] || [ $lang == "auto" ];then
-			echo "Now Reading 【$provider_name】 Proxy Provider..." >$REAL_LOG
+			echo "Now Reading 【$provider_type】-【$server_name】 Proxy-Provider..." >$REAL_LOG
 		elif [ $lang == "zh_cn" ];then
-			 echo "正在读取【$provider_name】代理集配置..." >$REAL_LOG
+			 echo "正在读取【$provider_type】-【$provider_name】代理集配置..." >$START_LOG
 		fi
- 
-      provider_nums=$(grep -Fw "$provider_name" "$match_provider" |awk -F '.' '{print $1}')
- 
+
       name=clash
       uci_name_tmp=$(uci add $name provider)
       uci_set="uci -q set $name.$uci_name_tmp."
@@ -629,8 +601,10 @@ do
       ${uci_set}health_check_url="$provider_che_url"
       ${uci_set}health_check_interval="$provider_che_interval"
 
-    for ((i=1;i<=${group_num};i++))
-    do
+
+        if [ ! -z "$(grep "config groups" "$CFG_FILE")" ]; then
+        for ((i=1;i<=$group_num;i++))
+        do
             single_group="/tmp/group_$i.yaml"
             use_line=$(sed -n '/^ \{0,\}use:/=' $single_group)
             proxies_line=$(sed -n '/^ \{0,\}proxies:/=' $single_group)
@@ -645,35 +619,36 @@ do
                   ${uci_add}groups="$group_name"
                fi
             elif [ ! -z "$use_line" ] && [ -z "$proxies_line" ]; then
-         	     if [ ! -z "$(grep -F "$provider_name" $single_group)" ]; then
+         	    if [ ! -z "$(grep -F "$provider_name" $single_group)" ]; then
                   group_name=$(grep "name:" $single_group 2>/dev/null |awk -F 'name:' '{print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null)
                   ${uci_add}groups="$group_name"
-               fi
+                fi
             fi
-	done
-	uci commit clash
+	    done
+	    fi 
+
+   uci commit clash
 done
 
 
+ 	  	if [ $lang == "en" ] || [ $lang == "auto" ];then
+			echo "Reading Proxy Provider Completed" >$REAL_LOG
+			sleep 2
+			echo "Clash for OpenWRT" >$REAL_LOG
+		elif [ $lang == "zh_cn" ];then
+			echo "读取代理集配置完成" >$REAL_LOG
+			sleep 2
+			echo "Clash for OpenWRT" >$REAL_LOG			
+		fi
+#######READ PROVIDER END
+fi
+fi
+rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml /tmp/yaml_group.yaml /tmp/match_servers.list /tmp/yaml_provider.yaml /tmp/provider.yaml /tmp/provider_gen.yaml /tmp/provider_che.yaml /tmp/match_provider.list 2>/dev/null
 
+/usr/share/clash/proxy.sh >/dev/null 2>&1
 
-yml_provider_name_get()
-{
-   local section="$1"
-   config_get "name" "$section" "name" ""
-   [ ! -z "$name" ] && {
-      echo "$provider_nums"."$name" >>"$match_provider"
-   }
-   provider_nums=$(( $provider_nums + 1 ))
 }
 
+run_load >/dev/null 2>&1
 
-echo "" >"$match_provider"
-provider_nums=0
-config_load "clash"
-config_foreach yml_provider_name_get "provider"
-
-fi
-
-/usr/share/clash/proxy.sh 2>/dev/null
 

@@ -661,3 +661,15 @@ msgstr "Tun模式DNS"
 
 msgid "Select Tun Mode, Enable Tun custom DNS and make sure you are using tun supported core"
 msgstr "选择Tun模式，启用Tun自定义DNS,并确保使用支持的Tun内核"
+
+msgid "Upload Provider File"
+msgstr "上传代理集文件"
+
+msgid "Upload Provider File If Empty"
+msgstr "上传代理集文件（如果为空）"
+
+msgid "Provider File"
+msgstr "代理集文件"
+
+msgid "Modify Tun DNS"
+msgstr "修改Tun DNS"

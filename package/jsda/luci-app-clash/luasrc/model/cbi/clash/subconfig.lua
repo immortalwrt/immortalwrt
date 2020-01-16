@@ -18,13 +18,14 @@ s.addremove=false
 
 local conf = "/usr/share/clash/config/sub/config.yaml"
 sev = s:option(TextValue, "conf")
-sev.readonly=true
+--sev.readonly=true
 sev.rows = 20
 sev.wrap = "off"
 sev.cfgvalue = function(self, section)
 	return NXFS.readfile(conf) or ""
 end
 sev.write = function(self, section, value)
+	NXFS.writefile(conf, value:gsub("\r\n", "\n"))
 end
 
 

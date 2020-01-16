@@ -64,8 +64,5 @@ o.title = translate("Action")
 o.template = "clash/start_stop"
 
 
-
-
-
 return m
 

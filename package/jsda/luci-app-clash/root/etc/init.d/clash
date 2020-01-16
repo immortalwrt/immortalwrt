@@ -25,7 +25,6 @@ revert_dns() {
     	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 	uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1
 	uci set dhcp.@dnsmasq[0].noresolv=0
-	uci set dhcp.@dnsmasq[0].resolvfile=/tmp/resolv.conf.auto
 	uci delete dhcp.@dnsmasq[0].cachesize
 	rm -rf $CUSLIST $CUSLITT  $CUSLISTV $CUSLITTV 2>/dev/null
 	uci commit dhcp
