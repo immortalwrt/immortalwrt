@@ -251,7 +251,7 @@ if not disk_info.p_table:match("Raid") then
   end
   btn_action.write = function(self, section, value)
     -- luci.util.perror(value)
-    if value == "New" then
+    if value == translate("New") then
       local start_sec = disk_info.partitions[section]._sec_start and tonumber(disk_info.partitions[section]._sec_start) or tonumber(disk_info.partitions[section].sec_start)
       local end_sec = disk_info.partitions[section]._sec_end
 
@@ -311,7 +311,7 @@ if not disk_info.p_table:match("Raid") then
       else
         luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
       end
-    elseif value == "Remove" then
+    elseif value == translate("Remove") then
       -- remove partition
       local number = tostring(disk_info.partitions[section].number)
       if (not number) or (number == "") then
