@@ -2,7 +2,7 @@
 local m, s, o
 local openclash = "openclash"
 local uci = luci.model.uci.cursor()
-local fs = require "nixio.fs"
+local fs = require "luci.openclash"
 local sys = require "luci.sys"
 local sid = arg[1]
 
@@ -10,6 +10,17 @@ font_red = [[<font color="red">]]
 font_off = [[</font>]]
 bold_on  = [[<strong>]]
 bold_off = [[</strong>]]
+
+function IsYamlFile(e)
+   e=e or""
+   local e=string.lower(string.sub(e,-5,-1))
+   return e == ".yaml"
+end
+function IsYmlFile(e)
+   e=e or""
+   local e=string.lower(string.sub(e,-4,-1))
+   return e == ".yml"
+end
 
 m = Map(openclash, translate("Edit Group"))
 m.pageaction = false
@@ -23,6 +34,20 @@ end
 s = m:section(NamedSection, sid, "groups")
 s.anonymous = true
 s.addremove   = false
+
+o = s:option(ListValue, "config", translate("Config File"))
+o:value("all", translate("Use For All Config File"))
+local e,a={}
+for t,f in ipairs(fs.glob("/etc/openclash/config/*"))do
+	a=fs.stat(f)
+	if a then
+    e[t]={}
+    e[t].name=fs.basename(f)
+    if IsYamlFile(e[t].name) or IsYmlFile(e[t].name) then
+       o:value(e[t].name)
+    end
+  end
+end
 
 o = s:option(ListValue, "type", translate("Group Type"))
 o.rmempty = true

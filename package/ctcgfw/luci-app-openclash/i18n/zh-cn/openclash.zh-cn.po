@@ -62,14 +62,11 @@ msgstr "文件不存在"
 msgid "Not Set"
 msgstr "未设置"
 
-msgid "Server Configuration"
-msgstr "配置文件"
-
 msgid "Server logs"
-msgstr "服务器日志"
+msgstr "运行日志"
 
 msgid "Logs"
-msgstr "服务器日志"
+msgstr "运行日志"
 
 msgid "Enable Clash"
 msgstr "启动 OpenClash"
@@ -94,6 +91,15 @@ msgstr "Redir-Host（兼容）模式"
 
 msgid "fake-ip"
 msgstr "Fake-IP（增强）模式"
+
+msgid "fake-ip(tun mode)"
+msgstr "Fake-IP（TUN）模式【依赖kmod-tun】"
+
+msgid "redir-host-vpn(game mode)"
+msgstr "Redir-Host（游戏）模式【依赖kmod-tun】"
+
+msgid "fake-ip-vpn(game mode)"
+msgstr "Fake-IP（游戏）模式【依赖kmod-tun】"
 
 msgid "Select Mode For OpenClash Work, Network Error Try Flush DNS Cache"
 msgstr "选择运行模式，在兼容模式下无法代理路由器自身流量，如客户端的网络无法连接请尝试清除DNS缓存"
@@ -226,10 +232,13 @@ msgid "Rules Setting"
 msgstr "规则设置（访问控制）"
 
 msgid "Server Config"
-msgstr "配置文件"
+msgstr "配置文件管理"
 
-msgid "Upload Config"
-msgstr "上传配置文件"
+msgid "Upload File Type"
+msgstr "上传文件类型"
+
+msgid "Proxy Provider File"
+msgstr "代理集文件"
 
 msgid "Upload"
 msgstr "上传"
@@ -244,26 +253,14 @@ msgid "No specify upload file."
 msgstr "未指定上传文件"
 
 msgid ""
-"Rename your config file to config.yaml before upload what would be save to /etc/openclash"
-msgstr "注意：上传之前请将配置文件重命名为 config.yaml ，文件将被保存到 /etc/openclash"
+"Only Support yaml what would be save to /etc/openclash/config/"
+msgstr "注意：只支持【yaml】后缀的文件，文件将被保存到 /etc/openclash/config/"
 
-msgid "Keyword Matching Setting"
-msgstr "筛选节点"
-
-msgid "Only Keep Servers which Matching Keywords, eg: hk or tw&bgp"
-msgstr "仅订阅名字与以上任意一行关键字匹配的节点，不区分大小写，条件且请用（&）表示。格式示例：香港、台湾&bgp"
+msgid "Proxy Provider File List"
+msgstr "代理集文件列表"
 
 msgid "Please Make Sure Ports Available"
 msgstr "请确保端口可用"
-
-msgid "Subcription Url"
-msgstr "订阅地址"
-
-msgid "Update Url Type"
-msgstr "订阅地址类型"
-
-msgid "Power By fndroid，Use Other Rules If V2rayN Subcription"
-msgstr "API提供：Fndroid，V2rayN类型的订阅可配合第三方规则使用"
 
 msgid "Update Subcription"
 msgstr "更新订阅配置"
@@ -394,6 +391,15 @@ msgstr "必须代理的流量"
 msgid "Apple"
 msgstr "苹果服务流量"
 
+msgid "Netease Music"
+msgstr "网易云音乐流量"
+
+msgid "Speedtest"
+msgstr "测速流量"
+
+msgid "Telegram"
+msgstr "Telegram流量"
+
 msgid "AdBlock"
 msgstr "广告流量"
 
@@ -468,8 +474,8 @@ msgid "Only For IPK Install Type Or Not Release Memory"
 msgstr ""
 "只支持通过IPK安装的版本进行更新，因为随系统编译的版本更新后不会释放旧版本的闪存空间"
 
-msgid "Severs&Groups"
-msgstr "服务器&策略组"
+msgid "Severs and Groups"
+msgstr "服务器与策略组管理"
 
 msgid "Load Config"
 msgstr "读取配置"
@@ -479,6 +485,9 @@ msgstr "删除未启用节点"
 
 msgid "Delete Severs"
 msgstr "清空服务器配置"
+
+msgid "Delete Proxy Provider"
+msgstr "清空代理集配置"
 
 msgid "Delete Groups"
 msgstr "清空策略组配置"
@@ -493,7 +502,7 @@ msgid "Keep Settings"
 msgstr "保留配置"
 
 msgid "Only Update Servers Below When Subscription"
-msgstr "订阅时仅更新节点，保留下方策略组设置，不修改顺序"
+msgstr "订阅时仅更新节点和代理集，保留下方策略组设置，不修改顺序"
 
 msgid "New Servers Group"
 msgstr "新节点默认策略组"
@@ -562,7 +571,7 @@ msgid "Create Config"
 msgstr "一键生成配置文件"
 
 msgid "Create Config By One-Click Only Need Proxys"
-msgstr "一键生成配置文件功能只需要配置服务器节点信息"
+msgstr "一键生成配置文件功能只需要配置服务器节点信息或代理集信息"
 
 msgid "Proxy Groups(No Need Set when Config Create)"
 msgstr "策略组配置（使用一键生成配置文件功能时无需设置）"
@@ -606,6 +615,9 @@ msgstr "包含其他策略组（请勿重复添加）"
 msgid "The Added Proxy Groups Must Exist Except 'DIRECT' & 'REJECT'"
 msgstr "注意：除'DIRECT'和'REJECT'外，修改配置文件前添加的其他策略组必须已创建"
 
+msgid "The Added Proxy Provider Must Exist"
+msgstr "修改配置文件前添加的代理集必须已创建"
+
 msgid "Proxy Group"
 msgstr "添加到策略组（请勿重复添加）"
 
@@ -618,6 +630,93 @@ msgstr "清理日志"
 msgid "Refresh Log"
 msgstr "刷新日志"
 
+msgid "Config File"
+msgstr "配置文件"
 
+msgid "State"
+msgstr "状态"
 
+msgid "Update Time"
+msgstr "更新时间"
+
+msgid "File Name"
+msgstr "文件名"
+
+msgid "Switch Config"
+msgstr "切换"
+
+msgid "Size"
+msgstr "文件大小"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "(Enable or Disable Subscribe)"
+msgstr "（启用或禁用更新）"
+
+msgid "Config Alias"
+msgstr "配置文件名"
+
+msgid "(Name For Distinguishing)"
+msgstr "（用于区分，请勿重名）"
+
+msgid "Subscribe Address"
+msgstr "订阅地址"
+
+msgid "Subscribe Type"
+msgstr "订阅地址类型"
+
+msgid "(Power By fndroid)"
+msgstr "（API提供：Fndroid）"
+
+msgid "(Not Null)"
+msgstr "（空值无效）"
+
+msgid "Keyword Match"
+msgstr "筛选节点"
+
+msgid "(eg: hk or tw&bgp)"
+msgstr "（格式示例：香港、台湾&bgp）"
+
+msgid "Config File List"
+msgstr "配置文件列表"
+
+msgid "Use For All Config File"
+msgstr "添加到所有配置文件"
+
+msgid "Proxy-Provider"
+msgstr "代理集管理"
+
+msgid "Edit Proxy-Provider"
+msgstr "编辑代理集配置"
+
+msgid "Provider Type"
+msgstr "代理集类型
+
+msgid "Choose The Provider Type"
+msgstr "选择代理集的类型"
+
+msgid "Provider Name"
+msgstr "代理集别名（请勿重名）"
+
+msgid "Provider Path"
+msgstr "代理集路径（Path）"
+
+msgid "Update Your Proxy Provider File From Config Luci Page"
+msgstr "请先在配置文件管理页面上传您的代理集文件"
+
+msgid "Provider URL"
+msgstr "代理集URL"
+
+msgid "Provider Interval(s)"
+msgstr "代理集更新间隔（s）"
+
+msgid "Provider Health Check"
+msgstr "代理集状态检查"
+
+msgid "Health Check URL"
+msgstr "状态检查URL"
+
+msgid "Health Check Interval(s)"
+msgstr "状态检查间隔（s）"
 
