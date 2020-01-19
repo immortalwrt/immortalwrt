@@ -4,7 +4,7 @@ config global 'global'
 	option user 'rclone'
 
 config conf 'config'
-	option config_path '/etc/rclone/rclone.conf'
+	option config_path '/var/etc/rclone/rclone.conf'
 	option port '5572'
 	option username 'admin'
 	option password 'admin'
