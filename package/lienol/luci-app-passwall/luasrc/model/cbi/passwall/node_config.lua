@@ -90,11 +90,10 @@ if is_installed("trojan") or is_finded("trojan") then
     type:value("Trojan", translate("Trojan"))
 end
 
---[[v2ray_protocol = s:option(ListValue, "v2ray_protocol",
+v2ray_protocol = s:option(ListValue, "v2ray_protocol",
                           translate("V2ray Protocol"))
 v2ray_protocol:value("vmess", translate("Vmess"))
 v2ray_protocol:depends("type", "V2ray")
---]]
 
 v2ray_balancing_node = s:option(DynamicList, "v2ray_balancing_node",
                                 translate("List of backup nodes"), translate(
