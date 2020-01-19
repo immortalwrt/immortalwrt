@@ -39,25 +39,18 @@ youtube_key:depends("music_source", "youtube")
 
 endpoint_url = s:option(Value, "endpoint_url", translate("EndPoint"))
 endpoint_url.description = translate("具体说明参见：https://github.com/nondanee/UnblockNeteaseMusic")
-endpoint_url.default = "https://music.163.com"
-endpoint_url.placeholder = "https://music.163.com"
+endpoint_url.default = "http://music.163.com"
+endpoint_url.placeholder = "http://music.163.com"
 endpoint_url.datatype = "string"
 endpoint_url.rmempty = false
 
-hijack = s:option(ListValue, "hijack_ways", translate("[主实例] 劫持方法"))
+hijack = s:option(ListValue, "hijack_ways", translate("劫持方法"))
 hijack:value("dont_hijack", translate("不开启劫持"))
 hijack:value("use_ipset", translate("使用IPSet劫持"))
 hijack:value("use_hosts", translate("使用Hosts劫持"))
 hijack.description = translate("如果使用Hosts劫持，主实例的HTTP/HTTPS端口将被锁定为80/443")
 hijack.default = "dont_hijack"
 hijack.rmempty = false
-
-hijack_apple = s:option(ListValue, "hijack_ways_apple", translate("[苹果实例] 劫持方法"))
-hijack_apple:value("dont_hijack", translate("不开启劫持"))
-hijack_apple:value("use_dnsmasq", translate("使用DNSmasq劫持"))
-hijack_apple.description = translate("如果使用DNSmasq劫持，请在设备中将代理选项设置为自动")
-hijack_apple.default = "dont_hijack"
-hijack_apple.rmempty = false
 
 auto_update = s:option(Flag, "auto_update", translate("启用自动更新"))
 auto_update.description = translate("启用后，每天将定时自动检查最新版本并更新")
@@ -77,33 +70,19 @@ advanced_mode.description = translate("仅推荐高级玩家使用")
 advanced_mode.default = 0
 advanced_mode.rmempty = false
 
-http_port = s:option(Value, "http_port", translate("[主实例] HTTP 监听端口"))
-http_port.description = translate("主实例监听的HTTP端口，不可与苹果实例/其他程序/HTTPS共用一个端口")
+http_port = s:option(Value, "http_port", translate("HTTP 监听端口"))
+http_port.description = translate("程序监听的HTTP端口，不可与 其他程序/HTTPS 共用一个端口")
 http_port.placeholder = "5200"
 http_port.default = "5200"
 http_port.datatype = "port"
 http_port:depends("advanced_mode", 1)
 
-https_port = s:option(Value, "https_port", translate("[主实例] HTTPS 监听端口"))
-https_port.description = translate("主实例监听的HTTPS端口，不可与苹果实例/其他程序/HTTP共用一个端口")
+https_port = s:option(Value, "https_port", translate("HTTPS 监听端口"))
+https_port.description = translate("程序监听的HTTPS端口，不可与 其他程序/HTTP 共用一个端口")
 https_port.placeholder = "5201"
 https_port.default = "5201"
 https_port.datatype = "port"
 https_port:depends("advanced_mode", 1)
-
-apple_http_port = s:option(Value, "apple_http_port", translate("[苹果实例] HTTP 监听端口"))
-apple_http_port.description = translate("苹果实例监听的HTTP端口，不可与主实例/其他程序/HTTPS共用一个端口")
-apple_http_port.placeholder = "5202"
-apple_http_port.default = "5202"
-apple_http_port.datatype = "port"
-apple_http_port:depends("advanced_mode", 1)
-
-apple_https_port = s:option(Value, "apple_https_port", translate("[苹果实例] HTTPS 监听端口"))
-apple_https_port.description = translate("苹果实例监听的HTTPS端口，不可与主实例/其他程序/HTTP共用一个端口")
-apple_https_port.placeholder = "5203"
-apple_https_port.default = "5203"
-apple_https_port.datatype = "port"
-apple_https_port:depends("advanced_mode", 1)
 
 daemon_enable = s:option(Flag, "daemon_enable", translate("启用进程守护"))
 daemon_enable.description = translate("开启后，附属程序会自动检测主程序运行状态，在主程序退出时自动重启")
