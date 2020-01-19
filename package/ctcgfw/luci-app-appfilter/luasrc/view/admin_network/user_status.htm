@@ -1,59 +1,85 @@
+<style type="text/css">
+table.imagetable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #999999;
+    border-collapse: collapse;
+}
+table.imagetable th {
+    background:#b5cfd2 url('cell-blue.jpg');
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #999999;
+}
+table.imagetable td {
+    background:#dcddc0 url('cell-grey.jpg');
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #999999;
+}
+</style>
 <script type="text/javascript">//<![CDATA[
-	XHR.poll(5, '<%=url('admin/network/user_status')%>', null,
+
+	XHR.poll(10, '<%=url('admin/network/user_status')%>', null,
 		function(x, st)
 		{
 			var tb = document.getElementById('user_status_table');
-			if (st && st && tb)
+			var str=JSON.stringify(st);
+			if (st && tb)
 			{
-				var rows = [];
-				for (var i = 0; i < st.length; i++)
+				/* clear all rows */
+				while(tb.rows.length > 1)
+					tb.deleteRow(1);
+				for(var i = 0; i < st.length; i++ )
 				{
-					if(st[i].hostname == ""){
-						st[i].hostname="unknown"
-					}
 					var action_status=""
 					if(st[i].latest_action == 1)
 						action_status="已过滤"
 					else
 						action_status="未过滤"
-						
-					<!--st[i].latest_time=st[i].latest_time+"<br>"+st[i].latest_time-->
-					rows.push([
-						st[i].hostname,
-						st[i].mac,
-						st[i].ip,
-						st[i].appname,
-						st[i].drop_num.toString(),
-						st[i].total_num.toString(),
-						st[i].latest_time,
-						action_status
-					]);
+					var hostname=""
+					if(st[i].hostname == "" || st[i].hostname == "*"){
+						hostname="?";
+					}
+					else{
+						hostname=st[i].hostname;
+					}
+					var tr = tb.insertRow(-1);
+					//tr.className = 'cbi-section-table-row cbi-rowstyle-' + ((i % 2) + 1);
+					tr.insertCell(-1).innerHTML = hostname;
+					tr.insertCell(-1).innerHTML = st[i].mac;
+					tr.insertCell(-1).innerHTML = st[i].ip;
+					tr.insertCell(-1).innerHTML = st[i].appname;
+					tr.insertCell(-1).innerHTML = st[i].drop_num;
+					tr.insertCell(-1).innerHTML = st[i].total_num;
+					tr.insertCell(-1).innerHTML = st[i].latest_time;
+					tr.insertCell(-1).innerHTML = action_status;
 				}
-
-				cbi_update_table(tb, rows, '<em><%:no data%></em>');
 			}
-
 		}
 	);
 //]]></script>
 
-<div class="cbi-section">
-	<h3><%:访问记录%></h3>
-	<div class="table" id="user_status_table">
-		<div class="tr table-titles">
-			<div class="th"><%:Hostname%></div>
-			<div class="th"><%:mac地址%></div>
-			<div class="th"><%:ip地址%></div>
-		<div class="th"><%:应用名称%></div>
-			<div class="th"><%:丢包次数%></div>
-			<div class="th"><%:总访问次数%></div>
-			<div class="th"><%:最后访问时间%></div>
-			<div class="th"><%:过滤状态%></div>
 
-		</div>
-		<div class="tr placeholder">
-			<div class="td"><em><%:Collecting data...%></em></div>
-		</div>
-	</div>
-</div>
-
+<fieldset class="cbi-section">
+	<legend><%:访问记录%></legend>
+	<table class="imagetable" id="user_status_table">
+		<tr>
+			<th ><%:主机名%></th>
+			<th ><%:mac地址%></th>
+			<th ><%:ip地址%></th>
+			<th ><%:App名称%></th>
+			<th><%:丢包次数%></th>
+			<th ><%:访问次数%></th>
+			<th><%:最后访问时间%></th>
+			<th><%:过滤状态%></th>
+		</tr>
+		<tr>
+			<td colspan="8"><em><br /><%:Collecting data...%></em></td>
+		</tr>
+	</table>
+</fieldset>
