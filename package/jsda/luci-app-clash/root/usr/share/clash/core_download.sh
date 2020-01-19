@@ -10,7 +10,7 @@ rm -rf /tmp/clash.tar.gz >/dev/null 2>&1
 fi
  echo '' >/tmp/clash_update.txt 2>/dev/null
  
-if [ /usr/share/clash/core_down_complete ];then 
+if [ -f /usr/share/clash/core_down_complete ];then 
   rm -rf /usr/share/clash/core_down_complete 2>/dev/null
 fi
 

@@ -9,20 +9,20 @@ CLASHT="/etc/clash/clashtun/clash"
 CLASH_CONFIG="/etc/clash"
 CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
-CONFIG_YAML_OLD="/etc/clash/config.yml"
+CONFIG_YAML_OLD="/etc/clash/config.yml" 
 
 CONFIG_YAML_SUB="/usr/share/clash/config/sub/config.yaml"
 CONFIG_YAML_UPL="/usr/share/clash/config/upload/config.yaml"
 CONFIG_YAML_CUS="/usr/share/clash/config/custom/config.yaml"
 CUSLIST="/tmp/dnsmasq.d/custom_list.conf"
 CUSLITT="/tmp/dnsmasq.clash"
-CUSLISTV="/var/dnsmasq.d/custom_list.conf"
+CUSLISTV="/var/dnsmasq.d/custom_list.conf" 
 CUSLITTV="/var/dnsmasq.clash" 
 REAL_LOG="/usr/share/clash/clash_real.txt"
 
 revert_dns() {
 #=========================================================================================================================== 
-    	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
+    	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null) 
 	uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1
 	uci set dhcp.@dnsmasq[0].noresolv=0
 	uci delete dhcp.@dnsmasq[0].cachesize
@@ -43,6 +43,23 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 	if [ "${auto}" -eq 1 ]; then
 	[ -z "$(grep -w "/usr/share/clash/clash.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/clash.sh" >> $CRON_FILE
 	[ -z "$(grep -w "/usr/share/clash/v2ssr.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/v2ssr.sh" >> $CRON_FILE
+	fi
+	auto_geoip=$(uci get clash.config.auto_update_geoip 2>/dev/null)
+	if [ "${auto_geoip}" -eq 1 ]; then
+	day=$(uci get clash.config.geoip_update_day 2>/dev/null)
+	week=$(uci get clash.config.geo_update_week 2>/dev/null)
+	if [ -z $week ];then
+		update_week="*"
+	else
+		update_week=$week
+	fi
+	if [ -z $day ];then
+		update_day="*"
+	else
+		update_day=$day
+	fi	
+	
+	[ -z "$(grep -w "/usr/share/clash/geoip.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_geoip_time 2>/dev/null) $update_week * $update_day /usr/share/clash/geoip.sh" >> $CRON_FILE
 	fi
 	crontab $CRON_FILE
 #=========================================================================================================================== 	
@@ -209,6 +226,8 @@ rules(){
 		elif [ "${tun_mode}" -eq 2 ] || [ "${tun_mode}" -eq 3 ];then
 			PROXY_FWMARK="0x162"
 			PROXY_ROUTE_TABLE="0x162"
+			PROXY_BYPASS_USER="root"
+			
 			ipset create localnetwork hash:net
 			ipset add localnetwork 127.0.0.0/8
 			ipset add localnetwork 10.0.0.0/8
@@ -220,16 +239,29 @@ rules(){
 
 			ip tuntap add user root mode tun clash0
 			ip link set clash0 up
+			ip address replace 198.18.0.0/16 dev clash0
 			ip route replace default dev clash0 table "$PROXY_ROUTE_TABLE"
-			ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
-
+			ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"		
+			
 			iptables -t mangle -N clash
 			iptables -t mangle -F clash
+			iptables -t mangle -A clash -m owner --uid-owner "$PROXY_BYPASS_USER" -j RETURN
 			iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
-			iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN			
+			iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
+			iptables -t mangle -A clash -j MARK --set-mark "$PROXY_FWMARK"
+
+
+			iptables -t nat -N CLASH_DNS
+			iptables -t nat -F CLASH_DNS 
+			iptables -t nat -A CLASH_DNS -m owner --uid-owner "$PROXY_BYPASS_USER" -j RETURN
+			iptables -t nat -A CLASH_DNS -p udp -j DNAT --to "127.0.0.1:$dns_port"			
 
 			iptables -t mangle -I OUTPUT -j clash
-			iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"							
+			iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
+
+			iptables -t nat -I OUTPUT -p udp --dport 53 -j CLASH_DNS
+			iptables -t nat -I PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"			
+			
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 			ip6tables -t mangle -I PREROUTING -j MARK --set-mark "$PROXY_FWMARK"		
 			fi
@@ -409,7 +441,28 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 	fi
 	
 	yml_dns_change >/dev/null 2>&1
-
+	
+	if [ ! -f /etc/clash/Country.mmdb ];then
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Cannot find Country.mmdb" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "找不到Country.mmdb" >$REAL_LOG
+		fi	
+		sleep 5
+		echo "Clash for OpenWRT" >$REAL_LOG		
+		exit 0
+	fi
+	
+	if [ ! -f /etc/clash/config.yaml ];then
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Cannot find config.yaml" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "找不到config.yaml" >$REAL_LOG
+		fi	
+		sleep 5
+		echo "Clash for OpenWRT" >$REAL_LOG		
+		exit 0
+	fi	
 	
     if [ "${core}" -eq 1 ];then
         	nohup $CLASH -d "$CLASH_CONFIG" > /tmp/clash.txt 2>&1 &	
@@ -525,6 +578,7 @@ remove_mark(){
 
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
+		dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 
 		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 		ip6tables -t nat -F clash_ipv6 2>/dev/null1 && ip6tables -t nat -X clash_ipv6 2>/dev/null
@@ -534,7 +588,6 @@ remove_mark(){
 		done
 		fi
 
-
 		if [ "${tun_mode}" -eq 2 ] || [ "${tun_mode}" -eq 3 ];then
 		
 		PROXY_FWMARK="0x162" 2>/dev/null
@@ -542,11 +595,15 @@ remove_mark(){
 		
 		ip link set dev clash0 down 2>/dev/null
 		ip tuntap del clash0 mode tun 2>/dev/null
+		
 		ip route del default dev clash0 table "$PROXY_ROUTE_TABLE" 2>/dev/null
 		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
 
 		iptables -t mangle -D OUTPUT -j clash 2>/dev/null
 		iptables -t mangle -D PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK" 2>/dev/null
+		
+		iptables -t nat -D OUTPUT -p udp --dport 53 -j CLASH_DNS
+		iptables -t nat -D PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"
 
 		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 		ip6tables -t mangle -D PREROUTING -j MARK --set-mark "$PROXY_FWMARK" 2>/dev/null
@@ -554,12 +611,19 @@ remove_mark(){
 
 		iptables -t mangle -F clash 2>/dev/null
 		iptables -t mangle -X clash 2>/dev/null
+		
+		iptables -t nat -F CLASH_DNS 2>/dev/null
+		iptables -t nat -X CLASH_DNS 2>/dev/null
+
 		ipset destroy localnetwork 2>/dev/null
 				
 		fi
-
+        /etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
 
+del_list() {
+	sh /usr/share/clash/del_servers.sh  >/dev/null 2>&1
+}
 
 stop(){
 #=========================================================================================================================== 
@@ -569,6 +633,7 @@ stop(){
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		core=$(uci get clash.config.core 2>/dev/null)
+		
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Stopping Client..." >$REAL_LOG
@@ -638,6 +703,7 @@ stop(){
 		elif [ "${lang}" == "zh_cn" ];then
 	    	echo "重启 Dnsmasq 程序" >$REAL_LOG
 		fi	
+		del_list >/dev/null 2>&1
 		revert_dns >/dev/null 2>&1
    	    	sleep 1
 

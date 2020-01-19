@@ -96,7 +96,7 @@ for t,f in ipairs(fss.glob("/etc/clash/provider/*"))do
     end
   end
 end
-o.rmempty = true
+o.rmempty = false
 o:depends("type", "file")
 
 

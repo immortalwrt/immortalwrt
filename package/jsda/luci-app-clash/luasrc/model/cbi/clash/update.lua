@@ -4,7 +4,8 @@ local HTTP = require "luci.http"
 local DISP = require "luci.dispatcher"
 local UTIL = require "luci.util"
 local uci = require("luci.model.uci").cursor()
-local m
+local m , r, k
+local http = luci.http
 
 font_green = [[<font color="green">]]
 font_off = [[</font>]]
@@ -16,9 +17,63 @@ m:section(SimpleSection).template  = "clash/update"
 m.pageaction = false
 
 k = Map("clash")
-s = k:section(TypedSection, "clash")
-s.anonymous = true
 
+s=k:section(TypedSection, "clash", translate("Upload Clash(Tun)"))
+s.anonymous = true
+s.addremove=false
+o = s:option(FileUpload, "")
+o.description = translate("NB: Upload Clash Supported Tun (clash)")
+.."<br />"
+..translate("https://github.com/comzyh/clash/releases")
+.."<br />"
+..translate("https://github.com/Dreamacro/clash/releases/tag/TUN")
+
+
+o.title = translate("  ")
+o.template = "clash/clash_upload"
+um = s:option(DummyValue, "", nil)
+um.template = "clash/clash_dvalue"
+
+local dir, fd
+dir = "/etc/clash/clashtun/"
+http.setfilehandler(
+	function(meta, chunk, eof)
+		if not fd then
+			if not meta then return end
+
+			if	meta and chunk then fd = nixio.open(dir .. meta.file, "w") end
+
+			if not fd then
+				um.value = translate("upload file error.")
+				return
+			end
+		end
+		if chunk and fd then
+			fd:write(chunk)
+		end
+		if eof and fd then
+			fd:close()
+			fd = nil
+			um.value = translate("File saved to") .. ' "/etc/clash/clashtun/"'
+			SYS.call("chmod 755 /etc/clash/clashtun/clash")
+			if luci.sys.call("pidof clash >/dev/null") == 0 then
+			SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
+			end
+		end
+	end
+)
+
+if luci.http.formvalue("upload") then
+	local f = luci.http.formvalue("ulfile")
+	if #f <= 0 then
+		um.value = translate("No specify upload file.")
+	end
+end
+
+
+
+s = k:section(TypedSection, "clash", translate("Download Clash/Clashr"))
+s.anonymous = true
 o = s:option(ListValue, "dcore", translate("Core Type"))
 o.default = "clashcore"
 o:value("1", translate("Clash"))
@@ -56,6 +111,6 @@ o.title = translate("Download")
 o.template = "clash/core_check"
 
 
-return m, k
+return m,  k
 
 

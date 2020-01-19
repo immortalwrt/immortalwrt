@@ -46,7 +46,7 @@ o:depends("type", "fallback")
 o:depends("type", "load-balance")
 
 o = s:option(DynamicList, "other_group", translate("Other Group"))
-o.rmempty = false
+o.rmempty = true
 o.description = translate("Proxy Groups Must Exist In Rule")
 o:value("ALL", translate("All Servers"))
 uci:foreach("clash", "servers",

@@ -673,3 +673,96 @@ msgstr "代理集文件"
 
 msgid "Modify Tun DNS"
 msgstr "修改Tun DNS"
+
+msgid "Local Update GeoIP"
+msgstr "本地更新GeoIP数据库"
+
+msgid "Online Update GeoIP"
+msgstr "在线更新GeoIP数据库"
+
+msgid "MaxMind License Key"
+msgstr "MaxMind许可证密钥"
+
+msgid "License Key"
+msgstr "许可证密钥"
+
+msgid "Auto Update GeoIP Database"
+msgstr "自动更新GeoIP数据库"
+
+msgid "Update Day (Day of Month)"
+msgstr "更新(每月的日)"
+
+msgid "GeoIP Update Time"
+msgstr "GeoIP更新时间"
+
+msgid "Every 1st Day"
+msgstr "每月的第一天"
+
+msgid "Every 7th Day"
+msgstr "每月的第七天"
+
+msgid "Every 14th Day"
+msgstr "每月的第十四天"
+
+msgid "Every 21st Day"
+msgstr "每月的第二十一天"
+
+msgid "Every 28th Day"
+msgstr "每月的第二十八天"
+
+msgid "Update GeoIP"
+msgstr "更新GeoIP数据库"
+
+msgid "Update Time"
+msgstr "更新时间"
+
+msgid "Every Monday"
+msgstr "每周一"
+
+msgid "Every Tuesday"
+msgstr "每周二"
+
+msgid "Every Wednesday"
+msgstr "每周三"
+
+msgid "Every Thursday"
+msgstr "每周四"
+
+msgid "Every Friday"
+msgstr "每周五"
+
+msgid "Every Saturday"
+msgstr "每周六"
+
+msgid "Every Sunday"
+msgstr "每周日"
+
+msgid "Update Every (Week/Month)"
+msgstr "更新（每周/每月）"
+
+msgid "Update Day (Day of Week)"
+msgstr "更新的天"
+
+msgid "Time For Update (Once a week/Month)"
+msgstr "更新（每周一次/每月一次）"
+
+msgid "Weekly"
+msgstr "每周"
+
+msgid "Monthly"
+msgstr "每月"
+
+msgid "Upload Clash(Tun)"
+msgstr "上传Clash(Tun)"
+
+msgid "NB: Upload Clash Supported Tun (clash)"
+msgstr "注意：上传clash支持的Tun"
+
+msgid "Download Clash/Clashr"
+msgstr "下载Clash/Clashr"
+
+msgid "No file chosen"
+msgstr "未选择文件"
+
+msgid "Chose File"
+msgstr "选择文件"

@@ -1,11 +1,13 @@
 #!/bin/bash /etc/rc.common
 . /lib/functions.sh
 
+create_config(){
+
 REAL_LOG="/usr/share/clash/clash_real.txt"
 lang=$(uci get luci.main.lang 2>/dev/null)
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 create=$(uci get clash.config.create 2>/dev/null)
-load_from=$(uci get clash.config.loadfrom 2>/dev/null)
+load_from=$(uci get clash.config.loadfrom 2>/dev/null) 
 
 
 if [ "$load_from" == "sub" ];then  
@@ -13,7 +15,6 @@ if [ "$load_from" == "sub" ];then
 elif [ "$load_from" == "upl" ];then
 	    load="/usr/share/clash/config/upload/config.yaml"
 fi
-
 
 if [ "${create}" -eq 1 ];then
 
@@ -36,23 +37,22 @@ CFG_FILE="/etc/config/clash"
 DNS_FILE="/usr/share/clash/dns.yaml" 
 PROVIDER_FILE="/tmp/yaml_provider.yaml"
 
-
-
-   servcount=$( grep -c "config servers" $CFG_FILE 2>/dev/null)
    gcount=$( grep -c "config groups" $CFG_FILE 2>/dev/null)
-   if [ $servcount -eq 0 ] || [ $gcount -eq 0 ];then
+   scount=$( grep -c "config servers" $CFG_FILE 2>/dev/null)
+   pcount=$( grep -c "config provider" $CFG_FILE 2>/dev/null)
+   if [ $gcount -eq 0 ];then
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "No servers or group. Aborting Operation .." >$REAL_LOG 
+		echo "No policy group found. Aborting Operation .." >$REAL_LOG 
 		sleep 2
 		echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ $lang == "zh_cn" ];then
-    	 echo "找不到代理或策略组。中止操作..." >$REAL_LOG
+    	 echo "找不到策略组。中止操作..." >$REAL_LOG
 		 sleep 2
 		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
 	exit 0	
    fi
-sleep 2
+	sleep 2
 
 
 
@@ -112,6 +112,19 @@ cat >> "$PROVIDER_FILE" <<-EOF
 EOF
 
 }
+
+if [ $pcount -gt 0 ];then
+config_load "clash"
+config_foreach yml_proxy_provider_set "provider"
+fi
+
+if [ -f $PROVIDER_FILE ];then 
+sed -i "1i\   " $PROVIDER_FILE 2>/dev/null 
+sed -i "2i\proxy-provider:" $PROVIDER_FILE 2>/dev/null
+#echo "proxy-provider:" >$PROVIDER_FILE
+rm -rf /tmp/Proxy_Provider
+
+fi
 
 
 servers_set()
@@ -353,30 +366,30 @@ EOF
 }
 
 
-
-config_load "clash"
-config_foreach yml_proxy_provider_set "provider"
-
-if [ -f $PROVIDER_FILE ];then 
-sed -i "1i\   " $PROVIDER_FILE 2>/dev/null 
-sed -i "2i\proxy-provider:" $PROVIDER_FILE 2>/dev/null
-#echo "proxy-provider:" >$PROVIDER_FILE
-rm -rf /tmp/Proxy_Provider
-
-fi
-
-
+if [ $scount -gt 0 ];then
 config_load clash
 config_foreach servers_set "servers"
+fi
 
+if [ -z "${scount}" ] || [ "${scount}" -eq 0 ];then
+cat >> "$SERVER_FILE" <<-EOF
+- name: Shadowsocks
+  type: ss
+  server: 127.0.0.1
+  port: 1080
+  cipher: aes-256-gcm
+  password: "12345"
+EOF
+fi
 
-if [ "$(ls -l $SERVER_FILE|awk '{print $5}')" -ne 0 ]; then
 
 sed -i "1i\   " $SERVER_FILE 2>/dev/null 
 sed -i "2i\Proxy:" $SERVER_FILE 2>/dev/null 
 
 egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
+
 sed -i "s/^ \{0,\}/    - /" $Proxy_Group 2>/dev/null 
+
 
 
 yml_servers_add()
@@ -482,21 +495,21 @@ yml_groups_set()
    
    if [ "$( grep -c "config provider" $CFG_FILE )" -ne 0 ];then
    
-	echo "  use: $group_name" >>$GROUP_FILE
-   
-   config_foreach set_proxy_provider "provider" "$group_name" 
+		echo "  use: $group_name" >>$GROUP_FILE
+	   
+	   config_foreach set_proxy_provider "provider" "$group_name" 
 
-   if [ "$set_group" -eq 1 ]; then
-      sed -i "/^ \{0,\}proxies: ${group_name}/c\  proxies:" $GROUP_FILE
-   else
-      sed -i "/proxies: ${group_name}/d" $GROUP_FILE 2>/dev/null
-   fi
+	   if [ "$set_group" -eq 1 ]; then
+		  sed -i "/^ \{0,\}proxies: ${group_name}/c\  proxies:" $GROUP_FILE
+	   else
+		  sed -i "/proxies: ${group_name}/d" $GROUP_FILE 2>/dev/null
+	   fi
 
-   if [ "$set_proxy_provider" -eq 1 ]; then
-      sed -i "/^ \{0,\}use: ${group_name}/c\  use:" $GROUP_FILE
-   else
-      sed -i "/use: ${group_name}/d" $GROUP_FILE 2>/dev/null
-   fi
+	   if [ "$set_proxy_provider" -eq 1 ]; then
+		  sed -i "/^ \{0,\}use: ${group_name}/c\  use:" $GROUP_FILE
+	   else
+		  sed -i "/use: ${group_name}/d" $GROUP_FILE 2>/dev/null
+	   fi
    
    fi
    
@@ -562,7 +575,9 @@ EOF
 		
 cat $DNS_FILE >> $TEMP_FILE  2>/dev/null
 
+if [ -f $SERVER_FILE ];then
 cat $SERVER_FILE >> $TEMP_FILE  2>/dev/null
+fi
 
 cat $GROUP_FILE >> $TEMP_FILE 2>/dev/null
 
@@ -599,8 +614,9 @@ if pidof clash >/dev/null; then
 fi
 fi
 
-fi
+
 rm -rf $SERVER_FILE
-
 fi
 
+}
+create_config >/dev/null 2>&1

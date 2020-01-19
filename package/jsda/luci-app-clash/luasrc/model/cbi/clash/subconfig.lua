@@ -28,6 +28,12 @@ sev.write = function(self, section, value)
 	NXFS.writefile(conf, value:gsub("\r\n", "\n"))
 end
 
+o=s:option(Button,"apply")
+o.inputtitle = translate("Save & Apply")
+o.inputstyle = "reload"
+o.write = function()
+  m.uci:commit("clash")
+end
 
 
 o = s:option(Button,"configrm")

@@ -34,6 +34,14 @@ o.write = function()
   SYS.call("rm -rf /usr/share/clash/config/upload/config.yaml >/dev/null 2>&1 &")
 end
 
+o=s:option(Button,"apply")
+o.inputtitle = translate("Save & Apply")
+o.inputstyle = "reload"
+o.write = function()
+  m.uci:commit("clash")
+end
+
+
 return  m
 
 
