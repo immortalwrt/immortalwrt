@@ -78,7 +78,7 @@ function get_subscribe()
         end
         luci.sys.call('uci commit vssr')
         luci.sys.call(
-            "nohup /usr/share/vssr/subscribe.sh >/www/check_update.htm 2>/dev/null &")
+            "nohup /usr/bin/lua /usr/share/vssr/subscribe.lua >/www/check_update.htm 2>/dev/null &")
         e.error = 0
     else
         e.error = 1
@@ -118,7 +118,7 @@ function change_node()
     if sid ~= "" then
         uci:set("vssr", name, "global_server", sid)
         uci:commit("vssr")
-        luci.sys.call("/usr/bin/vssr-qucikswitch")
+        luci.sys.call("/etc/init.d/vssr restart")
         e.status = true
     end
     luci.http.prepare_content("application/json")
@@ -315,7 +315,7 @@ function check_ip()
 
     result = luci.sys.exec("curl -s https://api.ip.sb/ip")
     if JudgeIPString(result) then
-        local cmd = '/usr/share/vssr/getip.sh '..result
+        local cmd = '/usr/share/vssr/getip.sh ' .. result
         e.outboard = result
         e.outboardip = luci.sys.exec(cmd)
     else
