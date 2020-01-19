@@ -5,7 +5,7 @@ msgid "DiskMan"
 msgstr "Menadżer dysków"
 
 msgid "Manage Disks over LuCI."
-msgstr "Zarządzaj dyskami przez LuCI"
+msgstr "Zarządzaj dyskami przez LuCI."
 
 msgid "Rescan Disks"
 msgstr "Skanuj dyski"
@@ -113,7 +113,7 @@ msgid "Partition Management"
 msgstr "Menadżer partycji"
 
 msgid "Partition Disk over LuCI."
-msgstr "Zarządzaj partycjami przez LuCI"
+msgstr "Zarządzaj partycjami przez LuCI."
 
 msgid "Device Info"
 msgstr "Informacja o urządzeniu"
@@ -125,4 +125,4 @@ msgid "Partitions Info"
 msgstr "Informacja o partycjach"
 
 msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
-msgstr "Domyślne obsługiwane ustawienie sektora początkowego: 2048 +rozmiar w sektorze końcowym {b,k,m,g,t}"
+msgstr "Sektory wyrównywane są do wielokrotności 2048, sektor końcowy można podać jako rozmiar w postaci +size{b,k,m,g,t}"
