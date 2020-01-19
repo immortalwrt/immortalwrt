@@ -5,6 +5,7 @@ logfile="/var/log/dnscache.file"
 adg_logfile="/etc/AdGuardHome/data/querylog.json"
 dns_enable=$(uci get flowoffload.@flow[0].dns 2>/dev/null)
 dnscache_enable=$(uci get flowoffload.@flow[0].dnscache_enable 2>/dev/null)
+lan_addr=$(uci get network.lan.ipaddr)
 
 clean_log(){
 logrow=$(grep -c "" ${logfile})
@@ -28,7 +29,7 @@ echo "$curtime online! "
 if [ $dns_enable -eq 1 ]; then
 	if [ $dnscache_enable = "3" ];then
 		if ! pidof AdGuardHome>/dev/null;then
-			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome 2>&1 &
+			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome -h ${lan_addr} -p 3001 --no-check-update &
 			echo "$curtime 重启服务！" >> ${logfile}
 		fi
 	else
