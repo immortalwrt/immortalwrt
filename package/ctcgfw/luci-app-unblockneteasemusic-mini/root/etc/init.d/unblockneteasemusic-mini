@@ -12,15 +12,13 @@ unblock_server_ip="$(ping "cdn-shanghai.service.project-openwrt.eu.org" -c 1 | s
 [ -z "${unblock_server_ip}" ] && unblock_server_ip="122.51.88.18"
 unblock_server_http_port="30000"
 unblock_server_https_port="30001"
-unblock_ios_server_http_port="30002"
-unblock_ios_server_https_port="30003"
 
 set_ipset(){
 	if [ "${set_type}" = "start" ]; then
 		mkdir -p "/tmp/dnsmasq.d"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic-mini.conf"
-dhcp-option=252,http://${unblock_server_addr}:${unblock_ios_server_http_port}/proxy.pac
+dhcp-option=252,http://${unblock_server_addr}:${unblock_server_http_port}/proxy.pac
 ipset=/.music.163.com/music
 ipset=/interface.music.163.com/music
 ipset=/interface3.music.163.com/music
@@ -45,9 +43,7 @@ ipset=/apm3.music.163.com/music
 		iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j unblock_netease_music
 
 		mkdir -p /var/etc
-		cat <<-EOF >> "/var/etc/unblockneteasemusic-mini.include"
-/etc/init.d/luci-app-unblockneteasemusic-mini restart
-		EOF
+		echo -e "/etc/init.d/luci-app-unblockneteasemusic-mini restart" > "/var/etc/unblockneteasemusic-mini.include"
 	elif [ "${set_type}" = "stop" ]; then
 		iptables -t nat -D PREROUTING -p tcp -m set --match-set music dst -j unblock_netease_music
 		iptables -t nat -F unblock_netease_music
