@@ -357,11 +357,11 @@ function fetchData(period)
 		if (res !== null && typeof(res) === 'object' && typeof(res.columns) === 'object' && typeof(res.data) === 'object')
 			trafficData = res;
 		trafficData["data"].sort();
-		bakdatanew = JSON.parse(JSON.stringify(trafficData["data"]);
+		bakdatanew = $.extend(true, {}, trafficData["data"]);
 		if (bakdataold){
 			var j=0;
 			var k=j;
-			var ll=bakdataold.length;
+			var ll=Object.getOwnPropertyNames(bakdataold).length;
 			for (i=0,l=trafficData["data"].length; i<l ; i++){
 				one=trafficData["data"][i];
 				for (j=k;j<ll;j++){
