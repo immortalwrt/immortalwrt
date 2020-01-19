@@ -114,7 +114,7 @@ o.default = 0
 -- [[ Other Settings ]]--
 s = m:section(TypedSection, "global_other", translate("Other Settings"),
               translatef(
-                  "You can only set up a maximum of %s nodes for the time being",
+                  "You can only set up a maximum of %s nodes for the time being, Used for access control.",
                   "3"))
 s.anonymous = true
 s.addremove = false
@@ -149,7 +149,8 @@ o.default = "1"
 o.rmempty = false
 
 ---- 显示节点检测
-o = s:option(Flag, "status_show_check_port", translate("Status Show Check Port"))
+o =
+    s:option(Flag, "status_show_check_port", translate("Status Show Check Port"))
 o.default = "0"
 o.rmempty = false
 

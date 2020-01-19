@@ -127,6 +127,8 @@ load_acl() {
 	[ -z "$proxy_mode" -o "$proxy_mode" = "default" ] && proxy_mode=$PROXY_MODE
 	[ -z "$tcp_redir_ports" -o "$tcp_redir_ports" = "default" ] && tcp_redir_ports=$TCP_REDIR_PORTS
 	[ -z "$udp_redir_ports" -o "$udp_redir_ports" = "default" ] && udp_redir_ports=$UDP_REDIR_PORTS
+	[ -z "$tcp_node" -o "$TCP_NODE_NUM" == "1" ] && tcp_node=1
+	[ -z "$udp_node" -o "$UDP_NODE_NUM" == "1" ] && udp_node=1
 	eval TCP_NODE=\$TCP_NODE$tcp_node
 	eval UDP_NODE=\$UDP_NODE$udp_node
 	local ip_mark=$(get_ip_mark $ip)
@@ -275,10 +277,10 @@ add_firewall_rule() {
 	if [ "$SOCKS5_NODE_NUM" -ge 1 ]; then
 		for i in $(seq 1 $SOCKS5_NODE_NUM); do
 			local k=$i
-			eval temp_server=\$SOCKS5_NODE$k
-			if [ "$temp_server" != "nil" ]; then
-				local address=$(config_get $temp_server address)
-				local SOCKS5_NODE_PORT=$(config_get $temp_server port)
+			eval node=\$SOCKS5_NODE$k
+			if [ "$node" != "nil" ]; then
+				local address=$(config_get $node address)
+				local SOCKS5_NODE_PORT=$(config_get $node port)
 				local SOCKS5_NODE_IP=$(get_host_ip "ipv4" $address)
 				[ -n "$SOCKS5_NODE_IP" -a -n "$SOCKS5_NODE_PORT" ] && $iptables_nat -A PSW -p tcp -d $SOCKS5_NODE_IP -m multiport --dports $SOCKS5_NODE_PORT -j RETURN
 			fi
@@ -288,16 +290,15 @@ add_firewall_rule() {
 	if [ "$TCP_NODE_NUM" -ge 1 ]; then
 		for i in $(seq 1 $TCP_NODE_NUM); do
 			local k=$i
-			local local_port=104$k
 			local ttl=14$k
-			eval temp_server=\$TCP_NODE$k
+			eval node=\$TCP_NODE$k
 			eval local_port=\$TCP_REDIR_PORT$k
 			# 生成TCP转发规则
-			if [ "$temp_server" != "nil" ]; then
-				local address=$(config_get $temp_server address)
-				local TCP_NODE_PORT=$(config_get $temp_server port)
+			if [ "$node" != "nil" ]; then
+				local address=$(config_get $node address)
+				local TCP_NODE_PORT=$(config_get $node port)
 				local TCP_NODE_IP=$(get_host_ip "ipv4" $address)
-				local TCP_NODE_TYPE=$(echo $(config_get $temp_server type) | tr 'A-Z' 'a-z')
+				local TCP_NODE_TYPE=$(echo $(config_get $node type) | tr 'A-Z' 'a-z')
 				[ -n "$TCP_NODE_IP" -a -n "$TCP_NODE_PORT" ] && $iptables_nat -A PSW -p tcp -d $TCP_NODE_IP -m multiport --dports $TCP_NODE_PORT -j RETURN
 				if [ "$TCP_NODE_TYPE" == "brook" ]; then
 					$iptables_mangle -A PSW_ACL -p tcp -m socket -j MARK --set-mark 1
@@ -422,15 +423,14 @@ add_firewall_rule() {
 	if [ "$UDP_NODE_NUM" -ge 1 ]; then
 		for i in $(seq 1 $UDP_NODE_NUM); do
 			local k=$i
-			local local_port=104$k
-			eval temp_server=\$UDP_NODE$k
+			eval node=\$UDP_NODE$k
 			eval local_port=\$UDP_REDIR_PORT$k
 			#  生成UDP转发规则
-			if [ "$temp_server" != "nil" ]; then
-				local address=$(config_get $temp_server address)
-				local UDP_NODE_PORT=$(config_get $temp_server port)
+			if [ "$node" != "nil" ]; then
+				local address=$(config_get $node address)
+				local UDP_NODE_PORT=$(config_get $node port)
 				local UDP_NODE_IP=$(get_host_ip "ipv4" $address)
-				local UDP_NODE_TYPE=$(echo $(config_get $temp_server type) | tr 'A-Z' 'a-z')
+				local UDP_NODE_TYPE=$(echo $(config_get $node type) | tr 'A-Z' 'a-z')
 				[ -n "$UDP_NODE_IP" -a -n "$UDP_NODE_PORT" ] && $iptables_mangle -A PSW -p udp -d $UDP_NODE_IP -m multiport --dports $UDP_NODE_PORT -j RETURN
 				[ "$UDP_NODE_TYPE" == "brook" ] && $iptables_mangle -A PSW_ACL -p udp -m socket -j MARK --set-mark 1
 				#  全局模式

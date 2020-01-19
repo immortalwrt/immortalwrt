@@ -150,16 +150,15 @@ get_remote_config(){
 	add_mode="$subscrib_remark"
 	[ -n "$3" ] && add_mode="导入"
 	new_node_type=$(echo $1 | tr '[a-z]' '[A-Z]')
-	decode_link="$2"
 	if [ "$1" == "ss" ]; then
-		decode_link=$(ss_decode $decode_link)
+		decode_link=$(ss_decode $2)
 		ss_encrypt_method=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		password=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $1}')
 		node_address=$(echo "$decode_link" | awk -F ':' '{print $2}' | awk -F '@' '{print $2}')
 		node_port=$(echo "$decode_link" | awk -F '@' '{print $2}' | awk -F '#' '{print $1}' | awk -F ':' '{print $2}')
 		remarks=$(urldecode $(echo "$decode_link" | awk -F '#' '{print $2}'))
 	elif [ "$1" == "ssr" ]; then
-		decode_link=$(decode_url_link $decode_link 1)
+		decode_link=$(decode_url_link $2 1)
 		node_address=$(echo "$decode_link" | awk -F ':' '{print $1}')
 		node_port=$(echo "$decode_link" | awk -F ':' '{print $2}')
 		protocol=$(echo "$decode_link" | awk -F ':' '{print $3}')

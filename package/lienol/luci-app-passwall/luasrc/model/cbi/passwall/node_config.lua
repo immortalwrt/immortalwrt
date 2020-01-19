@@ -1,5 +1,6 @@
 local d = require "luci.dispatcher"
 local ipkg = require("luci.model.ipkg")
+local uci = require"luci.model.uci".cursor()
 local api = require "luci.model.cbi.passwall.api.api"
 
 local appname = "passwall"
@@ -9,11 +10,22 @@ local function get_customed_path(e)
 end
 
 local function is_finded(e)
-    return luci.sys.exec("find /usr/*bin %s -iname %s -type f" % {get_customed_path(e), e}) ~= "" and
-               true or false
+    return luci.sys.exec("find /usr/*bin %s -iname %s -type f" %
+                             {get_customed_path(e), e}) ~= "" and true or false
 end
 
 local function is_installed(e) return ipkg.installed(e) end
+
+local n = {}
+uci:foreach(appname, "nodes", function(e)
+    if e.type and e.type == "V2ray" and e.remarks and e.port then
+        n[e[".name"]] = "[%s] %s:%s" % {e.remarks, e.address, e.port}
+    end
+end)
+
+local key_table = {}
+for key, _ in pairs(n) do table.insert(key_table, key) end
+table.sort(key_table)
 
 local ss_encrypt_method_list = {
     "rc4-md5", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "aes-128-ctr",
@@ -69,6 +81,7 @@ if is_finded("ss-redir") then type:value("SS", translate("Shadowsocks")) end
 if is_finded("ssr-redir") then type:value("SSR", translate("ShadowsocksR")) end
 if is_installed("v2ray") or is_finded("v2ray") then
     type:value("V2ray", translate("V2ray"))
+    --type:value("V2ray_balancing", translate("V2ray Balancing"))
 end
 if is_installed("brook") or is_finded("brook") then
     type:value("Brook", translate("Brook"))
@@ -77,20 +90,45 @@ if is_installed("trojan") or is_finded("trojan") then
     type:value("Trojan", translate("Trojan"))
 end
 
-v2ray_protocol = s:option(ListValue, "v2ray_protocol",
+--[[v2ray_protocol = s:option(ListValue, "v2ray_protocol",
                           translate("V2ray Protocol"))
 v2ray_protocol:value("vmess", translate("Vmess"))
 v2ray_protocol:depends("type", "V2ray")
+--]]
+
+v2ray_balancing_node = s:option(DynamicList, "v2ray_balancing_node",
+                                translate("List of backup nodes"), translate(
+                                    "List of backup nodes, the first of which must be the primary node and the others the standby node."))
+for _, key in pairs(key_table) do v2ray_balancing_node:value(key, n[key]) end
+v2ray_balancing_node:depends("type", "V2ray_balancing")
 
 address = s:option(Value, "address", translate("Address (Support Domain Name)"))
 address.rmempty = false
+address:depends("type", "Socks5")
+address:depends("type", "SS")
+address:depends("type", "SSR")
+address:depends("type", "V2ray")
+address:depends("type", "Brook")
+address:depends("type", "Trojan")
 
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
 use_ipv6.default = 0
+use_ipv6:depends("type", "Socks5")
+use_ipv6:depends("type", "SS")
+use_ipv6:depends("type", "SSR")
+use_ipv6:depends("type", "V2ray")
+use_ipv6:depends("type", "Brook")
+use_ipv6:depends("type", "Trojan")
 
 port = s:option(Value, "port", translate("Port"))
 port.datatype = "port"
 port.rmempty = false
+port:depends("type", "Socks5")
+port:depends("type", "SS")
+port:depends("type", "SSR")
+port:depends("type", "V2ray")
+port:depends("type", "Brook")
+port:depends("type", "Trojan")
 
 username = s:option(Value, "username", translate("Username"))
 username:depends("type", "Socks5")
@@ -151,7 +189,8 @@ ss_plugin:value("none", translate("none"))
 if is_finded("v2ray-plugin") then ss_plugin:value("v2ray-plugin") end
 ss_plugin:depends("type", "SS")
 
-ss_plugin_v2ray_opts = s:option(Value, "ss_plugin_v2ray_opts", translate("opts"))
+ss_plugin_v2ray_opts =
+    s:option(Value, "ss_plugin_v2ray_opts", translate("opts"))
 ss_plugin_v2ray_opts:depends("ss_plugin", "v2ray-plugin")
 
 use_kcp = s:option(Flag, "use_kcp", translate("Use Kcptun"),
@@ -184,11 +223,11 @@ kcp_opts:depends("use_kcp", "1")
 
 v2ray_VMess_id = s:option(Value, "v2ray_VMess_id", translate("ID"))
 v2ray_VMess_id.password = true
-v2ray_VMess_id:depends("v2ray_protocol", "vmess")
+v2ray_VMess_id:depends("type", "V2ray")
 
 v2ray_VMess_alterId = s:option(Value, "v2ray_VMess_alterId",
                                translate("Alter ID"))
-v2ray_VMess_alterId:depends("v2ray_protocol", "vmess")
+v2ray_VMess_alterId:depends("type", "V2ray")
 
 v2ray_VMess_level =
     s:option(Value, "v2ray_VMess_level", translate("User Level"))
@@ -202,6 +241,7 @@ v2ray_stream_security = s:option(ListValue, "v2ray_stream_security",
 v2ray_stream_security:value("none", "none")
 v2ray_stream_security:value("tls", "tls")
 v2ray_stream_security:depends("type", "V2ray")
+v2ray_stream_security:depends("type", "V2ray_balancing")
 
 -- [[ TLS部分 ]] --
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
@@ -222,15 +262,16 @@ v2ray_transport:value("h2", "HTTP/2")
 v2ray_transport:value("ds", "DomainSocket")
 v2ray_transport:value("quic", "QUIC")
 v2ray_transport:depends("type", "V2ray")
+v2ray_transport:depends("type", "V2ray_balancing")
 
 -- [[ TCP部分 ]]--
 
 -- TCP伪装
 v2ray_tcp_guise = s:option(ListValue, "v2ray_tcp_guise",
                            translate("Camouflage Type"))
-v2ray_tcp_guise:depends("v2ray_transport", "tcp")
 v2ray_tcp_guise:value("none", "none")
 v2ray_tcp_guise:value("http", "http")
+v2ray_tcp_guise:depends("v2ray_transport", "tcp")
 
 -- HTTP域名
 v2ray_tcp_guise_http_host = s:option(DynamicList, "v2ray_tcp_guise_http_host",
@@ -319,6 +360,7 @@ v2ray_quic_guise:depends("v2ray_transport", "quic")
 
 v2ray_mux = s:option(Flag, "v2ray_mux", translate("Mux"))
 v2ray_mux:depends("type", "V2ray")
+v2ray_mux:depends("type", "V2ray_balancing")
 
 v2ray_mux_concurrency = s:option(Value, "v2ray_mux_concurrency",
                                  translate("Mux Concurrency"))
@@ -367,12 +409,15 @@ trojan_cert_path:depends("trojan_verify_cert", "1")
 
 -- v2ray_insecure = s:option(Flag, "v2ray_insecure", translate("allowInsecure"))
 -- v2ray_insecure:depends("type", "V2ray")
+-- v2ray_insecure:depends("type", "V2ray_balancing")
 
 function rmempty_restore()
+    address.rmempty = true
+    port.rmempty = true
     password.rmempty = true
     timeout.rmempty = true
     tcp_fast_open.rmempty = true
-    v2ray_protocol.rmempty = true
+    --v2ray_protocol.rmempty = true
     v2ray_VMess_id.rmempty = true
     v2ray_VMess_alterId.rmempty = true
 end
@@ -380,20 +425,31 @@ end
 type.validate = function(self, value)
     rmempty_restore()
     if value == "SS" then
+        address.rmempty = false
+        port.rmempty = false
         password.rmempty = false
         timeout.rmempty = false
         tcp_fast_open.rmempty = false
     elseif value == "SSR" then
+        address.rmempty = false
+        port.rmempty = false
         password.rmempty = false
         timeout.rmempty = false
         tcp_fast_open.rmempty = false
     elseif value == "V2ray" then
-        v2ray_protocol.rmempty = false
+        address.rmempty = false
+        port.rmempty = false
+        --v2ray_protocol.rmempty = false
         v2ray_VMess_id.rmempty = false
         v2ray_VMess_alterId.rmempty = false
+    elseif value == "V2ray_balancing" then
     elseif value == "Brook" then
+        address.rmempty = false
+        port.rmempty = false
         password.rmempty = false
     elseif value == "Trojan" then
+        address.rmempty = false
+        port.rmempty = false
         password.rmempty = false
         tcp_fast_open.rmempty = false
     end

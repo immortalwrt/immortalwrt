@@ -153,11 +153,11 @@ function status()
     for i = 1, socks5_node_num, 1 do
         local listen_port = luci.sys.exec(
                                 string.format(
-                                    "[ -f '/var/etc/passwall/port/Socks5_%s' ] && echo -n `cat /var/etc/passwall/port/Socks5_%s`",
+                                    "[ -f '/var/etc/passwall/port/SOCKS5_%s' ] && echo -n `cat /var/etc/passwall/port/SOCKS5_%s`",
                                     i, i))
         e["socks5_node%s_status" % i] = luci.sys.call(
                                             string.format(
-                                                "ps -w | grep -v grep | grep -i -E '%s/Socks5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
+                                                "ps -w | grep -v grep | grep -i -E '%s/SOCKS5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
                                                 appname, i, listen_port)) == 0
     end
     luci.http.prepare_content("application/json")

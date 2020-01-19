@@ -94,21 +94,6 @@ for i = 1, socks5_node_num, 1 do
     for _, key in pairs(key_table) do o:value(key, n[key]) end
 end
 
----- DNS Forward Mode
-o = s:option(ListValue, "dns_mode", translate("DNS Mode"), translate(
-                 "if has problem, please try another mode.<br />if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq."))
-o.rmempty = false
-o:reset_values()
-if is_finded("chinadns-ng") then o:value("chinadns-ng", "ChinaDNS-NG") end
-if is_finded("dns2socks") then
-    o:value("dns2socks", "dns2socks " .. translate("Need Socks5 server"))
-end
-if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
-    o:value("pdnsd", "pdnsd")
-end
-o:value("local_7913", translate("Use local port 7913 as DNS"))
-o:value("nonuse", translate("No patterns are used"))
-
 ---- China DNS Server
 o = s:option(Value, "up_china_dns", translate("China DNS Server") .. "(UDP)",
              translate(
@@ -125,26 +110,48 @@ o:value("1.2.4.8", "1.2.4.8 (CNNIC DNS)")
 o:value("210.2.4.8", "210.2.4.8 (CNNIC DNS)")
 o:value("180.76.76.76", "180.76.76.76 (" .. translate("Baidu") .. "DNS)")
 
+---- DNS Forward Mode
+o = s:option(ListValue, "dns_mode", translate("DNS Mode"), translate(
+                 "if has problem, please try another mode.<br />if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq."))
+o.rmempty = false
+o:reset_values()
+if is_finded("chinadns-ng") then o:value("chinadns-ng", "ChinaDNS-NG") end
+if is_finded("dns2socks") then
+    o:value("dns2socks",
+            "dns2socks + " .. translate("Use Socks5 Node Resolve DNS"))
+end
+if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
+    o:value("pdnsd", "pdnsd")
+end
+o:value("local_7913", translate("Use local port 7913 as DNS"))
+o:value("nonuse", translate("No patterns are used"))
+
 ---- Upstream trust DNS Server for ChinaDNS-NG
 o = s:option(Value, "up_trust_chinadns_ng_dns",
              translate("Upstream trust DNS Server for ChinaDNS-NG") .. "(UDP)",
              translate(
                  "Example: 127.0.0.1#5353 ,such as dns2socks,dns-forwarder...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."))
-o.default = "8.8.4.4,8.8.8.8"
+o.default = "pdnsd"
+if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
+    o:value("pdnsd", "pdnsd + " .. translate("Use TCP Node Resolve DNS"))
+end
+if is_finded("dns2socks") then
+    o:value("dns2socks",
+            "dns2socks + " .. translate("Use Socks5 Node Resolve DNS"))
+end
 o:value("8.8.4.4,8.8.8.8", "8.8.4.4, 8.8.8.8 (Google DNS)")
 o:value("208.67.222.222,208.67.220.220",
         "208.67.222.222, 208.67.220.220 (Open DNS)")
-if is_finded("dns2socks") then
-    o:value("dns2socks", "dns2socks " .. translate("Need Socks5 server"))
-end
 o:depends("dns_mode", "chinadns-ng")
 
 ---- Use TCP Node Resolve DNS
-o = s:option(Flag, "use_tcp_node_resolve_dns",
-             translate("Use TCP Node Resolve DNS"),
-             translate("If checked, DNS is resolved using the TCP node."))
-o.default = 1
-o:depends("dns_mode", "pdnsd")
+if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
+    o = s:option(Flag, "use_tcp_node_resolve_dns",
+                 translate("Use TCP Node Resolve DNS"),
+                 translate("If checked, DNS is resolved using the TCP node."))
+    o.default = 1
+    o:depends("dns_mode", "pdnsd")
+end
 
 ---- DNS Forward
 o = s:option(Value, "dns_forward", translate("DNS Address"))
@@ -156,6 +163,7 @@ o:value("208.67.220.220", "208.67.220.220 (Open DNS)")
 o:depends("dns_mode", "dns2socks")
 o:depends("dns_mode", "pdnsd")
 o:depends("up_trust_chinadns_ng_dns", "dns2socks")
+o:depends("up_trust_chinadns_ng_dns", "pdnsd")
 
 ---- DNS Hijack
 o = s:option(Flag, "dns_53", translate("DNS Hijack"))

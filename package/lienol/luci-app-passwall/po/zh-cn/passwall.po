@@ -223,8 +223,8 @@ msgstr "自定义"
 msgid "DNS Server"
 msgstr "DNS服务器"
 
-msgid "Need Socks5 server"
-msgstr "需要Socks5"
+msgid "Use Socks5 Node Resolve DNS"
+msgstr "使用Socks5节点解析DNS"
 
 msgid "Multi Process Option"
 msgstr "多进程并发"
@@ -778,8 +778,8 @@ msgstr "账号密码"
 msgid "Node Number"
 msgstr "节点数量"
 
-msgid "You can only set up a maximum of %s nodes for the time being"
-msgstr "目前最多只能设置%s个节点"
+msgid "You can only set up a maximum of %s nodes for the time being, Used for access control."
+msgstr "目前最多只能设置%s个节点，用于给访问控制使用。"
 
 msgid "Status Use Big Icon"
 msgstr "状态信息使用大图标"
