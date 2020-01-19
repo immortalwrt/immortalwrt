@@ -31,6 +31,10 @@ a.rmempty=true
 a=s:taboption("tab_basic", Value,"sckey",translate('SCKEY'))
 a.rmempty=true
 
+device_name=s:taboption("tab_basic", Value,"device_name",translate('本设备名称'))
+device_name.rmempty=true
+device_name.description = translate("在推送信息标题中会标识本设备名称，用于区分推送信息的来源设备")
+
 debuglevel=s:taboption("tab_basic", ListValue,"debuglevel",translate("日志调试等级"))
 debuglevel:value("",translate("关闭"))
 debuglevel:value("1",translate("简单"))

@@ -48,6 +48,7 @@ function read_config(){
 	cpuload=`get_config cpuload`
 	temperature_enable=`get_config temperature_enable`
 	temperature=`get_config temperature`
+	device_name=`get_config device_name`
 	dir="/tmp/serverchan/"
 }
 
@@ -537,6 +538,7 @@ function send(){
 				send_content=${send_content}"`cat ${dir}ipAddress | grep "$ip" | awk  '{print $3}' | grep -v "^$" | sort -u`%0D%0A%0D%0A""     总计流量：$ip_total  在线 $time1"
 			done
 		fi
+	if [ ! -z "$device_name" ] ; then send_title="【$device_name】$send_title" ;fi
 	send_title=$( echo $send_title | sed $'s/\ /%20/g'| sed $'s/\"/%22/g'| sed $'s/\#/%23/g'| sed $'s/\&/%26/g'| sed $'s/\,/%2C/g'| sed $'s/\//%2F/g'| sed $'s/\:/%3A/g'| sed $'s/\;/%3B/g'| sed $'s/\=/%3D/g'| sed $'s/\@/%40/g')
 	content=$( echo $content| sed $'s/unknown/%e6%9c%aa%e7%9f%a5%e8%ae%be%e5%a4%87/')
 	#send_content=$( echo $send_content | sed $'s/\ /%20/g'| sed $'s/\"/%22/g'| sed $'s/\#/%23/g'| sed $'s/\&/%26/g'| sed $'s/\,/%2C/g'| sed $'s/\//%2F/g'| sed $'s/\:/%3A/g'| sed $'s/\;/%3B/g'| sed $'s/\=/%3D/g'| sed $'s/\@/%40/g')
@@ -977,6 +979,7 @@ function serverchan_send(){
 	if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
 	if [ ! -z "$title" ] && [ ! -z "$content" ] ; then
 		nowtime=`date "+%Y-%m-%d %H:%M:%S"`
+		if [ ! -z "$device_name" ] ; then title="【$device_name】$title" ;fi
 		title=$( echo $title | sed $'s/\ /%20/g'| sed $'s/\"/%22/g'| sed $'s/\#/%23/g'| sed $'s/\&/%26/g'| sed $'s/\,/%2C/g'| sed $'s/\//%2F/g'| sed $'s/\:/%3A/g'| sed $'s/\;/%3B/g'| sed $'s/\=/%3D/g'| sed $'s/\@/%40/g')
 		content=$( echo $content| sed $'s/unknown/%e6%9c%aa%e7%9f%a5%e8%ae%be%e5%a4%87/')		
 		if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  进行 URL 编码，标题=$title" >> ${logfile};fi
