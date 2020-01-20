@@ -18,8 +18,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/libiptbwctl
 	SECTION:=net
-	CATEGORY:=Gargoyle
-	SUBMENU:=Network
+	CATEGORY:=Network
 	DEPENDS:=+iptables-mod-bandwidth
 	TITLE:=IPT bandwidth control library
 	URL:=http://www.gargoyle-router.com

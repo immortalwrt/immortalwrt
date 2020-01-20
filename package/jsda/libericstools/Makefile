@@ -18,8 +18,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/libericstools
 	SECTION:=libs
-	CATEGORY:=Gargoyle
-	SUBMENU:=Libraries
+	CATEGORY:=Libraries
 	TITLE:=Erics Tools
 	URL:=http://www.gargoyle-router.com
 	MAINTAINER:=Eric Bishop <eric@gargoyle-router.com>

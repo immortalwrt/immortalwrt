@@ -10,8 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/gargoyle-firewall-util
 	SECTION:=net
-	CATEGORY:=Gargoyle
-	SUBMENU:=Network
+	CATEGORY:=Network
 	TITLE:=A couple of shell script routines for firewall initialization
 	DEPENDS:=+ebtables +libericstools +uci +libiptbwctl +iptables-mod-filter \
 		+iptables-mod-ipopt +iptables-mod-conntrack-extra +iptables-mod-nat-extra \
