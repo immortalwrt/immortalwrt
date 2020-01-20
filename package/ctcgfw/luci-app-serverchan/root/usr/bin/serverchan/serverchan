@@ -207,10 +207,10 @@ fi
 
 # 流量数据
 function usage(){
-	if [ -f "/usr/bin/serverchan/wrtbwmon/wrtbwmon" ] && [ -f "/usr/bin/serverchan/wrtbwmon/readDB.awk" ] ; then
-		/usr/bin/serverchan/wrtbwmon/wrtbwmon update ${dir}usage.db
+	if [ -f "/usr/sbin/wrtbwmon" ] && [ -f "/etc/init.d/wrtbwmon" ] ; then
+		wrtbwmon update ${dir}usage.db
 	else
-		echo "`date "+%H:%M:%S"` 【！！！】流量数据文件缺失" >> ${logfile}
+		if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"` 【！！！】未安装 wrtbwmon ，流量统计不可用" >> ${logfile};fi
 	fi
 }
 
