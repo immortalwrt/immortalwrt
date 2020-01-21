@@ -1,5 +1,6 @@
 local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
+local api = require "luci.model.cbi.passwall.api.api"
 local node_section = arg[1]
 local proto = arg[2]
 local redir_port = arg[3]
@@ -7,6 +8,7 @@ local socks5_proxy_port = arg[4]
 local node = ucursor:get_all("passwall", node_section)
 local inbound_json = {}
 local inboundDetour_json = nil
+local vnext = {}
 
 if socks5_proxy_port ~= "nil" then
     inbound_json = {
@@ -41,6 +43,42 @@ if redir_port ~= "nil" then
             }
         }
     end
+end
+
+if node.v2ray_balancing_node then
+    local nodes = node.v2ray_balancing_node
+    local length = #nodes
+    for i = 1, length do
+        local id = nodes[i]
+        local vnext_json = {
+            address = api.uci_get_type_id(id, "address"),
+            port = tonumber(api.uci_get_type_id(id, "port")),
+            users = {
+                {
+                    id = api.uci_get_type_id(id, "v2ray_VMess_id"),
+                    alterId = tonumber(api.uci_get_type_id(id, "v2ray_VMess_alterId")),
+                    level = tonumber(api.uci_get_type_id(id, "v2ray_VMess_level")),
+                    security = api.uci_get_type_id(id, "v2ray_security")
+                }
+            }
+        }
+        vnext[i] = vnext_json
+    end
+else
+    vnext = {
+        {
+            address = node.address,
+            port = tonumber(node.port),
+            users = {
+                {
+                    id = node.v2ray_VMess_id,
+                    alterId = tonumber(node.v2ray_VMess_alterId),
+                    level = tonumber(node.v2ray_VMess_level),
+                    security = node.v2ray_security
+                }
+            }
+        }
+    }
 end
 
 local v2ray = {
@@ -95,22 +133,7 @@ local v2ray = {
                     header = {type = node.v2ray_quic_guise}
                 } or nil
             },
-            settings = {
-                vnext = {
-                    {
-                        address = node.address,
-                        port = tonumber(node.port),
-                        users = {
-                            {
-                                id = node.v2ray_VMess_id,
-                                alterId = tonumber(node.v2ray_VMess_alterId),
-                                level = tonumber(node.v2ray_VMess_level),
-                                security = node.v2ray_security
-                            }
-                        }
-                    }
-                }
-            }
+            settings = {vnext = vnext}
         }, -- 额外传出连接
         {protocol = "freedom", tag = "direct", settings = {keep = ""}}
     }

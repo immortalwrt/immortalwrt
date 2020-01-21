@@ -16,17 +16,6 @@ end
 
 local function is_installed(e) return ipkg.installed(e) end
 
-local n = {}
-uci:foreach(appname, "nodes", function(e)
-    if e.type and e.type == "V2ray" and e.remarks and e.port then
-        n[e[".name"]] = "[%s] %s:%s" % {e.remarks, e.address, e.port}
-    end
-end)
-
-local key_table = {}
-for key, _ in pairs(n) do table.insert(key_table, key) end
-table.sort(key_table)
-
 local ss_encrypt_method_list = {
     "rc4-md5", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "aes-128-ctr",
     "aes-192-ctr", "aes-256-ctr", "bf-cfb", "camellia-128-cfb",
@@ -81,7 +70,7 @@ if is_finded("ss-redir") then type:value("SS", translate("Shadowsocks")) end
 if is_finded("ssr-redir") then type:value("SSR", translate("ShadowsocksR")) end
 if is_installed("v2ray") or is_finded("v2ray") then
     type:value("V2ray", translate("V2ray"))
-    --type:value("V2ray_balancing", translate("V2ray Balancing"))
+    type:value("V2ray_balancing", translate("V2ray Balancing"))
 end
 if is_installed("brook") or is_finded("brook") then
     type:value("Brook", translate("Brook"))
@@ -94,10 +83,22 @@ v2ray_protocol = s:option(ListValue, "v2ray_protocol",
                           translate("V2ray Protocol"))
 v2ray_protocol:value("vmess", translate("Vmess"))
 v2ray_protocol:depends("type", "V2ray")
+v2ray_protocol:depends("type", "V2ray_balancing")
+
+local n = {}
+uci:foreach(appname, "nodes", function(e)
+    if e.type and e.type == "V2ray" and e.remarks and e.port then
+        n[e[".name"]] = "[%s] %s:%s" % {e.remarks, e.address, e.port}
+    end
+end)
+
+local key_table = {}
+for key, _ in pairs(n) do table.insert(key_table, key) end
+table.sort(key_table)
 
 v2ray_balancing_node = s:option(DynamicList, "v2ray_balancing_node",
-                                translate("List of backup nodes"), translate(
-                                    "List of backup nodes, the first of which must be the primary node and the others the standby node."))
+                                translate("Load balancing node list"), translate(
+                                    "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/app/balance.html'>document</a>"))
 for _, key in pairs(key_table) do v2ray_balancing_node:value(key, n[key]) end
 v2ray_balancing_node:depends("type", "V2ray_balancing")
 

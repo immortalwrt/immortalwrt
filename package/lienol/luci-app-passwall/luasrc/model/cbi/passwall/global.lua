@@ -16,12 +16,15 @@ end
 
 local n = {}
 uci:foreach(appname, "nodes", function(e)
-    if e.type and e.address and e.remarks then
+    local type = e.type
+    local address = e.address
+    if address == nil then address = "" end
+    if type and address and e.remarks then
         if e.use_kcp and e.use_kcp == "1" then
             n[e[".name"]] = "%s+%s：[%s] %s" %
-                                {e.type, "Kcptun", e.remarks, e.address}
+                                {translate(type), "Kcptun", e.remarks, address}
         else
-            n[e[".name"]] = "%s：[%s] %s" % {e.type, e.remarks, e.address}
+            n[e[".name"]] = "%s：[%s] %s" % {translate(type), e.remarks, address}
         end
     end
 end)
@@ -153,16 +156,22 @@ if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
     o:depends("dns_mode", "pdnsd")
 end
 
----- DNS Forward
-o = s:option(Value, "dns_forward", translate("DNS Address"))
+o = s:option(Value, "dns2socks_forward", translate("DNS Address"))
 o.default = "8.8.4.4"
 o:value("8.8.4.4", "8.8.4.4 (Google DNS)")
 o:value("8.8.8.8", "8.8.8.8 (Google DNS)")
 o:value("208.67.222.222", "208.67.222.222 (Open DNS)")
 o:value("208.67.220.220", "208.67.220.220 (Open DNS)")
 o:depends("dns_mode", "dns2socks")
-o:depends("dns_mode", "pdnsd")
 o:depends("up_trust_chinadns_ng_dns", "dns2socks")
+
+---- DNS Forward
+o = s:option(Value, "dns_forward", translate("DNS Address"))
+o.default = "8.8.4.4, 8.8.8.8"
+o:value("8.8.4.4, 8.8.8.8", "8.8.4.4, 8.8.8.8 (Google DNS)")
+o:value("208.67.222.222", "208.67.222.222 (Open DNS)")
+o:value("208.67.220.220", "208.67.220.220 (Open DNS)")
+o:depends("dns_mode", "pdnsd")
 o:depends("up_trust_chinadns_ng_dns", "pdnsd")
 
 ---- DNS Hijack

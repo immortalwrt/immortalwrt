@@ -75,7 +75,7 @@ if api.uci_get_type("global_other", "compact_display_nodes", "0") == "1" then
         local type = api.uci_get_type_id(n, "type") or ""
         local address = api.uci_get_type_id(n, "address") or ""
         local port = api.uci_get_type_id(n, "port") or ""
-        if is_sub == "" and group == "" then str = str .. type .. "：" end
+        if is_sub == "" and group == "" then str = str .. translate(type) .. "：" end
         str = str .. remarks
         if address ~= "" and port ~= "" then
             local s = " （" .. address .. ":" .. port .. "）"
@@ -103,6 +103,10 @@ else
 
     ---- Type
     o = s:option(DummyValue, "type", translate("Type"))
+    o.cfgvalue = function(t, n)
+        local v = Value.cfgvalue(t, n)
+        return translate(v)
+    end
 
     ---- Address
     o = s:option(DummyValue, "address", translate("Address"))

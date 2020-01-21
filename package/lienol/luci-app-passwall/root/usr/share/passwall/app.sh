@@ -273,15 +273,17 @@ gen_start_config() {
 	local_port=$2
 	redir_type=$3
 	config_file=$4
+	type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
 	remarks=$(config_n_get $node remarks)
 	server_host=$(config_n_get $node address)
-	use_ipv6=$(config_n_get $node use_ipv6)
-	network_type="ipv4"
-	[ "$use_ipv6" == "1" ] && network_type="ipv6"
-	server_ip=$(get_host_ip $network_type $server_host)
 	port=$(config_n_get $node port)
-	type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
-	echolog "$redir_type节点：$remarks，节点地址端口：${server_ip}:${port}"
+	[ -n "$server_host" -a -n "$port" ] && {
+		use_ipv6=$(config_n_get $node use_ipv6)
+		network_type="ipv4"
+		[ "$use_ipv6" == "1" ] && network_type="ipv6"
+		server_ip=$(get_host_ip $network_type $server_host)
+		echolog "$redir_type节点：$remarks，节点地址端口：${server_ip}:${port}"
+	}
 
 	if [ "$redir_type" == "SOCKS5" ]; then
 		if [ "$network_type" == "ipv6" ]; then
@@ -443,6 +445,28 @@ gen_start_config() {
 			#	$redsocks_bin -c $redsocks_config_file >/dev/null &
 			#}
 		elif [ "$type" == "v2ray" ]; then
+			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
+			v2ray_path=$(config_t_get global_app v2ray_file $(find_bin v2ray))
+			if [ -f "${v2ray_path}/v2ray" ]; then
+				${v2ray_path}/v2ray -config=$config_file >/dev/null &
+			else
+				echolog "找不到V2ray客户端主程序，无法启用！"
+			fi
+		elif [ "$type" == "v2ray_balancing" ]; then
+			local balancing_node=$(config_n_get $node v2ray_balancing_node)
+			balancing_node_address=""
+			for node_id in $balancing_node
+			do
+				local address=$(config_n_get $node_id address)
+				local port=$(config_n_get $node_id port)
+				local temp=""
+				if [ -z "$balancing_node_address" ]; then
+					temp="${address}:${port}"
+				else
+					temp="${balancing_node_address}\n${address}:${port}"
+				fi
+				balancing_node_address="$temp"
+			done
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
 			v2ray_path=$(config_t_get global_app v2ray_file $(find_bin v2ray))
 			if [ -f "${v2ray_path}/v2ray" ]; then
@@ -659,7 +683,8 @@ start_dns() {
 		if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
 			dns2socks_bin=$(find_bin dns2socks)
 			[ -n "$dns2socks_bin" ] && {
-				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 ${DNS_FORWARD}:53 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
+				DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
+				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
 				echolog "运行DNS转发模式：dns2socks..."
 			}
 		else
@@ -671,6 +696,7 @@ start_dns() {
 		pdnsd_bin=$(find_bin pdnsd)
 		[ -n "$pdnsd_bin" ] && {
 			gen_pdnsd_config $DNS_PORT "cache"
+			DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
 			nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
 			echolog "运行DNS转发模式：pdnsd..."
 		}
@@ -693,18 +719,20 @@ start_dns() {
 					gen_pdnsd_config $other_port
 					pdnsd_bin=$(find_bin pdnsd)
 					[ -n "$pdnsd_bin" ] && {
+						DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
 						nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
 						nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-						echolog "运行DNS转发模式：ChinaDNS-NG + pdnsd(${DNS_FORWARD}:53)，国内DNS：$UP_CHINA_DNS"
+						echolog "运行DNS转发模式：ChinaDNS-NG + pdnsd($DNS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 					}
 				fi
 			elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
 				if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
 					dns2socks_bin=$(find_bin dns2socks)
 					[ -n "$dns2socks_bin" ] && {
-						nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 ${DNS_FORWARD}:53 127.0.0.1:$other_port >/dev/null 2>&1 &
+						DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
+						nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$other_port >/dev/null 2>&1 &
 						nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-						echolog "运行DNS转发模式：ChinaDNS-NG + dns2socks(${DNS_FORWARD}:53)，国内DNS：$UP_CHINA_DNS"
+						echolog "运行DNS转发模式：ChinaDNS-NG + dns2socks($DNS2SOCKS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 					}
 				else
 					echolog "dns2socks模式需要使用Socks5代理节点，请开启！"
@@ -874,7 +902,7 @@ gen_pdnsd_config() {
 			max_ttl = 1w;
 			timeout = 10;
 			tcp_qtimeout = 1;
-			par_queries = 2;
+			par_queries = 1;
 			neg_domain_pol = on;
 			udpbufsize = 1024;
 		}
@@ -892,7 +920,6 @@ gen_pdnsd_config() {
 				interval = 60;
 				uptest = none;
 				purge_cache = off;
-				caching = on;
 			}
 			
 		EOF
@@ -909,7 +936,6 @@ gen_pdnsd_config() {
 				interval = 60;
 				uptest = none;
 				purge_cache = off;
-				caching = on;
 			}
 			server {
 				label = "opendns";
@@ -920,7 +946,6 @@ gen_pdnsd_config() {
 				interval = 60;
 				uptest = none;
 				purge_cache = off;
-				caching = on;
 			}
 			source {
 				ttl = 86400;

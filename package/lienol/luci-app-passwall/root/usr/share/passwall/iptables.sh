@@ -40,7 +40,7 @@ get_ip_mark() {
 	fi
 }
 
-get_dst_list() {
+dst() {
 	echo "-m set --match-set $1 dst"
 }
 
@@ -148,13 +148,13 @@ load_acl() {
 				[ "$TCP_NODE" != "nil" ] && {
 					#local TCP_NODE_TYPE=$(echo $(config_get $TCP_NODE type) | tr 'A-Z' 'a-z')
 					eval tcp_redir_port=\$TCP_REDIR_PORT$tcp_node
-					$iptables_nat -A PSW_ACL $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p tcp $(get_dst_list $IPSET_BLACKLIST) -m comment --comment "$remarks" -j REDIRECT --to-ports $tcp_redir_port
+					$iptables_nat -A PSW_ACL $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p tcp $(dst $IPSET_BLACKLIST) -m comment --comment "$remarks" -j REDIRECT --to-ports $tcp_redir_port
 					$iptables_nat -A PSW_ACL $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p tcp $(factor $tcp_redir_ports "-m multiport --dport") -m comment --comment "$remarks" -$(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)$tcp_node
 				}
 				[ "$UDP_NODE" != "nil" ] && {
 					#local UDP_NODE_TYPE=$(echo $(config_get $UDP_NODE type) | tr 'A-Z' 'a-z')
 					eval udp_redir_port=\$UDP_REDIR_PORT$udp_node
-					$iptables_mangle -A PSW_ACL $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p udp $(get_dst_list $IPSET_BLACKLIST) -m comment --comment "$remarks" -j TPROXY --on-port $udp_redir_port --tproxy-mark 0x1/0x1
+					$iptables_mangle -A PSW_ACL $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p udp $(dst $IPSET_BLACKLIST) -m comment --comment "$remarks" -j TPROXY --on-port $udp_redir_port --tproxy-mark 0x1/0x1
 					$iptables_mangle -A PSW_ACL $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p udp $(factor $udp_redir_ports "-m multiport --dport") -m comment --comment "$remarks" -$(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)$udp_node
 				}
 			fi
@@ -240,15 +240,15 @@ add_firewall_rule() {
 	config_foreach filter_vpsip "nodes"
 	
 	$iptables_nat -N PSW
-	$iptables_nat -A PSW $(get_dst_list $IPSET_LANIPLIST) -j RETURN
-	$iptables_nat -A PSW $(get_dst_list $IPSET_VPSIPLIST) -j RETURN
-	$iptables_nat -A PSW $(get_dst_list $IPSET_WHITELIST) -j RETURN
+	$iptables_nat -A PSW $(dst $IPSET_LANIPLIST) -j RETURN
+	$iptables_nat -A PSW $(dst $IPSET_VPSIPLIST) -j RETURN
+	$iptables_nat -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$iptables_nat -N PSW_ACL
 
 	$iptables_mangle -N PSW
-	$iptables_mangle -A PSW $(get_dst_list $IPSET_LANIPLIST) -j RETURN
-	$iptables_mangle -A PSW $(get_dst_list $IPSET_VPSIPLIST) -j RETURN
-	$iptables_mangle -A PSW $(get_dst_list $IPSET_WHITELIST) -j RETURN
+	$iptables_mangle -A PSW $(dst $IPSET_LANIPLIST) -j RETURN
+	$iptables_mangle -A PSW $(dst $IPSET_VPSIPLIST) -j RETURN
+	$iptables_mangle -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$iptables_mangle -N PSW_ACL
 
 	if [[ "$TCP_NODE_NUM" -ge 1 ]] || [[ "$UDP_NODE_NUM" -ge 1 ]]; then
@@ -303,48 +303,56 @@ add_firewall_rule() {
 				if [ "$TCP_NODE_TYPE" == "brook" ]; then
 					$iptables_mangle -A PSW_ACL -p tcp -m socket -j MARK --set-mark 1
 
-					# $iptables_mangle -A PSW$k -p tcp $(get_dst_list $IPSET_BLACKLIST) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+					# $iptables_mangle -A PSW$k -p tcp $(dst $IPSET_BLACKLIST) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 					# 全局模式
 					$iptables_mangle -A PSW_GLO$k -p tcp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# GFWLIST模式
-					$iptables_mangle -A PSW_GFW$k -p tcp $(get_dst_list $IPSET_GFW) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+					$iptables_mangle -A PSW_GFW$k -p tcp $(dst $IPSET_GFW) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# 大陆白名单模式
-					$iptables_mangle -A PSW_CHN$k -p tcp $(get_dst_list $IPSET_CHN) -j RETURN
+					$iptables_mangle -A PSW_CHN$k -p tcp $(dst $IPSET_CHN) -j RETURN
 					$iptables_mangle -A PSW_CHN$k -p tcp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# 回国模式
-					$iptables_mangle -A PSW_HOME$k -p tcp $(get_dst_list $IPSET_CHN) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+					$iptables_mangle -A PSW_HOME$k -p tcp $(dst $IPSET_CHN) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 					# 游戏模式
-					$iptables_mangle -A PSW_GAME$k -p tcp $(get_dst_list $IPSET_CHN) -j RETURN
+					$iptables_mangle -A PSW_GAME$k -p tcp $(dst $IPSET_CHN) -j RETURN
 
 					# 用于本机流量转发，默认只走router
-					$iptables_mangle -A PSW -s $lan_ip -p tcp $(get_dst_list $IPSET_ROUTER) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
-					$iptables_mangle -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(get_dst_list $IPSET_ROUTER) $iptables_comment -j MARK --set-mark 1
+					$iptables_mangle -A PSW -s $lan_ip -p tcp $(dst $IPSET_ROUTER) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+					$iptables_mangle -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_ROUTER) $iptables_comment -j MARK --set-mark 1
 				else
 					# 全局模式
 					$iptables_nat -A PSW_GLO$k -p tcp -j REDIRECT --to-ports $local_port
 
 					# GFWLIST模式
-					$iptables_nat -A PSW_GFW$k -p tcp $(get_dst_list $IPSET_ROUTER) -j REDIRECT --to-ports $local_port
-					$iptables_nat -A PSW_GFW$k -p tcp $(get_dst_list $IPSET_GFW) -j REDIRECT --to-ports $local_port
+					$iptables_nat -A PSW_GFW$k -p tcp $(dst $IPSET_ROUTER) -j REDIRECT --to-ports $local_port
+					$iptables_nat -A PSW_GFW$k -p tcp $(dst $IPSET_GFW) -j REDIRECT --to-ports $local_port
 
 					# 大陆白名单模式
-					$iptables_nat -A PSW_CHN$k -p tcp $(get_dst_list $IPSET_CHN) -j RETURN
+					$iptables_nat -A PSW_CHN$k -p tcp $(dst $IPSET_CHN) -j RETURN
 					#$iptables_nat -A PSW_CHN$k -p tcp -m geoip ! --destination-country CN -j REDIRECT --to-ports $local_port
 					$iptables_nat -A PSW_CHN$k -p tcp -j REDIRECT --to-ports $local_port
 
 					# 回国模式
 					#$iptables_nat -A PSW_HOME$k -p tcp -m geoip --destination-country CN -j REDIRECT --to-ports $local_port
-					$iptables_nat -A PSW_HOME$k -p tcp $(get_dst_list $IPSET_CHN) -j REDIRECT --to-ports $local_port
+					$iptables_nat -A PSW_HOME$k -p tcp $(dst $IPSET_CHN) -j REDIRECT --to-ports $local_port
 
 					# 游戏模式
-					$iptables_nat -A PSW_GAME$k -p tcp $(get_dst_list $IPSET_CHN) -j RETURN
+					$iptables_nat -A PSW_GAME$k -p tcp $(dst $IPSET_CHN) -j RETURN
 
 					[ "$k" == 1 ] && {
-						[ "$use_tcp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && $iptables_nat -I PSW 2 -p tcp -d $DNS_FORWARD -m multiport --dport 1:65535 -j REDIRECT --to-ports $local_port
+						[ "$use_tcp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && {
+							for dns in $DNS_FORWARD
+							do
+								local dns_ip=$(echo $dns | awk -F "#" '{print $1}')
+								local dns_port=$(echo $dns | awk -F "#" '{print $2}')
+								[ -z "$dns_port" ] && dns_port=53
+								$iptables_nat -I PSW 2 -p tcp -d $dns_ip --dport $dns_port -j REDIRECT --to-ports $local_port
+							done
+						}
 
 						is_add_prerouting=0
 
@@ -376,15 +384,23 @@ add_firewall_rule() {
 						fi
 						# 用于本机流量转发，默认只走router
 						#$iptables_nat -I OUTPUT -j PSW
-						$iptables_nat -A OUTPUT $(get_dst_list $IPSET_LANIPLIST) $iptables_comment -j RETURN
-						[ "$use_tcp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && $iptables_nat -A OUTPUT -p tcp -d $DNS_FORWARD -m multiport --dport 1:65535 $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
-						$iptables_nat -A OUTPUT $(get_dst_list $IPSET_VPSIPLIST) $iptables_comment -j RETURN
-						$iptables_nat -A OUTPUT $(get_dst_list $IPSET_WHITELIST) $iptables_comment -j RETURN
-						$iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(get_dst_list $IPSET_ROUTER) $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
-						$iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(get_dst_list $IPSET_BLACKLIST) $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
+						$iptables_nat -A OUTPUT $(dst $IPSET_LANIPLIST) $iptables_comment -j RETURN
+						[ "$use_tcp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && {
+							for dns in $DNS_FORWARD
+							do
+								local dns_ip=$(echo $dns | awk -F "#" '{print $1}')
+								local dns_port=$(echo $dns | awk -F "#" '{print $2}')
+								[ -z "$dns_port" ] && dns_port=53
+								$iptables_nat -A OUTPUT -p tcp -d $dns_ip --dport $dns_port $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
+							done
+						}
+						$iptables_nat -A OUTPUT $(dst $IPSET_VPSIPLIST) $iptables_comment -j RETURN
+						$iptables_nat -A OUTPUT $(dst $IPSET_WHITELIST) $iptables_comment -j RETURN
+						$iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_ROUTER) $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
+						$iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_BLACKLIST) $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
 
 						[ "$LOCALHOST_PROXY_MODE" == "global" ] && $iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
-						[ "$LOCALHOST_PROXY_MODE" == "gfwlist" ] && $iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(get_dst_list $IPSET_GFW) $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
+						[ "$LOCALHOST_PROXY_MODE" == "gfwlist" ] && $iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_GFW) $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
 						[ "$LOCALHOST_PROXY_MODE" == "chnroute" ] && {
 							$iptables_nat -A OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS -m set ! --match-set $IPSET_CHN dst $iptables_comment -j REDIRECT --to-ports $TCP_REDIR_PORT1
 						}
@@ -437,36 +453,39 @@ add_firewall_rule() {
 				$iptables_mangle -A PSW_GLO$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  GFWLIST模式
-				$iptables_mangle -A PSW_GFW$k -p udp $(get_dst_list $IPSET_ROUTER) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
-				$iptables_mangle -A PSW_GFW$k -p udp $(get_dst_list $IPSET_GFW) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+				$iptables_mangle -A PSW_GFW$k -p udp $(dst $IPSET_ROUTER) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+				$iptables_mangle -A PSW_GFW$k -p udp $(dst $IPSET_GFW) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  大陆白名单模式
-				$iptables_mangle -A PSW_CHN$k -p udp $(get_dst_list $IPSET_CHN) -j RETURN
+				$iptables_mangle -A PSW_CHN$k -p udp $(dst $IPSET_CHN) -j RETURN
 				$iptables_mangle -A PSW_CHN$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  回国模式
-				$iptables_mangle -A PSW_HOME$k -p udp $(get_dst_list $IPSET_CHN) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+				$iptables_mangle -A PSW_HOME$k -p udp $(dst $IPSET_CHN) -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 
 				#  游戏模式
-				$iptables_mangle -A PSW_GAME$k -p udp $(get_dst_list $IPSET_CHN) -j RETURN
+				$iptables_mangle -A PSW_GAME$k -p udp $(dst $IPSET_CHN) -j RETURN
 				$iptables_mangle -A PSW_GAME$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 				
 				# 用于本机流量转发，默认只走router
-				$iptables_mangle -A OUTPUT -p udp $(get_dst_list $IPSET_LANIPLIST) $iptables_comment -j RETURN
+				$iptables_mangle -A OUTPUT -p udp $(dst $IPSET_LANIPLIST) $iptables_comment -j RETURN
 				[ "$use_udp_node_resolve_dns" == 1 -a -n "$DNS_FORWARD" ] && {
 					for dns in $DNS_FORWARD
 					do
-						$iptables_mangle -A OUTPUT -p udp -d $dns $iptables_comment -j MARK --set-mark 1
-						$iptables_mangle -I PSW 2 -p udp -d $dns $iptables_comment -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
+						local dns_ip=$(echo $dns | awk -F "#" '{print $1}')
+						local dns_port=$(echo $dns | awk -F "#" '{print $2}')
+						[ -z "$dns_port" ] && dns_port=53
+						$iptables_mangle -A OUTPUT -p udp -d $dns_ip --dport $dns_port $iptables_comment -j MARK --set-mark 1
+						$iptables_mangle -I PSW 2 -p udp -d $dns_ip --dport $dns_port $iptables_comment -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
 					done
 				}
-				$iptables_mangle -A OUTPUT -p udp $(get_dst_list $IPSET_VPSIPLIST) $iptables_comment -j RETURN
-				$iptables_mangle -A OUTPUT -p udp $(get_dst_list $IPSET_WHITELIST) $iptables_comment -j RETURN
-				$iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $(get_dst_list $IPSET_ROUTER) $iptables_comment -j MARK --set-mark 1
-				$iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $(get_dst_list $IPSET_BLACKLIST) $iptables_comment -j MARK --set-mark 1
+				$iptables_mangle -A OUTPUT -p udp $(dst $IPSET_VPSIPLIST) $iptables_comment -j RETURN
+				$iptables_mangle -A OUTPUT -p udp $(dst $IPSET_WHITELIST) $iptables_comment -j RETURN
+				$iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $(dst $IPSET_ROUTER) $iptables_comment -j MARK --set-mark 1
+				$iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $(dst $IPSET_BLACKLIST) $iptables_comment -j MARK --set-mark 1
 
 				[ "$LOCALHOST_PROXY_MODE" == "global" ] && $iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $iptables_comment -j MARK --set-mark 1
-				[ "$LOCALHOST_PROXY_MODE" == "gfwlist" ] && $iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $(get_dst_list $IPSET_GFW) $iptables_comment -j MARK --set-mark 1
+				[ "$LOCALHOST_PROXY_MODE" == "gfwlist" ] && $iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS $(dst $IPSET_GFW) $iptables_comment -j MARK --set-mark 1
 				[ "$LOCALHOST_PROXY_MODE" == "chnroute" ] && {
 					$iptables_mangle -A OUTPUT -p udp -m multiport --dport $UDP_REDIR_PORTS -m set ! --match-set $IPSET_CHN dst $iptables_comment -j MARK --set-mark 1
 				}
@@ -477,6 +496,19 @@ add_firewall_rule() {
 		$iptables_mangle -A PSW -j PSW_ACL
 	else
 		echolog "UDP节点未选择，无法转发UDP！"
+	fi
+		
+	if [ -n "$balancing_node_address" ]; then
+		balancing_node_address=$(echo -e $balancing_node_address)
+		for balancing_node in $balancing_node_address
+		do
+			local ip=$(echo $balancing_node | awk -F ":" '{print $1}')
+			local port=$(echo $balancing_node | awk -F ":" '{print $2}')
+			$iptables_nat -I PSW 2 -p tcp -d $ip --dport $port -j RETURN
+			$iptables_nat -I OUTPUT 2 -p tcp -d $ip --dport $port $iptables_comment -j RETURN
+			$iptables_mangle -I PSW 2 -p udp -d $ip --dport $port -j RETURN
+			$iptables_mangle -I OUTPUT 2 -p udp -d $ip --dport $port $iptables_comment -j RETURN
+		done
 	fi
 
 	$iptables_mangle -A PREROUTING -j PSW
@@ -490,11 +522,11 @@ add_firewall_rule() {
 		[ "$UDP_NODE1" != "nil" ] && $iptables_mangle -A PSW_ACL -p udp -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)
 	else
 		[ "$TCP_NODE1" != "nil" ] && {
-			$iptables_nat -A PSW_ACL -p tcp $(get_dst_list $IPSET_BLACKLIST) -m comment --comment "Default" -j REDIRECT --to-ports $TCP_REDIR_PORT1
+			$iptables_nat -A PSW_ACL -p tcp $(dst $IPSET_BLACKLIST) -m comment --comment "Default" -j REDIRECT --to-ports $TCP_REDIR_PORT1
 			$iptables_nat -A PSW_ACL -p tcp -m multiport --dport $TCP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)1
 		}
 		[ "$UDP_NODE1" != "nil" ] && {
-			$iptables_mangle -A PSW_ACL -p udp $(get_dst_list $IPSET_BLACKLIST) -m comment --comment "Default" -j TPROXY --on-port $UDP_REDIR_PORT1 --tproxy-mark 0x1/0x1
+			$iptables_mangle -A PSW_ACL -p udp $(dst $IPSET_BLACKLIST) -m comment --comment "Default" -j TPROXY --on-port $UDP_REDIR_PORT1 --tproxy-mark 0x1/0x1
 			$iptables_mangle -A PSW_ACL -p udp -m multiport --dport $UDP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)1
 		}
 	fi
