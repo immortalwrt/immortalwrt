@@ -72,6 +72,7 @@ define Package/$(PKG_NAME)-client/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/client_linux_$(PKG_ARCH_KCPTUN) $(1)/usr/bin/kcptun-client
 endef
 
+<<<<<<< HEAD
 define Package/$(PKG_NAME)-server/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/server_linux_$(PKG_ARCH_KCPTUN) $(1)/usr/bin/kcptun-server
@@ -79,3 +80,6 @@ endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)-client))
 $(eval $(call BuildPackage,$(PKG_NAME)-server))
+=======
+$(eval $(call BuildPackage,$(PKG_NAME)))
+>>>>>>> 46fc685ec42e327ffe8b4afd166321eacfd4290a
