@@ -56,9 +56,6 @@ sed -i 's/cbi.submit\"] = true/cbi.submit\"] = \"1\"/g' /usr/lib/lua/luci/dispat
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
 
-<<<<<<< HEAD
 mv /etc/openwrt_banner /etc/banner
 
-=======
->>>>>>> 46fc685ec42e327ffe8b4afd166321eacfd4290a
 exit 0
