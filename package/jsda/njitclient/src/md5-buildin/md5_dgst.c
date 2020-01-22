@@ -415,7 +415,7 @@ void HASH_BLOCK_DATA_ORDER (MD5_CTX *c, const void *p, size_t num)
 	a=ROTATE(a,s); \
 	a+=b; };
 
-const char MD5_version[]="MD5" OPENSSL_VERSION_PTEXT;
+const char MD5_version[]="MD5";
 
 /* Implemented from RFC1321 The MD5 Message-Digest Algorithm
  */
