@@ -20,7 +20,7 @@ sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git
 
 ## Clone the source
 ```bash
-git clone https://github.com/project-openwrt/openwrt -b master && cd openwrt
+git clone https://github.com/project-openwrt/openwrt -b master --depth 1 && cd openwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 For developer, you may use `dev` branch instead of `master`.
