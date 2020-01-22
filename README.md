@@ -41,8 +41,8 @@ make menuconfig
 make -j1 V=s
 ```
 
-# Contributed
+## Contributed
 ### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt/blob/master/CONTRIBUTED.md).
 
-# License
+## License
 ### [GNU General Public License v3.0](https://github.com/project-openwrt/openwrt/blob/master/LICENSE).
