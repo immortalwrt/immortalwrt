@@ -62,12 +62,12 @@ define Build/Configure
 endef
 
 define Build/Compile
-	chmod 0755 $(PKG_BUILD_DIR)/$(PKG_BUILD_DIR)/dnscrypt-proxy
+	chmod 0755 $(PKG_BUILD_DIR)/$(PKG_BUILD_DNSCRYPT)/dnscrypt-proxy
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_BUILD_DIR)/dnscrypt-proxy $(1)/usr/bin/dnscrypt-proxy
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_BUILD_DNSCRYPT)/dnscrypt-proxy $(1)/usr/bin/dnscrypt-proxy
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
