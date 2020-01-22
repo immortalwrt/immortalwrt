@@ -1,4 +1,4 @@
-# CONTRIBUTING
+# CONTRIBUTED
 ## The Source of Packages
 
 ### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
