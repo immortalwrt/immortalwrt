@@ -105,7 +105,9 @@ else
     o = s:option(DummyValue, "type", translate("Type"))
     o.cfgvalue = function(t, n)
         local v = Value.cfgvalue(t, n)
-        return translate(v)
+        if v then
+            return translate(v)
+        end
     end
 
     ---- Address
