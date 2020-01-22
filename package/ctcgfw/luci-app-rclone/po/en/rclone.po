@@ -38,6 +38,14 @@ msgstr "all address"
 msgid "configure"
 msgstr "configure"
 
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:77
+msgid "download"
+msgstr "download"
+
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:76
+msgid "download configuration"
+msgstr "download configuration"
+
 #: luci-app-rclone/luasrc/model/cbi/rclone.lua:47
 msgid "global"
 msgstr "global"
@@ -58,15 +66,15 @@ msgstr "local network address"
 msgid "localhost address"
 msgstr "localhost address"
 
-#: luci-app-rclone/luasrc/model/cbi/rclone.lua:87
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:111
 msgid "log"
 msgstr "log"
 
-#: luci-app-rclone/luasrc/model/cbi/rclone.lua:81
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:105
 msgid "password"
 msgstr "password"
 
-#: luci-app-rclone/luasrc/model/cbi/rclone.lua:91
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:115
 msgid "path"
 msgstr "path"
 
@@ -94,7 +102,7 @@ msgstr "rclone state"
 msgid "run Rclone as daemon"
 msgstr "run Rclone as daemon"
 
-#: luci-app-rclone/luasrc/model/cbi/rclone.lua:76
+#: luci-app-rclone/luasrc/model/cbi/rclone.lua:100
 msgid "username"
 msgstr "username"
 

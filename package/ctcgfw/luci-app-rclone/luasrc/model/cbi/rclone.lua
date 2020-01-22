@@ -73,6 +73,30 @@ o.placeholder = '/var/etc/rclone/rclone.conf'
 o.default = '/var/etc/rclone/rclone.conf'
 o.rmempty = false
 
+o = s:option(Button,"config_download",translate("download configuration"))
+o.inputtitle = translate("download")
+o.inputstyle = "apply"
+o.write = function()
+  	Download()
+end
+
+function Download()
+	local t,e
+	t=nixio.open(uci.get('rclone', 'config', 'config_path'),"r")
+	luci.http.header('Content-Disposition','attachment; filename="rclone.conf"')
+	luci.http.prepare_content("application/octet-stream")
+	while true do
+		e=t:read(nixio.const.buffersize)
+		if(not e)or(#e==0)then
+			break
+		else
+			luci.http.write(e)
+		end
+	end
+	t:close()
+	luci.http.close()
+end
+
 o = s:option(Value, 'username', translate('username'))
 o.placeholder = 'admin'
 o.default = 'admin'

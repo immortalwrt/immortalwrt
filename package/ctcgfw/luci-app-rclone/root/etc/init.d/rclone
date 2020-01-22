@@ -30,6 +30,8 @@ init_config() {
 	config_dir=${config_path%/*}
 	[ -d $config_dir ] || mkdir -p $config_dir
 
+	[ -f $config_path ] || touch $config_path
+
 	log_dir=${log_path%/*}
 	[ -d $log_dir ] || mkdir -p $log_dir && echo /dev/null > $log_path 
 
