@@ -165,12 +165,12 @@ m.handle = function(self, state, data)
       create_body["IPAM"]["Config"]["AuxiliaryAddresses"] = aux_address
     end
     if driver == "macvlan" then
-      create_body["IPAM"]["Options"] = {
+      create_body["Options"] = {
         macvlan_mode = data.macvlan_mode,
         parent = data.parent
       }
     elseif driver == "ipvlan" then
-      create_body["IPAM"]["Options"] = {
+      create_body["Options"] = {
         ipvlan_mode = data.ipvlan_mode
       }
     elseif driver == "overlay" then
@@ -188,8 +188,11 @@ m.handle = function(self, state, data)
       }
     end
 
-    if next(options) ~= nil then 
-      create_body["Options"] = options
+    if next(options) ~= nil then
+      create_body["Options"] = create_body["Options"] or {}
+      for k, v in pairs(options) do
+        create_body["Options"][k] = v
+      end
     end
 
     docker:append_status("Network: " .. "create" .. " " .. create_body.Name .. "...")
