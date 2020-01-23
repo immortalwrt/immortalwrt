@@ -88,31 +88,45 @@ end
 
 function smart_attr(dev)
   local dm = require "luci.model.diskman"
-  local cmd = io.popen(dm.command.smartctl ..  " --attributes -d sat /dev/%s" % dev)
+  local cmd = io.popen(dm.command.smartctl ..  " --attributes /dev/%s" % dev)
   if cmd then
     local attr = { }
-    while true do
-      local ln = cmd:read("*l")
-      if not ln then
-        break
-      elseif ln:match("^.*%d+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+") then
-        local id,attrbute,flag,value,worst,thresh,type,updated,raw = ln:match("^%s*(%d+)%s+([%a%p]+)%s+(%w+)%s+(%d+)%s+(%d+)%s+(%d+)%s+([%a%p]+)%s+(%a+)%s+[%w%p]+%s+(.+)")
-        id= "%x" % id
-        if not id:match("^%w%w") then
-          id = "0%s" % id
+    if dev:match("nvme")then
+      while true do
+        local ln = cmd:read("*l")
+        if not ln then
+          break
+        elseif ln:match("^(.-):%s+(.+)") then
+          local key, value = ln:match("^(.-):%s+(.+)")
+          attr[#attr+1]= {
+              key = key,
+              value = value
+            }
         end
-        attr[#attr+1]= {
-            id = id:upper(),
-            attrbute = attrbute,
-            flag  = flag,
-            value = value,
-            worst = worst,
-            thresh  = thresh,
-            type = type,
-            updated = updated,
-            raw  = raw
-          }
-      else
+      end
+    else
+      while true do
+        local ln = cmd:read("*l")
+        if not ln then
+          break
+        elseif ln:match("^.*%d+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+%s+.+") then
+          local id,attrbute,flag,value,worst,thresh,type,updated,raw = ln:match("^%s*(%d+)%s+([%a%p]+)%s+(%w+)%s+(%d+)%s+(%d+)%s+(%d+)%s+([%a%p]+)%s+(%a+)%s+[%w%p]+%s+(.+)")
+          id= "%x" % id
+          if not id:match("^%w%w") then
+            id = "0%s" % id
+          end
+          attr[#attr+1]= {
+              id = id:upper(),
+              attrbute = attrbute,
+              flag  = flag,
+              value = value,
+              worst = worst,
+              thresh  = thresh,
+              type = type,
+              updated = updated,
+              raw  = raw
+            }
+        end
       end
     end
   cmd:close()

@@ -16,6 +16,10 @@
             var tr = tb.insertRow(-1);
             tr.className = 'cbi-section-table-row cbi-rowstyle-' + ((i % 2) + 1);
             var td = null
+            <% if dev:match("nvme") then %>
+            tr.insertCell(-1).innerHTML = st[i].key;
+            tr.insertCell(-1).innerHTML = st[i].value;
+            <% else %>
             tr.insertCell(-1).innerHTML = st[i].id;
             tr.insertCell(-1).innerHTML = st[i].attrbute;
             tr.insertCell(-1).innerHTML = st[i].flag;
@@ -28,6 +32,7 @@
             if ((st[i].id == '05' || st[i].id == 'C5') && st[i].raw != '0') {
               tr.style.cssText = "background-color:red !important;";
             }
+            <% end %>
           }
           if (tb.rows.length == 1) {
             var tr = tb.insertRow(-1);
@@ -47,6 +52,10 @@
         <legend><%:S.M.A.R.T Attrbutes%>: /dev/<%=dev%></legend>
         <table class="cbi-section-table" id="smart_attr_table">
           <tr class="cbi-section-table-titles">
+            <% if dev:match("nvme") then %>
+            <!-- <th class="cbi-section-table-cell"><%:KEY%></th>
+            <th class="cbi-section-table-cell"><%:VALUE%></th> -->
+            <% else %>
             <th class="cbi-section-table-cell"><%:ID%></th>
             <th class="cbi-section-table-cell"><%:Attrbute%></th>
             <th class="cbi-section-table-cell"><%:Flag%></th>
@@ -56,6 +65,7 @@
             <th class="cbi-section-table-cell"><%:Type%></th>
             <th class="cbi-section-table-cell"><%:Updated%></th>
             <th class="cbi-section-table-cell"><%:Raw%></th>
+            <% end %>
           </tr>
           <tr class="cbi-section-table-row">
             <td colspan="4"><em><br /><%:Collecting data...%></em></td>

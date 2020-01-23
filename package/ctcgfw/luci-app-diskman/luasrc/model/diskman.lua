@@ -41,14 +41,17 @@ local get_smart_info = function(device)
     local attrib, val
     if section == 1 then
         attrib, val = line:match "^(.-):%s+(.+)"
+    elseif section == 2 and device:match("nvme") then
+      attrib, val = line:match("^(.-):%s+(.+)")
+      if not smart_info.health then smart_info.health = line:match(".-overall%-health.-: (.+)") end
     elseif section == 2 then
       attrib, val = line:match("^([0-9 ]+)%s+[^ ]+%s+[POSRCK-]+%s+[0-9-]+%s+[0-9-]+%s+[0-9-]+%s+[0-9-]+%s+([0-9-]+)")
       if not smart_info.health then smart_info.health = line:match(".-overall%-health.-: (.+)") end
     else
       attrib = line:match "^=== START OF (.*) SECTION ==="
-      if attrib == "INFORMATION" then
+      if attrib and attrib:match("INFORMATION") then
         section = 1
-      elseif attrib == "READ SMART DATA" then
+      elseif attrib and attrib:match("SMART DATA") then
         section = 2
       elseif not smart_info.status then
         val = line:match "^Device is in (.*) mode"
@@ -71,8 +74,8 @@ local get_smart_info = function(device)
     --   smart_info.logic_sec = smart_info.phy_sec
     elseif attrib == "Serial Number" then
       smart_info.sn = val
-    elseif attrib == "194" then
-      smart_info.temp = val .. "°C"
+    elseif attrib == "194" or attrib == "Temperature" then
+      smart_info.temp = val:match("(%d+)") .. "°C"
     elseif attrib == "Rotation Rate" then
       smart_info.rota_rate = val
     elseif attrib == "SATA Version is" then
@@ -185,7 +188,7 @@ local get_parted_info = function(device)
         partition_temp["name"] = "-"
       elseif device:match("sd") or device:match("sata") then
         partition_temp["name"] = device..partition_temp["number"]
-      elseif device:match("mmcblk") or device:match("md") then
+      elseif device:match("mmcblk") or device:match("md") or device:match("nvme") then
         partition_temp["name"] = device.."p"..partition_temp["number"]
       end
       partition_temp["fs"] = partition_temp["fs"] == "" and "raw" or partition_temp["fs"]
@@ -384,9 +387,10 @@ d.list_devices = function()
   -- get all device names (sdX and mmcblkX)
   local target_devnames = {}
   for dev in fs.dir("/dev") do
-    if dev:match("sd[a-z]$")
-      or dev:match("mmcblk%d+$")
-      or dev:match("sata[a-z]$")
+    if dev:match("^sd[a-z]$")
+      or dev:match("^mmcblk%d+$")
+      or dev:match("^sata[a-z]$")
+      or dev:match("^nvme%d+n%d+$")
       then
       table.insert(target_devnames, dev)
     end
