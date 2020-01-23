@@ -150,16 +150,19 @@ m.handle = function(self, state, data)
       Internal = internal
     }
   
-    if subnet or gateway or ip_range or next(aux_address)~=nil then
+    if subnet or gateway or ip_range then
       create_body["IPAM"]["Config"] = {
         {
           Subnet = subnet,
           Gateway = gateway,
           IPRange = ip_range,
           -- AuxAddress = aux_address
-          AuxiliaryAddresses = aux_address
+          -- AuxiliaryAddresses = aux_address
         }
       }
+    end
+    if next(aux_address)~=nil then
+      create_body["IPAM"]["Config"]["AuxiliaryAddresses"] = aux_address
     end
     if driver == "macvlan" then
       create_body["IPAM"]["Options"] = {

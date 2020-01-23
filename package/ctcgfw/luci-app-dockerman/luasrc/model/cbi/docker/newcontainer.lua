@@ -328,7 +328,7 @@ m.handle = function(self, state, data)
   local interactive = type(data.interactive) == "number" and (data.interactive == 1 and true or false) or default_config.interactive or false
   local image = data.image
   local user = data.user
-  if not image:match(".-:.+") then
+  if image and not image:match(".-:.+") then
     image = image .. ":latest"
   end
   local privileged = type(data.privileged) == "number" and (data.privileged == 1 and true or false) or default_config.privileged or false
