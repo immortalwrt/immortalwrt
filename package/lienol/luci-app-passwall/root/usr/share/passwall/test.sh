@@ -56,7 +56,7 @@ test_auto_switch() {
 			let "failcount++"
 			[ "$failcount" -ge 5 ] && {
 				echolog "自动切换检测：检测异常，切换节点"
-				TCP_NODES=$(uci get $CONFIG.@auto_switch[0].tcp_node)
+				TCP_NODES=$(uci -q get $CONFIG.@auto_switch[0].tcp_node)
 				has_backup_server=$(echo $TCP_NODES | grep $TCP_NODES1)
 				setserver=
 				if [ -z "$has_backup_server" ]; then

@@ -15,9 +15,9 @@ if [ -n "$update" ]; then
 	[ -n "$(echo $update | grep "chnroute_update")" ] && chnroute_update=1
 	[ -n "$(echo $update | grep "chnlist_update")" ] && chnlist_update=1
 else
-	gfwlist_update=$(uci get $CONFIG.@global_rules[0].gfwlist_update)
-	chnroute_update=$(uci get $CONFIG.@global_rules[0].chnroute_update)
-	chnlist_update=$(uci get $CONFIG.@global_rules[0].chnlist_update)
+	gfwlist_update=$(uci -q get $CONFIG.@global_rules[0].gfwlist_update)
+	chnroute_update=$(uci -q get $CONFIG.@global_rules[0].chnroute_update)
+	chnlist_update=$(uci -q get $CONFIG.@global_rules[0].chnlist_update)
 fi
 
 if [ "$gfwlist_update" == 0 -a "$chnroute_update" == 0 -a "$chnlist_update" == 0 ]; then
@@ -29,7 +29,7 @@ uci_get_by_type() {
 	if [ -n $4 ]; then
 		index=$4
 	fi
-	local ret=$(uci get $CONFIG.@$1[$index].$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.@$1[$index].$2 2>/dev/null)
 	echo ${ret:=$3}
 }
 

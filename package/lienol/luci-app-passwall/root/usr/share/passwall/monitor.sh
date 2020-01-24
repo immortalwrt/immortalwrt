@@ -4,14 +4,14 @@ CONFIG=passwall
 CONFIG_PATH=/var/etc/$CONFIG
 
 config_n_get() {
-	local ret=$(uci get $CONFIG.$1.$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.$1.$2 2>/dev/null)
 	echo ${ret:=$3}
 }
 
 config_t_get() {
 	local index=0
 	[ -n "$4" ] && index=$4
-	local ret=$(uci get $CONFIG.@$1[$index].$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.@$1[$index].$2 2>/dev/null)
 	echo ${ret:=$3}
 }
 

@@ -7,6 +7,8 @@ uci -q batch <<-EOF >/dev/null
 	commit ucitrack
 EOF
 
-killall -9 kcptun haproxy shadowsocks-libev shadowsocksr-libev
+echo "" > /etc/dnsmasq.conf
+killall -q -9 kcptun haproxy shadowsocks-libev shadowsocksr-libev
+/etc/init.d/haproxy disable && /etc/init.d/haproxy stop
 rm -f /tmp/luci-indexcache
 exit 0

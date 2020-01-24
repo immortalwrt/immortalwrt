@@ -11,7 +11,7 @@ LOG_FILE=/var/log/$CONFIG.log
 config_t_get() {
 	local index=0
 	[ -n "$3" ] && index=$3
-	local ret=$(uci get $CONFIG.@$1[$index].$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.@$1[$index].$2 2>/dev/null)
 	#echo ${ret:=$3}
 	echo $ret
 }
@@ -413,7 +413,7 @@ del_config(){
 		[ "`cat /usr/share/${CONFIG}/sub/all_onlinenodes |grep -c "$localaddress"`" -eq 0 ] && {
 			for localindex in $(uci show $CONFIG | grep -w "$localaddress" | grep -w "address=" |cut -d '[' -f2|cut -d ']' -f1)
 			do
-				del_type=$(uci get $CONFIG.@nodes[$localindex].type)
+				del_type=$(uci -q get $CONFIG.@nodes[$localindex].type)
 				uci delete $CONFIG.@nodes[$localindex]
 				uci commit $CONFIG
 				if [ "$del_type" == "SS" ]; then
@@ -434,17 +434,20 @@ del_config(){
 del_all_config(){
 	get_node_index
 	[ "`uci show $CONFIG | grep -c 'is_sub'`" -eq 0 ] && exit 0
-	TCP_NODE_NUM=$(uci get $CONFIG.@global_other[0].tcp_node_num)
+	TCP_NODE_NUM=$(uci -q get $CONFIG.@global_other[0].tcp_node_num)
+	[ -z "$TCP_NODE_NUM" ] && TCP_NODE_NUM=1
 	for i in $(seq 1 $TCP_NODE_NUM); do
 		eval TCP_NODE$i=$(config_t_get global tcp_node$i)
 	done
 
-	UDP_NODE_NUM=$(uci get $CONFIG.@global_other[0].udp_node_num)
+	UDP_NODE_NUM=$(uci -q get $CONFIG.@global_other[0].udp_node_num)
+	[ -z "$UDP_NODE_NUM" ] && UDP_NODE_NUM=1
 	for i in $(seq 1 $UDP_NODE_NUM); do
 		eval UDP_NODE$i=$(config_t_get global udp_node$i)
 	done
 
-	SOCKS5_NODE_NUM=$(uci get $CONFIG.@global_other[0].socks5_node_num)
+	SOCKS5_NODE_NUM=$(uci -q get $CONFIG.@global_other[0].socks5_node_num)
+	[ -z "$SOCKS5_NODE_NUM" ] && SOCKS5_NODE_NUM=1
 	for i in $(seq 1 $SOCKS5_NODE_NUM); do
 		eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i)
 	done

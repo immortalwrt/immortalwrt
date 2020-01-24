@@ -23,7 +23,7 @@ APP_PATH=/usr/share/$CONFIG
 TMP_DNSMASQ_PATH=/var/etc/dnsmasq-passwall.d
 DNSMASQ_PATH=/etc/dnsmasq.d
 RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
-lanip=$(uci get network.lan.ipaddr)
+lanip=$(uci -q get network.lan.ipaddr)
 DNS_PORT=7913
 API_GEN_V2RAY=/usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua
 API_GEN_TROJAN=/usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua
@@ -48,14 +48,14 @@ find_bin() {
 }
 
 config_n_get() {
-	local ret=$(uci get $CONFIG.$1.$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.$1.$2 2>/dev/null)
 	echo ${ret:=$3}
 }
 
 config_t_get() {
 	local index=0
 	[ -n "$4" ] && index=$4
-	local ret=$(uci get $CONFIG.@$1[$index].$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.@$1[$index].$2 2>/dev/null)
 	echo ${ret:=$3}
 }
 
@@ -78,10 +78,10 @@ get_host_ip() {
 	if [ -z "$isip" ]; then
 		vpsrip=""
 		if [ "$use_ipv6" == "1" ]; then
-			vpsrip=$(resolveip -6 -t 2 $host | awk 'NR==1{print}')
+			vpsrip=$(resolveip -6 -t 3 $host | awk 'NR==1{print}')
 			[ -z "$vpsrip" ] && vpsrip=$(dig @208.67.222.222 $host AAAA 2>/dev/null | grep 'IN' | awk -F ' ' '{print $5}' | grep -E "([a-f0-9]{1,4}(:[a-f0-9]{1,4}){7}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){0,7}::[a-f0-9]{0,4}(:[a-f0-9]{1,4}){0,7})" | head -n1)
 		else
-			vpsrip=$(resolveip -4 -t 2 $host | awk 'NR==1{print}')
+			vpsrip=$(resolveip -4 -t 3 $host | awk 'NR==1{print}')
 			[ -z "$vpsrip" ] && vpsrip=$(dig @208.67.222.222 $host 2>/dev/null | grep 'IN' | awk -F ' ' '{print $5}' | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n1)
 		fi
 		ip=$vpsrip
@@ -94,11 +94,11 @@ check_port_exists() {
 	protocol=$2
 	result=
 	if [ "$protocol" = "tcp" ]; then
-		result=$(netstat -tlpn | grep "\<$port\>")
+		result=$(netstat -tln | grep -c ":$port")
 	elif [ "$protocol" = "udp" ]; then
-		result=$(netstat -ulpn | grep "\<$port\>")
+		result=$(netstat -uln | grep -c ":$port")
 	fi
-	if [ -n "$result" ]; then
+	if [ "$result" = 1 ]; then
 		echo 1
 	else
 		echo 0
@@ -805,7 +805,7 @@ add_dnsmasq() {
 	# sed -i '/except-interface/d' /etc/dnsmasq.conf >/dev/null 2>&1 &
 	# for wanname in $(cat /var/state/network |grep pppoe|awk -F '.' '{print $2}')
 	# do
-	# echo "except-interface=$(uci get network.$wanname.ifname)" >>/etc/dnsmasq.conf
+	# echo "except-interface=$(uci -q get network.$wanname.ifname)" >>/etc/dnsmasq.conf
 	# done
 	# fi
 
@@ -842,7 +842,6 @@ add_dnsmasq() {
 		rm -rf $TMP_DNSMASQ_PATH/whitelist_host.conf
 	fi
 
-	echo "" > /etc/dnsmasq.conf
 	server="server=127.0.0.1#$DNS_PORT"
 	[ "$DNS_MODE" != "chinadns-ng" ] && {
 		local china_dns1=$(echo $UP_CHINA_DNS | awk -F "," '{print $1}')
@@ -859,7 +858,7 @@ add_dnsmasq() {
 	EOF
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	echolog "dnsmasq：生成配置文件并重启服务。"
-	/etc/init.d/dnsmasq restart 2>/dev/null
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
 }
 
 gen_redsocks_config() {
@@ -1005,7 +1004,7 @@ stop_dnsmasq() {
 	rm -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	rm -rf $TMP_DNSMASQ_PATH
-	/etc/init.d/dnsmasq restart 2>/dev/null
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
 }
 
 start_haproxy() {
@@ -1147,7 +1146,6 @@ start() {
 	start_redir TCP REDIR tcp
 	start_redir UDP REDIR udp
 	source $APP_PATH/iptables.sh start
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
 	start_crontab
 	set_cru
 	rm -f "$LOCK_FILE"

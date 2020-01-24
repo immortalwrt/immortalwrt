@@ -22,7 +22,7 @@ config global_delay
 
 config global_forwarding
 	option udp_redir_ports '1:65535'
-	option tcp_redir_ports '80,443'
+	option tcp_redir_ports '1:65535'
 	option process '1'
 
 config global_proxy

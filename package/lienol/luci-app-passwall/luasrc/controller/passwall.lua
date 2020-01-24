@@ -225,8 +225,7 @@ function check_port()
     local uci = luci.model.uci.cursor()
 
     local retstring = "<br />"
-    retstring = retstring ..
-                    "<font color='red'>暂时不支持UDP检测</font><br />"
+    -- retstring = retstring .. "<font color='red'>暂时不支持UDP检测</font><br />"
 
     if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
                          appname) == "1" and
@@ -239,23 +238,24 @@ function check_port()
             if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
                 (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
             else
-                if s.type and s.address and s.port and s.remarks then
+                local type = s.type
+                if type and type ~= "V2ray_balancing" and s.address and s.port and
+                    s.remarks then
                     node_name = "[%s] [%s:%s]" % {s.remarks, s.address, s.port}
+                    result = luci.sys.exec(
+                                 "echo -n `tcping -q -c 1 -i 1 -p " .. s.port ..
+                                     " " .. s.address ..
+                                     " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
+                    if result and result ~= "" then
+                        retstring = retstring .. "<font color='green'>" ..
+                                        node_name .. "   " .. result ..
+                                        "ms.</font><br />"
+                    else
+                        retstring = retstring .. "<font color='red'>" ..
+                                        node_name .. "   Error.</font><br />"
+                    end
+                    ret = ""
                 end
-
-                result = luci.sys.exec("echo -n `tcping -q -c 1 -i 3 -p " ..
-                                           s.port .. " " .. s.address ..
-                                           " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
-                if result and result ~= "" then
-                    retstring =
-                        retstring .. "<font color='green'>" .. node_name ..
-                            "   " .. result .. "ms.</font><br />"
-                else
-                    retstring =
-                        retstring .. "<font color='red'>" .. node_name ..
-                            "   Error.</font><br />"
-                end
-                ret = ""
             end
         end)
     else
@@ -268,24 +268,24 @@ function check_port()
             if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
                 (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
             else
-                if s.type and s.address and s.port and s.remarks then
+                local type = s.type
+                if type and type ~= "V2ray_balancing" and s.address and s.port and
+                    s.remarks then
                     node_name = "%s：[%s] %s:%s" %
                                     {s.type, s.remarks, s.address, s.port}
+                    tcp_socket = nixio.socket("inet", "stream")
+                    tcp_socket:setopt("socket", "rcvtimeo", 3)
+                    tcp_socket:setopt("socket", "sndtimeo", 3)
+                    ret = tcp_socket:connect(s.address, s.port)
+                    if tostring(ret) == "true" then
+                        retstring = retstring .. "<font color='green'>" ..
+                                        node_name .. "   OK.</font><br />"
+                    else
+                        retstring = retstring .. "<font color='red'>" ..
+                                        node_name .. "   Error.</font><br />"
+                    end
+                    ret = ""
                 end
-                tcp_socket = nixio.socket("inet", "stream")
-                tcp_socket:setopt("socket", "rcvtimeo", 3)
-                tcp_socket:setopt("socket", "sndtimeo", 3)
-                ret = tcp_socket:connect(s.address, s.port)
-                if tostring(ret) == "true" then
-                    retstring =
-                        retstring .. "<font color='green'>" .. node_name ..
-                            "   OK.</font><br />"
-                else
-                    retstring =
-                        retstring .. "<font color='red'>" .. node_name ..
-                            "   Error.</font><br />"
-                end
-                ret = ""
             end
             if tcp_socket then tcp_socket:close() end
             if udp_socket then udp_socket:close() end
