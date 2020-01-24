@@ -159,6 +159,27 @@ endef
 TARGET_DEVICES += sun8i-h3-nanopi-neo
 
 
+define Device/sun8i-h3-nanopi-duo2
+  DEVICE_TITLE:=FriendlyARM NanoPi Duo2
+  SUPPORTED_DEVICES:=friendlyarm,nanopi-duo2
+  DEVICE_PACKAGES:=ar3k-firmware ath6k-firmware ath9k-htc-firmware brcmfmac-firmware-43430-sdio brcmfmac-firmware-usb carl9170-firmware collectd collectd-mod-cpu collectd-mod-interface collectd-mod-iwinfo collectd-mod-load collectd-mod-memory collectd-mod-network collectd-mod-rrdtool collectd-mod-thermal collectd-mod-uptime collectd-mod-wireless edgeport-firmware hostapd-common iperf iw iwinfo kmod-brcmfmac kmod-brcmutil kmod-cfg80211 kmod-mmc kmod-nls-base kmod-usb-core libertas-spi-firmware libertas-usb-firmware libiwinfo libiwinfo-lua libltdl liblua liblucihttp liblucihttp-lua librrd1 libubus-lua libusb-1.0 lua luci luci-app-firewall luci-app-statistics luci-base \
+	luci-lib-ip luci-lib-jsonc luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp luci-theme-bootstrap mt7601u-firmware mwl8k-firmware p54-usb-firmware prism54-firmware r8169-firmware rpcd rpcd-mod-rrdns rrdtool1 rs9113-firmware rt2800-usb-firmware rt73-usb-firmware rtl8188eu-firmware rtl8192ce-firmware rtl8192cu-firmware rtl8192de-firmware rtl8192se-firmware rtl8192su-firmware rtl8821ae-firmware swconfigti-3410-firmware ti-5052-firmware triggerhappy uclibcxx uhttpd usb-modeswitch usbutils wireless-regdb wl12xx-firmware wl18xx-firmware  wpad-mini zlib \
+	travelmate luci-app-travelmate
+  SUNXI_DTS:=sun8i-h3-nanopi-duo2
+endef
+
+TARGET_DEVICES += sun8i-h3-nanopi-duo2
+
+
+define Device/sun8i-h3-nanopi-r1
+  DEVICE_TITLE:=FriendlyARM NanoPi R1
+  SUPPORTED_DEVICES:=friendlyarm,nanopi-r1
+  SUNXI_DTS:=sun8i-h3-nanopi-r1
+endef
+
+TARGET_DEVICES += sun8i-h3-nanopi-r1
+
+
 define Device/sun8i-h3-orangepi-one
   DEVICE_TITLE:=Xunlong Orange Pi One
   DEVICE_PACKAGES:=kmod-rtc-sunxi
@@ -218,3 +239,4 @@ endef
 TARGET_DEVICES += sun7i-a20-pcduino3
 
 endif
+

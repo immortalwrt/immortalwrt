@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2013-2016 OpenWrt.org
-# Copyright (C) 2017 Yousong Zhou
+# Copyright (C) 2017 Yousong Zhou 
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -144,6 +144,20 @@ define U-Boot/nanopi_neo
   BUILD_DEVICES:=sun8i-h3-nanopi-neo
 endef
 
+define U-Boot/nanopi_duo2
+  BUILD_SUBTARGET:=cortexa7
+  NAME:=U-Boot for NanoPi Duo2 (H3)
+  BUILD_DEVICES:=sun8i-h3-nanopi-duo2
+endef
+
+define U-Boot/nanopi_r1
+  BUILD_SUBTARGET:=cortexa7
+  NAME:=U-Boot for NanoPi R1 (H3)
+  BUILD_DEVICES:=sun8i-h3-nanopi-r1
+endef
+
+
+
 define U-Boot/orangepi_r1
   BUILD_SUBTARGET:=cortexa7
   NAME:=Orange Pi R1 (H2+)
@@ -193,14 +207,6 @@ define U-Boot/nanopi_neo2
   NAME:=NanoPi NEO2 (H5)
   BUILD_DEVICES:=sun50i-h5-nanopi-neo2
   DEPENDS:=+PACKAGE_u-boot-nanopi_neo2:arm-trusted-firmware-sunxi
-  UENV:=a64
-endef
-
-define U-Boot/nanopi_r1s
-  BUILD_SUBTARGET:=cortexa53
-  NAME:=NanoPi R1S (H5)
-  BUILD_DEVICES:=sun50i-h5-nanopi-r1s
-  DEPENDS:=+PACKAGE_u-boot-nanopi_r1s:arm-trusted-firmware-sunxi
   UENV:=a64
 endef
 
@@ -258,9 +264,10 @@ UBOOT_TARGETS := \
 	Lamobo_R1 \
 	nanopi_m1_plus \
 	nanopi_neo \
+	nanopi_duo2 \
+	nanopi_r1 \
 	nanopi_neo_plus2 \
 	nanopi_neo2 \
-	nanopi_r1s \
 	orangepi_zero \
 	orangepi_r1 \
 	orangepi_pc \

@@ -33,7 +33,7 @@ Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-Op
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
 luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).<br/>
-NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).
+NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).
 
 ## License
 ### Depending on their own License.
