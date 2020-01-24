@@ -9,9 +9,9 @@ load_from=$(uci get clash.config.loadfrom 2>/dev/null)
 run_load(){
 
 if [ "$load_from" == "sub" ];then 
-        load="/usr/share/clash/config/sub/config.yaml"	
+        load=$(uci get clash.config.config_path_sub 2>/dev/null)	
 elif [ "$load_from" == "upl" ];then
-	    load="/usr/share/clash/config/upload/config.yaml"
+	    load=$(uci get clash.config.config_path_up 2>/dev/null)
 fi
 
 

@@ -1,25 +1,45 @@
 #!/bin/bash /etc/rc.common
+. /lib/functions.sh
 
-
-config_name=$(uci get clash.config.config_name 2>/dev/null)
-REAL_LOG="/usr/share/clash/clash_real.txt"
+config_name=$(uci get clash.config.config_update_name 2>/dev/null)
+CONFIG_YAML="/usr/share/clash/config/sub/${config_name}" 
+url=$(grep -F "${config_name}" "/usr/share/clashbackup/confit_list.conf" | awk -F '#' '{print $2}')
 lang=$(uci get luci.main.lang 2>/dev/null)
+REAL_LOG="/usr/share/clash/clash_real.txt"
  
- 
-check_name=$(grep -F "${config_name}.yaml" "/usr/share/clashbackup/confit_list.conf")
-if [ ! -z $check_name ];then
-   
+type=$(grep -F "${config_name}" "/usr/share/clashbackup/confit_list.conf" | awk -F '#' '{print $3}')
+
+if [ $type == "clash" ] && [ ! -z $url ];then
 	if [ $lang == "en" ] || [ $lang == "auto" ];then
-				echo "Config with same name exist, please rename and download again" >$REAL_LOG
+				echo "Updating Configuration..." >$REAL_LOG
 	elif [ $lang == "zh_cn" ];then
-				echo "已存在同名配置，请重命名名配置重新下载" >$REAL_LOG
+				echo "开始更新配置" >$REAL_LOG
+	fi
+wget --no-check-certificate --user-agent="Clash/OpenWRT" $url -O 2>&1 >1 $CONFIG_YAML
+	
+if [ "$?" -eq "0" ]; then
+	if [ $lang == "en" ] || [ $lang == "auto" ];then
+		echo "Updating Configuration Completed" >$REAL_LOG
+
+	elif [ $lang == "zh_cn" ];then
+		echo "更新配置完成" >$REAL_LOG
+
 	fi
 	sleep 5
 	echo "Clash for OpenWRT" >$REAL_LOG
-	exit 0	
+	
+	if pidof clash >/dev/null; then
+		/etc/init.d/clash restart 2>/dev/null
+	fi
+		
+fi
+elif [ $type == "v2ssr2clash" ] && [ ! -z $url ];then
 
-   
-else
+	if [ $lang == "en" ] || [ $lang == "auto" ];then
+				echo "Updating Configuration..." >$REAL_LOG
+	elif [ $lang == "zh_cn" ];then
+				echo "开始更新配置" >$REAL_LOG
+	fi
 	
 	#awk '/config groups/,/##end/{print}' /etc/config/clashh 2>/dev/null >/usr/share/clash/v2ssr/config.bak 2>&1
 
@@ -409,7 +429,7 @@ Server_Update() {
 echo "1" >/www/lock.htm
 
 name=clash
-subscribe_url=($(uci get $name.config.subscribe_url)) 
+subscribe_url=$url 
 [ ${#subscribe_url[@]} -eq 0 ] && exit 1
 
 for ((o=0;o<${#subscribe_url[@]};o++))
@@ -595,7 +615,7 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 	
 CONFIG_YAML_RULE="/usr/share/clash/v2ssr/v2ssr_custom_rule.yaml"
 SERVER_FILE="/tmp/servers.yaml"
-CONFIG_YAML="/usr/share/clash/config/sub/${config_name}.yaml"
+CONFIG_YAML="/usr/share/clash/config/sub/${config_name}"
 TEMP_FILE="/tmp/dns_temp.yaml"
 Proxy_Group="/tmp/Proxy_Group"
 GROUP_FILE="/tmp/groups.yaml"
@@ -909,9 +929,6 @@ cat $GROUP_FILE >> $TEMP_FILE 2>/dev/null
 cat $TEMP_FILE $CONFIG_YAML_RULE > $CONFIG_YAML 2>/dev/null
 
 sed -i "/Rule:/i\     " $CONFIG_YAML 2>/dev/null
-
-echo "${config_name}.yaml#$subscribe_url#$subtype" >>/usr/share/clashbackup/confit_list.conf
-
 rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE
 
 
@@ -925,18 +942,24 @@ rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE
 			echo "Clash for OpenWRT" >$REAL_LOG
 	fi
 	
-
+	if [ $lang == "en" ] || [ $lang == "auto" ];then
+		echo "Updating Configuration Completed" >$REAL_LOG
+		  sleep 2
+			echo "Clash for OpenWRT" >$REAL_LOG
+	elif [ $lang == "zh_cn" ];then
+		echo "更新配置完成" >$REAL_LOG
+		  sleep 2
+			echo "Clash for OpenWRT" >$REAL_LOG
+	fi
 
 mv /usr/share/clash/v2ssr/config.bak /etc/config/clash 2>/dev/null
 sleep 1
 
-if [ $config_type == "sub" ];then 
-if pidof clash >/dev/null; then
-/etc/init.d/clash restart 2>/dev/null
-fi
-fi
+	if pidof clash >/dev/null; then
+		/etc/init.d/clash restart 2>/dev/null
+	fi
 	
 fi
 rm -rf $SERVER_FILE
-fi
 
+fi

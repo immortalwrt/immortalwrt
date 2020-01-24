@@ -1,8 +1,8 @@
 #!/bin/sh
 CONFIG_YAML="/etc/clash/config.yaml"
-CONFIG_YAML_SUB="/usr/share/clash/config/sub/config.yaml"
-CONFIG_YAML_UPL="/usr/share/clash/config/upload/config.yaml"
-CONFIG_YAML_CUS="/usr/share/clash/config/custom/config.yaml"
+CONFIG_YAML_SUB=$(uci get clash.config.config_path_sub 2>/dev/null)
+CONFIG_YAML_UPL=$(uci get clash.config.config_path_up 2>/dev/null)
+CONFIG_YAML_CUS=$(uci get clash.config.config_path_cus 2>/dev/null)
 lang=$(uci get luci.main.lang 2>/dev/null)
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
@@ -12,15 +12,15 @@ subscribe_urll=$(uci get $name.config.subscribe_url 2>/dev/null)
 
 REAL_LOG="/usr/share/clash/clash_real.txt"
 
-if [ $config_type == "sub" ];then 
+if [ $config_type == "1" ];then 
 if [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB|awk '{print int($5)}')" -ne 0 ];then
 	cp $CONFIG_YAML_SUB $CONFIG_YAML 2>/dev/null
 fi
-elif [ $config_type == "upl" ];then 
+elif [ $config_type == "2" ];then 
 if [  -f $CONFIG_YAML_UPL ] && [ "$(ls -l $CONFIG_YAML_UPL|awk '{print int($5)}')" -ne 0 ];then
 	cp $CONFIG_YAML_UPL $CONFIG_YAML 2>/dev/null
 fi
-elif [ $config_type == "cus" ];then 
+elif [ $config_type == "3" ];then 
 if [  -f $CONFIG_YAML_CUS ] && [ "$(ls -l $CONFIG_YAML_CUS|awk '{print int($5)}')" -ne 0 ];then
 	cp $CONFIG_YAML_CUS $CONFIG_YAML 2>/dev/null
 fi

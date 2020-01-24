@@ -1,4 +1,11 @@
 Rule:
+- DOMAIN-SUFFIX,netflix.com,🎬Netflix
+- DOMAIN-SUFFIX,netflix.net,🎬Netflix
+- DOMAIN-SUFFIX,nflxext.com,🎬Netflix
+- DOMAIN-SUFFIX,nflximg.com,🎬Netflix
+- DOMAIN-SUFFIX,nflximg.net,🎬Netflix
+- DOMAIN-SUFFIX,nflxso.net,🎬Netflix
+- DOMAIN-SUFFIX,nflxvideo.net,🎬Netflix
 # (GlobalTV)
 # > ABC
 - DOMAIN-SUFFIX,edgedatg.com,📺GlobalTV
@@ -80,14 +87,6 @@ Rule:
 - DOMAIN-SUFFIX,mytvsuper.com,📺GlobalTV
 - DOMAIN-SUFFIX,tvb.com,📺GlobalTV
 
-# > Netflix
-- DOMAIN-SUFFIX,netflix.com,📺GlobalTV
-- DOMAIN-SUFFIX,netflix.net,📺GlobalTV
-- DOMAIN-SUFFIX,nflxext.com,📺GlobalTV
-- DOMAIN-SUFFIX,nflximg.com,📺GlobalTV
-- DOMAIN-SUFFIX,nflximg.net,📺GlobalTV
-- DOMAIN-SUFFIX,nflxso.net,📺GlobalTV
-- DOMAIN-SUFFIX,nflxvideo.net,📺GlobalTV
 
 # > Pandora
 - DOMAIN-SUFFIX,pandora.com,📺GlobalTV
@@ -132,9 +131,9 @@ Rule:
 - DOMAIN-SUFFIX,api.mob.app.letv.com,🖥️AsianTV
 
 # > NeteaseMusic
-- DOMAIN-SUFFIX,163yun.com,DIRECT
-- DOMAIN-SUFFIX,music.126.net,DIRECT
-- DOMAIN-SUFFIX,music.163.com,DIRECT
+- DOMAIN-SUFFIX,163yun.com,🖥️AsianTV
+- DOMAIN-SUFFIX,music.126.net,🖥️AsianTV
+- DOMAIN-SUFFIX,music.163.com,🖥️AsianTV
 
 # > Tencent Video
 - DOMAIN-SUFFIX,vv.video.qq.com,🖥️AsianTV
@@ -144,7 +143,7 @@ Rule:
 - DOMAIN,analytics.google.com,🔑Proxy
 - DOMAIN,analyticsinsights-pa.googleapis.com,🔑Proxy
 - DOMAIN,analyticsreporting.googleapis.com,🔑Proxy
-- DOMAIN-SUFFIX,vd.l.qq.com,DIRECT
+- DOMAIN-SUFFIX,vd.l.qq.com,🖥️AsianTV
 # > General
 - DOMAIN-KEYWORD,adservice,❌AdBlock
 - DOMAIN-KEYWORD,analytics,❌AdBlock
@@ -766,189 +765,191 @@ Rule:
 
 # China Area Network
 # > App Store Download || iBooks Sample
-- DOMAIN-SUFFIX,itunes.apple.com,🔑Proxy
+- DOMAIN-SUFFIX,itunes.apple.com,🖥️AsianTV
 # > Apple Music
-- DOMAIN,aod.itunes.apple.com,🔑Proxy
-- DOMAIN,audio.itunes.apple.com,🔑Proxy
-- DOMAIN,audio-ssl.itunes.apple.com,🔑Proxy
-- DOMAIN,streamingaudio.itunes.apple.com,🔑Proxy
+- DOMAIN,aod.itunes.apple.com,🖥️AsianTV
+- DOMAIN,audio.itunes.apple.com,🖥️AsianTV
+- DOMAIN,audio-ssl.itunes.apple.com,🖥️AsianTV
+- DOMAIN,streamingaudio.itunes.apple.com,🖥️AsianTV
 # > Apple TV
-- DOMAIN,ocvideo.apple.com,🔑Proxy
+- DOMAIN,ocvideo.apple.com,🖥️AsianTV
 # > Apple News and Apple Map TOMTOM Version
-- DOMAIN,gspe1-ssl.ls.apple.com,🔑Proxy
+- DOMAIN,gspe1-ssl.ls.apple.com,🖥️AsianTV
 #PROCESS-NAME,News,🔑Proxy
 #USER-AGENT,AppleNews*,🔑Proxy
 # > Apple
-- DOMAIN-SUFFIX,aaplimg.com,🔑Proxy
-- DOMAIN-SUFFIX,apple.co,DIRECT
-- DOMAIN-SUFFIX,apple.com,DIRECT
-- DOMAIN-SUFFIX,appstore.com,DIRECT
-- DOMAIN-SUFFIX,cdn-apple.com,🔑Proxy
-- DOMAIN-SUFFIX,crashlytics.com,DIRECT
-- DOMAIN-SUFFIX,icloud.com,DIRECT
-- DOMAIN-SUFFIX,icloud-content.com,🔑Proxy
-- DOMAIN-SUFFIX,me.com,DIRECT
-- DOMAIN-SUFFIX,mzstatic.com,DIRECT
+- DOMAIN-SUFFIX,aaplimg.com,🖥️AsianTV
+- DOMAIN-SUFFIX,apple.co,🖥️AsianTV
+- DOMAIN-SUFFIX,apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,appstore.com,🖥️AsianTV
+- DOMAIN-SUFFIX,cdn-apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,crashlytics.com,🖥️AsianTV
+- DOMAIN-SUFFIX,icloud.com,🖥️AsianTV
+- DOMAIN-SUFFIX,icloud-content.com,🖥️AsianTV
+- DOMAIN-SUFFIX,me.com,🖥️AsianTV
+- DOMAIN-SUFFIX,mzstatic.com,🖥️AsianTV
 # > Microsoft
-- DOMAIN-SUFFIX,microsoft.com,DIRECT
-- DOMAIN-SUFFIX,windows.net,DIRECT
-- DOMAIN-SUFFIX,sfx.ms,DIRECT
-- DOMAIN-SUFFIX,sharepoint.com,DIRECT
-- DOMAIN-KEYWORD,officecdn,DIRECT
+- DOMAIN-SUFFIX,microsoft.com,🖥️AsianTV
+- DOMAIN-SUFFIX,windows.net,🖥️AsianTV
+- DOMAIN-SUFFIX,sfx.ms,🖥️AsianTV
+- DOMAIN-SUFFIX,sharepoint.com,🖥️AsianTV
+- DOMAIN-KEYWORD,officecdn,🖥️AsianTV
 # > Blizzard
-- DOMAIN-SUFFIX,blizzard.com,DIRECT
-- DOMAIN-SUFFIX,battle.net,DIRECT
-- DOMAIN,blzddist1-a.akamaihd.net,DIRECT
+- DOMAIN-SUFFIX,blizzard.com,🖥️AsianTV
+- DOMAIN-SUFFIX,battle.net,🖥️AsianTV
+- DOMAIN,blzddist1-a.akamaihd.net,🖥️AsianTV
 # > Steam
-- DOMAIN-SUFFIX,steampowered.com,DIRECT
-- DOMAIN-SUFFIX,steam-chat.com,DIRECT
-- DOMAIN-KEYWORD,steamcdn,DIRECT
-- DOMAIN-KEYWORD,steamstore,DIRECT
-- DOMAIN-KEYWORD,steamuserimages,DIRECT
-- DOMAIN-KEYWORD,steambroadcast,DIRECT
+- DOMAIN-SUFFIX,steampowered.com,🖥️AsianTV
+- DOMAIN-SUFFIX,steam-chat.com,🖥️AsianTV
+- DOMAIN-KEYWORD,steamcdn,🖥️AsianTV
+- DOMAIN-KEYWORD,steamstore,🖥️AsianTV
+- DOMAIN-KEYWORD,steamuserimages,🖥️AsianTV
+- DOMAIN-KEYWORD,steambroadcast,🖥️AsianTV
 # > Tencent
-#USER-AGENT,MicroMessenger%20Client,DIRECT
-#USER-AGENT,WeChat*,DIRECT
-- DOMAIN-SUFFIX,qq.com,DIRECT
-- DOMAIN-SUFFIX,qpic.cn,DIRECT
-- DOMAIN-SUFFIX,tencent.com,DIRECT
+#USER-AGENT,MicroMessenger%20Client,🖥️AsianTV
+#USER-AGENT,WeChat*,🖥️AsianTV
+- DOMAIN-SUFFIX,qq.com,🖥️AsianTV
+- DOMAIN-SUFFIX,qpic.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,tencent.com,🖥️AsianTV
 # > Alibaba
-- DOMAIN-SUFFIX,alibaba.com,DIRECT
-- DOMAIN-SUFFIX,alicdn.com,DIRECT
-- DOMAIN-SUFFIX,amap.com,DIRECT
-- DOMAIN-SUFFIX,dingtalk.com,DIRECT
-- DOMAIN-SUFFIX,taobao.com,DIRECT
-- DOMAIN-SUFFIX,tmall.com,DIRECT
-- DOMAIN-SUFFIX,ykimg.com,DIRECT
-- DOMAIN-SUFFIX,youku.com,DIRECT
-- DOMAIN-SUFFIX,xiami.com,DIRECT
-- DOMAIN-SUFFIX,xiami.net,DIRECT
+- DOMAIN-SUFFIX,alibaba.com,🖥️AsianTV
+- DOMAIN-SUFFIX,alicdn.com,🖥️AsianTV
+- DOMAIN-SUFFIX,amap.com,🖥️AsianTV
+- DOMAIN-SUFFIX,dingtalk.com,🖥️AsianTV
+- DOMAIN-SUFFIX,taobao.com,🖥️AsianTV
+- DOMAIN-SUFFIX,tmall.com,🖥️AsianTV
+- DOMAIN-SUFFIX,ykimg.com,🖥️AsianTV
+- DOMAIN-SUFFIX,youku.com,🖥️AsianTV
+- DOMAIN-SUFFIX,xiami.com,🖥️AsianTV
+- DOMAIN-SUFFIX,xiami.net,🖥️AsianTV
 # > NetEase
-- DOMAIN-SUFFIX,163.com,DIRECT
-- DOMAIN-SUFFIX,126.net,DIRECT
-- DOMAIN-SUFFIX,163yun.com,DIRECT
+- DOMAIN-SUFFIX,163.com,🖥️AsianTV
+- DOMAIN-SUFFIX,126.net,🖥️AsianTV
+- DOMAIN-SUFFIX,163yun.com,🖥️AsianTV
 # > Sohu
-- DOMAIN-SUFFIX,sohu.com.cn,DIRECT
-- DOMAIN-SUFFIX,itc.cn,DIRECT
-- DOMAIN-SUFFIX,sohu.com,DIRECT
-- DOMAIN-SUFFIX,v-56.com,DIRECT
+- DOMAIN-SUFFIX,sohu.com.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,itc.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,sohu.com,🖥️AsianTV
+- DOMAIN-SUFFIX,v-56.com,🖥️AsianTV
 # > Sina
-- DOMAIN-SUFFIX,weibo.com,DIRECT
-- DOMAIN-SUFFIX,weibo.cn,DIRECT
+- DOMAIN-SUFFIX,weibo.com,🖥️AsianTV
+- DOMAIN-SUFFIX,weibo.cn,🖥️AsianTV
 # > JD
-- DOMAIN-SUFFIX,jd.com,DIRECT
-- DOMAIN-SUFFIX,jd.hk,DIRECT
-- DOMAIN-SUFFIX,360buyimg.com,DIRECT
+- DOMAIN-SUFFIX,jd.com,🖥️AsianTV
+- DOMAIN-SUFFIX,jd.hk,🖥️AsianTV
+- DOMAIN-SUFFIX,360buyimg.com,🖥️AsianTV
 # > MI
-- DOMAIN-SUFFIX,duokan.com,DIRECT
-- DOMAIN-SUFFIX,mi-img.com,DIRECT
-- DOMAIN-SUFFIX,mifile.cn,DIRECT
-- DOMAIN-SUFFIX,xiaomi.com,DIRECT
+- DOMAIN-SUFFIX,duokan.com,🖥️AsianTV
+- DOMAIN-SUFFIX,mi-img.com,🖥️AsianTV
+- DOMAIN-SUFFIX,mifile.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,xiaomi.com,🖥️AsianTV
 # > bilibili
-- DOMAIN-SUFFIX,acgvideo.com,DIRECT
-- DOMAIN-SUFFIX,bilibili.com,DIRECT
-- DOMAIN-SUFFIX,hdslb.com,DIRECT
+- DOMAIN-SUFFIX,acgvideo.com,🖥️AsianTV
+- DOMAIN-SUFFIX,bilibili.com,🖥️AsianTV
+- DOMAIN-SUFFIX,hdslb.com,🖥️AsianTV
 # > iQiyi
-- DOMAIN-SUFFIX,iqiyi.com,DIRECT
-- DOMAIN-SUFFIX,iqiyipic.com,DIRECT
-- DOMAIN-SUFFIX,71.am.com,DIRECT
+- DOMAIN-SUFFIX,iqiyi.com,🖥️AsianTV
+- DOMAIN-SUFFIX,iqiyipic.com,🖥️AsianTV
+- DOMAIN-SUFFIX,71.am.com,🖥️AsianTV
 # > HunanTV
-- DOMAIN-SUFFIX,hitv.com,DIRECT
-- DOMAIN-SUFFIX,mgtv.com,DIRECT
+- DOMAIN-SUFFIX,hitv.com,🖥️AsianTV
+- DOMAIN-SUFFIX,mgtv.com,🖥️AsianTV
 # > Meitu
-- DOMAIN-SUFFIX,meitu.com,DIRECT
-- DOMAIN-SUFFIX,meitudata.com,DIRECT
-- DOMAIN-SUFFIX,meipai.com,DIRECT
+- DOMAIN-SUFFIX,meitu.com,🖥️AsianTV
+- DOMAIN-SUFFIX,meitudata.com,🖥️AsianTV
+- DOMAIN-SUFFIX,meipai.com,🖥️AsianTV
 # > YYeTs
-- DOMAIN-SUFFIX,zmzapi.com,DIRECT
-- DOMAIN-SUFFIX,zimuzu.tv,DIRECT
-- DOMAIN-SUFFIX,zmzfile.com,DIRECT
-- DOMAIN-SUFFIX,zmzapi.net,DIRECT
+- DOMAIN-SUFFIX,zmzapi.com,🖥️AsianTV
+- DOMAIN-SUFFIX,zimuzu.tv,🖥️AsianTV
+- DOMAIN-SUFFIX,zmzfile.com,🖥️AsianTV
+- DOMAIN-SUFFIX,zmzapi.net,🖥️AsianTV
 # > 蛋蛋赞
-- DOMAIN-SUFFIX,baduziyuan.com,DIRECT
-- DOMAIN-SUFFIX,com-hs-hkdy.com,DIRECT
-- DOMAIN-SUFFIX,czybjz.com,DIRECT
-- DOMAIN-SUFFIX,dandanzan.com,DIRECT
-- DOMAIN-SUFFIX,fjhps.com,DIRECT
-- DOMAIN-SUFFIX,kuyunbo.club,DIRECT
+- DOMAIN-SUFFIX,baduziyuan.com,🖥️AsianTV
+- DOMAIN-SUFFIX,com-hs-hkdy.com,🖥️AsianTV
+- DOMAIN-SUFFIX,czybjz.com,🖥️AsianTV
+- DOMAIN-SUFFIX,dandanzan.com,🖥️AsianTV
+- DOMAIN-SUFFIX,fjhps.com,🖥️AsianTV
+- DOMAIN-SUFFIX,kuyunbo.club,🖥️AsianTV
 # > Baidu
-- DOMAIN-SUFFIX,baidu.com,DIRECT
-- DOMAIN-SUFFIX,baidubcr.com,DIRECT
-- DOMAIN-SUFFIX,bdstatic.com,DIRECT
+- DOMAIN-SUFFIX,baidu.com,🖥️AsianTV
+- DOMAIN-SUFFIX,baidubcr.com,🖥️AsianTV
+- DOMAIN-SUFFIX,bdstatic.com,🖥️AsianTV
 # > ChinaNet
-- DOMAIN-SUFFIX,189.cn,DIRECT
-- DOMAIN-SUFFIX,21cn.com,DIRECT
+- DOMAIN-SUFFIX,189.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,21cn.com,🖥️AsianTV
 # > ByteDance
-- DOMAIN-SUFFIX,bytecdn.cn,DIRECT
-- DOMAIN-SUFFIX,pstatp.com,DIRECT
-- DOMAIN-SUFFIX,snssdk.com,DIRECT
-- DOMAIN-SUFFIX,toutiao.com,DIRECT
+- DOMAIN-SUFFIX,bytecdn.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,pstatp.com,🖥️AsianTV
+- DOMAIN-SUFFIX,snssdk.com,🖥️AsianTV
+- DOMAIN-SUFFIX,toutiao.com,🖥️AsianTV
 # > Content Delivery Network
 # > Akamai
-- DOMAIN-SUFFIX,akadns.net,DIRECT
-# - DOMAIN-SUFFIX,akamai.net,DIRECT
-# - DOMAIN-SUFFIX,akamaiedge.net,DIRECT
-# - DOMAIN-SUFFIX,akamaihd.net,DIRECT
-# - DOMAIN-SUFFIX,akamaistream.net,DIRECT
-# - DOMAIN-SUFFIX,akamaized.net,DIRECT
+- DOMAIN-SUFFIX,akadns.net,🖥️AsianTV
+# - DOMAIN-SUFFIX,akamai.net,🖥️AsianTV
+# - DOMAIN-SUFFIX,akamaiedge.net,🖥️AsianTV
+# - DOMAIN-SUFFIX,akamaihd.net,🖥️AsianTV
+# - DOMAIN-SUFFIX,akamaistream.net,🖥️AsianTV
+# - DOMAIN-SUFFIX,akamaized.net,🖥️AsianTV
 # > ChinaNetCenter
-- DOMAIN-SUFFIX,chinanetcenter.com,DIRECT
-- DOMAIN-SUFFIX,wangsu.com,DIRECT
+- DOMAIN-SUFFIX,chinanetcenter.com,🖥️AsianTV
+- DOMAIN-SUFFIX,wangsu.com,🖥️AsianTV
 # > CloudFlare
-- DOMAIN-SUFFIX,cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,cloudflare.com,🔑Proxy
+- DOMAIN-KEYWORD,cloudflare,🔑Proxy
 # > IP Query
-- DOMAIN-SUFFIX,ipip.net,DIRECT
-- DOMAIN-SUFFIX,ip.cn,DIRECT
-- DOMAIN-SUFFIX,ip.la,DIRECT
-- DOMAIN-SUFFIX,ip-cdn.com,DIRECT
-- DOMAIN-SUFFIX,ipv6-test.com,DIRECT
-- DOMAIN-SUFFIX,test-ipv6.com,DIRECT
-- DOMAIN-SUFFIX,whatismyip.com,DIRECT
-- DOMAIN,ip.bjango.com,DIRECT
+- DOMAIN-SUFFIX,ipip.net,🖥️AsianTV
+- DOMAIN-SUFFIX,ip.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,ip.la,🖥️AsianTV
+- DOMAIN-SUFFIX,ip-cdn.com,🖥️AsianTV
+- DOMAIN-SUFFIX,ipv6-test.com,🖥️AsianTV
+- DOMAIN-SUFFIX,test-ipv6.com,🖥️AsianTV
+- DOMAIN-SUFFIX,whatismyip.com,🖥️AsianTV
+- DOMAIN,ip.bjango.com,🖥️AsianTV
 # > Other
-- DOMAIN-SUFFIX,40017.cn,DIRECT
-- DOMAIN-SUFFIX,cailianpress.com,DIRECT
-- DOMAIN-SUFFIX,chdbits.co,DIRECT
-- DOMAIN-SUFFIX,chushou.tv,DIRECT
-- DOMAIN-SUFFIX,cmbchina.com,DIRECT
-- DOMAIN-SUFFIX,cmbimg.com,DIRECT
-- DOMAIN-SUFFIX,cmct.tv,DIRECT
-- DOMAIN-SUFFIX,cmvideo.cn,DIRECT
-- DOMAIN-SUFFIX,cnlang.org,DIRECT
-- DOMAIN-SUFFIX,doubanio.com,DIRECT
-- DOMAIN-SUFFIX,douyu.com,DIRECT
-- DOMAIN-SUFFIX,douyucdn.cn,DIRECT
-- DOMAIN-SUFFIX,dxycdn.com,DIRECT
-- DOMAIN-SUFFIX,hicloud.com,DIRECT
-- DOMAIN-SUFFIX,hdchina.org,DIRECT
-- DOMAIN-SUFFIX,hdcmct.org,DIRECT
-- DOMAIN-SUFFIX,ithome.com,DIRECT
-- DOMAIN-SUFFIX,kkmh.com,DIRECT
-- DOMAIN-SUFFIX,ksosoft.com,DIRECT
-- DOMAIN-SUFFIX,maoyun.tv,DIRECT
-- DOMAIN-SUFFIX,meituan.net,DIRECT
-- DOMAIN-SUFFIX,mobike.com,DIRECT
-- DOMAIN-SUFFIX,mubu.com,DIRECT
-- DOMAIN-SUFFIX,myzaker.com,DIRECT
-- DOMAIN-SUFFIX,ourbits.club,DIRECT
-- DOMAIN-SUFFIX,passthepopcorn.me,DIRECT
-- DOMAIN-SUFFIX,paypal.com,DIRECT
-- DOMAIN-SUFFIX,paypalobjects.com,DIRECT
-- DOMAIN-SUFFIX,privatehd.to,DIRECT
-- DOMAIN-SUFFIX,redacted.ch,DIRECT
-- DOMAIN-SUFFIX,ruguoapp.com,DIRECT
-- DOMAIN-SUFFIX,smzdm.com,DIRECT
-- DOMAIN-SUFFIX,sogou.com,DIRECT
-- DOMAIN-SUFFIX,teamviewer.com,DIRECT
-- DOMAIN-SUFFIX,totheglory.im,DIRECT
-- DOMAIN-SUFFIX,tp.m-team.cc,DIRECT
-- DOMAIN-SUFFIX,udacity.com,DIRECT
-- DOMAIN-SUFFIX,xmcdn.com,DIRECT
-- DOMAIN-SUFFIX,yangkeduo.com,DIRECT
-- DOMAIN-SUFFIX,zhihu.com,DIRECT
-- DOMAIN-SUFFIX,zhimg.com,DIRECT
-#USER-AGENT,NeteaseMusic*,DIRECT
-#USER-AGENT,%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90*,DIRECT
+- DOMAIN-SUFFIX,40017.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,cailianpress.com,🖥️AsianTV
+- DOMAIN-SUFFIX,chdbits.co,🖥️AsianTV
+- DOMAIN-SUFFIX,chushou.tv,🖥️AsianTV
+- DOMAIN-SUFFIX,cmbchina.com,🖥️AsianTV
+- DOMAIN-SUFFIX,cmbimg.com,🖥️AsianTV
+- DOMAIN-SUFFIX,cmct.tv,🖥️AsianTV
+- DOMAIN-SUFFIX,cmvideo.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,cnlang.org,🖥️AsianTV
+- DOMAIN-SUFFIX,doubanio.com,🖥️AsianTV
+- DOMAIN-SUFFIX,douyu.com,🖥️AsianTV
+- DOMAIN-SUFFIX,douyucdn.cn,🖥️AsianTV
+- DOMAIN-SUFFIX,dxycdn.com,🖥️AsianTV
+- DOMAIN-SUFFIX,hicloud.com,🖥️AsianTV
+- DOMAIN-SUFFIX,hdchina.org,🖥️AsianTV
+- DOMAIN-SUFFIX,hdcmct.org,🖥️AsianTV
+- DOMAIN-SUFFIX,ithome.com,🖥️AsianTV
+- DOMAIN-SUFFIX,kkmh.com,🖥️AsianTV
+- DOMAIN-SUFFIX,ksosoft.com,🖥️AsianTV
+- DOMAIN-SUFFIX,maoyun.tv,🖥️AsianTV
+- DOMAIN-SUFFIX,meituan.net,🖥️AsianTV
+- DOMAIN-SUFFIX,mobike.com,🖥️AsianTV
+- DOMAIN-SUFFIX,mubu.com,🖥️AsianTV
+- DOMAIN-SUFFIX,myzaker.com,🖥️AsianTV
+- DOMAIN-SUFFIX,ourbits.club,🖥️AsianTV
+- DOMAIN-SUFFIX,passthepopcorn.me,🖥️AsianTV
+- DOMAIN-SUFFIX,paypal.com,🔑Proxy
+- DOMAIN-KEYWORD,paypal,🔑Proxy
+- DOMAIN-SUFFIX,paypalobjects.com,🔑Proxy
+- DOMAIN-SUFFIX,privatehd.to,🖥️AsianTV
+- DOMAIN-SUFFIX,redacted.ch,🖥️AsianTV
+- DOMAIN-SUFFIX,ruguoapp.com,🖥️AsianTV
+- DOMAIN-SUFFIX,smzdm.com,🖥️AsianTV
+- DOMAIN-SUFFIX,sogou.com,🖥️AsianTV
+- DOMAIN-SUFFIX,teamviewer.com,🖥️AsianTV
+- DOMAIN-SUFFIX,totheglory.im,🖥️AsianTV
+- DOMAIN-SUFFIX,tp.m-team.cc,🖥️AsianTV
+- DOMAIN-SUFFIX,udacity.com,🖥️AsianTV
+- DOMAIN-SUFFIX,xmcdn.com,🖥️AsianTV
+- DOMAIN-SUFFIX,yangkeduo.com,🖥️AsianTV
+- DOMAIN-SUFFIX,zhihu.com,🖥️AsianTV
+- DOMAIN-SUFFIX,zhimg.com,🖥️AsianTV
+#USER-AGENT,NeteaseMusic*,🖥️AsianTV
+#USER-AGENT,%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90*,🖥️AsianTV
 
 # (DNS Cache Pollution Protection)
 # > Google
@@ -1108,8 +1109,6 @@ Rule:
 - DOMAIN-SUFFIX,jiji.com,🔑Proxy
 - DOMAIN-SUFFIX,jinx.com,🔑Proxy
 - DOMAIN-SUFFIX,jkforum.net,🔑Proxy
-- DOMAIN-SUFFIX,cloudflare.com,🔑Proxy
-- DOMAIN-KEYWORD,cloudflare,🔑Proxy
 - DOMAIN-SUFFIX,joinmastodon.org,🔑Proxy
 - DOMAIN-SUFFIX,kakao.com,🔑Proxy
 - DOMAIN-SUFFIX,lihkg.com,🔑Proxy
@@ -1256,20 +1255,33 @@ Rule:
 # (The Most Popular Sites)
 # > Apple
 # > Apple URL Shortener
-- DOMAIN-SUFFIX,appsto.re,🔑Proxy
+- DOMAIN-SUFFIX,appsto.re,🖥️AsianTV
 # > TestFlight
-- DOMAIN,beta.itunes.apple.com,🔑Proxy
+- DOMAIN,beta.itunes.apple.com,🖥️AsianTV
 # > iBooks Store download
-- DOMAIN,books.itunes.apple.com,🔑Proxy
+- DOMAIN,books.itunes.apple.com,🖥️AsianTV
 # > iTunes Store Moveis Trailers
-- DOMAIN,hls.itunes.apple.com,🔑Proxy
+- DOMAIN,hls.itunes.apple.com,🖥️AsianTV
 # App Store Preview
-- DOMAIN,itunes.apple.com,🔑Proxy
+- DOMAIN,itunes.apple.com,🖥️AsianTV
 # > Spotlight
-- DOMAIN,api-glb-sea.smoot.apple.com,🔑Proxy
+- DOMAIN,api-glb-sea.smoot.apple.com,🖥️AsianTV
 # > Dictionary
-- DOMAIN,lookup-api.apple.com,🔑Proxy
+- DOMAIN,lookup-api.apple.com,🖥️AsianTV
 #PROCESS-NAME,LookupViewService,🔑Proxy
+- DOMAIN,guzzoni.apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,aaplimg.com,🖥️AsianTV
+- DOMAIN-SUFFIX,apple.co,🖥️AsianTV
+- DOMAIN-SUFFIX,apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,apple-cloudkit.com,🖥️AsianTV
+- DOMAIN-SUFFIX,cdn-apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,icloud.com,🖥️AsianTV
+- DOMAIN-SUFFIX,icloud-content.com,🖥️AsianTV
+- DOMAIN-SUFFIX,itunes.apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,itunes.com,🖥️AsianTV
+- DOMAIN-SUFFIX,lookup-api.apple.com,🖥️AsianTV
+- DOMAIN-SUFFIX,me.com,🖥️AsianTV
+- DOMAIN-SUFFIX,mzstatic.com,🖥️AsianTV
 # > Google
 - DOMAIN-SUFFIX,abc.xyz,🔑Proxy
 - DOMAIN-SUFFIX,android.com,🔑Proxy
@@ -1377,16 +1389,16 @@ Rule:
 - DOMAIN-SUFFIX,dler.cloud,🔑Proxy
 
 # Local Area Network
-- DOMAIN-KEYWORD,announce,DIRECT
-- DOMAIN-KEYWORD,torrent,DIRECT
-- DOMAIN-KEYWORD,tracker,DIRECT
-- DOMAIN-SUFFIX,smtp,DIRECT
-- DOMAIN-SUFFIX,local,DIRECT
-- IP-CIDR,192.168.0.0/16,DIRECT
-- IP-CIDR,10.0.0.0/8,DIRECT
-- IP-CIDR,172.16.0.0/12,DIRECT
-- IP-CIDR,127.0.0.0/8,DIRECT
-- IP-CIDR,100.64.0.0/10,DIRECT
+- DOMAIN-KEYWORD,announce,🖥️AsianTV
+- DOMAIN-KEYWORD,torrent,🖥️AsianTV
+- DOMAIN-KEYWORD,tracker,🖥️AsianTV
+- DOMAIN-SUFFIX,smtp,🖥️AsianTV
+- DOMAIN-SUFFIX,local,🖥️AsianTV
+- IP-CIDR,192.168.0.0/16,🖥️AsianTV
+- IP-CIDR,10.0.0.0/8,🖥️AsianTV
+- IP-CIDR,172.16.0.0/12,🖥️AsianTV
+- IP-CIDR,127.0.0.0/8,🖥️AsianTV
+- IP-CIDR,100.64.0.0/10,🖥️AsianTV
 
 # (🖥️AsianTV)
 # > Bilibili
@@ -1508,9 +1520,26 @@ Rule:
 - IP-CIDR,202.160.128.0/22,🔑Proxy
 - IP-CIDR,209.237.192.0/19,🔑Proxy
 
-#- SRC-IP-CIDR,192.168.1.201/32,DIRECT
-#- DST-PORT,80,DIRECT
-#- DST-PORT,443,DIRECT
+# > CloudFlare
+- IP-CIDR,173.245.48.0/20,🔑Proxy
+- IP-CIDR,103.21.244.0/22,🔑Proxy
+- IP-CIDR,103.22.200.0/22,🔑Proxy
+- IP-CIDR,103.31.4.0/22,🔑Proxy
+- IP-CIDR,141.101.64.0/18,🔑Proxy
+- IP-CIDR,108.162.192.0/18,🔑Proxy
+- IP-CIDR,190.93.240.0/20,🔑Proxy
+- IP-CIDR,188.114.96.0/20,🔑Proxy
+- IP-CIDR,197.234.240.0/22,🔑Proxy
+- IP-CIDR,198.41.128.0/17,🔑Proxy
+- IP-CIDR,162.158.0.0/15,🔑Proxy
+- IP-CIDR,104.16.0.0/12,🔑Proxy
+- IP-CIDR,172.64.0.0/13,🔑Proxy
+- IP-CIDR,131.0.72.0/22,🔑Proxy
 
-- GEOIP,CN,DIRECT
+#- DST-PORT,80,🖥️AsianTV
+#- DST-PORT,443,🖥️AsianTV
+# GeoIP China
+- GEOIP,CN,🖥️AsianTV
+
 - MATCH,🔑Proxy
+

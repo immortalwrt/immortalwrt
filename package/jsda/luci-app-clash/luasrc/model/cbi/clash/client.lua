@@ -37,8 +37,6 @@ o.description = translate("Select core, clashr support ssr while clash does not.
 
 o = s:option(ListValue, "tun_mode", translate("Tun Mode"))
 o.default = "1"
-o:value("0", translate("Disable"))
-o:value("1", translate("Fake-IP(Dreamacro Tun)"))
 o:value("2", translate("Fake-IP(comzyh Tun)"))
 o:value("3", translate("Redir-Host(comzyh Tun)"))
 o.description = translate("Select Tun Mode")
@@ -46,10 +44,16 @@ o:depends("core",3)
 
 o = s:option(ListValue, "config_type", translate("Config Type"))
 o.default = "sub"
-o:value("sub", translate("Subscription Config"))
-o:value("upl", translate("Uploaded Config"))
-o:value("cus", translate("Custom Config"))
+o:value("1", translate("Subscription Config"))
+o:value("2", translate("Uploaded Config"))
+o:value("3", translate("Custom Config"))
 o.description = translate("Select Configuration type")
+
+o = s:option(ListValue, "g_rules", translate("Game Rules"))
+o.default = "0"
+o:value("0", translate("Disable"))
+o:value("1", translate("Enable"))
+o.description = translate("Set rules under Setting=>Game Rules, will take effect when client start")
 
 o = s:option(Button, "Apply")
 o.title = translate("Save & Apply")
@@ -60,7 +64,7 @@ o.write = function()
 end
 
 o = s:option(Button,"action")
-o.title = translate("Action")
+o.title = translate("Operation")
 o.template = "clash/start_stop"
 
 

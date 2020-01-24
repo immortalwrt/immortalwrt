@@ -143,7 +143,7 @@ msgid "Overview"
 msgstr "概览"
 
 msgid "Download"
-msgstr "下载新版本"
+msgstr "下载"
 
 msgid "Checking..."
 msgstr "正在检查..."
@@ -766,3 +766,129 @@ msgstr "未选择文件"
 
 msgid "Chose File"
 msgstr "选择文件"
+
+msgid "Update Time"
+msgstr "更新时间"
+
+msgid "File Name"
+msgstr "文件名"
+
+msgid "Use Config"
+msgstr "使用配置"
+
+msgid "Size"
+msgstr "文件大小"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Download Config"
+msgstr "下载配置"
+
+msgid "Config Name"
+msgstr "配置名"
+
+msgid "Give a name for your config"
+msgstr "为配置命名"
+
+msgid "CONFIG IN USE"
+msgstr "使用中的配置"
+
+msgid "Daily Server subscription update time. Only update config in use"
+msgstr "每日服务器订阅更新时间。仅更新正在使用的配置"
+
+msgid "NB: Only upload file with name .yaml.It recommended to rename each upload file name to avoid overwrite"
+msgstr "注意：仅上载名为.yaml的文件。建议重命名每个上载文件名以避免覆盖"
+
+msgid "Not Selected"
+msgstr "未选择"
+
+msgid "Force Same Name"
+msgstr "强制使用同名"
+
+msgid "Enable to overwrite config file"
+msgstr "启用覆盖配置文件"
+
+msgid "Clash Config"
+msgstr "Clash配置"
+
+msgid "SUBSCRIBE"
+msgstr "订阅配置"
+
+msgid "UPLOAD"
+msgstr "上传配置"
+
+msgid "CUSTOM"
+msgstr "自定义配置"
+
+msgid "Operation"
+msgstr "操作"
+
+msgid "NOT SELECTED"
+msgstr "未选择"
+
+msgid "Game Rule's Name"
+msgstr "选择游戏规则"
+
+msgid "Select Proxy Group"
+msgstr "选择策略组"
+
+msgid "Game Rules List"
+msgstr "游戏规则列表"
+
+msgid "Rule Name"
+msgstr "规则名称"
+
+msgid "Download Rule"
+msgstr "下载规则"
+
+msgid "Exist"
+msgstr "已下载"
+
+msgid "Not Exist"
+msgstr "未下载"
+
+msgid "Order Number"
+msgstr "序号"
+
+msgid "Game Rules & Groups"
+msgstr "游戏规则策略组"
+
+msgid "Timeout"
+msgstr "下载超时"
+
+msgid "Error"
+msgstr "下载失败"
+
+msgid "Successful"
+msgstr "下载成功"
+
+msgid "Game Rules"
+msgstr "游戏规则"
+
+msgid "Update Rule"
+msgstr "点击更新规则"
+
+msgid "Game Rule Tag"
+msgstr "游戏规则评论"
+
+msgid "Rule Tag"
+msgstr "游戏评论"
+
+msgid "Edit Game Rule & Group"
+msgstr "编辑游戏规则策略组"
+
+msgid "Give a special name for your rules"
+msgstr "规则名字"
+
+msgid "Select a policy group to add rule"
+msgstr "选择要添加规则的策略组"
+
+msgid "Set rules under Setting=>Game Rules, will take effect when client start"
+msgstr "在设置=>游戏规则下设置规则，将在客户端启动时生效"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Downloading..."
+msgstr "正在下载规则..."

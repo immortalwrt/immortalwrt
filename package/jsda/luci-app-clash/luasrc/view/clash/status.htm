@@ -10,6 +10,7 @@
 	<table width="100%" cellspacing="10">
 		<tr><td width="50%"><span><%:Clash Client%></span></td><td id="_clash"><em><%:Collecting data...%></em></td> </tr>
 		<tr><td width="50%"><span><%:Clash Mode%></span></td><td id="_emode"><em><%:Collecting data...%></em></td> </tr>
+		<tr><td width="50%"><span><%:Clash Config%></span></td><td id="_useconf"><em><%:Collecting data...%></em></td> </tr>
 		<tr><td width="50%"><span><%:Clash Dashboard%></span></td><td id="_web"><em> <%:Collecting data...%> </em></td> </tr>
 	</table>
 </fieldset>
@@ -150,14 +151,25 @@ var HTTP = {
 	var secret = document.getElementById('_secret');
 	var emode = document.getElementById('_emode');
 	var logo = document.getElementById('_logo');
+	var use = document.getElementById('_useconf');
 	XHR.poll(1, '<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', null, function(x, status) {
 		if ( x && x.status == 200 ) {
+			if(status.in_use==1){
+				use.innerHTML = status.in_use ? '<b><font color="green"><%:SUBSCRIBE%></font> </b>' : '<b><font color="red"><%:NOT SELECTED%></font></b>';
+			}
+			if(status.in_use==2){
+				use.innerHTML = status.in_use ? '<b><font color="green"><%:UPLOAD%></font> </b>' : '<em><b><font color="red"><%:NOT SELECTED%></font></b></em>';
+			}
+			if(status.in_use==3){
+				use.innerHTML = status.in_use ? '<b><font color="green"><%:CUSTOM%></font> </b>' : '<em><b><font color="red"><%:NOT SELECTED%></font></b></em>';
+			}
 			web.innerHTML = status.web ? '<a type="button" class="btn" style="background-color:black;padding: 5px;"  href="http://'+window.location.hostname+':'+status.dash_port+'/ui" target="_blank"/><b><font color="green"><%:OPEN DASHBOARD%></font></b></a>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
 			clash.innerHTML = status.clash ? '<b><font color="green"><%:RUNNING%></font> </b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
 			ip.innerHTML = status.localip ? '<b><font color="green">'+status.localip+'</font> </b>' : '<em><b><font color="red"><%:NOT SET%></font></b></em>';
 			port.innerHTML = status.dash_port ? '<b><font color="green">'+status.dash_port+'</font> </b>' : '<em><b><font color="red"><%:NOT SET%></font></b></em>';
 			secret.innerHTML = status.dash_pass ? '<b><font color="green">'+status.dash_pass+'</font> </b>' : '<em><b><font color="red"><%:NOT SET%></font></b></em>';
 			emode.innerHTML = status.e_mode ? '<b><font color="green" style="text-transform: uppercase;">'+status.e_mode+'</font> </b>' : '<b><font color="red"><%:NOT SET%></font></b>';	
+			
 			IP.getIpifyIP();
 			IP.getIpipnetIP();
 

@@ -11,9 +11,10 @@ CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
 CONFIG_YAML_OLD="/etc/clash/config.yml" 
 
-CONFIG_YAML_SUB="/usr/share/clash/config/sub/config.yaml"
-CONFIG_YAML_UPL="/usr/share/clash/config/upload/config.yaml"
-CONFIG_YAML_CUS="/usr/share/clash/config/custom/config.yaml"
+CONFIG_YAML_SUB=$(uci get clash.config.config_path_sub 2>/dev/null)
+CONFIG_YAML_UPL=$(uci get clash.config.config_path_up 2>/dev/null)
+CONFIG_YAML_CUS=$(uci get clash.config.config_path_cus 2>/dev/null)
+
 CUSLIST="/tmp/dnsmasq.d/custom_list.conf"
 CUSLITT="/tmp/dnsmasq.clash"
 CUSLISTV="/var/dnsmasq.d/custom_list.conf" 
@@ -41,8 +42,7 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 	[ -n "$(grep -w "/usr/share/clash/v2ssr.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/v2ssr.sh/d' $CRON_FILE
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
 	if [ "${auto}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/clash.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/clash.sh" >> $CRON_FILE
-	[ -z "$(grep -w "/usr/share/clash/v2ssr.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/v2ssr.sh" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/update.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/update.sh" >> $CRON_FILE
 	fi
 	auto_geoip=$(uci get clash.config.auto_update_geoip 2>/dev/null)
 	if [ "${auto_geoip}" -eq 1 ]; then
@@ -83,18 +83,53 @@ elif [ "${lang}" == "zh_cn" ];then
 	echo "正在检查配置文件。。。" >$REAL_LOG
 fi
 sleep 1
-if [ $config_type == "sub" ];then 
+if [ $config_type == "1" ];then 
+
+	if [ "$(uci get clash.config.config_path_sub)" == "" ] && [ -z "$(uci get clash.config.config_path_sub)" ];then
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Select Config and Restart Client" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			 echo "选择配置,重新启动客户端" >$REAL_LOG
+		fi
+		sleep 5
+		echo "Clash for OpenWRT" >$REAL_LOG
+		exit 0	
+	fi
+	
 if [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB|awk '{print int($5)}')" -ne 0 ];then
 	cp $CONFIG_YAML_SUB $CONFIG_YAML 2>/dev/null
 fi
-elif [ $config_type == "upl" ];then 
+
+elif [ $config_type == "2" ];then 
+	if [ "$(uci get clash.config.config_path_up)" == "" ] && [ -z "$(uci get clash.config.config_path_up)" ];then
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Select Config and Restart Client" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			 echo "选择配置,重新启动客户端" >$REAL_LOG
+		fi
+		sleep 5
+		echo "Clash for OpenWRT" >$REAL_LOG
+		exit 0	
+	fi
 if [  -f $CONFIG_YAML_UPL ] && [ "$(ls -l $CONFIG_YAML_UPL|awk '{print int($5)}')" -ne 0 ];then
 	cp $CONFIG_YAML_UPL $CONFIG_YAML 2>/dev/null
 fi
-elif [ $config_type == "cus" ];then 
+
+elif [ $config_type == "3" ];then 
+	if [ "$(uci get clash.config.config_path_cus)" == "" ] && [ -z "$(uci get clash.config.config_path_cus)" ];then
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Select Config and Restart Client" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			 echo "选择配置,重新启动客户端" >$REAL_LOG
+		fi
+		sleep 5
+		echo "Clash for OpenWRT" >$REAL_LOG
+		exit 0	
+	fi
 if [  -f $CONFIG_YAML_CUS ] && [ "$(ls -l $CONFIG_YAML_CUS|awk '{print int($5)}')" -ne 0 ];then
 	cp $CONFIG_YAML_CUS $CONFIG_YAML 2>/dev/null
 fi
+
 fi
 
 #=========================================================================================================================== 
@@ -108,6 +143,11 @@ yml_change() {
 #=========================================================================================================================== 
 }
 
+game_rules() {
+#===========================================================================================================================
+	sh /usr/share/clash/game.sh 2>/dev/null
+#=========================================================================================================================== 
+}
 
 
 yml_dns_change(){
@@ -228,6 +268,13 @@ rules(){
 			PROXY_ROUTE_TABLE="0x162"
 			PROXY_BYPASS_USER="root"
 			
+			TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
+			if [ -z $TUN_DEVICE ];then
+			TUN_DEVICE_NAME="clash0"
+			else
+			TUN_DEVICE_NAME=$TUN_DEVICE
+			fi
+		
 			ipset create localnetwork hash:net
 			ipset add localnetwork 127.0.0.0/8
 			ipset add localnetwork 10.0.0.0/8
@@ -237,10 +284,10 @@ rules(){
 			ipset add localnetwork 240.0.0.0/4
 			ipset add localnetwork 172.16.0.0/12
 
-			ip tuntap add user root mode tun clash0
-			ip link set clash0 up
-			ip address replace 198.18.0.0/16 dev clash0
-			ip route replace default dev clash0 table "$PROXY_ROUTE_TABLE"
+			ip tuntap add user root mode tun $TUN_DEVICE_NAME
+			ip link set $TUN_DEVICE_NAME up
+			ip address replace 198.18.0.0/16 dev $TUN_DEVICE_NAME
+			ip route replace default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE"
 			ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"		
 			
 			iptables -t mangle -N clash
@@ -393,7 +440,7 @@ else
 if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')" -ne 0 ] ; then
 
    	yml_change >/dev/null 2>&1
-	
+
 	checktype=$(grep -c "type: ssr" /etc/clash/config.yaml 2>/dev/null)
 	if [ "${checktype}" -gt 0 ] && [ "${core}" -eq 1 ] || [ "${checktype}" -gt 0 ] && [ "${core}" -eq 3 ]; then
 	 	
@@ -405,27 +452,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		sleep 5
 		echo "Clash for OpenWRT" >$REAL_LOG
 		exit 0
-	fi
-
-	checkaccess=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
-    	if [ "${checkaccess}" = "fake-ip" ] && [ "${lana}" -eq 1 ];then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Clash fake-ip mode does not support Proxy Lan IP " >$REAL_LOG
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "Clash模式fake-ip不支持走代理的局域网IP" >$REAL_LOG
-		fi
-		sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-		exit 0		
-        elif [ "${checkaccess}" = "fake-ip" ] && [ "${lanac}" -eq 1 ];then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Clash fake-ip mode does not support Bypass Lan IP" >$REAL_LOG
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "Clash模式fake-ip不支持不走代理的局域网IP" >$REAL_LOG
-		fi
-		sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-		exit 0		
 	fi
 		
 
@@ -463,7 +489,9 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		echo "Clash for OpenWRT" >$REAL_LOG		
 		exit 0
 	fi	
-	
+
+	game_rules >/dev/null 2>&1
+
     if [ "${core}" -eq 1 ];then
         	nohup $CLASH -d "$CLASH_CONFIG" > /tmp/clash.txt 2>&1 &	
 		
@@ -500,11 +528,11 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		echo "设置 Clash iptables" >$REAL_LOG
 	fi
 
-    	if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
+    if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
        		uci set firewall.@defaults[0].forward=ACCEPT >/dev/null 2>&1
        		uci commit firewall >/dev/null 2>&1
        		/etc/init.d/firewall restart >/dev/null 2>&1
-    	fi
+    fi
 
 
 	rules >/dev/null 2>&1
@@ -592,11 +620,17 @@ remove_mark(){
 		
 		PROXY_FWMARK="0x162" 2>/dev/null
 		PROXY_ROUTE_TABLE="0x162" 2>/dev/null
+		TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
+		if [ -z $TUN_DEVICE ];then
+		TUN_DEVICE_NAME="clash0"
+		else
+		TUN_DEVICE_NAME=$TUN_DEVICE
+		fi
 		
-		ip link set dev clash0 down 2>/dev/null
-		ip tuntap del clash0 mode tun 2>/dev/null
+		ip link set dev $TUN_DEVICE_NAME down 2>/dev/null
+		ip tuntap del $TUN_DEVICE_NAME mode tun 2>/dev/null
 		
-		ip route del default dev clash0 table "$PROXY_ROUTE_TABLE" 2>/dev/null
+		ip route del default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE" 2>/dev/null
 		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
 
 		iptables -t mangle -D OUTPUT -j clash 2>/dev/null

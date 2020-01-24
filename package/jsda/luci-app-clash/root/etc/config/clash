@@ -19,12 +19,12 @@ config clash 'config'
 	option cus_list '1'
 	option custom_dns '114.114.114.114'
 	option cusrule '0'
-	option config_type 'sub'
 	option loadfrom 'sub'
 	option loadservers '1'
 	option loadgroups '1'
 	option fake_ip_range '198.18.0.0/16'
 	option dnscache '0'	
+	option config_type '1'
 
 config groups
 	option old_name '❌AdBlock'

@@ -43,7 +43,6 @@ y.description = translate("Allow ipv6 traffic through clash")
 o = s:option(ListValue, "tun_mode", translate("Tun Mode DNS"))
 o.default = "0"
 o:value("0", translate("Disable"))
-o:value("1", translate("Fake-IP(Dreamacro Tun)"))
 o:value("2", translate("Fake-IP(comzyh Tun)"))
 o:value("3", translate("Redir-Host(comzyh Tun)"))
 o.description = translate("Select Tun Mode, Enable Tun custom DNS and make sure you are using tun supported core")
@@ -72,20 +71,6 @@ end
 o.description = translate("NB: press ENTER to create a blank line at the end of input.")
 o:depends("mode", 1)
 
-
-local dns1 = "/usr/share/clash/tundns_1.yaml"
-o = s:option(TextValue, "dns1",translate("Modify Tun DNS"))
-o.template = "clash/tvalue"
-o.rows = 26
-o.wrap = "off"
-o.cfgvalue = function(self, section)
-	return NXFS.readfile(dns1) or ""
-end
-o.write = function(self, section, value)
-	NXFS.writefile(dns1, value:gsub("\r\n", "\n"))
-end
-o.description = translate("NB: press ENTER to create a blank line at the end of input.")
-o:depends("tun_mode", 1)
 
 
 local dns2 = "/usr/share/clash/tundns_2.yaml"

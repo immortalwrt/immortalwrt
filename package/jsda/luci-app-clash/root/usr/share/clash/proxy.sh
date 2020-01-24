@@ -1,19 +1,50 @@
 #!/bin/bash /etc/rc.common
 . /lib/functions.sh
 
-create_config(){
-
 REAL_LOG="/usr/share/clash/clash_real.txt"
 lang=$(uci get luci.main.lang 2>/dev/null)
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 create=$(uci get clash.config.create 2>/dev/null)
-load_from=$(uci get clash.config.loadfrom 2>/dev/null) 
+load_from=$(uci get clash.config.loadfrom 2>/dev/null)
+config_name=$(uci get clash.config.create_tag 2>/dev/null)
+CONFIG_YAML="/usr/share/clash/config/custom/${config_name}.yaml" 
+check_name=$(grep -F "${config_name}.yaml" "/usr/share/clashbackup/create_list.conf")
+same_tag=$(uci get clash.config.same_tag 2>/dev/null)
 
 
-if [ "$load_from" == "sub" ];then  
-        load="/usr/share/clash/config/sub/config.yaml"	
+if  [ $config_name == "" ] || [ -z $config_name ];then
+
+	if [ $lang == "en" ] || [ $lang == "auto" ];then
+				echo "Tag Your Config" >$REAL_LOG
+	elif [ $lang == "zh_cn" ];then
+				echo "标记您的配置" >$REAL_LOG
+	fi
+	sleep 5
+	echo "Clash for OpenWRT" >$REAL_LOG
+	exit 0	
+	
+fi
+
+
+if [ ! -z $check_name ] && [ "${same_tag}" -eq 0 ];then
+
+	if [ $lang == "en" ] || [ $lang == "auto" ];then
+				echo "Config with same name exist, please rename tag and create again" >$REAL_LOG
+	elif [ $lang == "zh_cn" ];then
+				echo "已存在同名配置，请重命名标记,重新创建配置" >$REAL_LOG
+	fi
+	sleep 5
+	echo "Clash for OpenWRT" >$REAL_LOG
+	exit 0	
+
+   
+else
+
+
+if [ "$load_from" == "sub" ];then 
+        load=$(uci get clash.config.config_path_sub 2>/dev/null)	
 elif [ "$load_from" == "upl" ];then
-	    load="/usr/share/clash/config/upload/config.yaml"
+	load=$(uci get clash.config.config_path_up 2>/dev/null)
 fi
 
 if [ "${create}" -eq 1 ];then
@@ -28,7 +59,6 @@ if [ "${create}" -eq 1 ];then
 	
 CONFIG_YAML_RULE="/usr/share/clash/custom_rule.yaml"
 SERVER_FILE="/tmp/servers.yaml"
-CONFIG_YAML="/usr/share/clash/config/custom/config.yaml"
 TEMP_FILE="/tmp/dns_temp.yaml"
 Proxy_Group="/tmp/Proxy_Group"
 GROUP_FILE="/tmp/groups.yaml"
@@ -593,6 +623,12 @@ cat $TEMP_FILE $CONFIG_YAML_RULE > $CONFIG_YAML 2>/dev/null
 
 sed -i "/Rule:/i\     " $CONFIG_YAML 2>/dev/null
 
+if [ -z $check_name ] && [ "${same_tag}" -eq 1 ];then
+echo "${config_name}.yaml" >>/usr/share/clashbackup/create_list.conf
+elif [ -z $check_name ] && [ "${same_tag}" -eq 0 ];then
+echo "${config_name}.yaml" >>/usr/share/clashbackup/create_list.conf
+fi
+
 rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE $PROVIDER_FILE
 
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
@@ -604,19 +640,9 @@ rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE $PROVIDER_FILE
 		sleep 2
 		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
-	
-
-
-
-if [ $config_type == "cus" ];then 
-if pidof clash >/dev/null; then
-/etc/init.d/clash restart 2>/dev/null
-fi
-fi
-
 
 rm -rf $SERVER_FILE
 fi
+fi
 
-}
-create_config >/dev/null 2>&1
+

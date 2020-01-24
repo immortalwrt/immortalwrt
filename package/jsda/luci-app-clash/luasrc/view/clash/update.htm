@@ -71,7 +71,7 @@
 			version_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return version_check(this)"/></center>' : '<em></em>';
 			core_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return core_check(this)"/></center>' : '<em></em>';
 			corer_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return clashr_core_check(this)"/></center>' : '<em></em>';
-			coretun_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Link1%>" onclick="return clashtun_core_check1(this)"/> <input type="button" class="cbi-button cbi-button-reload" value="<%:Link2%>" onclick="return clashtun_core_check2(this)"/></center>' : '<em></em>';
+			coretun_butt.innerHTML = status.current_version ? '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return clashtun_core_check(this)"/></center>' : '<em></em>';
 			
 			
 						
@@ -148,6 +148,34 @@ function clashr_core_check(btn)
    });
 }
 
+
+
+function clashtun_core_check(btn)
+{
+    btn.disabled = true;
+    btn.value    = '<%:Checking...%>';
+    XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
+   if(status.new_clashtun_core_version > status.clashtun_core)
+   {
+	coretun_butt.innerHTML ='<center><b><font color="green"><%:New Version :%>'+status.new_clashtun_core_version+'</font> </b></center>';
+	 }
+	
+   else if(status.new_clashtun_core_version==0)
+   {
+	coretun_butt.innerHTML ='<center><input type="button" class="cbi-button cbi-button-reset" value="<%:Error Occured  |Return%>" onclick="return clashtun_core_return(this)"/></center>';
+  
+	}
+	else if(status.clashtun_core >= status.new_clashtun_core_version)
+    {
+        coretun_butt.innerHTML ='<center><input type="button" class="cbi-button cbi-button-reset" value="<%:No Update | Return%>" onclick="return clashtun_core_return(this)"/></center>';
+    }
+	return false;
+   });
+}
+
+
+
+
 function download_update(btn)
 {
 XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
@@ -160,29 +188,6 @@ XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_statu
  });
 }
 
-function clashtun_core_check1(btn)
-{
-XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
-        btn.disabled = true;
-        btn.value    = '<%:Link1%>';
-        url='https://github.com/Dreamacro/clash/releases/tag/TUN';
-        window.open(url);
-        btn.disabled = false;
-        return false;
- });
-}
-
-function clashtun_core_check2(btn)
-{
-XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "check_status")%>', null, function(x, status) {
-        btn.disabled = true;
-        btn.value    = '<%:Link2%>';
-        url='https://github.com/comzyh/clash/releases';
-        window.open(url);
-        btn.disabled = false;
-        return false;
- });
-}
 
 function check_return(btn)
 {
@@ -215,7 +220,15 @@ function clashr_core_return(btn)
 }
 
 
-
+function clashtun_core_return(btn)
+{
+    XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "status")%>', status.clashtun_core, function(x, status) {
+       btn.disabled = true;
+       btn.value    = '<%:Return Check%>';
+	coretun_butt.innerHTML = '<center><input type="button" class="cbi-button cbi-button-reload" value="<%:Check%>" onclick="return clashtun_core_check(this)"/></center>';
+   });
+    
+}
 //]]></script>
 
 
