@@ -34,6 +34,10 @@ endif
 ifeq ($(ARCH),arm)
 	BIN_ARCH:=arm7
 endif
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH:=arm64
+	BIN_ARCH:=arm64
+endif
 
 PKG_SOURCE:=v2ray-plugin-linux-$(PKG_ARCH)-v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/shadowsocks/v2ray-plugin/releases/download/v$(PKG_VERSION)/
