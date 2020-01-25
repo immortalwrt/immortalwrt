@@ -1,13 +1,20 @@
 #!/bin/bash /etc/rc.common
 . /lib/functions.sh  
 
-config_name=$(uci get clash.config.config_update_name 2>/dev/null)
+c_type=$(uci get clash.config.config_type 2>/dev/null)
+
+countt=$(grep -c '' /usr/share/clashbackup/confit_list.conf) 
+count_nums=1
+while [[ $count_nums -le $countt ]]
+do
+
+config_name=$(sed -n "$count_nums"p /usr/share/clashbackup/confit_list.conf| awk -F '#' '{print $1}')
+
 CONFIG_YAML="/usr/share/clash/config/sub/${config_name}" 
 url=$(grep -F "${config_name}" "/usr/share/clashbackup/confit_list.conf" | awk -F '#' '{print $2}')
 lang=$(uci get luci.main.lang 2>/dev/null)
-REAL_LOG="/usr/share/clash/clash_real.txt"
-c_type=$(uci get clash.config.config_type 2>/dev/null)
-path=$(uci get clash.config.use_config 2>/dev/null)
+REAL_LOG="/usr/share/clash/update_clash_real.txt"
+ 
 type=$(grep -F "${config_name}" "/usr/share/clashbackup/confit_list.conf" | awk -F '#' '{print $3}') 
 
 if [ $type == "clash" ] && [ ! -z $url ];then
@@ -380,7 +387,7 @@ json_for_each_item() {
 	esac
 }
 
-REAL_LOG="/usr/share/clash/clash_real.txt"
+REAL_LOG="/usr/share/clash/update_clash_real.txt"
 lang=$(uci get luci.main.lang 2>/dev/null)
 
 urlsafe_b64decode() {
@@ -957,12 +964,18 @@ rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE
 
 mv /usr/share/clash/v2ssr/config.bak /etc/config/clash 2>/dev/null
 sleep 1
-
-	if pidof clash >/dev/null; then
-		/etc/init.d/clash restart 2>/dev/null
-	fi
 	
 fi
 rm -rf $SERVER_FILE
 
 fi
+
+count_nums=$(( $count_nums + 1))	
+done
+
+if pidof clash >/dev/null; then
+	if [ "${c_type}" -eq 1 ];then
+  		/etc/init.d/clash restart 2>/dev/null
+	fi
+fi
+

@@ -9,11 +9,8 @@ CLASHT="/etc/clash/clashtun/clash"
 CLASH_CONFIG="/etc/clash"
 CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
-CONFIG_YAML_OLD="/etc/clash/config.yml" 
+CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null) 
 
-CONFIG_YAML_SUB=$(uci get clash.config.config_path_sub 2>/dev/null)
-CONFIG_YAML_UPL=$(uci get clash.config.config_path_up 2>/dev/null)
-CONFIG_YAML_CUS=$(uci get clash.config.config_path_cus 2>/dev/null)
 
 CUSLIST="/tmp/dnsmasq.d/custom_list.conf"
 CUSLITT="/tmp/dnsmasq.clash"
@@ -22,7 +19,7 @@ CUSLITTV="/var/dnsmasq.clash"
 REAL_LOG="/usr/share/clash/clash_real.txt"
 
 revert_dns() {
-#=========================================================================================================================== 
+#===========================================================================================================================  
     	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null) 
 	uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1
 	uci set dhcp.@dnsmasq[0].noresolv=0
@@ -42,7 +39,7 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 	[ -n "$(grep -w "/usr/share/clash/v2ssr.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/v2ssr.sh/d' $CRON_FILE
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
 	if [ "${auto}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/update.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/update.sh" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/update_all.sh" >> $CRON_FILE
 	fi
 	auto_geoip=$(uci get clash.config.auto_update_geoip 2>/dev/null)
 	if [ "${auto_geoip}" -eq 1 ]; then
@@ -77,59 +74,40 @@ del_cron(){
 select_config(){
 #=========================================================================================================================== 
 config_type=$(uci get clash.config.config_type 2>/dev/null)
+lang=$(uci get luci.main.lang 2>/dev/null)
 if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 	echo "Checking Config file..." >$REAL_LOG 
 elif [ "${lang}" == "zh_cn" ];then
 	echo "正在检查配置文件。。。" >$REAL_LOG
 fi
 sleep 1
-if [ $config_type == "1" ];then 
 
-	if [ "$(uci get clash.config.config_path_sub)" == "" ] && [ -z "$(uci get clash.config.config_path_sub)" ];then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Select Config and Restart Client" >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			 echo "选择配置,重新启动客户端" >$REAL_LOG
-		fi
-		sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-		exit 0	
-	fi
+if [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH|awk '{print int($5)}')" -ne 0 ];then
+
+	cp $CONFIG_YAML_PATH $CONFIG_YAML 2>/dev/null
 	
-if [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB|awk '{print int($5)}')" -ne 0 ];then
-	cp $CONFIG_YAML_SUB $CONFIG_YAML 2>/dev/null
-fi
+elif [ ! -f "$CONFIG_YAML_PATH" ] && [ ! -f "$CONFIG_YAML" ];then
 
-elif [ $config_type == "2" ];then 
-	if [ "$(uci get clash.config.config_path_up)" == "" ] && [ -z "$(uci get clash.config.config_path_up)" ];then
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Select Config and Restart Client" >$REAL_LOG 
+			echo "No config found" >$REAL_LOG 
 		elif [ "${lang}" == "zh_cn" ];then
-			 echo "选择配置,重新启动客户端" >$REAL_LOG
+			echo "找不到配置文章" >$REAL_LOG
 		fi
 		sleep 5
 		echo "Clash for OpenWRT" >$REAL_LOG
 		exit 0	
-	fi
-if [  -f $CONFIG_YAML_UPL ] && [ "$(ls -l $CONFIG_YAML_UPL|awk '{print int($5)}')" -ne 0 ];then
-	cp $CONFIG_YAML_UPL $CONFIG_YAML 2>/dev/null
-fi
+	
+elif [ "$(ls -l $CONFIG_YAML_PATH|awk '{print int($5)}')" -eq 0 ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -eq 0 ];then
 
-elif [ $config_type == "3" ];then 
-	if [ "$(uci get clash.config.config_path_cus)" == "" ] && [ -z "$(uci get clash.config.config_path_cus)" ];then
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Select Config and Restart Client" >$REAL_LOG 
+			echo "Your Config File is Empty" >$REAL_LOG 
 		elif [ "${lang}" == "zh_cn" ];then
-			 echo "选择配置,重新启动客户端" >$REAL_LOG
+			 echo "你的config.yaml有问题还是为了空" >$REAL_LOG
 		fi
 		sleep 5
 		echo "Clash for OpenWRT" >$REAL_LOG
 		exit 0	
-	fi
-if [  -f $CONFIG_YAML_CUS ] && [ "$(ls -l $CONFIG_YAML_CUS|awk '{print int($5)}')" -ne 0 ];then
-	cp $CONFIG_YAML_CUS $CONFIG_YAML 2>/dev/null
-fi
-
+		
 fi
 
 #=========================================================================================================================== 
@@ -152,6 +130,7 @@ game_rules() {
 
 yml_dns_change(){
 #=========================================================================================================================== 
+	lang=$(uci get luci.main.lang 2>/dev/null)
 	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 	dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
 	dnscache=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
@@ -230,7 +209,7 @@ rules(){
 		core=$(uci get clash.config.core 2>/dev/null)
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		
-		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ] || [ -z "${tun_mode}" ] || [ "${tun_mode}" -eq 1 ];then
+		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
 			iptables -t nat -N clash              
 			iptables -t nat -A clash -d 0.0.0.0/8 -j RETURN
 			iptables -t nat -A clash -d 10.0.0.0/8 -j RETURN
@@ -241,21 +220,18 @@ rules(){
 			iptables -t nat -A clash -d 224.0.0.0/4 -j RETURN
 			iptables -t nat -A clash -d 240.0.0.0/4 -j RETURN
 			
-			if [ "${core}" -eq 3 ] && [ "${tun_mode}" -eq 1 ];then	
-			iptables -t nat -A clash -d 198.18.0.0/16 -j RETURN
-			fi
 	
 			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
 			iptables -t nat -A zone_lan_prerouting -p tcp -j clash
 			
 			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
-			if [ "{$core}" -ne 3  ];then
+		
 			if [ ! -z "${fake_ip_range}" ];then
 				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
 			else
-				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.0/16 -j REDIRECT --to-ports "${redir_port}"
+				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "${redir_port}"
 			fi
-			fi
+			
 			
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 				ip6tables -t nat -N clash_ipv6
@@ -263,7 +239,7 @@ rules(){
 				ip6tables -t nat -A zone_lan_prerouting -p tcp -j clash_ipv6
 			fi
 			
-		elif [ "${tun_mode}" -eq 2 ] || [ "${tun_mode}" -eq 3 ];then
+		elif [ "${core}" -eq 3 ];then
 			PROXY_FWMARK="0x162"
 			PROXY_ROUTE_TABLE="0x162"
 			PROXY_BYPASS_USER="root"
@@ -316,19 +292,6 @@ rules(){
 #=========================================================================================================================== 
 }	 
 
-yml_yaml(){
-#===========================================================================================================================
-
-if [ -f $CONFIG_YAML_OLD ] && [ ! -f $CONFIG_YAML ];then
-	mv $CONFIG_YAML_OLD $CONFIG_YAML 2>/dev/null
-
-elif [ -f $CONFIG_YAML_OLD ] && [ -f $CONFIG_YAML  ] && [  "$(ls -l $CONFIG_YAML_OLD|awk '{print int($5)}')" -ne 0 ];then
-	mv $CONFIG_YAML_OLD $CONFIG_YAML 2>/dev/null
-fi
-#===========================================================================================================================
-}
-
-
 
 yml_sub(){
 #===========================================================================================================================
@@ -337,23 +300,19 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 subscri=$(uci get clash.config.subcri 2>/dev/null)
 subscribe_url_clash=$(uci get clash.config.subscribe_url_clash 2>/dev/null)
 
-if [ "${config_type}" == "sub" ];then 
+if [ "${config_type}" == "1" ];then 
 if [ "${subscri}" == "clash" ];then 
-if [ ! -f $CONFIG_YAML_SUB ] && [ ! -z "${subscribe_url_clash}" ];then 
+if [ ! -f $CONFIG_YAML_PATH ] && [ ! -z "${subscribe_url_clash}" ];then 
 	sh /usr/share/clash/clash.sh >>/tmp/clash.txt
-elif [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url_clash}" ]  && [ -f $CONFIG_YAML_OLD ] && [ "$(ls -l $CONFIG_YAML_OLD | awk '{print int($5/1024)}')" -eq 0 ];then
-	sh /usr/share/clash/clash.sh >>/tmp/clash.txt 
-elif [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url_clash}" ] && [ ! -f $CONFIG_YAML_OLD ];then
+elif [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url_clash}" ];then
 	sh /usr/share/clash/clash.sh >>/tmp/clash.txt 
 fi
 fi
 
 if [ "${subscri}" == "v2ssr2clash" ];then 
-if [ ! -f $CONFIG_YAML_CUS ] && [ ! -z "${subscribe_url}" ];then 
+if [ ! -f $CONFIG_YAML_PATH ] && [ ! -z "${subscribe_url}" ];then 
 	sh /usr/share/clash/v2ssr.sh >>/tmp/clash.txt  
-elif [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url}" ] && [ -f $CONFIG_YAML_OLD ] && [ "$(ls -l $CONFIG_YAML_OLD | awk '{print int($5/1024)}')" -eq 0 ] ;then	
-	sh /usr/share/clash/v2ssr.sh >>/tmp/clash.txt 
-elif [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url}" ] && [ -f $CONFIG_YAML_OLD ] ;then	
+elif [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url}" ];then	
 	sh /usr/share/clash/v2ssr.sh >>/tmp/clash.txt 
 fi 
 fi
@@ -384,26 +343,11 @@ if [ "${enable}" -eq 1 ]; then
 	fi	
 	sleep 2
 	
-	if [ "${core}" -eq 3 ];then
-		uci set clash.config.mode="0" && uci commit clash
-	else
-		uci set clash.config.mode="1" && uci commit clash
-	fi
-	if [ "${core}" -eq 3 ] && [ "${tun_mode}" -eq 0 ];then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Select Tun Mode" >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			 echo "选Tun模式" >$REAL_LOG
-		fi
-		sleep 5
-		echo "Clash for OpenWRT" >$REAL_LOG
-		exit 0	
-	fi
-	
+
 	sleep 2
 	
-	yml_yaml >/dev/null 2>&1
 	yml_sub >/dev/null 2>&1
+	
 	select_config >/dev/null 2>&1
 
 if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
@@ -416,6 +360,7 @@ if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
 	fi
 	sleep 2
 	echo "Clash for OpenWRT" >$REAL_LOG
+	exit 0
 elif  [ "${core}" -eq 2 ] && [ ! -f /usr/bin/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr core not found in /usr/bin/clash  download and install clashr from update page  " >> /tmp/clash.txt
@@ -426,6 +371,7 @@ elif  [ "${core}" -eq 2 ] && [ ! -f /usr/bin/clash ]; then
 	fi
 	sleep 2
 	echo "Clash for OpenWRT" >$REAL_LOG
+	exit 0
 elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr Tun core not found in /etc/clash/clashtun/clash " >> /tmp/clash.txt
@@ -436,6 +382,7 @@ elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	fi	
 	sleep 2
 	echo "Clash for OpenWRT" >$REAL_LOG
+	exit 0
 else
 if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')" -ne 0 ] ; then
 
@@ -455,7 +402,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 	fi
 		
 
-
 	if [ ! -z "${landns}" ];then
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Setting up Custom lan dns server " >$REAL_LOG 
@@ -466,7 +412,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		uci set network.lan.dns="${landns}" && uci commit network && /etc/init.d/network reload >/dev/null 2>&1
 	fi
 	
-	yml_dns_change >/dev/null 2>&1
 	
 	if [ ! -f /etc/clash/Country.mmdb ];then
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -488,8 +433,12 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		sleep 5
 		echo "Clash for OpenWRT" >$REAL_LOG		
 		exit 0
-	fi	
+	fi
 
+	yml_dns_change >/dev/null 2>&1
+	
+	sleep 2
+	
 	game_rules >/dev/null 2>&1
 
     if [ "${core}" -eq 1 ];then
@@ -534,8 +483,9 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
        		/etc/init.d/firewall restart >/dev/null 2>&1
     fi
 
-
+        sleep 2
 	rules >/dev/null 2>&1
+
 	custom_list >/dev/null 2>&1
 	sleep 1
 	
@@ -604,7 +554,7 @@ fi
 
 remove_mark(){
 
-		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
+		core=$(uci get clash.config.core 2>/dev/null)
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 
@@ -616,7 +566,7 @@ remove_mark(){
 		done
 		fi
 
-		if [ "${tun_mode}" -eq 2 ] || [ "${tun_mode}" -eq 3 ];then
+		if [ "${core}" -eq 3 ];then
 		
 		PROXY_FWMARK="0x162" 2>/dev/null
 		PROXY_ROUTE_TABLE="0x162" 2>/dev/null

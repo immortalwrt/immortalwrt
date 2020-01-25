@@ -40,20 +40,15 @@ y:value("0", translate("disabled"))
 y:value("1", translate("enabled"))
 y.description = translate("Allow ipv6 traffic through clash")
 
-o = s:option(ListValue, "tun_mode", translate("Tun Mode DNS"))
-o.default = "0"
-o:value("0", translate("Disable"))
-o:value("2", translate("Fake-IP(comzyh Tun)"))
-o:value("3", translate("Redir-Host(comzyh Tun)"))
-o.description = translate("Select Tun Mode, Enable Tun custom DNS and make sure you are using tun supported core")
-o:depends("mode", 0)
 
-
+md = s:option(Flag, "tun_mode", translate("Tun Mode DNS"))
+md.default = 0
+md.description = translate("Enable Tun custom DNS and make sure you are using tun supported core")
+md:depends("mode", 0)
 
 
 md = s:option(Flag, "mode", translate("Custom DNS"))
 md.default = 1
-md.rmempty = false
 md.description = translate("Enabling Custom DNS will Overwrite your config.yaml dns section")
 md:depends("tun_mode", 0)
 
@@ -73,7 +68,7 @@ o:depends("mode", 1)
 
 
 
-local dns2 = "/usr/share/clash/tundns_2.yaml"
+local dns2 = "/usr/share/clash/tundns.yaml"
 o = s:option(TextValue, "dns2",translate("Modify Tun DNS"))
 o.template = "clash/tvalue"
 o.rows = 26
@@ -85,23 +80,7 @@ o.write = function(self, section, value)
 	NXFS.writefile(dns2, value:gsub("\r\n", "\n"))
 end
 o.description = translate("NB: press ENTER to create a blank line at the end of input.")
-o:depends("tun_mode", 2)
-
-
-
-local dns3 = "/usr/share/clash/tundns_3.yaml"
-o = s:option(TextValue, "dns3",translate("Modify Tun DNS"))
-o.template = "clash/tvalue"
-o.rows = 26
-o.wrap = "off"
-o.cfgvalue = function(self, section)
-	return NXFS.readfile(dns3) or ""
-end
-o.write = function(self, section, value)
-	NXFS.writefile(dns3, value:gsub("\r\n", "\n"))
-end
-o.description = translate("NB: press ENTER to create a blank line at the end of input.")
-o:depends("tun_mode", 3)
+o:depends("tun_mode", 1)
 
 
 o = s:option(Button, "Apply")
@@ -109,16 +88,11 @@ o.title = translate("Save & Apply")
 o.inputtitle = translate("Save & Apply")
 o.inputstyle = "apply"
 o.write = function()
-local clash_conf = "/etc/clash/config.yaml"
-if NXFS.access(clash_conf) then
-	uci:commit("clash")
-	SYS.call("sh /usr/share/clash/yum_change.sh 2>&1 &")
-	if luci.sys.call("pidof clash >/dev/null") == 0 then
+m.uci:commit("clash")
+if luci.sys.call("pidof clash >/dev/null") == 0 then
 	SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash"))
-	end
+        luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash"))
 else
-  	uci:commit("clash")
   	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash" , "settings", "dns"))
 end
 end

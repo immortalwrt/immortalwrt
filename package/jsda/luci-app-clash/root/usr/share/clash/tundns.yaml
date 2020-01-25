@@ -1,10 +1,9 @@
-
 experimental:
   ignore-resolve-fail: true
 
 tun:
  enable: true
- device-url: dev://clash0
+ device-url: dev://utun
  dns-listen: 0.0.0.0:5300
 
 dns:
@@ -19,6 +18,5 @@ dns:
   - udp://8.8.8.8:53
   - udp://8.8.4.4:53
   - tcp://1.1.1.1
-  
   
   

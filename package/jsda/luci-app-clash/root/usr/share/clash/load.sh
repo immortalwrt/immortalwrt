@@ -4,20 +4,22 @@
 lang=$(uci get luci.main.lang 2>/dev/null)
 loadgroups=$(uci get clash.config.loadgroups 2>/dev/null)
 loadservers=$(uci get clash.config.loadservers 2>/dev/null)
-load_from=$(uci get clash.config.loadfrom 2>/dev/null)
+
 
 run_load(){
 
-if [ "$load_from" == "sub" ];then 
-        load=$(uci get clash.config.config_path_sub 2>/dev/null)	
-elif [ "$load_from" == "upl" ];then
-	    load=$(uci get clash.config.config_path_up 2>/dev/null)
+
+load="/etc/clash/config.yaml"
+CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null)
+
+if [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH|awk '{print int($5)}')" -ne 0 ];then
+	cp $CONFIG_YAML_PATH $load 2>/dev/null		
 fi
 
-
-if [ ! -f $load ] && [ ! -f $load ]; then 
+if [ ! -f $load ] || [ "$(ls -l $load|awk '{print int($5)}')" -eq 0 ]; then 
   exit 0
-fi
+fi 
+
 
 
 CFG_FILE="/etc/config/clash"

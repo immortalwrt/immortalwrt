@@ -659,8 +659,8 @@ msgstr "选Tun模式"
 msgid "Tun Mode DNS"
 msgstr "Tun模式DNS"
 
-msgid "Select Tun Mode, Enable Tun custom DNS and make sure you are using tun supported core"
-msgstr "选择Tun模式，启用Tun自定义DNS,并确保使用支持的Tun内核"
+msgid "Enable Tun custom DNS and make sure you are using tun supported core"
+msgstr "启用Tun自定义DNS,并确保使用支持的Tun内核"
 
 msgid "Upload Provider File"
 msgstr "上传代理集文件"
@@ -788,8 +788,8 @@ msgstr "下载配置"
 msgid "Config Name"
 msgstr "配置名"
 
-msgid "Give a name for your config"
-msgstr "为配置命名"
+msgid "Config Name. Do not use a config name that already exist"
+msgstr "配置名,不要使用已经存在的配置名"
 
 msgid "CONFIG IN USE"
 msgstr "使用中的配置"
@@ -892,3 +892,27 @@ msgstr "启用"
 
 msgid "Downloading..."
 msgstr "正在下载规则..."
+
+msgid "Auto Update Config"
+msgstr "自动更新配置"
+
+msgid "Subcription Config List"
+msgstr "订阅配置列表"
+
+msgid "Upload Config List"
+msgstr "上传配置列表"
+
+msgid "Custom Config List"
+msgstr "自定义配置列表"
+
+msgid "Downloading..."
+msgstr "正在下载规则..."
+
+msgid "Downloading..."
+msgstr "正在下载规则..."
+
+msgid "VIEW CONFIG"
+msgstr "查看配置"
+
+msgid "View Config"
+msgstr "查看配置"

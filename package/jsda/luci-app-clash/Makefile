@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/luci-app-clash
 	SECTION:=luci
 	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
+	SUBMENU:=3. Application
 	TITLE:=LuCI app for clash
 	DEPENDS:=+luci +luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util
 	PKGARCH:=all
@@ -127,8 +127,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/rules/g_rules/Steam.rules $(1)/usr/share/clash/rules/g_rules
 	$(INSTALL_BIN) ./root//usr/share/clash/rules/rules.list $(1)/usr/share/clash/rules
 
-	$(INSTALL_BIN) ./root/usr/share/clash/tundns_2.yaml $(1)/usr/share/clash/
-	$(INSTALL_BIN) ./root/usr/share/clash/tundns_3.yaml $(1)/usr/share/clash/
+	$(INSTALL_BIN) ./root/usr/share/clash/tundns.yaml $(1)/usr/share/clash/
 	$(INSTALL_BIN) ./root/usr/share/clash/custom_rule.yaml $(1)/usr/share/clash/
 	
 	$(INSTALL_BIN) ./root/usr/share/clash/luci_version $(1)/usr/share/clash/

@@ -3,31 +3,16 @@
 
 lang=$(uci get luci.main.lang 2>/dev/null) 
 load="/etc/clash/config.yaml"
-config_type=$(uci get clash.config.config_type 2>/dev/null)
-CONFIG_YAML_SUB=$(uci get clash.config.config_path_sub 2>/dev/null)
-CONFIG_YAML_UPL=$(uci get clash.config.config_path_up 2>/dev/null)
-CONFIG_YAML_CUS=$(uci get clash.config.config_path_cus 2>/dev/null)
+CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null)
 
-if [ ! -f $load ] || [ "$(ls -l $load|awk '{print int($5)}')" -eq 0 ];then
-	if [ $config_type == "1" ];then 
-	if [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB|awk '{print int($5)}')" -ne 0 ];then
-		cp $CONFIG_YAML_SUB $load 2>/dev/null
-	fi
-	elif [ $config_type == "2" ];then 
-	if [  -f $CONFIG_YAML_UPL ] && [ "$(ls -l $CONFIG_YAML_UPL|awk '{print int($5)}')" -ne 0 ];then
-		cp $CONFIG_YAML_UPL $load 2>/dev/null
-	fi
-	elif [ $config_type == "3" ];then 
-	if [  -f $CONFIG_YAML_CUS ] && [ "$(ls -l $CONFIG_YAML_CUS|awk '{print int($5)}')" -ne 0 ];then
-		cp $CONFIG_YAML_CUS $load 2>/dev/null
-	fi
-	fi 
+if [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH|awk '{print int($5)}')" -ne 0 ];then
+	cp $CONFIG_YAML_PATH $load 2>/dev/null		
 fi
 
 
 if [ ! -f $load ] || [ "$(ls -l $load|awk '{print int($5)}')" -eq 0 ]; then 
   exit 0
-fi
+fi 
 
 CFG_FILE="/etc/config/clash"
 REAL_LOG="/usr/share/clash/clash_real.txt"

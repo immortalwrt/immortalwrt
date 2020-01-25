@@ -71,12 +71,6 @@ cc = s:option(Flag, "same_tag", translate("Force Same Name"))
 cc.default = 1
 cc.description = translate("Enable to overwrite config file")
 
-
-o = s:option(ListValue, "loadfrom", translate("Load From"))
-o:value("sub", translate("Subscription Config"))
-o:value("upl", translate("Upload Config"))
-o.description = translate("Select from which configuration custom server should be loaded from")
-
 o = s:option(ListValue, "loadservers", translate("Load Servers"))
 o:value("1", translate("enabled"))
 o:value("0", translate("disabled"))

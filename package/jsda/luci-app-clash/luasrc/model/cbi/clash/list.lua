@@ -37,12 +37,11 @@ o.title = translate("Apply Custom List")
 o.inputtitle = translate("Apply Custom List")
 o.inputstyle = "apply"
 o.write = function()
-  m.uci:commit("clash")
-  --SYS.call("sh /usr/share/clash/list.sh 2>&1 &")
+m.uci:commit("clash")
   if luci.sys.call("pidof clash >/dev/null") == 0 then
-   SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash"))
-   end
+  SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
+  luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash"))
+  end
 end
 
 

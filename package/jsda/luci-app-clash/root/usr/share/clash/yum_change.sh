@@ -1,50 +1,31 @@
 #!/bin/sh
 CONFIG_YAML="/etc/clash/config.yaml"
-CONFIG_YAML_SUB=$(uci get clash.config.config_path_sub 2>/dev/null)
-CONFIG_YAML_UPL=$(uci get clash.config.config_path_up 2>/dev/null)
-CONFIG_YAML_CUS=$(uci get clash.config.config_path_cus 2>/dev/null)
 lang=$(uci get luci.main.lang 2>/dev/null)
-config_type=$(uci get clash.config.config_type 2>/dev/null)
-tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 core=$(uci get clash.config.core 2>/dev/null)
 subscribe_url=$(uci get clash.config.subscribe_url_clash 2>/dev/null)
 subscribe_urll=$(uci get $name.config.subscribe_url 2>/dev/null) 
 
 REAL_LOG="/usr/share/clash/clash_real.txt"
 
-if [ $config_type == "1" ];then 
-if [  -f $CONFIG_YAML_SUB ] && [ "$(ls -l $CONFIG_YAML_SUB|awk '{print int($5)}')" -ne 0 ];then
-	cp $CONFIG_YAML_SUB $CONFIG_YAML 2>/dev/null
-fi
-elif [ $config_type == "2" ];then 
-if [  -f $CONFIG_YAML_UPL ] && [ "$(ls -l $CONFIG_YAML_UPL|awk '{print int($5)}')" -ne 0 ];then
-	cp $CONFIG_YAML_UPL $CONFIG_YAML 2>/dev/null
-fi
-elif [ $config_type == "3" ];then 
-if [  -f $CONFIG_YAML_CUS ] && [ "$(ls -l $CONFIG_YAML_CUS|awk '{print int($5)}')" -ne 0 ];then
-	cp $CONFIG_YAML_CUS $CONFIG_YAML 2>/dev/null
-fi
-fi 
-
-if [  -f $CONFIG_YAML ];then
 
 
- 	if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "Checking DNS Settings.. " >$REAL_LOG 
-	elif [ $lang == "zh_cn" ];then
+if [ $lang == "en" ] || [ $lang == "auto" ];then
+		echo "Checking DNS Settings.. " >$REAL_LOG  
+elif [ $lang == "zh_cn" ];then
     	 echo "DNS设置检查..." >$REAL_LOG
-	fi
-if [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
+fi
+
+if [ -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
 #===========================================================================================================================
 if [ "${core}" -eq 3 ];then
-	uci set clash.config.mode="0" && uci commit clash
+	uci set clash.config.mode="0" && uci set clash.config.tun_mode="1" && uci commit clash
 else
-	uci set clash.config.mode="1" && uci commit clash
+	uci set clash.config.mode="1" && uci set clash.config.tun_mode="0" && uci commit clash
 fi	
 #===========================================================================================================================	
 fi
  
-
+sleep 2
 #===========================================================================================================================
 		mode=$(uci get clash.config.mode 2>/dev/null)
 		da_password=$(uci get clash.config.dash_pass 2>/dev/null)
@@ -56,7 +37,7 @@ fi
 		allow_lan=$(uci get clash.config.allow_lan 2>/dev/null)
 		log_level=$(uci get clash.config.level 2>/dev/null)
 		subtype=$(uci get clash.config.subcri 2>/dev/null)
-		
+		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		
 if [ "${mode}" -eq 1 ];  then
 	
@@ -75,9 +56,13 @@ if [ "${mode}" -eq 1 ];  then
 		mv /etc/clash/config.yaml /etc/clash/dns.yaml
 		cat /usr/share/clash/dns.yaml /etc/clash/dns.yaml > $CONFIG_YAML 2>/dev/null
 		rm -rf /etc/clash/dns.yaml
-		if [ ! -z ${subscribe_url} ] || [ ! -z ${subscribe_url} ];then
+		
+		if [ ! -z ${subscribe_url} ] || [ ! -z ${subscribe_urll} ];then
 		sed -i "1i\# ${subscribe_url}  ${subscribe_urll}" $CONFIG_YAML 2>/dev/null
+		else
+		sed -i "1i\#****CLASH-CONFIG-START****#" $CONFIG_YAML 2>/dev/null
 		fi
+		
 		sed -i "2i\port: ${http_port}" $CONFIG_YAML 2>/dev/null
 		sed -i "/port: ${http_port}/a\socks-port: ${socks_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/socks-port: ${socks_port}/a\redir-port: ${redir_port}" $CONFIG_YAML 2>/dev/null 
@@ -100,13 +85,13 @@ if [ "${mode}" -eq 1 ];  then
 		
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null	
-		if [ ! -z "$(grep "^experimental:" $CONFIG_YAML)" ]; then
+		if [ ! -z "$(grep "^experimental:" "$CONFIG_YAML")" ]; then
 		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
 		fi	
 		
-elif [ "${core}" -eq 3 ] && [ ! -z "${tun_mode}" ];  then
+elif [ "${tun_mode}" -eq 1 ];  then
 	
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Setting Up Ports and Password.. " >$REAL_LOG 
@@ -121,17 +106,13 @@ elif [ "${core}" -eq 3 ] && [ ! -z "${tun_mode}" ];  then
 		sed -i "/#=============/a\ " $CONFIG_YAML 2>/dev/null
 		sed -i '1,/#clash-openwrt/d' $CONFIG_YAML 2>/dev/null		
 		mv /etc/clash/config.yaml /etc/clash/dns.yaml
-		if [ "${tun_mode}" -eq 1 ];then
-		cat /usr/share/clash/tundns_1.yaml /etc/clash/dns.yaml > $CONFIG_YAML 2>/dev/null
-		elif [ "${tun_mode}" -eq 2 ];then
-		cat /usr/share/clash/tundns_2.yaml /etc/clash/dns.yaml > $CONFIG_YAML 2>/dev/null
-		elif [ "${tun_mode}" -eq 3 ];then
-		cat /usr/share/clash/tundns_3.yaml /etc/clash/dns.yaml > $CONFIG_YAML 2>/dev/null
-		fi
+		cat /usr/share/clash/tundns.yaml /etc/clash/dns.yaml > $CONFIG_YAML 2>/dev/null
 		rm -rf /etc/clash/dns.yaml
-		if [ ! -z ${subscribe_url} ] || [ ! -z ${subscribe_url} ];then
+		if [ ! -z ${subscribe_url} ] || [ ! -z ${subscribe_urll} ];then
 		sed -i "1i\# ${subscribe_url}  ${subscribe_urll}" $CONFIG_YAML 2>/dev/null
-		fi		
+		else
+		sed -i "1i\#****CLASH-CONFIG-START****#" $CONFIG_YAML 2>/dev/null
+		fi	
 		sed -i "2i\port: ${http_port}" $CONFIG_YAML 2>/dev/null
 		sed -i "/port: ${http_port}/a\socks-port: ${socks_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/socks-port: ${socks_port}/a\redir-port: ${redir_port}" $CONFIG_YAML 2>/dev/null 
@@ -154,7 +135,7 @@ elif [ "${core}" -eq 3 ] && [ ! -z "${tun_mode}" ];  then
 		
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null	
-		if [ ! -z "$(grep "^experimental:" $CONFIG_YAML)" ]; then
+		if [ ! -z "$(grep "^experimental:" "$CONFIG_YAML")" ]; then
 		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
@@ -170,7 +151,7 @@ else
 	
 	
 	
-		if [ ! -z "$(grep "^experimental:" /etc/clash/config.yaml)" ]; then
+		if [ ! -z "$(grep "^experimental:" "$CONFIG_YAML")" ]; then
 		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
 		sed -i "/     /a\#clash-openwrt" $CONFIG_YAML 2>/dev/null
                 sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML 2>/dev/null
@@ -183,9 +164,13 @@ else
                 sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML 2>/dev/null
 		sed -i '1,/#clash-openwrt/d' $CONFIG_YAML 2>/dev/null
 		fi
-		if [ ! -z ${subscribe_url} ] || [ ! -z ${subscribe_url} ];then
+		
+		if [ ! -z ${subscribe_url} ] || [ ! -z ${subscribe_urll} ];then
 		sed -i "1i\# ${subscribe_url}  ${subscribe_urll}" $CONFIG_YAML 2>/dev/null
+		else
+		sed -i "1i\#****CLASH-CONFIG-START****#" $CONFIG_YAML 2>/dev/null
 		fi
+		
 		sed -i "2i\port: ${http_port}" $CONFIG_YAML 2>/dev/null
 		sed -i "/port: ${http_port}/a\socks-port: ${socks_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/socks-port: ${socks_port}/a\redir-port: ${redir_port}" $CONFIG_YAML 2>/dev/null 
@@ -213,4 +198,4 @@ else
 		fi
 fi
 #=========================================================================================================================== 
-fi
+
