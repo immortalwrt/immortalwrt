@@ -2,7 +2,7 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "DiskMan"
-msgstr "磁盘管理"
+msgstr "DiskMan磁盘管理"
 
 msgid "Manage Disks over LuCI."
 msgstr "通过LuCI管理磁盘"
@@ -41,13 +41,13 @@ msgid "Mount"
 msgstr "挂载"
 
 msgid "Umount"
-msgstr "卸载分区"
+msgstr "卸载"
 
 msgid "Eject"
 msgstr "弹出"
 
 msgid "New"
-msgstr "创建分区"
+msgstr "创建"
 
 msgid "Remove"
 msgstr "移除"
@@ -119,7 +119,7 @@ msgid "Device Info"
 msgstr "设备信息"
 
 msgid "Disk Man"
-msgstr "磁盘管理"
+msgstr "DiskMan磁盘管理"
 
 msgid "Partitions Info"
 msgstr "分区信息"
