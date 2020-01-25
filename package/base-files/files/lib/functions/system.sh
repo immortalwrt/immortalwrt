@@ -145,10 +145,26 @@ macaddr_add() {
 	echo $oui:$nic
 }
 
-macaddr_setbit_la() {
+macaddr_setbit() {
 	local mac=$1
+	local bit=${2:-0}
 
-	printf "%02x:%s" $((0x${mac%%:*} | 0x02)) ${mac#*:}
+	[ $bit -gt 0 -a $bit -le 48 ] || return
+
+	printf "%012x" $(( 0x${mac//:/} | 2**(48-bit) )) | sed -e 's/\(.\{2\}\)/\1:/g' -e 's/:$//'
+}
+
+macaddr_unsetbit() {
+	local mac=$1
+	local bit=${2:-0}
+
+	[ $bit -gt 0 -a $bit -le 48 ] || return
+
+	printf "%012x" $(( 0x${mac//:/} & ~(2**(48-bit)) )) | sed -e 's/\(.\{2\}\)/\1:/g' -e 's/:$//'
+}
+
+macaddr_setbit_la() {
+	macaddr_setbit $1 7
 }
 
 macaddr_2bin() {
