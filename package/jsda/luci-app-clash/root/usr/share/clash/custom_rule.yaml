@@ -1,11 +1,4 @@
 Rule:
-- DOMAIN-SUFFIX,netflix.com,🎬Netflix
-- DOMAIN-SUFFIX,netflix.net,🎬Netflix
-- DOMAIN-SUFFIX,nflxext.com,🎬Netflix
-- DOMAIN-SUFFIX,nflximg.com,🎬Netflix
-- DOMAIN-SUFFIX,nflximg.net,🎬Netflix
-- DOMAIN-SUFFIX,nflxso.net,🎬Netflix
-- DOMAIN-SUFFIX,nflxvideo.net,🎬Netflix
 # (GlobalTV)
 # > ABC
 - DOMAIN-SUFFIX,edgedatg.com,📺GlobalTV

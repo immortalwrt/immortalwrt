@@ -9,9 +9,27 @@ local UTIL = require "luci.util"
 local fs = require "luci.clash"
 local uci = require "luci.model.uci".cursor()
 
+font_red = [[<font color="red">]]
+font_blue = [[<font color="blue">]]
+font_off = [[</font>]]
+bold_on  = [[<strong>]]
+bold_off = [[</strong>]]
+
 
 m = Map(clash)
 m.pageaction = false
+m.description=''..font_red..bold_on..translate("Usage Steps:")..bold_off..font_off..' '
+.."<br />"
+..font_blue..bold_on..translate("1.Load Policy Group, make sure you have selected a config on config page")..bold_off..font_off..' '
+.."<br />"
+..font_blue..bold_on..translate("2.Download the game rules you want to use from the game rules list on this page")..bold_off..font_off..' '
+.."<br />"
+..font_blue..bold_on..translate("3. Make sure your game and servers support UDP")..bold_off..font_off..' '
+.."<br />"
+..font_blue..bold_on..translate("4.Click on ADD, Set the corresponding policy group of the downloaded game rules and save, recommended: FallBack")..bold_off..font_off..' '
+.."<br />"
+..font_blue..bold_on..translate("5.Select ClashTun Core type and start client")..bold_off..font_off..' '
+
 
 SYS.call("awk -F ',' '{print $1}' /usr/share/clash/rules/rules.list > /tmp/rules_name 2>/dev/null")
 file = io.open("/tmp/rules_name", "r");

@@ -2,7 +2,7 @@
 . /lib/functions.sh
 
 dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
-
+cp /usr/share/clash/server.list /usr/share/clash/list.bak
 add_address(){
 servers_get()
 {
@@ -28,7 +28,7 @@ cat /usr/share/clashbackup/address.list /usr/share/clash/server.list > /usr/shar
 rm -rf /usr/share/clash/server.list 
 mv /usr/share/clash/me.list /usr/share/clash/server.list
 chmod 755 /usr/share/clash/server.list
-rm -rf /tmp/server.conf >/dev/null 2>&1
+rm -rf /tmp/server.conf /usr/share/clashbackup/address.list >/dev/null 2>&1
 }
 if [ "${dnsforwader}" -eq 1 ];then
 	add_address >/dev/null 2>&1

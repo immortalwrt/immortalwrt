@@ -265,8 +265,8 @@ msgstr "国外网IP"
 msgid "clash"
 msgstr "clash"
 
-msgid "OPEN DASHBOARD"
-msgstr "打开外部控制"
+msgid "DASHBOARD"
+msgstr "外部控制"
 
 msgid "Clash Dashboard"
 msgstr "Clash外部控制"
@@ -870,10 +870,10 @@ msgid "Update Rule"
 msgstr "点击更新规则"
 
 msgid "Game Rule Tag"
-msgstr "游戏规则评论"
+msgstr "游戏规则名字"
 
 msgid "Rule Tag"
-msgstr "游戏评论"
+msgstr "游戏名字"
 
 msgid "Edit Game Rule & Group"
 msgstr "编辑游戏规则策略组"
@@ -916,3 +916,24 @@ msgstr "查看配置"
 
 msgid "View Config"
 msgstr "查看配置"
+
+msgid "If config does not show refresh page"
+msgstr "如果配置不显示刷新页"
+
+msgid "Usage Steps:"
+msgstr "使用步骤："
+
+msgid "1.Load Policy Group, make sure you have selected a config on config page"
+msgstr "1. 加载策略组，确保已在配置页上选择配置。"
+
+msgid "2.Download the game rules you want to use from the game rules list on this page"
+msgstr "2. 从该页的游戏规则列表中下载要使用的游戏规则。"
+
+msgid "3. Make sure your game and servers support UDP"
+msgstr "3. 确保游戏和服务器支持UDP。"
+
+msgid "4.Click on ADD, Set the corresponding policy group of the downloaded game rules and save, recommended: FallBack"
+msgstr "4. 单击添加，设置下载游戏规则的相应策略组（策略组类型建议:FallBack）。"
+
+msgid "5.Select ClashTun Core type and start client"
+msgstr "5. 在客户端页选择ClashTun内核(https://github.com/comzyh/clash/releases)和启用游戏规则。"

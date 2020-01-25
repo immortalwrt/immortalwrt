@@ -188,13 +188,21 @@ local function clashr_core()
 	end
 end
 
+
 local function clashtun_core()
 	if nixio.fs.access("/etc/clash/clashtun/clash") then
-		return luci.sys.exec("/etc/clash/clashtun/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		local tun=luci.sys.exec("/etc/clash/clashtun/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		if tun ~= "" then
+			return luci.sys.exec("/etc/clash/clashtun/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		else 
+			return luci.sys.exec("sed -n 1p /usr/share/clash/tun_version")
+		end
 	else
 		return "0"
 	end
 end
+
+
 
 local function readlog()
 	return luci.sys.exec("sed -n '$p' /usr/share/clash/clash_real.txt 2>/dev/null")
@@ -262,8 +270,9 @@ function check_status()
 		clashtun_core = clashtun_core(),
 		new_core_version = new_core_version(),
 		new_clashtun_core_version =new_clashtun_core_version(),
-		check_clashtun_core = check_clashtun_core()
-		
+		check_clashtun_core = check_clashtun_core(),
+		conf_path = conf_path(),
+		typeconf = typeconf()	
 	})
 end
 function action_status()
@@ -279,7 +288,10 @@ function action_status()
 		dash_pass = dash_pass(),
 		clashtun_core = clashtun_core(),
 		e_mode = e_mode(),
-		in_use = in_use()
+		in_use = in_use(),
+		conf_path = conf_path(),
+		typeconf = typeconf()
+
 
 
 	})

@@ -165,6 +165,9 @@ update(){
 			  mv /tmp/clash /etc/clash/clashtun/clash >/dev/null 2>&1
 			  rm -rf /usr/share/clash/tun_version >/dev/null 2>&1
 			  mv /usr/share/clash/download_tun_version /usr/share/clash/tun_version >/dev/null 2>&1
+			  tun=$(sed -n 1p /usr/share/clash/tun_version 2>/dev/null)
+			  sed -i "s/${tun}/v${tun}/g" /usr/share/clash/tun_version 2>&1
+
 			  
 			 if [ $lang == "zh_cn" ];then
 			  echo "  ${LOGTIME} - ClashTun内核更新成功！" >$LOG_FILE
@@ -200,7 +203,7 @@ if [ $CORETYPE -eq 1 ] && [ $VER != $CLASHVER ]; then
 	    update
 elif [ $CORETYPE -eq 2 ] && [ $VERR != $CLASHRVER ]; then
 	    update	
-elif [ $CORETYPE -eq 2 ] && [ $VERS != $CLASHTUN ]; then
+elif [ $CORETYPE -eq 3 ] && [ $VERS != $CLASHTUN ]; then
 	    update		
 else
 	 if [ $lang == "zh_cn" ];then

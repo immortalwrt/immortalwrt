@@ -9,31 +9,31 @@ local fs = require "luci.clash"
 local http = luci.http
 local clash = "clash"
 
+kk = Map(clash)
+r = kk:section(TypedSection, "clash", translate("Auto Update Config"))
+r.anonymous = true
+kk.pageaction = false
 
-kr = Map(clash)
-s = kr:section(TypedSection, "clash", translate("Auto Update Config"))
-s.anonymous = true
-kr.pageaction = false
-
-o = s:option(Flag, "auto_update", translate("Auto Update"))
+o = r:option(Flag, "auto_update", translate("Auto Update"))
 o.description = translate("Auto Update Server subscription")
 
-o = s:option(ListValue, "auto_update_time", translate("Update time (every day)"))
+o = r:option(ListValue, "auto_update_time", translate("Update time (every day)"))
 for t = 0,23 do
 o:value(t, t..":00")
 end
 o.default=0
 o.description = translate("Daily Server subscription update time. Only update config in use")
 
-o = s:option(Button, "Apply")
+o = r:option(Button, "Apply")
 o.title = translate("Save & Apply")
 o.inputtitle = translate("Save & Apply")
 o.inputstyle = "apply"
 o.write = function()
-  kr.uci:commit("clash")
+  kk.uci:commit("clash")
 end
 
 
+kr = Map(clash)
 s = kr:section(TypedSection, "clash", translate("Subscription Config"))
 s.anonymous = true
 kr.pageaction = false
@@ -54,11 +54,6 @@ o.description = translate("Clash Subscription Address")
 o.rmempty = true
 o:depends("subcri", 'clash')
 
-o = s:option(Value, "subscribe_url")
-o.title = translate("Subcription Url")
-o.description = translate("V2/SSR Subscription Address, Only input your subscription address without any api conversion url")
-o.rmempty = true
-o:depends("subcri", 'v2ssr2clash')
 
 o = s:option(Button,"update")
 o.title = translate("Download Config")
@@ -71,6 +66,13 @@ o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "clash"))
 end
 o:depends("subcri", 'clash')
+
+o = s:option(Value, "subscribe_url")
+o.title = translate("Subcription Url")
+o.description = translate("V2/SSR Subscription Address, Only input your subscription address without any api conversion url")
+o.rmempty = true
+o:depends("subcri", 'v2ssr2clash')
+
 
 o = s:option(Button,"updatee")
 o.title = translate("Download Config")
@@ -136,4 +138,4 @@ if luci.http.formvalue("upload") then
 end
 
 
-return kr,ko
+return kr,kk,ko

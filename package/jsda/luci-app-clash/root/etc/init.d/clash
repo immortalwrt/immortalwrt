@@ -27,7 +27,7 @@ revert_dns() {
 	rm -rf $CUSLIST $CUSLITT  $CUSLISTV $CUSLITTV 2>/dev/null
 	uci commit dhcp
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
-#=========================================================================================================================== 	
+#=========================================================================================================================== 	 
 }
 
 add_cron(){
@@ -74,7 +74,6 @@ del_cron(){
 select_config(){
 #=========================================================================================================================== 
 config_type=$(uci get clash.config.config_type 2>/dev/null)
-lang=$(uci get luci.main.lang 2>/dev/null)
 if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 	echo "Checking Config file..." >$REAL_LOG 
 elif [ "${lang}" == "zh_cn" ];then
@@ -130,7 +129,6 @@ game_rules() {
 
 yml_dns_change(){
 #=========================================================================================================================== 
-	lang=$(uci get luci.main.lang 2>/dev/null)
 	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 	dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
 	dnscache=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
@@ -293,42 +291,12 @@ rules(){
 }	 
 
 
-yml_sub(){
-#===========================================================================================================================
-subscribe_url=$(uci get clash.config.subscribe_url 2>/dev/null)
-config_type=$(uci get clash.config.config_type 2>/dev/null)
-subscri=$(uci get clash.config.subcri 2>/dev/null)
-subscribe_url_clash=$(uci get clash.config.subscribe_url_clash 2>/dev/null)
-
-if [ "${config_type}" == "1" ];then 
-if [ "${subscri}" == "clash" ];then 
-if [ ! -f $CONFIG_YAML_PATH ] && [ ! -z "${subscribe_url_clash}" ];then 
-	sh /usr/share/clash/clash.sh >>/tmp/clash.txt
-elif [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url_clash}" ];then
-	sh /usr/share/clash/clash.sh >>/tmp/clash.txt 
-fi
-fi
-
-if [ "${subscri}" == "v2ssr2clash" ];then 
-if [ ! -f $CONFIG_YAML_PATH ] && [ ! -z "${subscribe_url}" ];then 
-	sh /usr/share/clash/v2ssr.sh >>/tmp/clash.txt  
-elif [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH | awk '{print int($5)}')" -eq 0 ] && [ ! -z "${subscribe_url}" ];then	
-	sh /usr/share/clash/v2ssr.sh >>/tmp/clash.txt 
-fi 
-fi
-fi
-#===========================================================================================================================
-}
-
 custom_list() {
 	sh /usr/share/clash/list.sh  >/dev/null 2>&1
 }
 
 start(){
 #=========================================================================================================================== 
-if pidof clash >/dev/null; then
-	kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
-fi
 lang=$(uci get luci.main.lang 2>/dev/null)
 landns=$(uci get clash.config.landns 2>/dev/null)
 enable=$(uci get clash.config.enable 2>/dev/null)
@@ -342,11 +310,6 @@ if [ "${enable}" -eq 1 ]; then
     	 echo "启动客户端..." >$REAL_LOG
 	fi	
 	sleep 2
-	
-
-	sleep 2
-	
-	yml_sub >/dev/null 2>&1
 	
 	select_config >/dev/null 2>&1
 
@@ -605,10 +568,6 @@ remove_mark(){
         /etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
 
-del_list() {
-	sh /usr/share/clash/del_servers.sh  >/dev/null 2>&1
-}
-
 stop(){
 #=========================================================================================================================== 
 		delandns=$(uci get clash.config.delan 2>/dev/null)
@@ -661,7 +620,7 @@ stop(){
 		fi
 
 		kill -9 `pidof clash|sed "s/$//g"` 2>/dev/null
-
+		
 		sleep 1
 
 		if [ ! -z "${delandns}" ];then
@@ -687,7 +646,7 @@ stop(){
 		elif [ "${lang}" == "zh_cn" ];then
 	    	echo "重启 Dnsmasq 程序" >$REAL_LOG
 		fi	
-		del_list >/dev/null 2>&1
+	
 		revert_dns >/dev/null 2>&1
    	    	sleep 1
 
@@ -695,6 +654,11 @@ stop(){
 
 		echo "0" > /usr/share/clash/logstatus_check >/dev/null 2>&1
 		
+		rm -rf /etc/clash/*.yaml /etc/clash/*.yml >/dev/null 2>&1
+
+		mv /usr/share/clash/list.bak /usr/share/clash/server.list >/dev/null 2>&1
+
+
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "  $(date "+%Y-%m-%d %H:%M:%S") - CLIENT IS DISABLED " >> /tmp/clash.txt
 			echo "Client is Disabled " >$REAL_LOG
@@ -706,6 +670,11 @@ stop(){
 			sleep 2
 			echo "Clash for OpenWRT" >$REAL_LOG
 		fi	
+	if pidof clash >/dev/null; then
+		kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	fi
+
+
 #=========================================================================================================================== 	
 }
 
