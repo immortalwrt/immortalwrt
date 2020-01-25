@@ -161,7 +161,7 @@ local s = m:section(SimpleSection, translate("New Container"))
 s.addremove = true
 s.anonymous = true
 
-local d = s:option(DummyValue,"cmd_line","Resolv CLI")
+local d = s:option(DummyValue,"cmd_line", translate("Resolv CLI"))
 d.rawhtml  = true
 d.template = "docker/resolv_container"
 
@@ -202,7 +202,7 @@ d.disabled = 0
 d.enabled = 1
 d.default = default_config.privileged and 1 or 0
 
-d = s:option(ListValue, "restart", translate("Restart policy"))
+d = s:option(ListValue, "restart", translate("Restart Policy"))
 d.rmempty = true
 
 d:value("no", "No")

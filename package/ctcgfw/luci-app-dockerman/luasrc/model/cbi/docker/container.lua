@@ -452,7 +452,7 @@ elseif action == "stats" then
     stat_section = m:section(SimpleSection)
     stat_section.container_id = container_id
     stat_section.template="docker/stats"
-    table_stats = {cpu={key="CPU Useage",value='-'},memory={key="Memory Useage",value='-'}}
+    table_stats = {cpu={key=translate("CPU Useage"),value='-'},memory={key=translate("Memory Useage"),value='-'}}
     stat_section = m:section(Table, table_stats, translate("Stats"))
     stat_section:option(DummyValue, "key", translate("Stats")).width="33%"
     

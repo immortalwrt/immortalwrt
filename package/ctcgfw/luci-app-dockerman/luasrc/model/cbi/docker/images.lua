@@ -55,7 +55,7 @@ m.submit=false
 m.reset=false
 
 local pull_value={{_image_tag_name="", _registry="index.docker.io"}}
-local pull_section = m:section(Table,pull_value, "Pull Image")
+local pull_section = m:section(Table,pull_value, translate("Pull Image"))
 pull_section.template="cbi/nullsection"
 local tag_name = pull_section:option(Value, "_image_tag_name")
 tag_name.template="docker/cbi/inlinevalue"

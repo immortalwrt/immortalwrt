@@ -64,7 +64,7 @@ end
 
 network_name = network_table:option(DummyValue, "_name", translate("Name"))
 network_driver = network_table:option(DummyValue, "_driver", translate("Driver"))
-network_interface = network_table:option(DummyValue, "_interface", translate("Interface"))
+network_interface = network_table:option(DummyValue, "_interface", translate("Parent Interface"))
 network_subnet = network_table:option(DummyValue, "_subnet", translate("Subnet"))
 network_gateway = network_table:option(DummyValue, "_gateway", translate("Gateway"))
 
