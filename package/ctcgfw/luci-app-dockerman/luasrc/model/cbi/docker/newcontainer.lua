@@ -113,7 +113,9 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
     default_config.interactive = create_body.OpenStdin and true or false
     default_config.privileged = create_body.HostConfig.Privileged and true or false
     default_config.restart =  create_body.HostConfig.RestartPolicy and create_body.HostConfig.RestartPolicy.name or nil
-    default_config.network = create_body.HostConfig.NetworkMode == "default" and "bridge" or create_body.HostConfig.NetworkMode
+    -- default_config.network = create_body.HostConfig.NetworkMode == "default" and "bridge" or create_body.HostConfig.NetworkMode
+    -- if container has leave original network, and add new network, .HostConfig.NetworkMode is INcorrect, so using first child of .NetworkingConfig.EndpointsConfig
+    default_config.network = next(create_body.NetworkingConfig.EndpointsConfig)
     default_config.ip = default_config.network and default_config.network ~= "bridge" and default_config.network ~= "host" and default_config.network ~= "null" and create_body.NetworkingConfig.EndpointsConfig[default_config.network].IPAMConfig and create_body.NetworkingConfig.EndpointsConfig[default_config.network].IPAMConfig.IPv4Address or nil
     default_config.link = create_body.HostConfig.Links
     default_config.env = create_body.Env
