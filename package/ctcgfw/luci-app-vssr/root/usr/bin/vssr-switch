@@ -106,7 +106,7 @@ select_proxy() {
 
 #切换代理
 switch_proxy() {
-  /etc/init.d/shadowsocksr restart $1
+  /etc/init.d/ssr restart $1
   return 0
 }
 
