@@ -50,7 +50,7 @@ config_foreach yml_game_rule_get "game"
 if [ -f $GAME_RULE_FILE ];then
 
 sed -i -e "\$a#*******GAME-RULE-END**********#" $GAME_RULE_FILE 2>/dev/null
-sed -i '#*******GAME-RULE-START**********#/,/#*******GAME-RULE-END**********#/d' "$CLASH_CONFIG" 2>/dev/null
+sed -i '/#*******GAME-RULE-START**********#/,/#*******GAME-RULE-END**********#/d' "$CLASH_CONFIG" 2>/dev/null
 
 if [ ! -z "$(grep "^ \{0,\}- GEOIP" "/etc/clash/config.yaml")" ]; then
    sed -i '1,/^ \{0,\}- GEOIP,/{/^ \{0,\}- GEOIP,/s/^ \{0,\}- GEOIP,/#*******GAME-RULE-START**********#\n&/}' "$CLASH_CONFIG" 2>/dev/null
@@ -62,8 +62,9 @@ fi
 
 sed -i '/GAME-RULE-START/r/tmp/yaml_game_rule_group.yaml' "$CLASH_CONFIG" 2>/dev/null
 fi
+
 else
-sed -i '#*******GAME-RULE-START**********#/,/#*******GAME-RULE-END**********#/d' "$CLASH_CONFIG" 2>/dev/null
+sed -i '/#*******GAME-RULE-START**********#/,/#*******GAME-RULE-END**********#/d' "$CLASH_CONFIG" 2>/dev/null
 fi
 
 

@@ -576,8 +576,10 @@ stop(){
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		core=$(uci get clash.config.core 2>/dev/null)
-		
-		
+		LIST="/usr/share/clash/server.list"
+
+		sed -i '/#START/,/#END/d' "$LIST" 2>/dev/null
+
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Stopping Client..." >$REAL_LOG
 		elif [ "${lang}" == "zh_cn" ];then
@@ -655,9 +657,6 @@ stop(){
 		echo "0" > /usr/share/clash/logstatus_check >/dev/null 2>&1
 		
 		rm -rf /etc/clash/*.yaml /etc/clash/*.yml >/dev/null 2>&1
-
-		mv /usr/share/clash/list.bak /usr/share/clash/server.list >/dev/null 2>&1
-
 
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "  $(date "+%Y-%m-%d %H:%M:%S") - CLIENT IS DISABLED " >> /tmp/clash.txt

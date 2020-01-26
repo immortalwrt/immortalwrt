@@ -115,7 +115,7 @@ update(){
 	   elif [ $CORETYPE -eq 2 ];then 
 		wget --no-check-certificate  https://github.com/frainzy1477/clashrdev/releases/download/v"$CLASHRVER"/clashr-"$MODELTYPE"-v"$CLASHRVER".gz -O 2>&1 >1 /tmp/clash.gz
 	   elif [ $CORETYPE -eq 3 ];then 
-		wget --no-check-certificate  https://github.com/frainzy1477/clashtun/releases/download/v"$CLASHTUN"/clash-"$MODELTYPE".tar.gz -O 2>&1 >1 /tmp/clash.gz
+		wget --no-check-certificate  https://github.com/frainzy1477/clashtun/releases/download/v"$CLASHTUN"/clash-"$MODELTYPE".gz -O 2>&1 >1 /tmp/clash.gz
 	   fi
 	   
 	   if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/clash.gz |awk '{print int($5)}')" -ne 0 ]; then
