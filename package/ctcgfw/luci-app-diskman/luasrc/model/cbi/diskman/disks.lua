@@ -172,7 +172,7 @@ v_device.render = function(self, section, scope)
   end
 end
 v_device.write = function(self, section, value)
-  _mount_point.device = value
+  _mount_point.device = value and value:gsub("%s+", "") or ""
 end
 local v_fs = table_mp:option(Value, "fs", translate("File System"))
 v_fs.render = function(self, section, scope)
@@ -188,7 +188,7 @@ v_fs.render = function(self, section, scope)
   end
 end
 v_fs.write = function(self, section, value)
-  _mount_point.fs = value
+  _mount_point.fs = value and value:gsub("%s+", "") or ""
 end
 local v_mount_option = table_mp:option(Value, "mount_options", translate("Mount Options"))
 v_mount_option.render = function(self, section, scope)
@@ -199,11 +199,19 @@ v_mount_option.render = function(self, section, scope)
     Value.render(self, section, scope)
   else
     self.template = "cbi/dvalue"
+    local mp = mount_point[section].mount_options
+    mount_point[section].mount_options = nil
+    for k in mp:gmatch("([^,]+)") do
+      mount_point[section].mount_options = mount_point[section].mount_options and mount_point[section].mount_options .. "," or ""
+      if #mount_point[section].mount_options > 50 then mount_point[section].mount_options = mount_point[section].mount_options.. " " end
+      mount_point[section].mount_options= mount_point[section].mount_options.. k
+    end
+    -- mount_point[section].mount_options = #mount_point[section].mount_options > 50 and mount_point[section].mount_options:sub(1,50) .. "..." or mount_point[section].mount_options
     DummyValue.render(self, section, scope)
   end
 end
 v_mount_option.write = function(self, section, value)
-  _mount_point.mount_options = value
+  _mount_point.mount_options = value and value:gsub("%s+", "") or ""
 end
 local v_mount_point = table_mp:option(Value, "mount_point", translate("Mount Point"))
 v_mount_point.render = function(self, section, scope)
@@ -236,7 +244,7 @@ btn_umount.write = function(self, section, value)
   local res
   if value == translate("Mount") then
     luci.util.exec("mkdir -p ".. _mount_point.mount_point)
-    res = luci.util.exec("mount ".. _mount_point.device .. (_mount_point.fs and (" -t ".. _mount_point.fs )or "") .. (_mount_point.mount_options and (" -o " .. _mount_point.mount_options) or  " ").._mount_point.mount_point .. " 2>&1")
+    res = luci.util.exec("mount ".. _mount_point.device .. (_mount_point.fs and (" -t ".. _mount_point.fs )or "") .. (_mount_point.mount_options and (" -o " .. _mount_point.mount_options.. " ") or  " ").._mount_point.mount_point .. " 2>&1")
   elseif value == translate("Umount") then
     res = luci.util.exec("umount "..mount_point[section].mount_point .. " 2>&1")
   end
