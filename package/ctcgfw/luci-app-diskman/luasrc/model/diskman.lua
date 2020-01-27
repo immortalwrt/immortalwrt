@@ -266,13 +266,17 @@ d.get_mount_points = function()
   end
   for mount in mounts:gmatch("[^\n]+") do
     local device = mount:match("^([^%s]+)%s+.+")
-    -- only show /dev/xxx device, and not show docker root dir mounts
-    if device:match("/dev/") and not mount:match(dk_root_dir)then
-      res[#res+1] = {}
-      local i = 0
-      for v in mount:gmatch("[^%s]+") do
-        i = i + 1
-        res[#res][h[i]] = v
+    -- only show /dev/xxx device
+    if device and device:match("/dev/") then
+      -- not show docker root dir mounts
+      if dk_root_dir and mount and mount:match(dk_root_dir) then
+      else
+        res[#res+1] = {}
+        local i = 0
+        for v in mount:gmatch("[^%s]+") do
+          i = i + 1
+          res[#res][h[i]] = v
+        end
       end
     end
   end
