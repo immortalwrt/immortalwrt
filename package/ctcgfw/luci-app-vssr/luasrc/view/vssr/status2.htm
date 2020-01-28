@@ -9,7 +9,7 @@ math.randomseed(os.time())
             <div class="pure-g">
                 <div class="pure-u-1-2">
                     <span class="flag"><img src="/luci-static/vssr/flags/4x3/un.svg" class="pure-img"></span> <span
-                        class="status-info">获取中...</span>
+                        class="status-info"></span>
                 </div>
                 <div class="pure-u-1-2">
                     <div class="icon-con">
@@ -36,10 +36,10 @@ math.randomseed(os.time())
         $(window).resize(resize);
         $(document).ready(function () {
             resize();
-            $.getJSON("<%=url([[admin]], [[services]], [[vssr]], [[ip]])%>", function (data) {
+            $.getJSON("<%=url([[admin]], [[vpn]], [[vssr]], [[ip]])%>", function (data) {
                 wirte_status(data);
             });
-            XHR.poll(5, '<%=url([[admin]], [[services]], [[vssr]], [[ip]])%>', null,
+            XHR.poll(5, '<%=url([[admin]], [[vpn]], [[vssr]], [[ip]])%>', null,
                 function (x, data) {
                     wirte_status(data);
                 }

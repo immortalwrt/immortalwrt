@@ -1,11 +1,13 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
 
-local IPK_Version="3.0.9"
+local IPK_Version="202000109"
 local m, s, o
 local redir_run=0
 local reudp_run=0
 local sock5_run=0
+local ssock5_run=0
+local v2sock5_run=0
 local server_run=0
 local kcptun_run=0
 local tunnel_run=0
@@ -73,6 +75,13 @@ end
 if luci.sys.call("pidof ssr-local >/dev/null") == 0 then
 sock5_run=1
 end
+if luci.sys.call("pidof ss-local >/dev/null") == 0 then
+ssock5_run=1
+end
+
+if luci.sys.call("ps -w | grep v2-ssr-local | grep -v grep >/dev/null") == 0 then
+v2sock5_run=1
+end
 
 if luci.sys.call("pidof kcptun-client >/dev/null") == 0 then
 kcptun_run=1
@@ -118,8 +127,20 @@ else
 s.value = translate("Not Running")
 end 
 
+
+
+if nixio.fs.access("/usr/bin/ss-local") then
+s=m:field(DummyValue,"ssock5_run",translate("SSOCKS5 Proxy")) 
+s.rawhtml  = true
+if ssock5_run == 1 then
+s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
+else
+s.value = translate("Not Running")
+end
+end
+
 if nixio.fs.access("/usr/bin/ssr-local") then
-s=m:field(DummyValue,"sock5_run",translate("SOCKS5 Proxy")) 
+s=m:field(DummyValue,"sock5_run",translate("SSR SOCKS5 Proxy")) 
 s.rawhtml  = true
 if sock5_run == 1 then
 s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
@@ -128,6 +149,15 @@ s.value = translate("Not Running")
 end
 end
 
+if nixio.fs.access("/usr/bin/v2ray/v2ray") then
+s=m:field(DummyValue,"ssock5_run",translate("V2SOCKS5 Proxy")) 
+s.rawhtml  = true
+if v2sock5_run == 1 then
+s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
+else
+s.value = translate("Not Running")
+end
+end
 if nixio.fs.access("/usr/bin/ssr-server") then
 s=m:field(DummyValue,"server_run",translate("Global SSR Server")) 
 s.rawhtml  = true
@@ -151,30 +181,9 @@ else
 s.value = translate("Not Running")
 end
 end
-
-s=m:field(DummyValue,"google",translate("Google Connectivity"))
-s.value = translate("No Check") 
-s.template = "vssr/check"
-
-s=m:field(DummyValue,"baidu",translate("Baidu Connectivity")) 
-s.value = translate("No Check") 
-s.template = "vssr/check"
-
-if gfwmode==1 then 
-s=m:field(DummyValue,"gfw_data",translate("GFW List Data")) 
+s=m:field(DummyValue,"version",translate("IPK Version")) 
 s.rawhtml  = true
-s.template = "vssr/refresh"
-s.value =tostring(math.ceil(gfw_count)) .. " " .. translate("Records")
+s.value =IPK_Version
 
-end
-
-s=m:field(DummyValue,"ip_data",translate("China IP Data")) 
-s.rawhtml  = true
-s.template = "vssr/refresh"
-s.value =ip_count .. " " .. translate("Records")
-
-s=m:field(DummyValue,"check_port",translate("Check Server Port"))
-s.template = "vssr/checkport"
-s.value =translate("No Check")
 
 return m

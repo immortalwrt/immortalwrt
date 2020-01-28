@@ -62,43 +62,29 @@ o.datatype = "uinteger"
 o:depends("enable_switch", "1")
 o.default = 5
 
--- [[ 节点订阅 ]]--
+o = s:option(Value, "switch_try_count", translate("Check Try Count"))
+o.datatype = "uinteger"
+o:depends("enable_switch", "1")
+o.default = 3
 
-s = m:section(TypedSection, "server_subscribe",  translate("Servers subscription and manage"))
+-- [[ SOCKS5 Proxy ]]--
+if nixio.fs.access("/usr/bin/ssr-local") then
+s = m:section(TypedSection, "socks5_proxy", translate("SOCKS5 Proxy"))
 s.anonymous = true
 
-o = s:option(Flag, "auto_update", translate("Auto Update"))
+o = s:option(ListValue, "server", translate("Server"))
+o:value("nil", translate("Disable"))
+for _,key in pairs(key_table) do o:value(key,server_table[key]) end
+o.default = "nil"
 o.rmempty = false
-o.description = translate("Auto Update Server subscription, GFW list and CHN route")
 
+o = s:option(Value, "local_port", translate("Local Port"))
+o.datatype = "port"
+o.default = 1080
+o.rmempty = false
 
-o = s:option(ListValue, "auto_update_time", translate("Update time (every day)"))
-for t = 0,23 do
-    o:value(t, t..":00")
 end
-o.default=2
-o.rmempty = false
 
-o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"))
-o.rmempty = true
-
-o = s:option(Flag, "proxy", translate("Through proxy update"))
-o.rmempty = false
-o.description = translate("Through proxy update list, Not Recommended ")
-
-
-o = s:option(DummyValue, "", "")
-o.rawhtml = true
-o.template = "vssr/update_subscribe"
-
-o = s:option(Button,"delete",translate("Delete all severs"))
-o.inputstyle = "reset"
-o.write = function()
-    uci:delete_all("vssr", "servers", function(s) return true end)
-	uci:commit("vssr") 
-    luci.sys.call("/etc/init.d/vssr stop")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "services", "vssr", "servers"))
-end
 
 -- [[ 更新设置 ]]--
 
@@ -116,4 +102,6 @@ o.template = "vssr/refresh"
 o.value =ip_count .. " " .. translate("Records")
 
 
+
 return m
+

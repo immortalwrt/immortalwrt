@@ -5,8 +5,8 @@
 </fieldset>
 <!-- tblsection -->
 <fieldset class="cbi-section" id="cbi-<%=self.config%>-<%=self.sectiontype%>">
-    <button class="cbi-button  cbi-button-check "><%:Ping All Servers%></button><span class="panel-title">总计
-        <%- print(self.des)-%>个节点</span>
+    <button class="cbi-button  cbi-button-check "><%:Ping All Servers%></button><span class="panel-title"><%:Node list%>    （<%:total%>  
+        &nbsp; <%- print(self.des)-%><%:Nodes%>）</span>
     <div class="cbi-section-node">
         <%- local count = 0 -%>
         <div class="cbi-section-table pure-g p-in5">
@@ -35,7 +35,7 @@
                         </div>
 
                         <a class="cbi-button ssr-button " type="button" value="" onclick="apply_node('<%=section%>')"
-                            alt="应用" title="应用"><span class="icon-edit"></span> 应用</a>
+                            alt="<%:Apply%>" title="<%:Apply%>"><span class="icon-edit"></span> <%:Apply%></a>
                         <%- if self.extedit then -%>
                         <a class="cbi-button ssr-button " type="button" value="" <%- if type(self.extedit) == "string" then
                            %> onclick="location.href='<%=self.extedit:format(section)%>'" <%- elseif type(self.extedit) == "function" then
@@ -93,6 +93,7 @@
 </fieldset>
 <!-- /tblsection -->
 <script type="text/javascript">
+
     var servers = '<%= self.servers%>';
     servers = JSON.parse(servers.replace(/\t/g,""));
     $.each(servers, function (i, val) {
@@ -109,6 +110,7 @@
         $(id).find(".type .tp").text(val.type);
         $(id).find(".type").addClass("flag-icon-" + val.flag);
         $(id).find(".alias").text(val.alias);
+
         $(id).attr("server", val.server);
         $(id).attr("server_port", val.server_port);
     });
@@ -117,7 +119,7 @@
 
     function apply_node(node) {
         $("#cbi-apply-vssr1").show();
-        $.get('<%=luci.dispatcher.build_url("admin", "services", "vssr","change")%>',
+        $.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","change")%>',
             {
                 set: node
             },
@@ -132,6 +134,11 @@
             });
     }
     $(document).ready(function () {
+        /*$.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","allserver")%>',
+            function (data) {
+                
+            }, "json");*/
+
         setTimeout(function() { check(); }, 500);
         function check() {
             $(".host_con").html("");
@@ -146,7 +153,7 @@
 
         function check_port(hosts, ports, target) {
 
-            $.get('<%=luci.dispatcher.build_url("admin", "services", "vssr","checkport")%>',
+            $.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","checkport")%>',
                 {
                     host: hosts,
                     port: ports
@@ -188,6 +195,19 @@
             return false;
         });
 
+
+        //转换 emoji
+
+
+
     });
 
 </script>
+<fieldset class="cbi-section">  
+	
+	   <tr>
+	  	<td colspan="4" width="100%">
+	  		<p align="center">   <img src="https://i.imgur.com/9ejUjam.gif" 
+
+
+ </p></script>

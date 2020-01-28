@@ -308,20 +308,22 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
     padding: 8px;
 }
 
-.cbi-section-table-row {
-    position: relative;
-    background: #edf3f8;
-    margin: 10px !important;
-    padding: 8px 15px 8px 70px;
-    box-shadow: 0 0 5px 0 rgba(136, 152, 170, .75);
-    border-radius: .5rem;
-    border: 0;
-    color: #525f7f;
-    text-align: left;
-    line-height: 1.7em;
-    overflow: hidden;
-    letter-spacing: normal;
-    transition: all 0.2s;
+    .cbi-section-table-row {
+        position: relative;
+        background: #99CCFF;
+        margin: 10px;
+        padding: 8px 15px 10px 65px;
+        box-shadow: 0 0 1rem 0 rgba(136,152,170,.75);
+        border-radius: .5rem;
+        border: 0;
+        color: #336699;
+        text-align: left;
+        line-height: 1.7em;
+        white-space: nowrap;
+　　　　 text-overflow: ellipsis;
+        overflow: hidden;
+        transition: all 0.3s;
+
 }
 .cbi-section-table-row:hover{
     background: #fff;
@@ -456,13 +458,17 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
     margin-top: 1rem;
 }
 
-.cbi-button-check {
-    color: #fff !important;
-    background-color: #337ab7 !important;
-    border-color: #2e6da4 !important;
-    float: right;
-    margin-right: 18px;
-    margin-top: 1rem;
+
+    .cbi-button-check {
+        color: #fff !important;
+      background-color: #336633 !important;
+        border-color: #2e6da4 !important;
+        font-size:12px;
+        padding:0.5rem 0.8rem;
+        float:right;
+        margin-right:10px;
+        margin-top:-0.3rem;
+
 }
 
 .cbi-section-table-cell {
@@ -494,6 +500,22 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 footer.mobile-hide{
     display: block;
 }
+.cbi-button-add{
+        position:fixed;
+        padding: 0.3rem 0.5rem;
+        z-index:1000;
+        width:70px !important;
+        height:70px;
+        bottom:90px;
+        right:80px;
+   font-size:20px;
+        border-radius:50%;
+        display:block;
+	  background-color: #336633!important;
+        border-color: 	#CC6699 !important; 	
+        box-shadow: 0 0 1rem 0 rgba(136,152,170,.75);
+    }
+
 
 .mar-10 {margin-left: 50px; margin-right: 10px;}
 
@@ -522,6 +544,8 @@ footer.mobile-hide{
     height: 3em;
     text-align: right;
 }
+
+
 
 @media screen and (max-width: 1900px) {
     .pure-u-1-5 {
@@ -574,7 +598,7 @@ footer.mobile-hide{
         font-size: 16px;
         border-radius: 50%;
         display: block;
-        background-color: #fb6340 !important;
+        background-color: #fb6340!important;
         border-color: #fb6340 !important;
         box-shadow: 0 0 1rem 0 rgba(136, 152, 170, .75);
     }

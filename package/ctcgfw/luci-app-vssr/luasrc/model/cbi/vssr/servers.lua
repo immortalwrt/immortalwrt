@@ -29,7 +29,7 @@ s.des = server_count
 s.current = uci:get("vssr", name, "global_server")
 s.servers = cjson.encode(server_table)
 s.template = "vssr/tblsection"
-s.extedit = luci.dispatcher.build_url("admin/services/vssr/servers/%s")
+s.extedit = luci.dispatcher.build_url("admin/vpn/vssr/servers/%s")
 function s.create(...)
     local sid = TypedSection.create(...)
     if sid then
@@ -59,3 +59,4 @@ end
 m:section(SimpleSection).template = "vssr/status2"
 
 return m
+

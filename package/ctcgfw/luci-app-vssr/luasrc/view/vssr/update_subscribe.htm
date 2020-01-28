@@ -60,7 +60,7 @@
 		//console.log(data);
 		$.ajax({
 			  type: "post",
-			  url: "<%=luci.dispatcher.build_url('admin', 'services', 'vssr','subscribe')%>",
+			  url: "<%=luci.dispatcher.build_url('admin', 'vpn', 'vssr','subscribe')%>",
 				dataType : "json",
 				data: data,
 				success: function (d) {
@@ -102,7 +102,7 @@
                 }
                 console.log(noChange);
                 if (noChange > 10) {
-					window.location.href="<%=luci.dispatcher.build_url('admin', 'services', 'vssr','servers')%>"
+					window.location.href="<%=luci.dispatcher.build_url('admin', 'vpn', 'vssr','servers')%>"
                     return false;
                 } else {
                     setTimeout("get_realtime_log();", 250);

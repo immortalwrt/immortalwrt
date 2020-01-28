@@ -7,7 +7,7 @@
 		btn.disabled = true;
 		btn.value    = '<%:Refresh...%> ';
 		murl=dataname;
-		XHR.get('<%=luci.dispatcher.build_url("admin", "services", "vssr","refresh")%>',
+		XHR.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","refresh")%>',
 			{ set:murl },
 			function(x,rv)
 			{

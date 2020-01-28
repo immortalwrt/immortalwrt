@@ -1,11 +1,6 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "vssr"
-msgstr "Hello World"
-
-msgid "Client"
-msgstr "客户端"
 
 msgid "Enable"
 msgstr "启用"
@@ -13,17 +8,117 @@ msgstr "启用"
 msgid "Disable"
 msgstr "停用"
 
+msgid "Enable Servers"
+msgstr "开启服务"
+
+
+msgid "Socks user"
+msgstr "用户名"
+
+msgid "Socks pass"
+msgstr "密码"
+
+msgid "Ping All Servers"
+msgstr "PING 所有节点"
+
+
+msgid "vssr Server"
+msgstr "vssr 服务端"
+
+msgid "SSR SOCKS5 Proxy"
+msgstr "SSR SOCKS5代理"
+
+msgid "Subscription"
+msgstr "订阅管理"
+
+msgid "Subscribing,Please do not refresh!"
+msgstr "订阅，请不要刷新!"
+
+msgid "Check Try Count"
+msgstr "切换检查重试次数"
+
 msgid "Log"
 msgstr "日志"
 
-msgid "Running"
-msgstr "运行中"
+msgid "Bypass Domain List"
+msgstr "不走代理的域名"
 
-msgid "Not Running"
-msgstr "未运行"
+msgid "Black Domain List"
+msgstr "强制走代理的域名"
+
+msgid "Node List"
+msgstr "节点列表"
+
+msgid "END SUBSCRIBE"
+msgstr "结束订阅"
+
+msgid "Update Setting"
+msgstr "更新设置"
+
+
+msgid "AlterId"
+msgstr "额外ID"
+
+msgid "Save And Start Subscribe"
+msgstr "保存并开始订阅"
+
+
+msgid "VmessId (UUID)"
+msgstr "用户ID(UUID)"
+
+msgid "Transport"
+msgstr "传输方式"
+
+msgid "Configuration Url"
+msgstr "配置链接"
+
+msgid "Import Configuration"
+msgstr "导入配置信息"
+
+msgid "Apply"
+msgstr "应用"
+
+msgid "total"
+msgstr "总计"
+
+msgid "Node list"
+msgstr "节点列表"
+
+
+msgid "Nodes"
+msgstr "个节点"
+
+msgid "Client"
+msgstr "客户端"
+
+msgid "Visit foreign websites"
+msgstr "访问国外网站"
+
+msgid "Visit domestic website"
+msgstr "访问国内网站"
+
+msgid "Problem detected"
+msgstr "无法访问"
+
+msgid "Working..."
+msgstr "连接正常"
+
 
 msgid "Game Mode"
 msgstr "游戏模式"
+
+
+msgid "V2ray SOCKS5 Proxy"
+msgstr "V2ray SOCKS5代理"
+
+msgid "Edit vssr Server"
+msgstr "编辑服务器配置"
+
+msgid "ShadowSocksR is running"
+msgstr "ShadowSocksR 客户端运行中"
+
+msgid "ShadowSocksR is not running"
+msgstr "ShadowSocksR 客户端未运行"
 
 msgid "Global Setting"
 msgstr "全局设置"
@@ -31,8 +126,8 @@ msgstr "全局设置"
 msgid "Global Server"
 msgstr "全局服务器"
 
-msgid "vssr SOCK5 Proxy is running"
-msgstr "vssr SOCK5代理运行中"
+msgid "ShadowSocksR SOCK5 Proxy is running"
+msgstr "ShadowSocksR SOCK5代理运行中"
 
 msgid "UDP Relay Server"
 msgstr "UDP中继服务器"
@@ -122,19 +217,19 @@ msgid "LAN Host List"
 msgstr "内网主机列表"
 
 msgid "SSR Client"
-msgstr "基本设置"
+msgstr "客户端"
 
 msgid "SSR Server"
 msgstr "服务端"
 
-msgid "vssr Server"
-msgstr "vssr 服务端"
+msgid "ShadowSocksR Server"
+msgstr "ShadowSocksR 服务端"
 
-msgid "vssr Server is running"
-msgstr "vssr 服务端运行中"
+msgid "ShadowSocksR Server is running"
+msgstr "ShadowSocksR 服务端运行中"
 
-msgid "vssr Server is not running"
-msgstr "vssr 服务端未运行"
+msgid "ShadowSocksR Server is not running"
+msgstr "ShadowSocksR 服务端未运行"
 
 msgid "Enable Server"
 msgstr "启动服务端"
@@ -166,14 +261,14 @@ msgstr "Kcptun可执行文件格式不正确，请确认是否正确下载了路
 msgid "Enable Process Monitor"
 msgstr "启用进程监控"
 
-msgid "Edit vssr Server"
+msgid "Edit ShadowSocksR Server"
 msgstr "编辑服务器配置"
 
 msgid "Alias"
 msgstr "别名"
 
-msgid "V2ray SOCKS5 Proxy"
-msgstr "V2ray SOCKS5代理"
+msgid "SOCKS5 Proxy"
+msgstr "SOCKS5代理"
 
 msgid "Server"
 msgstr "服务器"
@@ -189,6 +284,9 @@ msgstr "未知"
 
 msgid "Running Status"
 msgstr "运行状态"
+
+msgid "vssr"
+msgstr "Hello World"
 
 msgid "Global Client"
 msgstr "TCP透明代理"
@@ -383,8 +481,8 @@ msgstr "通过代理更新"
 msgid "GFW List"
 msgstr "GFW列表"
 
-msgid "Basic Settings"
-msgstr "基本设置（支持SS/SSR/V2RAY）"
+msgid "ShadowSocksR Plus+ Settings"
+msgstr "ShadowSocksR Plus+ 设置（支持SS/SSR/V2RAY）"
 
 msgid "Main Server"
 msgstr "主服务器"
@@ -405,28 +503,25 @@ msgid "Auto Update Server subscription, GFW list and CHN route"
 msgstr "自动更新服务器订阅、GFW列表和 CHN路由表"
 
 msgid "Subscribe URL"
-msgstr "SSR/V2RAY订阅URL地址"
+msgstr "SS/SSR/V2RAY订阅URL地址"
 
 msgid "Update"
 msgstr "更新"
 
-msgid "Save And Start Subscribe"
-msgstr "保存并开始订阅"
-
 msgid "Server Count"
-msgstr "节点数量"
+msgstr "服务器节点数量"
 
 msgid "IP black-and-white list"
-msgstr "黑白名单"
+msgstr "IP黑白名单"
 
 msgid "WAN IP AC"
-msgstr "广域网访问控制"
+msgstr "WAN IP访问控制"
 
 msgid "WAN White List IP"
-msgstr "不走代理的广域网 IP"
+msgstr "不走代理的WAN IP"
 
 msgid "WAN Force Proxy IP"
-msgstr "强制走代理的广域网 IP"
+msgstr "强制走代理的WAN IP"
 
 msgid "LAN Bypassed Host List"
 msgstr "不走代理的局域网LAN IP"
@@ -456,16 +551,13 @@ msgid "Please refer to the following writing"
 msgstr "每行一个域名，无需写前面的 HTTP(S):// ，提交后即时生效"
 
 msgid "Servers subscription and manage"
-msgstr "服务器节点订阅管理（支持SSR/V2ray 订阅）"
-
-msgid "Subscription"
 msgstr "节点订阅"
 
 msgid "Through proxy update list, Not Recommended"
 msgstr "通过路由器自身代理更新订阅（不推荐）"
 
 msgid "LAN IP AC"
-msgstr "局域网访问控制"
+msgstr "LAN IP访问控制"
 
 msgid "Game Mode UDP Server"
 msgstr "游戏模式UDP中继服务器"
@@ -480,7 +572,7 @@ msgid "Delete all severs"
 msgstr "删除所有服务器"
 
 msgid "Severs Nodes"
-msgstr "节点列表"
+msgstr "服务器节点"
 
 msgid "Use Local DNS Service listen port 5335"
 msgstr "使用本机端口为5335的DNS服务"
@@ -521,90 +613,6 @@ msgstr "所有端口（默认）"
 msgid "Only Common Ports"
 msgstr "仅常用端口（不走P2P流量到代理）"
 
-msgid "Ping Latency"
-msgstr "Ping延迟"				   
-
-msgid "Bypass Domain List"
-msgstr "直连域名"
-
-msgid "Black Domain List"
-msgstr "代理域名"
-
-msgid "Socks user"
-msgstr "用户名"
-
-msgid "Socks pass"
-msgstr "密码"
-
-msgid "Enable Servers"
-msgstr "开启服务"
-
-msgid "Subscribing,Please do not refresh!"
-msgstr "请勿刷新本页面，正在订阅中 ..."
-
-msgid "Apply"
-msgstr "应用"
-
-msgid "Edit"
-msgstr "修改"
-
-msgid "Delete"
-msgstr "删除"
-
-msgid "Ping All Servers"
-msgstr "Ping 所有节点"
-
-msgid "Check Ip And Access"
-msgstr "Ip地址检查"
-
-msgid "Test From Internal"
-msgstr "从国内测试"
-
-msgid "Test From Abroad"
-msgstr "从国外测试"
-
-msgid "Test From Google"
-msgstr "从谷歌测试"
-
-msgid "Baidu"
-msgstr "百度搜索"
-
-msgid "Connection OK"
-msgstr "访问正常"
-
-msgid "Cannot Access"
-msgstr "无法访问"
-
-msgid "Unavailable"
-msgstr "无法获取"
-
-msgid "Connection Timeout"
-msgstr "连接超时"
-
-msgid "Update Setting"
-msgstr "更新设置"
-
-msgid "Paste Node Link Here"
-msgstr "在这里粘贴配置链接"
-
-msgid "User Cancel"
-msgstr "用户取消"
-
-msgid "Invalid Format"
-msgstr "无效的格式"
-
-msgid "Import Configuration"
-msgstr "导入配置信息"
-
-msgid "Import"
-msgstr "导入"
 
 
-msgid "Configuration Succeeded"
-msgstr "配置信息成功"
 
-msgid "Import Configuration"
-msgstr "导入配置信息"
-
-msgid "Configuration Url"
-msgstr "配置链接"

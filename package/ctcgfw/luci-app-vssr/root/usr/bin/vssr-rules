@@ -14,9 +14,7 @@ FWI=$(uci get firewall.vssr.path 2>/dev/null)  # firewall include file
 usage() {
 	cat <<-EOF
 		Usage: vssr-rules [options]
-
 		Valid options are:
-
 		    -s <server_ip>          ip address of vssr remote server
 		    -l <local_port>         port number of vssr local server
 		    -S <server_ip>          ip address of vssr remote UDP server

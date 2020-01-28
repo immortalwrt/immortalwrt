@@ -2,11 +2,10 @@
 
 <script type="text/javascript">//<![CDATA[
 
-    function getFlag(remark,hosts, sid) {
-        $.get('<%=luci.dispatcher.build_url("admin", "services", "vssr","flag")%>',
+    function getFlag(hosts, sid) {
+        $.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","flag")%>',
             {
-                host: hosts,
-                remark: remark
+                host: hosts
             },
             function (data, status) {
                 document.getElementById('cbid.vssr.' + sid + '.flag').value = data.flag.replace(/[\r\n]/g, "");;
@@ -99,7 +98,7 @@
         var s = document.getElementById(urlname + '-status');
         if (!s)
             return false;
-        var ssrurl = prompt("<%:Paste Node Link Here%> ssr:// | ss:// | vmess://", "");
+        var ssrurl = prompt("在这里黏贴配置链接  ssr:// | ss:// | vmess:// | trojan://", "");
         if (ssrurl == null || ssrurl == "") {
             s.innerHTML = "<font color='red'><%:User Cancel%></font>";
             return false;
@@ -119,7 +118,6 @@
         if (ssu[0] == "ssr") {
             var sstr = b64decsafe(ssu[1]);
             var ploc = sstr.indexOf("/?");
-            var rema = "";
             document.getElementById('cbid.vssr.' + sid + '.type').value = "ssr";
             document.getElementById('cbid.vssr.' + sid + '.type').dispatchEvent(event);
             var url0, param = "";
@@ -146,12 +144,11 @@
             document.getElementById('cbid.vssr.' + sid + '.password').value = b64decsafe(ssm[6]);
             document.getElementById('cbid.vssr.' + sid + '.obfs_param').value = dictvalue(pdict, 'obfsparam');
             document.getElementById('cbid.vssr.' + sid + '.protocol_param').value = dictvalue(pdict, 'protoparam');
-            
+            getFlag(ssm[1], sid);
             var rem = pdict['remarks'];
             if (typeof (rem) != 'undefined' && rem != '' && rem.length > 0)
-                rema = b64decutf8safe(rem);
                 document.getElementById('cbid.vssr.' + sid + '.alias').value = b64decutf8safe(rem);
-            getFlag(rema,ssm[1], sid);
+
             s.innerHTML = "<font color='green'><%:Import%>ShadowsocksR<%:Configuration Succeeded%></font>";
             return false;
         } else if (ssu[0] == "ss") {
@@ -163,7 +160,7 @@
                 url0 = ssu[1]
             }
             var sstr = b64decsafe(url0);
-            var rema = "";
+
 
             document.getElementById('cbid.vssr.' + sid + '.type').value = "ss";
 
@@ -176,18 +173,43 @@
             document.getElementById('cbid.vssr.' + sid + '.server_port').value = part2[1];
             document.getElementById('cbid.vssr.' + sid + '.password').value = part1[1];
             document.getElementById('cbid.vssr.' + sid + '.encrypt_method_ss').value = part1[0];
-            
+            getFlag(part2[0], sid);
             if (param != undefined) {
-                rema = decodeURI(param)
                 document.getElementById('cbid.vssr.' + sid + '.alias').value = decodeURI(param);
             }
-            getFlag(rema,part2[0], sid);
+
             s.innerHTML = "<font color='green'><%:Import%>Shadowsocks<%:Configuration Succeeded%></font>";
+            return false;
+      } else if (ssu[0] == "trojan") {
+            var ploc = ssu[1].indexOf("#");
+            if (ploc > 0) {
+                url0 = ssu[1].substr(0, ploc);
+                param = ssu[1].substr(ploc + 1);
+            } else {
+                url0 = ssu[1]
+            }
+            var sstr = b64decsafe(url0);
+
+
+            document.getElementById('cbid.shadowsocksr.' + sid + '.type').value = "trojan";
+
+            document.getElementById('cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
+            var team = sstr.split('@');
+            console.log(param);
+            var part1 = team[0].split(':');
+            var part2 = team[1].split(':');
+            document.getElementById('cbid.shadowsocksr.' + sid + '.server').value = part2[0];
+            document.getElementById('cbid.shadowsocksr.' + sid + '.server_port').value = part2[1];
+            document.getElementById('cbid.shadowsocksr.' + sid + '.password').value = part1[1];
+            if (param != undefined) {
+                document.getElementById('cbid.shadowsocksr.' + sid + '.alias').value = decodeURI(param);
+            }
+
+            s.innerHTML = "<font color='green'>导入Trojan配置信息成功</font>";
             return false;
         } else if (ssu[0] == "vmess") {
             var sstr = b64DecodeUnicode(ssu[1]);
             var ploc = sstr.indexOf("/?");
-            var rema = "";
             document.getElementById('cbid.vssr.' + sid + '.type').value = "v2ray";
             document.getElementById('cbid.vssr.' + sid + '.type').dispatchEvent(event);
             var url0, param = "";
@@ -227,7 +249,7 @@
                     break;
 
             }
-            getFlag(ssm.ps,ssm.add, sid);
+            getFlag(ssm.add, sid);
 
 
 
@@ -241,6 +263,8 @@
 
 <input type="button" class="cbi-button cbi-button-apply" value="<%:Import Configuration%>"
     onclick="return import_ssr_url(this, '<%=self.option%>', '<%=self.value%>')" />
+<input type="button" class="cbi-button cbi-button-apply" value="<%:Export SSR%>" onclick="return export_ssr_url(this,'<%=self.option%>','<%=self.value%>')" /><span id="<%=self.option%>-status"></span>
 <span id="<%=self.option%>-status"></span>
+
 
 <%+cbi/valuefooter%>

@@ -6,7 +6,7 @@
 	{
 		btn.disabled = true;
 		btn.value    = '<%:Check...%>';
-		XHR.get('<%=luci.dispatcher.build_url("admin", "services", "vssr","checkports")%>',
+		XHR.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","checkports")%>',
 			null,
 			function(x,rv)
 			{
