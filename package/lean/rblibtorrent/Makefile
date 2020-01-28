@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rblibtorrent
-PKG_VERSION:=1.1.13
+PKG_VERSION:=1.2.3
 PKG_RELEASE=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/arvidn/libtorrent.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=6f1250c6535730897909240ea0f4f2a81937d21a
+PKG_SOURCE_VERSION:=078f7b956ef0d992948852a801e626b1118a1fc5
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_LICENSE:=BSD
@@ -24,7 +24,7 @@ define Package/rblibtorrent
   CATEGORY:=Libraries
   TITLE:=Rasterbar BitTorrent library
   URL:=https://www.libtorrent.org/
-  DEPENDS:=+libstdcpp +libopenssl +boost +boost-system +boost-chrono +boost-random
+  DEPENDS:=+libstdcpp +libopenssl +boost +boost-system +boost-chrono +boost-random $(ICONV_DEPENDS)
   MAINTAINER:=Arvid Norberg <arvid@libtorrent.org>
 endef
 
