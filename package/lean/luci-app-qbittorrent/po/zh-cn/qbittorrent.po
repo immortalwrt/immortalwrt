@@ -25,18 +25,6 @@ msgstr "配置文件目录"
 msgid "Store configuration files in the Path"
 msgstr "配置文件存放路径"
 
-msgid "program_dir"
-msgstr "程序目录"
-
-msgid "library_dir"
-msgstr "库目录"
-
-msgid "Store Program files in the Path"
-msgstr "程序文件存放路径"
-
-msgid "Store Library in the Path"
-msgstr "库文件存放路径"
-
 msgid "Download Settings"
 msgstr "下载设置"
 
