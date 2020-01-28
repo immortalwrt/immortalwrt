@@ -20,7 +20,7 @@ config_qbittorrent()
 		sed -i 's/Downloads\\SavePath=[a-z,/]*//g' $2/qBittorrent/config/qBittorrent.conf
 		echo "Downloads\SavePath=$download_dir" >> $2/qBittorrent/config/qBittorrent.conf
 	else
-		cat >$2/qBittorrent/config/qBittorrent.conf<<-EOF
+		cat >$2/qBittorrent/config/qBittorrent.conf<<EOF
 [AutoRun]
 enabled=false
 program=
@@ -37,7 +37,7 @@ Downloads\SavePath=$download_dir
 General\Locale=zh
 WebUI\Port=$port
 WebUI\CSRFProtection=false
-		EOF
+EOF
 	fi
 }
 
