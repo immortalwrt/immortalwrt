@@ -39,3 +39,6 @@ msgstr "WEBUI设置"
 
 msgid "WEBUI listening port"
 msgstr "WEBUI监听端口"
+
+msgid "Open Web Interface"
+msgstr "打开Web界面"
