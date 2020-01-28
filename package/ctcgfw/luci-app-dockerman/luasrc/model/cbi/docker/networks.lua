@@ -75,7 +75,7 @@ end
 docker_status = m:section(SimpleSection)
 docker_status.template="docker/apply_widget"
 docker_status.err=nixio.fs.readfile(dk.options.status_path)
-if docker_status then docker:clear_status() end
+if docker_status.err then docker:clear_status() end
 
 action = m:section(Table,{{}})
 action.notitle=true

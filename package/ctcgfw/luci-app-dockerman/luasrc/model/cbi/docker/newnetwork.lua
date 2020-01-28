@@ -20,7 +20,7 @@ m.redirect = luci.dispatcher.build_url("admin", "docker", "networks")
 docker_status = m:section(SimpleSection)
 docker_status.template="docker/apply_widget"
 docker_status.err=nixio.fs.readfile(dk.options.status_path)
-if docker_status then docker:clear_status() end
+if docker_status.err then docker:clear_status() end
 
 s = m:section(SimpleSection, translate("New Network"))
 s.addremove = true

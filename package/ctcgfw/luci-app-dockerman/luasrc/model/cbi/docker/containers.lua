@@ -81,7 +81,7 @@ docker_status = m:section(SimpleSection)
 docker_status.template="docker/apply_widget"
 docker_status.err=nixio.fs.readfile(dk.options.status_path)
 -- luci.util.perror(docker_status.err)
-if docker_status then docker:clear_status() end
+if docker_status.err then docker:clear_status() end
 
 c_table = m:section(Table, c_lists, translate("Containers"))
 c_table.nodescr=true
@@ -199,7 +199,5 @@ end
 btnstop.write = function(self, section)
   start_stop_remove(m,"stop")
 end
-
-
 
 return m

@@ -128,7 +128,7 @@ function fnSubmitForm(el){
 }
 
 <% if self.err then -%>
-	docker_status_message('warning', "<%=self.err%>");
+	docker_status_message('warning', `<%=self.err%>`);
 	document.getElementById('docker_apply_overlay').addEventListener("click", (e)=>{
 		docker_status_message()
 	})
