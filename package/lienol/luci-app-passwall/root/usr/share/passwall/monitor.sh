@@ -35,13 +35,12 @@ use_haproxy=$(config_t_get global_haproxy balancing_enable 0)
 
 #tcp
 for i in $(seq 1 $TCP_NODE_NUM); do
-	eval temp_server=\$TCP_NODE$i
-	if [ "$temp_server" != "nil" ]; then
+	eval tmp_node=\$TCP_NODE$i
+	if [ "$tmp_node" != "nil" ]; then
 		#kcptun
-		use_kcp=$(config_n_get $temp_server use_kcp 0)
+		use_kcp=$(config_n_get $tmp_node use_kcp 0)
 		if [ $use_kcp -gt 0 ]; then
-			kcp_port=$(config_t_get global_proxy kcptun_port 11183)
-			icount=$(ps -w | grep kcptun-client | grep $kcp_port | grep -v grep | wc -l)
+			icount=$(ps -w | grep kcptun-client | grep $CONFIG_PATH/kcptun_${i} | grep -v grep | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0
@@ -59,9 +58,9 @@ done
 
 #udp
 for i in $(seq 1 $UDP_NODE_NUM); do
-	eval temp_server=\$UDP_NODE$i
-	if [ "$temp_server" != "nil" ]; then
-		[ "$temp_server" == "default" ] && temp_server=$TCP_NODE1
+	eval tmp_node=\$UDP_NODE$i
+	if [ "$tmp_node" != "nil" ]; then
+		[ "$tmp_node" == "default" ] && tmp_node=$TCP_NODE1
 		[ -f "/var/etc/passwall/port/UDP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/UDP_$i`)
 		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/UDP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -U -l ${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then
@@ -73,8 +72,8 @@ done
 
 #socks5
 for i in $(seq 1 $SOCKS5_NODE_NUM); do
-	eval temp_server=\$SOCKS5_NODE$i
-	if [ "$temp_server" != "nil" ]; then
+	eval tmp_node=\$SOCKS5_NODE$i
+	if [ "$tmp_node" != "nil" ]; then
 		[ -f "/var/etc/passwall/port/SOCKS5_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/SOCKS5_$i`)
 		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/SOCKS5_${i}|brook client -l 0.0.0.0:${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then

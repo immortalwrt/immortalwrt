@@ -142,7 +142,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 		<div class="pure-u-1-4">
             <div class="block pure-g">
                 <div class="pure-u-16-24">
-				<h4 id="status_socks5_node">SOCKS5<br /><span class="red"><%:NOT RUNNING%></span></h4>
+				<h4 id="status_socks5_node">Socks5<br /><span class="red"><%:NOT RUNNING%></span></h4>
                 </div>
                 <div class="pure-u-8-24">
                     <div class="img-con">
@@ -165,7 +165,6 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
                 </div>
             </div>
         </div>
-		<% if ipkg.installed("haproxy") or is_finded("haproxy*") then %>
 		<div class="pure-u-1-4">
             <div class="block pure-g">
                 <div class="pure-u-16-24">
@@ -179,12 +178,10 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
                 </div>
             </div>
         </div>
-		<% end %>
-		<% if ipkg.installed("kcptun") or is_finded("kcptun*") then %>
 		<div class="pure-u-1-4">
             <div class="block pure-g">
                 <div class="pure-u-16-24">
-                    <h4 id="status_kcptun">KcpTun<br /><span class="red"><%:NOT RUNNING%></span></h4>
+                    <h4 id="status_kcptun">Kcptun<br /><span class="red"><%:NOT RUNNING%></span></h4>
                 </div>
                 <div class="pure-u-8-24">
                     <div class="img-con">
@@ -194,7 +191,6 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
                 </div>
             </div>
         </div>
-		<% end %>
 		<div class="pure-u-1-4 check" onclick="check_connect('baidu')">
             <div class="block pure-g">
                 <div class="pure-u-16-24">
@@ -316,7 +312,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 					if (socks5_node_num >= 1) {
 						var status_socks5_node = document.getElementById('status_socks5_node');
 						if (status_socks5_node) {
-							var text = 'SOCKS5<br />';
+							var text = 'Socks5<br />';
 							if (socks5_node_num == 1) {
 								if (data["socks5_node1_status"])
 									text += '<span class="green"><%:RUNNING%></span>';
@@ -349,9 +345,9 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 					}
 					if (status_kcptun) {
 						if (data.kcptun_status) {
-							status_kcptun.innerHTML = 'KcpTun<br /><span class="green"><%:RUNNING%></span>'
+							status_kcptun.innerHTML = 'Kcptun<br /><span class="green"><%:RUNNING%></span>'
 						} else {
-							status_kcptun.innerHTML = 'KcpTun<br /><span class="red"><%:NOT RUNNING%></span>'
+							status_kcptun.innerHTML = 'Kcptun<br /><span class="red"><%:NOT RUNNING%></span>'
 						}
 					}
 				}
