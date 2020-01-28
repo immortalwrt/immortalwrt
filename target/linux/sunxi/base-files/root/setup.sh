@@ -79,28 +79,8 @@ if [ -f /sys/class/sunxi_info/sys_info ]; then
     fi
 fi
 
-# update /etc/config/network
-WAN_IF=`uci get network.wan.ifname`
-if [ "x${WAN_IF}" = "xeth0" ]; then
-	uci set network.wan.dns=8.8.8.8
-	uci commit
-fi
-
 WIFI_NUM=`find /sys/class/net/ -name wlan* | wc -l`
 if [ ${WIFI_NUM} -gt 0 ]; then
-
-    # make sure lan interface exist
-    if [ -z "`uci get network.lan`" ]; then
-        uci batch <<EOF
-set network.lan='interface'
-set network.lan.type='bridge'
-set network.lan.proto='static'
-set network.lan.ipaddr='192.168.1.1'
-set network.lan.netmask='255.255.255.0'
-set network.lan.ip6assign='60'
-EOF
-    fi
-    
     # update /etc/config/wireless
     for i in `seq 0 ${WIFI_NUM}`; do
         setup_ssid radio${i}
