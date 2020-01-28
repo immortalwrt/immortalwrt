@@ -50,10 +50,6 @@ run_qbittorrent()
 		if [ "$profile_dir" != "" ]; then
 			mkdir -p $profile_dir/qBittorrent
 			ln -sf /etc/qBittorrent/ipfilter.dat $profile_dir/qBittorrent/ipfilter.dat
-			config_get library_dir $1 library_dir
-			config_get program_dir $1 program_dir
-			export PATH=$PATH:$program_dir
-			export LD_LIBRARY_PATH=$library_dir
 			qbittorrent-nox -d --profile=$profile_dir
 		else
 			echo "no profile_dir,stop!"
