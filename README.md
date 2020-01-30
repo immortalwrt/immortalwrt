@@ -1,18 +1,17 @@
 # PROJECT OPENWRT
-## The Source of OpenWrt Modified by CTCGFW
+## The Source Code of OpenWrt Modified by CTCGFW
 ### Welcome to my Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
-
-# Tips
-You'd better not use **root** to make it, or you may be not able to use.<br/>
-Default username is **root** and password is **password**, login address: 192.168.1.1.
+- - -
 
 # How to make it
-## OS require
-Ubuntu 18.04 LTS x86\_64 (16.04 LTS is OK)<br/>
-At least 2G RAM & 2 CPU Cores<br/>
-At least 25G HDD<br/>
+## Minimum requirements
+Linux with case sensitive<br/>
+2G DDR2 RAM<br/>
+2 CPU Cores (AMD64, 1.4Ghz)<br/>
+25G disk space left<br/>
+Has access to both ChinaNet & Internet
 
-## Install the necessary packages 
+## Install the necessary packages (for Ubuntu user)
 ```bash
 sudo apt-get update -y
 sudo apt-get full-upgrade -y
@@ -23,10 +22,9 @@ sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git
 sudo bash -c "bash <(curl -s https://build-scripts.project-openwrt.eu.org/init_build_environment.sh)"
 ```
 
-
 ## Clone the source
 ```bash
-git clone https://github.com/project-openwrt/openwrt -b master --depth 1 && cd openwrt
+git clone https://github.com/project-openwrt/openwrt && cd openwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 #### For developer, you may use `dev` branch instead of `master`.
@@ -41,8 +39,12 @@ make menuconfig
 make -j1 V=s
 ```
 
-## Contributed
+## Tips
+You'd better not use **root** to make it, or you may be not able to use.<br/>
+Default login address: 192.168.1.1, username is **root** and password is **password**.
+
+# Contributed
 ### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt/blob/master/CONTRIBUTED.md).
 
-## License
+# License
 ### [GNU General Public License v3.0](https://github.com/project-openwrt/openwrt/blob/master/LICENSE).
