@@ -93,7 +93,7 @@ local get_config = function(old_config, old_host_config, old_network_setting, im
   if config.User == image_config.User then config.User = "" end
   if table_equal(config.Cmd, image_config.Cmd) then config.Cmd = nil end
   if table_equal(config.Entrypoint, image_config.Entrypoint) then config.Entrypoint = nil end
-
+  if table_equal(config.ExposedPorts, image_config.ExposedPorts) then config.ExposedPorts = nil end
   config.Env = table_subtract(config.Env, image_config.Env)
   config.Labels = table_subtract(config.Labels, image_config.Labels)
   config.Volumes = map_subtract(config.Volumes, image_config.Volumes)

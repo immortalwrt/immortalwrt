@@ -23,7 +23,7 @@ msgid "Restart"
 msgstr "重启"
 
 msgid "Stop"
-msgstr "关闭"
+msgstr "停止"
 
 msgid "Upgrade"
 msgstr "升级容器"
