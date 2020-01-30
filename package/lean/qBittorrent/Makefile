@@ -1,14 +1,14 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=qBittorrent-Enhanced-Edition
-PKG_VERSION:=4.2.1.10
+PKG_NAME:=qbittorrent
+PKG_VERSION:=4.1.9
 PKG_RELEASE=5
 
 PKG_SOURCE:=$(PKG_NAME)-release-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/c0re100/qBittorrent-Enhanced-Edition/tar.gz/release-$(PKG_VERSION)?
-PKG_HASH:=78b0116c00d791328d2ad4f84f7447e2208bf0eb5798c4da2ae4404ac00cad2b
+PKG_SOURCE_URL:=https://codeload.github.com/qbittorrent/qBittorrent/tar.gz/release-$(PKG_VERSION)?
+PKG_HASH:=620127f73f88ed3f2b2e4195cbc641f7c27f967d3b045e45f7916c0995fd61fe
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/qBittorrent-Enhanced-Edition-release-$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/qBittorrent-release-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-2.0+
 PKG_LICENSE_FILES:=COPYING
@@ -19,16 +19,16 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/qBittorrent
   SUBMENU:=BitTorrent
   SECTION:=net
   CATEGORY:=Network
   TITLE:=bittorrent client programmed in C++ / Qt
-  URL:=https://github.com/c0re100/qBittorrent-Enhanced-Edition
-  DEPENDS:=+qt5-core +qt5-network +qt5-xml +rblibtorrent +python3
+  URL:=https://www.qbittorrent.org/
+  DEPENDS:=+python3 +qt5-core +qt5-network +qt5-xml +rblibtorrent
 endef
 
-define Package/$(PKG_NAME)/description
+define Package/qBittorrent/description
 qBittorrent is a bittorrent client programmed in C++ / Qt that uses 
 libtorrent (sometimes called libtorrent-rasterbar) by Arvid Norberg.
 It aims to be a good alternative to all other bittorrent clients out 
@@ -49,13 +49,11 @@ define Build/Prepare
 	$(SED) '/<context>/{:a;N;/<\/context>/!ba;/\/gui\//d}' `ls $(PKG_BUILD_DIR)/src/lang/qbittorrent_*.ts`
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/qBittorrent/install
 	$(INSTALL_DIR) $(1)/usr/man/man1
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/man/man1/qbittorrent-nox.1 $(1)/usr/man/man1/qbittorrent-nox.1
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/qbittorrent-nox $(1)/usr/bin
-	$(INSTALL_DIR) $(1)/etc/qBittorrent
-	$(INSTALL_DATA) ./files/ipfilter.dat $(1)/etc/qBittorrent/ipfilter.dat
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,qBittorrent))
