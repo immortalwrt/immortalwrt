@@ -416,7 +416,7 @@ m.handle = function(self, state, data)
     end
   end
 
-  create_body.Hostname = name
+  create_body.Hostname = network ~= "host" and name or nil
   create_body.Tty = tty and true or false
   create_body.OpenStdin = interactive and true or false
   create_body.User = user

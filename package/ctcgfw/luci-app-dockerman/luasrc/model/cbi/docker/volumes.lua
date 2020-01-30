@@ -98,7 +98,6 @@ btnremove.write = function(self, section)
     -- 得到选中项的名字
     if volume_list[volume_table_sid]._selected == 1 then
       -- volume_selected[#volume_selected+1] = volume_id:cfgvalue(volume_table_sid)
-      luci.util.perror(volume_table_sid)
       volume_selected[#volume_selected+1] = volume_table_sid
     end
   end
