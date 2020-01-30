@@ -175,10 +175,9 @@ SOCKS5_NODE1_TYPE=""
 BROOK_SOCKS5_CMD=""
 BROOK_TCP_CMD=""
 BROOK_UDP_CMD=""
-AUTO_SWITCH_ENABLE=$(config_t_get auto_switch enable 0)
 TCP_REDIR_PORTS=$(config_t_get global_forwarding tcp_redir_ports '80,443')
 UDP_REDIR_PORTS=$(config_t_get global_forwarding udp_redir_ports '1:65535')
-KCPTUN_REDIR_PORT=$(config_t_get global_proxy kcptun_port 11183)
+KCPTUN_REDIR_PORT=$(config_t_get global_forwarding kcptun_port 12948)
 PROXY_MODE=$(config_t_get global proxy_mode gfwlist)
 
 load_config() {
@@ -212,16 +211,16 @@ load_config() {
 		local dns2=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '2P')
 		[ -n "$dns1" -a -n "$dns2" ] && UP_CHINA_DNS="$dns1,$dns2"
 	}
-	TCP_REDIR_PORT1=$(config_t_get global_proxy tcp_redir_port 1041)
+	TCP_REDIR_PORT1=$(config_t_get global_forwarding tcp_redir_port 1041)
 	TCP_REDIR_PORT2=$(expr $TCP_REDIR_PORT1 + 1)
 	TCP_REDIR_PORT3=$(expr $TCP_REDIR_PORT2 + 1)
-	UDP_REDIR_PORT1=$(config_t_get global_proxy udp_redir_port 1051)
+	UDP_REDIR_PORT1=$(config_t_get global_forwarding udp_redir_port 1051)
 	UDP_REDIR_PORT2=$(expr $UDP_REDIR_PORT1 + 1)
 	UDP_REDIR_PORT3=$(expr $UDP_REDIR_PORT2 + 1)
-	SOCKS5_PROXY_PORT1=$(config_t_get global_proxy socks5_proxy_port 1061)
+	SOCKS5_PROXY_PORT1=$(config_t_get global_forwarding socks5_proxy_port 1081)
 	SOCKS5_PROXY_PORT2=$(expr $SOCKS5_PROXY_PORT1 + 1)
 	SOCKS5_PROXY_PORT3=$(expr $SOCKS5_PROXY_PORT2 + 1)
-	PROXY_IPV6=$(config_t_get global_proxy proxy_ipv6 0)
+	PROXY_IPV6=$(config_t_get global_forwarding proxy_ipv6 0)
 	mkdir -p /var/etc $CONFIG_PATH $RUN_PID_PATH $RUN_ID_PATH $RUN_IP_PATH $RUN_PORT_PATH
 	config_load $CONFIG
 	return 0
@@ -245,8 +244,8 @@ gen_ss_ssr_config_file() {
 	}
 	cat <<-EOF >$configfile
 		{
-			"server": "$server_host",
 			"_comment": "$server_ip",
+			"server": "$server_host",
 			"server_port": $port,
 			"local_address": "0.0.0.0",
 			"local_port": $local_port,
@@ -662,7 +661,7 @@ start_crontab() {
 		echolog "已启动守护进程。"
 	fi
 
-	auto_on=$(config_t_get global_delay auto_on)
+	auto_on=$(config_t_get global_delay auto_on 0)
 	if [ "$auto_on" = "1" ]; then
 		time_off=$(config_t_get global_delay time_off)
 		time_on=$(config_t_get global_delay time_on)
@@ -681,6 +680,7 @@ start_crontab() {
 		}
 	fi
 
+	AUTO_SWITCH_ENABLE=$(config_t_get auto_switch enable 0)
 	[ "$AUTO_SWITCH_ENABLE" = "1" ] && {
 		testing_time=$(config_t_get auto_switch testing_time)
 		[ -n "$testing_time" ] && {
@@ -694,7 +694,7 @@ start_crontab() {
 stop_crontab() {
 	sed -i "/$CONFIG/d" /etc/crontabs/root >/dev/null 2>&1 &
 	ps | grep "$APP_PATH/test.sh" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	rm -f /var/lock/passwall_test.lock >/dev/null 2>&1 &
+	rm -f /var/lock/${CONFIG}_test.lock >/dev/null 2>&1 &
 	/etc/init.d/cron restart
 	echolog "清除定时执行命令。"
 }
@@ -1108,12 +1108,10 @@ force_stop() {
 }
 
 boot() {
-	local delay=$(config_t_get global_delay start_delay 0)
+	local delay=$(config_t_get global_delay start_delay 1)
 	if [ "$delay" -gt 0 ]; then
-		[ "$TCP_NODE1" != "nil" -o "$UDP_NODE1" != "nil" ] && {
-			echolog "执行启动延时 $delay 秒后再启动!"
-			sleep $delay && start >/dev/null 2>&1 &
-		}
+		echolog "执行启动延时 $delay 秒后再启动!"
+		sleep $delay && start >/dev/null 2>&1 &
 	else
 		start
 	fi

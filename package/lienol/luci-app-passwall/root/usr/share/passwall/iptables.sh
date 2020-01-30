@@ -187,20 +187,9 @@ filter_vpsip() {
 dns_hijack() {
 	dnshijack=$(config_t_get global dns_53)
 	if [ "$dnshijack" = "1" -o "$1" = "force" ]; then
-		chromecast_nu=$($iptables_nat -L PSW -v -n --line-numbers | grep "dpt:53" | awk '{print $1}')
-		is_right_lanip=$($iptables_nat -L PSW -v -n --line-numbers | grep "dpt:53" | grep "$lanip")
-		if [ -z "$chromecast_nu" ]; then
-			echolog "添加DNS劫持规则..."
-			$iptables_nat -I PSW -i br-lan -p udp --dport 53 -j DNAT --to $lanip 2>/dev/null
-		else
-			if [ -z "$is_right_lanip" ]; then
-				echolog "添加DNS劫持规则..."
-				$iptables_nat -D PSW $chromecast_nu >/dev/null 2>&1 &
-				$iptables_nat -I PSW -i br-lan -p udp --dport 53 -j DNAT --to $lanip 2>/dev/null
-			else
-				echolog "DNS劫持规则已经添加，跳过~" >>$LOG_FILE
-			fi
-		fi
+		echolog "添加DNS劫持规则..."
+		$iptables_nat -I PSW -p udp --dport 53 -j REDIRECT --to-ports 53
+		$iptables_nat -I PSW -p tcp --dport 53 -j REDIRECT --to-ports 53
 	fi
 }
 

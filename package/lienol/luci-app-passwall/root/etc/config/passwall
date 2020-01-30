@@ -18,18 +18,13 @@ config global_haproxy
 config global_delay
 	option auto_on '0'
 	option start_daemon '0'
-	option start_delay '20'
+	option start_delay '1'
 
 config global_forwarding
-	option udp_redir_ports '1:65535'
-	option tcp_redir_ports '1:65535'
 	option process '1'
-
-config global_proxy
-	option tcp_redir_port '1041'
-	option udp_redir_port '1051'
-	option socks5_proxy_port '1061'
-	option kcptun_port '11183'
+	option tcp_redir_ports '1:65535'
+	option udp_redir_ports '1:65535'
+	option socks5_proxy_port '1081'
 	option proxy_ipv6 '0'
 	
 config global_other
