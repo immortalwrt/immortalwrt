@@ -1,13 +1,13 @@
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index d17045a..9e1be8b 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -924,2 +924,4 @@
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+--- a/arch/arm/dts/Makefile	2019-11-05 02:12:02.183543000 +0800
++++ a/arch/arm/dts/Makefile	2019-11-05 10:48:17.483563700 +0800
+@@ -365,2 +365,4 @@
  	sun8i-h3-nanopi-neo.dtb \
 +	sun8i-h3-nanopi-duo2.dtb \
 +	sun8i-h3-nanopi-r1.dtb \
- 	sun8i-h3-nanopi-neo-air.dtb \
-diff --git a/arch/arm/boot/dts/sun8i-h3-nanopi-r1.dts b/arch/arm/boot/dts/sun8i-h3-nanopi-r1.dts
+ 	sun8i-h3-nanopi-neo-air.dtb
+diff --git a/arch/arm/dts/sun8i-h3-nanopi-r1.dts b/arch/arm/dts/sun8i-h3-nanopi-r1.dts
 new file mode 100644
 index 0000000..9f33f6f
 --- /dev/null
@@ -148,7 +148,7 @@ new file mode 100644
 index 0000000..1e51018
 --- /dev/null
 +++ b/configs/nanopi_duo2_defconfig
-@@ -0,0 +1,21 @@	@@ -0,0 +1,126 @@
+@@ -0,0 +1,21 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
 +CONFIG_SYS_TEXT_BASE=0x4a000000
@@ -158,7 +158,7 @@ index 0000000..1e51018
 +CONFIG_DRAM_ZQ=3881979
 +CONFIG_DRAM_ODT_EN=y
 +# CONFIG_VIDEO_DE2 is not set
-+CONFIG_DEVEL=y
++CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-nanopi-duo2"
 +# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
 +CONFIG_CONSOLE_MUX=y
 +CONFIG_SPL=y
@@ -170,11 +170,11 @@ index 0000000..1e51018
 +CONFIG_SUN8I_EMAC=y
 +CONFIG_USB_EHCI_HCD=y
 +CONFIG_SYS_USB_EVENT_POLL_VIA_INT_QUEUE=y
-diff --git a/arch/arm/boot/dts/sun8i-h3-nanopi-duo2.dts b/arch/arm/boot/dts/sun8i-h3-nanopi-duo2.dts
+diff --git a/arch/arm/dts/sun8i-h3-nanopi-duo2.dts b/arch/arm/dts/sun8i-h3-nanopi-duo2.dts
 new file mode 100644
 index 0000000..b6afe20
 --- /dev/null
-+++ b/arch/arm/boot/dts/sun8i-h3-nanopi-duo2.dts
++++ b/arch/arm/dts/sun8i-h3-nanopi-duo2.dts
 @@ -0,0 +1,98 @@
 +/*
 + * adapted by Igor Pecovnik igor@armbian.com
