@@ -39,6 +39,10 @@ case "$FIRMWARE" in
 	openmesh,a62)
 		caldata_extract "0:ART" 0x9000 0x2f20
 		;;
+	p2w,r619ac |\
+	p2w,r619ac-128m)
+		ath10kcal_extract "ART" 36864 12064
+		;;
 	esac
 	;;
 "ath10k/pre-cal-ahb-a000000.wifi.bin")
@@ -49,6 +53,8 @@ case "$FIRMWARE" in
 	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
 	linksys,ea6350v3 |\
+	p2w,r619ac |\
+	p2w,r619ac-128m |\
 	qcom,ap-dk01.1-c1)
 		caldata_extract "ART" 0x1000 0x2f20
 		;;
@@ -128,6 +134,8 @@ case "$FIRMWARE" in
 	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
 	linksys,ea6350v3 |\
+	p2w,r619ac |\
+	p2w,r619ac-128m |\
 	qcom,ap-dk01.1-c1)
 		caldata_extract "ART" 0x5000 0x2f20
 		;;
