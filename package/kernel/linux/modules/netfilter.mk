@@ -467,7 +467,7 @@ define KernelPackage/ipt-cgroup
   DEPENDS:= kmod-ipt-core
 endef
 
-define KernelPackage/ipt-cgroup
+define KernelPackage/ipt-cgroup/description
  Kernel support for cgroup netfilter module
  Include:
  - cgroup
