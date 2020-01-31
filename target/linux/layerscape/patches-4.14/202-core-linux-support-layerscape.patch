@@ -539,7 +539,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2344,7 +2344,8 @@ int register_netdevice_notifier(struct n
+@@ -2349,7 +2349,8 @@ int register_netdevice_notifier(struct n
  int unregister_netdevice_notifier(struct notifier_block *nb);
  
  struct netdev_notifier_info {
@@ -549,7 +549,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  };
  
  struct netdev_notifier_info_ext {
-@@ -2376,6 +2377,7 @@ static inline void netdev_notifier_info_
+@@ -2381,6 +2382,7 @@ static inline void netdev_notifier_info_
  					     struct net_device *dev)
  {
  	info->dev = dev;
@@ -557,7 +557,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  }
  
  static inline struct net_device *
-@@ -2384,6 +2386,12 @@ netdev_notifier_info_to_dev(const struct
+@@ -2389,6 +2391,12 @@ netdev_notifier_info_to_dev(const struct
  	return info->dev;
  }
  
@@ -580,7 +580,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  void  __kfree_skb(struct sk_buff *skb);
  extern struct kmem_cache *skbuff_head_cache;
  
-@@ -3313,6 +3314,7 @@ static inline void skb_free_datagram_loc
+@@ -3315,6 +3316,7 @@ static inline void skb_free_datagram_loc
  }
  int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags);
  int skb_copy_bits(const struct sk_buff *skb, int offset, void *to, int len);

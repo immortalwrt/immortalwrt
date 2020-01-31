@@ -187,7 +187,7 @@ define KernelPackage/fb-tft
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Support for small TFT LCD display modules
   DEPENDS:= \
-	  @GPIO_SUPPORT @!LINUX_4_9 +kmod-backlight \
+	  @GPIO_SUPPORT +kmod-backlight \
 	  +kmod-fb +kmod-fb-sys-fops +kmod-fb-sys-ram +kmod-spi-bitbang
   KCONFIG:= \
        CONFIG_FB_BACKLIGHT=y \
@@ -447,7 +447,7 @@ define KernelPackage/video-videobuf2
 	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-v4l2.ko@ge4.16 \
 	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-memops.ko@ge4.16 \
 	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-vmalloc.ko@ge4.16
-  AUTOLOAD:=$(call AutoLoad,65,videobuf2-core videobuf-v4l2@ge4.4 videobuf2-memops videobuf2-vmalloc)
+  AUTOLOAD:=$(call AutoLoad,65,videobuf2-core videobuf-v4l2 videobuf2-memops videobuf2-vmalloc)
   $(call AddDepends/video)
 endef
 
@@ -511,7 +511,7 @@ $(eval $(call KernelPackage,video-uvc))
 define KernelPackage/video-gspca-core
   MENU:=1
   TITLE:=GSPCA webcam core support framework
-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-input-core +LINUX_4_19:kmod-video-videobuf2
+  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-input-core +!LINUX_4_14:kmod-video-videobuf2
   KCONFIG:=CONFIG_USB_GSPCA
   FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_main.ko
   AUTOLOAD:=$(call AutoProbe,gspca_main)

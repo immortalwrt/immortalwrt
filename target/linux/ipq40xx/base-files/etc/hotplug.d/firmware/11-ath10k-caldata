@@ -46,10 +46,16 @@ case "$FIRMWARE" in
 	8dev,jalapeno |\
 	alfa-network,ap120c-ac |\
 	cilab,meshpoint-one |\
+	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
 	linksys,ea6350v3 |\
 	qcom,ap-dk01.1-c1)
 		caldata_extract "ART" 0x1000 0x2f20
+		;;
+	aruba,ap-303 |\
+	aruba,ap-303h)
+		caldata_extract "ART" 0x1000 0x2f20
+		ath10k_patch_mac $(mtd_get_mac_binary mfginfo 0x1D)
 		;;
 	asus,map-ac2200)
 		caldata_extract_ubi "Factory" 0x1000 0x2f20
@@ -81,6 +87,14 @@ case "$FIRMWARE" in
 	unielec,u4019-32m)
 		caldata_extract "0:ART" 0x1000 0x2f20
 		;;
+	dlink,dap-2610)
+		caldata_extract "ART" 0x1000 0x2f20
+		ath10k_patch_mac $(mtd_get_mac_ascii bdcfg wlanmac)
+		;;
+	engenius,emd1)
+		caldata_extract "0:ART" 0x1000 0x2f20
+		ath10k_patch_mac $(mtd_get_mac_ascii 0:APPSBLENV wlanaddr)
+		;;
 	engenius,ens620ext)
 		caldata_extract "ART" 0x1000 0x2f20
 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +2)
@@ -111,10 +125,16 @@ case "$FIRMWARE" in
 	8dev,jalapeno |\
 	alfa-network,ap120c-ac |\
 	cilab,meshpoint-one |\
+	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
 	linksys,ea6350v3 |\
 	qcom,ap-dk01.1-c1)
 		caldata_extract "ART" 0x5000 0x2f20
+		;;
+	aruba,ap-303 |\
+	aruba,ap-303h)
+		caldata_extract "ART" 0x5000 0x2f20
+		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary mfginfo 0x1D) +1)
 		;;
 	asus,map-ac2200)
 		caldata_extract_ubi "Factory" 0x5000 0x2f20
@@ -145,6 +165,14 @@ case "$FIRMWARE" in
 	qxwlan,e2600ac-c2 |\
 	unielec,u4019-32m)
 		caldata_extract "0:ART" 0x5000 0x2f20
+		;;
+	dlink,dap-2610)
+		caldata_extract "ART" 0x5000 0x2f20
+		ath10k_patch_mac $(mtd_get_mac_ascii bdcfg wlanmac_a)
+		;;
+	engenius,emd1)
+		caldata_extract "0:ART" 0x5000 0x2f20
+		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_ascii 0:APPSBLENV wlanaddr) +1)
 		;;
 	engenius,ens620ext)
 		caldata_extract "ART" 0x5000 0x2f20

@@ -17,10 +17,8 @@ define KernelPackage/iio-core
 	CONFIG_IIO_TRIGGERED_BUFFER
   FILES:= \
 	$(LINUX_DIR)/drivers/iio/industrialio.ko \
-	$(if $(CONFIG_IIO_TRIGGERED_BUFFER),$(LINUX_DIR)/drivers/iio/industrialio-triggered-buffer.ko@lt4.4) \
-	$(if $(CONFIG_IIO_TRIGGERED_BUFFER),$(LINUX_DIR)/drivers/iio/buffer/industrialio-triggered-buffer.ko@ge4.4) \
-	$(LINUX_DIR)/drivers/iio/kfifo_buf.ko@lt4.4 \
-	$(LINUX_DIR)/drivers/iio/buffer/kfifo_buf.ko@ge4.4
+	$(if $(CONFIG_IIO_TRIGGERED_BUFFER),$(LINUX_DIR)/drivers/iio/buffer/industrialio-triggered-buffer.ko) \
+	$(LINUX_DIR)/drivers/iio/buffer/kfifo_buf.ko
   AUTOLOAD:=$(call AutoLoad,55,industrialio kfifo_buf industrialio-triggered-buffer)
 endef
 
@@ -133,7 +131,7 @@ $(eval $(call KernelPackage,iio-dht11))
 define KernelPackage/iio-bme680
   SUBMENU:=$(IIO_MENU)
   TITLE:=BME680 gas/humidity/pressure/temperature sensor
-  DEPENDS:=@LINUX_4_19 +kmod-iio-core +kmod-regmap-core
+  DEPENDS:=@!LINUX_4_14 +kmod-iio-core +kmod-regmap-core
   KCONFIG:=CONFIG_BME680
   FILES:=$(LINUX_DIR)/drivers/iio/chemical/bme680_core.ko
 endef

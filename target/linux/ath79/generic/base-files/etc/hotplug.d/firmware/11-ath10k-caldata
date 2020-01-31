@@ -4,6 +4,7 @@
 
 . /lib/functions/caldata.sh
 . /lib/functions/k2t.sh
+. /lib/functions/mikrotik-caldata.sh
 
 board=$(board_name)
 
@@ -64,6 +65,9 @@ case "$FIRMWARE" in
 		caldata_extract "art" 0x5000 0x844
 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary art 0x0) +2)
 		;;
+	mikrotik,routerboard-wap-g-5hact2hnd)
+		mikrotik_caldata_extract "art" 0x5000 0x844
+		;;
 	nec,wg800hp)
 		caldata_extract "art" 0x5000 0x844
 		ath10k_patch_mac $(mtd_get_mac_text board_data 0x880)
@@ -110,6 +114,10 @@ case "$FIRMWARE" in
 	tplink,re450-v2)
 		caldata_extract "art" 0x5000 0x844
 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary info 0x8) +1)
+		;;
+	tplink,tl-wr902ac-v1)
+		caldata_extract "art" 0x5000 0x844
+		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary tplink 0x8) -1)
 		;;
 	esac
 	;;

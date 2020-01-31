@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=w1-gpio-custom
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/w1-gpio-custom
   SUBMENU:=W1 support
   TITLE:=Custom GPIO-based 1-wire device
-  DEPENDS:=kmod-w1 +kmod-w1-master-gpio @!LINUX_4_19
+  DEPENDS:=kmod-w1 +kmod-w1-master-gpio @LINUX_4_14
   FILES:=$(PKG_BUILD_DIR)/w1-gpio-custom.ko
   KCONFIG:=
 endef
