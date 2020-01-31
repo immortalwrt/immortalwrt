@@ -460,11 +460,17 @@ $(eval $(call KernelPackage,ipt-nat))
 
 define KernelPackage/ipt-cgroup
   SUBMENU:=$(NF_MENU)
-  TITLE:=cgroup
+  TITLE:=cgroup netfilter module
   KCONFIG:=$(KCONFIG_IPT_CGROUP)
   FILES:=$(LINUX_DIR)/net/netfilter/*cgroup*.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_CGROUP-m)))
   DEPENDS:= kmod-ipt-core
+endef
+
+define KernelPackage/ipt-cgroup
+ Kernel support for cgroup netfilter module
+ Include:
+ - cgroup
 endef
 
 $(eval $(call KernelPackage,ipt-cgroup))

@@ -171,7 +171,7 @@ endef
 
 define Package/iptables-mod-cgroup
 $(call Package/iptables/Module, +kmod-ipt-cgroup)
-  TITLE:=cgroup support
+  TITLE:=cgroup extension
   endef
 
 define Package/iptables-mod-cgroup/description
