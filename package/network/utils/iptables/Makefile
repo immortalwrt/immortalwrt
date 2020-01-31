@@ -169,6 +169,19 @@ Includes support for:
 
 endef
 
+define Package/iptables-mod-cgroup
+$(call Package/iptables/Module, +kmod-ipt-cgroup)
+  TITLE:=cgroup support
+  endef
+
+define Package/iptables-mod-cgroup/description
+iptables extension for cgroup support.
+
+ Matches:
+   - cgroup
+
+endef
+
 define Package/iptables-mod-imq
 $(call Package/iptables/Module, +kmod-ipt-imq)
   TITLE:=IMQ support
@@ -711,6 +724,7 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
 $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
 $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
+$(eval $(call BuildPlugin,iptables-mod-cgroup,$(IPT_CGROUP-m)))
 $(eval $(call BuildPlugin,iptables-mod-imq,$(IPT_IMQ-m)))
 $(eval $(call BuildPlugin,iptables-mod-bandwidth,$(IPT_BANDWIDTH-m)))
 $(eval $(call BuildPlugin,iptables-mod-timerange,$(IPT_TIMERANGE-m)))

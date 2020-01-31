@@ -150,6 +150,9 @@ $(eval $(call nf_add,IPT_IPSEC,CONFIG_NETFILTER_XT_MATCH_POLICY, $(P_XT)xt_polic
 # flow offload support
 $(eval $(call nf_add,IPT_FLOW,CONFIG_NETFILTER_XT_TARGET_FLOWOFFLOAD, $(P_XT)xt_FLOWOFFLOAD))
 
+# cgroup
+$(eval $(call nf_add,IPT_CGROUP,CONFIG_NETFILTER_XT_MATCH_CGROUP, $(P_XT)xt_cgroup))
+
 # IPv6
 
 # kernel only

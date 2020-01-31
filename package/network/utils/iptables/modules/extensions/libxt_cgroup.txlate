@@ -1,0 +1,5 @@
+iptables-translate -t filter -A INPUT -m cgroup --cgroup 0 -j ACCEPT
+nft add rule ip filter INPUT meta cgroup 0 counter accept
+
+iptables-translate -t filter -A INPUT -m cgroup ! --cgroup 0 -j ACCEPT
+nft add rule ip filter INPUT meta cgroup != 0 counter accept
