@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openwrt-frpc
-PKG_VERSION:=0.29.1
+PKG_VERSION:=0.31.1
 PKG_RELEASE:=1
 
 ifeq ($(ARCH),mipsel)

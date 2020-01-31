@@ -23,9 +23,4 @@ e=t:option(DummyValue,"opennewwindow" ,
 	translate("<input type=\"button\" class=\"cbi-button cbi-button-apply\" value=\"Zerotier.com\" onclick=\"window.open('https://my.zerotier.com/network')\" />"))
 e.description = translate("Create or manage your zerotier network, and auth clients who could access")
 
-local apply = luci.http.formvalue("cbi.apply")
-if apply then
-	io.popen("/etc/init.d/zerotier restart")
-end
-
 return a
