@@ -1,0 +1,174 @@
+#!/bin/sh /etc/rc.common
+# Created By [CTCGFW]Project OpenWRT
+# https://github.com/project-openwrt
+
+START=80
+STOP=10
+
+lan_addr="$(uci get network.lan.ipaddr)"
+
+enable="$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable)"
+
+music_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_source)"
+qq_cookie="$(uci get unblockneteasemusic.@unblockneteasemusic[0].qq_cookie 2>"/dev/null")"
+youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2>"/dev/null")"
+
+endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url)"
+hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
+
+auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
+update_time="$(uci get unblockneteasemusic.@unblockneteasemusic[0].update_time)"
+
+http_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].http_port 2>"/dev/null" || echo "5200")"
+https_port="$(uci get unblockneteasemusic.@unblockneteasemusic[0].https_port 2>"/dev/null" || echo "5201")"
+
+keep_core_when_upgrade="$(uci get unblockneteasemusic.@unblockneteasemusic[0].keep_core_when_upgrade 2>"/dev/null")"
+[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>"/dev/null")*" = "*1*" ] && addr="0.0.0.0" || addr="${lan_addr}"
+[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].strict_mode 2>"/dev/null")*" = "*1*" ] && strict_mode="-s"
+
+netease_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].netease_server_ip 2>"/dev/null")"
+[ -n "${netease_server_ip}" ] && netease_server_ip="-f ${netease_server_ip}"
+proxy_server_ip="$(uci get unblockneteasemusic.@unblockneteasemusic[0].proxy_server_ip 2>"/dev/null")"
+[ -n "${proxy_server_ip}" ] && proxy_server_ip="-u ${proxy_server_ip}"
+
+set_ipset(){
+	if [ "${set_type}" = "start" ]; then
+		mkdir -p "/tmp/dnsmasq.d"
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac
+ipset=/.music.163.com/music
+ipset=/interface.music.163.com/music
+ipset=/interface3.music.163.com/music
+ipset=/apm.music.163.com/music
+ipset=/apm3.music.163.com/music
+		EOF
+		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+
+		if ! ipset list music > "/dev/null"; then ipset create music hash:ip; fi
+		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |bash > "/dev/null" 2>&1
+		iptables -t nat -N cloud_music
+		iptables -t nat -A cloud_music -d 0.0.0.0/8 -j RETURN
+		iptables -t nat -A cloud_music -d 10.0.0.0/8 -j RETURN
+		iptables -t nat -A cloud_music -d 127.0.0.0/8 -j RETURN
+		iptables -t nat -A cloud_music -d 169.254.0.0/16 -j RETURN
+		iptables -t nat -A cloud_music -d 172.16.0.0/12 -j RETURN
+		iptables -t nat -A cloud_music -d 192.168.0.0/16 -j RETURN
+		iptables -t nat -A cloud_music -d 224.0.0.0/4 -j RETURN
+		iptables -t nat -A cloud_music -d 240.0.0.0/4 -j RETURN
+		iptables -t nat -A cloud_music -p tcp --dport 80 -j REDIRECT --to-ports "${http_port}"
+		iptables -t nat -A cloud_music -p tcp --dport 443 -j REDIRECT --to-ports "${https_port}"
+		iptables -t nat -I PREROUTING -p tcp -m set --match-set music dst -j cloud_music
+
+		mkdir -p /var/etc
+		echo -e "/etc/init.d/unblockneteasemusic restart" > "/var/etc/unblockneteasemusic.include"
+	elif [ "${set_type}" = "stop" ]; then
+		iptables -t nat -D PREROUTING -p tcp -m set --match-set music dst -j cloud_music
+		iptables -t nat -F cloud_music
+		iptables -t nat -X cloud_music
+		ipset destroy music
+
+		echo "" > "/var/etc/unblockneteasemusic.include"
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+	fi
+}
+
+set_hosts(){
+	if [ "${set_type}" = "start" ]; then
+		mkdir -p "/tmp/dnsmasq.d"
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		cat <<-EOF > "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+dhcp-option=252,http://${lan_addr}:${http_port}/proxy.pac
+address=/music.163.com/${lan_addr}
+address=/interface.music.163.com/${lan_addr}
+address=/interface3.music.163.com/${lan_addr}
+address=/apm.music.163.com/${lan_addr}
+address=/apm3.music.163.com/${lan_addr}
+address=/music.httpdns.c.163.com/0.0.0.0
+		EOF
+		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+
+		ip route add 223.252.199.10 dev lo
+	elif [ "${set_type}" = "stop" ]; then
+		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
+		/etc/init.d/dnsmasq restart > "/dev/null" 2>&1
+
+		ip route del 223.252.199.10
+	fi
+}
+
+set_ports(){
+	if [ "${set_type}" = "start" ]; then
+		iptables -I INPUT -p tcp --dport "${http_port}" -j ACCEPT
+		iptables -I INPUT -p tcp --dport "${https_port}" -j ACCEPT
+
+		mkdir -p /var/etc
+		echo -e "/etc/init.d/unblockneteasemusic restart" > "/var/etc/unblockneteasemusic.include"
+	elif [ "${set_type}" = "stop" ]; then
+		iptables -D INPUT -p tcp --dport "${http_port}" -j ACCEPT
+		iptables -D INPUT -p tcp --dport "${https_port}" -j ACCEPT
+
+		echo "" > "/var/etc/unblockneteasemusic.include"
+	fi
+}
+
+start()
+{
+	stop
+
+	[ "${enable}" -ne "1" ] && exit 0
+
+	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && rm -f "/usr/share/unblockneteasemusic/local_ver" && bash "/usr/share/unblockneteasemusic/update_core.sh"
+	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && echo "Core Not Found, please download it before starting." >> "/tmp/unblockneteasemusic.log" && exit 1
+
+	if [ "${music_source}" = "qq" ];then
+		[ -z "${qq_cookie}" ] && echo "QQ cookie is not exsit, please enter it before starting." && exit 1
+		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/provider/qq.js")"
+		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/provider/qq.js"
+		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/provider/qq.js"
+	elif [ "${music_source}" = "youtube" ];then
+		[ -z "${youtube_key}" ] && echo "Youtube API Key is not exsit, please enter it before starting." && exit 1
+		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/provider/youtube.js"
+		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/provider/youtube.js"
+	fi
+
+	[ "${hijack_ways}" = "use_hosts" ] && { http_port="80"; https_port="443"; }
+	if [ "${music_source}" = "default" ]; then
+		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" -e "${endpoint_url}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
+	else
+		nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" -o "${music_source}" -e "${endpoint_url}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/unblockneteasemusic.log" 2>&1 &
+	fi
+
+	set_type="start"
+	if [ "${hijack_ways}" = "use_ipset" ]; then
+		set_ipset > "/dev/null" 2>&1
+	elif [ "${hijack_ways}" = "use_hosts" ]; then
+		set_hosts > "/dev/null" 2>&1
+	fi
+
+	[ "*$(uci get unblockneteasemusic.@unblockneteasemusic[0].pub_access 2>"/dev/null")*" = "*1*" ] && set_ports > "/dev/null" 2>&1
+
+	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
+	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/unblockneteasemusic/update_core.sh" >> "/etc/crontabs/root"
+	echo "*/5 * * * * /usr/share/unblockneteasemusic/log_check.sh" >> "/etc/crontabs/root"
+	/etc/init.d/cron restart > "/dev/null" 2>&1
+}
+
+stop()
+{
+	{ ps |grep "unblockneteasemusic" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } > "/dev/null" 2>&1
+
+	sed -i '/unblockneteasemusic/d' "/etc/crontabs/root"
+	/etc/init.d/cron restart > "/dev/null" 2>&1
+
+	sed -i '/unblockneteasemusic/d' "/etc/sysupgrade.conf"
+	[ "${keep_core_when_upgrade}" -eq 1 ] && { echo "/usr/share/unblockneteasemusic/core/" >> "/etc/sysupgrade.conf"; echo "/usr/share/unblockneteasemusic/local_ver" >> "/etc/sysupgrade.conf"; }
+
+	rm -f "/tmp/unblockneteasemusic.log"
+
+	set_type="stop"
+	set_ipset > "/dev/null" 2>&1
+	set_hosts > "/dev/null" 2>&1
+	set_ports > "/dev/null" 2>&1
+}

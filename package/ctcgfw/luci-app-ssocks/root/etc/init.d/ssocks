@@ -1,0 +1,40 @@
+#!/bin/sh /etc/rc.common
+# Created By [CTCGFW]Project OpenWRT
+# https://github.com/project-openwrt
+
+START=99
+STOP=10
+
+enable="$(uci get ssocks.@ssocks[0].enable)"
+bind_addr="$(uci get ssocks.@ssocks[0].bind_addr)"
+listen_port="$(uci get ssocks.@ssocks[0].listen_port)"
+username="$(uci get ssocks.@ssocks[0].username)"
+password="$(uci get ssocks.@ssocks[0].password)"
+lan_addr="$(uci get network.lan.ipaddr)"
+
+start()
+{
+	stop
+	[ "${enable}" -eq "0" ] && exit 0
+
+	mkdir -p "/tmp/"
+	mkdir -p "/var/etc/"
+	[ "${bind_addr}" == "lan" ] && bind_address="${lan_addr}" || bind_address="0.0.0.0"
+	if [ -n "${username}" ] && [ -n "${password}" ]; then
+		rm -f /etc/config/ssocks-authorization
+		echo "${username}:${password}" > /etc/config/ssocks-authorization
+		auth_arg="--auth /etc/config/ssocks-authorization"
+	fi
+	/usr/bin/ssocks --port "${listen_port}" --bind "${bind_address}" ${auth_arg} >/dev/null 2>&1 &
+	iptables -I INPUT -p tcp --dport "${listen_port}" -j ACCEPT
+	cat <<-EOF > "/var/etc/ssocks.include"
+iptables -I INPUT -p tcp --dport "${listen_port}" -j ACCEPT
+	EOF
+}
+
+stop()
+{
+	killall -9 ssocks >/dev/null 2>&1
+	rm -f "/etc/config/ssocks-authorization"
+	rm -f "/var/etc/ssocks.include"
+}

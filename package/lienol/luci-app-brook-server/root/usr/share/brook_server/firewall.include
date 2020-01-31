@@ -1,0 +1,25 @@
+#!/bin/sh
+
+. $IPKG_INSTROOT/lib/functions.sh
+. $IPKG_INSTROOT/lib/functions/service.sh
+
+gen_user_iptables() {
+	config_get enable $1 enable
+	[ "$enable" = "0" ] && return 0
+	config_get remarks $1 remarks
+	config_get port $1 port
+	iptables -A BROOK-SERVER -p tcp --dport $port -m comment --comment "$remarks" -j ACCEPT
+	iptables -A BROOK-SERVER -p udp --dport $port -m comment --comment "$remarks" -j ACCEPT
+}
+
+iptables -F BROOK-SERVER 2>/dev/null
+iptables -D INPUT -j BROOK-SERVER 2>/dev/null
+iptables -X BROOK-SERVER 2>/dev/null
+
+enable=$(uci get brook_server.@global[0].enable)
+if [ $enable -eq 1 ]; then
+	iptables -N BROOK-SERVER
+	iptables -I INPUT -j BROOK-SERVER
+	config_load brook_server
+	config_foreach gen_user_iptables "user"
+fi

@@ -1,0 +1,49 @@
+#!/bin/sh /etc/rc.common
+#Author:KyleRicardo
+#Email:shaoyz714@126.com
+
+START=65
+STOP=10
+
+start()
+{
+if [ $(uci get airwhu.@switch[0].enableauth) ] ;
+then
+	local Username=$(uci get airwhu.@auth[0].Username) 
+	local Password=$(uci get airwhu.@auth[0].Password) 
+	local ifname=$(uci get airwhu.@auth[0].ifname) 
+	local IP=$(uci get airwhu.@auth[0].IP) 
+	local Mask=$(uci get airwhu.@auth[0].Mask) 
+	local Gateway=$(uci get airwhu.@auth[0].Gateway) 
+	local DNS=$(uci get airwhu.@auth[0].DNS) 
+	local PingHost=$(uci get airwhu.@auth[0].PingHost) 
+	local Timeout=$(uci get airwhu.@auth[0].Timeout) 
+	local EchoInterval=$(uci get airwhu.@auth[0].EchoInterval) 
+	local RestartWait=$(uci get airwhu.@auth[0].RestartWait) 
+	local MaxFail=$(uci get airwhu.@auth[0].MaxFail) 
+	local StartMode=$(uci get airwhu.@auth[0].StartMode) 
+	local DHCPMode=$(uci get airwhu.@auth[0].DHCPMode) 
+	local DaemonMode=$(uci get airwhu.@auth[0].DaemonMode) 
+	local ShowNotify=$(uci get airwhu.@auth[0].ShowNotify) 
+	local Version=$(uci get airwhu.@auth[0].Version) 
+	local DataFile=$(uci get airwhu.@auth[0].DataFile) 
+	local DHCPScript=$(uci get airwhu.@auth[0].DHCPScript) 
+	mentohust -u$Username -p$Password -n$ifname -b$DaemonMode -a$StartMode -d$DaemonMode -c"$DHCPScript" -w>/dev/null 2>&1
+	#Temporarily designed only for whu. To be continued...
+else
+	stop
+fi
+
+}
+
+stop()
+{
+	sync
+	mentohust -k >/dev/null 2>&1
+}
+
+restart()
+{
+	stop
+	start
+}

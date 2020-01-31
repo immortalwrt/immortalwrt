@@ -1,0 +1,68 @@
+msgid "Trojan Server"
+msgstr "Trojan 服务器"
+
+msgid "Global Settings"
+msgstr "全局设置"
+
+msgid "Server Config"
+msgstr "服务器配置"
+
+msgid "Users Manager"
+msgstr "用户管理"
+
+msgid "Remarks"
+msgstr "备注"
+
+msgid "Port"
+msgstr "端口"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "TCP Fast Open"
+msgstr "TCP快速打开"
+
+msgid "Enable TCP fast open (kernel support required)"
+msgstr "是否启用TCP快速打开（需要内核支持）"
+
+msgid "Enable Remote"
+msgstr "启用转发"
+
+msgid "You can forward to Nginx/Caddy/V2ray WebSocket and more."
+msgstr "您可以转发到Nginx/Caddy/V2ray WebSocket等。"
+
+msgid "Remote Address"
+msgstr "远程地址"
+
+msgid "Remote Port"
+msgstr "远程端口"
+
+msgid "as:"
+msgstr "如："
+
+msgid "Public key absolute path"
+msgstr "公钥文件绝对路径"
+
+msgid "Private key absolute path"
+msgstr "私钥文件绝对路径"
+
+msgid "Logs"
+msgstr "日志"
+
+msgid "Clear logs"
+msgstr "清空日志"
+
+msgid "Enabled"
+msgstr "启用"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Current Condition"
+msgstr "当前状态"
+
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+msgid "RUNNING"
+msgstr "运行中"

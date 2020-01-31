@@ -1,0 +1,31 @@
+<%
+local dsp = require "luci.dispatcher"
+-%>
+
+<script type="text/javascript">
+	//<![CDATA[
+	var pings = document.getElementsByClassName('ping');
+	for(var i = 0; i < pings.length; i++) {
+		XHR.get('<%=luci.dispatcher.build_url("admin", "services", "clash", "ping")%>',{
+		
+				index: i,
+				domain: pings[i].getAttribute("hint")
+			},
+			function(x, result) {
+				pings[result.index].innerHTML = (result.ping ? '<b><font color="green">'+result.ping+'</font></b> ms' : '<b><font color="red"><%:Error%></font></b>');
+			}
+		);
+		
+		XHR.poll(10,'<%=luci.dispatcher.build_url("admin", "services", "clash", "ping")%>',{
+		
+				index: i,
+				domain: pings[i].getAttribute("hint")
+			},
+			function(x, result) {
+				pings[result.index].innerHTML = (result.ping ? '<b><font color="green">'+result.ping+'</font></b> ms' : '<b><font color="red"><%:Error%></font></b>');
+			}
+		);
+	}
+	//]]>
+</script>
+ 

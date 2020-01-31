@@ -1,0 +1,45 @@
+
+config global
+	option enable '0'
+
+config user
+	option enable '1'
+	option remarks '备注222'
+	option bind_local '0'
+	option protocol 'vmess'
+	list VMess_id 'fd00927a-b0c2-4629-aef7-d9ff15a9d722'
+	option VMess_alterId '16'
+	option VMess_level '1'
+	option transport 'tcp'
+	option tcp_guise 'none'
+	option port '12366'
+
+config user
+	option enable '1'
+	option remarks 'WebsocketDemo'
+	option bind_local '0'
+	option protocol 'vmess'
+	option VMess_alterId '16'
+	option VMess_level '1'
+	list VMess_id 'fd00927a-b0c2-4629-aef7-d9ff15a9d722'
+	option transport 'ws'
+	option ws_path '/websocket'
+	option tls_enable '1'
+	option tls_certificateFile '/etc/config/ssl/fullchain.pem'
+	option tls_keyFile '/etc/config/ssl/private.key'
+	option port '30010'
+
+config user
+	option enable '1'
+	option remarks 'H2Demo'
+	option bind_local '0'
+	option protocol 'vmess'
+	option VMess_alterId '16'
+	option VMess_level '1'
+	list VMess_id 'fd00927a-b0c2-4629-aef7-d9ff15a9d722'
+	option tls_enable '1'
+	option tls_certificateFile '/etc/config/ssl/fullchain.pem'
+	option tls_keyFile '/etc/config/ssl/private.key'
+	option transport 'h2'
+	option h2_path '/h2'
+	option port '30011'

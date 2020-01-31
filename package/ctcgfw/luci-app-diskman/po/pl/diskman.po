@@ -1,0 +1,128 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "DiskMan"
+msgstr "Menadżer dysków"
+
+msgid "Manage Disks over LuCI."
+msgstr "Zarządzaj dyskami przez LuCI."
+
+msgid "Rescan Disks"
+msgstr "Skanuj dyski"
+
+msgid "Disks"
+msgstr "Dyski"
+
+msgid "Path"
+msgstr "Ścieżka"
+
+msgid "Serial Number"
+msgstr "Numer seryjny"
+
+msgid "Temp"
+msgstr "Temperatura"
+
+msgid "Partition Table"
+msgstr "Tablica partycji"
+
+msgid "SATA Version"
+msgstr "Wersja SATA"
+
+msgid "Health"
+msgstr "Kondycja"
+
+msgid "File System"
+msgstr "System plików"
+
+msgid "Mount Options"
+msgstr "Opcje montowania"
+
+msgid "Mount"
+msgstr "Montuj"
+
+msgid "Umount"
+msgstr "Odmontuj"
+
+msgid "Eject"
+msgstr "Wysuń"
+
+msgid "New"
+msgstr "Nowa"
+
+msgid "Remove"
+msgstr "Wysuń"
+
+msgid "Format"
+msgstr "Formatuj"
+
+msgid "Start Sector"
+msgstr "Sektor początkowy"
+
+msgid "End Sector"
+msgstr "Sektor końcowy"
+
+msgid "Useage"
+msgstr "Użycie"
+
+msgid "Model"
+msgstr "Model urządzenia"
+
+msgid "Size"
+msgstr "Rozmiar"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Mount Point"
+msgstr "Punkt montowania"
+
+msgid "Sector Size"
+msgstr "Rozmiar sektora"
+
+msgid "Rotation Rate"
+msgstr "Obroty"
+
+msgid "RAID Devices"
+msgstr "Urządzenia RAID"
+
+msgid "RAID mode"
+msgstr "Tryb RAID"
+
+msgid "Members"
+msgstr "Członkowie"
+
+msgid "Active"
+msgstr "Aktywny"
+
+msgid "RAID Creation"
+msgstr "Kreator RAID"
+
+msgid "Raid Name"
+msgstr "Nazwa RAID"
+
+msgid "Raid Level"
+msgstr "Poziom RAID"
+
+msgid "Raid Member"
+msgstr "Członek RAID"
+
+msgid "Create Raid"
+msgstr "Utwórz RAID"
+
+msgid "Partition Management"
+msgstr "Menadżer partycji"
+
+msgid "Partition Disk over LuCI."
+msgstr "Zarządzaj partycjami przez LuCI."
+
+msgid "Device Info"
+msgstr "Informacja o urządzeniu"
+
+msgid "Disk Man"
+msgstr "Menadżer dysków"
+
+msgid "Partitions Info"
+msgstr "Informacja o partycjach"
+
+msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
+msgstr "Sektory wyrównywane są do wielokrotności 2048, sektor końcowy można podać jako rozmiar w postaci +size{b,k,m,g,t}"

@@ -1,0 +1,6 @@
+
+config softethervpn5 'config'
+	option vpn_server_enabled '0'
+	option vpn_bridge_enabled '0'
+	option vpn_client_enabled '0'
+

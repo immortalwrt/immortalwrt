@@ -1,0 +1,53 @@
+config clash 'config'
+	option redir_port '7892'
+	option http_port '7890'
+	option socks_port '7891'
+	option mode '0'
+	option tun_mode '0'
+	option enable '0'
+	option dash_port '9090'
+	option dash_pass '123456'
+	option auto_update '0'	
+	option auto_update_time '0'
+	option level 'info'
+	option core '1'
+	option allow_lan 'true'
+	option bind_addr '*'
+	option dnsforwader '1'
+	option subcri 'clash'
+	option cus_list '1'
+	option custom_dns '114.114.114.114'
+	option cusrule '0'
+	option loadservers '1'
+	option loadgroups '1'
+	option dnscache '0'	
+	option config_type '1'
+
+config groups
+	option old_name '❌AdBlock'
+	option old_name_cfg '❌AdBlock'
+	option type 'select'
+	list other_group 'REJECT'
+	option name '❌AdBlock'
+
+config groups
+	option old_name '🖥️AsianTV'
+	option old_name_cfg '🖥️AsianTV'
+	option type 'select'
+	option name '🖥️AsianTV'
+	list other_group 'DIRECT'
+	list other_group '🔑Proxy'
+
+config groups
+	option old_name '📺GlobalTV'
+	option old_name_cfg '📺GlobalTV'
+	option type 'select'
+	option name '📺GlobalTV'
+	list other_group 'ALL'
+
+config groups
+	option type 'select'
+	option name '🔑Proxy'
+	list other_group 'ALL'
+
+

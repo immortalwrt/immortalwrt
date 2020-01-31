@@ -1,0 +1,128 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "DiskMan"
+msgstr "DiskMan磁盘管理"
+
+msgid "Manage Disks over LuCI."
+msgstr "通过LuCI管理磁盘"
+
+msgid "Rescan Disks"
+msgstr "重新扫描磁盘"
+
+msgid "Disks"
+msgstr "磁盘"
+
+msgid "Path"
+msgstr "路径"
+
+msgid "Serial Number"
+msgstr "序列号"
+
+msgid "Temp"
+msgstr "温度"
+
+msgid "Partition Table"
+msgstr "分区表"
+
+msgid "SATA Version"
+msgstr "SATA版本"
+
+msgid "Health"
+msgstr "健康"
+
+msgid "File System"
+msgstr "文件系统"
+
+msgid "Mount Options"
+msgstr "挂载选项"
+
+msgid "Mount"
+msgstr "挂载"
+
+msgid "Umount"
+msgstr "卸载"
+
+msgid "Eject"
+msgstr "弹出"
+
+msgid "New"
+msgstr "创建"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Format"
+msgstr "格式化"
+
+msgid "Start Sector"
+msgstr "起始扇区"
+
+msgid "End Sector"
+msgstr "中止扇区"
+
+msgid "Useage"
+msgstr "使用情况"
+
+msgid "Model"
+msgstr "主机型号"
+
+msgid "Size"
+msgstr "容量"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Mount Point"
+msgstr "挂载点"
+
+msgid "Sector Size"
+msgstr "扇区/物理扇区大小"
+
+msgid "Rotation Rate"
+msgstr "转速"
+
+msgid "RAID Devices"
+msgstr "RAID 设备"
+
+msgid "RAID mode"
+msgstr "RAID 模式"
+
+msgid "Members"
+msgstr "成员"
+
+msgid "Active"
+msgstr "活动"
+
+msgid "RAID Creation"
+msgstr "RAID 创建"
+
+msgid "Raid Name"
+msgstr "RAID 名称"
+
+msgid "Raid Level"
+msgstr "RAID 级别"
+
+msgid "Raid Member"
+msgstr "磁盘阵列成员"
+
+msgid "Create Raid"
+msgstr "创建 RAID"
+
+msgid "Partition Management"
+msgstr "分区管理"
+
+msgid "Partition Disk over LuCI."
+msgstr "通过LuCI分区磁盘。"
+
+msgid "Device Info"
+msgstr "设备信息"
+
+msgid "Disk Man"
+msgstr "DiskMan磁盘管理"
+
+msgid "Partitions Info"
+msgstr "分区信息"
+
+msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
+msgstr "默认2048扇区对齐，【中止扇区】支持 +容量{b,k,m,g,t} 格式，例：+500m +10g +1t"

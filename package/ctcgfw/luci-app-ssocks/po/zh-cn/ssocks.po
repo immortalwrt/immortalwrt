@@ -1,0 +1,44 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Base Setting"
+msgstr "基本设置"
+
+msgid "sSocks Server"
+msgstr "sSocks服务端"
+
+msgid "sSocks Server is a simple, small, and easy-to-use Socks5 server program, but supports TCP on IPv4 only."
+msgstr "sSocks服务端是一个简单、小巧且易于使用的Socks5服务器程序，但它仅支持IPv4上的TCP协议。"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Bind Address"
+msgstr "绑定地址"
+
+msgid "The address that sSocks Server binded."
+msgstr "sSocks服务端所绑定的地址。"
+
+msgid "LAN"
+msgstr "局域网"
+
+msgid "WAN"
+msgstr "广域网"
+
+msgid "Listen Port"
+msgstr "监听端口"
+
+msgid "The port that sSocks Server listened at, don't reuse the port with other program."
+msgstr "sSocks服务端所监听的端口，不可与其他程序共用一个端口。"
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "The authorization username, leave blank to deauthorize."
+msgstr "连接用户名，留空以取消身份验证。"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "The authorization password, leave blank to deauthorize."
+msgstr "连接密码，留空以取消身份验证。"

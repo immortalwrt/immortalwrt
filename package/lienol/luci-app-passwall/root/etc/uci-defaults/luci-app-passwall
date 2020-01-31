@@ -1,0 +1,14 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@passwall[-1]
+	add ucitrack passwall
+	set ucitrack.@passwall[-1].init=passwall
+	commit ucitrack
+EOF
+
+echo "" > /etc/dnsmasq.conf
+killall -q -9 kcptun haproxy shadowsocks-libev shadowsocksr-libev
+/etc/init.d/haproxy disable && /etc/init.d/haproxy stop
+rm -f /tmp/luci-indexcache
+exit 0

@@ -1,0 +1,34 @@
+<script type="text/javascript">//<![CDATA[
+  function show_detail(dev, e) {
+    e.preventDefault()
+    window.open('<%=luci.dispatcher.build_url("admin", "system", "diskman", "smartdetail")%>/' + dev,
+      'newwindow', 'height=480,width=800,top=100,left=200,toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no, status=no')
+  }
+  window.onload = function () {
+    // handle partition table
+    const btn_p_table = document.getElementById("cbid.table.1.p_table")
+    const btn_p_table_raw_index = btn_p_table.selectedIndex
+    const val_name = document.getElementById("cbi-table-1-path").innerText.split('/').pop()
+    btn_p_table.onchange = function () {
+      let btn_p_table_index = btn_p_table.selectedIndex
+      if (btn_p_table_index != btn_p_table_raw_index) {
+        if (confirm("Warnning !! \nTHIS WILL OVERWRITE EXISTING PARTITIONS!! \nModify the partition table?")) {
+          let p_table = btn_p_table.options[btn_p_table_index].value
+          XHR.get('<%=luci.dispatcher.build_url("admin", "system", "diskman", "mk_p_table")%>', { dev: val_name, p_table: p_table }, (x, res) => {
+            if (res.code == 0) {
+              location.reload();
+            }
+          }
+          );
+        }
+        else {
+        }
+      }
+    }
+    // handle smartinfo
+    const url = location.href.split('/')
+    const dev = url[url.length - 1]
+    const btn_smart_detail = document.getElementById("cbi-table-1-health")
+    btn_smart_detail.children[0].onclick = show_detail.bind(this, dev)
+  }
+</script>

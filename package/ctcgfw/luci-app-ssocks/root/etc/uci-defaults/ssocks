@@ -1,0 +1,17 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@ssocks[-1]
+	add ucitrack ssocks
+	set ucitrack.@ssocks[-1].init=ssocks
+	commit ucitrack
+	delete firewall.ssocks
+	set firewall.ssocks=include
+	set firewall.ssocks.type=script
+	set firewall.ssocks.path=/var/etc/ssocks.include
+	set firewall.ssocks.reload=1
+	commit firewall
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

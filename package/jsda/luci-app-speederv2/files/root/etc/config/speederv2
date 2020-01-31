@@ -1,0 +1,14 @@
+
+config general 'general'
+	list server 'nil'
+	option daemon_user 'root'
+
+config servers 'default'
+	option server_port '3333'
+	option listen_port '4096'
+	option fec_str '20:10'
+	option fec_timeout '8'
+	option fec_mode '0'
+	option fec_mtu '1250'
+	option disable_color '1'
+
