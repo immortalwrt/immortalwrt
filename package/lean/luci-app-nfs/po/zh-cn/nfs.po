@@ -13,8 +13,8 @@ msgstr ""
 "Language-Team: \n"
 "X-Generator: Poedit 1.8.1\n"
 
-msgid "NFS"
-msgstr "NFS"
+msgid "NFS Manage"
+msgstr "NFS 管理"
 
 msgid "Shared Directories"
 msgstr "共享目录"
@@ -28,32 +28,17 @@ msgstr "路径"
 msgid "Clients"
 msgstr "允许的客户端"
 
-msgid "Permission"
-msgstr "访问权限"
-
-msgid "anonymous"
-msgstr "匿名访问"
-
-msgid "root"
-msgstr "root"
-
-msgid "full"
-msgstr "全部权限"
-
-msgid "Read-only"
-msgstr "只读"
-
-msgid "Insecure"
-msgstr "禁用安全性"
-
-msgid "Allow external network access"
-msgstr "允许外部网络访问"
-
 msgid "Mounted Points"
-msgstr "已挂载到本地的NFS"
+msgstr "已挂载的目录"
 
-msgid "Host"
-msgstr "主机"
+msgid "source"
+msgstr "源目录"
 
-msgid "Mount On"
+msgid "target"
 msgstr "挂载到"
+
+msgid "options"
+msgstr "选项"
+
+msgid "delay"
+msgstr "延迟时间"
