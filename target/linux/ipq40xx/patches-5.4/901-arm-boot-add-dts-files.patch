@@ -5,12 +5,12 @@ Subject: [PATCH] arm: boot: add dts files
 
 Signed-off-by: John Crispin <john@phrozen.org>
 ---
- arch/arm/boot/dts/Makefile | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ arch/arm/boot/dts/Makefile | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -837,11 +837,46 @@ dtb-$(CONFIG_ARCH_QCOM) += \
+@@ -837,11 +837,47 @@ dtb-$(CONFIG_ARCH_QCOM) += \
  	qcom-apq8074-dragonboard.dtb \
  	qcom-apq8084-ifc6540.dtb \
  	qcom-apq8084-mtp.dtb \
@@ -38,6 +38,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 +	qcom-ipq4019-a62.dtb \
 +	qcom-ipq4019-ea8300.dtb \
 +	qcom-ipq4019-eap2200.dtb \
++	qcom-ipq4019-canbox-cm520-79f.dtb \
 +	qcom-ipq4019-fritzbox-7530.dtb \
 +	qcom-ipq4019-fritzrepeater-1200.dtb \
 +	qcom-ipq4019-fritzrepeater-3000.dtb \

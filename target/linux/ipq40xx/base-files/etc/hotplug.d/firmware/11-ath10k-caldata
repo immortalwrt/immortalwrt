@@ -57,6 +57,7 @@ case "$FIRMWARE" in
 	cilab,meshpoint-one |\
 	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
+	canbox,cm520-79f |\
 	linksys,ea6350v3 |\
 	p2w,r619ac |\
 	p2w,r619ac-128m |\
@@ -141,6 +142,7 @@ case "$FIRMWARE" in
 	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
 	linksys,ea6350v3 |\
+	canbox,cm520-79f |\
 	p2w,r619ac |\
 	p2w,r619ac-128m |\
 	qcom,ap-dk01.1-c1)
