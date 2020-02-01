@@ -263,6 +263,20 @@ d.disabled = 0
 d.enabled = 1
 d.default = default_config.advance or 0
 
+d = s:option(DynamicList, "device", translate("Device"))
+d.template = "docker/cbi/xdynlist"
+d.placeholder = "/dev/sda:/dev/xvdc:rwm"
+d.rmempty = true
+d:depends("advance", 1)
+d.default = default_config.device or nil
+
+d = s:option(DynamicList, "tmpfs", translate("Tmpfs"), translate("Mount tmpfs filesystems"))
+d.template = "docker/cbi/xdynlist"
+d.placeholder = "/run:rw,noexec,nosuid,size=65536k"
+d.rmempty = true
+d:depends("advance", 1)
+d.default = default_config.tmpfs or nil
+
 d = s:option(Value, "cpus", translate("CPUs"), translate("Number of CPUs. Number is a fractional number. 0.000 means no limit."))
 d.placeholder = "1.5"
 d.rmempty = true
@@ -290,19 +304,6 @@ d:depends("advance", 1)
 d.datatype="uinteger"
 d.default = default_config.blkioweight or nil
 
-d = s:option(DynamicList, "device", translate("Device"))
-d.template = "docker/cbi/xdynlist"
-d.placeholder = "/dev/sda:/dev/xvdc:rwm"
-d.rmempty = true
-d:depends("advance", 1)
-d.default = default_config.device or nil
-
-d = s:option(DynamicList, "tmpfs", translate("Tmpfs"), translate("Mount tmpfs filesystems"))
-d.template = "docker/cbi/xdynlist"
-d.placeholder = "/run:rw,noexec,nosuid,size=65536k"
-d.rmempty = true
-d:depends("advance", 1)
-d.default = default_config.tmpfs or nil
 
 for _, v in ipairs (networks) do
   if v.Name then
@@ -366,12 +367,13 @@ m.handle = function(self, state, data)
       if h and c then
         t['PathOnHost'] = h
         t['PathInContainer'] = c
-        t['CgroupPermissions'] = p or nil
+        t['CgroupPermissions'] = p or "rwm"
       else
         local _,_, h, c = v:find("(.-):(.+)")
         if h and c then
           t['PathOnHost'] = h
           t['PathInContainer'] = c
+          t['CgroupPermissions'] = "rwm"
         end
       end
       if next(t) ~= nil then
@@ -426,7 +428,6 @@ m.handle = function(self, state, data)
   create_body.ExposedPorts = (next(exposedports) ~= nil) and exposedports or nil
   create_body.HostConfig = create_body.HostConfig or {}
   create_body.HostConfig.Binds = (#mount ~= 0) and mount or nil
-  create_body.HostConfig.NetworkMode = network
   create_body.HostConfig.RestartPolicy = { Name = restart, MaximumRetryCount = 0 }
   create_body.HostConfig.Privileged = privileged and true or false
   create_body.HostConfig.PortBindings = (next(portbindings) ~= nil) and portbindings or nil
@@ -434,8 +435,14 @@ m.handle = function(self, state, data)
   create_body.HostConfig.CpuShares = tonumber(cpushares)
   create_body.HostConfig.NanoCPUs = tonumber(cpus) * 10 ^ 9
   create_body.HostConfig.BlkioWeight = tonumber(blkioweight)
+  if create_body.HostConfig.NetworkMode ~= network then
+    -- network mode changed, need to clear duplicate config
+    create_body.NetworkingConfig = nil
+  end
+  create_body.HostConfig.NetworkMode = network
   if ip then
     if create_body.NetworkingConfig and create_body.NetworkingConfig.EndpointsConfig and type(create_body.NetworkingConfig.EndpointsConfig) == "table" then
+      -- ip + duplicate config
       for k, v in pairs (create_body.NetworkingConfig.EndpointsConfig) do
         if k == network and v.IPAMConfig and v.IPAMConfig.IPv4Address then
           v.IPAMConfig.IPv4Address = ip
@@ -445,18 +452,16 @@ m.handle = function(self, state, data)
         break
       end
     else
+      -- ip + no duplicate config
       create_body.NetworkingConfig = { EndpointsConfig = { [network] = { IPAMConfig = { IPv4Address = ip } } } }
     end
   elseif not create_body.NetworkingConfig then
+    -- no ip + no duplicate config
     create_body.NetworkingConfig = nil
   end
 
-  if next(tmpfs) ~= nil then
-    create_body["HostConfig"]["Tmpfs"] = tmpfs
-  end
-  if next(device) ~= nil then
-    create_body["HostConfig"]["Devices"] = device
-  end
+  create_body["HostConfig"]["Tmpfs"] = (next(tmpfs) ~= nil) and tmpfs or nil
+  create_body["HostConfig"]["Devices"] = (next(device) ~= nil) and device or nil
 
   if network == "bridge" and next(link) ~= nil then
     create_body["HostConfig"]["Links"] = link
