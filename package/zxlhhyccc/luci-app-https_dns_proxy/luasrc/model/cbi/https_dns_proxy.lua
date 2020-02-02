@@ -55,8 +55,8 @@ uci:foreach("https_dns_proxy", "https_dns_proxy", function(s)
 end)
 
 prov = s3:option(ListValue, "url_prefix", translate("Provider"))
-prov:value("https://cloudflare-dns.com/dns-query?ct=application/dns-json&","Cloudflare")
-prov:value("https://dns.google.com/resolve?","Google")
+prov:value("https://cloudflare-dns.com/dns-query","Cloudflare")
+prov:value("https://dns.google/dns-query","Google")
 prov.write = function(self, section, value)
   local la_val = la:formvalue(section)
   local lp_val = lp:formvalue(section)
@@ -64,10 +64,10 @@ prov.write = function(self, section, value)
   if not lp_val then lp_val = n + 5053 end
   if value and value:match("cloudflare") then
     uci:set("https_dns_proxy", section, "bootstrap_dns", "1.1.1.1,1.0.0.1")
-    uci:set("https_dns_proxy", section, "url_prefix", "https://cloudflare-dns.com/dns-query?ct=application/dns-json&")
+    uci:set("https_dns_proxy", section, "url_prefix", "https://cloudflare-dns.com/dns-query")
   else
     uci:set("https_dns_proxy", section, "bootstrap_dns", "8.8.8.8,8.8.4.4")
-    uci:set("https_dns_proxy", section, "url_prefix", "https://dns.google.com/resolve?")
+    uci:set("https_dns_proxy", section, "url_prefix", "https://dns.google/dns-query")
   end
   uci:set("https_dns_proxy", section, "user", "nobody")
   uci:set("https_dns_proxy", section, "group", "nogroup")
