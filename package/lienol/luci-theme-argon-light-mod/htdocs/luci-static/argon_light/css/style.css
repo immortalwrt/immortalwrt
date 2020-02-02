@@ -1416,6 +1416,10 @@ footer > a {
     z-index: 100;
 }
 
+.main-left::-webkit-scrollbar {width: 5px;height: 1px;}
+.main-left::-webkit-scrollbar-thumb {background-color:  #f6f9fc}
+.main-left::-webkit-scrollbar-track {background-color:#fff ;}
+
 
 .main-right {
     width: 85%;
@@ -1479,6 +1483,7 @@ table > tbody > tr > td, table > tbody > tr > th, table > tfoot > tr > td, table
 
 .cbi-section-table {
     border: none;
+    margin: 0 !important;
 }
 
 
@@ -2342,8 +2347,6 @@ select[multiple="multiple"] {
     overflow-y: visible;
 }
 #cbi-network .cbi-section , #cbi-network .cbi-section .cbi-section-node{
-    overflow-x:auto;
-    overflow-y: visible;
 }
 .cbi-section-node .cbi-value{
 /*    padding: 0.3rem 0rem 0.3rem 1rem;
