@@ -7,11 +7,11 @@ function index()
 		return
 	end
 	
-	entry({"admin", "services", "softethervpn5"},alias("admin", "services", "softethervpn5", "setting"),_("softethervpn5"), 10).dependent = true
-	entry({"admin", "services", "softethervpn5", "setting"},arcombine(cbi("softethervpn5/setting"), form("softethervpn5/setting-config")),_("VPN Setting"), 10).leaf = true
+	entry({"admin", "vpn", "softethervpn5"},alias("admin", "vpn", "softethervpn5", "setting"),_("SoftEther VPN5"), 10).dependent = true
+	entry({"admin", "vpn", "softethervpn5", "setting"},arcombine(cbi("softethervpn5/setting"), form("softethervpn5/setting-config")),_("VPN Setting"), 10).leaf = true
 	
-	entry({"admin", "services", "softethervpn5", "server"},form("softethervpn5/server"),_("VPN Server"), 20).leaf = true
-	entry({"admin", "services", "softethervpn5", "bridge"},form("softethervpn5/bridge"),_("VPN Bridge"), 30).leaf = true
-	entry({"admin", "services", "softethervpn5", "client"},form("softethervpn5/client"),_("VPN Client"), 40).leaf = true
-	entry({"admin", "services", "softethervpn5", "status"},form("softethervpn5/status"),_("Status"), 50).leaf = true
+	entry({"admin", "vpn", "softethervpn5", "server"},form("softethervpn5/server"),_("VPN Server"), 20).leaf = true
+	entry({"admin", "vpn", "softethervpn5", "bridge"},form("softethervpn5/bridge"),_("VPN Bridge"), 30).leaf = true
+	entry({"admin", "vpn", "softethervpn5", "client"},form("softethervpn5/client"),_("VPN Client"), 40).leaf = true
+	entry({"admin", "vpn", "softethervpn5", "status"},form("softethervpn5/status"),_("Status"), 50).leaf = true
 end
