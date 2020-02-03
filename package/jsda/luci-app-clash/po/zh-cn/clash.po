@@ -471,7 +471,7 @@ msgid "Custom"
 msgstr "自定义"
 
 msgid "Config Type"
-msgstr "配置类型"
+msgstr "Clash配置类型"
 
 msgid "Select Configuration type"
 msgstr "选择配置类型”"
@@ -809,8 +809,8 @@ msgstr "强制使用同名"
 msgid "Enable to overwrite config file"
 msgstr "启用覆盖配置文件"
 
-msgid "Clash Config"
-msgstr "Clash配置"
+msgid "Config Type"
+msgstr "Clash配置类型"
 
 msgid "SUBSCRIBE"
 msgstr "订阅配置"
@@ -911,10 +911,10 @@ msgstr "正在下载规则..."
 msgid "Downloading..."
 msgstr "正在下载规则..."
 
-msgid "VIEW CONFIG"
-msgstr "查看配置"
+msgid "Clash Config"
+msgstr "Clash配置"
 
-msgid "View Config"
+msgid "VIEW CONFIG"
 msgstr "查看配置"
 
 msgid "If config does not show refresh page"
@@ -937,3 +937,18 @@ msgstr "4. 单击添加，设置下载游戏规则的相应策略组（策略组
 
 msgid "5.Select ClashTun Core type and start client"
 msgstr "5. 在客户端页选择ClashTun内核(https://github.com/comzyh/clash/releases)和启用游戏规则。"
+
+msgid "RULE"
+msgstr "规则模式"
+
+msgid "GLOBAL"
+msgstr "全局模式"
+
+msgid "DIRECT"
+msgstr "直接模式"
+
+msgid "Proxy Mode"
+msgstr "代理模式"
+
+msgid "Choose proxy mode"
+msgstr "选择代理模式"

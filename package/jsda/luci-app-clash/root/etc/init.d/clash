@@ -220,7 +220,11 @@ rules(){
 			
 	
 			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
-			iptables -t nat -A zone_lan_prerouting -p tcp -j clash
+			if [ -z "$(iptables -nvL zone_lan_prerouting -t nat)" ]; then
+		           iptables -t nat -A PREROUTING -p tcp -j clash
+		    	else
+		           iptables -t nat -A zone_lan_prerouting -p tcp -j clash
+		    	fi
 			
 			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 		
@@ -234,7 +238,11 @@ rules(){
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 				ip6tables -t nat -N clash_ipv6
 				ip6tables -t nat -A clash_ipv6 -p tcp -j REDIRECT --to-ports "${redir_port}"
-				ip6tables -t nat -A zone_lan_prerouting -p tcp -j clash_ipv6
+				if [ -z "$(ip6tables -nvL zone_lan_prerouting -t nat)" ]; then
+				   ip6tables -t nat -A PREROUTING -p tcp -j clash_ipv6
+				else
+				   ip6tables -t nat -A zone_lan_prerouting -p tcp -j clash_ipv6
+				fi
 			fi
 			
 		elif [ "${core}" -eq 3 ];then
@@ -523,11 +531,16 @@ remove_mark(){
 
 		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 		ip6tables -t nat -F clash_ipv6 2>/dev/null1 && ip6tables -t nat -X clash_ipv6 2>/dev/null
+		if [ -z "$(ip6tables -nvL zone_lan_prerouting -t nat)" ]; then
+			ip6tables -t nat -D PREROUTING -p tcp -j clash_ipv6 >/dev/null 2>&1
+		else
 		mangle_indexs=$(ip6tables -nvL zone_lan_prerouting -t nat | sed 1,2d | sed -n '/clash_ipv6/=' | sort -r)
 		for mangle_index in $mangle_indexs; do
 			ip6tables -t nat -D zone_lan_prerouting $mangle_index 2>/dev/null
 		done
 		fi
+		fi
+
 
 		if [ "${core}" -eq 3 ];then
 		
@@ -593,14 +606,15 @@ stop(){
 		fi
 										
 		iptables -t nat -F clash >/dev/null 2>&1 && iptables -t nat -X clash >/dev/null 2>&1
-		
+		if [ -z "$(iptables -nvL zone_lan_prerouting -t nat)" ]; then
+			iptables -t nat -D PREROUTING -p tcp -j clash >/dev/null 2>&1
+		else
 		nat_indexs=$(iptables -nvL zone_lan_prerouting -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
 		for nat_index in $nat_indexs; do
 			iptables -t nat -D zone_lan_prerouting $nat_index >/dev/null 2>&1
 		done
+		fi
 
-
-		
 		fake=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.0\/16/=' |sort -r)
        		for fake in $fake; do
           	iptables -t nat -D OUTPUT $fake >/dev/null 2>&1

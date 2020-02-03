@@ -22,6 +22,7 @@ config clash 'config'
 	option loadgroups '1'
 	option dnscache '0'	
 	option config_type '1'
+	option p_mode 'Rule'
 
 config groups
 	option old_name '❌AdBlock'

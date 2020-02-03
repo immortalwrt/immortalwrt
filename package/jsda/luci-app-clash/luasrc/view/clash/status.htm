@@ -10,8 +10,8 @@
 	<table width="100%" cellspacing="10">
 		<tr><td width="50%"><span><%:Clash Client%></span></td><td id="_clash"><em><%:Collecting data...%></em></td> </tr>
 		<tr><td width="50%"><span><%:Clash Mode%></span></td><td id="_emode"><em><%:Collecting data...%></em></td> </tr>
-		<tr><td width="50%"><span><%:Clash Config%></span></td><td id="_conf_path"><b><font color="red"><%:NOT RUNNING%></font></b></td> </tr>
-		<tr><td width="50%"><span><%:View Config%></span></td><td id="_conf"><em><%:Collecting data...%></em></td> </tr>
+		<tr><td width="50%"><span><%:Clash Config%></span></td><td id="_conf"><em><%:Collecting data...%></em></td> </tr>
+		<tr><td width="50%"><span><%:Config Type%></span></td><td id="_conf_path"><em><%:Collecting data...%></em></td> </tr>
 		<tr><td width="50%"><span><%:Clash Dashboard%></span></td><td id="_web"><em> <%:Collecting data...%> </em></td> </tr>
 		
 	</table>
@@ -173,7 +173,10 @@ var HTTP = {
 			}
 			if(status.typeconf==3){
 				conf_path.innerHTML = status.clash ? '<b><font color="green"><%:CUSTOM%></font></b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
-			}			
+			}	
+			if(status.typeconf==0 || status.typeconf==''){
+				conf_path.innerHTML = status.typeconf ? '<b><font color="red"><%:NOT SELECTED%></font></b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
+			}		
 			IP.getIpifyIP();
 			IP.getIpipnetIP();
 
