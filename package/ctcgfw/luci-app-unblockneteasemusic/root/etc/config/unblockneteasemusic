@@ -17,3 +17,5 @@ config unblockneteasemusic
 	option strict_mode '0'
 	option netease_server_ip '59.111.181.38'
 	option proxy_server_ip ''
+	option self_issue_cert_crt '/usr/share/unblockneteasemusic/core/server.crt'
+	option self_issue_cert_key '/usr/share/unblockneteasemusic/core/server.key'

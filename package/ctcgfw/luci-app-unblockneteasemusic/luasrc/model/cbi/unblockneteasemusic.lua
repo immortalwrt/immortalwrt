@@ -48,7 +48,7 @@ hijack = s:option(ListValue, "hijack_ways", translate("劫持方法"))
 hijack:value("dont_hijack", translate("不开启劫持"))
 hijack:value("use_ipset", translate("使用IPSet劫持"))
 hijack:value("use_hosts", translate("使用Hosts劫持"))
-hijack.description = translate("如果使用Hosts劫持，主实例的HTTP/HTTPS端口将被锁定为80/443")
+hijack.description = translate("如果使用Hosts劫持，程序监听的HTTP/HTTPS端口将被锁定为80/443")
 hijack.default = "dont_hijack"
 hijack.rmempty = false
 
@@ -103,7 +103,7 @@ pub_access.rmempty = false
 pub_access:depends("advanced_mode", 1)
 
 strict_mode = s:option(Flag, "strict_mode", translate("启用严格模式"))
-strict_mode.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求；注意：该模式下只能使用PAC方式进行代理")
+strict_mode.description = translate("若将服务部署到公网，则强烈建议使用严格模式，此模式下仅放行网易云音乐所属域名的请求；注意：该模式下不能使用全局代理")
 strict_mode.default = 0
 strict_mode.rmempty = false
 strict_mode:depends("advanced_mode", 1)
@@ -112,7 +112,6 @@ netease_server_ip = s:option(Value, "netease_server_ip", translate("网易云服
 netease_server_ip.description = translate("通过 ping music.163.com 即可获得IP地址，仅限填写一个")
 netease_server_ip.placeholder = "59.111.181.38"
 netease_server_ip.datatype = "ipaddr"
-netease_server_ip:depends("set_netease_server_ip", 1)
 netease_server_ip:depends("advanced_mode", 1)
 
 proxy_server_ip = s:option(Value, "proxy_server_ip", translate("代理服务器地址"))
@@ -120,5 +119,17 @@ proxy_server_ip.description = translate("使用代理服务器获取音乐信息
 proxy_server_ip.placeholder = "http(s)://host:port"
 proxy_server_ip.datatype = "string"
 proxy_server_ip:depends("advanced_mode", 1)
+
+self_issue_cert_crt = s:option(Value, "self_issue_cert_crt", translate("自签发证书公钥位置"))
+self_issue_cert_crt.description = translate("[公钥] 默认使用UnblockNeteaseMusic项目提供的CA证书，您可以指定为您自己的证书")
+self_issue_cert_crt.placeholder = "/usr/share/unblockneteasemusic/core/server.crt"
+self_issue_cert_crt.datatype = "file"
+self_issue_cert_crt:depends("advanced_mode", 1)
+
+self_issue_cert_key = s:option(Value, "self_issue_cert_key", translate("自签发证书私钥位置"))
+self_issue_cert_key.description = translate("[私钥] 默认使用UnblockNeteaseMusic项目提供的CA证书，您可以指定为您自己的证书")
+self_issue_cert_key.placeholder = "/usr/share/unblockneteasemusic/core/server.key"
+self_issue_cert_key.datatype = "file"
+self_issue_cert_key:depends("advanced_mode", 1)
 
 return mp
