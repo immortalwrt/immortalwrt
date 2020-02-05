@@ -36,7 +36,8 @@ luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luc
 NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).<br/>
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
 luci-theme-opentomato source: [Leo-Jo-My/luci-theme-opentomato](https://github.com/Leo-Jo-My/luci-theme-opentomato).<br/>
-luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.com/Leo-Jo-My/luci-theme-opentomcat).
+luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.com/Leo-Jo-My/luci-theme-opentomcat).<br/>
+qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).
 
 ## License
 ### Depending on their own License.
