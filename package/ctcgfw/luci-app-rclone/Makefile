@@ -14,7 +14,7 @@ LUCI_DEPENDS:=+rclone +rclone-webui-react
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-rclone
 PKG_VERSION:=1.0.7
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_LICENSE:=GPLv3.0+
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
