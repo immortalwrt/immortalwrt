@@ -40,7 +40,8 @@ s:option(DummyValue, "size_formated", translate("Size"))
 s:option(DummyValue, "sec_size", translate("Sector Size "))
 local dv_p_table = s:option(ListValue, "p_table", translate("Partition Table"))
 dv_p_table.render = function(self, section, scope)
-  if not disk_info.p_table:match("Raid") and (#disk_info.partitions == 0 or (#disk_info.partitions == 1 and disk_info.partitions[1].number == -1)) then
+  -- create table only if not used by raid and no partitions on disk
+  if not disk_info.p_table:match("Raid") and (#disk_info.partitions == 0 or (#disk_info.partitions == 1 and disk_info.partitions[1].number == -1) or (disk_info.p_table:match("LOOP") and not disk_info.partitions[1].inuse)) then
     self:value(disk_info.p_table, disk_info.p_table)
     self:value("GPT", "GPT")
     self:value("MBR", "MBR")

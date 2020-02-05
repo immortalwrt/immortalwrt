@@ -77,7 +77,18 @@ if dm.command.mdadm then
     -- end
     r.extedit  = luci.dispatcher.build_url("admin/system/diskman/partition/%s")
   end
+end
 
+-- btrfs devices
+if dm.command.btrfs then
+  btrfs_devices = dm.list_btrfs_devices()
+  local table_btrfs = m:section(Table, btrfs_devices, translate("Btrfs"))
+  table_btrfs:option(DummyValue, "uuid", translate("UUID"))
+  table_btrfs:option(DummyValue, "label", translate("Label"))
+  table_btrfs:option(DummyValue, "devices", translate("Devices"))
+  table_btrfs:option(DummyValue, "size_formated", translate("Size"))
+  table_btrfs:option(DummyValue, "used_formated", translate("Usage"))
+  table_btrfs.extedit  = luci.dispatcher.build_url("admin/system/diskman/btrfs/%s")
 end
 
 --tabs
@@ -95,12 +106,12 @@ if dm.command.mdadm then
   local r = m:section(SimpleSection, translate("RAID Creation"))
   r.template="diskman/cbi/xnullsection"
   r.config = "raid"
-  local r_name = r:option(Value, "_name", translate("Raid Name"))
+  local r_name = r:option(Value, "_rname", translate("Raid Name"))
   r_name.placeholder = "/dev/md0"
   r_name.write = function(self, section, value)
     rname = value
   end
-  local r_level = r:option(ListValue, "_level", translate("Raid Level"))
+  local r_level = r:option(ListValue, "_rlevel", translate("Raid Level"))
   local valid_raid = luci.util.exec("lsmod | grep md_mod")
   if valid_raid:match("linear") then
     r_level:value("linear", "Linear")
@@ -121,7 +132,7 @@ if dm.command.mdadm then
   r_level.write = function(self, section, value)
     rlevel = value
   end
-  local r_member = r:option(DynamicList, "_member", translate("Raid Member"))
+  local r_member = r:option(DynamicList, "_rmember", translate("Raid Member"))
   for dev, info in pairs(disks) do
     if not info.inuse and  #info.partitions == 0  then
         r_member:value(info.path, info.path.. " ".. info.size_formated)
@@ -135,7 +146,7 @@ if dm.command.mdadm then
   r_member.write = function(self, section, value)
     rmembers = value
   end
-  local r_create = r:option(Button, "_create")
+  local r_create = r:option(Button, "_rcreate")
   r_create.render = function(self, section, scope)
     self.title = " "
     self.inputtitle = translate("Create Raid")
@@ -145,7 +156,7 @@ if dm.command.mdadm then
   r_create.write = function(self, section, value)
     -- mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2 /dev/sdb6 /dev/sdc5
     local res = dm.create_raid(rname, rlevel, rmembers)
-    if res:match("^ERR") then
+    if res and res:match("^ERR") then
       m.errmessage = translate(res)
       return
     end
@@ -248,18 +259,63 @@ btn_umount.write = function(self, section, value)
   elseif value == translate("Umount") then
     res = luci.util.exec("umount "..mount_point[section].mount_point .. " 2>&1")
   end
-  if res:match("^mount:") then
+  if res:match("^mount:") or res:match("^umount:") then
     m.errmessage = luci.util.pcdata(res)
   else
     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
   end
 end
 
--- -- btrfs
+-- btrfs
 if dm.command.btrfs then
+  local blabel, bmembers, blevel
   tab_section.tabs.btrfs = translate("Btrfs")
-  local btrfs_devices = {}
-  local table_btrfs = m:section(Table, btrfs_devices, translate("Btrfs"))
-  table_btrfs.config = "btrfs"
+  local r = m:section(SimpleSection, translate("Btrfs Multiple Devices Creation"))
+  r.template="diskman/cbi/xnullsection"
+  r.config = "btrfs"
+  local btrfs_label = r:option(Value, "_blabel", translate("Btrfs Label"))
+  btrfs_label.write = function(self, section, value)
+    blabel = value
+  end
+  local btrfs_level = r:option(ListValue, "_blevel", translate("Btrfs Raid Level"))
+  btrfs_level:value("single", "Single")
+  btrfs_level:value("raid0", "Raid 0")
+  btrfs_level:value("raid1", "Raid 1")
+  btrfs_level:value("raid10", "Raid 10")
+  btrfs_level.write = function(self, section, value)
+    blevel = value
+  end
+
+  local btrfs_member = r:option(DynamicList, "_bmember", translate("Btrfs Member"))
+  for dev, info in pairs(disks) do
+    if not info.inuse and  #info.partitions == 0  then
+      btrfs_member:value(info.path, info.path.. " ".. info.size_formated)
+    end
+    for i, v in ipairs(info.partitions) do
+      if not v.inuse then
+        btrfs_member:value("/dev/".. v.name, "/dev/".. v.name .. " ".. v.size_formated)
+      end
+    end
+  end
+  btrfs_member.write = function(self, section, value)
+    bmembers = value
+  end
+  local btrfs_create = r:option(Button, "_bcreate")
+  btrfs_create.render = function(self, section, scope)
+    self.title = " "
+    self.inputtitle = translate("Create Btrfs")
+    self.inputstyle = "add"
+    Button.render(self, section, scope)
+  end
+  btrfs_create.write = function(self, section, value)
+    -- mkfs.btrfs -L label -d blevel /dev/sda /dev/sdb
+    local res = dm.create_btrfs(blabel, blevel, bmembers)
+    if res and res:match("^ERR") then
+      m.errmessage = translate(res)
+      return
+    end
+    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
+  end
 end
+
 return m

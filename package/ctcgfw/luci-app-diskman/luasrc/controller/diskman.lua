@@ -29,6 +29,7 @@ function index()
   entry({"admin", "system", "diskman"}, alias("admin", "system", "diskman", "disks"), _("Disk Man"), 55)
   entry({"admin", "system", "diskman", "disks"}, form("diskman/disks"), nil).leaf = true
   entry({"admin", "system", "diskman", "partition"}, form("diskman/partition"), nil).leaf = true
+  entry({"admin", "system", "diskman", "btrfs"}, form("diskman/btrfs"), nil).leaf = true
   entry({"admin", "system", "diskman", "get_disk_info"}, call("get_disk_info"), nil).leaf = true
   entry({"admin", "system", "diskman", "mk_p_table"}, call("mk_p_table"), nil).leaf = true
   entry({"admin", "system", "diskman", "smartdetail"}, call("smart_detail"), nil).leaf = true

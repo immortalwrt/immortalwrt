@@ -11,7 +11,7 @@ $Id$
 require "luci.util"
 local ver = require "luci.version"
 
-local CMD = {"parted", "mdadm", "blkid", "smartctl", "df", "sgdisk", "btrfs"}
+local CMD = {"parted", "mdadm", "blkid", "smartctl", "df", "sgdisk", "btrfs", "mergerfs", "snapraid", "lsblk"}
 
 local d = {command ={}}
 for _, cmd in ipairs(CMD) do
@@ -535,6 +535,138 @@ d.gen_mdadm_config = function()
   x:commit("mdadm")
   -- enable mdadm
   luci.util.exec("/etc/init.d/mdadm enable")
+end
+
+-- list btrfs filesystem device
+-- {uuid={uuid, label, devices, size, used}...}
+d.list_btrfs_devices = function()
+  local btrfs_device = {}
+  if not d.command.btrfs then return btrfs_device end
+  local line, _uuid
+  for _, line in ipairs(luci.util.execl(d.command.btrfs .. " filesystem show -d --raw"))
+  do
+    local label, uuid = line:match("^Label:%s+([^%s]+)%s+uuid:%s+([^%s]+)")
+    if label and uuid then
+      _uuid = uuid
+      local _label = label:match("^'([^']+)'")
+      btrfs_device[_uuid] = {label = _label or label, uuid = uuid}
+      -- table.insert(btrfs_device, {label = label, uuid = uuid})
+    end
+    local used = line:match("Total devices[%w%s]+used%s+(%d+)$")
+    if used then
+      btrfs_device[_uuid]["used"] = tonumber(used)
+      btrfs_device[_uuid]["used_formated"] = byte_format(tonumber(used))
+    end
+    local size, device = line:match("devid[%w.%s]+size%s+(%d+)[%w.%s]+path%s+([^%s]+)$")
+    if size and device then
+      btrfs_device[_uuid]["size"] = btrfs_device[_uuid]["size"] and btrfs_device[_uuid]["size"] + tonumber(size) or tonumber(size)
+      btrfs_device[_uuid]["size_formated"] = byte_format(btrfs_device[_uuid]["size"])
+      btrfs_device[_uuid]["devices"] = btrfs_device[_uuid]["devices"] and btrfs_device[_uuid]["devices"]..", "..device or device
+    end
+  end
+  return btrfs_device
+end
+
+d.create_btrfs = function(blabel, blevel, bmembers)
+  -- mkfs.btrfs -L label -d blevel /dev/sda /dev/sdb
+  if not d.command.btrfs or type(bmembers) ~= "table" or next(bmembers) == nil then return "ERR no btrfs support or no members" end
+  local label = blabel and " -L " .. blabel or ""
+  local cmd = "mkfs.btrfs -f " .. label .. " -d " .. blevel .. " " .. table.concat(bmembers, " ")
+  return luci.util.exec(cmd)
+end
+
+-- get btrfs subvolume
+-- {id={id, gen, top_level, path, snapshots, otime, default_subvolume}...}, mount_point
+d.get_btrfs_subv = function(uuid, snapshot)
+local subvolume = {}
+if not uuid or not d.command.lsblk or not d.command.btrfs then return subvolume end
+-- check mounted device & get mount point
+-- local m_point = luci.util.exec(d.command.lsblk .. " -o UUID,MOUNTPOINT | awk '{if($1==\""..uuid.."\") print $2}'")
+-- clear sapce and \n
+-- m_point = m_point and string.gsub(m_point, "[\n%s]+", "")
+-- if not m_point or m_point =="" then
+m_point = "/tmp/.btrfs_tmp"
+nixio.fs.mkdirr(m_point)
+luci.util.exec("umount "..m_point .. " >/dev/null 2>&1")
+luci.util.exec("mount -o subvol=/ -U "..uuid.." "..m_point)
+-- os.execute("sleep " .. 0.5)
+-- end
+
+-- get default subvolume
+local cmd = d.command.btrfs .. " subvolume get-default " .. m_point
+local res = luci.util.exec(cmd)
+local default_subvolume_id = res:match("^ID%s+([^%s]+)")
+
+-- get the root subvolume
+if not snapshot then
+  local _, line, section_snap, _uuid, _otime, _id, _snap
+  cmd = d.command.btrfs .. " subvolume show ".. m_point
+  for _, line in ipairs(luci.util.execl(cmd)) do
+    if not section_snap then
+      local uuid = line:match("^%s-UUID:%s+([^%s]+)")
+      local otime = line:match("^%s+Creation time:%s+(.+)")
+      local id = line:match("^%s+Subvolume ID:%s+([^%s]+)")
+      if uuid then
+        _uuid = uuid
+      elseif otime then
+        _otime = otime
+      elseif id then 
+        _id = id
+      elseif line:match("^%s+(Snapshot%(s%):)") then
+        section_snap = "true"
+      end
+    else
+      local snapshot = line:match("^%s+(.+)")
+      _snap = _snap and (_snap ..", /".. snapshot) or ("/"..snapshot)
+    end
+  end
+  if _uuid and _otime and _id then
+    subvolume["0".._id] = {id = _id , uuid = _uuid, otime = _otime, snapshots = _snap, path = "/"}
+    if default_subvolume_id == _id then
+      subvolume["0".._id].default_subvolume = 1
+    end
+  end
+end
+
+-- get subvolume of btrfs
+cmd = d.command.btrfs .. " subvolume list -gcu" .. (snapshot and "s " or " ") .. m_point
+for _, line in ipairs(luci.util.execl(cmd)) do
+  -- ID 259 gen 11 top level 258 uuid 26ae0c59-199a-cc4d-bd58-644eb4f65d33 path 1a/2b'
+  local id, gen, top_level, uuid, path, otime, otime2
+  if snapshot then
+    id, gen, top_level, otime, otime2, uuid, path = line:match("^ID%s+([^%s]+)%s+gen%s+([^%s]+)%s+cgen.-top level%s+([^%s]+)%s+otime%s+([^%s]+)%s+([^%s]+)%s+uuid%s+([^%s]+)%s+path%s+([^%s]+)%s-$")
+  else
+    id, gen, top_level, uuid, path = line:match("^ID%s+([^%s]+)%s+gen%s+([^%s]+)%s+cgen.-top level%s+([^%s]+)%s+uuid%s+([^%s]+)%s+path%s+([^%s]+)%s-$")
+  end
+  if id and gen and top_level and uuid and path then
+    subvolume[id] = {id = id, gen = gen, top_level = top_level, otime = (otime and otime or "") .." ".. (otime2 and otime2 or ""), uuid = uuid, path = '/'.. path}
+    if not snapshot then
+      -- use btrfs subv show to get snapshots
+      local show_cmd = d.command.btrfs .. " subvolume show "..m_point.."/"..path
+      local __, line_show, section_snap
+      for __, line_show in ipairs(luci.util.execl(show_cmd)) do
+        if not section_snap then
+          local create_time = line_show:match("^%s+Creation time:%s+(.+)")
+          if create_time then
+            subvolume[id]["otime"] = create_time
+          elseif line_show:match("^%s+(Snapshot%(s%):)") then
+            section_snap = "true"
+          end
+        else
+          local snapshot = line_show:match("^%s+(.+)")
+          subvolume[id]["snapshots"] = subvolume[id]["snapshots"] and (subvolume[id]["snapshots"] .. ", /".. snapshot) or ("/"..snapshot)
+        end
+      end
+    end
+  end
+end
+if subvolume[default_subvolume_id] then
+  subvolume[default_subvolume_id].default_subvolume = 1
+end
+-- if m_point == "/tmp/.btrfs_tmp" then
+--   luci.util.exec("umount " .. m_point)
+-- end
+return subvolume, m_point
 end
 
 return d
