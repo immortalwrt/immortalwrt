@@ -1,9 +1,6 @@
 
-config basic
-	option profile_dir '/root'
+config qbittorrent
 	option enable '0'
-
-config Preferences
-	option download_dir '/mnt/download'
 	option port '8080'
-
+	option profile_dir '/root'
+	option download_dir '/mnt/download'

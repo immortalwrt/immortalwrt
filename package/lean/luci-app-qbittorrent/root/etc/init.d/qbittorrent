@@ -3,24 +3,24 @@ START=99
 
 get_config()
 {
-	config_get_bool enable $1 enable 0
+	config_get_bool enable "$1" enable 0
 }
 
 config_qbittorrent()
 {
 	local download_dir
 	local port
-	config_get download_dir $1 download_dir
-	config_get port $1 port
-	mkdir -p $download_dir
-	mkdir -p $2
-	ln -sf /etc/qBittorrent/ipfilter.dat $2/qBittorrent/ipfilter.dat
-	if [ -f $2/qBittorrent/config/qBittorrent.conf ]; then
-		sed -i 's/WebUI\\Port=[0-9]*/WebUI\\Port='"$port"'/g' $2/qBittorrent/config/qBittorrent.conf
-		sed -i 's/Downloads\\SavePath=[a-z,/]*//g' $2/qBittorrent/config/qBittorrent.conf
-		echo "Downloads\SavePath=$download_dir" >> $2/qBittorrent/config/qBittorrent.conf
+	config_get download_dir "$1" "download_dir"
+	config_get port "$1" "port"
+	mkdir -p "$download_dir"
+	mkdir -p "$2" "$2/qBittorrent" "$2/qBittorrent/config"
+	ln -sf "/etc/qBittorrent/ipfilter.dat" "$2/qBittorrent/ipfilter.dat"
+	if [ -f "$2/qBittorrent/config/qBittorrent.conf" ]; then
+		sed -i 's/WebUI\\Port=[0-9]*/WebUI\\Port='"$port"'/g' "$2/qBittorrent/config/qBittorrent.conf"
+		sed -i 's/Downloads\\SavePath=[a-z,/]*//g' "$2/qBittorrent/config/qBittorrent.conf"
+		echo "Downloads\SavePath=$download_dir" >> "$2/qBittorrent/config/qBittorrent.conf"
 	else
-		cat >$2/qBittorrent/config/qBittorrent.conf<<EOF
+		cat >"$2/qBittorrent/config/qBittorrent.conf"<<EOF
 [AutoRun]
 enabled=false
 program=
@@ -30,13 +30,18 @@ Accepted=true
 
 [Network]
 Cookies=@Invalid()
+Downloads\SavePath=${download_dir}
 
 [Preferences]
+Advanced\AutoBanUnknownPeer=true
+Bittorrent\AutoUpdateTrackers=true
+Bittorrent\CustomizeTrackersListUrl=https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_best.txt
 General\Locale=zh
-Downloads\SavePath=$download_dir
-General\Locale=zh
-WebUI\Port=$port
+IPFilter\Enabled=true
+IPFilter\File=$2/qBittorrent/ipfilter.dat
+IPFilter\FilterTracker=false
 WebUI\CSRFProtection=false
+WebUI\Port=${port}
 EOF
 	fi
 }
@@ -44,16 +49,16 @@ EOF
 run_qbittorrent()
 {
 	local enable
-	config_get_bool enable $1 enable
+	config_get_bool enable "$1" enable
 
 	if [ $enable ]; then
 		local profile_dir
-		config_get profile_dir $1 profile_dir
-		config_foreach config_qbittorrent 'Preferences' $profile_dir
+		config_get profile_dir "$1" profile_dir
+		config_foreach config_qbittorrent "qbittorrent" "$profile_dir"
 		if [ "$profile_dir" != "" ]; then
-			qbittorrent-nox -d --profile=$profile_dir
+			qbittorrent-nox -d --profile="$profile_dir"
 		else
-			echo "no profile_dir,stop!"
+			echo "No profile_dir found, stop!"
 		fi
 
 	fi
@@ -63,14 +68,13 @@ start()
 {
 	stop
 	local profile_path
-	config_load 'qbittorrent'
-	config_foreach get_config basic
+	config_load "qbittorrent"
+	config_foreach get_config "qbittorrent"
 	[ $enable -eq 0 ] && exit 0
-	config_foreach run_qbittorrent 'basic'
+	config_foreach run_qbittorrent "qbittorrent"
 }
 
 stop()
 {
-	killall qbittorrent-nox >/dev/null 2>&1
-	return 0
+	killall "qbittorrent-nox" >/dev/null 2>&1
 }
