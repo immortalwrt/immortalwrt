@@ -12,10 +12,7 @@
       s.innerHTML = "<font color='red'>Command line Error</font>";
       return;
     }
-    let re = /\/admin\/docker\/newcontainer\//
-    let p = window.location.href
-    let path = p.split(re)
-    window.location.href = path[0] + "/admin/docker/newcontainer/" + encodeURI(cmd_line)
+    window.location.href = "newcontainer/" + encodeURI(cmd_line)
   }
 </script>
 <input type="button" class="cbi-button cbi-button-apply" value="Command line" onclick="resolv_container('<%=self.option%>')" />
