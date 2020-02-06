@@ -47,7 +47,7 @@ endef
 define Package/qt5-core
 	$(call Package/qt5/Default)
 	TITLE+=core
-	DEPENDS+=+libatomic +libzstd +zlib +libpcre2-16 +libdouble-conversion
+	DEPENDS+=+libatomic +libzstd +zlib +libpcre2-16 +libdouble-conversion +icu
 endef
 
 define Package/qt5-network
