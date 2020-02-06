@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=rblibtorrent
+PKG_NAME:=libtorrent-rasterbar
 PKG_VERSION:=1.2.3
 PKG_RELEASE=2
 
@@ -19,7 +19,7 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/rblibtorrent
+define Package/libtorrent-rasterbar
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=Rasterbar BitTorrent library
@@ -28,7 +28,7 @@ define Package/rblibtorrent
   MAINTAINER:=Arvid Norberg <arvid@libtorrent.org>
 endef
 
-define Package/rblibtorrent/description
+define Package/libtorrent-rasterbar/description
 Rasterbar libtorrent is a C++ library that aims to be a good alternative to
 all the other bittorrent implementations around. It is a library and not a
 full featured client, although it comes with a working example client.
@@ -66,9 +66,9 @@ define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libtorrent-rasterbar.pc $(1)/usr/lib/pkgconfig/
 endef
 
-define Package/rblibtorrent/install
+define Package/libtorrent-rasterbar/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libtorrent-rasterbar.so.* $(1)/usr/lib/
 endef
 
-$(eval $(call BuildPackage,rblibtorrent))
+$(eval $(call BuildPackage,libtorrent-rasterbar))
