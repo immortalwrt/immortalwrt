@@ -59,7 +59,7 @@ msgid "Update"
 msgstr "更新"
 
 msgid "Device"
-msgstr "设备(--device)"
+msgstr "设备"
 
 msgid "Mount/Volume"
 msgstr "挂载/存储卷"
