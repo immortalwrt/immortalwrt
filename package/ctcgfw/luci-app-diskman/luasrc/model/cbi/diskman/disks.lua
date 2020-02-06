@@ -62,14 +62,6 @@ if dm.command.mdadm then
     r:option(DummyValue, "status", translate("Status"))
     r:option(DummyValue, "members_str", translate("Members"))
     r:option(DummyValue, "active", translate("Active"))
-    -- local redit = r:option(Button, "rpartition")
-    -- redit.inputstyle = "edit"
-    -- redit.inputtitle = "Edit"
-    -- redit.write = function(self, section)
-    --   local url = luci.dispatcher.build_url("admin/system/diskman/partition")
-    --   url = url .. "/" .. raid_devices[section].path:match("/dev/(.+)")
-    --   luci.http.redirect(url)
-    -- end
     r.extedit  = luci.dispatcher.build_url("admin/system/diskman/partition/%s")
   end
 end
@@ -77,14 +69,16 @@ end
 -- btrfs devices
 if dm.command.btrfs then
   btrfs_devices = dm.list_btrfs_devices()
-  local table_btrfs = m:section(Table, btrfs_devices, translate("Btrfs"))
-  table_btrfs:option(DummyValue, "uuid", translate("UUID"))
-  table_btrfs:option(DummyValue, "label", translate("Label"))
-  table_btrfs:option(DummyValue, "members", translate("Members"))
-  -- sieze is error, since there is RAID
-  -- table_btrfs:option(DummyValue, "size_formated", translate("Size"))
-  table_btrfs:option(DummyValue, "used_formated", translate("Usage"))
-  table_btrfs.extedit  = luci.dispatcher.build_url("admin/system/diskman/btrfs/%s")
+  if next(btrfs_devices) ~= nil then
+    local table_btrfs = m:section(Table, btrfs_devices, translate("Btrfs"))
+    table_btrfs:option(DummyValue, "uuid", translate("UUID"))
+    table_btrfs:option(DummyValue, "label", translate("Label"))
+    table_btrfs:option(DummyValue, "members", translate("Members"))
+    -- sieze is error, since there is RAID
+    -- table_btrfs:option(DummyValue, "size_formated", translate("Size"))
+    table_btrfs:option(DummyValue, "used_formated", translate("Usage"))
+    table_btrfs.extedit  = luci.dispatcher.build_url("admin/system/diskman/btrfs/%s")
+  end
 end
 
 --tabs
