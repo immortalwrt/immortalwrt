@@ -150,7 +150,7 @@ s.anonymous = true
 s.addremove = true
 s.sortable = false
 s.template = "cbi/tblsection"
-s.extedit = luci.dispatcher.build_url("admin/services/clash/servers-config/%s")
+s.extedit = luci.dispatcher.build_url("admin/services/clash/servers/%s")
 function s.create(...)
 	local sid = TypedSection.create(...)
 	if sid then
@@ -192,7 +192,7 @@ s.anonymous = true
 s.addremove = true
 s.sortable = false
 s.template = "cbi/tblsection"
-s.extedit = luci.dispatcher.build_url("admin/services/clash/provider-config/%s")
+s.extedit = luci.dispatcher.build_url("admin/services/clash/provider/%s")
 function s.create(...)
 	local sid = TypedSection.create(...)
 	if sid then

@@ -8,7 +8,7 @@ create=$(uci get clash.config.create 2>/dev/null)
 load_from=$(uci get clash.config.loadfrom 2>/dev/null)
 config_name=$(uci get clash.config.create_tag 2>/dev/null)
 CONFIG_YAML="/usr/share/clash/config/custom/${config_name}.yaml" 
-check_name=$(grep -F "${config_name}.yaml" "/usr/share/clashbackup/create_list.conf")
+check_name=$(grep -F "${config_name}.yaml" "/usr/share/clashbackup/create_list.conf") 
 same_tag=$(uci get clash.config.same_tag 2>/dev/null)
 
 
@@ -401,17 +401,7 @@ config_load clash
 config_foreach servers_set "servers"
 fi
 
-if [ -z "${scount}" ] || [ "${scount}" -eq 0 ];then
-cat >> "$SERVER_FILE" <<-EOF
-- name: Shadowsocks
-  type: ss
-  server: 127.0.0.1
-  port: 1080
-  cipher: aes-256-gcm
-  password: "12345"
-EOF
-fi
-
+if [ ! -z "${scount}" ] || [ "${scount}" -ne 0 ];then
 
 sed -i "1i\   " $SERVER_FILE 2>/dev/null 
 sed -i "2i\Proxy:" $SERVER_FILE 2>/dev/null 
@@ -419,7 +409,7 @@ sed -i "2i\Proxy:" $SERVER_FILE 2>/dev/null
 egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
 
 sed -i "s/^ \{0,\}/    - /" $Proxy_Group 2>/dev/null 
-
+fi
 
 
 yml_servers_add()
@@ -501,14 +491,14 @@ yml_groups_set()
    echo "  type: $type" >>$GROUP_FILE 2>/dev/null 
    
    group_name="$name"
-   #echo "  proxies: $group_name" >>$GROUP_FILE
+   echo "  proxies: $group_name" >>$GROUP_FILE
 
-  if [ "$type" == "url-test" ] || [ "$type" == "load-balance" ] || [ "$type" == "fallback" ] ; then
-      echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
-      #cat $Proxy_Group >> $GROUP_FILE 2>/dev/null
-   else
-      echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
-   fi       
+   #if [ "$type" == "url-test" ] || [ "$type" == "load-balance" ] || [ "$type" == "fallback" ] ; then
+   #  echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
+   #   cat $Proxy_Group >> $GROUP_FILE 2>/dev/null
+   #else
+   #  echo "  proxies:" >>$GROUP_FILE 2>/dev/null 
+   #fi       
  
    if [ "$name" != "$old_name" ]; then
       sed -i "s/,${old_name}$/,${name}#d/g" $load 2>/dev/null
@@ -609,11 +599,11 @@ if [ -f $SERVER_FILE ];then
 cat $SERVER_FILE >> $TEMP_FILE  2>/dev/null
 fi
 
-cat $GROUP_FILE >> $TEMP_FILE 2>/dev/null
-
 if [ -f $PROVIDER_FILE ];then 
 cat $PROVIDER_FILE >> $TEMP_FILE 2>/dev/null
 fi
+
+cat $GROUP_FILE >> $TEMP_FILE 2>/dev/null
 
 if [ -f $CONFIG_YAML ];then
 	rm -rf $CONFIG_YAML

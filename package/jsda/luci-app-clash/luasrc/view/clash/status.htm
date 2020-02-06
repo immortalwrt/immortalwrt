@@ -163,8 +163,9 @@ var HTTP = {
 			ip.innerHTML = status.localip ? '<b><font color="green">'+status.localip+'</font> </b>' : '<em><b><font color="red"><%:NOT SET%></font></b></em>';
 			port.innerHTML = status.dash_port ? '<b><font color="green">'+status.dash_port+'</font> </b>' : '<em><b><font color="red"><%:NOT SET%></font></b></em>';
 			secret.innerHTML = status.dash_pass ? '<b><font color="green">'+status.dash_pass+'</font> </b>' : '<em><b><font color="red"><%:NOT SET%></font></b></em>';
-			emode.innerHTML = status.clash ? '<b><font color="green" style="text-transform: uppercase;">'+status.e_mode+'</font> </b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';	
-			conf.innerHTML = status.clash ? '<b><input type="button" class="btn" style="background-color:black;padding: 5px;font-color:green;color:green;font-weight:bold" value="<%:VIEW CONFIG%>" onclick="return view(this)"/></b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
+			emode.innerHTML = status.clash ? '<b><font color="green" style="text-transform: uppercase;">'+status.e_mode+'</font> </b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';			if(status.typeconf != 0 || status.typeconf != ''){
+			conf.innerHTML = status.typeconf ? '<b><input type="button" class="btn" style="background-color:black;padding: 5px;font-color:green;color:green;font-weight:bold" value="<%:VIEW CONFIG%>" onclick="return view(this)"/></b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
+			}
 			if(status.typeconf==1){
 				conf_path.innerHTML = status.clash ? '<b><font color="green"><%:SUBSCRIBE%> </font></b>' : '<b><font color="red"><%:NOT RUNNING%></font></b>';
 			}

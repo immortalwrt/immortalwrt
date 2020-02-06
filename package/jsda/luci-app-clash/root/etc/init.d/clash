@@ -6,6 +6,7 @@ STOP=15
 CLASH="/etc/clash/clash"
 CLASHR="/usr/bin/clash"
 CLASHT="/etc/clash/clashtun/clash"
+CLASHD="/etc/clash/dtun/clash"
 CLASH_CONFIG="/etc/clash"
 CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
@@ -34,7 +35,7 @@ add_cron(){
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 #===========================================================================================================================
 	sed -i '/clash.txt/d' $CRON_FILE
-	echo '0 0 * * 0 echo "" >> /tmp/clash.txt' >> $CRON_FILE
+	echo '0 0 * * 0 echo "" >> /usr/share/clash/clash.txt' >> $CRON_FILE
 	[ -n "$(grep -w "/usr/share/clash/clash.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/clash.sh/d' $CRON_FILE
 	[ -n "$(grep -w "/usr/share/clash/v2ssr.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/v2ssr.sh/d' $CRON_FILE
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
@@ -206,7 +207,8 @@ rules(){
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		core=$(uci get clash.config.core 2>/dev/null)
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
-		
+		lan_ip=$(uci get network.lan.ipaddr 2>/dev/null |awk -F '/' '{print $1}' 2>/dev/null)
+		wan=$(ubus call network.interface.wan status 2>/dev/null | grep \"address\" | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' 2>/dev/null)
 		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
 			iptables -t nat -N clash              
 			iptables -t nat -A clash -d 0.0.0.0/8 -j RETURN
@@ -217,15 +219,13 @@ rules(){
 			iptables -t nat -A clash -d 192.168.0.0/16 -j RETURN
 			iptables -t nat -A clash -d 224.0.0.0/4 -j RETURN
 			iptables -t nat -A clash -d 240.0.0.0/4 -j RETURN
-			
-	
+			iptables -t nat -A clash -d "${lan_ip}" -j RETURN
+			if [ ! -z "$wan" ]; then
+                	iptables -t nat -A clash -d "${wan}" -j RETURN
+                	fi
 			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
-			if [ -z "$(iptables -nvL zone_lan_prerouting -t nat)" ]; then
-		           iptables -t nat -A PREROUTING -p tcp -j clash
-		    	else
-		           iptables -t nat -A zone_lan_prerouting -p tcp -j clash
-		    	fi
-			
+			iptables -t nat -A PREROUTING -p tcp -j clash
+		    	
 			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 		
 			if [ ! -z "${fake_ip_range}" ];then
@@ -238,14 +238,11 @@ rules(){
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 				ip6tables -t nat -N clash_ipv6
 				ip6tables -t nat -A clash_ipv6 -p tcp -j REDIRECT --to-ports "${redir_port}"
-				if [ -z "$(ip6tables -nvL zone_lan_prerouting -t nat)" ]; then
-				   ip6tables -t nat -A PREROUTING -p tcp -j clash_ipv6
-				else
-				   ip6tables -t nat -A zone_lan_prerouting -p tcp -j clash_ipv6
-				fi
+				ip6tables -t nat -A PREROUTING -p tcp -j clash_ipv6
+				
 			fi
 			
-		elif [ "${core}" -eq 3 ];then
+		elif [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 			PROXY_FWMARK="0x162"
 			PROXY_ROUTE_TABLE="0x162"
 			PROXY_BYPASS_USER="root"
@@ -265,11 +262,19 @@ rules(){
 			ipset add localnetwork 224.0.0.0/4
 			ipset add localnetwork 240.0.0.0/4
 			ipset add localnetwork 172.16.0.0/12
-
+			ipset add localnetwork "${lan_ip}"
+			if [ ! -z "$wan" ]; then
+                	ipset add localnetwork "${wan}"
+                	fi
+			if [ "${core}" -eq 3 ];then
 			ip tuntap add user root mode tun $TUN_DEVICE_NAME
 			ip link set $TUN_DEVICE_NAME up
 			ip address replace 198.18.0.0/16 dev $TUN_DEVICE_NAME
 			ip route replace default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE"
+			elif [ "${core}" -eq 4 ];then
+			ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
+			fi
+
 			ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"		
 			
 			iptables -t mangle -N clash
@@ -311,6 +316,10 @@ enable=$(uci get clash.config.enable 2>/dev/null)
 core=$(uci get clash.config.core 2>/dev/null)
 tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 
+if [ -f /etc/clash/config.yaml ];then
+ rm -rf /etc/clash/config.yaml >/dev/null 2>&1
+fi
+
 if [ "${enable}" -eq 1 ]; then
  	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "Starting Client.. " >$REAL_LOG 
@@ -323,10 +332,10 @@ if [ "${enable}" -eq 1 ]; then
 
 if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clash core not found,  download and install clash from update page  " >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clash core not found,  download and install clash from update page  " >> /usr/share/clash/clash.txt
 		echo "clash core not found,  download and install clash from update page" >> $REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/etc/clash/clash,请从更新页下载clash内核" >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/etc/clash/clash,请从更新页下载clash内核" >> /usr/share/clash/clash.txt
 		echo "找不到/etc/clash/clash,请从更新页下载clash内核" >> $REAL_LOG			
 	fi
 	sleep 2
@@ -334,10 +343,10 @@ if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
 	exit 0
 elif  [ "${core}" -eq 2 ] && [ ! -f /usr/bin/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr core not found in /usr/bin/clash  download and install clashr from update page  " >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr core not found in /usr/bin/clash  download and install clashr from update page  " >> /usr/share/clash/clash.txt
 		echo "clashr core not found,  download and install clash from update page" >> $REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/usr/bin/clash,请从更新页下载clashr内核" >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/usr/bin/clash,请从更新页下载clashr内核" >> /usr/share/clash/clash.txt
 		echo "找不到/usr/bin/clash,请从更新页下载clashr内核" >> $REAL_LOG		
 	fi
 	sleep 2
@@ -345,10 +354,10 @@ elif  [ "${core}" -eq 2 ] && [ ! -f /usr/bin/clash ]; then
 	exit 0
 elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr Tun core not found in /etc/clash/clashtun/clash " >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr Tun core not found in /etc/clash/clashtun/clash " >> /usr/share/clash/clash.txt
 		echo "clash Tun core not found in /etc/clash/clashtun/clash" >> $REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/etc/clash/clashtun/clash, clash Tun内核" >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/etc/clash/clashtun/clash, clash Tun内核" >> /usr/share/clash/clash.txt
 		echo "找不到/usr/bin/clash, clash Tun内核" >> $REAL_LOG	
 	fi	
 	sleep 2
@@ -412,8 +421,8 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 	
 	game_rules >/dev/null 2>&1
 
-    if [ "${core}" -eq 1 ];then
-        	nohup $CLASH -d "$CLASH_CONFIG" > /tmp/clash.txt 2>&1 &	
+       if [ "${core}" -eq 1 ];then
+        	nohup $CLASH -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Clash Core Started Successfully " >$REAL_LOG 
@@ -422,16 +431,23 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		fi
 		
 	elif [ "${core}" -eq 3 ];then
-       	 	nohup $CLASHT -d "$CLASH_CONFIG" > /tmp/clash.txt 2>&1 &	
+       	 	nohup $CLASHT -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Clash Core Started Successfully " >$REAL_LOG 
 		elif [ "${lang}" == "zh_cn" ];then
 			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
 		fi	
+	elif [ "${core}" -eq 4 ];then
+       	 	nohup $CLASHD -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Clash Core Started Successfully " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
+		fi	
 	elif [ "${core}" -eq 2 ];then
-        	nohup $CLASHR -d "$CLASH_CONFIG" > /tmp/clash.txt 2>&1 &		
+        	nohup $CLASHR -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Clashr Core Started Successfully " >$REAL_LOG 
 		elif [ "${lang}" == "zh_cn" ];then
@@ -448,11 +464,11 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		echo "设置 Clash iptables" >$REAL_LOG
 	fi
 
-    if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
+    	if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
        		uci set firewall.@defaults[0].forward=ACCEPT >/dev/null 2>&1
        		uci commit firewall >/dev/null 2>&1
        		/etc/init.d/firewall restart >/dev/null 2>&1
-    fi
+    	fi
 
         sleep 2
 	rules >/dev/null 2>&1
@@ -494,12 +510,12 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 	fi	
 else
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") -  problem with config.yaml,  config.yaml is either empty or not found " >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") -  problem with config.yaml,  config.yaml is either empty or not found " >> /usr/share/clash/clash.txt
 		echo "  problem with config file " >$REAL_LOG 
 		sleep 5
 		echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 你的config.yaml有问题还是为了空 0kb " >> /tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 你的config.yaml有问题还是为了空 0kb " >> /usr/share/clash/clash.txt
 		echo "  你的config.yaml有问题还是为了空 0kb " >$REAL_LOG
 		sleep 5
 		echo "Clash for OpenWRT" >$REAL_LOG 
@@ -509,12 +525,12 @@ fi
 else
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "Enable Client and Start Client Again" >$REAL_LOG 
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - Enable Client and Start Client Again" >>/tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - Enable Client and Start Client Again" >>/usr/share/clash/clash.txt
 		sleep 3
 		echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
     		echo "启用客户端并重新启动客户端" >$REAL_LOG
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - 启用客户端并重新启动客户端" >>/tmp/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - 启用客户端并重新启动客户端" >>/usr/share/clash/clash.txt
 		sleep 3
 		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
@@ -530,19 +546,15 @@ remove_mark(){
 		dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 
 		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
-		ip6tables -t nat -F clash_ipv6 2>/dev/null1 && ip6tables -t nat -X clash_ipv6 2>/dev/null
-		if [ -z "$(ip6tables -nvL zone_lan_prerouting -t nat)" ]; then
-			ip6tables -t nat -D PREROUTING -p tcp -j clash_ipv6 >/dev/null 2>&1
-		else
-		mangle_indexs=$(ip6tables -nvL zone_lan_prerouting -t nat | sed 1,2d | sed -n '/clash_ipv6/=' | sort -r)
+		ip6tables -t nat -F clash_ipv6 2>/dev/null1 && ip6tables -t nat -X clash_ipv6 2>/dev/null		
+		mangle_indexs=$(ip6tables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash_ipv6/=' | sort -r)
 		for mangle_index in $mangle_indexs; do
-			ip6tables -t nat -D zone_lan_prerouting $mangle_index 2>/dev/null
+			ip6tables -t nat -D PREROUTING $mangle_index 2>/dev/null
 		done
 		fi
-		fi
 
 
-		if [ "${core}" -eq 3 ];then
+		if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 		
 		PROXY_FWMARK="0x162" 2>/dev/null
 		PROXY_ROUTE_TABLE="0x162" 2>/dev/null
@@ -552,11 +564,11 @@ remove_mark(){
 		else
 		TUN_DEVICE_NAME=$TUN_DEVICE
 		fi
-		
+		if [ "${core}" -eq 3 ];then
 		ip link set dev $TUN_DEVICE_NAME down 2>/dev/null
 		ip tuntap del $TUN_DEVICE_NAME mode tun 2>/dev/null
-		
 		ip route del default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE" 2>/dev/null
+		fi
 		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
 
 		iptables -t mangle -D OUTPUT -j clash 2>/dev/null
@@ -578,7 +590,7 @@ remove_mark(){
 		ipset destroy localnetwork 2>/dev/null
 				
 		fi
-        /etc/init.d/dnsmasq restart >/dev/null 2>&1
+        	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
 
 stop(){
@@ -606,14 +618,11 @@ stop(){
 		fi
 										
 		iptables -t nat -F clash >/dev/null 2>&1 && iptables -t nat -X clash >/dev/null 2>&1
-		if [ -z "$(iptables -nvL zone_lan_prerouting -t nat)" ]; then
-			iptables -t nat -D PREROUTING -p tcp -j clash >/dev/null 2>&1
-		else
-		nat_indexs=$(iptables -nvL zone_lan_prerouting -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
+		nat_indexs=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
 		for nat_index in $nat_indexs; do
-			iptables -t nat -D zone_lan_prerouting $nat_index >/dev/null 2>&1
+			iptables -t nat -D PREROUTING $nat_index >/dev/null 2>&1
 		done
-		fi
+		
 
 		fake=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.0\/16/=' |sort -r)
        		for fake in $fake; do
@@ -666,26 +675,26 @@ stop(){
 		revert_dns >/dev/null 2>&1
    	    	sleep 1
 
-	 	echo "" >/tmp/clash.txt >/dev/null 2>&1
+	 	echo "" >/usr/share/clash/clash.txt >/dev/null 2>&1
 
 		echo "0" > /usr/share/clash/logstatus_check >/dev/null 2>&1
 		
-		rm -rf /etc/clash/*.yaml /etc/clash/*.yml >/dev/null 2>&1
+		
 
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "  $(date "+%Y-%m-%d %H:%M:%S") - CLIENT IS DISABLED " >> /tmp/clash.txt
+			echo "  $(date "+%Y-%m-%d %H:%M:%S") - CLIENT IS DISABLED " >> /usr/share/clash/clash.txt
 			echo "Client is Disabled " >$REAL_LOG
 			sleep 2
 			echo "Clash for OpenWRT" >$REAL_LOG
 		elif [ "${lang}" == "zh_cn" ];then
-			echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 客户端被禁用 " >> /tmp/clash.txt
+			echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 客户端被禁用 " >> /usr/share/clash/clash.txt
 			echo "客户端被禁用 " >$REAL_LOG
 			sleep 2
 			echo "Clash for OpenWRT" >$REAL_LOG
 		fi	
-	if pidof clash >/dev/null; then
-		kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
-	fi
+		if pidof clash >/dev/null; then
+			kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		fi
 
 
 #=========================================================================================================================== 	

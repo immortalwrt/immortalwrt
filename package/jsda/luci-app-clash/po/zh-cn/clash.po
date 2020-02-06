@@ -952,3 +952,6 @@ msgstr "代理模式"
 
 msgid "Choose proxy mode"
 msgstr "选择代理模式"
+
+msgid "NB: Upload only Dreamacro clash tun core - (https://github.com/Dreamacro/clash/releases/tag/TUN)"
+msgstr "注意：只上传clash tun内核-(https://github.com/Dreamacro/clash/releases/tag/TUN)"

@@ -22,7 +22,10 @@ if nixio.fs.access("/usr/bin/clash") then
 o:value("2", translate("Clashr"))
 end
 if nixio.fs.access("/etc/clash/clashtun/clash") then
-o:value("3", translate("ClashTun"))
+o:value("3", translate("Clash(cTun)"))
+end
+if nixio.fs.access("/etc/clash/dtun/clash") then
+o:value("4", translate("Clash(dTun)"))
 end
 o.description = translate("Select core, clashr support ssr while clash does not.")
 

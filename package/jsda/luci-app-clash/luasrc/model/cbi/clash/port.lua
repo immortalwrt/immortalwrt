@@ -73,9 +73,9 @@ o.description = translate("Dashboard Secret")
 
 o = s:option(ListValue, "p_mode", translate("Proxy Mode"))
 o.description = translate("Choose proxy mode")
-o:value("Rule", "RULE")
-o:value("Global", "GLOBAL")
-o:value("Direct", "DIRECT")
+o:value("Rule", translate("RULE"))
+o:value("Global", translate("GLOBAL"))
+o:value("Direct", translate("DIRECT"))
 o.default = "Rule"
 
 o = s:option(ListValue, "level", translate("Log level"))
