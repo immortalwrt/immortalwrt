@@ -1,17 +1,12 @@
 --[[
 LuCI - Lua Configuration Interface
 Copyright 2019 lisaac <https://github.com/lisaac/luci-app-diskman>
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-  http://www.apache.org/licenses/LICENSE-2.0
-$Id$
 ]]--
 
 require "luci.util"
 local ver = require "luci.version"
 
-local CMD = {"parted", "mdadm", "blkid", "smartctl", "df", "sgdisk", "btrfs", "mergerfs", "snapraid", "lsblk"}
+local CMD = {"parted", "mdadm", "blkid", "smartctl", "df", "sgdisk", "btrfs", "mergerfs", "snapraid"}
 
 local d = {command ={}}
 for _, cmd in ipairs(CMD) do
@@ -21,7 +16,7 @@ end
 
 local mounts = nixio.fs.readfile("/proc/mounts") or ""
 local swaps = nixio.fs.readfile("/proc/swaps") or ""
-local df = luci.sys.exec(d.command.df) or ""
+local df = luci.sys.exec(d.command.df .. " -B1") or ""
 
 function byte_format(byte)
   local suff = {"B", "KB", "MB", "GB", "TB"}
@@ -142,11 +137,16 @@ local get_mount_point = function(partition)
 
 end
 
-local get_partition_useage = function(partition)
+-- return used, free, usage
+local get_partition_usage = function(partition)
   if not nixio.fs.access("/dev/"..partition) then return false end
-  local useage = df:match("\n/dev/" .. partition .. "%s+%d+%s+%d+%s+%d+%s+([0-9]+)%%%s")
-  useage = useage and (useage .. "%") or false
-  return useage
+  local used, free, usage = df:match("\n/dev/" .. partition .. "%s+%d+%s+(%d+)%s+(%d+)%s+(%d+)%%%s-")
+
+  usage = usage and (usage .. "%") or "-"
+  used = used and tonumber(used) or 0
+  free = free and tonumber(free) or 0
+
+  return used, free, usage
 end
 
 local get_parted_info = function(device)
@@ -195,7 +195,15 @@ local get_parted_info = function(device)
       partition_temp["sec_start"] = partition_temp["sec_start"] and partition_temp["sec_start"]:sub(1,-2)
       partition_temp["sec_end"] = partition_temp["sec_end"] and partition_temp["sec_end"]:sub(1,-2)
       partition_temp["mount_point"] = partition_temp["name"]~="-" and get_mount_point(partition_temp["name"]) or "-"
-      partition_temp["useage"] = partition_temp["mount_point"]~="-" and get_partition_useage(partition_temp["name"]) or "-"
+      if partition_temp["mount_point"]~="-" then
+        partition_temp["used"], partition_temp["free"], partition_temp["usage"] = get_partition_usage(partition_temp["name"])
+        partition_temp["used_formated"] = partition_temp["used"] and byte_format(partition_temp["used"]) or "-"
+        partition_temp["free_formated"] = partition_temp["free"] and byte_format(partition_temp["free"]) or "-"
+      else
+        partition_temp["used"], partition_temp["free"], partition_temp["usage"] = 0,0,"-"
+        partition_temp["used_formated"] = "-"
+        partition_temp["free_formated"] = "-"
+      end
       -- if disk_temp["p_table"] == "MBR" and (partition_temp["number"] < 4) and (partition_temp["number"] > 0) then
       --   local real_size_sec = tonumber(nixio.fs.readfile("/sys/block/"..device.."/"..partition_temp["name"].."/size")) * tonumber(disk_temp.phy_sec)
       --   if real_size_sec ~= partition_temp["size"] then
@@ -288,8 +296,8 @@ d.get_disk_info = function(device, wakeup)
   {
     path, model, sn, size, size_mounted, flags, type, temp, p_table, logic_sec, phy_sec, sec_size, sata_ver, rota_rate, status, health,
     partitions = {
-      1 = { number, name, sec_start, sec_end, size, size_mounted, fs, tag_name, type, flags, mount_point, useage },
-      2 = { number, name, sec_start, sec_end, size, size_mounted, fs, tag_name, type, flags, mount_point, useage },
+      1 = { number, name, sec_start, sec_end, size, size_mounted, fs, tag_name, type, flags, mount_point, usage, used, free, used_formated, free_formated},
+      2 = { number, name, sec_start, sec_end, size, size_mounted, fs, tag_name, type, flags, mount_point, usage, used, free, used_formated, free_formated},
       ...
     }
     --raid devices only
@@ -538,7 +546,7 @@ d.gen_mdadm_config = function()
 end
 
 -- list btrfs filesystem device
--- {uuid={uuid, label, devices, size, used}...}
+-- {uuid={uuid, label, members, size, used}...}
 d.list_btrfs_devices = function()
   local btrfs_device = {}
   if not d.command.btrfs then return btrfs_device end
@@ -561,7 +569,7 @@ d.list_btrfs_devices = function()
     if size and device then
       btrfs_device[_uuid]["size"] = btrfs_device[_uuid]["size"] and btrfs_device[_uuid]["size"] + tonumber(size) or tonumber(size)
       btrfs_device[_uuid]["size_formated"] = byte_format(btrfs_device[_uuid]["size"])
-      btrfs_device[_uuid]["devices"] = btrfs_device[_uuid]["devices"] and btrfs_device[_uuid]["devices"]..", "..device or device
+      btrfs_device[_uuid]["members"] = btrfs_device[_uuid]["members"] and btrfs_device[_uuid]["members"]..", "..device or device
     end
   end
   return btrfs_device
@@ -575,22 +583,65 @@ d.create_btrfs = function(blabel, blevel, bmembers)
   return luci.util.exec(cmd)
 end
 
+-- get btrfs info
+-- {uuid, label, members, data_raid_level,metadata_raid_lavel, size, used, size_formated, used_formated, free, free_formated, usage}
+d.get_btrfs_info = function(m_point)
+  local btrfs_info = {}
+  if not m_point or not d.command.btrfs then return btrfs_info end
+  local cmd = d.command.btrfs .. " filesystem show --raw " .. m_point
+  local _, line, uuid, _label, members
+  for _, line in ipairs(luci.util.execl(cmd)) do
+    if not uuid and not _label then
+      _label, uuid = line:match("^Label:%s+([^%s]+)%s+uuid:%s+([^s]+)")
+    else
+      local mb = line:match("%s+devid.+path%s+([^%s]+)")
+      if mb then
+        members = members and (members .. ", ".. mb) or mb
+      end
+    end
+  end
+
+  if not _label or not uuid then return btrfs_info end
+  local label = _label:match("^'([^']+)'")
+  cmd = d.command.btrfs .. " filesystem usage -b " .. m_point
+  local used, free, data_raid_level, metadata_raid_lavel
+  for _, line in ipairs(luci.util.execl(cmd)) do
+    if not used then
+      used = line:match("^%s+Used:%s+(%d+)")
+    elseif not free then
+      free = line:match("^%s+Free %(estimated%):%s+(%d+)")
+    elseif not data_raid_level then
+      data_raid_level = line:match("^Data,%s-(%w+)")
+    elseif not metadata_raid_lavel then
+      metadata_raid_lavel = line:match("^Metadata,%s-(%w+)")
+    end
+  end
+  if used and free and data_raid_level and metadata_raid_lavel then
+    used = tonumber(used)
+    free = tonumber(free)
+    btrfs_info = {
+      uuid = uuid,
+      label = label,
+      data_raid_level = data_raid_level,
+      metadata_raid_lavel = metadata_raid_lavel,
+      used = used,
+      free = free,
+      size = used + free,
+      size_formated = byte_format(used + free),
+      used_formated = byte_format(used),
+      free_formated = byte_format(free),
+      members = members,
+      usage = string.format("%.2f",(used / (free+used) * 100)) .. "%"
+    }
+  end
+  return btrfs_info
+end
+
 -- get btrfs subvolume
--- {id={id, gen, top_level, path, snapshots, otime, default_subvolume}...}, mount_point
-d.get_btrfs_subv = function(uuid, snapshot)
+-- {id={id, gen, top_level, path, snapshots, otime, default_subvolume}...}
+d.get_btrfs_subv = function(m_point, snapshot)
 local subvolume = {}
-if not uuid or not d.command.lsblk or not d.command.btrfs then return subvolume end
--- check mounted device & get mount point
--- local m_point = luci.util.exec(d.command.lsblk .. " -o UUID,MOUNTPOINT | awk '{if($1==\""..uuid.."\") print $2}'")
--- clear sapce and \n
--- m_point = m_point and string.gsub(m_point, "[\n%s]+", "")
--- if not m_point or m_point =="" then
-m_point = "/tmp/.btrfs_tmp"
-nixio.fs.mkdirr(m_point)
-luci.util.exec("umount "..m_point .. " >/dev/null 2>&1")
-luci.util.exec("mount -o subvol=/ -U "..uuid.." "..m_point)
--- os.execute("sleep " .. 0.5)
--- end
+if not m_point or not d.command.btrfs then return subvolume end
 
 -- get default subvolume
 local cmd = d.command.btrfs .. " subvolume get-default " .. m_point
@@ -603,23 +654,27 @@ if not snapshot then
   cmd = d.command.btrfs .. " subvolume show ".. m_point
   for _, line in ipairs(luci.util.execl(cmd)) do
     if not section_snap then
-      local uuid = line:match("^%s-UUID:%s+([^%s]+)")
-      local otime = line:match("^%s+Creation time:%s+(.+)")
-      local id = line:match("^%s+Subvolume ID:%s+([^%s]+)")
-      if uuid then
-        _uuid = uuid
-      elseif otime then
-        _otime = otime
-      elseif id then 
-        _id = id
+      if not _uuid then
+        _uuid = line:match("^%s-UUID:%s+([^%s]+)")
+      elseif not _otime then
+        _otime = line:match("^%s+Creation time:%s+(.+)")
+      elseif not _id then
+        _id = line:match("^%s+Subvolume ID:%s+([^%s]+)")
       elseif line:match("^%s+(Snapshot%(s%):)") then
-        section_snap = "true"
+        section_snap = true
       end
     else
       local snapshot = line:match("^%s+(.+)")
-      _snap = _snap and (_snap ..", /".. snapshot) or ("/"..snapshot)
+      if snapshot then
+        _snap = _snap and (_snap ..", /".. snapshot) or ("/"..snapshot)
+      end
     end
   end
+  luci.util.perror(_uuid)
+  luci.util.perror(_otime)
+  luci.util.perror(_id)
+  luci.util.perror(_snap)
+  luci.util.perror(_uuid)
   if _uuid and _otime and _id then
     subvolume["0".._id] = {id = _id , uuid = _uuid, otime = _otime, snapshots = _snap, path = "/"}
     if default_subvolume_id == _id then
@@ -666,7 +721,7 @@ end
 -- if m_point == "/tmp/.btrfs_tmp" then
 --   luci.util.exec("umount " .. m_point)
 -- end
-return subvolume, m_point
+return subvolume
 end
 
 return d

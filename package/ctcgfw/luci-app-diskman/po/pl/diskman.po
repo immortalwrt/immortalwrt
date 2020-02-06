@@ -61,7 +61,7 @@ msgstr "Sektor początkowy"
 msgid "End Sector"
 msgstr "Sektor końcowy"
 
-msgid "Useage"
+msgid "Usage"
 msgstr "Użycie"
 
 msgid "Model"
@@ -126,3 +126,66 @@ msgstr "Informacja o partycjach"
 
 msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
 msgstr "Sektory wyrównywane są do wielokrotności 2048, sektor końcowy można podać jako rozmiar w postaci +size{b,k,m,g,t}"
+
+msgid "Multiple Devices Btrfs Creation"
+msgstr "Kreator urządzeń Btrfs"
+
+msgid "Label"
+msgstr "Etykieta"
+
+msgid "Btrfs Label"
+msgstr "Etykieta Btrfs"
+
+msgid "Btrfs Raid Level"
+msgstr "Poziom Raid Btrfs"
+
+msgid "Btrfs Member"
+msgstr "Członek Btrfs"
+
+msgid "Create Btrfs"
+msgstr "Utwórz Btrfs"
+
+msgid "New Snapshot"
+msgstr "Nowy obraz"
+
+msgid "SubVolumes"
+msgstr "SubVolumes"
+
+msgid "Top Level"
+msgstr "Top Level"
+
+msgid "Manage Btrfs"
+msgstr "Zarządzaj Btrfs"
+
+msgid "Otime"
+msgstr "Otime"
+
+msgid "Snapshots"
+msgstr "Obrazy"
+
+msgid "Set Default"
+msgstr "Ustaw domyślnie"
+
+msgid "Source Path"
+msgstr "Ścieżka źródłowa"
+
+msgid "Readonly"
+msgstr "Tylko do odczytu"
+
+msgid "Delete"
+msgstr "Usuń"
+
+msgid "Create"
+msgstr "Utwórz"
+
+msgid "Destination Path (optional)"
+msgstr "Ścieżka docelowa (opcjonalnie)"
+
+msgid "Metadata"
+msgstr "Metadata"
+
+msgid "Data"
+msgstr "Data"
+
+msgid "Btrfs Info"
+msgstr "Informacja o Btrfs"

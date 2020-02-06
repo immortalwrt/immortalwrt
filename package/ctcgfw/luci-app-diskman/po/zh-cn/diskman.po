@@ -61,8 +61,14 @@ msgstr "起始扇区"
 msgid "End Sector"
 msgstr "中止扇区"
 
-msgid "Useage"
-msgstr "使用情况"
+msgid "Usage"
+msgstr "用量"
+
+msgid "Used"
+msgstr "已使用"
+
+msgid "Free Space"
+msgstr "空闲空间"
 
 msgid "Model"
 msgstr "主机型号"
@@ -126,3 +132,66 @@ msgstr "分区信息"
 
 msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
 msgstr "默认2048扇区对齐，【中止扇区】支持 +容量{b,k,m,g,t} 格式，例：+500m +10g +1t"
+
+msgid "Multiple Devices Btrfs Creation"
+msgstr "Btrfs 阵列创建"
+
+msgid "Label"
+msgstr "卷标"
+
+msgid "Btrfs Label"
+msgstr "Btrfs 卷标"
+
+msgid "Btrfs Raid Level"
+msgstr "Btrfs Raid 级别"
+
+msgid "Btrfs Member"
+msgstr "Btrfs 整列成员"
+
+msgid "Create Btrfs"
+msgstr "创建 Btrfs"
+
+msgid "New Snapshot"
+msgstr "新建快照"
+
+msgid "SubVolumes"
+msgstr "子卷"
+
+msgid "Top Level"
+msgstr "父ID"
+
+msgid "Manage Btrfs"
+msgstr "Btrfs 管理"
+
+msgid "Otime"
+msgstr "创建时间"
+
+msgid "Snapshots"
+msgstr "快照"
+
+msgid "Set Default"
+msgstr "默认子卷"
+
+msgid "Source Path"
+msgstr "源目录"
+
+msgid "Readonly"
+msgstr "只读"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Create"
+msgstr "创建"
+
+msgid "Destination Path (optional)"
+msgstr "目标目录（可选）"
+
+msgid "Metadata"
+msgstr "元数据"
+
+msgid "Data"
+msgstr "数据"
+
+msgid "Btrfs Info"
+msgstr "Btrfs 信息"
