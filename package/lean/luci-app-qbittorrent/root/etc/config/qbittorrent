@@ -1,19 +1,6 @@
 
-
-config qbittorrent 'main'
-	option user 'root'
-	option Locale 'zh'
-	option BTProtocol 'Both'
-	option DisableAutoTMMByDefault 'true'
-	option CategoryChanged 'false'
-	option DefaultSavePathChanged 'true'
-	option CategorySavePathChanged 'true'
-	option Encryption '0'
-	option MaxRatioAction '0'
-	option CSRFProtection 'false'
-	option SeedChokingAlgorithm 'FastestUpload'
-	option Enabled 'false'
-	option Port '8080'
-	option profile '/opt'
-	option enabled '0'
-
+config qbittorrent
+	option enable '0'
+	option port '8080'
+	option profile_dir '/etc'
+	option download_dir '/mnt/download'
