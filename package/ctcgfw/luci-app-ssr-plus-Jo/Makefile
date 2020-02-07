@@ -155,7 +155,7 @@ define Package/luci-app-ssr-plus-Jo/install
 	$(INSTALL_DIR) $(1)/
 	cp -pR ./root/* $(1)/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	cp -pR ./po/zh-cn/ssr-plus.zh-cn.lmo $(1)/usr/lib/lua/luci/i18n/ssr-plus.zh-cn.lmo
+	cp -pR ./po/zh_Hans/ssr-plus.zh_Hans.lmo $(1)/usr/lib/lua/luci/i18n/ssr-plus.zh_Hans.lmo
 endef
 
 define Package/luci-app-ssr-plus-Jo/postinst

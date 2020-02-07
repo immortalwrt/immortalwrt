@@ -34,7 +34,7 @@ rm -rf /tmp/luci*
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/i18n/zh-cn/*.po), \
+	$(foreach po,$(wildcard ${CURDIR}/i18n/zh_Hans/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
