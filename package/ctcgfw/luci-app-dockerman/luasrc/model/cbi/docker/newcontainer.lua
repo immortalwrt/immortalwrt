@@ -50,6 +50,8 @@ if cmd_line and cmd_line:match("^docker.+") then
         key = "port"
       elseif key == "e" then
         key = "env"
+      elseif key == "dns" then
+        key = "dns"
       elseif key == "net" then
         key = "network"
       elseif key == "cpu-shares" then
@@ -64,7 +66,7 @@ if cmd_line and cmd_line:match("^docker.+") then
       end
       --key=value
       if val then
-        if key == "mount" or key == "link" or key == "env" or key == "port" or key == "device" or key == "tmpfs" then
+        if key == "mount" or key == "link" or key == "env" or key == "dns" or key == "port" or key == "device" or key == "tmpfs" then
           if not default_config[key] then default_config[key] = {} end
           table.insert( default_config[key], val )
         else
@@ -76,7 +78,7 @@ if cmd_line and cmd_line:match("^docker.+") then
       cursor = 1
     -- value
     elseif key and type(key) == "string" and cursor == 1 then
-      if key == "mount" or key == "link" or key == "env" or key == "port" or key == "device" or key == "tmpfs" then
+      if key == "mount" or key == "link" or key == "env" or key == "dns" or key == "port" or key == "device" or key == "tmpfs" then
         if not default_config[key] then default_config[key] = {} end
         table.insert( default_config[key], w )
       else
@@ -114,6 +116,7 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
     default_config.ip = default_config.network and default_config.network ~= "bridge" and default_config.network ~= "host" and default_config.network ~= "null" and create_body.NetworkingConfig.EndpointsConfig[default_config.network].IPAMConfig and create_body.NetworkingConfig.EndpointsConfig[default_config.network].IPAMConfig.IPv4Address or nil
     default_config.link = create_body.HostConfig.Links
     default_config.env = create_body.Env
+    default_config.dns = create_body.HostConfig.Dns
     default_config.mount = create_body.HostConfig.Binds
 
     if create_body.HostConfig.PortBindings and type(create_body.HostConfig.PortBindings) == "table" then
@@ -178,12 +181,6 @@ d.disabled = 0
 d.enabled = 1
 d.default = default_config.tty and 1 or 0
 
-d = s:option(Flag, "_force_pull", translate("Always pull image first"))
-d.rmempty = true
-d.disabled = 0
-d.enabled = 1
-d.default = 0
-
 d = s:option(Value, "image", translate("Docker Image"))
 d.rmempty = true
 d.default = default_config.image or nil
@@ -192,6 +189,12 @@ for _, v in ipairs (images) do
     d:value(v.RepoTags[1], v.RepoTags[1])
   end
 end
+
+d = s:option(Flag, "_force_pull", translate("Always pull image first"))
+d.rmempty = true
+d.disabled = 0
+d.enabled = 1
+d.default = 0
 
 d = s:option(Flag, "privileged", translate("Privileged"))
 d.rmempty = true
@@ -217,11 +220,6 @@ d_ip.datatype="ip4addr"
 d_ip:depends("network", "nil")
 d_ip.default = default_config.ip or nil
 
-d = s:option(Value, "user", translate("User"))
-d.placeholder = "1000:1000"
-d.rmempty = true
-d.default = default_config.user or nil
-
 d = s:option(DynamicList, "link", translate("Links with other containers"))
 d.template = "docker/cbi/xdynlist"
 d.placeholder = "container_name:alias"
@@ -229,19 +227,30 @@ d.rmempty = true
 d:depends("network", "bridge")
 d.default = default_config.link or nil
 
-d = s:option(DynamicList, "env", translate("Environmental Variable"))
+d = s:option(DynamicList, "dns", translate("Set custom DNS servers"))
+d.template = "docker/cbi/xdynlist"
+d.placeholder = "8.8.8.8"
+d.rmempty = true
+d.default = default_config.dns or nil
+
+d = s:option(Value, "user", translate("User(-u)"), translate("The user that commands are run as inside the container.(format: name|uid[:group|gid])"))
+d.placeholder = "1000:1000"
+d.rmempty = true
+d.default = default_config.user or nil
+
+d = s:option(DynamicList, "env", translate("Environmental Variable(-e)"), translate("Set environment variables to inside the container"))
 d.template = "docker/cbi/xdynlist"
 d.placeholder = "TZ=Asia/Shanghai"
 d.rmempty = true
 d.default = default_config.env or nil
 
-d = s:option(DynamicList, "mount", translate("Bind Mount"))
+d = s:option(DynamicList, "mount", translate("Bind Mount(-v)"), translate("Bind mount a volume"))
 d.template = "docker/cbi/xdynlist"
 d.placeholder = "/media:/media:slave"
 d.rmempty = true
 d.default = default_config.mount or nil
 
-local d_ports = s:option(DynamicList, "port", translate("Exposed Ports"))
+local d_ports = s:option(DynamicList, "port", translate("Exposed Ports(-p)"), translate("Publish container's port(s) to the host"))
 d_ports.template = "docker/cbi/xdynlist"
 d_ports.placeholder = "2200:22/tcp"
 d_ports.rmempty = true
@@ -258,14 +267,14 @@ d.disabled = 0
 d.enabled = 1
 d.default = default_config.advance or 0
 
-d = s:option(DynamicList, "device", translate("Device"))
+d = s:option(DynamicList, "device", translate("Device(--device)"), translate("Add host device to the container"))
 d.template = "docker/cbi/xdynlist"
 d.placeholder = "/dev/sda:/dev/xvdc:rwm"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.device or nil
 
-d = s:option(DynamicList, "tmpfs", translate("Tmpfs"), translate("Mount tmpfs filesystems"))
+d = s:option(DynamicList, "tmpfs", translate("Tmpfs(--tmpfs)"), translate("Mount tmpfs directory"))
 d.template = "docker/cbi/xdynlist"
 d.placeholder = "/run:rw,noexec,nosuid,size=65536k"
 d.rmempty = true
@@ -279,7 +288,7 @@ d:depends("advance", 1)
 d.datatype="ufloat"
 d.default = default_config.cpus or nil
 
-d = s:option(Value, "cpushares", translate("CPU Shares Weight"), translate("CPU shares (relative weight, if 0 is set, the system will ignore the value and use the default of 1024."))
+d = s:option(Value, "cpushares", translate("CPU Shares Weight"), translate("CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."))
 d.placeholder = "1024"
 d.rmempty = true
 d:depends("advance", 1)
@@ -321,7 +330,7 @@ end
 m.handle = function(self, state, data)
   if state ~= FORM_VALID then return end
   local tmp
-  local name = data.name
+  local name = data.name or ("luci_" .. os.date("%Y%m%d%H%M%S"))
   local tty = type(data.tty) == "number" and (data.tty == 1 and true or false) or default_config.tty or false
   local interactive = type(data.interactive) == "number" and (data.interactive == 1 and true or false) or default_config.interactive or false
   local image = data.image
@@ -332,6 +341,7 @@ m.handle = function(self, state, data)
   local privileged = type(data.privileged) == "number" and (data.privileged == 1 and true or false) or default_config.privileged or false
   local restart = data.restart
   local env = data.env
+  local dns = data.dns
   local network = data.network
   local ip = (network ~= "bridge" and network ~= "host" and network ~= "none") and data.ip or nil
   local mount = data.mount
@@ -422,6 +432,7 @@ m.handle = function(self, state, data)
   create_body.Image = image
   create_body.ExposedPorts = (next(exposedports) ~= nil) and exposedports or nil
   create_body.HostConfig = create_body.HostConfig or {}
+  create_body.HostConfig.Dns = dns
   create_body.HostConfig.Binds = (#mount ~= 0) and mount or nil
   create_body.HostConfig.RestartPolicy = { Name = restart, MaximumRetryCount = 0 }
   create_body.HostConfig.Privileged = privileged and true or false

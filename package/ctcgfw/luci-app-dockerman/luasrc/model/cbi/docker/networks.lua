@@ -57,7 +57,7 @@ network_selecter.render = function(self, section, scope)
   Flag.render(self, section, scope)
 end
 
-network_name = network_table:option(DummyValue, "_name", translate("Name"))
+network_name = network_table:option(DummyValue, "_name", translate("Network Name"))
 network_driver = network_table:option(DummyValue, "_driver", translate("Driver"))
 network_interface = network_table:option(DummyValue, "_interface", translate("Parent Interface"))
 network_subnet = network_table:option(DummyValue, "_subnet", translate("Subnet"))
