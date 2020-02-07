@@ -253,6 +253,11 @@ get_remote_config(){
 				[ -z "$node_address" -o "$node_address" == "" ] && return
 				
 				[ -z "$remarks" -o "$remarks" == "" ] && remarks="${node_address}:${node_port}"
+				tmp=$(echo $remarks | grep -E "过期时间|剩余流量|QQ群|官网")
+				[ -n "$tmp" ] && {
+					echo "$Date: 丢弃无用节点：$tmp" >> $LOG_FILE
+					return
+				}
 				
 				# 把全部节点节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
 				if [ ! -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ]; then
@@ -265,7 +270,6 @@ get_remote_config(){
 			done
 			return
 		fi
-	
 	fi
 	
 	node_address=$(echo -n $node_address | awk '{print gensub(/[^!-~]/,"","g",$0)}')
@@ -273,6 +277,11 @@ get_remote_config(){
 	[ -z "$node_address" -o "$node_address" == "" ] && return
 	
 	[ -z "$remarks" -o "$remarks" == "" ] && remarks="${node_address}:${node_port}"
+	tmp=$(echo $remarks | grep -E "过期时间|剩余流量|QQ群|官网")
+	[ -n "$tmp" ] && {
+		echo "$Date: 丢弃无用节点：$tmp" >> $LOG_FILE
+		return
+	}
 	
 	# 把全部节点节点写入文件 /usr/share/${CONFIG}/sub/all_onlinenodes
 	if [ ! -f "/usr/share/${CONFIG}/sub/all_onlinenodes" ]; then
@@ -355,6 +364,7 @@ add_nodes(){
 		${uci_set}v2ray_ws_path="$json_path"
 		${uci_set}v2ray_h2_host="$json_host"
 		${uci_set}v2ray_h2_path="$json_path"
+		${uci_set}tls_allowInsecure=1
 		
 		if [ "$1" == "add" ]; then
 			let addnum_v2ray+=1

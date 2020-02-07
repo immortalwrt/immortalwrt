@@ -157,14 +157,14 @@ msgstr "DNS地址"
 msgid "China DNS Server"
 msgstr "国内DNS服务器"
 
-msgid "Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as smartdns,AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash!"
-msgstr "例：127.0.0.1#6053 使用本机的6053端口的DNS服务。例：smartdns，AdGuardHome等等。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。<br />如果你使用自定义，除非你知道你在做什么，否则设置不当会直接导致卡到崩溃！"
+msgid "If you want to work with other DNS acceleration services, use the default.<br />Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as SmartDNS, AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash !"
+msgstr "如果你想和其他DNS加速服务一起工作，请使用默认。<br />例：127.0.0.1#6053 使用本机的6053端口的DNS服务。例：SmartDNS，AdGuardHome等等。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。<br />如果你使用自定义，除非你知道你在做什么，否则设置不当会直接导致卡到崩溃！"
 
 msgid "Upstream trust DNS Server for ChinaDNS-NG"
 msgstr "ChinaDNS-NG可信DNS"
 
-msgid "Example: 127.0.0.1#5353 ,such as dns2socks,dns-forwarder...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
-msgstr "例：127.0.0.1#5353 例：dns2socks，dns-forwarder等等。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
+msgid "You can use other resolving DNS services as trusted DNS, Example: dns2socks, dns-forwarder... 127.0.0.1#5353<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
+msgstr "你可以使用其他解决污染DNS服务作为可信DNS，例：dns2socks，dns-forwarder等等。127.0.0.1#5353<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
 
 msgid "The server client can also use this rule to scientifically surf the Internet.<br /> Global and continental whitelist are not recommended for non-special cases!"
 msgstr "本机服务器的客户端也可以使用这个代理模式上网。<br />非特殊情况不推荐使用全局和大陆白名单！"
