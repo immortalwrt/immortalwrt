@@ -14,9 +14,12 @@ for _, cmd in ipairs(CMD) do
     d.command[cmd] = command:match("^.+"..cmd) or nil
 end
 
+d.command.mount = nixio.fs.access("/usr/bin/mount") and "/usr/bin/mount" or "/bin/mount"
+d.command.umount = nixio.fs.access("/usr/bin/umount") and "/usr/bin/umount" or "/bin/umount"
+
 local mounts = nixio.fs.readfile("/proc/mounts") or ""
 local swaps = nixio.fs.readfile("/proc/swaps") or ""
-local df = luci.sys.exec(d.command.df .. " -B1") or ""
+local df = luci.sys.exec(d.command.df) or ""
 
 function byte_format(byte)
   local suff = {"B", "KB", "MB", "GB", "TB"}
@@ -143,8 +146,8 @@ local get_partition_usage = function(partition)
   local used, free, usage = df:match("\n/dev/" .. partition .. "%s+%d+%s+(%d+)%s+(%d+)%s+(%d+)%%%s-")
 
   usage = usage and (usage .. "%") or "-"
-  used = used and tonumber(used) or 0
-  free = free and tonumber(free) or 0
+  used = used and (tonumber(used) * 1024) or 0
+  free = free and (tonumber(free) * 1024) or 0
 
   return used, free, usage
 end
@@ -670,11 +673,6 @@ if not snapshot then
       end
     end
   end
-  luci.util.perror(_uuid)
-  luci.util.perror(_otime)
-  luci.util.perror(_id)
-  luci.util.perror(_snap)
-  luci.util.perror(_uuid)
   if _uuid and _otime and _id then
     subvolume["0".._id] = {id = _id , uuid = _uuid, otime = _otime, snapshots = _snap, path = "/"}
     if default_subvolume_id == _id then

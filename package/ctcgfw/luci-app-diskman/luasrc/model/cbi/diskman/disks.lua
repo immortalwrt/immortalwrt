@@ -147,7 +147,7 @@ if dm.command.mdadm then
     -- mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2 /dev/sdb6 /dev/sdc5
     local res = dm.create_raid(rname, rlevel, rmembers)
     if res and res:match("^ERR") then
-      m.errmessage = translate(res)
+      m.errmessage = luci.util.pcdata(res)
       return
     end
     dm.gen_mdadm_config()
@@ -251,9 +251,9 @@ btn_umount.write = function(self, section, value)
   local res
   if value == translate("Mount") then
     luci.util.exec("mkdir -p ".. _mount_point.mount_point)
-    res = luci.util.exec("mount ".. _mount_point.device .. (_mount_point.fs and (" -t ".. _mount_point.fs )or "") .. (_mount_point.mount_options and (" -o " .. _mount_point.mount_options.. " ") or  " ").._mount_point.mount_point .. " 2>&1")
+    res = luci.util.exec(dm.command.mount .. " ".. _mount_point.device .. (_mount_point.fs and (" -t ".. _mount_point.fs )or "") .. (_mount_point.mount_options and (" -o " .. _mount_point.mount_options.. " ") or  " ").._mount_point.mount_point .. " 2>&1")
   elseif value == translate("Umount") then
-    res = luci.util.exec("umount "..mount_point[section].mount_point .. " 2>&1")
+    res = luci.util.exec(dm.command.umount .. " "..mount_point[section].mount_point .. " 2>&1")
   end
   if res:match("^mount:") or res:match("^umount:") then
     m.errmessage = luci.util.pcdata(res)
@@ -307,7 +307,7 @@ if dm.command.btrfs then
     -- mkfs.btrfs -L label -d blevel /dev/sda /dev/sdb
     local res = dm.create_btrfs(blabel, blevel, bmembers)
     if res and res:match("^ERR") then
-      m.errmessage = translate(res)
+      m.errmessage = luci.util.pcdata(res)
       return
     end
     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))

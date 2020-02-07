@@ -13,13 +13,14 @@ if not uuid then luci.http.redirect(luci.dispatcher.build_url("admin/system/disk
 -- mount subv=/ to tempfs
 mount_point = "/tmp/.btrfs_tmp"
 nixio.fs.mkdirr(mount_point)
-luci.util.exec("umount "..mount_point .. " >/dev/null 2>&1")
-luci.util.exec("mount -o subvol=/ -U "..uuid.." "..mount_point)
+luci.util.exec(dm.command.umount .. " "..mount_point .. " >/dev/null 2>&1")
+luci.util.exec(dm.command.mount .. " -t btrfs -o subvol=/ UUID="..uuid.." "..mount_point)
 
 m = SimpleForm("btrfs", translate("Btrfs"), translate("Manage Btrfs"))
+m.template = "diskman/cbi/xsimpleform"
+m.redirect = luci.dispatcher.build_url("admin/system/diskman")
 m.submit = false
 m.reset = false
-m.redirect = luci.dispatcher.build_url("admin/system/diskman")
 
 -- info
 local btrfs_info = dm.get_btrfs_info(mount_point)
@@ -109,7 +110,7 @@ btn_remove.render = function(self, section, scope)
     btn_remove.inputtitle = translate("Create")
     btn_remove.inputstyle = "add"
     self.view_disabled = false
-  elseif subvolume_list[section].path == "/" then
+  elseif subvolume_list[section].path == "/" or subvolume_list[section].default_subvolume then
     btn_remove.inputtitle = translate("Delete")
     btn_remove.inputstyle = "remove"
     self.view_disabled = true
@@ -125,13 +126,17 @@ btn_remove.write = function(self, section, value)
   local cmd
   if value == translate("Delete") then
     cmd = dm.command.btrfs .. " subvolume delete " .. mount_point .. subvolume_list[section].path
-  elseif value == translate("Create") and value_path then
-    luci.util.perror(mount_point)
-    cmd = dm.command.btrfs .. " subvolume create " .. mount_point .. value_path
+  elseif value == translate("Create") then
+    if value_path and value_path:match("^/") then
+      cmd = dm.command.btrfs .. " subvolume create " .. mount_point .. value_path
+    else
+      m.errmessage = translate("Please input Subvolume Path, Subvolume must start with '/'")
+      return
+    end
   end
   local res = luci.util.exec(cmd.. " 2>&1")
   if res and (res:match("ERR") or res:match("not enough arguments")) then
-    m.errmessage = res
+    m.errmessage = luci.util.pcdata(res)
   else
     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
   end
@@ -151,7 +156,7 @@ end
 --   local cmd = dm.command.btrfs .. " subvolume delete " .. mount_point .. snapshot_list[section].path
 --   local res = luci.util.exec(cmd.. " 2>&1")
 --   if res and (res:match("ERR") or res:match("not enough arguments")) then
---     m.errmessage = res
+--     m.errmessage = luci.util.pcdata(res)
 --   else
 --     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
 --   end
@@ -160,13 +165,16 @@ end
 -- new snapshots
 local s_snapshot = m:section(SimpleSection, translate("New Snapshot"))
 local value_sorce, value_dest, value_readonly
-local v_sorce = s_snapshot:option(Value, "_source", translate("Source Path"))
+local v_sorce = s_snapshot:option(Value, "_source", translate("Source Path"), translate("The source path for create the snapshot"))
 v_sorce.placeholder = "/data"
+v_sorce.forcewrite = true
 v_sorce.write = function(self, section, value)
   value_sorce = value
 end
 
-local v_readonly = s_snapshot:option(Flag, "_readonly", translate("Readonly"))
+local v_readonly = s_snapshot:option(Flag, "_readonly", translate("Readonly"), translate("The path where you want to store the snapshot"))
+v_readonly.forcewrite = true
+v_readonly.rmempty = false
 v_readonly.disabled = 0
 v_readonly.enabled = 1
 v_readonly.default = 1
@@ -174,6 +182,7 @@ v_readonly.write = function(self, section, value)
   value_readonly = value
 end
 local v_dest = s_snapshot:option(Value, "_dest", translate("Destination Path (optional)"))
+v_dest.forcewrite = true
 v_dest.placeholder = "/.snapshot/202002051538"
 v_dest.write = function(self, section, value)
   value_dest = value
@@ -186,13 +195,15 @@ btn_snp_create.write = function(self, section, value)
   if value_sorce and value_sorce:match("^/") then
     if not value_dest then value_dest = "/.snapshot"..value_sorce.."/"..os.date("%Y%m%d%H%M%S") end
     nixio.fs.mkdirr(mount_point..value_dest:match("(.-)[^/]+$"))
-    local cmd = dm.command.btrfs .. " subvolume snapshot " .. (value_readonly == 1 and " -r " or " ") .. mount_point..value_sorce .. " " .. mount_point..value_dest
+    local cmd = dm.command.btrfs .. " subvolume snapshot" .. (value_readonly == 1 and " -r " or " ") .. mount_point..value_sorce .. " " .. mount_point..value_dest
     local res = luci.util.exec(cmd .. " 2>&1")
     if res and (res:match("ERR") or res:match("not enough arguments")) then
-      m.errmessage = res
+      m.errmessage = luci.util.pcdata(res)
     else
       luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
     end
+  else
+    m.errmessage = translate("Please input Source Path of snapshot, Source Path must start with '/'")
   end
 end
 

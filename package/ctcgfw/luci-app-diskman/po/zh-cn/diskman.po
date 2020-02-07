@@ -2,7 +2,7 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "DiskMan"
-msgstr "DiskMan磁盘管理"
+msgstr "DiskMan 磁盘管理"
 
 msgid "Manage Disks over LuCI."
 msgstr "通过LuCI管理磁盘"
@@ -195,3 +195,33 @@ msgstr "数据"
 
 msgid "Btrfs Info"
 msgstr "Btrfs 信息"
+
+msgid "The source path for create the snapshot"
+msgstr "创建快照的源数据目录"
+
+msgid "The path where you want to store the snapshot"
+msgstr "存放快照数据目录"
+
+msgid "Please input Source Path of snapshot, Source Path must start with '/'"
+msgstr "请输入快照源路径，源路径必须以'/'开头"
+
+msgid "Please input Subvolume Path, Subvolume must start with '/'"
+msgstr "请输入子卷路径，子卷路径必须以'/'开头"
+
+msgid "is in use! please unmount it first!"
+msgstr "正在被使用！请先卸载！"
+
+msgid "Partition NOT found!"
+msgstr "分区未找到！"
+
+msgid "Filesystem NOT support!"
+msgstr "文件系统不支持！"
+
+msgid "Invalid Start Sector!"
+msgstr "无效的起始扇区！"
+
+msgid "Invalid End Sector"
+msgstr "无效的终止扇区！"
+
+msgid "Partition not exists!"
+msgstr "分区不存在！"
