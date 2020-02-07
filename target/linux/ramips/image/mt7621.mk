@@ -2,10 +2,26 @@
 # MT7621 Profiles
 #
 
+include ./common-tp-link.mk
+
 DEFAULT_SOC := mt7621
 
 KERNEL_DTB += -d21
-DEVICE_VARS += TPLINK_BOARD_ID TPLINK_HEADER_VERSION TPLINK_HWID TPLINK_HWREV
+DEVICE_VARS += UIMAGE_MAGIC
+
+# The OEM webinterface expects an kernel with initramfs which has the uImage
+# header field ih_name.
+# We don't want to set the header name field for the kernel include in the
+# sysupgrade image as well, as this image shouldn't be accepted by the OEM
+# webinterface. It will soft-brick the board.
+define Build/custom-initramfs-uimage
+	mkimage -A $(LINUX_KARCH) \
+		-O linux -T kernel \
+		-C lzma -a $(KERNEL_LOADADDR) $(if $(UIMAGE_MAGIC),-M $(UIMAGE_MAGIC),) \
+		-e $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR)) \
+		-n '$(1)' -d $@ $@.new
+	mv $@.new $@
+endef
 
 define Build/elecom-gst-factory
   $(eval product=$(word 1,$(1)))
@@ -49,6 +65,22 @@ define Build/iodata-factory
 	fi
 endef
 
+define Build/iodata-mstc-header
+  ( \
+    data_size_crc="$$(dd if=$@ ibs=64 skip=1 2>/dev/null | \
+      gzip -c | tail -c 8 | od -An -tx8 --endian little | tr -d ' \n')"; \
+    echo -ne "$$(echo $$data_size_crc | sed 's/../\\x&/g')" | \
+      dd of=$@ bs=8 count=1 seek=7 conv=notrunc 2>/dev/null; \
+  )
+  dd if=/dev/zero of=$@ bs=4 count=1 seek=1 conv=notrunc 2>/dev/null
+  ( \
+    header_crc="$$(dd if=$@ bs=64 count=1 2>/dev/null | \
+      gzip -c | tail -c 8 | od -An -N4 -tx4 --endian little | tr -d ' \n')"; \
+    echo -ne "$$(echo $$header_crc | sed 's/../\\x&/g')" | \
+      dd of=$@ bs=4 count=1 seek=1 conv=notrunc 2>/dev/null; \
+  )
+endef
+
 define Build/ubnt-erx-factory-image
 	if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(KERNEL_SIZE)" ]; then \
 		echo '21001:6' > $(1).compat; \
@@ -71,19 +103,6 @@ define Build/ubnt-erx-factory-image
 	else \
 		echo "WARNING: initramfs kernel image too big, cannot generate factory image" >&2; \
 	fi
-endef
-
-# The OEM webinterface expects an kernel with initramfs which has the uImage
-# header field ih_name.
-# We don't wan't to set the header name field for the kernel include in the
-# sysupgrade image as well, as this image shouldn't be accepted by the OEM
-# webinterface. It will soft-brick the board.
-define Build/wr1201-factory-header
-	mkimage -A $(LINUX_KARCH) \
-		-O linux -T kernel \
-		-C lzma -a $(KERNEL_LOADADDR) -e $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR)) \
-		-n 'WR1201_8_128' -d $@ $@.new
-	mv $@.new $@
 endef
 
 define Device/afoundry_ew1200
@@ -333,6 +352,38 @@ define Device/iodata_wn-ax1167gr
 endef
 TARGET_DEVICES += iodata_wn-ax1167gr
 
+define Device/iodata_wn-ax1167gr2
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  UIMAGE_MAGIC := 0x434f4d42
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 51200k
+  DEVICE_VENDOR := I-O DATA
+  DEVICE_MODEL := WN-AX1167GR2
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(XBC.1)b10 | \
+	iodata-mstc-header
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-mt7615e wpad-basic
+endef
+TARGET_DEVICES += iodata_wn-ax1167gr2
+
+define Device/iodata_wn-dx1167r
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  UIMAGE_MAGIC := 0x434f4d43
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 51200k
+  DEVICE_VENDOR := I-O DATA
+  DEVICE_MODEL := WN-DX1167R
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(XIK.1)b10 | \
+	iodata-mstc-header
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-mt7615e wpad-basic
+endef
+TARGET_DEVICES += iodata_wn-dx1167r
+
 define Device/iodata_wn-gx300gr
   IMAGE_SIZE := 7616k
   DEVICE_VENDOR := I-O DATA
@@ -465,7 +516,7 @@ define Device/mtc_wr1201
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := MTC
   DEVICE_MODEL := Wireless Router WR1201
-  KERNEL_INITRAMFS := $(KERNEL_DTB) | wr1201-factory-header
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage WR1201_8_128
   DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 \
 	kmod-usb-ledtrig-usbport wpad-basic
 endef
@@ -573,21 +624,22 @@ define Device/netgear_wndr3700-v5
 endef
 TARGET_DEVICES += netgear_wndr3700-v5
 
-define Device/netis_wf-2881
+define Device/netis_wf2881
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   FILESYSTEMS := squashfs
+  KERNEL_SIZE := 4096k
   IMAGE_SIZE := 129280k
-  KERNEL := $(KERNEL_DTB) | pad-offset $$(BLOCKSIZE) 64 | uImage lzma
   UBINIZE_OPTS := -E 5
-  IMAGE/sysupgrade.bin := append-kernel | append-ubi | append-metadata | \
+  IMAGES += factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | \
 	check-size $$$$(IMAGE_SIZE)
   DEVICE_VENDOR := NETIS
-  DEVICE_MODEL := WF-2881
+  DEVICE_MODEL := WF2881
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
-  SUPPORTED_DEVICES += wf-2881
 endef
-TARGET_DEVICES += netis_wf-2881
+TARGET_DEVICES += netis_wf2881
 
 define Device/phicomm_k2p
   IMAGE_SIZE := 15744k
@@ -661,19 +713,6 @@ define Device/adslr_g7
   DEVICE_PACKAGES := kmod-mt7615e wpad-basic
 endef
 TARGET_DEVICES += adslr_g7
-
-define Device/tplink-safeloader
-  DEVICE_VENDOR := TP-Link
-  TPLINK_BOARD_ID :=
-  TPLINK_HWID := 0x0
-  TPLINK_HWREV := 0
-  TPLINK_HEADER_VERSION := 1
-  KERNEL := $(KERNEL_DTB) | tplink-v1-header -e -O
-  IMAGES += factory.bin
-  IMAGE/sysupgrade.bin := append-rootfs | tplink-safeloader sysupgrade | \
-	append-metadata | check-size $$$$(IMAGE_SIZE)
-  IMAGE/factory.bin := append-rootfs | tplink-safeloader factory
-endef
 
 define Device/tplink_re350-v1
   $(Device/tplink-safeloader)
