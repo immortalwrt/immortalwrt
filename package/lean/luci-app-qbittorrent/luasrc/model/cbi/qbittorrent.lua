@@ -1,5 +1,5 @@
 local e=require"luci.model.uci".cursor()
-local o=e:get_first("qbittorrent","Preferences","port") or 8080
+local o=e:get_first("qbittorrent","qbittorrent","port") or 8080
 
 local a=(luci.sys.call("pidof qbittorrent-nox > /dev/null")==0)
 
