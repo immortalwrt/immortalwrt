@@ -91,7 +91,7 @@ define Package/luci-app-ssr-plus/install
 	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DATA) ./luasrc/model/cbi/shadowsocksr/*.lua $(1)/usr/lib/lua/luci/model/cbi/shadowsocksr/
 	$(INSTALL_DATA) ./luasrc/view/shadowsocksr/* $(1)/usr/lib/lua/luci/view/shadowsocksr/
-	po2lmo ./po/zh-cn/ssr-plus.po $(1)/usr/lib/lua/luci/i18n/ssr-plus.zh-cn.lmo
+	po2lmo ./po/zh_Hans/ssr-plus.po $(1)/usr/lib/lua/luci/i18n/ssr-plus.zh_Hans.lmo
 endef
 
 define Package/luci-app-ssr-plus/postinst
