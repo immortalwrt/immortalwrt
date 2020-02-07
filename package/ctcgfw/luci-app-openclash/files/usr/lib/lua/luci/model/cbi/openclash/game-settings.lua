@@ -11,7 +11,14 @@ local uci = require "luci.model.uci".cursor()
 
 m = Map(openclash,  translate("Game Rules and Groups"))
 m.pageaction = false
-m.description=translate("注意事项：<br/>游戏模式为测试功能，不保证可用性。使用的内核由comzyh修改<br/>项目地址：https://github.com/comzyh/clash <br/>使用步骤：<br/>1、在《服务器与策略组管理》页面创建您准备使用的游戏策略组和游戏节点（节点添加时必须选择要加入的策略组），策略组类型建议:FallBack，游戏节点必须支持UDP<br/>2、在此页面的游戏规则列表下载您要使用的游戏规则<br/>3、在此页面上方设置您已下载的游戏规则的对应策略组并保存设置<br/>4、替换内核，下载地址：（https://github.com/vernesong/OpenClash/releases/tag/TUN）<br/>5、在《全局设置》-《常规设置》-《运行模式》中选择游戏模式并启动")
+m.description=translate("注意事项：<br/>游戏代理为测试功能，不保证可用性。其中游戏模式使用的内核由comzyh修改 \
+<br/>项目地址：https://github.com/comzyh/clash <br/>使用步骤： \
+<br/>1、在《服务器与策略组管理》页面创建您准备使用的游戏策略组和游戏节点（节点添加时必须选择要加入的策略组），策略组类型建议:FallBack，游戏节点必须支持UDP \
+<br/>2、在此页面的游戏规则列表下载您要使用的游戏规则 \
+<br/>3、在此页面上方设置您已下载的游戏规则的对应策略组并保存设置 \
+<br/>4、替换内核一，下载地址：https://github.com/Dreamacro/clash/releases/tag/TUN \
+<br/>或替换内核二，下载地址：https://github.com/vernesong/OpenClash/releases/tag/TUN \
+<br/>5、在《全局设置》-《常规设置》-《运行模式》中选择TUN模式（内核一）或者游戏模式（内核二）并启动")
 
 
 function IsRuleFile(e)
@@ -20,7 +27,21 @@ local e=string.lower(string.sub(e,-6,-1))
 return e==".rules"
 end
 
-SYS.call("awk -F ',' '{print $1}' /etc/openclash/game_rules.list > /tmp/rules_name 2>/dev/null")
+function IsYamlFile(e)
+   e=e or""
+   local e=string.lower(string.sub(e,-5,-1))
+   return e == ".yaml"
+end
+
+function IsYmlFile(e)
+   e=e or""
+   local e=string.lower(string.sub(e,-4,-1))
+   return e == ".yml"
+end
+
+if not NXFS.access("/tmp/rules_name") then
+   SYS.call("awk -F ',' '{print $1}' /etc/openclash/game_rules.list > /tmp/rules_name 2>/dev/null")
+end
 file = io.open("/tmp/rules_name", "r");
 
 -- [[ Edit Game Rule ]] --
@@ -37,6 +58,21 @@ o.rmempty     = false
 o.default     = o.enabled
 o.cfgvalue    = function(...)
     return Flag.cfgvalue(...) or "1"
+end
+
+---- config
+o = s:option(ListValue, "config", translate("Config File"))
+o:value("all", translate("Use For All Config File"))
+local e,a={}
+for t,f in ipairs(fs.glob("/etc/openclash/config/*"))do
+	a=fs.stat(f)
+	if a then
+    e[t]={}
+    e[t].name=fs.basename(f)
+    if IsYamlFile(e[t].name) or IsYmlFile(e[t].name) then
+       o:value(e[t].name)
+    end
+  end
 end
 
 ---- rule name
@@ -69,9 +105,8 @@ o:value("REJECT")
 o.rmempty = true
 
 ---- Rules List
-local e={},a,o,t
-a=nixio.fs.access("/tmp/rules_name")
-if a then
+local e={},o,t
+if NXFS.access("/tmp/rules_name") then
 for o in file:lines() do
 table.insert(e,o)
 end

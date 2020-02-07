@@ -1,11 +1,6 @@
 --[[
 LuCI - Lua Configuration Interface
 Copyright 2019 lisaac <https://github.com/lisaac/luci-app-diskman>
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-  http://www.apache.org/licenses/LICENSE-2.0
-$Id$
 ]]--
 
 require "luci.util"
@@ -29,6 +24,7 @@ function index()
   entry({"admin", "system", "diskman"}, alias("admin", "system", "diskman", "disks"), _("Disk Man"), 55)
   entry({"admin", "system", "diskman", "disks"}, form("diskman/disks"), nil).leaf = true
   entry({"admin", "system", "diskman", "partition"}, form("diskman/partition"), nil).leaf = true
+  entry({"admin", "system", "diskman", "btrfs"}, form("diskman/btrfs"), nil).leaf = true
   entry({"admin", "system", "diskman", "get_disk_info"}, call("get_disk_info"), nil).leaf = true
   entry({"admin", "system", "diskman", "mk_p_table"}, call("mk_p_table"), nil).leaf = true
   entry({"admin", "system", "diskman", "smartdetail"}, call("smart_detail"), nil).leaf = true

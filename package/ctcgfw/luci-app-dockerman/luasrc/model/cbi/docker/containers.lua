@@ -1,11 +1,6 @@
 --[[
 LuCI - Lua Configuration Interface
-Copyright 2019 lisaac <lisaac.cn@gmail.com>
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-	http://www.apache.org/licenses/LICENSE-2.0
-$Id$
+Copyright 2019 lisaac <https://github.com/lisaac/luci-app-dockerman>
 ]]--
 
 require "luci.util"
@@ -94,7 +89,7 @@ container_selecter.default = 0
 
 container_id = c_table:option(DummyValue, "_id", translate("ID"))
 container_id.width="10%"
-container_name = c_table:option(DummyValue, "_name", translate("Name"))
+container_name = c_table:option(DummyValue, "_name", translate("Container Name"))
 container_name.width="20%"
 container_name.template="docker/cbi/dummyvalue"
 container_name.href = function (self, section)

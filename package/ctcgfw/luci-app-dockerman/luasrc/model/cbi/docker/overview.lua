@@ -1,11 +1,6 @@
 --[[
 LuCI - Lua Configuration Interface
-Copyright 2019 lisaac <lisaac.cn@gmail.com>
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-	http://www.apache.org/licenses/LICENSE-2.0
-$Id$
+Copyright 2019 lisaac <https://github.com/lisaac/luci-app-dockerman>
 ]]--
 
 require "luci.util"
@@ -87,7 +82,7 @@ s = m:section(NamedSection, "local", "section", translate("Setting"))
 
 socket_path = s:option(Value, "socket_path", translate("Socket Path"))
 status_path = s:option(Value, "status_path", translate("Action Status Tempfile Path"), translate("Where you want to save the docker status file"))
-debug = s:option(Flag, "debug", translate("Enable Debug"), translate("For debug, It shows all docker API actions of luci-app-docker in Debug Tempfile Path"))
+debug = s:option(Flag, "debug", translate("Enable Debug"), translate("For debug, It shows all docker API actions of luci-app-dockerman in Debug Tempfile Path"))
 debug.enabled="true"
 debug.disabled="false"
 debug_path = s:option(Value, "debug_path", translate("Debug Tempfile Path"), translate("Where you want to save the debug tempfile"))

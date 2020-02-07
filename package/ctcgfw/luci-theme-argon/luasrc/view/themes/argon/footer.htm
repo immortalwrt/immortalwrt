@@ -16,27 +16,11 @@
 	Licensed to the public under the Apache License 2.0 
 -%>
 
-<%
-	local ver = require "luci.version"
-	local disp = require "luci.dispatcher"
-	local request  = disp.context.path
-	local category = request[1]
-	local tree = disp.node()
-	local categories = disp.node_childs(tree)
-%>
+<% local ver = require "luci.version" %>
 	</div>
 	<footer class="mobile-hide">
 	<a href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> / <%= ver.distversion %>
-	<% if #categories > 1 then %>
-		<ul class="breadcrumb pull-right" id="modemenu">
-		<% for i, r in ipairs(categories) do %>
-		<li<% if request[1] == r then %> class="active"<%end%>>
-			<a href="<%=controller%>/<%=r%>/"><%=striptags(translate(tree.nodes[r].title))%></a>
-			<span class="divider">|</span>
-		</li>
-		<% end %>
-		</ul>
-	<% end %>
+	<ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
 	</footer>
 	</div>
 </div>
@@ -44,8 +28,8 @@
 	// thanks for Jo-Philipp Wich <jow@openwrt.org>
 	var luciLocation = <%= luci.http.write_json(luci.dispatcher.context.path) %>;
 </script>
-<script src="<%=media%>/js/jquery.min.js?v=git-20.029.45734-adbbd5c"></script>
-<script src="<%=media%>/js/script.js?v=git-20.029.45734-adbbd5c"></script>
+<script src="<%=media%>/js/jquery.min.js"></script>
+<script src="<%=media%>/js/script.js"></script>
 </body>
 </html>
 

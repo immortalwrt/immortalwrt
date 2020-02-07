@@ -25,7 +25,7 @@
  */
 @import url("custom.css?v=1");
 /*
-  *	Icon Css and Fonts
+  *	Icon Css and Fonts 
   */
 @font-face {
   font-family: 'argon';
@@ -356,9 +356,10 @@ button,
 select,
 input,
 .cbi-dropdown {
+  line-height: 1.5rem;
   height: 2.5rem;
   padding: 0.625rem 0.75rem;
-  margin: 0.25rem 0;
+  margin: 0.25rem 0.1rem;
   color: #8898aa;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
@@ -607,10 +608,22 @@ header .fill .status * {
   margin-bottom: 1em;
   padding: 1rem;
   border: 0;
-  border-radius: 0 !important;
+  border-radius: 0.375rem !important;
   background-color: #fff;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 2px 0 rgba(0, 0, 0, 0.12);
   text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+}
+.alert.error,
+.alert-message.error {
+  background-color: #ffd600;
+}
+.alert h4,
+.alert-message h4 {
+  padding: 0rem 1.5rem 0.75rem 0rem;
+}
+.alert .btn,
+.alert-message .btn {
+  height: auto;
 }
 .alert-message > h4 {
   font-size: 110%;
@@ -1532,10 +1545,13 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
 .cbi-dropdown > ul.preview {
   display: none;
 }
-.cbi-dropdown > ul.preview li {
+.cbi-button-apply > ul.preview {
+  display: none;
+}
+.cbi-button-apply > ul.preview li {
   color: #fff;
 }
-.cbi-dropdown > ul:first-child li {
+.cbi-button-apply > ul:first-child li {
   color: #fff;
 }
 .cbi-dropdown > .open {
@@ -2264,17 +2280,23 @@ input[name="nslookup"] {
 .node-main-login .main .main-right #maincontent .container .alert-message.error {
   position: absolute;
   color: #fff;
-  width: calc(100% - 4rem);
+  width: calc(100% - 2rem);
   background-color: #f0ad4e;
   border-color: #eea236;
   box-sizing: border-box;
-  margin-top: 8rem;
-  border-radius: 5px;
-  padding: 1rem 2rem;
+  margin-top: -7rem;
+  border-radius: 5px !important;
+  padding: 1rem 2rem 0.5rem 2rem;
   text-align: center;
 }
 .node-main-login .main .main-right #maincontent .container .alert-message.error p {
   color: #fff;
+}
+.node-main-login .main .main-right #maincontent .container .alert-message.error h4 {
+  font-size: 1rem;
+}
+.node-main-login .main .main-right #maincontent .container .alert-message.error .btn {
+  height: auto;
 }
 .node-main-login .main .main-right #maincontent .container .cbi-map h2 {
   width: 120px;

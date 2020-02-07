@@ -52,6 +52,7 @@ endef
 define Package/speederv2-tunnel/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/speederv2_cross $(1)/usr/bin/speederv2
+	( cd $(1)/usr/bin; $(LN) speederv2 udpspeeder; )
 endef
 
 $(eval $(call BuildPackage,speederv2-tunnel))

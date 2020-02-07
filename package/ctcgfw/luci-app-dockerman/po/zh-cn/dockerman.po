@@ -58,8 +58,8 @@ msgstr "重启策略"
 msgid "Update"
 msgstr "更新"
 
-msgid "Device"
-msgstr "设备"
+msgid "Device(--device)"
+msgstr "设备(--device)"
 
 msgid "Mount/Volume"
 msgstr "挂载/存储卷"
@@ -103,26 +103,20 @@ msgstr "CPU数量，数字是小数，0.000表示没有限制。"
 msgid "CPU Shares Weight"
 msgstr "CPU份额权重"
 
-msgid ""
-"CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."
-msgstr ""
-"CPU份额相对权重，如果设置为0，则系统将忽略该值，并使用默认值1024。"
+msgid "CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."
+msgstr "CPU份额相对权重，如果设置为0，则系统将忽略该值，并使用默认值1024。"
 
 msgid "Memory"
 msgstr "内存"
 
-msgid ""
-"Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M."
-msgstr ""
-"内存限制 (格式: <容量>[<单位>]). 数字是一个正整数。单位可以是b，k，m或g之一。最小为4M。"
+msgid "Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M."
+msgstr "内存限制 (格式: <容量>[<单位>]). 数字是一个正整数。单位可以是b，k，m或g之一。最小为4M。"
 
 msgid "Block IO Weight"
 msgstr "IO 权重"
 
-msgid ""
-"Block IO weight (relative weight) accepts a weight value between 10 and 1000."
-msgstr ""
-"IO 权重（相对权重）接受10到1000之间的权重值。"
+msgid "Block IO weight (relative weight) accepts a weight value between 10 and 1000."
+msgstr "IO 权重 (相对权重) 接受10到1000之间的权重值。"
 
 msgid "Container Logs"
 msgstr "容器日志"
@@ -151,8 +145,8 @@ msgstr "解析命令行"
 msgid "Docker Image"
 msgstr "Docker 镜像"
 
-msgid "User"
-msgstr "用户"
+msgid "User(-u)"
+msgstr "用户(-u)"
 
 msgid "New Container"
 msgstr "新容器"
@@ -167,22 +161,22 @@ msgid "Always pull image first"
 msgstr "始终先拉取镜像"
 
 msgid "Privileged"
-msgstr "特权模式(Privileged)"
+msgstr "特权模式(--privileged)"
 
 msgid "IPv4 Address"
 msgstr "IPv4 地址"
 
 msgid "Links with other containers"
-msgstr "与其他容器的链接(Links)"
+msgstr "与其他容器的链接(--link)"
 
-msgid "Environmental Variable"
-msgstr "环境变量(Env)"
+msgid "Environmental Variable(-e)"
+msgstr "环境变量(-e)"
 
-msgid "Bind Mount"
+msgid "Bind Mount(-v)"
 msgstr "挂载(-v)"
 
-msgid "Exposed Ports"
-msgstr "暴露端口"
+msgid "Exposed Ports(-p)"
+msgstr "暴露端口(-p)"
 
 msgid "Run command"
 msgstr "运行命令"
@@ -190,8 +184,8 @@ msgstr "运行命令"
 msgid "Advance"
 msgstr "高级"
 
-msgid "Mount tmpfs filesystems"
-msgstr "挂载tmpfs文件系统"
+msgid "Mount tmpfs directory"
+msgstr "挂载tmpfs到容器内部目录"
 
 msgid "New Network"
 msgstr "新网络"
@@ -259,8 +253,8 @@ msgstr "保存docker status文件的位置"
 msgid "Enable Debug"
 msgstr "启用调试"
 
-msgid "For debug, It shows all docker API actions of luci-app-docker in Debug Tempfile Path"
-msgstr "用于调试，它在调试临时文件路径中显示luci-app-docker的所有docker API操作"
+msgid "For debug, It shows all docker API actions of luci-app-dockermab in Debug Tempfile Path"
+msgstr "用于调试，它在调试临时文件路径中显示 luci-app-dockermab 的所有docker API操作"
 
 msgid "Debug Tempfile Path"
 msgstr "调试临时文件路径"
@@ -297,3 +291,36 @@ msgstr "拉取镜像"
 
 msgid "Pull"
 msgstr "拉取"
+
+msgid "Command line"
+msgstr "输入命令行"
+
+msgid "Plese input <docker create/run> command line:"
+msgstr "请输入 docker run/create ... 命令行："
+
+msgid "Network Name"
+msgstr "网络名"
+
+msgid "Set custom DNS servers"
+msgstr "自定义 DNS 服务器"
+
+msgid "The user that commands are run as inside the container.(format: name|uid[:group|gid])"
+msgstr "容器内部执行命令的用户(组), 格式: UID:GID"
+
+msgid "Set environment variables to inside the container"
+msgstr "容器内部环境变量"
+
+msgid "Bind mount a volume"
+msgstr "绑定挂载"
+
+msgid "Publish container's port(s) to the host"
+msgstr "将容器的端口发布到宿主"
+
+msgid "Add host device to the container"
+msgstr "添加宿主设备到容器内部"
+
+msgid "Device"
+msgstr "设备"
+
+msgid "Finish Time"
+msgstr "结束时间"

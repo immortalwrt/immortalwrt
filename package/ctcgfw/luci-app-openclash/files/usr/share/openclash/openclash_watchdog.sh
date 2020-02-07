@@ -19,6 +19,8 @@ if [ "$enable" -eq 1 ]; then
 	      CONFIG_FILE=$(uci get openclash.config.config_path 2>/dev/null)
 	      echo "${LOGTIME} Watchdog: Clash Core Problem, Restart." >> $LOG_FILE
 	      nohup $CLASH -d "$CLASH_CONFIG" -f "$CONFIG_FILE" >> $LOG_FILE 2>&1 &
+	      sleep 3
+	      /usr/share/openclash/openclash_history_set.sh
 	   else
 	      echo "${LOGTIME} Watchdog: Already Restart 3 Times With Clash Core Problem, Auto-Exit." >> $LOG_FILE
 	      exit 0
@@ -28,11 +30,23 @@ if [ "$enable" -eq 1 ]; then
   fi
 fi
 
+## Porxy history
+    /usr/share/openclash/openclash_history_get.sh
+
 ## Log File Size Manage:
     LOGSIZE=`ls -l /tmp/openclash.log |awk '{print int($5/1024)}'`
     if [ "$LOGSIZE" -gt 90 ]; then 
        echo "$LOGTIME Watchdog: Size Limit, Clean Up All Log Records." > $LOG_FILE
     fi
+
+## 端口转发重启
+   last_line=$(iptables -t nat -nL PREROUTING --line-number |awk '{print $1}' 2>/dev/null |awk 'END {print}' |sed -n '$p')
+   op_line=$(iptables -t nat -nL PREROUTING --line-number |grep "openclash" 2>/dev/null |awk '{print $1}' 2>/dev/null |head -1)
+   if [ "$last_line" -ne "$op_line" ]; then
+      iptables -t nat -D PREROUTING -p tcp -j openclash
+      iptables -t nat -A PREROUTING -p tcp -j openclash
+      echo "$LOGTIME Watchdog: Reset Firewall For Enabling Redirect." >>$LOG_FILE
+   fi
    
 ## DNS转发劫持
    if [ "$enable_redirect_dns" != "0" ]; then

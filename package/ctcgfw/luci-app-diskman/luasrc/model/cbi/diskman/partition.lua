@@ -1,11 +1,6 @@
 --[[
 LuCI - Lua Configuration Interface
 Copyright 2019 lisaac <https://github.com/lisaac/luci-app-diskman>
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-  http://www.apache.org/licenses/LICENSE-2.0
-$Id$
 ]]--
 
 require "luci.util"
@@ -37,10 +32,11 @@ s:option(DummyValue, "path", translate("Path"))
 s:option(DummyValue, "model", translate("Model"))
 s:option(DummyValue, "sn", translate("Serial Number"))
 s:option(DummyValue, "size_formated", translate("Size"))
-s:option(DummyValue, "sec_size", translate("Sector Size "))
+s:option(DummyValue, "sec_size", translate("Sector Size"))
 local dv_p_table = s:option(ListValue, "p_table", translate("Partition Table"))
 dv_p_table.render = function(self, section, scope)
-  if not disk_info.p_table:match("Raid") and (#disk_info.partitions == 0 or (#disk_info.partitions == 1 and disk_info.partitions[1].number == -1)) then
+  -- create table only if not used by raid and no partitions on disk
+  if not disk_info.p_table:match("Raid") and (#disk_info.partitions == 0 or (#disk_info.partitions == 1 and disk_info.partitions[1].number == -1) or (disk_info.p_table:match("LOOP") and not disk_info.partitions[1].inuse)) then
     self:value(disk_info.p_table, disk_info.p_table)
     self:value("GPT", "GPT")
     self:value("MBR", "MBR")
@@ -100,7 +96,7 @@ btn_eject.forcewrite = true
 btn_eject.write = function(self, section, value)
   for i, p in ipairs(disk_info.partitions) do
     if p.mount_point ~= "-" then
-      m.errmessage = p.name .. "is in use! please unmount it first!"
+      m.errmessage = p.name .. translate("is in use! please unmount it first!")
       return
     end
   end
@@ -160,7 +156,9 @@ if not disk_info.p_table:match("Raid") then
   if disk_info.p_table == "MBR" then
     s_partition_table:option(DummyValue, "type", translate("Type"))
   end
-  s_partition_table:option(DummyValue, "useage", translate("Useage"))
+  s_partition_table:option(DummyValue, "used_formated", translate("Used"))
+  s_partition_table:option(DummyValue, "free_formated", translate("Free Space"))
+  s_partition_table:option(DummyValue, "usage", translate("Usage"))
   s_partition_table:option(DummyValue, "mount_point", translate("Mount Point"))
   local val_fs = s_partition_table:option(Value, "fs", translate("File System"))
   val_fs.forcewrite = true
@@ -211,18 +209,21 @@ if not disk_info.p_table:match("Raid") then
   btn_format.write = function(self, section, value)
     local partition_name = "/dev/".. disk_info.partitions[section].name
     if not nixio.fs.access(partition_name) then
-      m.errmessage = "Partition NOT found!"
+      m.errmessage = translate("Partition NOT found!")
       return
     end
     local fs = disk_info.partitions[section]._fs
     if not format_cmd[fs] then
-      m.errmessage = "Filesystem NOT support!"
+      m.errmessage = translate("Filesystem NOT support!")
       return
     end
     local cmd = format_cmd[fs].cmd .. " " .. format_cmd[fs].option .. " " .. partition_name
-    -- luci.util.perror(cmd)
-    local res = luci.sys.exec(cmd)
-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
+    local res = luci.util.exec(cmd .. " 2>&1")
+    if res and res:lower():match("error+") then
+      m.errmessage = luci.util.pcdata(res)
+    else
+      luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
+    end
   end
 
   local btn_action = s_partition_table:option(Button, "_action")
@@ -250,7 +251,6 @@ if not disk_info.p_table:match("Raid") then
     Button.render(self, section, scope)
   end
   btn_action.write = function(self, section, value)
-    -- luci.util.perror(value)
     if value == translate("New") then
       local start_sec = disk_info.partitions[section]._sec_start and tonumber(disk_info.partitions[section]._sec_start) or tonumber(disk_info.partitions[section].sec_start)
       local end_sec = disk_info.partitions[section]._sec_end
@@ -267,7 +267,7 @@ if not disk_info.p_table:match("Raid") then
           start_sec = start_sec .. "s"
         end
       else
-        m.errmessage = "Invalid Start Sector!"
+        m.errmessage = translate("Invalid Start Sector!")
         return
       end
       -- support +size format for End sector
@@ -286,7 +286,7 @@ if not disk_info.p_table:match("Raid") then
       elseif tonumber(end_sec) then
         end_sec = end_sec .. "s"
       else
-        m.errmessage = "Invalid End Sector!"
+        m.errmessage = translate("Invalid End Sector!")
         return
       end
       local part_type = "primary"
@@ -305,9 +305,9 @@ if not disk_info.p_table:match("Raid") then
 
       -- partiton
       local cmd = dm.command.parted .. " -s -a optimal /dev/" .. dev .. " mkpart " .. part_type .." " .. start_sec .. " " .. end_sec
-      local res = luci.util.exec(cmd)
-      if res:match("Error.+") then
-        m.errmessage = res
+      local res = luci.util.exec(cmd .. " 2>&1")
+      if res and res:lower():match("error+") then
+        m.errmessage = luci.util.pcdata(res)
       else
         luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
       end
@@ -315,13 +315,13 @@ if not disk_info.p_table:match("Raid") then
       -- remove partition
       local number = tostring(disk_info.partitions[section].number)
       if (not number) or (number == "") then
-        m.errmessage = "Partition not exists!"
+        m.errmessage = translate("Partition not exists!")
         return
       end
       local cmd = dm.command.parted .. " -s /dev/" .. dev .. " rm " .. number
-      local res = luci.util.exec(cmd)
-      if res:match("Error.+") then
-        m.errmessage = res
+      local res = luci.util.exec(cmd .. " 2>&1")
+      if res and res:lower():match("error+") then
+        m.errmessage = luci.util.pcdata(res)
       else
         luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
       end
