@@ -24,8 +24,8 @@ port.placeholder = "8080"
 port.rmempty = false
 
 profile_dir = s:option(Value,"profile_dir",translate("Profile Dir"),translate("Store configuration files in the Path"))
-profile_dir.default = "/root"
-profile_dir.placeholder = "/root"
+profile_dir.default = "/etc"
+profile_dir.placeholder = "/etc"
 profile_dir.rmempty = false
 
 download_dir = s:option(Value,"download_dir",translate("Download Dir"),translate("Store download files in the Path"))

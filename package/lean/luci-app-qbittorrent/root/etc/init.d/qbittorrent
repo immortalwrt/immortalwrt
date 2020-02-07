@@ -14,7 +14,7 @@ config_qbittorrent()
 	config_get port "$1" "port"
 	mkdir -p "$download_dir"
 	mkdir -p "$2" "$2/qBittorrent" "$2/qBittorrent/config"
-	ln -sf "/etc/qBittorrent/ipfilter.dat" "$2/qBittorrent/ipfilter.dat"
+	{ [ "$2" != "/etc" ] && [ "$2" != "/etc/" ]; } && ln -sf "/etc/qBittorrent/ipfilter.dat" "$2/qBittorrent/ipfilter.dat"
 	if [ -f "$2/qBittorrent/config/qBittorrent.conf" ]; then
 		sed -i 's/WebUI\\Port=[0-9]*/WebUI\\Port='"$port"'/g' "$2/qBittorrent/config/qBittorrent.conf"
 		sed -i 's/Downloads\\SavePath=[a-z,/]*//g' "$2/qBittorrent/config/qBittorrent.conf"
