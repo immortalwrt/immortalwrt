@@ -149,7 +149,7 @@ msgid "New Snapshot"
 msgstr "Nowy obraz"
 
 msgid "SubVolumes"
-msgstr "SubVolumes"
+msgstr "Sub-wolumeny"
 
 msgid "Top Level"
 msgstr "Top Level"
@@ -189,3 +189,33 @@ msgstr "Data"
 
 msgid "Btrfs Info"
 msgstr "Informacja o Btrfs"
+
+msgid "The source path for create the snapshot"
+msgstr "Ścieżka źródłowa do utworzenia obrazu"
+
+msgid "The path where you want to store the snapshot"
+msgstr "Ścieżka, w której chcesz przechowywać obraz"
+
+msgid "Please input Source Path of snapshot, Source Path must start with '/'"
+msgstr "Proszę podać ścieżkę źródłową dla obrazu, ścieżka musi zaczynać się od '/'"
+
+msgid "Please input Subvolume Path, Subvolume must start with '/'"
+msgstr "Proszę podać ścieżkę dla sub-wolumenu, sub-wolumen musi zaczynać się od '/'"
+
+msgid "is in use! please unmount it first!"
+msgstr "aktualnie jest w użyciu, proszę najpierw odmontować！"
+
+msgid "Partition NOT found!"
+msgstr "Nie znaleziono partycji！"
+
+msgid "Filesystem NOT support!"
+msgstr "System plików nie jest obsługiwany！"
+
+msgid "Invalid Start Sector!"
+msgstr "Nieprawidłowy sektor początkowy！"
+
+msgid "Invalid End Sector"
+msgstr "Nieprawidłowy sektor końcowy！"
+
+msgid "Partition not exists!"
+msgstr "Partycja nie istnieje!"
