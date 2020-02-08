@@ -83,7 +83,7 @@ msgid "30 m"
 msgstr "30 分"
 
 msgid "60 m"
-msgid "60 分"
+msgstr "60 分"
 
 msgid "Auto"
 msgstr "自动"
@@ -107,7 +107,7 @@ msgid "Hasee"
 msgstr "神舟"
 
 msgid "Honor"
-msgid "荣耀"
+msgstr "荣耀"
 
 msgid "HP"
 msgstr "惠普"
@@ -119,7 +119,7 @@ msgid "Apple"
 msgstr "苹果"
 
 msgid "Lenovo"
-msgid "联想"
+msgstr "联想"
 
 msgid "LeEco"
 msgstr "乐视"
