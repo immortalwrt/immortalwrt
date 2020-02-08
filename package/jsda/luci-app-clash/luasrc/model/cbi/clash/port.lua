@@ -71,6 +71,13 @@ o.default = 123456
 o.rmempty = false
 o.description = translate("Dashboard Secret")
 
+o = s:option(ListValue, "p_mode", translate("Proxy Mode"))
+o.description = translate("Choose proxy mode")
+o:value("Rule", translate("RULE"))
+o:value("Global", translate("GLOBAL"))
+o:value("Direct", translate("DIRECT"))
+o.default = "Rule"
+
 o = s:option(ListValue, "level", translate("Log level"))
 o.description = translate("Choose Log Level")
 o:value("info", "info")

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk 
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=1.5.0
+PKG_VERSION:=1.5.2
 PKG_MAINTAINER:=frainzy1477
 
 
@@ -12,7 +12,7 @@ define Package/luci-app-clash
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI app for clash
-	DEPENDS:=+luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util
+	DEPENDS:=+luci +luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util
 	PKGARCH:=all
 	MAINTAINER:=frainzy1477
 endef
@@ -96,7 +96,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DIR) $(1)/etc/clash
-	$(INSTALL_DIR) $(1)/tmp	
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	$(INSTALL_DIR) $(1)/usr/share/
 	$(INSTALL_DIR) $(1)/usr/share/clash
@@ -106,6 +105,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard/img
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard/js
 	$(INSTALL_DIR) $(1)/etc/clash/clashtun
+	$(INSTALL_DIR) $(1)/etc/clash/dtun
 	$(INSTALL_DIR) $(1)/usr/share/clashbackup
 	$(INSTALL_DIR) $(1)/etc/clash/provider
 	$(INSTALL_DIR) $(1)/usr/share/clash/config
@@ -134,7 +134,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/server.list $(1)/usr/share/clash/
 	$(INSTALL_BIN) ./root/usr/share/clash/clash_real.txt $(1)/usr/share/clash/
 	$(INSTALL_BIN) ./root/usr/share/clash/logstatus_check $(1)/usr/share/clash/
-	$(INSTALL_BIN) ./root/usr/share/clash/clash.txt $(1)/tmp/
+	$(INSTALL_BIN) ./root/usr/share/clash/clash.txt $(1)/usr/share/clash/
 	
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/usr/share/clash/dashboard/
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.0bddb85299f970595cb5.css $(1)/usr/share/clash/dashboard/

@@ -4,7 +4,7 @@ experimental:
 tun:
  enable: true
  device-url: dev://utun
- dns-listen: 0.0.0.0:5300
+ dns-listen: 0.0.0.0:53
 
 dns:
  enable: true

@@ -29,7 +29,7 @@ o.inputstyle = "reload"
 o.write = function()
   uci:commit("clash")
   luci.sys.call("bash /usr/share/clash/rule.sh >>/tmp/clash.txt >/dev/null 2>&1 &")
-  HTTP.redirect(DISP.build_url("admin", "services", "clash", "servers"))
+  HTTP.redirect(DISP.build_url("admin", "services", "clash", "create"))
 end
 
 local rule = "/usr/share/clash/custom_rule.yaml"
@@ -150,7 +150,7 @@ s.anonymous = true
 s.addremove = true
 s.sortable = false
 s.template = "cbi/tblsection"
-s.extedit = luci.dispatcher.build_url("admin/services/clash/servers-config/%s")
+s.extedit = luci.dispatcher.build_url("admin/services/clash/servers/%s")
 function s.create(...)
 	local sid = TypedSection.create(...)
 	if sid then
@@ -192,7 +192,7 @@ s.anonymous = true
 s.addremove = true
 s.sortable = false
 s.template = "cbi/tblsection"
-s.extedit = luci.dispatcher.build_url("admin/services/clash/provider-config/%s")
+s.extedit = luci.dispatcher.build_url("admin/services/clash/provider/%s")
 function s.create(...)
 	local sid = TypedSection.create(...)
 	if sid then

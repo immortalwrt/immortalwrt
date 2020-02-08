@@ -20,9 +20,9 @@ function index()
 	entry({"admin", "services", "clash", "config"},cbi("clash/config"),_("Config"), 30).leaf = true
 
 	entry({"admin", "services", "clash", "create"},cbi("clash/create"),_("Create Config"), 40).leaf = true
-    entry({"admin", "services", "clash", "servers-config"},cbi("clash/servers-config"), nil).leaf = true
-	entry({"admin", "services", "clash", "provider-config"},cbi("clash/provider-config"), nil).leaf = true
-    entry({"admin", "services", "clash", "groups"},cbi("clash/groups"), nil).leaf = true
+        entry({"admin", "services", "clash", "servers"},cbi("clash/servers-config"), nil).leaf = true
+	entry({"admin", "services", "clash", "provider"},cbi("clash/provider-config"), nil).leaf = true
+        entry({"admin", "services", "clash", "groups"},cbi("clash/groups"), nil).leaf = true
 
 	entry({"admin", "services", "clash", "settings"}, firstchild(),_("Settings"), 50)
 	entry({"admin", "services", "clash", "settings", "port"},cbi("clash/port"),_("Proxy Ports"), 60).leaf = true
@@ -31,7 +31,7 @@ function index()
 	entry({"admin", "services", "clash", "settings", "list"},cbi("clash/list"),_("Custom List"), 90).leaf = true
 
 	entry({"admin", "services", "clash", "settings", "grules"},cbi("clash/game-settings"),_("Game Rules"), 91).dependent = false
-    entry({"admin", "services", "clash", "g-rules"},cbi("clash/game-rule"), nil).leaf = true
+        entry({"admin", "services", "clash", "g-rules"},cbi("clash/game-rule"), nil).leaf = true
 
 	entry({"admin","services","clash","status"},call("action_status")).leaf=true
 	entry({"admin", "services", "clash", "log"},cbi("clash/log"),_("Log"), 150).leaf = true
@@ -174,15 +174,26 @@ end
 
 local function clash_core()
 	if nixio.fs.access("/etc/clash/clash") then
-		return luci.sys.exec("/etc/clash/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		local core=luci.sys.exec("/etc/clash/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		if core ~= "" then
+			return luci.sys.exec("/etc/clash/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		else
+			return luci.sys.exec("sed -n 1p /usr/share/clash/core_version")
+		end
 	else
 		return "0"
 	end
 end
 
+
 local function clashr_core()
 	if nixio.fs.access("/usr/bin/clash") then
-		return luci.sys.exec("/usr/bin/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		local core=luci.sys.exec("/usr/bin/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		if core ~= "" then
+			return luci.sys.exec("/usr/bin/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+		else
+			return luci.sys.exec("sed -n 1p /usr/share/clash/corer_version")
+		end
 	else
 		return "0"
 	end
@@ -202,6 +213,14 @@ local function clashtun_core()
 	end
 end
 
+
+local function dtun_core()
+	if nixio.fs.access("/etc/clash/dtun/clash") then
+		return luci.sys.exec("/etc/clash/dtun/clash -v 2>/dev/null |awk -F ' ' '{print $2}'")
+	else
+		return "0"
+	end
+end
 
 
 local function readlog()
@@ -268,6 +287,7 @@ function check_status()
 		clash_core = clash_core(),
 		clashr_core = clashr_core(),
 		clashtun_core = clashtun_core(),
+		dtun_core = dtun_core(),
 		new_core_version = new_core_version(),
 		new_clashtun_core_version =new_clashtun_core_version(),
 		check_clashtun_core = check_clashtun_core(),
@@ -285,6 +305,7 @@ function action_status()
 		current_version = current_version(),
 		clash_core = clash_core(),
 		clashr_core = clashr_core(),
+		dtun_core = dtun_core(),
 		dash_pass = dash_pass(),
 		clashtun_core = clashtun_core(),
 		e_mode = e_mode(),
@@ -363,7 +384,7 @@ end
 function logstatus_check()
 	luci.http.prepare_content("text/plain; charset=utf-8")
 	local fdp=tonumber(fs.readfile("/usr/share/clash/logstatus_check")) or 0
-	local f=io.open("/tmp/clash.txt", "r+")
+	local f=io.open("/usr/share/clash/clash.txt", "r+")
 	f:seek("set",fdp)
 	local a=f:read(2048000) or ""
 	fdp=f:seek()
