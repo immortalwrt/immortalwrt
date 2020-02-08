@@ -1,0 +1,243 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:62
+msgid "0 means no limit,default to 8"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:78
+msgid "0(no)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:84
+msgid "0(no),1-20(yes),default to 0"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:71
+msgid "0(not in used)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:65
+msgid "0(standard)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:66
+msgid "1(ruijjie)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:72
+msgid "1(secondary authenticate)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:79
+msgid "1(yes,turn off output)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:73
+msgid "2(post authenticate)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:67
+msgid "2(saier)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:80
+msgid "2(yes,persevere output)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:74
+msgid "3(pre authenticate)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:81
+msgid "3(yes,output to file)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/controller/airwhu.lua:4
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:19
+msgid "AirWHU"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:56
+msgid "Authenticate timeout(s)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:30
+msgid "Config Authentication"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:19
+msgid "Configure Ruijie 802.1X client with IPv6 NAT based on Masquerade."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:21
+msgid "Configure global 802.1X Authentication and IPv6-NAT on-off."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:91
+msgid "DHCP script"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:70
+msgid "DHCP type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:52
+msgid "DNS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:25
+msgid "Enable 802.1X Auth"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:28
+msgid "Enable IPv6 NAT"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:28
+msgid "Enable IPv6 NAT pass-through based on ip6tables MASQUERADE."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:25
+msgid "Enable or disable Ruijie 802.1X authentication."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:50
+msgid "Gateway"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:21
+msgid "Global Switch"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:58
+msgid "Heartbeat timeout(s)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:46
+msgid "IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:43
+msgid "Interfaces"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:62
+msgid "Max failure times"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:48
+msgid "Netmask"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:16
+msgid "Not Running"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:37
+msgid "Password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:54
+msgid "Ping host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:14
+msgid "Running"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:26
+msgid ""
+"Start Ruijie 802.1X Authentication based on MentoHUST when the router is "
+"booting."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:26
+msgid "Start with boot"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:19
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:30
+msgid "The options below are all of MentoHUST's arguments."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:60
+msgid "Timeout on failure(s)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:34
+msgid "Username"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:86
+msgid "client version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:88
+msgid "customized data file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:50
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:52
+msgid "default to 0.0.0.0"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:54
+msgid "default to 0.0.0.0,i.e. disable this function"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:86
+msgid "default to 0.00,compatible with xrgsu"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:64
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:70
+msgid "default to 1"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:60
+msgid "default to 15s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:77
+msgid "default to 3"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:58
+msgid "default to 30s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:56
+msgid "default to 8s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:46
+msgid "default to localhost's IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:48
+msgid "default to localhost's netmask"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:84
+msgid "display notification"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:64
+msgid "mulcast address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:88
+msgid "not in used by default"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:77
+msgid "run in daemon mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-airwhu/files/root/usr/lib/lua/luci/model/cbi/airwhu.lua:91
+msgid "use dhclient by default"
+msgstr ""

@@ -1,0 +1,584 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:6
+msgid "-- Please choose --"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:7
+msgid "-- custom --"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:84
+msgid "Action Status Tempfile Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:270
+msgid "Add host device to the container"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:264
+msgid "Advance"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:193
+msgid "Always pull image first"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:27
+msgid "Api Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:60
+msgid "Back to Overview"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:247
+msgid "Bind Mount(-v)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:247
+msgid "Bind mount a volume"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:391
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:304
+msgid "Block IO Weight"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:391
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:304
+msgid ""
+"Block IO weight (relative weight) accepts a weight value between 10 and 1000."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:380
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:291
+msgid "CPU Shares Weight"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:467
+msgid "CPU Useage"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:380
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:291
+msgid ""
+"CPU shares relative weight, if 0 is set, the system will ignore the value "
+"and use the default of 1024."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:374
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:284
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:28
+msgid "CPUs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:64
+msgid "Cancel"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:215
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:111
+msgid "Command"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/resolv_container.htm:18
+msgid "Command line"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:240
+msgid "Connect"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:240
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:270
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:304
+msgid "Connect Network"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:446
+msgid "Container Logs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:92
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:168
+msgid "Container Name"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/controller/dockerman.lua:19
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:81
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:107
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:67
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/overview.htm:138
+msgid "Containers"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:207
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:109
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:69
+msgid "Created"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:88
+msgid "Debug Tempfile Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:212
+msgid "Device"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:270
+msgid "Device(--device)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:234
+msgid "Disconnect"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:70
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:47
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:38
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:148
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:11
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:21
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:52
+msgid "Docker"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:130
+msgid "Docker Container"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/logs.htm:1
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/logs.htm:8
+msgid "Docker Events"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:184
+msgid "Docker Image"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:30
+msgid "Docker Root Dir"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:26
+msgid "Docker Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/apply_widget.htm:92
+msgid "Docker actions done."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:61
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:27
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:66
+msgid "Driver"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:168
+msgid "Duplicate"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/container.htm:4
+msgid "Edit"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:85
+msgid "Enable Debug"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:93
+msgid "Enable IPv6"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:216
+msgid "Env"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:241
+msgid "Environmental Variable(-e)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/controller/dockerman.lua:23
+msgid "Events"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:88
+msgid "Exclude IPs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:253
+msgid "Exposed Ports(-p)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:209
+msgid "Finish Time"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:85
+msgid ""
+"For debug, It shows all docker API actions of luci-app-dockerman in Debug "
+"Tempfile Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:166
+msgid "Force Remove"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:64
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:78
+msgid "Gateway"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/inlinevalue.htm:4
+msgid "Go to relevant configuration page"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:210
+msgid "Healthy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:204
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:90
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:105
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:48
+msgid "ID"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:83
+msgid "IP range"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:218
+msgid "IPv4 Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:105
+msgid "IPv6 Gateway"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:99
+msgid "IPv6 Subnet"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:205
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:105
+msgid "Image"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/controller/dockerman.lua:20
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:98
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/overview.htm:162
+msgid "Images"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:31
+msgid "Index Server Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:248
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:34
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/container.htm:3
+msgid "Info"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:55
+msgid "Ingress"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:55
+msgid ""
+"Ingress network is the network which provides the routing-mesh in swarm mode."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:172
+msgid "Interactive (-i)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:67
+msgid "Internal"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:48
+msgid "Ipvlan Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:218
+msgid "Links"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:223
+msgid "Links with other containers"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/container.htm:6
+msgid "Logs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:39
+msgid "Macvlan Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:386
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:298
+msgid "Memory"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:467
+msgid "Memory Useage"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:386
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:298
+msgid ""
+"Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit "
+"can be one of b, k, m, or g. Minimum is 4M."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:68
+msgid "Mount Point"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:277
+msgid "Mount tmpfs directory"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:213
+msgid "Mount/Volume"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:203
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:252
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:65
+msgid "Name"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:234
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:344
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:101
+msgid "Network"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:24
+msgid "Network Name"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/stats.htm:46
+msgid "Network TX/RX"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/controller/dockerman.lua:21
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:43
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:214
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/overview.htm:194
+msgid "Networks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:158
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:80
+msgid "New"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:160
+msgid "New Container"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:20
+msgid "New Network"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:374
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:284
+msgid "Number of CPUs. Number is a fractional number. 0.000 means no limit."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:62
+msgid "Options"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/controller/dockerman.lua:14
+msgid "Overview"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:62
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:34
+msgid "Parent Interface"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/resolv_container.htm:6
+msgid "Plese input <docker create/run> command line:"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:217
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:103
+msgid "Ports"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:199
+msgid "Privileged"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:253
+msgid "Publish container's port(s) to the host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:62
+msgid "Pull"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:53
+msgid "Pull Image"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:173
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:179
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:157
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:89
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:84
+msgid "Remove"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:106
+msgid "RepoTags"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:78
+msgid "Reset"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:164
+msgid "Resolv CLI"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:153
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:169
+msgid "Restart"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:211
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:260
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:205
+msgid "Restart Policy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:67
+msgid "Restrict external access to the network"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/inlinevalue.htm:31
+msgid "Reveal/hide password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:259
+msgid "Run command"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:230
+msgid "Set custom DNS servers"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:241
+msgid "Set environment variables to inside the container"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:81
+msgid "Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/images.lua:108
+msgid "Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:69
+msgid "Skip"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:83
+msgid "Socket Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:148
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:164
+msgid "Start"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:209
+msgid "Start Time"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:468
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:469
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/container.htm:5
+msgid "Stats"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:206
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:98
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:158
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/containers.lua:174
+msgid "Stop"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/cbi/xsimpleform.htm:73
+msgid "Submit"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/networks.lua:63
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newnetwork.lua:73
+msgid "Subnet"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:472
+msgid "TOP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:178
+msgid "TTY (-t)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:236
+msgid ""
+"The user that commands are run as inside the container.(format: name|uid[:"
+"group|gid])"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:277
+msgid "Tmpfs(--tmpfs)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:29
+msgid "Total Memory"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:203
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:211
+msgid "Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/container.lua:163
+msgid "Upgrade"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/newcontainer.lua:236
+msgid "User(-u)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/controller/dockerman.lua:22
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/volumes.lua:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/view/docker/overview.htm:271
+msgid "Volumes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:88
+msgid "Where you want to save the debug tempfile"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-dockerman/luasrc/model/cbi/docker/overview.lua:84
+msgid "Where you want to save the docker status file"
+msgstr ""

@@ -1,0 +1,1528 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:383
+msgid "(Communication protocol)"
+msgstr "(通讯协议)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:370
+msgid "(Do Not Add Type Ahead)"
+msgstr "(请勿添加类型前缀)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:69
+msgid "(Enable or Disable Subscribe)"
+msgstr "（启用或禁用更新）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:353
+msgid "(Enable or Disable)"
+msgstr "(仅添加选中的设置)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:120
+msgid "(Maybe Incompatible For Your Firmware)"
+msgstr "（部分固件可能不兼容）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:78
+msgid "(Name For Distinguishing)"
+msgstr "（用于区分，请勿重名）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:362
+msgid "(NameServer Group Must Be Set)"
+msgstr "(NameServer 组必须设置)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:93
+msgid "(Not Null)"
+msgstr "（空值无效）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:126
+msgid "(Please Don't Modify it at Will)"
+msgstr "（如您不知道选项有何用，请不要随意修改）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:84
+msgid "(Power By fndroid)"
+msgstr "（API提供：Fndroid）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:377
+msgid "(Require When Use Non-Standard Port)"
+msgstr "(使用非标准端口时必须填写)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:345
+msgid "(Take Effect After Choose Above)"
+msgstr "（在上方DNS设置中启用本功能后生效）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:100
+msgid "(eg: hk or tw&bgp)"
+msgstr "（格式示例：香港、台湾&bgp）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:31
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:54
+msgid "- 参数异常"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:134
+msgid "114.114.114.114 or 127.0.0.1#5300"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:70
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:107
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:117
+msgid "<New>"
+msgstr "<可更新>"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:12
+msgid "A Clash Client For OpenWrt"
+msgstr ""
+"一个运行在OpenWrt上的Clash客户端，兼容Shadowsocks、Vmess、Snell等协议，根据灵"
+"活的规则配置实现策略代理"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:231
+msgid "AdBlock"
+msgstr "广告流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:345
+msgid "Add Custom DNS Servers"
+msgstr "设置自定义上游DNS服务器"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:125
+msgid "Advanced Setting"
+msgstr "高级设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:172
+msgid "AlterId"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:206
+msgid "Apple"
+msgstr "苹果服务流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:117
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:313
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:175
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:235
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:469
+msgid "Apply Configurations"
+msgstr "应用配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:191
+msgid "AsianTV"
+msgstr "亚洲流媒体流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:191
+msgid "Auth Password"
+msgstr "登录密码"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:185
+msgid "Auth Username"
+msgstr "登录用户名"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:23
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:256
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:291
+msgid "Auto Update"
+msgstr "自动更新"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:292
+msgid "Auto Update GEOIP Database"
+msgstr "自动更新GEOIP数据库"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:257
+msgid "Auto Update Other Rules"
+msgstr "正在使用第三方规则时更新设置才会生效"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:24
+msgid "Auto Update Server subscription"
+msgstr "自动更新配置文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:105
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:121
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:249
+msgid "Back Configurations"
+msgstr "返回概览"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:31
+msgid "CPU Model"
+msgstr "处理器架构"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:49
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:140
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:281
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:316
+msgid "Check And Update"
+msgstr "检查并更新"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:249
+msgid "Choose Proxy Group, Base On Your Servers Group in config.yaml"
+msgstr ""
+"指定流量(策略)的代理方式，只支持选择（服务器组），信息来源于您的配置文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:23
+msgid "Choose Template For Create Config"
+msgstr "选择配置文件模板"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:54
+msgid "Choose The Operation Mode"
+msgstr "设置策略组挑选服务器节点的工作方式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:54
+msgid "Choose The Provider Type"
+msgstr "选择代理集的类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:30
+msgid "Chose to Download"
+msgstr "*选择内核编译版本"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:85
+msgid "Clash"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/log.lua:44
+msgid "Clean Log"
+msgstr "清理日志"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/developer.htm:3
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/developer.htm:4
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/developer.htm:5
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/developer.htm:6
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/developer.htm:7
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/developer.htm:8
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:9
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:10
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:11
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:9
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:30
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:31
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:32
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:33
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:10
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:11
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:12
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:13
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:14
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:15
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:110
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:306
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:168
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:96
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:113
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:240
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:227
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:462
+msgid "Commit Configurations"
+msgstr "保存配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:42
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:77
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:126
+msgid "Config Alias"
+msgstr "配置文件名"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:64
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:38
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:38
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:66
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:97
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:135
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/upload.htm:5
+msgid "Config File"
+msgstr "配置文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:121
+msgid "Config File List"
+msgstr "配置文件列表"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:47
+msgid "Config File Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:25
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:48
+msgid "Config Normal"
+msgstr "检查通过"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:25
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:16
+msgid "Config Update"
+msgstr "配置文件订阅"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:28
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:179
+msgid "ConnersHua Return Rules"
+msgstr "ConnersHua 回国规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:27
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:178
+msgid "ConnersHua Rules"
+msgstr "ConnersHua 规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:17
+msgid "Create Config"
+msgstr "一键生成配置文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:18
+msgid "Create Config By One-Click Only Need Proxys"
+msgstr "一键生成配置文件功能只需要配置服务器节点信息或代理集信息"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:168
+msgid "Custom Clash Rules"
+msgstr "自定义规则(访问控制)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:107
+msgid "Custom DNS Setting"
+msgstr "自定义上游DNS服务器"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:441
+msgid ""
+"Custom Hosts Here, For More Go Github:https://github.com/Dreamacro/clash/"
+"blob/master/README.md"
+msgstr ""
+"设置自定义Hosts，详细信息请前往Github( https://github.com/Dreamacro/clash/"
+"blob/master/README.md )查询"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:422
+msgid ""
+"Custom Rules Here, For More Go Github:https://github.com/Dreamacro/clash/"
+"blob/master/README.md, IP To CIDR: http://ip2cidr.com"
+msgstr ""
+"设置自定义规则，详细信息请前往Github( https://github.com/Dreamacro/clash/"
+"blob/master/README.md )查询，在线IP段转CIDR地址：http://ip2cidr.com"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:126
+msgid "DNS Advanced Settings"
+msgstr "DNS高级设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:369
+msgid "DNS Server Address"
+msgstr "服务器地址"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:361
+msgid "DNS Server Group"
+msgstr "服务器分组"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:376
+msgid "DNS Server Port"
+msgstr "服务器端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:382
+msgid "DNS Server Type"
+msgstr "服务器类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:21
+msgid "DNS Setting"
+msgstr "DNS设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:333
+msgid "Dashboard Address Example:"
+msgstr "管理页面地址示例:"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:329
+msgid "Dashboard Port"
+msgstr "管理页面端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:336
+msgid "Dashboard Secret"
+msgstr "管理页面登录密钥"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:23
+msgid "Dashboard Settings"
+msgstr "外部控制"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:69
+msgid "Debug Mode"
+msgstr "Debug【调试】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:288
+msgid "Default Config File With Correct General-Settings"
+msgstr "参考配置文件，方便您查询各项参数注释和正确的设置、顺序"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:201
+msgid "Delete Groups"
+msgstr "清空策略组配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:191
+msgid "Delete Proxy Provider"
+msgstr "清空代理集配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:181
+msgid "Delete Severs"
+msgstr "清空服务器配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:171
+msgid "Delete Unused Servers"
+msgstr "删除未启用节点"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:61
+msgid "Direct Proxy Mode"
+msgstr "Direct【全局直连】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:29
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:25
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:102
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:87
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:19
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:32
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:75
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:103
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:109
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:115
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:121
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:127
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:170
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:258
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:293
+msgid "Disable"
+msgstr "停用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:99
+msgid "Disable Clash"
+msgstr "关闭 OpenClash"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:119
+msgid "Disable Dnsmasq's DNS Cache"
+msgstr "禁止Dnsmasq缓存DNS"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:176
+msgid "Disable Other Rules"
+msgstr "不使用第三方规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:151
+msgid "Domain Names In The List Do Not Return Fake-IP, One rule per line"
+msgstr ""
+"每行请只填写一个域名，列表中的域名在（Fake-IP模式）下查询DNS时将返回真实IP地"
+"址，更改后点击上方按钮生效"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:238
+msgid "Domestic"
+msgstr "国内流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:148
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:214
+msgid "Download Configurations"
+msgstr "下载配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:148
+msgid "Download Rule"
+msgstr "下载规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:25
+msgid "Edit Group"
+msgstr "编辑策略组配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:25
+msgid "Edit Proxy-Provider"
+msgstr "编辑代理集配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:52
+msgid "Edit Server"
+msgstr "编辑服务器配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:27
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:26
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:69
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:100
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:56
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:88
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:20
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:33
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:90
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:128
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:76
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:104
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:110
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:116
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:122
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:128
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:171
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:259
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:294
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:353
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:400
+msgid "Enable"
+msgstr "启用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:90
+msgid "Enable Clash"
+msgstr "启动 OpenClash"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:174
+msgid "Enable Other Rules"
+msgstr "第三方规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:113
+msgid "Enable ipv6 Resolve"
+msgstr "IPV6类型DNS解析"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:108
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:113
+msgid "Encrypt Method"
+msgstr "加密方式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:68
+msgid "Error Mode"
+msgstr "Error【错误】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:30
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:263
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:298
+msgid "Every Day"
+msgstr "每天"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:35
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:268
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:303
+msgid "Every Friday"
+msgstr "每周五"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:31
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:264
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:299
+msgid "Every Monday"
+msgstr "每周一"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:36
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:269
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:304
+msgid "Every Saturday"
+msgstr "每周六"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:37
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:270
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:305
+msgid "Every Sunday"
+msgstr "每周日"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:34
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:267
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:302
+msgid "Every Thursday"
+msgstr "每周四"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:32
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:265
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:300
+msgid "Every Tuesday"
+msgstr "每周二"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:33
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:266
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:301
+msgid "Every Wednesday"
+msgstr "每周三"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:128
+msgid "Exist"
+msgstr "已下载"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:137
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:138
+msgid "Fake-IP Block List Update"
+msgstr "更新Fake-IP域名黑名单"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:64
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:99
+msgid "Fake-IP（TUN）模式"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:52
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:87
+msgid "Fake-IP（增强）模式"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:72
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:107
+msgid "Fake-IP（游戏）模式"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:364
+msgid "FallBack"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:57
+msgid "Fallback"
+msgstr "Fallback【故障切换】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:210
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:145
+msgid "File Name"
+msgstr "文件名"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:39
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:40
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:41
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:42
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:62
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:63
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:64
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:65
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:51
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:98
+msgid "File Not Exist"
+msgstr "文件不存在"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:75
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:78
+msgid "File saved to"
+msgstr "文件已成功上传到"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:114
+msgid "Force Enable to Resolve ipv6 DNS Requests"
+msgstr ""
+"固件须配置好IPV6的NAT，如你不使用IPV6请关闭固件的相关服务，避免客户端连接出现"
+"异常"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:25
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:314
+msgid "GEOIP Update"
+msgstr "GEOIP数据库订阅"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:79
+msgid "Game Rule's Name"
+msgstr "选择游戏规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:137
+msgid "Game Rules List"
+msgstr "游戏规则列表"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:24
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:12
+msgid "Game Rules and Groups"
+msgstr "游戏规则与策略组管理"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:20
+msgid "General Settings"
+msgstr "常规设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:60
+msgid "Global Proxy Mode"
+msgstr "Global【全局代理（需前往控制面板手动指定节点）】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:22
+msgid "Global Settings"
+msgstr "全局设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:15
+msgid ""
+"Global Settings(Will Modify The Config File Or Subscribe According To The "
+"Settings On This Page)"
+msgstr "全局设置（将按照本页设置自动修改配置文件和获取订阅）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:184
+msgid "GlobalTV"
+msgstr "国际流媒体流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:70
+msgid "Group Name"
+msgstr "别名（请勿重名）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:52
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:65
+msgid "Group Type"
+msgstr "策略组类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:85
+msgid "HTTP(S)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:87
+msgid "HTTP(S) Port"
+msgstr "HTTP(S) 代理端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:387
+msgid "HTTPS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:95
+msgid "Health Check Interval(s)"
+msgstr "状态检查间隔（s）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:91
+msgid "Health Check URL"
+msgstr "状态检查URL"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:66
+msgid "Info Mode"
+msgstr "Info【信息】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:30
+msgid "Keep Settings"
+msgstr "保留配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:99
+msgid "Keyword Match"
+msgstr "筛选节点"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:217
+msgid "Load Config"
+msgstr "读取配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:58
+msgid "Load-Balance"
+msgstr "Load-Balance【负载均衡】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:64
+msgid "Log Level"
+msgstr "日志等级"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:30
+msgid "Logs"
+msgstr "运行日志"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:36
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:37
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:83
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:84
+msgid "Model Not Found"
+msgstr "处理器架构识别失败"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:49
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:52
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:56
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:64
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:68
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:72
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:74
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:78
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:79
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:84
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:87
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:91
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:95
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:99
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:103
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:107
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:109
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:113
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:114
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:363
+msgid "NameServer"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:213
+msgid "Netease Music"
+msgstr "网易云音乐流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:36
+msgid "New Servers Group"
+msgstr "新节点默认策略组"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:100
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:227
+msgid "No Need Set when Config Create, The added Proxy Groups Must Exist"
+msgstr ""
+"注意：使用一键生成配置文件功能时无需设置此项，修改配置文件前添加的策略组必须"
+"已创建"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:87
+msgid "No specify upload file."
+msgstr "未指定上传文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:67
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:72
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:104
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:109
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:142
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:147
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:152
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:157
+msgid "None"
+msgstr "未配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:130
+msgid "Not Exist"
+msgstr "未下载"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:94
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:371
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:409
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:414
+msgid "Not Null"
+msgstr "空值无效"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:44
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:75
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:76
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:77
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:110
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:111
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:112
+msgid "Not Set"
+msgstr "未设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/dvalue.htm:4
+msgid "Only Support yaml what would be save to /etc/openclash/"
+msgstr "注意：只支持【yaml】后缀的文件，文件将被保存到 /etc/openclash/"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:31
+msgid "Only Update Servers Below When Subscription"
+msgstr "订阅时仅更新节点和代理集，保留下方策略组设置，不修改顺序"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:73
+msgid "Only intranet allowed"
+msgstr "仅允许内网"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:9
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:11
+msgid "OpenClash"
+msgstr "OpenClash"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:142
+msgid "Order Number"
+msgstr "序号"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:77
+msgid "Other Group"
+msgstr "包含其他策略组（请勿重复添加）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:279
+msgid "Other Rules Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:282
+msgid "Other Rules Update(Only in Use)"
+msgstr "正在使用第三方规则时才能更新"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:245
+msgid "Others"
+msgstr "未匹配到规则的流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:10
+msgid "Overviews"
+msgstr "运行状态"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:99
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:413
+msgid "Password"
+msgstr "密码"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:160
+msgid "Ping Latency"
+msgstr "服务器延迟"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:84
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:91
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:98
+msgid "Please Make Sure Ports Available"
+msgstr "请确保端口可用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:86
+msgid "Provider Health Check"
+msgstr "代理集状态检查"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:81
+msgid "Provider Interval(s)"
+msgstr "代理集更新间隔（s）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:107
+msgid "Provider Name"
+msgstr "代理集别名（请勿重名）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:61
+msgid "Provider Path"
+msgstr "代理集路径（Path）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:52
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:102
+msgid "Provider Type"
+msgstr "代理集类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:77
+msgid "Provider URL"
+msgstr "代理集URL"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:198
+msgid "Proxy"
+msgstr "必须代理的流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:99
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:226
+msgid "Proxy Group"
+msgstr "添加到策略组（请勿重复添加）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:46
+msgid "Proxy Groups(No Need Set when Config Create)"
+msgstr "策略组配置（使用一键生成配置文件功能时无需设置）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:57
+msgid "Proxy Mode"
+msgstr "*代理模式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/upload.htm:6
+msgid "Proxy Provider File"
+msgstr "代理集文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:206
+msgid "Proxy Provider File List"
+msgstr "代理集文件列表"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:76
+msgid "Proxy-Provider"
+msgstr "代理集配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:113
+msgid "Proxys"
+msgstr "服务器节点配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:104
+msgid "Psk"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:49
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:74
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:84
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:109
+msgid "RUNNING"
+msgstr "运行中"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:120
+msgid "Recommended Enabled For Avoiding Some Connection Errors"
+msgstr "推荐启用，防止因缓存造成连接错误"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:80
+msgid "Redir Port"
+msgstr "流量转发端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:95
+msgid "Redir-Host（TUN）模式"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:56
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:91
+msgid "Redir-Host（兼容）模式"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:68
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:103
+msgid "Redir-Host（游戏）模式"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:101
+msgid "Redirect Local DNS Setting"
+msgstr "*本地DNS劫持"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/log.lua:37
+msgid "Refresh Log"
+msgstr "刷新日志"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:181
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:247
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:151
+msgid "Remove"
+msgstr "移除"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:144
+msgid "Rule Name"
+msgstr "规则名称"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:59
+msgid "Rule Proxy Mode"
+msgstr "Rule【策略代理】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:22
+msgid "Rules Setting"
+msgstr "规则设置（访问控制）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:24
+msgid "Rules Update"
+msgstr "第三方规则订阅"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:94
+msgid "SOCKS5 Port"
+msgstr "SOCKS5 代理端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:55
+msgid "Select"
+msgstr "Select【手动选择】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:31
+msgid ""
+"Select Based On Your CPU Model For Core Update, Wrong Version Will Not Work"
+msgstr "请根据处理器架构选择以便下载、更新对应内核，错误的版本将不能正常运行"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:65
+msgid "Select Core's Log Level"
+msgstr "选择内核日志的默认输出模式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:47
+msgid "Select Mode"
+msgstr "*运行模式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:48
+msgid "Select Mode For OpenClash Work, Network Error Try Flush DNS Cache"
+msgstr ""
+"选择运行模式，在兼容模式下无法代理路由器自身流量，如客户端的网络无法连接请尝"
+"试清除DNS缓存"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:96
+msgid "Select Proxy Group"
+msgstr "选择策略组"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:58
+msgid "Select Proxy Mode"
+msgstr "选择默认代理模式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:91
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:150
+msgid "Server Address"
+msgstr "服务器地址"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:88
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:145
+msgid "Server Alias"
+msgstr "别名（请勿重名）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:29
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:22
+msgid "Server Config"
+msgstr "配置文件管理"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:80
+msgid "Server Node Type"
+msgstr "服务器节点类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:95
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:155
+msgid "Server Port"
+msgstr "服务器端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/log.lua:9
+msgid "Server logs"
+msgstr "运行日志"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:11
+msgid "Servers manage and Config create"
+msgstr "服务器&策略组管理（支持配置文件一键生成）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:392
+msgid "Set Authentication of SOCKS5/HTTP(S)"
+msgstr "设置SOCKS5/HTTP(S)认证信息"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:436
+msgid "Set Custom Hosts, Only Work with Redir-Host Mode"
+msgstr "设置自定义Hosts，仅在Redir-Host模式下生效（不会覆盖配置文件设置）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:417
+msgid "Set Custom Rules"
+msgstr "设置自定义规则（在上方规则设置中启用本功能后生效）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:338
+msgid "Set Dashboard Secret"
+msgstr "设置您的管理页面登录密钥"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:102
+msgid "Set Local DNS Redirect"
+msgstr ""
+"默认启用，将自动设置Dnsmasq的上游服务器，如和其他插件冲突可停用，但须将"
+"OpenClash作为冲突插件的唯一上游服务器"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:108
+msgid "Set OpenClash Upstream DNS Resolve Server"
+msgstr "启用将覆盖配置文件内的设置，请先在下方配置好服务器"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:37
+msgid "Set The New Subscribe Server's Default Proxy Groups"
+msgstr "选择符合订阅要求的新节点的默认策略组（请勿重复添加）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/share/openclash/dashboard/js/bundle.0bddb85299f970595cb5.min.js:1
+msgid "Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/controller/openclash.lua:23
+msgid "Severs and Groups"
+msgstr "服务器与策略组管理"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:81
+msgid "Shadowsocks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:70
+msgid "Silent Mode"
+msgstr "Silent【静默】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:128
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:212
+msgid "Size"
+msgstr "文件大小"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:205
+msgid "Skip-Cert-Verify"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:83
+msgid "Snell"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:84
+msgid "Socks5"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:131
+msgid "Specify DNS Server"
+msgstr "（Fake-IP模式）黑名单DNS服务器"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:132
+msgid "Specify DNS Server For List, Only One IP Server Address Support"
+msgstr "指定下方列表中域名的DNS服务器，只支持填写一个IP地址"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:219
+msgid "Speedtest"
+msgstr "测速流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:41
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:125
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:143
+msgid "State"
+msgstr "状态"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:92
+msgid "Subscribe Address"
+msgstr "订阅地址"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:83
+msgid "Subscribe Type"
+msgstr "订阅地址类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:87
+msgid "Surge"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:56
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:130
+msgid "Switch Config"
+msgstr "切换"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:385
+msgid "TCP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:216
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:386
+msgid "TLS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:108
+msgid "Technical Support"
+msgstr "技术支持"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:225
+msgid "Telegram"
+msgstr "Telegram流量"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:70
+msgid "Test Interval(s)"
+msgstr "检测频率（秒）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:63
+msgid "Test URL"
+msgstr "检测地址（URL）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:78
+msgid "The Added Proxy Groups Must Exist Except 'DIRECT' & 'REJECT'"
+msgstr "注意：除'DIRECT'和'REJECT'外，修改配置文件前添加的其他策略组必须已创建"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:232
+msgid ""
+"Tip: OpenClash 启动时会检查配置文件参数【服务器（策略）组、规则、DNS设置】以"
+"确保能够正常工作"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:244
+msgid "Tip: OpenClash 成功启动后请耐心等待下方网站访问检查连接正常后再使用"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:216
+msgid "Tip: 不会编写配置文件？试试在【服务器&策略组】页面一键创建"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:224
+msgid "Tip: 使用 Fake-IP 模式可以获得更加快速的访问体验"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:228
+msgid "Tip: 使用 TLS & TCP & HTTPS 方式查询DNS可以获得更好的抗污染效果"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:236
+msgid "Tip: 使用自定义DNS上游服务器时NameServer组必须设置至少一个服务器"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:248
+msgid "Tip: 如果不使用IPV6，请关闭IPV6的DHCP服务，否则会造成连接异常"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:252
+msgid "Tip: 您可以在全局设置页面进行版本更新操作"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:208
+msgid "Tip: 您可以在配置文件页面直接修改配置文件（适用于没被接管的内容）"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:220
+msgid "Tip: 某些网站链接出现异常? 试试切换模式或者使用第三方规则"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:212
+msgid "Tip: 点击上方版本图标可跳转到客户端发布页面"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:240
+msgid "Tip: 网站访问检查展示的是当前登录LUCI页面设备的连接情况"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:140
+msgid "Type"
+msgstr "节点类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:384
+msgid "UDP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:118
+msgid "UDP Enable"
+msgstr "UDP支持"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:56
+msgid "URL-Test"
+msgstr "URL-Test【最低延迟】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:57
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:66
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:68
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:76
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:104
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:113
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:115
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:123
+msgid "Unknown"
+msgstr "查询失败"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:315
+msgid "Update GEOIP Database"
+msgstr "更新GEOIP数据库"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:280
+msgid "Update Other Rules"
+msgstr "更新第三方规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:48
+msgid "Update Subcription"
+msgstr "更新订阅配置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/client.lua:43
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:127
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:211
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:146
+msgid "Update Time"
+msgstr "更新时间"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:29
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:262
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:297
+msgid "Update Time (Every Week)"
+msgstr "更新时间(每周)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:62
+msgid "Update Your Proxy Provider File From Config Luci Page"
+msgstr "请先在配置文件管理页面上传您的代理集文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:40
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:273
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:308
+msgid "Update time (every day)"
+msgstr "更新时间(每天)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/upload.htm:9
+msgid "Upload"
+msgstr "上传"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/upload.htm:3
+msgid "Upload File Type"
+msgstr "上传文件类型"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:169
+msgid "Use Custom Rules"
+msgstr "启用后将把自定义规则增加到配置文件并优先匹配，规则请到下方文本框编辑"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:65
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/groups-config.lua:39
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/proxy-provider-config.lua:39
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:67
+msgid "Use For All Config File"
+msgstr "添加到所有配置文件"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:175
+msgid "Use Other Rules"
+msgstr "选择并启用第三方规则后将覆盖配置文件内的所有规则 (不包括自定义规则)"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:24
+msgid "Use Other Rules To Create Config"
+msgstr "使用第三方规则快速创建配置文件（创建后可在全局设置页面调整参数）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:408
+msgid "Username"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:86
+msgid "Using incorrect encryption mothod may causes service fail to start"
+msgstr "输入不正确的参数组合可能会导致服务无法启动"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:86
+msgid "V2rayN"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:26
+msgid "Version Update"
+msgstr "版本更新"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:82
+msgid "Vmess"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:179
+msgid "VmessId (UUID)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:67
+msgid "Warning Mode"
+msgstr "Warning【警告】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:74
+msgid ""
+"When enabled, the control panel and the connection broker port will not be "
+"accessible from the public network"
+msgstr "启用后将禁止从公网访问控制面板和连接代理端口"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:273
+msgid ""
+"You Can Modify config file Here, Except The Settings That Were Taken Over"
+msgstr "您可以在下方直接修改配置文件, 仅支持未被接管的设置"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:62
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:99
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:137
+msgid "all"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config-subscribe.lua:79
+msgid "config"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:50
+msgid "fake-ip"
+msgstr "Fake-IP（增强）模式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:52
+msgid "fake-ip(tun mode)"
+msgstr "Fake-IP（TUN）模式【依赖kmod-tun】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:54
+msgid "fake-ip-vpn(game mode)"
+msgstr "Fake-IP（游戏）模式【依赖kmod-tun】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers.lua:26
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:177
+msgid "lhie1 Rules"
+msgstr "lhie1 规则"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:33
+msgid "linux-amd64(x86-64)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:197
+msgid "mux"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:149
+msgid "obfs-hosts"
+msgstr "混淆参数（HOST）"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:125
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:134
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:142
+msgid "obfs-mode"
+msgstr "传输协议"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:49
+msgid "redir-host"
+msgstr "Redir-Host（兼容）模式"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:51
+msgid "redir-host(tun mode)"
+msgstr "Redir-Host（TUN）模式【依赖kmod-tun】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/settings.lua:53
+msgid "redir-host-vpn(game mode)"
+msgstr "Redir-Host（游戏）模式【依赖kmod-tun】"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/config.lua:54
+msgid "upload file error."
+msgstr "文件上传失败"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:131
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:146
+msgid "websocket (ws)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:158
+msgid "ws-headers"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/servers-config.lua:166
+msgid "ws-path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:130
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:131
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:156
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:174
+msgid "下载到本地"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/download_game_rule.htm:17
+msgid "下载失败"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/download_game_rule.htm:21
+msgid "下载成功"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/download_game_rule.htm:25
+msgid "下载超时"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:78
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:79
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:113
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:114
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:121
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/status.htm:130
+msgid "打开控制面板"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:28
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:34
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:51
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/state.htm:57
+msgid "未找到配置文件"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:42
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:89
+msgid "未选择编译版本，请到常规设置标签中配置"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:48
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:95
+msgid "查询更新失败"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:128
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:129
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:137
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:148
+msgid "检查并更新"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/server_list.htm:19
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/server_list.htm:27
+msgid "检测失败"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/download_game_rule.htm:7
+msgid "正在下载规则..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:14
+msgid ""
+"注意事项：<br/>游戏代理为测试功能，不保证可用性。其中游戏模式使用的内核由"
+"comzyh修改 <br/>项目地址：https://github.com/comzyh/clash <br/>使用步骤： "
+"<br/>1、在《服务器与策略组管理》页面创建您准备使用的游戏策略组和游戏节点（节"
+"点添加时必须选择要加入的策略组），策略组类型建议:FallBack，游戏节点必须支持"
+"UDP <br/>2、在此页面的游戏规则列表下载您要使用的游戏规则 <br/>3、在此页面上方"
+"设置您已下载的游戏规则的对应策略组并保存设置 <br/>4、替换内核一，下载地址："
+"https://github.com/Dreamacro/clash/releases/tag/TUN <br/>或替换内核二，下载地"
+"址：https://github.com/vernesong/OpenClash/releases/tag/TUN <br/>5、在《全局"
+"设置》-《常规设置》-《运行模式》中选择TUN模式（内核一）或者游戏模式（内核二）"
+"并启动"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:196
+msgid "注意：如更新失败可手动下载并上传，内核路径为：/etc/openclash"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/update.htm:200
+msgid ""
+"注意：客户端只支持通过IPK安装的版本进行更新，因为随系统编译的版本更新后不会释"
+"放旧版本的闪存空间"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/view/openclash/download_game_rule.htm:35
+msgid "点击更新规则"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-openclash/files/usr/lib/lua/luci/model/cbi/openclash/game-settings.lua:138
+msgid "规则项目: SSTap-Rule ( https://github.com/FQrabbit/SSTap-Rule )<br/>"
+msgstr ""
+
+#~ msgid "GEOIP数据库订阅"
+#~ msgstr "外部控制"
+
+#~ msgid ""
+#~ "After clash start running, wait a moment for servers to resolve,enjoy"
+#~ msgstr "运行后，请等待服务器上线"
+
+#~ msgid "Server Subscription Address"
+#~ msgstr "配置文件订阅地址"
+
+#~ msgid "Current Core Version"
+#~ msgstr "当前内核版本"
+
+#~ msgid "Last Core Version"
+#~ msgstr "最新内核版本"
+
+#~ msgid "Update Core File"
+#~ msgstr "更新内核"
+
+#~ msgid ""
+#~ "Download Form https://github.com/vernesong/OpenClash/releases/tag/Clash "
+#~ "If Fail"
+#~ msgstr ""
+#~ "如下载失败可前往 https://github.com/vernesong/OpenClash/releases/tag/"
+#~ "Clash 手动下载并上传"
+
+#~ msgid "Last OpenClash Version"
+#~ msgstr "最新客户端版本"
+
+#~ msgid "Current OpenClash Version"
+#~ msgstr "当前客户端版本"
+
+#~ msgid "Update OpenClash"
+#~ msgstr "更新客户端"
+
+#~ msgid "Only For IPK Install Type Or Not Release Memory"
+#~ msgstr ""
+#~ "只支持通过IPK安装的版本进行更新，因为随系统编译的版本更新后不会释放旧版本"
+#~ "的闪存空间"
+
+#~ msgid "Disable Create Config"
+#~ msgstr "只更新配置文件服务器节点信息"
+
+#~ msgid "The Added Proxy Provider Must Exist"
+#~ msgstr "修改配置文件前添加的代理集必须已创建"

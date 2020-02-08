@@ -1,0 +1,147 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:65
+msgid "Attrbute"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:45
+msgid "Check Interval"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:75
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:77
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:55
+msgid "Days"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:74
+msgid "Detail"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:70
+msgid "Device"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:74
+msgid "Devices to monitor"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:30
+msgid "Enabled"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:66
+msgid "Flag"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:27
+msgid "Global"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:54
+msgid "Hours"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:64
+msgid "ID"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:58
+msgid "Log to file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:53
+msgid "Minutes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:71
+msgid "Model"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:49
+msgid "No Attrbute to display."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:51
+msgid "No storage device to monitor."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:72
+msgid "Raw"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:61
+msgid "S.M.A.R.T Attrbutes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/controller/smartinfo.lua:25
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:19
+msgid "S.M.A.R.T Info"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:21
+msgid "S.M.A.R.T Report Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:67
+msgid "S.M.A.R.T Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:36
+msgid "Show"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:72
+msgid "Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_status.htm:73
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:19
+msgid ""
+"This widget allow you to monitor your storage devices which support S.M.A.R."
+"T technology."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:69
+msgid "Thresh"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:66
+msgid "Touch a warning file when disk fail"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:70
+msgid "Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:50
+msgid "Unit"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:71
+msgid "Updated"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:67
+msgid "Value"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:56
+msgid "Weeks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/view/smartinfo/smart_detail.htm:68
+msgid "Worst"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:61
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smartinfo/luasrc/model/cbi/smartinfo.lua:69
+msgid "at"
+msgstr ""

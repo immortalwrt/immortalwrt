@@ -1,0 +1,117 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/view/unblockneteasemusic-go/unblockneteasemusic_go_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/view/unblockneteasemusic-go/unblockneteasemusic_go_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/view/unblockneteasemusic-go/unblockneteasemusic_go_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:22
+msgid "[HTTPS] 监听端口"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:15
+msgid "[HTTP] 监听端口"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:39
+msgid "不开启劫持"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:41
+msgid "使用Hosts劫持"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:40
+msgid "使用IPSet劫持"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:38
+msgid "劫持方法"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:2
+msgid ""
+"原理：采用 [酷我/酷狗/咕咪] 音源，替换网易云音乐 无版权/收费 歌曲链接<br/>具"
+"体使用方法参见：https://github.com/project-openwrt/luci-app-"
+"unblockneteasemusic-go"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:10
+msgid "启用本插件"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:11
+msgid "启用本插件以解除网易云音乐播放限制"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:46
+msgid "启用进程守护"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:33
+msgid "咕咪音乐"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/controller/unblockneteasemusic-go.lua:14
+msgid "基本设定"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:42
+msgid "如果使用Hosts劫持，请将HTTP/HTTPS端口设置为80/443"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:47
+msgid "开启后，附属程序会自动检测主程序运行状态，在主程序退出时自动重启"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/controller/unblockneteasemusic-go.lua:15
+msgid "日志"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:23
+msgid "本插件监听的HTTPS端口，不可与其他程序/HTTP共用一个端口"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:16
+msgid "本插件监听的HTTP端口，不可与其他程序/HTTPS共用一个端口"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/controller/unblockneteasemusic-go.lua:12
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:1
+msgid "解除网易云音乐播放限制 (Golang)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:31
+msgid "酷我音乐"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:32
+msgid "酷狗音乐"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:29
+msgid "音源接口"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:34
+msgid "音源调用接口"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-unblockneteasemusic-go/luasrc/model/cbi/unblockneteasemusic-go.lua:30
+msgid "默认"
+msgstr ""

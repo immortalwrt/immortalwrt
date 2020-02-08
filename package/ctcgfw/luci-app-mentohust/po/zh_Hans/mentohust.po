@@ -1,0 +1,249 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:43
+msgid "Advanced Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:100
+msgid ""
+"Authentication data file, if you need to verify the client, you need to set "
+"correctly"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/log.lua:20
+msgid "Clear log"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:97
+msgid "Client Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:97
+msgid ""
+"Client version number. If client verification is not enabled but the version "
+"number is required, it can be specified here. The format is 3.30."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:22
+msgid "Configure MentoHUST 802.11x."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:87
+msgid "DHCP method"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:103
+msgid "DHCP script"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:69
+msgid "DNS server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:69
+msgid "DNS server, it doesn't matter"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:100
+msgid "DataFile"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:87
+msgid "DhcpMode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:103
+msgid "DhcpScript"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:72
+msgid "Each timeout of the package (seconds)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:75
+msgid "EchoInterval"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:45
+msgid "Enable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:78
+msgid ""
+"Failed Wait (seconds) Wait for seconds after authentication failed or "
+"restart authentication after server request"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:66
+msgid "Gateway"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:66
+msgid "Gateway, if specified, will monitor gateway ARP information"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:60
+msgid "IP Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:50
+msgid "Interfaces"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:75
+msgid "Interval for sending Echo packets (seconds)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/log.lua:5
+msgid "Log file:/tmp/mentohust.log"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/controller/mentohust.lua:12
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:22
+msgid "MentoHUST"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/controller/mentohust.lua:15
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/log.lua:4
+msgid "MentoHUST LOG"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/controller/mentohust.lua:14
+msgid "MentoHUST Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:81
+msgid "Multicast address type when searching for servers"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:16
+msgid "NOT ONLINE"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:5
+msgid "NOT RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:63
+msgid "NetMask"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:63
+msgid "NetMask, it doesn't matter"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:33
+msgid "Network Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:88
+msgid "None"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:42
+msgid "Normal Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:14
+msgid "ONLINE"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:47
+msgid "Password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:50
+msgid "Physical interface of WAN"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:57
+msgid "Ping host for drop detection, 0.0.0.0 to turn off this feature"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:57
+msgid "PingHost"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:11
+msgid "Pinghost not set"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:3
+msgid "RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:78
+msgid "RestartWait"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:83
+msgid "Ruijie"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:38
+msgid "Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:94
+msgid "ShowNotify"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:82
+msgid "Standard"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:81
+msgid "StartMode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:24
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:47
+msgid "The password you set or given to you by your network administrator"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:46
+msgid "The username given to you by your network administrator"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:72
+msgid "Timeout"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:46
+msgid "Username"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:84
+msgid "Uses MentoHUST for Xaar certification"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:94
+msgid "Whether to display notifications 0 (no) 1 to 20 (yes)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:60
+msgid "Your IPv4 Address. (DHCP users can set to 0.0.0.0)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:90
+msgid "after certification"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:91
+msgid "before certification"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-mentohust/files/luci/model/cbi/mentohust/general.lua:89
+msgid "secondary authentication"
+msgstr ""

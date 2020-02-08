@@ -1,0 +1,219 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:15
+msgid "10 m"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:11
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:25
+msgid "10 s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:16
+msgid "15 m"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:23
+msgid "2 s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:17
+msgid "30 m"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:12
+msgid "30 s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:14
+msgid "5 m"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:24
+msgid "5 s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:18
+msgid "60 m"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:13
+msgid "60 s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:69
+msgid "Apple"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:60
+msgid "Asus"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:57
+msgid "Auto"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:61
+msgid "Coolpad"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:42
+msgid "Customize the fifth page of device information"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:5
+msgid "Customize your device screen"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:62
+msgid "Dell"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:47
+msgid "Device"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:42
+msgid "Device customization"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:32
+msgid "Display CPU temperature"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:35
+msgid "Execute k3screenctrl -t and return the result"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:7
+msgid "General Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:66
+msgid "HP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:63
+msgid "Haier"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:64
+msgid "Hasee"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:29
+msgid "Hide Wireless password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:65
+msgid "Honor"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:54
+msgid "Hostname"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:68
+msgid "Huawei"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:56
+msgid "Icon"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:71
+msgid "LeEco"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:70
+msgid "Lenovo"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:73
+msgid "Meitu"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:74
+msgid "Meizu"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:84
+msgid "Microsoft"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:58
+msgid "OnePlus"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:89
+msgid "Output results"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:76
+msgid "Phicomm"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:36
+msgid "Print info"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:22
+msgid "Refresh interval :"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:77
+msgid "Samsung"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/controller/k3screenctrl.lua:9
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:5
+msgid "Screen"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:22
+msgid "Screen data refresh interval."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:10
+msgid "Screen time :"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:78
+msgid "Smartisan"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:79
+msgid "Sony"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:35
+msgid "Test"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:32
+msgid "The first page shows the CPU temperature."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:10
+msgid "This time no action, the screen will close."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:82
+msgid "TongfangPC"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:85
+msgid "XiaoMi"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-k3screenctrl/files/luci/model/cbi/k3screenctrl.lua:86
+msgid "ZTE"
+msgstr ""

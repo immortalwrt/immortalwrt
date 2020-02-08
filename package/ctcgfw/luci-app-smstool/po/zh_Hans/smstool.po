@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smstool/files/usr/lib/lua/luci/view/sms.htm:8
+msgid "SMS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-smstool/files/usr/lib/lua/luci/controller/sms.lua:4
+msgid "SMS Tool"
+msgstr ""

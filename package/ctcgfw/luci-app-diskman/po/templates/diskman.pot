@@ -1,0 +1,470 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:5
+msgid "-- Please choose --"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:6
+msgid "-- custom --"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:64
+msgid "Active"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:60
+msgid "Attrbute"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:59
+msgid "Back to Overview"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:19
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:73
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:268
+msgid "Btrfs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:27
+msgid "Btrfs Info"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:272
+msgid "Btrfs Label"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:285
+msgid "Btrfs Member"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:276
+msgid "Btrfs Raid Level"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:63
+msgid "Cancel"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:71
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:110
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:129
+msgid "Create"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:302
+msgid "Create Btrfs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:142
+msgid "Create Raid"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:30
+msgid "Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:121
+msgid "Default 2048 sector alignment, support +size{b,k,m,g,t} in End Sector"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:114
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:118
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:127
+msgid "Delete"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:184
+msgid "Destination Path (optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:164
+msgid "Device"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:28
+msgid "Device Info"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/controller/diskman.lua:24
+msgid "Disk Man"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:11
+msgid "DiskMan"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:34
+msgid "Disks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:91
+msgid "Eject"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:136
+msgid "End Sector"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:178
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:163
+msgid "File System"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:217
+msgid "Filesystem NOT support!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:61
+msgid "Flag"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:190
+msgid "Format"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:34
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:160
+msgid "Free Space"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:46
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:59
+msgid "Health"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:53
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:59
+msgid "ID"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:289
+msgid "Invalid End Sector!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:270
+msgid "Invalid Start Sector!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:56
+msgid "KEY"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:36
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:75
+msgid "Label"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:51
+msgid "Level"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:19
+msgid "Manage Btrfs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:11
+msgid "Manage Disks over LuCI."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:29
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:63
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:76
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:52
+msgid "Members"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:31
+msgid "Metadata"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:38
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:32
+msgid "Model"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:238
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:242
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:252
+msgid "Mount"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:194
+msgid "Mount Options"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:87
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:162
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:223
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:162
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/disk_info_tab.htm:12
+msgid "Mount Point"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:269
+msgid "Multiple Devices Btrfs Creation"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:124
+msgid "Name"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:248
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:254
+msgid "New"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:166
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:192
+msgid "New Snapshot"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:42
+msgid "No Attrbute to display."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xnullsection.htm:17
+msgid "One or more fields contain invalid values!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xnullsection.htm:19
+msgid "One or more required fields have no value!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:56
+msgid "Otime"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:17
+msgid "Partition Disk over LuCI."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:17
+msgid "Partition Management"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:212
+msgid "Partition NOT found!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:43
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:61
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:36
+msgid "Partition Table"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:318
+msgid "Partition not exists!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:121
+msgid "Partitions Info"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:37
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:31
+msgid "Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:206
+msgid "Please input Source Path of snapshot, Source Path must start with '/'"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:133
+msgid "Please input Subvolume Path, Subvolume must start with '/'"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:96
+msgid "RAID Creation"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:56
+msgid "RAID Devices"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:59
+msgid "RAID mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:95
+msgid "Raid"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:104
+msgid "Raid Level"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:125
+msgid "Raid Member"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:99
+msgid "Raid Name"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:67
+msgid "Raw"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:175
+msgid "Readonly"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:89
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:245
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:314
+msgid "Remove"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:20
+msgid "Rescan Disks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:77
+msgid "Reset"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:56
+msgid "Rotation Rate"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:52
+msgid "S.M.A.R.T Attrbutes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:44
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:55
+msgid "SATA Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:35
+msgid "Sector Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:39
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:33
+msgid "Serial Number"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:75
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:82
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:86
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:93
+msgid "Set Default"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:32
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:40
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:34
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:155
+msgid "Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:68
+msgid "Skip"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:57
+msgid "Snapshots"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:168
+msgid "Source Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:125
+msgid "Start Sector"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:47
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:62
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:58
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:52
+msgid "SubVolumes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/cbi/xsimpleform.htm:72
+msgid "Submit"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:41
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:54
+msgid "Temp"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:175
+msgid "The path where you want to store the snapshot"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:168
+msgid "The source path for create the snapshot"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:64
+msgid "Thresh"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:54
+msgid "Top Level"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:157
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:65
+msgid "Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:28
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:55
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:74
+msgid "UUID"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:245
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:255
+msgid "Umount"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:42
+msgid "Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:66
+msgid "Updated"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:35
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua:79
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:161
+msgid "Usage"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua:33
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:159
+msgid "Used"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:57
+msgid "VALUE"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:62
+msgid "Value"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/view/diskman/smart_detail.htm:63
+msgid "Worst"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua:99
+msgid "is in use! please unmount it first!"
+msgstr ""

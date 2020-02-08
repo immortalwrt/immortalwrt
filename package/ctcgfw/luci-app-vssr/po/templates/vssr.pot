@@ -1,0 +1,884 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:84
+msgid "0"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:56
+msgid "1 Thread"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:57
+msgid "2 Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:58
+msgid "4 Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:59
+msgid "8 Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:22
+msgid "Access Control"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:75
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:76
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:84
+msgid "Add"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:24
+msgid "Advanced Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/servers.lua:44
+msgid "Alias"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:82
+msgid "Alias(optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:70
+msgid "All Ports"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:156
+msgid "AlterId"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:79
+msgid "Anti-pollution DNS Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:38
+msgid "Apply"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:55
+msgid "Auto Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:27
+msgid "Auto Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:29
+msgid "Auto Update Server subscription, GFW list and CHN route"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:40
+msgid "Basic Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:245
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:256
+msgid "BitTorrent (uTP)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:71
+msgid "Black Domain List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:53
+msgid "Bypass Domain List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:187
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:252
+msgid "Camouflage Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/check.htm:26
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/check.htm:35
+msgid "Check Connect"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/checkport.htm:24
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/checkport.htm:31
+msgid "Check Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:65
+msgid "Check Try Count"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:60
+msgid "Check timout(second)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/check.htm:8
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/checkport.htm:8
+msgid "Check..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:99
+msgid "China IP Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:18
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:114
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:116
+msgid "Client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:90
+msgid "Cloudflare DNS (1.1.1.1)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:321
+msgid "Concurrency"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:152
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:181
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:256
+msgid "Configuration Succeeded"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:62
+msgid "Configuration Url"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:298
+msgid "Congestion"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/check.htm:20
+msgid "Connect Error"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/check.htm:18
+msgid "Connect OK"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:68
+msgid "Connection Timeout"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:87
+msgid "Copy SSR to clipboard successfully."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:84
+msgid "Country"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:47
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:48
+msgid "Delete"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:53
+msgid "Delete all severs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:76
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:44
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:50
+msgid "Disable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:280
+msgid "Downlink Capacity"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:43
+msgid "Edit"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:50
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:43
+msgid "Edit vssr Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:59
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:82
+msgid "Enable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:52
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:333
+msgid "Enable Auto Switch"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:49
+msgid "Enable Process Deamon"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:65
+msgid "Enable Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:108
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:113
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:169
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:77
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:94
+msgid "Encrypt Method"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:266
+msgid "Export SSR"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/list.lua:4
+msgid "GFW Custom List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:94
+msgid "GFW List Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:64
+msgid "GFW List Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:129
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:131
+msgid "Game Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:37
+msgid "Game Mode Host List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:114
+msgid "Game Mode UDP Relay"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:49
+msgid "Game Mode UDP Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:106
+msgid "Global Client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:66
+msgid "Global Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:162
+msgid "Global SSR Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:60
+msgid "Global Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:80
+msgid "Google Public DNS (8.8.4.4)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:81
+msgid "Google Public DNS (8.8.8.8)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:194
+msgid "HTTP Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:199
+msgid "HTTP Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:218
+msgid "HTTP/2 Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:223
+msgid "HTTP/2 Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:359
+msgid "Haven't a Kcptun executable file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:240
+msgid "Header"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:65
+msgid "IP Route Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:4
+msgid "IP black-and-white list"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:184
+msgid "IPK Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:152
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:181
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:256
+msgid "Import"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:264
+msgid "Import Configuration"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:86
+msgid "Invalid"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:111
+msgid "Invalid Format"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/servers.lua:55
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:176
+msgid "KcpTun"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:344
+msgid "KcpTun Enable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:375
+msgid "KcpTun Param"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:370
+msgid "KcpTun Password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:351
+msgid "KcpTun Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:172
+msgid "KcpTun Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:21
+msgid "LAN Bypassed Host List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:29
+msgid "LAN Force Proxy Host List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:19
+msgid "LAN IP AC"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:84
+msgid "Level 3 Public DNS (209.244.0.3)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:85
+msgid "Level 3 Public DNS (209.244.0.4)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:86
+msgid "Level 3 Public DNS (4.2.2.1)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:87
+msgid "Level 3 Public DNS (4.2.2.2)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:88
+msgid "Level 3 Public DNS (4.2.2.3)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:89
+msgid "Level 3 Public DNS (4.2.2.4)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:81
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:337
+msgid "Local Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:39
+msgid "Log"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:262
+msgid "MTU"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:43
+msgid "Main Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:54
+msgid "Multi Threads Option"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:315
+msgid "Mux"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:18
+msgid "No new data!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:16
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:19
+msgid "Node List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:8
+msgid "Node list"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:9
+msgid "Nodes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:189
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:232
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:243
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:254
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/servers.lua:45
+msgid "None"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:111
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:119
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:127
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:138
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:148
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:158
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:167
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:181
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:18
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:70
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:82
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:116
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:131
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:136
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:141
+msgid "Not Running"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:361
+msgid "Not a Kcptun executable file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:37
+msgid "Not exist"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:126
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:86
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:107
+msgid "Obfs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:152
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:90
+msgid "Obfs param(optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:71
+msgid "Only Common Ports"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:83
+msgid "OpenDNS (208.67.220.220)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:82
+msgid "OpenDNS (208.67.222.222)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:67
+msgid "Oversea Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:91
+msgid "Oversea Mode DNS-1 (114.114.114.114)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:92
+msgid "Oversea Mode DNS-2 (114.114.115.115)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:122
+msgid "PDNSD"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:102
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:73
+msgid "Password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:8
+msgid "Ping All Servers"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/list.lua:4
+msgid "Please refer to the following writing"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:31
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:44
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:121
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:126
+msgid "Problem detected"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:118
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:81
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:100
+msgid "Protocol"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:123
+msgid "Protocol param(optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:69
+msgid "Proxy Ports"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:236
+msgid "QUIC Key"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:229
+msgid "QUIC Security"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:286
+msgid "Read Buffer Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:97
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:102
+msgid "Records"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:32
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:41
+msgid "Refresh Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:21
+msgid "Refresh Error!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:25
+msgid "Refresh OK!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:8
+msgid "Refresh..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:74
+msgid "Resolve Dns Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:109
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:117
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:125
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:136
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:146
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:156
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:165
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:179
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:114
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:129
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:134
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:139
+msgid "Running"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:63
+msgid "Running Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:72
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:133
+msgid "SSOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:14
+msgid "SSR Client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:143
+msgid "SSR SOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:36
+msgid "SSR Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:51
+msgid "Same as Global Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/update_subscribe.htm:6
+msgid "Save And Start Subscribe"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:75
+msgid "Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:89
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/servers.lua:47
+msgid "Server Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:67
+msgid "Server Node Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:93
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:63
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:88
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/servers.lua:50
+msgid "Server Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:69
+msgid "Server Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:46
+msgid "Server failsafe auto swith settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:77
+msgid "Shadowsocks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:75
+msgid "ShadowsocksR"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:38
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:39
+msgid "Subscribe URL"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/update_subscribe.htm:19
+msgid "Subscribing,Please do not refresh!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:20
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:24
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/update_subscribe.htm:18
+msgid "Subscription"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:55
+msgid "Switch check cycly(second)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:326
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server-config.lua:92
+msgid "TCP Fast Open"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:148
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:309
+msgid "TLS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:268
+msgid "TTI"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:58
+msgid "This section contains no values yet"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:42
+msgid "Through proxy update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:44
+msgid "Through proxy update list, Not Recommended"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/refresh.htm:25
+msgid "Total Records:"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:175
+msgid "Transport"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:69
+msgid "Trojan"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/servers.lua:41
+msgid "Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:89
+msgid "Unable to copy SSR to clipboard."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:34
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:44
+msgid "Unknown"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/update_subscribe.htm:3
+msgid "Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/advanced.lua:91
+msgid "Update Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/subscription.lua:32
+msgid "Update time (every day)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:274
+msgid "Uplink Capacity"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:76
+msgid "Use Local DNS Service listen port 5335"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client.lua:75
+msgid "Use Pdnsd tcp query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/ssrurl.htm:103
+msgid "User Cancel"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:80
+msgid "Using incorrect encryption mothod may causes service fail to start"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:73
+msgid "V2Ray"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/status.lua:153
+msgid "V2SOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:131
+msgid "V2ray-plugin"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:140
+msgid "V2ray-plugin-host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:144
+msgid "V2ray-plugin-path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:135
+msgid "V2ray-plugin-transport"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:244
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:255
+msgid "VideoCall (SRTP)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:44
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:124
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:126
+msgid "Visit domestic website"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:31
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:119
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:121
+msgid "Visit foreign websites"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:163
+msgid "VmessId (UUID)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:15
+msgid "WAN Force Proxy IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:10
+msgid "WAN IP AC"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/control.lua:12
+msgid "WAN White List IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:206
+msgid "WebSocket Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:211
+msgid "WebSocket Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:246
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:257
+msgid "WechatVideo"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:119
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/status.htm:124
+msgid "Working..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:292
+msgid "Write Buffer Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:233
+msgid "aes-128-gcm"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:303
+msgid "allowInsecure"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:345
+msgid "bin:/usr/bin/kcptun-client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:234
+msgid "chacha20-poly1305"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/view/vssr/tblsection.htm:8
+msgid "total"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:11
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/controller/vssr.lua:27
+msgid "vssr"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/server.lua:10
+msgid "vssr Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-vssr/luasrc/model/cbi/vssr/client-config.lua:86
+msgid "请自己指定。格式：cn us hk 等"
+msgstr ""

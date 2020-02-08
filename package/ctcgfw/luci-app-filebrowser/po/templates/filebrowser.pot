@@ -1,0 +1,68 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:25
+msgid "FileBrowser是一个基于Go的在线文件管理器，助您方便的管理设备上的文件。"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:22
+msgid "FileBrowser未运行"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:20
+msgid "FileBrowser运行中"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:26
+msgid "FileBrowser运行状态"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:32
+msgid "启用"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:48
+msgid "开放目录"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:16
+msgid "打开管理界面"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:59
+msgid "数据库名"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:53
+msgid "数据库目录"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/controller/filebrowser.lua:8
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:25
+msgid "文件管理器"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:57
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:63
+msgid "普通用户请勿随意更改"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:38
+msgid "监听全部地址"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:35
+msgid "监听地址"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:37
+msgid "监听局域网地址"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:36
+msgid "监听本机地址"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-filebrowser/luasrc/model/cbi/filebrowser.lua:42
+msgid "监听端口"
+msgstr ""

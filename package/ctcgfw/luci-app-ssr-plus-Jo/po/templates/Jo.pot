@@ -1,0 +1,1057 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:91
+msgid "0"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:71
+msgid "1 Thread"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:72
+msgid "2 Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:73
+msgid "4 Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:74
+msgid "8 Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:17
+msgid "Access Control"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:23
+msgid "Advanced Settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:162
+msgid "Advertising Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:36
+msgid "Alias"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:141
+msgid "Alias(optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:219
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:202
+msgid "AlterId"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:124
+msgid "Anti-pollution DNS Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/appointlist.lua:4
+msgid "Appoint dns List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:20
+msgid "Appointlist List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:194
+msgid "Auth Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:70
+msgid "Auto Threads"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:21
+msgid "Auto Update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:23
+msgid "Auto Update Server subscription, GFW list and CHN route"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:22
+msgid "Automatic Switching"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:152
+msgid "BT Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:307
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:318
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:294
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:305
+msgid "BitTorrent (uTP)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:82
+msgid "Black Domain List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:64
+msgid "Bypass Domain List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:249
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:314
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:236
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:301
+msgid "Camouflage Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/check.htm:22
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/check.htm:30
+msgid "Check Connect"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/checkport.htm:18
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/checkport.htm:24
+msgid "Check Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:172
+msgid "Check Server Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/automatic.lua:37
+msgid "Check timout(second)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/check.htm:7
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/checkport.htm:7
+msgid "Check..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:102
+msgid "Chiadns Resolve Dns Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:167
+msgid "China IP Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:217
+msgid "ChinaDNS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:189
+msgid "Cipher Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:137
+msgid "Cloudflare DNS (1.1.1.1)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:383
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:368
+msgid "Concurrency"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:360
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:347
+msgid "Congestion"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/check.htm:19
+msgid "Connect Error"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/check.htm:17
+msgid "Connect OK"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:147
+msgid "Connection Timeout"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/ssrurl.htm:77
+msgid "Copy SSR to clipboard successfully."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:61
+msgid "Delete all severs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:128
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:56
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:65
+msgid "Disable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:342
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:329
+msgid "Downlink Capacity"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:107
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:104
+msgid "Edit ShadowSocksR Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:120
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:89
+msgid "Enable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/automatic.lua:29
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:396
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:59
+msgid "Enable Auto Switch"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:140
+msgid "Enable HTTP Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/automatic.lua:26
+msgid "Enable Process Deamon"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:71
+msgid "Enable Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:207
+msgid "Enable UDPspeeder"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:159
+msgid "Enable udp2raw"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:138
+msgid "Enabling IPv6 server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:108
+msgid "Enabling the Management Console"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:170
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:175
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:231
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:158
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:218
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:105
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:50
+msgid "Encrypt Method"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/ssrurl.htm:253
+msgid "Export SSR"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:232
+msgid "Fec"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:246
+msgid "Fec Timeout"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:364
+msgid "Feedback"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/list.lua:4
+msgid "GFW Custom List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:19
+msgid "GFW List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:157
+msgid "GFW List Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:79
+msgid "GFW List Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:40
+msgid "Game Mode Host List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:200
+msgid "Game Mode UDP Relay"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:64
+msgid "Game Mode UDP Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:192
+msgid "Global Client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:82
+msgid "Global Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:305
+msgid "Global SS Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:295
+msgid "Global SSR Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:68
+msgid "Global Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:315
+msgid "Global V2RAY Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:127
+msgid "Google Public DNS (8.8.4.4)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:128
+msgid "Google Public DNS (8.8.8.8)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:256
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:243
+msgid "HTTP Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:261
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:248
+msgid "HTTP Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:143
+msgid "HTTP Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:285
+msgid "HTTP Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:280
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:267
+msgid "HTTP/2 Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:285
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:272
+msgid "HTTP/2 Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:421
+msgid "Haven't a Kcptun executable file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:302
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:289
+msgid "Header"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:80
+msgid "IP Route Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:4
+msgid "IP black-and-white list"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:338
+msgid "IPK Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:67
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:329
+msgid "KcpTun"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:407
+msgid "KcpTun Enable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:437
+msgid "KcpTun Param"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:432
+msgid "KcpTun Password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:413
+msgid "KcpTun Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:325
+msgid "KcpTun Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:147
+msgid "Kill BT"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:24
+msgid "LAN Bypassed Host List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:32
+msgid "LAN Force Proxy Host List"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:22
+msgid "LAN IP AC"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:131
+msgid "Level 3 Public DNS (209.244.0.3)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:132
+msgid "Level 3 Public DNS (209.244.0.4)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:133
+msgid "Level 3 Public DNS (4.2.2.1)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:134
+msgid "Level 3 Public DNS (4.2.2.2)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:135
+msgid "Level 3 Public DNS (4.2.2.3)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:136
+msgid "Level 3 Public DNS (4.2.2.4)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:58
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:208
+msgid "Load Balancing"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:133
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:171
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:219
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:400
+msgid "Local Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:33
+msgid "Log"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:324
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:311
+msgid "MTU"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:55
+msgid "Main Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:236
+msgid "Mtu"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:69
+msgid "Multi Threads Option"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:378
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:363
+msgid "Mux"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:174
+msgid "No Check"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:366
+msgid "No feedback"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:18
+msgid "No new data!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:18
+msgid "Node Subscribe"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:251
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:294
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:305
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:316
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:238
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:281
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:292
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:303
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:38
+msgid "None"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:197
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:205
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:213
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:222
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:231
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:239
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:247
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:260
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:270
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:280
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:290
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:300
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:310
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:320
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:334
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:350
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:362
+msgid "Not Running"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:423
+msgid "Not a Kcptun executable file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:47
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:63
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:77
+msgid "Not exist"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:210
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:192
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:111
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:56
+msgid "Obfs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:215
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:197
+msgid "Obfs param(optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:130
+msgid "OpenDNS (208.67.220.220)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:129
+msgid "OpenDNS (208.67.222.222)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:81
+msgid "Oversea IP Route Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:138
+msgid "Oversea Mode DNS-1 (114.114.114.114)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:139
+msgid "Oversea Mode DNS-2 (114.114.115.115)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:226
+msgid "PDNSD"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:119
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:175
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:223
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:161
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:152
+msgid "Password"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:74
+msgid "Ping Latency"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/list.lua:4
+msgid "Please refer to the following writing"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:195
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:181
+msgid "Plugin Opts"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:150
+msgid "Prohibit downloading tool ports through proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:202
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:187
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:108
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:53
+msgid "Protocol"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:207
+msgid "Protocol param(optional)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:298
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:285
+msgid "QUIC Key"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:291
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:278
+msgid "QUIC Security"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:241
+msgid "Queue Len"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:179
+msgid "Raw Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:348
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:335
+msgid "Read Buffer Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:160
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:165
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:170
+msgid "Records"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:32
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:41
+msgid "Refresh Data"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:21
+msgid "Refresh Error!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:25
+msgid "Refresh OK!"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:8
+msgid "Refresh..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:85
+msgid "Resolve Dns Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:195
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:203
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:211
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:220
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:229
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:237
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:245
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:258
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:268
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:278
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:288
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:298
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:308
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:318
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:332
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:348
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:360
+msgid "Running"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:78
+msgid "Running Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/status.htm:95
+msgid "Running Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:124
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:255
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:265
+msgid "SSOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:12
+msgid "SSR Client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:30
+msgid "SSR Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:66
+msgid "Same as Global Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:184
+msgid "Seq Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:127
+msgid "Server"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:163
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:211
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:143
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:41
+msgid "Server Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:19
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:63
+msgid "Server Count"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:125
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:124
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:95
+msgid "Server Node Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:167
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:215
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:147
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:142
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:100
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:46
+msgid "Server Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server.lua:75
+msgid "Server Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/automatic.lua:23
+msgid "Server failsafe auto swith settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:52
+msgid "Server settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:112
+msgid "Service Port"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:13
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:14
+msgid "Severs Nodes"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:25
+msgid "ShadowSocksR"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:11
+msgid "ShadowSocksR Plus+"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:135
+msgid "Shadowsocks"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:129
+msgid "Shadowsocks New Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:133
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:126
+msgid "ShadowsocksR"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:227
+msgid "Speeder Mode"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:32
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:41
+msgid "Subscribe URL"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/controller/shadowsocksr.lua:16
+msgid "Subscription Managenent"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/automatic.lua:32
+msgid "Switch check cycly(second)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:389
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:374
+msgid "TCP Fast Open"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:371
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:357
+msgid "TLS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:330
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:317
+msgid "TTI"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:44
+msgid "Through proxy update"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:46
+msgid "Through proxy update list, Not Recommended"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/refresh.htm:25
+msgid "Total Records:"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:237
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:224
+msgid "Transport"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:127
+msgid "Trojan"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/servers.lua:31
+msgid "Type"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:204
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:357
+msgid "UDPspeeder"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:354
+msgid "UDPspeeder Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/view/shadowsocksr/ssrurl.htm:79
+msgid "Unable to copy SSR to clipboard."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:44
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:54
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:60
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:70
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:74
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:84
+msgid "Unknown"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:48
+msgid "Update All Subscribe Severs"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:34
+msgid "Update time (every day)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:55
+msgid "Upgrade V2ray"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:336
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:323
+msgid "Uplink Capacity"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:103
+msgid "Use Local DNS Service"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:86
+msgid "Use Local DNS Service listen port 5335"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:87
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:104
+msgid "Use Pdnsd tcp query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:88
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:105
+msgid "Use Pdnsd udp query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:97
+msgid "Use chinadns query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:94
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:111
+msgid "Use dnscrypt-proxy query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:90
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:107
+msgid "Use dnsforwarder tcp query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:91
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:108
+msgid "Use dnsforwarder udp query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:119
+msgid "Use https_dns_proxy query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:115
+msgid "Use smartdns query and cache"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:207
+msgid "User Level"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:116
+msgid "User name"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:125
+msgid "Using System Default DNS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client.lua:126
+msgid "Using acceleration center DNS"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:137
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:134
+msgid "Using incorrect encryption mothod may causes service fail to start"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/subscription.lua:25
+msgid "V2 Edition"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:131
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:132
+msgid "V2Ray"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:275
+msgid "V2SOCKS5 Proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:306
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:317
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:293
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:304
+msgid "VideoCall (SRTP)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:225
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:212
+msgid "VmessId (UUID)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:18
+msgid "WAN Fk Proxy IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:15
+msgid "WAN Force Proxy IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:10
+msgid "WAN IP AC"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/control.lua:12
+msgid "WAN White List IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:268
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:255
+msgid "WebSocket Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:273
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:260
+msgid "WebSocket Path"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:308
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:319
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:295
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:306
+msgid "WechatVideo"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:156
+msgid "Weight"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:354
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:341
+msgid "Write Buffer Size"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:295
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:282
+msgid "aes-128-gcm"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:365
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:352
+msgid "allowInsecure"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:407
+msgid "bin:/usr/bin/kcptun-client"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:296
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:283
+msgid "chacha20-poly1305"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:242
+msgid "dnscrypt_proxy"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:234
+msgid "dnsforwarder"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:105
+msgid "haProxy settings"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/client-config.lua:180
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/server-config.lua:166
+msgid "plugin"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:345
+msgid "udp2raw"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/status.lua:342
+msgid "udp2raw Version"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-ssr-plus-Jo/luasrc/model/cbi/shadowsocksr/advanced.lua:156
+msgid "udp2raw tunnel"
+msgstr ""

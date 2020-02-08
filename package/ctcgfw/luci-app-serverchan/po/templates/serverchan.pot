@@ -1,0 +1,272 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:48
+msgid ""
+"<br/> 请输入设备 MAC 和设备别名，用“-”隔开，如：<br/> XX:XX:XX:XX:XX:XX-我的"
+"手机"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:81
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:106
+msgid "<br/>一般选择 wan 接口，多拨环境请自行选择"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:86
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:111
+msgid "<br/>会因服务器稳定性/连接频繁等原因导致获取失败，一般不推荐"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:162
+msgid "<br/>使用特殊符号可能会造成发送失败"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:133
+msgid ""
+"<br/>设备报警只会在连续五次超过阈值的时候才会推送<br/>而且一个小时内不会再提"
+"醒第二次"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:126
+msgid "CPU 温度报警"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:119
+msgid "CPU 负载报警"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/view/serverchan/serverchan_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:214
+msgid "MAC过滤"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/view/serverchan/serverchan_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/view/serverchan/serverchan_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:31
+msgid "SCKEY"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:8
+msgid "ServerChan"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:17
+msgid "Server酱设置"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:172
+msgid "WAN信息"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:215
+msgid "disable"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:11
+msgid "github 项目地址"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:63
+msgid "ipv4 变动通知"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:88
+msgid "ipv6 变动通知"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:9
+msgid ""
+"「Server酱」，英文名「ServerChan」，是一款从服务器推送报警信息和日志到微信的"
+"工具。<br /><br />如果你在使用中遇到问题，请到这里提交："
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:217
+msgid "仅通知列表内设备"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:218
+msgid "仅通知此接口设备"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:21
+msgid "免打扰"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:197
+msgid "免打扰开始时间"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:191
+msgid "免打扰时段设置"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:205
+msgid "免打扰结束时间"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:226
+msgid "关注列表"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:39
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:65
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:90
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:137
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:192
+msgid "关闭"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:181
+msgid "发送"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:141
+msgid "发送时间"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:149
+msgid "发送间隔"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:27
+msgid "启用"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:191
+msgid "在指定整点时间段内，暂停推送消息<br/>免打扰时间中，定时推送也会被阻止。"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:36
+msgid "在推送信息标题中会标识本设备名称，用于区分推送信息的来源设备"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:18
+msgid "基本设置"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:135
+msgid "定时任务设定"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:138
+msgid "定时发送"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:20
+msgid "定时推送"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:176
+msgid "客户端列表"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:22
+msgid "客户端日志"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:151
+msgid "小时"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/controller/serverchan.lua:6
+msgid "微信推送"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:157
+msgid "微信推送标题"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:220
+msgid "忽略列表"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:216
+msgid "忽略列表内设备"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:180
+msgid "手动发送"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:68
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:93
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:232
+msgid "接口名称"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:38
+msgid "日志调试等级"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:34
+msgid "本设备名称"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:193
+msgid "模式一：脚本挂起，延迟发送"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:194
+msgid "模式二：静默模式，不发送任何信息"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:143
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:199
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:207
+msgid "每天"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:40
+msgid "简单"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:164
+msgid "系统运行情况"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:113
+msgid "设备上线通知"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:116
+msgid "设备下线通知"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:45
+msgid "设备别名"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:168
+msgid "设备温度"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:19
+msgid "设备状态"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:41
+msgid "详细"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:67
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:92
+msgid "通过URL获取"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:66
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:91
+msgid "通过接口获取"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-serverchan/luasrc/model/cbi/serverchan.lua:139
+msgid "间隔发送"
+msgstr ""
