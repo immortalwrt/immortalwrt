@@ -1,6 +1,6 @@
 #!/bin/sh
 
-uci set luci.main.lang=zh_cn
+uci set luci.main.lang=zh_Hans
 uci commit luci
 
 uci set system.@system[0].timezone=CST-8
