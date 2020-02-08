@@ -215,7 +215,7 @@ revert_dns() {
 
 }
 
-start_service(){
+start(){
 	dns=$(uci get flowoffload.@flow[0].dns 2>/dev/null)
 	dnscache_enable=$(uci get flowoffload.@flow[0].dnscache_enable 2>/dev/null)
 	bbr=$(uci get flowoffload.@flow[0].bbr 2>/dev/null)
@@ -262,7 +262,7 @@ start_service(){
 	fi
 }
 
-stop_service(){
+stop(){
     dns=$(uci get firewall.@defaults[0].dns 2>/dev/null)
 	stop_dnscache
     revert_dns
