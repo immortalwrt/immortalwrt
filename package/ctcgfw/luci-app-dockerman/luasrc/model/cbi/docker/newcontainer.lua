@@ -4,6 +4,7 @@ Copyright 2019 lisaac <https://github.com/lisaac/luci-app-dockerman>
 ]]--
 
 require "luci.util"
+require "math"
 local uci = luci.model.uci.cursor()
 local docker = require "luci.model.docker"
 local dk = docker.new()
@@ -14,10 +15,23 @@ local images = dk.images:list().body
 local networks = dk.networks:list().body
 local containers = dk.containers:list(nil, {all=true}).body
 
+local is_quot_complete = function(str)
+  if not str then return true end
+  local num = 0, w
+  for w in str:gmatch("[\"\']") do
+    num = num + 1
+  end
+  if math.fmod(num, 2) ~= 0 then
+    return false
+  else
+    return true
+  end
+end
+
 -- reslvo default config
 local default_config = { }
 if cmd_line and cmd_line:match("^docker.+") then
-  local key = nil
+  local key = nil, _key
   --cursor = 0: docker run
   --cursor = 1: resloving para
   --cursor = 2: resloving image
@@ -26,6 +40,24 @@ if cmd_line and cmd_line:match("^docker.+") then
   for w in cmd_line:gmatch("[^%s]+") do 
     -- skip '\'
     if w == '\\' then
+    elseif _key then
+      -- there is a value that unpair quotation marks:
+      -- "i was a ok man"
+      -- now we only get: "i
+      if _key == "mount" or _key == "link" or _key == "env" or _key == "dns" or _key == "port" or _key == "device" or _key == "tmpfs" then
+        default_config[_key][#default_config[_key]] = default_config[_key][#default_config[_key]] .. " " .. w
+        if is_quot_complete(default_config[_key][#default_config[_key]]) then
+          -- clear quotation marks
+          default_config[_key][#default_config[_key]] = default_config[_key][#default_config[_key]]:gsub("[\"\']", "")
+          _key = nil
+        end
+      else
+        default_config[_key] = default_config[_key] .. " ".. w
+        if is_quot_complete(default_config[_key]) then
+          default_config[_key] = default_config[_key]:gsub("[\"\']", "")
+          _key = nil
+        end
+      end
     -- start with '-'
     elseif w:match("^%-+.+") and cursor <= 1 then
       --key=value
@@ -33,7 +65,7 @@ if cmd_line and cmd_line:match("^docker.+") then
       key, val = w:match("^%-%-(.-)=(.+)")
       -- -dit
       if not key then key = w:match("^%-%-(.+)") end
-      
+
       if not key then
         key = w:match("^%-(.+)")
         if key:match("i") or key:match("t") or key:match("d") then
@@ -43,7 +75,7 @@ if cmd_line and cmd_line:match("^docker.+") then
           key = nil
         end
       end
-      
+
       if key == "v" or key == "volume" then
         key = "mount"
       elseif key == "p" then
@@ -72,6 +104,12 @@ if cmd_line and cmd_line:match("^docker.+") then
         else
           default_config[key] = val
         end
+        -- if there are " or ' in val and separate by space, we need keep the _key to link with next w
+        if is_quot_complete(val) then
+          _key = nil
+        else
+          _key = key
+        end
         -- clear key
         key = nil
       end
@@ -86,6 +124,12 @@ if cmd_line and cmd_line:match("^docker.+") then
       end
       if key == "cpus" or key == "cpushare" or key == "memory" or key == "blkioweight" or key == "device" or key == "tmpfs" then
         default_config["advance"] = 1
+      end
+      -- if there are " or ' in val and separate by space, we need keep the _key to link with next w
+      if is_quot_complete(w) then
+        _key = nil
+      else
+        _key = key
       end
       key = nil
       cursor = 1
