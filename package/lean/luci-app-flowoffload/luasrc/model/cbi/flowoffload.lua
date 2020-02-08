@@ -68,9 +68,4 @@ o.default = "2001:4860:4860::8888,2001:4860:4860::8844,2001:2001::1111,2001:2001
 o.description = translate("Muitiple IPV6 DNS server can saperate with ','")
 o:depends("dnscache_enable", 2)
 
-local apply = luci.http.formvalue("cbi.apply")
-if apply then
-os.execute("/etc/init.d/flowoffload restart >/dev/null 2>&1 &")
-end
-
 return m
