@@ -1,6 +1,11 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2019 [CTCGFW] Project OpenWRT
 
+. /lib/functions.sh
+. /lib/functions/procd.sh
+
+USE_PROCD=1
+
 START=90
 STOP=10
 
@@ -20,14 +25,26 @@ elif [ "${addr_type}" == "wan" ];then
 	addr="0.0.0.0"
 fi
 
-start() {
-	stop
-	[ "$enabled" == "1" ] || exit 0
+start_service() {
+	[ "${enabled}" == "1" ] || exit 0
+	procd_open_instance filebrowser
 	mkdir -p "${root_dir}"
 	mkdir -p "${db_dir}"
-	filebrowser -a "${addr}" -d "${db_dir}/${db_name}" -p "${port}" -r "${root_dir}" >/dev/null 2>&1 &
+	procd_set_param command filebrowser
+	procd_append_param command -a "${addr}"
+	procd_append_param command -d "${db_dir}/${db_name}"
+	procd_append_param command -p "${port}"
+	procd_append_param command -r "${root_dir}"
+	procd_set_param respawn ${respawn_threshold:-3600} ${respawn_timeout:-5} ${respawn_retry:-5}
+	procd_close_instance
 }
 
-stop() {
-	killall -9 filebrowser >/dev/null 2>&1
+reload_service()
+{
+	stop
+	start
+}
+
+service_triggers() {
+        procd_add_reload_trigger "filebrowser"
 }
