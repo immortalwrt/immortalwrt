@@ -612,7 +612,7 @@ msgid "Edit Proxy Provider"
 msgstr "编辑代理集配置"
 
 msgid "Provider Type"
-msgstr "代理集类型
+msgstr "代理集类型"
 
 msgid "Provider Type"
 msgstr "代理集的类型"
@@ -809,6 +809,9 @@ msgstr "强制使用同名"
 msgid "Enable to overwrite config file"
 msgstr "启用覆盖配置文件"
 
+msgid "Give a name for your config"
+msgstr "为配置命名"
+
 msgid "Config Type"
 msgstr "Clash配置类型"
 
@@ -955,3 +958,9 @@ msgstr "选择代理模式"
 
 msgid "NB: Upload only Dreamacro clash tun core - (https://github.com/Dreamacro/clash/releases/tag/TUN)"
 msgstr "注意：只上传clash tun内核-(https://github.com/Dreamacro/clash/releases/tag/TUN)"
+
+msgid "Load Provider"
+msgstr "读取代理集"
+
+msgid "Enable to read Proxy Provider"
+msgstr "启用读取代理集"

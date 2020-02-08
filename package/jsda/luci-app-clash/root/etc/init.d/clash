@@ -220,7 +220,7 @@ rules(){
 			iptables -t nat -A clash -d 224.0.0.0/4 -j RETURN
 			iptables -t nat -A clash -d 240.0.0.0/4 -j RETURN
 			iptables -t nat -A clash -d "${lan_ip}" -j RETURN
-			if [ ! -z "$wan" ]; then
+			if [ ! -z "${wan}" ]; then
                 	iptables -t nat -A clash -d "${wan}" -j RETURN
                 	fi
 			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
@@ -263,7 +263,7 @@ rules(){
 			ipset add localnetwork 240.0.0.0/4
 			ipset add localnetwork 172.16.0.0/12
 			ipset add localnetwork "${lan_ip}"
-			if [ ! -z "$wan" ]; then
+			if [ ! -z "${wan}" ]; then
                 	ipset add localnetwork "${wan}"
                 	fi
 			if [ "${core}" -eq 3 ];then
@@ -421,7 +421,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 	
 	game_rules >/dev/null 2>&1
 
-       if [ "${core}" -eq 1 ];then
+        if [ "${core}" -eq 1 ];then
         	nohup $CLASH -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -447,7 +447,8 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
 		fi	
 	elif [ "${core}" -eq 2 ];then
-        	nohup $CLASHR -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &		
+        	nohup $CLASHR -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &
+				
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Clashr Core Started Successfully " >$REAL_LOG 
 		elif [ "${lang}" == "zh_cn" ];then
@@ -455,7 +456,9 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		fi
 		
 	fi
-	
+
+	sh /usr/share/clash/restore.sh >/dev/null 2>&1
+
 	sleep 1	
 
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -635,6 +638,8 @@ stop(){
         	done	
 
 		remove_mark >/dev/null 2>&1
+
+		sh /usr/share/clash/backup.sh >/dev/null 2>&1
 
 		kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 		

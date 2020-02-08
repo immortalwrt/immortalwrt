@@ -82,6 +82,10 @@ o:value("1", translate("enabled"))
 o:value("0", translate("disabled"))
 o.description = translate("Enable to read policy group")
 
+o = s:option(ListValue, "loadprovider", translate("Load Provider"))
+o:value("1", translate("enabled"))
+o:value("0", translate("disabled"))
+o.description = translate("Enable to read Proxy Provider")
 
 local t = {
     {Load_Config, Creat_Config, Apply, Delete_Severs, Delete_Groups}
