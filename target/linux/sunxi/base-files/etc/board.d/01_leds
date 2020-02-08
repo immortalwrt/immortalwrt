@@ -14,7 +14,7 @@ case "$(board_name)" in
 *)
 	;;
 esac
- 
+
 board_config_flush
 
 exit 0

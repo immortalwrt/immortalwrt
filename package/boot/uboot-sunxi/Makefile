@@ -153,19 +153,19 @@ endef
 define U-Boot/nanopi_duo2
   BUILD_SUBTARGET:=cortexa7
   NAME:=U-Boot for NanoPi Duo2 (H3)
-  BUILD_DEVICES:=sun8i-h3-nanopi-duo2
+  BUILD_DEVICES:=friendyarm-h3-nanopi-duo2
 endef
 
 define U-Boot/nanopi_r1
   BUILD_SUBTARGET:=cortexa7
   NAME:=U-Boot for NanoPi R1 (H3)
-  BUILD_DEVICES:=sun8i-h3-nanopi-r1
+  BUILD_DEVICES:=friendyarm-h3-nanopi-r1
 endef
 
 define U-Boot/nanopi_r1s
   BUILD_SUBTARGET:=cortexa53
   NAME:=NanoPi R1S (H5)
-  BUILD_DEVICES:=sun50i-h5-nanopi-r1s
+  BUILD_DEVICES:=friendlyarm-h5-nanopi-r1s
   DEPENDS:=+PACKAGE_u-boot-nanopi_r1s:arm-trusted-firmware-sunxi
   UENV:=a64
 endef
