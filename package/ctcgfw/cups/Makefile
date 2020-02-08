@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cups
-PKG_VERSION:=2.1.4
+PKG_VERSION:=2.2.12
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-source.tar.gz
 PKG_SOURCE_URL:=http://www.cups.org/software/$(PKG_VERSION)
-PKG_MD5SUM:=9f9bf6e3b9c20a3519b4dc409666d6e7
+PKG_HASH:=0f61ab449e4748a24c6ab355b481ff7691247a140d327b2b7526fce34b7f9aa8
 
 TARGET_LDFLAGS+=-Wl,-rpath-link=$(STAGING_DIR)/usr/lib
 
@@ -95,17 +95,17 @@ define Package/cups-ppdc/description
 	Common UNIX Printing System - PPDC utils
 endef
 
-define Package/libcups
-$(call Package/cups/Default)
-  SECTION:=libs
-  CATEGORY:=Libraries
-  DEPENDS:=+zlib +libpthread +libpng +libjpeg
-  TITLE:=Common UNIX Printing System - Core library
-endef
+#define Package/libcups
+#$(call Package/cups/Default)
+#  SECTION:=libs
+#  CATEGORY:=Libraries
+#  DEPENDS:=+zlib +libpthread +libpng +libjpeg
+#  TITLE:=Common UNIX Printing System - Core library
+#endef
 
-define Package/libcups/description
-	Common UNIX Printing System - Core library
-endef
+#define Package/libcups/description
+#	Common UNIX Printing System - Core library
+#endef
 
 define Package/libcupscgi
 $(call Package/cups/Default)
@@ -275,10 +275,10 @@ define Package/cups-ppdc/install
 		$(1)/usr/bin/
 endef
 
-define Package/libcups/install
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups.so* $(1)/usr/lib/
-endef
+#define Package/libcups/install
+#	$(INSTALL_DIR) $(1)/usr/lib
+#	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups.so* $(1)/usr/lib/
+#endef
 
 define Package/libcupscgi/install
 	$(INSTALL_DIR) $(1)/usr/lib
@@ -300,17 +300,17 @@ define Package/libcupsppdc/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcupsppdc.so* $(1)/usr/lib/
 endef
 
-define Build/InstallDev
-	$(INSTALL_DIR) $(2)/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cups-config $(2)/bin/
-	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/cups $(1)/usr/include/
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups*.so* $(1)/usr/lib/
-endef
+#define Build/InstallDev
+#	$(INSTALL_DIR) $(2)/bin
+#	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cups-config $(2)/bin/
+#	$(INSTALL_DIR) $(1)/usr/include
+#	$(CP) $(PKG_INSTALL_DIR)/usr/include/cups $(1)/usr/include/
+#	$(INSTALL_DIR) $(1)/usr/lib
+#	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups*.so* $(1)/usr/lib/
+#endef
 
 $(eval $(call BuildPackage,cups))
-$(eval $(call BuildPackage,libcups))
+#$(eval $(call BuildPackage,libcups))
 $(eval $(call BuildPackage,libcupscgi))
 $(eval $(call BuildPackage,libcupsimage))
 $(eval $(call BuildPackage,libcupsmime))
