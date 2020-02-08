@@ -25,8 +25,8 @@ ifeq ($(ARCH),aarch64)
 	PKG_ARCH_SYNCTHING:=arm64
 endif
 
-PKG_NAME:=syncthing
-PKG_VERSION:=v1.3.3
+PKG_NAME:=openwrt-syncthing
+PKG_VERSION:=v1.3.4
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION).tar.gz
@@ -39,7 +39,6 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=A continuous file synchronization program
-	DEPENDS:=
 	URL:=https://github.com/syncthing/syncthing
 endef
 
