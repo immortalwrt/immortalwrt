@@ -324,3 +324,9 @@ msgstr "设备"
 
 msgid "Finish Time"
 msgstr "结束时间"
+
+msgid "Command line Error"
+msgstr "命令行错误"
+
+msgid "Canceled"
+msgstr "已取消"
