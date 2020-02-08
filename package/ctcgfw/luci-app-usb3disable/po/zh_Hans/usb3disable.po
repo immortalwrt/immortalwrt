@@ -11,31 +11,31 @@ msgstr ""
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:20
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:38
 msgid "Disable"
-msgstr ""
+msgstr "禁用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:30
 msgid "Enable"
-msgstr ""
+msgstr "启用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:18
 msgid "disable now"
-msgstr ""
+msgstr "立即禁用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:36
 msgid "disable on boot"
-msgstr ""
+msgstr "开机时禁用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:12
 msgid "enable"
-msgstr ""
+msgstr "启用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:10
 msgid "enable now"
-msgstr ""
+msgstr "立即启用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:28
 msgid "enable on boot"
-msgstr ""
+msgstr "开机时启用"
 
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/controller/usb3disable.lua:4
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/controller/usb3disable.lua:5
