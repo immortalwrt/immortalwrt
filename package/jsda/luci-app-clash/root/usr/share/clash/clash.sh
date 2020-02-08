@@ -46,7 +46,7 @@ else
 	fi
 	sleep 1
 			
-	wget --no-check-certificate --user-agent="Clash/OpenWRT" $subscribe_url -O 2>&1 >1 $CONFIG_YAML
+	wget -c4 --no-check-certificate --user-agent="Clash/OpenWRT" $subscribe_url -O 2>&1 >1 $CONFIG_YAML
 	if [ "$?" -eq "0" ]; then
 	echo "${config_name}.yaml#$subscribe_url#$subtype" >>/usr/share/clashbackup/confit_list.conf
    

@@ -20,7 +20,7 @@
 				echo "开始下载【$RULE_FILE_NAME】规则..." >$REAL_LOG
 	fi 
 	
-   wget -c4 --no-check-certificate --timeout=30 https://raw.githubusercontent.com/FQrabbit/SSTap-Rule/master/rules/"$DOWNLOAD_PATH" -O 2>&1 >1 "$TMP_RULE_DIR"
+   wget --no-check-certificate -c4 https://raw.githubusercontent.com/FQrabbit/SSTap-Rule/master/rules/"$DOWNLOAD_PATH" -O 2>&1 >1 "$TMP_RULE_DIR"
    
    if [ "$?" -eq "0" ] && [ "$(ls -l $TMP_RULE_DIR |awk '{print $5}')" -ne 0 ]; then
    

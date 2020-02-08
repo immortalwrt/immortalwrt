@@ -4,7 +4,7 @@
 lang=$(uci get luci.main.lang 2>/dev/null)
 loadgroups=$(uci get clash.config.loadgroups 2>/dev/null)
 loadservers=$(uci get clash.config.loadservers 2>/dev/null)
-
+loadprovider=$(uci get clash.config.loadprovider 2>/dev/null)
 
 run_load(){
 
@@ -250,7 +250,7 @@ fi
    
 #awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
 
- if [ $loadservers -eq 1 ];then
+
 
  
 proxy_len=$(sed -n '/^ \{0,\}Proxy:/=' $load 2>/dev/null)
@@ -310,6 +310,8 @@ cfg_gett()
 {
 	echo "$(grep "$1" $single_server 2>/dev/null |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null)"
 }  
+
+ if [ $loadservers -eq 1 ];then
 #######READ SERVERS START   
 if [ -f /tmp/yaml_proxy.yaml ];then
    while [[ "$( grep -c "config servers" $CFG_FILE )" -ne 0 ]] 
@@ -497,7 +499,10 @@ elif [ $lang == "zh_cn" ];then
 fi
 fi
 #######READ SERVERS END  
+fi
 
+
+if [ "${loadprovider}" -eq 1 ];then
 #######READ PROVIDER START
 
 if [ -f /tmp/yaml_provider.yaml ];then
@@ -645,6 +650,8 @@ done
 #######READ PROVIDER END
 fi
 fi
+
+
 rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml /tmp/yaml_group.yaml /tmp/match_servers.list /tmp/yaml_provider.yaml /tmp/provider.yaml /tmp/provider_gen.yaml /tmp/provider_che.yaml /tmp/match_provider.list 2>/dev/null
 
 /usr/share/clash/proxy.sh >/dev/null 2>&1
