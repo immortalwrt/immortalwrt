@@ -6,13 +6,13 @@ local o="v2ray_server"
 local a,e,t
 
 a=Map(o,translate("V2ray Server"))
-e=a:section(TypedSection,"global",translate("Global Setting"))
+e=a:section(TypedSection,"global",translate("Global Settings"))
 e.anonymous=true
 e.addremove=false
 t=e:option(Flag,"enable",translate("Enable"))
 t.rmempty=false
 
-e=a:section(TypedSection,"user",translate("Server Setting"))
+e=a:section(TypedSection,"user",translate("Server Config"))
 e.anonymous=true
 e.addremove=true
 e.template="cbi/tblsection"
