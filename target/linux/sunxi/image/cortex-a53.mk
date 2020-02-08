@@ -41,8 +41,7 @@ define Device/friendlyarm_nanopi-r1s
   KERNEL_NAME := Image
   KERNEL := kernel-bin
 endef
-
-TARGET_DEVICES += friendlyarm_h5-nanopi-r1s
+TARGET_DEVICES += friendlyarm_nanopi-r1s
 
 define Device/pine64_pine64-plus
   DEVICE_VENDOR := Pine64
