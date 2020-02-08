@@ -12,7 +12,7 @@ define Package/luci-app-clash
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI app for clash
-	DEPENDS:=+luci +luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util
+	DEPENDS:=+luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util
 	PKGARCH:=all
 	MAINTAINER:=frainzy1477
 endef
