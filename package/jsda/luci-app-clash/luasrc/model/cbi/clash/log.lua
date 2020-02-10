@@ -22,7 +22,7 @@ o.inputtitle = translate("Download logs")
 o.inputstyle = "apply"
 o.write = function ()
 	local sPath, sFile, fd, block
-	sPath = "/tmp/clash.txt"
+	sPath = "/usr/share/clash/clash.txt"
 	sFile = NXFS.basename(sPath)
 	if fs.isdirectory(sPath) then
 		fd = io.popen('txt -C "%s" -cz .' % {sPath}, "r")

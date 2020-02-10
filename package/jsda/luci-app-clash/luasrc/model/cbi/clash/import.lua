@@ -61,7 +61,7 @@ o.inputtitle = translate("Download Config")
 o.inputstyle = "reload"
 o.write = function()
   kr.uci:commit("clash")
-  SYS.call("sh /usr/share/clash/clash.sh >>/tmp/clash.txt 2>&1 &")
+  SYS.call("sh /usr/share/clash/clash.sh >>/usr/share/clash/clash.txt 2>&1 &")
   SYS.call("sleep 1")
   HTTP.redirect(DISP.build_url("admin", "services", "clash"))
 end
@@ -82,7 +82,7 @@ o.write = function()
   kr.uci:commit("clash")
   SYS.call("cp /etc/config/clash /usr/share/clash/v2ssr/config.bak 2>/dev/null")
   SYS.call("sleep 1")
-  luci.sys.call("bash /usr/share/clash/v2ssr.sh >>/tmp/clash.txt 2>&1 &")
+  luci.sys.call("bash /usr/share/clash/v2ssr.sh >>/usr/share/clash/clash.txt 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "clash"))
 end
 o:depends("subcri", 'v2ssr2clash')

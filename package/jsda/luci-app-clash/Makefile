@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk 
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=1.5.3
+PKG_VERSION:=1.5.5
 PKG_MAINTAINER:=frainzy1477
 
 
@@ -67,7 +67,7 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 	rm -rf /usr/share/clash/web 2>/dev/null
 	mv /usr/share/clash/config/sub/config.yaml /usr/share/clashbackup/config.bak1 2>/dev/null
 	mv /usr/share/clash/config/upload/config.yaml /usr/share/clashbackup/config.bak2 2>/dev/null
-	mv /usr/share/clash/config/custom/config.yaml /usr/share/clashbackup/config.bak3 2>/dev/nul	
+	mv /usr/share/clash/config/custom/config.yaml /usr/share/clashbackup/config.bak3 2>/dev/null
 fi
 
 exit 0
