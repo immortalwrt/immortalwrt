@@ -45,11 +45,13 @@ ipset=/interface.music.163.com/neteasemusic
 ipset=/interface3.music.163.com/neteasemusic
 ipset=/apm.music.163.com/neteasemusic
 ipset=/apm3.music.163.com/neteasemusic
+ipset=/clientlog.music.163.com/neteasemusic
+ipset=/clientlog3.music.163.com/neteasemusic
 		EOF
 		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
 
 		if ! ipset list "neteasemusic" > "/dev/null"; then ipset create "neteasemusic" hash:ip; fi
-		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add music "$1}' |bash > "/dev/null" 2>&1
+		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add neteasemusic "$1}' |bash > "/dev/null" 2>&1
 		iptables -t nat -N "netease_cloud_music"
 		iptables -t nat -A "netease_cloud_music" -d "0.0.0.0/8" -j RETURN
 		iptables -t nat -A "netease_cloud_music" -d "10.0.0.0/8" -j RETURN
@@ -88,6 +90,8 @@ address=/interface.music.163.com/${lan_addr}
 address=/interface3.music.163.com/${lan_addr}
 address=/apm.music.163.com/${lan_addr}
 address=/apm3.music.163.com/${lan_addr}
+address=/clientlog.music.163.com/${lan_addr}
+address=/clientlog3.music.163.com/${lan_addr}
 address=/music.httpdns.c.163.com/0.0.0.0
 		EOF
 		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
@@ -122,22 +126,22 @@ start()
 
 	[ "${enable}" -ne "1" ] && exit 0
 
-	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && rm -f "/usr/share/unblockneteasemusic/local_ver" && bash "/usr/share/unblockneteasemusic/update.sh" "update_core_non_restart"
-	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && echo "Core Not Found, please download it before starting." >> "/tmp/unblockneteasemusic.log" && exit 1
+	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && { rm -f "/usr/share/unblockneteasemusic/local_ver"; bash "/usr/share/unblockneteasemusic/update.sh" "update_core_non_restart"; }
+	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && { echo "Core Not Found, please download it before starting." >> "/tmp/unblockneteasemusic.log"; exit 1; }
 
 	if [ "${music_source}" = "qq" ];then
-		[ -z "${qq_cookie}" ] && echo "QQ cookie is not exsit, please enter it before starting." && exit 1
+		[ -z "${qq_cookie}" ] && { echo "QQ cookie is not exsit, please enter it before starting."; exit 1; }
 		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/provider/qq.js")"
 		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/provider/qq.js"
 		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/provider/qq.js"
 	elif [ "${music_source}" = "youtube" ];then
-		[ -z "${youtube_key}" ] && echo "Youtube API Key is not exsit, please enter it before starting." && exit 1
+		[ -z "${youtube_key}" ] && { echo "Youtube API Key is not exsit, please enter it before starting."; exit 1; }
 		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/provider/youtube.js"
 		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/provider/youtube.js"
 	fi
 
-	[ -f "${self_issue_cert_crt}" ] && { [ "${self_issue_cert_crt}" != "/usr/share/unblockneteasemusic/core/server.crt" ] && ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"; }
-	[ -f "${self_issue_cert_key}" ] && { [ "${self_issue_cert_key}" != "/usr/share/unblockneteasemusic/core/server.key" ] && ln -sf "${self_issue_cert_key}" "/usr/share/unblockneteasemusic/core/server.key"; }
+	{ [ -f "${self_issue_cert_crt}" ] && [ "${self_issue_cert_crt}" != "/usr/share/unblockneteasemusic/core/server.crt" ]; } && ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"
+	{ [ -f "${self_issue_cert_key}" ] && [ "${self_issue_cert_key}" != "/usr/share/unblockneteasemusic/core/server.key" ]; } && ln -sf "${self_issue_cert_key}" "/usr/share/unblockneteasemusic/core/server.key"
 
 	[ "${hijack_ways}" = "use_hosts" ] && { http_port="80"; https_port="443"; }
 	if [ "${music_source}" = "default" ]; then
