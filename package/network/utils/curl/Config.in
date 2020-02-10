@@ -125,7 +125,7 @@ config LIBCURL_LIBIDN2
 
 config LIBCURL_THREADED_RESOLVER
 	bool "Enable threaded DNS resolver"
-	default n
+	default y
 	help
 		Enable POSIX threaded asynchronous DNS resolution
 
