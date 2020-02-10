@@ -34,7 +34,8 @@ ALLWIFIBOARDS:= \
 	linksys_ea6350v3 \
 	linksys_ea8300 \
 	qxwlan_e2600ac \
-	canbox_cm520-79f
+	canbox_cm520-79f \
+	p2w_r619ac
 
 ALLWIFIPACKAGES:=$(foreach BOARD,$(ALLWIFIBOARDS),ipq-wifi-$(BOARD))
 
@@ -108,5 +109,6 @@ $(eval $(call generate-ipq-wifi-package,linksys_ea6350v3,Linksys EA6350v3))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac,Qxwlan E2600AC))
 $(eval $(call generate-ipq-wifi-package,canbox_cm520-79f,CanBox CM520-79F))
+$(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
 
 $(foreach PACKAGE,$(ALLWIFIPACKAGES),$(eval $(call BuildPackage,$(PACKAGE))))

@@ -47,6 +47,11 @@ ipq40xx_setup_interfaces()
 	zyxel,wre6606)
 		ucidef_set_interface_lan "eth0"
 		;;
+	canbox,cm520-79f)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0u@eth0" "3:lan" "4:lan"
+		;;
 	avm,fritzrepeater-3000|\
 	compex,wpj428)
 		ucidef_set_interface_lan "eth0 eth1"
@@ -56,10 +61,11 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0u@eth0" "3:lan" "4:lan"
 		;;
-	canbox,cm520-79f)
+	p2w,r619ac|\
+	p2w,r619ac-128m)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		ucidef_add_switch "switch0" \
-			"0u@eth0" "3:lan" "4:lan"
+			"0u@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1"
 		;;
 	qxwlan,e2600ac-c1 |\
 	qxwlan,e2600ac-c2)
