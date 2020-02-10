@@ -178,7 +178,7 @@ BROOK_UDP_CMD=""
 TCP_REDIR_PORTS=$(config_t_get global_forwarding tcp_redir_ports '80,443')
 UDP_REDIR_PORTS=$(config_t_get global_forwarding udp_redir_ports '1:65535')
 KCPTUN_REDIR_PORT=$(config_t_get global_forwarding kcptun_port 12948)
-PROXY_MODE=$(config_t_get global proxy_mode gfwlist)
+PROXY_MODE=$(config_t_get global proxy_mode chnroute)
 
 load_config() {
 	[ "$ENABLED" != 1 ] && {
@@ -199,14 +199,15 @@ load_config() {
 		process=$(config_t_get global_forwarding process)
 	fi
 	LOCALHOST_PROXY_MODE=$(config_t_get global localhost_proxy_mode default)
-	UP_CHINA_DNS=$(config_t_get global up_china_dns 223.5.5.5,114.114.114.114)
-	[ ! -f "$RESOLVFILE" ] && RESOLVFILE=/tmp/resolv.conf.auto
-	[ "$UP_CHINA_DNS" == "dnsbyisp" ] && {
+	UP_CHINA_DNS=$(config_t_get global up_china_dns dnsbyisp)
+	[ "$UP_CHINA_DNS" == "default" ] && IS_DEFAULT_CHINA_DNS=1
+	[ ! -f "$RESOLVFILE" -o ! -s "$RESOLVFILE" ] && RESOLVFILE=/tmp/resolv.conf.auto
+	[ "$UP_CHINA_DNS" == "dnsbyisp" -o "$UP_CHINA_DNS" == "default" ] && {
 		local dns1=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '1P')
 		if [ -n "$dns1" ]; then
 			UP_CHINA_DNS=$dns1
 		else
-			UP_CHINA_DNS="223.5.5.5,114.114.114.114"
+			UP_CHINA_DNS="223.5.5.5"
 		fi
 		local dns2=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '2P')
 		[ -n "$dns1" -a -n "$dns2" ] && UP_CHINA_DNS="$dns1,$dns2"
@@ -281,7 +282,7 @@ gen_start_config() {
 		network_type="ipv4"
 		[ "$use_ipv6" == "1" ] && network_type="ipv6"
 		server_ip=$(get_host_ip $network_type $server_host)
-		echolog "$redir_type节点：$remarks，节点地址端口：${server_ip}:${port}"
+		echolog "$redir_type节点：$remarks，节点：${server_ip}:${port}，监听端口：$local_port"
 	}
 
 	if [ "$redir_type" == "SOCKS5" ]; then
@@ -702,10 +703,10 @@ stop_crontab() {
 start_dns() {
 	case "$DNS_MODE" in
 	nonuse)
-		echolog "不使用任何DNS转发模式，将会直接将WAN口DNS给dnsmasq上游！"
+		echolog "DNS：不使用，将会直接使用上级DNS！"
 	;;
 	local_7913)
-		echolog "运行DNS转发模式：使用本机7913端口DNS服务器解析域名..."
+		echolog "DNS：使用本机7913端口DNS服务器解析域名..."
 	;;
 	dns2socks)
 		if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
@@ -713,10 +714,10 @@ start_dns() {
 			[ -n "$dns2socks_bin" ] && {
 				DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
 				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
-				echolog "运行DNS转发模式：dns2socks..."
+				echolog "DNS：dns2socks..."
 			}
 		else
-			echolog "dns2socks模式需要使用Socks5代理节点，请开启！"
+			echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
 			force_stop
 		fi
 	;;
@@ -727,7 +728,7 @@ start_dns() {
 			gen_pdnsd_config $DNS_PORT "cache"
 			DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
 			nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
-			echolog "运行DNS转发模式：pdnsd..."
+			echolog "DNS：pdnsd..."
 		}
 	;;
 	chinadns-ng)
@@ -741,7 +742,7 @@ start_dns() {
 			up_trust_chinadns_ng_dns=$(config_t_get global up_trust_chinadns_ng_dns "pdnsd")
 			if [ "$up_trust_chinadns_ng_dns" == "pdnsd" ]; then
 				if [ -z "$TCP_NODE1" -o "$TCP_NODE1" == "nil" ]; then
-					echolog "ChinaDNS-NG + pdnsd 模式需要启用TCP节点！"
+					echolog "DNS：ChinaDNS-NG + pdnsd 模式需要启用TCP节点！"
 					force_stop
 				else
 					use_tcp_node_resolve_dns=1
@@ -751,7 +752,7 @@ start_dns() {
 						DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
 						nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
 						nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-						echolog "运行DNS转发模式：ChinaDNS-NG + pdnsd($DNS_FORWARD)，国内DNS：$UP_CHINA_DNS"
+						echolog "DNS：ChinaDNS-NG + pdnsd($DNS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 					}
 				fi
 			elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
@@ -761,22 +762,17 @@ start_dns() {
 						DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
 						nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$other_port >/dev/null 2>&1 &
 						nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-						echolog "运行DNS转发模式：ChinaDNS-NG + dns2socks($DNS2SOCKS_FORWARD)，国内DNS：$UP_CHINA_DNS"
+						echolog "DNS：ChinaDNS-NG + dns2socks($DNS2SOCKS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 					}
 				else
-					echolog "dns2socks模式需要使用Socks5代理节点，请开启！"
+					echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
 					force_stop
 				fi
 			else
-				if [ -z "$UDP_NODE1" -o "$UDP_NODE1" == "nil" ]; then
-					nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 208.67.222.222#443,208.67.222.222#5353 $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-					echolog "运行DNS转发模式：ChinaDNS-NG，国内DNS：$UP_CHINA_DNS，因为你没有使用UDP节点，将使用OpenDNS 443端口或5353端口作为可信DNS。"
-				else
-					use_udp_node_resolve_dns=1
-					DNS_FORWARD=$(echo $up_trust_chinadns_ng_dns | sed 's/,/ /g')
-					nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t $up_trust_chinadns_ng_dns $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-					echolog "运行DNS转发模式：ChinaDNS-NG，国内DNS：$UP_CHINA_DNS，可信DNS：$up_trust_chinadns_ng_dns"
-				fi
+				use_udp_node_resolve_dns=1
+				DNS_FORWARD=$(echo $up_trust_chinadns_ng_dns | sed 's/,/ /g')
+				nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t $up_trust_chinadns_ng_dns $gfwlist_param $chnlist_param >/dev/null 2>&1 &
+				echolog "DNS：ChinaDNS-NG，国内DNS：$UP_CHINA_DNS，可信DNS：$up_trust_chinadns_ng_dns，如果不能使用，请确保UDP节点已打开并且支持UDP转发。"
 			fi
 		}
 	;;
@@ -815,35 +811,28 @@ add_dnsmasq() {
 		cat $RULE_PATH/router | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/router"}' >>$TMP_DNSMASQ_PATH/router.conf
 	fi
 
-	userconf=$(grep -c "" $RULE_PATH/user.conf)
-	if [ "$userconf" -gt 0 ]; then
-		ln -s $RULE_PATH/user.conf $TMP_DNSMASQ_PATH/user.conf
-	fi
-
-	backhome=$(config_t_get global proxy_mode gfwlist)
-	if [ "$backhome" == "returnhome" ]; then
-		rm -rf $TMP_DNSMASQ_PATH/gfwlist.conf
-		rm -rf $TMP_DNSMASQ_PATH/blacklist_host.conf
-		rm -rf $TMP_DNSMASQ_PATH/whitelist_host.conf
-	fi
-
-	server="server=127.0.0.1#$DNS_PORT"
-	[ "$DNS_MODE" != "chinadns-ng" ] && {
-		local china_dns1=$(echo $UP_CHINA_DNS | awk -F "," '{print $1}')
-		local china_dns2=$(echo $UP_CHINA_DNS | awk -F "," '{print $2}')
-		[ -n "$china_dns1" ] && server="server=$china_dns1"
-		[ -n "$china_dns2" ] && server="${server}\n${server_2}"
-		server="${server}\nno-resolv"
-	}
-	cat <<-EOF > /var/dnsmasq.d/dnsmasq-$CONFIG.conf
+	if [ -z "$IS_DEFAULT_CHINA_DNS" -o "$IS_DEFAULT_CHINA_DNS" == 0 ]; then
+		server="server=127.0.0.1#$DNS_PORT"
+		[ "$DNS_MODE" != "chinadns-ng" ] && {
+			local china_dns1=$(echo $UP_CHINA_DNS | awk -F "," '{print $1}')
+			local china_dns2=$(echo $UP_CHINA_DNS | awk -F "," '{print $2}')
+			[ -n "$china_dns1" ] && server="server=$china_dns1"
+			[ -n "$china_dns2" ] && server="${server}\n${server_2}"
+			server="${server}\nno-resolv"
+		}
+		cat <<-EOF > /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 			$(echo -e $server)
 			all-servers
 			no-poll
-			conf-dir=$TMP_DNSMASQ_PATH
+		EOF
+	fi
+	
+	cat <<-EOF >> /var/dnsmasq.d/dnsmasq-$CONFIG.conf
+		conf-dir=$TMP_DNSMASQ_PATH
 	EOF
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
-	echolog "dnsmasq：生成配置文件并重启服务。"
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+	echolog "dnsmasq：生成配置文件并重启服务。"
 }
 
 gen_redsocks_config() {
@@ -914,7 +903,6 @@ gen_redsocks_config() {
 gen_pdnsd_config() {
 	pdnsd_dir=$CONFIG_PATH/pdnsd
 	mkdir -p $pdnsd_dir
-	touch $pdnsd_dir/pdnsd.cache
 	chown -R root.nogroup $pdnsd_dir
 	[ "$2" == "cache" ] && cache_param="perm_cache = 1024;\ncache_dir = \"$pdnsd_dir\";"
 	cat > $pdnsd_dir/pdnsd.conf <<-EOF

@@ -100,8 +100,9 @@ end
 ---- China DNS Server
 o = s:option(Value, "up_china_dns", translate("China DNS Server") .. "(UDP)",
              translate(
-                 "Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as smartdns,AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash!"))
-o.default = "223.5.5.5"
+                 "If you want to work with other DNS acceleration services, use the default.<br />Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as SmartDNS, AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash !"))
+o.default = "default"
+o:value("default", translate("default"))
 o:value("dnsbyisp", translate("dnsbyisp"))
 o:value("223.5.5.5", "223.5.5.5 (" .. translate("Ali") .. "DNS)")
 o:value("223.6.6.6", "223.6.6.6 (" .. translate("Ali") .. "DNS)")
@@ -133,7 +134,7 @@ o:value("nonuse", translate("No patterns are used"))
 o = s:option(Value, "up_trust_chinadns_ng_dns",
              translate("Upstream trust DNS Server for ChinaDNS-NG") .. "(UDP)",
              translate(
-                 "Example: 127.0.0.1#5353 ,such as dns2socks,dns-forwarder...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."))
+                 "You can use other resolving DNS services as trusted DNS, Example: dns2socks, dns-forwarder... 127.0.0.1#5353<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."))
 o.default = "pdnsd"
 if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
     o:value("pdnsd", "pdnsd + " .. translate("Use TCP Node Resolve DNS"))
