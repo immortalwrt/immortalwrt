@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/luci-app-clash
 	SECTION:=luci
 	CATEGORY:=LuCI
-	SUBMENU:=3. Applications 
+	SUBMENU:=3. Applications
 	TITLE:=LuCI app for clash
 	DEPENDS:=+luci-base +luci-compat +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +libopenssl +openssl-util +curl +jsonfilter +ca-certificates
 	PKGARCH:=all
