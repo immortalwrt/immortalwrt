@@ -54,6 +54,7 @@ if cmd_line and cmd_line:match("^docker.+") then
       else
         default_config[_key] = default_config[_key] .. " ".. w
         if is_quot_complete(default_config[_key]) then
+          -- clear quotation marks
           default_config[_key] = default_config[_key]:gsub("[\"\']", "")
           _key = nil
         end
@@ -101,8 +102,12 @@ if cmd_line and cmd_line:match("^docker.+") then
         if key == "mount" or key == "link" or key == "env" or key == "dns" or key == "port" or key == "device" or key == "tmpfs" then
           if not default_config[key] then default_config[key] = {} end
           table.insert( default_config[key], val )
+          -- clear quotation marks
+          default_config[key][#default_config[key]] = default_config[key][#default_config[key]]:gsub("[\"\']", "")
         else
           default_config[key] = val
+          -- clear quotation marks
+          default_config[key] = default_config[key]:gsub("[\"\']", "")
         end
         -- if there are " or ' in val and separate by space, we need keep the _key to link with next w
         if is_quot_complete(val) then
@@ -119,8 +124,12 @@ if cmd_line and cmd_line:match("^docker.+") then
       if key == "mount" or key == "link" or key == "env" or key == "dns" or key == "port" or key == "device" or key == "tmpfs" then
         if not default_config[key] then default_config[key] = {} end
         table.insert( default_config[key], w )
+        -- clear quotation marks
+        default_config[key][#default_config[key]] = default_config[key][#default_config[key]]:gsub("[\"\']", "")
       else
         default_config[key] = w
+        -- clear quotation marks
+        default_config[key] = default_config[key]:gsub("[\"\']", "")
       end
       if key == "cpus" or key == "cpushare" or key == "memory" or key == "blkioweight" or key == "device" or key == "tmpfs" then
         default_config["advance"] = 1

@@ -1,4 +1,3 @@
-<%+cbi/valueheader%>
 <style type="text/css">
   #dialog_reslov {
     position: absolute;
@@ -19,16 +18,15 @@
     margin: auto;
     display: flex;
     flex-wrap: wrap;
-    min-height: 50%;
-    max-height: auto;
+    height:auto;
     align-items: center;
   }
 
   #dialog_reslov .dialog_line {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-top: .5em;
+    margin-bottom: .5em;
+    margin-left: 2em;
+    margin-right: 2em;
   }
 
   #dialog_reslov .dialog_box>h4,
@@ -53,39 +51,44 @@
 </style>
 <script type="text/javascript">
   function close_reslov_dialog() {
-    document.body.classList.remove('dialog-reslov-active');
-    document.documentElement.style.overflowY = 'scroll';
+    document.body.classList.remove('dialog-reslov-active')
+    document.documentElement.style.overflowY = 'scroll'
   }
 
-  function reslov_container(op) {
-    let s = document.getElementById(op + '-status');
-    if (!s) return;
+  function reslov_container() {
+    let s = document.getElementById('cmd-line-status')
+    if (!s) return
     let cmd_line = document.getElementById("dialog_reslov_text").value;
     if (cmd_line == null || cmd_line == "") {
-      s.innerHTML = "<font color='red'><%:Canceled%></font>";
-      close_reslov_dialog()
-      return;
+      return
     }
     if (!cmd_line.match(/^docker\s+(run|create)/)) {
-      s.innerHTML = "<font color='red'><%:Command line Error%></font>";
-      close_reslov_dialog()
-      return;
+      s.innerHTML = "<font color='red'><%:Command line Error%></font>"
+      return
     }
     let reg_space = /\s+/g
     let reg_muti_line= /\\\s*\n/g
-    let reg_rem =/(?<!\\)`#.+(?<!\\)`/g  // the command has `# `
+    //   reg_rem =/(?<!\\)`#.+(?<!\\)`/g  // the command has `# `
+    let reg_rem =/`#.+`/g// the command has `# `
     cmd_line = cmd_line.replace(reg_rem, " ").replace(reg_muti_line, " ").replace(reg_space, " ")
     console.log(cmd_line)
     window.location.href = "/cgi-bin/luci/admin/docker/newcontainer/" + encodeURI(cmd_line)
   }
 
-  function show_reslov_dialog(op) {
-    document.getElementById('dialog_reslov') || document.body.insertAdjacentHTML("beforeend", '<div id="dialog_reslov"><div class="dialog_box"><div class="dialog_line"></div><div class="dialog_line"><h5><%:Plese input <docker create/run> command line:%></h5></div><div class="dialog_line"><textarea class="cbi-input-textarea" id="dialog_reslov_text" style="width: 100%; height:100%;" rows="15"></textarea></div><div class="dialog_line"><input type="button" class="cbi-button cbi-button-apply" type="submit" value="<%:Submit%>" onclick="reslov_container(\'' + op + '\')" /> <input type="button" class="cbi-button cbi-button-reset" type="reset" value="<%:Cancel%>" onclick="close_reslov_dialog()" /></div></div></div>')
-    document.body.classList.add('dialog-reslov-active');
-    document.documentElement.style.overflowY = 'hidden';
+  function clear_text(){
+    let s = document.getElementById('cmd-line-status')
+    s.innerHTML = ""
+  }
+
+  function show_reslov_dialog() {
+    document.getElementById('dialog_reslov') || document.body.insertAdjacentHTML("beforeend", '<div id="dialog_reslov"><div class="dialog_box"><div class="dialog_line"></div><div class="dialog_line"><span><%:Plese input <docker create/run> command line:%></span><br><span id="cmd-line-status"></span></div><div class="dialog_line"><textarea class="cbi-input-textarea" id="dialog_reslov_text" style="width: 100%; height:100%;" rows="15" onkeyup="clear_text()"></textarea></div><div class="dialog_line" style="text-align: right;"><input type="button" class="cbi-button cbi-button-apply" type="submit" value="<%:Submit%>" onclick="reslov_container()" /> <input type="button" class="cbi-button cbi-button-reset" type="reset" value="<%:Cancel%>" onclick="close_reslov_dialog()" /></div><div class="dialog_line"></div></div></div>')
+    document.body.classList.add('dialog-reslov-active')
+    let s = document.getElementById('cmd-line-status')
+    s.innerHTML = ""
+    document.documentElement.style.overflowY = 'hidden'
   }
 </script>
-<input type="button" class="cbi-button cbi-button-apply" value="<%:Command line%>"
-  onclick="show_reslov_dialog('<%=self.option%>')" />
-<span id="<%=self.option%>-status"></span>
+<%+cbi/valueheader%>
+<input type="button" class="cbi-button cbi-button-apply" value="<%:Command line%>" onclick="show_reslov_dialog()" />
+
 <%+cbi/valuefooter%>
