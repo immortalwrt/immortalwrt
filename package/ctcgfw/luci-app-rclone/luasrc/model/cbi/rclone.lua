@@ -1,6 +1,6 @@
 require('luci.sys')
 require('luci.util')
-require('luci.model.ipkg')
+
 local fs = require 'nixio.fs'
 
 local uci = require 'luci.model.uci'.cursor()
