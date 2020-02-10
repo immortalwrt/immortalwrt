@@ -56,7 +56,7 @@ config LIBCURL_IMAP
 
 config LIBCURL_LDAP
 	bool "LDAP protocol"
-	default n
+	default y
 
 config LIBCURL_LDAPS
 	bool "Enable LDAPS support"
@@ -117,7 +117,7 @@ config LIBCURL_CRYPTO_AUTH
 
 config LIBCURL_TLS_SRP
 	bool "Enable TLS-SRP authentication"
-	default n
+	default y
 
 config LIBCURL_LIBIDN2
 	bool "Enable IDN2 support"
