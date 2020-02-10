@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=AdGuardHome
 PKG_VERSION:=snapshot
-PKG_RELEASE:=r1869-207e023
+PKG_RELEASE:=r1882-8086186
 
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH_AdGuardHome:=linux_amd64
