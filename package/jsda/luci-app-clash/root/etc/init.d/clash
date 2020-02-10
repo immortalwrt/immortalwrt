@@ -12,7 +12,6 @@ CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
 CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null) 
 
-
 CUSLIST="/tmp/dnsmasq.d/custom_list.conf"
 CUSLITT="/tmp/dnsmasq.clash"
 CUSLISTV="/var/dnsmasq.d/custom_list.conf" 
@@ -275,30 +274,20 @@ rules(){
 			ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
 			fi
 
-			ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"		
-			
-			iptables -t mangle -N clash
-			iptables -t mangle -F clash
-			iptables -t mangle -A clash -m owner --uid-owner "$PROXY_BYPASS_USER" -j RETURN
-			iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
-			iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
-			iptables -t mangle -A clash -j MARK --set-mark "$PROXY_FWMARK"
-
-
-			iptables -t nat -N CLASH_DNS
-			iptables -t nat -F CLASH_DNS 
-			iptables -t nat -A CLASH_DNS -m owner --uid-owner "$PROXY_BYPASS_USER" -j RETURN
-			iptables -t nat -A CLASH_DNS -p udp -j DNAT --to "127.0.0.1:$dns_port"			
-
-			iptables -t mangle -I OUTPUT -j clash
-			iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
-
-			iptables -t nat -I OUTPUT -p udp --dport 53 -j CLASH_DNS
-			iptables -t nat -I PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"			
+                	ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
+            
+                	iptables -t mangle -N clash
+                	iptables -t mangle -F clash
+                	iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
+               	 	iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
+                	iptables -t mangle -I OUTPUT -j clash
+                	iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
+						
 			
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 			ip6tables -t mangle -I PREROUTING -j MARK --set-mark "$PROXY_FWMARK"		
 			fi
+
 		fi
 #=========================================================================================================================== 
 }	 
@@ -308,6 +297,9 @@ custom_list() {
 	sh /usr/share/clash/list.sh  >/dev/null 2>&1
 }
 
+watchdog() {
+	nohup /usr/share/clash/clash-watchdog.sh >/dev/null 2>&1
+}
 start(){
 #=========================================================================================================================== 
 lang=$(uci get luci.main.lang 2>/dev/null)
@@ -456,8 +448,19 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		fi
 		
 	fi
+	
+	sleep 2
+	
+	
+	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+		echo "Setting Cron Job" >$REAL_LOG 
+		add_cron
+	elif [ "${lang}" == "zh_cn" ];then
+		echo "设置Cron" >$REAL_LOG
+		add_cron
 
-	sh /usr/share/clash/restore.sh >/dev/null 2>&1
+	fi
+		
 
 	sleep 1	
 
@@ -467,18 +470,17 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		echo "设置 Clash iptables" >$REAL_LOG
 	fi
 
-    	if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
+    if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
        		uci set firewall.@defaults[0].forward=ACCEPT >/dev/null 2>&1
        		uci commit firewall >/dev/null 2>&1
        		/etc/init.d/firewall restart >/dev/null 2>&1
-    	fi
+    fi
 
-        sleep 2
+    sleep 2
 	rules >/dev/null 2>&1
 
 	custom_list >/dev/null 2>&1
 	sleep 1
-	
 	
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "Restarting Dnsmasq " >$REAL_LOG 
@@ -488,29 +490,21 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 			
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	sleep 1
-
-	if pidof clash >/dev/null; then
-	add_cron
+	
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "Setting Cron Job" >$REAL_LOG 
-		sleep 1
 		echo "Clash Started Successfully " >$REAL_LOG
 		sleep 2
 		echo "Clash is Running " >$REAL_LOG
 		sleep 2
 		echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
-		echo "设置Cron" >$REAL_LOG
-		sleep 1
 		echo "Clash 启动成功，请等待服务器上线！" >$REAL_LOG
 		sleep 2
 		echo "Clash运行中" >$REAL_LOG
 		sleep 2
 		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
-	nohup /usr/share/clash/clash-watchdog.sh >/dev/null 2>&1	
-
-	fi	
+	watchdog >/dev/null 2>&1
 else
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S") -  problem with config.yaml,  config.yaml is either empty or not found " >> /usr/share/clash/clash.txt
@@ -639,7 +633,7 @@ stop(){
 
 		remove_mark >/dev/null 2>&1
 
-		sh /usr/share/clash/backup.sh >/dev/null 2>&1
+		bash /usr/share/clash/backup.sh >/dev/null 2>&1
 
 		kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 		

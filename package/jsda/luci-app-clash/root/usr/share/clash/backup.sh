@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash /etc/rc.common
+. /lib/functions.sh  
 
 CURL_GROUP_CACHE="/usr/share/clashbackup/clash_gorup.json"
 CURL_NOW_CACHE="/usr/share/clashbackup/clash_now.json"
