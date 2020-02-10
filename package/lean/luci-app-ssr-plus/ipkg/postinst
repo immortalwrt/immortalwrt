@@ -1,7 +1,0 @@
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	( . /etc/uci-defaults/luci-ssr-plus ) && rm -f /etc/uci-defaults/luci-ssr-plus
-	rm -f /tmp/luci-indexcache
-	/etc/init.d/shadowsocksr enable >/dev/null 2>&1
-fi
-exit 0

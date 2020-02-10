@@ -1,6 +1,0 @@
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/shadowsocksr disable
-	/etc/init.d/shadowsocksr stop
-fi
-exit 0
