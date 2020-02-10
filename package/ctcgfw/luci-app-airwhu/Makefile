@@ -24,7 +24,7 @@ endef
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 	$(CP) ./* $(PKG_BUILD_DIR)/
-	po2lmo $(PKG_BUILD_DIR)/po/airwhu.zh_Hans.po $(PKG_BUILD_DIR)/po/airwhu.zh_Hans.lmo
+	po2lmo $(PKG_BUILD_DIR)/po/airwhu.zh_Hans.po $(PKG_BUILD_DIR)/po/airwhu.zh-cn.lmo
 endef  
 
 define Build/Compile
@@ -45,7 +45,7 @@ define Package/luci-app-airwhu/install
 	$(INSTALL_BIN) ./files/root/bin/ipv6masq.sh $(1)/bin/ipv6masq.sh
 	$(INSTALL_DATA) ./files/root/usr/lib/lua/luci/model/cbi/airwhu.lua $(1)/usr/lib/lua/luci/model/cbi/airwhu.lua
 	$(INSTALL_DATA) ./files/root/usr/lib/lua/luci/controller/airwhu.lua $(1)/usr/lib/lua/luci/controller/airwhu.lua
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/po/airwhu.zh_Hans.lmo $(1)/usr/lib/lua/luci/i18n/airwhu.zh_Hans.lmo
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/po/airwhu.zh-cn.lmo $(1)/usr/lib/lua/luci/i18n/airwhu.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,luci-app-airwhu))

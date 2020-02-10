@@ -78,7 +78,7 @@ define Package/luci-app-vssr/install
 	$(INSTALL_DIR) $(1)/
 	cp -pR ./root/* $(1)/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo ./po/zh_Hans/vssr.po $(1)/usr/lib/lua/luci/i18n/vssr.zh_Hans.lmo
+	po2lmo ./po/zh_Hans/vssr.po $(1)/usr/lib/lua/luci/i18n/vssr.zh-cn.lmo
 endef
 
 define Package/luci-app-vssr/postinst
