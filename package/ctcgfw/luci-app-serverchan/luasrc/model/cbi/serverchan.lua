@@ -1,5 +1,5 @@
 local nt = require "luci.sys".net
-local log=require"nixio.fs"
+local fs=require"nixio.fs"
 local e=luci.model.uci.cursor()
 local net = require "luci.model.network".init()
 local sys = require "luci.sys"
@@ -11,7 +11,6 @@ translate("「Server酱」，英文名「ServerChan」，是一款从服务器�
 .. translate("github 项目地址")
 .. [[</a>]]
 )
-
 
 m:section(SimpleSection).template  = "serverchan/serverchan_status"
 s=m:section(NamedSection,"serverchan","serverchan",translate("Server酱设置"))
@@ -35,6 +34,10 @@ device_name=s:taboption("tab_basic", Value,"device_name",translate('本设备名
 device_name.rmempty=true
 device_name.description = translate("在推送信息标题中会标识本设备名称，用于区分推送信息的来源设备")
 
+sleeptime=s:taboption("tab_basic", Value,"sleeptime",translate('检测时间间隔'))
+sleeptime.default = "60"
+sleeptime.description = translate("越短的时间灵敏度越高，但会占用更多的系统资源")
+
 debuglevel=s:taboption("tab_basic", ListValue,"debuglevel",translate("日志调试等级"))
 debuglevel:value("",translate("关闭"))
 debuglevel:value("1",translate("简单"))
@@ -47,6 +50,7 @@ device_aliases.rmempty = true
 device_aliases.optional = true
 device_aliases.description = translate("<br/> 请输入设备 MAC 和设备别名，用“-”隔开，如：<br/> XX:XX:XX:XX:XX:XX-我的手机")
 
+local logfile = "/tmp/serverchan/serverchan.log" 
 
 e=s:taboption("log",TextValue,"log")
 e:depends({debuglevel="1"})
@@ -55,9 +59,18 @@ e.rows=26
 e.wrap="off"
 e.readonly=true
 e.cfgvalue=function(s,s)
-return log.readfile("/tmp/serverchan/server_chan.log")or""
+return fs.readfile(logfile)or""
 end
 e.write=function(e,e,e)
+end
+
+e=s:taboption("log", Button,translate(""))
+e.inputtitle=translate("清理日志")
+e.inputstyle = "clean_log"
+function e.write(self, section)
+
+luci.sys.call("cbi.clean_log")
+	fs.writefile(logfile, "")
 end
 
 a=s:taboption("tab_basic2", ListValue,"serverchan_ipv4",translate("ipv4 变动通知"))
@@ -146,6 +159,14 @@ e.default=12
 e.datatype=uinteger
 e:depends("send_mode","1")
 
+e=s:taboption("tab_basic3", ListValue,"regular_time_2",translate("第一次发送时间"))
+for t=0,23 do
+e:value(t,translate("每天"..t.."点"))
+end
+e.default=8
+e.datatype=uinteger
+e:depends("send_mode","2")
+
 e=s:taboption("tab_basic3", ListValue,"interval_time",translate("发送间隔"))
 for t=1,23 do
 e:value(t,translate(t.."小时"))
@@ -187,6 +208,13 @@ function e.write(self, section)
 luci.sys.call("cbi.apply")
         luci.sys.call("/usr/bin/serverchan/serverchan send &")
 end
+
+up_timeout=s:taboption("tab_basic4", Value,"up_timeout",translate('设备上线检测超时'))
+up_timeout.default = "2"
+
+down_timeout=s:taboption("tab_basic4", Value,"down_timeout",translate('设备离线检测超时'))
+down_timeout.default = "10"
+down_timeout.description = translate("如果遇到设备频繁离线，可以把超时时间设置长一些")
 
 sheep=s:taboption("tab_basic4", ListValue,"serverchan_sheep",translate("免打扰时段设置"),translate("在指定整点时间段内，暂停推送消息<br/>免打扰时间中，定时推送也会被阻止。"))
 sheep:value("0",translate("关闭"))
@@ -242,6 +270,7 @@ for _, iface in ipairs(ifaces) do
 		n:value(iface, ((#nets > 0) and "%s (%s)" % {iface, nets} or iface))
 	end
 end
+
 local apply = luci.http.formvalue("cbi.apply")
  if apply then
      io.popen("/etc/init.d/serverchan start")
