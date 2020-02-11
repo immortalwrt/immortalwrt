@@ -347,13 +347,13 @@ if [ "$1" ] ;then
 				if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
 				if [ -z "$title" ] ; then
 					title="有人连接了你的路由器"
-					content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A"">$ip_name"
+					content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A"">$ip_name  $1"
 				elif ( echo ${title} | grep -q "有人连接了你的路由器" ) ; then
 					title="有人连接了你的路由器"
-					content="%0D%0A%0D%0A"">$ip_name"
+					content="%0D%0A%0D%0A"">$ip_name  $1"
 				else
 					title="设备状态变化"
-					content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A"">$ip_name"
+					content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A"">$ip_name  $1"
 				fi
 				#echo "$1 $( cat /var/dhcp.leases | grep -w $1 |awk '{print $2" "$4}' )" >> ${dir}ipAddress
 				echo "$1 $ip_mac $ip_name `date +%s`" >> ${dir}ipAddress
@@ -439,13 +439,13 @@ if [ "$1" ] ;then
 				time1=`time_for_humans $time1`
 				if [ -z "$title" ] ; then
 					title="设备离线通知"
-					content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">总计流量：$ip_total%0D%0A%0D%0A"">在线 $time1"
+					content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name  $1 %0D%0A%0D%0A"">总计流量：$ip_total%0D%0A%0D%0A"">在线 $time1"
 				elif ( echo ${title} | grep -q "设备离线通知" ) ; then
 					title="设备离线通知"
-					content="%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">总计流量：$ip_total%0D%0A%0D%0A"">在线 $time1"
+					content="%0D%0A%0D%0A"">$ip_name  $1 %0D%0A%0D%0A"">总计流量：$ip_total%0D%0A%0D%0A"">在线 $time1"
 				else
 					title="设备状态变化"
-					content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">总计流量：$ip_total%0D%0A%0D%0A"">在线 $time1"
+					content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name  $1 %0D%0A%0D%0A"">总计流量：$ip_total%0D%0A%0D%0A"">在线 $time1"
 				fi
 				
 				echo "`date "+%H:%M:%S"`  【微信推送】设备 $ip_name $1 断开连接 " >> ${logfile}
@@ -466,7 +466,7 @@ fi
 
 #发送定时数据
 function send(){
-	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  创建定时任务" >> ${logfile};fi
+	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  【定时数据】创建定时任务" >> ${logfile};fi
 	uci set serverchan.serverchan.send_enable=3
 	uci commit serverchan
 	unset title
@@ -502,10 +502,10 @@ function send(){
 		fi
 	client_list=`get_config client_list`
 		if [ ! -z "$client_list" ] && [ "$client_list" -eq "1" ] ; then		
-			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  检测客户端列表" >> ${logfile};fi
+			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"` 【定时数据】检测客户端列表" >> ${logfile};fi
 			
 			if [ ! -f "${dir}ipAddress" ] ; then > ${dir}ipAddress;fi
-			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"` 【连接】开始进行设备下线检测" >> ${logfile};fi
+			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"` 【定时数据】开始进行设备下线检测" >> ${logfile};fi
 			IPLIST=$( cat ${dir}ipAddress| awk '{print $1}' | grep -v "^$" | sort -u )
 			for ip in $IPLIST; do
 			if [ ! -z "$ip" ] ; then
@@ -514,7 +514,7 @@ function send(){
 			done
 			wait
 			
-			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"` 【连接】开始进行设备接入检测" >> ${logfile};fi
+			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"` 【定时数据】开始进行设备接入检测" >> ${logfile};fi
 			IPLISTrow=$(grep -c "" ${dir}ipAddress)
 			IPLIST=$( cat /proc/net/arp | grep "0x2" | awk  '{print $1}' | grep -v "^$" | sort -u )
 			for  ip in $IPLIST; do
@@ -524,18 +524,17 @@ function send(){
 			done
 			wait
 			
-			if [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then echo "`date "+%H:%M:%S"` 没有新设备连接" >> ${logfile};fi			
+			if [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then echo "`date "+%H:%M:%S"` 【定时数据】没有新设备连接" >> ${logfile};fi			
 			send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 在线设备%0D%0A%0D%0A";
 			
-			ip=$( cat ${dir}ipAddress | awk '{print $1"}' )
+			IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
 			for  ip in $IPLIST; do
-				send_content=${send_content}"%0D%0A%0D%0A""     $ip  "
 				ip_total=`usage_ip $ip`
 				time_down=`date +%s`
 				time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
 				time1=$(($time_down-$time_up))
 				time1=`time_for_humans $time1`
-				send_content=${send_content}"`cat ${dir}ipAddress | grep "$ip" | awk  '{print $3}' | grep -v "^$" | sort -u`%0D%0A%0D%0A""     总计流量：$ip_total  在线 $time1"
+				send_content=${send_content}"%0D%0A%0D%0A""     `cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u`  $ip%0D%0A%0D%0A""     总计流量：$ip_total  在线 $time1"
 			done
 		fi
 	if [ ! -z "$device_name" ] ; then send_title="【$device_name】$send_title" ;fi
@@ -543,7 +542,7 @@ function send(){
 	content=$( echo $content| sed $'s/unknown/%e6%9c%aa%e7%9f%a5%e8%ae%be%e5%a4%87/')
 	#send_content=$( echo $send_content | sed $'s/\ /%20/g'| sed $'s/\"/%22/g'| sed $'s/\#/%23/g'| sed $'s/\&/%26/g'| sed $'s/\,/%2C/g'| sed $'s/\//%2F/g'| sed $'s/\:/%3A/g'| sed $'s/\;/%3B/g'| sed $'s/\=/%3D/g'| sed $'s/\@/%40/g')
 	#未转义 | sed $'s/\(/%28/g'  | sed $'s/\)/%29/g'   | sed $'s/\+/%2B/g'   | sed $'s/\%/%25/g'   | sed $'s/\</%3C/g'   | sed $'s/\>/%3E/g'   | sed $'s/\?/%3F/g'   | sed $'s/\\/%5C/g'   | sed $'s/\|/%7C/g'
-	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  进行 URL 编码，标题=$send_title" >> ${logfile};fi
+	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  【定时数据】进行 URL 编码，标题=$send_title" >> ${logfile};fi
 	if [ -z "$send_content" ] ; then
 		send_content="%0D%0A%0D%0A---%0D%0A%0D%0A#### 我遇到了一个难题%0D%0A%0D%0A>你没有选择需要发送的项目，该怎么办呢%0D%0A%0D%0A---";
 		echo "`date "+%H:%M:%S"`  【！！！】定时发送选项错误，请检查你的设置" >> ${logfile}
@@ -553,14 +552,14 @@ function send(){
 		if [ `date +%H` -ge $endtime -a $starttime -lt $endtime ] || [ `date +%H` -lt $starttime -a $starttime -lt $endtime ] || [ `date +%H` -lt $starttime -a `date +%H` -ge $endtime -a $starttime -gt $endtime ] ; then
 			curl -s "http://sc.ftqq.com/$serverchan_sckey.send?text=${send_title}" -d "&desp=${nowtime}%0D%0A%0D%0A${send_content}" >/dev/null
 		else
-			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  当前为免打扰时间，消息不发送" >> ${logfile};fi
+			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%H:%M:%S"`  【定时数据】当前为免打扰时间，消息不发送" >> ${logfile};fi
 		fi
 	else
 		curl -s "http://sc.ftqq.com/$serverchan_sckey.send?text=${send_title}" -d "&desp=${nowtime}%0D%0A%0D%0A${send_content}" >/dev/null
 	fi
 	uci set serverchan.serverchan.send_enable=0
 	uci commit serverchan
-	echo "`date "+%H:%M:%S"`  【微信推送】定时发送状态消息" >> ${logfile}
+	echo "`date "+%H:%M:%S"`  【定时数据】微信推送" >> ${logfile}
 	exit
 }
 
@@ -627,7 +626,7 @@ if [ ! -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ] ; then
 			fi	
 		# 如果 “仅关注接口选项打开” 
 		elif [ ! -z "$serverchan_interface" ] ; then
-			if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep $ip |awk '{print $6}' | grep -v "^$" | sort -u )); then
+			if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep -w $ip |awk '{print $6}' | grep -v "^$" | sort -u )); then
 				up $ip &
 			else
 				if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] && ( ! echo ${ip_mac} | grep -q "unknown" ) ; then echo "`date "+%H:%M:%S"`  仅关注接口已启用，跳过$ip_name $ip" >> ${logfile};fi
@@ -807,7 +806,7 @@ function rand_geturl(){
 					fi	
 				# 如果 “仅关注接口选项打开” 
 				elif [ ! -z "$serverchan_interface" ] ; then
-					if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep $ip |awk '{print $6}' | grep -v "^$" | sort -u )); then
+					if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep -w $ip |awk '{print $6}' | grep -v "^$" | sort -u )); then
 						down $ip &
 					else
 						sed -i "/$ip/d" ${dir}ipAddress
@@ -871,7 +870,7 @@ function rand_geturl(){
 					
 				# 如果 “仅关注接口选项打开” 
 				elif [ ! -z "$serverchan_interface" ] ; then
-					if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep $ip |awk '{print $6}' | grep -v "^$" | sort -u )); then
+					if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep -w $ip |awk '{print $6}' | grep -v "^$" | sort -u )); then
 						up $ip &
 					else
 						if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] && ( ! echo ${ip_mac} | grep -q "unknown" ) ; then echo "`date "+%H:%M:%S"`  仅关注接口已启用，跳过$ip_name $ip" >> ${logfile};fi
