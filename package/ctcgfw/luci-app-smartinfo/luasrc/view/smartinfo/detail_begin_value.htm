@@ -1,7 +1,0 @@
-
-<!-- Org doc from luci-app-ddns -->
-<%+cbi/valueheader%>
-	<input type="text" class="cbi-input-text" style="width: 9em;" onchange="cbi_d_update(this.id)"<%=
-		attr("name", cbid) .. attr("id", cbid) .. attr("value", self:cfgvalue(section) or self.default) ..
-		ifattr(self.size, "size") .. ifattr(self.placeholder, "placeholder")
-	%> />
