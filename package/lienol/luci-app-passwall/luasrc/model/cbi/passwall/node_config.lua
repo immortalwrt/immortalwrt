@@ -187,11 +187,13 @@ tcp_fast_open:depends("type", "Trojan")
 ss_plugin = s:option(ListValue, "ss_plugin", translate("plugin"))
 ss_plugin:value("none", translate("none"))
 if is_finded("v2ray-plugin") then ss_plugin:value("v2ray-plugin") end
+if is_finded("obfs-local") then ss_plugin:value("obfs-local") end
 ss_plugin:depends("type", "SS")
 
-ss_plugin_v2ray_opts =
-    s:option(Value, "ss_plugin_v2ray_opts", translate("opts"))
-ss_plugin_v2ray_opts:depends("ss_plugin", "v2ray-plugin")
+ss_plugin_opts =
+    s:option(Value, "ss_plugin_opts", translate("opts"))
+ss_plugin_opts:depends("ss_plugin", "v2ray-plugin")
+ss_plugin_opts:depends("ss_plugin", "obfs-local")
 
 use_kcp = s:option(Flag, "use_kcp", translate("Use Kcptun"),
                    "<span style='color:red'>" .. translate(
