@@ -1,0 +1,166 @@
+<%#
+
+	luci-theme-Butterfly
+	Copyright 2017 Tracemouse <tracemouse@wcan.in>
+	
+	Smart Menu:
+	https://www.smartmenus.org/
+	
+	Font Awesome:
+	http://fontawesome.io/
+
+
+	luci-theme-material
+	Copyright 2015 Lutty Yang <lutty@wcan.in>
+
+	luci-theme-bootstrap:
+	Copyright 2008 Steven Barth <steven@midlink.org>
+	Copyright 2008 Jo-Philipp Wich <jow@openwrt.org>
+	Copyright 2012 David Menting <david@nut-bolt.nl>
+
+	MUI:
+	https://github.com/muicss/mui
+
+	Licensed to the public under the Apache License 2.0
+-%>
+
+<%
+	local ver = require "luci.version"
+	local disp = require "luci.dispatcher"
+	local request  = disp.context.path
+	local category = request[1]
+	local tree = disp.node()
+	local categories = disp.node_childs(tree)
+%>
+                </div>
+                <footer class="mobile-hide" style="text-align:center">
+                    <a href="https://github.com/openwrt/luci">Powered by LeoJo <%= ver.luciname %> (<%= ver.luciversion %>)</a> /
+                    <a href="http://butong.me/"><%= ver.distversion %></a> /
+                    <% if #categories > 1 then %>
+                    <ul class="breadcrumb pull-right" id="modemenu">
+                        <% for i, r in ipairs(categories) do %>
+                        <li<% if request[1] == r then %> class="active"<%end%>><a href="<%=controller%>/<%=r%>/"><%=striptags(translate(tree.nodes[r].title))%></a> <span class="divider">|</span></li>
+                        <% end %>
+                    </ul>
+                    <% end %>
+                </footer>
+            </div>
+        </div>
+
+    <script>
+        // thanks for Jo-Philipp Wich <jow@openwrt.org>
+        var luciLocation = <%= luci.http.write_json(luci.dispatcher.context.path) %>;
+    </script>
+    <script src="<%=media%>/js/jquery.min.js?v=git-17.016.25656-a85807d"></script>
+    <script src="<%=media%>/js/script.js?v=git-17.016.25656-a85807d"></script>
+    <script src="<%=media%>/js/jquery.smartmenus.min.js?v=git-20.033.33881-3c72cd1"></script>
+
+	<script>
+
+// SmartMenus init
+$(function() {
+  $('#main-menu').smartmenus({
+    subMenusSubOffsetX: 1,
+    subMenusSubOffsetY: -8
+  });
+});
+
+// SmartMenus mobile menu toggle button
+$(function() {
+  var $mainMenuState = $('#main-menu-state');
+  if ($mainMenuState.length) {
+    // animate mobile menu
+    $mainMenuState.change(function(e) {
+      var $menu = $('#main-menu');
+      if (this.checked) {
+        $menu.hide().slideDown(250, function() { $menu.css('display', ''); });
+      } else {
+        $menu.show().slideUp(250, function() { $menu.css('display', ''); });
+      }
+    });
+    // hide mobile menu beforeunload
+    $(window).bind('beforeunload unload', function() {
+      if ($mainMenuState[0].checked) {
+        $mainMenuState[0].click();
+      }
+    });
+  }
+});
+
+
+//onload
+$(document).ready(function(){
+	 //add icon for login title
+	 str=$(".node-main-login > .main form > div > h2").html();
+	 str="<i class='fa fa-lock'></i> " + str;
+	 $(".node-main-login > .main form > div > h2").html(str);
+
+	 //add icons for navbar
+                  status = ".main-nav > #main-menu > .slide > a[data-title='新春版客户端'] > i";
+	 $(status).attr("class","fa fa-windows");
+                  
+
+	 status = ".main-nav > #main-menu > .slide > a[data-title='Status'] > i";
+	 $(status).attr("class","fa fa-university");
+ 
+	 status = ".main-nav > #main-menu > .slide > a[data-title='System'] > i";
+	 $(status).attr("class","fa fa-cogs");
+                 
+                   status = ".main-nav > #main-menu > .slide > a[data-title='Docker'] > i";
+	  $(status).attr("class","fa fa-cubes");
+                    
+                    status = ".main-nav > #main-menu > .slide > a[data-title='Control'] > i";
+	  $(status).attr("class","fa fa-life-ring");
+        
+                   status = ".main-nav > #main-menu > .slide > a[data-title='NAS'] > i";
+	  $(status).attr("class","fa fa-recycle");
+
+                    status = ".main-nav > #main-menu > .slide > a[data-title='VPN'] > i";
+	  $(status).attr("class","fa fa-paper-plane-o");
+
+	 status = ".main-nav > #main-menu > .slide > a[data-title='Services'] > i";
+	 $(status).attr("class","fa fa-sitemap");
+
+	 status = ".main-nav > #main-menu > .slide > a[data-title='Network'] > i";
+	 $(status).attr("class","fa fa-globe");
+
+                  status = ".main-nav > #main-menu > .slide > a[data-title='Bandwidth Monitor'] > i";
+	 $(status).attr("class","fa fa-gg-circle");
+
+                   status = ".main-nav > #main-menu > .slide > a[data-title='QOS'] > i";
+	 $(status).attr("class","fa fa-drupal");
+	
+	 status = ".main-nav > #main-menu > .slide > a[data-title='Quick Guide'] > i";
+	 $(status).attr("class","fa fa-paper-plane");
+
+                    status = ".main-nav > #main-menu > .slide > a[data-title='Logout'] > i";
+	 $(status).attr("class","fa fa-mail-reply-all");
+
+	 //icons
+	 /*
+	 $('img').each(function(){
+		 img = $(this).attr('src');
+		 //alert(img);
+		if (img.indexOf("images/wifi.png"))
+		{
+			$(this).after("<i class='fa fa-wifi'></i>");
+			$(this).remove();
+		}
+
+	 });
+	 */
+
+});
+
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?9d64293436438b5ccd227072050a13a7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</body>
+</html>

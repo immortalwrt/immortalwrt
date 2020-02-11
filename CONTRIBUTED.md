@@ -37,7 +37,8 @@ NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jer
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
 luci-theme-opentomato source: [Leo-Jo-My/luci-theme-opentomato](https://github.com/Leo-Jo-My/luci-theme-opentomato).<br/>
 luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.com/Leo-Jo-My/luci-theme-opentomcat).<br/>
-qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).
+qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
+luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com/Leo-Jo-My/luci-theme-Butterfly).
 
 ## License
 ### Depending on their own License.
