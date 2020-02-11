@@ -157,7 +157,8 @@ for i in $(seq 1 $SOCKS5_NODE_NUM); do
 	eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i nil)
 done
 
-[ "$UDP_NODE1" == "default" ] && UDP_NODE1=$TCP_NODE1
+[ "$UDP_NODE1" == "tcp" ] && UDP_NODE1=$TCP_NODE1
+[ "$SOCKS5_NODE1" == "tcp" ] && SOCKS5_NODE1=$TCP_NODE1
 
 TCP_NODE1_IP=""
 UDP_NODE1_IP=""
@@ -181,9 +182,7 @@ KCPTUN_REDIR_PORT=$(config_t_get global_forwarding kcptun_port 12948)
 PROXY_MODE=$(config_t_get global proxy_mode chnroute)
 
 load_config() {
-	[ "$ENABLED" != 1 ] && {
-		return 1
-	}
+	[ "$ENABLED" != 1 ] && return 1
 	[ "$TCP_NODE1" == "nil" -a "$UDP_NODE1" == "nil" -a "$SOCKS5_NODE1" == "nil" ] && {
 		echolog "没有选择节点！"
 		return 1
@@ -347,9 +346,9 @@ gen_start_config() {
 				local plugin_params=""
 				local plugin=$(config_n_get $node ss_plugin)
 				if [ "$plugin" != "none" ]; then
-					[ "$plugin" == "v2ray-plugin" ] && {
-						local opts=$(config_n_get $node ss_plugin_v2ray_opts)
-						plugin_params="--plugin v2ray-plugin --plugin-opts $opts"
+					[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+						local opts=$(config_n_get $node ss_plugin_opts)
+						plugin_params="--plugin $plugin --plugin-opts $opts"
 					}
 				fi
 				$ss_bin -c $config_file -b 0.0.0.0 -u $plugin_params >/dev/null 2>&1 &
@@ -455,9 +454,9 @@ gen_start_config() {
 				local plugin_params=""
 				local plugin=$(config_n_get $node ss_plugin)
 				if [ "$plugin" != "none" ]; then
-					[ "$plugin" == "v2ray-plugin" ] && {
-						local opts=$(config_n_get $node ss_plugin_v2ray_opts)
-						plugin_params="--plugin v2ray-plugin --plugin-opts $opts"
+					[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+						local opts=$(config_n_get $node ss_plugin_opts)
+						plugin_params="--plugin $plugin --plugin-opts $opts"
 					}
 				fi
 				$ss_bin -c $config_file -f $RUN_PID_PATH/udp_ss_1_$5 -U $plugin_params >/dev/null 2>&1 &
@@ -568,9 +567,9 @@ gen_start_config() {
 					local plugin_params=""
 					local plugin=$(config_n_get $node ss_plugin)
 					if [ "$plugin" != "none" ]; then
-						[ "$plugin" == "v2ray-plugin" ] && {
-						local opts=$(config_n_get $node ss_plugin_v2ray_opts)
-						plugin_params="--plugin v2ray-plugin --plugin-opts $opts"
+						[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+						local opts=$(config_n_get $node ss_plugin_opts)
+						plugin_params="--plugin $plugin --plugin-opts $opts"
 						}
 					fi
 					for k in $(seq 1 $process); do
@@ -1096,13 +1095,15 @@ force_stop() {
 }
 
 boot() {
-	local delay=$(config_t_get global_delay start_delay 1)
-	if [ "$delay" -gt 0 ]; then
-		echolog "执行启动延时 $delay 秒后再启动!"
-		sleep $delay && start >/dev/null 2>&1 &
-	else
-		start
-	fi
+	[ "$ENABLED" == 1 ] && {
+		local delay=$(config_t_get global_delay start_delay 1)
+		if [ "$delay" -gt 0 ]; then
+			echolog "执行启动延时 $delay 秒后再启动!"
+			sleep $delay && start >/dev/null 2>&1 &
+		else
+			start
+		fi
+	}
 	return 0
 }
 
@@ -1137,7 +1138,7 @@ stop() {
 	done
 	clean_log
 	source $APP_PATH/iptables.sh stop
-	kill_all brook dns2socks haproxy chinadns-ng ipt2socks v2ray-plugin
+	kill_all brook dns2socks haproxy chinadns-ng ipt2socks v2ray-plugin obfs-local
 	ps -w | grep -E "$CONFIG_TCP_FILE|$CONFIG_UDP_FILE|$CONFIG_SOCKS5_FILE" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -E "$CONFIG_PATH" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf $TMP_DNSMASQ_PATH $CONFIG_PATH

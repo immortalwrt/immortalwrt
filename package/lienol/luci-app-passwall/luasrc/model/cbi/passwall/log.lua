@@ -1,3 +1,5 @@
-m = Map("passwall")
-m:append(Template("passwall/log/log"))
-return m
+f = SimpleForm("passwall")
+f.reset = false
+f.submit = false
+f:append(Template("passwall/log/log"))
+return f
