@@ -45,7 +45,7 @@ o:value("0", translate("Not Set"))
 o.default=0
 
 o = s:taboption("settings", ListValue, "en_mode", font_red..bold_on..translate("Select Mode")..bold_off..font_off)
-o.description = translate("Select Mode For OpenClash Work, Network Error Try Flush DNS Cache")
+o.description = translate("Select Mode For OpenClash Work, Try Flush DNS Cache If Network Error")
 o:value("redir-host", translate("redir-host"))
 o:value("fake-ip", translate("fake-ip"))
 o:value("redir-host-tun", translate("redir-host(tun mode)"))
@@ -330,7 +330,7 @@ o.title = translate("Dashboard Port")
 o.default = 9090
 o.datatype = "port"
 o.rmempty = false
-o.description = translate("Dashboard Address Example:").." "..font_green..bold_on..lan_ip.."/openclash、"..lan_ip..':'..cn_port..'/ui'..bold_off..font_off
+o.description = translate("Dashboard Address Example:").." "..font_green..bold_on..lan_ip.."/luci-static/openclash、"..lan_ip..':'..cn_port..'/ui'..bold_off..font_off
 
 o = s:taboption("dashboard", Value, "dashboard_password")
 o.title = translate("Dashboard Secret")

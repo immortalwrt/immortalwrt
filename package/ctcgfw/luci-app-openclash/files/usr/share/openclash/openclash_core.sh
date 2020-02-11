@@ -11,8 +11,8 @@ CPU_MODEL=$(uci get openclash.config.core_version 2>/dev/null)
 if [ "$(/etc/openclash/clash -v 2>/dev/null |awk -F ' ' '{print $2}')" != "$(sed -n 1p /tmp/clash_last_version 2>/dev/null)" ] || [ -z "$(/etc/openclash/clash -v 2>/dev/null |awk -F ' ' '{print $2}')" ] || [ ! -f /etc/openclash/clash ]; then
    if [ "$CPU_MODEL" != 0 ]; then
    echo "开始下载 OpenClash 内核..." >$START_LOG
-   curl -sL -m 10 --retry 2 https://github.com/vernesong/OpenClash/releases/download/Clash/clash-"$CPU_MODEL".tar.gz -o /tmp/clash.tar.gz >/dev/null 2>&1
-   if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/clash.tar.gz |awk '{print int($5/1024)}')" -ne 0 ]; then
+   curl -sL --connect-timeout 10 --retry 2 https://github.com/vernesong/OpenClash/releases/download/Clash/clash-"$CPU_MODEL".tar.gz -o /tmp/clash.tar.gz >/dev/null 2>&1
+   if [ "$?" -eq "0" ] && [ -s "/tmp/clash.tar.gz" ]; then
       tar zxvf /tmp/clash.tar.gz -C /tmp >/dev/null 2>&1\
       && rm -rf /tmp/clash.tar.gz >/dev/null 2>&1\
       && chmod 4755 /tmp/clash\
