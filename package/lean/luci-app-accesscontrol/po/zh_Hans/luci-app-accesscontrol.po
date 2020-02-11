@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/mia.lua:2
+msgid "Access Schedule Control Settins"
+msgstr "设置客户端禁止访问互联网的时间"
+
+#: luasrc/model/cbi/mia.lua:15
+msgid "Client Rules"
+msgstr "客户端规则"
+
+#: luasrc/view/mia/mia_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:8
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:34
+msgid "End time"
+msgstr "结束时间"
+
+#: luasrc/model/cbi/mia.lua:54
+msgid "Fri"
+msgstr "五"
+
+#: luasrc/controller/mia.lua:8 luasrc/view/mia/mia_status.htm:7
+#: luasrc/view/mia/mia_status.htm:10 luasrc/model/cbi/mia.lua:2
+msgid "Internet Access Schedule Control"
+msgstr "上网时间控制"
+
+#: luasrc/model/cbi/mia.lua:24
+msgid "MAC address (Computer Name)"
+msgstr "MAC 地址 (主机名)"
+
+#: luasrc/model/cbi/mia.lua:38
+msgid "Mon"
+msgstr "一"
+
+#: luasrc/view/mia/mia_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/view/mia/mia_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:58
+msgid "Sat"
+msgstr "六"
+
+#: luasrc/model/cbi/mia.lua:30
+msgid "Start time"
+msgstr "开始时间"
+
+#: luasrc/model/cbi/mia.lua:11
+msgid "Strict Mode"
+msgstr "严格模式"
+
+#: luasrc/model/cbi/mia.lua:13
+msgid ""
+"Strict Mode will degrade CPU performance, but it can achieve better results"
+msgstr "严格模式会损耗部分CPU资源，但可以按照时间规则立即拦截数据包，效果更好"
+
+#: luasrc/model/cbi/mia.lua:62
+msgid "Sun"
+msgstr "日"
+
+#: luasrc/model/cbi/mia.lua:50
+msgid "Thu"
+msgstr "四"
+
+#: luasrc/model/cbi/mia.lua:42
+msgid "Tue"
+msgstr "二"
+
+#: luasrc/model/cbi/mia.lua:46
+msgid "Wed"
+msgstr "三"
+
+#: luasrc/model/cbi/mia.lua:20
+msgid "√"
+msgstr ""
+
+#~ msgid "General switch"
+#~ msgstr "开启/关闭"
+
+#~ msgid "Description"
+#~ msgstr "描述"

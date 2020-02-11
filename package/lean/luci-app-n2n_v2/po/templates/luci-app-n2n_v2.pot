@@ -1,0 +1,65 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/n2n_v2.lua:15 luasrc/model/cbi/n2n_v2.lua:50
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:43
+msgid "Enable packet forwarding"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:41
+msgid "Encryption key"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:25
+msgid "Interface IP address"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:21
+msgid "Interface mode"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:28
+msgid "Interface netmask"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:38
+msgid "N2N Community name"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:11
+msgid "N2N Edge Settings"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:46
+msgid "N2N Supernode Settings"
+msgstr ""
+
+#: luasrc/controller/n2n_v2.lua:16 luasrc/model/cbi/n2n_v2.lua:8
+msgid "N2N v2 VPN"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:53
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:31
+msgid "Supernode IP address"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:34
+msgid "Supernode Port"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:18
+msgid "TUN desvice name"
+msgstr ""
+
+#: luasrc/model/cbi/n2n_v2.lua:9
+msgid ""
+"n2n is a layer-two peer-to-peer virtual private network (VPN) which allows "
+"users to exploit features typical of P2P applications at network instead of "
+"application level."
+msgstr ""

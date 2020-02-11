@@ -1,0 +1,52 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/view/ssrs/ssrs_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:51
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:63
+msgid "Encrypt Method"
+msgstr ""
+
+#: luasrc/view/ssrs/ssrs_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:71
+msgid "Obfs"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:59
+msgid "Password"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:67
+msgid "Protocol"
+msgstr ""
+
+#: luasrc/view/ssrs/ssrs_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/controller/ssrs.lua:12
+msgid "SSR Python Server"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:54
+msgid "Server Port"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:42
+msgid "ShadowSocksR Server Config"
+msgstr ""
+
+#: luasrc/model/cbi/ssrs.lua:43
+msgid ""
+"ShadowsocksR Python Server is a fork of the Shadowsocks project, claimed to "
+"be superior in terms of security and stability"
+msgstr ""

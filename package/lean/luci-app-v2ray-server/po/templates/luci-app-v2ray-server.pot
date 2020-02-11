@@ -1,0 +1,211 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/v2ray_server/config.lua:42
+msgid "Alter ID"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:79
+#: luasrc/model/cbi/v2ray_server/config.lua:89
+#: luasrc/model/cbi/v2ray_server/config.lua:113
+msgid "Camouflage Type"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:185
+msgid "Can't determine ARCH, or ARCH not supported. Please select manually."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:312
+msgid "Can't move new file to path: %s"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:298
+msgid "Client file is required."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/index.lua:37
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:238
+msgid "Download url is required."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:19
+#: luasrc/model/cbi/v2ray_server/index.lua:12
+#: luasrc/model/cbi/v2ray_server/index.lua:32
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:106
+#: luasrc/model/cbi/v2ray_server/config.lua:111
+msgid "Encrypt Method"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:253
+msgid "File download failed or timed out: %s"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:272
+msgid "File path required."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:194
+msgid "Get remote version info failed."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/index.lua:9
+msgid "Global Settings"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:85
+msgid "HTTP Host"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:87
+msgid "HTTP Path"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:35
+msgid "Http"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:37
+msgid "ID"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:100
+msgid "KCP Congestion"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:92
+msgid "KCP MTU"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:94
+msgid "KCP TTI"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:98
+msgid "KCP downlinkCapacity"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:102
+msgid "KCP readBufferSize"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:96
+msgid "KCP uplinkCapacity"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:104
+msgid "KCP writeBufferSize"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:111
+msgid "Key"
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:184
+msgid "Manually update"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/api/v2ray.lua:218
+msgid "New version found, but failed to get new version download url."
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:52
+#: luasrc/model/cbi/v2ray_server/config.lua:63
+msgid "Password"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:27
+#: luasrc/model/cbi/v2ray_server/index.lua:40
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:32
+#: luasrc/model/cbi/v2ray_server/index.lua:41
+msgid "Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:23
+#: luasrc/model/cbi/v2ray_server/config.lua:24
+#: luasrc/model/cbi/v2ray_server/index.lua:38
+msgid "Remarks"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:12
+#: luasrc/model/cbi/v2ray_server/index.lua:15
+msgid "Server Config"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:34
+msgid "Socks"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/index.lua:35
+msgid "Status"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:72
+msgid "Transport"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:69
+msgid "User Level"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:47
+#: luasrc/model/cbi/v2ray_server/config.lua:58
+msgid "User name"
+msgstr ""
+
+#: luasrc/controller/v2ray_server.lua:10
+#: luasrc/model/cbi/v2ray_server/index.lua:8
+msgid "V2ray Server"
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:178
+msgid "Version"
+msgstr ""
+
+#: luasrc/model/cbi/v2ray_server/config.lua:33
+msgid "Vmess"
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:126
+msgid "下载中..."
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:15
+msgid "已是最新版本"
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:19
+msgid "意外错误."
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:16
+msgid "更新成功."
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:18
+msgid "正在更新..."
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:20
+msgid "正在更新，你确认要关闭吗？"
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:17
+msgid "点击更新"
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:153
+msgid "移动中..."
+msgstr ""
+
+#: luasrc/view/v2ray_server/v2ray.htm:140
+msgid "解压中..."
+msgstr ""

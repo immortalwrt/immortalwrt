@@ -1,0 +1,513 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/amule.lua:302
+msgid "Accept only obfuscation connections"
+msgstr "只接受迷惑协议连接"
+
+#: luasrc/model/cbi/amule.lua:261
+msgid "Add files to download in pause mode"
+msgstr "添加新下载文件时设为暂停"
+
+#: luasrc/model/cbi/amule.lua:264
+msgid "Add files to download with auto priority"
+msgstr "添加新下载文件时设定优先级为自动"
+
+#: luasrc/model/cbi/amule.lua:289
+msgid "Add new shares with auto priority"
+msgstr "添加新共享文件时设优先级为自动"
+
+#: luasrc/model/cbi/amule.lua:258
+msgid "Advanced I.C.H trusts every hash (not recommended)"
+msgstr "高级I.C.H，信任全部校验值（不推荐）"
+
+#: luasrc/model/cbi/amule.lua:345
+msgid "Always filter LAN IPs"
+msgstr "总是过滤局域网ip地址"
+
+#: luasrc/model/cbi/amule.lua:205
+msgid "Auto connect to servers in static list only"
+msgstr "只自动连接到静态列表中的服务器"
+
+#: luasrc/model/cbi/amule.lua:211
+msgid "Auto update server list at startup"
+msgstr "启动时自动更新服务器列表"
+
+#: luasrc/model/cbi/amule.lua:337
+msgid "Auto-update ipfilter at startup"
+msgstr "自动更新过滤列表"
+
+#: luasrc/model/cbi/amule.lua:121
+msgid "Automatically connect"
+msgstr "自动连接"
+
+#: luasrc/model/cbi/amule.lua:124
+msgid "Automatically reconnect"
+msgstr "自动重连"
+
+#: luasrc/model/cbi/amule.lua:117
+msgid "Bind Address"
+msgstr "地址绑定"
+
+#: luasrc/view/amule/webshell.htm:88
+msgid "Clear"
+msgstr "清空"
+
+#: luasrc/view/amule/overview_status.htm:89
+#: luasrc/view/amule/overview_status.htm:92
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:83
+msgid "Command:"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:57
+msgid "Configuration directory"
+msgstr "配置目录"
+
+#: luasrc/model/cbi/amule.lua:130
+msgid "Connect to ED2K network"
+msgstr "连接到ED2K网络"
+
+#: luasrc/model/cbi/amule.lua:127
+msgid "Connect to Kad network"
+msgstr "连接到Kad网络"
+
+#: luasrc/model/cbi/amule.lua:37
+msgid "Connections"
+msgstr "连接"
+
+#: luasrc/model/cbi/amule.lua:215
+msgid "Content of addresses.dat. One address per line"
+msgstr "addresses.dat的内容. 每行一个地址."
+
+#: luasrc/model/cbi/amule.lua:314
+msgid "Content of ipfilter_static.dat"
+msgstr "ipfilter_static.dat的内容"
+
+#: luasrc/model/cbi/amule.lua:241
+msgid "Content of shareddir.dat. One directory per line"
+msgstr "shareddir.dat的内容. 每行一个目录."
+
+#: luasrc/model/cbi/amule.lua:183
+msgid "Dead Server Retry"
+msgstr "删除前重连次数"
+
+#: luasrc/model/cbi/amule.lua:165 luasrc/model/cbi/amule.lua:173
+msgid "Download now"
+msgstr "立即下载"
+
+#: luasrc/model/cbi/amule.lua:369
+msgid "EC password"
+msgstr "远程连接密码"
+
+#: luasrc/model/cbi/amule.lua:172
+msgid "Ed2k Servers List Url"
+msgstr "Ed2k服务器列表URL"
+
+#: luasrc/model/cbi/amule.lua:42
+msgid "Edit Template"
+msgstr "编辑配置模版"
+
+#: luasrc/model/cbi/amule.lua:424
+msgid "Edit the template that is used for generating the aMule configuration."
+msgstr "编辑用来生成aMule设置的模板"
+
+#: luasrc/model/cbi/amule.lua:416
+msgid "Enable Gzip compression"
+msgstr "启用Gzip压缩"
+
+#: luasrc/model/cbi/amule.lua:101
+msgid "Enable UDP port"
+msgstr "启用UDP端口"
+
+#: luasrc/model/cbi/amule.lua:109
+msgid "Enable UPnP"
+msgstr "启用UPnP"
+
+#: luasrc/model/cbi/amule.lua:403
+msgid "Enable UPnP port forwarding of the web server port"
+msgstr "为Web服务端口启用UPnP端口转发"
+
+#: luasrc/model/cbi/amule.lua:135
+msgid "Enable proxy"
+msgstr "启用代理"
+
+#: luasrc/model/cbi/amule.lua:366
+msgid "Enable upnp port forwarding on the EC port"
+msgstr "为远程连接端口启用upnp"
+
+#: luasrc/model/cbi/amule.lua:375
+msgid "Enable web server on startup"
+msgstr "启动时运行Web服务"
+
+#: luasrc/model/cbi/amule.lua:48
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:86
+msgid "Execute"
+msgstr "执行"
+
+#: luasrc/view/amule/webshell.htm:80
+msgid "Execute 'Help' to get more infomation."
+msgstr "执行'Help'命令以获取更多信息"
+
+#: luasrc/view/amule/overview_status.htm:50
+#: luasrc/view/amule/overview_status.htm:60
+msgid "Existing file will be overwritten, do you really want to proceed?"
+msgstr "已有文件将被覆盖，是否继续？"
+
+#: luasrc/model/cbi/amule.lua:41
+msgid "External Control"
+msgstr "远程控制"
+
+#: luasrc/view/amule/detail_logview.htm:12
+msgid "File not found or empty"
+msgstr "文件不存在或为空"
+
+#: luasrc/model/cbi/amule.lua:328
+msgid "Filter clients by IP"
+msgstr "过滤用户"
+
+#: luasrc/model/cbi/amule.lua:331
+msgid "Filter servers by IP"
+msgstr "过滤服务器"
+
+#: luasrc/model/cbi/amule.lua:340
+msgid "Filtering Level"
+msgstr "过滤级别"
+
+#: luasrc/model/cbi/amule.lua:36
+msgid "General"
+msgstr "常规"
+
+#: luasrc/model/cbi/amule.lua:311
+msgid "IP Filter Configuration"
+msgstr "IP过滤设置"
+
+#: luasrc/model/cbi/amule.lua:334
+msgid "IP filter list URL"
+msgstr "过滤列表URL"
+
+#: luasrc/model/cbi/amule.lua:356
+msgid "IP of the listening interface for external connection"
+msgstr "远程连接监听IP"
+
+#: luasrc/model/cbi/amule.lua:235
+msgid "Incoming directory"
+msgstr "下载文件夹"
+
+#: luasrc/model/cbi/amule.lua:255
+msgid "Intelligent corruption handling (I.C.H.)"
+msgstr "智能损坏数据处理(I.C.H.)"
+
+#: luasrc/model/cbi/amule.lua:164
+msgid "Kad Nodes Url"
+msgstr "Kad节点URL"
+
+#: luasrc/model/cbi/amule.lua:117
+msgid "Leave blank to bind all"
+msgstr "留空则全部绑定"
+
+#: luasrc/model/cbi/amule.lua:43
+msgid "Log File Viewer"
+msgstr "日志查看"
+
+#: luasrc/model/cbi/amule.lua:84
+msgid "Max connections"
+msgstr "最大连接数"
+
+#: luasrc/model/cbi/amule.lua:74
+msgid "Max download speed"
+msgstr "最大下载速度"
+
+#: luasrc/model/cbi/amule.lua:89
+msgid "Max sources per file"
+msgstr "单文件最大连接数"
+
+#: luasrc/model/cbi/amule.lua:69
+msgid "Max upload speed"
+msgstr "最大上传速度"
+
+#: luasrc/model/cbi/amule.lua:61
+msgid "Memory Limit"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:281
+msgid "Minimum free disk space. in Mbytes"
+msgstr "最低剩余空间，单位MB"
+
+#: luasrc/model/cbi/amule.lua:66
+msgid "Nickname"
+msgstr "昵称"
+
+#: luasrc/view/amule/overview_status.htm:11
+msgid "Open aMuleWeb"
+msgstr "打开aMuleWeb"
+
+#: luasrc/model/cbi/amule.lua:411
+msgid "Page refresh time(in secs)"
+msgstr "页面刷新周期(秒)"
+
+#: luasrc/model/cbi/amule.lua:348
+msgid "Paranoid handling of non-matching IPs"
+msgstr "处理不匹配的IP"
+
+#: luasrc/model/cbi/amule.lua:39
+msgid "Path And File"
+msgstr "路径和文件"
+
+#: luasrc/model/cbi/amule.lua:61
+msgid "Percentage"
+msgstr "百分比"
+
+#: luasrc/model/cbi/amule.lua:448
+msgid "Please press [Read] button"
+msgstr "请点击[读取]按钮"
+
+#: luasrc/model/cbi/amule.lua:278
+msgid "Preallocate disk space for new files"
+msgstr "为新文件预分配磁盘空间"
+
+#: luasrc/model/cbi/amule.lua:133
+msgid "Proxy Configuration"
+msgstr "代理设置"
+
+#: luasrc/model/cbi/amule.lua:144
+msgid "Proxy name"
+msgstr "代理名称"
+
+#: luasrc/model/cbi/amule.lua:158
+msgid "Proxy password"
+msgstr "代理密码"
+
+#: luasrc/model/cbi/amule.lua:147
+msgid "Proxy port"
+msgstr "代理端口"
+
+#: luasrc/model/cbi/amule.lua:151
+msgid "Proxy requires authentication"
+msgstr "代理需要认证"
+
+#: luasrc/model/cbi/amule.lua:138
+msgid "Proxy type"
+msgstr "代理类型"
+
+#: luasrc/model/cbi/amule.lua:154
+msgid "Proxy user"
+msgstr "代理用户"
+
+#: luasrc/model/cbi/amule.lua:444
+msgid "Read / Reread log file"
+msgstr "读取/重载日志文件"
+
+#: luasrc/model/cbi/amule.lua:180
+msgid "Remove Dead Server"
+msgstr "删除无效服务器"
+
+#: luasrc/model/cbi/amule.lua:51
+msgid "Run daemon as user"
+msgstr "运行守护进程的用户"
+
+#: luasrc/model/cbi/amule.lua:202
+msgid "Safe connect"
+msgstr "安全连接"
+
+#: luasrc/model/cbi/amule.lua:286
+msgid "Save 10 sources on rare files (< 20 sources)"
+msgstr "保存稀有文件（少于20个源）的十个源"
+
+#: luasrc/model/cbi/amule.lua:40
+msgid "Security"
+msgstr "安全"
+
+#: luasrc/model/cbi/amule.lua:38
+msgid "Server"
+msgstr "服务器"
+
+#: luasrc/model/cbi/amule.lua:214
+msgid "Server addresses"
+msgstr "服务器地址"
+
+#: luasrc/model/cbi/amule.lua:208
+msgid "Set manually added servers to high priority"
+msgstr "将手动输入的服务器设为高优先级"
+
+#: luasrc/model/cbi/amule.lua:240
+msgid "Shared directory"
+msgstr "共享文件夹"
+
+#: luasrc/model/cbi/amule.lua:79
+msgid "Slot allocation"
+msgstr "槽速度"
+
+#: luasrc/view/amule/overview_status.htm:19
+#: luasrc/view/amule/overview_status.htm:31
+msgid "Start aMule"
+msgstr "启动aMule"
+
+#: luasrc/model/cbi/amule.lua:270
+msgid "Start next paused file from the same category"
+msgstr "从同一分类开始下一个暂停的文件"
+
+#: luasrc/model/cbi/amule.lua:274
+msgid "Start next paused file in alphabetic order"
+msgstr "根据字母顺序开始下一个暂停的文件"
+
+#: luasrc/model/cbi/amule.lua:267
+msgid "Start next paused file when a file completes"
+msgstr "一个文件完成时开始下一个暂停的文件"
+
+#: luasrc/model/cbi/amule.lua:313
+msgid "Static IP list for filtering"
+msgstr "静态IP过滤列表"
+
+#: luasrc/model/cbi/amule.lua:96
+msgid "TCP port"
+msgstr "TCP端口"
+
+#: luasrc/model/cbi/amule.lua:361
+msgid "TCP port for EC"
+msgstr "远程连接TCP端口"
+
+#: luasrc/model/cbi/amule.lua:231
+msgid "Temporary directory"
+msgstr "临时文件夹"
+
+#: luasrc/model/cbi/amule.lua:425
+msgid ""
+"This is the content of the file '/etc/amule/amule.conf.template' from which "
+"your amule configuration will be generated. Values enclosed by pipe symbols "
+"('|') should not be changed. They get their values from other tabs."
+msgstr ""
+"创建aMule设置的 '/etc/amule/amule.conf.template' 文件的内容。被通道符|包围的"
+"值不应该在这里改动，请在其他标签修改这些设置。"
+
+#: luasrc/model/cbi/amule.lua:104
+msgid "UDP port"
+msgstr "UDP端口"
+
+#: luasrc/model/cbi/amule.lua:112
+msgid "UPnP TCP port"
+msgstr "UPnP TCP端口"
+
+#: luasrc/model/cbi/amule.lua:69 luasrc/model/cbi/amule.lua:74
+msgid "Unlimited when set to 0"
+msgstr "设为0时不限制"
+
+#: luasrc/model/cbi/amule.lua:193
+msgid "Update server list when a client connects"
+msgstr "与其他用户连接时更新服务器列表"
+
+#: luasrc/model/cbi/amule.lua:190
+msgid "Update server list when connecting to a server"
+msgstr "与服务器连接时更新服务器列表"
+
+#: luasrc/model/cbi/amule.lua:391
+msgid "Use low rights user"
+msgstr "启用低权限用户"
+
+#: luasrc/model/cbi/amule.lua:299
+msgid "Use obfuscation for outgoing connections"
+msgstr "为传出连接使用迷惑协议"
+
+#: luasrc/model/cbi/amule.lua:196
+msgid "Use priority system"
+msgstr "启用优先级系统"
+
+#: luasrc/model/cbi/amule.lua:296
+msgid "Use secure user identification"
+msgstr "使用安全用户认证"
+
+#: luasrc/model/cbi/amule.lua:199
+msgid "Use smart LowID check on connect"
+msgstr "智能LOWID检测"
+
+#: luasrc/model/cbi/amule.lua:351
+msgid "Use system-wide ipfilter.dat if available"
+msgstr "可用情况下使用系统级的ipfilter.dat"
+
+#: luasrc/model/cbi/amule.lua:398
+msgid "Web TCP port"
+msgstr "Web TCP端口"
+
+#: luasrc/model/cbi/amule.lua:406
+msgid "Web UPnP TCP port"
+msgstr "Web服务UPnP的TCP端口"
+
+#: luasrc/model/cbi/amule.lua:387
+msgid "Web full rights password"
+msgstr "Web最高权限密码"
+
+#: luasrc/model/cbi/amule.lua:394
+msgid "Web low rights password"
+msgstr "Web低权限密码"
+
+#: luasrc/model/cbi/amule.lua:378
+msgid "Web template"
+msgstr "Web模版"
+
+#: luasrc/model/cbi/amule.lua:305
+msgid "Who can see my shared files"
+msgstr "谁可查看我的共享文件"
+
+#: luasrc/view/amule/webshell.htm:79
+msgid "You can call amulecmd commands here to control your amule."
+msgstr "你可以在这里运行amulecmd命令以控制你的aMule"
+
+#: luasrc/model/cbi/amule.lua:28
+msgid "aMule"
+msgstr ""
+
+#: luasrc/controller/amule.lua:24 luasrc/model/cbi/amule.lua:32
+msgid "aMule Settings"
+msgstr "aMule设置"
+
+#: luasrc/view/amule/overview_status.htm:87
+msgid "aMule Status"
+msgstr "aMule状态"
+
+#: luasrc/model/cbi/amule.lua:373
+msgid "aMule Web Configuration"
+msgstr "aMule Web设置"
+
+#: luasrc/model/cbi/amule.lua:44
+msgid "aMule command"
+msgstr "aMule命令"
+
+#: luasrc/view/amule/overview_status.htm:15
+msgid "aMule daemon is not running."
+msgstr "aMule守护进程未运行"
+
+#: luasrc/view/amule/overview_status.htm:9
+msgid "aMule daemon is running."
+msgstr "aMule守护进程正在运行"
+
+#: luasrc/model/cbi/amule.lua:28
+msgid "aMule is a ED2K/KAD client for all platforms."
+msgstr "aMule是一个跨平台的ED2K/KAD客户端"
+
+#: luasrc/model/cbi/amule.lua:211
+msgid "addresses.dat file"
+msgstr "addresses.dat文件"
+
+#~ msgid "NAS"
+#~ msgstr "网络存储"
+
+#~ msgid "Default to bind all"
+#~ msgstr "默认全部绑定"
+
+#~ msgid "aMule Command"
+#~ msgstr "aMule命令"
+
+#~ msgid "Command: "
+#~ msgstr "命令: "

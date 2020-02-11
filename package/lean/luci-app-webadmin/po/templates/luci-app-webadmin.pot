@@ -1,0 +1,40 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/webadmin.lua:13
+msgid "Bind to specific interface:port (by specifying interface address"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:13
+msgid "HTTP listeners (address:port)"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:46
+msgid "Ignore private IPs on public interface"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:46
+msgid ""
+"Prevent access from private (RFC1918) IPs on an interface if it has an "
+"public IP address"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:41
+msgid "Redirect all HTTP to HTTPS"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:44
+msgid "Redirect all HTTP to HTTPS when SSl cert was installed"
+msgstr ""
+
+#: luasrc/controller/webadmin.lua:13
+msgid "Web Admin"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:6
+msgid "Web Admin Settings"
+msgstr ""
+
+#: luasrc/model/cbi/webadmin.lua:7
+msgid "Web Admin Settings Page"
+msgstr ""

@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/controller/unblockmusic.lua:11
+msgid "Base Setting"
+msgstr ""
+
+#: luasrc/view/unblockmusic/unblockmusic_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:32
+msgid "HTTPS 证书"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:25
+msgid "JOOX音乐"
+msgstr ""
+
+#: luasrc/controller/unblockmusic.lua:12
+msgid "Log"
+msgstr ""
+
+#: luasrc/view/unblockmusic/unblockmusic_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:19
+msgid "QQ音乐"
+msgstr ""
+
+#: luasrc/view/unblockmusic/unblockmusic_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:34
+msgid ""
+"iOS 13 系统需要在“设置 -> 通用 -> 关于本机 -> 证书信任设置” 中，信任 "
+"UnblockNeteaseMusic Root CA )"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:33
+msgid "下载 CA 根证书"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:14
+msgid ""
+"启用后，路由器自动分流解锁，大部分设备无需设置代理。<br />苹果系列设备需要设"
+"置 WIFI/有线代理方式为 自动 ,并安装 CA根证书并信任。"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:11
+msgid "启用解锁"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:24
+msgid "咕咪音乐"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:65
+msgid "手动更新"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:66
+msgid "更新核心版本"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:61
+msgid "每天自动检测并更新到最新版本"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:21
+msgid "百度音乐"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:67
+msgid "目前运行主程序版本"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:18
+msgid "网易云音乐"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:58
+msgid "自动检查更新主程序"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:20
+msgid "虾米音乐"
+msgstr ""
+
+#: luasrc/controller/unblockmusic.lua:9 luasrc/model/cbi/unblockmusic.lua:2
+msgid "解锁网易云灰色歌曲"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:27
+msgid "转发HTTPS音源地址"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:23
+msgid "酷我音乐(高音质推荐)"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:22
+msgid "酷狗音乐"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:3
+msgid "采用 [QQ/虾米/百度/酷狗/酷我/咕咪/JOOX]等音源，替换网易云变灰歌曲链接"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:16
+msgid "音源选择"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:17
+msgid "默认"
+msgstr ""
+
+#: luasrc/model/cbi/unblockmusic.lua:30
+msgid "默认为 https://music.163.com"
+msgstr ""

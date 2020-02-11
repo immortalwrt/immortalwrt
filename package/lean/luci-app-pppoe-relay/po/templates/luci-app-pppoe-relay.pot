@@ -1,0 +1,36 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/pppoe-relay.lua:44
+msgid "Check"
+msgstr ""
+
+#: luasrc/model/cbi/pppoe-relay.lua:30
+msgid "Client Interface"
+msgstr ""
+
+#: luasrc/model/cbi/pppoe-relay.lua:13
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/model/cbi/pppoe-relay.lua:50
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/pppoe-relay.lua:7
+msgid ""
+"Opening the PPPoE relay allows devices in the Intranet to create a separate "
+"PPPoE connection that can cross NAT."
+msgstr ""
+
+#: luasrc/controller/pppoe-relay.lua:8 luasrc/model/cbi/pppoe-relay.lua:6
+msgid "PPPoE Relay"
+msgstr ""
+
+#: luasrc/model/cbi/pppoe-relay.lua:52
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/pppoe-relay.lua:16
+msgid "Server Interface"
+msgstr ""

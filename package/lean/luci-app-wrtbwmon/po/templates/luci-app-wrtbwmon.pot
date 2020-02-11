@@ -1,0 +1,77 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/view/wrtbwmon.htm:10
+msgid "Auto Refresh Interval"
+msgstr ""
+
+#: luasrc/model/cbi/wrtbwmon/config.lua:6
+msgid "Check this to persist the database file"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:6
+msgid "Configuration"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:5 luasrc/model/cbi/wrtbwmon/config.lua:1
+msgid "Details"
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:12
+msgid "Disabled"
+msgstr ""
+
+#: luasrc/model/cbi/wrtbwmon/config.lua:3
+msgid "General settings"
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:42
+msgid "Loading..."
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:24 luasrc/view/wrtbwmon.htm:25
+#: luasrc/view/wrtbwmon.htm:26 luasrc/view/wrtbwmon.htm:27
+msgid "Minutes"
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:32
+msgid "Per-host Totals"
+msgstr ""
+
+#: luasrc/model/cbi/wrtbwmon/config.lua:5
+msgid "Persist database"
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:4
+msgid "Reset Database"
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:13
+msgid "Second"
+msgstr ""
+
+#: luasrc/view/wrtbwmon.htm:14 luasrc/view/wrtbwmon.htm:15
+#: luasrc/view/wrtbwmon.htm:16 luasrc/view/wrtbwmon.htm:17
+#: luasrc/view/wrtbwmon.htm:18 luasrc/view/wrtbwmon.htm:19
+#: luasrc/view/wrtbwmon.htm:20 luasrc/view/wrtbwmon.htm:21
+#: luasrc/view/wrtbwmon.htm:22 luasrc/view/wrtbwmon.htm:23
+msgid "Seconds"
+msgstr ""
+
+#: luasrc/model/cbi/wrtbwmon/custom.lua:7
+msgid ""
+"This file is used to match users with MAC addresses and it must have the "
+"following format: 00:aa:bb:cc:ee:ff,username"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:4 luasrc/view/wrtbwmon.htm:2
+msgid "Usage"
+msgstr ""
+
+#: luasrc/model/cbi/wrtbwmon/custom.lua:6
+msgid "Usage - Custom User File"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:7
+msgid "User file"
+msgstr ""

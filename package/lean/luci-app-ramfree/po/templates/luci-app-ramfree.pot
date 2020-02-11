@@ -1,0 +1,6 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/controller/release_ram.lua:4
+msgid "Release Ram"
+msgstr ""

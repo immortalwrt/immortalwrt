@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/view/cbi/other_upload.htm:2
+msgid "Choose local file:"
+msgstr "选择本地文件："
+
+#: luasrc/model/cbi/updownload.lua:34
+msgid "Couldn't open file:"
+msgstr "无法打开文件："
+
+#: luasrc/model/cbi/updownload.lua:63
+msgid "Create upload file error."
+msgstr "创建上传文件失败。"
+
+#: luasrc/view/cbi/other_download.htm:4 luasrc/model/cbi/updownload.lua:14
+msgid "Download"
+msgstr "下载"
+
+#: luasrc/model/cbi/updownload.lua:17
+msgid "Download file"
+msgstr "下载文件"
+
+#: luasrc/model/cbi/updownload.lua:108
+msgid "File name"
+msgstr "文件名"
+
+#: luasrc/model/cbi/updownload.lua:73
+msgid "File saved to"
+msgstr "文件保存到"
+
+#: luasrc/controller/filetransfer.lua:11
+msgid "FileTransfer"
+msgstr "文件传输"
+
+#: luasrc/model/cbi/updownload.lua:130
+msgid "Install"
+msgstr "安装"
+
+#: luasrc/model/cbi/updownload.lua:110
+msgid "Mode string"
+msgstr "模式字符串"
+
+#: luasrc/model/cbi/updownload.lua:109
+msgid "Modify time"
+msgstr "修改时间"
+
+#: luasrc/model/cbi/updownload.lua:83
+msgid "No specify upload file."
+msgstr "未指定上传文件"
+
+#: luasrc/view/cbi/other_download.htm:2
+msgid "Path on Route:"
+msgstr "路由上目录"
+
+#: luasrc/model/cbi/updownload.lua:112
+msgid "Remove"
+msgstr "移除"
+
+#: luasrc/model/cbi/updownload.lua:111
+msgid "Size"
+msgstr "大小"
+
+#: luasrc/view/cbi/other_upload.htm:4 luasrc/model/cbi/updownload.lua:4
+msgid "Upload"
+msgstr "上传"
+
+#: luasrc/model/cbi/updownload.lua:103
+msgid "Upload file list"
+msgstr "上传文件列表"
+
+#: luasrc/model/cbi/updownload.lua:8
+msgid "Upload file to '/tmp/upload/'"
+msgstr "将文件上传到'/tmp/upload/'"

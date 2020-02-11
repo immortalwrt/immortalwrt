@@ -1,0 +1,65 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/usb_printer.lua:128
+msgid "Bidirectional mode"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:90
+msgid "Bindings"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:83
+msgid "Description"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:81
+msgid "Detected printers"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:96
+msgid "Device"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:86
+msgid "Device Name"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:103
+msgid "Interface"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:122
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:84
+msgid "Printer Model"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:21
+msgid ""
+"Shares multiple USB printers via TCP/IP.<br />When modified bingings, re-"
+"plug usb connectors to take effect.<br />This module requires kmod-usb-"
+"printer."
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:103
+msgid "Specifies the interface to listen on."
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:122
+msgid "TCP listener port."
+msgstr ""
+
+#: luasrc/controller/usb_printer.lua:28 luasrc/model/cbi/usb_printer.lua:20
+msgid "USB Printer Server"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:85
+msgid "VID/PID"
+msgstr ""
+
+#: luasrc/model/cbi/usb_printer.lua:94
+msgid "enable"
+msgstr ""

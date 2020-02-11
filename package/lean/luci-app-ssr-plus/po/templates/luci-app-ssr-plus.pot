@@ -1,0 +1,770 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/shadowsocksr/server.lua:77
+msgid "0"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:48
+msgid "1 Thread"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:49
+msgid "2 Threads"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:50
+msgid "4 Threads"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:51
+msgid "8 Threads"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:13
+msgid "Access Control"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:15
+msgid "Advanced Settings"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:171
+msgid "Advertising Data"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:93
+msgid "Alias"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:135
+msgid "Alias(optional)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:63
+msgid "All Ports"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:184
+msgid "AlterId"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:73
+msgid "Anti-pollution DNS Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:117
+msgid "Auto Switch"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:47
+msgid "Auto Threads"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:22
+msgid "Auto Update"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:24
+msgid "Auto Update Server subscription, GFW list and CHN route"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:159
+msgid "Baidu Connectivity"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:273
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:284
+msgid "BitTorrent (uTP)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:71
+msgid "Black Domain List"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:53
+msgid "Bypass Domain List"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:215
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:280
+msgid "Camouflage Type"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/check.htm:21 luasrc/view/shadowsocksr/check.htm:27
+msgid "Check Connect"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/checkport.htm:18
+#: luasrc/view/shadowsocksr/checkport.htm:24
+msgid "Check Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:182
+msgid "Check Server Port"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:40
+msgid "Check Try Count"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:35
+msgid "Check timout(second)"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/check.htm:6
+#: luasrc/view/shadowsocksr/checkport.htm:7
+msgid "Check..."
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:177
+msgid "China IP Data"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:84
+msgid "Cloudflare DNS (1.1.1.1)"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:355
+msgid "Concurrency"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:326
+msgid "Congestion"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/check.htm:18
+msgid "Connect Error"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/check.htm:16
+msgid "Connect OK"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:68
+msgid "Connection Timeout"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/ssrurl.htm:75
+msgid "Copy SSR to clipboard successfully."
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:62
+msgid "Delete all severs"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:58
+#: luasrc/model/cbi/shadowsocksr/client.lua:36
+#: luasrc/model/cbi/shadowsocksr/client.lua:42
+msgid "Disable"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:308
+msgid "Downlink Capacity"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:105
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:43
+msgid "Edit ShadowSocksR Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:59
+#: luasrc/model/cbi/shadowsocksr/server.lua:75
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:27
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:367
+msgid "Enable Auto Switch"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:24
+msgid "Enable Process Deamon"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/server.lua:58
+msgid "Enable Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:49
+msgid "Enable adblock"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:157
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:162
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:197
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:77
+#: luasrc/model/cbi/shadowsocksr/server.lua:86
+msgid "Encrypt Method"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/list.lua:4
+msgid "GFW Custom List"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:164
+msgid "GFW List Data"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:56
+msgid "GFW List Mode"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:37
+msgid "Game Mode Host List"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:105
+msgid "Game Mode UDP Relay"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:41
+msgid "Game Mode UDP Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:97
+msgid "Global Client"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:58
+msgid "Global Mode"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:132
+msgid "Global SSR Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/server.lua:55
+msgid "Global Setting"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:155
+msgid "Google Connectivity"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:74
+msgid "Google Public DNS (8.8.4.4)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:75
+msgid "Google Public DNS (8.8.8.8)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:222
+msgid "HTTP Host"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:227
+msgid "HTTP Path"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:246
+msgid "HTTP/2 Host"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:251
+msgid "HTTP/2 Path"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:392
+msgid "Haven't a Kcptun executable file"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:268
+msgid "Header"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:57
+msgid "IP Route Mode"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:4
+msgid "IP black-and-white list"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:110
+#: luasrc/model/cbi/shadowsocksr/status.lua:146
+msgid "KcpTun"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:378
+msgid "KcpTun Enable"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:408
+msgid "KcpTun Param"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:403
+msgid "KcpTun Password"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:384
+msgid "KcpTun Port"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:142
+msgid "KcpTun Version"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:21
+msgid "LAN Bypassed Host List"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:29
+msgid "LAN Force Proxy Host List"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:19
+msgid "LAN IP AC"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:78
+msgid "Level 3 Public DNS (209.244.0.3)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:79
+msgid "Level 3 Public DNS (209.244.0.4)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:80
+msgid "Level 3 Public DNS (4.2.2.1)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:81
+msgid "Level 3 Public DNS (4.2.2.2)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:82
+msgid "Level 3 Public DNS (4.2.2.3)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:83
+msgid "Level 3 Public DNS (4.2.2.4)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:63
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:371
+msgid "Local Port"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:24
+msgid "Log"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:290
+msgid "MTU"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:35
+msgid "Main Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:46
+msgid "Multi Threads Option"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:349
+msgid "Mux"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:156
+#: luasrc/model/cbi/shadowsocksr/status.lua:160
+#: luasrc/model/cbi/shadowsocksr/status.lua:184
+msgid "No Check"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/refresh.htm:16
+msgid "No new data!"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:218
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:260
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:271
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:282
+#: luasrc/model/cbi/shadowsocksr/servers.lua:95
+msgid "None"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:102
+#: luasrc/model/cbi/shadowsocksr/status.lua:110
+#: luasrc/model/cbi/shadowsocksr/status.lua:118
+#: luasrc/model/cbi/shadowsocksr/status.lua:127
+#: luasrc/model/cbi/shadowsocksr/status.lua:137
+#: luasrc/model/cbi/shadowsocksr/status.lua:151
+msgid "Not Running"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:394
+msgid "Not a Kcptun executable file"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:36
+msgid "Not exist"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:175
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:86
+#: luasrc/model/cbi/shadowsocksr/server.lua:97
+msgid "Obfs"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:180
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:90
+msgid "Obfs param(optional)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:64
+msgid "Only Common Ports"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:77
+msgid "OpenDNS (208.67.220.220)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:76
+msgid "OpenDNS (208.67.222.222)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:59
+msgid "Oversea Mode"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:85
+msgid "Oversea Mode DNS-1 (114.114.114.114)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:86
+msgid "Oversea Mode DNS-2 (114.114.115.115)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:113
+msgid "PDNSD"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:150
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:73
+msgid "Password"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:126
+msgid "Ping Latency"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/list.lua:4
+msgid "Please refer to the following writing"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:167
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:81
+#: luasrc/model/cbi/shadowsocksr/server.lua:92
+msgid "Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:172
+msgid "Protocol param(optional)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:62
+msgid "Proxy Ports"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:264
+msgid "QUIC Key"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:257
+msgid "QUIC Security"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:314
+msgid "Read Buffer Size"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:167
+#: luasrc/model/cbi/shadowsocksr/status.lua:174
+#: luasrc/model/cbi/shadowsocksr/status.lua:180
+msgid "Records"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/refresh.htm:27
+#: luasrc/view/shadowsocksr/refresh.htm:33
+#: luasrc/view/shadowsocksr/subscribe.htm:11
+msgid "Refresh Data"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/refresh.htm:19
+msgid "Refresh Error!"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/refresh.htm:23
+msgid "Refresh OK!"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/refresh.htm:6
+#: luasrc/view/shadowsocksr/subscribe.htm:5
+msgid "Refresh..."
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:67
+msgid "Resolve Dns Mode"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:100
+#: luasrc/model/cbi/shadowsocksr/status.lua:108
+#: luasrc/model/cbi/shadowsocksr/status.lua:116
+#: luasrc/model/cbi/shadowsocksr/status.lua:125
+#: luasrc/model/cbi/shadowsocksr/status.lua:135
+#: luasrc/model/cbi/shadowsocksr/status.lua:149
+msgid "Running"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:55
+msgid "Running Mode"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:54
+#: luasrc/model/cbi/shadowsocksr/status.lua:122
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:11
+msgid "SSR Client"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:17
+msgid "SSR Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:43
+msgid "Same as Global Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:57
+msgid "Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:137
+#: luasrc/model/cbi/shadowsocksr/servers.lua:98
+msgid "Server Address"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:64
+msgid "Server Count"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:122
+msgid "Server Node Type"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:141
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:63
+#: luasrc/model/cbi/shadowsocksr/server.lua:81
+#: luasrc/model/cbi/shadowsocksr/servers.lua:103
+msgid "Server Port"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/server.lua:62
+msgid "Server Setting"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:21
+msgid "Server failsafe auto swith settings"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:15
+msgid "Servers subscription and manage"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:12
+msgid "Severs Nodes"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:10
+msgid "ShadowSocksR Plus+"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:11
+msgid "ShadowSocksR Plus+ Settings"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/server.lua:9
+msgid "ShadowSocksR Server"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:125
+msgid "Shadowsocks New Version"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:123
+msgid "ShadowsocksR"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:122
+msgid "Socket Connected"
+msgstr ""
+
+#: luasrc/controller/shadowsocksr.lua:19
+msgid "Status"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:34
+msgid "Subscribe URL"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:30
+msgid "Switch check cycly(second)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:361
+#: luasrc/model/cbi/shadowsocksr/server-config.lua:92
+msgid "TCP Fast Open"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:337
+msgid "TLS"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:343
+msgid "TLS Host"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:296
+msgid "TTI"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:44
+msgid "Through proxy update"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:46
+msgid "Through proxy update list, Not Recommended"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/refresh.htm:23
+msgid "Total Records:"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:203
+msgid "Transport"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:131
+msgid "Trojan"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:88
+msgid "Type"
+msgstr ""
+
+#: luasrc/view/shadowsocksr/ssrurl.htm:77
+msgid "Unable to copy SSR to clipboard."
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/status.lua:33
+#: luasrc/model/cbi/shadowsocksr/status.lua:43
+msgid "Unknown"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:48
+#: luasrc/view/shadowsocksr/subscribe.htm:16
+msgid "Update All Subscribe Severs"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/servers.lua:27
+msgid "Update time (every day)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:302
+msgid "Uplink Capacity"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:69
+msgid "Use Local DNS Service listen port 5335"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:68
+msgid "Use Pdnsd tcp query and cache"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client.lua:70
+msgid "Use system DNS"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:133
+msgid "Using incorrect encryption mothod may causes service fail to start"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:128
+msgid "V2Ray"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:272
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:283
+msgid "VideoCall (SRTP)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:191
+msgid "VmessId (UUID)"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:15
+msgid "WAN Force Proxy IP"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:10
+msgid "WAN IP AC"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/control.lua:12
+msgid "WAN White List IP"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:234
+msgid "WebSocket Host"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:239
+msgid "WebSocket Path"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:274
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:285
+msgid "WechatVideo"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:320
+msgid "Write Buffer Size"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/advanced.lua:46
+msgid "adblock settings"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:261
+msgid "aes-128-gcm"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:331
+msgid "allowInsecure"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:378
+msgid "bin:/usr/bin/kcptun-client"
+msgstr ""
+
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:262
+msgid "chacha20-poly1305"
+msgstr ""

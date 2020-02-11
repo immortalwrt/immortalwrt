@@ -1,0 +1,58 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/view/qbittorrent/qbittorrent_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:11
+msgid "Default login username: admin, password: adminadmin."
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:31
+msgid "Download Dir"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:18
+msgid "Enable"
+msgstr ""
+
+#: luasrc/view/qbittorrent/qbittorrent_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:8
+msgid "Open Web Interface"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:21
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:26
+msgid "Profile Dir"
+msgstr ""
+
+#: luasrc/view/qbittorrent/qbittorrent_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:26
+msgid "Store configuration files in the Path"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:31
+msgid "Store download files in the Path"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:21
+msgid "WebUI listening port"
+msgstr ""
+
+#: luasrc/controller/qbittorrent.lua:7 luasrc/model/cbi/qbittorrent.lua:11
+msgid "qBittorrent"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:11
+msgid "qBittorrent is a cross-platform free and open-source BitTorrent client."
+msgstr ""

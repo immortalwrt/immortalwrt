@@ -1,0 +1,84 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/mia.lua:2
+msgid "Access Schedule Control Settins"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:15
+msgid "Client Rules"
+msgstr ""
+
+#: luasrc/view/mia/mia_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:8
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:34
+msgid "End time"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:54
+msgid "Fri"
+msgstr ""
+
+#: luasrc/controller/mia.lua:8 luasrc/view/mia/mia_status.htm:7
+#: luasrc/view/mia/mia_status.htm:10 luasrc/model/cbi/mia.lua:2
+msgid "Internet Access Schedule Control"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:24
+msgid "MAC address (Computer Name)"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:38
+msgid "Mon"
+msgstr ""
+
+#: luasrc/view/mia/mia_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/view/mia/mia_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:58
+msgid "Sat"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:30
+msgid "Start time"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:11
+msgid "Strict Mode"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:13
+msgid ""
+"Strict Mode will degrade CPU performance, but it can achieve better results"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:62
+msgid "Sun"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:50
+msgid "Thu"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:42
+msgid "Tue"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:46
+msgid "Wed"
+msgstr ""
+
+#: luasrc/model/cbi/mia.lua:20
+msgid "√"
+msgstr ""

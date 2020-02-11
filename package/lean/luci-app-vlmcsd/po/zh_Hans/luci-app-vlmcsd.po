@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/vlmcsd.lua:5
+msgid "A KMS Serever Emulator to active your Windows or Office"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:17
+msgid "Auto activate"
+msgstr "自动激活局域网客户端"
+
+#: luasrc/model/cbi/vlmcsd.lua:13
+msgid "Basic Setting"
+msgstr "基本设置"
+
+#: luasrc/view/vlmcsd/vlmcsd_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:20
+msgid "Config File"
+msgstr "配置文件"
+
+#: luasrc/model/cbi/vlmcsd.lua:14
+msgid "Enable"
+msgstr "启用"
+
+#: luasrc/controller/vlmcsd.lua:8
+msgid "KMS Server"
+msgstr "KMS 服务器"
+
+#: luasrc/view/vlmcsd/vlmcsd_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/view/vlmcsd/vlmcsd_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:21
+msgid "This file is /etc/vlmcsd.ini."
+msgstr "这个文件在 /etc/vlmcsd.ini 下，可以增加新的产品主密钥。"
+
+#: luasrc/model/cbi/vlmcsd.lua:21
+msgid "configfile"
+msgstr "配置文件"
+
+#: luasrc/model/cbi/vlmcsd.lua:4
+msgid "vlmcsd config"
+msgstr "KMS 服务器设置"
+
+#~ msgid "<b><font color=green>Vlmcsd is running.</font></b>"
+#~ msgstr "<b><font color=green>KMS 服务器运行中</font></b>"
+
+#~ msgid "<b><font color=red>Vlmcsd is not running.</font></b>"
+#~ msgstr "<b><font color=red>KMS 服务器未运行</font></b>"

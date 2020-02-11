@@ -1,0 +1,50 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/vlmcsd.lua:5
+msgid "A KMS Serever Emulator to active your Windows or Office"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:17
+msgid "Auto activate"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:13
+msgid "Basic Setting"
+msgstr ""
+
+#: luasrc/view/vlmcsd/vlmcsd_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:20
+msgid "Config File"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:14
+msgid "Enable"
+msgstr ""
+
+#: luasrc/controller/vlmcsd.lua:8
+msgid "KMS Server"
+msgstr ""
+
+#: luasrc/view/vlmcsd/vlmcsd_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/view/vlmcsd/vlmcsd_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:21
+msgid "This file is /etc/vlmcsd.ini."
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:21
+msgid "configfile"
+msgstr ""
+
+#: luasrc/model/cbi/vlmcsd.lua:4
+msgid "vlmcsd config"
+msgstr ""

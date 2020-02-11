@@ -1,0 +1,44 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/docker.lua:21
+msgid "<a href=\"../../../../DockerReadme.pdf\" target=\"_blank\" />"
+msgstr ""
+
+#: luasrc/view/docker/docker_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/controller/docker.lua:8
+msgid "Docker CE Container"
+msgstr ""
+
+#: luasrc/model/cbi/docker.lua:8
+msgid ""
+"Docker is a set of platform-as-a-service (PaaS) products that use OS-level "
+"virtualization to deliver software in packages called containers."
+msgstr ""
+
+#: luasrc/model/cbi/docker.lua:21
+msgid "Download DockerReadme.pdf"
+msgstr ""
+
+#: luasrc/model/cbi/docker.lua:16
+msgid "Enable WAN access Dokcer"
+msgstr ""
+
+#: luasrc/model/cbi/docker.lua:16
+msgid "Enable WAN access docker mapped ports"
+msgstr ""
+
+#: luasrc/view/docker/docker_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/docker.lua:5
+msgid "Open Portainer Docker Admin"
+msgstr ""
+
+#: luasrc/view/docker/docker_status.htm:7
+msgid "RUNNING"
+msgstr ""

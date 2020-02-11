@@ -1,0 +1,57 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:26
+msgid "Account"
+msgstr ""
+
+#: luasrc/view/ipsec/ipsec_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:22
+msgid "DNS using in VPN tunnel.Set to the router's LAN IP is recommended"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:10
+msgid "Enable"
+msgstr ""
+
+#: luasrc/controller/ipsec-server.lua:10
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:2
+msgid "IPSec VPN Server"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:3
+msgid ""
+"IPSec VPN connectivity using the native built-in VPN Client on iOS or "
+"Andriod (IKEv1 with PSK and Xauth)"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:16
+msgid "LAN DHCP reserved started IP addresses with the same subnet mask"
+msgstr ""
+
+#: luasrc/view/ipsec/ipsec_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:29
+msgid "Password"
+msgstr ""
+
+#: luasrc/view/ipsec/ipsec_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:32
+msgid "Secret Pre-Shared Key"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:20
+msgid "VPN Client DNS"
+msgstr ""
+
+#: luasrc/model/cbi/ipsec-server/ipsec-server.lua:14
+msgid "VPN Client IP"
+msgstr ""

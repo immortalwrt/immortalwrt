@@ -1,0 +1,61 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/docker.lua:21
+msgid "<a href=\"../../../../DockerReadme.pdf\" target=\"_blank\" />"
+msgstr ""
+
+#: luasrc/view/docker/docker_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/controller/docker.lua:8
+msgid "Docker CE Container"
+msgstr "Docker CE 容器"
+
+#: luasrc/model/cbi/docker.lua:8
+msgid ""
+"Docker is a set of platform-as-a-service (PaaS) products that use OS-level "
+"virtualization to deliver software in packages called containers."
+msgstr ""
+"Docker是一组平台即服务（platform-as-a-service，PaaS）产品，它使用操作系统级容"
+"器虚拟化来交付软件包。"
+
+#: luasrc/model/cbi/docker.lua:21
+msgid "Download DockerReadme.pdf"
+msgstr "下载 Docker 初始化无脑配置教程"
+
+#: luasrc/model/cbi/docker.lua:16
+msgid "Enable WAN access Dokcer"
+msgstr "允许 WAN 访问 Dokcer"
+
+#: luasrc/model/cbi/docker.lua:16
+msgid "Enable WAN access docker mapped ports"
+msgstr ""
+"允许 WAN 访问 Dokcer 映射后的端口（易受攻击！）。<br /><br />推荐禁用该选项"
+"后，用系统防火墙选择性映射 172.17.0.X:XX 端口到 WAN"
+
+#: luasrc/view/docker/docker_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/docker.lua:5
+msgid "Open Portainer Docker Admin"
+msgstr "打开 Portainer Docker 管理页面"
+
+#: luasrc/view/docker/docker_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#~ msgid "Docker Readme First"
+#~ msgstr "Docker 初始化无脑配置教程"
+
+#~ msgid "Please download DockerReadme.pdf to read when first-running"
+#~ msgstr "初次在OpenWrt中运行Docker必读（只需执行一次流程）"

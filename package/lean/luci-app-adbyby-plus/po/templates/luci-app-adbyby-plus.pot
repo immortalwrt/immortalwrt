@@ -1,0 +1,167 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/adbyby.lua:150
+msgid "<strong>Client Filter Mode Settings</strong>"
+msgstr ""
+
+#: luasrc/controller/adbyby.lua:9
+msgid "ADBYBY Plus +"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:15
+msgid "Adbyby Plus +"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:16
+msgid ""
+"Adbyby Plus + can filter all kinds of banners, popups, video ads, and "
+"prevent tracking, privacy theft and a variety of malicious websites<br /"
+"><font color=\"red\">Plus + version combination mode can operation with "
+"Adblock Plus Host，filtering ads without losing bandwidth</font>"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:46
+msgid "Adbyby and Rule state"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:56
+msgid "Advance Setting"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:23
+msgid "Base Setting"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:106
+msgid "Black Domain List"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:121
+msgid "Black IP List"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:72
+msgid "Block Apple iOS OTA update"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:91
+msgid "Bypass Domain List"
+msgstr ""
+
+#: luasrc/view/adbyby/adbyby_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:140
+msgid ""
+"Each line of the beginning exclamation mark is considered an annotation."
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:26
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:167
+msgid "Filter Mode"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:151
+msgid ""
+"Filter mode settings can be set to specific LAN clients ( <font color=blue> "
+"No filter , Global filter </font> ) . Does not need to be set by default."
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:32
+msgid "Global Mode（The slowest, the best effects）"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:172
+msgid "Global filter"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:157
+msgid "IP Address"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:65
+msgid "Manually force update"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:64
+msgid "Manually force update<br />Adblock Plus Host List"
+msgstr ""
+
+#: luasrc/view/adbyby/adbyby_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:171
+msgid "No filter"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:34
+msgid "No filter Mode (Must set in Client Filter Mode Settings manually)"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:64
+msgid ""
+"Note: It needs to download and convert the rules. The background process may "
+"takes 60-120 seconds to run. <br / > After completed it would automatically "
+"refresh, please do not duplicate click!"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:33
+msgid ""
+"Plus + Mode（Filter domain name list and blacklist website.Recommended）"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:76
+msgid "Plus+ Domain List"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:39
+msgid "RAM Running Mode"
+msgstr ""
+
+#: luasrc/view/adbyby/adbyby_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:47
+msgid "Restart Adbyby"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:42
+msgid "Running Adbyby in RAM.More speed,less disk consumption"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:31
+msgid "Running Mode"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:59
+msgid "Update the rule at 6 a.m. every morning and restart adbyby"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:136
+msgid "User-defined Rule"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:80
+msgid ""
+"（!）Note that you should fill to the domain name ONLY. For example, http://"
+"www.baidu.com only needs to write to baidu.com. One line for each"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:110
+msgid "（!）Will Always block these Domain"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:125
+msgid "（!）Will Always block these IP"
+msgstr ""
+
+#: luasrc/model/cbi/adbyby.lua:95
+msgid "（!）Will Never filter these Domain"
+msgstr ""

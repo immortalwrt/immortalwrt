@@ -1,0 +1,77 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/view/qbittorrent/qbittorrent_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:11
+msgid "Default login username: admin, password: adminadmin."
+msgstr "默认登录用户名：admin，密码：adminadmin。"
+
+#: luasrc/model/cbi/qbittorrent.lua:31
+msgid "Download Dir"
+msgstr "下载目录"
+
+#: luasrc/model/cbi/qbittorrent.lua:18
+msgid "Enable"
+msgstr "启用"
+
+#: luasrc/view/qbittorrent/qbittorrent_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:8
+msgid "Open Web Interface"
+msgstr "打开Web界面"
+
+#: luasrc/model/cbi/qbittorrent.lua:21
+msgid "Port"
+msgstr "端口"
+
+#: luasrc/model/cbi/qbittorrent.lua:26
+msgid "Profile Dir"
+msgstr "配置文件目录"
+
+#: luasrc/view/qbittorrent/qbittorrent_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:26
+msgid "Store configuration files in the Path"
+msgstr "配置文件存放路径"
+
+#: luasrc/model/cbi/qbittorrent.lua:31
+msgid "Store download files in the Path"
+msgstr "下载文件存放目录"
+
+#: luasrc/model/cbi/qbittorrent.lua:21
+msgid "WebUI listening port"
+msgstr "WebUI监听端口"
+
+#: luasrc/controller/qbittorrent.lua:7 luasrc/model/cbi/qbittorrent.lua:11
+msgid "qBittorrent"
+msgstr ""
+
+#: luasrc/model/cbi/qbittorrent.lua:11
+msgid "qBittorrent is a cross-platform free and open-source BitTorrent client."
+msgstr "qBittorrent是一个基于 QT 的跨平台的开源 BitTorrent 客户端。"
+
+#~ msgid "qbittorrent"
+#~ msgstr "qbittorrent"
+
+#~ msgid "qbittorrent Run Status"
+#~ msgstr "qbittorrent运行状态"
+
+#~ msgid "Running"
+#~ msgstr "运行中"
+
+#~ msgid "Not running"
+#~ msgstr "未运行"

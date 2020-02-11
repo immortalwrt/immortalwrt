@@ -1,0 +1,90 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:53
+msgid "(!)Special Code you know that add in to client .ovpn file"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:4
+msgid "An easy config OpenVPN Server Web-UI"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:12
+msgid "Base Setting"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:28
+msgid "Client Network"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:33
+msgid "Client Settings"
+msgstr ""
+
+#: luasrc/view/openvpn/openvpn_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:40
+msgid "Download .ovpn file"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:14
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:41
+msgid ""
+"If you are using IOS client, please download this .ovpn file and send it via "
+"QQ or Email to your IOS device"
+msgstr ""
+
+#: luasrc/view/openvpn/openvpn_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:39
+msgid "OpenVPN Client config file"
+msgstr ""
+
+#: luasrc/controller/openvpn-server.lua:13
+msgid "OpenVPN Server"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:20
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:16
+msgid "Proto"
+msgstr ""
+
+#: luasrc/view/openvpn/openvpn_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:35
+msgid ""
+"Set route 192.168.0.0 255.255.255.0 and dhcp-option DNS 192.168.0.1 base on "
+"your router"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:48
+msgid "Special Code"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:17
+msgid "TCP Server"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:18
+msgid "UDP Server"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:30
+msgid "VPN Client Network IP with subnet"
+msgstr ""
+
+#: luasrc/model/cbi/openvpn-server/openvpn-server.lua:23
+msgid "WAN DDNS or IP"
+msgstr ""

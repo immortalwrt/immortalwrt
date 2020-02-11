@@ -1,0 +1,61 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/familycloud.lua:19
+msgid "AccessToken"
+msgstr ""
+
+#: luasrc/controller/familycloud.lua:11
+msgid "Base Setting"
+msgstr ""
+
+#: luasrc/view/familycloud/familycloud_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/controller/familycloud.lua:12
+msgid "Log"
+msgstr ""
+
+#: luasrc/view/familycloud/familycloud_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/view/familycloud/familycloud_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/familycloud.lua:11
+msgid "启用提速"
+msgstr ""
+
+#: luasrc/model/cbi/familycloud.lua:16
+msgid "天翼云盘提速"
+msgstr ""
+
+#: luasrc/controller/familycloud.lua:9
+msgid "天翼家庭云/云盘提速"
+msgstr ""
+
+#: luasrc/model/cbi/familycloud.lua:2
+msgid "天翼家庭云/天翼云盘提速"
+msgstr ""
+
+#: luasrc/model/cbi/familycloud.lua:3
+msgid "天翼家庭云/天翼云盘提速 (最高可达500Mbps)"
+msgstr ""
+
+#: luasrc/model/cbi/familycloud.lua:17
+msgid "天翼家庭云提速"
+msgstr ""
+
+#: luasrc/model/cbi/familycloud.lua:15
+msgid "天翼提速包类型"
+msgstr ""

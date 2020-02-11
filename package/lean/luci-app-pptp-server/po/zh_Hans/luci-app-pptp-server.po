@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:17
+msgid "Client IP"
+msgstr "客户端分配的IP范围"
+
+#: luasrc/view/pptp/pptp_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:24
+msgid "Debug Logging"
+msgstr "记录日志"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:10
+msgid "Enable"
+msgstr "启用"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:19
+msgid "LAN DHCP reserved start-to-end IP addresses with the same subnet mask"
+msgstr ""
+"使用和 LAN 同一网段。请使用 DHCP分配地址以外的空余IP地址范围，例如 "
+"192.168.0.20-30"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:14
+msgid "Local IP"
+msgstr "PPTP 服务器IP"
+
+#: luasrc/view/pptp/pptp_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:28
+msgid "PPTP Logins"
+msgstr "PPTP 登录设置"
+
+#: luasrc/controller/pptp-server.lua:10
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:2
+msgid "PPTP VPN Server"
+msgstr "PPTP VPN 服务器"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:3
+msgid ""
+"PPTP VPN Server connectivity using the native built-in VPN Client on Windows/"
+"Linux or Andriod"
+msgstr "使用Windows/Linux 或者 Andriod 内置的 PPTP VPN 客户端进行连接 "
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:34
+msgid "Password"
+msgstr "密码"
+
+#: luasrc/view/pptp/pptp_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:21
+msgid "Remote Client DNS"
+msgstr "客户端分配IP的DNS服务器"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:31
+msgid "User name"
+msgstr "用户名"
+
+#~ msgid "Disable from startup"
+#~ msgstr "禁止开机启动"
+
+#~ msgid "Enable on startup"
+#~ msgstr "允许开机启动"
+
+#~ msgid "PPTP Service"
+#~ msgstr "PPTP 服务设置"
+
+#~ msgid "PPTPD status"
+#~ msgstr "PPTPD 服务状态"
+
+#~ msgid "Start"
+#~ msgstr "启动"
+
+#~ msgid "Stop"
+#~ msgstr "关闭"

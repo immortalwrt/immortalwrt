@@ -1,0 +1,61 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:17
+msgid "Client IP"
+msgstr ""
+
+#: luasrc/view/pptp/pptp_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:24
+msgid "Debug Logging"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:10
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:19
+msgid "LAN DHCP reserved start-to-end IP addresses with the same subnet mask"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:14
+msgid "Local IP"
+msgstr ""
+
+#: luasrc/view/pptp/pptp_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:28
+msgid "PPTP Logins"
+msgstr ""
+
+#: luasrc/controller/pptp-server.lua:10
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:2
+msgid "PPTP VPN Server"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:3
+msgid ""
+"PPTP VPN Server connectivity using the native built-in VPN Client on Windows/"
+"Linux or Andriod"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:34
+msgid "Password"
+msgstr ""
+
+#: luasrc/view/pptp/pptp_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:21
+msgid "Remote Client DNS"
+msgstr ""
+
+#: luasrc/model/cbi/pptp-server/pptp-server.lua:31
+msgid "User name"
+msgstr ""

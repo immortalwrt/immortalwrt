@@ -1,0 +1,84 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/nps.lua:11
+msgid "Basic Setting"
+msgstr ""
+
+#: luasrc/view/nps/nps_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:12
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:31
+msgid "Enable Compression"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:34
+msgid "Enable Encryption"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:34
+msgid ""
+"Encrypted the communication between Npc and Nps, will effectively prevent "
+"the traffic intercepted."
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:26
+msgid "KCP Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:37
+msgid "Log Level"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:14
+msgid "Must an IPv4 address"
+msgstr ""
+
+#: luasrc/view/nps/nps_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/controller/nps.lua:7 luasrc/model/cbi/nps.lua:2
+msgid "Nps Setting"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:3
+msgid ""
+"Nps is a fast reverse proxy to help you expose a local server behind a NAT "
+"or firewall to the internet."
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:18
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:23
+msgid "Protocol Type"
+msgstr ""
+
+#: luasrc/view/nps/nps_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:14
+msgid "Server"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:25
+msgid "TCP Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:31
+msgid ""
+"The contents will be compressed to speed up the traffic forwarding speed, "
+"but this will consume some additional cpu resources."
+msgstr ""
+
+#: luasrc/model/cbi/nps.lua:27
+msgid "vkey"
+msgstr ""

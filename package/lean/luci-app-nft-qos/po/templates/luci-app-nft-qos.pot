@@ -1,0 +1,224 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/view/nft-qos/rate.htm:136 luasrc/view/nft-qos/rate.htm:155
+msgid "Bytes Total"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:141 luasrc/view/nft-qos/rate.htm:160
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:224
+msgid "Comment"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:48
+msgid "Default Download Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:53
+msgid "Default Download Unit"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:107
+msgid "Default Network Interface"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:60
+msgid "Default Upload Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:65
+msgid "Default Upload Unit"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:53
+msgid "Default unit for download rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:65
+msgid "Default unit for upload rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:75
+msgid "Default value for download bandwidth"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:48
+msgid "Default value for download rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:80
+msgid "Default value for upload bandwidth"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:60
+msgid "Default value for upload rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:75
+msgid "Download Bandwidth (Mbps)"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:135
+msgid "Download Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:38
+msgid "Enable Limit Rate Feature"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:103
+msgid "Enable Traffic Priority"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:103
+msgid "Enable this feature"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:121
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:158
+msgid "Hostname"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:134 luasrc/view/nft-qos/rate.htm:153
+msgid "IP Address"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:126
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:163
+msgid "IP Address(V4 / V6)"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:128
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:165
+msgid "IP Address(V4 Only)"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:38
+msgid "Limit Enable"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:42
+msgid "Limit Type"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:135
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:172
+msgid "MAC (optional)"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:48
+msgid "MB"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:28
+msgid "NFT-QoS Settings"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:107
+msgid "Network Interface for Traffic Shaping, e.g. br-lan, eth0.1, eth0, etc"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:85
+msgid "Network to be apply, e.g. 192.168.1.0/24, 10.2.0.0/16, etc"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:91
+msgid "Network to be apply, e.g. AAAA::BBBB/64, CCCC::1/128, etc"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:65
+msgid "No information available"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:137 luasrc/view/nft-qos/rate.htm:156
+msgid "Packets Total"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:207
+msgid "Priority"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:199
+msgid "Protocol"
+msgstr ""
+
+#: luasrc/controller/nft-qos.lua:16 luasrc/model/cbi/nft-qos/nft-qos.lua:23
+msgid "Qos over Nftables"
+msgstr ""
+
+#: luasrc/controller/nft-qos.lua:12 luasrc/model/cbi/nft-qos/nft-qos.lua:139
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:176
+msgid "Rate"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:130
+msgid "Realtime Download Rate"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:125
+msgid "Realtime Rate"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:149
+msgid "Realtime Upload Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:221
+msgid "Service"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:116
+msgid "Static QoS-Download Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:153
+msgid "Static QoS-Upload Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:85
+msgid "Target Network (IPv4/MASK)"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:91
+msgid "Target Network6 (IPv6/MASK)"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:127
+msgid "This page gives an overview over currently download/upload rate."
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:194
+msgid "Traffic Priority Settings"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:42
+msgid "Type of Limit Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:144
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:181
+msgid "Unit"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:80
+msgid "Upload Bandwidth (Mbps)"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:154
+msgid "Upload Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:96
+msgid "White List for Limit Rate"
+msgstr ""
+
+#: luasrc/model/cbi/nft-qos/nft-qos.lua:221
+msgid "e.g. https, 23, (separator is comma)"
+msgstr ""
+
+#: luasrc/view/nft-qos/rate.htm:44
+msgid "kB"
+msgstr ""

@@ -1,0 +1,124 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/guest-wifi.lua:15
+msgid ""
+"Check to create guest wifi when enabled, or check to remove guest wifi when "
+"disabled."
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:57
+msgid "Client Limit"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:6
+msgid "Config"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:15
+msgid "Create/Remove"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:61
+msgid "DHCP lease time"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:34
+msgid "Define IP address for guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:20
+msgid "Define device"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:20
+msgid "Define device of guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:38
+msgid "Define encryption of guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:30
+msgid "Define the interface name of guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:26
+msgid "Define the name of guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:45
+msgid "Define the password of guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:10
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:10
+msgid "Enable or disable guest wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:49
+msgid "Enalbe or disable isolation"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:38
+msgid "Encryption"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:61
+msgid "Expiry time of leased addresses, minimum is 2 minutes (2m)"
+msgstr ""
+
+#: luasrc/controller/guest-wifi.lua:10 luasrc/model/cbi/guest-wifi.lua:4
+msgid "Guest-wifi"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:34
+msgid "Interface IP address"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:30
+msgid "Interface name"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:49
+msgid "Isolation"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:53
+msgid "Lowest leased address as offset from the network address"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:57
+msgid "Maximum number of leased addresses"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:51
+msgid "NO"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:45
+msgid "Password"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:53
+msgid "Start address"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:26
+msgid "Wifi name"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:50
+msgid "YES"
+msgstr ""
+
+#: luasrc/model/cbi/guest-wifi.lua:6
+msgid ""
+"You can set guest wifi here. The wifi will be disconnected when enabling/"
+"disabling. When modifying the password, first disable the guest wifi, and "
+"then do the modification, save and apply. Finally check both Enable and "
+"Create, save and apply."
+msgstr ""

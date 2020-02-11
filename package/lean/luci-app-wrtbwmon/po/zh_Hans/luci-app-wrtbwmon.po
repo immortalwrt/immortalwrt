@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/view/wrtbwmon.htm:10
+msgid "Auto Refresh Interval"
+msgstr "自动刷新间隔"
+
+#: luasrc/model/cbi/wrtbwmon/config.lua:6
+msgid "Check this to persist the database file"
+msgstr "把统计数据写入 /etc/config 中避免重启或者升级后丢失"
+
+#: luasrc/controller/wrtbwmon.lua:6
+msgid "Configuration"
+msgstr "配置"
+
+#: luasrc/controller/wrtbwmon.lua:5 luasrc/model/cbi/wrtbwmon/config.lua:1
+msgid "Details"
+msgstr "详细信息"
+
+#: luasrc/view/wrtbwmon.htm:12
+msgid "Disabled"
+msgstr "禁用"
+
+#: luasrc/model/cbi/wrtbwmon/config.lua:3
+msgid "General settings"
+msgstr "通用设置"
+
+#: luasrc/view/wrtbwmon.htm:42
+msgid "Loading..."
+msgstr "加载中..."
+
+#: luasrc/view/wrtbwmon.htm:24 luasrc/view/wrtbwmon.htm:25
+#: luasrc/view/wrtbwmon.htm:26 luasrc/view/wrtbwmon.htm:27
+msgid "Minutes"
+msgstr "分钟"
+
+#: luasrc/view/wrtbwmon.htm:32
+msgid "Per-host Totals"
+msgstr "合并每一客户端数据"
+
+#: luasrc/model/cbi/wrtbwmon/config.lua:5
+msgid "Persist database"
+msgstr "写入数据库到硬盘"
+
+#: luasrc/view/wrtbwmon.htm:4
+msgid "Reset Database"
+msgstr "重置数据库"
+
+#: luasrc/view/wrtbwmon.htm:13
+msgid "Second"
+msgstr "秒"
+
+#: luasrc/view/wrtbwmon.htm:14 luasrc/view/wrtbwmon.htm:15
+#: luasrc/view/wrtbwmon.htm:16 luasrc/view/wrtbwmon.htm:17
+#: luasrc/view/wrtbwmon.htm:18 luasrc/view/wrtbwmon.htm:19
+#: luasrc/view/wrtbwmon.htm:20 luasrc/view/wrtbwmon.htm:21
+#: luasrc/view/wrtbwmon.htm:22 luasrc/view/wrtbwmon.htm:23
+msgid "Seconds"
+msgstr "秒"
+
+#: luasrc/model/cbi/wrtbwmon/custom.lua:7
+msgid ""
+"This file is used to match users with MAC addresses and it must have the "
+"following format: 00:aa:bb:cc:ee:ff,username"
+msgstr "每一行的格式为  00:aa:bb:cc:ee:ff,username"
+
+#: luasrc/controller/wrtbwmon.lua:4 luasrc/view/wrtbwmon.htm:2
+msgid "Usage"
+msgstr "实时流量监测"
+
+#: luasrc/model/cbi/wrtbwmon/custom.lua:6
+msgid "Usage - Custom User File"
+msgstr "自定义MAC地址对应的主机名"
+
+#: luasrc/controller/wrtbwmon.lua:7
+msgid "User file"
+msgstr "自定义主机信息"
+
+#~ msgid "Usage - Configuration"
+#~ msgstr "详细设置"

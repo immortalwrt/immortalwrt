@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/syncdial.lua:29
+msgid "<font color=\"red\">指定要多拨的第二个外网接口，如wan2</font>"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:8
+msgid "使用macvlan驱动创建多个虚拟WAN口，支持并发多拨 <br />当前在线接口数量："
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:16
+msgid "单线多拨"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:17
+msgid "双线多拨"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:15
+msgid "多拨类型"
+msgstr ""
+
+#: luasrc/controller/syncdial.lua:7 luasrc/model/cbi/syncdial.lua:7
+msgid "多线多拨"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:19
+msgid "指定要多拨的外网接口，如wan"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:33
+msgid "第二条线虚拟WAN接口数量"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:33
+msgid "设置第二条线的拨号数"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:19
+msgid "选择外网接口"
+msgstr ""
+
+#: luasrc/model/cbi/syncdial.lua:29
+msgid "选择第二个外网接口"
+msgstr ""

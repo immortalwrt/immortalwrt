@@ -1,0 +1,492 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/amule.lua:302
+msgid "Accept only obfuscation connections"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:261
+msgid "Add files to download in pause mode"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:264
+msgid "Add files to download with auto priority"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:289
+msgid "Add new shares with auto priority"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:258
+msgid "Advanced I.C.H trusts every hash (not recommended)"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:345
+msgid "Always filter LAN IPs"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:205
+msgid "Auto connect to servers in static list only"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:211
+msgid "Auto update server list at startup"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:337
+msgid "Auto-update ipfilter at startup"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:121
+msgid "Automatically connect"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:124
+msgid "Automatically reconnect"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:117
+msgid "Bind Address"
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:88
+msgid "Clear"
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:89
+#: luasrc/view/amule/overview_status.htm:92
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:83
+msgid "Command:"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:57
+msgid "Configuration directory"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:130
+msgid "Connect to ED2K network"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:127
+msgid "Connect to Kad network"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:37
+msgid "Connections"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:215
+msgid "Content of addresses.dat. One address per line"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:314
+msgid "Content of ipfilter_static.dat"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:241
+msgid "Content of shareddir.dat. One directory per line"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:183
+msgid "Dead Server Retry"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:165 luasrc/model/cbi/amule.lua:173
+msgid "Download now"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:369
+msgid "EC password"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:172
+msgid "Ed2k Servers List Url"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:42
+msgid "Edit Template"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:424
+msgid "Edit the template that is used for generating the aMule configuration."
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:416
+msgid "Enable Gzip compression"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:101
+msgid "Enable UDP port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:109
+msgid "Enable UPnP"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:403
+msgid "Enable UPnP port forwarding of the web server port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:135
+msgid "Enable proxy"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:366
+msgid "Enable upnp port forwarding on the EC port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:375
+msgid "Enable web server on startup"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:48
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:86
+msgid "Execute"
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:80
+msgid "Execute 'Help' to get more infomation."
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:50
+#: luasrc/view/amule/overview_status.htm:60
+msgid "Existing file will be overwritten, do you really want to proceed?"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:41
+msgid "External Control"
+msgstr ""
+
+#: luasrc/view/amule/detail_logview.htm:12
+msgid "File not found or empty"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:328
+msgid "Filter clients by IP"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:331
+msgid "Filter servers by IP"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:340
+msgid "Filtering Level"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:36
+msgid "General"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:311
+msgid "IP Filter Configuration"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:334
+msgid "IP filter list URL"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:356
+msgid "IP of the listening interface for external connection"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:235
+msgid "Incoming directory"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:255
+msgid "Intelligent corruption handling (I.C.H.)"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:164
+msgid "Kad Nodes Url"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:117
+msgid "Leave blank to bind all"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:43
+msgid "Log File Viewer"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:84
+msgid "Max connections"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:74
+msgid "Max download speed"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:89
+msgid "Max sources per file"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:69
+msgid "Max upload speed"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:61
+msgid "Memory Limit"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:281
+msgid "Minimum free disk space. in Mbytes"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:66
+msgid "Nickname"
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:11
+msgid "Open aMuleWeb"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:411
+msgid "Page refresh time(in secs)"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:348
+msgid "Paranoid handling of non-matching IPs"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:39
+msgid "Path And File"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:61
+msgid "Percentage"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:448
+msgid "Please press [Read] button"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:278
+msgid "Preallocate disk space for new files"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:133
+msgid "Proxy Configuration"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:144
+msgid "Proxy name"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:158
+msgid "Proxy password"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:147
+msgid "Proxy port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:151
+msgid "Proxy requires authentication"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:138
+msgid "Proxy type"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:154
+msgid "Proxy user"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:444
+msgid "Read / Reread log file"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:180
+msgid "Remove Dead Server"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:51
+msgid "Run daemon as user"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:202
+msgid "Safe connect"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:286
+msgid "Save 10 sources on rare files (< 20 sources)"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:40
+msgid "Security"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:38
+msgid "Server"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:214
+msgid "Server addresses"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:208
+msgid "Set manually added servers to high priority"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:240
+msgid "Shared directory"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:79
+msgid "Slot allocation"
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:19
+#: luasrc/view/amule/overview_status.htm:31
+msgid "Start aMule"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:270
+msgid "Start next paused file from the same category"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:274
+msgid "Start next paused file in alphabetic order"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:267
+msgid "Start next paused file when a file completes"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:313
+msgid "Static IP list for filtering"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:96
+msgid "TCP port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:361
+msgid "TCP port for EC"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:231
+msgid "Temporary directory"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:425
+msgid ""
+"This is the content of the file '/etc/amule/amule.conf.template' from which "
+"your amule configuration will be generated. Values enclosed by pipe symbols "
+"('|') should not be changed. They get their values from other tabs."
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:104
+msgid "UDP port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:112
+msgid "UPnP TCP port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:69 luasrc/model/cbi/amule.lua:74
+msgid "Unlimited when set to 0"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:193
+msgid "Update server list when a client connects"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:190
+msgid "Update server list when connecting to a server"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:391
+msgid "Use low rights user"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:299
+msgid "Use obfuscation for outgoing connections"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:196
+msgid "Use priority system"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:296
+msgid "Use secure user identification"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:199
+msgid "Use smart LowID check on connect"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:351
+msgid "Use system-wide ipfilter.dat if available"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:398
+msgid "Web TCP port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:406
+msgid "Web UPnP TCP port"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:387
+msgid "Web full rights password"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:394
+msgid "Web low rights password"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:378
+msgid "Web template"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:305
+msgid "Who can see my shared files"
+msgstr ""
+
+#: luasrc/view/amule/webshell.htm:79
+msgid "You can call amulecmd commands here to control your amule."
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:28
+msgid "aMule"
+msgstr ""
+
+#: luasrc/controller/amule.lua:24 luasrc/model/cbi/amule.lua:32
+msgid "aMule Settings"
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:87
+msgid "aMule Status"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:373
+msgid "aMule Web Configuration"
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:44
+msgid "aMule command"
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:15
+msgid "aMule daemon is not running."
+msgstr ""
+
+#: luasrc/view/amule/overview_status.htm:9
+msgid "aMule daemon is running."
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:28
+msgid "aMule is a ED2K/KAD client for all platforms."
+msgstr ""
+
+#: luasrc/model/cbi/amule.lua:211
+msgid "addresses.dat file"
+msgstr ""

@@ -1,0 +1,337 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/vsftpd/general.lua:64
+msgid ". and .. are excluded."
+msgstr ". 和 .. 将被忽略。"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:31 luasrc/model/cbi/vsftpd/item.lua:57
+#: luasrc/model/cbi/vsftpd/general.lua:108
+#: luasrc/model/cbi/vsftpd/general.lua:111
+msgid "0 means no limitation"
+msgstr "0 表明不限制"
+
+#: luasrc/model/cbi/vsftpd/general.lua:72
+msgid "A message will be displayed when entering a directory."
+msgstr "在进入一个新目录时将显示的消息"
+
+#: luasrc/model/cbi/vsftpd/general.lua:92
+msgid "ASCII mode"
+msgstr "ASCII 模式"
+
+#: luasrc/model/cbi/vsftpd/general.lua:62
+msgid "Allow directory recursely list"
+msgstr "允许递归列目录"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:22
+msgid "An actual local user to handle anonymous user"
+msgstr "承载匿名用户的本地用户"
+
+#: luasrc/model/cbi/vsftpd/users.lua:22
+msgid "An actual local user to handle virtual users"
+msgstr "承载虚拟用户的本地用户"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:17
+msgid "Anonymous Settings"
+msgstr "匿名用户设置"
+
+#: luasrc/controller/vsftpd.lua:39
+msgid "Anonymous User"
+msgstr "匿名用户"
+
+#: luasrc/model/cbi/vsftpd/general.lua:96
+msgid "Both download and upload"
+msgstr "下载和上传"
+
+#: luasrc/model/cbi/vsftpd/general.lua:117
+msgid "Can not be zero, default is 3"
+msgstr "不能为 0，默认为 3"
+
+#: luasrc/model/cbi/vsftpd/general.lua:87
+msgid "Connection Settings"
+msgstr "连接设置"
+
+#: luasrc/model/cbi/vsftpd/general.lua:102
+msgid "Connection timeout"
+msgstr "连接超时"
+
+#: luasrc/model/cbi/vsftpd/general.lua:38
+msgid "Data Port"
+msgstr "数据端口"
+
+#: luasrc/model/cbi/vsftpd/general.lua:105
+msgid "Data connection timeout"
+msgstr "数据连接超时"
+
+#: luasrc/model/cbi/vsftpd/general.lua:74
+msgid "Directory message filename"
+msgstr "目录消息文件名"
+
+#: luasrc/model/cbi/vsftpd/general.lua:93
+msgid "Disabled"
+msgstr ""
+
+#: luasrc/model/cbi/vsftpd/general.lua:94
+msgid "Download only"
+msgstr "仅下载"
+
+#: luasrc/model/cbi/vsftpd/general.lua:19
+msgid "Enable IPv4"
+msgstr "启用 IPv4"
+
+#: luasrc/model/cbi/vsftpd/general.lua:27
+msgid "Enable IPv6"
+msgstr "启用 IPv6"
+
+#: luasrc/model/cbi/vsftpd/general.lua:90
+msgid "Enable PASV mode"
+msgstr "启用 PASV 模式"
+
+#: luasrc/model/cbi/vsftpd/general.lua:89
+msgid "Enable PORT mode"
+msgstr "启用 PORT 模式"
+
+#: luasrc/model/cbi/vsftpd/general.lua:59
+msgid "Enable directory list"
+msgstr "允许列目录"
+
+#: luasrc/model/cbi/vsftpd/general.lua:72
+msgid "Enable directory message"
+msgstr "启用目录消息"
+
+#: luasrc/model/cbi/vsftpd/general.lua:56
+msgid "Enable download"
+msgstr "允许下载"
+
+#: luasrc/model/cbi/vsftpd/log.lua:22
+msgid "Enable file log"
+msgstr "启用文件日志"
+
+#: luasrc/model/cbi/vsftpd/general.lua:80
+msgid "Enable local user"
+msgstr "启用本地用户"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:40 luasrc/model/cbi/vsftpd/item.lua:66
+msgid "Enable other rights"
+msgstr "允许其它权限"
+
+#: luasrc/model/cbi/vsftpd/log.lua:19
+msgid "Enable syslog"
+msgstr "启用系统日志"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:37 luasrc/model/cbi/vsftpd/item.lua:63
+msgid "Enable upload"
+msgstr "允许上传"
+
+#: luasrc/model/cbi/vsftpd/general.lua:53
+msgid "Enable write"
+msgstr "允许写"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:34 luasrc/model/cbi/vsftpd/item.lua:60
+msgid "Enable write/mkdir"
+msgstr "允许写/创建目录"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:19
+#: luasrc/model/cbi/vsftpd/users.lua:19
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/model/cbi/vsftpd/general.lua:70
+msgid "FTP Banner"
+msgstr "FTP 欢迎提示"
+
+#: luasrc/controller/vsftpd.lua:27
+msgid "FTP Server"
+msgstr "FTP 服务器"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:15
+msgid "FTP Server - Anonymous Settings"
+msgstr "FTP 服务器 - 匿名用户设置"
+
+#: luasrc/model/cbi/vsftpd/general.lua:15
+msgid "FTP Server - General Settings"
+msgstr "FTP 服务器 - 常规设置"
+
+#: luasrc/model/cbi/vsftpd/log.lua:15
+msgid "FTP Server - Log Settings"
+msgstr "FTP 服务器 - 日志设置"
+
+#: luasrc/model/cbi/vsftpd/item.lua:30
+msgid "FTP Server - Virtual User %q"
+msgstr "FTP 服务器 - 虚拟用户 %q"
+
+#: luasrc/model/cbi/vsftpd/item.lua:18
+msgid "FTP Server - Virtual User &lt;new&gt;"
+msgstr "FTP 服务器 - 虚拟用户 &lt;新用户&gt;"
+
+#: luasrc/model/cbi/vsftpd/users.lua:15
+msgid "FTP Server - Virtual User Settings"
+msgstr "FTP 服务器 - 虚拟用户设置"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:28 luasrc/model/cbi/vsftpd/item.lua:54
+#: luasrc/model/cbi/vsftpd/general.lua:67
+msgid "File mode umask"
+msgstr "文件权限掩码"
+
+#: luasrc/controller/vsftpd.lua:31
+msgid "General Settings"
+msgstr "常规设置"
+
+#: luasrc/model/cbi/vsftpd/general.lua:51
+msgid "Global Settings"
+msgstr "全局设置"
+
+#: luasrc/model/cbi/vsftpd/users.lua:47 luasrc/model/cbi/vsftpd/item.lua:51
+msgid "Home directory"
+msgstr "主目录"
+
+#: luasrc/model/cbi/vsftpd/general.lua:23
+msgid "IPv4 Address"
+msgstr "IPv4 地址"
+
+#: luasrc/model/cbi/vsftpd/general.lua:30
+msgid "IPv6 Address"
+msgstr "IPv6 地址"
+
+#: luasrc/model/cbi/vsftpd/general.lua:99
+msgid "Idle session timeout"
+msgstr "空闲回话超时"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:40 luasrc/model/cbi/vsftpd/item.lua:66
+msgid "Include rename, deletion ..."
+msgstr "包括重命名、删除 ..."
+
+#: luasrc/model/cbi/vsftpd/general.lua:83
+msgid "Leave empty will use user's home directory"
+msgstr "留空将使用用户主目录"
+
+#: luasrc/model/cbi/vsftpd/general.lua:34
+msgid "Listen Port"
+msgstr "监听端口"
+
+#: luasrc/model/cbi/vsftpd/general.lua:17
+msgid "Listening Settings"
+msgstr "监听设置"
+
+#: luasrc/model/cbi/vsftpd/general.lua:78
+msgid "Local Users"
+msgstr "本地用户"
+
+#: luasrc/controller/vsftpd.lua:43 luasrc/model/cbi/vsftpd/log.lua:17
+msgid "Log Settings"
+msgstr "日志设置"
+
+#: luasrc/model/cbi/vsftpd/log.lua:25
+msgid "Log file"
+msgstr "日志文件"
+
+#: luasrc/model/cbi/vsftpd/general.lua:108
+msgid "Max clients"
+msgstr "最大连接数"
+
+#: luasrc/model/cbi/vsftpd/general.lua:111
+msgid "Max clients per IP"
+msgstr "同一 IP 的最大连接数"
+
+#: luasrc/model/cbi/vsftpd/general.lua:117
+msgid "Max login fail count"
+msgstr "最大登录尝试数"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:31 luasrc/model/cbi/vsftpd/item.lua:57
+#: luasrc/model/cbi/vsftpd/general.lua:114
+msgid "Max transmit rate"
+msgstr "最大传输速率"
+
+#: luasrc/model/cbi/vsftpd/item.lua:48
+msgid "Password"
+msgstr ""
+
+#: luasrc/model/cbi/vsftpd/general.lua:46
+msgid "Pasv Max Port"
+msgstr "Pasv 模式最大端口"
+
+#: luasrc/model/cbi/vsftpd/general.lua:42
+msgid "Pasv Min Port"
+msgstr "Pasv 模式最小端口"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:25
+#: luasrc/model/cbi/vsftpd/general.lua:83
+msgid "Root directory"
+msgstr "根目录"
+
+#: luasrc/model/cbi/vsftpd/users.lua:17
+msgid "Settings"
+msgstr "设置"
+
+#: luasrc/model/cbi/vsftpd/general.lua:64
+msgid "Show dot files"
+msgstr "显示以点开头的文件 (隐藏文件)"
+
+#: luasrc/model/cbi/vsftpd/users.lua:42
+msgid "Unknown"
+msgstr ""
+
+#: luasrc/model/cbi/vsftpd/general.lua:95
+msgid "Upload only"
+msgstr "仅上传"
+
+#: luasrc/model/cbi/vsftpd/general.lua:67
+msgid ""
+"Uploaded file mode will be 666 - &lt;umask&gt;; directory mode will be 777 - "
+"&lt;umask&gt;."
+msgstr ""
+"上传的文件权限将被设置为 666 - &lt;掩码&gt;；目录权限将被设置为 777 - &lt;掩"
+"码&gt;。"
+
+#: luasrc/model/cbi/vsftpd/item.lua:35
+msgid "User Settings"
+msgstr "用户设置"
+
+#: luasrc/model/cbi/vsftpd/users.lua:25
+msgid "User lists"
+msgstr "用户列表"
+
+#: luasrc/model/cbi/vsftpd/anonymous.lua:22 luasrc/model/cbi/vsftpd/item.lua:38
+#: luasrc/model/cbi/vsftpd/users.lua:22 luasrc/model/cbi/vsftpd/users.lua:40
+msgid "Username"
+msgstr ""
+
+#: luasrc/model/cbi/vsftpd/item.lua:43
+msgid "Username cannot be empty"
+msgstr "用户名不能为空"
+
+#: luasrc/controller/vsftpd.lua:35
+msgid "Virtual Users"
+msgstr "虚拟用户"
+
+#: luasrc/model/cbi/vsftpd/general.lua:56
+msgid "When disabled, all download request will give permission denied."
+msgstr "如果禁止，所有的下载请求都将被拒绝。"
+
+#: luasrc/model/cbi/vsftpd/general.lua:53
+msgid "When disabled, all write request will give permission denied."
+msgstr "如果禁止，所有的写类型请求都将被拒绝。"
+
+#: luasrc/model/cbi/vsftpd/general.lua:59
+msgid "When disabled, list commands will give permission denied."
+msgstr "如果禁止，列目录命令将被拒绝。"
+
+#: luasrc/model/cbi/vsftpd/general.lua:114
+msgid "in KB/s, 0 means no limitation"
+msgstr "单位为 KB/s，0 表明不限制"
+
+#: luasrc/model/cbi/vsftpd/general.lua:99
+#: luasrc/model/cbi/vsftpd/general.lua:102
+#: luasrc/model/cbi/vsftpd/general.lua:105
+msgid "in seconds"
+msgstr "单位为秒"
+
+#~ msgid "NAS"
+#~ msgstr "网络存储"

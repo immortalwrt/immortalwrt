@@ -1,0 +1,163 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/mwan3helper/client.lua:17
+msgid "Anti-pollution DNS Server"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:28
+msgid "Cloudflare DNS (1.1.1.1)"
+msgstr ""
+
+#: luasrc/view/mwan3helper/mwan3helper_status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:13
+msgid "Enable GFW IPSet"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:10
+msgid "GFW列表"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:11
+msgid "GFW列表数据： 5207 条，IPSET 名称为 gfwlist"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:20
+msgid "Google Public DNS (8.8.4.4)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:21
+msgid "Google Public DNS (8.8.8.8)"
+msgstr ""
+
+#: luasrc/controller/mwan3helper.lua:16
+msgid "IPSet Lists"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:22
+msgid "Level 3 Public DNS (209.244.0.3)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:23
+msgid "Level 3 Public DNS (209.244.0.4)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:24
+msgid "Level 3 Public DNS (4.2.2.1)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:25
+msgid "Level 3 Public DNS (4.2.2.2)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:26
+msgid "Level 3 Public DNS (4.2.2.3)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:27
+msgid "Level 3 Public DNS (4.2.2.4)"
+msgstr ""
+
+#: luasrc/controller/mwan3helper.lua:12
+#: luasrc/model/cbi/mwan3helper/client.lua:4
+msgid "MWAN3 Helper"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:5
+msgid "MWAN3 Helper generate IPSets"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:4
+msgid "MWAN3 IPSets"
+msgstr ""
+
+#: luasrc/view/mwan3helper/mwan3helper_status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:19
+msgid "OpenDNS (208.67.220.220)"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:18
+msgid "OpenDNS (208.67.222.222)"
+msgstr ""
+
+#: luasrc/view/mwan3helper/mwan3helper_status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/controller/mwan3helper.lua:14
+msgid "Settings"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:34
+msgid "中国其他ISP"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:35
+msgid "中国其他ISP： 5134 条, IPSET 名称为 othernet"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:13
+msgid "中国所有IP地址"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:14
+msgid "中国所有IP地址路由表数据： 8304 条, IPSET 名称为 cn"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:28
+msgid "中国教育网"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:29
+msgid "中国教育网路由表数据： 162 条, IPSET 名称为 cernet"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:16
+msgid "中国电信"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:17
+msgid "中国电信路由表数据： 1948 条, IPSET 名称为 ct"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:22
+msgid "中国移动"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:23
+msgid "中国移动路由表数据： 55 条, IPSET 名称为 cmcc"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:19
+msgid "中国联通/网通"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:20
+msgid "中国联通/网通路由表数据： 895 条, IPSET 名称为 cnc"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:25
+msgid "中国铁通"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:26
+msgid "中国铁通路由表数据： 16 条, IPSET 名称为 crtc"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/client.lua:15
+msgid "启用 DNS 防污染并打开GFW IPSet（与SSR的GFW列表模式不能同时开启）"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:31
+msgid "长城宽带/鹏博士"
+msgstr ""
+
+#: luasrc/model/cbi/mwan3helper/list.lua:32
+msgid "长城宽带/鹏博士： 94 条, IPSET 名称为 gwbn"
+msgstr ""

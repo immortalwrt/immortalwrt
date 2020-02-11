@@ -1,0 +1,129 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/flowoffload.lua:49
+msgid ""
+"AdGuardHome's login username/passwd: AdGuardHome, web console addr: IP:3001"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:37
+msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
+msgstr ""
+
+#: luasrc/view/flow/status.htm:8
+#: luasrc/view/flow/status.htm:4 luasrc/view/flow/status.htm:5
+#: luasrc/view/flow/status.htm:6 luasrc/view/flow/status.htm:7
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:44
+msgid "DNS Acceleration"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:42
+msgid ""
+"Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack "
+"network"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:18
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:34
+msgid "Enable BBR"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:47
+msgid "Enable DNS Cache Acceleration and anti ISP DNS pollution"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:32
+msgid "Enable Fullcone NAT"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:26
+msgid "Enable Hardware NAT (depends on hw capability like MTK 762x)"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:21
+msgid ""
+"Enable software flow offloading for connections. (decrease cpu load / "
+"increase routing throughput)"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:39
+msgid "Filter AAAA"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:29
+msgid "Fullcone NAT"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:23
+msgid "HWNAT"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:62
+msgid "Muitiple DNS server can saperate with ','"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:68
+msgid "Muitiple IPV6 DNS server can saperate with ','"
+msgstr ""
+
+#: luasrc/view/flow/status.htm:24
+#: luasrc/view/flow/status.htm:20 luasrc/view/flow/status.htm:21
+#: luasrc/view/flow/status.htm:22 luasrc/view/flow/status.htm:23
+msgid "NOT RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:6
+msgid "Open Web Interface"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:11
+msgid "Opensource Linux Flow Offload driver (Fast Path or HWNAT)"
+msgstr ""
+
+#: luasrc/view/flow/status.htm:24
+#: luasrc/view/flow/status.htm:20 luasrc/view/flow/status.htm:21
+#: luasrc/view/flow/status.htm:22 luasrc/view/flow/status.htm:23
+msgid "RUNNING"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:49
+msgid "Resolve Dns Mode"
+msgstr ""
+
+#: luasrc/view/flow/status.htm:2
+msgid "Running Status"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:10
+msgid "Turbo ACC Acceleration Settings"
+msgstr ""
+
+#: luasrc/controller/flowoffload.lua:8
+msgid "Turbo ACC Center"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:60
+msgid "Upsteam DNS Server"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:66
+msgid "Upsteam IPV6 DNS Server"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:55
+msgid "Use AdGuardHome query and cache"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:50
+msgid "Use Pdnsd query and cache"
+msgstr ""
+
+#: luasrc/model/cbi/flowoffload.lua:52
+msgid "Use dnsforwarder query and cache"
+msgstr ""

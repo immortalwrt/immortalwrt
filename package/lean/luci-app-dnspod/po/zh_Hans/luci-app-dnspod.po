@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:21
+msgid "DNSPOD Token"
+msgstr ""
+
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:22
+msgid "主域名"
+msgstr ""
+
+#: files/root/usr/lib/lua/luci/controller/dnspod.lua:4
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:15
+msgid "动态DNSPOD"
+msgstr ""
+
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:25
+msgid "外网ip获取命令"
+msgstr ""
+
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:23
+msgid "子域名"
+msgstr ""
+
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:24
+msgid "更新周期(s)"
+msgstr ""
+
+#: files/root/usr/lib/lua/luci/model/cbi/dnspod.lua:15
+msgid "配置动态DNSPOD"
+msgstr ""

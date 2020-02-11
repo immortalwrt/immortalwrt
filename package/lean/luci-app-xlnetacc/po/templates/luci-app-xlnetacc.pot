@@ -1,0 +1,122 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: files/luci/view/xlnetacc/logview.htm:25
+#: files/luci/view/xlnetacc/status.htm:6
+#: files/luci/view/xlnetacc/status.htm:4 files/luci/view/xlnetacc/status.htm:5
+msgid "Collecting data..."
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:5
+msgid "DownLink Upgrade Status"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:14
+msgid "Enable DownLink Upgrade"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:18
+msgid "Enable Logging"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:16
+msgid "Enable UpLink Upgrade"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:21
+msgid "Enable verbose logging"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:11
+msgid "Enabled"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:44
+msgid "Error get log data."
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:7
+msgid "General Settings"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:25
+msgid "Loading..."
+msgstr ""
+
+#: files/luci/controller/xlnetacc.lua:15
+msgid "Log"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:22
+msgid "Log Data"
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:16
+msgid "NOT RUNNING"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:39
+#: files/luci/view/xlnetacc/logview.htm:41
+msgid "No log data."
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:17
+#: files/luci/view/xlnetacc/status.htm:18
+msgid "No upgrade information"
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:16
+msgid "RUNNING"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:26
+msgid "Refresh every 5 seconds."
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:2
+msgid "Running Status"
+msgstr ""
+
+#: files/luci/controller/xlnetacc.lua:12 files/luci/model/cbi/xlnetacc.lua:4
+msgid "Settings"
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:6
+msgid "UpLink Upgrade Status"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:24
+msgid "Upgrade interface"
+msgstr ""
+
+#: files/luci/controller/xlnetacc.lua:9 files/luci/view/xlnetacc/logview.htm:22
+#: files/luci/model/cbi/xlnetacc.lua:4
+msgid "XLNetAcc"
+msgstr ""
+
+#: files/luci/view/xlnetacc/status.htm:4
+msgid "XLNetAcc Running Status"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:31
+msgid "XLNetAcc account"
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:4
+msgid ""
+"XLNetAcc is a Thunder joint broadband operators launched a commitment to "
+"help users solve the low broadband, slow Internet access, poor Internet "
+"experience of professional-grade broadband upgrade software."
+msgstr ""
+
+#: files/luci/model/cbi/xlnetacc.lua:33
+msgid "XLNetAcc password"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:40
+msgid "log file:"
+msgstr ""
+
+#: files/luci/view/xlnetacc/logview.htm:38
+msgid "syslog:"
+msgstr ""

@@ -1,0 +1,58 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/model/cbi/autoreboot.lua:9
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:14
+msgid "Everyday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:19
+msgid "Friday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:24
+msgid "Hour"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:28
+msgid "Minute"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:15
+msgid "Monday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:20
+msgid "Saturday"
+msgstr ""
+
+#: luasrc/controller/autoreboot.lua:3 luasrc/model/cbi/autoreboot.lua:3
+msgid "Scheduled Reboot"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:3
+msgid "Scheduled reboot Setting"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:21
+msgid "Sunday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:18
+msgid "Thursday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:16
+msgid "Tuesday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:17
+msgid "Wednesday"
+msgstr ""
+
+#: luasrc/model/cbi/autoreboot.lua:13
+msgid "Week Day"
+msgstr ""

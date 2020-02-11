@@ -1,0 +1,74 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: luasrc/view/cbi/other_upload.htm:2
+msgid "Choose local file:"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:34
+msgid "Couldn't open file:"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:63
+msgid "Create upload file error."
+msgstr ""
+
+#: luasrc/view/cbi/other_download.htm:4 luasrc/model/cbi/updownload.lua:14
+msgid "Download"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:17
+msgid "Download file"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:108
+msgid "File name"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:73
+msgid "File saved to"
+msgstr ""
+
+#: luasrc/controller/filetransfer.lua:11
+msgid "FileTransfer"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:130
+msgid "Install"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:110
+msgid "Mode string"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:109
+msgid "Modify time"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:83
+msgid "No specify upload file."
+msgstr ""
+
+#: luasrc/view/cbi/other_download.htm:2
+msgid "Path on Route:"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:112
+msgid "Remove"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:111
+msgid "Size"
+msgstr ""
+
+#: luasrc/view/cbi/other_upload.htm:4 luasrc/model/cbi/updownload.lua:4
+msgid "Upload"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:103
+msgid "Upload file list"
+msgstr ""
+
+#: luasrc/model/cbi/updownload.lua:8
+msgid "Upload file to '/tmp/upload/'"
+msgstr ""
