@@ -29,7 +29,7 @@ PKG_NAME:=openwrt-syncthing
 PKG_VERSION:=v1.3.4
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=syncthing-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/syncthing/syncthing/releases/download/$(PKG_VERSION)
 PKG_HASH:=skip
 
@@ -58,7 +58,7 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME)-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION)/syncthing $(1)/usr/bin/syncthing
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/syncthing-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION)/syncthing $(1)/usr/bin/syncthing
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
