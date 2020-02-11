@@ -1,5 +1,5 @@
 # PROJECT OPENWRT
-## DON'T USE IT!!!
+## This is a experimental item, use it under ypur own risk.
 ## The Source Code of OpenWrt Modified by CTCGFW
 ### Welcome to my Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
 - - -
@@ -44,7 +44,7 @@ You'd better not use **root** to make it, or you may be not able to use.<br/>
 Default login address: 192.168.1.1, username is **root** and password is **password**.
 
 # Contributed
-### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt/blob/master/CONTRIBUTED.md).
+### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt-latest/blob/master/CONTRIBUTED.md).
 
 # License
 ### [GNU General Public License v3.0](https://github.com/project-openwrt/openwrt-latest/blob/master/LICENSE).
