@@ -35,7 +35,7 @@ Downloads\SavePath=${download_dir}
 [Preferences]
 Advanced\AutoBanUnknownPeer=true
 Bittorrent\AutoUpdateTrackers=true
-Bittorrent\CustomizeTrackersListUrl=https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_best.txt
+Bittorrent\CustomizeTrackersListUrl=https://trackerslist.com/all.txt
 General\Locale=zh
 IPFilter\Enabled=true
 IPFilter\File=$2/qBittorrent/ipfilter.dat
