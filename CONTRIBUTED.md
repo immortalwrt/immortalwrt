@@ -1,7 +1,7 @@
 # CONTRIBUTED
 ## The Source of Packages
 
-### Based on: [project-openwrt/openwrt](https://github.com/project-openwrt/openwrt).<br/>
+### Based on: [openwrt/openwrt](https://github.com/openwrt/openwrt).<br/>
 Package jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
