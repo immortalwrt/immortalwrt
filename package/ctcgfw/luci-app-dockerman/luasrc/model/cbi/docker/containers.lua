@@ -93,7 +93,7 @@ container_name = c_table:option(DummyValue, "_name", translate("Container Name")
 container_name.width="20%"
 container_name.template="docker/cbi/dummyvalue"
 container_name.href = function (self, section)
-  return luci.dispatcher.build_url("admin/docker/container/" .. urlencode(container_id:cfgvalue(section)))
+  return luci.dispatcher.build_url("admin/services/docker/container/" .. urlencode(container_id:cfgvalue(section)))
 end
 container_status = c_table:option(DummyValue, "_status", translate("Status"))
 container_status.width="15%"
@@ -106,7 +106,7 @@ container_image = c_table:option(DummyValue, "_image", translate("Image"))
 container_image.template="docker/cbi/dummyvalue"
 container_image.width="10%"
 -- container_image.href = function (self, section)
---   return luci.dispatcher.build_url("admin/docker/image/" .. urlencode(c_lists[section]._image_id))
+--   return luci.dispatcher.build_url("admin/services/docker/image/" .. urlencode(c_lists[section]._image_id))
 -- end
 container_command = c_table:option(DummyValue, "_command", translate("Command"))
 container_command.width="20%"
@@ -145,7 +145,7 @@ local start_stop_remove = function(m,cmd)
       end
     end
     if success then docker:clear_status() end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/containers"))
   end
 end
 
@@ -180,7 +180,7 @@ btnremove.inputtitle=translate("Remove")
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
 btnnew.write = function(self, section)
-  luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+  luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer"))
 end
 btnstart.write = function(self, section)
   start_stop_remove(m,"start")

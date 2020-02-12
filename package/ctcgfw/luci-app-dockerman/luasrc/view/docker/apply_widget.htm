@@ -94,7 +94,7 @@ function uci_confirm_docker() {
       // var delay = isNaN(duration) ? 0 : Math.max(1000 - duration, 0);
       var delay =1000
       window.setTimeout(function() {
-        xhr.get('<%=url("admin/docker/confirm")%>', null, call, uci_apply_timeout * 1000);
+        xhr.get('<%=url("admin/services/docker/confirm")%>', null, call, uci_apply_timeout * 1000);
       }, delay);
     };
 

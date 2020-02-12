@@ -116,20 +116,20 @@ local start_stop_remove = function(m, cmd)
   end
   if res and res.code >= 300 then
     docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id))
   else
     docker:clear_status()
     if cmd ~= "remove" and cmd ~= "upgrade" then
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id))
     else
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/containers"))
     end
   end
 end
 
 m=SimpleForm("docker", container_info.Name:sub(2), translate("Docker Container") )
 m.template = "docker/cbi/xsimpleform"
-m.redirect = luci.dispatcher.build_url("admin/docker/containers")
+m.redirect = luci.dispatcher.build_url("admin/services/docker/containers")
 -- m:append(Template("docker/container"))
 docker_status = m:section(SimpleSection)
 docker_status.template="docker/apply_widget"
@@ -190,7 +190,7 @@ btnstop.write = function(self, section)
   start_stop_remove(m,"stop")
 end
 btnduplicate.write = function(self, section)
-  luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer/duplicate/"..container_id))
+  luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer/duplicate/"..container_id))
 end
 
 tab_section = m:section(SimpleSection)
@@ -365,7 +365,7 @@ if action == "info" then
     else
       docker:clear_status()
     end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id.."/info"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id.."/info"))
   end
   
 -- info end
@@ -426,7 +426,7 @@ elseif action == "edit" then
       else
         docker:clear_status()
       end
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id.."/edit"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id.."/edit"))
     end
   end
 elseif action == "logs" then
