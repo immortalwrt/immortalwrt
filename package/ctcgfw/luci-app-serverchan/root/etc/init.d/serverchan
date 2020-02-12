@@ -4,7 +4,7 @@ STOP=10
 
 
 start() {
-flag=$(ps | grep "serverchan/serverchan" | grep -v "grep" | wc -l)
+flag=$(ps | grep "/usr/bin/serverchan/serverchan" | grep -v "grep" | wc -l)
 if [ $flag -eq 0 ] ;then
 /usr/bin/serverchan/serverchan &
 else
@@ -12,5 +12,5 @@ else
 fi
 }
 stop() {
-kill -9 `pgrep -f serverchan/serverchan`
+kill -9 `pgrep -f /usr/bin/serverchan/serverchan`
 }
