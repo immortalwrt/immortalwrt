@@ -782,6 +782,12 @@ msgstr "二进制文件：/usr/bin/kcptun-client"
 msgid "chacha20-poly1305"
 msgstr ""
 
+msgid "Plugin"
+msgstr "插件"
+
+msgid "Plugin Opts"
+msgstr "插件参数"
+
 #~ msgid "ShadowSocksR Client"
 #~ msgstr "ShadowSocksR 客户端"
 
