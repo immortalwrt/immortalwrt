@@ -63,9 +63,9 @@ if cmd_line and cmd_line:match("^docker.+") then
     elseif w:match("^%-+.+") and cursor <= 1 then
       --key=value
       local val
-      key, val = w:match("^%-%-(.-)=(.+)")
+      key, val = w:match("^%-+(.-)=(.+)")
       -- -dit
-      if not key then key = w:match("^%-%-(.+)") end
+      if not key then key = w:match("^%-+(.+)") end
 
       if not key then
         key = w:match("^%-(.+)")
@@ -79,7 +79,7 @@ if cmd_line and cmd_line:match("^docker.+") then
 
       if key == "v" or key == "volume" then
         key = "mount"
-      elseif key == "p" then
+      elseif key == "p" or key == "publish" then
         key = "port"
       elseif key == "e" then
         key = "env"
@@ -87,6 +87,8 @@ if cmd_line and cmd_line:match("^docker.+") then
         key = "dns"
       elseif key == "net" then
         key = "network"
+      elseif key == "h" or key == "hostname" then
+        key = "hostname"
       elseif key == "cpu-shares" then
         key = "cpushares"
       elseif key == "m" then
@@ -96,6 +98,8 @@ if cmd_line and cmd_line:match("^docker.+") then
       elseif key == "privileged" then
         default_config["privileged"] = true
         key = nil
+      elseif key == "cap-add" then
+        default_config["privileged"] = true
       end
       --key=value
       if val then
@@ -159,6 +163,7 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
   if next(create_body) ~= nil then
     default_config.name = nil
     default_config.image = create_body.Image
+    default_config.hostname = create_body.Hostname
     default_config.tty = create_body.Tty and true or false
     default_config.interactive = create_body.OpenStdin and true or false
     default_config.privileged = create_body.HostConfig.Privileged and true or false
@@ -320,6 +325,11 @@ d.disabled = 0
 d.enabled = 1
 d.default = default_config.advance or 0
 
+d = s:option(Value, "hostname", translate("Host Name"))
+d.rmempty = true
+d.default = default_config.hostname or nil
+d:depends("advance", 1)
+
 d = s:option(DynamicList, "device", translate("Device(--device)"), translate("Add host device to the container"))
 d.template = "docker/cbi/xdynlist"
 d.placeholder = "/dev/sda:/dev/xvdc:rwm"
@@ -384,6 +394,7 @@ m.handle = function(self, state, data)
   if state ~= FORM_VALID then return end
   local tmp
   local name = data.name or ("luci_" .. os.date("%Y%m%d%H%M%S"))
+  local hostname = data.hostname
   local tty = type(data.tty) == "number" and (data.tty == 1 and true or false) or default_config.tty or false
   local interactive = type(data.interactive) == "number" and (data.interactive == 1 and true or false) or default_config.interactive or false
   local image = data.image
@@ -476,7 +487,7 @@ m.handle = function(self, state, data)
     end
   end
 
-  create_body.Hostname = network ~= "host" and name or nil
+  create_body.Hostname = network ~= "host" and (hostname or name) or nil
   create_body.Tty = tty and true or false
   create_body.OpenStdin = interactive and true or false
   create_body.User = user
@@ -531,7 +542,7 @@ m.handle = function(self, state, data)
     docker:append_status("Images: " .. "pulling" .. " " .. image .. "...")
     local x_auth = nixio.bin.b64encode(json_stringify({serveraddress= server}))
     local res = dk.images:create(nil, {fromImage=image,_header={["X-Registry-Auth"]=x_auth}})
-    if res and res.code < 300 then
+    if res and res.code == 200 then
       docker:append_status("done<br>")
     else
       docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "<br>")
