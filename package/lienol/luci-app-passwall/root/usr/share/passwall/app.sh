@@ -817,12 +817,12 @@ add_dnsmasq() {
 			local china_dns2=$(echo $UP_CHINA_DNS | awk -F "," '{print $2}')
 			[ -n "$china_dns1" ] && server="server=$china_dns1"
 			[ -n "$china_dns2" ] && server="${server}\n${server_2}"
-			server="${server}\nno-resolv"
 		}
 		cat <<-EOF > /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 			$(echo -e $server)
 			all-servers
 			no-poll
+			no-resolv
 		EOF
 	fi
 	
