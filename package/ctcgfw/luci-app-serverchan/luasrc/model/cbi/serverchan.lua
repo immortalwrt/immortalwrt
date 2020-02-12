@@ -36,7 +36,7 @@ device_name.description = translate("在推送信息标题中会标识本设备�
 
 sleeptime=s:taboption("tab_basic", Value,"sleeptime",translate('检测时间间隔'))
 sleeptime.default = "60"
-sleeptime.description = translate("越短的时间灵敏度越高，但会占用更多的系统资源")
+sleeptime.description = translate("越短的时间时间响应越及时，但会占用更多的系统资源")
 
 debuglevel=s:taboption("tab_basic", ListValue,"debuglevel",translate("日志调试等级"))
 debuglevel:value("",translate("关闭"))
@@ -143,7 +143,7 @@ a= s:taboption("tab_basic2", Value, "temperature", "温度报警阈值")
 a.rmempty = true 
 a.placeholder = "80"
 a:depends({temperature_enable="1"})
-a.description = translate("<br/>设备报警只会在连续五次超过阈值的时候才会推送<br/>而且一个小时内不会再提醒第二次")
+a.description = translate("<br/>设备报警只会在连续五分钟超过设定值时才会推送<br/>而且一个小时内不会再提醒第二次")
 
 e=s:taboption("tab_basic3", ListValue,"send_mode",translate("定时任务设定"))
 e.default="disable"
@@ -154,18 +154,28 @@ e:value("2",translate("间隔发送"))
 e=s:taboption("tab_basic3", ListValue,"regular_time",translate("发送时间"))
 for t=0,23 do
 e:value(t,translate("每天"..t.."点"))
-end
-e.default=12
+end	
+e.default=8	
 e.datatype=uinteger
 e:depends("send_mode","1")
 
-e=s:taboption("tab_basic3", ListValue,"regular_time_2",translate("第一次发送时间"))
+e=s:taboption("tab_basic3", ListValue,"regular_time_2",translate("发送时间"))
+e:value("",translate("关闭"))
 for t=0,23 do
 e:value(t,translate("每天"..t.."点"))
-end
-e.default=8
+end	
+e.default="关闭"
 e.datatype=uinteger
-e:depends("send_mode","2")
+e:depends("send_mode","1")
+
+e=s:taboption("tab_basic3", ListValue,"regular_time_3",translate("发送时间"))
+e:value("",translate("关闭"))
+for t=0,23 do
+e:value(t,translate("每天"..t.."点"))
+end	
+e.default="关闭"
+e.datatype=uinteger
+e:depends("send_mode","1")
 
 e=s:taboption("tab_basic3", ListValue,"interval_time",translate("发送间隔"))
 for t=1,23 do
@@ -174,6 +184,7 @@ end
 e.default=6
 e.datatype=uinteger
 e:depends("send_mode","2")
+e.description = translate("<br/>从 00:00 开始，每 * 小时发送一次")
 
 title= s:taboption("tab_basic3", Value, "send_title", translate("微信推送标题"))
 title:depends("send_mode","1")
@@ -214,7 +225,7 @@ up_timeout.default = "2"
 
 down_timeout=s:taboption("tab_basic4", Value,"down_timeout",translate('设备离线检测超时'))
 down_timeout.default = "10"
-down_timeout.description = translate("如果遇到设备频繁离线，可以把超时时间设置长一些")
+down_timeout.description = translate("如果遇到设备频繁离线，可以把超时时间设置长一些<br/>因为会重试两次，所以实际时间会略大于设定值的 2 倍")
 
 sheep=s:taboption("tab_basic4", ListValue,"serverchan_sheep",translate("免打扰时段设置"),translate("在指定整点时间段内，暂停推送消息<br/>免打扰时间中，定时推送也会被阻止。"))
 sheep:value("0",translate("关闭"))

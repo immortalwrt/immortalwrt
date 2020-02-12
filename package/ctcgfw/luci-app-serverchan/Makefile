@@ -9,7 +9,7 @@ LUCI_TITLE:=LuCI support for serverchan
 LUCI_DEPENDS:=+iputils-arping +curl 
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-serverchan
-PKG_VERSION:=1.30
+PKG_VERSION:=1.33
 PKG_RELEASE:=42
 
 include $(TOPDIR)/feeds/luci/luci.mk
