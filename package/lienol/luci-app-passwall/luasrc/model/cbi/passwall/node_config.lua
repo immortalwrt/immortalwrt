@@ -248,6 +248,7 @@ v2ray_stream_security:depends("type", "V2ray_balancing")
 -- [[ TLS部分 ]] --
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
 tls_serverName:depends("v2ray_stream_security", "tls")
+tls_serverName:depends("trojan_verify_cert", "1")
 
 tls_allowInsecure = s:option(Flag, "tls_allowInsecure",
                              translate("allowInsecure"), translate(
