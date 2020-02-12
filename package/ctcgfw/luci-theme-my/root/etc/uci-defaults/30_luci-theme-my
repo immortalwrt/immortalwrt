@@ -1,6 +1,0 @@
-#!/bin/sh
-uci batch <<-EOF
-	set luci.themes.AdvancedTomatomy=/luci-static/my
-	commit luci
-EOF
-exit 0
