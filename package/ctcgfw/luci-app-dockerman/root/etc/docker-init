@@ -23,4 +23,3 @@ w
 fi
 
 echo "y" | mkfs.ext4 /dev/sda$partid
-
