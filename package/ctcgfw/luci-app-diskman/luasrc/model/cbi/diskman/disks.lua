@@ -166,6 +166,11 @@ v_device.render = function(self, section, scope)
   if mount_point[section].device == 0 then
     self.template = "cbi/value"
     self.forcewrite = true
+    for dev, info in pairs(disks) do
+      for i, v in ipairs(info.partitions) do
+        self:value("/dev/".. v.name, "/dev/".. v.name .. " ".. v.size_formated)
+      end
+    end
     Value.render(self, section, scope)
   else
     self.template = "cbi/dvalue"
