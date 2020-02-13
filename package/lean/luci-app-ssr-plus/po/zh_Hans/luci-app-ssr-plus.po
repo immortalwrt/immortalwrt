@@ -788,6 +788,12 @@ msgstr "插件"
 msgid "Plugin Opts"
 msgstr "插件参数"
 
+msgid "SOCKS Proxy"
+msgstr "SOCKS(4/5)代理"
+
+msgid "Enable SOCKS Proxy"
+msgstr "启用 SOCKS 代理"
+
 #~ msgid "ShadowSocksR Client"
 #~ msgstr "ShadowSocksR 客户端"
 
