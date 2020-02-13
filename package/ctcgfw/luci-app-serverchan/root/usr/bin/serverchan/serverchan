@@ -216,12 +216,13 @@ function usage(){
 
 function usage_ip(){
 	if [ "$1" ] ;then
-		if [ -f "${dir}usage.db" ] ; then ip=`cat /tmp/serverchan/usage.db | grep -w $1`;else return;fi
+		if [ -f ${dir}usage.db ] ; then ip=`cat ${dir}usage.db | grep -w $1`;else return;fi
 		if [ ! -z "$ip" ] ; then ip=`echo $ip | sed 's/,/ /g'`;fi
 		if [ ! -z "$ip" ] ; then ip_total=`echo $ip | awk  '{print $6}'`;fi
 		if [ ! -z "$ip_total" ] ; then echo `bytes_for_humans $ip_total`;fi
 	fi
 }
+
 # 流量数据剔除ip
 function usage_down(){
 	if [ ! -f "${dir}usage.db" ] ; then return;fi
@@ -509,7 +510,7 @@ function soc_temp(){
 
 # 发送定时数据
 function send(){
-	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  【定时数据】创建定时任务" >> ${logfile};fi
+	echo "`date "+%Y-%m-%d %H:%M:%S"`  【定时数据】创建定时任务" >> ${logfile}
 	uci set serverchan.serverchan.send_enable=3
 	uci commit serverchan
 	unset title
@@ -576,7 +577,7 @@ function send(){
 				time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
 				time1=$(($time_down-$time_up))
 				time1=`time_for_humans $time1`
-				send_content=${send_content}"%0D%0A%0D%0A""     `cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u`  $ip%0D%0A%0D%0A""     在线 $time1"
+				send_content=${send_content}"%0D%0A%0D%0A""     `cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u`  $ip%0D%0A%0D%0A""     $ip_total在线 $time1"
 			done
 		fi
 	if [ ! -z "$device_name" ] ; then send_title="【$device_name】$send_title" ;fi
