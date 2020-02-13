@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Last-Translator: ElonH <elonhhuang@gmail.com>\n"
 "Language-Team: none\n"
-"Language: zh_CN\n"
+"Language: zh-Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: \n"
@@ -55,7 +55,7 @@ msgstr "别名（可选）"
 msgid "All Ports"
 msgstr "所有端口（默认）"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:184
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:193
 msgid "AlterId"
 msgstr ""
 
@@ -83,8 +83,8 @@ msgstr "自动更新服务器订阅、GFW列表和 CHN路由表"
 msgid "Baidu Connectivity"
 msgstr "【百度】连通性检查"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:273
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:284
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:282
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:293
 msgid "BitTorrent (uTP)"
 msgstr ""
 
@@ -96,8 +96,8 @@ msgstr "强制走代理的域名"
 msgid "Bypass Domain List"
 msgstr "不走代理的域名"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:215
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:280
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:224
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:289
 msgid "Camouflage Type"
 msgstr ""
 
@@ -137,13 +137,13 @@ msgstr ""
 
 #: luasrc/view/shadowsocksr/status.htm:20
 msgid "Collecting data..."
-msgstr ""
+msgstr "获取数据中..."
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:355
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:363
 msgid "Concurrency"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:326
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:335
 msgid "Congestion"
 msgstr ""
 
@@ -173,7 +173,7 @@ msgstr "删除所有服务器节点"
 msgid "Disable"
 msgstr "停用"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:308
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:317
 msgid "Downlink Capacity"
 msgstr ""
 
@@ -188,7 +188,7 @@ msgid "Enable"
 msgstr "启用"
 
 #: luasrc/model/cbi/shadowsocksr/advanced.lua:27
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:367
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:376
 msgid "Enable Auto Switch"
 msgstr "启用自动切换"
 
@@ -206,7 +206,7 @@ msgstr "启用广告屏蔽"
 
 #: luasrc/model/cbi/shadowsocksr/client-config.lua:157
 #: luasrc/model/cbi/shadowsocksr/client-config.lua:162
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:197
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:206
 #: luasrc/model/cbi/shadowsocksr/server-config.lua:77
 #: luasrc/model/cbi/shadowsocksr/server.lua:86
 msgid "Encrypt Method"
@@ -264,29 +264,29 @@ msgstr ""
 msgid "Google Public DNS (8.8.8.8)"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:222
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:231
 msgid "HTTP Host"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:227
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:236
 msgid "HTTP Path"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:246
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:255
 msgid "HTTP/2 Host"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:251
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:260
 msgid "HTTP/2 Path"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:392
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:401
 msgid "Haven't a Kcptun executable file"
 msgstr ""
 "不存在Kcptun可执行文件，请下载Kcptun可执行文件并改名放入/usr/bin/kcptun-"
 "client"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:268
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:277
 msgid "Header"
 msgstr ""
 
@@ -303,19 +303,19 @@ msgstr "黑白名单"
 msgid "KcpTun"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:378
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:387
 msgid "KcpTun Enable"
 msgstr "KcpTun 启用"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:408
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:417
 msgid "KcpTun Param"
 msgstr "KcpTun 参数"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:403
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:412
 msgid "KcpTun Password"
 msgstr "KcpTun 密码"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:384
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:393
 msgid "KcpTun Port"
 msgstr "KcpTun 端口"
 
@@ -360,7 +360,7 @@ msgid "Level 3 Public DNS (4.2.2.4)"
 msgstr ""
 
 #: luasrc/model/cbi/shadowsocksr/advanced.lua:63
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:371
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:380
 msgid "Local Port"
 msgstr "本地端口"
 
@@ -368,7 +368,7 @@ msgstr "本地端口"
 msgid "Log"
 msgstr "日志"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:290
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:299
 msgid "MTU"
 msgstr ""
 
@@ -380,7 +380,7 @@ msgstr "主服务器"
 msgid "Multi Threads Option"
 msgstr "多线程并发转发"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:349
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:358
 msgid "Mux"
 msgstr ""
 
@@ -398,10 +398,10 @@ msgstr "未检查"
 msgid "No new data!"
 msgstr "你已经是最新数据，无需更新！"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:218
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:260
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:271
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:282
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:227
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:269
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:280
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:291
 #: luasrc/model/cbi/shadowsocksr/servers.lua:95
 msgid "None"
 msgstr ""
@@ -415,7 +415,7 @@ msgstr ""
 msgid "Not Running"
 msgstr "未运行"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:394
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:403
 msgid "Not a Kcptun executable file"
 msgstr ""
 "Kcptun可执行文件格式不正确，请确认是否正确下载了路由器对应的可执行文件"
@@ -424,13 +424,13 @@ msgstr ""
 msgid "Not exist"
 msgstr "未安装可执行文件"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:175
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:184
 #: luasrc/model/cbi/shadowsocksr/server-config.lua:86
 #: luasrc/model/cbi/shadowsocksr/server.lua:97
 msgid "Obfs"
 msgstr "混淆插件"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:180
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:189
 #: luasrc/model/cbi/shadowsocksr/server-config.lua:90
 msgid "Obfs param(optional)"
 msgstr "混淆参数（可选）"
@@ -476,13 +476,13 @@ msgstr "Ping延迟"
 msgid "Please refer to the following writing"
 msgstr "每行一个域名，无需写前面的 HTTP(S):// ，提交后即时生效"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:167
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:176
 #: luasrc/model/cbi/shadowsocksr/server-config.lua:81
 #: luasrc/model/cbi/shadowsocksr/server.lua:92
 msgid "Protocol"
 msgstr "传输协议"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:172
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:181
 msgid "Protocol param(optional)"
 msgstr "传输协议参数（可选）"
 
@@ -490,11 +490,11 @@ msgstr "传输协议参数（可选）"
 msgid "Proxy Ports"
 msgstr "需要代理的端口"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:264
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:273
 msgid "QUIC Key"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:257
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:266
 msgid "QUIC Security"
 msgstr ""
 
@@ -502,7 +502,7 @@ msgstr ""
 msgid "RUNNING"
 msgstr "运行中"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:314
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:323
 msgid "Read Buffer Size"
 msgstr "读取缓存大小"
 
@@ -641,20 +641,20 @@ msgstr "SS/SSR/V2RAY订阅URL地址"
 msgid "Switch check cycly(second)"
 msgstr "自动切换检查周期（秒）"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:361
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:369
 #: luasrc/model/cbi/shadowsocksr/server-config.lua:92
 msgid "TCP Fast Open"
 msgstr "TCP快速打开"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:337
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:346
 msgid "TLS"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:343
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:352
 msgid "TLS Host"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:296
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:305
 msgid "TTI"
 msgstr ""
 
@@ -670,7 +670,7 @@ msgstr "通过路由器自身代理更新订阅"
 msgid "Total Records:"
 msgstr "新的总纪录数："
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:203
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:212
 msgid "Transport"
 msgstr ""
 
@@ -700,7 +700,7 @@ msgstr "更新所有订阅服务器节点"
 msgid "Update time (every day)"
 msgstr "更新时间 (每天)"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:302
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:311
 msgid "Uplink Capacity"
 msgstr ""
 
@@ -724,12 +724,12 @@ msgstr "输入不正确的参数组合可能会导致服务无法启动"
 msgid "V2Ray"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:272
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:283
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:281
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:292
 msgid "VideoCall (SRTP)"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:191
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:200
 msgid "VmessId (UUID)"
 msgstr ""
 
@@ -745,20 +745,20 @@ msgstr "WAN IP访问控制"
 msgid "WAN White List IP"
 msgstr "不走代理的WAN IP"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:234
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:243
 msgid "WebSocket Host"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:239
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:248
 msgid "WebSocket Path"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:274
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:285
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:283
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:294
 msgid "WechatVideo"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:320
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:329
 msgid "Write Buffer Size"
 msgstr "写入缓存大小"
 
@@ -766,27 +766,27 @@ msgstr "写入缓存大小"
 msgid "adblock settings"
 msgstr "广告屏蔽设置"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:261
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:270
 msgid "aes-128-gcm"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:331
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:340
 msgid "allowInsecure"
 msgstr ""
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:378
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:387
 msgid "bin:/usr/bin/kcptun-client"
 msgstr "二进制文件：/usr/bin/kcptun-client"
 
-#: luasrc/model/cbi/shadowsocksr/client-config.lua:262
+#: luasrc/model/cbi/shadowsocksr/client-config.lua:271
 msgid "chacha20-poly1305"
 msgstr ""
 
-msgid "Plugin"
-msgstr "插件"
+#~ msgid "Plugin"
+#~ msgstr "插件"
 
-msgid "Plugin Opts"
-msgstr "插件参数"
+#~ msgid "Plugin Opts"
+#~ msgstr "插件参数"
 
 #~ msgid "ShadowSocksR Client"
 #~ msgstr "ShadowSocksR 客户端"
