@@ -22,6 +22,8 @@ config global_delay
 
 config global_forwarding
 	option process '1'
+	option tcp_no_redir_ports 'disable'
+	option udp_no_redir_ports 'disable'
 	option tcp_redir_ports '1:65535'
 	option udp_redir_ports '1:65535'
 	option socks5_proxy_port '1081'

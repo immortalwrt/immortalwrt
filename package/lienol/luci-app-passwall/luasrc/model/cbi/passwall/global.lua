@@ -186,26 +186,25 @@ o.rmempty = false
 
 ---- Default Proxy Mode
 o = s:option(ListValue, "proxy_mode",
-             translate("Default") .. translate("Proxy Mode"), translate(
-                 "If using GFW mode is not available, try clearing the native cache."))
+             translate("Default") .. translate("Proxy Mode"),
+             translate("If not available, try clearing the cache."))
 o.default = "chnroute"
 o.rmempty = false
 o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
 o:value("chnroute", translate("China WhiteList"))
---o:value("gamemode", translate("Game Mode"))
+-- o:value("gamemode", translate("Game Mode"))
 o:value("returnhome", translate("Return Home"))
 
 ---- Localhost Proxy Mode
 o = s:option(ListValue, "localhost_proxy_mode",
              translate("Localhost") .. translate("Proxy Mode"), translate(
-                 "The server client can also use this rule to scientifically surf the Internet.<br /> Global and continental whitelist are not recommended for non-special cases!"))
+                 "The server client can also use this rule to scientifically surf the Internet."))
 o:value("default", translate("Default"))
-o:value("global",
-        translate("Global Proxy") .. "（" .. translate("Danger") .. "）")
 o:value("gfwlist", translate("GFW List"))
 o:value("chnroute", translate("China WhiteList"))
+o:value("global", translate("Global Proxy"))
 o.default = "default"
 o.rmempty = false
 

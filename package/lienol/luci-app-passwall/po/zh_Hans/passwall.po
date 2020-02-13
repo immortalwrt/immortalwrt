@@ -166,8 +166,8 @@ msgstr "ChinaDNS-NG可信DNS"
 msgid "You can use other resolving DNS services as trusted DNS, Example: dns2socks, dns-forwarder... 127.0.0.1#5353<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
 msgstr "你可以使用其他解决污染DNS服务作为可信DNS，例：dns2socks，dns-forwarder等等。127.0.0.1#5353<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
 
-msgid "The server client can also use this rule to scientifically surf the Internet.<br /> Global and continental whitelist are not recommended for non-special cases!"
-msgstr "本机服务器的客户端也可以使用这个代理模式上网。<br />非特殊情况不推荐使用全局和大陆白名单！"
+msgid "The server client can also use this rule to scientifically surf the Internet."
+msgstr "本机服务器的客户端也可以使用这个代理模式上网。"
 
 msgid "Tips"
 msgstr "小提示"
@@ -226,8 +226,8 @@ msgstr "单进程"
 msgid "Proxy Mode"
 msgstr "代理模式"
 
-msgid "If using GFW mode is not available, try clearing the native cache."
-msgstr "如果使用GFW模式无法使用，请尝试清除本机缓存。"
+msgid "If not available, try clearing the cache."
+msgstr "如果无法使用，请尝试清除缓存。"
 
 msgid "No Proxy"
 msgstr "不代理"
@@ -381,6 +381,15 @@ msgstr "自动重启时间"
 
 msgid "Forwarding Settings"
 msgstr "转发配置"
+
+msgid "TCP No Redir Ports"
+msgstr "TCP不转发端口"
+
+msgid "UDP No Redir Ports"
+msgstr "UDP不转发端口"
+
+msgid "Fill in the ports you don't want to be forwarded by the agent, with the highest priority."
+msgstr "填写你不希望被代理转发的端口，优先级最高。"
 
 msgid "TCP Redir Ports"
 msgstr "TCP转发端口"

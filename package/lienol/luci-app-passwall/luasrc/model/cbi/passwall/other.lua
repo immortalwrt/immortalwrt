@@ -54,10 +54,25 @@ s = m:section(TypedSection, "global_forwarding",
 s.anonymous = true
 s.addremove = false
 
+---- TCP No Redir Ports
+o = s:option(Value, "tcp_no_redir_ports", translate("TCP No Redir Ports"),
+             translate(
+                 "Fill in the ports you don't want to be forwarded by the agent, with the highest priority."))
+o.default = "disable"
+o:value("disable", translate("No patterns are used"))
+o:value("1:65535", translate("All"))
+
+---- UDP No Redir Ports
+o = s:option(Value, "udp_no_redir_ports", translate("UDP No Redir Ports"),
+             translate(
+                 "Fill in the ports you don't want to be forwarded by the agent, with the highest priority."))
+o.default = "disable"
+o:value("disable", translate("No patterns are used"))
+o:value("1:65535", translate("All"))
+
 ---- TCP Redir Ports
 o = s:option(Value, "tcp_redir_ports", translate("TCP Redir Ports"))
 o.default = "80,443"
-o:value("disable", translate("No Proxy"))
 o:value("1:65535", translate("All"))
 o:value("80,443", "80,443")
 o:value("80:", "80 " .. translate("or more"))
@@ -66,7 +81,6 @@ o:value(":443", "443 " .. translate("or less"))
 ---- UDP Redir Ports
 o = s:option(Value, "udp_redir_ports", translate("UDP Redir Ports"))
 o.default = "1:65535"
-o:value("disable", translate("No Proxy"))
 o:value("1:65535", translate("All"))
 o:value("53", "53")
 
