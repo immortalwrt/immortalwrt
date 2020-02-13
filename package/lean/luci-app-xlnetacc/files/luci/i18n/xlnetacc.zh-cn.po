@@ -1,115 +1,115 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
+"Project-Id-Version: \n"
+"Last-Translator: ElonH <elonhhuang@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh-Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"X-Generator: Poedit 2.0.6\n"
 
-#: files/luci/view/xlnetacc/logview.htm:25
-#: files/luci/view/xlnetacc/status.htm:6 files/luci/view/xlnetacc/status.htm:4
-#: files/luci/view/xlnetacc/status.htm:5
+#: luasrc/view/xlnetacc/status.htm:4 luasrc/view/xlnetacc/status.htm:5
+#: luasrc/view/xlnetacc/status.htm:6 luasrc/view/xlnetacc/logview.htm:25
 msgid "Collecting data..."
-msgstr ""
+msgstr "获取数据中..."
 
-#: files/luci/view/xlnetacc/status.htm:5
+#: luasrc/view/xlnetacc/status.htm:5
 msgid "DownLink Upgrade Status"
 msgstr "下行提速状态"
 
-#: files/luci/model/cbi/xlnetacc.lua:14
+#: luasrc/model/cbi/xlnetacc.lua:14
 msgid "Enable DownLink Upgrade"
 msgstr "开启下行提速"
 
-#: files/luci/model/cbi/xlnetacc.lua:18
+#: luasrc/model/cbi/xlnetacc.lua:18
 msgid "Enable Logging"
 msgstr "启用日志记录"
 
-#: files/luci/model/cbi/xlnetacc.lua:16
+#: luasrc/model/cbi/xlnetacc.lua:16
 msgid "Enable UpLink Upgrade"
 msgstr "开启上行提速"
 
-#: files/luci/model/cbi/xlnetacc.lua:21
+#: luasrc/model/cbi/xlnetacc.lua:21
 msgid "Enable verbose logging"
 msgstr "启用详细日志"
 
-#: files/luci/model/cbi/xlnetacc.lua:11
+#: luasrc/model/cbi/xlnetacc.lua:11
 msgid "Enabled"
 msgstr "启用"
 
-#: files/luci/view/xlnetacc/logview.htm:44
+#: luasrc/view/xlnetacc/logview.htm:44
 msgid "Error get log data."
 msgstr "获取日志数据失败。"
 
-#: files/luci/model/cbi/xlnetacc.lua:7
+#: luasrc/model/cbi/xlnetacc.lua:7
 msgid "General Settings"
 msgstr "基本设置"
 
-#: files/luci/view/xlnetacc/logview.htm:25
+#: luasrc/view/xlnetacc/logview.htm:25
 msgid "Loading..."
 msgstr "正在加载..."
 
-#: files/luci/controller/xlnetacc.lua:15
+#: luasrc/controller/xlnetacc.lua:15
 msgid "Log"
 msgstr "日志"
 
-#: files/luci/view/xlnetacc/logview.htm:22
+#: luasrc/view/xlnetacc/logview.htm:22
 msgid "Log Data"
 msgstr "日志数据"
 
-#: files/luci/view/xlnetacc/status.htm:16
+#: luasrc/view/xlnetacc/status.htm:16
 msgid "NOT RUNNING"
 msgstr "未运行"
 
-#: files/luci/view/xlnetacc/logview.htm:39
-#: files/luci/view/xlnetacc/logview.htm:41
+#: luasrc/view/xlnetacc/logview.htm:39 luasrc/view/xlnetacc/logview.htm:41
 msgid "No log data."
 msgstr "无日志数据。"
 
-#: files/luci/view/xlnetacc/status.htm:17
-#: files/luci/view/xlnetacc/status.htm:18
+#: luasrc/view/xlnetacc/status.htm:17 luasrc/view/xlnetacc/status.htm:18
 msgid "No upgrade information"
 msgstr "暂无提速信息"
 
-#: files/luci/view/xlnetacc/status.htm:16
+#: luasrc/view/xlnetacc/status.htm:16
 msgid "RUNNING"
 msgstr "运行中"
 
-#: files/luci/view/xlnetacc/logview.htm:26
+#: luasrc/view/xlnetacc/logview.htm:26
 msgid "Refresh every 5 seconds."
 msgstr "每 5 秒刷新。"
 
-#: files/luci/view/xlnetacc/status.htm:2
+#: luasrc/view/xlnetacc/status.htm:2
 msgid "Running Status"
 msgstr "运行状态"
 
-#: files/luci/controller/xlnetacc.lua:12 files/luci/model/cbi/xlnetacc.lua:4
+#: luasrc/controller/xlnetacc.lua:12 luasrc/model/cbi/xlnetacc.lua:4
 msgid "Settings"
 msgstr "设置"
 
-#: files/luci/view/xlnetacc/status.htm:6
+#: luasrc/view/xlnetacc/status.htm:6
 msgid "UpLink Upgrade Status"
 msgstr "上行提速状态"
 
-#: files/luci/model/cbi/xlnetacc.lua:24
+#: luasrc/model/cbi/xlnetacc.lua:24
 msgid "Upgrade interface"
 msgstr "指定提速接口"
 
-#: files/luci/controller/xlnetacc.lua:9 files/luci/view/xlnetacc/logview.htm:22
-#: files/luci/model/cbi/xlnetacc.lua:4
+#: luasrc/controller/xlnetacc.lua:9 luasrc/view/xlnetacc/logview.htm:22
+#: luasrc/model/cbi/xlnetacc.lua:4
 msgid "XLNetAcc"
 msgstr "迅雷快鸟"
 
-#: files/luci/view/xlnetacc/status.htm:4
+#: luasrc/view/xlnetacc/status.htm:4
 msgid "XLNetAcc Running Status"
 msgstr "快鸟运行状态"
 
-#: files/luci/model/cbi/xlnetacc.lua:31
+#: luasrc/model/cbi/xlnetacc.lua:31
 msgid "XLNetAcc account"
 msgstr "迅雷快鸟帐号"
 
-#: files/luci/model/cbi/xlnetacc.lua:4
+#: luasrc/model/cbi/xlnetacc.lua:4
 msgid ""
 "XLNetAcc is a Thunder joint broadband operators launched a commitment to "
 "help users solve the low broadband, slow Internet access, poor Internet "
@@ -118,15 +118,15 @@ msgstr ""
 "迅雷快鸟是迅雷联合宽带运营商推出的一款致力于帮助用户解决宽带低、网速慢、上网"
 "体验差的专业级宽带加速软件。"
 
-#: files/luci/model/cbi/xlnetacc.lua:33
+#: luasrc/model/cbi/xlnetacc.lua:33
 msgid "XLNetAcc password"
 msgstr "迅雷快鸟密码"
 
-#: files/luci/view/xlnetacc/logview.htm:40
+#: luasrc/view/xlnetacc/logview.htm:40
 msgid "log file:"
 msgstr "日志文件："
 
-#: files/luci/view/xlnetacc/logview.htm:38
+#: luasrc/view/xlnetacc/logview.htm:38
 msgid "syslog:"
 msgstr "系统日志："
 
