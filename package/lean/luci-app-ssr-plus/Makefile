@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
-PKG_RELEASE:=140
+PKG_RELEASE:=142
 PKG_VERSION:=1
 
 define Package/$(PKG_NAME)/config
@@ -35,7 +35,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks
 	bool "Include Socks Sever"
-	default y if x86_64
+	default y
 endef
 
 LUCI_TITLE:=SS/SSR/V2Ray/Trojan LuCI interface

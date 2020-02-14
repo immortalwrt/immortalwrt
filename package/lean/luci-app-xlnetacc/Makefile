@@ -11,10 +11,6 @@ LUCI_DEPENDS:=+jshn +wget +openssl-util
 LUCI_PKGARCH:=all
 LUCI_DESCRIPTION=LuCI Support for XLNetAcc.
 
-define Package/$(PKG_NAME)/conffiles
-	/etc/config/xlnetacc
-endef
-
 include $(TOPDIR)/feeds/luci/luci.mk
 
-# call BuildPackage - OpenWrt buildroot signature
+$(eval $(call BuildPackage,$(PKG_NAME)))
