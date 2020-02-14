@@ -2,7 +2,7 @@
 ## The Source of Packages
 
 ### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
-Package jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
+Package ntlf9t: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/tracemouse/luci-theme-netgear).<br/>
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
