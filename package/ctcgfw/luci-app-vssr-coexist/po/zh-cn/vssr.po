@@ -11,6 +11,32 @@ msgstr "停用"
 msgid "Enable Servers"
 msgstr "开启服务"
 
+msgid "Open v2ray split-flow"
+msgstr "开启V2ray分流"
+
+msgid "When open v2ray split-flow,your main server must be a v2ray server"
+msgstr "当使用v2ray分流功能时 主服务器必须为V2ray"
+
+msgid "Youtube Proxy"
+msgstr "Youtube 代理"
+
+msgid "TaiWan Video Proxy"
+msgstr "台湾视频服务代理"
+
+msgid "Netflix Proxy"
+msgstr "Netflix 代理"
+
+msgid "Diseny+ Proxy"
+msgstr "Diseny+ 代理"
+
+msgid "Prime Video Proxy"
+msgstr "Prime Video 代理"
+
+msgid "adblock settings"
+msgstr "广告屏蔽设置"
+
+msgid "Enable adblock"
+msgstr "开启广告屏蔽"
 
 msgid "Socks user"
 msgstr "用户名"
@@ -37,14 +63,6 @@ msgstr "订阅，请不要刷新!"
 msgid "Check Try Count"
 msgstr "切换检查重试次数"
 
-msgid "Log"
-msgstr "日志"
-
-msgid "Bypass Domain List"
-msgstr "不走代理的域名"
-
-msgid "Black Domain List"
-msgstr "强制走代理的域名"
 
 msgid "Node List"
 msgstr "节点列表"

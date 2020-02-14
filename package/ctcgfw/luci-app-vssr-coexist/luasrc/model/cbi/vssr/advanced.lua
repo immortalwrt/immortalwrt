@@ -5,6 +5,7 @@ local server_table = {}
 local gfwmode=0
 local gfw_count=0
 local ip_count=0
+local ad_count = 0
 
 if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
 gfwmode=1		
@@ -84,7 +85,12 @@ o.default = 1080
 o.rmempty = false
 
 end
+-- [[ adblock ]]--
+s = m:section(TypedSection, "global", translate("adblock settings"))
+s.anonymous = true
 
+o = s:option(Flag, "adblock", translate("Enable adblock"))
+o.rmempty = false
 
 -- [[ 更新设置 ]]--
 
