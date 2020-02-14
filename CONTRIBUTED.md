@@ -2,7 +2,7 @@
 ## The Source of Packages
 
 ### Based on: [openwrt/openwrt](https://github.com/openwrt/openwrt).<br/>
-Package jsda: [jsda/packages2](https://github.com/jsda/packages2).<br/>
+Package ntlf9t: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
 luci-app-koolproxy source: [Baozisoftware/luci-app-koolproxy](https://github.com/Baozisoftware/luci-app-koolproxy).<br/>
