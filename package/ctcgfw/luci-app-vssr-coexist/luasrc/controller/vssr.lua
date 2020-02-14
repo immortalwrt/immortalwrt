@@ -6,7 +6,7 @@ function index()
     if not nixio.fs.access("/etc/config/vssr") then return end
 
     if nixio.fs.access("/usr/bin/ssr-redir") then
-	entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false
+	  entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false	
         entry({"admin", "vpn", "vssr"},
               alias("admin", "vpn", "vssr", "client"), _("vssr"), 10).dependent =
             true -- 首页

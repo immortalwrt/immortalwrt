@@ -28,11 +28,12 @@ luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://
 luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).<br/>
 Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-OpenWrt).<br/>
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
-luci-app-vssr source: [Leo-Jo-My/luci-app-vssr](https://github.com/Leo-Jo-My/luci-app-vssr).<br/>
+luci-app-vssr source: [Flowers-in-thorns/luci-app-vssr-coexist](https://github.com/Flowers-in-thorns/luci-app-vssr-coexist).<br/>
 luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).<br/>
 NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).<br/>
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
-qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).
+qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
+Package qca: [jollaman999/openwrt](https://github.com/jollaman999/openwrt).
 
 ## License
 ### Depending on their own License.
