@@ -479,7 +479,7 @@ if [ "$1" ] ;then
 						content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1%0D%0A%0D%0A""$ip_total>在线 $time1"
 					elif ( echo ${title} | grep -q "设备离线通知" ) ; then
 						title="设备离线通知"
-						content="%0D%0A%0D%0A"">$ip_name  $1 %0D%0A%0D%0A""$ip_total>在线 $time1"
+						content="%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1 %0D%0A%0D%0A""$ip_total>在线 $time1"
 					else
 						title="设备状态变化"
 						content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1%0D%0A%0D%0A""$ip_total>在线 $time1"
