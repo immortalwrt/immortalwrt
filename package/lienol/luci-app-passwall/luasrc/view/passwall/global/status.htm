@@ -365,23 +365,23 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 					},
 					function(x, rv) {
 						if (rv.status) {
-							var time = ((new Date()).getTime() - sendDate) / 1000;
+							var use_time = rv.use_time;
 							var speed = "";
-							if (time < 0.5) {
+							if (use_time < 1) {
 								s.className="green";
-								speed = "<%:very good%>";
-							} else if (time < 0.8) {
+								speed = "<%:Very Fast%>";
+							} else if (use_time < 2) {
 								s.className="green";
-								speed = "<%:good%>";
-							}  else if (time < 1.5) {
+								speed = "<%:Fast%>";
+							}  else if (use_time < 3) {
 								s.className="yellow";
-								speed = "<%:general%>";
-							} else if (time < 3) {
+								speed = "<%:General%>";
+							} else if (use_time < 4) {
 								s.className="red";
-								speed = "<%:bad%>";
-							} else if (time >= 3) {
+								speed = "<%:Slow%>";
+							} else if (use_time >= 4) {
 								s.className="red";
-								speed = "<%:very bad%>";
+								speed = "<%:Very Slow%>";
 							}
 							s.innerHTML = speed;
 						}
