@@ -529,10 +529,20 @@ function send(){
 	router_temp=`get_config router_temp`
 		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`soc_temp`%e2%84%83";fi
 	router_wan=`get_config router_wan`
-		send_wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
-		send_wanIPv6=$(ip addr show|grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2)
-		send_hostIP=$(curl -k -s -4 "http://members.3322.org/dyndns/getip")
-		send_hostIPv6=$(curl -k -s -6 v6.ip.zxinc.org/getip)
+	ipv4_interface=$(get_config ipv4_interface)
+	ipv6_interface=$(get_config ipv6_interface)
+	ipv4_URL=`get_config ipv4_URL`
+	if [ -z "$ipv4_URL" ] ; then ipv4_URL="members.3322.org/dyndns/getip";fi
+	ipv6_URL=`get_config ipv6_URL`
+	if [ -z "$ipv6_URL" ] ; then ipv6_URL="v6.ip.zxinc.org/getip";fi
+		if [ ! -z "$ipv4_interface" ] ; then send_wanIP=$(/sbin/ifconfig $ipv4_interface | awk '/inet addr/ {print $2}' | awk -F: '{print $2}'| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
+		if [ -z "$ipv4_interface" ] ; then send_wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
+		if [ ! -z "$ipv6_interface" ] ; then send_wanIPv6=$(ip addr show $ipv6_interface |grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
+		if [ -z "$ipv6_interface" ] ; then send_wanIPv6=$(ip addr show|grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
+		if [ ! -z "$ipv4_interface" ] ; then send_hostIP=$(curl -k -s -4 --interface $ipv4_interface $ipv4_URL);fi
+		if [ -z "$ipv4_interface" ] ; then send_hostIP=$(curl -k -s -4 $ipv4_URL);fi
+		if [ ! -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 --interface $ipv6_interface $ipv6_URL);fi
+		if [ -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 $ipv6_URL);fi
 		if [ ! -z "$router_wan" ] && [ "$router_wan" -eq "1" ] ; then
 			send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     ip：$send_wanIP"
 			send_content=${send_content}"%0D%0A%0D%0A""     外网 ip：$send_hostIP"
