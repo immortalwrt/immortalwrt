@@ -41,7 +41,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)/default
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=FRPC
+	TITLE:=FRP
 	URL:=https://github.com/fatedier/frp/releases
 endef
 
