@@ -30,6 +30,8 @@ define Package/default-settings/description
 endef
 
 define Build/Prepare
+	$(foreach po,$(wildcard ${CURDIR}/i18n/*.po), \
+				po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Configure
