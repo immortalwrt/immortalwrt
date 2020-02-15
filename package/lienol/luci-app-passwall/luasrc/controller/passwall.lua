@@ -9,7 +9,8 @@ local v2ray = require "luci.model.cbi.passwall.api.v2ray"
 function index()
     if not nixio.fs.access("/etc/config/passwall") then return end
     entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false
-    entry({"admin", "vpn", "passwall", "reset_config"}, call("reset_config")).leaf = true
+    entry({"admin", "vpn", "passwall", "reset_config"}, call("reset_config")).leaf =
+        true
     entry({"admin", "vpn", "passwall", "show"}, call("show_menu")).leaf = true
     entry({"admin", "vpn", "passwall", "hide"}, call("hide_menu")).leaf = true
     if nixio.fs.access("/etc/config/passwall") and
@@ -81,7 +82,8 @@ local function http_write_json(content)
 end
 
 function reset_config()
-    luci.sys.call('[ -f "/usr/share/passwall/config.default" ] && cp -f /usr/share/passwall/config.default /etc/config/passwall && /etc/init.d/passwall reload')
+    luci.sys.call(
+        '[ -f "/usr/share/passwall/config.default" ] && cp -f /usr/share/passwall/config.default /etc/config/passwall && /etc/init.d/passwall reload')
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall"))
 end
 
@@ -99,7 +101,7 @@ function link_add_node()
     local link = luci.http.formvalue("link")
     luci.sys.call('rm -f /tmp/links.conf && echo "' .. link ..
                       '" >> /tmp/links.conf')
-    luci.sys.call("/usr/share/passwall/subscription.sh add >/dev/null")
+    luci.sys.call("lua /usr/share/passwall/subscribe.lua add >> /var/log/passwall.log")
 end
 
 function get_log()
@@ -115,9 +117,9 @@ function status()
     local e = {}
     e.dns_mode_status = luci.sys.call("netstat -apn | grep 7913 >/dev/null") ==
                             0
-    e.haproxy_status = luci.sys.call(
-                           "ps -w | grep -v grep | grep -i 'haproxy -f /var/etc/" ..
-                               appname .. "/haproxy.cfg' >/dev/null") == 0
+    e.haproxy_status = luci.sys.call(string.format(
+                                         "ps -w | grep -v grep | grep '%s/bin/' | grep haproxy >/dev/null",
+                                         appname)) == 0
     e.kcptun_status = luci.sys.call(
                           "ps -w | grep -v grep | grep -i 'log /var/etc/" ..
                               appname .. "/kcptun' >/dev/null") == 0
@@ -132,7 +134,7 @@ function status()
                                     i, i))
         e["tcp_node%s_status" % i] = luci.sys.call(
                                          string.format(
-                                             "ps -w | grep -v grep | grep -i -E '%s/TCP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -T -l %s' >/dev/null",
+                                             "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'TCP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -T -l %s' >/dev/null",
                                              appname, i, listen_port,
                                              listen_port)) == 0
     end
@@ -147,7 +149,7 @@ function status()
                                     i, i))
         e["udp_node%s_status" % i] = luci.sys.call(
                                          string.format(
-                                             "ps -w | grep -v grep | grep -i -E '%s/UDP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -U -l %s' >/dev/null",
+                                             "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'UDP_%s|brook tproxy -l 0.0.0.0:%s|ipt2socks -U -l %s' >/dev/null",
                                              appname, i, listen_port,
                                              listen_port)) == 0
     end
@@ -162,7 +164,7 @@ function status()
                                     i, i))
         e["socks5_node%s_status" % i] = luci.sys.call(
                                             string.format(
-                                                "ps -w | grep -v grep | grep -i -E '%s/SOCKS5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
+                                                "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'SOCKS5_%s|brook client -l 0.0.0.0:%s' >/dev/null",
                                                 appname, i, listen_port)) == 0
     end
     luci.http.prepare_content("application/json")
@@ -170,7 +172,9 @@ function status()
 end
 
 function connect_status()
+    local os = require "os"
     local e = {}
+    local start_time = os.time()
     if luci.http.formvalue("type") == "google" then
         e.status = luci.sys.call(
                        "echo `/usr/share/passwall/test.sh test_url 'www.google.com'` | grep 200 >/dev/null") ==
@@ -180,6 +184,8 @@ function connect_status()
                        "echo `/usr/share/passwall/test.sh test_url 'www.baidu.com'` | grep 200 >/dev/null") ==
                        0
     end
+    local use_time = os.difftime(os.time(), start_time)
+    e.use_time = use_time
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end

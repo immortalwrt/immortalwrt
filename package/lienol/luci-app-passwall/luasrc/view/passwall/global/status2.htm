@@ -223,24 +223,24 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 				var s = document.getElementById('_' + type + '_status');
 				if(s) {
 					if(rv.status) {
-						var time = ((new Date()).getTime() - sendDate) / 1000;
+						var use_time = rv.use_time;
 						var speed = "";
 						var color="red";
-						if (time < 0.5) {
+						if (use_time < 1) {
 							color = "green";
-							speed = "<%:very good%>";
-						} else if (time < 0.8) {
+							speed = "<%:Very Fast%>";
+						} else if (use_time < 2) {
 							color = "green";
-							speed = "<%:good%>";
-						} else if (time < 1.5) {
+							speed = "<%:Fast%>";
+						} else if (use_time < 3) {
 							color = "#b9b90b";
-							speed = "<%:general%>";
-						} else if (time < 3) {
+							speed = "<%:General%>";
+						} else if (use_time < 4) {
 							color = "red";
-							speed = "<%:bad%>";
-						} else if (time >= 3) {
+							speed = "<%:Slow%>";
+						} else if (use_time >= 4) {
 							color = "red";
-							speed = "<%:very bad%>";
+							speed = "<%:Very Slow%>";
 						}
 						//s.setAttribute("color", color);
 						btn.setAttribute("style","background-color: " + color + " !important; border-color: " + color + " !important;");

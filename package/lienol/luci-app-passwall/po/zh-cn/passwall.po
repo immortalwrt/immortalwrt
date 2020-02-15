@@ -16,20 +16,20 @@ msgstr "连接正常"
 msgid "Problem detected!"
 msgstr "连接失败"
 
-msgid "very good"
-msgstr "非常好"
+msgid "Very Fast"
+msgstr "非常快"
 
-msgid "good"
-msgstr "好"
+msgid "Fast"
+msgstr "很快"
 
-msgid "general"
+msgid "General"
 msgstr "一般般"
 
-msgid "bad"
-msgstr "差"
+msgid "Slow"
+msgstr "很慢"
 
-msgid "very bad"
-msgstr "非常差"
+msgid "Very Slow"
+msgstr "非常慢"
 
 msgid "Touch Check"
 msgstr "点我检测"

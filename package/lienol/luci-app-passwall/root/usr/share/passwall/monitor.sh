@@ -2,6 +2,7 @@
 
 CONFIG=passwall
 CONFIG_PATH=/var/etc/$CONFIG
+RUN_BIN_PATH=$CONFIG_PATH/bin
 
 config_n_get() {
 	local ret=$(uci -q get $CONFIG.$1.$2 2>/dev/null)
@@ -40,14 +41,14 @@ for i in $(seq 1 $TCP_NODE_NUM); do
 		#kcptun
 		use_kcp=$(config_n_get $tmp_node use_kcp 0)
 		if [ $use_kcp -gt 0 ]; then
-			icount=$(ps -w | grep kcptun-client | grep $CONFIG_PATH/kcptun_${i} | grep -v grep | wc -l)
+			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep kcptun-client | grep kcptun_${i} | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0
 			fi
 		fi
 		[ -f "/var/etc/passwall/port/TCP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/TCP_$i`)
-		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/TCP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -T -l ${listen_port}" | wc -l)
+		icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "TCP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -T -l ${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart
 			exit 0
@@ -62,7 +63,7 @@ for i in $(seq 1 $UDP_NODE_NUM); do
 	if [ "$tmp_node" != "nil" ]; then
 		[ "$tmp_node" == "default" ] && tmp_node=$TCP_NODE1
 		[ -f "/var/etc/passwall/port/UDP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/UDP_$i`)
-		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/UDP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -U -l ${listen_port}" | wc -l)
+		icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "UDP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -U -l ${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart
 			exit 0
@@ -75,7 +76,7 @@ for i in $(seq 1 $SOCKS5_NODE_NUM); do
 	eval tmp_node=\$SOCKS5_NODE$i
 	if [ "$tmp_node" != "nil" ]; then
 		[ -f "/var/etc/passwall/port/SOCKS5_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/SOCKS5_$i`)
-		icount=$(ps -w | grep -v grep | grep -i -E "${CONFIG}/SOCKS5_${i}|brook client -l 0.0.0.0:${listen_port}" | wc -l)
+		icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "SOCKS5_${i}|brook client -l 0.0.0.0:${listen_port}" | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart
 			exit 0
@@ -94,7 +95,7 @@ fi
 
 #haproxy
 if [ $use_haproxy -gt 0 ]; then
-	icount=$(ps -w | grep haproxy | grep $CONFIG_PATH/haproxy.cfg | grep -v grep | wc -l)
+	icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep haproxy | wc -l)
 	if [ $icount = 0 ]; then
 		/etc/init.d/passwall restart
 		exit 0
