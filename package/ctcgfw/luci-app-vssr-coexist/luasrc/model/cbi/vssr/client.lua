@@ -5,7 +5,9 @@
 local m, s, sec, o, kcp_enable
 local vssr = "vssr"
 
-
+local gfw_count=0
+local ad_count=0
+local ip_count=0
 local gfwmode=0
 
 if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
@@ -14,7 +16,18 @@ end
 
 local uci = luci.model.uci.cursor()
 
+local sys = require "luci.sys"
 
+if gfwmode==1 then 
+ gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l"))/2
+ if nixio.fs.access("/etc/dnsmasq.ssr/ad.conf") then
+  ad_count=tonumber(sys.exec("cat /etc/dnsmasq.ssr/ad.conf | wc -l"))
+ end
+end
+ 
+if nixio.fs.access("/etc/china_ssr.txt") then 
+ ip_count = sys.exec("cat /etc/china_ssr.txt | wc -l")
+end
 
 m = Map(vssr)
 
@@ -146,6 +159,25 @@ o:value("1.1.1.1:53", translate("Cloudflare DNS (1.1.1.1)"))
 o:value("114.114.114.114:53", translate("Oversea Mode DNS-1 (114.114.114.114)"))
 o:value("114.114.115.115:53", translate("Oversea Mode DNS-2 (114.114.115.115)"))
 o:depends("pdnsd_enable", "1")
+
+o = s:option(Button,"gfw_data",translate("GFW List Data"))
+o.rawhtml  = true
+o.template = "vssr/refresh"
+o.value =tostring(math.ceil(gfw_count)) .. " " .. translate("Records")
+
+o = s:option(Button,"ad_data",translate("Advertising Data")) 
+o .rawhtml  = true
+o .template = "vssr/refresh"
+o .value =tostring(math.ceil(ad_count)) .. " " .. translate("Records")
+
+o = s:option(Button,"ip_data",translate("China IP Data"))
+o.rawhtml  = true
+o.template = "vssr/refresh"
+o.value =ip_count .. " " .. translate("Records")
+
+o = s:option(Button,"check_port",translate("Check Server Port"))
+o.template = "vssr/checkport"
+o.value =translate("No Check")
 
 m:section(SimpleSection).template  = "vssr/status2"
 return m

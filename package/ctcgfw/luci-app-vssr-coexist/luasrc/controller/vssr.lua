@@ -3,10 +3,12 @@
 module("luci.controller.vssr", package.seeall)
 
 function index()
-    if not nixio.fs.access("/etc/config/vssr") then return end
+    if not nixio.fs.access("/etc/config/vssr") then 
+      return 
+end
 
     if nixio.fs.access("/usr/bin/ssr-redir") then
-	  entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false	
+	entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false	
         entry({"admin", "vpn", "vssr"},
               alias("admin", "vpn", "vssr", "client"), _("vssr"), 10).dependent =
             true -- 首页
@@ -20,6 +22,7 @@ function index()
 entry({"admin", "vpn", "vssr", "subscription"},cbi("vssr/subscription"), _("Subscription"),12).leaf = true
         entry({"admin", "vpn", "vssr", "control"}, cbi("vssr/control"),
               _("Access Control"), 13).leaf = true -- 访问控制
+       
         entry({"admin", "vpn", "vssr", "advanced"}, cbi("vssr/advanced"),
               _("Advanced Settings"), 14).leaf = true -- 高级设置
     elseif nixio.fs.access("/usr/bin/ssr-server") then
@@ -41,6 +44,7 @@ entry({"admin", "vpn", "vssr", "status"},form("vssr/status"),_("Status"), 23).le
 
     entry({"admin", "vpn", "vssr", "refresh"}, call("refresh_data")) -- 更新白名单和GFWLIST
     entry({"admin", "vpn", "vssr", "checkport"}, call("check_port")) -- 检测单个端口并返回Ping
+    entry({"admin", "vpn", "vssr", "checkports"}, call("check_ports"))
     entry({"admin", "vpn", "vssr", "run"}, call("act_status")) -- 检测全局服务器状态
     entry({"admin", "vpn", "vssr", "change"}, call("change_node")) -- 切换节点
     entry({"admin", "vpn", "vssr", "allserver"}, call("get_servers")) -- 获取所有节点Json
@@ -87,6 +91,7 @@ function get_subscribe()
     luci.http.write_json(e)
 
 end
+
 
 -- 获取所有节点
 function get_servers()
@@ -191,6 +196,19 @@ function act_status()
     luci.http.write_json(e)
 end
 
+function check_status()
+	local set ="/usr/bin/ssr-check www." .. luci.http.formvalue("set") .. ".com 80 3 1"
+	sret=luci.sys.call(set)
+	if sret== 0 then
+		retstring ="0"
+	else
+		retstring ="1"
+	end	
+
+	luci.http.prepare_content("application/json")
+	luci.http.write_json({ ret=retstring })
+end
+
 -- 刷新检测文件
 function refresh_data()
     local set = luci.http.formvalue("set")
@@ -208,11 +226,9 @@ function refresh_data()
             luci.sys.call("/usr/bin/vssr-gfw")
             icount = luci.sys.exec("cat /tmp/gfwnew.txt | wc -l")
             if tonumber(icount) > 1000 then
-                oldcount = luci.sys.exec(
-                               "cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l")
+                oldcount = luci.sys.exec("cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l")
                 if tonumber(icount) ~= tonumber(oldcount) then
-                    luci.sys.exec(
-                        "cp -f /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf")
+                    luci.sys.exec("cp -f /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf")
                     retstring = tostring(math.ceil(tonumber(icount) / 2))
                 else
                     retstring = "0"
@@ -253,8 +269,7 @@ function refresh_data()
             icount = luci.sys.exec("cat /tmp/ad.conf | wc -l")
             if tonumber(icount) > 1000 then
                 if nixio.fs.access("/etc/dnsmasq.ssr/ad.conf") then
-                    oldcount = luci.sys.exec(
-                                   "cat /etc/dnsmasq.ssr/ad.conf | wc -l")
+                    oldcount = luci.sys.exec("cat /etc/dnsmasq.ssr/ad.conf | wc -l")
                 else
                     oldcount = 0
                 end
@@ -279,6 +294,48 @@ function refresh_data()
     luci.http.prepare_content("application/json")
     luci.http.write_json({ret = retstring, retcount = icount})
 end
+
+
+-- 检测所有服务器
+function check_ports()
+    local set = ""
+    local retstring = "<br /><br />"
+    local s
+    local server_name = ""
+    local vssr = "vssr"
+    local uci = luci.model.uci.cursor()
+    local iret = 1
+
+    uci:foreach(
+        vssr,
+        "servers",
+        function(s)
+            if s.alias then
+                server_name = s.alias
+            elseif s.server and s.server_port then
+                server_name = "%s:%s" % {s.server, s.server_port}
+            end
+            iret = luci.sys.call(" ipset add ss_spec_wan_ac " .. s.server .. " 2>/dev/null")
+            socket = nixio.socket("inet", "stream")
+            socket:setopt("socket", "rcvtimeo", 3)
+            socket:setopt("socket", "sndtimeo", 3)
+            ret = socket:connect(s.server, s.server_port)
+            if tostring(ret) == "true" then
+                socket:close()
+                retstring = retstring .. "<font color='green'>[" .. server_name .. "] OK.</font><br />"
+            else
+                retstring = retstring .. "<font color='red'>[" .. server_name .. "] Error.</font><br />"
+            end
+            if iret == 0 then
+                luci.sys.call(" ipset del ss_spec_wan_ac " .. s.server)
+            end
+        end
+    )
+
+    luci.http.prepare_content("application/json")
+    luci.http.write_json({ret = retstring})
+end
+
 
 -- 检测单个节点状态并返回连接速度
 function check_port()
