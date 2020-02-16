@@ -1,0 +1,40 @@
+#!/bin/sh /etc/rc.common
+# Created By [CTCGFW]Project OpenWRT
+# https://github.com/project-openwrt
+
+START=80
+STOP=10
+
+EXTRA_COMMANDS="gen_subdomain"
+EXTRA_HELP="	gen_subdomain Generate a subdomain by token"
+
+enable="$(uci get 233ddns.@233ddns[0].enable)"
+push_ipv6="$(uci get 233ddns.@233ddns[0].push_ipv6)"
+[ "${push_ipv6}" -eq "0" ] && curl_arg="-4" || curl_arg="-6"
+token="$(uci get 233ddns.@233ddns[0].token)"
+
+start()
+{
+	stop
+
+	[ "${enable}" -ne "1" ] && exit 0
+	curl "${curl_arg}" -b "a=a" "https://u.233.ro/u/${token}"
+	echo "* * * * * curl ${curl_arg} -b \"a=a\" \"https://u.233.ro/u/${token}\"" >> "/etc/crontabs/root"
+	/etc/init.d/cron restart
+}
+
+stop()
+{
+	sed -i '/u.233.ro/d' "/etc/crontabs/root"
+	/etc/init.d/cron restart
+}
+
+restart()
+{
+	stop
+	start
+}
+
+gen_subdomain() {
+	echo -n "$1" |sha512sum |head -c 10
+}

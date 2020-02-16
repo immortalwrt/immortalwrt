@@ -1,0 +1,29 @@
+msgid "233DDNS"
+msgstr "233DDNS"
+
+msgid "A simple, fast, security DDNS client, powered by Oxygen233."
+msgstr "由 Oxygen233 驱动的一个简单、快速、安全的 DDNS 客户端。"
+
+msgid "Please add u.233.ro to your whitelist if you use proxies program."
+msgstr "如果您使用了代理程序，请将 u.233.ro 添加至白名单。"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Your DDNS domain is"
+msgstr "您的DDNS域名是"
+
+msgid ".ddns.233.ro"
+msgstr ".ddns.233.ro"
+
+msgid "Push IPv6 address"
+msgstr "推送IPv6地址"
+
+msgid "Push IPv6 record to remote instead of IPv4."
+msgstr "将IPv6地址推送到远程而不是IPv4。"
+
+msgid "Token"
+msgstr "令牌"
+
+msgid "Must be 10 in length."
+msgstr "长度必须为10。"

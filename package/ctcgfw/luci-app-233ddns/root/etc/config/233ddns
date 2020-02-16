@@ -1,0 +1,5 @@
+
+config 233ddns
+	option enable '0'
+	option push_ipv6 '0'
+	option token ''
