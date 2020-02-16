@@ -15,7 +15,7 @@ s.anonymous=true
 s.addremove=false
 
 enable = s:option(Flag, "enable", translate("Enable"))
-enable.description = translate("Your DDNS domain is") .. " " .. ddns_domain .. translate(".ddns.233.ro")
+enable.description = translate("Your DDNS domain is") .. " " .. ddns_domain .. translate(".233ddns.me")
 enable.default = 0
 enable.rmempty = false
 
