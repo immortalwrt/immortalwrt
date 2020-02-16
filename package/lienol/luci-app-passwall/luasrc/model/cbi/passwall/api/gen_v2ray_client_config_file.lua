@@ -93,7 +93,7 @@ local v2ray = {
     -- 传出连接
     outbounds = {
         {
-            protocol = node.v2ray_protocol,
+            protocol = node.v2ray_protocol or "vmess",
             mux = {
                 enabled = (node.v2ray_mux == "1") and true or false,
                 concurrency = (node.v2ray_mux_concurrency) and
