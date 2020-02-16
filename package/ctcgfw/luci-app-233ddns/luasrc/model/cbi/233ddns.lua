@@ -8,7 +8,7 @@ end
 ddns_domain = luci.sys.exec("/etc/init.d/233ddns gen_subdomain " .. conf_token)
 
 mp = Map("233ddns", translate("233DDNS"))
-mp.description = translate("A simple, fast, security DDNS client, powered by Oxygen233.") .. "<br/>" .. translate("Please add u.233.ro to your whitelist if you use proxies program.")
+mp.description = translate("A simple, fast, security DDNS client, powered by Oxygen233.") .. "<br/>" .. translate("Instructions for use:") .." https://233.ro/archives/233DDNS.html<br/>" .. translate("Please add u.233.ro to your whitelist if you use proxies program.")
 
 s = mp:section(TypedSection, "233ddns")
 s.anonymous=true
