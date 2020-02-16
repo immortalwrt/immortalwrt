@@ -101,7 +101,7 @@ function link_add_node()
     local link = luci.http.formvalue("link")
     luci.sys.call('rm -f /tmp/links.conf && echo "' .. link ..
                       '" >> /tmp/links.conf')
-    luci.sys.call("lua /usr/share/passwall/subscribe.lua add >> /var/log/passwall.log")
+    luci.sys.call("lua /usr/share/passwall/subscribe.lua add log")
 end
 
 function get_log()

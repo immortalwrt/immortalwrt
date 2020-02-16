@@ -63,7 +63,7 @@ o = s:option(Button, "_update", translate("Manual subscription"))
 o.inputstyle = "apply"
 function o.write(e, e)
     luci.sys.call(
-        "lua /usr/share/passwall/subscribe.lua start >> /var/log/passwall.log 2>&1 &")
+        "lua /usr/share/passwall/subscribe.lua start log > /dev/null 2>&1 &")
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
                                                  "log"))
 end
@@ -73,7 +73,7 @@ o = s:option(Button, "_stop", translate("Delete All Subscribe Node"))
 o.inputstyle = "remove"
 function o.write(e, e)
     luci.sys.call(
-        "lua /usr/share/passwall/subscribe.lua truncate >> /var/log/passwall.log 2>&1 &")
+        "lua /usr/share/passwall/subscribe.lua truncate log > /dev/null 2>&1 &")
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
                                                  "log"))
 end
