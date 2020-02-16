@@ -11,7 +11,7 @@ PKG_NAME:=luci-app-233ddns
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
 LUCI_TITLE:=LuCI support for 233DDNS
-LUCI_DEPENDS:=+busybox +curl
+LUCI_DEPENDS:=+busybox +coreutils-sha512sum +curl
 LUCI_PKGARCH:=all
 
 PKG_MAINTAINER:=[CTCGFW]Project-OpenWrt
