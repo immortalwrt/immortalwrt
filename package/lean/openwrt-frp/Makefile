@@ -74,6 +74,8 @@ define Build/Prepare
 endef
 
 define Build/Configure
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/frps
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/frpc
 endef
 
 define Build/Compile
