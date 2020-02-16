@@ -131,13 +131,13 @@ start()
 
 	if [ "${music_source}" = "qq" ];then
 		[ -z "${qq_cookie}" ] && { echo "QQ cookie is not exsit, please enter it before starting."; exit 1; }
-		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/provider/qq.js")"
-		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/provider/qq.js"
-		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/provider/qq.js"
+		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/src/provider/qq.js")"
+		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/src/provider/qq.js"
+		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/src/provider/qq.js"
 	elif [ "${music_source}" = "youtube" ];then
 		[ -z "${youtube_key}" ] && { echo "Youtube API Key is not exsit, please enter it before starting."; exit 1; }
-		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/provider/youtube.js"
-		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/provider/youtube.js"
+		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/src/provider/youtube.js"
+		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/src/provider/youtube.js"
 	fi
 
 	{ [ -f "${self_issue_cert_crt}" ] && [ "${self_issue_cert_crt}" != "/usr/share/unblockneteasemusic/core/server.crt" ]; } && ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"
