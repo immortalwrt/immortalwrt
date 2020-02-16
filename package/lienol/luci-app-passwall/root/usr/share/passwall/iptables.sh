@@ -225,9 +225,6 @@ add_firewall_rule() {
 	lan_ip=$(ifconfig br-lan | grep "inet addr" | awk '{print $2}' | awk -F : '{print $2}') #路由器lan IP
 	lan_ipv4=$(ip address show br-lan | grep -w "inet" | awk '{print $2}')                  #当前LAN IPv4段
 	[ -n "$lan_ipv4" ] && ipset -! add $IPSET_LANIPLIST $lan_ipv4 >/dev/null 2>&1 &
-
-	#  过滤所有节点IP
-	config_foreach filter_vpsip "nodes"
 	
 	$ipt_n -N PSW
 	$ipt_n -A PSW $(dst $IPSET_LANIPLIST) -j RETURN
@@ -511,6 +508,9 @@ add_firewall_rule() {
 			$ipt_m -A PSW_ACL -p udp -m multiport --dport $UDP_REDIR_PORTS -m comment --comment "Default" -j $(get_action_chain $PROXY_MODE)1
 		}
 	fi
+	
+	#  过滤所有节点IP，暂时关闭，节点一多会解析很久导致启动超慢。。。
+	# config_foreach filter_vpsip "nodes"
 }
 
 del_firewall_rule() {

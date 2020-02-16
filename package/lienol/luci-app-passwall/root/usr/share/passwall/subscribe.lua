@@ -102,7 +102,6 @@ local function processData(szType, content, add_mode)
 		add_mode = add_mode,
 		is_sub = (add_mode and add_mode == "导入") and 0 or 1
 	}
-	result.hashkey = type(content) == 'string' and md5(content) or md5(jsonStringify(content))
 	if szType == 'ssr' then
 		local dat = split(content, "/\\?")
 		local hostInfo = split(dat[1], ':')
@@ -225,6 +224,11 @@ local function processData(szType, content, add_mode)
 	if not result.remarks then
 		result.remarks = result.address .. ':' .. result.port
 	end
+	-- remarks 不参与 hashkey 计算
+	local remarks = result.remarks
+	result.remarks = nil
+	result.hashkey = md5(jsonStringify(result))
+	result.remarks = remarks
 	return result
 end
 -- wget
