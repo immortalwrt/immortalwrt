@@ -286,18 +286,16 @@ function blackwhitelist(){
 		# 如果 “忽略列表 为空” 并且  “关注列表为空” 
 		if [ -z "$serverchan_whitelist" ] && [ -z "$serverchan_blacklist" ] && [ -z "$serverchan_interface" ]; then
 			echo 1
-					
 		# 如果 “忽略列表不为空” 
 		elif [ ! -z "$serverchan_whitelist" ] ; then
-			if ( ! echo $serverchan_whitelist | grep -q -i $1 ); then
+			if ( ! echo $serverchan_whitelist | grep -q -i $( cat /proc/net/arp | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u )); then
 				echo 1
 			else
 				echo 0
 			fi
-
 		# 如果 “关注列表不为空” 
 		elif [ ! -z "$serverchan_blacklist" ] ; then
-			if ( echo $serverchan_blacklist | grep -q -i $1 ); then
+			if ( echo $serverchan_blacklist | grep -q -i $( cat /proc/net/arp | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u )); then
 				echo 1
 			else
 				echo 0
@@ -541,7 +539,7 @@ function send(){
 		if [ -z "$ipv6_interface" ] ; then send_wanIPv6=$(ip addr show|grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
 		if [ ! -z "$ipv4_interface" ] ; then send_hostIP=$(curl -k -s -4 --interface $ipv4_interface $ipv4_URL);fi
 		if [ -z "$ipv4_interface" ] ; then send_hostIP=$(curl -k -s -4 $ipv4_URL);fi
-		if [ ! -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 --interface $ipv6_interface $ipv6_URL);fi
+		if [ ! -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 --interface $send_wanIPv6 $ipv6_URL);fi
 		if [ -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 $ipv6_URL);fi
 		if [ ! -z "$router_wan" ] && [ "$router_wan" -eq "1" ] ; then
 			send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     ip：$send_wanIP"
