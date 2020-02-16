@@ -33,11 +33,19 @@ m = Map(shadowsocksr)
 m:section(SimpleSection).template  = "shadowsocksr/status"
 
 local server_table = {}
+local v2ray_table = {}
 uci:foreach(shadowsocksr, "servers", function(s)
 	if s.alias then
 		server_table[s[".name"]] = "[%s]:%s" %{string.upper(s.type), s.alias}
 	elseif s.server and s.server_port then
 		server_table[s[".name"]] = "[%s]:%s:%s" %{string.upper(s.type), s.server, s.server_port}
+	end
+if s.type == "v2ray"	then
+		if s.alias then
+			v2ray_table[s[".name"]] = "[%s]:%s" %{string.upper(s.type), s.alias}
+		elseif s.server and s.server_port then
+			v2ray_table[s[".name"]] = "[%s]:%s:%s" %{string.upper(s.type), s.server, s.server_port}
+		end
 	end
 end)
 
@@ -47,6 +55,13 @@ for key,_ in pairs(server_table) do
 end 
 
 table.sort(key_table)  
+
+local key_table_v2 = {}  
+for key,_ in pairs(v2ray_table) do  
+    table.insert(key_table_v2,key)  
+end 
+
+table.sort(key_table_v2)
 
 -- [[ Global Setting ]]--
 s = m:section(TypedSection, "global", translate("Server settings"))
@@ -65,6 +80,46 @@ o = s:option(ListValue, "udp_relay_server", translate("Game Mode UDP Server"))
 o:value("", translate("Disable"))
 o:value("same", translate("Same as Global Server"))
 for _,key in pairs(key_table) do o:value(key,server_table[key]) end
+
+o = s:option(Flag, "v2ray_flow", translate("Open v2ray split-flow"))
+o.rmempty = false
+o.description = translate("When open v2ray split-flow,your main server must be a v2ray server")
+
+o = s:option(ListValue, "youtube_server", translate("Youtube Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+
+o = s:option(ListValue, "tw_video_server", translate("TaiWan Video Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+o = s:option(ListValue, "netflix_server", translate("Netflix Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+o = s:option(ListValue, "disney_server", translate("Diseny+ Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+o = s:option(ListValue, "prime_server", translate("Prime Video Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
 
 o = s:option(ListValue, "threads", translate("Multi Threads Option"))
 o:value("0", translate("Auto Threads"))
