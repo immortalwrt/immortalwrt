@@ -14,12 +14,12 @@ if [ "${select_server}" = "tencent_shanghai_nodejs" ]; then
 	[ -z "${unblock_server_ip}" ] && unblock_server_ip="122.51.88.18"
 	unblock_server_http_port="30000"
 	unblock_server_https_port="30001"
-else
-	unblock_server_addr="cdn-anhui.service.project-openwrt.eu.org"
-	unblock_server_ip="$(ping "cdn-anhui.service.project-openwrt.eu.org" -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')"
-	[ -z "${unblock_server_ip}" ] && unblock_server_ip="223.215.42.127"
-	unblock_server_http_port="53025"
-	unblock_server_https_port="44178"
+elif [ "${select_server}" = "tencent_shanghai_golang" ]; then
+	unblock_server_addr="cdn-shanghai.service.project-openwrt.eu.org"
+	unblock_server_ip="$(ping "cdn-shanghai.service.project-openwrt.eu.org" -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')"
+	[ -z "${unblock_server_ip}" ] && unblock_server_ip="122.51.88.18"
+	unblock_server_http_port="30002"
+	unblock_server_https_port="30003"
 fi
 
 set_ipset(){
