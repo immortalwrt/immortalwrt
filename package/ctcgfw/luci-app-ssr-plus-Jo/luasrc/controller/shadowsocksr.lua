@@ -7,7 +7,7 @@ function index()
         return
     end
     if nixio.fs.access("/usr/bin/ssr-redir") then
-        entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false
+	entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false	
         entry({"admin", "vpn", "shadowsocksr"},alias("admin", "vpn", "shadowsocksr", "client"), _("ShadowSocksR Plus+"),10).dependent = true
         entry({"admin", "vpn", "shadowsocksr", "client"},cbi("shadowsocksr/client"),_("SSR Client"),10).leaf = true
         entry({"admin", "vpn", "shadowsocksr", "servers"}, cbi("shadowsocksr/servers"), _("Severs Nodes"), 11).leaf = true
