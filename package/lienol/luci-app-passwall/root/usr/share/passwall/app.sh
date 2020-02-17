@@ -215,6 +215,11 @@ load_config() {
 	LOCALHOST_PROXY_MODE=$(config_t_get global localhost_proxy_mode default)
 	[ "$LOCALHOST_PROXY_MODE" == "default" ] && LOCALHOST_PROXY_MODE=$PROXY_MODE
 	UP_CHINA_DNS=$(config_t_get global up_china_dns dnsbyisp)
+	wangejibadns=$(config_t_get global_other wangejibadns 0)
+	[ "$wangejibadns" == "0" ] && {
+		UP_CHINA_DNS="default"
+		[ "$DNS_MODE" == "chinadns-ng" ] && DNS_MODE="pdnsd" && use_udp_node_resolve_dns=0
+	}
 	[ "$UP_CHINA_DNS" == "default" ] && IS_DEFAULT_CHINA_DNS=1
 	[ ! -f "$RESOLVFILE" -o ! -s "$RESOLVFILE" ] && RESOLVFILE=/tmp/resolv.conf.auto
 	[ "$UP_CHINA_DNS" == "dnsbyisp" -o "$UP_CHINA_DNS" == "default" ] && {
