@@ -74,4 +74,5 @@ o.width="10%"
 
 m:append(Template("vssr/server_list"))
 
+m:section(SimpleSection).template  = "vssr/status2"
 return m
