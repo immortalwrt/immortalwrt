@@ -90,7 +90,9 @@ gen_config_file() {
          fi
 
 local stype=$(uci_get_by_name $1 type)
-if [ "$stype" == "ss" ] ;then
+	local plugin=$(uci_get_by_name $1 plugin)
+	if [ "$stype" == "ss" ] ;then
+		if [ "$plugin" == "none" ] ;then
 	cat <<-EOF >$config_file
 		{
 		    "server": "$hostip",
@@ -104,7 +106,24 @@ if [ "$stype" == "ss" ] ;then
 		    "fast_open": $fastopen
 		}
 EOF
-       elif [ "$stype" == "ssr" ] ;then
+		else
+	cat <<-EOF >$config_file
+		{
+		    "server": "$hostip",
+		    "server_port": $(uci_get_by_name $1 server_port),
+		    "local_address": "0.0.0.0",
+		    "local_port": $(uci_get_by_name $1 local_port),
+		    "password": "$(uci_get_by_name $1 password)",
+		    "timeout": $(uci_get_by_name $1 timeout 60),
+		    "method": "$(uci_get_by_name $1 encrypt_method_ss)",
+		    "plugin": "$(uci_get_by_name $1 plugin)",
+		    "plugin_opts": "$(uci_get_by_name $1 plugin_opts)",
+		    "reuse_port": true,
+		    "fast_open": $fastopen
+		}
+EOF
+		fi
+	elif [ "$stype" == "ssr" ] ;then
 	cat <<-EOF >$config_file
 		{
 		    
@@ -565,7 +584,12 @@ stop() {
 	killall -q -9 vssr-monitor
 	killall -q -9 ss-redir
 	killall -q -9 ssr-redir
-                 killall -q -9 ssr-local
+        killall -q -9 ssr-local
+	killall -q -9 v2ray-plugin
+        killall -q -9 obfs-local
+	killall -q -9 obfs-server
+        killall -q -9 gq-client
+	killall -q -9 gq-server
 	killall -q -9 ss-local
 	killall -q -9 v2ray
 	killall -q -9 trojan

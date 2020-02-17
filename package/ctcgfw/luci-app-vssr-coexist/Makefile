@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-vssr-coexist
-PKG_VERSION:=1.06
-PKG_RELEASE:=20200115-4
+PKG_VERSION:=1.07
+PKG_RELEASE:=20200217-4
 
 PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
         CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
@@ -10,7 +10,13 @@ PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
         CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks \
         CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs\
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server\
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-client\
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-server\
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_v2ray-plugin
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -43,6 +49,30 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks
 	bool "Include ShadowsocksR Socks and Tunnel"
 	default y
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks
+	bool "Include ipt2socks"
+	default y	
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs
+	bool "Include simple-obfsl"
+	default y
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server
+	bool "Include simple-obfs-server"
+	default n
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-client
+	bool "Include GoQuiet-client"
+	default n
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-server
+	bool "Include GoQuiet-server"
+	default n
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_v2ray-plugin
+	bool "Include v2ray-plugin"
+	default y	
 endef
 
 define Package/luci-app-vssr-coexist
@@ -55,6 +85,12 @@ define Package/luci-app-vssr-coexist
             +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun:kcptun-client \
+	    +PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks:ipt2socks \
+	    +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs:simple-obfs \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server:simple-obfs-server \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-client:gq-client \
+	    +PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-server:gq-server \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_v2ray-plugin:v2ray-plugin \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks:shadowsocks-libev-ss-local \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-redir \
             +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
