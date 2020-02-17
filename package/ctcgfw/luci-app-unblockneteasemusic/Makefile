@@ -12,7 +12,7 @@ LUCI_DEPENDS:=+bash +busybox +coreutils-nohup +curl +dnsmasq-full +ipset +libope
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-unblockneteasemusic
 PKG_VERSION:=2.7
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_MAINTAINER:=[CTCGFW]Project-OpenWrt
 

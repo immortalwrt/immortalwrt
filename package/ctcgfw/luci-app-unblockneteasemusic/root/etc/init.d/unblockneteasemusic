@@ -64,11 +64,15 @@ ipset=/clientlog3.music.163.com/neteasemusic
 		iptables -t nat -A "netease_cloud_music" -p tcp --dport 80 -j REDIRECT --to-ports "${http_port}"
 		iptables -t nat -A "netease_cloud_music" -p tcp --dport 443 -j REDIRECT --to-ports "${https_port}"
 		iptables -t nat -I PREROUTING -p tcp -m set --match-set "neteasemusic" dst -j "netease_cloud_music"
+		[ -z "$(iptables -t nat -L "ADBYBY" | grep "UnblockMusic" | sed 's/\/.*//')" ] && iptables -t nat -I "ADBYBY" -m set --match-set "neteasemusic" dst -j RETURN -m comment --comment "AD for UnblockMusic"
+		[ -z "$(iptables -t nat -L "KOOLPROXY" | grep "UnblockMusic" | sed 's/\/.*//')" ] && iptables -t nat -I "KOOLPROXY" -m set --match-set "neteasemusic" dst -j RETURN -m comment --comment "KP for UnblockMusic"
 
 		mkdir -p "/var/etc/"
 		echo -e "/etc/init.d/unblockneteasemusic restart" > "/var/etc/unblockneteasemusic.include"
 	elif [ "${set_type}" = "stop" ]; then
-		iptables -t nat -D PREROUTING -p tcp -m set --match-set "neteasemusic" dst -j "netease_cloud_music"
+		iptables -t nat -D "PREROUTING" -p tcp -m set --match-set "neteasemusic" dst -j "netease_cloud_music"
+		iptables -t nat -D "ADBYBY" -m set --match-set "neteasemusic" dst -j RETURN -m comment --comment "AD for UnblockMusic"
+		iptables -t nat -D "KOOLPROXY" -m set --match-set "neteasemusic" dst -j RETURN -m comment --comment "KP for UnblockMusic"
 		iptables -t nat -F "netease_cloud_music"
 		iptables -t nat -X "netease_cloud_music"
 		ipset destroy "neteasemusic"
