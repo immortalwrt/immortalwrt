@@ -400,6 +400,12 @@ msgstr "UDP转发端口"
 msgid "All"
 msgstr "所有"
 
+msgid "Common Use"
+msgstr "常用的"
+
+msgid "Only Web"
+msgstr "仅网页"
+
 msgid "or more"
 msgstr "及以上"
 
