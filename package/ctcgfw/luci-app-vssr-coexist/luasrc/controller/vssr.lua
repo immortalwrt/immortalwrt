@@ -22,9 +22,10 @@ end
 entry({"admin", "vpn", "vssr", "subscription"},cbi("vssr/subscription"), _("Subscription"),12).leaf = true
         entry({"admin", "vpn", "vssr", "control"}, cbi("vssr/control"),
               _("Access Control"), 13).leaf = true -- 访问控制
-       
+       entry({"admin", "vpn", "vssr", "servers-list"}, cbi("vssr/servers-list"),
+              _("Severs Nodes"), 14).leaf = true
         entry({"admin", "vpn", "vssr", "advanced"}, cbi("vssr/advanced"),
-              _("Advanced Settings"), 14).leaf = true -- 高级设置
+              _("Advanced Settings"), 15).leaf = true -- 高级设置
     elseif nixio.fs.access("/usr/bin/ssr-server") then
         entry({"admin", "vpn", "vssr"},
               alias("admin", "vpn", "vssr", "server"), _("vssr"), 10).dependent =
@@ -45,6 +46,7 @@ entry({"admin", "vpn", "vssr", "status"},form("vssr/status"),_("Status"), 23).le
     entry({"admin", "vpn", "vssr", "refresh"}, call("refresh_data")) -- 更新白名单和GFWLIST
     entry({"admin", "vpn", "vssr", "checkport"}, call("check_port")) -- 检测单个端口并返回Ping
     entry({"admin", "vpn", "vssr", "checkports"}, call("check_ports"))
+    entry({"admin", "vpn", "vssr", "ping"}, call("act_ping")).leaf=true
     entry({"admin", "vpn", "vssr", "run"}, call("act_status")) -- 检测全局服务器状态
     entry({"admin", "vpn", "vssr", "change"}, call("change_node")) -- 切换节点
     entry({"admin", "vpn", "vssr", "allserver"}, call("get_servers")) -- 获取所有节点Json
@@ -194,6 +196,14 @@ function act_status()
 
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
+end
+
+function act_ping()
+	local e={}
+	e.index=luci.http.formvalue("index")
+	e.ping=luci.sys.exec("ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*.[0-9]' | awk -F '=' '{print$2}'"%luci.http.formvalue("domain"))
+	luci.http.prepare_content("application/json")
+	luci.http.write_json(e)
 end
 
 function check_status()
