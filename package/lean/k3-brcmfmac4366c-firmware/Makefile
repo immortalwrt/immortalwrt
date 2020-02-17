@@ -14,7 +14,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
 	TITLE:=k3wifi
-	DEPENDS:=
+	DEPENDS:=@TARGET_bcm53xx_DEVICE_phicomm-k3
 	URL:=http://www.k3wifi.com/
 endef
 
