@@ -13,6 +13,8 @@ uci -q batch <<-EOF >/dev/null
 	commit firewall
 EOF
 
+killall -q -9 v2ray-plugin
+
 /usr/share/vssr/gfw2ipset.sh
 rm -f /tmp/luci-indexcache
 exit 0
