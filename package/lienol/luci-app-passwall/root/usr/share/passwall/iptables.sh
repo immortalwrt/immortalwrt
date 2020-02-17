@@ -270,7 +270,10 @@ add_firewall_rule() {
 			if [ "$node" != "nil" ]; then
 				local SOCKS5_NODE_PORT=$(config_get $node port)
 				local SOCKS5_NODE_IP=$(get_node_host_ip $node)
-				[ -n "$SOCKS5_NODE_IP" -a -n "$SOCKS5_NODE_PORT" ] && $ipt_n -A PSW -p tcp -d $SOCKS5_NODE_IP -m multiport --dports $SOCKS5_NODE_PORT -j RETURN
+				[ -n "$SOCKS5_NODE_IP" -a -n "$SOCKS5_NODE_PORT" ] && {
+					$ipt_n -A PSW -p tcp -d $SOCKS5_NODE_IP --dport $SOCKS5_NODE_PORT -j RETURN
+					$ipt_n -A PSW_OUTPUT -p tcp -d $SOCKS5_NODE_IP --dport $SOCKS5_NODE_PORT -j RETURN
+				}
 			fi
 		done
 	fi
@@ -286,7 +289,10 @@ add_firewall_rule() {
 				local TCP_NODE_PORT=$(config_get $node port)
 				local TCP_NODE_IP=$(get_node_host_ip $node)
 				local TCP_NODE_TYPE=$(echo $(config_get $node type) | tr 'A-Z' 'a-z')
-				[ -n "$TCP_NODE_IP" -a -n "$TCP_NODE_PORT" ] && $ipt_n -A PSW -p tcp -d $TCP_NODE_IP -m multiport --dports $TCP_NODE_PORT -j RETURN
+				[ -n "$TCP_NODE_IP" -a -n "$TCP_NODE_PORT" ] && {
+					$ipt_n -A PSW -p tcp -d $TCP_NODE_IP --dport $TCP_NODE_PORT -j RETURN
+					$ipt_n -A PSW_OUTPUT -p tcp -d $TCP_NODE_IP --dport $TCP_NODE_PORT -j RETURN
+				}
 				if [ "$TCP_NODE_TYPE" == "brook" ]; then
 					$ipt_m -A PSW_ACL -p tcp -m socket -j MARK --set-mark 1
 
@@ -375,9 +381,7 @@ add_firewall_rule() {
 						
 						$ipt_n -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_BLACKLIST) -j REDIRECT --to-ports $TCP_REDIR_PORT1
 						$ipt_n -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_ROUTER) -j REDIRECT --to-ports $TCP_REDIR_PORT1
-						[ "$LOCALHOST_PROXY_MODE" == "global" ] && $ipt_n -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS -j REDIRECT --to-ports $TCP_REDIR_PORT1
-						[ "$LOCALHOST_PROXY_MODE" == "gfwlist" ] && $ipt_n -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS $(dst $IPSET_GFW) -j REDIRECT --to-ports $TCP_REDIR_PORT1
-						[ "$LOCALHOST_PROXY_MODE" == "chnroute" ] && $ipt_n -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS -m set ! --match-set $IPSET_CHN dst -j REDIRECT --to-ports $TCP_REDIR_PORT1
+						$ipt_n -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_REDIR_PORTS -j $(get_action_chain $LOCALHOST_PROXY_MODE)1
 					}
 					# 重定所有流量到透明代理端口
 					# $ipt_n -A PSW -p tcp -m ttl --ttl-eq $ttl -j REDIRECT --to $local_port
@@ -420,7 +424,10 @@ add_firewall_rule() {
 				local UDP_NODE_PORT=$(config_get $node port)
 				local UDP_NODE_IP=$(get_node_host_ip $node)
 				local UDP_NODE_TYPE=$(echo $(config_get $node type) | tr 'A-Z' 'a-z')
-				[ -n "$UDP_NODE_IP" -a -n "$UDP_NODE_PORT" ] && $ipt_m -A PSW -p udp -d $UDP_NODE_IP -m multiport --dports $UDP_NODE_PORT -j RETURN
+				[ -n "$UDP_NODE_IP" -a -n "$UDP_NODE_PORT" ] && {
+					$ipt_m -A PSW -p udp -d $UDP_NODE_IP --dport $UDP_NODE_PORT -j RETURN
+					$ipt_m -A PSW_OUTPUT -p udp -d $UDP_NODE_IP --dport $UDP_NODE_PORT -j RETURN
+				}
 				[ "$UDP_NODE_TYPE" == "brook" ] && $ipt_m -A PSW_ACL -p udp -m socket -j MARK --set-mark 1
 				#  全局模式
 				$ipt_m -A PSW_GLO$k -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port $local_port
