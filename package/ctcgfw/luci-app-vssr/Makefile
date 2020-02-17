@@ -132,10 +132,10 @@ define Package/luci-app-vssr
             +PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks:ipt2socks \
             +PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy:dnscrypt-proxy-full \
             +PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder \
-            +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:ChinaDNS \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns \
             +PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy \
             +PACKAGE_$(PKG_NAME)_INCLUDE_privoxy:privoxy \
-            +PACKAGE_$(PKG_NAME)_INCLUDE_udpspeeder:udpspeeder \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_udpspeeder:speederv2-tunnel \
             +PACKAGE_$(PKG_NAME)_INCLUDE_udp2raw-tunnel:udp2raw-tunnel \
             +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs:simple-obfs \
             +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server:simple-obfs-server \

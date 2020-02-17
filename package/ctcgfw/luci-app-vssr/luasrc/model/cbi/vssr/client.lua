@@ -233,4 +233,6 @@ o = s:option(Button,"check_port",translate("Check Server Port"))
 o.template = "vssr/checkport"
 o.value =translate("No Check")
 
+m:section(SimpleSection).template  = "vssr/status2"
+
 return m
