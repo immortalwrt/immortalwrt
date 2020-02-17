@@ -5,7 +5,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-app-frps
+PKG_NAME:=luci-app-frpserver
 PKG_VERSION:=0.0.1
 PKG_RELEASE:=1
 
