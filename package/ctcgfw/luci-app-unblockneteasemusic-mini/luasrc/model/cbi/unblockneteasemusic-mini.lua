@@ -23,6 +23,6 @@ select_server.default = "tencent_shanghai_nodejs"
 select_server.rmempty = false
 
 download_certificate=s:option(DummyValue,"opennewwindow",translate("<input type=\"button\" class=\"cbi-button cbi-button-apply\" value=\"下载CA根证书\" onclick=\"window.open('https://raw.githubusercontent.com/nondanee/UnblockNeteaseMusic/master/ca.crt')\" />"))
-download_certificate.description = translate("Linux/iOS/iPad/MacOSX设备在信任根证书后方可正常使用解锁功能。")
+download_certificate.description = translate("Linux/iOS/MacOSX设备在信任根证书后方可正常使用解锁功能。")
 
 return mp
