@@ -48,6 +48,9 @@ msgid "Ping All Servers"
 msgstr "PING 所有节点"
 
 
+msgid "Ping Latency"
+msgstr "Ping 延迟"
+
 msgid "vssr Server"
 msgstr "vssr 服务端"
 
