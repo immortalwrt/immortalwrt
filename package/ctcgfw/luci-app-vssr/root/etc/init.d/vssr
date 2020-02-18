@@ -54,9 +54,8 @@ uci_get_by_type() {
 add_cron() {
 	sed -i '/vssr.log/d' $CRON_FILE
 	echo '0 1 * * 0 echo "" > /tmp/vssr.log' >>$CRON_FILE
-	[ -n "$(grep -w "/usr/share/vssr/subscribe.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/vssr\/subscribe.sh/d' $CRON_FILE
-	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/share/vssr/subscribe.sh" >>$CRON_FILE
-	[ -z "$(grep -w "/usr/share/vssr/update.sh" $CRON_FILE)" ] && echo "0 5 * * 0 /usr/share/vssr/update.sh" >>$CRON_FILE
+	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/subscribe.lua" >> $CRON_FILE
+	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/update.lua" >> $CRON_FILE
 	crontab $CRON_FILE
 }
 
