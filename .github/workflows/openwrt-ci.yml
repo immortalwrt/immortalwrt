@@ -119,8 +119,8 @@ jobs:
            CONFIG_PACKAGE_kmod-fs-ntfs=y
            CONFIG_PACKAGE_kmod-fs-squashfs=y
            CONFIG_PACKAGE_kmod-fs-ext4=y
-           CONFIG_kmod-fs-vfat=y
-           CONFIG_libext2fs=y    
+           CONFIG_PACKAGE_kmod-fs-vfat=y
+           CONFIG_PACKAGE_libext2fs=y    
           EOF
           # USB3.0支持:
            cat >> .config <<EOF
