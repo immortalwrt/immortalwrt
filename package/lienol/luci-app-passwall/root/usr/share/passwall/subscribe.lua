@@ -457,6 +457,8 @@ if arg[1] then
 				log('发生错误, 正在恢复服务')
 			end)
 			log('订阅完毕...')
+		else
+			log('未设置或启用订阅, 请检查设置...')
 		end
 	elseif arg[1] == "add" then
 		local f = assert(io.open("/tmp/links.conf",'r'))
