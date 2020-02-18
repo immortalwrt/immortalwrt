@@ -74,6 +74,9 @@ s.anonymous = true
 o = s:option(Flag, "adblock", translate("Enable adblock"))
 o.rmempty = false
 
+o = s:option(Value, "adblock_url", translate("adblock_url"))
+o.default = "https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt"
+
 -- [[ haProxy ]]--
 
 s = m:section(TypedSection, "global_haproxy", translate("haProxy settings"))

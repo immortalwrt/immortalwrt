@@ -39,6 +39,9 @@ msgstr "广告屏蔽设置"
 msgid "Enable adblock"
 msgstr "开启广告屏蔽"
 
+msgid "adblock_url"
+msgstr "广告屏蔽订阅"
+
 msgid "Socks user"
 msgstr "用户名"
 
