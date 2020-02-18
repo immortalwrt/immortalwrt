@@ -40,4 +40,4 @@ msgstr "开机时启用"
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/controller/usb3disable.lua:4
 #: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/controller/usb3disable.lua:5
 msgid "usb3disable"
-msgstr ""
+msgstr "禁用USB3"
