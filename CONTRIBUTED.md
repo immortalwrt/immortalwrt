@@ -38,7 +38,8 @@ NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede
 luci-theme-opentomato source: [Leo-Jo-My/luci-theme-opentomato](https://github.com/Leo-Jo-My/luci-theme-opentomato).<br/>
 luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.com/Leo-Jo-My/luci-theme-opentomcat).<br/>
 qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
-luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com/Leo-Jo-My/luci-theme-Butterfly).
+luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com/Leo-Jo-My/luci-theme-Butterfly).<br/>
+lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).
 
 ## License
 ### Depending on their own License.
