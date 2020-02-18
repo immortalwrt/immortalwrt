@@ -691,27 +691,29 @@ start_crontab() {
 	weekupdatesubscribe=$(config_t_get global_subscribe week_update_subscribe)
 	dayupdatesubscribe=$(config_t_get global_subscribe time_update_subscribe)
 	if [ "$autoupdate" = "1" ]; then
+		local t
 		if [ "$weekupdate" = "7" ]; then
-			echo "0 $dayupdate * * * $APP_PATH/rule_update.sh" >>/etc/crontabs/root
-			echolog "设置自动更新规则在每天 $dayupdate 点。"
+			t="0 $dayupdate * * *"
 		else
-			echo "0 $dayupdate * * $weekupdate $APP_PATH/rule_update.sh" >>/etc/crontabs/root
-			echolog "设置自动更新规则在星期 $weekupdate 的 $dayupdate 点。"
+			t="0 $dayupdate * * $weekupdate"
 		fi
+		echo "$t $APP_PATH/rule_update.sh" >>/etc/crontabs/root
+		echolog "配置定时任务：自动更新规则。"
 	else
 		sed -i '/rule_update.sh/d' /etc/crontabs/root >/dev/null 2>&1 &
 	fi
 
 	if [ "$autoupdatesubscribe" = "1" ]; then
+		local t
 		if [ "$weekupdatesubscribe" = "7" ]; then
-			echo "0 $dayupdatesubscribe * * * lua $APP_PATH/subscribe.lua >> /var/log/passwall.log" >>/etc/crontabs/root
-			echolog "设置节点订阅自动更新规则在每天 $dayupdatesubscribe 点。"
+			t="0 $dayupdatesubscribe * * *"
 		else
-			echo "0 $dayupdatesubscribe * * $weekupdate lua $APP_PATH/subscribe.lua >> /var/log/passwall.log" >>/etc/crontabs/root
-			echolog "设置节点订阅自动更新规则在星期 $weekupdate 的 $dayupdatesubscribe 点。"
+			t="0 $dayupdatesubscribe * * $weekupdate"
 		fi
+		echo "$t lua $APP_PATH/subscribe.lua start log > /dev/null 2>&1 &" >>/etc/crontabs/root
+		echolog "配置定时任务：自动更新节点订阅。"
 	else
-		sed -i '/subscription.sh/d' /etc/crontabs/root >/dev/null 2>&1 &
+		sed -i '/subscribe.lua/d' /etc/crontabs/root >/dev/null 2>&1 &
 	fi
 	
 	/etc/init.d/cron restart
@@ -940,6 +942,9 @@ gen_pdnsd_config() {
 				interval = 60;
 				uptest = none;
 				purge_cache = off;
+				reject=::/0;
+				reject_policy=negate;
+				reject_recursively=on;
 			}
 			
 		EOF
