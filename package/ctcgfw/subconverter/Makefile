@@ -36,7 +36,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Network
   TITLE:=Utility to convert between various subscription format.
   URL:=https://github.com/tindy2013/subconverter
-  DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +libopenssl
+  DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +libopenssl +zlib
 endef
 
 define Package/$(PKG_NAME)/description
