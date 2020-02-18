@@ -32,7 +32,8 @@ luci-app-vssr source: [Leo-Jo-My/luci-app-vssr](https://github.com/Leo-Jo-My/luc
 luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).<br/>
 NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).<br/>
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
-qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).
+qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
+lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).
 
 ## License
 ### Depending on their own License.
