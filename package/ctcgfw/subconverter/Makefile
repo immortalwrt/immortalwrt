@@ -72,7 +72,7 @@ define Package/$(PKG_NAME)/install
 	$(CP) $(PKG_BUILD_DIR)/base/* $(1)/etc/subconverter/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/subconverter.init $(1)/etc/init.d/subconverter
-	( cd $(1) && ln -sf usr/bin/subconverter etc/subconverter/subconverter )
+	( cd $(1)/etc/subconverter && ln -sf ../../usr/bin/subconverter subconverter )
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
