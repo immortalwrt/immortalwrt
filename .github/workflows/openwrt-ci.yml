@@ -93,9 +93,9 @@ jobs:
           # 
           # 编译x64固件:
            cat >> .config <<EOF
-           CONFIG_TARGET_armvirt=y
-           CONFIG_TARGET_armvirt_64=y
-           CONFIG_TARGET_armvirt_64_Generic=y
+           CONFIG_TARGET_bcm53xx=y
+           CONFIG_TARGET_bcm53xx_DEVICE_phicomm-k3=y
+           CONFIG_TARGET_BOARD="bcm53xx"
            EOF
           # 固件压缩:
             cat >> .config <<EOF
