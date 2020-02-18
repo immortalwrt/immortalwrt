@@ -652,9 +652,12 @@ msgstr "使用dnscrypt-proxy TCP查询并缓存"
 msgid "Use dnsforwarder tcp query and cache"
 msgstr "使用dnsforwarder TCP查询并缓存"
 
+msgid "Use Pdnsd udp query and cache"
+msgstr "使用Pdnsd UDP查询并缓存"
+
+
 msgid "Use dnsforwarder udp query and cache"
 msgstr "使用dnsforwarder UDP查询并缓存"
-
 
 msgid "Use chinadns query and cache"
 msgstr "使用ChinaDNS查询并缓存"
