@@ -72,7 +72,14 @@ define Package/$(PKG_NAME)/install
 	$(CP) $(PKG_BUILD_DIR)/base/* $(1)/etc/subconverter/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/subconverter.init $(1)/etc/init.d/subconverter
-	( cd $(1)/etc/subconverter && ln -sf ../../usr/bin/subconverter subconverter )
+endef
+
+define Package/$(PKG_NAME)/postinst
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	ln -sf /usr/bin/subconverter /etc/subconverter/subconverter
+fi
+exit 0
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
