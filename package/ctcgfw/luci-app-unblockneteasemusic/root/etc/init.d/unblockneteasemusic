@@ -13,8 +13,8 @@ music_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_source
 qq_cookie="$(uci get unblockneteasemusic.@unblockneteasemusic[0].qq_cookie 2>"/dev/null")"
 youtube_key="$(uci get unblockneteasemusic.@unblockneteasemusic[0].youtube_key 2>"/dev/null")"
 
-endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url)"
-hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
+endpoint_url="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_url || echo "http://music.163.com")"
+hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways || echo "use_ipset")"
 
 auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
 update_time="$(uci get unblockneteasemusic.@unblockneteasemusic[0].update_time)"
@@ -51,7 +51,7 @@ ipset=/clientlog3.music.163.com/neteasemusic
 		/etc/init.d/dnsmasq reload > "/dev/null" 2>&1
 
 		if ! ipset list "neteasemusic" > "/dev/null"; then ipset create "neteasemusic" hash:ip; fi
-		curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add neteasemusic "$1}' |bash > "/dev/null" 2>&1
+		curl --retry "5" --retry-delay "3" -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" |grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' |sort |uniq |awk '{print "ipset add neteasemusic "$1}' |bash > "/dev/null" 2>&1
 		iptables -t nat -N "netease_cloud_music"
 		iptables -t nat -A "netease_cloud_music" -d "0.0.0.0/8" -j RETURN
 		iptables -t nat -A "netease_cloud_music" -d "10.0.0.0/8" -j RETURN
