@@ -55,6 +55,31 @@ daemon_enable.description = translate("开启后，附属程序会自动检测�
 daemon_enable.default = 0
 daemon_enable.rmempty = false
 
+download_cert = s:option(Button,"certificate",translate("HTTPS 证书"))
+download_cert.inputtitle = translate("下载 CA 根证书")
+download_cert.description = translate("Linux/iOS/MacOSX在信任根证书后方可正常使用")
+download_cert.inputstyle = "reload"
+download_cert.write = function()
+	act_download_cert()
+end
+
+function act_download_cert()
+	local t,e
+	t=nixio.open("/usr/share/unblockneteasemusic/core/ca.crt","r")
+	luci.http.header('Content-Disposition','attachment; filename="ca.crt"')
+	luci.http.prepare_content("application/octet-stream")
+	while true do
+		e=t:read(nixio.const.buffersize)
+		if(not e)or(#e==0)then
+			break
+		else
+			luci.http.write(e)
+		end
+	end
+	t:close()
+	luci.http.close()
+end
+
 advanced_mode = s:option(Flag, "advanced_mode", translate("启用进阶设置"))
 advanced_mode.description = translate("仅推荐高级玩家使用")
 advanced_mode.default = 0
