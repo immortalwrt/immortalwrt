@@ -5,7 +5,7 @@ msgid "DiskMan"
 msgstr "DiskMan 磁盘管理"
 
 msgid "Manage Disks over LuCI."
-msgstr "通过LuCI管理磁盘"
+msgstr "通过 LuCI 管理磁盘"
 
 msgid "Rescan Disks"
 msgstr "重新扫描磁盘"
@@ -26,7 +26,7 @@ msgid "Partition Table"
 msgstr "分区表"
 
 msgid "SATA Version"
-msgstr "SATA版本"
+msgstr "SATA 版本"
 
 msgid "Health"
 msgstr "健康"
@@ -125,7 +125,7 @@ msgid "Device Info"
 msgstr "设备信息"
 
 msgid "Disk Man"
-msgstr "DiskMan磁盘管理"
+msgstr "DiskMan 磁盘管理"
 
 msgid "Partitions Info"
 msgstr "分区信息"

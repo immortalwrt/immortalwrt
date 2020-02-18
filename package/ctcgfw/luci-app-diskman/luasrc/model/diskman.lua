@@ -234,14 +234,21 @@ local get_parted_info = function(device)
           table.insert(partitions_temp[disk_temp["extended_partition_index"]]["logicals"], i)
         end
       elseif (p["number"] < 4) and (p["number"] > 0) then
-        local real_size_sec = tonumber(nixio.fs.readfile("/sys/block/"..device.."/"..p["name"].."/size")) * tonumber(disk_temp.phy_sec)
-        if real_size_sec ~= p["size"] then
-          disk_temp["extended_partition_index"] = i
-          p["type"] = "extended"
-          p["size"] = real_size_sec
-          p["fs"] = "-"
-          p["logicals"] = {}
+        local s = nixio.fs.readfile("/sys/block/"..device.."/"..p["name"].."/size")
+        if s then
+          local real_size_sec = tonumber(s) * tonumber(disk_temp.phy_sec)
+          -- if size not equal, it's an extended
+          if real_size_sec ~= p["size"] then
+            disk_temp["extended_partition_index"] = i
+            p["type"] = "extended"
+            p["size"] = real_size_sec
+            p["fs"] = "-"
+            p["logicals"] = {}
+          else
+            p["type"] = "primary"
+          end
         else
+          -- if not found in "/sys/block"
           p["type"] = "primary"
         end
       end
