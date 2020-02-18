@@ -222,6 +222,45 @@ local function processData(szType, content, add_mode)
 		end
 		result.ss_encrypt_method = method
 		result.password = password
+	elseif szType == "trojan" then
+		local alias = ""
+		if content:find("#") then
+			local idx_sp = content:find("#")
+			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1)
+		end
+		local Info = split(content, "@")
+		if Info then
+			local address, port, peer
+			local password = Info[1]
+			local allowInsecure = 1
+			local params = {}
+			local hostInfo = split(Info[2], ":")
+			if hostInfo then
+				address = hostInfo[1]
+				hostInfo = split(hostInfo[2], "?")
+				if hostInfo then
+					port = hostInfo[1]
+					for _, v in pairs(split(hostInfo[2], '&')) do
+						local t = split(v, '=')
+						params[t[1]] = t[2]
+					end
+					if params.allowInsecure then
+						allowInsecure = params.allowInsecure
+					end
+					if params.peer then
+						peer = params.peer
+					end
+				end
+			end
+			result.type = "Trojan"
+			result.address = address
+			result.port = port
+			result.password = password
+			result.tls_allowInsecure = allowInsecure
+			result.tls_serverName = peer
+			result.remarks = UrlDecode(alias)
+		end
 	elseif szType == "ssd" then
 		result.type = "SS"
 		result.address = content.server
@@ -395,7 +434,7 @@ local function parse_link(raw, remark, md5_str, manual)
 					local node = trim(v)
 					local dat = split(node, "://")
 					if dat and dat[1] and dat[2] then
-						if dat[1] == 'ss' then
+						if dat[1] == 'ss' or dat[1] == 'trojan' then
 							result = processData(dat[1], dat[2], add_mode)
 						else
 							result = processData(dat[1], base64Decode(dat[2]), add_mode)
