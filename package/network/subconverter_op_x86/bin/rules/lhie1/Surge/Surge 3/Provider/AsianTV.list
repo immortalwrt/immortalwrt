@@ -1,0 +1,36 @@
+# > Bilibili
+USER-AGENT,*bili*
+DOMAIN-KEYWORD,bilibili
+DOMAIN-SUFFIX,acg.tv
+DOMAIN-SUFFIX,acgvideo.com
+DOMAIN-SUFFIX,b23.tv
+DOMAIN-SUFFIX,biliapi.com
+DOMAIN-SUFFIX,biliapi.net
+DOMAIN-SUFFIX,bilibili.com
+DOMAIN-SUFFIX,biligame.com
+DOMAIN-SUFFIX,biligame.net
+DOMAIN-SUFFIX,bilivideo.com
+DOMAIN-SUFFIX,hdslb.com
+DOMAIN-SUFFIX,im9.com
+
+# > IQIYI
+USER-AGENT,QIYI*
+USER-AGENT,iQiYi*
+DOMAIN-KEYWORD,qiyi
+DOMAIN-SUFFIX,qy.net
+IP-CIDR,101.227.0.0/16,no-resolve
+IP-CIDR,101.224.0.0/13,no-resolve
+IP-CIDR,119.176.0.0/12,no-resolve
+
+# > letv
+DOMAIN-SUFFIX,api.mob.app.letv.com
+
+# > MOO
+USER-AGENT,MOO*
+USER-AGENT,TencentMidasConnect*
+
+# > Tencent Video
+DOMAIN-SUFFIX,vv.video.qq.com
+
+# > Youku
+IP-CIDR,106.11.0.0/16,no-resolve
