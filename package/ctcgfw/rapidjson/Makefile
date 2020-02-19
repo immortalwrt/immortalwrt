@@ -36,7 +36,6 @@ define Package/$(PKG_NAME)
   CATEGORY:=Libraries
   URL:=https://github.com/Tencent/rapidjson
   TITLE:=rapidjson JSON parser/generator for C++
-  MAINTAINER:=[CTCGFW]Project OpenWrt
 endef
 
 define Package/$(PKG_NAME)/description
