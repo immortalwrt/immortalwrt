@@ -66,7 +66,7 @@ $(curdir)/install: $(TMP_DIR)/.build $(curdir)/merge $(if $(CONFIG_TARGET_PER_DE
 	rm -rf $(TARGET_DIR) $(TARGET_DIR_ORIG)
 	mkdir -p $(TARGET_DIR)/tmp
 	$(call opkg,$(TARGET_DIR)) install \
-		$(call opkg_package_files,$(shell cat $(PACKAGE_INSTALL_FILES) 2>/dev/null))
+		$(call opkg_package_files,$(foreach pkg,$(shell cat $(PACKAGE_INSTALL_FILES) 2>/dev/null),$(pkg)$(call GetABISuffix,$(pkg))))
 	@for file in $(PACKAGE_INSTALL_FILES); do \
 		[ -s $$file.flags ] || continue; \
 		for flag in `cat $$file.flags`; do \
