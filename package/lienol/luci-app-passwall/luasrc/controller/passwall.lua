@@ -198,11 +198,12 @@ function ping_node()
     e.index = index
     if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
                          appname) == "1" and
-        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        e.ping = luci.sys.exec(
-                     "echo -n `tcping -q -c 1 -i 1 -p " .. port .. " " ..
-                         address ..
-                         " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
+        luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
+        local interface = luci.sys.exec(
+                              "echo -n $(route | grep default | awk '{print $NF}')")
+        e.ping = luci.sys.exec(string.format(
+                                   "echo -n $(tcping -c 1 -i 1 -I %s -p %s %s 2>&1 | grep 'SYN/ACK' | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
+                                   interface, port, address))
     else
         e.ping = luci.sys.exec(
                      "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
@@ -243,6 +244,8 @@ function check_port()
         luci.sys.exec("echo -n `command -v tcping`") ~= "" then
         retstring = retstring ..
                         "<font color='green'>使用tcping检测端口延迟</font><br />"
+        local interface = luci.sys.exec(
+                              "echo -n $(route | grep default | awk '{print $NF}')")
         uci:foreach("passwall", "nodes", function(s)
             local ret = ""
             local tcp_socket
@@ -254,9 +257,9 @@ function check_port()
                     s.remarks then
                     node_name = "[%s] [%s:%s]" % {s.remarks, s.address, s.port}
                     result = luci.sys.exec(
-                                 "echo -n `tcping -q -c 1 -i 1 -p " .. s.port ..
-                                     " " .. s.address ..
-                                     " 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`")
+                                 string.format(
+                                     "echo -n $(tcping -c 1 -i 1 -I %s -p %s %s 2>&1 | grep 'SYN/ACK' | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
+                                     interface, s.port, s.address))
                     if result and result ~= "" then
                         retstring = retstring .. "<font color='green'>" ..
                                         node_name .. "   " .. result ..

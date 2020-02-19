@@ -2,7 +2,6 @@ local e = require "nixio.fs"
 local e = require "luci.sys"
 local net = require"luci.model.network".init()
 local uci = require"luci.model.uci".cursor()
-local ifaces = e.net:devices()
 local appname = "passwall"
 
 local n = {}
@@ -32,13 +31,13 @@ o.default = false
 
 ---- Console Username
 o = s:option(Value, "console_user", translate("Console Username"))
-o.default = "admin"
+o.default = ""
 o:depends("balancing_enable", 1)
 
 ---- Console Password
 o = s:option(Value, "console_password", translate("Console Password"))
 o.password = true
-o.default = "admin"
+o.default = ""
 o:depends("balancing_enable", 1)
 
 ---- Console Port
@@ -72,6 +71,7 @@ o.rmempty = false
 ---- Node Port
 o = s:option(Value, "lbort", translate("Node Port"))
 o:value("default", translate("Default"))
+o.default = "default"
 o.rmempty = false
 
 ---- Node Weight
@@ -82,8 +82,9 @@ o.rmempty = false
 ---- Export
 o = s:option(ListValue, "export", translate("Export Of Multi WAN"))
 o:value(0, translate("Auto"))
+local ifaces = e.net:devices()
 for _, iface in ipairs(ifaces) do
-    if (iface:match("^pppoe*")) then
+    if (iface:match("^br") or iface:match("^eth*") or iface:match("^pppoe*")) then
         local nets = net:get_interface(iface)
         nets = nets and nets:get_networks() or {}
         for k, v in pairs(nets) do nets[k] = nets[k].sid end

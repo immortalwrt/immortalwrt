@@ -803,11 +803,11 @@ start_dns() {
 
 add_dnsmasq() {
 	mkdir -p $TMP_DNSMASQ_PATH $DNSMASQ_PATH /var/dnsmasq.d
-	cat $RULE_PATH/whitelist_host | sed "s/^/ipset=&\/./g" | sed "s/$/\/&whitelist/g" | sort | awk '{if ($0!=line) print;line=$0}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
+	cat $RULE_PATH/whitelist_host | sed -e "/^$/d" | sed "s/^/ipset=&\/./g" | sed "s/$/\/&whitelist/g" | sort | awk '{if ($0!=line) print;line=$0}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
 
 	[ "$DNS_MODE" != "nonuse" ] && {
-		[ -f "$RULE_PATH/blacklist_host" -a -s "$RULE_PATH/blacklist_host" ] && cat $RULE_PATH/blacklist_host | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' > $TMP_DNSMASQ_PATH/blacklist_host.conf
-		[ -f "$RULE_PATH/router" -a -s "$RULE_PATH/router" ] && cat $RULE_PATH/router | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/router"}' > $TMP_DNSMASQ_PATH/router.conf
+		[ -f "$RULE_PATH/blacklist_host" -a -s "$RULE_PATH/blacklist_host" ] && cat $RULE_PATH/blacklist_host | sed -e "/^$/d" | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' > $TMP_DNSMASQ_PATH/blacklist_host.conf
+		[ -f "$RULE_PATH/router" -a -s "$RULE_PATH/router" ] && cat $RULE_PATH/router | sed -e "/^$/d" | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/router"}' > $TMP_DNSMASQ_PATH/router.conf
 		[ -f "$RULE_PATH/gfwlist.conf" -a -s "$RULE_PATH/gfwlist.conf" ] && ln -s $RULE_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
 		
 		subscribe_proxy=$(config_t_get global_subscribe subscribe_proxy 0)
@@ -942,9 +942,6 @@ gen_pdnsd_config() {
 				interval = 60;
 				uptest = none;
 				purge_cache = off;
-				reject=::/0;
-				reject_policy=negate;
-				reject_recursively=on;
 			}
 			
 		EOF
@@ -1123,8 +1120,8 @@ start() {
 	start_redir TCP REDIR tcp
 	start_redir UDP REDIR udp
 	start_dns
-	source $APP_PATH/iptables.sh start
 	add_dnsmasq
+	source $APP_PATH/iptables.sh start
 	start_crontab
 	rm -f "$LOCK_FILE"
 	echolog "运行完成！\n"
