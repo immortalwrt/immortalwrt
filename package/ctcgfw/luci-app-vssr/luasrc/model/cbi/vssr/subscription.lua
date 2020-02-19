@@ -36,7 +36,8 @@ end
 o.default=2
 o.rmempty = false
 
-o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"))
+o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"),
+	translate("Before subscribing please click below to delete all servers in the subscription"))
 o.rmempty = true
 
 o = s:option(Flag, "proxy", translate("Through proxy update"))

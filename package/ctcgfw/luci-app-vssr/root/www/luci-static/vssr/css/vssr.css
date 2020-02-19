@@ -312,7 +312,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
         position: relative;
         background: #CCFFFF;
         margin: 10px;
-        padding: 8px 15px 10px 70px;
+        padding: 18px 18px 18px 88px;
         box-shadow: 0 0 1rem 0 rgba(136,152,170,.75);
         border-radius: .5rem;
         border: 0;
@@ -464,10 +464,10 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
       background-color: #336633 !important;
         border-color: #2e6da4 !important;
         font-size:12px;
-        padding:0.5rem 0.8rem;
+        padding:0.6rem 0.8rem;
         float:right;
         margin-right:10px;
-        margin-top:0rem;
+        margin-top:-0.3rem;
 
 }
 

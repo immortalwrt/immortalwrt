@@ -132,7 +132,7 @@ function change_node()
     if sid ~= "" then
         uci:set("vssr", name, "global_server", sid)
         uci:commit("vssr")
-     luci.sys.call("uci commit vssr && /etc/init.d/vssr restart")
+     luci.sys.call("/etc/init.d/vssr restart")
         e.status = true
     end
     luci.http.prepare_content("application/json")
@@ -271,12 +271,26 @@ if luci.sys.call("ps -w | grep trojan-server | grep -v grep >/dev/null") == 0 th
 end
 
 function act_ping()
-	local e={}
-	e.index=luci.http.formvalue("index")
-	e.ping=luci.sys.exec("ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*.[0-9]' | awk -F '=' '{print$2}'"%luci.http.formvalue("domain"))
+	local e = {}
+	local domain = luci.http.formvalue("domain")
+	local port = luci.http.formvalue("port")
+	e.index = luci.http.formvalue("index")
+	local iret = luci.sys.call(" ipset add ss_spec_wan_ac " .. domain .. " 2>/dev/null")
+	local socket = nixio.socket("inet", "stream")
+	socket:setopt("socket", "rcvtimeo", 3)
+	socket:setopt("socket", "sndtimeo", 3)
+	e.socket = socket:connect(domain, port)
+	socket:close()
+	e.ping = luci.sys.exec("ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*.[0-9]' | awk -F '=' '{print$2}'" % domain)
+	if (iret == 0) then
+		luci.sys.call(" ipset del ss_spec_wan_ac " .. domain)
+	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end
+
+
+
 
 function check_status()
 	local set ="/usr/bin/ssr-check www." .. luci.http.formvalue("set") .. ".com 80 3 1"

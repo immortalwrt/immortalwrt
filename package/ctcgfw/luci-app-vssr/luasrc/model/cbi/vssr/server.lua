@@ -104,6 +104,9 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
+o = sec:option(DummyValue,"vmess_id",translate("ID"))
+o.width="10%"
+
 o = sec:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
 o.width="10%"
 
