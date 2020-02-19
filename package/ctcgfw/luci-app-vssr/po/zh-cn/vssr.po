@@ -764,12 +764,24 @@ msgstr "启用管理控制台"
 msgid "Service Port"
 msgstr "端口"
 
+msgid "Socket Connected"
+msgstr "连接测试"
+
 
 msgid "Enable HTTP Proxy"
 msgstr "启用HTTP代理"
 
 msgid "HTTP Port"
 msgstr "HTTP代理端口"
+
+msgid "plugin"
+msgstr "插件"
+
+msgid "Plugin Opts"
+msgstr "插件参数"
+
+msgid "Before subscribing please click below to delete all servers in the subscription"
+msgstr "订阅前请点击下面的删除所有服务器在订阅"
 
 
 

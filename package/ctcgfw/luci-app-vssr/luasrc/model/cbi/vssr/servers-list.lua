@@ -55,18 +55,15 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
-o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
+
+o = s:option(DummyValue,"security",translate("Encrypt Method"))
 o.width="10%"
 
-o = s:option(DummyValue, "protocol", translate("Protocol"))
-o.width="10%"
 
-o = s:option(DummyValue, "obfs", translate("Obfs"))
+
+o = s:option(DummyValue, "server_port", translate("Socket Connected"))
+o.template="vssr/socket"
 o.width="10%"
-o = s:option(Flag, "switch_enable", translate("Enable Auto Switch"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "?"
-end
 
 o = s:option(DummyValue,"server",translate("Ping Latency"))
 o.template="vssr/ping1"
