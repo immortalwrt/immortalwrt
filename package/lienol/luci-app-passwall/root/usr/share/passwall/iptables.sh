@@ -187,13 +187,20 @@ load_acl() {
 }
 
 filter_vpsip() {
-	local server_ip use_ipv6 network_type
+	local use_ipv6 network_type server
 	use_ipv6=$(config_get $1 use_ipv6)
 	network_type="ipv4"
 	[ "$use_ipv6" == "1" ] && network_type="ipv6"
-	server_ip=$(get_node_host_ip $1)
-	[ -n "$server_ip" ] && {
-		[ "$network_type" == "ipv4" ] && ipset -! add $IPSET_VPSIPLIST $server_ip >/dev/null 2>&1 &
+	server=$(config_get $1 address)
+	[ -n "$server" ] && {
+		[ "$network_type" == "ipv4" ] && {
+			isip=$(echo $server | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
+			if [ -n "$isip" ]; then
+				ipset -! add $IPSET_VPSIPLIST $isip >/dev/null 2>&1 &
+			else
+				echo "$server" | sed -e "/^$/d" | sed "s/^/ipset=&\//g" | sed "s/$/\/&vpsiplist/g" | sort | awk '{if ($0!=line) print;line=$0}' >> $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+			fi
+		}
 	}
 }
 
@@ -217,9 +224,9 @@ add_firewall_rule() {
 	ipset -! create $IPSET_BLACKLIST nethash && ipset flush $IPSET_BLACKLIST
 	ipset -! create $IPSET_WHITELIST nethash && ipset flush $IPSET_WHITELIST
 
-	sed -e "s/^/add $IPSET_CHN &/g" $RULE_PATH/chnroute | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	sed -e "s/^/add $IPSET_BLACKLIST &/g" $RULE_PATH/blacklist_ip | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	sed -e "s/^/add $IPSET_WHITELIST &/g" $RULE_PATH/whitelist_ip | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULE_PATH/chnroute | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULE_PATH/blacklist_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULE_PATH/whitelist_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 
 	ipset -! -R <<-EOF || return 1
 		$(gen_laniplist | sed -e "s/^/add $IPSET_LANIPLIST /")
@@ -242,6 +249,7 @@ add_firewall_rule() {
 	$ipt_n -A PSW $(dst $IPSET_VPSIPLIST) -j RETURN
 	$ipt_n -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_n -N PSW_ACL
+	
 	$ipt_n -N PSW_OUTPUT
 	$ipt_n -A PSW_OUTPUT $(dst $IPSET_LANIPLIST) -j RETURN
 	$ipt_n -A PSW_OUTPUT $(dst $IPSET_VPSIPLIST) -j RETURN
@@ -252,6 +260,7 @@ add_firewall_rule() {
 	$ipt_m -A PSW $(dst $IPSET_VPSIPLIST) -j RETURN
 	$ipt_m -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_m -N PSW_ACL
+	
 	$ipt_m -N PSW_OUTPUT
 	$ipt_m -A PSW_OUTPUT $(dst $IPSET_LANIPLIST) -j RETURN
 	$ipt_m -A PSW_OUTPUT $(dst $IPSET_VPSIPLIST) -j RETURN
@@ -540,8 +549,8 @@ add_firewall_rule() {
 		}
 	fi
 	
-	#  过滤所有节点IP，暂时关闭，节点一多会解析很久导致启动超慢。。。
-	# config_foreach filter_vpsip "nodes"
+	#  过滤所有节点IP
+	config_foreach filter_vpsip "nodes"
 }
 
 del_firewall_rule() {

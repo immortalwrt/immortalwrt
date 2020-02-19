@@ -271,6 +271,9 @@ local function processData(szType, content, add_mode)
 		result.ss_plugin_opts = content.plugin_options
 		result.group = content.airport
 		result.remarks = content.remarks
+	else
+		log('暂时不支持' .. szType .. "类型的节点订阅，跳过此节点。")
+		return nil
 	end
 	if not result.remarks then
 		result.remarks = result.address .. ':' .. result.port
