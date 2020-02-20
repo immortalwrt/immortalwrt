@@ -10,7 +10,7 @@ end
     if nixio.fs.access("/usr/bin/ssr-redir") then
 	entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false	
         entry({"admin", "vpn", "vssr"},
-              alias("admin", "vpn", "vssr", "client"), _("vssr"), 10).dependent =
+              alias("admin", "vpn", "vssr", "client"), _("Hello World"), 10).dependent =
             true -- 首页
         entry({"admin", "vpn", "vssr", "client"}, cbi("vssr/client"),
               _("SSR Client"), 10).leaf = true -- 基本设置
