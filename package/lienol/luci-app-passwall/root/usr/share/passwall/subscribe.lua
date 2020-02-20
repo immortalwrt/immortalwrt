@@ -21,7 +21,6 @@ local nodeResult = setmetatable({}, { __index = cache })  -- update result
 local name = 'passwall'
 local uciType = 'nodes'
 local ucic = luci.model.uci.cursor()
-local api = require "luci.model.cbi.passwall.api.api"
 local arg2 = arg[2]
 
 local log = function(...)
@@ -41,22 +40,25 @@ end
 
 -- 分割字符串
 local function split(full, sep)
-	full = full:gsub("%z", "")  -- 这里不是很清楚 有时候结尾带个\0
-	local off, result = 1, {}
-	while true do
-		local nStart, nEnd = full:find(sep, off)
-		if not nEnd then
-			local res = ssub(full, off, slen(full))
-			if #res > 0 then -- 过滤掉 \0
-				tinsert(result, res)
+	if full then
+		full = full:gsub("%z", "")  -- 这里不是很清楚 有时候结尾带个\0
+		local off, result = 1, {}
+		while true do
+			local nStart, nEnd = full:find(sep, off)
+			if not nEnd then
+				local res = ssub(full, off, slen(full))
+				if #res > 0 then -- 过滤掉 \0
+					tinsert(result, res)
+				end
+				break
+			else
+				tinsert(result, ssub(full, off, nStart - 1))
+				off = nEnd + 1
 			end
-			break
-		else
-			tinsert(result, ssub(full, off, nStart - 1))
-			off = nEnd + 1
 		end
+		return result
 	end
-	return result
+	return {}
 end
 -- urlencode
 local function get_urlencode(c)
@@ -299,7 +301,7 @@ local function truncate_nodes()
 	for i = 1, tcp_node_num, 1 do
 		local node = ucic:get_first(name, "global", "tcp_node"..i, nil)
 		if node and node ~= "nil" then
-			local is_sub_node = api.uci_get_type_id(node, "is_sub", "0")
+			local is_sub_node = ucic:get(name, node, "is_sub", "0")
 			if is_sub_node == "1" then
 				is_stop = 1
 				ucic:set(name, ucic:get_first(name, 'global'), "tcp_node"..i, "nil")
@@ -310,7 +312,7 @@ local function truncate_nodes()
 	for i = 1, udp_node_num, 1 do
 		local node = ucic:get_first(name, "global", "udp_node"..i, nil)
 		if node and node ~= "nil" then
-			local is_sub_node = api.uci_get_type_id(node, "is_sub", "0")
+			local is_sub_node = ucic:get(name, node, "is_sub", "0")
 			if is_sub_node == "1" then
 				is_stop = 1
 				ucic:set(name, ucic:get_first(name, 'global'), "udp_node"..i, "nil")
@@ -321,7 +323,7 @@ local function truncate_nodes()
 	for i = 1, socks5_node_num, 1 do
 		local node = ucic:get_first(name, "global", "socks5_node"..i, nil)
 		if node and node ~= "nil" then
-			local is_sub_node = api.uci_get_type_id(node, "is_sub", "0")
+			local is_sub_node = ucic:get(name, node, "is_sub", "0")
 			if is_sub_node == "1" then
 				is_stop = 1
 				ucic:set(name, ucic:get_first(name, 'global'), "socks5_node"..i, "nil")

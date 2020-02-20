@@ -13,9 +13,9 @@ LEDE_BOARD = nil
 DISTRIB_TARGET = nil
 
 function uci_get_type(type, config, default)
-    value = uci:get(appname, "@" .. type .. "[0]", config) or sys.exec(
-                "echo -n `uci -q get " .. appname .. ".@" .. type .. "[0]." ..
-                    config .. "`")
+    local value = uci:get_first(appname, type, config, default) or sys.exec(
+                      "echo -n `uci -q get " .. appname .. ".@" .. type ..
+                          "[0]." .. config .. "`")
     if (value == nil or value == "") and (default and default ~= "") then
         value = default
     end
@@ -23,10 +23,9 @@ function uci_get_type(type, config, default)
 end
 
 function uci_get_type_id(id, config, default)
-    value = uci:get(appname, id, config) or
-                sys.exec(
-                    "echo -n `uci -q get " .. appname .. "." .. id .. "." ..
-                        config .. "`")
+    local value = uci:get(appname, id, config, default) or
+                      sys.exec("echo -n `uci -q get " .. appname .. "." .. id ..
+                                   "." .. config .. "`")
     if (value == nil or value == "") and (default and default ~= "") then
         value = default
     end
@@ -175,7 +174,9 @@ function get_api_json(url)
     --	function(chunk) output[#output + 1] = chunk end)
     -- local json_content = util.trim(table.concat(output))
 
-    local json_content = luci.sys.exec(wget .. " --no-check-certificate --timeout=10 -t 1 -O- " .. url)
+    local json_content = luci.sys.exec(wget ..
+                                           " --no-check-certificate --timeout=10 -t 1 -O- " ..
+                                           url)
 
     if json_content == "" then return {} end
 

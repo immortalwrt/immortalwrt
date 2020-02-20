@@ -836,8 +836,7 @@ add_dnsmasq() {
 		conf-dir=$TMP_DNSMASQ_PATH
 	EOF
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
-	echolog "dnsmasq：生成配置文件并重启服务。"
+	echolog "dnsmasq：生成配置文件。"
 }
 
 gen_redsocks_config() {
@@ -1123,8 +1122,9 @@ start() {
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
 	start_crontab
-	rm -f "$LOCK_FILE"
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
 	echolog "运行完成！\n"
+	rm -f "$LOCK_FILE"
 	return 0
 }
 
