@@ -70,7 +70,7 @@ o:value("0", translate("Use Local DNS Service listen port 5335"))
 o:value("2", translate("Use system DNS"))
 o.default = 1
 
-o = s:option(ListValue, "tunnel_forward", translate("Anti-pollution DNS Server"))
+o = s:option(Value, "tunnel_forward", translate("Anti-pollution DNS Server"))
 o:value("8.8.4.4:53", translate("Google Public DNS (8.8.4.4)"))
 o:value("8.8.8.8:53", translate("Google Public DNS (8.8.8.8)"))
 o:value("208.67.222.222:53", translate("OpenDNS (208.67.222.222)"))
@@ -85,5 +85,6 @@ o:value("1.1.1.1:53", translate("Cloudflare DNS (1.1.1.1)"))
 o:value("114.114.114.114:53", translate("Oversea Mode DNS-1 (114.114.114.114)"))
 o:value("114.114.115.115:53", translate("Oversea Mode DNS-2 (114.114.115.115)"))
 o:depends("pdnsd_enable", "1")
+o.description = translate("Custom DNS Server format as IP:PORT (default: 8.8.4.4:53)")
 
 return m
