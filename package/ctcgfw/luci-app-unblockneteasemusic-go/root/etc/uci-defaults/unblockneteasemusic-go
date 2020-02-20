@@ -5,11 +5,11 @@ uci -q batch <<-EOF >/dev/null
 	add ucitrack unblockneteasemusic-go
 	set ucitrack.@unblockneteasemusic-go[-1].init=unblockneteasemusic-go
 	commit ucitrack
-	delete firewall.unblockneteasemusic-go
-	set firewall.unblockneteasemusic-go=include
-	set firewall.unblockneteasemusic-go.type=script
-	set firewall.unblockneteasemusic-go.path=/var/etc/unblockneteasemusic-go.include
-	set firewall.unblockneteasemusic-go.reload=1
+	delete firewall.unblockneteasemusic_go
+	set firewall.unblockneteasemusic_go=include
+	set firewall.unblockneteasemusic_go.type=script
+	set firewall.unblockneteasemusic_go.path=/var/etc/unblockneteasemusic-go.include
+	set firewall.unblockneteasemusic_go.reload=1
 	commit firewall
 EOF
 
