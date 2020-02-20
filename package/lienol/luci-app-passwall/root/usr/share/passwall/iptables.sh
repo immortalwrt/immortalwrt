@@ -198,7 +198,8 @@ filter_vpsip() {
 			if [ -n "$isip" ]; then
 				ipset -! add $IPSET_VPSIPLIST $isip >/dev/null 2>&1 &
 			else
-				echo "$server" | sed -e "/^$/d" | sed "s/^/ipset=&\//g" | sed "s/$/\/&vpsiplist/g" | sort | awk '{if ($0!=line) print;line=$0}' >> $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+				has=$(cat $TMP_DNSMASQ_PATH/vpsiplist_host.conf | grep "$server")
+				[ -z "$has" ] && echo "$server" | sed -e "/^$/d" | sed "s/^/ipset=&\//g" | sed "s/$/\/&vpsiplist/g" | sort | awk '{if ($0!=line) print;line=$0}' >> $TMP_DNSMASQ_PATH/vpsiplist_host.conf
 			fi
 		}
 	}

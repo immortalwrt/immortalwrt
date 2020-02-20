@@ -805,7 +805,7 @@ msgstr "状态信息显示IP111"
 msgid "Hide Menu"
 msgstr "隐藏菜单"
 
-msgid "After the hidden to the display, input example in the address bar: "
+msgid "After the hidden to the display, input example in the address bar:"
 msgstr "当你隐藏后想再次显示，地址栏输入例："
 
 msgid "Can't determine ARCH, or ARCH not supported."
