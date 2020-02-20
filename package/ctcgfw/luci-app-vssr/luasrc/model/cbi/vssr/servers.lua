@@ -31,7 +31,7 @@ s.servers = cjson.encode(server_table)
 s.template = "vssr/tblsection"
 s.extedit = luci.dispatcher.build_url("admin/vpn/vssr/servers/%s")
 function s.create(...)
-    local sid = TypedSection.create(...)
+	local sid = TypedSection.create(...)
     if sid then
         luci.http.redirect(s.extedit % sid)
         return
