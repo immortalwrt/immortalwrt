@@ -202,8 +202,8 @@ function ping_node()
         local interface = luci.sys.exec(
                               "echo -n $(route | grep default | awk '{print $NF}')")
         e.ping = luci.sys.exec(string.format(
-                                   "echo -n $(tcping -c 1 -i 1 -I %s -p %s %s 2>&1 | grep 'SYN/ACK' | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
-                                   interface, port, address))
+                                   "echo -n $(tcping -c 1 -i 1 -p %s %s 2>&1 | grep 'SYN/ACK' | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
+                                   port, address))
     else
         e.ping = luci.sys.exec(
                      "echo -n `ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}'`" %
