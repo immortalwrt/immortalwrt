@@ -44,8 +44,8 @@ function read_config(){
 	if [ -z "$down_timeout" ] ; then down_timeout="10";fi
 }
 
-# 等待 5s，确保 luci 设置已保存
-#sleep 5
+# 等待 2s，确保 luci 设置已保存
+sleep 2
 read_config
 
 # 检测程序开关
@@ -214,6 +214,15 @@ function usage(){
 	fi
 }
 
+# CPU 占用率
+function getcpu(){
+	AT=$(cat /proc/stat | grep "^cpu " | awk '{print $2+$3+$4+$5+$6+$7+$8 " " $2+$3+$4+$7+$8}')
+	sleep 3
+	BT=$(cat /proc/stat | grep "^cpu " | awk '{print $2+$3+$4+$5+$6+$7+$8 " " $2+$3+$4+$7+$8}')
+	printf "%.01f%%" $(echo $AT $BT | awk '{print (($4-$2)/($3-$1))*100}')
+}
+
+# 流量数据
 function usage_ip(){
 	if [ "$1" ] ;then
 		if [ -f ${dir}usage.db ] ; then ip=`cat ${dir}usage.db | grep -w $1`;else return;fi
@@ -239,7 +248,7 @@ function usage_down(){
 function bytes_for_humans {
 	if [ "$1" ] ;then
 		if [[ $1 -lt 1024 ]]; then
-			echo $1 bytes 
+			echo $1 bytes
 		elif [[ $1 -lt 1048576  ]]; then
 			echo `awk 'BEGIN{printf "%.2f\n",'$1'/'1024'}'` KB
 		elif [[ $1 -lt 1073741824  ]]; then
@@ -248,7 +257,7 @@ function bytes_for_humans {
 			echo `awk 'BEGIN{printf "%.2f\n",'$1'/'1073741824'}'` GB
 		fi
 	else
-		echo 0bytes 
+		echo 0bytes
     fi
 }
 
@@ -256,12 +265,12 @@ function bytes_for_humans {
 function time_for_humans {
 	if [ "$1" ] ;then
 		if [[ $1 -lt 60 ]]; then
-			echo $1 秒 
+			echo $1 秒
 		elif [[ $1 -lt 3600 ]]; then
 			usetime_min=`expr $1 / 60`
 			usetime_sec=`expr $usetime_min \* 60`
 			usetime_sec=`expr $1 - ${usetime_sec}`
-			echo $usetime_min 分钟 $usetime_sec 秒
+			echo $usetime_min 分 $usetime_sec 秒
 		elif [[ $1 -lt 216000  ]]; then
 			usetime_hour=`expr $1 / 3600`
 			usetime_min=`expr $usetime_hour \* 3600`
@@ -380,14 +389,14 @@ if [ "$1" ] ;then
 						if [ -f "${dir}title" ] ; then title=`cat ${dir}title` ;fi
 						if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
 						if [ -z "$title" ] ; then
-							title="有人连接了你的路由器"
-							content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1"
-						elif ( echo ${title} | grep -q "有人连接了你的路由器" ) ; then
-							title="有人连接了你的路由器"
-							content="%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1"
+							title="$ip_name 连接了你的路由器"
+							content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A客户端名：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_name%0D%0A%0D%0A客户端 IP：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$1%0D%0A%0D%0A客户端 MAC：%26ensp%3b%26ensp%3b$ip_mac"
+						elif ( echo ${title} | grep -q "连接了你的路由器" ) ; then
+							title="$ip_name 连接了你的路由器"
+							content="%0D%0A%0D%0A客户端名：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_name%0D%0A%0D%0A客户端 IP：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$1%0D%0A%0D%0A客户端 MAC：%26ensp%3b%26ensp%3b$ip_mac"
 						else
 							title="设备状态变化"
-							content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1"
+							content="%0D%0A%0D%0A---%0D%0A%0D%0A####新设备连接%0D%0A%0D%0A客户端名：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_name%0D%0A%0D%0A客户端 IP：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$1%0D%0A%0D%0A客户端 MAC：%26ensp%3b%26ensp%3b$ip_mac"
 						fi
 						echo "`date "+%Y-%m-%d %H:%M:%S"`  【微信推送】新设备 $ip_name $1 连接了">> ${logfile}
 				
@@ -467,20 +476,20 @@ if [ "$1" ] ;then
 				if [ ! -z `blackwhitelist $1` ] && [ `blackwhitelist $1` -eq 1 ] ; then
 					if [ -f "${dir}title" ] ; then title=`cat ${dir}title` ;fi
 					if [ -f "${dir}content" ] ; then content=`cat ${dir}content` ;fi
-					ip_total=`usage_ip $1` && if [ ! -z "$ip_total" ] ; then ip_total=">总计流量：$ip_total%0D%0A%0D%0A""";fi
+					ip_total=`usage_ip $1` && if [ ! -z "$ip_total" ] ; then ip_total="%0D%0A%0D%0A总计流量： %26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_total";fi
 					time_down=`date +%s`
 					time_up=$( cat ${dir}ipAddress | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u )
 					time1=$(($time_down-$time_up))
 					time1=`time_for_humans $time1`
 					if [ -z "$title" ] ; then
-						title="设备离线通知"
-						content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1%0D%0A%0D%0A""$ip_total>在线 $time1"
-					elif ( echo ${title} | grep -q "设备离线通知" ) ; then
-						title="设备离线通知"
-						content="%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1 %0D%0A%0D%0A""$ip_total>在线 $time1"
+						title="$ip_name 断开连接"
+						content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A客户端名：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_name%0D%0A%0D%0A客户端 IP： %26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$1%0D%0A%0D%0A客户端MAC： %26ensp%3b%26ensp%3b$ip_mac$ip_total%0D%0A%0D%0A在线时间： %26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$time1"
+					elif ( echo ${title} | grep -q "断开连接" ) ; then
+						title="$ip_name 断开连接"
+						content="%0D%0A%0D%0A客户端名：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_name%0D%0A%0D%0A客户端 IP：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$1%0D%0A%0D%0A客户端MAC：$ip_mac$ip_total%0D%0A%0D%0A在线时间：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$time1"
 					else
 						title="设备状态变化"
-						content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A"">$ip_name%0D%0A%0D%0A"">$1%0D%0A%0D%0A""$ip_total>在线 $time1"
+						content="%0D%0A%0D%0A---%0D%0A%0D%0A####设备断开连接%0D%0A%0D%0A客户端名：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_name%0D%0A%0D%0A客户端 IP：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$1%0D%0A%0D%0A客户端MAC：$ip_mac$ip_total%0D%0A%0D%0A在线时间：%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$time1"
 					fi
 				
 					echo "`date "+%Y-%m-%d %H:%M:%S"`  【微信推送】设备 $ip_name $1 断开连接 " >> ${logfile}
@@ -520,8 +529,8 @@ function send(){
 	if [ -z "$send_title" ] ; then send_title="路由状态：";fi
 	router_status=`get_config router_status`
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 系统运行状态%0D%0A%0D%0A";fi
-		#if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""     CPU占用：`top -n 1 |grep -i Cpu:| awk '{print $3":"$2" "$5":"$4}'`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""     平均负载：`cat /proc/loadavg | awk '{print $1" "$2" "$3}'`";fi
+		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""     CPU占用：`getcpu`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""     内存占用：`free -m | sed -n '2p' | awk '{print""($3/$2)*100"%"}'`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then send_content=${send_content}"%0D%0A%0D%0A""`cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     运行时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`";fi
 	router_temp=`get_config router_temp`
@@ -542,10 +551,10 @@ function send(){
 		if [ ! -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 --interface $send_wanIPv6 $ipv6_URL);fi
 		if [ -z "$ipv6_interface" ] ; then send_hostIPv6=$(curl -k -s -6 $ipv6_URL);fi
 		if [ ! -z "$router_wan" ] && [ "$router_wan" -eq "1" ] ; then
-			send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     ip：$send_wanIP"
-			send_content=${send_content}"%0D%0A%0D%0A""     外网 ip：$send_hostIP"
-			send_content=${send_content}"%0D%0A%0D%0A""     ipv6：$send_wanIPv6"
-			send_content=${send_content}"%0D%0A%0D%0A""     外网 ipv6：$send_hostIPv6"
+			send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     接口ip:$send_wanIP"
+			send_content=${send_content}"%0D%0A%0D%0A""     外网ip:$send_hostIP"
+			send_content=${send_content}"%0D%0A%0D%0A""      ipv6:$send_wanIPv6"
+			send_content=${send_content}"%0D%0A%0D%0A""     外网v6:$send_hostIPv6"
 			if [ ! -z "$send_content" ] && [ ! -z "$router_wan" ] ; then
 				if ( ! echo ${send_wanIP} | grep -q ${send_hostIP} );then send_content=${send_content}"%0D%0A%0D%0A""     外网 ip 与接口 ip 不一致，你的 ip 不是公网 ip";fi
 			else
@@ -575,9 +584,7 @@ function send(){
 			fi
 			done
 			wait
-				
 			send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 在线设备%0D%0A%0D%0A";
-			
 			IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
 			for  ip in $IPLIST; do
 				ip_total=`usage_ip $ip` && if [ ! -z "$ip_total" ] ; then ip_total="总计流量：$ip_total  ";fi
@@ -585,7 +592,9 @@ function send(){
 				time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
 				time1=$(($time_down-$time_up))
 				time1=`time_for_humans $time1`
-				send_content=${send_content}"%0D%0A%0D%0A""     `cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u`  $ip%0D%0A%0D%0A""     $ip_total在线 $time1"
+				ip_name=$( cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u )
+				if [ "${#ip_name}" -gt  "20" ] ; then ip_name=`echo ${ip_name:0:20}"*"`;fi
+				send_content=${send_content}"%0D%0A%0D%0A     $ip_name  $ip%0D%0A%0D%0A     $ip_total在线 $time1%0D%0A%0D%0A    ----"
 			done
 		fi
 	if [ ! -z "$device_name" ] ; then send_title="【$device_name】$send_title" ;fi
@@ -840,13 +849,45 @@ function rand_geturl(){
 				
 			fi
 		done
-			wait
-			if [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then
-				if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  没有新设备连接" >> ${logfile};fi
-			else
-				usage
-			fi
 		
+		wait
+		if [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then
+			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  没有新设备连接" >> ${logfile};fi
+		else
+			usage
+		fi
+		
+		if [ -f "${dir}content" ] ; then
+			content=`cat ${dir}content`
+			if [ -f ${dir}usage.db ] ; then ip_total_db="总计流量%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b";fi
+			content="%0D%0A%0D%0A---%0D%0A%0D%0A####现有在线设备 `grep -c "" ${dir}ipAddress` 台，具体如下%0D%0A%0D%0A#####IP 地址%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_total_db客户端名"
+			IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
+			for  ip in $IPLIST; do
+				ip_total=`usage_ip $ip`
+				time_down=`date +%s`
+				time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
+				time1=$(($time_down-$time_up))
+				time1=`time_for_humans $time1`
+				ip_name=$( cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u )
+				if [ "${#ip_name}" -gt  "18" ] ; then ip_name=`echo ${ip_name:0:18}"*"`;fi
+				n=`expr 16 - ${#ip}`
+				for i in `seq 1 $n` 
+				do
+					ip=$ip"%26ensp%3b"
+				done
+					
+				if [ ! -z "$ip_total" ] ; then	
+					n=`expr 12 - ${#ip_total}`
+					for i in `seq 1 $n` 
+						do
+						ip_total=$ip_total"%26ensp%3b"
+					done
+				fi
+				content=${content}"%0D%0A%0D%0A$ip$ip_total$ip_name"
+			done
+			echo -n $content >>${dir}content
+		fi
+				
 		cpu_Alert=0
 		# 负载状态报警
 		if [ ! -z "$cpuload_enable" ] && [ "$cpuload_enable" -eq "1" ] ; then
