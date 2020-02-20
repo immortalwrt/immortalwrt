@@ -17,8 +17,8 @@ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_HASH:=464f46744a6be778626d11452c4db3c2d09461080c6db42e358e21af19d542f6
 
-PKG_LICENSE:=GPLv3
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE:=Boost Software License, Version 1.0
+PKG_LICENSE_FILES:=COPYING
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -31,6 +31,8 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+CMAKE_OPTIONS+= -DMSGPACK_BUILD_EXAMPLES:BOOL=OFF
+
 define Package/$(PKG_NAME)
 	SECTION:=lib
 	CATEGORY:=Libraries
@@ -38,7 +40,7 @@ define Package/$(PKG_NAME)
 	TITLE:=MessagePack implementation for C and C++ / msgpack.org[C/C++]
 endef
 
-define Package/lib$(PKG_NAME)
+define Package/libmsgpack
 	$(call Package/$(PKG_NAME))
 	TITLE+= (Libraries)
 	VARIANT:=lib
@@ -48,7 +50,7 @@ define Package/$(PKG_NAME)/description
 	MessagePack is an efficient binary serialization format, which lets you exchange data among multiple languages like JSON, except that it's faster and smaller. Small integers are encoded into a single byte and short strings require only one extra byte in addition to the strings themselves.
 endef
 
-define Package/lib$(PKG_NAME)/description
+define Package/libmsgpack/description
 	$(call Package/$(PKG_NAME)/description)
 endef
 
@@ -62,10 +64,10 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/CMakeFiles/Export/lib/cmake/msgpack $(1)/usr/lib/cmake/msgpack
 endef
 
-define Package/lib$(PKG_NAME)/install
+define Package/libmsgpack/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/libmsgpackc.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
-$(eval $(call BuildPackage,lib$(PKG_NAME)))
+$(eval $(call BuildPackage,libmsgpack))
