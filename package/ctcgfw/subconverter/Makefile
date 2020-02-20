@@ -32,11 +32,11 @@ PKG_BUILD_DEPENDS:=jpcre2 rapidjson
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-  SECTION:=net
-  CATEGORY:=Network
-  TITLE:=Utility to convert between various subscription format.
-  URL:=https://github.com/tindy2013/subconverter
-  DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +libopenssl +zlib
+	SECTION:=utils
+	CATEGORY:=Utilities
+	TITLE:=Utility to convert between various subscription format.
+	URL:=https://github.com/tindy2013/subconverter
+	DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +libopenssl +zlib
 endef
 
 define Package/$(PKG_NAME)/description
