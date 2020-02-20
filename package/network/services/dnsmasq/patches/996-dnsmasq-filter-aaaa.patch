@@ -39,7 +39,7 @@ index d8c57d6..1cc65bf 100644
      { "dhcp-rapid-commit", 0, 0, LOPT_RAPID_COMMIT },
      { "dumpfile", 1, 0, LOPT_DUMPFILE },
      { "dumpmask", 1, 0, LOPT_DUMPMASK },
-+	 { "filter-aaaa", 0, 0, LOPT_FILTER_AAAA },
++    { "filter-aaaa", 0, 0, LOPT_FILTER_AAAA },
      { NULL, 0, 0, 0 }
    };
  
