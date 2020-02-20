@@ -36,7 +36,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Network
   TITLE:=Instant Terminal Sharing
   URL:=https://tmate.io
-  DEPENDS:=+libpthread +libevent2 +libssh +libmsgpack +libncurses
+  DEPENDS:=+libpthread +libevent2 +libssh +libmsgpack-c +libncurses
 endef
 
 define Package/$(PKG_NAME)/description

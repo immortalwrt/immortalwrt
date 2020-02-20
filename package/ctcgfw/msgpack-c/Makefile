@@ -33,25 +33,25 @@ include $(INCLUDE_DIR)/cmake.mk
 
 CMAKE_OPTIONS+= -DMSGPACK_BUILD_EXAMPLES:BOOL=OFF
 
-define Package/$(PKG_NAME)
+define Package/msgpack-c
 	SECTION:=lib
 	CATEGORY:=Libraries
 	URL:=https://github.com/msgpack/msgpack-c
 	TITLE:=MessagePack implementation for C and C++ / msgpack.org[C/C++]
 endef
 
-define Package/libmsgpack
-	$(call Package/$(PKG_NAME))
+define Package/libmsgpack-c
+	$(call Package/msgpack-c)
 	TITLE+= (Libraries)
 	VARIANT:=lib
 endef
 
-define Package/$(PKG_NAME)/description
+define Package/msgpack-c/description
 	MessagePack is an efficient binary serialization format, which lets you exchange data among multiple languages like JSON, except that it's faster and smaller. Small integers are encoded into a single byte and short strings require only one extra byte in addition to the strings themselves.
 endef
 
-define Package/libmsgpack/description
-	$(call Package/$(PKG_NAME)/description)
+define Package/libmsgpack-c/description
+	$(call Package/msgpack-c/description)
 endef
 
 define Build/InstallDev
@@ -64,10 +64,10 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/CMakeFiles/Export/lib/cmake/msgpack $(1)/usr/lib/cmake/msgpack
 endef
 
-define Package/libmsgpack/install
+define Package/libmsgpack-c/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/libmsgpackc.* $(1)/usr/lib/
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
-$(eval $(call BuildPackage,libmsgpack))
+$(eval $(call BuildPackage,msgpack-c))
+$(eval $(call BuildPackage,libmsgpack-c))
