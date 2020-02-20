@@ -225,6 +225,10 @@ local function processData(szType, content)
 	if not result.alias then
 		result.alias = result.server .. ':' .. result.server_port
 	end
+	
+        local flag =  luci.sys.exec('/usr/share/'..name..'/getflag.sh "'..result.alias..'" '..result.server)
+        result.flag = string.gsub(flag, '\n', '')
+	
 	-- alias 不参与 hashkey 计算
 	local alias = result.alias
 	result.alias = nil

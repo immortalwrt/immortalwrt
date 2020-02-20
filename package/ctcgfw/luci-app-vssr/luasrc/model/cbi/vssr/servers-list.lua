@@ -36,38 +36,31 @@ function s.create(...)
 end
 
 o = s:option(DummyValue, "type", translate("Type"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or translate("")
-end
+o.width="1%"
 
 o = s:option(DummyValue, "alias", translate("Alias"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or translate("None")
-end
+o.width="1%"
 
 o = s:option(DummyValue, "server", translate("Server Address"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "?"
-end
+o.width="30%"
 
 o = s:option(DummyValue, "server_port", translate("Server Port"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "?"
-end
+o.width="30%"
 
 
 o = s:option(DummyValue,"security",translate("Encrypt Method"))
-o.width="10%"
+o.width="1%"
 
-
+o = s:option(Flag, "switch_enable", translate("Enable Auto Switch"))
+o.width="1%"
 
 o = s:option(DummyValue, "server_port", translate("Socket Connected"))
 o.template="vssr/socket"
-o.width="10%"
+o.width="1%"
 
 o = s:option(DummyValue,"server",translate("Ping Latency"))
 o.template="vssr/ping1"
-o.width="10%"
+o.width="1%"
 
 m:append(Template("vssr/server_list"))
 
