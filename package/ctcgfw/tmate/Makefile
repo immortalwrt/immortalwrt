@@ -17,8 +17,8 @@ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_HASH:=62b61eb12ab394012c861f6b48ba0bc04ac8765abca13bdde5a4d9105cb16138
 
-PKG_LICENSE:=GPLv3
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE:=BSD
+PKG_LICENSE_FILES:=COPYING
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -40,7 +40,7 @@ define Package/$(PKG_NAME)
 endef
 
 define Package/$(PKG_NAME)/description
-	Instant Terminal Sharing.
+	Tmate is a fork of tmux. It provides an instant pairing solution.
 endef
 
 define Package/$(PKG_NAME)/install
