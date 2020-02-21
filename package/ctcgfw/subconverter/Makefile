@@ -66,20 +66,11 @@ define Build/Install
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/subconverter $(1)/usr/bin/subconverter
 	$(INSTALL_DIR) $(1)/etc/subconverter
 	$(CP) $(PKG_BUILD_DIR)/base/* $(1)/etc/subconverter/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/subconverter $(1)/etc/subconverter/subconverter
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/subconverter.init $(1)/etc/init.d/subconverter
-endef
-
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	ln -sf /usr/bin/subconverter /etc/subconverter/subconverter
-fi
-exit 0
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
