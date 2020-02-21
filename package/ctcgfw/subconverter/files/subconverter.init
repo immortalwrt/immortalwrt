@@ -6,6 +6,7 @@ USE_PROCD=1
 BIN=/etc/subconverter/subconverter
 
 start_service() {
+	[ ! -e /etc/subconverter/subconverter ] && ln -fs /usr/bin/subconverter /etc/subconverter/subconverter
 	procd_open_instance
 	procd_set_param command $BIN
 	procd_set_param respawn
