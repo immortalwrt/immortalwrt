@@ -1,0 +1,57 @@
+#!/bin/sh /etc/rc.common
+# Copyright (c) 2019 www.mleaf.org. All rights reserved.
+# 微信公众号【WiFi物联网】
+
+START=99
+STOP=10
+
+USE_PROCD=1
+
+PROG=/usr/sbin/mwol
+
+generate_mwol_conf()
+{
+	logger "Generate /tmp/mwol.json"
+	lua /usr/sbin/mwol_config_json > /tmp/mwol.json
+}
+
+start_service_real() {
+	local cfg="$1"
+	local enable
+	local id
+	config_get enable "$cfg" enable
+	config_get id "$cfg" id
+	if [ -z "$id" ]; then
+		mac=`cat /sys/class/net/eth0/address`
+		logger "mqtt id is not set to use eth0 by default: $mac"
+		uci set mwol.mwol_conf.id=$mac
+		uci commit mwol
+	fi
+
+	if [ "$enable" -eq 1 ]; then
+		generate_mwol_conf
+
+		procd_open_instance
+
+		procd_set_param command $PROG -c /tmp/mwol.json
+		
+		procd_set_param respawn
+
+		procd_set_param stdout 1
+		procd_set_param stderr 1
+
+		procd_close_instance
+	fi
+
+}
+
+service_triggers() { 
+	procd_add_reload_trigger "mwol"
+}
+
+start_service()
+{
+	config_load mwol
+	
+	config_foreach start_service_real mwol
+}

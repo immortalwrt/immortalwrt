@@ -33,7 +33,8 @@ luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luc
 NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).<br/>
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
 qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
-lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).
+lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
+package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).
 
 ## License
 ### Depending on their own License.
