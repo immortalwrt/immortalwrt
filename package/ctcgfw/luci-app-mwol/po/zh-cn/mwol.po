@@ -1,0 +1,54 @@
+
+msgid "Mwol Plus is Running"
+msgstr "Mwol正在运行"
+
+msgid "Mwol Plus is Not Running"
+msgstr "Mwol未运行"
+
+msgid "Mwol Sub Topic:"
+msgstr "Mwol订阅消息主题:"
+
+msgid "Mwol Pub Topic:"
+msgstr "Mwol发布消息主题:"
+
+msgid "General Settings"
+msgstr "通用设置"
+
+msgid "Encryption Settings"
+msgstr "加密设定"
+
+msgid "SSL Settings"
+msgstr "SSL证书设置"
+
+msgid "Enable"
+msgstr "开启"
+
+msgid "MQTT Server"
+msgstr "MQTT服务器"
+
+msgid "MQTT Port"
+msgstr "MQTT端口"
+
+msgid "Preset Mac"
+msgstr "预设MAC地址"
+
+msgid "Choose the host to wake up or enter a custom MAC address to use"
+msgstr "选择一个需要唤醒的主机或自定义唤醒主机的mac地址"
+
+msgid "MQTT Topic Id"
+msgstr "MQTT主题ID"
+
+msgid "MQTT UserName"
+msgstr "MQTT用户名"
+
+msgid "MQTT Password"
+msgstr "MQTT密码"
+
+msgid "Edit the ca file path."
+msgstr "编辑CA路径。"
+
+msgid "Edit the crt file path."
+msgstr "编辑CRT路径。"
+
+msgid "Edit the key file path."
+msgstr "编辑KEY路径。"

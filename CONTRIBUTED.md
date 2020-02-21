@@ -39,7 +39,8 @@ luci-theme-opentomato source: [Leo-Jo-My/luci-theme-opentomato](https://github.c
 luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.com/Leo-Jo-My/luci-theme-opentomcat).<br/>
 qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
 luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com/Leo-Jo-My/luci-theme-Butterfly).<br/>
-lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).
+lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
+package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).
 
 ## License
 ### Depending on their own License.
