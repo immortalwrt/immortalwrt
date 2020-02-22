@@ -199,10 +199,8 @@ function ping_node()
     if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
                          appname) == "1" and
         luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
-        local interface = luci.sys.exec(
-                              "echo -n $(route | grep default | awk '{print $NF}')")
         e.ping = luci.sys.exec(string.format(
-                                   "echo -n $(tcping -c 1 -i 1 -p %s %s 2>&1 | grep 'SYN/ACK' | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
+                                   "echo -n $(tcping -q -c 1 -i 1 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
                                    port, address))
     else
         e.ping = luci.sys.exec(
@@ -239,72 +237,37 @@ function check_port()
     local retstring = "<br />"
     -- retstring = retstring .. "<font color='red'>暂时不支持UDP检测</font><br />"
 
-    if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
-                         appname) == "1" and
-        luci.sys.exec("echo -n `command -v tcping`") ~= "" then
-        retstring = retstring ..
-                        "<font color='green'>使用tcping检测端口延迟</font><br />"
-        local interface = luci.sys.exec(
-                              "echo -n $(route | grep default | awk '{print $NF}')")
-        uci:foreach("passwall", "nodes", function(s)
-            local ret = ""
-            local tcp_socket
-            if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
-                (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
-            else
-                local type = s.type
-                if type and type ~= "V2ray_balancing" and s.address and s.port and
-                    s.remarks then
-                    node_name = "[%s] [%s:%s]" % {s.remarks, s.address, s.port}
-                    result = luci.sys.exec(
-                                 string.format(
-                                     "echo -n $(tcping -c 1 -i 1 -I %s -p %s %s 2>&1 | grep 'SYN/ACK' | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
-                                     interface, s.port, s.address))
-                    if result and result ~= "" then
-                        retstring = retstring .. "<font color='green'>" ..
-                                        node_name .. "   " .. result ..
-                                        "ms.</font><br />"
-                    else
-                        retstring = retstring .. "<font color='red'>" ..
-                                        node_name .. "   Timeout.</font><br />"
-                    end
-                    ret = ""
+    retstring = retstring ..
+                    "<font color='green'>检测端口可用性</font><br />"
+    uci:foreach("passwall", "nodes", function(s)
+        local ret = ""
+        local tcp_socket
+        if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
+            (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
+        else
+            local type = s.type
+            if type and type ~= "V2ray_balancing" and s.address and s.port and
+                s.remarks then
+                node_name = "%s：[%s] %s:%s" %
+                                {s.type, s.remarks, s.address, s.port}
+                tcp_socket = nixio.socket("inet", "stream")
+                tcp_socket:setopt("socket", "rcvtimeo", 3)
+                tcp_socket:setopt("socket", "sndtimeo", 3)
+                ret = tcp_socket:connect(s.address, s.port)
+                if tostring(ret) == "true" then
+                    retstring =
+                        retstring .. "<font color='green'>" .. node_name ..
+                            "   OK.</font><br />"
+                else
+                    retstring =
+                        retstring .. "<font color='red'>" .. node_name ..
+                            "   Error.</font><br />"
                 end
+                ret = ""
             end
-        end)
-    else
-        retstring = retstring ..
-                        "<font color='green'>使用socket检测端口是否打开</font><br />"
-        uci:foreach("passwall", "nodes", function(s)
-            local ret = ""
-            local tcp_socket
-            local udp_socket
-            if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or
-                (s.v2ray_transport and s.v2ray_transport == "mkcp" and s.port) then
-            else
-                local type = s.type
-                if type and type ~= "V2ray_balancing" and s.address and s.port and
-                    s.remarks then
-                    node_name = "%s：[%s] %s:%s" %
-                                    {s.type, s.remarks, s.address, s.port}
-                    tcp_socket = nixio.socket("inet", "stream")
-                    tcp_socket:setopt("socket", "rcvtimeo", 3)
-                    tcp_socket:setopt("socket", "sndtimeo", 3)
-                    ret = tcp_socket:connect(s.address, s.port)
-                    if tostring(ret) == "true" then
-                        retstring = retstring .. "<font color='green'>" ..
-                                        node_name .. "   OK.</font><br />"
-                    else
-                        retstring = retstring .. "<font color='red'>" ..
-                                        node_name .. "   Error.</font><br />"
-                    end
-                    ret = ""
-                end
-            end
-            if tcp_socket then tcp_socket:close() end
-            if udp_socket then udp_socket:close() end
-        end)
-    end
+        end
+        if tcp_socket then tcp_socket:close() end
+    end)
     luci.http.prepare_content("application/json")
     luci.http.write_json({ret = retstring})
 end

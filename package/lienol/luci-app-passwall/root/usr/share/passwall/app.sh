@@ -7,16 +7,7 @@
 CONFIG=passwall
 CONFIG_PATH=/var/etc/$CONFIG
 RUN_BIN_PATH=$CONFIG_PATH/bin
-RUN_PID_PATH=$CONFIG_PATH/pid
 RUN_ID_PATH=$CONFIG_PATH/id
-RUN_IP_PATH=$CONFIG_PATH/ip
-RUN_PORT_PATH=$CONFIG_PATH/port
-HAPROXY_FILE=$CONFIG_PATH/haproxy.cfg
-REDSOCKS_CONFIG_TCP_FILE=$CONFIG_PATH/redsocks_TCP.conf
-REDSOCKS_CONFIG_UDP_FILE=$CONFIG_PATH/redsocks_UDP.conf
-CONFIG_TCP_FILE=$CONFIG_PATH/TCP.json
-CONFIG_UDP_FILE=$CONFIG_PATH/UDP.json
-CONFIG_SOCKS5_FILE=$CONFIG_PATH/SOCKS5.json
 LOCK_FILE=/var/lock/$CONFIG.lock
 LOG_FILE=/var/log/$CONFIG.log
 RULE_PATH=/etc/config/${CONFIG}_rule
@@ -24,17 +15,14 @@ APP_PATH=/usr/share/$CONFIG
 TMP_DNSMASQ_PATH=/var/etc/dnsmasq-passwall.d
 DNSMASQ_PATH=/etc/dnsmasq.d
 RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
-lanip=$(uci -q get network.lan.ipaddr)
 DNS_PORT=7913
-API_GEN_V2RAY=/usr/lib/lua/luci/model/cbi/passwall/api/gen_v2ray_client_config_file.lua
-API_GEN_TROJAN=/usr/lib/lua/luci/model/cbi/passwall/api/gen_trojan_client_config_file.lua
-
-get_date() {
-	echo "$(date "+%Y-%m-%d %H:%M:%S")"
-}
+LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
+API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray_client_config.lua
+API_GEN_TROJAN=$LUA_API_PATH/gen_trojan_client_config.lua
 
 echolog() {
-	echo -e "$(get_date): $1" >>$LOG_FILE
+	local d="$(date "+%Y-%m-%d %H:%M:%S")"
+	echo -e "$d: $1" >>$LOG_FILE
 }
 
 find_bin() {
@@ -60,12 +48,10 @@ config_t_get() {
 }
 
 get_host_ip() {
-	local network_type host isip
-	network_type=$1
-	host=$2
-	isip=""
-	ip=$host
-	if [ "$network_type" == "ipv6" ]; then
+	local host=$2
+	local isip=""
+	local ip=$host
+	if [ "$1" == "ipv6" ]; then
 		isip=$(echo $host | grep -E "([[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){0,7}::[a-f0-9]{0,4}(:[a-f0-9]{1,4}){0,7}])")
 		if [ -n "$isip" ]; then
 			isip=$(echo $host | cut -d '[' -f2 | cut -d ']' -f1)
@@ -75,17 +61,12 @@ get_host_ip() {
 	else
 		isip=$(echo $host | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 	fi
-	if [ -z "$isip" ]; then
-		vpsrip=""
-		if [ "$use_ipv6" == "1" ]; then
-			vpsrip=$(resolveip -6 -t 3 $host | awk 'NR==1{print}')
-			[ -z "$vpsrip" ] && vpsrip=$(dig @208.67.222.222 $host AAAA 2>/dev/null | grep 'IN' | awk -F ' ' '{print $5}' | grep -E "([a-f0-9]{1,4}(:[a-f0-9]{1,4}){7}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){0,7}::[a-f0-9]{0,4}(:[a-f0-9]{1,4}){0,7})" | head -n1)
-		else
-			vpsrip=$(resolveip -4 -t 3 $host | awk 'NR==1{print}')
-			[ -z "$vpsrip" ] && vpsrip=$(dig @208.67.222.222 $host 2>/dev/null | grep 'IN' | awk -F ' ' '{print $5}' | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n1)
-		fi
+	[ -z "$isip" ] && {
+		local t=4
+		[ "$1" == "ipv6" ] && t=6
+		local vpsrip=$(resolveip -$t -t 3 $host | awk 'NR==1{print}')
 		ip=$vpsrip
-	fi
+	}
 	echo $ip
 }
 
@@ -152,6 +133,22 @@ set_subscribe_proxy() {
 	}
 }
 
+ln_start_bin() {
+	local file=$1
+	local bin=$2
+	local cmd=$3
+	if [ -n "${RUN_BIN_PATH}/$bin" -a -f "${RUN_BIN_PATH}/$bin" ];then
+		${RUN_BIN_PATH}/$bin $cmd >/dev/null 2>&1 &
+	else
+		if [ -n "$file" -a -f "$file" ];then
+			ln -s $file ${RUN_BIN_PATH}/$bin
+			${RUN_BIN_PATH}/$bin $cmd >/dev/null 2>&1 &
+		else
+			echolog "找不到$bin主程序，无法启动！"
+		fi
+	fi
+}
+
 ENABLED=$(config_t_get global enabled 0)
 
 TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
@@ -172,22 +169,9 @@ done
 [ "$UDP_NODE1" == "tcp" ] && UDP_NODE1=$TCP_NODE1
 [ "$SOCKS5_NODE1" == "tcp" ] && SOCKS5_NODE1=$TCP_NODE1
 
-TCP_NODE1_IP=""
-UDP_NODE1_IP=""
-SOCKS5_NODE1_IP=""
-TCP_NODE1_IPV6=""
-UDP_NODE1_IPV6=""
-SOCKS5_NODE1_IPV6=""
-TCP_NODE1_PORT=""
-UDP_NODE1_PORT=""
-SOCKS5_NODE1_PORT=""
-TCP_NODE1_TYPE=""
-UDP_NODE1_TYPE=""
-SOCKS5_NODE1_TYPE=""
+# Dynamic variables (Used to record)
+# TCP_NODE1_IP="" UDP_NODE1_IP="" SOCKS5_NODE1_IP="" TCP_NODE1_PORT="" UDP_NODE1_PORT="" SOCKS5_NODE1_PORT="" TCP_NODE1_TYPE="" UDP_NODE1_TYPE="" SOCKS5_NODE1_TYPE=""
 
-BROOK_SOCKS5_CMD=""
-BROOK_TCP_CMD=""
-BROOK_UDP_CMD=""
 TCP_REDIR_PORTS=$(config_t_get global_forwarding tcp_redir_ports '80,443')
 UDP_REDIR_PORTS=$(config_t_get global_forwarding udp_redir_ports '1:65535')
 TCP_NO_REDIR_PORTS=$(config_t_get global_forwarding tcp_no_redir_ports 'disable')
@@ -242,37 +226,7 @@ load_config() {
 	SOCKS5_PROXY_PORT2=$(expr $SOCKS5_PROXY_PORT1 + 1)
 	SOCKS5_PROXY_PORT3=$(expr $SOCKS5_PROXY_PORT2 + 1)
 	PROXY_IPV6=$(config_t_get global_forwarding proxy_ipv6 0)
-	mkdir -p /var/etc $CONFIG_PATH $RUN_BIN_PATH $RUN_PID_PATH $RUN_ID_PATH $RUN_IP_PATH $RUN_PORT_PATH
-	
-	#配置环境
-	ss_redir_bin=$(find_bin ss-redir)
-	[ -n "$ss_redir_bin" -a -f "$ss_redir_bin" ] && ln -s $ss_redir_bin ${RUN_BIN_PATH}/ss-redir && ss_redir_bin=${RUN_BIN_PATH}/ss-redir
-	ss_local_bin=$(find_bin ss-local)
-	[ -n "$ss_local_bin" -a -f "$ss_local_bin" ] && ln -s $ss_local_bin ${RUN_BIN_PATH}/ss-local && ss_local_bin=${RUN_BIN_PATH}/ss-local
-	ssr_redir_bin=$(find_bin ssr-redir)
-	[ -n "$ssr_redir_bin" -a -f "$ssr_redir_bin" ] && ln -s $ssr_redir_bin ${RUN_BIN_PATH}/ssr-redir && ssr_redir_bin=${RUN_BIN_PATH}/ssr-redir
-	ssr_local_bin=$(find_bin ssr-local)
-	[ -n "$ssr_local_bin" -a -f "$ssr_local_bin" ] && ln -s $ssr_local_bin ${RUN_BIN_PATH}/ssr-local && ssr_local_bin=${RUN_BIN_PATH}/ssr-local
-	trojan_bin=$(find_bin trojan)
-	[ -n "$trojan_bin" -a -f "$trojan_bin" ] && ln -s $trojan_bin ${RUN_BIN_PATH}/trojan && trojan_bin=${RUN_BIN_PATH}/trojan
-	v2ray_path=$(config_t_get global_app v2ray_file $(find_bin v2ray))
-	[ -n "$v2ray_path" -a -f "${v2ray_path}/v2ray" ]&& ln -s ${v2ray_path}/v2ray ${RUN_BIN_PATH}/v2ray && v2ray_bin=${RUN_BIN_PATH}/v2ray
-	brook_bin=$(config_t_get global_app brook_file $(find_bin brook))
-	[ -n "$brook_bin" -a -f "$brook_bin" ] && ln -s $brook_bin ${RUN_BIN_PATH}/brook && brook_bin=${RUN_BIN_PATH}/brook
-	kcptun_bin=$(config_t_get global_app kcptun_client_file $(find_bin kcptun-client))
-	[ -n "$kcptun_bin" -a -f "$kcptun_bin" ] && ln -s $kcptun_bin ${RUN_BIN_PATH}/kcptun-client && kcptun_bin=${RUN_BIN_PATH}/kcptun-client
-	redsocks2_bin=$(find_bin redsocks2)
-	[ -n "$redsocks2_bin" -a -f "$redsocks2_bin" ] && ln -s $redsocks2_bin ${RUN_BIN_PATH}/redsocks2 && redsocks2_bin=${RUN_BIN_PATH}/redsocks2
-	ipt2socks_bin=$(find_bin ipt2socks)
-	[ -n "$ipt2socks_bin" -a -f "$ipt2socks_bin" ] && ln -s $ipt2socks_bin ${RUN_BIN_PATH}/ipt2socks && ipt2socks_bin=${RUN_BIN_PATH}/ipt2socks
-	dns2socks_bin=$(find_bin dns2socks)
-	[ -n "$dns2socks_bin" -a -f "$dns2socks_bin" ] && ln -s $dns2socks_bin ${RUN_BIN_PATH}/dns2socks && dns2socks_bin=${RUN_BIN_PATH}/dns2socks
-	pdnsd_bin=$(find_bin pdnsd)
-	[ -n "$pdnsd_bin" -a -f "$pdnsd_bin" ] && ln -s $pdnsd_bin ${RUN_BIN_PATH}/pdnsd && pdnsd_bin=${RUN_BIN_PATH}/pdnsd
-	chinadns_ng_bin=$(find_bin chinadns-ng)
-	[ -n "$chinadns_ng_bin" -a -f "$chinadns_ng_bin" ] && ln -s $chinadns_ng_bin ${RUN_BIN_PATH}/chinadns-ng && chinadns_ng_bin=${RUN_BIN_PATH}/chinadns-ng
-	haproxy_bin=$(find_bin haproxy)
-	[ -n "$haproxy_bin" -a -f "$haproxy_bin" ] && ln -s $haproxy_bin ${RUN_BIN_PATH}/haproxy && haproxy_bin=${RUN_BIN_PATH}/haproxy
+	mkdir -p /var/etc $CONFIG_PATH $RUN_BIN_PATH $RUN_ID_PATH
 	
 	config_load $CONFIG
 	return 0
@@ -347,11 +301,7 @@ gen_start_config() {
 			echolog "Socks5节点不能使用Socks5代理节点！"
 		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
-			if [ -f "$v2ray_bin" ]; then
-				$v2ray_bin -config=$config_file >/dev/null &
-			else
-				echolog "找不到V2ray客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "v2ray_balancing" ]; then
 			local balancing_node=$(config_n_get $node v2ray_balancing_node)
 			balancing_node_address=""
@@ -368,37 +318,26 @@ gen_start_config() {
 				balancing_node_address="$temp"
 			done
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
-			if [ -f "$v2ray_bin" ]; then
-				$v2ray_bin -config=$config_file >/dev/null &
-			else
-				echolog "找不到V2ray客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node client "0.0.0.0" $local_port >$config_file
-			[ -f "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
+			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
 		elif [ "$type" == "brook" ]; then
-			BROOK_SOCKS5_CMD="client -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_ip:$port -p $(config_n_get $node password)"
-			if [ -f "$brook_bin" ]; then
-				$brook_bin $BROOK_SOCKS5_CMD &>/dev/null &
-			else
-				echolog "找不到Brook客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook "client -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_ip:$port -p $(config_n_get $node password)"
 		elif [ "$type" == "ssr" ]; then
 			gen_ss_ssr_config_file ssr $local_port 0 $node $config_file
-			[ -f "$ssr_local_bin" ] && $ssr_local_bin -c $config_file -b 0.0.0.0 -u >/dev/null 2>&1 &
+			ln_start_bin $(find_bin ssr-local) ssr-local "-c $config_file -b 0.0.0.0 -u"
 		elif [ "$type" == "ss" ]; then
 			gen_ss_ssr_config_file ss $local_port 0 $node $config_file
-			[ -n "$ss_local_bin" ] && {
-				local plugin_params=""
-				local plugin=$(config_n_get $node ss_plugin)
-				if [ "$plugin" != "none" ]; then
-					[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
-						local opts=$(config_n_get $node ss_plugin_opts)
-						plugin_params="--plugin $plugin --plugin-opts $opts"
-					}
-				fi
-				$ss_local_bin -c $config_file -b 0.0.0.0 -u $plugin_params >/dev/null 2>&1 &
-			}
+			local plugin_params=""
+			local plugin=$(config_n_get $node ss_plugin)
+			if [ "$plugin" != "none" ]; then
+				[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+					local opts=$(config_n_get $node ss_plugin_opts)
+					plugin_params="--plugin $plugin --plugin-opts $opts"
+				}
+			fi
+			ln_start_bin $(find_bin ss-local) ss-local "-c $config_file -b 0.0.0.0 -u $plugin_params" 
 		fi
 	fi
 
@@ -416,20 +355,14 @@ gen_start_config() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
-			[ -f "$ipt2socks_bin" ] && $ipt2socks_bin -U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R >/dev/null &
+			ln_start_bin $(find_bin ipt2socks) ipt2socks "-U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
 			
-			#[ -f "$redsocks2_bin" ] && {
-			#	local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
-			#	gen_redsocks_config $redsocks_config_file udp $port $node_address $node_port $server_username $server_password
-			#	$redsocks2_bin -c $redsocks_config_file >/dev/null &
-			#}
+			# local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
+			# gen_redsocks_config $redsocks_config_file udp $port $node_address $node_port $server_username $server_password
+			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
 		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
-			if [ -f "$v2ray_bin" ]; then
-				$v2ray_bin -config=$config_file >/dev/null &
-			else
-				echolog "找不到V2ray客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "v2ray_balancing" ]; then
 			local balancing_node=$(config_n_get $node v2ray_balancing_node)
 			balancing_node_address=""
@@ -446,57 +379,40 @@ gen_start_config() {
 				balancing_node_address="$temp"
 			done
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
-			if [ -f "$v2ray_bin" ]; then
-				$v2ray_bin -config=$config_file >/dev/null &
-			else
-				echolog "找不到V2ray客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			SOCKS5_PROXY_PORT4=$(expr $SOCKS5_PROXY_PORT3 + 1)
 			local_port=$(get_not_exists_port_after $SOCKS5_PROXY_PORT4 tcp)
 			socks5_port=$local_port
 			lua $API_GEN_TROJAN $node client "127.0.0.1" $socks5_port >$config_file
-			[ -f "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
+			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
 			
 			local node_address=$(config_n_get $node address)
 			local node_port=$(config_n_get $node port)
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
-			[ -f "$ipt2socks_bin" ] && $ipt2socks_bin -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R >/dev/null &
+			ln_start_bin $(find_bin ipt2socks) ipt2socks "-U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
 				
-			#[ -f "$redsocks2_bin" ] && {
-			#	local redsocks_config_file=$CONFIG_PATH/redsocks_UDP_$i.conf
-			#	gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
-			#	$redsocks2_bin -c $redsocks_config_file >/dev/null &
-			#}
+			# local redsocks_config_file=$CONFIG_PATH/redsocks_UDP_$i.conf
+			# gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
+			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
 		elif [ "$type" == "brook" ]; then
-			BROOK_UDP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$port -p $(config_n_get $node password)"
-			if [ -f "$brook_bin" ]; then
-				$brook_bin $BROOK_UDP_CMD &>/dev/null &
-			else
-				echolog "找不到Brook客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook "tproxy -l 0.0.0.0:$local_port -s $server_ip:$port -p $(config_n_get $node password)"
 		elif [ "$type" == "ssr" ]; then
 			gen_ss_ssr_config_file ssr $local_port 0 $node $config_file
-			if [ -f "$ssr_redir_bin" ]; then
-				$ssr_redir_bin -c $config_file -f $RUN_PID_PATH/udp_ssr_1_$5 -U >/dev/null 2>&1 &
-			else
-				echolog "找不到ssr客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(find_bin ssr-redir) ssr-redir "-c $config_file -U"
 		elif [ "$type" == "ss" ]; then
 			gen_ss_ssr_config_file ss $local_port 0 $node $config_file
-			[ -f "$ss_redir_bin" ] && {
-				local plugin_params=""
-				local plugin=$(config_n_get $node ss_plugin)
-				if [ "$plugin" != "none" ]; then
-					[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
-						local opts=$(config_n_get $node ss_plugin_opts)
-						plugin_params="--plugin $plugin --plugin-opts $opts"
-					}
-				fi
-				$ss_redir_bin -c $config_file -f $RUN_PID_PATH/udp_ss_1_$5 -U $plugin_params >/dev/null 2>&1 &
-			}
+			local plugin_params=""
+			local plugin=$(config_n_get $node ss_plugin)
+			if [ "$plugin" != "none" ]; then
+				[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+					local opts=$(config_n_get $node ss_plugin_opts)
+					plugin_params="--plugin $plugin --plugin-opts $opts"
+				}
+			fi
+			ln_start_bin $(find_bin ss-redir) ss-redir "-c $config_file -U $plugin_params"
 		fi
 	fi
 
@@ -514,20 +430,14 @@ gen_start_config() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$TCP_REDIR_PORT$5
-			[ -f "$ipt2socks_bin" ] && $ipt2socks_bin -l $port -b 0.0.0.0 -s $node_address -p $socks5_port -R >/dev/null &
+			ln_start_bin $(find_bin ipt2socks) ipt2socks "-l $port -b 0.0.0.0 -s $node_address -p $socks5_port -R"
 			
-			#[ -f "$redsocks2_bin" ] && {
-			#	local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
-			#	gen_redsocks_config $redsocks_config_file tcp $port $node_address $socks5_port $server_username $server_password
-			#	$redsocks2_bin -c $redsocks_config_file >/dev/null &
-			#}
+			# local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
+			# gen_redsocks_config $redsocks_config_file tcp $port $node_address $socks5_port $server_username $server_password
+			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
 		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
-			if [ -f "$v2ray_bin" ]; then
-				$v2ray_bin -config=$config_file >/dev/null &
-			else
-				echolog "找不到V2ray客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "v2ray_balancing" ]; then
 			local balancing_node=$(config_n_get $node v2ray_balancing_node)
 			balancing_node_address=""
@@ -544,14 +454,10 @@ gen_start_config() {
 				balancing_node_address="$temp"
 			done
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
-			if [ -f "$v2ray_bin" ]; then
-				$v2ray_bin -config=$config_file >/dev/null &
-			else
-				echolog "找不到V2ray客户端主程序，无法启用！"
-			fi
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
-			[ -f "$trojan_bin" ] && $trojan_bin -c $config_file >/dev/null 2>&1 &
+			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
 		else
 			local kcptun_use=$(config_n_get $node use_kcp 0)
 			if [ "$kcptun_use" == "1" ]; then
@@ -559,15 +465,11 @@ gen_start_config() {
 				local kcptun_port=$(config_n_get $node kcp_port)
 				local kcptun_config="$(config_n_get $node kcp_opts)"
 				local lbenabled=$(config_t_get global_haproxy balancing_enable 0)
-				if [ ! -f "$kcptun_bin" ]; then
-					echolog "【未安装Kcptun主程序，请到自动更新下载Kcptun】，跳过~"
-					force_stop
-				fi
 				if [ -z "$kcptun_port" -o -z "$kcptun_config" ]; then
 					echolog "【未配置Kcptun参数】，跳过~"
 					force_stop
 				fi
-				if [ -n "$kcptun_port" -a -n "$kcptun_config" -a "$lbenabled" == "0" -a -f "$kcptun_bin" ]; then
+				if [ -n "$kcptun_port" -a -n "$kcptun_config" -a "$lbenabled" == "0" ]; then
 					local run_kcptun_ip=$server_ip
 					if [ -n "$kcptun_server_host" ]; then
 						kcptun_use_ipv6=$(config_n_get $node kcp_use_ipv6)
@@ -579,42 +481,33 @@ gen_start_config() {
 						echolog "Kcptun节点IP地址:$kcptun_server_ip"
 					fi
 					KCPTUN_REDIR_PORT=$(get_not_exists_port_after $KCPTUN_REDIR_PORT udp)
-					$kcptun_bin --log $CONFIG_PATH/kcptun_${5}.log -l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config >/dev/null 2>&1 &
+					ln_start_bin $(config_t_get global_app kcptun_client_file $(find_bin kcptun-client)) kcptun-client "--log $CONFIG_PATH/kcptun_${5}.log -l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
 				fi
 			fi
 			if [ "$type" == "ssr" ]; then
 				gen_ss_ssr_config_file ssr $local_port $kcptun_use $node $config_file
-				[ -f "$ssr_redir_bin" ] && {
-					for k in $(seq 1 $process); do
-						$ssr_redir_bin -c $config_file -f $RUN_PID_PATH/tcp_ssr_${k}_${5} >/dev/null 2>&1 &
-					done
-				}
+				for k in $(seq 1 $process); do
+					ln_start_bin $(find_bin ssr-redir) ssr-redir "-c $config_file"
+				done
 			elif [ "$type" == "ss" ]; then
 				gen_ss_ssr_config_file ss $local_port $kcptun_use $node $config_file
-				[ -f "$ss_redir_bin" ] && {
-					local plugin_params=""
-					local plugin=$(config_n_get $node ss_plugin)
-					if [ "$plugin" != "none" ]; then
-						[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
-						local opts=$(config_n_get $node ss_plugin_opts)
-						plugin_params="--plugin $plugin --plugin-opts $opts"
-						}
-					fi
-					for k in $(seq 1 $process); do
-						$ss_redir_bin -c $config_file -f $RUN_PID_PATH/tcp_ss_${k}_${5} $plugin_params >/dev/null 2>&1 &
-					done
-				}
+				local plugin_params=""
+				local plugin=$(config_n_get $node ss_plugin)
+				if [ "$plugin" != "none" ]; then
+					[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+					local opts=$(config_n_get $node ss_plugin_opts)
+					plugin_params="--plugin $plugin --plugin-opts $opts"
+					}
+				fi
+				for k in $(seq 1 $process); do
+					ln_start_bin $(find_bin ss-redir) ss-redir "-c $config_file $plugin_params"
+				done
 			elif [ "$type" == "brook" ]; then
 				[ "$kcptun_use" == "1" ] && {
 					server_ip=127.0.0.1
 					port=$KCPTUN_REDIR_PORT
 				}
-				BROOK_TCP_CMD="tproxy -l 0.0.0.0:$local_port -s $server_ip:$port -p $(config_n_get $node password)"
-				if [ -f "$brook_bin" ]; then
-					$brook_bin $BROOK_TCP_CMD &>/dev/null &
-				else
-					echolog "找不到Brook客户端主程序，无法启用！"
-				fi
+				ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook "tproxy -l 0.0.0.0:$local_port -s $server_ip:$port -p $(config_n_get $node password)"
 			fi
 		fi
 	fi
@@ -632,9 +525,7 @@ start_redir() {
 			local port=$(echo $(get_not_exists_port_after $current_port $3))
 			eval ${1}_${2}$i=$port
 			gen_start_config $node $port $1 $config_file $i
-			echo $port > $RUN_PORT_PATH/${1}_${i}
-			eval ip=\$${1}_NODE${i}_IP
-			echo $ip > $RUN_IP_PATH/${1}_${i}
+			#eval ip=\$${1}_NODE${i}_IP
 			echo $node > $RUN_ID_PATH/${1}_${i}
 		}
 	done
@@ -642,10 +533,10 @@ start_redir() {
 
 clean_log() {
 	logsnum=$(cat $LOG_FILE 2>/dev/null | wc -l)
-	if [ "$logsnum" -gt 300 ]; then
-		rm -f $LOG_FILE >/dev/null 2>&1 &
+	[ "$logsnum" -gt 300 ] && {
+		echo "" > $LOG_FILE
 		echolog "日志文件过长，清空处理！"
-	fi
+	}
 }
 
 start_crontab() {
@@ -663,15 +554,15 @@ start_crontab() {
 		time_restart=$(config_t_get global_delay time_restart)
 		[ -z "$time_off" -o "$time_off" != "nil" ] && {
 			echo "0 $time_off * * * /etc/init.d/$CONFIG stop" >>/etc/crontabs/root
-			echolog "设置自动关闭在每天 $time_off 点。"
+			echolog "配置定时任务：每天 $time_off 点关闭服务。"
 		}
 		[ -z "$time_on" -o "$time_on" != "nil" ] && {
 			echo "0 $time_on * * * /etc/init.d/$CONFIG start" >>/etc/crontabs/root
-			echolog "设置自动开启在每天 $time_on 点。"
+			echolog "配置定时任务：每天 $time_on 点开启服务。"
 		}
 		[ -z "$time_restart" -o "$time_restart" != "nil" ] && {
 			echo "0 $time_restart * * * /etc/init.d/$CONFIG restart" >>/etc/crontabs/root
-			echolog "设置自动重启在每天 $time_restart 点。"
+			echolog "配置定时任务：每天 $time_restart 点重启服务。"
 		}
 	fi
 
@@ -680,7 +571,7 @@ start_crontab() {
 		testing_time=$(config_t_get auto_switch testing_time)
 		[ -n "$testing_time" ] && {
 			echo "*/$testing_time * * * * nohup $APP_PATH/test.sh > /dev/null 2>&1" >>/etc/crontabs/root
-			echolog "设置每$testing_time分钟执行检测脚本。"
+			echolog "配置定时任务：每$testing_time分钟执行自动切换检测脚本。"
 		}
 	}
 	
@@ -691,29 +582,17 @@ start_crontab() {
 	weekupdatesubscribe=$(config_t_get global_subscribe week_update_subscribe)
 	dayupdatesubscribe=$(config_t_get global_subscribe time_update_subscribe)
 	if [ "$autoupdate" = "1" ]; then
-		local t
-		if [ "$weekupdate" = "7" ]; then
-			t="0 $dayupdate * * *"
-		else
-			t="0 $dayupdate * * $weekupdate"
-		fi
+		local t="0 $dayupdate * * $weekupdate"
+		[ "$weekupdate" = "7" ] && t="0 $dayupdate * * *"
 		echo "$t $APP_PATH/rule_update.sh" >>/etc/crontabs/root
 		echolog "配置定时任务：自动更新规则。"
-	else
-		sed -i '/rule_update.sh/d' /etc/crontabs/root >/dev/null 2>&1 &
 	fi
 
 	if [ "$autoupdatesubscribe" = "1" ]; then
-		local t
-		if [ "$weekupdatesubscribe" = "7" ]; then
-			t="0 $dayupdatesubscribe * * *"
-		else
-			t="0 $dayupdatesubscribe * * $weekupdate"
-		fi
+		local t="0 $dayupdatesubscribe * * $weekupdate"
+		[ "$weekupdatesubscribe" = "7" ] && t="0 $dayupdatesubscribe * * *"
 		echo "$t lua $APP_PATH/subscribe.lua start log > /dev/null 2>&1 &" >>/etc/crontabs/root
 		echolog "配置定时任务：自动更新节点订阅。"
-	else
-		sed -i '/subscribe.lua/d' /etc/crontabs/root >/dev/null 2>&1 &
 	fi
 	
 	/etc/init.d/cron restart
@@ -737,66 +616,56 @@ start_dns() {
 	;;
 	dns2socks)
 		if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
-			[ -f "$dns2socks_bin" ] && {
-				DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
-				nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT >/dev/null 2>&1 &
-				echolog "DNS：dns2socks..."
-			}
+			DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
+			ln_start_bin $(find_bin dns2socks) dns2socks "127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT"
+			echolog "DNS：dns2socks..."
 		else
 			echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
 			force_stop
 		fi
 	;;
 	pdnsd)
-		[ -f "$pdnsd_bin" ] && {
-			use_tcp_node_resolve_dns=1
-			gen_pdnsd_config $DNS_PORT 10240
-			DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
-			nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
-			echolog "DNS：pdnsd..."
-		}
+		use_tcp_node_resolve_dns=1
+		gen_pdnsd_config $DNS_PORT 10240
+		DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
+		ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
+		echolog "DNS：pdnsd..."
 	;;
 	chinadns-ng)
-		[ -f "$chinadns_ng_bin" ] && {
-			other_port=$(expr $DNS_PORT + 1)
-			cat $RULE_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $CONFIG_PATH/gfwlist.txt
-			[ -f "$CONFIG_PATH/gfwlist.txt" ] && local gfwlist_param="-g $CONFIG_PATH/gfwlist.txt"
-			[ -f "$RULE_PATH/chnlist" ] && local chnlist_param="-m $RULE_PATH/chnlist"
-			
-			up_trust_chinadns_ng_dns=$(config_t_get global up_trust_chinadns_ng_dns "pdnsd")
-			if [ "$up_trust_chinadns_ng_dns" == "pdnsd" ]; then
-				if [ -z "$TCP_NODE1" -o "$TCP_NODE1" == "nil" ]; then
-					echolog "DNS：ChinaDNS-NG + pdnsd 模式需要启用TCP节点！"
-					force_stop
-				else
-					use_tcp_node_resolve_dns=1
-					gen_pdnsd_config $other_port 0
-					[ -f "$pdnsd_bin" ] && {
-						DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
-						nohup $pdnsd_bin --daemon -c $pdnsd_dir/pdnsd.conf -d >/dev/null 2>&1 &
-						nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-						echolog "DNS：ChinaDNS-NG + pdnsd($DNS_FORWARD)，国内DNS：$UP_CHINA_DNS"
-					}
-				fi
-			elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
-				if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
-					[ -f "$dns2socks_bin" ] && {
-						DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
-						nohup $dns2socks_bin 127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$other_port >/dev/null 2>&1 &
-						nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-						echolog "DNS：ChinaDNS-NG + dns2socks($DNS2SOCKS_FORWARD)，国内DNS：$UP_CHINA_DNS"
-					}
-				else
-					echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
-					force_stop
-				fi
+		other_port=$(expr $DNS_PORT + 1)
+		cat $RULE_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $CONFIG_PATH/gfwlist.txt
+		[ -f "$CONFIG_PATH/gfwlist.txt" ] && local gfwlist_param="-g $CONFIG_PATH/gfwlist.txt"
+		[ -f "$RULE_PATH/chnlist" ] && local chnlist_param="-m $RULE_PATH/chnlist"
+		
+		up_trust_chinadns_ng_dns=$(config_t_get global up_trust_chinadns_ng_dns "pdnsd")
+		if [ "$up_trust_chinadns_ng_dns" == "pdnsd" ]; then
+			if [ -z "$TCP_NODE1" -o "$TCP_NODE1" == "nil" ]; then
+				echolog "DNS：ChinaDNS-NG + pdnsd 模式需要启用TCP节点！"
+				force_stop
 			else
-				use_udp_node_resolve_dns=1
-				DNS_FORWARD=$(echo $up_trust_chinadns_ng_dns | sed 's/,/ /g')
-				nohup $chinadns_ng_bin -l $DNS_PORT -c $UP_CHINA_DNS -t $up_trust_chinadns_ng_dns $gfwlist_param $chnlist_param >/dev/null 2>&1 &
-				echolog "DNS：ChinaDNS-NG，国内DNS：$UP_CHINA_DNS，可信DNS：$up_trust_chinadns_ng_dns，如果不能使用，请确保UDP节点已打开并且支持UDP转发。"
+				use_tcp_node_resolve_dns=1
+				gen_pdnsd_config $other_port 0
+				DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
+				ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
+				ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param"
+				echolog "DNS：ChinaDNS-NG + pdnsd($DNS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 			fi
-		}
+		elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
+			if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
+				DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
+				ln_start_bin $(find_bin dns2socks) dns2socks "127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$other_port"
+				ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param"
+				echolog "DNS：ChinaDNS-NG + dns2socks($DNS2SOCKS_FORWARD)，国内DNS：$UP_CHINA_DNS"
+			else
+				echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
+				force_stop
+			fi
+		else
+			use_udp_node_resolve_dns=1
+			DNS_FORWARD=$(echo $up_trust_chinadns_ng_dns | sed 's/,/ /g')
+			ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $UP_CHINA_DNS -t $up_trust_chinadns_ng_dns $gfwlist_param $chnlist_param"
+			echolog "DNS：ChinaDNS-NG，国内DNS：$UP_CHINA_DNS，可信DNS：$up_trust_chinadns_ng_dns，如果不能使用，请确保UDP节点已打开并且支持UDP转发。"
+		fi
 	;;
 	esac
 }
@@ -832,9 +701,7 @@ add_dnsmasq() {
 		EOF
 	}
 	
-	cat <<-EOF >> /var/dnsmasq.d/dnsmasq-$CONFIG.conf
-		conf-dir=$TMP_DNSMASQ_PATH
-	EOF
+	echo "conf-dir=$TMP_DNSMASQ_PATH" >> /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	echolog "dnsmasq：生成配置文件。"
 }
@@ -913,7 +780,6 @@ gen_pdnsd_config() {
 		global {
 			perm_cache = $2;
 			cache_dir = "$pdnsd_dir";
-			pid_file = "$RUN_PID_PATH/pdnsd.pid";
 			run_as = "root";
 			server_ip = 127.0.0.1;
 			server_port = $1;
@@ -980,21 +846,24 @@ stop_dnsmasq() {
 	rm -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	rm -rf $TMP_DNSMASQ_PATH
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+	/etc/init.d/dnsmasq reload >/dev/null 2>&1 &
 }
 
 start_haproxy() {
 	enabled=$(config_t_get global_haproxy balancing_enable 0)
 	[ "$enabled" = "1" ] && {
+		haproxy_bin=$(find_bin haproxy)
 		[ -f "$haproxy_bin" ] && {
+			local HAPROXY_PATH=$CONFIG_PATH/haproxy
+			mkdir -p $HAPROXY_PATH
+			local HAPROXY_FILE=$HAPROXY_PATH/config.cfg
 			bport=$(config_t_get global_haproxy haproxy_port)
 			cat <<-EOF >$HAPROXY_FILE
 				global
 				    log         127.0.0.1 local2
 				    chroot      /usr/bin
-				    pidfile     $RUN_PID_PATH/haproxy.pid
 				    maxconn     60000
-				    stats socket  $RUN_PID_PATH/haproxy.sock
+				    stats socket  $HAPROXY_PATH/haproxy.sock
 				    user        root
 				    daemon
 					
@@ -1023,9 +892,6 @@ start_haproxy() {
 			for i in $(seq 0 50); do
 				bips=$(config_t_get balancing lbss '' $i)
 				bports=$(config_t_get balancing lbort '' $i)
-				bweight=$(config_t_get balancing lbweight '' $i)
-				exports=$(config_t_get balancing export '' $i)
-				bbackup=$(config_t_get balancing backup '' $i)
 				if [ -z "$bips" ] || [ -z "$bports" ]; then
 					break
 				fi
@@ -1033,6 +899,10 @@ start_haproxy() {
 				local bport=$(echo $bips | awk -F ":" '{print $2}')
 				[ "$bports" != "default" ] && bport=$bports
 				[ -z "$bport" ] && break
+				
+				bweight=$(config_t_get balancing lbweight '' $i)
+				exports=$(config_t_get balancing export '' $i)
+				bbackup=$(config_t_get balancing backup '' $i)
 				if [ "$bbackup" = "1" ]; then
 					bbackup=" backup"
 					echolog "负载均衡：添加故障转移备节点:$bip"
@@ -1060,7 +930,6 @@ start_haproxy() {
 							sleep 1m
 						else
 							route add -host ${bip} dev ${exports}
-							echolog "添加SS出口路由表：$exports"
 							echo "$bip" >>/tmp/balancing_ip
 							break
 						fi
@@ -1071,19 +940,19 @@ start_haproxy() {
 			console_port=$(config_t_get global_haproxy console_port)
 			console_user=$(config_t_get global_haproxy console_user)
 			console_password=$(config_t_get global_haproxy console_password)
+			local auth=""
+			[ -n "$console_user" -a -n "console_password" ] && auth="stats auth $console_user:$console_password"
 			cat <<-EOF >> $HAPROXY_FILE
 			
 				listen status
 				    bind 0.0.0.0:$console_port
 				    mode http                   
 				    stats refresh 30s
-				    stats uri  /  
-				    stats auth $console_user:$console_password
-				    #stats hide-version
+				    stats uri /
 				    stats admin if TRUE
+					$auth
 			EOF
-			nohup $haproxy_bin -f $HAPROXY_FILE >/dev/null 2>&1 &
-			[ "$?" == 0 ] && echolog "负载均衡：运行成功！" || echolog "负载均衡：运行失败！"
+			ln_start_bin $haproxy_bin haproxy "-f $HAPROXY_FILE"
 		}
 	}
 }
@@ -1122,7 +991,7 @@ start() {
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
 	start_crontab
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+	/etc/init.d/dnsmasq reload >/dev/null 2>&1 &
 	echolog "运行完成！\n"
 	rm -f "$LOCK_FILE"
 	return 0
@@ -1147,7 +1016,6 @@ stop() {
 	stop_dnsmasq
 	stop_crontab
 	echolog "关闭相关程序，清理相关文件和缓存完成。"
-	sleep 1s
 }
 
 case $1 in
