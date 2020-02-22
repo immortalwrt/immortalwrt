@@ -10,22 +10,22 @@ module("luci.controller.dockerman",package.seeall)
 
 function index()
 
-  entry({"admin", "docker"}, firstchild(), "Docker", 40).dependent = false
-  entry({"admin","docker","overview"},cbi("docker/overview"),_("Overview"),0).leaf=true
+  entry({"admin", "services","docker"}, firstchild(), "Docker", 40).dependent = false
+  entry({"admin","services","docker","overview"},cbi("docker/overview"),_("Overview"),0).leaf=true
 
   local socket = luci.model.uci.cursor():get("docker", "local", "socket_path")
   if not nixio.fs.access(socket) then return end
   if (require "luci.model.docker").new():_ping().code ~= 200 then return end
-  entry({"admin","docker","containers"},form("docker/containers"),_("Containers"),1).leaf=true
-  entry({"admin","docker","images"},form("docker/images"),_("Images"),2).leaf=true
-  entry({"admin","docker","networks"},form("docker/networks"),_("Networks"),3).leaf=true
-  entry({"admin","docker","volumes"},form("docker/volumes"),_("Volumes"),4).leaf=true
-  entry({"admin","docker","events"},call("action_events"),_("Events"),5)
-  entry({"admin","docker","newcontainer"},form("docker/newcontainer")).leaf=true
-  entry({"admin","docker","newnetwork"},form("docker/newnetwork")).leaf=true
-  entry({"admin","docker","container"},form("docker/container")).leaf=true
-  entry({"admin","docker","container_stats"},call("action_get_container_stats")).leaf=true
-  entry({"admin","docker","confirm"},call("action_confirm")).leaf=true
+  entry({"admin","services","docker","containers"},form("docker/containers"),_("Containers"),1).leaf=true
+  entry({"admin","services","docker","images"},form("docker/images"),_("Images"),2).leaf=true
+  entry({"admin","services","docker","networks"},form("docker/networks"),_("Networks"),3).leaf=true
+  entry({"admin","services","docker","volumes"},form("docker/volumes"),_("Volumes"),4).leaf=true
+  entry({"admin","services","docker","events"},call("action_events"),_("Events"),5)
+  entry({"admin","services","docker","newcontainer"},form("docker/newcontainer")).leaf=true
+  entry({"admin","services","docker","newnetwork"},form("docker/newnetwork")).leaf=true
+  entry({"admin","services","docker","container"},form("docker/container")).leaf=true
+  entry({"admin","services","docker","container_stats"},call("action_get_container_stats")).leaf=true
+  entry({"admin","services","docker","confirm"},call("action_confirm")).leaf=true
 
 end
 

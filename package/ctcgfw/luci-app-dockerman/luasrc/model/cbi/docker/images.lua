@@ -32,7 +32,7 @@ function get_images()
     for ci,cv in ipairs(containers) do
       if v.Id == cv.ImageID then
         data[index]["_containers"] = (data[index]["_containers"] and (data[index]["_containers"] .. " | ") or "")..
-        "<a href=/cgi-bin/luci/admin/docker/container/"..cv.Id.." >".. cv.Names[1]:sub(2).."</a>"
+        "<a href=/cgi-bin/luci/admin/services/docker/container/"..cv.Id.." >".. cv.Names[1]:sub(2).."</a>"
       end
     end
     data[index]["_size"] = string.format("%.2f", tostring(v.Size/1024/1024)).."MB"
@@ -54,7 +54,7 @@ local pull_section = m:section(Table,pull_value, translate("Pull Image"))
 pull_section.template="cbi/nullsection"
 local tag_name = pull_section:option(Value, "_image_tag_name")
 tag_name.template="docker/cbi/inlinevalue"
-tag_name.placeholder="lisaac/luci:latest"
+tag_name.placeholder="hello-world:latest"
 local registry = pull_section:option(Value, "_registry")
 registry.template="docker/cbi/inlinevalue"
 registry:value("index.docker.io", "DockerHub")
@@ -91,7 +91,7 @@ action_pull.write = function(self, section)
     else
       docker:append_status("done<br>")
     end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/images"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/images"))
   end
 end
 
@@ -139,7 +139,7 @@ local remove_action = function(force)
       end
     end
     if success then docker:clear_status() end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/images"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/images"))
   end
 end
 

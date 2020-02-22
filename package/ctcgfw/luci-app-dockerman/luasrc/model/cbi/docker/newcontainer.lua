@@ -205,7 +205,7 @@ end
 
 local m = SimpleForm("docker", translate("Docker"))
 m.template = "docker/cbi/xsimpleform"
-m.redirect = luci.dispatcher.build_url("admin", "docker", "containers")
+m.redirect = luci.dispatcher.build_url("admin", "services","docker", "containers")
 -- m.reset = false
 -- m.submit = false
 -- new Container
@@ -546,7 +546,7 @@ m.handle = function(self, state, data)
       docker:append_status("done<br>")
     else
       docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "<br>")
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer"))
     end
   end
   docker:clear_status()
@@ -569,10 +569,10 @@ m.handle = function(self, state, data)
   local res = dk.containers:create(name, nil, create_body)
   if res and res.code == 201 then
     docker:clear_status()
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/containers"))
   else
     docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer"))
   end
 end
 

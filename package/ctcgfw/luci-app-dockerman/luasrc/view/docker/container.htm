@@ -7,14 +7,14 @@
 </ul>
 
 <script type="text/javascript">
-	let re = /\/admin\/docker\/container\//
+	let re = /\/admin\/services\/docker\/container\//
 	let p = window.location.href
 	let path = p.split(re)
 	let container_id = path[1].split('/')[0] || path[1]
 	let action = path[1].split('/')[1] || "info"
 	let actions=["info","edit","stats","logs"]
 	actions.forEach(function(item) {
-		document.getElementById("a-cbi-tab-container_" + item).href= path[0]+"/admin/docker/container/"+container_id+'/'+item
+		document.getElementById("a-cbi-tab-container_" + item).href= path[0]+"/admin/services/docker/container/"+container_id+'/'+item
 		if (action === item) {
 			document.getElementById("cbi-tab-container_" + item).className="cbi-tab"
 		}	else {
