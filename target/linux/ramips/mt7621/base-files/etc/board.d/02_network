@@ -64,6 +64,7 @@ ramips_setup_interfaces()
 	glinet,gl-mt1300|\
 	iptime,a3002mesh|\
 	jcg,q20|\
+	jdcloud,re-sp-01b|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
 	mts,wg430223|\
@@ -221,6 +222,12 @@ ramips_setup_macs()
 	zbtlink,zbt-wg3526-16m|\
 	zbtlink,zbt-wg3526-32m)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
+		;;
+	jdcloud,re-sp-01b)
+		local index="$(find_mtd_index "config")"
+		label_mac=$(macaddr_canonicalize $(dd if="/dev/mtd${index}" bs=12 skip=17449 iflag=skip_bytes count=1 2>/dev/null))
+		lan_mac=$label_mac
+		wan_mac=$label_mac
 		;;
 	linksys,e5600|\
 	linksys,ea6350-v4|\
