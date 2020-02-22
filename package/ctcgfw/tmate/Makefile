@@ -34,6 +34,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
   SECTION:=net
   CATEGORY:=Network
+  SUBMENU:=SSH
   TITLE:=Instant Terminal Sharing
   URL:=https://tmate.io
   DEPENDS:=+libpthread +libevent2 +libssh +libmsgpack-c +libncurses
