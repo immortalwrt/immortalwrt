@@ -9,9 +9,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-233ddns
 PKG_VERSION:=1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 LUCI_TITLE:=LuCI support for 233DDNS
-LUCI_DEPENDS:=+busybox +coreutils-sha512sum +curl
+LUCI_DEPENDS:=+wget
 LUCI_PKGARCH:=all
 
 PKG_MAINTAINER:=[CTCGFW]Project-OpenWrt
