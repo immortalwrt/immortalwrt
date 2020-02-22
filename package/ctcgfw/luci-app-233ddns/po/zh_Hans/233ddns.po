@@ -22,5 +22,5 @@ msgstr "您的DDNS域名是"
 msgid "Token"
 msgstr "令牌"
 
-msgid "Must be 10 in length."
-msgstr "长度必须为10。"
+msgid "Must be 10 in length. You can change it anytime, but notice the DDNS domain will be changed simultaneously."
+msgstr "长度必须为10。可随意修改，但请注意DDNS域名也会随之变动。"
