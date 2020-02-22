@@ -11,4 +11,12 @@ function index()
 	local page
 	page = entry({"admin", "services", "233ddns"}, cbi("233ddns"), _("233DDNS"), 100)
 	page.dependent = true
+	entry({"admin", "services", "233ddns", "status"},call("act_status")).leaf=true
+end
+
+function act_status()
+	local e={}
+	e.running=luci.sys.call("grep -q 'u.233.ro' '/etc/crontabs/root'")==0
+	luci.http.prepare_content("application/json")
+	luci.http.write_json(e)
 end
