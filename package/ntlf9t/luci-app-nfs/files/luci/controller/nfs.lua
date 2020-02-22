@@ -1,8 +1,6 @@
 module("luci.controller.nfs", package.seeall)
 
 function index()
-	require("luci.i18n")
-	luci.i18n.loadc("nfs")
 	if not nixio.fs.access("/etc/config/nfs") then
 		return
 	end
