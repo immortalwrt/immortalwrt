@@ -12,15 +12,15 @@ PKG_VERSION:=0.0.14
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/david378/ssocks.git
-PKG_SOURCE_VERSION:=5792e565449c47e624a37323f0bbecb60c46ff9c
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
+PKG_SOURCE_URL:=https://github.com/tostercx/ssocks.git
+PKG_SOURCE_VERSION:=8d9a5d2f89e507c9ffebd838b3c7430f07a0f36c
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
-PKG_LICENSE:=MIT
+PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=david378
+PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 
 PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
@@ -28,7 +28,6 @@ PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
@@ -43,9 +42,7 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build/bin/ssocksd $(1)/usr/bin/ssocks
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build/lib/libsocks.a $(1)/usr/lib/libsocks.a
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocksd $(1)/usr/bin/ssocks
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
