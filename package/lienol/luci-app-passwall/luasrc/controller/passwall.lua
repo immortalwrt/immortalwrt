@@ -39,7 +39,7 @@ function index()
     entry({"admin", "vpn", "passwall", "rule_list"},
           cbi("passwall/rule_list", {autoapply = true}),
           _("Set Blacklist And Whitelist"), 98).leaf = true
-    entry({"admin", "vpn", "passwall", "log"}, cbi("passwall/log"),
+    entry({"admin", "vpn", "passwall", "log"}, form("passwall/log"),
           _("Watch Logs"), 99).leaf = true
     entry({"admin", "vpn", "passwall", "node_config"},
           cbi("passwall/node_config")).leaf = true
@@ -274,8 +274,7 @@ end
 
 function update_rules()
     local update = luci.http.formvalue("update")
-    luci.sys.call("nohup /usr/share/passwall/rule_update.sh '" .. update ..
-                      "' 2>&1 &")
+    luci.sys.call("lua /usr/share/passwall/rule_update.lua log '" .. update .. "' > /dev/null 2>&1 &")
 end
 
 function kcptun_check()
