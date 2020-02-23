@@ -36,6 +36,12 @@ o:value("1", translate("Enable"))
 o.description = translate("Set rules under Setting=>Game Rules, will take effect when client start")
 
 
+o = s:option(ListValue, "append_rules", translate("Append Customs Rules"))
+o.default = "0"
+o:value("0", translate("Disable"))
+o:value("1", translate("Enable"))
+o.description = translate("Set custom rules under Setting=>Others , will take effect when client start")
+
 o = s:option(Button, "Apply")
 o.title = translate("Save & Apply")
 o.inputtitle = translate("Save & Apply")

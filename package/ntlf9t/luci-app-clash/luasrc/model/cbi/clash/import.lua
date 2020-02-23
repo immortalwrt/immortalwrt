@@ -9,28 +9,7 @@ local fs = require "luci.clash"
 local http = luci.http
 local clash = "clash"
 
-kk = Map(clash)
-r = kk:section(TypedSection, "clash", translate("Auto Update Config"))
-r.anonymous = true
-kk.pageaction = false
 
-o = r:option(Flag, "auto_update", translate("Auto Update"))
-o.description = translate("Auto Update Server subscription")
-
-o = r:option(ListValue, "auto_update_time", translate("Update time (every day)"))
-for t = 0,23 do
-o:value(t, t..":00")
-end
-o.default=0
-o.description = translate("Daily Server subscription update time. Only update config in use")
-
-o = r:option(Button, "Apply")
-o.title = translate("Save & Apply")
-o.inputtitle = translate("Save & Apply")
-o.inputstyle = "apply"
-o.write = function()
-  kk.uci:commit("clash")
-end
 
 
 kr = Map(clash)
@@ -138,4 +117,4 @@ if luci.http.formvalue("upload") then
 end
 
 
-return kr,kk,ko
+return kr,ko

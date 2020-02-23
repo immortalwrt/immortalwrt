@@ -54,7 +54,7 @@ sed -i '/#*******GAME-RULE-START**********#/,/#*******GAME-RULE-END**********#/d
 
 if [ ! -z "$(grep "^ \{0,\}- GEOIP" "/etc/clash/config.yaml")" ]; then
    sed -i '1,/^ \{0,\}- GEOIP,/{/^ \{0,\}- GEOIP,/s/^ \{0,\}- GEOIP,/#*******GAME-RULE-START**********#\n&/}' "$CLASH_CONFIG" 2>/dev/null
-elif [ ! -z "$(grep "^ \{0,\}- MATCH," "$RULE_FILE")" ]; then
+elif [ ! -z "$(grep "^ \{0,\}- MATCH," "/etc/clash/config.yaml")" ]; then
    sed -i '1,/^ \{0,\}- MATCH,/{/^ \{0,\}- MATCH,/s/^ \{0,\}- MATCH,/#*******GAME-RULE-START**********#\n&/}' "$CLASH_CONFIG" 2>/dev/null
 else
    echo "#*******GAME RULE START**********#" >> "$CLASH_CONFIG" 2>/dev/null

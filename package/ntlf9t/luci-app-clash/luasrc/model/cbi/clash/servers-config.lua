@@ -257,6 +257,7 @@ o:depends("obfs", "websocket")
 o:depends("type", "vmess")
 o:depends("type", "socks5")
 o:depends("type", "http")
+o:depends("obfs_vmess", "none")
 
 -- [[ TLS ]]--
 o = s:option(ListValue, "tls", translate("TLS"))
@@ -267,6 +268,7 @@ o:value("false")
 o:depends("type", "vmess")
 o:depends("type", "socks5")
 o:depends("type", "http")
+o:depends("obfs_vmess", "none")
 
 local apply = luci.http.formvalue("cbi.apply")
 if apply then

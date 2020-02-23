@@ -269,10 +269,7 @@ msgid "DASHBOARD"
 msgstr "外部控制"
 
 msgid "Clash Dashboard"
-msgstr "Clash外部控制"
-
-msgid "Yac Dashboard"
-msgstr "Yacd外部控制"
+msgstr "Clash控制面板"
 
 msgid "Client"
 msgstr "客户端"
@@ -964,3 +961,63 @@ msgstr "读取代理集"
 
 msgid "Enable to read Proxy Provider"
 msgstr "启用读取代理集"
+
+msgid "Every Hour"
+msgstr "每个小时"
+
+msgid "Every 6 Hours"
+msgstr "每个6小时"
+
+msgid "Every 12 Hours"
+msgstr "每个12小时"
+
+msgid "Every 24 Hours"
+msgstr "每个24小时"
+
+msgid "Clear Clash Log"
+msgstr "清除日志"
+
+msgid "Auto Clear Log"
+msgstr "自动清除日志"
+
+msgid "Clear Time (Time of Day)"
+msgstr "清除时间（一天中的时间）"
+
+msgid "Clear Log Time"
+msgstr "清除日志时间"
+
+msgid "Other Settings"
+msgstr "其他设置"
+
+msgid "Rule Type"
+msgstr "规则类型"
+
+msgid "Choose Type"
+msgstr "选择类型"
+
+msgid "Set custom rules under Setting=>Others , will take effect when client start"
+msgstr "在“设置”=>“其他”下设置自定义规则，将在客户端启动时生效"
+
+msgid "Append Customs Rules"
+msgstr "附加自定义规则"
+
+msgid "Edit Custom Rule & Group"
+msgstr "编辑自定义规则组"
+
+msgid "Custom Rules"
+msgstr "自定义规则"
+
+msgid "IP/Domain/Address/Keyword/Port"
+msgstr "IP/域/地址/关键字/端口"
+
+msgid "Manually download, unzip and rename clash core from links below and upload"
+msgstr "从下面的链接手动下载、解压和重命名到clash然后上载"
+
+msgid "Manual Upload"
+msgstr "手动上载"
+
+msgid "Download Online"
+msgstr "在线下载"
+
+msgid "Yacd Dashboard"
+msgstr "Yacd控制面板"
