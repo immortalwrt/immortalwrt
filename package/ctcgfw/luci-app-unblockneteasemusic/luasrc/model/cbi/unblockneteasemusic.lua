@@ -12,17 +12,17 @@ enable.description = translate("启用本插件以解除网易云音乐播放限
 enable.default = 0
 enable.rmempty = false
 
-music_source = s:option(ListValue, "music_source", translate("音源接口"))
+music_source = s:option(Value, "music_source", translate("音源接口"))
 music_source:value("default", translate("默认"))
 music_source:value("qq", translate("QQ音乐"))
-music_source:value("xiami", translate("虾米音乐"))
-music_source:value("baidu", translate("百度音乐"))
-music_source:value("kugou", translate("酷狗音乐"))
 music_source:value("kuwo", translate("酷我音乐"))
 music_source:value("migu", translate("咕咪音乐"))
+music_source:value("kugou", translate("酷狗音乐"))
+music_source:value("xiami", translate("虾米音乐"))
+music_source:value("baidu", translate("百度音乐"))
 music_source:value("joox", translate("JOOX音乐"))
 music_source:value("youtube", translate("Youtube音乐"))
-music_source.description = translate("音源调用接口")
+music_source.description = translate("自定义模式下，多个音源请用空格隔开")
 music_source.default = "default"
 music_source.rmempty = false
 
@@ -36,6 +36,11 @@ youtube_key = s:option(Value, "youtube_key", translate("Youtube API Key"))
 youtube_key.description = translate("API Key申请地址：https://developers.google.com/youtube/v3/getting-started#before-you-start")
 youtube_key.datatype = "string"
 youtube_key:depends("music_source", "youtube")
+
+enable_flac = s:option(Flag, "enable_flac", translate("启用无损音质"))
+enable_flac.description = translate("目前仅支持QQ、酷我、咪咕音源")
+enable_flac.default = 0
+enable_flac.rmempty = false
 
 auto_update = s:option(Flag, "auto_update", translate("启用自动更新"))
 auto_update.description = translate("启用后，每天将定时自动检查最新版本并更新")
