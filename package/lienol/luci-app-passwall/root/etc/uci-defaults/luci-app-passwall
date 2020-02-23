@@ -5,6 +5,12 @@ uci -q batch <<-EOF >/dev/null
 	add ucitrack passwall
 	set ucitrack.@passwall[-1].init=passwall
 	commit ucitrack
+	delete firewall.passwall
+	set firewall.passwall=include
+	set firewall.passwall.type=script
+	set firewall.passwall.path=/var/etc/passwall.include
+	set firewall.passwall.reload=1
+	commit firewall
 EOF
 
 echo "" > /etc/dnsmasq.conf
