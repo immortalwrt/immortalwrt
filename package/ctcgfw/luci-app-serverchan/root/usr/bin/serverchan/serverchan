@@ -292,30 +292,38 @@ function time_for_humans {
 # 检测黑白名单
 function blackwhitelist(){
 	if [ "$1" ] ;then
+		ip_mac=$( cat ${dir}ipAddress | grep -w $1 |awk '{print $2}' | grep -v "^$" | sort -u )
+		if [ -z "$ip_mac" ] ; then ip_mac=$( cat /proc/net/arp | grep -w $1 | awk  '{print $4}' | grep -v "^$" | sort -u );fi
 		# 如果 “忽略列表 为空” 并且  “关注列表为空” 
 		if [ -z "$serverchan_whitelist" ] && [ -z "$serverchan_blacklist" ] && [ -z "$serverchan_interface" ]; then
 			echo 1
 		# 如果 “忽略列表不为空” 
 		elif [ ! -z "$serverchan_whitelist" ] ; then
-			if ( ! echo $serverchan_whitelist | grep -q -i $( cat /proc/net/arp | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u )); then
+			if ( ! echo $serverchan_whitelist | grep -q -i -w $ip_mac); then
 				echo 1
 			else
 				echo 0
 			fi
 		# 如果 “关注列表不为空” 
 		elif [ ! -z "$serverchan_blacklist" ] ; then
-			if ( echo $serverchan_blacklist | grep -q -i $( cat /proc/net/arp | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u )); then
+			if ( echo $serverchan_blacklist | grep -q -i -w $ip_mac); then
 				echo 1
 			else
 				echo 0
 			fi	
 		# 如果 “仅关注接口选项打开” 
 		elif [ ! -z "$serverchan_interface" ] ; then
-			if ( echo $serverchan_interface | grep -q -i $( cat /proc/net/arp | grep -w $1 |awk '{print $6}' | grep -v "^$" | sort -u )); then
+			if ( echo $serverchan_interface | grep -q -i -w $ip_mac) ; then
 				echo 1
 			else
-				echo 0
-			fi	
+				wlan_interface=`iw dev $serverchan_interface station dump | grep -i -w $ip_mac | grep Station`
+				ipAddress_interface=$( cat ${dir}ipAddress | grep -w $1 |awk '{print $5}' | grep -v "^$" | sort -u )
+				if [ ! -z "$wlan_interface" ] || [ ! -z "$ipAddress_interface" ] ; then
+					echo 1
+				else
+					echo 0
+				fi
+			fi
 		fi
 	fi
 }
@@ -414,14 +422,11 @@ if [ "$1" ] ;then
 				unset title
 				unset content
 			fi
-			echo "$1 $ip_mac $ip_name `date +%s`" >> ${dir}ipAddress
+			echo "$1 $ip_mac $ip_name `date +%s` `iw dev $serverchan_interface station dump | grep Station | grep -i -w $ip_mac | sed -nr 's#^.*on (.*))#\1#gp'`" >> ${dir}ipAddress
 		else
 			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  设备 $ip_name $1 连接失败" >> ${logfile};fi
 		fi
 		rm -f ${dir}serverchan.lock >/dev/null 2>&1
-	else
-		# 调试日志
-		if [ ! -z "$debuglevel" ] && [ "$debuglevel" -eq "5" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` $ip_name $1 已存在，跳过" >> ${logfile};fi
 	fi
 	unset ip_ms
 fi
@@ -553,10 +558,10 @@ function send(){
 		if [ ! -z "$router_wan" ] && [ "$router_wan" -eq "1" ] ; then
 			send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     接口ip:$send_wanIP"
 			send_content=${send_content}"%0D%0A%0D%0A""     外网ip:$send_hostIP"
-			send_content=${send_content}"%0D%0A%0D%0A""      ipv6:$send_wanIPv6"
+			send_content=${send_content}"%0D%0A%0D%0A""     ipv6 :$send_wanIPv6"
 			send_content=${send_content}"%0D%0A%0D%0A""     外网v6:$send_hostIPv6"
 			if [ ! -z "$send_content" ] && [ ! -z "$router_wan" ] ; then
-				if ( ! echo ${send_wanIP} | grep -q ${send_hostIP} );then send_content=${send_content}"%0D%0A%0D%0A""     外网 ip 与接口 ip 不一致，你的 ip 不是公网 ip";fi
+				if ( ! echo ${send_wanIP} | grep -q -w ${send_hostIP} );then send_content=${send_content}"%0D%0A%0D%0A""     外网 ip 与接口 ip 不一致，你的 ip 不是公网 ip";fi
 			else
 				send_content=${send_content}"%0D%0A%0D%0A""     ip 获取失败"
 			fi
@@ -864,10 +869,10 @@ function rand_geturl(){
 			IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
 			for  ip in $IPLIST; do
 				ip_total=`usage_ip $ip`
-				time_down=`date +%s`
-				time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
-				time1=$(($time_down-$time_up))
-				time1=`time_for_humans $time1`
+				#time_down=`date +%s`
+				#time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
+				#time1=$(($time_down-$time_up))
+				#time1=`time_for_humans $time1`
 				ip_name=$( cat ${dir}ipAddress | grep -w $ip | awk  '{print $3}' | grep -v "^$" | sort -u )
 				if [ "${#ip_name}" -gt  "18" ] ; then ip_name=`echo ${ip_name:0:18}"*"`;fi
 				n=`expr 16 - ${#ip}`
@@ -1042,11 +1047,11 @@ function serverchan_send(){
 		else
 			curl -s "http://sc.ftqq.com/$serverchan_sckey.send?text=${title}" -d "&desp=${nowtime}%0D%0A%0D%0A${content}" >/dev/null
 		fi
-		unset title
-		unset content
-		rm -f ${dir}title >/dev/null 2>&1
-		rm -f ${dir}content >/dev/null 2>&1
 	fi
+	unset title
+	unset content
+	rm -f ${dir}title >/dev/null 2>&1
+	rm -f ${dir}content >/dev/null 2>&1
 	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【等待】我累了，$sleeptime 秒后再回来" >> ${logfile};fi
 	enable_detection $sleeptime
 }
