@@ -11,8 +11,8 @@ LUCI_TITLE:=LuCI support for UnblockNeteaseMusic
 LUCI_DEPENDS:=+bash +busybox +coreutils-nohup +curl +dnsmasq-full +ipset +libopenssl +node
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-unblockneteasemusic
-PKG_VERSION:=2.7
-PKG_RELEASE:=6
+PKG_VERSION:=2.8
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=[CTCGFW]Project-OpenWrt
 
