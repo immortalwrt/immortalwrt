@@ -82,19 +82,19 @@ fi
 fi
 
 if [ -f /usr/share/clash/core_version ];then
-VER=$(sed -n 1p /usr/share/clash/core_version 2>/dev/null)
+VER=$(rm -rf /usr/share/clash/core_version 2>/dev/null && /etc/clash/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/core_version 2>/dev/null | sed -n 1p /usr/share/clash/core_version)
 else
 VER=0
 fi
 
  if [ -f /usr/share/clash/corer_version ];then
-VERR=$(sed -n 1p /usr/share/clash/corer_version 2>/dev/null)
+VERR=$(rm -rf /usr/share/clash/corer_version 2>/dev/null && /usr/bin/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/corer_version 2>/dev/null | sed -n 1p /usr/share/clash/corer_version) 
 else
 VERR=0
 fi
 
  if [ -f /usr/share/clash/tun_version ];then
-VERS=$(sed -n 1p /usr/share/clash/tun_version 2>/dev/null)
+VERS=$(rm -rf /usr/share/clash/tun_version 2>/dev/null && /etc/clash/clashtun/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/tun_version | sed -n 1p /usr/share/clash/tun_version)
 else
 VERS=0
 fi

@@ -34,13 +34,17 @@ add_cron(){
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 #===========================================================================================================================
 	sed -i '/clash.txt/d' $CRON_FILE
-	echo '0 0 * * 0 echo "" >> /usr/share/clash/clash.txt' >> $CRON_FILE
-	[ -n "$(grep -w "/usr/share/clash/clash.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/clash.sh/d' $CRON_FILE
-	[ -n "$(grep -w "/usr/share/clash/v2ssr.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/clash\/v2ssr.sh/d' $CRON_FILE
+	
+	clear=$(uci get clash.config.auto_clear_log 2>/dev/null)
+	if [ "${clear}" -eq 1 ]; then
+	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
+	fi
+	
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
 	if [ "${auto}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "0 $(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/update_all.sh" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.auto_update_time 2>/dev/null) * * * /usr/share/clash/update_all.sh" >> $CRON_FILE
 	fi
+	
 	auto_geoip=$(uci get clash.config.auto_update_geoip 2>/dev/null)
 	if [ "${auto_geoip}" -eq 1 ]; then
 	day=$(uci get clash.config.geoip_update_day 2>/dev/null)
@@ -123,6 +127,12 @@ yml_change() {
 game_rules() {
 #===========================================================================================================================
 	sh /usr/share/clash/game.sh 2>/dev/null
+#=========================================================================================================================== 
+}
+
+ip_rules() {
+#===========================================================================================================================
+	sh /usr/share/clash/iprules.sh 2>/dev/null
 #=========================================================================================================================== 
 }
 
@@ -221,7 +231,7 @@ rules(){
 			iptables -t nat -A clash -d "${lan_ip}" -j RETURN
 			if [ ! -z "${wan}" ]; then
                 	iptables -t nat -A clash -d "${wan}" -j RETURN
-                	fi
+            fi
 			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
 			iptables -t nat -A PREROUTING -p tcp -j clash
 		    	
@@ -263,8 +273,8 @@ rules(){
 			ipset add localnetwork 172.16.0.0/12
 			ipset add localnetwork "${lan_ip}"
 			if [ ! -z "${wan}" ]; then
-                	ipset add localnetwork "${wan}"
-                	fi
+                ipset add localnetwork "${wan}"
+            fi
 			if [ "${core}" -eq 3 ];then
 			ip tuntap add user root mode tun $TUN_DEVICE_NAME
 			ip link set $TUN_DEVICE_NAME up
@@ -274,16 +284,15 @@ rules(){
 			ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
 			fi
 
-                	ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
+            ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
             
-                	iptables -t mangle -N clash
-                	iptables -t mangle -F clash
-                	iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
-               	 	iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
-                	iptables -t mangle -I OUTPUT -j clash
-                	iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
+            iptables -t mangle -N clash
+            iptables -t mangle -F clash
+            iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
+            iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
+            iptables -t mangle -I OUTPUT -j clash
+            iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
 						
-			
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 			ip6tables -t mangle -I PREROUTING -j MARK --set-mark "$PROXY_FWMARK"		
 			fi
@@ -412,8 +421,12 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 	sleep 2
 	
 	game_rules >/dev/null 2>&1
-
-        if [ "${core}" -eq 1 ];then
+	
+	sleep 1
+	
+    ip_rules >/dev/null 2>&1
+	
+    if [ "${core}" -eq 1 ];then
         	nohup $CLASH -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -448,7 +461,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		fi
 		
 	fi
-	
+	ln -s /usr/share/clash/yacd /www/luci-static/yacd 2>/dev/null
 	sleep 2
 	
 	
@@ -615,6 +628,7 @@ stop(){
 		fi
 										
 		iptables -t nat -F clash >/dev/null 2>&1 && iptables -t nat -X clash >/dev/null 2>&1
+		
 		nat_indexs=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
 		for nat_index in $nat_indexs; do
 			iptables -t nat -D PREROUTING $nat_index >/dev/null 2>&1
@@ -622,14 +636,14 @@ stop(){
 		
 
 		fake=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.0\/16/=' |sort -r)
-       		for fake in $fake; do
+       	for fake in $fake; do
           	iptables -t nat -D OUTPUT $fake >/dev/null 2>&1
-        	done
+        done
 		
 		fake2=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.1\/16/=' |sort -r)
-       		for fake2 in $fake2; do
+       	for fake2 in $fake2; do
           	iptables -t nat -D OUTPUT $fake2 >/dev/null 2>&1
-        	done	
+        done	
 
 		remove_mark >/dev/null 2>&1
 
@@ -644,7 +658,7 @@ stop(){
 		fi
 
 		kill -9 `pidof clash|sed "s/$//g"` 2>/dev/null
-		
+		rm -rf /www/luci-static/yacd 2>/dev/null
 		sleep 1
 
 		if [ ! -z "${delandns}" ];then
@@ -663,7 +677,7 @@ stop(){
 		fi
 		
   	  	del_cron >/dev/null 2>&1
-	    	sleep 1		
+	    sleep 1		
 
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Restarting Dnsmasq " >$REAL_LOG 
@@ -672,7 +686,7 @@ stop(){
 		fi	
 	
 		revert_dns >/dev/null 2>&1
-   	    	sleep 1
+   	    sleep 1
 
 	 	echo "" >/usr/share/clash/clash.txt >/dev/null 2>&1
 
@@ -705,7 +719,7 @@ restart(){
 			stop  >/dev/null 2>&1
 			start >/dev/null 2>&1
 		else
-		    	start >/dev/null 2>&1
+		    start >/dev/null 2>&1
 		fi
 #=========================================================================================================================== 
 }

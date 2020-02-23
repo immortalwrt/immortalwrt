@@ -491,7 +491,7 @@ yml_groups_set()
    echo "  type: $type" >>$GROUP_FILE 2>/dev/null 
    
    group_name="$name"
-   echo "  proxies: $group_name" >>$GROUP_FILE
+   echo "  proxies: " >>$GROUP_FILE
 
    #if [ "$type" == "url-test" ] || [ "$type" == "load-balance" ] || [ "$type" == "fallback" ] ; then
    #  echo "  proxies:" >>$GROUP_FILE 2>/dev/null 

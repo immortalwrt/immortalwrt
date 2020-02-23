@@ -23,6 +23,12 @@ config clash 'config'
 	option dnscache '0'	
 	option config_type '1'
 	option p_mode 'Rule'
+	option auto_clear_log '1'
+	option auto_update '1'
+	option auto_update_time '12'
+	option clear_time '12'
+	option append_rules '0'
+
 
 config groups
 	option old_name '❌AdBlock'
@@ -51,4 +57,27 @@ config groups
 	option name '🔑Proxy'
 	list other_group 'ALL'
 
+config addtype
+	option type 'SRC-IP-CIDR'
+	option pgroup 'DIRECT'
+	list ipaaddr '192.168.1.4/30'
 
+config addtype
+	option type 'SRC-IP-CIDR'
+	option pgroup 'DIRECT'
+	option ipaaddr '192.168.1.2/31'
+
+config addtype
+	option type 'DOMAIN-KEYWORD'
+	option pgroup 'DIRECT'
+	option ipaaddr 'baidu'
+
+config addtype
+	option type 'SRC-PORT'
+	option pgroup 'DIRECT'
+	option ipaaddr '22'
+
+config addtype
+	option type 'DST-PORT'
+	option pgroup 'DIRECT'
+	option ipaaddr '443'

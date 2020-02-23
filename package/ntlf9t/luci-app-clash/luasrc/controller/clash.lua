@@ -20,9 +20,9 @@ function index()
 	entry({"admin", "services", "clash", "config"},cbi("clash/config"),_("Config"), 30).leaf = true
 
 	entry({"admin", "services", "clash", "create"},cbi("clash/create"),_("Create Config"), 40).leaf = true
-        entry({"admin", "services", "clash", "servers"},cbi("clash/servers-config"), nil).leaf = true
+    entry({"admin", "services", "clash", "servers"},cbi("clash/servers-config"), nil).leaf = true
 	entry({"admin", "services", "clash", "provider"},cbi("clash/provider-config"), nil).leaf = true
-        entry({"admin", "services", "clash", "groups"},cbi("clash/groups"), nil).leaf = true
+    entry({"admin", "services", "clash", "groups"},cbi("clash/groups"), nil).leaf = true
 
 	entry({"admin", "services", "clash", "settings"}, firstchild(),_("Settings"), 50)
 	entry({"admin", "services", "clash", "settings", "port"},cbi("clash/port"),_("Proxy Ports"), 60).leaf = true
@@ -31,8 +31,11 @@ function index()
 	entry({"admin", "services", "clash", "settings", "list"},cbi("clash/list"),_("Custom List"), 90).leaf = true
 
 	entry({"admin", "services", "clash", "settings", "grules"},cbi("clash/game-settings"),_("Game Rules"), 91).dependent = false
-        entry({"admin", "services", "clash", "g-rules"},cbi("clash/game-rule"), nil).leaf = true
-
+    entry({"admin", "services", "clash", "g-rules"},cbi("clash/game-rule"), nil).leaf = true
+	entry({"admin", "services", "clash", "settings", "other"},cbi("clash/other"),_("Other Settings"), 92).leaf = true
+    entry({"admin", "services", "clash", "ip-rules"},cbi("clash/ip-rules"), nil).leaf = true
+	
+	
 	entry({"admin","services","clash","status"},call("action_status")).leaf=true
 	entry({"admin", "services", "clash", "log"},cbi("clash/log"),_("Log"), 150).leaf = true
 	entry({"admin", "services", "clash", "update"},cbi("clash/update"),_("Update"), 160).leaf = true

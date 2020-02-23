@@ -7,6 +7,7 @@ local uci = require("luci.model.uci").cursor()
 local m , r, k
 local http = luci.http
 
+font_red = [[<font color="red">]]
 font_green = [[<font color="green">]]
 font_off = [[</font>]]
 bold_on  = [[<strong>]]
@@ -17,24 +18,50 @@ bold_off = [[</strong>]]
 ko = Map("clash")
 ko.reset = false
 ko.submit = false
-sul =ko:section(TypedSection, "clash","")
+sul =ko:section(TypedSection, "clash",translate("Manual Upload"))
 sul.anonymous = true
 sul.addremove=false
 o = sul:option(FileUpload, "")
-o.description = translate("NB: Upload only Dreamacro clash tun core - (https://github.com/Dreamacro/clash/releases/tag/TUN)")
+o.description =''..font_red..bold_on..translate("Manually download, unzip and rename clash core from links below and upload")..bold_off..font_off..' '
+.."<br />"
+..translate("Dreamacro clash tun core (dtun) - (https://github.com/Dreamacro/clash/releases/tag/TUN)")
+.."<br />"
+..translate("comzyh clash tun core (ctun) - (https://github.com/comzyh/clash/releases)")
+.."<br />"
+..translate("Dreamacro clash core - (https://github.com/Dreamacro/clash/releases)")
+.."<br />"
+..translate("Frainzy1477 clashr core - (https://github.com/frainzy1477/clashrdev/releases)")
+.."<br />"
+..translate("Frainzy1477 clash core - (https://github.com/frainzy1477/clash_dev/releases)")
+.."<br />"
+..translate("Frainzy1477 clash(ctun) core - (https://github.com/frainzy1477/clashtun/releases)")
+
 o.title = translate("  ")
-o.template = "clash/clash_upload"
+o.template = "clash/upload_core"
 um = sul:option(DummyValue, "", nil)
 um.template = "clash/clash_dvalue"
 
-local dir, fd
-dir = "/etc/clash/dtun/"
+local dir, fd,dtun,ctun,cssr
+dir = "/etc/clash/"
+cssr="/usr/bin/"
+dtun="/etc/clash/dtun/"
+ctun="/etc/clash/clashtun/"
+
 http.setfilehandler(
 	function(meta, chunk, eof)
+		local fp = HTTP.formvalue("file_type")
 		if not fd then
 			if not meta then return end
-
-			if	meta and chunk then fd = nixio.open(dir .. meta.file, "w") end
+			
+			if fp == "clash" then
+			   if meta and chunk then fd = nixio.open(dir .. meta.file, "w") end
+			elseif fp == "clashr" then
+			   if meta and chunk then fd = nixio.open(cssr .. meta.file, "w") end
+			elseif fp == "clashctun" then
+			   if meta and chunk then fd = nixio.open(ctun .. meta.file, "w") end
+			elseif fp == "clashdtun" then
+			   if meta and chunk then fd = nixio.open(dtun .. meta.file, "w") end  
+			end
 
 			if not fd then
 				um.value = translate("upload file error.")
@@ -47,8 +74,21 @@ http.setfilehandler(
 		if eof and fd then
 			fd:close()
 			fd = nil
-			SYS.exec("chmod 755 /etc/clash/dtun/clash 2>&1 &")
-			um.value = translate("File saved to") .. ' "/etc/clash/dtun/"'
+			
+			if fp == "clash" then
+			    SYS.exec("chmod 755 /etc/clash/clash 2>&1 &")
+				um.value = translate("File saved to") .. ' "/etc/clash/'..meta.file..'"'
+			elseif fp == "clashr" then
+			    SYS.exec("chmod 755 /usr/bin/clash 2>&1 &")
+				um.value = translate("File saved to") .. ' "/usr/bin/'..meta.file..'"'
+			elseif fp == "clashctun" then
+			    SYS.exec("chmod 755 /etc/clash/clashtun/clash 2>&1 &")
+				um.value = translate("File saved to") .. ' "/etc/clash/clashtun/'..meta.file..'"'
+			elseif fp == "clashdtun" then
+			    SYS.exec("chmod 755 /etc/clash/dtun/clash 2>&1 &")
+				um.value = translate("File saved to") .. ' "/etc/clash/dtun/'..meta.file..'"'  
+			end
+			
 			
 		end
 	end
@@ -68,7 +108,7 @@ m:section(SimpleSection).template  = "clash/update"
 m.pageaction = false
 
 k = Map("clash")
-s = k:section(TypedSection, "clash")
+s = k:section(TypedSection, "clash",translate("Download Online"))
 s.anonymous = true
 o = s:option(ListValue, "dcore", translate("Core Type"))
 o.default = "clashcore"
