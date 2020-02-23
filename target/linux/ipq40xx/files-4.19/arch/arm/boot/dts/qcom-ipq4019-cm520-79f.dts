@@ -1,10 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-/*
- * Copyright (C) 2019 LGA1150
- * Copyright (C) 2020 Mleaf
- */
-
 #include "qcom-ipq4019.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -36,7 +31,7 @@
 			pinctrl-0 = <&mdio_pins>;
 			pinctrl-names = "default";
 			reset-gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
-			reset-delay-us = <5000>;
+			reset-delay-us = <1000>;
 		};
 
 		ess-psgmii@98000 {
@@ -146,8 +141,8 @@
 			trigger-sources = <&usb3_port1>, <&usb3_port2>, <&usb2_port1>;
 		};
 
-		led_sys: sys {
-			label = "cm520-79f:blue:sys";
+		led_sys: can {
+			label = "cm520-79f:blue:can";
 			gpios = <&tlmm 11 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -269,18 +264,18 @@
 
 	nand_pins: nand_pins {
 		pullups {
-			pins = "gpio53", "gpio58", "gpio59";
+			pins =	"gpio52", "gpio53", "gpio58",
+				"gpio59";
 			function = "qpic";
 			bias-pull-up;
 		};
 
-		// gpio61 controls led_usb
-
 		pulldowns {
-			pins =	"gpio55", "gpio56", "gpio57",
-				"gpio60", "gpio62", "gpio63",
-				"gpio64", "gpio65", "gpio66",
-				"gpio67", "gpio68", "gpio69";
+			pins =	"gpio54", "gpio55", "gpio56",
+				"gpio57", "gpio60", "gpio61",
+				"gpio62", "gpio63", "gpio64",
+				"gpio65", "gpio66", "gpio67",
+				"gpio68", "gpio69";
 			function = "qpic";
 			bias-pull-down;
 		};
