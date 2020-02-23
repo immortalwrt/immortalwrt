@@ -783,5 +783,38 @@ msgstr "插件参数"
 msgid "Before subscribing please click below to delete all servers in the subscription"
 msgstr "订阅前请点击下面的删除所有服务器在订阅"
 
+msgid "Chnroute Setting"
+msgstr "国内IP段数据库更新设置"
+
+msgid "Enable custom chnroute"
+msgstr "启用自定义更新地址"
+
+msgid "Update url"
+msgstr "更新链接"
+
+msgid "HTTP Proxy"
+msgstr "HTTP代理"
+
+msgid "Raw Mode"
+msgstr "模式"
+
+msgid "Seq Mode"
+msgstr "Seq模式"
+
+msgid "Cipher Mode"
+msgstr "加密模式"
+
+msgid "Auth Mode"
+msgstr "校验模式"
+
+msgid "Speeder Mode"
+msgstr "Speeder模式"
+
+msgid "Fec"
+msgstr "fec参数"
+
+msgid "Mtu"
+msgstr "mtu参数"
+
 
 

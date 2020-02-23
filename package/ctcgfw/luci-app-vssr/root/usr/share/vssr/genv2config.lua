@@ -38,22 +38,21 @@ function gen_outbound(server_node, tags)
                 }
             },
             -- 底层传输配置
-            streamSettings = {
-                network = server.transport,
-                security = (server.tls == '1') and "tls" or "none",
-                tlsSettings = {
-                    allowInsecure = (server.insecure == "1") and true or false,
-                    serverName = server.ws_host
-                },
-                kcpSettings = (server.transport == "kcp") and {
-                    mtu = tonumber(server.mtu),
-                    tti = tonumber(server.tti),
-                    uplinkCapacity = tonumber(server.uplink_capacity),
-                    downlinkCapacity = tonumber(server.downlink_capacity),
-                    congestion = (server.congestion == "1") and true or false,
-                    readBufferSize = tonumber(server.read_buffer_size),
-                    writeBufferSize = tonumber(server.write_buffer_size),
-                    header = {type = server.kcp_guise}
+           streamSettings = {
+			network = server.transport,
+			security = (server.tls == '1') and "tls" or "none",
+			tlsSettings = {allowInsecure = (server.insecure == "1") and true or false,serverName=server.tls_host,},
+			kcpSettings = (server.transport == "kcp") and {
+				mtu = tonumber(server.mtu),
+				tti = tonumber(server.tti),
+				uplinkCapacity = tonumber(server.uplink_capacity),
+				downlinkCapacity = tonumber(server.downlink_capacity),
+				congestion = (server.congestion == "1") and true or false,
+				readBufferSize = tonumber(server.read_buffer_size),
+				writeBufferSize = tonumber(server.write_buffer_size),
+				header = {
+					type = server.kcp_guise
+				}
                 } or nil,
                 wsSettings = (server.transport == "ws") and
                     (server.ws_path ~= nil or server.ws_host ~= nil) and {
