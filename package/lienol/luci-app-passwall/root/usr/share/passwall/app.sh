@@ -300,24 +300,7 @@ gen_start_config() {
 		eval SOCKS5_NODE${5}_PORT=$port
 		if [ "$type" == "socks5" ]; then
 			echolog "Socks5节点不能使用Socks5代理节点！"
-		elif [ "$type" == "v2ray" ]; then
-			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
-			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
-		elif [ "$type" == "v2ray_balancing" ]; then
-			local balancing_node=$(config_n_get $node v2ray_balancing_node)
-			balancing_node_address=""
-			for node_id in $balancing_node
-			do
-				local address=$(config_n_get $node_id address)
-				local port=$(config_n_get $node_id port)
-				local temp=""
-				if [ -z "$balancing_node_address" ]; then
-					temp="${address}:${port}"
-				else
-					temp="${balancing_node_address}\n${address}:${port}"
-				fi
-				balancing_node_address="$temp"
-			done
+		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
@@ -361,24 +344,7 @@ gen_start_config() {
 			# local redsocks_config_file=$CONFIG_PATH/UDP_$i.conf
 			# gen_redsocks_config $redsocks_config_file udp $port $node_address $node_port $server_username $server_password
 			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
-		elif [ "$type" == "v2ray" ]; then
-			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
-			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
-		elif [ "$type" == "v2ray_balancing" ]; then
-			local balancing_node=$(config_n_get $node v2ray_balancing_node)
-			balancing_node_address=""
-			for node_id in $balancing_node
-			do
-				local address=$(config_n_get $node_id address)
-				local port=$(config_n_get $node_id port)
-				local temp=""
-				if [ -z "$balancing_node_address" ]; then
-					temp="${address}:${port}"
-				else
-					temp="${balancing_node_address}\n${address}:${port}"
-				fi
-				balancing_node_address="$temp"
-			done
+		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
@@ -436,24 +402,7 @@ gen_start_config() {
 			# local redsocks_config_file=$CONFIG_PATH/TCP_$i.conf
 			# gen_redsocks_config $redsocks_config_file tcp $port $node_address $socks5_port $server_username $server_password
 			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
-		elif [ "$type" == "v2ray" ]; then
-			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
-			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
-		elif [ "$type" == "v2ray_balancing" ]; then
-			local balancing_node=$(config_n_get $node v2ray_balancing_node)
-			balancing_node_address=""
-			for node_id in $balancing_node
-			do
-				local address=$(config_n_get $node_id address)
-				local port=$(config_n_get $node_id port)
-				local temp=""
-				if [ -z "$balancing_node_address" ]; then
-					temp="${address}:${port}"
-				else
-					temp="${balancing_node_address}\n${address}:${port}"
-				fi
-				balancing_node_address="$temp"
-			done
+		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
@@ -674,6 +623,11 @@ start_dns() {
 add_dnsmasq() {
 	mkdir -p $TMP_DNSMASQ_PATH $DNSMASQ_PATH /var/dnsmasq.d
 	cat $RULE_PATH/whitelist_host | sed -e "/^$/d" | sed "s/^/ipset=&\/./g" | sed "s/$/\/&whitelist/g" | sort | awk '{if ($0!=line) print;line=$0}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
+
+	local adblock=$(config_t_get global_rules adblock 0)
+	[ "$adblock" == "1" ] && {
+		[ -f "$RULE_PATH/adblock.conf" -a -s "$RULE_PATH/adblock.conf" ] && ln -s $RULE_PATH/adblock.conf $TMP_DNSMASQ_PATH/adblock.conf
+	}
 
 	[ "$DNS_MODE" != "nonuse" ] && {
 		[ -f "$RULE_PATH/blacklist_host" -a -s "$RULE_PATH/blacklist_host" ] && cat $RULE_PATH/blacklist_host | sed -e "/^$/d" | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' > $TMP_DNSMASQ_PATH/blacklist_host.conf

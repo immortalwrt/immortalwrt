@@ -1,0 +1,19 @@
+[
+    {
+        "d": 276776,
+        "enable": 1,
+        "forbidden_port": "",
+        "id": "cfg05ae6f",
+        "method": "none",
+        "obfs": "tls1.2_ticket_auth",
+        "passwd": "123456",
+        "port": 11111,
+        "protocol": "auth_chain_a",
+        "protocol_param": "2",
+        "speed_limit_per_con": 100,
+        "speed_limit_per_user": 200,
+        "transfer_enable": 10737418240,
+        "u": 60612,
+        "user": "\u563b\u563b"
+    }
+]
