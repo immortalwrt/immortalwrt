@@ -1,7 +1,4 @@
 
-
-
-
 config global
 	option tunnel_forward '8.8.4.4:53'
 	option tunnel_address '0.0.0.0'
@@ -38,6 +35,12 @@ config access_control
 	list wan_fw_ips '91.108.4.0/22'
 	list wan_fw_ips '91.108.56.0/22'
 	list wan_fw_ips '109.239.140.0/24'
+	list wan_fw_ips '1.1.1.1/32'
+	list wan_fw_ips '1.0.0.1/32'
+	list wan_fw_ips '8.8.8.8/32'
+	list wan_fw_ips '8.8.4.4/32'
+	list wan_fw_ips '9.9.9.9/32'
+	list wan_fw_ips '146.112.41.2/32'
 
 config server_global
 	option enable_server '0'
@@ -70,8 +73,4 @@ config udpspeeder
 	option queue_len '1'
 	option timeout '8'
 	option udpspeeder_enable '0'
-
-
-
-
 
