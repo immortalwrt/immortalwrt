@@ -63,6 +63,7 @@ if api.uci_get_type("global_other", "show_group", "1") == "1" then
     end
 end
 
+s.sortable = true
 -- 简洁模式
 if api.uci_get_type("global_other", "compact_display_nodes", "0") == "1" then
     if show_group then show_group.width = "25%" end
@@ -84,7 +85,6 @@ if api.uci_get_type("global_other", "compact_display_nodes", "0") == "1" then
         return str
     end
 else
-    s.sortable = true
     ---- Add Mode
     if api.uci_get_type("global_other", "show_add_mode", "1") == "1" then
         o = s:option(DummyValue, "add_mode", translate("Add Mode"))

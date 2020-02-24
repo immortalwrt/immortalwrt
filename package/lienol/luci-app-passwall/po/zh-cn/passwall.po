@@ -292,11 +292,17 @@ msgstr "V2ray 负载均衡"
 msgid "V2ray_balancing"
 msgstr "V2ray 负载均衡"
 
+msgid "V2ray Shunt"
+msgstr "V2ray 分流"
+
+msgid "V2ray_shunt"
+msgstr "V2ray 分流"
+
 msgid "Load balancing node list"
 msgstr "负载均衡节点列表"
 
-msgid "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/app/balance.html'>document</a>"
-msgstr "负载均衡节点列表，<a target='_blank' href='https://toutyrater.github.io/app/balance.html'>文档原理</a>"
+msgid "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"
+msgstr "负载均衡节点列表，<a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>文档原理</a>"
 
 msgid "Address"
 msgstr "地址"
@@ -483,6 +489,9 @@ msgstr "负载均衡设置"
 
 msgid "Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"
 msgstr "添加节点，指定出口功能是为多WAN用户准备的。负载比重范围1-256。多个主服务器可以负载均衡，备用只有在主服务器离线时才会启用！"
+
+msgid "Node"
+msgstr "节点"
 
 msgid "Node Address"
 msgstr "节点地址"

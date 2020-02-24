@@ -1,0 +1,25 @@
+#!/bin/sh
+
+. $IPKG_INSTROOT/lib/functions.sh
+. $IPKG_INSTROOT/lib/functions/service.sh
+
+gen_user_iptables() {
+	config_get enable $1 enable
+	[ "$enable" = "0" ] && return 0
+	config_get remarks $1 remarks
+	config_get port $1 port
+	iptables -A SSR_PYTHON-SERVER -p tcp --dport $port -m comment --comment "$remarks" -j ACCEPT
+	iptables -A SSR_PYTHON-SERVER -p udp --dport $port -m comment --comment "$remarks" -j ACCEPT
+}
+
+iptables -F SSR_PYTHON-SERVER 2>/dev/null
+iptables -D INPUT -j SSR_PYTHON-SERVER 2>/dev/null
+iptables -X SSR_PYTHON-SERVER 2>/dev/null
+
+enable=$(uci get ssr_python_pro_server.@global[0].enable)
+if [ $enable -eq 1 ]; then
+	iptables -N SSR_PYTHON-SERVER
+	iptables -I INPUT -j SSR_PYTHON-SERVER
+	config_load ssr_python_pro_server
+	config_foreach gen_user_iptables "user"
+fi
