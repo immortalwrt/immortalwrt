@@ -14,7 +14,7 @@ PKG_SOURCE_VERSION:=e0d586aa93cb8687dd7dc0e593b6a820df2d6e1d
 
 PKG_MAINTAINER:=Ben Greear <greearb@candelatech.com>
 PKG_BUILD_PARALLEL:=1
-#PKG_EXTMOD_SUBDIRS:=rtl8812au-ct
+#PKG_EXTMOD_M:=rtl8812au-ct
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
@@ -45,7 +45,7 @@ NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPE
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
 		$(KERNEL_MAKE_FLAGS) \
-		SUBDIRS="$(PKG_BUILD_DIR)" \
+		M="$(PKG_BUILD_DIR)" \
 		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
 		modules
 endef
