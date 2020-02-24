@@ -9,22 +9,20 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
 PKG_BASE:=1.1.1
-PKG_BUGFIX:=d
+PKG_BUGFIX:=e-dev
 PKG_VERSION:=$(PKG_BASE)$(PKG_BUGFIX)
-PKG_RELEASE:=2
+PKG_RELEASE:=1
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/openssl/openssl.git
+PKG_SOURCE_VERSION:=22623e0cc26a11908253206a721873d4101cd466
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_HASH:=63006d1af7096683206b617667d5f5b00f1f9e3cb82ca25e00e7f01319a4abb4
+
 PKG_USE_MIPS16:=0
 ENGINES_DIR=engines-1.1
-
 PKG_BUILD_PARALLEL:=1
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:= \
-	http://ftp.fi.muni.cz/pub/openssl/source/ \
-	http://ftp.linux.hr/pub/openssl/source/ \
-	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
-	http://www.openssl.org/source/ \
-	http://www.openssl.org/source/old/$(PKG_BASE)/
-PKG_HASH:=1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2
 
 PKG_LICENSE:=OpenSSL
 PKG_LICENSE_FILES:=LICENSE
