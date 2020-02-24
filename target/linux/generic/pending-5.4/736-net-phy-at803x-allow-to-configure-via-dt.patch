@@ -1,0 +1,17 @@
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -464,6 +464,14 @@ static int at803x_read_status(struct phy
+ 	if (pdata && pdata->disable_smarteee)
+ 		at803x_disable_smarteee(phydev);
+ 
++#ifdef CONFIG_OF_MDIO
++	if (phydev->mdio.dev.of_node &&
++		of_property_read_bool(phydev->mdio.dev.of_node,
++				      "at803x-disable-smarteee")) {
++		at803x_disable_smarteee(phydev);
++	}
++#endif
++
+ 	return 0;
+ }
+ 

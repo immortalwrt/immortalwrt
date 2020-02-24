@@ -1,0 +1,75 @@
+From: Felix Fietkau <nbd@nbd.name>
+Subject: add patch for including unpartitioned space in the rootfs partition for redboot devices (if applicable)
+
+[john@phrozen.org: used by ixp and others]
+
+lede-commit: 394918851f84e4d00fa16eb900e7700e95091f00
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ drivers/mtd/redboot.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+--- a/drivers/mtd/parsers/redboot.c
++++ b/drivers/mtd/parsers/redboot.c
+@@ -259,33 +259,40 @@ static int parse_redboot_partitions(stru
+ 		i++;
+ 	}
+ #endif
+-	for ( ; i<nrparts; i++) {
+-		parts[i].size = fl->img->size;
+-		parts[i].offset = fl->img->flash_base;
+-		parts[i].name = names;
++        for ( ; i<nrparts; i++) {
++                parts[i].size = fl->img->size;
++                parts[i].offset = fl->img->flash_base;
++                parts[i].name = names;
+ 
+-		strcpy(names, fl->img->name);
++                strcpy(names, fl->img->name);
+ #ifdef CONFIG_MTD_REDBOOT_PARTS_READONLY
+-		if (!memcmp(names, "RedBoot", 8) ||
+-				!memcmp(names, "RedBoot config", 15) ||
+-				!memcmp(names, "FIS directory", 14)) {
+-			parts[i].mask_flags = MTD_WRITEABLE;
+-		}
++                if (!memcmp(names, "RedBoot", 8) ||
++                                !memcmp(names, "RedBoot config", 15) ||
++                                !memcmp(names, "FIS directory", 14)) {
++                        parts[i].mask_flags = MTD_WRITEABLE;
++                }
+ #endif
+-		names += strlen(names)+1;
++                names += strlen(names)+1;
+ 
++                if(fl->next && fl->img->flash_base + fl->img->size + master->erasesize <= fl->next->img->flash_base) {
++                        if (!strcmp(parts[i].name, "rootfs")) {
++                                parts[i].size = fl->next->img->flash_base;
++                                parts[i].size &= ~(master->erasesize - 1);
++                                parts[i].size -= parts[i].offset;
+ #ifdef CONFIG_MTD_REDBOOT_PARTS_UNALLOCATED
+-		if(fl->next && fl->img->flash_base + fl->img->size + master->erasesize <= fl->next->img->flash_base) {
+-			i++;
+-			parts[i].offset = parts[i-1].size + parts[i-1].offset;
+-			parts[i].size = fl->next->img->flash_base - parts[i].offset;
+-			parts[i].name = nullname;
+-		}
++                                nrparts--;
++                        } else {
++                                i++;
++                                parts[i].offset = parts[i-1].size + parts[i-1].offset;
++                                parts[i].size = fl->next->img->flash_base - parts[i].offset;
++                                parts[i].name = nullname;
+ #endif
+-		tmp_fl = fl;
+-		fl = fl->next;
+-		kfree(tmp_fl);
+-	}
++                        }
++                }
++                tmp_fl = fl;
++                fl = fl->next;
++                kfree(tmp_fl);
++        }
+ 	ret = nrparts;
+ 	*pparts = parts;
+  out:
