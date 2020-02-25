@@ -76,16 +76,20 @@ http.setfilehandler(
 			fd = nil
 			
 			if fp == "clash" then
-			    SYS.exec("chmod 755 /etc/clash/clash 2>&1 &")
+			    	SYS.exec("chmod 755 /etc/clash/clash 2>&1 &")
+				SYS.exec("rm -rf /usr/share/clash/core_version 2>/dev/null && /etc/clash/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/core_version 2>/dev/null")
 				um.value = translate("File saved to") .. ' "/etc/clash/'..meta.file..'"'
 			elseif fp == "clashr" then
-			    SYS.exec("chmod 755 /usr/bin/clash 2>&1 &")
+			    	SYS.exec("chmod 755 /usr/bin/clash 2>&1 &")
+				SYS.exec("rm -rf /usr/share/clash/corer_version 2>/dev/null && /usr/bin/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/corer_version 2>/dev/null")
 				um.value = translate("File saved to") .. ' "/usr/bin/'..meta.file..'"'
 			elseif fp == "clashctun" then
-			    SYS.exec("chmod 755 /etc/clash/clashtun/clash 2>&1 &")
+			    	SYS.exec("chmod 755 /etc/clash/clashtun/clash 2>&1 &")
+				SYS.exec("rm -rf /usr/share/clash/tun_version 2>/dev/null && /etc/clash/clashtun/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/tun_version 2>/dev/null")
 				um.value = translate("File saved to") .. ' "/etc/clash/clashtun/'..meta.file..'"'
 			elseif fp == "clashdtun" then
 			    SYS.exec("chmod 755 /etc/clash/dtun/clash 2>&1 &")
+				SYS.exec("rm -rf /usr/share/clash/dtun_core_version 2>/dev/null && /etc/clash/dtun/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/dtun_core_version 2>/dev/null")
 				um.value = translate("File saved to") .. ' "/etc/clash/dtun/'..meta.file..'"'  
 			end
 			

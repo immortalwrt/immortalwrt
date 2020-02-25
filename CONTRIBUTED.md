@@ -40,7 +40,9 @@ luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.c
 qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
 luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com/Leo-Jo-My/luci-theme-Butterfly).<br/>
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
-package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).
+package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>
+package gargoyle: [ericpaulbishop/gargoyle](https://github.com/ericpaulbishop/gargoyle).<br/>
+luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).
 
 ## License
 ### Depending on their own License.

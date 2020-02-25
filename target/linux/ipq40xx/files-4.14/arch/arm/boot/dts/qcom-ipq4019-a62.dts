@@ -89,7 +89,7 @@
 		reset {
 			label = "reset";
 			gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART >;
+			linux,code = <KEY_RESTART>;
 		};
 	};
 
@@ -147,6 +147,7 @@
 			drive-strength = <12>;
 			bias-disable;
 		};
+
 		pin_cs {
 			function = "gpio";
 			pins = "gpio12";

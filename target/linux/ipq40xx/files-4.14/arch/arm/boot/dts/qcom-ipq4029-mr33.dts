@@ -210,56 +210,67 @@
 				reg = <0x000000000000 0x000000100000>;
 				read-only;
 			};
+
 			partition@1 {
 				label = "mibib";
 				reg = <0x000000100000 0x000000100000>;
 				read-only;
 			};
+
 			partition@2 {
 				label = "bootconfig";
 				reg = <0x000000200000 0x000000100000>;
 				read-only;
 			};
+
 			partition@3 {
 				label = "qsee";
 				reg = <0x000000300000 0x000000100000>;
 				read-only;
 			};
+
 			partition@4 {
 				label = "qsee_alt";
 				reg = <0x000000400000 0x000000100000>;
 				read-only;
 			};
+
 			partition@5 {
 				label = "cdt";
 				reg = <0x000000500000 0x000000080000>;
 				read-only;
 			};
+
 			partition@6 {
 				label = "cdt_alt";
 				reg = <0x000000580000 0x000000080000>;
 				read-only;
 			};
+
 			partition@7 {
 				label = "ddrparams";
 				reg = <0x000000600000 0x000000080000>;
 				read-only;
 			};
+
 			partition@8 {
 				label = "u-boot";
 				reg = <0x000000700000 0x000000200000>;
 				read-only;
 			};
+
 			partition@9 {
 				label = "u-boot-backup";
 				reg = <0x000000900000 0x000000200000>;
 				read-only;
 			};
+
 			partition@10 {
 				label = "ART";
 				reg = <0x000000b00000 0x000000080000>;
 				read-only;
 			};
+
 			partition@11 {
 				label = "ubi";
 				reg = <0x000000c00000 0x000007000000>;
@@ -305,6 +316,7 @@
 			function = "mdio";
 			bias-pull-up;
 		};
+
 		mux_2 {
 			pins = "gpio7";
 			function = "mdc";
@@ -334,6 +346,7 @@
 			function = "blsp_i2c0";
 			pins = "gpio20", "gpio21";
 		};
+
 		pinconf {
 			pins = "gpio20", "gpio21";
 			drive-strength = <16>;
@@ -346,6 +359,7 @@
 			function = "blsp_i2c1";
 			pins = "gpio34", "gpio35";
 		};
+
 		pinconf {
 			pins = "gpio34", "gpio35";
 			drive-strength = <16>;

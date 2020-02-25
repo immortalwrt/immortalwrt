@@ -44,15 +44,18 @@
 					function = "blsp_spi0";
 					pins = "gpio13", "gpio14", "gpio15";
 				};
+
 				pinmux_cs {
 					function = "gpio";
 					pins = "gpio12";
 				};
+
 				pinconf {
 					pins = "gpio13", "gpio14", "gpio15";
 					drive-strength = <12>;
 					bias-disable;
 				};
+
 				pinconf_cs {
 					pins = "gpio12";
 					drive-strength = <2>;
@@ -66,6 +69,7 @@
 					function = "blsp_i2c0";
 					pins = "gpio10", "gpio11";
 				};
+
 				pinconf {
 					pins = "gpio10", "gpio11";
 					drive-strength = <16>;
@@ -74,7 +78,6 @@
 			};
 
 			nand_pins: nand_pins {
-
 				pullups {
 					pins = "gpio52", "gpio53", "gpio58",
 						"gpio59";

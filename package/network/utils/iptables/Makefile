@@ -197,22 +197,22 @@ endef
 
 define Package/iptables-mod-bandwidth
 $(call Package/iptables/Module, +kmod-ipt-bandwidth)
-  TITLE:=bandwidth
+  TITLE:=bandwidth option extensions
 endef
 
 define Package/iptables-mod-timerange
 $(call Package/iptables/Module, +kmod-ipt-timerange)
-  TITLE:=timerange
+  TITLE:=timerange option extensions
 endef
 
 define Package/iptables-mod-webmon
 $(call Package/iptables/Module, +kmod-ipt-webmon)
-  TITLE:=webmon
+  TITLE:=webmon option extensions
 endef
 
 define Package/iptables-mod-weburl
 $(call Package/iptables/Module, +kmod-ipt-weburl)
-  TITLE:=weburl
+  TITLE:=weburl option extensions
 endef
 
 define Package/iptables-mod-ipopt

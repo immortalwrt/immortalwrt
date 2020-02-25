@@ -61,6 +61,11 @@ s.sortable = true
 s.anonymous = true
 s.addremove = true
 
+---- Enable
+o = s:option(Flag, "enabled", translate("Enable"))
+o.default = 1
+o.rmempty = false
+
 ---- Node Address
 o = s:option(Value, "lbss", translate("Node Address"))
 for _, key in pairs(key_table) do
