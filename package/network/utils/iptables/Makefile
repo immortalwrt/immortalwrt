@@ -187,6 +187,14 @@ $(call Package/iptables/Module, +kmod-ipt-imq)
   TITLE:=IMQ support
 endef
 
+define Package/iptables-mod-imq/description
+iptables extension for IMQ support.
+
+ Targets:
+   - IMQ
+
+endef
+
 define Package/iptables-mod-bandwidth
 $(call Package/iptables/Module, +kmod-ipt-bandwidth)
   TITLE:=bandwidth option extensions
@@ -205,14 +213,6 @@ endef
 define Package/iptables-mod-weburl
 $(call Package/iptables/Module, +kmod-ipt-weburl)
   TITLE:=weburl option extensions
-endef
-
-define Package/iptables-mod-imq/description
-iptables extension for IMQ support.
-
- Targets:
-  - IMQ
-
 endef
 
 define Package/iptables-mod-ipopt
