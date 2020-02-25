@@ -1,0 +1,2811 @@
+--- /dev/null
++++ b/extensions/libipt_bandwidth.c
+@@ -0,0 +1,657 @@
++/*  bandwidth --	An iptables extension for bandwidth monitoring/control
++ *  			Can be used to efficiently monitor bandwidth and/or implement bandwidth quotas
++ *  			Can be queried using the iptbwctl userspace library
++ *  			Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2009 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++#include <stdio.h>
++#include <netdb.h>
++#include <string.h>
++#include <stdlib.h>
++#include <getopt.h>
++#include <unistd.h>
++#include <time.h>
++#include <sys/time.h>
++#include <limits.h>
++
++/*
++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
++ * we can use to check whether we need to deal with the new requirements
++ * in pre-processor directives below
++ */
++#include <iptables.h>  
++#include <linux/netfilter_ipv4/ipt_bandwidth.h>
++
++#ifdef _XTABLES_H
++	#define iptables_rule_match	xtables_rule_match
++	#define iptables_match		xtables_match
++	#define iptables_target		xtables_target
++	#define ipt_tryload		xt_tryload
++#endif
++
++/* 
++ * XTABLES_VERSION_CODE is only defined in versions 1.4.1 and later, which
++ * also require the use of xtables_register_match
++ * 
++ * Version 1.4.0 uses register_match like previous versions
++ */
++#ifdef XTABLES_VERSION_CODE 
++	#define register_match          xtables_register_match
++#endif
++
++
++
++int get_minutes_west(void);
++void set_kernel_timezone(void);
++int parse_sub(char* subnet_string, uint32_t* subnet, uint32_t* subnet_mask);
++static unsigned long get_pow(unsigned long base, unsigned long pow);
++static void param_problem_exit_error(char* msg);
++
++
++/* Function which prints out usage message. */
++static void help(void)
++{
++	printf("bandwidth options:\n");
++	printf("  --id [unique identifier for querying bandwidth]\n");
++	printf("  --type [combined|individual_src|individual_dst|individual_local|individual_remote]\n");
++	printf("  --subnet [a.b.c.d/mask] (0 < mask < 32)\n");
++	printf("  --greater_than [BYTES]\n");
++	printf("  --less_than [BYTES]\n");
++	printf("  --current_bandwidth [BYTES]\n");
++	printf("  --reset_interval [minute|hour|day|week|month]\n");
++	printf("  --reset_time [OFFSET IN SECONDS]\n");
++	printf("  --intervals_to_save [NUMBER OF PREVIOS INTERVALS TO STORE IN MEMORY]\n");
++	printf("  --last_backup_time [UTC SECONDS SINCE 1970]\n");
++	printf("  --bcheck Check another bandwidth rule without incrementing it\n");
++	printf("  --bcheck_with_src_dst_swap Check another bandwidth rule without incrementing it, swapping src & dst ips for check\n");
++}
++
++static struct option opts[] = 
++{
++	{ .name = "id", 			.has_arg = 1, .flag = 0, .val = BANDWIDTH_ID },	
++	{ .name = "type", 			.has_arg = 1, .flag = 0, .val = BANDWIDTH_TYPE },	
++	{ .name = "subnet", 			.has_arg = 1, .flag = 0, .val = BANDWIDTH_SUBNET },	
++	{ .name = "greater_than", 		.has_arg = 1, .flag = 0, .val = BANDWIDTH_GT },
++	{ .name = "less_than", 			.has_arg = 1, .flag = 0, .val = BANDWIDTH_LT },	
++	{ .name = "current_bandwidth",		.has_arg = 1, .flag = 0, .val = BANDWIDTH_CURRENT },	
++	{ .name = "reset_interval",		.has_arg = 1, .flag = 0, .val = BANDWIDTH_RESET_INTERVAL },
++	{ .name = "reset_time",			.has_arg = 1, .flag = 0, .val = BANDWIDTH_RESET_TIME },
++	{ .name = "intervals_to_save",		.has_arg = 1, .flag = 0, .val = BANDWIDTH_NUM_INTERVALS },
++	{ .name = "last_backup_time",		.has_arg = 1, .flag = 0, .val = BANDWIDTH_LAST_BACKUP},
++	{ .name = "bcheck",	 		.has_arg = 0, .flag = 0, .val = BANDWIDTH_CHECK_NOSWAP },
++	{ .name = "bcheck_with_src_dst_swap",	.has_arg = 0, .flag = 0, .val = BANDWIDTH_CHECK_SWAP },
++	{ .name = 0 }
++};
++
++
++/* Function which parses command options; returns true if it
++   ate an option */
++static int parse(	int c, 
++			char **argv,
++			int invert,
++			unsigned int *flags,
++#ifdef _XTABLES_H
++			const void *entry,
++#else
++			const struct ipt_entry *entry,
++			unsigned int *nfcache,
++#endif			
++			struct ipt_entry_match **match
++			)
++{
++	struct ipt_bandwidth_info *info = (struct ipt_bandwidth_info *)(*match)->data;
++	int valid_arg = 0;
++	long int num_read;
++	uint64_t read_64;
++	time_t read_time;
++
++	/* set defaults first time we get here */
++	if(*flags == 0)
++	{
++		/* generate random id */
++		srand ( time(NULL) );
++		unsigned long id_num = rand();
++		sprintf(info->id, "%lu", id_num);
++
++		info->type = BANDWIDTH_COMBINED;
++		info->check_type = BANDWIDTH_CHECK_NOSWAP;
++		info->local_subnet = 0;
++		info->local_subnet_mask = 0;
++		info->cmp = BANDWIDTH_MONITOR; /* don't test greater/less than, just monitor bandwidth */
++		info->current_bandwidth = 0;
++		info->reset_is_constant_interval = 0;
++		info->reset_interval = BANDWIDTH_NEVER;
++		info->reset_time=0;
++		info->last_backup_time = 0;
++		info->next_reset = 0;
++		
++		info->num_intervals_to_save=0;
++
++		info->non_const_self = NULL;
++		info->ref_count = NULL;
++
++		*flags = *flags + BANDWIDTH_INITIALIZED;
++	}
++
++	switch (c)
++	{
++		case BANDWIDTH_ID:
++			if(strlen(optarg) < BANDWIDTH_MAX_ID_LENGTH)
++			{
++				sprintf(info->id, "%s", optarg);
++				valid_arg = 1;
++			}
++			c=0;
++			break;
++		case BANDWIDTH_TYPE:
++			valid_arg = 1;
++			if(strcmp(optarg, "combined") == 0)
++			{
++				info->type = BANDWIDTH_COMBINED;
++			}
++			else if(strcmp(optarg, "individual_src") == 0)
++			{
++				info->type = BANDWIDTH_INDIVIDUAL_SRC;
++			}
++			else if(strcmp(optarg, "individual_dst") == 0)
++			{
++				info->type = BANDWIDTH_INDIVIDUAL_DST;
++			}
++			else if(strcmp(optarg, "individual_local") == 0)
++			{
++				info->type = BANDWIDTH_INDIVIDUAL_LOCAL;
++				*flags = *flags + BANDWIDTH_REQUIRES_SUBNET;
++			}
++			else if(strcmp(optarg, "individual_remote") == 0)
++			{
++				info->type = BANDWIDTH_INDIVIDUAL_REMOTE;
++				*flags = *flags + BANDWIDTH_REQUIRES_SUBNET;
++			}
++			else
++			{
++				valid_arg = 0;
++			}
++
++			c=0;
++			break;
++
++		case BANDWIDTH_SUBNET:
++			valid_arg =  parse_sub(optarg, &(info->local_subnet), &(info->local_subnet_mask));
++			break;
++		case BANDWIDTH_LT:
++			num_read = sscanf(argv[optind-1], "%lld", &read_64);
++			if(num_read > 0 && (*flags & BANDWIDTH_CMP) == 0)
++			{
++				info->cmp = BANDWIDTH_LT;
++				info->bandwidth_cutoff = read_64;
++				valid_arg = 1;
++			}
++			c = BANDWIDTH_CMP; //only need one flag for less_than/greater_than
++			break;
++		case BANDWIDTH_GT:
++			num_read = sscanf(argv[optind-1], "%lld", &read_64);
++			if(num_read > 0  && (*flags & BANDWIDTH_CMP) == 0)
++			{
++				info->cmp = BANDWIDTH_GT;
++				info->bandwidth_cutoff = read_64;
++				valid_arg = 1;
++			}
++			c = BANDWIDTH_CMP; //only need one flag for less_than/greater_than
++			break;
++		case BANDWIDTH_CHECK_NOSWAP:
++			if(  (*flags & BANDWIDTH_CMP) == 0 )
++			{
++				info->cmp = BANDWIDTH_CHECK;
++				info->check_type = BANDWIDTH_CHECK_NOSWAP;
++				valid_arg = 1;
++			}
++			c = BANDWIDTH_CMP;
++			break;
++		case BANDWIDTH_CHECK_SWAP:
++			if(  (*flags & BANDWIDTH_CMP) == 0 )
++			{
++				info->cmp = BANDWIDTH_CHECK;
++				info->check_type = BANDWIDTH_CHECK_SWAP;
++				valid_arg = 1;
++			}
++			c = BANDWIDTH_CMP;
++			break;
++		case BANDWIDTH_CURRENT:
++			num_read = sscanf(argv[optind-1], "%lld", &read_64);
++			if(num_read > 0 )
++			{
++				info->current_bandwidth = read_64;
++				valid_arg = 1;
++			}
++			break;
++		case BANDWIDTH_RESET_INTERVAL:
++			valid_arg = 1;
++			if(strcmp(argv[optind-1],"minute") ==0)
++			{
++				info->reset_interval = BANDWIDTH_MINUTE;
++				info->reset_is_constant_interval = 0;
++			}
++			else if(strcmp(argv[optind-1],"hour") ==0)
++			{
++				info->reset_interval = BANDWIDTH_HOUR;
++				info->reset_is_constant_interval = 0;
++			}
++			else if(strcmp(argv[optind-1],"day") ==0)
++			{
++				info->reset_interval = BANDWIDTH_DAY;
++				info->reset_is_constant_interval = 0;
++			}
++			else if(strcmp(argv[optind-1],"week") ==0)
++			{
++				info->reset_interval = BANDWIDTH_WEEK;
++				info->reset_is_constant_interval = 0;
++			}
++			else if(strcmp(argv[optind-1],"month") ==0)
++			{
++				info->reset_interval = BANDWIDTH_MONTH;
++				info->reset_is_constant_interval = 0;
++			}
++			else if(strcmp(argv[optind-1],"never") ==0)
++			{
++				info->reset_interval = BANDWIDTH_NEVER;
++			}
++			else if(sscanf(argv[optind-1], "%ld", &read_time) > 0)
++			{
++				info->reset_interval = read_time;
++				info->reset_is_constant_interval = 1;
++			}
++			else
++			{
++				valid_arg = 0;
++			}
++			break;
++		case BANDWIDTH_NUM_INTERVALS:
++			if( sscanf(argv[optind-1], "%ld", &num_read) > 0)
++			{
++				info->num_intervals_to_save = num_read;
++				valid_arg=1;
++			}
++			c=0;
++			break;
++		case BANDWIDTH_RESET_TIME:
++			num_read = sscanf(argv[optind-1], "%ld", &read_time);
++			if(num_read > 0 )
++			{
++				info->reset_time = read_time;
++				valid_arg = 1;
++			}	
++			break;
++		case BANDWIDTH_LAST_BACKUP:
++			num_read = sscanf(argv[optind-1], "%ld", &read_time);
++			if(num_read > 0 )
++			{
++				info->last_backup_time = read_time;
++				valid_arg = 1;
++			}
++			break;
++	}
++	*flags = *flags + (unsigned int)c;
++
++
++	//if we have both reset_interval & reset_time, check reset_time is in valid range
++	if((*flags & BANDWIDTH_RESET_TIME) == BANDWIDTH_RESET_TIME && (*flags & BANDWIDTH_RESET_INTERVAL) == BANDWIDTH_RESET_INTERVAL)
++	{
++		if(	(info->reset_interval == BANDWIDTH_NEVER) ||
++			(info->reset_interval == BANDWIDTH_MONTH && info->reset_time >= 60*60*24*28) ||
++			(info->reset_interval == BANDWIDTH_WEEK && info->reset_time >= 60*60*24*7) ||
++			(info->reset_interval == BANDWIDTH_DAY && info->reset_time >= 60*60*24) ||
++			(info->reset_interval == BANDWIDTH_HOUR && info->reset_time >= 60*60) ||
++			(info->reset_interval == BANDWIDTH_MINUTE && info->reset_time >= 60) 
++		  )
++		{
++			valid_arg = 0;
++			param_problem_exit_error("Parameter for '--reset_time' is not in valid range");
++		}
++	}
++	if(info->type != BANDWIDTH_COMBINED && (*flags & BANDWIDTH_CURRENT) == BANDWIDTH_CURRENT)
++	{
++		valid_arg = 0;
++		param_problem_exit_error("You may only specify current bandwidth for combined type\n  Use user-space library for setting bandwidth for individual types");
++	}
++
++	return valid_arg;
++}
++
++
++
++static void print_bandwidth_args( struct ipt_bandwidth_info* info )
++{
++	if(info->cmp == BANDWIDTH_CHECK)
++	{
++		if(info->check_type == BANDWIDTH_CHECK_NOSWAP)
++		{
++			printf("--bcheck ");
++		}
++		else
++		{
++			printf("--bcheck_with_src_dst_swap ");
++		}
++	}
++	printf("--id %s ", info->id);
++
++
++
++	if(info->cmp != BANDWIDTH_CHECK)
++	{
++		/* determine current time in seconds since epoch, with offset for current timezone */
++		int minuteswest = get_minutes_west();
++		time_t now;
++		time(&now);
++		now = now - (minuteswest*60);
++
++		if(info->type == BANDWIDTH_COMBINED)
++		{
++			printf("--type combined ");
++		}
++		if(info->type == BANDWIDTH_INDIVIDUAL_SRC)
++		{
++			printf("--type individual_src ");
++		}
++		if(info->type == BANDWIDTH_INDIVIDUAL_DST)
++		{
++			printf("--type individual_dst ");
++		}
++		if(info->type == BANDWIDTH_INDIVIDUAL_LOCAL)
++		{
++			printf("--type individual_local ");
++		}
++		if(info->type == BANDWIDTH_INDIVIDUAL_REMOTE)
++		{
++			printf("--type individual_remote ");
++		}
++
++
++		if(info->local_subnet != 0)
++		{
++			unsigned char* sub = (unsigned char*)(&(info->local_subnet));
++			int msk_bits=0;
++			int pow=0;
++			for(pow=0; pow<32; pow++)
++			{
++				uint32_t test = get_pow(2, pow);
++				msk_bits = ( (info->local_subnet_mask & test) == test) ? msk_bits+1 : msk_bits;
++			}
++			printf("--subnet %u.%u.%u.%u/%u ", (unsigned char)sub[0], (unsigned char)sub[1], (unsigned char)sub[2], (unsigned char)sub[3], msk_bits); 
++		}
++		if(info->cmp == BANDWIDTH_GT)
++		{
++			printf("--greater_than %lld ", info->bandwidth_cutoff);
++		}
++		if(info->cmp == BANDWIDTH_LT)
++		{
++			printf("--less_than %lld ", info->bandwidth_cutoff);
++		}
++		if (info->type == BANDWIDTH_COMBINED) /* too much data to print for multi types, have to use socket to get/set data */
++		{
++			if( info->reset_interval != BANDWIDTH_NEVER && info->next_reset != 0 && info->next_reset < now)
++			{
++				/* 
++				 * current bandwidth only gets reset when first packet after reset interval arrives, so output
++				 * zero if we're already past interval, but no packets have arrived 
++				 */
++				printf("--current_bandwidth 0 ");
++			}
++			else 
++			{
++				printf("--current_bandwidth %lld ", info->current_bandwidth);
++			}
++		}
++		if(info->reset_is_constant_interval)
++		{
++			printf("--reset_interval %ld ", info->reset_interval);
++		}
++		else
++		{
++			if(info->reset_interval == BANDWIDTH_MINUTE)
++			{
++				printf("--reset_interval minute ");
++			}
++			else if(info->reset_interval == BANDWIDTH_HOUR)
++			{
++				printf("--reset_interval hour ");
++			}
++			else if(info->reset_interval == BANDWIDTH_DAY)
++			{
++				printf("--reset_interval day ");
++			}
++			else if(info->reset_interval == BANDWIDTH_WEEK)
++			{
++				printf("--reset_interval week ");
++			}
++			else if(info->reset_interval == BANDWIDTH_MONTH)
++			{
++				printf("--reset_interval month ");
++			}
++		}
++		if(info->reset_time > 0)
++		{
++			printf("--reset_time %ld ", info->reset_time);
++		}
++		if(info->num_intervals_to_save > 0)
++		{
++			printf("--intervals_to_save %d ", info->num_intervals_to_save);
++		}
++	}
++}
++
++/* 
++ * Final check, we can't have reset_time without reset_interval
++ */
++static void final_check(unsigned int flags)
++{
++	if (flags == 0)
++	{
++		param_problem_exit_error("You must specify at least one argument. ");
++	}
++	if( (flags & BANDWIDTH_RESET_INTERVAL) == 0 && (flags & BANDWIDTH_RESET_TIME) != 0)
++	{
++		param_problem_exit_error("You may not specify '--reset_time' without '--reset_interval' ");
++	}
++	if( (flags & BANDWIDTH_REQUIRES_SUBNET) == BANDWIDTH_REQUIRES_SUBNET && (flags & BANDWIDTH_SUBNET) == 0 )
++	{
++		param_problem_exit_error("You must specify a local subnet (--subnet a.b.c.d/mask) to match individual local/remote IPs ");
++	}
++
++	/* update timezone minutes_west in kernel to match userspace*/
++	set_kernel_timezone();
++}
++
++/* Prints out the matchinfo. */
++#ifdef _XTABLES_H
++static void print(const void *ip, const struct xt_entry_match *match, int numeric)
++#else	
++static void print(const struct ipt_ip *ip, const struct ipt_entry_match *match, int numeric)
++#endif
++{
++	printf("bandwidth ");
++	struct ipt_bandwidth_info *info = (struct ipt_bandwidth_info *)match->data;
++
++	print_bandwidth_args(info);
++}
++
++/* Saves the union ipt_matchinfo in parsable form to stdout. */
++#ifdef _XTABLES_H
++static void save(const void *ip, const struct xt_entry_match *match)
++#else
++static void save(const struct ipt_ip *ip, const struct ipt_entry_match *match)
++#endif
++{
++	struct ipt_bandwidth_info *info = (struct ipt_bandwidth_info *)match->data;
++	time_t now;
++	
++	print_bandwidth_args(info);
++	
++	time(&now);
++	printf("--last_backup-time %ld ", now);
++}
++
++static struct iptables_match bandwidth = 
++{ 
++	.next		= NULL,
++ 	.name		= "bandwidth",
++	#ifdef XTABLES_VERSION_CODE
++		.version = XTABLES_VERSION, 
++	#else
++		.version = IPTABLES_VERSION,
++	#endif
++	.size		= XT_ALIGN(sizeof(struct ipt_bandwidth_info)),
++	.userspacesize	= XT_ALIGN(sizeof(struct ipt_bandwidth_info)),
++	.help		= &help,
++	.parse		= &parse,
++	.final_check	= &final_check,
++	.print		= &print,
++	.save		= &save,
++	.extra_opts	= opts
++};
++
++void _init(void)
++{
++	register_match(&bandwidth);
++}
++
++static void param_problem_exit_error(char* msg)
++{
++	#ifdef xtables_error
++		xtables_error(PARAMETER_PROBLEM, "%s", msg);
++	#else
++		exit_error(PARAMETER_PROBLEM, msg);
++	#endif
++}
++
++/* 
++ * implement a simple function to get positive powers of positive integers so we don't have to mess with math.h 
++ * all we really need are powers of 2 for calculating netmask
++ * This is only called a couple of times, so speed isn't an issue either
++ */
++static unsigned long get_pow(unsigned long base, unsigned long pow)
++{
++	unsigned long ret = pow == 0 ? 1 : base*get_pow(base, pow-1);
++	return ret;
++}
++
++
++int parse_sub(char* subnet_string, uint32_t* subnet, uint32_t* subnet_mask)
++{
++
++	int valid = 0;
++	unsigned int A,B,C,D,E,F,G,H;
++	int read_int = sscanf(subnet_string, "%u.%u.%u.%u/%u.%u.%u.%u", &A, &B, &C, &D, &E, &F, &G, &H);
++	if(read_int >= 5)
++	{
++		if( A <= 255 && B <= 255 && C <= 255 && D <= 255)
++		{
++			unsigned char* sub = (unsigned char*)(subnet);
++			unsigned char* msk = (unsigned char*)(subnet_mask);
++			
++			*( sub ) = (unsigned char)A;
++			*( sub + 1 ) = (unsigned char)B;
++			*( sub + 2 ) = (unsigned char)C;
++			*( sub + 3 ) = (unsigned char)D;
++
++			if(read_int == 5)
++			{
++				unsigned int mask = E;
++				if(mask <= 32)
++				{
++					int msk_index;
++					for(msk_index=0; msk_index*8 < mask; msk_index++)
++					{
++						int bit_index;
++						msk[msk_index] = 0;
++						for(bit_index=0; msk_index*8 + bit_index < mask && bit_index < 8; bit_index++)
++						{
++							msk[msk_index] = msk[msk_index] + get_pow(2, 7-bit_index);
++						}
++					}
++				}
++				valid = 1;
++			}
++			if(read_int == 8)
++			{
++				if( E <= 255 && F <= 255 && G <= 255 && H <= 255)
++				*( msk ) = (unsigned char)E;
++				*( msk + 1 ) = (unsigned char)F;
++				*( msk + 2 ) = (unsigned char)G;
++				*( msk + 3 ) = (unsigned char)H;
++				valid = 1;
++			}
++		}
++	}
++	if(valid)
++	{
++		*subnet = (*subnet & *subnet_mask );
++	}
++	return valid;
++}
++
++
++
++int get_minutes_west(void)
++{
++	time_t now;
++	struct tm* utc_info;
++	struct tm* tz_info;
++	int utc_day;
++	int utc_hour;
++	int utc_minute;
++	int tz_day;
++	int tz_hour;
++	int tz_minute;
++	int minuteswest;
++
++	time(&now);
++	utc_info = gmtime(&now);
++	utc_day = utc_info->tm_mday;
++	utc_hour = utc_info->tm_hour;
++	utc_minute = utc_info->tm_min;
++	tz_info = localtime(&now);
++	tz_day = tz_info->tm_mday;
++	tz_hour = tz_info->tm_hour;
++	tz_minute = tz_info->tm_min;
++
++	utc_day = utc_day < tz_day  - 1 ? tz_day  + 1 : utc_day;
++	tz_day =  tz_day  < utc_day - 1 ? utc_day + 1 : tz_day;
++	
++	minuteswest = (24*60*utc_day + 60*utc_hour + utc_minute) - (24*60*tz_day + 60*tz_hour + tz_minute) ;
++
++	return minuteswest;
++}
++
++void set_kernel_timezone(void)
++{
++	struct timeval tv;
++	struct timezone old_tz;
++	struct timezone new_tz;
++
++	new_tz.tz_minuteswest = get_minutes_west();;
++	new_tz.tz_dsttime = 0;
++
++	/* Get tv to pass to settimeofday(2) to be sure we avoid hour-sized warp */
++	/* (see gettimeofday(2) man page, or /usr/src/linux/kernel/time.c) */
++	gettimeofday(&tv, &old_tz);
++
++	/* set timezone */
++	settimeofday(&tv, &new_tz);
++}
+
+--- /dev/null
++++ b/include/linux/netfilter_ipv4/ipt_bandwidth.h
+@@ -0,0 +1,106 @@
++/*  bandwidth --	An iptables extension for bandwidth monitoring/control
++ *  			Can be used to efficiently monitor bandwidth and/or implement bandwidth quotas
++ *  			Can be queried using the iptbwctl userspace library
++ *  			Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2009 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef _IPT_BANDWIDTH_H
++#define _IPT_BANDWIDTH_H
++
++/*flags -- first three don't map to parameters the rest do */
++#define BANDWIDTH_INITIALIZED		   1
++#define BANDWIDTH_REQUIRES_SUBNET	   2
++#define BANDWIDTH_SUBNET		   4
++#define BANDWIDTH_CMP			   8
++#define BANDWIDTH_CURRENT		  16
++#define BANDWIDTH_RESET_INTERVAL	  32
++#define BANDWIDTH_RESET_TIME		  64
++#define BANDWIDTH_LAST_BACKUP		 128
++
++
++/* parameter defs that don't map to flag bits */
++#define BANDWIDTH_TYPE			  70
++#define BANDWIDTH_ID			  71
++#define BANDWIDTH_GT			  72
++#define BANDWIDTH_LT			  73
++#define BANDWIDTH_MONITOR		  74
++#define BANDWIDTH_CHECK			  75
++#define BANDWIDTH_CHECK_NOSWAP		  76
++#define BANDWIDTH_CHECK_SWAP		  77
++#define BANDWIDTH_NUM_INTERVALS		  78
++
++/* possible reset intervals */
++#define BANDWIDTH_MINUTE		  80
++#define BANDWIDTH_HOUR			  81
++#define BANDWIDTH_DAY			  82
++#define BANDWIDTH_WEEK			  83
++#define BANDWIDTH_MONTH			  84
++#define BANDWIDTH_NEVER			  85
++
++/* possible monitoring types */
++#define BANDWIDTH_COMBINED 		  90
++#define BANDWIDTH_INDIVIDUAL_SRC	  91
++#define BANDWIDTH_INDIVIDUAL_DST 	  92
++#define BANDWIDTH_INDIVIDUAL_LOCAL	  93
++#define BANDWIDTH_INDIVIDUAL_REMOTE	  94
++
++
++
++/* socket id parameters (for userspace i/o) */
++#define BANDWIDTH_SET 			2048
++#define BANDWIDTH_GET 			2049
++
++/* max id length */
++#define BANDWIDTH_MAX_ID_LENGTH		  50
++
++/* 4 bytes for total number of entries, 100 entries of 12 bytes each, + 1 byte indicating whether all have been dumped */
++#define BANDWIDTH_QUERY_LENGTH		1205 
++#define BANDWIDTH_ENTRY_LENGTH		  12
++
++
++struct ipt_bandwidth_info
++{
++	char id[BANDWIDTH_MAX_ID_LENGTH];
++	unsigned char type;
++	unsigned char check_type;
++	uint32_t local_subnet;
++	uint32_t local_subnet_mask;
++
++	unsigned char cmp;
++	unsigned char reset_is_constant_interval;
++	time_t reset_interval; //specific fixed type (see above) or interval length in seconds
++	time_t reset_time; //seconds from start of month/week/day/hour/minute to do reset, or start point of interval if it is a constant interval
++	uint64_t bandwidth_cutoff;
++	uint64_t current_bandwidth;
++	time_t next_reset;
++	time_t previous_reset;
++	time_t last_backup_time;
++
++	uint32_t num_intervals_to_save;
++
++
++	unsigned long hashed_id;
++	void* iam;
++	uint64_t* combined_bw;
++	struct ipt_bandwidth_info* non_const_self;
++	unsigned long* ref_count;
++
++
++};
++#endif /*_IPT_BANDWIDTH_H*/
+
+--- /dev/null
++++ b/extensions/libipt_timerange.c
+@@ -0,0 +1,876 @@
++/*  timerange --	An iptables extension to match multiple timeranges within a week
++ *  			Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2009-2010 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++#include <stdio.h>
++#include <netdb.h>
++#include <string.h>
++#include <stdlib.h>
++#include <getopt.h>
++#include <ctype.h>
++#include <time.h>
++#include <sys/time.h>
++
++
++/*
++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
++ * we can use to check whether we need to deal with the new requirements
++ * in pre-processor directives below
++ */
++#include <iptables.h>  
++#include <linux/netfilter_ipv4/ipt_timerange.h>
++
++#ifdef _XTABLES_H
++	#define iptables_rule_match	xtables_rule_match
++	#define iptables_match		xtables_match
++	#define iptables_target		xtables_target
++	#define ipt_tryload		xt_tryload
++#endif
++
++/* 
++ * XTABLES_VERSION_CODE is only defined in versions 1.4.1 and later, which
++ * also require the use of xtables_register_match
++ * 
++ * Version 1.4.0 uses register_match like previous versions
++ */
++#ifdef XTABLES_VERSION_CODE 
++	#define register_match          xtables_register_match
++#endif
++
++/* utility functions necessary for module to work across multiple iptables versions */
++static int  my_check_inverse(const char option[], int* invert, int *my_optind, int argc);
++static void param_problem_exit_error(char* msg);
++
++
++long* parse_time_ranges(char* time_ranges, unsigned char is_weekly_range);
++void merge_adjacent_time_ranges(long* time_ranges, unsigned char is_weekly_range);
++unsigned long parse_time(char* time_str);
++long* parse_weekdays(char* wd_str);
++
++char** split_on_separators(char* line, char* separators, int num_separators, int max_pieces, int include_remainder_at_max);
++void to_lowercase(char* str);
++char* trim_flanking_whitespace(char* str);
++
++void set_kernel_timezone(void);
++
++/* Function which prints out usage message. */
++static void help(void)
++{
++	printf(	"timerange options:\n  --hours [HOURLY RANGES] --weekdays [WEEKDAYS ACTIVE] --weekly_ranges [WEEKLY RANGES]\n");
++}
++
++static struct option opts[] = 
++{
++	{ .name = "hours",        .has_arg = 1, .flag = 0, .val = HOURS },
++	{ .name = "weekdays",     .has_arg = 1, .flag = 0, .val = WEEKDAYS },
++	{ .name = "weekly_ranges", .has_arg = 1, .flag = 0, .val = WEEKLY_RANGE },
++	{ .name = 0 }
++};
++
++
++/* Function which parses command options; returns true if it
++   ate an option */
++static int parse(	int c, 
++			char **argv,
++			int invert,
++			unsigned int *flags,
++#ifdef _XTABLES_H
++			const void *entry,
++#else
++			const struct ipt_entry *entry,
++			unsigned int *nfcache,
++#endif			
++			struct ipt_entry_match **match
++			)
++{
++	struct ipt_timerange_info *info = (struct ipt_timerange_info *)(*match)->data;
++	int valid_arg = 0;
++	if(*flags == 0)
++	{
++		my_check_inverse(optarg, &invert, &optind, 0);
++		info->invert = invert ? 1 : 0;
++	}
++
++	long* parsed = NULL;
++	switch (c)
++	{
++		case HOURS:
++			parsed = parse_time_ranges(argv[optind-1], 0);
++			if(parsed != NULL && (*flags & HOURS) == 0 && (*flags & WEEKLY_RANGE) == 0)
++			{
++				int range_index = 0;
++				for(range_index = 0; parsed[range_index] != -1; range_index++)
++				{
++					if(range_index > 100)
++					{
++						return 0;
++					}
++					info->ranges[range_index] = parsed[range_index];
++				}
++				info->ranges[range_index] = -1;
++				free(parsed);
++
++
++				valid_arg = 1;
++				*flags = *flags+ c;
++				info->type = *flags;
++			}
++			break;
++
++
++		case WEEKDAYS:
++			parsed = parse_weekdays(argv[optind-1]);
++			if(parsed != NULL && (*flags & WEEKDAYS) == 0 && (*flags & WEEKLY_RANGE) == 0)
++			{
++				int day_index;
++				for(day_index=0; day_index < 7; day_index++)
++				{
++					info->days[day_index] = parsed[day_index];
++				}
++				free(parsed);
++
++				valid_arg = 1 ;
++				*flags = *flags + c;
++				info->type = *flags;
++			}
++			break;
++		case WEEKLY_RANGE:
++			parsed = parse_time_ranges(argv[optind-1], 1);
++			if(parsed != NULL && (*flags & HOURS) == 0 && (*flags & WEEKDAYS) == 0 && (*flags & WEEKLY_RANGE) == 0 )
++			{
++				int range_index = 0;
++				for(range_index = 0; parsed[range_index] != -1; range_index++)
++				{
++					if(range_index > 100)
++					{
++						return 0;
++					}
++					info->ranges[range_index] = parsed[range_index];
++				
++				}
++				info->ranges[range_index] = -1;
++				free(parsed);
++
++				valid_arg = 1;
++				*flags = *flags+c;
++				info->type = *flags;
++			}
++			break;
++	}
++
++	return valid_arg;
++}
++
++
++	
++static void print_timerange_args(	struct ipt_timerange_info* info )
++{
++	int i;
++	
++	if(info->invert == 1)
++	{
++		printf(" ! ");
++	}
++
++	switch(info->type)
++	{
++		case DAYS_HOURS:
++		case HOURS:
++			printf(" --hours ");
++			for(i=0; info->ranges[i] != -1; i++)
++			{
++				printf("%ld", info->ranges[i]);
++				if(info->ranges[i+1] != -1)
++				{
++					if(i % 2 == 0){ printf("-"); }
++					else { printf(","); }
++				}
++			}
++			if(info->type == HOURS) { break; }
++		case WEEKDAYS:
++			printf(" --weekdays ");
++			for(i=0; i<7; i++)
++			{
++				printf("%d", info->days[i]);
++				if(i != 6){ printf(","); }
++			}
++			break;
++		case WEEKLY_RANGE:
++			printf(" --weekly_ranges ");
++			for(i=0; info->ranges[i] != -1; i++)
++			{
++				printf("%ld", info->ranges[i]);
++				if(info->ranges[i+1] != -1)
++				{
++					if(i % 2 == 0){ printf("-"); }
++					else { printf(","); }
++				}
++			}
++			break;
++	}
++	printf(" ");
++	
++}
++
++/* Final check; must have specified a test string with either --contains or --contains_regex. */
++static void final_check(unsigned int flags)
++{
++	if(flags ==0)
++	{
++		param_problem_exit_error("Invalid arguments to time_range");
++	}
++
++	/* update timezone minutes_west in kernel to match userspace*/
++	set_kernel_timezone();
++}
++
++/* Prints out the matchinfo. */
++#ifdef _XTABLES_H
++static void print(const void *ip, const struct xt_entry_match *match, int numeric)
++#else	
++static void print(const struct ipt_ip *ip, const struct ipt_entry_match *match, int numeric)
++#endif
++{
++	printf("timerange ");
++	struct ipt_timerange_info *info = (struct ipt_timerange_info *)match->data;
++
++	print_timerange_args(info);
++}
++
++/* Saves the union ipt_matchinfo in parsable form to stdout. */
++#ifdef _XTABLES_H
++static void save(const void *ip, const struct xt_entry_match *match)
++#else
++static void save(const struct ipt_ip *ip, const struct ipt_entry_match *match)
++#endif
++{
++	struct ipt_timerange_info *info = (struct ipt_timerange_info *)match->data;
++	print_timerange_args(info);
++}
++
++static struct iptables_match timerange = 
++{ 
++	.next		= NULL,
++ 	.name		= "timerange",
++	#ifdef XTABLES_VERSION_CODE
++		.version = XTABLES_VERSION, 
++	#else
++		.version = IPTABLES_VERSION,
++	#endif
++	.size		= XT_ALIGN(sizeof(struct ipt_timerange_info)),
++	.userspacesize	= XT_ALIGN(sizeof(struct ipt_timerange_info)),
++	.help		= &help,
++	.parse		= &parse,
++	.final_check	= &final_check,
++	.print		= &print,
++	.save		= &save,
++	.extra_opts	= opts
++};
++
++void _init(void)
++{
++	register_match(&timerange);
++}
++
++#ifndef TRUE
++#define TRUE 1
++#endif
++#ifndef FALSE
++#define FALSE 0
++#endif
++static int  my_check_inverse(const char option[], int* invert, int *my_optind, int argc)
++{
++	if (option && strcmp(option, "!") == 0)
++	{
++		if (*invert)
++		{
++			param_problem_exit_error("Multiple `!' flags not allowed");
++		}
++		*invert = TRUE;
++		if (my_optind != NULL)
++		{
++			++*my_optind;
++			if (argc && *my_optind > argc)
++			{
++				param_problem_exit_error("no argument following `!'");
++			}
++		}
++		return TRUE;
++	}
++	return FALSE;
++}
++static void param_problem_exit_error(char* msg)
++{
++	#ifdef xtables_error
++		xtables_error(PARAMETER_PROBLEM, "%s", msg);
++	#else
++		exit_error(PARAMETER_PROBLEM, msg);
++	#endif
++}
++
++/* takes a string of days e.g. "Monday, Tuesday, Friday", and turns into an array of 7 longs
++ * each 0 or 1, one for each weekday starting with sunday, e.g. [0,1,1,0,0,1,0] for our example 
++ */
++long* parse_weekdays(char* wd_str)
++{
++	long* weekdays = (long*)malloc(7*sizeof(long));
++	weekdays[0] = weekdays[1] = weekdays[2] = weekdays[3] = weekdays[4] = weekdays[5] = weekdays[6] = 0;
++
++	char** days = split_on_separators(wd_str, ",", 1, -1, 0);
++	int day_index;
++	int found = 0;
++	for(day_index=0; days[day_index] != NULL; day_index++)
++	{
++		char day[4];
++		trim_flanking_whitespace(days[day_index]);
++		memcpy(day, days[day_index], 3);
++		free(days[day_index]);
++		day[3] = '\0';
++		to_lowercase(day);
++		if(strcmp(day, "sun") == 0)
++		{
++			weekdays[0] = 1;
++			found = 1;
++		}
++		else if(strcmp(day, "mon") ==0)
++		{
++			weekdays[1] = 1;
++			found = 1;
++		}
++		else if(strcmp(day, "tue") ==0)
++		{
++			weekdays[2] = 1;
++			found = 1;
++		}
++		else if(strcmp(day, "wed") ==0)
++		{
++			weekdays[3] = 1;
++			found = 1;
++		}	
++		else if(strcmp(day, "thu") ==0)
++		{
++			weekdays[4] = 1;
++			found = 1;
++		}
++		else if(strcmp(day, "fri") ==0)
++		{
++			weekdays[5] = 1;
++			found = 1;
++		}
++		else if(strcmp(day, "sat") ==0)
++		{
++			weekdays[6] = 1;
++			found = 1;
++		}
++		else if(strcmp(day, "all") ==0)
++		{
++			weekdays[0] = weekdays[1] = weekdays[2] = weekdays[3] = weekdays[4] = weekdays[5] = weekdays[6] = 1;
++			found = 1;
++		}
++	}
++	free(days);
++	if(found == 0)
++	{
++		free(weekdays);
++		weekdays = NULL;
++	}
++	return weekdays;	
++}
++
++
++/* is_weekly_range indicates whether we're parsing hours within a single day or a range over a whole week */
++long* parse_time_ranges(char* time_ranges, unsigned char is_weekly_range)
++{
++	char** pieces = split_on_separators(time_ranges, ",", 1, -1, 0);
++	int num_pieces = 0;
++	for(num_pieces = 0; pieces[num_pieces] != NULL; num_pieces++) {};
++	long *parsed = (long*)malloc( (1+(num_pieces*2)) * sizeof(long));
++
++
++	
++	int piece_index = 0;
++	for(piece_index = 0; pieces[piece_index] != NULL; piece_index++)
++	{
++		trim_flanking_whitespace(pieces[piece_index]);
++		char** times=split_on_separators(pieces[piece_index], "-", 1, 2, 0);
++		int time_count = 0;
++		for(time_count = 0; times[time_count] != 0 ; time_count++){}
++		if( time_count == 2 )
++		{
++			unsigned long  start = parse_time(trim_flanking_whitespace(times[0]));
++			unsigned long end = parse_time(trim_flanking_whitespace(times[1]));
++			parsed[ piece_index*2 ] = (long)start;
++			parsed[ (piece_index*2)+1 ] = (long)end;
++
++			free( times[1] );
++		}
++		if( time_count > 0) { free(times[0]); }
++
++		free(times);
++		free(pieces[piece_index]);
++	}
++	free(pieces);
++	parsed[ (num_pieces*2) ] = -1; // terminated with -1 
++
++
++	// make sure there is no overlap -- this will invalidate ranges 
++	int range_index = 0;
++	char overlap_found = 0;
++	for(range_index = 0; range_index < num_pieces; range_index++)
++	{
++		// now test for overlap 
++		long start1 = parsed[ (range_index*2) ];
++		long end1 = parsed[ (range_index*2)+1 ];
++		end1= end1 < start1 ? end1 + (is_weekly_range ? 7*24*60*60 : 24*60*60) : end1;
++		
++		int range_index2 = 0;
++		for(range_index2 = 0; range_index2 < num_pieces; range_index2++)
++		{
++			if(range_index2 != range_index)
++			{
++				long start2 = parsed[ (range_index2*2) ];
++				long end2 = parsed[ (range_index2*2)+1 ];
++				end2= end2 < start2 ? end2 + (is_weekly_range ? 7*24*60*60 : 24*60*60) : end2;
++				overlap_found = overlap_found || (start1 < end2 && end1 > start2 );
++			}
++		}
++	}
++
++	if(!overlap_found)
++	{
++		// sort ranges 
++		int sorted_index = 0;
++		while(parsed[sorted_index] != -1)
++		{
++			int next_start=-1;
++			int next_start_index=-1;
++			int test_index;
++			long tmp1;
++			long tmp2;
++			for(test_index=sorted_index; parsed[test_index] != -1; test_index=test_index+2)
++			{
++				next_start_index = next_start < 0 || next_start > parsed[test_index] ? test_index : next_start_index;
++				next_start = next_start < 0 || next_start > parsed[test_index] ? parsed[test_index] : next_start;
++			}
++			tmp1 = parsed[next_start_index];
++			tmp2 = parsed[next_start_index+1];
++			parsed[next_start_index] = parsed[sorted_index];
++			parsed[next_start_index+1] = parsed[sorted_index+1];
++			parsed[sorted_index] = 	tmp1;
++			parsed[sorted_index+1] = tmp2;
++			sorted_index = sorted_index + 2;
++		}
++	}
++	else
++	{
++		// de-allocate parsed, set to NULL 
++		free(parsed);
++		parsed = NULL;
++	}
++
++	// merge time ranges where end of first = start of second 
++	merge_adjacent_time_ranges(parsed, is_weekly_range);
++
++
++	// if always active, free & return NULL 
++	int max_multiple = is_weekly_range ? 7 : 1;
++	if(parsed[0] == 0 && parsed[1] == max_multiple*24*60*60)
++	{
++		free(parsed);
++		parsed = NULL;
++	}
++
++
++	//adjust so any range that crosses end of range is split in two
++	int num_range_indices=0;
++	for(num_range_indices=0; parsed[num_range_indices] != -1; num_range_indices++){}
++
++	long* adjusted_range = (long*)malloc((3+num_range_indices)*sizeof(long));
++	int ar_index = 0;
++	int old_index = 0;
++	if(parsed[num_range_indices-1] < parsed[0])
++	{
++		adjusted_range[0] = 0;
++		adjusted_range[1] = parsed[num_range_indices-1];
++		ar_index = ar_index + 2;
++		parsed[num_range_indices-1] = -1;
++	}
++	for(old_index=0; parsed[old_index] != -1; old_index++)
++	{
++		adjusted_range[ar_index] = parsed[old_index];
++		ar_index++;
++	}
++
++	if(ar_index % 2 == 1 )
++	{
++		adjusted_range[ar_index] = is_weekly_range ? 7*24*60*60 : 24*60*60;
++		ar_index++;
++	}
++	adjusted_range[ar_index] = -1;
++	free(parsed);
++	
++	return adjusted_range;
++}
++
++
++
++void merge_adjacent_time_ranges(long* time_ranges, unsigned char is_weekly_range)
++{
++	int range_length = 0;
++	while(time_ranges[range_length] != -1){ range_length++; }
++	int* merged_indices = (int*)malloc((range_length+1)*sizeof(int));
++	
++	int merged_index=0;
++	int next_index;
++	for(next_index=0; time_ranges[next_index] != -1; next_index++)
++	{
++		if(next_index == 0)
++		{
++			merged_indices[merged_index] = next_index;
++			merged_index++;
++		}
++		else if( time_ranges[next_index+1] == -1 )
++		{
++			merged_indices[merged_index] = next_index;
++			merged_index++;
++		}
++		else if( time_ranges[next_index] != time_ranges[next_index-1] && time_ranges[next_index] != time_ranges[next_index+1] )
++		{
++			merged_indices[merged_index] = next_index;
++			merged_index++;
++		}
++	}
++	merged_indices[merged_index] = -1;
++	
++	for(next_index=0; merged_indices[next_index] != -1; next_index++)
++	{
++		time_ranges[next_index] = time_ranges[ merged_indices[next_index] ];
++	}
++	time_ranges[next_index] = -1;
++	free(merged_indices);
++
++}
++
++
++
++
++/* 
++ * assumes 24hr time, not am/pm, in format:
++ * (Day of week) hours:minutes:seconds
++ * if day of week is present, returns seconds since midnight on Sunday
++ * otherwise, seconds since midnight
++ */
++unsigned long parse_time(char* time_str)
++{
++	while((*time_str == ' ' || *time_str == '\t') && *time_str != '\0') { time_str++; }
++	
++	int weekday = -1;
++	if(strlen(time_str) > 3)
++	{
++		char wday_test[4];
++		memcpy(wday_test, time_str, 3);
++		wday_test[3] = '\0';
++		to_lowercase(wday_test);
++		if(strcmp(wday_test, "sun") == 0)
++		{
++			weekday = 0;
++		}
++		else if(strcmp(wday_test, "mon") == 0)
++		{
++			weekday = 1;
++		}
++		else if(strcmp(wday_test, "tue") == 0)
++		{
++			weekday = 2;
++		}
++		else if(strcmp(wday_test, "wed") == 0)
++		{
++			weekday = 3;
++		}
++		else if(strcmp(wday_test, "thu") == 0)
++		{
++			weekday = 4;
++		}
++		else if(strcmp(wday_test, "fri") == 0)
++		{
++			weekday = 5;
++		}
++		else if(strcmp(wday_test, "sat") == 0)
++		{
++			weekday = 6;
++		}
++	}
++
++	if(weekday >= 0)
++	{
++		time_str = time_str + 3;
++		while( (*time_str < 48 || *time_str > 57) && *time_str != '\0') { time_str++; }
++	}
++
++	char** time_parts=split_on_separators(time_str, ":", 1, -1, 0);
++	unsigned long seconds = weekday < 0 ? 0 : ( ((unsigned long)(weekday))*60*60*24 );
++	unsigned long tmp;
++	unsigned long multiple = 60*60;
++
++	int tp_index = 0;
++	for(tp_index=0; time_parts[tp_index] != NULL; tp_index++)
++	{
++		sscanf(time_parts[tp_index], "%ld", &tmp);
++		seconds = seconds + (tmp*multiple);
++		multiple = (unsigned long)(multiple/60);
++		free(time_parts[tp_index]);
++	}
++	free(time_parts);
++
++	return seconds;
++}
++
++void to_lowercase(char* str)
++{
++	int i;
++	for(i = 0; str[i] != '\0'; i++)
++	{
++		str[i] = tolower(str[i]);
++	}
++}
++
++/*
++ * line_str is the line to be parsed -- it is not modified in any way
++ * max_pieces indicates number of pieces to return, if negative this is determined dynamically
++ * include_remainder_at_max indicates whether the last piece, when max pieces are reached, 
++ * 	should be what it would normally be (0) or the entire remainder of the line (1)
++ * 	if max_pieces < 0 this parameter is ignored
++ *
++ *
++ * returns all non-separator pieces in a line
++ * result is dynamically allocated, MUST be freed after call-- even if 
++ * line is empty (you still get a valid char** pointer to to a NULL char*)
++ */
++char** split_on_separators(char* line_str, char* separators, int num_separators, int max_pieces, int include_remainder_at_max)
++{
++	char** split;
++
++	if(line_str != NULL)
++	{
++		int split_index;
++		int non_separator_found;
++		char* dup_line;
++		char* start;
++
++		if(max_pieces < 0)
++		{
++			/* count number of separator characters in line -- this count + 1 is an upperbound on number of pieces */
++			int separator_count = 0;
++			int line_index;
++			for(line_index = 0; line_str[line_index] != '\0'; line_index++)
++			{
++				int sep_index;
++				int found = 0;
++				for(sep_index =0; found == 0 && sep_index < num_separators; sep_index++)
++				{
++					found = separators[sep_index] == line_str[line_index] ? 1 : 0;
++				}
++				separator_count = separator_count+ found;
++			}
++			max_pieces = separator_count + 1;
++		}
++		split = (char**)malloc((1+max_pieces)*sizeof(char*));
++		split_index = 0;
++		split[split_index] = NULL;
++
++
++		dup_line = strdup(line_str);
++		start = dup_line;
++		non_separator_found = 0;
++		while(non_separator_found == 0)
++		{
++			int matches = 0;
++			int sep_index;
++			for(sep_index =0; sep_index < num_separators; sep_index++)
++			{
++				matches = matches == 1 || separators[sep_index] == start[0] ? 1 : 0;
++			}
++			non_separator_found = matches==0 || start[0] == '\0' ? 1 : 0;
++			if(non_separator_found == 0)
++			{
++				start++;
++			}
++		}
++
++		while(start[0] != '\0' && split_index < max_pieces)
++		{
++			/* find first separator index */
++			int first_separator_index = 0;
++			int separator_found = 0;
++			while(	separator_found == 0 )
++			{
++				int sep_index;
++				for(sep_index =0; separator_found == 0 && sep_index < num_separators; sep_index++)
++				{
++					separator_found = separators[sep_index] == start[first_separator_index] || start[first_separator_index] == '\0' ? 1 : 0;
++				}
++				if(separator_found == 0)
++				{
++					first_separator_index++;
++				}
++			}
++			
++			/* copy next piece to split array */
++			if(first_separator_index > 0)
++			{
++				char* next_piece = NULL;
++				if(split_index +1 < max_pieces || include_remainder_at_max <= 0)
++				{
++					next_piece = (char*)malloc((first_separator_index+1)*sizeof(char));
++					memcpy(next_piece, start, first_separator_index);
++					next_piece[first_separator_index] = '\0';
++				}
++				else
++				{
++					next_piece = strdup(start);
++				}
++				split[split_index] = next_piece;
++				split[split_index+1] = NULL;
++				split_index++;
++			}
++
++
++			/* find next non-separator index, indicating start of next piece */
++			start = start+ first_separator_index;
++			non_separator_found = 0;
++			while(non_separator_found == 0)
++			{
++				int matches = 0;
++				int sep_index;
++				for(sep_index =0; sep_index < num_separators; sep_index++)
++				{
++					matches = matches == 1 || separators[sep_index] == start[0] ? 1 : 0;
++				}
++				non_separator_found = matches==0 || start[0] == '\0' ? 1 : 0;
++				if(non_separator_found == 0)
++				{
++					start++;
++				}
++			}
++		}
++		free(dup_line);
++	}
++	else
++	{
++		split = (char**)malloc((1)*sizeof(char*));
++		split[0] = NULL;
++	}
++	return split;
++}
++
++
++char* trim_flanking_whitespace(char* str)
++{
++	int new_start = 0;
++	int new_length = 0;
++
++	char whitespace[5] = { ' ', '\t', '\n', '\r', '\0' };
++	int num_whitespace_chars = 4;
++	
++	
++	int str_index = 0;
++	int is_whitespace = 1;
++	int test;
++	while( (test = str[str_index]) != '\0' && is_whitespace == 1)
++	{
++		int whitespace_index;
++		is_whitespace = 0;
++		for(whitespace_index = 0; whitespace_index < num_whitespace_chars && is_whitespace == 0; whitespace_index++)
++		{
++			is_whitespace = test == whitespace[whitespace_index] ? 1 : 0;
++		}
++		str_index = is_whitespace == 1 ? str_index+1 : str_index;
++	}
++	new_start = str_index;
++
++
++	str_index = strlen(str) - 1;
++	is_whitespace = 1;
++	while( str_index >= new_start && is_whitespace == 1)
++	{
++		int whitespace_index;
++		is_whitespace = 0;
++		for(whitespace_index = 0; whitespace_index < num_whitespace_chars && is_whitespace == 0; whitespace_index++)
++		{
++			is_whitespace = str[str_index] == whitespace[whitespace_index] ? 1 : 0;
++		}
++		str_index = is_whitespace == 1 ? str_index-1 : str_index;
++	}
++	new_length = str[new_start] == '\0' ? 0 : str_index + 1 - new_start;
++	
++
++	if(new_start > 0)
++	{
++		for(str_index = 0; str_index < new_length; str_index++)
++		{
++			str[str_index] = str[str_index+new_start];
++		}
++	}
++	str[new_length] = 0;
++	return str;
++}
++
++void set_kernel_timezone(void)
++{
++	time_t now;
++	struct tm* utc_info;
++	struct tm* tz_info;
++	int utc_day;
++	int utc_hour;
++	int utc_minute;
++	int tz_day;
++	int tz_hour;
++	int tz_minute;
++	int minuteswest;
++
++	struct timeval tv;
++	struct timezone old_tz;
++	struct timezone new_tz;
++
++	time(&now);
++	utc_info = gmtime(&now);
++	utc_day = utc_info->tm_mday;
++	utc_hour = utc_info->tm_hour;
++	utc_minute = utc_info->tm_min;
++	tz_info = localtime(&now);
++	tz_day = tz_info->tm_mday;
++	tz_hour = tz_info->tm_hour;
++	tz_minute = tz_info->tm_min;
++
++	utc_day = utc_day < tz_day  - 1 ? tz_day  + 1 : utc_day;
++	tz_day =  tz_day  < utc_day - 1 ? utc_day + 1 : tz_day;
++	
++	minuteswest = (24*60*utc_day + 60*utc_hour + utc_minute) - (24*60*tz_day + 60*tz_hour + tz_minute) ;
++	new_tz.tz_minuteswest = minuteswest;
++	new_tz.tz_dsttime = 0;
++
++	/* Get tv to pass to settimeofday(2) to be sure we avoid hour-sized warp */
++	/* (see gettimeofday(2) man page, or /usr/src/linux/kernel/time.c) */
++	gettimeofday(&tv, &old_tz);
++
++	/* set timezone */
++	settimeofday(&tv, &new_tz);
++
++}
+
+--- /dev/null
++++ b/include/linux/netfilter_ipv4/ipt_timerange.h
+@@ -0,0 +1,43 @@
++/*  timerange --	An iptables extension to match multiple timeranges within a week
++ *  			Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2009 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++
++
++#ifndef _IPT_TIMERANGE_H
++#define _IPT_TIMERANGE_H
++
++
++#define RANGE_LENGTH 51
++
++#define HOURS 1
++#define WEEKDAYS 2
++#define DAYS_HOURS (HOURS+WEEKDAYS)
++#define WEEKLY_RANGE 4
++
++
++struct ipt_timerange_info
++{
++	long ranges[RANGE_LENGTH];
++	char days[7];
++	char type;
++	unsigned char invert;
++};
++#endif /*_IPT_TIMERANGE_H*/
+
+--- /dev/null
++++ b/extensions/libipt_webmon.c
+@@ -0,0 +1,700 @@
++/*  webmon --	An iptables extension to match URLs in HTTP(S) requests
++ *  		This module can match using string match or regular expressions
++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2008-2011 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++#include <stdio.h>
++#include <netdb.h>
++#include <string.h>
++#include <stdlib.h>
++#include <getopt.h>
++
++#include <arpa/inet.h>
++
++/*
++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
++ * we can use to check whether we need to deal with the new requirements
++ * in pre-processor directives below
++ */
++#include <iptables.h>  
++#include <linux/netfilter_ipv4/ipt_webmon.h>
++
++#ifdef _XTABLES_H
++	#define iptables_rule_match	xtables_rule_match
++	#define iptables_match		xtables_match
++	#define iptables_target		xtables_target
++	#define ipt_tryload		xt_tryload
++#endif
++
++/* 
++ * XTABLES_VERSION_CODE is only defined in versions 1.4.1 and later, which
++ * also require the use of xtables_register_match
++ * 
++ * Version 1.4.0 uses register_match like previous versions
++ */
++#ifdef XTABLES_VERSION_CODE 
++	#define register_match          xtables_register_match
++#endif
++
++
++#define STRIP "%d.%d.%d.%d"
++#define NIPQUAD(addr) \
++	((unsigned char *)&addr)[0], \
++	((unsigned char *)&addr)[1], \
++	((unsigned char *)&addr)[2], \
++	((unsigned char *)&addr)[3]
++
++
++
++/* utility functions necessary for module to work across multiple iptables versions */
++static void param_problem_exit_error(char* msg);
++
++
++void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info);
++
++char** split_on_separators(char* line, char* separators, int num_separators, int max_pieces, int include_remainder_at_max);
++char* trim_flanking_whitespace(char* str);
++unsigned char* read_entire_file(FILE* in, unsigned long read_block_size, unsigned long *length);
++
++#define DEFAULT_MAX      300
++
++#define SEARCH_LOAD_FILE 100
++#define DOMAIN_LOAD_FILE 101
++#define CLEAR_SEARCH     102
++#define CLEAR_DOMAIN     103
++
++static char* domain_load_file = NULL;
++static char* search_load_file = NULL;
++static uint32_t global_max_domains  = DEFAULT_MAX;
++static uint32_t global_max_searches = DEFAULT_MAX;
++
++/* Function which prints out usage message. */
++static void help(void)
++{
++	printf(	"webmon options:\n");
++}
++
++static struct option opts[] = 
++{
++	{ .name = "exclude_ips",        .has_arg = 1, .flag = 0, .val = WEBMON_EXCLUDE },
++	{ .name = "include_ips",        .has_arg = 1, .flag = 0, .val = WEBMON_INCLUDE },
++	{ .name = "max_domains",        .has_arg = 1, .flag = 0, .val = WEBMON_MAXDOMAIN },
++	{ .name = "max_searches",       .has_arg = 1, .flag = 0, .val = WEBMON_MAXSEARCH },
++	{ .name = "search_load_file",   .has_arg = 1, .flag = 0, .val = SEARCH_LOAD_FILE },
++	{ .name = "domain_load_file",   .has_arg = 1, .flag = 0, .val = DOMAIN_LOAD_FILE },
++	{ .name = "clear_search",       .has_arg = 0, .flag = 0, .val = CLEAR_SEARCH },
++	{ .name = "clear_domain",       .has_arg = 0, .flag = 0, .val = CLEAR_DOMAIN },
++
++	{ .name = 0 }
++};
++
++static void webmon_init(
++#ifdef _XTABLES_H
++	struct xt_entry_match *match
++#else
++	struct ipt_entry_match *match, unsigned int *nfcache
++#endif
++	)
++{
++	struct ipt_webmon_info *info = (struct ipt_webmon_info *)match->data;
++	info->max_domains=DEFAULT_MAX;
++	info->max_searches=DEFAULT_MAX;
++	info->num_exclude_ips=0;
++	info->num_exclude_ranges=0;
++	info->exclude_type = WEBMON_EXCLUDE;
++	info->ref_count = NULL;
++}
++
++
++/* Function which parses command options; returns true if it ate an option */
++static int parse(	int c, 
++			char **argv,
++			int invert,
++			unsigned int *flags,
++#ifdef _XTABLES_H
++			const void *entry,
++#else
++			const struct ipt_entry *entry,
++			unsigned int *nfcache,
++#endif			
++			struct ipt_entry_match **match
++			)
++{
++	struct ipt_webmon_info *info = (struct ipt_webmon_info *)(*match)->data;
++	int valid_arg = 1;
++	long max;
++	switch (c)
++	{
++		case WEBMON_EXCLUDE:
++			parse_ips_and_ranges(optarg, info);
++			info->exclude_type = WEBMON_EXCLUDE;
++			break;
++		case WEBMON_INCLUDE:
++			parse_ips_and_ranges(optarg, info);
++			info->exclude_type = WEBMON_INCLUDE;
++			break;
++		case WEBMON_MAXSEARCH:
++			if( sscanf(argv[optind-1], "%ld", &max) == 0)
++			{
++				info->max_searches = DEFAULT_MAX ;
++				valid_arg = 0;
++			}
++			else
++			{
++				info->max_searches = (uint32_t)max;
++				global_max_searches = info->max_searches;
++			}
++			break;
++		case WEBMON_MAXDOMAIN:
++			if( sscanf(argv[optind-1], "%ld", &max) == 0)
++			{
++				info->max_domains = DEFAULT_MAX ;
++				valid_arg = 0;
++			}
++			else
++			{
++				info->max_domains = (uint32_t)max;
++				global_max_domains = info->max_domains;
++			}
++			break;
++		case SEARCH_LOAD_FILE:
++			search_load_file = strdup(optarg);
++			break;
++		case DOMAIN_LOAD_FILE:
++			domain_load_file = strdup(optarg);
++			break;
++		case CLEAR_SEARCH:
++			search_load_file = strdup("/dev/null");
++			break;
++		case CLEAR_DOMAIN:
++			domain_load_file = strdup("/dev/null");
++			break;
++		default:
++			valid_arg = 0;
++	}
++	return valid_arg;
++
++}
++
++
++	
++static void print_webmon_args(	struct ipt_webmon_info* info )
++{
++	printf("--max_domains %ld ", (unsigned long int)info->max_domains);
++	printf("--max_searches %ld ", (unsigned long int)info->max_searches);
++	if(info->num_exclude_ips > 0 || info->num_exclude_ranges > 0)
++	{
++		int ip_index = 0;
++		char comma[3] = "";
++		printf("--%s ", (info->exclude_type == WEBMON_EXCLUDE ? "exclude_ips" : "include_ips"));
++		for(ip_index=0; ip_index < info->num_exclude_ips; ip_index++)
++		{
++			printf("%s"STRIP, comma, NIPQUAD((info->exclude_ips)[ip_index]) );
++			sprintf(comma, ",");
++		}
++		for(ip_index=0; ip_index < info->num_exclude_ranges; ip_index++)
++		{
++			struct ipt_webmon_ip_range r = (info->exclude_ranges)[ip_index];
++			printf("%s"STRIP"-"STRIP, comma, NIPQUAD(r.start), NIPQUAD(r.end) );
++			sprintf(comma, ",");
++		}
++		printf(" ");
++	}
++}
++
++
++static void do_load(char* file, uint32_t max, unsigned char type)
++{
++	if(file != NULL)
++	{
++		unsigned char* data = NULL;
++		unsigned long data_length = 0;
++		char* file_data = NULL;
++		if(strcmp(file, "/dev/null") != 0)
++		{
++			FILE* in = fopen(file, "r");
++			if(in != NULL)
++			{
++				file_data = (char*)read_entire_file(in, 4096, &data_length);
++				fclose(in);
++			}
++		}
++		if(file_data == NULL)
++		{
++			file_data=strdup("");
++		}
++		
++		if(file_data != NULL)
++		{
++			data_length = strlen(file_data) + sizeof(uint32_t)+2;
++			data = (unsigned char*)malloc(data_length);
++			if(data != NULL)
++			{
++				int sockfd = -1;
++				uint32_t* maxp = (uint32_t*)(data+1);
++				data[0] = type;
++				*maxp = max;
++				sprintf( (data+1+sizeof(uint32_t)),  "%s", file_data);
++			
++				sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
++				if(sockfd >= 0)
++				{
++					setsockopt(sockfd, IPPROTO_IP, WEBMON_SET, data, data_length);
++					close(sockfd);
++				}
++				free(data);
++			}
++			free(file_data);
++		}
++	}
++
++}
++
++
++static void final_check(unsigned int flags)
++{
++	do_load(domain_load_file, global_max_domains,  WEBMON_DOMAIN);
++	do_load(search_load_file, global_max_searches, WEBMON_SEARCH);
++}
++
++/* Prints out the matchinfo. */
++#ifdef _XTABLES_H
++static void print(const void *ip, const struct xt_entry_match *match, int numeric)
++#else	
++static void print(const struct ipt_ip *ip, const struct ipt_entry_match *match, int numeric)
++#endif
++{
++	printf("WEBMON ");
++	struct ipt_webmon_info *info = (struct ipt_webmon_info *)match->data;
++
++	print_webmon_args(info);
++}
++
++/* Saves the union ipt_matchinfo in parsable form to stdout. */
++#ifdef _XTABLES_H
++static void save(const void *ip, const struct xt_entry_match *match)
++#else
++static void save(const struct ipt_ip *ip, const struct ipt_entry_match *match)
++#endif
++{
++	struct ipt_webmon_info *info = (struct ipt_webmon_info *)match->data;
++	print_webmon_args(info);
++}
++
++static struct iptables_match webmon = 
++{ 
++	.next		= NULL,
++ 	.name		= "webmon",
++	#ifdef XTABLES_VERSION_CODE
++		.version = XTABLES_VERSION,
++	#else
++		.version = IPTABLES_VERSION,
++	#endif
++	.size		= XT_ALIGN(sizeof(struct ipt_webmon_info)),
++	.userspacesize	= XT_ALIGN(sizeof(struct ipt_webmon_info)),
++	.help		= &help,
++	.init           = &webmon_init,
++	.parse		= &parse,
++	.final_check	= &final_check,
++	.print		= &print,
++	.save		= &save,
++	.extra_opts	= opts
++};
++
++void _init(void)
++{
++	register_match(&webmon);
++}
++
++
++#ifndef TRUE
++#define TRUE 1
++#endif
++#ifndef FALSE
++#define FALSE 0
++#endif
++
++
++
++
++
++
++
++static void param_problem_exit_error(char* msg)
++{
++	#ifdef xtables_error
++		xtables_error(PARAMETER_PROBLEM, "%s", msg);
++	#else
++		exit_error(PARAMETER_PROBLEM, msg);
++	#endif
++}
++
++
++void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
++{
++	char** addr_parts = split_on_separators(addr_str, ",", 1, -1, 0);
++
++	info->num_exclude_ips=0;
++	info->num_exclude_ranges = 0;
++
++	int ip_part_index;
++	for(ip_part_index=0; addr_parts[ip_part_index] != NULL; ip_part_index++)
++	{
++		char* next_str = addr_parts[ip_part_index];
++		if(strchr(next_str, '-') != NULL)
++		{
++			char** range_parts = split_on_separators(next_str, "-", 1, 2, 1);
++			char* start = trim_flanking_whitespace(range_parts[0]);
++			char* end = trim_flanking_whitespace(range_parts[1]);
++			int start_ip[4];
++			int end_ip[4];
++			int start_valid = sscanf(start, "%d.%d.%d.%d", start_ip, start_ip+1, start_ip+2, start_ip+3);
++			int end_valid = sscanf(end, "%d.%d.%d.%d", end_ip, end_ip+1, end_ip+2, end_ip+3);
++			
++			if(start_valid == 4 && end_valid == 4)
++			{
++				struct ipt_webmon_ip_range r;
++				struct in_addr sip, eip;
++				inet_pton(AF_INET, start, &sip);
++				inet_pton(AF_INET, end, &eip);
++				r.start = (uint32_t)sip.s_addr;
++				r.end   = (uint32_t)eip.s_addr;
++
++				if(info->num_exclude_ranges <  WEBMON_MAX_IP_RANGES  && (unsigned long)ntohl(r.start) < (unsigned long)ntohl(r.end) )
++				{
++					(info->exclude_ranges)[ info->num_exclude_ranges ] = r;
++					info->num_exclude_ranges = info->num_exclude_ranges + 1;
++				}
++			}
++
++			free(start);
++			free(end);	
++			free(range_parts);
++		}
++		else if(strchr(next_str, '/') != NULL)
++		{
++			char** range_parts = split_on_separators(next_str, "/", 1, 2, 1);
++			char* start = trim_flanking_whitespace(range_parts[0]);
++			char* end = trim_flanking_whitespace(range_parts[1]);
++			int base_ip[4];
++			int base_valid = sscanf(start, "%d.%d.%d.%d", base_ip, base_ip+1, base_ip+2, base_ip+3);
++			if(base_valid == 4)
++			{
++				int mask_valid = 0;
++				uint32_t mask;
++				if(strchr(end, '.') != NULL)
++				{
++					uint32_t mask_ip[4];
++					int mask_test = sscanf(end, "%d.%d.%d.%d", mask_ip, mask_ip+1, mask_ip+2, mask_ip+3);
++					if(mask_test == 4)
++					{
++						struct in_addr mask_add;
++						inet_pton(AF_INET, end, &mask_add);
++						mask = (uint32_t)mask_add.s_addr;
++						mask_valid = 1;
++					}
++				}
++				else
++				{
++					int mask_bits;
++					if( sscanf(end, "%d", &mask_bits) > 0)
++					{
++						if(mask_bits >=0 && mask_bits <= 32)
++						{
++							uint32_t byte = 0;
++							mask = 0;
++							for(byte=0; byte < 4; byte++)
++							{
++								unsigned char byte_bits = mask_bits > 8 ? 8 : mask_bits;
++								uint32_t byte_mask = 0;
++								mask_bits = mask_bits - byte_bits;
++								
++								while(byte_bits > 0)
++								{
++									byte_mask = byte_mask | (256 >> byte_bits);
++									byte_bits--;
++								}
++								mask = mask | ((uint32_t)byte_mask << (byte*8));
++								printf("mask = "STRIP"\n", NIPQUAD(mask));	
++							}
++							mask_valid = 1;
++						}
++					}
++				}
++				if(mask_valid)
++				{
++					struct ipt_webmon_ip_range r;
++					struct in_addr bip;
++					inet_pton(AF_INET, start, &bip);
++					r.start = ( ((uint32_t)bip.s_addr) & mask );
++					r.end   = ( ((uint32_t)bip.s_addr) | (~mask) );
++					if(info->num_exclude_ranges <  WEBMON_MAX_IP_RANGES && ntohl(r.start) <= ntohl(r.end) )
++					{
++						(info->exclude_ranges)[ info->num_exclude_ranges ] = r;
++						info->num_exclude_ranges = info->num_exclude_ranges + 1;
++					}
++				}
++			}
++			free(start);
++			free(end);	
++			free(range_parts);
++		}
++		else
++		{
++			int parsed_ip[4];
++			int valid = sscanf(next_str, "%d.%d.%d.%d", parsed_ip, parsed_ip+1, parsed_ip+2, parsed_ip+3);
++			if(valid == 4)
++			{
++				struct in_addr ip;
++				trim_flanking_whitespace(next_str);
++				inet_pton(AF_INET, next_str, &ip);
++				
++				if(info->num_exclude_ranges <  WEBMON_MAX_IPS)
++				{
++					(info->exclude_ips)[ info->num_exclude_ips ] = (uint32_t)ip.s_addr;
++					info->num_exclude_ips = info->num_exclude_ips + 1;
++				}
++			}
++		}
++		free(next_str);
++	}
++	free(addr_parts);
++	
++}
++
++
++
++/*
++ * line_str is the line to be parsed -- it is not modified in any way
++ * max_pieces indicates number of pieces to return, if negative this is determined dynamically
++ * include_remainder_at_max indicates whether the last piece, when max pieces are reached, 
++ * 	should be what it would normally be (0) or the entire remainder of the line (1)
++ * 	if max_pieces < 0 this parameter is ignored
++ *
++ *
++ * returns all non-separator pieces in a line
++ * result is dynamically allocated, MUST be freed after call-- even if 
++ * line is empty (you still get a valid char** pointer to to a NULL char*)
++ */
++char** split_on_separators(char* line_str, char* separators, int num_separators, int max_pieces, int include_remainder_at_max)
++{
++	char** split;
++
++	if(line_str != NULL)
++	{
++		int split_index;
++		int non_separator_found;
++		char* dup_line;
++		char* start;
++
++		if(max_pieces < 0)
++		{
++			/* count number of separator characters in line -- this count + 1 is an upperbound on number of pieces */
++			int separator_count = 0;
++			int line_index;
++			for(line_index = 0; line_str[line_index] != '\0'; line_index++)
++			{
++				int sep_index;
++				int found = 0;
++				for(sep_index =0; found == 0 && sep_index < num_separators; sep_index++)
++				{
++					found = separators[sep_index] == line_str[line_index] ? 1 : 0;
++				}
++				separator_count = separator_count+ found;
++			}
++			max_pieces = separator_count + 1;
++		}
++		split = (char**)malloc((1+max_pieces)*sizeof(char*));
++		split_index = 0;
++		split[split_index] = NULL;
++
++
++		dup_line = strdup(line_str);
++		start = dup_line;
++		non_separator_found = 0;
++		while(non_separator_found == 0)
++		{
++			int matches = 0;
++			int sep_index;
++			for(sep_index =0; sep_index < num_separators; sep_index++)
++			{
++				matches = matches == 1 || separators[sep_index] == start[0] ? 1 : 0;
++			}
++			non_separator_found = matches==0 || start[0] == '\0' ? 1 : 0;
++			if(non_separator_found == 0)
++			{
++				start++;
++			}
++		}
++
++		while(start[0] != '\0' && split_index < max_pieces)
++		{
++			/* find first separator index */
++			int first_separator_index = 0;
++			int separator_found = 0;
++			while(	separator_found == 0 )
++			{
++				int sep_index;
++				for(sep_index =0; separator_found == 0 && sep_index < num_separators; sep_index++)
++				{
++					separator_found = separators[sep_index] == start[first_separator_index] || start[first_separator_index] == '\0' ? 1 : 0;
++				}
++				if(separator_found == 0)
++				{
++					first_separator_index++;
++				}
++			}
++			
++			/* copy next piece to split array */
++			if(first_separator_index > 0)
++			{
++				char* next_piece = NULL;
++				if(split_index +1 < max_pieces || include_remainder_at_max <= 0)
++				{
++					next_piece = (char*)malloc((first_separator_index+1)*sizeof(char));
++					memcpy(next_piece, start, first_separator_index);
++					next_piece[first_separator_index] = '\0';
++				}
++				else
++				{
++					next_piece = strdup(start);
++				}
++				split[split_index] = next_piece;
++				split[split_index+1] = NULL;
++				split_index++;
++			}
++
++
++			/* find next non-separator index, indicating start of next piece */
++			start = start+ first_separator_index;
++			non_separator_found = 0;
++			while(non_separator_found == 0)
++			{
++				int matches = 0;
++				int sep_index;
++				for(sep_index =0; sep_index < num_separators; sep_index++)
++				{
++					matches = matches == 1 || separators[sep_index] == start[0] ? 1 : 0;
++				}
++				non_separator_found = matches==0 || start[0] == '\0' ? 1 : 0;
++				if(non_separator_found == 0)
++				{
++					start++;
++				}
++			}
++		}
++		free(dup_line);
++	}
++	else
++	{
++		split = (char**)malloc((1)*sizeof(char*));
++		split[0] = NULL;
++	}
++	return split;
++}
++
++
++
++char* trim_flanking_whitespace(char* str)
++{
++	int new_start = 0;
++	int new_length = 0;
++
++	char whitespace[5] = { ' ', '\t', '\n', '\r', '\0' };
++	int num_whitespace_chars = 4;
++	
++	
++	int str_index = 0;
++	int is_whitespace = 1;
++	int test;
++	while( (test = str[str_index]) != '\0' && is_whitespace == 1)
++	{
++		int whitespace_index;
++		is_whitespace = 0;
++		for(whitespace_index = 0; whitespace_index < num_whitespace_chars && is_whitespace == 0; whitespace_index++)
++		{
++			is_whitespace = test == whitespace[whitespace_index] ? 1 : 0;
++		}
++		str_index = is_whitespace == 1 ? str_index+1 : str_index;
++	}
++	new_start = str_index;
++
++
++	str_index = strlen(str) - 1;
++	is_whitespace = 1;
++	while( str_index >= new_start && is_whitespace == 1)
++	{
++		int whitespace_index;
++		is_whitespace = 0;
++		for(whitespace_index = 0; whitespace_index < num_whitespace_chars && is_whitespace == 0; whitespace_index++)
++		{
++			is_whitespace = str[str_index] == whitespace[whitespace_index] ? 1 : 0;
++		}
++		str_index = is_whitespace == 1 ? str_index-1 : str_index;
++	}
++	new_length = str[new_start] == '\0' ? 0 : str_index + 1 - new_start;
++	
++
++	if(new_start > 0)
++	{
++		for(str_index = 0; str_index < new_length; str_index++)
++		{
++			str[str_index] = str[str_index+new_start];
++		}
++	}
++	str[new_length] = 0;
++	return str;
++}
++
++
++unsigned char* read_entire_file(FILE* in, unsigned long read_block_size, unsigned long *length)
++{
++	int max_read_size = read_block_size;
++	unsigned char* read_string = (unsigned char*)malloc(max_read_size+1);
++	unsigned long bytes_read = 0;
++	int end_found = 0;
++	while(end_found == 0)
++	{
++		int nextch = '?';
++		while(nextch != EOF && bytes_read < max_read_size)
++		{
++			nextch = fgetc(in);
++			if(nextch != EOF)
++			{
++				read_string[bytes_read] = (unsigned char)nextch;
++				bytes_read++;
++			}
++		}
++		read_string[bytes_read] = '\0';
++		end_found = (nextch == EOF) ? 1 : 0;
++		if(end_found == 0)
++		{
++			unsigned char *new_str;
++			max_read_size = max_read_size + read_block_size;
++		       	new_str = (unsigned char*)malloc(max_read_size+1);
++			memcpy(new_str, read_string, bytes_read);
++			free(read_string);
++			read_string = new_str;
++		}
++	}
++	*length = bytes_read;
++	return read_string;
++}
++
+
+--- /dev/null
++++ b/include/linux/netfilter_ipv4/ipt_webmon.h
+@@ -0,0 +1,63 @@
++/*  webmon --	A netfilter module to match URLs in HTTP(S) requests
++ *  		This module can match using string match or regular expressions
++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2008-2010 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++
++
++#ifndef _IPT_WEBMON_H
++#define _IPT_WEBMON_H
++
++
++#define WEBMON_MAX_IPS           256
++#define WEBMON_MAX_IP_RANGES      16
++
++#define WEBMON_EXCLUDE             1
++#define WEBMON_INCLUDE             2
++
++#define WEBMON_MAXDOMAIN           4
++#define WEBMON_MAXSEARCH           8
++
++#define WEBMON_DOMAIN             16
++#define WEBMON_SEARCH             32
++
++
++#define WEBMON_SET              3064
++
++struct ipt_webmon_ip_range
++{
++	uint32_t start;
++	uint32_t end;
++};
++
++struct ipt_webmon_info
++{
++	uint32_t max_domains;
++	uint32_t max_searches;
++	uint32_t exclude_ips[WEBMON_MAX_IPS];
++	struct ipt_webmon_ip_range exclude_ranges[WEBMON_MAX_IP_RANGES];
++	uint32_t num_exclude_ips;
++	uint32_t num_exclude_ranges;
++	unsigned char exclude_type;
++	uint32_t* ref_count;
++
++};
++
++#endif /*_IPT_WEBMON_H*/
+
+--- /dev/null
++++ b/extensions/libipt_weburl.c
+@@ -0,0 +1,290 @@
++/*  weburl --	An iptables extension to match URLs in HTTP(S) requests
++ *  		This module can match using string match or regular expressions
++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2008-2010 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++#include <stdio.h>
++#include <netdb.h>
++#include <string.h>
++#include <stdlib.h>
++#include <getopt.h>
++
++
++/*
++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
++ * we can use to check whether we need to deal with the new requirements
++ * in pre-processor directives below
++ */
++#include <iptables.h>  
++#include <linux/netfilter_ipv4/ipt_weburl.h>
++
++#ifdef _XTABLES_H
++	#define iptables_rule_match	xtables_rule_match
++	#define iptables_match		xtables_match
++	#define iptables_target		xtables_target
++	#define ipt_tryload		xt_tryload
++#endif
++
++/* 
++ * XTABLES_VERSION_CODE is only defined in versions 1.4.1 and later, which
++ * also require the use of xtables_register_match
++ * 
++ * Version 1.4.0 uses register_match like previous versions
++ */
++#ifdef XTABLES_VERSION_CODE 
++	#define register_match          xtables_register_match
++#endif
++
++
++/* utility functions necessary for module to work across multiple iptables versions */
++static int  my_check_inverse(const char option[], int* invert, int *my_optind, int argc);
++static void param_problem_exit_error(char* msg);
++
++
++
++/* Function which prints out usage message. */
++static void help(void)
++{
++	printf(	"weburl options:\n  --contains [!] [STRING]\n  --contains_regex [!] [REGEX]\n --matches_exactly [!] [STRING]\n --domain_only\n --path_only\n");
++}
++
++static struct option opts[] = 
++{
++	{ .name = "contains", 		.has_arg = 1, .flag = 0, .val = WEBURL_CONTAINS_TYPE },	//string
++	{ .name = "contains_regex", 	.has_arg = 1, .flag = 0, .val = WEBURL_REGEX_TYPE },	//regex
++	{ .name = "matches_exactly",	.has_arg = 1, .flag = 0, .val = WEBURL_EXACT_TYPE },	//exact string match
++	{ .name = "domain_only",	.has_arg = 0, .flag = 0, .val = WEBURL_DOMAIN_PART },	//only match domain portion of url
++	{ .name = "path_only",		.has_arg = 0, .flag = 0, .val = WEBURL_PATH_PART },	//only match path portion of url
++	{ .name = 0 }
++};
++
++
++/* Function which parses command options; returns true if it
++   ate an option */
++static int parse(	int c, 
++			char **argv,
++			int invert,
++			unsigned int *flags,
++#ifdef _XTABLES_H
++			const void *entry,
++#else
++			const struct ipt_entry *entry,
++			unsigned int *nfcache,
++#endif			
++			struct ipt_entry_match **match
++			)
++{
++	struct ipt_weburl_info *info = (struct ipt_weburl_info *)(*match)->data;
++	int valid_arg = 0;
++
++	if(*flags < 10)
++	{
++		info->match_part = WEBURL_ALL_PART;
++	}
++
++	switch (c)
++	{
++		case WEBURL_CONTAINS_TYPE:
++		case WEBURL_REGEX_TYPE:
++		case WEBURL_EXACT_TYPE:
++			info->match_type = c;
++
++			//test whether to invert rule
++			my_check_inverse(optarg, &invert, &optind, 0);
++			info->invert = invert ? 1 : 0;
++	
++			//test that test string is reasonable length, then to info
++			int testlen = strlen(argv[optind-1]);
++			if(testlen > 0 && testlen < MAX_TEST_STR)
++			{
++				strcpy(info->test_str, argv[optind-1]);
++			}
++			else if(testlen >= MAX_TEST_STR)
++			{
++				char err[100];
++				sprintf(err, "Parameter definition is too long, must be less than %d characters", MAX_TEST_STR);
++				param_problem_exit_error(err);
++			}
++			else
++			{
++				param_problem_exit_error("Parameter definition is incomplete");
++			}
++
++			if(*flags % 10 == 1)
++			{
++				param_problem_exit_error("You may only specify one string/pattern to match");
++			}
++			*flags = *flags + 1;
++			
++			valid_arg = 1;
++			break;
++
++		case WEBURL_DOMAIN_PART:
++		case WEBURL_PATH_PART:
++			info->match_part = c;
++			if(*flags >= 10)
++			{
++				param_problem_exit_error("You may specify at most one part of the url to match:\n\t--domain_only, --path_only or neither (to match full url)\n");
++			}
++			*flags = *flags+10;
++			
++			valid_arg = 1;
++			break;
++	}
++	
++	return valid_arg;
++}
++
++
++	
++static void print_weburl_args(	struct ipt_weburl_info* info )
++{
++	//invert
++	if(info->invert > 0)
++	{
++		printf("! ");
++	}
++	//match type
++	switch (info->match_type)
++	{
++		case WEBURL_CONTAINS_TYPE:
++			printf("--contains ");
++			break;
++		case WEBURL_REGEX_TYPE:
++			printf("--contains_regex ");
++			break;
++		case WEBURL_EXACT_TYPE:
++			printf("--matches_exactly ");
++			break;
++	}
++	//test string
++	printf("%s ", info->test_str);
++
++	//match part
++	switch(info->match_part)
++	{
++		case WEBURL_DOMAIN_PART:
++			printf("--domain_only ");
++			break;
++		case WEBURL_PATH_PART:
++			printf("--path_only ");
++			break;
++		case WEBURL_ALL_PART:
++			//print nothing
++			break;
++	}
++	
++}
++
++/* Final check; must have specified a test string with either --contains or --contains_regex. */
++static void final_check(unsigned int flags)
++{
++	if (flags %10 == 0)
++	{
++		param_problem_exit_error("You must specify '--contains' or '--contains_regex' or '--matches_exactly'");
++	}
++}
++
++/* Prints out the matchinfo. */
++#ifdef _XTABLES_H
++static void print(const void *ip, const struct xt_entry_match *match, int numeric)
++#else	
++static void print(const struct ipt_ip *ip, const struct ipt_entry_match *match, int numeric)
++#endif
++{
++	printf("WEBURL ");
++	struct ipt_weburl_info *info = (struct ipt_weburl_info *)match->data;
++
++	print_weburl_args(info);
++}
++
++/* Saves the union ipt_matchinfo in parsable form to stdout. */
++#ifdef _XTABLES_H
++static void save(const void *ip, const struct xt_entry_match *match)
++#else
++static void save(const struct ipt_ip *ip, const struct ipt_entry_match *match)
++#endif
++{
++	struct ipt_weburl_info *info = (struct ipt_weburl_info *)match->data;
++	print_weburl_args(info);
++}
++
++static struct iptables_match weburl = 
++{ 
++	.next		= NULL,
++ 	.name		= "weburl",
++	#ifdef XTABLES_VERSION_CODE
++		.version = XTABLES_VERSION,
++	#else
++		.version = IPTABLES_VERSION,
++	#endif
++	.size		= XT_ALIGN(sizeof(struct ipt_weburl_info)),
++	.userspacesize	= XT_ALIGN(sizeof(struct ipt_weburl_info)),
++	.help		= &help,
++	.parse		= &parse,
++	.final_check	= &final_check,
++	.print		= &print,
++	.save		= &save,
++	.extra_opts	= opts
++};
++
++void _init(void)
++{
++	register_match(&weburl);
++}
++
++
++#ifndef TRUE
++#define TRUE 1
++#endif
++#ifndef FALSE
++#define FALSE 0
++#endif
++static int  my_check_inverse(const char option[], int* invert, int *my_optind, int argc)
++{
++	if (option && strcmp(option, "!") == 0)
++	{
++		if (*invert)
++		{
++			param_problem_exit_error("Multiple `!' flags not allowed");
++		}
++		*invert = TRUE;
++		if (my_optind != NULL)
++		{
++			++*my_optind;
++			if (argc && *my_optind > argc)
++			{
++				param_problem_exit_error("no argument following `!'");
++			}
++		}
++		return TRUE;
++	}
++	return FALSE;
++}
++static void param_problem_exit_error(char* msg)
++{
++	#ifdef xtables_error
++		xtables_error(PARAMETER_PROBLEM, "%s", msg);
++	#else
++		exit_error(PARAMETER_PROBLEM, msg);
++	#endif
++}
++
++
+
+--- /dev/null
++++ b/include/linux/netfilter_ipv4/ipt_weburl.h
+@@ -0,0 +1,45 @@
++/*  weburl --	A netfilter module to match URLs in HTTP(S) requests
++ *  		This module can match using string match or regular expressions
++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
++ *
++ *
++ *  Copyright © 2008 by Eric Bishop <eric@gargoyle-router.com>
++ * 
++ *  This file is free software: you may copy, redistribute and/or modify it
++ *  under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  This file is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++
++
++#ifndef _IPT_WEBURL_H
++#define _IPT_WEBURL_H
++
++
++#define MAX_TEST_STR 1024
++
++#define WEBURL_CONTAINS_TYPE 1
++#define WEBURL_REGEX_TYPE 2
++#define WEBURL_EXACT_TYPE 3
++#define WEBURL_ALL_PART 4
++#define WEBURL_DOMAIN_PART 5
++#define WEBURL_PATH_PART 6
++
++struct ipt_weburl_info
++{
++	char test_str[MAX_TEST_STR];
++	unsigned char match_type;
++	unsigned char match_part;
++	unsigned char invert;
++};
++#endif /*_IPT_WEBURL_H*/
