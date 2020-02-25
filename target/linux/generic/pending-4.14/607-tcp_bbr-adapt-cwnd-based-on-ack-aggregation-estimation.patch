@@ -433,7 +433,7 @@ diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
 +/*	BUILD_BUG_ON(sizeof(struct bbr) > ICSK_CA_PRIV_SIZE);*/
  	return tcp_register_congestion_control(&tcp_bbr_cong_ops);
  }
- 
+
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
@@ -455,4 +455,32 @@ diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
  
  /* Trim TSO SKB to LEN bytes, put the remaining data into a new packet
   * which is put after SKB on the list.  It is very much like
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -553,6 +553,8 @@
+ 
+ u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+ 		     int min_tso_segs);
++bool tcp_snd_wnd_test(const struct tcp_sock *tp, const struct sk_buff *skb,
++		      unsigned int cur_mss);
+ void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
+ 			       int nonagle);
+ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs);
+
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -136,8 +136,8 @@
+ 	} icsk_mtup;
+ 	u32			  icsk_user_timeout;
+ 
+-	u64			  icsk_ca_priv[88 / sizeof(u64)];
+-#define ICSK_CA_PRIV_SIZE      (11 * sizeof(u64))
++	u64			  icsk_ca_priv[104 / sizeof(u64)];
++#define ICSK_CA_PRIV_SIZE      (13 * sizeof(u64))
+ };
+ 
+ #define ICSK_TIME_RETRANS	1	/* Retransmit timer */
 
