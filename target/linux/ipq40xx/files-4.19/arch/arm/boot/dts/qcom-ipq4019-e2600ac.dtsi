@@ -1,5 +1,7 @@
-/* 
- * Copyright (c) 2019 Hugo Yuan <hugolxq@gmail.com>
+/* SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ *
+ * Copyright (c) 2018 Peng Zhang <sd20@qxwlan.com>
+ *
  */
 
 #include "qcom-ipq4019.dtsi"
@@ -9,7 +11,7 @@
 
 / {
 
-	model = "Hugo AC1200";
+	model = "Qxwlan E2600AC";
 	compatible = "qcom,ipq4019";
 
 	memory {
@@ -17,14 +19,11 @@
 		reg = <0x80000000 0x10000000>; /* 256MB */
 	};
 
-	aliases {
-		led-boot = &power;
-		led-failsafe = &power;
-		led-running = &power;
-		led-upgrade = &power;
-	};
-
 	soc {
+		rng@22000 {
+			status = "okay";
+		};
+
 		mdio@90000 {
 			status = "okay";
 			pinctrl-0 = <&mdio_pins>;
@@ -133,18 +132,35 @@
 			compatible = "gpio-leds";
 
 			led1 {
-				label = "ac1200:green:ctrl1";
-				gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
+				label = "e2600ac:green:wlan0";
+				gpios = <&tlmm 50 GPIO_ACTIVE_LOW>;
 			};
 
 			led2 {
-				label = "ac1200:red:ctrl2";
-				gpios = <&tlmm 45 GPIO_ACTIVE_LOW>;
+				label = "e2600ac:green:wlan1";
+				gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
 			};
 
-			power: led3 {
-				label = "ac1200:blue:ctrl3";
-				gpios = <&tlmm 46 GPIO_ACTIVE_LOW>;
+			led3 {
+				label = "e2600ac:green:usb";
+				gpios = <&tlmm 32 GPIO_ACTIVE_LOW>;
+				trigger-sources = <&usb2_port1>, <&usb3_port1>, <&usb3_port2>;
+				linux,default-trigger = "usbport";
+			};
+
+			led4 {
+				label = "e2600ac:green:ctrl1";
+				gpios = <&tlmm 51 GPIO_ACTIVE_LOW>;
+			};
+
+			led5 {
+				label = "e2600ac:green:ctrl2";
+				gpios = <&tlmm 30 GPIO_ACTIVE_LOW>;
+			};
+
+			led6 {
+				label = "e2600ac:green:ctrl3";
+				gpios = <&tlmm 31 GPIO_ACTIVE_LOW>;
 			};
 		};
 
@@ -187,6 +203,7 @@
 			function = "mdio";
 			bias-pull-up;
 		};
+
 		mux_2 {
 			pins = "gpio7";
 			function = "mdc";
@@ -217,6 +234,7 @@
 			drive-strength = <12>;
 			bias-disable;
 		};
+
 		pinmux_cs {
 			function = "gpio";
 			pins = "gpio12";
@@ -241,10 +259,10 @@
 
 &wifi0 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "hugo_ac1200";
+	qcom,ath10k-calibration-variant = "Qxwlan-E2600AC";
 };
 
 &wifi1 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "hugo_ac1200";
+	qcom,ath10k-calibration-variant = "Qxwlan-E2600AC";
 };

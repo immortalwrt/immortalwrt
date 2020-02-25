@@ -18,7 +18,6 @@
 	model = "Linksys EA8300 (Dallas)";
 	compatible = "linksys,ea8300", "qcom,ipq4019";
 
-
 	aliases {
 		led-boot = &led_wps_amber;
 		led-failsafe = &led_wps;
@@ -26,7 +25,6 @@
 		led-upgrade = &led_world;
 		serial0 = &blsp1_uart1;
 	};
-
 
 	leds {
 		compatible = "gpio-leds";
@@ -72,7 +70,6 @@
 		};
 	};
 
-
 	keys {
 		compatible = "gpio-keys";
 
@@ -89,7 +86,6 @@
 		};
 	};
 
-
 	//
 	// OEM U-Boot provides either
 	// init=/sbin/init rootfstype=ubifs ubi.mtd=11,2048 \
@@ -101,12 +97,10 @@
 		bootargs-append = " root=/dev/ubiblock0_0 rootfstype=squashfs ro";
 	};
 
-
 	memory {
 		device_type = "memory";
 		reg = <0x80000000 0x10000000>;
 	};
-
 
 	soc {
 		rng@22000 {

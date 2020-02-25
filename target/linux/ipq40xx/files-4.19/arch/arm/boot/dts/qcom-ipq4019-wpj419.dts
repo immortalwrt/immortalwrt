@@ -36,6 +36,7 @@
 			reg = <0x87000000 0x500000>;
 			no-map;
 		};
+
 		wifi_dump@87500000 {
 			reg = <0x87500000 0x600000>;
 			no-map;
@@ -131,6 +132,7 @@
 					function = "led0";
 					bias-pull-down;
 				};
+
 				mux_2 {
 					pins = "gpio40";
 					function = "led4";
@@ -151,8 +153,6 @@
 			num-cs = <2>;
 
 			flash0@0 {
-				#address-cells = <1>;
-				#size-cells = <1>;
 				reg = <0>;
 				compatible = "jedec,spi-nor";
 				spi-max-frequency = <24000000>;
@@ -160,6 +160,8 @@
 
 				partitions {
 					compatible = "fixed-partitions";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					partition@0 {
 						label = "0:SBL1";

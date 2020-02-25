@@ -131,6 +131,7 @@
 			function = "mdio";
 			bias-pull-up;
 		};
+
 		mux_2 {
 			pins = "gpio7";
 			function = "mdc";

@@ -141,6 +141,7 @@
 			drive-strength = <12>;
 			bias-disable;
 		};
+
 		pin_cs {
 			function = "gpio";
 			pins = "gpio54";

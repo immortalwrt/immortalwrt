@@ -99,10 +99,12 @@
 			pins = "gpio53";
 			function = "mdio";
 		};
+
 		pinmux_2 {
 			pins = "gpio52";
 			function = "mdc";
 		};
+
 		pinconf {
 			pins = "gpio52", "gpio53";
 			bias-pull-up;
@@ -124,6 +126,7 @@
 			drive-strength = <2>;
 			bias-disable;
 		};
+
 		pin_cs {
 			function = "gpio";
 			pins = "gpio54", "gpio59";
@@ -161,36 +164,43 @@
 				reg = <0x00000000 0x00040000>;
 				read-only;
 			};
+
 			partition1@40000 {
 				label = "MIBIB";
 				reg = <0x00040000 0x00020000>;
 				read-only;
 			};
+
 			partition2@60000 {
 				label = "QSEE";
 				reg = <0x00060000 0x00060000>;
 				read-only;
 			};
+
 			partition3@c0000 {
 				label = "CDT";
 				reg = <0x000c0000 0x00010000>;
 				read-only;
 			};
+
 			partition4@d0000 {
 				label = "DDRPARAMS";
 				reg = <0x000d0000 0x00010000>;
 				read-only;
 			};
+
 			partition5@e0000 {
 				label = "APPSBLENV"; /* uboot env*/
 				reg = <0x000e0000 0x00010000>;
 				read-only;
 			};
+
 			partition5@f0000 {
 				label = "APPSBL"; /* uboot */
 				reg = <0x000f0000 0x00080000>;
 				read-only;
 			};
+
 			partition5@170000 {
 				label = "ART";
 				reg = <0x00170000 0x00010000>;
@@ -230,7 +240,17 @@
 };
 
 &gmac0 {
-	vlan_tag = <1 0x31>;
+	qcom,poll_required = <1>;
+	qcom,poll_required_dynamic = <1>;
+	qcom,phy_mdio_addr = <3>;
+	vlan_tag = <1 0x10>;
+};
+
+&gmac1 {
+	qcom,poll_required = <1>;
+	qcom,poll_required_dynamic = <1>;
+	qcom,phy_mdio_addr = <4>;
+	vlan_tag = <2 0x20>;
 };
 
 &wifi0 {
