@@ -341,9 +341,4 @@ diff --git a/include/net/tcp.h b/include/net/tcp.h
  	bool is_retrans;	/* is sample from retransmission? */
 +	bool is_ack_delayed;    /* is this (likely) a delayed ACK? */
  };
-@@ -1026,2 +1027,4 @@
- 	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
-+	/* override sysctl_tcp_min_tso_segs */
-+	u32 (*min_tso_segs)(struct sock *sk);
- 	/* suggest number of segments for each skb to transmit (optional) */
-
+ 
