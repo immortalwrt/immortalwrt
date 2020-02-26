@@ -333,12 +333,3 @@ diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
 +	bbr->extra_acked[1] = 0;
 +
  	cmpxchg(&sk->sk_pacing_status, SK_PACING_NONE, SK_PACING_NEEDED);
-
-diff --git a/include/net/tcp.h b/include/net/tcp.h
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1000,2 +1000,3 @@
- 	bool is_retrans;	/* is sample from retransmission? */
-+	bool is_ack_delayed;    /* is this (likely) a delayed ACK? */
- };
- 
