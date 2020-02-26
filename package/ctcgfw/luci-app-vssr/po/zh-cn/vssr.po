@@ -63,6 +63,8 @@ msgstr "SSR SOCKS5代理"
 msgid "Subscription"
 msgstr "订阅管理"
 
+
+
 msgid "Subscribing,Please do not refresh!"
 msgstr "订阅，请不要刷新!"
 
@@ -124,10 +126,10 @@ msgid "Client"
 msgstr "客户端"
 
 msgid "Visit foreign websites"
-msgstr "访问国外网站"
+msgstr "国外网站"
 
 msgid "Visit domestic website"
-msgstr "访问国内网站"
+msgstr "国内网站"
 
 msgid "Problem detected"
 msgstr "无法访问"
@@ -251,8 +253,6 @@ msgstr "内网主机列表"
 msgid "SSR Client"
 msgstr "客户端"
 
-msgid "SSR Server"
-msgstr "服务端"
 
 msgid "ShadowSocksR Server"
 msgstr "ShadowSocksR 服务端"
@@ -639,6 +639,25 @@ msgstr "4 线程"
 msgid "8 Threads"
 msgstr "8 线程"
 
+msgid "16 Threads"
+msgstr "16 线程"
+
+msgid "32 Threads"
+msgstr "32 线程"
+
+msgid "64 Threads"
+msgstr "64 线程"
+
+msgid "128 Threads"
+msgstr "128 线程"
+
+msgid "256 Threads"
+msgstr "256 线程"
+
+msgid "512 Threads"
+msgstr "512 线程"
+
+
 msgid "Proxy Ports"
 msgstr "需要代理的端口"
 
@@ -815,6 +834,23 @@ msgstr "fec参数"
 
 msgid "Mtu"
 msgstr "mtu参数"
+
+msgid "SS Servers"
+msgstr "SS服务器"
+
+
+msgid "SSR Servers"
+msgstr "SSR服务器"
+
+msgid "SSR Server"
+msgstr "服务端"
+
+msgid "V2 Servers"
+msgstr "V2服务器"
+
+msgid "SS/SSR/V2RAY Server"
+msgstr "SS/SSR/V2RAY 服务端"
+
 
 
 
