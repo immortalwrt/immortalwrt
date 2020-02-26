@@ -1,8 +1,5 @@
 #!/bin/sh /etc/rc.common
 
-sleeptime=150
-enable=$(uci get clash.config.enable 2>/dev/null)
-
 if [ -f /usr/share/clashbackup/history ];then
 
 HISTORY_PATH="/usr/share/clashbackup/history"
@@ -22,15 +19,3 @@ do
 done >/dev/null 2>&1 
   
 fi 
-
-while [ $enable -eq 1 ];
-do
-	if ! pidof clash>/dev/null; then
-		/etc/init.d/clash restart 2>&1 &
-	fi
-
-sleep ${sleeptime}
-continue
-done
-
-
