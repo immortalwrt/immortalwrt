@@ -129,6 +129,12 @@ o:value("1", translate("1 Thread"))
 o:value("2", translate("2 Threads"))
 o:value("4", translate("4 Threads"))
 o:value("8", translate("8 Threads"))
+o:value("16", translate("16 Threads"))
+o:value("32", translate("32 Threads"))
+o:value("64", translate("64 Threads"))
+o:value("128", translate("128 Threads"))
+o:value("256", translate("256 Threads"))
+o:value("512", translate("512 Threads"))
 o.default = "0"
 o.rmempty = false
 

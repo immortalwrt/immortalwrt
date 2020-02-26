@@ -21,6 +21,7 @@ local name = 'vssr'
 local uciType = 'servers'
 local ucic = luci.model.uci.cursor()
 local proxy = ucic:get_first(name, 'server_subscribe', 'proxy', '0')
+local switch = ucic:get_first(name, 'server_subscribe', 'switch', '1')
 local subscribe_url = ucic:get_first(name, 'server_subscribe', 'subscribe_url', {})
 
 local log = function(...)
@@ -96,7 +97,7 @@ end
 local function processData(szType, content)
 	local result = {
 -- 		auth_enable = '0',
-		switch_enable = '1',
+-- 		switch_enable = '1',
 		type = szType,
 		local_port = 1234,
 -- 		timeout = 60, -- 不太确定 好像是死的
@@ -135,6 +136,7 @@ local function processData(szType, content)
 		result.alter_id = info.aid
 		result.vmess_id = info.id
 		result.alias = info.ps
+		result.insecure = 1
 -- 		result.mux = 1
 -- 		result.concurrency = 8
 		if info.net == 'ws' then
@@ -225,15 +227,16 @@ local function processData(szType, content)
 	if not result.alias then
 		result.alias = result.server .. ':' .. result.server_port
 	end
-	
-        local flag =  luci.sys.exec('/usr/share/'..name..'/getflag.sh "'..result.alias..'" '..result.server)
-        result.flag = string.gsub(flag, '\n', '')
-	
+                 local flag =  luci.sys.exec('/usr/share/'..name..'/getflag.sh "'..result.alias..'" '..result.server)
+                 result.flag = string.gsub(flag, '\n', '')
 	-- alias 不参与 hashkey 计算
 	local alias = result.alias
 	result.alias = nil
+	local switch_enable = result.switch_enable
+	result.switch_enable = nil
 	result.hashkey = md5(jsonStringify(result))
 	result.alias = alias
+	result.switch_enable = switch_enable
 	return result
 end
 -- wget
@@ -337,36 +340,45 @@ local execute = function()
 			else
 				log('忽略手动添加的节点: ' .. old.alias)
 			end
+		
 		end)
+				
 		for k, v in ipairs(nodeResult) do
 			for kk, vv in ipairs(v) do
 				if not vv._ignore then
 					local section = ucic:add(name, uciType)
 					ucic:tset(name, section, vv)
+					ucic:set(name, section, "switch_enable", switch)
 					add = add + 1
 				end
 
 			end
 		end
 		ucic:commit(name)
-		-- 如果服务器已经不见了把帮换一个
+		
+		-- 如果原有服务器节点已经不见了就尝试换为第一个节点	
 		local globalServer = ucic:get_first(name, 'global', 'global_server', '')
 		local firstServer = ucic:get_first(name, uciType)
-		if not ucic:get(name, globalServer) then
-			if firstServer then
-				ucic:set(name, ucic:get_first(name, 'global'), 'global_server', firstServer)
-				ucic:commit(name)
-				log('当前主服务器已更新，正在自动更换。')
-			end
-		end
+    
 		if firstServer then
-			luci.sys.call("/etc/init.d/" .. name .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
+      if not ucic:get(name, globalServer) then
+        luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &")
+        ucic:commit(name)
+        ucic:set(name, ucic:get_first(name, 'global'), 'global_server', ucic:get_first(name, uciType))
+        ucic:commit(name)
+        log('当前主服务器节点已被删除，正在自动更换为第一个节点。')
+        luci.sys.call("/etc/init.d/" .. name .. " start > /dev/null 2>&1 &")
+      else
+        log('维持当前主服务器节点。')
+        luci.sys.call("/etc/init.d/" .. name .." restart > /dev/null 2>&1 &")
+			end
 		else
-			luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
+      log('没有服务器节点了，停止服务')
+      luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &")
 		end
 		log('新增节点数量: ' ..add, '删除节点数量: ' .. del)
                                   log("END SUBSCRIBE")
-		log('更新成功服务正在启动')
+		log('订阅更新成功')	
 	end
 end
 
@@ -379,9 +391,10 @@ if subscribe_url and #subscribe_url > 0 then
 		local firstServer = ucic:get_first(name, uciType)
 		if firstServer then
 			luci.sys.call("/etc/init.d/" .. name .." restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
+			log('重启服务成功')	
 		else
 			luci.sys.call("/etc/init.d/" .. name .." stop > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
+			log('停止服务成功')	
 		end
 	end)
 end
-
