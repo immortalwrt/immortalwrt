@@ -42,7 +42,8 @@ luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
 package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>
 package gargoyle: [ericpaulbishop/gargoyle](https://github.com/ericpaulbishop/gargoyle).<br/>
-luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).
+luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).<br/>
+luci-theme-rosy source: [rosywrt/luci-theme-rosy](https://github.com/rosywrt/luci-theme-rosy).
 
 ## License
 ### Depending on their own License.
