@@ -4,12 +4,9 @@ CONFIG=passwall
 LOCK_FILE=/var/lock/${CONFIG}_test.lock
 LOG_FILE=/var/log/$CONFIG.log
 
-get_date() {
-	echo "$(date "+%Y-%m-%d %H:%M:%S")"
-}
-
 echolog() {
-	echo -e "$(get_date): $1" >> $LOG_FILE
+	local d="$(date "+%Y-%m-%d %H:%M:%S")"
+	echo -e "$d: $1" >> $LOG_FILE
 }
 
 test_url() {

@@ -154,7 +154,7 @@ elseif node.type == "V2ray_shunt" then
                 type = "field",
                 domain = {
                     "youtube", "youtube.com", "youtu.be", "googlevideo.com",
-                    "gvt2.com"
+                    "ytimg.com","gvt2.com"
                 },
                 outboundTag = "youtube"
             }

@@ -35,6 +35,52 @@ table td, .table .td {
 
 <script type="text/javascript">
 	//<![CDATA[
+	var ajax = {
+		post: function(url, data, fn_success, fn_timeout) {
+			var xhr = new XMLHttpRequest();
+			var code = ajax.encode(data);
+			xhr.open("POST", url, true);
+			xhr.timeout = 1000;
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.ontimeout = function() {
+				fn_timeout(xhr);
+			}
+			xhr.onreadystatechange = function() {
+				if(xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 304)) {
+					var json = null;
+					if (xhr.getResponseHeader("Content-Type") == "application/json") {
+						try {
+							json = eval('(' + xhr.responseText + ')');
+						}
+						catch(e) {
+							json = null;
+						}
+					}
+					fn_success(xhr, json);
+				}
+			};
+			xhr.send(code);
+		},
+		encode: function(obj) {
+			obj = obj ? obj : { };
+			obj['_'] = Math.random();
+
+			if (typeof obj == 'object')
+			{
+				var code = '';
+				var self = this;
+
+				for (var k in obj)
+					code += (code ? '&' : '') +
+						k + '=' + encodeURIComponent(obj[k]);
+
+				return code;
+			}
+
+			return obj;
+		}
+	}
+	
 	var section = "";
 	function open_set_node_div(cbi_id) {
 		section = cbi_id;
@@ -94,11 +140,14 @@ table td, .table .td {
 	
 	/* 自动Ping */
 	const auto_ping_value = document.getElementsByClassName('auto_ping_value');
-	const xhr = (index) => {
-		return new Promise((res) => {
-			const dom = auto_ping_value[index];
-			if (!dom) res()
-			var cbi_id = dom.getAttribute("cbiid");
+	var index = 0;
+	function auto_ping() {
+		if (index >= auto_ping_value.length) { 
+			return;
+		}
+		var has_ping = auto_ping_value[index].getAttribute("has_ping");
+		if (has_ping == null) {
+			var cbi_id = auto_ping_value[index].getAttribute("cbiid");
 			<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
 				var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
 				var address = null;
@@ -113,38 +162,67 @@ table td, .table .td {
 				var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
 			<% end %>
 			if ((address != null && address != "") && (port != null && port != "")) {
-				XHR.get('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
-					index,
-					address: address,
-					port: port
-				},
-				(x, result) => {
-					if (result.ping == null || result.ping.trim() == "") {
-						auto_ping_value[result.index].innerHTML = "<font style='color:red'><%:Timeout%></font>";
-					} else {
-						var ping = parseInt(result.ping);
-						if (ping < 100)
-							auto_ping_value[result.index].innerHTML = "<font style='color:green'>" + result.ping + " ms" + "</font>";
-						else if (ping < 200)
-							auto_ping_value[result.index].innerHTML = "<font style='color:#fb9a05'>" + result.ping + " ms" + "</font>";
-						else if (ping >= 200)
-							auto_ping_value[result.index].innerHTML = "<font style='color:red'>" + result.ping + " ms" + "</font>";
-					}
-					res();
-				});
+				ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+						index: index,
+						address: address,
+						port: port
+					},
+					function(x, result) {
+						if(x && x.status == 200) {
+							for(var i = 0; i < auto_ping_value.length; i++) {
+								var obj = auto_ping_value[i];
+								var obj_cbi_id = obj.getAttribute("cbiid");
+								<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
+									var obj_remarks = document.getElementById("cbid.passwall." + obj_cbi_id + ".remarks").value;
+									var obj_address = null;
+									var obj_port = null;
+									if (obj_remarks.lastIndexOf("（") != -1 && obj_remarks.lastIndexOf("）") != -1) {
+										var obj_address_full = obj_remarks.substring(obj_remarks.lastIndexOf("（") + 1, obj_remarks.lastIndexOf("）"));
+										obj_address = obj_address_full.substring(0, obj_address_full.lastIndexOf(":"));
+										obj_port = obj_address_full.substring(obj_address_full.lastIndexOf(":") + 1);
+									}
+								<% else %>
+									var obj_address = document.getElementById("cbid.passwall." + obj_cbi_id + ".address").value;
+									var obj_port = document.getElementById("cbid.passwall." + obj_cbi_id + ".port").value;
+								<% end %>
+								
+								if (address == obj_address && port == obj_port) {
+									auto_ping_value[i].setAttribute("has_ping", "1");
+									if (result.ping == null || result.ping.trim() == "") {
+										auto_ping_value[i].innerHTML = "<font style='color:red'><%:Timeout%></font>";
+									} else {
+										var ping = parseInt(result.ping);
+										if (ping < 100)
+											auto_ping_value[i].innerHTML = "<font style='color:green'>" + result.ping + " ms" + "</font>";
+										else if (ping < 200)
+											auto_ping_value[i].innerHTML = "<font style='color:#fb9a05'>" + result.ping + " ms" + "</font>";
+										else if (ping >= 200)
+											auto_ping_value[i].innerHTML = "<font style='color:red'>" + result.ping + " ms" + "</font>";
+									}
+								}
+							}
+						}
+						index++;
+						auto_ping();
+					},
+					function(x) {
+						auto_ping_value[index].innerHTML = "<font style='color:red'><%:Timeout%></font>";
+						index++;
+						auto_ping();
+					},
+				);
+			} else {
+				index++;
+				auto_ping();
 			}
-		})
-	}
-	let task = -1;
-	const auto_ping_thread = () => {
-		task = task + 1
-		if (auto_ping_value[task]) {
-			xhr(task).then(auto_ping_thread);
+		}
+		else {
+			index++;
+			auto_ping();
 		}
 	}
-	for (let i = 0; i < 3; i++) {
-		auto_ping_thread()
-	}
+	
+	auto_ping();
 	
 	//添加"应用"按钮到"修改"按钮前
 	var edit_btn = document.getElementsByClassName("cbi-button cbi-button-edit");

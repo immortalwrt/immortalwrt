@@ -8,7 +8,6 @@ config global
 	option up_china_dns 'default'
 	option dns_forward '8.8.4.4'
 	option use_tcp_node_resolve_dns '1'
-	option dns_53 '1'
 	option proxy_mode 'chnroute'
 	option localhost_proxy_mode 'gfwlist'
 
