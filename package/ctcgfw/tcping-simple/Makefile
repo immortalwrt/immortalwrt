@@ -44,7 +44,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-	$(TARGET_CROSS)gcc $(PKG_BUILD_DIR)/$(PKG_SOURCE) -o $(PKG_BUILD_DIR)/tcping
+	$(TARGET_CROSS)gcc $(PKG_BUILD_DIR)/$(PKG_SOURCE) -o $(PKG_BUILD_DIR)/tcping-simple
 endef
 
 define Build/Install
