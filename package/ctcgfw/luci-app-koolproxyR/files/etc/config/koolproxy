@@ -1,3 +1,4 @@
+
 config global
 	option time_update '4'
 	option koolproxy_port '0'
@@ -9,9 +10,9 @@ config global
 	option koolproxy_acl_default '3'
 
 config rss_rule
-	option load '1'
 	option name 'kpr_our_rule.txt'
 	option url 'https://github.com/user1121114685/koolproxyR_rule_list/raw/master/kpr_our_rule.txt'
 	option file 'kpr_our_rule.txt'
 	option load '0'
+
 
