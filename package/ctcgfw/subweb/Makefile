@@ -42,8 +42,9 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Configure
-	$(RM) $(PKG_BUILD_DIR)/config/subconverter
-	$(SED) 's/root/etc/g' $(PKG_BUILD_DIR)/subweb.sh
+	$(RM) $(PKG_BUILD_DIR)/config/{subconverter,README.md,README-cn.md}
+	$(RM) -r $(PKG_BUILD_DIR)/api/__pycache__
+	$(SED) 's/root/etc/g;s/ -ef//g' $(PKG_BUILD_DIR)/subweb.sh
 endef
 
 define Build/Compile
@@ -54,7 +55,8 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/subweb
-	$(CP) $(PKG_BUILD_DIR)/{api,config,static,templates,api.py,subweb.sh} $(1)/etc/subweb/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/subweb.sh $(1)/etc/subweb/
+	$(CP) $(PKG_BUILD_DIR)/{api,config,static,templates,api.py} $(1)/etc/subweb/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/subweb.init $(1)/etc/init.d/subweb
 endef
