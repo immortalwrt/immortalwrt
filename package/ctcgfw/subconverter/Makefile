@@ -29,6 +29,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_BUILD_DEPENDS:=jpcre2 rapidjson
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=utils
@@ -42,28 +43,6 @@ define Package/$(PKG_NAME)/description
 	Utility to convert between various subscription format.
 endef
 
-define Build/Configure
-	mkdir -p $(PKG_BUILD_DIR)/obj
-endef
-
-define Build/Compile
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/interfaces.cpp -o $(PKG_BUILD_DIR)/obj/interfaces.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/logger.cpp -o $(PKG_BUILD_DIR)/obj/logger.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/main.cpp -o $(PKG_BUILD_DIR)/obj/main.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/misc.cpp -o $(PKG_BUILD_DIR)/obj/misc.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/multithread.cpp -o $(PKG_BUILD_DIR)/obj/multithread.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/nodemanip.cpp -o $(PKG_BUILD_DIR)/obj/nodemanip.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/rapidjson_extra.cpp -o $(PKG_BUILD_DIR)/obj/rapidjson_extra.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/speedtestutil.cpp -o $(PKG_BUILD_DIR)/obj/speedtestutil.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/subexport.cpp -o $(PKG_BUILD_DIR)/obj/subexport.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/webget.cpp -o $(PKG_BUILD_DIR)/obj/webget.o
-	$(TARGET_CROSS)c++ -std=c++17 -Wall -fexceptions -c $(PKG_BUILD_DIR)/src/webserver_libevent.cpp -o $(PKG_BUILD_DIR)/obj/webserver_libevent.o
-	$(TARGET_CROSS)c++ -o $(PKG_BUILD_DIR)/subconverter $(PKG_BUILD_DIR)/obj/*.o -lpcre2-8 -levent -lpthread -lyaml-cpp -lcurl -lssl -lcrypto -lz -O3 -s
-endef
-
-define Build/Install
-endef
-
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/subconverter $(1)/usr/bin/subconverter
@@ -71,14 +50,6 @@ define Package/$(PKG_NAME)/install
 	$(CP) $(PKG_BUILD_DIR)/base/* $(1)/etc/subconverter/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/subconverter.init $(1)/etc/init.d/subconverter
-endef
-
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	ln -sf /usr/bin/subconverter /etc/subconverter/subconverter
-fi
-exit 0
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
