@@ -157,8 +157,8 @@ msgstr "DNS地址"
 msgid "China DNS Server"
 msgstr "国内DNS服务器"
 
-msgid "If you want to work with other DNS acceleration services, use the default.<br />Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as SmartDNS, AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash !"
-msgstr "如果你想和其他DNS加速服务一起工作，请使用默认。<br />例：127.0.0.1#6053 使用本机的6053端口的DNS服务。例：SmartDNS，AdGuardHome等等。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。<br />如果你使用自定义，除非你知道你在做什么，否则设置不当会直接导致卡到崩溃！"
+msgid "If you want to work with other DNS acceleration services, use the default.<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
+msgstr "如果你想和其他DNS加速服务一起工作，请使用默认。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
 
 msgid "Upstream trust DNS Server for ChinaDNS-NG"
 msgstr "ChinaDNS-NG可信DNS"
@@ -652,23 +652,17 @@ msgstr "IP黑名单"
 msgid "Router Hosts"
 msgstr "路由器本机黑名单"
 
-msgid "These had been joined websites will use proxy.Please input the domain names of websites,every line can input only one website domain.For example,google.com."
-msgstr "加入的域名将走代理，对所有模式有效。输入网站域名，如：google.com，每个地址段一行。"
-
-msgid "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,112.123.134.145/24 or 112.123.134.145."
-msgstr "加入的地址段将走代理，对所有模式有效。可输入IP地址或地址段，如：112.123.134.145/24或112.123.134.145，每个地址段一行。"
-
 msgid "Join the white list of domain names will not go agent."
 msgstr "加入的域名不走代理通道，对所有模式有效。且优先于黑名单。"
 
-msgid "These had been joined ip addresses will not use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,112.123.134.145/24 or 112.123.134.145."
-msgstr "加入的地址段不走代理通道，对所有模式有效。且优先于黑名单。可输入IP地址或地址段，如：112.123.134.145/24或112.123.134.145，每个地址段一行。"
+msgid "These had been joined ip addresses will not use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,192.168.0.0/24 or 223.5.5.5."
+msgstr "加入的IP段不走代理通道，对所有模式有效。且优先于黑名单。可输入IP地址或地址段，如：192.168.0.0/24或223.5.5.5，每个地址段一行。"
 
-msgid "These had been joined websites will use proxy,but only Router model.Please input the domain names of websites,every line can input only one website domain.For example,google.com."
-msgstr "加入的域名将走代理，仅限路由器本机使用。输入网站域名，如：google.com，每个地址段一行。"
+msgid "These had been joined websites will use proxy.Please input the domain names of websites,every line can input only one website domain.For example,google.com."
+msgstr "加入的域名将走代理，对所有模式有效。输入网站域名，如：google.com，每个地址段一行。"
 
-msgid "These is logs."
-msgstr "这里显示的是最近的日志。"
+msgid "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,35.24.0.0/24 or 8.8.4.4."
+msgstr "加入的IP段将走代理，对所有模式有效。可输入IP地址或地址段，如：35.24.0.0/24或8.8.4.4，每个地址段一行。"
 
 msgid "Clear logs"
 msgstr "清空日志"
@@ -728,7 +722,7 @@ msgid "Use Kcptun"
 msgstr "使用Kcptun"
 
 msgid "Please confirm whether the Kcptun is installed. If not, please go to Rule Update download installation."
-msgstr "请确认KCP是否已安装，若没有请到自动更新下载安装。"
+msgstr "请确认Kcptun是否已安装，若没有请到自动更新下载安装。"
 
 msgid "Kcptun Server"
 msgstr "Kcptun服务器"
@@ -740,7 +734,13 @@ msgid "Kcptun Config"
 msgstr "Kcptun参数配置"
 
 msgid "--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"
-msgstr "默认Kcptun和SS服务器相同IP,参数中无需配置服务器IP和本地端口，需要配置的参数和格式如：--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"
+msgstr "参数中无需配置服务器IP和本地端口，需要配置的参数和格式如：--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"
+
+msgid "Brook Protocol"
+msgstr "Brook协议"
+
+msgid "Use TLS"
+msgstr "使用TLS"
 
 msgid "V2ray Protocol"
 msgstr "V2ray协议"

@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.6
-PKG_RELEASE:=2
-PKG_DATE:=20200225
+PKG_RELEASE:=5
+PKG_DATE:=20200227
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -83,7 +83,7 @@ endef
 define Package/$(PKG_NAME)
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
-  TITLE:=LuCI support for PassWall By Lienol
+  TITLE:=LuCI support for PassWall
   PKGARCH:=all
   DEPENDS:=+libmbedtls +iptables-mod-tproxy +kmod-ipt-tproxy +iptables-mod-ipopt +kmod-ipt-ipopt +ip +ipset +coreutils +coreutils-base64 +coreutils-nohup +luci-lib-jsonc \
   +wget +resolveip +unzip +dnsmasq-full +tcping \
@@ -114,13 +114,18 @@ endef
 define Build/Compile
 endef
 
+define Package/$(PKG_NAME)/conffiles
+/etc/config/passwall
+/usr/share/passwall/rules/blacklist_host
+/usr/share/passwall/rules/blacklist_ip
+/usr/share/passwall/rules/whitelist_host
+/usr/share/passwall/rules/whitelist_ip
+endef
+
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./root/etc/config/passwall $(1)/etc/config/passwall
 	$(INSTALL_CONF) ./root/etc/config/passwall_show $(1)/etc/config/passwall_show
-	
-	$(INSTALL_DIR) $(1)/etc/config/passwall_rule
-	cp -pR ./root/etc/config/passwall_rule/* $(1)/etc/config/passwall_rule/
 	
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_CONF) ./root/etc/uci-defaults/* $(1)/etc/uci-defaults

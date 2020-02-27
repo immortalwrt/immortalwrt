@@ -22,8 +22,8 @@ table.sort(key_table)
 m = Map("passwall")
 
 -- [[ ACLs Settings ]]--
-s = m:section(TypedSection, "acl_rule", translate("ACLs"), translate(
-                  "ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered."))
+s = m:section(TypedSection, "acl_rule", translate("ACLs"), "<font color='red'>" .. translate(
+                  "ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered.") .. "</font>")
 s.template = "cbi/tblsection"
 s.sortable = true
 s.anonymous = true

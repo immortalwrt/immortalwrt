@@ -8,7 +8,6 @@ config global
 	option up_china_dns 'default'
 	option dns_forward '8.8.4.4'
 	option use_tcp_node_resolve_dns '1'
-	option dns_53 '1'
 	option proxy_mode 'chnroute'
 	option localhost_proxy_mode 'gfwlist'
 
@@ -17,7 +16,7 @@ config global_haproxy
 
 config global_delay
 	option auto_on '0'
-	option start_daemon '0'
+	option start_daemon '1'
 	option start_delay '1'
 
 config global_forwarding
@@ -44,12 +43,6 @@ config global_other
 
 config global_rules
 	option auto_update '0'
-	option gfwlist_update '1'
-	option chnroute_update '1'
-	option chnlist_update '1'
-	option gfwlist_version '2019-12-10'
-	option chnroute_version '2019-12-05'
-	option chnlist_version '2020-01-06'
 	
 config global_app
 	option v2ray_file '/usr/bin/v2ray/'

@@ -49,8 +49,7 @@ ENABLED=$(config_t_get global enabled 0)
 					exit 0
 				fi
 			fi
-			[ -f "/var/etc/passwall/port/TCP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/TCP_$i`)
-			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "TCP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -T -l ${listen_port}" | wc -l)
+			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "TCP_${i}|brook_tcp_$i|ipt2socks_tcp_$i" | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0
@@ -64,8 +63,7 @@ ENABLED=$(config_t_get global enabled 0)
 		eval tmp_node=\$UDP_NODE$i
 		if [ "$tmp_node" != "nil" ]; then
 			[ "$tmp_node" == "default" ] && tmp_node=$TCP_NODE1
-			[ -f "/var/etc/passwall/port/UDP_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/UDP_$i`)
-			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "UDP_${i}|brook tproxy -l 0.0.0.0:${listen_port}|ipt2socks -U -l ${listen_port}" | wc -l)
+			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "UDP_${i}|brook_udp_$i|ipt2socks_udp_$i" | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0
@@ -77,8 +75,7 @@ ENABLED=$(config_t_get global enabled 0)
 	for i in $(seq 1 $SOCKS5_NODE_NUM); do
 		eval tmp_node=\$SOCKS5_NODE$i
 		if [ "$tmp_node" != "nil" ]; then
-			[ -f "/var/etc/passwall/port/SOCKS5_$i" ] && listen_port=$(echo -n `cat /var/etc/passwall/port/SOCKS5_$i`)
-			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "SOCKS5_${i}|brook client -l 0.0.0.0:${listen_port}" | wc -l)
+			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "SOCKS5_${i}|brook_socks_$i" | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0

@@ -54,7 +54,8 @@ o = s:option(Flag, "enabled", translate("Main switch"))
 o.rmempty = false
 
 ---- TCP Node
-local tcp_node_num = tonumber(api.uci_get_type("global_other", "tcp_node_num", 1))
+local tcp_node_num = tonumber(
+                         api.uci_get_type("global_other", "tcp_node_num", 1))
 for i = 1, tcp_node_num, 1 do
     if i == 1 then
         o = s:option(ListValue, "tcp_node" .. i, translate("TCP Node"),
@@ -68,7 +69,8 @@ for i = 1, tcp_node_num, 1 do
 end
 
 ---- UDP Node
-local udp_node_num = tonumber(api.uci_get_type("global_other", "udp_node_num", 1))
+local udp_node_num = tonumber(
+                         api.uci_get_type("global_other", "udp_node_num", 1))
 for i = 1, udp_node_num, 1 do
     if i == 1 then
         o = s:option(ListValue, "udp_node" .. i, translate("UDP Node"),
@@ -85,7 +87,8 @@ for i = 1, udp_node_num, 1 do
 end
 
 ---- Socks5 Node
-local socks5_node_num = tonumber(api.uci_get_type("global_other", "socks5_node_num", 1))
+local socks5_node_num = tonumber(api.uci_get_type("global_other",
+                                                  "socks5_node_num", 1))
 for i = 1, socks5_node_num, 1 do
     if i == 1 then
         o = s:option(ListValue, "socks5_node" .. i, translate("Socks5 Node"),
@@ -101,9 +104,9 @@ for i = 1, socks5_node_num, 1 do
 end
 
 if api.uci_get_type("global_other", "wangejibadns", "0") == "1" then
-    o = s:option(Value, "up_china_dns", translate("China DNS Server") .. "(UDP)",
-                translate(
-                    "If you want to work with other DNS acceleration services, use the default.<br />Example: 127.0.0.1#6053 ,Represents DNS on using 127.0.0.1 the 6053 port. such as SmartDNS, AdGuard Home...<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.<br />If you use custom, unless you know what you're doing, setting it up incorrectly can cause your stuck to crash !"))
+    o = s:option(Value, "up_china_dns",
+                 translate("China DNS Server") .. "(UDP)", translate(
+                     "If you want to work with other DNS acceleration services, use the default.<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."))
     o.default = "default"
     o:value("default", translate("default"))
     o:value("dnsbyisp", translate("dnsbyisp"))
@@ -123,7 +126,7 @@ o = s:option(ListValue, "dns_mode", translate("DNS Mode"), translate(
                  "if has problem, please try another mode.<br />if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq."))
 o.rmempty = false
 o:reset_values()
-if is_finded("chinadns-ng") and api.uci_get_type("global_other", "wangejibadns", "0") == "1" then o:value("chinadns-ng", "ChinaDNS-NG") end
+if is_finded("chinadns-ng") then o:value("chinadns-ng", "ChinaDNS-NG") end
 if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
     o:value("pdnsd", "pdnsd")
 end
@@ -179,11 +182,6 @@ o:value("208.67.222.222", "208.67.222.222 (Open DNS)")
 o:value("208.67.220.220", "208.67.220.220 (Open DNS)")
 o:depends("dns_mode", "pdnsd")
 o:depends("up_trust_chinadns_ng_dns", "pdnsd")
-
----- DNS Hijack
-o = s:option(Flag, "dns_53", translate("DNS Hijack"))
-o.default = 1
-o.rmempty = false
 
 ---- Default Proxy Mode
 o = s:option(ListValue, "proxy_mode",

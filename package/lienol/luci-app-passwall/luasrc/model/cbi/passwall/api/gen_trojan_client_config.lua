@@ -29,7 +29,7 @@ local trojan = {
     tcp = {
         no_delay = true,
         keep_alive = true,
-        reuse_port = false,
+        reuse_port = true,
         fast_open = (node.tcp_fast_open == "true") and true or false,
         fast_open_qlen = 20
     }
