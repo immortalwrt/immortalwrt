@@ -136,7 +136,9 @@ o:value("ss", translate("Shadowsocks"))
 end
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
-
+upload_conf = s:option(FileUpload, "")	
+upload_conf.template = "cbi/other_upload2"	
+upload_conf:depends("use_conf_file", 1)	
 
 o = s:option(Value, "alias", translate("Alias(optional)"))
 
@@ -227,13 +229,13 @@ o.rmempty = true
 o.default = uuid
 o:depends("type", "v2ray")
 
--- 加密方式
+-- 鍔犲瘑鏂瑰紡
 o = s:option(ListValue, "security", translate("Encrypt Method"))
 for _, v in ipairs(securitys) do o:value(v, v:upper()) end
 o.rmempty = true
 o:depends("type", "v2ray")
 
--- 传输协议
+-- 浼犺緭鍗忚
 o = s:option(ListValue, "transport", translate("Transport"))
 o:value("tcp", "TCP")
 o:value("kcp", "mKCP")
@@ -243,50 +245,50 @@ o:value("quic", "QUIC")
 o.rmempty = true
 o:depends("type", "v2ray")
 
--- [[ TCP部分 ]]--
+-- [[ TCP閮ㄥ垎 ]]--
 
--- TCP伪装
+-- TCP浼
 o = s:option(ListValue, "tcp_guise", translate("Camouflage Type"))
 o:depends("transport", "tcp")
 o:value("none", translate("None"))
 o:value("http", "HTTP")
 o.rmempty = true
 
--- HTTP域名
+-- HTTP鍩熷悕
 o = s:option(DynamicList, "http_host", translate("HTTP Host"))
 o:depends("tcp_guise", "http")
 o.rmempty = true
 
--- HTTP路径
+-- HTTP璺緞
 o = s:option(DynamicList, "http_path", translate("HTTP Path"))
 o:depends("tcp_guise", "http")
 o.rmempty = true
 
--- [[ WS部分 ]]--
+-- [[ WS閮ㄥ垎 ]]--
 
--- WS域名
+-- WS鍩熷悕
 o = s:option(Value, "ws_host", translate("WebSocket Host"))
 o:depends("transport", "ws")
 o.rmempty = true
 
--- WS路径
+-- WS璺緞
 o = s:option(Value, "ws_path", translate("WebSocket Path"))
 o:depends("transport", "ws")
 o.rmempty = true
 
--- [[ H2部分 ]]--
+-- [[ H2閮ㄥ垎 ]]--
 
--- H2域名
+-- H2鍩熷悕
 o = s:option(DynamicList, "h2_host", translate("HTTP/2 Host"))
 o:depends("transport", "h2")
 o.rmempty = true
 
--- H2路径
+-- H2璺緞
 o = s:option(Value, "h2_path", translate("HTTP/2 Path"))
 o:depends("transport", "h2")
 o.rmempty = true
 
--- [[ QUIC部分 ]]--
+-- [[ QUIC閮ㄥ垎 ]]--
 
 o = s:option(ListValue, "quic_security", translate("QUIC Security"))
 o:depends("transport", "quic")
@@ -309,7 +311,7 @@ o:value("wechat-video", translate("WechatVideo"))
 o:value("dtls", "DTLS 1.2")
 o:value("wireguard", "WireGuard")
 
--- [[ mKCP部分 ]]--
+-- [[ mKCP閮ㄥ垎 ]]--
 
 o = s:option(ListValue, "kcp_guise", translate("Camouflage Type"))
 o:depends("transport", "kcp")
@@ -442,3 +444,4 @@ o:depends("type", "ss")
 end
 
 return m
+

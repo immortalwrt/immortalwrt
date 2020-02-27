@@ -676,7 +676,9 @@ start_redir() {
 		done
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Shadowsocks/ShadowsocksR $threads Threads Started!" >> /tmp/ssrplus.log  
 	   elif [ "$stype" == "trojan" ] ;then
+	    for i in $(seq 1 $threads); do
                                  $sscmd --config /var/etc/trojan-ssr-retcp.json >/dev/null 2>&1 &
+				   done
                                   echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd --version 2>&1 | head -1) Started!" >> /tmp/ssrplus.log
 
                   elif [ "$stype" == "v2ray" ] ;then

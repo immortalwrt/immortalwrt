@@ -113,3 +113,4 @@ o.width="10%"
 
 m:append(Template("shadowsocksr/server_list"))
 return m
+
