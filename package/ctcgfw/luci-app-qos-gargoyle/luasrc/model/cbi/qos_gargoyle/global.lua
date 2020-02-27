@@ -33,10 +33,10 @@ m = Map(qos_gargoyle, translate("Gargoyle QoS"),
 	translate("Quality of Service (QoS) provides a way to control how available bandwidth is "
 	.. "allocated."))
 
-s = m:section(SimpleSection, translate("Global Settings"))
+s = m:section(TypedSection, 'global', translate("Global Settings"))
 s.anonymous = true
 
-o = s:option(Button, "_switch", nil, translate("QoS Switch"))
+o = s:option(Button, "", translate("QoS Switch"))
 o.render = function(self, section, scope)
 	if qos_enabled() then
 		self.title = translate("Disable QoS")
