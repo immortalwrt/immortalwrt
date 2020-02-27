@@ -1,3 +1,4 @@
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-dns-prefetch-control" content="on">
@@ -73,6 +74,7 @@
             text-overflow: ellipsis;
             transform:translateY(10%);
         }
+
         .sk-text-success {
             color: #32b643;
             font-size:15px;
@@ -85,6 +87,7 @@
             text-align: left;
             transform:translateY(10%);
         }
+
         .sk-text-error {
             color: #e85600;
             font-size:15px;
@@ -97,16 +100,20 @@
             text-align: left;
             transform:translateY(10%);
         }
+
         h3 {
             margin: 5px 0 6px;
         }
+
         p {
             margin: 10px 0;
         }
+
         a {
             text-decoration: none;
             color: #666;
         }
+
     </style>
 </head>
 <fieldset class="cbi-section">
@@ -163,7 +170,7 @@
         url2='https://ip.skk.moe';
         window.open(url2);
        }
-         const $$ = document;
+        const $$ = document;
         $$.getElementById('ip-webrtc').innerHTML = '查询中...';
         $$.getElementById('ip-pcol').innerHTML = '查询中...';
         $$.getElementById('ip-ipify').innerHTML = '查询中...';
@@ -194,7 +201,8 @@
                     throw error;
                 }),
             parseIPIpip: (ip, elID) => {
-                IP.get(`https://api.skk.moe/network/parseIp/ipip/v3/${ip}`, 'json')
+                
+                 IP.get(`https://api.skk.moe/network/parseIp/ipip/v3/${ip}`, 'json')
                     .then(resp => {
                         let x = '';
                         for (let i of resp.data) {
@@ -293,8 +301,8 @@
                 $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
         };
         function getIpsbIP(data){
-                $$.getElementById('ip-ipsb').innerHTML = data.ip;
-                IP.parseIPIpip(data.ip, 'ip-ipsb-geo');
+                $$.getElementById('ip-ipsb').innerHTML = data.address;
+                $$.getElementById('ip-ipsb-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
         };
 
 	      window.onload=myip_Load();
@@ -310,7 +318,7 @@
 	         var sbip = document.getElementsByTagName('HEAD').item(0);
 	         var sbipScript= document.createElement("script");
 	         sbipScript.defer = "defer";
-	         sbipScript.src='https://api-ipv4.ip.sb/jsonip?callback=getIpsbIP';
+	         sbipScript.src='https://ip.sb/addrinfo?callback=getIpsbIP';
 	         sbip.appendChild(sbipScript);
 	         
 	         const $$ = document;
@@ -326,8 +334,8 @@
                 $$.getElementById('ip-pcol-ipip').innerHTML = `${data.pro} ${data.city} ${data.region} ${pcisp[1]}`;
 		       };
 		       function getIpsbIP(data){
-                $$.getElementById('ip-ipsb').innerHTML = data.ip;
-                IP.parseIPIpip(data.ip, 'ip-ipsb-geo');
+                $$.getElementById('ip-ipsb').innerHTML = data.address;
+                $$.getElementById('ip-ipsb-geo').innerHTML = `${data.country} ${data.province} ${data.city} ${data.isp.name}`
 		       };
 
        	   setTimeout("myip_Load()",1000*10);
@@ -335,6 +343,8 @@
 
     </script>
     <script defer="defer" src="https://whois.pconline.com.cn/ipJson.jsp?callback=getPcolIP"></script>
-    <script defer="defer" src="https://api-ipv4.ip.sb/jsonip?callback=getIpsbIP"></script>
+    <script defer="defer" src="https://ip.sb/addrinfo?callback=getIpsbIP"></script>
 </body>
+
 </html>
+

@@ -39,7 +39,11 @@ o.datatype = "uinteger"
 o:depends("enable_switch", "1")
 o.default = 5
 
-
+o = s:option(Value, "switch_try_count", translate("Check Try Count"))
+o.datatype = "uinteger"
+o:depends("enable_switch", "1")
+o.default = 3
 
 
 return m
+

@@ -15,43 +15,48 @@ o.datatype = "ip4addr"
 o = s:taboption("wan_ac", DynamicList, "wan_fw_ips", translate("WAN Force Proxy IP"))
 o.datatype = "ip4addr"
 
-o = s:taboption("wan_ac", DynamicList, "wan_fk_ips", translate("WAN Fk Proxy IP"))
-o.datatype = "ip4addr"
-
 -- Part of LAN
 s:tab("lan_ac", translate("LAN IP AC"))
 
-o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Bypassed Host List"))
+o = s:taboption("lan_ac", ListValue, "lan_ac_mode", translate("LAN Access Control"))
+o:value("0", translate("Disable"))
+o:value("w", translate("Allow listed only"))
+o:value("b", translate("Allow all except listed"))
+o.rmempty = false
+
+o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Host List"))
 o.datatype = "ipaddr"
 luci.ip.neighbors({ family = 4 }, function(entry)
-       if entry.reachable then
-               o:value(entry.dest:string())
-       end
+		if entry.reachable then
+			o:value(entry.dest:string())
+		end
+end)
+o:depends("lan_ac_mode", "w")
+o:depends("lan_ac_mode", "b")
+
+o = s:taboption("lan_ac", DynamicList, "lan_bp_ips", translate("LAN Bypassed Host List"))
+o.datatype = "ipaddr"
+luci.ip.neighbors({ family = 4 }, function(entry)
+		if entry.reachable then
+			o:value(entry.dest:string())
+		end
 end)
 
 o = s:taboption("lan_ac", DynamicList, "lan_fp_ips", translate("LAN Force Proxy Host List"))
 o.datatype = "ipaddr"
 luci.ip.neighbors({ family = 4 }, function(entry)
-       if entry.reachable then
-               o:value(entry.dest:string())
-       end
+		if entry.reachable then
+			o:value(entry.dest:string())
+		end
 end)
 
 o = s:taboption("lan_ac", DynamicList, "lan_gm_ips", translate("Game Mode Host List"))
 o.datatype = "ipaddr"
 luci.ip.neighbors({ family = 4 }, function(entry)
-       if entry.reachable then
-               o:value(entry.dest:string())
-       end
+		if entry.reachable then
+			o:value(entry.dest:string())
+		end
 end)
-
--- s = m:section(TypedSection, "domain_white_list", translate("Domain White List"))
--- s.template = "cbi/tblsection"
--- s.anonymous = true
--- s.addremove = true
--- s.sortable  = true
-
--- o = s:option(Value, "domain_names", translate("Domain name (keyword only)"))
 
 -- Part of Self
 -- s:tab("self_ac", translate("Router Self AC"))
@@ -96,5 +101,4 @@ o.remove = function(self, section, value)
 	NXFS.writefile(blockconf, "")
 end
 
-m:section(SimpleSection).template  = "shadowsocksr/myip"
 return m
