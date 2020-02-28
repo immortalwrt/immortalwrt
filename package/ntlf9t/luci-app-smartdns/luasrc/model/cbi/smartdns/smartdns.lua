@@ -84,7 +84,7 @@ o.cfgvalue    = function(...)
 end
 
 ---- Serve expired
-o = s.taboption("settings", Flag, "serve_expired", translate("Serve expired"), translate("Attempts to serve old responses from cache with a TTL of 0 in the response without waiting for the actual resolution to finish."))
+o = s:taboption("settings", Flag, "serve_expired", translate("Serve expired"), translate("Attempts to serve old responses from cache with a TTL of 0 in the response without waiting for the actual resolution to finish."))
 o.rmempty     = false
 o.default     = o.disabled
 o.cfgvalue    = function(...)
@@ -248,7 +248,8 @@ s:option(Value, "name", translate("DNS Server Name"), translate("DNS Server Name
 ---- IP address
 o = s:option(Value, "ip", translate("ip"), translate("DNS Server ip"))
 o.datatype = "or(ipaddr, string)"
-o.rmempty = false 
+o.rmempty = false
+
 ---- port
 o = s:option(Value, "port", translate("port"), translate("DNS Server port"))
 o.placeholder = "default"
@@ -334,4 +335,3 @@ o.write = function()
 end
 
 return m
-
