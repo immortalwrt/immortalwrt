@@ -159,7 +159,28 @@ if not disk_info.p_table:match("Raid") then
   s_partition_table:option(DummyValue, "used_formated", translate("Used"))
   s_partition_table:option(DummyValue, "free_formated", translate("Free Space"))
   s_partition_table:option(DummyValue, "usage", translate("Usage"))
-  s_partition_table:option(DummyValue, "mount_point", translate("Mount Point"))
+  local dv_mount_point = s_partition_table:option(DummyValue, "mount_point", translate("Mount Point"))
+  dv_mount_point.rawhtml = true
+  dv_mount_point.render = function(self, section, scope)
+    local new_mp = ""
+    local v_mp_d
+    for line in self["section"]["data"][section]["mount_point"]:gmatch("[^%s]+") do
+      if line == '-' then
+        new_mp = line
+        break
+      end
+      for v_mp_d in line:gmatch('[^/]+') do
+        if #v_mp_d > 12 then
+          new_mp = new_mp .. "/" .. v_mp_d:sub(1,7) .. ".." .. v_mp_d:sub(-4)
+        else
+          new_mp = new_mp .."/".. v_mp_d
+        end
+      end
+      new_mp = '<span title="'.. line .. '" >' ..new_mp  ..'</span>' .. "<br/>"
+    end
+    self["section"]["data"][section]["mount_point"] = new_mp
+    DummyValue.render(self, section, scope)
+  end
   local val_fs = s_partition_table:option(Value, "fs", translate("File System"))
   val_fs.forcewrite = true
   val_fs.write = function(self, section, value)

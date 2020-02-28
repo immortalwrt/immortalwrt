@@ -234,6 +234,17 @@ v_mount_point.render = function(self, section, scope)
     Value.render(self, section, scope)
   else
     self.template = "cbi/dvalue"
+    local new_mp = ""
+    local v_mp_d
+    for v_mp_d in self["section"]["data"][section]["mount_point"]:gmatch('[^/]+') do
+      if #v_mp_d > 12 then
+        new_mp = new_mp .. "/" .. v_mp_d:sub(1,7) .. ".." .. v_mp_d:sub(-4)
+      else
+        new_mp = new_mp .."/".. v_mp_d
+      end
+    end
+    self["section"]["data"][section]["mount_point"] = '<span title="'..self["section"]["data"][section]["mount_point"] .. '" >'..new_mp..'</span>'
+    self.rawhtml = true
     DummyValue.render(self, section, scope)
   end
 end

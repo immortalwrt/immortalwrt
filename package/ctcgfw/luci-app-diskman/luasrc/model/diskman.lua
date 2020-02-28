@@ -18,9 +18,9 @@ d.command.mount = nixio.fs.access("/usr/bin/mount") and "/usr/bin/mount" or "/bi
 d.command.umount = nixio.fs.access("/usr/bin/umount") and "/usr/bin/umount" or "/bin/umount"
 
 local proc_mounts = nixio.fs.readfile("/proc/mounts") or ""
-local mounts = luci.util.exec(d.command.mount) or ""
+local mounts = luci.util.exec(d.command.mount .. " 2>/dev/null") or ""
 local swaps = nixio.fs.readfile("/proc/swaps") or ""
-local df = luci.sys.exec(d.command.df) or ""
+local df = luci.sys.exec(d.command.df .. " 2>/dev/null") or ""
 
 function byte_format(byte)
   local suff = {"B", "KB", "MB", "GB", "TB"}
@@ -114,19 +114,9 @@ local is_raid_member = function(partition)
 end
 
 local get_mount_point = function(partition)
-  local mount_point, dk_root_dir
-  -- if use luci-in-dokcer, exclude the docker overlay mounts
-  -- if ver.distname == "LuCI in Docker" then
-    local _o, dk = pcall(require,"luci.docker")
-    if _o and dk then
-      dk_root_dir = dk.new():info().body.DockerRootDir
-    end
-  -- end
+  local mount_point
   for m in mounts:gmatch("/dev/"..partition.." on ([^ ]*)") do
-    if dk_root_dir and m:match(dk_root_dir) then
-    else
-      mount_point = (mount_point and (mount_point .. " ")  or "") .. m
-    end
+    mount_point = (mount_point and (mount_point .. " ")  or "") .. m
   end
   if mount_point then return mount_point end
   -- result = luci.sys.exec('cat /proc/mounts | awk \'{if($1=="/dev/'.. partition ..'") print $2}\'')
@@ -278,26 +268,18 @@ end
 
 -- return {{device="", mount_points="", fs="", mount_options="", dump="", pass=""}..}
 d.get_mount_points = function()
-  local mount, dk_root_dir
+  local mount
   local res = {}
   local h ={"device", "mount_point", "fs", "mount_options", "dump", "pass"}
-  local _o, dk = pcall(require,"luci.docker")
-  if _o and dk then
-    dk_root_dir = dk.new():info().body.DockerRootDir
-  end
   for mount in proc_mounts:gmatch("[^\n]+") do
     local device = mount:match("^([^%s]+)%s+.+")
     -- only show /dev/xxx device
     if device and device:match("/dev/") then
-      -- not show docker root dir mounts
-      if dk_root_dir and mount and mount:match(dk_root_dir) then
-      else
-        res[#res+1] = {}
-        local i = 0
-        for v in mount:gmatch("[^%s]+") do
-          i = i + 1
-          res[#res][h[i]] = v
-        end
+      res[#res+1] = {}
+      local i = 0
+      for v in mount:gmatch("[^%s]+") do
+        i = i + 1
+        res[#res][h[i]] = v
       end
     end
   end
