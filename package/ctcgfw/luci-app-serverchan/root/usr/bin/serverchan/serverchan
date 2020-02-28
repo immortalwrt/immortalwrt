@@ -38,9 +38,9 @@ function read_config(){
 	temperature=`get_config temperature`
 	device_name=`get_config device_name`
 	dir="/tmp/serverchan/"
-	up_timeout=`get_config uptimeout`
+	up_timeout=`get_config up_timeout`
 	if [ -z "$up_timeout" ] ; then up_timeout="2";fi
-	down_timeout=`get_config uptimeout`
+	down_timeout=`get_config down_timeout`
 	if [ -z "$down_timeout" ] ; then down_timeout="10";fi
 }
 
@@ -901,15 +901,15 @@ function rand_geturl(){
 			cpu_fuzai=`cat /proc/loadavg | awk '{print $1}' 2>/dev/null`
 			cpuload=`get_config cpuload`
 			if [ ! -z "$cpu_fuzai" ] && [ ! -z "$cpuload" ] && [ `expr $cpu_fuzai \> $cpuload` -eq "1" ] ; then
-				if [ -f ${logfile} ] && [ $(grep -c "" ${logfile}) -ge "2" ] ; then
-					log_end=`awk '{print}' ${logfile} | tail -n 2 | awk 'NR==1'`
-					log_end_2=`awk 'END {print}' ${logfile}`
-					if ( echo ${log_end} | grep -q "负载" ) && ( echo ${log_end_2} | grep -q "负载" ) ; then
-						sed -i '$d' -i /tmp/serverchan/serverchan.log
-						sed -i '$d' -i /tmp/serverchan/serverchan.log
-						echo "`echo $log_end | awk '{print $1" "$2}'` 【刷屏日志自动过滤】 CPU 负载持续超高: `echo $log_end | awk '{print $6}'`" >> ${logfile}
-					fi
-				fi
+				#if [ -f ${logfile} ] && [ $(grep -c "" ${logfile}) -ge "2" ] ; then
+					#log_end=`awk '{print}' ${logfile} | tail -n 2 | awk 'NR==1'`
+					#log_end_2=`awk 'END {print}' ${logfile}`
+					#if ( echo ${log_end} | grep -q "负载" ) && ( echo ${log_end_2} | grep -q "负载" ) ; then
+						#sed -i '$d' -i /tmp/serverchan/serverchan.log
+						#sed -i '$d' -i /tmp/serverchan/serverchan.log
+						#echo "`echo $log_end | awk '{print $1" "$2}'` 【刷屏日志自动过滤】 CPU 负载持续超高: `echo $log_end | awk '{print $6}'`" >> ${logfile}
+					#fi
+				#fi
 				echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！警报！！】 CPU 负载过高: ${cpu_fuzai}" >> ${logfile}
 			elif [ -z "$cpu_fuzai" ] ; then
 				echo "`date "+%Y-%m-%d %H:%M:%S"`  【！！！】无法读取设备负载，请检查命令" >> ${logfile}
@@ -943,15 +943,15 @@ function rand_geturl(){
 			cpu_wendu=`soc_temp`
 			temperature=`get_config temperature`
 			if [ ! -z "$cpu_wendu" ] && [ ! -z "$temperature" ] && [ "$cpu_wendu" -gt "$temperature" ] ; then
-				if [ -f ${logfile} ] && [ $(grep -c "" ${logfile}) -ge "2" ] ; then
-					log_end=`awk '{print}' ${logfile} | tail -n 2 | awk 'NR==1'`
-					log_end_2=`awk 'END {print}' ${logfile}`
-					if ( echo ${log_end} | grep -q "温度" ) && ( echo ${log_end_2} | grep -q "温度" ) ; then
-						sed -i '$d' -i /tmp/serverchan/serverchan.log
-						sed -i '$d' -i /tmp/serverchan/serverchan.log
-						echo "`echo $log_end | awk '{print $1" "$2}'` 【刷屏日志自动过滤】 CPU 温度持续超高: `echo $log_end | awk '{print $6}'`" >> ${logfile}
-					fi
-				fi
+				#if [ -f ${logfile} ] && [ $(grep -c "" ${logfile}) -ge "2" ] ; then
+					#log_end=`awk '{print}' ${logfile} | tail -n 2 | awk 'NR==1'`
+					#log_end_2=`awk 'END {print}' ${logfile}`
+					#if ( echo ${log_end} | grep -q "温度" ) && ( echo ${log_end_2} | grep -q "温度" ) ; then
+						#sed -i '$d' -i /tmp/serverchan/serverchan.log
+						#sed -i '$d' -i /tmp/serverchan/serverchan.log
+						#echo "`echo $log_end | awk '{print $1" "$2}'` 【刷屏日志自动过滤】 CPU 温度持续超高: `echo $log_end | awk '{print $6}'`" >> ${logfile}
+					#fi
+				#fi
 				echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！警报！！】 CPU 温度过高: ${cpu_wendu}" >> ${logfile}
 			elif [ -z "$cpu_wendu" ] ; then
 				echo "`date "+%Y-%m-%d %H:%M:%S"`  【！！！】无法读取设备温度，请检查命令" >> ${logfile}
