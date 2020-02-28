@@ -256,4 +256,5 @@ do
         logger -st $log_name[$$] -p3 "${subscribe_url[$o]} 订阅数据获取失败 错误代码: $curl_code"
 	fi
 done
+echo "END SUBSCRIBE"
 /etc/init.d/$name restart >/dev/null 2>&1

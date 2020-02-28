@@ -64,7 +64,7 @@ end
 table.sort(key_table_v2)
 
 -- [[ Global Setting ]]--
-s = m:section(TypedSection, "global", translate("Server settings"))
+s = m:section(TypedSection, "global", translate("ShadowSocksR Plus+ Settings"))
 s.anonymous = true
 
 o = s:option(ListValue, "global_server", translate("Main Server"))

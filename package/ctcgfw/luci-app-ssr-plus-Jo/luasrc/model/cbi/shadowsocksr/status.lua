@@ -1,7 +1,7 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
 
-local IPK_Version="20191202.120"
+local IPK_Version="20200228.148"
 local m, s, o
 local redir_run=0
 local reudp_run=0
@@ -247,24 +247,20 @@ else
 s.value = translate("Not Running")
 end 
 
-
-
-
-
-if nixio.fs.access("/usr/bin/ssr-local") then
-s=m:field(DummyValue,"sock5_run",translate("SOCKS5 Proxy")) 
+if nixio.fs.access("/usr/bin/ss-local") then
+s=m:field(DummyValue,"ssock5_run",translate("SSOCKS5 Proxy")) 
 s.rawhtml  = true
-if sock5_run == 1 then
+if ssock5_run == 1 then
 s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
 else
 s.value = translate("Not Running")
 end
 end
 
-if nixio.fs.access("/usr/bin/ss-local") then
-s=m:field(DummyValue,"ssock5_run",translate("SSOCKS5 Proxy")) 
+if nixio.fs.access("/usr/bin/ssr-local") then
+s=m:field(DummyValue,"sock5_run",translate("SSR SOCKS5 Proxy")) 
 s.rawhtml  = true
-if ssock5_run == 1 then
+if sock5_run == 1 then
 s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
 else
 s.value = translate("Not Running")

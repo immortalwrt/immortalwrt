@@ -18,7 +18,7 @@ end
 
 
 m = Map(shadowsocksr)
-m:section(SimpleSection).template  = "shadowsocksr/status"
+m:section(SimpleSection).template  = "shadowsocksr/status3"
 -- [[ 节点订阅 ]]--
 
 s = m:section(TypedSection, "server_subscribe",  translate("Subscription"))
@@ -56,11 +56,11 @@ o.inputstyle = "reset"
 
 
 o.write = function()
-    uci:delete_all("vssr", "servers", function(s) return true end)
-	uci:commit("vssr") 
-    luci.sys.call("uci commit vssrsr && /etc/init.d/vssr stop")
+    uci:delete_all("shadowsocksr", "servers", function(s) return true end)
+	uci:commit("shadowsocksr") 
+    luci.sys.call("uci commit shadowsocksr && /etc/init.d/shadowsocksr stop")
 
-    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "vssr", "servers"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "shadowsocksr", "servers"))
  return
 end
 
