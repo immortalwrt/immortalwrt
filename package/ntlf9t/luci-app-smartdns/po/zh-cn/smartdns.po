@@ -73,6 +73,12 @@ msgstr "域名预加载"
 msgid "Enable domain prefetch, accelerate domain response speed."
 msgstr "启用域名预加载，加速域名响应速度。"
 
+msgid "Serve expired"
+msgstr "缓存过期服务"
+
+msgid "Attempts to serve old responses from cache with a TTL of 0 in the response without waiting for the actual resolution to finish."
+msgstr "查询性能优化，有请求时尝试回应TTL为0的过期记录，以避免查询等待。"
+
 msgid "Redirect"
 msgstr "重定向"
 

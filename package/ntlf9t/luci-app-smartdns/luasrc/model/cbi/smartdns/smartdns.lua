@@ -83,6 +83,14 @@ o.cfgvalue    = function(...)
     return Flag.cfgvalue(...) or "0"
 end
 
+---- Serve expired
+o = s.taboption("settings", Flag, "serve_expired", translate("Serve expired"), translate("Attempts to serve old responses from cache with a TTL of 0 in the response without waiting for the actual resolution to finish."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
 ---- Redirect
 o = s:taboption("settings", ListValue, "redirect", translate("Redirect"), translate("SmartDNS redirect mode"))
 o.placeholder = "none"
