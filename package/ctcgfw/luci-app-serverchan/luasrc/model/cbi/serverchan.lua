@@ -65,6 +65,8 @@ e.write=function(e,e,e)
 end
 
 e=s:taboption("log", Button,translate(""))
+e:depends({debuglevel="1"})
+e:depends({debuglevel="2"})
 e.inputtitle=translate("清理日志")
 e.inputstyle = "clean_log"
 function e.write(self, section)
@@ -133,15 +135,15 @@ a=s:taboption("tab_basic2", Flag,"cpuload_enable",translate("CPU 负载报警"))
 a.default=0
 a.rmempty=true
 a= s:taboption("tab_basic2", Value, "cpuload", "负载报警阈值")
+a.default = "3.0"
 a.rmempty = true 
-a.placeholder = "2.0"
 a:depends({cpuload_enable="1"})
 a=s:taboption("tab_basic2", Flag,"temperature_enable",translate("CPU 温度报警"))
 a.default=0
 a.rmempty=true
 a= s:taboption("tab_basic2", Value, "temperature", "温度报警阈值")
 a.rmempty = true 
-a.placeholder = "80"
+a.default = "80"
 a:depends({temperature_enable="1"})
 a.description = translate("<br/>设备报警只会在连续五分钟超过设定值时才会推送<br/>而且一个小时内不会再提醒第二次")
 
