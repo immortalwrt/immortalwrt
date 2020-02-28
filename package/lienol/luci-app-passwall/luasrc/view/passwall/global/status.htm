@@ -283,6 +283,25 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 							}
 							status_tcp_node.innerHTML = text;
 						}
+						var status_kcptun = document.getElementById('status_kcptun');
+						if (status_kcptun) {
+							var text = 'Kcptun<br />';
+							if (tcp_node_num == 1) {
+								if (data["kcptun_tcp_node1_status"])
+									text += '<span class="green"><%:RUNNING%></span>';
+								else
+									text += '<span class="red"><%:NOT RUNNING%></span>';
+							} else {
+								for(var i = 0; i < tcp_node_num; i++) {
+									var k = i + 1;
+									if (data["kcptun_tcp_node" + k + "_status"])
+										text += '<span class="green"> ✓</span>';
+									else
+										text += '<span class="red"> X</span>';
+								}
+							}
+							status_kcptun.innerHTML = text;
+						}
 					}
 					
 					var udp_node_num = <%=udp_node_num%>;
@@ -341,13 +360,6 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 							status_haproxy.innerHTML = '<%:Load Balancing%><br /><span class="green"><%:RUNNING%></span>'
 						} else {
 							status_haproxy.innerHTML = '<%:Load Balancing%><br /><span class="red"><%:NOT RUNNING%></span>'
-						}
-					}
-					if (status_kcptun) {
-						if (data.kcptun_status) {
-							status_kcptun.innerHTML = 'Kcptun<br /><span class="green"><%:RUNNING%></span>'
-						} else {
-							status_kcptun.innerHTML = 'Kcptun<br /><span class="red"><%:NOT RUNNING%></span>'
 						}
 					}
 				}

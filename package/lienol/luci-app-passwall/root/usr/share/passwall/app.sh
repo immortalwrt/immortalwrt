@@ -388,16 +388,15 @@ gen_start_config() {
 				local kcptun_server_host=$(config_n_get $node kcp_server)
 				local kcptun_port=$(config_n_get $node kcp_port)
 				local kcptun_config="$(config_n_get $node kcp_opts)"
-				local lbenabled=$(config_t_get global_haproxy balancing_enable 0)
 				if [ -z "$kcptun_port" -o -z "$kcptun_config" ]; then
-					echolog "【未配置Kcptun参数】，跳过~"
+					echolog "Kcptun未配置参数，错误！"
 					force_stop
 				fi
-				if [ -n "$kcptun_port" -a -n "$kcptun_config" -a "$lbenabled" == "0" ]; then
+				if [ -n "$kcptun_port" -a -n "$kcptun_config" ]; then
 					local run_kcptun_ip=$server_host
 					[ -n "$kcptun_server_host" ] && run_kcptun_ip=$(get_host_ip $network_type $kcptun_server_host)
-					KCPTUN_REDIR_PORT=$(get_not_exists_port_after $KCPTUN_REDIR_PORT udp)
-					ln_start_bin $(config_t_get global_app kcptun_client_file $(find_bin kcptun-client)) kcptun-client "--log $TMP_PATH/kcptun_${5}.log -l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
+					KCPTUN_REDIR_PORT=$(get_not_exists_port_after $KCPTUN_REDIR_PORT tcp)
+					ln_start_bin $(config_t_get global_app kcptun_client_file $(find_bin kcptun-client)) kcptun_tcp_$5 "-l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
 				fi
 			fi
 			if [ "$type" == "ssr" ]; then
@@ -561,7 +560,7 @@ start_dns() {
 	;;
 	chinadns-ng)
 		other_port=$(expr $DNS_PORT + 1)
-		cat $APP_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $TMP_PATH/gfwlist.txt
+		cat $RULES_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $TMP_PATH/gfwlist.txt
 		[ -f "$TMP_PATH/gfwlist.txt" ] && local gfwlist_param="-g $TMP_PATH/gfwlist.txt"
 		[ -f "$APP_PATH/chnlist" ] && local chnlist_param="-m $APP_PATH/chnlist"
 		
