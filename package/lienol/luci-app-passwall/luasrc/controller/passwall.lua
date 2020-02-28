@@ -120,14 +120,14 @@ function status()
     e.haproxy_status = luci.sys.call(string.format(
                                          "ps -w | grep -v grep | grep '%s/bin/' | grep haproxy >/dev/null",
                                          appname)) == 0
-    e.kcptun_status = luci.sys.call(
-                          "ps -w | grep -v grep | grep -i 'log /var/etc/" ..
-                              appname .. "/kcptun' >/dev/null") == 0
-
     local tcp_node_num = luci.sys.exec(
                              "echo -n `uci -q get %s.@global_other[0].tcp_node_num`" %
                                  appname)
     for i = 1, tcp_node_num, 1 do
+        e["kcptun_tcp_node%s_status" % i] =
+            luci.sys.call(string.format(
+                              "ps -w | grep -v grep | grep '%s/bin/' | grep 'kcptun_tcp_%s' >/dev/null",
+                              appname, i)) == 0
         e["tcp_node%s_status" % i] = luci.sys.call(
                                          string.format(
                                              "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'TCP_%s|brook_tcp_%s|ipt2socks_tcp_%s' >/dev/null",
@@ -148,6 +148,10 @@ function status()
                                 "echo -n `uci -q get %s.@global_other[0].socks5_node_num`" %
                                     appname)
     for i = 1, socks5_node_num, 1 do
+        e["kcptun_socks_node%s_status" % i] =
+            luci.sys.call(string.format(
+                              "ps -w | grep -v grep | grep '%s/bin/' | grep 'kcptun_socks_%s' >/dev/null",
+                              appname, i)) == 0
         e["socks5_node%s_status" % i] = luci.sys.call(
                                             string.format(
                                                 "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'SOCKS5_%s|brook_socks_%s' >/dev/null",
@@ -185,6 +189,9 @@ function ping_node()
     if luci.sys.exec("echo -n `uci -q get %s.@global_other[0].use_tcping`" %
                          appname) == "1" and
         luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
+        luci.sys.call(string.format(
+                          "ps -w | grep 'tcping -q -c 1 -i 1 -p %s %s' | grep -v grep | awk '{print $1}' | xargs kill -9 > /dev/null",
+                          port, address))
         e.ping = luci.sys.exec(string.format(
                                    "echo -n $(tcping -q -c 1 -i 1 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print$2}')",
                                    port, address))
