@@ -266,7 +266,17 @@ gen_start_config() {
 	remarks=$(config_n_get $node remarks)
 	server_host=$(config_n_get $node address)
 	port=$(config_n_get $node port)
-	[ -n "$server_host" -a -n "$port" ] && echolog "$redir_type节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
+	[ -n "$server_host" -a -n "$port" ] && {
+		# 过滤URL
+		server_host=$(echo $server_host | sed 's/^\(http:\/\/\|https:\/\/\)//g' | awk -F '/' '{print $1}')
+		# 过滤包含汉字的节点（SB机场）
+		local tmp=$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')
+		[ -n "$tmp" ] && {
+			echolog "$redir_type节点，非法的地址，无法启动！"
+			return 1
+		}
+		echolog "$redir_type节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
+	}
 
 	if [ "$redir_type" == "SOCKS5" ]; then
 		eval SOCKS5_NODE${5}_PORT=$port

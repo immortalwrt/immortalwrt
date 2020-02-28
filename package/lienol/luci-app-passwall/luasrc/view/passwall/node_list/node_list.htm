@@ -161,7 +161,9 @@ table td, .table .td {
 				var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
 				var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
 			<% end %>
-			if ((address != null && address != "") && (port != null && port != "")) {
+			//判断是否含有汉字
+			var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
+			if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false) {
 				ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
 						index: index,
 						address: address,
