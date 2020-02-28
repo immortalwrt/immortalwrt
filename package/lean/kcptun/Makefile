@@ -32,7 +32,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_NAME:=kcptun
-PKG_VERSION:=20200201
+PKG_VERSION:=20200226
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=kcptun-linux-$(PKG_ARCH_KCPTUN)-$(PKG_VERSION).tar.gz
@@ -41,20 +41,23 @@ PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)-client
+define Package/$(PKG_NAME)/default
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=Kcptun is a cross-platform proxy software
-	DEPENDS:=
 	URL:=https://github.com/xtaci/kcptun
 endef
 
 define Package/$(PKG_NAME)-server
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=Kcptun is a cross-platform proxy software
-	DEPENDS:=
-	URL:=https://github.com/xtaci/kcptun
+	$(call Package/$(PKG_NAME)/default)
+	TITLE+= (Server)
+	VARIANT:=server
+endef
+
+define Package/$(PKG_NAME)-client
+	$(call Package/$(PKG_NAME)/default)
+	TITLE+= (Client)
+	VARIANT:=client
 endef
 
 define Build/Prepare
@@ -62,14 +65,11 @@ define Build/Prepare
 endef
 
 define Build/Configure
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/server_linux_$(PKG_ARCH_KCPTUN)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/client_linux_$(PKG_ARCH_KCPTUN)
 endef
 
 define Build/Compile
-endef
-
-define Package/$(PKG_NAME)-client/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/client_linux_$(PKG_ARCH_KCPTUN) $(1)/usr/bin/kcptun-client
 endef
 
 define Package/$(PKG_NAME)-server/install
@@ -77,5 +77,10 @@ define Package/$(PKG_NAME)-server/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/server_linux_$(PKG_ARCH_KCPTUN) $(1)/usr/bin/kcptun-server
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)-client))
+define Package/$(PKG_NAME)-client/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/client_linux_$(PKG_ARCH_KCPTUN) $(1)/usr/bin/kcptun-client
+endef
+
 $(eval $(call BuildPackage,$(PKG_NAME)-server))
+$(eval $(call BuildPackage,$(PKG_NAME)-client))
