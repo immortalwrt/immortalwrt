@@ -58,7 +58,7 @@ o.inputstyle = "reset"
 o.write = function()
     uci:delete_all("vssr", "servers", function(s) return true end)
 	uci:commit("vssr") 
-    luci.sys.call("uci commit vssrsr && /etc/init.d/vssr stop")
+    luci.sys.call("uci commit vssr && /etc/init.d/vssr stop")
 
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "vssr", "servers"))
  return
