@@ -18,7 +18,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
 --- a/include/net/inet_connection_sock.h
 +++ b/include/net/inet_connection_sock.h
-@@ -138,4 +138,4 @@
+@@ -141,4 +141,4 @@
  
 -	u64			  icsk_ca_priv[88 / sizeof(u64)];
 -#define ICSK_CA_PRIV_SIZE      (11 * sizeof(u64))
@@ -65,13 +65,6 @@ diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
 +}
 +
  /* Return rate in bytes per second, optionally with a gain.
-@@ -206,2 +233,6 @@
-  */
-+
-+
-+
-+
- static u64 bbr_rate_bytes_per_sec(struct sock *sk, u64 rate, int gain)
 @@ -307,2 +338,4 @@
  		bbr->idle_restart = 1;
 +		bbr->ack_epoch_mstamp = tp->tcp_mstamp;
