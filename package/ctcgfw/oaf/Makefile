@@ -16,6 +16,7 @@ define KernelPackage/oaf
   CATEGORY:=Kernel modules
   SUBMENU:=Netfilter Extensions
   TITLE:=open app filter kernel module
+  DEPENDS:=@!LINUX_5_4
   FILES:=$(PKG_BUILD_DIR)/oaf.ko
   KCONFIG:=
   AUTOLOAD:=$(call AutoLoad,0,$(PKG_AUTOLOAD))
@@ -29,7 +30,7 @@ endef
 MAKE_OPTS:= \
 	ARCH="$(LINUX_KARCH)" \
 	CROSS_COMPILE="$(TARGET_CROSS)" \
-	SUBDIRS="$(PKG_BUILD_DIR)" \
+	M="$(PKG_BUILD_DIR)" \
 	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 	$(EXTRA_KCONFIG)
 
