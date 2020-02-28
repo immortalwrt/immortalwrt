@@ -197,14 +197,27 @@ filter_vpsip() {
 			[ "$use_ipv6" == "1" ] && network_type="ipv6"
 			local server=$(u_get $i address)
 			[ -n "$server" ] && {
-				[ "$network_type" == "ipv4" ] && {
-					isip=$(echo $server | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
-					if [ -n "$isip" ]; then
-						ipset -! add $IPSET_VPSIPLIST $isip >/dev/null 2>&1 &
-					else
-						has=$([ -f "$TMP_DNSMASQ_PATH/vpsiplist_host.conf" ] && cat $TMP_DNSMASQ_PATH/vpsiplist_host.conf | grep "$server")
-						[ -z "$has" ] && echo "$server" | sed -e "/^$/d" | sed "s/^/ipset=&\//g" | sed "s/$/\/&vpsiplist/g" | sort | awk '{if ($0!=line) print;line=$0}' >> $TMP_DNSMASQ_PATH/vpsiplist_host.conf
-					fi
+				# 过滤URL
+				server=$(echo $server | sed 's/^\(http:\/\/\|https:\/\/\)//g' | awk -F '/' '{print $1}')
+				# 过滤包含汉字的节点（SB机场）
+				local tmp=$(echo -n $server | awk '{print gensub(/[!-~]/,"","g",$0)}')
+				[ -z "$tmp" ] && {
+					[ "$network_type" == "ipv4" ] && {
+						isip=$(echo $server | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
+						if [ -n "$isip" ]; then
+							ipset -! add $IPSET_VPSIPLIST $isip >/dev/null 2>&1 &
+						else
+							# 判断节点的服务器地址是否包含在GFWLIST，比如某（SB机场）的 www.google.com 导致不走google代理
+							local suffix=$(echo ${server##*.})
+							local top_host=$(echo ${server%.*} | awk -F '.' '{print $NF}')
+							[ -n "$suffix" -a -n "$top_host" ] && server="$top_host.$suffix"
+							is_gfwlist=$(cat $TMP_DNSMASQ_PATH/gfwlist.conf | grep -c "$server")
+							[ "$is_gfwlist" == 0 ] && {
+								has=$([ -f "$TMP_DNSMASQ_PATH/vpsiplist_host.conf" ] && cat $TMP_DNSMASQ_PATH/vpsiplist_host.conf | grep "$server")
+								[ -z "$has" ] && echo "$server" | sed -e "/^$/d" | sed "s/^/ipset=&\//g" | sed "s/$/\/&vpsiplist/g" | sort | awk '{if ($0!=line) print;line=$0}' >> $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+							}
+						fi
+					}
 				}
 			}
 		done
