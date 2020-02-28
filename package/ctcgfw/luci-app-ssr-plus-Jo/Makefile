@@ -1,11 +1,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus-Jo
-PKG_VERSION:=1.47
-PKG_RELEASE:=8
+PKG_VERSION:=148
+PKG_RELEASE:=20200228-5
 PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
-        CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
+                CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun:kcptun \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server \
@@ -16,8 +16,8 @@ PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_haproxy \
-        CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_udpspeeder \
-        CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_udp2raw-tunnel \
+                 CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_udpspeeder \
+                 CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_udp2raw-tunnel \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_privoxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs\
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server\
@@ -119,7 +119,7 @@ define Package/luci-app-ssr-plus-Jo
 	SUBMENU:=3. Applications
 	TITLE:=SS/SSR/V2Ray LuCI interface
 	PKGARCH:=all
-	DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +bash +pdnsd-alt +curl +wget +unzip \
+	DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +bash +pdnsd-alt +luasocket +jshn +curl +wget +unzip \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-redir \
             +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
@@ -128,7 +128,7 @@ define Package/luci-app-ssr-plus-Jo
             +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server:shadowsocks-libev-ss-server \
             +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Socks:shadowsocksr-libev-ssr-local \
             +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Socks:shadowsocks-libev-ss-local \
-	    +PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks:ipt2socks \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks:ipt2socks \
             +PACKAGE_$(PKG_NAME)_INCLUDE_dnscrypt_proxy:dnscrypt-proxy-full \
             +PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder \
             +PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS:openwrt_chinadns \
@@ -139,7 +139,7 @@ define Package/luci-app-ssr-plus-Jo
             +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs:simple-obfs \
             +PACKAGE_$(PKG_NAME)_INCLUDE_simple-obfs-server:simple-obfs-server \
             +PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-client:gq-client \
-	    +PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-server:gq-server \
+            +PACKAGE_$(PKG_NAME)_INCLUDE_GoQuiet-server:gq-server \
             +PACKAGE_$(PKG_NAME)_INCLUDE_v2ray-plugin:v2ray-plugin
 endef
 
