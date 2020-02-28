@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-serverchan
-PKG_VERSION:=1.39
+PKG_VERSION:=1.41
 PKG_RELEASE:=5
 
 include $(INCLUDE_DIR)/package.mk
@@ -28,11 +28,10 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/etc/init.d $(1)/etc/uci-defaults $(1)/usr/bin/serverchan $(1)/etc/config $(1)/usr/lib/lua/luci
+	$(INSTALL_DIR) $(1)/etc/init.d $(1)/usr/bin/serverchan $(1)/etc/config $(1)/usr/lib/lua/luci
 	$(CP) ./luasrc/* $(1)/usr/lib/lua/luci
 	$(INSTALL_CONF) ./root/etc/config/serverchan $(1)/etc/config
 	$(INSTALL_BIN) ./root/etc/init.d/serverchan $(1)/etc/init.d
-	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-serverchan $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./root/usr/bin/serverchan/serverchan $(1)/usr/bin/serverchan
 endef
 
