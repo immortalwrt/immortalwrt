@@ -6,7 +6,7 @@ local vssr = "vssr"
 local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
-m = Map(vssr)
+m = Map(vssr, translate("SS/SSR/V2RAY Server"))
 m:section(SimpleSection).template  = "vssr/status3"
 local type = {
 	"ssr",
