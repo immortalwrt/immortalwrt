@@ -20,7 +20,7 @@ REAL_LOG="/usr/share/clash/clash_real.txt"
 
 revert_dns() {
 #===========================================================================================================================  
-    	dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null) 
+    dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null) 
 	uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1
 	uci set dhcp.@dnsmasq[0].noresolv=0
 	uci delete dhcp.@dnsmasq[0].cachesize
@@ -34,7 +34,9 @@ add_cron(){
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 #===========================================================================================================================
 	sed -i '/clash.txt/d' $CRON_FILE
- 
+
+	[ -z "$(grep -w "/usr/share/clash/clash-watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/clash-watchdog.sh" >> $CRON_FILE
+	
 	clear=$(uci get clash.config.auto_clear_log 2>/dev/null)
 	if [ "${clear}" -eq 1 ]; then
 	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
@@ -68,7 +70,7 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 
 del_cron(){
 #=========================================================================================================================== 
-	sed -i '/clash/d' $CRON_FILE
+	sed -i '/update_all.sh/d' $CRON_FILE
 	sed -i '/clash.txt/d' $CRON_FILE
 	/etc/init.d/cron restart
 #=========================================================================================================================== 	
@@ -521,7 +523,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')"
 		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
 
-	nohup /usr/share/clash/kill.sh >/dev/null 2>&1
+	#nohup /usr/share/clash/clash-watchdog.sh >/dev/null 2>&1
 else
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S") -  problem with config.yaml,  config.yaml is either empty or not found " >> /usr/share/clash/clash.txt
@@ -693,7 +695,7 @@ stop(){
 	 	echo "" >/usr/share/clash/clash.txt >/dev/null 2>&1
 
 		echo "0" > /usr/share/clash/logstatus_check >/dev/null 2>&1
-		sh /usr/share/clash/kill.sh
+		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "  $(date "+%Y-%m-%d %H:%M:%S") - CLIENT IS DISABLED " >> /usr/share/clash/clash.txt
 			echo "Client is Disabled " >$REAL_LOG
