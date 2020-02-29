@@ -6,7 +6,7 @@ local shadowsocksr = "shadowsocksr"
 local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
-m = Map(shadowsocksr)
+m = Map(shadowsocksr, translate("SS/SSR/V2RAY Server"))
 
 local type = {
 	"ssr",
