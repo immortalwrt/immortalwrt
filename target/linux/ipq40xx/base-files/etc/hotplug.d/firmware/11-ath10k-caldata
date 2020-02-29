@@ -31,6 +31,10 @@ case "$FIRMWARE" in
 		/usr/bin/fritz_cal_extract -i 1 -s 0x3C800 -e 0x212 -l 12064 -o /lib/firmware/$FIRMWARE $(find_mtd_chardev "urlader1") || \
 		/usr/bin/fritz_cal_extract -i 1 -s 0x3C000 -e 0x212 -l 12064 -o /lib/firmware/$FIRMWARE $(find_mtd_chardev "urlader1")
 		;;
+	engenius,eap2200 |\
+	openmesh,a62)
+		caldata_extract "0:ART" 0x9000 0x2f20
+		;;
 	linksys,ea8300)
 		caldata_extract "ART" 0x9000 0x2f20
 		# OEM assigns 4 sequential MACs
@@ -86,6 +90,7 @@ case "$FIRMWARE" in
 	compex,wpj419 |\
 	compex,wpj428 |\
 	engenius,eap1300 |\
+	engenius,eap2200 |\
 	openmesh,a42 |\
 	openmesh,a62 |\
 	qxwlan,e2600ac-c1 |\
@@ -167,6 +172,7 @@ case "$FIRMWARE" in
 	compex,wpj419 |\
 	compex,wpj428 |\
 	engenius,eap1300 |\
+	engenius,eap2200 |\
 	openmesh,a42 |\
 	openmesh,a62 |\
 	qxwlan,e2600ac-c1 |\
