@@ -1,6 +1,10 @@
 #!/bin/bash /etc/rc.common
 . /lib/functions.sh
 
+
+#ping=$(uci get clash.config.ping_enable 2>/dev/null)
+
+
 enable_list=$(uci get clash.config.cus_list 2>/dev/null)
 if [  $enable_list -eq 1 ];then 
 
@@ -36,7 +40,9 @@ add_address(){
 	rm -rf /tmp/server.conf /usr/share/clashbackup/address.list >/dev/null 2>&1
 }
 
+#if  [  $ping -eq 1 ];then 
 add_address >/dev/null 2>&1
+#fi
 
 if [  -d /tmp/dnsmasq.clash ];then 
  rm -rf /tmp/dnsmasq.clash

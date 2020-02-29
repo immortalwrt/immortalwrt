@@ -56,6 +56,7 @@ function index()
 	entry({"admin", "services", "clash", "conf"},call("action_conf")).leaf=true
 	entry({"admin", "services", "clash", "update_config"},call("action_update")).leaf=true
 	entry({"admin", "services", "clash", "game_rule"},call("action_update_rule")).leaf=true
+	entry({"admin", "services", "clash", "ping_check"},call("action_ping_status")).leaf=true
 	
 end
 
@@ -87,6 +88,11 @@ end
 
 local function in_use()
 	return luci.sys.exec("uci get clash.config.config_type")
+end
+
+
+local function ping_enable()
+	return luci.sys.exec("uci get clash.config.ping_enable")
 end
 
 
@@ -315,16 +321,20 @@ function action_status()
 		in_use = in_use(),
 		conf_path = conf_path(),
 		typeconf = typeconf()
+	})
+end
 
-
-
+function action_ping_status()
+	luci.http.prepare_content("application/json")
+	luci.http.write_json({
+		ping_enable = ping_enable()
 	})
 end
 
 function act_ping()
 	local e={}
 	e.index=luci.http.formvalue("index")
-	e.ping=luci.sys.exec("ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*.[0-9]' | awk -F '=' '{print$2}'"%luci.http.formvalue("domain"))
+	e.ping=luci.sys.exec("ping -c 1 -W 1 -w 10 %q 2>&1 | grep -o 'time=[0-9]*.[0-9]' | awk -F '=' '{print$2}'"%luci.http.formvalue("domain"))
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end

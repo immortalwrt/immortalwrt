@@ -1021,3 +1021,9 @@ msgstr "在线下载"
 
 msgid "Yacd Dashboard"
 msgstr "Yacd控制面板"
+
+msgid "Enable Ping Servers"
+msgstr "启用Ping服务器"
+
+msgid "DISABLED"
+msgstr "禁用"

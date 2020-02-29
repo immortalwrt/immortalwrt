@@ -48,5 +48,7 @@ o.description = translate("Select a policy group to add rule")
 o = s:option(Value, "ipaaddr", translate("IP/Domain/Address/Keyword/Port"))
 o.rmempty = false
 
+o = s:option(Flag, "res", translate("No Resolve"))
+o.default = 0
 
 return m
