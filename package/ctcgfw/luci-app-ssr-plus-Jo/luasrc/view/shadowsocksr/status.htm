@@ -92,7 +92,7 @@
    </div>
             </div>
             <div class="pure-u-5-8">
-                <h4 id="shadowsocksr_status">科学上网<br><span class="red">未运行✘</span></h4>
+                <h4 id="shadowsocksr_status"><%:Client%><br><span class="red"><%:Not Running%></span></h4>
             </div>
         </div>
     </div>
@@ -104,7 +104,7 @@
   </div>
             </div>
             <div class="pure-u-5-8">
-                <h4 id="google_status">国外网站<br><span class="red">无法访问✘</span></h4>
+                <h4 id="google_status"><%:Visit foreign websites%><br><span class="red"><%:Problem detected%></span></h4>
             </div>
         </div>
     </div>
@@ -116,7 +116,7 @@
 </div> 
             </div>
             <div class="pure-u-5-8">
-                <h4 id="baidu_status">国内网站<br><span class="red">无法访问✘</span></h4>
+                <h4 id="baidu_status"><%:Visit domestic website%><br><span class="red"><%:Problem detected%></span></h4>
             </div>
         </div>
     </div>
@@ -128,7 +128,7 @@
  </div> 
             </div>
             <div class="pure-u-5-8">
-                <h4 id="game_status">游戏模式<br><span class="red">未运行✘</span></h4>
+                <h4 id="game_status"><%:Game Mode%><br><span class="red"><%:Not Running%></span></h4>
    </div>
         </div>
     </div>
@@ -140,7 +140,7 @@
        </div>
             </div>
             <div class="pure-u-5-8">
-                <h4 id="chinadns_status">𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="red">未运行✘</span></h4>
+                <h4 id="chinadns_status">𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="red"><%:Not Running%></span></h4>
             </div>
         </div>
     </div>
@@ -152,7 +152,7 @@
                </div>
             </div>
             <div class="pure-u-5-8">
-                <h4 id="SOCKS5_status">𝙎𝙊𝘾𝙆𝙎⑤<br><span class="red">未运行✘</span></h4>
+                <h4 id="SOCKS5_status">𝙎𝙊𝘾𝙆𝙎⑤<br><span class="red"><%:Not Running%></span></h4>
             </div>
         </div>
     </div>
@@ -172,34 +172,34 @@
                 var tb5 = document.getElementById('SOCKS5_status');        
                 if (data && tb) {
                     if (data.global) {
-                        tb.innerHTML = '<%:Client%><br><span class="green">运行正常✔</span>';
+                        tb.innerHTML = '<%:Client%><br><span class="green"><%:Running%></span>';
                     } else {
-                        tb.innerHTML = '<%:Client%><br><span class="red">未运行✘</span>';
+                        tb.innerHTML = '<%:Client%><br><span class="red"><%:Not Running%></span>';
                     }
                     if (data.google) {
-                        tb1.innerHTML = '国外网站<br><span class="green">访问正常✔</span>';
+                        tb1.innerHTML = '<%:Visit foreign websites%><br><span class="green"><%:Working...%></span>';
                     } else {
-                        tb1.innerHTML = '国外网站<br><span class="red">无法访问✘</span>';
+                        tb1.innerHTML = '<%:Visit foreign websites%><br><span class="red"><%:Problem detected%></span>';
                     }
                     if (data.baidu) {
-                        tb2.innerHTML = '国内网站<br><span class="green">访问正常✔</span>';
+                        tb2.innerHTML = '<%:Visit domestic website%><br><span class="green"><%:Working...%></span>';
                     } else {
-                        tb2.innerHTML = '国内网站<br><span class="red">无法访问✘</span>';
+                        tb2.innerHTML = '<%:Visit domestic website%><br><span class="red"><%:Problem detected%></span>';
                     }
                     if (data.game) {
-                        tb3.innerHTML = '游戏模式<br><span class="green">运行正常✔</span>';
+                        tb3.innerHTML = '<%:Game Mode%><br><span class="green"><%:Running%></span>';
                     } else {
-                        tb3.innerHTML = '游戏模式<br><span class="red">未运行✘</span>';
+                        tb3.innerHTML = '<%:Game Mode%><br><span class="red"><%:Not Running%></span>';
                     }
                     if (data.chinadns) {
-                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="green">运行正常✔</span>';
+                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="green"><%:Running%></span>';
                     } else {
-                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="red">未运行✘</span>';
+                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="red"><%:Not Running%></span>';
                   }
                     if (data.SOCKS5 ) {
-                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="green">运行正常✔</span>';
+                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="green"><%:Running%></span>';
                     } else {
-                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="red">未运行✘</span>';
+                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="red"><%:Not Running%></span>';
   
 
                     }
