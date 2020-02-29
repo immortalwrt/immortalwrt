@@ -2,7 +2,7 @@ local fs = require "luci.fs"
 local http = luci.http
 
 mp = Map("unblockneteasemusic", translate("解除网易云音乐播放限制 (Golang)"))
-mp.description = translate("原理：采用 [酷我/酷狗/咕咪] 音源(后续有空补充)，替换网易云音乐 灰色 歌曲链接<br/>具体使用方法参见：https://github.com/cnsilvan/luci-app-unblockneteasemusic<br/>首次使用会自动生成证书，所以较慢")
+mp.description = translate("原理：采用 [酷我/酷狗/咕咪] 音源(后续有空补充)，替换网易云音乐 灰色 歌曲链接<br/>具体使用方法参见：https://github.com/cnsilvan/luci-app-unblockneteasemusic<br/>首次使用会自动生成证书，可能较慢")
 mp:section(SimpleSection).template = "unblockneteasemusic/unblockneteasemusic_status"
 
 s = mp:section(TypedSection, "unblockneteasemusic")
@@ -54,11 +54,25 @@ daemon_enable.description = translate("开启后，附属程序会自动检测�
 daemon_enable.default = 0
 daemon_enable.rmempty = false
 
-download = s:option(FileUpload,"", translate("下载根证书"))
+endpoint_enable = s:option(Flag, "endpoint_enable", translate("启用地址转换"))
+endpoint_enable.description = translate("开启后，设备需要信任证书，经测试ios设备需要开启，其他设备无法使用时再开启尝试")
+endpoint_enable.default = 0
+endpoint_enable.rmempty = false
+
+delete = s:option(Button,"_delete", translate("删除根证书"))
+delete.description = translate("删除证书，以便下次启动时生成，可用于解决过期证书等问题")
+delete.inputstyle = "reload"
+delete.write = function()
+	delete_()
+end
+download = s:option(Button,"_download", translate("下载根证书"))
 download.description = translate("请在客户端信任该证书。该证书由你设备自动生成，安全可靠")
-download.rmempty = false
-download.template = "unblockneteasemusic/unblockneteasemusic_download"
-function Download()
+download.inputstyle = "reload"
+download.write = function()
+	download_()
+end
+
+function download_()
 	local sPath, sFile, fd, block
 	sPath = "/usr/share/UnblockNeteaseMusic/ca.crt"
 	sFile = nixio.fs.basename(sPath)
@@ -86,7 +100,14 @@ function Download()
 	fd:close()
 	http.close()
 end
-if luci.http.formvalue("download") then
-	Download()
+function delete_()
+	local sPath, fd
+	sPath = "/usr/share/UnblockNeteaseMusic/server.crt"
+	fd = os.remove(sPath)
+    if not fd then
+		delete.description = string.format('删除证书，以便下次启动时生成，可用于解决过期证书等问题<br/><span style="color: red">%s</span>', translate("Couldn't delete file: ") .. sPath)
+		return
+    end
+    delete.description = translate("删除证书，以便下次启动时生成，可用于解决过期证书等问题")
 end
 return mp
