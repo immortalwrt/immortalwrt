@@ -2,11 +2,11 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for UnblockNeteaseMusic Go
-LUCI_DEPENDS:=+coreutils-nohup +dnsmasq-full +ipset +UnblockNeteaseMusicGo
+LUCI_DEPENDS:=+luci-lib-fs +bash +busybox +coreutils-nohup +curl +dnsmasq-full +ipset +UnblockNeteaseMusic-Go
 LUCI_PKGARCH:=all
-PKG_NAME:=luci-app-unblockmusic-go
-PKG_VERSION:=1.1
-PKG_RELEASE:=2
+PKG_NAME:=luci-app-unblockneteasemusic-go
+PKG_VERSION:=1.4
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=https://github.com/cnsilvan/luci-app-unblockneteasemusic
 
