@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-openclash
-PKG_VERSION:=0.36.6
+PKG_VERSION:=0.36.7
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=vernesong <https://github.com/vernesong/OpenClash>
 
@@ -27,7 +27,7 @@ endef
 
 define Build/Prepare
 	$(CP) $(CURDIR)/files $(PKG_BUILD_DIR)
-	$(foreach po,$(wildcard ${CURDIR}/i18n/zh-cn/*.po), \
+	$(foreach po,$(wildcard ${CURDIR}/i18n/zh_Hans/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 	chmod 0755 $(PKG_BUILD_DIR)/files/etc/init.d/openclash
 	chmod -R 0755 $(PKG_BUILD_DIR)/files/usr/share/openclash/
