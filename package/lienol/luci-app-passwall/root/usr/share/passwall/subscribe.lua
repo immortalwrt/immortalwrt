@@ -458,7 +458,8 @@ local function parse_link(raw, remark, md5_str, manual)
 						result.remarks:find("剩余流量") or
 						result.remarks:find("QQ群") or
 						result.remarks:find("官网") or
-						not result.address
+						not result.address or
+						result.address:match("[^0-9a-zA-Z%-%.%s]") -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
 					then
 						log('丢弃无效节点: ' .. result.type ..' 节点, ' .. result.remarks)
 					else
