@@ -1,3 +1,6 @@
+-- Licensed to the public under the GNU General Public License v3.
+
+local m, s, o
 local shadowsocksr= "shadowsocksr"
 local uci = luci.model.uci.cursor()
 local server_table = {}
@@ -9,6 +12,13 @@ if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
 gfwmode=1		
 end
 
+local uci = luci.model.uci.cursor()
+local server_count = 0
+uci:foreach("vssr", "servers", function(s)
+  server_count = server_count + 1
+end)
+
+local fs  = require "nixio.fs"
 local sys = require "luci.sys"
 
 if gfwmode==1 then 
@@ -50,13 +60,18 @@ o.template = "shadowsocksr/update_subscribe"
 
 
 
-o = s:option(Button,"delete",translate("Delete all severs"))
+o = s:option(Button,"delete",translate("Delete All Subscribe Severs"))
 o.inputstyle = "reset"
-
-
+o.description = string.format(translate("Server Count") ..  ": %d", server_count)
 o.write = function()
-    uci:delete_all("shadowsocksr", "servers", function(s) return true end)
-	uci:commit("shadowsocksr") 
+uci:delete_all("shadowsocksr", "servers", function(s) 
+  if s["hashkey"] then
+    return true
+  else
+    return false
+  end
+end)
+uci:save("shadowsocksr")
     luci.sys.call("uci commit shadowsocksr && /etc/init.d/shadowsocksr stop")
 
     luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "shadowsocksr", "servers"))

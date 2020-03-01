@@ -850,6 +850,7 @@ msgstr "V2服务器"
 msgid "SS/SSR/V2RAY Server"
 msgstr "SS/SSR/V2RAY 服务端"
 
-
+msgid "Delete All Subscribe Severs"
+msgstr "删除所有订阅服务器节点"
 
 
