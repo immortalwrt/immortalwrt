@@ -538,7 +538,7 @@ msgid "Auto Update Server subscription, GFW list and CHN route"
 msgstr "自动更新服务器订阅、GFW列表和 CHN路由表"
 
 msgid "Subscribe URL"
-msgstr "SS/SSR/V2RAY订阅URL地址"
+msgstr "SS/SSR/V2RAY/Trojan订阅URL地址"
 
 msgid "Update"
 msgstr "更新"
@@ -851,6 +851,7 @@ msgstr "V2服务器"
 msgid "SS/SSR/V2RAY Server"
 msgstr "SS/SSR/V2RAY 服务端"
 
-
+msgid "Delete All Subscribe Severs"
+msgstr "删除所有订阅服务器节点"
 
 
