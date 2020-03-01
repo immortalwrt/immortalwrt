@@ -512,7 +512,7 @@ define KernelPackage/ipt-bandwidth
   KCONFIG:=$(KCONFIG_IPT_BANDWIDTH)
   FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*bandwidth*.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_BANDWIDTH-m)))
-  DEPENDS:= kmod-ipt-core
+  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
 endef
 
 $(eval $(call KernelPackage,ipt-bandwidth))
@@ -524,7 +524,7 @@ define KernelPackage/ipt-timerange
   KCONFIG:=$(KCONFIG_IPT_TIMERANGE)
   FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*timerange*.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_TIMERANGE-m)))
-  DEPENDS:= kmod-ipt-core
+  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
 endef
 
 $(eval $(call KernelPackage,ipt-timerange))
@@ -536,7 +536,7 @@ define KernelPackage/ipt-webmon
   KCONFIG:=$(KCONFIG_IPT_WEBMON)
   FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*webmon*.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_WEBMON-m)))
-  DEPENDS:= kmod-ipt-core
+  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
 endef
 
 $(eval $(call KernelPackage,ipt-webmon))
@@ -548,7 +548,7 @@ define KernelPackage/ipt-weburl
   KCONFIG:=$(KCONFIG_IPT_WEBURL)
   FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*weburl*.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_WEBURL-m)))
-  DEPENDS:= kmod-ipt-core
+  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
 endef
 
 $(eval $(call KernelPackage,ipt-weburl))
