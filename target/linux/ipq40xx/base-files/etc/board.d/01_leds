@@ -14,11 +14,6 @@ case "$board" in
 alfa-network,ap120c-ac)
 	ucidef_set_led_netdev "wan" "WAN" "${boardname}:amber:wan" "eth1"
 	;;
-p2w,r619ac |\
-p2w,r619ac-128m)
-	ucidef_set_led_wlan "wlan2g" "WLAN2G" "r619ac:blue:wlan2g" "phy0tpt"
-	ucidef_set_led_wlan "wlan5g" "WLAN5G" "r619ac:blue:wlan5g" "phy1tpt"
-	;;
 asus,rt-ac58u)
 	ucidef_set_led_netdev "wan" "WAN" "${boardname}:blue:wan" "eth1"
 	ucidef_set_led_switch "lan" "LAN" "${boardname}:blue:lan" "switch0" "0x1e"

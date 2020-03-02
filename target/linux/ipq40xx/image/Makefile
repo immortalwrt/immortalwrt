@@ -480,28 +480,12 @@ endef
 
 TARGET_DEVICES += openmesh_a62
 
-define Device/qcom_ap-dk01.1-c1
-	DEVICE_VENDOR := Qualcomm Atheros
-	DEVICE_MODEL := AP-DK01.1
-	DEVICE_VARIANT := C1
-	BOARD_NAME := ap-dk01.1-c1
-	SOC := qcom-ipq4019
-	DEVICE_DTS := qcom-ipq4019-ap.dk01.1-c1
-	KERNEL_INSTALL := 1
-	KERNEL_SIZE := 4096k
-	IMAGE_SIZE := 26624k
-	$(call Device/FitImage)
-	IMAGES := sysupgrade.bin
-	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$${KERNEL_SIZE} | append-rootfs | pad-rootfs | append-metadata
-endef
-TARGET_DEVICES += qcom_ap-dk01.1-c1
-
 define Device/p2w_r619ac
 	$(call Device/FitzImage)
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := P&W
 	DEVICE_MODEL := R619AC
-	DEVICE_DTS := qcom-ipq4019-r619ac
+	SOC := qcom-ipq4019
 	DEVICE_DTS_CONFIG := config@10
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
@@ -517,13 +501,29 @@ define Device/p2w_r619ac-128m
 	DEVICE_VENDOR := P&W
 	DEVICE_MODEL := R619AC
 	DEVICE_VARIANT := 128M
-	DEVICE_DTS := qcom-ipq4019-r619ac-128m
+	SOC := qcom-ipq4019
 	DEVICE_DTS_CONFIG := config@10
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_PACKAGES := ipq-wifi-p2w_r619ac
 endef
 TARGET_DEVICES += p2w_r619ac-128m
+
+define Device/qcom_ap-dk01.1-c1
+	DEVICE_VENDOR := Qualcomm Atheros
+	DEVICE_MODEL := AP-DK01.1
+	DEVICE_VARIANT := C1
+	BOARD_NAME := ap-dk01.1-c1
+	SOC := qcom-ipq4019
+	DEVICE_DTS := qcom-ipq4019-ap.dk01.1-c1
+	KERNEL_INSTALL := 1
+	KERNEL_SIZE := 4096k
+	IMAGE_SIZE := 26624k
+	$(call Device/FitImage)
+	IMAGES := sysupgrade.bin
+	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$${KERNEL_SIZE} | append-rootfs | pad-rootfs | append-metadata
+endef
+TARGET_DEVICES += qcom_ap-dk01.1-c1
 
 define Device/qcom_ap-dk04.1-c1
 	$(call Device/FitImage)

@@ -68,10 +68,6 @@ platform_do_upgrade() {
 		fi
 		nand_do_upgrade "$1"
 		;;
-	p2w,r619ac|\
-	p2w,r619ac-128m)
-		nand_do_upgrade "$1"
-		;;
 	asus,map-ac2200)
 		CI_KERNPART="linux"
 		nand_do_upgrade "$1"
@@ -81,7 +77,9 @@ platform_do_upgrade() {
 		CI_KERNPART="linux"
 		nand_do_upgrade "$1"
 		;;
-	compex,wpj419)
+	compex,wpj419|\
+	p2w,r619ac|\
+	p2w,r619ac-128m)
 		nand_do_upgrade "$1"
 		;;
 	linksys,ea6350v3 |\
