@@ -30,7 +30,7 @@ find_bin() {
 	bin_name=$1
 	result=$(find /usr/*bin -iname "$bin_name" -type f)
 	if [ -z "$result" ]; then
-		echo ""
+		echo "null"
 	else
 		echo "$result"
 	fi
@@ -118,18 +118,20 @@ get_not_exists_port_after() {
 
 ln_start_bin() {
 	local file=$1
-	local bin=$2
-	local cmd=$3
-	if [ -n "${TMP_BIN_PATH}/$bin" -a -f "${TMP_BIN_PATH}/$bin" ];then
-		${TMP_BIN_PATH}/$bin $cmd >/dev/null 2>&1 &
-	else
-		if [ -n "$file" -a -f "$file" ];then
-			ln -s $file ${TMP_BIN_PATH}/$bin
+	[ "$file" != "null" ] && {
+		local bin=$2
+		local cmd=$3
+		if [ -n "${TMP_BIN_PATH}/$bin" -a -f "${TMP_BIN_PATH}/$bin" ];then
 			${TMP_BIN_PATH}/$bin $cmd >/dev/null 2>&1 &
 		else
-			echolog "找不到$bin主程序，无法启动！"
+			if [ -n "$file" -a -f "$file" ];then
+				ln -s $file ${TMP_BIN_PATH}/$bin
+				${TMP_BIN_PATH}/$bin $cmd >/dev/null 2>&1 &
+			else
+				echolog "找不到$bin主程序，无法启动！"
+			fi
 		fi
-	fi
+	}
 }
 
 ENABLED=$(config_t_get global enabled 0)
@@ -267,12 +269,12 @@ gen_start_config() {
 	server_host=$(config_n_get $node address)
 	port=$(config_n_get $node port)
 	[ -n "$server_host" -a -n "$port" ] && {
-		# 过滤URL
+		# 判断节点服务器地址是否URL并去掉~
 		server_host=$(echo $server_host | sed 's/^\(http:\/\/\|https:\/\/\)//g' | awk -F '/' '{print $1}')
-		# 过滤包含汉字的节点（SB机场）
+		# 判断节点服务器地址是否包含汉字~
 		local tmp=$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')
 		[ -n "$tmp" ] && {
-			echolog "$redir_type节点，非法的地址，无法启动！"
+			echolog "$redir_type节点，非法的服务器地址，无法启动！"
 			return 1
 		}
 		echolog "$redir_type节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
