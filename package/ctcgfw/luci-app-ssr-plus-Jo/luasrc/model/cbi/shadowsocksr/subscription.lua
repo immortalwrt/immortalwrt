@@ -14,7 +14,7 @@ end
 
 local uci = luci.model.uci.cursor()
 local server_count = 0
-uci:foreach("vssr", "servers", function(s)
+uci:foreach("shadowsocksr", "servers", function(s)
   server_count = server_count + 1
 end)
 
