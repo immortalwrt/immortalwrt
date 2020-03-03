@@ -8,7 +8,6 @@ USE_PROCD=1
 DNSMASQ_RESTART=N
 DNS_SERVER="114.114.114.114,114.114.115.115,223.5.5.5,223.6.6.6,180.76.76.76,119.29.29.29,119.28.28.28,1.2.4.8,210.2.4.8"
 IPV6DNS_SERVER="2001:4860:4860::8888,2001:4860:4860::8844,2001:2001::1111,2001:2001::1001,2400:da00::6666,240C::6666,240C::6644"
-lan_addr=$(uci get network.lan.ipaddr)
 
 start_pdnsd() {
 	DNS_SERVER=$(uci get flowoffload.@flow[0].dns_server 2>/dev/null)
@@ -238,6 +237,7 @@ start_service(){
 		elif [ $dnscache_enable = "2" ];  then
 			start_dnsforwarder
 		elif [ $dnscache_enable = "3" ];  then
+			lan_addr=$(uci get network.lan.ipaddr)
 			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome -h ${lan_addr} -p 3001 --no-check-update &
 		fi
 		change_dns
