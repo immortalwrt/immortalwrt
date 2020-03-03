@@ -6,7 +6,7 @@
 #include <linux/sysctl.h>
 
 #include "af_log.h"
-int af_log_lvl = 2;
+int af_log_lvl = 1;
 int af_test_mode = 0;
 /* 
 	cat /proc/sys/oaf/debug
