@@ -59,7 +59,7 @@ o.template="vssr/socket"
 o.width="1%"
 
 o = s:option(DummyValue,"server",translate("Ping Latency"))
-o.template="vssr/ping1"
+o.template="vssr/ping"
 o.width="1%"
 
 m:append(Template("vssr/server_list"))
