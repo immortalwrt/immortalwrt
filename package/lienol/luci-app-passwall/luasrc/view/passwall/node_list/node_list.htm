@@ -16,6 +16,8 @@ table th, .table .th {
 
 table td, .table .td {
 	text-align: center;
+    white-space: nowrap;
+    word-break: keep-all;
 }
 
 #set_node_div{
@@ -163,7 +165,7 @@ table td, .table .td {
 			<% end %>
 			//判断是否含有汉字
 			var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
-			if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false) {
+			if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false && (address.indexOf(".") != -1 && address.charAt(address.address - 1) != ".")) {
 				ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
 						index: index,
 						address: address,
