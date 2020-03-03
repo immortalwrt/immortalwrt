@@ -53,15 +53,8 @@ end
 
 
 function user_status()
-	local s = require "luci.tools.status"
 	local json = require "luci.jsonc"
 	luci.http.prepare_content("application/json")
-	tb={}
-	obj={};
-	obj.hostname="derry"
-	obj.ip="192.168.10.199"
-	obj.mac="192.168.10.199"
-	tb[#tb+1]=obj
 	--local fs=require "nixio.fs"
 	--local ok, status_data = pcall(json.parse, fs.readfile("/proc/net/af_client"))
 	--luci.http.write_json(tb);
