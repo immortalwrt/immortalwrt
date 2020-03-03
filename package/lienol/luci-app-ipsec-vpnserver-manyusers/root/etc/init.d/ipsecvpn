@@ -1,5 +1,4 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2018-2019 Lienol <lawlienol@gmail.com>
 
 START=90
 STOP=10
@@ -47,7 +46,7 @@ remove_includes() {
 do_include() {
 	local conf="$1"
 	local uciconf="$2"
-	local backup=`mktemp -t -p /tmp/ ipsec-init-XXXXXX`
+	local backup=$(mktemp -t -p /tmp/ ipsec-init-XXXXXX)
 
 	[ ! -f "${conf}" ] && rm -rf "${conf}"
 	touch "${conf}"
@@ -242,7 +241,7 @@ config_remote() {
 		local ipdest
 
 		[ "$remote_gateway" = "%any" ] && ipdest="1.1.1.1" || ipdest="$remote_gateway"
-		local_gateway=`ip route get $ipdest | awk -F"src" '/src/{gsub(/ /,"");print $2}'`
+		local_gateway=$(ip route get $ipdest | awk -F"src" '/src/{gsub(/ /,"");print $2}')
 	}
 
 	[ -n "$local_identifier" ] && secret_xappend -n "$local_identifier " || secret_xappend -n "$local_gateway "
@@ -339,7 +338,7 @@ service_running() {
 }
 
 reload_service() {
-  local bool vt_enabled=`uci get ipsec.@service[0].enabled 2>/dev/null`
+  local bool vt_enabled=$(uci get ipsec.@service[0].enabled 2>/dev/null)
   [ "$vt_enabled" = 0 ] && /etc/init.d/ipsecvpn stop > /dev/null 2>&1 && return
 	running && {
 		prepare_env
@@ -368,12 +367,11 @@ service_triggers() {
 
 start_service() {
 	fw3 reload
-	local vt_enabled=`uci get ipsec.@service[0].enabled 2>/dev/null`
-	local vt_clientip=`uci get ipsec.@service[0].clientip`
-	local vt_clientdns=`uci get ipsec.@service[0].clientdns`
-	local vt_secret=`uci get ipsec.@service[0].secret 2>/dev/null`
-	local vt_is_nat=`uci get ipsec.@service[0].is_nat 2>/dev/null`
-	local vt_export_interface=`uci get ipsec.@service[0].export_interface 2>/dev/null`
+	local vt_enabled=$(uci -q get ipsec.@service[0].enabled)
+	local vt_clientip=$(uci -q get ipsec.@service[0].clientip)
+	local vt_clientdns=$(uci -q get ipsec.@service[0].clientdns)
+	[ -z "$vt_clientdns" ] && local vt_clientdns="8.8.4.4"
+	local vt_secret=$(uci -q get ipsec.@service[0].secret)
 	
 	[ "$vt_enabled" = 0 ] && /etc/init.d/ipsecvpn stop > /dev/null 2>&1 && return
 	
