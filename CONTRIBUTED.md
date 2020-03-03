@@ -2,6 +2,7 @@
 ## The Source of Packages
 
 ### Based on: [openwrt/openwrt](https://github.com/openwrt/openwrt).<br/>
+Package lean: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 Package ntlf9t: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
@@ -30,8 +31,6 @@ Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-Op
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
 luci-app-vssr source: [Leo-Jo-My/luci-app-vssr](https://github.com/Leo-Jo-My/luci-app-vssr).<br/>
 luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).<br/>
-NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).<br/>
-NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
 qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
 package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>
