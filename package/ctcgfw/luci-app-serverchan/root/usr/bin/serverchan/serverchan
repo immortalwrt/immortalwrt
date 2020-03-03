@@ -123,7 +123,13 @@ function serverchan_cron(){
 		if ( echo `crontab -l` | grep -q "serverchan" ); then
 			crontab -l > conf && sed -i "/serverchan/d" conf && crontab conf && rm -f conf >/dev/null 2>&1
 		fi
-	fi		
+	fi
+	serverchan_enable=`get_config serverchan_enable`
+	if [ -z "$serverchan_enable" ] ; then
+		if ( echo `crontab -l` | grep -q "serverchan" ); then
+			crontab -l > conf && sed -i "/serverchan/d" conf && crontab conf && rm -f conf >/dev/null 2>&1
+		fi
+	fi
 	/etc/init.d/cron stop
 	/etc/init.d/cron start	
 }
@@ -439,8 +445,7 @@ function up(){
 if [ ! -f "${dir}ipAddress" ] ; then > ${dir}ipAddress;fi
 if [ "$1" ] ;then
 	# 如果 ipAddress 文件中存在此ip，则跳过，待断线检测
-	grep -w -q $1 ${dir}ipAddress
-	if [ $? -ne 0 ] ; then
+	if ( ! echo ${dir}ipAddress | grep -q -w $1 ) ; then
 		local ip_mac=`getmac $1`
 		local ip_name=`getname $1 $ip_mac`
 
@@ -791,7 +796,6 @@ function send(){
 	fi
 	uci set serverchan.serverchan.send_enable=0
 	uci commit serverchan
-	exit
 }
 
 # 初始化在线设备列表
@@ -825,6 +829,15 @@ if [ "$1" ] ;then
 	exit
 fi
 
+# 防止重复启动
+basePath=$(cd `dirname $0`; pwd)
+fullPathProc=$basePath/${0##*/}
+pCount=$(ps -ef | grep $fullPathProc | grep -v 'grep' | grep -v ' -c sh' | grep -v $$ | grep -c 'sh')
+if [ $pCount -gt 1 ]; then
+	echo "serverchan is running ..."
+	exit 0
+fi
+
 # 初始化
 serverchan_cron
 read_config
@@ -835,6 +848,7 @@ serverchan_first
 while [ "$serverchan_enable" -eq "1" ] ;
 do
 	deltemp
+	read_config
 	rand_geturl
 	usage
 	# 外网IP变化检测

@@ -4,27 +4,20 @@ START=99
 STOP=10
 
 start() {
-flag=$(ps | grep "serverchan/serverchan" | grep -v "grep" | wc -l)
-if [ $flag -eq 0 ] ;then
-/usr/bin/serverchan/serverchan &
-else
-/usr/bin/serverchan/serverchan crontab
-fi
 	enable=$(uci get serverchan.serverchan.serverchan_enable)
 	if [ $enable -eq 1 ]; then	
-		kill -9 $(ps | grep serverchan/serverchan | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
-		sleep 1
-		nohup /usr/bin/serverchan/serverchan 2>&1 &
+		/usr/bin/serverchan/serverchan &
+		echo "serverchan is starting now ..."
+	else
+		/usr/bin/serverchan/serverchan crontab
+		echo "serverchan is not enable, detect crontab and exit ..."
+		stop
 	fi
 }
 
 stop() {
-kill -9 `pgrep -f serverchan/serverchan`
-	enable=$(uci get serverchan.serverchan.serverchan_enable)
-	if [ $enable -ne 1 ]; then
-		kill $(pidof serverchan) >/dev/null 2>&1
-		kill -9 $(ps | grep serverchan | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
-	fi
+	kill -9 `pgrep -f "/usr/bin/serverchan/serverchan"`  2>/dev/null
+	echo "serverchan exit ..."
 }
 
 restart(){
