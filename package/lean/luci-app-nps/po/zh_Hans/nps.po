@@ -1,101 +1,29 @@
-msgid ""
-msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: \n"
-"Last-Translator: ElonH <elonhhuang@gmail.com>\n"
-"Language-Team: none\n"
-"Language: zh-Hans\n"
-"MIME-Version: 1.0\n"
-"Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"X-Generator: Poedit 2.0.6\n"
-"X-Poedit-Bookmarks: -1,14,-1,-1,-1,-1,-1,-1,-1,-1\n"
+msgid "Nps Setting"
+msgstr "Nps 内网穿透"
 
-#: luasrc/model/cbi/nps.lua:11
-msgid "Basic Setting"
-msgstr "基本设置"
+msgid "Nps is a fast reverse proxy to help you expose a local server behind a NAT or firewall to the internet."
+msgstr "Nps 是一种快速反向代理，可帮助您将 NAT 或防火墙后面的本地服务器公开到 Internet。"
 
-#: luasrc/view/nps/nps_status.htm:20
-msgid "Collecting data..."
-msgstr "获取数据中..."
+msgid "Must an IPv4 address"
+msgstr "必须是 IPv4 地址"
 
-#: luasrc/model/cbi/nps.lua:12
-msgid "Enable"
-msgstr "启用"
+msgid "vkey"
+msgstr "密钥(vkey)"
 
-#: luasrc/model/cbi/nps.lua:31
 msgid "Enable Compression"
 msgstr "使用压缩传输"
 
-#: luasrc/model/cbi/nps.lua:34
 msgid "Enable Encryption"
 msgstr "使用加密传输"
 
-#: luasrc/model/cbi/nps.lua:34
-msgid ""
-"Encrypted the communication between Npc and Nps, will effectively prevent "
-"the traffic intercepted."
+msgid "The contents will be compressed to speed up the traffic forwarding speed, but this will consume some additional cpu resources."
+msgstr "压缩传输内容，加快流量转发速度，会额外消耗 CPU 资源。"
+
+msgid "Encrypted the communication between Npc and Nps, will effectively prevent the traffic intercepted."
 msgstr "加密传输 npc 与 nps 之间的通信内容，会有效防止流量被拦截。"
 
-#: luasrc/model/cbi/nps.lua:26
-msgid "KCP Protocol"
-msgstr "KCP 协议"
+msgid "<b style='color:green;'>Nps is running.</b>"
+msgstr "<b style='color:green;'>Nps 运行中</b>"
 
-#: luasrc/model/cbi/nps.lua:37
-msgid "Log Level"
-msgstr "日志等级"
-
-#: luasrc/model/cbi/nps.lua:14
-msgid "Must an IPv4 address"
-msgstr "必须是一个 IPv4 地址"
-
-#: luasrc/view/nps/nps_status.htm:10
-msgid "NOT RUNNING"
-msgstr "未运行"
-
-#: luasrc/controller/nps.lua:7 luasrc/model/cbi/nps.lua:2
-msgid "Nps Setting"
-msgstr "Nps内网穿透"
-
-#: luasrc/model/cbi/nps.lua:3
-msgid ""
-"Nps is a fast reverse proxy to help you expose a local server behind a NAT "
-"or firewall to the internet."
-msgstr ""
-"Nps是一种快速反向代理，可帮助您将NAT或防火墙后面的本地服务器公开到Internet。"
-
-#: luasrc/model/cbi/nps.lua:18
-msgid "Port"
-msgstr "端口"
-
-#: luasrc/model/cbi/nps.lua:23
-msgid "Protocol Type"
-msgstr "协议类型"
-
-#: luasrc/view/nps/nps_status.htm:7
-msgid "RUNNING"
-msgstr "运行中"
-
-#: luasrc/model/cbi/nps.lua:14
-msgid "Server"
-msgstr "服务器"
-
-#: luasrc/model/cbi/nps.lua:25
-msgid "TCP Protocol"
-msgstr "TCP 协议"
-
-#: luasrc/model/cbi/nps.lua:31
-msgid ""
-"The contents will be compressed to speed up the traffic forwarding speed, "
-"but this will consume some additional cpu resources."
-msgstr "内容将被压缩以加快流量转发速度，但这将消耗额外的cpu资源。"
-
-#: luasrc/model/cbi/nps.lua:27
-msgid "vkey"
-msgstr ""
-
-#~ msgid ""
-#~ "The contents will be compressed to speed up the traffic forwarding speed, "
-#~ "but this will consume some additional cpu resources"
-#~ msgstr "压缩传输内容，加快流量转发速度，会额外消耗 cpu 资源"
+msgid "<b style='color:red;'>Nps is not running.</b>"
+msgstr "<b style='color:red;'>Nps 未运行</b>"
