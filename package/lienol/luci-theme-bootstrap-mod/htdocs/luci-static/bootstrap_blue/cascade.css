@@ -105,14 +105,14 @@ legend {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1080px;
     margin: 0 auto;
 }
 
 /* Header */
 
 header {
-    font-size: 15px;
+    font-size: 14px;
     position: fixed;
     top: 0;
     left: 0;
@@ -120,7 +120,7 @@ header {
     background: #34aee8;
     box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
     z-index: 100;
-    border-bottom: 3px solid #19a4e6;
+    border-bottom: 2px solid #19a4e6;
 }
 
 .brand {
@@ -193,9 +193,9 @@ header {
 .dropdown-menu a {
     color: #fff;
     line-height: 30px;
-    min-width: 160px;
+    min-width: 150px;
     padding: 0 20px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .dropdown-menu a:hover {
@@ -794,13 +794,13 @@ textarea,
 select {
     display: inline-block;
     width: 16em;
-    padding: 0.5em;
+    padding: 0.4em;
     border: 1px solid #118af3;
     border-radius: 5px;
     box-sizing: border-box;
     color: #111;
     font: inherit;
-    line-height: 1em;
+    line-height: 18px;
 }
 
 table.cbi-section-table input,
@@ -906,7 +906,7 @@ button {
     border-radius: 6px !important;
     display: inline-block;
     background: #fff;
-    border: 2px solid #118af3;
+    border: 1px solid #118af3;
     border-radius: 2px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, .05);
     color: #333;
@@ -1230,7 +1230,7 @@ button:focus {
 /* Footer */
 
 footer {
-    border-top: 2px solid #34aee8;
+    border-top: 1px solid #34aee8;
     color: #111;
     text-align: center;
     padding: 10px 0;

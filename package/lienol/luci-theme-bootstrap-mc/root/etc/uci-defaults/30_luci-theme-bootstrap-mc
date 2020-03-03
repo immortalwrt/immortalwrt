@@ -1,7 +1,0 @@
-#!/bin/sh
-uci batch <<-EOF
-	set luci.themes.Bootstrap_Blue=/luci-static/bootstrap_blue
-	set luci.themes.Bootstrap_Purple=/luci-static/bootstrap_purple
-	commit luci
-EOF
-exit 0

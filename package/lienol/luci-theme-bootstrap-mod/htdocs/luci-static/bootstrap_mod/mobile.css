@@ -5,7 +5,6 @@ header h3 a, header .brand {
 @media screen and (max-device-width: 1600px) {
 	.container>.pull-right>* {
 		position: absolute;
-		top: 1rem;
 		right: 0.5rem;
 		cursor: pointer;
 	}

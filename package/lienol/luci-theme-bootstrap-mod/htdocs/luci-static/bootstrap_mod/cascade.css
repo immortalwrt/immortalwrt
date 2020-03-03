@@ -15,7 +15,7 @@ body {
 }
 
 a {
-    color: #726bda;
+    color: #0069d6;
     text-decoration: none;
     outline: 0;
 }
@@ -33,7 +33,7 @@ h6,
 p,
 .cbi-map-descr,
 .cbi-section-descr {
-    color: #726bda;
+    color: #404040;
     margin-top: 0;
     margin-bottom: 10px;
 }
@@ -51,7 +51,7 @@ tr,
 }
 
 legend {
-    color: #726bda;
+    color: #404040;
     font-size: 18px;
     font-weight: bold;
     padding: 0 0 3px;
@@ -105,22 +105,22 @@ legend {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1080px;
     margin: 0 auto;
 }
 
 /* Header */
 
 header {
-    font-size: 15px;
+    font-size: 14px;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background: #948fe1;
+    background: #222;
     box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
     z-index: 100;
-    border-bottom: 3px solid #726bda;
+    border-bottom: 2px solid #ccc;
 }
 
 .brand {
@@ -163,7 +163,7 @@ header {
 }
 
 .dropdown:hover {
-    background-color: #726bda;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .dropdown:hover .dropdown-menu {
@@ -174,7 +174,7 @@ header {
     display: none;
     position: absolute;
     top: 40px;
-    background: #948fe1;
+    background: #222;
     border-radius: 5px;
     padding: 5px 0px;
     z-index: 100;
@@ -185,22 +185,22 @@ header {
     position: absolute;
     top: -6px;
     left: 27px;
-    border-bottom: 6px solid #00aaff;
+    border-bottom: 6px solid white;
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
 }
 
 .dropdown-menu a {
-    color: #fff;
-    line-height: 32px;
-    min-width: 160px;
+    color: #999;
+    line-height: 30px;
+    min-width: 150px;
     padding: 0 20px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .dropdown-menu a:hover {
-    background: #726bda;
-    /* color: #3fc3ef; */
+    background: #191919;
+    color: #fff;
 }
 
 .cbi-dropdown {
@@ -391,26 +391,24 @@ header {
 /* Label */
 
 .label {
-    border-radius: 10px !important;
     display: inline-block;
     background: #bbb;
-    border-bottom: 2px solid rgba(0, 0, 0, .05);
     border-radius: 4px;
     color: #fff;
     font-size: 14px;
     line-height: 24px;
     text-transform: uppercase;
     margin-top: 6px;
-    padding: 2px 9px;
+    padding: 1px 9px;
     cursor: pointer;
 }
 
 .label.success {
-    background: #726bda;
+    background: #46a546;
 }
 
 .label.notice {
-    background: #726bda;
+    background: #46a546;
 }
 
 .label.important {
@@ -440,7 +438,7 @@ h2+.cbi-map-descr {
     position: relative;
     padding: 15px;
     margin-bottom: 10px;
-    background: #d9d6ff;
+    background: #b4e7ff;
     /* border: 1px solid rgba(0, 0, 0, .1);
 	border-width: 2px 0; */
     border-radius: 2px;
@@ -550,7 +548,7 @@ p {
 
 .tabs,
 .cbi-tabmenu {
-    border-bottom: 1.5px solid #948fe1;
+    border-bottom: 1.5px solid #ddd;
     margin-bottom: 20px;
 }
 
@@ -562,7 +560,7 @@ p {
 .tabs a,
 .cbi-tabmenu a {
     display: block;
-    color: #726bda;
+    color: #404040;
     line-height: 34px;
     margin-bottom: -2px;
     margin-right: 20px;
@@ -781,7 +779,6 @@ tr tr {
 #conns>div>div,
 #swaptotal>div>div,
 #swapfree>div>div {
-    background: #948fe1a6 !important;
     height: 18px !important;
     border-radius: 3px;
 }
@@ -794,13 +791,13 @@ textarea,
 select {
     display: inline-block;
     width: 16em;
-    padding: 0.5em;
-    border: 1px solid #726bda;
+    padding: 0.4em;
+    border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
     color: #111;
     font: inherit;
-    line-height: 1em;
+    line-height: 18px;
 }
 
 table.cbi-section-table input,
@@ -821,7 +818,7 @@ table.cbi-section-table select,
 input:active,
 input:focus {
     outline: 0;
-    border-color: #726bda;
+    border-color: #0069d6;
 }
 
 input[type=file]:focus,
@@ -906,19 +903,18 @@ button {
     border-radius: 6px !important;
     display: inline-block;
     background: #fff;
-    border: 2px solid #99d;
+    border: 1px solid #ccc;
     border-radius: 2px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, .05);
     color: #333;
     line-height: 16px;
-    padding: 4px 8px;
+    padding: 0.5em;
     cursor: pointer;
     margin-left: 0.2em;
 }
 
 .cbi-button:active,
-.cbi-button:focus,
-button:active,
+.cbi-button:focus button:active,
 button:focus {
     border-color: #bbb;
 }
@@ -939,8 +935,8 @@ button:focus {
 
 .cbi-button-add,
 .cbi-input-add {
-    background: #948fe1;
-    border-color: #948fe1;
+    background: #404040;
+    border-color: #404040;
     color: #fff;
 }
 
@@ -948,16 +944,15 @@ button:focus {
 .cbi-button-add:focus,
 .cbi-input-add:active,
 .cbi-input-add:focus {
-    border-color: #948fe1;
+    border-color: #404040;
     opacity: .8;
 }
 
 .cbi-button-remove,
 .cbi-input-remove,
 .cbi-section-remove input {
-    background: #c00;
-    border-color: #c00;
-    color: #fff;
+    border-color: #c44;
+    color: #c44;
 }
 
 .cbi-button-remove:active,
@@ -972,8 +967,8 @@ button:focus {
 
 .cbi-button-reload,
 .cbi-input-reload {
-    background: rgb(0, 171, 232);
-    border-color: rgb(0, 171, 232);
+    background: rgb(148, 143, 225);
+    border-color: rgb(148, 143, 225);
     color: #fff;
 }
 
@@ -981,7 +976,7 @@ button:focus {
 .cbi-button-reload:focus,
 .cbi-input-reload:active,
 .cbi-input-reload:focus {
-    border-color: rgb(0, 171, 232);
+    border-color: rgb(148, 143, 225);
     opacity: .8;
 }
 
@@ -1017,23 +1012,22 @@ button:focus {
 
 .cbi-button-apply,
 .cbi-input-apply {
-    background: rgb(148, 143, 225);
-    border-color: rgb(148, 143, 225);
-    color: #fff;
+    border-color: #0069d6;
+    color: #0069d6;
 }
 
 .cbi-button-apply:active,
 .cbi-button-apply:focus,
 .cbi-input-apply:active,
 .cbi-input-apply:focus {
-    border-color: rgb(148, 143, 225);
+    border-color: rgb(0, 171, 232);
     opacity: .8;
 }
 
 .cbi-button-save,
 .cbi-input-save {
-    background: rgb(0, 171, 232);
-    border-color: rgb(0, 171, 232);
+    background: rgb(148, 143, 225);
+    border-color: rgb(148, 143, 225);
     color: #fff;
 }
 
@@ -1041,7 +1035,7 @@ button:focus {
 .cbi-button-save:focus,
 .cbi-input-save:active,
 .cbi-input-save:focus {
-    border-color: rgb(0, 171, 232);
+    border-color: rgb(148, 143, 225);
     opacity: .8;
 }
 
@@ -1078,7 +1072,7 @@ button:focus {
 }
 
 .ifacebox .ifacebox-head.active {
-    background: #b9b6eb;
+    background: #90c0e0;
 }
 
 .ifacebox .ifacebox-body {
@@ -1162,6 +1156,11 @@ button:focus {
 }
 
 .network-status-table {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cbi-tooltip {
     position: absolute;
     z-index: 1000;
     left: -10000px;
@@ -1172,14 +1171,6 @@ button:focus {
     opacity: 0;
     transition: opacity .25s ease-in;
     padding: 2px 5px;
-}
-
-.cbi-tooltip {
-    position: absolute;
-    z-index: 1000;
-    left: -1000px;
-    opacity: 0;
-    transition: opacity .25s ease-out;
 }
 
 .cbi-tooltip-container {
@@ -1234,7 +1225,7 @@ button:focus {
 /* Footer */
 
 footer {
-    border-top: 2px solid #948fe1;
+    border-top: 1px solid #ddd;
     color: #111;
     text-align: center;
     padding: 10px 0;
@@ -1242,13 +1233,8 @@ footer {
 }
 
 footer a {
-    color: #726bda;
+    color: #0069d6;
 }
-
-footer a:hover {
-    color: #fff;
-}
-
 
 /* diy */
 
@@ -1304,7 +1290,7 @@ body.node-main-login .alert-message {
     text-indent: -500px;
     overflow: hidden;
     border-radius: 60px;
-    /* border: #948fe1 3px solid; */
+    /* border: #0069d6 3px solid; */
     background-image: url(wifi.png);
     background-size: cover;
     /* box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4); */
@@ -1356,7 +1342,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     max-width: unset;
     min-height: 32px;
     min-width: 270px;
-    background: #d9d6ff !important;
+    background: #b4e7ff !important;
     border-radius: 3px;
     padding: 1em;
     margin: 0;
@@ -1390,7 +1376,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     position: absolute;
     padding: 15px;
     margin-bottom: 10px;
-    background: #d9d6ff;
+    background: #b4e7ff;
     border: 1px solid rgba(0, 0, 0, .1);
     border-width: 2px 0;
 }*/
@@ -1440,7 +1426,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     max-width: 400px;
     width: auto;
     background: white;
-    border: 1px solid #118af3;
+    border: 1px solid #0069d6;
     border-radius: 5px;
     box-sizing: border-box;
     padding: 0.3em !important;
@@ -1450,7 +1436,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     margin-bottom: 4px;
     box-shadow: 0 0 2px #ccc;
     background: #fff;
-    border: 1px solid #118af3;
+    border: 1px solid #0069d6;
     border-radius: 3px;
     position: relative;
     pointer-events: none;
@@ -1503,6 +1489,8 @@ body.modal-overlay-active #modal_overlay>.modal {
 .cbi-page-actions .cbi-button-apply,
 .cbi-section-actions .cbi-button-edit {
     color: #fff;
+    background: #0069d6;
+    border: 1px solid #0069d6;
 }
 
 .cbi-dropdown {
@@ -1524,7 +1512,7 @@ body.modal-overlay-active #modal_overlay>.modal {
 }
 
 .cbi-progressbar>div {
-    background: #d9d6ff;
+    background: #90c0e0;
     height: 100%;
     transition: width .25s ease-in;
     width: 0%;
