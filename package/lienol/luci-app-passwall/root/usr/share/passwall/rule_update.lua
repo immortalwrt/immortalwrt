@@ -39,7 +39,7 @@ local function wget(url, file)
     return trim(stdout)
 end
 
-local rule_path = "/etc/config/" .. name .. "_rule"
+local rule_path = "/usr/share/" .. name .. "/rules"
 local url_main = "https://raw.githubusercontent.com/hq450/fancyss/master/rules"
 local reboot = 0
 local gfwlist_update = 0
@@ -70,14 +70,15 @@ if version then
 		local new_version = luci.sys.exec("echo -n $(echo '" .. gfwlist .. "' | awk '{print $1}')")
 		local new_md5 = luci.sys.exec("echo -n $(echo '" .. gfwlist .. "' | awk '{print $3}')")
 		if new_version ~= "" and new_md5 ~= "" then
+			local old_version = ucic:get_first(name, 'global_rules', "gfwlist_version", "nil")
 			local old_md5 = luci.sys.exec("echo -n $(md5sum " .. rule_path .. "/gfwlist.conf | awk '{print $1}')")
-			if old_md5 ~= new_md5 then
+			if old_md5 ~= new_md5 or old_version ~= new_version then
 				log("开始更新gfwlist...")
 				wget(url_main .. "/gfwlist.conf", "/tmp/gfwlist_tmp")
 				local download_md5 = luci.sys.exec("echo -n $([ -f '/tmp/gfwlist_tmp' ] && md5sum /tmp/gfwlist_tmp | awk '{print $1}')")
 				if download_md5 == new_md5 then
 					luci.sys.exec("mv -f /tmp/gfwlist_tmp " .. rule_path .. "/gfwlist.conf")
-					uci.set(name, ucic:get_first(name, 'global_rules'), "gfwlist_version", new_version)
+					ucic:set(name, ucic:get_first(name, 'global_rules'), "gfwlist_version", new_version)
 					ucic:commit(name)
 					reboot = 1
 					log("更新gfwlist成功...")
@@ -95,14 +96,15 @@ if version then
 		local new_version = luci.sys.exec("echo -n $(echo '" .. chnroute .. "' | awk '{print $1}')")
 		local new_md5 = luci.sys.exec("echo -n $(echo '" .. chnroute .. "' | awk '{print $3}')")
 		if new_version ~= "" and new_md5 ~= "" then
+			local old_version = ucic:get_first(name, 'global_rules', "chnroute_version", "nil")
 			local old_md5 = luci.sys.exec("echo -n $(md5sum " .. rule_path .. "/chnroute | awk '{print $1}')")
-			if old_md5 ~= new_md5 then
+			if old_md5 ~= new_md5 or old_version ~= new_version then
 				log("开始更新chnroute...")
 				wget(url_main .. "/chnroute.txt", "/tmp/chnroute_tmp")
 				local download_md5 = luci.sys.exec("echo -n $([ -f '/tmp/chnroute_tmp' ] && md5sum /tmp/chnroute_tmp | awk '{print $1}')")
 				if download_md5 == new_md5 then
 					luci.sys.exec("mv -f /tmp/chnroute_tmp " .. rule_path .. "/chnroute")
-					uci.set(name, ucic:get_first(name, 'global_rules'), "chnroute_version", new_version)
+					ucic:set(name, ucic:get_first(name, 'global_rules'), "chnroute_version", new_version)
 					ucic:commit(name)
 					reboot = 1
 					log("更新chnroute成功...")
@@ -120,14 +122,15 @@ if version then
 		local new_version = luci.sys.exec("echo -n $(echo '" .. chnlist .. "' | awk '{print $1}')")
 		local new_md5 = luci.sys.exec("echo -n $(echo '" .. chnlist .. "' | awk '{print $3}')")
 		if new_version ~= "" and new_md5 ~= "" then
+			local old_version = ucic:get_first(name, 'global_rules', "chnlist_version", "nil")
 			local old_md5 = luci.sys.exec("echo -n $(md5sum " .. rule_path .. "/chnlist | awk '{print $1}')")
-			if old_md5 ~= new_md5 then
+			if old_md5 ~= new_md5 or old_version ~= new_version then
 				log("开始更新chnlist...")
 				wget(url_main .. "/cdn.txt", "/tmp/chnlist_tmp")
 				local download_md5 = luci.sys.exec("echo -n $([ -f '/tmp/chnlist_tmp' ] && md5sum /tmp/chnlist_tmp | awk '{print $1}')")
 				if download_md5 == new_md5 then
 					luci.sys.exec("mv -f /tmp/chnlist_tmp " .. rule_path .. "/chnlist")
-					uci.set(name, ucic:get_first(name, 'global_rules'), "chnlist_version", new_version)
+					ucic:set(name, ucic:get_first(name, 'global_rules'), "chnlist_version", new_version)
 					ucic:commit(name)
 					reboot = 1
 					log("更新chnlist成功...")
@@ -140,9 +143,9 @@ if version then
 		end
 	end
 end
-uci.set(name, ucic:get_first(name, 'global_rules'), "gfwlist_update", gfwlist_update)
-uci.set(name, ucic:get_first(name, 'global_rules'), "chnroute_update", chnroute_update)
-uci.set(name, ucic:get_first(name, 'global_rules'), "chnlist_update", chnlist_update)
+ucic:set(name, ucic:get_first(name, 'global_rules'), "gfwlist_update", gfwlist_update)
+ucic:set(name, ucic:get_first(name, 'global_rules'), "chnroute_update", chnroute_update)
+ucic:set(name, ucic:get_first(name, 'global_rules'), "chnlist_update", chnlist_update)
 ucic:commit(name)
 
 if reboot == 1 then

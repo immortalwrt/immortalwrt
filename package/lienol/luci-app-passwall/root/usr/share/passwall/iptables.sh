@@ -202,11 +202,12 @@ filter_vpsip() {
 							local top_host=$(echo ${server%.*} | awk -F '.' '{print $NF}')
 							[ "$suffix" == "$top_host" ] && continue
 							[ -n "$suffix" -a -n "$top_host" ] && tmp="$top_host.$suffix"
-							is_gfwlist=$(cat $TMP_DNSMASQ_PATH/gfwlist.conf | grep -c "$tmp")
-							[ "$is_gfwlist" == 0 ] && {
+							[ "tmp" == "google.com" ] && continue
+							#is_gfwlist=$(cat $TMP_DNSMASQ_PATH/gfwlist.conf | grep -c "$tmp")
+							#[ "$is_gfwlist" == 0 ] && {
 								has=$([ -f "$TMP_DNSMASQ_PATH/vpsiplist_host.conf" ] && cat $TMP_DNSMASQ_PATH/vpsiplist_host.conf | grep "$server")
 								[ -z "$has" ] && echo "$server" | sed -e "/^$/d" | sed "s/^/ipset=&\//g" | sed "s/$/\/&vpsiplist/g" | sort | awk '{if ($0!=line) print;line=$0}' >> $TMP_DNSMASQ_PATH/vpsiplist_host.conf
-							}
+							#}
 						fi
 					}
 				}
