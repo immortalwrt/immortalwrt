@@ -54,8 +54,11 @@ uci_get_by_type() {
 add_cron() {
 	sed -i '/vssr.log/d' $CRON_FILE
 	echo '0 1 * * 0 echo "" > /tmp/vssr.log' >>$CRON_FILE
-	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/subscribe.lua" >> $CRON_FILE
+#	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/subscribe.lua" >> $CRON_FILE
 	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/update.lua" >> $CRON_FILE
+        [ -n "$(grep -w "/usr/share/vssr/subscribe.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/vssr\/subscribe.sh/d' $CRON_FILE
+	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/share/vssr/subscribe.sh" >> $CRON_FILE
+        [ -z "$(grep -w "/usr/share/vssr/update.sh" $CRON_FILE)" ] && echo "0 5 * * 0 /usr/share/vssr/update.sh" >> $CRON_FILE       
 	crontab $CRON_FILE
 }
 
@@ -614,6 +617,7 @@ start_redir() {
         sscmd="/usr/bin/v2ray/v2ray"
        elif [ "$stype" == "trojan" ] ;then
         sscmd="/usr/sbin/trojan"
+
     fi
 		local utype=$(uci_get_by_name $UDP_RELAY_SERVER type)
     if [ "$utype" == "ss" ] ;then
@@ -624,6 +628,7 @@ start_redir() {
         ucmd="/usr/bin/v2ray/v2ray"
        elif [ "$utype" == "trojan" ] ;then
         ucmd="/usr/sbin/trojan"
+ 
      fi
   if [ "$(uci_get_by_type global threads 0)" = "0" ] ;then
     threads=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
@@ -642,14 +647,16 @@ start_redir() {
 
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Shadowsocks/ShadowsocksR $threads 线程 已启动!" >> /tmp/vssr.log
   elif [ "$stype" == "v2ray" ] ;then
+   for i in $(seq 1 $threads); do
     $sscmd -config /var/etc/v2-ssr-retcp.json >/dev/null 2>&1 &
-    echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd -version | head -1) 已启动!" >> /tmp/vssr.log
+    done
+    echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd -version | head -1) $threads 线程 已启动!" >> /tmp/vssr.log
 
   elif [ "$stype" == "trojan" ] ;then
   for i in $(seq 1 $threads); do
     $sscmd --config /var/etc/trojan-ssr-retcp.json >/dev/null 2>&1 & 
     done
-    echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd --version 2>&1 | head -1) 已启动!" >> /tmp/vssr.log
+    echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd --version 2>&1 | head -1) $threads 线程 已启动!" >> /tmp/vssr.log
 
 	fi
 
@@ -896,6 +903,7 @@ start_server() {
 	gen_serv_include
 	return 0
 }
+
 start_local() {
 	local local_server=$(uci_get_by_type socks5_proxy server)
 	local http_enable=$(uci_get_by_type socks5_proxy http_enable)
@@ -1051,7 +1059,7 @@ stop() {
 	killall -q -9 vssr-monitor
 	killall -q -9 ss-redir
 	killall -q -9 ssr-redir
-                 killall -q -9 trojan
+        killall -q -9 trojan
 	killall -q -9 v2ray
 	killall -q -9 ssr-server
 	killall -q -9 ss-server
@@ -1066,8 +1074,8 @@ stop() {
 	killall -q -9 obfs-local
 	killall -q -9 obfs-server
 	killall -q -9 chinadns
-                 killall -q -9 udp2raw
-                 killall -q -9 udpspeeder
+        killall -q -9 udp2raw
+        killall -q -9 udpspeeder
                  /usr/bin/udp2raw --clear >/dev/null
 	if [ -f /var/run/pdnsd.pid ] ;then
 		kill $(cat /var/run/pdnsd.pid) >/dev/null 2>&1

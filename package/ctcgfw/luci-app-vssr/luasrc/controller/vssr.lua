@@ -47,13 +47,15 @@ end
               _("SSR Server"), 20).leaf = true
     end
 entry({"admin", "vpn", "vssr", "status"},form("vssr/status"),_("Status"), 23).leaf = true
-    entry({"admin", "vpn", "vssr", "log"}, cbi("vssr/log"), _("Log"), 30).leaf =
-        true
+    
+entry({"admin", "vpn", "vssr", "logview"}, cbi("vssr/logview", {hideapplybtn=true, hidesavebtn=true, hideresetbtn=true}), _("Log") ,80).leaf=true
+      
 
     entry({"admin", "vpn", "vssr", "refresh"}, call("refresh_data")) -- 更新白名单和GFWLIST
     entry({"admin", "vpn", "vssr", "checkport"}, call("check_port")) -- 检测单个端口并返回Ping
     entry({"admin", "vpn", "vssr", "checkports"}, call("check_ports"))
     entry({"admin", "vpn", "vssr", "ping"}, call("act_ping")).leaf=true
+   entry({"admin", "vpn", "vssr", "fileread"}, call("act_read"), nil).leaf=true
     entry({"admin", "vpn", "vssr", "run"}, call("act_status")) -- 检测全局服务器状态
     entry({"admin", "vpn", "vssr", "change"}, call("change_node")) -- 切换节点
     entry({"admin", "vpn", "vssr", "allserver"}, call("get_servers")) -- 获取所有节点Json
@@ -533,4 +535,17 @@ function get_flag()
     e.flag = luci.sys.exec(cmd1)
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
+end
+
+function act_read(lfile)
+	local NXFS = require "nixio.fs"
+	local HTTP = require "luci.http"
+	local lfile = HTTP.formvalue("lfile")
+	local ldata={}
+	ldata[#ldata+1] = NXFS.readfile(lfile) or "_nofile_"
+	if ldata[1] == "" then
+		ldata[1] = "_nodata_"
+	end
+	HTTP.prepare_content("application/json")
+	HTTP.write_json(ldata)
 end

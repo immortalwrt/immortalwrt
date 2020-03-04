@@ -800,7 +800,7 @@ msgid "Plugin Opts"
 msgstr "插件参数"
 
 msgid "Before subscribing please click below to delete all servers in the subscription"
-msgstr "订阅前请点击下面的删除所有服务器在订阅"
+msgstr "使用此订阅前请删除所有服务器在订阅"
 
 msgid "Chnroute Setting"
 msgstr "国内IP段数据库更新设置"
@@ -854,4 +854,15 @@ msgstr "SS/SSR/V2RAY 服务端"
 msgid "Delete All Subscribe Severs"
 msgstr "删除所有订阅服务器节点"
 
+msgid "Update All Subscribe Severs"
+msgstr "更新所有订阅服务器节点"
+
+msgid "No special needs, please click here to subscribe to update"
+msgstr "没有特殊需要，请点击这里订阅更新"
+
+msgid "Running Details:"
+msgstr "进程详情："
+
+msgid "File Viewer"
+msgstr "文件查看器"
 
