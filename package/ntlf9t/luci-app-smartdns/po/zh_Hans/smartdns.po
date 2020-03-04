@@ -11,10 +11,25 @@ msgid "SmartDNS Server"
 msgstr "SmartDNS 服务器"
 
 msgid "SmartDNS is a local high-performance DNS server, supports finding fastest IP, supports ad filtering, and supports avoiding DNS poisoning."
-msgstr "SmartDNS是一个本地高性能DNS服务器，支持避免域名污染，支持返回最快IP，支持广告过滤。"
+msgstr "SmartDNS是一个本地高性能DNS服务器，支持返回最快IP，支持广告过滤。"
 
 msgid "Custom Settings"
 msgstr "自定义设置"
+
+msgid "General Settings"
+msgstr "基本设置"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Advanced Settings"
+msgstr "高级设置"
+
+msgid "RUNNING"
+msgstr "运行中"
+
+msgid "NOT RUNNING"
+msgstr "未运行"
 
 msgid "Generate Coredump"
 msgstr "生成coredump"
@@ -163,7 +178,7 @@ msgstr "跳过address SOA(#)规则。"
 msgid "Skip Dualstack Selection"
 msgstr "跳过双栈优选"
 
-msgid "Skip Sualstack Selection."
+msgid "Skip Dualstack Selection."
 msgstr "跳过双栈优选。"
 
 msgid "Skip Cache"
@@ -171,6 +186,12 @@ msgstr "跳过cache"
 
 msgid "Skip Cache."
 msgstr "跳过cache。"
+
+msgid "Force AAAA SOA"
+msgstr "停用IPV6地址解析"
+
+msgid "Force AAAA SOA."
+msgstr "停用IPV6地址解析。"
 
 msgid "Upstream Servers"
 msgstr "上游服务器"
@@ -282,7 +303,3 @@ msgstr "捐助smartdns项目"
 
 msgid "Donate"
 msgstr "捐助"
-
-
-
-
