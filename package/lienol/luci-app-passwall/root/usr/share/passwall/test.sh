@@ -9,22 +9,32 @@ echolog() {
 	echo -e "$d: $1" >> $LOG_FILE
 }
 
+config_t_get() {
+	local index=0
+	[ -n "$4" ] && index=$4
+	local ret=$(uci -q get $CONFIG.@$1[$index].$2 2>/dev/null)
+	echo ${ret:=$3}
+}
+
 test_url() {
-	status=$(/usr/bin/curl -I -o /dev/null -s --connect-timeout 2 --retry 1 -w %{http_code} "$1" | grep 200)
-	[ "$?" != 0 ] && {
-		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=2 --tries 1 "$1")
-		[ "$?" == 0 ] && status=200
-	}
+	local url=$1
+	local try=1
+	[ -n "$2" ] && try=$2
+	local timeout=2
+	[ -n "$3" ] && timeout=$3
+	status=$(/usr/bin/wget --no-check-certificate --spider --timeout=$timeout --tries $try "$url")
+	[ "$?" == 0 ] && status=200
 	echo $status
 }
 
 test_proxy() {
+	local try=5
 	result=0
-	status=$(test_url "https://www.google.com")
+	status=$(test_url "https://www.google.com" $try)
 	if [ "$status" = "200" ]; then
 		result=0
 	else
-		status2=$(test_url "https://www.baidu.com")
+		status2=$(test_url "https://www.baidu.com" $try)
 		if [ "$status2" = "200" ]; then
 			result=1
 		else
@@ -35,85 +45,48 @@ test_proxy() {
 }
 
 test_auto_switch() {
-	if [ -f "/var/etc/$CONFIG/tcp_server_id" ]; then
-		TCP_NODES1=$(cat /var/etc/$CONFIG/tcp_server_id)
+	local type=$1
+	local index=$2
+	local b_tcp_nodes=$3
+	local now_node
+	if [ -f "/var/etc/$CONFIG/id/${type}_${index}" ]; then
+		now_node=$(cat /var/etc/$CONFIG/id/${type}_${index})
 	else
-		rm -f $LOCK_FILE
-		exit 1
+		return 1
 	fi
 
-	failcount=1
-	while [ "$failcount" -le 5 ]; do
-		status=$(test_proxy)
-		if [ "$status" == 2 ]; then
-			echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"
-			break
-		elif [ "$status" == 1 ]; then
-			echolog "自动切换检测：第$failcount次检测异常"
-			let "failcount++"
-			[ "$failcount" -ge 5 ] && {
-				echolog "自动切换检测：检测异常，切换节点"
-				TCP_NODES=$(uci -q get $CONFIG.@auto_switch[0].tcp_node)
-				has_backup_server=$(echo $TCP_NODES | grep $TCP_NODES1)
-				setserver=
-				if [ -z "$has_backup_server" ]; then
-					setserver=$(echo $TCP_NODES | awk -F ' ' '{print $1}')
-				else
-					setserver=$TCP_NODES1
-					flag=0
-					for server in $has_backup_server; do
-						if [ "$flag" == 0 ]; then
-							if [ "$TCP_NODES1" == "$server" ]; then
-								flag=1
-								continue
-							fi
-						fi
-						if [ "$flag" == 1 ]; then
-							flag=2
-							continue
-						fi
-						if [ "$flag" == 2 ]; then
-							setserver=$server
-							break
-						fi
-					done
-				fi
-				rm -f $LOCK_FILE
-				uci set $CONFIG.@global[0].tcp_node=$setserver
-				uci commit $CONFIG
-				/etc/init.d/$CONFIG restart
-				exit 1
-			}
-			sleep 5s
-		elif [ "$status" == 0 ]; then
-			echolog "自动切换检测：检测正常"
-			break
+	status=$(test_proxy)
+	if [ "$status" == 2 ]; then
+		echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"
+		return 1
+	elif [ "$status" == 1 ]; then
+		echolog "自动切换检测：${type}_${index}节点异常，开始切换节点！"
+		new_node=
+		in_backup_nodes=$(echo $b_tcp_nodes | grep $now_node)
+		# 判断当前节点是否存在于备用节点列表里
+		if [ -z "$in_backup_nodes" ]; then
+			# 如果不存在，设置第一次节点为新的节点
+			new_node=$(echo $b_tcp_nodes | awk -F ' ' '{print $1}')
+		else
+			# 如果存在，设置下一个备用节点为新的节点
+			local count=$(expr $(echo $b_tcp_nodes | grep -o ' ' | wc -l) + 1)
+			local next_node=$(echo $b_tcp_nodes | awk -F "$now_node" '{print $2}' | awk -F " " '{print $1}')
+			if [ -z "$next_node" ]; then
+				new_node=$(echo $b_tcp_nodes | awk -F ' ' '{print $1}')
+			else
+				new_node=$next_node
+			fi
 		fi
-	done
-}
-
-test_reconnection() {
-	failcount=1
-	while [ "$failcount" -le 5 ]; do
-		status=$(test_proxy)
-		if [ "$status" == 2 ]; then
-			echolog "掉线重连检测：无法连接到网络，请检查网络是否正常！"
-			break
-		elif [ "$status" == 1 ]; then
-			echolog "掉线重连检测：第$failcount次检测异常"
-			let "failcount++"
-			[ "$failcount" -ge 5 ] && {
-				echolog "掉线重连检测：检测异常，重启程序"
-				rm -f $LOCK_FILE
-				/etc/init.d/$CONFIG restart
-				exit 1
-			}
-			sleep 5s
-		elif [ "$status" == 0 ]; then
-			echolog "掉线重连检测：检测正常"
-			break
-		fi
-	done
+		rm -f $LOCK_FILE
+		uci set $CONFIG.@global[0].tcp_node${index}=$new_node
+		uci commit $CONFIG
+		/etc/init.d/$CONFIG restart > /dev/null &
+		echolog "自动切换检测：${type}_${index}节点切换完毕！"
+		return 0
+	elif [ "$status" == 0 ]; then
+		echolog "自动切换检测：${type}_${index}节点正常。"
+		return 0
+	fi
 }
 
 start() {
@@ -123,13 +96,19 @@ start() {
 	else
 		touch $LOCK_FILE
 	fi
-
-	is_auto_switch=$(uci show $CONFIG.@auto_switch[0] | grep "tcp_node")
-	if [ -z "$is_auto_switch" ]; then
-		test_reconnection
-	else
-		test_auto_switch
-	fi
+	
+	ENABLED=$(config_t_get global enabled 0)
+	[ "$ENABLED" != 1 ] && return 1
+	ENABLED=$(config_t_get auto_switch enable 0)
+	[ "$ENABLED" != 1 ] && return 1
+	TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
+	for i in $(seq 1 $TCP_NODE_NUM); do
+		eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
+		eval tmp=\$TCP_NODE$i
+		[ -n "$tmp" ] && {
+			test_auto_switch TCP $i $tmp
+		}
+	done
 
 	rm -f $LOCK_FILE
 	exit

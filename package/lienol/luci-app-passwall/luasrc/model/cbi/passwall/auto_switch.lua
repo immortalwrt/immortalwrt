@@ -5,8 +5,9 @@ local appname = "passwall"
 local n = {}
 uci:foreach(appname, "nodes", function(e)
     if e.type and e.remarks and e.address and e.port then
-        n[e[".name"]] = "%s：[%s] %s:%s" %
-                            {e.type, e.remarks, e.address, e.port}
+        if (e.type == "V2ray_balancing" or e.type == "V2ray_shunt") or (e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= ".") then
+            n[e[".name"]] = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
+        end
     end
 end)
 

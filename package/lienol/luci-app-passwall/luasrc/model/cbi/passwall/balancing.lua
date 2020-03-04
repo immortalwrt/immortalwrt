@@ -6,9 +6,11 @@ local appname = "passwall"
 
 local n = {}
 uci:foreach(appname, "nodes", function(e)
-    if e.remarks and e.address and e.port and e.address ~= "127.0.0.1" then
-        e.remark = "[%s] %s:%s" % {e.remarks, e.address, e.port}
-        n[e[".name"]] = e
+    if e.type and e.remarks and e.port and e.address and e.address ~= "127.0.0.1" then
+        if e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= "." then
+            e.remark = "%s：[%s] %s:%s" % {translate(e.type), e.remarks, e.address, e.port}
+            n[e[".name"]] = e
+        end
     end
 end)
 

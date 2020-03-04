@@ -23,8 +23,8 @@ function index()
           _("Basic Settings"), 1).dependent = true
     entry({"admin", "vpn", "passwall", "node_list"}, cbi("passwall/node_list"),
           _("Node List"), 2).dependent = true
-    -- entry({"admin", "vpn", "passwall", "auto_switch"},
-    --      cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
+    entry({"admin", "vpn", "passwall", "auto_switch"},
+          cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
     entry({"admin", "vpn", "passwall", "other"},
           cbi("passwall/other", {autoapply = true}), _("Other Settings"), 94).leaf =
         true
@@ -36,9 +36,6 @@ function index()
           _("Rule Update"), 96).leaf = true
     entry({"admin", "vpn", "passwall", "acl"}, cbi("passwall/acl"),
           _("Access control"), 97).leaf = true
-    entry({"admin", "vpn", "passwall", "rule_list"},
-          cbi("passwall/rule_list", {autoapply = true}),
-          _("Set Blacklist And Whitelist"), 98).leaf = true
     entry({"admin", "vpn", "passwall", "log"}, form("passwall/log"),
           _("Watch Logs"), 99).leaf = true
     entry({"admin", "vpn", "passwall", "node_config"},
