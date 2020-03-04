@@ -459,7 +459,9 @@ local function parse_link(raw, remark, md5_str, manual)
 						result.remarks:find("QQ群") or
 						result.remarks:find("官网") or
 						not result.address or
-						result.address:match("[^0-9a-zA-Z%-%.%s]") -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
+						result.address:match("[^0-9a-zA-Z%-%_%.%s]") or -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
+						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧
+						result.address:sub(#result.address) == "." -- 结尾是.
 					then
 						log('丢弃无效节点: ' .. result.type ..' 节点, ' .. result.remarks)
 					else

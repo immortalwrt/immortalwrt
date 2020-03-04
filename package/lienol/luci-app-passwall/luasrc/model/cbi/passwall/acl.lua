@@ -21,8 +21,8 @@ o.rows = 8
 o.wrap = "off"
 o.cfgvalue = function(self, section) return fs.readfile(w_host_file) or "" end
 o.write = function(self, section, value)
-    fs.writefile(w_host_file, value:gsub("\r\n", "\n"):gsub("http://", ""):gsub(
-                     "https://", ""))
+    fs.writefile(w_host_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
+                     "http://", ""))
 end
 o.remove = function(self, section, value) fs.writefile(w_host_file, "") end
 
@@ -36,8 +36,8 @@ o.rows = 8
 o.wrap = "off"
 o.cfgvalue = function(self, section) return fs.readfile(w_ip_file) or "" end
 o.write = function(self, section, value)
-    fs.writefile(w_ip_file, value:gsub("\r\n", "\n"):gsub("http://", ""):gsub(
-                     "https://", ""))
+    fs.writefile(w_ip_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
+                     "http://", ""))
 end
 o.remove = function(self, section, value) fs.writefile(w_ip_file, "") end
 
@@ -52,8 +52,8 @@ o.rows = 8
 o.wrap = "off"
 o.cfgvalue = function(self, section) return fs.readfile(b_host_file) or "" end
 o.write = function(self, section, value)
-    fs.writefile(b_host_file, value:gsub("\r\n", "\n"):gsub("http://", ""):gsub(
-                     "https://", ""))
+    fs.writefile(b_host_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
+                     "http://", ""))
 end
 o.remove = function(self, section, value) fs.writefile(b_host_file, "") end
 
@@ -67,8 +67,8 @@ o.rows = 8
 o.wrap = "off"
 o.cfgvalue = function(self, section) return fs.readfile(b_ip_file) or "" end
 o.write = function(self, section, value)
-    fs.writefile(b_ip_file, value:gsub("\r\n", "\n"):gsub("http://", ""):gsub(
-                     "https://", ""))
+    fs.writefile(b_ip_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
+                     "http://", ""))
 end
 o.remove = function(self, section, value) fs.writefile(b_ip_file, "") end
 
