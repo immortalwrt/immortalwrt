@@ -6,6 +6,6 @@ new_version=`wget -qO- "https://github.com/frainzy1477/luci-app-clash/tags"| gre
 if [ $new_version ]; then
 echo $new_version > /usr/share/clash/new_luci_version 2>&1 & >/dev/null
 elif [ $new_version =="" ]; then
-echo 0 > /usr/share/clash/new__luci_version 2>&1 & >/dev/null
+echo 0 > /usr/share/clash/new_luci_version 2>&1 & >/dev/null
 fi
  
