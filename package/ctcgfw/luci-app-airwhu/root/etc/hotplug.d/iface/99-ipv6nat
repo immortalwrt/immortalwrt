@@ -2,10 +2,12 @@
 #Author:KyleRicardo
 #Email:shaoyz714@126.com
 
-
 [ "$ACTION" = ifup ] || exit 0
+
 iface=wan6
+
 [ -z "$iface" -o "$INTERFACE" = "$iface" ] || exit 0
+
 ip -6 route add `ip -6 route show default|sed -e 's/from [^ ]* //'`
 logger -t IPv6 "Add IPv6 default route."
 
@@ -28,14 +30,13 @@ COUNT=1
 
 while [ $PROBE -eq 0 ]
 do
-if [ $COUNT -gt $MAX_TRIES ]
-then
-logger -t NAT6 "No IPv6 route found (reached retry limit $MAX_TRIES times)" && exit 1
-fi
-sleep 5
-logger -t NAT6 "Probing IPv6 route ($COUNT time)"
-COUNT=$((COUNT+1))
-PROBE=$(route -A inet6 | grep -c '::/0')
+	if [ $COUNT -gt $MAX_TRIES ];then
+		logger -t NAT6 "No IPv6 route found (reached retry limit $MAX_TRIES times)" && exit 1
+	fi
+	sleep 5
+	logger -t NAT6 "Probing IPv6 route ($COUNT time)"
+	COUNT=$((COUNT+1))
+	PROBE=$(route -A inet6 | grep -c '::/0')
 done
 
 #ip6tables -t nat -I POSTROUTING -s "$LAN_ULA_PREFIX" -o "$WAN6_INTERFACE" -j MASQUERADE
@@ -46,11 +47,8 @@ ip6tables -t nat -I POSTROUTING -s "$LAN_IP6PREFIX" -o "$WAN6_INTERFACE" -j MASQ
 WAN6_GATEWAY=$(ifconfig eth0.2 | grep 'Global' | awk '{print $3}'| awk -F':' '{print $1":"$2":"$3":"$4"::1"}')
 #caculate gateway from wan ipv6
 #WAN6_GATEWAY=$(tracepath6 -n tv.byr.cn | grep ' 1: ' | awk 'NR==1 {print $2}')
-#opkg install iputils-tracepath6 . change tv.byr.cn for faster site. e.g. ipv6.bjtu.edu.cn
 
 #route -A inet6 add 2000::/3 gw "$WAN6_GATEWAY" dev "$WAN6_INTERFACE"
 route -A inet6 add default gw "$WAN6_GATEWAY" dev "$WAN6_INTERFACE"
 
 logger -t NAT6 "Done with IPv6 settings"
-
-
