@@ -26,6 +26,7 @@ usage() {
 		                            define access control mode
 		    -b <wan_ips>            wan ip of will be bypassed
 		    -w <wan_ips>            wan ip of will be forwarded
+		    -B <bp_lan_ips>         lan ip of will be bypassed proxy
 		    -p <fp_lan_ips>         lan ip of will be global proxy
 		    -G <gm_lan_ips>         lan ip of will be game mode proxy
 			-D <proxy_ports>        proxy ports
@@ -88,7 +89,7 @@ ipset_r() {
 EOF
 		ipset -N gfwlist hash:net 2>/dev/null
 		$IPT -N SS_SPEC_WAN_AC
-		$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN
+		$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set ss_spec_wan_ac dst -j RETURN
 		$IPT -A SS_SPEC_WAN_AC -j SS_SPEC_WAN_FW
 	
@@ -99,7 +100,7 @@ EOF
 			$IPT -A SS_SPEC_WAN_AC -m set --match-set china dst -j RETURN
 			$IPT -A SS_SPEC_WAN_AC -m set --match-set gfwlist dst -j SS_SPEC_WAN_FW
 			$IPT -A SS_SPEC_WAN_AC -m set --match-set gmlan src -m set ! --match-set china dst -j SS_SPEC_WAN_FW
-			$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN
+			$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 
 	elif [ "$RUNMODE" = "oversea" ] ;then
 		ipset -N oversea hash:net 2>/dev/null
@@ -110,7 +111,7 @@ EOF
 
 		for ip in $LAN_GM_IP; do ipset -! add gmlan $ip ; done
 			$IPT -A SS_SPEC_WAN_AC -m set --match-set gmlan src -m set --match-set china dst -j SS_SPEC_WAN_FW	
-			$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN	
+			$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN	
 
 	elif [ "$RUNMODE" = "routers" ] ;then
 		ipset -! -R <<-EOF || return 1
@@ -127,14 +128,16 @@ EOF
 	elif [ "$RUNMODE" = "all" ] ;then
 		$IPT -N SS_SPEC_WAN_AC
 		$IPT -A SS_SPEC_WAN_AC -j SS_SPEC_WAN_FW
-		$IPT -I SS_SPEC_WAN_AC -d $server -j RETURN
+		$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 
 	fi
 	
 	ipset -N fplan hash:net 2>/dev/null
 	for ip in $LAN_FP_IP; do ipset -! add fplan $ip ; done
 	$IPT -I SS_SPEC_WAN_AC -m set --match-set fplan src -j SS_SPEC_WAN_FW
-	
+	ipset -N bplan hash:net 2>/dev/null
+	for ip in $LAN_BP_IP; do ipset -! add bplan $ip; done
+	$IPT -I SS_SPEC_WAN_AC -m set --match-set bplan src -j RETURN
 	ipset -N whitelist hash:net 2>/dev/null
 	ipset -N blacklist hash:net 2>/dev/null
 	$IPT -I SS_SPEC_WAN_AC -m set --match-set blacklist src -j SS_SPEC_WAN_FW
@@ -157,6 +160,7 @@ fw_rule() {
 	$IPT -A SS_SPEC_WAN_FW -d 224.0.0.0/4 -j RETURN
 	$IPT -A SS_SPEC_WAN_FW -d 240.0.0.0/4 -j RETURN
 	$IPT -A SS_SPEC_WAN_FW  -p tcp $PROXY_PORTS \
+	         $IPT -A SS_SPEC_WAN_FW  -p tcp $PROXY_PORTS \
 		-j REDIRECT --to-ports $local_port 2>/dev/null || {
 		loger 3 "Can't redirect, please check the iptables."
 		exit 1
@@ -217,8 +221,8 @@ tp_rule() {
 	$ipt -A SS_SPEC_TPROXY -p udp -d 192.168.0.0/16 -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp -d 224.0.0.0/4 -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp -d 240.0.0.0/4 -j RETURN
-	$ipt -A SS_SPEC_TPROXY -p udp -d $SERVER -j RETURN
-  
+	$ipt -A SS_SPEC_TPROXY -p udp ! --dport 53 -d $server -j RETURN
+        $ipt -A SS_SPEC_TPROXY -p udp -m set --match-set bplan src -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src \
 		-j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
   
@@ -326,7 +330,7 @@ EOF
 	return 0
 }
 
-while getopts ":s:l:S:L:i:e:a:b:w:p:G:D:k:oOuUfgrRczh" arg; do
+while getopts ":s:l:S:L:i:e:a:B:b:w:p:G:D:k:oOuUfgrRczh" arg; do
 	case "$arg" in
 		s)
 			server=$OPTARG
@@ -349,6 +353,11 @@ while getopts ":s:l:S:L:i:e:a:b:w:p:G:D:k:oOuUfgrRczh" arg; do
 		a)
 			LAN_AC_IP=$OPTARG
 			;;
+			
+		B)
+		        LAN_BP_IP=$OPTARG
+		        ;;
+				
 		b)
 			WAN_BP_IP=$(for ip in $OPTARG; do echo $ip; done)
 			;;
