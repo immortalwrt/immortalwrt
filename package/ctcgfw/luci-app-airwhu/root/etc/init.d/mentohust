@@ -7,7 +7,7 @@ STOP=10
 
 start()
 {
-	if [$(uci get airwhu.@switch[0].enableauth)];then
+	if [ $(uci get airwhu.@switch[0].enableauth) ];then
 		local Username=$(uci get airwhu.@auth[0].Username)
 		local Password=$(uci get airwhu.@auth[0].Password)
 		local ifname=$(uci get airwhu.@auth[0].ifname)

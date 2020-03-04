@@ -25,11 +25,6 @@ define Package/luci-app-mentohust/conffiles
 /etc/config/mentohust
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Build/Configure
 endef
 
@@ -37,17 +32,16 @@ define Build/Compile
 endef
 
 define Package/luci-app-mentohust/install
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/mentohust
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/mentohust.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(INSTALL_CONF) ./files/root/etc/config/mentohust $(1)/etc/config/mentohust
+	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
+	$(INSTALL_DATA) ./luasrc/model/cbi/mentohust/*.lua $(1)/usr/lib/lua/luci/model/cbi/mentohust/
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./root/etc/config/mentohust $(1)/etc/config/mentohust
+	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/root/etc/init.d/mentohust $(1)/etc/init.d/mentohust
-	$(INSTALL_DATA) ./files/luci/model/cbi/mentohust/general.lua $(1)/usr/lib/lua/luci/model/cbi/mentohust/general.lua
-	$(INSTALL_DATA) ./files/luci/model/cbi/mentohust/log.lua $(1)/usr/lib/lua/luci/model/cbi/mentohust/log.lua
-	$(INSTALL_DATA) ./files/luci/controller/mentohust.lua $(1)/usr/lib/lua/luci/controller/mentohust.lua
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/mentohust.po $(1)/usr/lib/lua/luci/i18n/mentohust.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,luci-app-mentohust))
