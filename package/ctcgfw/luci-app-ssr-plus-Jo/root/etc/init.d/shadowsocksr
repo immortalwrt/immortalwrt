@@ -217,7 +217,7 @@ start_rules() {
 	
 	local local_port=$(uci_get_by_name $GLOBAL_SERVER local_port)
 	local lan_ac_ips=$(uci_get_by_type access_control lan_ac_ips)
-	local lan_ac_mode="b"
+	local lan_ac_mode=$(uci_get_by_type access_control lan_ac_mode)
 	local router_proxy=$(uci_get_by_type access_control router_proxy)
 	if [ "$GLOBAL_SERVER" = "$UDP_RELAY_SERVER" -a $kcp_flag = 0 ]; then
 		ARG_UDP="-u"
@@ -263,6 +263,7 @@ start_rules() {
 		-i "$(uci_get_by_type access_control wan_bp_list)" \
 		-b "$(uci_get_by_type access_control wan_bp_ips)" \
 		-w "$(uci_get_by_type access_control wan_fw_ips)" \
+		-B "$(uci_get_by_type access_control lan_bp_ips)" \
 		-p "$(uci_get_by_type access_control lan_fp_ips)" \
 		-G "$(uci_get_by_type access_control lan_gm_ips)" \
 		-D "$proxyport" \
@@ -679,11 +680,13 @@ start_redir() {
 	    for i in $(seq 1 $threads); do
                                  $sscmd --config /var/etc/trojan-ssr-retcp.json >/dev/null 2>&1 &
 				   done
-                                  echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd --version 2>&1 | head -1) Started!" >> /tmp/ssrplus.log
+                                  echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd --version 2>&1 | head -1) $threads Threads Started!" >> /tmp/ssrplus.log
 
                   elif [ "$stype" == "v2ray" ] ;then
+		   for i in $(seq 1 $threads); do
 		$sscmd -config /var/etc/v2-ssr-retcp.json >/dev/null 2>&1 &
-		echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd -version | head -1) Started!" >> /tmp/ssrplus.log
+		done
+		echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd -version | head -1) $threads Threads Started!" >> /tmp/ssrplus.log
 
 	fi
 	

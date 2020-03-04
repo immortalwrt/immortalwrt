@@ -28,8 +28,8 @@ entry({"admin", "vpn", "shadowsocksr", "appointlist"},form("shadowsocksr/appoint
         entry({"admin", "vpn", "shadowsocksr", "server"},arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")),_("SSR Server"),22).leaf = true
     end
     entry({"admin", "vpn", "shadowsocksr", "status"},form("shadowsocksr/status"),_("Status"), 23).leaf = true
-    entry({"admin", "vpn", "shadowsocksr", "log"}, cbi("shadowsocksr/log"), _("Log"), 30).leaf = true
-
+    entry({"admin", "vpn", "shadowsocksr", "logview"}, cbi("vssr/logview", {hideapplybtn=true, hidesavebtn=true, hideresetbtn=true}), _("Log") ,30).leaf=true
+    entry({"admin", "vpn", "shadowsocksr", "fileread"}, call("act_read"), nil).leaf=true
     entry({"admin", "vpn", "shadowsocksr", "refresh"}, call("refresh_data"))
     entry({"admin", "vpn", "shadowsocksr", "checkport"}, call("check_port"))
     entry({"admin", "vpn", "shadowsocksr", "checkports"}, call("check_ports"))
@@ -65,7 +65,7 @@ function get_subscribe()
         end
         luci.sys.call('uci commit shadowsocksr')
         luci.sys.call(
-            "nohup /usr/share/shadowsocksr/subscribe.sh >/www/check_update.htm 2>/dev/null &")
+              "nohup /usr/bin/lua /usr/share/shadowsocksr/subscribe.lua >/www/check_update.htm 2>/dev/null &")
         
         e.error = 0
     else
@@ -372,5 +372,16 @@ function check_port()
     luci.http.write_json({ret = retstring , used = math.floor(tt*1000 + 0.5)})
 end
 
-
+function act_read(lfile)
+	local NXFS = require "nixio.fs"
+	local HTTP = require "luci.http"
+	local lfile = HTTP.formvalue("lfile")
+	local ldata={}
+	ldata[#ldata+1] = NXFS.readfile(lfile) or "_nofile_"
+	if ldata[1] == "" then
+		ldata[1] = "_nodata_"
+	end
+	HTTP.prepare_content("application/json")
+	HTTP.write_json(ldata)
+end
 
