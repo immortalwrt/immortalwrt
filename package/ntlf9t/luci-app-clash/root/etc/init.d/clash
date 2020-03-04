@@ -33,10 +33,8 @@ revert_dns() {
 add_cron(){
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 #===========================================================================================================================
-	sed -i '/clash.txt/d' $CRON_FILE
-
 	[ -z "$(grep -w "/usr/share/clash/clash-watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/clash-watchdog.sh" >> $CRON_FILE
-	
+	[ -z "$(grep -w "/usr/share/clash/kill_watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/kill_watchdog.sh" >> $CRON_FILE
 	clear=$(uci get clash.config.auto_clear_log 2>/dev/null)
 	if [ "${clear}" -eq 1 ]; then
 	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
@@ -70,6 +68,7 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 
 del_cron(){
 #=========================================================================================================================== 
+	sed -i '/clash-watchdog.sh/d' $CRON_FILE
 	sed -i '/update_all.sh/d' $CRON_FILE
 	sed -i '/clash.txt/d' $CRON_FILE
 	/etc/init.d/cron restart
