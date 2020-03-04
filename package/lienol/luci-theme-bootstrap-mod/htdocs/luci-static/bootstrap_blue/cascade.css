@@ -927,6 +927,8 @@ button:focus {
     background-position: center;
     background-image: url('../resources/cbi/up.gif'), linear-gradient(#ffffff, #ffffff 50%, #e6e6e6);
     background-repeat: no-repeat;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .cbi-button-down,
@@ -934,6 +936,8 @@ button:focus {
     background-position: center;
     background-image: url('../resources/cbi/down.gif'), linear-gradient(#ffffff, #ffffff 50%, #e6e6e6);
     background-repeat: no-repeat;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .cbi-button-add,

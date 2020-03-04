@@ -148,12 +148,15 @@ header {
 
 .nav a {
     display: block;
-    color: #fff;
     line-height: 40px;
     padding: 0 15px;
+    color: #bfbfbf;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
-.nav a:hover {}
+.nav a:hover {
+    color: white;
+}
 
 
 /* Dropdown */
@@ -924,6 +927,8 @@ button:focus {
     background-position: center;
     background-image: url('../resources/cbi/up.gif'), linear-gradient(#ffffff, #ffffff 50%, #e6e6e6);
     background-repeat: no-repeat;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .cbi-button-down,
@@ -931,6 +936,8 @@ button:focus {
     background-position: center;
     background-image: url('../resources/cbi/down.gif'), linear-gradient(#ffffff, #ffffff 50%, #e6e6e6);
     background-repeat: no-repeat;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .cbi-button-add,
