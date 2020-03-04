@@ -46,8 +46,7 @@ end
 o.default=2
 o.rmempty = false
 
-o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"),
-	translate("Before subscribing please click below to delete all servers in the subscription"))
+o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"))
 o.rmempty = true
 
 o = s:option(Flag, "proxy", translate("Through proxy update"))
@@ -59,6 +58,12 @@ o = s:option(DummyValue, "", "")
 o.rawhtml = true
 o.template = "vssr/update_subscribe"
 
+o = s:option(Button,"update",translate("Update All Subscribe Severs"),translate("No special needs, please click here to subscribe to update"))
+o.inputstyle = "reload"
+o.write = function()
+  luci.sys.call("bash /usr/share/vssr/subscribe.sh >>/tmp/vssr.log 2>&1")
+  luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "vssr", "servers"))
+end
 
 
 o = s:option(Button,"delete",translate("Delete All Subscribe Severs"))
