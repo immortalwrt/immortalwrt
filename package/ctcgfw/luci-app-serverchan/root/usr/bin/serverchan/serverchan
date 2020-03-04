@@ -445,7 +445,8 @@ function up(){
 if [ ! -f "${dir}ipAddress" ] ; then > ${dir}ipAddress;fi
 if [ "$1" ] ;then
 	# 如果 ipAddress 文件中存在此ip，则跳过，待断线检测
-	if ( ! echo ${dir}ipAddress | grep -q -w $1 ) ; then
+	local ip=`cat ${dir}ipAddress | grep -w $1`
+	if [ -z "$ip" ] ; then
 		local ip_mac=`getmac $1`
 		local ip_name=`getname $1 $ip_mac`
 
