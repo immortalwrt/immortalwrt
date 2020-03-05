@@ -28,7 +28,7 @@ entry({"admin", "vpn", "shadowsocksr", "appointlist"},form("shadowsocksr/appoint
         entry({"admin", "vpn", "shadowsocksr", "server"},arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")),_("SSR Server"),22).leaf = true
     end
     entry({"admin", "vpn", "shadowsocksr", "status"},form("shadowsocksr/status"),_("Status"), 23).leaf = true
-    entry({"admin", "vpn", "shadowsocksr", "logview"}, cbi("vssr/logview", {hideapplybtn=true, hidesavebtn=true, hideresetbtn=true}), _("Log") ,30).leaf=true
+    entry({"admin", "vpn", "shadowsocksr", "logview"}, cbi("shadowsocksr/logview", {hideapplybtn=true, hidesavebtn=true, hideresetbtn=true}), _("Log") ,30).leaf=true
     entry({"admin", "vpn", "shadowsocksr", "fileread"}, call("act_read"), nil).leaf=true
     entry({"admin", "vpn", "shadowsocksr", "refresh"}, call("refresh_data"))
     entry({"admin", "vpn", "shadowsocksr", "checkport"}, call("check_port"))
