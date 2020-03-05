@@ -866,3 +866,5 @@ msgstr "进程详情："
 msgid "File Viewer"
 msgstr "文件查看器"
 
+msgid "Enable Authentication"
+msgstr "启用 用户名/密码 认证"

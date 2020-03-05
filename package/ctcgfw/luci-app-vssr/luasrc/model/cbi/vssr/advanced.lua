@@ -77,7 +77,7 @@ o = s:option(Flag, "adblock", translate("Enable adblock"))
 o.rmempty = false
 
 o = s:option(Value, "adblock_url", translate("adblock_url"))
-o.default = "https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt"
+o.default = "https://gitee.com/privacy-protection-tools/anti-ad/raw/master/anti-ad-for-dnsmasq.conf"
 
 -- [[ chnroute ]]
 s = m:section(TypedSection, "global", translate("Chnroute Setting"))
@@ -87,7 +87,7 @@ o = s:option(Flag, "chnroute", translate("Enable custom chnroute"))
 o.rmempty = false
 
 o = s:option(Value, "chnroute_url", translate("Update url"))
-o.default = "https://cdn.jsdelivr.net/gh/17mon/china_ip_list/china_ip_list.txt"
+o.default = "https://ispip.clang.cn/all_cn.txt"
 
 -- [[ haProxy ]]--
 
