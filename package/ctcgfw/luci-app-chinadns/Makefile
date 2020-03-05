@@ -32,11 +32,6 @@ define Package/luci-app-chinadns/description
 	LuCI Support for ChinaDNS.
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Build/Configure
 endef
 
@@ -66,20 +61,20 @@ define Package/luci-app-chinadns/conffiles
 endef
 
 define Package/luci-app-chinadns/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/chinadns
-	$(INSTALL_DATA) ./files/luci/view/chinadns/chinadns_status.htm $(1)/usr/lib/lua/luci/view/chinadns/chinadns_status.htm
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/chinadns.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/chinadns.lua $(1)/usr/lib/lua/luci/controller/chinadns.lua
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/chinadns
-	$(INSTALL_DATA) ./files/luci/model/cbi/chinadns.lua $(1)/usr/lib/lua/luci/model/cbi/chinadns.lua
+	$(INSTALL_DATA) ./luasrc/controller/chinadns.lua $(1)/usr/lib/lua/luci/controller/chinadns.lua
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
+	$(INSTALL_DATA) ./luasrc/model/cbi/chinadns.lua $(1)/usr/lib/lua/luci/model/cbi/chinadns.lua
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/chinadns
+	$(INSTALL_DATA) ./luasrc/view/chinadns/chinadns_status.htm $(1)/usr/lib/lua/luci/view/chinadns/chinadns_status.htm
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/root/etc/config/chinadns $(1)/etc/config/chinadns
+	$(INSTALL_DATA) ./root/etc/config/chinadns $(1)/etc/config/chinadns
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/chinadns $(1)/etc/init.d/chinadns
+	$(INSTALL_BIN) ./root/etc/init.d/chinadns $(1)/etc/init.d/chinadns
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-chinadns $(1)/etc/uci-defaults/luci-chinadns
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-chinadns $(1)/etc/uci-defaults/luci-chinadns
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/chinadns.po $(1)/usr/lib/lua/luci/i18n/chinadns.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,luci-app-chinadns))
