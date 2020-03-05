@@ -3,20 +3,13 @@
 START=99
 STOP=10
 
-start() {
-	enable=$(uci get serverchan.serverchan.serverchan_enable)
-	if [ $enable -eq 1 ]; then	
-		/usr/bin/serverchan/serverchan &
-		echo "serverchan is starting now ..."
-	else
-		/usr/bin/serverchan/serverchan crontab
-		echo "serverchan is not enable, detect crontab and exit ..."
-		stop
-	fi
+start() {	
+	/usr/bin/serverchan/serverchan &
+	echo "serverchan is starting now ..."
 }
 
 stop() {
-	kill -9 `pgrep -f "/usr/bin/serverchan/serverchan"`  2>/dev/null
+	kill -9 `pgrep -f "/usr/bin/serverchan/serverchan"` 2>/dev/null
 	echo "serverchan exit ..."
 }
 

@@ -58,8 +58,8 @@ function enable_detection(){
 
 # 初始化
 function serverchan_init(){
-	deltemp
 	rm -f ${dir}usage.db >/dev/null 2>&1
+	rm -f ${dir}fd1 >/dev/null 2>&1
 	uci set serverchan.serverchan.send_enable=0
 	uci commit serverchan
 	echo "`date "+%Y-%m-%d %H:%M:%S"` 【初始化】载入配置文件" >> ${logfile}
@@ -174,6 +174,7 @@ function LockFile(){
 			else
 				while [ -f "${dir}serverchan.lock" ] ;
 				do
+				enable_detection 1
 				continue
 				done
 				LockFile lock
@@ -495,10 +496,10 @@ if [ "$1" ] ;then
 				if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 新设备 $ip_name $1 连接了" >> ${logfile};fi
 			fi
 			echo "$1 $ip_mac $ip_name `date +%s` `iw dev $serverchan_interface station dump | grep Station | grep -i -w $ip_mac | sed -nr 's#^.*on (.*))#\1#gp'`" >> ${dir}ipAddress
+			LockFile unlock
 		else
 			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  设备 $ip_name $1 连接失败" >> ${logfile};fi
 		fi
-		LockFile unlock
 	fi
 fi
 }
@@ -560,9 +561,8 @@ if [ "$1" ] ;then
 		sed -i "/$1/d" ${dir}ipAddress
 		usage_down $1
 		fi
-	LockFile unlock
+		LockFile unlock
 	fi
-	unset ip_ms
 fi	
 }
 
@@ -699,9 +699,6 @@ function cpu_load(){
 function send(){
 	uci set serverchan.serverchan.send_enable=3
 	uci commit serverchan
-	read_config
-	deltemp
-	serverchan_cron
 	echo "`date "+%Y-%m-%d %H:%M:%S"`  【定时数据】创建定时任务" >> ${logfile}
 	local send_title=`get_config send_title`
 	if [ -z "$send_title" ] ; then local send_title="路由状态：";fi
@@ -749,20 +746,30 @@ function send(){
 			local IPLIST=$( cat ${dir}ipAddress| awk '{print $1}' | grep -v "^$" | sort -u )
 			for ip in $IPLIST; do
 			if [ ! -z "$ip" ] ; then
-				down $ip &
+				read -u 5
+				{
+				down $ip
+				echo "" >&5
+				}&
 			fi
 			done
 			wait
+			unset ip && unset IPLIST
 			
 			unset IPLIST
 			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【定时数据】开始进行设备接入检测" >> ${logfile};fi
 			local IPLIST=$( cat /proc/net/arp | grep "0x2" | awk  '{print $1}' | grep -v "^$" | sort -u )
 			for ip in $IPLIST; do
 			if [ ! -z "$ip" ] ; then
-				up $ip &
+				read -u 5
+				{
+				up $ip
+				echo "" >&5
+				}&
 			fi
 			done
 			wait
+			unset ip && unset IPLIST
 			local send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 在线设备%0D%0A%0D%0A";
 			
 			unset IPLIST
@@ -778,6 +785,7 @@ function send(){
 				if [ "${#ip_name}" -gt  "20" ] ; then local ip_name=`echo ${ip_name:0:20}"*"`;fi
 				local send_content=${send_content}"%0D%0A%0D%0A     $ip_name  $ip%0D%0A%0D%0A     $ip_total在线 $time1%0D%0A%0D%0A    ----"
 			done
+			unset ip && unset IPLIST
 		fi
 	if [ ! -z "$device_name" ] ; then local send_title="【$device_name】$send_title" ;fi
 	local send_title=$( echo $send_title | sed $'s/\ /%20/g'| sed $'s/\"/%22/g'| sed $'s/\#/%23/g'| sed $'s/\&/%26/g'| sed $'s/\,/%2C/g'| sed $'s/\//%2F/g'| sed $'s/\:/%3A/g'| sed $'s/\;/%3B/g'| sed $'s/\=/%3D/g'| sed $'s/\@/%40/g')
@@ -823,25 +831,37 @@ if [ ! -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ] ; then
 fi
 }
 
+read_config
+deltemp
+serverchan_cron
+
+# 限制并发进程
+thread_num=3
+[ -e ${dir}fd1 ] || mkfifo ${dir}fd1
+exec 5<>${dir}fd1
+rm -f ${dir}fd1 >/dev/null 2>&1
+for i in `seq 1 $thread_num` 
+do
+	echo >&5
+done
+unset i && unset n
+
 # 启动参数
 if [ "$1" ] ;then
 	if [ $1 = "send" ] ;then send;fi
-	if [ $1 = "crontab" ] ;then serverchan_cron;fi
 	exit
 fi
 
 # 防止重复启动
 basePath=$(cd `dirname $0`; pwd)
 fullPathProc=$basePath/${0##*/}
-pCount=$(ps -ef | grep $fullPathProc | grep -v 'grep' | grep -v ' -c sh' | grep -v $$ | grep -c 'sh')
+pCount=$(ps | grep $fullPathProc | grep -v 'grep' | grep -v ' -c sh' | grep -v $$ | grep -c 'sh')
 if [ $pCount -gt 1 ]; then
-	echo "serverchan is running ..."
 	exit 0
 fi
 
 # 初始化
-serverchan_cron
-read_config
+
 serverchan_init
 serverchan_first
 
@@ -860,28 +880,38 @@ do
 	# 设备下线检测
 	# 从 ipAddress 文件中读取上次检测到的在线列表
 	if [ -f ${dir}ipAddress ] ; then IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' | grep -v "^$" | sort -u ) && IPLISTrow=$(grep -c "" ${dir}ipAddress);fi
+	send_enable=`get_config send_enable`
 	for ip in $IPLIST; do
-		if [ ! -z "$ip" ] && [ `get_config send_enable` -ne 3 ] ; then
-			down $ip &	
+		if [ ! -z "$ip" ] && [ $send_enable -ne 3 ] ; then
+			read -u 5
+			{
+			down $ip
+			echo "" >&5
+			}&
 		fi
 	done
 	wait
-	if [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then
+	if [ ! -f ${dir}ipAddress ] || [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then
 		if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  没有检测到设备离线" >> ${logfile};fi
 	fi
 	unset IPLIST && unset IPLISTrow
 		
 	# 新设备接入检测
 	# 从 arp 缓存中读取 0x2 在线列表
-	if [ -f ${dir}ipAddress ] ; then IPLIST=$( cat /proc/net/arp | grep "0x2" | awk  '{print $1}' | grep -v "^$" | sort -u ) && IPLISTrow=$(grep -c "" ${dir}ipAddress);fi	
+	if [ -f ${dir}ipAddress ] ; then IPLIST=$( cat /proc/net/arp | grep "0x2" | awk  '{print $1}' | grep -v "^$" | sort -u ) && IPLISTrow=$(grep -c "" ${dir}ipAddress);fi
+	send_enable=`get_config send_enable`
 	for  ip in $IPLIST; do
 		# 如果 “ip 列表不为空” 
-		if [ ! -z "$ip" ] && [ `get_config send_enable` -ne 3 ] ; then			
-			up $ip &
+		if [ ! -z "$ip" ] && [ $send_enable -ne 3 ] ; then			
+			read -u 5
+			{
+			up $ip
+			echo "" >&5
+			}&
 		fi
 	done
 	wait
-	if [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then
+	if [ ! -f ${dir}ipAddress ] || [ "$IPLISTrow" -eq $(grep -c "" ${dir}ipAddress) ] ; then
 		if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  没有新设备连接" >> ${logfile};fi
 	else
 		usage
