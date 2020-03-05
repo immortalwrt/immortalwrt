@@ -11,6 +11,8 @@ msgstr "停用"
 msgid "Enable Servers"
 msgstr "开启服务"
 
+msgid "Enable Authentication"
+msgstr "启用 用户名/密码 认证"
 
 msgid "Open v2ray split-flow"
 msgstr "开启V2ray分流"
