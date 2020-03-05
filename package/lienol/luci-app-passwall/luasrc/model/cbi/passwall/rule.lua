@@ -106,6 +106,7 @@ s = m:section(TypedSection, "global_app", translate("App Update"),
                   translate("Please confirm that your firmware supports FPU.") ..
                   "</font>")
 s.anonymous = true
+s:append(Template("passwall/rule/passwall_version"))
 s:append(Template("passwall/rule/v2ray_version"))
 s:append(Template("passwall/rule/kcptun_version"))
 s:append(Template("passwall/rule/brook_version"))

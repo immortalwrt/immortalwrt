@@ -46,8 +46,8 @@ test_proxy() {
 
 test_auto_switch() {
 	local type=$1
-	local index=$2
-	local b_tcp_nodes=$3
+	local index=$4
+	local b_tcp_nodes=$5
 	local now_node
 	if [ -f "/var/etc/$CONFIG/id/${type}_${index}" ]; then
 		now_node=$(cat /var/etc/$CONFIG/id/${type}_${index})
@@ -61,7 +61,7 @@ test_auto_switch() {
 		return 1
 	elif [ "$status" == 1 ]; then
 		echolog "自动切换检测：${type}_${index}节点异常，开始切换节点！"
-		new_node=
+		local new_node
 		in_backup_nodes=$(echo $b_tcp_nodes | grep $now_node)
 		# 判断当前节点是否存在于备用节点列表里
 		if [ -z "$in_backup_nodes" ]; then
@@ -77,14 +77,11 @@ test_auto_switch() {
 				new_node=$next_node
 			fi
 		fi
-		rm -f $LOCK_FILE
-		uci set $CONFIG.@global[0].tcp_node${index}=$new_node
-		uci commit $CONFIG
-		/etc/init.d/$CONFIG restart > /dev/null &
+		/usr/share/passwall/app.sh node_switch $type $2 $3 $index $new_node
 		echolog "自动切换检测：${type}_${index}节点切换完毕！"
 		return 0
 	elif [ "$status" == 0 ]; then
-		echolog "自动切换检测：${type}_${index}节点正常。"
+		#echolog "自动切换检测：${type}_${index}节点正常。"
 		return 0
 	fi
 }
@@ -106,7 +103,7 @@ start() {
 		eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
 		eval tmp=\$TCP_NODE$i
 		[ -n "$tmp" ] && {
-			test_auto_switch TCP $i $tmp
+			test_auto_switch TCP REDIR tcp $i "$tmp"
 		}
 	done
 
