@@ -32,18 +32,13 @@ define Package/$(PKG_NAME)/description
 	LuCI Support for k3screenctrl.
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/k3screenctrl.lua $(1)/usr/lib/lua/luci/controller/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/k3screenctrl.*.lmo $(1)/usr/lib/lua/luci/i18n/
+	$(INSTALL_DATA) ./luasrc/controller/k3screenctrl.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
-	$(INSTALL_DATA) ./files/luci/model/cbi/k3screenctrl.lua $(1)/usr/lib/lua/luci/model/cbi/
+	$(INSTALL_DATA) ./luasrc/model/cbi/k3screenctrl.lua $(1)/usr/lib/lua/luci/model/cbi/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/k3screenctrl.po $(1)/usr/lib/lua/luci/i18n/k3screenctrl.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
