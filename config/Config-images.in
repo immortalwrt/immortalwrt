@@ -79,7 +79,7 @@ menu "Target Images"
 
 	menuconfig TARGET_ROOTFS_EXT4FS
 		bool "ext4"
-		default n
+		default y if TARGET_bcm27xx
 		help
 		  Build an ext4 root filesystem.
 
