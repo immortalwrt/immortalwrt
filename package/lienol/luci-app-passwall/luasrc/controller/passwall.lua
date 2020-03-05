@@ -2,6 +2,7 @@
 module("luci.controller.passwall", package.seeall)
 local appname = "passwall"
 local http = require "luci.http"
+local passwall = require "luci.model.cbi.passwall.api.passwall"
 local kcptun = require "luci.model.cbi.passwall.api.kcptun"
 local brook = require "luci.model.cbi.passwall.api.brook"
 local v2ray = require "luci.model.cbi.passwall.api.v2ray"
@@ -58,6 +59,10 @@ function index()
     entry({"admin", "vpn", "passwall", "copy_node"}, call("copy_node")).leaf =
         true
     entry({"admin", "vpn", "passwall", "update_rules"}, call("update_rules")).leaf =
+        true
+    entry({"admin", "vpn", "passwall", "luci_check"}, call("luci_check")).leaf =
+        true
+    entry({"admin", "vpn", "passwall", "luci_update"}, call("luci_update")).leaf =
         true
     entry({"admin", "vpn", "passwall", "kcptun_check"}, call("kcptun_check")).leaf =
         true
@@ -127,8 +132,8 @@ function status()
                               appname, i)) == 0
         e["tcp_node%s_status" % i] = luci.sys.call(
                                          string.format(
-                                             "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'TCP_%s|brook_tcp_%s|ipt2socks_tcp_%s' >/dev/null",
-                                             appname, i, i, i)) == 0
+                                             "ps -w | grep -v grep | grep -v kcptun | grep '%s/bin/' | grep -i -E 'TCP_%s' >/dev/null",
+                                             appname, i)) == 0
     end
 
     local udp_node_num = luci.sys.exec(
@@ -137,8 +142,8 @@ function status()
     for i = 1, udp_node_num, 1 do
         e["udp_node%s_status" % i] = luci.sys.call(
                                          string.format(
-                                             "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'UDP_%s|brook_udp_%s|ipt2socks_udp_%s' >/dev/null",
-                                             appname, i, i, i)) == 0
+                                             "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'UDP_%s' >/dev/null",
+                                             appname, i)) == 0
     end
 
     local socks5_node_num = luci.sys.exec(
@@ -151,7 +156,7 @@ function status()
                               appname, i)) == 0
         e["socks5_node%s_status" % i] = luci.sys.call(
                                             string.format(
-                                                "ps -w | grep -v grep | grep '%s/bin/' | grep -i -E 'SOCKS5_%s|brook_socks_%s' >/dev/null",
+                                                "ps -w | grep -v grep | grep -v kcptun | grep '%s/bin/' | grep -i -E 'SOCKS_%s|SOCKS5_%s' >/dev/null",
                                                 appname, i, i)) == 0
     end
     luci.http.prepare_content("application/json")
@@ -266,6 +271,16 @@ function update_rules()
     local update = luci.http.formvalue("update")
     luci.sys.call("lua /usr/share/passwall/rule_update.lua log '" .. update ..
                       "' > /dev/null 2>&1 &")
+end
+
+function luci_check()
+    local json = passwall.to_check("")
+    http_write_json(json)
+end
+
+function luci_update()
+    local json = passwall.update_luci(http.formvalue("url"), http.formvalue("save"))
+    http_write_json(json)
 end
 
 function kcptun_check()

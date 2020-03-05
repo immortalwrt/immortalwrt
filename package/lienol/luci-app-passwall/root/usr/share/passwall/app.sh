@@ -8,6 +8,7 @@ CONFIG=passwall
 TMP_PATH=/var/etc/$CONFIG
 TMP_BIN_PATH=$TMP_PATH/bin
 TMP_ID_PATH=$TMP_PATH/id
+TMP_PORT_PATH=$TMP_PATH/port
 LOCK_FILE=/var/lock/$CONFIG.lock
 LOG_FILE=/var/log/$CONFIG.log
 APP_PATH=/usr/share/$CONFIG
@@ -151,6 +152,16 @@ for i in $(seq 1 $SOCKS5_NODE_NUM); do
 	eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i nil)
 done
 
+TCP_REDIR_PORT1=$(config_t_get global_forwarding tcp_redir_port 1041)
+TCP_REDIR_PORT2=$(expr $TCP_REDIR_PORT1 + 1)
+TCP_REDIR_PORT3=$(expr $TCP_REDIR_PORT2 + 1)
+UDP_REDIR_PORT1=$(config_t_get global_forwarding udp_redir_port 1051)
+UDP_REDIR_PORT2=$(expr $UDP_REDIR_PORT1 + 1)
+UDP_REDIR_PORT3=$(expr $UDP_REDIR_PORT2 + 1)
+SOCKS5_PROXY_PORT1=$(config_t_get global_forwarding socks5_proxy_port 1081)
+SOCKS5_PROXY_PORT2=$(expr $SOCKS5_PROXY_PORT1 + 1)
+SOCKS5_PROXY_PORT3=$(expr $SOCKS5_PROXY_PORT2 + 1)
+
 [ "$UDP_NODE1" == "tcp" ] && UDP_NODE1=$TCP_NODE1
 [ "$SOCKS5_NODE1" == "tcp" ] && SOCKS5_NODE1=$TCP_NODE1
 
@@ -184,8 +195,6 @@ load_config() {
 	LOCALHOST_PROXY_MODE=$(config_t_get global localhost_proxy_mode default)
 	[ "$LOCALHOST_PROXY_MODE" == "default" ] && LOCALHOST_PROXY_MODE=$PROXY_MODE
 	UP_CHINA_DNS=$(config_t_get global up_china_dns dnsbyisp)
-	wangejibadns=$(config_t_get global_other wangejibadns 0)
-	[ "$wangejibadns" == "0" ] && UP_CHINA_DNS="default"
 	[ "$UP_CHINA_DNS" == "default" ] && IS_DEFAULT_CHINA_DNS=1
 	[ ! -f "$RESOLVFILE" -o ! -s "$RESOLVFILE" ] && RESOLVFILE=/tmp/resolv.conf.auto
 	if [ "$UP_CHINA_DNS" == "dnsbyisp" -o "$UP_CHINA_DNS" == "default" ]; then
@@ -206,17 +215,8 @@ load_config() {
 			UP_CHINA_DNS="223.5.5.5"
 		fi
 	fi
-	TCP_REDIR_PORT1=$(config_t_get global_forwarding tcp_redir_port 1041)
-	TCP_REDIR_PORT2=$(expr $TCP_REDIR_PORT1 + 1)
-	TCP_REDIR_PORT3=$(expr $TCP_REDIR_PORT2 + 1)
-	UDP_REDIR_PORT1=$(config_t_get global_forwarding udp_redir_port 1051)
-	UDP_REDIR_PORT2=$(expr $UDP_REDIR_PORT1 + 1)
-	UDP_REDIR_PORT3=$(expr $UDP_REDIR_PORT2 + 1)
-	SOCKS5_PROXY_PORT1=$(config_t_get global_forwarding socks5_proxy_port 1081)
-	SOCKS5_PROXY_PORT2=$(expr $SOCKS5_PROXY_PORT1 + 1)
-	SOCKS5_PROXY_PORT3=$(expr $SOCKS5_PROXY_PORT2 + 1)
 	PROXY_IPV6=$(config_t_get global_forwarding proxy_ipv6 0)
-	mkdir -p /var/etc $TMP_PATH $TMP_BIN_PATH $TMP_ID_PATH
+	mkdir -p /var/etc $TMP_PATH $TMP_BIN_PATH $TMP_ID_PATH $TMP_PORT_PATH
 	return 0
 }
 
@@ -270,7 +270,7 @@ gen_start_config() {
 	port=$(config_n_get $node port)
 	[ -n "$server_host" -a -n "$port" ] && {
 		# 判断节点服务器地址是否URL并去掉~
-		server_host=$(echo $server_host | sed 's/^\(http:\/\/\|https:\/\/\)//g' | awk -F '/' '{print $1}')
+		server_host=$(echo $server_host | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}')
 		# 判断节点服务器地址是否包含汉字~
 		local tmp=$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')
 		[ -n "$tmp" ] && {
@@ -286,10 +286,10 @@ gen_start_config() {
 			echolog "Socks5节点不能使用Socks5代理节点！"
 		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
-			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_socks_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node client "0.0.0.0" $local_port >$config_file
-			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+			ln_start_bin $(find_bin trojan) trojan_socks_$5 "-c $config_file"
 		elif [ "$type" == "brook" ]; then
 			local protocol=$(config_n_get $node brook_protocol client)
 			local brook_tls=$(config_n_get $node brook_tls 0)
@@ -299,7 +299,7 @@ gen_start_config() {
 			ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_socks_$5 "$protocol -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_host:$port -p $(config_n_get $node password)"
 		elif [ "$type" == "ssr" ]; then
 			gen_ss_ssr_config_file ssr $local_port 0 $node $config_file
-			ln_start_bin $(find_bin ssr-local) ssr-local "-c $config_file -b 0.0.0.0 -u"
+			ln_start_bin $(find_bin ssr-local) ssr-local_socks_$5 "-c $config_file -b 0.0.0.0 -u"
 		elif [ "$type" == "ss" ]; then
 			gen_ss_ssr_config_file ss $local_port 0 $node $config_file
 			local plugin_params=""
@@ -310,7 +310,7 @@ gen_start_config() {
 					plugin_params="--plugin $plugin --plugin-opts $opts"
 				}
 			fi
-			ln_start_bin $(find_bin ss-local) ss-local "-c $config_file -b 0.0.0.0 -u $plugin_params" 
+			ln_start_bin $(find_bin ss-local) ss-local_socks_$5 "-c $config_file -b 0.0.0.0 -u $plugin_params" 
 		fi
 	fi
 
@@ -324,19 +324,15 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
-			
-			# local redsocks_config_file=$TMP_PATH/UDP_$i.conf
-			# gen_redsocks_config $redsocks_config_file udp $port $node_address $node_port $server_username $server_password
-			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
 		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
-			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			SOCKS5_PROXY_PORT4=$(expr $SOCKS5_PROXY_PORT3 + 1)
 			local_port=$(get_not_exists_port_after $SOCKS5_PROXY_PORT4 tcp)
 			socks5_port=$local_port
 			lua $API_GEN_TROJAN $node client "127.0.0.1" $socks5_port >$config_file
-			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+			ln_start_bin $(find_bin trojan) trojan_udp_$5 "-c $config_file"
 			
 			local node_address=$(config_n_get $node address)
 			local node_port=$(config_n_get $node port)
@@ -344,10 +340,6 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
-				
-			# local redsocks_config_file=$TMP_PATH/redsocks_UDP_$i.conf
-			# gen_redsocks_config $redsocks_config_file udp $port "127.0.0.1" $socks5_port
-			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
 		elif [ "$type" == "brook" ]; then
 			local protocol=$(config_n_get $node brook_protocol client)
 			if [ "$protocol" == "wsclient" ]; then
@@ -357,7 +349,7 @@ gen_start_config() {
 			fi
 		elif [ "$type" == "ssr" ]; then
 			gen_ss_ssr_config_file ssr $local_port 0 $node $config_file
-			ln_start_bin $(find_bin ssr-redir) ssr-redir "-c $config_file -U"
+			ln_start_bin $(find_bin ssr-redir) ssr-redir_udp_$5 "-c $config_file -U"
 		elif [ "$type" == "ss" ]; then
 			gen_ss_ssr_config_file ss $local_port 0 $node $config_file
 			local plugin_params=""
@@ -368,7 +360,7 @@ gen_start_config() {
 					plugin_params="--plugin $plugin --plugin-opts $opts"
 				}
 			fi
-			ln_start_bin $(find_bin ss-redir) ss-redir "-c $config_file -U $plugin_params"
+			ln_start_bin $(find_bin ss-redir) ss-redir_udp_$5 "-c $config_file -U $plugin_params"
 		fi
 	fi
 
@@ -382,17 +374,13 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$TCP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-T -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
-			
-			# local redsocks_config_file=$TMP_PATH/TCP_$i.conf
-			# gen_redsocks_config $redsocks_config_file tcp $port $node_address $socks5_port $server_username $server_password
-			# ln_start_bin $(find_bin redsocks2) redsocks2 "-c $redsocks_config_file"
 		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
-			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_tcp_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
 			for k in $(seq 1 $process); do
-				ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+				ln_start_bin $(find_bin trojan) trojan_tcp_$5 "-c $config_file"
 			done
 		else
 			local kcptun_use=$(config_n_get $node use_kcp 0)
@@ -414,7 +402,7 @@ gen_start_config() {
 			if [ "$type" == "ssr" ]; then
 				gen_ss_ssr_config_file ssr $local_port $kcptun_use $node $config_file
 				for k in $(seq 1 $process); do
-					ln_start_bin $(find_bin ssr-redir) ssr-redir "-c $config_file"
+					ln_start_bin $(find_bin ssr-redir) ssr-redir_tcp_$5 "-c $config_file"
 				done
 			elif [ "$type" == "ss" ]; then
 				gen_ss_ssr_config_file ss $local_port $kcptun_use $node $config_file
@@ -427,7 +415,7 @@ gen_start_config() {
 					}
 				fi
 				for k in $(seq 1 $process); do
-					ln_start_bin $(find_bin ss-redir) ss-redir "-c $config_file $plugin_params"
+					ln_start_bin $(find_bin ss-redir) ss-redir_tcp_$5 "-c $config_file $plugin_params"
 				done
 			elif [ "$type" == "brook" ]; then
 				local server_ip=$server_host
@@ -453,6 +441,23 @@ gen_start_config() {
 	return 0
 }
 
+node_switch() {
+	local i=$4
+	local node=$5
+	[ -n "$1" -a -n "$2" -a "$2" != "nil" -a -n "$3" -a -n "$4" -a -n "$5" ] && {
+		ps -w | grep -E "$TMP_PATH" | grep -i "${1}_${i}" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+		local config_file=$TMP_PATH/${1}_${i}.json
+		eval current_port=\$${1}_${2}_PORT$i
+		local port=$(cat $TMP_PORT_PATH/${1}_${i})
+		gen_start_config $node $port $1 $config_file $i
+		echo $node > $TMP_ID_PATH/${1}_${i}
+		local node_net=$(echo $1 | tr 'A-Z' 'a-z')
+		uci set $CONFIG.@global[0].${node_net}_node${i}=$node
+		uci commit $CONFIG
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+	}
+}
+
 start_redir() {
 	eval num=\$${1}_NODE_NUM
 	for i in $(seq 1 $num); do
@@ -466,6 +471,7 @@ start_redir() {
 			gen_start_config $node $port $1 $config_file $i
 			#eval ip=\$${1}_NODE${i}_IP
 			echo $node > $TMP_ID_PATH/${1}_${i}
+			echo $port > $TMP_PORT_PATH/${1}_${i}
 		}
 	done
 }
@@ -665,71 +671,6 @@ add_dnsmasq() {
 	echo "conf-dir=$TMP_DNSMASQ_PATH" >> /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	echolog "dnsmasq：生成配置文件。"
-}
-
-gen_redsocks_config() {
-	protocol=$2
-	local_port=$3
-	proxy_server=$4
-	proxy_port=$5
-	proxy_username=$6
-	[ -n "$proxy_username" ] && proxy_username="login = $proxy_username;"
-	proxy_password=$7
-	[ -n "$proxy_password" ] && proxy_password="password = $proxy_password;"
-	[ -n "$1" ] && {
-		cat >$1 <<-EOF
-			base {
-			    log_debug = off;
-			    log_info = off;
-			    log = "file:/dev/null";
-			    daemon = on;
-			    redirector = iptables;
-			}
-			
-		EOF
-		if [ "$protocol" == "tcp" ]; then
-			cat >>$1 <<-EOF
-				redsocks {
-				    local_ip = 0.0.0.0;
-				    local_port = $local_port;
-				    type = socks5;
-				    autoproxy = 0;
-				    ip = $proxy_server;
-				    port = $proxy_port;
-				    $proxy_username
-				    $proxy_password
-				}
-				
-				autoproxy {
-				    no_quick_check_seconds = 300;
-				    quick_connect_timeout = 2;
-				}
-				
-				ipcache {
-				    cache_size = 4;
-				    stale_time = 7200;
-				    autosave_interval = 3600;
-				    port_check = 0;
-				}
-				
-			EOF
-		elif [ "$protocol" == "udp" ]; then
-			cat >>$1 <<-EOF
-				redudp {
-				    local_ip = 0.0.0.0;
-				    local_port = $local_port;
-				    type = socks5;
-				    ip = $proxy_server;
-				    port = $proxy_port;
-				    $proxy_username
-				    $proxy_password
-				    udp_timeout = 60;
-				    udp_timeout_stream = 360;
-				}
-				
-			EOF
-		fi
-	}
 }
 
 gen_pdnsd_config() {
@@ -1008,6 +949,9 @@ stop() {
 }
 
 case $1 in
+node_switch)
+	node_switch $2 $3 $4 $5 $6
+	;;
 stop)
 	[ -n "$2" -a "$2" == "force" ] && force_stop
 	stop
