@@ -2,6 +2,7 @@
 config unblockneteasemusic
 	option enable '0'
 	option music_source 'default'
+	option neteasemusic_cookie ''
 	option qq_cookie ''
 	option youtube_key ''
 	option enable_flac '0'
@@ -20,3 +21,7 @@ config unblockneteasemusic
 	option proxy_server_ip ''
 	option self_issue_cert_crt '/usr/share/unblockneteasemusic/core/server.crt'
 	option self_issue_cert_key '/usr/share/unblockneteasemusic/core/server.key'
+
+config acl_rule
+	option ip_addr ''
+	option filter_mode 'disable_all'

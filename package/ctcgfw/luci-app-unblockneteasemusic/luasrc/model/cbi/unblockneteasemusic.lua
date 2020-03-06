@@ -14,6 +14,7 @@ enable.rmempty = false
 
 music_source = s:option(Value, "music_source", translate("音源接口"))
 music_source:value("default", translate("默认"))
+music_source:value("netease", translate("网易云音乐"))
 music_source:value("qq", translate("QQ音乐"))
 music_source:value("kuwo", translate("酷我音乐"))
 music_source:value("migu", translate("咕咪音乐"))
@@ -25,6 +26,11 @@ music_source:value("youtube", translate("Youtube音乐"))
 music_source.description = translate("自定义模式下，多个音源请用空格隔开")
 music_source.default = "default"
 music_source.rmempty = false
+
+neteasemusic_cookie = s:option(Value, "neteasemusic_cookie", translate("NeteaseMusic Cookie"))
+neteasemusic_cookie.description = translate("在 music.163.com 获取，需要MUSIC_U值")
+neteasemusic_cookie.datatype = "string"
+neteasemusic_cookie:depends("music_source", "netease")
 
 qq_cookie = s:option(Value, "qq_cookie", translate("QQ Cookie"))
 qq_cookie.description = translate("在 y.qq.com 获取，需要uin和qm_keyst值")
@@ -160,5 +166,29 @@ self_issue_cert_key.description = translate("[私钥] 默认使用UnblockNetease
 self_issue_cert_key.placeholder = "/usr/share/unblockneteasemusic/core/server.key"
 self_issue_cert_key.datatype = "file"
 self_issue_cert_key:depends("advanced_mode", 1)
+
+acl_rule = mp:section(TypedSection,"acl_rule",translate("例外客户端规则"), translate("可以为局域网客户端分别设置不同的例外模式，默认无需设置"))
+acl_rule.template="cbi/tblsection"
+acl_rule.sortable=true
+acl_rule.anonymous=true
+acl_rule.addremove=true
+
+acl_ip_addr=acl_rule:option(Value, "acl_ip_addr", translate("IP 地址"))
+acl_ip_addr.width = "40%"
+acl_ip_addr.datatype = "ip4addr"
+acl_ip_addr.placeholder = "0.0.0.0/0"
+luci.ip.neighbors({ family = 4 }, function(entry)
+	if entry.reachable then
+		acl_ip_addr:value(entry.dest:string())
+	end
+end)
+
+acl_filter_mode = acl_rule:option(ListValue, "acl_filter_mode", translate("规则"))
+acl_filter_mode.width = "40%"
+acl_filter_mode.default = "disable_all"
+acl_filter_mode.rmempty = false
+acl_filter_mode:value("disable_all", translate("不代理HTTP和HTTPS"))
+acl_filter_mode:value("disable_http", translate("不代理HTTP"))
+acl_filter_mode:value("disable_https", translate("不代理HTTPS"))
 
 return mp
