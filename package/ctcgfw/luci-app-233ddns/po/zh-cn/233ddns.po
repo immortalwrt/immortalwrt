@@ -7,8 +7,8 @@ msgstr "由 Oxygen233 驱动的一个简单、快速、安全的 DDNS 客户端�
 msgid "Instructions for use:"
 msgstr "使用说明："
 
-msgid "Please add u.233.ro to your whitelist if you use proxy programs."
-msgstr "如果您使用了代理程序，请将 u.233.ro 添加至白名单。"
+msgid "Please add 233ddns.ro to your whitelist if you use proxy programs."
+msgstr "如果您使用了代理程序，请将 233ddns.ro 添加至白名单。"
 
 msgid "Enable"
 msgstr "启用"

@@ -7,7 +7,7 @@ if (conf_token == nil or conf_token == '') then
 end
 
 mp = Map("233ddns", translate("233DDNS"))
-mp.description = translate("A simple, fast, security DDNS client, powered by Oxygen233.") .. "<br/>" .. translate("Instructions for use:") .." https://233.ro/archives/233DDNS.html<br/>" .. translate("Please add u.233.ro to your whitelist if you use proxy programs.")
+mp.description = translate("A simple, fast, security DDNS client, powered by Oxygen233.") .. "<br/>" .. translate("Instructions for use:") .." https://233.ro/archives/233DDNS.html<br/>" .. translate("Please add 233ddns.ro to your whitelist if you use proxy programs.")
 
 mp:section(SimpleSection).template = "233ddns/233ddns_status"
 
