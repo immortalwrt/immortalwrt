@@ -96,9 +96,9 @@ brook_tls:depends("brook_protocol", "wsclient")
 
 local n = {}
 uci:foreach(appname, "nodes", function(e)
-    if e.type and e.type == "V2ray" and e.remarks and e.port then
+    if e.type and e.remarks and e.port then
         if e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= "." then
-            n[e[".name"]] = "[%s] %s:%s" % {e.remarks, e.address, e.port}
+            n[e[".name"]] = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
         end
     end
 end)

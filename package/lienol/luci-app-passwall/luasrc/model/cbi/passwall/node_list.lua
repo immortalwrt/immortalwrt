@@ -76,8 +76,7 @@ if api.uci_get_type("global_other", "compact_display_nodes", "0") == "1" then
         local type = api.uci_get_type_id(n, "type") or ""
         local address = api.uci_get_type_id(n, "address") or ""
         local port = api.uci_get_type_id(n, "port") or ""
-        if is_sub == "" and group == "" then str = str .. translate(type) .. "：" end
-        str = str .. remarks
+        str = str .. translate(type) .. "：" .. remarks
         if address ~= "" and port ~= "" then
             local s = " （" .. address .. ":" .. port .. "）"
             str = str .. s
@@ -98,23 +97,28 @@ else
             return str
         end
     end
-    ---- Remarks
-    o = s:option(DummyValue, "remarks", translate("Remarks"))
 
     ---- Type
     o = s:option(DummyValue, "type", translate("Type"))
     o.cfgvalue = function(t, n)
         local v = Value.cfgvalue(t, n)
-        if v then
-            return translate(v)
-        end
+        if v then return translate(v) end
     end
+
+    ---- Remarks
+    o = s:option(DummyValue, "remarks", translate("Remarks"))
 
     ---- Address
     o = s:option(DummyValue, "address", translate("Address"))
+    o.cfgvalue = function(t, n)
+        return Value.cfgvalue(t, n) or "---"
+    end
 
     ---- Port
     o = s:option(DummyValue, "port", translate("Port"))
+    o.cfgvalue = function(t, n)
+        return Value.cfgvalue(t, n) or "---"
+    end
 
     ---- Encrypt Method
     --[[ o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))

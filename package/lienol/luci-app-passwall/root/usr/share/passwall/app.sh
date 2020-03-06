@@ -18,8 +18,9 @@ DNSMASQ_PATH=/etc/dnsmasq.d
 RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
 DNS_PORT=7913
 LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
-API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray_client_config.lua
-API_GEN_TROJAN=$LUA_API_PATH/gen_trojan_client_config.lua
+API_GEN_TROJAN=$LUA_API_PATH/gen_trojan.lua
+API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray.lua
+API_GEN_V2RAY_SHUNT=$LUA_API_PATH/gen_v2ray_shunt.lua
 FWI=$(uci get firewall.passwall.path 2>/dev/null)
 
 echolog() {
@@ -100,8 +101,9 @@ check_port_exists() {
 	fi
 }
 
-get_not_exists_port_after() {
+get_new_port() {
 	port=$1
+	[ "$port" == "auto" ] && port=$SOCKS5_PROXY_PORT3
 	protocol=$2
 	result=$(check_port_exists $port $protocol)
 	if [ "$result" = 1 ]; then
@@ -111,7 +113,7 @@ get_not_exists_port_after() {
 		elif [ "$port" -gt 1 ]; then
 			temp=$(expr $port - 1)
 		fi
-		get_not_exists_port_after $temp $protocol
+		get_new_port $temp $protocol
 	else
 		echo $port
 	fi
@@ -259,11 +261,13 @@ gen_ss_ssr_config_file() {
 }
 
 gen_start_config() {
-	local node local_port redir_type config_file server_host port type
+	local node local_port redir_type config_file bind server_host port type
 	node=$1
 	local_port=$2
 	redir_type=$3
 	config_file=$4
+	bind="0.0.0.0"
+	[ -n "$6" ] && bind="$6"
 	type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
 	remarks=$(config_n_get $node remarks)
 	server_host=$(config_n_get $node address)
@@ -277,18 +281,21 @@ gen_start_config() {
 			echolog "$redir_type节点，非法的服务器地址，无法启动！"
 			return 1
 		}
-		echolog "$redir_type节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
+		[ "$bind" == "0.0.0.0" ] && echolog "$redir_type节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
 	}
 
 	if [ "$redir_type" == "SOCKS5" ]; then
 		eval SOCKS5_NODE${5}_PORT=$port
 		if [ "$type" == "socks5" ]; then
 			echolog "Socks5节点不能使用Socks5代理节点！"
-		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
+		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" ]; then
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_socks_$5 "-config=$config_file"
+		elif [ "$type" == "v2ray_shunt" ]; then
+			lua $API_GEN_V2RAY_SHUNT $node nil nil $local_port >$config_file
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_socks_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
-			lua $API_GEN_TROJAN $node client "0.0.0.0" $local_port >$config_file
+			lua $API_GEN_TROJAN $node client $bind $local_port >$config_file
 			ln_start_bin $(find_bin trojan) trojan_socks_$5 "-c $config_file"
 		elif [ "$type" == "brook" ]; then
 			local protocol=$(config_n_get $node brook_protocol client)
@@ -296,10 +303,10 @@ gen_start_config() {
 			[ "$protocol" == "wsclient" ] && {
 				[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}" 
 			}
-			ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_socks_$5 "$protocol -l 0.0.0.0:$local_port -i 0.0.0.0 -s $server_host:$port -p $(config_n_get $node password)"
+			ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_socks_$5 "$protocol -l $bind:$local_port -i $$bind -s $server_host:$port -p $(config_n_get $node password)"
 		elif [ "$type" == "ssr" ]; then
 			gen_ss_ssr_config_file ssr $local_port 0 $node $config_file
-			ln_start_bin $(find_bin ssr-local) ssr-local_socks_$5 "-c $config_file -b 0.0.0.0 -u"
+			ln_start_bin $(find_bin ssr-local) ssr-local_socks_$5 "-c $config_file -b $bind -u"
 		elif [ "$type" == "ss" ]; then
 			gen_ss_ssr_config_file ss $local_port 0 $node $config_file
 			local plugin_params=""
@@ -310,7 +317,7 @@ gen_start_config() {
 					plugin_params="--plugin $plugin --plugin-opts $opts"
 				}
 			fi
-			ln_start_bin $(find_bin ss-local) ss-local_socks_$5 "-c $config_file -b 0.0.0.0 -u $plugin_params" 
+			ln_start_bin $(find_bin ss-local) ss-local_socks_$5 "-c $config_file -b $bind -u $plugin_params" 
 		fi
 	fi
 
@@ -324,12 +331,15 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
-		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
+		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" ]; then
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
+		elif [ "$type" == "v2ray_shunt" ]; then
+			lua $API_GEN_V2RAY_SHUNT $node udp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			SOCKS5_PROXY_PORT4=$(expr $SOCKS5_PROXY_PORT3 + 1)
-			local_port=$(get_not_exists_port_after $SOCKS5_PROXY_PORT4 tcp)
+			local_port=$(get_new_port $SOCKS5_PROXY_PORT4 tcp)
 			socks5_port=$local_port
 			lua $API_GEN_TROJAN $node client "127.0.0.1" $socks5_port >$config_file
 			ln_start_bin $(find_bin trojan) trojan_udp_$5 "-c $config_file"
@@ -374,8 +384,11 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$TCP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-T -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
-		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" -o "$type" == "v2ray_shunt" ]; then
+		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" ]; then
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_tcp_$5 "-config=$config_file"
+		elif [ "$type" == "v2ray_shunt" ]; then
+			lua $API_GEN_V2RAY_SHUNT $node tcp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_tcp_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
@@ -395,7 +408,7 @@ gen_start_config() {
 				if [ -n "$kcptun_port" -a -n "$kcptun_config" ]; then
 					local run_kcptun_ip=$server_host
 					[ -n "$kcptun_server_host" ] && run_kcptun_ip=$(get_host_ip $network_type $kcptun_server_host)
-					KCPTUN_REDIR_PORT=$(get_not_exists_port_after $KCPTUN_REDIR_PORT tcp)
+					KCPTUN_REDIR_PORT=$(get_new_port $KCPTUN_REDIR_PORT tcp)
 					ln_start_bin $(config_t_get global_app kcptun_client_file $(find_bin kcptun-client)) kcptun_tcp_$5 "-l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
 				fi
 			fi
@@ -423,7 +436,7 @@ gen_start_config() {
 				local brook_tls=$(config_n_get $node brook_tls 0)
 				if [ "$protocol" == "wsclient" ]; then
 					[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}" 
-					socks5_port=$(get_not_exists_port_after $(expr $SOCKS5_PROXY_PORT3 + 3) tcp)
+					socks5_port=$(get_new_port $(expr $SOCKS5_PROXY_PORT3 + 3) tcp)
 					ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_tcp_$5 "wsclient -l 127.0.0.1:$socks5_port -i 127.0.0.1 -s $server_ip:$port -p $(config_n_get $node password)"
 					eval port=\$TCP_REDIR_PORT$5
 					ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-T -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
@@ -466,7 +479,7 @@ start_redir() {
 			TYPE=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
 			local config_file=$TMP_PATH/${1}_${i}.json
 			eval current_port=\$${1}_${2}_PORT$i
-			local port=$(echo $(get_not_exists_port_after $current_port $3))
+			local port=$(echo $(get_new_port $current_port $3))
 			eval ${1}_${2}$i=$port
 			gen_start_config $node $port $1 $config_file $i
 			#eval ip=\$${1}_NODE${i}_IP
@@ -949,6 +962,12 @@ stop() {
 }
 
 case $1 in
+get_new_port)
+	get_new_port $2 $3
+	;;
+gen_start_config)
+	gen_start_config $2 $3 $4 $5 $6 $7
+	;;
 node_switch)
 	node_switch $2 $3 $4 $5 $6
 	;;
@@ -961,8 +980,5 @@ start)
 	;;
 boot)
 	boot
-	;;
-*)
-	echo "Usage: $0 (start|stop|restart)"
 	;;
 esac
