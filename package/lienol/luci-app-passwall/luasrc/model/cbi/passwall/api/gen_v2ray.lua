@@ -141,61 +141,6 @@ if node.type == "V2ray_balancing" and node.v2ray_balancing_node then
             {type = "field", network = "tcp,udp", balancerTag = "balancer"}
         }
     }
-elseif node.type == "V2ray_shunt" then
-    local rules = {}
-
-    local youtube_node = node.youtube_node or nil
-    if youtube_node and youtube_node ~= "nil" then
-        local node = ucursor:get_all("passwall", youtube_node)
-        local youtube_outbound = gen_outbound(node, "youtube")
-        if youtube_outbound then
-            table.insert(outbounds, youtube_outbound)
-            local rule = {
-                type = "field",
-                domain = {
-                    "youtube", "youtube.com", "youtu.be", "googlevideo.com",
-                    "ytimg.com","gvt2.com"
-                },
-                outboundTag = "youtube"
-            }
-            table.insert(rules, rule)
-        end
-    end
-
-    local netflix_node = node.netflix_node or nil
-    if netflix_node and netflix_node ~= "nil" then
-        local node = ucursor:get_all("passwall", netflix_node)
-        local netflix_outbound = gen_outbound(node, "netflix")
-        if netflix_outbound then
-            table.insert(outbounds, netflix_outbound)
-            local rule = {
-                type = "field",
-                domain = {
-                    "netflix", "netflix.com", "nflxso.net", "nflxext.com",
-                    "nflximg.com", "nflximg.net", "nflxvideo.net"
-                },
-                outboundTag = "netflix"
-            }
-            table.insert(rules, rule)
-        end
-    end
-
-    local default_node = node.default_node or nil
-    if default_node and default_node ~= "nil" then
-        local node = ucursor:get_all("passwall", default_node)
-        local default_outbound = gen_outbound(node, "default")
-        if default_outbound then
-            table.insert(outbounds, default_outbound)
-            local rule = {
-                type = "field",
-                outboundTag = "default",
-                network = network
-            }
-            table.insert(rules, rule)
-        end
-    end
-
-    routing = {domainStrategy = "IPOnDemand", rules = rules}
 else
     local outbound = gen_outbound(node)
     if outbound then table.insert(outbounds, outbound) end
