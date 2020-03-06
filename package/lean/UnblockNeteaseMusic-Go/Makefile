@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
 PKG_VERSION:=0.1.6
-PKG_RELEASE:=1
+PKG_RELEASE:=5
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cnsilvan/UnblockNeteaseMusic.git
@@ -32,14 +32,15 @@ define Package/$(PKG_NAME)
 	URL:=https://github.com/cnsilvan/UnblockNeteaseMusic
 	DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
+
 define Package/$(PKG_NAME)/description
 	Revive unavailable songs for Netease Cloud Music (Golang)
 endef
+
 define Build/Prepare
-	# tar -xzf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
-	# unzip -d $(PKG_BUILD_DIR) $(DL_DIR)/$(PKG_SOURCE)
-	#  $(call Build/Prepare/Default)
 	tar -zxvf $(DL_DIR)/$(PKG_SOURCE) -C $(BUILD_DIR)/$(PKG_NAME) --strip-components 1
+	$(CP) ./001-endpoint.patch $(BUILD_DIR)/$(PKG_NAME)/
+	patch -d $(BUILD_DIR)/$(PKG_NAME) -p1 < 001-endpoint.patch
 endef
 
 define Build/Configure
@@ -57,7 +58,8 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/UnblockNeteaseMusic $(1)/usr/bin/UnblockNeteaseMusic
-	$(INSTALL_DIR) $(1)/usr/share/UnblockNeteaseMusic
+	$(INSTALL_DIR) $(1)/usr/share/UnblockNeteaseMusicGo
+	$(CP) ./files/* $(1)/usr/share/UnblockNeteaseMusicGo/
 	
 endef
 $(eval $(call GoBinPackage,$(PKG_NAME)))
