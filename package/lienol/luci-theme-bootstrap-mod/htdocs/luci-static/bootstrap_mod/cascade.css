@@ -1327,6 +1327,36 @@ body.node-main-login .alert-message {
     text-align: center !important;
 }
 
+/* luci18 */
+.cbi-section-table-titles.named::before {
+	content: attr(data-title) " ";
+    display: table-cell;
+    padding: 5px 3px !important;
+    line-height: 18px;
+    font-weight: bold;
+    vertical-align: middle;
+	color: #811;
+}
+
+.cbi-section-table-descr.named::before {
+	content: attr(data-title) " ";
+    display: table-cell;
+    padding: 10px 10px 9px;
+    line-height: 18px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.cbi-section-table-row[data-title]::before {
+    border-top: 1px solid #a9b1bb26;
+	content: attr(data-title) " ";
+    display: table-cell;
+    padding: 10px 10px 9px;
+    line-height: 18px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
 /* luci 19 */
 body.modal-overlay-active {
     overflow: hidden;
