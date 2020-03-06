@@ -161,10 +161,10 @@
 				cs-gpios = <&qcom_pinmux 20 GPIO_ACTIVE_HIGH>;
 
 				flash: m25p80@0 {
-					compatible = "jedec,spi-nor";
+					compatible = "s25fl256s1";
 					#address-cells = <1>;
 					#size-cells = <1>;
-					spi-max-frequency = <51200000>;
+					spi-max-frequency = <50000000>;
 					reg = <0>;
 
 					SBL1@0 {
