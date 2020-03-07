@@ -127,27 +127,30 @@ subjectAltName=DNS:music.163.com,DNS:*.music.163.com" >"${extFile}"
 start() {
 	stop >>"${logFile}" 2>&1
 	[ "${enable}" -ne "1" ] && exit 0
-	if [ ! -f "$serverCrt" ]; then
-		createCertificate >>"${logFile}" 2>&1
-	fi
-	if [ "${endpoint}" = "1" ]; then
-		exArgs="-e"
-	fi
-	if [ "${music_source}" = "default" ]; then
-		nohup UnblockNeteaseMusic -p "${http_port}" -sp "${https_port}" -m 0 -c "${serverCrt}" -k "${serverKey}" ${exArgs} >>"${logFile}" 2>&1 &
+	ping -c 1 114.114.114.114 >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		if [ ! -f "$serverCrt" ]; then
+			createCertificate >>"${logFile}" 2>&1
+		fi
+		if [ "${endpoint}" = "1" ]; then
+			exArgs="-e"
+		fi
+		if [ "${music_source}" = "default" ]; then
+			nohup UnblockNeteaseMusic -p "${http_port}" -sp "${https_port}" -o kuwo -m 0 -c "${serverCrt}" -k "${serverKey}" ${exArgs} >>"${logFile}" 2>&1 &
+		else
+			nohup UnblockNeteaseMusic -p "${http_port}" -sp "${https_port}" -o "${music_customize_source}" -m 0 -c "${serverCrt}" -k "${serverKey}" ${exArgs} >>"${logFile}" 2>&1 &
+		fi
+		set_type="start"
+		if [ "${hijack_ways}" = "use_ipset" ]; then
+			set_ipset >"/dev/null" 2>&1
+		elif [ "${hijack_ways}" = "use_hosts" ]; then
+			set_hosts >"/dev/null" 2>&1
+		fi
 	else
-		nohup UnblockNeteaseMusic -p "${http_port}" -sp "${https_port}" -o "${music_customize_source}" -m 0 -c "${serverCrt}" -k "${serverKey}" ${exArgs} >>"${logFile}" 2>&1 &
+		echo "$(date -R) 网络连接异常" >>"${logFile}"
 	fi
-
-	set_type="start"
-	if [ "${hijack_ways}" = "use_ipset" ]; then
-		set_ipset >"/dev/null" 2>&1
-	elif [ "${hijack_ways}" = "use_hosts" ]; then
-		set_hosts >"/dev/null" 2>&1
-	fi
-
 	sed -i '/UnblockNeteaseMusic/d' /etc/crontabs/root
-	echo "*/5 * * * * /usr/share/UnblockNeteaseMusic/log_check.sh" >>"/etc/crontabs/root"
+	echo "*/1 * * * * /usr/share/UnblockNeteaseMusic/log_check.sh" >>"/etc/crontabs/root"
 	/etc/init.d/cron restart >"/dev/null" 2>&1
 }
 
@@ -157,7 +160,7 @@ stop() {
 	sed -i '/UnblockNeteaseMusic/d' "/etc/crontabs/root"
 	/etc/init.d/cron restart >"/dev/null" 2>&1
 
-	rm -f "${logFile}"
+	# rm -f "${logFile}"
 
 	set_type="stop"
 	set_ipset >"/dev/null" 2>&1

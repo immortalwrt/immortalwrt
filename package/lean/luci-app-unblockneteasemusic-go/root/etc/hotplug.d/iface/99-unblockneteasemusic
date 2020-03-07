@@ -1,0 +1,14 @@
+#!/bin/sh
+[ "$ACTION" = ifup ] || exit 0
+log_file="/tmp/unblockneteasemusic.log"
+sleep 10
+if [ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable)" == "1" ]; then
+    echo "$(date -R) ifup--尝试重启应用..." >>"${log_file}"
+    /etc/init.d/unblockneteasemusic restart
+fi
+# curl -s "http://httpdns.n.netease.com/httpdns/v2/d?domain=music.163.com,interface.music.163.com,interface3.music.163.com,apm.music.163.com,apm3.music.163.com,clientlog.music.163.com,clientlog3.music.163.com" | grep -Eo '[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?' | sort | uniq | awk '{print "ipset add unblockneteasemusic4 "$1}' | bash >"/dev/null" 2>&1
+# domains="music.163.com"
+# for domain in $domains; do
+#     ip=$(ping6 ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')
+#     ipset add unblockneteasemusic6 $ip
+# done
