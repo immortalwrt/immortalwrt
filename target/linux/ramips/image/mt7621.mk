@@ -629,7 +629,7 @@ define Device/netgear_r6800
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0062
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += kmod-mt7615e kmod-pinctrl-sx150x
+  DEVICE_PACKAGES += kmod-mt7615e
 endef
 TARGET_DEVICES += netgear_r6800
 
