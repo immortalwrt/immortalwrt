@@ -32,7 +32,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_NAME:=verysync
-PKG_VERSION:=v1.3.1
+PKG_VERSION:=v1.3.3
 PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
