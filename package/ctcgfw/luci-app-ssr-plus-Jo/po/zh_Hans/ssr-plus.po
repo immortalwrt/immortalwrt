@@ -747,7 +747,7 @@ msgid "UDPspeeder Project"
 msgstr "UDPspeeder 项目"
 
 msgid "Appointlist List"
-msgstr "加速列表"
+msgstr "DNS列表"
 
 msgid "udp2raw tunnel"
 msgstr "UDP隧道"

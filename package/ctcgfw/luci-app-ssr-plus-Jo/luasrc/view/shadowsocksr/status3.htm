@@ -94,7 +94,7 @@
     <div class="block pure-g"> 
      <div class="pure-u-3-5">  
      
-         <h4 id="baidu_status"><%:Visit domestic website%><br><span class="red"><%:Problem detected%></span></h4>
+         <h4 id="baidu_status"><%:domestic website%><br><span class="red"><%:Problem detected%></span></h4>
      </div> 
      <div class="pure-u-2-5"> 
       <div class="img-con"> 
@@ -106,7 +106,7 @@
     <div class="pure-u-1-6"> 
     <div class="block pure-g"> 
      <div class="pure-u-3-5"> 
-<h4 id="google_status"><%:Visit foreign websites%><br><span class="red"><%:Problem detected%></span></h4>
+<h4 id="google_status"><%:foreign websites%><br><span class="red"><%:Problem detected%></span></h4>
      </div> 
      <div class="pure-u-2-5"> 
       <div class="img-con"> 
@@ -162,8 +162,8 @@
             function (x, data) {
                 if (data) {
 					document.getElementById('shadowsocksr_status').innerHTML = data.global?'<%:Client%><br><span class="green"><%:Running%></span>':'<%:Client%><br><span class="red"><%:Not Running%></span>';
-                                                                                    document.getElementById('baidu_status').innerHTML = data.baidu?'<%:Visit domestic website%><br><span class="green"><%:Working...%></span>':'<%:Visit domestic website%><br><span class="red"><%:Problem detected%></span>';
-					document.getElementById('google_status').innerHTML = data.google?'<%:Visit foreign websites%><br><span class="green"><%:Working...%></span>':'<%:Visit foreign websites%><br><span class="red"><%:Problem detected%></span>';
+                                                                                    document.getElementById('baidu_status').innerHTML = data.baidu?'<%:domestic website%><br><span class="green"><%:Connect OK%></span>':'<%:domestic website%><br><span class="red"><%:Problem detected%></span>';
+					document.getElementById('google_status').innerHTML = data.google?'<%:foreign websites%><br><span class="green"><%:Connect OK%></span>':'<%:foreign websites%><br><span class="red"><%:Problem detected%></span>';
 					document.getElementById('game_status').innerHTML = data.game?'<%:Game Mode%><br><span class="green"><%:Running%></span>':'<%:Game Mode%><br><span class="red"><%:Not Running%></span>';
 					document.getElementById('chinadns_status').innerHTML = data.chinadns?'ChinaDNS<br><span class="green"><%:Running%></span>':'ChinaDNS<br><span class="red"><%:Not Running%></span>';
                                                                                        document.getElementById('SOCKS5_status').innerHTML = data.SOCKS5?'𝙎𝙊𝘾𝙆𝙎5<br><span class="green"><%:Running%></span>':'𝙎𝙊𝘾𝙆𝙎5<br><span class="red"><%:Not Running%></span>';					     
