@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-serverchan
 PKG_VERSION:=1.42
-PKG_RELEASE:=5
+PKG_RELEASE:=6
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -15,7 +15,7 @@ define Package/$(PKG_NAME)
   SECTION:=luci
   CATEGORY:=LuCI
   SUBMENU:=3. Applications
-  DEPENDS:=+iputils-arping +curl +coreutils +coreutils-nohup
+  DEPENDS:=+iputils-arping +curl +iw
   TITLE:=LuCI support for serverchan
   PKGARCH:=all
 endef
