@@ -123,6 +123,10 @@ ath79_setup_interfaces()
 	ocedo,ursus)
 		ucidef_set_interface_lan "eth0 eth1"
 		;;
+	devolo,magic-2-wifi)
+		ucidef_add_switch "switch0" \
+			"0@eth0" "2:wan" "3:lan" "4:lan"
+		;;
 	dlink,dir-825-b1)
 		ucidef_set_interface_wan "eth1"
 		ucidef_add_switch "switch0" \
@@ -142,7 +146,8 @@ ath79_setup_interfaces()
 			"0@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "5:wan"
 		;;
 	elecom,wrc-1750ghbk2-i|\
-	elecom,wrc-300ghbk2-i)
+	elecom,wrc-300ghbk2-i|\
+	sitecom,wlr-8100)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "2:lan:4" "3:lan:3" "4:lan:2" "5:lan:1" "1:wan"
 		;;
@@ -328,6 +333,9 @@ ath79_setup_macs()
 		lan_mac=$(fritz_tffs -n maca -i $(find_mtd_part "tffs (1)"))
 		wan_mac=$(fritz_tffs -n macb -i $(find_mtd_part "tffs (1)"))
 		;;
+	devolo,magic-2-wifi)
+		label_mac=$(macaddr_add "$(mtd_get_mac_binary art 0x1002)" 3)
+		;;
 	dlink,dir-825-b1)
 		lan_mac=$(mtd_get_mac_text "caldata" 0xffa0)
 		wan_mac=$(mtd_get_mac_text "caldata" 0xffb4)
@@ -407,7 +415,8 @@ ath79_setup_macs()
 		wan_mac=$(mtd_get_mac_binary factory 0x0)
 		lan_mac=$(macaddr_setbit_la "$wan_mac")
 		;;
-	sitecom,wlr-7100)
+	sitecom,wlr-7100|\
+	sitecom,wlr-8100)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
 		wan_mac=$(mtd_get_mac_ascii u-boot-env wanaddr)
 		label_mac=$lan_mac

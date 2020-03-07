@@ -13,6 +13,7 @@ case "$FIRMWARE" in
 	case $board in
 	comfast,cf-wr650ac-v1|\
 	comfast,cf-wr650ac-v2|\
+	devolo,magic-2-wifi|\
 	ubnt,unifiac-lite|\
 	ubnt,unifiac-lr|\
 	ubnt,unifiac-mesh|\
@@ -118,6 +119,14 @@ case "$FIRMWARE" in
 	tplink,tl-wr902ac-v1)
 		caldata_extract "art" 0x5000 0x844
 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary tplink 0x8) -1)
+		;;
+	esac
+	;;
+"ath10k/cal-pci-0000:01:00.0.bin")
+	case $board in
+	sitecom,wlr-8100)
+		caldata_extract "art" 0x5000 0x844
+		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +1)
 		;;
 	esac
 	;;

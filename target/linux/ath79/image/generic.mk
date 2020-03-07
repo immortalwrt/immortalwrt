@@ -401,6 +401,15 @@ define Device/devolo_dvl1750x
 endef
 TARGET_DEVICES += devolo_dvl1750x
 
+define Device/devolo_magic-2-wifi
+  SOC := ar9344
+  DEVICE_VENDOR := Devolo
+  DEVICE_MODEL := Magic 2 WiFi
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15872k
+endef
+TARGET_DEVICES += devolo_magic-2-wifi
+
 define Device/dlink_dir-505
   SOC := ar9330
   DEVICE_VENDOR := D-Link
@@ -1085,6 +1094,22 @@ define Device/sitecom_wlr-7100
   IMAGE_SIZE := 7488k
 endef
 TARGET_DEVICES += sitecom_wlr-7100
+
+define Device/sitecom_wlr-8100
+  SOC := qca9558
+  DEVICE_VENDOR := Sitecom
+  DEVICE_MODEL := WLR-8100
+  DEVICE_ALT0_VENDOR := Sitecom
+  DEVICE_ALT0_MODEL := X8 AC1750
+  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2 kmod-usb3
+  SUPPORTED_DEVICES += wlr8100
+  IMAGES += factory.dlf
+  IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE) | \
+	senao-header -r 0x222 -p 0x56 -t 2
+  IMAGE_SIZE := 15424k
+endef
+TARGET_DEVICES += sitecom_wlr-8100
 
 define Device/teltonika_rut955
   SOC := ar9344
