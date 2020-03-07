@@ -149,10 +149,8 @@ o.default = gfw
 o = s:option(ListValue, "pdnsd_enable", translate("Resolve Dns Mode"))
 o:value("0", translate("Use Local DNS Service listen port 5335"))
 o:value("1", translate("Use Pdnsd tcp query and cache"))
-o:value("2", translate("Use Pdnsd udp query and cache"))
 if nixio.fs.access("/usr/bin/dnsforwarder") then
 o:value("3", translate("Use dnsforwarder tcp query and cache"))
-o:value("4", translate("Use dnsforwarder udp query and cache"))
 end
 if nixio.fs.access("/usr/bin/dnscrypt-proxy") then
 o:value("5", translate("Use dnscrypt-proxy query and cache"))
@@ -166,10 +164,8 @@ o.default = 1
 o = s:option(ListValue, "chinadns_enable", translate("Chiadns Resolve Dns Mode"))
 o:value("0", translate("Use Local DNS Service"))
 o:value("1", translate("Use Pdnsd tcp query and cache"))
-o:value("2", translate("Use Pdnsd udp query and cache"))
 if nixio.fs.access("/usr/bin/dnsforwarder") then
 o:value("3", translate("Use dnsforwarder tcp query and cache"))
-o:value("4", translate("Use dnsforwarder udp query and cache"))
 end
 if nixio.fs.access("/usr/bin/dnscrypt-proxy") then
 o:value("5", translate("Use dnscrypt-proxy query and cache"))
@@ -205,6 +201,7 @@ o:depends("pdnsd_enable", "1")
 o:depends("pdnsd_enable", "2")
 o:depends("pdnsd_enable", "3")
 o:depends("pdnsd_enable", "4")
+o:depends("pdnsd_enable", "5")
 o:depends("pdnsd_enable", "6")
 o.default = "8.8.4.4:53"
 

@@ -247,7 +247,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
     line-height: 1;
     font-family: inherit;
     min-width: inherit;
-    padding: 6px 10px 7px 8px;
+    padding: 5px 5px 5px 8px;
     overflow-x: auto;
     overflow-y: hidden;
     border: 1px solid rgba(0, 0, 0, .05);
@@ -320,7 +320,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
     position: relative;
     background: #f3f9f1;
     margin: 10px !important;
-    padding: 18px 18px 18px 108px;
+    padding: 18px 18px 18px 110px;
     box-shadow: 0 0 5px 0 rgba(136, 152, 170, .75);
     border-radius: .5rem;
     border: 0;
@@ -337,7 +337,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 }
 
 .cbi-section-table-row.fast{
-    background: #5e72e4;
+    background: #C01818;
     color: #fff;
 
 }
