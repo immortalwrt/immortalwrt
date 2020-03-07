@@ -9,10 +9,10 @@ function index()
 		return
 	end
 	local page
-	page = entry({"admin", "services", "ssocks"}, cbi("ssocks"), _("sSocks Server"), 100)
+	page = entry({"admin", "vpn", "ssocks"}, cbi("ssocks"), _("sSocks Server"), 100)
 	page.i18n = "ssocks"
 	page.dependent = true
-	entry({"admin", "services", "ssocks", "status"},call("act_status")).leaf=true
+	entry({"admin", "vpn", "ssocks", "status"},call("act_status")).leaf=true
 end
 
 function act_status()
