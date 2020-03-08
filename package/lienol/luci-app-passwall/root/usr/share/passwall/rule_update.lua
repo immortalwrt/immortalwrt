@@ -79,7 +79,6 @@ if version then
 				if download_md5 == new_md5 then
 					luci.sys.exec("mv -f /tmp/gfwlist_tmp " .. rule_path .. "/gfwlist.conf")
 					ucic:set(name, ucic:get_first(name, 'global_rules'), "gfwlist_version", new_version)
-					ucic:commit(name)
 					reboot = 1
 					log("更新gfwlist成功...")
 				end
@@ -105,7 +104,6 @@ if version then
 				if download_md5 == new_md5 then
 					luci.sys.exec("mv -f /tmp/chnroute_tmp " .. rule_path .. "/chnroute")
 					ucic:set(name, ucic:get_first(name, 'global_rules'), "chnroute_version", new_version)
-					ucic:commit(name)
 					reboot = 1
 					log("更新chnroute成功...")
 				end
@@ -131,7 +129,6 @@ if version then
 				if download_md5 == new_md5 then
 					luci.sys.exec("mv -f /tmp/chnlist_tmp " .. rule_path .. "/chnlist")
 					ucic:set(name, ucic:get_first(name, 'global_rules'), "chnlist_version", new_version)
-					ucic:commit(name)
 					reboot = 1
 					log("更新chnlist成功...")
 				end
@@ -146,7 +143,8 @@ end
 ucic:set(name, ucic:get_first(name, 'global_rules'), "gfwlist_update", gfwlist_update)
 ucic:set(name, ucic:get_first(name, 'global_rules'), "chnroute_update", chnroute_update)
 ucic:set(name, ucic:get_first(name, 'global_rules'), "chnlist_update", chnlist_update)
-ucic:commit(name)
+ucic:save(name)
+luci.sys.call("uci commit " .. name)
 
 if reboot == 1 then
 	log("重启服务，应用新的规则。")
