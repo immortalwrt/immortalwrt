@@ -173,7 +173,7 @@ acl_rule.sortable=true
 acl_rule.anonymous=true
 acl_rule.addremove=true
 
-acl_ip_addr=acl_rule:option(Value, "acl_ip_addr", translate("IP 地址"))
+acl_ip_addr=acl_rule:option(Value, "ip_addr", translate("IP 地址"))
 acl_ip_addr.width = "40%"
 acl_ip_addr.datatype = "ip4addr"
 acl_ip_addr.placeholder = "0.0.0.0/0"
@@ -183,7 +183,7 @@ luci.ip.neighbors({ family = 4 }, function(entry)
 	end
 end)
 
-acl_filter_mode = acl_rule:option(ListValue, "acl_filter_mode", translate("规则"))
+acl_filter_mode = acl_rule:option(ListValue, "filter_mode", translate("规则"))
 acl_filter_mode.width = "40%"
 acl_filter_mode.default = "disable_all"
 acl_filter_mode.rmempty = false

@@ -2,7 +2,7 @@
 # Created By [CTCGFW]Project OpenWRT
 # https://github.com/project-openwrt
 
-START=80
+START=89
 STOP=10
 
 NAME="unblockneteasemusic"
@@ -106,17 +106,15 @@ ipset=/clientlog3.music.163.com/neteasemusic
 		iptables -t "nat" -A "netease_cloud_music" -d "192.168.0.0/16" -j "RETURN"
 		iptables -t "nat" -A "netease_cloud_music" -d "224.0.0.0/4" -j "RETURN"
 		iptables -t "nat" -A "netease_cloud_music" -d "240.0.0.0/4" -j "RETURN"
-		iptables -t "nat" -A "netease_cloud_music" -p "tcp" -m "set" ! --match-set "acl_neteasemusic_http" "src" --dport 80 -j "REDIRECT" --to-ports "${http_port}"
-		iptables -t "nat" -A "netease_cloud_music" -p "tcp" -m "set" ! --match-set "acl_neteasemusic_https" "src" --dport 443 -j "REDIRECT" --to-ports "${https_port}"
+		iptables -t "nat" -A "netease_cloud_music" -p "tcp" -m "set" ! --match-set "acl_neteasemusic_http" "src" --dport "80" -j "REDIRECT" --to-ports "${http_port}"
+		iptables -t "nat" -A "netease_cloud_music" -p "tcp" -m "set" ! --match-set "acl_neteasemusic_https" "src" --dport "443" -j "REDIRECT" --to-ports "${https_port}"
 		iptables -t "nat" -I "PREROUTING" -p "tcp" -m "set" --match-set "neteasemusic" "dst" -j "netease_cloud_music"
-		[ -z "$(iptables -t "nat" -L "ADBYBY" | grep "UnblockMusic" | sed 's/\/.*//')" ] && iptables -t "nat" -I "ADBYBY" -m "set" --match-set "neteasemusic" "dst" -j "RETURN" -m "comment" --comment "AD for UnblockMusic"
 		[ -z "$(iptables -t "nat" -L "KOOLPROXY" | grep "UnblockMusic" | sed 's/\/.*//')" ] && iptables -t "nat" -I "KOOLPROXY" -m "set" --match-set "neteasemusic" "dst" -j "RETURN" -m "comment" --comment "KP for UnblockMusic"
 
 		mkdir -p "/var/etc/"
 		echo "/etc/init.d/unblockneteasemusic restart" > "/var/etc/unblockneteasemusic.include"
 	elif [ "${set_type}" = "stop" ]; then
 		iptables -t "nat" -D "PREROUTING" -p "tcp" -m set --match-set "neteasemusic" "dst" -j "netease_cloud_music"
-		iptables -t "nat" -D "ADBYBY" -m "set" --match-set "neteasemusic" "dst" -j "RETURN" -m "comment" --comment "AD for UnblockMusic"
 		iptables -t "nat" -D "KOOLPROXY" -m "set" --match-set "neteasemusic" "dst" -j "RETURN" -m "comment" --comment "KP for UnblockMusic"
 		iptables -t "nat" -F "netease_cloud_music"
 		iptables -t "nat" -X "netease_cloud_music"
@@ -189,8 +187,8 @@ start()
 		sed -i "/if (netease.path.includes('song\/enhance')) {/a\\\t\\t\\t\\t\\treq.headers.cookie = [" "/usr/share/unblockneteasemusic/core/src/hook.js";
 		sed -i "/req.headers.cookie = \[/a\\\t\\t\\t\\t\\t\\t'MUSIC_U=${neteasemusic_cookie}'," "/usr/share/unblockneteasemusic/core/src/hook.js";
 		sed -i "/'MUSIC_U=${neteasemusic_cookie}',/a\\\t\\t\\t\\t\\t\\treq.headers.cookie.replace(\/\\\s*MUSIC_\\\w=[^\\\s;]+;*\/g, '')" "/usr/share/unblockneteasemusic/core/src/hook.js";
-		sed -i "/req.headers.cookie.replace(\/\\\s\\*MUSIC_\\\w=[^\\\s;]\\+/a\\\t\\t\\t\\t\\t].filter(line => line).join('; ')" "/usr/share/unblockneteasemusic/core/src/hook.js"
-		sed -i "/].filter(line => line).join('; ')/a\\\t\\t\\t\\t}\\n" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i "/req.headers.cookie.replace(\/\\\s\\*MUSIC_\\\w=[^\\\s;]\\+/a\\\t\\t\\t\\t\\t].filter(line => line).join('; ')" "/usr/share/unblockneteasemusic/core/src/hook.js";
+		sed -i "/].filter(line => line).join('; ')/a\\\t\\t\\t\\t}\\n" "/usr/share/unblockneteasemusic/core/src/hook.js";
 }
 	[ -n "${qq_cookie}" ] && {
 		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/src/provider/qq.js")";
@@ -202,8 +200,8 @@ start()
 		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/src/provider/youtube.js";
 }
 
-	{ [ -f "${self_issue_cert_crt}" ] && [ "${self_issue_cert_crt}" != "/usr/share/unblockneteasemusic/core/server.crt" ]; } && { ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"; sed -i "#${self_issue_cert_crt}#d"; echo "${self_issue_cert_crt}" >> "/etc/sysupgrade.conf"; }
-	{ [ -f "${self_issue_cert_key}" ] && [ "${self_issue_cert_key}" != "/usr/share/unblockneteasemusic/core/server.key" ]; } && { ln -sf "${self_issue_cert_key}" "/usr/share/unblockneteasemusic/core/server.key"; sed -i "#${self_issue_cert_key}#d"; echo "${self_issue_cert_key}" >> "/etc/sysupgrade.conf"; }
+	{ [ -f "${self_issue_cert_crt}" ] && [ "${self_issue_cert_crt}" != "/usr/share/unblockneteasemusic/core/server.crt" ]; } && { ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"; sed -i "/${self_issue_cert_crt//\//\\/}/d"; echo "${self_issue_cert_crt}" >> "/etc/sysupgrade.conf"; }
+	{ [ -f "${self_issue_cert_key}" ] && [ "${self_issue_cert_key}" != "/usr/share/unblockneteasemusic/core/server.key" ]; } && { ln -sf "${self_issue_cert_key}" "/usr/share/unblockneteasemusic/core/server.key"; sed -i "/${self_issue_cert_key//\//\\/}/d"; echo "${self_issue_cert_key}" >> "/etc/sysupgrade.conf"; }
 
 	[ "${hijack_ways}" = "use_hosts" ] && { http_port="80"; https_port="443"; }
 	if [ "${music_source}" = "default" ]; then
@@ -234,7 +232,7 @@ stop()
 	sed -i '/unblockneteasemusic/d' "/etc/crontabs/root"
 	/etc/init.d/cron restart > "/dev/null" 2>&1
 
-	sed -i '#unblockneteasemusic/core#d' "/etc/sysupgrade.conf"
+	sed -i '/unblockneteasemusic\/core/d;/unblockneteasemusic\/local_ver/d' "/etc/sysupgrade.conf"
 	[ "${keep_core_when_upgrade}" -eq "1" ] && { echo "/usr/share/unblockneteasemusic/core/" >> "/etc/sysupgrade.conf"; echo "/usr/share/unblockneteasemusic/local_ver" >> "/etc/sysupgrade.conf"; }
 
 	rm -f "/tmp/unblockneteasemusic.log"
