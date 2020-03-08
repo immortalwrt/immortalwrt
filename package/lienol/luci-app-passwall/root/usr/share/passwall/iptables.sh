@@ -10,6 +10,7 @@ IPSET_WHITELIST="whitelist"
 ipt_n="iptables -t nat"
 ipt_m="iptables -t mangle"
 ip6t_n="ip6tables -t nat"
+FWI=$(uci -q get firewall.passwall.path 2>/dev/null)
 
 factor() {
 	if [ -z "$1" ] || [ -z "$2" ]; then
@@ -658,12 +659,36 @@ flush_ipset() {
 	ipset -F $IPSET_WHITELIST >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST >/dev/null 2>&1 &
 }
 
+flush_include() {
+	echo '#!/bin/sh' >$FWI
+}
+
+gen_include() {
+	flush_include
+	extract_rules() {
+		echo "*$1"
+		iptables-save -t $1 | grep PSW | \
+		sed -e "s/^-A \(OUTPUT\|PREROUTING\)/-I \1 1/"
+		echo 'COMMIT'
+	}
+	cat <<-EOF >>$FWI
+		iptables-save -c | grep -v "PSW" | iptables-restore -c
+		iptables-restore -n <<-EOT
+		$(extract_rules nat)
+		$(extract_rules mangle)
+		EOT
+	EOF
+	return 0
+}
+
 start() {
 	add_firewall_rule
+	gen_include
 }
 
 stop() {
 	del_firewall_rule
+	flush_include
 }
 
 case $1 in
