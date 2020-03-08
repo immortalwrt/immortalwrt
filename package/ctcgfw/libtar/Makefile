@@ -54,7 +54,15 @@ Here are some of its features:
 
 endef
 
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/libtar $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/* $(1)/usr/lib
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include
+endef
+
 define Package/libtar/install
+	$(Build/Install/Default)
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/libtar $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/lib
