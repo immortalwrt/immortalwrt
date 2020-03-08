@@ -45,7 +45,8 @@ package gargoyle: [ericpaulbishop/gargoyle](https://github.com/ericpaulbishop/ga
 luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).<br/>
 luci-theme-rosy source: [rosywrt/luci-theme-rosy](https://github.com/rosywrt/luci-theme-rosy).<br/>
 luci-theme-argon-mc source: [sypopo/luci-theme-argon-mc](https://github.com/sypopo/luci-theme-argon-mc).<br/>
-luci-app-cupsd source: [F-Light/luci-app-cupsd](https://github.com/F-Light/luci-app-cupsd).
+luci-app-cupsd source: [F-Light/luci-app-cupsd](https://github.com/F-Light/luci-app-cupsd).<br/>
+libtar source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenWRT).
 
 ## License
 ### Depending on their own License.
