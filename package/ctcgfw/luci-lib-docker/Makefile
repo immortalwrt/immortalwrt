@@ -22,7 +22,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=6. Libraries
 	TITLE:=Docker Engine API for LuCI
 	PKGARCH:=all
-	DEPENDS:=+luci-lib-json
+	DEPENDS:=+luci-lib-jsonc
 endef
 
 define Package/$(PKG_NAME)/description
