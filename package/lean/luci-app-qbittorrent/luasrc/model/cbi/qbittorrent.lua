@@ -1,4 +1,4 @@
-m = Map("qbittorrent", translate("qBittorrent"), translate("qBittorrent is a cross-platform free and open-source BitTorrent client.").."<br/>"..translate("Default login username: admin, password: adminadmin.")..t)
+m = Map("qbittorrent", translate("qBittorrent"), translate("qBittorrent is a cross-platform free and open-source BitTorrent client.").."<br/>"..translate("Default login username: admin, password: adminadmin."))
 
 m:section(SimpleSection).template="qbittorrent/qbittorrent_status"
 
