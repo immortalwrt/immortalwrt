@@ -329,6 +329,13 @@ o = s:option(Flag, "tls", translate("TLS"))
 o.rmempty = true
 o.default = "0"
 o:depends("type", "v2ray")
+o:depends("type", "trojan")
+
+o = s:option(Value, "tls_host", translate("TLS Host"))
+--o:depends("type", "trojan")
+o:depends("tls", "1")
+o.rmempty = true
+
 
 -- [[ Mux ]]--
 o = s:option(Flag, "mux", translate("Mux"))

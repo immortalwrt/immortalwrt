@@ -146,6 +146,11 @@ o:value("oversea", translate("Oversea GFW List Mode"))
 o:value("all", translate("Global Mode"))
 o.default = gfw
 
+o = s:option(ListValue, "dports", translate("Proxy Ports"))
+o:value("1", translate("All Ports"))
+o:value("2", translate("Only Common Ports"))
+o.default = 1
+
 o = s:option(ListValue, "pdnsd_enable", translate("Resolve Dns Mode"))
 o:value("0", translate("Use Local DNS Service listen port 5335"))
 o:value("1", translate("Use Pdnsd tcp query and cache"))
@@ -204,17 +209,6 @@ o:depends("pdnsd_enable", "4")
 o:depends("pdnsd_enable", "5")
 o:depends("pdnsd_enable", "6")
 o.default = "8.8.4.4:53"
-
-
-o = s:option(Flag, "bt", translate("Kill BT"))
-o.default = 0
-o.rmempty = false
-o.description = translate("Prohibit downloading tool ports through proxy")
-
-o = s:option(Value, "bt_port", translate("BT Port"))
-o.default = "1236:65535"
-o.rmempty = true
-o:depends("bt", "1")
 
 
 o = s:option(Button,"gfw_data",translate("GFW List Data"))
