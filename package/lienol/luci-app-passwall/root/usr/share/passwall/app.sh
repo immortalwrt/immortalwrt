@@ -21,7 +21,6 @@ LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
 API_GEN_TROJAN=$LUA_API_PATH/gen_trojan.lua
 API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray.lua
 API_GEN_V2RAY_SHUNT=$LUA_API_PATH/gen_v2ray_shunt.lua
-FWI=$(uci get firewall.passwall.path 2>/dev/null)
 
 echolog() {
 	local d="$(date "+%Y-%m-%d %H:%M:%S")"
@@ -866,28 +865,6 @@ start_haproxy() {
 	}
 }
 
-flush_include() {
-	echo '#!/bin/sh' >$FWI
-}
-
-gen_include() {
-	flush_include
-	extract_rules() {
-		echo "*$1"
-		iptables-save -t $1 | grep PSW | \
-		sed -e "s/^-A \(OUTPUT\|PREROUTING\)/-I \1 1/"
-		echo 'COMMIT'
-	}
-	cat <<-EOF >>$FWI
-		iptables-save -c | grep -v "PSW" | iptables-restore -c
-		iptables-restore -n <<-EOT
-		$(extract_rules nat)
-		$(extract_rules mangle)
-		EOT
-	EOF
-	return 0
-}
-
 kill_all() {
 	kill -9 $(pidof $@) >/dev/null 2>&1 &
 }
@@ -921,10 +898,9 @@ start() {
 	start_dns
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
-	gen_include
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
-	echolog "运行完成！\n"
 	start_crontab
+	echolog "运行完成！\n"
 	rm -f "$LOCK_FILE"
 	return 0
 }
@@ -942,7 +918,6 @@ stop() {
 	done
 	clean_log
 	source $APP_PATH/iptables.sh stop
-	flush_include
 	kill_all v2ray-plugin obfs-local
 	ps -w | grep -v "grep" | grep $CONFIG/test.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep $CONFIG/monitor.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
