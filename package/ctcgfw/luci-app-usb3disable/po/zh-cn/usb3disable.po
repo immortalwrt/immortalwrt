@@ -1,0 +1,43 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-cn\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:20
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:38
+msgid "Disable"
+msgstr "禁用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:30
+msgid "Enable"
+msgstr "启用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:18
+msgid "disable now"
+msgstr "立即禁用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:36
+msgid "disable on boot"
+msgstr "开机时禁用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:12
+msgid "enable"
+msgstr "启用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:10
+msgid "enable now"
+msgstr "立即启用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/model/cbi/usb3disable.lua:28
+msgid "enable on boot"
+msgstr "开机时启用"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/controller/usb3disable.lua:4
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-usb3disable/luasrc/controller/usb3disable.lua:5
+msgid "usb3disable"
+msgstr "禁用USB3"

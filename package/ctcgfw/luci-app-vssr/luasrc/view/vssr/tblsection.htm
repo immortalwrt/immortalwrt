@@ -1,0 +1,205 @@
+<script type="text/javascript" src="/luci-static/vssr/emoji.js"></script>
+<fieldset class="cbi-section" id="cbi-apply-vssr1" style="display: none;">
+    <span class="panel-title">正在应用更改</span>
+    <img src="/luci-static/resources/icons/loading.gif" alt="载入中" style="vertical-align:middle">
+</fieldset>
+<!-- tblsection -->
+<fieldset class="cbi-section" id="cbi-<%=self.config%>-<%=self.sectiontype%>">
+    <button class="cbi-button  cbi-button-check "><%:Ping All Servers%></button><span class="panel-title"><%:Node list%>    （<%:total%>  
+        &nbsp; <%- print(self.des)-%><%:Nodes%>）</span>
+    <div class="cbi-section-node">
+        <%- local count = 0 -%>
+        <div class="cbi-section-table pure-g p-in5">
+
+            <%- local isempty = true
+            for i, k in ipairs(self:cfgsections()) do
+            section = k
+            isempty = false
+            scope = { valueheader = "cbi/cell_valueheader", valuefooter = "cbi/cell_valuefooter" }
+            -%>
+
+            <div class="pure-u-1-5">
+                <div class="cbi-section-table-row " id="cbi-<%=self.config%>-<%=section%>">
+
+                    <div class="loadings hide"></div>
+
+                    <div class="incon type flag-icon">
+                        <div class="tp"></div>
+                    </div>
+                    <div class="incon alias"></div>
+
+                    <%- if self.extedit or self.addremove then -%>
+                    <div class="cbi-section-table-cell">
+                        <div class="host_con">
+
+                        </div>
+
+                        <a class="cbi-button ssr-button " type="button" value="" onclick="apply_node('<%=section%>')"
+                            alt="<%:Apply%>" title="<%:Apply%>"><span class="icon-edit"></span> <%:Apply%></a>
+                        <%- if self.extedit then -%>
+                        <a class="cbi-button ssr-button " type="button" value="" <%- if type(self.extedit) == "string" then
+                           %> onclick="location.href='<%=self.extedit:format(section)%>'" <%- elseif type(self.extedit) == "function" then
+                           %> onclick="location.href='<%=self:extedit(section)%>'" <%- end
+                           %> alt="<%:Edit%>" title="<%:Edit%>"><span class="icon-edit"></span> <%:Edit%></a>
+                        <%- end; if self.addremove then %>
+                        <button class="cbi-button  ssr-button" type="submit" value=""
+                            onclick="this.form.cbi_state = 'del-section'; return true"
+                            name="cbi.rts.<%=self.config%>.<%=k%>" alt="<%:Delete%>" title="<%:Delete%>" /><span
+                            class="icon-delete"></span> <%:Delete%></button>
+                        <%- end -%>
+                    </div>
+                    <%- end -%>
+                </div>
+            </div>
+            <%- end -%>
+
+            <%- if isempty then -%>
+            <div class="cbi-section-table-row">
+                <div colspan="<%=count%>"><em><br /><%:This section contains no values yet%></em></div>
+            </div>
+            <%- end -%>
+        </div>
+
+        <% if self.error then %>
+        <div class="cbi-section-error">
+            <ul><% for _, c in pairs(self.error) do for _, e in ipairs(c) do -%>
+                <li><%=pcdata(e):gsub("\n","<br />")%></li>
+                <%- end end %></ul>
+        </div>
+        <% end %>
+
+        <%- if self.addremove then -%>
+        <% if self.template_addremove then include(self.template_addremove) else -%>
+        <div class="cbi-section-create cbi-tblsection-create">
+            <% if self.anonymous then %>
+            <input class="cbi-button cbi-button-add" type="submit" value="<%:Add%>"
+                name="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.<%=section%>" title="<%:Add%>" />
+            <% else %>
+            <% if self.invalid_cts then -%><div class="cbi-section-error"><% end %>
+                <input type="text" class="cbi-section-create-name"
+                    id="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.<%=section%>"
+                    name="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.<%=section%>" data-type="uciname"
+                    data-optional="true" />
+                <input class="cbi-button cbi-button-add" type="submit"
+                    onclick="this.form.cbi_state = 'add-section'; return true" value="<%:Add%>" title="<%:Add%>" />
+                <% if self.invalid_cts then -%>
+                <br /><%:Invalid%></div>
+            <%- end %>
+            <% end %>
+        </div>
+        <%- end %>
+        <%- end -%>
+    </div>
+</fieldset>
+<!-- /tblsection -->
+<script type="text/javascript">
+
+    var servers = '<%= self.servers%>';
+    servers = JSON.parse(servers.replace(/\t/g,""));
+    $.each(servers, function (i, val) {
+        var id = '#cbi-<%=self.config%>-' + val.name;
+        if (val.name == "<%=self.current%>") {
+            $(id).addClass("fast");
+        }
+        if (val.flag == undefined) {
+            val.flag = "un";
+        } else if (val.flag == "tw") {
+            val.flag = "cn";
+        }
+
+        $(id).find(".type .tp").text(val.type);
+        $(id).find(".type").addClass("flag-icon-" + val.flag);
+        $(id).find(".alias").text(val.alias);
+
+        $(id).attr("server", val.server);
+        $(id).attr("server_port", val.server_port);
+    });
+    $(".alias").emoji();
+    $(".type").width($(".type").height());
+
+    function apply_node(node) {
+        $("#cbi-apply-vssr1").show();
+        $.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","change")%>',
+            {
+                set: node
+            },
+            function (data, status) {
+                $("#cbi-apply-vssr1").hide();
+
+                if (data.status) {
+                    var id = '#cbi-<%=self.config%>-' + node;
+                    $(".cbi-section-table-row").removeClass("fast");
+                    $(id).addClass("fast");
+                }
+            });
+    }
+    $(document).ready(function () {
+        /*$.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","allserver")%>',
+            function (data) {
+                
+            }, "json");*/
+
+        setTimeout(function() { check(); }, 500);
+        function check() {
+            $(".host_con").html("");
+
+            $(".pure-u-1-5").each(function () {
+                host = $(this).find(".cbi-section-table-row ").attr("server");
+                port = $(this).find(".cbi-section-table-row ").attr("server_port");
+                $(".host_con").text("--ms");
+                check_port(host, port, this);
+            });
+        }
+
+        function check_port(hosts, ports, target) {
+
+            $.get('<%=luci.dispatcher.build_url("admin", "vpn", "vssr","checkport")%>',
+                {
+                    host: hosts,
+                    port: ports
+                },
+                function (data, status) {
+                    $(target).find(".host_con").removeClass("fast");
+                    $(target).find(".host_con").removeClass("middle");
+                    $(target).find(".host_con").removeClass("slow");
+                    $(target).find(".host_con").removeClass("nopass");
+                    if (data.ret == 1) {
+                        if (data.used == "") {
+
+                            $(target).find(".host_con").addClass("nopass");
+                            $(target).find(".host_con").text("Error");
+                        } else if (data.used <= 80) {
+
+                            $(target).find(".host_con").addClass("fast");
+                            $(target).find(".host_con").text(data.used + "ms");
+                        } else if (data.used > 80 && data.used <= 200) {
+
+                            $(target).find(".host_con").addClass("middle");
+                            $(target).find(".host_con").text(data.used + "ms");
+                        } else if (data.used > 200) {
+
+                            $(target).find(".host_con").addClass("slow");
+                            $(target).find(".host_con").text(data.used + "ms");
+                        }
+
+                    } else {
+
+                        $(target).find(".host_con").addClass("nopass");
+                        $(target).find(".host_con").text("Error");
+                    }
+                });
+        }
+
+        $(".cbi-button-check").click(function () {
+            check();
+            return false;
+        });
+
+
+        //转换 emoji
+
+
+
+    });
+
+</script>

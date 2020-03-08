@@ -1,0 +1,8 @@
+msgid "Syncthing"
+msgstr "储存同步"
+
+msgid "SyncThing Synchronization Tool"
+msgstr "syncthing同步工具"
+
+msgid "Open Web Interface"
+msgstr "打开管理页面"

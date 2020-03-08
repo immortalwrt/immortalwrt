@@ -1,0 +1,25 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+chnroute="$(uci get chinadns.@chinadns[0].chnroute)"
+enable="$(uci get chinadns.@chinadns[0].enable)"
+port="$(uci get chinadns.@chinadns[0].port)"
+server="$(uci get chinadns.@chinadns[0].server)"
+yn_use_proxy="$(uci get chinadns.@chinadns[0].yn_use_proxy)"
+
+local_subnet="$(curl -4 -s members.3322.org/dyndns/getip | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.')0"
+[ "${yn_use_proxy}" -eq "1" ] && foreign_subnet="$(curl -4 -s ip.sb | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.')0)" || foreign_subnet="$(uci get chinadns.@chinadns[0].foreign_subnet)"
+
+start()
+{
+	stop
+	[ "${enable}" -eq "0" ] && exit 0
+	/usr/sbin/chinadns -p "${port}" -s "${server}" -c "${chnroute}" -e "${local_subnet},${foreign_subnet}" >/dev/null 2>&1 &
+}
+
+stop()
+{
+	kill -9 "$(ps | grep "/usr/sbin/chinadns" | grep -v grep | awk '{print $1}')" >/dev/null 2>&1
+}

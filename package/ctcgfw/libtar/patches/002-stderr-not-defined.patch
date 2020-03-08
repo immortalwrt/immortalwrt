@@ -1,0 +1,14 @@
+diff --git a/libtar/libtar.c b/libtar/libtar.c
+index 23f8741..e8d9d73 100644
+--- a/libtar/libtar.c
++++ b/libtar/libtar.c
+@@ -10,6 +10,9 @@
+ **  University of Illinois at Urbana-Champaign
+ */
+ 
++#include <stdio.h>
++#include <stdlib.h>
++
+ #include <config.h>
+ #include <libtar.h>
+ 

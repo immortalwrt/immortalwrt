@@ -1,0 +1,11 @@
+--- a/compat/setenv.c	2019-11-17 06:09:38.000000000 +0800
++++ b/compat/setenv.c	2020-02-20 05:36:25.183144203 +0800
+@@ -21,7 +21,7 @@
+ #include "tmux.h"
+ 
+ int
+-setenv(const char *name, const char *value, unused int overwrite)
++setenv(const char *name, const char *value, int overwrite)
+ {
+ 	char	*newval;
+ 

@@ -1,0 +1,10 @@
+#!/bin/sh
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@https_dns_proxy[-1]
+	add ucitrack https_dns_proxy
+	set ucitrack.@template[-1].init=https_dns_proxy
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

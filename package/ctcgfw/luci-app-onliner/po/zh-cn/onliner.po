@@ -1,0 +1,14 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Connection info"
+msgstr "连接信息"
+
+msgid "Online User"
+msgstr "在线用户"
+
+msgid "Speed monitor"
+msgstr "宽带监视"
+
+msgid "There is no one online now."
+msgstr "当前无任何设备在线。"

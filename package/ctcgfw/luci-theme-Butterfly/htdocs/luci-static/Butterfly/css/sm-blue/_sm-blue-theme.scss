@@ -1,0 +1,586 @@
+// This file is best viewed with Tab size 4 code indentation
+
+
+// -----------------------------------------------------------------------------------------------------------------
+// 1. Theme Quick Settings (Variables)
+// (for further control, you will need to dig into the actual CSS in 2.)
+// -----------------------------------------------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------
+// :: 1.1. Colors
+// ----------------------------------------------------------
+
+$sm-blue__blue:											#3092c0 !default;
+$sm-blue__blue-dark:									darken($sm-blue__blue, 5%) !default;
+$sm-blue__blue-darker:									#006892 !default;
+$sm-blue__blue-light:									lighten($sm-blue__blue, 30%) !default;
+$sm-blue__white:										#fff !default;
+$sm-blue__gray:											darken($sm-blue__white, 34%) !default;
+
+$sm-blue__text-shadow:									rgba(0, 0, 0, 0.2) !default;
+$sm-blue__box-shadow:									rgba(0, 0, 0, 0.2) !default;
+
+$sm-blue__gradients_amount:								2% !default;
+
+
+// ----------------------------------------------------------
+// :: 1.2. Breakpoints
+// ----------------------------------------------------------
+
+$sm-blue__desktop-vp:									768px !default;		// switch from collapsible to desktop
+
+
+// ----------------------------------------------------------
+// :: 1.3. Typography
+// ----------------------------------------------------------
+
+// Import "PT Sans Narrow" font from Google fonts
+@import url(https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700);
+
+$sm-blue__font-family:									"PT Sans Narrow", "Arial Narrow", Arial, Helvetica, sans-serif !default;
+$sm-blue__font-size-base:								18px !default;
+$sm-blue__font-size-small:								16px !default;
+$sm-blue__line-height:									23px !default;
+
+
+// ----------------------------------------------------------
+// :: 1.4. Borders
+// ----------------------------------------------------------
+
+$sm-blue__border-width:									1px !default;
+$sm-blue__border-radius-base:							8px !default;
+$sm-blue__border-radius-small:							4px !default;
+
+
+// ----------------------------------------------------------
+// :: 1.5. Collapsible main menu
+// ----------------------------------------------------------
+
+// Menu box
+$sm-blue__collapsible-bg:								transparent !default;
+$sm-blue__collapsible-border-radius:					$sm-blue__border-radius-base !default;
+$sm-blue__collapsible-box-shadow:						0 1px 4px $sm-blue__box-shadow !default;
+
+// Items                           
+$sm-blue__collapsible-item-color:						$sm-blue__white !default;
+$sm-blue__collapsible-item-bg:							$sm-blue__blue !default;
+$sm-blue__collapsible-item-current-color:				$sm-blue__white !default;
+$sm-blue__collapsible-item-current-bg:					$sm-blue__blue-darker !default;
+$sm-blue__collapsible-item-disabled-color:				lighten($sm-blue__blue, 30%) !default;
+$sm-blue__collapsible-item-padding-vertical:			10px !default;
+$sm-blue__collapsible-item-padding-horizontal:			20px !default;
+
+// Toggle button (sub menu indicators)
+$sm-blue__collapsible-toggle-bg:						rgba(0, 0, 0, 0.1) !default;
+
+
+// ----------------------------------------------------------
+// :: 1.6. Collapsible sub menus
+// ----------------------------------------------------------
+
+// Menu box
+$sm-blue__collapsible-sub-bg:							$sm-blue__white !default;
+
+// Items
+$sm-blue__collapsible-sub-item-color:					$sm-blue__blue-dark !default;
+$sm-blue__collapsible-sub-item-bg:						transparent !default;
+$sm-blue__collapsible-sub-item-current-color:			$sm-blue__white !default;
+$sm-blue__collapsible-sub-item-current-bg:				$sm-blue__blue-darker !default;
+$sm-blue__collapsible-sub-item-disabled-color:			darken($sm-blue__white, 30%) !default;
+
+// Items separators
+$sm-blue__collapsible-sub-separators-color:				rgba(0, 0, 0, 0.05) !default;
+
+// Items text indentation for deeper levels
+$sm-blue__collapsible-sub-item-indentation:				8px !default;
+
+
+// ----------------------------------------------------------
+// :: 1.7. Desktop main menu
+// ----------------------------------------------------------
+
+// Menu box
+$sm-blue__desktop-bg:									$sm-blue__blue !default;
+$sm-blue__desktop-border-radius:						$sm-blue__border-radius-base !default;
+$sm-blue__desktop-box-shadow:							0 1px 1px $sm-blue__box-shadow !default;
+
+// Items
+$sm-blue__desktop-item-color:							$sm-blue__white !default;
+$sm-blue__desktop-item-bg:								$sm-blue__blue !default;
+$sm-blue__desktop-item-hover-bg:						darken($sm-blue__blue, 5%) !default;
+$sm-blue__desktop-item-current-color:					$sm-blue__white !default;
+$sm-blue__desktop-item-current-bg:						$sm-blue__blue-darker !default;
+$sm-blue__desktop-item-disabled-color:					lighten($sm-blue__blue, 30%) !default;
+$sm-blue__desktop-item-padding-vertical:				13px !default;
+$sm-blue__desktop-item-padding-horizontal:				24px !default;
+
+// Items separators
+$sm-blue__desktop-separators-size:						1px !default;
+$sm-blue__desktop-separators-color:						darken($sm-blue__blue, 5%) !default;
+
+// Sub menu indicators
+$sm-blue__desktop-arrow-size:							5px !default;		// border-width
+$sm-blue__desktop-arrow-color:							$sm-blue__blue-light !default;
+
+// Vertical menu box
+$sm-blue__desktop-vertical-box-shadow:					0 1px 4px $sm-blue__box-shadow !default;
+
+// Vertical items
+$sm-blue__desktop-vertical-item-padding-vertical:		9px !default;
+$sm-blue__desktop-vertical-item-padding-horizontal:		23px !default;
+
+
+// ----------------------------------------------------------
+// :: 1.8. Desktop sub menus
+// ----------------------------------------------------------
+
+// Menu box
+$sm-blue__desktop-sub-bg:								$sm-blue__white !default;
+$sm-blue__desktop-sub-border-color:						$sm-blue__gray !default;
+$sm-blue__desktop-sub-border-radius:					$sm-blue__border-radius-small !default;
+$sm-blue__desktop-sub-box-shadow:						0 5px 12px $sm-blue__box-shadow !default;
+$sm-blue__desktop-sub-padding-vertical:					7px !default;
+$sm-blue__desktop-sub-padding-horizontal:				0 !default;
+
+// Items
+$sm-blue__desktop-sub-item-color:						$sm-blue__blue-dark !default;
+$sm-blue__desktop-sub-item-bg:							transparent !default;
+$sm-blue__desktop-sub-item-hover-color:					$sm-blue__white !default;
+$sm-blue__desktop-sub-item-hover-bg:					$sm-blue__blue !default;
+$sm-blue__desktop-sub-item-current-color:				$sm-blue__white !default;
+$sm-blue__desktop-sub-item-current-bg:					$sm-blue__blue-darker !default;
+$sm-blue__desktop-sub-item-disabled-color:				darken($sm-blue__white, 30%) !default;
+$sm-blue__desktop-sub-item-padding-vertical:			9px !default;
+$sm-blue__desktop-sub-item-padding-horizontal:			23px !default;
+
+
+// -----------------------------------------------------------------------------------------------------------------
+// 2. Theme CSS
+// -----------------------------------------------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------
+// :: 2.1. Collapsible mode (mobile first)
+// ----------------------------------------------------------
+
+// calc item height and sub menus toggle button size
+$sm-blue__item-height: $sm-blue__line-height + $sm-blue__collapsible-item-padding-vertical * 2;
+// set toggle button size to 80% of item height
+$sm-blue__toggle-size: floor($sm-blue__item-height * 0.8);
+$sm-blue__toggle-spacing: floor($sm-blue__item-height * 0.1);
+
+// Main menu box
+.sm-blue {
+	background: $sm-blue__collapsible-bg;
+	border-radius: $sm-blue__collapsible-border-radius;
+	box-shadow: $sm-blue__collapsible-box-shadow;
+
+	// Main menu items
+	a {
+		&,
+		&:hover,
+		&:focus,
+		&:active {
+			padding: $sm-blue__collapsible-item-padding-vertical $sm-blue__collapsible-item-padding-horizontal;
+			/* make room for the toggle button (sub indicator) */
+			padding-right: $sm-blue__collapsible-item-padding-horizontal + $sm-blue__toggle-size + $sm-blue__toggle-spacing;
+			background: $sm-blue__collapsible-item-bg;
+			background-image: linear-gradient(to bottom, lighten($sm-blue__collapsible-item-bg, $sm-blue__gradients_amount), darken($sm-blue__collapsible-item-bg, $sm-blue__gradients_amount));
+			color: $sm-blue__collapsible-item-color;
+			font-family: $sm-blue__font-family;
+			font-size: $sm-blue__font-size-base;
+			font-weight: bold;
+			line-height: $sm-blue__line-height;
+			text-decoration: none;
+			text-shadow: 0 1px 0 $sm-blue__text-shadow;
+		}
+
+		&.current {
+			background: $sm-blue__collapsible-item-current-bg;
+			background-image: linear-gradient(to bottom, darken($sm-blue__collapsible-item-current-bg, $sm-blue__gradients_amount), lighten($sm-blue__collapsible-item-current-bg, $sm-blue__gradients_amount));
+			color: $sm-blue__collapsible-item-current-color;
+		}
+
+		&.disabled {
+			color: $sm-blue__collapsible-item-disabled-color;
+		}
+
+		// Toggle buttons (sub menu indicators)
+		.sub-arrow {
+			position: absolute;
+			top: 50%;
+			margin-top: -(ceil($sm-blue__toggle-size / 2));
+			left: auto;
+			right: $sm-blue__toggle-spacing;
+			width: $sm-blue__toggle-size;
+			height: $sm-blue__toggle-size;
+			overflow: hidden;
+			font: bold #{$sm-blue__font-size-small}/#{$sm-blue__toggle-size} monospace !important;
+			text-align: center;
+			text-shadow: none;
+			background: $sm-blue__collapsible-toggle-bg;
+			border-radius: $sm-blue__border-radius-small;
+		}
+		.sub-arrow::before {
+			content: '+';
+		}
+		&.highlighted .sub-arrow::before {
+			content: '-';
+		}
+	}
+
+	// round the corners of the first item
+	> li:first-child > a, > li:first-child > :not(ul) a {
+		border-radius: $sm-blue__collapsible-border-radius $sm-blue__collapsible-border-radius 0 0;
+	}
+	// round the corners of the last item
+	@include sm-blue__round-corners-last-item($sm-blue__collapsible-border-radius);
+
+	// Sub menus box
+	ul {
+		background: $sm-blue__collapsible-sub-bg;
+
+		// darken the background of the 2+ level sub menus
+		ul {
+			background: rgba(darken($sm-blue__collapsible-sub-bg, 60%), 0.1);
+		}
+
+		// Sub menus items
+		a {
+			&,
+			&:hover,
+			&:focus,
+			&:active {
+				background: $sm-blue__collapsible-sub-item-bg;
+				color: $sm-blue__collapsible-sub-item-color;
+				font-size: $sm-blue__font-size-small;
+				text-shadow: none;
+				// add indentation for sub menus text
+				border-left: $sm-blue__collapsible-sub-item-indentation solid transparent;
+			}
+
+			&.current {
+				background: $sm-blue__collapsible-sub-item-current-bg;
+				background-image: linear-gradient(to bottom, darken($sm-blue__collapsible-sub-item-current-bg, $sm-blue__gradients_amount), lighten($sm-blue__collapsible-sub-item-current-bg, $sm-blue__gradients_amount));
+				color: $sm-blue__collapsible-sub-item-current-color;
+			}
+
+			&.disabled {
+				color: $sm-blue__collapsible-sub-item-disabled-color;
+			}
+		}
+
+		// Add indentation for sub menus text for deeper levels
+		@include sm-blue__sub-items-indentation($sm-blue__collapsible-sub-item-indentation);
+
+		// Sub menus items separators
+		li {
+			border-top: 1px solid $sm-blue__collapsible-sub-separators-color;
+
+			&:first-child {
+				border-top: 0;
+			}
+		}
+	}
+}
+
+
+// ----------------------------------------------------------
+// :: 2.2. Desktop mode
+// ----------------------------------------------------------
+
+@media (min-width: $sm-blue__desktop-vp) {
+
+	/* Switch to desktop layout
+	-----------------------------------------------
+	   These transform the menu tree from
+	   collapsible to desktop (navbar + dropdowns)
+	-----------------------------------------------*/
+	/* start... (it's not recommended editing these rules) */
+	.sm-blue ul{position:absolute;width:12em;}
+	.sm-blue li{float:left;}
+	.sm-blue.sm-rtl li{float:right;}
+	.sm-blue ul li,.sm-blue.sm-rtl ul li,.sm-blue.sm-vertical li{float:none;}
+	.sm-blue a{white-space:nowrap;}
+	.sm-blue ul a,.sm-blue.sm-vertical a{white-space:normal;}
+	.sm-blue .sm-nowrap > li > a,.sm-blue .sm-nowrap > li > :not(ul) a{white-space:nowrap;}
+	/* ...end */
+
+	// Main menu box
+	.sm-blue {
+		background: $sm-blue__desktop-bg;
+		background-image: linear-gradient(to bottom, lighten($sm-blue__desktop-bg, $sm-blue__gradients_amount), darken($sm-blue__desktop-bg, $sm-blue__gradients_amount));
+		border-radius: $sm-blue__desktop-border-radius;
+		box-shadow: $sm-blue__desktop-box-shadow;
+
+		// Main menu items
+		a {
+			&,
+			&:hover,
+			&:focus,
+			&:active,
+			&.highlighted {
+				padding: $sm-blue__desktop-item-padding-vertical $sm-blue__desktop-item-padding-horizontal;
+				background: $sm-blue__desktop-item-bg;
+				background-image: linear-gradient(to bottom, lighten($sm-blue__desktop-item-bg, $sm-blue__gradients_amount), darken($sm-blue__desktop-item-bg, $sm-blue__gradients_amount));
+				color: $sm-blue__desktop-item-color;
+			}
+
+			&:hover,
+			&:focus,
+			&:active,
+			&.highlighted {
+				background: $sm-blue__desktop-item-hover-bg;
+				background-image: linear-gradient(to bottom, lighten($sm-blue__desktop-item-hover-bg, $sm-blue__gradients_amount), darken($sm-blue__desktop-item-hover-bg, $sm-blue__gradients_amount));
+			}
+
+			&.current {
+				background: $sm-blue__desktop-item-current-bg;
+				background-image: linear-gradient(to bottom, darken($sm-blue__desktop-item-current-bg, $sm-blue__gradients_amount), lighten($sm-blue__desktop-item-current-bg, $sm-blue__gradients_amount));
+				color: $sm-blue__desktop-item-current-color;
+			}
+
+			&.disabled {
+				background: $sm-blue__desktop-item-bg;
+				background-image: linear-gradient(to bottom, lighten($sm-blue__desktop-item-bg, $sm-blue__gradients_amount), darken($sm-blue__desktop-item-bg, $sm-blue__gradients_amount));
+				color: $sm-blue__desktop-item-disabled-color;
+			}
+
+			// Sub menu indicators
+			.sub-arrow {
+				top: auto;
+				margin-top: 0;
+				bottom: 2px;
+				left: 50%;
+				margin-left: -$sm-blue__desktop-arrow-size;
+				right: auto;
+				width: 0;
+				height: 0;
+				border-width: $sm-blue__desktop-arrow-size;
+				border-style: solid dashed dashed dashed;
+				border-color: $sm-blue__desktop-arrow-color transparent transparent transparent;
+				background: transparent;
+				border-radius: 0;
+			}
+			// reset mobile first style
+			.sub-arrow::before {
+				display: none;
+			}
+		}
+
+		// round the corners of the first and last items
+		> li:first-child > a, > li:first-child > :not(ul) a {
+			border-radius: $sm-blue__desktop-border-radius 0 0 $sm-blue__desktop-border-radius;
+		}
+		> li:last-child > a, > li:last-child > :not(ul) a {
+			border-radius: 0 $sm-blue__desktop-border-radius $sm-blue__desktop-border-radius 0 !important;
+		}
+
+		// Main menu items separators
+		> li {
+			border-left: $sm-blue__desktop-separators-size solid $sm-blue__desktop-separators-color;
+
+			&:first-child {
+				border-left: 0;
+			}
+		}
+
+		// Sub menus box
+		ul {
+			border: $sm-blue__border-width solid $sm-blue__desktop-sub-border-color;
+			padding: $sm-blue__desktop-sub-padding-vertical $sm-blue__desktop-sub-padding-horizontal;
+			background: $sm-blue__desktop-sub-bg;
+			border-radius: 0 0 $sm-blue__desktop-sub-border-radius $sm-blue__desktop-sub-border-radius !important;
+			box-shadow: $sm-blue__desktop-sub-box-shadow;
+
+			// 2+ sub levels need rounding of all corners
+			ul {
+				border-radius: $sm-blue__desktop-sub-border-radius !important;
+				background: $sm-blue__desktop-sub-bg;
+			}
+
+			// Sub menus items
+			a {
+				&,
+				&:hover,
+				&:focus,
+				&:active,
+				&.highlighted {
+					border: 0 !important;
+					padding: $sm-blue__desktop-sub-item-padding-vertical $sm-blue__desktop-sub-item-padding-horizontal;
+					background: $sm-blue__desktop-sub-item-bg;
+					color: $sm-blue__desktop-sub-item-color;
+					border-radius: 0 !important;
+				}
+
+				&:hover,
+				&:focus,
+				&:active,
+				&.highlighted {
+					background: $sm-blue__desktop-sub-item-hover-bg;
+					background-image: linear-gradient(to bottom, lighten($sm-blue__desktop-sub-item-hover-bg, $sm-blue__gradients_amount), darken($sm-blue__desktop-sub-item-hover-bg, $sm-blue__gradients_amount));
+					color: $sm-blue__desktop-sub-item-hover-color;
+				}
+
+				&.current {
+					background: $sm-blue__desktop-sub-item-current-bg;
+					background-image: linear-gradient(to bottom, darken($sm-blue__desktop-sub-item-current-bg, $sm-blue__gradients_amount), lighten($sm-blue__desktop-sub-item-current-bg, $sm-blue__gradients_amount));
+					color: $sm-blue__desktop-sub-item-current-color;
+				}
+
+				&.disabled {
+					background: $sm-blue__desktop-sub-bg;
+					color: $sm-blue__desktop-sub-item-disabled-color;
+				}
+
+				// Sub menu indicators
+				.sub-arrow {
+					top: 50%;
+					margin-top: -$sm-blue__desktop-arrow-size;
+					bottom: auto;
+					left: auto;
+					margin-left: 0;
+					right: 10px;
+					border-style: dashed dashed dashed solid;
+					border-color: transparent transparent transparent $sm-blue__desktop-arrow-color;
+				}
+			}
+
+			// No sub menus items separators
+			li {
+				border: 0;
+			}
+		}
+
+		// Scrolling arrows containers for tall sub menus - test sub menu: "Sub test" -> "more..." in the default download package
+		.scroll-up,
+		.scroll-down {
+			position: absolute;
+			display: none;
+			visibility: hidden;
+			overflow: hidden;
+			background: $sm-blue__desktop-sub-bg;
+			height: 20px;
+			// width and position will be set automatically by the script
+		}
+		.scroll-up-arrow,
+		.scroll-down-arrow {
+			position: absolute;
+			top: -2px;
+			left: 50%;
+			margin-left: -8px;
+			// we will use one-side border to create a triangle so that we don't use a real background image, of course, you can use a real image if you like too
+			width: 0;
+			height: 0;
+			overflow: hidden;
+			border-width: 8px; // tweak size of the arrow
+			border-style: dashed dashed solid dashed;
+			border-color: transparent transparent $sm-blue__desktop-sub-item-color transparent;
+		}
+		.scroll-down-arrow {
+			top: 6px;
+			border-style: solid dashed dashed dashed;
+			border-color: $sm-blue__desktop-sub-item-color transparent transparent transparent;
+		}
+
+
+		// Rigth-to-left
+
+		// Main menu box
+		&.sm-rtl {
+
+			// Vertical main menu items
+			&.sm-vertical {
+				a {
+					// Sub menu indicators
+					.sub-arrow {
+						right: auto;
+						left: 10px;
+						border-style: dashed solid dashed dashed;
+						border-color: transparent $sm-blue__desktop-arrow-color transparent transparent;
+					}
+				}
+			}
+
+			// round the corners of the first and last items
+			> li:first-child > a, > li:first-child > :not(ul) a {
+				border-radius: 0 $sm-blue__desktop-border-radius $sm-blue__desktop-border-radius 0;
+			}
+			> li:last-child > a, > li:last-child > :not(ul) a {
+				border-radius: $sm-blue__desktop-border-radius 0 0 $sm-blue__desktop-border-radius !important;
+			}
+
+			// Main menu items separators
+			> li {
+				&:first-child {
+					border-left: $sm-blue__desktop-separators-size solid $sm-blue__desktop-separators-color;
+				}
+				&:last-child {
+					border-left: 0;
+				}
+			}
+
+			// Sub menus box
+			ul {
+				a {
+					// Sub menu indicators
+					.sub-arrow {
+						right: auto;
+						left: 10px;
+						border-style: dashed solid dashed dashed;
+						border-color: transparent $sm-blue__desktop-arrow-color transparent transparent;
+					}
+				}
+			}
+		}
+
+
+		// Vertical main menu
+
+		// Main menu box
+		&.sm-vertical {
+			box-shadow: $sm-blue__desktop-vertical-box-shadow;
+
+			// Main menu items
+			a {
+				padding: $sm-blue__desktop-vertical-item-padding-vertical $sm-blue__desktop-vertical-item-padding-horizontal;
+
+				// Sub menu indicators
+				.sub-arrow {
+					top: 50%;
+					margin-top: -$sm-blue__desktop-arrow-size;
+					bottom: auto;
+					left: auto;
+					margin-left: 0;
+					right: 10px;
+					border-style: dashed dashed dashed solid;
+					border-color: transparent transparent transparent $sm-blue__desktop-arrow-color;
+				}
+			}
+
+			// round the corners of the first and last items
+			> li:first-child > a, > li:first-child > :not(ul) a {
+				border-radius: $sm-blue__desktop-border-radius $sm-blue__desktop-border-radius 0 0;
+			}
+			> li:last-child > a, > li:last-child > :not(ul) a {
+				border-radius: 0 0 $sm-blue__desktop-border-radius $sm-blue__desktop-border-radius !important;
+			}
+
+			// No main menu item separators
+			> li {
+				border-left: 0 !important;
+			}
+
+			// Sub menus box
+			ul {
+				border-radius: $sm-blue__desktop-sub-border-radius !important;
+
+				// Sub menus items
+				a {
+					padding: $sm-blue__desktop-sub-item-padding-vertical $sm-blue__desktop-sub-item-padding-horizontal;
+				}
+			}
+		}
+	}
+}

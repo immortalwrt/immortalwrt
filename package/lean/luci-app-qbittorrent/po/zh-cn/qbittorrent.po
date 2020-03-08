@@ -1,0 +1,41 @@
+msgid "qbittorrent"
+msgstr "qbittorrent"
+
+msgid "qBittorrent is a cross-platform free and open-source BitTorrent client."
+msgstr "qBittorrent是一个基于 QT 的跨平台的开源 BitTorrent 客户端。"
+
+msgid "Default login username: admin, password: adminadmin."
+msgstr "默认登录用户名：admin，密码：adminadmin。"
+
+msgid "Open Web Interface"
+msgstr "打开Web界面"
+
+msgid "qbittorrent Run Status"
+msgstr "qbittorrent运行状态"
+
+msgid "Running"
+msgstr "运行中"
+
+msgid "Not running"
+msgstr "未运行"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Port"
+msgstr "端口"
+
+msgid "WebUI listening port"
+msgstr "WebUI监听端口"
+
+msgid "Profile Dir"
+msgstr "配置文件目录"
+
+msgid "Store configuration files in the Path"
+msgstr "配置文件存放路径"
+
+msgid "Download Dir"
+msgstr "下载目录"
+
+msgid "Store download files in the Path"
+msgstr "下载文件存放目录"

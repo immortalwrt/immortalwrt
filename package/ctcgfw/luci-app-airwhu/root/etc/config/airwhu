@@ -1,0 +1,26 @@
+
+config switch
+	option enableauth
+	option startwithboot
+	option enableipv6
+
+config auth
+	option Username
+	option Password
+	option ifname
+	option IP
+	option Mask
+	option Gateway
+	option DNS
+	option PingHost
+	option Timeout
+	option EchoInterval
+	option RestartWait
+	option MaxFail
+	option StartMode
+	option DHCPMode
+	option DaemonMode
+	option ShowNotify
+	option Version
+	option DataFile
+	option DHCPScript

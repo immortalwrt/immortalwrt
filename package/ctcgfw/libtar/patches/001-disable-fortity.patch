@@ -1,0 +1,12 @@
+diff --git a/configure.ac b/configure.ac
+index 3ebdf51..e8db2c2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -107,6 +107,7 @@ AC_FUNC_STRFTIME
+ COMPAT_FUNC_STRLCPY
+ COMPAT_FUNC_STRMODE
+ COMPAT_FUNC_STRSEP
++AC_DEFINE([_FORTIFY_STDIO_H], [1], [disable fortify])
+ 
+ dnl ### Check for libraries. #######################################
+ AC_ARG_WITH([zlib],

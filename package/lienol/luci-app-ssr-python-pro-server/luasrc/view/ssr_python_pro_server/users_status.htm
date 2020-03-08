@@ -1,0 +1,18 @@
+<%
+local uci = require "luci.model.uci".cursor()
+function get_status(section)
+	local port = uci:get("ssr_python_pro_server",section,"port")
+	if port and port ~= "" then
+		local status = luci.sys.call("netstat -an | grep '" .. port .. "' >/dev/null")==0
+		if status then
+			return '<font color="green"> ✓ </font>'
+		else
+			return '<font color="red"> X </font>'
+		end
+	end
+end
+%>
+
+<%+cbi/valueheader%>
+<span class="ssr_python_users_status" hint="<%=self:cfgvalue(section)%>"><%=get_status(section)%></span>
+<%+cbi/valuefooter%>

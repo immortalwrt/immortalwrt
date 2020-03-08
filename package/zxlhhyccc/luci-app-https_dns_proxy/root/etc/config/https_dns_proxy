@@ -1,0 +1,19 @@
+config https_dns_proxy
+	option listen_addr '127.0.0.1'
+	option listen_port '5053'
+	option bootstrap_dns '8.8.8.8,8.8.4.4'
+	option url_prefix 'https://dns.google/dns-query'
+	option user 'nobody'
+	option group 'nogroup'
+	option subnet_addr ''
+	option proxy_server ''
+
+config https_dns_proxy
+	option listen_addr '127.0.0.1'
+	option listen_port '5054'
+	option bootstrap_dns '1.1.1.1,1.0.0.1'
+	option url_prefix 'https://cloudflare-dns.com/dns-query'
+	option user 'nobody'
+	option group 'nogroup'
+	option subnet_addr ''
+	option proxy_server ''

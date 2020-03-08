@@ -1,0 +1,100 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2018-2019 Lienol <lawlienol@gmail.com>
+
+START=99
+
+CONFIG=ssr_python_pro_server
+ssr_python_path=/usr/share/$CONFIG
+
+config_t_get() {
+	local index=0
+	[ -n "$4" ] && index=$4
+	local ret=$(uci get $CONFIG.@$1[$index].$2 2>/dev/null)
+	echo ${ret:=$3}
+}
+
+gen_ssr_python_config_file() {
+	cbi_ids="$cbi_ids $1"
+	config_get enable $1 enable
+	config_get remarks $1 remarks
+	config_get port $1 port
+	config_get password $1 password
+	config_get method $1 method
+	config_get protocol $1 protocol
+	config_get obfs $1 obfs
+	config_get device_limit $1 device_limit
+	config_get speed_limit_per_con $1 speed_limit_per_con
+	config_get speed_limit_per_user $1 speed_limit_per_user
+	config_get forbidden_port $1 forbidden_port
+	config_get transfer_enable $1 transfer_enable
+	[ "$transfer_enable" = "0" ] && transfer_enable="838868"
+	cd $ssr_python_path
+	exist=$(echo `./mujson_mgr.py -l -I $1`)
+	action="-e"
+	[ -z "$exist" ] && action="-a"
+	./mujson_mgr.py $action -I $1 -u "${remarks}" -p ${port} -k ${password} -m ${method} -O ${protocol} -G ${device_limit} -o ${obfs} -s ${speed_limit_per_con} -S ${speed_limit_per_user} -t ${transfer_enable} -f "${forbidden_port}"
+}
+
+set_ssr_python_crontab() {
+	if [ "$1" = "start" ];then
+		auto_clear_transfer=$(config_t_get global auto_clear_transfer 0)
+		if [ "$auto_clear_transfer" = "0" ];then
+			sed -i '/clear_traffic_all_users.sh/d' /etc/crontabs/root >/dev/null 2>&1 &
+		else
+			auto_clear_transfer_time=$(config_t_get global auto_clear_transfer_time)
+			[ -n "$auto_clear_transfer_time" ] && auto_clear_transfer_time=$(echo $auto_clear_transfer_time | tr ',' ' ')
+			echo "$auto_clear_transfer_time $ssr_python_path/sh/clear_traffic_all_users.sh >/dev/null 2>&1" >> /etc/crontabs/root
+		fi
+	else
+		sed -i '/clear_traffic_all_users.sh/d' /etc/crontabs/root >/dev/null 2>&1 &
+	fi
+	/etc/init.d/cron restart
+}
+
+start_ssr_python_server() {
+	python=/usr/bin/python
+	lua /usr/lib/lua/luci/model/cbi/ssr_python_pro_server/genssrmudbconfig.lua > /tmp/mudb.json
+	mv -f /tmp/mudb.json $ssr_python_path/mudb.json
+	$python $ssr_python_path/server.py >> /var/log/$CONFIG.log 2>&1 &
+	set_ssr_python_crontab "start"
+	
+	fw3 reload
+	
+:<<EOF
+	cbi_ids=
+	config_foreach gen_ssr_python_config_file "ssr_python_users"
+	if [ -z "$cbi_ids" ];then
+		echo "[]" > $ssr_python_path/mudb.json
+	else
+		$python $ssr_python_path/server.py >> /var/log/$CONFIG.log 2>&1 &
+	fi
+EOF
+}
+
+stop_ssr_python_server() {
+	fw3 reload
+	ps -w | grep "/usr/bin/python $ssr_python_path/server.py" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	rm -rf /var/log/$CONFIG.log
+	set_ssr_python_crontab "stop"
+}
+
+start() {
+	config_load $CONFIG
+	enable=$(config_t_get global enable 0)
+	if [ "$enable" = "0" ];then
+		stop_ssr_python_server
+	else
+		cp -rf $ssr_python_path/mudb.json $ssr_python_path/mudb_backup.json
+		start_ssr_python_server
+	fi
+}
+
+stop() {
+	stop_ssr_python_server
+}
+
+restart() {
+	stop
+	sleep 1
+	start
+}

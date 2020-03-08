@@ -1,0 +1,7 @@
+#!/bin/sh
+uci batch <<-EOF
+	set luci.themes.Argon_Light=/luci-static/argon_light
+	set luci.themes.Argon_Light_Green=/luci-static/argon_light_green
+	commit luci
+EOF
+exit 0
