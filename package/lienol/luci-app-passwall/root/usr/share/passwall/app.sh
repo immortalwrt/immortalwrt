@@ -499,12 +499,6 @@ clean_log() {
 
 start_crontab() {
 	sed -i '/$CONFIG/d' /etc/crontabs/root >/dev/null 2>&1 &
-	start_daemon=$(config_t_get global_delay start_daemon)
-	if [ "$start_daemon" = "1" ]; then
-		echo "*/1 * * * * nohup $APP_PATH/monitor.sh > /dev/null 2>&1" >>/etc/crontabs/root
-		echolog "已启动守护进程。"
-	fi
-
 	auto_on=$(config_t_get global_delay auto_on 0)
 	if [ "$auto_on" = "1" ]; then
 		time_off=$(config_t_get global_delay time_off)
@@ -524,24 +518,15 @@ start_crontab() {
 		}
 	fi
 
-	AUTO_SWITCH_ENABLE=$(config_t_get auto_switch enable 0)
-	[ "$AUTO_SWITCH_ENABLE" = "1" ] && {
-		testing_time=$(config_t_get auto_switch testing_time)
-		[ -n "$testing_time" ] && {
-			echo "*/$testing_time * * * * nohup $APP_PATH/test.sh > /dev/null 2>&1" >>/etc/crontabs/root
-			echolog "配置定时任务：每$testing_time分钟执行自动切换检测脚本。"
-		}
-	}
-	
 	autoupdate=$(config_t_get global_rules auto_update)
 	weekupdate=$(config_t_get global_rules week_update)
 	dayupdate=$(config_t_get global_rules time_update)
-	#if [ "$autoupdate" = "1" ]; then
-	#	local t="0 $dayupdate * * $weekupdate"
-	#	[ "$weekupdate" = "7" ] && t="0 $dayupdate * * *"
-	#	echo "$t lua $APP_PATH/rule_update.lua nil log > /dev/null 2>&1 &" >>/etc/crontabs/root
-	#	echolog "配置定时任务：自动更新规则。"
-	#fi
+	if [ "$autoupdate" = "1" ]; then
+		local t="0 $dayupdate * * $weekupdate"
+		[ "$weekupdate" = "7" ] && t="0 $dayupdate * * *"
+		echo "$t lua $APP_PATH/rule_update.lua nil log > /dev/null 2>&1 &" >>/etc/crontabs/root
+		echolog "配置定时任务：自动更新规则。"
+	fi
 
 	autoupdatesubscribe=$(config_t_get global_subscribe auto_update_subscribe)
 	weekupdatesubscribe=$(config_t_get global_subscribe week_update_subscribe)
@@ -553,13 +538,18 @@ start_crontab() {
 		echolog "配置定时任务：自动更新节点订阅。"
 	fi
 	
+	start_daemon=$(config_t_get global_delay start_daemon 0)
+	[ "$start_daemon" = "1" ] && $APP_PATH/monitor.sh > /dev/null 2>&1 &
+	
+	AUTO_SWITCH_ENABLE=$(config_t_get auto_switch enable 0)
+	[ "$AUTO_SWITCH_ENABLE" = "1" ] && $APP_PATH/test.sh > /dev/null 2>&1 &
+	
 	/etc/init.d/cron restart
 }
 
 stop_crontab() {
 	sed -i "/$CONFIG/d" /etc/crontabs/root >/dev/null 2>&1 &
 	ps | grep "$APP_PATH/test.sh" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	rm -f /var/lock/${CONFIG}_test.lock >/dev/null 2>&1 &
 	/etc/init.d/cron restart
 	echolog "清除定时执行命令。"
 }
@@ -932,9 +922,9 @@ start() {
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
 	gen_include
-	start_crontab
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
 	echolog "运行完成！\n"
+	start_crontab
 	rm -f "$LOCK_FILE"
 	return 0
 }
@@ -954,7 +944,9 @@ stop() {
 	source $APP_PATH/iptables.sh stop
 	flush_include
 	kill_all v2ray-plugin obfs-local
-	ps -w | grep -E "$TMP_PATH" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	ps -w | grep -v "grep" | grep $CONFIG/test.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	ps -w | grep -v "grep" | grep $CONFIG/monitor.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	ps -w | grep -v "grep" | grep -E "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf $TMP_DNSMASQ_PATH $TMP_PATH
 	stop_dnsmasq
 	stop_crontab

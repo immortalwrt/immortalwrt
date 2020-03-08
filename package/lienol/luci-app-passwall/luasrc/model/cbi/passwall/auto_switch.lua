@@ -32,7 +32,9 @@ o = s:option(Value, "testing_time", translate("How often is a diagnosis made"),
 o.default = "3"
 
 ---- TCP Node
-local tcp_node_num = tonumber(api.uci_get_type("global_other", "tcp_node_num", 1))
+-- local tcp_node_num = tonumber(api.uci_get_type("global_other", "tcp_node_num", 1))
+-- 暂时只支持TCP1
+local tcp_node_num = 1
 for i = 1, tcp_node_num, 1 do
     o = s:option(DynamicList, "tcp_node" .. i,
                  "TCP " .. i .. " " .. translate("List of backup nodes"),

@@ -15,8 +15,17 @@ config_t_get() {
 	echo ${ret:=$3}
 }
 
+if [ "$(ps -w | grep -v grep | grep $CONFIG/monitor.sh | wc -l)" -gt 2 ]; then
+	exit 1
+fi
+
 ENABLED=$(config_t_get global enabled 0)
-[ "$ENABLED" == "1" ] && {
+[ "$ENABLED" != 1 ] && return 1
+ENABLED=$(config_t_get global_delay start_daemon 0)
+[ "$ENABLED" != 1 ] && return 1
+sleep 1m
+while [ "$ENABLED" -eq 1 ]
+do
 	TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
 	for i in $(seq 1 $TCP_NODE_NUM); do
 		eval TCP_NODE$i=$(config_t_get global tcp_node$i nil)
@@ -55,7 +64,6 @@ ENABLED=$(config_t_get global enabled 0)
 			fi
 		fi
 	done
-
 
 	#udp
 	for i in $(seq 1 $UDP_NODE_NUM); do
@@ -99,4 +107,6 @@ ENABLED=$(config_t_get global enabled 0)
 			exit 0
 		fi
 	fi
-}
+	
+	sleep 1m
+done
