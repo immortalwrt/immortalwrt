@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.6
-PKG_RELEASE:=16
-PKG_DATE:=20200306
+PKG_RELEASE:=18
+PKG_DATE:=20200308
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -85,7 +85,7 @@ define Package/$(PKG_NAME)
   SUBMENU:=3. Applications
   TITLE:=LuCI support for PassWall
   PKGARCH:=all
-  DEPENDS:=+libmbedtls +iptables-mod-tproxy +kmod-ipt-tproxy +iptables-mod-ipopt +kmod-ipt-ipopt +ip +ipset +coreutils +coreutils-base64 +coreutils-nohup +luci-lib-jsonc \
+  DEPENDS:=+libmbedtls +iptables-mod-tproxy +ip +ipset +coreutils +coreutils-base64 +coreutils-nohup +luci-lib-jsonc \
   +wget +resolveip +unzip +dnsmasq-full +tcping \
   +PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks:ipt2socks \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-redir \

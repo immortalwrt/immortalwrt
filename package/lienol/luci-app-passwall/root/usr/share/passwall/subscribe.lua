@@ -1,4 +1,5 @@
 #!/usr/bin/lua
+
 ------------------------------------------------
 -- This file from luci-app-ssr-plus transplant to luci-app-passwall
 -- This file is part of the luci-app-ssr-plus subscribe.lua
@@ -16,20 +17,19 @@ local tinsert = table.insert
 local ssub, slen, schar, sbyte, sformat, sgsub = string.sub, string.len, string.char, string.byte, string.format, string.gsub
 local jsonParse, jsonStringify = luci.jsonc.parse, luci.jsonc.stringify
 local b64decode = nixio.bin.b64decode
-local cache = {}
-local nodeResult = setmetatable({}, { __index = cache })  -- update result
-local name = 'passwall'
+local nodeResult = {} -- update result
+local application = 'passwall'
 local uciType = 'nodes'
 local ucic = luci.model.uci.cursor()
 local arg2 = arg[2]
 
 local log = function(...)
 	if arg2 then
-		local result = os.date("%Y-%m-%d %H:%M:%S: ") .. table.concat({ ... }, " ")
+		local result = os.date("%Y-%m-%d %H:%M:%S: ") .. table.concat({...}, " ")
 		if arg2 == "log" then
-			local f,err = io.open("/var/log/passwall.log","a")
+			local f, err = io.open("/var/log/passwall.log", "a")
 			if f and err == nil then
-				f:write(result.."\n")
+				f:write(result .. "\n")
 				f:close()
 			end
 		elseif arg2 == "print" then
@@ -38,10 +38,50 @@ local log = function(...)
 	end
 end
 
+-- 获取各项动态配置的当前服务器，可以用 get 和 set， get必须要获取到节点表
+local CONFIG = {}
+do
+	local function import_config(protocol)
+		local node_num = ucic:get_first(application, "global_other", protocol .. "_node_num", 1)
+		for i = 1, node_num, 1 do
+			local name = string.upper(protocol)
+			local option = protocol .. "_node" .. i
+			local szType = "global"
+			local json = {
+				remarks = name .. "节点" .. i,
+				type = szType,
+				option = option,
+				set = function(server)
+					ucic:set(application, ucic:get_first(application, szType), option, server)
+				end
+			}
+			CONFIG[name .. "_NODE" .. i] = json
+		end
+	end
+	import_config("tcp")
+	import_config("udp")
+	import_config("socks5")
+
+	for k, v in pairs(CONFIG) do
+		local currentNode
+		if v.get then
+			currentNode = v.get()
+		else
+			local cfgid = ucic:get_first(application, v.type, v.option)
+			if cfgid then currentNode = ucic:get_all(application, cfgid) end
+		end
+		if currentNode then
+			CONFIG[k].currentNode = currentNode
+		else
+			CONFIG[k] = nil
+		end
+	end
+end
+
 -- 分割字符串
 local function split(full, sep)
 	if full then
-		full = full:gsub("%z", "")  -- 这里不是很清楚 有时候结尾带个\0
+		full = full:gsub("%z", "") -- 这里不是很清楚 有时候结尾带个\0
 		local off, result = 1, {}
 		while true do
 			local nStart, nEnd = full:find(sep, off)
@@ -61,9 +101,7 @@ local function split(full, sep)
 	return {}
 end
 -- urlencode
-local function get_urlencode(c)
-	return sformat("%%%02X", sbyte(c))
-end
+local function get_urlencode(c) return sformat("%%%02X", sbyte(c)) end
 
 local function urlEncode(szText)
 	local str = szText:gsub("([^0-9a-zA-Z ])", get_urlencode)
@@ -71,26 +109,17 @@ local function urlEncode(szText)
 	return str
 end
 
-local function get_urldecode(h)
-	return schar(tonumber(h, 16))
-end
+local function get_urldecode(h) return schar(tonumber(h, 16)) end
 local function UrlDecode(szText)
 	return szText:gsub("+", " "):gsub("%%(%x%x)", get_urldecode)
 end
 
 -- trim
 local function trim(text)
-	if not text or text == "" then
-		return ""
-	end
+	if not text or text == "" then return "" end
 	return (sgsub(text, "^%s*(.-)%s*$", "%1"))
 end
--- md5
-local function md5(content)
-	local stdout = luci.sys.exec('echo \"' .. urlEncode(content) .. '\" | md5sum | cut -d \" \"  -f1')
-	-- assert(nixio.errno() == 0)
-	return trim(stdout)
-end
+
 -- base64
 local function base64Decode(text)
 	local raw = text
@@ -112,7 +141,7 @@ local function processData(szType, content, add_mode)
 	local result = {
 		timeout = 60,
 		add_mode = add_mode,
-		is_sub = (add_mode and add_mode == "导入") and 0 or 1
+		is_sub = add_mode == '导入' and 0 or 1
 	}
 	if szType == 'ssr' then
 		local dat = split(content, "/%?")
@@ -132,9 +161,7 @@ local function processData(szType, content, add_mode)
 		result.obfs_param = base64Decode(params.obfsparam)
 		result.protocol_param = base64Decode(params.protoparam)
 		local group = base64Decode(params.group)
-		if group then
-			result.group = group
-		end
+		if group then result.group = group end
 		result.remarks = base64Decode(params.remarks)
 	elseif szType == 'vmess' then
 		local info = jsonParse(content)
@@ -175,9 +202,7 @@ local function processData(szType, content, add_mode)
 			result.v2ray_quic_key = info.key
 			result.v2ray_quic_security = info.securty
 		end
-		if not info.security then
-			result.v2ray_security = "auto"
-		end
+		if not info.security then result.v2ray_security = "auto" end
 		if info.tls == "tls" or info.tls == "1" then
 			result.v2ray_stream_security = "tls"
 			result.tls_serverName = info.host
@@ -214,7 +239,8 @@ local function processData(szType, content, add_mode)
 				local idx_pn = plugin_info:find(";")
 				if idx_pn then
 					result.ss_plugin = plugin_info:sub(1, idx_pn - 1)
-					result.ss_plugin_opts = plugin_info:sub(idx_pn + 1, #plugin_info)
+					result.ss_plugin_opts =
+						plugin_info:sub(idx_pn + 1, #plugin_info)
 				else
 					result.ss_plugin = plugin_info
 				end
@@ -250,9 +276,7 @@ local function processData(szType, content, add_mode)
 					if params.allowInsecure then
 						allowInsecure = params.allowInsecure
 					end
-					if params.peer then
-						peer = params.peer
-					end
+					if params.peer then peer = params.peer end
 				end
 			end
 			result.type = "Trojan"
@@ -274,17 +298,13 @@ local function processData(szType, content, add_mode)
 		result.group = content.airport
 		result.remarks = content.remarks
 	else
-		log('暂时不支持' .. szType .. "类型的节点订阅，跳过此节点。")
+		log('暂时不支持' .. szType ..
+				"类型的节点订阅，跳过此节点。")
 		return nil
 	end
 	if not result.remarks then
 		result.remarks = result.address .. ':' .. result.port
 	end
-	-- remarks 不参与 hashkey 计算
-	local remarks = result.remarks
-	result.remarks = nil
-	result.hashkey = md5(jsonStringify(result))
-	result.remarks = remarks
 	return result
 end
 -- wget
@@ -295,115 +315,132 @@ end
 
 local function truncate_nodes()
 	local is_stop = 0
-	local tcp_node_num = ucic:get_first(name, "global_other", "tcp_node_num", 1)
-	local udp_node_num = ucic:get_first(name, "global_other", "udp_node_num", 1)
-	local socks5_node_num = ucic:get_first(name, "global_other", "socks5_node_num", 1)
-	for i = 1, tcp_node_num, 1 do
-		local node = ucic:get_first(name, "global", "tcp_node"..i, nil)
-		if node and node ~= "nil" then
-			local is_sub_node = ucic:get(name, node, "is_sub", "0")
-			if is_sub_node == "1" then
-				is_stop = 1
-				ucic:set(name, ucic:get_first(name, 'global'), "tcp_node"..i, "nil")
+	local function clear(type)
+		local node_num =
+			ucic:get_first(application, "global_other", type .. "_node_num", 1)
+		for i = 1, node_num, 1 do
+			local node = ucic:get_first(application, "global", type.."_node" .. i, nil)
+			if node and node ~= "nil" then
+				local is_sub_node = ucic:get(application, node, "is_sub", "0")
+				if is_sub_node == "1" then
+					is_stop = 1
+					ucic:set(application, ucic:get_first(application, 'global'), type.."_node" .. i, "nil")
+				end
 			end
 		end
 	end
+	clear("tcp")
+	clear("udp")
+	clear("socks5")
 
-	for i = 1, udp_node_num, 1 do
-		local node = ucic:get_first(name, "global", "udp_node"..i, nil)
-		if node and node ~= "nil" then
-			local is_sub_node = ucic:get(name, node, "is_sub", "0")
-			if is_sub_node == "1" then
-				is_stop = 1
-				ucic:set(name, ucic:get_first(name, 'global'), "udp_node"..i, "nil")
-			end
-		end
-	end
-
-	for i = 1, socks5_node_num, 1 do
-		local node = ucic:get_first(name, "global", "socks5_node"..i, nil)
-		if node and node ~= "nil" then
-			local is_sub_node = ucic:get(name, node, "is_sub", "0")
-			if is_sub_node == "1" then
-				is_stop = 1
-				ucic:set(name, ucic:get_first(name, 'global'), "socks5_node"..i, "nil")
-			end
-		end
-	end
-
-	ucic:foreach(name, uciType, function(old)
+	ucic:delete_all(application, uciType, function(old)
 		if old.is_sub and old.is_sub == "1" then
-			ucic:delete(name, old['.name'])
+			return true
+		else
+			return false
 		end
 	end)
-	ucic:commit(name)
+	ucic:commit(application)
 
 	if is_stop == 1 then
-		luci.sys.call("/etc/init.d/" .. name .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
+		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end
 	log('在线订阅节点已全部删除')
 end
 
-local function update_node(manual)
-	if next(nodeResult) == nil then
-			log("更新失败，没有可用的节点信息")
-			return
+local function select_node(nodes, config)
+	local server
+	-- 第一优先级 IP + 端口
+	for id, node in pairs(nodes) do
+		if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
+			log('选择【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
+			server = id
+			break
+		end
 	end
-	local add, del = 0, 0
-	ucic:foreach(name, uciType, function(old)
-		if old.grouphashkey or old.hashkey then -- 没有 hash 的不参与删除
-			if manual == 0 and (old.is_sub and old.is_sub == "1") then
-				if not nodeResult[old.grouphashkey] or not nodeResult[old.grouphashkey][old.hashkey] then
-					ucic:delete(name, old['.name'])
-					del = del + 1
-				else
-					local dat = nodeResult[old.grouphashkey][old.hashkey]
-					ucic:tset(name, old['.name'], dat)
-					-- 标记一下
-					setmetatable(nodeResult[old.grouphashkey][old.hashkey], { __index =  { _ignore = true } })
-				end
-			elseif manual == 1 and (old.add_mode and old.add_mode == "导入") then
-				if nodeResult[old.grouphashkey] and nodeResult[old.grouphashkey][old.hashkey] then
-					ucic:delete(name, old['.name'])
-				end
+	-- 第二优先级 IP
+	if not server then
+		for id, node in pairs(nodes) do
+			if node.address == config.currentNode.address then
+				log('选择【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
+				server = id
+				break
 			end
-		else
-			--log('忽略手动添加的节点: ' .. old.remarks)
+		end
+	end
+	-- 第三优先级备注
+	if not server then
+		for id, node in pairs(nodes) do
+			if node.remarks == config.currentNode.remarks then
+				log('选择【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
+				server = id
+				break
+			end
+		end
+	end
+	-- 第四 cfgid
+	if not server then
+		for id, node in pairs(nodes) do
+			if id == config.currentNode['.name'] then
+				log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+				server = id
+				break
+			end
+		end
+	end
+	-- 还不行 随便找一个
+	if not server then
+		server = ucic:get_first(application, uciType)
+		if server then
+			log('无法找到最匹配的节点，当前已更换为' .. ucic:get_all(application, server).remarks)
+		end
+	end
+	if server then
+		config.set(server)
+	end
+end
+
+local function update_node()
+	if next(nodeResult) == nil then
+		log("更新失败，没有可用的节点信息")
+		return
+	end
+	-- delet all for subscribe nodes
+	ucic:foreach(application, uciType, function(node)
+		if (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
+			ucic:delete(application, node['.name'])
 		end
 	end)
 	for k, v in ipairs(nodeResult) do
 		for kk, vv in ipairs(v) do
-			if not vv._ignore then
-				local section = ucic:add(name, uciType)
-				ucic:tset(name, section, vv)
-				add = add + 1
-			end
+			local section = ucic:add(application, uciType)
+			ucic:tset(application, section, vv)
+		end
+	end
+	ucic:commit(application)
 
+	if next(CONFIG) then
+		local nodes = {}
+		ucic:foreach(application, uciType, function(node)
+			if node.port and node.address and node.remarks then
+				nodes[node['.name']] = node
+			end
+		end)
+		for _, config in pairs(CONFIG) do
+			select_node(nodes, config)
 		end
+		ucic:commit(application)
+		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end
-	log('新增节点数量: ' ..add, '删除节点数量: ' .. del)
-	ucic:commit(name)
-	-- 如果节点已经不见了把帮换一个
-	local globalServer = ucic:get_first(name, 'global', 'tcp_node1', '')
-	local firstServer = ucic:get_first(name, uciType)
-	if not ucic:get(name, globalServer) then
-		if firstServer then
-			ucic:set(name, ucic:get_first(name, 'global'), 'tcp_node1', firstServer)
-			ucic:commit(name)
-			log('当前主服务器已更新，正在自动更换。')
-		end
-		luci.sys.call("/etc/init.d/" .. name .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
-	end
+
 end
 
-local function parse_link(raw, remark, md5_str, manual)
+local function parse_link(raw, remark, manual)
 	if raw and #raw > 0 then
 		local add_mode
 		local nodes, szType
-		local groupHash = md5_str or md5(raw)
-		cache[groupHash] = {}
-		tinsert(nodeResult, {})
-		local index = #nodeResult
+		local all_nodes = {}
+		tinsert(nodeResult, all_nodes)
 		-- SSD 似乎是这种格式 ssd:// 开头的
 		if raw:find('ssd://') then
 			szType = 'ssd'
@@ -420,7 +457,7 @@ local function parse_link(raw, remark, md5_str, manual)
 			local servers = {}
 			-- SS里面包着 干脆直接这样
 			for _, server in ipairs(nodes.servers) do
-				tinsert(servers, setmetatable(server, { __index = extra }))
+				tinsert(servers, setmetatable(server, {__index = extra}))
 			end
 			nodes = servers
 		else
@@ -457,23 +494,19 @@ local function parse_link(raw, remark, md5_str, manual)
 					if result.remarks:find("过期时间") or
 						result.remarks:find("剩余流量") or
 						result.remarks:find("QQ群") or
-						result.remarks:find("官网") or
-						not result.address or
+						result.remarks:find("官网") or not result.address or
 						result.address:match("[^0-9a-zA-Z%-%_%.%s]") or -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
 						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧
 						result.address:sub(#result.address) == "." -- 结尾是.
 					then
-						log('丢弃无效节点: ' .. result.type ..' 节点, ' .. result.remarks)
+						log('丢弃无效节点: ' .. result.type .. ' 节点, ' .. result.remarks)
 					else
-						--log('成功解析: ' .. result.type ..' 节点, ' .. result.remarks)
-						result.grouphashkey = groupHash
-						tinsert(nodeResult[index], result)
-						cache[groupHash][result.hashkey] = nodeResult[index][#nodeResult[index]]
+						tinsert(all_nodes, result)
 					end
 				end
 			end
 		end
-		log('成功解析节点数量: ' ..#nodes)
+		log('成功解析节点数量: ' .. #nodes)
 	else
 		if not manual then
 			log('获取到的节点内容为空...')
@@ -484,27 +517,24 @@ end
 local execute = function()
 	-- exec
 	do
-		ucic:foreach(name, "subscribe_list", function(obj)
+		ucic:foreach(application, "subscribe_list", function(obj)
 			local enabled = obj.enabled or nil
 			if enabled and enabled == "1" then
 				local remark = obj.remark
 				local url = obj.url
 				log('正在订阅: ' .. url)
-				local md5_str = md5(url)
 				local raw = wget(url)
-				parse_link(raw, remark, md5_str)
+				parse_link(raw, remark)
 			end
 		end)
-	end
-	-- diff
-	do
-		update_node(0)
+		-- diff
+		update_node()
 	end
 end
 
 if arg[1] then
 	if arg[1] == "start" then
-		count = luci.sys.exec("echo -n $(uci show " .. name .." | grep @subscribe_list | grep -c \"enabled='1'\")")
+		local count = luci.sys.exec("echo -n $(uci show " .. application .. " | grep @subscribe_list | grep -c \"enabled='1'\")")
 		if count and tonumber(count) > 0 then
 			log('开始订阅...')
 			xpcall(execute, function(e)
@@ -517,16 +547,20 @@ if arg[1] then
 			log('未设置或启用订阅, 请检查设置...')
 		end
 	elseif arg[1] == "add" then
-		local f = assert(io.open("/tmp/links.conf",'r'))
+		local f = assert(io.open("/tmp/links.conf", 'r'))
 		local content = f:read('*all')
 		f:close()
 		local nodes = split(content:gsub(" ", "\n"), "\n")
 		for _, raw in ipairs(nodes) do
-			local md5_str = md5(raw)
-			parse_link(raw, nil, md5_str, 1)
+			parse_link(raw, nil, 1)
 		end
-		update_node(1)
+		update_node()
 	elseif arg[1] == "truncate" then
 		truncate_nodes()
+	elseif arg[1] == "test" then
+		for k, v in pairs(CONFIG) do
+			print(k, v)
+		end
 	end
 end
+

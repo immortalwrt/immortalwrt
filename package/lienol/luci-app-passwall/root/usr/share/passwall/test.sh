@@ -1,7 +1,6 @@
 #!/bin/sh
 
 CONFIG=passwall
-LOCK_FILE=/var/lock/${CONFIG}_test.lock
 LOG_FILE=/var/log/$CONFIG.log
 
 echolog() {
@@ -22,7 +21,7 @@ test_url() {
 	[ -n "$2" ] && try=$2
 	local timeout=2
 	[ -n "$3" ] && timeout=$3
-	status=$(/usr/bin/wget --no-check-certificate --spider --timeout=$timeout --tries $try "$url")
+	status=$(/usr/bin/wget --no-check-certificate --spider --timeout=$timeout --tries $try "$url" 2>/dev/null)
 	[ "$?" == 0 ] && status=200
 	echo $status
 }
@@ -87,28 +86,31 @@ test_auto_switch() {
 }
 
 start() {
-	#防止并发执行
-	if [ -f "$LOCK_FILE" ]; then
+	if [ "$(ps -w | grep -v grep | grep $CONFIG/test.sh | wc -l)" -gt 2 ]; then
 		exit 1
-	else
-		touch $LOCK_FILE
 	fi
 	
 	ENABLED=$(config_t_get global enabled 0)
 	[ "$ENABLED" != 1 ] && return 1
 	ENABLED=$(config_t_get auto_switch enable 0)
 	[ "$ENABLED" != 1 ] && return 1
-	TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
-	for i in $(seq 1 $TCP_NODE_NUM); do
-		eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
-		eval tmp=\$TCP_NODE$i
-		[ -n "$tmp" ] && {
-			test_auto_switch TCP REDIR tcp $i "$tmp"
-		}
+	delay=$(config_t_get auto_switch testing_time 1)
+	sleep ${delay}m
+	while [ "$ENABLED" -eq 1 ]
+	do
+		# TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
+		# 暂时只能检测TCP1
+		TCP_NODE_NUM=1
+		for i in $(seq 1 $TCP_NODE_NUM); do
+			eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
+			eval tmp=\$TCP_NODE$i
+			[ -n "$tmp" -a "$tmp" != "nil" ] && {
+				test_auto_switch TCP REDIR tcp $i "$tmp"
+			}
+		done
+		delay=$(config_t_get auto_switch testing_time 1)
+		sleep ${delay}m
 	done
-
-	rm -f $LOCK_FILE
-	exit
 }
 
 case $1 in
