@@ -26,6 +26,13 @@ function cbi_add_dpi_protocols(field)
 end
 
 function get_wan()
-	local net = require "luci.model.network".init()
-	return net:get_wannet()
+	local network = require "luci.model.network".init()
+	local bundle = network:get_status_by_route("0.0.0.0", 0)
+	local net, stat
+	for k, v in pairs(bundle) do
+		net = k
+		stat = v
+		break
+	end
+	return net and network:network(net, stat.proto)
 end

@@ -27,7 +27,7 @@ endef
 
 define Build/Prepare
 	$(CP) $(CURDIR)/files $(PKG_BUILD_DIR)
-	$(foreach po,$(wildcard ${CURDIR}/i18n/zh-cn/*.po), \
+	$(foreach po,$(wildcard ${CURDIR}/i18n/zh_Hans/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 	chmod 0755 $(PKG_BUILD_DIR)/files/etc/init.d/openclash
 	chmod -R 0755 $(PKG_BUILD_DIR)/files/usr/share/openclash/

@@ -1,0 +1,85 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:68
+msgid "5ping loss1-4"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:60
+msgid "Auto del dnsmasq log"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:61
+msgid "Auto tail runtime log"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/controller/autoipsetadder.lua:8
+msgid "Base Setting"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/view/autoipsetadder/status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:59
+msgid "Crontab task"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/view/autoipsetadder/status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:59
+msgid "Please change time and args in crontab"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/view/autoipsetadder/status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:21
+msgid "Runtime log file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/controller/autoipsetadder.lua:7
+msgid "autoipsetadder"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:40
+msgid "dnsmasq log file"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:6
+msgid "ipsetautoadder"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:67
+msgid "no china ip"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:69
+msgid "packet >12 pass"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/view/autoipsetadder/check.htm:7
+msgid "reverse"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:66
+msgid "the way add to gfwlist"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:14
+msgid "启用"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-autoipsetadder/luasrc/model/cbi/autoipsetadder.lua:7
+msgid "自动将联不通的域名加入ipset"
+msgstr ""

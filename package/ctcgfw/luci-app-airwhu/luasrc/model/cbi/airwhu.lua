@@ -9,12 +9,12 @@ Copyright 2017 KyleRicardo[W.B.L.E. TeAm] <shaoyz714@126.com>
 require("luci.sys")
 require("luci.tools.webadmin")
 
-local IsOnAir = (luci.sys.call("pidof mentohust > /dev/null") == 0)
-if IsOnAir then
-    state_msg = "<b><font color=\"green\">" .. translate("Running") .. "</font></b>"
-else
-    state_msg = "<b><font color=\"red\">" .. translate("Not Running") .. "</font></b>"
-end
+local IsOnAir = (luci.sys.call("pidof mentohust > /dev/null") == 0)  
+if IsOnAir then      
+    state_msg = "<b><font color=\"green\">" .. translate("Running") .. "</font></b>"  
+else  
+    state_msg = "<b><font color=\"red\">" .. translate("Not Running") .. "</font></b>"  
+end  
 
 m = Map("airwhu", translate("AirWHU"), translate("Configure Ruijie 802.1X client with IPv6 NAT based on Masquerade.") .. "<br /><br />" .. translate("Status") .. " : " .. state_msg)
 
@@ -104,7 +104,7 @@ if apply then
 	else
         	luci.sys.exec("/etc/init.d/mentohust disable")
 	end
-
+	
 	if luci.sys.exec("uci get airwhu.@switch[0].enableipv6") then
 		luci.sys.exec("sh /bin/ipv6masq.sh install")
 	else

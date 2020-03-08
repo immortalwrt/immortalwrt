@@ -37,13 +37,13 @@ define Package/luci-app-eqos/description
 	Luci interface for the eqos.
 endef
 
-define Package/luci-i18n-eqos-zh-cn
+define Package/luci-i18n-eqos-zh_Hans
 	SECTION:=luci
 	CATEGORY:=LuCI
-	TITLE:=luci-app-eqos - zh-cn translation
+	TITLE:=luci-app-eqos - zh_Hans translation
 	HIDDEN:=1
 	DEPENDS:=luci-app-eqos
-	DEFAULT:=LUCI_LANG_zh-cn
+	DEFAULT:=LUCI_LANG_zh_Hans
     PKGARCH:=all
 endef
 
@@ -90,11 +90,11 @@ uci -q get ucitrack.@eqos[0] > /dev/null && {
 }
 endef
 
-define Package/luci-i18n-eqos-zh-cn/install
+define Package/luci-i18n-eqos-zh_Hans/install
 	$(INSTALL_DIR) $(1)$(LUCI_DIR)/i18n
-	po2lmo ./files/po/zh-cn/eqos.po $(1)$(LUCI_DIR)/i18n/eqos.zh-cn.lmo
+	po2lmo ./files/po/zh_Hans/eqos.po $(1)$(LUCI_DIR)/i18n/eqos.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,eqos))
 $(eval $(call BuildPackage,luci-app-eqos))
-$(eval $(call BuildPackage,luci-i18n-eqos-zh-cn))
+$(eval $(call BuildPackage,luci-i18n-eqos-zh_Hans))

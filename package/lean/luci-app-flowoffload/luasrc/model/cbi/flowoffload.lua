@@ -26,6 +26,11 @@ hw.rmempty = true
 hw.description = translate("Enable Hardware NAT (depends on hw capability like MTK 762x)")
 hw:depends("flow_offloading", 1)
 
+fc = s:option(Flag, "fullcone_nat", translate("Fullcone NAT"))
+fc.default = 1
+fc.rmempty = true
+fc.description = translate("Enable Fullcone NAT")
+
 bbr = s:option(Flag, "bbr", translate("Enable BBR"))
 bbr.default = 0
 bbr.rmempty = false

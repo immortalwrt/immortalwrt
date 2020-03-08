@@ -1,0 +1,219 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:769
+msgid "%d IPv4-only hosts"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:776
+msgid "%d IPv6-only hosts"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:783
+msgid "%d dual-stack hosts"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:260
+msgid "%s and %s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:258
+msgid "%s, %s and %s"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:836
+msgid "<big id=\"conn-total\">0</big> connections"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:833
+msgid "<big id=\"host-total\">0</big> hosts"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:877
+msgid "<big id=\"ipv6-hosts\">0%</big> IPv6 support rate among hosts"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:879
+msgid "<big id=\"ipv6-rx\">0B</big> total IPv6 download"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:878
+msgid "<big id=\"ipv6-share\">0%</big> of the total traffic is IPv6"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:880
+msgid "<big id=\"ipv6-tx\">0B</big> total IPv6 upload"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:858
+msgid "<big id=\"layer7-most-conn\">0</big> cause the most connections"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:856
+msgid "<big id=\"layer7-most-rx\">0</big> cause the most download"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:857
+msgid "<big id=\"layer7-most-tx\">0</big> cause the most upload"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:855
+msgid "<big id=\"layer7-total\">0</big> different application protocols"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:834
+msgid "<big id=\"rx-total\">0</big> download"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:835
+msgid "<big id=\"tx-total\">0</big> upload"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:864
+msgid "Application"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:825
+msgid "Application Protocols"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:94
+msgid "Collecting data..."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:434
+msgid "Conn."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/controller/onliner.lua:4
+msgid "Connection info"
+msgstr "连接信息"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:844
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:865
+msgid "Connections"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:435
+msgid "Down. (Bytes / Pkts.)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:845
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:866
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:889
+msgid "Download (Bytes / Packets)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:888
+msgid "Family"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:577
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:633
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:747
+msgid "Force reload…"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:842
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:886
+msgid "Host"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:88
+msgid "Hostname"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:814
+msgid "Hostname: <big id=\"bubble-hostname\">example.org</big>"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:89
+msgid "IPv4-Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:826
+msgid "IPv6"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:91
+msgid "Interface"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:843
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:887
+msgid "MAC"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:90
+msgid "MAC-Address"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:805
+msgid "Netlink Bandwidth Monitor"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:577
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:633
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:747
+msgid "No data recorded yet."
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/controller/onliner.lua:5
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:84
+msgid "Online User"
+msgstr "在线用户"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:545
+msgid "Protocol"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:538
+msgid "Source IP"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/controller/onliner.lua:6
+msgid "Speed monitor"
+msgstr "宽带监视"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:81
+msgid "Status"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/onliner.htm:74
+msgid "There is no one online now."
+msgstr "当前无任何设备在线。"
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:824
+msgid "Traffic Distribution"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:436
+msgid "Up. (Bytes / Pkts.)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:846
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:867
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:890
+msgid "Upload (Bytes / Packets)"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:815
+msgid "Vendor: <big id=\"bubble-vendor\">Example Corp.</big>"
+msgstr ""
+
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:443
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:451
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:456
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:539
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:607
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:612
+#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-onliner/luasrc/view/onliner/display.htm:615
+msgid "other"
+msgstr ""

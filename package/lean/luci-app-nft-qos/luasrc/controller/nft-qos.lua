@@ -8,11 +8,11 @@ function index()
 		return
 	end
 
-	entry({"admin", "status", "realtime", "rate"},
+	entry({"admin", "network", "realtime", "rate"},
 		template("nft-qos/rate"), _("Rate"), 5).leaf = true
-	entry({"admin", "status", "realtime", "rate_status"},
+	entry({"admin", "network", "realtime", "rate_status"},
 		call("action_rate")).leaf = true
-	entry({"admin", "services", "nft-qos"}, cbi("nft-qos/nft-qos"),
+	entry({"admin", "network", "nft-qos"}, cbi("nft-qos/nft-qos"),
 		_("Qos over Nftables"), 60)
 end
 

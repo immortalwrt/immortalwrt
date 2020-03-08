@@ -3,7 +3,6 @@ config switch
 	option enableauth
 	option startwithboot
 	option enableipv6
-
 config auth
 	option Username
 	option Password

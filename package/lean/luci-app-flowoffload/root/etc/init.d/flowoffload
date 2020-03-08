@@ -2,8 +2,7 @@
 # Copyright (c) 2011-2015 OpenWrt.org
 
 START=90
-
-USE_PROCD=1
+STOP=15
 
 DNSMASQ_RESTART=N
 DNS_SERVER="114.114.114.114,114.114.115.115,223.5.5.5,223.6.6.6,180.76.76.76,119.29.29.29,119.28.28.28,1.2.4.8,210.2.4.8"
@@ -215,7 +214,7 @@ revert_dns() {
 
 }
 
-start_service(){
+start(){
 	dns=$(uci get flowoffload.@flow[0].dns 2>/dev/null)
 	dnscache_enable=$(uci get flowoffload.@flow[0].dnscache_enable 2>/dev/null)
 	bbr=$(uci get flowoffload.@flow[0].bbr 2>/dev/null)
@@ -255,6 +254,7 @@ start_service(){
 
 	uci set firewall.@defaults[0].flow_offloading=$(uci get flowoffload.@flow[0].flow_offloading)
 	uci set firewall.@defaults[0].flow_offloading_hw=$(uci get flowoffload.@flow[0].flow_offloading_hw)
+	uci set firewall.@defaults[0].fullcone=$(uci get flowoffload.@flow[0].fullcone_nat)
 	uci commit firewall
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart && echo "DNSMASQ change"
@@ -262,7 +262,7 @@ start_service(){
 	fi
 }
 
-stop_service(){
+stop(){
     dns=$(uci get firewall.@defaults[0].dns 2>/dev/null)
 	stop_dnscache
     revert_dns

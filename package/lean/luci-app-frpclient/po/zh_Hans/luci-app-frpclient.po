@@ -1,0 +1,420 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: luasrc/model/cbi/frp/frp.lua:61
+msgid "0 means disable this feature, unit: min"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:114
+msgid "<font color=\"red\">Please ensure the remark name is unique.</font>"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:12 luasrc/model/cbi/frp/frp.lua:13
+msgid "Basic Settings"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:29
+msgid "Both the above two Domain types"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:76
+msgid "Choose Plugin"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:15
+msgid "Client Log"
+msgstr ""
+
+#: luasrc/view/frp/frp_status.htm:21
+msgid "Collecting data..."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:9
+msgid "Config Frp Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:45
+msgid "Connect frps by HTTP PROXY"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:56
+msgid "Connection Pool"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:56
+msgid "Connections will be established in advance."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:27 luasrc/model/cbi/frp/config.lua:32
+msgid "Custom Domains"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:68
+msgid "Debug"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:38
+msgid "Default is Ture. This feature in frps.ini and frpc.ini must be same."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:18
+msgid "Disable"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:25
+msgid "Domain Type"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:105
+msgid "Domain/Subdomain"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:17
+msgid "Enable"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:54
+msgid "Enable Connection Pool"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:14 luasrc/model/cbi/frp/frp.lua:157
+msgid "Enable State"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:71
+msgid "Enable URL routing"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:16
+msgid "Enabled"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:108
+msgid ""
+"Encrypted the communication between frpc and frps, will effectively prevent "
+"the traffic intercepted."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:71
+msgid "Error"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:35
+msgid "Exit program when first login failed"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:7
+msgid "Frp Domain Config"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:19 luasrc/model/cbi/frp/frp.lua:103
+msgid "Frp Protocol Type"
+msgstr ""
+
+#: luasrc/controller/frp.lua:8 luasrc/model/cbi/frp/frp.lua:8
+msgid "Frp Setting"
+msgstr ""
+
+#: luasrc/view/frp/frp_status.htm:19
+msgid "Frp Status"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:102
+msgid "Frp can rewrite http requests with a modified Host header."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:8
+msgid ""
+"Frp is a fast reverse proxy to help you expose a local server behind a NAT "
+"or firewall to the internet."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:71
+msgid ""
+"Frp support forward http requests to different backward web services by url "
+"routing."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:41
+msgid "Frp support kcp protocol since v0.12.0"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:10
+msgid "Global Setting"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:20
+msgid "HTTP"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:49
+msgid "HTTP PROXY"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:99
+msgid "HTTP PassWord"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:87
+msgid "HTTP Proxy Password"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:84
+msgid "HTTP Proxy UserName"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:96
+msgid "HTTP UserName"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:21
+msgid "HTTPS"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:105
+msgid "Host Header"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:73
+msgid "Http requests with url prefix /news will be forwarded to this service."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:93
+msgid "Http username and password are safety certification for http protocol."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:32
+msgid ""
+"If SubDomain is used, Custom Domains couldn't be subdomain or wildcard "
+"domain of the maindomain(subdomain_host)."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:47
+msgid ""
+"If plugin is defined, local_ip and local_port is useless, plugin will handle "
+"connections got from frps."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:69
+msgid "Info"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:44
+msgid "KCP Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:50 luasrc/model/cbi/frp/frp.lua:133
+msgid "Local Host Address"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:59 luasrc/model/cbi/frp/frp.lua:135
+msgid "Local Host Port"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:72
+msgid "Log Keepd Max Days"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:65
+msgid "Log Level"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:81
+msgid ""
+"Other PCs could access the Internet through frpc's network by using "
+"http_proxy plugin."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:13 luasrc/model/cbi/frp/frp.lua:14
+msgid "Other Settings"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:93
+msgid "Password protecting your web service"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:90
+msgid "Plugin Unix Sock Path"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:21
+msgid "Port"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:41
+msgid "Protocol Type"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:81
+msgid "Proxy Authentication"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:43 luasrc/model/cbi/frp/frp.lua:121
+msgid "Remote Port"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:102
+msgid "Rewriting the Host Header"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:24
+msgid "STCP"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:38
+msgid "STCP Role"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:65
+msgid "STCP Screct Key"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:40
+msgid "STCP Server"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:68
+msgid "STCP Server Name"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:68
+msgid "STCP Server Name is Service Remark Name of STCP Server"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:41
+msgid "STCP Vistor"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:18
+msgid "Server"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:114 luasrc/model/cbi/frp/frp.lua:101
+msgid "Service Remark Name"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:61
+msgid "Service registration interval"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:86
+msgid "Services List"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:28 luasrc/model/cbi/frp/config.lua:35
+msgid "SubDomain"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:22
+msgid "TCP"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:43
+msgid "TCP Protocol"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:38
+msgid "TCP Stream Multiplexing"
+msgstr ""
+
+#: luasrc/view/frp/frp_status.htm:10
+msgid "The Frp service is not running."
+msgstr ""
+
+#: luasrc/view/frp/frp_status.htm:7
+msgid "The Frp service is running."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:105
+msgid ""
+"The Host header will be rewritten to match the hostname portion of the "
+"forwarding address."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:111
+msgid ""
+"The contents will be compressed to speed up the traffic forwarding speed, "
+"but this will consume some additional cpu resources."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:54
+msgid "This feature is fit for a large number of short connections."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:25
+msgid ""
+"Time duration between server of frpc and frps mustn't exceed 15 minutes."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:25
+msgid "Token"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:67
+msgid "Trace"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:23
+msgid "UDP"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:73
+msgid "URL routing"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:111 luasrc/model/cbi/frp/frp.lua:147
+msgid "Use Compression"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:108 luasrc/model/cbi/frp/frp.lua:137
+msgid "Use Encryption"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:47
+msgid "Use Plugin"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:29
+msgid "Vhost HTTP Port"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:32
+msgid "Vhost HTTPS Port"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:70
+msgid "Warning"
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:35
+msgid ""
+"decide if exit program when first login failed, otherwise continuous relogin "
+"to frps."
+msgstr ""
+
+#: luasrc/model/cbi/frp/frp.lua:45
+msgid "frpc can connect frps using HTTP PROXY"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:77
+msgid "http_proxy"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:78
+msgid "socks5"
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:35
+msgid "subdomain_host must be configured in server: frps in advance."
+msgstr ""
+
+#: luasrc/model/cbi/frp/config.lua:79
+msgid "unix_domain_socket"
+msgstr ""

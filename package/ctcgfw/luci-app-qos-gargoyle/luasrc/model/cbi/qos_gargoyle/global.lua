@@ -33,10 +33,10 @@ m = Map(qos_gargoyle, translate("Gargoyle QoS"),
 	translate("Quality of Service (QoS) provides a way to control how available bandwidth is "
 	.. "allocated."))
 
-s = m:section(SimpleSection, translate("Global Settings"))
+s = m:section(TypedSection, 'global', translate("Global Settings"))
 s.anonymous = true
 
-o = s:option(Button, "_switch", nil, translate("QoS Switch"))
+o = s:option(Button, "", translate("QoS Switch"))
 o.render = function(self, section, scope)
 	if qos_enabled() then
 		self.title = translate("Disable QoS")
@@ -104,8 +104,9 @@ o = s:option(Value, "ptarget_ip", translate("Use Non-standard Ping Target"),
 	.. "link will occur in a different segment then you can enter an alternate ping target. Leave "
 	.. "empty to use the default settings."))
 o:depends("qos_monenabled", "true")
-local wan = qos.get_wan()
-if wan then o:value(wan:gwaddr()) end
+-- local wan = qos.get_wan()
+-- if wan then o:value(wan:gwaddr()) end
+-- TODO: get wan address
 o.datatype = "ipaddr"
 
 o = s:option(Value, "pinglimit", translate("Manual Ping Limit"),

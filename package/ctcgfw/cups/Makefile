@@ -95,17 +95,17 @@ define Package/cups-ppdc/description
 	Common UNIX Printing System - PPDC utils
 endef
 
-define Package/libcups
-$(call Package/cups/Default)
-  SECTION:=libs
-  CATEGORY:=Libraries
-  DEPENDS:=+zlib +libpthread +libpng +libjpeg
-  TITLE:=Common UNIX Printing System - Core library
-endef
+#define Package/libcups
+#$(call Package/cups/Default)
+#  SECTION:=libs
+#  CATEGORY:=Libraries
+#  DEPENDS:=+zlib +libpthread +libpng +libjpeg
+#  TITLE:=Common UNIX Printing System - Core library
+#endef
 
-define Package/libcups/description
-	Common UNIX Printing System - Core library
-endef
+#define Package/libcups/description
+#	Common UNIX Printing System - Core library
+#endef
 
 define Package/libcupscgi
 $(call Package/cups/Default)
@@ -275,10 +275,10 @@ define Package/cups-ppdc/install
 		$(1)/usr/bin/
 endef
 
-define Package/libcups/install
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups.so* $(1)/usr/lib/
-endef
+#define Package/libcups/install
+#	$(INSTALL_DIR) $(1)/usr/lib
+#	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups.so* $(1)/usr/lib/
+#endef
 
 define Package/libcupscgi/install
 	$(INSTALL_DIR) $(1)/usr/lib
@@ -300,17 +300,17 @@ define Package/libcupsppdc/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcupsppdc.so* $(1)/usr/lib/
 endef
 
-define Build/InstallDev
-	$(INSTALL_DIR) $(2)/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cups-config $(2)/bin/
-	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/cups $(1)/usr/include/
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups*.so* $(1)/usr/lib/
-endef
+#define Build/InstallDev
+#	$(INSTALL_DIR) $(2)/bin
+#	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cups-config $(2)/bin/
+#	$(INSTALL_DIR) $(1)/usr/include
+#	$(CP) $(PKG_INSTALL_DIR)/usr/include/cups $(1)/usr/include/
+#	$(INSTALL_DIR) $(1)/usr/lib
+#	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcups*.so* $(1)/usr/lib/
+#endef
 
 $(eval $(call BuildPackage,cups))
-$(eval $(call BuildPackage,libcups))
+#$(eval $(call BuildPackage,libcups))
 $(eval $(call BuildPackage,libcupscgi))
 $(eval $(call BuildPackage,libcupsimage))
 $(eval $(call BuildPackage,libcupsmime))
