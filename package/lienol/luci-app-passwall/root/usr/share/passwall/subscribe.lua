@@ -6,6 +6,7 @@
 -- @author William Chan <root@williamchan.me>
 ------------------------------------------------
 require 'nixio'
+require 'uci'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
@@ -20,8 +21,9 @@ local b64decode = nixio.bin.b64decode
 local nodeResult = {} -- update result
 local application = 'passwall'
 local uciType = 'nodes'
-local ucic = luci.model.uci.cursor()
+local ucic2 = uci.cursor()
 local arg2 = arg[2]
+ucic2:revert(application)
 
 local log = function(...)
 	if arg2 then
@@ -42,17 +44,17 @@ end
 local CONFIG = {}
 do
 	local function import_config(protocol)
-		local node_num = ucic:get_first(application, "global_other", protocol .. "_node_num", 1)
+		local node_num = ucic2:get(application, "@global_other[0]", protocol .. "_node_num") or 1
 		for i = 1, node_num, 1 do
 			local name = string.upper(protocol)
 			local option = protocol .. "_node" .. i
-			local szType = "global"
+			local szType = "@global[0]"
 			local json = {
 				remarks = name .. "节点" .. i,
 				type = szType,
 				option = option,
 				set = function(server)
-					ucic:set(application, ucic:get_first(application, szType), option, server)
+					ucic2:set(application, szType, option, server)
 				end
 			}
 			CONFIG[name .. "_NODE" .. i] = json
@@ -67,8 +69,10 @@ do
 		if v.get then
 			currentNode = v.get()
 		else
-			local cfgid = ucic:get_first(application, v.type, v.option)
-			if cfgid then currentNode = ucic:get_all(application, cfgid) end
+			local cfgid = ucic2:get(application, v.type, v.option)
+			if cfgid then
+				currentNode = ucic2:get_all(application, cfgid)
+			end
 		end
 		if currentNode then
 			CONFIG[k].currentNode = currentNode
@@ -101,13 +105,13 @@ local function split(full, sep)
 	return {}
 end
 -- urlencode
-local function get_urlencode(c) return sformat("%%%02X", sbyte(c)) end
+-- local function get_urlencode(c) return sformat("%%%02X", sbyte(c)) end
 
-local function urlEncode(szText)
-	local str = szText:gsub("([^0-9a-zA-Z ])", get_urlencode)
-	str = str:gsub(" ", "+")
-	return str
-end
+-- local function urlEncode(szText)
+-- 	local str = szText:gsub("([^0-9a-zA-Z ])", get_urlencode)
+-- 	str = str:gsub(" ", "+")
+-- 	return str
+-- end
 
 local function get_urldecode(h) return schar(tonumber(h, 16)) end
 local function UrlDecode(szText)
@@ -316,15 +320,14 @@ end
 local function truncate_nodes()
 	local is_stop = 0
 	local function clear(type)
-		local node_num =
-			ucic:get_first(application, "global_other", type .. "_node_num", 1)
+		local node_num = ucic2:get(application, "@global_other[0]", type .. "_node_num") or 1
 		for i = 1, node_num, 1 do
-			local node = ucic:get_first(application, "global", type.."_node" .. i, nil)
-			if node and node ~= "nil" then
-				local is_sub_node = ucic:get(application, node, "is_sub", "0")
+			local node = ucic2:get(application, "@global[0]", type.."_node" .. i)
+			if node then
+				local is_sub_node = ucic2:get(application, node, "is_sub") or 0
 				if is_sub_node == "1" then
 					is_stop = 1
-					ucic:set(application, ucic:get_first(application, 'global'), type.."_node" .. i, "nil")
+					ucic2:set(application, '@global[0]', type.."_node" .. i, "nil")
 				end
 			end
 		end
@@ -333,15 +336,12 @@ local function truncate_nodes()
 	clear("udp")
 	clear("socks5")
 
-	ucic:delete_all(application, uciType, function(old)
-		if old.is_sub and old.is_sub == "1" then
-			return true
-		else
-			return false
+	ucic2:foreach(application, uciType, function(node)
+		if (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
+			ucic2:delete(application, node['.name'])
 		end
 	end)
-	ucic:save(application)
-	luci.sys.call("uci commit " .. application)
+	ucic2:commit(application)
 
 	if is_stop == 1 then
 		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
@@ -391,9 +391,9 @@ local function select_node(nodes, config)
 	end
 	-- 还不行 随便找一个
 	if not server then
-		server = ucic:get_first(application, uciType)
+		server = ucic2:get(application, '@' .. uciType .. '[0]')
 		if server then
-			log('无法找到最匹配的节点，当前已更换为' .. ucic:get_all(application, server).remarks)
+			log('无法找到最匹配的节点，当前已更换为' .. ucic2:get_all(application, server).remarks)
 		end
 	end
 	if server then
@@ -407,23 +407,25 @@ local function update_node()
 		return
 	end
 	-- delet all for subscribe nodes
-	ucic:foreach(application, uciType, function(node)
+	ucic2:foreach(application, uciType, function(node)
 		if (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
-			ucic:delete(application, node['.name'])
+			ucic2:delete(application, node['.name'])
 		end
 	end)
-	for k, v in ipairs(nodeResult) do
-		for kk, vv in ipairs(v) do
-			local section = ucic:add(application, uciType)
-			ucic:tset(application, section, vv)
+	for _, v in ipairs(nodeResult) do
+		for _, vv in ipairs(v) do
+			local cfgid = ucic2:add(application, uciType)
+			for kkk, vvv in pairs(vv) do
+				ucic2:set(application, cfgid, kkk, vvv)
+			end
 		end
 	end
-	ucic:save(application)
-	luci.sys.call("uci commit " .. application)
+	ucic2:commit(application)
 
 	if next(CONFIG) then
 		local nodes = {}
-		ucic:foreach(application, uciType, function(node)
+		local ucic3 = uci.cursor()
+		ucic3:foreach(application, uciType, function(node)
 			if node.port and node.address and node.remarks then
 				nodes[node['.name']] = node
 			end
@@ -431,11 +433,9 @@ local function update_node()
 		for _, config in pairs(CONFIG) do
 			select_node(nodes, config)
 		end
-		ucic:save(application)
-		luci.sys.call("uci commit " .. application)
+		ucic3:commit(application)
 		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end
-
 end
 
 local function parse_link(raw, remark, manual)
@@ -460,7 +460,7 @@ local function parse_link(raw, remark, manual)
 			local servers = {}
 			-- SS里面包着 干脆直接这样
 			for _, server in ipairs(nodes.servers) do
-				tinsert(servers, setmetatable(server, {__index = extra}))
+				tinsert(servers, setmetatable(server, { __index = extra }))
 			end
 			nodes = servers
 		else
@@ -520,7 +520,7 @@ end
 local execute = function()
 	-- exec
 	do
-		ucic:foreach(application, "subscribe_list", function(obj)
+		ucic2:foreach(application, "subscribe_list", function(obj)
 			local enabled = obj.enabled or nil
 			if enabled and enabled == "1" then
 				local remark = obj.remark
@@ -566,4 +566,3 @@ if arg[1] then
 		end
 	end
 end
-
