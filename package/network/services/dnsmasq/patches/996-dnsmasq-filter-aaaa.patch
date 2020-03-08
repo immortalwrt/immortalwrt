@@ -22,8 +22,7 @@ index 1896a64..e10d6c4 100644
 +#define OPT_LAST           63
  
  #define OPTION_BITS (sizeof(unsigned int)*8)
- #define OPTION_SIZE (
-(OPT_LAST/OPTION_BITS)+((OPT_LAST%OPTION_BITS)!=0) )
+ #define OPTION_SIZE ( (OPT_LAST/OPTION_BITS)+((OPT_LAST%OPTION_BITS)!=0) )
 diff --git a/src/option.c b/src/option.c
 index d8c57d6..1cc65bf 100644
 --- a/src/option.c
