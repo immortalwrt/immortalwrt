@@ -512,7 +512,7 @@ start() {
 		GLOBAL_SERVER=$switch_server
 		switch_enable=1
 	fi
-	if rules ;then
+	if rules; then
 		start_redir
 		if ! [ "$(uci_get_by_type global pdnsd_enable)" = "2" ] ;then
 			mkdir -p /tmp/dnsmasq.d && cp -a /etc/dnsmasq.ssr /tmp/ && cp -a /etc/dnsmasq.oversea /tmp/
@@ -524,6 +524,8 @@ start() {
 			if [ $(uci_get_by_type global adblock 0) == "0" ] ;then
 				rm -f /tmp/dnsmasq.ssr/ad.conf
 			fi
+			/usr/share/shadowsocksr/gfw2ipset.sh
+			/etc/init.d/dnsmasq restart >/dev/null 2>&1
 		fi
 	fi
 	start_server
@@ -571,18 +573,6 @@ stop() {
 	killall -q -9 dns2socks
 	killall -q -9 microsocks
 	killall -q -9 redsocks2
-<<<<<<< HEAD
-	if [ $(uci_get_by_type global adblock 0) == "0" ]; then
-		rm -f /tmp/dnsmasq.d/ad.conf
-	else
-		cp -f /etc/dnsmasq.ssr/ad.conf /tmp/dnsmasq.d/ad.conf
-=======
-	if [ -f /var/run/pdnsd.pid ]; then
-		kill $(cat /var/run/pdnsd.pid) >/dev/null 2>&1
-	else
-		kill -9 $(busybox ps -w | grep pdnsd | grep -v grep | awk '{print $1}') >/dev/null 2>&1
->>>>>>> 19ec6b2511601e88ade445e807b199aafdda7933
-	fi
 	if [ -f "/tmp/dnsmasq.d/dnsmasq-ssr.conf" ]; then
 		rm -f /tmp/dnsmasq.d/dnsmasq-ssr.conf
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
