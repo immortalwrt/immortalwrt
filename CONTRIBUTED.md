@@ -35,7 +35,9 @@ qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-drive
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
 package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>
 package gargoyle: [ericpaulbishop/gargoyle](https://github.com/ericpaulbishop/gargoyle).<br/>
-luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).
+luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).<br/>
+luci-app-cupsd source: [F-Light/luci-app-cupsd](https://github.com/F-Light/luci-app-cupsd).<br/>
+libtar source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenWRT).
 
 ## License
 ### Depending on their own License.
