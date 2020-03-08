@@ -340,7 +340,8 @@ local function truncate_nodes()
 			return false
 		end
 	end)
-	ucic:commit(application)
+	ucic:save(application)
+	luci.sys.call("uci commit " .. application)
 
 	if is_stop == 1 then
 		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
@@ -417,7 +418,8 @@ local function update_node()
 			ucic:tset(application, section, vv)
 		end
 	end
-	ucic:commit(application)
+	ucic:save(application)
+	luci.sys.call("uci commit " .. application)
 
 	if next(CONFIG) then
 		local nodes = {}
@@ -429,7 +431,8 @@ local function update_node()
 		for _, config in pairs(CONFIG) do
 			select_node(nodes, config)
 		end
-		ucic:commit(application)
+		ucic:save(application)
+		luci.sys.call("uci commit " .. application)
 		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end
 
