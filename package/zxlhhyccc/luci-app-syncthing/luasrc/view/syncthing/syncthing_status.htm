@@ -4,10 +4,10 @@ XHR.poll(1, '<%=url([[admin]], [[nas]], [[syncthing]], [[status]])%>', null,
 		var tb = document.getElementById('syncthing_status');
 		if (data && tb) {
 			if (data.running) {
-				var links = '<font color=green><%:RUNNING%></font><input class="cbi-button mar-10" type="button" value="<%:Open Web Interface%>" onclick="openwebui();" />';
+				var links = '<font color=green>Syncthing <%:RUNNING%></font><input class="cbi-button mar-10" type="button" value="<%:Open Web Interface%>" onclick="openwebui();" />';
 				tb.innerHTML = links;
 			} else {
-				tb.innerHTML = '<font color=red><%:NOT RUNNING%></font>';
+				tb.innerHTML = '<font color=red>Syncthing <%:NOT RUNNING%></font>';
 			}
 		}
 	}
