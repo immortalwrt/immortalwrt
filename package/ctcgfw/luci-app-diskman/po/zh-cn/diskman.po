@@ -125,7 +125,7 @@ msgid "Device Info"
 msgstr "设备信息"
 
 msgid "Disk Man"
-msgstr "DiskMan 磁盘管理"
+msgstr "磁盘管理"
 
 msgid "Partitions Info"
 msgstr "分区信息"

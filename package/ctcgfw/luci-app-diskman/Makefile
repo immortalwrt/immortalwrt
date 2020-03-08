@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-diskman
-PKG_VERSION:=v0.2.3
+PKG_VERSION:=v0.2.4
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-diskman>
 PKG_LICENSE:=AGPL-3.0
@@ -11,10 +11,28 @@ PKG_SOURCE_URL:=https://github.com/lisaac/luci-app-diskman.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
 
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)
-PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 
 include $(INCLUDE_DIR)/package.mk
+
+define Package/$(PKG_NAME)/config
+config PACKAGE_$(PKG_NAME)_INCLUDE_btrfs_progs
+	bool "Include btrfs-progs"
+	default y
+config PACKAGE_$(PKG_NAME)_INCLUDE_lsblk
+	bool "Include lsblk"
+	default y
+config PACKAGE_$(PKG_NAME)_INCLUDE_mdadm
+	bool "Include mdadm"
+	default n
+config PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_raid456
+	bool "Include kmod-md-raid456"
+	default n
+config PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linear
+	bool "Include kmod-md-linear"
+	default n
+endef
 
 define Package/$(PKG_NAME)
 	SECTION:=luci
@@ -22,7 +40,14 @@ define Package/$(PKG_NAME)
 	SUBMENU:=3. Applications
 	TITLE:=Disk Manager interface for LuCI
 	PKGARCH:=all
-	DEPENDS:=+e2fsprogs +parted +smartmontools +blkid
+	DEPENDS:=+e2fsprogs +parted +smartmontools +blkid \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_btrfs_progs:btrfs-progs \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_lsblk:lsblk \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_mdadm:mdadm \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_raid456:kmod-md-mod \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_raid456:kmod-md-raid456 \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linears:kmod-md-mod \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linears:kmod-md-linear
 endef
 
 define Package/$(PKG_NAME)/description
