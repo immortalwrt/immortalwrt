@@ -1,31 +1,8 @@
-require("luci.sys")
-require("luci.util")
-require("luci.model.ipkg")
-local fs  = require "nixio.fs"
+m = Map("filebrowser", translate("文件管理器"), translate("FileBrowser是一个基于Go的在线文件管理器，助您方便的管理设备上的文件。"))
 
-local uci = require "luci.model.uci".cursor()
+m:section(SimpleSection).template  = "filebrowser/filebrowser_status"
 
-local m, s
-
-local running=(luci.sys.call("pidof filebrowser > /dev/null") == 0)
-
-local button = ""
-local state_msg = ""
-local trport = uci:get("filebrowser", "config", "port")
-if running  then
-	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("打开管理界面") .. " \" onclick=\"window.open('http://'+window.location.hostname+':" .. trport .. "')\"/>"
-end
-
-if running then
-        state_msg = "<b><font color=\"green\">" .. translate("FileBrowser运行中") .. "</font></b>"
-else
-        state_msg = "<b><font color=\"red\">" .. translate("FileBrowser未运行") .. "</font></b>"
-end
-
-m = Map("filebrowser", translate("文件管理器"), translate("FileBrowser是一个基于Go的在线文件管理器，助您方便的管理设备上的文件。") .. button
-        .. "<br/><br/>" .. translate("FileBrowser运行状态").. " : "  .. state_msg .. "<br/>")
-        
-s = m:section(TypedSection, "filebrowser", "")
+s = m:section(TypedSection, "filebrowser")
 s.addremove = false
 s.anonymous = true
 
