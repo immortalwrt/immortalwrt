@@ -4,10 +4,10 @@ XHR.poll(1, '<%=url([[admin]], [[nas]], [[syncthing]], [[status]])%>', null,
 		var tb = document.getElementById('syncthing_status');
 		if (data && tb) {
 			if (data.running) {
-				var links = '<font color=green><%:RUNNING%></font><input class="cbi-button mar-10" type="button" value="<%:Open Web Interface%>" onclick="openClient();" />';
+				var links = '<font color=green>Syncthing <%:RUNNING%></font><input class="cbi-button mar-10" type="button" value="<%:Open Web Interface%>" onclick="openClient();" />';
 				tb.innerHTML = links;
 			} else {
-				tb.innerHTML = '<font color=red><%:NOT RUNNING%></font>';
+				tb.innerHTML = '<font color=red>Syncthing <%:NOT RUNNING%></font>';
 			}
 		}
 	}
@@ -21,6 +21,7 @@ function openClient() {
 	var clientPort = window.document.getElementById("cbid.syncthing.config.port").value
 	var url = "http:" + localhostPath.substring(window.location.protocol.length) + ":" + clientPort;
 	window.open(url)
+};
 //]]>
 </script>
 <style>.mar-10 {margin-left: 50px; margin-right: 10px;}</style>
