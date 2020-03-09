@@ -257,6 +257,7 @@ define Device/glinet_gl-b1300
 	DEVICE_MODEL := GL-B1300
 	BOARD_NAME := gl-b1300
 	DEVICE_DTS := qcom-ipq4029-gl-b1300
+	BOARD_NAME := gl-b1300
 	KERNEL_SIZE := 4096k
 	IMAGE_SIZE := 26624k
 	IMAGES := sysupgrade.bin
@@ -266,7 +267,8 @@ TARGET_DEVICES += glinet_gl-b1300
 
 define Device/hugo_ac1200
 	$(call Device/FitImage)
-	DEVICE_TITLE := Hugo AC1200
+	DEVICE_VENDOR := Hugo
+	DEVICE_MODEL := AC1200
 	BOARD_NAME := hugo_ac1200
 	DEVICE_DTS := qcom-ipq4019-hugo-ac1200
 	KERNEL_SIZE := 4096k
