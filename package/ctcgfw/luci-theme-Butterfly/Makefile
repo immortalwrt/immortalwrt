@@ -8,6 +8,8 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Butterfly Theme
 LUCI_DEPENDS:=
+PKG_VERSION:=2.0
+PKG_RELEASE:=03-20200302
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

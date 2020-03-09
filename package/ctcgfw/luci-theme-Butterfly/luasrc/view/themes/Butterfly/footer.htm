@@ -1,7 +1,7 @@
 <%#
 
 	luci-theme-Butterfly
-	Copyright 2017 Tracemouse <tracemouse@wcan.in>
+	Copyright 2020 Tracemouse <tracemouse@wcan.in>
 	
 	Smart Menu:
 	https://www.smartmenus.org/
@@ -35,7 +35,7 @@
                 </div>
                 <footer class="mobile-hide" style="text-align:center">
                     <a href="https://github.com/openwrt/luci">Powered by LeoJo <%= ver.luciname %> (<%= ver.luciversion %>)</a> /
-                    <a href="http://butong.me/"><%= ver.distversion %></a> /
+                    <a href="https://github.com/openwrt/openwrt/"><%= ver.distversion %></a> /
                     <% if #categories > 1 then %>
                     <ul class="breadcrumb pull-right" id="modemenu">
                         <% for i, r in ipairs(categories) do %>
@@ -96,21 +96,18 @@ $(document).ready(function(){
 	 $(".node-main-login > .main form > div > h2").html(str);
 
 	 //add icons for navbar
-                  status = ".main-nav > #main-menu > .slide > a[data-title='新春版客户端'] > i";
-	 $(status).attr("class","fa fa-windows");
-                  
-
+         
 	 status = ".main-nav > #main-menu > .slide > a[data-title='Status'] > i";
-	 $(status).attr("class","fa fa-university");
+	 $(status).attr("class","fa fa-bank");
  
 	 status = ".main-nav > #main-menu > .slide > a[data-title='System'] > i";
-	 $(status).attr("class","fa fa-cogs");
+	 $(status).attr("class","fa fa-windows");
                  
                    status = ".main-nav > #main-menu > .slide > a[data-title='Docker'] > i";
 	  $(status).attr("class","fa fa-cubes");
                     
                     status = ".main-nav > #main-menu > .slide > a[data-title='Control'] > i";
-	  $(status).attr("class","fa fa-life-ring");
+	  $(status).attr("class","fa fa-user-md");
         
                    status = ".main-nav > #main-menu > .slide > a[data-title='NAS'] > i";
 	  $(status).attr("class","fa fa-recycle");
@@ -119,16 +116,16 @@ $(document).ready(function(){
 	  $(status).attr("class","fa fa-paper-plane-o");
 
 	 status = ".main-nav > #main-menu > .slide > a[data-title='Services'] > i";
-	 $(status).attr("class","fa fa-sitemap");
+	 $(status).attr("class","fa fa-outdent");
 
 	 status = ".main-nav > #main-menu > .slide > a[data-title='Network'] > i";
 	 $(status).attr("class","fa fa-globe");
 
                   status = ".main-nav > #main-menu > .slide > a[data-title='Bandwidth Monitor'] > i";
-	 $(status).attr("class","fa fa-gg-circle");
+	 $(status).attr("class","fa fa-rocket");
 
                    status = ".main-nav > #main-menu > .slide > a[data-title='QOS'] > i";
-	 $(status).attr("class","fa fa-drupal");
+	 $(status).attr("class","fa fa-support");
 	
 	 status = ".main-nav > #main-menu > .slide > a[data-title='Quick Guide'] > i";
 	 $(status).attr("class","fa fa-paper-plane");
