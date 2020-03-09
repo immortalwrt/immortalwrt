@@ -1,27 +1,22 @@
-Subject: [PATCH] ARM: dts: qcom: ipq4019: Add SDHCI controller node
+From 04b3b72b5b8fdb883bfdc619cb29b03641b1cc6a Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
 Date: Thu, 15 Aug 2019 19:28:23 +0200
-Message-Id: <20190815172823.12028-1-robimarko@gmail.com>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Sender: linux-arm-msm-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-arm-msm.vger.kernel.org>
-X-Mailing-List: linux-arm-msm@vger.kernel.org
-X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: [PATCH] ARM: dts: qcom: ipq4019: Add SDHCI controller node
 
 IPQ4019 has a built in SD/eMMC controller which is supported by the
 SDHCI MSM driver, by the "qcom,sdhci-msm-v4" binding.
 So lets add the appropriate node for it.
 
 Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
  arch/arm/boot/dts/qcom-ipq4019.dtsi | 12 ++++++++++++
  1 file changed, 12 insertions(+)
- 
+
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -226,6 +226,18 @@
- 			status = "disabled";
+@@ -214,6 +214,18 @@
+ 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
  		};
  
 +		sdhci: sdhci@7824900 {
