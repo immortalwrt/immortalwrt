@@ -1,7 +1,6 @@
 #!/bin/sh
 CONFIG_YAML="/etc/clash/config.yaml"
 lang=$(uci get luci.main.lang 2>/dev/null)
-core=$(uci get clash.config.core 2>/dev/null)
 subscribe_url=$(uci get clash.config.subscribe_url_clash 2>/dev/null)
 subscribe_urll=$(uci get $name.config.subscribe_url 2>/dev/null) 
 
@@ -10,26 +9,45 @@ REAL_LOG="/usr/share/clash/clash_real.txt"
 
 
 if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "Checking DNS Settings.. " >$REAL_LOG  
+		echo "Checking DNS Settings.. " >$REAL_LOG   
 elif [ $lang == "zh_cn" ];then
     	 echo "DNS设置检查..." >$REAL_LOG
 fi
 
 
 #===========================================================================================================================
+core=$(uci get clash.config.core 2>/dev/null)
+mode=$(uci get clash.config.mode 2>/dev/null)
+tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
+
 if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
+
+if [ "${tun_mode}" -eq 0 ] && [ "${core}" -eq 3 ] || [ "${tun_mode}" -eq 0 ] && [ "${core}" -eq 4 ];then
 if [ -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
 	uci set clash.config.mode="0" && uci set clash.config.tun_mode="1" && uci commit clash
+fi
+elif [ "${tun_mode}" -eq 1 ] && [ "${core}" -eq 3 ] || [ "${tun_mode}" -eq 1 ] && [ "${core}" -eq 4 ];then
+	uci set clash.config.mode="0" && uci set clash.config.tun_mode="1" && uci commit clash	
 fi	
-elif [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
+fi
+
+
+if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
+if [ "${mode}" -eq 0 ] && [ "${core}" -eq 1 ] || [ "${mode}" -eq 0 ] && [ "${core}" -eq 2 ];then
 if [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
 	uci set clash.config.mode="1" && uci set clash.config.tun_mode="0" && uci commit clash
 fi
-fi	
+elif [ "$mode" -eq 1 ] && [ "$core" -eq 1 ] || [ "$mode" -eq 1 ] && [ "$core" -eq 2 ];then
+	uci set clash.config.mode="1" && uci set clash.config.tun_mode="0" && uci commit clash
+
+fi
+fi
+				
 #===========================================================================================================================	
 
   
-sleep 2
+sleep 3
+
 #===========================================================================================================================
 		mode=$(uci get clash.config.mode 2>/dev/null)
 		da_password=$(uci get clash.config.dash_pass 2>/dev/null)
@@ -45,9 +63,9 @@ sleep 2
 		p_mode=$(uci get clash.config.p_mode 2>/dev/null)
 		
 if [ "${mode}" -eq 1 ];  then
-	
+if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then	
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "Setting Up Ports and Password.. " >$REAL_LOG 
+		echo "Setting Up Ports and Password.. " >$REAL_LOG  
 	elif [ $lang == "zh_cn" ];then
     	 echo "设置端口,DNS和密码..." >$REAL_LOG
 	fi
@@ -98,10 +116,11 @@ if [ "${mode}" -eq 1 ];  then
 		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
-		fi	
-		
+		fi
+		sed -i '/#clash-openwrt/ d' $CONFIG_YAML 2>/dev/null	
+fi		
 elif [ "${tun_mode}" -eq 1 ];  then
-	
+if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then	
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Setting Up Ports and Password.. " >$REAL_LOG 
 	elif [ $lang == "zh_cn" ];then
@@ -153,6 +172,8 @@ elif [ "${tun_mode}" -eq 1 ];  then
 		else
 		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
 		fi		
+		sed -i '/#clash-openwrt/ d' $CONFIG_YAML 2>/dev/null
+fi
 else
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Setting Up Ports and Password.. " >$REAL_LOG 
@@ -209,6 +230,8 @@ else
 		else
 		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
 		fi
+		sed -i '/#clash-openwrt/ d' $CONFIG_YAML 2>/dev/null
+
 fi
 #=========================================================================================================================== 
 

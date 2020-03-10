@@ -33,7 +33,7 @@ revert_dns() {
 add_cron(){
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 #===========================================================================================================================
-	[ -z "$(grep -w "/usr/share/clash/clash-watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/clash-watchdog.sh" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/clash-watchdog.sh" $CRON_FILE)" ] && echo "*/2 * * * * /usr/share/clash/clash-watchdog.sh" >> $CRON_FILE
 	[ -z "$(grep -w "/usr/share/clash/kill_watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/kill_watchdog.sh" >> $CRON_FILE
 	clear=$(uci get clash.config.auto_clear_log 2>/dev/null)
 	if [ "${clear}" -eq 1 ]; then
@@ -208,6 +208,16 @@ yml_dns_change(){
 #=========================================================================================================================== 	   
 }
 
+
+check(){
+
+	   sed -i 's/Proxy Group:/proxy-groups:/g' "$CONFIG_YAML"
+	   sed -i 's/proxy-provider:/proxy-providers:/g' "$CONFIG_YAML"
+	   sed -i 's/Proxy:/proxies:/g' "$CONFIG_YAML"
+	   sed -i 's/Rule:/rules:/g' "$CONFIG_YAML"
+
+}
+
 rules(){
 #===========================================================================================================================
 
@@ -218,9 +228,12 @@ rules(){
 		core=$(uci get clash.config.core 2>/dev/null)
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		lan_ip=$(uci get network.lan.ipaddr 2>/dev/null |awk -F '/' '{print $1}' 2>/dev/null)
-		wan=$(ubus call network.interface.wan status 2>/dev/null | grep \"address\" | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' 2>/dev/null)
+		wan=$(ifconfig | grep 'inet addr' | awk '{print $2}' | cut -d: -f2 2>/dev/null)
+		ip6=$(ifconfig | grep 'inet6 addr' | awk '{print $3}' 2>/dev/null)
+		enable_udp=$(uci get clash.config.enable_udp 2>/dev/null)
+		
 		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
-			iptables -t nat -N clash              
+			iptables -t nat -N clash   	
 			iptables -t nat -A clash -d 0.0.0.0/8 -j RETURN
 			iptables -t nat -A clash -d 10.0.0.0/8 -j RETURN
 			iptables -t nat -A clash -d 127.0.0.0/8 -j RETURN
@@ -230,18 +243,57 @@ rules(){
 			iptables -t nat -A clash -d 224.0.0.0/4 -j RETURN
 			iptables -t nat -A clash -d 240.0.0.0/4 -j RETURN
 			iptables -t nat -A clash -d "${lan_ip}" -j RETURN
-			if [ ! -z "${wan}" ]; then
-                	iptables -t nat -A clash -d "${wan}" -j RETURN
+            if [ ! -z "${wan}" ]; then
+                for wan_ip in $wan; do
+                      iptables -t mangle -A clash -d "$wan_ip" -j RETURN 2>/dev/null
+                done
             fi
-			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
-			iptables -t nat -A PREROUTING -p tcp -j clash
-		    	
+			
+	    iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
+            iptables -t nat -A PREROUTING -p tcp -j clash
+				
+				
+				
+			if [ "${enable_udp}" -eq 1 ]; then	
+			
+			ip rule add fwmark 1 table 100
+            ip route add local default dev lo table 100
+			
+            iptables -t mangle -N clash
+            iptables -t mangle -A clash -d 0.0.0.0/8 -j RETURN
+            iptables -t mangle -A clash -d 10.0.0.0/8 -j RETURN
+            iptables -t mangle -A clash -d 127.0.0.0/8 -j RETURN
+            iptables -t mangle -A clash -d 169.254.0.0/16 -j RETURN
+            iptables -t mangle -A clash -d 172.16.0.0/12 -j RETURN
+            iptables -t mangle -A clash -d 192.168.0.0/16 -j RETURN
+            iptables -t mangle -A clash -d 224.0.0.0/4 -j RETURN
+            iptables -t mangle -A clash -d 240.0.0.0/4 -j RETURN
+            if [ ! -z "${wan}" ]; then
+                for wan_ip in $wan; do
+                      iptables -t mangle -A clash -d "$wan_ip" -j RETURN 2>/dev/null
+                done
+            fi
+   
+            iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark 1
+			#iptables -t mangle -A clash -p udp --dport 53 -j TPROXY --on-port "${redir_port}" --tproxy-mark 0x01/0x01
+            iptables -t mangle -A PREROUTING -p udp -j clash
+
+			fi
+			
+			
+									
 			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 		
 			if [ ! -z "${fake_ip_range}" ];then
 				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
+				if [ "${enable_udp}" -eq 1 ]; then
+                      iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark 1
+                fi
 			else
 				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "${redir_port}"
+				if [ "${enable_udp}" -eq 1 ]; then
+                      iptables -t mangle -A OUTPUT -p udp -d 198.18.0.1/16 -j MARK --set-mark 1
+                fi
 			fi
 			
 			
@@ -249,6 +301,20 @@ rules(){
 				ip6tables -t nat -N clash_ipv6
 				ip6tables -t nat -A clash_ipv6 -p tcp -j REDIRECT --to-ports "${redir_port}"
 				ip6tables -t nat -A PREROUTING -p tcp -j clash_ipv6
+				
+				
+				if [ "${enable_udp}" -eq 1 ]; then
+                      ip6tables -t mangle -N clash
+                      if [ ! -z "${ip6}" ]; then
+                         for lan_ip6 in $ip6; do
+                            if [ "$enable_udp" -eq 1 ]; then
+                               ip6tables -t mangle -A clash -d "$lan_ip6" -j RETURN 2>/dev/null
+                            fi
+                         done
+                      fi
+                      ip6tables -t mangle -A clash -p udp -j TPROXY --on-port "$proxy_port" --tproxy-mark 1
+                      ip6tables -t mangle -A PREROUTING -p udp -j clash
+                fi
 				
 			fi
 			
@@ -281,6 +347,7 @@ rules(){
 			ip link set $TUN_DEVICE_NAME up
 			ip address replace 198.18.0.0/16 dev $TUN_DEVICE_NAME
 			ip route replace default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE"
+			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
 			elif [ "${core}" -eq 4 ];then
 			ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
 			fi
@@ -293,6 +360,7 @@ rules(){
             iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
             iptables -t mangle -I OUTPUT -j clash
             iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
+			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
 						
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 			ip6tables -t mangle -I PREROUTING -j MARK --set-mark "$PROXY_FWMARK"		
@@ -320,6 +388,7 @@ landns=$(uci get clash.config.landns 2>/dev/null)
 enable=$(uci get clash.config.enable 2>/dev/null)
 core=$(uci get clash.config.core 2>/dev/null)
 tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
+
 
 if [ -f /etc/clash/config.yaml ];then
  rm -rf /etc/clash/config.yaml >/dev/null 2>&1
@@ -370,11 +439,14 @@ elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	exit 0
 else
 if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')" -ne 0 ] ; then
-
+	new_conf=$(uci get clash.config.new_conf 2>/dev/null)
    	yml_change >/dev/null 2>&1
+	if [ "$new_conf" -eq 1 ];then
+	check >/dev/null 2>&1
+	fi
 
 	checktype=$(grep -c "type: ssr" /etc/clash/config.yaml 2>/dev/null)
-	if [ "${checktype}" -gt 0 ] && [ "${core}" -eq 1 ] || [ "${checktype}" -gt 0 ] && [ "${core}" -eq 3 ]; then
+	if [ "${checktype}" -gt 0 ] && [ "${core}" -ne 2 ]; then
 	 	
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Clash Core does not Support Config, use clashr core" >$REAL_LOG
@@ -632,23 +704,53 @@ stop(){
 	    	echo "删除clash iptables规则" >$REAL_LOG
 		fi
 										
-		iptables -t nat -F clash >/dev/null 2>&1 && iptables -t nat -X clash >/dev/null 2>&1
+		nat_indexs=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
+		for nat_index in $nat_indexs; do
+			iptables -t nat -D PREROUTING $nat_index >/dev/null 2>&1
+			iptables -t nat -F clash >/dev/null 2>&1 && iptables -t nat -X clash >/dev/null 2>&1
+			iptables -t mangle -F clash >/dev/null 2>&1 && iptables -t mangle -D PREROUTING -p udp -j clash >/dev/null 2>&1 && iptables -t mangle -X clash >/dev/null 2>&1
+		done
 		
+		sleep 1
+
+		ip rule del fwmark 1 table 100 >/dev/null 2>&1
+		ip route del local default dev lo table 100 >/dev/null 2>&1
+
+		iptables -t nat -D PREROUTING -p tcp --dport 53 -j ACCEPT >/dev/null 2>&1
+
+		sleep 1
+		
+		ip6tables -t mangle -F clash >/dev/null 2>&1
+		ip6tables -t mangle -D PREROUTING -p udp -j clash >/dev/null 2>&1
+		ip6tables -t mangle -X clash >/dev/null 2>&1
+		
+		
+		out_linese=$(iptables -nvL OUTPUT -t mangle |sed 1,2d |sed -n '/198.18.0.1\/16/=' 2>/dev/null |sort -rn)
+		for out_linee in $out_linese; do
+			iptables -t mangle -D OUTPUT "$out_linee" >/dev/null 2>&1
+		done
+
+		out_linesee=$(iptables -nvL OUTPUT -t mangle |sed 1,2d |sed -n '/198.18.0.0\/16/=' 2>/dev/null |sort -rn)
+		for out_linees in $out_linesee; do
+			iptables -t mangle -D OUTPUT "$out_linees" >/dev/null 2>&1
+		done		
+	
 		nat_indexs=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
 		for nat_index in $nat_indexs; do
 			iptables -t nat -D PREROUTING $nat_index >/dev/null 2>&1
 		done
 		
+				
 
 		fake=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.0\/16/=' |sort -r)
-       		for fake in $fake; do
-          		iptables -t nat -D OUTPUT $fake >/dev/null 2>&1
-        	done
+       	for fake in $fake; do
+          	iptables -t nat -D OUTPUT $fake >/dev/null 2>&1
+        done
 		
 		fake2=$(iptables -nvL OUTPUT -t nat |sed 1,2d |sed -n '/198.18.0.1\/16/=' |sort -r)
-       		for fake2 in $fake2; do
-          		iptables -t nat -D OUTPUT $fake2 >/dev/null 2>&1
-        	done	
+       	for fake2 in $fake2; do
+          	iptables -t nat -D OUTPUT $fake2 >/dev/null 2>&1
+        done	
 
 		remove_mark >/dev/null 2>&1
 
