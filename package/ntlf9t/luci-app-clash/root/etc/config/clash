@@ -28,6 +28,9 @@ config clash 'config'
 	option auto_update_time '12'
 	option clear_time '12'
 	option append_rules '0'
+	option enable_udp '0'
+	option new_conf '0'
+	option ping_enable '1'
 
 
 config groups
@@ -57,27 +60,11 @@ config groups
 	option name '🔑Proxy'
 	list other_group 'ALL'
 
+	
 config addtype
-	option type 'SRC-IP-CIDR'
-	option pgroup 'DIRECT'
-	list ipaaddr '192.168.1.4/30'
+	option type 'IP-CIDR'
+	option pgroup 'REJECT'
+	option ipaaddr '198.18.0.1/16'
+	option res '1'
+	
 
-config addtype
-	option type 'SRC-IP-CIDR'
-	option pgroup 'DIRECT'
-	option ipaaddr '192.168.1.2/31'
-
-config addtype
-	option type 'DOMAIN-KEYWORD'
-	option pgroup 'DIRECT'
-	option ipaaddr 'baidu'
-
-config addtype
-	option type 'SRC-PORT'
-	option pgroup 'DIRECT'
-	option ipaaddr '22'
-
-config addtype
-	option type 'DST-PORT'
-	option pgroup 'DIRECT'
-	option ipaaddr '443'

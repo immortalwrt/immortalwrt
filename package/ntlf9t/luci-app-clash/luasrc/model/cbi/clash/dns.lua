@@ -21,6 +21,11 @@ y:value("0", translate("disabled"))
 y:value("1", translate("enabled"))
 y.description = translate("Set custom DNS forwarder in DHCP and DNS Settings and forward all dns traffic to clash")
 
+y = s:option(ListValue, "enable_udp", translate("Enable UDP"))
+y:value("0", translate("disabled"))
+y:value("1", translate("enabled"))
+y.description = translate("Enable udp traffic ,make sure your server support udp")
+
 deldns = s:option(Flag, "delan", translate("Remove Lan DNS"))
 deldns.description = translate("Remove Lan custom DNS Servers when client is disabled")
 
@@ -35,17 +40,16 @@ dns.datatype = "ipaddr"
 dns.cast     = "string"
 dns:depends("culan", 1)
 
-y = s:option(ListValue, "ipv6", translate("Enable ipv6"))
-y:value("0", translate("disabled"))
-y:value("1", translate("enabled"))
-y.description = translate("Allow ipv6 traffic through clash")
-
 
 md = s:option(Flag, "tun_mode", translate("Tun Mode DNS"))
 md.default = 0
 md.description = translate("Enable Tun custom DNS and make sure you are using tun supported core")
 md:depends("mode", 0)
 
+y = s:option(ListValue, "ipv6", translate("Enable ipv6"))
+y:value("0", translate("disabled"))
+y:value("1", translate("enabled"))
+y.description = translate("Allow ipv6 traffic through clash")
 
 md = s:option(Flag, "mode", translate("Custom DNS"))
 md.default = 1
