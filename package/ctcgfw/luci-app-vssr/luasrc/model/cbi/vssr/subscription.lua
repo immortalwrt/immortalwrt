@@ -58,7 +58,8 @@ o = s:option(DummyValue, "", "")
 o.rawhtml = true
 o.template = "vssr/update_subscribe"
 
-o = s:option(Button,"update",translate("Update All Subscribe Severs"),translate("No special needs, please click here to subscribe to update"))
+
+o = s:option(Button,"update",translate("Update All Subscribe Severs"), "<font color='red'>" .. translate("No special needs, please click here to subscribe to update") .."</font>")
 o.inputstyle = "reload"
 o.write = function()
   luci.sys.call("bash /usr/share/vssr/subscribe.sh >>/tmp/vssr.log 2>&1")
