@@ -1,81 +1,78 @@
-header h3 a, header .brand {
-	display:none !important;
+@media screen and (max-width: 1600px) {
+
+    header h3 a,
+    header .brand {
+        display: none !important;
+    }
 }
 
-@media screen and (max-device-width: 1600px) {
-	.container>.pull-right>* {
-		position: absolute;
-		right: 0.5rem;
-		cursor: pointer;
-	}
+@media screen and (max-width: 1600px) {
+    .container>.pull-right>* {
+        position: absolute;
+        right: 0.5rem;
+        cursor: pointer;
+    }
 }
 
-@media screen and (max-width: 480px) {
-	body {
-		font-size: 12px;
-	}
-	header {
-		font-size: 13px;
-	}
-	legend {
-		font-size: 14px;
-	}
-	.dropdown-menu a {
-		font-size: 13px;
-		min-width: 130px;
-		padding: 0 15px;
-	}
-	.mobile-hide {
-		display: none;
-	}
-	#maincontent.container {
-		padding: 0px 10px;
-	}
-	div.cbi-section, fieldset {
-		min-width: inherit;
-		overflow-x: auto;
-		overflow-y: hidden;
-	}
-	.cbi-value {
-	}
-	.cbi-value-title {
-		width: 30%;
-		min-width: 0rem !important;
-		margin-right: 1em;
-		/* text-align: left;
+@media screen and (max-width: 1024px) {
+    body {
+        font-size: 12px;
+    }
+
+    header {
+        font-size: 13px;
+    }
+
+    legend {
+        font-size: 14px;
+    }
+
+    .dropdown-menu a {
+        font-size: 13px;
+        min-width: 130px;
+        padding: 0 15px;
+    }
+
+    .mobile-hide {
+        display: none;
+    }
+
+    #maincontent.container {
+        padding: 0px 10px;
+    }
+
+    div.cbi-section,
+    fieldset {
+        min-width: inherit;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .cbi-value {}
+
+    .cbi-value-title {
+        width: 30%;
+        min-width: 0rem !important;
+        margin-right: 1em;
+        /* text-align: left;
 		padding-left: 1em; */
-	}
-	.cbi-value-field {
-		width: 55%;
-	}
-	.cbi-value-description {
-		width: 75%;
-		display: inline-table;
-		padding: 1px 1.2rem;
-		background-position-y: 3px;
-	}
-	.cbi-value-field .cbi-input-select,
-	.cbi-value input[type="password"],
-	.cbi-value input[type="text"] {
-		min-width: unset;
-		/* width: 95%; */
-	}
-}
+    }
 
-@media screen and (max-device-width: 600px) {
-	#maincontent.container {
-		margin-top: 30px;
-	}
-}
+    .cbi-value-field {
+        width: 55%;
+    }
 
-@media screen and (max-device-width: 360px) {
-	#maincontent.container {
-		margin-top: 30px;
-	}
-}
+    .cbi-value-description {
+        width: 75%;
+        display: inline-table;
+        padding: 1px 1.2rem;
+        background-position-y: 3px;
+    }
 
-@media screen and (max-device-width: 200px) {
-	#maincontent.container {
-		margin-top: 30px;
-	}
+    .cbi-value-field .cbi-input-select,
+    .cbi-value input[type="password"],
+    .cbi-value input[type="text"] {
+        min-width: unset;
+        /* width: 95%; */
+    }
 }

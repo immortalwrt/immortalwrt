@@ -10,7 +10,7 @@ body {
     font-size: 14px;
     line-height: 1.8;
     margin: 0;
-    padding-top: 60px;
+    /* padding-top: 60px; */
     margin: unset;
 }
 
@@ -101,7 +101,8 @@ legend {
 /* Style */
 
 .container:first-child {
-    min-height: 40px;
+    /* min-height: 40px; */
+    display: flow-root;
 }
 
 .container {
@@ -113,10 +114,10 @@ legend {
 
 header {
     font-size: 14px;
-    position: fixed;
+    /* position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    right: 0; */
     background: #34aee8;
     box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
     z-index: 100;
@@ -385,6 +386,10 @@ header {
 .cbi-dropdown[disabled] {
     pointer-events: none;
     opacity: .6;
+}
+
+#maincontent.container {
+    margin-top: 10px;
 }
 
 
@@ -1336,17 +1341,17 @@ body.node-main-login .alert-message {
 
 /* luci18 */
 .cbi-section-table-titles.named::before {
-	content: attr(data-title) " ";
+    content: attr(data-title) " ";
     display: table-cell;
     padding: 5px 3px !important;
     line-height: 18px;
     font-weight: bold;
     vertical-align: middle;
-	color: #811;
+    color: #811;
 }
 
 .cbi-section-table-descr.named::before {
-	content: attr(data-title) " ";
+    content: attr(data-title) " ";
     display: table-cell;
     padding: 10px 10px 9px;
     line-height: 18px;
@@ -1356,7 +1361,7 @@ body.node-main-login .alert-message {
 
 .cbi-section-table-row[data-title]::before {
     border-top: 1px solid #a9b1bb26;
-	content: attr(data-title) " ";
+    content: attr(data-title) " ";
     display: table-cell;
     padding: 10px 10px 9px;
     line-height: 18px;
