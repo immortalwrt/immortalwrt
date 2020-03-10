@@ -62,7 +62,13 @@ msgid "End Sector"
 msgstr "Sektor końcowy"
 
 msgid "Usage"
-msgstr "Użycie"
+msgstr "Wykorzystane"
+
+msgid "Used"
+msgstr "Zajęte"
+
+msgid "Free Space"
+msgstr "Wolna przestrzeń"
 
 msgid "Model"
 msgstr "Model urządzenia"
@@ -194,7 +200,7 @@ msgid "The source path for create the snapshot"
 msgstr "Ścieżka źródłowa do utworzenia obrazu"
 
 msgid "The path where you want to store the snapshot"
-msgstr "Ścieżka, w której chcesz przechowywać obraz"
+msgstr "Ścieżka w której chcesz przechowywać obraz"
 
 msgid "Please input Source Path of snapshot, Source Path must start with '/'"
 msgstr "Proszę podać ścieżkę źródłową dla obrazu, ścieżka musi zaczynać się od '/'"

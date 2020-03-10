@@ -265,8 +265,8 @@ btn_umount.render = function(self, section, scope)
 end
 btn_umount.write = function(self, section, value)
   local res
-  if not _mount_point.mount_point or not _mount_point.device then return end
   if value == translate("Mount") then
+    if not _mount_point.mount_point or not _mount_point.device then return end
     luci.util.exec("mkdir -p ".. _mount_point.mount_point)
     res = luci.util.exec(dm.command.mount .. " ".. _mount_point.device .. (_mount_point.fs and (" -t ".. _mount_point.fs )or "") .. (_mount_point.mount_options and (" -o " .. _mount_point.mount_options.. " ") or  " ").._mount_point.mount_point .. " 2>&1")
   elseif value == translate("Umount") then
