@@ -68,7 +68,7 @@ define Device/Default
   DEVICE_DTS = $$(SOC)_$(1)
   SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
   IMAGES := sysupgrade.bin
-  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size
 endef
 
 define Device/NAND/xway
@@ -93,7 +93,7 @@ endef
 define Device/lantiqBrnImage
   KERNEL := kernel-bin | append-dtb | mkbrncmdline | lzma-no-dict
   IMAGES := factory.bin
-  IMAGE/factory.bin := mkbrnimg | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := mkbrnimg | check-size
 endef
 
 define Device/lantiqFullImage
@@ -107,7 +107,7 @@ define Device/AVM
   KERNEL := kernel-bin | append-dtb | lzma | eva-image
   KERNEL_INITRAMFS := $$(KERNEL)
   IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | append-avm-fakeroot | \
-	append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
+	append-rootfs | pad-rootfs | append-metadata | check-size
 endef
 
 ifeq ($(SUBTARGET),ase)
