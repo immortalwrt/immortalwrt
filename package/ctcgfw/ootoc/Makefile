@@ -15,8 +15,8 @@ PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/ElonH/ootoc.git
-PKG_MIRROR_HASH:=1618751ed55f5b0b54ceddca43b92f55c8ff8d60bec22616d7a2d2303f7d2328
-PKG_SOURCE_VERSION:=8fb0c485eb03c6e97b5be002b731cbabe65ea536
+PKG_MIRROR_HASH:=39a62e478fd947b9ef4a45c39e7b1cd7a0abf14da5d7ea19eac562658851327c
+PKG_SOURCE_VERSION:=ae2fcfaa0d3555638ce879a12e0bc7a21beea5a0
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -25,7 +25,6 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:=httplib/host
 
 PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
@@ -34,7 +33,7 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-CMAKE_OPTIONS+= -DOOTOC_TEST:BOOL=OFF -DOOTOC_BUILDIN_LIBTAR:BOOL=OFF -DOOTOC_BUILDIN_HTTPLIB:BOOL=OFF
+CMAKE_OPTIONS+= -DOOTOC_TEST:BOOL=OFF -DOOTOC_BUILDIN_LIBTAR:BOOL=OFF
 
 define Package/ootoc
 	SECTION:=base
@@ -62,9 +61,16 @@ define Package/libootocc/description
 	$(call Package/ootoc/description)
 endef
 
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include $(1)/usr/share
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/* $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/share/* $(1)/usr/share
+endef
+
 define Package/ootoc/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ootocCLI $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ootocCLI $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,ootoc))
