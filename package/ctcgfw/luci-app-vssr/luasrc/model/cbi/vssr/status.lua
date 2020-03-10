@@ -1,7 +1,7 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
 
-local IPK_Version="20200307.1.19"
+local IPK_Version="20200310.1.22"
 local m, s, o
 local redir_run=0
 local reudp_run=0

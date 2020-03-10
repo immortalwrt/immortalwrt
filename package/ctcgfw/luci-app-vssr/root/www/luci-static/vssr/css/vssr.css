@@ -332,7 +332,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
     transition: all 0.2s;
 }
 .cbi-section-table-row:hover{
-    background: #fff;
+    background: #F0E68C;
     
 }
 
@@ -358,7 +358,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
     color: #fff !important;
 }
 .host_con.fast {
-    color: #6f9a37;
+    color: #00bc12;
 }
 
 .host_con.nopass {
@@ -538,7 +538,7 @@ footer.mobile-hide{
     right: 0;
     box-shadow: 0 0 2rem 0 rgba(136,152,170,.3);
     color: #525f7f;
-    background: #fff;
+    background: #f4;
     z-index: 5;
     box-sizing: border-box;
 }

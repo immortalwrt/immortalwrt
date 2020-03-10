@@ -707,7 +707,7 @@ msgid "Using acceleration center DNS"
 msgstr "使用加速中心DNS"
 
 msgid "Appoint dns List"
-msgstr "指定DNS解析列表"
+msgstr "DNS解析列表"
 
 msgid "Use https_dns_proxy query and cache"
 msgstr "使用https_dns_proxy TCP查询并缓存"
