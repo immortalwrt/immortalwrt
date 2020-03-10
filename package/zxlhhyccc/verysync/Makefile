@@ -19,10 +19,7 @@ ifeq ($(ARCH),i386)
 	PKG_ARCH_VERYSYNC:=386
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH_VERYSYNC:=arm7
-endif
-ifeq ($(BOARD),bcm53xx)
-	PKG_ARCH_VERYSYNC:=arm6
+	PKG_ARCH_VERYSYNC:=arm
 endif
 ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_VERYSYNC:=arm
@@ -32,7 +29,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_NAME:=verysync
-PKG_VERSION:=v1.3.4
+PKG_VERSION:=v1.3.5
 PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
