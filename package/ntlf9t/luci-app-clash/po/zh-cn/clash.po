@@ -1025,5 +1025,11 @@ msgstr "Yacd控制面板"
 msgid "Enable Ping Servers"
 msgstr "启用Ping服务器"
 
-msgid "DISABLED"
-msgstr "禁用"
+msgid "New Config(Rename fields)"
+msgstr "新配置(重命名字段)"
+
+msgid "Enable UDP"
+msgstr "启用UDP"
+
+msgid "Enable udp traffic ,make sure your server support udp"
+msgstr "启用udp流量，服务器必须支持udp"

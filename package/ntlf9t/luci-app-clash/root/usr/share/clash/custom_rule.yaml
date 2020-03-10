@@ -1,4 +1,4 @@
-Rule:
+rules:
 # (GlobalTV)
 # > ABC
 - DOMAIN-SUFFIX,edgedatg.com,📺GlobalTV
