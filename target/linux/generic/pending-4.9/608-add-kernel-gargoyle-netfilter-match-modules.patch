@@ -269,7 +269,7 @@
 +#endif /*_IPT_WEBURL_H*/
 --- a/net/ipv4/netfilter/Kconfig
 +++ b/net/ipv4/netfilter/Kconfig
-@@ -417,5 +417,25 @@ config IP_NF_ARP_MANGLE
+@@ -406,5 +406,25 @@ config IP_NF_ARP_MANGLE
  
  endif # IP_NF_ARPTABLES
  
@@ -297,7 +297,7 @@
  
 --- a/net/ipv4/netfilter/Makefile
 +++ b/net/ipv4/netfilter/Makefile
-@@ -55,6 +55,10 @@ obj-$(CONFIG_IP_NF_RAW) += iptable_raw.o
+@@ -50,6 +50,10 @@ obj-$(CONFIG_IP_NF_RAW) += iptable_raw.o
  obj-$(CONFIG_IP_NF_SECURITY) += iptable_security.o
  
  # matches
@@ -3908,7 +3908,6 @@
 +module_init(init);
 +module_exit(fini);
 +
-
 --- /dev/null
 +++ b/net/ipv4/netfilter/ipt_bandwidth.mod.c
 @@ -0,0 +1,20 @@
@@ -4077,7 +4076,6 @@
 +module_init(init);
 +module_exit(fini);
 +
-
 --- /dev/null
 +++ b/net/ipv4/netfilter/ipt_timerange.mod.c
 @@ -0,0 +1,20 @@
@@ -5423,7 +5421,6 @@
 +
 +module_init(init);
 +module_exit(fini);
-
 --- /dev/null
 +++ b/net/ipv4/netfilter/ipt_weburl.c
 @@ -0,0 +1,537 @@
@@ -5964,7 +5961,6 @@
 +
 +module_init(init);
 +module_exit(fini);
-
 --- /dev/null
 +++ b/net/ipv4/netfilter/ipt_weburl.mod.c
 @@ -0,0 +1,20 @@

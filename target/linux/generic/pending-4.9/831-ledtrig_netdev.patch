@@ -60,8 +60,8 @@ Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
 +obj-$(CONFIG_LEDS_TRIGGER_NETDEV)	+= ledtrig-netdev.o
 --- a/drivers/leds/trigger/Kconfig
 +++ b/drivers/leds/trigger/Kconfig
-@@ -126,4 +126,11 @@ config LEDS_TRIGGER_PANIC
- 	  a different trigger.
+@@ -133,4 +133,11 @@ config LEDS_TRIGGER_NETDEV
+ 	  This allows LEDs to be controlled by network device activity.
  	  If unsure, say Y.
  
 +config LEDS_TRIGGER_NETDEV
