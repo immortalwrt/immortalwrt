@@ -232,7 +232,7 @@ define Device/dlink_dir-878-a1
   IMAGES += factory.bin
   DEVICE_MODEL := DIR-878
   DEVICE_VARIANT := A1
-  DEVICE_PACKAGES := kmod-mt7615e wpad-basic
+  DEVICE_PACKAGES := luci-app-mtwifi
   KERNEL_INITRAMFS := $$(KERNEL) | ubootpad96
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | ubootpad96 |\
 	pad-rootfs |  check-size $$$$(IMAGE_SIZE) | append-metadata
