@@ -1,0 +1,94 @@
+#!/bin/bash /etc/rc.common
+
+START=55
+STOP=55
+
+USE_PROCD=1
+PROG=/usr/bin/ootocCLI
+
+_info() {
+    logger -p daemon.info -t "ootoc" "$*"
+}
+
+_err() {
+    logger -p daemon.err -t "ootoc" "$*"
+}
+
+init_conf() {
+    config_load "ootoc"
+    
+    local AUX LOG
+    config_get AUX server aux_path
+    config_get LOG log path
+    
+	# detect aux file exist
+	[ -d "${AUX%/*}" ] || mkdir -p "${AUX%/*}" 2>/dev/null
+    [ -f "$AUX" ] || {
+        echo "auxilary file not found: ${AUX}"
+        return 1
+    }
+
+	# backup opkg feeds conf
+	FEEDS="/etc/opkg/distfeeds.conf"
+	FEEDS_BAK="${FEEDS}.bak"
+	[ -d "${FEEDS%/*}" ] || mkdir -p "${FEEDS%/*}" 2>/dev/null
+	[ -e "$FEEDS_BAK" ] || {
+		_log "opkg feeds backup not exist '$FEEDS_BAK', backup now..."
+		[ -e "$FEEDS" ] || {
+			_err "not exist file: $FEEDS"
+			return 1
+		}
+		cp -rf "$FEEDS" "$FEEDS_BAK" 
+	}
+
+	# create log path
+	[ -d "${LOG%/*}" ] || mkdir -p "${LOG%/*}" 2>/dev/null
+}
+
+start_service() {
+    init_conf || return 1;
+	config_load "ootoc"
+
+	local ENABLED ADDR PORT TAR AUX PROXY_ENABLED PROXY_ADDR
+	config_get ENABLED global enabled
+	config_get ADDR server addr
+	config_get PORT server port
+	config_get TAR server tar_url
+	config_get AUX server aux_path
+	config_get PROXY_ENABLED proxy enabled
+	config_get PROXY_ADDR proxy proxy_addr
+
+	[[ $ENABLED == 0 ]] && {
+		_info "Instance 'ootoc' disabled."
+		return 1
+	}
+
+	$PROG subscription --addr "$ADDR" --port "$PORT" --url "$TAR" --aux "$AUX" --out "/etc/opkg/distfeeds.conf" >/dev/null
+
+    procd_open_instance
+    procd_set_param command $PROG server
+	procd_append_param command --addr "$ADDR" 
+	procd_append_param command --port "$PORT" 
+	procd_append_param command --url "$TAR" 
+	procd_append_param command --aux "$AUX" 
+	[[ $PROXY_ENABLED == 1 ]] && {
+		procd_set_param env all_proxy="$PROXY_ADDR" https_proxy="$PROXY_ADDR" http_proxy="$PROXY_ADDR"
+		procd_set_param env ALL_PROXY="$PROXY_ADDR" HTTPS_PROXY="$PROXY_ADDR" HTTP_PROXY="$PROXY_ADDR"
+	}
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_set_param file /etc/config/ootoc
+	procd_set_param pidfile /var/run/ootoc.pid
+	procd_set_param respawn retry=60
+	procd_close_instance
+}
+
+stop_service()
+{
+    service_stop ${PROG}
+}
+
+service_triggers()
+{
+    procd_add_reload_trigger "ootoc"
+}
