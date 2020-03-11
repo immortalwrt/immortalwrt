@@ -248,6 +248,8 @@ body {
     font-weight: 400;
     color: #fff;
     height: 100%;
+    font-size:15px;
+    line-height: 150%;
     margin: 0;
     padding: 0
 }
