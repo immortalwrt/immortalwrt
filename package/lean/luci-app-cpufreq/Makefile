@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI for CPU Freq Setting
-LUCI_DEPENDS:=@(arm||aarch64)
+LUCI_DEPENDS:=@arm
 PKG_NAME:=luci-app-cpufreq
 PKG_VERSION:=1
 PKG_RELEASE:=3
