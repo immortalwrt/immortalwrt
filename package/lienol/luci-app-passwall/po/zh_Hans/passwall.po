@@ -250,6 +250,9 @@ msgstr "回国模式"
 msgid "Localhost"
 msgstr "本机"
 
+msgid "Router Localhost"
+msgstr "路由器自身"
+
 msgid "Danger"
 msgstr "危险"
 

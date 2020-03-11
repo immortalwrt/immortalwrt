@@ -46,9 +46,9 @@ config global_rules
 	option chnlist_update '1'
 	option chnroute_update '1'
 	option gfwlist_update '1'
-	option gfwlist_version '2020-02-27'
-	option chnroute_version '2020-02-27'
-	option chnlist_version '2020-02-27'
+	option gfwlist_version '2020-03-10'
+	option chnroute_version '2020-03-10'
+	option chnlist_version '2020-03-10'
 	
 config global_app
 	option v2ray_file '/usr/bin/v2ray/'
