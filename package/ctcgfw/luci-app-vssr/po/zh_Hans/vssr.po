@@ -838,6 +838,11 @@ msgstr "mtu参数"
 msgid "SS Servers"
 msgstr "SS服务器"
 
+msgid "Support AdGuardHome and DNSMASQ format list"
+msgstr "同时支持 AdGuard Home 和 DNSMASQ 格式的过滤列表"
+
+msgid "Running"
+msgstr "运行正常"
 
 msgid "SSR Servers"
 msgstr "SSR服务器"

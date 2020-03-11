@@ -16,7 +16,7 @@ math.randomseed(os.time())
         <div class="pure-u-1-6">
             <div class="block pure-g">
                 <div class="pure-u-3-5">
-                    <h4 id="vssr_status"><%:Client%><br /><span class="red"><%:Not Running%></span></h4>
+                    <h4 id="vssr_status"><%:Client%><br /><span class="red"><%:Not Running%>✘</span></h4>
                 </div>
                 <div class="pure-u-2-5">
                     <div class="img-con">
@@ -29,7 +29,7 @@ math.randomseed(os.time())
       <div class="pure-u-1-6">
             <div class="block pure-g">
                 <div class="pure-u-3-5">
-                    <h4 id="google_status"><%:foreign websites%><br /><span class="red"><%:Problem detected%></span></h4>
+                    <h4 id="google_status"><%:foreign websites%><br /><span class="red"><%:Problem detected%>✘</span></h4>
                 </div>
                 <div class="pure-u-2-5">
                     <div class="img-con">
@@ -42,7 +42,7 @@ math.randomseed(os.time())
       <div class="pure-u-1-6">
             <div class="block pure-g">
                 <div class="pure-u-3-5">
-                    <h4 id="baidu_status"><%:domestic website%><br /><span class="red"><%:Problem detected%></span></h4>
+                    <h4 id="baidu_status"><%:domestic website%><br /><span class="red"><%:Problem detected%>✘</span></h4>
                 </div>
                 <div class="pure-u-2-5">
                     <div class="img-con">
@@ -56,7 +56,7 @@ math.randomseed(os.time())
         <div class="pure-u-1-6">
             <div class="block pure-g">
                 <div class="pure-u-3-5">
-                    <h4 id="game_status"><%:Game Mode%><br /><span class="red"><%:Not Running%></span></h4>
+                    <h4 id="game_status"><%:Game Mode%><br /><span class="red"><%:Not Running%>✘</span></h4>
                 </div>
                 <div class="pure-u-2-5">
                     <div class="img-con">
@@ -68,7 +68,7 @@ math.randomseed(os.time())
         <div class="pure-u-1-6">
             <div class="block pure-g">
                 <div class="pure-u-3-5">
-                    <h4 id="chinadns_status">𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br /><span class="red"><%:Not Running%></span></h4>
+                    <h4 id="chinadns_status">𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br /><span class="red"><%:Not Running%>✘</span></h4>
                 </div>
                 <div class="pure-u-2-5">
                     <div class="img-con">
@@ -80,7 +80,7 @@ math.randomseed(os.time())
         <div class="pure-u-1-6">
             <div class="block pure-g">
                 <div class="pure-u-3-5">
-                    <h4 id="socks5_status">𝙎𝙊𝘾𝙆𝙎5<br /><span class="red"><%:Not Running%></span></h4>
+                    <h4 id="socks5_status">𝙎𝙊𝘾𝙆𝙎5<br /><span class="red"><%:Not Running%>✘</span></h4>
                 </div>
                 <div class="pure-u-2-5">
                     <div class="img-con">
@@ -112,34 +112,34 @@ math.randomseed(os.time())
                 var tb5 = document.getElementById('socks5_status');
                 if (data && tb) {
                     if (data.global) {
-                        tb.innerHTML = '<%:Client%><br><span class="green"><%:Running%></span>';
+                        tb.innerHTML = '<%:Client%><br><span class="green"><%:Running%>✔</span>';
                     } else {
-                        tb.innerHTML = '<%:Client%><br><span class="red"><%:Not Running%></span>';
+                        tb.innerHTML = '<%:Client%><br><span class="red"><%:Not Running%>✘</span>';
                                  }
                     if (data.google) {
-                        tb1.innerHTML = '<%:foreign websites%><br><span class="green"><%:Connect OK%></span>';
+                        tb1.innerHTML = '<%:foreign websites%><br><span class="green"><%:Connect OK%>✔</span>';
                     } else {
-                        tb1.innerHTML = '<%:foreign websites%><br><span class="red"><%:Problem detected%></span>';
+                        tb1.innerHTML = '<%:foreign websites%><br><span class="red"><%:Problem detected%>✘</span>';
                     }
                     if (data.baidu) {
-                        tb2.innerHTML = '<%:domestic website%><br><span class="green"><%:Connect OK%></span>';
+                        tb2.innerHTML = '<%:domestic website%><br><span class="green"><%:Connect OK%>✔</span>';
                     } else {
-                        tb2.innerHTML = '<%:domestic website%><br><span class="red"><%:Problem detected%></span>';
+                        tb2.innerHTML = '<%:domestic website%><br><span class="red"><%:Problem detected%>✘</span>';
                     }
                     if (data.game) {
-                        tb3.innerHTML = '<%:Game Mode%><br><span class="green"><%:Running%></span>';
+                        tb3.innerHTML = '<%:Game Mode%><br><span class="green"><%:Running%>✔</span>';
                     } else {
-                        tb3.innerHTML = '<%:Game Mode%><br><span class="red"><%:Not Running%></span>';
+                        tb3.innerHTML = '<%:Game Mode%><br><span class="red"><%:Not Running%>✘</span>';
                     }
                     if (data.chinadns) {
-                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="green"><%:Running%></span>';
+                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="green"><%:Running%>✔</span>';
                     } else {
-                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="red"><%:Not Running%></span>';
+                        tb4.innerHTML = '𝐂𝐡𝐢𝐧𝐚𝐃𝐍𝐒<br><span class="red"><%:Not Running%>✘</span>';
                     }
                     if (data.socks5) {
-                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="green"><%:Running%></span>';
+                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="green"><%:Running%>✔</span>';
                     } else {
-                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="red"><%:Not Running%></span>';
+                        tb5.innerHTML = '𝙎𝙊𝘾𝙆𝙎5<br><span class="red"><%:Not Running%>✘</span>';
                     }
                 }
             }
