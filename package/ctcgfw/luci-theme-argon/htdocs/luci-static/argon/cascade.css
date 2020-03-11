@@ -1,3 +1,4 @@
+@import url("custom.css?v=1");
 /**
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
@@ -23,10 +24,9 @@
 /*
  *	Include base and custom css
  */
-@import url("custom.css?v=1");
 /*
-  *	Icon Css and Fonts 
-  */
+   *	Icon Css and Fonts 
+   */
 @font-face {
   font-family: 'argon';
   src: url('fonts/argon.eot?vncylf');
@@ -122,6 +122,9 @@
 }
 .icon-question:before {
   content: "\f059";
+}
+.icon-docker:before {
+  content: "\e911";
 }
 .sk-folding-cube {
   position: absolute;
@@ -481,7 +484,7 @@ small {
   top: 0;
   float: left;
   width: 15%;
-  width: calc(0% + 15rem);
+  width: calc(15%);
   height: 100%;
   background-color: #fff;
   background-color: var(--menu-bg-color);
@@ -507,7 +510,7 @@ small {
 .main-right {
   float: right;
   width: 85%;
-  width: calc(100% - 15rem);
+  width: calc(85%);
   height: 100%;
   background-color: #f8f9fe;
   transition: all 0.2s;
@@ -640,8 +643,8 @@ header .fill .status * {
   margin-top: 1rem;
 }
 /*
- *	Main Menu
- */
+  *	Main Menu
+  */
 .main .main-left {
   transition: all 0.2s;
 }
@@ -760,6 +763,10 @@ header .fill .status * {
 .main .main-left .nav li.slide .menu[data-title=Bandwidth_Monitor]:before {
   content: "\e90d";
   color: #2dce89;
+}
+.main .main-left .nav li.slide .menu[data-title=docker]:before {
+  content: "\e911";
+  color: #6699ff;
 }
 .main .main-left .nav li.slide:hover {
   background: none;
@@ -1035,7 +1042,7 @@ tr > th,
 }
 .cbi-section-table-row > .cbi-value-field [data-dynlist] > input,
 .cbi-section-table-row > .cbi-value-field input.cbi-input-password {
-  width: calc(100% - 1.5rem);
+  width: calc(98.5%);
 }
 .cbi-section-table-row .td {
   text-align: center !important;
@@ -2266,7 +2273,7 @@ input[name="nslookup"] {
 .node-main-login .main .main-right #maincontent .container .alert-message.warning {
   position: absolute;
   color: #fff;
-  width: calc(100% - 2rem);
+  width: calc(98%);
   box-sizing: border-box;
   margin-top: 8rem;
   border-radius: 5px !important;
@@ -2280,7 +2287,7 @@ input[name="nslookup"] {
 .node-main-login .main .main-right #maincontent .container .alert-message.error {
   position: absolute;
   color: #fff;
-  width: calc(100% - 2rem);
+  width: calc(98%);
   background-color: #f0ad4e;
   border-color: #eea236;
   box-sizing: border-box;
@@ -2349,7 +2356,7 @@ input[name="nslookup"] {
   line-height: 1.5;
   display: block;
   width: 100%;
-  height: calc(2.75rem + 2px);
+  height: calc(4.75rem);
   padding: 0.625rem 0.75rem;
   transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   color: #8898aa;
@@ -2538,7 +2545,7 @@ input[name="nslookup"] {
 }
 /* wireless overview */
 #cbi-wireless > #wifi_assoclist_table > .tr {
-  box-shadow: inset 1px -1px 0 #ddd, inset -1px -1px 0 #ddd;
+  box-shadow: inset 1px -1px 0 #dddddd, inset -1px -1px 0 #dddddd;
 }
 #cbi-wireless > #wifi_assoclist_table > .tr.placeholder > .td {
   right: 33px;
@@ -2547,11 +2554,11 @@ input[name="nslookup"] {
   border-top: thin solid #ddd !important;
 }
 #cbi-wireless > #wifi_assoclist_table > .tr.table-titles {
-  box-shadow: inset 1px 0 0 #ddd, inset -1px 0 0 #ddd;
+  box-shadow: inset 1px 0 0 #dddddd, inset -1px 0 0 #dddddd;
 }
 #cbi-wireless > #wifi_assoclist_table > .tr.table-titles > .th {
   border-bottom: thin solid #ddd;
-  box-shadow: 0 -1px 0 0 #ddd;
+  box-shadow: 0 -1px 0 0 #dddddd;
 }
 #wifi_assoclist_table > .tr > .td[data-title="RX Rate / TX Rate"] {
   width: 23rem;
@@ -2715,10 +2722,10 @@ input[type="checkbox"]:checked {
     margin: 0 2.5rem 0 0.5rem;
   }
   .main-left {
-    width: calc(0% + 13rem);
+    width: calc(13%);
   }
   .main-right {
-    width: calc(100% - 13rem);
+    width: calc(87%);
   }
   .btn:not(button),
   .cbi-button {
@@ -2753,10 +2760,10 @@ input[type="checkbox"]:checked {
     cursor: default;
   }
   .main-left {
-    width: calc(0% + 13rem);
+    width: calc(13%);
   }
   .main-right {
-    width: calc(100% - 13rem);
+    width: calc(87%);
   }
   .tabs > li > a,
   .cbi-tabmenu > li > a {
@@ -2827,10 +2834,10 @@ input[type="checkbox"]:checked {
     top: 25%;
   }
   .main-left {
-    width: calc(0% + 13rem);
+    width: calc(13%);
   }
   .main-right {
-    width: calc(100% - 13rem);
+    width: calc(87%);
   }
   body:not(.logged-in) .showSide {
     visibility: hidden;
@@ -2902,7 +2909,7 @@ input[type="checkbox"]:checked {
   }
   .td [data-dynlist] > input,
   .td input.cbi-input-password {
-    width: calc(100% - 1.5rem);
+    width: calc(98.5%);
   }
   .td[data-type="button"],
   .td[data-type="fvalue"] {
@@ -3085,3 +3092,4 @@ input[type="checkbox"]:checked {
   }
 }
 /*# sourceMappingURL=./cascade.css.map */
+/*# sourceMappingURL=cascade.css.map */
