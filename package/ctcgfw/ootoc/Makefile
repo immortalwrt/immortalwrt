@@ -15,8 +15,8 @@ PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/ElonH/ootoc.git
-PKG_MIRROR_HASH:=39a62e478fd947b9ef4a45c39e7b1cd7a0abf14da5d7ea19eac562658851327c
-PKG_SOURCE_VERSION:=ae2fcfaa0d3555638ce879a12e0bc7a21beea5a0
+PKG_MIRROR_HASH:=8a26f160c3314bde554e4094ba7f24376403a152bd8e796367f6807f365b792d
+PKG_SOURCE_VERSION:=6bfbe253e8265c7aa7d5553e4dc4c752d5c23ac3
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -69,8 +69,10 @@ define Build/InstallDev
 endef
 
 define Package/ootoc/install
-	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ootocCLI $(1)/usr/bin/
+	$(INSTALL_BIN) ./files/ootoc.init $(1)/etc/init.d/ootoc
+	$(INSTALL_DATA) ./files/ootoc.conf $(1)/etc/config/ootoc
 endef
 
 $(eval $(call BuildPackage,ootoc))
