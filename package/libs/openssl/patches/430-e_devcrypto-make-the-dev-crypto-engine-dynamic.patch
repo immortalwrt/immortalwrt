@@ -132,7 +132,7 @@ index 64dc6b891d..fb5c6e1636 100644
  #include <openssl/objects.h>
  #include <crypto/cryptodev.h>
  
--#include "internal/engine.h"
+-#include "crypto/engine.h"
 -
  /* #define ENGINE_DEVCRYPTO_DEBUG */
  
