@@ -78,6 +78,7 @@ o.rmempty = false
 
 o = s:option(Value, "adblock_url", translate("adblock_url"))
 o.default = "https://gitee.com/privacy-protection-tools/anti-ad/raw/master/anti-ad-for-dnsmasq.conf"
+o.description = translate("Support AdGuardHome and DNSMASQ format list")
 
 -- [[ chnroute ]]
 s = m:section(TypedSection, "global", translate("Chnroute Setting"))
