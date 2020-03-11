@@ -88,6 +88,8 @@ function update_luci(url, save)
         }
     end
 
+    api.exec("/bin/opkg", {"remove", "luci-app-passwall"})
+
     local opkg_args = {"--force-downgrade", "--force-reinstall"}
 
     if save ~= "true" then opkg_args[#opkg_args + 1] = "--force-maintainer" end
