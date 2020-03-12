@@ -1,19 +1,12 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: luci-i18n-sqm\n"
-"POT-Creation-Date: 2017-03-28 04:14+0800\n"
-"PO-Revision-Date: 2017-03-28 04:15+0800\n"
-"Last-Translator: \n"
-"Language-Team: player131 <player1311@gmail.com>\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
 "Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.10\n"
-"X-Poedit-Basepath: .\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Poedit-KeywordsList: translate\n"
-"X-Poedit-SearchPath-0: .\n"
 
 #: usr/lib/lua/luci/controller/sqm.lua:24
 msgid "SQM QoS"
@@ -77,13 +70,11 @@ msgid ""
 "shaping:"
 msgstr "上传速度(kbit/s)(出口)<br />设置为0关闭出口控制："
 
-#: usr/lib/lua/luci/model/cbi/sqm.lua:78
+#: usr/lib/lua/luci/model/cbi/sqm.lua:88
 msgid ""
-"Create log file for this SQM instance under /var/run/sqm/${Inerface_name}."
-"debug.log. Make sure to delete log files manually."
+"Create log file for this SQM instance under /var/run/sqm/${Interface_name}.[start|stop]-sqm.log."
 msgstr ""
-"创建日志文件到 /var/run/sqm/${Inerface_name}.debug.log。"
-"请手动删除日志文件。"
+"[启用|关闭]日志<br />创建日志文件到/var/run/sqm/接口名-sqm.log。"
 
 #: usr/lib/lua/luci/model/cbi/sqm.lua:82
 msgid "Verbosity of SQM's output into the system log."
