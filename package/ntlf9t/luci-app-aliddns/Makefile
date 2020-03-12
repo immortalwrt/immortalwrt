@@ -31,11 +31,6 @@ define Package/luci-app-aliddns/description
 	LuCI Support for ALiDDNS.
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Build/Configure
 endef
 
@@ -65,20 +60,20 @@ define Package/luci-app-aliddns/conffiles
 endef
 
 define Package/luci-app-aliddns/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/aliddns.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/*.lua $(1)/usr/lib/lua/luci/controller/
+	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/aliddns
-	$(INSTALL_DATA) ./files/luci/model/cbi/*.lua $(1)/usr/lib/lua/luci/model/cbi/
+	$(INSTALL_DATA) ./luasrc/model/cbi/*.lua $(1)/usr/lib/lua/luci/model/cbi/
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/root/etc/config/aliddns $(1)/etc/config/aliddns
+	$(INSTALL_DATA) ./root/etc/config/aliddns $(1)/etc/config/aliddns
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/aliddns $(1)/etc/init.d/aliddns
+	$(INSTALL_BIN) ./root/etc/init.d/aliddns $(1)/etc/init.d/aliddns
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-aliddns $(1)/etc/uci-defaults/luci-aliddns
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-aliddns $(1)/etc/uci-defaults/luci-aliddns
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) ./files/root/usr/sbin/aliddns $(1)/usr/sbin/aliddns
+	$(INSTALL_BIN) ./root/usr/sbin/aliddns $(1)/usr/sbin/aliddns
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/aliddns.po $(1)/usr/lib/lua/luci/i18n/aliddns.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,luci-app-aliddns))
