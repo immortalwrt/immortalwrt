@@ -92,6 +92,7 @@ hostapd_common_add_device_config() {
 	config_add_boolean country_ie doth
 	config_add_string require_mode
 	config_add_boolean legacy_rates
+	config_add_boolean vendor_vht
 
 	config_add_string acs_chan_bias
 	config_add_array hostapd_options
@@ -106,7 +107,7 @@ hostapd_prepare_device_config() {
 	local base="${config%%.conf}"
 	local base_cfg=
 
-	json_get_vars country country_ie beacon_int:100 doth require_mode legacy_rates acs_chan_bias
+	json_get_vars country country_ie beacon_int:100 doth require_mode legacy_rates acs_chan_bias vendor_vht
 
 	hostapd_set_log_options base_cfg
 
@@ -136,6 +137,7 @@ hostapd_prepare_device_config() {
 	[ "$hwmode" = "g" ] && {
 		[ "$legacy_rates" -eq 0 ] && set_default rate_list "6000 9000 12000 18000 24000 36000 48000 54000"
 		[ -n "$require_mode" ] && set_default basic_rate_list "6000 12000 24000"
+		[ -n "$vendor_vht" ] && append base_cfg "vendor_vht=$vendor_vht" "$N"
 	}
 
 	case "$require_mode" in
@@ -704,9 +706,12 @@ wpa_supplicant_prepare_interface() {
 	local ap_scan=
 
 	_w_mode="$mode"
+	_w_modestr=
 
 	[[ "$mode" = adhoc ]] && {
 		ap_scan="ap_scan=2"
+
+		_w_modestr="mode=1"
 	}
 
 	local country_str=
@@ -806,6 +811,8 @@ wpa_supplicant_add_network() {
 		append wpa_key_mgmt "SAE"
 		scan_ssid=""
 	}
+
+	[ "$_w_mode" = "adhoc" -o "$_w_mode" = "mesh" ] && append network_data "$_w_modestr" "$N$T"
 
 	[ "$multi_ap" = 1 -a "$_w_mode" = "sta" ] && append network_data "multi_ap_backhaul_sta=1" "$N$T"
 
