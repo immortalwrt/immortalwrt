@@ -11,4 +11,3 @@ msgid ""
 msgstr ""
 "IEEE 802.1x 有线拨号客户端, 使用前需要将WAN口"
 "协议修改为<i>DHCP客户端</i>. <a href=\"network\">点击这里</a>"
-

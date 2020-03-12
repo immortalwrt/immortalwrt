@@ -9,18 +9,18 @@ run_cd8021x()
 {
     local enable
     config_get_bool enable $1 enable
-    
+
     if [ $enable ]; then
         local username
         local password
         local ifname
         local eap
-        
+
         config_get username $1 username
         config_get password $1 password
         config_get ifname $1 ifname
         config_get eap $1 eap
-        
+
         killall wpa_supplicant
         echo -e "ctrl_interface=/var/run/wpa_supplicant\nctrl_interface_group=root\nap_scan=0\nnetwork={\nkey_mgmt=IEEE8021X\neap=$eap\nidentity=\"$username\"\npassword=\"$password\"" > /tmp/cd8021x.conf
         case "$eap" in
@@ -37,7 +37,7 @@ run_cd8021x()
         esac
 
         wpa_supplicant -B -c /tmp/cd8021x.conf -i$ifname -Dwired
-        
+
         echo "cd802.1x client has started."
     fi
 }
@@ -50,6 +50,6 @@ start()
 
 stop()
 {
-    killall wpa_supplicant    
+    killall wpa_supplicant
     echo "cd802.1x client has stoped."
 }
