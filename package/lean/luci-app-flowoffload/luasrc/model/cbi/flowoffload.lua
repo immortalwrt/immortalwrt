@@ -31,11 +31,6 @@ bbr.default = 0
 bbr.rmempty = false
 bbr.description = translate("Bottleneck Bandwidth and Round-trip propagation time (BBR)")
 
-aaaa = s:option(Flag, "filter_aaaa", translate("Filter AAAA"))
-aaaa.default = 0
-aaaa.rmempty = false
-aaaa.description = translate("Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network")
-
 dns = s:option(Flag, "dns", translate("DNS Acceleration"))
 dns.default = 0
 dns.rmempty = false

@@ -26,7 +26,7 @@ msgid "Enable BBR"
 msgstr "启用 BBR"
 
 msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
-msgstr "BBR拥塞控制算法可以加强TCP应用表现，但会降低路由器本机上的WIFI吞吐性能"
+msgstr "使用BBR拥塞控制算法可以加强TCP应用表现"
 
 msgid "DNS Acceleration"
 msgstr "DNS 加速"
@@ -58,17 +58,6 @@ msgstr "支持多个上游DNS服务器，用','分隔（注意用英文逗号).�
 msgid "Muitiple IPV6 DNS server can saperate with ','"
 msgstr "支持dnsforwarder解析多个上游IPV6 DNS服务器，用','分隔（注意用英文逗号).请填写您最快的DNS服务器"
 
-msgid "Enable dnsmasq killqqad"
-msgstr "启用dnsmasq去广告"
-
-msgid "dnsmasq killqqad"
-msgstr "dnsmasq去广告"
-
 msgid "AdGuardHome's login username/passwd: AdGuardHome, web console addr: IP:3001"
 msgstr "AdGuardHome 网页控制台地址：IP:3001 登录账号/密码：AdGuardHome"
 
-msgid "Filter AAAA"
-msgstr "忽略域名的IPv6地址"
-
-msgid "Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network"
-msgstr "dnsmasq不返回ipv6解析结果，优化国内复杂双栈网络"
