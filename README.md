@@ -1,5 +1,5 @@
 # PROJECT OPENWRT
-## This is a experimental item, use it under your own risk.
+## The item is still under tesing, reporting bugs is welcome.
 ## The Source Code of OpenWrt Modified by CTCGFW
 ### Welcome to our Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
 - - -
