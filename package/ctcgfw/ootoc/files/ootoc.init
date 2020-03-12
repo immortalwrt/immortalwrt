@@ -1,7 +1,7 @@
 #!/bin/bash /etc/rc.common
 
-START=55
-STOP=55
+START=83
+STOP=83
 
 USE_PROCD=1
 PROG=/usr/bin/ootocCLI
@@ -33,7 +33,7 @@ init_conf() {
 	FEEDS_BAK="${FEEDS}.bak"
 	[ -d "${FEEDS%/*}" ] || mkdir -p "${FEEDS%/*}" 2>/dev/null
 	[ -e "$FEEDS_BAK" ] || {
-		_log "opkg feeds backup not exist '$FEEDS_BAK', backup now..."
+		_err "opkg feeds backup not exist '$FEEDS_BAK', backup now..."
 		[ -e "$FEEDS" ] || {
 			_err "not exist file: $FEEDS"
 			return 1
@@ -43,6 +43,14 @@ init_conf() {
 
 	# create log path
 	[ -d "${LOG%/*}" ] || mkdir -p "${LOG%/*}" 2>/dev/null
+
+	# disable signature
+	[ -e /etc/opkg.conf ] || {
+		_err "not exist file: /etc/opkg.conf"
+		return 1
+	}
+	sed -i "s/^[ ]*option check_signature/# option check_signaturesign/" /etc/opkg.conf
+	return 0
 }
 
 start_service() {
@@ -63,7 +71,7 @@ start_service() {
 		return 1
 	}
 
-	$PROG subscription --addr "$ADDR" --port "$PORT" --url "$TAR" --aux "$AUX" --out "/etc/opkg/distfeeds.conf" >/dev/null
+	$PROG subscription --addr "$ADDR" --port "$PORT" -i "$AUX" > "/etc/opkg/distfeeds.conf"
 
     procd_open_instance
     procd_set_param command $PROG server

@@ -15,8 +15,8 @@ PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/ElonH/ootoc.git
-PKG_MIRROR_HASH:=8a26f160c3314bde554e4094ba7f24376403a152bd8e796367f6807f365b792d
-PKG_SOURCE_VERSION:=6bfbe253e8265c7aa7d5553e4dc4c752d5c23ac3
+PKG_MIRROR_HASH:=b7ec508df4e204bdf12fa679075b1d36c8527ef5f8656415eac1aca31227a44b
+PKG_SOURCE_VERSION:=5b919a6c6da5c5c0c007b2820c70a86aa3067aca
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -40,25 +40,12 @@ define Package/ootoc
 	CATEGORY:=Base system
 	URL:=https://github.com/msgpack/ootoc
 	TITLE:=opkg over tar over curl
-	DEPENDS:=+libootoc
-	MENU:=1
-endef
-
-define Package/libootoc
-	URL:=https://github.com/msgpack/ootoc
-	TITLE:=opkg over tar over curl
 	DEPENDS:=+libcurl +libyaml-cpp +libtar
-	SECTION:=lib
-	CATEGORY:=Libraries
-	VARIANT:=lib
+	MENU:=1
 endef
 
 define Package/ootoc/description
 	opkg over tar over curl
-endef
-
-define Package/libootocc/description
-	$(call Package/ootoc/description)
 endef
 
 define Build/InstallDev
@@ -69,11 +56,11 @@ define Build/InstallDev
 endef
 
 define Package/ootoc/install
-	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config
+	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config $(1)/var/etc/ootoc
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ootocCLI $(1)/usr/bin/
 	$(INSTALL_BIN) ./files/ootoc.init $(1)/etc/init.d/ootoc
 	$(INSTALL_DATA) ./files/ootoc.conf $(1)/etc/config/ootoc
+	$(INSTALL_DATA) ./files/latest-Packages.yml $(1)/var/etc/ootoc/latest-Packages.yml
 endef
 
 $(eval $(call BuildPackage,ootoc))
-$(eval $(call BuildPackage,libootoc))
