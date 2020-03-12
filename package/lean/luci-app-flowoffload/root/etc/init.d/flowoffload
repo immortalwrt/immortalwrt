@@ -218,13 +218,6 @@ start(){
 	dns=$(uci get flowoffload.@flow[0].dns 2>/dev/null)
 	dnscache_enable=$(uci get flowoffload.@flow[0].dnscache_enable 2>/dev/null)
 	bbr=$(uci get flowoffload.@flow[0].bbr 2>/dev/null)
-	aaaa=$(uci get flowoffload.@flow[0].filter_aaaa 2>/dev/null)
-	if [ $aaaa -eq 1 ];  then
-		sed -i '/filter-aaaa/d' /etc/dnsmasq.conf
-		echo "filter-aaaa" >> /etc/dnsmasq.conf
-	else
-		sed -i '/filter-aaaa/d' /etc/dnsmasq.conf	
-	fi
 
 	if [ $dns -eq 1 ];  then
 		stop_dnscache
@@ -256,6 +249,10 @@ start(){
 	uci set firewall.@defaults[0].flow_offloading_hw=$(uci get flowoffload.@flow[0].flow_offloading_hw)
 	uci set firewall.@defaults[0].fullcone=$(uci get flowoffload.@flow[0].fullcone_nat)
 	uci commit firewall
+
+	uci set dhcp.@dnsmasq[0].filter_aaaa=$(uci get flowoffload.@flow[0].filter_aaaa)
+	uci commit dhcp
+
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart && echo "DNSMASQ change"
 		/etc/init.d/firewall restart
