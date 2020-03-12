@@ -248,8 +248,11 @@ body {
     font-weight: 400;
     color: #fff;
     height: 100%;
-    font-size:15px;
-    line-height: 150%;
+   
+ font-size:15px;
+ line-height: 150%;
+
+
     margin: 0;
     padding: 0
 }
@@ -437,7 +440,7 @@ footer > a {
     background-color: #ff7d60!important
 }
 .warning {
-    background-color: #f0e68c!important
+    background-color: #065279!important
 }
 
 .success {
@@ -736,6 +739,7 @@ table table {
     border: none;
 }
 
+
 .cbi-value-field table {
     border: none;
 }
@@ -825,8 +829,8 @@ form[method="post"] + form[method="post"],
 .cbi-button[name="restart"],
 .cbi-button[onclick="hide_empty(this)"] {
     font-weight: 700;
-    border: thin solid #bfbfbf;
-    background-color: #d4d4d4
+    border: thin solid #f4;
+    background-color: #0aa344
 }
 
 .btn.primary,
@@ -842,8 +846,45 @@ form[method="post"] + form[method="post"],
 .cbi-button-neutral[onclick="handleConfig(event)"] {
     font-weight: 400;
     color: #fff;
-    border: thin solid #2e6da4;
-    background-color: #337ab7
+    border: thin solid #3b2e7e ;
+    background-color: #3b2e7e
+}
+
+.cbi-button-link,
+.cbi-input-find,
+.cbi-input-save,
+.cbi-button-add,
+.cbi-button-save,
+.cbi-button-find,
+.cbi-input-reload,
+.cbi-button-reload {
+    color: #fff !important;
+    background-color: #177cb0 !important;
+    border-color: #177cb0 !important;
+}
+
+.cbi-button-reset,
+.cbi-input-remove {
+     color: #fff !important;
+     background-color: #801dae !important;
+     border-color: #801dae !important;
+}
+
+
+.cbi-input-apply,
+.cbi-button-apply,
+.cbi-button-edit {
+    color: #fff !important;
+    background-color: #00BCD4     !important;
+    border-color: #00BCD4  !important;
+}
+
+.cbi-input-reset,
+.cbi-section-remove>.cbi-button,
+.cbi-button-remove {
+    color: #fff !important;
+    background-color: #fb6340    !important;
+    border-color: #fb6340 !important;
 }
 
 .cbi-page-actions .cbi-button-apply,
@@ -857,8 +898,8 @@ form[method="post"] + form[method="post"],
 .cbi-button[onclick="addKey(event)"] {
     font-weight: 400;
     color: #fff;
-    border: thin solid #46b8da;
-    background-color: #5bc0de
+    border: thin solid #065279 ;
+    background-color: #065279
 }
 
 .btn.danger,
@@ -872,8 +913,8 @@ form[method="post"] + form[method="post"],
 .cbi-button-neutral[value="Restart"] {
     font-weight: 400;
     color: #fff;
-    border: thin solid #d43f3a;
-    background-color: #d9534f
+    border: thin solid #fb6340;
+    background-color: #fb6340
 }
 
 .btn[value="Dismiss"],
@@ -885,8 +926,8 @@ form[method="post"] + form[method="post"],
 .cbi-button-neutral[value="Disable"] {
     font-weight: 400;
     color: #fff;
-    border: thin solid #eea236;
-    background-color: #f0ad4e
+    border: thin solid #fb6340;
+    background-color: #801dae
 }
 
 .cbi-button-success,
@@ -896,7 +937,7 @@ form[method="post"] + form[method="post"],
 .cbi-button[value="Save mtdblock"] {
     font-weight: 400;
     color: #fff;
-    border: thin solid #4cae4c;
+    border: thin solid #f4;
     background-color: #5cb85c
 }
 
@@ -1010,6 +1051,7 @@ form[method="post"] + form[method="post"],
 
 .cbi-value-description {
     font-size: small;
+  
     opacity: .5;
     padding: .5rem 0 0
 }
