@@ -37,11 +37,6 @@ define Package/$(PKG_NAME)/description
 	LuCI Support for Brook.
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Build/Configure
 endef
 
@@ -88,27 +83,27 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/brook.lua $(1)/usr/lib/lua/luci/controller/brook.lua
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/brook.*.lmo $(1)/usr/lib/lua/luci/i18n
+	$(INSTALL_DATA) ./luasrc/controller/brook.lua $(1)/usr/lib/lua/luci/controller/brook.lua
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/brook
-	$(INSTALL_DATA) ./files/luci/model/cbi/brook/*.lua $(1)/usr/lib/lua/luci/model/cbi/brook/
+	$(INSTALL_DATA) ./luasrc/model/cbi/brook/*.lua $(1)/usr/lib/lua/luci/model/cbi/brook/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/brook
-	$(INSTALL_DATA) ./files/luci/view/brook/*.htm $(1)/usr/lib/lua/luci/view/brook/
+	$(INSTALL_DATA) ./luasrc/view/brook/*.htm $(1)/usr/lib/lua/luci/view/brook/
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-brook $(1)/etc/uci-defaults/luci-brook
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-brook $(1)/etc/uci-defaults/luci-brook
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/root/etc/config/brook $(1)/etc/config/brook
+	$(INSTALL_DATA) ./root/etc/config/brook $(1)/etc/config/brook
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/brook $(1)/etc/init.d/brook
+	$(INSTALL_BIN) ./root/etc/init.d/brook $(1)/etc/init.d/brook
 	$(INSTALL_DIR) $(1)/etc/dnsmasq.brook
-	$(INSTALL_DATA) ./files/root/etc/dnsmasq.brook/gfw_list.conf $(1)/etc/dnsmasq.brook/gfw_list.conf
-	$(INSTALL_DATA) ./files/root/etc/dnsmasq.brook/custom_list.conf $(1)/etc/dnsmasq.brook/custom_list.conf
+	$(INSTALL_DATA) ./root/etc/dnsmasq.brook/gfw_list.conf $(1)/etc/dnsmasq.brook/gfw_list.conf
+	$(INSTALL_DATA) ./root/etc/dnsmasq.brook/custom_list.conf $(1)/etc/dnsmasq.brook/custom_list.conf
 	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_DATA) ./files/root/etc/china_ip.txt $(1)/etc/china_ip.txt
+	$(INSTALL_DATA) ./root/etc/china_ip.txt $(1)/etc/china_ip.txt
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) ./files/root/usr/bin/brook-gfw $(1)/usr/bin/brook-gfw
-	$(INSTALL_BIN) ./files/root/usr/bin/brook-ad $(1)/usr/bin/brook-ad
+	$(INSTALL_BIN) ./root/usr/bin/brook-gfw $(1)/usr/bin/brook-gfw
+	$(INSTALL_BIN) ./root/usr/bin/brook-ad $(1)/usr/bin/brook-ad
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/brook.po $(1)/usr/lib/lua/luci/i18n/brook.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
