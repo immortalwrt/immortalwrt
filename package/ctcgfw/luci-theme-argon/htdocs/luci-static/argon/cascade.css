@@ -764,7 +764,7 @@ header .fill .status * {
   content: "\e90d";
   color: #2dce89;
 }
-.main .main-left .nav li.slide .menu[data-title=docker]:before {
+.main .main-left .nav li.slide .menu[data-title=Docker]:before {
   content: "\e911";
   color: #6699ff;
 }
