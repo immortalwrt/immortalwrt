@@ -224,13 +224,6 @@ start_service() {
 	dns=$(uci get sfe.config.dns 2>/dev/null)
 	dnscache_enable=$(uci get sfe.config.dnscache_enable 2>/dev/null)
 	bbr=$(uci get sfe.config.bbr 2>/dev/null)
-	aaaa=$(uci get sfe.config.filter_aaaa 2>/dev/null)
-	if [ $aaaa -eq 1 ];  then
-		sed -i '/filter-aaaa/d' /etc/dnsmasq.conf
-		echo "filter-aaaa" >> /etc/dnsmasq.conf
-	else
-		sed -i '/filter-aaaa/d' /etc/dnsmasq.conf	
-	fi
   
 	if [ $enable -eq 1 ]; then
 		! (lsmod | grep fast_classifier >/dev/null) && (modprobe fast_classifier)
@@ -276,6 +269,9 @@ start_service() {
 	else
 		sysctl -w net.ipv4.tcp_congestion_control=cubic
 	fi
+
+	uci set dhcp.@dnsmasq[0].filter_aaaa=$(uci get sfe.@sfe[0].filter_aaaa)
+	uci commit dhcp
 
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart
