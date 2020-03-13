@@ -54,8 +54,6 @@ if [ "${create}" -eq 1 ];then
 	elif [ $lang == "zh_cn" ];then
     	 echo "开始创建自定义配置..." >$REAL_LOG
 	fi
-	sleep 1
-	
 	
 CONFIG_YAML_RULE="/usr/share/clash/custom_rule.yaml"
 SERVER_FILE="/tmp/servers.yaml"
@@ -82,7 +80,6 @@ PROVIDER_FILE="/tmp/yaml_provider.yaml"
 	fi
 	exit 0	
    fi
-	sleep 2
 
 
 

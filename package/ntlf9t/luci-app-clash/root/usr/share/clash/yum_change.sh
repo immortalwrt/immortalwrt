@@ -69,7 +69,7 @@ if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
 	elif [ $lang == "zh_cn" ];then
     	 echo "设置端口,DNS和密码..." >$REAL_LOG
 	fi
-	sleep 2
+	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
 	    if [ ! -z "$(grep "^Proxy:" "$CONFIG_YAML")" ]; then
 		sed -i "/Proxy:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
@@ -126,7 +126,7 @@ if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 	elif [ $lang == "zh_cn" ];then
     	 echo "设置端口,DNS和密码..." >$REAL_LOG
 	fi
-	sleep 2
+	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
 	
 		if [ ! -z "$(grep "^Proxy:" "$CONFIG_YAML")" ]; then
@@ -180,7 +180,7 @@ else
 	elif [ $lang == "zh_cn" ];then
     	 echo "设置端口,DNS和密码..." >$REAL_LOG
 	fi	
-	sleep 2
+	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
 	
 	

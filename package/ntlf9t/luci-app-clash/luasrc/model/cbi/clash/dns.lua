@@ -21,6 +21,11 @@ y:value("0", translate("disabled"))
 y:value("1", translate("enabled"))
 y.description = translate("Set custom DNS forwarder in DHCP and DNS Settings and forward all dns traffic to clash")
 
+y = s:option(ListValue, "dnscache", translate("DNS Cache"))
+y:value("0", translate("disabled"))
+y:value("1", translate("enabled"))
+y.description = translate("Set to enable or disable dns cache")
+
 y = s:option(ListValue, "enable_udp", translate("Enable UDP"))
 y:value("0", translate("disabled"))
 y:value("1", translate("enabled"))

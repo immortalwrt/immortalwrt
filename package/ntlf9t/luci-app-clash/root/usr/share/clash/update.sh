@@ -27,7 +27,7 @@ if [ $type == "clash" ] && [ ! -z $url ];then
 			echo "更新配置完成" >$REAL_LOG
 
 		fi
-		sleep 5
+		sleep 1
 		echo "Clash for OpenWRT" >$REAL_LOG
 		
 			

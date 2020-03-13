@@ -36,8 +36,6 @@ rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml
     	echo "Start updating policy group config" >$REAL_LOG
 	fi
 
-	sleep 3
-
 	if [ "${new_conf}" -eq 1 ];then
 	   sed -i 's/Proxy Group:/proxy-groups:/g' "$load"
 	   sed -i 's/proxy-provider:/proxy-providers:/g' "$load"
