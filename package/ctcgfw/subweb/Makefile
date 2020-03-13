@@ -30,8 +30,8 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-	SECTION:=utils
-	CATEGORY:=Utilities
+	SECTION:=net
+	CATEGORY:=Network
 	TITLE:=(WebUI) Utility to convert between various subscription format.
 	URL:=https://github.com/lzdnico/subweb
 	DEPENDS:=+python3 +python3-flask +python3-flask-restful +python3-requests +subconverter
