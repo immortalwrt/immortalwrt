@@ -101,7 +101,7 @@ gen_laniplist() {
 
 load_acl() {
 	local count=$(uci show $CONFIG | grep "@acl_rule" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
-	[ -n "$count" -a "$count" -ge 0 ] && {
+	[ -n "$count" ] && [ "$count" -ge 0 ] && {
 		u_get() {
 			local ret=$(uci -q get $CONFIG.@acl_rule[$1].$2)
 			echo ${ret:=$3}
