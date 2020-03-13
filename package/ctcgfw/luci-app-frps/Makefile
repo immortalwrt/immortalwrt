@@ -16,7 +16,7 @@ PKG_MAINTAINER:=Weizheng Li <lwz322@qq.com>
 
 LUCI_TITLE:=LuCI support for Frps
 LUCI_PKGARCH:=all
-LUCI_DEPENDS:=+openwrt-frps
+LUCI_DEPENDS:=+frps
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
