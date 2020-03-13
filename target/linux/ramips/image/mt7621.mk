@@ -902,7 +902,7 @@ define Device/xiaomi_mir3p
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
 	check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := kmod-mt7615e kmod-usb3 kmod-usb-ledtrig-usbport \
+  DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport \
 	wpad-openssl uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir3p
