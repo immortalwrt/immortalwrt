@@ -19,8 +19,6 @@ turn them on if it is safe and fast enough.
 
 Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
 
-diff --git a/engines/e_devcrypto.c b/engines/e_devcrypto.c
-index fb5c6e1636..7741138b82 100644
 --- a/engines/e_devcrypto.c
 +++ b/engines/e_devcrypto.c
 @@ -854,7 +854,7 @@ static void prepare_digest_methods(void)
@@ -32,7 +30,7 @@ index fb5c6e1636..7741138b82 100644
  
          /*
           * Check that the digest is usable
-@@ -1074,7 +1074,7 @@ static const ENGINE_CMD_DEFN devcrypto_cmds[] = {
+@@ -1074,7 +1074,7 @@ static const ENGINE_CMD_DEFN devcrypto_c
  #ifdef IMPLEMENT_DIGEST
     {DEVCRYPTO_CMD_DIGESTS,
      "DIGESTS",
