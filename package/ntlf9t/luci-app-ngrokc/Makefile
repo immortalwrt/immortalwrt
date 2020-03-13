@@ -23,19 +23,13 @@ define Package/luci-app-ngrokc
 	DEPENDS:=+ngrokc
 endef
 
-
-define Package/luci-app-cdns/description
-	LuCI Support for cdns.
+define Package/luci-app-ngrokc/description
+	LuCI Support for ngrokc.
 endef
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 rm -rf /tmp/luci*
-endef
-
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/i18n/zh-cn/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
 define Build/Configure
@@ -45,10 +39,20 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
+	$(INSTALL_DATA) ./luasrc/controller/ngrokc.lua $(1)/usr/lib/lua/luci/controller/ngrokc.lua
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/ngrokc
+	$(INSTALL_DATA) ./luasrc/model/cbi/ngrokc/*.lua $(1)/usr/lib/lua/luci/model/cbi/ngrokc/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/ngrokc
+	$(INSTALL_DATA) ./luasrc/view/ngrokc/*.htm $(1)/usr/lib/lua/luci/view/ngrokc/
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_DATA) ./root/etc/config/ngrokc $(1)/etc/config/ngrokc
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./root/etc/init.d/ngrokc $(1)/etc/init.d/ngrokc
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-ngrokc $(1)/etc/uci-defaults/luci-ngrokc
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/*.*.lmo $(1)/usr/lib/lua/luci/i18n/
-	$(CP) ./files/* $(1)/
-
+	po2lmo ./po/zh-cn/ngrokc.po $(1)/usr/lib/lua/luci/i18n/ngrokc.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

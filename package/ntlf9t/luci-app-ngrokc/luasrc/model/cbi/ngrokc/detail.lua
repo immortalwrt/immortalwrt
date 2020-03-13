@@ -14,7 +14,7 @@ local DTYP = require "luci.cbi.datatypes"
 
 local apply = luci.http.formvalue("cbi.apply")               
 if apply then                                                
-        luci.sys.exec("/etc/init.d/ngrokc reload &")       -- reload configuration
+	luci.sys.exec("/etc/init.d/ngrokc reload &")       -- reload configuration
 end 
 
 -- takeover arguments -- #######################################################
@@ -69,7 +69,6 @@ hostheader.datatype = nil
 hostheader.rmempty = true
 hostheader:depends("type", "http")
 hostheader:depends("type", "https")
-
 
 rport=tunnels:option(Value, "rport", translate("Remote Port"))
 rport.datatype = "port"
