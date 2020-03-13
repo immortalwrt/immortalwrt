@@ -67,7 +67,17 @@ end
 o:depends("subcri", 'v2ssr2clash')
 
 
+function IsYamlFile(e)
+   e=e or""
+   local e=string.lower(string.sub(e,-5,-1))
+   return e == ".yaml"
+end
 
+function IsYmlFile(e)
+   e=e or""
+   local e=string.lower(string.sub(e,-4,-1))
+   return e == ".yml"
+end
 
 
 ko = Map(clash)
@@ -103,7 +113,9 @@ http.setfilehandler(
 		if eof and fd then
 			fd:close()
 			fd = nil
-			um.value = translate("File saved to") .. ' "/usr/share/clash/config/upload/"'
+			local yml=string.lower(string.sub(meta.file,0,-5))
+			local c=fs.rename(dir .. meta.file,"/usr/share/clash/config/upload/".. yml .. ".yaml")
+			um.value = translate("File saved to") .. ' "/usr/share/clash/config/upload/'..yml..'.yaml"'
 			
 		end
 	end
