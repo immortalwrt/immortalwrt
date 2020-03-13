@@ -14,7 +14,7 @@ if [ ! -z $check_name ];then
 	elif [ $lang == "zh_cn" ];then
 				echo "已存在同名配置，请重命名名配置重新下载" >$REAL_LOG
 	fi
-	sleep 5
+	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
 	exit 0	
 
@@ -433,14 +433,14 @@ do
 			elif [ $lang == "zh_cn" ];then
 				echo "下载配置完成" >$REAL_LOG
 			fi
-			sleep 2
+			sleep 1
 			
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Strating to Create Custom Config.. " >$REAL_LOG 
 	elif [ $lang == "zh_cn" ];then
     	 echo "开始创建自定义配置..." >$REAL_LOG
 	fi
-	sleep 2
+	sleep 1
 	
 	if [ $curl_code -eq 0 ];then
 		ssr_url=($(echo $subscribe_data | base64 -d | sed 's/\r//g')) 
@@ -608,16 +608,15 @@ DNS_FILE="/usr/share/clash/dns.yaml"
    if [ $servcount -eq 0 ] || [ $gcount -eq 0 ];then
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "No servers or group. Aborting Operation .." >$REAL_LOG 
-		sleep 2
+		sleep 1
 			echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ $lang == "zh_cn" ];then
     	 echo "找不到代理或策略组。中止操作..." >$REAL_LOG
-		 sleep 2
-			echo "Clash for OpenWRT" >$REAL_LOG
+		 sleep 1
+		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
 	exit 0	
    fi
-   sleep 2
 servers_set()
 {
    local section="$1"
@@ -917,18 +916,15 @@ rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE
 
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Completed Creating Custom Config.. " >$REAL_LOG 
-		 sleep 2
+		 sleep 1
 			echo "Clash for OpenWRT" >$REAL_LOG
 	elif [ $lang == "zh_cn" ];then
     	 echo "创建自定义配置完成..." >$REAL_LOG
-		  sleep 2
+		  sleep 1
 			echo "Clash for OpenWRT" >$REAL_LOG
 	fi
-	
-
 
 mv /usr/share/clash/v2ssr/config.bak /etc/config/clash 2>/dev/null
-sleep 1
 
 if [ $config_type == "sub" ];then 
 if pidof clash >/dev/null; then

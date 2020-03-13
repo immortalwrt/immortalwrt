@@ -1033,3 +1033,9 @@ msgstr "启用UDP"
 
 msgid "Enable udp traffic ,make sure your server support udp"
 msgstr "启用udp流量，服务器必须支持udp"
+
+msgid "DNS Cache"
+msgstr "DNS缓存"
+
+msgid "Set to enable or disable dns cache"
+msgstr "设置为启用或禁用dns缓存"

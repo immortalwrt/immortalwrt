@@ -59,6 +59,64 @@ o.write = function()
 end
 
 
+
+
+w = Map("clash")
+s = w:section(TypedSection, "clash" , translate("New Config(Rename fields)"))
+s.anonymous = true
+
+
+o = s:option(ListValue, "new_conff", translate("New Config(Rename fields)"))
+o:value("0", translate("Disable"))
+o:value("1", translate("Enable"))
+o.description = translate("https://github.com/Dreamacro/clash/commit/88d8f937938d7aba774b1af638df6910b1a1a14d")
+
+o=s:option(Button,"nwewcf")
+o.inputtitle = translate("Save & Apply")
+o.title = translate("Save & Apply")
+o.inputstyle = "reload"
+o.write = function()
+  w.uci:commit("clash")
+end
+
+o = s:option(Button, "Load") 
+o.inputtitle = translate("Load Groups")
+o.title = translate("Load Groups")
+o.inputstyle = "apply"
+o.write = function()
+  w.uci:commit("clash")
+  luci.sys.call("bash /usr/share/clash/load_groups.sh >/dev/null 2>&1 &")
+  luci.sys.call("sleep 4")
+  HTTP.redirect(luci.dispatcher.build_url("admin", "services", "clash", "settings", "other"))   
+end
+
+
+r = w:section(TypedSection, "conf_groups", translate("Policy Groups"))
+r.anonymous = true
+r.addremove = false
+r.sortable = false
+r.template = "cbi/tblsection"
+function r.create(...)
+	local sid = TypedSection.create(...)
+	if sid then
+		luci.http.redirect(r.extedit % sid)
+		return
+	end
+end
+
+o = r:option(DummyValue, "type", translate("Group Type"))
+function o.cfgvalue(...)
+	return Value.cfgvalue(...) or translate("None")
+end
+
+
+o = r:option(DummyValue, "name", translate("Group Name"))
+function o.cfgvalue(...)
+	return Value.cfgvalue(...) or translate("None")
+end
+
+
+
 y = Map("clash")
 x = y:section(TypedSection, "addtype", translate("Custom Rules"))
 x.anonymous = true
@@ -92,37 +150,5 @@ end
 
 
 
-local t = {
-    {Load,Apply}
-}
 
-k = Form("apply")
-k.reset = false
-k.submit = false
-s = k:section(Table, t)
-
-
-o = s:option(Button, "Load") 
-o.inputtitle = translate("Load Groups")
-o.inputstyle = "apply"
-o.write = function()
-  m.uci:commit("clash")
-  luci.sys.call("bash /usr/share/clash/load_groups.sh >/dev/null 2>&1 &")
-  luci.sys.call("sleep 3")
-  HTTP.redirect(luci.dispatcher.build_url("admin", "services", "clash", "settings", "other"))   
-end
-
-o = s:option(Button, "Apply")
-o.inputtitle = translate("Save & Apply")
-o.inputstyle = "apply"
-o.write = function()
-  m.uci:commit("clash")
-  if luci.sys.call("pidof clash >/dev/null") == 0 then
-	SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash"))
-  else
-  	HTTP.redirect(luci.dispatcher.build_url("admin", "services", "clash", "settings", "other"))
-  end
-end
-
-return kk, m,y,k
+return kk, m,w,y
