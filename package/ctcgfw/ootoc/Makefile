@@ -15,8 +15,8 @@ PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/ElonH/ootoc.git
-PKG_MIRROR_HASH:=b7ec508df4e204bdf12fa679075b1d36c8527ef5f8656415eac1aca31227a44b
-PKG_SOURCE_VERSION:=5b919a6c6da5c5c0c007b2820c70a86aa3067aca
+PKG_MIRROR_HASH:=8df94810a5c4ab69556531f628006f6f4f7c443a211b386ece4cde65f4e1bd50
+PKG_SOURCE_VERSION:=449f254d54e854221f967c4d156f54ee1af224fb
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -40,7 +40,7 @@ define Package/ootoc
 	CATEGORY:=Base system
 	URL:=https://github.com/msgpack/ootoc
 	TITLE:=opkg over tar over curl
-	DEPENDS:=+libcurl +libyaml-cpp +libtar
+	DEPENDS:=+libcurl +libyaml-cpp +libtar +spdlog
 	MENU:=1
 endef
 
