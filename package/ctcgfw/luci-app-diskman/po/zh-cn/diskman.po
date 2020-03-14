@@ -225,3 +225,6 @@ msgstr "无效的终止扇区！"
 
 msgid "Partition not exists!"
 msgstr "分区不存在！"
+
+msgid "Creation"
+msgstr "创建"
