@@ -814,8 +814,8 @@ msgstr "状态信息显示节点检测"
 msgid "Status Show IP111"
 msgstr "状态信息显示IP111"
 
-msgid "Hide Menu"
-msgstr "隐藏菜单"
+msgid "Hide menu method, input example in the address bar:"
+msgstr "隐藏菜单方法，地址栏输入例："
 
 msgid "After the hidden to the display, input example in the address bar:"
 msgstr "当你隐藏后想再次显示，地址栏输入例："
