@@ -171,9 +171,6 @@ load_acl() {
 filter_vpsip() {
 	echolog "开始过滤所有IPV4节点到白名单"
 	uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIPLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	local dns2="$UP_CHINA_DNS2"
-	[ -z "$dns2" ] && dns2="114.114.114.114"
-	uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$dns2'\nipset=/."$1"/'$IPSET_VPSIPLIST'"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
 	echolog "过滤所有IPV4节点完成"
 }
 
@@ -185,17 +182,17 @@ filter_node() {
 			[ "$type" == "brook" -a "$(config_n_get $1 brook_protocol client)" == "client" ] && i=$ipt_m
 			local address=$(config_n_get $1 address)
 			local port=$(config_n_get $1 port)
-			is_exist=$($i -L PSW 2>/dev/null | grep -c "$address:$port")
+			is_exist=$($i -n -L PSW 2>/dev/null | grep -c "$address:$port")
 			[ "$is_exist" == 0 ] && {
 				local ADD_INDEX=2
-				local INDEX=$($i -L PSW --line-numbers | grep "$IPSET_VPSIPLIST" | sed -n '$p' | awk '{print $1}')
+				local INDEX=$($i -n -L PSW --line-numbers | grep "$IPSET_VPSIPLIST" | sed -n '$p' | awk '{print $1}')
 				[ -n "$INDEX" ] && ADD_INDEX=$INDEX
 				$i -I PSW $ADD_INDEX -p tcp -d $address --dport $port $(comment "$address:$port") -j RETURN
 			}
-			is_exist=$($i -L PSW_OUTPUT 2>/dev/null | grep -c "$address:$port")
+			is_exist=$($i -n -L PSW_OUTPUT 2>/dev/null | grep -c "$address:$port")
 			[ "$is_exist" == 0 ] && {
 				local ADD_INDEX=2
-				local INDEX=$($i -L PSW_OUTPUT --line-numbers | grep "$IPSET_VPSIPLIST" | sed -n '$p' | awk '{print $1}')
+				local INDEX=$($i -n -L PSW_OUTPUT --line-numbers | grep "$IPSET_VPSIPLIST" | sed -n '$p' | awk '{print $1}')
 				[ -n "$INDEX" ] && ADD_INDEX=$INDEX
 				$i -I PSW_OUTPUT $ADD_INDEX -p tcp -d $address --dport $port $(comment "$address:$port") -j RETURN
 			}
@@ -531,10 +528,10 @@ add_firewall_rule() {
 }
 
 del_firewall_rule() {
-	ipv6_output_ss_exist=$($ip6t_n -L OUTPUT 2>/dev/null | grep -c "PSW")
+	ipv6_output_ss_exist=$($ip6t_n -n -L OUTPUT 2>/dev/null | grep -c "PSW")
 	[ -n "$ipv6_output_ss_exist" ] && {
 		until [ "$ipv6_output_ss_exist" = 0 ]; do
-			rules=$($ip6t_n -L OUTPUT --line-numbers | grep "PSW" | awk '{print $1}')
+			rules=$($ip6t_n -n -L OUTPUT --line-numbers | grep "PSW" | awk '{print $1}')
 			for rule in $rules; do
 				$ip6t_n -D OUTPUT $rule 2>/dev/null
 				break

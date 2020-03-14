@@ -401,14 +401,15 @@ local function select_node(nodes, config)
 	end
 end
 
-local function update_node()
+local function update_node(manual)
 	if next(nodeResult) == nil then
 		log("更新失败，没有可用的节点信息")
 		return
 	end
 	-- delet all for subscribe nodes
 	ucic2:foreach(application, uciType, function(node)
-		if (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
+		-- 如果是手动导入的节点就不参与删除
+		if manual == 0 and (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
 			ucic2:delete(application, node['.name'])
 		end
 	end)
@@ -531,7 +532,7 @@ local execute = function()
 			end
 		end)
 		-- diff
-		update_node()
+		update_node(0)
 	end
 end
 
@@ -557,12 +558,9 @@ if arg[1] then
 		for _, raw in ipairs(nodes) do
 			parse_link(raw, nil, 1)
 		end
-		update_node()
+		update_node(1)
+		luci.sys.call("rm -f /tmp/links.conf")
 	elseif arg[1] == "truncate" then
 		truncate_nodes()
-	elseif arg[1] == "test" then
-		for k, v in pairs(CONFIG) do
-			print(k, v)
-		end
 	end
 end

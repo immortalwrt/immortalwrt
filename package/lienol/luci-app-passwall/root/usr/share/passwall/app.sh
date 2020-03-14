@@ -51,6 +51,8 @@ config_t_get() {
 
 get_host_ip() {
 	local host=$2
+	local count=$3
+	[ -z "$count" ] && count=3
 	local isip=""
 	local ip=$host
 	if [ "$1" == "ipv6" ]; then
@@ -66,7 +68,7 @@ get_host_ip() {
 	[ -z "$isip" ] && {
 		local t=4
 		[ "$1" == "ipv6" ] && t=6
-		local vpsrip=$(resolveip -$t -t 3 $host | awk 'NR==1{print}')
+		local vpsrip=$(resolveip -$t -t $count $host | awk 'NR==1{print}')
 		ip=$vpsrip
 	}
 	echo $ip
@@ -200,12 +202,10 @@ load_config() {
 	[ ! -f "$RESOLVFILE" -o ! -s "$RESOLVFILE" ] && RESOLVFILE=/tmp/resolv.conf.auto
 	if [ "$UP_CHINA_DNS" == "dnsbyisp" -o "$UP_CHINA_DNS" == "default" ]; then
 		UP_CHINA_DNS1=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '1P')
-		if [ -n "$UP_CHINA_DNS1" ]; then
-			UP_CHINA_DNS=$UP_CHINA_DNS1
-		else
-			UP_CHINA_DNS="119.29.29.29"
-		fi
-		local UP_CHINA_DNS2=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '2P')
+		DEFAULT_DNS1="$UP_CHINA_DNS1"
+		[ -z "$UP_CHINA_DNS1" ] && UP_CHINA_DNS1="119.29.29.29"
+		UP_CHINA_DNS="$UP_CHINA_DNS1"
+		UP_CHINA_DNS2=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1 | sed -n '2P')
 		[ -n "$UP_CHINA_DNS1" -a -n "$UP_CHINA_DNS2" ] && UP_CHINA_DNS="$UP_CHINA_DNS1,$UP_CHINA_DNS2"
 	else
 		UP_CHINA_DNS1=$(echo $UP_CHINA_DNS | sed "s/:/#/g" | awk -F ',' '{print $1}')
@@ -213,7 +213,8 @@ load_config() {
 			UP_CHINA_DNS2=$(echo $UP_CHINA_DNS | sed "s/:/#/g" | awk -F ',' '{print $2}')
 			[ -n "$UP_CHINA_DNS2" ] && UP_CHINA_DNS="${UP_CHINA_DNS1},${UP_CHINA_DNS2}"
 		else
-			UP_CHINA_DNS="114.114.114.114"
+			UP_CHINA_DNS1="119.29.29.29"
+			UP_CHINA_DNS=$UP_CHINA_DNS1
 		fi
 	fi
 	PROXY_IPV6=$(config_t_get global_forwarding proxy_ipv6 0)
@@ -632,16 +633,20 @@ add_dnsmasq() {
 	}
 	
 	[ "$DNS_MODE" != "nonuse" ] && {
-		local dns2="$UP_CHINA_DNS2"
-		[ -z "$dns2" ] && dns2="114.114.114.114"
-		[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$dns2'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
+		if [ -n "$UP_CHINA_DNS2" ]; then
+			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
+			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+		else
+			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
+			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+		fi
 		[ -f "$RULES_PATH/blacklist_host" -a -s "$RULES_PATH/blacklist_host" ] && cat $RULES_PATH/blacklist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' > $TMP_DNSMASQ_PATH/blacklist_host.conf
 		[ -f "$RULES_PATH/gfwlist.conf" -a -s "$RULES_PATH/gfwlist.conf" ] && ln -s $RULES_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
 		
 		subscribe_proxy=$(config_t_get global_subscribe subscribe_proxy 0)
 		[ "$subscribe_proxy" -eq 1 ] && {
 			local count=$(uci show $CONFIG | grep "@subscribe_list" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
-			[ -n "$count" -a "$count" -ge 0 ] && {
+			[ -n "$count" ] && [ "$count" -ge 0 ] && {
 				u_get() {
 					local ret=$(uci -q get $CONFIG.@subscribe_list[$1].$2)
 					echo ${ret:=$3}
@@ -664,7 +669,7 @@ add_dnsmasq() {
 		}
 	}
 	
-	[ -z "$IS_DEFAULT_CHINA_DNS" -o "$IS_DEFAULT_CHINA_DNS" == 0 ] && {
+	if [ -z "$IS_DEFAULT_CHINA_DNS" -o "$IS_DEFAULT_CHINA_DNS" == 0 ]; then
 		server="server=127.0.0.1#$DNS_PORT"
 		[ "$DNS_MODE" != "chinadns-ng" ] && {
 			[ -n "$UP_CHINA_DNS1" ] && server="server=$UP_CHINA_DNS1"
@@ -676,7 +681,21 @@ add_dnsmasq() {
 			no-poll
 			no-resolv
 		EOF
-	}
+	else
+		# 如果有某些人DNS设置了默认，但是没有设置上级DNS会上不了网，做个防呆...(真是服了你们这些xxx)
+		[ -z "$DEFAULT_DNS1" ] && {
+			local tmp=$(get_host_ip ipv4 www.baidu.com 1)
+			[ -z "$tmp" ] && {
+				cat <<-EOF > /var/dnsmasq.d/dnsmasq-$CONFIG.conf
+					server=$UP_CHINA_DNS1
+					no-poll
+					no-resolv
+				EOF
+				echolog "你没有设置接口DNS，请前往设置！"
+				/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+			}
+		}
+	fi
 	
 	echo "conf-dir=$TMP_DNSMASQ_PATH" >> /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
@@ -797,7 +816,7 @@ start_haproxy() {
 				    mode tcp
 			EOF
 			local count=$(uci show $CONFIG | grep "@balancing" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
-			[ -n "$count" -a "$count" -ge 0 ] && {
+			[ -n "$count" ] && [ "$count" -ge 0 ] && {
 				u_get() {
 					local ret=$(uci -q get $CONFIG.@balancing[$1].$2)
 					echo ${ret:=$3}
