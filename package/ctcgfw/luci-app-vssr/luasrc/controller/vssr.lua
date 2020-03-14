@@ -148,10 +148,6 @@ function act_status()
     -- 全局服务器
    e.global=luci.sys.call("ps -w | grep ssr-retcp | grep -v grep >/dev/null") == 0 
 
---检测负载均衡状态
-    if tonumber(luci.sys.exec("ps -w | grep haproxy |grep -v grep| wc -l"))>0 then
-		e.haproxy= true  
-                   end
 --检测kcptun状态
     if tonumber(luci.sys.exec("ps -w | grep kcptun-client |grep -v grep| wc -l"))>0 then
 		e.kcptun= true  
@@ -187,7 +183,7 @@ function act_status()
 --检测UDP2RAW状态
                  if tonumber(luci.sys.exec("ps -w | grep udp2raw |grep -v grep| wc -l"))>0 then
 		e.udp2raw= true  
-end
+                  end
 --检测UDPspeeder状态
                  if tonumber(luci.sys.exec("ps -w | grep udpspeeder |grep -v grep| wc -l"))>0 then
 		e.udpspeeder= true  
@@ -196,18 +192,16 @@ end
 	if tonumber(luci.sys.exec("ps -w | grep ssr-server |grep -v grep| wc -l"))>0 then
 		e.server= true
                     end 
+
                   if luci.sys.call("pidof ssr-server >/dev/null") == 0 then
                    e.ssr_server= true
+
                    end 
 	if luci.sys.call("pidof ss-server >/dev/null") == 0 then
 		e.ss_server= true
 
                      end 
-if luci.sys.call("ps -w | grep trojan-server | grep -v grep >/dev/null") == 0 then
-		e.trojan_server= true
 
-
-	end  
 	if luci.sys.call("ps -w | grep v2ray-server | grep -v grep >/dev/null") == 0 then
 		e.v2_server= true
 
@@ -255,18 +249,6 @@ if luci.sys.call("ps -w | grep trojan-server | grep -v grep >/dev/null") == 0 th
         e.google =  true
     end
     
-
-    -- 检测Socks5
-   
-	if tonumber(luci.sys.exec("ps -w | grep ssr-local |grep -v grep| wc -l"))>0 then
-		e.socks5 = true
-	elseif tonumber(luci.sys.exec("ps -w | grep ss-local |grep -v grep| wc -l"))>0 then
-		e.socks5 = true
-	elseif tonumber(luci.sys.exec("ps -w | grep v2-ssr-local |grep -v grep| wc -l"))>0 then
-		e.socks5 = true
-                  elseif tonumber(luci.sys.exec("ps -w | grep trojan-ssr-local |grep -v grep| wc -l"))>0 then
-		e.socks5 = true
-	end    
 
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
