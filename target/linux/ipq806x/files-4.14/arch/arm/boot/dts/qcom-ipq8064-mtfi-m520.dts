@@ -134,10 +134,10 @@
 			};
 		};
 
-		gsbi2: gsbi@12480000 {
+		gsbi@16300000 {
 			qcom,mode = <GSBI_PROT_I2C_UART>;
 			status = "ok";
-			uart2: serial@12490000 {
+			serial@16340000 {
 				status = "ok";
 			};
 		};
