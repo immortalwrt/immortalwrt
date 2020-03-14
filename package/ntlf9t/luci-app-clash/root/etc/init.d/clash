@@ -154,11 +154,8 @@ yml_dns_change(){
 			elif [ "${lang}" == "zh_cn" ];then
 				echo "设置dns转发器" >$REAL_LOG
 			fi
-			
-		  dns_serve1=$(uci get dhcp.@dnsmasq[0].server 2>/dev/null)
-		  if [ $dns_serve1 ]; then
-			 uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#"$dns_port"
-		  fi	
+
+			  uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1
 	          uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#5300 >/dev/null 2>&1
 	          uci delete dhcp.@dnsmasq[0].resolvfile
 	          uci set dhcp.@dnsmasq[0].noresolv=1
@@ -174,10 +171,7 @@ yml_dns_change(){
 		  fi  
 	    else
 		  echo "Setting dns forwarder" >$REAL_LOG
-		  dns_serve1=$(uci get dhcp.@dnsmasq[0].server 2>/dev/null)
-		  if [ $dns_serve1 ]; then
-			uci del dhcp.@dnsmasq[-1].server
-		  fi 	
+			  uci del_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1 	
 	          uci add_list dhcp.@dnsmasq[0].server=127.0.0.1#$dns_port >/dev/null 2>&1 
 	          uci delete dhcp.@dnsmasq[0].resolvfile
 	          uci set dhcp.@dnsmasq[0].noresolv=1
