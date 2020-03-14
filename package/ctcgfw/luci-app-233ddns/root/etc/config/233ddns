@@ -1,4 +1,0 @@
-
-config 233ddns
-	option enable '0'
-	option token ''
