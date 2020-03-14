@@ -174,7 +174,7 @@ EOF
 	print <<EOF;
 choice
 	prompt "Target System"
-	default TARGET_x86_64
+	default TARGET_x86
 	reset if !DEVEL
 	
 EOF
