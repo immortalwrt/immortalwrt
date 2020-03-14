@@ -1,18 +1,3 @@
-<br>
-<ul class="cbi-tabmenu">
-  <% for k, v in pairs(self.tabs) do
-      local class = k == self.default_tab and "cbi-tab" or "cbi-tab-disabled" 
-      local id = "tab.raid-tab." .. k
-  %>
-        <li id=<%=id%> class=<%=class%> >
-          <a onclick="this.blur(); return cbi_t_switch('raid-tab', '<%=k%>')" href=""><%=v%></a>
-        </li>
-  <% end %>
-  <!-- <li id="tab.raid-tab.mount_point" class="cbi-tab">
-    <a onclick="this.blur(); return cbi_t_switch('raid-tab', 'mount_point')" href=""><%:Mount Point%></a>
-  </li> -->
-</ul>
-
 <script type="text/javascript">
   window.onload = function () {
     //disk partition info
@@ -119,25 +104,5 @@
         item.insertAdjacentHTML('afterend', partitons_div);
       })
     })
-    // tab
-    <% for k, v in pairs(self.tabs) do
-      local display = k == self.default_tab and "block" or "none" 
-      local tid = "cbi-"..k.."-table"
-      local sid = "cbi-"..k.."-section"
-      local cid = "container.raid-tab." .. k
-    %>
-      mount_point_table = document.getElementById("<%=tid%>") || document.getElementById("<%=sid%>") || null
-      if (mount_point_table) {
-        mount_point_table.setAttribute("style", "display: <%=display%>;")
-        mount_point_table.setAttribute("id", "<%=cid%>")
-        cbi_t_add('raid-tab', '<%=k%>')
-      }
-    <%end%>
-    // const mount_point_table = document.getElementById("cbi-mount_point-table")
-    // if (mount_point_table) {
-    //   mount_point_table.setAttribute("style", "display: block;")
-    //   mount_point_table.setAttribute("id", "container.raid-tab.mount_point")
-    //   cbi_t_add('raid-tab', 'mount_point')
-    // }
   }
 </script>

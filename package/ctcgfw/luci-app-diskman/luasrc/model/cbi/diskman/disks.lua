@@ -10,7 +10,7 @@ local dm = require "luci.model.diskman"
 -- Use (non-UCI) SimpleForm since we have no related config file
 m = SimpleForm("diskman", translate("DiskMan"), translate("Manage Disks over LuCI."))
 m.template = "diskman/cbi/xsimpleform"
--- m:append(Template("diskman/disk_info"))
+m:append(Template("diskman/disk_info"))
 -- disable submit and reset button
 m.submit = false
 m.reset = false
@@ -81,86 +81,11 @@ if dm.command.btrfs then
   end
 end
 
---tabs
-tab_section = m:section(SimpleSection)
-tab_section.tabs = {
-  mount_point = translate("Mount Point")
-}
-tab_section.default_tab = "mount_point"
-tab_section.template="diskman/disk_info_tab"
-
--- raid functions
-if dm.command.mdadm then
-  local rname, rmembers, rlevel
-  tab_section.tabs.raid = translate("Raid")
-  local r = m:section(SimpleSection, translate("RAID Creation"))
-  r.template="diskman/cbi/xnullsection"
-  r.config = "raid"
-  local r_name = r:option(Value, "_rname", translate("Raid Name"))
-  r_name.placeholder = "/dev/md0"
-  r_name.write = function(self, section, value)
-    rname = value
-  end
-  local r_level = r:option(ListValue, "_rlevel", translate("Raid Level"))
-  local valid_raid = luci.util.exec("lsmod | grep md_mod")
-  if valid_raid:match("linear") then
-    r_level:value("linear", "Linear")
-  end
-  if valid_raid:match("raid456") then
-    r_level:value("5", "Raid 5")
-    r_level:value("6", "Raid 6")
-  end
-  if valid_raid:match("raid1") then
-    r_level:value("1", "Raid 1")
-  end
-  if valid_raid:match("raid0") then
-    r_level:value("0", "Raid 0")
-  end
-  if valid_raid:match("raid10") then
-    r_level:value("10", "Raid 10")
-  end
-  r_level.write = function(self, section, value)
-    rlevel = value
-  end
-  local r_member = r:option(DynamicList, "_rmember", translate("Raid Member"))
-  for dev, info in pairs(disks) do
-    if not info.inuse and  #info.partitions == 0  then
-        r_member:value(info.path, info.path.. " ".. info.size_formated)
-    end
-    for i, v in ipairs(info.partitions) do
-      if not v.inuse then
-        r_member:value("/dev/".. v.name, "/dev/".. v.name .. " ".. v.size_formated)
-      end
-    end
-  end
-  r_member.write = function(self, section, value)
-    rmembers = value
-  end
-  local r_create = r:option(Button, "_rcreate")
-  r_create.render = function(self, section, scope)
-    self.title = " "
-    self.inputtitle = translate("Create Raid")
-    self.inputstyle = "add"
-    Button.render(self, section, scope)
-  end
-  r_create.write = function(self, section, value)
-    -- mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2 /dev/sdb6 /dev/sdc5
-    local res = dm.create_raid(rname, rlevel, rmembers)
-    if res and res:match("^ERR") then
-      m.errmessage = luci.util.pcdata(res)
-      return
-    end
-    dm.gen_mdadm_config()
-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
-  end
-end
-
 -- mount point
 local mount_point = dm.get_mount_points()
 local _mount_point = {}
 table.insert( mount_point, { device = 0 } )
 local table_mp = m:section(Table, mount_point, translate("Mount Point"))
-table_mp.config = "mount_point"
 local v_device = table_mp:option(Value, "device", translate("Device"))
 v_device.render = function(self, section, scope)
   if mount_point[section].device == 0 then
@@ -279,18 +204,84 @@ btn_umount.write = function(self, section, value)
   end
 end
 
+local creation_section = m:section(TypedSection, "_creation")
+creation_section.cfgsections=function()
+  return {translate("Creation")}
+end
+creation_section:tab("raid",  translate("RAID"), translate("RAID Creation"))
+creation_section:tab("btrfs", translate("Btrfs"), translate("Multiple Devices Btrfs Creation"))
+
+-- raid functions
+if dm.command.mdadm then
+
+  local rname, rmembers, rlevel
+  local r_name = creation_section:taboption("raid", Value, "_rname", translate("Raid Name"))
+  r_name.placeholder = "/dev/md0"
+  r_name.write = function(self, section, value)
+    rname = value
+  end
+  local r_level = creation_section:taboption("raid", ListValue, "_rlevel", translate("Raid Level"))
+  local valid_raid = luci.util.exec("lsmod | grep md_mod")
+  if valid_raid:match("linear") then
+    r_level:value("linear", "Linear")
+  end
+  if valid_raid:match("raid456") then
+    r_level:value("5", "Raid 5")
+    r_level:value("6", "Raid 6")
+  end
+  if valid_raid:match("raid1") then
+    r_level:value("1", "Raid 1")
+  end
+  if valid_raid:match("raid0") then
+    r_level:value("0", "Raid 0")
+  end
+  if valid_raid:match("raid10") then
+    r_level:value("10", "Raid 10")
+  end
+  r_level.write = function(self, section, value)
+    rlevel = value
+  end
+  local r_member = creation_section:taboption("raid", DynamicList, "_rmember", translate("Raid Member"))
+  for dev, info in pairs(disks) do
+    if not info.inuse and  #info.partitions == 0  then
+        r_member:value(info.path, info.path.. " ".. info.size_formated)
+    end
+    for i, v in ipairs(info.partitions) do
+      if not v.inuse then
+        r_member:value("/dev/".. v.name, "/dev/".. v.name .. " ".. v.size_formated)
+      end
+    end
+  end
+  r_member.write = function(self, section, value)
+    rmembers = value
+  end
+  local r_create = creation_section:taboption("raid", Button, "_rcreate")
+  r_create.render = function(self, section, scope)
+    self.title = " "
+    self.inputtitle = translate("Create Raid")
+    self.inputstyle = "add"
+    Button.render(self, section, scope)
+  end
+  r_create.write = function(self, section, value)
+    -- mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2 /dev/sdb6 /dev/sdc5
+    local res = dm.create_raid(rname, rlevel, rmembers)
+    if res and res:match("^ERR") then
+      m.errmessage = luci.util.pcdata(res)
+      return
+    end
+    dm.gen_mdadm_config()
+    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
+  end
+end
+
 -- btrfs
 if dm.command.btrfs then
   local blabel, bmembers, blevel
-  tab_section.tabs.btrfs = translate("Btrfs")
-  local r = m:section(SimpleSection, translate("Multiple Devices Btrfs Creation"))
-  r.template="diskman/cbi/xnullsection"
-  r.config = "btrfs"
-  local btrfs_label = r:option(Value, "_blabel", translate("Btrfs Label"))
+  local btrfs_label = creation_section:taboption("btrfs", Value, "_blabel", translate("Btrfs Label"))
   btrfs_label.write = function(self, section, value)
     blabel = value
   end
-  local btrfs_level = r:option(ListValue, "_blevel", translate("Btrfs Raid Level"))
+  local btrfs_level = creation_section:taboption("btrfs", ListValue, "_blevel", translate("Btrfs Raid Level"))
   btrfs_level:value("single", "Single")
   btrfs_level:value("raid0", "Raid 0")
   btrfs_level:value("raid1", "Raid 1")
@@ -299,7 +290,7 @@ if dm.command.btrfs then
     blevel = value
   end
 
-  local btrfs_member = r:option(DynamicList, "_bmember", translate("Btrfs Member"))
+  local btrfs_member = creation_section:taboption("btrfs", DynamicList, "_bmember", translate("Btrfs Member"))
   for dev, info in pairs(disks) do
     if not info.inuse and  #info.partitions == 0  then
       btrfs_member:value(info.path, info.path.. " ".. info.size_formated)
@@ -313,7 +304,7 @@ if dm.command.btrfs then
   btrfs_member.write = function(self, section, value)
     bmembers = value
   end
-  local btrfs_create = r:option(Button, "_bcreate")
+  local btrfs_create = creation_section:taboption("btrfs", Button, "_bcreate")
   btrfs_create.render = function(self, section, scope)
     self.title = " "
     self.inputtitle = translate("Create Btrfs")
