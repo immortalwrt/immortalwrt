@@ -6,7 +6,7 @@
   }
   window.onload = function () {
     // handle partition table
-    const btn_p_table = document.getElementById("cbid.table.1.p_table")
+    const btn_p_table = document.getElementById("widget.cbid.table.1.p_table") || document.getElementById("cbid.table.1.p_table")
     const btn_p_table_raw_index = btn_p_table.selectedIndex
     const val_name = document.getElementById("cbi-table-1-path").innerText.split('/').pop()
     btn_p_table.onchange = function () {
