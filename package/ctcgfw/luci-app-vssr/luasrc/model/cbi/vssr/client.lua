@@ -84,44 +84,6 @@ o:value("same", translate("Same as Global Server"))
 for _,key in pairs(key_table) do o:value(key,server_table[key]) end
 
 
-o = s:option(Flag, "v2ray_flow", translate("Open v2ray split-flow"))
-o.rmempty = false
-o.description = translate("When open v2ray split-flow,your main server must be a v2ray server")
-
-o = s:option(ListValue, "youtube_server", translate("Youtube Proxy"))
-o:value("nil", translate("Same as Global Server"))
-for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-
-o = s:option(ListValue, "tw_video_server", translate("TaiWan Video Proxy"))
-o:value("nil", translate("Same as Global Server"))
-for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-o = s:option(ListValue, "netflix_server", translate("Netflix Proxy"))
-o:value("nil", translate("Same as Global Server"))
-for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-o = s:option(ListValue, "disney_server", translate("Diseny+ Proxy"))
-o:value("nil", translate("Same as Global Server"))
-for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-o = s:option(ListValue, "prime_server", translate("Prime Video Proxy"))
-o:value("nil", translate("Same as Global Server"))
-for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
 
 o = s:option(ListValue, "threads", translate("Multi Threads Option"))
 o:value("0", translate("Auto Threads"))
@@ -211,6 +173,72 @@ o:depends("pdnsd_enable", "6")
 o.default = "8.8.4.4:53"
 
 
+-- [[ SOCKS5 Proxy ]]--
+if nixio.fs.access("/usr/bin/ssr-local") then
+
+s = m:section(TypedSection, "socks5_proxy", translate("SOCKS5 Proxy"))
+s.anonymous = true
+o = s:option(ListValue, "server", translate("Server"))
+o:value("nil", translate("Disable"))
+for _,key in pairs(key_table) do o:value(key,server_table[key]) end
+o.default = "nil"
+o.rmempty = false
+
+o = s:option(Value, "local_port", translate("Local Port"))
+o.datatype = "port"
+o.default = 1080
+o.rmempty = false
+
+-- [[ HTTP Proxy ]]--
+if nixio.fs.access("/usr/sbin/privoxy") then
+o = s:option(Flag, "http_enable", translate("Enable HTTP Proxy"))
+o.rmempty = false
+
+o = s:option(Value, "http_port", translate("HTTP Port"))
+o.datatype = "port"
+o.default = 1081
+o.rmempty = false
+end  
+end
+o = s:option(Flag, "v2ray_flow",  translate("Open v2ray split-flow") .."</font>")
+o.rmempty = false
+o.description = ("<font color='blue'>" ..translate("When open v2ray split-flow,your main server must be a v2ray server").."</font>")
+
+o = s:option(ListValue, "youtube_server", translate("Youtube Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+
+o = s:option(ListValue, "tw_video_server", translate("TaiWan Video Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+o = s:option(ListValue, "netflix_server", translate("Netflix Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+o = s:option(ListValue, "disney_server", translate("Diseny+ Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
+
+o = s:option(ListValue, "prime_server", translate("Prime Video Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
+
 o = s:option(Button,"gfw_data",translate("GFW List Data"))
 o.rawhtml  = true
 o.template = "vssr/refresh"
@@ -229,7 +257,6 @@ o.value =ip_count .. " " .. translate("Records")
 o = s:option(Button,"check_port",translate("Check Server Port"))
 o.template = "vssr/checkport"
 o.value =translate("No Check")
-
 m:section(SimpleSection).template  = "vssr/status2"
 
 return m

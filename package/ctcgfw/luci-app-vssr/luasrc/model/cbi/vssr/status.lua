@@ -1,7 +1,7 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
 
-local IPK_Version="20200310.1.22"
+local IPK_Version="20200315.1.24"
 local m, s, o
 local redir_run=0
 local reudp_run=0
@@ -272,8 +272,8 @@ t = m:section(Table, procs, translate("Running Details: ") .. "(/var/etc)")
 t:option(DummyValue, "PID", translate("PID"))
 t:option(DummyValue, "COMMAND", translate("CMD"))
 t:option(DummyValue, "LISTEN", translate("LISTEN"))
-t:option(DummyValue, "%CPU", translate("CPU"))
-t:option(DummyValue, "%MEM", translate("MEM"))
+t:option(DummyValue, "%CPU", translate("CPU usage (%)"))
+t:option(DummyValue, "%MEM", translate("Memory usage (%)"))
 
 s=m:field(DummyValue,"redir_run",translate("Global Client")) 
 s.rawhtml  = true
