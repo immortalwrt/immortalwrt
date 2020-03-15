@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=iptables
-PKG_VERSION:=1.8.3
+PKG_VERSION:=1.8.4
 PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://netfilter.org/projects/iptables/files
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_HASH:=a23cac034181206b4545f4e7e730e76e08b5f3dd78771ba9645a6756de9cdd80
+PKG_HASH:=993a3a5490a544c2cbf2ef15cf7e7ed21af1845baf228318d5c36ef8827e157c
 
 PKG_FIXUP:=autoreconf
 PKG_FLAGS:=nonshared
@@ -533,15 +533,6 @@ define Package/ip6tables-mod-nat/description
 iptables extensions for IPv6-NAT targets.
 endef
 
-define Package/libiptc
-$(call Package/iptables/Default)
-  SECTION:=libs
-  CATEGORY:=Libraries
-  DEPENDS:=+libip4tc +libip6tc +libxtables
-  ABI_VERSION:=0
-  TITLE:=IPv4/IPv6 firewall - shared libiptc library (nf compatibility stub)
-endef
-
 define Package/libip4tc
 $(call Package/iptables/Default)
   SECTION:=libs
@@ -675,11 +666,6 @@ define Package/ip6tables-nft/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ip6tables{,-restore}-translate $(1)/usr/sbin/
 endef
 
-define Package/libiptc/install
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libiptc.so.* $(1)/usr/lib/
-endef
-
 define Package/libip4tc/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libip4tc.so.* $(1)/usr/lib/
@@ -751,7 +737,6 @@ $(eval $(call BuildPackage,ip6tables))
 $(eval $(call BuildPackage,ip6tables-nft))
 $(eval $(call BuildPlugin,ip6tables-extra,$(IPT_IPV6_EXTRA-m)))
 $(eval $(call BuildPlugin,ip6tables-mod-nat,$(IPT_NAT6-m)))
-$(eval $(call BuildPackage,libiptc))
 $(eval $(call BuildPackage,libip4tc))
 $(eval $(call BuildPackage,libip6tc))
 $(eval $(call BuildPackage,libxtables))
