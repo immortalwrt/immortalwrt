@@ -23,10 +23,9 @@ init_conf() {
 
 	# detect aux file exist
 	[ -d "${AUX%/*}" ] || mkdir -p "${AUX%/*}" 2>/dev/null
-    [ -f "$AUX" ] || {
-        echo "auxilary file not found: ${AUX}"
-        return 1
-    }
+    [ -f "$AUX" ] || touch "$AUX"
+	[ -d "/etc/opkg/" ] || mkdir -p "/etc/opkg/" 2>/dev/null
+	[ -e "/etc/opkg/distfeeds.conf" ] || touch "/etc/opkg/distfeeds.conf"
 
 	# backup opkg feeds conf
 	FEEDS="/etc/opkg/distfeeds.conf"
@@ -63,6 +62,7 @@ start_service() {
 	config_get PORT server port
 	config_get TAR server tar_url
 	config_get AUX server aux_path
+	config_get AUX_URL server aux_url
 	config_get PROXY_ENABLED proxy enabled
 	config_get PROXY_ADDR proxy proxy_addr
 	config_get LOG log path
@@ -72,9 +72,6 @@ start_service() {
 		return 1
 	}
 	_info "Instance 'ootoc' enabled."
-	_info "$PROG subscription --addr \"$ADDR\" --port \"$PORT\" -i \"$AUX\" > \"/etc/opkg/distfeeds.conf\""
-
-	$PROG subscription --addr "$ADDR" --port "$PORT" -i "$AUX" > "/etc/opkg/distfeeds.conf"
 
     procd_open_instance
     procd_set_param command $PROG server
@@ -83,6 +80,8 @@ start_service() {
 	procd_append_param command --url "$TAR"
 	procd_append_param command --aux "$AUX"
 	procd_append_param command -l "$LOG"
+	procd_append_param command --aux-url "$AUX_URL"
+	procd_append_param command --subscription "/etc/opkg/distfeeds.conf"
 	[[ $PROXY_ENABLED == 1 ]] && {
 		procd_set_param env all_proxy="$PROXY_ADDR" https_proxy="$PROXY_ADDR" http_proxy="$PROXY_ADDR"
 		procd_set_param env ALL_PROXY="$PROXY_ADDR" HTTPS_PROXY="$PROXY_ADDR" HTTP_PROXY="$PROXY_ADDR"
