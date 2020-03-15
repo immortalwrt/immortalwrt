@@ -20,6 +20,7 @@ DNS_PORT=7913
 LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
 API_GEN_TROJAN=$LUA_API_PATH/gen_trojan.lua
 API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray.lua
+API_GEN_V2RAY_BALANCING=$LUA_API_PATH/gen_v2ray_balancing.lua
 API_GEN_V2RAY_SHUNT=$LUA_API_PATH/gen_v2ray_shunt.lua
 
 echolog() {
@@ -288,8 +289,11 @@ gen_start_config() {
 		eval SOCKS5_NODE${5}_PORT=$port
 		if [ "$type" == "socks5" ]; then
 			echolog "Socks5节点不能使用Socks5代理节点！"
-		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" ]; then
+		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_socks_$5 "-config=$config_file"
+		elif [ "$type" == "v2ray_balancing" ]; then
+			lua $API_GEN_V2RAY_BALANCING $node nil nil $local_port >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_socks_$5 "-config=$config_file"
 		elif [ "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY_SHUNT $node nil nil $local_port >$config_file
@@ -331,8 +335,11 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
-		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" ]; then
+		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
+		elif [ "$type" == "v2ray_balancing" ]; then
+			lua $API_GEN_V2RAY_BALANCING $node udp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
 		elif [ "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY_SHUNT $node udp $local_port nil >$config_file
@@ -384,8 +391,11 @@ gen_start_config() {
 			local server_password=$(config_n_get $node password)
 			eval port=\$TCP_REDIR_PORT$5
 			ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-T -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
-		elif [ "$type" == "v2ray" -o "$type" == "v2ray_balancing" ]; then
+		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
+			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_tcp_$5 "-config=$config_file"
+		elif [ "$type" == "v2ray_balancing" ]; then
+			lua $API_GEN_V2RAY_BALANCING $node tcp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_tcp_$5 "-config=$config_file"
 		elif [ "$type" == "v2ray_shunt" ]; then
 			lua $API_GEN_V2RAY_SHUNT $node tcp $local_port nil >$config_file

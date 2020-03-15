@@ -20,7 +20,7 @@ uci:foreach(appname, "nodes", function(e)
     if type == nil then type = "" end
     local address = e.address
     if address == nil then address = "" end
-    if (type == "V2ray_balancing" or type == "V2ray_shunt") or (address:match("[\u4e00-\u9fa5]") and address:find("%.") and address:sub(#address) ~= ".") then
+    --if (type == "V2ray_balancing" or type == "V2ray_shunt") or (address:match("[\u4e00-\u9fa5]") and address:find("%.") and address:sub(#address) ~= ".") then
         if type and address and e.remarks then
             if e.use_kcp and e.use_kcp == "1" then
                 n[e[".name"]] = "%s+%s：[%s] %s" %
@@ -32,7 +32,7 @@ uci:foreach(appname, "nodes", function(e)
                                     {translate(type), e.remarks, address}
             end
         end
-    end
+    --end
 end)
 
 local key_table = {}

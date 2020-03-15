@@ -10,12 +10,11 @@ local outbounds = {}
 local network = proto
 local routing = nil
 
-local function gen_outbound(node, tag)
+local function gen_outbound(node)
     local result = nil
     if node then
         result = {
-            tag = tag or node[".name"],
-            cbi_id = node[".name"],
+            tag = node[".name"],
             protocol = node.v2ray_protocol or "vmess",
             mux = {
                 enabled = (node.v2ray_mux == "1") and true or false,

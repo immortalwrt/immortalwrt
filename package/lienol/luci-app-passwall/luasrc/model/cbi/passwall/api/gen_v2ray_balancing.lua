@@ -11,7 +11,7 @@ local outbounds = {}
 local network = proto
 local routing = nil
 
-local function gen_outbound(node, tag)
+local function gen_outbound(node)
     local result = nil
     if node then
         local node_id = node[".name"]
@@ -28,7 +28,7 @@ local function gen_outbound(node, tag)
                 sys.call(string.format(
                              "/usr/share/passwall/app.sh gen_start_config %s %s %s %s %s %s",
                              node_id, new_port, "SOCKS5",
-                             "/var/etc/passwall/v2_shunt_" .. node_type .. "_" ..
+                             "/var/etc/passwall/v2_balancing_" .. node_type .. "_" ..
                                  node_id .. ".json", "4", "127.0.0.1"))
                 node.v2ray_protocol = "socks"
                 node.v2ray_transport = "tcp"
@@ -36,7 +36,7 @@ local function gen_outbound(node, tag)
             end
         end
         result = {
-            tag = tag,
+            tag = node_id,
             protocol = node.v2ray_protocol or "vmess",
             mux = {
                 enabled = (node.v2ray_mux == "1") and true or false,
@@ -167,60 +167,22 @@ if redir_port ~= "nil" then
     end
 end
 
-local rules = {}
-
-local youtube_node = node.youtube_node or nil
-if youtube_node and youtube_node ~= "nil" then
-    local node = ucursor:get_all("passwall", youtube_node)
-    local youtube_outbound = gen_outbound(node, "youtube")
-    if youtube_outbound then
-        table.insert(outbounds, youtube_outbound)
-        local rule = {
-            type = "field",
-            domain = {
-                "youtube", "youtube.com", "youtu.be", "googlevideo.com",
-                "ytimg.com", "gvt2.com"
-            },
-            outboundTag = "youtube"
-        }
-        table.insert(rules, rule)
+if node.v2ray_balancing_node then
+    local nodes = node.v2ray_balancing_node
+    local length = #nodes
+    for i = 1, length do
+        local node = ucursor:get_all("passwall", nodes[i])
+        local outbound = gen_outbound(node)
+        if outbound then table.insert(outbounds, outbound) end
     end
-end
-
-local netflix_node = node.netflix_node or nil
-if netflix_node and netflix_node ~= "nil" then
-    local node = ucursor:get_all("passwall", netflix_node)
-    local netflix_outbound = gen_outbound(node, "netflix")
-    if netflix_outbound then
-        table.insert(outbounds, netflix_outbound)
-        local rule = {
-            type = "field",
-            domain = {
-                "netflix", "netflix.com", "nflxso.net", "nflxext.com",
-                "nflximg.com", "nflximg.net", "nflxvideo.net"
-            },
-            outboundTag = "netflix"
+    routing = {
+        domainStrategy = "IPOnDemand",
+        balancers = {{tag = "balancer", selector = nodes}},
+        rules = {
+            {type = "field", network = "tcp,udp", balancerTag = "balancer"}
         }
-        table.insert(rules, rule)
-    end
+    }
 end
-
-local default_node = node.default_node or nil
-if default_node and default_node ~= "nil" then
-    local node = ucursor:get_all("passwall", default_node)
-    local default_outbound = gen_outbound(node, "default")
-    if default_outbound then
-        table.insert(outbounds, default_outbound)
-        local rule = {
-            type = "field",
-            outboundTag = "default",
-            network = network
-        }
-        table.insert(rules, rule)
-    end
-end
-
-routing = {domainStrategy = "IPOnDemand", rules = rules}
 
 -- 额外传出连接
 table.insert(outbounds,
