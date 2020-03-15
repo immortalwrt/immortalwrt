@@ -5,8 +5,8 @@ Subject: [PATCH] arm: boot: add dts files
 
 Signed-off-by: John Crispin <john@phrozen.org>
 ---
- arch/arm/boot/dts/Makefile | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ arch/arm/boot/dts/Makefile | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
