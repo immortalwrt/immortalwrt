@@ -867,6 +867,8 @@ dnsmasq_start()
 	append_bool "$cfg" noping "--no-ping"
 	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
 
+	append_bool "$cfg" filter_aaaa "--filter-aaaa"
+
 	append_parm "$cfg" logfacility "--log-facility"
 
 	append_parm "$cfg" cachesize "--cache-size"
