@@ -18,7 +18,7 @@ include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
 	kmod-usb-dwc3-of-simple \
 	kmod-leds-gpio kmod-gpio-button-hotplug swconfig \
-	kmod-ath10k-ct wpad-basic \
+	kmod-ath10k-ct wpad-openssl \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019-ct \
 	automount autosamba \
 	ca-certificates htop fdisk e2fsprogs
