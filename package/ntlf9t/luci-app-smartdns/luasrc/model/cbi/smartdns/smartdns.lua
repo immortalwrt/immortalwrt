@@ -140,19 +140,20 @@ o.cfgvalue    = function(...)
     return Flag.cfgvalue(...) or "1"
 end
 
-o = s:taboption("seconddns", Flag, "seconddns_no_speed_check", translate("Skip Speed Check"), translate("Do not check speed."))
-o.rmempty     = false
-o.default     = o.disabled
-o.cfgvalue    = function(...)
-    return Flag.cfgvalue(...) or "0"
-end
-
 ---- dns server group
 o = s:taboption("seconddns", Value, "seconddns_server_group", translate("Server Group"), translate("Query DNS through specific dns server group, such as office, home."))
 o.rmempty     = true
 o.placeholder = "default"
 o.datatype    = "hostname"
 o.rempty      = true
+
+---- skip speed test
+o = s:taboption("seconddns", Flag, "seconddns_no_speed_check", translate("Skip Speed Check"), translate("Do not check speed."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
 
 ---- skip address rules
 o = s:taboption("seconddns", Flag, "seconddns_no_rule_addr", translate("Skip Address Rules"), translate("Skip address rules."))
@@ -186,7 +187,7 @@ o.cfgvalue    = function(...)
     return Flag.cfgvalue(...) or "0"
 end
 
-o = s:taboption("seconddns", Flag, "seconddns_no_dualstack_selection", translate("Skip Dualstack Selection"), translate("Skip Sualstack Selection."))
+o = s:taboption("seconddns", Flag, "seconddns_no_dualstack_selection", translate("Skip Dualstack Selection"), translate("Skip Dualstack Selection."))
 o.rmempty     = false
 o.default     = o.disabled
 o.cfgvalue    = function(...)
@@ -195,6 +196,14 @@ end
 
 ---- skip cache
 o = s:taboption("seconddns", Flag, "seconddns_no_cache", translate("Skip Cache"), translate("Skip Cache."))
+o.rmempty     = false
+o.default     = o.disabled
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
+---- Force AAAA SOA
+o = s:taboption("seconddns", Flag, "force_aaaa_soa", translate("Force AAAA SOA"), translate("Force AAAA SOA."))
 o.rmempty     = false
 o.default     = o.disabled
 o.cfgvalue    = function(...)
