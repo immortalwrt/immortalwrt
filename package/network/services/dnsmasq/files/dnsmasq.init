@@ -871,6 +871,8 @@ dnsmasq_start()
 
 	append_parm "$cfg" logfacility "--log-facility"
 
+	append_parm "$cfg" mini_ttl "--min-ttl"
+
 	append_parm "$cfg" cachesize "--cache-size"
 	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
 	append_parm "$cfg" port "--port"

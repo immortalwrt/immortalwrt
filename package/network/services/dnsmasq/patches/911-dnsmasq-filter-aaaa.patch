@@ -31,7 +31,7 @@ index d8c57d6..1cc65bf 100644
  #define LOPT_IGNORE_CLID   358
  #define LOPT_SINGLE_PORT   359
  #define LOPT_SCRIPT_TIME   360
-+#define LOPT_FILTER_AAAA   361
++#define LOPT_FILTER_AAAA   362
   
  #ifdef HAVE_GETOPT_LONG
  static const struct option opts[] =  
