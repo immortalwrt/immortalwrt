@@ -10,13 +10,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ootoc
-PKG_VERSION:=0.0.1
-PKG_RELEASE:=2
+PKG_VERSION:=1.0.0
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/ElonH/ootoc.git
-PKG_MIRROR_HASH:=8df94810a5c4ab69556531f628006f6f4f7c443a211b386ece4cde65f4e1bd50
-PKG_SOURCE_VERSION:=449f254d54e854221f967c4d156f54ee1af224fb
+PKG_MIRROR_HASH:=b97bec2b1a53df2934745d800133d114b3012e8051280228cadcc507f3f6b8a9
+PKG_SOURCE_VERSION:=52ca8808598f70679023629565033ddc5ca870e8
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -60,7 +60,6 @@ define Package/ootoc/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ootocCLI $(1)/usr/bin/
 	$(INSTALL_BIN) ./files/ootoc.init $(1)/etc/init.d/ootoc
 	$(INSTALL_DATA) ./files/ootoc.conf $(1)/etc/config/ootoc
-	$(INSTALL_DATA) ./files/latest-Packages.yml $(1)/var/etc/ootoc/latest-Packages.yml
 endef
 
 $(eval $(call BuildPackage,ootoc))
