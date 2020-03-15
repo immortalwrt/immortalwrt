@@ -66,7 +66,9 @@ end)
 -- o:value("2", translatef("Forwarded Proxy"))
 -- o.rmempty = false
 
-s:tab("esc",  translate("Bypass Domain List"))
+s:tab("esc",  translate("Bypass Domain List"), "<font color='red'>" ..
+          translate("Join the white list of domain names will not go agent.") ..
+          "</font>")
 
 local escconf = "/etc/config/white.list"
 o = s:taboption("esc", TextValue, "escconf")
@@ -84,7 +86,10 @@ o.remove = function(self, section, value)
 end
 
 
-s:tab("block",  translate("Black Domain List"))
+s:tab("block",  translate("Black Domain List"),
+      "<font color='red'>" .. translate(
+          "These had been joined websites will use proxy.Please input the domain names of websites,every line can input only one website domain.For example,google.com.") ..
+          "</font>")
 
 local blockconf = "/etc/config/black.list"
 o = s:taboption("block", TextValue, "blockconf")
