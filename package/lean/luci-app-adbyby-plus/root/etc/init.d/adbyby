@@ -227,3 +227,7 @@ boot()
 	mkdir -p /tmp/adbyby && cp -a /usr/share/adbyby /tmp/
 	start
 }
+
+service_triggers() {
+	procd_add_reload_trigger "adbyby"
+}
