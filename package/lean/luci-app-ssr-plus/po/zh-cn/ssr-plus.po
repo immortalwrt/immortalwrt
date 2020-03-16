@@ -476,7 +476,7 @@ msgid "Please refer to the following writing"
 msgstr "每行一个域名，无需写前面的 HTTP(S):// ，提交后即时生效"
 
 msgid "Servers subscription and manage"
-msgstr "服务器节点订阅与管理（支持订阅和手动导入SSR链接）"
+msgstr "服务器节点订阅与管理"
 
 msgid "Through proxy update list, Not Recommended"
 msgstr "通过路由器自身代理更新订阅"
@@ -516,9 +516,6 @@ msgstr "服务器节点"
 
 msgid "Use Local DNS Service listen port 5335"
 msgstr "使用本机端口为5335的DNS服务"
-
-msgid "Use system DNS"
-msgstr "使用系统DNS"
 
 msgid "Server Node Type"
 msgstr "服务器节点类型"
@@ -642,3 +639,12 @@ msgstr "允许从 WAN 访问"
 
 msgid "Redirect traffic to this network interface"
 msgstr "分流到这个网络接口"
+
+msgid "Netflix Node"
+msgstr "Netflix 分流服务器"
+
+msgid "Netflix Domain List"
+msgstr "Netflix 分流域名列表"
+
+msgid "Netflix IP List"
+msgstr "Netflix 分流IP列表"
