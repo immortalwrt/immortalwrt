@@ -27,15 +27,15 @@ diff --git a/src/option.c b/src/option.c
 index d8c57d6..1cc65bf 100644
 --- a/src/option.c
 +++ b/src/option.c
-@@ -167,6 +167,7 @@
+@@ -168,6 +168,7 @@
  #define LOPT_IGNORE_CLID   358
  #define LOPT_SINGLE_PORT   359
  #define LOPT_SCRIPT_TIME   360
 +#define LOPT_FILTER_AAAA   362
-  
+ 
  #ifdef HAVE_GETOPT_LONG
  static const struct option opts[] =  
-@@ -339,6 +340,7 @@
+@@ -341,6 +342,7 @@
      { "dumpfile", 1, 0, LOPT_DUMPFILE },
      { "dumpmask", 1, 0, LOPT_DUMPMASK },
      { "dhcp-ignore-clid", 0, 0,  LOPT_IGNORE_CLID },
@@ -43,7 +43,7 @@ index d8c57d6..1cc65bf 100644
      { NULL, 0, 0, 0 }
    };
  
-@@ -518,6 +520,7 @@
+@@ -521,6 +523,7 @@
    { LOPT_DUMPFILE, ARG_ONE, "<path>", gettext_noop("Path to debug packet dump file"), NULL },
    { LOPT_DUMPMASK, ARG_ONE, "<hex>", gettext_noop("Mask which packets to dump"), NULL },
    { LOPT_SCRIPT_TIME, OPT_LEASE_RENEW, NULL, gettext_noop("Call dhcp-script when lease expiry changes."), NULL },
@@ -55,7 +55,7 @@ diff --git a/src/rfc1035.c b/src/rfc1035.c
 index 24d08c1..1594962 100644
 --- a/src/rfc1035.c
 +++ b/src/rfc1035.c
-@@ -1941,6 +1941,15 @@
+@@ -1959,6 +1959,15 @@
  	    }
  	}
  
