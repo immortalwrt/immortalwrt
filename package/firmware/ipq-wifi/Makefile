@@ -33,9 +33,9 @@ ALLWIFIBOARDS:= \
 	engenius_emd1 \
 	ezviz_cs-w3-wd1200g-eup \
 	linksys_ea8300 \
+	mobipromo_cm520-79f \
 	p2w_r619ac \
-	qxwlan_e2600ac \
-	canbox_cm520-79f
+	qxwlan_e2600ac
 
 ALLWIFIPACKAGES:=$(foreach BOARD,$(ALLWIFIBOARDS),ipq-wifi-$(BOARD))
 
@@ -104,8 +104,8 @@ $(eval $(call generate-ipq-wifi-package,engenius_eap2200,EnGenius EAP2200))
 $(eval $(call generate-ipq-wifi-package,engenius_emd1,EnGenius EMD1))
 $(eval $(call generate-ipq-wifi-package,ezviz_cs-w3-wd1200g-eup,EZVIZ CS-W3-WD1200G EUP))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
+$(eval $(call generate-ipq-wifi-package,mobipromo_cm520-79f,MobiPromo CM520-79F))
 $(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac,Qxwlan E2600AC))
-$(eval $(call generate-ipq-wifi-package,canbox_cm520-79f,CanBox CM520-79F))
 
 $(foreach PACKAGE,$(ALLWIFIPACKAGES),$(eval $(call BuildPackage,$(PACKAGE))))

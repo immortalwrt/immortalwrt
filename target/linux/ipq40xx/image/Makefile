@@ -440,6 +440,18 @@ define Device/linksys_ea8300
 endef
 TARGET_DEVICES += linksys_ea8300
 
+define Device/mobipromo_cm520-79f
+	$(call Device/FitzImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := MobiPromo
+	DEVICE_MODEL := CM520-79F
+	SOC := qcom-ipq4019
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := ipq-wifi-mobipromo_cm520-79f kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += mobipromo_cm520-79f
+
 define Device/meraki_mr33
 	$(call Device/FitImage)
 	DEVICE_VENDOR := Cisco Meraki
@@ -569,18 +581,6 @@ define Device/qcom_ap-dk04.1-c1
 	BOARD_NAME := ap-dk04.1-c1
 endef
 TARGET_DEVICES += qcom_ap-dk04.1-c1
-
-define Device/canbox_cm520-79f
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_TITLE :=  CanBox CM520-79F
-	BOARD_NAME := cm520-79f
-	DEVICE_DTS := qcom-ipq4019-canbox-cm520-79f
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_PACKAGES := ipq-wifi-canbox_cm520-79f
-endef
-TARGET_DEVICES += canbox_cm520-79f
 
 define Device/qxwlan_e2600ac-c1
 	$(call Device/FitImage)

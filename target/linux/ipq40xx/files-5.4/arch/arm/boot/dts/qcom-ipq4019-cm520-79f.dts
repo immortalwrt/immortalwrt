@@ -1,65 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-/*
- * Device Tree Source for CanBox CM520-79F
- *
- * Copyright (C) 2020 Mleaf
- *
- */
-
-/dts-v1/;
-
 #include "qcom-ipq4019.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-	model = "CanBox CM520-79F";
-	compatible = "canbox,cm520-79f";
-
-	chosen {
-		bootargs-append = " ubi.block=0,1 root=/dev/ubiblock0_1";
-	};
+	model = "MobiPromo CM520-79F";
+	compatible = "mobipromo,cm520-79f";
 
 	aliases {
 		led-boot = &led_sys;
 		led-failsafe = &led_sys;
 		led-running = &led_sys;
 		led-upgrade = &led_sys;
-		serial0 = &blsp1_uart1;
 	};
 
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_usb: usb {
-			label = "cm520-79f:red:usb";
-			gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "usbport";
-			trigger-sources = <&usb3_port1>, <&usb3_port2>, <&usb2_port1>;
-		};
-
-		led_sys: sys {
-			label = "cm520-79f:red:sys";
-			gpios = <&tlmm 11 GPIO_ACTIVE_HIGH>;
-		};
-	};
-
-	keys {
-		compatible = "gpio-keys";
-
-		button@0 {
-			label = "reset";
-			linux,code = <KEY_RESTART>;
-			gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
-		};
-	};
-
-	memory {
-		device_type = "memory";
-		reg = <0x80000000 0x20000000>;
+	chosen {
+		bootargs-append = " ubi.block=0,1 root=/dev/ubiblock0_1";
 	};
 
 	soc {
@@ -72,7 +30,7 @@
 			pinctrl-0 = <&mdio_pins>;
 			pinctrl-names = "default";
 			reset-gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
-			reset-delay-us = <5000>;
+			reset-delay-us = <1000>;
 		};
 
 		ess-psgmii@98000 {
@@ -152,8 +110,79 @@
 			status = "okay";
 		};
 	};
-};
 
+	led_spi {
+		compatible = "spi-gpio";
+		#address-cells = <1>;
+		ranges;
+
+		sck-gpios = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+		mosi-gpios = <&tlmm 36 GPIO_ACTIVE_HIGH>;
+		num-chipselects = <0>;
+
+		led_gpio: led_gpio@0 {
+			compatible = "fairchild,74hc595";
+			reg = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			registers-number = <1>;
+			spi-max-frequency = <1000000>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_usb: usb {
+			label = "cm520-79f:blue:usb";
+			gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "usbport";
+			trigger-sources = <&usb3_port1>, <&usb3_port2>, <&usb2_port1>;
+		};
+
+		led_sys: can {
+			label = "cm520-79f:blue:can";
+			gpios = <&tlmm 11 GPIO_ACTIVE_HIGH>;
+		};
+
+		wan {
+			label = "cm520-79f:blue:wan";
+			gpios = <&led_gpio 0 GPIO_ACTIVE_LOW>;
+		};
+
+		lan1 {
+			label = "cm520-79f:blue:lan1";
+			gpios = <&led_gpio 1 GPIO_ACTIVE_LOW>;
+		};
+
+		lan2 {
+			label = "cm520-79f:blue:lan2";
+			gpios = <&led_gpio 2 GPIO_ACTIVE_LOW>;
+		};
+
+		wlan2g {
+			label = "cm520-79f:blue:wlan2g";
+			gpios = <&led_gpio 5 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		wlan5g {
+			label = "cm520-79f:blue:wlan5g";
+			gpios = <&led_gpio 6 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
 
 &blsp_dma {
 	status = "okay";
@@ -161,20 +190,28 @@
 
 &blsp1_uart1 {
 	status = "okay";
-	pinctrl-0 = <&serial_0_pins>;
-	pinctrl-names = "default";
+};
 
+&blsp1_uart2 {
+	status = "okay";
 };
 
 &cryptobam {
 	status = "okay";
 };
 
-&nand {
-	status = "okay";
+&gmac0 {
+	mtd-mac-address = <&art 0x1006>;
+};
 
+&gmac1 {
+	mtd-mac-address = <&art 0x5006>;
+};
+
+&nand {
 	pinctrl-0 = <&nand_pins>;
 	pinctrl-names = "default";
+	status = "okay";
 
 	nand@0 {
 		partitions {
@@ -206,12 +243,6 @@
 };
 
 &tlmm {
-	serial_0_pins: serial0-pinmux {
-		pins = "gpio16", "gpio17";
-		function = "blsp_uart0";
-		bias-disable;
-	};
-
 	mdio_pins: mdio_pinmux {
 		mux_1 {
 			pins = "gpio6";
@@ -228,25 +259,25 @@
 
 	nand_pins: nand_pins {
 		pullups {
-			pins = "gpio53", "gpio58", "gpio59";
+			pins =	"gpio52", "gpio53", "gpio58",
+				"gpio59";
 			function = "qpic";
 			bias-pull-up;
 		};
 
-		// gpio61 controls led_usb
-
 		pulldowns {
-			pins =  "gpio55", "gpio56", "gpio57",
-				"gpio60", "gpio62", "gpio63",
-				"gpio64", "gpio65", "gpio66",
-				"gpio67", "gpio68", "gpio69";
+			pins =	"gpio54", "gpio55", "gpio56",
+				"gpio57", "gpio60", "gpio61",
+				"gpio62", "gpio63", "gpio64",
+				"gpio65", "gpio66", "gpio67",
+				"gpio68", "gpio69";
 			function = "qpic";
 			bias-pull-down;
 		};
 	};
 };
 
-&usb2_hs_phy {
+&usb3_ss_phy {
 	status = "okay";
 };
 
@@ -254,16 +285,8 @@
 	status = "okay";
 };
 
-&usb3_ss_phy {
+&usb2_hs_phy {
 	status = "okay";
-};
-
-&gmac0 {
-	mtd-mac-address = <&art 0x1006>;
-};
-
-&gmac1 {
-	mtd-mac-address = <&art 0x5006>;
 };
 
 &wifi0 {
