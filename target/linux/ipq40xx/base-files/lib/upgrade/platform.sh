@@ -51,7 +51,9 @@ platform_do_upgrade() {
 	avm,fritzbox-7530 |\
 	avm,fritzrepeater-1200 |\
 	avm,fritzrepeater-3000 |\
-	canbox,cm520-79f |\
+	mobipromo,cm520-79f |\
+	p2w,r619ac|\
+	p2w,r619ac-128m|\
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$1"
 		;;
@@ -76,10 +78,6 @@ platform_do_upgrade() {
 	openmesh,a62)
 		PART_NAME="inactive"
 		platform_do_upgrade_openmesh "$1"
-		;;
-	p2w,r619ac|\
-	p2w,r619ac-128m)
-		nand_do_upgrade "$1"
 		;;
 	zyxel,nbg6617)
 		zyxel_do_upgrade "$1"

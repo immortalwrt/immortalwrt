@@ -273,6 +273,18 @@ define Device/linksys_ea8300
 endef
 TARGET_DEVICES += linksys_ea8300
 
+define Device/mobipromo_cm520-79f
+	$(call Device/FitzImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := MobiPromo
+	DEVICE_MODEL := CM520-79F
+	DEVICE_DTS := qcom-ipq4019-cm520-79f
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := ipq-wifi-mobipromo_cm520-79f kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += mobipromo_cm520-79f
+
 define Device/meraki_mr33
 	$(call Device/FitImage)
 	DEVICE_DTS := qcom-ipq4029-mr33
@@ -333,46 +345,7 @@ define Device/openmesh_a62
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct uboot-envtools
 endef
-
 TARGET_DEVICES += openmesh_a62
-
-define Device/qcom_ap-dk01.1-c1
-	DEVICE_TITLE := QCA AP-DK01.1-C1
-	BOARD_NAME := ap-dk01.1-c1
-	DEVICE_DTS := qcom-ipq4019-ap.dk01.1-c1
-	KERNEL_INSTALL := 1
-	KERNEL_SIZE := 4096k
-	IMAGE_SIZE := 26624k
-	$(call Device/FitImage)
-	IMAGES := sysupgrade.bin
-	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$${KERNEL_SIZE} | append-rootfs | pad-rootfs | append-metadata
-endef
-TARGET_DEVICES += qcom_ap-dk01.1-c1
-
-define Device/qcom_ap-dk04.1-c1
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_DTS := qcom-ipq4019-ap.dk04.1-c1
-	KERNEL_INSTALL := 1
-	KERNEL_SIZE := 4048k
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	BOARD_NAME := ap-dk04.1-c1
-	DEVICE_TITLE := QCA AP-DK04.1-C1
-endef
-TARGET_DEVICES += qcom_ap-dk04.1-c1
-
-define Device/canbox_cm520-79f
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_TITLE :=  CanBox CM520-79F
-	BOARD_NAME := cm520-79f
-	DEVICE_DTS := qcom-ipq4019-canbox-cm520-79f
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_PACKAGES := ipq-wifi-canbox_cm520-79f
-endef
-TARGET_DEVICES += canbox_cm520-79f
 
 define Device/p2w_r619ac
 	$(call Device/FitzImage)
@@ -401,6 +374,32 @@ define Device/p2w_r619ac-128m
 	DEVICE_PACKAGES := ipq-wifi-p2w_r619ac
 endef
 TARGET_DEVICES += p2w_r619ac-128m
+
+define Device/qcom_ap-dk01.1-c1
+	DEVICE_TITLE := QCA AP-DK01.1-C1
+	BOARD_NAME := ap-dk01.1-c1
+	DEVICE_DTS := qcom-ipq4019-ap.dk01.1-c1
+	KERNEL_INSTALL := 1
+	KERNEL_SIZE := 4096k
+	IMAGE_SIZE := 26624k
+	$(call Device/FitImage)
+	IMAGES := sysupgrade.bin
+	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$${KERNEL_SIZE} | append-rootfs | pad-rootfs | append-metadata
+endef
+TARGET_DEVICES += qcom_ap-dk01.1-c1
+
+define Device/qcom_ap-dk04.1-c1
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_DTS := qcom-ipq4019-ap.dk04.1-c1
+	KERNEL_INSTALL := 1
+	KERNEL_SIZE := 4048k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	BOARD_NAME := ap-dk04.1-c1
+	DEVICE_TITLE := QCA AP-DK04.1-C1
+endef
+TARGET_DEVICES += qcom_ap-dk04.1-c1
 
 define Device/qxwlan_e2600ac-c1
 	$(call Device/FitImage)

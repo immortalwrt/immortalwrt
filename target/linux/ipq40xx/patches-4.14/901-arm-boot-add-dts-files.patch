@@ -29,7 +29,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
  	qcom-ipq4019-ap.dk01.1-c1.dtb \
 +	qcom-ipq4019-a62.dtb \
 +	qcom-ipq4019-ap.dk04.1-c1.dtb \
-+	qcom-ipq4019-canbox-cm520-79f.dtb \
++	qcom-ipq4019-cm520-79f.dtb \
 +	qcom-ipq4019-fritzbox-7530.dtb \
 +	qcom-ipq4019-fritzrepeater-1200.dtb \
 +	qcom-ipq4019-fritzrepeater-3000.dtb \
