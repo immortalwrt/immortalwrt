@@ -342,13 +342,38 @@ function network_restart(){
 	fi
 }
 
+# 获取 ip
+function getip(){
+if [ "$1" ] ;then
+	if [ $1 = "wanipv4" ] ;then
+		if [ ! -z "$ipv4_interface" ] ; then local wanIP=$(/sbin/ifconfig $ipv4_interface | awk '/inet addr/ {print $2}' | awk -F: '{print $2}'| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
+		if [ -z "$ipv4_interface" ] ; then local wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
+		echo "$wanIP"
+	elif [ $1 = "hostipv4" ] ;then
+		if [ -z "$ipv4_URL" ] ; then local ipv4_URL="members.3322.org/dyndns/getip";fi
+		if [ ! -z "$ipv4_interface" ] ; then local hostIP=$(curl -k -s -4 --interface $ipv4_interface $ipv4_URL);fi
+		if [ -z "$ipv4_interface" ] ; then local hostIP=$(curl -k -s -4 $ipv4_URL);fi
+		echo "$hostIP"
+	elif [ $1 = "wanipv6" ] ;then
+		if [ ! -z "$ipv6_interface" ] ; then local wanIPv6=$(ip addr show $ipv6_interface |grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
+		if [ -z "$ipv6_interface" ] ; then local wanIPv6=$(ip addr show|grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
+		echo "$wanIPv6"
+	elif [ $1 = "hostipv6" ] ;then
+		if [ -z "$ipv6_URL" ] ; then local ipv6_URL="v6.ip.zxinc.org/getip";fi
+		if [ ! -z "$ipv6_interface" ] ; then local hostIPv6=$(curl -k -s -6 --interface $ipv6_interface $ipv6_URL);fi
+		if [ -z "$ipv6_interface" ] ; then local hostIPv6=$(curl -k -s -6 $ipv6_URL);fi
+		echo "$hostIPv6"
+	fi
+fi
+}
+
 # 无人值守任务
 function unattended(){
 if [ `get_config send_enable` -eq 3 ] ; then return;fi
 if [ ! -z "$err_device_aliases" ] && [ -f ${dir}ipAddress ] ; then
 	MACLIST=$( cat ${dir}ipAddress | awk '{print $2}' | grep -v "^$" | sort -u )
 	for mac in $MACLIST; do
-		if [ -z "$ip_mac" ] && [ ! -z "$mac" ] ; then
+		if [ -z "$ipmac" ] && [ ! -z "$mac" ] ; then
 			local ipmac=$( echo "$err_device_aliases" | grep -i -w $mac | grep -v "^$" | sort -u )
 		fi
 	done
@@ -368,23 +393,27 @@ if [ -z "$ipmac" ] && [ ! -z "$system_time_event" ] && [ ! -z "$autoreboot_time"
 	fi
 fi
 
+
+
 # 重拨尝试获取公网
 if [ -z "$ipmac" ] && [ ! -z "$public_ip_event" ] && [ ! -z "$public_ip_retry_count" ] ; then
-	if [ -z "$ipv4_URL" ] ; then local ipv4_URL="members.3322.org/dyndns/getip";fi
-	if [ ! -z "$ipv4_interface" ] ; then local wanIP=$(/sbin/ifconfig $ipv4_interface | awk '/inet addr/ {print $2}' | awk -F: '{print $2}'| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
-	if [ -z "$ipv4_interface" ] ; then local wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
-	if [ ! -z "$ipv4_interface" ] ; then local hostIP=$(curl -k -s -4 --interface $ipv4_interface $ipv4_URL);fi
-	if [ -z "$ipv4_interface" ] ; then local hostIP=$(curl -k -s -4 $ipv4_URL);fi
-	if ( ! echo ${wanIP} | grep -q -w ${hostIP} );then
+	local wanIP=`getip wanipv4`
+	local hostIP=`getip hostipv4`
+	if [ ! -z ${wanIP} ] && [ ! -z ${hostIP} ] && ( ! echo ${wanIP} | grep -q -w ${hostIP} );then
 		if [ $today -eq `date +"%d"` ] ;then public_ip_retry_count=`expr $public_ip_retry_count + 1`;else public_ip_today=`date +"%d"` && public_ip_retry_count=1;fi
 		echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】重拨尝试获取公网 ip，当前第 $public_ip_retry_count 次 " >> ${logfile}
+		# 等待 60 秒后重新获取 ip 并写入
 		network_restart 60
-		if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "1" ] ; then local IPv4=$wanIP;fi
-		if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "2" ] ; then local IPv4=$hostIP;fi
-		if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "1" ] ; then local IPv6=$(ip -6 address show "$ipv6_interface" | grep inet6 | awk '{print $2}' | cut -d'/' -f1 | head -n 1 | grep -v "^$" | sort -u);fi
-		if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "2" ] ; then local IPv6=$(curl -k -s -6 "$ipv6_URL");fi
-		echo IPv4 $IPv4 > ${dir}ip
-		echo -e IPv6 $last_IPv6 >> ${dir}ip
+		local wanIP=`getip wanipv4`
+		local hostIP=`getip hostipv4`
+		if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "1" ] ; then local IPv4=${wanIP};fi
+		if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "2" ] ; then local IPv4=${hostIP};fi	
+		if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "1" ] ; then local IPv6=`getip wanipv6`;fi
+		if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "2" ] ; then local IPv6=`getip hostipv6`;fi
+		if [ ! -z ${wanIP} ] && [ ! -z ${hostIP} ] && ( ! echo ${wanIP} | grep -q -w ${hostIP} );then
+			echo IPv4 $IPv4 > ${dir}ip
+			echo -e IPv6 $last_IPv6 >> ${dir}ip
+		fi
 	fi
 fi
 }
@@ -536,10 +565,10 @@ function rand_geturl(){
 # 检测 ip 状况
 function ip_changes(){
 	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  【外网IP】正在检测外网IP变化" >> ${logfile};fi
-	if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "1" ] ; then local IPv4=$(/sbin/ifconfig $ipv4_interface | awk '/inet addr/ {print $2}' | awk -F: '{print $2}'| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
-	if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "2" ] ; then local IPv4=$(curl -k -s -4 "$ipv4_URL");fi	
-	if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "1" ] ; then local IPv6=$(ip -6 address show "$ipv6_interface" | grep inet6 | awk '{print $2}' | cut -d'/' -f1 | head -n 1 | grep -v "^$" | sort -u);fi
-	if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "2" ] ; then local IPv6=$(curl -k -s -6 "$ipv6_URL");fi
+	if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "1" ] ; then local IPv4=`getip wanipv4`;fi
+	if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "2" ] ; then local IPv4=`getip hostipv4`;fi	
+	if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "1" ] ; then local IPv6=`getip wanipv6`;fi
+	if [ ! -z "$serverchan_ipv6" ] && [ "$serverchan_ipv6" -eq "2" ] ; then local IPv6=`getip hostipv6`;fi
 
 	if [ -f ${dir}ip ] ; then
 		local last_IPv4=$(cat "${dir}ip" | grep IPv4 | awk '{print $2}' | grep -v "^$" | sort -u)
@@ -932,25 +961,19 @@ function send(){
 	echo "`date "+%Y-%m-%d %H:%M:%S"`  【定时数据】创建定时任务" >> ${logfile}
 	local send_title=`get_config send_title`
 	if [ -z "$send_title" ] ; then local send_title="路由状态：";fi
-	local router_status=`get_config router_status`
+		local router_status=`get_config router_status`
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 系统运行状态%0D%0A%0D%0A";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""     平均负载：`cat /proc/loadavg | awk '{print $1" "$2" "$3}'`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""     CPU占用：`getcpu`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""     内存占用：`free -m | sed -n '2p' | awk '{print""($3/$2)*100"%"}'`";fi
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""`cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     运行时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`";fi
-	local router_temp=`get_config router_temp`
+		local router_temp=`get_config router_temp`
 		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`soc_temp`%e2%84%83";fi
-	local router_wan=`get_config router_wan`
-	if [ -z "$ipv4_URL" ] ; then local ipv4_URL="members.3322.org/dyndns/getip";fi
-	if [ -z "$ipv6_URL" ] ; then local ipv6_URL="v6.ip.zxinc.org/getip";fi
-		if [ ! -z "$ipv4_interface" ] ; then local send_wanIP=$(/sbin/ifconfig $ipv4_interface | awk '/inet addr/ {print $2}' | awk -F: '{print $2}'| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
-		if [ -z "$ipv4_interface" ] ; then local send_wanIP=$(ubus call network.interface.wan status | grep '\"address\"' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}');fi
-		if [ ! -z "$ipv6_interface" ] ; then local send_wanIPv6=$(ip addr show $ipv6_interface |grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
-		if [ -z "$ipv6_interface" ] ; then local send_wanIPv6=$(ip addr show|grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2);fi
-		if [ ! -z "$ipv4_interface" ] ; then local send_hostIP=$(curl -k -s -4 --interface $ipv4_interface $ipv4_URL);fi
-		if [ -z "$ipv4_interface" ] ; then local send_hostIP=$(curl -k -s -4 $ipv4_URL);fi
-		if [ ! -z "$ipv6_interface" ] ; then local send_hostIPv6=$(curl -k -s -6 --interface $send_wanIPv6 $ipv6_URL);fi
-		if [ -z "$ipv6_interface" ] ; then local send_hostIPv6=$(curl -k -s -6 $ipv6_URL);fi
+		local router_wan=`get_config router_wan`
+		local send_wanIP=`getip wanipv4`
+		local send_wanIPv6=`getip wanipv6`
+		local send_hostIP=`getip hostipv4`
+		local send_hostIPv6=`getip hostipv6`
 		if [ ! -z "$router_wan" ] && [ "$router_wan" -eq "1" ] ; then
 			local send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     接口ip:$send_wanIP"
 			local send_content=${send_content}"%0D%0A%0D%0A""     外网ip:$send_hostIP"
@@ -963,7 +986,7 @@ function send(){
 			fi
 			local send_content=${send_content}"%0D%0A%0D%0A""`ubus call network.interface.wan status | grep \"uptime\" | sed $'s/\"uptime": //g'| sed $'s/\,//g'| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     在线时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`"
 		fi
-	local client_list=`get_config client_list`
+		local client_list=`get_config client_list`
 		if [ ! -z "$client_list" ] && [ "$client_list" -eq "1" ] ; then		
 			if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【定时数据】检测客户端列表" >> ${logfile};fi
 			
