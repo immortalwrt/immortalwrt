@@ -28,7 +28,7 @@ function get_containers()
     data[index]["_selected"] = 0
     data[index]["_id"] = v.Id:sub(1,12)
     data[index]["name"] = v.Names[1]:sub(2)
-    data[index]["_name"] = '<a href='..luci.dispatcher.build_url("admin/docker/container/"..v.Id)..'  class="dockerman_link" title="'..translate("Container detail")..'">'.. v.Names[1]:sub(2).."</a>"
+    data[index]["_name"] = '<a href='..luci.dispatcher.build_url("admin/services/docker/container/"..v.Id)..'  class="dockerman_link" title="'..translate("Container detail")..'">'.. v.Names[1]:sub(2).."</a>"
     data[index]["_status"] = v.Status
     if v.Status:find("^Up") then
       data[index]["_status"] = '<font color="green">'.. data[index]["_status"] .. "</font>"
@@ -69,6 +69,7 @@ local c_lists = get_containers()
 -- list Containers
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
+m.template = "dockerman/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -131,7 +132,7 @@ local start_stop_remove = function(m,cmd)
       end
     end
     if success then docker:clear_status() end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/containers"))
   end
 end
 
@@ -166,7 +167,7 @@ btnremove.inputtitle=translate("Remove")
 btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
 btnnew.write = function(self, section)
-  luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+  luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer"))
 end
 btnstart.write = function(self, section)
   start_stop_remove(m,"start")

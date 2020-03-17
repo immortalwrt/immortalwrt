@@ -24,7 +24,7 @@ openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn
 luci-app-ssr-plus-Jo source: [Leo-Jo-My/luci-app-ssr-plus-Jo](https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo).<br/>
 openwrt-udpspeeder source: [zhfreal/openwrt-UDPspeeder](https://github.com/zhfreal/openwrt-UDPspeeder).<br/>
 luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).<br/>
-luci-app-dockerman source: [lisaac/luci-app-dockerman](https://github.com/lisaac/luci-app-dockerman).<br/>
+luci-app-dockerman source: [KFERMercer/luci-app-dockerman](https://github.com/KFERMercer/luci-app-dockerman).<br/>
 luci-lib-docker source: [lisaac/luci-lib-docker](https://github.com/lisaac/luci-lib-docker).<br/>
 openwrt-iptvhelper source: [riverscn/openwrt-iptvhelper](https://github.com/riverscn/openwrt-iptvhelper).<br>
 luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://github.com/rufengsuixing/luci-app-autoipsetadder).<br>

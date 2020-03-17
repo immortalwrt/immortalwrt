@@ -22,7 +22,7 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 	}
 
-	XHR.poll(5, '/cgi-bin/luci/admin/docker/container_stats/<%=self.container_id%>', { status: 1 },
+	XHR.poll(5, '/cgi-bin/luci/admin/services/docker/container_stats/<%=self.container_id%>', { status: 1 },
 		function (x, info) {
 			var e;
 

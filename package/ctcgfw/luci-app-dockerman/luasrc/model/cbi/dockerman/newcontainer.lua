@@ -32,7 +32,7 @@ end
 
 local resolve_cli = function(cmd_line)
   local config = {advance = 1}
-  local key_no_val = '|t|d|i|tty|rm|read_only|interactive|init|help|detach|privileged|'
+  local key_no_val = '|t|d|i|tty|rm|read-only|interactive|init|help|detach|privileged|'
   local key_with_val = '|sysctl|add_host|a|attach|blkio_weight_device|cap_add|cap_drop|device|device_cgroup_rule|device_read_bps|device_read_iops|device_write_bps|device_write_iops|dns|dns_option|dns_search|e|env|env_file|expose|group_add|l|label|label_file|link|link_local_ip|log_driver|log_opt|network_alias|p|publish|security_opt|storage_opt|tmpfs|v|volume|volumes_from|blkio_weight|cgroup_parent|cidfile|cpu_period|cpu_quota|cpu_rt_period|cpu_rt_runtime|c|cpu_shares|cpus|cpuset_cpus|cpuset_mems|detach_keys|disable_content_trust|domainname|entrypoint|gpus|health_cmd|health_interval|health_retries|health_start_period|health_timeout|h|hostname|ip|ip6|ipc|isolation|kernel_memory|log_driver|mac_address|m|memory|memory_reservation|memory_swap|memory_swappiness|mount|name|network|no_healthcheck|oom_kill_disable|oom_score_adj|pid|pids_limit|P|publish_all|restart|runtime|shm_size|sig_proxy|stop_signal|stop_timeout|ulimit|u|user|userns|uts|volume_driver|w|workdir|'
   local key_abb = {net='network',a='attach',c='cpu-shares',d='detach',e='env',h='hostname',i='interactive',l='label',m='memory',p='publish',P='publish_all',t='tty',u='user',v='volume',w='workdir'}
   local key_with_list = '|sysctl|add_host|a|attach|blkio_weight_device|cap_add|cap_drop|device|device_cgroup_rule|device_read_bps|device_read_iops|device_write_bps|device_write_iops|dns|dns_option|dns_search|e|env|env_file|expose|group_add|l|label|label_file|link|link_local_ip|log_driver|log_opt|network_alias|p|publish|security_opt|storage_opt|tmpfs|v|volume|volumes_from|'
@@ -55,7 +55,7 @@ local resolve_cli = function(cmd_line)
           key = w:match("^%-([%lP%-]+)")
           if key then
             -- for -dit
-            if key:match("i") or key:match("t") or key:match("d") then
+            if key:match("i") or key:match("t") then
               if key:match("i") then
                 config[key_abb["i"]] = true
                 key:gsub("i", "")
@@ -75,13 +75,14 @@ local resolve_cli = function(cmd_line)
       end
       if key then
         key = key:gsub("-","_")
-        key = key_abb[key] or key
         if key_no_val:match("|"..key.."|") then
+          key = key_abb[key] or key
           config[key] = true
           val = nil
           key = nil
         elseif key_with_val:match("|"..key.."|") then
-          -- if key == "cap_add" then config.privileged = true end
+          key = key_abb[key] or key
+          if key == "cap_add" then config.privileged = true end
         else
           key = nil
           val = nil
@@ -93,39 +94,13 @@ local resolve_cli = function(cmd_line)
         is_cmd = true
       end
     elseif (key or _key) and not is_cmd then
-      if key == "mount" then
-        -- we need resolve mount options here
-        -- type=bind,source=/source,target=/app
-        local _type = w:match("^type=([^,]+),") or "bind"
-        local source =  (_type ~= "tmpfs") and (w:match("source=([^,]+),") or  w:match("src=([^,]+),")) or ""
-        local target =  w:match(",target=([^,]+)") or  w:match(",dst=([^,]+)") or w:match(",destination=([^,]+)") or ""
-        local ro = w:match(",readonly") and "ro" or nil
-        if source and target then
-          if _type ~= "tmpfs" then
-            -- bind or volume
-            local bind_propagation = (_type == "bind") and w:match(",bind%-propagation=([^,]+)") or nil
-            val = source..":"..target .. ((ro or bind_propagation) and (":" .. (ro and ro or "") .. (((ro and bind_propagation) and "," or "") .. (bind_propagation and bind_propagation or ""))or ""))
-          else
-            -- tmpfs
-            local tmpfs_mode = w:match(",tmpfs%-mode=([^,]+)") or nil
-            local tmpfs_size = w:match(",tmpfs%-size=([^,]+)") or nil
-            key = "tmpfs"
-            val = target .. ((tmpfs_mode or tmpfs_size) and (":" .. (tmpfs_mode and ("mode=" .. tmpfs_mode) or "") .. ((tmpfs_mode and tmpfs_size) and "," or "") .. (tmpfs_size and ("size=".. tmpfs_size) or "")) or "")
-            if not config[key] then config[key] = {} end
-            table.insert( config[key], val )
-            key = nil
-            val = nil
-          end
-        end
-      else
-        val = w
-      end
+      val = w
     elseif is_cmd then
       config["command"] = (config["command"] and (config["command"] .. " " )or "")  .. w
     end
     if (key or _key) and val then
       key = _key or key
-      if key_with_list:match("|"..key.."|") then
+      if key_with_list:match(key) then
         if not config[key] then config[key] = {} end
         if _key then
           config[key][#config[key]] = config[key][#config[key]] .. " " .. w
@@ -179,7 +154,6 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
     default_config.env = create_body.Env
     default_config.dns = create_body.HostConfig.Dns
     default_config.volume = create_body.HostConfig.Binds
-    default_config.cap_add = create_body.HostConfig.CapAdd
 
     if create_body.HostConfig.Sysctls and type(create_body.HostConfig.Sysctls) == "table" then
       default_config.sysctl = {}
@@ -219,7 +193,8 @@ elseif cmd_line and cmd_line:match("^duplicate/[^/]+$") then
 end
 
 local m = SimpleForm("docker", translate("Docker"))
-m.redirect = luci.dispatcher.build_url("admin", "docker", "containers")
+m.template = "dockerman/cbi/xsimpleform"
+m.redirect = luci.dispatcher.build_url("admin", "services","docker", "containers")
 -- m.reset = false
 -- m.submit = false
 -- new Container
@@ -294,14 +269,14 @@ d_ip:depends("network", "nil")
 d_ip.default = default_config.ip or nil
 
 d = s:option(DynamicList, "link", translate("Links with other containers"))
-d.cfgvalue = function (self, section) return default_config.link or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "container_name:alias"
 d.rmempty = true
 d:depends("network", "bridge")
 d.default = default_config.link or nil
 
 d = s:option(DynamicList, "dns", translate("Set custom DNS servers"))
-d.cfgvalue = function (self, section) return default_config.dns or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "8.8.8.8"
 d.rmempty = true
 d.default = default_config.dns or nil
@@ -312,19 +287,19 @@ d.rmempty = true
 d.default = default_config.user or nil
 
 d = s:option(DynamicList, "env", translate("Environmental Variable(-e)"), translate("Set environment variables to inside the container"))
-d.cfgvalue = function (self, section) return default_config.env or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "TZ=Asia/Shanghai"
 d.rmempty = true
 d.default = default_config.env or nil
 
 d = s:option(DynamicList, "volume", translate("Bind Mount(-v)"), translate("Bind mount a volume"))
-d.cfgvalue = function (self, section) return default_config.volume or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "/media:/media:slave"
 d.rmempty = true
 d.default = default_config.volume or nil
 
 local d_publish = s:option(DynamicList, "publish", translate("Exposed Ports(-p)"), translate("Publish container's port(s) to the host"))
-d_publish.cfgvalue = function (self, section) return default_config.publish or nil end
+d_publish.template = "dockerman/cbi/xdynlist"
 d_publish.placeholder = "2200:22/tcp"
 d_publish.rmempty = true
 d_publish.default = default_config.publish or nil
@@ -346,32 +321,25 @@ d.default = default_config.hostname or nil
 d:depends("advance", 1)
 
 d = s:option(DynamicList, "device", translate("Device(--device)"), translate("Add host device to the container"))
-d.cfgvalue = function (self, section) return default_config.device or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "/dev/sda:/dev/xvdc:rwm"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.device or nil
 
 d = s:option(DynamicList, "tmpfs", translate("Tmpfs(--tmpfs)"), translate("Mount tmpfs directory"))
-d.cfgvalue = function (self, section) return default_config.tmpfs or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "/run:rw,noexec,nosuid,size=65536k"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.tmpfs or nil
 
 d = s:option(DynamicList, "sysctl", translate("Sysctl(--sysctl)"), translate("Sysctls (kernel parameters) options"))
-d.cfgvalue = function (self, section) return default_config.sysctl or nil end
+d.template = "dockerman/cbi/xdynlist"
 d.placeholder = "net.ipv4.ip_forward=1"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.sysctl or nil
-
-d = s:option(DynamicList, "cap_add", translate("CAP-ADD(--cap-add)"), translate("A list of kernel capabilities to add to the container"))
-d.cfgvalue = function (self, section) return default_config.cap_add or nil end
-d.placeholder = "NET_ADMIN"
-d.rmempty = true
-d:depends("advance", 1)
-d.default = default_config.cap_add or nil
 
 d = s:option(Value, "cpus", translate("CPUs"), translate("Number of CPUs. Number is a fractional number. 0.000 means no limit."))
 d.placeholder = "1.5"
@@ -399,6 +367,7 @@ d.rmempty = true
 d:depends("advance", 1)
 d.datatype="uinteger"
 d.default = default_config.blkio_weight or nil
+
 
 for _, v in ipairs (networks) do
   if v.Name then
@@ -434,7 +403,6 @@ m.handle = function(self, state, data)
   local restart = data.restart
   local env = data.env
   local dns = data.dns
-  local cap_add = data.cap_add
   local sysctl = {}
   tmp = data.sysctl
   if type(tmp) == "table" then
@@ -531,16 +499,16 @@ m.handle = function(self, state, data)
   create_body.Tty = tty and true or false
   create_body.OpenStdin = interactive and true or false
   create_body.User = user
-  create_body.Cmd = command
+  create_body.Cmd = (#command ~= 0) and command or nil
   create_body.Env = env
   create_body.Image = image
-  create_body.ExposedPorts = exposedports
+  create_body.ExposedPorts = (next(exposedports) ~= nil) and exposedports or nil
   create_body.HostConfig = create_body.HostConfig or {}
   create_body.HostConfig.Dns = dns
-  create_body.HostConfig.Binds = volume
+  create_body.HostConfig.Binds = (#volume ~= 0) and volume or nil
   create_body.HostConfig.RestartPolicy = { Name = restart, MaximumRetryCount = 0 }
   create_body.HostConfig.Privileged = privileged and true or false
-  create_body.HostConfig.PortBindings = portbindings
+  create_body.HostConfig.PortBindings = (next(portbindings) ~= nil) and portbindings or nil
   create_body.HostConfig.Memory = tonumber(memory)
   create_body.HostConfig.CpuShares = tonumber(cpu_shares)
   create_body.HostConfig.NanoCPUs = tonumber(cpus) * 10 ^ 9
@@ -569,12 +537,11 @@ m.handle = function(self, state, data)
     -- no ip + no duplicate config
     create_body.NetworkingConfig = nil
   end
-  create_body["HostConfig"]["Tmpfs"] = tmpfs
-  create_body["HostConfig"]["Devices"] = device
-  create_body["HostConfig"]["Sysctls"] = sysctl
-  create_body["HostConfig"]["CapAdd"] = cap_add
+  create_body["HostConfig"]["Tmpfs"] = (next(tmpfs) ~= nil) and tmpfs or nil
+  create_body["HostConfig"]["Devices"] = (next(device) ~= nil) and device or nil
+  create_body["HostConfig"]["Sysctls"] = (next(sysctl) ~= nil) and sysctl or nil
 
-  if network == "bridge" then
+  if network == "bridge" and next(link) ~= nil then
     create_body["HostConfig"]["Links"] = link
   end
   local pull_image = function(image)
@@ -584,9 +551,8 @@ m.handle = function(self, state, data)
     if res and res.code == 200 and (res.body[#res.body] and not res.body[#res.body].error and res.body[#res.body].status and (res.body[#res.body].status == "Status: Downloaded newer image for ".. image or res.body[#res.body].status == "Status: Image is up to date for ".. image)) then
       docker:append_status("done\n")
     else
-      res.code = (res.code == 200) and 500 or res.code
       docker:append_status("code:" .. res.code.." ".. (res.body[#res.body] and res.body[#res.body].error or (res.body.message or res.message)).. "\n")
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer"))
     end
   end
   docker:clear_status()
@@ -605,15 +571,14 @@ m.handle = function(self, state, data)
     end
   end
 
-  create_body = docker.clear_empty_tables(create_body)
   docker:append_status("Container: " .. "create" .. " " .. name .. "...")
   local res = dk.containers:create({name = name, body = create_body})
   if res and res.code == 201 then
     docker:clear_status()
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/containers"))
   else
     docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer"))
   end
 end
 

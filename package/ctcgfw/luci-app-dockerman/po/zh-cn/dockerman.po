@@ -411,33 +411,3 @@ msgstr "错误"
 
 msgid "Console"
 msgstr "控制台"
-
-msgid "DockerMan is a Simple Docker manager client for LuCI, If you have any issue please visit:"
-msgstr "DockerMan 是一个简单的 Docker 管理客户端，如果您在使用过程中有问题，请访问："
-
-msgid "Access Control for the bridge network"
-msgstr "birdge 网络访问控制"
-
-msgid "Allowed access interfaces"
-msgstr "允许访问的接口"
-
-msgid "Containers allowed to be accessed"
-msgstr "允许被访问的容器"
-
-msgid "Which container(s) can be accessed, even from interfaces that are not allowed, fill-in Container Id or Name"
-msgstr "哪些容器可以被访问，即使访问来自不被允许的接口，填入容器ID或容器名"
-
-msgid "Which interface(s) can access containers under the bridge network, fill-in Interface Name"
-msgstr "哪些接口可以访问 bridge 网络下的容器, 填入接口名"
-
-msgid "Dockerman connect to remote endpoint"
-msgstr "Dockerman 将连接到远程节点"
-
-msgid "Access Control"
-msgstr "访问控制"
-
-msgid "Create macvlan interface"
-msgstr "创建 macvlan 接口"
-
-msgid "Auto create macvlan interface in Openwrt"
-msgstr "在 Openwrt 中自动创建 macvlan 接口"

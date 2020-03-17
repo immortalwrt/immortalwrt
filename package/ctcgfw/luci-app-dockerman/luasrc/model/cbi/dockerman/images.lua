@@ -38,7 +38,7 @@ function get_images()
     for ci,cv in ipairs(containers) do
       if v.Id == cv.ImageID then
         data[index]["_containers"] = (data[index]["_containers"] and (data[index]["_containers"] .. " | ") or "")..
-        '<a href='..luci.dispatcher.build_url("admin/docker/container/"..cv.Id)..' class="dockerman_link" title="'..translate("Container detail")..'">'.. cv.Names[1]:sub(2).."</a>"
+        '<a href='..luci.dispatcher.build_url("admin/services/docker/container/"..cv.Id)..' class="dockerman_link" title="'..translate("Container detail")..'">'.. cv.Names[1]:sub(2).."</a>"
       end
     end
     data[index]["_size"] = string.format("%.2f", tostring(v.Size/1024/1024)).."MB"
@@ -51,6 +51,7 @@ local image_list = get_images()
 
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
+m.template = "dockerman/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -59,7 +60,7 @@ local pull_section = m:section(SimpleSection, translate("Pull Image"))
 pull_section.template="cbi/nullsection"
 local tag_name = pull_section:option(Value, "_image_tag_name")
 tag_name.template = "dockerman/cbi/inlinevalue"
-tag_name.placeholder="lisaac/luci:latest"
+tag_name.placeholder="hello-world:latest"
 local action_pull = pull_section:option(Button, "_pull")
 action_pull.inputtitle= translate("Pull")
 action_pull.template = "dockerman/cbi/inlinebutton"
@@ -87,12 +88,12 @@ action_pull.write = function(self, section)
   else
     docker:append_status("code: 400 please input the name of image name!")
   end
-  luci.http.redirect(luci.dispatcher.build_url("admin/docker/images"))
+  luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/images"))
 end
 
-local import_section = m:section(SimpleSection, translate("Import Images"))
-local im = import_section:option(DummyValue, "_image_import")
-im.template = "dockerman/images_import"
+-- local import_section = m:section(SimpleSection, translate("Import Images"))
+-- local im = import_section:option(DummyValue, "_image_import")
+-- im.template = "dockerman/images_import"
 
 local image_table = m:section(Table, image_list, translate("Images"))
 
@@ -137,7 +138,7 @@ local remove_action = function(force)
       end
     end
     if success then docker:clear_status() end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/images"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/images"))
   end
 end
 

@@ -4,6 +4,7 @@ Copyright 2019 lisaac <https://github.com/lisaac/luci-app-dockerman>
 ]]--
 
 require "luci.util"
+local uci = luci.model.uci.cursor()
 local docker = require "luci.model.docker"
 local dk = docker.new()
 container_id = arg[1]
@@ -145,19 +146,20 @@ local start_stop_remove = function(m, cmd)
   end
   if res and res.code >= 300 then
     docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id))
   else
     docker:clear_status()
     if cmd ~= "remove" and cmd ~= "upgrade" then
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id))
     else
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/containers"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/containers"))
     end
   end
 end
 
 m=SimpleForm("docker", container_info.Name:sub(2), translate("Docker Container") )
-m.redirect = luci.dispatcher.build_url("admin/docker/containers")
+m.template = "dockerman/cbi/xsimpleform"
+m.redirect = luci.dispatcher.build_url("admin/services/docker/containers")
 -- m:append(Template("dockerman/container"))
 docker_status = m:section(SimpleSection)
 docker_status.template = "dockerman/apply_widget"
@@ -218,7 +220,7 @@ btnstop.write = function(self, section)
   start_stop_remove(m,"stop")
 end
 btnduplicate.write = function(self, section)
-  luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer/duplicate/"..container_id))
+  luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newcontainer/duplicate/"..container_id))
 end
 
 tab_section = m:section(SimpleSection)
@@ -303,9 +305,7 @@ if action == "info" then
       self:reset_values()
       self.size = nil
       for k,v in pairs(list_networks) do
-        if k ~= "host" then
-          self:value(k,v)
-        end
+        self:value(k,v)
       end
       self.default=table_info[section]._value
       ListValue.render(self, section, scope)
@@ -364,6 +364,7 @@ if action == "info" then
     end
   end
   btn_update.write = function(self, section, value)
+    -- luci.util.perror(section)
     local res
     docker:clear_status()
     if section == "01name" then
@@ -383,6 +384,7 @@ if action == "info" then
       local connect_network = table_info[section]._value
       local network_opiton
       if connect_network ~= "none" and connect_network ~= "bridge" and connect_network ~= "host" then
+        -- luci.util.perror(table_info[section]._opts)
         network_opiton = table_info[section]._opts ~= "" and {
             IPAMConfig={
               IPv4Address=table_info[section]._opts
@@ -397,7 +399,7 @@ if action == "info" then
     else
       docker:clear_status()
     end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id.."/info"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id.."/info"))
   end
   
 -- info end
@@ -457,7 +459,7 @@ elseif action == "edit" then
       else
         docker:clear_status()
       end
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id.."/edit"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id.."/edit"))
     end
   end
 elseif action == "file" then
@@ -489,7 +491,7 @@ elseif action == "console" then
   m.reset  = false
   local cmd_docker = luci.util.exec("which docker"):match("^.+docker") or nil
   local cmd_ttyd = luci.util.exec("which ttyd"):match("^.+ttyd") or nil
-  if cmd_docker and cmd_ttyd and container_info.State.Status == "running" then
+  if cmd_docker and cmd_ttyd then
     local consolesection= m:section(SimpleSection)
     local cmd = "/bin/sh"
     local uid
@@ -519,11 +521,9 @@ elseif action == "console" then
       local cmd_ttyd = luci.util.exec("which ttyd"):match("^.+ttyd") or nil
       if not cmd_docker or not cmd_ttyd or cmd_docker:match("^%s+$") or cmd_ttyd:match("^%s+$") then return end
       local kill_ttyd = 'netstat -lnpt | grep ":7682[ \t].*ttyd$" | awk \'{print $NF}\' | awk -F\'/\' \'{print "kill -9 " $1}\' | sh > /dev/null'
-      luci.util.exec(kill_ttyd)
       local hosts
-      local uci = (require "luci.model.uci").cursor()
       local remote = uci:get("dockerman", "local", "remote_endpoint")
-      local socket_path = (remote == "false" or not remote) and  uci:get("dockerman", "local", "socket_path") or nil
+      local socket_path = (remote == "false") and  uci:get("dockerman", "local", "socket_path") or nil
       local host = (remote == "true") and uci:get("dockerman", "local", "remote_host") or nil
       local port = (remote == "true") and uci:get("dockerman", "local", "remote_port") or nil
       if remote and host and port then
@@ -533,8 +533,9 @@ elseif action == "console" then
       else
         return
       end
-      local start_cmd = cmd_ttyd .. ' -d 2 --once -p 7682 '.. cmd_docker .. ' -H "'.. hosts ..'" exec -it ' .. (uid and uid ~= "" and (" -u ".. uid  .. ' ') or "").. container_id .. ' ' .. cmd .. ' &'
-      os.execute(start_cmd)
+
+      local start_cmd = cmd_ttyd .. ' -d 2 -p 7682 '.. cmd_docker .. ' -H "'.. hosts ..'" exec -it ' .. (uid and uid ~= "" and (" -u ".. uid  .. ' ') or "").. container_id .. ' ' .. cmd .. ' &'
+      local res = luci.util.exec(start_cmd)
       local console = consolesection:option(DummyValue, "console")
       console.container_id = container_id
       console.template = "dockerman/container_console"
@@ -560,6 +561,7 @@ elseif action == "stats" then
     table_stats = {cpu={key=translate("CPU Useage"),value='-'},memory={key=translate("Memory Useage"),value='-'}}
     stat_section = m:section(Table, table_stats, translate("Stats"))
     stat_section:option(DummyValue, "key", translate("Stats")).width="33%"
+    
     stat_section:option(DummyValue, "value")
     top_section= m:section(Table, container_top.Processes, translate("TOP"))
     for i, v in ipairs(container_top.Titles) do

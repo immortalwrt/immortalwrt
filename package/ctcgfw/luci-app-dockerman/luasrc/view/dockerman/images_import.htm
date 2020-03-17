@@ -1,3 +1,5 @@
+<!-- this page has no effect -->
+
 <input type="text" class="cbi-input-text" name="isrc" placeholder="http://host/image.tar" id="isrc" />
 <input type="text" class="cbi-input-text" name="itag" placeholder="repository:tag" id="itag" />
 <div style="display: inline-block;">
@@ -19,7 +21,7 @@
       formData.append('tag', valITag.value)
       let xhr = new XMLHttpRequest()
       uci_confirm_docker()
-      xhr.open("POST", "<%=url('admin/docker/images_import')%>", true)
+      xhr.open("POST", "<%=url('admin/services/docker/images_import')%>", true)
       xhr.onload = function () {
         location.reload()
       }
@@ -40,7 +42,7 @@
     formData.append('upload-archive', fileimport.files[0])
     let xhr = new XMLHttpRequest()
     uci_confirm_docker()
-    xhr.open("POST", "<%=url('admin/docker/images_import')%>", true)
+    xhr.open("POST", "<%=url('admin/services/docker/images_import')%>", true)
     xhr.onload = function () {
       fileimport.value = ''
       location.reload()
@@ -51,7 +53,7 @@
   let new_tag = function (image_id) {
     let new_tag = prompt("<%:New tag%>\n<%:Image%>" + "ID: " + image_id + "\n<%:Please input new tag%>:", "")
     if (new_tag) {
-      (new XHR()).post("<%=url('admin/docker/images_tag')%>",
+      (new XHR()).post("<%=url('admin/services/docker/images_tag')%>",
         { id: image_id, tag: new_tag },
         function (r) {
           if (r.status == 201) {
@@ -70,7 +72,7 @@
   let un_tag = function (tag) {
     if (tag.match("<none>")) return
     if (confirm("<%:Remove tag%>: " + tag + " ?")) {
-      (new XHR()).post("<%=url('admin/docker/images_untag')%>",
+      (new XHR()).post("<%=url('admin/services/docker/images_untag')%>",
         { tag: tag },
         function (r) {
           if (r.status == 200) {

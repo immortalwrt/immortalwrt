@@ -1,14 +1,14 @@
 #!/bin/sh
 
 uci -q batch <<-EOF >/dev/null
-	set uhttpd.main.script_timeout="360"
+	set uhttpd.main.script_timeout="600"
 	commit uhttpd
-	delete ucitrack.@dockerman[-1]
-	add ucitrack dockerman
-	set ucitrack.@dockerman[-1].exec='/etc/init.d/dockerman start'
+	delete ucitrack.@dockerd[-1]
+	add ucitrack dockerd
+	set ucitrack.@dockerd[-1].init=dockerd
 	commit ucitrack
 EOF
-[ -x "$(which dockerd)" ] && chmod +x /etc/init.d/dockerman && /etc/init.d/dockerd disable && /etc/init.d/dockerman enable >/dev/null 2>&1
+/etc/init.d/dockerd enable >/dev/null 2>&1
 /etc/init.d/uhttpd restart >/dev/null 2>&1
 rm -fr /tmp/luci-indexcache /tmp/luci-modulecache >/dev/null 2>&1
 exit 0

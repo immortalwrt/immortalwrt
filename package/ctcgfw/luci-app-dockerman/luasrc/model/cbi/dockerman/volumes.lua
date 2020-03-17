@@ -28,7 +28,7 @@ function get_volumes()
       for vi, vv in ipairs(cv.Mounts) do
         if v.Name == vv.Name then
           data[index]["_containers"] = (data[index]["_containers"] and (data[index]["_containers"] .. " | ") or "")..
-          '<a href='..luci.dispatcher.build_url("admin/docker/container/"..cv.Id)..' class="dockerman_link" title="'..translate("Container detail")..'">'.. cv.Names[1]:sub(2)..'</a>'
+          '<a href='..luci.dispatcher.build_url("admin/services/docker/container/"..cv.Id)..' class="dockerman_link" title="'..translate("Container detail")..'">'.. cv.Names[1]:sub(2)..'</a>'
         end
       end
     end
@@ -50,6 +50,7 @@ local volume_list = get_volumes()
 
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
+m.template = "dockerman/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -110,7 +111,7 @@ btnremove.write = function(self, section)
       end
     end
     if success then docker:clear_status() end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/volumes"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/volumes"))
   end
 end
 return m

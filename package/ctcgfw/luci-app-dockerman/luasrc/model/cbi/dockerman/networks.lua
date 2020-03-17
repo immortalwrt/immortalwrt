@@ -36,6 +36,7 @@ end
 local network_list = get_networks()
 -- m = Map("docker", translate("Docker"))
 m = SimpleForm("docker", translate("Docker"))
+m.template = "dockerman/cbi/xsimpleform"
 m.submit=false
 m.reset=false
 
@@ -83,7 +84,7 @@ btnnew.notitle=true
 btnnew.inputstyle = "add"
 btnnew.forcewrite = true
 btnnew.write = function(self, section)
-  luci.http.redirect(luci.dispatcher.build_url("admin/docker/newnetwork"))
+  luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newnetwork"))
 end
 btnremove = action:option(Button, "_remove")
 btnremove.inputtitle= translate("Remove")
@@ -92,22 +93,18 @@ btnremove.inputstyle = "remove"
 btnremove.forcewrite = true
 btnremove.write = function(self, section)
   local network_selected = {}
-  local network_name_selected = {}
-  local network_driver_selected = {}
   -- 遍历table中sectionid
   local network_table_sids = network_table:cfgsections()
   for _, network_table_sid in ipairs(network_table_sids) do
     -- 得到选中项的名字
     if network_list[network_table_sid]._selected == 1 then
       network_selected[#network_selected+1] = network_list[network_table_sid]._id --network_name:cfgvalue(network_table_sid)
-      network_name_selected[#network_name_selected+1] = network_list[network_table_sid]._name
-      network_driver_selected[#network_driver_selected+1] = network_list[network_table_sid]._driver
     end
   end
   if next(network_selected) ~= nil then
     local success = true
     docker:clear_status()
-    for ii, net in ipairs(network_selected) do
+    for _,net in ipairs(network_selected) do
       docker:append_status("Networks: " .. "remove" .. " " .. net .. "...")
       local res = dk.networks["remove"](dk, {id = net})
       if res and res.code >= 300 then
@@ -115,15 +112,12 @@ btnremove.write = function(self, section)
         success = false
       else
         docker:append_status("done\n")
-        if network_driver_selected[ii] == "macvlan" then
-          docker.remove_macvlan_interface(network_name_selected[ii])
-        end
       end
     end
     if success then
       docker:clear_status()
     end
-    luci.http.redirect(luci.dispatcher.build_url("admin/docker/networks"))
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/networks"))
   end
 end
 

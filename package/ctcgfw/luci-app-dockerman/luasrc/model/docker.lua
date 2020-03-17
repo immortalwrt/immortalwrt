@@ -79,14 +79,14 @@ local map_subtract = function(t1, t2)
   return next(res) ~= nil and res or nil
 end
 
-_docker.clear_empty_tables = function ( t )
+local function clear_empty_tables( t )
   local k, v
   if next(t) == nil then
     t = nil
   else
     for k, v in pairs(t) do
       if type(v) == 'table' then
-        t[k] = _docker.clear_empty_tables(v)
+        t[k] = clear_empty_tables(v)
       end
     end
   end
@@ -150,8 +150,8 @@ local get_config = function(container_config, image_config)
   local create_body = config
   create_body["HostConfig"] = host_config
   create_body["NetworkingConfig"] = {EndpointsConfig = network_setting}
-  create_body = _docker.clear_empty_tables(create_body) or {}
-  extra_network = _docker.clear_empty_tables(extra_network) or {}
+  create_body = clear_empty_tables(create_body) or {}
+  extra_network = clear_empty_tables(extra_network) or {}
   return create_body, extra_network
 end
 
@@ -308,23 +308,23 @@ end
 --{"status":"Downloading from https://downloads.openwrt.org/releases/19.07.0/targets/x86/64/openwrt-19.07.0-x86-64-generic-rootfs.tar.gz"}
 --{"status":"Importing","progressDetail":{"current":1572391,"total":3821714},"progress":"[====================\u003e                              ]  1.572MB/3.822MB"}
 --{"status":"sha256:d5304b58e2d8cc0a2fd640c05cec1bd4d1229a604ac0dd2909f13b2b47a29285"}
-_docker.import_image_show_status_cb = function(res, source)
-  return status_cb(res, source, function(chunk)
-    local json_parse = luci.jsonc.parse
-    local step = json_parse(chunk)
-    if type(step) == "table" then
-      local buf = _docker:read_status()
-      local num = 0
-      local str = '\t' .. (step.status and step.status or "") .. (step.progress and (" " .. step.progress) or "").."\n"
-      if step.status then buf, num = buf:gsub("\t"..step.status .. " .-\n", str) end
-      if num == 0 then
-        buf = buf .. str
-      end
-      _docker:write_status(buf)
-    end
-  end
-  )
-end
+-- _docker.import_image_show_status_cb = function(res, source)
+--   return status_cb(res, source, function(chunk)
+--     local json_parse = luci.jsonc.parse
+--     local step = json_parse(chunk)
+--     if type(step) == "table" then
+--       local buf = _docker:read_status()
+--       local num = 0
+--       local str = '\t' .. (step.status and step.status or "") .. (step.progress and (" " .. step.progress) or "").."\n"
+--       if step.status then buf, num = buf:gsub("\t"..step.status .. " .-\n", str) end
+--       if num == 0 then
+--         buf = buf .. str
+--       end
+--       _docker:write_status(buf)
+--     end
+--   end
+--   )
+-- end
 
 -- _docker.print_status_cb = function(res, source)
 --   return status_cb(res, source, function(step)
@@ -332,58 +332,5 @@ end
 --   end
 --   )
 -- end
-
-_docker.create_macvlan_interface = function(name, device, gateway, ip_range)
-  if not nixio.fs.access("/etc/config/network") or not nixio.fs.access("/etc/config/firewall") then return end
-  if uci:get("dockerman", "local", "remote_endpoint") == "true" then return end
-  local ip = require "luci.ip"
-  local if_name = "docker_"..name
-  local net_mask = tostring(ip.new(ip_range):mask())
-  local lan_interfaces
-  uci:delete("network", if_name)
-  uci:set("network", if_name, "interface")
-  uci:set("network", if_name, "proto", "static")
-  uci:set("network", if_name, "ifname", if_name)
-  uci:set("network", if_name, "ipaddr", gateway)
-  uci:set("network", if_name, "netmask", net_mask)
-  uci:foreach("firewall", "zone", function(s)
-    if s.name == "lan" then
-      local interfaces
-      if type(s.network) == "table" then
-        interfaces = table.concat(s.network, " ")
-        uci:delete("firewall", s[".name"], "network")
-      else
-        interfaces = s.network and s.network or ""
-      end
-      uci:set("firewall", s[".name"], "network", interfaces .. " " .. if_name)
-    end
-  end)
-  uci:commit("firewall")
-  uci:commit("network")
-  device = device:match("br%-(.+)") or device
-  os.execute("ifup " .. device)
-end
-
-_docker.remove_macvlan_interface = function(name)
-  if not nixio.fs.access("/etc/config/network") or not nixio.fs.access("/etc/config/firewall") then return end
-  if uci:get("dockerman", "local", "remote_endpoint") == "true" then return end
-  local if_name = "docker_"..name
-  uci:foreach("firewall", "zone", function(s)
-    if s.name == "lan" then
-      local interfaces
-      if type(s.network) == "table" then
-        interfaces = table.concat(s.network, " ")
-      else
-        interfaces = s.network and s.network or ""
-      end
-      interfaces = interfaces and interfaces:gsub(if_name, "")
-      uci:set("firewall", s[".name"], "network", interfaces)
-    end
-  end)
-  uci:commit("firewall")
-  uci:delete("network", if_name)
-  uci:commit("network")
-  os.execute("ip link del " .. if_name)
-end
 
 return _docker
