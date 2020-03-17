@@ -46,7 +46,7 @@ for _,key in pairs(key_table) do o:value(key,server_table[key]) end
 o = s:option(ListValue, "netflix_server", translate("Netflix Node"))
 o:value("same", translate("Same as Global Server"))
 for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o.default = "nil"
+o.default = "same"
 o.rmempty = false
 
 o = s:option(ListValue, "threads", translate("Multi Threads Option"))
@@ -76,11 +76,8 @@ o.default = 1
 
 o = s:option(ListValue, "pdnsd_enable", translate("Resolve Dns Mode"))
 o:value("1", translate("Use Pdnsd tcp query and cache"))
-if nixio.fs.access("/usr/bin/dns2socks") then
 o:value("2", translate("Use DNS2SOCKS query and cache"))
-end
 o:value("0", translate("Use Local DNS Service listen port 5335"))
-o:value("2", translate("Use system DNS"))
 o.default = 1
 
 o = s:option(Value, "tunnel_forward", translate("Anti-pollution DNS Server"))
