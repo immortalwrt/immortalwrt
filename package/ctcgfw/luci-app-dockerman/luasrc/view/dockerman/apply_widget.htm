@@ -87,6 +87,7 @@ function uci_confirm_docker() {
         var indicator = document.querySelector('.uci_change_indicator');
         if (indicator) indicator.style.display = 'none';
         docker_status_message('notice', '<%:Docker actions done.%>');
+        document.body.classList.remove('apply-overlay-active');
         window.clearTimeout(tt);
         return;
       }
@@ -102,8 +103,8 @@ function uci_confirm_docker() {
       var now = Date.now();
 
       docker_status_message('notice',
-        '<img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" /> ' +
-        loading_msg);
+        '<img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" /> <span style="white-space:pre-line; font-family: \'Courier New\', Courier, monospace;">' +
+        loading_msg + '</span>');
 
       tt = window.setTimeout(tick, 200);
       ts = now;
@@ -123,7 +124,7 @@ function fnSubmitForm(el){
 }
 
 <% if self.err then -%>
-  docker_status_message('warning', `<%=self.err%>`);
+  docker_status_message('warning', '<span style="white-space:pre-line; font-family: \'Courier New\', Courier, monospace;">'+`<%=self.err%>`+'</span>');
   document.getElementById('docker_apply_overlay').addEventListener("click", (e)=>{
     docker_status_message()
   })

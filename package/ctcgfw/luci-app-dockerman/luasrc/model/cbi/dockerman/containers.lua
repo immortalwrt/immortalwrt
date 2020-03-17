@@ -27,7 +27,8 @@ function get_containers()
     data[index]={}
     data[index]["_selected"] = 0
     data[index]["_id"] = v.Id:sub(1,12)
-    data[index]["_name"] = v.Names[1]:sub(2)
+    data[index]["name"] = v.Names[1]:sub(2)
+    data[index]["_name"] = '<a href='..luci.dispatcher.build_url("admin/services/docker/container/"..v.Id)..'  class="dockerman_link" title="'..translate("Container detail")..'">'.. v.Names[1]:sub(2).."</a>"
     data[index]["_status"] = v.Status
     if v.Status:find("^Up") then
       data[index]["_status"] = '<font color="green">'.. data[index]["_status"] .. "</font>"
@@ -54,7 +55,7 @@ function get_containers()
     end
     for ii,iv in ipairs(images) do
       if iv.Id == v.ImageID then
-        data[index]["_image"] = iv.RepoTags and iv.RepoTags[1] or (iv.RepoDigests[1]:gsub("(.-)@.+", "%1") .. ":none")
+        data[index]["_image"] = iv.RepoTags and iv.RepoTags[1] or (iv.RepoDigests[1]:gsub("(.-)@.+", "%1") .. ":<none>")
       end
     end
     
@@ -74,8 +75,8 @@ m.reset=false
 
 docker_status = m:section(SimpleSection)
 docker_status.template = "dockerman/apply_widget"
-docker_status.err=nixio.fs.readfile(dk.options.status_path)
--- luci.util.perror(docker_status.err)
+docker_status.err=docker:read_status()
+docker_status.err=docker_status.err and docker_status.err:gsub("\n","<br>"):gsub(" ","&nbsp;")
 if docker_status.err then docker:clear_status() end
 
 c_table = m:section(Table, c_lists, translate("Containers"))
@@ -90,11 +91,7 @@ container_selecter.default = 0
 container_id = c_table:option(DummyValue, "_id", translate("ID"))
 container_id.width="10%"
 container_name = c_table:option(DummyValue, "_name", translate("Container Name"))
-container_name.width="20%"
-container_name.template = "dockerman/cbi/dummyvalue"
-container_name.href = function (self, section)
-  return luci.dispatcher.build_url("admin/services/docker/container/" .. urlencode(container_id:cfgvalue(section)))
-end
+container_name.rawhtml = true
 container_status = c_table:option(DummyValue, "_status", translate("Status"))
 container_status.width="15%"
 container_status.rawhtml=true
@@ -103,11 +100,7 @@ container_ip.width="15%"
 container_ports = c_table:option(DummyValue, "_ports", translate("Ports"))
 container_ports.width="10%"
 container_image = c_table:option(DummyValue, "_image", translate("Image"))
-container_image.template = "dockerman/cbi/dummyvalue"
 container_image.width="10%"
--- container_image.href = function (self, section)
---   return luci.dispatcher.build_url("admin/services/docker/image/" .. urlencode(c_lists[section]._image_id))
--- end
 container_command = c_table:option(DummyValue, "_command", translate("Command"))
 container_command.width="20%"
 
@@ -116,18 +109,13 @@ container_selecter.write=function(self, section, value)
 end
 
 local start_stop_remove = function(m,cmd)
-    -- luci.template.render("admin_uci/apply", {
-	-- 	changes = next(changes) and changes,
-	-- 	configs = reload
-  -- })
-
   local c_selected = {}
   -- 遍历table中sectionid
   local c_table_sids = c_table:cfgsections()
   for _, c_table_sid in ipairs(c_table_sids) do
     -- 得到选中项的名字
     if c_lists[c_table_sid]._selected == 1 then
-      c_selected[#c_selected+1] = container_name:cfgvalue(c_table_sid)
+      c_selected[#c_selected+1] = c_lists[c_table_sid].name --container_name:cfgvalue(c_table_sid)
     end
   end
   if #c_selected >0 then
@@ -138,9 +126,9 @@ local start_stop_remove = function(m,cmd)
       local res = dk.containers[cmd](dk, {id = cont})
       if res and res.code >= 300 then
         success = false
-        docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "<br>")
+        docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "\n")
       else
-        docker:append_status("done<br>")
+        docker:append_status("done\n")
       end
     end
     if success then docker:clear_status() end

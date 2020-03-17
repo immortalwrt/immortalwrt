@@ -1,11 +1,11 @@
 <div style="display: inline-block;">
-	<%- if self.title then -%>
+	<!-- <%- if self.title then -%>
 	<label class="cbi-value-title"<%= attr("for", cbid) %>>
 		<%- if self.titleref then -%><a title="<%=self.titledesc or translate('Go to relevant configuration page')%>" class="cbi-title-ref" href="<%=self.titleref%>"><%- end -%>
 			<%-=self.title-%>
 		<%- if self.titleref then -%></a><%- end -%>
 		</label>
-	<%- end -%>
+	<%- end -%> -->
 	<%- if self.password then -%>
 		<input type="password" style="position:absolute; left:-100000px" aria-hidden="true"<%=
 			attr("name", "password." .. cbid)

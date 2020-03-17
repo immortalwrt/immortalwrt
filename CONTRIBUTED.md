@@ -30,7 +30,7 @@ luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github
 Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-OpenWrt).<br/>
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
 luci-app-vssr source: [Leo-Jo-My/luci-app-vssr](https://github.com/Leo-Jo-My/luci-app-vssr).<br/>
-luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).<br/>
+luci-app-diskman source: [KFERMercer/luci-app-dockerman](https://github.com/KFERMercer/luci-app-dockerman).<br/>
 qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
 package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>

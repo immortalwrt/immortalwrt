@@ -62,6 +62,7 @@
     if (cmd_line == null || cmd_line == "") {
       return
     }
+    cmd_line = cmd_line.replace(/(^\s*)/g,"")
     if (!cmd_line.match(/^docker\s+(run|create)/)) {
       s.innerHTML = "<font color='red'><%:Command line Error%></font>"
       return
@@ -70,7 +71,7 @@
     let reg_muti_line= /\\\s*\n/g
     //   reg_rem =/(?<!\\)`#.+(?<!\\)`/g  // the command has `# `
     let reg_rem =/`#.+`/g// the command has `# `
-    cmd_line = cmd_line.replace(reg_rem, " ").replace(reg_muti_line, " ").replace(reg_space, " ")
+    cmd_line = cmd_line.replace(/^docker\s+(run|create)/,"DOCKERCLI").replace(reg_rem, " ").replace(reg_muti_line, " ").replace(reg_space, " ")
     console.log(cmd_line)
     window.location.href = "/cgi-bin/luci/admin/services/docker/newcontainer/" + encodeURI(cmd_line)
   }
