@@ -10,7 +10,7 @@ local dk = docker.new()
 container_id = arg[1]
 local action = arg[2] or "info"
 
-local images, networks, containers_info
+local images, networks, container_info
 if not container_id then return end
 local res = dk.containers:inspect({id = container_id})
 if res.code < 300 then container_info = res.body else return end
@@ -94,6 +94,36 @@ local get_links = function(d)
   return data
 end
 
+local get_tmpfs = function(d)
+  local data
+  if d.HostConfig and d.HostConfig.Tmpfs then
+    for k, v in pairs(d.HostConfig.Tmpfs) do
+      data = (data and (data .. "<br>") or "") .. k .. (v~="" and ":" or "")..v
+    end
+  end
+  return data
+end
+
+local get_dns = function(d)
+  local data
+  if d.HostConfig and d.HostConfig.Dns then
+    for _, v in ipairs(d.HostConfig.Dns) do
+      data = (data and (data .. "<br>") or "") .. v
+    end
+  end
+  return data
+end
+
+local get_sysctl = function(d)
+  local data
+  if d.HostConfig and d.HostConfig.Sysctls then
+    for k, v in pairs(d.HostConfig.Sysctls) do
+      data = (data and (data .. "<br>") or "") .. k..":"..v
+    end
+  end
+  return data
+end
+
 local get_networks = function(d)
   local data={}
   if d.NetworkSettings and d.NetworkSettings.Networks and type(d.NetworkSettings.Networks) == "table" then
@@ -115,7 +145,7 @@ local start_stop_remove = function(m, cmd)
     res = dk.containers_upgrade(dk, {id = container_id})
   end
   if res and res.code >= 300 then
-    docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
+    docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
     luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/container/"..container_id))
   else
     docker:clear_status()
@@ -133,8 +163,8 @@ m.redirect = luci.dispatcher.build_url("admin/services/docker/containers")
 -- m:append(Template("dockerman/container"))
 docker_status = m:section(SimpleSection)
 docker_status.template = "dockerman/apply_widget"
-docker_status.err=nixio.fs.readfile(dk.options.status_path)
--- luci.util.perror(docker_status.err)
+docker_status.err=docker:read_status()
+docker_status.err=docker_status.err and docker_status.err:gsub("\n","<br>"):gsub(" ","&nbsp;")
 if docker_status.err then docker:clear_status() end
 
 
@@ -165,7 +195,7 @@ btnupgrade.inputstyle = "reload"
 btnstop.forcewrite = true
 btnduplicate=action_section:option(Button, "_duplicate")
 btnduplicate.template = "dockerman/cbi/inlinebutton"
-btnduplicate.inputtitle=translate("Duplicate")
+btnduplicate.inputtitle=translate("Duplicate/Edit")
 btnduplicate.inputstyle = "add"
 btnstop.forcewrite = true
 btnremove=action_section:option(Button, "_remove")
@@ -209,13 +239,16 @@ if action == "info" then
   table_info["06start"] = container_info.State.Status == "running" and {_key = translate("Start Time"),  _value = container_info.State and container_info.State.StartedAt or "-"} or {_key = translate("Finish Time"),  _value = container_info.State and container_info.State.FinishedAt or "-"}
   table_info["07healthy"] = {_key = translate("Healthy"),  _value = container_info.State and container_info.State.Health and container_info.State.Health.Status or "-"}
   table_info["08restart"] = {_key = translate("Restart Policy"),  _value = container_info.HostConfig and container_info.HostConfig.RestartPolicy and container_info.HostConfig.RestartPolicy.Name or "-", _button=translate("Update")}
-  table_info["09device"] = {_key = translate("Device"),  _value = get_device(container_info)  or "-"}
+  table_info["081user"] = {_key = translate("User"),  _value = container_info.Config and (container_info.Config.User ~="" and container_info.Config.User or "-") or "-"}
   table_info["09mount"] = {_key = translate("Mount/Volume"),  _value = get_mounts(container_info)  or "-"}
-
   table_info["10cmd"] = {_key = translate("Command"),  _value = get_command(container_info) or "-"}
   table_info["11env"] = {_key = translate("Env"),  _value = get_env(container_info)  or "-"}
   table_info["12ports"] = {_key = translate("Ports"),  _value = get_ports(container_info) or "-"}
   table_info["13links"] = {_key = translate("Links"),  _value = get_links(container_info)  or "-"}
+  table_info["14device"] = {_key = translate("Device"),  _value = get_device(container_info)  or "-"}
+  table_info["15tmpfs"] = {_key = translate("Tmpfs"),  _value = get_tmpfs(container_info)  or "-"}
+  table_info["16dns"] = {_key = translate("DNS"),  _value = get_dns(container_info)  or "-"}
+  table_info["17sysctl"] = {_key = translate("Sysctl"),  _value = get_sysctl(container_info)  or "-"}
   info_networks = get_networks(container_info)
   list_networks = {}
   for _, v in ipairs (networks) do
@@ -322,9 +355,10 @@ if action == "info" then
     if table_info[section]._button and table_info[section]._value ~= nil then
       btn_update.inputtitle=table_info[section]._button
       self.template = "cbi/button"
+      self.inputstyle = "edit"
       Button.render(self, section, scope)
     else 
-      self.template = "dockerman/cbi/dummyvalue"
+      self.template = "cbi/dvalue"
       self.default=""
       DummyValue.render(self, section, scope)
     end
@@ -361,7 +395,7 @@ if action == "info" then
       res = dk.networks:connect({name = connect_network, body = {Container = container_id, EndpointConfig= network_opiton}})
     end
     if res and res.code > 300 then
-      docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
+      docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
     else
       docker:clear_status()
     end
@@ -418,11 +452,10 @@ elseif action == "edit" then
         Memory = tonumber(memory),
         CpuShares = tonumber(data.cpushares)
         }
-      docker:clear_status()
-      docker:append_status("Containers: update " .. container_id .. "...")
+      docker:write_status("Containers: update " .. container_id .. "...")
       local res = dk.containers:update({id = container_id, body = request_body})
       if res and res.code >= 300 then
-        docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
+        docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message))
       else
         docker:clear_status()
       end
@@ -453,6 +486,61 @@ elseif action == "logs" then
   logsection.template = "dockerman/logs"
   m.submit = false
   m.reset  = false
+elseif action == "console" then
+  m.submit = false
+  m.reset  = false
+  local cmd_docker = luci.util.exec("which docker"):match("^.+docker") or nil
+  local cmd_ttyd = luci.util.exec("which ttyd"):match("^.+ttyd") or nil
+  if cmd_docker and cmd_ttyd then
+    local consolesection= m:section(SimpleSection)
+    local cmd = "/bin/sh"
+    local uid
+    local vcommand = consolesection:option(Value, "command", translate("Command"))
+    vcommand:value("/bin/sh", "/bin/sh")
+    vcommand:value("/bin/ash", "/bin/ash")
+    vcommand:value("/bin/bash", "/bin/bash")
+    vcommand.default = "/bin/sh"
+    vcommand.forcewrite = true
+    vcommand.write = function(self, section, value)
+      cmd = value
+    end
+    local vuid = consolesection:option(Value, "uid", translate("UID"))
+    vuid.forcewrite = true
+    vuid.write = function(self, section, value)
+      uid = value
+    end
+    local btn_connect = consolesection:option(Button, "connect")
+    btn_connect.render = function(self, section, scope)
+      self.inputstyle = "add"
+      self.title = " "
+      self.inputtitle = translate("Connect")
+      Button.render(self, section, scope)
+    end
+    btn_connect.write = function(self, section)
+      local cmd_docker = luci.util.exec("which docker"):match("^.+docker") or nil
+      local cmd_ttyd = luci.util.exec("which ttyd"):match("^.+ttyd") or nil
+      if not cmd_docker or not cmd_ttyd or cmd_docker:match("^%s+$") or cmd_ttyd:match("^%s+$") then return end
+      local kill_ttyd = 'netstat -lnpt | grep ":7682[ \t].*ttyd$" | awk \'{print $NF}\' | awk -F\'/\' \'{print "kill -9 " $1}\' | sh > /dev/null'
+      local hosts
+      local remote = uci:get("dockerman", "local", "remote_endpoint")
+      local socket_path = (remote == "false") and  uci:get("dockerman", "local", "socket_path") or nil
+      local host = (remote == "true") and uci:get("dockerman", "local", "remote_host") or nil
+      local port = (remote == "true") and uci:get("dockerman", "local", "remote_port") or nil
+      if remote and host and port then
+        hosts = host .. ':'.. port
+      elseif socket_path then
+        hosts = "unix://" .. socket_path
+      else
+        return
+      end
+
+      local start_cmd = cmd_ttyd .. ' -d 2 -p 7682 '.. cmd_docker .. ' -H "'.. hosts ..'" exec -it ' .. (uid and uid ~= "" and (" -u ".. uid  .. ' ') or "").. container_id .. ' ' .. cmd .. ' &'
+      local res = luci.util.exec(start_cmd)
+      local console = consolesection:option(DummyValue, "console")
+      console.container_id = container_id
+      console.template = "dockerman/container_console"
+    end
+  end
 elseif action == "stats" then
   local response = dk.containers:top({id = container_id, query = {ps_args="-aux"}})
   local container_top
@@ -469,7 +557,7 @@ elseif action == "stats" then
     container_top=response.body
     stat_section = m:section(SimpleSection)
     stat_section.container_id = container_id
-    stat_section.template = "dockerman/stats"
+    stat_section.template = "dockerman/container_stats"
     table_stats = {cpu={key=translate("CPU Useage"),value='-'},memory={key=translate("Memory Useage"),value='-'}}
     stat_section = m:section(Table, table_stats, translate("Stats"))
     stat_section:option(DummyValue, "key", translate("Stats")).width="33%"
@@ -483,6 +571,5 @@ end
 m.submit = false
 m.reset  = false
 end
-
 
 return m
