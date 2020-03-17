@@ -10,7 +10,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ootoc
-PKG_VERSION:=1.0.0
+PKG_VERSION:=1.0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -56,7 +56,7 @@ define Build/InstallDev
 endef
 
 define Package/ootoc/install
-	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config $(1)/var/etc/ootoc
+	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ootocCLI $(1)/usr/bin/
 	$(INSTALL_BIN) ./files/ootoc.init $(1)/etc/init.d/ootoc
 	$(INSTALL_DATA) ./files/ootoc.conf $(1)/etc/config/ootoc
