@@ -9,16 +9,18 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
 PKG_BASE:=1.1.1
-PKG_BUGFIX:=e-dev
+PKG_BUGFIX:=e
 PKG_VERSION:=$(PKG_BASE)$(PKG_BUGFIX)
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/openssl/openssl.git
-PKG_SOURCE_VERSION:=22623e0cc26a11908253206a721873d4101cd466
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=63006d1af7096683206b617667d5f5b00f1f9e3cb82ca25e00e7f01319a4abb4
+PKG_SOURCE_URL:= \
+	http://www.openssl.org/source/ \
+	http://www.openssl.org/source/old/$(PKG_BASE)/ \
+	http://ftp.fi.muni.cz/pub/openssl/source/ \
+	http://ftp.linux.hr/pub/openssl/source/ \
+	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/
+PKG_HASH:=694f61ac11cb51c9bf73f54e771ff6022b0327a43bbdfa1b2f19de1662a6dcbe
 
 PKG_USE_MIPS16:=0
 ENGINES_DIR=engines-1.1
