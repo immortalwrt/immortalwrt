@@ -1,10 +1,11 @@
-<% if self.title == translate("Docker Events") then %>
+<% if self.title == "Events" then %>	
 <%+header%>
+<h2 name="content"><%:Docker%></h2>
+<legend><%:Events%></legend>
 <% end %>
-<h2><a id="content" name="content"><%=self.title%></a></h2>
 <div id="content_syslog">
 <textarea readonly="readonly" wrap="off" rows="<%=self.syslog:cmatch("\n")+2%>" id="syslog"><%=self.syslog:pcdata()%></textarea>
 </div>
-<% if self.title == translate("Docker Events") then %>
+<% if self.title == "Events" then %>
 <%+footer%>
 <% end %>

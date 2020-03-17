@@ -4,17 +4,16 @@ Copyright 2019 lisaac <https://github.com/lisaac/luci-app-dockerman>
 ]]--
 
 require "luci.util"
-local uci = luci.model.uci.cursor()
 local docker = require "luci.model.docker"
 local dk = docker.new()
 
 m = SimpleForm("docker", translate("Docker"))
-m.template = "dockerman/cbi/xsimpleform"
-m.redirect = luci.dispatcher.build_url("admin", "services","docker", "networks")
+m.redirect = luci.dispatcher.build_url("admin", "docker", "networks")
 
 docker_status = m:section(SimpleSection)
 docker_status.template = "dockerman/apply_widget"
-docker_status.err=nixio.fs.readfile(dk.options.status_path)
+docker_status.err=docker:read_status()
+docker_status.err=docker_status.err and docker_status.err:gsub("\n","<br>"):gsub(" ","&nbsp;")
 if docker_status.err then docker:clear_status() end
 
 s = m:section(SimpleSection, translate("New Network"))
@@ -34,7 +33,12 @@ d:value("overlay", "overlay")
 d = s:option(Value, "parent", translate("Parent Interface"))
 d.rmempty = true
 d:depends("dirver", "macvlan")
-d.placeholder="eth0"
+local interfaces = luci.sys and luci.sys.net and luci.sys.net.devices() or {}
+for _, v in ipairs(interfaces) do
+  d:value(v, v)
+end
+d.default="br-lan"
+d.placeholder="br-lan"
 
 d = s:option(Value, "macvlan_mode", translate("Macvlan Mode"))
 d.rmempty = true
@@ -60,15 +64,23 @@ d.default = 0
 d:depends("dirver", "overlay")
 
 d = s:option(DynamicList, "options", translate("Options"))
-d.template = "dockerman/cbi/xdynlist"
 d.rmempty = true
 d.placeholder="com.docker.network.driver.mtu=1500"
 
 d = s:option(Flag, "internal", translate("Internal"), translate("Restrict external access to the network"))
 d.rmempty = true
+d:depends("dirver", "overlay")
 d.disabled = 0
 d.enabled = 1
 d.default = 0
+
+if  nixio.fs.access("/etc/config/network") and nixio.fs.access("/etc/config/firewall")then
+  d = s:option(Flag, "op_macvlan", translate("Create macvlan interface"), translate("Auto create macvlan interface in Openwrt"))
+  d:depends("dirver", "macvlan")
+  d.disabled = 0
+  d.enabled = 1
+  d.default = 1
+end
 
 d = s:option(Value, "subnet", translate("Subnet"))
 d.rmempty = true
@@ -86,7 +98,6 @@ d.placeholder="10.1.1.0/24"
 d.datatype="ip4addr"
 
 d = s:option(DynamicList, "aux_address", translate("Exclude IPs"))
-d.template = "dockerman/cbi/xdynlist"
 d.rmempty = true
 d.placeholder="my-route=10.1.1.1"
 
@@ -151,13 +162,10 @@ m.handle = function(self, state, data)
           Subnet = subnet,
           Gateway = gateway,
           IPRange = ip_range,
-          -- AuxAddress = aux_address
-          -- AuxiliaryAddresses = aux_address
+          AuxAddress = aux_address,
+          AuxiliaryAddresses = aux_address
         }
       }
-    end
-    if next(aux_address)~=nil then
-      create_body["IPAM"]["Config"]["AuxiliaryAddresses"] = aux_address
     end
     if driver == "macvlan" then
       create_body["Options"] = {
@@ -190,14 +198,18 @@ m.handle = function(self, state, data)
       end
     end
 
-    docker:append_status("Network: " .. "create" .. " " .. create_body.Name .. "...")
+    create_body = docker.clear_empty_tables(create_body)
+    docker:write_status("Network: " .. "create" .. " " .. create_body.Name .. "...")
     local res = dk.networks:create({body = create_body})
     if res and res.code == 201 then
       docker:clear_status()
-      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/networks"))
+      if driver == "macvlan" and data.op_macvlan ~= 0 then
+        docker.create_macvlan_interface(data.name, data.parent, data.gateway, data.ip_range)
+      end
+      luci.http.redirect(luci.dispatcher.build_url("admin/docker/networks"))
     else
-      docker:append_status("fail code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "<br>")
-      luci.http.redirect(luci.dispatcher.build_url("admin/services/docker/newnetwork"))
+      docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "\n")
+      luci.http.redirect(luci.dispatcher.build_url("admin/docker/newnetwork"))
     end
   end
 end
