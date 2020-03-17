@@ -212,28 +212,28 @@ static int edma_get_settings(struct net_device *netdev,
 
 		phyreg = (uint16_t)phy_read(adapter->phydev, MII_LPA);
 		if (phyreg & LPA_10HALF)
-			linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT,
+			linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, 
 								cmd->link_modes.lp_advertising);
 
 		if (phyreg & LPA_10FULL)
-			linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT,
+			linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, 
 								cmd->link_modes.lp_advertising);
 
 		if (phyreg & LPA_100HALF)
-			linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT,
+			linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, 
 								cmd->link_modes.lp_advertising);
 
 		if (phyreg & LPA_100FULL)
-			linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT,
+			linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, 
 								cmd->link_modes.lp_advertising);
 
 		phyreg = (uint16_t)phy_read(adapter->phydev, MII_STAT1000);
 		if (phyreg & LPA_1000HALF)
-			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
+			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, 
 								cmd->link_modes.lp_advertising);
 
 		if (phyreg & LPA_1000FULL)
-			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
+			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, 
 								cmd->link_modes.lp_advertising);
 	} else {
 		/* If the speed/duplex for this GMAC is forced and we
