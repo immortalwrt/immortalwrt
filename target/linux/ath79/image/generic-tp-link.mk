@@ -135,6 +135,17 @@ define Device/tplink_archer-c60-v2
 endef
 TARGET_DEVICES += tplink_archer-c60-v2
 
+define Device/tplink_archer-c60-v3
+  $(Device/tplink-safeloader-uimage)
+  SOC := qca9561
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := Archer C60
+  DEVICE_VARIANT := v3
+  TPLINK_BOARD_ID := ARCHER-C60-V3
+  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
+endef
+TARGET_DEVICES += tplink_archer-c60-v3
+
 define Device/tplink_archer-c7-v1
   $(Device/tplink-8mlzma)
   SOC := qca9558
@@ -205,6 +216,35 @@ define Device/tplink_archer-d50-v1
 	tplink-v2-header -s -V "ver. 1.0"
 endef
 TARGET_DEVICES += tplink_archer-d50-v1
+
+define Device/tplink_archer-d7-v1
+  $(Device/tplink-v2)
+  SOC := qca9558
+  DEVICE_MODEL := Archer D7
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport \
+	kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+  TPLINK_HWID := 0x89300001
+  TPLINK_HWREV := 0x0000002D
+  TPLINK_FLASHLAYOUT := 16Mqca
+  TPLINK_HWREVADD := 0x00000002
+endef
+TARGET_DEVICES += tplink_archer-d7-v1
+
+define Device/tplink_archer-d7b-v1
+  $(Device/tplink-v2)
+  SOC := qca9558
+  DEVICE_MODEL := Archer D7b
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport \
+	kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 16000k
+  TPLINK_HWID := 0x89300001
+  TPLINK_HWREV := 0x0000003D
+  TPLINK_FLASHLAYOUT := 16Mqca
+endef
+TARGET_DEVICES += tplink_archer-d7b-v1
 
 define Device/tplink_cpe210-v1
   $(Device/tplink-safeloader-okli)

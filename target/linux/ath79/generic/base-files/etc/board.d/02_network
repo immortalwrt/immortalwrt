@@ -40,7 +40,7 @@ ath79_setup_interfaces()
 	tplink,re450-v1|\
 	tplink,re450-v2|\
 	tplink,tl-wr902ac-v1|\
-	ubnt,bullet-m|\
+	ubnt,bullet-m-ar7241|\
 	ubnt,bullet-m-xw|\
 	ubnt,lap-120|\
 	ubnt,litebeam-ac-gen2|\
@@ -81,6 +81,7 @@ ath79_setup_interfaces()
 	tplink,archer-c25-v1|\
 	tplink,archer-c60-v1|\
 	tplink,archer-c60-v2|\
+	tplink,archer-c60-v3|\
 	tplink,tl-wdr3500-v1|\
 	tplink,tl-wr842n-v1|\
 	tplink,tl-wr842n-v3|\
@@ -250,6 +251,11 @@ ath79_setup_interfaces()
 	tplink,archer-d50-v1)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "2:lan:3" "3:lan:2" "4:lan:1" "1:wan"
+		;;
+	tplink,archer-d7-v1|\
+	tplink,archer-d7b-v1)
+		ucidef_add_switch "switch0" \
+			"0@eth1" "3:lan:3" "4:lan:2" "5:lan:1" "6@eth0" "2:wan:4" "1:wan:5"
 		;;
 	tplink,tl-mr6400-v1)
 		ucidef_set_interfaces_lan_wan "eth0.1 eth1" "usb0"
@@ -440,7 +446,7 @@ ath79_setup_macs()
 		label_mac=$wan_mac
 		;;
 	ubnt,airrouter|\
-	ubnt,bullet-m|\
+	ubnt,bullet-m-ar7241|\
 	ubnt,nanostation-loco-m|\
 	ubnt,nanostation-m|\
 	ubnt,picostation-m|\

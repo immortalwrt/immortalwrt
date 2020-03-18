@@ -71,7 +71,6 @@ endef
 
 define Device/ubnt-xm
   $(Device/ubnt)
-  SOC := ar7241
   DEVICE_VARIANT := XM
   DEVICE_PACKAGES += kmod-usb-ohci
   IMAGE_SIZE := 7448k
@@ -108,18 +107,21 @@ TARGET_DEVICES += ubnt_acb-isp
 
 define Device/ubnt_airrouter
   $(Device/ubnt-xm)
+  SOC := ar7241
   DEVICE_MODEL := AirRouter
   SUPPORTED_DEVICES += airrouter
 endef
 TARGET_DEVICES += ubnt_airrouter
 
-define Device/ubnt_bullet-m
+define Device/ubnt_bullet-m-ar7241
   $(Device/ubnt-xm)
+  SOC := ar7241
   DEVICE_MODEL := Bullet-M
+  DEVICE_VARIANT := XM (AR7241)
   DEVICE_PACKAGES += rssileds
-  SUPPORTED_DEVICES += bullet-m
+  SUPPORTED_DEVICES += bullet-m ubnt,bullet-m
 endef
-TARGET_DEVICES += ubnt_bullet-m
+TARGET_DEVICES += ubnt_bullet-m-ar7241
 
 define Device/ubnt_bullet-m-xw
   $(Device/ubnt-xw)
@@ -181,6 +183,7 @@ TARGET_DEVICES += ubnt_nanostation-ac-loco
 
 define Device/ubnt_nanostation-loco-m
   $(Device/ubnt-xm)
+  SOC := ar7241
   DEVICE_MODEL := Nanostation Loco M
   DEVICE_PACKAGES += rssileds
   SUPPORTED_DEVICES += bullet-m
@@ -197,6 +200,7 @@ TARGET_DEVICES += ubnt_nanostation-loco-m-xw
 
 define Device/ubnt_nanostation-m
   $(Device/ubnt-xm)
+  SOC := ar7241
   DEVICE_MODEL := Nanostation M
   DEVICE_PACKAGES += rssileds
   SUPPORTED_DEVICES += nanostation-m
@@ -213,6 +217,7 @@ TARGET_DEVICES += ubnt_nanostation-m-xw
 
 define Device/ubnt_picostation-m
   $(Device/ubnt-xm)
+  SOC := ar7241
   DEVICE_MODEL := Picostation M
   DEVICE_PACKAGES += rssileds
   SUPPORTED_DEVICES += bullet-m
@@ -221,6 +226,7 @@ TARGET_DEVICES += ubnt_picostation-m
 
 define Device/ubnt_rocket-m
   $(Device/ubnt-xm)
+  SOC := ar7241
   DEVICE_MODEL := Rocket-M
   DEVICE_PACKAGES += rssileds
   SUPPORTED_DEVICES += rocket-m
