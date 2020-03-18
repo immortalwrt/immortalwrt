@@ -334,9 +334,14 @@ function blackwhitelist(){
 
 # 重启网络服务
 function network_restart(){
-	/etc/init.d/network restart &
-	/etc/init.d/firewall reload &
-	/etc/init.d/dnsmasq restart &
+cat>${dir}network_restart<<EOF
+#!/bin/sh
+/etc/init.d/network restart >/dev/null 2>&1 &
+/etc/init.d/firewall restart >/dev/null 2>&1 &
+/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+EOF
+	chmod 0755 ${dir}network_restart && ${dir}network_restart
+	rm -f ${dir}network_restart >/dev/null 2>&1
 	if [ "$1" ] ;then
 		sleep $1
 	fi
@@ -367,20 +372,26 @@ if [ "$1" ] ;then
 fi
 }
 
+# 查看无人值守任务设备是否在线
+function geterrdevicealiases(){
+	if [ ! -z "$err_device_aliases" ] && [ -f ${dir}ipAddress ] ; then
+		MACLIST=$( cat ${dir}ipAddress | awk '{print $2}' | grep -v "^$" | sort -u )
+		for mac in $MACLIST; do
+			if [ -z "$err_mac" ] && [ ! -z "$mac" ] ; then
+				local err_mac=$( echo "$err_device_aliases" | grep -i $mac | grep -v "^$" | sort -u )
+			fi
+		done
+		echo "$err_mac"
+	fi
+}
+
 # 无人值守任务
 function unattended(){
 if [ `get_config send_enable` -eq 3 ] ; then return;fi
-if [ ! -z "$err_device_aliases" ] && [ -f ${dir}ipAddress ] ; then
-	MACLIST=$( cat ${dir}ipAddress | awk '{print $2}' | grep -v "^$" | sort -u )
-	for mac in $MACLIST; do
-		if [ -z "$ipmac" ] && [ ! -z "$mac" ] ; then
-			local ipmac=$( echo "$err_device_aliases" | grep -i -w $mac | grep -v "^$" | sort -u )
-		fi
-	done
-fi
+local err_mac=`geterrdevicealiases`
 
 # 关注设备不在线，执行任务
-if [ -z "$ipmac" ] && [ ! -z "$system_time_event" ] && [ ! -z "$autoreboot_time" ]; then
+if [ -z "$err_mac" ] && [ ! -z "$system_time_event" ] && [ ! -z "$autoreboot_time" ]; then
 	if [ `cat /proc/uptime | awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$autoreboot_time" ] && [ "$system_time_event" -eq "1" ] ; then
 		echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】重启路由器咯" >> ${logfile}
 		cat ${logfile} > /usr/bin/serverchan/errlog
@@ -396,7 +407,7 @@ fi
 
 
 # 重拨尝试获取公网
-if [ -z "$ipmac" ] && [ ! -z "$public_ip_event" ] && [ ! -z "$public_ip_retry_count" ] ; then
+if [ -z "$err_mac" ] && [ ! -z "$public_ip_event" ] && [ ! -z "$public_ip_retry_count" ] ; then
 	local wanIP=`getip wanipv4`
 	local hostIP=`getip hostipv4`
 	if [ ! -z ${wanIP} ] && [ ! -z ${hostIP} ] && ( ! echo ${wanIP} | grep -q -w ${hostIP} );then
@@ -440,24 +451,18 @@ function rand_geturl(){
 			if [ ! -z "$network_err_event" ] && [ "$((`date +%s`-$network_err_time))" -ge "600" ] ; then
 				# 查找列表 MAC 是否在线
 				serverchan_first
-				if [ ! -z "$err_device_aliases" ] && [ -f ${dir}ipAddress ] ; then
-					MACLIST=$( cat ${dir}ipAddress | awk '{print $2}' | grep -v "^$" | sort -u )
-					for mac in $MACLIST; do
-						if [ -z "$ip_mac" ] && [ ! -z "$mac" ] ; then
-							local ip_mac=$( echo "$err_device_aliases" | grep -i $mac | grep -v "^$" | sort -u )
-						fi
-					done
-				fi
+				local err_mac=`geterrdevicealiases`
 				
 				# 关注设备不在线，尝试修复网络
-				if [ -z "$ip_mac" ] ; then
+				if [ -z "$err_mac" ] ; then
+					if [ -f /usr/bin/serverchan/autoreboot_count ] ; then
+							retry_count=`cat /usr/bin/serverchan/autoreboot_count`
+							rm -f /usr/bin/serverchan/autoreboot_count >/dev/null 2>&1
+					fi
+					retry_count=`expr $retry_count + 1`
+					
 					# 修复方式为重启路由器
 					if [ "$network_err_event" -eq "1" ] ;then
-						if [ -f /usr/bin/serverchan/autoreboot_count ] ; then
-							retry_count=`cat /usr/bin/serverchan/autoreboot_count`
-						fi
-						retry_count=`expr $retry_count + 1`
-						
 						if [ "$retry_count" -lt "3" ] ;then
 							echo "$retry_count" > /usr/bin/serverchan/autoreboot_count
 							echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！！】正在尝试重启网络，当前第 $retry_count 次 " >> ${logfile}
@@ -472,7 +477,6 @@ function rand_geturl(){
 					
 					# 修复方式为重启网络接口
 					if [ "$network_err_event" -eq "2" ] ;then
-						retry_count=`expr $retry_count + 1`
 						if [ "$retry_count" -lt "3" ] ;then
 							echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！！】正在尝试重启网络，当前第 $retry_count 次 " >> ${logfile}
 							network_restart 60
@@ -482,10 +486,7 @@ function rand_geturl(){
 					fi
 					
 					# 修复方式为修改相关设置项，尝试修复网络
-					if [ "$network_err_event" -eq "3" ] ;then
-						if [ -f /usr/bin/serverchan/autoreboot_count ] ; then retry_count=`cat /usr/bin/serverchan/autoreboot_count`;fi
-						retry_count=`expr $retry_count + 1`
-						
+					if [ "$network_err_event" -eq "3" ] ;then				
 						# 重启网络
 						if [ "$retry_count" -eq "1" ] ;then
 							echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！！】正在尝试修复网络，当前第 1 次，重启网络服务中 " >> ${logfile}
@@ -521,7 +522,10 @@ function rand_geturl(){
 							uci commit network
 							# 还原 dns 重定向
 							uci set dhcp.@dnsmasq[0].port='53'
+							uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
 							uci delete dhcp.@dnsmasq[0].server
+							uci delete dhcp.@dnsmasq[0].noresolv
+							uci commit dhcp
 							# 删除静态租约
 							#uci delete dhcp.host
 							# 删除防火墙转发规则
@@ -529,12 +533,13 @@ function rand_geturl(){
 							# 删除防火墙自定义规则
 							>/etc/firewall.user
 							uci commit firewall
+							network_restart 60
+						elif [ "$retry_count" -eq "4" ] ;then
 							echo "$retry_count" > /usr/bin/serverchan/autoreboot_count
-							echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！！】正在尝试重启网络，当前第 $retry_count 次 " >> ${logfile}
 							cat ${logfile} > /usr/bin/serverchan/errlog
 							sleep 2
 							reboot
-						elif [ "$retry_count" -eq "4" ] ;then
+						elif [ "$retry_count" -eq "5" ] ;then
 							echo "$retry_count" > /usr/bin/serverchan/autoreboot_count
 							echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！！】修复失败，还原设置中，请自行检查网络设置" >> ${logfile}
 							# 还原设置项
@@ -546,7 +551,9 @@ function rand_geturl(){
 							# 如果 LAN 口误设置为 pppoe 则改为静态分配，不还原，点错懒得捅菊花就拔网线等十分钟
 							lan_proto=`uci get network.lan.proto 2>/dev/null | grep pppoe`
 							if [ ! -z "$lan_proto" ];then uci set network.lan.proto='static' && uci set network.lan.ipaddr='192.168.1.1' && uci set network.lan.netmask='255.255.255.0' && uci commit network;fi
-							network_restart
+							cat ${logfile} > /usr/bin/serverchan/errlog
+							sleep 2
+							reboot
 						fi
 					fi
 				fi
@@ -1066,8 +1073,6 @@ if [ ! -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ] ; then
 	for ip in $IPLIST; do
 	# 如果 “ip 列表不为空” 	
 	if [ ! -z "$ip" ] ; then	
-		local ip_mac=`getmac $ip`
-		local ip_name=`getname $ip $ip_mac`
 		up $ip &
 	fi
 	done
@@ -1096,14 +1101,6 @@ unset i && unset n
 if [ "$1" ] ;then
 	if [ $1 = "send" ] ;then send;fi
 	exit
-fi
-
-# 防止重复启动
-basePath=$(cd `dirname $0`; pwd)
-fullPathProc=$basePath/${0##*/}
-pCount=$(ps | grep $fullPathProc | grep -v 'grep' | grep -v ' -c sh' | grep -v $$ | grep -c 'sh')
-if [ $pCount -gt 1 ]; then
-	exit 0
 fi
 
 # 初始化
