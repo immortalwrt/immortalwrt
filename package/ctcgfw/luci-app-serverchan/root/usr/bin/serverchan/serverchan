@@ -387,24 +387,23 @@ function geterrdevicealiases(){
 
 # 无人值守任务
 function unattended(){
+if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"`  【无人值守任务】检测客户端在线情况" >> ${logfile};fi
 if [ `get_config send_enable` -eq 3 ] ; then return;fi
 local err_mac=`geterrdevicealiases`
-
+if [ -z "$err_mac" ] &&  [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ]; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】关注设备不在线" >> ${logfile};elif [ ! -z "$err_mac" ] && [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ]; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】关注设备在线，跳过" >> ${logfile};fi
 # 关注设备不在线，执行任务
-if [ -z "$err_mac" ] && [ ! -z "$system_time_event" ] && [ ! -z "$autoreboot_time" ]; then
-	if [ `cat /proc/uptime | awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$autoreboot_time" ] && [ "$system_time_event" -eq "1" ] ; then
+if [ -z "$err_mac" ] && [ ! -z "$system_time_event" ] ; then
+	if [ ! -z "$autoreboot_time" ] && [ `cat /proc/uptime | awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$autoreboot_time" ] && [ "$system_time_event" -eq "1" ] ; then
 		echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】重启路由器咯" >> ${logfile}
 		cat ${logfile} > /usr/bin/serverchan/errlog
 		sleep 2
 		reboot
 		exit
-	elif [ `ubus call network.interface.wan status | grep \"uptime\" | sed $'s/\"uptime": //g'| sed $'s/\,//g' | awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$network_restart_time" ] && [ "$system_time_event" -eq "2" ] ; then
+	elif [ ! -z "$network_restart_time" ] && [ `ubus call network.interface.wan status | grep \"uptime\" | sed $'s/\"uptime": //g'| sed $'s/\,//g' | awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$network_restart_time" ] && [ "$system_time_event" -eq "2" ] ; then
 		echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】重新拨号咯" >> ${logfile}
 		network_restart 60
 	fi
 fi
-
-
 
 # 重拨尝试获取公网
 if [ -z "$err_mac" ] && [ ! -z "$public_ip_event" ] && [ ! -z "$public_ip_retry_count" ] ; then
