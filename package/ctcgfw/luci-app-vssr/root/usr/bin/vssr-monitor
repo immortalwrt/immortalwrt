@@ -29,6 +29,7 @@ kcp_process=$5
 local_process=$6
 pdnsd_process=$7
 dnsforwarder_process=$8
+dns2socks_process=$9
 ssserver_process=$10
 ssrserver_process=$11
 v2rayserver_process=$12
@@ -219,7 +220,6 @@ do
 		if [ $icount -lt $pdnsd_process ]  #如果进程挂掉就重启它
 		then
 			logger -t "$NAME" "pdnsd tunnel error.restart!"
-			echo "$(date "+%Y-%m-%d %H:%M:%S") pdnsd tunnel error.restart!" >> ${logfile}
 			if [ -f /var/run/pdnsd.pid ] ;then
 				kill $(cat /var/run/pdnsd.pid) >/dev/null 2>&1
 			else 
@@ -228,6 +228,22 @@ do
 
 			( /usr/sbin/pdnsd -c /var/etc/pdnsd.conf -d &)
 		fi   
+	fi
+
+#dns2socks
+	if [ "$pdnsd_process" -eq 2 ]; then
+		icount=$(busybox ps -w | grep -e ssr-dns -e dns2socks | grep -v grep | wc -l)
+		if [ "$icount" -lt 2 ]; then #如果进程挂掉就重启它
+                                                  logger -t "$NAME" "dns2socks $dnsstr tunnel error.restart!"
+                                                   echo "$(date "+%Y-%m-%d %H:%M:%S") dns2socks tunnel error.restart!" >> ${logfile}
+			dnsstr=$(uci_get_by_type global tunnel_forward 8.8.4.4:53)
+			dnsserver=$(echo "$dnsstr" | awk -F ':' '{print $1}')
+			dnsport=$(echo "$dnsstr" | awk -F ':' '{print $2}')
+			killall -q -9 dns2socks
+			kill -9 $(busybox ps -w | grep ssr-dns | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+			microsocks -i 127.0.0.1 -p 10802 ssr-dns >/dev/null 2>&1 &
+      dns2socks 127.0.0.1:10802  $dnsserver:$dnsport 127.0.0.1:5335 -q >/dev/null 2>&1 &
+		fi
 	fi
 #chiandns
 	if [ $chinadns_process -gt 0 ] ;then
@@ -274,4 +290,6 @@ do
 		fi
 	fi
 done
+
+
 
