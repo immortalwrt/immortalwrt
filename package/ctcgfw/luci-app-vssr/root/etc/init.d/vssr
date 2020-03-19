@@ -27,7 +27,6 @@ kcp_flag=0
 pdnsd_enable_flag=0
 dnsforwarder_enable_flag=0
 chinadns_enable_flag=0
-dnscrypt-proxy_enable_flag=0
 switch_enable=0
 ssserver_enable=0
 ssrserver_enable=0
@@ -50,13 +49,9 @@ uci_get_by_type() {
 }
 
 add_cron() {
-	sed -i '/vssr/d' $CRON_FILE
-	sed -i '/vssr.log/d' $CRON_FILE && echo '0 1 * * * echo "" > /tmp/vssr.log' >>$CRON_FILE
-#	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/subscribe.lua" >>$CRON_FILE
-	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 5 * * * /usr/bin/lua /usr/share/vssr/update.lua" >>$CRON_FILE
-                 [ -n "$(grep -w "/usr/share/vssr/subscribe.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/vssr\/subscribe.sh/d' $CRON_FILE
-	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/share/vssr/subscribe.sh" >> $CRON_FILE
-                 [ -z "$(grep -w "/usr/share/vssr/update.sh" $CRON_FILE)" ] && echo "0 5 * * 0 /usr/share/vssr/update.sh" >> $CRON_FILE   
+	sed -i '/vssr.log/d' $CRON_FILE && echo '0 1 * * * echo "" > /tmp/vssr.log' >> $CRON_FILE
+	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/subscribe.lua" >> $CRON_FILE
+	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/bin/lua /usr/share/vssr/update.lua" >> $CRON_FILE
 	crontab $CRON_FILE
 }
 
@@ -709,6 +704,7 @@ fi
 #deal with dns
 
 	if [ "$(uci_get_by_type global pdnsd_enable)" -ne "0" ] ;then
+	local ssr_dns="$(uci_get_by_type global pdnsd_enable 0)"
 	local dnsstr="$(uci_get_by_type global tunnel_forward 8.8.4.4:53)"
     local dnsserver=`echo "$dnsstr"|awk -F ':'  '{print $1}'`
     local dnsport=`echo "$dnsstr"|awk -F ':'  '{print $2}'`
@@ -753,6 +749,10 @@ fi
 			fi
 			nohup /usr/bin/chinadns -p 5335 -c /etc/china_ssr.txt -m -d -s $dnsstrs >/dev/null 2>&1 &
 			chinadns_enable_flag=1
+			elif [ "$ssr_dns" == "7" ]; then
+                        microsocks -i 127.0.0.1 -p 10802 ssr-dns >/dev/null 2>&1 &
+                        dns2socks 127.0.0.1:10802 $dnsserver:$dnsport 127.0.0.1:5335 -q >/dev/null 2>&1 &
+                        pdnsd_enable_flag=1
 		fi
 
 	fi
@@ -1020,11 +1020,11 @@ start() {
 	start_server
 	start_local
 	if [ $(uci_get_by_type global monitor_enable 0) == "1" ]; then
-		let total_count=server_count+redir_tcp+redir_udp+tunnel_enable+kcp_enable_flag+local_enable+pdnsd_enable_flag+dnsforwarder_enable_flag+switch_enable+ssserver_enable+ssrserver_enable+v2rayserver_enable+haproxy_enable+privoxy_enable+chinadns_enable_flag+dnscrypt-proxy_enable_flag
+		let total_count=server_count+redir_tcp+redir_udp+tunnel_enable+kcp_enable_flag+local_enable+pdnsd_enable_flag+dnsforwarder_enable_flag+switch_enable+ssserver_enable+ssrserver_enable+v2rayserver_enable+haproxy_enable+privoxy_enable+chinadns_enable_flag
 
 		if [ $total_count -gt 0 ] ;then
 			#param:server(count) redir_tcp(0:no,1:yes)  redir_udp tunnel kcp local gfw
-			service_start /usr/bin/vssr-monitor $server_count $redir_tcp $redir_udp $tunnel_enable $kcp_enable_flag $local_enable $pdnsd_enable_flag $dnsforwarder_enable_flag $switch_enable $ssserver_enable $ssrserver_enable $v2rayserver_enable $haproxy_enable $privoxy_enable $chinadns_enable_flag $dnscrypt-proxy_enable_flag
+			service_start /usr/bin/vssr-monitor $server_count $redir_tcp $redir_udp $tunnel_enable $kcp_enable_flag $local_enable $pdnsd_enable_flag $dnsforwarder_enable_flag $switch_enable $ssserver_enable $ssrserver_enable $v2rayserver_enable $haproxy_enable $privoxy_enable $chinadns_enable_flag 
 		fi
 	fi
 	ENABLE_SERVER=$(uci_get_by_type global global_server nil)
@@ -1052,7 +1052,7 @@ stop() {
 	killall -q -9 vssr-monitor
 	killall -q -9 ss-redir
 	killall -q -9 ssr-redir
-                 killall -q -9 trojan
+        killall -q -9 trojan
 	killall -q -9 v2ray
 	killall -q -9 ssr-server
 	killall -q -9 ss-server
@@ -1061,15 +1061,16 @@ stop() {
 	killall -q -9 ss-local
 	killall -q -9 haproxy
 	killall -q -9 privoxy
-                 killall -q -9 ipt2socks
+        killall -q -9 ipt2socks
+	killall -q -9  dns2socks
 	killall -q -9 v2ray-plugin
 	killall -q -9 gq-client
 	killall -q -9 gq-server
 	killall -q -9 obfs-local
 	killall -q -9 obfs-server
 	killall -q -9 chinadns
-                 killall -q -9 udp2raw
-                 killall -q -9 udpspeeder
+        killall -q -9 udp2raw
+        killall -q -9 udpspeeder
 	if [ -f /var/run/pdnsd.pid ]; then
 		kill $(cat /var/run/pdnsd.pid) >/dev/null 2>&1
 	else

@@ -1,13 +1,13 @@
 #!/usr/bin/lua
 ------------------------------------------------
--- This file is part of the luci-app-vssr subscribe.lua
+-- This file is part of the luci-app-ssr-plus subscribe.lua
 -- @author William Chan <root@williamchan.me>
 ------------------------------------------------
 require 'nixio'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
-
+require 'uci'
 -- these global functions are accessed all the time by the event handler
 -- so caching them is worth the effort
 local luci = luci
@@ -262,8 +262,6 @@ local function processData(szType, content)
 	if not result.alias then
 		result.alias = result.server .. ':' .. result.server_port
 	end
-                 local flag =  luci.sys.exec('/usr/share/'..name..'/getflag.sh "'..result.alias..'" '..result.server)
-                 result.flag = string.gsub(flag, '\n', '')
 	-- alias 不参与 hashkey 计算
 	local alias = result.alias
 	result.alias = nil
@@ -272,11 +270,13 @@ local function processData(szType, content)
 	result.hashkey = md5(jsonStringify(result))
 	result.alias = alias
 	result.switch_enable = switch_enable
+                 local flag =  luci.sys.exec('/usr/share/'..name..'/getflag.sh "'..result.alias..'" '..result.server)
+                 result.flag = string.gsub(flag, '\n', '')
 	return result
 end
 -- wget
 local function wget(url)
-	local stdout = luci.sys.exec('wget-ssl --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36" --no-check-certificate -t 3 -T 10 -O- "' .. url .. '"')
+	local stdout = luci.sys.exec('wget-ssl --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" --no-check-certificate -t 3 -T 10 -O- "' .. url .. '"')
 	return trim(stdout)
 end
 
@@ -356,17 +356,13 @@ local execute = function()
 					end
 				end
 				log('成功解析节点数量: ' ..#nodes)
-			else
-				log(url .. ': 获取内容为空')
+			
 			end
 		end
 	end
 	-- diff
 	do
-		if next(nodeResult) == nil then
-			log("更新失败，没有可用的节点信息")
-			return
-		end
+		assert(next(nodeResult), "node result is empty")
 		local add, del = 0, 0
 		ucic:foreach(name, uciType, function(old)
 			if old.grouphashkey or old.hashkey then -- 没有 hash 的不参与删除
@@ -380,10 +376,11 @@ local execute = function()
 					setmetatable(nodeResult[old.grouphashkey][old.hashkey], { __index =  { _ignore = true } })
 				end
 			else
-				if not old.alias then
-					old.alias = old.server .. ':' .. old.server_port
-				end
-				log('忽略手动添加的节点: ' .. old.alias)
+				   if (old.alias ~= nil) then
+                                                                     log('忽略手动添加的节点: ' .. old.alias)
+                                                   else
+                                                                     log('忽略手动添加的无效节点')
+                                                   end
 			end
 
 		end)
@@ -401,25 +398,23 @@ local execute = function()
 		-- 如果原有服务器节点已经不见了就尝试换为第一个节点
 		local globalServer = ucic:get_first(name, 'global', 'global_server', '')
 		local firstServer = ucic:get_first(name, uciType)
-		if firstServer then
-			if not ucic:get(name, globalServer) then
-				luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &")
-				ucic:commit(name)
-				ucic:set(name, ucic:get_first(name, 'global'), 'global_server', ucic:get_first(name, uciType))
+                                  if not ucic:get(name, globalServer) then
+		                   if firstServer then
+				ucic:set(name, ucic:get_first(name, 'global'), 'global_server', firstServer)
 				ucic:commit(name)
 				log('当前主服务器节点已被删除，正在自动更换为第一个节点。')
-				luci.sys.call("/etc/init.d/" .. name .. " start > /dev/null 2>&1 &")
-			else
-				log('维持当前主服务器节点。')
-				luci.sys.call("/etc/init.d/" .. name .." restart > /dev/null 2>&1 &")
-			end
+				
+			       end
+                                             end
+		                   if firstServer then
+			                  luci.sys.call("/etc/init.d/" .. name ..  " restart > /dev/null 2>&1 &") 
+			
 		else
-			log('没有服务器节点了，停止服务')
-			luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &")
+			luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &") 
 		end
 		log('新增节点数量: ' ..add, '删除节点数量: ' .. del)
-                                  log("END SUBSCRIBE")
 		log('订阅更新成功')
+                                 log("END SUBSCRIBE")
 	end
 end
 
@@ -427,8 +422,8 @@ if subscribe_url and #subscribe_url > 0 then
 	xpcall(execute, function(e)
 		log(e)
 		log(debug.traceback())
-                                   log("END SUBSCRIBE")
 		log('发生错误, 正在恢复服务')
+                                  log("END SUBSCRIBE")
 		local firstServer = ucic:get_first(name, uciType)
 		if firstServer then
 			luci.sys.call("/etc/init.d/" .. name .." restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早

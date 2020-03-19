@@ -516,8 +516,6 @@ msgstr "通过代理更新"
 msgid "GFW List"
 msgstr "GFW列表"
 
-msgid "ShadowSocksR Plus+ Settings"
-msgstr "ShadowSocksR Plus+ 设置（支持SS/SSR/V2RAY/Trojan）"
 
 msgid "Main Server"
 msgstr "主服务器"
@@ -862,8 +860,8 @@ msgstr "删除所有订阅服务器节点"
 msgid "Update All Subscribe Severs"
 msgstr "更新所有订阅服务器节点"
 
-msgid "No special needs, please click here to subscribe to update"
-msgstr "没有特殊需要，请点击这里订阅更新"
+msgid "Use DNS2SOCKS query and cache"
+msgstr "使用 DNS2SOCKS 查询并缓存"
 
 msgid "Running Details:"
 msgstr "进程详情："

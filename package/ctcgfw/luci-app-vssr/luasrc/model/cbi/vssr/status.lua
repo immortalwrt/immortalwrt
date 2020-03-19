@@ -1,7 +1,7 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
 
-local IPK_Version="20200315.1.24"
+local IPK_Version="20200319.1.26"
 local m, s, o
 local redir_run=0
 local reudp_run=0
@@ -23,6 +23,7 @@ local pdnsd_run=0
 local dnsforwarder_run=0
 local dnscrypt_proxy_run=0
 local chinadns_run=0
+local dns2socks_run=0
 local haproxy_run=0
 local privoxy_run=0
 
@@ -259,6 +260,9 @@ if luci.sys.call("pidof dnscrypt-proxy >/dev/null") == 0 then
 dnscrypt_proxy_run=1     
 end
 
+if luci.sys.call("pidof dns2socks >/dev/null") == 0 then                 
+dns2socks_run=1     
+end
 
 if luci.sys.call("pidof haproxy >/dev/null") == 0 then                 
 haproxy_run=1     
@@ -315,6 +319,16 @@ if pdnsd_run == 1 then
 s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
 else             
 s.value = translate("Not Running")
+end 
+
+if nixio.fs.access("/usr/bin/dns2socks") then
+s=m:field(DummyValue,"dns2socks_run",translate("DNS2SOCKS"))
+s.rawhtml  = true                                              
+if dns2socks_run == 1 then                             
+s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
+else             
+s.value = translate("Not Running")
+end 
 end 
 
 s=m:field(DummyValue,"dnsforwarder_run",translate("dnsforwarder"))
