@@ -202,7 +202,7 @@
 				s.innerHTML = "<font color='green'>导入Shadowsocks配置信息成功</font>";
 			}
 			return false;
-		} else if (ssu[0] == "trojan") {
+			} else if (ssu[0] == "trojan") {
 			var url0, param = "";
 			var ploc = ssu[1].indexOf("#");
 			if (ploc > 0) {
@@ -212,15 +212,32 @@
 				url0 = ssu[1]
 			}
 			var sstr = url0;
+
 			document.getElementById('cbid.vssr.' + sid + '.type').value = "trojan";
 			document.getElementById('cbid.vssr.' + sid + '.type').dispatchEvent(event);
 			var team = sstr.split('@');
 			var password = team[0]
 			var serverPart = team[1].split(':');
-			var port = serverPart[1].split('?')[0];
+			var others = serverPart[1].split('?');
+			var port = others[0]
+			var queryParam = {}
+			if(others.length > 1) {
+				var queryParams = others[1]
+				var queryArray = queryParams.split('&')
+				for (i = 0; i < queryArray.length; i++) {
+					var params = queryArray[i].split('=');
+					queryParam[decodeURIComponent(params[0])] = decodeURIComponent(params[1] || '');
+				}
+			}
+			
 			document.getElementById('cbid.vssr.' + sid + '.server').value = serverPart[0];
 			document.getElementById('cbid.vssr.' + sid + '.server_port').value = port;
 			document.getElementById('cbid.vssr.' + sid + '.password').value = password;
+			document.getElementById('cbid.vssr.' + sid + '.tls').checked = true;
+			document.getElementById('cbid.vssr.' + sid + '.tls').dispatchEvent(event);
+			document.getElementById('cbid.vssr.' + sid + '.tls_host').value = queryParam.peer || '';
+			document.getElementById('cbid.vssr.' + sid + '.insecure').checked = queryParam.allowInsecure === '1';
+
 			if (param != undefined) {
 				document.getElementById('cbid.vssr.' + sid + '.alias').value = decodeURI(param);
 			}
