@@ -30,11 +30,6 @@ define Package/$(PKG_NAME)/description
 	LuCI Support for udp2raw-tunnel.
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Build/Configure
 endef
 
@@ -54,20 +49,20 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/udp2raw.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/*.lua $(1)/usr/lib/lua/luci/controller/
+	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/udp2raw
-	$(INSTALL_DATA) ./files/luci/model/cbi/udp2raw/*.lua $(1)/usr/lib/lua/luci/model/cbi/udp2raw/
+	$(INSTALL_DATA) ./luasrc/model/cbi/udp2raw/*.lua $(1)/usr/lib/lua/luci/model/cbi/udp2raw/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/udp2raw
-	$(INSTALL_DATA) ./files/luci/view/udp2raw/*.htm $(1)/usr/lib/lua/luci/view/udp2raw/
+	$(INSTALL_DATA) ./luasrc/view/udp2raw/*.htm $(1)/usr/lib/lua/luci/view/udp2raw/
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/root/etc/config/udp2raw $(1)/etc/config/udp2raw
+	$(INSTALL_CONF) ./root/etc/config/udp2raw $(1)/etc/config/udp2raw
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/udp2raw $(1)/etc/init.d/udp2raw
+	$(INSTALL_BIN) ./root/etc/init.d/udp2raw $(1)/etc/init.d/udp2raw
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-udp2raw $(1)/etc/uci-defaults/luci-udp2raw
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-udp2raw $(1)/etc/uci-defaults/luci-udp2raw
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/udp2raw.po $(1)/usr/lib/lua/luci/i18n/udp2raw.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
