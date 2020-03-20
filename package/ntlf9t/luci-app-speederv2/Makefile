@@ -30,11 +30,6 @@ define Package/$(PKG_NAME)/description
 	LuCI Support for speederv2-tunnel.
 endef
 
-define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/files/luci/i18n/*.po), \
-		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
-endef
-
 define Build/Configure
 endef
 
@@ -54,20 +49,20 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/speederv2.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./files/luci/controller/*.lua $(1)/usr/lib/lua/luci/controller/
+	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/speederv2
-	$(INSTALL_DATA) ./files/luci/model/cbi/speederv2/*.lua $(1)/usr/lib/lua/luci/model/cbi/speederv2/
+	$(INSTALL_DATA) ./luasrc/model/cbi/speederv2/*.lua $(1)/usr/lib/lua/luci/model/cbi/speederv2/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/speederv2
-	$(INSTALL_DATA) ./files/luci/view/speederv2/*.htm $(1)/usr/lib/lua/luci/view/speederv2/
+	$(INSTALL_DATA) ./luasrc/view/speederv2/*.htm $(1)/usr/lib/lua/luci/view/speederv2/
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/root/etc/config/speederv2 $(1)/etc/config/speederv2
+	$(INSTALL_CONF) ./root/etc/config/speederv2 $(1)/etc/config/speederv2
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/root/etc/init.d/speederv2 $(1)/etc/init.d/speederv2
+	$(INSTALL_BIN) ./root/etc/init.d/speederv2 $(1)/etc/init.d/speederv2
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/root/etc/uci-defaults/luci-speederv2 $(1)/etc/uci-defaults/luci-speederv2
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-speederv2 $(1)/etc/uci-defaults/luci-speederv2
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	po2lmo ./po/zh-cn/speederv2.po $(1)/usr/lib/lua/luci/i18n/speederv2.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
