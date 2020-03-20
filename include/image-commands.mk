@@ -420,3 +420,10 @@ define Build/append-metadata
 		fwtool -S "$@.ucert" "$@" ;\
 	}
 endef
+
+# Convert a raw image into a $1 type image.
+# E.g. | qemu-image vdi
+define Build/qemu-image
+	qemu-img convert -f raw -O $1 $@ $@.new
+	@mv $@.new $@
+endef
