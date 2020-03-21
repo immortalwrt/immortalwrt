@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 ARCH:=i386
 BOARD:=x86
 BOARDNAME:=x86
-FEATURES:=squashfs ext4 vdi vmdk pcmcia targz fpu
+FEATURES:=squashfs ext4 vdi vmdk pcmcia targz fpu boot-part rootfs-part
 SUBTARGETS:=64 generic legacy geode
 
 KERNEL_PATCHVER:=5.4
@@ -28,6 +28,6 @@ DEFAULT_PACKAGES += partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid \
 
 $(eval $(call BuildTarget))
 
-$(eval $(call $(if $(CONFIG_TARGET_ROOTFS_ISO),RequireCommand,Ignore),mkisofs, \
+$(eval $(call $(if $(CONFIG_ISO_IMAGES),RequireCommand,Ignore),mkisofs, \
    	Please install mkisofs. \
 ))
