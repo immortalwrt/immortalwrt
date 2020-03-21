@@ -14,7 +14,7 @@ XHR.poll(3, '<%=url([[admin]], [[nas]], [[qBittorrent]], [[status]])%>', null,
 );
 
 function openwebui(){
-	var url = window.location.host+":<%=luci.sys.exec("uci -q get qbittorrent.config.port"):gsub("^%s*(.-)%s*$", "%1")%>";
+	var url = window.location.host+":<%=luci.sys.exec("uci -q get qbittorrent.@qbittorrent[0].port"):gsub("^%s*(.-)%s*$", "%1")%>";
 	window.open('http://'+url,'target','');
 };
 //]]>
