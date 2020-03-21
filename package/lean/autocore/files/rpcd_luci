@@ -629,6 +629,16 @@ local methods = {
 		end
 	},
 
+	getCPUBench = {
+		call = function()
+			local sys = require "luci.sys"
+			local cpubench = {}
+
+			cpubench.cpubench = sys.exec("cat /etc/bench.log 2>/dev/null")
+			return cpubench
+		end
+	},
+
 	getOnlineUsers = {
 		call = function()
 			local sys = require "luci.sys"
