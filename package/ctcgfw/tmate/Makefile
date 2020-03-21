@@ -40,6 +40,10 @@ define Package/$(PKG_NAME)
   DEPENDS:=+libpthread +libevent2 +libssh +libmsgpack-c +libncurses
 endef
 
+CONFIGURE_ARGS+=--oldincludedir=$(STAGING_DIR)
+
+CONFIGURE_VARS+=LIBSSH_CFLAGS="-I$(STAGING_DIR)/usr/include " LIBSSH_LIBS="-lssh"
+
 define Package/$(PKG_NAME)/description
 	Tmate is a fork of tmux. It provides an instant pairing solution.
 endef
