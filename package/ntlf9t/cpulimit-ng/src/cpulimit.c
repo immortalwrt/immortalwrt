@@ -58,7 +58,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/sysctl.h>
+#include <linux/sysctl.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 
