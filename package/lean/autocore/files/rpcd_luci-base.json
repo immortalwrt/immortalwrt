@@ -61,7 +61,7 @@
 			"ubus": {
 				"file": [ "list", "read", "stat" ],
 				"iwinfo": [ "assoclist", "freqlist", "txpowerlist", "countrylist" ],
-				"luci": [ "getConntrackList", "getInitList", "getLocaltime", "getProcessList", "getRealtimeStats", "getTimezones", "getLEDs", "getUSBDevices", "getSwconfigFeatures", "getSwconfigPortState", "getBlockDevices", "getMountPoints", "getCPUBench", "getCPUUsage", "getOnlineUsers", "getETHInfo" ],
+				"luci": [ "getConntrackList", "getInitList", "getLocaltime", "getProcessList", "getRealtimeStats", "getTimezones", "getLEDs", "getUSBDevices", "getSwconfigFeatures", "getSwconfigPortState", "getBlockDevices", "getMountPoints", "getCPUBench", "getCPUInfo", "getCPUUsage", "getETHInfo", "getOnlineUsers" ],
 				"luci-rpc": [ "getBoardJSON", "getDHCPLeases", "getDSLStatus", "getDUIDHints", "getHostHints", "getNetworkDevices", "getWirelessDevices" ],
 				"network.interface": [ "dump" ],
 				"network.rrdns": [ "lookup" ],

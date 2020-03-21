@@ -613,22 +613,6 @@ local methods = {
 		end
 	},
 
-	getCPUUsage = {
-		call = function()
-			local sys = require "luci.sys"
-			local cpuusage = {}
-
-			sys.call("/bin/getcpu &")
-			cpuusage.cpuusage = sys.exec("cat /tmp/cpuusage 2>/dev/null")
-
-			if (cpuusage.cpuusage == nil) or (cpuusage.cpuusage == "") then
-				cpuusage.cpuusage = "2.33%"
-			end
-
-			return cpuusage
-		end
-	},
-
 	getCPUBench = {
 		call = function()
 			local sys = require "luci.sys"
@@ -636,17 +620,6 @@ local methods = {
 
 			cpubench.cpubench = sys.exec("cat /etc/bench.log 2>/dev/null")
 			return cpubench
-		end
-	},
-
-	getOnlineUsers = {
-		call = function()
-			local sys = require "luci.sys"
-			local onlineusers = {}
-
-			onlineusers.onlineusers = sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
-			return onlineusers
-
 		end
 	},
 
@@ -662,6 +635,22 @@ local methods = {
 			end
 
 			return cpuinfo
+		end
+	},
+
+	getCPUUsage = {
+		call = function()
+			local sys = require "luci.sys"
+			local cpuusage = {}
+
+			sys.call("/bin/getcpu &")
+			cpuusage.cpuusage = sys.exec("cat /tmp/cpuusage 2>/dev/null")
+
+			if (cpuusage.cpuusage == nil) or (cpuusage.cpuusage == "") then
+				cpuusage.cpuusage = "2.33%"
+			end
+
+			return cpuusage
 		end
 	},
 
@@ -686,6 +675,18 @@ local methods = {
 			fd:close()
 			return { ethinfo = rv }
 		end
+	},
+
+	getOnlineUsers = {
+		call = function()
+			local sys = require "luci.sys"
+			local onlineusers = {}
+
+			onlineusers.onlineusers = sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
+			return onlineusers
+
+		end
+	}
 }
 
 local function parseInput()
