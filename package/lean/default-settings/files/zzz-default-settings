@@ -48,6 +48,10 @@ echo "DISTRIB_REVISION=''" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt SNAPSHOT | Mod20.03 By CTCGFW'" >> /etc/openwrt_release
 
+sed -i 's/LuCI Master/LuCI SNAPSHOT/g' /usr/lib/lua/luci/version.lua
+sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
+echo 'luciversion = "Mod20.03 by CTCGFW"' >> /usr/lib/lua/luci/version.lua
+
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 
