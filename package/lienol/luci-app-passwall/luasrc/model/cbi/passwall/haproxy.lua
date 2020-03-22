@@ -48,16 +48,9 @@ o = s:option(Value, "console_port", translate("Console Port"), translate(
 o.default = "1188"
 o:depends("balancing_enable", 1)
 
----- Haproxy Port
-o = s:option(Value, "haproxy_port", translate("Haproxy Port"),
-             translate("Configure this node with 127.0.0.1: this port"))
-o.default = "1181"
-o:depends("balancing_enable", 1)
-
 -- [[ Balancing Settings ]]--
-s = m:section(TypedSection, "balancing", translate("Load Balancing Setting"),
-              translate(
-                  "Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline!"))
+s = m:section(TypedSection, "haproxy_config", translate("Load Balancing Setting"),
+              "<font color='red'>" .. translate("Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline! Multiple groups can be set, Haproxy port same one for each group.").."</font>")
 s.template = "cbi/tblsection"
 s.sortable = true
 s.anonymous = true
@@ -79,6 +72,10 @@ o.rmempty = false
 o = s:option(Value, "lbort", translate("Node Port"))
 o:value("default", translate("Default"))
 o.default = "default"
+o.rmempty = false
+
+---- Haproxy Port
+o = s:option(Value, "haproxy_port", translate("Haproxy Port"))
 o.rmempty = false
 
 ---- Node Weight
