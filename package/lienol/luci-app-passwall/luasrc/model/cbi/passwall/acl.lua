@@ -124,8 +124,8 @@ if tonumber(udp_node_num) > 1 then
     for i = 1, udp_node_num, 1 do o:value(i, "UDP_" .. i) end
 end
 
----- Proxy Mode
-o = s:option(ListValue, "proxy_mode", translate("Proxy Mode"))
+---- TCP Proxy Mode
+o = s:option(ListValue, "tcp_proxy_mode", "TCP" .. translate("Proxy Mode"))
 o.default = "default"
 o.rmempty = false
 o:value("default", translate("Default"))
@@ -133,7 +133,17 @@ o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
 o:value("chnroute", translate("China WhiteList"))
--- o:value("gamemode", translate("Game Mode"))
+o:value("returnhome", translate("Return Home"))
+
+---- UDP Proxy Mode
+o = s:option(ListValue, "udp_proxy_mode", "UDP" .. translate("Proxy Mode"))
+o.default = "default"
+o.rmempty = false
+o:value("default", translate("Default"))
+o:value("disable", translate("No Proxy"))
+o:value("global", translate("Global Proxy"))
+o:value("gfwlist", translate("GFW List"))
+o:value("chnroute", translate("Game Mode") .. "（" .. translate("China WhiteList") .. "）")
 o:value("returnhome", translate("Return Home"))
 
 ---- TCP No Redir Ports
