@@ -2,55 +2,42 @@
 # Copyright (c) 2011-2015 OpenWrt.org
 
 START=90
+USE_PROCD=1
 
-get_config() {
+start_instance() {
 	config_get_bool enabled $1 enabled 0
 	config_get autoactivate $1 autoactivate 1
-}
+	[ $enabled -eq 0 ] && return 0
 
-add_vlmcs_entry() {
-	local new_hostname="$1"
+	HOSTNAME=$(uci get system.@system[0].hostname)
+	host_name=$(awk -F ',' '/^[ \t]*srv-host=_vlmcs\._tcp/{print $2}' /etc/dnsmasq.conf)
 
-	uci -q batch <<-EOF >/dev/null
-		add dhcp srvhost
-		set dhcp.@srvhost[-1].srv=_vlmcs._tcp
-		set dhcp.@srvhost[-1].target=$new_hostname
-		set dhcp.@srvhost[-1].port=1688
-		set dhcp.@srvhost[-1].class=0
-		set dhcp.@srvhost[-1].weight=100
-		commit dhcp
-	EOF
+	echo $HOSTNAME
+	echo $host_name
 
-	/etc/init.d/dnsmasq restart
-	exit 0
-}
-
-start() {
-	config_load vlmcsd
-	config_foreach get_config vlmcsd
-	[ $enabled -eq 0 ] && exit 0
-	/usr/bin/vlmcsd -i /etc/vlmcsd.ini -L 0.0.0.0:1688
-	echo "KMS Server has started."
-
-	if [ $autoactivate -eq 1 ]; then
-		local HOSTNAME=`uci get system.@system[0].hostname`
-
-		local index=$(uci -q show dhcp |grep "].srv='_vlmcs._tcp'") \
-			|| add_vlmcs_entry $HOSTNAME
-		index=${index#*[}
-		index=${index%]*}
-
-		local host_name=$(uci -q get dhcp.@srvhost[$index].target)
-
-		if [ "$HOSTNAME" != "$host_name" ]; then
-			uci delete dhcp.@srvhost[$index]
-			add_vlmcs_entry $HOSTNAME
-		fi
+	if [ "$HOSTNAME" != "$host_name" ];then
+		sed -i '/^[ \t]*srv-host=_vlmcs\._tcp/d' /etc/dnsmasq.conf
+		sed -i '$a\srv-host=_vlmcs\._tcp,'"$HOSTNAME"','"1688"',0,100' /etc/dnsmasq.conf
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
+
+	procd_open_instance
+	procd_set_param command /usr/bin/vlmcsd -D -i /etc/vlmcsd.ini -L 0.0.0.0:1688 -L [::]:1688
+	procd_append_param command -l syslog
+
+	procd_set_param respawn
+
+	procd_set_param file /etc/vlmcsd.ini
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_close_instance
 }
 
-stop() {
-    killall -q -9 vlmcsd
-    echo "KMS Server has stopped."
+start_service() {
+	config_load vlmcsd
+	config_foreach start_instance vlmcsd
 }
 
+service_triggers() {
+	procd_add_reload_trigger "vlmcsd"
+}
