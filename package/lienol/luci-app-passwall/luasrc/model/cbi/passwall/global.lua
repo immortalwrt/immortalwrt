@@ -20,19 +20,17 @@ uci:foreach(appname, "nodes", function(e)
     if type == nil then type = "" end
     local address = e.address
     if address == nil then address = "" end
-    --if (type == "V2ray_balancing" or type == "V2ray_shunt") or (address:match("[\u4e00-\u9fa5]") and address:find("%.") and address:sub(#address) ~= ".") then
-        if type and address and e.remarks then
-            if e.use_kcp and e.use_kcp == "1" then
-                n[e[".name"]] = "%s+%s：[%s] %s" %
-                                    {
-                        translate(type), "Kcptun", e.remarks, address
-                    }
-            else
-                n[e[".name"]] = "%s：[%s] %s" %
-                                    {translate(type), e.remarks, address}
-            end
+    -- if (type == "V2ray_balancing" or type == "V2ray_shunt") or (address:match("[\u4e00-\u9fa5]") and address:find("%.") and address:sub(#address) ~= ".") then
+    if type and address and e.remarks then
+        if e.use_kcp and e.use_kcp == "1" then
+            n[e[".name"]] = "%s+%s：[%s] %s" %
+                                {translate(type), "Kcptun", e.remarks, address}
+        else
+            n[e[".name"]] = "%s：[%s] %s" %
+                                {translate(type), e.remarks, address}
         end
-    --end
+    end
+    -- end
 end)
 
 local key_table = {}
@@ -110,7 +108,7 @@ end
 o = s:option(Value, "up_china_dns", translate("China DNS Server") .. "(UDP)")
 -- o.description = translate("If you want to work with other DNS acceleration services, use the default.<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.")
 o.default = "default"
-o:value("default", translate("default"))
+o:value("default", translate("Default"))
 o:value("dnsbyisp", translate("dnsbyisp"))
 o:value("223.5.5.5", "223.5.5.5 (" .. translate("Ali") .. "DNS)")
 o:value("223.6.6.6", "223.6.6.6 (" .. translate("Ali") .. "DNS)")
@@ -183,9 +181,9 @@ o:value("208.67.220.220", "208.67.220.220 (Open DNS)")
 o:depends("dns_mode", "pdnsd")
 o:depends("up_trust_chinadns_ng_dns", "pdnsd")
 
----- Default Proxy Mode
-o = s:option(ListValue, "proxy_mode",
-             translate("Default") .. translate("Proxy Mode"))
+---- TCP Default Proxy Mode
+o = s:option(ListValue, "tcp_proxy_mode",
+             "TCP" .. translate("Default") .. translate("Proxy Mode"))
 -- o.description = translate("If not available, try clearing the cache.")
 o.default = "chnroute"
 o.rmempty = false
@@ -193,16 +191,37 @@ o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
 o:value("chnroute", translate("China WhiteList"))
--- o:value("gamemode", translate("Game Mode"))
 o:value("returnhome", translate("Return Home"))
 
----- Localhost Proxy Mode
-o = s:option(ListValue, "localhost_proxy_mode",
-             translate("Router Localhost") .. translate("Proxy Mode"))
+---- UDP Default Proxy Mode
+o = s:option(ListValue, "udp_proxy_mode",
+             "UDP" .. translate("Default") .. translate("Proxy Mode"))
+o.default = "chnroute"
+o.rmempty = false
+o:value("disable", translate("No Proxy"))
+o:value("global", translate("Global Proxy"))
+o:value("gfwlist", translate("GFW List"))
+o:value("chnroute", translate("Game Mode") .. "（" .. translate("China WhiteList") .. "）")
+o:value("returnhome", translate("Return Home"))
+
+---- Localhost TCP Proxy Mode
+o = s:option(ListValue, "localhost_tcp_proxy_mode",
+             translate("Router Localhost") .. "TCP" .. translate("Proxy Mode"))
 -- o.description = translate("The server client can also use this rule to scientifically surf the Internet.")
 o:value("default", translate("Default"))
 o:value("gfwlist", translate("GFW List"))
 o:value("chnroute", translate("China WhiteList"))
+o:value("global", translate("Global Proxy"))
+o.default = "default"
+o.rmempty = false
+
+---- Localhost UDP Proxy Mode
+o = s:option(ListValue, "localhost_udp_proxy_mode",
+             translate("Router Localhost") .. "UDP" .. translate("Proxy Mode"))
+o:value("disable", translate("No Proxy"))
+o:value("default", translate("Default"))
+o:value("gfwlist", translate("GFW List"))
+o:value("chnroute", translate("Game Mode") .. "（" .. translate("China WhiteList") .. "）")
 o:value("global", translate("Global Proxy"))
 o.default = "default"
 o.rmempty = false

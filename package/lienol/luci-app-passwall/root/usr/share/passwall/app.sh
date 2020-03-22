@@ -145,23 +145,22 @@ TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
 for i in $(seq 1 $TCP_NODE_NUM); do
 	eval TCP_NODE$i=$(config_t_get global tcp_node$i nil)
 done
+TCP_REDIR_PORT1=$(config_t_get global_forwarding tcp_redir_port 1041)
+TCP_REDIR_PORT2=$(expr $TCP_REDIR_PORT1 + 1)
+TCP_REDIR_PORT3=$(expr $TCP_REDIR_PORT2 + 1)
 
 UDP_NODE_NUM=$(config_t_get global_other udp_node_num 1)
 for i in $(seq 1 $UDP_NODE_NUM); do
 	eval UDP_NODE$i=$(config_t_get global udp_node$i nil)
 done
+UDP_REDIR_PORT1=$(config_t_get global_forwarding udp_redir_port 1051)
+UDP_REDIR_PORT2=$(expr $UDP_REDIR_PORT1 + 1)
+UDP_REDIR_PORT3=$(expr $UDP_REDIR_PORT2 + 1)
 
 SOCKS5_NODE_NUM=$(config_t_get global_other socks5_node_num 1)
 for i in $(seq 1 $SOCKS5_NODE_NUM); do
 	eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i nil)
 done
-
-TCP_REDIR_PORT1=$(config_t_get global_forwarding tcp_redir_port 1041)
-TCP_REDIR_PORT2=$(expr $TCP_REDIR_PORT1 + 1)
-TCP_REDIR_PORT3=$(expr $TCP_REDIR_PORT2 + 1)
-UDP_REDIR_PORT1=$(config_t_get global_forwarding udp_redir_port 1051)
-UDP_REDIR_PORT2=$(expr $UDP_REDIR_PORT1 + 1)
-UDP_REDIR_PORT3=$(expr $UDP_REDIR_PORT2 + 1)
 SOCKS5_PROXY_PORT1=$(config_t_get global_forwarding socks5_proxy_port 1081)
 SOCKS5_PROXY_PORT2=$(expr $SOCKS5_PROXY_PORT1 + 1)
 SOCKS5_PROXY_PORT3=$(expr $SOCKS5_PROXY_PORT2 + 1)
@@ -177,7 +176,12 @@ UDP_REDIR_PORTS=$(config_t_get global_forwarding udp_redir_ports '1:65535')
 TCP_NO_REDIR_PORTS=$(config_t_get global_forwarding tcp_no_redir_ports 'disable')
 UDP_NO_REDIR_PORTS=$(config_t_get global_forwarding udp_no_redir_ports 'disable')
 KCPTUN_REDIR_PORT=$(config_t_get global_forwarding kcptun_port 12948)
-PROXY_MODE=$(config_t_get global proxy_mode chnroute)
+TCP_PROXY_MODE=$(config_t_get global tcp_proxy_mode chnroute)
+UDP_PROXY_MODE=$(config_t_get global udp_proxy_mode chnroute)
+LOCALHOST_TCP_PROXY_MODE=$(config_t_get global localhost_tcp_proxy_mode default)
+LOCALHOST_UDP_PROXY_MODE=$(config_t_get global localhost_udp_proxy_mode default)
+[ "$LOCALHOST_TCP_PROXY_MODE" == "default" ] && LOCALHOST_TCP_PROXY_MODE=$TCP_PROXY_MODE
+[ "$LOCALHOST_UDP_PROXY_MODE" == "default" ] && LOCALHOST_UDP_PROXY_MODE=$UDP_PROXY_MODE
 
 load_config() {
 	[ "$ENABLED" != 1 ] && return 1
@@ -196,8 +200,6 @@ load_config() {
 	else
 		process=$(config_t_get global_forwarding process)
 	fi
-	LOCALHOST_PROXY_MODE=$(config_t_get global localhost_proxy_mode default)
-	[ "$LOCALHOST_PROXY_MODE" == "default" ] && LOCALHOST_PROXY_MODE=$PROXY_MODE
 	UP_CHINA_DNS=$(config_t_get global up_china_dns dnsbyisp)
 	[ "$UP_CHINA_DNS" == "default" ] && IS_DEFAULT_CHINA_DNS=1
 	[ ! -f "$RESOLVFILE" -o ! -s "$RESOLVFILE" ] && RESOLVFILE=/tmp/resolv.conf.auto
@@ -794,7 +796,7 @@ start_haproxy() {
 			mkdir -p $HAPROXY_PATH
 			local HAPROXY_FILE=$HAPROXY_PATH/config.cfg
 			bport=$(config_t_get global_haproxy haproxy_port)
-			cat <<-EOF >$HAPROXY_FILE
+			cat <<-EOF > $HAPROXY_FILE
 				global
 				    log         127.0.0.1 local2
 				    chroot      /usr/bin
@@ -821,48 +823,51 @@ start_haproxy() {
 				    timeout check           10s
 				    maxconn                 3000
 					
-				listen passwall
-				    bind 0.0.0.0:$bport
-				    mode tcp
 			EOF
-			local count=$(uci show $CONFIG | grep "@balancing" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
+			
+			local ports=$(uci show $CONFIG | grep "@haproxy_config" | grep haproxy_port | cut -d "'" -f 2 | sort -u)
+			for p in $ports; do
+				cat <<-EOF >> $HAPROXY_FILE
+					listen $p
+					    mode tcp
+					    bind 0.0.0.0:$p
+						
+				EOF
+			done
+			
+			local count=$(uci show $CONFIG | grep "@haproxy_config" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
 			[ -n "$count" ] && [ "$count" -ge 0 ] && {
 				u_get() {
-					local ret=$(uci -q get $CONFIG.@balancing[$1].$2)
+					local ret=$(uci -q get $CONFIG.@haproxy_config[$1].$2)
 					echo ${ret:=$3}
 				}
 				for i in $(seq 0 $count); do
-					enabled=$(u_get $i enabled 0)
-					[ "$enabled" == "0" ] && continue
-					bips=$(u_get $i lbss)
-					bports=$(u_get $i lbort)
+					local enabled=$(u_get $i enabled 0)
+					[ -z "$enabled" -o "$enabled" == "0" ] && continue
+					
+					local haproxy_port=$(u_get $i haproxy_port)
+					[ -z "$haproxy_port" ] && continue
+					
+					local bips=$(u_get $i lbss)
+					local bports=$(u_get $i lbort)
 					if [ -z "$bips" ] || [ -z "$bports" ]; then
-						break
+						continue
 					fi
+					
 					local bip=$(echo $bips | awk -F ":" '{print $1}')
 					local bport=$(echo $bips | awk -F ":" '{print $2}')
 					[ "$bports" != "default" ] && bport=$bports
-					[ -z "$bport" ] && break
+					[ -z "$bport" ] && continue
 					
-					bweight=$(u_get $i lbweight)
-					exports=$(u_get $i export)
-					bbackup=$(u_get $i backup)
-					if [ "$bbackup" = "1" ]; then
-						bbackup=" backup"
-						echolog "负载均衡：添加故障转移备节点:$bip"
-					else
-						bbackup=""
-						echolog "负载均衡：添加负载均衡主节点:$bip"
-					fi
-					#si=$(echo $bip | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
-					#if [ -z "$si" ]; then
-					#	bip=$(resolveip -4 -t 2 $bip | awk 'NR==1{print}')
-					#	if [ -z "$bip" ]; then
-					#		bip=$(nslookup $bip localhost | sed '1,4d' | awk '{print $3}' | grep -v : | awk 'NR==1{print}')
-					#	fi
-					#	echolog "负载均衡${i} IP为：$bip"
-					#fi
-					echo "    server $bip:$bport $bip:$bport weight $bweight check inter 1500 rise 1 fall 3 $bbackup" >> $HAPROXY_FILE
+					local line=$(cat $HAPROXY_FILE | grep -n "bind 0.0.0.0:$haproxy_port" | awk -F ":" '{print $1}')
+					[ -z "$line" ] && continue
+					
+					local bweight=$(u_get $i lbweight)
+					local exports=$(u_get $i export)
+					local backup=$(u_get $i backup)
+					local bbackup=""
+					[ "$backup" = "1" ] && bbackup="backup"
+					sed -i "${line}i \ \ \ \ server $bip:$bport $bip:$bport weight $bweight check inter 1500 rise 1 fall 3 $bbackup" $HAPROXY_FILE
 					if [ "$exports" != "0" ]; then
 						failcount=0
 						while [ "$failcount" -lt "3" ]; do
@@ -881,22 +886,23 @@ start_haproxy() {
 					fi
 				done
 			}
-			#生成负载均衡控制台
-			console_port=$(config_t_get global_haproxy console_port)
-			console_user=$(config_t_get global_haproxy console_user)
-			console_password=$(config_t_get global_haproxy console_password)
+			
+			# 控制台配置
+			local console_port=$(config_t_get global_haproxy console_port)
+			local console_user=$(config_t_get global_haproxy console_user)
+			local console_password=$(config_t_get global_haproxy console_password)
 			local auth=""
 			[ -n "$console_user" -a -n "console_password" ] && auth="stats auth $console_user:$console_password"
 			cat <<-EOF >> $HAPROXY_FILE
-			
-				listen status
+				listen console
 				    bind 0.0.0.0:$console_port
 				    mode http                   
 				    stats refresh 30s
 				    stats uri /
 				    stats admin if TRUE
-					$auth
+				    $auth
 			EOF
+			
 			ln_start_bin $haproxy_bin haproxy "-f $HAPROXY_FILE"
 		}
 	}

@@ -27,15 +27,17 @@ function index()
     entry({"admin", "vpn", "passwall", "auto_switch"},
           cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
     entry({"admin", "vpn", "passwall", "other"},
-          cbi("passwall/other", {autoapply = true}), _("Other Settings"), 94).leaf =
+          cbi("passwall/other", {autoapply = true}), _("Other Settings"), 93).leaf =
         true
     if nixio.fs.access("/usr/sbin/haproxy") then
-        entry({"admin", "vpn", "passwall", "balancing"},
-              cbi("passwall/balancing"), _("Load Balancing"), 95).leaf = true
+        entry({"admin", "vpn", "passwall", "haproxy"},
+              cbi("passwall/haproxy"), _("Load Balancing"), 94).leaf = true
     end
-    entry({"admin", "vpn", "passwall", "rule"},
-          cbi("passwall/rule"), _("Rule Update"), 96).leaf =
+    entry({"admin", "vpn", "passwall", "node_subscribe"},
+          cbi("passwall/node_subscribe"), _("Node Subscribe"), 95).dependent =
         true
+    entry({"admin", "vpn", "passwall", "rule"}, cbi("passwall/rule"),
+          _("Rule Update"), 96).leaf = true
     entry({"admin", "vpn", "passwall", "acl"}, cbi("passwall/acl"),
           _("Access control"), 97).leaf = true
     entry({"admin", "vpn", "passwall", "log"}, form("passwall/log"),
