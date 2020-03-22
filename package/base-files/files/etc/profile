@@ -20,6 +20,19 @@ case "$TERM" in
 		;;
 esac
 
+[ -x /bin/more ] || alias more='less'
+[ -x /usr/bin/vim ] && alias vi='vim' || alias vim='vi'
+
+alias l='ls -lF'
+alias la='ls -a'
+alias ll='ls -alF'
+alias ls='ls --color=auto'
+
+[ -z "$KSH_VERSION" -o \! -s /etc/mkshrc ] || . /etc/mkshrc
+
+[ -x /usr/bin/arp -o -x /sbin/arp ] || arp() { cat /proc/net/arp; }
+[ -x /usr/bin/ldd ] || ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; }
+
 [ -n "$FAILSAFE" ] || {
 	for FILE in /etc/profile.d/*.sh; do
 		[ -e "$FILE" ] && . "$FILE"
@@ -38,3 +51,12 @@ in order to prevent unauthorized SSH logins.
 --------------------------------------------------
 EOF
 fi
+
+service() {
+	[ -f "/etc/init.d/$1" ] || {
+		echo "service "'"'"$1"'"'" not found, the following services are available:"
+		ls "/etc/init.d"
+		return 1
+	}
+	/etc/init.d/$@
+}
