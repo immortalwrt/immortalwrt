@@ -7,7 +7,7 @@ include ./common-tp-link.mk
 DEFAULT_SOC := mt7621
 
 KERNEL_DTB += -d21
-DEVICE_VARS += UIMAGE_MAGIC
+DEVICE_VARS += UIMAGE_MAGIC SERCOMM_HWNAME
 
 # The OEM webinterface expects an kernel with initramfs which has the uImage
 # header field ih_name.
@@ -165,8 +165,8 @@ define Device/asus_rt-ac65p
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615e wpad-openssl uboot-envtools
+	check-size
+  DEVICE_PACKAGES := kmod-usb3 luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += asus_rt-ac65p
 
@@ -181,8 +181,8 @@ define Device/asus_rt-ac85p
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615e wpad-openssl uboot-envtools
+	check-size
+  DEVICE_PACKAGES := kmod-usb3 luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += asus_rt-ac85p
 
@@ -245,9 +245,9 @@ define Device/edimax_ra21s
   DEVICE_ALT0_VENDOR := Edimax
   DEVICE_ALT0_MODEL := Gemini RA21S
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elx-header 02020040 8844A2D168B45A2D
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += edimax_ra21s
 
@@ -256,9 +256,9 @@ define Device/edimax_rg21s
   DEVICE_VENDOR := Edimax
   DEVICE_MODEL := Gemini AC2600 RG21S
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elx-header 02020038 8844A2D168B45A2D
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += edimax_rg21s
 
@@ -267,9 +267,9 @@ define Device/elecom_wrc-1167ghbk2-s
   DEVICE_VENDOR := ELECOM
   DEVICE_MODEL := WRC-1167GHBK2-S
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elecom-wrc-factory WRC-1167GHBK2-S 0.00
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += elecom_wrc-1167ghbk2-s
 
@@ -278,7 +278,7 @@ define Device/elecom_wrc-1900gst
   DEVICE_VENDOR := ELECOM
   DEVICE_MODEL := WRC-1900GST
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elecom-gst-factory WRC-1900GST 0.00
 endef
 TARGET_DEVICES += elecom_wrc-1900gst
@@ -288,7 +288,7 @@ define Device/elecom_wrc-2533gst
   DEVICE_VENDOR := ELECOM
   DEVICE_MODEL := WRC-2533GST
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elecom-gst-factory WRC-2533GST 0.00
 endef
 TARGET_DEVICES += elecom_wrc-2533gst
@@ -337,7 +337,7 @@ define Device/hiwifi_hc5962
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size $$$$(IMAGE_SIZE)
+	check-size
   DEVICE_VENDOR := HiWiFi
   DEVICE_MODEL := HC5962
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 wpad-openssl
@@ -369,7 +369,7 @@ define Device/iodata_wn-ax1167gr2
   KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(XBC.1)b10 | \
 	iodata-mstc-header
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += iodata_wn-ax1167gr2
 
@@ -385,7 +385,7 @@ define Device/iodata_wn-dx1167r
   KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(XIK.1)b10 | \
 	iodata-mstc-header
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += iodata_wn-dx1167r
 
@@ -402,9 +402,9 @@ define Device/iodata_wnpr2600g
   DEVICE_MODEL := WNPR2600G
   IMAGE_SIZE := 13952k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elx-header 0104003a 8844A2D168B45A2D
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += iodata_wnpr2600g
 
@@ -429,7 +429,7 @@ TARGET_DEVICES += iptime_a8004t
 define Device/jcg_jhr-ac876m
   IMAGE_SIZE := 16064k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	jcg-header 89.1
   JCG_MAXSIZE := 16064k
   DEVICE_VENDOR := JCG
@@ -484,7 +484,7 @@ define Device/MikroTik
   KERNEL := $(KERNEL_DTB) | loader-kernel
   IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
 	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | \
-	check-size $$$$(IMAGE_SIZE)
+	check-size
 endef
 
 define Device/mikrotik_rb750gr3
@@ -534,7 +534,7 @@ define Device/netgear_ex6150
   NETGEAR_BOARD_ID := U12H318T00_NETGEAR
   IMAGE_SIZE := 14848k
   IMAGES += factory.chk
-  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | \
 	netgear-chk
 endef
 TARGET_DEVICES += netgear_ex6150
@@ -550,11 +550,10 @@ define Device/netgear_sercomm_nand
 	zip $$$$(SERCOMM_HWNAME).bin | sercom-seal
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/kernel.bin := append-kernel
-  IMAGE/rootfs.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/rootfs.bin := append-ubi | check-size
   DEVICE_VENDOR := NETGEAR
   DEVICE_PACKAGES := kmod-mt7603 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
 endef
-DEVICE_VARS += SERCOMM_HWNAME SERCOMM_HWID SERCOMM_HWVER SERCOMM_SWVER
 
 define Device/netgear_r6220
   $(Device/netgear_sercomm_nand)
@@ -643,7 +642,7 @@ define Device/netgear_wndr3700-v5
   IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs
   IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | \
-	check-size $$$$(IMAGE_SIZE)
+	check-size
   IMAGE/factory.img := pad-extra 320k | $$(IMAGE/default) | \
 	pad-to $$$$(BLOCKSIZE) | sercom-footer | pad-to 128 | \
 	zip WNDR3700v5.bin | sercom-seal
@@ -668,7 +667,7 @@ define Device/netis_wf2881
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | \
-	check-size $$$$(IMAGE_SIZE)
+	check-size
   DEVICE_VENDOR := NETIS
   DEVICE_MODEL := WF2881
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
@@ -736,7 +735,7 @@ define Device/totolink_a7000r
   UIMAGE_NAME := C8340R1C-9999
   DEVICE_VENDOR := TOTOLINK
   DEVICE_MODEL := A7000R
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += totolink_a7000r
 
@@ -744,7 +743,7 @@ define Device/adslr_g7
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := ADSLR
   DEVICE_MODEL := G7
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += adslr_g7
 
@@ -763,7 +762,7 @@ define Device/tplink_re650-v1
   $(Device/tplink-safeloader)
   DEVICE_MODEL := RE650
   DEVICE_VARIANT := v1
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
   TPLINK_BOARD_ID := RE650-V1
   IMAGE_SIZE := 14208k
 endef
@@ -794,7 +793,7 @@ TARGET_DEVICES += ubiquiti_edgerouterx-sfp
 define Device/ubnt_unifi-nanohd
   DEVICE_VENDOR := Ubiquiti
   DEVICE_MODEL := UniFi nanoHD
-  DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES += kmod-mt7603 luci-app-mtwifi
   IMAGE_SIZE := 15552k
 endef
 TARGET_DEVICES += ubnt_unifi-nanohd
@@ -850,7 +849,7 @@ define Device/xiaomi_mir3g
   UBINIZE_OPTS := -E 5
   IMAGES += kernel1.bin rootfs0.bin
   IMAGE/kernel1.bin := append-kernel
-  IMAGE/rootfs0.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/rootfs0.bin := append-ubi | check-size
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router 3G
@@ -884,7 +883,7 @@ define Device/xiaomi_mir3p
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size $$$$(IMAGE_SIZE)
+	check-size
   DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport \
 	uboot-envtools
 endef
