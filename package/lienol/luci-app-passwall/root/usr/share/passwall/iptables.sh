@@ -496,7 +496,7 @@ add_firewall_rule() {
 	echolog "TCP默认代理模式：$(get_action_chain_name $TCP_PROXY_MODE)"
 	
 	#  加载UDP默认代理模式
-	[ "$UDP_PROXY_MODE" == "disable" ] && {
+	[ "$UDP_PROXY_MODE" != "disable" ] && {
 		[ "$UDP_NODE1" != "nil" ] && {
 			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && $ipt_m -A PSW_ACL -p udp -m multiport --dport $UDP_NO_REDIR_PORTS $(comment "Default") -j RETURN
 			$ipt_m -A PSW_ACL -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(comment "Default") -j $(get_action_chain $UDP_PROXY_MODE)1
