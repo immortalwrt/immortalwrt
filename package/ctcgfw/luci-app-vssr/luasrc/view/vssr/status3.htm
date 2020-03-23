@@ -97,7 +97,7 @@
     <div class="block pure-g"> 
      <div class="pure-u-3-5">  
      
-         <h4 id="baidu_status"><%:domestic website%><br><span class="red"><%:Problem detected%>✘</span></h4>
+         <h4 id="baidu_status"><%:baidu%><br><span class="red"><%:Problem detected%>✘</span></h4>
      </div> 
      <div class="pure-u-2-5"> 
       <div class="img-con"> 
@@ -109,7 +109,7 @@
     <div class="pure-u-1-6"> 
     <div class="block pure-g"> 
      <div class="pure-u-3-5"> 
-<h4 id="google_status"><%:foreign websites%><br><span class="red"><%:Problem detected%>✘</span></h4>
+<h4 id="google_status"><%:youtube%><br><span class="red"><%:Problem detected%>✘</span></h4>
      </div> 
      <div class="pure-u-2-5"> 
       <div class="img-con"> 
@@ -166,8 +166,8 @@
             function (x, data) {
                 if (data) {
 					document.getElementById('vssr_status').innerHTML = data.global?'<%:Client%><br><span class="green"><%:Running%>✔</span>':'<%:Client%><br><span class="red"><%:Not Running%>✘</span>';
-                                                                                    document.getElementById('baidu_status').innerHTML = data.baidu?'<%:domestic website%><br><span class="green"><%:Connect OK%>✔</span>':'<%:domestic website%><br><span class="red"><%:Problem detected%>✘</span>';
-					document.getElementById('google_status').innerHTML = data.google?'<%:foreign websites%><br><span class="green"><%:Connect OK%>✔</span>':'<%:foreign websites%><br><span class="red"><%:Problem detected%>✘</span>';
+                                                                                    document.getElementById('baidu_status').innerHTML = data.baidu?'<%:baidu%><br><span class="green"><%:Connect OK%>✔</span>':'<%:baidu%><br><span class="red"><%:Problem detected%>✘</span>';
+					document.getElementById('google_status').innerHTML = data.google?'<%:youtube%><br><span class="green"><%:Connect OK%>✔</span>':'<%:youtube%><br><span class="red"><%:Problem detected%>✘</span>';
 					document.getElementById('ss_server_status').innerHTML = data.ss_server?'<%:SS Servers%><br><span class="green"><%:Running%>✔</span>':'<%:SS Servers%><br><span class="red"><%:Not Running%>✘</span>';
 					document.getElementById('ssr_server_status').innerHTML = data.ssr_server?'<%:SSR Servers%><br><span class="green"><%:Running%>✔</span>':'<%:SSR Servers%><br><span class="red"><%:Not Running%>✘</span>';
                                                                                        document.getElementById('v2_server_status').innerHTML = data.v2_server?'<%:V2 Servers%><br><span class="green"><%:Running%>✔</span>':'<%:V2 Servers%><br><span class="red"><%:Not Running%>✘</span>';					     

@@ -125,10 +125,10 @@ msgstr "个节点"
 msgid "Client"
 msgstr "客户端"
 
-msgid "foreign websites"
+msgid "youtube"
 msgstr "国外网站"
 
-msgid "domestic website"
+msgid "baidu"
 msgstr "国内网站"
 
 msgid "Problem detected"
