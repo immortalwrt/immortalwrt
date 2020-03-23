@@ -15,8 +15,8 @@ end)
 
 
 
-m = Map(vssr)
-m:section(SimpleSection).template  = "vssr/status"
+m = Map(vssr,  translate("Node List"))
+m:section(SimpleSection).template  = "vssr/status1"
 
 
 -- [[ Servers Manage ]]--
@@ -34,35 +34,43 @@ function s.create(...)
 		return
 	end
 end
-
-o = s:option(DummyValue, "type", translate("Type"))
-o.width="1%"
-
 o = s:option(DummyValue, "alias", translate("Alias"))
-o.width="1%"
+o.width="10%"
+o = s:option(DummyValue, "type", translate("Type"))
+o.width="15%"
 
 o = s:option(DummyValue, "server", translate("Server Address"))
-o.width="30%"
+o.width="10%"
 
 o = s:option(DummyValue, "server_port", translate("Server Port"))
-o.width="30%"
+o.width="10%"
 
+o = s:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
+o.width="10%"
 
-o = s:option(DummyValue,"security",translate("Encrypt Method"))
-o.width="1%"
+o = s:option(DummyValue, "protocol", translate("Protocol"))
+o.width="10%"
+o = s:option(DummyValue, "obfs", translate("Obfs"))
+o.width="10%"
 
 o = s:option(Flag, "switch_enable", translate("Enable Auto Switch"))
-o.width="1%"
+o.width="10%"
+
+if nixio.fs.access("/usr/bin/kcptun-client") then
+
+o = s:option(Flag, "kcp_enable", translate("KcpTun"))
+o.width="10%"
+end
 
 o = s:option(DummyValue, "server_port", translate("Socket Connected"))
 o.template="vssr/socket"
-o.width="1%"
+o.width="10%"
 
 o = s:option(DummyValue,"server",translate("Ping Latency"))
 o.template="vssr/ping"
-o.width="1%"
+o.width="10%"
 
 m:append(Template("vssr/server_list"))
 
-m:section(SimpleSection).template  = "vssr/status2"
+
 return m
