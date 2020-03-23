@@ -1062,13 +1062,16 @@ stop() {
 	killall -q -9 haproxy
 	killall -q -9 privoxy
         killall -q -9 ipt2socks
-	killall -q -9  dns2socks
+	killall -q -9 dns2socks
 	killall -q -9 v2ray-plugin
 	killall -q -9 gq-client
 	killall -q -9 gq-server
 	killall -q -9 obfs-local
 	killall -q -9 obfs-server
 	killall -q -9 chinadns
+	killall -q -9 dnscrypt-proxy
+	killall -q -9 dnsforwarder
+	killall -q -9 pdnsd
         killall -q -9 udp2raw
         killall -q -9 udpspeeder
 	if [ -f /var/run/pdnsd.pid ]; then
