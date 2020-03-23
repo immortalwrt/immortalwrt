@@ -323,8 +323,8 @@ function blackwhitelist(){
 			fi	
 		# 如果 “仅关注接口选项打开” 
 		elif [ ! -z "$serverchan_interface" ] ; then
-			local ip=`iw dev $serverchan_interface station dump | grep -i -w $1 | grep Station 2>/dev/null`
-			if [ ! -z "$ip" ];then local ip=`getinterface $1 | grep -i -w $serverchan_interface`;fi
+			local ip=`iw dev $serverchan_interface station dump | grep -i -w $1 | grep Station | grep -v "^$" 2>/dev/null`
+			if [ -z "$ip" ];then local ip=`getinterface $1 | grep -i -w $serverchan_interface | grep -v "^$"`;fi
 			if [ ! -z "$ip" ];then
 				echo 1
 			fi
@@ -1086,7 +1086,7 @@ deltemp
 serverchan_cron
 
 # 限制并发进程
-thread_num=3
+thread_num=4
 [ -e ${dir}fd1 ] || mkfifo ${dir}fd1
 exec 5<>${dir}fd1
 rm -f ${dir}fd1 >/dev/null 2>&1
@@ -1144,7 +1144,7 @@ do
 	# 新设备接入检测
 	# 从 arp 缓存中读取 0x2 在线列表
 	if [ ! -f "${dir}ipAddress" ] ; then > ${dir}ipAddress;fi
-	IPLIST=$( cat /proc/net/arp | grep "0x2" | awk  '{print $1}' | grep -v "^$" | sort -u ) && IPLISTrow=$(grep -c "" ${dir}ipAddress)
+	IPLIST=$( cat /proc/net/arp | grep "0x2\|0x6" | awk  '{print $1}' | grep -v "^$" | sort -u ) && IPLISTrow=$(grep -c "" ${dir}ipAddress)
 	send_enable=`get_config send_enable`
 	for  ip in $IPLIST; do
 		# 如果 “ip 列表不为空” 
