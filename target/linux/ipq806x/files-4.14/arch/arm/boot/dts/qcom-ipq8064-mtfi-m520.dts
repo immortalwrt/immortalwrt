@@ -134,19 +134,11 @@
 			};
 		};
 
-		gsbi@16300000 {
+		gsbi2: gsbi@12480000 {
 			qcom,mode = <GSBI_PROT_I2C_UART>;
 			status = "ok";
-			serial@16340000 {
-				status = "ok";
-			};
-		};
 
-		gsbi5: gsbi@1a200000 {
-			qcom,mode = <GSBI_PROT_SPI>;
-			status = "ok";
-
-			i2c@1a280000 {
+			i2c@124a0000 {
 				status = "ok";
 
 				lm75@48 {
@@ -161,6 +153,25 @@
 					reg = <0x51>;
 				};
 			};
+		};
+
+		gsbi@16300000 {
+			qcom,mode = <GSBI_PROT_I2C_UART>;
+			status = "ok";
+			serial@16340000 {
+				status = "ok";
+			};
+			/*
+			 * The i2c device on gsbi4 should not be enabled.
+			 * On ipq806x designs gsbi4 i2c is meant for exclusive
+			 * RPM usage. Turning this on in kernel manifests as
+			 * i2c failure for the RPM.
+			 */
+		};
+
+		gsbi5: gsbi@1a200000 {
+			qcom,mode = <GSBI_PROT_SPI>;
+			status = "ok";
 
 			spi4: spi@1a280000 {
 				status = "ok";
