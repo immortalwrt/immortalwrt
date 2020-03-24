@@ -19,7 +19,10 @@ ifeq ($(ARCH),i386)
 	PKG_ARCH_VERYSYNC:=386
 endif
 ifeq ($(ARCH),arm)
-	PKG_ARCH_VERYSYNC:=arm
+	PKG_ARCH_VERYSYNC:=arm7
+endif
+ifeq ($(BOARD),bcm53xx)
+	PKG_ARCH_VERYSYNC:=arm6
 endif
 ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_VERYSYNC:=arm
@@ -29,9 +32,8 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_NAME:=verysync
-PKG_VERSION:=v1.3.5
+PKG_VERSION:=v1.3.1
 PKG_RELEASE:=2
-
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://releases-cdn.verysync.com/releases/$(PKG_VERSION)/
@@ -43,6 +45,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=A efficient data transmission tool
+	DEPENDS:=
 	URL:=http://www.verysync.com
 endef
 
@@ -51,8 +54,7 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	tar -zxf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
-	chmod 0755 $(PKG_BUILD_DIR)/$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION)/verysync
+	tar -xzvf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
 endef
 
 define Build/Configure
