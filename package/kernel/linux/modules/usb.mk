@@ -1142,6 +1142,23 @@ define AddDepends/usb-net
 endef
 
 
+define KernelPackage/usb-net-aqc111
+  TITLE:=Kernel module for Aquantia AQtion USB to 5/2.5GbE Controllers
+  DEPENDS:=+kmod-libphy
+  KCONFIG:=CONFIG_USB_NET_AQC111
+  FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/aqc111.ko
+  AUTOLOAD:=$(call AutoProbe,aqc111)
+  $(call AddDepends/usb-net)
+endef
+
+define KernelPackage/usb-net-aqc111/description
+ Kernel module for Aquantia AQtion USB Ethernet adapters
+ based on AQC111U/AQC112 chips.
+endef
+
+$(eval $(call KernelPackage,usb-net-aqc111))
+
+
 define KernelPackage/usb-net-asix
   TITLE:=Kernel module for USB-to-Ethernet Asix convertors
   DEPENDS:=+kmod-libphy
