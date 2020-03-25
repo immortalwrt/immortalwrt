@@ -48,7 +48,8 @@ luci-theme-argon-mc source: [sypopo/luci-theme-argon-mc](https://github.com/sypo
 luci-app-cupsd source: [F-Light/luci-app-cupsd](https://github.com/F-Light/luci-app-cupsd).<br/>
 ootoc-OpenWRT source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenWRT).<br/>
 r8168 source: [BROBIRD/openwrt-r8168](https://github.com/BROBIRD/openwrt-r8168).<br/>
-luci-theme-Butterfly-dark source: [Leo-Jo-My/luci-theme-Butterfly-dark](https://github.com/Leo-Jo-My/luci-theme-Butterfly-dark).
+luci-theme-Butterfly-dark source: [Leo-Jo-My/luci-theme-Butterfly-dark](https://github.com/Leo-Jo-My/luci-theme-Butterfly-dark).<br/>
+luci-theme-argon-mod source: [Leo-Jo-My/luci-theme-argon-mod](https://github.com/Leo-Jo-My/luci-theme-argon-mod).
 
 ## License
 ### Depending on their own License.
