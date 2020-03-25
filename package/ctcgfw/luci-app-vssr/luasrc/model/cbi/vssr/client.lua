@@ -9,7 +9,7 @@ local ad_count=0
 local ip_count=0
 local gfwmode=0
 
-if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
+if nixio.fs.access("/etc/dnsmasq.vssr/gfw_list.conf") then
 gfwmode=1		
 end
 
@@ -18,9 +18,9 @@ local uci = luci.model.uci.cursor()
 local sys = require "luci.sys"
 
 if gfwmode==1 then 
- gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l"))/2
- if nixio.fs.access("/etc/dnsmasq.ssr/ad.conf") then
-  ad_count=tonumber(sys.exec("cat /etc/dnsmasq.ssr/ad.conf | wc -l"))
+ gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.vssr/gfw_list.conf | wc -l"))/2
+ if nixio.fs.access("/etc/dnsmasq.vssr/ad.conf") then
+  ad_count=tonumber(sys.exec("cat /etc/dnsmasq.vssr/ad.conf | wc -l"))
  end
 end
  

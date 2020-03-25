@@ -21,10 +21,10 @@ log('正在更新【GFW列表】数据库')
 	luci.sys.call("/usr/bin/vssr-gfw")
 	icount = luci.sys.exec("cat /tmp/gfwnew.txt | wc -l")
 	if tonumber(icount)>1000 then
-	oldcount=luci.sys.exec("cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l")
+	oldcount=luci.sys.exec("cat /etc/dnsmasq.vssr/gfw_list.conf | wc -l")
 		if tonumber(icount) ~= tonumber(oldcount) then
-			luci.sys.exec("cp -f /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf")
-			luci.sys.exec("cp -f /tmp/gfwnew.txt /tmp/dnsmasq.ssr/gfw_list.conf")
+			luci.sys.exec("cp -f /tmp/gfwnew.txt /etc/dnsmasq.vssr/gfw_list.conf")
+			luci.sys.exec("cp -f /tmp/gfwnew.txt /tmp/dnsmasq.vssr/gfw_list.conf")
 			log('更新成功！ 新的总纪录数：'.. icount)
 		else
 			log('你已经是最新数据，无需更新！')
@@ -73,14 +73,14 @@ if sret== 0 then
 	luci.sys.call("/usr/bin/vssr-ad")
 	icount = luci.sys.exec("cat /tmp/ad.conf | wc -l")
 	if tonumber(icount)>1000 then
-	if nixio.fs.access("/etc/dnsmasq.ssr/ad.conf") then
-		oldcount=luci.sys.exec("cat /etc/dnsmasq.ssr/ad.conf | wc -l")
+	if nixio.fs.access("/etc/dnsmasq.vssr/ad.conf") then
+		oldcount=luci.sys.exec("cat /etc/dnsmasq.vssr/ad.conf | wc -l")
 	else
 		oldcount=0
 	end
 	if tonumber(icount) ~= tonumber(oldcount) then
-		luci.sys.exec("cp -f /tmp/ad.conf /etc/dnsmasq.ssr/ad.conf")
-		luci.sys.exec("cp -f /tmp/ad.conf /tmp/dnsmasq.ssr/ad.conf")
+		luci.sys.exec("cp -f /tmp/ad.conf /etc/dnsmasq.vssr/ad.conf")
+		luci.sys.exec("cp -f /tmp/ad.conf /tmp/dnsmasq.vssr/ad.conf")
 		log('更新成功！ 新的总纪录数：'.. icount)
 	else
 		log('你已经是最新数据，无需更新！')

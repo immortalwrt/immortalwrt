@@ -8,7 +8,7 @@ local gfwmode=0
 local gfw_count=0
 local ip_count=0
 
-if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
+if nixio.fs.access("/etc/dnsmasq.vssr/gfw_list.conf") then
 gfwmode=1		
 end
 
@@ -22,7 +22,7 @@ local fs  = require "nixio.fs"
 local sys = require "luci.sys"
 
 if gfwmode==1 then 
- gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l"))/2
+ gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.vssr/gfw_list.conf | wc -l"))/2
 
 end
 
