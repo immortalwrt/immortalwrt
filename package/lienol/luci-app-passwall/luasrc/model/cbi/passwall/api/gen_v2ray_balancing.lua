@@ -44,7 +44,7 @@ local function gen_outbound(node)
                     tonumber(node.v2ray_mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = {
+            streamSettings = (node.v2ray_protocol == "vmess") and {
                 network = node.v2ray_transport,
                 security = node.v2ray_stream_security,
                 tlsSettings = (node.v2ray_stream_security == "tls") and {
@@ -90,7 +90,7 @@ local function gen_outbound(node)
                     key = node.v2ray_quic_key,
                     header = {type = node.v2ray_quic_guise}
                 } or nil
-            },
+            } or nil,
             settings = {
                 vnext = (node.v2ray_protocol == "vmess") and {
                     {
@@ -113,16 +113,6 @@ local function gen_outbound(node)
                         users = (node.username and node.password) and
                             {{user = node.username, pass = node.password}} or
                             nil
-                    }
-                } or (node.v2ray_protocol == "ss") and {
-                    {
-                        email = nil,
-                        address = node.address,
-                        method = nil,
-                        ota = nil,
-                        password = node.password or nil,
-                        port = tonumber(node.port),
-                        level = 1
                     }
                 } or nil
             }

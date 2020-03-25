@@ -82,6 +82,17 @@ do
 	end
 end
 
+-- 判断是否过滤节点关键字
+local filter_keyword_table = ucic2:get(application, "@global_subscribe[0]", "filter_keyword")
+local function is_filter_keyword(value)
+	for k,v in ipairs(filter_keyword_table) do
+	  if value:find(v) then
+          return true
+      end
+    end
+    return false
+end
+
 -- 分割字符串
 local function split(full, sep)
 	if full then
@@ -188,6 +199,9 @@ local function processData(szType, content, add_mode)
 			result.v2ray_h2_path = info.path
 		end
 		if info.net == 'tcp' then
+			if info.type and info.type ~= "http" then
+				info.type = "none"
+			end
 			result.v2ray_tcp_guise = info.type
 			result.v2ray_tcp_guise_http_host = info.host
 			result.v2ray_tcp_guise_http_path = info.path
@@ -248,6 +262,9 @@ local function processData(szType, content, add_mode)
 				else
 					result.ss_plugin = plugin_info
 				end
+			end
+			if result.ss_plugin and result.ss_plugin == "simple-obfs" then
+				result.ss_plugin = "obfs-local"
 			end
 		else
 			result.port = host[2]
@@ -523,10 +540,7 @@ local function parse_link(raw, remark, manual)
 				end
 				-- log(result)
 				if result then
-					if result.remarks:find("过期时间") or
-						result.remarks:find("剩余流量") or
-						result.remarks:find("QQ群") or
-						result.remarks:find("官网") or
+					if is_filter_keyword(result.remarks) or
 						not result.address or
 						result.address:match("[^0-9a-zA-Z%-%_%.%s]") or -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
 						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧

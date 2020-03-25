@@ -625,6 +625,12 @@ msgstr "手动订阅"
 msgid "Delete All Subscribe Node"
 msgstr "删除所有订阅节点"
 
+msgid "Filter keyword"
+msgstr "过滤关键字"
+
+msgid "When subscribing, the keywords in the list are discarded."
+msgstr "订阅时，将丢弃包含列表里的关键字的节点。"
+
 msgid "Add"
 msgstr "添加"
 
