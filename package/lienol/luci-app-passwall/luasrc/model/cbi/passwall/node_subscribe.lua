@@ -52,6 +52,9 @@ function o.write(e, e)
                                                  "log"))
 end
 
+filter_keyword = s:option(DynamicList, "filter_keyword", translate("Filter keyword"),
+	translate("When subscribing, the keywords in the list are discarded."))
+
 s = m:section(TypedSection, "subscribe_list", "",
               "<font color='red'>" .. translate(
                   "Please input the subscription url first, save and submit before updating. If you subscribe to update, it is recommended to delete all subscriptions and then re-subscribe.") ..

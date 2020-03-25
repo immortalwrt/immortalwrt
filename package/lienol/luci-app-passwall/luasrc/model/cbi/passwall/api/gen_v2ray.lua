@@ -7,7 +7,6 @@ local socks5_proxy_port = arg[4]
 local node = ucursor:get_all("passwall", node_section)
 local inbounds = {}
 local outbounds = {}
-local network = proto
 local routing = nil
 
 local function gen_outbound(node)
@@ -22,7 +21,7 @@ local function gen_outbound(node)
                     tonumber(node.v2ray_mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = {
+            streamSettings = (node.v2ray_protocol == "vmess") and {
                 network = node.v2ray_transport,
                 security = node.v2ray_stream_security,
                 tlsSettings = (node.v2ray_stream_security == "tls") and {
@@ -67,9 +66,9 @@ local function gen_outbound(node)
                     key = node.v2ray_quic_key,
                     header = {type = node.v2ray_quic_guise}
                 } or nil
-            },
+            } or nil,
             settings = {
-                vnext = {
+                vnext = (node.v2ray_protocol == "vmess") and {
                     {
                         address = node.address,
                         port = tonumber(node.port),
@@ -82,7 +81,22 @@ local function gen_outbound(node)
                             }
                         }
                     }
-                }
+                } or nil,
+                servers = (node.v2ray_protocol == "http" or node.v2ray_protocol == "socks" or node.v2ray_protocol == "shadowsocks") and {
+                    {
+                        address = node.address,
+                        port = tonumber(node.port),
+                        method = node.v2ray_ss_encrypt_method,
+                        password = node.password or "",
+                        ota = (node.v2ray_ss_ota == '1') and true or false,
+                        users = (node.username and node.password) and {
+                            {
+                                user = node.username or "",
+                                pass = node.password or ""
+                            }
+                        } or nil
+                    }
+                } or nil
             }
         }
     end
@@ -125,25 +139,9 @@ if redir_port ~= "nil" then
     end
 end
 
-if node.type == "V2ray_balancing" and node.v2ray_balancing_node then
-    local nodes = node.v2ray_balancing_node
-    local length = #nodes
-    for i = 1, length do
-        local node = ucursor:get_all("passwall", nodes[i])
-        local outbound = gen_outbound(node)
-        if outbound then table.insert(outbounds, outbound) end
-    end
-    routing = {
-        domainStrategy = "IPOnDemand",
-        balancers = {{tag = "balancer", selector = nodes}},
-        rules = {
-            {type = "field", network = "tcp,udp", balancerTag = "balancer"}
-        }
-    }
-else
-    local outbound = gen_outbound(node)
-    if outbound then table.insert(outbounds, outbound) end
-end
+local outbound = gen_outbound(node)
+if outbound then table.insert(outbounds, outbound) end
+
 -- 额外传出连接
 table.insert(outbounds,
              {protocol = "freedom", tag = "direct", settings = {keep = ""}})

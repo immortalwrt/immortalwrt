@@ -44,6 +44,10 @@ local ssr_obfs_list = {
     "tls1.0_session_auth", "tls1.2_ticket_auth"
 }
 
+local v2ray_ss_encrypt_method_list = {
+    "aes-128-cfb", "aes-256-cfb", "aes-128-gcm", "aes-256-gcm", "chacha20", "chacha20-ietf", "chacha20-poly1305", "chacha20-ietf-poly1305"
+}
+
 local v2ray_security_list = {"none", "auto", "aes-128-gcm", "chacha20-poly1305"}
 
 local v2ray_header_type_list = {
@@ -83,6 +87,9 @@ end
 v2ray_protocol = s:option(ListValue, "v2ray_protocol",
                           translate("V2ray Protocol"))
 v2ray_protocol:value("vmess", translate("Vmess"))
+v2ray_protocol:value("http", translate("HTTP"))
+v2ray_protocol:value("socks", translate("Socks"))
+v2ray_protocol:value("shadowsocks", translate("Shadowsocks"))
 v2ray_protocol:depends("type", "V2ray")
 
 brook_protocol = s:option(ListValue, "brook_protocol",
@@ -162,6 +169,8 @@ port:depends("type", "Trojan")
 
 username = s:option(Value, "username", translate("Username"))
 username:depends("type", "Socks5")
+username:depends("v2ray_protocol", "http")
+username:depends("v2ray_protocol", "socks")
 
 password = s:option(Value, "password", translate("Password"))
 password.password = true
@@ -170,6 +179,9 @@ password:depends("type", "SS")
 password:depends("type", "SSR")
 password:depends("type", "Brook")
 password:depends("type", "Trojan")
+password:depends("v2ray_protocol", "http")
+password:depends("v2ray_protocol", "socks")
+password:depends("v2ray_protocol", "shadowsocks")
 
 ss_encrypt_method = s:option(ListValue, "ss_encrypt_method",
                              translate("Encrypt Method"))
@@ -184,7 +196,17 @@ ssr_encrypt_method:depends("type", "SSR")
 v2ray_security = s:option(ListValue, "v2ray_security",
                           translate("Encrypt Method"))
 for a, t in ipairs(v2ray_security_list) do v2ray_security:value(t) end
-v2ray_security:depends("type", "V2ray")
+v2ray_security:depends("v2ray_protocol", "vmess")
+
+v2ray_ss_encrypt_method = s:option(ListValue, "v2ray_ss_encrypt_method",
+                             translate("Encrypt Method"))
+for a, t in ipairs(v2ray_ss_encrypt_method_list) do v2ray_ss_encrypt_method:value(t) end
+v2ray_ss_encrypt_method:depends("v2ray_protocol", "shadowsocks")
+
+v2ray_ss_ota = s:option(Flag, "v2ray_ss_ota", translate("OTA"), translate(
+                      "When OTA is enabled, V2Ray will reject connections that are not OTA enabled. This option is invalid when using AEAD encryption."))
+v2ray_ss_ota.default = "0"
+v2ray_ss_ota:depends("v2ray_protocol", "shadowsocks")
 
 protocol = s:option(ListValue, "protocol", translate("Protocol"))
 for a, t in ipairs(ssr_protocol_list) do protocol:value(t) end
@@ -250,16 +272,16 @@ kcp_opts:depends("use_kcp", "1")
 
 v2ray_VMess_id = s:option(Value, "v2ray_VMess_id", translate("ID"))
 v2ray_VMess_id.password = true
-v2ray_VMess_id:depends("type", "V2ray")
+v2ray_VMess_id:depends("v2ray_protocol", "vmess")
 
 v2ray_VMess_alterId = s:option(Value, "v2ray_VMess_alterId",
                                translate("Alter ID"))
-v2ray_VMess_alterId:depends("type", "V2ray")
+v2ray_VMess_alterId:depends("v2ray_protocol", "vmess")
 
 v2ray_VMess_level =
     s:option(Value, "v2ray_VMess_level", translate("User Level"))
 v2ray_VMess_level.default = 1
-v2ray_VMess_level:depends("type", "V2ray")
+v2ray_VMess_level:depends("v2ray_protocol", "vmess")
 
 v2ray_stream_security = s:option(ListValue, "v2ray_stream_security",
                                  translate("Transport Layer Encryption"),
@@ -267,7 +289,9 @@ v2ray_stream_security = s:option(ListValue, "v2ray_stream_security",
                                      'Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
 v2ray_stream_security:value("none", "none")
 v2ray_stream_security:value("tls", "tls")
-v2ray_stream_security:depends("type", "V2ray")
+v2ray_stream_security:depends("v2ray_protocol", "vmess")
+v2ray_stream_security:depends("v2ray_protocol", "http")
+v2ray_stream_security:depends("v2ray_protocol", "shadowsocks")
 
 -- [[ TLS部分 ]] --
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
@@ -288,7 +312,14 @@ v2ray_transport:value("ws", "WebSocket")
 v2ray_transport:value("h2", "HTTP/2")
 v2ray_transport:value("ds", "DomainSocket")
 v2ray_transport:value("quic", "QUIC")
-v2ray_transport:depends("type", "V2ray")
+v2ray_transport:depends("v2ray_protocol", "vmess")
+
+--[[
+v2ray_ss_transport = s:option(ListValue, "v2ray_ss_transport", translate("Transport"))
+v2ray_ss_transport:value("ws", "WebSocket")
+v2ray_ss_transport:value("h2", "HTTP/2")
+v2ray_ss_transport:depends("v2ray_protocol", "shadowsocks")
+]]--
 
 -- [[ TCP部分 ]]--
 
@@ -347,17 +378,21 @@ v2ray_mkcp_writeBufferSize:depends("v2ray_transport", "mkcp")
 
 v2ray_ws_host = s:option(Value, "v2ray_ws_host", translate("WebSocket Host"))
 v2ray_ws_host:depends("v2ray_transport", "ws")
+v2ray_ws_host:depends("v2ray_ss_transport", "ws")
 
 v2ray_ws_path = s:option(Value, "v2ray_ws_path", translate("WebSocket Path"))
 v2ray_ws_path:depends("v2ray_transport", "ws")
+v2ray_ws_path:depends("v2ray_ss_transport", "ws")
 
 -- [[ HTTP/2部分 ]]--
 
 v2ray_h2_host = s:option(DynamicList, "v2ray_h2_host", translate("HTTP/2 Host"))
 v2ray_h2_host:depends("v2ray_transport", "h2")
+v2ray_h2_host:depends("v2ray_ss_transport", "h2")
 
 v2ray_h2_path = s:option(Value, "v2ray_h2_path", translate("HTTP/2 Path"))
 v2ray_h2_path:depends("v2ray_transport", "h2")
+v2ray_h2_path:depends("v2ray_ss_transport", "h2")
 
 -- [[ DomainSocket部分 ]]--
 
@@ -392,7 +427,8 @@ v2ray_mux_concurrency = s:option(Value, "v2ray_mux_concurrency",
 v2ray_mux_concurrency.default = 8
 v2ray_mux_concurrency:depends("v2ray_mux", "1")
 
--- [[ 当作为TCP节点时，是否同时开启socks代理 ]]
+-- [[ 当作为TCP节点时，是否同时开启socks代理 ]]--
+--[[
 v2ray_tcp_socks = s:option(Flag, "v2ray_tcp_socks", translate("TCP Open Socks"),
                            translate(
                                "When using this TCP node, whether to open the socks proxy at the same time"))
@@ -421,6 +457,7 @@ v2ray_tcp_socks_auth_username:depends("v2ray_tcp_socks_auth", "password")
 v2ray_tcp_socks_auth_password = s:option(Value, "v2ray_tcp_socks_auth_password",
                                          "Socks5 " .. translate("Password"))
 v2ray_tcp_socks_auth_password:depends("v2ray_tcp_socks_auth", "password")
+--]]
 
 -- [[ Trojan Cert ]]--
 trojan_verify_cert = s:option(Flag, "trojan_verify_cert",
@@ -464,8 +501,8 @@ type.validate = function(self, value)
         address.rmempty = false
         port.rmempty = false
         -- v2ray_protocol.rmempty = false
-        v2ray_VMess_id.rmempty = false
-        v2ray_VMess_alterId.rmempty = false
+        -- v2ray_VMess_id.rmempty = false
+        -- v2ray_VMess_alterId.rmempty = false
     elseif value == "V2ray_balancing" then
     elseif value == "Brook" then
         address.rmempty = false
