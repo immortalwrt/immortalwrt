@@ -1,7 +1,7 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
 
-local IPK_Version="20200323.1.27"
+local IPK_Version="20200325.1.29"
 local m, s, o
 local redir_run=0
 local reudp_run=0
@@ -27,7 +27,7 @@ local dns2socks_run=0
 local haproxy_run=0
 local privoxy_run=0
 
-if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
+if nixio.fs.access("/etc/dnsmasq.vssr/gfw_list.conf") then
 gfwmode=1		
 end
 
@@ -87,9 +87,9 @@ else
 end
 
 if gfwmode==1 then 
- gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l"))/2
- if nixio.fs.access("/etc/dnsmasq.ssr/ad.conf") then
-  ad_count=tonumber(sys.exec("cat /etc/dnsmasq.ssr/ad.conf | wc -l"))
+ gfw_count = tonumber(sys.exec("cat /etc/dnsmasq.vssr/gfw_list.conf | wc -l"))/2
+ if nixio.fs.access("/etc/dnsmasq.vssr/ad.conf") then
+  ad_count=tonumber(sys.exec("cat /etc/dnsmasq.vssr/ad.conf | wc -l"))
  end
 end
  
