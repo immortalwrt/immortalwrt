@@ -1,5 +1,5 @@
 local fs = require "nixio.fs"
-local conffile = "/etc/dnsmasq.ssr/appoint_list.conf"
+local conffile = "/etc/dnsmasq.vssr/appoint_list.conf"
 
 f = SimpleForm("custom", translate("Appoint dns List"))
 
