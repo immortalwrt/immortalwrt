@@ -53,7 +53,7 @@ platform_do_upgrade() {
 	avm,fritzrepeater-3000 |\
 	mobipromo,cm520-79f |\
 	p2w,r619ac|\
-	p2w,r619ac-128m|\
+	p2w,r619ac-pcie|\
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$1"
 		;;

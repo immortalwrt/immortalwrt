@@ -362,18 +362,18 @@ define Device/p2w_r619ac
 endef
 TARGET_DEVICES += p2w_r619ac
 
-define Device/p2w_r619ac-128m
+define Device/p2w_r619ac-pcie
 	$(call Device/FitzImage)
 	$(call Device/UbiFit)
-	DEVICE_TITLE :=  P&W R619AC 128M
-	BOARD_NAME := p2w-r619ac-128m
-	DEVICE_DTS := qcom-ipq4019-r619ac-128m
+	DEVICE_TITLE :=  P&W R619AC PCIE
+	BOARD_NAME := p2w-r619ac-pcie
+	DEVICE_DTS := qcom-ipq4019-r619ac-pcie
 	DEVICE_DTS_CONFIG := config@10
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_PACKAGES := ipq-wifi-p2w_r619ac
 endef
-TARGET_DEVICES += p2w_r619ac-128m
+TARGET_DEVICES += p2w_r619ac-pcie
 
 define Device/qcom_ap-dk01.1-c1
 	DEVICE_TITLE := QCA AP-DK01.1-C1
