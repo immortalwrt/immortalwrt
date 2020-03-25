@@ -336,7 +336,7 @@ gen_start_config() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
-			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
+			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-4 -U -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
 		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node udp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
@@ -358,7 +358,7 @@ gen_start_config() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
-			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
+			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-4 -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
 		elif [ "$type" == "brook" ]; then
 			local protocol=$(config_n_get $node brook_protocol client)
 			if [ "$protocol" == "wsclient" ]; then
@@ -392,7 +392,7 @@ gen_start_config() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$TCP_REDIR_PORT$5
-			ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-T -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
+			ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-4 -T -l $port -b 0.0.0.0 -s $node_address -p $node_port -R"
 		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node tcp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_tcp_$5 "-config=$config_file"
@@ -451,7 +451,7 @@ gen_start_config() {
 					socks5_port=$(get_new_port $(expr $SOCKS5_PROXY_PORT3 + 3) tcp)
 					ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_tcp_$5 "wsclient -l 127.0.0.1:$socks5_port -i 127.0.0.1 -s $server_ip:$port -p $(config_n_get $node password)"
 					eval port=\$TCP_REDIR_PORT$5
-					ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-T -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
+					ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-4 -T -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
 					echolog "Brook的WebSocket不支持透明代理，将使用ipt2socks转换透明代理！"
 				else
 					[ "$kcptun_use" == "1" ] && {
@@ -647,10 +647,10 @@ add_dnsmasq() {
 	[ "$DNS_MODE" != "nonuse" ] && {
 		if [ -n "$UP_CHINA_DNS2" ]; then
 			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
-			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
 		else
 			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
-			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
 		fi
 		[ -f "$RULES_PATH/blacklist_host" -a -s "$RULES_PATH/blacklist_host" ] && cat $RULES_PATH/blacklist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' > $TMP_DNSMASQ_PATH/blacklist_host.conf
 		[ -f "$RULES_PATH/gfwlist.conf" -a -s "$RULES_PATH/gfwlist.conf" ] && ln -s $RULES_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
