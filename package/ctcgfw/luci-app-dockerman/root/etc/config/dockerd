@@ -1,5 +1,0 @@
-config section 'local'
-        option ea 'true'
-        option en_wan 'false'
-        option data_root '/opt/docker'
-        option log_level 'warn'

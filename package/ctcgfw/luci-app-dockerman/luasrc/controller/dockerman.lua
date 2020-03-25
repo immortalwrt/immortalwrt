@@ -10,8 +10,8 @@ module("luci.controller.dockerman",package.seeall)
 
 function index()
 
-  entry({"admin", "services","docker"}, firstchild(), "Docker", 40).dependent = false
-  entry({"admin","services","docker","overview"},cbi("dockerman/overview"),_("Overview"),0).leaf=true
+  entry({"admin", "docker"}, firstchild(), "Docker", 40).dependent = false
+  entry({"admin","docker","overview"},cbi("dockerman/overview"),_("Overview"),0).leaf=true
 
   local remote = luci.model.uci.cursor():get("dockerman", "local", "remote_endpoint")
   if remote ==  nil then
@@ -24,24 +24,24 @@ function index()
   end
 
   if (require "luci.model.docker").new():_ping().code ~= 200 then return end
-  entry({"admin","services","docker","containers"},form("dockerman/containers"),_("Containers"),1).leaf=true
-  entry({"admin","services","docker","images"},form("dockerman/images"),_("Images"),2).leaf=true
-  entry({"admin","services","docker","networks"},form("dockerman/networks"),_("Networks"),3).leaf=true
-  entry({"admin","services","docker","volumes"},form("dockerman/volumes"),_("Volumes"),4).leaf=true
-  entry({"admin","services","docker","events"},call("action_events"),_("Events"),5)
-  entry({"admin","services","docker","newcontainer"},form("dockerman/newcontainer")).leaf=true
-  entry({"admin","services","docker","newnetwork"},form("dockerman/newnetwork")).leaf=true
-  entry({"admin","services","docker","container"},form("dockerman/container")).leaf=true
-  entry({"admin","services","docker","container_stats"},call("action_get_container_stats")).leaf=true
-  entry({"admin","services","docker","container_get_archive"},call("download_archive")).leaf=true
-  entry({"admin","services","docker","container_put_archive"},call("upload_archive")).leaf=true
-  entry({"admin","services","docker","images_save"},call("save_images")).leaf=true
-  entry({"admin","services","docker","images_load"},call("load_images")).leaf=true
-  entry({"admin","services","docker","images_import"},call("import_images")).leaf=true
-  entry({"admin","services","docker","images_get_tags"},call("get_image_tags")).leaf=true
-  entry({"admin","services","docker","images_tag"},call("tag_image")).leaf=true
-  entry({"admin","services","docker","images_untag"},call("untag_image")).leaf=true
-  entry({"admin","services","docker","confirm"},call("action_confirm")).leaf=true
+  entry({"admin","docker","containers"},form("dockerman/containers"),_("Containers"),1).leaf=true
+  entry({"admin","docker","images"},form("dockerman/images"),_("Images"),2).leaf=true
+  entry({"admin","docker","networks"},form("dockerman/networks"),_("Networks"),3).leaf=true
+  entry({"admin","docker","volumes"},form("dockerman/volumes"),_("Volumes"),4).leaf=true
+  entry({"admin","docker","events"},call("action_events"),_("Events"),5)
+  entry({"admin","docker","newcontainer"},form("dockerman/newcontainer")).leaf=true
+  entry({"admin","docker","newnetwork"},form("dockerman/newnetwork")).leaf=true
+  entry({"admin","docker","container"},form("dockerman/container")).leaf=true
+  entry({"admin","docker","container_stats"},call("action_get_container_stats")).leaf=true
+  entry({"admin","docker","container_get_archive"},call("download_archive")).leaf=true
+  entry({"admin","docker","container_put_archive"},call("upload_archive")).leaf=true
+  entry({"admin","docker","images_save"},call("save_images")).leaf=true
+  entry({"admin","docker","images_load"},call("load_images")).leaf=true
+  entry({"admin","docker","images_import"},call("import_images")).leaf=true
+  entry({"admin","docker","images_get_tags"},call("get_image_tags")).leaf=true
+  entry({"admin","docker","images_tag"},call("tag_image")).leaf=true
+  entry({"admin","docker","images_untag"},call("untag_image")).leaf=true
+  entry({"admin","docker","confirm"},call("action_confirm")).leaf=true
 end
 
 function action_events()
@@ -272,39 +272,39 @@ function load_images()
   luci.http.write_json({message = msg})
 end
 
--- function import_images()
---   local src = luci.http.formvalue("src")
---   local itag = luci.http.formvalue("tag")
---   local dk = docker.new()
---   local ltn12 = require "luci.ltn12"
---   local rec_send = function(sinkout)
---     luci.http.setfilehandler(function (meta, chunk, eof)
---       if chunk then
---         ltn12.pump.step(ltn12.source.string(chunk), sinkout)
---       end
---     end)
---   end
---   docker:write_status("Images: importing".. " ".. itag .."...\n")
---   local repo = itag and itag:match("^([^:]+)")
---   local tag = itag and itag:match("^[^:]-:([^:]+)")
---   local res = dk.images:create({query = {fromSrc = src or "-", repo = repo or nil, tag = tag or nil }, body = not src and rec_send or nil}, docker.import_image_show_status_cb)
---   local msg = res and res.body and ( res.body.message )or nil
---   if not msg and #res.body == 0 then
---     -- res.body = {"status":"sha256:d5304b58e2d8cc0a2fd640c05cec1bd4d1229a604ac0dd2909f13b2b47a29285"}
---     msg = res.body.status or res.body.error
---   elseif not msg and #res.body >= 1 then
---     -- res.body = [...{"status":"sha256:d5304b58e2d8cc0a2fd640c05cec1bd4d1229a604ac0dd2909f13b2b47a29285"}]
---     msg = res.body[#res.body].status or res.body[#res.body].error
---   end
---   if res.code == 200 and msg and msg:match("sha256:") then
---     docker:clear_status()
---   else
---     docker:append_status("code:" .. res.code.." ".. msg)
---   end
---   luci.http.status(res.code, msg)
---   luci.http.prepare_content("application/json")
---   luci.http.write_json({message = msg})
--- end
+function import_images()
+  local src = luci.http.formvalue("src")
+  local itag = luci.http.formvalue("tag")
+  local dk = docker.new()
+  local ltn12 = require "luci.ltn12"
+  local rec_send = function(sinkout)
+    luci.http.setfilehandler(function (meta, chunk, eof)
+      if chunk then
+        ltn12.pump.step(ltn12.source.string(chunk), sinkout)
+      end
+    end)
+  end
+  docker:write_status("Images: importing".. " ".. itag .."...\n")
+  local repo = itag and itag:match("^([^:]+)")
+  local tag = itag and itag:match("^[^:]-:([^:]+)")
+  local res = dk.images:create({query = {fromSrc = src or "-", repo = repo or nil, tag = tag or nil }, body = not src and rec_send or nil}, docker.import_image_show_status_cb)
+  local msg = res and res.body and ( res.body.message )or nil
+  if not msg and #res.body == 0 then
+    -- res.body = {"status":"sha256:d5304b58e2d8cc0a2fd640c05cec1bd4d1229a604ac0dd2909f13b2b47a29285"}
+    msg = res.body.status or res.body.error
+  elseif not msg and #res.body >= 1 then
+    -- res.body = [...{"status":"sha256:d5304b58e2d8cc0a2fd640c05cec1bd4d1229a604ac0dd2909f13b2b47a29285"}]
+    msg = res.body[#res.body].status or res.body[#res.body].error
+  end
+  if res.code == 200 and msg and msg:match("sha256:") then
+    docker:clear_status()
+  else
+    docker:append_status("code:" .. res.code.." ".. msg)
+  end
+  luci.http.status(res.code, msg)
+  luci.http.prepare_content("application/json")
+  luci.http.write_json({message = msg})
+end
 
 function get_image_tags(image_id)
   if not image_id then 
