@@ -4,6 +4,7 @@ function index()
 	if not nixio.fs.access("/etc/config/filebrowser") then
 		return
 	end
+	entry({"admin", "nas"}, firstchild(), _("NAS") , 45).dependent = false
 	local page
 	page = entry({"admin", "nas", "filebrowser"}, cbi("filebrowser"), _("文件管理器"), 100)
 	page.dependent = true
