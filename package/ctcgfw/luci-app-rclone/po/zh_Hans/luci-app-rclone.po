@@ -4,22 +4,30 @@ msgstr ""
 "Project-Id-Version: \n"
 "Last-Translator: ElonH <elonhhuang@gmail.com>\n"
 "Language-Team: none\n"
-"Language: zh-Hans\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: luasrc/model/cbi/rclone.lua:114
-msgid "How to proxy rclone"
-msgstr "如何代理rclone"
+#: luasrc/model/cbi/rclone.lua:115
+msgid "FAQ"
+msgstr "常见问题"
+
+#: luasrc/model/cbi/rclone.lua:131
+msgid "Hosts must be comma separated, and can contain domains or parts."
+msgstr "用逗号分隔地址,且地址必须包含(部分)域名"
 
 #: luasrc/model/cbi/rclone.lua:41
 msgid "Installed Web Interface"
 msgstr "已安装Web界面"
 
-#: luasrc/model/cbi/rclone.lua:37 luasrc/controller/rclone.lua:7
+#: luasrc/controller/rclone.lua:5
+msgid "NAS"
+msgstr "存储"
+
+#: luasrc/model/cbi/rclone.lua:37 luasrc/controller/rclone.lua:6
 msgid "Rclone"
 msgstr "Rclone"
 
@@ -29,6 +37,18 @@ msgid ""
 "usr/bin and directories to and from different cloud storage providers."
 msgstr ""
 "Rclone是一款的命令行工具，支持在不同对象存储、网盘间同步、上传、下载数据。"
+
+#: luasrc/model/cbi/rclone.lua:124
+msgid ""
+"The content of the variable is protocol://server:port. The protocol value is "
+"commonly either http or socks5."
+msgstr ""
+"内容格式为: protocol://server:port\n"
+"protocol 通常为 http 或者 socks5"
+
+#: luasrc/model/cbi/rclone.lua:130
+msgid "This allows you to disable the proxy for specific hosts."
+msgstr "这允许不代理特定的地址."
 
 #: luasrc/model/cbi/rclone.lua:43
 msgid "Webui React"
@@ -43,8 +63,8 @@ msgid "configure"
 msgstr "配置"
 
 #: luasrc/model/cbi/rclone.lua:126
-msgid "disable proxy for specific hosts"
-msgstr "针对特定主机禁用代理"
+msgid "disable proxy"
+msgstr ""
 
 #: luasrc/model/cbi/rclone.lua:77
 msgid "download"
@@ -54,7 +74,7 @@ msgstr "下载"
 msgid "download configuration"
 msgstr "下载配置文件"
 
-#: luasrc/model/cbi/rclone.lua:116
+#: luasrc/model/cbi/rclone.lua:117
 msgid "enable proxy"
 msgstr "启用代理"
 
@@ -78,7 +98,7 @@ msgstr "局域网地址"
 msgid "localhost address"
 msgstr "本机地址"
 
-#: luasrc/model/cbi/rclone.lua:131
+#: luasrc/model/cbi/rclone.lua:133
 msgid "log"
 msgstr "日志"
 
@@ -86,7 +106,7 @@ msgstr "日志"
 msgid "password"
 msgstr "密码"
 
-#: luasrc/model/cbi/rclone.lua:135
+#: luasrc/model/cbi/rclone.lua:137
 msgid "path"
 msgstr "路径"
 
@@ -94,7 +114,7 @@ msgstr "路径"
 msgid "proxy"
 msgstr "代理"
 
-#: luasrc/model/cbi/rclone.lua:119
+#: luasrc/model/cbi/rclone.lua:120
 msgid "proxy address"
 msgstr "代理地址"
 
@@ -118,12 +138,6 @@ msgstr "rclone 运行中"
 msgid "rclone state"
 msgstr "rclone 状态"
 
-#: luasrc/model/cbi/rclone.lua:123
-msgid ""
-"rclone will follow the standard environment variables for proxies, similar "
-"to cURL and other programs."
-msgstr "rclone 会使用代理的标准环境变量，类似于 cURL 及其他程序。"
-
 #: luasrc/model/cbi/rclone.lua:51
 msgid "run Rclone as daemon"
 msgstr "启动 rclone 后台服务"
@@ -131,6 +145,17 @@ msgstr "启动 rclone 后台服务"
 #: luasrc/model/cbi/rclone.lua:100
 msgid "username"
 msgstr "用户名"
+
+#~ msgid "How to proxy rclone"
+#~ msgstr "如何代理rclone"
+
+#~ msgid "disable proxy for specific hosts"
+#~ msgstr "针对特定主机禁用代理"
+
+#~ msgid ""
+#~ "rclone will follow the standard environment variables for proxies, "
+#~ "similar to cURL and other programs."
+#~ msgstr "rclone 会使用代理的标准环境变量，类似于 cURL 及其他程序。"
 
 #~ msgid "run Rclone in daeman"
 #~ msgstr "启动 rclone 后台服务"
