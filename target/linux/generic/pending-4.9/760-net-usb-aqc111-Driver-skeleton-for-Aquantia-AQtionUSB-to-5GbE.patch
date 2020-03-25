@@ -1,6 +1,6 @@
 --- a/drivers/net/usb/Kconfig
 +++ b/drivers/net/usb/Kconfig
-@@ -613,4 +613,16 @@ config USB_NET_CH9200
+@@ -607,4 +607,16 @@ config USB_NET_CH9200
  	  To compile this driver as a module, choose M here: the
  	  module will be called ch9200.
  
@@ -19,7 +19,7 @@
  endif # USB_NET_DRIVERS
 --- a/drivers/net/usb/Makefile
 +++ b/drivers/net/usb/Makefile
-@@ -40,3 +40,4 @@ obj-$(CONFIG_USB_VL600)		+= lg-vl600.o
+@@ -39,3 +39,4 @@ obj-$(CONFIG_USB_VL600)		+= lg-vl600.o
  obj-$(CONFIG_USB_NET_QMI_WWAN)	+= qmi_wwan.o
  obj-$(CONFIG_USB_NET_CDC_MBIM)	+= cdc_mbim.o
  obj-$(CONFIG_USB_NET_CH9200)	+= ch9200.o
@@ -1753,41 +1753,41 @@
 +#endif /* __LINUX_USBNET_AQC111_H */
 --- a/drivers/net/usb/cdc_ether.c
 +++ b/drivers/net/usb/cdc_ether.c
-@@ -569,6 +569,8 @@ static const struct driver_info wwan_inf
- #define MICROSOFT_VENDOR_ID	0x045e
- #define UBLOX_VENDOR_ID		0x1546
- #define TPLINK_VENDOR_ID	0x2357
-+#define AQUANTIA_VENDOR_ID	0x2eca
-+#define ASIX_VENDOR_ID		0x0b95
+@@ -540,6 +540,8 @@ static const struct driver_info wwan_inf
+ #define LINKSYS_VENDOR_ID	0x13b1
+ #define NVIDIA_VENDOR_ID	0x0955
+ #define HP_VENDOR_ID		0x03f0
++#define AQUANTIA_VENDOR_ID      0x2eca
++#define ASIX_VENDOR_ID          0x0b95
  
  static const struct usb_device_id	products[] = {
  /* BLACKLIST !!
-@@ -835,6 +837,30 @@ static const struct usb_device_id	produc
+@@ -750,6 +752,30 @@ static const struct usb_device_id	produc
  	.driver_info = 0,
  },
  
 +/* Aquantia AQtion USB to 5GbE Controller (based on AQC111U) */
 +{
-+	USB_DEVICE_AND_INTERFACE_INFO(AQUANTIA_VENDOR_ID, 0xc101,
-+				      USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
-+				      USB_CDC_PROTO_NONE),
-+	.driver_info = 0,
++       USB_DEVICE_AND_INTERFACE_INFO(AQUANTIA_VENDOR_ID, 0xc101,
++                                     USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
++                                     USB_CDC_PROTO_NONE),
++       .driver_info = 0,
 +},
 +
 +/* ASIX USB 3.1 Gen1 to 5G Multi-Gigabit Ethernet Adapter(based on AQC111U) */
 +{
-+	USB_DEVICE_AND_INTERFACE_INFO(ASIX_VENDOR_ID, 0x2790, USB_CLASS_COMM,
-+				      USB_CDC_SUBCLASS_ETHERNET,
-+				      USB_CDC_PROTO_NONE),
-+	.driver_info = 0,
++       USB_DEVICE_AND_INTERFACE_INFO(ASIX_VENDOR_ID, 0x2790, USB_CLASS_COMM,
++                                     USB_CDC_SUBCLASS_ETHERNET,
++                                     USB_CDC_PROTO_NONE),
++       .driver_info = 0,
 +},
 +
 +/* ASIX USB 3.1 Gen1 to 2.5G Multi-Gigabit Ethernet Adapter(based on AQC112U) */
 +{
-+	USB_DEVICE_AND_INTERFACE_INFO(ASIX_VENDOR_ID, 0x2791, USB_CLASS_COMM,
-+				      USB_CDC_SUBCLASS_ETHERNET,
-+				      USB_CDC_PROTO_NONE),
-+	.driver_info = 0,
++       USB_DEVICE_AND_INTERFACE_INFO(ASIX_VENDOR_ID, 0x2791, USB_CLASS_COMM,
++                                     USB_CDC_SUBCLASS_ETHERNET,
++                                     USB_CDC_PROTO_NONE),
++       .driver_info = 0,
 +},
 +
  /* WHITELIST!!!
