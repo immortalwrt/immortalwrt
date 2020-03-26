@@ -188,28 +188,28 @@ menu "Target Images"
 		select PACKAGE_grub2
 		default y
 
-	config EFI_IMAGES
-		bool "Build EFI GRUB images (Linux x86 or x86_64 host only)"
+	config GRUB_EFI_IMAGES
+		bool "Build GRUB EFI images (Linux x86 or x86_64 host only)"
 		depends on TARGET_x86
-		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_ISO || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS
+		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS
 		select PACKAGE_grub2
 		select PACKAGE_grub2-efi
+		select PACKAGE_kmod-fs-vfat
 		default y
 
 	config GRUB_CONSOLE
 		bool "Use Console Terminal (in addition to Serial)"
-		depends on GRUB_IMAGES || EFI_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default y
 
 	config GRUB_SERIAL
 		string "Serial port device"
-		depends on GRUB_IMAGES || EFI_IMAGES
-		default "hvc0" if TARGET_x86_xen_domu
-		default "ttyS0" if ! TARGET_x86_xen_domu
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
+		default "ttyS0"
 
 	config GRUB_BAUDRATE
 		int "Serial port baud rate"
-		depends on GRUB_IMAGES || EFI_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default 38400 if TARGET_x86_generic
 		default 115200
 
@@ -220,21 +220,20 @@ menu "Target Images"
 
 	config GRUB_BOOTOPTS
 		string "Extra kernel boot options"
-		depends on GRUB_IMAGES || EFI_IMAGES
-		default "xencons=hvc" if TARGET_x86_xen_domu
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		help
 		  If you don't know, just leave it blank.
 
 	config GRUB_TIMEOUT
 		string "Seconds to wait before booting the default entry"
-		depends on GRUB_IMAGES || EFI_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default "0"
 		help
 		  If you don't know, 5 seconds is a reasonable default.
 
 	config GRUB_TITLE
 		string "Title for the menu entry in GRUB"
-		depends on GRUB_IMAGES || EFI_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default "OpenWrt"
 		help
 		  This is the title of the GRUB menu entry.
@@ -243,38 +242,20 @@ menu "Target Images"
 	config ISO_IMAGES
 		bool "Build LiveCD image (ISO)"
 		depends on TARGET_x86
-		select GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 
 	config VDI_IMAGES
 		bool "Build VirtualBox image files (VDI)"
-		depends on TARGET_x86 || TARGET_x86_64
-		select GRUB_IMAGES
-		select TARGET_IMAGES_PAD
+		depends on TARGET_x86
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 
 	config VMDK_IMAGES
 		bool "Build VMware image files (VMDK)"
-		depends on TARGET_x86 || TARGET_x86_64
-		select GRUB_IMAGES
-		select TARGET_IMAGES_PAD
+		depends on TARGET_x86
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 		default y
-
-	config VHD_IMAGES
-		bool "Build Hyper-V image files (VHD)"
-		depends on TARGET_x86 || TARGET_x86_64
-		depends on GRUB_IMAGES || EFI_IMAGES
-		select TARGET_IMAGES_PAD
-		select PACKAGE_kmod-tulip
-		default n
-
- 	config QCOW2_IMAGES
-		bool "Build PVE/KVM image files (QCOW2)"
-		depends on TARGET_x86 || TARGET_x86_64
-		depends on GRUB_IMAGES || EFI_IMAGES
-		select TARGET_IMAGES_PAD
-		select PACKAGE_kmod-e1000
-		default n
 
 	config TARGET_IMAGES_PAD
 		bool "Pad images to filesystem size (for JFFS2)"
@@ -307,7 +288,7 @@ menu "Target Images"
 
 	config TARGET_ROOTFS_PARTNAME
 		string "Root partition on target device"
-		depends on GRUB_IMAGES || EFI_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		help
 		  Override the root partition on the final device. If left empty,
 		  it will be mounted by PARTUUID which makes the kernel find the
