@@ -199,7 +199,7 @@ platform_do_upgrade() {
 		;;
 	compex,wpj419|\
 	p2w,r619ac|\
-	p2w,r619ac-128m)
+	p2w,r619ac-pcie)
 		nand_do_upgrade "$1"
 		;;
 	linksys,ea6350v3 |\

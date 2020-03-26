@@ -130,6 +130,9 @@ case "$FIRMWARE" in
 	openmesh,a62)
 		ath10kcal_extract "0:ART" 36864 12064
 		;;
+	p2w,r619ac-pcie)
+		ath10kcal_extract "ART" 36864 12064
+		;;
 	esac
 	;;
 "ath10k/pre-cal-ahb-a000000.wifi.bin")
@@ -142,7 +145,7 @@ case "$FIRMWARE" in
 	linksys,ea6350v3 |\
 	mobipromo,cm520-79f |\
 	p2w,r619ac |\
-	p2w,r619ac-128m |\
+	p2w,r619ac-pcie |\
 	qcom,ap-dk01.1-c1)
 		ath10kcal_extract "ART" 4096 12064
 		;;
@@ -226,7 +229,7 @@ case "$FIRMWARE" in
 	linksys,ea6350v3 |\
 	mobipromo,cm520-79f |\
 	p2w,r619ac |\
-	p2w,r619ac-128m |\
+	p2w,r619ac-pcie |\
 	qcom,ap-dk01.1-c1)
 		ath10kcal_extract "ART" 20480 12064
 		;;
