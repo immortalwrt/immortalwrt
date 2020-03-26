@@ -85,11 +85,13 @@ end
 -- 判断是否过滤节点关键字
 local filter_keyword_table = ucic2:get(application, "@global_subscribe[0]", "filter_keyword")
 local function is_filter_keyword(value)
-	for k,v in ipairs(filter_keyword_table) do
-	  if value:find(v) then
-          return true
-      end
-    end
+	if filter_keyword_table then
+		for k,v in ipairs(filter_keyword_table) do
+			if value:find(v) then
+				return true
+			end
+		end
+	end
     return false
 end
 
