@@ -435,8 +435,10 @@ gen_start_config() {
 				local plugin=$(config_n_get $node ss_plugin)
 				if [ "$plugin" != "none" ]; then
 					[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+						local plugin_opts=""
 						local opts=$(config_n_get $node ss_plugin_opts)
-						plugin_params="--plugin $plugin --plugin-opts $opts"
+						[ -n "$opts" ] && plugin_opts="--plugin-opts $opts"
+						plugin_params="--plugin $plugin $plugin_opts"
 					}
 				fi
 				for k in $(seq 1 $process); do
