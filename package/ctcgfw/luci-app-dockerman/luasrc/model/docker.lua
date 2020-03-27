@@ -201,9 +201,6 @@ local upgrade = function(self, request)
 
   -- extra networks need to network connect action
   for k, v in pairs(extra_network) do
-    -- if v.IPAMConfig and next(v.IPAMConfig) == nil then v.IPAMConfig =nil end
-    -- if v.DriverOpts and next(v.DriverOpts) == nil then v.DriverOpts =nil end
-    -- if v.Aliases and next(v.Aliases) == nil then v.Aliases =nil end
     _docker:append_status("Networks: Connect" .. " " .. container_name .. "...")
     res = self.networks:connect({id = k, body = {Container = container_name, EndpointConfig = v}})
     if res.code > 300 then return res end
@@ -218,9 +215,6 @@ local duplicate_config = function (self, request)
   local container_info = self.containers:inspect({id = request.id})
   if container_info.code > 300 and type(container_info.body) == "table" then return nil end
   local old_image_id = container_info.body.Image
-  -- local old_config = container_info.body.Config
-  -- local old_host_config = container_info.body.HostConfig
-  -- local old_network_setting = container_info.body.NetworkSettings.Networks or {}
   local image_config = self.images:inspect({id = old_image_id}).body.Config
   return get_config(container_info.body, image_config)
 end

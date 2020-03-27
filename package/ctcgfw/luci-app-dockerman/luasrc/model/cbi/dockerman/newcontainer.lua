@@ -294,14 +294,12 @@ d_ip:depends("network", "nil")
 d_ip.default = default_config.ip or nil
 
 d = s:option(DynamicList, "link", translate("Links with other containers"))
-d.cfgvalue = function (self, section) return default_config.link or nil end
 d.placeholder = "container_name:alias"
 d.rmempty = true
 d:depends("network", "bridge")
 d.default = default_config.link or nil
 
 d = s:option(DynamicList, "dns", translate("Set custom DNS servers"))
-d.cfgvalue = function (self, section) return default_config.dns or nil end
 d.placeholder = "8.8.8.8"
 d.rmempty = true
 d.default = default_config.dns or nil
@@ -312,19 +310,16 @@ d.rmempty = true
 d.default = default_config.user or nil
 
 d = s:option(DynamicList, "env", translate("Environmental Variable(-e)"), translate("Set environment variables to inside the container"))
-d.cfgvalue = function (self, section) return default_config.env or nil end
 d.placeholder = "TZ=Asia/Shanghai"
 d.rmempty = true
 d.default = default_config.env or nil
 
 d = s:option(DynamicList, "volume", translate("Bind Mount(-v)"), translate("Bind mount a volume"))
-d.cfgvalue = function (self, section) return default_config.volume or nil end
 d.placeholder = "/media:/media:slave"
 d.rmempty = true
 d.default = default_config.volume or nil
 
 local d_publish = s:option(DynamicList, "publish", translate("Exposed Ports(-p)"), translate("Publish container's port(s) to the host"))
-d_publish.cfgvalue = function (self, section) return default_config.publish or nil end
 d_publish.placeholder = "2200:22/tcp"
 d_publish.rmempty = true
 d_publish.default = default_config.publish or nil
@@ -346,28 +341,24 @@ d.default = default_config.hostname or nil
 d:depends("advance", 1)
 
 d = s:option(DynamicList, "device", translate("Device(--device)"), translate("Add host device to the container"))
-d.cfgvalue = function (self, section) return default_config.device or nil end
 d.placeholder = "/dev/sda:/dev/xvdc:rwm"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.device or nil
 
 d = s:option(DynamicList, "tmpfs", translate("Tmpfs(--tmpfs)"), translate("Mount tmpfs directory"))
-d.cfgvalue = function (self, section) return default_config.tmpfs or nil end
 d.placeholder = "/run:rw,noexec,nosuid,size=65536k"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.tmpfs or nil
 
 d = s:option(DynamicList, "sysctl", translate("Sysctl(--sysctl)"), translate("Sysctls (kernel parameters) options"))
-d.cfgvalue = function (self, section) return default_config.sysctl or nil end
 d.placeholder = "net.ipv4.ip_forward=1"
 d.rmempty = true
 d:depends("advance", 1)
 d.default = default_config.sysctl or nil
 
 d = s:option(DynamicList, "cap_add", translate("CAP-ADD(--cap-add)"), translate("A list of kernel capabilities to add to the container"))
-d.cfgvalue = function (self, section) return default_config.cap_add or nil end
 d.placeholder = "NET_ADMIN"
 d.rmempty = true
 d:depends("advance", 1)
