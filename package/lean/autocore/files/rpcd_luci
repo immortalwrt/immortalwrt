@@ -618,13 +618,7 @@ local methods = {
 			local sys = require "luci.sys"
 			local cpuusage = {}
 
-			sys.call("/bin/getcpu &")
-			cpuusage.cpuusage = sys.exec("cat /tmp/cpuusage 2>/dev/null")
-
-			if (cpuusage.cpuusage == nil) or (cpuusage.cpuusage == "") then
-				cpuusage.cpuusage = "2.33%"
-			end
-
+			cpuusage.cpuusage = (sys.exec("expr 100 - $(top -n 1 | grep 'CPU:' | awk -F '%' '{print$4}' | awk -F ' ' '{print$2}')") or "2.33") .. "%"
 			return cpuusage
 		end
 	},
