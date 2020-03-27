@@ -388,27 +388,6 @@
 			linux,code = <KEY_RESTART>;
 		};
 	};
-
-	leds {
-		compatible = "gpio-leds";
-		pinctrl-0 = <&led_pins>;
-		pinctrl-names = "default";
-
-		usb_1 {
-			label = "m520:green:usb_1";
-			gpios = <&qcom_pinmux 7 GPIO_ACTIVE_HIGH>;
-		};
-
-		usb_3 {
-			label = "m520:green:usb_3";
-			gpios = <&qcom_pinmux 8 GPIO_ACTIVE_HIGH>;
-		};
-
-		status_green {
-			label = "m520:green:status";
-			gpios = <&qcom_pinmux 9 GPIO_ACTIVE_LOW>;
-		};
-	};
 };
 
 &adm_dma {
