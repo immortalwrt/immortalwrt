@@ -22,7 +22,7 @@ ifeq ($(ARCH),arm)
 	PKG_ARCH_VERYSYNC:=arm7
 endif
 ifeq ($(BOARD),bcm53xx)
-	PKG_ARCH_VERYSYNC:=arm6
+	PKG_ARCH_VERYSYNC:=arm
 endif
 ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_VERYSYNC:=arm
@@ -33,7 +33,7 @@ endif
 
 PKG_NAME:=verysync
 PKG_VERSION:=v1.3.1
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://releases-cdn.verysync.com/releases/$(PKG_VERSION)/
