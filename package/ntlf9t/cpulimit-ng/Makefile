@@ -42,16 +42,7 @@ define Package/cpulimit-ng
 				 percentage, not in cpu time). 
 endef
 
-# Specify what needs to be done to prepare for building the package.
-# In our case, we need to copy the source files to the build directory.
-# This is NOT the default.  The default uses the PKG_SOURCE_URL and the
-# PKG_SOURCE which is not defined here to download the source from the web.
-# In order to just build a simple program that we have just written, it is
-# much easier to do it this way.
-define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) ./src/* $(PKG_BUILD_DIR)/
-endef
+# using default Build/Prepare to enable patch (ElonH<elonhhuang@gmail.com>)
 
 # We do not need to define Build/Configure or Build/Compile directives
 # The defaults are appropriate for compiling a simple program such as this one
