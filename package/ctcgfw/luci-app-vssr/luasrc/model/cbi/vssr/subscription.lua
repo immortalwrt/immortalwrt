@@ -49,6 +49,10 @@ o.rmempty = false
 o = s:option(DynamicList, "subscribe_url", translate("Subscribe URL"))
 o.rmempty = true
 
+o = s:option(Value, "filter_words", translate("Subscribe Filter Words"))
+o.rmempty = true
+o.description = translate("Filter Words splited by /")
+
 o = s:option(Flag, "proxy", translate("Through proxy update"))
 o.rmempty = false
 o.description = translate("Through proxy update list, Not Recommended ")
