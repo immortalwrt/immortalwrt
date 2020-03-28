@@ -41,7 +41,7 @@ define Package/luci-app-airwhu/install
 	$(INSTALL_DIR) $(1)/bin
 	$(INSTALL_BIN) ./root/bin/ipv6masq.sh $(1)/bin/ipv6masq.sh
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n  
-	po2lmo ./po/zh-cn/airwhu.po $(1)/usr/lib/lua/luci/i18n/airwhu.zh-cn.lmo
+	po2lmo ./po/zh_cn/airwhu.po $(1)/usr/lib/lua/luci/i18n/airwhu.zh-cn.lmo
 endef
 
 $(eval $(call BuildPackage,luci-app-airwhu))
