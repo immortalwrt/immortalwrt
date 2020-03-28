@@ -797,8 +797,11 @@ msgstr "插件"
 msgid "Plugin Opts"
 msgstr "插件参数"
 
-msgid "Before subscribing please click below to delete all servers in the subscription"
-msgstr "使用此订阅前请先删除所有服务器在订阅"
+msgid "Subscribe Filter Words"
+msgstr "订阅节点关键字过滤"
+
+msgid "Filter Words splited by /"
+msgstr "命中关键字的节点将被丢弃。多个关键字用 / 分隔"
 
 msgid "Chnroute Setting"
 msgstr "国内IP段数据库更新设置"
