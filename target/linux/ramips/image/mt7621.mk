@@ -678,8 +678,6 @@ define Device/phicomm_k2p
   IMAGE_SIZE := 15744k
   DEVICE_VENDOR := Phicomm
   DEVICE_MODEL := K2P
-  DEVICE_ALT0_VENDOR := Phicomm
-  DEVICE_ALT0_MODEL := KE 2P
   SUPPORTED_DEVICES += k2p
   DEVICE_PACKAGES := luci-app-mtwifi
 endef
