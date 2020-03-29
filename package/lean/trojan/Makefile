@@ -66,4 +66,3 @@ define Package/trojan/install
 endef
 
 $(eval $(call BuildPackage,trojan))
-
