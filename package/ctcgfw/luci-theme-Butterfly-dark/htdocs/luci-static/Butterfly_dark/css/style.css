@@ -758,9 +758,9 @@ cursor: pointer;
 	display: inline-block;
 	background-color: #e6e6e6;
 	background-repeat: no-repeat;	
-	padding: 5px 14px 6px;
-	
+	padding: 5px 14px 6px;	
 	color: #333;
+	white-space: nowrap;
 	font-size: 14px;
 	line-height: normal;
 	border: 1px solid #ccc;
