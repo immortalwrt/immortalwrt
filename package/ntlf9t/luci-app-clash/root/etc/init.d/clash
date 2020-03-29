@@ -143,11 +143,11 @@ yml_dns_change(){
 	dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
 	dnscache=$(uci get clash.config.dnscache 2>/dev/null)
 	if [ "${dns_port}" -eq 53 ]; then
-			sed -i 's/0.0.0.0:53/0.0.0.0:5300/g' $CONFIG_YAML
+			sed -i 's/^0.0.0.0:53/0.0.0.0:5300/g' $CONFIG_YAML
 	fi	
 
-	if [ "$dnsforwader" -eq 1 ]; then	
-	   if [ "$dns_port" -eq 53 ]; then
+	if [ "$dnsforwader" -ne 0 ]; then	
+	   if [ "${dns_port}" -eq 53 ]; then
 	   
 			if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 				echo "Setting dns forwarder" >$REAL_LOG 
@@ -187,7 +187,7 @@ yml_dns_change(){
 			uci commit dhcp
 		  fi	      
 	   fi
-	elif [ "$dnsforwader" -eq 0 ]; then
+	elif [ "$dnsforwader" -ne 1 ]; then
 		if [ "$dnscache"  -eq 0 ];then
 			if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 				echo "Disabling dns cache" >$REAL_LOG 
@@ -225,6 +225,11 @@ rules(){
 		wan=$(ifconfig | grep 'inet addr' | awk '{print $2}' | cut -d: -f2 2>/dev/null)
 		ip6=$(ifconfig | grep 'inet6 addr' | awk '{print $3}' 2>/dev/null)
 		enable_udp=$(uci get clash.config.enable_udp 2>/dev/null)
+
+		PROXY_FWMARK="0x162"
+		PROXY_ROUTE_TABLE="0x162"
+		PROXY_BYPASS_USER="root"
+
 		
 		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
 			iptables -t nat -N clash   	
@@ -250,8 +255,8 @@ rules(){
 				
 			if [ "${enable_udp}" -eq 1 ]; then	
 			
-			ip rule add fwmark 1 table 100
-            ip route add local default dev lo table 100
+	        ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789
+            ip route add local default dev lo table "$PROXY_ROUTE_TABLE"
 			
             iptables -t mangle -N clash
             iptables -t mangle -A clash -d 0.0.0.0/8 -j RETURN
@@ -268,7 +273,7 @@ rules(){
                 done
             fi
    
-            iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark 1
+            iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark "$PROXY_FWMARK"
             iptables -t mangle -A PREROUTING -p udp -j clash
 
 			fi
@@ -278,12 +283,12 @@ rules(){
 			if [ ! -z "${fake_ip_range}" ];then
 				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
 				if [ "${enable_udp}" -eq 1 ]; then
-                      iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark 1
+                      iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark "$PROXY_FWMARK"
                 fi
 			else
 				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "${redir_port}"
 				if [ "${enable_udp}" -eq 1 ]; then
-                      iptables -t mangle -A OUTPUT -p udp -d 198.18.0.1/16 -j MARK --set-mark 1
+                      iptables -t mangle -A OUTPUT -p udp -d 198.18.0.1/16 -j MARK --set-mark "$PROXY_FWMARK"
                 fi
 			fi
 			
@@ -303,16 +308,13 @@ rules(){
                             fi
                          done
                       fi
-                      ip6tables -t mangle -A clash -p udp -j TPROXY --on-port "$proxy_port" --tproxy-mark 1
+                      ip6tables -t mangle -A clash -p udp -j TPROXY --on-port "$proxy_port" --tproxy-mark "$PROXY_FWMARK"
                       ip6tables -t mangle -A PREROUTING -p udp -j clash
                 fi
 				
 			fi
 			
 		elif [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
-			PROXY_FWMARK="0x162"
-			PROXY_ROUTE_TABLE="0x162"
-			PROXY_BYPASS_USER="root"
 			
 			TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 			if [ -z $TUN_DEVICE ];then
@@ -429,14 +431,11 @@ elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	exit 0
 else
 if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')" -ne 0 ] ; then
-	new_conf=$(uci get clash.config.new_conf 2>/dev/null)
+	
+	check >/dev/null 2>&1
 	
    	yml_change >/dev/null 2>&1
 	
-	if [ "$new_conf" -eq 1 ];then
-	check >/dev/null 2>&1
-	fi
-
 	checktype=$(grep -c "type: ssr" /etc/clash/config.yaml 2>/dev/null)
 	if [ "${checktype}" -gt 0 ] && [ "${core}" -ne 2 ]; then
 	 	
@@ -609,6 +608,9 @@ remove_mark(){
 		core=$(uci get clash.config.core 2>/dev/null)
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
+		PROXY_FWMARK="0x162" 2>/dev/null
+		PROXY_ROUTE_TABLE="0x162" 2>/dev/null
+
 
 		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
 		ip6tables -t nat -F clash_ipv6 2>/dev/null1 && ip6tables -t nat -X clash_ipv6 2>/dev/null		
@@ -618,11 +620,11 @@ remove_mark(){
 		done
 		fi
 
+    	ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789 >/dev/null 2>&1
+    	ip route del local default dev lo table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
 
 		if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 		
-		PROXY_FWMARK="0x162" 2>/dev/null
-		PROXY_ROUTE_TABLE="0x162" 2>/dev/null
 		TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 		if [ -z $TUN_DEVICE ];then
 		TUN_DEVICE_NAME="clash0"
@@ -634,7 +636,8 @@ remove_mark(){
 		ip tuntap del $TUN_DEVICE_NAME mode tun 2>/dev/null
 		ip route del default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE" 2>/dev/null
 		fi
-		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
+		#ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
+		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789 >/dev/null 2>&1
 
 		iptables -t mangle -D OUTPUT -j clash 2>/dev/null
 		iptables -t mangle -D PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK" 2>/dev/null

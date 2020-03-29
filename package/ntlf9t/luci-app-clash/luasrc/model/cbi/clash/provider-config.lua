@@ -132,7 +132,9 @@ o = s:option(DynamicList, "groups", translate("Policy Group"))
 o.rmempty = true
 m.uci:foreach("clash", "groups",
 		function(s)
-			o:value(s.name)
+			if s.name ~= "" and s.name ~= nil and s.type ~= "relay" then
+			   o:value(s.name)
+			end
 		end)
 
 
