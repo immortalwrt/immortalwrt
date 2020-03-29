@@ -37,7 +37,7 @@ deldns.description = translate("Remove Lan custom DNS Servers when client is dis
 cdns = s:option(Flag, "culan", translate("Enable Lan DNS"))
 cdns.default = 1
 cdns.description = translate("Enabling will set custom DNS Servers for Lan")
-cdns:depends("dnsforwader", 0)
+
 
 dns = s:option(DynamicList, "landns", translate("Lan DNS servers"))
 dns.description = translate("Set custom DNS Servers for Lan")

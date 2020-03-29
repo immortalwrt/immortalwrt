@@ -1,14 +1,11 @@
 #!/bin/bash /etc/rc.common
-. /lib/functions.sh
 
 lang=$(uci get luci.main.lang 2>/dev/null)
 loadgroups=$(uci get clash.config.loadgroups 2>/dev/null)
 loadservers=$(uci get clash.config.loadservers 2>/dev/null)
 loadprovider=$(uci get clash.config.loadprovider 2>/dev/null)
-new_conf=$(uci get clash.config.new_conff 2>/dev/null)
 
 run_load(){
-
 
 load="/etc/clash/config.yaml"
 CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null)
@@ -21,7 +18,7 @@ if [ ! -f $load ] || [ "$(ls -l $load|awk '{print int($5)}')" -eq 0 ]; then
   exit 0
 fi 
 
- 
+
 
 CFG_FILE="/etc/config/clash"
 REAL_LOG="/usr/share/clash/clash_real.txt"
@@ -30,19 +27,14 @@ REAL_LOG="/usr/share/clash/clash_real.txt"
 rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml /tmp/yaml_group.yaml /tmp/match_servers.list /tmp/yaml_provider.yaml /tmp/provider.yaml /tmp/provider_gen.yaml /tmp/provider_che.yaml /tmp/match_provider.list 2>/dev/null
 
 
-	if [ $lang == "zh_cn" ];then
-		echo "开始更新策略组配置..." >$REAL_LOG 
-	elif [ $lang == "en" ] || [ $lang == "auto" ];then
-    	echo "Start updating policy group config" >$REAL_LOG
-	fi
+	sed -i "/^ \{0,\}proxy-groups:/c\Proxy Group:" "$load" 2>/dev/null
 
-	if [ "${new_conf}" -eq 1 ];then
-	   sed -i 's/Proxy Group:/proxy-groups:/g' "$load"
-	   sed -i 's/proxy-provider:/proxy-providers:/g' "$load"
-	   sed -i 's/Proxy:/proxies:/g' "$load"
-	   sed -i 's/Rule:/rules:/g' "$load"
-	else
+	sed -i "/^ \{0,\}proxy-providers:/c\proxy-provider:" "$load" 2>/dev/null
 
+	sed -i "s/^proxies:/Proxy:/" "$load" 2>/dev/null
+
+	sed -i "/^ \{0,\}rules:/c\Rule:" "$load" 2>/dev/null
+		
 	 [ ! -z "$(grep "^ \{0,\}'Proxy':" "$load")" ] || [ ! -z "$(grep '^ \{0,\}"Proxy":' "$load")" ] && {
 	    sed -i "/^ \{0,\}\'Proxy\':/c\Proxy:" "$load"
 	    sed -i '/^ \{0,\}\"Proxy\":/c\Proxy:' "$load"
@@ -68,27 +60,8 @@ rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml
 	    sed -i '/^ \{0,\}\"dns\":/c\dns:' "$load"
 	 }
 	 
-	fi	
-	 
-	 [ ! -z "$(grep "^ \{0,\}'dns':" "$load")" ] || [ ! -z "$(grep '^ \{0,\}"dns":' "$load")" ] && {
-	    sed -i "/^ \{0,\}\'dns\':/c\dns:" "$load"
-	    sed -i '/^ \{0,\}\"dns\":/c\dns:' "$load"
-	 }	 
-
    #awk '/Proxy:/,/Rule:/{print}' $load 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep name: |awk -F 'name:' '{print $2}' |sed 's/,.*//' |sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null >/tmp/Proxy_Group 2>&1
    
-   
-if [ "${new_conf}" -eq 1 ];then   
-   group_len=$(sed -n '/^ \{0,\}proxy-groups:/=' "$load" 2>/dev/null)
-   provider_len=$(sed -n '/^ \{0,\}proxy-providers:/=' "$load" 2>/dev/null)
-   if [ "$provider_len" -ge "$group_len" ]; then
-       awk '/proxies:/,/proxy-providers:/{print}' "$load" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep name: |awk -F 'name:' '{print $2}' |sed 's/,.*//' |sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null >/tmp/Proxy_Group 2>&1
-       sed -i "s/proxy-providers://g" /tmp/Proxy_Group 2>&1
-   else
-       awk '/proxies:/,/rules:/{print}' "$load" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep name: |awk -F 'name:' '{print $2}' |sed 's/,.*//' |sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null >/tmp/Proxy_Group 2>&1
-   fi 
-
-elif [ "${new_conf}" -eq 0 ];then
    group_len=$(sed -n '/^ \{0,\}Proxy Group:/=' "$load" 2>/dev/null)
    provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' "$load" 2>/dev/null)
    if [ "$provider_len" -ge "$group_len" ]; then
@@ -96,9 +69,7 @@ elif [ "${new_conf}" -eq 0 ];then
        sed -i "s/proxy-provider://g" /tmp/Proxy_Group 2>&1
    else
        awk '/Proxy:/,/Rule:/{print}' "$load" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep name: |awk -F 'name:' '{print $2}' |sed 's/,.*//' |sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null |sed 's/ \{0,\}\}\{0,\}$//g' 2>/dev/null >/tmp/Proxy_Group 2>&1
-   fi 
-
-fi   
+   fi  
    
    
    if [ "$?" -eq "0" ]; then
@@ -116,17 +87,7 @@ fi
 
 
 #awk '/Proxy Group:/,/Rule:/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
-if [ "${new_conf}" -eq 1 ];then
-group_len=$(sed -n '/^ \{0,\}Proxy Group:/=' "$load" 2>/dev/null)
-provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' "$load" 2>/dev/null)
-if [ "$provider_len" -ge "$group_len" ]; then
-   awk '/proxy-groups:/,/proxy-providers:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
-   sed -i "s/proxy-providers://g" /tmp/yaml_group.yaml 2>&1
-else
-   awk '/proxy-groups:/,/rules:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
-fi
 
-elif [ "${new_conf}" -eq 0 ];then
 group_len=$(sed -n '/^ \{0,\}Proxy Group:/=' "$load" 2>/dev/null)
 provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' "$load" 2>/dev/null)
 if [ "$provider_len" -ge "$group_len" ]; then
@@ -136,7 +97,6 @@ else
    awk '/Proxy Group:/,/Rule:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_group.yaml 2>&1
 fi
 
-fi
 
 #######READ GROUPS START
 if [ $loadgroups -eq 1 ];then
@@ -275,11 +235,8 @@ uci commit clash
 		fi
 
 
-if [ "${new_conf}" -eq 1 ];then		
-awk '/^ {0,}rules:/,/^ {0,}##END/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/rule.yaml 2>&1
-else
+		
 awk '/^ {0,}Rule:/,/^ {0,}##END/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/rule.yaml 2>&1
-fi
 rm -rf /usr/shar/clash/custom_rule.yaml 2>/dev/null
 mv /tmp/rule.yaml /usr/share/clash/custom_rule.yaml 2>/dev/null
 rm -rf /tmp/rule.yaml 2>&1  
@@ -292,32 +249,8 @@ fi
 #awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' $load 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
 
 
-if [ "${new_conf}" -eq 1 ];then	
+
  
-proxy_len=$(sed -n '/^ \{0,\}proxies:/=' $load 2>/dev/null)
-group_len=$(sed -n '/^ \{0,\}proxy-groups:/=' "$load" 2>/dev/null)
-provider_len=$(sed -n '/^ \{0,\}proxy-providers:/=' $load 2>/dev/null)
-
-if [ ! -z "$provider_len" ] && [ "$provider_len" -ge "$proxy_len" ] && [ "$provider_len" -le "$group_len" ]; then
-   awk '/^ {0,}proxies:/,/^ {0,}proxy-providers:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
-   awk '/^ {0,}proxy-providers:/,/^ {0,}proxy-groups:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
-   	sed -i "s/proxy-groups://g" /tmp/yaml_provider.yaml 2>&1
-	sed -i "s/proxy-providers://g" /tmp/yaml_proxy.yaml 2>&1	
-elif [ ! -z "$provider_len" ] && [ "$provider_len" -le "$proxy_len" ]; then
-   awk '/^ {0,}proxies:/,/^ {0,}proxy-groups:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
-   awk '/^ {0,}proxy-providers:/,/^ {0,}proxies:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
-   sed -i "s/Proxy://g" /tmp/yaml_provider.yaml 2>&1
-   sed -i "s/proxy-groups://g" /tmp/yaml_proxy.yaml 2>&1
-elif [ ! -z "$provider_len" ] && [ "$provider_len" -ge "$group_len" ]; then
-   awk '/^ {0,}proxies:/,/^ {0,}proxy-groups:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
-   awk '/^ {0,}proxy-providers:/,/^ {0,}rules:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
-   sed -i "s/rules://g" /tmp/yaml_provider.yaml 2>&1
-   sed -i "s/proxy-groups://g" /tmp/yaml_proxy.yaml 2>&1
-else
-   awk '/^ {0,}proxies:/,/^ {0,}proxy-groups:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
-fi
-
-elif [ "${new_conf}" -eq 0 ];then
 proxy_len=$(sed -n '/^ \{0,\}Proxy:/=' $load 2>/dev/null)
 group_len=$(sed -n '/^ \{0,\}Proxy Group:/=' "$load" 2>/dev/null)
 provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' $load 2>/dev/null)
@@ -325,23 +258,27 @@ provider_len=$(sed -n '/^ \{0,\}proxy-provider:/=' $load 2>/dev/null)
 if [ ! -z "$provider_len" ] && [ "$provider_len" -ge "$proxy_len" ] && [ "$provider_len" -le "$group_len" ]; then
    awk '/^ {0,}Proxy:/,/^ {0,}proxy-provider:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
    awk '/^ {0,}proxy-provider:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
-   	sed -i "s/Proxy Group://g" /tmp/yaml_provider.yaml 2>&1
-	sed -i "s/proxy-provider://g" /tmp/yaml_proxy.yaml 2>&1	
-elif [ ! -z "$provider_len" ] && [ "$provider_len" -le "$proxy_len" ]; then
+   sed -i '/proxy-provider:/,$d' /tmp/yaml_proxy.yaml 2>&1
+   sed -i '/Proxy Group:/,$d' /tmp/yaml_provider.yaml 2>&1	
+   
+elif [ ! -z "$provider_len" ] && [ "$provider_len" -le "$proxy_len" ] && [ "$provider_len" -le "$group_len" ]; then
    awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
    awk '/^ {0,}proxy-provider:/,/^ {0,}Proxy:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
-   sed -i "s/Proxy://g" /tmp/yaml_provider.yaml 2>&1
-   sed -i "s/Proxy Group://g" /tmp/yaml_proxy.yaml 2>&1
+   sed -i '/Proxy:/,$d' /tmp/yaml_provider.yaml 2>&1
+   sed -i '/Proxy Group:/,$d' /tmp/yaml_proxy.yaml 2>&1
+   
 elif [ ! -z "$provider_len" ] && [ "$provider_len" -ge "$group_len" ]; then
    awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
    awk '/^ {0,}proxy-provider:/,/^ {0,}Rule:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_provider.yaml 2>&1
-   sed -i "s/Rule://g" /tmp/yaml_provider.yaml 2>&1
-   sed -i "s/Proxy Group://g" /tmp/yaml_proxy.yaml 2>&1
+   sed -i '/Proxy Group:/,$d' /tmp/yaml_proxy.yaml 2>&1
+   sed -i '/Rule:/,$d' /tmp/yaml_provider.yaml 2>&1
+
 else
    awk '/^ {0,}Proxy:/,/^ {0,}Proxy Group:/{print}' "$load" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\t/ /g' 2>/dev/null >/tmp/yaml_proxy.yaml 2>&1
+   sed -i '/Proxy Group:/,$d' /tmp/yaml_proxy.yaml 2>&1
 fi
 
-fi
+
 match_provider="/tmp/match_provider.list"
 single_provider="/tmp/provider.yaml"
 single_provider_gen="/tmp/provider_gen.yaml"
@@ -354,21 +291,21 @@ server_file="/tmp/yaml_proxy.yaml"
 single_server="/tmp/servers.yaml"
 
 
-line=$(sed -n '/^ \{0,\}-/=' $server_file)
-num=$(grep -c "^ \{0,\}-" $server_file)
+line=$(sed -n '/name:/=' $server_file 2>/dev/null)
+num=$(grep -c "name:" $server_file 2>/dev/null)
 count=1
 
 sed -i '/^ *$/d' $provider_file 2>/dev/null
 sed -i '/^ \{0,\}#/d' $provider_file 2>/dev/null
 sed -i 's/\t/ /g' $provider_file 2>/dev/null
-if [ "${new_conf}" -eq 1 ];then	
-provider_line=$(awk '{print $0"#*#"FNR}' $provider_file |grep -v '^ \{0,\}proxy-providers:\|^ \{0,\}proxies:\|^ \{0,\}proxy-groups:\|^ \{0,\}rules:\|^ \{0,\}type:\|^ \{0,\}path:\|^ \{0,\}url:\|^ \{0,\}interval:\|^ \{0,\}health-check:\|^ \{0,\}enable:' |awk -F '#*#' '{print $3}')
-elif [ "${new_conf}" -eq 0 ];then
 provider_line=$(awk '{print $0"#*#"FNR}' $provider_file |grep -v '^ \{0,\}proxy-provider:\|^ \{0,\}Proxy:\|^ \{0,\}Proxy Group:\|^ \{0,\}Rule:\|^ \{0,\}type:\|^ \{0,\}path:\|^ \{0,\}url:\|^ \{0,\}interval:\|^ \{0,\}health-check:\|^ \{0,\}enable:' |awk -F '#*#' '{print $3}')
-fi
 provider_num=$(grep -c "^ \{0,\}type:" $provider_file)
 provider_count=1
 
+cfg_get_alpn()
+{
+	echo "$(grep "^ \{0,\}$1" $single_server 2>/dev/null |grep -v "^ \{0,\}- name:" |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/\}.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed "s/^\'//g" 2>/dev/null |sed "s/\'$//g" 2>/dev/null)"
+}
 
 cfg_get()
 {
@@ -465,7 +402,10 @@ do
    username="$(cfg_gett "username:")"
    #tls_custom:
    tls_custom="$(cfg_gett "tls:")"
-   
+   #sni:
+   sni="$(cfg_gett "sni:")"
+   #alpn:
+   alpns="$(cfg_get_alpn "-" "$single_server")"   
    
  	  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 			echo "Now Reading 【$server_type】-【$server_name】 Proxies..." >$REAL_LOG
@@ -519,11 +459,17 @@ do
 	   
 	[ -z "$mode" ] && [ -z "$network" ] && ${uci_set}obfs_vmess="none"
    fi
-   ${uci_set}obfs_snell="$mode"
-   [ -z "$obfs" ] && ${uci_set}obfs="$mode"
-   [ -z "$obfs" ] && [ -z "$mode" ] && ${uci_set}obfs="none"
-   [ -z "$mode" ] && ${uci_set}obfs_snell="none"
-   [ -z "$obfs_host" ] && ${uci_set}host="$host"
+   
+   
+    [ -z "$obfs_host" ] && ${uci_set}host="$host"
+
+	[ -z "$mode" ] && [ "$server_type" = "snell" ] && ${uci_set}obfs_snell="$mode"
+	
+    [ -z "$obfs" ] && [ "$server_type" = "ss" ] && ${uci_set}obfs="$mode"
+	
+    [ -z "$obfs" ] && [ "$server_type" = "ss" ] && [ -z "$mode" ] && ${uci_set}obfs="none"
+	
+    [ -z "$mode" ] && [ "$server_type" = "snell" ] &&  ${uci_set}obfs_snell="none"
 
    if [ $tls ] && [ "$server_type" != "ss" ];then 
    ${uci_set}tls="$tls"
@@ -552,6 +498,13 @@ do
    else
      ${uci_set}password="$password"
    fi
+	if [ "$server_type" = "trojan" ]; then
+       ${uci_set}sni="$sni"
+       ${uci_del}alpn >/dev/null 2>&1
+       for alpn in $alpns; do
+        ${uci_add}alpn="$alpn" >/dev/null 2>&1
+       done
+	fi
 	
 done
 uci commit clash
@@ -728,5 +681,4 @@ rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml
 }
 
 run_load >/dev/null 2>&1
-
 

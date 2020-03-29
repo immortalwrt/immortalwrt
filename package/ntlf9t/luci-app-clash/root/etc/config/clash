@@ -29,7 +29,6 @@ config clash 'config'
 	option clear_time '12'
 	option append_rules '0'
 	option enable_udp '0'
-	option new_conf '0'
 	option ping_enable '1'
 	option dnscache '0'
 

@@ -14,9 +14,23 @@ cfg_groups_set()
    fi
    
     
-   if [ "$name" != "$old_name_cfg" ]; then
-      sed -i "s/\'${old_name_cfg}\'/\'${name}\'/g" $CFG_FILE 2>/dev/null
-      sed -i "s/old_name \'${name}\'/old_name \'${old_name}\'/g" $CFG_FILE 2>/dev/null
+   if [ -z "$old_name_cfg" ]; then
+      uci set clash."$section".old_name_cfg="$name"
+      uci commit clash
+   fi
+   
+   if [ -z "$old_name" ]; then
+      uci set clash."$section".old_name="$name"
+      uci commit clash
+   fi
+   
+	  
+   if [ "$name" != "$old_name_cfg" ] && [ ! -z "$old_name_cfg" ]; then
+   	  sed -i "s/old_name_cfg \'${old_name_cfg}\'/old_name_cfg \'${name}\'/g" $CFG_FILE 2>/dev/null
+      sed -i "s/groups \'${old_name_cfg}/groups \'${name}/g" $CFG_FILE 2>/dev/null
+      sed -i "s/other_group \'${old_name_cfg}/other_group \'${name}/g" $CFG_FILE 2>/dev/null
+      sed -i "s/new_servers_group \'${old_name_cfg}/new_servers_group \'${name}/g" $CFG_FILE 2>/dev/null
+      sed -i "s/relay_groups \'${old_name_cfg}/relay_groups \'${name}/g" $CFG_FILE 2>/dev/null	  
       config_load "clash"
    fi
 

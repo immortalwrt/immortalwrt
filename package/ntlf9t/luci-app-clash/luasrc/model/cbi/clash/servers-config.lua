@@ -98,6 +98,7 @@ o:value("vmess", translate("Vmess"))
 o:value("socks5", translate("Socks5"))
 o:value("http", translate("HTTP(S)"))
 o:value("snell", translate("Snell"))
+o:value("trojan", translate("trojan"))
 
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
@@ -118,6 +119,7 @@ o.password = true
 o.rmempty = true
 o:depends("type", "ss")
 o:depends("type", "ssr")
+o:depends("type", "trojan")
 
 o = s:option(Value, "psk", translate("Psk"))
 o.rmempty = false
@@ -193,6 +195,9 @@ o = s:option(ListValue, "udp", translate("udp"))
 o:value("true")
 o:value("false")
 o:depends("type", "ss")
+o:depends("type", "vmess")
+o:depends("type", "socks5")
+o:depends("type", "trojan")
 
 o = s:option(ListValue, "tls_custom", translate("tls"))
 o.default = "false"
@@ -258,6 +263,8 @@ o:depends("type", "vmess")
 o:depends("type", "socks5")
 o:depends("type", "http")
 o:depends("obfs_vmess", "none")
+o:depends("type", "trojan")
+o:depends("obfs_vmess", "websocket")
 
 -- [[ TLS ]]--
 o = s:option(ListValue, "tls", translate("TLS"))
@@ -269,6 +276,20 @@ o:depends("type", "vmess")
 o:depends("type", "socks5")
 o:depends("type", "http")
 o:depends("obfs_vmess", "none")
+
+-- [[ sni ]]--
+o = s:option(Value, "sni", translate("sni"))
+o.datatype = "host"
+o.placeholder = translate("example.com")
+o.rmempty = true
+o:depends("type", "trojan")
+
+-- [[ alpn ]]--
+o = s:option(DynamicList, "alpn", translate("alpn"))
+o.rmempty = true
+o:value("h2")
+o:value("http/1.1")
+o:depends("type", "trojan")
 
 local apply = luci.http.formvalue("cbi.apply")
 if apply then
