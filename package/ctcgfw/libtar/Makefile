@@ -62,7 +62,6 @@ define Build/InstallDev
 endef
 
 define Package/libtar/install
-	$(Build/Install/Default)
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/libtar $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/lib
