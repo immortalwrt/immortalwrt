@@ -87,7 +87,7 @@ sul =ko:section(TypedSection, "clash", translate("Upload Config"))
 sul.anonymous = true
 sul.addremove=false
 o = sul:option(FileUpload, "")
-o.description = translate("NB: Only upload file with name .yaml.It recommended to rename each upload file name to avoid overwrite")
+--o.description = translate("NB: Only upload file with name .yaml.It recommended to rename each upload file name to avoid overwrite")
 o.title = translate("  ")
 o.template = "clash/clash_upload"
 um = sul:option(DummyValue, "", nil)
@@ -96,6 +96,7 @@ um.template = "clash/clash_dvalue"
 local dir, fd
 dir = "/usr/share/clash/config/upload/"
 http.setfilehandler(
+
 	function(meta, chunk, eof)
 		if not fd then
 			if not meta then return end
@@ -113,9 +114,15 @@ http.setfilehandler(
 		if eof and fd then
 			fd:close()
 			fd = nil
+			local e=string.lower(string.sub(meta.file,-4,-1))
+			local yml2=string.lower(string.sub(meta.file,0,-5))
+			if e == '.yml'  then
 			local yml=string.lower(string.sub(meta.file,0,-5))
 			local c=fs.rename(dir .. meta.file,"/usr/share/clash/config/upload/".. yml .. ".yaml")
 			um.value = translate("File saved to") .. ' "/usr/share/clash/config/upload/'..yml..'.yaml"'
+			else
+			um.value = translate("File saved to") .. ' "/usr/share/clash/config/upload/'..yml2..'yaml"'
+			end
 			
 		end
 	end

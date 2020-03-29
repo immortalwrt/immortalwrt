@@ -71,10 +71,10 @@ if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
 	fi
 	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
-	    if [ ! -z "$(grep "^Proxy:" "$CONFIG_YAML")" ]; then
-		sed -i "/Proxy:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
-		elif [ ! -z "$(grep "^proxy-provider:" "$CONFIG_YAML")" ]; then
-		sed -i "/proxy-provider:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
+	    if [ ! -z "$(grep "^proxies:" "$CONFIG_YAML")" ]; then
+		sed -i "/^proxies:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
+		elif [ ! -z "$(grep "^proxy-providers:" "$CONFIG_YAML")" ]; then
+		sed -i "/proxy-providers:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
 		fi
 		
         sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML 2>/dev/null
@@ -129,10 +129,10 @@ if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
 	
-		if [ ! -z "$(grep "^Proxy:" "$CONFIG_YAML")" ]; then
-		sed -i "/Proxy:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
-		elif [ ! -z "$(grep "^proxy-provider:" "$CONFIG_YAML")" ]; then
-		sed -i "/proxy-provider:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
+		if [ ! -z "$(grep "^proxies:" "$CONFIG_YAML")" ]; then
+		sed -i "/^proxies:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
+		elif [ ! -z "$(grep "^proxy-providers:" "$CONFIG_YAML")" ]; then
+		sed -i "/proxy-providers:/i\#clash-openwrt" $CONFIG_YAML 2>/dev/null
 		fi
                 sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML 2>/dev/null
 		sed -i "/#=============/a\ " $CONFIG_YAML 2>/dev/null

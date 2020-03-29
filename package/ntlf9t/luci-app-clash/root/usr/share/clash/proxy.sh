@@ -10,7 +10,6 @@ config_name=$(uci get clash.config.create_tag 2>/dev/null)
 CONFIG_YAML="/usr/share/clash/config/custom/${config_name}.yaml" 
 check_name=$(grep -F "${config_name}.yaml" "/usr/share/clashbackup/create_list.conf") 
 same_tag=$(uci get clash.config.same_tag 2>/dev/null)
-new_conf=$(uci get clash.config.new_conff 2>/dev/null)
 
 if  [ $config_name == "" ] || [ -z $config_name ];then
 
@@ -24,7 +23,6 @@ if  [ $config_name == "" ] || [ -z $config_name ];then
 	exit 0	
 	
 fi
-
 
 if [ ! -z $check_name ] && [ "${same_tag}" -eq 0 ];then
 
@@ -147,15 +145,38 @@ fi
 
 if [ -f $PROVIDER_FILE ];then 
 sed -i "1i\   " $PROVIDER_FILE 2>/dev/null 
-if [ "${new_conf}" -eq 1 ];then
+
 sed -i "2i\proxy-providers:" $PROVIDER_FILE 2>/dev/null
-else
-sed -i "2i\proxy-provider:" $PROVIDER_FILE 2>/dev/null
-fi
+
 #echo "proxy-provider:" >$PROVIDER_FILE
 rm -rf /tmp/Proxy_Provider
 
 fi
+
+set_alpn()
+{
+   if [ -z "$1" ]; then
+      return
+   fi
+cat >> "$SERVER_FILE" <<-EOF
+    - $1
+EOF
+}
+
+
+set_groups()
+{
+  if [ -z "$1" ]; then
+     return
+  fi
+
+	if [ "$1" = "$3" ]; then
+	   set_group=1
+	   echo "  - \"${2}\"" >>$GROUP_FILE
+	fi
+
+}
+
 
 
 servers_set()
@@ -189,7 +210,9 @@ servers_set()
    config_get "cipher_ssr" "$section" "cipher_ssr" ""
    config_get "psk" "$section" "psk" ""
    config_get "obfs_snell" "$section" "obfs_snell" ""
-	
+   config_get "sni" "$section" "sni" ""
+   config_get "alpn" "$section" "alpn" ""
+   
    if [ -z "$type" ]; then
       return
    fi
@@ -237,7 +260,11 @@ servers_set()
       return
    fi
    
-   if [ ! -z "$udp" ] && [ "$obfs" ] || [ "$obfs" = " " ]; then
+   if [ ! -z "$udp" ] && [ "$obfs" = "none" ] && [ "$type" = "ss" ]; then
+      udpp=", udp: $udp"
+   fi
+
+   if [ ! -z "$udp" ] && [ "$type" != "trojan" ] && [ "$type" != "ss" ]; then
       udpp=", udp: $udp"
    fi
    
@@ -302,6 +329,16 @@ servers_set()
       skip_cert_verifys=""	  
    fi
 
+   if [ ! -z "$auth_name" ] && [ ! -z "$auth_pass" ]; then
+      auth_psk=", username: $auth_name, password: $auth_pass"
+   fi
+   
+   
+   if [ -z "$password" ]; then
+   	 if [ "$type" = "ss" ] || [ "$type" = "trojan" ]; then
+        return
+     fi
+   fi
 
    
    if [ "$type" = "ss" ] && [ "$obfs" = " " ]; then
@@ -364,15 +401,50 @@ cat >> "$SERVER_FILE" <<-EOF
 EOF
   fi
    fi
+
+if [ "$type" = "trojan" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+- name: "$name"
+  type: $type
+  server: $server
+  port: $port
+  password: "$password"
+EOF
+if [ ! -z "$udp" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  udp: $udp
+EOF
+fi
+if [ ! -z "$sni" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  sni: $sni
+EOF
+fi
+if [ ! -z "$alpn" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  alpn:
+EOF
+config_list_foreach "$section" "alpn" set_alpn
+fi
+if [ "$skip_cert_verify" = "true" ] && [ "$type" = "trojan" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    skip_cert_verify: true
+EOF
+  fi
+fi
    
    if [ "$type" = "vmess" ]; then
-      echo "- { name: \"$name\", type: $type, server: $server, port: $port, uuid: $uuid, alterId: $alterId, cipher: $securitys$obfs_vmesss$path$custom$tls$skip_cert_verifys }" >>$SERVER_FILE
+      echo "- { name: \"$name\", type: $type, server: $server, port: $port, uuid: $uuid, alterId: $alterId, cipher: $securitys$udpp$obfs_vmesss$path$custom$tls$skip_cert_verifys }" >>$SERVER_FILE
    fi
    
-   if [ "$type" = "socks5" ] || [ "$type" = "http" ]; then
-      echo "- { name: \"$name\", type: $type, server: $server, port: $port, username: $auth_name, password: $auth_pass$skip_cert_verifys$tls }" >>$SERVER_FILE
+   if [ "$type" = "socks5" ]; then
+      echo "- { name: \"$name\", type: $type, server: $server, port: $port$auth_psk$udpp$skip_cert_verify$tls }" >>$SERVER_FILE
    fi
    
+   if [ "$type" = "http" ]; then
+      echo "- { name: \"$name\", type: $type, server: $server, port: $port$auth_psk$udpp$skip_cert_verify$tls }" >>$SERVER_FILE
+   fi
+
     if [ "$type" = "ssr" ]; then
       echo "- { name: \"$name\", type: $type, server: $server, port: $port, cipher: $cipher_ssr, password: "$password"$protol$pro_param$ssr_obfs$obfs_param}" >>$SERVER_FILE
     fi
@@ -406,11 +478,8 @@ if [ ! -z "${scount}" ] || [ "${scount}" -ne 0 ];then
 
 sed -i "1i\   " $SERVER_FILE 2>/dev/null 
 
-if [ "${new_conf}" -eq 1 ];then
 sed -i "2i\proxies:" $SERVER_FILE 2>/dev/null 
-else
-sed -i "2i\Proxy:" $SERVER_FILE 2>/dev/null 
-fi
+
 egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
 
 sed -i "s/^ \{0,\}/    - /" $Proxy_Group 2>/dev/null 
@@ -423,21 +492,10 @@ yml_servers_add()
 	local section="$1"
 	config_get "name" "$section" "name" ""
 	config_list_foreach "$section" "groups" set_groups "$name" "$2"
-	
+	config_get "relay_groups" "$section" "relay_groups" ""
 }
 
-set_groups()
-{
-	if [ -z "$1" ]; then
-		 return
-	fi
 
-	if [ "$1" = "$3" ]; then
-		set_group=1
-		echo "    - \"${2}\"" >>$GROUP_FILE 2>/dev/null 
-	fi
-
-}
 
 set_other_groups()
 {
@@ -494,7 +552,6 @@ yml_groups_set()
    
    echo "- name: $name" >>$GROUP_FILE 2>/dev/null 
    echo "  type: $type" >>$GROUP_FILE 2>/dev/null 
-   
    group_name="$name"
    echo "  proxies: " >>$GROUP_FILE
 
@@ -515,14 +572,22 @@ yml_groups_set()
    set_group=0
    set_proxy_provider=0   
    
-   config_list_foreach "$section" "other_group" set_other_groups 
-   config_foreach yml_servers_add "servers" "$name" 
+
+    config_list_foreach "$section" "other_group" set_other_groups #加入其他策略组
+   
+
+   config_foreach yml_servers_add "servers" "$name" "$type" #加入服务器节点
+
    
    if [ "$( grep -c "config provider" $CFG_FILE )" -ne 0 ];then
    
 		echo "  use: $group_name" >>$GROUP_FILE
 	   
-	   config_foreach set_proxy_provider "provider" "$group_name" 
+	   
+	   
+	    if [ "$type" != "relay" ]; then
+			 config_foreach set_proxy_provider "provider" "$group_name" #加入代理集
+	    fi
 
 	   if [ "$set_group" -eq 1 ]; then
 		  sed -i "/^ \{0,\}proxies: ${group_name}/c\  proxies:" $GROUP_FILE
@@ -554,11 +619,8 @@ config_foreach yml_groups_set "groups"
 
 if [ "$(ls -l $GROUP_FILE|awk '{print $5}')" -ne 0 ]; then
 sed -i "1i\  " $GROUP_FILE 2>/dev/null 
-if [ "${new_conf}" -eq 1 ];then
 sed -i "2i\proxy-groups:" $GROUP_FILE 2>/dev/null 
-else
-sed -i "2i\Proxy Group:" $GROUP_FILE 2>/dev/null 
-fi
+
 fi
 
 
@@ -628,7 +690,8 @@ elif [ -z $check_name ] && [ "${same_tag}" -eq 0 ];then
 echo "${config_name}.yaml" >>/usr/share/clashbackup/create_list.conf
 fi
 
-rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE $PROVIDER_FILE
+rm -rf $TEMP_FILE $GROUP_FILE $Proxy_Group $CONFIG_FILE $PROVIDER_FILE 
+rm -rf /tmp/relay_server.list 2>/dev/null
 
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 		echo "Completed Creating Custom Config.. " >$REAL_LOG 
