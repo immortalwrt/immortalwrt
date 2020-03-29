@@ -565,6 +565,7 @@ cursor: pointer;
 	background-repeat: no-repeat;	
 	padding: 5px 14px 6px;
 	color: #333;
+	white-space: nowrap;
 	font-size: 14px;
 	line-height: normal;
 	border: 1px solid #ccc;
