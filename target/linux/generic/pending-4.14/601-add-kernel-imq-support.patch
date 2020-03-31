@@ -1,6 +1,6 @@
---- a/drivers/net/Kconfig	2018-04-22 23:17:57.583718674 -0400
-+++ b/drivers/net/Kconfig	2018-04-22 23:20:39.331768961 -0400
-@@ -277,6 +277,125 @@
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -277,6 +277,125 @@ config RIONET_RX_SIZE
  	depends on RIONET
  	default "128"
  
@@ -126,9 +126,9 @@
  config TUN
  	tristate "Universal TUN/TAP device driver support"
  	depends on INET
---- a/drivers/net/Makefile	2018-04-22 23:17:57.583718674 -0400
-+++ b/drivers/net/Makefile	2018-04-22 23:20:39.411768985 -0400
-@@ -13,6 +13,7 @@
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_DUMMY) += dummy.o
  obj-$(CONFIG_EQUALIZER) += eql.o
  obj-$(CONFIG_IFB) += ifb.o
  obj-$(CONFIG_MACSEC) += macsec.o
@@ -136,8 +136,8 @@
  obj-$(CONFIG_MACVLAN) += macvlan.o
  obj-$(CONFIG_MACVTAP) += macvtap.o
  obj-$(CONFIG_MII) += mii.o
---- /dev/null	2018-03-30 15:39:24.291451107 -0400
-+++ b/drivers/net/imq.c	2018-05-20 11:10:23.471713282 -0400
+--- /dev/null
++++ b/drivers/net/imq.c
 @@ -0,0 +1,1268 @@
 +/*
 + *             Pseudo-driver for the intermediate queue device.
@@ -1407,8 +1407,8 @@
 +MODULE_DESCRIPTION("Pseudo-driver for the intermediate queue device. See https://github.com/imq/linuximq/wiki for more information.");
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS_RTNL_LINK("imq");
---- /dev/null	2018-03-30 15:39:24.291451107 -0400
-+++ b/include/linux/imq.h	2018-04-22 23:20:39.411768985 -0400
+--- /dev/null
++++ b/include/linux/imq.h
 @@ -0,0 +1,13 @@
 +#ifndef _IMQ_H
 +#define _IMQ_H
@@ -1423,9 +1423,9 @@
 +
 +#endif /* _IMQ_H */
 +
---- a/include/linux/netdevice.h	2018-04-22 23:18:14.351723881 -0400
-+++ b/include/linux/netdevice.h	2018-04-22 23:20:39.411768985 -0400
-@@ -1785,6 +1785,11 @@
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1779,6 +1779,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
@@ -1437,7 +1437,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -3646,6 +3651,19 @@
+@@ -3667,6 +3672,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1457,8 +1457,8 @@
  static inline void netif_tx_disable(struct net_device *dev)
  {
  	unsigned int i;
---- /dev/null	2018-03-30 15:39:24.291451107 -0400
-+++ b/include/linux/netfilter/xt_IMQ.h	2018-04-22 23:20:39.415768987 -0400
+--- /dev/null
++++ b/include/linux/netfilter/xt_IMQ.h
 @@ -0,0 +1,9 @@
 +#ifndef _XT_IMQ_H
 +#define _XT_IMQ_H
@@ -1469,8 +1469,8 @@
 +
 +#endif /* _XT_IMQ_H */
 +
---- /dev/null	2018-03-30 15:39:24.291451107 -0400
-+++ b/include/linux/netfilter_ipv4/ipt_IMQ.h	2018-04-22 23:20:39.415768987 -0400
+--- /dev/null
++++ b/include/linux/netfilter_ipv4/ipt_IMQ.h
 @@ -0,0 +1,10 @@
 +#ifndef _IPT_IMQ_H
 +#define _IPT_IMQ_H
@@ -1482,8 +1482,8 @@
 +
 +#endif /* _IPT_IMQ_H */
 +
---- /dev/null	2018-03-30 15:39:24.291451107 -0400
-+++ b/include/linux/netfilter_ipv6/ip6t_IMQ.h	2018-04-22 23:20:39.415768987 -0400
+--- /dev/null
++++ b/include/linux/netfilter_ipv6/ip6t_IMQ.h
 @@ -0,0 +1,10 @@
 +#ifndef _IP6T_IMQ_H
 +#define _IP6T_IMQ_H
@@ -1495,8 +1495,8 @@
 +
 +#endif /* _IP6T_IMQ_H */
 +
---- a/include/linux/skbuff.h	2018-04-22 23:18:15.079724108 -0400
-+++ b/include/linux/skbuff.h	2018-04-22 23:20:39.415768987 -0400
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
 @@ -40,6 +40,10 @@
  #include <linux/in6.h>
  #include <linux/if_packet.h>
@@ -1508,7 +1508,7 @@
  
  /* The interface for checksum offload between the stack and networking drivers
   * is as follows...
-@@ -582,7 +586,7 @@
+@@ -582,7 +586,7 @@ typedef unsigned int sk_buff_data_t;
  typedef unsigned char *sk_buff_data_t;
  #endif
  
@@ -1517,7 +1517,7 @@
   *	struct sk_buff - socket buffer
   *	@next: Next buffer in list
   *	@prev: Previous buffer in list
-@@ -685,6 +689,9 @@
+@@ -691,6 +695,9 @@ struct sk_buff {
  	 * first. This is owned by whoever has the skb queued ATM.
  	 */
  	char			cb[48] __aligned(8);
@@ -1527,7 +1527,7 @@
  
  	unsigned long		_skb_refdst;
  	void			(*destructor)(struct sk_buff *skb);
-@@ -694,6 +701,9 @@
+@@ -700,6 +707,9 @@ struct sk_buff {
  #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
  	unsigned long		 _nfct;
  #endif
@@ -1537,7 +1537,7 @@
  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
  	struct nf_bridge_info	*nf_bridge;
  #endif
-@@ -771,6 +781,9 @@
+@@ -776,6 +786,9 @@ struct sk_buff {
  #ifdef CONFIG_NET_SWITCHDEV
  	__u8			offload_fwd_mark:1;
  #endif
@@ -1547,7 +1547,7 @@
  #ifdef CONFIG_NET_CLS_ACT
  	__u8			tc_skip_classify:1;
  	__u8			tc_at_ingress:1;
-@@ -870,7 +883,7 @@
+@@ -874,7 +887,7 @@ static inline bool skb_pfmemalloc(const
   */
  static inline struct dst_entry *skb_dst(const struct sk_buff *skb)
  {
@@ -1556,7 +1556,7 @@
  	 * rcu_read_lock section
  	 */
  	WARN_ON((skb->_skb_refdst & SKB_DST_NOREF) &&
-@@ -960,6 +973,12 @@
+@@ -964,6 +977,12 @@ void skb_tx_error(struct sk_buff *skb);
  void consume_skb(struct sk_buff *skb);
  void __consume_stateless_skb(struct sk_buff *skb);
  void  __kfree_skb(struct sk_buff *skb);
@@ -1569,7 +1569,7 @@
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -3779,8 +3798,12 @@
+@@ -3847,8 +3866,12 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif
@@ -1583,9 +1583,9 @@
  	nf_bridge_get(src->nf_bridge);
  #endif
  #if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
---- a/include/net/netfilter/nf_queue.h	2018-04-22 23:18:15.199724146 -0400
-+++ b/include/net/netfilter/nf_queue.h	2018-04-22 23:20:39.419768987 -0400
-@@ -31,6 +31,12 @@
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -31,6 +31,12 @@ struct nf_queue_handler {
  void nf_register_queue_handler(struct net *net, const struct nf_queue_handler *qh);
  void nf_unregister_queue_handler(struct net *net);
  void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
@@ -1598,9 +1598,9 @@
  
  void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
  void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
---- a/include/net/pkt_sched.h	2018-04-22 23:18:15.219724151 -0400
-+++ b/include/net/pkt_sched.h	2018-04-22 23:20:39.419768987 -0400
-@@ -109,6 +109,8 @@
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -109,6 +109,8 @@ int sch_direct_xmit(struct sk_buff *skb,
  
  void __qdisc_run(struct Qdisc *q);
  
@@ -1609,9 +1609,9 @@
  static inline void qdisc_run(struct Qdisc *q)
  {
  	if (qdisc_run_begin(q))
---- a/include/net/sch_generic.h	2018-04-22 23:18:15.227724154 -0400
-+++ b/include/net/sch_generic.h	2018-04-22 23:20:39.419768987 -0400
-@@ -567,6 +567,13 @@
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -571,6 +571,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1625,8 +1625,8 @@
  static inline bool qdisc_is_percpu_stats(const struct Qdisc *q)
  {
  	return q->flags & TCQ_F_CPUSTATS;
---- a/include/uapi/linux/netfilter.h	2018-04-22 23:18:16.159724442 -0400
-+++ b/include/uapi/linux/netfilter.h	2018-04-22 23:20:39.419768987 -0400
+--- a/include/uapi/linux/netfilter.h
++++ b/include/uapi/linux/netfilter.h
 @@ -14,7 +14,8 @@
  #define NF_QUEUE 3
  #define NF_REPEAT 4
@@ -1637,8 +1637,8 @@
  
  /* we overload the higher bits for encoding auxiliary data such as the queue
   * number or errno values. Not nice, but better than additional function
---- a/net/core/dev.c	2018-04-22 23:18:24.391727000 -0400
-+++ b/net/core/dev.c	2018-04-22 23:20:39.419768987 -0400
+--- a/net/core/dev.c
++++ b/net/core/dev.c
 @@ -143,6 +143,9 @@
  #include <linux/hrtimer.h>
  #include <linux/netfilter_ingress.h>
@@ -1649,7 +1649,7 @@
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  
-@@ -2979,7 +2982,12 @@
+@@ -3001,7 +3004,12 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1661,8 +1661,8 @@
 +#endif
  		dev_queue_xmit_nit(skb, dev);
  
- #ifdef CONFIG_ETHERNET_PACKET_MANGLE
-@@ -3028,6 +3036,8 @@
+ 	len = skb->len;
+@@ -3040,6 +3048,8 @@ out:
  	return skb;
  }
  
@@ -1671,9 +1671,9 @@
  static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
  					  netdev_features_t features)
  {
---- a/net/core/skbuff.c	2018-04-22 23:18:24.395727003 -0400
-+++ b/net/core/skbuff.c	2018-04-22 23:20:39.419768987 -0400
-@@ -82,6 +82,87 @@
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -81,6 +81,87 @@ struct kmem_cache *skbuff_head_cache __r
  static struct kmem_cache *skbuff_fclone_cache __read_mostly;
  int sysctl_max_skb_frags __read_mostly = MAX_SKB_FRAGS;
  EXPORT_SYMBOL(sysctl_max_skb_frags);
@@ -1761,7 +1761,7 @@
  
  /**
   *	skb_panic - private function for out-of-line support
-@@ -628,6 +709,28 @@
+@@ -615,6 +696,28 @@ void skb_release_head_state(struct sk_bu
  		WARN_ON(in_irq());
  		skb->destructor(skb);
  	}
@@ -1790,7 +1790,7 @@
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  	nf_conntrack_put(skb_nfct(skb));
  #endif
-@@ -817,6 +920,10 @@
+@@ -804,6 +907,10 @@ static void __copy_skb_header(struct sk_
  	new->sp			= secpath_get(old->sp);
  #endif
  	__nf_copy(new, old, false);
@@ -1801,7 +1801,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -3915,6 +4022,13 @@
+@@ -3943,6 +4050,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
@@ -1815,9 +1815,9 @@
  }
  
  static int
---- a/net/netfilter/core.c	2018-04-22 23:18:26.019727507 -0400
-+++ b/net/netfilter/core.c	2018-04-22 23:20:39.419768987 -0400
-@@ -457,6 +457,11 @@
+--- a/net/netfilter/core.c
++++ b/net/netfilter/core.c
+@@ -490,6 +490,11 @@ int nf_hook_slow(struct sk_buff *skb, st
  			if (ret == 0)
  				ret = -EPERM;
  			return ret;
@@ -1829,9 +1829,9 @@
  		case NF_QUEUE:
  			ret = nf_queue(skb, state, e, s, verdict);
  			if (ret == 1)
---- a/net/netfilter/Kconfig	2018-04-22 23:18:25.751727424 -0400
-+++ b/net/netfilter/Kconfig	2018-04-22 23:20:39.419768987 -0400
-@@ -902,6 +902,18 @@
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -910,6 +910,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
  
@@ -1850,18 +1850,18 @@
  config NETFILTER_XT_TARGET_MARK
  	tristate '"MARK" target support'
  	depends on NETFILTER_ADVANCED
---- a/net/netfilter/Makefile	2018-04-22 23:18:25.711727410 -0400
-+++ b/net/netfilter/Makefile	2018-04-22 23:20:39.423768990 -0400
-@@ -136,6 +136,7 @@
- obj-$(CONFIG_NETFILTER_XT_TARGET_FLOWOFFLOAD) += xt_FLOWOFFLOAD.o
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -135,6 +135,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
+ obj-$(CONFIG_NETFILTER_XT_TARGET_DSCP) += xt_DSCP.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HMARK) += xt_HMARK.o
 +obj-$(CONFIG_NETFILTER_XT_TARGET_IMQ) += xt_IMQ.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_LED) += xt_LED.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_LOG) += xt_LOG.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_NETMAP) += xt_NETMAP.o
---- a/net/netfilter/nf_queue.c	2018-04-22 23:18:25.699727407 -0400
-+++ b/net/netfilter/nf_queue.c	2018-04-22 23:22:59.395812579 -0400
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
 @@ -1,4 +1,4 @@
 -/*
 +	/*
@@ -1892,7 +1892,7 @@
  /* return EBUSY when somebody else is registered, return EEXIST if the
   * same handler is registered, return 0 in case of success. */
  void nf_register_queue_handler(struct net *net, const struct nf_queue_handler *qh)
-@@ -144,16 +161,29 @@
+@@ -141,16 +158,29 @@ static void nf_ip6_saveroute(const struc
  
  static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
  		      const struct nf_hook_entries *entries,
@@ -1924,7 +1924,7 @@
  	if (!qh) {
  		status = -ESRCH;
  		goto err;
-@@ -217,8 +248,16 @@
+@@ -218,8 +248,16 @@ int nf_queue(struct sk_buff *skb, struct
  {
  	int ret;
  
@@ -1942,7 +1942,7 @@
  		if (ret == -ESRCH &&
  		    (verdict & NF_VERDICT_FLAG_QUEUE_BYPASS))
  			return 1;
-@@ -302,6 +341,7 @@
+@@ -323,6 +361,7 @@ next_hook:
  		local_bh_enable();
  		break;
  	case NF_QUEUE:
@@ -1950,8 +1950,8 @@
  		err = nf_queue(skb, &entry->state, hooks, i, verdict);
  		if (err == 1)
  			goto next_hook;
---- /dev/null	2018-03-30 15:39:24.291451107 -0400
-+++ b/net/netfilter/xt_IMQ.c	2018-04-22 23:20:39.423768990 -0400
+--- /dev/null
++++ b/net/netfilter/xt_IMQ.c
 @@ -0,0 +1,72 @@
 +/*
 + * This target marks packets to be enqueued to an imq device
@@ -2025,9 +2025,9 @@
 +MODULE_ALIAS("ipt_IMQ");
 +MODULE_ALIAS("ip6t_IMQ");
 +
---- a/net/sched/sch_generic.c	2018-04-22 23:18:26.623727693 -0400
-+++ b/net/sched/sch_generic.c	2018-04-22 23:20:39.423768990 -0400
-@@ -158,6 +158,14 @@
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -158,6 +158,14 @@ trace:
  	return skb;
  }
  
