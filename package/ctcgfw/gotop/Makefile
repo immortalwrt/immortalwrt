@@ -26,8 +26,8 @@ include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/$(PKG_NAME)
-	SECTION:=utils
-	CATEGORY:=Utilities
+	SECTION:=admin
+	CATEGORY:=Administration
 	TITLE:=A terminal based graphical activity monitor inspired by gtop and vtop
 	URL:=https://github.com/xxxserxxx/gotop
 	DEPENDS:=$(GO_ARCH_DEPENDS)
