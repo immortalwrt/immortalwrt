@@ -17,36 +17,11 @@ fi
 
 #===========================================================================================================================
 core=$(uci get clash.config.core 2>/dev/null)
-mode=$(uci get clash.config.mode 2>/dev/null)
-tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
-
-if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
-
-if [ "${tun_mode}" -eq 0 ] && [ "${core}" -eq 3 ] || [ "${tun_mode}" -eq 0 ] && [ "${core}" -eq 4 ];then
-if [ -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
-	uci set clash.config.mode="0" && uci set clash.config.tun_mode="1" && uci commit clash
-fi
-elif [ "${tun_mode}" -eq 1 ] && [ "${core}" -eq 3 ] || [ "${tun_mode}" -eq 1 ] && [ "${core}" -eq 4 ];then
-	uci set clash.config.mode="0" && uci set clash.config.tun_mode="1" && uci commit clash	
-fi	
-fi
-
-
-if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
-if [ "${mode}" -eq 0 ] && [ "${core}" -eq 1 ] || [ "${mode}" -eq 0 ] && [ "${core}" -eq 2 ];then
-if [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
-	uci set clash.config.mode="1" && uci set clash.config.tun_mode="0" && uci commit clash
-fi
-elif [ "$mode" -eq 1 ] && [ "$core" -eq 1 ] || [ "$mode" -eq 1 ] && [ "$core" -eq 2 ];then
-	uci set clash.config.mode="1" && uci set clash.config.tun_mode="0" && uci commit clash
-
-fi
-fi
-				
+			
 #===========================================================================================================================	
 
   
-sleep 3
+sleep 1
 
 #===========================================================================================================================
 		mode=$(uci get clash.config.mode 2>/dev/null)
