@@ -111,7 +111,7 @@ update_rss_rules() {
 	
 update_rules() {
 	echo $(date "+%F %T"): ------------------- 内置规则更新 ------------------- >>$LOGFILE
-	         wget 'https://houzi-.coding.net/p/my_dream/d/my_dream/git/raw/master/kp.dat' -q -O $KP_DIR/data/rules/kp.dat
+	         wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR_rule_list/master/kp.dat' -q -O $KP_DIR/data/rules/kp.dat
                  wget 'https://houzi-.coding.net/p/my_dream/d/my_dream/git/raw/master/daily.txt' -q -O $KP_DIR/data/rules/daily.txt
                  wget 'https://houzi-.coding.net/p/my_dream/d/my_dream/git/raw/master/koolproxy.txt' -q -O $KP_DIR/data/rules/koolproxy.txt
 	         wget 'https://raw.githubusercontent.com/user1121114685/koolproxyR/master/koolproxyR/koolproxyR/data/rules/yhosts.txt' -q -O $KP_DIR/data/rules/yhosts.txt
