@@ -28,8 +28,8 @@ include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/$(PKG_NAME)
-	SECTION:=net
-	CATEGORY:=Network
+	SECTION:=multimedia
+	CATEGORY:=Multimedia
 	TITLE:=Revive Netease Cloud Music (Golang)
 	DEPENDS:=$(GO_ARCH_DEPENDS)
 	URL:=https://github.com/cnsilvan/UnblockNeteaseMusic
