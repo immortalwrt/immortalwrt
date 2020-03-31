@@ -1,8 +1,35 @@
 diff --git a/src/main.c b/src/main.c
-index 6a9c97a..d902b3d 100644
+index 6a9c97a..e0ab8dd 100644
 --- a/src/main.c
 +++ b/src/main.c
-@@ -630,7 +630,7 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
+@@ -385,9 +385,13 @@ static void ndpi_gc_flow(void)
+         u64 t1;
+         struct timeval tv;
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+         do_gettimeofday(&tv);
++#else
++        ktime_get_real_ts64(&tv);
++#endif
+         t1 = (uint64_t) tv.tv_sec;
+-        
++
+ 	if (debug_dpi) pr_info ("xt_ndpi: call garbage collector.\n");
+         next = rb_first(&osdpi_flow_root);
+         while (next){
+@@ -449,7 +453,11 @@ ndpi_process_packet(struct nf_conn * ct, const uint64_t time,
+ 		}
+ 	}
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+         do_gettimeofday(&tv);
++#else
++	ktime_get_real_ts64(&tv);
++#endif
+         t1 = (uint64_t) tv.tv_sec;
+ 
+         if (flow == NULL) {
+@@ -630,7 +638,7 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
  #if LINUX_VERSION_CODE < KERNEL_VERSION(3,0,0)
  	} else if (nf_ct_is_untracked(skb)){
  #else
@@ -11,3 +38,15 @@ index 6a9c97a..d902b3d 100644
  #endif
  		pr_info ("xt_ndpi: ignoring untracked sk_buff.\n");
  		return false;               
+@@ -641,7 +649,11 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
+         ip = ip_hdr(skb_use);
+         tcph = (const void *)ip + ip_hdrlen(skb_use);
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+ 	do_gettimeofday(&tv);
++#else
++	ktime_get_real_ts64(&tv);
++#endif
+ 	time = ((uint64_t) tv.tv_sec) * detection_tick_resolution +
+ 		tv.tv_usec / (1000000 / detection_tick_resolution);
+ 
