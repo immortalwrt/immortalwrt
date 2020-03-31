@@ -281,8 +281,8 @@ rules(){
 			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 		
 			if [ ! -z "${fake_ip_range}" ];then
-				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
 				if [ "${enable_udp}" -eq 1 ]; then
+				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
                       iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark "$PROXY_FWMARK"
                 fi
 			else
@@ -340,7 +340,13 @@ rules(){
 			ip link set $TUN_DEVICE_NAME up
 			ip address replace 198.18.0.0/16 dev $TUN_DEVICE_NAME
 			ip route replace default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE"
+			
+			nat=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/tcp dpt:53/=' | sort -r)
+			for natx in $nat; do
+				iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
+			done
 			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
+			
 			elif [ "${core}" -eq 4 ];then
 			ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
 			fi
@@ -353,6 +359,10 @@ rules(){
             iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
             iptables -t mangle -I OUTPUT -j clash
             iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
+			nat=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/tcp dpt:53/=' | sort -r)
+			for natx in $nat; do
+				iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
+			done			
 			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
 						
 			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
@@ -373,6 +383,69 @@ restore() {
 }
 
 
+use_dns(){
+
+if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+		echo "Checking Dns Mode " >$REAL_LOG 
+fi
+
+if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
+
+
+ if [ "$mode" -eq 1 ] || [ "$tun_mode" -eq 1 ] ;then
+
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Enabling Custom Dns Mode " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+	    	echo "启用自定义Dns模式" >$REAL_LOG
+		fi
+		uci set clash.config.mode="1" && uci del clash.config.tun_mode && uci commit clash
+
+ elif [ -z "$mode" ] || [ "$mode" -eq 0 ];then
+
+	if [ ! -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
+ 	
+
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Enabling Custom Dns Mode " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+	    	echo "启用自定义Dns模式" >$REAL_LOG
+		fi		
+		uci set clash.config.mode="1" && uci del clash.config.tun_mode && uci commit clash
+	fi
+ fi
+fi
+
+
+if [ "$core" -eq 3 ] || [ "$core" -eq 4 ];then
+
+if [ "$tun_mode" -eq 1 ] || [ "$mode" -eq 1 ];then
+
+
+	
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Enabling Tun Dns Mode " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+	    	echo "启用自定义Tun Dns模式" >$REAL_LOG
+		fi		
+	uci del clash.config.mode && uci set clash.config.tun_mode="1" && uci commit clash	
+
+
+elif [ -z "$tun_mode" ] || [ "$tun_mode" -eq 0 ];then
+
+	if [ -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Enabling Tun Dns Mode " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+	    	echo "启用自定义Tun Dns模式" >$REAL_LOG
+		fi
+		uci del clash.config.mode && uci set clash.config.tun_mode="1" && uci commit clash
+	fi
+fi
+	
+fi
+
+}
 
 start(){
 #=========================================================================================================================== 
@@ -380,7 +453,9 @@ lang=$(uci get luci.main.lang 2>/dev/null)
 landns=$(uci get clash.config.landns 2>/dev/null)
 enable=$(uci get clash.config.enable 2>/dev/null)
 core=$(uci get clash.config.core 2>/dev/null)
+mode=$(uci get clash.config.mode 2>/dev/null)
 tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
+
 
 
 if [ -f /etc/clash/config.yaml ];then
@@ -395,6 +470,9 @@ if [ "${enable}" -eq 1 ]; then
 	fi	
 	sleep 1
 	select_config >/dev/null 2>&1
+	sleep 1
+	use_dns >/dev/null 2>&1
+	sleep 1
 
 if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -623,7 +701,7 @@ remove_mark(){
     	ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789 >/dev/null 2>&1
     	ip route del local default dev lo table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
 
-		if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
+		
 		
 		TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 		if [ -z $TUN_DEVICE ];then
@@ -639,10 +717,17 @@ remove_mark(){
 		#ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
 		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789 >/dev/null 2>&1
 
-		iptables -t mangle -D OUTPUT -j clash 2>/dev/null
-		iptables -t mangle -D PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK" 2>/dev/null
+
+		mangle=$(iptables -nvL OUTPUT -t mangle | sed 1,2d | sed -n '/clash/=' | sort -r)
+		for mangles in $mangle; do
+			iptables -t mangle -D OUTPUT $mangles 2>/dev/null
+		done
 		
-		iptables -t nat -D OUTPUT -p udp --dport 53 -j CLASH_DNS
+		pre=$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/! match-set localnetwork dst MARK set 0x162/=' | sort -r)
+		for prer in $pre; do
+			iptables -t mangle -D PREROUTING $prer 2>/dev/null
+		done
+		
 		iptables -t nat -D PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"
 
 		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
@@ -657,8 +742,8 @@ remove_mark(){
 
 		ipset destroy localnetwork 2>/dev/null
 				
-		fi
-        	/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		
+        /etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
 
 stop(){
@@ -684,19 +769,24 @@ stop(){
 		elif [ "${lang}" == "zh_cn" ];then
 	    	echo "删除clash iptables规则" >$REAL_LOG
 		fi
-										
+		
+		remove_mark >/dev/null 2>&1		
+		
 		nat_indexs=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
 		for nat_index in $nat_indexs; do
 			iptables -t nat -D PREROUTING $nat_index >/dev/null 2>&1
-			iptables -t nat -F clash >/dev/null 2>&1 && iptables -t nat -X clash >/dev/null 2>&1
-			iptables -t mangle -F clash >/dev/null 2>&1 && iptables -t mangle -D PREROUTING -p udp -j clash >/dev/null 2>&1 && iptables -t mangle -X clash >/dev/null 2>&1
+			iptables -t nat -F clash >/dev/null 2>&1
+			iptables -t nat -X clash >/dev/null 2>&1
+			iptables -t mangle -F clash >/dev/null 2>&1
+			iptables -t mangle -D PREROUTING -p udp -j clash >/dev/null 2>&1 
+			iptables -t mangle -X clash >/dev/null 2>&1
 		done
 
-		ip rule del fwmark 1 table 100 >/dev/null 2>&1
-		ip route del local default dev lo table 100 >/dev/null 2>&1
-
-		iptables -t nat -D PREROUTING -p tcp --dport 53 -j ACCEPT >/dev/null 2>&1
-
+		nat=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/tcp dpt:53/=' | sort -r)
+		for natx in $nat; do
+			iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
+		done
+		
 		ip6tables -t mangle -F clash >/dev/null 2>&1
 		ip6tables -t mangle -D PREROUTING -p udp -j clash >/dev/null 2>&1
 		ip6tables -t mangle -X clash >/dev/null 2>&1
@@ -728,9 +818,9 @@ stop(){
        	for fake2 in $fake2; do
           	iptables -t nat -D OUTPUT $fake2 >/dev/null 2>&1
         done	
-
-		remove_mark >/dev/null 2>&1
-
+		
+		iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
+		
 		bash /usr/share/clash/backup.sh >/dev/null 2>&1
 
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
