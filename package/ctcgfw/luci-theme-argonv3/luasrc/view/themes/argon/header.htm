@@ -2,7 +2,7 @@
 	Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-bootstrap and MUI and Argon Template
 
 	luci-theme-argon
-	Copyright 2019 Jerrykuku <jerrykuku@qq.com>
+	Copyright 2020 Jerryk <jerrykuku@gmail.com>
 
 	Have a bug? Please create an issue here on GitHub!
 	https://github.com/jerrykuku/luci-theme-argon/issues
@@ -194,109 +194,111 @@
 	end
 	
 	math.randomseed(os.time())
-	
-	local bgcount = 0
-	for f in ipairs(glob("/www/luci-static/argon/img/*")) do
-		bgcount = bgcount + 1
-	end
-	
-	
+	local bgTable = glob("/www/luci-static/argon/img/*")
+	local  bgcount = table.getn(bgTable) 
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
+	
 <head>
 	<meta charset="utf-8">
-	<title><%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %> - LuCI</title>
-	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
-        <meta name="format-detection" content="telephone=no, email=no"/>
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="x5-fullscreen" content="true">
-        <meta name="full-screen" content="yes">
-        <meta name="x5-page-mode" content="app">
-        <meta name="browsermode" content="application">
-        <meta name="theme-color" content="#5e72e4">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="msapplication-TileColor" content="#5e72e4">
+	<title>
+		<%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %>
+		- LuCI</title>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="x5-fullscreen" content="true">
+	<meta name="full-screen" content="yes">
+	<meta name="x5-page-mode" content="app">
+	<meta name="browsermode" content="application">
+	<meta name="theme-color" content="#5e72e4">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="msapplication-TileColor" content="#5e72e4">
 
-        <meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
-        <meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
-        <meta name="msapplication-TileImage" content="<%=media%>/logo.png"/>
-        <link rel="icon" href="<%=media%>/logo.png" sizes="144x144">
-        <link rel="apple-touch-icon-precomposed" href="<%=media%>/logo.png" sizes="144x144">
-	<link rel="stylesheet" href="<%=media%>/css/purecss.css">  
-	<link rel="stylesheet" href="<%=media%>/css/style.css?v=<%=math.random(1,100000)%>"> 
-	<link rel="shortcut icon" href="<%=media%>/favicon.ico"> 
+	<meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
+	<meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
+	<meta name="msapplication-TileImage" content="<%=media%>/logo.png" />
+	<link rel="icon" href="<%=media%>/logo.png" sizes="144x144">
+	<link rel="apple-touch-icon-precomposed" href="<%=media%>/logo.png" sizes="144x144">
+	<link rel="stylesheet" href="<%=media%>/css/purecss.css?v=1.4">
+	<link rel="stylesheet" href="<%=media%>/css/style.css?v=<%=math.random(1,100000)%>">
+	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
-		<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
+	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
 	<% end -%>
 	<% if css then %>
-		<style title="text/css"><%= css %></style>
+	<style title="text/css"><%=css %></style>
 	<% end -%>
 	<script src="<%=resource%>/cbi.js?v=git-19.190.55614-35357e4"></script>
 	<script src="<%=resource%>/xhr.js?v=git-19.190.55614-35357e4"></script>
 	<script src="<%=media%>/js/jquery.min.js?v=git-19.190.55614-35357e4"></script>
 </head>
-<body class="lang_<%=luci.i18n.context.lang%> <%- if node then %><%= striptags( node.title ) %><%- end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %>">
 
-<div class="main">
-    <div style="" class="loading">
-        <div class="sk-folding-cube">
-            <div class="sk-cube1 sk-cube"></div>
-            <div class="sk-cube2 sk-cube"></div>
-            <div class="sk-cube4 sk-cube"></div>
-            <div class="sk-cube3 sk-cube"></div>
-        </div>
-    </div>
-    <div class="main-left">
-        <div class="sidenav-header d-flex align-items-center">
-            <a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a> 
-            <div class="ml-auto">
-                <!-- Sidenav toggler -->
-                <div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin" data-target="#sidenav-main">
-                    <div class="sidenav-toggler-inner">
-                        <i class="sidenav-toggler-line"></i>
-                        <i class="sidenav-toggler-line"></i>
-                        <i class="sidenav-toggler-line"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <% render_topmenu() %>
-    </div>
-	<div class="main-right">
-            <header class="bg-primary">
-                <div class="fill">
-                    <div class="container">
-                        <a class="showSide"></a>
-                        <a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
-                        <div class="pull-right">
-                            <% render_changes() %>
-                            <span id="xhr_poll_status" style="display:none" onclick="XHR.running() ? XHR.halt() : XHR.run()">
-                                <span class="label success" id="xhr_poll_status_on"><span class="mobile-hide"><%:Auto Refresh%></span> <%:on%></span>
-                                <span class="label" id="xhr_poll_status_off" style="display:none"><span class="mobile-hide"><%:Auto Refresh%></span> <%:off%></span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </header>
-		<div class="darkMask"></div>
-		<div class="login-bg" style="background-image:url(<%=media%>/img/bg<%=math.random(1,bgcount)%>.jpg)"></div>
-		<div id="maincontent">
-			<div class="container">
-				<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>
+<body
+	class="<%- if node then %><%= striptags( node.title ) %><%- end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %> lang_<%=luci.i18n.context.lang%>  ">
+
+	<div class="main">
+
+		<div class="main-left">
+			<div class="sidenav-header d-flex align-items-center">
+				<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
+				<div class="ml-auto">
+					<!-- Sidenav toggler -->
+					<div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin"
+						data-target="#sidenav-main">
+						<div class="sidenav-toggler-inner">
+							<i class="sidenav-toggler-line"></i>
+							<i class="sidenav-toggler-line"></i>
+							<i class="sidenav-toggler-line"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<% render_topmenu() %>
+		</div>
+		<div class="main-right">
+			<header class="bg-primary">
+				<div class="fill">
+					<div class="container">
+						<a class="showSide"></a>
+						<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
+						<div class="pull-right">
+							<% render_changes() %>
+							<span id="xhr_poll_status" style="display:none"
+								onclick="XHR.running() ? XHR.halt() : XHR.run()">
+								<span class="label success" id="xhr_poll_status_on"><span
+										class="mobile-hide"><%:Auto Refresh%></span> <%:on%></span>
+								<span class="label" id="xhr_poll_status_off" style="display:none"><span
+										class="mobile-hide"><%:Auto Refresh%></span> <%:off%></span>
+							</span>
+						</div>
+					</div>
+				</div>
+			</header>
+			<div class="darkMask"></div>
+			<% if striptags( node.title ) == nil then %>
+			<div class="login-bg" style="background-image:url(<%=media%>/img/bg<%=math.random(1,bgcount)%>.jpg)"></div>
+			<% end -%>
+			
+			<div id="maincontent">
+				<div class="container">
+					<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>
 					<div class="alert-message warning">
 						<h4><%:No password set!%></h4>
-						<p><%:There is no password set on this router. Please configure a root password to protect the web interface and enable SSH.%></p>
-						<div class="right"><a class="btn" href="<%=url("admin/system/admin")%>"><%:Go to password configuration...%></a></div>
+						<p><%:There is no password set on this router. Please configure a root password to protect the web interface and enable SSH.%>
+						</p>
+						<div class="right"><a class="btn"
+								href="<%=url("admin/system/admin")%>"><%:Go to password configuration...%></a></div>
 					</div>
-				<%- end -%>
+					<%- end -%>
 
-				<noscript>
-					<div class="alert-message warning">
-						<h4><%:JavaScript required!%></h4>
-						<p><%:You must enable JavaScript in your browser or LuCI will not work properly.%></p>
-					</div>
-				</noscript>
+					<noscript>
+						<div class="alert-message warning">
+							<h4><%:JavaScript required!%></h4>
+							<p><%:You must enable JavaScript in your browser or LuCI will not work properly.%></p>
+						</div>
+					</noscript>
 
-				<% if category then render_tabmenu(category, cattree) end %>
+					<% if category then render_tabmenu(category, cattree) end %>
