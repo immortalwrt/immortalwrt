@@ -1,5 +1,3 @@
-diff --git a/net/ipv4/netfilter/nf_nat_snmp_basic.c b/net/ipv4/netfilter/nf_nat_snmp_basic.c
-index c8ac57f..7f7d847 100644
 --- a/net/ipv4/netfilter/nf_nat_snmp_basic.c
 +++ b/net/ipv4/netfilter/nf_nat_snmp_basic.c
 @@ -1196,7 +1196,7 @@ static int snmp_translate(struct nf_conn

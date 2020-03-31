@@ -70,7 +70,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	help
  	  This option adds the flow table core infrastructure.
  
-@@ -974,6 +973,15 @@ config NETFILTER_XT_TARGET_NOTRACK
+@@ -986,6 +985,15 @@ config NETFILTER_XT_TARGET_NOTRACK
  	depends on NETFILTER_ADVANCED
  	select NETFILTER_XT_TARGET_CT
  
@@ -95,7 +95,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 +obj-$(CONFIG_NETFILTER_XT_TARGET_FLOWOFFLOAD) += xt_FLOWOFFLOAD.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HMARK) += xt_HMARK.o
- obj-$(CONFIG_NETFILTER_XT_TARGET_LED) += xt_LED.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_IMQ) += xt_IMQ.o
 --- /dev/null
 +++ b/net/netfilter/xt_FLOWOFFLOAD.c
 @@ -0,0 +1,422 @@
