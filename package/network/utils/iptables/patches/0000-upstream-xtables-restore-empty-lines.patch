@@ -1,0 +1,77 @@
+From 8e76391096f12212985c401ee83a67990aa27a29 Mon Sep 17 00:00:00 2001
+From: Phil Sutter <phil@nwl.cc>
+Date: Tue, 11 Feb 2020 16:52:59 +0100
+Subject: xtables-restore: fix for --noflush and empty lines
+
+Lookahead buffer used for cache requirements estimate in restore
+--noflush separates individual lines with nul-chars. Two consecutive
+nul-chars are interpreted as end of buffer and remaining buffer content
+is skipped.
+
+Sadly, reading an empty line (i.e., one containing a newline character
+only) caused double nul-chars to appear in buffer as well, leading to
+premature stop when reading cached lines from buffer.
+
+To fix that, make use of xtables_restore_parse_line() skipping empty
+lines without calling strtok() and just leave the newline character in
+place. A more intuitive approach, namely skipping empty lines while
+buffering, is deliberately not chosen as that would cause wrong values
+in 'line' variable.
+
+Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1400
+Fixes: 09cb517949e69 ("xtables-restore: Improve performance of --noflush operation")
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+Acked-by: Arturo Borrero Gonzalez <arturo@netfilter.org>
+---
+ .../testcases/ipt-restore/0011-noflush-empty-line_0      | 16 ++++++++++++++++
+ iptables/xtables-restore.c                               |  8 +++++---
+ 2 files changed, 21 insertions(+), 3 deletions(-)
+ create mode 100755 iptables/tests/shell/testcases/ipt-restore/0011-noflush-empty-line_0
+
+diff --git a/iptables/tests/shell/testcases/ipt-restore/0011-noflush-empty-line_0 b/iptables/tests/shell/testcases/ipt-restore/0011-noflush-empty-line_0
+new file mode 100755
+index 00000000..bea1a690
+--- /dev/null
++++ b/iptables/tests/shell/testcases/ipt-restore/0011-noflush-empty-line_0
+@@ -0,0 +1,16 @@
++#!/bin/bash -e
++
++# make sure empty lines won't break --noflush
++
++cat <<EOF | $XT_MULTI iptables-restore --noflush
++# just a comment followed by innocent empty line
++
++*filter
++-A FORWARD -j ACCEPT
++COMMIT
++EOF
++
++EXPECT='Chain FORWARD (policy ACCEPT)
++target     prot opt source               destination         
++ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0           '
++diff -u <(echo "$EXPECT") <($XT_MULTI iptables -n -L FORWARD)
+diff --git a/iptables/xtables-restore.c b/iptables/xtables-restore.c
+index 63cc15ce..fb2ac8b5 100644
+--- a/iptables/xtables-restore.c
++++ b/iptables/xtables-restore.c
+@@ -293,11 +293,13 @@ void xtables_restore_parse(struct nft_handle *h,
+ 		while (fgets(buffer, sizeof(buffer), p->in)) {
+ 			size_t blen = strlen(buffer);
+ 
+-			/* drop trailing newline; xtables_restore_parse_line()
++			/* Drop trailing newline; xtables_restore_parse_line()
+ 			 * uses strtok() which replaces them by nul-characters,
+ 			 * causing unpredictable string delimiting in
+-			 * preload_buffer */
+-			if (buffer[blen - 1] == '\n')
++			 * preload_buffer.
++			 * Unless this is an empty line which would fold into a
++			 * spurious EoB indicator (double nul-char). */
++			if (buffer[blen - 1] == '\n' && blen > 1)
+ 				buffer[blen - 1] = '\0';
+ 			else
+ 				blen++;
+-- 
+cgit v1.2.3
+
+
