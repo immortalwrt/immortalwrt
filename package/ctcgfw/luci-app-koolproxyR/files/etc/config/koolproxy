@@ -9,9 +9,6 @@ config global
 	option koolproxy_rules 'easylistchina.txt fanboy.txt yhosts.txt koolproxy.txt daily.txt kp.dat user.txt'
 	option koolproxy_acl_default '3'
 
-config rss_rules
-	option load '0'
-	option name '1'
-	option url '1'
+
 
 
