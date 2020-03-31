@@ -45,13 +45,13 @@ sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 
 sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-echo "DISTRIB_REVISION='| Mod20.03 by CTCGFW'" >> /etc/openwrt_release
+echo "DISTRIB_REVISION='| Mod20.04 by CTCGFW'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt 18.06 by Lean '" >> /etc/openwrt_release
 
 sed -i 's/LuCI Master/LuCI 18.06 by Lean/g' /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
-echo 'luciversion = "Mod20.03 by CTCGFW"' >> /usr/lib/lua/luci/version.lua
+echo 'luciversion = "Mod20.04 by CTCGFW"' >> /usr/lib/lua/luci/version.lua
 
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
