@@ -171,7 +171,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  /**
   * Search the device tree for the best MAC address to use.  'mac-address' is
   * checked first, because that is supposed to contain to "most recent" MAC
-@@ -65,11 +193,18 @@ static const void *of_get_mac_addr(struc
+@@ -65,11 +198,18 @@ static const void *of_get_mac_addr(struc
   * addresses.  Some older U-Boots only initialized 'local-mac-address'.  In
   * this case, the real MAC is in 'local-mac-address', and 'mac-address' exists
   * but is all zeros.
