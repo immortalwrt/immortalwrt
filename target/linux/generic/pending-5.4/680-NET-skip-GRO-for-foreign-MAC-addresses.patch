@@ -22,7 +22,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  #endif
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -822,6 +822,7 @@ struct sk_buff {
+@@ -824,6 +824,7 @@ struct sk_buff {
  #ifdef CONFIG_TLS_DEVICE
  	__u8			decrypted:1;
  #endif
