@@ -79,7 +79,8 @@ menu "Target Images"
 
 	menuconfig TARGET_ROOTFS_EXT4FS
 		bool "ext4"
-		default n
+		default y if USES_EXT4
+		default n if TARGET_x86
 		help
 		  Build an ext4 root filesystem.
 
@@ -288,7 +289,8 @@ menu "Target Images"
 	config TARGET_IMAGES_GZIP
 		bool "GZip images"
 		depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS || TARGET_x86
-		default n
+		default y
+		default n if TARGET_x86
 
 	comment "Image Options"
 
