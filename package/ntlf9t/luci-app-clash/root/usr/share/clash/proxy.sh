@@ -378,7 +378,7 @@ EOF
   fi
    if [ "$skip_cert_verify" = "true" ] && [ "$type" = "ss" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    skip_cert_verify: true
+    skip-cert-verify: true
 EOF
   fi
 
@@ -428,7 +428,7 @@ config_list_foreach "$section" "alpn" set_alpn
 fi
 if [ "$skip_cert_verify" = "true" ] && [ "$type" = "trojan" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-  skip_cert_verify: true
+  skip-cert-verify: true
 EOF
   fi
 fi
