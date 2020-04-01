@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-diskman
-PKG_VERSION:=v0.2.5
+PKG_VERSION:=v0.2.7
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-diskman>
 PKG_LICENSE:=AGPL-3.0
@@ -19,10 +19,10 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)/config
 config PACKAGE_$(PKG_NAME)_INCLUDE_btrfs_progs
 	bool "Include btrfs-progs"
-	default n
+	default y
 config PACKAGE_$(PKG_NAME)_INCLUDE_lsblk
 	bool "Include lsblk"
-	default n
+	default y
 config PACKAGE_$(PKG_NAME)_INCLUDE_mdadm
 	bool "Include mdadm"
 	default n
