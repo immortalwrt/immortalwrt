@@ -311,10 +311,8 @@ if not disk_info.p_table:match("Raid") then
         return
       end
       local part_type = "primary"
-      -- create partition table if no partition table
-      if disk_info.p_table == "UNKNOWN" then
-        local cmd = dm.command.parted .. " -s /dev/" .. dev .. " mktable gpt"
-      elseif disk_info.p_table == "MBR" and disk_info["extended_partition_index"] then
+
+      if disk_info.p_table == "MBR" and disk_info["extended_partition_index"] then
         if tonumber(disk_info.partitions[disk_info["extended_partition_index"]].sec_start) <= tonumber(start_sec:sub(1,-2)) and tonumber(disk_info.partitions[disk_info["extended_partition_index"]].sec_end) >= tonumber(end_sec:sub(1,-2)) then
           part_type = "logical"
           if tonumber(start_sec:sub(1,-2)) - tonumber(disk_info.partitions[section].sec_start) < 2048 then
@@ -322,6 +320,11 @@ if not disk_info.p_table:match("Raid") then
             start_sec = start_sec .."s"
           end
         end
+      elseif disk_info.p_table == "GPT" then
+        -- AUTOMATIC FIX GPT PARTITION TABLE
+        -- Not all of the space available to /dev/sdb appears to be used, you can fix the GPT to use all of the space (an extra 16123870 blocks) or continue with the current setting?
+        local cmd = ' printf "ok\nfix\n" | parted ---pretend-input-tty /dev/'.. dev ..' print'
+        luci.util.exec(cmd .. " 2>&1")
       end
 
       -- partiton
