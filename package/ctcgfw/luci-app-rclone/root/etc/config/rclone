@@ -1,10 +1,9 @@
 
 config global 'global'
 	option enabled '0'
-	option user 'rclone'
 
 config conf 'config'
-	option config_path '/var/etc/rclone/rclone.conf'
+	option config_path '/etc/rclone/rclone.conf'
 	option port '5572'
 	option username 'admin'
 	option password 'admin'
@@ -13,7 +12,6 @@ config conf 'config'
 config proxy 'proxy'
 	option enabled '0'
 	option proxy_addr 'socks5://127.0.0.1:1080'
-	option no_proxy 'localhost,127.0.0.0/8'
 
 config log 'log'
 	option path '/var/log/rclone/output'
