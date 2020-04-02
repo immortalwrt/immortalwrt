@@ -69,9 +69,12 @@ o.datatype = 'port'
 o.rmempty = false
 
 o = s:option(Value, 'config_path', translate('rclone configuration file path'))
-o.placeholder = '/var/etc/rclone/rclone.conf'
-o.default = '/var/etc/rclone/rclone.conf'
+o.placeholder = '/etc/rclone/rclone.conf'
+o.default = '/etc/rclone/rclone.conf'
 o.rmempty = false
+o.description = translate("Recommand: run ") ..
+    "<span style=\"background: lightgray;border-radius: 4px;padding-left: 4px;padding-right: 4px;\">rclone config --config rclone.conf</span>" ..
+    translate(" to setup configuration on pc,") .. "</br>" .. translate("than updaload configuration to here.")
 
 o = s:option(Button,"config_download",translate("download configuration"))
 o.inputtitle = translate("download")
@@ -122,13 +125,6 @@ o.placeholder = 'socks5://127.0.0.1:1080'
 o.default = 'socks5://127.0.0.1:1080'
 o.rmempty = false
 o.description = translate("The content of the variable is protocol://server:port. The protocol value is commonly either http or socks5.")
-
-o = s:option(Value, 'no_proxy', translate('disable proxy'))
-o.placeholder = 'localhost,127.0.0.0/8'
-o.default = 'localhost,127.0.0.0/8'
-o.rmempty = false
-o.description = translate("This allows you to disable the proxy for specific hosts.").."<br>"..
-    translate("Hosts must be comma separated, and can contain domains or parts.")
 
 s = m:section(TypedSection, 'log', translate('log'))
 s.addremove = false
