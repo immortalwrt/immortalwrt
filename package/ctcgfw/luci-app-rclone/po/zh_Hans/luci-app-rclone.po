@@ -4,20 +4,16 @@ msgstr ""
 "Project-Id-Version: \n"
 "Last-Translator: ElonH <elonhhuang@gmail.com>\n"
 "Language-Team: none\n"
-"Language: zh_CN\n"
+"Language: zh-Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: luasrc/model/cbi/rclone.lua:115
+#: luasrc/model/cbi/rclone.lua:118
 msgid "FAQ"
 msgstr "常见问题"
-
-#: luasrc/model/cbi/rclone.lua:131
-msgid "Hosts must be comma separated, and can contain domains or parts."
-msgstr "用逗号分隔地址,且地址必须包含(部分)域名"
 
 #: luasrc/model/cbi/rclone.lua:41
 msgid "Installed Web Interface"
@@ -38,17 +34,17 @@ msgid ""
 msgstr ""
 "Rclone是一款的命令行工具，支持在不同对象存储、网盘间同步、上传、下载数据。"
 
-#: luasrc/model/cbi/rclone.lua:124
+#: luasrc/model/cbi/rclone.lua:75
+msgid "Recommand: run"
+msgstr "建议: 在 PC 上运行"
+
+#: luasrc/model/cbi/rclone.lua:127
 msgid ""
 "The content of the variable is protocol://server:port. The protocol value is "
 "commonly either http or socks5."
 msgstr ""
 "内容格式为: protocol://server:port\n"
 "protocol 通常为 http 或者 socks5"
-
-#: luasrc/model/cbi/rclone.lua:130
-msgid "This allows you to disable the proxy for specific hosts."
-msgstr "这允许不代理特定的地址."
 
 #: luasrc/model/cbi/rclone.lua:43
 msgid "Webui React"
@@ -62,19 +58,15 @@ msgstr "全部地址"
 msgid "configure"
 msgstr "配置"
 
-#: luasrc/model/cbi/rclone.lua:126
-msgid "disable proxy"
-msgstr ""
-
-#: luasrc/model/cbi/rclone.lua:77
+#: luasrc/model/cbi/rclone.lua:80
 msgid "download"
 msgstr "下载"
 
-#: luasrc/model/cbi/rclone.lua:76
+#: luasrc/model/cbi/rclone.lua:79
 msgid "download configuration"
 msgstr "下载配置文件"
 
-#: luasrc/model/cbi/rclone.lua:117
+#: luasrc/model/cbi/rclone.lua:120
 msgid "enable proxy"
 msgstr "启用代理"
 
@@ -98,23 +90,23 @@ msgstr "局域网地址"
 msgid "localhost address"
 msgstr "本机地址"
 
-#: luasrc/model/cbi/rclone.lua:133
+#: luasrc/model/cbi/rclone.lua:129
 msgid "log"
 msgstr "日志"
 
-#: luasrc/model/cbi/rclone.lua:105
+#: luasrc/model/cbi/rclone.lua:108
 msgid "password"
 msgstr "密码"
 
-#: luasrc/model/cbi/rclone.lua:137
+#: luasrc/model/cbi/rclone.lua:133
 msgid "path"
 msgstr "路径"
 
-#: luasrc/model/cbi/rclone.lua:111
+#: luasrc/model/cbi/rclone.lua:114
 msgid "proxy"
 msgstr "代理"
 
-#: luasrc/model/cbi/rclone.lua:120
+#: luasrc/model/cbi/rclone.lua:123
 msgid "proxy address"
 msgstr "代理地址"
 
@@ -142,9 +134,23 @@ msgstr "rclone 状态"
 msgid "run Rclone as daemon"
 msgstr "启动 rclone 后台服务"
 
-#: luasrc/model/cbi/rclone.lua:100
+#: luasrc/model/cbi/rclone.lua:77
+msgid "than updaload configuration to here."
+msgstr "然后上传配置文件到这里"
+
+#: luasrc/model/cbi/rclone.lua:77
+msgid "to setup configuration on pc,"
+msgstr "命令设置 rclone 配置文件,"
+
+#: luasrc/model/cbi/rclone.lua:103
 msgid "username"
 msgstr "用户名"
+
+#~ msgid "Hosts must be comma separated, and can contain domains or parts."
+#~ msgstr "用逗号分隔地址,且地址必须包含(部分)域名"
+
+#~ msgid "This allows you to disable the proxy for specific hosts."
+#~ msgstr "这允许不代理特定的地址."
 
 #~ msgid "How to proxy rclone"
 #~ msgstr "如何代理rclone"
