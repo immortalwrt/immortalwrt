@@ -720,7 +720,7 @@ $(eval $(call KernelPackage,i40e))
 define KernelPackage/i40evf
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Intel(R) Ethernet Adaptive Virtual Function support
-  DEPENDS:=@PCI_SUPPORT +kmod-i40e
+  DEPENDS:=@!LINUX_5_4 @PCI_SUPPORT +kmod-i40e
   KCONFIG:=CONFIG_I40EVF
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/i40evf/i40evf.ko
   AUTOLOAD:=$(call AutoProbe,i40evf)
