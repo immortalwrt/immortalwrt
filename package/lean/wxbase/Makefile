@@ -124,8 +124,7 @@ define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/wx-2.8 $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwx_base$(LIB_PFX){,_net,_xml}-*.so* $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/wx $(1)/usr/lib/
-	$(SED) 's,-I$$$${includedir}/wx-2.8,-I$(STAGING_DIR)/usr/include/wx-2.8,g' $(1)/usr/bin/wx-config
-	$(SED) 's,-I$$$${libdir}/wx/include,-I$(STAGING_DIR)/usr/lib/wx/include,g' $(1)/usr/bin/wx-config
+	$(SED) "s,$(PKG_BUILD_DIR),$(STAGING_DIR)/usr,g" $(1)/usr/bin/wx-config
 endef
 
 define Package/libwxbase/install
