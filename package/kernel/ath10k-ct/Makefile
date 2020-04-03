@@ -12,10 +12,10 @@ PKG_SOURCE_DATE:=2020-03-25
 PKG_SOURCE_VERSION:=3d173a471d3e583f2885ce68190c4387424cecc5
 PKG_MIRROR_HASH:=496279322f3cd26b262d4999cb5a8c1ea022e92a7bb0d43d008bce235abb9a65
 
-# Build the 4.19 ath10k-ct driver version.  Other option is "-4.16".
+# Build the 5.4 ath10k-ct driver version.  Other option is "-4.19".
 # Probably this should match as closely as
 # possible to whatever mac80211 backports version is being used.
-CT_KVER="-4.19"
+CT_KVER="-5.4"
 
 PKG_MAINTAINER:=Ben Greear <greearb@candelatech.com>
 PKG_BUILD_PARALLEL:=1
