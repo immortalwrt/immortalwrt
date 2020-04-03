@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set_rpi4() {
+	case "$(board_name)" in
+	raspberrypi,4-model-b)
+		sed -i 's/VHT80/VHT40/g' /lib/wifi/mac80211.sh
+		sed -i 's|pcdata(boardinfo.system or "?")|luci.sys.exec("uname -m") or "?"|g' /usr/lib/lua/luci/view/admin_status/index.htm
+		;;
+	esac
+}
+
+boot_hook_add preinit_main set_rpi4
