@@ -1,0 +1,13 @@
+diff --git a/wx-config.in b/wx-config.in
+index b185bbb..0a9a341 100755
+--- a/wx-config.in
++++ b/wx-config.in
+@@ -937,7 +937,7 @@ fi
+ 
+ is_monolithic() { [ "x@MONOLITHIC@" = "x1" ]; }
+ is_static()     { [ -n "$this_linkage" ]; }
+-is_installed()  { [ -z "$this_prefix" ]; }
++is_installed()  { [ "$this_prefix" ]; }
+ 
+ 
+ # Is the user after a support utility?
