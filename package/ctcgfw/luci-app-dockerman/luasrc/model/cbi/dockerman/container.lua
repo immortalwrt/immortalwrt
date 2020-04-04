@@ -401,26 +401,26 @@ if action == "info" then
   end
   
 -- info end
-elseif action == "edit" then
-  local editsection= m:section(SimpleSection)
-  d = editsection:option( Value, "cpus", translate("CPUs"), translate("Number of CPUs. Number is a fractional number. 0.000 means no limit."))
+elseif action == "resources" then
+  local resources_section= m:section(SimpleSection)
+  d = resources_section:option( Value, "cpus", translate("CPUs"), translate("Number of CPUs. Number is a fractional number. 0.000 means no limit."))
   d.placeholder = "1.5"
   d.rmempty = true
   d.datatype="ufloat"
   d.default = container_info.HostConfig.NanoCpus / (10^9)
 
-  d = editsection:option(Value, "cpushares", translate("CPU Shares Weight"), translate("CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."))
+  d = resources_section:option(Value, "cpushares", translate("CPU Shares Weight"), translate("CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."))
   d.placeholder = "1024"
   d.rmempty = true
   d.datatype="uinteger"
   d.default = container_info.HostConfig.CpuShares
 
-  d = editsection:option(Value, "memory", translate("Memory"), translate("Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M."))
+  d = resources_section:option(Value, "memory", translate("Memory"), translate("Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M."))
   d.placeholder = "128m"
   d.rmempty = true
   d.default = container_info.HostConfig.Memory ~=0 and ((container_info.HostConfig.Memory / 1024 /1024) .. "M") or 0
 
-  d = editsection:option(Value, "blkioweight", translate("Block IO Weight"), translate("Block IO weight (relative weight) accepts a weight value between 10 and 1000."))
+  d = resources_section:option(Value, "blkioweight", translate("Block IO Weight"), translate("Block IO weight (relative weight) accepts a weight value between 10 and 1000."))
   d.placeholder = "500"
   d.rmempty = true
   d.datatype="uinteger"
@@ -457,7 +457,7 @@ elseif action == "edit" then
       else
         docker:clear_status()
       end
-      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id.."/edit"))
+      luci.http.redirect(luci.dispatcher.build_url("admin/docker/container/"..container_id.."/resources"))
     end
   end
 elseif action == "file" then
