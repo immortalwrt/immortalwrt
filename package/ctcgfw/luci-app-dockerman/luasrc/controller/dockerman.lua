@@ -4,7 +4,7 @@ Copyright 2019 lisaac <https://github.com/lisaac/luci-app-dockerman>
 ]]--
 require "luci.util"
 local docker = require "luci.model.docker"
-local uci = require "luci.model.uci"
+-- local uci = require "luci.model.uci"
 
 module("luci.controller.dockerman",package.seeall)
 

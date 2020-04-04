@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-dockerman
-PKG_VERSION:=v0.5.5
+PKG_VERSION:=v0.5.6
 PKG_RELEASE:=beta
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-app-dockerman>
 PKG_LICENSE:=AGPL-3.0
@@ -56,6 +56,8 @@ exit 0
 endef
 
 define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr
+	cp -pR $(PKG_BUILD_DIR)/root/usr/* $(1)/usr/
 	$(INSTALL_DIR) $(1)/etc/config
 	cp -pR $(PKG_BUILD_DIR)/root/etc/config/* $(1)/etc/config/
 	$(INSTALL_DIR) $(1)/etc/init.d

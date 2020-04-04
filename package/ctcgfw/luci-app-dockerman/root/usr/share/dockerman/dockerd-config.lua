@@ -9,8 +9,8 @@ raw_json = luci.jsonc.parse(raw_json_str) or {}
 
 new_json = {}
 new_json["data-root"] = uci:get("dockerman", "local", "daemon_data_root")
-new_json["hosts"] = uci:get("dockerman", "local", "daemon_hosts")
-new_json["registry-mirrors"] = uci:get("dockerman", "local", "daemon_registry_mirrors")
+new_json["hosts"] = uci:get("dockerman", "local", "daemon_hosts") or {}
+new_json["registry-mirrors"] = uci:get("dockerman", "local", "daemon_registry_mirrors") or {}
 new_json["log-level"] = uci:get("dockerman", "local", "daemon_log_level")
 
 function comp(raw, new)
@@ -43,6 +43,8 @@ function comp(raw, new)
 end
 comp(raw_json, new_json)
 if changed then
+  if next(raw_json["registry-mirrors"]) == nil then raw_json["registry-mirrors"] = nil end
+  if next(raw_json["hosts"]) == nil then raw_json["hosts"] = nil end
   fs.writefile(raw_file_dir, luci.jsonc.stringify(raw_json, true):gsub("\\", ""))
   os.exit(0)
 else
