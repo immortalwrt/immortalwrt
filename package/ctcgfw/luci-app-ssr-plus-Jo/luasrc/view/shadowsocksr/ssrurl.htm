@@ -48,15 +48,15 @@
         var s = document.getElementById(urlname + '-status');
         if (!s)
             return false;
-        var v_server = document.getElementById('cbid.shadowsocksr.' + sid + '.server');
-        var v_port = document.getElementById('cbid.shadowsocksr.' + sid + '.server_port');
-        var v_protocol = document.getElementById('cbid.shadowsocksr.' + sid + '.protocol');
-        var v_method = document.getElementById('cbid.shadowsocksr.' + sid + '.encrypt_method');
-        var v_obfs = document.getElementById('cbid.shadowsocksr.' + sid + '.obfs');
-        var v_password = document.getElementById('cbid.shadowsocksr.' + sid + '.password');
-        var v_obfs_param = document.getElementById('cbid.shadowsocksr.' + sid + '.obfs_param');
-        var v_protocol_param = document.getElementById('cbid.shadowsocksr.' + sid + '.protocol_param');
-        var v_alias = document.getElementById('cbid.shadowsocksr.' + sid + '.alias');
+        var v_server = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server');
+        var v_port = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server_port');
+        var v_protocol = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.protocol');
+        var v_method = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.encrypt_method');
+        var v_obfs = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.obfs');
+        var v_password = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.password');
+        var v_obfs_param = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.obfs_param');
+        var v_protocol_param = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.protocol_param');
+        var v_alias = document.getElementById('widget.cbid.shadowsocksr.' + sid + '.alias');
 
         var ssr_str = v_server.value + ":" +
                 v_port.value + ":" +
@@ -108,8 +108,8 @@
         if (ssu[0] == "ssr") {
             var sstr = b64decsafe(ssu[1]);
             var ploc = sstr.indexOf("/?");
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').value = "ssr";
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').value = "ssr";
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
             var url0, param = "";
             if (ploc > 0) {
                 url0 = sstr.substr(0, ploc);
@@ -127,18 +127,18 @@
                     pdict[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
                 }
             }
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server').value = ssm[1];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server_port').value = ssm[2];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.protocol').value = ssm[3];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.encrypt_method').value = ssm[4];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.obfs').value = ssm[5];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.password').value = b64decsafe(ssm[6]);
-            document.getElementById('cbid.shadowsocksr.' + sid + '.obfs_param').value = dictvalue(pdict, 'obfsparam');
-            document.getElementById('cbid.shadowsocksr.' + sid + '.protocol_param').value = dictvalue(pdict, 'protoparam');
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server').value = ssm[1];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server_port').value = ssm[2];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.protocol').value = ssm[3];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.encrypt_method').value = ssm[4];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.obfs').value = ssm[5];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.password').value = b64decsafe(ssm[6]);
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.obfs_param').value = dictvalue(pdict, 'obfsparam');
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.protocol_param').value = dictvalue(pdict, 'protoparam');
 
             var rem = pdict['remarks'];
             if (typeof (rem) != 'undefined' && rem != '' && rem.length > 0)
-                document.getElementById('cbid.shadowsocksr.' + sid + '.alias').value = b64decutf8safe(rem);
+                document.getElementById('widget.cbid.shadowsocksr.' + sid + '.alias').value = b64decutf8safe(rem);
 
             s.innerHTML = "<font color='green'>导入ShadowsocksR配置信息成功</font>";
             return false;
@@ -153,19 +153,19 @@
             var sstr = b64decsafe(url0);
 
 
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').value = "ss";
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').value = "ss";
 
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
             var team = sstr.split('@');
             console.log(param);
             var part1 = team[0].split(':');
             var part2 = team[1].split(':');
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server').value = part2[0];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server_port').value = part2[1];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.password').value = part1[1];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.encrypt_method_ss').value = part1[0];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server').value = part2[0];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server_port').value = part2[1];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.password').value = part1[1];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.encrypt_method_ss').value = part1[0];
             if (param != undefined) {
-                document.getElementById('cbid.shadowsocksr.' + sid + '.alias').value = decodeURI(param);
+                document.getElementById('widget.cbid.shadowsocksr.' + sid + '.alias').value = decodeURI(param);
             }
 
             s.innerHTML = "<font color='green'>导入Shadowsocks配置信息成功</font>";
@@ -181,18 +181,18 @@
             var sstr = b64decsafe(url0);
 
 
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').value = "trojan";
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').value = "trojan";
 
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
             var team = sstr.split('@');
             console.log(param);
             var part1 = team[0].split(':');
             var part2 = team[1].split(':');
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server').value = part2[0];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server_port').value = part2[1];
-            document.getElementById('cbid.shadowsocksr.' + sid + '.password').value = part1[1];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server').value = part2[0];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server_port').value = part2[1];
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.password').value = part1[1];
             if (param != undefined) {
-                document.getElementById('cbid.shadowsocksr.' + sid + '.alias').value = decodeURI(param);
+                document.getElementById('widget.cbid.shadowsocksr.' + sid + '.alias').value = decodeURI(param);
             }
 
             s.innerHTML = "<font color='green'>导入Trojan配置信息成功</font>";
@@ -200,25 +200,25 @@
         } else if (ssu[0] == "vmess") {
             var sstr = b64DecodeUnicode(ssu[1]);
             var ploc = sstr.indexOf("/?");
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').value = "v2ray";
-            document.getElementById('cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').value = "v2ray";
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.type').dispatchEvent(event);
             var url0, param = "";
             if (ploc > 0) {
                 url0 = sstr.substr(0, ploc);
                 param = sstr.substr(ploc + 2);
             }
             var ssm = JSON.parse(sstr);
-            document.getElementById('cbid.shadowsocksr.' + sid + '.alias').value = ssm.ps;
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server').value = ssm.add;
-            document.getElementById('cbid.shadowsocksr.' + sid + '.server_port').value = ssm.port;
-            document.getElementById('cbid.shadowsocksr.' + sid + '.alter_id').value = ssm.aid;
-            document.getElementById('cbid.shadowsocksr.' + sid + '.vmess_id').value = ssm.id;
-            document.getElementById('cbid.shadowsocksr.' + sid + '.transport').value = ssm.net;
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.alias').value = ssm.ps;
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server').value = ssm.add;
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.server_port').value = ssm.port;
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.alter_id').value = ssm.aid;
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.vmess_id').value = ssm.id;
+            document.getElementById('widget.cbid.shadowsocksr.' + sid + '.transport').value = ssm.net;
 			if(ssm.tls == "tls"){
-				document.getElementById('cbid.shadowsocksr.' + sid + '.tls').checked = true;
-				document.getElementById('cbid.shadowsocksr.' + sid + '.insecure').checked = true;
+				document.getElementById('widget.cbid.shadowsocksr.' + sid + '.tls').checked = true;
+				document.getElementById('widget.cbid.shadowsocksr.' + sid + '.insecure').checked = true;
 			}
-			document.getElementById('cbid.shadowsocksr.' + sid + '.transport').dispatchEvent(event);
+			document.getElementById('widget.cbid.shadowsocksr.' + sid + '.transport').dispatchEvent(event);
 			
 			switch(ssm.net){
 				case "tcp":
@@ -228,8 +228,8 @@
 				break;
 				
 				case "ws":
-				document.getElementById('cbid.shadowsocksr.' + sid + '.ws_host').value = ssm.host;
-				document.getElementById('cbid.shadowsocksr.' + sid + '.ws_path').value = ssm.path;
+				document.getElementById('widget.cbid.shadowsocksr.' + sid + '.ws_host').value = ssm.host;
+				document.getElementById('widget.cbid.shadowsocksr.' + sid + '.ws_path').value = ssm.path;
 				break;
 				
 				case "h2":
