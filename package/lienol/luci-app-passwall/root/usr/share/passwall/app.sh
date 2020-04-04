@@ -319,8 +319,10 @@ gen_start_config() {
 			local plugin=$(config_n_get $node ss_plugin)
 			if [ "$plugin" != "none" ]; then
 				[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+					local plugin_opts=""
 					local opts=$(config_n_get $node ss_plugin_opts)
-					plugin_params="--plugin $plugin --plugin-opts $opts"
+					[ -n "$opts" ] && plugin_opts="--plugin-opts $opts"
+					plugin_params="--plugin $plugin $plugin_opts"
 				}
 			fi
 			ln_start_bin $(find_bin ss-local) ss-local_socks_$5 "-c $config_file -b $bind -u $plugin_params" 
@@ -375,8 +377,10 @@ gen_start_config() {
 			local plugin=$(config_n_get $node ss_plugin)
 			if [ "$plugin" != "none" ]; then
 				[ "$plugin" == "v2ray-plugin" -o "$plugin" == "obfs-local" ] && {
+					local plugin_opts=""
 					local opts=$(config_n_get $node ss_plugin_opts)
-					plugin_params="--plugin $plugin --plugin-opts $opts"
+					[ -n "$opts" ] && plugin_opts="--plugin-opts $opts"
+					plugin_params="--plugin $plugin $plugin_opts"
 				}
 			fi
 			ln_start_bin $(find_bin ss-redir) ss-redir_udp_$5 "-c $config_file -U $plugin_params"
@@ -647,15 +651,14 @@ add_dnsmasq() {
 	}
 	
 	[ "$DNS_MODE" != "nonuse" ] && {
-		if [ -n "$UP_CHINA_DNS2" ]; then
-			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
-			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nserver=/."$1"/'$UP_CHINA_DNS2'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+		[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort -u | awk '{if (mode != "chinadns-ng" && dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (mode != "chinadns-ng" && dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/whitelist"}' mode=$DNS_MODE dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/whitelist_host.conf
+		uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort -u | awk '{if (dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/vpsiplist"}' dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+		[ -f "$RULES_PATH/blacklist_host" -a -s "$RULES_PATH/blacklist_host" ] && cat $RULES_PATH/blacklist_host | sed -e "/^$/d" | sort -u | awk '{if (mode != "chinadns-ng") print "server=/."$1"/127.0.0.1#'$DNS_PORT'"; print "ipset=/."$1"/blacklist"}' mode=$DNS_MODE > $TMP_DNSMASQ_PATH/blacklist_host.conf
+		if [ "$DNS_MODE" != "chinadns-ng" ]; then
+			[ -f "$RULES_PATH/gfwlist.conf" -a -s "$RULES_PATH/gfwlist.conf" ] && ln -s $RULES_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
 		else
-			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/whitelist"}' > $TMP_DNSMASQ_PATH/whitelist_host.conf
-			uci show $CONFIG | grep "@nodes" | grep "address" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort | uniq | awk '{print "server=/."$1"/'$UP_CHINA_DNS1'\nipset=/."$1"/vpsiplist"}' > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
+			cat $TMP_PATH/gfwlist.txt | sed -e "/^$/d" | sort -u | awk '{print "ipset=/."$1"/gfwlist"}' > $TMP_DNSMASQ_PATH/gfwlist.conf
 		fi
-		[ -f "$RULES_PATH/blacklist_host" -a -s "$RULES_PATH/blacklist_host" ] && cat $RULES_PATH/blacklist_host | sed -e "/^$/d" | sort | awk '{print "server=/."$1"/127.0.0.1#'$DNS_PORT'\nipset=/."$1"/blacklist"}' > $TMP_DNSMASQ_PATH/blacklist_host.conf
-		[ -f "$RULES_PATH/gfwlist.conf" -a -s "$RULES_PATH/gfwlist.conf" ] && ln -s $RULES_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
 		
 		subscribe_proxy=$(config_t_get global_subscribe subscribe_proxy 0)
 		[ "$subscribe_proxy" -eq 1 ] && {
@@ -671,10 +674,10 @@ add_dnsmasq() {
 					local url=$(u_get $i url)
 					[ -n "$url" -a "$url" != "" ] && {
 						if [ -n "$(echo -n "$url" | grep "//")" ]; then
-							echo -n "$url" | awk -F '/' '{print $3}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
+							[ "$DNS_MODE" != "chinadns-ng" ] && echo -n "$url" | awk -F '/' '{print $3}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
 							echo -n "$url" | awk -F '/' '{print $3}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/blacklist/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
 						else
-							echo -n "$url" | awk -F '/' '{print $1}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
+							[ "$DNS_MODE" != "chinadns-ng" ] && echo -n "$url" | awk -F '/' '{print $1}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
 							echo -n "$url" | awk -F '/' '{print $1}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/blacklist/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
 						fi
 					}
@@ -696,7 +699,7 @@ add_dnsmasq() {
 			no-resolv
 		EOF
 	else
-		# 如果有某些人DNS设置了默认，但是没有设置上级DNS会上不了网，做个防呆...(真是服了你们这些xxx)
+		# 防呆
 		[ -z "$DEFAULT_DNS1" ] && {
 			local tmp=$(get_host_ip ipv4 www.baidu.com 1)
 			[ -z "$tmp" ] && {

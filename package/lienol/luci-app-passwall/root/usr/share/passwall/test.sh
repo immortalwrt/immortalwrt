@@ -21,7 +21,7 @@ test_url() {
 	[ -n "$2" ] && try=$2
 	local timeout=2
 	[ -n "$3" ] && timeout=$3
-	status=$(/usr/bin/wget --no-check-certificate --spider --timeout=$timeout --tries $try "$url" 2>/dev/null)
+	status=$(/usr/bin/wget -4 --no-check-certificate --spider --timeout=$timeout --tries $try "$url" 2>/dev/null)
 	[ "$?" == 0 ] && status=200
 	echo $status
 }
@@ -29,7 +29,7 @@ test_url() {
 test_proxy() {
 	local try=5
 	result=0
-	status=$(test_url "https://www.google.com" $try)
+	status=$(test_url "https://www.google.com/generate_204" $try)
 	if [ "$status" = "200" ]; then
 		result=0
 	else

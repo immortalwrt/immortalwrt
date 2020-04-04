@@ -172,7 +172,7 @@ function connect_status()
     local start_time = os.time()
     if luci.http.formvalue("type") == "google" then
         e.status = luci.sys.call(
-                       "echo $(/usr/share/passwall/test.sh test_url 'www.google.com') | grep 200 >/dev/null") ==
+                       "echo $(/usr/share/passwall/test.sh test_url 'www.google.com/generate_204') | grep 200 >/dev/null") ==
                        0
     else
         e.status = luci.sys.call(
