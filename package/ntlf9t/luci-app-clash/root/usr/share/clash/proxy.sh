@@ -156,7 +156,7 @@ fi
 if [ -f $PROVIDER_FILE ];then 
 sed -i "1i\   " $PROVIDER_FILE 2>/dev/null 
 
-sed -i "2i\proxy-providers:" $PROVIDER_FILE 2>/dev/null
+sed -i "2i\proxy-provider:" $PROVIDER_FILE 2>/dev/null
 
 #echo "proxy-provider:" >$PROVIDER_FILE
 rm -rf /tmp/Proxy_Provider
@@ -559,7 +559,7 @@ if [ ! -z "${scount}" ] || [ "${scount}" -ne 0 ];then
 
 sed -i "1i\   " $SERVER_FILE 2>/dev/null 
 
-sed -i "2i\proxies:" $SERVER_FILE 2>/dev/null 
+sed -i "2i\Proxy:" $SERVER_FILE 2>/dev/null 
 
 egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
 
@@ -700,7 +700,7 @@ config_foreach yml_groups_set "groups"
 
 if [ "$(ls -l $GROUP_FILE|awk '{print $5}')" -ne 0 ]; then
 sed -i "1i\  " $GROUP_FILE 2>/dev/null 
-sed -i "2i\proxy-groups:" $GROUP_FILE 2>/dev/null 
+sed -i "2i\Proxy Group:" $GROUP_FILE 2>/dev/null 
 
 fi
 

@@ -49,7 +49,7 @@ if [ $type == "ssr2clash" ] && [ ! -z $url ];then
 	elif [ $lang == "zh_cn" ];then
 				echo "开始更新配置" >$REAL_LOG
 	fi
-	wget --no-check-certificate --user-agent="Clash/OpenWRT" $url -O 2>&1 >1 $CONFIG_YAML
+	wget --no-check-certificate --user-agent="Clash/OpenWRT" "https://ssrsub2clashr.herokuapp.com/ssrsub2clash?sub=$url" -O 2>&1 >1 $CONFIG_YAML
 	
 	if [ "$?" -eq "0" ]; then
 	
@@ -113,7 +113,7 @@ if [ $type == "v2clash" ] && [ ! -z $url ];then
 	elif [ $lang == "zh_cn" ];then
 				echo "开始更新配置" >$REAL_LOG
 	fi
-	wget --no-check-certificate --user-agent="Clash/OpenWRT" $url -O 2>&1 >1 $CONFIG_YAML
+	wget --no-check-certificate --user-agent="Clash/OpenWRT" "https://tgbot.lbyczf.com/v2rayn2clash?url=$url" -O 2>&1 >1 $CONFIG_YAML
 	
 	if [ "$?" -eq "0" ]; then
 		if [ $lang == "en" ] || [ $lang == "auto" ];then
@@ -134,4 +134,9 @@ fi
 count_nums=$(( $count_nums + 1))	
 done
 
-
+sleep 2
+if [ "$c_type" -eq 1 ];then 
+if pidof clash >/dev/null; then
+		/etc/init.d/clash restart 2>/dev/null
+fi
+fi
