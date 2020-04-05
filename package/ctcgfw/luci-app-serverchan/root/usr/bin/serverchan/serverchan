@@ -47,6 +47,9 @@ function read_config(){
 	wlan_interface=`iw dev | grep Interface | awk '{print $2}'`
 	public_ip_event=`get_config public_ip_event`
 	public_ip_retry_count=`get_config public_ip_retry_count`
+	wrtbwmon_version=`opkg list-installed |grep -w ^wrtbwmon|awk  '{print $3}'`
+	iputils-arping_version=`opkg list-installed |grep -w ^iputils-arping|awk  '{print $3}'`
+	curl_version=`opkg list-installed |grep -w ^curl|awk  '{print $3}'`
 	enable_detection
 }
 
@@ -69,6 +72,9 @@ function enable_detection(){
 function serverchan_init(){
 	rm -f ${dir}usage.db >/dev/null 2>&1
 	rm -f ${dir}fd1 >/dev/null 2>&1
+	rm -f ${dir}tmp_downlist >/dev/null 2>&1
+	rm -f ${dir}top >/dev/null 2>&1
+	deltemp 
 	public_ip_today=`date +"%d"`
 	public_ip_retry_count=0
 	uci set serverchan.serverchan.send_enable=0
@@ -79,12 +85,12 @@ function serverchan_init(){
 		echo "--------------------------------------------------------" >> ${logfile}
 		rm -f /usr/bin/serverchan/errlog >/dev/null 2>&1
 	fi
+	if [ -z "$serverchan_enable" ] || [ "$serverchan_enable" -eq "0" ] ; then `/etc/init.d/serverchan stop`;fi
 	echo "`date "+%Y-%m-%d %H:%M:%S"` 【初始化】载入配置文件" >> ${logfile}
 	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【初始化】工作目录为 $dir " >> ${logfile};fi
 	if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【初始化】log 目录为 $logfile " >> ${logfile};fi
-	if [ -z "$serverchan_enable" ] || [ "$serverchan_enable" -eq "0" ] ; then `/etc/init.d/serverchan stop`;fi
-	if [ -z "$serverchan_sckey" ] || [ "${#serverchan_sckey}" -lt  "50" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】请填入正确的 SCKEY " >> ${logfile};fi
-	if [ -z "$serverchan_sckey" ] && [ "${#serverchan_sckey}" -lt  "50" ] ; then exit;fi
+	if [ -z "$serverchan_sckey" ] || [ "${#serverchan_sckey}" -lt  "50" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】请填入正确的 SCKEY " >> ${logfile} && exit;fi
+	if [ -z "$iputils-arping_version" ] || [ -z "$curl_version" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】依赖未正确安装，程序即将推出 " >> ${logfile} && exit;fi
 	if [ -z "$serverchan_ipv4" ] || [ "$serverchan_ipv4" -ne "0" ] && [ "$serverchan_ipv4" -ne "1" ] && [ "$serverchan_ipv4" -ne "2" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】无法读取 ipv4 变化通知 开关" >> ${logfile};fi
 	if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "1" ] && [ -z "$ipv4_interface" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】无法读取 ipv4 IP 接口信息" >> ${logfile};fi
 	if [ ! -z "$serverchan_ipv4" ] && [ "$serverchan_ipv4" -eq "2" ] && [ -z "$ipv4_URL" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】无法读取 ipv4 IP URL信息" >> ${logfile};fi
@@ -269,7 +275,15 @@ function time_for_humans {
 
 # 流量数据
 function usage(){
-	if [ -f "/usr/sbin/wrtbwmon" ] && [ -f "/etc/init.d/wrtbwmon" ] ; then
+	function version_le() { test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1"; }
+	function version_ge() { test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1"; }
+	if [ ! -z "$wrtbwmon_version" ] ; then
+		if version_ge $wrtbwmon_version "1.2.0"; then
+			wrtbwmon -f ${dir}usage.db
+		elif version_le $wrtbwmon_version "1.0.0"; then
+			wrtbwmon update ${dir}usage.db
+		fi
+	elif [ -f "/usr/sbin/wrtbwmon" ] ; then
 		wrtbwmon update ${dir}usage.db
 	else
 		if [ ! -z "$debuglevel" ] && [ "$debuglevel" -ne "1" ] ; then echo "`date "+%Y-%m-%d %H:%M:%S"` 【！！！】未安装 wrtbwmon ，流量统计不可用" >> ${logfile};fi
@@ -660,9 +674,9 @@ function getmac(){
 
 # 查询主机名
 function getname(){
-	if [ -f "${dir}ipAddress" ] ; then local ip_name=`cat ${dir}ipAddress | grep -w $1 |awk '{print $3}' | grep -v "^$" | sort -u`;fi
-	if [ -f "${dir}tmp_downlist" ] && [ -z "$ip_name" ] ; then local ip_name=`cat ${dir}tmp_downlist | grep -w $1 |awk '{print $3}' | grep -v "^$" | sort -u`;fi
-	if ( echo "$ip_name" | grep -q "unknown" ) || [ -z "$ip_name" ] ; then local ip_name=`echo "$device_aliases" | grep -i $2 |awk '{print $2}' | grep -v "^$" | sort -u`;fi
+	local ip_name=`echo "$device_aliases" | grep -i $2 |awk '{print $2}' | grep -v "^$" | sort -u`
+	if [ -z "$ip_name" ] && [ -f "${dir}ipAddress" ] ; then local ip_name=`cat ${dir}ipAddress | grep -w $1 |awk '{print $3}' | grep -v "^$" | sort -u`;fi
+	if [ -z "$ip_name" ] && [ -f "${dir}tmp_downlist" ] ; then local ip_name=`cat ${dir}tmp_downlist | grep -w $1 |awk '{print $3}' | grep -v "^$" | sort -u`;fi
 	if ( echo "$ip_name" | grep -q "unknown" ) || [ -z "$ip_name" ] ; then local ip_name=`cat /var/dhcp.leases | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u`;fi
 	if [ -z "$ip_name" ] ; then local ip_name="unknown";fi
 	echo "$ip_name"
@@ -1113,7 +1127,7 @@ echo "`date "+%Y-%m-%d %H:%M:%S"` 【初始化】初始化完成" >> ${logfile}
 while [ "$serverchan_enable" -eq "1" ] ;
 do
 	deltemp
-	read_config
+	#read_config
 	rand_geturl
 	usage
 	# 外网IP变化检测
@@ -1145,6 +1159,7 @@ do
 	# 从 arp 缓存中读取 0x2 在线列表
 	if [ ! -f "${dir}ipAddress" ] ; then > ${dir}ipAddress;fi
 	IPLIST=$( cat /proc/net/arp | grep "0x2\|0x6" | awk  '{print $1}' | grep -v "^$" | sort -u ) && IPLISTrow=$(grep -c "" ${dir}ipAddress)
+	#cat /proc/net/arp | awk '!a[$4]++{print}' | grep "0x2\|0x6" | awk  '{print $1}'
 	send_enable=`get_config send_enable`
 	for  ip in $IPLIST; do
 		# 如果 “ip 列表不为空” 
