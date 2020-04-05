@@ -6,10 +6,9 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for nfs
-LUCI_DEPENDS:=
+LUCI_DEPENDS:=+nfs-utils +nfs-kernel-server +nfs-kernel-server-utils +mount-utils
 LUCI_PKGARCH:=all
-PKG_NAME:=luci-app-nfs
-PKG_VERSION:=1.0
+PKG_VERSION:=1.1
 PKG_RELEASE:=1
 
 include $(TOPDIR)/feeds/luci/luci.mk

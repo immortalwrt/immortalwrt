@@ -62,4 +62,9 @@ if nixio.fs.access("/etc/config/fstab") then
   ph2.titleref = luci.dispatcher.build_url("admin", "system", "mounts")
 end
 
+local apply = luci.http.formvalue("cbi.apply")
+if apply then
+    io.popen("/etc/init.d/nfs reload")
+end
+
 return m
