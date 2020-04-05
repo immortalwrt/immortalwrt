@@ -25,7 +25,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Network
   TITLE:=bittorrent client programmed in C++ / Qt
   URL:=https://github.com/c0re100/qBittorrent-Enhanced-Edition
-  DEPENDS:=+qt5-core +qt5-network +qt5-xml +libtorrent-rasterbar +python3
+  DEPENDS:=+qt5-core +qt5-network +qt5-xml +libtorrent-rasterbar +python3 +boost-system
 endef
 
 define Package/$(PKG_NAME)/description
