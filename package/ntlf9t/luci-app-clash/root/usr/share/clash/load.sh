@@ -302,9 +302,9 @@ provider_line=$(awk '{print $0"#*#"FNR}' $provider_file |grep -v '^ \{0,\}proxy-
 provider_num=$(grep -c "^ \{0,\}type:" $provider_file)
 provider_count=1
 
-cfg_get_alpn()
+cfg_get_dyn()
 {
-	echo "$(grep "^ \{0,\}$1" $single_server 2>/dev/null |grep -v "^ \{0,\}- name:" |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/\}.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null |sed "s/^\'//g" 2>/dev/null |sed "s/\'$//g" 2>/dev/null)"
+	echo "$(grep "^ \{0,\}$1" "$2" 2>/dev/null |grep -v "^ \{0,\}- name:"  |grep -v "^ \{0,\}- keep-alive" |awk -v tag=$1 'BEGIN{FS=tag} {print $2}' 2>/dev/null |sed 's/,.*//' 2>/dev/null |sed 's/\}.*//' 2>/dev/null |sed 's/^ \{0,\}//g' 2>/dev/null |sed 's/ \{0,\}$//g' 2>/dev/null)"
 }
 
 cfg_get()
@@ -405,7 +405,9 @@ do
    #sni:
    sni="$(cfg_gett "sni:")"
    #alpn:
-   alpns="$(cfg_get_alpn "-" "$single_server")"   
+   alpns="$(cfg_get_dyn "-" "$single_server")"
+   #http_paths:
+   http_paths="$(cfg_get_dyn "-" "$single_server")"   
    
  	  	if [ $lang == "en" ] || [ $lang == "auto" ];then
 			echo "Now Reading 【$server_type】-【$server_name】 Proxies..." >$REAL_LOG
@@ -455,9 +457,12 @@ do
 
    if [ "$server_type" = "vmess" ]; then
 
-	[ -z "$mode" ] && [ ! -z "$network" ] && ${uci_set}obfs_vmess="websocket"
+	[ -z "$mode" ] && [ "$network" = "ws" ] && ${uci_set}obfs_vmess="websocket"
 	   
 	[ -z "$mode" ] && [ -z "$network" ] && ${uci_set}obfs_vmess="none"
+	
+	[ -z "$mode" ] && [ "$network" = "http" ] && ${uci_set}obfs_vmess="http"
+	
    fi
    
    
@@ -480,16 +485,25 @@ do
    fi
 
    ${uci_set}path="$path"
-   [ -z "$path" ] && ${uci_set}path="$ws_path"
+   [ -z "$path" ] && [ "$network" = "ws" ] && ${uci_set}path="$ws_path"
    ${uci_set}mux="$mux"
    ${uci_set}custom="$headers"
    
-   [ -z "$headers" ] && ${uci_set}custom="$Host"
+   [ -z "$headers" ] && [ "$network" = "ws" ] && ${uci_set}custom="$Host"
     
    if [ "$server_type" = "vmess" ]; then
     #v2ray
     ${uci_set}alterId="$alterId"
     ${uci_set}uuid="$uuid"
+	${uci_del}http_path >/dev/null 2>&1
+    for http_path in $http_paths; do
+          ${uci_add}http_path="$http_path" >/dev/null 2>&1
+    done
+    if [ ! -z "$(grep "^ \{0,\}- keep-alive" "$single_server")" ]; then
+          ${uci_set}keep_alive="true"
+    else
+          ${uci_set}keep_alive="false"
+    fi
    fi
 	
    if [ "$server_type" = "socks5" ] || [ "$server_type" = "http" ]; then

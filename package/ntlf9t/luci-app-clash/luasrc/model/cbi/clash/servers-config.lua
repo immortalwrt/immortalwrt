@@ -180,6 +180,7 @@ o = s:option(ListValue, "obfs_vmess", translate("obfs-mode"))
 o.default = "none"
 o:value("none")
 o:value("websocket", translate("websocket (ws)"))
+o:value("http", translate("http"))
 o:depends("type", "vmess")
 
 o = s:option(Value, "host", translate("hosts"))
@@ -215,22 +216,35 @@ o.rmempty = true
 o:depends("obfs", "websocket")
 o:depends("obfs_vmess", "websocket")
 
-o = s:option(ListValue, "mux", translate("Mux"))
-o.default = "false"
-o:value("true")
-o:value("false")
-o:depends("obfs", "websocket")
+o = s:option(DynamicList, "http_path", translate("path"))
+o.rmempty = true
+o:value("/")
+o:value("/video")
+o:depends("obfs_vmess", "http")
 
 o = s:option(Value, "custom", translate("headers"))
 o.rmempty = true
 o:depends("obfs", "websocket")
 o:depends("obfs_vmess", "websocket")
 
+o = s:option(Value, "keep_alive", translate("keep-alive"))
+o.rmempty = true
+o.default = "true"
+o:value("true")
+o:value("false")
+o:depends("obfs_vmess", "http")
+
+o = s:option(ListValue, "mux", translate("Mux"))
+o.default = "false"
+o:value("true")
+o:value("false")
+o:depends("obfs", "websocket")
+
 
 -- AlterId
 o = s:option(Value, "alterId", translate("AlterId"))
 o.datatype = "port"
-o.default = 16
+o.default = 32
 o.rmempty = true
 o:depends("type", "vmess")
 
@@ -272,10 +286,12 @@ o.rmempty = true
 o.default = "false"
 o:value("true")
 o:value("false")
-o:depends("type", "vmess")
+o:depends("obfs", "websocket")
+o:depends("obfs_vmess", "none")
+o:depends("obfs_vmess", "websocket")
+o:depends("obfs_vmess", "http")
 o:depends("type", "socks5")
 o:depends("type", "http")
-o:depends("obfs_vmess", "none")
 
 -- [[ sni ]]--
 o = s:option(Value, "sni", translate("sni"))
