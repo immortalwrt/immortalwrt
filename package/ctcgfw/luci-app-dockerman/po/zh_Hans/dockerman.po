@@ -292,8 +292,11 @@ msgstr "状态"
 msgid "Logs"
 msgstr "日志"
 
-msgid "Network TX/RX"
-msgstr "网络发送/接收"
+msgid "TX/RX"
+msgstr "发送/接收"
+
+msgid "Upload/Download"
+msgstr "上传/下载"
 
 msgid "CPU Useage"
 msgstr "CPU用量"
