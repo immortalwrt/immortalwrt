@@ -103,7 +103,7 @@ end
 btnist.write=function(a,t)
 luci.sys.exec(string.format('uci set clash.config.config_update_name="%s"',e[t].name))
 luci.sys.exec('uci commit clash')
-luci.sys.exec('bash /usr/share/clash/update.sh >>/tmp/clash.txt 2>&1 &')
+luci.sys.exec('bash /usr/share/clash/update.sh >>/usr/share/clash/clash.txt 2>&1 &')
 luci.http.redirect(luci.dispatcher.build_url("admin", "services", "clash"))
 end
 
