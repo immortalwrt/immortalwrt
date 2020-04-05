@@ -62,7 +62,7 @@ end
 
 
 w = Map("clash")
-s = w:section(TypedSection, "clash" , translate("Load Groups)"))
+s = w:section(TypedSection, "clash" , translate("Load Groups"))
 s.anonymous = true
 
 

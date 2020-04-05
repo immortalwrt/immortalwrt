@@ -1039,3 +1039,6 @@ msgstr "DNS缓存"
 
 msgid "Set to enable or disable dns cache"
 msgstr "设置为启用或禁用dns缓存"
+
+msgid "Old Config"
+msgstr "旧配置"

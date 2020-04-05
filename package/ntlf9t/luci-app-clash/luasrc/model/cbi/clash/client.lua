@@ -29,6 +29,11 @@ o:value("4", translate("Clash(dTun)"))
 end
 o.description = translate("Select core, clashr support ssr while clash does not.")
 
+
+o = s:option(Flag, "old_conf", translate("Old Config"))
+o.description = translate("Proxy/Proxy Groups/Rule")
+
+
 o = s:option(ListValue, "g_rules", translate("Game Rules"))
 o.default = "0"
 o:value("0", translate("Disable"))
