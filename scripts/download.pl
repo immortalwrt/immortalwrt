@@ -194,6 +194,7 @@ foreach my $mirror (@ARGV) {
 			push @mirrors, "https://downloads.sourceforge.net/$1";
 		}
 	} elsif ($mirror =~ /^\@APACHE\/(.+)$/) {
+		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/apache/$1";
 		push @mirrors, "https://mirrors.ustc.edu.cn/apache/$1";
 		push @mirrors, "https://mirror.netcologne.de/apache.org/$1";
 		push @mirrors, "https://mirror.aarnet.edu.au/pub/apache/$1";
@@ -214,6 +215,7 @@ foreach my $mirror (@ARGV) {
 			push @mirrors, "https://raw.githubusercontent.com/$dir";
 		}
 	} elsif ($mirror =~ /^\@GNU\/(.+)$/) {
+		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/gnu/$1";
 		push @mirrors, "https://mirrors.ustc.edu.cn/gnu/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/gnu/$1";
 		push @mirrors, "https://mirror.netcologne.de/gnu/$1";
@@ -240,6 +242,7 @@ foreach my $mirror (@ARGV) {
 			push @extra, "$extra[0]/longterm/v$1";
 		}
 		foreach my $dir (@extra) {
+			push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/kernel/$dir";
 			push @mirrors, "https://mirrors.ustc.edu.cn/kernel.org/$dir";
 			push @mirrors, "https://cdn.kernel.org/pub/$dir";
 			push @mirrors, "https://mirror.rackspace.com/kernel.org/pub/$dir";
