@@ -20,14 +20,15 @@ kr.pageaction = false
 o = s:option(ListValue, "subcri", translate("Subcription Type"))
 o.default = clash
 o:value("clash", translate("clash"))
-o:value("v2ssr2clash", translate("v2ssr2clash"))
+o:value("ssr2clash", translate("ssr2clash"))
+o:value("v2clash", translate("v2clash"))
 o.description = translate("Select Subcription Type")
 
 o = s:option(Value, "config_name")
 o.title = translate("Config Name")
 o.description = translate("Config Name. Do not use a config name that already exist")
 
-o = s:option(Value, "subscribe_url_clash")
+o = s:option(Value, "clash_url")
 o.title = translate("Subcription Url")
 o.description = translate("Clash Subscription Address")
 o.rmempty = true
@@ -46,11 +47,11 @@ o.write = function()
 end
 o:depends("subcri", 'clash')
 
-o = s:option(Value, "subscribe_url")
+o = s:option(Value, "ssr_url")
 o.title = translate("Subcription Url")
-o.description = translate("V2/SSR Subscription Address, Only input your subscription address without any api conversion url")
+o.placeholder = translate("https://www.example.com/link/QkjokZXktyyr35gfj")
 o.rmempty = true
-o:depends("subcri", 'v2ssr2clash')
+o:depends("subcri", 'ssr2clash')
 
 
 o = s:option(Button,"updatee")
@@ -59,12 +60,28 @@ o.inputtitle = translate("Download Config")
 o.inputstyle = "reload"
 o.write = function()
   kr.uci:commit("clash")
-  SYS.call("cp /etc/config/clash /usr/share/clash/v2ssr/config.bak 2>/dev/null")
-  SYS.call("sleep 1")
-  luci.sys.call("bash /usr/share/clash/v2ssr.sh >>/usr/share/clash/clash.txt 2>&1 &")
+  luci.sys.call("bash /usr/share/clash/clash.sh >>/usr/share/clash/clash.txt 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "clash"))
 end
-o:depends("subcri", 'v2ssr2clash')
+o:depends("subcri", 'ssr2clash')
+
+o = s:option(Value, "v2_url")
+o.title = translate("Subcription Url")
+o.placeholder = translate("https://www.example.com/link/QkjokZXktyyr35gfj")
+o.rmempty = true
+o:depends("subcri", 'v2clash')
+
+
+o = s:option(Button,"updateee")
+o.title = translate("Download Config")
+o.inputtitle = translate("Download Config")
+o.inputstyle = "reload"
+o.write = function()
+  kr.uci:commit("clash")
+  luci.sys.call("bash /usr/share/clash/clash.sh >>/usr/share/clash/clash.txt 2>&1 &")
+  HTTP.redirect(DISP.build_url("admin", "services", "clash"))
+end
+o:depends("subcri", 'v2clash')
 
 
 function IsYamlFile(e)
