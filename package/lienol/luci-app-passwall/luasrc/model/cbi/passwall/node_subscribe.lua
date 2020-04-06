@@ -52,8 +52,11 @@ function o.write(e, e)
                                                  "log"))
 end
 
-filter_keyword = s:option(DynamicList, "filter_keyword", translate("Filter keyword"),
-	translate("When subscribing, the keywords in the list are discarded."))
+filter_keyword = s:option(DynamicList, "filter_keyword", translate("Filter keyword"))
+    
+o = s:option(Flag, "filter_keyword_discarded", translate("Filter keyword discarded"), translate("When checked, the keywords in the list are discarded. Otherwise, it is not discarded."))
+o.default = "1"
+o.rmempty = false
 
 s = m:section(TypedSection, "subscribe_list", "",
               "<font color='red'>" .. translate(
