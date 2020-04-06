@@ -34,7 +34,7 @@ start_trojan_server() {
 }
 
 stop_trojan_server() {
-	fw3 reload >/dev/null 2>&1 &
+	fw3 reload >/dev/null 2>&1
 	ps -w | grep "$CONFIG_PATH/" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf $CONFIG_PATH
 	rm -rf $LOG_PATH
@@ -56,6 +56,5 @@ stop() {
 
 restart() {
 	stop
-	sleep 1
 	start
 }

@@ -8,8 +8,8 @@ include $(TOPDIR)/rules.mk
 LUCI_TITLE:=LuCI support for SSR Python Pro Server
 LUCI_DEPENDS:=+libsodium +luci-lib-jsonc +python
 LUCI_PKGARCH:=all
-PKG_VERSION:=1.0
-PKG_RELEASE:=6-20190704
+PKG_VERSION:=2
+PKG_RELEASE:=1-20200326
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

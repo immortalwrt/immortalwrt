@@ -11,7 +11,7 @@ EOF
 uci -q batch <<-EOF >/dev/null
 	delete ucitrack.@ipsec[-1]
 	add ucitrack ipsec
-	set ucitrack.@ipsec[-1].exec='/etc/init.d/ipsecvpn start'
+	set ucitrack.@ipsec[-1].init=ipsecvpn
 	commit ucitrack
 EOF
 
@@ -19,5 +19,5 @@ EOF
 rm -f /etc/init.d/ipsec
 chmod a+x /usr/share/ipsecvpn/* >/dev/null 2>&1
 
-rm -f /tmp/luci-indexcache
+rm -rf /tmp/luci-*cache
 exit 0

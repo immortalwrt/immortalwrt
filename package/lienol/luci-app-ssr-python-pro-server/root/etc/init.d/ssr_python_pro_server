@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2018-2019 Lienol <lawlienol@gmail.com>
+# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
 
 START=99
 
@@ -9,7 +9,7 @@ ssr_python_path=/usr/share/$CONFIG
 config_t_get() {
 	local index=0
 	[ -n "$4" ] && index=$4
-	local ret=$(uci get $CONFIG.@$1[$index].$2 2>/dev/null)
+	local ret=$(uci -q get $CONFIG.@$1[$index].$2 2>/dev/null)
 	echo ${ret:=$3}
 }
 
@@ -58,7 +58,7 @@ start_ssr_python_server() {
 	$python $ssr_python_path/server.py >> /var/log/$CONFIG.log 2>&1 &
 	set_ssr_python_crontab "start"
 	
-	fw3 reload
+	fw3 reload > /dev/null 2>&1 &
 	
 :<<EOF
 	cbi_ids=
@@ -72,7 +72,7 @@ EOF
 }
 
 stop_ssr_python_server() {
-	fw3 reload
+	fw3 reload > /dev/null 2>&1
 	ps -w | grep "/usr/bin/python $ssr_python_path/server.py" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf /var/log/$CONFIG.log
 	set_ssr_python_crontab "stop"
@@ -95,6 +95,5 @@ stop() {
 
 restart() {
 	stop
-	sleep 1
 	start
 }

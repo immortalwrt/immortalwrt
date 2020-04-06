@@ -1,25 +1,39 @@
 #!/bin/sh
 
-. $IPKG_INSTROOT/lib/functions.sh
-. $IPKG_INSTROOT/lib/functions/service.sh
+count=$(iptables -n -L INPUT 2>/dev/null | grep -c "BROOK-SERVER")
+if [ -n "$count" ]; then
+	until [ "$count" = 0 ]
+	do
+		rules=$(iptables -n -L INPUT --line-num 2>/dev/null | grep "BROOK-SERVER" | awk '{print $1}')
+		for rule in $rules
+		do
+			iptables -D INPUT $rule 2>/dev/null
+			break
+		done
+		count=$(expr $count - 1)
+	done
+fi
 
-gen_user_iptables() {
-	config_get enable $1 enable
-	[ "$enable" = "0" ] && return 0
-	config_get remarks $1 remarks
-	config_get port $1 port
-	iptables -A BROOK-SERVER -p tcp --dport $port -m comment --comment "$remarks" -j ACCEPT
-	iptables -A BROOK-SERVER -p udp --dport $port -m comment --comment "$remarks" -j ACCEPT
-}
+iptables -F BROOK-SERVER 2>/dev/null && iptables -X BROOK-SERVER 2>/dev/null
 
-iptables -F BROOK-SERVER 2>/dev/null
-iptables -D INPUT -j BROOK-SERVER 2>/dev/null
-iptables -X BROOK-SERVER 2>/dev/null
-
-enable=$(uci get brook_server.@global[0].enable)
+enable=$(uci -q get brook_server.@global[0].enable)
 if [ $enable -eq 1 ]; then
 	iptables -N BROOK-SERVER
 	iptables -I INPUT -j BROOK-SERVER
-	config_load brook_server
-	config_foreach gen_user_iptables "user"
+	
+	count=$(uci show brook_server | grep "@user" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
+	[ -n "$count" ] && [ "$count" -ge 0 ] && {
+		u_get() {
+			local ret=$(uci -q get brook_server.@user[$1].$2)
+			echo ${ret:=$3}
+		}
+		for i in $(seq 0 $count); do
+			enable=$(u_get $i enable 0)
+			[ $enable -eq 0 ] && continue
+			remarks=$(u_get $i remarks)
+			port=$(u_get $i port)
+			iptables -A BROOK-SERVER -p tcp --dport $port -m comment --comment "$remarks" -j ACCEPT
+			iptables -A BROOK-SERVER -p udp --dport $port -m comment --comment "$remarks" -j ACCEPT
+		done
+	}
 fi
