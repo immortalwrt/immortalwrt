@@ -27,9 +27,11 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_mdadm
 	bool "Include mdadm"
 	default n
 config PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_raid456
+	depends on PACKAGE_$(PKG_NAME)_INCLUDE_mdadm
 	bool "Include kmod-md-raid456"
 	default n
 config PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linear
+	depends on PACKAGE_$(PKG_NAME)_INCLUDE_mdadm
 	bool "Include kmod-md-linear"
 	default n
 endef
@@ -44,9 +46,7 @@ define Package/$(PKG_NAME)
 	+PACKAGE_$(PKG_NAME)_INCLUDE_btrfs_progs:btrfs-progs \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_lsblk:lsblk \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_mdadm:mdadm \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_raid456:kmod-md-mod \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_raid456:kmod-md-raid456 \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linears:kmod-md-mod \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_kmod_md_linears:kmod-md-linear
 endef
 
