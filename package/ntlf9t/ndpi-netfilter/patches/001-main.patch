@@ -1,10 +1,38 @@
 diff --git a/src/main.c b/src/main.c
-index 6a9c97a..e0ab8dd 100644
+index 6a9c97a..a499327 100644
 --- a/src/main.c
 +++ b/src/main.c
-@@ -385,9 +385,13 @@ static void ndpi_gc_flow(void)
+@@ -383,9 +383,15 @@ static void ndpi_gc_flow(void)
+ 	union nf_inet_addr *ipdst;
+ 
          u64 t1;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
          struct timeval tv;
+ 
+         do_gettimeofday(&tv);
++#else
++        struct timespec64 tv;
++
++        ktime_get_real_ts64(&tv);
++#endif
+         t1 = (uint64_t) tv.tv_sec;
+         
+ 	if (debug_dpi) pr_info ("xt_ndpi: call garbage collector.\n");
+@@ -418,7 +424,11 @@ ndpi_process_packet(struct nf_conn * ct, const uint64_t time,
+ 
+ 	u8 exist_flow=0;
+         u64 t1;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+         struct timeval tv;
++#else
++        struct timespec64 tv;
++#endif
+ 
+ 	spin_lock_bh (&flow_lock);
+         ipsrc = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.src.u3;
+@@ -449,7 +459,11 @@ ndpi_process_packet(struct nf_conn * ct, const uint64_t time,
+ 		}
+ 	}
  
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
          do_gettimeofday(&tv);
@@ -12,24 +40,21 @@ index 6a9c97a..e0ab8dd 100644
 +        ktime_get_real_ts64(&tv);
 +#endif
          t1 = (uint64_t) tv.tv_sec;
--        
-+
- 	if (debug_dpi) pr_info ("xt_ndpi: call garbage collector.\n");
-         next = rb_first(&osdpi_flow_root);
-         while (next){
-@@ -449,7 +453,11 @@ ndpi_process_packet(struct nf_conn * ct, const uint64_t time,
- 		}
- 	}
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
-         do_gettimeofday(&tv);
-+#else
-+	ktime_get_real_ts64(&tv);
-+#endif
-         t1 = (uint64_t) tv.tv_sec;
  
          if (flow == NULL) {
-@@ -630,7 +638,7 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
+@@ -602,7 +616,11 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 
+ 	enum ip_conntrack_info ctinfo;
+ 	struct nf_conn * ct;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+ 	struct timeval tv;
++#else
++	struct timespec64 tv;
++#endif
+ 	struct sk_buff *linearized_skb = NULL;
+ 	const struct sk_buff *skb_use = NULL;
+ 
+@@ -630,7 +648,7 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
  #if LINUX_VERSION_CODE < KERNEL_VERSION(3,0,0)
  	} else if (nf_ct_is_untracked(skb)){
  #else
@@ -38,15 +63,20 @@ index 6a9c97a..e0ab8dd 100644
  #endif
  		pr_info ("xt_ndpi: ignoring untracked sk_buff.\n");
  		return false;               
-@@ -641,7 +649,11 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
+@@ -641,9 +659,16 @@ ndpi_mt(const struct sk_buff *skb, struct xt_action_param *par)
          ip = ip_hdr(skb_use);
          tcph = (const void *)ip + ip_hdrlen(skb_use);
  
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
  	do_gettimeofday(&tv);
-+#else
-+	ktime_get_real_ts64(&tv);
-+#endif
  	time = ((uint64_t) tv.tv_sec) * detection_tick_resolution +
  		tv.tv_usec / (1000000 / detection_tick_resolution);
++#else
++	ktime_get_real_ts64(&tv);
++	// refs: [tv_nsec and u_sec](https://github.com/torvalds/linux/blob/51a198e89a96c34b3944034b2ebda9002ff57827/fs/utimes.c#L183)
++	time = ((uint64_t) tv.tv_sec) * detection_tick_resolution +
++		(tv.tv_nsec / 1000 )/ (1000000 / detection_tick_resolution);
++#endif
  
+ 	/* reset for new packets and solve ct collisions */
+ 	if (ctinfo == IP_CT_NEW) {
