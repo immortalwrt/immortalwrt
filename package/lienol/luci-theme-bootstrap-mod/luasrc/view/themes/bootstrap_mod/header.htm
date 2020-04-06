@@ -165,10 +165,10 @@
 	<head>
 		<meta charset="utf-8">
 		<title><%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %> - LuCI</title>
-		<!--[if lt IE 9]><script src="<%=media%>/html5.js?v=git-18.138.53009-80cb4fe"></script><![endif]-->
+		<!--[if lt IE 9]><script src="<%=media%>/html5.js"></script><![endif]-->
 		<meta name="viewport" content="initial-scale=1.0">
-		<link rel="stylesheet" href="<%=media%>/cascade.css?v=git-18.138.53009-80cb4fe">
-		<link rel="stylesheet" media="only screen and (max-width: 1600px)" href="<%=media%>/mobile.css?v=git-18.138.53009-80cb4fe" type="text/css" />
+		<link rel="stylesheet" href="<%=media%>/cascade.css">
+		<link rel="stylesheet" media="only screen and (max-width: 1600px)" href="<%=media%>/mobile.css" type="text/css" />
 		<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 		<% if node and node.css then %>
 			<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -177,9 +177,9 @@
 			<style title="text/css"><%= css %></style>
 		<% end -%>
 		
-		<script src="<%=url('admin/translations', luci.i18n.context.lang)%>?v=git-19.338.61646-9ca48ec"></script>
-		<script src="<%=resource%>/cbi.js?v=git-19.338.61646-9ca48ec"></script>
-		<script src="<%=resource%>/xhr.js?v=git-19.338.61646-9ca48ec"></script>
+		<!-- <script src="<%=url('admin/translations', luci.i18n.context.lang)%>"></script> -->
+		<script src="<%=resource%>/cbi.js"></script>
+		<script src="<%=resource%>/xhr.js"></script>
 	</head>
 
 	<body class="lang_<%=luci.i18n.context.lang%> <% if node then %><%= striptags( node.title ) %><%- end %>" data-page="<%= table.concat(disp.context.requestpath, "-") %>">

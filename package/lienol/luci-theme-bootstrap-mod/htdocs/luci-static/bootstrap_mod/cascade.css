@@ -826,7 +826,7 @@ table.cbi-section-table select,
 input:active,
 input:focus {
     outline: 0;
-    border-color: #0069d6;
+    border-color: #ccc;
 }
 
 input[type=file]:focus,
@@ -1302,7 +1302,7 @@ body.node-main-login .alert-message {
     text-indent: -500px;
     overflow: hidden;
     border-radius: 60px;
-    /* border: #0069d6 3px solid; */
+    /* border: #ccc 3px solid; */
     background-image: url(wifi.png);
     background-size: cover;
     /* box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4); */
@@ -1468,17 +1468,17 @@ body.modal-overlay-active #modal_overlay>.modal {
     max-width: 400px;
     width: auto;
     background: white;
-    border: 1px solid #0069d6;
+    border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    padding: 0.3em !important;
+    padding: 0 0.4em !important;
 }
 
 .cbi-dynlist>.item {
     margin-bottom: 4px;
     box-shadow: 0 0 2px #ccc;
     background: #fff;
-    border: 1px solid #0069d6;
+    border: 1px solid #ccc;
     border-radius: 3px;
     position: relative;
     pointer-events: none;
