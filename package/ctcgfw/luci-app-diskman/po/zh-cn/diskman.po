@@ -71,7 +71,7 @@ msgid "Free Space"
 msgstr "空闲空间"
 
 msgid "Model"
-msgstr "型号"
+msgstr "主机型号"
 
 msgid "Size"
 msgstr "容量"
