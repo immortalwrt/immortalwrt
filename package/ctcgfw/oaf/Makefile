@@ -4,7 +4,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=oaf
 PKG_VERSION:=3.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -16,8 +16,8 @@ define KernelPackage/oaf
   CATEGORY:=Kernel modules
   SUBMENU:=Netfilter Extensions
   TITLE:=open app filter kernel module
-  DEPENDS:=@!LINUX_5_4
   FILES:=$(PKG_BUILD_DIR)/oaf.ko
+  DEPENDS:=+kmod-ipt-conntrack
   KCONFIG:=
   AUTOLOAD:=$(call AutoLoad,0,$(PKG_AUTOLOAD))
 endef
@@ -28,16 +28,10 @@ endef
 
 
 MAKE_OPTS:= \
-	ARCH="$(LINUX_KARCH)" \
-	CROSS_COMPILE="$(TARGET_CROSS)" \
+	$(KERNEL_MAKE_FLAGS) \
 	M="$(PKG_BUILD_DIR)" \
 	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 	$(EXTRA_KCONFIG)
-
-define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) ./src/* $(PKG_BUILD_DIR)/
-endef
 
 define Build/Compile
 	$(MAKE) -C "$(LINUX_DIR)" \
