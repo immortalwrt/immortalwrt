@@ -47,52 +47,193 @@ do
 		local node_num = ucic2:get(application, "@global_other[0]", protocol .. "_node_num") or 1
 		for i = 1, node_num, 1 do
 			local name = string.upper(protocol)
-			local option = protocol .. "_node" .. i
 			local szType = "@global[0]"
-			local json = {
+			local option = protocol .. "_node" .. i
+			
+			local node = ucic2:get(application, szType, option)
+			local currentNode
+			if node then
+				currentNode = ucic2:get_all(application, node)
+			end
+			CONFIG[#CONFIG + 1] = {
+				log = true,
 				remarks = name .. "节点" .. i,
-				type = szType,
-				option = option,
+				node = node,
+				currentNode = currentNode,
 				set = function(server)
 					ucic2:set(application, szType, option, server)
 				end
 			}
-			CONFIG[name .. "_NODE" .. i] = json
 		end
 	end
 	import_config("tcp")
 	import_config("udp")
 	import_config("socks5")
 
-	for k, v in pairs(CONFIG) do
-		local currentNode
-		if v.get then
-			currentNode = v.get()
-		else
-			local cfgid = ucic2:get(application, v.type, v.option)
-			if cfgid then
-				currentNode = ucic2:get_all(application, cfgid)
+	local tcp_node1_table = ucic2:get(application, "@auto_switch[0]", "tcp_node1")
+	if tcp_node1_table then
+		local nodes = {}
+		local new_nodes = {}
+		for k,v in ipairs(tcp_node1_table) do
+			local node = v
+			local currentNode
+			if node then
+				currentNode = ucic2:get_all(application, node)
 			end
+			nodes[#nodes + 1] = {
+				log = false,
+				node = node,
+				currentNode = currentNode,
+				remarks = node,
+				set = function(server)
+					for kk, vv in pairs(CONFIG) do
+						if (vv.remarks == "自动切换TCP_1节点列表") then
+							table.insert(vv.new_nodes, server)
+						end
+					end
+				end
+			}
 		end
-		if currentNode then
-			CONFIG[k].currentNode = currentNode
+		CONFIG[#CONFIG + 1] = {
+			remarks = "自动切换TCP_1节点列表",
+			nodes = nodes,
+			new_nodes = new_nodes,
+			set = function()
+				for kk, vv in pairs(CONFIG) do
+					if (vv.remarks == "自动切换TCP_1节点列表") then
+						log("刷新自动切换列表")
+						ucic2:set_list(application, "@auto_switch[0]", "tcp_node1", vv.new_nodes)
+					end
+				end
+			end
+		}
+	end
+
+	ucic2:foreach(application, uciType, function(node)
+		if node.type == 'V2ray_shunt' then
+			local node_id = node[".name"]
+			local youtube_node_id = node.youtube_node
+			local netflix_node_id = node.netflix_node
+			local default_node_id = node.default_node
+
+			local youtube_node
+			local netflix_node
+			local default_node
+			if youtube_node_id then
+				youtube_node = ucic2:get_all(application, youtube_node_id)
+			end
+			if netflix_node_id then
+				netflix_node = ucic2:get_all(application, netflix_node_id)
+			end
+			if default_node_id then
+				default_node = ucic2:get_all(application, default_node_id)
+			end
+			CONFIG[#CONFIG + 1] = {
+				log = false,
+				currentNode = youtube_node,
+				remarks = "V2ray分流youtube节点",
+				set = function(server)
+					ucic2:set(application, node_id, "youtube_node", server)
+				end
+			}
+			CONFIG[#CONFIG + 1] = {
+				log = false,
+				currentNode = netflix_node,
+				remarks = "V2ray分流Netflix节点",
+				set = function(server)
+					ucic2:set(application, node_id, "netflix_node", server)
+				end
+			}
+			CONFIG[#CONFIG + 1] = {
+				log = false,
+				currentNode = default_node,
+				remarks = "V2ray分流默认节点",
+				set = function(server)
+					ucic2:set(application, node_id, "default_node", server)
+				end
+			}
+		elseif node.type == 'V2ray_balancing' then
+			local node_id = node[".name"]
+			local nodes = {}
+			local new_nodes = {}
+			for k, v in pairs(node.v2ray_balancing_node) do
+				local node = v
+				local currentNode
+				if node then
+					currentNode = ucic2:get_all(application, node)
+				end
+				nodes[#nodes + 1] = {
+					log = false,
+					node = node,
+					currentNode = currentNode,
+					remarks = node,
+					set = function(server)
+						for kk, vv in pairs(CONFIG) do
+							if (vv.remarks == "V2ray负载均衡节点列表" .. node_id) then
+								table.insert(vv.new_nodes, server)
+							end
+						end
+					end
+				}
+			end
+			CONFIG[#CONFIG + 1] = {
+				remarks = "V2ray负载均衡节点列表" .. node_id,
+				nodes = nodes,
+				new_nodes = new_nodes,
+				set = function()
+					for kk, vv in pairs(CONFIG) do
+						if (vv.remarks == "V2ray负载均衡节点列表" .. node_id) then
+							log("刷新V2ray负载均衡节点列表")
+							ucic2:foreach(application, uciType, function(node2)
+								if node2[".name"] == node[".name"] then
+									local index = node2[".index"]
+									ucic2:set_list(application, "@nodes[" .. index .. "]", "v2ray_balancing_node", vv.new_nodes)
+								end
+							end)
+						end
+					end
+				end
+			}
+		end
+	end)
+
+	for k, v in pairs(CONFIG) do
+		if v.nodes and type(v.nodes) == "table" then
+			for kk, vv in pairs(v.nodes) do
+				if vv.currentNode == nil then
+					CONFIG[k].nodes[kk] = nil
+				end
+			end
 		else
-			CONFIG[k] = nil
+			if v.currentNode == nil then
+				CONFIG[k] = nil
+			end
 		end
 	end
 end
 
 -- 判断是否过滤节点关键字
 local filter_keyword_table = ucic2:get(application, "@global_subscribe[0]", "filter_keyword")
+local filter_keyword_discarded = ucic2:get(application, "@global_subscribe[0]", "filter_keyword_discarded")
 local function is_filter_keyword(value)
 	if filter_keyword_table then
-		for k,v in ipairs(filter_keyword_table) do
-			if value:find(v) then
-				return true
+		if filter_keyword_discarded and filter_keyword_discarded == "1" then
+			for k,v in ipairs(filter_keyword_table) do
+				if value:find(v) then
+					return true
+				end
 			end
+		else
+			local result = true
+			for k,v in ipairs(filter_keyword_table) do
+				if value:find(v) then
+					result = false
+				end
+			end
+			return result
 		end
 	end
-    return false
+	return false
 end
 
 -- 分割字符串
@@ -370,77 +511,90 @@ end
 
 local function select_node(nodes, config)
 	local server
-	-- 特别优先级 V2ray分流 + 备注
-	if config.currentNode.type == 'V2ray_shunt' then
-		for id, node in pairs(nodes) do
-			if node.remarks == config.currentNode.remarks then
-				log('选择【' .. config.remarks .. '】V2ray分流匹配节点：' .. node.remarks)
-				server = id
-				break
-			end
-		end
-	end
-	-- 特别优先级 V2ray负载均衡 + 备注
-	if config.currentNode.type == 'V2ray_balancing' then
-		for id, node in pairs(nodes) do
-			if node.remarks == config.currentNode.remarks then
-				log('选择【' .. config.remarks .. '】V2ray负载均衡匹配节点：' .. node.remarks)
-				server = id
-				break
-			end
-		end
-	end
-	-- 第一优先级 IP + 端口
-	if not server then
-		for id, node in pairs(nodes) do
-			if node.address and node.port then
-				if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
-					log('选择【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
-					server = id
-					break
-				end
-			end
-		end
-	end
-	-- 第二优先级 IP
-	if not server then
-		for id, node in pairs(nodes) do
-			if node.address then
-				if node.address == config.currentNode.address then
-					log('选择【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
-					server = id
-					break
-				end
-			end
-		end
-	end
-	-- 第三优先级备注
-	if not server then
-		for id, node in pairs(nodes) do
-			if node.remarks then
+	if config.currentNode then
+		-- 特别优先级 V2ray分流 + 备注
+		if config.currentNode.type == 'V2ray_shunt' then
+			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
-					log('选择【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
+					log('选择【' .. config.remarks .. '】V2ray分流匹配节点：' .. node.remarks)
 					server = id
 					break
 				end
 			end
 		end
-	end
-	-- 第四 cfgid
-	if not server then
-		for id, node in pairs(nodes) do
-			if id == config.currentNode['.name'] then
-				log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
-				server = id
-				break
+		-- 特别优先级 V2ray负载均衡 + 备注
+		if config.currentNode.type == 'V2ray_balancing' then
+			for id, node in pairs(nodes) do
+				if node.remarks == config.currentNode.remarks then
+					log('选择【' .. config.remarks .. '】V2ray负载均衡匹配节点：' .. node.remarks)
+					server = id
+					break
+				end
+			end
+		end
+		-- 第一优先级 IP + 端口
+		if not server then
+			for id, node in pairs(nodes) do
+				if node.address and node.port then
+					if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
+						if config.log == nil or config.log == true then
+							log('选择【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
+						end
+						server = id
+						break
+					end
+				end
+			end
+		end
+		-- 第二优先级 IP
+		if not server then
+			for id, node in pairs(nodes) do
+				if node.address then
+					if node.address == config.currentNode.address then
+						if config.log == nil or config.log == true then
+							log('选择【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
+						end
+						server = id
+						break
+					end
+				end
+			end
+		end
+		-- 第三优先级备注
+		if not server then
+			for id, node in pairs(nodes) do
+				if node.remarks then
+					if node.remarks == config.currentNode.remarks then
+						if config.log == nil or config.log == true then
+							log('选择【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
+						end
+						server = id
+						break
+					end
+				end
+			end
+		end
+		-- 第四 cfgid
+		if not server then
+			for id, node in pairs(nodes) do
+				if id == config.currentNode['.name'] then
+					if config.log == nil or config.log == true then
+						log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+					end
+					server = id
+					break
+				end
 			end
 		end
 	end
 	-- 还不行 随便找一个
 	if not server then
-		server = ucic2:get(application, '@' .. uciType .. '[0]')
+		server = ucic2:get_all(application, '@' .. uciType .. '[0]')
 		if server then
-			log('无法找到最匹配的节点，当前已更换为' .. ucic2:get_all(application, server).remarks)
+			if config.log == nil or config.log == true then
+				log('【' .. config.remarks .. '】' .. '无法找到最匹配的节点，当前已更换为：' .. server.remarks)
+			end
+			server = server[".name"]
 		end
 	end
 	if server then
@@ -479,8 +633,28 @@ local function update_node(manual)
 			end
 		end)
 		for _, config in pairs(CONFIG) do
-			select_node(nodes, config)
+			if config.nodes and type(config.nodes) == "table" then
+				for kk, vv in pairs(config.nodes) do
+					select_node(nodes, vv)
+				end
+				config.set()
+			else
+				select_node(nodes, config)
+			end
 		end
+
+		--[[
+		for k, v in pairs(CONFIG) do
+			if type(v.new_nodes) == "table" and #v.new_nodes > 0 then
+				for kk, vv in pairs(v.new_nodes) do
+					print(vv)
+				end
+			else
+				print(v.new_nodes)
+			end
+		end
+		]]--
+
 		ucic2:commit(application)
 		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end

@@ -607,7 +607,7 @@ start_dns() {
 		[ -f "$RULES_PATH/chnlist" ] && cp -a $RULES_PATH/chnlist $TMP_PATH/chnlist
 		[ -f "$TMP_PATH/chnlist" ] && {
 			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host >> $TMP_PATH/chnlist
-			local chnlist_param="-m $TMP_PATH/chnlist -M"
+			local chnlist_param="-m $TMP_PATH/chnlist -M -f"
 		}
 		
 		up_trust_chinadns_ng_dns=$(config_t_get global up_trust_chinadns_ng_dns "pdnsd")
