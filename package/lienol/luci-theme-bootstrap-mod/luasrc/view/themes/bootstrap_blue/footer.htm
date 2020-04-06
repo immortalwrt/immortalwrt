@@ -2,7 +2,7 @@
  Copyright 2008 Steven Barth <steven@midlink.org>
  Copyright 2008 Jo-Philipp Wich <jow@openwrt.org>
  Copyright 2012 David Menting <david@nut-bolt.nl>
- Copyright 2018-2019 Lienol <lawlienol@gmail.com>
+ Copyright 2018-2020 Lienol <lawlienol@gmail.com>
  Licensed to the public under the Apache License 2.0.
 -%>
 
@@ -41,12 +41,20 @@
 			luci_password[0].parentElement.parentElement.children[0].style.display = "none";
 			
 			var errorbox = document.getElementsByClassName("errorbox");
+			var alert_message = document.getElementsByClassName("alert-message");
 			if (errorbox.length == 1) {
 				var tips = document.getElementsByClassName("cbi-map-descr");
 				if (tips.length == 1) {
 					tips[0].innerHTML = errorbox[0].innerHTML;
 					tips[0].classList.add('errorbox');
 					errorbox[0].style.display = "none";
+				}
+			} else if (alert_message.length == 1) {
+				var tips = document.getElementsByClassName("cbi-map-descr");
+				if (tips.length == 1) {
+					tips[0].innerHTML = alert_message[0].innerHTML;
+					tips[0].classList.add('errorbox');
+					alert_message[0].style.display = "none";
 				}
 			}
 		}

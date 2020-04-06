@@ -1478,7 +1478,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     border: 1px solid #118af3;
     border-radius: 5px;
     box-sizing: border-box;
-    padding: 0.3em !important;
+    padding: 0 0.4em !important;
 }
 
 .cbi-dynlist>.item {
