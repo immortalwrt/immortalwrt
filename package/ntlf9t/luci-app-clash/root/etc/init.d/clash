@@ -37,12 +37,12 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 	[ -z "$(grep -w "/usr/share/clash/kill_watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/kill_watchdog.sh" >> $CRON_FILE
 	clear=$(uci get clash.config.auto_clear_log 2>/dev/null)
 	if [ "${clear}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "* */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
 	fi
 	
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
 	if [ "${auto}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "* */$(uci get clash.config.auto_update_time 2>/dev/null) * * * bash /usr/share/clash/update_all.sh >/usr/share/clash/clash.txt 2>&1 &" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.auto_update_time 2>/dev/null) * * * bash /usr/share/clash/update_all.sh >/usr/share/clash/clash.txt 2>&1 &" >> $CRON_FILE
 	fi
 	
 	auto_geoip=$(uci get clash.config.auto_update_geoip 2>/dev/null)
