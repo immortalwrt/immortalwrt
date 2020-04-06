@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2018-2019 Lienol <lawlienol@gmail.com>
+# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
 
 START=99
 
@@ -43,11 +43,11 @@ gen_ssr_libev_config_file() {
 
 start_ssr_libev_server() {
 	config_foreach gen_ssr_libev_config_file "user"
-	fw3 reload
+	fw3 reload >/dev/null 2>&1 &
 }
 
 stop_ssr_libev_server() {
-	fw3 reload
+	fw3 reload >/dev/null 2>&1
 	ps -w | grep "$CONFIG_PATH/" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 }
 
@@ -69,6 +69,5 @@ stop() {
 
 restart() {
 	stop
-	sleep 1
 	start
 }
