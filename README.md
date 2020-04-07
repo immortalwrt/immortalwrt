@@ -1,6 +1,6 @@
 # PROJECT OPENWRT
-## The Source Code of OpenWrt Modified by CTCGFW
-### Welcome to my Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
+## The Source Code of OpenWrt-Lean Modified by CTCGFW
+### Welcome to our Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
 - - -
 
 # How to make it
@@ -24,10 +24,10 @@ sudo bash -c "bash <(curl -s https://build-scripts.project-openwrt.eu.org/init_b
 
 ## Clone the source
 ```bash
-git clone https://github.com/project-openwrt/openwrt && cd openwrt
+git clone -b openwrt-18.06 --single-branch https://github.com/project-openwrt/openwrt && cd openwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
-#### For developer, you may use `dev` branch instead of `master`.
+#### For developer, you may use `openwrt-18.06-dev` branch instead of `openwrt-18.06`.
 
 ## Configure your firmware
 ```bash
@@ -44,10 +44,10 @@ You'd better not use **root** to make it, or you may be not able to use.<br/>
 Default login address: 192.168.1.1, username is **root** and password is **password**.
 
 # Contributed
-### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt/blob/master/CONTRIBUTED.md).
+### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt/blob/openwrt-18.06/CONTRIBUTED.md).
 
 # Donate
 ETH Address: `0x373Ba17dF77ea455bd29a24104088659fBac7e96`
 
 # License
-### [GNU General Public License v3.0](https://github.com/project-openwrt/openwrt/blob/master/LICENSE).
+### [GNU General Public License v3.0](https://github.com/project-openwrt/openwrt/blob/openwrt-18.06/LICENSE).
