@@ -29,9 +29,9 @@ sed -i 's/services/nas/g'  /usr/lib/lua/luci/view/minidlna_status.htm
 
 ln -sf /sbin/ip /usr/bin/ip
 
-sed -i 's#http://downloads.openwrt.org#https://mirrors.ustc.edu.cn/lede#g' /etc/opkg/distfeeds.conf
-sed -i 's#src/gz openwrt_luci https://mirrors.ustc.edu.cn/lede/snapshots#src/gz openwrt_luci https://mirrors.ustc.edu.cn/lede/releases/18.06.8#g' /etc/opkg/distfeeds.conf
-sed -i 's#src/gz openwrt_packages https://mirrors.ustc.edu.cn/lede/snapshots#src/gz openwrt_packages https://mirrors.ustc.edu.cn/lede/releases/18.06.8#g' /etc/opkg/distfeeds.conf
+sed -i 's#http://downloads.openwrt.org#https://mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf
+sed -i 's#src/gz openwrt_luci https://mirrors.cloud.tencent.com/lede/snapshots#src/gz openwrt_luci https://mirrors.cloud.tencent.com/lede/releases/18.06.8#g' /etc/opkg/distfeeds.conf
+sed -i 's#src/gz openwrt_packages https://mirrors.cloud.tencent.com/lede/snapshots#src/gz openwrt_packages https://mirrors.cloud.tencent.com/lede/releases/18.06.8#g' /etc/opkg/distfeeds.conf
 sed -i "s/# //g" /etc/opkg/distfeeds.conf
 
 sed -i 's/root::0:0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::/g' /etc/shadow
