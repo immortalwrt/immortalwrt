@@ -1,0 +1,52 @@
+From ab04c52c3040de2bb7eda69fd70d098386df9f41 Mon Sep 17 00:00:00 2001
+From: Chen Minqiang <ptpt52@gmail.com>
+Date: Wed, 8 Apr 2020 10:39:39 +0800
+Subject: [PATCH] net/dsa/mt7530: disable eee on ports
+
+Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
+---
+ drivers/net/dsa/mt7530.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 7cbd1bd4c5a6..cc6b4c1f50fb 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1237,6 +1237,22 @@ mtk_get_tag_protocol(struct dsa_switch *ds, int port,
+ 	}
+ }
+ 
++static void
++mt7530_port_disable_eee(struct dsa_switch *ds, int i)
++{
++	/* Disable EEE */
++	mt7530_phy_write(ds, i, 13, 0x7);
++	mt7530_phy_write(ds, i, 14, 0x3c);
++	mt7530_phy_write(ds, i, 13, 0x4007);
++	mt7530_phy_write(ds, i, 14, 0x0);
++
++	/* Disable EEE 10Base-Te */
++	mt7530_phy_write(ds, i, 13, 0x1f);
++	mt7530_phy_write(ds, i, 14, 0x027b);
++	mt7530_phy_write(ds, i, 13, 0x401f);
++	mt7530_phy_write(ds, i, 14, 0x1177);
++}
++
+ static int
+ mt7530_setup(struct dsa_switch *ds)
+ {
+@@ -1373,6 +1389,11 @@ mt7530_setup(struct dsa_switch *ds)
+ 
+ 	mt7530_setup_port5(ds, interface);
+ 
++	/* Disable eee on ports */
++	for (i = 0; i < 5; i++) {
++		mt7530_port_disable_eee(ds, i);
++	}
++
+ 	/* Flush the FDB table */
+ 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
+ 	if (ret < 0)
+-- 
+2.17.1
+
