@@ -485,7 +485,7 @@ node_switch() {
 		local node_net=$(echo $1 | tr 'A-Z' 'a-z')
 		uci set $CONFIG.@global[0].${node_net}_node${i}=$node
 		uci commit $CONFIG
-		/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	}
 }
 
@@ -711,7 +711,7 @@ add_dnsmasq() {
 					no-resolv
 				EOF
 				echolog "你没有设置接口DNS，请前往设置！"
-				/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+				/etc/init.d/dnsmasq restart >/dev/null 2>&1
 			}
 		}
 	fi
@@ -791,7 +791,7 @@ stop_dnsmasq() {
 	rm -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	rm -rf $TMP_DNSMASQ_PATH
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
 
 start_haproxy() {
@@ -948,7 +948,7 @@ start() {
 	start_dns
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1 &
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	start_crontab
 	echolog "运行完成！\n"
 	rm -f "$LOCK_FILE"
