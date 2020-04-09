@@ -9,7 +9,6 @@ TMP_PATH=/var/etc/$CONFIG
 TMP_BIN_PATH=$TMP_PATH/bin
 TMP_ID_PATH=$TMP_PATH/id
 TMP_PORT_PATH=$TMP_PATH/port
-LOCK_FILE=/var/lock/$CONFIG.lock
 LOG_FILE=/var/log/$CONFIG.log
 APP_PATH=/usr/share/$CONFIG
 RULES_PATH=/usr/share/${CONFIG}/rules
@@ -105,7 +104,7 @@ check_port_exists() {
 
 get_new_port() {
 	port=$1
-	[ "$port" == "auto" ] && port=$SOCKS5_PROXY_PORT3
+	[ "$port" == "auto" ] && port=$SOCKS_REDIR_PORT3
 	protocol=$2
 	result=$(check_port_exists $port $protocol)
 	if [ "$result" = 1 ]; then
@@ -157,19 +156,19 @@ UDP_REDIR_PORT1=$(config_t_get global_forwarding udp_redir_port 1051)
 UDP_REDIR_PORT2=$(expr $UDP_REDIR_PORT1 + 1)
 UDP_REDIR_PORT3=$(expr $UDP_REDIR_PORT2 + 1)
 
-SOCKS5_NODE_NUM=$(config_t_get global_other socks5_node_num 1)
-for i in $(seq 1 $SOCKS5_NODE_NUM); do
-	eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i nil)
+SOCKS_NODE_NUM=$(config_t_get global_other socks_node_num 1)
+for i in $(seq 1 $SOCKS_NODE_NUM); do
+	eval SOCKS_NODE$i=$(config_t_get global socks_node$i nil)
 done
-SOCKS5_PROXY_PORT1=$(config_t_get global_forwarding socks5_proxy_port 1081)
-SOCKS5_PROXY_PORT2=$(expr $SOCKS5_PROXY_PORT1 + 1)
-SOCKS5_PROXY_PORT3=$(expr $SOCKS5_PROXY_PORT2 + 1)
+SOCKS_REDIR_PORT1=$(config_t_get global_forwarding socks_proxy_port1 1081)
+SOCKS_REDIR_PORT2=$(config_t_get global_forwarding socks_proxy_port2 1082)
+SOCKS_REDIR_PORT3=$(config_t_get global_forwarding socks_proxy_port3 1083)
 
 [ "$UDP_NODE1" == "tcp" ] && UDP_NODE1=$TCP_NODE1
-[ "$SOCKS5_NODE1" == "tcp" ] && SOCKS5_NODE1=$TCP_NODE1
+[ "$SOCKS_NODE1" == "tcp" ] && SOCKS_NODE1=$TCP_NODE1
 
 # Dynamic variables (Used to record)
-# TCP_NODE1_IP="" UDP_NODE1_IP="" SOCKS5_NODE1_IP="" TCP_NODE1_PORT="" UDP_NODE1_PORT="" SOCKS5_NODE1_PORT="" TCP_NODE1_TYPE="" UDP_NODE1_TYPE="" SOCKS5_NODE1_TYPE=""
+# TCP_NODE1_IP="" UDP_NODE1_IP="" SOCKS_NODE1_IP="" TCP_NODE1_PORT="" UDP_NODE1_PORT="" SOCKS_NODE1_PORT="" TCP_NODE1_TYPE="" UDP_NODE1_TYPE="" SOCKS_NODE1_TYPE=""
 
 TCP_REDIR_PORTS=$(config_t_get global_forwarding tcp_redir_ports '80,443')
 UDP_REDIR_PORTS=$(config_t_get global_forwarding udp_redir_ports '1:65535')
@@ -185,14 +184,14 @@ LOCALHOST_UDP_PROXY_MODE=$(config_t_get global localhost_udp_proxy_mode default)
 
 load_config() {
 	[ "$ENABLED" != 1 ] && return 1
-	[ "$TCP_NODE1" == "nil" -a "$UDP_NODE1" == "nil" -a "$SOCKS5_NODE1" == "nil" ] && {
+	[ "$TCP_NODE1" == "nil" -a "$UDP_NODE1" == "nil" -a "$SOCKS_NODE1" == "nil" ] && {
 		echolog "没有选择节点！"
 		return 1
 	}
 	
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
 	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4)
-	use_tcp_node_resolve_dns=$(config_t_get global use_tcp_node_resolve_dns 0)
+	use_tcp_node_resolve_dns=0
 	use_udp_node_resolve_dns=0
 	process=1
 	if [ "$(config_t_get global_forwarding process 0)" = "0" ]; then
@@ -287,10 +286,10 @@ gen_start_config() {
 		[ "$bind" == "0.0.0.0" ] && echolog "${redir_type}_${5}节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
 	}
 
-	if [ "$redir_type" == "SOCKS5" ]; then
-		eval SOCKS5_NODE${5}_PORT=$port
+	if [ "$redir_type" == "SOCKS" ]; then
+		eval SOCKS_NODE${5}_PORT=$port
 		if [ "$type" == "socks5" ]; then
-			echolog "Socks5节点不能使用Socks5代理节点！"
+			echolog "Socks节点不能使用Socks代理节点！"
 		elif [ "$type" == "v2ray" ]; then
 			lua $API_GEN_V2RAY $node nil nil $local_port >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_socks_$5 "-config=$config_file"
@@ -349,10 +348,10 @@ gen_start_config() {
 			lua $API_GEN_V2RAY_SHUNT $node udp $local_port nil >$config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray_udp_$5 "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
-			SOCKS5_PROXY_PORT4=$(expr $SOCKS5_PROXY_PORT3 + 1)
-			local_port=$(get_new_port $SOCKS5_PROXY_PORT4 tcp)
-			socks5_port=$local_port
-			lua $API_GEN_TROJAN $node client "127.0.0.1" $socks5_port >$config_file
+			SOCKS_REDIR_PORT4=$(expr $SOCKS_REDIR_PORT3 + 1)
+			local_port=$(get_new_port $SOCKS_REDIR_PORT4 tcp)
+			socks_port=$local_port
+			lua $API_GEN_TROJAN $node client "127.0.0.1" $socks_port >$config_file
 			ln_start_bin $(find_bin trojan) trojan_udp_$5 "-c $config_file"
 			
 			local node_address=$(config_n_get $node address)
@@ -360,7 +359,7 @@ gen_start_config() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$5
-			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-4 -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
+			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$5 "-4 -U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks_port -R"
 		elif [ "$type" == "brook" ]; then
 			local protocol=$(config_n_get $node brook_protocol client)
 			if [ "$protocol" == "wsclient" ]; then
@@ -454,8 +453,8 @@ gen_start_config() {
 				local brook_tls=$(config_n_get $node brook_tls 0)
 				if [ "$protocol" == "wsclient" ]; then
 					[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}" 
-					socks5_port=$(get_new_port $(expr $SOCKS5_PROXY_PORT3 + 3) tcp)
-					ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_tcp_$5 "wsclient -l 127.0.0.1:$socks5_port -i 127.0.0.1 -s $server_ip:$port -p $(config_n_get $node password)"
+					socks_port=$(get_new_port $(expr $SOCKS_REDIR_PORT3 + 3) tcp)
+					ln_start_bin $(config_t_get global_app brook_file $(find_bin brook)) brook_tcp_$5 "wsclient -l 127.0.0.1:$socks_port -i 127.0.0.1 -s $server_ip:$port -p $(config_n_get $node password)"
 					eval port=\$TCP_REDIR_PORT$5
 					ln_start_bin $(find_bin ipt2socks) ipt2socks_tcp_$5 "-4 -T -l $port -b 0.0.0.0 -s 127.0.0.1 -p $socks5_port -R"
 					echolog "Brook的WebSocket不支持透明代理，将使用ipt2socks转换透明代理！"
@@ -473,12 +472,12 @@ gen_start_config() {
 }
 
 node_switch() {
-	local i=$4
-	local node=$5
-	[ -n "$1" -a -n "$2" -a "$2" != "nil" -a -n "$3" -a -n "$4" -a -n "$5" ] && {
+	local i=$3
+	local node=$4
+	[ -n "$1" -a -n "$2" -a -n "$3" -a -n "$4" ] && {
 		ps -w | grep -E "$TMP_PATH" | grep -i "${1}_${i}" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 		local config_file=$TMP_PATH/${1}_${i}.json
-		eval current_port=\$${1}_${2}_PORT$i
+		eval current_port=\$${1}_REDIR_PORT${i}
 		local port=$(cat $TMP_PORT_PATH/${1}_${i})
 		gen_start_config $node $port $1 $config_file $i
 		echo $node > $TMP_ID_PATH/${1}_${i}
@@ -496,9 +495,9 @@ start_redir() {
 		[ "$node" != "nil" ] && {
 			TYPE=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
 			local config_file=$TMP_PATH/${1}_${i}.json
-			eval current_port=\$${1}_${2}_PORT$i
-			local port=$(echo $(get_new_port $current_port $3))
-			eval ${1}_${2}$i=$port
+			eval current_port=\$${1}_REDIR_PORT$i
+			local port=$(echo $(get_new_port $current_port $2))
+			eval ${1}_REDIR${i}=$port
 			gen_start_config $node $port $1 $config_file $i
 			#eval ip=\$${1}_NODE${i}_IP
 			echo $node > $TMP_ID_PATH/${1}_${i}
@@ -581,21 +580,25 @@ start_dns() {
 		echolog "DNS：使用本机7913端口DNS服务器解析域名..."
 	;;
 	dns2socks)
-		if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
+		if [ -n "$SOCKS_NODE1" -a "$SOCKS_NODE1" != "nil" ]; then
 			DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
-			ln_start_bin $(find_bin dns2socks) dns2socks "127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT"
+			ln_start_bin $(find_bin dns2socks) dns2socks "127.0.0.1:$SOCKS_REDIR_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT"
 			echolog "DNS：dns2socks..."
 		else
-			echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
+			echolog "DNS：dns2socks模式需要使用Socks代理节点，请开启！"
 			force_stop
 		fi
 	;;
 	pdnsd)
-		use_tcp_node_resolve_dns=1
-		gen_pdnsd_config $DNS_PORT 4096
-		DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
-		ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
-		echolog "DNS：pdnsd..."
+		if [ -z "$TCP_NODE1" -o "$TCP_NODE1" == "nil" ]; then
+			echolog "DNS：pdnsd 模式需要启用TCP节点！"
+			force_stop
+		else
+			gen_pdnsd_config $DNS_PORT 2048
+			DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
+			ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
+			echolog "DNS：pdnsd + 使用TCP节点解析DNS（$DNS_FORWARD）..."
+		fi
 	;;
 	chinadns-ng)
 		other_port=$(expr $DNS_PORT + 1)
@@ -616,7 +619,6 @@ start_dns() {
 				echolog "DNS：ChinaDNS-NG + pdnsd 模式需要启用TCP节点！"
 				force_stop
 			else
-				use_tcp_node_resolve_dns=1
 				gen_pdnsd_config $other_port 0
 				DNS_FORWARD=$(echo $DNS_FORWARD | sed 's/,/ /g')
 				ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
@@ -624,13 +626,13 @@ start_dns() {
 				echolog "DNS：ChinaDNS-NG + pdnsd($DNS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 			fi
 		elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
-			if [ -n "$SOCKS5_NODE1" -a "$SOCKS5_NODE1" != "nil" ]; then
+			if [ -n "$SOCKS_NODE1" -a "$SOCKS_NODE1" != "nil" ]; then
 				DNS2SOCKS_FORWARD=$(config_t_get global dns2socks_forward 8.8.4.4)
-				ln_start_bin $(find_bin dns2socks) dns2socks "127.0.0.1:$SOCKS5_PROXY_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$other_port"
+				ln_start_bin $(find_bin dns2socks) dns2socks "127.0.0.1:$SOCKS_REDIR_PORT1 $DNS2SOCKS_FORWARD 127.0.0.1:$other_port"
 				ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $UP_CHINA_DNS -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param"
 				echolog "DNS：ChinaDNS-NG + dns2socks($DNS2SOCKS_FORWARD)，国内DNS：$UP_CHINA_DNS"
 			else
-				echolog "DNS：dns2socks模式需要使用Socks5代理节点，请开启！"
+				echolog "DNS：dns2socks模式需要使用Socks代理节点，请开启！"
 				force_stop
 			fi
 		else
@@ -747,51 +749,27 @@ gen_pdnsd_config() {
 		
 	EOF
 			
-	[ "$use_tcp_node_resolve_dns" == 1 ] && {
-		cat >> $pdnsd_dir/pdnsd.conf <<-EOF
-			server {
-				label = "node";
-				ip = $DNS_FORWARD;
-				edns_query = on;
-				port = 53;
-				timeout = 4;
-				interval = 10m;
-				uptest = none;
-				purge_cache = off;
-			}
-			
-		EOF
-	}
-		
 	cat >> $pdnsd_dir/pdnsd.conf <<-EOF
 		server {
-			label = "opendns";
-			ip = 208.67.222.222, 208.67.220.220;
+			label = "node";
+			ip = $DNS_FORWARD;
 			edns_query = on;
-			port = 443;
-			timeout = 3;
+			port = 53;
+			timeout = 4;
 			interval = 10m;
 			uptest = none;
 			purge_cache = off;
 		}
-		server {
-			label = "opendns";
-			ip = 208.67.222.222, 208.67.220.220;
-			edns_query = on;
-			port = 5353;
-			timeout = 3;
-			interval = 10m;
-			uptest = none;
-			purge_cache = off;
-		}
+		
 	EOF
+	
+	use_tcp_node_resolve_dns=1
 }
 
-stop_dnsmasq() {
+del_dnsmasq() {
 	rm -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	rm -rf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
 	rm -rf $TMP_DNSMASQ_PATH
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 }
 
 start_haproxy() {
@@ -920,7 +898,7 @@ kill_all() {
 }
 
 force_stop() {
-	rm -f "$LOCK_FILE"
+	stop
 	exit 0
 }
 
@@ -939,33 +917,19 @@ boot() {
 
 start() {
 	! load_config && return 1
-	[ -f "$LOCK_FILE" ] && return 3
-	touch "$LOCK_FILE"
 	start_haproxy
-	start_redir SOCKS5 PROXY tcp
-	start_redir TCP REDIR tcp
-	start_redir UDP REDIR udp
+	start_redir SOCKS tcp
+	start_redir TCP tcp
+	start_redir UDP udp
 	start_dns
 	add_dnsmasq
 	source $APP_PATH/iptables.sh start
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	start_crontab
 	echolog "运行完成！\n"
-	rm -f "$LOCK_FILE"
-	return 0
 }
 
 stop() {
-	failcount=1
-	while [ "$failcount" -le 10 ]; do
-		if [ -f "$LOCK_FILE" ]; then
-			let "failcount++"
-			sleep 1s
-			[ "$failcount" -ge 10 ] && rm -f "$LOCK_FILE"
-		else
-			break
-		fi
-	done
 	clean_log
 	source $APP_PATH/iptables.sh stop
 	kill_all v2ray-plugin obfs-local
@@ -974,8 +938,9 @@ stop() {
 	ps -w | grep -v "grep" | grep -E "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "sleep 1m" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf $TMP_DNSMASQ_PATH $TMP_PATH
-	stop_dnsmasq
 	stop_crontab
+	del_dnsmasq
+	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	echolog "清空并关闭相关程序和缓存完成。"
 }
 
@@ -987,7 +952,7 @@ gen_start_config)
 	gen_start_config $2 $3 $4 $5 $6 $7
 	;;
 node_switch)
-	node_switch $2 $3 $4 $5 $6
+	node_switch $2 $3 $4 $5
 	;;
 stop)
 	[ -n "$2" -a "$2" == "force" ] && force_stop

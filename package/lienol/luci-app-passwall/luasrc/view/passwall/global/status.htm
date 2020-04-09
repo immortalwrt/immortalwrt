@@ -13,7 +13,7 @@ end
 
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
-local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
+local socks_node_num = api.uci_get_type("global_other", "socks_node_num", 1)
 
 local status_show_check_port = api.uci_get_type("global_other", "status_show_check_port", 0)
 local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 0)
@@ -142,7 +142,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 		<div class="pure-u-1-4">
             <div class="block pure-g">
                 <div class="pure-u-16-24">
-				<h4 id="status_socks5_node">Socks5<br /><span class="red"><%:NOT RUNNING%></span></h4>
+				<h4 id="status_socks_node">Socks<br /><span class="red"><%:NOT RUNNING%></span></h4>
                 </div>
                 <div class="pure-u-8-24">
                     <div class="img-con">
@@ -327,26 +327,26 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 						}
 					}
 					
-					var socks5_node_num = <%=socks5_node_num%>;
-					if (socks5_node_num >= 1) {
-						var status_socks5_node = document.getElementById('status_socks5_node');
-						if (status_socks5_node) {
-							var text = 'Socks5<br />';
-							if (socks5_node_num == 1) {
-								if (data["socks5_node1_status"])
+					var socks_node_num = <%=socks_node_num%>;
+					if (socks_node_num >= 1) {
+						var status_socks_node = document.getElementById('status_socks_node');
+						if (status_socks_node) {
+							var text = 'Socks<br />';
+							if (socks_node_num == 1) {
+								if (data["socks_node1_status"])
 									text += '<span class="green"><%:RUNNING%></span>';
 								else
 									text += '<span class="red"><%:NOT RUNNING%></span>';
 							} else {
-								for(var i = 0; i < socks5_node_num; i++) {
+								for(var i = 0; i < socks_node_num; i++) {
 									var k = i + 1;
-									if (data["socks5_node" + k + "_status"])
+									if (data["socks_node" + k + "_status"])
 										text += '<span class="green"> ✓</span>';
 									else
 										text += '<span class="red"> X</span>';
 								}
 							}
-							status_socks5_node.innerHTML = text;
+							status_socks_node.innerHTML = text;
 						}
 					}
 					

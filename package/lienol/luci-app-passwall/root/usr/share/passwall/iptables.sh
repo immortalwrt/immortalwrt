@@ -267,8 +267,8 @@ add_firewall_rule() {
 	ip rule add fwmark 1 lookup 100
 	ip route add local 0.0.0.0/0 dev lo table 100
 
-	for k in $(seq 1 $SOCKS5_NODE_NUM); do
-		eval node=\$SOCKS5_NODE$k
+	for k in $(seq 1 $SOCKS_NODE_NUM); do
+		eval node=\$SOCKS_NODE$k
 		[ "$node" != "nil" ] && filter_node $node
 	done
 	
