@@ -673,6 +673,7 @@ define Device/nexx_wt3020-4m
   DEVICE_MODEL := WT3020
   DEVICE_VARIANT := 4M
   SUPPORTED_DEVICES += wt3020 wt3020-4M
+  DEFAULT := n
 endef
 TARGET_DEVICES += nexx_wt3020-4m
 
@@ -961,6 +962,7 @@ define Device/vonets_var11n-300
   BLOCKSIZE := 4k
   DEVICE_VENDOR := Vonets
   DEVICE_MODEL := VAR11N-300
+  DEFAULT := n
 endef
 TARGET_DEVICES += vonets_var11n-300
 
