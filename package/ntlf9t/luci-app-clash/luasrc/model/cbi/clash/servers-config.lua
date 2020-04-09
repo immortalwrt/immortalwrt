@@ -1,14 +1,9 @@
 
 local m, s, o
 local clash = "clash"
-local uci = luci.model.uci.cursor()
-local fs = require "nixio.fs"
-local sys = require "luci.sys"
 local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
 
-
-local server_table = {}
 
 local encrypt_methods_ss = {
 
@@ -86,10 +81,16 @@ if m.uci:get(clash, sid) ~= "servers" then
 	return
 end
 
+
 -- [[ Servers Setting ]]--
 s = m:section(NamedSection, sid, "servers")
 s.anonymous = true
 s.addremove   = false
+
+o = s:option(DummyValue,"ssr_url",translate("Import config info")) 
+o.rawhtml  = true
+o.template = "clash/ssrurl"
+o.value =sid
 
 o = s:option(ListValue, "type", translate("Server Node Type"))
 o:value("ss", translate("Shadowsocks"))
@@ -99,6 +100,8 @@ o:value("socks5", translate("Socks5"))
 o:value("http", translate("HTTP(S)"))
 o:value("snell", translate("Snell"))
 o:value("trojan", translate("trojan"))
+
+
 
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
@@ -302,7 +305,7 @@ o:depends("type", "trojan")
 
 -- [[ alpn ]]--
 o = s:option(DynamicList, "alpn", translate("alpn"))
-o.rmempty = true
+o.default = "http/1.1"
 o:value("h2")
 o:value("http/1.1")
 o:depends("type", "trojan")
