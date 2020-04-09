@@ -714,4 +714,23 @@ end
 return subvolume
 end
 
+d.format_partition = function(partition, fs)
+  local partition_name = "/dev/".. partition
+  if not nixio.fs.access(partition_name) then
+    return 500, translate("Partition NOT found!")
+  end
+
+  local format_cmd = d.get_format_cmd()
+  if not format_cmd[fs] then
+    return 500, translate("Filesystem NOT support!")
+  end
+  local cmd = format_cmd[fs].cmd .. " " .. format_cmd[fs].option .. " " .. partition_name
+  local res = luci.util.exec(cmd .. " 2>&1")
+  if res and res:lower():match("error+") then
+    return 500, res
+  else
+    return 200, "OK"
+  end
+end
+
 return d
