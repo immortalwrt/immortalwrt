@@ -183,69 +183,79 @@ if not disk_info.p_table:match("Raid") then
   end
   local val_fs = s_partition_table:option(Value, "fs", translate("File System"))
   val_fs.forcewrite = true
+  val_fs.partitions = disk_info.partitions
+  for k, v in pairs(format_cmd) do
+    val_fs.format_cmd = val_fs.format_cmd and (val_fs.format_cmd ..  "," .. k) or k
+  end
+
   val_fs.write = function(self, section, value)
     disk_info.partitions[section]._fs = value
   end
   val_fs.render = function(self, section, scope)
     -- use listvalue when partition not mounted
     if disk_info.partitions[section].mount_point == "-" and disk_info.partitions[section].number ~= -1 and disk_info.partitions[section].type ~= "extended" then
-      self.template = "cbi/value"
-      self:reset_values()
-      self.keylist = {}
-      self.vallist = {}
-      for k, v in pairs(format_cmd) do
-        self:value(k,k)
-      end
+      self.template = "diskman/cbi/format_button"
+      self.inputstyle = "reset"
+      self.inputtitle = disk_info.partitions[section].fs:match("^%s+$") and "Format" or disk_info.partitions[section].fs
+      Button.render(self, section, scope)
+      -- self:reset_values()
+      -- self.keylist = {}
+      -- self.vallist = {}
+      -- for k, v in pairs(format_cmd) do
+      --   self:value(k,k)
+      -- end
       -- self.default = disk_info.partitions[section].fs
     else
-      self:reset_values()
-      self.keylist = {}
-      self.vallist = {}
+      -- self:reset_values()
+      -- self.keylist = {}
+      -- self.vallist = {}
       self.template = "cbi/dvalue"
-    end
-    DummyValue.render(self, section, scope)
-  end
-  btn_format = s_partition_table:option(Button, "_format")
-  btn_format.render = function(self, section, scope)
-    if disk_info.partitions[section].mount_point == "-" and disk_info.partitions[section].number ~= -1 and disk_info.partitions[section].type ~= "extended" then
-      self.inputtitle = translate("Format")
-      self.template = "diskman/cbi/disabled_button"
-      self.view_disabled = false
-      self.inputstyle = "reset"
-      for k, v in pairs(format_cmd) do
-        self:depends("val_fs", "k")
-      end
-    -- elseif disk_info.partitions[section].mount_point ~= "-" and disk_info.partitions[section].number ~= -1 then
-    --   self.inputtitle = "Format"
-    --   self.template = "diskman/cbi/disabled_button"
-    --   self.view_disabled = true
-    --   self.inputstyle = "reset"
-    else
-      self.inputtitle = ""
-      self.template = "cbi/dvalue"
-    end
-    Button.render(self, section, scope)
-  end
-  btn_format.forcewrite = true
-  btn_format.write = function(self, section, value)
-    local partition_name = "/dev/".. disk_info.partitions[section].name
-    if not nixio.fs.access(partition_name) then
-      m.errmessage = translate("Partition NOT found!")
-      return
-    end
-    local fs = disk_info.partitions[section]._fs
-    if not format_cmd[fs] then
-      m.errmessage = translate("Filesystem NOT support!")
-      return
-    end
-    local cmd = format_cmd[fs].cmd .. " " .. format_cmd[fs].option .. " " .. partition_name
-    local res = luci.util.exec(cmd .. " 2>&1")
-    if res and res:lower():match("error+") then
-      m.errmessage = luci.util.pcdata(res)
-    else
-      luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
+      DummyValue.render(self, section, scope)
     end
   end
+  -- btn_format = s_partition_table:option(Button, "_format")
+  -- btn_format.template = "diskman/cbi/format_button"
+  -- btn_format.partitions = disk_info.partitions
+  -- btn_format.render = function(self, section, scope)
+  --   if disk_info.partitions[section].mount_point == "-" and disk_info.partitions[section].number ~= -1 and disk_info.partitions[section].type ~= "extended" then
+  --     self.inputtitle = translate("Format")
+  --     self.template = "diskman/cbi/disabled_button"
+  --     self.view_disabled = false
+  --     self.inputstyle = "reset"
+  --     for k, v in pairs(format_cmd) do
+  --       self:depends("val_fs", "k")
+  --     end
+  --   -- elseif disk_info.partitions[section].mount_point ~= "-" and disk_info.partitions[section].number ~= -1 then
+  --   --   self.inputtitle = "Format"
+  --   --   self.template = "diskman/cbi/disabled_button"
+  --   --   self.view_disabled = true
+  --   --   self.inputstyle = "reset"
+  --   else
+  --     self.inputtitle = ""
+  --     self.template = "cbi/dvalue"
+  --   end
+  --   Button.render(self, section, scope)
+  -- end
+  -- btn_format.forcewrite = true
+  -- btn_format.write = function(self, section, value)
+  --   local partition_name = "/dev/".. disk_info.partitions[section].name
+  --   if not nixio.fs.access(partition_name) then
+  --     m.errmessage = translate("Partition NOT found!")
+  --     return
+  --   end
+  --   local fs = disk_info.partitions[section]._fs
+  --   if not format_cmd[fs] then
+  --     m.errmessage = translate("Filesystem NOT support!")
+  --     return
+  --   end
+  --   local cmd = format_cmd[fs].cmd .. " " .. format_cmd[fs].option .. " " .. partition_name
+  --   local res = luci.util.exec(cmd .. " 2>&1")
+  --   if res and res:lower():match("error+") then
+  --     m.errmessage = luci.util.pcdata(res)
+  --   else
+  --     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
+  --   end
+  -- end
 
   local btn_action = s_partition_table:option(Button, "_action")
   btn_action.forcewrite = true
