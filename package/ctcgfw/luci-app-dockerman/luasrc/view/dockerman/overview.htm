@@ -136,7 +136,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
       <div class="pure-u-3-5">
         <h4 style="text-align: right; font-size: 1rem"><%:Containers%></h4>
         <h4 style="text-align: right;">
-            <%- if self.containers_total ~= "-" then -%><a href="/cgi-bin/luci/admin/docker/containers"><%- end -%>
+            <%- if self.containers_total ~= "-" then -%><a href='<%=luci.dispatcher.build_url("admin/docker/containers")%>'><%- end -%>
             <span style="font-size: 2rem; color: #2dce89;"><%=self.containers_running%></span>
             <span style="font-size: 1rem; color: #8898aa !important;">/<%=self.containers_total%></span>
           <%- if self.containers_total ~= "-" then -%></a><%- end -%>
@@ -160,7 +160,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
       <div class="pure-u-3-5">
         <h4 style="text-align: right; font-size: 1rem"><%:Images%></h4>
         <h4 style="text-align: right;">
-          <%- if self.images_total ~= "-" then -%><a href="/cgi-bin/luci/admin/docker/images"><%- end -%>
+          <%- if self.images_total ~= "-" then -%><a href='<%=luci.dispatcher.build_url("admin/docker/images")%>'><%- end -%>
             <span style="font-size: 2rem; color: #2dce89;"><%=self.images_used%></span>
             <span style="font-size: 1rem; color: #8898aa !important;">/<%=self.images_total%></span>
           <%- if self.images_total ~= "-" then -%></a><%- end -%>
@@ -192,7 +192,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
       <div class="pure-u-3-5">
         <h4 style="text-align: right; font-size: 1rem"><%:Networks%></h4>
         <h4 style="text-align: right;">
-          <%- if self.networks_total ~= "-" then -%><a href="/cgi-bin/luci/admin/docker/networks"><%- end -%>
+          <%- if self.networks_total ~= "-" then -%><a href='<%=luci.dispatcher.build_url("admin/docker/networks")%>'><%- end -%>
           <span style="font-size: 2rem; color: #2dce89;"><%=self.networks_total%></span>
           <!-- <span style="font-size: 1rem; color: #8898aa !important;">/20</span> -->
           <%- if self.networks_total ~= "-" then -%></a><%- end -%>
@@ -269,7 +269,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
       <div class="pure-u-3-5">
         <h4 style="text-align: right; font-size: 1rem"><%:Volumes%></h4>
         <h4 style="text-align: right;">
-          <%- if self.volumes_total ~= "-" then -%><a href="/cgi-bin/luci/admin/docker/volumes"><%- end -%>
+          <%- if self.volumes_total ~= "-" then -%><a href='<%=luci.dispatcher.build_url("admin/docker/volumes")%>'><%- end -%>
             <span style="font-size: 2rem; color: #2dce89;"><%=self.volumes_total%></span>
             <!-- <span style="font-size: 1rem; color: #8898aa !important;">/20</span> -->
             <%- if self.volumes_total ~= "-" then -%></a><%- end -%>

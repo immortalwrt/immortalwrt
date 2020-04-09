@@ -56,7 +56,7 @@ d.default="l3"
 d:value("l2", "l2")
 d:value("l3", "l3")
 
-d = s:option(Flag, "ingress", translate("Ingress"), translate("Ingress network is the network which provides the routing-mesh in swarm mode."))
+d = s:option(Flag, "ingress", translate("Ingress"), translate("Ingress network is the network which provides the routing-mesh in swarm mode"))
 d.rmempty = true
 d.disabled = 0
 d.enabled = 1

@@ -33,7 +33,7 @@
     formData.append('upload-path', uploadPath)
     formData.append('upload-archive', uploadArchive.files[0])
     let xhr = new XMLHttpRequest()
-    xhr.open("POST", "/cgi-bin/luci/admin/docker/container_put_archive/<%=self.container%>", true)
+    xhr.open("POST", '<%=luci.dispatcher.build_url("admin/docker/container_put_archive")%>/<%=self.container%>', true)
     xhr.onload = function() {
       if (xhr.status == 200) {
         uploadArchive.value = ''
@@ -58,6 +58,6 @@
         })
       return
     }
-    window.open("/cgi-bin/luci/admin/docker/container_get_archive/?id=<%=self.container%>&path=" + encodeURIComponent(downloadPath))
+    window.open('<%=luci.dispatcher.build_url("admin/docker/container_get_archive")%>?id=<%=self.container%>&path=' + encodeURIComponent(downloadPath))
   }
 </script>

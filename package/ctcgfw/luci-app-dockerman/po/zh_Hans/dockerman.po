@@ -97,26 +97,26 @@ msgstr "信息"
 msgid "CPUs"
 msgstr "CPU数量"
 
-msgid "Number of CPUs. Number is a fractional number. 0.000 means no limit."
-msgstr "CPU数量，数字是小数，0.000表示没有限制。"
+msgid "Number of CPUs. Number is a fractional number. 0.000 means no limit"
+msgstr "CPU数量，数字是小数，0.000表示没有限制"
 
 msgid "CPU Shares Weight"
 msgstr "CPU份额权重"
 
-msgid "CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024."
+msgid "CPU shares relative weight, if 0 is set, the system will ignore the value and use the default of 1024"
 msgstr "CPU份额相对权重，如果设置为0，则系统将忽略该值，并使用默认值1024。"
 
 msgid "Memory"
 msgstr "内存"
 
-msgid "Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M."
-msgstr "内存限制 (格式: <容量>[<单位>]). 数字是一个正整数。单位可以是b，k，m或g之一。最小为4M。"
+msgid "Memory limit (format: <number>[<unit>]). Number is a positive integer. Unit can be one of b, k, m, or g. Minimum is 4M"
+msgstr "内存限制 (格式: <容量>[<单位>]). 数字是一个正整数。单位可以是b，k，m或g之一。最小为4M"
 
 msgid "Block IO Weight"
 msgstr "IO 权重"
 
-msgid "Block IO weight (relative weight) accepts a weight value between 10 and 1000."
-msgstr "IO 权重 (相对权重) 接受10到1000之间的权重值。"
+msgid "Block IO weight (relative weight) accepts a weight value between 10 and 1000"
+msgstr "IO 权重 (相对权重) 接受10到1000之间的权重值"
 
 msgid "Container Logs"
 msgstr "容器日志"
@@ -202,8 +202,8 @@ msgstr "Macvlan模式"
 msgid "Ipvlan Mode"
 msgstr "Ipvlan模式"
 
-msgid "Ingress network is the network which provides the routing-mesh in swarm mode."
-msgstr "Ingress网络是在群集模式下提供路由网的网络。"
+msgid "Ingress network is the network which provides the routing-mesh in swarm mode"
+msgstr "Ingress网络是在群集模式下提供路由网的网络"
 
 msgid "Options"
 msgstr "选项"
@@ -447,3 +447,24 @@ msgstr "创建 macvlan 接口"
 
 msgid "Auto create macvlan interface in Openwrt"
 msgstr "在 Openwrt 中自动创建 macvlan 接口"
+
+msgid "Kill"
+msgstr "强制关闭"
+
+msgid "Exposed All Ports(-P)"
+msgstr "暴露所有端口"
+
+msgid "Allocates an ephemeral host port for all of a container's exposed ports"
+msgstr "为容器的所有暴露端口分配临时主机端口"
+
+msgid "Log driver options"
+msgstr "日志选项"
+
+msgid "The logging configuration for this container"
+msgstr "容器日志配置"
+
+msgid "A list of kernel capabilities to add to the container"
+msgstr "添加到容器的内核功能列表"
+
+msgid "Sysctls (kernel parameters) options"
+msgstr "Sysctls（内核参数）选项"

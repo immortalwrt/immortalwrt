@@ -73,7 +73,7 @@
     let reg_rem =/`#.+`/g// the command has `# `
     cmd_line = cmd_line.replace(/^docker\s+(run|create)/,"DOCKERCLI").replace(reg_rem, " ").replace(reg_muti_line, " ").replace(reg_space, " ")
     console.log(cmd_line)
-    window.location.href = "/cgi-bin/luci/admin/docker/newcontainer/" + encodeURI(cmd_line)
+    window.location.href = '<%=luci.dispatcher.build_url("admin/docker/newcontainer")%>/' + encodeURI(cmd_line)
   }
 
   function clear_text(){

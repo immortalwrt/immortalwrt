@@ -20,7 +20,7 @@ local get_ports = function(d)
   local data
   if d.HostConfig and d.HostConfig.PortBindings then
     for inter, out in pairs(d.HostConfig.PortBindings) do
-      data = (data and (data .. "<br>") or "") .. out[1]["HostPort"] .. ":" .. inter 
+      data = (data and (data .. "<br>") or "") .. out[1]["HostPort"] .. ":" .. inter
     end
   end
   return data
@@ -186,6 +186,11 @@ btnstop.template = "dockerman/cbi/inlinebutton"
 btnstop.inputtitle=translate("Stop")
 btnstop.inputstyle = "reset"
 btnstop.forcewrite = true
+btnkill=action_section:option(Button, "_kill")
+btnkill.template = "dockerman/cbi/inlinebutton"
+btnkill.inputtitle=translate("Kill")
+btnkill.inputstyle = "reset"
+btnkill.forcewrite = true
 btnupgrade=action_section:option(Button, "_upgrade")
 btnupgrade.template = "dockerman/cbi/inlinebutton"
 btnupgrade.inputtitle=translate("Upgrade")
@@ -216,6 +221,9 @@ btnremove.write = function(self, section)
 end
 btnstop.write = function(self, section)
   start_stop_remove(m,"stop")
+end
+btnkill.write = function(self, section)
+  start_stop_remove(m,"kill")
 end
 btnduplicate.write = function(self, section)
   luci.http.redirect(luci.dispatcher.build_url("admin/docker/newcontainer/duplicate/"..container_id))
@@ -466,6 +474,13 @@ elseif action == "file" then
   m.reset  = false
   filesection.template = "dockerman/container_file"
   filesection.container = container_id
+elseif action == "inspect" then
+  local inspectsection= m:section(SimpleSection)
+  inspectsection.syslog = luci.jsonc.stringify(container_info, true)
+  inspectsection.title = translate("Container Inspect")
+  inspectsection.template = "dockerman/logs"
+  m.submit = false
+  m.reset  = false
 elseif action == "logs" then
   local logsection= m:section(SimpleSection)
   local logs = ""

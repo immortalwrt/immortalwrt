@@ -20,7 +20,7 @@
     formData.append('upload-archive', fileLoad.files[0])
     let xhr = new XMLHttpRequest()
     uci_confirm_docker()
-    xhr.open("POST", "/cgi-bin/luci/admin/docker/images_load", true)
+    xhr.open("POST", '<%=luci.dispatcher.build_url("admin/docker/images_load")%>', true)
     xhr.onload = function() {
       location.reload()
     }
