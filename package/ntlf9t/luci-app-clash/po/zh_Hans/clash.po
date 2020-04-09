@@ -1042,3 +1042,24 @@ msgstr "设置为启用或禁用dns缓存"
 
 msgid "Old Config"
 msgstr "旧配置"
+
+msgid "Import config info"
+msgstr "导入配置信息"
+
+msgid "Import V2ray config info successful"
+msgstr "导入V2ray配置信息成功"
+
+msgid "Import Trojan config info successful"
+msgstr "导入Trojan配置信息成功"
+
+msgid "Import Shadowsocks config info successful"
+msgstr "导入Shadowsocks配置信息成功"
+
+msgid "Import ShadowsocksR config info successful"
+msgstr "导入ShadowsocksR配置信息成功"
+
+msgid "Invalid link"
+msgstr "无效格式"
+
+msgid "Operation Aborted"
+msgstr "用户取消"
