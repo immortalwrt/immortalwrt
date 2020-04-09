@@ -25,10 +25,33 @@ function index()
   entry({"admin", "system", "diskman", "disks"}, form("diskman/disks"), nil).leaf = true
   entry({"admin", "system", "diskman", "partition"}, form("diskman/partition"), nil).leaf = true
   entry({"admin", "system", "diskman", "btrfs"}, form("diskman/btrfs"), nil).leaf = true
+  entry({"admin", "system", "diskman", "format_partition"}, call("format_partition"), nil).leaf = true
   entry({"admin", "system", "diskman", "get_disk_info"}, call("get_disk_info"), nil).leaf = true
   entry({"admin", "system", "diskman", "mk_p_table"}, call("mk_p_table"), nil).leaf = true
   entry({"admin", "system", "diskman", "smartdetail"}, call("smart_detail"), nil).leaf = true
   entry({"admin", "system", "diskman", "smartattr"}, call("smart_attr"), nil).leaf = true
+end
+
+function format_partition()
+  local partation_name = luci.http.formvalue("partation_name")
+  local fs = luci.http.formvalue("file_system")
+  if not partation_name then
+    luci.http.status(500, "Partition NOT found!")
+    luci.http.write_json("Partition NOT found!")
+    return
+  elseif not nixio.fs.access("/dev/"..partation_name) then
+    luci.http.status(500, "Partition NOT found!")
+    luci.http.write_json("Partition NOT found!")
+    return
+  elseif not fs then
+    luci.http.status(500, "no file system")
+    luci.http.write_json("no file system")
+    return
+  end
+  local dm = require "luci.model.diskman"
+  code, msg = dm.format_partition(partation_name, fs)
+  luci.http.status(code, msg)
+  luci.http.write_json({msg})
 end
 
 function get_disk_info(dev)

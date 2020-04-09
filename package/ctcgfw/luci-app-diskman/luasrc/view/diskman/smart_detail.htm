@@ -9,7 +9,6 @@
     xhr.onload = function () {
       let st = JSON.parse(xhr.responseText)
       let tb = document.getElementById('smart_attr_table');
-      console.log(st)
       if (st && tb) {
         /* clear all rows */
         while (tb.rows.length > 1)

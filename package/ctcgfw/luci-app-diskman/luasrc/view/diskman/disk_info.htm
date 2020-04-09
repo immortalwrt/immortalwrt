@@ -6,7 +6,7 @@
     lines.forEach((item) => {
       let dev = item.id.match(/cbi-disk-(.*)/)[1]
       if (dev == "table") { return }
-      XHR.get('/cgi-bin/luci/admin/system/diskman/get_disk_info/' + dev, null, (x, disk_info) => {
+      XHR.get('<%=luci.dispatcher.build_url("admin/system/diskman/get_disk_info")%>/' + dev, null, (x, disk_info) => {
         // handle disk info
         item.childNodes.forEach((cell) => {
           if (cell && cell.attributes) {
@@ -71,7 +71,7 @@
       let dev = item.id.match(/cbi-_raid-(.*)/)[1]
       if (dev == "table") { return }
       console.log(dev)
-      XHR.get('/cgi-bin/luci/admin/system/diskman/get_disk_info/' + dev, null, (x, disk_info) => {
+      XHR.get('<%=luci.dispatcher.build_url("admin/system/diskman/get_disk_info")%>/' + dev, null, (x, disk_info) => {
         // handle raid info
         item.childNodes.forEach((cell) => {
           if (cell && cell.attributes) {
