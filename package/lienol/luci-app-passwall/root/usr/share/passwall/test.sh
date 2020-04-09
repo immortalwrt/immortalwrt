@@ -45,8 +45,8 @@ test_proxy() {
 
 test_auto_switch() {
 	local type=$1
-	local index=$4
-	local b_tcp_nodes=$5
+	local index=$3
+	local b_tcp_nodes=$4
 	local now_node
 	if [ -f "/var/etc/$CONFIG/id/${type}_${index}" ]; then
 		now_node=$(cat /var/etc/$CONFIG/id/${type}_${index})
@@ -55,9 +55,12 @@ test_auto_switch() {
 	fi
 
 	status=$(test_proxy)
-	if [ "$status" == 2 ]; then
+	if [ "$status" == 0 ]; then
+		#echolog "自动切换检测：${type}_${index}节点正常。"
+		return 0
+	elif [ "$status" == 2 ]; then
 		echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"
-		return 1
+		return 2
 	elif [ "$status" == 1 ]; then
 		echolog "自动切换检测：${type}_${index}节点异常，开始切换节点！"
 		local new_node
@@ -68,7 +71,7 @@ test_auto_switch() {
 			new_node=$(echo $b_tcp_nodes | awk -F ' ' '{print $1}')
 		else
 			# 如果存在，设置下一个备用节点为新的节点
-			local count=$(expr $(echo $b_tcp_nodes | grep -o ' ' | wc -l) + 1)
+			#local count=$(expr $(echo $b_tcp_nodes | grep -o ' ' | wc -l) + 1)
 			local next_node=$(echo $b_tcp_nodes | awk -F "$now_node" '{print $2}' | awk -F " " '{print $1}')
 			if [ -z "$next_node" ]; then
 				new_node=$(echo $b_tcp_nodes | awk -F ' ' '{print $1}')
@@ -76,12 +79,18 @@ test_auto_switch() {
 				new_node=$next_node
 			fi
 		fi
-		/usr/share/passwall/app.sh node_switch $type $2 $3 $index $new_node
-		echolog "自动切换检测：${type}_${index}节点切换完毕！"
-		return 0
-	elif [ "$status" == 0 ]; then
-		#echolog "自动切换检测：${type}_${index}节点正常。"
-		return 0
+		/usr/share/passwall/app.sh node_switch $type $2 $index $new_node
+		sleep 10s
+		# 切换节点后等待10秒后再检测一次，如果还是不通继续切，直到可用为止
+		status2=$(test_proxy)
+		if [ "$status2" -eq 0 ]; then
+			echolog "自动切换检测：${type}_${index}节点切换完毕！"
+			return 0
+		elif [ "$status2" -eq 1 ]; then
+			test_auto_switch $1 $2 $3 "$4"
+		elif [ "$status2" -eq 2 ]; then
+			return 2
+		fi
 	fi
 }
 
@@ -105,7 +114,7 @@ start() {
 			eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
 			eval tmp=\$TCP_NODE$i
 			[ -n "$tmp" -a "$tmp" != "nil" ] && {
-				test_auto_switch TCP REDIR tcp $i "$tmp"
+				test_auto_switch TCP tcp $i "$tmp"
 			}
 		done
 		delay=$(config_t_get auto_switch testing_time 1)

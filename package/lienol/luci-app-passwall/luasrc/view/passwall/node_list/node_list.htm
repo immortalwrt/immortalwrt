@@ -5,7 +5,7 @@
 	
 	local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 	local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
-	local socks5_node_num = api.uci_get_type("global_other", "socks5_node_num", 1)
+	local socks_node_num = api.uci_get_type("global_other", "socks_node_num", 1)
 	local compact_display_nodes = api.uci_get_type("global_other", "compact_display_nodes", 1)
 -%>
 
@@ -261,9 +261,9 @@ table td, .table .td {
 			<% end %>
 		<% end %>
 		
-		<% if socks5_node_num and tonumber(socks5_node_num) >= 1 then %>
-			<% for i = 1, socks5_node_num, 1 do %>
-				<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('socks5',<%=i%>)" value="Socks5_<%=i%>" />
+		<% if socks_node_num and tonumber(socks_node_num) >= 1 then %>
+			<% for i = 1, socks_node_num, 1 do %>
+				<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('socks',<%=i%>)" value="Socks_<%=i%>" />
 			<% end %>
 		<% end %>
 		<input class="cbi-button cbi-button-remove" type="button" onclick="close_set_node_div()" value="<%:Close%>" />

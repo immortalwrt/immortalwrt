@@ -115,8 +115,8 @@ msgstr "TCP节点"
 msgid "UDP Node"
 msgstr "UDP节点"
 
-msgid "Socks5 Node"
-msgstr "Socks5节点"
+msgid "Socks Node"
+msgstr "Socks节点"
 
 msgid "Same as the tcp node"
 msgstr "与TCP节点相同"
@@ -130,8 +130,8 @@ msgstr "用于游戏模式或DNS解析等。"
 msgid "The selected server will not use Kcptun."
 msgstr "选中的服务器不会使用Kcptun。"
 
-msgid "The client can use the router's Socks5 proxy."
-msgstr "客户端可以使用路由器的Socks5代理。"
+msgid "The client can use the router's Socks proxy."
+msgstr "客户端可以使用路由器的Socks代理。"
 
 msgid "DNS Mode"
 msgstr "DNS模式"
@@ -208,8 +208,8 @@ msgstr "自定义"
 msgid "DNS Server"
 msgstr "DNS服务器"
 
-msgid "Use Socks5 Node Resolve DNS"
-msgstr "使用Socks5节点解析DNS"
+msgid "Use Socks Node Resolve DNS"
+msgstr "使用Socks节点解析DNS"
 
 msgid "Multi Process Option"
 msgstr "多进程并发"
@@ -436,8 +436,8 @@ msgstr "TCP透明代理端口"
 msgid "UDP Redir Port"
 msgstr "UDP透明代理端口"
 
-msgid "Socks5 Proxy Port"
-msgstr "Socks5代理端口"
+msgid "Socks Proxy Port"
+msgstr "Socks代理端口"
 
 msgid "Kcptun Port"
 msgstr "Kcptun端口"
@@ -624,6 +624,12 @@ msgstr "手动订阅"
 
 msgid "Delete All Subscribe Node"
 msgstr "删除所有订阅节点"
+
+msgid "Filter keyword switch"
+msgstr "过滤关键字开关"
+
+msgid "When checked, below options can only be take effect."
+msgstr "当勾选时，下面的选项才生效。"
 
 msgid "Filter keyword"
 msgstr "过滤关键字"

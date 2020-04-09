@@ -3,7 +3,7 @@ local json = require "luci.jsonc"
 local node_section = arg[1]
 local proto = arg[2]
 local redir_port = arg[3]
-local socks5_proxy_port = arg[4]
+local socks_proxy_port = arg[4]
 local node = ucursor:get_all("passwall", node_section)
 local inbounds = {}
 local outbounds = {}
@@ -103,10 +103,10 @@ local function gen_outbound(node)
     return result
 end
 
-if socks5_proxy_port ~= "nil" then
+if socks_proxy_port ~= "nil" then
     table.insert(inbounds, {
         listen = "0.0.0.0",
-        port = socks5_proxy_port,
+        port = socks_proxy_port,
         protocol = "socks",
         settings = {auth = "noauth", udp = true, ip = "127.0.0.1"}
     })
