@@ -452,7 +452,7 @@ define Device/jcg_jhr-ac876m
   JCG_MAXSIZE := 16064k
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := JHR-AC876M
-  DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += jcg_jhr-ac876m
 
@@ -909,7 +909,7 @@ define Device/xiaomi_mir3p
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
 	check-size $$$$(IMAGE_SIZE)
   DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport \
-	wpad-openssl uboot-envtools
+	uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir3p
 
