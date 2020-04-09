@@ -36,9 +36,9 @@ do
 		eval UDP_NODE$i=$(config_t_get global udp_node$i nil)
 	done
 
-	SOCKS5_NODE_NUM=$(config_t_get global_other socks5_node_num 1)
-	for i in $(seq 1 $SOCKS5_NODE_NUM); do
-		eval SOCKS5_NODE$i=$(config_t_get global socks5_node$i nil)
+	SOCKS_NODE_NUM=$(config_t_get global_other socks_node_num 1)
+	for i in $(seq 1 $SOCKS_NODE_NUM); do
+		eval SOCKS_NODE$i=$(config_t_get global socks_node$i nil)
 	done
 
 	dns_mode=$(config_t_get global dns_mode)
@@ -78,11 +78,11 @@ do
 		fi
 	done
 
-	#socks5
-	for i in $(seq 1 $SOCKS5_NODE_NUM); do
-		eval tmp_node=\$SOCKS5_NODE$i
+	#socks
+	for i in $(seq 1 $SOCKS_NODE_NUM); do
+		eval tmp_node=\$SOCKS_NODE$i
 		if [ "$tmp_node" != "nil" ]; then
-			icount=$(ps -w | grep -v grep | grep -v kcptun | grep $RUN_BIN_PATH | grep -i -E "SOCKS_${i}|SOCKS5_${i}" | wc -l)
+			icount=$(ps -w | grep -v grep | grep -v kcptun | grep $RUN_BIN_PATH | grep -i "SOCKS_${i}" | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0

@@ -149,17 +149,17 @@ function status()
                                              appname, i)) == 0
     end
 
-    local socks5_node_num = luci.sys.exec(
-                                "echo -n $(uci -q get %s.@global_other[0].socks5_node_num)" %
+    local socks_node_num = luci.sys.exec(
+                                "echo -n $(uci -q get %s.@global_other[0].socks_node_num)" %
                                     appname)
-    for i = 1, socks5_node_num, 1 do
+    for i = 1, socks_node_num, 1 do
         e["kcptun_socks_node%s_status" % i] =
             luci.sys.call(string.format(
                               "ps -w | grep -v grep | grep '%s/bin/' | grep 'kcptun_socks_%s' >/dev/null",
                               appname, i)) == 0
-        e["socks5_node%s_status" % i] = luci.sys.call(
+        e["socks_node%s_status" % i] = luci.sys.call(
                                             string.format(
-                                                "ps -w | grep -v grep | grep -v kcptun | grep '%s/bin/' | grep -i -E 'SOCKS_%s|SOCKS5_%s' >/dev/null",
+                                                "ps -w | grep -v grep | grep -v kcptun | grep '%s/bin/' | grep -i 'SOCKS_%s' >/dev/null",
                                                 appname, i, i)) == 0
     end
     luci.http.prepare_content("application/json")

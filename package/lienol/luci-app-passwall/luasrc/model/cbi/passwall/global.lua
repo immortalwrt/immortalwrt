@@ -88,18 +88,18 @@ for i = 1, udp_node_num, 1 do
     for _, key in pairs(key_table) do o:value(key, n[key]) end
 end
 
----- Socks5 Node
-local socks5_node_num = tonumber(api.uci_get_type("global_other",
-                                                  "socks5_node_num", 1))
-for i = 1, socks5_node_num, 1 do
+---- Socks Node
+local socks_node_num = tonumber(api.uci_get_type("global_other",
+                                                  "socks_node_num", 1))
+for i = 1, socks_node_num, 1 do
     if i == 1 then
-        o = s:option(ListValue, "socks5_node" .. i, translate("Socks5 Node"))
-        -- o.description = translate("The client can use the router's Socks5 proxy.")
+        o = s:option(ListValue, "socks_node" .. i, translate("Socks Node"))
+        -- o.description = translate("The client can use the router's Socks proxy.")
         o:value("nil", translate("Close"))
         o:value("tcp", translate("Same as the tcp node"))
     else
-        o = s:option(ListValue, "socks5_node" .. i,
-                     translate("Socks5 Node") .. " " .. i)
+        o = s:option(ListValue, "socks_node" .. i,
+                     translate("Socks Node") .. " " .. i)
         o:value("nil", translate("Close"))
     end
     for _, key in pairs(key_table) do o:value(key, n[key]) end
@@ -131,7 +131,7 @@ if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
 end
 if is_finded("dns2socks") then
     o:value("dns2socks",
-            "dns2socks + " .. translate("Use Socks5 Node Resolve DNS"))
+            "dns2socks + " .. translate("Use Socks Node Resolve DNS"))
 end
 o:value("local_7913", translate("Use local port 7913 as DNS"))
 o:value("nonuse", translate("No patterns are used"))
@@ -146,7 +146,7 @@ if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
 end
 if is_finded("dns2socks") then
     o:value("dns2socks",
-            "dns2socks + " .. translate("Use Socks5 Node Resolve DNS"))
+            "dns2socks + " .. translate("Use Socks Node Resolve DNS"))
 end
 o:value("8.8.4.4,8.8.8.8", "8.8.4.4, 8.8.8.8 (Google DNS)")
 o:value("208.67.222.222,208.67.220.220",

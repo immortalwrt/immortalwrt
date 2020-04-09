@@ -1,6 +1,4 @@
-local fs = require "nixio.fs"
-local net = require"luci.model.network".init()
-local ifaces = require"luci.sys".net:devices()
+local api = require "luci.model.cbi.passwall.api.api"
 
 m = Map("passwall")
 
@@ -94,11 +92,14 @@ o:value("2", "2 " .. translate("Process"))
 o:value("3", "3 " .. translate("Process"))
 o:value("4", "4 " .. translate("Process"))
 
----- Socks5 Proxy Port
-o = s:option(Value, "socks5_proxy_port", translate("Socks5 Proxy Port"))
-o.datatype = "port"
-o.default = 1081
-o.rmempty = true
+---- Socks Proxy Port
+local socks_node_num = tonumber(api.uci_get_type("global_other",
+                                                  "socks_node_num", 1))
+for i = 1, socks_node_num, 1 do
+    o = s:option(Value, "socks_proxy_port" .. i, translate("Socks Proxy Port"))
+    o.datatype = "port"
+    o.default = "108" .. i
+end
 
 ---- Proxy IPv6
 o = s:option(Flag, "proxy_ipv6", translate("Proxy IPv6"),
@@ -149,8 +150,8 @@ o:value("1")
 o:value("2")
 o:value("3")
 
----- Socks5 Node Number Option
-o = s:option(ListValue, "socks5_node_num", "Socks5" .. translate("Node Number"))
+---- Socks Node Number Option
+o = s:option(ListValue, "socks_node_num", "Socks" .. translate("Node Number"))
 o.default = "1"
 o.rmempty = false
 o:value("1")

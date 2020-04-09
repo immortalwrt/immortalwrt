@@ -3,7 +3,7 @@ config global
 	option enabled '0'
 	option tcp_node1 'nil'
 	option udp_node1 'nil'
-	option socks5_node1 'nil'
+	option socks_node1 'nil'
 	option dns_mode 'pdnsd'
 	option up_china_dns 'default'
 	option dns_forward '8.8.4.4'
@@ -18,7 +18,7 @@ config global_haproxy
 
 config global_delay
 	option auto_on '0'
-	option start_daemon '1'
+	option start_daemon '0'
 	option start_delay '1'
 
 config global_forwarding
@@ -27,7 +27,9 @@ config global_forwarding
 	option udp_no_redir_ports '80,443'
 	option tcp_redir_ports '22,25,53,143,465,587,993,995,80,443'
 	option udp_redir_ports '1:65535'
-	option socks5_proxy_port '1081'
+	option socks_proxy_port1 '1081'
+	option socks_proxy_port2 '1082'
+	option socks_proxy_port3 '1083'
 	option proxy_ipv6 '0'
 	
 config global_other
@@ -35,7 +37,7 @@ config global_other
 	option auto_ping '1'
 	option tcp_node_num '1'
 	option udp_node_num '1'
-	option socks5_node_num '1'
+	option socks_node_num '1'
 	option status_use_big_icon '1'
 	option status_show_check_port '0'
 	option status_show_ip111 '0'
@@ -60,6 +62,7 @@ config global_app
 config global_subscribe
 	option subscribe_proxy '0'
 	option auto_update_subscribe '0'
+	option filter_enabled '1'
 	option filter_keyword_discarded '1'
 	list filter_keyword '过期时间'
 	list filter_keyword '剩余流量'
