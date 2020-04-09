@@ -28,6 +28,9 @@ DEFAULT_PACKAGES += partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid \
 
 $(eval $(call BuildTarget))
 
-$(eval $(call $(if $(CONFIG_ISO_IMAGES),RequireCommand,Ignore),mkisofs, \
-   	Please install mkisofs. \
+$(eval $(call $(if $(CONFIG_ISO_IMAGES),SetupHostCommand,Ignore),mkisofs, \
+	Please install mkisofs. , \
+	mkisofs -v 2>&1 , \
+	genisoimage -v 2>&1 | grep genisoimage, \
+	xorrisofs -v 2>&1 | grep xorriso \
 ))
