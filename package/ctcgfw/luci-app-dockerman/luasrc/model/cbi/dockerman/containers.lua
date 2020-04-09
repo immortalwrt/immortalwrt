@@ -163,6 +163,11 @@ btnstop.template = "dockerman/cbi/inlinebutton"
 btnstop.inputtitle=translate("Stop")
 btnstop.inputstyle = "reset"
 btnstop.forcewrite = true
+btnkill=action_section:option(Button, "_kill")
+btnkill.template = "dockerman/cbi/inlinebutton"
+btnkill.inputtitle=translate("Kill")
+btnkill.inputstyle = "reset"
+btnkill.forcewrite = true
 btnremove=action_section:option(Button, "_remove")
 btnremove.template = "dockerman/cbi/inlinebutton"
 btnremove.inputtitle=translate("Remove")
@@ -182,6 +187,9 @@ btnremove.write = function(self, section)
 end
 btnstop.write = function(self, section)
   start_stop_remove(m,"stop")
+end
+btnkill.write = function(self, section)
+  start_stop_remove(m,"kill")
 end
 
 return m

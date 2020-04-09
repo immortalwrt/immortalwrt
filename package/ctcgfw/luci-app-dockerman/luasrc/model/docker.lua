@@ -129,8 +129,8 @@ local get_config = function(container_config, image_config)
 
   -- handle hostconfig
   local host_config = old_host_config
-  if host_config.PortBindings and next(host_config.PortBindings) == nil then host_config.PortBindings = nil end
-  host_config.LogConfig = nil
+  -- if host_config.PortBindings and next(host_config.PortBindings) == nil then host_config.PortBindings = nil end
+  -- host_config.LogConfig = nil
   host_config.Mounts = {}
   -- for volumes
   for i, v in ipairs(container_config.Mounts) do
