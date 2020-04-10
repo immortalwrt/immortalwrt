@@ -41,7 +41,7 @@ sleeptime.description = translate("越短的时间时间响应越及时，但会
 debuglevel=s:taboption("tab_basic", ListValue,"debuglevel",translate("日志调试等级"))
 debuglevel:value("",translate("关闭"))
 debuglevel:value("1",translate("简单"))
-debuglevel:value("2",translate("详细"))
+debuglevel:value("2",translate("调试"))
 debuglevel.rmempty = true 
 debuglevel.optional = true
 
@@ -151,10 +151,15 @@ a=s:taboption("tab_basic2", Flag,"err_enable",translate("无人值守任务"))
 a.default=0
 a.rmempty=true
 a.description = translate("请确认脚本可以正常运行！！<br/>否则可能造成频繁重启等错误！")
-device_aliases= s:taboption("tab_basic2", DynamicList, "err_device_aliases", translate("列表中设备都不在线时才会执行"))
+a=s:taboption("tab_basic2", Flag,"err_sheep_enable",translate("仅在免打扰时段重拨"))
+a.default=0
+a.rmempty=true
+a.description = translate("避免白天重拨 ddns 域名等待解析<br/>此功能不影响断网检测")
+a:depends({err_enable="1"})
+device_aliases= s:taboption("tab_basic2", DynamicList, "err_device_aliases", translate("关注列表"))
 device_aliases.rmempty = true 
 device_aliases.optional = true
-device_aliases.description = translate("请输入设备 MAC")
+device_aliases.description = translate("只会在列表中设备都不在线时才会执行<br/>免打扰时段一小时后，关注设备十分钟无流量将视为离线")
 nt.mac_hints(function(mac, name) device_aliases :value(mac, "%s (%s)" %{ mac, name }) end)
 device_aliases:depends({err_enable="1"})
 a=s:taboption("tab_basic2", ListValue,"network_err_event",translate("网络断开时"))
