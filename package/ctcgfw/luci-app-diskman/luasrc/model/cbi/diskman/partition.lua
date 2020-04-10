@@ -196,7 +196,7 @@ if not disk_info.p_table:match("Raid") then
     if disk_info.partitions[section].mount_point == "-" and disk_info.partitions[section].number ~= -1 and disk_info.partitions[section].type ~= "extended" then
       self.template = "diskman/cbi/format_button"
       self.inputstyle = "reset"
-      self.inputtitle = disk_info.partitions[section].fs:match("^%s+$") and translate("Format") or disk_info.partitions[section].fs
+      self.inputtitle = disk_info.partitions[section].fs == "raw" and translate("Format") or disk_info.partitions[section].fs
       Button.render(self, section, scope)
       -- self:reset_values()
       -- self.keylist = {}
