@@ -4,7 +4,7 @@ uci = (require "luci.model.uci").cursor()
 
 raw_file_dir = arg[1]
 
-raw_json_str = fs.readfile(raw_file_dir)
+raw_json_str = fs.readfile(raw_file_dir) or "[]"
 raw_json = luci.jsonc.parse(raw_json_str) or {}
 
 new_json = {}
