@@ -30,6 +30,7 @@ handle_allowed_interface(){
 }
 
 start(){
+	[ ! -x "/etc/init.d/dockerd" ] && return 0
 	init_dockerman_chain
 	if [ -n "$daemon_ea" ]; then
 		handle_allowed_interface

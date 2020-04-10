@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-lib-docker
-PKG_VERSION:=v0.3.0
-PKG_RELEASE:=beta
+PKG_VERSION:=v0.3.3
+PKG_RELEASE:=1
 PKG_MAINTAINER:=lisaac <https://github.com/lisaac/luci-lib-docker>
 PKG_LICENSE:=AGPL-3.0
 
@@ -11,7 +11,7 @@ PKG_SOURCE_URL:=https://github.com/lisaac/luci-lib-docker.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
 
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)
-PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 
 include $(INCLUDE_DIR)/package.mk
