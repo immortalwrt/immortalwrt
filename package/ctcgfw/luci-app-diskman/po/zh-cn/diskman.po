@@ -228,3 +228,12 @@ msgstr "分区不存在！"
 
 msgid "Creation"
 msgstr "创建"
+
+msgid "Please select file system!"
+msgstr "请选择文件系统！"
+
+msgid "Format partation:"
+msgstr "格式化分区："
+
+msgid "Warnning !! \nTHIS WILL OVERWRITE EXISTING PARTITIONS!! \nModify the partition table?"
+msgstr "警告！！\n此操作会覆盖现有分区\n确定修改分区表？"
