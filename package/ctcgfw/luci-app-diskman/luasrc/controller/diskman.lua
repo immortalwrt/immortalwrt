@@ -51,7 +51,7 @@ function format_partition()
   local dm = require "luci.model.diskman"
   code, msg = dm.format_partition(partation_name, fs)
   luci.http.status(code, msg)
-  luci.http.write_json({msg})
+  luci.http.write_json(msg)
 end
 
 function get_disk_info(dev)
