@@ -204,6 +204,7 @@ btn_umount.write = function(self, section, value)
   end
 end
 
+if dm.command.mdadm or dm.command.btrfs then
 local creation_section = m:section(TypedSection, "_creation")
 creation_section.cfgsections=function()
   return {translate("Creation")}
@@ -320,6 +321,7 @@ if dm.command.btrfs then
     end
     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
   end
+end
 end
 
 return m
