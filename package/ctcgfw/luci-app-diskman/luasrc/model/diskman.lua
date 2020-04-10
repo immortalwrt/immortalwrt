@@ -455,7 +455,7 @@ d.get_format_cmd = function()
     ext2 = { cmd = "mkfs.ext2", option = "-F -E lazy_itable_init=1" },
     ext3 = { cmd = "mkfs.ext3", option = "-F -E lazy_itable_init=1" },
     ext4 = { cmd = "mkfs.ext4", option = "-F -E lazy_itable_init=1" },
-    fat32 = { cmd = "mkfs.fat", option = "-F 32 -I" },
+    fat32 = { cmd = "mkfs.vfat", option = "-F" },
     exfat = { cmd = "mkexfat", option = "-f" },
     hfsplus = { cmd = "mkhfs", option = "-f" },
     ntfs = { cmd = "mkntfs", option = "-f" },
@@ -717,12 +717,12 @@ end
 d.format_partition = function(partition, fs)
   local partition_name = "/dev/".. partition
   if not nixio.fs.access(partition_name) then
-    return 500, translate("Partition NOT found!")
+    return 500, "Partition NOT found!"
   end
 
   local format_cmd = d.get_format_cmd()
   if not format_cmd[fs] then
-    return 500, translate("Filesystem NOT support!")
+    return 500, "Filesystem NOT support!"
   end
   local cmd = format_cmd[fs].cmd .. " " .. format_cmd[fs].option .. " " .. partition_name
   local res = luci.util.exec(cmd .. " 2>&1")

@@ -64,7 +64,7 @@
     btn_p_table.onchange = function () {
       let btn_p_table_index = btn_p_table.selectedIndex
       if (btn_p_table_index != btn_p_table_raw_index) {
-        if (confirm("Warnning !! \nTHIS WILL OVERWRITE EXISTING PARTITIONS!! \nModify the partition table?")) {
+        if (confirm("<%:Warnning !! \nTHIS WILL OVERWRITE EXISTING PARTITIONS!! \nModify the partition table?%>")) {
           let p_table = btn_p_table.options[btn_p_table_index].value
           XHR.get('<%=luci.dispatcher.build_url("admin/system/diskman/mk_p_table")%>', { dev: val_name, p_table: p_table }, (x, res) => {
             if (res.code == 0) {
@@ -89,22 +89,38 @@
   }
   function do_format(partation_name){
     let fs = document.getElementById("filesystem_list").value
+    let status = document.getElementById("format-status")
+    if(!fs) {
+      status.innerHTML = "<%:Please select file system!%>"
+      return
+    }
+    status.innerHTML = "<%:Formatting..%>"
+    let b = document.getElementById('btn_format')
+    b.disabled = true
     let xhr = new XHR()
     xhr.post('<%=luci.dispatcher.build_url("admin/system/diskman/format_partition")%>', { partation_name: partation_name, file_system: fs }, (x, res) => {
       if (x.status == 200) {
+        status.innerHTML = x.statusText
         location.reload();
+      }else{
+        status.innerHTML = x.statusText
       }
     })
   }
 
+  function clear_text(){
+    let s = document.getElementById('format-status')
+    s.innerHTML = ""
+    let b = document.getElementById('btn_format')
+    b.disabled = false
+  }
+
   function partition_format(partition_name, format_cmd, current_fs){
-    console.log(format_cmd)
     let list = ''
     format_cmd.split(",").forEach(e => {
       list = list + '<option value="'+e+'">'+e+'</option>'
     });
-    console.log(partition_name)
-    document.getElementById('dialog_format') || document.body.insertAdjacentHTML("beforeend", '<div id="dialog_format"><div class="dialog_box"><div class="dialog_line"></div><div class="dialog_line"><span><%:Format partation:%> <b>'+partition_name+'</b></span><br><spanid="cmd-line-status"></span></div><div class="dialog_line"><select id="filesystem_list" class="cbi-input-select">'+list+'</select></div><div class="dialog_line" style="text-align: right;"><input type="button" class="cbi-button cbi-button-apply"type="submit" value="<%:Format%>" onclick="do_format(`'+partition_name+'`)" /> <input type="button"class="cbi-button cbi-button-reset" type="reset" value="<%:Cancel%>" onclick="close_dialog()" /></div><div class="dialog_line"></div></div></div>>')
+    document.getElementById('dialog_format') || document.body.insertAdjacentHTML("beforeend", '<div id="dialog_format"><div class="dialog_box"><div class="dialog_line"></div><div class="dialog_line"><span><%:Format partation:%> <b>'+partition_name+'</b></span><br><span id="format-status" style="color: red;"></span></div><div class="dialog_line"><select id="filesystem_list" class="cbi-input-select" onchange="clear_text()">'+list+'</select></div><div class="dialog_line" style="text-align: right;"><input type="button" class="cbi-button cbi-button-apply" id="btn_format" type="submit" value="<%:Format%>" onclick="do_format(`'+partition_name+'`)" /> <input type="button"class="cbi-button cbi-button-reset" type="reset" value="<%:Cancel%>" onclick="close_dialog()" /></div><div class="dialog_line"></div></div></div>>')
     document.body.classList.add('dialog-format-active')
     document.documentElement.style.overflowY = 'hidden'
     let fs_list = document.getElementById("filesystem_list")
