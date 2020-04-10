@@ -145,6 +145,10 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
+	# Hack for qos-gargoyle
+	$(INSTALL_DIR) $(1)/usr/lib/iproute2/{tc,lib,include}
+	$(CP) $(PKG_BUILD_DIR)/{tc,include,lib} $(1)/usr/lib/iproute2
+	# Hack end
 endef
 
 define Package/ip-tiny/install
