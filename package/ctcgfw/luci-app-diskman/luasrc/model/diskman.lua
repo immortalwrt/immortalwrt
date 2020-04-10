@@ -185,7 +185,7 @@ local get_parted_info = function(device)
         partition_temp["name"] = device.."p"..partition_temp["number"]
       end
       if partition_temp["number"] > 0 and partition_temp["fs"] == "" and d.command.lsblk then
-        partition_temp["fs"] = luci.util.exec(d.command.lsblk .. " /dev/"..device.. tostring(partition_temp["number"]) .. " -no fstype")
+        partition_temp["fs"] = luci.util.exec(d.command.lsblk .. " /dev/"..device.. tostring(partition_temp["number"]) .. " -no fstype"):match("([^%s]+)") or ""
       end
       partition_temp["fs"] = partition_temp["fs"] == "" and "raw" or partition_temp["fs"]
       partition_temp["sec_start"] = partition_temp["sec_start"] and partition_temp["sec_start"]:sub(1,-2)
@@ -459,7 +459,7 @@ d.get_format_cmd = function()
     exfat = { cmd = "mkexfat", option = "-f" },
     hfsplus = { cmd = "mkhfs", option = "-f" },
     ntfs = { cmd = "mkntfs", option = "-f" },
-    swap = { cmd = "mkswap", option = "-f" },
+    swap = { cmd = "mkswap", option = "" },
     btrfs = { cmd = "mkfs.btrfs", option = "-f" }
   }
   result = {}
