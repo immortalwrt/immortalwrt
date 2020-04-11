@@ -83,9 +83,8 @@ ipq40xx_setup_macs()
 	case "$board" in
 	asus,rt-ac58u|\
 	asus,rt-acrh17)
-		CI_UBIPART=UBI_DEV
-		wan_mac=$(mtd_get_mac_binary_ubi Factory 20486)
-		lan_mac=$(mtd_get_mac_binary_ubi Factory 4102)
+		lan_mac=$(cat /sys/class/net/eth0/address)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
 		;;
 	engenius,ens620ext)
 		wan_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
