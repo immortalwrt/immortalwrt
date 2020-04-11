@@ -108,7 +108,7 @@ for index, key in pairs(ips) do o:value(key, temp[key]) end
 ---- MAC Address
 o = s:option(Value, "mac", translate("MAC"))
 o.rmempty = true
-sys.net.mac_hints(function(e, t) o:value(e, "%s " % {e}) end)
+sys.net.mac_hints(function(e, t) o:value(e, "%s (%s)" % {e, t}) end)
 
 ---- TCP Node
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)

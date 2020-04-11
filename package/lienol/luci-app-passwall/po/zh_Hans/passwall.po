@@ -301,6 +301,12 @@ msgstr "V2ray 分流"
 msgid "V2ray_shunt"
 msgstr "V2ray 分流"
 
+msgid "Preproxy"
+msgstr "前置代理"
+
+msgid "Use the default node for the transit."
+msgstr "使用默认节点代理转发。"
+
 msgid "Load balancing node list"
 msgstr "负载均衡节点列表"
 
