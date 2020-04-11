@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# 等待 5s，确保 luci 设置已保存
-sleep 5
+# 等待 3s，确保 luci 设置已保存
+sleep 3
 
 # 读取设置文件
 function get_config(){
@@ -469,17 +469,18 @@ if [ ! -z "$err_device_aliases" ] && [ -f ${dir}ipAddress ] ; then
 		if [ -z "$total_n" ] ; then total_n=`cat ${dir}usage.db 2>/dev/null | head -n1 | grep "total" | sed 's/,/\n/g' | awk '/total/{print NR}'`;fi
 		if [ -z "$total_n" ] ; then total_n="6";fi
 		for mac in $MACLIST; do
-			cat ${dir}usage.db 2>/dev/null | sed 's/,/ /g' | grep -i $mac | awk "{print "'$'$total_n"}" | grep -v "^$" | sort -u >> ${dir}sheep_usage
+			if [ ! -z "$mac" ] ; then local tmptotal=`cat ${dir}usage.db 2>/dev/null | sed 's/,/ /g' | grep -i $mac | awk "{print "'$'$total_n"}" | grep -v "^$" | sort -u`;fi
+			if [ ! -z "$tmptotal" ] ; then awk 'BEGIN{printf "%.0f\n",'$tmptotal'/'20480'}' 2>/dev/null >> ${dir}sheep_usage;fi
 		done
 		old_sheep_usage=`cat ${dir}old_sheep_usage 2>/dev/null`
 		sheep_usage=`cat ${dir}sheep_usage 2>/dev/null`
 		if [ "$old_sheep_usage" == "$sheep_usage" ] ; then
 			if [ -z "$sheep_nousage_starttime" ] ;then sheep_nousage_starttime=`date +%s`;fi
 		else
-			cat ${dir}sheep_usage 2>/dev/null > ${dir}old_sheep_usage
 			unset sheep_nousage_starttime
+			cat ${dir}sheep_usage 2>/dev/null > ${dir}old_sheep_usage
 		fi
-		# 如果关注设备十分钟无流量，视为不在线
+		# 如果关注设备连续十分钟低流量（每次低于10kb），视为不在线
 		if [ ! -z "$sheep_nousage_starttime" ] && [ "$((`date +%s`-$sheep_nousage_starttime))" -ge "600" ] ; then unset err_mac;fi
 	fi
 	if [ -z "$err_mac" ] ; then return 0;else return 1;fi
@@ -505,7 +506,7 @@ if [ -z "$err_mac" ] && [ ! -z "$system_time_event" ] ; then
 		exit
 	elif [ ! -z "$network_restart_time" ] && [ `ubus call network.interface.wan status | grep \"uptime\" | sed $'s/\"uptime": //g'| sed $'s/\,//g' | awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$network_restart_time" ] && [ "$system_time_event" -eq "2" ] ; then
 		echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】重新拨号咯" >> ${logfile}
-		/etc/init.d/network restart >/dev/null 2>&1
+		ifup wan >/dev/null 2>&1
 		sleep 60
 	fi
 fi
@@ -518,7 +519,7 @@ if [ -z "$err_mac" ] && [ ! -z "$public_ip_event" ] && [ ! -z "$public_ip_retry_
 		if [ $today -eq `date +"%d"` ] ;then public_ip_retry_count=`expr $public_ip_retry_count + 1`;else public_ip_today=`date +"%d"` && public_ip_retry_count=1;fi
 		echo "`date "+%Y-%m-%d %H:%M:%S"` 【无人值守任务】重拨尝试获取公网 ip，当前第 $public_ip_retry_count 次 " >> ${logfile}
 		# 等待 60 秒后重新获取 ip 并写入
-		/etc/init.d/network restart >/dev/null 2>&1
+		ifup wan >/dev/null 2>&1
 		sleep 60
 		local wanIP=`getip wanipv4`
 		local hostIP=`getip hostipv4`
@@ -753,6 +754,9 @@ function ip_changes(){
 		echo $title >${dir}title
 		echo -n $content >>${dir}content
 	fi
+	ddns_enabled=$(uci show ddns | grep "enabled" | grep "1")
+	if [ -z "$ddns_enabled" ] ; then ddns_logrow=0 ; else ddns_logrow=$(echo "$ddns_enabled" | wc -l);fi
+	if [ $ddns_logrow -ge 1 ] ;then /etc/init.d/ddns start;fi
 }			
 
 # 检测设备上线
