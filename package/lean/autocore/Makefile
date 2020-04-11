@@ -9,15 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
 PKG_VERSION:=1
-PKG_RELEASE:=26
-
+PKG_RELEASE:=27
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/autocore
   TITLE:=x86/x64 auto core loadbalance script.
-  MAINTAINER:=Lean
-  DEPENDS:=@BROKEN @TARGET_x86 +bc +lm-sensors +ethtool
+  MAINTAINER:=Lean / [CTCGFW] Project OpenWrt
+  DEPENDS:=@TARGET_x86 +bc +lm-sensors +ethtool
 endef
 
 define Package/autocore/description
@@ -30,7 +29,7 @@ endef
 define Package/autocore/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_BIN) ./files/rpcd_luci $(1)/etc/rpcd_luci
-	$(INSTALL_DATA) ./files/rpcd_luci-base.json $(1)/etc/rpcd_luci-base.json
+	$(INSTALL_DATA) ./files/rpcd_luci-mod-status.json $(1)/etc/rpcd_luci-mod-status.json
 	$(INSTALL_DATA) ./files/rpcd_10_system.js $(1)/etc/rpcd_10_system.js
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/autocore $(1)/etc/init.d/autocore
