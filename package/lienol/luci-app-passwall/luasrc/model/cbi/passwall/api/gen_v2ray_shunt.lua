@@ -20,16 +20,12 @@ local function gen_outbound(node, tag)
                 node.v2ray_protocol = "socks"
                 node.v2ray_transport = "tcp"
             else
-                local node_type = (proto and proto ~= "nil") and proto or
-                                      "socks"
-                local new_port = sys.exec(
-                                     "echo -n $(/usr/share/passwall/app.sh get_new_port auto tcp)")
+                local node_type = (proto and proto ~= "nil") and proto or "socks"
+                local new_port = sys.exec("echo -n $(/usr/share/passwall/app.sh get_new_port auto tcp)")
                 node.port = new_port
-                sys.call(string.format(
-                             "/usr/share/passwall/app.sh gen_start_config %s %s %s %s %s %s",
+                sys.call(string.format("/usr/share/passwall/app.sh gen_start_config %s %s %s %s %s %s",
                              node_id, new_port, "SOCKS",
-                             "/var/etc/passwall/v2_shunt_" .. node_type .. "_" ..
-                                 node_id .. ".json", "4", "127.0.0.1"))
+                             "/var/etc/passwall/v2_shunt_" .. node_type .. "_" .. node_id .. ".json", "4", "127.0.0.1"))
                 node.v2ray_protocol = "socks"
                 node.v2ray_transport = "tcp"
                 node.address = "127.0.0.1"
@@ -40,8 +36,7 @@ local function gen_outbound(node, tag)
             protocol = node.v2ray_protocol or "vmess",
             mux = {
                 enabled = (node.v2ray_mux == "1") and true or false,
-                concurrency = (node.v2ray_mux_concurrency) and
-                    tonumber(node.v2ray_mux_concurrency) or 8
+                concurrency = (node.v2ray_mux_concurrency) and tonumber(node.v2ray_mux_concurrency) or 8
             },
             -- 底层传输配置
             streamSettings = (node.v2ray_protocol == "vmess") and {
@@ -49,8 +44,7 @@ local function gen_outbound(node, tag)
                 security = node.v2ray_stream_security,
                 tlsSettings = (node.v2ray_stream_security == "tls") and {
                     serverName = node.tls_serverName,
-                    allowInsecure = (node.tls_allowInsecure == "1") and true or
-                        false
+                    allowInsecure = (node.tls_allowInsecure == "1") and true or false
                 } or nil,
                 tcpSettings = (node.v2ray_transport == "tcp" and
                     node.v2ray_protocol ~= "socks") and {
@@ -69,8 +63,7 @@ local function gen_outbound(node, tag)
                     tti = tonumber(node.v2ray_mkcp_tti),
                     uplinkCapacity = tonumber(node.v2ray_mkcp_uplinkCapacity),
                     downlinkCapacity = tonumber(node.v2ray_mkcp_downlinkCapacity),
-                    congestion = (node.v2ray_mkcp_congestion == "1") and true or
-                        false,
+                    congestion = (node.v2ray_mkcp_congestion == "1") and true or false,
                     readBufferSize = tonumber(node.v2ray_mkcp_readBufferSize),
                     writeBufferSize = tonumber(node.v2ray_mkcp_writeBufferSize),
                     header = {type = node.v2ray_mkcp_guise}
@@ -111,8 +104,7 @@ local function gen_outbound(node, tag)
                         address = node.address,
                         port = tonumber(node.port),
                         users = (node.username and node.password) and
-                            {{user = node.username, pass = node.password}} or
-                            nil
+                            {{user = node.username, pass = node.password}} or nil
                     }
                 } or nil
             }
@@ -159,10 +151,10 @@ end
 
 local rules = {}
 
-local youtube_node = node.youtube_node or nil
-if youtube_node and youtube_node ~= "nil" then
-    local node = ucursor:get_all("passwall", youtube_node)
-    local youtube_outbound = gen_outbound(node, "youtube")
+local youtube_node_id = node.youtube_node or nil
+if youtube_node_id and youtube_node_id ~= "nil" then
+    local youtube_node = ucursor:get_all("passwall", youtube_node_id)
+    local youtube_outbound = gen_outbound(youtube_node, "youtube")
     if youtube_outbound then
         table.insert(outbounds, youtube_outbound)
         local rule = {
@@ -177,17 +169,17 @@ if youtube_node and youtube_node ~= "nil" then
     end
 end
 
-local netflix_node = node.netflix_node or nil
-if netflix_node and netflix_node ~= "nil" then
-    local node = ucursor:get_all("passwall", netflix_node)
-    local netflix_outbound = gen_outbound(node, "netflix")
+local netflix_node_id = node.netflix_node or nil
+if netflix_node_id and netflix_node_id ~= "nil" then
+    local netflix_node = ucursor:get_all("passwall", netflix_node_id)
+    local netflix_outbound = gen_outbound(netflix_node, "netflix")
     if netflix_outbound then
         table.insert(outbounds, netflix_outbound)
         local rule = {
             type = "field",
             domain = {
                 "netflix", "netflix.com", "nflxso.net", "nflxext.com",
-                "nflximg.com", "nflximg.net", "nflxvideo.net"
+                "nflximg.com", "nflximg.net", "nflxvideo.net", "fast.com"
             },
             outboundTag = "netflix"
         }
@@ -195,10 +187,10 @@ if netflix_node and netflix_node ~= "nil" then
     end
 end
 
-local default_node = node.default_node or nil
-if default_node and default_node ~= "nil" then
-    local node = ucursor:get_all("passwall", default_node)
-    local default_outbound = gen_outbound(node, "default")
+local default_node_id = node.default_node or nil
+if default_node_id and default_node_id ~= "nil" then
+    local default_node = ucursor:get_all("passwall", default_node_id)
+    local default_outbound = gen_outbound(default_node, "default")
     if default_outbound then
         table.insert(outbounds, default_outbound)
         local rule = {
@@ -213,8 +205,7 @@ end
 routing = {domainStrategy = "IPOnDemand", rules = rules}
 
 -- 额外传出连接
-table.insert(outbounds,
-             {protocol = "freedom", tag = "direct", settings = {keep = ""}})
+table.insert(outbounds, {protocol = "freedom", tag = "direct", settings = {keep = ""}})
 
 local v2ray = {
     log = {
