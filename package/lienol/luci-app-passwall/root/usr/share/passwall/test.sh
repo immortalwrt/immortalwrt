@@ -22,7 +22,12 @@ test_url() {
 	local timeout=2
 	[ -n "$3" ] && timeout=$3
 	status=$(/usr/bin/wget -4 --no-check-certificate --spider --timeout=$timeout --tries $try "$url" 2>/dev/null)
-	[ "$?" == 0 ] && status=200
+	if [ "$?" == 0 ]; then
+		status=200
+	else
+		status=$(/usr/bin/wget --no-check-certificate --spider --timeout=$timeout --tries $try "$url" 2>/dev/null)
+		[ "$?" == 0 ] && status=200
+	fi
 	echo $status
 }
 

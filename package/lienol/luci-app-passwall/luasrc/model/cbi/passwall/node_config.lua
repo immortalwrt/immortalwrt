@@ -127,11 +127,21 @@ youtube_node:value("nil", translate("Close"))
 for _, key in pairs(key_table) do youtube_node:value(key, n[key]) end
 youtube_node:depends("type", "V2ray_shunt")
 
+youtube_proxy = s:option(Flag, "youtube_proxy", "Youtube " .. translate("Node") .. translate("Preproxy"),
+                        "Youtube " .. translate("Node") .. translate("Use the default node for the transit."))
+youtube_proxy.default = 0
+youtube_proxy:depends("type", "V2ray_shunt")
+
 netflix_node = s:option(ListValue, "netflix_node",
                         "Netflix " .. translate("Node"))
 netflix_node:value("nil", translate("Close"))
 for _, key in pairs(key_table) do netflix_node:value(key, n[key]) end
 netflix_node:depends("type", "V2ray_shunt")
+
+netflix_proxy = s:option(Flag, "netflix_proxy", "Netflix " .. translate("Node") .. translate("Preproxy"),
+                        "Netflix " .. translate("Node") .. translate("Use the default node for the transit."))
+netflix_proxy.default = 0
+netflix_proxy:depends("type", "V2ray_shunt")
 
 default_node = s:option(ListValue, "default_node",
                         translate("Default") .. " " .. translate("Node"))
@@ -148,6 +158,7 @@ address:depends("type", "V2ray")
 address:depends("type", "Brook")
 address:depends("type", "Trojan")
 
+--[[
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
 use_ipv6.default = 0
 use_ipv6:depends("type", "Socks5")
@@ -156,6 +167,7 @@ use_ipv6:depends("type", "SSR")
 use_ipv6:depends("type", "V2ray")
 use_ipv6:depends("type", "Brook")
 use_ipv6:depends("type", "Trojan")
+--]]
 
 port = s:option(Value, "port", translate("Port"))
 port.datatype = "port"

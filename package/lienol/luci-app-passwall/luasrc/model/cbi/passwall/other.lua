@@ -101,10 +101,12 @@ for i = 1, socks_node_num, 1 do
     o.default = "108" .. i
 end
 
+--[[
 ---- Proxy IPv6
 o = s:option(Flag, "proxy_ipv6", translate("Proxy IPv6"),
              translate("The IPv6 traffic can be proxyed when selected"))
 o.default = 0
+--]]
 
 --[[
 ---- TCP Redir Port
