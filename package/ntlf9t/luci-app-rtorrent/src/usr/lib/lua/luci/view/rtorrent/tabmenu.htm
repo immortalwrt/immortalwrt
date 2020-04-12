@@ -1,9 +1,0 @@
-<ul class="cbi-tabmenu" style="margin: 9px 0px 0px 0px;">
-	<%- for i, k in ipairs(self.pages) do -%>
-		<%- if k.name:lower() ~= "protected" then if self.page:lower() == k.name:lower() then -%>
-			<li class="cbi-tab"><a href="<%=k.link%>"><%=k.name%></a></li>
-		<%- else -%>
-			<li class="cbi-tab-disabled"><a href="<%=k.link%>"><%=k.name%></a></li>
-		<%- end end -%>
-	<%- end -%>
-</ul>

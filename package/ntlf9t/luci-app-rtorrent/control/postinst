@@ -1,6 +1,0 @@
-#!/bin/sh
-[ "${IPKG_NO_SCRIPT}" = "1" ] && exit 0
-. ${IPKG_INSTROOT}/lib/functions.sh
-default_postinst $0 $@
-uci get rtorrent.logging &>/dev/null || ( uci set rtorrent.logging=rss; uci commit )
-rm -fr /tmp/luci-indexcache /tmp/luci-modulecache

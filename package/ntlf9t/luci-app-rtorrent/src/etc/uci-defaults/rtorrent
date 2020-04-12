@@ -1,6 +1,0 @@
-#!/bin/sh
-/etc/init.d/rtorrent enable
-/etc/init.d/rtorrent start
-rm -fr /tmp/luci-indexcache /tmp/luci-modulecache
-exit 0
-
