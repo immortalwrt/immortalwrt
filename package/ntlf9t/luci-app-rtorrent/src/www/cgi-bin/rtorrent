@@ -1,4 +1,0 @@
-#!/usr/bin/lua
-local rtorrent = require "rtorrent"
-io.write(rtorrent.rpc(io.read("*all")))
-io.flush()
