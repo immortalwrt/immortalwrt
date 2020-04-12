@@ -705,7 +705,7 @@ define Device/phicomm_k2p
   DEVICE_VENDOR := Phicomm
   DEVICE_MODEL := K2P
   SUPPORTED_DEVICES += k2p
-  DEVICE_PACKAGES := kmod-mt_wifi_dbdc luci-app-mtwifi
+  DEVICE_PACKAGES := kmod-mt_wifi luci-app-mtwifi
 endef
 TARGET_DEVICES += phicomm_k2p
 
