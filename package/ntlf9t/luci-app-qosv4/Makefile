@@ -7,43 +7,17 @@
 
 include $(TOPDIR)/rules.mk
 
+LUCI_TITLE:=LuCI Support for QoSv4.
+LUCI_DESCRIPTION:=An agent script that makes qosv4 configuration simple.
+LUCI_DEPENDS:=+tc +iptables-mod-conntrack-extra +iptables-mod-conntrack-extra +iptables-mod-filter +iptables-mod-imq +iptables-mod-ipopt +iptables-mod-nat-extra +iptables-mod-imq +kmod-sched
+LUCI_PKGARCH:=all
+
 PKG_NAME:=luci-app-qosv4
 PKG_VERSION:=1.1f
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-include $(INCLUDE_DIR)/package.mk
+PKG_MAINTAINER:=qq 3341249
 
-define Package/luci-app-qosv4
-  SECTION:=LuCI
-  CATEGORY:=LuCI
-  SUBMENU:=3. Applications
-  TITLE:=LuCI Support for QoSv4.
-  DEPENDS:=+tc +iptables-mod-conntrack-extra +iptables-mod-conntrack-extra +iptables-mod-filter +iptables-mod-imq +iptables-mod-ipopt +iptables-mod-nat-extra +iptables-mod-imq +kmod-sched
-  PKGARCH:=all
-  MAINTAINER:=qq 3341249
-endef
+include $(TOPDIR)/feeds/luci/luci.mk
 
-define Package/luci-app-qosv4/description
-An agent script that makes qosv4 configuration simple.
-endef
-
-define Build/Compile
-endef
-
-define Package/luci-app-qosv4/postinst
-#!/bin/sh 
-
-[ -n "${IPKG_INSTROOT}" ] || {
-	( . /etc/uci-defaults/luci-qosv4 ) && rm -f /etc/uci-defaults/luci-qosv4
-	chmod 755 /etc/init.d/qosv4  >/dev/null 2>&1
-/etc/init.d/qosv4 enable  >/dev/null 2>&1	
-sed -i -e '/qos_scheduler/d' /etc/crontabs/root >/dev/null 2>&1	
-	exit 0
-}
-endef 
-
-define Package/luci-app-qosv4/install
-	$(CP) ./files/* $(1)
-endef
-
-$(eval $(call BuildPackage,luci-app-qosv4))
+# call BuildPackage - OpenWrt buildroot signature
