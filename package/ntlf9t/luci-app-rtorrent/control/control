@@ -1,8 +1,0 @@
-Package: luci-app-rtorrent
-Version: 0.1.6
-Depends: libc, rtorrent-rpc, luaexpat, luasocket, luasec, screen
-Source: https://github.com/wolandmaster/luci-app-rtorrent
-Section: luci
-Maintainer: Sandor Balazsi <sandor.balazsi@gmail.com>
-Architecture: all
-Description: rTorrent client for LuCI
