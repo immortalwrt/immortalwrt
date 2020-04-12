@@ -1,0 +1,11 @@
+{
+	"luci-app-ngrokc": {
+		"description": "Grant UCI access for luci-app-ngrokc",
+		"read": {
+			"uci": [ "ngrokc" ]
+		},
+		"write": {
+			"uci": [ "ngrokc" ]
+		}
+	}
+}

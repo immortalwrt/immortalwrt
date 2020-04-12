@@ -1,0 +1,11 @@
+{
+	"luci-app-advancedsetting": {
+		"description": "Grant UCI access for luci-app-advancedsetting",
+		"read": {
+			"uci": [ "advancedsetting" ]
+		},
+		"write": {
+			"uci": [ "advancedsetting" ]
+		}
+	}
+}

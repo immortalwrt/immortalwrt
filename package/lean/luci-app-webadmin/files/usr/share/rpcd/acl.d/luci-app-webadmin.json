@@ -1,0 +1,11 @@
+{
+	"luci-app-webadmin": {
+		"description": "Grant UCI access for luci-app-webadmin",
+		"read": {
+			"uci": [ "uhttpd" ]
+		},
+		"write": {
+			"uci": [ "uhttpd" ]
+		}
+	}
+}

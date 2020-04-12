@@ -1,0 +1,11 @@
+{
+	"luci-app-njitclient": {
+		"description": "Grant UCI access for luci-app-njitclient",
+		"read": {
+			"uci": [ "njitclient" ]
+		},
+		"write": {
+			"uci": [ "njitclient" ]
+		}
+	}
+}

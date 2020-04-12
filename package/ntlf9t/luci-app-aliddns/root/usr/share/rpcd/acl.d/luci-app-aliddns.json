@@ -1,0 +1,11 @@
+{
+	"luci-app-aliddns": {
+		"description": "Grant UCI access for luci-app-aliddns",
+		"read": {
+			"uci": [ "aliddns" ]
+		},
+		"write": {
+			"uci": [ "aliddns" ]
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"luci-app-ssocks": {
+		"description": "Grant UCI access for luci-app-ssocks",
+		"read": {
+			"uci": [ "ssocks" ]
+		},
+		"write": {
+			"uci": [ "ssocks" ]
+		}
+	}
+}

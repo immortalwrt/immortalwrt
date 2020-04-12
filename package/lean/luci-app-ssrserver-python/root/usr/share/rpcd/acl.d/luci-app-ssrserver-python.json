@@ -1,0 +1,11 @@
+{
+	"luci-app-ssrserver-python": {
+		"description": "Grant UCI access for luci-app-ssrserver-python",
+		"read": {
+			"uci": [ "ssrs" ]
+		},
+		"write": {
+			"uci": [ "ssrs" ]
+		}
+	}
+}

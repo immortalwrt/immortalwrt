@@ -1,0 +1,11 @@
+{
+	"luci-app-iptvhelper": {
+		"description": "Grant UCI access for luci-app-iptvhelper",
+		"read": {
+			"uci": [ "iptvhelper" ]
+		},
+		"write": {
+			"uci": [ "iptvhelper" ]
+		}
+	}
+}

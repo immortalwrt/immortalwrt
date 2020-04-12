@@ -1,0 +1,11 @@
+{
+	"luci-app-ssr-plus-Jo": {
+		"description": "Grant UCI access for luci-app-ssr-plus-Jo",
+		"read": {
+			"uci": [ "shadowsocksr" ]
+		},
+		"write": {
+			"uci": [ "shadowsocksr" ]
+		}
+	}
+}

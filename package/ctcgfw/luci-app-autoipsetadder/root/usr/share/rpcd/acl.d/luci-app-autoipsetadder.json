@@ -1,0 +1,11 @@
+{
+	"luci-app-autoipsetadder": {
+		"description": "Grant UCI access for luci-app-autoipsetadder",
+		"read": {
+			"uci": [ "autoipsetadder" ]
+		},
+		"write": {
+			"uci": [ "autoipsetadder" ]
+		}
+	}
+}

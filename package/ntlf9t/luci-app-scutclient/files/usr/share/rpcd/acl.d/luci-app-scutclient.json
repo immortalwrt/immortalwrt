@@ -1,0 +1,11 @@
+{
+	"luci-app-scutclient": {
+		"description": "Grant UCI access for luci-app-scutclient",
+		"read": {
+			"uci": [ "scutclient" ]
+		},
+		"write": {
+			"uci": [ "scutclient" ]
+		}
+	}
+}

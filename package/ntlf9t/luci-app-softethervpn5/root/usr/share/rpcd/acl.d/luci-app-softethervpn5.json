@@ -1,0 +1,11 @@
+{
+	"luci-app-softethervpn5": {
+		"description": "Grant UCI access for luci-app-softethervpn5",
+		"read": {
+			"uci": [ "softethervpn5" ]
+		},
+		"write": {
+			"uci": [ "softethervpn5" ]
+		}
+	}
+}

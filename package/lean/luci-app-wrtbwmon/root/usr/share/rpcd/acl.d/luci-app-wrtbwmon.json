@@ -1,0 +1,11 @@
+{
+	"luci-app-wrtbwmon": {
+		"description": "Grant UCI access for luci-app-wrtbwmon",
+		"read": {
+			"uci": [ "wrtbwmon" ]
+		},
+		"write": {
+			"uci": [ "wrtbwmon" ]
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"luci-app-nfs": {
+		"description": "Grant UCI access for luci-app-nfs",
+		"read": {
+			"uci": [ "nfs" ]
+		},
+		"write": {
+			"uci": [ "nfs" ]
+		}
+	}
+}

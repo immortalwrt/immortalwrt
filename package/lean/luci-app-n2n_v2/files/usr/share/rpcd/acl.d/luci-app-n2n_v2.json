@@ -1,0 +1,11 @@
+{
+	"luci-app-n2n_v2": {
+		"description": "Grant UCI access for luci-app-n2n_v2",
+		"read": {
+			"uci": [ "n2n_v2" ]
+		},
+		"write": {
+			"uci": [ "n2n_v2" ]
+		}
+	}
+}

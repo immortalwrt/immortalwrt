@@ -1,0 +1,11 @@
+{
+	"luci-app-xunlei": {
+		"description": "Grant UCI access for luci-app-xunlei",
+		"read": {
+			"uci": [ "xunlei" ]
+		},
+		"write": {
+			"uci": [ "xunlei" ]
+		}
+	}
+}

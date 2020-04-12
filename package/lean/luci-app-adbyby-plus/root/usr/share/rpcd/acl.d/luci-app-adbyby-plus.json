@@ -1,0 +1,11 @@
+{
+	"luci-app-adbyby-plus": {
+		"description": "Grant UCI access for luci-app-adbyby-plus",
+		"read": {
+			"uci": [ "adbyby" ]
+		},
+		"write": {
+			"uci": [ "adbyby" ]
+		}
+	}
+}

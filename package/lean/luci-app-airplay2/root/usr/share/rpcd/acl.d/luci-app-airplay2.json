@@ -1,0 +1,11 @@
+{
+	"luci-app-airplay2": {
+		"description": "Grant UCI access for luci-app-airplay2",
+		"read": {
+			"uci": [ "shairport-sync" ]
+		},
+		"write": {
+			"uci": [ "shairport-sync" ]
+		}
+	}
+}

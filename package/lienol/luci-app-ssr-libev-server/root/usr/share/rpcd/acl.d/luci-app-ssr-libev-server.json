@@ -1,0 +1,11 @@
+{
+	"luci-app-ssr-libev-server": {
+		"description": "Grant UCI access for luci-app-ssr-libev-server",
+		"read": {
+			"uci": [ "ssr_libev_server" ]
+		},
+		"write": {
+			"uci": [ "ssr_libev_server" ]
+		}
+	}
+}
