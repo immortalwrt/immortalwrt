@@ -57,12 +57,13 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	iodata,wn-ax1167gr2|\
+	iodata,wn-ax2033gr|\
 	iodata,wn-dx1167r)
 		iodata_mstc_upgrade_prepare
 		nand_do_upgrade "$1"
 		;;
-	ubiquiti,edgerouterx|\
-	ubiquiti,edgerouterx-sfp)
+	ubnt,edgerouter-x|\
+	ubnt,edgerouter-x-sfp)
 		platform_upgrade_ubnt_erx "$1"
 		;;
 	*)
