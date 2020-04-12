@@ -232,7 +232,7 @@ define Device/dlink_dir-878-a1
   IMAGES += factory.bin
   DEVICE_MODEL := DIR-878
   DEVICE_VARIANT := A1
-  DEVICE_PACKAGES := luci-app-mtwifi
+  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
   KERNEL_INITRAMFS := $$(KERNEL) | ubootpad96
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | ubootpad96 |\
 	pad-rootfs |  check-size $$$$(IMAGE_SIZE) | append-metadata
@@ -452,7 +452,7 @@ define Device/jcg_jhr-ac876m
   JCG_MAXSIZE := 16064k
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := JHR-AC876M
-  DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES := kmod-mt7615e kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
 endef
 TARGET_DEVICES += jcg_jhr-ac876m
 
@@ -603,7 +603,7 @@ define Device/netgear_r6260
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0052
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += luci-app-mtwifi
+  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += netgear_r6260
 
@@ -615,7 +615,7 @@ define Device/netgear_r6350
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0052
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += luci-app-mtwifi
+  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += netgear_r6350
 
@@ -630,7 +630,7 @@ define Device/netgear_r6700-v2
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x1032
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += luci-app-mtwifi
+  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += netgear_r6700-v2
 
@@ -642,7 +642,7 @@ define Device/netgear_r6800
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0062
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += luci-app-mtwifi
+  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += netgear_r6800
 
@@ -654,7 +654,7 @@ define Device/netgear_r6850
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0052
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += luci-app-mtwifi
+  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += netgear_r6850
 
@@ -705,7 +705,7 @@ define Device/phicomm_k2p
   DEVICE_VENDOR := Phicomm
   DEVICE_MODEL := K2P
   SUPPORTED_DEVICES += k2p
-  DEVICE_PACKAGES := luci-app-mtwifi
+  DEVICE_PACKAGES := kmod-mt_wifi_dbdc luci-app-mtwifi
 endef
 TARGET_DEVICES += phicomm_k2p
 
@@ -908,8 +908,8 @@ define Device/xiaomi_mir3p
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
 	check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := luci-app-mtwifi kmod-usb3 kmod-usb-ledtrig-usbport \
-	uboot-envtools
+  DEVICE_PACKAGES := kmod-usb3 kmod-usb-ledtrig-usbport \
+	kmod-mt_wifi luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir3p
 
