@@ -479,18 +479,6 @@ define Device/linksys_ea8300
 endef
 TARGET_DEVICES += linksys_ea8300
 
-define Device/mobipromo_cm520-79f
-	$(call Device/FitzImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := MobiPromo
-	DEVICE_MODEL := CM520-79F
-	SOC := qcom-ipq4019
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_PACKAGES := ipq-wifi-mobipromo_cm520-79f kmod-usb-ledtrig-usbport
-endef
-TARGET_DEVICES += mobipromo_cm520-79f
-
 define Device/meraki_mr33
 	$(call Device/FitImage)
 	DEVICE_VENDOR := Cisco Meraki
@@ -569,7 +557,6 @@ define Device/openmesh_a62
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct uboot-envtools
 endef
-
 TARGET_DEVICES += openmesh_a62
 
 define Device/p2w_r619ac
