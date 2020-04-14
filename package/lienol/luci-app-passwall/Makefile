@@ -136,8 +136,8 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/passwall
 	cp -pR ./root/usr/share/passwall/* $(1)/usr/share/passwall
 
-	$(INSTALL_DIR) $(1)/usr/usr/share/rpcd/acl.d
-	$(INSTALL_CONF) ./root/usr/usr/share/rpcd/acl.d/*.json $(1)/usr/usr/share/rpcd/acl.d/
+	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
+	$(INSTALL_CONF) ./root/usr/share/rpcd/acl.d/*.json $(1)/usr/share/rpcd/acl.d/
 
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci/
