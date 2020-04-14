@@ -11,16 +11,15 @@
  struct nf_ct_event_notifier {
  	int (*fcn)(unsigned int events, struct nf_ct_event *item);
  };
-@@ -80,7 +84,7 @@ int nf_conntrack_register_notifier(struc
+@@ -80,6 +84,7 @@ int nf_conntrack_register_notifier(struc
  				   struct nf_ct_event_notifier *nb);
  void nf_conntrack_unregister_notifier(struct net *net,
  				      struct nf_ct_event_notifier *nb);
--
 +#endif
+ 
  void nf_ct_deliver_cached_events(struct nf_conn *ct);
  int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
- 				  u32 portid, int report);
-@@ -105,12 +109,15 @@ static inline void
+@@ -105,11 +110,13 @@ static inline void
  nf_conntrack_event_cache(enum ip_conntrack_events event, struct nf_conn *ct)
  {
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
@@ -31,50 +30,36 @@
  
  	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
  		return;
- 
 +#endif
-+
+ 
  	e = nf_ct_ecache_find(ct);
  	if (e == NULL)
- 		return;
-@@ -123,31 +130,28 @@ static inline int
- nf_conntrack_event_report(enum ip_conntrack_events event, struct nf_conn *ct,
+@@ -124,10 +131,12 @@ nf_conntrack_event_report(enum ip_conntr
  			  u32 portid, int report)
  {
--#ifdef CONFIG_NF_CONNTRACK_EVENTS
+ #ifdef CONFIG_NF_CONNTRACK_EVENTS
 +#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
  	const struct net *net = nf_ct_net(ct);
  
  	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
  		return 0;
--
--	return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
--#else
--	return 0;
- #endif
-+
-+ 	return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
- }
++#endif
  
- static inline int
+ 	return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
+ #else
+@@ -139,10 +148,12 @@ static inline int
  nf_conntrack_event(enum ip_conntrack_events event, struct nf_conn *ct)
  {
--#ifdef CONFIG_NF_CONNTRACK_EVENTS
+ #ifdef CONFIG_NF_CONNTRACK_EVENTS
 +#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
  	const struct net *net = nf_ct_net(ct);
  
  	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
  		return 0;
++#endif
  
--	return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
--#else
--	return 0;
- #endif
-+
-+ 	return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
- }
- 
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
+ 	return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
+ #else
 --- a/include/net/netns/conntrack.h
 +++ b/include/net/netns/conntrack.h
 @@ -112,7 +112,11 @@ struct netns_ct {
@@ -130,16 +115,13 @@
  #include <linux/kernel.h>
  #include <linux/netdevice.h>
  #include <linux/slab.h>
-@@ -117,6 +120,38 @@ static void ecache_work(struct work_stru
+@@ -116,7 +119,35 @@ static void ecache_work(struct work_stru
+ 	if (delay >= 0)
  		schedule_delayed_work(&ctnet->ecache_dwork, delay);
  }
- 
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
-+int
-+nf_conntrack_eventmask_report(unsigned int eventmask,
-+			      struct nf_conn *ct,
-+			      u32 portid,
-+			      int report)
++int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
++				  u32 portid, int report)
 +{
 +	struct nf_conntrack_ecache *e;
 +	struct net *net = nf_ct_net(ct);
@@ -159,7 +141,7 @@
 +
 +		if (!((eventmask | missed) & e->ctmask))
 +			return 0;
-+
+ 
 +		atomic_notifier_call_chain(&net->ct.nf_conntrack_chain, eventmask | missed, &item);
 +	}
 +
@@ -169,7 +151,7 @@
  int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
  				  u32 portid, int report)
  {
-@@ -171,10 +206,52 @@ out_unlock:
+@@ -171,10 +202,52 @@ out_unlock:
  	rcu_read_unlock();
  	return ret;
  }
@@ -222,7 +204,7 @@
  void nf_ct_deliver_cached_events(struct nf_conn *ct)
  {
  	struct net *net = nf_ct_net(ct);
-@@ -225,6 +302,7 @@ void nf_ct_deliver_cached_events(struct
+@@ -225,6 +298,7 @@ void nf_ct_deliver_cached_events(struct
  out_unlock:
  	rcu_read_unlock();
  }
@@ -230,12 +212,13 @@
  EXPORT_SYMBOL_GPL(nf_ct_deliver_cached_events);
  
  void nf_ct_expect_event_report(enum ip_conntrack_expect_events event,
-@@ -257,6 +335,12 @@ out_unlock:
+@@ -257,6 +331,13 @@ out_unlock:
  	rcu_read_unlock();
  }
  
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
-+int nf_conntrack_register_notifier(struct net *net, struct notifier_block *nb)
++int nf_conntrack_register_notifier(struct net *net,
++				   struct notifier_block *nb)
 +{
 +        return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
 +}
@@ -243,7 +226,7 @@
  int nf_conntrack_register_notifier(struct net *net,
  				   struct nf_ct_event_notifier *new)
  {
-@@ -277,8 +361,15 @@ out_unlock:
+@@ -277,8 +358,15 @@ out_unlock:
  	mutex_unlock(&nf_ct_ecache_mutex);
  	return ret;
  }
@@ -259,7 +242,7 @@
  void nf_conntrack_unregister_notifier(struct net *net,
  				      struct nf_ct_event_notifier *new)
  {
-@@ -292,6 +383,7 @@ void nf_conntrack_unregister_notifier(st
+@@ -292,6 +380,7 @@ void nf_conntrack_unregister_notifier(st
  	mutex_unlock(&nf_ct_ecache_mutex);
  	/* synchronize_rcu() is called from ctnetlink_exit. */
  }
@@ -269,27 +252,13 @@
  int nf_ct_expect_register_notifier(struct net *net,
 --- a/net/netfilter/nf_conntrack_netlink.c
 +++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -28,6 +28,11 @@
- #include <linux/netlink.h>
- #include <linux/spinlock.h>
- #include <linux/interrupt.h>
-+
-+#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
-+#include <linux/notifier.h>
-+#endif
-+
- #include <linux/slab.h>
- #include <linux/siphash.h>
- 
-@@ -676,14 +681,22 @@ static size_t ctnetlink_nlmsg_size(const
- 	       ;
+@@ -677,13 +677,20 @@ static size_t ctnetlink_nlmsg_size(const
  }
  
-+#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
-+static int ctnetlink_conntrack_event(struct notifier_block *this,
-+                           unsigned long events, void *ptr)
-+#else
  static int
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++ctnetlink_conntrack_event(struct notifier_block *this, unsigned long events, void *ptr)
++#else
  ctnetlink_conntrack_event(unsigned int events, struct nf_ct_event *item)
 +#endif
  {
@@ -304,7 +273,7 @@
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3502,9 +3515,15 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3502,9 +3509,15 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
