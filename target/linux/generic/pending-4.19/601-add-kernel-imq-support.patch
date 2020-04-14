@@ -1344,7 +1344,7 @@
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3250,7 +3253,12 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3252,7 +3255,12 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1357,7 +1357,7 @@
  		dev_queue_xmit_nit(skb, dev);
  
  	len = skb->len;
-@@ -3289,6 +3297,8 @@ out:
+@@ -3291,6 +3299,8 @@ out:
  	return skb;
  }
  
