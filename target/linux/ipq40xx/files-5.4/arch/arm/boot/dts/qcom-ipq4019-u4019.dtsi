@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later OR MIT
- *
- * Copyright (c) 2018 Peng Zhang <sd20@qxwlan.com>
- *
- */
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include "qcom-ipq4019.dtsi"
 #include <dt-bindings/gpio/gpio.h>
@@ -10,14 +6,7 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-
-	model = "Qxwlan E2600AC";
-	compatible = "qcom,ipq4019";
-
-	memory {
-		device_type = "memory";
-		reg = <0x80000000 0x10000000>; /* 256MB */
-	};
+	compatible = "unielec,u4019","qcom,ipq4019";
 
 	soc {
 		rng@22000 {
@@ -28,6 +17,8 @@
 			status = "okay";
 			pinctrl-0 = <&mdio_pins>;
 			pinctrl-names = "default";
+			reset-gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
+			reset-delay-us = <2000>;
 		};
 
 		ess-psgmii@98000 {
@@ -41,7 +32,6 @@
 		};
 
 		tcsr@194b000 {
-			/* select hostmode */
 			compatible = "qcom,tcsr";
 			reg = <0x194b000 0x100>;
 			qcom,usb-hsphy-mode-select = <TCSR_USB_HSPHY_HOST_MODE>;
@@ -60,60 +50,37 @@
 			qcom,wifi_noc_memtype_m0_m2 = <TCSR_WIFI_NOC_MEMTYPE_M0_M2>;
 		};
 
-		usb2: usb2@60f8800 {
+		usb2@60f8800 {
 			status = "okay";
 
 			dwc3@6000000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 
-				usb2_port1: port@1 {
+				port@1 {
 					reg = <1>;
 					#trigger-source-cells = <0>;
 				};
 			};
 		};
 
-		serial@78af000 {
-			pinctrl-0 = <&serial_0_pins>;
-			pinctrl-names = "default";
-			status = "okay";
-		};
-
-		serial@78b0000 {
-			pinctrl-0 = <&serial_1_pins>;
-			pinctrl-names = "default";
-			status = "okay";
-		};
-
-		i2c@78b7000 { /* BLSP1 QUP2 */
-			pinctrl-0 = <&i2c_0_pins>;
-			pinctrl-names = "default";
-
-			status = "okay";
-		};
-
-		usb3: usb3@8af8800 {
+		usb3@8af8800 {
 			status = "okay";
 
 			dwc3@8a00000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 
-				usb3_port1: port@1 {
+				port@1 {
 					reg = <1>;
 					#trigger-source-cells = <0>;
 				};
 
-				usb3_port2: port@2 {
+				port@2 {
 					reg = <2>;
 					#trigger-source-cells = <0>;
 				};
 			};
-		};
-
-		crypto@8e3a000 {
-			status = "okay";
 		};
 
 		watchdog@b017000 {
@@ -128,39 +95,23 @@
 			status = "okay";
 		};
 
+		aliases {
+			led-boot = &led_status;
+			led-failsafe = &led_status;
+			led-running = &led_status;
+			led-upgrade = &led_status;
+			serial0 = &blsp1_uart1;
+			serial1 = &blsp1_uart2;
+		};
+
 		leds {
 			compatible = "gpio-leds";
+			pinctrl-0 = <&led_pins>;
+			pinctrl-names = "default";
 
-			led1 {
-				label = "e2600ac:green:wlan0";
-				gpios = <&tlmm 50 GPIO_ACTIVE_LOW>;
-			};
-
-			led2 {
-				label = "e2600ac:green:wlan1";
-				gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
-			};
-
-			led3 {
-				label = "e2600ac:green:usb";
-				gpios = <&tlmm 32 GPIO_ACTIVE_LOW>;
-				trigger-sources = <&usb2_port1>, <&usb3_port1>, <&usb3_port2>;
-				linux,default-trigger = "usbport";
-			};
-
-			led4 {
-				label = "e2600ac:green:ctrl1";
-				gpios = <&tlmm 51 GPIO_ACTIVE_LOW>;
-			};
-
-			led5 {
-				label = "e2600ac:green:ctrl2";
-				gpios = <&tlmm 30 GPIO_ACTIVE_LOW>;
-			};
-
-			led6 {
-				label = "e2600ac:green:ctrl3";
-				gpios = <&tlmm 31 GPIO_ACTIVE_LOW>;
+			led_status: led2 {
+				label = "u4019:green:led2";
+				gpios = <&tlmm 68 GPIO_ACTIVE_LOW>;
 			};
 		};
 
@@ -180,7 +131,15 @@
 	status = "okay";
 };
 
-&cryptobam {
+&blsp1_uart1 {
+	pinctrl-0 = <&serial_0_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&blsp1_uart2 {
+	pinctrl-0 = <&serial_1_pins>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
@@ -189,14 +148,6 @@
 };
 
 &tlmm {
-	i2c_0_pins: i2c-0-pinmux {
-		mux {
-			pins = "gpio20", "gpio21";
-			function = "blsp_i2c0";
-			bias-disable;
-		};
-	};
-
 	mdio_pins: mdio_pinmux {
 		mux_1 {
 			pins = "gpio6";
@@ -243,6 +194,15 @@
 			output-high;
 		};
 	};
+
+	led_pins: led_pinmux {
+		mux {
+			function = "gpio";
+			pins = "gpio68";
+			bias-disabled;
+			output-low;
+		};
+	};
 };
 
 &usb3_ss_phy {
@@ -259,10 +219,8 @@
 
 &wifi0 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "Qxwlan-E2600AC";
 };
 
 &wifi1 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "Qxwlan-E2600AC";
 };

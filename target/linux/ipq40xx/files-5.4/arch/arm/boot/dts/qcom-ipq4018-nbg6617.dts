@@ -8,7 +8,7 @@
 
 / {
 	model = "ZyXEL NBG6617";
-	compatible = "zyxel,nbg6617", "qcom,ipq4019";
+	compatible = "zyxel,nbg6617";
 
 	chosen {
 		/*
@@ -27,6 +27,10 @@
 	};
 
 	soc {
+		rng@22000 {
+			status = "okay";
+		};
+
 		mdio@90000 {
 			status = "okay";
 		};
@@ -210,8 +214,6 @@
 
 	mx25l25635f@0 {
 		compatible = "mx25l25635f", "jedec,spi-nor";
-		#address-cells = <1>;
-		#size-cells = <0>;
 		reg = <0>;
 		spi-max-frequency = <24000000>;
 		status = "okay";

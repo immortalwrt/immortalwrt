@@ -10,7 +10,7 @@
 
 / {
 	model = "Qxwlan E2600AC c2";
-	compatible = "qxwlan,e2600ac-c2", "qcom,ipq4019";
+	compatible = "qxwlan,e2600ac-c2";
 };
 
 &blsp1_spi1 {

@@ -6,8 +6,15 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-	model = "EnGenius EAP1300";
-	compatible = "engenius,eap1300";
+	model = "EnGenius EMD1";
+	compatible = "engenius,emd1";
+
+	aliases {
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+	};
 
 	soc {
 		rng@22000 {
@@ -50,10 +57,13 @@
 
 		ess-switch@c000000 {
 			status = "okay";
+			switch_lan_bmp = <0x20>;
+			switch_wan_bmp = <0x00>;
 		};
 
 		edma@c080000 {
 			status = "okay";
+			qcom,num_gmac = <1>;
 		};
 	};
 
@@ -62,43 +72,33 @@
 
 		reset {
 			label = "reset";
-			gpios = <&tlmm 18 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
-	};
-
-	aliases {
-		led-boot = &power;
-		led-failsafe = &power;
-		led-running = &power;
-		led-upgrade = &power;
 	};
 
 	leds {
 		compatible = "gpio-leds";
 
-		power: orange {
-			label = "eap1300:orange:power";
+		led_power: power {
+			label = "emd1:white:power";
 			gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 		};
 
-		lan {
-			label = "eap1300:blue:lan";
-			gpios = <&tlmm 2 GPIO_ACTIVE_HIGH>;
-		};
-
-		mesh {
-			label = "eap1300:blue:mesh";
-			gpios = <&tlmm 1 GPIO_ACTIVE_HIGH>;
-		};
-
 		wlan2g {
-			label = "eap1300:blue:wlan2g";
-			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
+			label = "emd1:red:wlan2g";
+			gpios = <&tlmm 2 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "phy0tpt";
 		};
 
 		wlan5g {
-			label = "eap1300:yellow:wlan5g";
+			label = "emd1:blue:wlan5g";
+			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "phy1tpt";
+		};
+
+		mesh {
+			label = "emd1:orange:mesh";
 			gpios = <&tlmm 0 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -141,7 +141,7 @@
 	status = "okay";
 	cs-gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>;
 
-	m25p80@0 {
+	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
@@ -150,7 +150,7 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partition@0 {
+			partition0@0 {
 				label = "0:SBL1";
 				reg = <0x00000000 0x00040000>;
 				read-only;
@@ -188,30 +188,26 @@
 
 			partition6@f0000 {
 				label = "0:APPSBL";
-				reg = <0x000f0000 0x00090000>;
+				reg = <0x000f0000 0x00080000>;
 				read-only;
 			};
 
-			partition7@180000 {
+			partition7@170000 {
 				label = "0:ART";
-				reg = <0x00180000 0x00010000>;
+				reg = <0x00170000 0x00010000>;
 				read-only;
 			};
 
-			partition8@190000 {
+			partition8@180000 {
+				label = "userconfig";
+				reg = <0x00180000 0x00080000>;
+				read-only;
+			};
+
+			partition9@200000 {
 				compatible = "denx,fit";
 				label = "firmware";
-				reg = <0x190000 0x1dc0000>;
-			};
-
-			partition9@1f50000 {
-				label = "u-boot-env";
-				reg = <0x01f50000 0x00010000>;
-			};
-
-			partition10@1f60000 {
-				label = "userconfig";
-				reg = <0x01f60000 0x000a0000>;
+				reg = <0x200000 0x01e00000>;
 			};
 		};
 	};
@@ -223,24 +219,24 @@
 	status = "okay";
 };
 
+&gmac0 {
+	qcom,phy_mdio_addr = <4>;
+	qcom,poll_required = <1>;
+	qcom,forced_speed = <1000>;
+	qcom,forced_duplex = <1>;
+	vlan_tag = <1 0x20>;
+};
+
 &cryptobam {
 	status = "okay";
 };
 
-&gmac0 {
-	vlan_tag = <2 0x20>;
-};
-
-&gmac1 {
-	vlan_tag = <1 0x10>;
-};
-
 &wifi0 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "EnGenius-EAP1300";
+	qcom,ath10k-calibration-variant = "EnGenius-EMD1";
 };
 
 &wifi1 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "EnGenius-EAP1300";
+	qcom,ath10k-calibration-variant = "EnGenius-EMD1";
 };

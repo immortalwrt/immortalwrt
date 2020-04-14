@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-License-Identifier: GPL-2.0 OR MIT
 
 #include "qcom-ipq4019.dtsi"
 #include <dt-bindings/gpio/gpio.h>
@@ -6,8 +6,15 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-	model = "EnGenius EAP1300";
-	compatible = "engenius,eap1300";
+	model = "EZVIZ CS-W3-WD1200G EUP";
+	compatible = "ezviz,cs-w3-wd1200g-eup";
+
+	aliases {
+		led-boot = &led_status_green;
+		led-failsafe = &led_status_red;
+		led-running = &led_status_blue;
+		led-upgrade = &led_status_green;
+	};
 
 	soc {
 		rng@22000 {
@@ -16,6 +23,10 @@
 
 		mdio@90000 {
 			status = "okay";
+			pinctrl-0 = <&mdio_pins>;
+			pinctrl-names = "default";
+			reset-gpios = <&tlmm 59 GPIO_ACTIVE_LOW>;
+			reset-delay-us = <5000>;
 		};
 
 		ess-psgmii@98000 {
@@ -26,6 +37,12 @@
 			compatible = "qcom,tcsr";
 			reg = <0x1949000 0x100>;
 			qcom,wifi_glb_cfg = <TCSR_WIFI_GLB_CFG>;
+		};
+
+		tcsr@194b000 {
+			compatible = "qcom,tcsr";
+			reg = <0x194b000 0x100>;
+			qcom,usb-hsphy-mode-select = <TCSR_USB_HSPHY_HOST_MODE>;
 		};
 
 		ess_tcsr@1953000 {
@@ -57,49 +74,32 @@
 		};
 	};
 
+	leds {
+		compatible = "gpio-leds";
+
+		led_status_red: status_red {
+			label = "cs-w3-wd1200g-eup:red:status";
+			gpios = <&tlmm 0 GPIO_ACTIVE_LOW>;
+		};
+
+		led_status_green: status_green {
+			label = "cs-w3-wd1200g-eup:green:status";
+			gpios = <&tlmm 3 GPIO_ACTIVE_LOW>;
+		};
+
+		led_status_blue: status_blue {
+			label = "cs-w3-wd1200g-eup:blue:status";
+			gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
+		};
+	};
+
 	keys {
 		compatible = "gpio-keys";
 
 		reset {
 			label = "reset";
-			gpios = <&tlmm 18 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
-		};
-	};
-
-	aliases {
-		led-boot = &power;
-		led-failsafe = &power;
-		led-running = &power;
-		led-upgrade = &power;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		power: orange {
-			label = "eap1300:orange:power";
-			gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
-		};
-
-		lan {
-			label = "eap1300:blue:lan";
-			gpios = <&tlmm 2 GPIO_ACTIVE_HIGH>;
-		};
-
-		mesh {
-			label = "eap1300:blue:mesh";
-			gpios = <&tlmm 1 GPIO_ACTIVE_HIGH>;
-		};
-
-		wlan2g {
-			label = "eap1300:blue:wlan2g";
-			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
-		};
-
-		wlan5g {
-			label = "eap1300:yellow:wlan5g";
-			gpios = <&tlmm 0 GPIO_ACTIVE_HIGH>;
 		};
 	};
 };
@@ -113,10 +113,24 @@
 		};
 	};
 
+	mdio_pins: mdio_pinmux {
+		mux_1 {
+			pins = "gpio53";
+			function = "mdio";
+			bias-pull-up;
+		};
+
+		mux_2 {
+			pins = "gpio52";
+			function = "mdc";
+			bias-pull-up;
+		};
+	};
+
 	spi_0_pins: spi_0_pinmux {
 		pin {
 			function = "blsp_spi0";
-			pins = "gpio54", "gpio55", "gpio56", "gpio57";
+			pins = "gpio55", "gpio56", "gpio57";
 			drive-strength = <12>;
 			bias-disable;
 		};
@@ -141,77 +155,68 @@
 	status = "okay";
 	cs-gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>;
 
-	m25p80@0 {
+	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
+
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partition@0 {
-				label = "0:SBL1";
+			partition0@0 {
+				label = "SBL1";
 				reg = <0x00000000 0x00040000>;
 				read-only;
 			};
 
 			partition1@40000 {
-				label = "0:MIBIB";
+				label = "MIBIB";
 				reg = <0x00040000 0x00020000>;
 				read-only;
 			};
 
 			partition2@60000 {
-				label = "0:QSEE";
+				label = "QSEE";
 				reg = <0x00060000 0x00060000>;
 				read-only;
 			};
 
 			partition3@c0000 {
-				label = "0:CDT";
+				label = "CDT";
 				reg = <0x000c0000 0x00010000>;
 				read-only;
 			};
 
 			partition4@d0000 {
-				label = "0:DDRPARAMS";
+				label = "DDRPARAMS";
 				reg = <0x000d0000 0x00010000>;
 				read-only;
 			};
 
-			partition5@e0000 {
-				label = "0:APPSBLENV";
+			partition5@E0000 {
+				label = "APPSBLENV";
 				reg = <0x000e0000 0x00010000>;
 				read-only;
 			};
 
-			partition6@f0000 {
-				label = "0:APPSBL";
-				reg = <0x000f0000 0x00090000>;
+			partition6@F0000 {
+				label = "APPSBL";
+				reg = <0x000f0000 0x00080000>;
 				read-only;
 			};
 
-			partition7@180000 {
-				label = "0:ART";
-				reg = <0x00180000 0x00010000>;
+			partition7@170000 {
+				label = "ART";
+				reg = <0x00170000 0x00010000>;
 				read-only;
 			};
 
-			partition8@190000 {
+			partition9@580000 {
 				compatible = "denx,fit";
 				label = "firmware";
-				reg = <0x190000 0x1dc0000>;
-			};
-
-			partition9@1f50000 {
-				label = "u-boot-env";
-				reg = <0x01f50000 0x00010000>;
-			};
-
-			partition10@1f60000 {
-				label = "userconfig";
-				reg = <0x01f60000 0x000a0000>;
+				reg = <0x00180000 0x00e80000>;
 			};
 		};
 	};
@@ -227,20 +232,12 @@
 	status = "okay";
 };
 
-&gmac0 {
-	vlan_tag = <2 0x20>;
-};
-
-&gmac1 {
-	vlan_tag = <1 0x10>;
-};
-
 &wifi0 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "EnGenius-EAP1300";
+	qcom,ath10k-calibration-variant = "ezviz-cs-w3-wd1200g-eup";
 };
 
 &wifi1 {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "EnGenius-EAP1300";
+	qcom,ath10k-calibration-variant = "ezviz-cs-w3-wd1200g-eup";
 };

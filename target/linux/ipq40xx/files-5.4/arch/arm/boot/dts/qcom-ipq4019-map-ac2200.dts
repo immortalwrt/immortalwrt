@@ -18,6 +18,10 @@
 	};
 
 	soc {
+		rng@22000 {
+			status = "okay";
+		};
+
 		mdio@90000 {
 			status = "okay";
 		};
@@ -67,6 +71,7 @@
 
 	keys {
 		compatible = "gpio-keys";
+
 		reset {
 			label = "reset";
 			gpios = <&tlmm 34 GPIO_ACTIVE_LOW>;

@@ -7,16 +7,21 @@
 
 / {
 	model = "AVM FRITZ!Box 4040";
-	compatible = "avm,fritzbox-4040", "qcom,ipq4019";
+	compatible = "avm,fritzbox-4040";
 
 	aliases {
 		led-boot = &power;
 		led-failsafe = &flash;
 		led-running = &power;
 		led-upgrade = &flash;
+		label-mac-device = &gmac0;
 	};
 
 	soc {
+		rng@22000 {
+			status = "okay";
+		};
+
 		mdio@90000 {
 			status = "okay";
 		};
@@ -179,8 +184,6 @@
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
-		#address-cells = <1>;
-		#size-cells = <0>;
 		reg = <0>;
 		spi-max-frequency = <24000000>;
 		status = "okay";

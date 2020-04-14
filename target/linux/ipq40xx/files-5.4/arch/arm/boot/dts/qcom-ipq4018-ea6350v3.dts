@@ -7,7 +7,7 @@
 
 / {
 	model = "Linksys EA6350v3";
-	compatible = "linksys,ea6350v3", "qcom,ipq4019";
+	compatible = "linksys,ea6350v3";
 
 	aliases {
 		led-boot = &power;
@@ -17,6 +17,10 @@
 	};
 
 	soc {
+		rng@22000 {
+			status = "okay";
+		};
+
 		mdio@90000 {
 			status = "okay";
 		};
@@ -231,7 +235,7 @@
 
 	flash@1 {
 		status = "okay";
-		compatible = "spinand,mt29f", "w25n01gv";
+		compatible = "spi-nand";
 		reg = <1>;
 		spi-max-frequency = <24000000>;
 

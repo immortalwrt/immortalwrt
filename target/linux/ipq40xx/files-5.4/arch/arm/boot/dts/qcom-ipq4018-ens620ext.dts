@@ -22,6 +22,10 @@
 	};
 
 	soc {
+		rng@22000 {
+			status = "okay";
+		};
+
 		mdio@90000 {
 			status = "okay";
 		};
@@ -224,7 +228,7 @@
 
 			partition@1660000 {
 				label = "failsafe";
-				reg = <0x01660000 0x008f0000>;
+				reg = <0x01660000 0x008F0000>;
 				read-only;
 			};
 

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+// Copyright (c) 2018, Robert Marko <robimarko@gmail.com>
 
 #include "qcom-ipq4019.dtsi"
 #include <dt-bindings/gpio/gpio.h>
@@ -6,25 +7,6 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-	model = "ASUS RT-AC58U / RT-AC1300UHP";
-	compatible = "asus,rt-ac58u";
-
-	memory {
-		device_type = "memory";
-		reg = <0x80000000 0x10000000>;
-	};
-
-	aliases {
-		led-boot = &led_power;
-		led-failsafe = &led_power;
-		led-running = &led_power;
-		led-upgrade = &led_power;
-	};
-
-	chosen {
-		bootargs-append = " ubi.mtd=UBI_DEV";
-	};
-
 	soc {
 		rng@22000 {
 			status = "okay";
@@ -32,10 +14,18 @@
 
 		mdio@90000 {
 			status = "okay";
+
+			pinctrl-0 = <&mdio_pins>;
+			pinctrl-names = "default";
 		};
 
 		ess-psgmii@98000 {
 			status = "okay";
+		};
+
+		counter@4a1000 {
+			compatible = "qcom,qca-gcnt";
+			reg = <0x4a1000 0x4>;
 		};
 
 		tcsr@1949000 {
@@ -45,6 +35,8 @@
 		};
 
 		tcsr@194b000 {
+			status = "okay";
+
 			compatible = "qcom,tcsr";
 			reg = <0x194b000 0x100>;
 			qcom,usb-hsphy-mode-select = <TCSR_USB_HSPHY_HOST_MODE>;
@@ -62,23 +54,12 @@
 			qcom,wifi_noc_memtype_m0_m2 = <TCSR_WIFI_NOC_MEMTYPE_M0_M2>;
 		};
 
-		usb3@8af8800 {
+		usb2: usb2@60f8800 {
 			status = "okay";
+		};
 
-			dwc3@8a00000 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				usb3_port1: port@1 {
-					reg = <1>;
-					#trigger-source-cells = <0>;
-				};
-
-				usb3_port2: port@2 {
-					reg = <2>;
-					#trigger-source-cells = <0>;
-				};
-			};
+		usb3: usb3@8af8800 {
+			status = "okay";
 		};
 
 		crypto@8e3a000 {
@@ -91,77 +72,34 @@
 
 		ess-switch@c000000 {
 			status = "okay";
+
+			switch_lan_bmp = <0x10>; /* lan port bitmap */
 		};
 
 		edma@c080000 {
 			status = "okay";
 		};
 	};
-
-	keys {
-		compatible = "gpio-keys";
-
-		reset {
-			label = "reset";
-			gpios = <&tlmm 4 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
-		};
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_power: status {
-			label = "rt-ac58u:blue:status";
-			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
-		};
-
-		wan {
-			label = "rt-ac58u:blue:wan";
-			gpios = <&tlmm 1 GPIO_ACTIVE_HIGH>;
-		};
-
-		wlan2G {
-			label = "rt-ac58u:blue:wlan2G";
-			gpios = <&tlmm 58 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "phy0tpt";
-		};
-
-		wlan5G {
-			label = "rt-ac58u:blue:wlan5G";
-			gpios = <&tlmm 5 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "phy1tpt";
-		};
-
-		usb {
-			label = "rt-ac58u:blue:usb";
-			gpios = <&tlmm 0 GPIO_ACTIVE_HIGH>;
-			trigger-sources = <&usb3_port1>, <&usb3_port2>;
-			linux,default-trigger = "usbport";
-		};
-
-		lan {
-			label = "rt-ac58u:blue:lan";
-			gpios = <&tlmm 2 GPIO_ACTIVE_HIGH>;
-		};
-	};
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&blsp_dma {
-	status = "okay";
 };
 
 &tlmm {
+	mdio_pins: mdio_pinmux {
+		pinmux_1 {
+			pins = "gpio53";
+			function = "mdio";
+		};
+
+		pinmux_2 {
+			pins = "gpio52";
+			function = "mdc";
+		};
+
+		pinconf {
+			pins = "gpio52", "gpio53";
+			bias-pull-up;
+		};
+	};
+
 	serial_pins: serial_pinmux {
 		mux {
 			pins = "gpio60", "gpio61";
@@ -171,14 +109,14 @@
 	};
 
 	spi_0_pins: spi_0_pinmux {
-		mux {
+		pin {
 			function = "blsp_spi0";
 			pins = "gpio55", "gpio56", "gpio57";
-			drive-strength = <12>;
+			drive-strength = <2>;
 			bias-disable;
 		};
 
-		mux_cs {
+		pin_cs {
 			function = "gpio";
 			pins = "gpio54", "gpio59";
 			drive-strength = <2>;
@@ -188,23 +126,23 @@
 	};
 };
 
-&blsp1_spi1 { /* BLSP1 QUP1 */
+&blsp_dma {
+	status = "okay";
+};
+
+&blsp1_spi1 {
+	status = "okay";
+
 	pinctrl-0 = <&spi_0_pins>;
 	pinctrl-names = "default";
-	status = "okay";
-	cs-gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>,
-		   <&tlmm 59 GPIO_ACTIVE_HIGH>;
+	cs-gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>, <&tlmm 59 GPIO_ACTIVE_HIGH>;
 
 	flash@0 {
-		/*
-		 * U-boot looks for "n25q128a11" node,
-		 * if we don't have it, it will spit out the following warning:
-		 * "ipq: fdt fixup unable to find compatible node".
-		 */
+		status = "okay";
+
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		linux,modalias = "m25p80", "mx25l1606e", "n25q128a11";
-		spi-max-frequency = <30000000>;
+		spi-max-frequency = <24000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -216,55 +154,57 @@
 				reg = <0x00000000 0x00040000>;
 				read-only;
 			};
+
 			partition@40000 {
 				label = "MIBIB";
 				reg = <0x00040000 0x00020000>;
 				read-only;
 			};
+
 			partition@60000 {
 				label = "QSEE";
 				reg = <0x00060000 0x00060000>;
 				read-only;
 			};
+
 			partition@c0000 {
 				label = "CDT";
 				reg = <0x000c0000 0x00010000>;
 				read-only;
 			};
+
 			partition@d0000 {
 				label = "DDRPARAMS";
 				reg = <0x000d0000 0x00010000>;
 				read-only;
 			};
+
 			partition@e0000 {
 				label = "APPSBLENV"; /* uboot env*/
 				reg = <0x000e0000 0x00010000>;
 				read-only;
 			};
+
 			partition@f0000 {
 				label = "APPSBL"; /* uboot */
 				reg = <0x000f0000 0x00080000>;
 				read-only;
 			};
+
 			partition@170000 {
 				label = "ART";
 				reg = <0x00170000 0x00010000>;
 				read-only;
 			};
-			/* 0x00180000 - 0x00200000 unused */
 		};
 	};
 
 	spi-nand@1 {
+		status = "okay";
+
 		compatible = "spi-nand";
 		reg = <1>;
-		spi-max-frequency = <30000000>;
-
-		/*
-		 * U-boot looks for "spinand,mt29f" node,
-		 * if we don't have it, it will spit out the following warning:
-		 * "ipq: fdt fixup unable to find compatible node".
-		 */
+		spi-max-frequency = <24000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -272,12 +212,7 @@
 			#size-cells = <1>;
 
 			partition@0 {
-				/*
-				 * TODO: change to label = "ubi" once we drop 4.14.
-				 *       also drop the bootargs-append and all the
-				 *	 userspace CI_UBIPART="UBI_DEV" remains.
-				 */
-				label = "UBI_DEV";
+				label = "ubi";
 				reg = <0x00000000 0x08000000>;
 			};
 		};
@@ -285,9 +220,40 @@
 };
 
 &blsp1_uart1 {
+	status = "okay";
+
 	pinctrl-0 = <&serial_pins>;
 	pinctrl-names = "default";
+};
+
+&cryptobam {
 	status = "okay";
+};
+
+&gmac0 {
+	qcom,poll_required = <1>;
+	qcom,poll_required_dynamic = <1>;
+	qcom,phy_mdio_addr = <3>;
+	vlan_tag = <1 0x10>;
+};
+
+&gmac1 {
+	qcom,poll_required = <1>;
+	qcom,poll_required_dynamic = <1>;
+	qcom,phy_mdio_addr = <4>;
+	vlan_tag = <2 0x20>;
+};
+
+&wifi0 {
+	status = "okay";
+
+	qcom,ath10k-calibration-variant = "8devices-Jalapeno";
+};
+
+&wifi1 {
+	status = "okay";
+
+	qcom,ath10k-calibration-variant = "8devices-Jalapeno";
 };
 
 &usb3_ss_phy {
@@ -298,12 +264,6 @@
 	status = "okay";
 };
 
-&wifi0 {
+&usb2_hs_phy {
 	status = "okay";
-	qcom,ath10k-calibration-variant = "RT-AC58U";
-};
-
-&wifi1 {
-	status = "okay";
-	qcom,ath10k-calibration-variant = "RT-AC58U";
 };
