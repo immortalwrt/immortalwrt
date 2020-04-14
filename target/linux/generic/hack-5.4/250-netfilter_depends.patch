@@ -17,7 +17,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	depends on NETFILTER_ADVANCED
  	help
  	  H.323 is a VoIP signalling protocol from ITU-T. As one of the most
-@@ -1100,7 +1099,6 @@ config NETFILTER_XT_TARGET_SECMARK
+@@ -1112,7 +1111,6 @@ config NETFILTER_XT_TARGET_SECMARK
  
  config NETFILTER_XT_TARGET_TCPMSS
  	tristate '"TCPMSS" target support'
