@@ -225,3 +225,15 @@ msgstr "Nieprawidłowy sektor końcowy！"
 
 msgid "Partition not exists!"
 msgstr "Partycja nie istnieje!"
+
+msgid "Creation"
+msgstr "Kreator"
+
+msgid "Please select file system!"
+msgstr "Proszę wybrać system plików!"
+
+msgid "Format partation:"
+msgstr "Format partycji:"
+
+msgid "Warnning !! \nTHIS WILL OVERWRITE EXISTING PARTITIONS!! \nModify the partition table?"
+msgstr "Ostrzeżenie !! \nISTNIEJĄCE PARTYCJE ZOSTANĄ NADPISANE!! \nZmodyfikować tablicę partycji?"
