@@ -638,8 +638,8 @@ define Device/youku_yk-l2
   DTS := YOUKU-YK2
   IMAGE_SIZE := $(ralink_default_fw_size_16M)
   DEVICE_TITLE := Youku YK-L2
-  DEVICE_PACKAGES := \
-	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-sdhci-mt7620 \
+	kmod-usb-ledtrig-usbport wpad-openssl
 endef
 TARGET_DEVICES += youku_yk-l2
 
