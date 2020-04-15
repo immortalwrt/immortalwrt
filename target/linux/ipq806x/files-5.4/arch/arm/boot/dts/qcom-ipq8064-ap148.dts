@@ -27,35 +27,6 @@
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
-	soc {
-		mdio0: mdio {
-			compatible = "virtual,mdio-gpio";
-			#address-cells = <1>;
-			#size-cells = <0>;
-			gpios = <&qcom_pinmux 1 GPIO_ACTIVE_HIGH>,
-				<&qcom_pinmux 0 GPIO_ACTIVE_HIGH>;
-			pinctrl-0 = <&mdio0_pins>;
-			pinctrl-names = "default";
-
-			phy0: ethernet-phy@0 {
-				reg = <0>;
-				qca,ar8327-initvals = <
-					0x00004 0x7600000   /* PAD0_MODE */
-					0x00008 0x1000000   /* PAD5_MODE */
-					0x0000c 0x80        /* PAD6_MODE */
-					0x000e4 0x6a545     /* MAC_POWER_SEL */
-					0x000e0 0xc74164de  /* SGMII_CTRL */
-					0x0007c 0x4e        /* PORT0_STATUS */
-					0x00094 0x4e        /* PORT6_STATUS */
-					>;
-			};
-
-			phy4: ethernet-phy@4 {
-				reg = <4>;
-			};
-		};
-	};
 };
 
 &qcom_pinmux {
@@ -94,7 +65,7 @@
 	mdio0_pins: mdio0_pins {
 		mux {
 			pins = "gpio0", "gpio1";
-			function = "gpio";
+			function = "mdio";
 			drive-strength = <8>;
 			bias-disable;
 		};
@@ -103,7 +74,7 @@
 	rgmii2_pins: rgmii2_pins {
 		mux {
 			pins = "gpio27", "gpio28", "gpio29", "gpio30", "gpio31", "gpio32",
-			       "gpio51", "gpio52", "gpio59", "gpio60", "gpio61", "gpio62" ;
+			       "gpio51", "gpio52", "gpio59", "gpio60", "gpio61", "gpio62";
 			function = "rgmii2";
 			drive-strength = <8>;
 			bias-disable;
@@ -124,11 +95,11 @@
 	};
 
 	/*
-	* The i2c device on gsbi4 should not be enabled.
-	* On ipq806x designs gsbi4 i2c is meant for exclusive
-	* RPM usage. Turning this on in kernel manifests as
-	* i2c failure for the RPM.
-	*/
+	 * The i2c device on gsbi4 should not be enabled.
+	 * On ipq806x designs gsbi4 i2c is meant for exclusive
+	 * RPM usage. Turning this on in kernel manifests as
+	 * i2c failure for the RPM.
+	 */
 };
 
 &gsbi5 {
@@ -144,7 +115,7 @@
 
 		cs-gpios = <&qcom_pinmux 20 0>;
 
-		flash: m25p80@0 {
+		m25p80@0 {
 			compatible = "s25fl256s1";
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -175,13 +146,13 @@
 	force_gen1 = <1>;
 };
 
-&nand {
+&nand_controller {
 	status = "okay";
 
 	pinctrl-0 = <&nand_pins>;
 	pinctrl-names = "default";
 
-	cs0 {
+	nand@0 {
 		reg = <0>;
 		compatible = "qcom,nandcs";
 
@@ -192,6 +163,30 @@
 		partitions {
 			compatible = "qcom,smem";
 		};
+	};
+};
+
+&mdio0 {
+	status = "okay";
+
+	pinctrl-0 = <&mdio0_pins>;
+	pinctrl-names = "default";
+
+	phy0: ethernet-phy@0 {
+		reg = <0>;
+		qca,ar8327-initvals = <
+			0x00004 0x7600000   /* PAD0_MODE */
+			0x00008 0x1000000   /* PAD5_MODE */
+			0x0000c 0x80        /* PAD6_MODE */
+			0x000e4 0x6a545     /* MAC_POWER_SEL */
+			0x000e0 0xc74164de  /* SGMII_CTRL */
+			0x0007c 0x4e        /* PORT0_STATUS */
+			0x00094 0x4e        /* PORT6_STATUS */
+			>;
+	};
+
+	phy4: ethernet-phy@4 {
+		reg = <4>;
 	};
 };
 
