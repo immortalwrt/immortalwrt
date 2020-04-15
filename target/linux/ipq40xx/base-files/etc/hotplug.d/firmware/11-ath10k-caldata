@@ -157,8 +157,9 @@ case "$FIRMWARE" in
 	asus,map-ac2200)
 		ath10kcal_ubi_extract "Factory" 4096 12064
 		;;
-	asus,rt-acrh17|\
-	asus,rt-ac58u)
+	asus,rt-acrh17 |\
+	asus,rt-ac58u |\
+	asus,rt-ac1300uhp)
 		CI_UBIPART=UBI_DEV
 		ath10kcal_ubi_extract "Factory" 4096 12064
 		;;
@@ -241,7 +242,8 @@ case "$FIRMWARE" in
 	asus,map-ac2200)
 		ath10kcal_ubi_extract "Factory" 20480 12064
 		;;
-	asus,rt-ac58u)
+	asus,rt-ac58u |\
+	asus,rt-ac1300uhp)
 		CI_UBIPART=UBI_DEV
 		ath10kcal_ubi_extract "Factory" 20480 12064
 		;;
