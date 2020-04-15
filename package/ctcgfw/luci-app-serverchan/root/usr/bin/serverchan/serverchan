@@ -147,9 +147,9 @@ function getname(){
 	if [ -z "$tmp_name" ] || ( echo "$tmp_name" | grep -q "unknown" ) ; then
 		local dhcp_config=`uci show dhcp`
 		local tmp_name=$(uci get dhcp.`echo "$dhcp_config" | grep -i ^dhcp.@host.*mac=.${2} | sed -nr 's#^dhcp.(.*).mac.*#\1#gp'`.name) 2>/dev/null
-		if [ -z "$tmp_name" ] ; then local tmp_name=$(uci get dhcp.`echo "$dhcp_config" | grep -i ^dhcp.@host.*ip=.${1} | sed -nr 's#^dhcp.(.*).ip.*#\1#gp'`.name) 2>/dev/null;fi
+		if [ -z "$tmp_name" ] ; then local tmp_name=$(uci get dhcp.`echo "$dhcp_config" | grep -w ^dhcp.@host.*ip=.${1} | sed -nr 's#^dhcp.(.*).ip.*#\1#gp'`.name) 2>/dev/null;fi
 		if [ -z "$tmp_name" ] ; then local tmp_name=$(uci get dhcp.`echo "$dhcp_config" | grep -i ^dhcp.@domain.*mac=.${2} | sed -nr 's#^dhcp.(.*).mac.*#\1#gp'`.name) 2>/dev/null;fi
-		if [ -z "$tmp_name" ] ; then local tmp_name=$(uci get dhcp.`echo "$dhcp_config" | grep -i ^dhcp.@domain.*ip=.${1} | sed -nr 's#^dhcp.(.*).ip.*#\1#gp'`.name) 2>/dev/null;fi
+		if [ -z "$tmp_name" ] ; then local tmp_name=$(uci get dhcp.`echo "$dhcp_config" | grep -w ^dhcp.@domain.*ip=.${1} | sed -nr 's#^dhcp.(.*).ip.*#\1#gp'`.name) 2>/dev/null;fi
 	fi
 	if [ -z "$tmp_name" ] || ( echo "$tmp_name" | grep -q "unknown" ) ; then local tmp_name=`cat /var/dhcp.leases | grep -w $1 |awk '{print $4}' | grep -v "^$" | sort -u` 2>/dev/null;fi
 	if [ -z "$tmp_name" ] ; then local tmp_name="unknown";fi
