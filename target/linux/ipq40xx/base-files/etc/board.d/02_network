@@ -28,6 +28,7 @@ ipq40xx_setup_interfaces()
 	aruba,ap-303h|\
 	asus,rt-acrh17|\
 	asus,rt-ac58u|\
+	asus,rt-ac1300uhp|\
 	avm,fritzbox-4040|\
 	ezviz,cs-w3-wd1200g-eup|\
 	linksys,ea6350v3|\
