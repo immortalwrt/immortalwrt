@@ -202,6 +202,15 @@ define Device/buffalo_wsr-1166dhp
 endef
 TARGET_DEVICES += buffalo_wsr-1166dhp
 
+define Device/buffalo_wsr-2533dhpl
+  IMAGE_SIZE := 7936k
+  DEVICE_VENDOR := Buffalo
+  DEVICE_MODEL := WSR-2533DHPL
+  IMAGE/sysupgrade.bin := trx | pad-rootfs | append-metadata
+  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+endef
+TARGET_DEVICES += buffalo_wsr-2533dhpl
+
 define Device/buffalo_wsr-600dhp
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Buffalo
@@ -513,25 +522,27 @@ define Device/MikroTik
 	check-size $$$$(IMAGE_SIZE)
 endef
 
-define Device/mikrotik_rb750gr3
+define Device/mikrotik_routerboard-750gr3
   $(Device/MikroTik)
-  DEVICE_MODEL := RouterBOARD RB750G
-  DEVICE_VARIANT := r3
+  DEVICE_MODEL := RouterBOARD 750Gr3
   DEVICE_PACKAGES += kmod-gpio-beeper
+  SUPPORTED_DEVICES += mikrotik,rb750gr3
 endef
-TARGET_DEVICES += mikrotik_rb750gr3
+TARGET_DEVICES += mikrotik_routerboard-750gr3
 
-define Device/mikrotik_rbm11g
+define define Device/mikrotik_routerboard-m11g
   $(Device/MikroTik)
   DEVICE_MODEL := RouterBOARD M11G
+  SUPPORTED_DEVICES += mikrotik,rbm11g
 endef
-TARGET_DEVICES += mikrotik_rbm11g
+TARGET_DEVICES += mikrotik_routerboard-m11g
 
-define Device/mikrotik_rbm33g
+define Device/mikrotik_routerboard-m33g
   $(Device/MikroTik)
   DEVICE_MODEL := RouterBOARD M33G
+  SUPPORTED_DEVICES += mikrotik,rbm33g
 endef
-TARGET_DEVICES += mikrotik_rbm33g
+TARGET_DEVICES += mikrotik_routerboard-m33g
 
 define Device/mqmaker_witi
   IMAGE_SIZE := 16064k
@@ -794,28 +805,31 @@ define Device/tplink_re650-v1
 endef
 TARGET_DEVICES += tplink_re650-v1
 
-define Device/ubiquiti_edgerouterx
+define Device/ubnt_edgerouter_common
   $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := Ubiquiti
   IMAGE_SIZE := 256768k
   FILESYSTEMS := squashfs
   KERNEL_SIZE := 3145728
   KERNEL_INITRAMFS := $$(KERNEL) | \
 	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  DEVICE_VENDOR := Ubiquiti
-  DEVICE_MODEL := EdgeRouter X
-  SUPPORTED_DEVICES += ubnt-erx
 endef
-TARGET_DEVICES += ubiquiti_edgerouterx
 
-define Device/ubiquiti_edgerouterx-sfp
-  $(Device/ubiquiti_edgerouterx)
-  DEVICE_VENDOR := Ubiquiti
-  DEVICE_MODEL := EdgeRouter X-SFP
-  DEVICE_PACKAGES += kmod-i2c-algo-pca kmod-gpio-pca953x kmod-i2c-gpio-custom
-  SUPPORTED_DEVICES += ubnt-erx-sfp
+define Device/ubnt_edgerouter-x
+  $(Device/ubnt_edgerouter_common)
+  DEVICE_MODEL := EdgeRouter X
+  SUPPORTED_DEVICES += ubnt-erx ubiquiti,edgerouterx
 endef
-TARGET_DEVICES += ubiquiti_edgerouterx-sfp
+TARGET_DEVICES += ubnt_edgerouter-x
+
+define Device/ubnt_edgerouter-x-sfp
+  $(Device/ubnt_edgerouter_common)
+  DEVICE_MODEL := EdgeRouter X SFP
+  DEVICE_PACKAGES += kmod-i2c-algo-pca kmod-gpio-pca953x
+  SUPPORTED_DEVICES += ubnt-erx-sfp ubiquiti,edgerouterx-sfp
+endef
+TARGET_DEVICES += ubnt_edgerouter-x-sfp
 
 define Device/ubnt_unifi-nanohd
   DEVICE_VENDOR := Ubiquiti

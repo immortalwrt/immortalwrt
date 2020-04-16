@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /dts-v1/;
 
 #include "mt7621.dtsi"
@@ -6,8 +7,8 @@
 #include <dt-bindings/gpio/gpio.h>
 
 / {
-	compatible = "mikrotik,rbm11g", "mediatek,mt7621-soc";
-	model = "MikroTik RouterBOARD M11G";
+	compatible = "mikrotik,routerboard-750gr3", "mediatek,mt7621-soc";
+	model = "MikroTik RouterBOARD 750Gr3";
 
 	aliases {
 		led-boot = &led_usr;
@@ -23,68 +24,58 @@
 	leds {
 		compatible = "gpio-leds";
 
+		pwr {
+			label = "routerboard-750gr3:blue:pwr";
+			gpios = <&gpio 16 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+
 		led_usr: usr {
-			label = "rbm11g:green:usr";
-			gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>;
-		};
-
-		rssi0 {
-			label = "rbm11g:green:rssi0";
-			gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
-		};
-
-		rssi1 {
-			label = "rbm11g:green:rssi1";
-			gpios = <&gpio0 23 GPIO_ACTIVE_LOW>;
-		};
-
-		rssi2 {
-			label = "rbm11g:green:rssi2";
-			gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
-		};
-
-		rssi3 {
-			label = "rbm11g:green:rssi3";
-			gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
-		};
-
-		rssi4 {
-			label = "rbm11g:green:rssi4";
-			gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
+			label = "routerboard-750gr3:green:usr";
+			gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
 	keys {
 		compatible = "gpio-keys";
 
-		res {
+		mode {
+			label = "mode";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,code = <BTN_0>;
+		};
+
+		reset {
 			label = "reset";
-			gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
 
-	pcie0_vcc_reg {
-		compatible = "regulator-fixed";
-		regulator-name = "pcie0_vcc";
+	beeper {
+		compatible = "gpio-beeper";
+		gpios = <&gpio 15 GPIO_ACTIVE_HIGH>;
+	};
 
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		gpio = <&gpio0 9 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-		regulator-boot-on;
-		regulator-always-on;
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		usb_power {
+			gpio-export,name = "usb_power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 12 GPIO_ACTIVE_HIGH>;
+		};
 	};
 };
 
 &spi0 {
 	status = "okay";
 
-	w25q128@0 {
+	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		// XXX empiric value to obtain actual 10MHz SCK at the chip
-		spi-max-frequency = <3125000>;
+		spi-max-frequency = <20000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -132,28 +123,56 @@
 			partition@40000 {
 				compatible = "mikrotik,minor";
 				label = "firmware";
-				reg = <0x040000 0xFC0000>;
+				reg = <0x040000 0xfc0000>;
 			};
 		};
 	};
 };
 
-&ethernet {
+&gmac0 {
 	mtd-mac-address = <&hard_config 0x0010>;
 	mtd-mac-address-increment = <1>;
 };
 
-&state_default {
-	gpio {
-		ralink,group = "uart2", "wdt", "rgmii2";
-		ralink,function = "gpio";
+&switch0 {
+	ports {
+		port@0 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&hard_config 0x0010>;
+			mtd-mac-address-increment = <2>;
+		};
+
+		port@1 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan3";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan4";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "lan5";
+		};
 	};
 };
 
-&i2c {
-	status = "okay";
+&state_default {
+	gpio {
+		/* via gpio7 (uart3 group) the PoE status can be read */
+		groups = "uart2", "uart3", "jtag", "wdt";
+		function = "gpio";
+	};
 };
 
-&pcie {
+&sdhci {
 	status = "okay";
 };

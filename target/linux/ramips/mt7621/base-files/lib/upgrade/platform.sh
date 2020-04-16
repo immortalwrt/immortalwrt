@@ -27,9 +27,9 @@ platform_do_upgrade() {
 			fi
 		}
 		;;
-	mikrotik,rb750gr3|\
-	mikrotik,rbm11g|\
-	mikrotik,rbm33g)
+	mikrotik,routerboard-750gr3|\
+	mikrotik,routerboard-m11g|\
+	mikrotik,routerboard-m33g)
 		[ -z "$(rootfs_type)" ] && mtd erase firmware
 		;;
 	asus,rt-ac65p|\
@@ -61,8 +61,8 @@ platform_do_upgrade() {
 		iodata_mstc_upgrade_prepare
 		nand_do_upgrade "$1"
 		;;
-	ubiquiti,edgerouterx|\
-	ubiquiti,edgerouterx-sfp)
+	ubnt,edgerouter-x|\
+	ubnt,edgerouter-x-sfp)
 		platform_upgrade_ubnt_erx "$1"
 		;;
 	*)
