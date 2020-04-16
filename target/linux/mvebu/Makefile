@@ -13,6 +13,7 @@ SUBTARGETS:=cortexa9 cortexa53 cortexa72
 MAINTAINER:=Imre Kaloz <kaloz@openwrt.org>
 
 KERNEL_PATCHVER:=4.19
+KERNEL_TESTING_PATCHVER:=5.4
 
 include $(INCLUDE_DIR)/target.mk
 
