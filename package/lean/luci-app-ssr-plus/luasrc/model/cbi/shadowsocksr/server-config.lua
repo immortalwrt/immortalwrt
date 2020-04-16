@@ -65,7 +65,7 @@ o.rmempty = false
 
 o = s:option(ListValue, "type", translate("Server Type"))
 o:value("socks5", translate("Socks5"))
-if nixio.fs.access("/usr/bin/ss-server") then
+if nixio.fs.access("/usr/bin/ssr-server") then
 o:value("ssr", translate("ShadowsocksR"))
 end
 o.default = "socks5"
