@@ -60,6 +60,10 @@ comfast,cf-wr800n)
 	ucidef_set_led_netdev "lan" "lan" "$boardname:white:ethernet" eth0.1
 	set_wifi_led "$boardname:white:wifi"
 	;;
+dlink,dwr-960)
+	ucidef_set_led_switch "lan" "lan" "$boardname:green:lan" "switch0" "0x2e"
+	ucidef_set_led_switch "wan" "wan" "$boardname:green:wan" "switch0" "0x01"
+	;;
 dlink,dwr-116-a1|\
 head-weblink,hdrm200|\
 ohyeah,oy-0001|\

@@ -138,7 +138,7 @@
 
 &state_default {
 	gpio {
-		ralink,group = "uart2", "uart3", "wdt";
-		ralink,function = "gpio";
+		groups = "uart2", "uart3", "wdt";
+		function = "gpio";
 	};
 };
