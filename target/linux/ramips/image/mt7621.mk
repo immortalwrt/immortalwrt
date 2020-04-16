@@ -530,7 +530,7 @@ define Device/mikrotik_routerboard-750gr3
 endef
 TARGET_DEVICES += mikrotik_routerboard-750gr3
 
-define define Device/mikrotik_routerboard-m11g
+define Device/mikrotik_routerboard-m11g
   $(Device/MikroTik)
   DEVICE_MODEL := RouterBOARD M11G
   SUPPORTED_DEVICES += mikrotik,rbm11g
