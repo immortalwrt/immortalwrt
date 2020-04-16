@@ -230,7 +230,7 @@
 				read-only;
 			};
 
-			PRODUCTINFO: PRODUCTINFO@80000 {
+			PRODUCTINFO@80000 {
 				label = "PRODUCTINFO";
 				reg = <0x80000 0x10000>;
 				read-only;
@@ -335,11 +335,16 @@
 	status = "okay";
 	phy-mode = "rgmii";
 	qcom,id = <1>;
+	qcom,phy_mdio_addr = <4>;
+	qcom,poll_required = <0>;
+	qcom,rgmii_delay = <1>;
+	qcom,phy_mii_type = <0>;
+	qcom,emulation = <0>;
+	qcom,irq = <255>;
+	mdiobus = <&mdio0>;
 
 	pinctrl-0 = <&rgmii2_pins>;
 	pinctrl-names = "default";
-
-	mtd-mac-address-ascii = <&PRODUCTINFO 0x86a>;
 
 	fixed-link {
 		speed = <1000>;
@@ -351,10 +356,13 @@
 	status = "okay";
 	phy-mode = "sgmii";
 	qcom,id = <2>;
-
-	mtd-mac-address-ascii = <&PRODUCTINFO 0x86a>;
-	mtd-mac-address-increment = <1>;
-	mtd-mac-address-increment-byte = <0>;
+	qcom,phy_mdio_addr = <0>;	/* none */
+	qcom,poll_required = <0>;	/* no polling */
+	qcom,rgmii_delay = <0>;
+	qcom,phy_mii_type = <1>;
+	qcom,emulation = <0>;
+	qcom,irq = <258>;
+	mdiobus = <&mdio0>;
 
 	fixed-link {
 		speed = <1000>;
@@ -365,6 +373,8 @@
 &amba {
 	sdcc1: sdcc@12400000 {
 		status = "okay";
+		pinctrl-0 = <&sdcc1_pins>;
+		pinctrl-names = "default";
 	};
 };
 
