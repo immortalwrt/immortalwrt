@@ -446,7 +446,7 @@ h2+.cbi-map-descr {
     position: relative;
     padding: 15px;
     margin-bottom: 10px;
-    background: #b4e7ff;
+    background: linear-gradient(to bottom, #fceec1, #eedc94) repeat-x;
     /* border: 1px solid rgba(0, 0, 0, .1);
 	border-width: 2px 0; */
     border-radius: 2px;
@@ -1258,7 +1258,8 @@ footer a {
 
 /* login */
 body.node-main-login {
-    background: url(bg.jpg);
+    /* background: url(bg.jpg); */
+    background: linear-gradient(#22b9a4, #9a87d4);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     -moz-background-size: 100% 100%;
@@ -1384,7 +1385,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     max-width: unset;
     min-height: 32px;
     min-width: 270px;
-    background: #b4e7ff !important;
+    background: linear-gradient(to bottom, #fceec1, #eedc94) repeat-x !important;
     border-radius: 3px;
     padding: 1em;
     margin: 0;
@@ -1418,7 +1419,7 @@ body.modal-overlay-active #modal_overlay>.modal {
     position: absolute;
     padding: 15px;
     margin-bottom: 10px;
-    background: #b4e7ff;
+    background: linear-gradient(to bottom, #fceec1, #eedc94) repeat-x;
     border: 1px solid rgba(0, 0, 0, .1);
     border-width: 2px 0;
 }*/
