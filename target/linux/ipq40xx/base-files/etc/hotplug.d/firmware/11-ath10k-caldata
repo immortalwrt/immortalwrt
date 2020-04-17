@@ -112,7 +112,7 @@ case "$FIRMWARE" in
 		;;
 	asus,rt-acrh17)
 		CI_UBIPART=UBI_DEV
-		caldata_extract_ubi "Factory" 36864 12064
+		ath10kcal_ubi_extract "Factory" 36864 12064
 		;;
 	avm,fritzrepeater-3000)
 		/usr/bin/fritz_cal_extract -i 1 -s 0x3D000 -e 0x212 -l 12064 -o /lib/firmware/$FIRMWARE $(find_mtd_chardev "urlader0") || \
