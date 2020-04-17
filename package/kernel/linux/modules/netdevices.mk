@@ -192,6 +192,23 @@ endef
 $(eval $(call KernelPackage,phy-broadcom))
 
 
+define KernelPackage/phy-bcm84881
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Broadcom BCM84881 PHY driver
+   KCONFIG:=CONFIG_BCM84881_PHY
+   DEPENDS:=+kmod-libphy
+   FILES:=$(LINUX_DIR)/drivers/net/phy/bcm84881.ko
+   AUTOLOAD:=$(call AutoLoad,18,bcm84881,1)
+endef
+
+define KernelPackage/phy-bcm84881/description
+   Supports the Broadcom 84881 PHY.
+endef
+
+$(eval $(call KernelPackage,phy-bcm84881))
+
+
+
 define KernelPackage/phy-realtek
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Realtek Ethernet PHY driver
@@ -222,6 +239,36 @@ define KernelPackage/swconfig/description
 endef
 
 $(eval $(call KernelPackage,swconfig))
+
+define KernelPackage/switch-bcm53xx
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Broadcom bcm53xx switch support
+  DEPENDS:=+kmod-swconfig
+  KCONFIG:=CONFIG_SWCONFIG_B53
+  FILES:=$(LINUX_DIR)/drivers/net/phy/b53/b53_common.ko
+  AUTOLOAD:=$(call AutoLoad,42,b53_common)
+endef
+
+define KernelPackage/switch-bcm53xx/description
+  Broadcom bcm53xx switch support
+endef
+
+$(eval $(call KernelPackage,switch-bcm53xx))
+
+define KernelPackage/switch-bcm53xx-mdio
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Broadcom bcm53xx switch MDIO support
+  DEPENDS:=+kmod-switch-bcm53xx
+  KCONFIG:=CONFIG_SWCONFIG_B53_PHY_DRIVER
+  FILES:=$(LINUX_DIR)/drivers/net/phy/b53/b53_mdio.ko
+  AUTOLOAD:=$(call AutoLoad,42,b53_mdio)
+endef
+
+define KernelPackage/switch-bcm53xx-mdio/description
+  Broadcom bcm53xx switch MDIO support
+endef
+
+$(eval $(call KernelPackage,switch-bcm53xx-mdio))
 
 define KernelPackage/switch-mvsw61xx
   SUBMENU:=$(NETWORK_DEVICES_MENU)
@@ -912,6 +959,7 @@ define KernelPackage/ifb
 	CONFIG_NET_CLS=y
   FILES:=$(LINUX_DIR)/drivers/net/ifb.ko
   AUTOLOAD:=$(call AutoLoad,34,ifb)
+  MODPARAMS.ifb:=numifbs=0
 endef
 
 define KernelPackage/ifb/description

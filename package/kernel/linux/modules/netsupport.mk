@@ -127,6 +127,7 @@ endef
 
 $(eval $(call KernelPackage,geneve))
 
+
 define KernelPackage/nsh
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=Network Service Header (NSH) protocol
@@ -746,7 +747,7 @@ $(eval $(call KernelPackage,mppe))
 
 SCHED_MODULES = $(patsubst $(LINUX_DIR)/net/sched/%.ko,%,$(wildcard $(LINUX_DIR)/net/sched/*.ko))
 SCHED_MODULES_CORE = sch_ingress sch_fq_codel sch_hfsc sch_htb sch_tbf cls_basic cls_fw cls_route cls_flow cls_tcindex cls_u32 em_u32 act_mirred act_skbedit cls_matchall
-SCHED_MODULES_FILTER = $(SCHED_MODULES_CORE) act_connmark act_ctinfo sch_netem sch_mqprio em_ipset cls_bpf cls_flower act_bpf act_vlan
+SCHED_MODULES_FILTER = $(SCHED_MODULES_CORE) act_connmark act_ctinfo sch_cake sch_netem sch_mqprio em_ipset cls_bpf cls_flower act_bpf act_vlan
 SCHED_MODULES_EXTRA = $(filter-out $(SCHED_MODULES_FILTER),$(SCHED_MODULES))
 SCHED_FILES = $(patsubst %,$(LINUX_DIR)/net/sched/%.ko,$(filter $(SCHED_MODULES_CORE),$(SCHED_MODULES)))
 SCHED_FILES_EXTRA = $(patsubst %,$(LINUX_DIR)/net/sched/%.ko,$(SCHED_MODULES_EXTRA))
@@ -784,6 +785,21 @@ endef
 
 $(eval $(call KernelPackage,sched-core))
 
+
+define KernelPackage/sched-cake
+  SUBMENU:=$(NETWORK_SUPPORT_MENU)
+  TITLE:=Cake fq_codel/blue derived shaper
+  DEPENDS:=@!(LINUX_4_9||LINUX_4_14) +kmod-sched-core
+  KCONFIG:=CONFIG_NET_SCH_CAKE
+  FILES:=$(LINUX_DIR)/net/sched/sch_cake.ko
+  AUTOLOAD:=$(call AutoProbe,sch_cake)
+endef
+
+define KernelPackage/sched-cake/description
+ Common Applications Kept Enhanced fq_codel/blue derived shaper
+endef
+
+$(eval $(call KernelPackage,sched-cake))
 
 define KernelPackage/sched-flower
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
@@ -851,16 +867,6 @@ define KernelPackage/sched-ctinfo
   AUTOLOAD:=$(call AutoLoad,71, act_ctinfo)
 endef
 $(eval $(call KernelPackage,sched-ctinfo))
-
-define KernelPackage/sched-police
-  SUBMENU:=$(NETWORK_SUPPORT_MENU)
-  TITLE:=Traffic shaper police support
-  DEPENDS:=+kmod-sched-core
-  KCONFIG:=CONFIG_NET_ACT_POLICE
-  FILES:=$(LINUX_DIR)/net/sched/act_police.ko
-  AUTOLOAD:=$(call AutoLoad,71, act_police)
-endef
-$(eval $(call KernelPackage,sched-police))
 
 define KernelPackage/sched-ipset
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
