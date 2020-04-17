@@ -27,7 +27,6 @@ define KernelPackage/sched-cake-oot
   FILES:=$(PKG_BUILD_DIR)/sch_cake.ko
   AUTOLOAD:=$(call AutoLoad,75,sch_cake)
   DEPENDS:=@(LINUX_4_9||LINUX_4_14) +kmod-sched-core +kmod-ipt-conntrack
-  PROVIDES:=kmod-sched-cake
 endef
 
 include $(INCLUDE_DIR)/kernel-defaults.mk
