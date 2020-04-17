@@ -59,7 +59,7 @@ MAKE_OPTS:= \
 	$(EXTRA_KCONFIG)
 
 define Build/Compile
-	$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
+	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
 		$(MAKE_OPTS) \
 		modules
 endef
