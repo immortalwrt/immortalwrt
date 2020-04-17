@@ -536,7 +536,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  
  	irq = dwc3_gadget_get_irq(dwc);
  	if (irq < 0) {
-@@ -3299,6 +3300,12 @@ int dwc3_gadget_init(struct dwc3 *dwc)
+@@ -3298,6 +3299,12 @@ int dwc3_gadget_init(struct dwc3 *dwc)
  
  	dwc3_gadget_set_speed(&dwc->gadget, dwc->maximum_speed);
  
