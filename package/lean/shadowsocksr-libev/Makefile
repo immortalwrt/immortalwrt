@@ -28,14 +28,17 @@ define Package/shadowsocksr-libev
 	SUBMENU:=Web Servers/Proxies
 	TITLE:=Lightweight Secured Socks5 Proxy
 	URL:=https://github.com/shadowsocksrr/shadowsocksr-libev
-	DEPENDS:=+libopenssl +libpthread +libpcre +zlib
+	DEPENDS:=+libev +libsodium +libopenssl +libpthread +libpcre +libudns +zlib
 endef
 
 Package/shadowsocksr-libev-server = $(Package/shadowsocksr-libev)
 Package/shadowsocksr-libev-alt = $(Package/shadowsocksr-libev)
 Package/shadowsocksr-libev-ssr-local = $(Package/shadowsocksr-libev)
 
-CONFIGURE_ARGS += --disable-documentation --disable-ssp --disable-assert
+CONFIGURE_ARGS += --disable-documentation --disable-ssp --disable-assert \
+	--enable-system-shared-lib
+
+TARGET_CFLAGS += -flto
 TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 define Package/shadowsocksr-libev/install
