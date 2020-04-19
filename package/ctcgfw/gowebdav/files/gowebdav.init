@@ -13,7 +13,6 @@ init_conf() {
 	config_get "root_dir" "config" "root_dir" "/mnt"
 	config_get "read_only" "config" "read_only" "0"
 	config_get "allow_wan" "config" "allow_wan" "0"
-	config_get "advanced_mode" "config" "advanced_mode" "0"
 	config_get "use_https" "config" "use_https" "0"
 	config_get "cert_crt" "config" "cert_crt"
 	config_get "cert_key" "config" "cert_key"

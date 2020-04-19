@@ -34,9 +34,6 @@ msgstr "Windows 系统默认不允许 HTTP 鉴权，您需要手动导入注册�
 msgid "Allow Access From Internet"
 msgstr "允许从外网访问"
 
-msgid "Advanced Mode"
-msgstr "高级模式"
-
 msgid "Use HTTPS instead of HTTP"
 msgstr "使用 HTTPS 模式"
 

@@ -42,11 +42,8 @@ read_only.rmempty = false
 allow_wan = s:option(Flag, "allow_wan", translate("Allow Access From Internet"))
 allow_wan.rmempty = false
 
-advanced_mode = s:option(Flag, "advanced_mode", translate("Advanced Mode"))
-advanced_mode.rmempty = false
-
 use_https = s:option(Flag, "use_https", translate("Use HTTPS instead of HTTP"))
-use_https:depends("advanced_mode", 1)
+use_https.rmempty = false
 
 cert_crt = s:option(Value, "cert_crt", translate("Path to Certificate"))
 cert_crt.datatype = "file"
@@ -56,7 +53,7 @@ cert_key = s:option(Value, "cert_key", translate("Path to Certificate Key"))
 cert_key.datatype = "file"
 cert_key:depends("use_https", 1)
 
-download_reg=s:option(DummyValue,"opennewwindow",translate("<input type=\"button\" class=\"cbi-button cbi-button-apply\" value=\"Download Reg File\" onclick=\"window.open('https://raw.githubusercontent.com/1715173329/gowebdav/master/allow_http.reg')\" />"))
+download_reg = s:option(DummyValue,"opennewwindow",translate("<input type=\"button\" class=\"cbi-button cbi-button-apply\" value=\"Download Reg File\" onclick=\"window.open('https://raw.githubusercontent.com/1715173329/gowebdav/master/allow_http.reg')\" />"))
 download_reg.description = translate("Windows doesn't allow HTTP auth by default, you need to import this reg key to enable it (Reboot needed).")
 
 return m
