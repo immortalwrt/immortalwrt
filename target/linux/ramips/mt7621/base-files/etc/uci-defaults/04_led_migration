@@ -16,6 +16,7 @@ mikrotik,routerboard-m33g)
 netgear,wndr3700-v5)
 	migrate_leds "^wndr3700v5:=$boardonly:"
 	;;
+
 esac
 
 migrations_apply system

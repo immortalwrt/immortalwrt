@@ -251,6 +251,7 @@ endef
 TARGET_DEVICES += dlink_dir-878-a1
 
 define Device/d-team_newifi-d2
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Newifi
   DEVICE_MODEL := D2
@@ -400,6 +401,22 @@ define Device/iodata_wn-ax1167gr2
 endef
 TARGET_DEVICES += iodata_wn-ax1167gr2
 
+define Device/iodata_wn-ax2033gr
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  UIMAGE_MAGIC := 0x434f4d42
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 51200k
+  DEVICE_VENDOR := I-O DATA
+  DEVICE_MODEL := WN-AX2033GR
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(VST.1)C10 | \
+	iodata-mstc-header
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e wpad-openssl
+endef
+TARGET_DEVICES += iodata_wn-ax2033gr
+
 define Device/iodata_wn-dx1167r
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -474,6 +491,7 @@ endef
 TARGET_DEVICES += jdcloud_re-sp-01b
 
 define Device/lenovo_newifi-d1
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Newifi
   DEVICE_MODEL := D1
@@ -758,6 +776,7 @@ endef
 TARGET_DEVICES += telco-electronics_x1
 
 define Device/thunder_timecloud
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Thunder
   DEVICE_MODEL := Timecloud
