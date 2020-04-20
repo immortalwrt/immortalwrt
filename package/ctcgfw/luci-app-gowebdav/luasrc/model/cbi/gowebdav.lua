@@ -12,7 +12,7 @@ s.anonymous = true
 enable = s:option(Flag, "enable", translate("Enable"))
 enable.rmempty = false
 
-listen_port = s:option(Value, "port", translate("Listen Port"))
+listen_port = s:option(Value, "listen_port", translate("Listen Port"))
 listen_port.placeholder = 6086
 listen_port.default     = 6086
 listen_port.datatype    = "port"
@@ -45,9 +45,9 @@ allow_wan.rmempty = false
 use_https = s:option(Flag, "use_https", translate("Use HTTPS instead of HTTP"))
 use_https.rmempty = false
 
-cert_crt = s:option(Value, "cert_crt", translate("Path to Certificate"))
-cert_crt.datatype = "file"
-cert_crt:depends("use_https", 1)
+cert_cer = s:option(Value, "cert_cer", translate("Path to Certificate"))
+cert_cer.datatype = "file"
+cert_cer:depends("use_https", 1)
 
 cert_key = s:option(Value, "cert_key", translate("Path to Certificate Key"))
 cert_key.datatype = "file"

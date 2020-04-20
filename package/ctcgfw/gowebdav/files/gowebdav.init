@@ -14,7 +14,7 @@ init_conf() {
 	config_get "read_only" "config" "read_only" "0"
 	config_get "allow_wan" "config" "allow_wan" "0"
 	config_get "use_https" "config" "use_https" "0"
-	config_get "cert_crt" "config" "cert_crt"
+	config_get "cert_cer" "config" "cert_cer"
 	config_get "cert_key" "config" "cert_key"
 
 	config_load "network"
@@ -44,7 +44,7 @@ start() {
 	[ "${allow_wan}" -ne "1" ] && listen_addr="${lan_addr}" || { listen_addr="0.0.0.0"; set_type="start" && set_firewall 2>"/dev/null"; }
 	{ [ -n "${username}" ] && [ -n "${password}" ]; } && auth_arg="-user ${username} -password ${password}"
 	[ "${read_only}" -eq "1" ] && readonly_arg="-read-only"
-	{ [ "${use_https}" -eq "1" ] && [ -e "${cert_crt}" ] && [ -e "${cert_key}" ]; } && https_arg="-https-mode -https-cert-file ${cert_crt} -https-key-file ${cert_key}"
+	{ [ "${use_https}" -eq "1" ] && [ -e "${cert_cer}" ] && [ -e "${cert_key}" ]; } && https_arg="-https-mode -https-cert-file ${cert_cer} -https-key-file ${cert_key}"
 	/usr/bin/gowebdav -dir "${root_dir}" -http "${listen_addr}:${listen_port}" ${auth_arg} ${readonly_arg} ${https_arg} &
 }
 
