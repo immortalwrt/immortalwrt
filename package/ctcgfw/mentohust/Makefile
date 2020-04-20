@@ -1,0 +1,59 @@
+#
+# Copyright (C) 2014-2015 KyleRicardo
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=mentohust
+PKG_VERSION:=0.3.1
+PKG_RELEASE:=1
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk.git
+PKG_REV:=557cffca8032b6d8ac948be8a79255dc64a1915d
+
+PKG_SOURCE_VERSION:=$(PKG_REV)
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+
+MAKE_PATH:=src
+
+include $(INCLUDE_DIR)/package.mk
+
+define Package/mentohust
+	SECTION:=net
+	CATEGORY:=Network
+	TITLE:=A Ruijie Client Daemon
+	URL:=https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk
+	SUBMENU:=Campus Network
+	DEPENDS:=+libpcap
+endef
+
+define Package/mentohust/description
+  A Ruijie Client Daemon, most usually used in China collages.
+endef
+
+define Build/Compile
+	$(MAKE) -C $(PKG_BUILD_DIR)/src \
+		$(TARGET_CONFIGURE_OPTS) \
+		CFLAGS="$(TARGET_CFLAGS)" \
+		CPPFLAGS="$(TARGET_CPPFLAGS)"  \
+		LDFLAGS="$(TARGET_LDFLAGS) -ldl"
+endef
+
+define Package/mentohust/conffiles
+/etc/mentohust.conf
+endef
+
+define Package/mentohust/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/mentohust $(1)/usr/sbin/mentohust
+	$(INSTALL_DIR) $(1)/etc
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/src/mentohust.conf $(1)/etc/mentohust.conf
+endef
+
+$(eval $(call BuildPackage,$(PKG_NAME)))
