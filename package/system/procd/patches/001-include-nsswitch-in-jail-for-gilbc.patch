@@ -1,0 +1,30 @@
+From d200b70e5d5b0b3b61e2573f1c2fa22b3fa9d63a Mon Sep 17 00:00:00 2001
+From: Daniel Golle <daniel@makrotopia.org>
+Date: Sun, 19 Apr 2020 23:06:51 +0100
+Subject: [PATCH] jail: include /etc/nsswitch.conf in jail for glibc.
+
+/etc/nsswitch.conf is needed to resolve usernames and groups from
+/etc/passwd and /etc/groups, name resoultion and a bunch of other
+things when using glibc.
+Mount /etc/nsswitch.conf in jail when building against glibc.
+
+Reported-by: Tobias Waldvogel <tobias.waldvogel@gmail.com>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ jail/jail.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/jail/jail.c
++++ b/jail/jail.c
+@@ -545,6 +545,11 @@ int main(int argc, char **argv)
+ 				add_mount("/etc/group", 0, -1);
+ 			}
+ 
++#if defined(__GLIBC__)
++			if (!opts.extroot)
++				add_mount("/etc/nsswitch.conf", 0, -1);
++#endif
++
+ 			if (!(opts.namespace & CLONE_NEWNET)) {
+ 				add_mount("/etc/resolv.conf", 0, -1);
+ 			}
