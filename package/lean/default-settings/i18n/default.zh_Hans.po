@@ -58,6 +58,9 @@ msgstr "基本设置"
 msgid "Log"
 msgstr "日志"
 
+msgid "NAS"
+msgstr "网络存储"
+
 msgid "Ethernet Information"
 msgstr "网口信息"
 
