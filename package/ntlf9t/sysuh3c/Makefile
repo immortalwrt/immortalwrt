@@ -17,6 +17,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=H3C client
+	SUBMENU:=Campus Network
 endef
 
 define Build/Configure

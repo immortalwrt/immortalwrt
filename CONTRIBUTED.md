@@ -7,7 +7,6 @@ luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
 luci-app-smartinfo source: [animefansxj/luci-app-smartinfo](https://github.com/animefansxj/luci-app-smartinfo).<br/>
-luci-app-koolproxy source: [Baozisoftware/luci-app-koolproxy](https://github.com/Baozisoftware/luci-app-koolproxy).<br/>
 luci-app-k3screenctrl source: [Hill-98/luci-app-k3screenctrl](https://github.com/Hill-98/luci-app-k3screenctrl).<br/>
 luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/luci-app-smstool-master).<br/>
 luci-app-airwhu source: [KyleRicardo/luci-app-airwhu](https://github.com/KyleRicardo/luci-app-airwhu).<br/>
@@ -19,7 +18,6 @@ v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/ope
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
 luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
-luci-app-koolproxyR source: [Ameykyl/luci-app-koolproxyR](https://github.com/Ameykyl/luci-app-koolproxyR).<br/>
 openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).<br/>
 luci-app-ssr-plus-Jo source: [Leo-Jo-My/luci-app-ssr-plus-Jo](https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo).<br/>
 openwrt-udpspeeder source: [zhfreal/openwrt-UDPspeeder](https://github.com/zhfreal/openwrt-UDPspeeder).<br/>
@@ -48,6 +46,9 @@ luci-theme-argon-mc source: [sypopo/luci-theme-argon-mc](https://github.com/sypo
 luci-app-cupsd source: [F-Light/luci-app-cupsd](https://github.com/F-Light/luci-app-cupsd).<br/>
 ootoc-OpenWRT source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenWRT).<br/>
 r8168 source: [BROBIRD/openwrt-r8168](https://github.com/BROBIRD/openwrt-r8168).<br/>
+MentoHUST source: [KyleRicardo/MentoHUST-OpenWrt-ipk](https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk).<br/>
+scutclient source: [scutclient/scutclient](https://github.com/scutclient/scutclient).<br/>
+luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).<br/>
 luci-theme-Butterfly-dark source: [Leo-Jo-My/luci-theme-Butterfly-dark](https://github.com/Leo-Jo-My/luci-theme-Butterfly-dark).<br/>
 luci-theme-argon-mod source: [Leo-Jo-My/luci-theme-argon-mod](https://github.com/Leo-Jo-My/luci-theme-argon-mod).
 
