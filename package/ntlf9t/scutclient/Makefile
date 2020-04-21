@@ -8,22 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=scutclient
-#If you want to compile your local source code, fill the absolute source path below.
-SRCDIR:=
-ifneq (,$(SRCDIR))
-PKG_VERSION:=$(shell cd $(SRCDIR) && git describe --tags || echo "debug")
-PKG_RELEASE:=1
-PKG_UNPACK=$(CP) $(SRCDIR)/. $(PKG_BUILD_DIR)
-else
-PKG_VERSION:=3.1.1
+PKG_VERSION:=3.1.2
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/scutclient/scutclient.git
-PKG_SOURCE_VERSION:=v$(PKG_VERSION)
+PKG_REV:=10d0c13cc5902925c479f1d50a68564c3129aebc
+
+PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-endif
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 
 PKG_MAINTAINER:=Scutclient Project
 
@@ -33,17 +28,18 @@ PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/scutclient
   SECTION:=net
   CATEGORY:=Network
   TITLE:=SCUT Dr.com client
-  DEPENDS:=
-  URL:=
+  URL:=https://github.com/scutclient/scutclient
+  SUBMENU:=Campus Network
 endef
 
 define Package/scutclient/description
- Support SCUT private authentication protocol.
+  Support SCUT private authentication protocol.
 endef
 
 define Package/scutclient/conffiles
