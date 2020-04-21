@@ -18,7 +18,8 @@ scutclient_validate_drcom() {
 		'hostname:string:Lenovo-PC' \
 		'server_auth_ip:ip4addr:202.38.210.131' \
 		'version:string:4472434f4d0096022a' \
-		'authexe:string' \
+		'onlinehook:string' \
+		'offlinehook:string' \
 		'nettime:string' \
 		'hash:string:2ec15ad258aee9604b18f2f8114da38db16efd00' || exit 1
 }
@@ -61,7 +62,8 @@ scutclient_start_instance() {
 		--cli-version "$version" \
 		--hash "$hash"
 	[ "$debug" -ge 1 ] && procd_append_param command --debug
-	[ -n "$authexe" ] && procd_append_param command --auth-exec "$authexe"
+	[ -n "$onlinehook" ] && procd_append_param command --online-hook "$onlinehook"
+	[ -n "$offlinehook" ] && procd_append_param command --offline-hook "$offlinehook"
 	[ -n "$nettime" ] && procd_append_param command --net-time "$nettime"
 	procd_close_instance
 }
