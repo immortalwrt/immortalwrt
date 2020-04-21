@@ -5,10 +5,8 @@
 local sys  = require "luci.sys"
 local fs = require "nixio.fs"
 local uci = require "luci.model.uci".cursor()
-local ipkg = require "luci.model.ipkg"
 local ntm = require "luci.model.network".init()
-local wan = ntm:get_wannet()
-local wandev = ntm:get_wandev()
+local scutclient_version = luci.sys.exec("opkg list-installed scutclient | cut -d ' ' -f 3")
 local scutclient_status = {}
 scutclient_status.enable = uci:get_first("scutclient", "option", "enable")
 scutclient_status.username = uci:get_first("scutclient", "scutclient", "username")
@@ -23,17 +21,20 @@ mode_links.redial = mode_links.base.."?redial=1"
 mode_links.logoff = mode_links.base.."?logoff=1"
 mode_links.move_tag = mode_links.base .."?move_tag=1"
 
-function page_moved()
-	return (uci:get_first("scutclient", "luci", "mainorder", 10) == 10)
+local stat, wan_nets = pcall(ntm.get_wan_networks, ntm)
+local wan, wandev
+if stat then
+	if #wan_nets > 0 then
+		wan = wan_nets[1]
+		wandev = wan:get_interface()
+	end
+else
+	wan = ntm:get_wannet()
+	wandev = ntm:get_wandev()
 end
 
-function get_client_version(pkg_name)
-	local clistat = ipkg.info('scutclient')
-	if clistat['scutclient'] then
-		return clistat['scutclient']['Version']
-	else
-		return nil
-	end
+function page_moved()
+	return (uci:get_first("scutclient", "luci", "mainorder", 10) == 10)
 end
 
 function get_client_status(exec_name)
@@ -150,9 +151,9 @@ end
 			</tr>
 
 			<tr class="cbi-section-table-row cbi-rowstyle-2">
-				<% if get_client_version("scutclient") then %>
+				<% if string.len(scutclient_version) > 1 then %>
 				<td width="33%"><strong>已安装版本：</strong></td>
-				<td><%=get_client_version("scutclient")%></td>
+				<td><%=scutclient_version%></td>
 				<% else %>
 				<td style="color: red;"><strong>scutclient未安装</strong></td>
 				<% end %>
