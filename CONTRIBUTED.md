@@ -6,7 +6,6 @@ Package lean: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 Package ntlf9t: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
-luci-app-koolproxy source: [Baozisoftware/luci-app-koolproxy](https://github.com/Baozisoftware/luci-app-koolproxy).<br/>
 luci-app-k3screenctrl source: [Hill-98/luci-app-k3screenctrl](https://github.com/Hill-98/luci-app-k3screenctrl).<br/>
 luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/luci-app-smstool-master).<br/>
 luci-app-airwhu source: [KyleRicardo/luci-app-airwhu](https://github.com/KyleRicardo/luci-app-airwhu).<br/>
@@ -17,7 +16,6 @@ simple-obfs source: [aa65535/openwrt-simple-obfs](https://github.com/aa65535/ope
 v2ray-plugin source: [honwen/openwrt-v2ray-plugin](https://github.com/honwen/openwrt-v2ray-plugin).<br/>
 Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br/>
 luci-theme-argon source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
-luci-app-koolproxyR source: [Ameykyl/luci-app-koolproxyR](https://github.com/Ameykyl/luci-app-koolproxyR).<br/>
 openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).<br/>
 luci-app-ssr-plus-Jo source: [Leo-Jo-My/luci-app-ssr-plus-Jo](https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo).<br/>
 openwrt-udpspeeder source: [zhfreal/openwrt-UDPspeeder](https://github.com/zhfreal/openwrt-UDPspeeder).<br/>
@@ -38,7 +36,10 @@ package gargoyle: [ericpaulbishop/gargoyle](https://github.com/ericpaulbishop/ga
 luci-app-qos-gargoyle source: [kuoruan/luci-app-qos-gargoyle](https://github.com/kuoruan/luci-app-qos-gargoyle).<br/>
 luci-app-cupsd source: [F-Light/luci-app-cupsd](https://github.com/F-Light/luci-app-cupsd).<br/>
 ootoc-OpenWRT source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenWRT).<br/>
-r8168 source: [BROBIRD/openwrt-r8168](https://github.com/BROBIRD/openwrt-r8168).
+r8168 source: [BROBIRD/openwrt-r8168](https://github.com/BROBIRD/openwrt-r8168).<br/>
+MentoHUST source: [KyleRicardo/MentoHUST-OpenWrt-ipk](https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk).<br/>
+scutclient source: [scutclient/scutclient](https://github.com/scutclient/scutclient).<br/>
+luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).
 
 ## License
 ### Depending on their own License.
