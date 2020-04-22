@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# 等待 3s，确保 luci 设置已保存
-[ ! "$1" ] && sleep 3
-
 # 读取设置文件
 function get_config(){
 	while [[ "$*" != "" ]]; do
@@ -13,7 +10,7 @@ function get_config(){
 
 # 初始化设置信息
 function read_config(){
-	get_config "serverchan_enable" "sckey" "serverchan_ipv4" "ipv4_interface" "ipv4_URL" "serverchan_ipv6" "ipv6_interface" "ipv6_URL" "serverchan_up" "serverchan_down" "serverchan_sheep" "serverchan_whitelist" "serverchan_blacklist" "serverchan_interface" "starttime" "endtime" "cpuload_enable" "cpuload" "temperature_enable" "temperature" "device_name" "err_enable" "network_err_event" "err_sheep_enable" "system_time_event" "autoreboot_time" "network_restart_time" "public_ip_event" "public_ip_retry_count" "soc_code" "sleeptime" "up_timeout" "down_timeout" "device_aliases" "debuglevel" "cpuload" "temperature" "send_mode" "regular_time" "regular_time_2" "regular_time_3" "interval_time" "thread_num" "timeout_retry_count" "send_tg" "tgtoken"
+	get_config "serverchan_enable" "sckey" "serverchan_ipv4" "ipv4_interface" "ipv4_URL" "serverchan_ipv6" "ipv6_interface" "ipv6_URL" "serverchan_up" "serverchan_down" "serverchan_sheep" "serverchan_whitelist" "serverchan_blacklist" "serverchan_interface" "starttime" "endtime" "cpuload_enable" "cpuload" "temperature_enable" "temperature" "device_name" "err_enable" "network_err_event" "err_sheep_enable" "system_time_event" "autoreboot_time" "network_restart_time" "public_ip_event" "public_ip_retry_count" "soc_code" "sleeptime" "up_timeout" "down_timeout" "device_aliases" "debuglevel" "cpuload" "temperature" "send_mode" "regular_time" "regular_time_2" "regular_time_3" "interval_time" "thread_num" "timeout_retry_count" "send_tg" "tgtoken" "err_device_aliases"
 	for str_version in "wrtbwmon" "iputils-arping" "curl" "iw"; do
 		eval `echo ${str_version:0:2}"_version"`=`opkg list-installed|grep -w ^${str_version}|awk '{print $3}'` 2>/dev/null
 	done
@@ -27,7 +24,6 @@ function read_config(){
 	[ -z "$timeout_retry_count" ] && timeout_retry_count="2";[ "$timeout_retry_count" -eq "0" ] && timeout_retry_count="1"
 	markdown_splitline="%0D%0A%0D%0A---%0D%0A%0D%0A";markdown_linefeed="%0D%0A%0D%0A";markdown_tab="     ";markdown_space=" "
 	[ ! -z "$send_tg" ] && [ "$send_tg" -eq "1" ] && markdown_splitline="%0D%0A%0D%0A%0D%0A%0D%0A" && markdown_tab=""
-	enable_detection
 }
 
 # 初始化
@@ -131,6 +127,8 @@ function getinterface(){
 
 # ping
 function getping(){
+	[ "$iw_version" ] && local wlan_online=`iw dev ${ip_interface} station dump|grep -i -w ${ip_mac}|grep Station` >/dev/null 2>&1
+	[ "$wlan_online" ] && return 0
 	for i in `seq 1 ${3}`; do
 		( ! echo "$ip_ms"|grep -q "ms" ) && local ip_ms=$( arping -I `cat /proc/net/arp|grep -w ${1}|awk '{print $6}'|grep -v "^$"|sort -u` -c 20 -f -w ${2} $1 ) 2>/dev/null
 		( ! echo "$ip_ms"|grep -q "ms" ) && local ip_ms=`ping -c 5 -w ${2} ${1}|grep -v '100% packet loss'` 2>/dev/null
@@ -168,7 +166,7 @@ function usage(){
 		[ -z "$total_n" ] && total_n="6"
 		[ "$2" ] && local tmptotal=`cat ${dir}usage.db|sed 's/,/ /g'|grep -i -w ${2}|awk "{print "'$'$total_n"}"|grep -v "^$"|sort -u` 2>/dev/null
 		[ -z "$tmptotal" ] && local tmptotal="0"
-		echo `bytes_for_humans ${tmptotal}`
+		[ ! "$3" ] && echo `bytes_for_humans ${tmptotal}` || echo $tmptotal
 	elif [ $1 == "down" ] ;then
 		[ "$2" ] && sed -i "/${2}/d" ${dir}usage.db 2>/dev/null
 	fi
@@ -313,6 +311,29 @@ function blackwhitelist(){
 	[ ! -z "$serverchan_interface" ] && ( echo `getinterface ${1}`|grep -q -i -w $serverchan_interface ) && return
 }
 
+function get_client(){
+	if [ -f "${dir}ipAddress" ]; then
+	while read line; do
+		local js_str="${js_str}<div class='tr placeholder'>"
+		local js_str="${js_str}<div class='th'><%:`echo $line|awk '{print $3}'`%></div>"
+		local tmp_mac=`echo $line|awk '{print $2}'`
+		local js_str="${js_str}<div class='th'><%:${tmp_mac}%></div>"
+		local js_str="${js_str}<div class='th'><%:`echo $line|awk '{print $1}'`%></div>"
+		local tmp_usage=`usage get ${tmp_mac}`
+		local js_str="${js_str}<div class='th'><%:${tmp_usage}%></div>"
+		local tmp_uptime=`echo $line|awk '{print $4}'`
+		local tmp_timenow=`date +%s`
+		local tmp_uptime=$(time_for_humans `expr ${tmp_timenow} - ${tmp_uptime}`)
+		local js_str="${js_str}<div class='th'><%:${tmp_uptime}%></div></div>"
+	done < ${dir}ipAddress
+	fi
+cat>/usr/lib/lua/luci/view/serverchan/client.htm<<EOF
+<h2><%:在线设备列表%></h2><div class="table" id="traffic"><div class="tr table-titles"><div class="th" id="thClient" style="width:17%"><%:客户端名%></div><div class="th" id="thMAC" style="width:10%"><%:MAC%></div><div class="th" id="thIP" style="width:17%"><%:IP%></div><div class="th" id="thTotal" style="width:9%"><%:总计流量%></div><div class="th" id="thFirstSeen" style="width:15%"><%:在线时间%></div></div>
+$js_str
+</div>
+EOF
+}
+
 # 重启网络服务
 function network_restart(){
 cat>${dir}network_restart<<EOF
@@ -338,8 +359,8 @@ function geterrdevicealiases(){
 		> ${dir}sheep_usage
 		local MACLIST=`echo "$err_device_aliases"|grep -v "^$"|sort -u`
 		for mac in $MACLIST; do
-			[ ! -z "$mac" ] && local tmptotal=`usage get ${mac}`
-			[ ! -z "$tmptotal" ] && awk 'BEGIN{printf "%.0f\n",'$tmptotal'/'20480'}' 2>/dev/null >> ${dir}sheep_usage
+			[ ! -z "$mac" ] && local tmptotal=`usage get ${mac} bytes`
+			[ ! -z "$tmptotal" ] && awk 'BEGIN{printf "%.0f\n",'$tmptotal'/'204800'}' 2>/dev/null >> ${dir}sheep_usage
 		done
 		old_sheep_usage=`cat ${dir}old_sheep_usage` 2>/dev/null
 		sheep_usage=`cat ${dir}sheep_usage` 2>/dev/null
@@ -354,8 +375,7 @@ function geterrdevicealiases(){
 function unattended(){
 	[ -z "$err_enable" ] || [ "$err_enable" -ne "1" ] && return
 	[ ! -z "$err_sheep_enable" ] && [ "$err_sheep_enable" -eq "1" ] && [ -z "$sheep_starttime" ] && return
-	geterrdevicealiases;[ $? -eq "1" ] && local err_mac="1"
-	[ -z "$err_mac" ] && return
+	geterrdevicealiases;[ $? -eq "1" ] && return
 	
 	if [ ! -z "$system_time_event" ]; then
 		if [ ! -z "$autoreboot_time" ] && [ `cat /proc/uptime|awk -F. '{run_hour=$1/3600;printf("%d",run_hour)}'` -ge "$autoreboot_time" ] && [ "$system_time_event" -eq "1" ]; then
@@ -409,8 +429,8 @@ function rand_geturl(){
 			[ -z "$network_err_time" ] && network_err_time=`date +%s`
 			if [ ! -z "$network_err_event" ] && [ "$((`date +%s`-$network_err_time))" -ge "600" ]; then
 				> ${dir}send_enable.lock && serverchan_first && deltemp
-				geterrdevicealiases;[ $? -eq "1" ] && local err_mac="1"
-				if [ -z "$err_mac" ]; then
+				geterrdevicealiases
+				if [ "$?" -eq "0" ]; then
 					[ -f /usr/bin/serverchan/autoreboot_count ] && retry_count=`cat /usr/bin/serverchan/autoreboot_count` && rm -f /usr/bin/serverchan/autoreboot_count >/dev/null 2>&1
 					[ ! -z ${retry_count} ] && retry_count=0;retry_count=`expr $retry_count + 1`
 					if [ "$network_err_event" -eq "1" ] ;then
@@ -541,9 +561,8 @@ function up(){
 	[ -f ${dir}ipAddress ] && ( cat ${dir}ipAddress|grep -q -w $1 ) && return
 	local ip_mac=`getmac $1`
 	local ip_interface=`getinterface ${ip_mac}`
-	[ "$iw_version" ] && local wlan_online=`iw dev ${ip_interface} station dump|grep -i -w ${ip_mac}|grep Station` >/dev/null 2>&1
 	getping ${1} ${up_timeout} "1";local ping_online=$?
-	if [ ! -z "$wlan_online" ] || [ "$ping_online" -eq "0" ]; then
+	if [ "$ping_online" -eq "0" ]; then
 		LockFile lock
 		[ -f "${dir}tmp_downlist" ] && local tmp_downip=`cat ${dir}tmp_downlist|grep -w ${1}|awk '{print $2}'|grep -v "^$"|sort -u`
 		if [ ! -z "$tmp_downip" ]; then
@@ -580,9 +599,8 @@ function up(){
 function down(){
 	local ip_mac=`getmac $1`
 	local ip_interface=`getinterface ${ip_mac}`
-	[ "$iw_version" ] && local wlan_down=`iw dev ${ip_interface} station dump|grep -i -w ${ip_mac}|grep Station` >/dev/null 2>&1
 	getping ${1} ${down_timeout} ${timeout_retry_count};local ping_online=$?
-	if [ -z "$wlan_down" ] && [ "$ping_online" -eq "1" ]; then
+	if [ "$ping_online" -eq "1" ]; then
 		LockFile lock
 		[ ! -f "${dir}send_enable.lock" ] && cat ${dir}ipAddress|grep -w ${1}|grep -v "^$"|sort -u >> ${dir}tmp_downlist
 		sed -i "/$1/d" ${dir}ipAddress	
@@ -799,7 +817,8 @@ unset i
 # 启动参数
 if [ "$1" ] ;then
 	[ $1 == "send" ] && send
-	[ $1 == "soc" ] && echo `soc_temp` > /tmp/serverchan/soc_tmp
+	[ $1 == "soc" ] && echo `soc_temp` > ${dir}soc_tmp
+	[ $1 == "client" ] && get_client
 	exit
 fi
 
