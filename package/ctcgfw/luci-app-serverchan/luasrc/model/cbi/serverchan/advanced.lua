@@ -63,7 +63,7 @@ a:depends({err_enable="1"})
 
 a= s:option(DynamicList, "err_device_aliases", translate("关注列表"))
 a.rmempty = true 
-a.description = translate("只会在列表中设备都不在线时才会执行<br/>免打扰时段一小时后，关注设备五分钟低流量（约10kb/m）将视为离线")
+a.description = translate("只会在列表中设备都不在线时才会执行<br/>免打扰时段一小时后，关注设备五分钟低流量（约100kb/m）将视为离线")
 nt.mac_hints(function(mac, name) a :value(mac, "%s (%s)" %{ mac, name }) end)
 a:depends({err_enable="1"})
 
