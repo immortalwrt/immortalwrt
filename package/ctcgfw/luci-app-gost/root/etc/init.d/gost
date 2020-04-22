@@ -2,7 +2,7 @@
 # Created By [CTCGFW]Project OpenWRT
 # https://github.com/project-openwrt
 
-START=80
+START=90
 STOP=10
 
 enable="$(uci get gost.@gost[0].enable)"
