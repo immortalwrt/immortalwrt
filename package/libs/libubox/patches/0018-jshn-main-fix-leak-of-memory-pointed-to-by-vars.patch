@@ -1,0 +1,38 @@
+From c42f11cc7c0f0ec6571af06ada6ff0e8882f4fde Mon Sep 17 00:00:00 2001
+From: =?utf8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+Date: Tue, 19 Nov 2019 12:34:14 +0100
+Subject: [PATCH] jshn: main: fix leak of memory pointed to by 'vars'
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
+
+Fixes following leak of memory:
+
+ 6,016 bytes in 1 blocks are possibly lost in loss record 1 of 1
+    at 0x4C31B25: calloc
+    by 0x1098F8: main (jshn.c:353)
+
+Signed-off-by: Petr Å tetiar <ynezz@true.cz>
+---
+ jshn.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/jshn.c b/jshn.c
+index 2d1748e..00293f2 100644
+--- a/jshn.c
++++ b/jshn.c
+@@ -410,8 +410,11 @@
+ 			indent = true;
+ 			break;
+ 		default:
++			free(vars);
+ 			return usage(argv[0]);
+ 		}
+ 	}
++
++	free(vars);
+ 	return usage(argv[0]);
+ }
+-- 
+2.20.1
+
