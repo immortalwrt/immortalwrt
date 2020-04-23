@@ -40,6 +40,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	TITLE:=A continuous file synchronization program
 	URL:=https://github.com/syncthing/syncthing
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
 endef
 
 define Package/$(PKG_NAME)/description
