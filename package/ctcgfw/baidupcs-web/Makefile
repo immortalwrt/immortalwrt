@@ -19,6 +19,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	TITLE:=BaiduPCS-Web is a web controller for BaiduPCS-Go
 	URL:=https://github.com/liuzhuoling2011/baidupcs-web
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
 endef
 
 
