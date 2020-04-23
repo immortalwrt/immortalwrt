@@ -1,0 +1,63 @@
+diff --git a/src/Makefile b/src/Makefile
+index 05c95ab..03ea7cd 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,11 +1,9 @@
+ include $(TOPDIR)/rules.mk
+ include $(INCLUDE_DIR)/package.mk
+ 
+-CC = mips-openwrt-linux-gcc
+ CFLAGS = -Wall -g -O2
+-INC_DIR= $(STAGING_DIR)/usr/include -I$(BUILD_DIR)/libpcap-*/ipkg-install/usr/include
+-LINK_DIR= $(STAGING_DIR)/usr/lib -L$(BUILD_DIR)/libpcap-*/ipkg-install/usr/lib
+-LIBS= $(BUILD_DIR)/libpcap-*/ipkg-install/usr/lib/libpcap.a
++CFLAGS+= $(shell pkg-config --cflags libpcap)
++LIBPCAP_LIBS:= $(shell pkg-config --libs libpcap)
+ 
+ OBJ  = mentohust.o dlfunc.o md5.o mycheck.o myconfig.o myfunc.o strnormalize.o myini.o mystate.o
+ .PHONY: all
+@@ -13,34 +11,34 @@ OBJ  = mentohust.o dlfunc.o md5.o mycheck.o myconfig.o myfunc.o strnormalize.o m
+ all: mentohust
+ 
+ mentohust: $(OBJ)
+-	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LIBS) -I$(INC_DIR) -L$(LINK_DIR) $(LDFLAGS)
++	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LIBPCAP_LIBS) $(LDFLAGS)
+ 
+ mentohust.o : mentohust.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $< 
+ 
+ dlfunc.o : dlfunc.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR) 
++	$(CC) $(CFLAGS) -c $< 
+ 
+ md5.o        : md5.c md5.h
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $<
+ 
+ strnormalize.o: strnormalize.c strnormalize.h
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $<
+ 
+ mycheck.o : mycheck.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $<
+ 
+ myconfig.o : myconfig.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $<
+ 
+ myfunc.o : myfunc.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $<
+ 	
+ myini.o : myini.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)	
++	$(CC) $(CFLAGS) -c $<	
+ 	
+ mystate.o : mystate.c
+-	$(CC) $(CFLAGS) -c $< -I$(INC_DIR)
++	$(CC) $(CFLAGS) -c $<
+         
+ clean :
+ 	rm -v $(OBJ) mentohust

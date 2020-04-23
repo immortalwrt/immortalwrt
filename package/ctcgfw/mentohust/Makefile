@@ -37,14 +37,6 @@ define Package/mentohust/description
   A Ruijie Client Daemon, most usually used in China collages.
 endef
 
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR)/src \
-		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS="$(TARGET_CFLAGS)" \
-		CPPFLAGS="$(TARGET_CPPFLAGS)"  \
-		LDFLAGS="$(TARGET_LDFLAGS) -ldl"
-endef
-
 define Package/mentohust/conffiles
 /etc/mentohust.conf
 endef
