@@ -1,5 +1,5 @@
 diff --git a/encrypt.c b/encrypt.c
-index ce04c6f..492e038 100644
+index ce04c6f..dc27754 100644
 --- a/encrypt.c
 +++ b/encrypt.c
 @@ -278,7 +278,7 @@ static void enc_table_init(enc_info * info, const char *pass)
@@ -220,12 +220,8 @@ index ce04c6f..492e038 100644
  #if defined(USE_CRYPTO_OPENSSL)
      if (ctx->init)
          return ilen + EVP_CIPHER_block_size(cipher); 
-@@ -911,12 +875,11 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
- 
- #if defined(USE_CRYPTO_OPENSSL)
+@@ -913,10 +877,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
      OpenSSL_add_all_algorithms();
-+//#else
-+//    cipher_kt_t cipher_info;
  #endif
  
 -    uint8_t iv[MAX_IV_LENGTH];
@@ -236,7 +232,7 @@ index ce04c6f..492e038 100644
  
  
      if (method == SALSA20 || method == CHACHA20) {
-@@ -924,11 +887,9 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
+@@ -924,11 +885,9 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
          if (sodium_init() == -1) {
              //FATAL("Failed to initialize sodium");
          }
@@ -250,7 +246,7 @@ index ce04c6f..492e038 100644
  #endif
  #if defined(USE_CRYPTO_POLARSSL)
          cipher->base = NULL;
-@@ -937,7 +898,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
+@@ -937,7 +896,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
  #endif
  */
      } else {
@@ -259,7 +255,7 @@ index ce04c6f..492e038 100644
      }
  
      if (cipher == NULL) {
-@@ -947,7 +908,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
+@@ -947,7 +906,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
                  cipher_info.base = NULL;
                  cipher_info.key_length = supported_ciphers_key_size[method] * 8;
                  cipher_info.iv_size = supported_ciphers_iv_size[method];
@@ -268,7 +264,7 @@ index ce04c6f..492e038 100644
                  break;
              }
  #endif
-@@ -959,7 +920,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
+@@ -959,7 +918,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
      if (md == NULL)
          return -1;
  
@@ -277,7 +273,7 @@ index ce04c6f..492e038 100644
      if (info->key_len == 0) {
          //FATAL("Cannot generate key and IV");
          return -1;
-@@ -967,7 +928,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
+@@ -967,7 +926,7 @@ static int enc_key_init(enc_info * info, int method, const char *pass)
      if (method == RC4_MD5) {
          info->iv_len = 16;
      } else {
