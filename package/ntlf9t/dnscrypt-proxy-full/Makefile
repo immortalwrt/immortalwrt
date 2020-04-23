@@ -46,7 +46,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=A flexible DNS proxy, with support for modern encrypted DNS protocols such as DNSCrypt v2 and DNS-over-HTTPS.
-	DEPENDS:=+ca-bundle
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64) +ca-bundle
 	URL:=https://github.com/jedisct1/dnscrypt-proxy/releases
 endef
 
