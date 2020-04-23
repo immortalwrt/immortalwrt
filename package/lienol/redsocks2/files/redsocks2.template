@@ -1,3 +1,8 @@
+base {
+ log_debug = off;
+ redirector = iptables;
+ reuseport = on;
+}
 redsocks {
  local_ip = 192.168.1.1;
  local_port = 1081;
