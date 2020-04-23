@@ -53,6 +53,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	TITLE:=Network-wide ads & trackers blocking DNS server
 	URL:=https://github.com/AdguardTeam/AdGuardHome
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
 endef
 
 define Build/Prepare
