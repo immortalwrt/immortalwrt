@@ -4,7 +4,6 @@
 
 . /lib/functions.sh
 . /lib/functions/system.sh
-. /lib/functions/mikrotik-caldata.sh
 
 ath9k_eeprom_die() {
 	echo "ath9k eeprom: " "$*"
@@ -83,7 +82,9 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath9k-eeprom-ahb-18100000.wmac.bin")
 	case $board in
-	avm,fritz4020)
+	avm,fritz1750e|\
+	avm,fritz4020|\
+	avm,fritz450e)
 		ath9k_eeprom_extract_reverse "urlader" 0x1541 0x440
 		;;
 	dlink,dir-505|\
@@ -113,10 +114,6 @@ case "$FIRMWARE" in
 	sitecom,wlr-7100)
 		ath9k_eeprom_extract "art" 0x1000 0x440
 		ath9k_patch_fw_mac $(mtd_get_mac_ascii u-boot-env ethaddr) 0x2
-		;;
-	mikrotik,routerboard-wap-g-5hact2hnd)
-		mikrotik_caldata_extract "art" 0x1000 0x440
-		ath9k_patch_fw_mac $(macaddr_add $(mtd_get_mac_binary art 0x10) +2)
 		;;
 	nec,wg800hp)
 		ath9k_eeprom_extract "art" 0x1000 0x440
@@ -162,7 +159,9 @@ case "$FIRMWARE" in
 	tplink,tl-wr2543-v1|\
 	tplink,tl-wr842n-v1|\
 	ubnt,airrouter|\
-	ubnt,bullet-m|\
+	ubnt,bullet-m-ar7240|\
+	ubnt,bullet-m-ar7241|\
+	ubnt,nanobridge-m|\
 	ubnt,nanostation-loco-m|\
 	ubnt,nanostation-m|\
 	ubnt,picostation-m|\

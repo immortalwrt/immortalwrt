@@ -1,5 +1,7 @@
 include ./common-netgear.mk	# for netgear-uImage
 
+DEVICE_VARS += RAS_ROOTFS_SIZE RAS_BOARD RAS_VERSION
+
 # attention: only zlib compression is allowed for the boot fs
 define Build/zyxel-buildkerneljffs
 	rm -rf  $(KDIR_TMP)/zyxelnbg6716
@@ -45,6 +47,24 @@ define Device/aerohive_hiveap-121
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += aerohive_hiveap-121
+
+define Device/domywifi_dw33d
+  SOC := qca9558
+  DEVICE_VENDOR := DomyWifi
+  DEVICE_MODEL := DW33D
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-storage kmod-usb-ledtrig-usbport \
+	kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  KERNEL_SIZE := 5120k
+  IMAGE_SIZE := 98304k
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  IMAGES += factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | \
+	check-size $$$$(IMAGE_SIZE)
+endef
+TARGET_DEVICES += domywifi_dw33d
 
 define Device/glinet_gl-ar300m-common-nand
   SOC := qca9531
@@ -96,7 +116,7 @@ define Device/glinet_gl-ar750s-nor-nand
   GL_UBOOT_UBI_OFFSET := 2048k
   IMAGES += factory.img
   IMAGE/factory.img := append-kernel | pad-to $$$$(GL_UBOOT_UBI_OFFSET) | \
-			append-ubi | check-kernel-size $$$$(GL_UBOOT_UBI_OFFSET)
+	append-ubi | check-kernel-size $$$$(GL_UBOOT_UBI_OFFSET)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   SUPPORTED_DEVICES += glinet,gl-ar750s-nor
 endef
@@ -198,4 +218,3 @@ define Device/zyxel_nbg6716
   UBINIZE_OPTS := -E 5
 endef
 TARGET_DEVICES += zyxel_nbg6716
-DEVICE_VARS += RAS_ROOTFS_SIZE RAS_BOARD RAS_VERSION

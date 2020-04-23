@@ -1,5 +1,4 @@
 include ./common-buffalo.mk
-include ./common-mikrotik.mk
 include ./common-netgear.mk
 include ./common-tp-link.mk
 include ./common-yuncore.mk
@@ -159,39 +158,57 @@ define Device/aruba_ap-105
   DEVICE_VENDOR := Aruba
   DEVICE_MODEL := AP-105
   IMAGE_SIZE := 16000k
-  DEVICE_PACKAGES := kmod-i2c-core kmod-i2c-gpio kmod-tpm-i2c-atmel
+  DEVICE_PACKAGES := kmod-i2c-gpio kmod-tpm-i2c-atmel
 endef
 TARGET_DEVICES += aruba_ap-105
 
-define Device/avm_fritz300e
-  SOC := ar7242
+define Device/avm
   DEVICE_VENDOR := AVM
-  DEVICE_MODEL := FRITZ!WLAN Repeater 300E
-  KERNEL := kernel-bin | append-dtb | lzma | eva-image
-  KERNEL_INITRAMFS := $$(KERNEL)
-  IMAGE_SIZE := 15232k
-  IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | \
-	append-squashfs-fakeroot-be | pad-to 256 | append-rootfs | pad-rootfs | \
-	append-metadata | check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := fritz-tffs rssileds -swconfig
-  SUPPORTED_DEVICES += fritz300e
-endef
-TARGET_DEVICES += avm_fritz300e
-
-define Device/avm_fritz4020
-  SOC := qca9561
-  DEVICE_VENDOR := AVM
-  DEVICE_MODEL := FRITZ!Box 4020
-  IMAGE_SIZE := 15232k
   KERNEL := kernel-bin | append-dtb | lzma | eva-image
   KERNEL_INITRAMFS := $$(KERNEL)
   IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | \
 	append-squashfs-fakeroot-be | pad-to 256 | append-rootfs | pad-rootfs | \
 	append-metadata | check-size $$$$(IMAGE_SIZE)
   DEVICE_PACKAGES := fritz-tffs
+endef
+
+define Device/avm_fritz1750e
+  $(Device/avm)
+  SOC := qca9556
+  IMAGE_SIZE := 15232k
+  DEVICE_MODEL := FRITZ!WLAN Repeater 1750E
+  DEVICE_PACKAGES += rssileds kmod-ath10k-ct-smallbuffers \
+	ath10k-firmware-qca988x-ct -swconfig
+endef
+TARGET_DEVICES += avm_fritz1750e
+
+define Device/avm_fritz300e
+  $(Device/avm)
+  SOC := ar7242
+  IMAGE_SIZE := 15232k
+  DEVICE_MODEL := FRITZ!WLAN Repeater 300E
+  DEVICE_PACKAGES += rssileds -swconfig
+  SUPPORTED_DEVICES += fritz300e
+endef
+TARGET_DEVICES += avm_fritz300e
+
+define Device/avm_fritz4020
+  $(Device/avm)
+  SOC := qca9561
+  IMAGE_SIZE := 15232k
+  DEVICE_MODEL := FRITZ!Box 4020
   SUPPORTED_DEVICES += fritz4020
 endef
 TARGET_DEVICES += avm_fritz4020
+
+define Device/avm_fritz450e
+  $(Device/avm)
+  SOC := qca9556
+  IMAGE_SIZE := 15232k
+  DEVICE_MODEL := FRITZ!WLAN Repeater 450E
+  SUPPORTED_DEVICES += fritz450e
+endef
+TARGET_DEVICES += avm_fritz450e
 
 define Device/buffalo_bhr-4grv
   SOC := ar7242
@@ -327,6 +344,16 @@ define Device/comfast_cf-e560ac
 endef
 TARGET_DEVICES += comfast_cf-e560ac
 
+define Device/comfast_cf-ew72
+  SOC := qca9531
+  DEVICE_VENDOR := COMFAST
+  DEVICE_MODEL := CF-EW72
+  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9888-ct \
+	-uboot-envtools -swconfig
+  IMAGE_SIZE := 16192k
+endef
+TARGET_DEVICES += comfast_cf-ew72
+
 define Device/comfast_cf-wr650ac-v1
   SOC := qca9558
   DEVICE_VENDOR := COMFAST
@@ -346,6 +373,17 @@ define Device/comfast_cf-wr650ac-v2
   IMAGE_SIZE := 16000k
 endef
 TARGET_DEVICES += comfast_cf-wr650ac-v2
+
+define Device/comfast_cf-wr752ac-v1
+  SOC := qca9531
+  DEVICE_VENDOR := COMFAST
+  DEVICE_MODEL := CF-WR752AC
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9888-ct \
+	-uboot-envtools
+  IMAGE_SIZE := 16192k
+endef
+TARGET_DEVICES += comfast_cf-wr752ac-v1
 
 define Device/devolo_dvl1200e
   SOC := qca9558
@@ -400,6 +438,15 @@ define Device/devolo_dvl1750x
   IMAGE_SIZE := 15936k
 endef
 TARGET_DEVICES += devolo_dvl1750x
+
+define Device/devolo_magic-2-wifi
+  SOC := ar9344
+  DEVICE_VENDOR := Devolo
+  DEVICE_MODEL := Magic 2 WiFi
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15872k
+endef
+TARGET_DEVICES += devolo_magic-2-wifi
 
 define Device/dlink_dir-505
   SOC := ar9330
@@ -756,19 +803,6 @@ define Device/librerouter_librerouter-v1
 endef
 TARGET_DEVICES += librerouter_librerouter-v1
 
-define Device/mikrotik_routerboard-wap-g-5hact2hnd
-  $(Device/mikrotik)
-  SOC := qca9556
-  DEVICE_MODEL := RouterBOARD wAP G-5HacT2HnD (wAP AC)
-  IMAGE_SIZE := 16256k
-  IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 -e | \
-	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | \
-	append-metadata | check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
-  SUPPORTED_DEVICES += rb-wapg-5hact2hnd
-endef
-TARGET_DEVICES += mikrotik_routerboard-wap-g-5hact2hnd
-
 define Device/nec_wg1200cr
   SOC := qca9563
   DEVICE_VENDOR := NEC
@@ -1012,7 +1046,7 @@ define Device/pisen_wmb001n
   DEVICE_VENDOR := PISEN
   DEVICE_MODEL := WMB001N
   IMAGE_SIZE := 14080k
-  DEVICE_PACKAGES := kmod-i2c-core kmod-i2c-gpio kmod-usb2
+  DEVICE_PACKAGES := kmod-i2c-gpio kmod-usb2
   LOADER_TYPE := bin
   LOADER_FLASH_OFFS := 0x20000
   COMPILE := loader-$(1).bin loader-$(1).uImage
@@ -1086,6 +1120,22 @@ define Device/sitecom_wlr-7100
 endef
 TARGET_DEVICES += sitecom_wlr-7100
 
+define Device/sitecom_wlr-8100
+  SOC := qca9558
+  DEVICE_VENDOR := Sitecom
+  DEVICE_MODEL := WLR-8100
+  DEVICE_ALT0_VENDOR := Sitecom
+  DEVICE_ALT0_MODEL := X8 AC1750
+  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2 kmod-usb3
+  SUPPORTED_DEVICES += wlr8100
+  IMAGES += factory.dlf
+  IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE) | \
+	senao-header -r 0x222 -p 0x56 -t 2
+  IMAGE_SIZE := 15424k
+endef
+TARGET_DEVICES += sitecom_wlr-8100
+
 define Device/teltonika_rut955
   SOC := ar9344
   DEVICE_VENDOR := Teltonika
@@ -1157,7 +1207,7 @@ define Device/winchannel_wb2000
   DEVICE_VENDOR := Winchannel
   DEVICE_MODEL := WB2000
   IMAGE_SIZE := 15872k
-  DEVICE_PACKAGES := kmod-i2c-core kmod-i2c-gpio kmod-rtc-ds1307 kmod-usb2 \
+  DEVICE_PACKAGES := kmod-i2c-gpio kmod-rtc-ds1307 kmod-usb2 \
 	kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += winchannel_wb2000
@@ -1208,7 +1258,7 @@ define Device/zbtlink_zbt-wd323
   DEVICE_VENDOR := ZBT
   DEVICE_MODEL := WD323
   IMAGE_SIZE := 16000k
-  DEVICE_PACKAGES := kmod-usb2 kmod-i2c-core kmod-i2c-gpio kmod-rtc-pcf8563 \
+  DEVICE_PACKAGES := kmod-usb2 kmod-i2c-gpio kmod-rtc-pcf8563 \
 	kmod-usb-serial kmod-usb-serial-cp210x uqmi
 endef
 TARGET_DEVICES += zbtlink_zbt-wd323

@@ -2,7 +2,6 @@
 
 . /lib/functions.sh
 . /lib/functions/k2t.sh
-. /lib/functions/mikrotik-caldata.sh
 
 ath10kcal_die() {
 	echo "ath10cal: " "$*"
@@ -72,8 +71,12 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath10k/cal-pci-0000:00:00.0.bin")
 	case $board in
+	avm,fritz1750e)
+		ath10kcal_extract "urlader" 0x198a 0x844
+		;;
 	comfast,cf-wr650ac-v1|\
 	comfast,cf-wr650ac-v2|\
+	devolo,magic-2-wifi|\
 	ubnt,unifiac-lite|\
 	ubnt,unifiac-lr|\
 	ubnt,unifiac-mesh|\
@@ -126,9 +129,6 @@ case "$FIRMWARE" in
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary art 0x0) +2)
 		;;
-	mikrotik,routerboard-wap-g-5hact2hnd)
-		mikrotik_caldata_extract "art" 0x5000 0x844
-		;;
 	nec,wg800hp)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac_crc $(mtd_get_mac_text board_data 0x880)
@@ -163,6 +163,11 @@ case "$FIRMWARE" in
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary romfile 0xf100) +2)
 		;;
+	tplink,archer-d7-v1|\
+	tplink,archer-d7b-v1)
+		ath10kcal_extract "art" 0x5000 0x844
+		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary romfs 0xf100) +2)
+		;;
 	tplink,re350k-v1)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary config 0x10008) +2)
@@ -182,6 +187,14 @@ case "$FIRMWARE" in
 		;;
 	esac
 	;;
+"ath10k/cal-pci-0000:01:00.0.bin")
+	case $board in
+	sitecom,wlr-8100)
+		ath10kcal_extract "art" 0x5000 0x844
+		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +1)
+		;;
+	esac
+	;;
 "ath10k/pre-cal-pci-0000:00:00.0.bin")
 	case $board in
 	comfast,cf-e313ac)
@@ -191,7 +204,9 @@ case "$FIRMWARE" in
 			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
 		rm /lib/firmware/ath10k/QCA9888/hw2.0/board-2.bin
 		;;
-	comfast,cf-e560ac)
+	comfast,cf-e560ac|\
+	comfast,cf-ew72|\
+	comfast,cf-wr752ac-v1)
 		ath10kcal_extract "art" 0x5000 0x2f20
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_binary art 0x0) +2)
 		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
@@ -223,6 +238,7 @@ case "$FIRMWARE" in
 	tplink,archer-c59-v2|\
 	tplink,archer-c60-v1|\
 	tplink,archer-c60-v2|\
+	tplink,archer-c60-v3|\
 	tplink,archer-c6-v2|\
 	tplink,archer-c6-v2-us)
 		ath10kcal_extract "art" 0x5000 0x2f20
