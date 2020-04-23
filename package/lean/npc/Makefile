@@ -47,7 +47,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=NPC Client
-	DEPENDS:=
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
 	URL:=https://github.com/ehang-io/nps/releases
 endef
 
