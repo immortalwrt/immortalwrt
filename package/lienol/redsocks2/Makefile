@@ -10,15 +10,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=redsocks2
 PKG_VERSION:=0.67
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=3052eeab75ff1ebd20c22334fbbecd808525bca7
+PKG_SOURCE_VERSION:=53cad23a14afdd5f61a0542615beb7f4d98be728
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_MAINTAINER:=semigodking  <semigodking@gmail.com>
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+
+PKG_MAINTAINER:=semigodking <semigodking@gmail.com>
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -27,21 +28,13 @@ define Package/redsocks2
 	CATEGORY:=Network
 	TITLE:=Redirect any TCP connection to a SOCKS or HTTPS proxy server
 	URL:=https://github.com/semigodking/redsocks
-	DEPENDS:=+libevent2 +libpolarssl
+	DEPENDS:=+libevent2 +libopenssl
 endef
 
 define Package/redsocks2/description
 This is a modified version of original redsocks. \
 The name is changed to be REDSOCKS2 since this release to distinguish with original redsocks. \
 This variant is useful for anti-GFW (Great Fire Wall).
-endef
-
-define Package/redsocks2/conffiles
-/etc/config/redsocks2
-endef
-
-define Build/Compile
-	$(call Build/Compile/Default,USE_CRYPTO_POLARSSL=true)
 endef
 
 define Package/redsocks2/install
