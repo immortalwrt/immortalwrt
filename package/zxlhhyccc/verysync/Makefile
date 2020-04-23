@@ -45,7 +45,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=A efficient data transmission tool
-	DEPENDS:=
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
 	URL:=http://www.verysync.com
 endef
 
