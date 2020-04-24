@@ -193,6 +193,7 @@ endef
 TARGET_DEVICES += asus_rt-ac85p
 
 define Device/buffalo_wsr-1166dhp
+  $(Device/uimage-lzma-loader)
   IMAGE/sysupgrade.bin := trx | pad-rootfs | append-metadata
   IMAGE_SIZE := 15936k
   DEVICE_VENDOR := Buffalo
@@ -203,6 +204,7 @@ endef
 TARGET_DEVICES += buffalo_wsr-1166dhp
 
 define Device/buffalo_wsr-2533dhpl
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 7936k
   DEVICE_VENDOR := Buffalo
   DEVICE_MODEL := WSR-2533DHPL
@@ -308,6 +310,7 @@ endef
 TARGET_DEVICES += elecom_wrc-1167ghbk2-s
 
 define Device/elecom_wrc-1900gst
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 11264k
   DEVICE_VENDOR := ELECOM
   DEVICE_MODEL := WRC-1900GST
@@ -318,6 +321,7 @@ endef
 TARGET_DEVICES += elecom_wrc-1900gst
 
 define Device/elecom_wrc-2533gst
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 11264k
   DEVICE_VENDOR := ELECOM
   DEVICE_MODEL := WRC-2533GST
@@ -378,6 +382,7 @@ endef
 TARGET_DEVICES += hiwifi_hc5962
 
 define Device/iodata_wn-ax1167gr
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 15552k
   KERNEL_INITRAMFS := $$(KERNEL) | \
 	iodata-factory 7864320 4 0x1055 $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.bin
@@ -436,6 +441,7 @@ endef
 TARGET_DEVICES += iodata_wn-dx1167r
 
 define Device/iodata_wn-gx300gr
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 7616k
   DEVICE_VENDOR := I-O DATA
   DEVICE_MODEL := WN-GX300GR
@@ -444,6 +450,7 @@ endef
 TARGET_DEVICES += iodata_wn-gx300gr
 
 define Device/iodata_wnpr2600g
+  $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := I-O DATA
   DEVICE_MODEL := WNPR2600G
   IMAGE_SIZE := 13952k
@@ -742,6 +749,7 @@ endef
 TARGET_DEVICES += phicomm_k2p
 
 define Device/planex_vr500
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 65216k
   DEVICE_VENDOR := Planex
   DEVICE_MODEL := VR500
