@@ -10,7 +10,7 @@
  		mutex_unlock(&__mdio_board_lock);
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -872,6 +872,7 @@ extern struct bus_type mdio_bus_type;
+@@ -874,6 +874,7 @@ extern struct bus_type mdio_bus_type;
  
  struct mdio_board_info {
  	const char	*bus_id;

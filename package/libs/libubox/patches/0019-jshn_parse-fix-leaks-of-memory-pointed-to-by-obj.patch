@@ -1,0 +1,56 @@
+From cb698e35409b898aedbbc3c673a0055dc1520ef6 Mon Sep 17 00:00:00 2001
+From: =?utf8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+Date: Tue, 19 Nov 2019 14:09:43 +0100
+Subject: [PATCH 1/1] jshn: jshn_parse: fix leaks of memory pointed to by 'obj'
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
+
+Fixes following leaks of memory:
+
+ 352 (72 direct, 280 indirect) bytes in 1 blocks are definitely lost in loss record 3 of 3
+   at 0x4C31B25: calloc
+   by 0x5042E1F: json_object_new_array
+   by 0x5044B02: json_tokener_parse_ex
+   by 0x5045316: json_tokener_parse_verbose
+   by 0x504537D: json_tokener_parse
+   by 0x401AA9: jshn_parse (jshn.c:179)
+   by 0x401977: main (jshn.c:378)
+
+ 752 (72 direct, 680 indirect) bytes in 1 blocks are definitely lost in loss record 6 of 6
+   at 0x4C31B25: calloc
+   by 0x50424CF: json_object_new_object
+   by 0x5044B38: json_tokener_parse_ex
+   by 0x5045316: json_tokener_parse_verbose
+   by 0x504537D: json_tokener_parse
+   by 0x401AA9: jshn_parse (jshn.c:179)
+   by 0x401977: main (jshn.c:380)
+
+Signed-off-by: Petr Å tetiar <ynezz@true.cz>
+---
+ jshn.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/jshn.c b/jshn.c
+index 2eebe6c..9639951 100644
+--- a/jshn.c
++++ b/jshn.c
+@@ -178,12 +178,15 @@ static int jshn_parse(const char *str)
+ 
+ 	obj = json_tokener_parse(str);
+ 	if (!obj || json_object_get_type(obj) != json_type_object) {
++		if (obj)
++			json_object_put(obj);
+ 		fprintf(stderr, "Failed to parse message data\n");
+ 		return 1;
+ 	}
+ 	fprintf(stdout, "json_init;\n");
+ 	add_json_object(obj);
+ 	fflush(stdout);
++	json_object_put(obj);
+ 
+ 	return 0;
+ }
+-- 
+2.20.1
+

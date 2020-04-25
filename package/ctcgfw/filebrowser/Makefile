@@ -51,6 +51,7 @@ define Package/$(PKG_NAME)
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=OpenWrt Support for FileBrowser.
+	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
 	URL:=https://github.com/filebrowser/filebrowser
 endef
 
