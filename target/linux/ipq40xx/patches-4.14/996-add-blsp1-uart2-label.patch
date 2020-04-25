@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -387,7 +387,7 @@
+@@ -382,7 +382,7 @@
  			dma-names = "rx", "tx";
  		};
  
