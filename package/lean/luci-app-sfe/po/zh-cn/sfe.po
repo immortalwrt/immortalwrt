@@ -79,8 +79,3 @@ msgstr "支持dnsforwarder解析多个上游IPV6 DNS服务器，用','分隔（�
 msgid "AdGuardHome's login username/passwd: AdGuardHome, web console addr: IP:3001"
 msgstr "AdGuardHome 网页控制台地址：IP:3001 登录账号/密码：AdGuardHome"
 
-msgid "Filter AAAA"
-msgstr "忽略域名的IPv6地址"
-
-msgid "Dnsmasq rejects IPv6 parsing and optimizes domestic complex dual-stack network"
-msgstr "dnsmasq不返回ipv6解析结果,优化国内复杂双栈网络"

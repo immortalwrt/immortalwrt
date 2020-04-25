@@ -3,7 +3,6 @@ config sfe
 	option ipv6 '0'
 	option wifi '0'
 	option bbr '0'
-	option filter_aaaa '1'
 	option dns '0'
 	option dnscache_enable '1'
 	option dns_server '114.114.114.114,114.114.115.115,223.5.5.5,223.6.6.6,180.76.76.76,119.29.29.29,119.28.28.28,1.2.4.8,210.2.4.8'
