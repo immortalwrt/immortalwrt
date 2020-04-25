@@ -22,11 +22,9 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  drivers/net/ethernet/qualcomm/essedma/edma.c | 14 +++++---------
  2 files changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index 3c4617f..7c3af8e 100644
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -598,8 +598,7 @@
+@@ -652,8 +652,7 @@
  			qcom,page-mode = <0>;
  			qcom,rx_head_buf_size = <1540>;
  			qcom,mdio_supported;
@@ -36,7 +34,7 @@ index 3c4617f..7c3af8e 100644
  			interrupts = <0  65 IRQ_TYPE_EDGE_RISING
  				      0  66 IRQ_TYPE_EDGE_RISING
  				      0  67 IRQ_TYPE_EDGE_RISING
-@@ -637,7 +636,7 @@
+@@ -691,7 +690,7 @@
  
  			gmac0: gmac0 {
  				local-mac-address = [00 00 00 00 00 00];
@@ -45,11 +43,9 @@ index 3c4617f..7c3af8e 100644
  			};
  
  			gmac1: gmac1 {
-diff --git a/drivers/net/ethernet/qualcomm/essedma/edma.c b/drivers/net/ethernet/qualcomm/essedma/edma.c
-index 05f9ce9..a3c0d66 100644
 --- a/drivers/net/ethernet/qualcomm/essedma/edma.c
 +++ b/drivers/net/ethernet/qualcomm/essedma/edma.c
-@@ -750,13 +750,11 @@ static void edma_rx_complete(struct edma_common_info *edma_cinfo,
+@@ -721,13 +721,11 @@ static u16 edma_rx_complete(struct edma_
  			edma_receive_checksum(rd, skb);
  
  			/* Process VLAN HW acceleration indication provided by HW */
@@ -68,7 +64,7 @@ index 05f9ce9..a3c0d66 100644
  
  			/* Update rx statistics */
  			adapter->stats.rx_packets++;
-@@ -1434,8 +1432,6 @@ netdev_tx_t edma_xmit(struct sk_buff *skb,
+@@ -1408,8 +1406,6 @@ netdev_tx_t edma_xmit(struct sk_buff *sk
  	if (!adapter->edma_cinfo->is_single_phy) {
  		if (unlikely(skb_vlan_tag_present(skb)))
  			flags_transmit |= EDMA_VLAN_TX_TAG_INSERT_FLAG;
@@ -77,6 +73,3 @@ index 05f9ce9..a3c0d66 100644
  	}
  
  	/* Check and mark checksum offload */
--- 
-2.7.4
-
