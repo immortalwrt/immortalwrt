@@ -46,8 +46,5 @@ Default login address: 192.168.1.1, username is **root** and password is **passw
 # Contributed
 ### See [CONTRIBUTED.md](https://github.com/project-openwrt/openwrt/blob/openwrt-18.06/CONTRIBUTED.md).
 
-# Donate
-ETH Address: `0x373Ba17dF77ea455bd29a24104088659fBac7e96`
-
 # License
 ### [GNU General Public License v3.0](https://github.com/project-openwrt/openwrt/blob/openwrt-18.06/LICENSE).
