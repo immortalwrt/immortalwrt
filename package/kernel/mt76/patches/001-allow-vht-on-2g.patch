@@ -9,7 +9,7 @@
  	if (dev->cap.has_5ghz)
  		mt76_init_stream_cap(dev, &dev->phy.sband_5g.sband, vht);
  }
-@@ -219,14 +219,14 @@ mt76_init_sband(struct mt76_dev *dev, st
+@@ -218,14 +218,14 @@ mt76_init_sband(struct mt76_dev *dev, st
  
  static int
  mt76_init_sband_2g(struct mt76_dev *dev, struct ieee80211_rate *rates,
@@ -26,7 +26,7 @@
  }
  
  static int
-@@ -446,7 +446,7 @@ int mt76_register_device(struct mt76_dev
+@@ -445,7 +445,7 @@ int mt76_register_device(struct mt76_dev
  	mt76_phy_init(dev, hw);
  
  	if (dev->cap.has_2ghz) {
