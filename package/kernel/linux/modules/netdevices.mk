@@ -716,38 +716,6 @@ endef
 
 $(eval $(call KernelPackage,ixgbevf))
 
-define KernelPackage/i40e
-  SUBMENU:=$(NETWORK_DEVICES_MENU)
-  TITLE:=Intel(R) Ethernet Controller XL710 Family support
-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-hwmon-core +LINUX_5_4:kmod-libphy
-  KCONFIG:=CONFIG_I40E \
-    CONFIG_I40E_DCB=n
-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/i40e/i40e.ko
-  AUTOLOAD:=$(call AutoProbe,i40e)
-endef
-
-define KernelPackage/i40e/description
- Kernel modules for Intel(R) Ethernet Controller XL710 Family 40 Gigabit Ethernet adapters.
-endef
-
-$(eval $(call KernelPackage,i40e))
-
-
-define KernelPackage/i40evf
-  SUBMENU:=$(NETWORK_DEVICES_MENU)
-  TITLE:=Intel(R) Ethernet Adaptive Virtual Function support
-  DEPENDS:=@!LINUX_5_4 @PCI_SUPPORT +kmod-i40e
-  KCONFIG:=CONFIG_I40EVF
-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/i40evf/i40evf.ko
-  AUTOLOAD:=$(call AutoProbe,i40evf)
-endef
-
-define KernelPackage/i40evf/description
- Kernel modules for Intel(R) Ethernet Controller XL710 Family Virtual Function Ethernet adapters.
-endef
-
-$(eval $(call KernelPackage,i40evf))
-
 
 define KernelPackage/i40e
   SUBMENU:=$(NETWORK_DEVICES_MENU)
