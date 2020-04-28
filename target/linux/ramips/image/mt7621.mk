@@ -408,8 +408,8 @@ define Device/iodata_wn-ax1167gr2
   $(Device/iodata_nand)
   UIMAGE_MAGIC := 0x434f4d42
   DEVICE_MODEL := WN-AX1167GR2
-  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(XBC.1)b10 | \
-	iodata-mstc-header
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel | lzma | \
+	custom-initramfs-uimage 3.10(XBC.1)b10 | iodata-mstc-header
   DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += iodata_wn-ax1167gr2
@@ -418,8 +418,8 @@ define Device/iodata_wn-ax2033gr
   $(Device/iodata_nand)
   UIMAGE_MAGIC := 0x434f4d42
   DEVICE_MODEL := WN-AX2033GR
-  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(VST.1)C10 | \
-	iodata-mstc-header
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel | lzma | \
+	custom-initramfs-uimage 3.10(VST.1)C10 | iodata-mstc-header
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += iodata_wn-ax2033gr
@@ -428,8 +428,8 @@ define Device/iodata_wn-dx1167r
   $(Device/iodata_nand)
   UIMAGE_MAGIC := 0x434f4d43
   DEVICE_MODEL := WN-DX1167R
-  KERNEL_INITRAMFS := $(KERNEL_DTB) | custom-initramfs-uimage 3.10(XIK.1)b10 | \
-	iodata-mstc-header
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel | lzma | \
+	custom-initramfs-uimage 3.10(XIK.1)b10 | iodata-mstc-header
   DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
 endef
 TARGET_DEVICES += iodata_wn-dx1167r
