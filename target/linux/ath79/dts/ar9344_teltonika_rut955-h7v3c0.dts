@@ -2,10 +2,11 @@
 /dts-v1/;
 
 #include "ar9344_teltonika_rut9xx.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
 
 / {
-	model = "Teltonika RUT955";
-	compatible = "teltonika,rut955", "teltonika,rut9xx", "qca,ar9344";
+	model = "Teltonika RUT955 H7V3C0";
+	compatible = "teltonika,rut955-h7v3c0", "teltonika,rut9xx", "qca,ar9344";
 
 	aliases {
 		led-boot = &led_system_green;
@@ -59,34 +60,20 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&jtag_disable_pins>;
 
-	gpio-line-names = "RS485_D", "led_wan", "DIN3", "mmc_cs",
-		"ext_sck", "", "", "",
+	gpio-line-names = "RS485_D", "led_wan", "wmac_lna", "mmc_cs",
+		"EXT_INT", "", "", "",
 		"", "", "", "",
-		"ext_mosi", "led_lan2", "led_lan1", "",
-		"i2c_scl", "i2c_sda", "", "DIN2",
-		"ext_cs", "DIN1", "led_lan3", "",
+		"", "led_lan2", "led_lan1", "",
+		"i2c_scl", "i2c_sda", "", "",
+		"", "", "led_lan3", "",
 		"", "", "", "",
 		"", "", "", "";
 
-	ext_sck {
+	ext_lna {
 		gpio-hog;
-		gpios = <4 GPIO_ACTIVE_HIGH>;
+		gpios = <2 GPIO_ACTIVE_HIGH>;
 		output-high;
-		line-name = "rut955:ext:sck";
-	};
-
-	ext_mosi {
-		gpio-hog;
-		gpios = <12 GPIO_ACTIVE_HIGH>;
-		output-high;
-		line-name = "rut955:ext:mosi";
-	};
-
-	ext_cs {
-		gpio-hog;
-		gpios = <20 GPIO_ACTIVE_HIGH>;
-		output-low;
-		line-name = "rut955:ext:cs";
+		line-name = "rut955:wmac:ext_lna";
 	};
 
 	mmc_cs {
@@ -94,6 +81,13 @@
 		gpios = <3 GPIO_ACTIVE_HIGH>;
 		output-high;
 		line-name = "rut955:mmc:cs";
+	};
+
+	ext_int {
+		gpio-hog;
+		gpios = <4 GPIO_ACTIVE_LOW>;
+		input;
+		line-name = "rut955:ext:int";
 	};
 
 	uart1_td {
@@ -139,29 +133,35 @@
 	};
 };
 
-&spi {
-	status = "okay";
+&i2c0 {
+	gpio_ext: gpio_ext@74 {
+		status = "okay";
 
-	num-cs = <3>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pmx_spi>, <&pmx_spi_ext>;
+		compatible = "nxp,pca9539";
+		reg = <0x74>;
 
-	gpio_ext: gpio_ext@2 {
-		compatible = "fairchild,74hc595";
-		reg = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
 		gpio-controller;
 		#gpio-cells = <2>;
-		registers-number = <2>;
-		spi-max-frequency = <10000000>;
+
+		reset-gpios = <&gpio 21 GPIO_ACTIVE_HIGH>;
+
+		interrupt-parent = <&gpio>;
+		interrupts = <4 IRQ_TYPE_EDGE_FALLING>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+
 		gpio-line-names = "signal_bar0", "signal_bar1", "signal_bar2", "signal_bar3",
 			"signal_bar4", "status_red", "status_green", "sim_sel",
-			"DOUT1", "DOUT2", "modem_vbus", "modem_rst",
-			"DOUT3", "RS485_R", "SDCS", "HWRST";
+			"DOUT1", "DOUT2", "DIN2", "DIN1",
+			"MON", "MRST", "SDCD", "RS485_R";
 	};
 };
 
 &hs_uart {
-	dtr-gpios = <&gpio_ext 13 GPIO_ACTIVE_HIGH>;
+	dtr-gpios = <&gpio_ext 15 GPIO_ACTIVE_HIGH>;
 };
 
 &eth0 {
@@ -184,11 +184,14 @@
 	pinctrl-0 = <&pmx_leds_switch>;
 };
 
+&wmac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pmx_ext_lna>;
+};
+
 &pinmux {
-	pmx_spi_ext: spi_ext {
-		// 2nd SCK on GPIO 4, 2nd MOSI on GPIO 12, SPI_CS2 on GPIO 20
-		pinctrl-single,bits = <0x4 0x0a 0xff>,
-					<0xc 0x0b 0xff>,
-					<0x14 0x08 0xff>;
+	pmx_ext_lna: ext_lna {
+		// EXT_LNA0 on GPIO 2
+		pinctrl-single,bits = <0x0 0x002e0000 0x00ff0000>;
 	};
 };
