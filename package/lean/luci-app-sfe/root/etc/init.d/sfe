@@ -270,9 +270,6 @@ start_service() {
 		sysctl -w net.ipv4.tcp_congestion_control=cubic
 	fi
 
-	uci set dhcp.@dnsmasq[0].filter_aaaa=$(uci get sfe.@sfe[0].filter_aaaa)
-	uci commit dhcp
-
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart
 	fi

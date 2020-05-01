@@ -8,9 +8,9 @@ PKG_LICENSE_FILES:=
 
 PKG_SOURCE_URL:=https://github.com/openwrt/mt76
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-04-23
-PKG_SOURCE_VERSION:=cde3716aa47e8f8446b18a0f6873f53c95c9f202
-PKG_MIRROR_HASH:=a97a23f828cf054220b5f9a083c94323d9591b631ad7190a903c0ab67ba69997
+PKG_SOURCE_DATE:=2020-04-27
+PKG_SOURCE_VERSION:=5f3ccc7226272198c21ec934d9072a56b0953f47
+PKG_MIRROR_HASH:=6f1a7b7d7b9f4db79d72405baeafa318769eeab270fea4479756f91ac5a2494d
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_BUILD_PARALLEL:=1
@@ -23,9 +23,7 @@ PKG_CONFIG_DEPENDS += \
 	CONFIG_PACKAGE_kmod-mt76x2-common \
 	CONFIG_PACKAGE_kmod-mt76x2 \
 	CONFIG_PACKAGE_kmod-mt76x2u \
-	CONFIG_PACKAGE_kmod-mt7603 \
-	CONFIG_PACKAGE_kmod-mt7615-common \
-	CONFIG_PACKAGE_kmod-mt7615e
+	CONFIG_PACKAGE_kmod-mt7603
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
@@ -140,19 +138,12 @@ define KernelPackage/mt7603
   AUTOLOAD:=$(call AutoProbe,mt7603e)
 endef
 
-define KernelPackage/mt7615-common
-  $(KernelPackage/mt76-default)
-  TITLE:=MediaTek MT7615 wireless driver common code
-  DEPENDS+=+kmod-mt76-core
-  HIDDEN:=1
-  FILES:=$(PKG_BUILD_DIR)/mt7615/mt7615-common.ko
-endef
-
 define KernelPackage/mt7615e
   $(KernelPackage/mt76-default)
   TITLE:=MediaTek MT7615 wireless driver
-  DEPENDS+=@PCI_SUPPORT +kmod-mt7615-common
+  DEPENDS+=@PCI_SUPPORT +kmod-mt76-core
   FILES:=\
+	$(PKG_BUILD_DIR)/mt7615/mt7615-common.ko \
 	$(PKG_BUILD_DIR)/mt7615/mt7615e.ko
   AUTOLOAD:=$(call AutoProbe,mt7615e)
 endef
@@ -200,10 +191,8 @@ endif
 ifdef CONFIG_PACKAGE_kmod-mt7603
   PKG_MAKE_FLAGS += CONFIG_MT7603E=m
 endif
-ifdef CONFIG_PACKAGE_kmod-mt7615-common
-  PKG_MAKE_FLAGS += CONFIG_MT7615_COMMON=m
-endif
 ifdef CONFIG_PACKAGE_kmod-mt7615e
+  PKG_MAKE_FLAGS += CONFIG_MT7615_COMMON=m
   PKG_MAKE_FLAGS += CONFIG_MT7615E=m
   ifdef CONFIG_TARGET_mediatek_mt7622
     PKG_MAKE_FLAGS += CONFIG_MT7622_WMAC=y
@@ -285,6 +274,5 @@ $(eval $(call KernelPackage,mt76x2-common))
 $(eval $(call KernelPackage,mt76x2u))
 $(eval $(call KernelPackage,mt76x2))
 $(eval $(call KernelPackage,mt7603))
-$(eval $(call KernelPackage,mt7615-common))
 $(eval $(call KernelPackage,mt7615e))
 $(eval $(call KernelPackage,mt76))
