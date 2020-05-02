@@ -211,6 +211,12 @@ msgstr "校验TLS主机名"
 msgid "Set TLS hostname to verify."
 msgstr "设置校验TLS主机名。"
 
+msgid "No check certificate"
+msgstr "跳过证书检查"
+
+msgid "Do not check certificate."
+msgstr "不检查服务器证书。"
+
 msgid "TLS SNI name"
 msgstr "TLS SNI名称"
 
