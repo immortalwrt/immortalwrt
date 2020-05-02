@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for SSR Python Pro Server
-LUCI_DEPENDS:=+libsodium +luci-lib-jsonc +python
+LUCI_DEPENDS:=+libsodium +luci-lib-jsonc +python3
 LUCI_PKGARCH:=all
 PKG_VERSION:=2
 PKG_RELEASE:=1-20200326

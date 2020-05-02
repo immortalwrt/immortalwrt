@@ -63,6 +63,16 @@ o.rempty      = true
 o:depends("type", "tls")
 o:depends("type", "https")
 
+---- Certificate verify
+o = s:option(Flag, "no_check_certificate", translate("No check certificate"), translate("Do not check certificate."))
+o.default = o.disabled
+o.rmempty = false
+o:depends("type", "tls")
+o:depends("type", "https")
+o.cfgvalue    = function(...)
+    return Flag.cfgvalue(...) or "0"
+end
+
 ---- SNI host name
 o = s:option(Value, "host_name", translate("TLS SNI name"), translate("Sets the server name indication for query."))
 o.default     = ""
