@@ -58,7 +58,11 @@ if (require "luci.model.docker").new():_ping().code == 200 then
   docker_info_table['4ApiVersion']._value = docker_info.headers["Api-Version"]
   docker_info_table['5NCPU']._value = tostring(docker_info.body.NCPU)
   docker_info_table['6MemTotal']._value = byte_format(docker_info.body.MemTotal)
-  docker_info_table['7DockerRootDir']._value = docker_info.body.DockerRootDir
+  if docker_info.body.DockerRootDir then
+    local statvfs = nixio.fs.statvfs(docker_info.body.DockerRootDir)
+    local size = statvfs and (statvfs.bavail * statvfs.bsize) or 0
+    docker_info_table['7DockerRootDir']._value = docker_info.body.DockerRootDir .. " (" .. tostring(byte_format(size)) .. " " .. translate("Available") .. ")"
+  end
   docker_info_table['8IndexServerAddress']._value = docker_info.body.IndexServerAddress
   for i, v in ipairs(docker_info.body.RegistryConfig.Mirrors) do
     docker_info_table['9RegistryMirrors']._value = docker_info_table['9RegistryMirrors']._value == "-" and v or (docker_info_table['9RegistryMirrors']._value .. ", " .. v)
