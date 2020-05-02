@@ -201,7 +201,7 @@ return L.view.extend({
 			_("Attempts to serve old responses from cache with a TTL of 0 in the response without waiting for the actual resolution to finish."));
 		o.rmempty = false;
 		o.default = o.disabled;
-	
+
 		// Redirect;
 		o = s.taboption("settings", form.ListValue, "redirect", _("Redirect"), _("SmartDNS redirect mode"));
 		o.placeholder = "none";
@@ -253,7 +253,7 @@ return L.view.extend({
 
 		// dns server group;
 		o = s.taboption("seconddns", form.Value, "seconddns_server_group", _("Server Group"),
-		_("Query DNS through specific dns server group, such as office, home."));
+			_("Query DNS through specific dns server group, such as office, home."));
 		o.rmempty = true;
 		o.placeholder = "default";
 		o.datatype = "hostname";
@@ -305,8 +305,7 @@ return L.view.extend({
 
 		// custom settings;
 		o = s.taboption("custom", form.TextValue, "custom_conf",
-			_(""),
-			_("smartdns custom settings"));
+			"", _("smartdns custom settings"));
 
 		o.rows = 20;
 		o.cfgvalue = function (section_id) {
@@ -386,6 +385,15 @@ return L.view.extend({
 		o.default = ""
 		o.datatype = "string"
 		o.rempty = true
+		o.modalonly = true;
+		o.depends("type", "tls")
+		o.depends("type", "https")
+
+		// certificate verify
+		o = s.taboption("advanced", form.Flag, "no_check_certificate", _("No check certificate"),
+			_("Do not check certificate."))
+		o.rmempty = false
+		o.default = o.disabled
 		o.modalonly = true;
 		o.depends("type", "tls")
 		o.depends("type", "https")
@@ -482,4 +490,3 @@ return L.view.extend({
 		return m.render();
 	}
 });
-
