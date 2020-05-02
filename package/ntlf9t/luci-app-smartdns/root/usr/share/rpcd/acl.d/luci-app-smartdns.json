@@ -5,19 +5,21 @@
 			"file": {
 				"uci": [ "smartdns" ],
 				"/etc/smartdns/*": [ "read" ],
-				"/usr/sbin/iptables": [ "exec" ],
-				"/usr/sbin/ip6tables": [ "exec" ],
+				"/usr/sbin/iptables -t nat -nL PREROUTING": [ "exec" ],
+				"/usr/sbin/ip6tables -t nat -nL PREROUTING": [ "exec" ],
 				"/usr/sbin/smartdns": [ "exec" ]
 			},
 			"ubus": {
 				"service": [ "list" ]
-			}
+			},
+			"uci": [ "smartdns" ]
 		},
 		"write": {
 			"file": {
 				"uci": [ "smartdns" ],
 				"/etc/smartdns/*": [ "write" ]
-			}
+			},
+			"uci": [ "smartdns" ]
 		}
 	}
 }
