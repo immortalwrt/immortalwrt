@@ -166,6 +166,7 @@ platform_do_upgrade() {
 	avm,fritzrepeater-1200 |\
 	avm,fritzrepeater-3000 |\
 	cilab,meshpoint-one |\
+	hiwifi,c526a |\
 	mobipromo,cm520-79f |\
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$ARGV"
