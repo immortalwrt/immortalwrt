@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2015 clowwindy
@@ -26,7 +26,7 @@ import time
 import argparse
 from subprocess import Popen, PIPE
 
-python = ['python']
+python = ['python3']
 
 default_url = 'http://localhost/'
 
