@@ -26,7 +26,7 @@ import time
 import argparse
 from subprocess import Popen, PIPE
 
-python3 = ['python']
+python = ['python3']
 
 default_url = 'http://localhost/'
 
@@ -44,10 +44,10 @@ parser.add_argument('--dns', type=str, default='8.8.8.8')
 config = parser.parse_args()
 
 if config.with_coverage:
-    python3 = ['coverage', 'run', '-p']
+    python = ['coverage', 'run', '-p']
 
-client_args = python3 + ['shadowsocks/local.py', '-v']
-server_args = python3 + ['shadowsocks/server.py', '-v']
+client_args = python + ['shadowsocks/local.py', '-v']
+server_args = python + ['shadowsocks/server.py', '-v']
 
 if config.client_conf:
     client_args.extend(['-c', config.client_conf])
