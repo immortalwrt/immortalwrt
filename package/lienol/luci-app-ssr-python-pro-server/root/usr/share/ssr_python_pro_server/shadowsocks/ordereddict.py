@@ -198,7 +198,7 @@ class OrderedDict(dict):
         'od.__ne__(y) <==> od!=y'
         return not self == other
 
-    # -- the following methods support python 3.x style dictionary views --
+    # -- the following methods support python3 3.x style dictionary views --
 
     def viewkeys(self):
         "od.viewkeys() -> a set-like object providing a view on od's keys"
