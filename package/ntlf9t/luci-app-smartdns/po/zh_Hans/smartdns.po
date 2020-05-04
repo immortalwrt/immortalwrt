@@ -227,10 +227,10 @@ msgid "Set TLS hostname to verify."
 msgstr "设置校验TLS主机名。"
 
 msgid "No check certificate"
-msgstr "跳过证书检查"
+msgstr "停用证书校验"
 
 msgid "Do not check certificate."
-msgstr "不检查服务器证书。"
+msgstr "不校验证书的合法性。"
 
 msgid "TLS SNI name"
 msgstr "TLS SNI名称"
