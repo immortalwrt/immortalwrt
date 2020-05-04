@@ -1,3 +1,12 @@
+##
+#   File: /patches/010-change-default-config-path.patch
+#   Project: rclone
+#   File Created: Friday, 1st May 2020 10:54:31 pm
+#   Author: ElonH[EH](elonhhuang@gmail.com)
+#   License: GNU General Public License v3.0 or later(http://www.gnu.org/licenses/gpl-3.0-standalone.html)
+#   Copyright (C) 2020 [ElonH]
+##
+# set /etc/rclone/rclone.conf as default configuration path
 diff --git a/fs/config/config.go b/fs/config/config.go
 index 53d67ef03..cc5d6436b 100644
 --- a/fs/config/config.go

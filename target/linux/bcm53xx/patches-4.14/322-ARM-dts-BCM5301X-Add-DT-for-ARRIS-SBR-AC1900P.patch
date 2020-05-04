@@ -8,8 +8,8 @@ see 700-b53-add-hacky-CPU-port-fixes-for-devices-not-using-p.patch
 
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -105,6 +105,8 @@ dtb-$(CONFIG_ARCH_BCM_5301X) += \
- 	bcm4709-netgear-r7000.dtb \
+@@ -101,6 +101,8 @@ dtb-$(CONFIG_ARCH_BCM_5301X) += \
+ 	bcm4709-netgear-r7900.dtb \
  	bcm4709-netgear-r8000.dtb \
  	bcm4709-tplink-archer-c9-v1.dtb \
 +	bcm4709-arris-sbr-ac1900p.dtb \

@@ -199,6 +199,10 @@ case "$FIRMWARE" in
 		ath10kcal_extract "ART" 4096 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +2)
 		;;
+	hiwifi,c526a)
+		ath10kcal_extract "ART" 4096 12064
+		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii bdinfo "Vfac_mac ") +2)
+		;;
 	linksys,ea8300)
 		ath10kcal_extract "ART" 4096 12064
 		ath10kcal_patch_mac_crc $(macaddr_add "$(cat /sys/class/net/eth0/address)" +2)
@@ -282,6 +286,10 @@ case "$FIRMWARE" in
 	engenius,ens620ext)
 		ath10kcal_extract "ART" 20480 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +3)
+		;;
+	hiwifi,c526a)
+		ath10kcal_extract "ART" 20480 12064
+		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii bdinfo "Vfac_mac ") +3)
 		;;
 	linksys,ea8300)
 		ath10kcal_extract "ART" 20480 12064
