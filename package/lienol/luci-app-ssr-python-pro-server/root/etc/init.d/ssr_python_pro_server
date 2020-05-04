@@ -52,7 +52,7 @@ set_ssr_python_crontab() {
 }
 
 start_ssr_python_server() {
-	python=/usr/bin/python
+	python=/usr/bin/python3
 	lua /usr/lib/lua/luci/model/cbi/ssr_python_pro_server/genssrmudbconfig.lua > /tmp/mudb.json
 	mv -f /tmp/mudb.json $ssr_python_path/mudb.json
 	$python $ssr_python_path/server.py >> /var/log/$CONFIG.log 2>&1 &
@@ -73,7 +73,7 @@ EOF
 
 stop_ssr_python_server() {
 	fw3 reload > /dev/null 2>&1
-	ps -w | grep "/usr/bin/python $ssr_python_path/server.py" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	ps -w | grep "/usr/bin/python3 $ssr_python_path/server.py" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf /var/log/$CONFIG.log
 	set_ssr_python_crontab "stop"
 }

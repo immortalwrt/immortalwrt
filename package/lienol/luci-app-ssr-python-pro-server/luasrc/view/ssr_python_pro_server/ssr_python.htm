@@ -7,7 +7,7 @@ local ipkg = require "luci.model.ipkg"
 <script type="text/javascript">//<![CDATA[
 	var ssr_python_status = document.getElementsByClassName('ssr_python_status')[0];
 	ssr_python_status.setAttribute("style","font-weight:bold;");
-	<% if ipkg.installed("python") then %>
+	<% if ipkg.installed("python3") then %>
 		XHR.poll(2, '<%=luci.dispatcher.build_url("admin", "vpn", "ssr_python_pro_server", "status")%>', null,
 			function(x, result)
 			{
@@ -17,7 +17,7 @@ local ipkg = require "luci.model.ipkg"
 		)
 	<% else %>
 		ssr_python_status.setAttribute("color","red");
-		ssr_python_status.innerHTML = '<%=translate("NOT INSTALLED")%><br><%=translate("please Install the python")%><br>opkg update && opkg install python</font></b>';
+		ssr_python_status.innerHTML = '<%=translate("NOT INSTALLED")%><br><%=translate("please Install the python3")%><br>opkg update && opkg install python3</font></b>';
 	<% end %>
 	
 	function ssr_python_get_total_traffic(section,dom) {

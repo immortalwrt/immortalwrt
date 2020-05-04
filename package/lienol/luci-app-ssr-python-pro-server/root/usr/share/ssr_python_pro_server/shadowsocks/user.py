@@ -237,4 +237,4 @@ password,method,protocol,protocolparam,obfs,obfsparam)
 with open('user-config.json','w') as f:
 	f.write(user.encode("utf-8"))
 print user+"\n"+"请检查输入是否有误，若需要修改请重新执行程序。\
-\n启动ssr请在终端切换至shadowsocksr/shadowsocks目录执行python local.py -d start"
+\n启动ssr请在终端切换至shadowsocksr/shadowsocks目录执行python3 local.py -d start"

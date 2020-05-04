@@ -139,8 +139,8 @@ msgstr "状态"
 msgid "Current Condition"
 msgstr "当前状态"
 
-msgid "please Install the python"
-msgstr "请安装python环境"
+msgid "please Install the python3"
+msgstr "请安装python3环境"
 
 msgid "NOT INSTALLED"
 msgstr "未安装"
