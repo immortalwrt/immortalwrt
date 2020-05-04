@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
 import traceback
@@ -211,7 +211,7 @@ class MuMgr(object):
 
 
 def print_server_help():
-	print('''usage: python mujson_manage.py -a|-d|-e|-c|-l [OPTION]...
+	print('''usage: python3 mujson_manage.py -a|-d|-e|-c|-l [OPTION]...
 
 Actions:
   -a                   add/edit a user
