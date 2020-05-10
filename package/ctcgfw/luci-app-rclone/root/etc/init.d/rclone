@@ -32,6 +32,9 @@ init_config() {
 
 	[ -f "$config_path" ] || touch "$config_path"
 
+	[ -d "/lib/upgrade/keep.d" ] || mkdir -p /lib/upgrade/keep.d/luci-app-rclone 2>/dev/null
+	echo "$config_path" > /lib/upgrade/keep.d/luci-app-rclone
+
 	log_dir=${log_path%/*}
 	[ -d "$log_dir" ] || mkdir -p "$log_dir" 2>/dev/null && echo /dev/null > "$log_path"
 
