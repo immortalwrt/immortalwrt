@@ -13,7 +13,7 @@
  *
  * DTS nodes are defined as follows:
  * For fixed partitions:
- *	node-name@unit-address {
+ *	node-name@unit-address {
  *		reg = <prop-encoded-array>;
  *		label = <string>;
  *		read-only;

@@ -52,7 +52,8 @@ ipq40xx_setup_interfaces()
 	avm,fritzrepeater-1200|\
 	dlink,dap-2610 |\
 	engenius,emd1|\
-	meraki,mr33)
+	meraki,mr33|\
+	zyxel,wre6606)
 		ucidef_set_interface_lan "eth0"
 		;;
 	glinet,gl-b1300|\
@@ -74,9 +75,11 @@ ipq40xx_setup_interfaces()
 			"0t@eth0" "3:lan:2" "4:lan:1" "5:wan"
 		;;
 	netgear,ex6100v2|\
-	netgear,ex6150v2|\
-	netgear,ex6200v2|\
-	zyxel,wre6606)
+	netgear,ex6150v2)
+		ucidef_add_switch "switch0" \
+			"0u@eth0" "4:lan"
+		;;
+	netgear,ex6200v2)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan"
 		;;

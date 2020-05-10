@@ -1199,7 +1199,7 @@ define KernelPackage/sfc
     CONFIG_NET_VENDOR_SOLARFLARE=y \
     CONFIG_SFC=y \
     CONFIG_SFC_MTD=y \
-    CONFIG_MCDI_MON=y \
+    CONFIG_SFC_MCDI_MON=y \
     CONFIG_SFC_SRIOV=n \
     CONFIG_SFC_MCDI_LOGGING=n \
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/sfc.ko
@@ -1231,3 +1231,19 @@ define KernelPackage/sfp/description
 endef
 
 $(eval $(call KernelPackage,sfp))
+
+
+define KernelPackage/jme
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=JMicron(R) PCI-Express Gigabit Ethernet support
+  DEPENDS:=@PCI_SUPPORT +kmod-mii
+  KCONFIG:=CONFIG_JME
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/jme.ko
+  AUTOLOAD:=$(call AutoProbe,jme)
+endef
+
+define KernelPackage/jme/description
+  Supports JMicron(R) PCI-Express Gigabit Ethernet adapters
+endef
+
+$(eval $(call KernelPackage,jme))
