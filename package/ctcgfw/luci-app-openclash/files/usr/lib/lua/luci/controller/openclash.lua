@@ -6,7 +6,7 @@ function index()
 	end
 
 	local page
-
+	
 	page = entry({"admin", "services", "openclash"}, alias("admin", "services", "openclash", "client"), _("OpenClash"), 50)
 	page.dependent = true
 	page.acl_depends = { "luci-app-openclash" }
