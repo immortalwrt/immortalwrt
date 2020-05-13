@@ -61,12 +61,8 @@
  *        Kernel Version Adaption
  * ####################################
  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,11)
   #define MODULE_PARM_ARRAY(a, b)   module_param_array(a, int, NULL, 0)
   #define MODULE_PARM(a, b)         module_param(a, int, 0)
-#else
-  #define MODULE_PARM_ARRAY(a, b)   MODULE_PARM(a, b)
-#endif
 
 
 
@@ -243,7 +239,6 @@ static INLINE void init_tables(void);
 
 static struct ptm_priv_data g_ptm_priv_data;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 static struct net_device_ops g_ptm_netdev_ops = {
     .ndo_get_stats       = ptm_get_stats,
     .ndo_open            = ptm_open,
@@ -257,7 +252,6 @@ static struct net_device_ops g_ptm_netdev_ops = {
     .ndo_do_ioctl        = ptm_ioctl,
     .ndo_tx_timeout      = ptm_tx_timeout,
 };
-#endif
 
 static struct net_device *g_net_dev[2] = {0};
 static char *g_net_dev_name[2] = {"dsl0", "dslfast0"};
@@ -415,11 +409,7 @@ static int ptm_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
     /*  allocate descriptor */
     desc_base = get_tx_desc(ndev, &f_full);
     if ( f_full ) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0)
         netif_trans_update(dev);
-#else
-        dev->trans_start = jiffies;
-#endif
         netif_stop_queue(dev);
 
         IFX_REG_W32_MASK(0, 1 << (ndev + 16), MBOX_IGU1_ISRC);
@@ -453,11 +443,7 @@ static int ptm_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
     g_ptm_priv_data.itf[ndev].stats.tx_packets++;
     g_ptm_priv_data.itf[ndev].stats.tx_bytes += reg_desc.datalen;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0)
     netif_trans_update(dev);
-#else
-    dev->trans_start = jiffies;
-#endif
     mailbox_signal(ndev, 1);
 
     adsl_led_flash();
@@ -1513,11 +1499,7 @@ static int ltq_ptm_probe(struct platform_device *pdev)
     }
 
     /*  register interrupt handler  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
     ret = request_irq(PPE_MAILBOX_IGU1_INT, mailbox_irq_handler, 0, "ptm_mailbox_isr", &g_ptm_priv_data);
-#else
-    ret = request_irq(PPE_MAILBOX_IGU1_INT, mailbox_irq_handler, IRQF_DISABLED, "ptm_mailbox_isr", &g_ptm_priv_data);
-#endif
     if ( ret ) {
         if ( ret == -EBUSY ) {
             err("IRQ may be occupied by other driver, please reconfig to disable it.");
