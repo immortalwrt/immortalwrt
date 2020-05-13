@@ -8,22 +8,21 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
-LOADADDR = 0x80010000		# RAM start + 64K
-KERNEL_ENTRY = $(LOADADDR)	# Newer kernels add a jmp to the kernel_entry at the start of the binary
-LOADER_ENTRY = 0x80a00000	# RAM start + 10M, for relocate
-RAMSIZE = 0x02000000		# 32MB
-LZMA_TEXT_START = 0x81800000	# 32MB - 8MB
+KERNEL_LOADADDR = 0x80010000		# RAM start + 64K
+LOADER_ENTRY = 0x80a00000		# RAM start + 10M, for relocate
+RAMSIZE = 0x02000000			# 32MB
+LZMA_TEXT_START = 0x81800000		# 32MB - 8MB
 
 LOADER_MAKEOPTS= \
 		KDIR=$(KDIR) \
-		LOADADDR=$(LOADADDR) \
-		KERNEL_ENTRY=$(KERNEL_ENTRY) \
+		LOADADDR=$(KERNEL_LOADADDR) \
+		KERNEL_ENTRY=$(KERNEL_LOADADDR) \
 		RAMSIZE=$(RAMSIZE) \
 		LZMA_TEXT_START=$(LZMA_TEXT_START) \
 
 RELOCATE_MAKEOPTS= \
 		CACHELINE_SIZE=16 \
-		KERNEL_ADDR=$(KERNEL_ENTRY) \
+		KERNEL_ADDR=$(KERNEL_LOADADDR) \
 		CROSS_COMPILE=$(TARGET_CROSS) \
 		LZMA_TEXT_START=$(LOADER_ENTRY)
 
@@ -37,7 +36,7 @@ endef
 define Build/hcs-initramfs
 	$(STAGING_DIR_HOST)/bin/hcsmakeimage --magic_bytes=$(HCS_MAGIC_BYTES) \
 		--rev_maj=$(HCS_REV_MAJ) --rev_min=$(HCS_REV_MIN) --input_file=$@ \
-		--output_file=$@.hcs --ldaddress=$(LOADADDR)
+		--output_file=$@.hcs --ldaddress=$(KERNEL_LOADADDR)
 	mv $@.hcs $@
 endef
 
@@ -54,20 +53,16 @@ define Build/loader-lzma
 	rm -rf $@.src
 endef
 
-define Build/lzma
+define Build/lzma-cfe
 	# CFE is a LZMA nazi! It took me hours to find out the parameters!
 	# Also I think lzma has a bug cause it generates different output depending on
 	# if you use stdin / stdout or not. Use files instead of stdio here, cause
 	# otherwise CFE will complain and not boot the image.
-	$(STAGING_DIR_HOST)/bin/lzma e $@ -d22 -fb64 -a1 $@.lzma
-	mv $@.lzma $@
-endef
-
-define Build/lzma-cfe
+	$(call Build/lzma-no-dict,-d22 -fb64 -a1)
 	# Strip out the length, CFE doesn't like this
-	dd if=$@ of=$@.lzma.cfe bs=5 count=1
-	dd if=$@ of=$@.lzma.cfe ibs=13 obs=5 skip=1 seek=1 conv=notrunc
-	mv $@.lzma.cfe $@
+	dd if=$@ of=$@.new bs=5 count=1
+	dd if=$@ of=$@.new ibs=13 obs=5 skip=1 seek=1 conv=notrunc
+	mv $@.new $@
 endef
 
 define Build/relocate-kernel
