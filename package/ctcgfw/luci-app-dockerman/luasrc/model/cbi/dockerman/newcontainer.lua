@@ -510,6 +510,10 @@ m.handle = function(self, state, data)
           t['PathOnHost'] = h
           t['PathInContainer'] = c
           t['CgroupPermissions'] = "rwm"
+        else
+          t['PathOnHost'] = v
+          t['PathInContainer'] = v
+          t['CgroupPermissions'] = "rwm"
         end
       end
       if next(t) ~= nil then
