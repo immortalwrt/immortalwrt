@@ -70,6 +70,9 @@ start_instance() {
 		return 1
 	fi
 
+	/sbin/validate_data "ip6addr" "$server_ip" >/dev/null 2>&1
+	[ $? -eq 0 ] && server_ip="[$server_ip]"
+
 	procd_open_instance
 	procd_set_param command /usr/bin/speederv2
 	procd_append_param command -c
