@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=AdGuardHome
-PKG_VERSION:=snapshot
-PKG_RELEASE:=r1882-8086186
+PKG_VERSION:=v0.102
+PKG_RELEASE:=0
 
 ifeq ($(ARCH),x86_64)
 	PKG_ARCH_AdGuardHome:=linux_amd64
@@ -27,12 +27,10 @@ ifeq ($(ARCH),mips)
 	ADG_CONF_NAME:=small_flash
 endif
 ifeq ($(ARCH),arm)
-ifeq ($(BOARD),kirkwood)
-	PKG_ARCH_AdGuardHome:=linux_arm5
-else ifeq ($(BOARD),bcm53xx)
-	PKG_ARCH_AdGuardHome:=linux_arm5
+ifeq ($(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE)))),)
+	PKG_ARCH_AdGuardHome:=linux_armv5
 else
-	PKG_ARCH_AdGuardHome:=linux_arm7
+	PKG_ARCH_AdGuardHome:=linux_arm
 endif
 	ADG_CONF_NAME:=big_space
 endif
@@ -42,7 +40,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_SOURCE:=AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz
-PKG_SOURCE_URL:=https://package.project-openwrt.eu.org/network/services/AdGuardHome/$(PKG_RELEASE)/
+PKG_SOURCE_URL:=https://github.com/AdguardTeam/AdGuardHome/releases/download/$(PKG_VERSION).$(PKG_RELEASE)/
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
 PKG_HASH:=skip
 
