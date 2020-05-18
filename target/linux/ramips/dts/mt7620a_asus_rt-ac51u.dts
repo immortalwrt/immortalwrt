@@ -117,7 +117,7 @@
 
 &ethernet {
 	status = "okay";
-	mtd-mac-address = <&factory 0x4>;
+	mtd-mac-address = <&factory 0x22>;
 	mediatek,portmap = "wllll";
 };
 

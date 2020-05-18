@@ -237,7 +237,6 @@ ramips_setup_macs()
 
 	case $board in
 	aigale,ai-br100|\
-	asus,rt-ac51u|\
 	asus,rt-n12p|\
 	asus,rt-n14u|\
 	bdcom,wap2100-sk|\
@@ -272,6 +271,10 @@ ramips_setup_macs()
 	zbtlink,zbt-we1026-h-32m)
 		wan_mac=$(mtd_get_mac_binary factory 0x2e)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
+		;;
+	asus,rt-ac51u)
+		wan_mac=$(mtd_get_mac_binary factory 0x28)
+		label_mac=$wan_mac
 		;;
 	dlink,dch-m225)
 		lan_mac=$(mtd_get_mac_ascii factory lanmac)
