@@ -10,6 +10,7 @@
 	model = "Asus RT-AC51U";
 
 	aliases {
+		label-mac-device = &ethernet;
 		led-boot = &led_power;
 		led-failsafe = &led_power;
 		led-running = &led_power;
@@ -118,7 +119,7 @@
 
 &ethernet {
 	status = "okay";
-	mtd-mac-address = <&factory 0x22>;
+	mtd-mac-address = <&factory 0x28>;
 	mediatek,portmap = "wllll";
 };
 
