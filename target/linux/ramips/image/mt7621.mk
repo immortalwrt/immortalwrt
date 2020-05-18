@@ -81,12 +81,6 @@ define Build/iodata-mstc-header
 	)
 endef
 
-define Build/netis-tail
-	echo -n $(1) >> $@
-	echo -n $(UIMAGE_NAME)-yun | $(STAGING_DIR_HOST)/bin/mkhash md5 | \
-		sed 's/../\\\\x&/g' | xargs echo -ne >> $@
-endef
-
 define Build/ubnt-erx-factory-image
 	if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(KERNEL_SIZE)" ]; then \
 		echo '21001:6' > $(1).compat; \
@@ -472,6 +466,24 @@ define Device/lenovo_newifi-d1
   SUPPORTED_DEVICES += newifi-d1
 endef
 TARGET_DEVICES += lenovo_newifi-d1
+
+define Device/linksys_ea7500-v2
+  $(Device/uimage-lzma-loader)
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 36864k
+  DEVICE_VENDOR := Linksys
+  DEVICE_MODEL := EA7500
+  DEVICE_VARIANT := v2
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615e wpad-basic uboot-envtools
+  UBINIZE_OPTS := -E 5
+  IMAGES := sysupgrade.bin factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata | check-size
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
+	append-ubi | check-size | linksys-image type=EA7500v2
+endef
+TARGET_DEVICES += linksys_ea7500-v2
 
 define Device/linksys_re6500
   IMAGE_SIZE := 7872k

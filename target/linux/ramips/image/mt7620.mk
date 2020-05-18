@@ -86,6 +86,16 @@ define Device/asus_rt-ac51u
 endef
 TARGET_DEVICES += asus_rt-ac51u
 
+define Device/asus_rt-ac54u
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Asus
+  DEVICE_MODEL := RT-AC54U
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci \
+	kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += asus_rt-ac54u
+
 define Device/asus_rt-n12p
   SOC := mt7620n
   IMAGE_SIZE := 16064k
@@ -689,6 +699,17 @@ define Device/netgear_wn3000rp-v3
   SUPPORTED_DEVICES += wn3000rpv3
 endef
 TARGET_DEVICES += netgear_wn3000rp-v3
+
+define Device/netis_wf2770
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  UIMAGE_NAME := WF2770_0.0.00
+  DEVICE_VENDOR := NETIS
+  DEVICE_MODEL := WF2770
+  DEVICE_PACKAGES := kmod-mt76x0e
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | netis-tail WF2770 | uImage lzma
+endef
+TARGET_DEVICES += netis_wf2770
 
 define Device/nexx_wt3020-4m
   SOC := mt7620n
