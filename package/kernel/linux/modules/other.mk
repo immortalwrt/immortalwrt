@@ -961,8 +961,8 @@ define KernelPackage/ptp-qoriq
   TITLE:=Freescale QorIQ PTP support
   DEPENDS:=@TARGET_mpc85xx +kmod-ptp @LINUX_4_19
   KCONFIG:=CONFIG_PTP_1588_CLOCK_QORIQ
-  FILES:=$(LINUX_DIR)/drivers/ptp/ptp_qoriq.o
-  AUTOLOAD:=$(call AutoProbe,ptp_qoriq)
+  FILES:=$(LINUX_DIR)/drivers/ptp/ptp-qoriq.ko
+  AUTOLOAD:=$(call AutoProbe,ptp-qoriq)
 endef
 
 
