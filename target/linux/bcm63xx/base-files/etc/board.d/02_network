@@ -12,6 +12,7 @@ actiontec,r1000h|\
 dynalink,rta770bw|\
 dynalink,rta770w|\
 netgear,cvg834g|\
+netgear,dgnd3700-v2|\
 netgear,evg2000|\
 t-com,speedport-w-303v|\
 t-com,speedport-w-500v)
@@ -99,6 +100,10 @@ sagem,fast-2704n)
 	ucidef_add_switch "switch0" \
 		"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "8t@eth0"
 	;;
+comtrend,vg-8050)
+	ucidef_add_switch "switch0" \
+		"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "8t@eth0"
+	;;
 comtrend,vr-3032u)
 	ucidef_add_switch "switch0" \
 		"0:lan:2" "1:lan:3" "2:lan:4" "3:lan:1" "8t@eth0"
@@ -127,6 +132,7 @@ netgear,dgnd3700-v1)
 	ucidef_add_switch "switch0" \
 		"1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "0:wan" "8t@eth0"
 	;;
+sercomm,ad1018|\
 sercomm,ad1018-nor)
 	ucidef_add_switch "switch0" \
 		"1:lan:3" "2:lan:2" "3:lan:1" "0:wan" "8t@eth0"
