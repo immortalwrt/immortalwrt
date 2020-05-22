@@ -2,6 +2,7 @@
 # BCM63XX NAND Profiles
 #
 
+DEVICE_VARS += CFE_PART_FLAGS CFE_PART_ID
 DEVICE_VARS += CFE_RAM_FILE
 DEVICE_VARS += CFE_RAM_JFFS2_NAME CFE_RAM_JFFS2_PAD
 DEVICE_VARS += CFE_WFI_CHIP_ID CFE_WFI_FLASH_TYPE
@@ -21,6 +22,8 @@ define Device/bcm63xx-nand
   IMAGE/cfe.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | cfe-jffs2-cferam | append-ubi | cfe-wfi-tag
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   KERNEL_SIZE := 5120k
+  CFE_PART_FLAGS :=
+  CFE_PART_ID :=
   CFE_RAM_FILE :=
   CFE_RAM_JFFS2_NAME :=
   CFE_RAM_JFFS2_PAD :=
@@ -67,6 +70,28 @@ define Device/comtrend_vg-8050
   CFE_WFI_FLASH_TYPE := 3
 endef
 TARGET_DEVICES += comtrend_vg-8050
+
+### Huawei ###
+define Device/huawei_hg253s-v2
+  $(Device/bcm63xx-nand)
+  IMAGES := flash.bin sysupgrade.bin
+  IMAGE/flash.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | cfe-jffs2-cferam | append-ubi
+  DEVICE_VENDOR := Huawei
+  DEVICE_MODEL := HG253s
+  DEVICE_VARIANT := v2
+  CHIP_ID := 6362
+  CFE_PART_FLAGS := 1
+  CFE_PART_ID := 0x0001EFEE
+  CFE_RAM_FILE := huawei,hg253s-v2/cferam.000
+  CFE_RAM_JFFS2_NAME := cferam.000
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  SUBPAGESIZE := 512
+  VID_HDR_OFFSET := 2048
+  DEVICE_PACKAGES += $(USB2_PACKAGES)
+  CFE_WFI_FLASH_TYPE := 3
+endef
+TARGET_DEVICES += huawei_hg253s-v2
 
 ### Netgear ###
 define Device/netgear_dgnd3700-v2
