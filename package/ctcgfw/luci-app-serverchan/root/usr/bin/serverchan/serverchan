@@ -164,7 +164,7 @@ function usage(){
 		[ ! -f "${dir}usage.db" ] && echo `bytes_for_humans 0` && return
 		[ -z "$total_n" ] && total_n=`cat ${dir}usage.db|head -n1|grep "total"|sed 's/,/\n/g'|awk '/total/{print NR}'` 2>/dev/null
 		[ -z "$total_n" ] && total_n="6"
-		[ "$2" ] && local tmptotal=`cat ${dir}usage.db|sed 's/,/ /g'|grep -i -w ${2}|awk "{print "'$'$total_n"}"|grep -v "^$"|sort -u` 2>/dev/null
+		[ "$2" ] && local tmptotal=`cat ${dir}usage.db|sed 's/,,,/,0,0,/g'|sed 's/,,/,0,/g'|sed 's/,/ /g'|grep -i -w ${2}|awk "{print "'$'$total_n"}"|grep -v "^$"|sort -u` 2>/dev/null
 		[ -z "$tmptotal" ] && local tmptotal="0"
 		[ ! "$3" ] && echo `bytes_for_humans ${tmptotal}` || echo $tmptotal
 	elif [ $1 == "down" ] ;then
