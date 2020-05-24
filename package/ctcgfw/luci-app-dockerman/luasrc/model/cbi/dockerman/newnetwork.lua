@@ -202,10 +202,14 @@ m.handle = function(self, state, data)
     docker:write_status("Network: " .. "create" .. " " .. create_body.Name .. "...")
     local res = dk.networks:create({body = create_body})
     if res and res.code == 201 then
-      docker:clear_status()
-      if driver == "macvlan" and data.op_macvlan ~= 0 then
-        docker.create_macvlan_interface(data.name, data.parent, data.gateway, data.ip_range)
+      docker:write_status("Network: " .. "create macvlan interface...")
+      res = dk.networks:inspect({ name = create_body.Name })
+      if driver == "macvlan" and data.op_macvlan ~= 0 and res.code == 200 
+        and res.body and res.body.IPAM and res.body.IPAM.Config and res.body.IPAM.Config[1] 
+        and res.body.IPAM.Config[1].Gateway and res.body.IPAM.Config[1].Subnet then
+        docker.create_macvlan_interface(data.name, data.parent, res.body.IPAM.Config[1].Gateway, res.body.IPAM.Config[1].Subnet)
       end
+      docker:clear_status()
       luci.http.redirect(luci.dispatcher.build_url("admin/docker/networks"))
     else
       docker:append_status("code:" .. res.code.." ".. (res.body.message and res.body.message or res.message).. "\n")
