@@ -43,7 +43,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
 -endif
 -
  ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
- KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,) $(EXTRA_OPTIMIZATION)
+ KBUILD_CFLAGS   += -Os $(EXTRA_OPTIMIZATION)
  else
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig

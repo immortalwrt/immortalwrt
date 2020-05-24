@@ -301,11 +301,7 @@ static int ptm_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
     /*  allocate descriptor */
     desc_base = get_tx_desc(0, &f_full);
     if ( f_full ) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0)
         netif_trans_update(dev);
-#else
-        dev->trans_start = jiffies;
-#endif
         netif_stop_queue(dev);
 
         IFX_REG_W32_MASK(0, 1 << 17, MBOX_IGU1_ISRC);
@@ -367,11 +363,7 @@ static int ptm_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
     wmb();
     *(volatile unsigned int *)desc = *(unsigned int *)&reg_desc;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0)
     netif_trans_update(dev);
-#else
-    dev->trans_start = jiffies;
-#endif
 
     return 0;
 
@@ -1024,11 +1016,7 @@ static int ltq_ptm_probe(struct platform_device *pdev)
     }
 
     /*  register interrupt handler  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
     ret = request_irq(PPE_MAILBOX_IGU1_INT, mailbox_irq_handler, 0, "ptm_mailbox_isr", &g_ptm_priv_data);
-#else
-    ret = request_irq(PPE_MAILBOX_IGU1_INT, mailbox_irq_handler, IRQF_DISABLED, "ptm_mailbox_isr", &g_ptm_priv_data);
-#endif
     if ( ret ) {
         if ( ret == -EBUSY ) {
             err("IRQ may be occupied by other driver, please reconfig to disable it.");
