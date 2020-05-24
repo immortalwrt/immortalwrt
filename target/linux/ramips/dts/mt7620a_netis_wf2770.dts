@@ -1,13 +1,4 @@
-/*
- * Device Tree file for the Linksys E1700
- *
- * Copyright (C) 2014 Imre Kaloz <kaloz@openwrt.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /dts-v1/;
 
 #include "mt7620a.dtsi"
@@ -16,14 +7,17 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	compatible = "linksys,e1700", "ralink,mt7620a-soc";
-	model = "Linksys E1700";
+	compatible = "netis,wf2770", "ralink,mt7620a-soc";
+	model = "NETIS WF2770";
 
-	aliases {
-		led-boot = &led_power;
-		led-failsafe = &led_power;
-		led-running = &led_power;
-		led-upgrade = &led_power;
+	leds {
+		compatible = "gpio-leds";
+
+		wlan {
+			label = "wf2770:blue:wlan";
+			gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
 	};
 
 	keys {
@@ -31,28 +25,26 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 
 		wps {
 			label = "wps";
-			gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;
 		};
-	};
 
-	leds {
-		compatible = "gpio-leds";
-
-		led_power: power {
-			label = "e1700:green:power";
-			gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+		rfkill {
+			label = "rfkill";
+			gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RFKILL>;
 		};
 
-		wan {
-			label = "e1700:green:wps";
-			gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
+		led-toggle {
+			label = "led-toggle";
+			gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_LIGHTS_TOGGLE>;
 		};
 	};
 };
@@ -63,7 +55,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <10000000>;
+		spi-max-frequency = <50000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -91,7 +83,7 @@
 			partition@50000 {
 				compatible = "denx,uimage";
 				label = "firmware";
-				reg = <0x50000 0x7b0000>;
+				reg = <0x50000 0xfb0000>;
 			};
 		};
 	};
@@ -106,9 +98,9 @@
 
 &ethernet {
 	pinctrl-names = "default";
-	pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
+	pinctrl-0 = <&rgmii1_pins &mdio_pins>;
 
-	mtd-mac-address = <&factory 0x28>;
+	mtd-mac-address = <&factory 0x4>;
 
 	port@5 {
 		status = "okay";
@@ -119,40 +111,49 @@
 	mdio-bus {
 		status = "okay";
 
-		phy0: ethernet-phy@0 {
+		ethernet-phy@0 {
 			reg = <0>;
 			phy-mode = "rgmii";
 		};
 
-		phy1: ethernet-phy@1 {
+		ethernet-phy@1 {
 			reg = <1>;
 			phy-mode = "rgmii";
 		};
 
-		phy2: ethernet-phy@2 {
+		ethernet-phy@2 {
 			reg = <2>;
 			phy-mode = "rgmii";
 		};
 
-		phy3: ethernet-phy@3 {
+		ethernet-phy@3 {
 			reg = <3>;
 			phy-mode = "rgmii";
 		};
 
-		phy4: ethernet-phy@4 {
+		ethernet-phy@4 {
 			reg = <4>;
 			phy-mode = "rgmii";
 		};
 
-		phy1f: ethernet-phy@1f {
+		ethernet-phy@1f {
 			reg = <0x1f>;
 			phy-mode = "rgmii";
 		};
 	};
 };
 
-&gsw {
-	mediatek,port4 = "gmac";
+&pcie {
+	status = "okay";
+};
+
+&pcie0 {
+	wifi@0,0 {
+		compatible = "mediatek,mt76";
+		reg = <0x0000 0 0 0 0>;
+		mediatek,mtd-eeprom = <&factory 0x8000>;
+		ieee80211-freq-limit = <5000000 6000000>;
+	};
 };
 
 &wmac {

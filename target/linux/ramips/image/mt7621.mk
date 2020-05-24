@@ -24,67 +24,61 @@ define Build/custom-initramfs-uimage
 endef
 
 define Build/elecom-gst-factory
-  $(eval product=$(word 1,$(1)))
-  $(eval version=$(word 2,$(1)))
-  ( $(STAGING_DIR_HOST)/bin/mkhash md5 $@ | tr -d '\n' ) >> $@
-  ( \
-    echo -n "ELECOM $(product) v$(version)" | \
-      dd bs=32 count=1 conv=sync; \
-    dd if=$@; \
-  ) > $@.new
-  mv $@.new $@
-  echo -n "MT7621_ELECOM_$(product)" >> $@
+	$(eval product=$(word 1,$(1)))
+	$(eval version=$(word 2,$(1)))
+	( $(STAGING_DIR_HOST)/bin/mkhash md5 $@ | tr -d '\n' ) >> $@
+	( \
+		echo -n "ELECOM $(product) v$(version)" | \
+			dd bs=32 count=1 conv=sync; \
+		dd if=$@; \
+	) > $@.new
+	mv $@.new $@
+	echo -n "MT7621_ELECOM_$(product)" >> $@
 endef
 
 define Build/elecom-wrc-factory
-  $(eval product=$(word 1,$(1)))
-  $(eval version=$(word 2,$(1)))
-  $(STAGING_DIR_HOST)/bin/mkhash md5 $@ >> $@
-  ( \
-    echo -n "ELECOM $(product) v$(version)" | \
-      dd bs=32 count=1 conv=sync; \
-    dd if=$@; \
-  ) > $@.new
-  mv $@.new $@
+	$(eval product=$(word 1,$(1)))
+	$(eval version=$(word 2,$(1)))
+	$(STAGING_DIR_HOST)/bin/mkhash md5 $@ >> $@
+	( \
+		echo -n "ELECOM $(product) v$(version)" | \
+			dd bs=32 count=1 conv=sync; \
+		dd if=$@; \
+	) > $@.new
+	mv $@.new $@
 endef
 
 define Build/iodata-factory
-  $(eval fw_size=$(word 1,$(1)))
-  $(eval fw_type=$(word 2,$(1)))
-  $(eval product=$(word 3,$(1)))
-  $(eval factory_bin=$(word 4,$(1)))
-  if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(fw_size)" ]; then \
-    $(CP) $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) $(factory_bin); \
-    $(STAGING_DIR_HOST)/bin/mksenaofw \
-      -r 0x30a -p $(product) -t $(fw_type) \
-      -e $(factory_bin) -o $(factory_bin).new; \
-    mv $(factory_bin).new $(factory_bin); \
-    $(CP) $(factory_bin) $(BIN_DIR)/; \
+	$(eval fw_size=$(word 1,$(1)))
+	$(eval fw_type=$(word 2,$(1)))
+	$(eval product=$(word 3,$(1)))
+	$(eval factory_bin=$(word 4,$(1)))
+	if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(fw_size)" ]; then \
+		$(CP) $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) $(factory_bin); \
+		$(STAGING_DIR_HOST)/bin/mksenaofw \
+			-r 0x30a -p $(product) -t $(fw_type) \
+			-e $(factory_bin) -o $(factory_bin).new; \
+		mv $(factory_bin).new $(factory_bin); \
+		$(CP) $(factory_bin) $(BIN_DIR)/; \
 	else \
 		echo "WARNING: initramfs kernel image too big, cannot generate factory image" >&2; \
 	fi
 endef
 
 define Build/iodata-mstc-header
-  ( \
-    data_size_crc="$$(dd if=$@ ibs=64 skip=1 2>/dev/null | \
-      gzip -c | tail -c 8 | od -An -tx8 --endian little | tr -d ' \n')"; \
-    echo -ne "$$(echo $$data_size_crc | sed 's/../\\x&/g')" | \
-      dd of=$@ bs=8 count=1 seek=7 conv=notrunc 2>/dev/null; \
-  )
-  dd if=/dev/zero of=$@ bs=4 count=1 seek=1 conv=notrunc 2>/dev/null
-  ( \
-    header_crc="$$(dd if=$@ bs=64 count=1 2>/dev/null | \
-      gzip -c | tail -c 8 | od -An -N4 -tx4 --endian little | tr -d ' \n')"; \
-    echo -ne "$$(echo $$header_crc | sed 's/../\\x&/g')" | \
-      dd of=$@ bs=4 count=1 seek=1 conv=notrunc 2>/dev/null; \
-  )
-endef
-
-define Build/netis-tail
-	echo -n $(1) >> $@
-	echo -n $(UIMAGE_NAME)-yun | $(STAGING_DIR_HOST)/bin/mkhash md5 | \
-		sed 's/../\\\\x&/g' | xargs echo -ne >> $@
+	( \
+		data_size_crc="$$(dd if=$@ ibs=64 skip=1 2>/dev/null | gzip -c | \
+			tail -c 8 | od -An -tx8 --endian little | tr -d ' \n')"; \
+		echo -ne "$$(echo $$data_size_crc | sed 's/../\\x&/g')" | \
+			dd of=$@ bs=8 count=1 seek=7 conv=notrunc 2>/dev/null; \
+	)
+	dd if=/dev/zero of=$@ bs=4 count=1 seek=1 conv=notrunc 2>/dev/null
+	( \
+		header_crc="$$(dd if=$@ bs=64 count=1 2>/dev/null | gzip -c | \
+			tail -c 8 | od -An -N4 -tx4 --endian little | tr -d ' \n')"; \
+		echo -ne "$$(echo $$header_crc | sed 's/../\\x&/g')" | \
+			dd of=$@ bs=4 count=1 seek=1 conv=notrunc 2>/dev/null; \
+	)
 endef
 
 define Build/ubootpad96
@@ -120,8 +114,8 @@ define Device/afoundry_ew1200
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := AFOUNDRY
   DEVICE_MODEL := EW1200
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-mt76x2 kmod-mt7603 \
-	kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-mt76x2 kmod-mt7603 kmod-usb3 \
+	kmod-usb-ledtrig-usbport wpad-openssl
   SUPPORTED_DEVICES += ew1200
 endef
 TARGET_DEVICES += afoundry_ew1200
@@ -130,8 +124,7 @@ define Device/alfa-network_quad-e4g
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := ALFA Network
   DEVICE_MODEL := Quad-E4G
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
-	uboot-envtools
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 uboot-envtools
 endef
 TARGET_DEVICES += alfa-network_quad-e4g
 
@@ -227,8 +220,8 @@ define Device/dlink_dir-860l-b1
   BLOCKSIZE := 64k
   SEAMA_SIGNATURE := wrgac13_dlink.2013gui_dir860lb
   LOADER_TYPE := bin
-  KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | \
-	relocate-kernel | lzma -a0 | uImage lzma
+  KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | relocate-kernel | \
+	lzma -a0 | uImage lzma
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DIR-860L
@@ -268,8 +261,8 @@ define Device/d-team_pbr-m1
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := PandoraBox
   DEVICE_MODEL := PBR-M1
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-mt7603 kmod-mt76x2 \
-	kmod-sdhci-mt7620 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
+	kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
   SUPPORTED_DEVICES += pbr-m1
 endef
 TARGET_DEVICES += d-team_pbr-m1
@@ -352,7 +345,7 @@ TARGET_DEVICES += gehua_ghl-r-001
 define Device/gnubee_gb-pc1
   DEVICE_VENDOR := GnuBee
   DEVICE_MODEL := Personal Cloud One
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620
   IMAGE_SIZE := 32448k
 endef
 TARGET_DEVICES += gnubee_gb-pc1
@@ -360,7 +353,7 @@ TARGET_DEVICES += gnubee_gb-pc1
 define Device/gnubee_gb-pc2
   DEVICE_VENDOR := GnuBee
   DEVICE_MODEL := Personal Cloud Two
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620
   IMAGE_SIZE := 32448k
 endef
 TARGET_DEVICES += gnubee_gb-pc2
@@ -504,6 +497,24 @@ define Device/lenovo_newifi-d1
 endef
 TARGET_DEVICES += lenovo_newifi-d1
 
+define Device/linksys_ea7500-v2
+  $(Device/uimage-lzma-loader)
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 36864k
+  DEVICE_VENDOR := Linksys
+  DEVICE_MODEL := EA7500
+  DEVICE_VARIANT := v2
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615e wpad-openssl uboot-envtools
+  UBINIZE_OPTS := -E 5
+  IMAGES := sysupgrade.bin factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
+	append-ubi | check-size $$$$(IMAGE_SIZE) | linksys-image type=EA7500v2
+endef
+TARGET_DEVICES += linksys_ea7500-v2
+
 define Device/linksys_re6500
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := Linksys
@@ -536,7 +547,6 @@ define Device/MikroTik
   IMAGE_SIZE := 16128k
   DEVICE_PACKAGES := kmod-usb3
   LOADER_TYPE := elf
-  PLATFORM := mt7621
   KERNEL := $(KERNEL_DTB) | loader-kernel
   IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
 	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | \
@@ -569,8 +579,8 @@ define Device/mqmaker_witi
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := MQmaker
   DEVICE_MODEL := WiTi
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-mt76x2 \
-	kmod-sdhci-mt7620 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-mt76x2 kmod-sdhci-mt7620 kmod-usb3 \
+	kmod-usb-ledtrig-usbport wpad-openssl
   SUPPORTED_DEVICES += witi mqmaker,witi-256m mqmaker,witi-512m
 endef
 TARGET_DEVICES += mqmaker_witi
@@ -635,7 +645,7 @@ define Device/netgear_r6260
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0052
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES += kmod-mt7615e
 endef
 TARGET_DEVICES += netgear_r6260
 
@@ -647,7 +657,7 @@ define Device/netgear_r6350
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0052
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES += kmod-mt7615e
 endef
 TARGET_DEVICES += netgear_r6350
 
@@ -657,12 +667,16 @@ define Device/netgear_r6700-v2
   DEVICE_VARIANT := v2
   DEVICE_ALT0_VENDOR := NETGEAR
   DEVICE_ALT0_MODEL := Nighthawk AC2400
+  DEVICE_ALT0_VARIANT := v1
+  DEVICE_ALT1_VENDOR := NETGEAR
+  DEVICE_ALT1_MODEL := R7200
+  DEVICE_ALT1_VARIANT := v1
   SERCOMM_HWNAME := R6950
   SERCOMM_HWID := BZV
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x1032
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES += kmod-mt7615e
 endef
 TARGET_DEVICES += netgear_r6700-v2
 
@@ -674,7 +688,7 @@ define Device/netgear_r6800
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0062
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES += kmod-mt7615e
 endef
 TARGET_DEVICES += netgear_r6800
 
@@ -686,7 +700,7 @@ define Device/netgear_r6850
   SERCOMM_HWVER := A001
   SERCOMM_SWVER := 0x0052
   IMAGE_SIZE := 40960k
-  DEVICE_PACKAGES += kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES += kmod-mt7615e
 endef
 TARGET_DEVICES += netgear_r6850
 
@@ -866,7 +880,7 @@ define Device/unielec_u7621-06-16m
   DEVICE_VENDOR := UniElec
   DEVICE_MODEL := U7621-06
   DEVICE_VARIANT := 16M
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3
   SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
 endef
 TARGET_DEVICES += unielec_u7621-06-16m
@@ -876,7 +890,7 @@ define Device/unielec_u7621-06-64m
   DEVICE_VENDOR := UniElec
   DEVICE_MODEL := U7621-06
   DEVICE_VARIANT := 64M
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3
   SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
 endef
 TARGET_DEVICES += unielec_u7621-06-64m
@@ -976,7 +990,7 @@ define Device/xiaoyu_xy-c5
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := XiaoYu
   DEVICE_MODEL := XY-C5
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-usb3
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3
 endef
 TARGET_DEVICES += xiaoyu_xy-c5
 
@@ -984,8 +998,8 @@ define Device/xzwifi_creativebox-v1
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := CreativeBox
   DEVICE_MODEL := v1
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-mt7603 kmod-mt76x2 \
-	kmod-sdhci-mt7620 kmod-usb3
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
+	kmod-usb3
 endef
 TARGET_DEVICES += xzwifi_creativebox-v1
 
@@ -1030,8 +1044,8 @@ define Device/zbtlink_zbt-wg2626
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG2626
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-sdhci-mt7620 \
-	kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 \
+	kmod-usb-ledtrig-usbport wpad-openssl
   SUPPORTED_DEVICES += zbt-wg2626
 endef
 TARGET_DEVICES += zbtlink_zbt-wg2626
@@ -1041,8 +1055,8 @@ define Device/zbtlink_zbt-wg3526-16m
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG3526
   DEVICE_VARIANT := 16M
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-sdhci-mt7620 \
-	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-mt7603 kmod-mt76x2 \
+	kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
   SUPPORTED_DEVICES += zbt-wg3526 zbt-wg3526-16M
 endef
 TARGET_DEVICES += zbtlink_zbt-wg3526-16m
@@ -1052,8 +1066,8 @@ define Device/zbtlink_zbt-wg3526-32m
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG3526
   DEVICE_VARIANT := 32M
-  DEVICE_PACKAGES := kmod-ata-core kmod-ata-ahci kmod-sdhci-mt7620 \
-	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-mt7603 kmod-mt76x2 \
+	kmod-usb3 kmod-usb-ledtrig-usbport wpad-openssl
   SUPPORTED_DEVICES += ac1200pro zbt-wg3526-32M
 endef
 TARGET_DEVICES += zbtlink_zbt-wg3526-32m

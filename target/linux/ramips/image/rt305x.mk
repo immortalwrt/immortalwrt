@@ -2,13 +2,13 @@
 # RT305X Profiles
 #
 define Build/buffalo-tftp-header
-  ( \
-    echo -n -e "# Airstation FirmWare\nrun u_fw\nreset\n\n" | \
-      dd bs=512 count=1 conv=sync; \
-    dd if=$@; \
-  ) > $@.tmp && \
-  $(STAGING_DIR_HOST)/bin/buffalo-tftp -i $@.tmp -o $@.new
-  mv $@.new $@
+	( \
+		echo -n -e "# Airstation FirmWare\nrun u_fw\nreset\n\n" | \
+			dd bs=512 count=1 conv=sync; \
+		dd if=$@; \
+	) > $@.tmp && \
+	$(STAGING_DIR_HOST)/bin/buffalo-tftp -i $@.tmp -o $@.new
+	mv $@.new $@
 endef
 
 define Build/dap-header
@@ -755,8 +755,7 @@ define Device/nixcore_x1-16m
   DEVICE_VENDOR := Nixcore
   DEVICE_MODEL := X1
   DEVICE_VARIANT := 16M
-  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink \
-	kmod-spi-dev
+  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink kmod-spi-dev
   SUPPORTED_DEVICES += nixcore-x1 nixcore-x1-16M
 endef
 TARGET_DEVICES += nixcore_x1-16m
@@ -767,8 +766,7 @@ define Device/nixcore_x1-8m
   DEVICE_VENDOR := Nixcore
   DEVICE_MODEL := X1
   DEVICE_VARIANT := 8M
-  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink \
-	kmod-spi-dev
+  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink kmod-spi-dev
   SUPPORTED_DEVICES += nixcore-x1 nixcore-x1-8M
 endef
 TARGET_DEVICES += nixcore_x1-8m
@@ -778,8 +776,7 @@ define Device/olimex_rt5350f-olinuxino
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := OLIMEX
   DEVICE_MODEL := RT5350F-OLinuXino
-  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink \
-	kmod-spi-dev
+  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink kmod-spi-dev
   SUPPORTED_DEVICES += rt5350f-olinuxino
 endef
 TARGET_DEVICES += olimex_rt5350f-olinuxino
@@ -789,8 +786,7 @@ define Device/olimex_rt5350f-olinuxino-evb
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := OLIMEX
   DEVICE_MODEL := RT5350F-OLinuXino-EVB
-  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink \
-	kmod-spi-dev
+  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink kmod-spi-dev
   SUPPORTED_DEVICES += rt5350f-olinuxino-evb
 endef
 TARGET_DEVICES += olimex_rt5350f-olinuxino-evb
@@ -1146,8 +1142,7 @@ define Device/vocore_vocore-16m
   DEVICE_VENDOR := VoCore
   DEVICE_MODEL := VoCore
   DEVICE_VARIANT := 16M
-  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink \
-	kmod-spi-dev
+  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink kmod-spi-dev
   SUPPORTED_DEVICES += vocore vocore-16M
 endef
 TARGET_DEVICES += vocore_vocore-16m
@@ -1158,8 +1153,7 @@ define Device/vocore_vocore-8m
   DEVICE_VENDOR := VoCore
   DEVICE_MODEL := VoCore
   DEVICE_VARIANT := 8M
-  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink \
-	kmod-spi-dev
+  DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-i2c-ralink kmod-spi-dev
   SUPPORTED_DEVICES += vocore vocore-8M
 endef
 TARGET_DEVICES += vocore_vocore-8m
