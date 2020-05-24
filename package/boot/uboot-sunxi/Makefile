@@ -302,7 +302,7 @@ UBOOT_TARGETS := \
 	nanopi_neo \
 	nanopi_duo2 \
 	nanopi_r1 \
-        nanopi_r1s \
+	nanopi_r1s \
 	nanopi_neo_air \
 	nanopi_neo_plus2 \
 	nanopi_neo2 \
