@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gost
-PKG_VERSION:=2.11.0
+PKG_VERSION:=2.11.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/ginuerzh/gost.git
-PKG_SOURCE_VERSION:=2c0e01a5dd3d2257527ee41867fefa4273efc380
+PKG_SOURCE_VERSION:=2707a8f0a90e111fc009791a6a911405939a25fb
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -17,7 +17,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-GO_PKG:=github.com/ginuerzh/gost
+GO_PKG:=github.com/ginuerzh/gost/cmd/gost
 GO_PKG_LDFLAGS:=-s -w
 
 include $(INCLUDE_DIR)/package.mk
@@ -43,7 +43,7 @@ define Build/Configure
 endef
 
 define Build/Compile
-	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG)/cmd/gost)
+	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG))
 	$(call GoPackage/Build/Configure)
 	$(call GoPackage/Build/Compile)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/gost
