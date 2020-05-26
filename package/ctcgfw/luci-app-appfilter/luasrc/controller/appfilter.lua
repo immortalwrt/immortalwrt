@@ -36,7 +36,7 @@ function get_hostname_by_mac(dst_mac)
 end
 
 function get_app_name_by_id(appid)
-	local class_fd = io.popen("find /etc/appfilter/ -type f -name *.class |xargs cat |grep "..appid.."|awk '{print $2}'")
+	local class_fd = io.popen("find /tmp/appfilter/ -type f -name *.class |xargs cat |grep "..appid.."|awk '{print $2}'")
 	if class_fd then
 		local name = class_fd:read("*l")
 		class_fd:close()
