@@ -72,7 +72,7 @@ dns:  # 如订阅配置无包括此项的所有DNS设置，OpenClash将自动添
 # 以上设置您可直接覆盖到配置文件,无需更改
 # Openclash 不会对下方服务器设置进行任何更改，请确保设置正确
 
-#proxy-provider: # 代理集设置，此部分与Proxy两者不能同时删除
+#proxy-providers: # 代理集设置，此部分与Proxy两者不能同时删除
 #  pro:
 #    type: http
 #    path: ./proxy_provider/pro.yaml
@@ -90,7 +90,7 @@ dns:  # 如订阅配置无包括此项的所有DNS设置，OpenClash将自动添
 #      url: http://www.gstatic.com/generate_204
 #      interval: 300
       
-Proxy: # 节点设置，此部分与proxy-provider两者不能同时删除
+proxies: # 节点设置，此部分与proxy-provider两者不能同时删除
 
 # shadowsocks
 # The supported ciphers(encrypt methods):
@@ -215,7 +215,7 @@ Proxy: # 节点设置，此部分与proxy-provider两者不能同时删除
     
 # Openclash 不会对下方策略组设置进行任何更改，请确保设置正确
 
-Proxy Group: # 此参数必须保留,不能删除
+proxy-groups: # 此参数必须保留,不能删除
 
 # relay chains the proxies. proxies shall not contain a proxy-group. No UDP support.
 # Traffic: clash <-> http <-> vmess <-> ss1 <-> ss2 <-> Internet
@@ -275,7 +275,30 @@ Proxy Group: # 此参数必须保留,不能删除
     - Proxy
     - DIRECT
 
-Rule: # 此参数必须保留,不能删除
+# https://lancellc.gitbook.io/clash/clash-config-file/rule-provider
+#rule-providers:
+#  name: # name of the provider
+#    type: http # type of the provider, it can be a HTTP or a File
+#    behavior: ipcidr # or domain
+#    path: # where is the file, ./ relative to clash home
+#    url: # only available when type is HTTP, where to download a file. You don't need to create a new file in local space.
+#    interval: # auto-update interval, only available when type is HTTP
+
+# https://lancellc.gitbook.io/clash/clash-config-file/script
+#script:
+#  code: |
+#    def main(ctx, metadata):
+#      ip = metadata["dst_ip"] = ctx.resolve_ip(metadata["host"])
+#      if ip == "":
+#        return "DIRECT"
+#        
+#      code = ctx.geoip(ip)
+#      if code == "LAN" or code == "CN":
+#        return "DIRECT"
+#      
+#      return "Proxy" # default policy for requests which are not matched by any other script
+      
+rules: # 此参数必须保留,不能删除
 # 如果您将一直使用第三方规则，下方可以留空。
 - DOMAIN-SUFFIX,google.com,auto
 - DOMAIN-KEYWORD,google,auto
@@ -287,6 +310,8 @@ Rule: # 此参数必须保留,不能删除
 - GEOIP,CN,DIRECT
 - DST-PORT,80,DIRECT
 - SRC-PORT,7777,DIRECT
+# or use rule with provider
+- RULE-SET,name,Proxy
 # FINAL would remove after prerelease
 # you also can use `FINAL,Proxy` or `FINAL,,Proxy` now
 - MATCH,auto
