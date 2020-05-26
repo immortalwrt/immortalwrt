@@ -30,7 +30,7 @@ s.anonymous = true
 s.addremove = false
 
 
-local class_fd = io.popen("find /etc/appfilter/ -type f -name '*.class'")
+local class_fd = io.popen("find /tmp/appfilter/ -type f -name '*.class'")
 if class_fd then
 	while true do
 		local apps
