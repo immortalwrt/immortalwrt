@@ -902,7 +902,11 @@ void TEST_cJSON(void)
 struct timer_list oaf_timer;   
 
 #define OAF_TIMER_INTERVAL 15
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
+static void oaf_timer_func(struct timer_list *t)
+#else
 static void oaf_timer_func(unsigned long ptr)
+#endif
 {
 //	check_client_expire();
 	af_visit_info_timer_handle();
@@ -912,7 +916,11 @@ static void oaf_timer_func(unsigned long ptr)
 
 void init_oaf_timer(void)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
+	timer_setup(&oaf_timer, oaf_timer_func, 0);
+#else
     setup_timer(&oaf_timer, oaf_timer_func, OAF_TIMER_INTERVAL * HZ);
+#endif
     mod_timer(&oaf_timer,  jiffies + OAF_TIMER_INTERVAL * HZ);
 	AF_INFO("init oaf timer...ok");
 }
