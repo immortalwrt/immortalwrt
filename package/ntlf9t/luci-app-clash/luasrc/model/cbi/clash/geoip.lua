@@ -126,7 +126,7 @@ o.rmempty = true
 
 o=s:option(Button,"update_geoip")
 o.inputtitle = translate("Save & Apply")
-o.title = translate("Save & Apply")
+o.title = luci.util.pcdata(translate("Save & Apply"))
 o.inputstyle = "reload"
 o.write = function()
   m.uci:commit("clash")
