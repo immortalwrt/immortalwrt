@@ -5,6 +5,7 @@ config unblockneteasemusic
 	option neteasemusic_cookie ''
 	option qq_cookie ''
 	option youtube_key ''
+	option replace_music_source 'dont_replace'
 	option enable_flac '0'
 	option auto_update '1'
 	option update_time '3'
