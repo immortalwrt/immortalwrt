@@ -22,7 +22,6 @@ define KernelPackage/oaf
   FILES:=$(PKG_BUILD_DIR)/oaf.ko
   DEPENDS:=+kmod-ipt-conntrack
   KCONFIG:=
-  AUTOLOAD:=$(call AutoProbe,oaf)
 endef
 
 define KernelPackage/oaf/description
