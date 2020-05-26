@@ -25,7 +25,7 @@ o:value("24", translate("Every 24 Hours"))
 o.description = translate("Daily Server subscription update time. Only update config in use")
 
 o = s:option(Button, "Apply")
-o.title = translate("Save & Apply")
+o.title = luci.util.pcdata(translate("Save & Apply"))
 o.inputtitle = translate("Save & Apply")
 o.inputstyle = "apply"
 o.write = function()
@@ -52,7 +52,7 @@ o.description = translate("Clear Log Time")
 
 o=s:option(Button,"clear_clear")
 o.inputtitle = translate("Save & Apply")
-o.title = translate("Save & Apply")
+o.title = luci.util.pcdata(translate("Save & Apply"))
 o.inputstyle = "reload"
 o.write = function()
   m.uci:commit("clash")

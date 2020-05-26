@@ -48,7 +48,7 @@ fi
 if [ "${create}" -eq 1 ];then
 
  	if [ $lang == "en" ] || [ $lang == "auto" ];then
-		echo "Strating to Create Custom Config.. " >$REAL_LOG 
+		echo "Starting to Create Custom Config.. " >$REAL_LOG
 	elif [ $lang == "zh_cn" ];then
     	 echo "开始创建自定义配置..." >$REAL_LOG
 	fi

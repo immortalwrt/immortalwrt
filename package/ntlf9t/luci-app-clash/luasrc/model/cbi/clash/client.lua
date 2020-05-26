@@ -48,7 +48,7 @@ o:value("1", translate("Enable"))
 o.description = translate("Set custom rules under Setting=>Others , will take effect when client start")
 
 o = s:option(Button, "Apply")
-o.title = translate("Save & Apply")
+o.title = luci.util.pcdata(translate("Save & Apply"))
 o.inputtitle = translate("Save & Apply")
 o.inputstyle = "apply"
 o.write = function()
