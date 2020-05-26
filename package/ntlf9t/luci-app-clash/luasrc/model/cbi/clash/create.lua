@@ -28,7 +28,7 @@ o.description = translate("Download Rule")
 o.inputstyle = "reload"
 o.write = function()
   uci:commit("clash")
-  luci.sys.call("bash /usr/share/clash/rule.sh >>/tmp/clash.txt >/dev/null 2>&1 &")
+  luci.sys.call("bash /usr/share/clash/rule.sh >>/usr/share/clash/clash.txt >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "clash", "create"))
 end
 

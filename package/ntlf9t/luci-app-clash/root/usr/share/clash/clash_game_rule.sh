@@ -10,7 +10,7 @@
    fi
    RULE_FILE_DIR="/usr/share/clash/rules/g_rules/$RULE_FILE_NAME"
    TMP_RULE_DIR="/tmp/$RULE_FILE_NAME"
-   LOG_FILE="/tmp/clash.txt"
+   LOG_FILE="/usr/share/clash/clash.txt"
    REAL_LOG="/usr/share/clash/clash_real.txt"
    
    
