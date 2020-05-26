@@ -43,6 +43,16 @@ youtube_key.description = translate("API Key申请地址：https://developers.go
 youtube_key.datatype = "string"
 youtube_key:depends("music_source", "youtube")
 
+replace_music_source = s:option(ListValue, "replace_music_source", translate("强制音乐音源替换"))
+replace_music_source:value("dont_replace", translate("不强制替换音乐音源"))
+replace_music_source:value("lower_than_192kbps", translate("当音质低于192Kbps（中）时"))
+replace_music_source:value("lower_than_320kbps", translate("当音质低于320Kbps（高）时"))
+replace_music_source:value("lower_than_999kbps", translate("当音质低于999Kbps（无损）时"))
+replace_music_source:value("replace_all", translate("替换所有音乐音源"))
+replace_music_source.description = translate("当音乐音质低于指定数值时，尝试强制使用其他平台的高音质版本进行替换")
+replace_music_source.default = "dont_replace"
+replace_music_source.rmempty = false
+
 enable_flac = s:option(Flag, "enable_flac", translate("启用无损音质"))
 enable_flac.description = translate("目前仅支持QQ、酷我、咪咕音源")
 enable_flac.default = 0

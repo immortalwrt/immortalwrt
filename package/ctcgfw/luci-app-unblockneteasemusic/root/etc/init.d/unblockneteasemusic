@@ -32,6 +32,7 @@ neteasemusic_cookie="$(uci_get_by_type "unblockneteasemusic" "neteasemusic_cooki
 qq_cookie="$(uci_get_by_type "unblockneteasemusic" "qq_cookie")"
 youtube_key="$(uci_get_by_type "unblockneteasemusic" "youtube_key")"
 
+replace_music_source="$(uci_get_by_type "unblockneteasemusic" "replace_music_source" "dont_replace")"
 enable_flac="$(uci_get_by_type "unblockneteasemusic" "enable_flac" "0")"
 [ "${enable_flac}" -eq "1" ] && flag_arg="ENABLE_FLAC=true"
 
@@ -182,23 +183,37 @@ start()
 
 	[ -n "${neteasemusic_cookie}" ] && {
 		ub_cookie_line="$(sed -n -e "/netease.path.includes('song\/enhance')/=" "/usr/share/unblockneteasemusic/core/src/hook.js")";
-		[ -n "${ub_cookie_line}" ] && { let ub_cookie_endline="${ub_cookie_line}+6"; sed -i "${ub_cookie_line},${ub_cookie_endline}d" "/usr/share/unblockneteasemusic/core/src/hook.js"; }
-		sed -i "/netease.path == '\/api\/song\/enhance\/download\/url'/i\\\t\\t\\t\\tif (netease.path.includes('song\/enhance')) {" "/usr/share/unblockneteasemusic/core/src/hook.js";
-		sed -i "/if (netease.path.includes('song\/enhance')) {/a\\\t\\t\\t\\t\\treq.headers.cookie = [" "/usr/share/unblockneteasemusic/core/src/hook.js";
-		sed -i "/req.headers.cookie = \[/a\\\t\\t\\t\\t\\t\\t'MUSIC_U=${neteasemusic_cookie}'," "/usr/share/unblockneteasemusic/core/src/hook.js";
-		sed -i "/'MUSIC_U=${neteasemusic_cookie}',/a\\\t\\t\\t\\t\\t\\treq.headers.cookie.replace(\/\\\s*MUSIC_\\\w=[^\\\s;]+;*\/g, '')" "/usr/share/unblockneteasemusic/core/src/hook.js";
-		sed -i "/req.headers.cookie.replace(\/\\\s\\*MUSIC_\\\w=[^\\\s;]\\+/a\\\t\\t\\t\\t\\t].filter(line => line).join('; ')" "/usr/share/unblockneteasemusic/core/src/hook.js";
-		sed -i "/].filter(line => line).join('; ')/a\\\t\\t\\t\\t}\\n" "/usr/share/unblockneteasemusic/core/src/hook.js";
+		[ -n "${ub_cookie_line}" ] && { let ub_cookie_endline="ub_cookie_line+6"; sed -i "${ub_cookie_line},${ub_cookie_endline}d" "/usr/share/unblockneteasemusic/core/src/hook.js"; }
+		sed -i "/netease.path == '\/api\/song\/enhance\/download\/url'/i\\\t\\t\\t\\tif (netease.path.includes('song\/enhance')) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i "/if (netease.path.includes('song\/enhance')) {/a\\\t\\t\\t\\t\\treq.headers.cookie = [" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i "/req.headers.cookie = \[/a\\\t\\t\\t\\t\\t\\t'MUSIC_U=${neteasemusic_cookie}'," "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i "/'MUSIC_U=${neteasemusic_cookie}',/a\\\t\\t\\t\\t\\t\\treq.headers.cookie.replace(\/\\\s*MUSIC_\\\w=[^\\\s;]+;*\/g, '')" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i "/req.headers.cookie.replace(\/\\\s\\*MUSIC_\\\w=[^\\\s;]\\+/a\\\t\\t\\t\\t\\t].filter(line => line).join('; ')" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i "/].filter(line => line).join('; ')/a\\\t\\t\\t\\t}\\n" "/usr/share/unblockneteasemusic/core/src/hook.js"
 }
 	[ -n "${qq_cookie}" ] && {
-		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/src/provider/qq.js")";
-		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/src/provider/qq.js";
-		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/src/provider/qq.js";
+		qq_cookie_line="$(awk "/'cookie':/{print NR}" "/usr/share/unblockneteasemusic/core/src/provider/qq.js")"
+		sed -i "${qq_cookie_line}d" "/usr/share/unblockneteasemusic/core/src/provider/qq.js"
+		sed -i -e "${qq_cookie_line}i \\\t'cookie': '${qq_cookie}'" "/usr/share/unblockneteasemusic/core/src/provider/qq.js"
 }
 	[ -n "${youtube_key}" ] && {
-		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/src/provider/youtube.js";
-		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/src/provider/youtube.js";
+		sed -i '/const key = /d' "/usr/share/unblockneteasemusic/core/src/provider/youtube.js"
+		sed -i -e "1i const key = '${youtube_key}'" "/usr/share/unblockneteasemusic/core/src/provider/youtube.js"
 }
+
+	quality_check_line="$(awk "/target == 0 \|\| item.id == target/{print NR}" "/usr/share/unblockneteasemusic/core/src/hook.js")"
+	sed -i "${quality_check_line}d" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	if [ "${replace_music_source}" = "dont_replace" ]; then
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	elif [ "${replace_music_source}" = "lower_than_192kbps" ]; then
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 192000) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	elif [ "${replace_music_source}" = "lower_than_320kbps" ]; then
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 320000) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	elif [ "${replace_music_source}" = "lower_than_999kbps" ]; then
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 999000) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	elif [ "${replace_music_source}" = "replace_all" ]; then
+		sed -i -e "${quality_check_line}i \\\t\\tif (target == 0 || item.id == target) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	fi
 
 	{ [ -f "${self_issue_cert_crt}" ] && [ "${self_issue_cert_crt}" != "/usr/share/unblockneteasemusic/core/server.crt" ]; } && { ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"; sed -i "/${self_issue_cert_crt//\//\\/}/d"; echo "${self_issue_cert_crt}" >> "/etc/sysupgrade.conf"; }
 	{ [ -f "${self_issue_cert_key}" ] && [ "${self_issue_cert_key}" != "/usr/share/unblockneteasemusic/core/server.key" ]; } && { ln -sf "${self_issue_cert_key}" "/usr/share/unblockneteasemusic/core/server.key"; sed -i "/${self_issue_cert_key//\//\\/}/d"; echo "${self_issue_cert_key}" >> "/etc/sysupgrade.conf"; }
