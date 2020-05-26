@@ -1,4 +1,4 @@
-#!/bin/sh /etc/rc.common
+#!/bin/bash /etc/rc.common
 
 START=99
 STOP=15
@@ -255,8 +255,8 @@ rules(){
 				
 			if [ "${enable_udp}" -eq 1 ]; then	
 			
-	        ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789
-            ip route add local default dev lo table "$PROXY_ROUTE_TABLE"
+	        ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
+            ip route add local 0.0.0.0/0 dev lo table "$PROXY_ROUTE_TABLE"
 			
             iptables -t mangle -N clash
             iptables -t mangle -A clash -d 0.0.0.0/8 -j RETURN
@@ -273,7 +273,7 @@ rules(){
                 done
             fi
    
-            iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark "$PROXY_FWMARK"
+            iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --on-ip 0.0.0.0 --tproxy-mark "$PROXY_FWMARK"
             iptables -t mangle -A PREROUTING -p udp -j clash
 
 			fi
@@ -283,13 +283,11 @@ rules(){
 			if [ ! -z "${fake_ip_range}" ];then
 				if [ "${enable_udp}" -eq 1 ]; then
 				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
-                      iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark "$PROXY_FWMARK"
+                iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark "$PROXY_FWMARK"
                 fi
 			else
 				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "${redir_port}"
-				if [ "${enable_udp}" -eq 1 ]; then
-                      iptables -t mangle -A OUTPUT -p udp -d 198.18.0.1/16 -j MARK --set-mark "$PROXY_FWMARK"
-                fi
+				
 			fi
 			
 			
@@ -308,7 +306,7 @@ rules(){
                             fi
                          done
                       fi
-                      ip6tables -t mangle -A clash -p udp -j TPROXY --on-port "$proxy_port" --tproxy-mark "$PROXY_FWMARK"
+                      ip6tables -t mangle -A clash -p udp -j TPROXY --on-port "$proxy_port" --on-ip 0.0.0.0 --tproxy-mark "$PROXY_FWMARK"
                       ip6tables -t mangle -A PREROUTING -p udp -j clash
                 fi
 				
