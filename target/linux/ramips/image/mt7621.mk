@@ -235,13 +235,13 @@ define Device/dlink_dir-878-a1
   BLOCKSIZE := 64k
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := D-Link
-  IMAGES += factory.bin
   DEVICE_MODEL := DIR-878
   DEVICE_VARIANT := A1
   DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
   KERNEL_INITRAMFS := $$(KERNEL) | ubootpad96
+  IMAGES += factory.bin
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | ubootpad96 |\
-	pad-rootfs |  check-size $$$$(IMAGE_SIZE) | append-metadata
+	pad-rootfs | check-size $$$$(IMAGE_SIZE) | append-metadata
   IMAGE/factory.bin := append-kernel | append-rootfs | ubootpad96 |\
 	check-size $$$$(IMAGE_SIZE)
 endef
@@ -482,7 +482,8 @@ define Device/jdcloud_re-sp-01b
   IMAGE_SIZE := 27328k
   DEVICE_VENDOR := JDCloud
   DEVICE_MODEL := RE-SP-01B
-  DEVICE_PACKAGES := kmod-fs-ext4 kmod-mt7603 kmod-mt7615e kmod-sdhci-mt7620 kmod-usb3 wpad-openssl
+  DEVICE_PACKAGES := kmod-fs-ext4 kmod-mt7603 kmod-mt7615e kmod-sdhci-mt7620 \
+	kmod-usb3 wpad-openssl
 endef
 TARGET_DEVICES += jdcloud_re-sp-01b
 
