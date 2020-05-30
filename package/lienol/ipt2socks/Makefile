@@ -25,20 +25,11 @@ define Package/ipt2socks
 	CATEGORY:=Network
 	TITLE:=Utility for converting iptables (REDIRECT/TPROXY) to SOCKS5
 	URL:=https://github.com/zfl9/ipt2socks
-	DEPENDS:=+libuv
 endef
 
 define Package/ipt2socks/description
 Utility for converting iptables (REDIRECT/TPROXY) to SOCKS5.
 endef
-
-define Package/ipt2socks/conffiles
-/etc/config/ipt2socks
-endef
-
-#MAKE_FLAGS += INCLUDES="-I$(STAGING_DIR)/usr/include"
-#MAKE_FLAGS += LDFLAGS="-L$(STAGING_DIR)/usr/lib"
-MAKE_FLAGS += LIBS="-l:libuv_a.a"
 
 define Package/ipt2socks/install
 	$(INSTALL_DIR) $(1)/usr/bin
