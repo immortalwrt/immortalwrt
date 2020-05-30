@@ -16,6 +16,7 @@ gconf
 #
 # temporary files from older version.  Should be removed
 #
+mconf_check
 zconf.???.c
 zconf.hash.c
 .tmp_qtcheck

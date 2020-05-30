@@ -180,7 +180,7 @@ TAR_CMD=$(HOST_TAR) -C $(1)/ $(TAR_OPTIONS)
 define KernelPackage/mt_wifi
   CATEGORY:=Kernel modules
   TITLE:=MTK wifi AP driver
-  DEPENDS:=+TARGET_ramips_mt7621_DEVICE_phicomm_k2p:wifi-l1profile
+  DEPENDS:=+wifi-l1profile
 ifneq ($(CONFIG_MTK_WHNAT_SUPPORT), )
   FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
 	$(PKG_BUILD_DIR)/mt_wifi/embedded/tools/plug_in/whnat/mt_whnat.ko
@@ -211,14 +211,8 @@ define KernelPackage/mt_wifi/install
 	$(INSTALL_DIR) $(1)/lib/wifi/
 	$(INSTALL_DIR) $(1)/etc/wireless/mt7615/
 	$(INSTALL_DIR) $(1)/etc_ro/Wireless/RT2860AP/
-ifneq ($(CONFIG_MTK_DBDC_MODE), )
 	$(INSTALL_BIN) ./files/mt7615.1.2G.dat $(1)/etc/wireless/mt7615/
 	$(INSTALL_BIN) ./files/mt7615.1.5G.dat $(1)/etc/wireless/mt7615/
-else
-	$(INSTALL_BIN) ./files/l1profile.dat $(1)/etc/wireless/
-	$(INSTALL_BIN) ./files/mt7615.1.dat $(1)/etc/wireless/mt7615/
-	$(INSTALL_BIN) ./files/mt7615.2.dat $(1)/etc/wireless/mt7615/
-endif
 	$(INSTALL_BIN) ./files/SingleSKU.dat $(1)/etc_ro/Wireless/RT2860AP/
 	$(INSTALL_BIN) ./files/SingleSKU_BF.dat $(1)/etc_ro/Wireless/RT2860AP/
 	$(INSTALL_BIN) ./files/mt7615.lua $(1)/lib/wifi
