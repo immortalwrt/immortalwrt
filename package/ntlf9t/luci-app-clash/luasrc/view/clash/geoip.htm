@@ -1,6 +1,6 @@
 <%+cbi/valueheader%>
 <%local fs=require"nixio.fs"%>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
 <input type="button" class="cbi-button cbi-button-apply" id="apply_update_geoip" value="<%:Download%>" onclick=" return apply_update() "/>
 <br /><br />
 <textarea id="geoip_download" class="cbi-input-textarea" style="width: 100%;display:none" data-update="change" rows="10" cols="100" readonly="readonly" > </textarea>
@@ -17,12 +17,14 @@ function apply_update(){
 function poll_check(){
 var lv = document.getElementById('geoip_download');
 	lv.style.display="inline"
+	lv.innerText = ""
 XHR.poll(2, '<%=url([[admin]], [[services]], [[clash]], [[check_geoip]])%>', null,
 	function(x, data) {
 		scroll();
 		var lv = document.getElementById('geoip_download');
 		if (x.responseText && lv) {
 			lv.innerHTML += x.responseText; 
+			lv.scrollTop = lv.scrollHeight;
 		}
 	}
 );
@@ -58,10 +60,10 @@ function hide(){
 }
 
 
-function scroll(){
+/*function scroll(){
 	var textarea = document.getElementById('geoip_download');
 	textarea.scrollTop = textarea.scrollHeight;
-}
+}*/
 
 
 <% if fs.access("/var/run/geoip_update") then %>
