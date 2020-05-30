@@ -11,7 +11,10 @@ function index()
 		return
 	end
 
-	entry({"admin", "services", "clash"},alias("admin", "services", "clash", "overview"), _("Clash"), 5)
+	local page = entry({"admin", "services", "clash"},alias("admin", "services", "clash", "overview"), _("Clash"), 5)
+	page.dependent = true
+	page.acl_depends = { "luci-app-oclash" }
+	
 	entry({"admin", "services", "clash", "overview"},cbi("clash/overview"),_("Overview"), 10).leaf = true
 	entry({"admin", "services", "clash", "client"},cbi("clash/client"),_("Client"), 20).leaf = true
 
@@ -69,7 +72,6 @@ local function uhttp_port()
 	end
 end
 
-
 local function download_rule()
 	local filename = luci.http.formvalue("filename")
 	local rule_file_dir="/usr/share/clash/rules/g_rules/" .. filename
@@ -89,7 +91,7 @@ function action_update_rule()
 end
 
 function action_update()
-	luci.sys.exec("kill $(pgrep /usr/share/clash/update.sh) ; (bash /usr/share/clash/update.sh >>/usr/share/clash/clash.txt 2>&1) &")
+	luci.sys.exec("kill $(pgrep /usr/share/clash/update.sh) ; (bash /usr/share/clash/update.sh >/usr/share/clash/clash.txt 2>&1) &")
 end
 
 
@@ -317,7 +319,6 @@ function action_status()
 		web = is_web(),
 		clash = is_running(),
 		localip = localip(),
-		uhttp_port = uhttp_port(),
 		dash_port = dash_port(),
 		current_version = current_version(),
 		clash_core = clash_core(),
@@ -328,6 +329,7 @@ function action_status()
 		e_mode = e_mode(),
 		in_use = in_use(),
 		conf_path = conf_path(),
+		uhttp_port = uhttp_port(),
 		typeconf = typeconf()
 	})
 end
@@ -390,11 +392,15 @@ function check_geoip_log()
 	local fdp=tonumber(fs.readfile("/var/run/geoiplog")) or 0
 	local f=io.open("/tmp/geoip_update.txt", "r+")
 	f:seek("set",fdp)
-	local a=f:read(2048000) or "."
+	local a=f:read(2048000) or ""
 	fdp=f:seek()
 	fs.writefile("/var/run/geoiplog",tostring(fdp))
 	f:close()
+if fs.access("/var/run/geoip_update") then
 	luci.http.write(a)
+else
+	luci.http.write(a.."\0")
+end
 end
 
 
