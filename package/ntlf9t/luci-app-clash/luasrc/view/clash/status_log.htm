@@ -4,7 +4,7 @@
 <script type="text/javascript">//<![CDATA[
 
 	var lv = document.getElementById('log');
-	lv.innerText = "Reading..."
+	lv.innerText = ""
 	lv.style.display="inline"
 	XHR.poll(3, '<%=url([[admin]], [[services]], [[clash]], [[logstatus]])%>', null,
 		function(x, data) {

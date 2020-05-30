@@ -62,6 +62,7 @@ cc = s:option(Flag, "create", translate("Enable Create"))
 cc.default = 1
 cc.description = translate("Enable to create configuration")
 
+
 o = s:option(Value, "create_tag")
 o.title = translate("Config Name")
 o.rmempty = true
