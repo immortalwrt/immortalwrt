@@ -8,4 +8,4 @@ else
 	sys_temp="$(awk "BEGIN{printf (\"%.1f\n\",$(cat /sys/class/thermal/thermal_zone0/temp)/1000) }")°C"
 fi
 
-echo -n "${cpu_freq} | ${sys_temp}"
+echo -n "(${cpu_freq}, ${sys_temp})"

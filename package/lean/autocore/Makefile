@@ -17,7 +17,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/autocore-raspberrypi
   TITLE:=RaspberryPi auto core loadbalance script.
   MAINTAINER:=CN_SZTL
-  DEPENDS:=@TARGET_bcm27xx
+  DEPENDS:=@TARGET_bcm27xx +bcm27xx-userland
 endef
 
 define Package/autocore-x86

@@ -50,11 +50,8 @@
 		
 		local cpu_usage = (luci.sys.exec("expr 100 - $(top -n 1 | grep 'CPU:' | awk -F '%' '{print$4}' | awk -F ' ' '{print$2}')") or "6") .. "%"
 
-		local cpu_info = luci.sys.exec("cpuinfo")
-
 		local rv = {
 			cpuusage   = cpu_usage,
-			cpuinfo    = cpu_info,
 			userinfo   = user_info,
 			systemp    = sys_temp,
 			uptime     = sysinfo.uptime or 0,
@@ -648,9 +645,6 @@
 			if (e = document.getElementById('cpuusage'))
 				e.innerHTML = info.cpuusage;
 
-			if (e = document.getElementById('cpuinfo'))
-				e.innerHTML = info.cpuinfo;
-
 			if (e = document.getElementById('loadavg'))
 				e.innerHTML = String.format(
 					'%.02f, %.02f, %.02f',
@@ -697,9 +691,8 @@
 
 	<table width="100%" cellspacing="10">
 		<tr><td width="33%"><%:Hostname%></td><td><%=luci.sys.hostname() or "?"%></td></tr>
-		<tr><td width="33%"><%:Model%></td><td><%=pcdata(boardinfo.model or "?")%> <%=luci.sys.exec("cat /etc/bench.log") or " "%></td></tr>
-		<tr><td width="33%"><%:Architecture%></td><td><%=pcdata(boardinfo.system or "ARMv8 Processor")%> x <%=luci.sys.exec("cat /proc/cpuinfo | grep 'processor' | wc -l") or "1"%></td></tr>
-		<tr><td width="33%"><%:CPU Info%></td><td id="cpuinfo">-</td></tr>
+		<tr><td width="33%"><%:Model%></td><td><%=pcdata(boardinfo.model or "?")%> <%=luci.sys.exec("cat /etc/bench.log") or ""%></td></tr>
+		<tr><td width="33%"><%:Architecture%></td><td><%=pcdata(boardinfo.system or "ARMv8 Processor")%> x <%=luci.sys.exec("cat /proc/cpuinfo | grep 'processor' | wc -l") or "1"%> <%=luci.sys.exec("cpuinfo") or ""%></td></tr>
 		<tr><td width="33%"><%:Firmware Version%></td><td>
 			<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%><!-- /
 			<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>) !-->
