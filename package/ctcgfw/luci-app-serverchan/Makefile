@@ -34,6 +34,8 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/etc/init.d/serverchan $(1)/etc/init.d
 	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-serverchan $(1)/etc/uci-defaults/luci-serverchan
 	$(INSTALL_BIN) ./root/usr/bin/serverchan/serverchan $(1)/usr/bin/serverchan
+	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
+	$(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/*.json $(1)/usr/share/rpcd/acl.d/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
