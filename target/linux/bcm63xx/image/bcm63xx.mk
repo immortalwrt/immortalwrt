@@ -19,7 +19,7 @@ endef
 
 define Device/bcm63xx
   FILESYSTEMS := squashfs jffs2-64k jffs2-128k
-  KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma-cfe
+  KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma
   KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | loader-lzma elf
   IMAGES := cfe.bin
   IMAGE/cfe.bin := cfe-bin --pad $$$$(shell expr $$$$(FLASH_MB) / 2)
@@ -34,6 +34,11 @@ define Device/bcm63xx
   FLASH_MB := 4
   CFE_BOARD_ID :=
   CFE_EXTRAS = --block-size $$(BLOCK_SIZE) --image-offset $$(if $$(IMAGE_OFFSET),$$(IMAGE_OFFSET),$$(BLOCK_SIZE))
+endef
+
+define Device/bcm63xx-legacy
+  $(Device/bcm63xx)
+  KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma-cfe
 endef
 
 define Device/bcm63xx_netgear
@@ -76,7 +81,7 @@ endef
 TARGET_DEVICES += brcm_bcm96328avng
 
 define Device/brcm_bcm96338gw
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96338GW
   CFE_BOARD_ID := 6338GW
@@ -85,7 +90,7 @@ endef
 TARGET_DEVICES += brcm_bcm96338gw
 
 define Device/brcm_bcm96338w
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96338W
   CFE_BOARD_ID := 6338W
@@ -95,7 +100,7 @@ endef
 TARGET_DEVICES += brcm_bcm96338w
 
 define Device/brcm_bcm96345gw2
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96345GW2
   IMAGES += cfe-bc221.bin
@@ -106,7 +111,7 @@ endef
 TARGET_DEVICES += brcm_bcm96345gw2
 
 define Device/brcm_bcm96348gw
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96348GW
   IMAGES += cfe-bc221.bin
@@ -117,7 +122,7 @@ endef
 TARGET_DEVICES += brcm_bcm96348gw
 
 define Device/brcm_bcm96348gw-10
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96348GW-10
   CFE_BOARD_ID := 96348GW-10
@@ -127,7 +132,7 @@ endef
 TARGET_DEVICES += brcm_bcm96348gw-10
 
 define Device/brcm_bcm96348gw-11
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96348GW-11
   CFE_BOARD_ID := 96348GW-11
@@ -137,7 +142,7 @@ endef
 TARGET_DEVICES += brcm_bcm96348gw-11
 
 define Device/brcm_bcm96348r
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96348R
   CFE_BOARD_ID := 96348R
@@ -147,7 +152,7 @@ endef
 TARGET_DEVICES += brcm_bcm96348r
 
 define Device/brcm_bcm96358vw
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96358VW
   CFE_BOARD_ID := 96358VW
@@ -156,7 +161,7 @@ endef
 TARGET_DEVICES += brcm_bcm96358vw
 
 define Device/brcm_bcm96358vw2
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Generic
   DEVICE_MODEL := 96358VW2
   CFE_BOARD_ID := 96358VW2
@@ -233,7 +238,7 @@ TARGET_DEVICES += adb_av4202n
 
 ### Alcatel ###
 define Device/alcatel_rg100a
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Alcatel
   DEVICE_MODEL := RG100A
   CFE_BOARD_ID := 96358VW2
@@ -245,7 +250,7 @@ TARGET_DEVICES += alcatel_rg100a
 
 ### Asmax ###
 define Device/asmax_ar-1004g
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Asmax
   DEVICE_MODEL := AR 1004g
   CFE_BOARD_ID := 96348GW-10
@@ -257,7 +262,7 @@ TARGET_DEVICES += asmax_ar-1004g
 
 ### Belkin ###
 define Device/belkin_f5d7633
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Belkin
   DEVICE_MODEL := F5D7633
   CFE_BOARD_ID := 96348GW-10
@@ -316,7 +321,7 @@ TARGET_DEVICES += brcm_bcm963269bhr
 
 ### BT ###
 define Device/bt_home-hub-2-a
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := BT
   DEVICE_MODEL := Home Hub 2.0
   DEVICE_VARIANT := A
@@ -328,7 +333,7 @@ endef
 TARGET_DEVICES += bt_home-hub-2-a
 
 define Device/bt_voyager-2110
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := BT
   DEVICE_MODEL := Voyager 2110
   CFE_BOARD_ID := V2110
@@ -340,7 +345,7 @@ endef
 TARGET_DEVICES += bt_voyager-2110
 
 define Device/bt_voyager-2500v-bb
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := BT
   DEVICE_MODEL := Voyager 2500V
   CFE_BOARD_ID := V2500V_BB
@@ -389,7 +394,7 @@ endef
 TARGET_DEVICES += comtrend_ar-5387un
 
 define Device/comtrend_ct-536plus
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Comtrend
   DEVICE_MODEL := CT-536+
   DEVICE_ALT0_VENDOR := Comtrend
@@ -402,7 +407,7 @@ endef
 TARGET_DEVICES += comtrend_ct-536plus
 
 define Device/comtrend_ct-5365
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Comtrend
   DEVICE_MODEL := CT-5365
   CFE_BOARD_ID := 96348A-122
@@ -413,7 +418,7 @@ endef
 TARGET_DEVICES += comtrend_ct-5365
 
 define Device/comtrend_ct-6373
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Comtrend
   DEVICE_MODEL := CT-6373
   CFE_BOARD_ID := CT6373-1
@@ -471,7 +476,7 @@ TARGET_DEVICES += comtrend_wap-5813n
 
 ### D-Link ###
 define Device/d-link_dsl-2640b-b
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DSL-2640B
   DEVICE_VARIANT := B2
@@ -483,7 +488,7 @@ endef
 TARGET_DEVICES += d-link_dsl-2640b-b
 
 define Device/d-link_dsl-2640u
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DSL-2640U
   DEVICE_VARIANT := C1
@@ -497,7 +502,7 @@ endef
 TARGET_DEVICES += d-link_dsl-2640u
 
 define Device/d-link_dsl-2650u
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DSL-2650U
   CFE_BOARD_ID := 96358VW2
@@ -507,7 +512,7 @@ endef
 TARGET_DEVICES += d-link_dsl-2650u
 
 define Device/d-link_dsl-274xb-c2
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DSL-2740B
   DEVICE_VARIANT := C2
@@ -522,7 +527,7 @@ endef
 TARGET_DEVICES += d-link_dsl-274xb-c2
 
 define Device/d-link_dsl-274xb-c3
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DSL-2740B
   DEVICE_VARIANT := C3
@@ -570,7 +575,7 @@ endef
 TARGET_DEVICES += d-link_dsl-275xb-d1
 
 define Device/d-link_dva-g3810bn-tl
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DVA-G3810BN/TL
   CFE_BOARD_ID := 96358VW
@@ -581,7 +586,7 @@ TARGET_DEVICES += d-link_dva-g3810bn-tl
 
 ### Davolink ###
 define Device/davolink_dv-201amr
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Davolink
   DEVICE_MODEL := DV-201AMR
   IMAGES := cfe-old.bin
@@ -594,7 +599,7 @@ TARGET_DEVICES += davolink_dv-201amr
 
 ### Dynalink ###
 define Device/dynalink_rta770bw
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Dynalink
   DEVICE_MODEL := RTA770BW
   DEVICE_ALT0_VENDOR := Siemens
@@ -609,7 +614,7 @@ endef
 TARGET_DEVICES += dynalink_rta770bw
 
 define Device/dynalink_rta770w
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Dynalink
   DEVICE_MODEL := RTA770W
   IMAGES =
@@ -622,7 +627,7 @@ endef
 TARGET_DEVICES += dynalink_rta770w
 
 define Device/dynalink_rta1025w
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Dynalink
   DEVICE_MODEL := RTA1025W
   CFE_BOARD_ID := RTA1025W_16
@@ -634,7 +639,7 @@ endef
 TARGET_DEVICES += dynalink_rta1025w
 
 define Device/dynalink_rta1320
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Dynalink
   DEVICE_MODEL := RTA1320
   CFE_BOARD_ID := RTA1320_16M
@@ -646,7 +651,7 @@ TARGET_DEVICES += dynalink_rta1320
 
 ### Huawei ###
 define Device/huawei_echolife-hg520v
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Huawei
   DEVICE_MODEL := EchoLife HG520v
   CFE_BOARD_ID := HW6358GW_B
@@ -659,7 +664,7 @@ endef
 TARGET_DEVICES += huawei_echolife-hg520v
 
 define Device/huawei_echolife-hg553
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Huawei
   DEVICE_MODEL := EchoLife HG553
   CFE_BOARD_ID := HW553
@@ -671,7 +676,7 @@ endef
 TARGET_DEVICES += huawei_echolife-hg553
 
 define Device/huawei_echolife-hg556a-a
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Huawei
   DEVICE_MODEL := EchoLife HG556a
   DEVICE_VARIANT := A
@@ -685,7 +690,7 @@ endef
 TARGET_DEVICES += huawei_echolife-hg556a-a
 
 define Device/huawei_echolife-hg556a-b
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Huawei
   DEVICE_MODEL := EchoLife HG556a
   DEVICE_VARIANT := B
@@ -699,7 +704,7 @@ endef
 TARGET_DEVICES += huawei_echolife-hg556a-b
 
 define Device/huawei_echolife-hg556a-c
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Huawei
   DEVICE_MODEL := EchoLife HG556a
   DEVICE_VARIANT := C
@@ -775,7 +780,7 @@ endef
 TARGET_DEVICES += netgear_cvg834g
 
 define Device/netgear_dg834gt-pn
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := DG834GT
   DEVICE_ALT0_VENDOR := NETGEAR
@@ -788,7 +793,7 @@ endef
 TARGET_DEVICES += netgear_dg834gt-pn
 
 define Device/netgear_dg834g-v4
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := DG834G
   DEVICE_VARIANT := v4
@@ -869,7 +874,7 @@ TARGET_DEVICES += observa_vh4032n
 
 ### Pirelli ###
 define Device/pirelli_a226g
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Pirelli
   DEVICE_MODEL := A226G
   CFE_BOARD_ID := DWV-S0
@@ -880,7 +885,7 @@ endef
 TARGET_DEVICES += pirelli_a226g
 
 define Device/pirelli_a226m
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Pirelli
   DEVICE_MODEL := A226M
   CFE_BOARD_ID := DWV-S0
@@ -891,7 +896,7 @@ endef
 TARGET_DEVICES += pirelli_a226m
 
 define Device/pirelli_a226m-fwb
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Pirelli
   DEVICE_MODEL := A226M-FWB
   CFE_BOARD_ID := DWV-S0
@@ -903,7 +908,7 @@ endef
 TARGET_DEVICES += pirelli_a226m-fwb
 
 define Device/pirelli_agpf-s0
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Pirelli
   DEVICE_MODEL := Alice Gate VoIP 2 Plus Wi-Fi AGPF-S0
   CFE_BOARD_ID := AGPF-S0
@@ -916,7 +921,7 @@ TARGET_DEVICES += pirelli_agpf-s0
 
 ### Sagem ###
 define Device/sagem_fast-2404
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Sagemcom
   DEVICE_MODEL := F@st 2404
   CFE_BOARD_ID := F@ST2404
@@ -937,7 +942,7 @@ endef
 TARGET_DEVICES += sagem_fast-2504n
 
 define Device/sagem_fast-2604
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Sagemcom
   DEVICE_MODEL := F@st 2604
   CFE_BOARD_ID := F@ST2604
@@ -984,7 +989,7 @@ TARGET_DEVICES += sercomm_ad1018-nor
 
 ### SFR ###
 define Device/sfr_neufbox-4-sercomm-r0
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := SFR
   DEVICE_MODEL := Neufbox 4
   DEVICE_VARIANT := Sercomm
@@ -996,7 +1001,7 @@ endef
 TARGET_DEVICES += sfr_neufbox-4-sercomm-r0
 
 define Device/sfr_neufbox-4-foxconn-r1
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := SFR
   DEVICE_MODEL := Neufbox 4
   DEVICE_VARIANT := Foxconn
@@ -1033,7 +1038,7 @@ TARGET_DEVICES += sky_sr102
 
 ### T-Com ###
 define Device/t-com_speedport-w-303v
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := T-Com
   DEVICE_MODEL := Speedport W 303V
   IMAGES := factory.bin sysupgrade.bin
@@ -1046,7 +1051,7 @@ endef
 TARGET_DEVICES += t-com_speedport-w-303v
 
 define Device/t-com_speedport-w-500v
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := T-Com
   DEVICE_MODEL := Speedport W 500V
   CFE_BOARD_ID := 96348GW
@@ -1058,7 +1063,7 @@ TARGET_DEVICES += t-com_speedport-w-500v
 
 ### Tecom ###
 define Device/tecom_gw6000
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Tecom
   DEVICE_MODEL := GW6000
   CFE_BOARD_ID := 96348GW
@@ -1069,7 +1074,7 @@ endef
 TARGET_DEVICES += tecom_gw6000
 
 define Device/tecom_gw6200
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Tecom
   DEVICE_MODEL := GW6200
   CFE_BOARD_ID := 96348GW
@@ -1082,7 +1087,7 @@ TARGET_DEVICES += tecom_gw6200
 
 ### Telsey ###
 define Device/telsey_cpva502plus
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Telsey
   DEVICE_MODEL := CPVA502+
   CFE_BOARD_ID := CPVA502+
@@ -1094,7 +1099,7 @@ endef
 TARGET_DEVICES += telsey_cpva502plus
 
 define Device/telsey_cpva642
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Telsey
   DEVICE_MODEL := CPVA642-type (CPA-ZNTE60T)
   CFE_BOARD_ID := CPVA642
@@ -1106,7 +1111,7 @@ endef
 TARGET_DEVICES += telsey_cpva642
 
 define Device/telsey_magic
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := Alice
   DEVICE_MODEL := W-Gate
   DEVICE_ALT0_VENDOR := Telsey
@@ -1121,7 +1126,7 @@ TARGET_DEVICES += telsey_magic
 
 ### TP-Link ###
 define Device/tp-link_td-w8900gb
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := TP-Link
   DEVICE_MODEL := TD-W8900GB
   CFE_BOARD_ID := 96348GW-11
@@ -1135,7 +1140,7 @@ TARGET_DEVICES += tp-link_td-w8900gb
 
 ### USRobotics ###
 define Device/usrobotics_usr9108
-  $(Device/bcm63xx)
+  $(Device/bcm63xx-legacy)
   DEVICE_VENDOR := USRobotics
   DEVICE_MODEL := USR9108
   CFE_BOARD_ID := 96348GW-A
