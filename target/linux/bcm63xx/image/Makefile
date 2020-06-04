@@ -15,7 +15,8 @@ LZMA_TEXT_START = 0x81800000		# 32MB - 8MB
 
 LOADER_MAKEOPTS= \
 		KDIR=$(KDIR) \
-		LOADADDR=$(KERNEL_LOADADDR) \
+		LOADER_ADDR=$(LOADER_ENTRY) \
+		KERNEL_ADDR=$(KERNEL_LOADADDR) \
 		RAMSIZE=$(RAMSIZE) \
 		LZMA_TEXT_START=$(LZMA_TEXT_START) \
 		CHIP_ID=$(CHIP_ID)
@@ -94,31 +95,6 @@ endef
 
 define Image/FileSystemStrip
 $(firstword $(subst +,$(space),$(subst root.,,$(notdir $(1)))))
-endef
-
-define Build/ad1018-jffs2-cferam
-	mv $@ $@.kernel
-
-	rm -rf $@-cferam
-	mkdir -p $@-cferam
-
-	# CFE RAM JFFS2 partition
-	cp $(KDIR)/bcm63xx-cfe/$(CFE_RAM_FILE) $@-cferam/$(CFE_RAM_JFFS2_NAME)
-	$(call Build/cfe-jffs2,$@-cferam)
-	mv $@ $@.cferam
-
-	# First block of CFE RAM 1 will be destroyed by MMAP
-	dd if=$@.cferam bs=$(BLOCKSIZE) count=1 > $@
-	dd if=$@.cferam >> $@
-	$(call Build/pad-to,896k)
-
-	# CFE RAM 2
-	dd if=$@.cferam >> $@
-
-	# Append kernel @ 4M
-	$(call Build/pad-to,4096k)
-	dd if=$@.kernel >> $@
-	rm -f $@.kernel
 endef
 
 define Build/cfe-bin
