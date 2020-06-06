@@ -1,4 +1,3 @@
-@import url("custom.css?v=1");
 /**
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
@@ -24,6 +23,7 @@
 /*
  *	Include base and custom css
  */
+@import url("custom.css?v=1");
 /*
   *	Icon Css and Fonts 
   */
@@ -125,6 +125,9 @@
 }
 .icon-docker:before {
   content: "\e911";
+}
+.icon-control:before {
+  content: "\e912";
 }
 .sk-folding-cube {
   position: absolute;
@@ -243,7 +246,7 @@
 .th {
   line-height: normal;
   display: table-cell;
-  padding: .5em;
+  padding: 0.5em;
   text-align: center;
   vertical-align: middle;
 }
@@ -336,7 +339,7 @@ html {
   -ms-text-size-adjust: 100%;
 }
 body {
-  font-size: .8rem;
+  font-size: 0.8rem;
   background-color: #f8f9fe;
 }
 html,
@@ -348,7 +351,7 @@ body {
   padding: 0;
 }
 select {
-  padding: .36rem .8rem;
+  padding: 0.36rem 0.8rem;
   color: #555;
   border: thin solid #ccc;
   background-color: #fff;
@@ -361,11 +364,11 @@ input,
 .cbi-dropdown {
   line-height: 1.5rem;
   height: 2.5rem;
-  padding: .625rem .75rem;
+  padding: 0.625rem 0.75rem;
   margin: 0.25rem 0.1rem;
   color: #8898aa;
   border: 1px solid #dee2e6;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   outline: 0;
   background-image: none;
   box-shadow: none;
@@ -392,7 +395,7 @@ pre {
 }
 code {
   font-size: 1rem;
-  font-size-adjust: .35;
+  font-size-adjust: 0.35;
   padding: 1px 3px;
   color: #101010;
   border-radius: 2px;
@@ -405,7 +408,7 @@ abbr {
 }
 hr {
   margin: 1rem 0;
-  opacity: .1;
+  opacity: 0.1;
   border-color: #eee;
 }
 header,
@@ -413,7 +416,7 @@ header,
   width: 100%;
 }
 footer {
-  font-size: .8rem;
+  font-size: 0.8rem;
   overflow: hidden;
   padding: 1rem;
   text-align: right;
@@ -450,7 +453,7 @@ small {
 .main > .loading > span {
   font-family: monospace;
   font-size: 2rem;
-  font-size-adjust: .35;
+  font-size-adjust: 0.35;
   position: relative;
   top: 12.5%;
   display: block;
@@ -459,8 +462,8 @@ small {
 }
 .main > .loading > span > .loading-img {
   position: relative;
-  top: .1rem;
-  left: .05rem;
+  top: 0.1rem;
+  left: 0.05rem;
   display: inline-block;
   width: 1.25rem;
   height: 1.25rem;
@@ -484,7 +487,7 @@ small {
   top: 0;
   float: left;
   width: 15%;
-  width: calc(15%);
+  width: calc(0% + 15rem);
   height: 100%;
   background-color: #fff;
   background-color: var(--menu-bg-color);
@@ -510,7 +513,7 @@ small {
 .main-right {
   float: right;
   width: 85%;
-  width: calc(85%);
+  width: calc(100% - 15rem);
   height: 100%;
   background-color: #f8f9fe;
   transition: all 0.2s;
@@ -577,9 +580,9 @@ header .fill .status {
 }
 header .fill .status * {
   position: relative;
-  top: .2rem;
+  top: 0.2rem;
   float: left;
-  margin-left: .3rem;
+  margin-left: 0.3rem;
   cursor: pointer;
 }
 #xhr_poll_status {
@@ -633,10 +636,10 @@ header .fill .status * {
   font-weight: bold;
 }
 .alert-message > * {
-  margin: .5rem 0;
+  margin: 0.5rem 0;
 }
 .alert-message .btn {
-  padding: .3rem .6rem;
+  padding: 0.3rem 0.6rem;
 }
 .container .alert,
 .container .alert-message {
@@ -672,9 +675,9 @@ header .fill .status * {
 }
 .main .main-left .nav li.slide .menu {
   display: block;
-  margin: 0.1rem .5rem 0.1rem .5rem;
-  padding: .675rem 0 .675rem 2.5rem;
-  border-radius: .375rem;
+  margin: 0.1rem 0.5rem 0.1rem 0.5rem;
+  padding: 0.675rem 0 0.675rem 2.5rem;
+  border-radius: 0.375rem;
   text-decoration: none;
   cursor: default;
   font-size: 1rem;
@@ -730,7 +733,7 @@ header .fill .status * {
   /* Better Font Rendering =========== */
   -moz-osx-font-smoothing: grayscale;
   content: '\e90f';
-  transition: all .15s ease;
+  transition: all 0.15s ease;
   color: #ced4da;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
@@ -767,6 +770,10 @@ header .fill .status * {
 .main .main-left .nav li.slide .menu[data-title=Docker]:before {
   content: "\e911";
   color: #6699ff;
+}
+.main .main-left .nav li.slide .menu[data-title=Control]:before {
+  content: "\e912";
+  color: #04B4AE;
 }
 .main .main-left .nav li.slide:hover {
   background: none;
@@ -831,9 +838,9 @@ header .fill .status * {
 }
 .logout {
   display: block;
-  margin: 0.8rem .5rem 0.1rem 0.5rem;
-  padding: .675rem 0 .675rem 2.5rem;
-  border-radius: .375rem;
+  margin: 0.8rem 0.5rem 0.1rem 0.5rem;
+  padding: 0.675rem 0 0.675rem 2.5rem;
+  border-radius: 0.375rem;
   text-decoration: none;
   font-size: 1rem;
   transition: all 0.2s;
@@ -934,7 +941,7 @@ h5 {
 .cbi-section-descr {
   font-size: small;
   line-height: 1.42857143;
-  padding: .5rem 0;
+  padding: 0.5rem 0;
   color: #fff;
 }
 .cbi-map-descr + fieldset {
@@ -993,10 +1000,10 @@ table > thead > tr > th,
 .table > .thead > .tr > .th,
 .table > .tr > .td.cbi-value-field,
 .table > .tr > .th.cbi-section-table-cell {
-  padding: .5rem;
+  padding: 0.5rem;
 }
 .container > .cbi-section:first-of-type > .table[width="100%"] > .tr > .td {
-  padding: .6rem;
+  padding: 0.6rem;
 }
 .cbi-section-table-cell {
   line-height: 1.1;
@@ -1042,7 +1049,7 @@ tr > th,
 }
 .cbi-section-table-row > .cbi-value-field [data-dynlist] > input,
 .cbi-section-table-row > .cbi-value-field input.cbi-input-password {
-  width: calc(98.5%);
+  width: calc(100% - 1.5rem);
 }
 .cbi-section-table-row .td {
   text-align: center !important;
@@ -1066,10 +1073,10 @@ td > table > tbody > tr > td,
 .btn,
 .cbi-button,
 .item::after {
-  font-size: .8rem;
+  font-size: 0.8rem;
   display: inline-block;
   width: auto !important;
-  padding: 0 .8rem;
+  padding: 0 0.8rem;
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -1083,7 +1090,7 @@ td > table > tbody > tr > td,
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.87);
   border: 0;
-  border-radius: .2rem;
+  border-radius: 0.2rem;
   background-color: #f0f0f0;
   background-image: none;
   -webkit-appearance: none;
@@ -1095,7 +1102,7 @@ td > table > tbody > tr > td,
   font-size: 1.2rem;
   display: inline-block;
   min-width: 0;
-  padding: .2rem .3rem;
+  padding: 0.2rem 0.3rem;
   color: transparent !important;
   background: url(icons/arrow.svg) no-repeat center;
   background-size: 12px 20px;
@@ -1107,7 +1114,7 @@ td > table > tbody > tr > td,
   -webkit-appearance: none !important;
 }
 .cbi-button + .cbi-button {
-  margin-left: .6rem;
+  margin-left: 0.6rem;
 }
 .btn:hover,
 .btn:focus,
@@ -1148,7 +1155,7 @@ td > table > tbody > tr > td,
 .cbi-button:disabled {
   cursor: not-allowed;
   pointer-events: none;
-  opacity: .5;
+  opacity: 0.5;
   box-shadow: none;
 }
 /* gray */
@@ -1258,14 +1265,14 @@ td > table > tbody > tr > td,
 }
 .tabs {
   margin: 0 0rem;
-  padding-left: .5rem;
+  padding-left: 0.5rem;
   border-radius: 0.375rem;
   background-color: #fff;
 }
 .tabs > li,
 .cbi-tabmenu > li {
   display: inline-block;
-  padding: .55rem 0;
+  padding: 0.55rem 0;
   margin: 0.5rem 0.1rem 0 0.1rem;
   border-top-left-radius: 0.375rem;
   border-top-right-radius: 0.375rem;
@@ -1273,8 +1280,8 @@ td > table > tbody > tr > td,
   cursor: pointer;
 }
 .tabs > li {
-  padding-bottom: .4rem;
-  border-bottom: .2rem solid transparent;
+  padding-bottom: 0.4rem;
+  border-bottom: 0.2rem solid transparent;
   background-color: #fff;
 }
 .tabs > li[class~="active"],
@@ -1288,7 +1295,7 @@ td > table > tbody > tr > td,
 }
 .tabs > li > a,
 .cbi-tabmenu > li > a {
-  padding: .6rem .9rem;
+  padding: 0.6rem 0.9rem;
   text-decoration: none;
   color: #404040;
 }
@@ -1361,14 +1368,14 @@ td > table > tbody > tr > td,
 }
 .cbi-value-description {
   font-size: small;
-  padding-top: .4rem;
-  opacity: .5;
+  padding-top: 0.4rem;
+  opacity: 0.5;
 }
 .cbi-value-title {
   display: table-cell;
   float: left;
   width: 23rem;
-  padding-top: .25rem;
+  padding-top: 0.25rem;
   padding-right: 2rem;
   text-align: right;
   word-wrap: break-word;
@@ -1376,7 +1383,7 @@ td > table > tbody > tr > td,
 .cbi-value {
   display: inline-block;
   width: 100%;
-  padding: .35rem 1rem .2rem 1rem;
+  padding: 0.35rem 1rem 0.2rem 1rem;
   line-height: 2.4rem;
 }
 .cbi-value ul {
@@ -1418,7 +1425,7 @@ td > table > tbody > tr > td,
 .td[data-title]::before {
   font-weight: bold;
   display: none;
-  padding: .25rem 0;
+  padding: 0.25rem 0;
   content: attr(data-title) ":\20";
   text-align: left;
   white-space: nowrap;
@@ -1432,7 +1439,7 @@ td > table > tbody > tr > td,
   display: table-cell;
   align-self: center;
   flex: 1 1 5%;
-  padding: .25rem;
+  padding: 0.25rem;
   content: attr(data-title) "\20";
   text-align: center;
   vertical-align: middle;
@@ -1482,7 +1489,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   max-width: 25rem;
   margin-right: 2em;
   margin-bottom: 0.3rem;
-  padding: 1em .25em .25em 0;
+  padding: 1em 0.25em 0.25em 0;
   pointer-events: none;
   color: #8898aa;
   border-bottom: 2px solid #5e72e4;
@@ -1574,7 +1581,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   flex-grow: 0;
   flex-shrink: 0;
   justify-content: center;
-  padding: 0 .25em;
+  padding: 0 0.25em;
   cursor: default;
   text-align: center;
   outline: 0;
@@ -1594,7 +1601,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   flex-grow: 1;
   flex-shrink: 1;
   min-height: 20px;
-  padding: .25em;
+  padding: 0.25em;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1617,7 +1624,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   pointer-events: none;
 }
 .cbi-dropdown > ul > li img {
-  margin-right: .25em;
+  margin-right: 0.25em;
   vertical-align: middle;
 }
 .cbi-dropdown > ul > li > form > input[type="checkbox"] {
@@ -1680,14 +1687,14 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   border-bottom: 0;
 }
 .cbi-dropdown[open] > ul.dropdown > li[unselectable] {
-  opacity: .7;
+  opacity: 0.7;
 }
 .cbi-dropdown[open] > ul.dropdown > li > input.create-item-input:first-child:last-child {
   width: 100%;
 }
 .cbi-dropdown[disabled] {
   pointer-events: none;
-  opacity: .6;
+  opacity: 0.6;
 }
 .cbi-dropdown .zonebadge {
   width: 100%;
@@ -1717,7 +1724,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   font-family: monospace;
   font-size: 1em;
   font-weight: bold;
-  font-size-adjust: .38;
+  font-size-adjust: 0.38;
   line-height: normal;
   position: absolute;
   top: 2px;
@@ -1760,15 +1767,15 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
 .modal > * {
   line-height: normal;
   flex-basis: 100%;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   max-width: 100%;
 }
 .modal > pre,
 .modal > textarea {
   font-size: 1rem;
-  font-size-adjust: .35;
+  font-size-adjust: 0.35;
   overflow: auto;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   padding: 8.5px;
   cursor: auto;
   white-space: pre-wrap;
@@ -1778,7 +1785,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 2px 0 rgba(0, 0, 0, 0.12);
 }
 .modal > h4 {
-  margin: .5em 0;
+  margin: 0.5em 0;
 }
 .modal ul {
   margin-left: 2.2em;
@@ -1788,13 +1795,13 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   color: #808080;
 }
 .modal p {
-  padding-left: .25rem;
+  padding-left: 0.25rem;
   word-break: break-word;
 }
 .modal .label {
-  font-size: .6rem;
+  font-size: 0.6rem;
   font-weight: normal;
-  padding: .1rem .3rem;
+  padding: 0.1rem 0.3rem;
   padding-bottom: 0;
   cursor: default;
   border-radius: 0;
@@ -1803,7 +1810,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   background-color: #f0ad4e !important;
 }
 .modal .btn {
-  padding: .3rem .6rem;
+  padding: 0.3rem 0.6rem;
 }
 .modal.cbi-modal {
   max-width: 90%;
@@ -1826,7 +1833,7 @@ body.modal-overlay-active #modal_overlay {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: .2em;
+  left: 0.2em;
   width: 32px;
   content: "";
   background: url(../resources/icons/loading.gif) no-repeat center;
@@ -1875,24 +1882,24 @@ body.modal-overlay-active #modal_overlay {
 }
 .ifacebadge {
   display: inline-flex;
-  padding: .5rem .8rem;
+  padding: 0.5rem 0.8rem;
   border-bottom: thin solid #ccc;
   background: #eee;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 td > .ifacebadge,
 .td > .ifacebadge {
-  font-size: .8rem;
+  font-size: 0.8rem;
   background-color: #f0f0f0;
 }
 .ifacebadge > em,
 .ifacebadge > img {
   display: inline-block;
   align-self: flex-start;
-  margin: 0 .2rem;
+  margin: 0 0.2rem;
 }
 .ifacebadge > img + img {
-  margin: 0 .2rem 0 0;
+  margin: 0 0.2rem 0 0;
 }
 .network-status-table {
   display: flex;
@@ -1900,7 +1907,7 @@ td > .ifacebadge,
 }
 .network-status-table .ifacebox {
   flex-grow: 1;
-  margin: .5em;
+  margin: 0.5em;
 }
 .network-status-table .ifacebox-body {
   display: flex;
@@ -1919,8 +1926,8 @@ td > .ifacebadge,
   align-items: center;
   flex: 1 1 auto;
   min-width: 220px;
-  margin: .5em 0em 0 0em;
-  padding: .5em;
+  margin: 0.5em 0em 0 0em;
+  padding: 0.5em;
   background-color: #fff;
 }
 /* textarea */
@@ -1928,7 +1935,7 @@ td > .ifacebadge,
   font-family: monospace;
   width: 100%;
   min-height: 14rem;
-  padding: .8rem;
+  padding: 0.8rem;
   color: #000;
 }
 #syslog {
@@ -2003,13 +2010,13 @@ td > .ifacebadge,
 }
 .uci-change-legend-label var ins,
 .uci-change-legend-label var del {
-  line-height: .4;
+  line-height: 0.4;
   border: 0;
 }
 .uci-change-list var,
 .uci-change-list del,
 .uci-change-list ins {
-  padding: .5rem;
+  padding: 0.5rem;
 }
 /* other fix */
 #iwsvg,
@@ -2031,7 +2038,7 @@ td > .ifacebadge,
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .ifacebox-head {
-  padding: .25em;
+  padding: 0.25em;
   background: #eee;
 }
 .ifacebox-head.active {
@@ -2043,44 +2050,44 @@ td > .ifacebadge,
   color: var(--white);
 }
 .ifacebox-body {
-  padding: .5em 1rem;
+  padding: 0.5em 1rem;
   line-height: 1.6em;
 }
 .cbi-image-button {
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }
 .zonebadge {
   display: inline-block;
-  padding: .2rem .5rem;
+  padding: 0.2rem 0.5rem;
 }
 .zonebadge .ifacebadge {
-  margin: .1rem .2rem;
-  padding: .2rem .3rem;
+  margin: 0.1rem 0.2rem;
+  padding: 0.2rem 0.3rem;
   border: thin solid #6c6c6c;
 }
 .zonebadge > input[type="text"] {
   min-width: 10rem;
-  margin-top: .3rem;
-  padding: .16rem 1rem;
+  margin-top: 0.3rem;
+  padding: 0.16rem 1rem;
 }
 .zonebadge > em,
 .zonebadge > strong {
   display: inline-block;
-  margin: 0 .2rem;
+  margin: 0 0.2rem;
 }
 .cbi-value-field .cbi-input-checkbox,
 .cbi-value-field .cbi-input-radio {
-  margin-top: .1rem;
+  margin-top: 0.1rem;
 }
 .cbi-value-field > ul > li {
   display: flex;
 }
 .cbi-value-field > ul > li > label {
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 .cbi-value-field > ul > li .ifacebadge {
   margin-top: -0.5rem;
-  margin-left: .4rem;
+  margin-left: 0.4rem;
   background-color: #eee;
 }
 .cbi-section-table-row > .cbi-value-field .cbi-dropdown {
@@ -2092,10 +2099,10 @@ td > .ifacebadge,
   margin: 0.25rem 0 0.25rem 1rem;
 }
 .cbi-section-create > * {
-  margin: .5rem;
+  margin: 0.5rem;
 }
 .cbi-section-remove {
-  padding: .5rem;
+  padding: 0.5rem;
 }
 div.cbi-value var,
 td.cbi-value-field var,
@@ -2135,7 +2142,7 @@ span[data-tooltip] .label {
 }
 .zonebadge .cbi-tooltip {
   margin: -1.5rem 0 0 -0.5rem;
-  padding: .25rem;
+  padding: 0.25rem;
   background: inherit;
 }
 .zonebadge-empty {
@@ -2151,7 +2158,7 @@ span[data-tooltip] .label {
 }
 .zone-forwards > span {
   flex-basis: 10%;
-  padding: 0 .25rem;
+  padding: 0 0.25rem;
   text-align: center;
 }
 .zone-forwards .zone-src,
@@ -2160,9 +2167,9 @@ span[data-tooltip] .label {
   flex-direction: column;
 }
 .label {
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: bold;
-  padding: .3rem .8rem;
+  padding: 0.3rem 0.8rem;
   white-space: nowrap;
   text-decoration: none;
   text-transform: uppercase;
@@ -2174,8 +2181,8 @@ span[data-tooltip] .label {
 label > input[type="checkbox"],
 label > input[type="radio"] {
   position: relative;
-  top: .4rem;
-  right: .2rem;
+  top: 0.4rem;
+  right: 0.2rem;
   margin: 0;
   vertical-align: bottom;
 }
@@ -2200,7 +2207,7 @@ label[data-index][data-depends] {
 #command-rc-output > pre,
 [data-page="admin-services-wol"] .notice code {
   font-size: 1.2rem;
-  font-size-adjust: .35;
+  font-size-adjust: 0.35;
   line-height: normal;
   display: block;
   overflow-y: hidden;
@@ -2266,14 +2273,14 @@ input[name="nslookup"] {
   position: relative;
   margin-top: 2rem !important;
   background-color: var(--secondary) !important;
-  border-radius: .375rem;
+  border-radius: 0.375rem;
   box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
   text-align: left;
 }
 .node-main-login .main .main-right #maincontent .container .alert-message.warning {
   position: absolute;
   color: #fff;
-  width: calc(98%);
+  width: calc(100% - 2rem);
   box-sizing: border-box;
   margin-top: 8rem;
   border-radius: 5px !important;
@@ -2287,7 +2294,7 @@ input[name="nslookup"] {
 .node-main-login .main .main-right #maincontent .container .alert-message.error {
   position: absolute;
   color: #fff;
-  width: calc(98%);
+  width: calc(100% - 2rem);
   background-color: #f0ad4e;
   border-color: #eea236;
   box-sizing: border-box;
@@ -2356,12 +2363,12 @@ input[name="nslookup"] {
   line-height: 1.5;
   display: block;
   width: 100%;
-  height: calc(4.75rem);
-  padding: .625rem .75rem;
+  height: calc(2.75rem + 2px);
+  padding: 0.625rem 0.75rem;
   transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   color: #8898aa;
   border: 0px solid #dee2e6;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   background-color: #fff;
   background-clip: padding-box;
   box-shadow: 0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02);
@@ -2403,10 +2410,10 @@ input[name="nslookup"] {
   font-size: 1rem;
   height: auto;
   position: relative;
-  transition: all .15s ease;
-  letter-spacing: .2em;
+  transition: all 0.15s ease;
+  letter-spacing: 0.2em;
   text-transform: none;
-  padding: .375rem 1.25rem;
+  padding: 0.375rem 1.25rem;
   will-change: transform;
   line-height: 1.5em;
   border: thin solid var(--purple);
@@ -2447,7 +2454,7 @@ input[name="nslookup"] {
 }
 [data-page="admin-system-reboot"] p > span {
   position: relative;
-  top: .1rem;
+  top: 0.1rem;
   left: 1rem;
 }
 /* samba */
@@ -2456,7 +2463,7 @@ input[name="nslookup"] {
 }
 #cbi-samba [data-tab="template"] .cbi-value-title {
   width: auto;
-  padding-bottom: .6rem;
+  padding-bottom: 0.6rem;
 }
 /* admin-system-admin-password */
 [data-page="admin-system-admin"] .cbi-map h2,
@@ -2474,28 +2481,28 @@ input[name="nslookup"] {
   color: var(--gray-dark);
 }
 .controls {
-  margin: .5em 1rem 1em 1rem !important;
+  margin: 0.5em 1rem 1em 1rem !important;
 }
 .controls > * > .btn:not([aria-label$="page"]) {
   flex-grow: initial !important;
-  margin-top: .25rem;
+  margin-top: 0.25rem;
 }
 .controls > #pager > .btn[aria-label$="page"] {
   font-size: 1.4rem;
   font-weight: bold;
 }
 .controls > * > label {
-  margin-bottom: .2rem;
+  margin-bottom: 0.2rem;
 }
 [data-page="admin-system-opkg"] div.btn {
   line-height: 3;
   display: inline;
-  padding: .3rem .6rem;
+  padding: 0.3rem 0.6rem;
 }
 [data-page^="admin-system-admin"]:not(.node-main-login) .cbi-map:not(#cbi-dropbear),
 [data-page="admin-system-opkg"] #maincontent > .container {
   margin-top: 2rem;
-  padding-top: .1rem;
+  padding-top: 0.1rem;
 }
 [data-page="admin-system-opkg"] #maincontent > .container {
   margin: 2rem;
@@ -2545,7 +2552,7 @@ input[name="nslookup"] {
 }
 /* wireless overview */
 #cbi-wireless > #wifi_assoclist_table > .tr {
-  box-shadow: inset 1px -1px 0 #dddddd, inset -1px -1px 0 #dddddd;
+  box-shadow: inset 1px -1px 0 #ddd, inset -1px -1px 0 #ddd;
 }
 #cbi-wireless > #wifi_assoclist_table > .tr.placeholder > .td {
   right: 33px;
@@ -2554,11 +2561,11 @@ input[name="nslookup"] {
   border-top: thin solid #ddd !important;
 }
 #cbi-wireless > #wifi_assoclist_table > .tr.table-titles {
-  box-shadow: inset 1px 0 0 #dddddd, inset -1px 0 0 #dddddd;
+  box-shadow: inset 1px 0 0 #ddd, inset -1px 0 0 #ddd;
 }
 #cbi-wireless > #wifi_assoclist_table > .tr.table-titles > .th {
   border-bottom: thin solid #ddd;
-  box-shadow: 0 -1px 0 0 #dddddd;
+  box-shadow: 0 -1px 0 0 #ddd;
 }
 #wifi_assoclist_table > .tr > .td[data-title="RX Rate / TX Rate"] {
   width: 23rem;
@@ -2629,7 +2636,7 @@ input[name="nslookup"] {
 .commandbox {
   width: 24% !important;
   margin: 10px 0 0 10px !important;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   border-bottom: thin solid #ccc;
   background: #eee;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -2719,25 +2726,25 @@ input[type="checkbox"]:checked {
 }
 @media screen and (max-width: 1600px) {
   header > .fill > .container > #logo {
-    margin: 0 2.5rem 0 .5rem;
+    margin: 0 2.5rem 0 0.5rem;
   }
   .main-left {
-    width: calc(13%);
+    width: calc(0% + 13rem);
   }
   .main-right {
-    width: calc(87%);
+    width: calc(100% - 13rem);
   }
   .btn:not(button),
   .cbi-button {
-    font-size: .8rem;
-    padding: .2rem .6rem;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
   }
   .label {
-    padding: .2rem .6rem;
+    padding: 0.2rem 0.6rem;
   }
   .cbi-value-title {
     width: 15rem;
-    padding-right: .6rem;
+    padding-right: 0.6rem;
   }
   .cbi-value-field .cbi-dropdown,
   .cbi-value-field .cbi-input-select,
@@ -2752,7 +2759,7 @@ input[type="checkbox"]:checked {
     font-size: small;
   }
   .node-admin-status > .main fieldset li > a {
-    padding: .3rem .6rem;
+    padding: 0.3rem 0.6rem;
   }
 }
 @media screen and (max-width: 1366px) {
@@ -2760,21 +2767,21 @@ input[type="checkbox"]:checked {
     cursor: default;
   }
   .main-left {
-    width: calc(13%);
+    width: calc(0% + 13rem);
   }
   .main-right {
-    width: calc(87%);
+    width: calc(100% - 13rem);
   }
   .tabs > li > a,
   .cbi-tabmenu > li > a {
-    padding: .2rem .5rem;
+    padding: 0.2rem 0.5rem;
   }
   .panel-title {
     font-size: 1.1rem;
     padding-bottom: 1rem;
   }
   table {
-    font-size: .7rem !important;
+    font-size: 0.7rem !important;
     width: 100% !important;
   }
   .table .cbi-input-text {
@@ -2793,10 +2800,10 @@ input[type="checkbox"]:checked {
   .main > .main-left > .nav > li a,
   .main > .main-left > .nav > .slide > .menu,
   .main > .main-left > .nav > li > [data-title="Logout"] {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
   .main > .main-left > .nav > .slide > .slide-menu > li > a {
-    font-size: .7rem;
+    font-size: 0.7rem;
   }
   #modal_overlay {
     top: 0rem;
@@ -2834,10 +2841,10 @@ input[type="checkbox"]:checked {
     top: 25%;
   }
   .main-left {
-    width: calc(13%);
+    width: calc(0% + 13rem);
   }
   .main-right {
-    width: calc(87%);
+    width: calc(100% - 13rem);
   }
   body:not(.logged-in) .showSide {
     visibility: hidden;
@@ -2909,7 +2916,7 @@ input[type="checkbox"]:checked {
   }
   .td [data-dynlist] > input,
   .td input.cbi-input-password {
-    width: calc(98.5%);
+    width: calc(100% - 1.5rem);
   }
   .td[data-type="button"],
   .td[data-type="fvalue"] {
@@ -2947,7 +2954,7 @@ input[type="checkbox"]:checked {
   }
   .tr[data-title]::before,
   .tr.cbi-section-table-titles.named::before {
-    font-size: .9rem;
+    font-size: 0.9rem;
     display: block;
     flex: 1 1 100%;
     border-bottom: thin solid rgba(0, 0, 0, 0.26);
@@ -2994,10 +3001,10 @@ input[type="checkbox"]:checked {
 }
 @media screen and (max-width: 768px) {
   body {
-    font-size: .8rem;
+    font-size: 0.8rem;
   }
   .cbi-progressbar::after {
-    font-size: .95em;
+    font-size: 0.95em;
     line-height: 1.5;
   }
   .main-left {
@@ -3091,4 +3098,4 @@ input[type="checkbox"]:checked {
     background: #424242;
   }
 }
-/*# sourceMappingURL=cascade.css.map */
+/*# sourceMappingURL=./cascade.css.map */
