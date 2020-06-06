@@ -1,7 +1,7 @@
 
 /*
 	author: destan19@126.com
-	Î¢ÐÅ¹«ÖÚºÅ: OpenWrt
+	Î¢ï¿½Å¹ï¿½ï¿½Úºï¿½: OpenWrt
 	date:2019/1/10
 */
 #include <linux/init.h>
@@ -407,7 +407,7 @@ int parse_flow_base(struct sk_buff *skb, flow_info_t *flow)
 
 
 /*
-	desc: ½âÎöhttps urlÐÅÏ¢£¬±£´æµ½flowÖÐ
+	desc: ï¿½ï¿½ï¿½ï¿½https urlï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½æµ½flowï¿½ï¿½
 	return:
 		-1: error
 		0: match
@@ -496,7 +496,7 @@ void parse_http_proto(flow_info_t *flow)
 				flow->http.host_len = i - start - 6;
 				//dump_str("host ", flow->http.host_pos, flow->http.host_len);
 			}
-			// ÅÐ¶ÏhttpÍ·²¿½áÊø
+			// ï¿½Ð¶ï¿½httpÍ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (data[i + 2] == 0x0d && data[i + 3] == 0x0a){
 				flow->http.data_pos = data + i + 4;
 				flow->http.data_len = data_len - i - 4;
@@ -654,7 +654,7 @@ int af_match_one(flow_info_t *flow, af_feature_node_t *node)
 	if (flow->l4_len == 0)
 		return AF_FALSE;
 
-	// Æ¥Åä¶Ë¿Ú
+	// Æ¥ï¿½ï¿½Ë¿ï¿½
 	if (node->sport != 0 && flow->sport != node->sport ){
 		return AF_FALSE;
 	}
@@ -772,7 +772,7 @@ void af_update_client_app_info(flow_info_t *flow)
 	AF_CLIENT_UNLOCK_W();
 }
 
-/* ÔÚnetfilter¿ò¼Ü×¢²áµÄ¹³×Ó */
+/* ï¿½ï¿½netfilterï¿½ï¿½ï¿½×¢ï¿½ï¿½Ä¹ï¿½ï¿½ï¿½ */
 
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,4,0)
@@ -902,7 +902,11 @@ void TEST_cJSON(void)
 struct timer_list oaf_timer;   
 
 #define OAF_TIMER_INTERVAL 15
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
+static void oaf_timer_func(struct timer_list *t)
+#else
 static void oaf_timer_func(unsigned long ptr)
+#endif
 {
 //	check_client_expire();
 	af_visit_info_timer_handle();
@@ -912,7 +916,11 @@ static void oaf_timer_func(unsigned long ptr)
 
 void init_oaf_timer(void)
 {
+		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
+    timer_setup(&oaf_timer, oaf_timer_func, OAF_TIMER_INTERVAL * HZ);
+		#else
     setup_timer(&oaf_timer, oaf_timer_func, OAF_TIMER_INTERVAL * HZ);
+		#endif
     mod_timer(&oaf_timer,  jiffies + OAF_TIMER_INTERVAL * HZ);
 	AF_INFO("init oaf timer...ok");
 }
@@ -925,7 +933,7 @@ void fini_port_timer(void)
 
 
 /*
-	Ä£¿é³õÊ¼»¯
+	Ä£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 */
 static int __init app_filter_init(void)
 {
@@ -949,7 +957,7 @@ static int __init app_filter_init(void)
 }
 
 /*
-	Ä£¿éÍË³ö
+	Ä£ï¿½ï¿½ï¿½Ë³ï¿½
 */
 static void app_filter_fini(void)
 {
