@@ -1133,6 +1133,7 @@ input[name="nslookup"] {
 
 
 #xhr_poll_status {
+    cursor: pointer;
     display: inline-block;
 
 }
@@ -1577,7 +1578,7 @@ footer>a {
     }
 }
 
-[id^="cbi-apply-"] {
+fieldset[id^="cbi-apply-"] {
     position: fixed;
     z-index: 200;
     width: 20rem;
@@ -1586,8 +1587,9 @@ footer>a {
     height: 10rem;
     left: 50%;
     top: 50%;
+    padding: 1rem;
+    box-sizing: border-box;
     font-size: 1.2rem;
-    border-color: #5e72e4;
     text-align: center;
 }
 
@@ -2287,6 +2289,10 @@ form.inline+form.inline,
     border-color: #5e72e4 !important;
 }
 
+.node-services-vssr .ssr-button{
+    margin-left: 0.3rem;
+   
+}
 
 .cbi-section-remove>.cbi-button,
 .cbi-button-remove {
@@ -3480,6 +3486,10 @@ header>.container>.pull-right>* {
     font-size: 0.875rem;
 }
 
+/* fix nlbw/display*/
+#detail-bubble.in{
+    z-index: 500;
+}
 
 
 @media screen and (max-width: 1600px) {
@@ -4145,6 +4155,7 @@ header>.container>.pull-right>* {
 
     .node-services-vssr .block{
         background-color: #3c3c3c !important;
+        box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, .35);
     }
 
     .node-services-vssr .block h4 {
@@ -4160,6 +4171,12 @@ header>.container>.pull-right>* {
     .node-services-vssr .cbi-section-table-row{
         color: #ccc;
         background-color: #3c3c3c !important;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, .35)
+    }
+
+    .node-services-vssr .cbi-section-table-row.fast {
+        background: darkslateblue !important;
+        color: #fff;
     }
 
     .node-services-vssr .ssr-button{
@@ -4200,6 +4217,12 @@ header>.container>.pull-right>* {
         border-bottom: 0.18751rem solid darkslateblue;
     color: darkslateblue;
     }
+
+    fieldset[id^="cbi-apply-"] {
+        background-color: #333333;
+    }
+
+    
 }
 
 @media (prefers-color-scheme: dark)  and (max-width: 480px){
