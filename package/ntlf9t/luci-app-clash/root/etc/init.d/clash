@@ -205,10 +205,10 @@ yml_dns_change(){
 
 check(){
 
-	   sed -i 's/Proxy Group:/proxy-groups:/g' "$CONFIG_YAML"
-	   sed -i 's/proxy-provider:/proxy-providers:/g' "$CONFIG_YAML"
-	   sed -i 's/Proxy:/proxies:/g' "$CONFIG_YAML"
-	   sed -i 's/Rule:/rules:/g' "$CONFIG_YAML"
+	   sed -i 's/^Proxy Group:/proxy-groups:/g' "$CONFIG_YAML"
+	   sed -i 's/^proxy-provider:/proxy-providers:/g' "$CONFIG_YAML"
+	   sed -i 's/^Proxy:/proxies:/g' "$CONFIG_YAML"
+	   sed -i 's/^Rule:/rules:/g' "$CONFIG_YAML"
 
 }
 
@@ -455,7 +455,7 @@ enable=$(uci get clash.config.enable 2>/dev/null)
 core=$(uci get clash.config.core 2>/dev/null)
 mode=$(uci get clash.config.mode 2>/dev/null)
 tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
-old_conf=$(uci get clash.config.old_conf 2>/dev/null)
+
 
 
 if [ -f /etc/clash/config.yaml ];then
@@ -508,11 +508,9 @@ elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	echo "Clash for OpenWRT" >$REAL_LOG
 	exit 0
 else
-if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5/1024)}')" -ne 0 ] ; then
+if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 0 ] ; then
 
-	if [ -z "$old_conf" ];then
 	check >/dev/null 2>&1
-	fi
 	
    	yml_change >/dev/null 2>&1
 	
