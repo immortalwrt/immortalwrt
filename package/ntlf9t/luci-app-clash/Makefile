@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk 
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=1.7.0
+PKG_VERSION:=1.7.1
 PKG_MAINTAINER:=frainzy1477
 
 
@@ -103,7 +103,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/clash
 	$(INSTALL_DIR) $(1)/usr/share/rpcd	
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d	
-
 	$(INSTALL_DIR) $(1)/usr/share/clash/rules
 	$(INSTALL_DIR) $(1)/usr/share/clash/rules/g_rules
 	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard
@@ -140,9 +139,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/logstatus_check $(1)/usr/share/clash/
 	$(INSTALL_BIN) ./root/usr/share/clash/clash.txt $(1)/usr/share/clash/
 	
-
-	$(INSTALL_BIN) ./root/usr/share/rpcd/acl.d/luci-app-clash.json $(1)/usr/share/rpcd/acl.d/
-
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/usr/share/clash/dashboard/
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.1560b07adc97ac0ac265.css $(1)/usr/share/clash/dashboard/
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/img/ffac0fa1d89f15922b4594863b8b32e9.png $(1)/usr/share/clash/dashboard/img/
