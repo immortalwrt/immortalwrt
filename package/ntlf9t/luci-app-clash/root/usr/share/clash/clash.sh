@@ -19,13 +19,19 @@ if  [ $config_name == "" ] || [ -z $config_name ];then
 	fi
 	sleep 5
 	echo "Clash for OpenWRT" >$REAL_LOG
-	exit 0	
+	exit 0	 
 	
 fi
 
 
- 
+if [ ! -f "/usr/share/clashbackup/confit_list.conf" ];then 
+   touch /usr/share/clashbackup/confit_list.conf
+fi
+
+
 check_name=$(grep -F "${config_name}.yaml" "/usr/share/clashbackup/confit_list.conf")
+
+
 if [ ! -z $check_name ];then
    
 	if [ $lang == "en" ] || [ $lang == "auto" ];then
@@ -48,14 +54,14 @@ else
 	sleep 1
 		
 	if [ "$subtype" = "clash" ];then
-	curl -sL --connect-timeout 10 --retry 2  "$clash_url" -O 2>&1 >1 $CONFIG_YAML
+	wget -c4 --no-check-certificate --user-agent="Clash/OpenWRT" "$clash_url" -O 2>&1 >1 $CONFIG_YAML
 	if [ "$?" -eq "0" ]; then
 	echo "${config_name}.yaml#$clash_url#$subtype" >>/usr/share/clashbackup/confit_list.conf
 	fi
     fi
 	
 	if [ "$subtype" = "ssr2clash" ];then
-	curl -sL --connect-timeout 10 --retry 2 "https://ssrsub2clashr.herokuapp.com/ssrsub2clash?sub=$ssr_url" -O 2>&1 >1 $CONFIG_YAML
+	wget -c4 --no-check-certificate --user-agent="Clash/OpenWRT" "https://gfwsb.114514.best/sub?target=clashr&url=$ssr_url" -O 2>&1 >1 $CONFIG_YAML
 	if [ "$?" -eq "0" ]; then
 	echo "${config_name}.yaml#$ssr_url#$subtype" >>/usr/share/clashbackup/confit_list.conf
 		CONFIG_YAMLL="/tmp/conf"
@@ -100,7 +106,7 @@ else
     fi
 
 	if [ "$subtype" = "v2clash" ];then
-	curl -sL --connect-timeout 10 --retry 2 "https://tgbot.lbyczf.com/v2rayn2clash?url=$v2_url" -O 2>&1 >1 $CONFIG_YAML
+	wget -c4 --no-check-certificate --user-agent="Clash/OpenWRT" "https://tgbot.lbyczf.com/v2rayn2clash?url=$v2_url" -O 2>&1 >1 $CONFIG_YAML
 	if [ "$?" -eq "0" ]; then
 	echo "${config_name}.yaml#$v2_url#$subtype" >>/usr/share/clashbackup/confit_list.conf
 	fi
