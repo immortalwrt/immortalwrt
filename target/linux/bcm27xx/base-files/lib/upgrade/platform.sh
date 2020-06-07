@@ -99,6 +99,6 @@ platform_copy_config() {
 		cp -af "$CONF_TAR" /boot/
 		tar -C / -zxvf "$CONF_TAR" boot/cmdline.txt boot/config.txt
 		sync
-		unmount /boot
+		umount /boot
 	fi
 }
