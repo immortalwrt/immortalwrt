@@ -23,7 +23,7 @@ STAGING_SUBDIR_TOOLCHAIN := staging_dir/toolchain-$(ARCH)$(ARCH_SUFFIX)_gcc-$(GC
 BUNDLER_PATH := $(subst $(space),:,$(filter-out $(TOPDIR)/%,$(subst :,$(space),$(PATH))))
 BUNDLER_COMMAND := PATH=$(BUNDLER_PATH) $(XARGS) $(SCRIPT_DIR)/bundle-libraries.sh $(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)
 
-EXCLUDE_DIRS:=*/ccache/* \
+EXCLUDE_DIRS:= \
 	*/stamp \
 	*/stampfiles \
 	*/man \
@@ -152,10 +152,7 @@ $(BIN_DIR)/$(SDK_NAME).tar.xz: clean
 		$(TOPDIR)/package/kernel/linux \
 		$(SDK_BUILD_DIR)/package/kernel/
 
-	-rm -rf \
-		$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/ccache \
-		$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_TARGET)/ccache \
-		$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_TOOLCHAIN)/ccache
+	-rm -rf $(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/.prereq-build
 
 	-rm -f $(SDK_BUILD_DIR)/feeds.conf.default
 	$(if $(BASE_FEED),echo "$(BASE_FEED)" > $(SDK_BUILD_DIR)/feeds.conf.default)
