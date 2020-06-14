@@ -43,9 +43,7 @@ define Device/UbiFit
 endef
 
 define Device/DniImage
-	KERNEL_SUFFIX := -fit-uImage.itb
-	KERNEL = kernel-bin | gzip | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb
-	KERNEL_NAME := Image
+	$(call Device/FitzImage)
 	NETGEAR_BOARD_ID :=
 	NETGEAR_HW_ID :=
 	IMAGES := factory.img sysupgrade.bin
@@ -377,6 +375,20 @@ define Device/engenius_emd1
 	IMAGE/factory.bin := qsdk-ipq-factory-nor | check-size
 endef
 TARGET_DEVICES += engenius_emd1
+
+define Device/engenius_emr3500
+	$(call Device/FitImage)
+	DEVICE_VENDOR := EnGenius
+	DEVICE_MODEL := EMR3500
+	DEVICE_DTS_CONFIG := config@4
+	SOC := qcom-ipq4018
+	KERNEL_SIZE := 4096k
+	IMAGE_SIZE := 30720k
+	IMAGES := sysupgrade.bin factory.bin
+	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
+	IMAGE/factory.bin := qsdk-ipq-factory-nor | check-size
+endef
+TARGET_DEVICES += engenius_emr3500
 
 define Device/engenius_ens620ext
 	$(call Device/FitImage)
