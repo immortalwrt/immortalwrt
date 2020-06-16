@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
 PKG_VERSION:=0.2.0
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cnsilvan/UnblockNeteaseMusic.git
@@ -44,7 +44,7 @@ define Build/Prepare
 endef
 
 define Build/Configure
-
+  patch -p1 -d $(BUILD_DIR)/$(PKG_NAME) <./patches/01-fix-endpoint.patch
 endef
 
 define Build/Compile
