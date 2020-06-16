@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
 PKG_VERSION:=0.2.0
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cnsilvan/UnblockNeteaseMusic.git
@@ -44,7 +44,7 @@ define Build/Prepare
 endef
 
 define Build/Configure
-
+  patch -p1 -d $(BUILD_DIR)/$(PKG_NAME) <./patches/01-fix-endpoint.patch
 endef
 
 define Build/Compile
@@ -61,7 +61,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/UnblockNeteaseMusic $(1)/usr/bin/UnblockNeteaseMusic
 	$(INSTALL_DIR) $(1)/usr/share/UnblockNeteaseMusicGo
 	$(CP) ./files/* $(1)/usr/share/UnblockNeteaseMusicGo/
-	
 endef
 $(eval $(call GoBinPackage,$(PKG_NAME)))
 $(eval $(call BuildPackage,$(PKG_NAME)))
