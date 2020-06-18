@@ -160,7 +160,7 @@
     fi
 
     if [ "$8" -eq 1 ]; then
-       if [ -z "$(grep "  ipv6: true" "$7")" ]; then
+       if [ -z "$(grep "^  ipv6: true" "$7")" ]; then
           if [ ! -z "$(grep "^ \{0,\}ipv6:" "$7")" ]; then
              sed -i "/^ \{0,\}ipv6:/c\  ipv6: true" "$7"
           else
@@ -168,7 +168,7 @@
           fi
        fi
     else
-       if [ -z "$(grep "  ipv6: false" "$7")" ]; then
+       if [ -z "$(grep "^  ipv6: false" "$7")" ]; then
           if [ ! -z "$(grep "^ \{0,\}ipv6:" "$7")" ]; then
              sed -i "/^ \{0,\}ipv6:/c\  ipv6: false" "$7"
           else
@@ -219,7 +219,7 @@
     fi
     
 #fake-ip-filter
-    sed -i '/##Custom fake-ip-filter##/,/##Custom fake-ip-filter END##/d' "$7" 2>/dev/null    
+    sed -i '/##Custom fake-ip-filter##/,/##Custom fake-ip-filter END##/d' "$7" 2>/dev/null
 	  if [ "$2" = "fake-ip" ]; then
       if [ ! -f "/etc/openclash/fake_filter.list" ] || [ ! -z "$(grep "config servers" /etc/config/openclash)" ]; then
          /usr/share/openclash/openclash_fake_filter.sh
