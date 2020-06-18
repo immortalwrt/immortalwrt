@@ -154,6 +154,7 @@ yml_servers_set()
    config_get "alpn" "$section" "alpn" ""
    config_get "http_path" "$section" "http_path" ""
    config_get "keep_alive" "$section" "keep_alive" ""
+   config_get "servername" "$section" "servername" ""
    
    if [ ! -z "$if_game_proxy" ] && [ "$if_game_proxy" != "$name" ] && [ "$if_game_proxy_type" = "proxy" ]; then
       return
@@ -294,14 +295,19 @@ cat >> "$SERVER_FILE" <<-EOF
   udp: $udp
 EOF
       fi
+      if [ ! -z "$skip_cert_verify" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  skip-cert-verify: $skip_cert_verify
+EOF
+      fi
       if [ ! -z "$tls" ]; then
 cat >> "$SERVER_FILE" <<-EOF
   tls: $tls
 EOF
       fi
-      if [ ! -z "$skip_cert_verify" ]; then
+      if [ ! -z "$servername" ] && [ "$tls" = "true" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-  skip-cert-verify: $skip_cert_verify
+  servername: $servername
 EOF
       fi
       if [ "$obfs_vmess" != "none" ]; then
@@ -552,17 +558,6 @@ cat >> "$SERVER_FILE" <<-EOF
   - Proxy
   - DIRECT
   - Domestic
-- name: AdBlock
-  type: select
-  proxies:
-  - REJECT
-  - DIRECT
-  - Proxy
-- name: Apple
-  type: select
-  proxies:
-  - DIRECT
-  - Proxy
 - name: AsianTV
   type: select
   proxies:
@@ -594,7 +589,99 @@ ${UCI_SET}rule_source="ConnersHua"
 ${UCI_SET}GlobalTV="GlobalTV"
 ${UCI_SET}AsianTV="AsianTV"
 ${UCI_SET}Proxy="Proxy"
-${UCI_SET}Apple="Apple"
+${UCI_SET}Domestic="Domestic"
+${UCI_SET}Others="Others"
+[ "$config_auto_update" -eq 1 ] && [ "$new_servers_group_set" -eq 1 ] && {
+	${UCI_SET}servers_update="1"
+	${UCI_DEL_LIST}="Auto - UrlTest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - UrlTest" >/dev/null 2>&1
+	${UCI_DEL_LIST}="Proxy" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Proxy" >/dev/null 2>&1
+	${UCI_DEL_LIST}="AsianTV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="AsianTV" >/dev/null 2>&1
+	${UCI_DEL_LIST}="GlobalTV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="GlobalTV" >/dev/null 2>&1
+}
+elif [ "$rule_sources" = "ConnersHua_provider" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
+echo "使用ConnersHua(规则集)规则创建中..." >$START_LOG
+echo "proxy-groups:" >>$SERVER_FILE
+cat >> "$SERVER_FILE" <<-EOF
+- name: Auto - UrlTest
+  type: url-test
+EOF
+if [ -f "/tmp/Proxy_Server" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  proxies:
+EOF
+fi
+cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
+if [ -f "/tmp/Proxy_Provider" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  use:
+EOF
+fi
+cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
+cat >> "$SERVER_FILE" <<-EOF
+  url: http://www.gstatic.com/generate_204
+  interval: "600"
+- name: Proxy
+  type: select
+  proxies:
+  - Auto - UrlTest
+  - DIRECT
+EOF
+cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
+if [ -f "/tmp/Proxy_Provider" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  use:
+EOF
+fi
+cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
+cat >> "$SERVER_FILE" <<-EOF
+- name: Domestic
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Others
+  type: select
+  proxies:
+  - Proxy
+  - DIRECT
+  - Domestic
+- name: AdBlock
+  type: select
+  proxies:
+  - REJECT
+  - DIRECT
+  - Proxy
+- name: AsianTV
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+EOF
+cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
+if [ -f "/tmp/Proxy_Provider" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  use:
+EOF
+fi
+cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
+cat >> "$SERVER_FILE" <<-EOF
+- name: GlobalTV
+  type: select
+  proxies:
+  - Proxy
+  - DIRECT
+EOF
+cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
+if [ -f "/tmp/Proxy_Provider" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  use:
+EOF
+fi
+cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
+${UCI_SET}rule_source="ConnersHua_provider"
+${UCI_SET}GlobalTV="GlobalTV"
+${UCI_SET}AsianTV="AsianTV"
+${UCI_SET}Proxy="Proxy"
 ${UCI_SET}AdBlock="AdBlock"
 ${UCI_SET}Domestic="Domestic"
 ${UCI_SET}Others="Others"
