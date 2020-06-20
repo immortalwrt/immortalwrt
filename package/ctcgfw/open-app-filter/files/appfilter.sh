@@ -64,6 +64,25 @@ load_rule()
     config_apply "$json_str"
     json_cleanup
 }
-
+load_mac_list()
+{
+    json_init
+    config_load appfilter
+    json_add_int "op" 4
+    json_add_object "data"
+    json_add_array "mac_list"
+	config_get appid_list "user" "users"
+	echo "appid list=$appid_list"
+	for appid in $appid_list:
+	do
+		echo "appid=$appid"
+		json_add_string "" $appid
+	done
+    json_str=`json_dump`
+    config_apply "$json_str"
+	echo "json str=$json_str"
+    json_cleanup
+}
 clean_rule
 load_rule
+load_mac_list

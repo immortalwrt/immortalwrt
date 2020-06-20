@@ -22,7 +22,7 @@ Signed-off-by: Sven Eckelmann <sven@narfation.org>
 
 --- a/drivers/net/ethernet/qualcomm/essedma/edma_axi.c
 +++ b/drivers/net/ethernet/qualcomm/essedma/edma_axi.c
-@@ -972,17 +972,14 @@ static int edma_axi_probe(struct platfor
+@@ -977,17 +977,14 @@ static int edma_axi_probe(struct platfor
  		edma_netdev[i]->features = NETIF_F_HW_CSUM | NETIF_F_RXCSUM
  				      | NETIF_F_HW_VLAN_CTAG_TX
  				      | NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_SG |

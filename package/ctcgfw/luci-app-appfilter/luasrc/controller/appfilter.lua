@@ -24,10 +24,8 @@ function get_hostname_by_mac(dst_mac)
             break
         end
         local ts, mac, ip, name, duid = ln:match("^(%d+) (%S+) (%S+) (%S+) (%S+)")
-        print(ln)
         if  dst_mac == mac then
-            print("match mac", mac, "hostname=", name);
-			fd:close()
+            fd:close()
             return name
         end
     end

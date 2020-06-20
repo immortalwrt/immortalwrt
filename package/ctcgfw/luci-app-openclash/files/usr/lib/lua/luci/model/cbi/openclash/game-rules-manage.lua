@@ -15,16 +15,23 @@ m.reset = false
 m.submit = false
 
 local t = {
-    {Apply}
+    {Refresh, Apply}
 }
 
 a = m:section(Table, t)
 
-o = a:option(Button, "Apply")
-o.inputtitle = translate("Back Configurations")
+o = a:option(Button, "Refresh")
+o.inputtitle = translate("Refresh Page")
 o.inputstyle = "apply"
 o.write = function()
-  HTTP.redirect(DISP.build_url("admin", "services", "openclash", "game-settings"))
+  HTTP.redirect(DISP.build_url("admin", "services", "openclash", "game-rules-manage"))
+end
+
+o = a:option(Button, "Apply")
+o.inputtitle = translate("Back Configurations")
+o.inputstyle = "reset"
+o.write = function()
+  HTTP.redirect(DISP.build_url("admin", "services", "openclash", "rule-providers-settings"))
 end
 
 if not NXFS.access("/tmp/rules_name") then
@@ -74,7 +81,7 @@ fm=tb:option(DummyValue,"filename",translate("File Name"))
 mt=tb:option(DummyValue,"mtime",translate("Update Time"))
 
 btnis=tb:option(DummyValue,"filename",translate("Download Rule"))
-btnis.template="openclash/download_game_rule"
+btnis.template="openclash/download_rule"
 
 btnrm=tb:option(Button,"remove",translate("Remove"))
 btnrm.render=function(e,t,a)

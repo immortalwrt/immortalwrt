@@ -38,6 +38,34 @@ cdns = s:option(Flag, "culan", translate("Enable Lan DNS"))
 cdns.default = 1
 cdns.description = translate("Enabling will set custom DNS Servers for Lan")
 
+y = s:option(ListValue, "access_control", translate("Access Control"))
+y:value("0", translate("disabled"))
+y:value("1", translate("Whitelist IPs"))
+y:value("2", translate("Blacklist Ips"))
+y.description = translate("Whitelist or Blacklist IPs to use Clash ( Only support enhanced-mode: redir-host )")
+
+
+o = s:option(DynamicList, "proxy_lan_ips", translate("Proxy Lan List"))
+o.datatype = "ipaddr"
+o.description = translate("Only selected IPs will be proxied")
+luci.ip.neighbors({ family = 4 }, function(entry)
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
+end)
+o:depends("access_control", 1)
+
+
+o = s:option(DynamicList, "reject_lan_ips", translate("Bypass Lan List"))
+o.datatype = "ipaddr"
+o.description = translate("Selected IPs will not be proxied")
+luci.ip.neighbors({ family = 4 }, function(entry)
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
+end)
+o:depends("access_control", 2)
+
 
 dns = s:option(DynamicList, "landns", translate("Lan DNS servers"))
 dns.description = translate("Set custom DNS Servers for Lan")

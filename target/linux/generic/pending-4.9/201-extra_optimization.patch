@@ -14,7 +14,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/Makefile
 +++ b/Makefile
-@@ -658,9 +658,9 @@ KBUILD_CFLAGS	+= $(call cc-option,-fdata
+@@ -654,9 +654,9 @@ KBUILD_CFLAGS	+= $(call cc-option,-fdata
  endif
  
  ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
