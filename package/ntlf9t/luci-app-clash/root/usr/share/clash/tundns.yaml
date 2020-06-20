@@ -3,6 +3,10 @@ experimental:
   # interface-name: eth0
 tun:
  enable: true
+ stack: system # or gvisor
+# dns-hijack:
+#  - 8.8.8.8:53
+#  - tcp://8.8.8.8:53
  device-url: dev://utun
  dns-listen: 0.0.0.0:53
 

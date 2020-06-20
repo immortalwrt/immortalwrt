@@ -1063,3 +1063,69 @@ msgstr "无效格式"
 
 msgid "Operation Aborted"
 msgstr "用户取消"
+
+msgid "Standard Config"
+msgstr "标准配置"
+
+msgid "Provider Config"
+msgstr "集配置"
+
+msgid "Select Config"
+msgstr "使用配置"
+
+msgid "Provider Behavior"
+msgstr "集行为"
+
+msgid "Edit Rule Provider"
+msgstr "编辑规则集"
+
+msgid "Rule Provider Name"
+msgstr "规则集别名（请勿重名)"
+
+msgid "Edit Rules"
+msgstr "编辑规则"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Provider Config"
+msgstr "集配置"
+
+msgid "Rule Provider"
+msgstr "规则集"
+
+msgid "Use Proxy Provider"
+msgstr "启用代理集"
+
+msgid "Use Rule Provider"
+msgstr "启用规则集"
+
+msgid "Use Rules"
+msgstr "启用规则"
+
+msgid "Delete Rule Provider"
+msgstr "删除规则集"
+
+msgid "Delete Rules"
+msgstr "删除规则"
+
+msgid "Use Script"
+msgstr "使用脚本"
+
+msgid "Script"
+msgstr "脚本"
+
+msgid "SCRIPT"
+msgstr "脚本模式"
+
+msgid "NB: Set Clash Mode to Script if want to use"
+msgstr "注意：如果要使用，请将Clash模式,设置为脚本"
+
+msgid "Whitelist IPs"
+msgstr "启用白名单IP"
+
+msgid "Blacklist Ips"
+msgstr "启用黑名单IP"
+
+msgid "Whitelist or Blacklist IPs to use Clash ( Only support enhanced-mode: redir-host )"
+msgstr "启用白名单或黑名单IP ( 仅支持enhanced-mode: redir-host )"

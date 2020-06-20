@@ -32,11 +32,354 @@ config clash 'config'
 	option ping_enable '1'
 	option dnscache '0'
 
+
+config proxyprovider
+	option type 'http'
+	option name 'ABCD'
+	option provider_interval '3600'
+	option health_check 'true'
+	option health_check_url 'http://www.gstatic.com/generate_204'
+	option health_check_interval '300'
+	list groups 'Global'
+	option provider_url 'https://www.abcd.net/link/trFxWDLxIKtbQdsZ?list=clash'
 	
-config addtype
-	option type 'IP-CIDR'
-	option pgroup 'REJECT'
-	option ipaaddr '198.18.0.1/16'
-	option res '1'
 	
 
+config ruleprovider
+	option behavior 'domain'
+	option type 'http'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/AppleTV.list'
+	option interval '3600'
+	option name 'AppleTV'
+
+config ruleprovider
+	option name 'Chinesemedia'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/Chinesemedia.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Chinesemediaip'
+	option type 'http'
+	option behavior 'ipcidr'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/Chinesemediaip.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Disney'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/Disney.list'
+	option interval '3600'
+
+config ruleprovider
+	option behavior 'domain'
+	option name 'GlobalMedia'
+	option type 'http'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/GlobalMedia.list'
+	option interval '3600'
+
+config ruleprovider
+	option behavior 'ipcidr'
+	option name 'GlobalMediaip'
+	option type 'http'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/GlobalMediaip.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'HBO'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/HBO.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'HMTmedia'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/HMTmedia.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Netflix'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/Netflix.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'NetflixIP'
+	option type 'http'
+	option behavior 'ipcidr'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/NetflixIP.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'YouTube'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/YouTube.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Youtube Music'
+	option type 'http'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/MEDIA/Youtube%20Music.list'
+	option interval '3600'
+	option behavior 'domain'
+
+config ruleprovider
+	option name 'AppleAP'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/AppleAP.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'AppleAPIP'
+	option type 'http'
+	option behavior 'ipcidr'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/AppleAPIP.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'AppleCN'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/AppleCN.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Digital'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/Digital.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Microsoft'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/Microsoft.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Paypal'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/Paypal.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Speedtest'
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/Speedtest.list'
+	option interval '3600'
+
+config ruleprovider
+	option name 'Telegram'
+	option type 'http'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/Telegram.list'
+	option interval '3600'
+	option behavior 'domain'
+
+config ruleprovider
+	option name 'TelegramIP'
+	option type 'http'
+	option behavior 'ipcidr'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/TelegramIP.list'
+	option interval '3600'
+
+config ruleprovider
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/gameline.list'
+	option interval '3600'
+	option name 'Game'
+
+config ruleprovider
+	option type 'http'
+	option behavior 'ipcidr'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/wyy%20ip.list'
+	option interval '3600'
+	option name 'NeteaseIp'
+
+config ruleprovider
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/SERVICES/wyy.list'
+	option interval '3600'
+	option name 'Netease'
+
+config ruleprovider
+	option type 'http'
+	option behavior 'domain'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/ADS/AdBlock.list'
+	option interval '3600'
+	option name 'Adblock'
+
+config ruleprovider
+	option type 'http'
+	option behavior 'ipcidr'
+	option url 'https://raw.githubusercontent.com/frainzy1477/clashruleset/master/ADS/AdBlockIP.list'
+	option interval '3600'
+	option name 'AdblockIP'
+	
+	
+config rules
+	option type 'RULE-SET'
+	option rulegroups 'Global'
+	option rulename 'AppleTV'
+
+config rules
+	option type 'RULE-SET'
+	option rulegroups 'Global'
+	option rulename 'Chinesemedia'
+
+config rules
+	option type 'RULE-SET'
+	option rulegroups 'Global'
+	option rulename 'Chinesemediaip'
+
+config rules
+	option type 'RULE-SET'
+	option rulegroups 'Global'
+	option rulename 'Disney'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'GlobalMedia'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'GlobalMediaip'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'HBO'
+	option rulegroups 'Global'
+
+config rules
+	option rulegroups 'Global'
+	option type 'RULE-SET'
+	option rulename 'HMTmedia'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Netflix'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'NetflixIP'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'YouTube'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Youtube Music'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'AppleAP'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'AppleAPIP'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'AppleCN'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Digital'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Microsoft'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Paypal'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Speedtest'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Telegram'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'TelegramIP'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Game'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'NeteaseIp'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Netease'
+	option rulegroups 'Global'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'Adblock'
+	option rulegroups 'REJECT'
+
+config rules
+	option type 'RULE-SET'
+	option rulename 'AdblockIP'
+	option rulegroups 'REJECT'
+
+config rules
+	option type 'GEOIP'
+	option rulenamee 'CN'
+	option res '0'
+	option rulegroups 'DIRECT'
+	option rulename 'CN'
+
+config rules
+	option type 'MATCH'
+	option rulegroups 'Others'
+
+config pgroups
+	option type 'select'
+	option name 'Others'
+	option old_name_cfg 'Others'
+	option old_name 'Others'
+	list other_group 'Global'
+	list other_group 'DIRECT'
+	list other_group 'REJECT'
+
+config pgroups
+	option type 'select'
+	option old_name_cfg 'Global'
+	option old_name 'Global'
+	option name 'Global'

@@ -37,12 +37,12 @@ config_type=$(uci get clash.config.config_type 2>/dev/null)
 	[ -z "$(grep -w "/usr/share/clash/kill_watchdog.sh" $CRON_FILE)" ] && echo "*/1 * * * * /usr/share/clash/kill_watchdog.sh" >> $CRON_FILE
 	clear=$(uci get clash.config.auto_clear_log 2>/dev/null)
 	if [ "${clear}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "* */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/clash.txt" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.clear_time 2>/dev/null) * * * echo '' >/usr/share/clash/clash.txt" >> $CRON_FILE
 	fi
 	
 	auto=$(uci get clash.config.auto_update 2>/dev/null)
 	if [ "${auto}" -eq 1 ]; then
-	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "* */$(uci get clash.config.auto_update_time 2>/dev/null) * * * bash /usr/share/clash/update_all.sh >/usr/share/clash/clash.txt 2>&1 &" >> $CRON_FILE
+	[ -z "$(grep -w "/usr/share/clash/update_all.sh" $CRON_FILE)" ] && echo "0 */$(uci get clash.config.auto_update_time 2>/dev/null) * * * bash /usr/share/clash/update_all.sh >/usr/share/clash/clash.txt 2>&1 &" >> $CRON_FILE
 	fi
 	
 	auto_geoip=$(uci get clash.config.auto_update_geoip 2>/dev/null)
@@ -217,111 +217,38 @@ rules(){
 
 		dns_port=$(grep listen: $CONFIG_YAML |awk -F ':' '{print $3}' |tr -cd "[0-9]")
 		redir_port=$(uci get clash.config.redir_port 2>/dev/null)
-		fake_ip_range=$(uci get clash.config.fake_ip_range 2>/dev/null)		
+		#fake_ip_range=$(uci get clash.config.fake_ip_range 2>/dev/null)		
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		core=$(uci get clash.config.core 2>/dev/null)
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
-		lan_ip=$(uci get network.lan.ipaddr 2>/dev/null |awk -F '/' '{print $1}' 2>/dev/null)
+		#lan_ip=$(uci get network.lan.ipaddr 2>/dev/null |awk -F '/' '{print $1}' 2>/dev/null)
 		wan=$(ifconfig | grep 'inet addr' | awk '{print $2}' | cut -d: -f2 2>/dev/null)
 		ip6=$(ifconfig | grep 'inet6 addr' | awk '{print $3}' 2>/dev/null)
 		enable_udp=$(uci get clash.config.enable_udp 2>/dev/null)
-
+		fake_ip=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
 		PROXY_FWMARK="0x162"
 		PROXY_ROUTE_TABLE="0x162"
 		PROXY_BYPASS_USER="root"
-
+		dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
 		
-		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
-			iptables -t nat -N clash   	
-			iptables -t nat -A clash -d 0.0.0.0/8 -j RETURN
-			iptables -t nat -A clash -d 10.0.0.0/8 -j RETURN
-			iptables -t nat -A clash -d 127.0.0.0/8 -j RETURN
-			iptables -t nat -A clash -d 169.254.0.0/16 -j RETURN
-			iptables -t nat -A clash -d 172.16.0.0/12 -j RETURN
-			iptables -t nat -A clash -d 192.168.0.0/16 -j RETURN
-			iptables -t nat -A clash -d 224.0.0.0/4 -j RETURN
-			iptables -t nat -A clash -d 240.0.0.0/4 -j RETURN
-			iptables -t nat -A clash -d "${lan_ip}" -j RETURN
-            if [ ! -z "${wan}" ]; then
-                for wan_ip in $wan; do
-                      iptables -t mangle -A clash -d "$wan_ip" -j RETURN 2>/dev/null
-                done
-            fi
-			
-			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
-            iptables -t nat -A PREROUTING -p tcp -j clash
-				
-				
-				
-			if [ "${enable_udp}" -eq 1 ]; then	
-			
-	        ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789
-            ip route add local default dev lo table "$PROXY_ROUTE_TABLE"
-			
-            iptables -t mangle -N clash
-            iptables -t mangle -A clash -d 0.0.0.0/8 -j RETURN
-            iptables -t mangle -A clash -d 10.0.0.0/8 -j RETURN
-            iptables -t mangle -A clash -d 127.0.0.0/8 -j RETURN
-            iptables -t mangle -A clash -d 169.254.0.0/16 -j RETURN
-            iptables -t mangle -A clash -d 172.16.0.0/12 -j RETURN
-            iptables -t mangle -A clash -d 192.168.0.0/16 -j RETURN
-            iptables -t mangle -A clash -d 224.0.0.0/4 -j RETURN
-            iptables -t mangle -A clash -d 240.0.0.0/4 -j RETURN
-            if [ ! -z "${wan}" ]; then
-                for wan_ip in $wan; do
-                      iptables -t mangle -A clash -d "$wan_ip" -j RETURN 2>/dev/null
-                done
-            fi
-   
-            iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark "$PROXY_FWMARK"
-            iptables -t mangle -A PREROUTING -p udp -j clash
-
-			fi
-								
-			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 		
-			if [ ! -z "${fake_ip_range}" ];then
-				if [ "${enable_udp}" -eq 1 ]; then
-				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
-                      iptables -t mangle -A OUTPUT -p udp -d $fake_ip_range -j MARK --set-mark "$PROXY_FWMARK"
-                fi
-			else
-				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "${redir_port}"
-				if [ "${enable_udp}" -eq 1 ]; then
-                      iptables -t mangle -A OUTPUT -p udp -d 198.18.0.1/16 -j MARK --set-mark "$PROXY_FWMARK"
-                fi
-			fi
+		redir_host=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+		if [ "$redir_host" == "redir-host" ];then
+		   if [ "$(uci get clash.config.access_control 2>/dev/null)" = "1" ] && [ -n "$(uci get clash.config.proxy_lan_ips 2>/dev/null)" ]; then
+				proxy_ips=$(uci get clash.config.proxy_lan_ips)
+				ipset -! -R <<-EOF
+					create proxy_lan hash:net
+					$(for ip in $proxy_ips; do echo "add proxy_lan $ip"; done)
+				EOF
+		   elif [ "$(uci get clash.config.access_control 2>/dev/null)" = "2" ] && [ -n "$(uci get clash.config.reject_lan_ips 2>/dev/null)" ]; then
+				reject_ips=$(uci get clash.config.reject_lan_ips)
+				ipset -! -R <<-EOF
+					create reject_lan hash:net
+					$(for ip in $reject_ips; do echo "add reject_lan $ip"; done)
+				EOF
 			
-			
-			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
-				ip6tables -t nat -N clash_ipv6
-				ip6tables -t nat -A clash_ipv6 -p tcp -j REDIRECT --to-ports "${redir_port}"
-				ip6tables -t nat -A PREROUTING -p tcp -j clash_ipv6
-				
-				
-				if [ "${enable_udp}" -eq 1 ]; then
-                      ip6tables -t mangle -N clash
-                      if [ ! -z "${ip6}" ]; then
-                         for lan_ip6 in $ip6; do
-                            if [ "$enable_udp" -eq 1 ]; then
-                               ip6tables -t mangle -A clash -d "$lan_ip6" -j RETURN 2>/dev/null
-                            fi
-                         done
-                      fi
-                      ip6tables -t mangle -A clash -p udp -j TPROXY --on-port "$proxy_port" --tproxy-mark "$PROXY_FWMARK"
-                      ip6tables -t mangle -A PREROUTING -p udp -j clash
-                fi
-				
-			fi
-			
-		elif [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
-			
-			TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
-			if [ -z $TUN_DEVICE ];then
-			TUN_DEVICE_NAME="clash0"
-			else
-			TUN_DEVICE_NAME=$TUN_DEVICE
-			fi
+		   fi
+		fi
 		
 			ipset create localnetwork hash:net
 			ipset add localnetwork 127.0.0.0/8
@@ -331,45 +258,147 @@ rules(){
 			ipset add localnetwork 224.0.0.0/4
 			ipset add localnetwork 240.0.0.0/4
 			ipset add localnetwork 172.16.0.0/12
-			ipset add localnetwork "${lan_ip}"
-			if [ ! -z "${wan}" ]; then
-                ipset add localnetwork "${wan}"
-            fi
+		    if [ -n "$wan" ]; then
+			  for wan_ip4s in $wan; do
+				 ipset add localnetwork "$wan_ip4s" 2>/dev/null
+			  done
+		    fi			
+
+		if [ "$(iptables -t nat -nL PREROUTING --line-number |grep "udp dpt:53" |grep "0.0.0.0/0 \{0,\}0.0.0.0/0" |wc -l)" -gt 1 ] && [ "$dnsforwader" -eq "1" ]; then
+		   pre_lines=$(iptables -nvL PREROUTING -t nat |sed 1,2d |sed -n '/0.0.0.0\/0 \{0,\}0.0.0.0\/0 \{0,\}udp dpt:53/=' 2>/dev/null |sort -rn)
+		   for pre_line in $pre_lines; do
+			  iptables -t nat -D PREROUTING "$pre_line" >/dev/null 2>&1
+		   done
+		   iptables -t nat -A PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53 >/dev/null 2>&1
+		   sleep 2
+		fi
+		
+		if [ -z "$(uci get firewall.clash 2>/dev/null)" ] || [ -z "$(uci get ucitrack.@clash[-1].init 2>/dev/null)" ]; then
+		   uci delete ucitrack.@clash[-1] >/dev/null 2>&1
+		   uci add ucitrack clash >/dev/null 2>&1
+		   uci set ucitrack.@clash[-1].init=clash >/dev/null 2>&1
+		   uci commit ucitrack >/dev/null 2>&1
+		   uci delete firewall.clash >/dev/null 2>&1
+		   uci set firewall.clash=include >/dev/null 2>&1
+		   uci set firewall.clash.type=script >/dev/null 2>&1
+		   uci set firewall.clash.path=/var/etc/clash.include >/dev/null 2>&1
+		   uci set firewall.clash.reload=1 >/dev/null 2>&1
+		fi		
+			
+		if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
+				uci set firewall.@defaults[0].forward=ACCEPT >/dev/null 2>&1
+				uci commit firewall >/dev/null 2>&1
+				/etc/init.d/firewall restart >/dev/null 2>&1
+		fi
+	
+		mkdir -p /var/etc
+		cat > "/var/etc/clash.include" <<-EOF
+		/etc/init.d/clash reload >/dev/null 2>&1
+		EOF
+			
+		if [ "${core}" -eq 1 ] || [ "${core}" -eq 2 ];then
+		
+			iptables -t nat -N clash
+			iptables -t nat -F clash
+			iptables -t nat -A clash -m set --match-set localnetwork dst -j RETURN
+			iptables -t nat -A clash -m set --match-set reject_lan src -j RETURN
+			iptables -t nat -A clash -m set ! --match-set proxy_lan src -j RETURN		
+			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
+			iptables -t nat -I PREROUTING -p tcp -d 8.8.8.8 -j REDIRECT --to-ports "${redir_port}"
+			iptables -t nat -I PREROUTING -p tcp -d 8.8.4.4 -j REDIRECT --to-ports "${redir_port}"			
+            iptables -t nat -A PREROUTING -p tcp -j clash
+				
+				
+				
+			if [ "${enable_udp}" -eq 1 ]; then				
+				ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
+				ip route add local 0.0.0.0/0 dev lo table "$PROXY_ROUTE_TABLE"			
+				iptables -t mangle -N clash
+				iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
+				iptables -t mangle -A clash -m set --match-set reject_lan src -j RETURN
+				iptables -t mangle -A clash -m set ! --match-set proxy_lan src -j RETURN
+				iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark "$PROXY_FWMARK"
+				iptables -t mangle -A PREROUTING -p udp -j clash
+			fi
+				
+			
+		   if [ "${fake_ip}" == "fake-ip" ];then
+			  iptables -t nat -N clash_output
+			  iptables -t nat -F clash_output
+			  iptables -t nat -A clash_output -m set --match-set localnetwork dst -j RETURN
+			  
+			  fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
+			  if [ ! -z "${fake_ip_range}" ];then
+				iptables -t nat -A clash_output -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
+			  else
+				iptables -t nat -A clash_output -p tcp -d 198.18.0.0/16 -j REDIRECT --to-ports "${redir_port}"
+			  fi	
+			  iptables -t nat -A OUTPUT -p tcp -j clash_output
+		   fi
+   
+   
+			if [ "${ipv6}" -eq 1 ]; then	
+					  ip6tables -t nat -N clash
+					  if [ -n "${ip6}" ]; then
+						 for lan_ip6s in $ip6; do
+							ip6tables -t nat -A clash -d "$lan_ip6s" -j RETURN 2>/dev/null
+						 done
+					  fi
+					  ip6tables -t nat -A clash -p tcp -j REDIRECT --to-ports "$proxy_port"
+					  ip6tables -t nat -A PREROUTING -p tcp -j clash
+			fi	
+			
+			
+			
+		elif [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
+			
+			TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
+			if [ -z $TUN_DEVICE ];then
+			TUN_DEVICE_NAME="clash0"
+			else
+			TUN_DEVICE_NAME=$TUN_DEVICE
+			fi
+			
 			if [ "${core}" -eq 3 ];then
-			ip tuntap add user root mode tun $TUN_DEVICE_NAME
-			ip link set $TUN_DEVICE_NAME up
-			ip address replace 198.18.0.0/16 dev $TUN_DEVICE_NAME
-			ip route replace default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE"
-			
-			nat=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/tcp dpt:53/=' | sort -r)
-			for natx in $nat; do
-				iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
-			done
-			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
-			
+				ip tuntap add user root mode tun $TUN_DEVICE_NAME
+				ip link set $TUN_DEVICE_NAME up
+				ip route replace default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE"
 			elif [ "${core}" -eq 4 ];then
-			ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
+			  TUN_WAIT=0
+			  while ( [ -n "$(pidof clash)" ] && [ -z "$(ip route list |grep utun)" ] && [ "$TUN_WAIT" -le 3 ] )
+			  do
+				 TUN_WAIT=$(expr "$TUN_WAIT" + 1)
+				 sleep 2
+			  done
+			  ip route replace default dev utun table "$PROXY_ROUTE_TABLE"
 			fi
 
-            ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
-            
+            ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"      
             iptables -t mangle -N clash
             iptables -t mangle -F clash
-            iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
             iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
-            iptables -t mangle -I OUTPUT -j clash
-            iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"	
-			nat=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/tcp dpt:53/=' | sort -r)
-			for natx in $nat; do
-				iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
-			done			
-			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
-						
-			if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
-			ip6tables -t mangle -I PREROUTING -j MARK --set-mark "$PROXY_FWMARK"		
+			if [ "${fake_ip}" == "fake-ip" ];then
+			iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
 			fi
+			
+            iptables -t mangle -I OUTPUT -j clash
+            iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"
+			iptables -t mangle -I PREROUTING -m set --match-set reject_lan src -j RETURN >/dev/null 2>&1
+			iptables -t mangle -I PREROUTING -m set ! --match-set proxy_lan src -j RETURN >/dev/null 2>&1			
+			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
 
+			if [ "${fake_ip}" == "fake-ip" ];then
+			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
+			if [ ! -z "${fake_ip_range}" ];then
+				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
+			else
+				iptables -t nat -A OUTPUT -p tcp -d 198.18.0.1/16 -j REDIRECT --to-ports "${redir_port}"
+			fi
+			fi
+			
+			
 		fi
+		
 #=========================================================================================================================== 
 }	 
 
@@ -502,18 +531,32 @@ elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 		echo "clash Tun core not found in /etc/clash/clashtun/clash" >> $REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/etc/clash/clashtun/clash, clash Tun内核" >> /usr/share/clash/clash.txt
-		echo "找不到/usr/bin/clash, clash Tun内核" >> $REAL_LOG	
+		echo "找不到/etc/clash/clashtun/clash, clash Tun内核" >> $REAL_LOG	
 	fi	
 	sleep 1
 	echo "Clash for OpenWRT" >$REAL_LOG
 	exit 0
+elif  [ "${core}" -eq 4 ] && [ ! -f /etc/clash/dtun/clash ]; then
+	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clash Tun core not found in /etc/clash/dtun/clash  " >> /usr/share/clash/clash.txt
+		echo "clash Tun core not found in /etc/clash/dtun/clash" >> $REAL_LOG
+	elif [ "${lang}" == "zh_cn" ];then
+		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/usr/bin/clash clash Tun" >> /usr/share/clash/clash.txt
+		echo "找不到/etc/clash/dtun/clash,clash Tun" >> $REAL_LOG		
+	fi
+
+	echo "Clash for OpenWRT" >$REAL_LOG
+	exit 0	
 else
 if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 0 ] ; then
 
 	check >/dev/null 2>&1
-	
+
+	custom_list >/dev/null 2>&1
+
    	yml_change >/dev/null 2>&1
 	
+
 	checktype=$(grep -c "type: ssr" /etc/clash/config.yaml 2>/dev/null)
 	if [ "${checktype}" -gt 0 ] && [ "${core}" -ne 2 ]; then
 	 	
@@ -522,6 +565,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		elif [ "${lang}" == "zh_cn" ];then
 			echo "Clash内核不支持你的配置，改用Clashr内核" >$REAL_LOG
 		fi
+		remove_mark >/dev/null 2>&1
 		sleep 1
 		echo "Clash for OpenWRT" >$REAL_LOG
 		exit 0
@@ -555,17 +599,52 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		elif [ "${lang}" == "zh_cn" ];then
 			echo "找不到config.yaml" >$REAL_LOG
 		fi	
+		remove_mark >/dev/null 2>&1
 		sleep 1
 		echo "Clash for OpenWRT" >$REAL_LOG		
 		exit 0
 	fi
-
+        
 	yml_dns_change >/dev/null 2>&1
 	
 	game_rules >/dev/null 2>&1
 	
     ip_rules >/dev/null 2>&1
 	
+	if [ ! -z "$(egrep '^ {0,}rule-providers:' "/etc/clash/config.yaml")" ] && [ "${core}" -ne 4 ];then
+	
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Your Current Config only support Clash Core(dtun)" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "你在使用配置不支持Clash内核，仅支持Clash(dtun)h内核" >$REAL_LOG
+		fi
+		remove_mark >/dev/null 2>&1
+		sleep 1
+		echo "Clash for OpenWRT" >$REAL_LOG		
+		exit 0		
+		
+	fi
+	
+	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "${core}" -ne 4 ];then
+	
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Your Current Config only support Clash Core(dtun)" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "你在使用配置不支持Clash内核，仅支持Clash(dtun)h内核" >$REAL_LOG
+		fi
+		remove_mark >/dev/null 2>&1
+		sleep 1
+		echo "Clash for OpenWRT" >$REAL_LOG		
+		exit 0		
+		
+	fi
+
+	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.p_mode 2>/dev/null)" != "Script" ];then
+		uci set clash.config.p_mode="Script"&& uci commit clash
+	elif [ "$(uci get clash.config.p_mode )" == "Script" ] && [ -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ];then
+		uci set clash.config.p_mode="Rule" && uci commit clash
+	fi
+
     if [ "${core}" -eq 1 ];then
         	nohup $CLASH -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
@@ -609,15 +688,8 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		echo "设置 Clash iptables" >$REAL_LOG
 	fi
 
-   	if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
-       		uci set firewall.@defaults[0].forward=ACCEPT >/dev/null 2>&1
-       		uci commit firewall >/dev/null 2>&1
-       		/etc/init.d/firewall restart >/dev/null 2>&1
-    fi
 
 	rules >/dev/null 2>&1
-
-	custom_list >/dev/null 2>&1
 	
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "Restarting Dnsmasq " >$REAL_LOG 
@@ -650,6 +722,12 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		sleep 1
 		echo "Clash for OpenWRT" >$REAL_LOG
 	fi
+	if ! pidof clash >/dev/null; then
+      		remove_mark 2>/dev/null
+      		kill -9 `pidof clash|sed "s/$//g"` 2>/dev/null
+	  	sleep 1
+	  	echo "Clash for OpenWRT" >$REAL_LOG
+    fi
 else
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S") -  problem with config.yaml,  config.yaml is either empty or not found " >> /usr/share/clash/clash.txt
@@ -682,7 +760,8 @@ fi
 
 
 remove_mark(){
-
+		rm -rf /var/etc/clash.include 2>/dev/null
+		
 		core=$(uci get clash.config.core 2>/dev/null)
 		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
 		dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
@@ -690,18 +769,9 @@ remove_mark(){
 		PROXY_ROUTE_TABLE="0x162" 2>/dev/null
 
 
-		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
-		ip6tables -t nat -F clash_ipv6 2>/dev/null1 && ip6tables -t nat -X clash_ipv6 2>/dev/null		
-		mangle_indexs=$(ip6tables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash_ipv6/=' | sort -r)
-		for mangle_index in $mangle_indexs; do
-			ip6tables -t nat -D PREROUTING $mangle_index 2>/dev/null
-		done
-		fi
+    	ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
+    	ip route del local 0.0.0.0/0  dev lo table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
 
-    	ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789 >/dev/null 2>&1
-    	ip route del local default dev lo table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
-
-		
 		
 		TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 		if [ -z $TUN_DEVICE ];then
@@ -714,8 +784,9 @@ remove_mark(){
 		ip tuntap del $TUN_DEVICE_NAME mode tun 2>/dev/null
 		ip route del default dev $TUN_DEVICE_NAME table "$PROXY_ROUTE_TABLE" 2>/dev/null
 		fi
+		ip route del default dev utun table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
 		#ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" 2>/dev/null
-		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" pref 789 >/dev/null 2>&1
+		ip rule del fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
 
 
 		mangle=$(iptables -nvL OUTPUT -t mangle | sed 1,2d | sed -n '/clash/=' | sort -r)
@@ -727,50 +798,65 @@ remove_mark(){
 		for prer in $pre; do
 			iptables -t mangle -D PREROUTING $prer 2>/dev/null
 		done
-		
+
+	   pre_lines=$(iptables -nvL PREROUTING -t nat |sed 1,2d |sed -n '/8\.8\./=' 2>/dev/null |sort -rn)
+	   for pre_line in $pre_lines; do
+		  iptables -t nat -D PREROUTING "$pre_line" >/dev/null 2>&1
+	   done
+   
+		iptables -t nat -D PREROUTING -p tcp --dport 53 -j ACCEPT >/dev/null 2>&1
 		iptables -t nat -D PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"
 
-		if [ -f /usr/sbin/ip6tables ] && [ "${ipv6}" -eq 1 ]; then
+		if [ "${ipv6}" -eq 1 ]; then
 		ip6tables -t mangle -D PREROUTING -j MARK --set-mark "$PROXY_FWMARK" 2>/dev/null
 		fi
 
 		iptables -t mangle -F clash 2>/dev/null
 		iptables -t mangle -X clash 2>/dev/null
 		
-		iptables -t nat -F CLASH_DNS 2>/dev/null
-		iptables -t nat -X CLASH_DNS 2>/dev/null
-
+		
+	    iptables -t nat -F clash_output >/dev/null 2>&1
+	    iptables -t nat -X clash_output >/dev/null 2>&1
+		
+		ipset -! flush proxy_lan >/dev/null 2>&1
+		ipset -! flush reject_lan >/dev/null 2>&1
+		ipset destroy reject_lan >/dev/null 2>&1
+		ipset destroy proxy_lan >/dev/null 2>&1
+		
+		proxy_lan=$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/! match-set proxy_lan src/=' | sort -r)
+		for natx in $proxy_lan; do
+			iptables -t mangle -D PREROUTING $natx >/dev/null 2>&1
+		done
+		
+		reject_lan=$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/match-set reject_lan src/=' | sort -r)
+		for natx in $reject_lan; do
+			iptables -t mangle -D PREROUTING $natx >/dev/null 2>&1
+		done		
+		
+		proxy_lann=$(iptables -nvL clash -t nat | sed 1,2d | sed -n '/! match-set proxy_lan src/=' | sort -r)
+		for natx in $proxy_lann; do
+			iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
+		done
+		
+		reject_lann=$(iptables -nvL clash -t nat | sed 1,2d | sed -n '/match-set reject_lan src/=' | sort -r)
+		for natx in $reject_lann; do
+			iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
+		done
+		
+		proxy_lannn=$(iptables -nvL clash -t nat | sed 1,2d | sed -n '/! match-set proxy_lan src/=' | sort -r)
+		for natx in $proxy_lannn; do
+			iptables -t mangle -D PREROUTING $natx >/dev/null 2>&1
+		done
+		
+		reject_lannn=$(iptables -nvL clash -t nat | sed 1,2d | sed -n '/match-set reject_lan src/=' | sort -r)
+		for natx in $reject_lannn; do
+			iptables -t mangle -D PREROUTING $natx >/dev/null 2>&1
+		done
+		
+	    iptables -t nat -D OUTPUT -p tcp -j clash_output >/dev/null 2>&1
+		
+		
 		ipset destroy localnetwork 2>/dev/null
-				
-		
-        /etc/init.d/dnsmasq restart >/dev/null 2>&1
-}
-
-stop(){
-#=========================================================================================================================== 
-		delandns=$(uci get clash.config.delan 2>/dev/null)
-		landns=$(uci get clash.config.landns 2>/dev/null)
-		lang=$(uci get luci.main.lang 2>/dev/null)
-		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
-		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
-		core=$(uci get clash.config.core 2>/dev/null)
-		LIST="/usr/share/clash/server.list"
-
-		sed -i '/#START/,/#END/d' "$LIST" 2>/dev/null
-
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Stopping Client..." >$REAL_LOG
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "正在停止客户端..." >$REAL_LOG
-		fi
-		sleep 1
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Removing clash iptables rules" >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-	    	echo "删除clash iptables规则" >$REAL_LOG
-		fi
-		
-		remove_mark >/dev/null 2>&1		
 		
 		nat_indexs=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/clash/=' | sort -r)
 		for nat_index in $nat_indexs; do
@@ -821,17 +907,6 @@ stop(){
 		
 		iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
 		
-		bash /usr/share/clash/backup.sh >/dev/null 2>&1
-
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Clash Core Stoped Successfully " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "Clash 停止进程守护程序" >$REAL_LOG
-		fi
-
-		kill -9 `pidof clash|sed "s/$//g"` 2>/dev/null
-		rm -rf /www/luci-static/yacd 2>/dev/null
-		
 		if [ ! -z "${delandns}" ];then
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 				echo "Removing Custom lan dns server " >$REAL_LOG 
@@ -840,6 +915,52 @@ stop(){
 		fi
 		uci delete network.lan.dns && uci commit network && /etc/init.d/network reload >/dev/null 2>&1
 		fi		
+		revert_dns >/dev/null 2>&1
+		
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Restarting Dnsmasq " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+	    	echo "重启 Dnsmasq 程序" >$REAL_LOG
+		fi	
+}
+
+stop(){
+#=========================================================================================================================== 
+		delandns=$(uci get clash.config.delan 2>/dev/null)
+		landns=$(uci get clash.config.landns 2>/dev/null)
+		lang=$(uci get luci.main.lang 2>/dev/null)
+		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
+		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
+		core=$(uci get clash.config.core 2>/dev/null)
+		LIST="/usr/share/clash/server.list"
+
+		sed -i '/#START/,/#END/d' "$LIST" 2>/dev/null
+
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Stopping Client..." >$REAL_LOG
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "正在停止客户端..." >$REAL_LOG
+		fi
+		sleep 1
+		remove_mark >/dev/null 2>&1
+		
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Removing clash iptables rules" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+	    	echo "删除clash iptables规则" >$REAL_LOG
+		fi
+		
+		bash /usr/share/clash/backup.sh >/dev/null 2>&1
+		
+		kill -9 `pidof clash|sed "s/$//g"` 2>/dev/null
+
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Clash Core Stoped Successfully " >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "Clash 停止进程守护程序" >$REAL_LOG
+		fi
+		
+		rm -rf /www/luci-static/yacd 2>/dev/null
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 				echo "Deleting Cron Job" >$REAL_LOG 
@@ -848,15 +969,8 @@ stop(){
 		fi
 		
   	  	del_cron >/dev/null 2>&1
-	        sleep 1		
+	    sleep 1		
 
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Restarting Dnsmasq " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-	    	echo "重启 Dnsmasq 程序" >$REAL_LOG
-		fi	
-	
-		revert_dns >/dev/null 2>&1
 
 	 	echo "" >/usr/share/clash/clash.txt >/dev/null 2>&1
 
@@ -891,4 +1005,12 @@ restart(){
 		    start >/dev/null 2>&1
 		fi
 #=========================================================================================================================== 
+}
+
+reload()
+{
+   if pidof clash >/dev/null; then
+      remove_mark 2>/dev/null
+      rules 2>/dev/null
+   fi
 }

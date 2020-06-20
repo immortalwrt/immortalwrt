@@ -66,4 +66,33 @@ awk '!/^$/&&!/^#/{printf("server=/%s/'"$cutom_dns"'\n",$0)}' /usr/share/clash/se
 ln -s /tmp/dnsmasq.clash/custom_list.conf /tmp/dnsmasq.d/custom_list.conf
 fi
 
+core=$(uci get clash.config.core 2>/dev/null)
 
+if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
+fake_ip=$(egrep '^ {0,}enhanced-mode' /usr/share/clash/tundns.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+elif [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
+fake_ip=$(egrep '^ {0,}enhanced-mode' /usr/share/clash/dns.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+fi
+
+
+if [ "${fake_ip}" == "fake-ip" ];then
+CUSTOM_FILE="/usr/share/clash/server.list"
+FAKE_FILTER_FILE="/usr/share/clash/fake_filter.list"
+num=$(grep -c '' /usr/share/clash/server.list 2>/dev/null)
+
+
+rm -rf "$FAKE_FILTER_FILE" 2>/dev/null
+
+if [ -s "$CUSTOM_FILE" ]; then
+
+	count_num=1
+	while [[ $count_num -le $num ]]
+	do 
+	line=$(sed -n "$count_num"p /usr/share/clash/server.list)	
+         echo "  - '$line'" >> "$FAKE_FILTER_FILE"
+    count_num=$(( $count_num + 1))	
+    done	  
+  
+ 
+fi
+fi
