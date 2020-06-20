@@ -75,6 +75,7 @@ o = s:option(ListValue, "p_mode", translate("Proxy Mode"))
 o.description = translate("Choose proxy mode")
 o:value("Rule", translate("RULE"))
 o:value("Global", translate("GLOBAL"))
+o:value("Script", translate("SCRIPT"))
 o:value("Direct", translate("DIRECT"))
 o.default = "Rule"
 

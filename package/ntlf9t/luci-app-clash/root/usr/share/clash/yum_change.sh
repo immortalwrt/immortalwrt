@@ -82,22 +82,17 @@ if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
 		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "external-ui: \"/usr/share/clash/dashboard\"/a\  " $CONFIG_YAML 2>/dev/null 
-		sed -i "   /a\   " $CONFIG_YAML 2>/dev/null
+		sed -i -e "\$a "  $CONFIG_YAML 2>/dev/null 
+		
 		else
 		sed -i "/allow-lan: ${allow_lan}/a\mode: Rule" $CONFIG_YAML 2>/dev/null
 		sed -i "/mode: Rule/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
 		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
-		
+		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null	
-		if [ ! -z "$(grep "^experimental:" "$CONFIG_YAML")" ]; then
-		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
-		else
-		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
-		fi
 		sed -i '/#clash-openwrt/ d' $CONFIG_YAML 2>/dev/null	
 fi		
 elif [ "${tun_mode}" -eq 1 ];  then
@@ -108,7 +103,7 @@ if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
     	 echo "设置端口,DNS和密码..." >$REAL_LOG
 	fi
 	sleep 1
-	echo "Clash for OpenWRT" >$REAL_LOG
+
 	
         if [ -z "$old_conf" ];then
 	    if [ ! -z "$(grep "^proxies:" "$CONFIG_YAML")" ]; then
@@ -125,13 +120,13 @@ if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 		fi
 		fi
 		
-                sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML 2>/dev/null
+        sed -i "/#clash-openwrt/a\#=============" $CONFIG_YAML 2>/dev/null
 		sed -i "/#=============/a\ " $CONFIG_YAML 2>/dev/null
 		sed -i '1,/#clash-openwrt/d' $CONFIG_YAML 2>/dev/null		
 		mv /etc/clash/config.yaml /etc/clash/dns.yaml
 		cat /usr/share/clash/tundns.yaml /etc/clash/dns.yaml > $CONFIG_YAML 2>/dev/null
 		rm -rf /etc/clash/dns.yaml
-	
+
 		sed -i "1i\#****CLASH-CONFIG-START****#" $CONFIG_YAML 2>/dev/null
 		sed -i "2i\port: ${http_port}" $CONFIG_YAML 2>/dev/null
 		sed -i "/port: ${http_port}/a\socks-port: ${socks_port}" $CONFIG_YAML 2>/dev/null 
@@ -144,22 +139,16 @@ if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
 		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "external-ui: \"/usr/share/clash/dashboard\"/a\  " $CONFIG_YAML 2>/dev/null 
-		sed -i "   /a\   " $CONFIG_YAML 2>/dev/null
+		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/allow-lan: ${allow_lan}/a\mode: Rule" $CONFIG_YAML 2>/dev/null
 		sed -i "/mode: Rule/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
 		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
-		
+		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null	
-		if [ ! -z "$(grep "^experimental:" "$CONFIG_YAML")" ]; then
-		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
-		else
-		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
-		fi		
 		sed -i '/#clash-openwrt/ d' $CONFIG_YAML 2>/dev/null
 fi
 else
@@ -169,7 +158,7 @@ else
     	 echo "设置端口,DNS和密码..." >$REAL_LOG
 	fi	
 	sleep 1
-	echo "Clash for OpenWRT" >$REAL_LOG
+
 	
 	
 	
@@ -204,23 +193,41 @@ else
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
 		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
-		
+		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/allow-lan: ${allow_lan}/a\mode: Rule" $CONFIG_YAML 2>/dev/null
 		sed -i "/mode: Rule/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
 		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null
-		if [ ! -z "$(grep "^experimental:" $CONFIG_YAML)" ]; then
-		sed -i "/experimental:/i\     " $CONFIG_YAML 2>/dev/null
-		else
-		sed -i "/dns:/i\     " $CONFIG_YAML 2>/dev/null
-		fi
 		sed -i '/#clash-openwrt/ d' $CONFIG_YAML 2>/dev/null
 
+
+		
 fi
+		fake_ip=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+		if [ "$fake_ip" == "fake-ip" ];then
+
+			if [ $lang == "en" ] || [ $lang == "auto" ];then
+				echo "Setting Up Fake-IP Filter" >$REAL_LOG 
+			elif [ $lang == "zh_cn" ];then
+				 echo "正在设置Fake-IP黑名单" >$REAL_LOG
+			fi	
+			sleep 1
+			sed -i '/fake-ip-filter:/d' "/etc/clash/config.yaml" 2>/dev/null
+			if [ ! -z "$(egrep '^ {0,}fake-ip-range:' "/etc/clash/config.yaml")" ];then	
+				sed -i '/fake-ip-range/a\ fake-ip-filter:' /etc/clash/config.yaml 2>/dev/null
+				sed -i '/fake-ip-filter:/r/usr/share/clash/fake_filter.list' "/etc/clash/config.yaml" 2>/dev/null	
+			elif [ ! -z "$(egrep '^ {0,}enhanced-mode:' "/etc/clash/config.yaml")" ];then
+				sed -i '/^enhanced-mode:/a\ fake-ip-filter:' /etc/clash/config.yaml 2>/dev/null
+				sed -i '/fake-ip-filter:/r/usr/share/clash/fake_filter.list' "/etc/clash/config.yaml" 2>/dev/null
+			fi	
+		fi
+		sleep 1
+
 #=========================================================================================================================== 
 
 
