@@ -4,7 +4,7 @@
 # r8168 is the Linux device driver released for Realtek Gigabit Ethernet
 # controllers with PCI-Express interface.
 #
-# Copyright(c) 2019 Realtek Semiconductor Corp. All rights reserved.
+# Copyright(c) 2020 Realtek Semiconductor Corp. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -456,7 +456,11 @@ static void rtl8168_hw_config(struct net_device *dev);
 static void rtl8168_hw_start(struct net_device *dev);
 static int rtl8168_close(struct net_device *dev);
 static void rtl8168_set_rx_mode(struct net_device *dev);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+static void rtl8168_tx_timeout(struct net_device *dev, unsigned int txqueue);
+#else
 static void rtl8168_tx_timeout(struct net_device *dev);
+#endif
 static struct net_device_stats *rtl8168_get_stats(struct net_device *dev);
 static int rtl8168_rx_interrupt(struct net_device *, struct rtl8168_private *, napi_budget);
 static int rtl8168_change_mtu(struct net_device *dev, int new_mtu);
@@ -881,6 +885,7 @@ static int proc_get_driver_variable(struct seq_file *m, void *v)
         seq_printf(m, "HwFiberModeVer\t0x%x\n", tp->HwFiberModeVer);
         seq_printf(m, "HwFiberStat\t0x%x\n", tp->HwFiberStat);
         seq_printf(m, "HwSwitchMdiToFiber\t0x%x\n", tp->HwSwitchMdiToFiber);
+        seq_printf(m, "HwSuppSerDesPhyVer\t0x%x\n", tp->HwSuppSerDesPhyVer);
         seq_printf(m, "NicCustLedValue\t0x%x\n", tp->NicCustLedValue);
         seq_printf(m, "RequiredSecLanDonglePatch\t0x%x\n", tp->RequiredSecLanDonglePatch);
         seq_printf(m, "HwSuppDashVer\t0x%x\n", tp->HwSuppDashVer);
@@ -1190,6 +1195,7 @@ static int proc_get_driver_variable(char *page, char **start,
                         "HwFiberModeVer\t0x%x\n"
                         "HwFiberStat\t0x%x\n"
                         "HwSwitchMdiToFiber\t0x%x\n"
+                        "HwSuppSerDesPhyVer\t0x%x\n"
                         "NicCustLedValue\t0x%x\n"
                         "RequiredSecLanDonglePatch\t0x%x\n"
                         "HwSuppDashVer\t0x%x\n"
@@ -1270,6 +1276,7 @@ static int proc_get_driver_variable(char *page, char **start,
                         tp->HwFiberModeVer,
                         tp->HwFiberStat,
                         tp->HwSwitchMdiToFiber,
+                        tp->HwSuppSerDesPhyVer,
                         tp->NicCustLedValue,
                         tp->RequiredSecLanDonglePatch,
                         tp->HwSuppDashVer,
@@ -1616,12 +1623,22 @@ static int rtl8168_proc_open(struct inode *inode, struct file *file)
         return single_open(file, show, dev);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+static const struct proc_ops rtl8168_proc_fops = {
+        .proc_open           = rtl8168_proc_open,
+        .proc_read           = seq_read,
+        .proc_lseek          = seq_lseek,
+        .proc_release        = single_release,
+};
+#else
 static const struct file_operations rtl8168_proc_fops = {
         .open           = rtl8168_proc_open,
         .read           = seq_read,
         .llseek         = seq_lseek,
         .release        = single_release,
 };
+#endif
+
 #endif
 
 /*
@@ -2086,6 +2103,52 @@ u16 rtl8168_mac_ocp_read(struct rtl8168_private *tp, u16 reg_addr)
         data16 = (u16)RTL_R32(tp, MACOCP);
 
         return data16;
+}
+
+static void
+rtl8168_clear_and_set_mcu_ocp_bit(
+        struct rtl8168_private *tp,
+        u16   addr,
+        u16   clearmask,
+        u16   setmask
+)
+{
+        u16 RegValue;
+
+        RegValue = rtl8168_mac_ocp_read(tp, addr);
+        RegValue &= ~clearmask;
+        RegValue |= setmask;
+        rtl8168_mac_ocp_write(tp, addr, RegValue);
+}
+
+/*
+static void
+rtl8168_clear_mcu_ocp_bit(
+        struct rtl8168_private *tp,
+        u16   addr,
+        u16   mask
+)
+{
+        rtl8168_clear_and_set_mcu_ocp_bit(tp,
+                                          addr,
+                                          mask,
+                                          0
+                                         );
+}
+*/
+
+static void
+rtl8168_set_mcu_ocp_bit(
+        struct rtl8168_private *tp,
+        u16   addr,
+        u16   mask
+)
+{
+        rtl8168_clear_and_set_mcu_ocp_bit(tp,
+                                          addr,
+                                          0,
+                                          mask
+                                         );
 }
 
 static u32 real_ocp_read(struct rtl8168_private *tp, u16 addr, u8 len)
@@ -3699,10 +3762,6 @@ rtl8168_check_link_status(struct net_device *dev)
         rtl8168_check_fiber_link_status(dev);
 #endif //ENABLE_FIBER_SUPPORT
 
-#ifdef ENABLE_FIBER_SUPPORT
-        rtl8168_check_fiber_link_status(dev);
-#endif //ENABLE_FIBER_SUPPORT
-
         link_status_on = tp->link_ok(dev);
 
         if (tp->mcfg == CFG_METHOD_11)
@@ -4483,7 +4542,7 @@ rtl8168_get_hw_wol(struct net_device *dev)
                 tp->wol_opts |= WAKE_MCAST;
 
 out_unlock:
-        tp->wol_enabled = (tp->wol_opts) ? WOL_ENABLED : WOL_DISABLED;
+        tp->wol_enabled = (tp->wol_opts || tp->dash_printer_enabled) ? WOL_ENABLED : WOL_DISABLED;
 
         spin_unlock_irqrestore(&tp->lock, flags);
 }
@@ -4528,6 +4587,9 @@ rtl8168_set_hw_wol(struct net_device *dev, u32 wolopts)
                         options |= cfg[i].mask;
                 RTL_W8(tp, cfg[i].reg, options);
         }
+
+        if (tp->dash_printer_enabled)
+                RTL_W8(tp, Config5, RTL_R8(tp, Config5) | LanWake);
 
         rtl8168_disable_cfg9346_write(tp);
 }
@@ -4600,6 +4662,9 @@ rtl8168_powerdown_pll(struct net_device *dev)
                         RTL_W8(tp, Config2, RTL_R8(tp, Config2) | PMSTS_En);
                         rtl8168_disable_cfg9346_write(tp);
                 }
+
+                if (HW_SUPP_SERDES_PHY(tp))
+                        return;
 
                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
                 auto_nego = rtl8168_mdio_read(tp, MII_ADVERTISE);
@@ -4760,11 +4825,11 @@ rtl8168_set_wol(struct net_device *dev,
 
         tp->wol_opts = wol->wolopts;
 
-        tp->wol_enabled = (tp->wol_opts) ? WOL_ENABLED : WOL_DISABLED;
+        tp->wol_enabled = (tp->wol_opts || tp->dash_printer_enabled) ? WOL_ENABLED : WOL_DISABLED;
 
         spin_unlock_irqrestore(&tp->lock, flags);
 
-        device_set_wakeup_enable(&tp->pci_dev->dev, wol->wolopts);
+        device_set_wakeup_enable(&tp->pci_dev->dev, tp->wol_enabled);
 
         return 0;
 }
@@ -6205,6 +6270,9 @@ rtl_ethtool_set_eee(struct net_device *net, struct ethtool_eee *eee)
                 return -EOPNOTSUPP;
         }
 
+        if (HW_SUPP_SERDES_PHY(tp) || !HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp))
+                return -EOPNOTSUPP;
+
         spin_lock_irqsave(&tp->lock, flags);
 
         if (unlikely(tp->rtk_enable_diag)) {
@@ -6861,12 +6929,33 @@ rtl8168_disable_now_is_oob(struct rtl8168_private *tp)
 }
 
 static void
+rtl8168_switch_to_sgmii_mode(
+        struct rtl8168_private *tp
+)
+{
+        if (FALSE == HW_SUPP_SERDES_PHY(tp)) return;
+
+        switch (tp->HwSuppSerDesPhyVer) {
+        case 1:
+                rtl8168_mac_ocp_write(tp, 0xEB00, 0x2);
+                rtl8168_set_mcu_ocp_bit(tp, 0xEB16, BIT_1);
+                break;
+        }
+}
+
+static void
 rtl8168_exit_oob(struct net_device *dev)
 {
         struct rtl8168_private *tp = netdev_priv(dev);
         u16 data16;
 
         RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) & ~(AcceptErr | AcceptRunt | AcceptBroadcast | AcceptMulticast | AcceptMyPhys |  AcceptAllPhys));
+
+        if (HW_SUPP_SERDES_PHY(tp)) {
+                if (tp->HwSuppSerDesPhyVer == 1) {
+                        rtl8168_switch_to_sgmii_mode(tp);
+                }
+        }
 
         switch (tp->mcfg) {
         case CFG_METHOD_23:
@@ -9213,7 +9302,11 @@ rtl8168_set_mac_mcu_8168fp_3(struct net_device *dev)
         rtl8168_mac_ocp_write(tp, 0xFC2A, 0x0B14);
         rtl8168_mac_ocp_write(tp, 0xFC2C, 0x0BE4);
 
-        rtl8168_mac_ocp_write(tp, 0xFC38, 0x0006);
+        if (tp->HwSuppSerDesPhyVer == 1) {
+                rtl8168_mac_ocp_write(tp, 0xFC38, 0x0007);
+        } else {
+                rtl8168_mac_ocp_write(tp, 0xFC38, 0x0006);
+        }
 }
 
 static void
@@ -9714,6 +9807,7 @@ rtl8168_hw_ephy_config(struct net_device *dev)
                 rtl8168_ephy_write(tp, 0x1E, 0x20EB);
                 rtl8168_ephy_write(tp, 0x0D, 0x1666);
                 ClearPCIePhyBit(tp, 0x0B, BIT_0);
+                SetPCIePhyBit(tp, 0x1D, BIT_14);
 
                 break;
         case CFG_METHOD_29:
@@ -22491,7 +22585,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
                                 rtl8168_mdio_write(tp, 0x15, 0x1006);
                         }
@@ -22779,7 +22873,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
                                 gphy_val = rtl8168_mdio_read(tp, 0x15);
                                 gphy_val |= BIT_12;
@@ -22787,7 +22881,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                         }
                 }
         } else if (tp->mcfg == CFG_METHOD_18) {
-                if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1F, 0x0005);
                         rtl8168_mdio_write(tp, 0x05, 0x8b80);
                         gphy_val = rtl8168_mdio_read(tp, 0x06);
@@ -22866,7 +22960,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x06, rtl8168_mdio_read(tp, 0x06) & ~BIT_8);
                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
 
-                if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1f, 0x0005);
                         rtl8168_mdio_write(tp, 0x05, 0x8b85);
                         rtl8168_mdio_write(tp, 0x06, rtl8168_mdio_read(tp, 0x06) | BIT_15);
@@ -22874,7 +22968,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 }
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
                                 gphy_val = rtl8168_mdio_read(tp, 0x15);
                                 gphy_val |= BIT_12;
@@ -22882,7 +22976,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                         }
                 }
         } else if (tp->mcfg == CFG_METHOD_19) {
-                if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1F, 0x0005);
                         rtl8168_mdio_write(tp, 0x05, 0x8b80);
                         gphy_val = rtl8168_mdio_read(tp, 0x06);
@@ -22925,7 +23019,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x06, rtl8168_mdio_read(tp, 0x06) & ~BIT_8);
                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
 
-                if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1f, 0x0005);
                         rtl8168_mdio_write(tp, 0x05, 0x8b85);
                         rtl8168_mdio_write(tp, 0x06, rtl8168_mdio_read(tp, 0x06) | BIT_15);
@@ -22933,7 +23027,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 }
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
                                 gphy_val = rtl8168_mdio_read(tp, 0x15);
                                 gphy_val |= BIT_12;
@@ -22942,7 +23036,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 }
         } else if (tp->mcfg == CFG_METHOD_20) {
 
-                if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1F, 0x0005);
                         rtl8168_mdio_write(tp, 0x05, 0x8b80);
                         gphy_val = rtl8168_mdio_read(tp, 0x06);
@@ -23017,7 +23111,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x06, rtl8168_mdio_read(tp, 0x06) & ~BIT_8);
                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
 
-                if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1f, 0x0005);
                         rtl8168_mdio_write(tp, 0x05, 0x8b85);
                         rtl8168_mdio_write(tp, 0x06, rtl8168_mdio_read(tp, 0x06) | BIT_15);
@@ -23025,7 +23119,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 }
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1f, 0x0000);
                                 gphy_val = rtl8168_mdio_read(tp, 0x15);
                                 gphy_val |= BIT_12;
@@ -23087,7 +23181,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x14, 0x9222);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_mdio_write(tp, 0x10, rtl8168_mdio_read(tp, 0x10) | BIT_2);
                         }
@@ -23131,7 +23225,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_mdio_write(tp, 0x10, rtl8168_mdio_read(tp, 0x10) | BIT_2);
                         }
@@ -23159,7 +23253,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x11, gphy_val);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_mdio_write(tp, 0x10, rtl8168_mdio_read(tp, 0x10) | BIT_2);
                         }
@@ -23231,7 +23325,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x14, (rtl8168_mdio_read(tp, 0x14) & ~0xFF00) | 0x8400);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_mdio_write(tp, 0x10, rtl8168_mdio_read(tp, 0x10) | BIT_2);
                         }
@@ -23303,7 +23397,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x14, (rtl8168_mdio_read(tp, 0x14) & ~0xFF00) | 0x8400);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_mdio_write(tp, 0x10, rtl8168_mdio_read(tp, 0x10) | BIT_2);
                         }
@@ -23378,7 +23472,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                                     );
                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
 
-                if (tp->HwHasWrRamCodeToMicroP) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         u16 dout_tapbin;
 
                         dout_tapbin = 0x0000;
@@ -23468,7 +23562,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_set_eth_phy_bit( tp, 0x10, BIT_2 );
                                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
@@ -23482,7 +23576,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                                       BIT_5 | BIT_4 | BIT_3 | BIT_2 | BIT_1 | BIT_0,
                                       0x0A );
 
-                if (tp->HwHasWrRamCodeToMicroP) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                         rtl8168_mdio_write(tp, 0x13, 0x8011);
                         rtl8168_set_eth_phy_bit(tp, 0x14, BIT_11);
@@ -23520,7 +23614,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                         rtl8168_mdio_write(tp, 0x1F, 0x0000);
                 }
 
-                if (tp->HwHasWrRamCodeToMicroP) {
+                if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                         rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                         rtl8168_mdio_write(tp, 0x13, 0x85FE);
                         ClearAndSetEthPhyBit(
@@ -23543,7 +23637,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 }
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_set_eth_phy_bit( tp, 0x10, BIT_2 );
                                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
@@ -23697,7 +23791,8 @@ rtl8168_hw_phy_config(struct net_device *dev)
                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
 
                 if (aspm) {
-                        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+                        if (!HW_SUPP_SERDES_PHY(tp) &&
+                            HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                                 rtl8168_mdio_write(tp, 0x1F, 0x0A43);
                                 rtl8168_set_eth_phy_bit( tp, 0x10, BIT_2 );
                                 rtl8168_mdio_write(tp, 0x1F, 0x0000);
@@ -23746,7 +23841,7 @@ rtl8168_hw_phy_config(struct net_device *dev)
 
         rtl8168_mdio_write(tp, 0x1F, 0x0000);
 
-        if (tp->HwHasWrRamCodeToMicroP == TRUE) {
+        if (HW_HAS_WRITE_PHY_MCU_RAM_CODE(tp)) {
                 if (tp->eee_enabled)
                         rtl8168_enable_EEE(tp);
                 else
@@ -23921,7 +24016,7 @@ rtl8168_init_software_variable(struct net_device *dev)
                 break;
         }
 
-        if (HW_DASH_SUPPORT_TYPE_3(tp) && tp->HwPkgDet == 0x06)
+        if (HW_SUPP_SERDES_PHY(tp))
                 eee_enable = 0;
 
         switch (tp->mcfg) {
@@ -24186,27 +24281,21 @@ rtl8168_init_software_variable(struct net_device *dev)
         }
 
 #ifdef ENABLE_FIBER_SUPPORT
+        rtl8168_check_hw_fiber_mode_support(dev);
+#endif //ENABLE_FIBER_SUPPORT
+
         switch(tp->mcfg) {
-        case CFG_METHOD_29:
-        case CFG_METHOD_30:
-                if ((pdev->subsystem_vendor == 0x1170 && pdev->subsystem_device == 0x0612) ||
-                    (pdev->subsystem_vendor == 0x1028 && pdev->subsystem_device == 0x080C) ||
-                    (pdev->subsystem_vendor == 0x107d && pdev->subsystem_device == 0x29b0) ||
-                    (pdev->subsystem_vendor == 0x107d && pdev->subsystem_device == 0x29b1) ||
-                    (pdev->subsystem_vendor == 0x107d && pdev->subsystem_device == 0x29b3) ||
-                    (pdev->subsystem_vendor == 0x107d && pdev->subsystem_device == 0x29b5))
-                        tp->HwFiberModeVer = FIBER_MODE_RTL8168H_RTL8211FS;
-                if((pdev->subsystem_vendor == 0x1d05 && pdev->subsystem_device == 0x2014))
-                        tp->HwFiberModeVer = FIBER_MODE_RTL8168H_MDI_SWITCH_RTL8211FS;
+        case CFG_METHOD_32:
+        case CFG_METHOD_33:
+                if (tp->HwPkgDet == 0x06) {
+                        u8 tmpUchar = rtl8168_eri_read(tp, 0xE6, 1, ERIAR_ExGMAC);
+                        if (tmpUchar == 0x02)
+                                tp->HwSuppSerDesPhyVer = 1;
+                        else if (tmpUchar == 0x00)
+                                tp->HwSuppSerDesPhyVer = 2;
+                }
                 break;
         }
-
-        if (HW_FIBER_MODE_ENABLED(tp))
-                tp->HwFiberStat = rtl8168_hw_fiber_get_connect_status(dev);
-
-        if (tp->HwFiberStat != FIBER_STAT_CONNECT)
-                tp->HwFiberModeVer = FIBER_MODE_NIC_ONLY;
-#endif //ENABLE_FIBER_SUPPORT
 
         if (pdev->subsystem_vendor == 0x144d) {
                 if (pdev->subsystem_device == 0xc098 ||
@@ -24229,14 +24318,6 @@ rtl8168_init_software_variable(struct net_device *dev)
                         break;
                 }
         }
-#ifdef ENABLE_FIBER_SUPPORT
-        switch (tp->HwFiberModeVer) {
-        case FIBER_MODE_RTL8168H_RTL8211FS:
-        case FIBER_MODE_RTL8168H_MDI_SWITCH_RTL8211FS:
-                tp->RequiredSecLanDonglePatch = TRUE;
-                break;
-        }
-#endif //ENABLE_FIBER_SUPPORT
 
         switch (tp->mcfg) {
         case CFG_METHOD_16:
@@ -24379,6 +24460,11 @@ rtl8168_init_software_variable(struct net_device *dev)
 #endif //LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
         tp->eee_enabled = eee_enable;
         tp->eee_adv_t = MDIO_EEE_1000T | MDIO_EEE_100TX;
+
+#ifdef ENABLE_FIBER_SUPPORT
+        if (HW_FIBER_MODE_ENABLED(tp))
+                rtl8168_set_fiber_mode_software_variable(dev);
+#endif //ENABLE_FIBER_SUPPORT
 }
 
 static void
@@ -26431,7 +26517,7 @@ rtl8168_hw_config(struct net_device *dev)
         case CFG_METHOD_32:
         case CFG_METHOD_33:
                 csi_tmp = rtl8168_eri_read(tp, 0xDE, 1, ERIAR_ExGMAC);
-                csi_tmp &= ~BIT_0;
+                csi_tmp &= BIT_0;
                 rtl8168_eri_write(tp, 0xDE, 1, csi_tmp, ERIAR_ExGMAC);
                 break;
         }
@@ -27057,17 +27143,22 @@ rtl8168_hw_config(struct net_device *dev)
 
                 mac_ocp_data = rtl8168_mac_ocp_read(tp, 0xE056);
                 mac_ocp_data &= ~(BIT_7 | BIT_6 | BIT_5 | BIT_4);
-                mac_ocp_data |= (BIT_6 | BIT_5 | BIT_4);
+                if (FALSE == HW_SUPP_SERDES_PHY(tp))
+                        mac_ocp_data |= (BIT_6 | BIT_5 | BIT_4);
                 rtl8168_mac_ocp_write(tp, 0xE056, mac_ocp_data);
-                rtl8168_mac_ocp_write(tp, 0xEA80, 0x0003);
+                if (FALSE == HW_SUPP_SERDES_PHY(tp))
+                        rtl8168_mac_ocp_write(tp, 0xEA80, 0x0003);
+                else
+                        rtl8168_mac_ocp_write(tp, 0xEA80, 0x0000);
 
                 rtl8168_oob_mutex_lock(tp);
                 mac_ocp_data = rtl8168_mac_ocp_read(tp, 0xE052);
-                mac_ocp_data |= BIT_0;
-                if (tp->mcfg == CFG_METHOD_32 || tp->mcfg == CFG_METHOD_33)
-                        mac_ocp_data |= BIT_3;
-                else
-                        mac_ocp_data &= ~BIT_3;
+                mac_ocp_data &= ~(BIT_3 | BIT_0);
+                if (FALSE == HW_SUPP_SERDES_PHY(tp)) {
+                        mac_ocp_data |= BIT_0;
+                        if (tp->mcfg == CFG_METHOD_32 || tp->mcfg == CFG_METHOD_33)
+                                mac_ocp_data |= BIT_3;
+                }
                 rtl8168_mac_ocp_write(tp, 0xE052, mac_ocp_data);
                 rtl8168_oob_mutex_unlock(tp);
 
@@ -27090,16 +27181,24 @@ rtl8168_hw_config(struct net_device *dev)
                 if (dev->mtu > ETH_DATA_LEN)
                         RTL_W8(tp, MTPS, 0x27);
 
-                RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) | BIT_6);
-                RTL_W8(tp, 0xF2, RTL_R8(tp, 0xF2) | BIT_6);
-
-                RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) | BIT_7);
+                if (FALSE == HW_SUPP_SERDES_PHY(tp)) {
+                        RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) | BIT_6);
+                        RTL_W8(tp, 0xF2, RTL_R8(tp, 0xF2) | BIT_6);
+                        RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) | BIT_7);
+                } else {
+                        RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) & ~BIT_6);
+                        RTL_W8(tp, 0xF2, RTL_R8(tp, 0xF2) & ~BIT_6);
+                        RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) & ~BIT_7);
+                }
 
                 rtl8168_eri_write(tp, 0xC0, 2, 0x0000, ERIAR_ExGMAC);
                 rtl8168_eri_write(tp, 0xB8, 4, 0x00000000, ERIAR_ExGMAC);
 
                 rtl8168_oob_mutex_lock(tp);
-                rtl8168_eri_write(tp, 0x5F0, 2, 0x4F87, ERIAR_ExGMAC);
+                if (FALSE == HW_SUPP_SERDES_PHY(tp))
+                        rtl8168_eri_write(tp, 0x5F0, 2, 0x4F87, ERIAR_ExGMAC);
+                else
+                        rtl8168_eri_write(tp, 0x5F0, 2, 0x4080, ERIAR_ExGMAC);
                 rtl8168_oob_mutex_unlock(tp);
 
                 csi_tmp = rtl8168_eri_read(tp, 0xD4, 4, ERIAR_ExGMAC);
@@ -27661,7 +27760,8 @@ rtl8168_unmap_tx_skb(struct pci_dev *pdev,
         unsigned int len = tx_skb->len;
 
         dma_unmap_single(&pdev->dev, le64_to_cpu(desc->addr), len, DMA_TO_DEVICE);
-        desc->opts1 = 0x00;
+
+        desc->opts1 = cpu_to_le32(RTK_MAGIC_DEBUG_VALUE);
         desc->opts2 = 0x00;
         desc->addr = 0x00;
         tx_skb->len = 0;
@@ -27843,8 +27943,13 @@ static void rtl8168_reset_task(struct work_struct *work)
         }
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+static void
+rtl8168_tx_timeout(struct net_device *dev, unsigned int txqueue)
+#else
 static void
 rtl8168_tx_timeout(struct net_device *dev)
+#endif
 {
         struct rtl8168_private *tp = netdev_priv(dev);
         unsigned long flags;
@@ -28126,6 +28231,15 @@ static int msdn_giant_send_check(struct sk_buff *skb)
 }
 #endif
 
+static bool rtl8168_tx_slots_avail(struct rtl8168_private *tp,
+                                   unsigned int nr_frags)
+{
+        unsigned int slots_avail = tp->dirty_tx + NUM_TX_DESC - tp->cur_tx;
+
+        /* A skbuff with nr_frags needs nr_frags+1 entries in the tx queue */
+        return slots_avail > nr_frags;
+}
+
 static int
 rtl8168_start_xmit(struct sk_buff *skb,
                    struct net_device *dev)
@@ -28143,7 +28257,7 @@ rtl8168_start_xmit(struct sk_buff *skb,
 
         spin_lock_irqsave(&tp->lock, flags);
 
-        if (unlikely(TX_BUFFS_AVAIL(tp) < skb_shinfo(skb)->nr_frags)) {
+        if (unlikely(!rtl8168_tx_slots_avail(tp, skb_shinfo(skb)->nr_frags))) {
                 if (netif_msg_drv(tp)) {
                         printk(KERN_ERR
                                "%s: BUG! Tx Ring full when queue awake!\n",
@@ -28155,8 +28269,14 @@ rtl8168_start_xmit(struct sk_buff *skb,
         entry = tp->cur_tx % NUM_TX_DESC;
         txd = tp->TxDescArray + entry;
 
-        if (unlikely(le32_to_cpu(txd->opts1) & DescOwn))
+        if (unlikely(le32_to_cpu(txd->opts1) & DescOwn)) {
+                if (netif_msg_drv(tp)) {
+                        printk(KERN_ERR
+                               "%s: BUG! Tx Desc is own by hardware!\n",
+                               dev->name);
+                }
                 goto err_stop;
+        }
 
         opts1 = DescOwn;
         opts2 = rtl8168_tx_vlan_tag(tp, skb);
@@ -28271,10 +28391,10 @@ rtl8168_start_xmit(struct sk_buff *skb,
 
         RTL_W8(tp, TxPoll, NPQ);    /* set polling bit */
 
-        if (TX_BUFFS_AVAIL(tp) < MAX_SKB_FRAGS) {
+        if (!rtl8168_tx_slots_avail(tp, MAX_SKB_FRAGS)) {
                 netif_stop_queue(dev);
                 smp_rmb();
-                if (TX_BUFFS_AVAIL(tp) >= MAX_SKB_FRAGS)
+                if (rtl8168_tx_slots_avail(tp, MAX_SKB_FRAGS))
                         netif_wake_queue(dev);
         }
 
@@ -28346,7 +28466,7 @@ rtl8168_tx_interrupt(struct net_device *dev,
                 tp->dirty_tx = dirty_tx;
                 smp_wmb();
                 if (netif_queue_stopped(dev) &&
-                    (TX_BUFFS_AVAIL(tp) >= MAX_SKB_FRAGS)) {
+                    (rtl8168_tx_slots_avail(tp, MAX_SKB_FRAGS))) {
                         netif_wake_queue(dev);
                 }
                 smp_rmb();

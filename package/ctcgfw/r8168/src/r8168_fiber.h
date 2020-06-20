@@ -4,7 +4,7 @@
 # r8168 is the Linux device driver released for Realtek Gigabit Ethernet
 # controllers with PCI-Express interface.
 #
-# Copyright(c) 2019 Realtek Semiconductor Corp. All rights reserved.
+# Copyright(c) 2020 Realtek Semiconductor Corp. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -55,11 +55,12 @@ enum {
 void rtl8168_hw_init_fiber_nic(struct net_device *dev);
 void rtl8168_hw_fiber_nic_d3_para(struct net_device *dev);
 void rtl8168_hw_fiber_phy_config(struct net_device *dev);
-u32 rtl8168_hw_fiber_get_connect_status(struct net_device *dev);
 void rtl8168_hw_switch_mdi_to_fiber(struct net_device *dev);
 void rtl8168_hw_switch_mdi_to_nic(struct net_device *dev);
 unsigned int rtl8168_hw_fiber_link_ok(struct net_device *dev);
 void rtl8168_check_fiber_link_status(struct net_device *dev);
+void rtl8168_check_hw_fiber_mode_support(struct net_device *dev);
+void rtl8168_set_fiber_mode_software_variable(struct net_device *dev);
 
 
 #endif /* _LINUX_R8168_FIBER_H */
