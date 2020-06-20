@@ -1,99 +1,53 @@
-msgid ""
-msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: zh_Hans\n"
-"MIME-Version: 1.0\n"
-"Content-Transfer-Encoding: 8bit\n"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/model/cbi/appfilter/appfilter.lua:28
-msgid "App Filter Rules"
-msgstr "应用过滤规则"
+msgid "website"
+msgstr "常用网站"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:75
-msgid "App名称"
-msgstr ""
-
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/model/cbi/appfilter/appfilter.lua:23
-msgid "Basic Settings"
-msgstr "基本设置"
-
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:82
-msgid "Collecting data..."
-msgstr ""
-
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/model/cbi/appfilter/appfilter.lua:24
-msgid "Enable App Filter"
-msgstr "开启应用过滤"
-
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/controller/appfilter.lua:10
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/model/cbi/appfilter/appfilter.lua:20
 msgid "appfilter"
 msgstr "应用过滤"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:74
-msgid "ip地址"
-msgstr ""
+msgid "game"
+msgstr "游戏"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:73
-msgid "mac地址"
-msgstr ""
+msgid "web"
+msgstr "网页"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:76
-msgid "丢包次数"
-msgstr ""
+msgid "video"
+msgstr "视频"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:72
-msgid "主机名"
-msgstr ""
+msgid "chat"
+msgstr "聊天"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:78
-msgid "最后访问时间"
-msgstr ""
+msgid "download"
+msgstr "下载"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:77
-msgid "访问次数"
-msgstr ""
+msgid "p2p"
+msgstr "p2p"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:69
-msgid "访问记录"
-msgstr ""
+msgid "music"
+msgstr "音乐"
 
-#: /mnt/A/openwrt-latest/package/ctcgfw/luci-app-appfilter/luasrc/view/admin_network/user_status.htm:79
-msgid "过滤状态"
-msgstr ""
+msgid "shopping"
+msgstr "购物"
 
-#~ msgid "website"
-#~ msgstr "常用网站"
+msgid "working"
+msgstr "办公"
 
-#~ msgid "game"
-#~ msgstr "游戏"
+msgid "employee"
+msgstr "招聘"
 
-#~ msgid "web"
-#~ msgstr "网页"
+msgid "Basic Settings"
+msgstr "基本设置"
 
-#~ msgid "video"
-#~ msgstr "视频"
+msgid "App Filter Rules"
+msgstr "应用过滤规则"
 
-#~ msgid "chat"
-#~ msgstr "聊天"
+msgid "Select at least one user, otherwise it will take effect for all users"
+msgstr "至少选择一个用户，否则对所有用户生效"
 
-#~ msgid "download"
-#~ msgstr "下载"
+msgid "Select users"
+msgstr "选择用户"
 
-#~ msgid "p2p"
-#~ msgstr "p2p"
+msgid "Enable App Filter"
+msgstr "开启应用过滤"
 
-#~ msgid "music"
-#~ msgstr "音乐"
 
-#~ msgid "shopping"
-#~ msgstr "购物"
-
-#~ msgid "working"
-#~ msgstr "办公"
-
-#~ msgid "employee"
-#~ msgstr "招聘"
