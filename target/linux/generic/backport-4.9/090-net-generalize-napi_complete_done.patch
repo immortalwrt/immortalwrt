@@ -927,7 +927,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	}
 --- a/drivers/net/ethernet/nxp/lpc_eth.c
 +++ b/drivers/net/ethernet/nxp/lpc_eth.c
-@@ -999,7 +999,7 @@ static int lpc_eth_poll(struct napi_stru
+@@ -1000,7 +1000,7 @@ static int lpc_eth_poll(struct napi_stru
  	rx_done = __lpc_handle_recv(ndev, budget);
  
  	if (rx_done < budget) {
