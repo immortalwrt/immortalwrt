@@ -23,6 +23,11 @@ fi
 CFG_FILE="/etc/config/clash"
 REAL_LOG="/usr/share/clash/clash_real.txt"
 
+if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] || [ ! -z "$(egrep '^ {0,}rule-providers:' "/etc/clash/config.yaml")" ];then	
+		exit 0			
+fi
+
+
 
 rm -rf /tmp/Proxy_Group /tmp/servers.yaml /tmp/yaml_proxy.yaml /tmp/group_*.yaml /tmp/yaml_group.yaml /tmp/match_servers.list /tmp/yaml_provider.yaml /tmp/provider.yaml /tmp/provider_gen.yaml /tmp/provider_che.yaml /tmp/match_provider.list 2>/dev/null
 

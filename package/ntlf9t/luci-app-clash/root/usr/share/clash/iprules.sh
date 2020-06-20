@@ -3,9 +3,38 @@
 
 
 CUSTOM_RULE_FILE="/tmp/ipadd.conf"
-CLASH_CONFIG="/etc/clash/config.yaml"
+RULE="/tmp/rules_conf.yaml"
+CLASH="/tmp/conf.yaml"
+CONFIG_YAML="/etc/clash/config.yaml"
+CLASH_CONFIG="/tmp/config.yaml"
+
+
+
 append=$(uci get clash.config.append_rules 2>/dev/null)
 if [ "${append}" -eq 1 ];then
+
+if [ -f $CLASH_CONFIG ];then
+	rm -rf $CLASH_CONFIG 2>/dev/null
+fi
+
+cp $CONFIG_YAML $CLASH_CONFIG 2>/dev/null
+if [ ! -z "$(grep "^Rule:" "$CLASH_CONFIG")" ]; then
+	sed -i "/^Rule:/i\#RULESTART#" $CLASH_CONFIG 2>/dev/null
+elif [ ! -z "$(grep "^rules:" "$CLASH_CONFIG")" ]; then
+	sed -i "/^rules:/i\#RULESTART#" $CLASH_CONFIG 2>/dev/null
+fi
+sed -i -e "\$a#RULEEND#" $CLASH_CONFIG 2>/dev/null
+
+awk '/#RULESTART#/,/#RULEEND#/{print}' "$CLASH_CONFIG" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep - |awk -F '- ' '{print "- "$2}' | sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null  >$RULE 2>&1
+
+sed -i '/#RULESTART#/,/#RULEEND#/d' "$CLASH_CONFIG" 2>/dev/null
+
+sed -i -e "\$a " $CLASH_CONFIG 2>/dev/null
+sed -i "1i\rules:" $RULE 2>/dev/null
+cat $CLASH_CONFIG $RULE  >$CLASH 2>/dev/null
+mv $CLASH $CLASH_CONFIG 2>/dev/null
+rm -rf $RULE 2>/dev/null
+
 
 
 if [ -f $CUSTOM_RULE_FILE ];then
@@ -22,7 +51,16 @@ ipadd()
 	   config_get "ipaaddr" "$section" "ipaaddr" ""
 	   config_get "type" "$section" "type" ""
 	   config_get "res" "$section" "res" ""
-	   if [ "${res}" -eq 1 ] || [ ! -z "${res}" ];then
+	   
+	   if [ -z "$type" ]; then
+		  return
+	   fi
+ 
+	   if [ -z "$pgroup" ]; then
+		  return
+	   fi
+	   
+	   if [ "${res}" -eq 1 ];then
 		echo "- $type,$ipaaddr,$pgroup,no-resolve">>/tmp/ipadd.conf
 	   else
 		echo "- $type,$ipaaddr,$pgroup">>/tmp/ipadd.conf
@@ -36,20 +74,22 @@ ipadd()
 
 if [ -f $CUSTOM_RULE_FILE ];then
 
-sed -i -e "\$a#*******CUSTOM-RULE-END**********#" $CUSTOM_RULE_FILE 2>/dev/null
-sed -i '/#*******CUSTOM-RULE-START**********#/,/#*******CUSTOM-RULE-END**********#/d' "$CLASH_CONFIG" 2>/dev/null
+sed -i -e "\$a#CUSTOMRULEEND#" $CUSTOM_RULE_FILE 2>/dev/null
+sed -i '/#CUSTOMRULESTART#/,/#CUSTOMRULEEND#/d' "$CLASH_CONFIG" 2>/dev/null
 
-if [ ! -z "$(grep "^ \{0,\}- GEOIP" "/etc/clash/config.yaml")" ]; then
-   sed -i '1,/^ \{0,\}- GEOIP,/{/^ \{0,\}- GEOIP,/s/^ \{0,\}- GEOIP,/#*******CUSTOM-RULE-START**********#\n&/}' "$CLASH_CONFIG" 2>/dev/null
-elif [ ! -z "$(grep "^ \{0,\}- MATCH," "/etc/clash/config.yaml")" ]; then
-   sed -i '1,/^ \{0,\}- MATCH,/{/^ \{0,\}- MATCH,/s/^ \{0,\}- MATCH,/#*******CUSTOM-RULE-START**********#\n&/}' "$CLASH_CONFIG" 2>/dev/null
+if [ ! -z "$(grep "^ \{0,\}- GEOIP" "$CLASH_CONFIG")" ]; then
+   sed -i '1,/^ \{0,\}- GEOIP,/{/^ \{0,\}- GEOIP,/s/^ \{0,\}- GEOIP,/#CUSTOMRULESTART#\n&/}' "$CLASH_CONFIG" 2>/dev/null
+elif [ ! -z "$(grep "^ \{0,\}- MATCH," "$CLASH_CONFIG")" ]; then
+   sed -i '1,/^ \{0,\}- MATCH,/{/^ \{0,\}- MATCH,/s/^ \{0,\}- MATCH,/#CUSTOMRULESTART#\n&/}' "$CLASH_CONFIG" 2>/dev/null
 else
-   echo "#*******CUSTOM RULE START**********#" >> "$CLASH_CONFIG" 2>/dev/null
+   echo "#CUSTOMRULESTART#" >> "$CLASH_CONFIG" 2>/dev/null
 fi
 
-sed -i '/CUSTOM-RULE-START/r/tmp/ipadd.conf' "$CLASH_CONFIG" 2>/dev/null
+sed -i '/CUSTOMRULESTART/r/tmp/ipadd.conf' "$CLASH_CONFIG" 2>/dev/null
+mv 	$CLASH_CONFIG $CONFIG_YAML 2>/dev/null
+
 fi
 
 else
-sed -i '/#*******CUSTOM-RULE-START**********#/,/#*******CUSTOM-RULE-END**********#/d' "$CLASH_CONFIG" 2>/dev/null
+sed -i '/#CUSTOMRULESTART#/,/#CUSTOMRULEEND#/d' "$CONFIG_YAML" 2>/dev/null
 fi

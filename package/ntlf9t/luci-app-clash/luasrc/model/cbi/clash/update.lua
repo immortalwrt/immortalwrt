@@ -24,7 +24,7 @@ sul.addremove=false
 o = sul:option(FileUpload, "")
 o.description =''..font_red..bold_on..translate("Manually download, unzip and rename clash core from links below and upload")..bold_off..font_off..' '
 .."<br />"
-..translate("Dreamacro clash tun core (dtun) - (https://github.com/Dreamacro/clash/releases/tag/TUN)")
+..translate("Dreamacro clash tun core (dtun) - (https://github.com/Dreamacro/clash/releases/tag/premium)")
 .."<br />"
 ..translate("comzyh clash tun core (ctun) - (https://github.com/comzyh/clash/releases)")
 .."<br />"
@@ -33,8 +33,7 @@ o.description =''..font_red..bold_on..translate("Manually download, unzip and re
 ..translate("Frainzy1477 clashr core - (https://github.com/frainzy1477/clashrdev/releases)")
 .."<br />"
 ..translate("Frainzy1477 clash core - (https://github.com/frainzy1477/clash_dev/releases)")
-.."<br />"
-..translate("Frainzy1477 clash(ctun) core - (https://github.com/frainzy1477/clashtun/releases)")
+
 
 o.title = translate("  ")
 o.template = "clash/upload_core"
@@ -118,7 +117,7 @@ o = s:option(ListValue, "dcore", translate("Core Type"))
 o.default = "clashcore"
 o:value("1", translate("Clash"))
 o:value("2", translate("Clashr"))
-o:value("3", translate("Clash(ctun)"))
+--o:value("3", translate("Clash(ctun)"))
 o.description = translate("Select core, clashr support ssr while clash does not.")
 
 
