@@ -1,13 +1,13 @@
 --- a/mac80211.c
 +++ b/mac80211.c
 @@ -156,7 +156,7 @@ static void mt76_init_stream_cap(struct
- void mt76_set_stream_caps(struct mt76_dev *dev, bool vht)
+ void mt76_set_stream_caps(struct mt76_phy *phy, bool vht)
  {
- 	if (dev->cap.has_2ghz)
--		mt76_init_stream_cap(dev, &dev->phy.sband_2g.sband, false);
-+		mt76_init_stream_cap(dev, &dev->phy.sband_2g.sband, vht);
- 	if (dev->cap.has_5ghz)
- 		mt76_init_stream_cap(dev, &dev->phy.sband_5g.sband, vht);
+ 	if (phy->dev->cap.has_2ghz)
+-		mt76_init_stream_cap(phy, &phy->sband_2g.sband, false);
++		mt76_init_stream_cap(phy, &phy->sband_2g.sband, vht);
+ 	if (phy->dev->cap.has_5ghz)
+ 		mt76_init_stream_cap(phy, &phy->sband_5g.sband, vht);
  }
 @@ -218,14 +218,14 @@ mt76_init_sband(struct mt76_dev *dev, st
  
