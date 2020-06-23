@@ -1,10 +1,10 @@
 config sfe
-	option enabled '0'
+	option enabled '1'
 	option ipv6 '0'
 	option wifi '0'
 	option bbr '0'
 	option dns '0'
 	option dnscache_enable '1'
 	option dns_server '114.114.114.114,114.114.115.115,223.5.5.5,223.6.6.6,180.76.76.76,119.29.29.29,119.28.28.28,1.2.4.8,210.2.4.8'
-	option ipv6dns_server '2001:4860:4860::8888,2001:4860:4860::8844,2001:2001::1111,2001:2001::1001,2400:da00::6666,240C::6666,240C::6644'
+	option ipv6dns_server '240c::6666,240c::6644,2400:da00::6666,2001:da8::666'
 
