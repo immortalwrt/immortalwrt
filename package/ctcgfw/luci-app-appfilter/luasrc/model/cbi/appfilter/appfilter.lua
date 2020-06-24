@@ -108,7 +108,7 @@ while true do
 	end
 	if not line:match("Ip*") then
 		local ip, hw_type, flags, mac, mask, device = line:match("(%S+) %s+ (%S+) %s+ (%S+) %s+ (%S+) %s+ (%S+) %s+ (%S+)")
-		if device:match("lan") then
+		if device ~= nil and mac ~= nil and device:match("lan") then
 			local hostname=get_hostname_by_mac(mac)
 			if not hostname then
 				users:value(mac, mac);
