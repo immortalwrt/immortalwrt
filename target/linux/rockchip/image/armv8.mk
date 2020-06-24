@@ -4,6 +4,16 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+define Device/friendlyarm_nanopi-r2s
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R2S
+  SOC := rk3328
+  UBOOT_DEVICE_NAME := nanopi-r2s-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | sdcard-img | gzip | append-metadata
+  DEVICE_PACKAGES += kmod-phy-realtek kmod-usb-net kmod-usb-net-rtl8152 kmod-macvlan
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r2s
+
 define Device/radxa_rock-pi-e
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := Rock Pi E
