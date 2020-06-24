@@ -38,6 +38,13 @@ cdns = s:option(Flag, "culan", translate("Enable Lan DNS"))
 cdns.default = 1
 cdns.description = translate("Enabling will set custom DNS Servers for Lan")
 
+dns = s:option(DynamicList, "landns", translate("Lan DNS servers"))
+dns.description = translate("Set custom DNS Servers for Lan")
+dns.datatype = "ipaddr"
+dns.cast = "string"
+dns:depends("culan", 1)
+
+
 y = s:option(ListValue, "access_control", translate("Access Control"))
 y:value("0", translate("disabled"))
 y:value("1", translate("Whitelist IPs"))
@@ -66,12 +73,6 @@ luci.ip.neighbors({ family = 4 }, function(entry)
 end)
 o:depends("access_control", 2)
 
-
-dns = s:option(DynamicList, "landns", translate("Lan DNS servers"))
-dns.description = translate("Set custom DNS Servers for Lan")
-dns.datatype = "ipaddr"
-dns.cast     = "string"
-dns:depends("culan", 1)
 
 
 md = s:option(Flag, "tun_mode", translate("Tun Mode DNS"))
