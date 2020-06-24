@@ -81,7 +81,7 @@ if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
 		sed -i "/mode: ${p_mode}/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $CONFIG_YAML 2>/dev/null 
 		sed -i -e "\$a "  $CONFIG_YAML 2>/dev/null 
 		
 		else
@@ -89,7 +89,7 @@ if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
 		sed -i "/mode: Rule/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $CONFIG_YAML 2>/dev/null 
 		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null	
@@ -138,14 +138,14 @@ if [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
 		sed -i "/mode: ${p_mode}/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $CONFIG_YAML 2>/dev/null 
 		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/allow-lan: ${allow_lan}/a\mode: Rule" $CONFIG_YAML 2>/dev/null
 		sed -i "/mode: Rule/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $CONFIG_YAML 2>/dev/null 
 		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null	
@@ -192,14 +192,14 @@ else
 		sed -i "/mode: ${p_mode}/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $CONFIG_YAML 2>/dev/null 
 		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		else
 		sed -i "/allow-lan: ${allow_lan}/a\mode: Rule" $CONFIG_YAML 2>/dev/null
 		sed -i "/mode: Rule/a\log-level: ${log_level}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $CONFIG_YAML 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $CONFIG_YAML 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $CONFIG_YAML 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $CONFIG_YAML 2>/dev/null 
 		sed -i -e "\$a " $CONFIG_YAML 2>/dev/null
 		fi
 		sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null

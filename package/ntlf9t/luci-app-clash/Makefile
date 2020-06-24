@@ -106,9 +106,9 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d	
 	$(INSTALL_DIR) $(1)/usr/share/clash/rules
 	$(INSTALL_DIR) $(1)/usr/share/clash/rules/g_rules
-	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard
-	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard/img
-	$(INSTALL_DIR) $(1)/usr/share/clash/dashboard/js
+	$(INSTALL_DIR) $(1)/etc/clash/dashboard
+	$(INSTALL_DIR) $(1)/etc/clash/dashboard/img
+	$(INSTALL_DIR) $(1)/etc/clash/dashboard/js
 	$(INSTALL_DIR) $(1)/usr/share/clash/yacd
 	$(INSTALL_DIR) $(1)/etc/clash/clashtun
 	$(INSTALL_DIR) $(1)/etc/clash/dtun
@@ -144,11 +144,11 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/logstatus_check $(1)/usr/share/clash/
 	$(INSTALL_BIN) ./root/usr/share/clash/clash.txt $(1)/usr/share/clash/
 	
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/usr/share/clash/dashboard/
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.772fa8c97df0c4f1549a.css $(1)/usr/share/clash/dashboard/
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/img/ffac0fa1d89f15922b4594863b8b32e9.png $(1)/usr/share/clash/dashboard/img/
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/1.bundle.772fa8c97df0c4f1549a.min.js $(1)/usr/share/clash/dashboard/js/
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.772fa8c97df0c4f1549a.min.js $(1)/usr/share/clash/dashboard/js/
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/etc/clash/dashboard/
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.24f6f4760d8c66faaa74.css $(1)/etc/clash/dashboard/
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/img/ffac0fa1d89f15922b4594863b8b32e9.png $(1)/etc/clash/dashboard/img/
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/1.bundle.24f6f4760d8c66faaa74.min.js $(1)/etc/clash/dashboard/js/
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.24f6f4760d8c66faaa74.min.js $(1)/etc/clash/dashboard/js/
 	$(INSTALL_BIN) ./root/usr/share/clash/yacd/* $(1)/usr/share/clash/yacd/
 	
 	$(INSTALL_DATA) ./luasrc/clash.lua $(1)/usr/lib/lua/luci/
