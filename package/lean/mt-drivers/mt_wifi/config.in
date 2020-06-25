@@ -47,14 +47,15 @@ endchoice
 
 choice
 	prompt "Choose Second WiFi Interface"
-	config MTK_SECOND_IF_NONE
-	bool "None"
 
 	config MTK_SECOND_IF_MT7615E
 	bool "MT7615E"
 	select MTK_WIFI_MT_MAC
 	select MTK_CHIP_MT7615E
 	select MTK_MULTI_INF_SUPPORT
+
+	config MTK_SECOND_IF_NONE
+	bool "None"
 
 endchoice
 
