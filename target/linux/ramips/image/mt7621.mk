@@ -753,7 +753,7 @@ define Device/phicomm_k2p
   DEVICE_VENDOR := Phicomm
   DEVICE_MODEL := K2P
   SUPPORTED_DEVICES += k2p
-  DEVICE_PACKAGES := kmod-mt7615e wpad-openssl
+  DEVICE_PACKAGES := luci-app-mtwifi
 endef
 TARGET_DEVICES += phicomm_k2p
 
@@ -965,8 +965,8 @@ define Device/xiaomi_mir3p
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
 	check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := kmod-mt7615e kmod-usb3 kmod-usb-ledtrig-usbport \
-	wpad-openssl uboot-envtools
+  DEVICE_PACKAGES := kmod-usb3 kmod-usb-ledtrig-usbport \
+	luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir3p
 
