@@ -33,6 +33,17 @@
  
  #ifdef CONFIG_LOCKDEP
  	struct lockdep_map	lockdep_map;
+--- a/include/net/netfilter/nf_conntrack_ecache.h
++++ b/include/net/netfilter/nf_conntrack_ecache.h
+@@ -74,6 +74,8 @@ struct nf_ct_event {
+ #ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
+ extern int nf_conntrack_register_notifier(struct net *net, struct notifier_block *nb);
+ extern int nf_conntrack_unregister_notifier(struct net *net, struct notifier_block *nb);
++extern int nf_conntrack_register_chain_notifier(struct net *net, struct notifier_block *nb);
++extern int nf_conntrack_unregister_chain_notifier(struct net *net, struct notifier_block *nb);
+ #else
+ struct nf_ct_event_notifier {
+ 	int (*fcn)(unsigned int events, struct nf_ct_event *item);
 --- a/net/Kconfig
 +++ b/net/Kconfig
 @@ -467,3 +467,6 @@ config HAVE_CBPF_JIT
@@ -149,77 +160,48 @@
 +	u64_stats_update_end(&stats->syncp);
 +}
 +EXPORT_SYMBOL_GPL(br_dev_update_stats);
---- a/net/netfilter/Kconfig
-+++ b/net/netfilter/Kconfig
-@@ -165,6 +165,14 @@ config NF_CONNTRACK_TIMEOUT
- 
- 	  If unsure, say `N'.
- 
-+config NF_CONNTRACK_CHAIN_EVENTS
-+	bool "Register multiple callbacks to ct events"
-+	depends on NF_CONNTRACK_EVENTS
-+	help
-+	  Support multiple registrations.
-+
-+	  If unsure, say `N'.
-+
- config NF_CONNTRACK_TIMESTAMP
- 	bool  'Connection tracking timestamping'
- 	depends on NETFILTER_ADVANCED
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -159,13 +159,17 @@ int nf_conntrack_eventmask_report(unsign
- {
- 	int ret = 0;
- 	struct net *net = nf_ct_net(ct);
-+#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
- 	struct nf_ct_event_notifier *notify;
-+#endif
- 	struct nf_conntrack_ecache *e;
+@@ -164,7 +164,11 @@ int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
  
  	rcu_read_lock();
-+#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++	if (!notify && !rcu_dereference_raw(net->ct.nf_conntrack_chain.head))
++#else
  	if (!notify)
- 		goto out_unlock;
 +#endif
+ 		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
- 	if (!e)
-@@ -183,7 +187,12 @@ int nf_conntrack_eventmask_report(unsign
+@@ -183,7 +187,14 @@ int nf_conntrack_eventmask_report(unsign
  		if (!((eventmask | missed) & e->ctmask))
  			goto out_unlock;
  
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
 +		ret = atomic_notifier_call_chain(&net->ct.nf_conntrack_chain,
 +			eventmask | missed, &item);
++		if (notify)
++			ret = notify->fcn(eventmask | missed, &item);
 +#else
  		ret = notify->fcn(eventmask | missed, &item);
 +#endif
  		if (unlikely(ret < 0 || missed)) {
  			spin_lock_bh(&ct->lock);
  			if (ret < 0) {
-@@ -258,15 +267,19 @@ void nf_ct_deliver_cached_events(struct
- {
- 	struct net *net = nf_ct_net(ct);
- 	unsigned long events, missed;
-+#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
- 	struct nf_ct_event_notifier *notify;
-+#endif
- 	struct nf_conntrack_ecache *e;
- 	struct nf_ct_event item;
- 	int ret;
+@@ -265,7 +276,11 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
  
  	rcu_read_lock();
-+#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++	if ((notify == NULL) && !rcu_dereference_raw(net->ct.nf_conntrack_chain.head))
++#else
  	if (notify == NULL)
- 		goto out_unlock;
 +#endif
+ 		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
- 	if (e == NULL)
-@@ -289,7 +302,13 @@ void nf_ct_deliver_cached_events(struct
+@@ -289,7 +304,15 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
  	item.portid = 0;
  	item.report = 0;
  
@@ -227,9 +209,35 @@
 +	ret = atomic_notifier_call_chain(&net->ct.nf_conntrack_chain,
 +			events | missed,
 +			&item);
++	if (notify != NULL)
++		ret = notify->fcn(events | missed, &item);
 +#else
  	ret = notify->fcn(events | missed, &item);
 +#endif
  
  	if (likely(ret == 0 && !missed))
  		goto out_unlock;
+@@ -342,6 +365,11 @@ int nf_conntrack_register_notifier(struct net *net, struct notifier_block *nb)
+ {
+         return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
+ }
++int nf_conntrack_register_chain_notifier(struct net *net, struct notifier_block *nb)
++{
++	return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
++}
++EXPORT_SYMBOL_GPL(nf_conntrack_register_chain_notifier);
+ #else
+ int nf_conntrack_register_notifier(struct net *net,
+ 				   struct nf_ct_event_notifier *new)
+@@ -371,6 +399,11 @@ int nf_conntrack_unregister_notifier(struct net *net, struct notifier_block *nb)
+ {
+ 	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
+ }
++int nf_conntrack_unregister_chain_notifier(struct net *net, struct notifier_block *nb)
++{
++	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
++}
++EXPORT_SYMBOL_GPL(nf_conntrack_unregister_chain_notifier);
+ #else
+ void nf_conntrack_unregister_notifier(struct net *net,
+ 				      struct nf_ct_event_notifier *new)
