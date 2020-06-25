@@ -152,6 +152,12 @@
 					compatible = "nxp,pcf8563";
 					reg = <0x51>;
 				};
+
+				tca9539@74 {
+					status = "okay";
+					compatible = "ti,tca9539";
+					reg = <0x74>;
+				};
 			};
 		};
 
