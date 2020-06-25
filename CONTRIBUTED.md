@@ -39,7 +39,8 @@ ootoc-OpenWRT source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenW
 r8168 source: [BROBIRD/openwrt-r8168](https://github.com/BROBIRD/openwrt-r8168).<br/>
 MentoHUST source: [KyleRicardo/MentoHUST-OpenWrt-ipk](https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk).<br/>
 scutclient source: [scutclient/scutclient](https://github.com/scutclient/scutclient).<br/>
-luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).
+luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).<br/>
+MT-Wifi 5.0.4.0: [MeIsReallyBa/mt7615-dbdc-linux5.4](https://github.com/MeIsReallyBa/mt7615-dbdc-linux5.4).
 
 ## License
 ### Depending on their own License.

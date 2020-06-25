@@ -30,7 +30,7 @@ define Package/minieap
 	DEPENDS:=+libpcap
 	TITLE:=Extendable 802.1x client
 	URL:=https://github.com/updateing/minieap
-	SUBMENU:=CERNET
+	SUBMENU:=Campus Network
 endef
 
 define Package/minieap/description
