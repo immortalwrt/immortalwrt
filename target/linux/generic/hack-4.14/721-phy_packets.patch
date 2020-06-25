@@ -101,7 +101,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	help
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3012,10 +3012,20 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3008,10 +3008,20 @@ static int xmit_one(struct sk_buff *skb,
  #endif
  		dev_queue_xmit_nit(skb, dev);
  
