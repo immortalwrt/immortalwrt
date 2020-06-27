@@ -702,6 +702,18 @@ define Device/netgear_wac104
 endef
 TARGET_DEVICES += netgear_wac104
 
+define Device/netgear_wac124
+  $(Device/netgear_sercomm_nand)
+  DEVICE_MODEL := WAC124
+  SERCOMM_HWNAME := WAC124
+  SERCOMM_HWID := CTL
+  SERCOMM_HWVER := A003
+  SERCOMM_SWVER := 0x0402
+  IMAGE_SIZE := 40960k
+  DEVICE_PACKAGES += kmod-mt7615e kmod-mt7615-firmware
+endef
+TARGET_DEVICES += netgear_wac124
+
 define Device/netgear_wndr3700-v5
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 64k
@@ -962,7 +974,7 @@ define Device/xiaomi_mir3p
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
 	check-size
   DEVICE_PACKAGES := kmod-usb3 kmod-usb-ledtrig-usbport \
-	luci-app-mtwifi uboot-envtools
+	kmod-mt7615e kmod-mt7615-firmware uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir3p
 
