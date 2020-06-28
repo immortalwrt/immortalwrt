@@ -25,7 +25,7 @@ htop lm-sensors autocore-x86 automount autosamba luci-app-ipsec-vpnd luci-proto-
 luci-app-airplay2 luci-app-music-remote-center luci-app-qbittorrent luci-app-amule luci-app-openvpn-server luci-app-unblockmusic \
 ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie \
 kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 kmod-usb-audio \
-kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152
+kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-mlx4-core kmod-mlx5-core
 
 $(eval $(call BuildTarget))
 
