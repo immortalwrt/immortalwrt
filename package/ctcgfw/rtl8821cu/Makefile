@@ -51,6 +51,10 @@ EXTRA_CFLAGS:= \
 	-DCONFIG_IOCTL_CFG80211 \
 	-DCONFIG_CONCURRENT_MODE \
 
+ifeq ($(ARCH),arm)
+	EXTRA_CFLAGS += -mfloat-abi=softfp
+endif
+
 ifeq ($(ARCH),x86_64)
 	EXTRA_CFLAGS += -mhard-float
 endif

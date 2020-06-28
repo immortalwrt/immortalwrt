@@ -1639,7 +1639,7 @@
   * number or errno values. Not nice, but better than additional function
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -143,6 +143,9 @@
+@@ -144,6 +144,9 @@
  #include <linux/hrtimer.h>
  #include <linux/netfilter_ingress.h>
  #include <linux/crash_dump.h>
@@ -1649,7 +1649,7 @@
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  
-@@ -3001,7 +3004,12 @@ static int xmit_one(struct sk_buff *skb,
+@@ -2997,7 +3000,12 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1662,7 +1662,7 @@
  		dev_queue_xmit_nit(skb, dev);
  
  	len = skb->len;
-@@ -3040,6 +3048,8 @@ out:
+@@ -3036,6 +3044,8 @@ out:
  	return skb;
  }
  

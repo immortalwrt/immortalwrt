@@ -727,7 +727,7 @@ EOF
 		sed -i "/mode: ${p_mode}/a\log-level: ${log_level}" $TEMP_FILE 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $TEMP_FILE 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $TEMP_FILE 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $TEMP_FILE 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $TEMP_FILE 2>/dev/null 
 		sed -i "external-ui: \"/usr/share/clash/dashboard\"/a\  " $TEMP_FILE 2>/dev/null 
 		sed -i "   /a\   " $TEMP_FILE 2>/dev/null
 		else
@@ -735,7 +735,7 @@ EOF
 		sed -i "/mode: ${p_mode}/a\log-level: ${log_level}" $TEMP_FILE 2>/dev/null 
 		sed -i "/log-level: ${log_level}/a\external-controller: 0.0.0.0:${dash_port}" $TEMP_FILE 2>/dev/null 
 		sed -i "/external-controller: 0.0.0.0:${dash_port}/a\secret: \"${da_password}\"" $TEMP_FILE 2>/dev/null 
-		sed -i "/secret: \"${da_password}\"/a\external-ui: \"/usr/share/clash/dashboard\"" $TEMP_FILE 2>/dev/null 
+		sed -i "/secret: \"${da_password}\"/a\external-ui: \"./dashboard\"" $TEMP_FILE 2>/dev/null 
 		fi
 		sed -i '/#config-start-here/ d' $TEMP_FILE 2>/dev/null
 
