@@ -284,6 +284,7 @@ config MTK_DEFAULT_5G_PROFILE
 	bool "5G default profile for DBDC"
 	depends on MTK_DBDC_MODE
 #	depends on MTK_MULTI_PROFILE_SUPPORT
+	default y if TARGET_ramips_mt7621_DEVICE_phicomm_k2p
 	default n
 
 config MTK_WSC_INCLUDED
