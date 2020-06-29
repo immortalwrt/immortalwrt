@@ -10,7 +10,7 @@ define Device/friendlyarm_nanopi-r2s
   SOC := rk3328
   UBOOT_DEVICE_NAME := nanopi-r2s-rk3328
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | sdcard-img | gzip | append-metadata
-  DEVICE_PACKAGES += kmod-phy-realtek kmod-usb-net kmod-usb-net-rtl8152 kmod-macvlan
+  DEVICE_PACKAGES += autocore-arm kmod-phy-realtek kmod-usb-net kmod-usb-net-rtl8152 kmod-macvlan
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r2s
 
