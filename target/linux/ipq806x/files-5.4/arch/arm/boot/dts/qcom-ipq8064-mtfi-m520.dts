@@ -164,6 +164,12 @@
 			compatible = "nxp,pcf8563";
 			reg = <0x51>;
 		};
+
+		tca9539@74 {
+			status = "okay";
+			compatible = "ti,tca9539";
+			reg = <0x74>;
+		};
 	};
 };
 
@@ -294,17 +300,16 @@
 
 &pcie0 {
 	status = "okay";
-	reset-gpio = <&qcom_pinmux 3 GPIO_ACTIVE_LOW>;
-	pinctrl-0 = <&pcie0_pins>;
-	pinctrl-names = "default";
+
+	reset-gpio = <&qcom_pinmux 3 GPIO_ACTIVE_HIGH>;
+	/delete-property/ perst-gpios;
 };
 
 &pcie1 {
 	status = "okay";
-	reset-gpio = <&qcom_pinmux 48 GPIO_ACTIVE_LOW>;
-	pinctrl-0 = <&pcie1_pins>;
-	pinctrl-names = "default";
-	force_gen1 = <1>;
+
+	reset-gpio = <&qcom_pinmux 48 GPIO_ACTIVE_HIGH>;
+	/delete-property/ perst-gpios;
 };
 
 &mdio0 {
