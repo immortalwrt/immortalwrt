@@ -253,6 +253,18 @@ define Device/rakwireless_rak633
 endef
 TARGET_DEVICES += rakwireless_rak633
 
+define Device/ravpower_rp-wd009
+  IMAGE_SIZE := 14272k
+  DEVICE_VENDOR := RAVPower
+  DEVICE_MODEL := RP-WD009
+  UBOOT_PATH := $(STAGING_DIR_IMAGE)/ravpower_rp-wd009-u-boot.bin
+  DEVICE_PACKAGES := kmod-mt76x0e kmod-usb2 kmod-usb-ohci \
+	kmod-sdhci-mt7620 kmod-i2c-mt7628 ravpower-mcu
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | ravpower-wd009-factory
+endef
+TARGET_DEVICES += ravpower_rp-wd009
+
 define Device/skylab_skw92a
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Skylab
@@ -354,6 +366,16 @@ define Device/tplink_re200-v2
   TPLINK_BOARD_ID := RE200-V2
 endef
 TARGET_DEVICES += tplink_re200-v2
+
+define Device/tplink_re220-v2
+  $(Device/tplink-safeloader)
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := RE220
+  DEVICE_VARIANT := v2
+  DEVICE_PACKAGES := kmod-mt76x0e
+  TPLINK_BOARD_ID := RE220-V2
+endef
+TARGET_DEVICES += tplink_re220-v2
 
 define Device/tplink_re305-v1
   $(Device/tplink-safeloader)
