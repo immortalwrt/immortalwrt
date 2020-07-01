@@ -34,7 +34,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	__u8			imq_flags:IMQ_F_BITS;
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4582,6 +4582,9 @@ static enum gro_result dev_gro_receive(s
+@@ -4578,6 +4578,9 @@ static enum gro_result dev_gro_receive(s
  	enum gro_result ret;
  	int grow;
  
@@ -44,7 +44,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (!(skb->dev->features & NETIF_F_GRO))
  		goto normal;
  
-@@ -5877,6 +5880,48 @@ static void __netdev_adjacent_dev_unlink
+@@ -5873,6 +5876,48 @@ static void __netdev_adjacent_dev_unlink
  					   &upper_dev->adj_list.lower);
  }
  
@@ -93,7 +93,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  static int __netdev_upper_dev_link(struct net_device *dev,
  				   struct net_device *upper_dev, bool master,
  				   void *upper_priv, void *upper_info)
-@@ -5949,6 +5994,7 @@ static int __netdev_upper_dev_link(struc
+@@ -5945,6 +5990,7 @@ static int __netdev_upper_dev_link(struc
  			goto rollback_lower_mesh;
  	}
  
@@ -101,7 +101,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	ret = call_netdevice_notifiers_info(NETDEV_CHANGEUPPER, dev,
  					    &changeupper_info.info);
  	ret = notifier_to_errno(ret);
-@@ -6075,6 +6121,7 @@ void netdev_upper_dev_unlink(struct net_
+@@ -6071,6 +6117,7 @@ void netdev_upper_dev_unlink(struct net_
  	list_for_each_entry(i, &upper_dev->all_adj_list.upper, list)
  		__netdev_adjacent_dev_unlink(dev, i->dev, i->ref_nr);
  
@@ -109,7 +109,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	call_netdevice_notifiers_info(NETDEV_CHANGEUPPER, dev,
  				      &changeupper_info.info);
  }
-@@ -6678,6 +6725,7 @@ int dev_set_mac_address(struct net_devic
+@@ -6674,6 +6721,7 @@ int dev_set_mac_address(struct net_devic
  	if (err)
  		return err;
  	dev->addr_assign_type = NET_ADDR_SET;
