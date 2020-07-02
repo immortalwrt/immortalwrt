@@ -10,12 +10,12 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=redsocks2
 PKG_VERSION:=0.67
-PKG_RELEASE:=2
+PKG_RELEASE:=4
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/semigodking/redsocks.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=53cad23a14afdd5f61a0542615beb7f4d98be728
+PKG_SOURCE_VERSION:=d94c245ea47859cda5b4b7373308589206b97bdc
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -35,6 +35,14 @@ define Package/redsocks2/description
 This is a modified version of original redsocks. \
 The name is changed to be REDSOCKS2 since this release to distinguish with original redsocks. \
 This variant is useful for anti-GFW (Great Fire Wall).
+endef
+
+define Package/redsocks2/conffiles
+/etc/config/redsocks2
+endef
+
+define Build/Compile
+	$(call Build/Compile/Default,DISABLE_SHADOWSOCKS=true)
 endef
 
 define Package/redsocks2/install
