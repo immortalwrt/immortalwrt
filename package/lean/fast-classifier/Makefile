@@ -55,7 +55,7 @@ define Build/Compile/kmod
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" $(strip $(SFE_MAKE_OPTS)) \
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_MAKE_FLAGS) \
-		SUBDIRS="$(PKG_BUILD_DIR)" \
+		M="$(PKG_BUILD_DIR)" \
 		CONFIG_FAST_CLASSIFIER=m \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 		modules
