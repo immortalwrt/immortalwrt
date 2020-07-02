@@ -163,7 +163,7 @@ endef
 $(eval $(call KernelPackage,fs-efivarfs))
 
 
-define KernelPackage/fs-exfat-kernel
+define KernelPackage/fs-exfat
   SUBMENU:=$(FS_MENU)
   TITLE:=exFAT filesystem support
   KCONFIG:= \
@@ -177,14 +177,14 @@ define KernelPackage/fs-exfat-kernel
 	CONFIG_EXFAT_DEFAULT_IOCHARSET="utf8"
   FILES:=$(LINUX_DIR)/drivers/staging/exfat/exfat.ko
   AUTOLOAD:=$(call AutoLoad,30,exfat,1)
-  DEPENDS:=@!(LINUX_4_9||LINUX_4_14||LINUX_4_19) +kmod-nls-base
+  DEPENDS:=@LINUX_5_4 +kmod-nls-base
 endef
 
-define KernelPackage/fs-exfat-kernel/description
+define KernelPackage/fs-exfat/description
  Kernel module for exFAT filesystem support
 endef
 
-$(eval $(call KernelPackage,fs-exfat-kernel))
+$(eval $(call KernelPackage,fs-exfat))
 
 
 define KernelPackage/fs-exportfs

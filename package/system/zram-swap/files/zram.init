@@ -69,7 +69,7 @@ zram_getdev()
 	local zdev=$( zram_dev )
 
 	if [ "$(mount | grep $zdev)" ]; then
-		local idx=`cat /sys/class/zram-control/hot_add`
+		local idx=$(cat /sys/class/zram-control/hot_add)
 		zdev="$( zram_dev $idx )"
 	fi
 
@@ -85,7 +85,7 @@ zram_comp_algo()
 		return 0
 	fi
 
-	if [ `grep -c "$zram_comp_algo" /sys/block/$( basename $dev )/comp_algorithm` -ne 0 ]; then
+	if [ $(grep -c "$zram_comp_algo" /sys/block/$( basename $dev )/comp_algorithm) -ne 0 ]; then
 		logger -s -t zram_comp_algo -p daemon.debug "Set compression algorithm '$zram_comp_algo' for zram '$dev'"
 		echo $zram_comp_algo > "/sys/block/$( basename $dev )/comp_algorithm"
 	else
