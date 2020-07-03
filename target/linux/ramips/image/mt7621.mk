@@ -268,6 +268,7 @@ endef
 TARGET_DEVICES += d-team_pbr-m1
 
 define Device/edimax_ra21s
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Edimax
   DEVICE_MODEL := RA21S
@@ -281,6 +282,7 @@ endef
 TARGET_DEVICES += edimax_ra21s
 
 define Device/edimax_rg21s
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Edimax
   DEVICE_MODEL := Gemini AC2600 RG21S
