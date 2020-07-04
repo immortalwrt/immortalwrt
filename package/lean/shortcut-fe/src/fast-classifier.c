@@ -36,10 +36,11 @@
 #include <linux/hashtable.h>
 #include <linux/version.h>
 
-#include <sfe_backport.h>
-#include <sfe.h>
-#include <sfe_cm.h>
+#include "sfe_backport.h"
+#include "sfe.h"
+#include "sfe_cm.h"
 #include "fast-classifier.h"
+
 
 typedef enum fast_classifier_exception {
 	FAST_CL_EXCEPTION_PACKET_BROADCAST,
@@ -196,7 +197,7 @@ static atomic_t done_fail_msgs = ATOMIC_INIT(0);
  * 	only implement ingress for now, because for egress we
  * 	want to have the bridge devices qdiscs be used.
  */
-static bool skip_to_bridge_ingress;
+static bool skip_to_bridge_ingress=1;
 
 /*
  * fast_classifier_incr_exceptions()
@@ -1824,7 +1825,7 @@ static int __init fast_classifier_init(void)
 		DEBUG_ERROR("failed to register genl family: %d\n", result);
 		goto exit5;
 	}
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0))
 	result = genl_register_family_with_ops_groups(&fast_classifier_gnl_family,
 						      fast_classifier_gnl_ops,
 						      fast_classifier_genl_mcgrp);

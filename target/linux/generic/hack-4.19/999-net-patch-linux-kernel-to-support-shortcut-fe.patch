@@ -44,17 +44,17 @@
 +	bool "Enables kernel network stack path for Shortcut  Forwarding Engine
 --- a/net/core/dev.c	2019-01-16 20:38:37.274933833 +0800
 +++ b/net/core/dev.c	2019-01-16 20:44:07.773594898 +0800
-@@ -3001,8 +3001,17 @@ static int xmit_one(struct sk_buff *skb,
- 	unsigned int len;
- 	int rc;
- 
+@@ -3256,8 +3256,17 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		!(skb->imq_flags & IMQ_F_ENQUEUE))
+ #else
+ 	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
++#endif
 +#ifdef CONFIG_SHORTCUT_FE
 +	/* If this skb has been fast forwarded then we don't want it to
 +	 * go to any taps (by definition we're trying to bypass them).
 +	 */
 +	if (!skb->fast_forwarded) {
-+#endif
- 	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
+ #endif
  		dev_queue_xmit_nit(skb, dev);
 +#ifdef CONFIG_SHORTCUT_FE
 +	}
