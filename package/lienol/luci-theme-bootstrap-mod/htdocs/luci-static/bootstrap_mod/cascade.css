@@ -556,7 +556,7 @@ p {
 
 .tabs,
 .cbi-tabmenu {
-    border-bottom: 1.5px solid #ddd;
+    border-bottom: 2px solid #ddd;
     margin-bottom: 20px;
 }
 
@@ -667,7 +667,7 @@ table td,
 .table .th,
 .table .td {
     color: #811;
-    padding: 5px 3px !important;
+    padding: 3px !important;
 }
 
 table tr+tr td,
@@ -718,23 +718,23 @@ table td:first-child,
 }
 
 .td.cbi-section-actions>* {
-    display: flex;
+    /* display: flex; */
 }
 
 .td.cbi-section-actions>*>*,
 .td.cbi-section-actions>*>form>* {
-    flex: 1 1 4em;
-    margin: 0 1px;
+    /* flex: 1 1 4em;
+    margin: 0 1px; */
 }
 
 .td.cbi-section-actions>*>.cbi-button-up,
 .cbi-input-up {
-    background: unset;
+    /* background: unset; */
 }
 
 .td.cbi-section-actions>*>.cbi-button-down,
 .cbi-input-down {
-    background: unset;
+    /* background: unset; */
 }
 
 #cbi-network .tr,
@@ -956,15 +956,14 @@ button:focus {
 .cbi-button-add:focus,
 .cbi-input-add:active,
 .cbi-input-add:focus {
-    border-color: #404040;
-    opacity: .8;
 }
 
 .cbi-button-remove,
 .cbi-input-remove,
 .cbi-section-remove input {
-    border-color: #c44;
-    color: #c44;
+    border-color: red;
+    background-color: red;
+    color: #fff;
 }
 
 .cbi-button-remove:active,
@@ -973,8 +972,6 @@ button:focus {
 .cbi-input-remove:focus,
 .cbi-section-remove input:active,
 .cbi-section-remove input:focus {
-    border-color: #c00;
-    opacity: .8;
 }
 
 .cbi-button-reload,
@@ -988,8 +985,6 @@ button:focus {
 .cbi-button-reload:focus,
 .cbi-input-reload:active,
 .cbi-input-reload:focus {
-    border-color: rgb(148, 143, 225);
-    opacity: .8;
 }
 
 .cbi-button-reset,
@@ -1003,8 +998,6 @@ button:focus {
 .cbi-button-reset:focus,
 .cbi-input-reset:active,
 .cbi-input-reset:focus {
-    border-color: #6bde84;
-    opacity: .8;
 }
 
 .cbi-button-edit,
@@ -1018,22 +1011,19 @@ button:focus {
 .cbi-button-edit:focus,
 .cbi-input-edit:active,
 .cbi-input-edit:focus {
-    border-color: #ff7700;
-    opacity: .8;
 }
 
 .cbi-button-apply,
 .cbi-input-apply {
-    border-color: #0069d6;
-    color: #0069d6;
+    color: #fff;
+    background: #0069d6;
+    border: 1px solid #0069d6;
 }
 
 .cbi-button-apply:active,
 .cbi-button-apply:focus,
 .cbi-input-apply:active,
 .cbi-input-apply:focus {
-    border-color: rgb(0, 171, 232);
-    opacity: .8;
 }
 
 .cbi-button-save,
@@ -1047,8 +1037,13 @@ button:focus {
 .cbi-button-save:focus,
 .cbi-input-save:active,
 .cbi-input-save:focus {
-    border-color: rgb(148, 143, 225);
-    opacity: .8;
+}
+
+/* LuCI 18 DynamicList */
+input[type="text"] + .cbi-button,
+input[type="password"] + .cbi-button,
+select + .cbi-button {
+	padding: 4px 8px;
 }
 
 
@@ -1504,7 +1499,7 @@ body.modal-overlay-active #modal_overlay>.modal {
 
 .cbi-dynlist>.add-item,
 .td.cbi-section-actions>* {
-    display: flex;
+    /* display: flex; */
 }
 
 .cbi-dynlist>.add-item>input,
@@ -1528,9 +1523,7 @@ body.modal-overlay-active #modal_overlay>.modal {
 }
 
 .btn.primary,
-.cbi-button-action.important,
-.cbi-page-actions .cbi-button-apply,
-.cbi-section-actions .cbi-button-edit {
+.cbi-button-action.important {
     color: #fff;
     background: #0069d6;
     border: 1px solid #0069d6;

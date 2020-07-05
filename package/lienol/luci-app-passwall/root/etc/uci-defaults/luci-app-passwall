@@ -11,9 +11,19 @@ uci -q batch <<-EOF >/dev/null
 	set firewall.passwall.path=/var/etc/passwall.include
 	set firewall.passwall.reload=1
 	commit firewall
+	delete ucitrack.@passwall_server[-1]
+	add ucitrack passwall_server
+	set ucitrack.@passwall_server[-1].init=passwall_server
+	commit ucitrack
+	delete firewall.passwall_server
+	set firewall.passwall_server=include
+	set firewall.passwall_server.type=script
+	set firewall.passwall_server.path=/var/etc/passwall_server.include
+	set firewall.passwall_server.reload=1
+	commit firewall
+	set uhttpd.main.max_requests=50
+	commit uhttpd
 EOF
 
-killall -q -9 kcptun haproxy shadowsocks-libev shadowsocksr-libev
-/etc/init.d/haproxy disable && /etc/init.d/haproxy stop
 rm -rf /tmp/luci-*cache
 exit 0

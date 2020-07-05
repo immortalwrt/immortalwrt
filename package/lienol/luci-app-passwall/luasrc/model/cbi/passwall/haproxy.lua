@@ -1,22 +1,20 @@
-local e = require "nixio.fs"
 local e = require "luci.sys"
-local net = require"luci.model.network".init()
-local uci = require"luci.model.uci".cursor()
+local net = require "luci.model.network".init()
+local uci = require "luci.model.uci".cursor()
 local appname = "passwall"
 
-local n = {}
+local nodes_table = {}
 uci:foreach(appname, "nodes", function(e)
     if e.type and e.remarks and e.port and e.address and e.address ~= "127.0.0.1" then
         if e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= "." then
-            e.remark = "%s：[%s] %s:%s" % {translate(e.type), e.remarks, e.address, e.port}
-            n[e[".name"]] = e
+            nodes_table[#nodes_table + 1] = {
+                id = e[".name"],
+                remarks = "%s：[%s] %s:%s" % {translate(e.type), e.remarks, e.address, e.port},
+                obj = e
+            }
         end
     end
 end)
-
-local key_table = {}
-for key, _ in pairs(n) do table.insert(key_table, key) end
-table.sort(key_table)
 
 m = Map(appname)
 
@@ -24,7 +22,7 @@ m = Map(appname)
 s = m:section(TypedSection, "global_haproxy", translate("Load Balancing"))
 s.anonymous = true
 
-s:append(Template("passwall/haproxy/status"))
+s:append(Template(appname .. "/haproxy/status"))
 
 ---- Balancing Enable
 o = s:option(Flag, "balancing_enable", translate("Enable Load Balancing"))
@@ -63,9 +61,7 @@ o.rmempty = false
 
 ---- Node Address
 o = s:option(Value, "lbss", translate("Node Address"))
-for _, key in pairs(key_table) do
-    o:value(n[key].address .. ":" .. n[key].port, n[key].remark)
-end
+for k, v in pairs(nodes_table) do o:value(v.obj.address .. ":" .. v.obj.port, v.remarks) end
 o.rmempty = false
 
 ---- Node Port

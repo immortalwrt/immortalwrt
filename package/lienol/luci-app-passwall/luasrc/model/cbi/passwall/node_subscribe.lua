@@ -1,7 +1,6 @@
-local e = require "nixio.fs"
-local e = require "luci.sys"
+local appname = "passwall"
 
-m = Map("passwall")
+m = Map(appname)
 
 -- [[ Subscribe Settings ]]--
 s = m:section(TypedSection, "global_subscribe", "")
@@ -36,20 +35,16 @@ o:depends("auto_update_subscribe", 1)
 o = s:option(Button, "_update", translate("Manual subscription"))
 o.inputstyle = "apply"
 function o.write(e, e)
-    luci.sys.call(
-        "lua /usr/share/passwall/subscribe.lua start log > /dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
-                                                 "log"))
+    luci.sys.call("lua /usr/share/" .. appname .. "/subscribe.lua start log > /dev/null 2>&1 &")
+    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", appname, "log"))
 end
 
 ---- Subscribe Delete All
 o = s:option(Button, "_stop", translate("Delete All Subscribe Node"))
 o.inputstyle = "remove"
 function o.write(e, e)
-    luci.sys.call(
-        "lua /usr/share/passwall/subscribe.lua truncate log > /dev/null 2>&1 &")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", "passwall",
-                                                 "log"))
+    luci.sys.call("lua /usr/share/" .. appname .. "/subscribe.lua truncate log > /dev/null 2>&1 &")
+    luci.http.redirect(luci.dispatcher.build_url("admin", "vpn", appname, "log"))
 end
 
 filter_enabled = s:option(Flag, "filter_enabled", translate("Filter keyword switch"), translate("When checked, below options can only be take effect."))
@@ -59,6 +54,10 @@ o.rmempty = false
 filter_keyword = s:option(DynamicList, "filter_keyword", translate("Filter keyword"))
     
 o = s:option(Flag, "filter_keyword_discarded", translate("Filter keyword discarded"), translate("When checked, the keywords in the list are discarded. Otherwise, it is not discarded."))
+o.default = "1"
+o.rmempty = false
+
+o = s:option(Flag, "allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host by default."))
 o.default = "1"
 o.rmempty = false
 

@@ -36,11 +36,6 @@ do
 		eval UDP_NODE$i=$(config_t_get global udp_node$i nil)
 	done
 
-	SOCKS_NODE_NUM=$(config_t_get global_other socks_node_num 1)
-	for i in $(seq 1 $SOCKS_NODE_NUM); do
-		eval SOCKS_NODE$i=$(config_t_get global socks_node$i nil)
-	done
-
 	dns_mode=$(config_t_get global dns_mode)
 	use_haproxy=$(config_t_get global_haproxy balancing_enable 0)
 
@@ -51,13 +46,13 @@ do
 			#kcptun
 			use_kcp=$(config_n_get $tmp_node use_kcp 0)
 			if [ $use_kcp -gt 0 ]; then
-				icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep kcptun_tcp_${i} | wc -l)
+				icount=$(ps -w | grep -v grep | grep "$RUN_BIN_PATH/kcptun" | grep -i "tcp_${i}" | wc -l)
 				if [ $icount = 0 ]; then
 					/etc/init.d/passwall restart
 					exit 0
 				fi
 			fi
-			icount=$(ps -w | grep -v grep | grep -v kcptun | grep $RUN_BIN_PATH | grep -i -E "TCP_${i}" | wc -l)
+			icount=$(ps -w | grep -v -E 'grep|kcptun' | grep "$RUN_BIN_PATH" | grep -i "TCP_${i}" | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0
@@ -69,20 +64,9 @@ do
 	for i in $(seq 1 $UDP_NODE_NUM); do
 		eval tmp_node=\$UDP_NODE$i
 		if [ "$tmp_node" != "nil" ]; then
-			[ "$tmp_node" == "default" ] && tmp_node=$TCP_NODE1
-			icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep -i -E "UDP_${i}" | wc -l)
-			if [ $icount = 0 ]; then
-				/etc/init.d/passwall restart
-				exit 0
-			fi
-		fi
-	done
-
-	#socks
-	for i in $(seq 1 $SOCKS_NODE_NUM); do
-		eval tmp_node=\$SOCKS_NODE$i
-		if [ "$tmp_node" != "nil" ]; then
-			icount=$(ps -w | grep -v grep | grep -v kcptun | grep $RUN_BIN_PATH | grep -i "SOCKS_${i}" | wc -l)
+			[ "$tmp_node" == "tcp" ] && continue
+			[ "$tmp_node" == "tcp_" ] && tmp_node=$TCP_NODE1
+			icount=$(ps -w | grep -v grep | grep "$RUN_BIN_PATH" | grep -i "UDP_${i}" | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/passwall restart
 				exit 0
@@ -101,7 +85,7 @@ do
 
 	#haproxy
 	if [ $use_haproxy -gt 0 ]; then
-		icount=$(ps -w | grep -v grep | grep $RUN_BIN_PATH | grep haproxy | wc -l)
+		icount=$(ps -w | grep -v grep | grep "$RUN_BIN_PATH/haproxy" | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart
 			exit 0

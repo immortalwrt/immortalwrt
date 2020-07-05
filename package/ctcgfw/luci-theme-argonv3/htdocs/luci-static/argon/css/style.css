@@ -511,7 +511,7 @@ footer>a {
 }
 
 #maincontent>.container>p {
-    color: #fff;
+    color: #32325d;
 }
 
 li {
@@ -1500,7 +1500,7 @@ header {
 header::after {
     content: "";
     position: absolute;
-    height: 14rem;
+    height: 2.4rem;
     width: 100%;
     background-color: #5e72e4 !important;
 }
@@ -1946,7 +1946,7 @@ div>.table>.tbody>.tr:nth-of-type(2n) {
 
 header>.fill {
     padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
+    border-bottom: 0px solid rgba(255, 255, 255, .08) !important;
 
 }
 
@@ -2035,9 +2035,13 @@ h1 {
 h2 {
     margin: 0 0 1rem 0;
     font-size: 1.5rem;
+    font-weight:bold;
     letter-spacing: 0.1rem;
-    padding: 1rem 0 0 0 !important;
-    color: #ffffff;
+    padding: 1rem 1.5rem;
+    color: #32325d;
+    border-radius: .375rem;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,.03);
 }
 
 #cbi-dropbear h2,
@@ -2304,8 +2308,7 @@ form.inline+form.inline,
 .cbi-value-field .cbi-button-add,
 .cbi-value-field .cbi-button-remove,
 .cbi-value-field .cbi-button-neutral {
-    height: 2.5rem;
-    line-height: 2.5rem;
+
     min-width: 2.5rem !important;
 }
 
@@ -2317,6 +2320,7 @@ form.inline+form.inline,
     padding-left: 1rem;
     background-color: #FFFFFF;
     border-radius: 0.375rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,.03);
 }
 
 .cbi-tabmenu>li,
@@ -2626,7 +2630,7 @@ select[multiple="multiple"] {
     box-shadow: 0 0 0rem 0 rgba(136, 152, 170, .15);
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.5rem 0;
+    padding: 0rem 0;
 }
 
 #cbi-network-lan.cbi-section-node {
@@ -2649,11 +2653,11 @@ select[multiple="multiple"] {
 .cbi-value-field,
 .cbi-value-description {
     display: table-cell;
-    line-height: 1.25;
+    line-height: 1.6;
+    font-size: 0.875rem;
 
 }
 
-div.cbi-value-field {}
 
 
 .cbi-value-helpicon>img {
@@ -2717,8 +2721,8 @@ div.cbi-value-field {}
 }
 
 .cbi-map-descr {
-    margin: 0rem 0 1rem 0rem;
-    color: #fff;
+    margin: 0rem 0 1rem 1.5rem;
+    color: #32325d;
     font-size: small;
 }
 
@@ -3486,9 +3490,25 @@ header>.container>.pull-right>* {
     font-size: 0.875rem;
 }
 
+.node-network-diagnostics .cbi-section div{
+    padding:0 1.5rem;
+}
+
+.node-network-diagnostics #diag-rc-output pre{
+    padding:1rem;
+    font-size: 0.875rem;
+}
+
+
+
+
 /* fix nlbw/display*/
 #detail-bubble.in{
     z-index: 500;
+}
+
+.node-nlbw-display .cbi-section ul{
+    padding:0.875rem 1.5rem;
 }
 
 
@@ -3924,6 +3944,10 @@ header>.container>.pull-right>* {
 
     h2 {
         color: #ccc;
+        background: #333333;
+    }
+    .cbi-map-descr {
+        color: #ccc;
     }
 
     .cbi-section {
@@ -4222,6 +4246,12 @@ header>.container>.pull-right>* {
         background-color: #333333;
     }
 
+    #detail-bubble > div {
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        padding: 5px;
+        background: #252525;
+    }
     
 }
 

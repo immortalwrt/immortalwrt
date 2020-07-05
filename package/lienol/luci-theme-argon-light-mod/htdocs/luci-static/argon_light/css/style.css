@@ -29,7 +29,8 @@
 
 /*
  *  Font generate by Icomoon<icomoon.io>
-  *  Mod again by Mask
+ *  Mod again by Mask
+ *  Mod again by Lienol
  */
 
 :root {
@@ -576,6 +577,7 @@ td>table>tbody>tr>td,
 .cbi-button-action.important {
     color: #fff;
     background-color: #337ab7;
+    border: none;
 }
 
 .cbi-page-actions .cbi-button-save,
@@ -584,6 +586,7 @@ td>table>tbody>tr>td,
 .cbi-button-positive.important {
     color: #fff;
     background-color: #5bc0de;
+    border: none;
 }
 
 .cbi-button-remove.important,
@@ -591,16 +594,15 @@ td>table>tbody>tr>td,
 .cbi-button-negative.important {
     color: #fff;
     background-color: #d9534f;
+    border: none;
 }
-
-
 
 .cbi-button-find,
 .cbi-button-link,
 .cbi-button-neutral {
     color: #fff !important;
-    border: 1px solid #f0ad4e !important;
     background-color: #f0ad4e !important;
+    border: none;
 }
 
 .cbi-button-edit,
@@ -608,8 +610,8 @@ td>table>tbody>tr>td,
 .cbi-button-reload,
 .cbi-button-action {
     color: #2e6da4;
-    border: 1px solid #2e6da4;
     background-color: transparent;
+    border: none;
 }
 
 .cbi-page-actions .cbi-button-apply+.cbi-button-save,
@@ -617,8 +619,8 @@ td>table>tbody>tr>td,
 .cbi-button-save,
 .cbi-button-positive {
     color: #46b8da;
-    border: 1px solid #46b8da;
     background-color: transparent;
+    border: none;
 }
 
 .cbi-section-remove>.cbi-button,
@@ -626,8 +628,8 @@ td>table>tbody>tr>td,
 .cbi-button-reset,
 .cbi-button-negative {
     color: #fff !important;
-    border: 1px solid #d43f3a !important;
     background-color: #fb6340 !important;
+    border: none;
 }
 
 .cbi-page-actions .cbi-button-link:first-child {
@@ -645,12 +647,12 @@ td>table>tbody>tr>td,
 }
 
 .td.cbi-section-actions {
-    text-align: right;
+    /* text-align: right; */
     vertical-align: middle;
 }
 
 .td.cbi-section-actions>* {
-    display: flex;
+    /* display: flex; */
 }
 
 .td.cbi-section-actions>*>*,
@@ -711,11 +713,6 @@ td>table>tbody>tr>td,
 .cbi-value input[type="password"],
 .cbi-value input[type="text"] {
     min-width: unset;
-}
-
-/* select */
-.cbi-value-field .cbi-dropdown {
-    min-width: 15rem;
 }
 
 select {
@@ -843,7 +840,7 @@ input[type="checkbox"] {
 input[type="checkbox"]:checked {
     border: 1px solid #5e72e4;
     background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 8 8\'%3e%3cpath fill=\'%23fff\' d=\'M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z\'/%3e%3c/svg%3e') !important;
-    background-color: #5e72e4;
+    background: #5e72e4;
     background-size: 70%;
     background-repeat: no-repeat;
     background-position: center;
@@ -1246,33 +1243,9 @@ body.lang_pl.node-main-login .cbi-value-title {
     line-height: 300%;
 }
 
-
-
-
-
-
-.table {
-    display: table;
-    position: relative;
-    color: #525f7f;
-    border-collapse: collapse;
-}
-
 .tr {
     display: table-row;
     border-bottom: 1px solid rgba(0, 0, 0, .05);
-}
-
-.thead {
-    display: table-header-group;
-}
-
-.tbody {
-    display: table-row-group;
-}
-
-.tfoot {
-    display: table-footer-group;
 }
 
 .td,
@@ -1599,7 +1572,21 @@ header>.container {
     padding: 0.5rem 1rem 0 1rem;
 }
 
-.cbi-section>h3:first-child,
+.cbi-section>h3:first-child {
+    width: 100%;
+    display: block;
+    margin-bottom: 0;
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
+    background-color: #fff;
+    line-height: 1.5;
+    margin-bottom: 0rem;
+    letter-spacing: 0.1rem;
+    color: #32325d;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
 .panel-title {
     font-size: 1.2rem;
     width: 100%;
@@ -1671,12 +1658,12 @@ table>thead>tr>th,
 
 div>table>tbody>tr:nth-of-type(2n),
 div>.table>.tbody>.tr:nth-of-type(2n) {
-    background-color: #f9f9f9;
+    /* background-color: #f9f9f9; */
 }
 
 div>table>tbody>tr:nth-of-type(2n),
 div>.table>.tbody>.tr:nth-of-type(2n) {
-    background-color: #f9f9f9;
+    /* background-color: #f9f9f9; */
 }
 
 .danger {
@@ -1995,16 +1982,13 @@ fieldset {
     font-style: normal;
     line-height: 1;
     font-family: inherit;
-
     min-width: inherit;
-    overflow-x: auto;
-    overflow-y: hidden;
-
+    /* overflow-x: auto;
+    overflow-y: hidden; */
     border: 1px solid rgba(0, 0, 0, .05);
     border-radius: .375rem;
     background-color: #fff;
     box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
-
     -webkit-overflow-scrolling: touch;
 }
 
@@ -2041,6 +2025,7 @@ fieldset.cbi-section p {
     font-size: 0.8rem;
 }
 
+.table,
 table {
     border-spacing: 0;
     border-collapse: collapse;
@@ -2051,6 +2036,7 @@ table {
     position: relative;
 }
 
+.table>.tr>.td,
 table>tbody>tr>td,
 table>tfoot>tr>td,
 table>thead>tr>td {
@@ -2063,10 +2049,10 @@ table>thead>tr>td {
     line-height: 1.3;
 }
 
+.table>.tr>.th,
 table>tbody>tr>th,
 table>tfoot>tr>th,
 table>thead>tr>th {
-
     padding-right: 1.5rem;
     padding-left: 1.5rem;
     color: #8898aa;
@@ -2123,15 +2109,14 @@ td>table>tbody>tr>td {
 .cbi-button {
     -webkit-appearance: none;
     text-transform: uppercase;
-    /*    height: 2.5rem;
-    line-height: 2.5rem;
-*/
+    /* height: 2.5rem;
+    line-height: 2.5rem; */
     color: rgba(0, 0, 0, 0.87);
     background-color: #F0F0F0;
     transition: all 0.2s ease-in-out;
     display: inline-block;
     padding: 0 0.8rem;
-    border: none;
+    /* border: none; */
     border-radius: 0.2rem;
     cursor: pointer;
     -ms-touch-action: manipulation;
@@ -2146,6 +2131,7 @@ td>table>tbody>tr>td {
     user-select: none;
     font-size: 0.8rem;
     width: auto !important;
+    margin-left: 0.3em;
 }
 
 .cbi-button:hover,
@@ -2172,13 +2158,10 @@ td>table>tbody>tr>td {
 }
 
 form.inline+form.inline,
-.cbi-button+.cbi-button {
-    margin-left: 0.6rem;
-}
+.cbi-button+.cbi-button {}
 
 .cbi-button-reset,
 .cbi-input-remove {
-
     color: #fff !important;
     background-color: #f0ad4e !important;
     border-color: #eea236 !important;
@@ -2191,7 +2174,6 @@ form.inline+form.inline,
 .cbi-button-find,
 .cbi-input-reload,
 .cbi-button-reload {
-
     color: #fff !important;
     background-color: #337ab7 !important;
     border-color: #2e6da4 !important;
@@ -2200,10 +2182,8 @@ form.inline+form.inline,
 .cbi-value-field .cbi-input-apply,
 .cbi-button-apply,
 .cbi-button-edit {
-
     color: #fff !important;
     background-color: #5e72e4 !important;
-    border-color: #5e72e4 !important;
 }
 
 
@@ -2216,10 +2196,12 @@ form.inline+form.inline,
 
 .cbi-value-field .cbi-button-add,
 .cbi-value-field .cbi-button-remove,
-.cbi-value-field .cbi-button-neutral {
-    height: 2.5rem;
-    line-height: 2.5rem;
-    min-width: 2.5rem !important;
+.cbi-value-field .cbi-button-neutral {}
+
+input[type="text"]+.cbi-button,
+input[type="password"]+.cbi-button,
+select+.cbi-button {
+    padding: 4px 8px;
 }
 
 
@@ -2239,7 +2221,6 @@ form.inline+form.inline,
     /* border-top-right-radius:0.25rem; */
     display: inline-block;
     padding: 0.6rem;
-    border-bottom: 0.18751rem solid rgba(0, 0, 0, 0);
 }
 
 .cbi-tabmenu>li {
@@ -2367,7 +2348,6 @@ form.inline+form.inline,
 .cbi-dropdown[open]>ul.dropdown {
     display: block;
     background: #fff;
-    border-color: #5e72e4;
     position: absolute;
     z-index: 1000;
     max-width: none;
@@ -2404,6 +2384,7 @@ form.inline+form.inline,
 
 .cbi-dropdown[open]>ul.dropdown>li {
     border-bottom: 1px solid #ccc;
+    color: #000;
 }
 
 .cbi-dropdown[open]>ul.dropdown>li[selected] {
@@ -2436,8 +2417,6 @@ form.inline+form.inline,
     font-size: .875rem;
     transition: all .15s ease-in-out;
     line-height: 1.5;
-    height: calc(2.75rem + 2px);
-    padding: 0m;
     color: #8898aa;
     border: 1px solid #dee2e6;
     border-radius: .25rem;
@@ -2447,17 +2426,11 @@ form.inline+form.inline,
     margin: 0.25rem;
 }
 
-.cbi-value-field .cbi-dropdown {
-    min-width: 20rem;
-}
-
 .cbi-value-field .cbi-dropdown .zonebadge>.ifacebadge {
     padding: 0rem 1rem;
     margin: 0rem 0.3rem;
     border: 1px solid #6C6C6C;
 }
-
-
 
 select[multiple="multiple"] {
     height: auto;
@@ -2473,7 +2446,10 @@ select[multiple="multiple"] {
     width: 100%;
 }
 
-
+/* select */
+.cbi-value-field .cbi-dropdown {
+    min-width: 15rem;
+}
 
 .cbi-section>legend {
     display: none !important;
@@ -2482,16 +2458,16 @@ select[multiple="multiple"] {
 .tabs>li[class~="active"],
 .tabs>li:hover {
     cursor: pointer;
-    background: #eee;
+    background: #5e72e4;
     margin-bottom: 0;
 }
 
 .tabs>li[class~="active"]>a {
-    color: #5e72e4;
+    color: #fff;
 }
 
 .tabs>li:hover {
-    border-bottom: 0.2rem solid #32325d;
+    /* border-bottom: 0.2rem solid #32325d; */
 }
 
 .cbi-tabmenu {
@@ -2508,8 +2484,7 @@ select[multiple="multiple"] {
 }
 
 .cbi-tabmenu>li[class~="cbi-tab"] {
-
-    background-color: #fb6340;
+    background-color: #5e72e4;
 }
 
 .cbi-tabmenu>li[class~="cbi-tab"]>a {
@@ -2520,7 +2495,7 @@ select[multiple="multiple"] {
 
 .cbi-section-remove:nth-of-type(2n),
 .cbi-section-node:nth-of-type(2n) {
-    background-color: #f9f9f9;
+    /* background-color: #f9f9f9; */
 }
 
 .cbi-section-node-tabbed {
@@ -2555,7 +2530,7 @@ select[multiple="multiple"] {
 
 
 .cbi-tabcontainer>.cbi-value:nth-of-type(2n) {
-    background-color: #f9f9f9;
+    /* background-color: #f9f9f9; */
 }
 
 .cbi-value-field {
@@ -2605,7 +2580,7 @@ select[multiple="multiple"] {
 */
 
 .cbi-value {
-    padding: 0.3rem 1rem;
+    /* margin-bottom: 0.1em; */
     display: inline-block;
     width: 100%;
     clear: both;
@@ -2665,9 +2640,8 @@ input[type="checkbox"] {
 
 .cbi-value-field .ifacebadge {
     display: inline-flex;
-    border-bottom: 0px solid #CCCCCC;
+    /* border-bottom: 0px solid #CCCCCC; */
     padding: 0.5rem 1rem;
-
     box-shadow: none;
 }
 
@@ -2925,15 +2899,32 @@ td>.ifacebadge {
 }
 
 .zonebadge {
-    padding: 0.2rem 0.5rem;
     display: inline-block;
+    border-radius: 4px;
+    color: #000;
+    white-space: nowrap;
+    padding: 0 8px;
     cursor: pointer;
 }
 
+.zonebadge em,
+.zonebadge strong {
+    margin: 0 5px;
+    color: #000;
+}
+
 .zonebadge>.ifacebadge {
-    padding: 0.2rem 1rem;
-    margin: 0.3rem;
-    border: 1px solid #6C6C6C;
+    display: inline-block;
+    flex-direction: row;
+    white-space: nowrap;
+    background-color: #3c3a38;
+    border: 1px solid #ccc;
+    padding: 2px;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: default;
+    line-height: 1.2em;
 }
 
 .zonebadge>input[type="text"] {
@@ -3111,10 +3102,12 @@ header>.container>.pull-right>* {
     margin-top: 0rem;
 }
 
-.node-main-login>.main fieldset {
+.node-main-login>.main fieldset,
+.node-main-login>.main .cbi-section,
+.node-main-login>.main .cbi-section>.cbi-section-node {
     padding: 0.5rem;
     margin: 0rem;
-    display: inline;
+    /* display: inline; */
     background: none;
     border: none;
     box-shadow: none;
@@ -3246,7 +3239,8 @@ header>.container>.pull-right>* {
     margin: 0;
 }
 
-.node-main-login>.main .cbi-value.cbi-value-last .cbi-input-password {
+.node-main-login>.main .cbi-value.cbi-value-last .cbi-input-password,
+.node-main-login>.main .cbi-value.cbi-value-last .cbi-input-text[type="password"] {
     box-shadow: 0 1px 3px rgba(50, 50, 93, .15), 0 1px 0 rgba(0, 0, 0, .02);
     transition: box-shadow .15s ease;
     border-radius: .375rem;
@@ -3280,25 +3274,14 @@ header>.container>.pull-right>* {
 }
 
 .node-main-login>.main .cbi-input-user,
-.node-main-login>.main .cbi-input-password {
+.node-main-login>.main .cbi-input-password,
+.node-main-login>.main .cbi-input-text[type="user"],
+.node-main-login>.main .cbi-input-text[type="password"] {
     min-width: 15rem;
 }
 
+.node-main-login .errorbox,
 .node-main-login .alert-message.warning {
-    position: absolute;
-    color: #fff;
-    width: calc(100% - 4rem);
-    background-color: #f0ad4e;
-    border-color: #eea236;
-    box-sizing: border-box;
-    margin-top: 8rem;
-    border-radius: 5px;
-    padding: 1rem 2rem;
-    text-align: center;
-    display: none;
-}
-
-.node-main-login .errorbox {
     position: absolute;
     color: #fff;
     width: calc(100% - 4rem);
@@ -3309,7 +3292,6 @@ header>.container>.pull-right>* {
     padding: 1rem 2rem;
     text-align: center;
     background-color: #8965e0 !important;
-
 }
 
 .node-main-login footer {
@@ -3526,6 +3508,7 @@ header>.container>.pull-right>* {
         padding-bottom: 1rem;
     }
 
+    .table,
     table {
         font-size: 0.7rem !important;
         width: 100% !important;
@@ -3613,9 +3596,11 @@ header>.container>.pull-right>* {
         font-size: 0.8rem;
     }
 
+    div.cbi-section,
     fieldset {
         padding: 0;
         margin: 1rem 0 0 0;
+        overflow-x: auto;
     }
 
     .tabs {
