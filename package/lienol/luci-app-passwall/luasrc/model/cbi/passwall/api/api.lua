@@ -6,16 +6,21 @@ local util = require "luci.util"
 local i18n = require "luci.i18n"
 
 appname = "passwall"
+curl = "/usr/bin/curl"
+curl_args = {"-skL", "--connect-timeout 3", "--retry 3", "-m 60"}
 wget = "/usr/bin/wget"
 wget_args = {"--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"}
 command_timeout = 300
 LEDE_BOARD = nil
 DISTRIB_TARGET = nil
 
+function gen_uuid()
+    local uuid = string.gsub(sys.exec("echo -n $(cat /proc/sys/kernel/random/uuid)"), "-", "")
+    return uuid
+end
+
 function uci_get_type(type, config, default)
-    local value = uci:get_first(appname, type, config, default) or sys.exec(
-                      "echo -n `uci -q get " .. appname .. ".@" .. type ..
-                          "[0]." .. config .. "`")
+    local value = uci:get_first(appname, type, config, default) or sys.exec("echo -n `uci -q get " .. appname .. ".@" .. type .."[0]." .. config .. "`")
     if (value == nil or value == "") and (default and default ~= "") then
         value = default
     end
@@ -23,13 +28,44 @@ function uci_get_type(type, config, default)
 end
 
 function uci_get_type_id(id, config, default)
-    local value = uci:get(appname, id, config, default) or
-                      sys.exec("echo -n `uci -q get " .. appname .. "." .. id ..
-                                   "." .. config .. "`")
+    local value = uci:get(appname, id, config, default) or sys.exec("echo -n `uci -q get " .. appname .. "." .. id .. "." .. config .. "`")
     if (value == nil or value == "") and (default and default ~= "") then
         value = default
     end
     return value
+end
+
+function get_v2ray_path()
+    local path = uci_get_type("global_app", "v2ray_file")
+    return path .. "/v2ray"
+end
+
+function get_v2ray_version()
+    local path = get_v2ray_path()
+    local version = sys.exec("[ -f '" .. path .. "' ] && " .. path .. " -version | awk '{print $2}' | sed -n 1P")
+    return version
+end
+
+function get_kcptun_path()
+    local path = uci_get_type("global_app", "kcptun_client_file")
+    return path
+end
+
+function get_kcptun_version()
+    local path = get_kcptun_path()
+    local version = sys.exec("[ -f '" .. path .. "' ] && " .. path .. " -v | awk '{print $3}'")
+    return version
+end
+
+function get_brook_path()
+    local path = uci_get_type("global_app", "brook_file")
+    return path
+end
+
+function get_brook_version()
+    local path = get_brook_path()
+    local version = sys.exec("[ -f '" .. path .. "' ] && " .. path .. " -v | awk '{print $3}'")
+    return version
 end
 
 function _unpack(t, i)
@@ -169,16 +205,7 @@ end
 function get_api_json(url)
     local jsonc = require "luci.jsonc"
 
-    local output = {}
-    -- exec(wget, { "-O-", url, _unpack(wget_args) },
-    --	function(chunk) output[#output + 1] = chunk end)
-    -- local json_content = util.trim(table.concat(output))
-
-    local json_content = luci.sys.exec(wget ..
-                                           " --no-check-certificate --timeout=10 -t 1 -O- " ..
-                                           url)
-
+    local json_content = luci.sys.exec(curl .. " " .. _unpack(curl_args) .. " " .. url)
     if json_content == "" then return {} end
-
     return jsonc.parse(json_content) or {}
 end

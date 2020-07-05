@@ -2,8 +2,7 @@
 local api = require "luci.model.cbi.passwall.api.api"
 local dsp = require "luci.dispatcher"
 
-local V2ray_path = api.uci_get_type("global_app", "v2ray_file")
-local V2ray_version = luci.sys.exec("[ -f '" .. V2ray_path .. "/v2ray' ] && " .. V2ray_path .. "/v2ray -version | awk '{print $2}' | sed -n 1P")
+local v2ray_version = api.get_v2ray_version()
 -%>
 
 <script type="text/javascript">
@@ -167,7 +166,7 @@ local V2ray_version = luci.sys.exec("[ -f '" .. V2ray_path .. "/v2ray' ] && " ..
 	</label>
 	<div class="cbi-value-field">
 		<div class="cbi-value-description">
-			<span>【 <%=V2ray_version%>】</span>
+			<span>【 <%=v2ray_version%>】</span>
 			<input class="cbi-button cbi-input-apply" type="button" id="_v2ray-check_btn" onclick="onBtnClick_v2ray(this);" value="<%:Manually update%>" />
 			<span id="_v2ray-check_btn-detail"></span>
 		</div>

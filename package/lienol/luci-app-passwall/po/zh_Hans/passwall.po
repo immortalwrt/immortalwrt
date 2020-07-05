@@ -94,6 +94,9 @@ msgstr "百度连接"
 msgid "Google Connection"
 msgstr "谷歌连接"
 
+msgid "GitHub Connection"
+msgstr "GitHub连接"
+
 msgid "Node Check"
 msgstr "节点检测"
 
@@ -102,9 +105,6 @@ msgstr "检测中..."
 
 msgid "Clear"
 msgstr "清除"
-
-msgid "If you can use it, very stable. If not, GG !!!"
-msgstr "如果你会用，稳得一批。否则，GG！！！"
 
 msgid "Main switch"
 msgstr "总开关"
@@ -115,11 +115,20 @@ msgstr "TCP节点"
 msgid "UDP Node"
 msgstr "UDP节点"
 
+msgid "Socks Config"
+msgstr "Socks配置"
+
 msgid "Socks Node"
 msgstr "Socks节点"
 
 msgid "Same as the tcp node"
 msgstr "与TCP节点相同"
+
+msgid "Same as the tcp %s node"
+msgstr "与TCP%s节点相同"
+
+msgid "New process"
+msgstr "另开进程"
 
 msgid "For used to surf the Internet."
 msgstr "用于科学上网。"
@@ -148,11 +157,23 @@ msgstr "如果有问题，请尝试其他模式。<br />如果您没有使用任
 msgid "Use TCP Node Resolve DNS"
 msgstr "使用TCP节点解析DNS"
 
+msgid "Use UDP Node Resolve DNS"
+msgstr "使用UDP节点解析DNS"
+
 msgid "If checked, DNS is resolved using the TCP node."
 msgstr "如果勾选，则使用TCP节点解析DNS解决污染。"
 
+msgid "Socks Server"
+msgstr "Socks服务器"
+
+msgid "Fair Mode"
+msgstr "公平模式"
+
 msgid "DNS Address"
 msgstr "DNS地址"
+
+msgid "DNS Cache"
+msgstr "DNS缓存"
 
 msgid "China DNS Server"
 msgstr "国内DNS服务器"
@@ -256,6 +277,9 @@ msgstr "路由器自身"
 msgid "Danger"
 msgstr "危险"
 
+msgid "Operation"
+msgstr "操作"
+
 msgid "Add Node"
 msgstr "添加节点"
 
@@ -267,6 +291,39 @@ msgstr "SS/SSR/V2ray/Trojan链接"
 
 msgid "Please enter the correct link, ss:// ssr:// vmess:// trojan://"
 msgstr "请输入正确的链接，ss:// ssr:// vmess:// trojan://"
+
+msgid "Clear all nodes"
+msgstr "清空所有节点"
+
+msgid "Are you sure to clear all nodes?"
+msgstr "你确定要清空所有节点吗？"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "Delete select nodes"
+msgstr "删除选择的节点"
+
+msgid "To Top"
+msgstr "置顶"
+
+msgid "Select"
+msgstr "选择"
+
+msgid "DeSelect"
+msgstr "反选"
+
+msgid "Select all"
+msgstr "全选"
+
+msgid "DeSelect all"
+msgstr "全不选"
+
+msgid "Are you sure to delete select nodes?"
+msgstr "你确定要删除选择的节点吗？"
+
+msgid "You no select nodes !"
+msgstr "你没有选择任何节点！"
 
 msgid "Are you sure set to"
 msgstr "你确定要设为"
@@ -289,14 +346,14 @@ msgstr "添加方式"
 msgid "Type"
 msgstr "类型"
 
-msgid "V2ray Balancing"
-msgstr "V2ray 负载均衡"
+msgid "Balancing"
+msgstr "负载均衡"
 
 msgid "V2ray_balancing"
 msgstr "V2ray 负载均衡"
 
-msgid "V2ray Shunt"
-msgstr "V2ray 分流"
+msgid "Shunt"
+msgstr "分流"
 
 msgid "V2ray_shunt"
 msgstr "V2ray 分流"
@@ -357,9 +414,6 @@ msgstr "选中后保存应用后即使用tcping替换ping检测节点"
 
 msgid "Concise display nodes"
 msgstr "简洁显示节点"
-
-msgid "Support for more than 10,000 ping nodes and luci does not crash and not slow."
-msgstr "支持超过10000个节点，而LuCI却不会卡死，更不会崩溃。"
 
 msgid "Apply"
 msgstr "应用"
@@ -526,6 +580,15 @@ msgstr "备用"
 msgid "Manually update"
 msgstr "手动更新"
 
+msgid "Enable custom url"
+msgstr "启用自定义规则地址"
+
+msgid "gfwlist Update url"
+msgstr "GFWList更新URL"
+
+msgid "Chnroute Update url"
+msgstr "国内IP段(Chnroute)更新URL"
+
 msgid "Rule status"
 msgstr "规则版本"
 
@@ -645,6 +708,9 @@ msgstr "关键字丢弃"
 
 msgid "When checked, the keywords in the list are discarded. Otherwise, it is not discarded."
 msgstr "当勾选时，将丢弃包含列表里的关键字的节点。否则，将保留列表的关键字的节点（反过来）。"
+
+msgid "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host by default."
+msgstr "是否允许不安全连接。当勾选时，缺省情况下客户端不会检查远端主机所提供的 TLS 证书的有效性。"
 
 msgid "Add"
 msgstr "添加"
@@ -840,6 +906,60 @@ msgstr "隐藏菜单方法，地址栏输入例："
 
 msgid "After the hidden to the display, input example in the address bar:"
 msgstr "当你隐藏后想再次显示，地址栏输入例："
+
+msgid "When OTA is enabled, V2Ray will reject connections that are not OTA enabled. This option is invalid when using AEAD encryption."
+msgstr "开启 OTA 后，V2Ray 会拒绝未启用 OTA 的连接。当使用 AEAD 加密时，该选项无效。"
+
+msgid "transit node"
+msgstr "中转到此节点"
+
+msgid "Bind Local"
+msgstr "本机监听"
+
+msgid "When selected, it can only be accessed locally,It is recommended to turn on when using reverse proxies."
+msgstr "当勾选时，只能由本机访问此端口，当开启反向代理时建议勾选此项。"
+
+msgid "Accept LAN Access"
+msgstr "接受局域网访问"
+
+msgid "When selected, it can accessed lan , this will not be safe!"
+msgstr "当勾选时，可以直接访问局域网，这将不安全！（非特殊情况不建议开启）"
+
+msgid "Enable Remote"
+msgstr "启用转发"
+
+msgid "You can forward to Nginx/Caddy/V2ray WebSocket and more."
+msgstr "您可以转发到Nginx/Caddy/V2ray WebSocket等。"
+
+msgid "Remote Address"
+msgstr "远程地址"
+
+msgid "Remote Port"
+msgstr "远程端口"
+
+msgid "as:"
+msgstr "如："
+
+msgid "Public key absolute path"
+msgstr "公钥文件绝对路径"
+
+msgid "Private key absolute path"
+msgstr "私钥文件绝对路径"
+
+msgid "Server-Side"
+msgstr "服务器端"
+
+msgid "Server Config"
+msgstr "服务器配置"
+
+msgid "Users Manager"
+msgstr "用户管理"
+
+msgid "Logs"
+msgstr "日志"
+
+msgid "UDP Forward"
+msgstr "UDP转发"
 
 msgid "Can't determine ARCH, or ARCH not supported."
 msgstr "无法确认ARCH架构，或是不支持。"
