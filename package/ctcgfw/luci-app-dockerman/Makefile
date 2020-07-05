@@ -47,6 +47,10 @@ endef
 define Build/Compile
 endef
 
+define Package/luci-app-dockerman/conffiles
+/etc/config/dockerman
+endef
+
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
