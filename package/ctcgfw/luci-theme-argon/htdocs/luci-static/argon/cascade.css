@@ -398,7 +398,7 @@ code {
 abbr {
   cursor: help;
   text-decoration: underline;
-  color: #fff;
+  color: #797474;
 }
 hr {
   margin: 1rem 0;
@@ -932,6 +932,11 @@ h5 {
 }
 .cbi-map-descr + fieldset {
   margin-top: 1rem;
+}
+.cbi-map-descr > abbr {
+  cursor: help;
+  text-decoration: underline;
+  color: #fff;
 }
 .cbi-section > legend {
   display: none !important;
