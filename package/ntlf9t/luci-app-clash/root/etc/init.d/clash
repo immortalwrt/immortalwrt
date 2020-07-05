@@ -10,7 +10,7 @@ CLASHD="/etc/clash/dtun/clash"
 CLASH_CONFIG="/etc/clash"
 CRON_FILE="/etc/crontabs/root"
 CONFIG_YAML="/etc/clash/config.yaml"
-CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null) 
+CONFIG_YAML_PATH=$(uci get clash.config.use_config 2>/dev/null)  
 
 CUSLIST="/tmp/dnsmasq.d/custom_list.conf"
 CUSLITT="/tmp/dnsmasq.clash"
@@ -80,9 +80,9 @@ select_config(){
 #=========================================================================================================================== 
 config_type=$(uci get clash.config.config_type 2>/dev/null)
 if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-	echo "Checking Config file..." >$REAL_LOG 
+	echo "Checking Config file" >$REAL_LOG 
 elif [ "${lang}" == "zh_cn" ];then
-	echo "正在检查配置文件。。。" >$REAL_LOG
+	echo "正在检查配置文件" >$REAL_LOG
 fi
 
 if [  -f $CONFIG_YAML_PATH ] && [ "$(ls -l $CONFIG_YAML_PATH|awk '{print int($5)}')" -ne 0 ];then
@@ -209,6 +209,7 @@ check(){
 	   sed -i 's/^proxy-provider:/proxy-providers:/g' "$CONFIG_YAML"
 	   sed -i 's/^Proxy:/proxies:/g' "$CONFIG_YAML"
 	   sed -i 's/^Rule:/rules:/g' "$CONFIG_YAML"
+	   sed -i 's/^rule-provider:/rule-providers:/g' "$CONFIG_YAML"
 
 }
 
@@ -218,7 +219,7 @@ rules(){
 		dns_port=$(grep listen: $CONFIG_YAML |awk -F ':' '{print $3}' |tr -cd "[0-9]")
 		redir_port=$(uci get clash.config.redir_port 2>/dev/null)
 		#fake_ip_range=$(uci get clash.config.fake_ip_range 2>/dev/null)		
-		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
+		ipv6=$(uci get clash.config.enable_ipv6 2>/dev/null)
 		core=$(uci get clash.config.core 2>/dev/null)
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
 		#lan_ip=$(uci get network.lan.ipaddr 2>/dev/null |awk -F '/' '{print $1}' 2>/dev/null)
@@ -264,6 +265,8 @@ rules(){
 			  done
 		    fi			
 
+
+		
 		if [ "$(iptables -t nat -nL PREROUTING --line-number |grep "udp dpt:53" |grep "0.0.0.0/0 \{0,\}0.0.0.0/0" |wc -l)" -gt 1 ] && [ "$dnsforwader" -eq "1" ]; then
 		   pre_lines=$(iptables -nvL PREROUTING -t nat |sed 1,2d |sed -n '/0.0.0.0\/0 \{0,\}0.0.0.0\/0 \{0,\}udp dpt:53/=' 2>/dev/null |sort -rn)
 		   for pre_line in $pre_lines; do
@@ -337,7 +340,7 @@ rules(){
 		   fi
    
    
-			if [ "${ipv6}" -eq 1 ]; then	
+			if [ "${ipv6}" == "true" ]; then	
 					  ip6tables -t nat -N clash
 					  if [ -n "${ip6}" ]; then
 						 for lan_ip6s in $ip6; do
@@ -351,6 +354,10 @@ rules(){
 			
 			
 		elif [ "${core}" -eq 3 ] || [ "${core}" -eq 4 ];then
+			natr=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/tcp dpt:53/=' | sort -r)
+			for natx in $natr; do
+				iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
+			done
 			
 			TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 			if [ -z $TUN_DEVICE ];then
@@ -412,74 +419,11 @@ restore() {
 }
 
 
-use_dns(){
 
-if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "Checking Dns Mode " >$REAL_LOG 
-fi
-
-if [ "$core" -eq 1 ] || [ "$core" -eq 2 ];then
-
-
- if [ "$mode" -eq 1 ] || [ "$tun_mode" -eq 1 ] ;then
-
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Enabling Custom Dns Mode " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-	    	echo "启用自定义Dns模式" >$REAL_LOG
-		fi
-		uci set clash.config.mode="1" && uci del clash.config.tun_mode && uci commit clash
-
- elif [ -z "$mode" ] || [ "$mode" -eq 0 ];then
-
-	if [ ! -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
- 	
-
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Enabling Custom Dns Mode " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-	    	echo "启用自定义Dns模式" >$REAL_LOG
-		fi		
-		uci set clash.config.mode="1" && uci del clash.config.tun_mode && uci commit clash
-	fi
- fi
-fi
-
-
-if [ "$core" -eq 3 ] || [ "$core" -eq 4 ];then
-
-if [ "$tun_mode" -eq 1 ] || [ "$mode" -eq 1 ];then
-
-
-	
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Enabling Tun Dns Mode " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-	    	echo "启用自定义Tun Dns模式" >$REAL_LOG
-		fi		
-	uci del clash.config.mode && uci set clash.config.tun_mode="1" && uci commit clash	
-
-
-elif [ -z "$tun_mode" ] || [ "$tun_mode" -eq 0 ];then
-
-	if [ -z "$(grep "^ \{0,\}tun:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}listen:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enhanced-mode:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}enable:" $CONFIG_YAML)" ] || [ -z "$(grep "^ \{0,\}dns:" $CONFIG_YAML)" ] ;then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Enabling Tun Dns Mode " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-	    	echo "启用自定义Tun Dns模式" >$REAL_LOG
-		fi
-		uci del clash.config.mode && uci set clash.config.tun_mode="1" && uci commit clash
-	fi
-fi
-	
-fi
-
-}
 
 start(){
 #=========================================================================================================================== 
 lang=$(uci get luci.main.lang 2>/dev/null)
-landns=$(uci get clash.config.landns 2>/dev/null)
 enable=$(uci get clash.config.enable 2>/dev/null)
 core=$(uci get clash.config.core 2>/dev/null)
 mode=$(uci get clash.config.mode 2>/dev/null)
@@ -493,15 +437,14 @@ fi
 
 if [ "${enable}" -eq 1 ]; then
  	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "Starting Client.. " >$REAL_LOG 
+		echo "Starting Client" >$REAL_LOG 
 	elif [ "${lang}" == "zh_cn" ];then
-    	 echo "启动客户端..." >$REAL_LOG
+    	 echo "启动客户端" >$REAL_LOG
 	fi	
 	sleep 1
 	select_config >/dev/null 2>&1
 	sleep 1
-	use_dns >/dev/null 2>&1
-	sleep 1
+	
 
 if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -554,6 +497,78 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 
 	custom_list >/dev/null 2>&1
 
+	if [ "$core" -eq 4 ] || [ "$core" -eq 3 ];then
+
+	if [ $tun_mode -eq 0 ];then
+			uci set clash.config.tun_mode="1" && uci set clash.config.stack="system" && uci commit clash
+			if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+				echo "Enabling TUN" >$REAL_LOG 
+			elif [ "${lang}" == "zh_cn" ];then
+				echo "启用TUN" >$REAL_LOG
+			fi	
+	fi
+
+	fi
+
+	sleep 1
+
+	enable_dns=$(uci get clash.config.enable_dns 2>/dev/null) 
+
+	if [ -z "$(grep "^ {0,}listen:" /etc/clash/config.yaml)" ] || [ -z "$(grep "^ {0,}enhanced-mode:" /etc/clash/config.yaml)" ] || [ -z "$(grep "^ {0,}dns:" /etc/clash/config.yaml)" ];then
+
+	if [ $enable_dns -eq 0 ];then
+			uci set clash.config.enable_dns="1" && uci commit clash
+			if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+				echo "Enabling Custom Dns" >$REAL_LOG 
+			elif [ "${lang}" == "zh_cn" ];then
+				echo "启用自定义DNS" >$REAL_LOG
+			fi
+	fi
+
+	fi
+
+	if [ ! -z "$(egrep '^ {0,}rule-providers:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.core)" -ne 4 ];then
+		
+		if [ -f /etc/clash/dtun/clash ];then
+		uci set clash.config.core="4" && uci commit clash
+		sleep 1
+		else
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Your Current Config only support Clash Core(dtun)" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "你在使用配置不支持Clash内核，仅支持Clash(dtun)h内核" >$REAL_LOG
+		fi
+		remove_mark >/dev/null 2>&1
+		sleep 1
+		echo "Clash for OpenWRT" >$REAL_LOG		
+		exit 0		
+		fi
+	fi
+	
+	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.core)" -ne 4 ];then
+		if [ -f /etc/clash/dtun/clash ];then
+		uci set clash.config.core="4" && uci commit clash
+		sleep 1
+		else
+		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
+			echo "Your Current Config only support Clash Core(dtun)" >$REAL_LOG 
+		elif [ "${lang}" == "zh_cn" ];then
+			echo "你在使用配置不支持Clash内核，仅支持Clash(dtun)h内核" >$REAL_LOG
+		fi
+		remove_mark >/dev/null 2>&1
+		sleep 1
+		echo "Clash for OpenWRT" >$REAL_LOG		
+		exit 0		
+		fi
+	fi
+        
+	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.p_mode 2>/dev/null)" != "Script" ];then
+		uci set clash.config.p_mode="Script"&& uci commit clash
+	elif [ "$(uci get clash.config.p_mode)" == "Script" ] && [ -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ];then
+		uci set clash.config.p_mode="rule" && uci commit clash
+	fi
+
+	sleep 1
    	yml_change >/dev/null 2>&1
 	
 
@@ -571,15 +586,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		exit 0
 	fi
 		
-
-	if [ ! -z "${landns}" ];then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Setting up Custom lan dns server " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "设置自定义lan dns服务器" >$REAL_LOG
-		fi
-		uci set network.lan.dns="${landns}" && uci commit network && /etc/init.d/network reload >/dev/null 2>&1
-	fi
 	
 	
 	if [ ! -f /etc/clash/Country.mmdb ];then
@@ -611,41 +617,8 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 	
     ip_rules >/dev/null 2>&1
 	
-	if [ ! -z "$(egrep '^ {0,}rule-providers:' "/etc/clash/config.yaml")" ] && [ "${core}" -ne 4 ];then
-	
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Your Current Config only support Clash Core(dtun)" >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "你在使用配置不支持Clash内核，仅支持Clash(dtun)h内核" >$REAL_LOG
-		fi
-		remove_mark >/dev/null 2>&1
-		sleep 1
-		echo "Clash for OpenWRT" >$REAL_LOG		
-		exit 0		
-		
-	fi
-	
-	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "${core}" -ne 4 ];then
-	
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Your Current Config only support Clash Core(dtun)" >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "你在使用配置不支持Clash内核，仅支持Clash(dtun)h内核" >$REAL_LOG
-		fi
-		remove_mark >/dev/null 2>&1
-		sleep 1
-		echo "Clash for OpenWRT" >$REAL_LOG		
-		exit 0		
-		
-	fi
-
-	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.p_mode 2>/dev/null)" != "Script" ];then
-		uci set clash.config.p_mode="Script"&& uci commit clash
-	elif [ "$(uci get clash.config.p_mode )" == "Script" ] && [ -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ];then
-		uci set clash.config.p_mode="Rule" && uci commit clash
-	fi
-
-    if [ "${core}" -eq 1 ];then
+        
+    if [ "$(uci get clash.config.core)" -eq 1 ];then
         	nohup $CLASH -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -654,7 +627,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
 		fi
 		
-	elif [ "${core}" -eq 3 ];then
+	elif [ "$(uci get clash.config.core)" -eq 3 ];then
        	 	nohup $CLASHT -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -662,7 +635,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		elif [ "${lang}" == "zh_cn" ];then
 			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
 		fi	
-	elif [ "${core}" -eq 4 ];then
+	elif [ "$(uci get clash.config.core)" -eq 4 ];then
        	 	nohup $CLASHD -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &	
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -670,7 +643,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		elif [ "${lang}" == "zh_cn" ];then
 			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
 		fi	
-	elif [ "${core}" -eq 2 ];then
+	elif [ "$(uci get clash.config.core)" -eq 2 ];then
         	nohup $CLASHR -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &
 				
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -763,7 +736,7 @@ remove_mark(){
 		rm -rf /var/etc/clash.include 2>/dev/null
 		
 		core=$(uci get clash.config.core 2>/dev/null)
-		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
+		ipv6=$(uci get clash.config.enable_ipv6 2>/dev/null)
 		dns_port=$(grep "^ \{0,\}listen:" $CONFIG_YAML |awk -F ':' '{print $3}' 2>/dev/null)
 		PROXY_FWMARK="0x162" 2>/dev/null
 		PROXY_ROUTE_TABLE="0x162" 2>/dev/null
@@ -807,7 +780,7 @@ remove_mark(){
 		iptables -t nat -D PREROUTING -p tcp --dport 53 -j ACCEPT >/dev/null 2>&1
 		iptables -t nat -D PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"
 
-		if [ "${ipv6}" -eq 1 ]; then
+		if [ "${ipv6}" == "true" ]; then
 		ip6tables -t mangle -D PREROUTING -j MARK --set-mark "$PROXY_FWMARK" 2>/dev/null
 		fi
 
@@ -906,15 +879,7 @@ remove_mark(){
         done	
 		
 		iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
-		
-		if [ ! -z "${delandns}" ];then
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-				echo "Removing Custom lan dns server " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-				echo "删除自定义lan dns服务器" >$REAL_LOG
-		fi
-		uci delete network.lan.dns && uci commit network && /etc/init.d/network reload >/dev/null 2>&1
-		fi		
+				
 		revert_dns >/dev/null 2>&1
 		
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -926,11 +891,10 @@ remove_mark(){
 
 stop(){
 #=========================================================================================================================== 
-		delandns=$(uci get clash.config.delan 2>/dev/null)
-		landns=$(uci get clash.config.landns 2>/dev/null)
+		
 		lang=$(uci get luci.main.lang 2>/dev/null)
 		tun_mode=$(uci get clash.config.tun_mode 2>/dev/null)
-		ipv6=$(uci get clash.config.ipv6 2>/dev/null)
+		#ipv6=$(uci get clash.config.enable_ipv6 2>/dev/null)
 		core=$(uci get clash.config.core 2>/dev/null)
 		LIST="/usr/share/clash/server.list"
 

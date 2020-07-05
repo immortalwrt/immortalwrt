@@ -12,12 +12,12 @@ status=$(egrep '^ {0,}Rule:' /tmp/Rule)
 		sed -i "1i\ " $RULE_YAML
 		mv $RULE_YAML /tmp/test 
 		sed -i '1,/===/d' /tmp/test
-		mv /tmp/test /usr/share/clash/custom_rule.yaml
+		mv /tmp/test /usr/share/clash/rule.yaml
 	else
 		sed -i "1i\Rule:" $RULE_YAML
 		mv $RULE_YAML /tmp/test
 		sed -i "1i\ " /tmp/test 
-		mv /tmp/test /usr/share/clash/custom_rule.yaml
+		mv /tmp/test /usr/share/clash/rule.yaml
 	fi
 fi
  
