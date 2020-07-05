@@ -156,7 +156,7 @@
 				url0 = ssu[1]
 			}
 			var sstr = url0;
-			var name = ssu[1].split('#');
+			var name = ssrurl.split('#');
 			document.getElementById('cbid.clash.' + sid + '.type').value = "trojan";
 			document.getElementById('cbid.clash.' + sid + '.type').dispatchEvent(event);
 			var team = sstr.split('@');
@@ -173,18 +173,15 @@
 					queryParam[decodeURIComponent(params[0])] = decodeURIComponent(params[1] || '');
 				}
 			}
-			
+			document.getElementById('cbid.clash.' + sid + '.name').value = name[1];
 			document.getElementById('cbid.clash.' + sid + '.server').value = serverPart[0];
 			document.getElementById('cbid.clash.' + sid + '.port').value = port;
 			document.getElementById('cbid.clash.' + sid + '.password').value = password;
-			//document.getElementById('cbid.clash.' + sid + '.tls').checked = true;
-			//document.getElementById('cbid.clash.' + sid + '.tls').dispatchEvent(event);
-			//document.getElementById('cbid.clash.' + sid + '.tls_host').value = queryParam.peer || '';
-			//document.getElementById('cbid.clash.' + sid + '.insecure').checked = queryParam.allowInsecure === '1';
-			document.getElementById('cbid.clash.' + sid + '.alpn').select = "http/1.1";
-			//document.getElementById('cbid.clash.' + sid + '.alpn').dispatchEvent(event);
+			document.getElementById('cbid.clash.' + sid + '.sni').value = serverPart[0];
+			document.getElementById('cbid.clash.' + sid + '.alpn_http').checked = true;
+			document.getElementById('cbid.clash.' + sid + '.alpn_h2').checked = false;
 			
-			document.getElementById('cbid.clash.' + sid + '.name').value = decodeURIComponent(name[1]);
+			
 			
 			s.innerHTML = "<font color='green'><%:Import Trojan config info successful%></font>";
 			return false;

@@ -1,8 +1,0 @@
-# 2020-05-20 03:00
-payload:
-  - 'paypal.*'
-  - '.paypal.'  
-  - 'paypal.com'
-  - 'paypalobjects.com'
-  - '.paypal.com'
-  - '.paypalobjects.com'

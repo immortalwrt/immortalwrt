@@ -1,17 +1,9 @@
-msgid "Do not edit Policy Group with Group Name Proxy or proxy and or 🔑Proxy and it's other policy group"
-msgstr "不要编辑策略组别名Proxy或proxy或🔑proxy和它的其他策略组"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
 
-msgid "Enable Lan DNS"
-msgstr "启用局域网DNS"
-
-msgid "Enabling will set custom DNS Servers for Lan"
-msgstr "启用将为自定义局域网DNS服务器"
-
-msgid "Lan DNS servers"
-msgstr "局域网DNS服务器"
-
-msgid "Set custom DNS Servers for Lan"
-msgstr "设置自定义局域网DNS服务器"
+msgid "Custom TLS Host"
+msgstr "自定义TLS主机"
 
 msgid "Cache DNS"
 msgstr "缓存的DNS"
@@ -1129,3 +1121,153 @@ msgstr "启用黑名单IP"
 
 msgid "Whitelist or Blacklist IPs to use Clash ( Only support enhanced-mode: redir-host )"
 msgstr "启用白名单或黑名单IP ( 仅支持enhanced-mode: redir-host )"
+
+msgid "Rule Providers Manager"
+msgstr "规则集经理"
+
+msgid "Rule Providers List"
+msgstr "规则集表"
+
+msgid "Type"
+msgstr "规则类型"
+
+msgid "Not Updated"
+msgstr "规则没更新"
+
+msgid "Update Rule Providers"
+msgstr "更新规则集"
+
+msgid "Proxy Groups"
+msgstr "代理组"
+
+msgid "Use Proxy"
+msgstr "启用代理"
+
+msgid "Other Rules"
+msgstr "其他规则"
+
+msgid "Use Other Rule"
+msgstr "启用其他规则"
+
+msgid "Delete Proxy Provider"
+msgstr "删除代理集"
+
+msgid "All Servers"
+msgstr "所有节点"
+
+msgid "Interface Name"
+msgstr "接口名称"
+
+msgid "Enable Interface Name"
+msgstr "启用接口名称"
+
+msgid "Set Interface Name"
+msgstr "设置接口名称"
+
+msgid "Tun Mode"
+msgstr "Tun模式"
+
+msgid "Enable Tun and make sure you are using tun supported core"
+msgstr "启用Tun并确保您使用的是Tun支持的核心"
+
+msgid "Stack"
+msgstr "Stack"
+
+msgid "Select Stack Mode"
+msgstr "选择Stack模式"
+
+msgid "Enable Clash DNS"
+msgstr "启用Clash DNS"
+
+msgid "DNS Listen Port"
+msgstr "DNS监听端口"
+
+msgid "Set DNS Listen Port"
+msgstr "设置DNS侦听端口"
+
+msgid "Default NameServer"
+msgstr "默认名称服务器"
+
+msgid "Default Nameserver List"
+msgstr "默认名称服务器列表"
+
+msgid "Enhanced Mode"
+msgstr "增强模式"
+
+msgid "Select Enhanced Mode"
+msgstr "选择增强模式"
+
+msgid "Fake IP Range"
+msgstr "假IP范围"
+
+msgid "Set Fake IP Range"
+msgstr "设置假IP范围"
+
+msgid "Fake IP Filter List"
+msgstr "假IP过滤器列表"
+
+msgid "Fake IP Filter"
+msgstr "假IP过滤器"
+
+msgid "DNS Hijack"
+msgstr "DNS劫持"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Protocol"
+msgstr "协议"
+
+msgid "Address"
+msgstr "地址"
+
+msgid "Port"
+msgstr "端口"
+
+msgid "Authentication"
+msgstr "HTTP(S)和SOCKS5认证方式"
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Hosts"
+msgstr "主机"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Nameservers & Fallback"
+msgstr "自定义上游DNS服务器"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Advance DNS"
+msgstr "高级DNS设置"
+
+msgid "Clash DNS"
+msgstr "配置DNS设置"
+
+msgid "Mixed Port"
+msgstr "HTTP(S)和SOCKS5同一端口上"
+
+msgid "Enable IPv6"
+msgstr "启用IPv6"
+
+msgid "Filter List"
+msgstr "自定义过滤器列表"
+
+msgid "Installed Version"
+msgstr "当前内核版本"
+
+msgid "New Version"
+msgstr "最新内核版本"
+
+msgid "Download Update"
+msgstr "下载最新版本客户端"
+
+msgid "No Protocol"
+msgstr "不带协议"

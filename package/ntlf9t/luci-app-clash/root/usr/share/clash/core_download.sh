@@ -14,6 +14,30 @@ if [ -f /usr/share/clash/core_down_complete ];then
   rm -rf /usr/share/clash/core_down_complete 2>/dev/null
 fi
 
+
+
+if [ $CORETYPE -eq 4 ];then
+if [ -f /usr/share/clash/download_dtun_version ];then 
+rm -rf /usr/share/clash/download_dtun_version
+fi
+	if [ $lang == "zh_cn" ];then
+         echo "  ${LOGTIME} - 正在检查最新版本。。" >$LOG_FILE
+	elif [ $lang == "en" ] || [ $lang == "auto" ];then
+         echo "  ${LOGTIME} - Checking latest version.." >$LOG_FILE
+        fi
+new_clashdtun_core_version=`wget -qO- "https://github.com/frainzy1477/clashdtun/tags"| grep "/frainzy1477/clashdtun/releases/"| head -n 1| awk -F "/tag/" '{print $2}'| sed 's/\">//'`
+
+if [ $new_clashdtun_core_version ]; then
+echo $new_clashdtun_core_version > /usr/share/clash/download_dtun_version 2>&1 & >/dev/null
+elif [ $new_clashdtun_core_version =="" ]; then
+echo 0 > /usr/share/clash/download_dtun_version 2>&1 & >/dev/null
+fi
+sleep 5
+if [ -f /usr/share/clash/download_dtun_version ];then
+CLASHDTUNC=$(sed -n 1p /usr/share/clash/download_dtun_version 2>/dev/null) 
+fi
+fi
+
 if [ $CORETYPE -eq 3 ];then
 if [ -f /usr/share/clash/download_tun_version ];then 
 rm -rf /usr/share/clash/download_tun_version
@@ -23,14 +47,14 @@ fi
 	elif [ $lang == "en" ] || [ $lang == "auto" ];then
          echo "  ${LOGTIME} - Checking latest version.." >$LOG_FILE
         fi
-new_clashtun_core_version=`wget -qO- "https://github.com/frainzy1477/clashtun/tags"| grep "/frainzy1477/clashtun/releases/tag/"| head -n 1| awk -F "/tag/v" '{print $2}'| sed 's/\">//'`
+new_clashtun_core_version=`wget -qO- "https://github.com/frainzy1477/clashtun/tags"| grep "/frainzy1477/clashtun/releases/"| head -n 1| awk -F "/tag/" '{print $2}'| sed 's/\">//'`
 
 if [ $new_clashtun_core_version ]; then
 echo $new_clashtun_core_version > /usr/share/clash/download_tun_version 2>&1 & >/dev/null
 elif [ $new_clashtun_core_version =="" ]; then
 echo 0 > /usr/share/clash/download_tun_version 2>&1 & >/dev/null
 fi
-sleep 8
+sleep 5
 if [ -f /usr/share/clash/download_tun_version ];then
 CLASHTUN=$(sed -n 1p /usr/share/clash/download_tun_version 2>/dev/null) 
 fi
@@ -46,14 +70,14 @@ fi
 	elif [ $lang == "en" ] || [ $lang == "auto" ];then
          echo "  ${LOGTIME} - Checking latest version.." >$LOG_FILE
         fi
-new_clashr_core_version=`wget -qO- "https://github.com/frainzy1477/clashrdev/tags"| grep "/frainzy1477/clashrdev/releases/tag/"| head -n 1| awk -F "/tag/v" '{print $2}'| sed 's/\">//'`
+new_clashr_core_version=`wget -qO- "https://github.com/frainzy1477/clashrdev/tags"| grep "/frainzy1477/clashrdev/releases/"| head -n 1| awk -F "/tag/" '{print $2}'| sed 's/\">//'`
 
 if [ $new_clashr_core_version ]; then
 echo $new_clashr_core_version > /usr/share/clash/download_corer_version 2>&1 & >/dev/null
 elif [ $new_clashr_core_version =="" ]; then
 echo 0 > /usr/share/clash/download_corer_version 2>&1 & >/dev/null
 fi
-sleep 8
+sleep 5
 if [ -f /usr/share/clash/download_corer_version ];then
 CLASHRVER=$(sed -n 1p /usr/share/clash/download_corer_version 2>/dev/null) 
 fi
@@ -68,14 +92,14 @@ fi
 	elif [ $lang == "en" ] || [ $lang == "auto" ];then
          echo "  ${LOGTIME} - Checking latest version.." >$LOG_FILE
         fi
-new_clashr_core_version=`wget -qO- "https://github.com/frainzy1477/clash_dev/tags"| grep "/frainzy1477/clash_dev/releases/tag/"| head -n 1| awk -F "/tag/v" '{print $2}'| sed 's/\">//'`
+new_clashr_core_version=`wget -qO- "https://github.com/frainzy1477/clash_dev/tags"| grep "/frainzy1477/clash_dev/releases/"| head -n 1| awk -F "/tag/" '{print $2}'| sed 's/\">//'`
 
 if [ $new_clashr_core_version ]; then
 echo $new_clashr_core_version > /usr/share/clash/download_core_version 2>&1 & >/dev/null
 elif [ $new_clashr_core_version =="" ]; then
 echo 0 > /usr/share/clash/download_core_version 2>&1 & >/dev/null
 fi
-sleep 8
+sleep 5
 if [ -f /usr/share/clash/download_core_version ];then
 CLASHVER=$(sed -n 1p /usr/share/clash/download_core_version 2>/dev/null) 
 fi
@@ -93,11 +117,13 @@ update(){
 			 echo "  ${LOGTIME} - Starting Clash Core download" >$LOG_FILE
 		fi				
 	   if [ $CORETYPE -eq 1 ];then
-		wget --no-check-certificate  https://github.com/frainzy1477/clash_dev/releases/download/v"$CLASHVER"/clash-"$MODELTYPE"-v"$CLASHVER".gz -O 2>&1 >1 /tmp/clash.gz
+		wget --no-check-certificate  https://github.com/frainzy1477/clash_dev/releases/download/"$CLASHVER"/clash-"$MODELTYPE".gz -O 2>&1 >1 /tmp/clash.gz
 	   elif [ $CORETYPE -eq 2 ];then 
-		wget --no-check-certificate  https://github.com/frainzy1477/clashrdev/releases/download/v"$CLASHRVER"/clashr-"$MODELTYPE"-v"$CLASHRVER".gz -O 2>&1 >1 /tmp/clash.gz
+		wget --no-check-certificate  https://github.com/frainzy1477/clashrdev/releases/download/"$CLASHRVER"/clashr-"$MODELTYPE".gz -O 2>&1 >1 /tmp/clash.gz
 	   elif [ $CORETYPE -eq 3 ];then 
-		wget --no-check-certificate  https://github.com/frainzy1477/clashtun/releases/download/v"$CLASHTUN"/clash-"$MODELTYPE".gz -O 2>&1 >1 /tmp/clash.gz
+		wget --no-check-certificate  https://github.com/frainzy1477/clashtun/releases/download/"$CLASHTUN"/clash-"$MODELTYPE".gz -O 2>&1 >1 /tmp/clash.gz
+	   elif [ $CORETYPE -eq 4 ];then 
+		wget --no-check-certificate  https://github.com/frainzy1477/clashdtun/releases/download/"$CLASHDTUNC"/clash-"$MODELTYPE".gz -O 2>&1 >1 /tmp/clash.gz
 	   fi
 	   
 	   if [ "$?" -eq "0" ] && [ "$(ls -l /tmp/clash.gz |awk '{print int($5)}')" -ne 0 ]; then
@@ -181,7 +207,7 @@ update(){
 		fi
 }
 
-if [ $CORETYPE -eq 1 ] || [ $CORETYPE -eq 2 ] || [ $CORETYPE -eq 3 ]; then
+if [ $CORETYPE -eq 1 ] || [ $CORETYPE -eq 2 ] || [ $CORETYPE -eq 3 ] || [ $CORETYPE -eq 4 ]; then
 	    update
 fi
 
