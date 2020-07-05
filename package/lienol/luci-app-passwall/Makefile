@@ -6,9 +6,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
-PKG_VERSION:=3.6
-PKG_RELEASE:=40
-PKG_DATE:=20200411
+PKG_VERSION:=3.9
+PKG_RELEASE:=4
+PKG_DATE:=20200705
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -20,23 +20,19 @@ menu "Configuration"
 config PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks
 	bool "Include ipt2socks"
 	default y
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
-	bool "Include Shadowsocks Redir (ss-redir)"
+	bool "Include Shadowsocks"
 	default n
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR
-	bool "Include ShadowsocksR Redir (ssr-redir)"
+	bool "Include ShadowsocksR"
 	default y
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_socks
-	bool "Include Shadowsocks Socks (ss-local)"
-	default n
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_socks
-	bool "Include ShadowsocksR Socks (ssr-local)"
-	default n
-
+config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
+	bool "Include ShadowsocksR Server"
+	default y
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
 	bool "Include V2ray"
 	default y
@@ -44,11 +40,11 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
 config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan
 	bool "Include Trojan"
 	default n
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_Brook
 	bool "Include Brook"
 	default n
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_kcptun
 	bool "Include kcptun"
 	default n
@@ -56,19 +52,19 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_kcptun
 config PACKAGE_$(PKG_NAME)_INCLUDE_haproxy
 	bool "Include haproxy"
 	default y
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS_NG
 	bool "Include ChinaDNS-NG"
 	default y
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_pdnsd
 	bool "Include pdnsd"
 	default y
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks
 	bool "Include dns2socks"
 	default y
-
+	
 config PACKAGE_$(PKG_NAME)_INCLUDE_v2ray-plugin
 	bool "Include v2ray-plugin (Shadowsocks plugin)"
 	default n
@@ -86,12 +82,13 @@ define Package/$(PKG_NAME)
   TITLE:=LuCI support for PassWall
   PKGARCH:=all
   DEPENDS:=+libmbedtls +iptables-mod-tproxy +ip +ipset +coreutils +coreutils-base64 +coreutils-nohup +luci-lib-jsonc \
-  +wget +resolveip +unzip +dnsmasq-full +tcping +libuci-lua \
+  +curl +ca-certificates +resolveip +unzip +dnsmasq-full +tcping +libuci-lua \
   +PACKAGE_$(PKG_NAME)_INCLUDE_ipt2socks:ipt2socks \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-redir \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-local \
   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-alt \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_socks:shadowsocks-libev-ss-local \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_socks:shadowsocksr-libev-ssr-local \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-ssr-local \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
   +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
@@ -116,6 +113,7 @@ endef
 
 define Package/$(PKG_NAME)/conffiles
 /etc/config/passwall
+/etc/config/passwall_server
 /usr/share/passwall/rules/blacklist_host
 /usr/share/passwall/rules/blacklist_ip
 /usr/share/passwall/rules/whitelist_host
@@ -125,23 +123,25 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./root/etc/config/passwall $(1)/etc/config/passwall
-	$(INSTALL_CONF) ./root/etc/config/passwall_show $(1)/etc/config/passwall_show
-
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./root/etc/uci-defaults/* $(1)/etc/uci-defaults
-
+	$(INSTALL_CONF) ./root/etc/config/passwall_server $(1)/etc/config/passwall_server
+	
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./root/etc/init.d/passwall $(1)/etc/init.d/passwall
-
+	$(INSTALL_BIN) ./root/etc/init.d/passwall_server $(1)/etc/init.d/passwall_server
+	
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_CONF) ./root/etc/uci-defaults/* $(1)/etc/uci-defaults
+	
 	$(INSTALL_DIR) $(1)/usr/share/passwall
 	cp -pR ./root/usr/share/passwall/* $(1)/usr/share/passwall
-
+	$(INSTALL_CONF) ./root/etc/config/passwall $(1)/usr/share/passwall/config.default
+	
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_CONF) ./root/usr/share/rpcd/acl.d/*.json $(1)/usr/share/rpcd/acl.d/
-
+	cp -pR ./root/usr/share/rpcd/acl.d/* $(1)/usr/share/rpcd/acl.d
+	
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci/
-
+	
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	po2lmo ./po/zh_Hans/passwall.po $(1)/usr/lib/lua/luci/i18n/passwall.zh-cn.lmo
 endef
@@ -149,6 +149,8 @@ endef
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 chmod a+x $${IPKG_INSTROOT}/usr/share/passwall/* >/dev/null 2>&1
+chmod a+x $${IPKG_INSTROOT}/usr/lib/lua/luci/model/cbi/passwall/server/api/app.lua >/dev/null 2>&1
+touch $${IPKG_INSTROOT}/etc/config/passwall_show >/dev/null 2>&1
 exit 0
 endef
 

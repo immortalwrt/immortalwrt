@@ -55,7 +55,7 @@ local v2ray_header_type_list = {
 }
 
 m = Map(appname, translate("Node Config"))
-m.redirect = d.build_url("admin", "vpn", "passwall")
+m.redirect = d.build_url("admin", "vpn", appname)
 
 s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false
@@ -68,14 +68,16 @@ remarks.rmempty = false
 type = s:option(ListValue, "type", translate("Type"))
 if ((is_installed("redsocks2") or is_finded("redsocks2")) or
     (is_installed("ipt2socks") or is_finded("ipt2socks"))) then
-    type:value("Socks5", translate("Socks5"))
+    type:value("Socks", translate("Socks"))
 end
-if is_finded("ss-redir") then type:value("SS", translate("Shadowsocks")) end
-if is_finded("ssr-redir") then type:value("SSR", translate("ShadowsocksR")) end
+if is_finded("ss-redir") then
+    type:value("SS", translate("Shadowsocks"))
+end
+if is_finded("ssr-redir") then
+    type:value("SSR", translate("ShadowsocksR"))
+end
 if is_installed("v2ray") or is_finded("v2ray") then
     type:value("V2ray", translate("V2ray"))
-    type:value("V2ray_balancing", translate("V2ray Balancing"))
-    type:value("V2ray_shunt", translate("V2ray Shunt"))
 end
 if is_installed("brook") or is_finded("brook") then
     type:value("Brook", translate("Brook"))
@@ -84,14 +86,50 @@ if is_installed("trojan") or is_finded("trojan") then
     type:value("Trojan", translate("Trojan"))
 end
 
-v2ray_protocol = s:option(ListValue, "v2ray_protocol",
-                          translate("V2ray Protocol"))
+v2ray_protocol = s:option(ListValue, "v2ray_protocol", translate("Protocol"))
 v2ray_protocol:value("vmess", translate("Vmess"))
 v2ray_protocol:value("http", translate("HTTP"))
 v2ray_protocol:value("socks", translate("Socks"))
 v2ray_protocol:value("shadowsocks", translate("Shadowsocks"))
+v2ray_protocol:value("_balancing", translate("Balancing"))
+v2ray_protocol:value("_shunt", translate("Shunt"))
 v2ray_protocol:depends("type", "V2ray")
 
+local nodes_table = {}
+uci:foreach(appname, "nodes", function(e)
+    if e.type and e.remarks and e.port then
+        if e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= "." then
+            nodes_table[#nodes_table + 1] = {
+                id = e[".name"],
+                remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
+            }
+        end
+    end
+end)
+
+-- 负载均衡列表
+v2ray_balancing_node = s:option(DynamicList, "v2ray_balancing_node", translate("Load balancing node list"), translate("Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"))
+for k, v in pairs(nodes_table) do v2ray_balancing_node:value(v.id, v.remarks) end
+v2ray_balancing_node:depends("v2ray_protocol", "_balancing")
+
+-- 分流
+uci:foreach(appname, "shunt_rules", function(e)
+    o = s:option(ListValue, e[".name"], translate(e.remarks))
+    o:value("nil", translate("Close"))
+    for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
+    o:depends("v2ray_protocol", "_shunt")
+
+    o = s:option(Flag, e[".name"] .. "_proxy", translate(e.remarks) .. translate("Preproxy"), translate("Use the default node for the transit."))
+    o.default = 0
+    o:depends("v2ray_protocol", "_shunt")
+end)
+
+default_node = s:option(ListValue, "default_node", translate("Default") .. " " .. translate("Node"))
+default_node:value("nil", translate("Close"))
+for k, v in pairs(nodes_table) do default_node:value(v.id, v.remarks) end
+default_node:depends("v2ray_protocol", "_shunt")
+
+-- Brook协议
 brook_protocol = s:option(ListValue, "brook_protocol",
                           translate("Brook Protocol"))
 brook_protocol:value("client", translate("Brook"))
@@ -101,70 +139,28 @@ brook_protocol:depends("type", "Brook")
 brook_tls = s:option(Flag, "brook_tls", translate("Use TLS"))
 brook_tls:depends("brook_protocol", "wsclient")
 
-local n = {}
-uci:foreach(appname, "nodes", function(e)
-    if e.type and e.remarks and e.port then
-        if e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= "." then
-            n[e[".name"]] = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
-        end
-    end
-end)
-
-local key_table = {}
-for key, _ in pairs(n) do table.insert(key_table, key) end
-table.sort(key_table)
-
-v2ray_balancing_node = s:option(DynamicList, "v2ray_balancing_node",
-                                translate("Load balancing node list"),
-                                translate(
-                                    "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"))
-for _, key in pairs(key_table) do v2ray_balancing_node:value(key, n[key]) end
-v2ray_balancing_node:depends("type", "V2ray_balancing")
-
-youtube_node = s:option(ListValue, "youtube_node",
-                        "Youtube " .. translate("Node"))
-youtube_node:value("nil", translate("Close"))
-for _, key in pairs(key_table) do youtube_node:value(key, n[key]) end
-youtube_node:depends("type", "V2ray_shunt")
-
-youtube_proxy = s:option(Flag, "youtube_proxy", "Youtube " .. translate("Node") .. translate("Preproxy"),
-                        "Youtube " .. translate("Node") .. translate("Use the default node for the transit."))
-youtube_proxy.default = 0
-youtube_proxy:depends("type", "V2ray_shunt")
-
-netflix_node = s:option(ListValue, "netflix_node",
-                        "Netflix " .. translate("Node"))
-netflix_node:value("nil", translate("Close"))
-for _, key in pairs(key_table) do netflix_node:value(key, n[key]) end
-netflix_node:depends("type", "V2ray_shunt")
-
-netflix_proxy = s:option(Flag, "netflix_proxy", "Netflix " .. translate("Node") .. translate("Preproxy"),
-                        "Netflix " .. translate("Node") .. translate("Use the default node for the transit."))
-netflix_proxy.default = 0
-netflix_proxy:depends("type", "V2ray_shunt")
-
-default_node = s:option(ListValue, "default_node",
-                        translate("Default") .. " " .. translate("Node"))
-default_node:value("nil", translate("Close"))
-for _, key in pairs(key_table) do default_node:value(key, n[key]) end
-default_node:depends("type", "V2ray_shunt")
-
 address = s:option(Value, "address", translate("Address (Support Domain Name)"))
 address.rmempty = false
-address:depends("type", "Socks5")
+address:depends("type", "Socks")
 address:depends("type", "SS")
 address:depends("type", "SSR")
-address:depends("type", "V2ray")
+address:depends({ type = "V2ray", v2ray_protocol = "vmess" })
+address:depends({ type = "V2ray", v2ray_protocol = "http" })
+address:depends({ type = "V2ray", v2ray_protocol = "socks" })
+address:depends({ type = "V2ray", v2ray_protocol = "shadowsocks" })
 address:depends("type", "Brook")
 address:depends("type", "Trojan")
 
 --[[
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
 use_ipv6.default = 0
-use_ipv6:depends("type", "Socks5")
+use_ipv6:depends("type", "Socks")
 use_ipv6:depends("type", "SS")
 use_ipv6:depends("type", "SSR")
-use_ipv6:depends("type", "V2ray")
+use_ipv6:depends({ type = "V2ray", v2ray_protocol = "vmess" })
+use_ipv6:depends({ type = "V2ray", v2ray_protocol = "http" })
+use_ipv6:depends({ type = "V2ray", v2ray_protocol = "socks" })
+use_ipv6:depends({ type = "V2ray", v2ray_protocol = "shadowsocks" })
 use_ipv6:depends("type", "Brook")
 use_ipv6:depends("type", "Trojan")
 --]]
@@ -172,21 +168,24 @@ use_ipv6:depends("type", "Trojan")
 port = s:option(Value, "port", translate("Port"))
 port.datatype = "port"
 port.rmempty = false
-port:depends("type", "Socks5")
+port:depends("type", "Socks")
 port:depends("type", "SS")
 port:depends("type", "SSR")
-port:depends("type", "V2ray")
+port:depends({ type = "V2ray", v2ray_protocol = "vmess" })
+port:depends({ type = "V2ray", v2ray_protocol = "http" })
+port:depends({ type = "V2ray", v2ray_protocol = "socks" })
+port:depends({ type = "V2ray", v2ray_protocol = "shadowsocks" })
 port:depends("type", "Brook")
 port:depends("type", "Trojan")
 
 username = s:option(Value, "username", translate("Username"))
-username:depends("type", "Socks5")
+username:depends("type", "Socks")
 username:depends("v2ray_protocol", "http")
 username:depends("v2ray_protocol", "socks")
 
 password = s:option(Value, "password", translate("Password"))
 password.password = true
-password:depends("type", "Socks5")
+password:depends("type", "Socks")
 password:depends("type", "SS")
 password:depends("type", "SSR")
 password:depends("type", "Brook")
@@ -429,10 +428,12 @@ v2ray_quic_guise = s:option(ListValue, "v2ray_quic_guise",
 for a, t in ipairs(v2ray_header_type_list) do v2ray_quic_guise:value(t) end
 v2ray_quic_guise:depends("v2ray_transport", "quic")
 
--- [[ 其它 ]]--
-
+-- [[ Mux ]]--
 v2ray_mux = s:option(Flag, "v2ray_mux", translate("Mux"))
-v2ray_mux:depends("type", "V2ray")
+v2ray_mux:depends({ type = "V2ray", v2ray_protocol = "vmess" })
+v2ray_mux:depends({ type = "V2ray", v2ray_protocol = "http" })
+v2ray_mux:depends({ type = "V2ray", v2ray_protocol = "socks" })
+v2ray_mux:depends({ type = "V2ray", v2ray_protocol = "shadowsocks" })
 
 v2ray_mux_concurrency = s:option(Value, "v2ray_mux_concurrency",
                                  translate("Mux Concurrency"))
@@ -448,7 +449,7 @@ v2ray_tcp_socks.default = 0
 v2ray_tcp_socks:depends("type", "V2ray")
 
 v2ray_tcp_socks_port = s:option(Value, "v2ray_tcp_socks_port",
-                                "Socks5 " .. translate("Port"),
+                                "Socks " .. translate("Port"),
                                 translate("Do not conflict with other ports"))
 v2ray_tcp_socks_port.datatype = "port"
 v2ray_tcp_socks_port.default = 1080
@@ -463,11 +464,11 @@ v2ray_tcp_socks_auth:value("password", translate("User Password"))
 v2ray_tcp_socks_auth:depends("v2ray_tcp_socks", "1")
 
 v2ray_tcp_socks_auth_username = s:option(Value, "v2ray_tcp_socks_auth_username",
-                                         "Socks5 " .. translate("Username"))
+                                         "Socks " .. translate("Username"))
 v2ray_tcp_socks_auth_username:depends("v2ray_tcp_socks_auth", "password")
 
 v2ray_tcp_socks_auth_password = s:option(Value, "v2ray_tcp_socks_auth_password",
-                                         "Socks5 " .. translate("Password"))
+                                         "Socks " .. translate("Password"))
 v2ray_tcp_socks_auth_password:depends("v2ray_tcp_socks_auth", "password")
 --]]
 
@@ -480,55 +481,5 @@ trojan_cert_path = s:option(Value, "trojan_cert_path",
                             translate("Trojan Cert Path"))
 trojan_cert_path.default = ""
 trojan_cert_path:depends("trojan_verify_cert", "1")
-
--- v2ray_insecure = s:option(Flag, "v2ray_insecure", translate("allowInsecure"))
--- v2ray_insecure:depends("type", "V2ray")
-
-function rmempty_restore()
-    address.rmempty = true
-    port.rmempty = true
-    password.rmempty = true
-    timeout.rmempty = true
-    tcp_fast_open.rmempty = true
-    -- v2ray_protocol.rmempty = true
-    v2ray_VMess_id.rmempty = true
-    v2ray_VMess_alterId.rmempty = true
-end
-
-type.validate = function(self, value)
-    rmempty_restore()
-    if value == "SS" then
-        address.rmempty = false
-        port.rmempty = false
-        password.rmempty = false
-        timeout.rmempty = false
-        tcp_fast_open.rmempty = false
-    elseif value == "SSR" then
-        address.rmempty = false
-        port.rmempty = false
-        password.rmempty = false
-        timeout.rmempty = false
-        tcp_fast_open.rmempty = false
-    elseif value == "V2ray" then
-        address.rmempty = false
-        port.rmempty = false
-        -- v2ray_protocol.rmempty = false
-        -- v2ray_VMess_id.rmempty = false
-        -- v2ray_VMess_alterId.rmempty = false
-    elseif value == "V2ray_balancing" then
-    elseif value == "Brook" then
-        address.rmempty = false
-        port.rmempty = false
-        password.rmempty = false
-    elseif value == "Trojan" then
-        address.rmempty = false
-        port.rmempty = false
-        password.rmempty = false
-        tcp_fast_open.rmempty = false
-    end
-    return value
-end
-
-v2ray_transport.validate = function(self, value) return value end
 
 return m
