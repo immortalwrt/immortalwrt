@@ -2,8 +2,7 @@
 local api = require "luci.model.cbi.passwall.api.api"
 local dsp = require "luci.dispatcher"
 
-local brook_path = api.uci_get_type("global_app", "brook_file")
-local brook_version = luci.sys.exec("[ -f '" .. brook_path .. "' ] && " .. brook_path .. " -v | awk '{print $3}'")
+local brook_version = api.get_brook_version()
 -%>
 
 <script type="text/javascript">

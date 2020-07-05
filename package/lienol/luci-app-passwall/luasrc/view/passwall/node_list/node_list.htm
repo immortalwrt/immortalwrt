@@ -5,7 +5,6 @@
 	
 	local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 	local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
-	local socks_node_num = api.uci_get_type("global_other", "socks_node_num", 1)
 	local compact_display_nodes = api.uci_get_type("global_other", "compact_display_nodes", 1)
 -%>
 
@@ -20,32 +19,39 @@ table td, .table .td {
     word-break: keep-all;
 }
 
-#set_node_div{
+#set_node_div {
 	display: none;
 	width: 30rem;
 	position: fixed;
-	left:50%;
 	top:50%;
-	transform: translate(-50%, -50%);
 	padding-top: 30px;
 	z-index: 99;
 	text-align: center;
 	background: white;
     box-shadow: darkgrey 10px 10px 30px 5px;
 }
+
+._select {
+	background: #dad8d8;
+}
 </style>
 
 <script type="text/javascript">
 	//<![CDATA[
 	var ajax = {
-		post: function(url, data, fn_success, fn_timeout) {
+		post: function(url, data, fn_success, timeout, fn_timeout) {
 			var xhr = new XMLHttpRequest();
 			var code = ajax.encode(data);
 			xhr.open("POST", url, true);
-			xhr.timeout = 1000;
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			xhr.ontimeout = function() {
-				fn_timeout(xhr);
+			
+			if (timeout && timeout > 1000) {
+				xhr.timeout = timeout;
+			}
+			if (fn_timeout) {
+				xhr.ontimeout = function() {
+					fn_timeout(xhr);
+				}
 			}
 			xhr.onreadystatechange = function() {
 				if(xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 304)) {
@@ -96,30 +102,131 @@ table td, .table .td {
 		document.getElementById("set_node_name").innerHTML = "";
 	}
 	
+	function _cbi_row_top(id) {
+		var dom = document.getElementById("cbi-passwall-" + id);
+		if (dom) {
+			var trs = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-section-table-row");
+			if (trs && trs.length > 0) {
+				for (var i = 0; i < trs.length; i++) {
+					var up = dom.getElementsByClassName("cbi-button-up");
+					if (up) {
+						cbi_row_swap(up[0], true, 'cbi.sts.passwall.nodes');
+					}
+				}
+			}
+		}
+	}
+	
+	function select_node_div(btn, id) {
+		btn.value = "<%:DeSelect%>";
+		btn.setAttribute("onclick", "deselect_node_div(this, '" + id + "')");
+		var dom = document.getElementById("cbi-passwall-" + id);
+		if (dom) {
+			dom.classList.add("_select");
+			dom.setAttribute("nodes_id", id);
+		}
+	}
+	
+	function deselect_node_div(btn, id) {
+		btn.value = "<%:Select%>";
+		btn.setAttribute("onclick", "select_node_div(this, '" + id + "')");
+		var dom = document.getElementById("cbi-passwall-" + id);
+		if (dom) {
+			dom.classList.remove("_select");
+			dom.removeAttribute("nodes_id");
+		}
+	}
+	
+	function select_all(btn) {
+		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-section-table-row");
+		if (doms && doms.length > 0) {
+			for (var i = 0 ; i < doms.length; i++) {
+				var id = doms[i].id.replace("cbi-passwall-", "");
+				var btn2 = document.getElementById("select_" + id);
+				select_node_div(btn2, id);
+			}
+			btn.value = "<%:DeSelect all%>";
+			btn.setAttribute("onclick", "deselect_all(this)");
+		}
+	}
+	
+	function deselect_all(btn) {
+		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-section-table-row");
+		if (doms && doms.length > 0) {
+			for (var i = 0 ; i < doms.length; i++) {
+				var id = doms[i].id.replace("cbi-passwall-", "");
+				var btn2 = document.getElementById("select_" + id);
+				deselect_node_div(btn2, id);
+			}
+			btn.value = "<%:Select all%>";
+			btn.setAttribute("onclick", "select_all(this)");
+		}
+	}
+	
+	function delete_select_nodes() {
+		var doms = document.getElementsByClassName("_select");
+		if (doms && doms.length > 0) {
+			var ids = [];
+			for (var i = 0 ; i < doms.length; i++) {
+				if (doms[i].getAttribute("nodes_id")) {
+					ids.push(doms[i].getAttribute("nodes_id"))
+				}
+			}
+			if (confirm('<%:Are you sure to delete select nodes?%>') == true){
+				XHR.get('<%=dsp.build_url("admin/vpn/passwall/delete_select_nodes")%>', {
+					ids: ids.join()
+				},
+				function(x, data) {
+					if(x && x.status == 200) {
+						window.location.href = '<%=dsp.build_url("admin/vpn/passwall/node_list")%>';
+					}
+					else {
+						alert("<%:Error%>");
+					}
+				});
+			}
+		} else {
+			alert("<%:You no select nodes !%>");
+		}
+	}
+	
 	function set_node(protocol,number) {
 		if (confirm('<%:Are you sure set to%> ' + protocol.toUpperCase() + "_" + number + '<%:the server?%>')==true){
 			window.location.href = '<%=dsp.build_url("admin/vpn/passwall/set_node")%>?protocol=' + protocol + '&number=' + number + '&section=' + section;
 		}
 	}
 	
-	function ping_node(cbi_id,dom) {
+	function get_address_full(id) {
 		<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
-			var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
-			var address = null;
-			var port = null;
-			if (remarks.lastIndexOf("（") != -1 && remarks.lastIndexOf("）") != -1) {
-				var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
-				address = address_full.substring(0, address_full.lastIndexOf(":"));
-				port = address_full.substring(address_full.lastIndexOf(":") + 1);
+			var remarks = document.getElementById("cbid.passwall." + id + ".remarks").value;
+			var result = remarks.match("\\（(.+?)\\）");
+			if (result != null) {
+				var full = result[1];
+				var address = full.substring(0, full.lastIndexOf(":"));
+				var port = full.substring(full.lastIndexOf(":") + 1);
 			}
 		<% else %>
-			var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
-			var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
+			try {
+				var address = document.getElementById("cbid.passwall." + id + ".address").value;
+				var port = document.getElementById("cbid.passwall." + id + ".port").value;
+			}
+			catch(err){}
 		<% end %>
-		if ((address != null && address != "") && (port != null && port != "")) {
+		//判断是否含有汉字
+		var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
+		if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false && (address.indexOf(".") != -1 && address.charAt(address.address - 1) != ".")) {
+			return { address: address, port: port };
+		} else {
+			return null;
+		}
+	}
+	
+	function ping_node(cbi_id, dom) {
+		var full = get_address_full(cbi_id);
+		if (full != null) {
 			XHR.get('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
-					address: address,
-					port: port
+					address: full.address,
+					port: full.port
 				},
 				function(x, result) {
 					if(x && x.status == 200) {
@@ -141,102 +248,143 @@ table td, .table .td {
 	}
 	
 	/* 自动Ping */
+	var nodes = [];
 	const auto_ping_value = document.getElementsByClassName('auto_ping_value');
-	var index = 0;
-	function auto_ping() {
-		if (index >= auto_ping_value.length) { 
-			return;
-		}
-		var has_ping = auto_ping_value[index].getAttribute("has_ping");
-		if (has_ping == null) {
-			var cbi_id = auto_ping_value[index].getAttribute("cbiid");
-			<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
-				var remarks = document.getElementById("cbid.passwall." + cbi_id + ".remarks").value;
-				var address = null;
-				var port = null;
-				if (remarks.lastIndexOf("（") != -1 && remarks.lastIndexOf("）") != -1) {
-					var address_full = remarks.substring(remarks.lastIndexOf("（") + 1, remarks.lastIndexOf("）"));
-					address = address_full.substring(0, address_full.lastIndexOf(":"));
-					port = address_full.substring(address_full.lastIndexOf(":") + 1);
+	for (var i = 0; i < auto_ping_value.length; i++) {
+		var cbi_id = auto_ping_value[i].getAttribute("cbiid");
+		var full = get_address_full(cbi_id);
+		if (full != null) {
+			var flag = false;
+			//当有多个相同地址和端口时合在一起
+			for (var j = 0; j < nodes.length; j++) {
+				if (nodes[j].address == full.address && nodes[j].port == full.port) {
+					nodes[j].indexs = nodes[j].indexs + "," + i;
+					flag = true;
+					break;
 				}
-			<% else %>
-				var address = document.getElementById("cbid.passwall." + cbi_id + ".address").value;
-				var port = document.getElementById("cbid.passwall." + cbi_id + ".port").value;
-			<% end %>
-			//判断是否含有汉字
-			var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
-			if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false && (address.indexOf(".") != -1 && address.charAt(address.address - 1) != ".")) {
-				ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
-						index: index,
-						address: address,
-						port: port
-					},
-					function(x, result) {
-						if(x && x.status == 200) {
-							for(var i = 0; i < auto_ping_value.length; i++) {
-								var obj = auto_ping_value[i];
-								var obj_cbi_id = obj.getAttribute("cbiid");
-								<% if compact_display_nodes and tonumber(compact_display_nodes) == 1 then %>
-									var obj_remarks = document.getElementById("cbid.passwall." + obj_cbi_id + ".remarks").value;
-									var obj_address = null;
-									var obj_port = null;
-									if (obj_remarks.lastIndexOf("（") != -1 && obj_remarks.lastIndexOf("）") != -1) {
-										var obj_address_full = obj_remarks.substring(obj_remarks.lastIndexOf("（") + 1, obj_remarks.lastIndexOf("）"));
-										obj_address = obj_address_full.substring(0, obj_address_full.lastIndexOf(":"));
-										obj_port = obj_address_full.substring(obj_address_full.lastIndexOf(":") + 1);
-									}
-								<% else %>
-									var obj_address = document.getElementById("cbid.passwall." + obj_cbi_id + ".address").value;
-									var obj_port = document.getElementById("cbid.passwall." + obj_cbi_id + ".port").value;
-								<% end %>
-								
-								if (address == obj_address && port == obj_port) {
-									auto_ping_value[i].setAttribute("has_ping", "1");
-									if (result.ping == null || result.ping.trim() == "") {
-										auto_ping_value[i].innerHTML = "<font style='color:red'><%:Timeout%></font>";
-									} else {
-										var ping = parseInt(result.ping);
-										if (ping < 100)
-											auto_ping_value[i].innerHTML = "<font style='color:green'>" + result.ping + " ms" + "</font>";
-										else if (ping < 200)
-											auto_ping_value[i].innerHTML = "<font style='color:#fb9a05'>" + result.ping + " ms" + "</font>";
-										else if (ping >= 200)
-											auto_ping_value[i].innerHTML = "<font style='color:red'>" + result.ping + " ms" + "</font>";
-									}
-								}
-							}
-						}
-						index++;
-						auto_ping();
-					},
-					function(x) {
-						auto_ping_value[index].innerHTML = "<font style='color:red'><%:Timeout%></font>";
-						index++;
-						auto_ping();
-					},
-				);
-			} else {
-				index++;
-				auto_ping();
 			}
-		}
-		else {
-			index++;
-			auto_ping();
+			if (flag)
+				continue;
+			nodes.push({
+				indexs: i + "",
+				address: full.address,
+				port: full.port
+			});
 		}
 	}
 	
-	auto_ping();
+	const _xhr = (index) => {
+		return new Promise((res) => {
+			const dom = nodes[index];
+			if (!dom) res()
+			ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+					index: dom.indexs,
+					address: dom.address,
+					port: dom.port
+				},
+				function(x, result) {
+					if (x && x.status == 200) {
+						var strs = dom.indexs.split(",");
+						for (var i = 0; i < strs.length; i++) {
+							if (result.ping == null || result.ping.trim() == "") {
+								auto_ping_value[strs[i]].innerHTML = "<font style='color:red'><%:Timeout%></font>";
+							} else {
+								var ping = parseInt(result.ping);
+								if (ping < 100)
+									auto_ping_value[strs[i]].innerHTML = "<font style='color:green'>" + result.ping + " ms" + "</font>";
+								else if (ping < 200)
+									auto_ping_value[strs[i]].innerHTML = "<font style='color:#fb9a05'>" + result.ping + " ms" + "</font>";
+								else if (ping >= 200)
+									auto_ping_value[strs[i]].innerHTML = "<font style='color:red'>" + result.ping + " ms" + "</font>";
+							}
+						}
+					}
+					res();
+				},
+				5000,
+				function(x) {
+					var strs = dom.indexs.split(",");
+					for (var i = 0; i < strs.length; i++) {
+						auto_ping_value[strs[i]].innerHTML = "<font style='color:red'><%:Timeout%></font>";
+					}
+					res();
+				}
+			);
+		})
+	}
 	
-	//添加"应用"按钮到"修改"按钮前
-	var edit_btn = document.getElementsByClassName("cbi-button cbi-button-edit");
+	let task = -1;
+	const thread = () => {
+		task = task + 1
+		if (nodes[task]) {
+			_xhr(task).then(thread);
+		}
+	}
+	for (let i = 0; i < 20; i++) {
+		thread()
+	}
+	
+	/* 递归单请求方法
+	var index = 0;
+	function auto_ping() {
+		if (index >= nodes.length) {
+			return;
+		}
+		var indexs = nodes[index].indexs;
+		var address = nodes[index].address;
+		var port = nodes[index].port;
+		ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+				index: indexs,
+				address: address,
+				port: port
+			},
+			function(x, result) {
+				if (x && x.status == 200) {
+					var strs = indexs.split(",");
+					for (var i = 0; i < strs.length; i++) {
+						if (result.ping == null || result.ping.trim() == "") {
+							auto_ping_value[strs[i]].innerHTML = "<font style='color:red'><%:Timeout%></font>";
+						} else {
+							var ping = parseInt(result.ping);
+							if (ping < 100)
+								auto_ping_value[strs[i]].innerHTML = "<font style='color:green'>" + result.ping + " ms" + "</font>";
+							else if (ping < 200)
+								auto_ping_value[strs[i]].innerHTML = "<font style='color:#fb9a05'>" + result.ping + " ms" + "</font>";
+							else if (ping >= 200)
+								auto_ping_value[strs[i]].innerHTML = "<font style='color:red'>" + result.ping + " ms" + "</font>";
+						}
+					}
+				}
+				index++;
+				return auto_ping();
+			},
+			function(x) {
+				var strs = indexs.split(",");
+				for (var i = 0; i < strs.length; i++) {
+					auto_ping_value[strs[i]].innerHTML = "<font style='color:red'><%:Timeout%></font>";
+				}
+				index++;
+				return auto_ping();
+			},
+		);
+	}
+	auto_ping();
+	*/
+	
+	var edit_btn = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-button cbi-button-edit");
 	for(var i = 0; i < edit_btn.length; i++) {
 		try {
 			var onclick_str = edit_btn[i].getAttribute("onclick");
 			var id = onclick_str.substring(onclick_str.lastIndexOf('/') + 1, onclick_str.length - 1);
 			var td = edit_btn[i].parentNode;
-			var apply = '<input class="cbi-button cbi-button-add" type="button" value="<%:Use%>" onclick="open_set_node_div(\'' + id + '\')" alt="<%:Use%>" title="<%:Use%>" />';
-			td.innerHTML = apply + "&nbsp;&nbsp;" + td.innerHTML;
+			var new_div = "";
+			//添加"置顶"按钮到"修改"按钮前
+			new_div += '<input class="cbi-button" type="button" value="<%:To Top%>" onclick="_cbi_row_top(\'' + id + '\')"/>&nbsp;&nbsp;';
+			//添加"选择"按钮到"修改"按钮前
+			new_div += '<input class="cbi-button cbi-button-add" type="button" value="<%:Select%>" id="select_' + id + '" onclick="select_node_div(this, \'' + id + '\')"/>&nbsp;&nbsp;';
+			//添加"应用"按钮到"修改"按钮前
+			new_div += '<input class="cbi-button cbi-button-apply" type="button" value="<%:Use%>" id="apply_' + id + '" onclick="open_set_node_div(\'' + id + '\')"/>&nbsp;&nbsp;';
+			td.innerHTML = new_div + td.innerHTML;
 		}
 		catch(err) {
 			console.error(err);
@@ -246,26 +394,22 @@ table td, .table .td {
 	//]]>
 </script>
 
-<div id="set_node_div">
-	<div class="cbi-value"><%:You choose node is:%><span id="set_node_name"></span></div>
-	<div class="cbi-value">
-		<% if tcp_node_num and tonumber(tcp_node_num) >= 1 then %>
-			<% for i = 1, tcp_node_num, 1 do %>
-				<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('tcp',<%=i%>)" value="TCP_<%=i%>" />
+<div style="display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;">
+	<div id="set_node_div">
+		<div class="cbi-value"><%:You choose node is:%><span id="set_node_name"></span></div>
+		<div class="cbi-value">
+			<% if tcp_node_num and tonumber(tcp_node_num) >= 1 then %>
+				<% for i = 1, tcp_node_num, 1 do %>
+					<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('tcp',<%=i%>)" value="TCP_<%=i%>" />
+				<% end %>
 			<% end %>
-		<% end %>
-		
-		<% if udp_node_num and tonumber(udp_node_num) >= 1 then %>
-			<% for i = 1, udp_node_num, 1 do %>
-				<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('udp',<%=i%>)" value="UDP_<%=i%>" />
+			
+			<% if udp_node_num and tonumber(udp_node_num) >= 1 then %>
+				<% for i = 1, udp_node_num, 1 do %>
+					<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('udp',<%=i%>)" value="UDP_<%=i%>" />
+				<% end %>
 			<% end %>
-		<% end %>
-		
-		<% if socks_node_num and tonumber(socks_node_num) >= 1 then %>
-			<% for i = 1, socks_node_num, 1 do %>
-				<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('socks',<%=i%>)" value="Socks_<%=i%>" />
-			<% end %>
-		<% end %>
-		<input class="cbi-button cbi-button-remove" type="button" onclick="close_set_node_div()" value="<%:Close%>" />
+			<input class="cbi-button cbi-button-remove" type="button" onclick="close_set_node_div()" value="<%:Close%>" />
+		</div>
 	</div>
 </div>

@@ -2,8 +2,7 @@
 local api = require "luci.model.cbi.passwall.api.api"
 local dsp = require "luci.dispatcher"
 
-local kcptun_path = api.uci_get_type("global_app", "kcptun_client_file")
-local kcptun_version = luci.sys.exec("[ -f '" .. kcptun_path .. "' ] && " .. kcptun_path .. " -v | awk '{print $3}'")
+local kcptun_version = api.get_kcptun_version()
 -%>
 
 <script type="text/javascript">

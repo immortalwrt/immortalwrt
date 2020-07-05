@@ -1,8 +1,6 @@
 #!/usr/bin/lua
 
 ------------------------------------------------
--- This file from luci-app-ssr-plus transplant to luci-app-passwall
--- This file is part of the luci-app-ssr-plus subscribe.lua
 -- @author William Chan <root@williamchan.me>
 ------------------------------------------------
 require 'nixio'
@@ -10,6 +8,7 @@ require 'uci'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
+local _api = require "luci.model.cbi.passwall.api.api"
 
 -- these global functions are accessed all the time by the event handler
 -- so caching them is worth the effort
@@ -23,6 +22,7 @@ local application = 'passwall'
 local uciType = 'nodes'
 local ucic2 = uci.cursor()
 local arg2 = arg[2]
+local allowInsecure_default = ucic2:get(application, "@global_subscribe[0]", "allowInsecure")
 ucic2:revert(application)
 
 local log = function(...)
@@ -68,7 +68,22 @@ do
 	end
 	import_config("tcp")
 	import_config("udp")
-	import_config("socks")
+
+	ucic2:foreach(application, "socks", function(t)
+		local node = t.node
+		local currentNode
+		if node then
+			currentNode = ucic2:get_all(application, node)
+		end
+		CONFIG[#CONFIG + 1] = {
+			log = true,
+			remarks = "Socks节点" .. t[".name"],
+			currentNode = currentNode,
+			set = function(server)
+				ucic2:set(application, t[".name"], "node", server)
+			end
+		}
+	end)
 
 	local tcp_node1_table = ucic2:get(application, "@auto_switch[0]", "tcp_node1")
 	if tcp_node1_table then
@@ -110,40 +125,29 @@ do
 	end
 
 	ucic2:foreach(application, uciType, function(node)
-		if node.type == 'V2ray_shunt' then
+		if node.type == 'V2ray' and node.v2ray_protocol == '_shunt' then
 			local node_id = node[".name"]
-			local youtube_node_id = node.youtube_node
-			local netflix_node_id = node.netflix_node
-			local default_node_id = node.default_node
+			ucic2:foreach(application, "shunt_rules", function(e)
+				local _node_id = node[e[".name"]] or nil
+				local _node
+				if _node_id then
+					_node = ucic2:get_all(application, _node_id)
+				end
+				CONFIG[#CONFIG + 1] = {
+					log = false,
+					currentNode = _node,
+					remarks = "V2ray分流" .. e.remarks .. "节点",
+					set = function(server)
+						ucic2:set(application, node_id, e[".name"], server)
+					end
+				}
+			end)
 
-			local youtube_node
-			local netflix_node
+			local default_node_id = node.default_node
 			local default_node
-			if youtube_node_id then
-				youtube_node = ucic2:get_all(application, youtube_node_id)
-			end
-			if netflix_node_id then
-				netflix_node = ucic2:get_all(application, netflix_node_id)
-			end
 			if default_node_id then
 				default_node = ucic2:get_all(application, default_node_id)
 			end
-			CONFIG[#CONFIG + 1] = {
-				log = false,
-				currentNode = youtube_node,
-				remarks = "V2ray分流youtube节点",
-				set = function(server)
-					ucic2:set(application, node_id, "youtube_node", server)
-				end
-			}
-			CONFIG[#CONFIG + 1] = {
-				log = false,
-				currentNode = netflix_node,
-				remarks = "V2ray分流Netflix节点",
-				set = function(server)
-					ucic2:set(application, node_id, "netflix_node", server)
-				end
-			}
 			CONFIG[#CONFIG + 1] = {
 				log = false,
 				currentNode = default_node,
@@ -152,7 +156,7 @@ do
 					ucic2:set(application, node_id, "default_node", server)
 				end
 			}
-		elseif node.type == 'V2ray_balancing' then
+		elseif node.type == 'V2ray' and node.v2ray_protocol == '_balancing' then
 			local node_id = node[".name"]
 			local nodes = {}
 			local new_nodes = {}
@@ -370,7 +374,7 @@ local function processData(szType, content, add_mode)
 		if info.tls == "tls" or info.tls == "1" then
 			result.v2ray_stream_security = "tls"
 			result.tls_serverName = info.host
-			result.tls_allowInsecure = 1
+			result.tls_allowInsecure = allowInsecure_default
 		else
 			result.v2ray_stream_security = "none"
 		end
@@ -428,7 +432,7 @@ local function processData(szType, content, add_mode)
 		if Info then
 			local address, port, peer
 			local password = Info[1]
-			local allowInsecure = 1
+			local allowInsecure = allowInsecure_default
 			local params = {}
 			local hostInfo = split(Info[2], ":")
 			if hostInfo then
@@ -469,14 +473,19 @@ local function processData(szType, content, add_mode)
 		return nil
 	end
 	if not result.remarks then
-		result.remarks = result.address .. ':' .. result.port
+		if result.address and result.port then
+			result.remarks = result.address .. ':' .. result.port
+		else
+			result.remarks = "NULL"
+		end
 	end
 	return result
 end
--- wget
-local function wget(url)
+
+-- curl
+local function curl(url)
 	local ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
-	local stdout = luci.sys.exec('/usr/bin/wget --user-agent="' .. ua .. '" --no-check-certificate -t 3 -T 10 -O- "' .. url .. '"')
+	local stdout = luci.sys.exec('curl -sL --user-agent "' .. ua .. '" -k --retry 3 --connect-timeout 3 "' .. url .. '"')
 	return trim(stdout)
 end
 
@@ -485,19 +494,29 @@ local function truncate_nodes()
 	local function clear(type)
 		local node_num = ucic2:get(application, "@global_other[0]", type .. "_node_num") or 1
 		for i = 1, node_num, 1 do
-			local node = ucic2:get(application, "@global[0]", type.."_node" .. i)
+			local node = ucic2:get(application, "@global[0]", type .. "_node" .. i)
 			if node then
 				local is_sub_node = ucic2:get(application, node, "is_sub") or 0
 				if is_sub_node == "1" then
 					is_stop = 1
-					ucic2:set(application, '@global[0]', type.."_node" .. i, "nil")
+					ucic2:set(application, '@global[0]', type .. "_node" .. i, "nil")
 				end
 			end
 		end
 	end
 	clear("tcp")
 	clear("udp")
-	clear("socks")
+
+	ucic2:foreach(application, "socks", function(t)
+		local node = t.node
+		if node then
+			local is_sub_node = ucic2:get(application, node, "is_sub") or 0
+			if is_sub_node == "1" then
+				is_stop = 1
+				ucic2:set(application, t[".name"], "node", "nil")
+			end
+		end
+	end)
 
 	ucic2:foreach(application, uciType, function(node)
 		if (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
@@ -516,7 +535,7 @@ local function select_node(nodes, config)
 	local server
 	if config.currentNode then
 		-- 特别优先级 V2ray分流 + 备注
-		if config.currentNode.type == 'V2ray_shunt' then
+		if config.currentNode.type == 'V2ray' and config.currentNode.v2ray_protocol == '_shunt' then
 			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
 					log('选择【' .. config.remarks .. '】V2ray分流匹配节点：' .. node.remarks)
@@ -526,7 +545,7 @@ local function select_node(nodes, config)
 			end
 		end
 		-- 特别优先级 V2ray负载均衡 + 备注
-		if config.currentNode.type == 'V2ray_balancing' then
+		if config.currentNode.type == 'V2ray' and config.currentNode.v2ray_protocol == '_balancing' then
 			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
 					log('选择【' .. config.remarks .. '】V2ray负载均衡匹配节点：' .. node.remarks)
@@ -620,6 +639,9 @@ local function update_node(manual)
 	for _, v in ipairs(nodeResult) do
 		for _, vv in ipairs(v) do
 			local cfgid = ucic2:add(application, uciType)
+			local uuid = _api.gen_uuid()
+			ucic2:rename(application, cfgid, uuid)
+			cfgid = uuid
 			for kkk, vvv in pairs(vv) do
 				ucic2:set(application, cfgid, kkk, vvv)
 			end
@@ -631,9 +653,7 @@ local function update_node(manual)
 		local nodes = {}
 		local ucic3 = uci.cursor()
 		ucic3:foreach(application, uciType, function(node)
-			if (node.port and node.address and node.remarks) or node.type == 'V2ray_shunt' or node.type == 'V2ray_balancing' then
-				nodes[node['.name']] = node
-			end
+			nodes[node['.name']] = node
 		end)
 		for _, config in pairs(CONFIG) do
 			if config.nodes and type(config.nodes) == "table" then
@@ -721,6 +741,7 @@ local function parse_link(raw, remark, manual)
 				if result then
 					if is_filter_keyword(result.remarks) or
 						not result.address or
+						result.remarks == "NULL" or
 						result.address:match("[^0-9a-zA-Z%-%_%.%s]") or -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
 						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧
 						result.address:sub(#result.address) == "." -- 结尾是.
@@ -749,7 +770,7 @@ local execute = function()
 				local remark = obj.remark
 				local url = obj.url
 				log('正在订阅: ' .. url)
-				local raw = wget(url)
+				local raw = curl(url)
 				parse_link(raw, remark)
 			end
 		end)
