@@ -233,8 +233,8 @@ define Device/d-team_newifi-d2
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := Newifi
   DEVICE_MODEL := D2
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
-	kmod-usb-ledtrig-usbport wpad-basic
+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt76x2e kmod-usb3 \
+	kmod-usb-ledtrig-usbport luci-app-mtwifi
 endef
 TARGET_DEVICES += d-team_newifi-d2
 
@@ -761,7 +761,7 @@ define Device/phicomm_k2p
   DEVICE_VENDOR := Phicomm
   DEVICE_MODEL := K2P
   SUPPORTED_DEVICES += k2p
-  DEVICE_PACKAGES := luci-app-mtwifi
+  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi
 endef
 TARGET_DEVICES += phicomm_k2p
 
@@ -991,7 +991,7 @@ define Device/xiaomi_redmi-router-ac2100
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Redmi Router AC2100
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware wpad-basic uboot-envtools
+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt7615d luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_redmi-router-ac2100
 
