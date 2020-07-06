@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
-PKG_VERSION:=0.2.1
+PKG_VERSION:=0.2.3
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/cnsilvan/UnblockNeteaseMusic.git
-PKG_SOURCE_VERSION:=7664b2b5c5dbe8e1ff7fde0c0051b4feabc0e0ba
+PKG_SOURCE_VERSION:=8a457177b28719c23fcdcd458ea40e0f96b19d65
 PKG_MAINTAINER:=Silvan <cnsilvan@gmail.com>
 
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)
