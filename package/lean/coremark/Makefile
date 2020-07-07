@@ -48,7 +48,7 @@ define Build/Compile
 	$(SED) 's|EXE = .exe|EXE =|' $(PKG_BUILD_DIR)/$(DIR_ARCH)/core_portme.mak
 	mkdir $(PKG_BUILD_DIR)/$(ARCH)
 	cp -r $(PKG_BUILD_DIR)/$(DIR_ARCH)/* $(PKG_BUILD_DIR)/$(ARCH)
-	$(MAKE) XCFLAGS="-DMULTITHREAD=8 -DUSE_PTHREAD" -C $(PKG_BUILD_DIR) PORT_DIR=$(ARCH) $(MAKE_FLAGS) \
+	$(MAKE) XCFLAGS="-DMULTITHREAD=16 -DUSE_PTHREAD" -C $(PKG_BUILD_DIR) PORT_DIR=$(ARCH) $(MAKE_FLAGS) \
 		compile 
 endef
 
@@ -64,7 +64,7 @@ endef
 define Package/coremark/postinst
 #!/bin/sh
 [ -n "$${IPKG_INSTROOT}" ] || sed -i '/coremark/d' /etc/crontabs/root
-[ -n "$${IPKG_INSTROOT}" ] || echo "0 4 * * 0 /etc/coremark.sh" >> /etc/crontabs/root
+[ -n "$${IPKG_INSTROOT}" ] || echo "0 4 * * * /etc/coremark.sh" >> /etc/crontabs/root
 [ -n "$${IPKG_INSTROOT}" ] || crontab /etc/crontabs/root
 endef
 
