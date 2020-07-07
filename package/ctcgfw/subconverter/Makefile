@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=subconverter
-PKG_VERSION:=0.6.6-6629f86
+PKG_VERSION:=0.6.0-6629f86
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -26,7 +26,7 @@ PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_DEPENDS:=jpcre2 rapidjson
+PKG_BUILD_DEPENDS:=duktape jpcre2 rapidjson
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -42,6 +42,8 @@ endef
 define Package/$(PKG_NAME)/description
 	Utility to convert between various subscription format.
 endef
+
+# CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
