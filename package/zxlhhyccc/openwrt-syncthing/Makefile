@@ -1,65 +1,64 @@
-#
-# Copyright (C) 2015-2016 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v3.
-#
-
 include $(TOPDIR)/rules.mk
 
-ifeq ($(ARCH),x86_64)
-	PKG_ARCH_SYNCTHING:=amd64
-endif
-ifeq ($(ARCH),mipsel)
-	PKG_ARCH_SYNCTHING:=mipsle
-endif
-ifeq ($(ARCH),mips)
-	PKG_ARCH_SYNCTHING:=mips
-endif
-ifeq ($(ARCH),i386)
-	PKG_ARCH_SYNCTHING:=386
-endif
-ifeq ($(ARCH),arm)
-	PKG_ARCH_SYNCTHING:=arm
-endif
-ifeq ($(ARCH),aarch64)
-	PKG_ARCH_SYNCTHING:=arm64
-endif
-
 PKG_NAME:=openwrt-syncthing
-PKG_VERSION:=v1.3.4
-PKG_RELEASE:=1
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=syncthing-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/syncthing/syncthing/releases/download/$(PKG_VERSION)
-PKG_HASH:=skip
+PKG_VERSION:=1.7.0
+PKG_RELEASE:=2
+
+PKG_SOURCE:=syncthing-source-v$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/syncthing/syncthing/releases/download/v$(PKG_VERSION)
+PKG_HASH:=aee7ee49b65cb614711b9d8a7d468766adbb687fa5ba8f273eef495e4a8e9435
+
+PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/$(PKG_NAME)
+
+PKG_MAINTAINER:=Paul Spooren <mail@aparcar.org>
+PKG_LICENSE:=MPL-2.0
+PKG_LICENSE_FILES:=LICENSE
+PKG_CPE_ID:=cpe:/a:syncthing:syncthing
+
+PKG_BUILD_DEPENDS:=golang/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
+
+GO_PKG:=github.com/syncthing/syncthing/
+GO_PKG_BUILD_PKG:=github.com/syncthing/syncthing/cmd/syncthing/
+GO_PKG_INSTALL_EXTRA:=^gui/
 
 include $(INCLUDE_DIR)/package.mk
+include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-define Package/$(PKG_NAME)
+define Package/openwrt-syncthing
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=A continuous file synchronization program
-	URL:=https://github.com/syncthing/syncthing
-	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
+	SUBMENU:=File Transfer
+	TITLE:=Continuous file synchronization program
+	URL:=https://syncthing.net
+	DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
-define Package/$(PKG_NAME)/description
-  Syncthing is a continuous file synchronization program.
-endef
-
-define Build/Prepare
-	tar -xzvf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
-endef
-
-define Build/Configure
-endef
+GO_PKG_LDFLAGS:= -s -w
+GO_PKG_LDFLAGS_X:= \
+	github.com/syncthing/syncthing/lib/build.Version=v$(PKG_VERSION) \
+	github.com/syncthing/syncthing/lib/build.Stamp=$(SOURCE_DATE_EPOCH) \
+	github.com/syncthing/syncthing/lib/build.User=ctcgfw \
+	github.com/syncthing/syncthing/lib/build.Host=project-openwrt \
+	github.com/syncthing/syncthing/lib/build.Program=syncthing
 
 define Build/Compile
+	$(call GoPackage/Build/Compile,-tags noupgrade)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/syncthing
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/openwrt-syncthing/description
+	Syncthing replaces proprietary sync and cloud services with something
+	open, trustworthy and decentralized. Your data is your data alone and
+	you deserve to choose where it is stored, if it is shared with some
+	third party and how it's transmitted over the Internet.
+endef
+
+define Package/openwrt-syncthing/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/syncthing-linux-$(PKG_ARCH_SYNCTHING)-$(PKG_VERSION)/syncthing $(1)/usr/bin/syncthing
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/syncthing $(1)/usr/bin/syncthing
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call GoBinPackage,openwrt-syncthing))
+$(eval $(call BuildPackage,openwrt-syncthing))
