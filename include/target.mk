@@ -23,8 +23,12 @@ ddns-scripts_aliyun ddns-scripts_dnspod
 # For nas targets
 DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm automount autosamba luci-app-usb-printer
 # For router targets
+<<<<<<< HEAD
 DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr
 DEFAULT_PACKAGES.bootloader:=
+=======
+DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall
+>>>>>>> 146bf0281a... target: rip of ip6tables
 
 ifneq ($(DUMP),)
   all: dumpinfo
