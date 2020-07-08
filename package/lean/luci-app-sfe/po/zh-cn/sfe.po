@@ -38,7 +38,7 @@ msgid "Enable BBR"
 msgstr "启用 BBR"
 
 msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
-msgstr "BBR拥塞控制算法可以加强TCP应用表现，但会降低路由器本机上的WIFI吞吐性能"
+msgstr "BBR拥塞控制算法可以加强TCP应用表现"
 
 msgid "DNS Acceleration"
 msgstr "DNS 加速"

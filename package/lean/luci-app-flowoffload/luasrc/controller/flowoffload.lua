@@ -25,7 +25,7 @@ local function is_fullcone()
 end
 
 local function is_dns()
-	return luci.sys.call("[ `uci get flowoffload.@flow[0].dnscache_enable 2>/dev/null` -ne 3 ] && pgrep dnscache >/dev/null || pgrep AdGuardHome >/dev/null") == 0
+	return luci.sys.call("[ x$(uci get flowoffload.@flow[0].dnscache_enable 2>/dev/null) != x3 ] && pgrep dnscache >/dev/null || pgrep AdGuardHome >/dev/null") == 0
 end
 
 local function is_ad()
