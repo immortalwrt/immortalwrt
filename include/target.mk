@@ -177,8 +177,8 @@ ifeq ($(DUMP),1)
     CPU_CFLAGS_octeonplus = -march=octeon+ -mabi=64
   endif
   ifeq ($(ARCH),i386)
-    CPU_TYPE ?= pentium
-    CPU_CFLAGS_pentium = -march=pentium-mmx
+    CPU_TYPE ?= pentium-mmx
+    CPU_CFLAGS_pentium-mmx = -march=pentium-mmx
     CPU_CFLAGS_pentium4 = -march=pentium4
   endif
   ifneq ($(findstring arm,$(ARCH)),)
@@ -226,7 +226,9 @@ ifeq ($(DUMP),1)
     .PRECIOUS: $(TMP_CONFIG)
 
     ifdef KERNEL_TESTING_PATCHVER
-      FEATURES += testing-kernel
+      ifneq ($(KERNEL_TESTING_PATCHVER),$(KERNEL_PATCHVER))
+        FEATURES += testing-kernel
+      endif
     endif
     ifneq ($(CONFIG_OF),)
       FEATURES += dt
