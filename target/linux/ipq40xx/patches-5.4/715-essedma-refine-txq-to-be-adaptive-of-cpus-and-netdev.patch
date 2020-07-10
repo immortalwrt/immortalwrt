@@ -156,7 +156,7 @@
  				if (edma_fill_netdev(edma_cinfo, k, i, j)) {
  					pr_err("Netdev overflow Error\n");
  					goto err_register;
-@@ -1109,9 +1114,12 @@ static int edma_axi_probe(struct platfor
+@@ -1106,9 +1111,12 @@ static int edma_axi_probe(struct platfor
  	/* populate per_core_info, do a napi_Add, request 16 TX irqs,
  	 * 8 RX irqs, do a napi enable
  	 */
@@ -170,7 +170,7 @@
  		edma_cinfo->edma_percpu_info[i].napi.state = 0;
  
  		netif_napi_add(edma_netdev[0],
-@@ -1131,7 +1139,7 @@ static int edma_axi_probe(struct platfor
+@@ -1128,7 +1136,7 @@ static int edma_axi_probe(struct platfor
  
  		/* Request irq per core */
  		for (j = edma_cinfo->edma_percpu_info[i].tx_start;
@@ -179,7 +179,7 @@
  			sprintf(&edma_tx_irq[j][0], "edma_eth_tx%d", j);
  			err = request_irq(edma_cinfo->tx_irq[j],
  					  edma_interrupt,
-@@ -1255,7 +1263,7 @@ err_configure:
+@@ -1252,7 +1260,7 @@ err_configure:
  #endif
  err_rmap_add_fail:
  	edma_free_irqs(adapter[0]);
@@ -188,7 +188,7 @@
  		napi_disable(&edma_cinfo->edma_percpu_info[i].napi);
  err_reset:
  err_unregister_sysctl_tbl:
-@@ -1303,7 +1311,7 @@ static int edma_axi_remove(struct platfo
+@@ -1300,7 +1308,7 @@ static int edma_axi_remove(struct platfo
  		unregister_netdev(edma_netdev[i]);
  
  	edma_stop_rx_tx(hw);

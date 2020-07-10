@@ -1282,7 +1282,7 @@
  	if (qdisc_run_begin(q)) {
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -795,6 +795,13 @@ static inline int qdisc_enqueue(struct s
+@@ -796,6 +796,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1310,7 +1310,7 @@
   * number or errno values. Not nice, but better than additional function
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -137,6 +137,9 @@
+@@ -138,6 +138,9 @@
  #include <linux/hrtimer.h>
  #include <linux/netfilter_ingress.h>
  #include <linux/crash_dump.h>
@@ -1320,7 +1320,7 @@
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3192,6 +3195,13 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3188,6 +3191,13 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1334,7 +1334,7 @@
  	if (dev_nit_active(dev))
  		dev_queue_xmit_nit(skb, dev);
  
-@@ -3231,6 +3241,8 @@ out:
+@@ -3227,6 +3237,8 @@ out:
  	return skb;
  }
  

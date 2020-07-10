@@ -38,7 +38,7 @@
  #endif
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -746,6 +746,28 @@ void br_port_flags_change(struct net_bridge_port *p, unsigned long mask)
+@@ -746,6 +746,28 @@ void br_port_flags_change(struct net_bri
  		br_recalculate_neigh_suppress_enabled(br);
  }
  
@@ -69,7 +69,7 @@
  	struct net_bridge_port *p;
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3202,9 +3202,17 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -3198,9 +3198,17 @@ static int xmit_one(struct sk_buff *skb,
  	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
  #endif
  
@@ -88,7 +88,7 @@
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (!dev->eth_mangle_tx ||
  	    (skb = dev->eth_mangle_tx(dev, skb)) != NULL)
-@@ -4696,6 +4704,11 @@ void netdev_rx_handler_unregister(struct net_device *dev)
+@@ -4694,6 +4702,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -100,7 +100,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -4746,6 +4759,10 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+@@ -4744,6 +4757,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -111,7 +111,7 @@
  	net_timestamp_check(!netdev_tstamp_prequeue, skb);
  
  	trace_netif_receive_skb(skb);
-@@ -4785,6 +4802,16 @@ another_round:
+@@ -4783,6 +4800,16 @@ another_round:
  			goto out;
  	}
  
@@ -161,7 +161,7 @@
  static int nf_ct_tcp_loose __read_mostly = 1;
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -153,13 +156,17 @@ int nf_conntrack_eventmask_report(unsign
+@@ -153,13 +153,17 @@ int nf_conntrack_eventmask_report(unsign
  {
  	int ret = 0;
  	struct net *net = nf_ct_net(ct);
@@ -179,7 +179,7 @@
  
  	e = nf_ct_ecache_find(ct);
  	if (!e)
-@@ -181,7 +188,12 @@ int nf_conntrack_eventmask_report(unsign
+@@ -177,7 +181,12 @@ int nf_conntrack_eventmask_report(unsign
  		if (!((eventmask | missed) & e->ctmask))
  			goto out_unlock;
  
@@ -192,7 +192,7 @@
  		if (unlikely(ret < 0 || missed)) {
  			spin_lock_bh(&ct->lock);
  			if (ret < 0) {
-@@ -261,15 +273,19 @@ void nf_ct_deliver_cached_events(struct
+@@ -252,15 +261,19 @@ void nf_ct_deliver_cached_events(struct
  {
  	struct net *net = nf_ct_net(ct);
  	unsigned long events, missed;
@@ -212,7 +212,7 @@
  
  	e = nf_ct_ecache_find(ct);
  	if (e == NULL)
-@@ -296,7 +312,13 @@ void nf_ct_deliver_cached_events(struct
+@@ -283,7 +296,13 @@ void nf_ct_deliver_cached_events(struct
  	item.portid = 0;
  	item.report = 0;
  
