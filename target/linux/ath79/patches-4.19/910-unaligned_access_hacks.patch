@@ -704,7 +704,7 @@
  struct fib6_info *fib6_info_alloc(gfp_t gfp_flags)
 --- a/net/netfilter/nf_conntrack_proto_tcp.c
 +++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -423,7 +423,7 @@ static void tcp_sack(const struct sk_buf
+@@ -429,7 +429,7 @@ static void tcp_sack(const struct sk_buf
  
  	/* Fast path for timestamp-only option */
  	if (length == TCPOLEN_TSTAMP_ALIGNED
