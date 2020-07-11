@@ -47,6 +47,9 @@ endchoice
 
 choice
 	prompt "Choose Second WiFi Interface"
+	default MTK_SECOND_IF_NONE if TARGET_ramips_mt7621_DEVICE_phicomm_k2p
+	default MTK_SECOND_IF_MT7615E
+
 	config MTK_SECOND_IF_NONE
 	bool "None"
 
@@ -740,7 +743,7 @@ config MTK_BAND_STEERING
 
 config MTK_LED_CONTROL_SUPPORT
 	bool "LED Control Support"
-	default n
+	default y
 
 config MTK_WLAN_HOOK
        bool "WLAN hook Support"
