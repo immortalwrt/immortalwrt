@@ -32,6 +32,14 @@
 		bootargs = "root=/dev/mmcblk0p3 rootfstype=squashfs,ext4 rootwait noinitrd";
 	};
 
+	cpus {
+		idle-states {
+			CPU_SPC: spc {
+				status = "disabled";
+			};
+		};
+	};
+
 	keys {
 		compatible = "gpio-keys";
 		pinctrl-0 = <&button_pins>;
