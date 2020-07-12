@@ -160,7 +160,7 @@ default_prerm() {
 		ret=$?
 	fi
 
-	local shell="$(which bash)"
+	local shell="$(command -v bash)"
 	for i in $(grep -s "^/etc/init.d/" "$root/usr/lib/opkg/info/${pkgname}.list"); do
 		if [ -n "$root" ]; then
 			${shell:-/bin/sh} "$root/etc/rc.common" "$root$i" disable
@@ -242,7 +242,7 @@ default_postinst() {
 
 	[ -n "$root" ] || rm -f /tmp/luci-indexcache 2>/dev/null
 
-	local shell="$(which bash)"
+	local shell="$(command -v bash)"
 	for i in $(grep -s "^/etc/init.d/" "$root/usr/lib/opkg/info/${pkgname}.list"); do
 		if [ -n "$root" ]; then
 			${shell:-/bin/sh} "$root/etc/rc.common" "$root$i" enable
