@@ -52,6 +52,10 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/gost $(1)/usr/bin/gost
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) $(CURDIR)/files/gost.config $(1)/etc/config/gost
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) $(CURDIR)/files/gost.init $(1)/etc/init.d/gost
 endef
 
 $(eval $(call GoBinPackage,$(PKG_NAME)))
