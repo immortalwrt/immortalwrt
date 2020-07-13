@@ -286,9 +286,14 @@ stop_service(){
 	fi
 }
 
-restart(){
+reload_service(){
 	DNSMASQ_RESTART=Y
 	stop
 	start
 	/etc/init.d/dnsmasq restart && echo "DNSMASQ restart"
+}
+
+service_triggers()
+{
+	procd_add_reload_trigger "sfe"
 }
