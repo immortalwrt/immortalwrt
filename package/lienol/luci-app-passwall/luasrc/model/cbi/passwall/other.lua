@@ -169,7 +169,7 @@ uci:foreach(appname, "nodes", function(e)
             remarks = "%s：[%s] " % {translatef(e.type .. e.v2ray_protocol), e.remarks}
         else
             if e.use_kcp and e.use_kcp == "1" then
-                remarks = "%s+%s：[%s] %s" % {e.type, "Kcptun", e.remarks, address}
+                remarks = "%s+%s：[%s] %s" % {e.type, "Kcptun", e.remarks, e.address}
             else
                 remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
             end
