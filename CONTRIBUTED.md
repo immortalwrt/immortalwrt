@@ -39,7 +39,9 @@ ootoc-OpenWRT source: [ElonH/ootoc-OpenWRT](https://github.com/ElonH/ootoc-OpenW
 r8168 source: [BROBIRD/openwrt-r8168](https://github.com/BROBIRD/openwrt-r8168).<br/>
 MentoHUST source: [KyleRicardo/MentoHUST-OpenWrt-ipk](https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk).<br/>
 scutclient source: [scutclient/scutclient](https://github.com/scutclient/scutclient).<br/>
-luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).
+luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).<br/>
+node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
+luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).
 
 ## License
 ### Depending on their own License.
