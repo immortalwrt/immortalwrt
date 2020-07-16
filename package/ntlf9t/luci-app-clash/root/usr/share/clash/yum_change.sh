@@ -351,6 +351,7 @@ rm -rf /tmp/tun.yaml /tmp/enable_dns.yaml /tmp/fallback.yaml /tmp/nameservers.ya
 			rm -rf /etc/clash/dns.yaml
 			sed -i '/#=============/ d' $CONFIG_YAML 2>/dev/null
 		fi
+		rm -rf  $TEMP_FILE 2>/dev/null
 		
 add_address(){
 	servers_get()
@@ -429,4 +430,4 @@ add_address(){
 				sed -i '/fake-ip-filter:/r/usr/share/clash/fake_filter.list' "/etc/clash/config.yaml" 2>/dev/null
 			fi	
 		fi	
-		
+	
