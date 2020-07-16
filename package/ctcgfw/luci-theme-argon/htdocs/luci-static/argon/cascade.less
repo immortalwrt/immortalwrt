@@ -179,8 +179,9 @@
     position: relative;
     -webkit-transform: scale(1.1);
     -ms-transform: scale(1.1);
-    transform: scale(1.1); 
+    transform: scale(1.1);
 }
+
 .sk-folding-cube .sk-cube:before {
     content: '';
     position: absolute;
@@ -195,60 +196,82 @@
     -ms-transform-origin: 100% 100%;
     transform-origin: 100% 100%;
 }
+
 .sk-folding-cube .sk-cube2 {
     -webkit-transform: scale(1.1) rotateZ(90deg);
     transform: scale(1.1) rotateZ(90deg);
 }
+
 .sk-folding-cube .sk-cube3 {
     -webkit-transform: scale(1.1) rotateZ(180deg);
     transform: scale(1.1) rotateZ(180deg);
 }
+
 .sk-folding-cube .sk-cube4 {
     -webkit-transform: scale(1.1) rotateZ(270deg);
     transform: scale(1.1) rotateZ(270deg);
 }
+
 .sk-folding-cube .sk-cube2:before {
     -webkit-animation-delay: 0.3s;
     animation-delay: 0.3s;
 }
+
 .sk-folding-cube .sk-cube3:before {
     -webkit-animation-delay: 0.6s;
-    animation-delay: 0.6s; 
+    animation-delay: 0.6s;
 }
+
 .sk-folding-cube .sk-cube4:before {
     -webkit-animation-delay: 0.9s;
     animation-delay: 0.9s;
 }
 
 @-webkit-keyframes sk-foldCubeAngle {
-    0%, 10% {
+
+    0%,
+    10% {
         -webkit-transform: perspective(140px) rotateX(-180deg);
         transform: perspective(140px) rotateX(-180deg);
-        opacity: 0; 
-    } 25%, 75% {
+        opacity: 0;
+    }
+
+    25%,
+    75% {
         -webkit-transform: perspective(140px) rotateX(0deg);
         transform: perspective(140px) rotateX(0deg);
-        opacity: 1; 
-    } 90%, 100% {
+        opacity: 1;
+    }
+
+    90%,
+    100% {
         -webkit-transform: perspective(140px) rotateY(180deg);
         transform: perspective(140px) rotateY(180deg);
-        opacity: 0; 
-    } 
+        opacity: 0;
+    }
 }
 
 @keyframes sk-foldCubeAngle {
-    0%, 10% {
+
+    0%,
+    10% {
         -webkit-transform: perspective(140px) rotateX(-180deg);
         transform: perspective(140px) rotateX(-180deg);
-        opacity: 0; 
-    } 25%, 75% {
+        opacity: 0;
+    }
+
+    25%,
+    75% {
         -webkit-transform: perspective(140px) rotateX(0deg);
         transform: perspective(140px) rotateX(0deg);
-        opacity: 1; 
-    } 90%, 100% {
+        opacity: 1;
+    }
+
+    90%,
+    100% {
         -webkit-transform: perspective(140px) rotateY(180deg);
         transform: perspective(140px) rotateY(180deg);
-        opacity: 0; 
+        opacity: 0;
     }
 }
 
@@ -683,6 +706,7 @@ header {
 #xhr_poll_status {
     display: flex;
     margin-left: 0.5rem;
+
     * {
         color: #fff;
     }
@@ -720,15 +744,15 @@ header {
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .16), 0 0 2px 0 rgba(0, 0, 0, .12);
     text-shadow: 1px 1px rgba(0, 0, 0, .1);
 
-    &.error{
+    &.error {
         background-color: #ffd600;
     }
 
-    h4{
+    h4 {
         padding: 0rem 1.5rem 0.75rem 0rem;
     }
 
-    .btn{
+    .btn {
         height: auto;
     }
 }
@@ -895,7 +919,10 @@ header {
                         color: #2dce89;
                     }
 
-                    
+                    .menu[data-title=Docker]:before {
+                        content: "\e911";
+                        color: #6699ff;
+                    }
 
                     &:hover {
                         background: none;
@@ -974,10 +1001,12 @@ header {
         }
     }
 }
-.lg{
+
+.lg {
     margin: 0;
     padding: 0 !important;
 }
+
 .logout {
     display: block;
     margin: 0.8rem .5rem 0.1rem 0.5rem;
@@ -1114,9 +1143,9 @@ h5 {
 }
 
 .cbi-map-descr>abbr {
-  cursor: help;
-  text-decoration: underline;
-  color: #fff;
+    cursor: help;
+    text-decoration: underline;
+    color: #fff;
 }
 
 .cbi-section>legend {
@@ -1829,6 +1858,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
     display: none;
 
 }
+
 .cbi-button-apply>ul.preview {
     display: none;
 
@@ -2681,7 +2711,7 @@ input[name="nslookup"] {
                     border-radius: .375rem;
                     box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
                     text-align: left;
-                    
+
 
                     .alert-message {
                         &.warning {
@@ -2694,7 +2724,8 @@ input[name="nslookup"] {
                             padding: 0.5rem 2rem;
                             text-align: center;
                             background-color: var(--purple) !important;
-                            p{
+
+                            p {
                                 color: #fff;
                             }
                         }
@@ -2710,13 +2741,16 @@ input[name="nslookup"] {
                             border-radius: 5px !important;
                             padding: 1rem 2rem 0.5rem 2rem;
                             text-align: center;
-                            p{
+
+                            p {
                                 color: #fff;
                             }
-                            h4{
+
+                            h4 {
                                 font-size: 1rem;
                             }
-                            .btn{
+
+                            .btn {
                                 height: auto;
                             }
                         }
@@ -2749,7 +2783,7 @@ input[name="nslookup"] {
 
                         .cbi-section {
                             padding: 0.5rem;
-                            margin: 0 ;
+                            margin: 0;
                             background: none !important;
                             box-shadow: none !important;
 
@@ -3352,7 +3386,8 @@ input[type="checkbox"]:checked {
         width: 32% !important;
     }
 
-    .btn:not(button), .cbi-button {
+    .btn:not(button),
+    .cbi-button {
         font-size: 0.8rem;
         padding: 0.2rem 0.6rem;
     }
@@ -3384,7 +3419,7 @@ input[type="checkbox"]:checked {
         width: calc(100% - 13rem);
     }
 
-    
+
 
     body:not(.logged-in) .showSide {
         visibility: hidden;
@@ -3564,7 +3599,8 @@ input[type="checkbox"]:checked {
         margin-left: 0 !important;
     }
 
-    .btn:not(button), .cbi-button {
+    .btn:not(button),
+    .cbi-button {
         font-size: 0.8rem;
         padding: 0.2rem 0.6rem;
     }
@@ -3628,18 +3664,22 @@ input[type="checkbox"]:checked {
     .main>.main-left>.nav>.slide>.slide-menu>li>a {
         font-size: 0.8rem;
     }
-    .cbi-section > div{
+
+    .cbi-section>div {
         overflow-x: auto;
     }
 
 }
+
 @media screen and (max-width: 600px) {
-    .mobile-hide{
+    .mobile-hide {
         display: none;
     }
-    #maincontent > .container {
+
+    #maincontent>.container {
         margin: 0 1rem 1rem 1rem;
     }
+
     .cbi-value-title {
         text-align: left;
     }
@@ -3648,6 +3688,7 @@ input[type="checkbox"]:checked {
         padding: 1rem 0 1rem 1rem;
 
     }
+
     [data-page="admin-system-flash"] .cbi-section-descr {
         padding: 1rem 0 1rem 1rem;
 
@@ -3660,9 +3701,11 @@ input[type="checkbox"]:checked {
     [data-page="admin-network-dhcp"] [data-tab-active="true"] {
         padding: 1rem 1rem !important;
     }
-    body{
+
+    body {
         overflow-x: hidden;
     }
+
     .node-main-login .main .main-right #maincontent .container .cbi-map .cbi-section .cbi-section-node .cbi-value .cbi-value-field {
         width: 16rem;
     }
@@ -3671,6 +3714,7 @@ input[type="checkbox"]:checked {
         display: none;
     }
 }
+
 @media screen and (min-width: 600px) {
     ::-webkit-scrollbar {
         width: 10px;
@@ -3694,5 +3738,5 @@ input[type="checkbox"]:checked {
         background: #424242;
     }
 
-    
+
 }

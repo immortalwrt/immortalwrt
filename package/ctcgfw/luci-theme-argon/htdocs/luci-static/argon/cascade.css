@@ -761,6 +761,10 @@ header .fill .status * {
   content: "\e90d";
   color: #2dce89;
 }
+.main .main-left .nav li.slide .menu[data-title=Docker]:before {
+  content: "\e911";
+  color: #6699ff;
+}
 .main .main-left .nav li.slide:hover {
   background: none;
 }
@@ -2327,7 +2331,7 @@ input[name="nslookup"] {
 }
 .node-main-login .main .main-right #maincontent .container .cbi-map .cbi-section {
   padding: 0.5rem;
-  margin: 0 ;
+  margin: 0;
   background: none !important;
   box-shadow: none !important;
 }
