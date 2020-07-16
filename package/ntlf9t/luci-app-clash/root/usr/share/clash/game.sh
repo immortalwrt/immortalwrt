@@ -94,9 +94,10 @@ fi
 sed -i '/GAMERULESTART/r/tmp/yaml_game_rule_group.yaml' "$CLASH_CONFIG" 2>/dev/null
 mv 	$CLASH_CONFIG $CONFIG_YAML 2>/dev/null
 fi
-
+rm -rf $GAME_RULE_FILE 2>/dev/null
 else
 sed -i '/#GAMERULESTART#/,/#GAMERULEEND#/d' "$CONFIG_YAML" 2>/dev/null
+rm -rf $GAME_RULE_FILE 2>/dev/null
 fi
 
 
