@@ -42,9 +42,10 @@ GO_PKG_LDFLAGS_X:= \
 	github.com/syncthing/syncthing/lib/build.User=ctcgfw \
 	github.com/syncthing/syncthing/lib/build.Host=project-openwrt \
 	github.com/syncthing/syncthing/lib/build.Program=syncthing
+GO_PKG_TAGS:=noupgrade
 
 define Build/Compile
-	$(call GoPackage/Build/Compile,-tags noupgrade)
+	$(call GoPackage/Build/Compile)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/syncthing
 endef
 
