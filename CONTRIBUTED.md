@@ -41,7 +41,8 @@ MentoHUST source: [KyleRicardo/MentoHUST-OpenWrt-ipk](https://github.com/KyleRic
 scutclient source: [scutclient/scutclient](https://github.com/scutclient/scutclient).<br/>
 luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).<br/>
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
-luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).
+luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
+luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypang13/luci-theme-edge)
 
 ## License
 ### Depending on their own License.
