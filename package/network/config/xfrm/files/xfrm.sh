@@ -28,8 +28,6 @@ proto_xfrm_setup() {
 
 	( proto_add_host_dependency "$cfg" '' "$tunlink" )
 
-	[ -z "$zone" ] && zone="wan"
-
 	proto_init_update "$cfg" 1
 
 	proto_add_tunnel
