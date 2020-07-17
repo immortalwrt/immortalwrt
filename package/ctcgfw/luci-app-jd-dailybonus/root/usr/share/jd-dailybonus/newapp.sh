@@ -55,13 +55,19 @@ fill_cookie() {
     cookie1=$(uci_get_by_type global cookie)
     if [ ! "$cookie1" = "" ]; then
         varb="var Key = '$cookie1';"
-        sed -i "s/^var Key =.*/$varb/g" $JD_SCRIPT
+        a=$(sed -n '/var Key =/=' $JD_SCRIPT)
+        b=$((a-1))
+        sed -i "${a}d" $JD_SCRIPT
+        sed -i "${b}a ${varb}" $JD_SCRIPT
     fi
 
     cookie2=$(uci_get_by_type global cookie2)
     if [ ! "$cookie2" = "" ]; then
         varb2="var DualKey = '$cookie2';"
-        sed -i "s/^var DualKey =.*/$varb2/g" $JD_SCRIPT
+        aa=$(sed -n '/var DualKey =/=' $JD_SCRIPT)
+        bb=$((aa-1))
+        sed -i "${aa}d" $JD_SCRIPT
+        sed -i "${bb}a ${varb2}" $JD_SCRIPT
     fi
 
     stop=$(uci_get_by_type global stop)
