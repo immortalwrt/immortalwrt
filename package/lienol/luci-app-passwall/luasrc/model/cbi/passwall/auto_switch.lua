@@ -5,8 +5,8 @@ local nodes_table = {}
 uci:foreach(appname, "nodes", function(e)
     if e.type and e.remarks then
         local remarks = ""
-        if e.type == "V2ray" and (e.v2ray_protocol == "_balancing" or e.v2ray_protocol == "_shunt") then
-            remarks = "%s：[%s] " % {translatef(e.type .. e.v2ray_protocol), e.remarks}
+        if e.type == "V2ray" and (e.protocol == "_balancing" or e.protocol == "_shunt") then
+            remarks = "%s：[%s] " % {translatef(e.type .. e.protocol), e.remarks}
         else
             remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
         end
