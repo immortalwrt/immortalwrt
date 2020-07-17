@@ -74,7 +74,7 @@ end
 if is_installed("brook") or is_finded("brook") then
     type:value("Brook", translate("Brook"))
 end
-if is_installed("trojan") or is_finded("trojan") then
+if is_installed("trojan-plus") or is_finded("trojan-plus") then
     type:value("Trojan", translate("Trojan-Plus"))
 end
 if is_installed("trojan-go") or is_finded("trojan-go") then
