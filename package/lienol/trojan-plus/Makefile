@@ -11,9 +11,9 @@ PKG_VERSION:=10.0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/Trojan-Plus-Group/trojan-plus.git
+PKG_SOURCE_URL:=https://github.com/peter-tank/trojan-plus.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=4af7ff4dd48c7257c354d4e6dafafcdf5f12379c
+PKG_SOURCE_VERSION:=2a15d2c886cb23f4d5a8ff975fa3c87819046390
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
 CMAKE_INSTALL:=1
@@ -62,7 +62,7 @@ endef
 
 define Package/trojan-plus/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/trojan $(1)/usr/sbin/trojan
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/trojan $(1)/usr/sbin/trojan-plus
 endef
 
 $(eval $(call BuildPackage,trojan-plus))
