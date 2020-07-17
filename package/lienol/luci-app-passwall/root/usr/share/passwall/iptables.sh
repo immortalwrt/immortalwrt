@@ -219,7 +219,7 @@ filter_node() {
 			fi
 		}
 	}
-	local v2ray_protocol=$(config_n_get $1 v2ray_protocol)
+	local v2ray_protocol=$(config_n_get $1 protocol)
 	if [ "$v2ray_protocol" == "_shunt" ]; then
 		local default_node=$(config_n_get $1 default_node nil)
 		filter_rules $default_node $2
@@ -240,7 +240,7 @@ filter_node() {
 			filter_rules $(config_n_get $1 $shunt_id) $2 $_proxy $3
 		done
 	elif [ "$v2ray_protocol" == "_balancing" ]; then
-		local balancing_node=$(config_n_get $1 v2ray_balancing_node)
+		local balancing_node=$(config_n_get $1 balancing_node)
 		for node_id in $balancing_node
 		do
 			filter_rules $node_id $2
