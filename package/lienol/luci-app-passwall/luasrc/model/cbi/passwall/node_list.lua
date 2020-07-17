@@ -72,7 +72,7 @@ if m:get("@global_other[0]", "compact_display_nodes") == "1" then
         local remarks = m:get(n, "remarks") or ""
         local type = m:get(n, "type") or ""
         if type == "V2ray" then
-            local protocol = m:get(n, "v2ray_protocol")
+            local protocol = m:get(n, "protocol")
             if protocol == "_balancing" then
                 type = type .. " 负载均衡"
             elseif protocol == "_shunt" then
@@ -111,7 +111,7 @@ else
         if v then
             result = translate(v)
             if v == "V2ray" then
-                local protocol = m:get(n, "v2ray_protocol")
+                local protocol = m:get(n, "protocol")
                 if protocol == "_balancing" then
                     result = result .. " 负载均衡"
                 elseif protocol == "_shunt" then
@@ -149,7 +149,7 @@ end
 o.cfgvalue = function(t, n)
     local type = m:get(n, "type") or ""
     if type == "V2ray" then
-        local protocol = m:get(n, "v2ray_protocol","")
+        local protocol = m:get(n, "protocol","")
         if protocol == "_balancing" or protocol == "_shunt" then
             return "---"
         end
