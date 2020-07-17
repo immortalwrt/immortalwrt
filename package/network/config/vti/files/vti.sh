@@ -16,6 +16,8 @@ vti_generic_setup() {
 	local mtu zone ikey
 	json_get_vars mtu zone ikey okey
 
+	[ -z "$zone" ] && zone="wan"
+
 	proto_init_update "$link" 1
 
 	proto_add_tunnel
