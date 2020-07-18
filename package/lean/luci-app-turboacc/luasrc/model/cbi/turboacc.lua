@@ -24,7 +24,7 @@ hw_flow.default = 0
 hw_flow.description = translate("Requires hardware NAT support. Implemented at least for mt7621")
 hw_flow:depends("sw_flow", 1)
 
-if nixio.fs.access("/lib/modules/" .. kernel_version .. "/shortcut-fe.ko") then
+if nixio.fs.access("/lib/modules/" .. kernel_version .. "/fast-classifier.ko") then
 sfe_flow = s:option(Flag, "sfe_flow", translate("Shortcut-FE flow offloading"))
 sfe_flow.default = 0
 sfe_flow.description = translate("Shortcut-FE based offloading for routing/NAT")
