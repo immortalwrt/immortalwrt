@@ -26,7 +26,7 @@
  obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
 --- /dev/null
 +++ b/drivers/net/phy/ar40xx.c
-@@ -0,0 +1,2097 @@
+@@ -0,0 +1,2123 @@
 +/*
 + * Copyright (c) 2016, The Linux Foundation. All rights reserved.
 + *
@@ -2083,12 +2083,6 @@
 +	/* register switch */
 +	swdev = &priv->dev;
 +
-+	if (priv->mii_bus == NULL) {
-+		dev_err(&pdev->dev, "Probe failed - Missing PHYs!\n");
-+		ret = -ENODEV;
-+		goto err_missing_phy;
-+	}
-+
 +	swdev->alias = dev_name(&priv->mii_bus->dev);
 +
 +	swdev->cpu_port = AR40XX_PORT_CPU;
@@ -2120,7 +2114,6 @@
 +	unregister_switch(&priv->dev);
 +err_unregister_phy:
 +	phy_driver_unregister(&ar40xx_phy_driver);
-+err_missing_phy:
 +	platform_set_drvdata(pdev, NULL);
 +	return ret;
 +}
