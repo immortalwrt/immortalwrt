@@ -4,10 +4,6 @@
 	model = "Qualcomm IPQ8064/DB149";
 	compatible = "qcom,ipq8064-db149", "qcom,ipq8064";
 
-	aliases {
-		serial0 = &gsbi2_serial;
-	};
-
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -16,6 +12,11 @@
 			reg = <0x41200000 0x300000>;
 			no-map;
 		};
+	};
+
+	alias {
+		serial0 = &uart2;
+		mdio-gpio0 = &mdio0;
 	};
 
 	chosen {
@@ -60,8 +61,7 @@
 		gsbi2: gsbi@12480000 {
 			qcom,mode = <GSBI_PROT_I2C_UART>;
 			status = "okay";
-
-			gsbi2_serial: serial@12490000 {
+			uart2: serial@12490000 {
 				status = "okay";
 			};
 		};
