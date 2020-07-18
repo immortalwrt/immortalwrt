@@ -6,8 +6,7 @@ local i18n = require "luci.i18n"
 local ipkg = require("luci.model.ipkg")
 local api = require "luci.model.cbi.passwall.api.api"
 
-local v2ray_api =
-    "https://api.github.com/repos/v2ray/v2ray-core/releases/latest"
+local v2ray_api = "https://api.github.com/repos/v2fly/v2ray-core/releases/latest"
 local is_armv7 = false
 
 function get_v2ray_file_path()
@@ -17,9 +16,7 @@ end
 function get_v2ray_version()
     if get_v2ray_file_path() and get_v2ray_file_path() ~= "" then
         if fs.access(get_v2ray_file_path() .. "/v2ray") then
-            return sys.exec("echo -n `" .. get_v2ray_file_path() ..
-                                "/v2ray -version | awk '{print $2}' | sed -n 1P" ..
-                                "`")
+            return sys.exec("echo -n $(" .. get_v2ray_file_path() .. "/v2ray -version | awk '{print $2}' | sed -n 1P" .. ")")
         end
     end
     return ""
@@ -52,8 +49,7 @@ function to_check(arch)
     end
 
     local remote_version = json.tag_name:match("[^v]+")
-    local needs_update = api.compare_versions(get_v2ray_version(), "<",
-                                              remote_version)
+    local needs_update = api.compare_versions(get_v2ray_version(), "<", remote_version)
     local html_url, download_url
 
     if needs_update then
@@ -160,8 +156,7 @@ function to_move(file)
     if not result or not fs.access(client_file) then
         return {
             code = 1,
-            error = i18n.translatef("Can't move new file to path: %s",
-                                    client_file)
+            error = i18n.translatef("Can't move new file to path: %s", client_file)
         }
     end
 

@@ -1,8 +1,5 @@
 <%
-local api = require "luci.model.cbi.passwall.api.api"
-local dsp = require "luci.dispatcher"
-
-local kcptun_version = api.get_kcptun_version()
+local kcptun_version = require "luci.model.cbi.passwall.api.api".get_kcptun_version()
 -%>
 
 <script type="text/javascript">
@@ -74,7 +71,7 @@ local kcptun_version = api.get_kcptun_version()
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
 
-		XHR.get('<%=dsp.build_url("admin/vpn/passwall/kcptun_check")%>', {
+		XHR.get('<%=url([[admin]], [[vpn]], [[passwall]], [[kcptun_check]])%>', {
 			token: tokenStr,
 			arch: ''
 		}, function(x,json) {
@@ -114,7 +111,7 @@ local kcptun_version = api.get_kcptun_version()
 
 		addPageNotice_kcptun();
 
-		var kcptunUpdateUrl = '<%=dsp.build_url("admin/vpn/passwall/kcptun_update")%>';
+		var kcptunUpdateUrl = '<%=url([[admin]], [[vpn]], [[passwall]], [[kcptun_update]])%>';
 		// Download file
 		XHR.get(kcptunUpdateUrl, {
 			token: tokenStr,
@@ -166,7 +163,7 @@ local kcptun_version = api.get_kcptun_version()
 	</label>
 	<div class="cbi-value-field">
 		<div class="cbi-value-description">
-			<span>【 <%=kcptun_version%>】</span>
+			<span>【 <%=kcptun_version%> 】</span>
 			<input class="cbi-button cbi-input-apply" type="button" id="_kcptun-check_btn" onclick="onBtnClick_kcptun(this);" value="<%:Manually update%>" />
 			<span id="_kcptun-check_btn-detail"></span>
 		</div>

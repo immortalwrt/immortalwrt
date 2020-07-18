@@ -21,8 +21,8 @@ local function gen_outbound(node, tag)
         end
         if node.type ~= "V2ray" then
             if node.type == "Socks" then
-                node.v2ray_protocol = "socks"
-                node.v2ray_transport = "tcp"
+                node.protocol = "socks"
+                node.transport = "tcp"
             else
                 local node_type = (proto and proto ~= "nil") and proto or "socks"
                 local new_port = sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port auto tcp)", appname))
@@ -35,83 +35,87 @@ local function gen_outbound(node, tag)
                     string.format("/var/etc/%s/v2_%s_%s.json", appname, node_type, node_id),
                     "4")
                 )
-                node.v2ray_protocol = "socks"
-                node.v2ray_transport = "tcp"
+                node.protocol = "socks"
+                node.transport = "tcp"
                 node.address = "127.0.0.1"
             end
         end
         result = {
             tag = tag,
-            protocol = node.v2ray_protocol or "vmess",
+            protocol = node.protocol or "vmess",
             mux = {
-                enabled = (node.v2ray_mux == "1") and true or false,
-                concurrency = (node.v2ray_mux_concurrency) and tonumber(node.v2ray_mux_concurrency) or 8
+                enabled = (node.mux == "1") and true or false,
+                concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = (node.v2ray_protocol == "vmess") and {
-                network = node.v2ray_transport,
-                security = node.v2ray_stream_security,
-                tlsSettings = (node.v2ray_stream_security == "tls") and {
+            streamSettings = (node.protocol == "vmess") and {
+                network = node.transport,
+                security = node.stream_security,
+                tlsSettings = (node.stream_security == "tls") and {
+                    disableSessionResumption = node.sessionTicket ~= "1" and true or false,
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
                 } or nil,
-                tcpSettings = (node.v2ray_transport == "tcp" and
-                    node.v2ray_protocol ~= "socks") and {
+                tcpSettings = (node.transport == "tcp" and
+                    node.protocol ~= "socks") and {
                     header = {
-                        type = node.v2ray_tcp_guise,
+                        type = node.tcp_guise,
                         request = {
-                            path = node.v2ray_tcp_guise_http_path or {"/"},
+                            path = node.tcp_guise_http_path or {"/"},
                             headers = {
-                                Host = node.v2ray_tcp_guise_http_host or {}
+                                Host = node.tcp_guise_http_host or {}
                             }
                         } or {}
                     }
                 } or nil,
-                kcpSettings = (node.v2ray_transport == "mkcp") and {
-                    mtu = tonumber(node.v2ray_mkcp_mtu),
-                    tti = tonumber(node.v2ray_mkcp_tti),
-                    uplinkCapacity = tonumber(node.v2ray_mkcp_uplinkCapacity),
-                    downlinkCapacity = tonumber(node.v2ray_mkcp_downlinkCapacity),
-                    congestion = (node.v2ray_mkcp_congestion == "1") and true or false,
-                    readBufferSize = tonumber(node.v2ray_mkcp_readBufferSize),
-                    writeBufferSize = tonumber(node.v2ray_mkcp_writeBufferSize),
-                    header = {type = node.v2ray_mkcp_guise}
+                kcpSettings = (node.transport == "mkcp") and {
+                    mtu = tonumber(node.mkcp_mtu),
+                    tti = tonumber(node.mkcp_tti),
+                    uplinkCapacity = tonumber(node.mkcp_uplinkCapacity),
+                    downlinkCapacity = tonumber(node.mkcp_downlinkCapacity),
+                    congestion = (node.mkcp_congestion == "1") and true or false,
+                    readBufferSize = tonumber(node.mkcp_readBufferSize),
+                    writeBufferSize = tonumber(node.mkcp_writeBufferSize),
+                    header = {type = node.mkcp_guise}
                 } or nil,
-                wsSettings = (node.v2ray_transport == "ws") and {
-                    path = node.v2ray_ws_path or "",
-                    headers = (node.v2ray_ws_host ~= nil) and
-                        {Host = node.v2ray_ws_host} or nil
+                wsSettings = (node.transport == "ws") and {
+                    path = node.ws_path or "",
+                    headers = (node.ws_host ~= nil) and
+                        {Host = node.ws_host} or nil
                 } or nil,
-                httpSettings = (node.v2ray_transport == "h2") and
-                    {path = node.v2ray_h2_path, host = node.v2ray_h2_host} or
+                httpSettings = (node.transport == "h2") and
+                    {path = node.h2_path, host = node.h2_host} or
                     nil,
-                dsSettings = (node.v2ray_transport == "ds") and
-                    {path = node.v2ray_ds_path} or nil,
-                quicSettings = (node.v2ray_transport == "quic") and {
-                    security = node.v2ray_quic_security,
-                    key = node.v2ray_quic_key,
-                    header = {type = node.v2ray_quic_guise}
+                dsSettings = (node.transport == "ds") and
+                    {path = node.ds_path} or nil,
+                quicSettings = (node.transport == "quic") and {
+                    security = node.quic_security,
+                    key = node.quic_key,
+                    header = {type = node.quic_guise}
                 } or nil
             } or nil,
             settings = {
-                vnext = (node.v2ray_protocol == "vmess") and {
+                vnext = (node.protocol == "vmess") and {
                     {
                         address = node.address,
                         port = tonumber(node.port),
                         users = {
                             {
-                                id = node.v2ray_VMess_id,
-                                alterId = tonumber(node.v2ray_VMess_alterId),
-                                level = tonumber(node.v2ray_VMess_level),
-                                security = node.v2ray_security
+                                id = node.vmess_id,
+                                alterId = tonumber(node.alter_id),
+                                level = tonumber(node.vmess_level),
+                                security = node.security
                             }
                         }
                     }
                 } or nil,
-                servers = (node.v2ray_protocol == "socks") and {
+                servers = (node.protocol == "socks" or node.protocol == "http" or node.protocol == "shadowsocks") and {
                     {
                         address = node.address,
                         port = tonumber(node.port),
+                        method = node.v_ss_encrypt_method or nil,
+                        password = node.password or "",
+                        ota = node.ss_ota == '1' and true or false,
                         users = (node.username and node.password) and
                             {{user = node.username, pass = node.password}} or nil
                     }
@@ -139,17 +143,17 @@ if redir_port ~= "nil" then
         settings = {network = proto, followRedirect = true},
         sniffing = {enabled = true, destOverride = {"http", "tls"}}
     })
-    if proto == "tcp" and node.v2ray_tcp_socks == "1" then
+    if proto == "tcp" and node.tcp_socks == "1" then
         table.insert(inbounds, {
             listen = "0.0.0.0",
-            port = tonumber(node.v2ray_tcp_socks_port),
+            port = tonumber(node.tcp_socks_port),
             protocol = "socks",
             settings = {
-                auth = node.v2ray_tcp_socks_auth,
-                accounts = (node.v2ray_tcp_socks_auth == "password") and {
+                auth = node.tcp_socks_auth,
+                accounts = (node.tcp_socks_auth == "password") and {
                     {
-                        user = node.v2ray_tcp_socks_auth_username,
-                        pass = node.v2ray_tcp_socks_auth_password
+                        user = node.tcp_socks_auth_username,
+                        pass = node.tcp_socks_auth_password
                     }
                 } or nil,
                 udp = true
@@ -158,7 +162,7 @@ if redir_port ~= "nil" then
     end
 end
 
-if node.v2ray_protocol == "_shunt" then
+if node.protocol == "_shunt" then
     local rules = {}
 
     ucursor:foreach(appname, "shunt_rules", function(e)
@@ -211,9 +215,9 @@ if node.v2ray_protocol == "_shunt" then
 
     routing = {domainStrategy = "IPOnDemand", rules = rules}
 
-elseif node.v2ray_protocol == "_balancing" then
-    if node.v2ray_balancing_node then
-        local nodes = node.v2ray_balancing_node
+elseif node.protocol == "_balancing" then
+    if node.balancing_node then
+        local nodes = node.balancing_node
         local length = #nodes
         for i = 1, length do
             local node = ucursor:get_all(appname, nodes[i])

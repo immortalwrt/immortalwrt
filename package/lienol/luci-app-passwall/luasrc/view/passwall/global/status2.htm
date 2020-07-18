@@ -209,7 +209,8 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 									text += '<font color="red" size="3"> X</font>';
 							}
 						}
-						kcptun_tcp_node_status.innerHTML = text;
+						if(kcptun_tcp_node_status)
+							kcptun_tcp_node_status.innerHTML = text;
 					}
 				}
 				

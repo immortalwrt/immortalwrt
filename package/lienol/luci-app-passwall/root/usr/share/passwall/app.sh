@@ -90,9 +90,9 @@ check_port_exists() {
 	protocol=$2
 	result=
 	if [ "$protocol" = "tcp" ]; then
-		result=$(netstat -tln | grep -c ":$port")
+		result=$(netstat -tln | grep -c ":$port ")
 	elif [ "$protocol" = "udp" ]; then
-		result=$(netstat -uln | grep -c ":$port")
+		result=$(netstat -uln | grep -c ":$port ")
 	fi
 	if [ "$result" = 1 ]; then
 		echo 1
@@ -255,7 +255,10 @@ run_socks() {
 		ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 	elif [ "$type" == "trojan" ]; then
 		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
-		ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+		ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
+	elif [ "$type" == "trojan-go" ]; then
+		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
+		ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
 	elif [ "$type" == "brook" ]; then
 		local protocol=$(config_n_get $node brook_protocol client)
 		local brook_tls=$(config_n_get $node brook_tls 0)
@@ -304,16 +307,11 @@ run_redir() {
 			lua $API_GEN_V2RAY $node udp $local_port nil > $config_file
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
-			local_port=$(get_new_port 2080 tcp)
-			lua $API_GEN_TROJAN $node client "127.0.0.1" $local_port > $config_file
-			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
-			
-			local node_address=$(config_n_get $node address)
-			local node_port=$(config_n_get $node port)
-			local server_username=$(config_n_get $node username)
-			local server_password=$(config_n_get $node password)
-			eval port=\$UDP_REDIR_PORT$6
-			ln_start_bin $(find_bin ipt2socks) ipt2socks_udp_$6 "-U -l $port -b 0.0.0.0 -s 127.0.0.1 -p $local_port -R"
+			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
+			ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
+		elif [ "$type" == "trojan-go" ]; then
+			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
+			ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
 		elif [ "$type" == "brook" ]; then
 			local protocol=$(config_n_get $node brook_protocol client)
 			if [ "$protocol" == "wsclient" ]; then
@@ -344,14 +342,17 @@ run_redir() {
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
-			[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Trojan的NAT模式不支持UDP转发！"
 			for k in $(seq 1 $process); do
-				ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+				ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
 			done
+		elif [ "$type" == "trojan-go" ]; then
+			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
+			ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
 		else
 			local kcptun_use=$(config_n_get $node use_kcp 0)
 			if [ "$kcptun_use" == "1" ]; then
 				local kcptun_server_host=$(config_n_get $node kcp_server)
+				local network_type="ipv4"
 				local kcptun_port=$(config_n_get $node kcp_port)
 				local kcptun_config="$(config_n_get $node kcp_opts)"
 				if [ -z "$kcptun_port" -o -z "$kcptun_config" ]; then
@@ -463,7 +464,7 @@ clean_log() {
 
 start_crontab() {
 	touch /etc/crontabs/root
-	sed -i '/$CONFIG/d' /etc/crontabs/root >/dev/null 2>&1 &
+	sed -i "/$CONFIG/d" /etc/crontabs/root >/dev/null 2>&1 &
 	auto_on=$(config_t_get global_delay auto_on 0)
 	if [ "$auto_on" = "1" ]; then
 		time_off=$(config_t_get global_delay time_off)
