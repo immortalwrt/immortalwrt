@@ -16,13 +16,15 @@ include $(INCLUDE_DIR)/package.mk
 define Package/autocore-arm
   TITLE:=Arm auto core loadbalance script.
   MAINTAINER:=CN_SZTL
-  DEPENDS:=@(TARGET_bcm27xx||TARGET_rockchip)
+  DEPENDS:=@(TARGET_bcm27xx||TARGET_ipq806x||TARGET_rockchip)
+  VARIANT:=arm
 endef
 
 define Package/autocore-x86
   TITLE:=x86/x64 auto core loadbalance script.
   MAINTAINER:=Lean
   DEPENDS:=@TARGET_x86 +bc +lm-sensors +ethtool
+  VARIANT:=x86
 endef
 
 define Package/autocore-arm/description
