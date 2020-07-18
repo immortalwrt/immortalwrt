@@ -25,7 +25,7 @@ if node.type == "SS" then
     end
 elseif node.type == "SSR" then
     config.method = node.ssr_encrypt_method
-    config.protocol = node.protocol
+    config.protocol = node.ssr_protocol
     config.protocol_param = node.protocol_param
     config.obfs = node.obfs
     config.obfs_param = node.obfs_param

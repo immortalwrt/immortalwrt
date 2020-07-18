@@ -4,7 +4,7 @@
 -- @author William Chan <root@williamchan.me>
 ------------------------------------------------
 require 'nixio'
-require 'uci'
+require 'luci.model.uci'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
@@ -20,9 +20,9 @@ local b64decode = nixio.bin.b64decode
 local nodeResult = {} -- update result
 local application = 'passwall'
 local uciType = 'nodes'
-local ucic2 = uci.cursor()
+local ucic2 = luci.model.uci.cursor()
 local arg2 = arg[2]
-local allowInsecure_default = ucic2:get(application, "@global_subscribe[0]", "allowInsecure")
+local allowInsecure_default = ucic2:get_bool(application, "@global_subscribe[0]", "allowInsecure")
 ucic2:revert(application)
 
 local log = function(...)
@@ -125,7 +125,7 @@ do
 	end
 
 	ucic2:foreach(application, uciType, function(node)
-		if node.type == 'V2ray' and node.v2ray_protocol == '_shunt' then
+		if node.type == 'V2ray' and node.protocol == '_shunt' then
 			local node_id = node[".name"]
 			ucic2:foreach(application, "shunt_rules", function(e)
 				local _node_id = node[e[".name"]] or nil
@@ -156,29 +156,31 @@ do
 					ucic2:set(application, node_id, "default_node", server)
 				end
 			}
-		elseif node.type == 'V2ray' and node.v2ray_protocol == '_balancing' then
+		elseif node.type == 'V2ray' and node.protocol == '_balancing' then
 			local node_id = node[".name"]
 			local nodes = {}
 			local new_nodes = {}
-			for k, v in pairs(node.v2ray_balancing_node) do
-				local node = v
-				local currentNode
-				if node then
-					currentNode = ucic2:get_all(application, node)
-				end
-				nodes[#nodes + 1] = {
-					log = false,
-					node = node,
-					currentNode = currentNode,
-					remarks = node,
-					set = function(server)
-						for kk, vv in pairs(CONFIG) do
-							if (vv.remarks == "V2ray负载均衡节点列表" .. node_id) then
-								table.insert(vv.new_nodes, server)
+			if node.balancing_node then
+				for k, v in pairs(node.balancing_node) do
+					local node = v
+					local currentNode
+					if node then
+						currentNode = ucic2:get_all(application, node)
+					end
+					nodes[#nodes + 1] = {
+						log = false,
+						node = node,
+						currentNode = currentNode,
+						remarks = node,
+						set = function(server)
+							for kk, vv in pairs(CONFIG) do
+								if (vv.remarks == "V2ray负载均衡节点列表" .. node_id) then
+									table.insert(vv.new_nodes, server)
+								end
 							end
 						end
-					end
-				}
+					}
+				end
 			end
 			CONFIG[#CONFIG + 1] = {
 				remarks = "V2ray负载均衡节点列表" .. node_id,
@@ -191,7 +193,7 @@ do
 							ucic2:foreach(application, uciType, function(node2)
 								if node2[".name"] == node[".name"] then
 									local index = node2[".index"]
-									ucic2:set_list(application, "@nodes[" .. index .. "]", "v2ray_balancing_node", vv.new_nodes)
+									ucic2:set_list(application, "@nodes[" .. index .. "]", "balancing_node", vv.new_nodes)
 								end
 							end)
 						end
@@ -276,7 +278,7 @@ end
 
 local function get_urldecode(h) return schar(tonumber(h, 16)) end
 local function UrlDecode(szText)
-	return szText:gsub("+", " "):gsub("%%(%x%x)", get_urldecode)
+	return (szText and szText:gsub("+", " "):gsub("%%(%x%x)", get_urldecode)) or nil
 end
 
 -- trim
@@ -303,6 +305,7 @@ local function base64Decode(text)
 end
 -- 处理数据
 local function processData(szType, content, add_mode)
+	log(content, add_mode)
 	local result = {
 		timeout = 60,
 		add_mode = add_mode,
@@ -314,7 +317,7 @@ local function processData(szType, content, add_mode)
 		result.type = "SSR"
 		result.address = hostInfo[1]
 		result.port = hostInfo[2]
-		result.protocol = hostInfo[3]
+		result.ssr_protocol = hostInfo[3]
 		result.ssr_encrypt_method = hostInfo[4]
 		result.obfs = hostInfo[5]
 		result.password = base64Decode(hostInfo[6])
@@ -333,50 +336,50 @@ local function processData(szType, content, add_mode)
 		result.type = 'V2ray'
 		result.address = info.add
 		result.port = info.port
-		result.v2ray_protocol = 'vmess'
-		result.v2ray_transport = info.net
-		result.v2ray_VMess_alterId = info.aid
-		result.v2ray_VMess_id = info.id
+		result.protocol = 'vmess'
+		result.transport = info.net
+		result.alter_id = info.aid
+		result.vmess_id = info.id
 		result.remarks = info.ps
-		-- result.v2ray_mux = 1
-		-- result.v2ray_mux_concurrency = 8
+		-- result.mux = 1
+		-- result.mux_concurrency = 8
 		if info.net == 'ws' then
-			result.v2ray_ws_host = info.host
-			result.v2ray_ws_path = info.path
+			result.ws_host = info.host
+			result.ws_path = info.path
 		end
 		if info.net == 'h2' then
-			result.v2ray_h2_host = info.host
-			result.v2ray_h2_path = info.path
+			result.h2_host = info.host
+			result.h2_path = info.path
 		end
 		if info.net == 'tcp' then
 			if info.type and info.type ~= "http" then
 				info.type = "none"
 			end
-			result.v2ray_tcp_guise = info.type
-			result.v2ray_tcp_guise_http_host = info.host
-			result.v2ray_tcp_guise_http_path = info.path
+			result.tcp_guise = info.type
+			result.tcp_guise_http_host = info.host
+			result.tcp_guise_http_path = info.path
 		end
 		if info.net == 'kcp' then
-			result.v2ray_mkcp_guise = info.type
-			result.v2ray_mkcp_mtu = 1350
-			result.v2ray_mkcp_tti = 50
-			result.v2ray_mkcp_uplinkCapacity = 5
-			result.v2ray_mkcp_downlinkCapacity = 20
-			result.v2ray_mkcp_readBufferSize = 2
-			result.v2ray_mkcp_writeBufferSize = 2
+			result.mkcp_guise = info.type
+			result.mkcp_mtu = 1350
+			result.mkcp_tti = 50
+			result.mkcp_uplinkCapacity = 5
+			result.mkcp_downlinkCapacity = 20
+			result.mkcp_readBufferSize = 2
+			result.mkcp_writeBufferSize = 2
 		end
 		if info.net == 'quic' then
-			result.v2ray_quic_guise = info.type
-			result.v2ray_quic_key = info.key
-			result.v2ray_quic_security = info.securty
+			result.quic_guise = info.type
+			result.quic_key = info.key
+			result.quic_security = info.securty
 		end
-		if not info.security then result.v2ray_security = "auto" end
+		if not info.security then result.security = "auto" end
 		if info.tls == "tls" or info.tls == "1" then
-			result.v2ray_stream_security = "tls"
+			result.stream_security = "tls"
 			result.tls_serverName = info.host
-			result.tls_allowInsecure = allowInsecure_default
+			result.tls_allowInsecure = allowInsecure_default and "1" or "0"
 		else
-			result.v2ray_stream_security = "none"
+			result.stream_security = "none"
 		end
 	elseif szType == "ss" then
 		local idx_sp = 0
@@ -387,14 +390,26 @@ local function processData(szType, content, add_mode)
 		end
 		local info = content:sub(1, idx_sp - 1)
 		local hostInfo = split(base64Decode(info), "@")
-		local host = split(hostInfo[2], ":")
-		local userinfo = base64Decode(hostInfo[1])
+		local hostInfoLen = #hostInfo
+		local host = nil
+		local userinfo = nil
+		if hostInfoLen > 2 then
+			host = split(hostInfo[hostInfoLen], ":")
+			userinfo = {}
+			for i = 1, hostInfoLen - 1 do
+				tinsert(userinfo, hostInfo[i])
+			end
+			userinfo = table.concat(userinfo, '@')
+		else
+			host = split(hostInfo[2], ":")
+			userinfo = base64Decode(hostInfo[1])
+		end
 		local method = userinfo:sub(1, userinfo:find(":") - 1)
 		local password = userinfo:sub(userinfo:find(":") + 1, #userinfo)
 		result.remarks = UrlDecode(alias)
 		result.type = "SS"
 		result.address = host[1]
-		if host[2]:find("/%?") then
+		if host[2] and host[2]:find("/%?") then
 			local query = split(host[2], "/%?")
 			result.port = query[1]
 			local params = {}
@@ -428,35 +443,123 @@ local function processData(szType, content, add_mode)
 			alias = content:sub(idx_sp + 1, -1)
 			content = content:sub(0, idx_sp - 1)
 		end
-		local Info = split(content, "@")
-		if Info then
-			local address, port, peer
-			local password = Info[1]
-			local allowInsecure = allowInsecure_default
-			local params = {}
-			local hostInfo = split(Info[2], ":")
-			if hostInfo then
-				address = hostInfo[1]
-				hostInfo = split(hostInfo[2], "?")
-				if hostInfo then
-					port = hostInfo[1]
-					for _, v in pairs(split(hostInfo[2], '&')) do
-						local t = split(v, '=')
-						params[t[1]] = t[2]
-					end
-					if params.allowInsecure then
-						allowInsecure = params.allowInsecure
-					end
-					if params.peer then peer = params.peer end
+		result.type = "Trojan"
+		result.remarks = UrlDecode(alias)
+		if content:find("@") then
+			local Info = split(content, "@")
+			result.password = UrlDecode(Info[1])
+			local port = "443"
+			Info[2] = (Info[2] or ""):gsub("/%?", "?")
+			local hostInfo = nil
+			if Info[2]:find(":") then
+				hostInfo = split(Info[2], ":")
+				result.address = hostInfo[1]
+				local idx_port = 2
+				if hostInfo[2]:find("?") then
+					hostInfo = split(hostInfo[2], "?")
+					idx_port = 1
 				end
+				if hostInfo[idx_port] ~= "" then port = hostInfo[idx_port] end
+			else
+				if Info[2]:find("?") then
+					hostInfo = split(Info[2], "?")
+				end
+				result.address = hostInfo and hostInfo[1] or Info[2]
 			end
-			result.type = "Trojan"
-			result.address = address
+			local peer, sni = nil, ""
+			local allowInsecure = allowInsecure_default
+			local query = split(Info[2], "?")
+			local params = {}
+			for _, v in pairs(split(query[2], '&')) do
+				local t = split(v, '=')
+				params[string.lower(t[1])] = UrlDecode(t[2])
+			end
+			if params.allowinsecure then
+				allowInsecure = params.allowinsecure
+			end
+			if params.peer then peer = params.peer end
+			sni = params.sni and params.sni or ""
+			if params.mux and params.mux == "1" then result.mux = "1" end
+			if params.ws and params.ws == "1" then
+				result.trojan_transport = "ws"
+				if params.wshost then result.ws_host = params.wshost end
+				if params.wspath then result.ws_path = params.wspath end
+				if sni == "" and params.wshost then sni = params.wshost end
+			end
+			if params.ss and params.ss == "1" then
+				result.ss_aead = "1"
+				if params.ssmethod then result.ss_aead_method = string.lower(params.ssmethod) end
+				if params.sspasswd then result.ss_aead_pwd = params.sspasswd end
+			end
 			result.port = port
-			result.password = password
-			result.tls_allowInsecure = allowInsecure
-			result.tls_serverName = peer
-			result.remarks = UrlDecode(alias)
+			if result.mux or result.trojan_transport == "ws" or result.ss_aead then
+				result.type = "Trojan-Go"
+				result.fingerprint = "firefox"
+			end
+			result.stream_security = 'tls'
+			result.tls_serverName = peer and peer or sni
+			result.tls_allowInsecure = allowInsecure and "1" or "0"
+		end
+	elseif szType == "trojan-go" then
+		local alias = ""
+		if content:find("#") then
+			local idx_sp = content:find("#")
+			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1)
+		end
+		result.type = "Trojan-Go"
+		result.remarks = UrlDecode(alias)
+		if content:find("@") then
+			local Info = split(content, "@")
+			result.password = UrlDecode(Info[1])
+			local port = "443"
+			Info[2] = (Info[2] or ""):gsub("/%?", "?")
+			local hostInfo = nil
+			if Info[2]:find(":") then
+				hostInfo = split(Info[2], ":")
+				result.address = hostInfo[1]
+				local idx_port = 2
+				if hostInfo[2]:find("?") then
+					hostInfo = split(hostInfo[2], "?")
+					idx_port = 1
+				end
+				if hostInfo[idx_port] ~= "" then port = hostInfo[idx_port] end
+			else
+				if Info[2]:find("?") then
+					hostInfo = split(Info[2], "?")
+				end
+				result.address = hostInfo and hostInfo[1] or Info[2]
+			end
+			local peer, sni = nil, ""
+			local allowInsecure = allowInsecure_default
+			local query = split(Info[2], "?")
+			local params = {}
+			for _, v in pairs(split(query[2], '&')) do
+				local t = split(v, '=')
+				params[string.lower(t[1])] = UrlDecode(t[2])
+			end
+			if params.allowinsecure then
+				allowInsecure = params.allowinsecure
+			end
+			if params.peer then peer = params.peer end
+			sni = params.sni and params.sni or ""
+			if params.mux and params.mux == "1" then result.mux = "1" end
+			if params.type and params.type == "ws" then
+				result.trojan_transport = "ws"
+				if params.host then result.ws_host = params.host end
+				if params.path then result.ws_path = params.path end
+				if sni == "" and params.host then sni = params.host end
+			end
+			if params.encryption and params.encryption:match('^ss;[^;:]*[;:].*$') then
+				result.ss_aead = "1"
+				result.ss_aead_method, result.ss_aead_pwd = params.encryption:match('^ss;([^;:]*)[;:](.*)$')
+				result.ss_aead_method = string.lower(result.ss_aead_method)
+			end
+			result.port = port
+			result.fingerprint = "firefox"
+			result.stream_security = 'tls'
+			result.tls_serverName = peer and peer or sni
+			result.tls_allowInsecure = allowInsecure and "1" or "0"
 		end
 	elseif szType == "ssd" then
 		result.type = "SS"
@@ -535,7 +638,7 @@ local function select_node(nodes, config)
 	local server
 	if config.currentNode then
 		-- 特别优先级 V2ray分流 + 备注
-		if config.currentNode.type == 'V2ray' and config.currentNode.v2ray_protocol == '_shunt' then
+		if config.currentNode.type == 'V2ray' and config.currentNode.protocol == '_shunt' then
 			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
 					log('选择【' .. config.remarks .. '】V2ray分流匹配节点：' .. node.remarks)
@@ -545,7 +648,7 @@ local function select_node(nodes, config)
 			end
 		end
 		-- 特别优先级 V2ray负载均衡 + 备注
-		if config.currentNode.type == 'V2ray' and config.currentNode.v2ray_protocol == '_balancing' then
+		if config.currentNode.type == 'V2ray' and config.currentNode.protocol == '_balancing' then
 			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
 					log('选择【' .. config.remarks .. '】V2ray负载均衡匹配节点：' .. node.remarks)
@@ -554,25 +657,23 @@ local function select_node(nodes, config)
 				end
 			end
 		end
-		-- 第一优先级 IP + 端口
+		-- 第一优先级 cfgid
+		if not server then
+			for id, node in pairs(nodes) do
+				if id == config.currentNode['.name'] then
+					if config.log == nil or config.log == true then
+						log('选择【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
+					end
+					server = id
+					break
+				end
+			end
+		end
+		-- 第二优先级 IP + 端口
 		if not server then
 			for id, node in pairs(nodes) do
 				if node.address and node.port then
 					if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
-						if config.log == nil or config.log == true then
-							log('选择【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
-						end
-						server = id
-						break
-					end
-				end
-			end
-		end
-		-- 第二优先级 IP
-		if not server then
-			for id, node in pairs(nodes) do
-				if node.address then
-					if node.address == config.currentNode.address then
 						if config.log == nil or config.log == true then
 							log('选择【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
 						end
@@ -582,11 +683,11 @@ local function select_node(nodes, config)
 				end
 			end
 		end
-		-- 第三优先级备注
+		-- 第三优先级 IP
 		if not server then
 			for id, node in pairs(nodes) do
-				if node.remarks then
-					if node.remarks == config.currentNode.remarks then
+				if node.address then
+					if node.address == config.currentNode.address then
 						if config.log == nil or config.log == true then
 							log('选择【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
 						end
@@ -596,15 +697,17 @@ local function select_node(nodes, config)
 				end
 			end
 		end
-		-- 第四 cfgid
+		-- 第四优先级备注
 		if not server then
 			for id, node in pairs(nodes) do
-				if id == config.currentNode['.name'] then
-					if config.log == nil or config.log == true then
-						log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+				if node.remarks then
+					if node.remarks == config.currentNode.remarks then
+						if config.log == nil or config.log == true then
+							log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+						end
+						server = id
+						break
 					end
-					server = id
-					break
 				end
 			end
 		end
@@ -638,9 +741,8 @@ local function update_node(manual)
 	end)
 	for _, v in ipairs(nodeResult) do
 		for _, vv in ipairs(v) do
-			local cfgid = ucic2:add(application, uciType)
 			local uuid = _api.gen_uuid()
-			ucic2:rename(application, cfgid, uuid)
+			local cfgid = ucic2:section(application, uciType, uuid)
 			cfgid = uuid
 			for kkk, vvv in pairs(vv) do
 				ucic2:set(application, cfgid, kkk, vvv)
@@ -728,7 +830,7 @@ local function parse_link(raw, remark, manual)
 					local node = trim(v)
 					local dat = split(node, "://")
 					if dat and dat[1] and dat[2] then
-						if dat[1] == 'ss' or dat[1] == 'trojan' then
+						if dat[1] == 'ss' or dat[1] == 'trojan' or dat[1] == 'trojan-go' then
 							result = processData(dat[1], dat[2], add_mode)
 						else
 							result = processData(dat[1], base64Decode(dat[2]), add_mode)
@@ -753,7 +855,7 @@ local function parse_link(raw, remark, manual)
 				end
 			end
 		end
-		log('成功解析节点数量: ' .. #nodes)
+		log('成功解析节点数量: ' .. #all_nodes)
 	else
 		if not manual then
 			log('获取到的节点内容为空...')

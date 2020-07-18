@@ -5,31 +5,7 @@ local util = require "luci.util"
 local i18n = require "luci.i18n"
 local api = require "luci.model.cbi.passwall.api.api"
 
-local brook_api =
-    "https://api.github.com/repos/txthinking/brook/releases/latest"
-
-function get_brook_file_path()
-    return api.uci_get_type("global_app", "brook_file")
-end
-
-function get_brook_version(file)
-    if file == nil then file = get_brook_file_path() end
-
-    if file and file ~= "" then
-        if not fs.access(file, "rwx", "rx", "rx") then
-            fs.chmod(file, 755)
-        end
-
-        local info = util.trim(sys.exec("%s -v 2>/dev/null" % file))
-
-        if info ~= "" then
-            local tb = util.split(info, "%s+", nil, true)
-            return tb[1] == "Brook" and tb[3] or ""
-        end
-    end
-
-    return ""
-end
+local brook_api = "https://api.github.com/repos/txthinking/brook/releases/latest"
 
 function to_check(arch)
     if not arch or arch == "" then arch = api.auto_get_arch() end
@@ -56,12 +32,9 @@ function to_check(arch)
         }
     end
 
+    local now_version = api.get_brook_version()
     local remote_version = json.tag_name:match("[^v]+")
-
-    local client_file = get_brook_file_path()
-
-    local needs_update = api.compare_versions(get_brook_version(client_file),
-                                              "<", remote_version)
+    local needs_update = api.compare_versions(now_version, "<", remote_version)
     local html_url, download_url
 
     if needs_update then
@@ -77,18 +50,17 @@ function to_check(arch)
     if needs_update and not download_url then
         return {
             code = 1,
-            now_version = get_brook_version(client_file),
+            now_version = now_version,
             version = remote_version,
             html_url = html_url,
-            error = i18n.translate(
-                "New version found, but failed to get new version download url.")
+            error = i18n.translate("New version found, but failed to get new version download url.")
         }
     end
 
     return {
         code = 0,
         update = needs_update,
-        now_version = get_brook_version(client_file),
+        now_version = now_version,
         version = remote_version,
         url = {html = html_url, download = download_url}
     }
@@ -122,17 +94,16 @@ function to_move(file)
         return {code = 1, error = i18n.translate("Client file is required.")}
     end
 
-    local version = get_brook_version(file)
+    local version = api.get_brook_version(file)
     if version == "" then
         sys.call("/bin/rm -rf /tmp/brook_download.*")
         return {
             code = 1,
-            error = i18n.translate(
-                "The client file is not suitable for current device.")
+            error = i18n.translate("The client file is not suitable for current device.")
         }
     end
 
-    local client_file = get_brook_file_path()
+    local client_file = api.get_brook_path()
     local client_file_bak
 
     if fs.access(client_file) then
@@ -140,8 +111,7 @@ function to_move(file)
         api.exec("/bin/mv", {"-f", client_file, client_file_bak})
     end
 
-    local result = api.exec("/bin/mv", {"-f", file, client_file}, nil,
-                            api.command_timeout) == 0
+    local result = api.exec("/bin/mv", {"-f", file, client_file}, nil, api.command_timeout) == 0
 
     if not result or not fs.access(client_file) then
         sys.call("/bin/rm -rf /tmp/brook_download.*")
@@ -150,8 +120,7 @@ function to_move(file)
         end
         return {
             code = 1,
-            error = i18n.translatef("Can't move new file to path: %s",
-                                    client_file)
+            error = i18n.translatef("Can't move new file to path: %s", client_file)
         }
     end
 
