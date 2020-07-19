@@ -47,6 +47,7 @@ define Package/autocore-arm/install
 	$(INSTALL_BIN) ./files/arm/090-cover-index_files $(1)/etc/uci-defaults/090-cover-index_files
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/cpuinfo $(1)/sbin/cpuinfo
+endef
 
 define Package/autocore-x86/install
 	$(INSTALL_DIR) $(1)/etc
