@@ -53,7 +53,8 @@ luci-theme-Butterfly-dark source: [Leo-Jo-My/luci-theme-Butterfly-dark](https://
 luci-theme-argon-mod source: [Leo-Jo-My/luci-theme-argon-mod](https://github.com/Leo-Jo-My/luci-theme-argon-mod).<br/>
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
 luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
-luci-theme-btmod source: [siropboy/luci-theme-btmod](https://github.com/siropboy/luci-theme-btmod).
+luci-theme-btmod source: [siropboy/luci-theme-btmod](https://github.com/siropboy/luci-theme-btmod).<br/>
+luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).
 
 ## License
-### Depending on their own License.
+### Depend on their own License.

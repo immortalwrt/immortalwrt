@@ -14,7 +14,7 @@ function gen_config(user)
             for i = 1, #user.vmess_id do
                 clients[i] = {
                     id = user.vmess_id[i],
-                    level = tonumber(user.vmess_level),
+                    level = tonumber(user.level),
                     alterId = tonumber(user.alter_id)
                 }
             end
@@ -42,11 +42,20 @@ function gen_config(user)
         }
     elseif user.protocol == "shadowsocks" then
         settings = {
-            method = user.ss_encrypt_method,
+            method = user.v_ss_encrypt_method,
             password = user.password,
-            level = tonumber(user.vmess_level) or 1,
+            level = tonumber(user.level) or 1,
             network = user.ss_network or "TCP,UDP",
             ota = (user.ss_ota == '1') and true or false
+        }
+    elseif user.protocol == "mtproto" then
+        settings = {
+            users = {
+                {
+                    level = tonumber(user.level) or 1,
+                    secret = (user.password == nil) and "" or user.password
+                }
+            }
         }
     end
 
@@ -74,7 +83,7 @@ function gen_config(user)
                     concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
                 },
                 -- 底层传输配置
-                streamSettings = (node.protocol == "vmess") and {
+                streamSettings = {
                     network = node.transport,
                     security = node.stream_security,
                     tlsSettings = (node.stream_security == "tls") and {
@@ -122,7 +131,7 @@ function gen_config(user)
                         key = node.quic_key,
                         header = {type = node.quic_guise}
                     } or nil
-                } or nil,
+                },
                 settings = {
                     vnext = (node.protocol == "vmess") and {
                         {
@@ -132,7 +141,7 @@ function gen_config(user)
                                 {
                                     id = node.vmess_id,
                                     alterId = tonumber(node.alter_id),
-                                    level = tonumber(node.vmess_level),
+                                    level = tonumber(node.level),
                                     security = node.security
                                 }
                             }
@@ -162,7 +171,7 @@ function gen_config(user)
 
     local config = {
         log = {
-            -- error = "/var/log/v2ray.log",
+            -- error = "/var/etc/passwall_server/log/" .. user[".name"] .. ".log",
             loglevel = "warning"
         },
         -- 传入连接
@@ -171,14 +180,12 @@ function gen_config(user)
                 listen = (user.bind_local == "1") and "127.0.0.1" or nil,
                 port = tonumber(user.port),
                 protocol = user.protocol,
-                -- 底层传输配置
                 settings = settings,
-                streamSettings = (user.protocol == "vmess") and {
+                streamSettings = {
                     network = user.transport,
                     security = (user.stream_security == 'tls') and "tls" or "none",
                     tlsSettings = (user.stream_security == 'tls') and {
                         disableSessionResumption = user.sessionTicket ~= "1" and true or false,
-                        -- serverName = (user.tls_serverName),
                         allowInsecure = false,
                         disableSystemRoot = false,
                         certificates = {
@@ -209,22 +216,22 @@ function gen_config(user)
                         writeBufferSize = tonumber(user.mkcp_writeBufferSize),
                         header = {type = user.mkcp_guise}
                     } or nil,
-                    wsSettings = (user.transport == "ws") and
-                        {
-                            headers = (user.ws_host) and {Host = user.ws_host} or
-                                nil,
-                            path = user.ws_path
-                        } or nil,
-                    httpSettings = (user.transport == "h2") and
-                        {path = user.h2_path, host = user.h2_host} or nil,
-                    dsSettings = (user.transport == "ds") and
-                        {path = user.ds_path} or nil,
+                    wsSettings = (user.transport == "ws") and {
+                        headers = (user.ws_host) and {Host = user.ws_host} or nil,
+                        path = user.ws_path
+                    } or nil,
+                    httpSettings = (user.transport == "h2") and {
+                        path = user.h2_path, host = user.h2_host
+                    } or nil,
+                    dsSettings = (user.transport == "ds") and {
+                        path = user.ds_path
+                    } or nil,
                     quicSettings = (user.transport == "quic") and {
                         security = user.quic_security,
                         key = user.quic_key,
                         header = {type = user.quic_guise}
                     } or nil
-                } or nil
+                }
             }
         },
         -- 传出连接

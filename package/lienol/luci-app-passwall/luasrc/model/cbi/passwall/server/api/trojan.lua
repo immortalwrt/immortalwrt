@@ -30,11 +30,6 @@ function gen_config(user)
         udp_timeout = 60,
         disable_http_check = true,
         tcp = {
-        mux = (user.mux == "1") and {
-            enabled = true,
-            concurrency = tonumber(user.mux_concurrency),
-            idle_timeout = 60,
-        } or nil,
         transport_plugin = user.stream_security == "none" and user.trojan_transport == "original" and {
             enabled = user.plugin_type ~= nil,
             type = user.plugin_type or "plaintext",
