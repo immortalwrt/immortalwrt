@@ -33,7 +33,7 @@ for _, e in ipairs(governor_array) do
 	if e ~= "" then governor:value(translate(e,string.upper(e))) end
 end
 
-minfreq = s:option(ListValue, "minifreq", translate("Min Idle CPU Freq"))
+minfreq = s:option(ListValue, "minfreq", translate("Min Idle CPU Freq"))
 for _, e in ipairs(freq_array) do
 	if e ~= "" then minfreq:value(e) end
 end
