@@ -244,12 +244,12 @@ define Device/dlink_dir-867-a1
 endef
 TARGET_DEVICES += dlink_dir-867-a1
 
-define Device/dlink_dir_878_a1
+define Device/dlink_dir-878-a1
   $(Device/dlink_dir-8xx-a1)
   DEVICE_MODEL := DIR-878
   DEVICE_VARIANT := A1
 endef
-TARGET_DEVICES += dlink_dir_878_a1
+TARGET_DEVICES += dlink_dir-878-a1
 
 define Device/dlink_dir-882-a1
   $(Device/dlink_dir-8xx-a1)
@@ -257,7 +257,7 @@ define Device/dlink_dir-882-a1
   DEVICE_VARIANT := A1
   DEVICE_PACKAGES += kmod-usb3 kmod-usb-ledtrig-usbport
 endef
-TARGET_DEVICES += dlink_dir_882_a1
+TARGET_DEVICES += dlink_dir-882-a1
 
 define Device/d-team_newifi-d2
   $(Device/uimage-lzma-loader)
