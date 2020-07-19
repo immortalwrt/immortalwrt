@@ -42,7 +42,8 @@ scutclient source: [scutclient/scutclient](https://github.com/scutclient/scutcli
 luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/scutclient/luci-app-scutclient).<br/>
 MT-Wifi 5.0.4.0: [MeIsReallyBa/mt7615-dbdc-linux5.4](https://github.com/MeIsReallyBa/mt7615-dbdc-linux5.4).<br/>
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
-luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).
+luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
+luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).
 
 ## License
-### Depending on their own License.
+### Depend on their own License.
