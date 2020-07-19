@@ -35,6 +35,12 @@ msgstr "Ondemand 自动平衡模式"
 msgid "performance"
 msgstr "Performance 高性能模式（降低游戏转发延迟）"
 
+msgid "powersave"
+msgstr "Powersave 省电模式"
+
+msgid "schedutil"
+msgstr "Schedutil 自动平衡模式"
+
 msgid "CPU Freq from 48000 to 716000 (Khz)"
 msgstr "CPU 频率范围为 48000 到 716000 (Khz)"
 
@@ -54,4 +60,4 @@ msgid "CPU Switching Sampling rate"
 msgstr "CPU 切换周期"
 
 msgid "The sampling rate determines how frequently the governor checks to tune the CPU (ms)"
-msgstr "CPU 检查切换的周期 (ms) 。注意：过于频繁的切换频率会引起网络延迟抖动"
+msgstr "CPU 检查切换的周期 (ms)。注意：过于频繁的切换频率会引起网络延迟抖动"
