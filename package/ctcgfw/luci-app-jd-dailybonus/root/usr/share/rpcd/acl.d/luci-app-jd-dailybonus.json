@@ -2,17 +2,10 @@
 	"luci-app-jd-dailybonus": {
 		"description": "Grant UCI access for luci-app-jd-dailybonus",
 		"read": {
-			"uci": [ "jd-dailybonus" ],
-			"file": {
-				"/usr/share/jd-dailybonus/*": ["read"],
-				"/www/JD_DailyBonus.htm": ["read"]
-			}
+			"uci": [ "jd-dailybonus" ]
 		},
 		"write": {
-			"uci": [ "jd-dailybonus" ],
-			"file": {
-				"/usr/share/jd-dailybonus/*": ["write"]
-			}
+			"uci": [ "jd-dailybonus" ]
 		}
 	}
 }
