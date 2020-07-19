@@ -10,8 +10,7 @@ local function get_customed_path(e)
 end
 
 local function is_finded(e)
-    return luci.sys.exec("find /usr/*bin %s -iname %s -type f" %
-                             {get_customed_path(e), e}) ~= "" and true or false
+    return luci.sys.exec("find /usr/*bin %s -iname %s -type f" % {get_customed_path(e), e}) ~= "" and true or false
 end
 
 local function is_installed(e) return ipkg.installed(e) end
@@ -73,13 +72,17 @@ s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false
 s.dynamic = false
 
+share = s:option(DummyValue, "share_url", translate("Share Current"))
+share.rawhtml  = true
+share.template = "passwall/node_list/link_share_man"
+share.value = arg[1]
+
 remarks = s:option(Value, "remarks", translate("Node Remarks"))
 remarks.default = translate("Remarks")
 remarks.rmempty = false
 
 type = s:option(ListValue, "type", translate("Type"))
-if ((is_installed("redsocks2") or is_finded("redsocks2")) or
-    (is_installed("ipt2socks") or is_finded("ipt2socks"))) then
+if is_installed("ipt2socks") or is_finded("ipt2socks") then
     type:value("Socks", translate("Socks"))
 end
 if is_finded("ss-redir") then
@@ -145,8 +148,7 @@ for k, v in pairs(nodes_table) do default_node:value(v.id, v.remarks) end
 default_node:depends("protocol", "_shunt")
 
 -- Brook协议
-brook_protocol = s:option(ListValue, "brook_protocol",
-                          translate("Brook Protocol"))
+brook_protocol = s:option(ListValue, "brook_protocol", translate("Brook Protocol"))
 brook_protocol:value("client", translate("Brook"))
 brook_protocol:value("wsclient", translate("WebSocket"))
 brook_protocol:depends("type", "Brook")
@@ -213,28 +215,23 @@ password:depends("protocol", "http")
 password:depends("protocol", "socks")
 password:depends("protocol", "shadowsocks")
 
-ss_encrypt_method = s:option(ListValue, "ss_encrypt_method",
-                             translate("Encrypt Method"))
+ss_encrypt_method = s:option(ListValue, "ss_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(ss_encrypt_method_list) do ss_encrypt_method:value(t) end
 ss_encrypt_method:depends("type", "SS")
 
-ssr_encrypt_method = s:option(ListValue, "ssr_encrypt_method",
-                              translate("Encrypt Method"))
+ssr_encrypt_method = s:option(ListValue, "ssr_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(ssr_encrypt_method_list) do ssr_encrypt_method:value(t) end
 ssr_encrypt_method:depends("type", "SSR")
 
-security = s:option(ListValue, "security",
-                          translate("Encrypt Method"))
+security = s:option(ListValue, "security", translate("Encrypt Method"))
 for a, t in ipairs(security_list) do security:value(t) end
 security:depends("protocol", "vmess")
 
-v_ss_encrypt_method = s:option(ListValue, "v_ss_encrypt_method",
-                             translate("Encrypt Method"))
+v_ss_encrypt_method = s:option(ListValue, "v_ss_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(v_ss_encrypt_method_list) do v_ss_encrypt_method:value(t) end
 v_ss_encrypt_method:depends("protocol", "shadowsocks")
 
-ss_ota = s:option(Flag, "ss_ota", translate("OTA"), translate(
-                      "When OTA is enabled, V2Ray will reject connections that are not OTA enabled. This option is invalid when using AEAD encryption."))
+ss_ota = s:option(Flag, "ss_ota", translate("OTA"), translate("When OTA is enabled, V2Ray will reject connections that are not OTA enabled. This option is invalid when using AEAD encryption."))
 ss_ota.default = "0"
 ss_ota:depends("protocol", "shadowsocks")
 
@@ -258,8 +255,7 @@ timeout.default = 300
 timeout:depends("type", "SS")
 timeout:depends("type", "SSR")
 
-tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"),
-                         translate("Need node support required"))
+tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"), translate("Need node support required"))
 tcp_fast_open:value("false")
 tcp_fast_open:value("true")
 tcp_fast_open:depends("type", "SS")
@@ -278,9 +274,7 @@ ss_plugin_opts:depends("ss_plugin", "v2ray-plugin")
 ss_plugin_opts:depends("ss_plugin", "obfs-local")
 
 use_kcp = s:option(Flag, "use_kcp", translate("Use Kcptun"),
-                   "<span style='color:red'>" .. translate(
-                       "Please confirm whether the Kcptun is installed. If not, please go to Rule Update download installation.") ..
-                       "</span>")
+                   "<span style='color:red'>" .. translate("Please confirm whether the Kcptun is installed. If not, please go to Rule Update download installation.") .. "</span>")
 use_kcp.default = 0
 use_kcp:depends("type", "SS")
 use_kcp:depends("type", "SSR")
@@ -294,34 +288,27 @@ kcp_port = s:option(Value, "kcp_port", translate("Kcptun Port"))
 kcp_port.datatype = "port"
 kcp_port:depends("use_kcp", "1")
 
-kcp_opts = s:option(TextValue, "kcp_opts", translate("Kcptun Config"),
-                    translate(
-                        "--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"))
-kcp_opts.placeholder =
-    "--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"
+kcp_opts = s:option(TextValue, "kcp_opts", translate("Kcptun Config"), translate("--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"))
+kcp_opts.placeholder = "--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"
 kcp_opts:depends("use_kcp", "1")
 
 vmess_id = s:option(Value, "vmess_id", translate("ID"))
 vmess_id.password = true
 vmess_id:depends("protocol", "vmess")
 
-alter_id = s:option(Value, "alter_id",
-                               translate("Alter ID"))
+alter_id = s:option(Value, "alter_id", translate("Alter ID"))
 alter_id:depends("protocol", "vmess")
 
-vmess_level =
-    s:option(Value, "vmess_level", translate("User Level"))
+vmess_level = s:option(Value, "vmess_level", translate("User Level"))
 vmess_level.default = 1
 vmess_level:depends("protocol", "vmess")
 
-stream_security = s:option(ListValue, "stream_security",
-                                 translate("Transport Layer Encryption"),
-                                 translate(
-                                     'Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
+stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
 stream_security:value("none", "none")
 stream_security:value("tls", "tls")
 stream_security.default = "tls"
 stream_security:depends("protocol", "vmess")
+stream_security:depends("protocol", "socks")
 stream_security:depends("protocol", "shadowsocks")
 stream_security:depends("type", "Trojan")
 stream_security:depends("type", "Trojan-Go")
@@ -333,13 +320,11 @@ stream_security.validate = function(self, value)
 end
 
 -- [[ TLS部分 ]] --
-
 tls_sessionTicket = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))
 tls_sessionTicket.default = "0"
 tls_sessionTicket:depends("stream_security", "tls")
 
 -- [[ Trojan TLS ]]--
-
 trojan_force_fp = s:option(ListValue, "fingerprint", translate("Finger Print"))
 for a, t in ipairs(force_fp) do trojan_force_fp:value(t) end
 trojan_force_fp.default = "firefox"
@@ -348,13 +333,11 @@ trojan_force_fp:depends({ type = "Trojan-Go", stream_security = "tls" })
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
 tls_serverName:depends("stream_security", "tls")
 
-tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate(
-                                 "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."))
+tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."))
 tls_allowInsecure.default = "0"
 tls_allowInsecure:depends("stream_security", "tls")
 
 -- [[ Trojan Cert ]]--
-
 trojan_cert_path = s:option(Value, "trojan_cert_path", translate("Trojan Cert Path"))
 trojan_cert_path.default = ""
 trojan_cert_path:depends({ stream_security = "tls", tls_allowInsecure = false })
@@ -397,12 +380,13 @@ transport:value("h2", "HTTP/2")
 transport:value("ds", "DomainSocket")
 transport:value("quic", "QUIC")
 transport:depends("protocol", "vmess")
+transport:depends("protocol", "socks")
+transport:depends("protocol", "shadowsocks")
 
 --[[
 ss_transport = s:option(ListValue, "ss_transport", translate("Transport"))
 ss_transport:value("ws", "WebSocket")
 ss_transport:value("h2", "HTTP/2")
-ss_transport:value("ws", "WebSocket")
 ss_transport:value("h2+ws", "HTTP/2 & WebSocket")
 ss_transport:depends("protocol", "shadowsocks")
 ]]--
@@ -410,27 +394,22 @@ ss_transport:depends("protocol", "shadowsocks")
 -- [[ TCP部分 ]]--
 
 -- TCP伪装
-tcp_guise = s:option(ListValue, "tcp_guise",
-                           translate("Camouflage Type"))
+tcp_guise = s:option(ListValue, "tcp_guise", translate("Camouflage Type"))
 tcp_guise:value("none", "none")
 tcp_guise:value("http", "http")
 tcp_guise:depends("transport", "tcp")
 
 -- HTTP域名
-tcp_guise_http_host = s:option(DynamicList, "tcp_guise_http_host",
-                                     translate("HTTP Host"))
+tcp_guise_http_host = s:option(DynamicList, "tcp_guise_http_host", translate("HTTP Host"))
 tcp_guise_http_host:depends("tcp_guise", "http")
 
 -- HTTP路径
-tcp_guise_http_path = s:option(DynamicList, "tcp_guise_http_path",
-                                     translate("HTTP Path"))
+tcp_guise_http_path = s:option(DynamicList, "tcp_guise_http_path", translate("HTTP Path"))
 tcp_guise_http_path:depends("tcp_guise", "http")
 
 -- [[ mKCP部分 ]]--
 
-mkcp_guise = s:option(ListValue, "mkcp_guise",
-                            translate("Camouflage Type"), translate(
-                                '<br />none: default, no masquerade, data sent is packets with no characteristics.<br />srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br />utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br />wechat-video: packets disguised as WeChat video calls.<br />dtls: disguised as DTLS 1.2 packet.<br />wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)'))
+mkcp_guise = s:option(ListValue, "mkcp_guise", translate("Camouflage Type"), translate('<br />none: default, no masquerade, data sent is packets with no characteristics.<br />srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br />utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br />wechat-video: packets disguised as WeChat video calls.<br />dtls: disguised as DTLS 1.2 packet.<br />wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)'))
 for a, t in ipairs(header_type_list) do mkcp_guise:value(t) end
 mkcp_guise:depends("transport", "mkcp")
 
@@ -440,28 +419,22 @@ mkcp_mtu:depends("transport", "mkcp")
 mkcp_tti = s:option(Value, "mkcp_tti", translate("KCP TTI"))
 mkcp_tti:depends("transport", "mkcp")
 
-mkcp_uplinkCapacity = s:option(Value, "mkcp_uplinkCapacity",
-                                     translate("KCP uplinkCapacity"))
+mkcp_uplinkCapacity = s:option(Value, "mkcp_uplinkCapacity", translate("KCP uplinkCapacity"))
 mkcp_uplinkCapacity:depends("transport", "mkcp")
 
-mkcp_downlinkCapacity = s:option(Value, "mkcp_downlinkCapacity",
-                                       translate("KCP downlinkCapacity"))
+mkcp_downlinkCapacity = s:option(Value, "mkcp_downlinkCapacity", translate("KCP downlinkCapacity"))
 mkcp_downlinkCapacity:depends("transport", "mkcp")
 
-mkcp_congestion = s:option(Flag, "mkcp_congestion",
-                                 translate("KCP Congestion"))
+mkcp_congestion = s:option(Flag, "mkcp_congestion", translate("KCP Congestion"))
 mkcp_congestion:depends("transport", "mkcp")
 
-mkcp_readBufferSize = s:option(Value, "mkcp_readBufferSize",
-                                     translate("KCP readBufferSize"))
+mkcp_readBufferSize = s:option(Value, "mkcp_readBufferSize", translate("KCP readBufferSize"))
 mkcp_readBufferSize:depends("transport", "mkcp")
 
-mkcp_writeBufferSize = s:option(Value, "mkcp_writeBufferSize",
-                                      translate("KCP writeBufferSize"))
+mkcp_writeBufferSize = s:option(Value, "mkcp_writeBufferSize", translate("KCP writeBufferSize"))
 mkcp_writeBufferSize:depends("transport", "mkcp")
 
 -- [[ WebSocket部分 ]]--
-
 ws_host = s:option(Value, "ws_host", translate("WebSocket Host"))
 ws_host:depends("transport", "ws")
 ws_host:depends("ss_transport", "ws")
@@ -475,7 +448,6 @@ ws_path:depends("trojan_transport", "h2+ws")
 ws_path:depends("trojan_transport", "ws")
 
 -- [[ HTTP/2部分 ]]--
-
 h2_host = s:option(Value, "h2_host", translate("HTTP/2 Host"))
 h2_host:depends("transport", "h2")
 h2_host:depends("ss_transport", "h2")
@@ -489,30 +461,24 @@ h2_path:depends("trojan_transport", "h2+ws")
 h2_path:depends("trojan_transport", "h2")
 
 -- [[ DomainSocket部分 ]]--
-
-ds_path = s:option(Value, "ds_path", "Path", translate(
-                             "A legal file path. This file must not exist before running V2Ray."))
+ds_path = s:option(Value, "ds_path", "Path", translate("A legal file path. This file must not exist before running V2Ray."))
 ds_path:depends("transport", "ds")
 
 -- [[ QUIC部分 ]]--
-quic_security = s:option(ListValue, "quic_security",
-                               translate("Encrypt Method"))
+quic_security = s:option(ListValue, "quic_security", translate("Encrypt Method"))
 quic_security:value("none")
 quic_security:value("aes-128-gcm")
 quic_security:value("chacha20-poly1305")
 quic_security:depends("transport", "quic")
 
-quic_key = s:option(Value, "quic_key",
-                          translate("Encrypt Method") .. translate("Key"))
+quic_key = s:option(Value, "quic_key", translate("Encrypt Method") .. translate("Key"))
 quic_key:depends("transport", "quic")
 
-quic_guise = s:option(ListValue, "quic_guise",
-                            translate("Camouflage Type"))
+quic_guise = s:option(ListValue, "quic_guise", translate("Camouflage Type"))
 for a, t in ipairs(header_type_list) do quic_guise:value(t) end
 quic_guise:depends("transport", "quic")
 
 -- [[ Trojan-Go Shadowsocks2 ]] --
-
 ss_aead = s:option(Flag, "ss_aead", translate("Shadowsocks2"))
 ss_aead:depends("type", "Trojan-Go")
 ss_aead.default = "0"
@@ -540,33 +506,24 @@ mux_concurrency:depends("mux", "1")
 
 -- [[ 当作为TCP节点时，是否同时开启socks代理 ]]--
 --[[
-tcp_socks = s:option(Flag, "tcp_socks", translate("TCP Open Socks"),
-                           translate(
-                               "When using this TCP node, whether to open the socks proxy at the same time"))
+tcp_socks = s:option(Flag, "tcp_socks", translate("TCP Open Socks"), translate("When using this TCP node, whether to open the socks proxy at the same time"))
 tcp_socks.default = 0
 tcp_socks:depends("type", "V2ray")
 
-tcp_socks_port = s:option(Value, "tcp_socks_port",
-                                "Socks " .. translate("Port"),
-                                translate("Do not conflict with other ports"))
+tcp_socks_port = s:option(Value, "tcp_socks_port", "Socks " .. translate("Port"), translate("Do not conflict with other ports"))
 tcp_socks_port.datatype = "port"
 tcp_socks_port.default = 1080
 tcp_socks_port:depends("tcp_socks", "1")
 
-tcp_socks_auth = s:option(ListValue, "tcp_socks_auth",
-                                translate("Socks for authentication"),
-                                translate(
-                                    'Socks protocol authentication, support anonymous and password.'))
+tcp_socks_auth = s:option(ListValue, "tcp_socks_auth", translate("Socks for authentication"), translate('Socks protocol authentication, support anonymous and password.'))
 tcp_socks_auth:value("noauth", translate("anonymous"))
 tcp_socks_auth:value("password", translate("User Password"))
 tcp_socks_auth:depends("tcp_socks", "1")
 
-tcp_socks_auth_username = s:option(Value, "tcp_socks_auth_username",
-                                         "Socks " .. translate("Username"))
+tcp_socks_auth_username = s:option(Value, "tcp_socks_auth_username", "Socks " .. translate("Username"))
 tcp_socks_auth_username:depends("tcp_socks_auth", "password")
 
-tcp_socks_auth_password = s:option(Value, "tcp_socks_auth_password",
-                                         "Socks " .. translate("Password"))
+tcp_socks_auth_password = s:option(Value, "tcp_socks_auth_password", "Socks " .. translate("Password"))
 tcp_socks_auth_password:depends("tcp_socks_auth", "password")
 --]]
 
