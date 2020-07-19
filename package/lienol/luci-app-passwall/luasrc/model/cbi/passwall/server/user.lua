@@ -82,17 +82,17 @@ if is_installed("trojan-go") or is_finded("trojan-go") then
 end
 
 protocol = s:option(ListValue, "protocol", translate("Protocol"))
-protocol:value("vmess", translate("Vmess"))
-protocol:value("http", translate("HTTP"))
-protocol:value("socks", translate("Socks"))
-protocol:value("shadowsocks", translate("Shadowsocks"))
+protocol:value("vmess", "Vmess")
+protocol:value("http", "HTTP")
+protocol:value("socks", "Socks")
+protocol:value("shadowsocks", "Shadowsocks")
+protocol:value("mtproto", "MTProto")
 protocol:depends("type", "V2ray")
 
 -- Brook协议
-brook_protocol = s:option(ListValue, "brook_protocol",
-                          translate("Brook Protocol"))
-brook_protocol:value("server", translate("Brook"))
-brook_protocol:value("wsserver", translate("WebSocket"))
+brook_protocol = s:option(ListValue, "brook_protocol", translate("Brook Protocol"))
+brook_protocol:value("server", "Brook")
+brook_protocol:value("wsserver", "WebSocket")
 brook_protocol:depends("type", "Brook")
 
 brook_tls = s:option(Flag, "brook_tls", translate("Use TLS"))
@@ -101,14 +101,6 @@ brook_tls:depends("brook_protocol", "wsserver")
 port = s:option(Value, "port", translate("Port"))
 port.datatype = "port"
 port.rmempty = false
-port:depends("type", "SSR")
-port:depends({ type = "V2ray", protocol = "vmess" })
-port:depends({ type = "V2ray", protocol = "http" })
-port:depends({ type = "V2ray", protocol = "socks" })
-port:depends({ type = "V2ray", protocol = "shadowsocks" })
-port:depends("type", "Brook")
-port:depends("type", "Trojan")
-port:depends("type", "Trojan-Go")
 
 username = s:option(Value, "username", translate("Username"))
 username:depends("protocol", "http")
@@ -123,6 +115,7 @@ password:depends("type", "Trojan-Go")
 password:depends({ type = "V2ray", protocol = "http" })
 password:depends({ type = "V2ray", protocol = "socks" })
 password:depends({ type = "V2ray", protocol = "shadowsocks" })
+password:depends({ type = "V2ray", protocol = "mtproto" })
 
 ssr_encrypt_method = s:option(ListValue, "ssr_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(ssr_encrypt_method_list) do ssr_encrypt_method:value(t) end
@@ -185,21 +178,20 @@ alter_id = s:option(Value, "alter_id", translate("Alter ID"))
 alter_id.default = 16
 alter_id:depends({ type = "V2ray", protocol = "vmess" })
 
-vmess_level = s:option(Value, "vmess_level", translate("User Level"))
-vmess_level.default = 1
-vmess_level:depends({ type = "V2ray", protocol = "vmess" })
-vmess_level:depends({ type = "V2ray", protocol = "shadowsocks" })
+level = s:option(Value, "level", translate("User Level"))
+level.default = 1
+level:depends({ type = "V2ray", protocol = "vmess" })
+level:depends({ type = "V2ray", protocol = "shadowsocks" })
+level:depends({ type = "V2ray", protocol = "mtproto" })
 
-stream_security = s:option(ListValue, "stream_security",
-                                 translate("Transport Layer Encryption"),
-                                 translate(
-                                     'Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
+stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
 stream_security:value("none", "none")
 stream_security:value("tls", "tls")
 stream_security.default = "tls"
 stream_security:depends({ type = "V2ray", protocol = "vmess", transport = "ws" })
 stream_security:depends({ type = "V2ray", protocol = "vmess", transport = "h2" })
-stream_security:depends("protocol", "shadowsocks")
+stream_security:depends({ type = "V2ray", protocol = "socks" })
+stream_security:depends({ type = "V2ray", protocol = "shadowsocks" })
 stream_security:depends("type", "Trojan-Go")
 
 -- [[ TLS部分 ]] --
@@ -221,7 +213,9 @@ transport:value("ws", "WebSocket")
 transport:value("h2", "HTTP/2")
 transport:value("ds", "DomainSocket")
 transport:value("quic", "QUIC")
-transport:depends("protocol", "vmess")
+stream_security:depends({ type = "V2ray", protocol = "vmess" })
+stream_security:depends({ type = "V2ray", protocol = "socks" })
+stream_security:depends({ type = "V2ray", protocol = "shadowsocks" })
 
 trojan_transport = s:option(ListValue, "trojan_transport", translate("Transport"))
 trojan_transport:value("original", "Original")
@@ -343,7 +337,7 @@ quic_guise = s:option(ListValue, "quic_guise", translate("Camouflage Type"))
 for a, t in ipairs(header_type_list) do quic_guise:value(t) end
 quic_guise:depends("transport", "quic")
 
-remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"),translate("You can forward to Nginx/Caddy/V2ray WebSocket and more."))
+remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"), translate("You can forward to Nginx/Caddy/V2ray WebSocket and more."))
 remote_enable.default = "1"
 remote_enable.rmempty = false
 remote_enable:depends("type", "Trojan")
@@ -371,14 +365,6 @@ ss_aead_pwd = s:option(Value, "ss_aead_pwd", translate("Password"))
 ss_aead_pwd.password = true
 ss_aead_pwd.rmempty = false
 ss_aead_pwd:depends("ss_aead", "1")
-
--- [[ Mux ]]--
-mux = s:option(Flag, "mux", translate("Mux"))
-
-mux_concurrency = s:option(Value, "mux_concurrency",
-                                 translate("Mux Concurrency"))
-mux_concurrency.default = 8
-mux_concurrency:depends("mux", "1")
 
 local nodes_table = {}
 uci:foreach("passwall", "nodes", function(e)

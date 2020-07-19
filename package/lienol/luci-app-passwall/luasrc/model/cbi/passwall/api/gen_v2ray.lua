@@ -48,7 +48,7 @@ local function gen_outbound(node, tag)
                 concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = (node.protocol == "vmess") and {
+            streamSettings = (node.protocol == "vmess" or node.protocol == "socks" or node.protocol == "shadowsocks") and {
                 network = node.transport,
                 security = node.stream_security,
                 tlsSettings = (node.stream_security == "tls") and {
@@ -56,8 +56,7 @@ local function gen_outbound(node, tag)
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
                 } or nil,
-                tcpSettings = (node.transport == "tcp" and
-                    node.protocol ~= "socks") and {
+                tcpSettings = (node.transport == "tcp" and node.protocol ~= "socks") and {
                     header = {
                         type = node.tcp_guise,
                         request = {

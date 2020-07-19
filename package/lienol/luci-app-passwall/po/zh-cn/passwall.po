@@ -370,6 +370,42 @@ msgstr "负载均衡节点列表"
 msgid "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"
 msgstr "负载均衡节点列表，<a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>文档原理</a>"
 
+msgid "Share Current"
+msgstr "所见即所得"
+
+msgid "From Share URL"
+msgstr "导入配置信息"
+
+msgid "Build Share URL"
+msgstr "导出配置信息"
+
+msgid "Import Finished"
+msgstr "导入完成："
+
+msgid "Not a supported scheme:"
+msgstr "不支持这种样式的："
+
+msgid "Invalid Share URL Format"
+msgstr "无效的分享信息"
+
+msgid "User cancelled"
+msgstr "用户已取消"
+
+msgid "Paste Share URL Here"
+msgstr "在此处粘贴分享信息"
+
+msgid "Unable share to clipboard, copy to batch mode still:"
+msgstr "无法分享网址到剪贴板，复制到批量导入临时输入："
+
+msgid "Share to clipboard successfully, copy to batch mode still:"
+msgstr "成功复制分享网址到剪贴板和批量导入临时输入："
+
+msgid "Faltal on get option, please help in debug:"
+msgstr "代码错误，请协助捉虫："
+
+msgid "Faltal on set option, please help in debug:"
+msgstr "代码错误，请协助捉虫："
+
 msgid "Address"
 msgstr "地址"
 
@@ -386,7 +422,7 @@ msgid "Finger Print"
 msgstr "指纹伪造"
 
 msgid "Shadowsocks2"
-msgstr "双重加密"
+msgstr "二次加密"
 
 msgid "Encrypt Method"
 msgstr "加密"
