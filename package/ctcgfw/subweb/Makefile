@@ -45,6 +45,7 @@ define Build/Configure
 	$(RM) $(PKG_BUILD_DIR)/config/{subconverter,README.md,README-cn.md}
 	$(RM) -r $(PKG_BUILD_DIR)/api/__pycache__
 	$(SED) 's/root/etc/g;s/ -ef//g' $(PKG_BUILD_DIR)/subweb.sh
+	$(SED) 's/10010/25500/g' $(PKG_BUILD_DIR)/api/aff.py
 endef
 
 define Build/Compile
