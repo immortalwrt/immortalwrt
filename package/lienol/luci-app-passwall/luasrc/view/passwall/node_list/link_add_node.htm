@@ -23,6 +23,41 @@ local dsp = require "luci.dispatcher"
 
 <script type="text/javascript">
 	//<![CDATA[
+	function link_clear_temp() {
+		if (confirm('<%:Are you sure to clear all cached links?%>') == true){
+			XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_clear_temp")%>', null,
+			function(x, data) {
+				if(x && x.status == 200) {
+					window.location.href = '<%=dsp.build_url("admin/vpn/passwall/node_list")%>';
+				}
+				else {
+					alert("<%:Error%>");
+				}
+			});
+		}
+	}
+
+	function link_load_temp() {
+		var inputer = document.getElementById("nodes_link");
+		XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_load_temp")%>', null,
+		function(x, data) {
+			if(x.readyState === 4 && x.status === 200) {
+				try {
+					res = JSON.parse(x.responseText);
+				}
+				catch(e) {
+					res = null;
+				}
+				if(res !== null && typeof(res) === "object") {
+					alert(res.counter);
+					if(res.data) inputer.value = res.data;
+				}
+			} else {
+				alert("<%:Error%>");
+			}
+		});
+	}
+
 	function ajax_add_node(link) {
 		if (link) {
 			XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_add_node")%>', {
@@ -51,7 +86,7 @@ local dsp = require "luci.dispatcher"
 	function add_node() {
 		var nodes_link = document.getElementById("nodes_link").value;
 		if (nodes_link.trim() != "") {
-			if (nodes_link.indexOf("ss://") == 0 || nodes_link.indexOf("ssr://") == 0 || nodes_link.indexOf("vmess://") == 0 || nodes_link.indexOf("trojan://") == 0) {
+			if (nodes_link.indexOf("ss://") == 0 || nodes_link.indexOf("ssr://") == 0 || nodes_link.indexOf("vmess://") == 0 || nodes_link.indexOf("trojan://") == 0 || nodes_link.indexOf("trojan-go://") == 0) {
 				ajax_add_node(nodes_link);
 			}
 			else {
@@ -88,9 +123,10 @@ local dsp = require "luci.dispatcher"
 		</div>
 	</div>
 	<div class="cbi-value">
-		<label class="cbi-value-title"></label>
 		<div class="cbi-value-field">
 			<input class="cbi-button cbi-button-add" type="button" onclick="add_node()" value="<%:Add%>" />
+			<input class="cbi-button cbi-button-apply" type="button" onclick="link_load_temp()" value="<%:Load %><%:Cached%>" />
+			<input class="cbi-button cbi-button-refresh" type="button" onclick="link_clear_temp()" value="<%:Clear %><%:Cached%>" />
 			<input class="cbi-button cbi-button-remove" type="button" onclick="close_add_link_div()" value="<%:Close%>" />
 		</div>
 	</div>

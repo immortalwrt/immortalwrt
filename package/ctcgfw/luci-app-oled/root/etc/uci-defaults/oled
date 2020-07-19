@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@oled[-1]
+	add ucitrack oled
+	set ucitrack.@oled[-1].init=oled
+	commit ucitrack
+EOF
+
+rm -rf /tmp/luci-*
+exit 0
