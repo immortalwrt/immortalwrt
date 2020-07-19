@@ -68,6 +68,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
+	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG))
 	$(call GoPackage/Build/Configure)
 	$(call GoPackage/Build/Compile)
 ifeq ($(CONFIG_TROJAN_GO_COMPRESS_UPX),y)
