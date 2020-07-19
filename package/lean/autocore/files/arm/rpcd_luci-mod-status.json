@@ -1,0 +1,132 @@
+{
+	"luci-mod-status-realtime": {
+		"description": "Grant access to realtime statistics",
+		"read": {
+			"ubus": {
+				"luci": [ "getConntrackList", "getRealtimeStats", "getCPUBench", "getCPUInfo", "getCPUUsage", "getOnlineUsers" ],
+				"network.rrdns": [ "lookup" ]
+			}
+		}
+	},
+
+	"luci-mod-status-processes": {
+		"description": "Grant access to process status",
+		"read": {
+			"ubus": {
+				"luci": [ "getProcessList" ]
+			}
+		},
+		"write": {
+			"file": {
+				"/bin/kill": [ "exec" ]
+			},
+			"ubus": {
+				"file": [ "exec" ]
+			}
+		}
+	},
+
+	"luci-mod-status-logs": {
+		"description": "Grant access to system logs",
+		"read": {
+			"cgi-io": [ "exec" ],
+			"file": {
+				"/bin/dmesg -r": [ "exec" ],
+				"/sbin/logread": [ "stat" ],
+				"/sbin/logread -e ^": [ "exec" ],
+				"/usr/sbin/logread": [ "stat" ],
+				"/usr/sbin/logread -e ^": [ "exec" ]
+			},
+			"ubus": {
+				"file": [ "stat" ]
+			}
+		}
+	},
+
+	"luci-mod-status-routes": {
+		"description": "Grant access to the system route status",
+		"read": {
+			"file": {
+				"/sbin/ip -[46] neigh show": [ "exec" ],
+				"/sbin/ip -[46] route show table all": [ "exec" ]
+			},
+			"ubus": {
+				"file": [ "exec" ]
+			}
+		}
+	},
+
+	"luci-mod-status-firewall": {
+		"description": "Grant access to firewall status",
+		"read": {
+			"cgi-io": [ "exec" ],
+			"file": {
+				"/usr/sbin/iptables --line-numbers -w -nvxL -t *": [ "exec" ],
+				"/usr/sbin/ip6tables --line-numbers -w -nvxL -t *": [ "exec" ],
+				"/usr/sbin/ip6tables": [ "list" ]
+			},
+			"ubus": {
+				"file": [ "stat" ]
+			}
+		},
+		"write": {
+			"cgi-io": [ "exec" ],
+			"file": {
+				"/etc/init.d/firewall restart": [ "exec" ],
+				"/usr/sbin/iptables -Z": [ "exec" ],
+				"/usr/sbin/ip6tables -Z": [ "exec" ]
+			},
+			"ubus": {
+				"file": [ "exec" ]
+			}
+		}
+	},
+
+	"luci-mod-status-index": {
+		"description": "Grant access to main status display",
+		"read": {
+			"file": {
+				"/proc/sys/net/netfilter/nf_conntrack_count": [ "read" ],
+				"/proc/sys/net/netfilter/nf_conntrack_max": [ "read" ],
+				"/usr/lib/lua/luci/version.lua": [ "read" ],
+				"/www/luci-static/resources/view/status/include": [ "list" ]
+			},
+			"ubus": {
+				"file": [ "list", "read" ],
+				"system": [ "board", "info" ]
+			}
+		}
+	},
+
+	"luci-mod-status-index-dhcp": {
+		"description": "Grant access to DHCP status display",
+		"read": {
+			"ubus": {
+				"luci-rpc": [ "getDHCPLeases" ]
+			}
+		}
+	},
+
+	"luci-mod-status-index-dsl": {
+		"description": "Grant access to DSL status display",
+		"read": {
+			"ubus": {
+				"luci-rpc": [ "getDSLStatus" ]
+			}
+		}
+	},
+
+	"luci-mod-status-index-wifi": {
+		"description": "Grant access to wireless status display",
+		"read": {
+			"ubus": {
+				"iwinfo": [ "assoclist" ]
+			}
+		},
+		"write": {
+			"ubus": {
+				"hostapd.*": [ "del_client" ]
+			}
+		}
+	}
+}
