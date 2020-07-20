@@ -19,10 +19,10 @@ sw_flow.description = translate("Software based offloading for routing/NAT")
 sw_flow:depends("sfe_flow", 0)
 end
 
-if luci.sys.call("cat /proc/cpuinfo | grep -q MT7621") == 0 then
+if luci.sys.call("cat /proc/cpuinfo | grep -q MT762") == 0 then
 hw_flow = s:option(Flag, "hw_flow", translate("Hardware flow offloading"))
 hw_flow.default = 0
-hw_flow.description = translate("Requires hardware NAT support. Implemented at least for mt7621")
+hw_flow.description = translate("Requires hardware NAT support. Implemented at least for mt762x")
 hw_flow:depends("sw_flow", 1)
 end
 
