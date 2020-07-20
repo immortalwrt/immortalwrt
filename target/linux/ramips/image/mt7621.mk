@@ -956,7 +956,7 @@ define Device/xiaomi-ac2100
   IMAGE/kernel1.bin := append-kernel
   IMAGE/rootfs0.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size $$$$(IMAGE_SIZE)
   DEVICE_VENDOR := Xiaomi
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e wpad-openssl uboot-envtools
 endef
