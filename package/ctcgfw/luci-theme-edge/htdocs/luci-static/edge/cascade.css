@@ -467,9 +467,7 @@ select+.focus-input::before {
 input:focus + .focus-input::before,select:focus + .focus-input::before {
     width: 100%;
 }
-input:focus,select:focus{
-	border-color:#fff !important;
-}
+
 select,
 .cbi-dropdown {
   width: inherit;
@@ -687,25 +685,36 @@ header .fill .status * {
 #xhr_poll_status * {
   color: #fff;
 }
+.modal.alert-message{
+  background-color: #5A8DEE;
+  color:#fff;	
+}
 .modal.alert-message p{
 	font-weight:bold;
-	color:#fff;
 	font-size:0.9rem;
 	text-align:center;
 }
+.modal .label.warning{
+    background-color: #FDAC41 !important;
+	color:#fff !important;
+}
 .danger {
-  background-color: #ff7d60 !important;
+  background-color: rgba(255, 91, 92, 0.2) !important;
+	color:#FF5B5C !important;
 }
 .warning {
-  background-color: #f0e68c !important;
+  background-color: rgba(253, 172, 65, 0.2) !important;
+	color:#FDAC41 !important;
+}
+.modal.warning {
+ color: #fff !important;
+	background-color:#FDAC41 !important;	
 }
 .success {
-  background-color: #5cb85c !important;
+  background-color: rgba(57, 218, 138, 0.2) !important;
+	color:#39DA8A !important;
 }
-.notice {
-  background-color: #5A8DEE !important;
 
-}
 .error {
   color: #f00;
 }
@@ -714,8 +723,8 @@ header .fill .status * {
   font-weight: bold;
   margin-bottom: 1em;
   padding:0.7rem 1rem;
-  background:rgba(255, 91, 92, 0.2);
-      color: #FF5B5C;
+  background:rgba(90, 141, 238, 0.2);
+      color: #5A8DEE;
   border: 0;
 
 }
@@ -1184,7 +1193,7 @@ div > .table > .tr:nth-of-type(2n):hover {
 }
 div > table > tbody > tr:nth-of-type(3n),
 div > .table > .tr:nth-of-type(3n) {
-  background-color: rgba(223, 56, 18, 0.05);
+  background-color: rgba(223, 56, 18, 0.04);
 }
 div > table > tbody > tr:nth-of-type(3n):hover,
 div > .table > .tr:nth-of-type(3n):hover {
@@ -1210,6 +1219,7 @@ td > table > tbody > tr > td,
   width: auto !important;
   padding: 0 0.8rem;
   cursor: pointer;
+   white-space: nowrap;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -1217,7 +1227,6 @@ td > table > tbody > tr > td,
   transition: all 0.2s ease-in-out;
   text-align: center;
   vertical-align: middle;
-  white-space: nowrap;
   text-decoration: none;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.87);
@@ -1270,6 +1279,7 @@ td > table > tbody > tr > td,
 .item:hover::after,
 .item:focus::after {
       opacity: 0.7;
+	top:0.15rem;
 }
 .btn:active,
 .cbi-button:active,
@@ -1511,11 +1521,11 @@ ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu{
 .cbi-value {
   display: inline-block;
   width: 100%;
-  padding: 0.35rem 1rem 0.2rem 1rem;
+  padding: 0.35rem 1rem 0.35rem 1rem;
   line-height: 2.4rem;
 }
 .cbi-value-field >*{
-	line-height: 2.2rem;
+	line-height: 1.3rem;
 }
 .cbi-value ul {
   line-height: 1.25;
@@ -1895,7 +1905,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   flex-wrap: wrap;
   width: 90%;
   min-width: 270px;
-  max-width: 600px;
+  max-width: 695px;
   min-height: 32px;
   margin: 25vh auto;
   padding: 1em;
@@ -1944,17 +1954,14 @@ h3+p,h4+p{
   font-size: 0.6rem;
   font-weight: normal;
   padding: 0.1rem 0.3rem;
-  padding-bottom: 0;
   cursor: default;
   border-radius: 0;
+  background: #9b9b9b;
+    color: #fff;
 }
-.modal .label.warning {
-  background-color: #f0ad4e !important;
-}
-
-.modal.cbi-modal {
-  max-width: 90%;
-  max-height: none;
+.modal .label.notice{
+	color: #fff;
+    background: #5A8DEE;
 }
 body.modal-overlay-active {
   overflow: hidden;
@@ -2092,7 +2099,6 @@ textarea {
 #syslog {
   font-size: small;
   line-height: 1.25;
-  overflow-y: hidden;
   width: 100%;
   min-height: 15rem;
   padding: 1rem;
@@ -2471,11 +2477,9 @@ input[name="nslookup"] {
 }
 .node-main-login .main .main-right #maincontent .alert-message.error p {
   color: #fff;
-
 }
 .alert-message p {
-  
-
+    text-align: center;
 }
 .node-main-login .main .main-right #maincontent .alert-message.error h4 {
   font-size: 1rem;
@@ -2858,7 +2862,10 @@ input[type="checkbox"] {
   padding: 0;
   cursor: pointer;
   transition: all 0.2s;
-  margin: 1rem 0 0 0;
+      position: absolute;
+    opacity: 0;
+    pointer-events: none;
+
 }
 input[type="checkbox"]:checked {
   border: 1px solid #5A8DEE;
@@ -2902,7 +2909,7 @@ input[type="checkbox"]:checked {
   .cbi-value-field .cbi-input-select,
   .cbi-value input[type="text"],
   .cbi-value input[type="password"] {
-    min-width: 18rem;
+    min-width: 15rem;
   }
   #cbi-firewall-zone .cbi-input-select {
     min-width: 9rem;
@@ -3579,8 +3586,7 @@ input[type=button],input[type=submit],input[type=reset]{
 }
   .btn,button,
   .cbi-button,input[type=button],input[type=submit],input[type=reset] {
-    font-size: 0.8rem;
-    padding: 0.7rem 2rem;
+    padding: 0.6rem 1.6rem;
   }
 i.waves-input-wrapper{
 	padding: 0 !important;
@@ -3614,4 +3620,10 @@ h2,.cbi-map-descr{
 }
 .node-admin-status .table .tr .td:first-child{
 	padding-left:3rem !important;
+}
+ul.errors li{
+margin-bottom: 1rem;	
+}
+.Wireless .cbi-section{
+padding:0 2rem;
 }

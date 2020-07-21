@@ -222,7 +222,7 @@ document.addEventListener('luci-loaded', function(ev) {
 var config = {
     // How long Waves effect duration 
     // when it's clicked (in milliseconds)
-    duration: 1000
+    duration: 600
 };
     Waves.attach('.cbi-button,.btn', ['waves-light']);
 	// Ripple on hover
@@ -235,8 +235,41 @@ $('.cbi-button,.btn').mouseenter(function() {
 $(".waves-input-wrapper").filter(function () {
   return ($(this).children().is(":hidden"))
 }).hide();
-	$("select,input[type='text'],input[type='email'],input[type='password'],input[type='url'],input[type='date'],input[type='datetime'],input[type='tel'],input[type='number'],input[type='search']").after("<span class='focus-input'></span>");
-$("input[type='checkbox']").siblings("label").siblings("input[type='checkbox']").css({"position":"absolute","opacity":"0","pointer-events":"none"});
+
+$("select,input[type='text'],input[type='email'],input[type='url'],input[type='date'],input[type='datetime'],input[type='tel'],input[type='number'],input[type='search']").filter(function () {
+return (!$(this).parents(".cbi-dynlist").length)
+}).after("<span class='focus-input'></span>");
+
+$("input[type='checkbox']").filter(function () {
+  return (!$(this).next("label").length)
+}).css({"position":"relative","opacity":"1","pointer-events":"auto"});
+
+$("select,input").filter(function () {
+  return ($(this).next(".focus-input").length)
+}).focus(function(){
+  $(this).css("border-bottom","1px solid #fff");
+}).blur(function(){
+  $(this).css("border-bottom","1px solid #9e9e9e");
+});
 	}, 100);
+
+var options = { attributes: true};
+function callback() {
+$("select,input[type='text'],input[type='email'],input[type='url'],input[type='date'],input[type='datetime'],input[type='tel'],input[type='number'],input[type='search']").filter(function () {
+return (!$(this).parents(".cbi-dynlist").length)
+}).after("<span class='focus-input'></span>");
+$("select,input").filter(function () {
+  return ($(this).next(".focus-input").length)
+}).focus(function(){
+  $(this).css("border-bottom","1px solid #fff");
+}).blur(function(){
+  $(this).css("border-bottom","1px solid #9e9e9e");
+});
+$("input[type='checkbox']").filter(function () {
+  return (!$(this).next("label").length)
+}).css({"position":"relative","opacity":"1","pointer-events":"auto"});
+}
+var mutationObserver = new MutationObserver(callback);
+ mutationObserver.observe($("body")[0], options);
 })(jQuery);
 });
