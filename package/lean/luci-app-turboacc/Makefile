@@ -10,7 +10,6 @@ LUCI_DEPENDS:=+pdnsd-alt \
               +PACKAGE_luci-app-turboacc_INCLUDE_shortcut-fe:kmod-fast-classifier \
               +PACKAGE_luci-app-turboacc_INCLUDE_flow-offload:kmod-ipt-offload \
               +PACKAGE_luci-app-turboacc_INCLUDE_bbr-cca:kmod-tcp-bbr \
-              +PACKAGE_luci-app-turboacc_INCLUDE_adguardhome:AdGuardHome \
               +PACKAGE_luci-app-turboacc_INCLUDE_dnsforwarder:dnsforwarder
 LUCI_PKGARCH:=all
 
@@ -36,10 +35,6 @@ config PACKAGE_luci-app-turboacc_INCLUDE_bbr-cca
 	bool "Include BBR CCA"
 	default n if LINUX_4_9
 	default y
-
-config PACKAGE_luci-app-turboacc_INCLUDE_adguardhome
-	bool "Include AdGuardHome"
-	default n
 
 config PACKAGE_luci-app-turboacc_INCLUDE_dnsforwarder
 	bool "Include DNSForwarder"

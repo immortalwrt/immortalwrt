@@ -62,8 +62,6 @@ endef
 
 define Package/AdGuardHome/install
 	$(call GoPackage/Package/Install/Bin,$(1))
-	$(INSTALL_DIR) $(1)/etc/AdGuardHome
-	$(INSTALL_CONF) ./conf/$(ADG_CONF_NAME).yaml $(1)/etc/AdGuardHome/AdGuardHome.yaml
 endef
 
 $(eval $(call GoBinPackage,AdGuardHome))
