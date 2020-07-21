@@ -67,7 +67,7 @@ msgstr "启用 DNS 多线程查询、缓存，并防止 ISP 的 DNS 广告和域
 msgid "Resolve DNS Mode"
 msgstr "DNS 解析方式"
 
-msgid "Only PDNSD and DNSForwarder is suppoted now"
+msgid "Only PDNSD and DNSForwarder is supported now"
 msgstr "目前仅支持 PDNSD 和 DNSForwarder"
 
 msgid "Using PDNSD to query and cache"
