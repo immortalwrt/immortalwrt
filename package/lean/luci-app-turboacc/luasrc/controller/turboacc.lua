@@ -25,11 +25,7 @@ local function fullconebat_status()
 end
 
 local function dnscaching_status()
-	return luci.sys.call("[ x$(uci -q get turboacc.config.dns_caching_mode) != x3 ] && pgrep dnscache >/dev/null || pgrep AdGuardHome >/dev/null") == 0
-end
-
-local function adguardhome_status()
-	return luci.sys.call("pgrep AdGuardHome >/dev/null") == 0
+	return luci.sys.call("pgrep dnscache >/dev/null") == 0
 end
 
 function action_status()
@@ -38,7 +34,6 @@ function action_status()
 		fastpath_state = fastpath_status(),
 		bbr_state = bbr_status(),
 		fullconenat_state = fullconebat_status(),
-		dnscaching_state = dnscaching_status(),
-		adguardhome_state = adguardhome_status()
+		dnscaching_state = dnscaching_status()
 	})
 end
