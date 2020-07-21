@@ -69,7 +69,7 @@ dns_caching.default = 0
 dns_caching.rmempty = false
 dns_caching.description = translate("Enable DNS Caching and anti ISP DNS pollution")
 
-dns_caching_mode = s:option(ListValue, "dns_caching_mode", translate("Resolve DNS Mode"), translate("Only PDNSD and DNSForwarder is suppoted now"))
+dns_caching_mode = s:option(ListValue, "dns_caching_mode", translate("Resolve DNS Mode"), translate("Only PDNSD and DNSForwarder is supported now"))
 dns_caching_mode:value("1", translate("Using PDNSD to query and cache"))
 if nixio.fs.access("/usr/bin/dnsforwarder") then
 dns_caching_mode:value("2", translate("Using DNSForwarder to query and cache"))
