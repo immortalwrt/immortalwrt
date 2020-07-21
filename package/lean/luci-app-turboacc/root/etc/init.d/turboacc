@@ -214,7 +214,7 @@ start(){
 	uci set firewall.@defaults[0].fullcone="${fullcone_nat}"
 	uci commit firewall
 
-	[ "${sfe_flow}" -eq "1" ] && {
+	[ "${sw_flow}" -ne "1" ] && [ "${sfe_flow}" -eq "1" ] && {
 		lsmod | grep -q fast_classifier || modprobe fast_classifier 2>/dev/null
 		echo "${sfe_bridge}" > "/sys/fast_classifier/skip_to_bridge_ingress"
 		if [ "${sfe_ipv6}" -eq "1" ]; then
@@ -244,6 +244,7 @@ start(){
 			start_pdnsd
 		elif [ "${dns_caching_mode}" = "2" ];  then
 			start_dnsforwarder
+		fi
 		change_dns
 		nohup "/usr/share/dnscache/dnscache-while.sh" > "/var/log/dnscache.file" 2>&1 &
 	else
