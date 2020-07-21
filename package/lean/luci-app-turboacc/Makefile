@@ -5,6 +5,12 @@
 
 include $(TOPDIR)/rules.mk
 
+PKG_NAME:=luci-app-turboacc
+PKG_VERSION:=1.0
+PKG_RELEASE:=1
+
+PKG_LICENSE:=GPLv3.0+
+
 LUCI_TITLE:=LuCI support for Flow Offload / Shortcut-FE
 LUCI_DEPENDS:=+pdnsd-alt \
               +PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe:kmod-fast-classifier \
@@ -12,12 +18,6 @@ LUCI_DEPENDS:=+pdnsd-alt \
               +PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca:kmod-tcp-bbr \
               +PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder
 LUCI_PKGARCH:=all
-
-PKG_NAME:=luci-app-turboacc
-PKG_VERSION:=1.0
-PKG_RELEASE:=1
-
-PKG_LICENSE:=GPLv3.0+
 
 define Package/$(PKG_NAME)/config
 config PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe
