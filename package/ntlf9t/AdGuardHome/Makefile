@@ -28,12 +28,6 @@ GO_PKG_EXCLUDES:=dhcpd/standalone
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION) main.channel=release
 
-ifneq ($(findstring $(ARCH),mips mipsel),)
-	ADG_CONF_NAME:=small_flash
-else
-	ADG_CONF_NAME:=big_space
-endif
-
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
@@ -62,8 +56,6 @@ endef
 
 define Package/AdGuardHome/install
 	$(call GoPackage/Package/Install/Bin,$(1))
-	$(INSTALL_DIR) $(1)/etc/AdGuardHome
-	$(INSTALL_CONF) ./conf/$(ADG_CONF_NAME).yaml $(1)/etc/AdGuardHome/AdGuardHome.yaml
 endef
 
 $(eval $(call GoBinPackage,AdGuardHome))

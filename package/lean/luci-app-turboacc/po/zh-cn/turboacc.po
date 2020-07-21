@@ -64,17 +64,17 @@ msgstr "DNS 缓存"
 msgid "Enable DNS Caching and anti ISP DNS pollution"
 msgstr "启用 DNS 多线程查询、缓存，并防止 ISP 的 DNS 广告和域名劫持"
 
-msgid "Resolve Dns Mode"
+msgid "Resolve DNS Mode"
 msgstr "DNS 解析方式"
+
+msgid "Only PDNSD and DNSForwarder is supported now"
+msgstr "目前仅支持 PDNSD 和 DNSForwarder"
 
 msgid "Using PDNSD to query and cache"
 msgstr "使用 PDNSD 解析"
 
 msgid "Using DNSForwarder to query and cache"
 msgstr "使用 DNSForwarder 解析"
-
-msgid "Using AdGuardHome to query and cache"
-msgstr "使用 AdGuardHome 解析"
 
 msgid "Upsteam IPv4 DNS Server"
 msgstr "上游 IPv4 DNS 服务器"
@@ -87,9 +87,6 @@ msgstr "上游 IPv6 DNS 服务器"
 
 msgid "Muitiple IPv6 DNS server can saperate with ','"
 msgstr "多个上游 IPv6 DNS 服务器请用 ',' 分隔（注意用英文逗号)"
-
-msgid "AdGuardHome login username/password: AdGuardHome/AdGuardHome"
-msgstr "AdGuardHome 登录账号/密码：AdGuardHome/AdGuardHome"
 
 msgid "Running Status"
 msgstr "运行状态"
@@ -105,9 +102,6 @@ msgstr "全锥型 NAT"
 
 msgid "DNS Caching"
 msgstr "DNS 缓存"
-
-msgid "AdGuardHome Anti-AD"
-msgstr "AdGuardHome 去广告"
 
 msgid "Open Web Interface"
 msgstr "打开 Web 界面"
