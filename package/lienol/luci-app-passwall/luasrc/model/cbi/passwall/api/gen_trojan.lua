@@ -58,13 +58,13 @@ if node.type == "Trojan-Go" then
     } or nil
     trojan.websocket = node.trojan_transport and node.trojan_transport:find('ws') and {
         enabled = true,
-        path = (node.ws_path ~= nil) and node.ws_path or "/",
-        host = (node.ws_host ~= nil) and node.ws_host or (node.tls_serverName ~= nil and node.tls_serverName or node.address)
+        path = node.ws_path or "/",
+        host = node.ws_host or (node.tls_serverName or node.address)
     } or nil
     trojan.shadowsocks = (node.ss_aead == "1") and {
         enabled = true,
-        method = (node.ss_aead_method ~= nil) and node.ss_aead_method or "aead_aes_128_gcm",
-        password = (node.ss_aead_pwd ~= nil) and node.ss_aead_pwd or ""
+        method = node.ss_aead_method or "aead_aes_128_gcm",
+        password = node.ss_aead_pwd or ""
     } or nil
 end
 print(json.stringify(trojan, 1))

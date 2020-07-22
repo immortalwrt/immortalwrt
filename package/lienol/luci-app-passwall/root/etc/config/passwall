@@ -11,6 +11,7 @@ config global
 	option udp_proxy_mode 'chnroute'
 	option localhost_tcp_proxy_mode 'gfwlist'
 	option localhost_udp_proxy_mode 'gfwlist'
+	option socks_server '0.0.0.0:1080'
 
 config global_haproxy
 	option balancing_enable '0'
