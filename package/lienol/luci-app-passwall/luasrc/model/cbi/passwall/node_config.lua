@@ -72,7 +72,7 @@ s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false
 s.dynamic = false
 
-share = s:option(DummyValue, "share_url", translate("Share Current"))
+share = s:option(DummyValue, "passwall", translate("Share Current"))
 share.rawhtml  = true
 share.template = "passwall/node_list/link_share_man"
 share.value = arg[1]
@@ -484,7 +484,7 @@ ss_aead:depends("type", "Trojan-Go")
 ss_aead.default = "0"
 
 ss_aead_method = s:option(ListValue, "ss_aead_method", translate("Encrypt Method"))
-for _, v in ipairs(encrypt_methods_ss_aead) do ss_aead_method:value(v, v:upper()) end
+for _, v in ipairs(encrypt_methods_ss_aead) do ss_aead_method:value(v, v) end
 ss_aead_method.default = "aead_aes_128_gcm"
 ss_aead_method:depends("ss_aead", "1")
 

@@ -100,16 +100,19 @@ local dsp = require "luci.dispatcher"
 	function buildUrl(btn, urlname, sid) {
 		var opt = {
 			base: "cbid.passwall",
+			client : true,
 			fallback: "dummy",
 			get: function(opt) {
 				var id = this.base + "." + opt;
-				var obj = document.getElementsByName(id) || document.getElementById(id);
+				var obj = document.getElementsByName(id)[0] || document.getElementsByClassName(id)[0] || document.getElementById(id)
 				if (obj) {
-					if (obj.length === 1) obj = obj[0];
 					return obj;
 				} else {
-					alert("<%:Faltal on get option, please help in debug: %>" + opt);
-					return document.getElementById(this.fallback);
+					obj = document.getElementById(this.fallback);
+					if  (opt === "address") obj.value = "0.0.0.0";
+					else if (opt === "mux") obj.value = "0";
+					if (this.client || (opt !== "address" && opt !== "mux")) alert("<%:Faltal on get option, please help in debug: %>" + opt);
+					return obj;
 				}
 			},
 			getlist: function(opt) {
@@ -144,7 +147,8 @@ local dsp = require "luci.dispatcher"
 			alert("Never");
 			return false;
 		}
-		opt.base = "cbid.passwall." + sid;
+		opt.base = "cbid." + urlname + "." + sid;
+		opt.client = urlname.indexOf("server") === -1;
 		opt.fallback = urlname + "-dummy";
 		var v_type = opt.get("type").value;
 		var v_alias = opt.get("remarks");
@@ -169,7 +173,7 @@ local dsp = require "luci.dispatcher"
 				"&remarks=" + b64encutf8safe(v_alias.value);
 			url = b64encsafe(ssr_str);
 		} else if (v_type === "Trojan" || v_type === "Trojan-Go") {
-			var v_password = opt.get("password");
+			var v_password = opt.get(!opt.client && v_type === "Trojan-Go"  ? "passwords" : "password");
 			var v_server = opt.get("address");
 			var v_port = opt.get("port");
 			url = encodeURIComponent(v_password.value) +
@@ -239,6 +243,7 @@ local dsp = require "luci.dispatcher"
 	function fromUrl(btn, urlname, sid) {
 		var opt = {
 			base: 'cbid.passwall',
+			client : true,
 			fallback: 'dummy',
 			get: function(opt) {
 				var obj;
@@ -247,7 +252,7 @@ local dsp = require "luci.dispatcher"
 				if (obj) {
 					return obj;
 				} else {
-					alert('<%:Faltal on get option, please help in debug: %>' + opt);
+					if (this.client || (opt !== "address" && opt !== "mux")) alert('<%:Faltal on get option, please help in debug: %>' + opt);
 					return document.getElementById(this.fallback);
 				}
 			},
@@ -287,7 +292,8 @@ local dsp = require "luci.dispatcher"
 			alert("Never");
 			return false;
 		}
-		opt.base = 'cbid.passwall.' + sid
+		opt.base = "cbid." + urlname + "." + sid;
+		opt.client = urlname.indexOf("server") === -1;
 		opt.fallback = urlname + '-dummy';
 		var ssrurl = prompt('<%:Paste Share URL Here%>', '');
 		if (ssrurl === null || ssrurl === "") {
@@ -333,7 +339,7 @@ local dsp = require "luci.dispatcher"
 			opt.set('protocol_param', dictvalue(pdict, 'protoparam'));
 			var rem = pdict['remarks'];
 			if (typeof(rem) !== 'undefined' && rem !== '' && rem.length > 0)
-				opt.set('remark', b64decutf8safe(rem));
+				opt.set('remarks', b64decutf8safe(rem));
 		} else if (ssu[0] === "ss") {
 			var url0 = "", param = "";
 			var sipIndex = ssu[1].indexOf("@");
@@ -374,7 +380,7 @@ local dsp = require "luci.dispatcher"
 				opt.set('ss_plugin', plugin || "");
 				opt.set('ss_plugin_opts', pluginOpts || "");
 				if (param !== undefined) {
-					opt.set('remark', decodeURI(param));
+					opt.set('remarks', decodeURI(param));
 				}
 			} else {
 				var sstr = b64decsafe(url0);
@@ -390,7 +396,7 @@ local dsp = require "luci.dispatcher"
 				opt.set('ss_plugin', "");
 				opt.set('ss_plugin_opts', "");
 				if (param !== undefined) {
-					opt.set('remark', decodeURI(param));
+					opt.set('remarks', decodeURI(param));
 				}
 			}
 		} else if (ssu[0] === "trojan") {
@@ -420,7 +426,7 @@ local dsp = require "luci.dispatcher"
 			opt.get('type').dispatchEvent(event);
 			opt.set('address', m.hostname);
 			opt.set('port', m.port || "443");
-			opt.set('password', decodeURIComponent(password));
+			opt.set(!opt.client && stype === "Trojan-Go" ? 'passwords' : 'password', decodeURIComponent(password));
 			var tls = true;
 			if (stype === "Trojan-Go") {
 				tls = queryParam.plugin === undefined;
@@ -454,12 +460,12 @@ local dsp = require "luci.dispatcher"
 			var ss = queryParam.ss === '1';
 			opt.set('ss_aead', ss);
 			if (ss) {
-				opt.set('ss_aead_method', queryParam.ssmethod.toUpperCase() || '');
+				opt.set('ss_aead_method', queryParam.ssmethod.toLowerCase() || '');
 				opt.set('ss_aead_pwd', queryParam.sspasswd || '');
 			}
 			opt.set('mux', queryParam.mux === '1');
 			if (m.hash) {
-				opt.set('remark', decodeURI(m.hash.substr(1)));
+				opt.set('remarks', decodeURI(m.hash.substr(1)));
 			}
 		} else if (ssu[0] === "trojan-go") {
 			var m = parseNodeUrl(ssrurl);
@@ -483,7 +489,7 @@ local dsp = require "luci.dispatcher"
 			opt.get('type').dispatchEvent(event);
 			opt.set('address', m.hostname);
 			opt.set('port', m.port || "443");
-			opt.set('password', decodeURIComponent(password));
+			opt.set(opt.client ? 'password' : 'passwords', decodeURIComponent(password));
 			opt.set('stream_security', (queryParam.tls && queryParam.tls === '1') ? 'tls' : 'none');
 			opt.get('stream_security').dispatchEvent(event);
 			var plugin = queryParam.plugin !== undefined;
@@ -538,12 +544,12 @@ local dsp = require "luci.dispatcher"
 			ss = enc.type === 'ss';
 			opt.set('ss_aead', ss);
 			if (ss) {
-				opt.set('ss_aead_method', enc.method.toUpperCase() || '');
+				opt.set('ss_aead_method', enc.method.toLowerCase() || '');
 				opt.set('ss_aead_pwd', enc.password || '');
 			}
 			opt.set('mux', queryParam.mux === '1');
 			if (m.hash) {
-				opt.set('remark', decodeURI(m.hash));
+				opt.set('remarks', decodeURI(m.hash.substr(1)));
 			}
 		} else if (ssu[0] === "vmess") {
 			var sstr = b64DecodeUnicode(ssu[1]);
@@ -556,7 +562,7 @@ local dsp = require "luci.dispatcher"
 				param = sstr.substr(ploc + 2);
 			}
 			var ssm = JSON.parse(sstr);
-			opt.set('remark', ssm.ps);
+			opt.set('remarks', ssm.ps);
 			opt.set('address', ssm.add);
 			opt.set('port', ssm.port);
 			opt.set('alter_id', ssm.aid);
@@ -597,7 +603,7 @@ local dsp = require "luci.dispatcher"
 	}
 
 //]]></script>
-<input type="test" class="hidden" id='<%=self.option%>-dummy' value="-dummy-" />
+<input type="text" class="hidden" id='<%=self.option%>-dummy' value="0.0.0.0" />
 <input type="button" class="cbi-button cbi-button-apply" value='<%:From Share URL%>' onclick="return fromUrl(this, '<%=self.option%>', '<%=self.value%>')" />
 <input type="button" class="cbi-button cbi-button-apply" value='<%:Build Share URL%>' onclick="return buildUrl(this, '<%=self.option%>', '<%=self.value%>')" />
 <span id="<%=self.option%>-status"></span>
