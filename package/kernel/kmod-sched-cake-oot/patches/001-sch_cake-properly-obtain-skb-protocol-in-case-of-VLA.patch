@@ -1,0 +1,89 @@
+From be8e2e4295d704c39b94e350468d593bbc5b78c3 Mon Sep 17 00:00:00 2001
+From: Ilya Ponetayev <i.ponetaev@ndmsystems.com>
+Date: Wed, 3 Jun 2020 16:00:00 +0300
+Subject: [PATCH 3/7] sch_cake: properly obtain skb protocol in case of
+ VLAN/QinQ
+
+cake_handle_diffserv() expects only ETH_P_IP or ETH_P_IPV6, which means that all tagged headers should be stripped down.
+Fix this issue by implementing cake_skb_proto() helper instead of using tc_skb_proto().
+
+Fixes: 9fba6021a9be ("sch_cake: Use tc_skb_protocol for getting packet protocol")
+Signed-off-by: Ilya Ponetayev <i.ponetaev@ndmsystems.com>
+---
+ cobalt_compat.h |  7 +++++++
+ sch_cake.c      | 26 ++++++++++++++++++++------
+ 2 files changed, 27 insertions(+), 6 deletions(-)
+
+diff --git a/cobalt_compat.h b/cobalt_compat.h
+index 49b7ebf..b10a283 100644
+--- a/cobalt_compat.h
++++ b/cobalt_compat.h
+@@ -103,6 +103,13 @@ static inline int skb_try_make_writable(struct sk_buff *skb,
+ }
+ #endif
+ 
++#if KERNEL_VERSION(4, 11, 0) > LINUX_VERSION_CODE
++static inline int skb_mac_offset(const struct sk_buff *skb)
++{
++	return skb_mac_header(skb) - skb->data;
++}
++#endif
++
+ #if KERNEL_VERSION(4, 7, 0) > LINUX_VERSION_CODE
+ #define nla_put_u64_64bit(skb, attrtype, value, padattr) nla_put_u64(skb, attrtype, value)
+ #endif
+diff --git a/sch_cake.c b/sch_cake.c
+index 6390a5f..023ee2b 100644
+--- a/sch_cake.c
++++ b/sch_cake.c
+@@ -595,11 +595,25 @@ static bool cobalt_should_drop(struct cobalt_vars *vars,
+ 	return drop;
+ }
+ 
++static __be16 cake_skb_proto(const struct sk_buff *skb)
++{
++	unsigned int offset = skb_mac_offset(skb) + sizeof(struct ethhdr);
++	__be16 proto = skb->protocol;
++	struct vlan_hdr vhdr, *vh;
++
++	while (proto == htons(ETH_P_8021Q) || proto == htons(ETH_P_8021AD)) {
++		vh = skb_header_pointer(skb, offset, sizeof(vhdr), &vhdr);
++		if (!vh)
++			break;
++
++		proto = vh->h_vlan_encapsulated_proto;
++		offset += sizeof(vhdr);
++	}
++
++	return proto;
++}
++
+ #if IS_REACHABLE(CONFIG_NF_CONNTRACK)
+-#if KERNEL_VERSION(4, 0, 0) > LINUX_VERSION_CODE
+-#define tc_skb_protocol(_skb) \
+-(vlan_tx_tag_present(_skb) ? _skb->vlan_proto : _skb->protocol)
+-#endif
+ 
+ static void cake_update_flowkeys(struct flow_keys *keys,
+ 				 const struct sk_buff *skb)
+@@ -609,7 +623,7 @@ static void cake_update_flowkeys(struct flow_keys *keys,
+ 	struct nf_conn *ct;
+ 	bool rev = false;
+ 
+-	if (tc_skb_protocol(skb) != htons(ETH_P_IP))
++	if (cake_skb_proto(skb) != htons(ETH_P_IP))
+ 		return;
+ 
+ 	ct = nf_ct_get(skb, &ctinfo);
+@@ -1624,7 +1638,7 @@ static u8 cake_handle_diffserv(struct sk_buff *skb, u16 wash)
+ 	int wlen = skb_network_offset(skb);
+ 	u8 dscp;
+ 
+-	switch (tc_skb_protocol(skb)) {
++	switch (cake_skb_proto(skb)) {
+ 	case htons(ETH_P_IP):
+ 		wlen += sizeof(struct iphdr);
+ 		if (!pskb_may_pull(skb, wlen) ||
+-- 
+2.20.1
+
