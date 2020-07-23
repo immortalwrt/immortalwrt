@@ -43,7 +43,6 @@ endef
 define Package/libmsgpack-c
 	$(call Package/msgpack-c)
 	TITLE+= (Libraries)
-	VARIANT:=lib
 endef
 
 define Package/msgpack-c/description
