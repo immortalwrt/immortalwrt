@@ -4,7 +4,6 @@ START=99
 STOP=15
 
 CLASH="/etc/clash/clash"
-CLASHR="/usr/bin/clash"
 CLASHT="/etc/clash/clashtun/clash"
 CLASHD="/etc/clash/dtun/clash"
 CLASH_CONFIG="/etc/clash"
@@ -457,20 +456,9 @@ if [ "${core}" -eq 1 ] && [ ! -f /etc/clash/clash ]; then
 
 	echo "Clash for OpenWRT" >$REAL_LOG
 	exit 0
-elif  [ "${core}" -eq 2 ] && [ ! -f /usr/bin/clash ]; then
-	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr core not found in /usr/bin/clash  download and install clashr from update page  " >> /usr/share/clash/clash.txt
-		echo "clashr core not found,  download and install clash from update page" >> $REAL_LOG
-	elif [ "${lang}" == "zh_cn" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/usr/bin/clash,请从更新页下载clashr内核" >> /usr/share/clash/clash.txt
-		echo "找不到/usr/bin/clash,请从更新页下载clashr内核" >> $REAL_LOG		
-	fi
-
-	echo "Clash for OpenWRT" >$REAL_LOG
-	exit 0
 elif  [ "${core}" -eq 3 ] && [ ! -f /etc/clash/clashtun/clash ]; then
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clashr Tun core not found in /etc/clash/clashtun/clash " >> /usr/share/clash/clash.txt
+		echo "  $(date "+%Y-%m-%d %H:%M:%S") - clash Tun core not found in /etc/clash/clashtun/clash " >> /usr/share/clash/clash.txt
 		echo "clash Tun core not found in /etc/clash/clashtun/clash" >> $REAL_LOG
 	elif [ "${lang}" == "zh_cn" ];then
 		echo "  $(date "+%Y-%m-%d %H:%M:%S")  - 找不到/etc/clash/clashtun/clash, clash Tun内核" >> /usr/share/clash/clash.txt
@@ -572,22 +560,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
    	yml_change >/dev/null 2>&1
 	
 
-	checktype=$(grep -c "type: ssr" /etc/clash/config.yaml 2>/dev/null)
-	if [ "${checktype}" -gt 0 ] && [ "${core}" -ne 2 ]; then
-	 	
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Clash Core does not Support Config, use clashr core" >$REAL_LOG
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "Clash内核不支持你的配置，改用Clashr内核" >$REAL_LOG
-		fi
-		remove_mark >/dev/null 2>&1
-		sleep 1
-		echo "Clash for OpenWRT" >$REAL_LOG
-		exit 0
-	fi
-		
-	
-	
 	if [ ! -f /etc/clash/Country.mmdb ];then
 		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
 			echo "Cannot find Country.mmdb" >$REAL_LOG 
@@ -643,15 +615,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		elif [ "${lang}" == "zh_cn" ];then
 			echo "Clash 计划任务,启动进程守护程序..." >$REAL_LOG
 		fi	
-	elif [ "$(uci get clash.config.core)" -eq 2 ];then
-        	nohup $CLASHR -d "$CLASH_CONFIG" > /usr/share/clash/clash.txt 2>&1 &
-				
-		if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
-			echo "Clashr Core Started Successfully " >$REAL_LOG 
-		elif [ "${lang}" == "zh_cn" ];then
-			echo "Clashr 计划任务,启动进程守护程序..." >$REAL_LOG
-		fi
-		
 	fi
 	ln -s /usr/share/clash/yacd /www/luci-static/yacd 2>/dev/null		
 

@@ -43,22 +43,9 @@ local encrypt_methods_ssr = {
 	"aes-128-ctr",
 	"aes-192-ctr",
 	"aes-256-ctr",
-	"aes-128-ofb",
-	"aes-192-ofb",
-	"aes-256-ofb",
-	"des-cfb",
-	"bf-cfb",
-	"cast5-cfb",
 	"rc4-md5",
-	"chacha20",
 	"chacha20-ietf",
-	"salsa20",
-	"camellia-128-cfb",
-	"camellia-192-cfb",
-	"camellia-256-cfb",
-	"idea-cfb",
-	"rc2-cfb",
-	"seed-cfb",
+
 }
 
 
@@ -68,6 +55,8 @@ local protocol_ssr = {
 	"auth_sha1_v4",
 	"auth_aes128_md5",
 	"auth_aes128_sha1",
+	"auth_chain_a",
+	"auth_chain_b",
 }
 
 
@@ -77,6 +66,8 @@ local obfs_ssr_list = {
 	"http_simple",
 	"http_post",
 	"tls1.2_ticket_auth",
+	"tls1.2_ticket_fastauth",
+	"random_head",
 }
 
 m = Map(clash, translate("Edit Server"))
@@ -201,6 +192,7 @@ o = s:option(ListValue, "udp", translate("udp"))
 o:value("true")
 o:value("false")
 o:depends("type", "ss")
+o:depends("type", "ssr")
 o:depends("type", "vmess")
 o:depends("type", "socks5")
 o:depends("type", "trojan")

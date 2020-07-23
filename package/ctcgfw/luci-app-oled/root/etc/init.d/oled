@@ -11,7 +11,7 @@ start() {
 	#crontab daemon
 	cat /etc/crontabs/root | grep oled > /dev/null
 	if [ $? -eq 1 ]; then
-		echo "*/15 * * * * /etc/init.d/oled restart &>/dev/null 2>&1" >> /etc/crontabs/root	
+		echo "*/5 * * * * /etc/init.d/oled restart &>/dev/null 2>&1" >> /etc/crontabs/root	
 	fi
 
 	date=$(uci get oled.@oled[0].date)
@@ -40,15 +40,13 @@ start() {
 		ps|grep netspeed|grep -v grep|awk '{print $1}'|xargs kill -9
 		rm -f /tmp/netspeed
 	fi
-	nohup ${PROG} ${date} ${lanip} ${cputemp} ${cpufreq} ${netspeed} ${time} ${drawline} ${drawrect} ${fillrect} ${drawcircle} ${drawroundrect} ${fillroundrect} ${drawtriangle} ${filltriangle} ${displaybitmap} ${displayinvertnormal}  ${drawbitmapeg} ${scroll} "${text}" "${netsource}" > /dev/null 2>&1 &
+	nohup ${PROG} ${date} ${lanip} ${cputemp} ${cpufreq} ${netspeed} ${time} ${drawline} ${drawrect} ${fillrect} ${drawcircle} ${drawroundrect} ${fillroundrect} ${drawtriangle} ${filltriangle} ${displaybitmap} ${displayinvertnormal}  ${drawbitmapeg} ${scroll} "${text}" "${netsource}" 1 > /dev/null 2>&1 &
 }
 
  
 stop() {
-	kill `pgrep /usr/bin/oled`
-	sleep 1
+	kill -2 `pgrep /usr/bin/oled`
 	ps|grep netspeed|grep -v grep|awk '{print $1}'|xargs kill -9
-	sleep 1
 	echo "oled exit..."
 }
 
@@ -57,9 +55,36 @@ restart(){
 	pgrep -f ${PROG} >/dev/null
 	if [ $? -eq 0 ]; then
 		if [ $enabled -eq 1 ]; then
-			stop
-			sleep 1
-			start
+			kill `pgrep /usr/bin/oled`
+			ps|grep netspeed|grep -v grep|awk '{print $1}'|xargs kill -9
+
+			date=$(uci get oled.@oled[0].date)
+			lanip=$(uci get oled.@oled[0].lanip)
+			cputemp=$(uci get oled.@oled[0].cputemp)
+			cpufreq=$(uci get oled.@oled[0].cpufreq)
+			netspeed=$(uci get oled.@oled[0].netspeed)
+			time=$(uci get oled.@oled[0].time)
+			drawline=$(uci get oled.@oled[0].drawline)
+			drawrect=$(uci get oled.@oled[0].drawrect)
+			fillrect=$(uci get oled.@oled[0].fillrect)
+			drawcircle=$(uci get oled.@oled[0].drawcircle)
+			drawroundrect=$(uci get oled.@oled[0].drawroundrect)
+			fillroundrect=$(uci get oled.@oled[0].fillroundrect)
+			drawtriangle=$(uci get oled.@oled[0].drawtriangle)
+			filltriangle=$(uci get oled.@oled[0].filltriangle)
+			displaybitmap=$(uci get oled.@oled[0].displaybitmap)
+			displayinvertnormal=$(uci get oled.@oled[0].displayinvertnormal)
+			drawbitmapeg=$(uci get oled.@oled[0].drawbitmapeg)
+			scroll=$(uci get oled.@oled[0].scroll)
+			text=$(uci get oled.@oled[0].text)
+			netsource=$(uci get oled.@oled[0].netsource)
+			if [ ${netspeed} -eq 1 ]; then
+				nohup /usr/sbin/netspeed ${netsource} >/dev/null 2>&1 &
+			else
+				ps|grep netspeed|grep -v grep|awk '{print $1}'|xargs kill -9
+				rm -f /tmp/netspeed
+			fi
+			nohup ${PROG} ${date} ${lanip} ${cputemp} ${cpufreq} ${netspeed} ${time} ${drawline} ${drawrect} ${fillrect} ${drawcircle} ${drawroundrect} ${fillroundrect} ${drawtriangle} ${filltriangle} ${displaybitmap} ${displayinvertnormal}  ${drawbitmapeg} ${scroll} "${text}" "${netsource}" 0 > /dev/null 2>&1 &
 		else
 			stop
 		fi

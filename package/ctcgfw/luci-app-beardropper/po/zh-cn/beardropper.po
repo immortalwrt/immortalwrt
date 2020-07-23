@@ -1,0 +1,115 @@
+bearDropper#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:36
+msgid "Attempt Cycle"
+msgstr "尝试登录时间段"
+
+
+msgid "Setting"
+msgstr "设置"
+
+msgid "Log"
+msgstr "日志"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:34
+msgid "Attempt Tolerance"
+msgstr "最大尝试登录次数"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:38
+msgid "Ban Period"
+msgstr "封禁IP时长"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/controller/bearDropper.lua:7
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:7
+msgid "BearDropper"
+msgstr ""
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:20
+msgid "Blocked IP"
+msgstr "屏蔽列表"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:52
+msgid "Blocked IP List"
+msgstr "已屏蔽IP列表"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/view/bearDropper/status.htm:20
+msgid "Collecting data..."
+msgstr ""
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:45
+msgid "Debug"
+msgstr "调试"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:43
+msgid "Default"
+msgstr "默认"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:22
+msgid "Enabled"
+msgstr "启用"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:29
+msgid "Entire"
+msgstr "已有记录"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:28
+msgid "Follow"
+msgstr "后台监控"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:40
+msgid "Log Level"
+msgstr "日志等级"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/view/bearDropper/status.htm:10
+msgid "NOT RUNNING"
+msgstr ""
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:19
+msgid "Options"
+msgstr "选项"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/view/bearDropper/status.htm:7
+msgid "RUNNING"
+msgstr ""
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:26
+msgid "Running Mode"
+msgstr "运行模式"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:42
+msgid "Silent"
+msgstr "安静"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:30
+msgid "Today"
+msgstr "仅今日"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:44
+msgid "Verbose"
+msgstr "详细"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:31
+msgid "Wipe"
+msgstr "清除所有"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:34
+msgid "failure attempts from a given IP required to trigger a ban"
+msgstr "尝试登录超过设定值次数的IP将被封禁"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:38
+msgid "how long a ban exist once the attempt threshold is exceeded"
+msgstr "IP将被封禁设定的时间"
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:8
+msgid ""
+"luci-app-beardropper, the LuCI app built with the elegant firewall rule "
+"generation on-the-fly script bearDropper. <br /> <br /> Should you have any "
+"questions, please refer to the repo:"
+msgstr ""
+"luci-app-beardropper, 是一款能够在开启公网访问之后对潜在的ssh attack进行防御"
+"的脚本. <br /> <br /> 如果你在使用中有任何问题，请到项目中提问: "
+
+#: ../../package/feeds/luci/luci-app-beardropper/luasrc/model/cbi/bearDropper/setting.lua:36
+msgid ""
+"time period during which attemptCount must be exceeded in order to trigger a "
+"ban <br> Format: 1w2d3h4m5s represents 1week 2days 3hours 4minutes 5 seconds"
+msgstr ""
+"在设定的时间段内连续尝试失败 <br> 格式：1w2d3h4m5s代表1周2天3小时4分5秒"
