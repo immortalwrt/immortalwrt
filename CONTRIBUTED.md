@@ -43,7 +43,8 @@ luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/
 MT-Wifi 5.0.4.0: [MeIsReallyBa/mt7615-dbdc-linux5.4](https://github.com/MeIsReallyBa/mt7615-dbdc-linux5.4).<br/>
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
 luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
-luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).
+luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
+luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).
 
 ## License
 ### Depend on their own License.
