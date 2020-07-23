@@ -8,43 +8,24 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=luci-app-adguardhome
 PKG_VERSION:=1.8
 PKG_RELEASE:=11
+PKG_MAINTAINER:=<https://github.com/rufengsuixing/luci-app-adguardhome>
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
+LUCI_TITLE:=LuCI app for AdGuardHome
+LUCI_PKGARCH:=all
+LUCI_DEPENDS:=+ca-certs +curl +wget +PACKAGE_$(PKG_NAME)_INCLUDE_binary:AdGuardHome
+LUCI_DESCRIPTION:=LuCI support for AdGuardHome
 
-include $(INCLUDE_DIR)/package.mk
-
-define Package/luci-app-adguardhome
-	SECTION:=luci
-	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
-	TITLE:=LuCI app for adguardhome
-	PKG_MAINTAINER:=<https://github.com/rufengsuixing/luci-app-adguardhome>
-	PKGARCH:=all
-	DEPENDS:=+!wget&&!curl:wget
+define Package/$(PKG_NAME)/config
+config PACKAGE_$(PKG_NAME)_INCLUDE_binary
+	bool "Include Binary File"
+	default y
 endef
 
-define Package/luci-app-adguardhome/description
-	LuCI support for adguardhome
-endef
-
-define Build/Prepare
-endef
-
-define Build/Compile
-endef
+PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_binary
 
 define Package/luci-app-adguardhome/conffiles
 /usr/share/AdGuardHome/links.txt
 /etc/config/AdGuardHome
-endef
-
-define Package/luci-app-adguardhome/install
-    $(INSTALL_DIR) $(1)/usr/lib/lua/luci
-	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci
-	$(INSTALL_DIR) $(1)/
-	cp -pR ./root/* $(1)/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo ./po/zh-cn/AdGuardHome.po $(1)/usr/lib/lua/luci/i18n/AdGuardHome.zh-cn.lmo
 endef
 
 define Package/luci-app-adguardhome/postinst
@@ -72,4 +53,6 @@ fi
 exit 0
 endef
 
-$(eval $(call BuildPackage,luci-app-adguardhome))
+include $(TOPDIR)/feeds/luci/luci.mk
+
+# call BuildPackage - OpenWrt buildroot signature
