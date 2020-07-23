@@ -43,7 +43,9 @@ luci-app-scutclient source: [scutclient/luci-app-scutclient](https://github.com/
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
 luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
 luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypang13/luci-theme-edge).<br/>
-luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).
+luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
+luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypang13/luci-theme-edge).<br/>
+luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).
 
 ## License
 ### Depend on their own License.

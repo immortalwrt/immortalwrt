@@ -1,0 +1,12 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@beardropper[-1]
+	add ucitrack beardropper
+	set ucitrack.@beardropper[-1].init=beardropper
+	commit ucitrack
+EOF
+
+touch /tmp/beardropper.bddb
+rm -rf /tmp/luci-*
+exit 0
