@@ -9,12 +9,19 @@ PKG_NAME:=luci-app-adguardhome
 PKG_VERSION:=1.8
 PKG_RELEASE:=11
 PKG_MAINTAINER:=<https://github.com/rufengsuixing/luci-app-adguardhome>
-LUCI_TITLE:=LuCI app for adguardhome
-LUCI_PKGARCH:=all
-LUCI_DEPENDS:=+!wget&&!curl:wget
-LUCI_DESCRIPTION:=LuCI support for adguardhome
 
-include $(TOPDIR)/feeds/luci/luci.mk
+LUCI_TITLE:=LuCI app for AdGuardHome
+LUCI_PKGARCH:=all
+LUCI_DEPENDS:=+ca-certs +curl +wget +PACKAGE_$(PKG_NAME)_INCLUDE_binary:AdGuardHome
+LUCI_DESCRIPTION:=LuCI support for AdGuardHome
+
+define Package/$(PKG_NAME)/config
+config PACKAGE_$(PKG_NAME)_INCLUDE_binary
+	bool "Include Binary File"
+	default y
+endef
+
+PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_binary
 
 define Package/luci-app-adguardhome/conffiles
 /usr/share/AdGuardHome/links.txt
@@ -45,5 +52,7 @@ EOF
 fi
 exit 0
 endef
+
+include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

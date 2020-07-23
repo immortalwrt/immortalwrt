@@ -55,7 +55,9 @@ define Build/Compile
 endef
 
 define Package/AdGuardHome/install
-	$(call GoPackage/Package/Install/Bin,$(1))
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+	$(INSTALL_DIR) $(1)/usr/bin/AdGuardHome
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome $(1)/usr/bin/AdGuardHome/AdGuardHome
 endef
 
 $(eval $(call GoBinPackage,AdGuardHome))
