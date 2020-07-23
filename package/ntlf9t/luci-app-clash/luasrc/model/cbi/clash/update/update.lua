@@ -26,11 +26,9 @@ o.description =''..font_red..bold_on..translate("Manually download, unzip and re
 .."<br />"
 ..translate("Dreamacro clash tun core (dtun) - (https://github.com/Dreamacro/clash/releases/tag/premium)")
 .."<br />"
-..translate("comzyh clash tun core (ctun) - (https://github.com/comzyh/clash/releases)")
-.."<br />"
 ..translate("Dreamacro clash core - (https://github.com/Dreamacro/clash/releases)")
 .."<br />"
-..translate("Frainzy1477 clashr core - (https://github.com/frainzy1477/clashrdev/releases)")
+..translate("comzyh clash tun core (ctun) - (https://github.com/comzyh/clash/releases)")
 .."<br />"
 ..translate("Frainzy1477 clash core - (https://github.com/frainzy1477/clash_dev/releases)")
 
@@ -42,7 +40,6 @@ um.template = "clash/clash_dvalue"
 
 local dir, fd,dtun,ctun,cssr
 dir = "/etc/clash/"
-cssr="/usr/bin/"
 dtun="/etc/clash/dtun/"
 ctun="/etc/clash/clashtun/"
 
@@ -54,8 +51,6 @@ http.setfilehandler(
 			
 			if fp == "clash" then
 			   if meta and chunk then fd = nixio.open(dir .. meta.file, "w") end
-			elseif fp == "clashr" then
-			   if meta and chunk then fd = nixio.open(cssr .. meta.file, "w") end
 			elseif fp == "clashctun" then
 			   if meta and chunk then fd = nixio.open(ctun .. meta.file, "w") end
 			elseif fp == "clashdtun" then
@@ -78,10 +73,6 @@ http.setfilehandler(
 			    	SYS.exec("chmod 755 /etc/clash/clash 2>&1 &")
 				SYS.exec("rm -rf /usr/share/clash/core_version 2>/dev/null && /etc/clash/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/core_version 2>/dev/null")
 				um.value = translate("File saved to") .. ' "/etc/clash/'..meta.file..'"'
-			elseif fp == "clashr" then
-			    	SYS.exec("chmod 755 /usr/bin/clash 2>&1 &")
-				SYS.exec("rm -rf /usr/share/clash/corer_version 2>/dev/null && /usr/bin/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/corer_version 2>/dev/null")
-				um.value = translate("File saved to") .. ' "/usr/bin/'..meta.file..'"'
 			elseif fp == "clashctun" then
 			    	SYS.exec("chmod 755 /etc/clash/clashtun/clash 2>&1 &")
 				SYS.exec("rm -rf /usr/share/clash/tun_version 2>/dev/null && /etc/clash/clashtun/clash -v | awk -F ' ' '{print $2}' >> /usr/share/clash/tun_version 2>/dev/null")
@@ -116,10 +107,9 @@ s.anonymous = true
 o = s:option(ListValue, "dcore", translate("Core Type"))
 o.default = "clashcore"
 o:value("1", translate("Clash"))
-o:value("2", translate("Clashr"))
 o:value("3", translate("Clash(ctun)"))
-o:value("4", translate("Clash(dtun)"))
-o.description = translate("Select core, clashr support ssr while clash does not.")
+o:value("4", translate("Clash(premium)"))
+
 
 
 local cpu_model=SYS.exec("opkg status libc 2>/dev/null |grep 'Architecture' |awk -F ': ' '{print $2}' 2>/dev/null")

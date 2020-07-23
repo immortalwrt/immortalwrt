@@ -25,7 +25,7 @@ elif [ ! -z "$(grep "^rules:" "$CLASH_CONFIG")" ]; then
 fi
 sed -i -e "\$a#RULEEND#" $CLASH_CONFIG 2>/dev/null
 
-awk '/#RULESTART#/,/#RULEEND#/{print}' "$CLASH_CONFIG" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep - |awk -F '- ' '{print "- "$2}' | sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null  >$RULE 2>&1
+awk '/#RULESTART#/,/#RULEEND#/{print}' "$CLASH_CONFIG" 2>/dev/null |sed "s/\'//g" 2>/dev/null |sed 's/\"//g' 2>/dev/null |sed 's/\t/ /g' 2>/dev/null |grep '^ \{0,\}- '|awk -F '- ' '{print "- "$2}' | sed 's/^ \{0,\}//' 2>/dev/null |sed 's/ \{0,\}$//' 2>/dev/null  >$RULE 2>&1
 
 sed -i '/#RULESTART#/,/#RULEEND#/d' "$CLASH_CONFIG" 2>/dev/null
 
@@ -77,10 +77,8 @@ if [ -f $CUSTOM_RULE_FILE ];then
 sed -i -e "\$a#CUSTOMRULEEND#" $CUSTOM_RULE_FILE 2>/dev/null
 sed -i '/#CUSTOMRULESTART#/,/#CUSTOMRULEEND#/d' "$CLASH_CONFIG" 2>/dev/null
 
-if [ ! -z "$(grep "^ \{0,\}- GEOIP" "$CLASH_CONFIG")" ]; then
-   sed -i '1,/^ \{0,\}- GEOIP,/{/^ \{0,\}- GEOIP,/s/^ \{0,\}- GEOIP,/#CUSTOMRULESTART#\n&/}' "$CLASH_CONFIG" 2>/dev/null
-elif [ ! -z "$(grep "^ \{0,\}- MATCH," "$CLASH_CONFIG")" ]; then
-   sed -i '1,/^ \{0,\}- MATCH,/{/^ \{0,\}- MATCH,/s/^ \{0,\}- MATCH,/#CUSTOMRULESTART#\n&/}' "$CLASH_CONFIG" 2>/dev/null
+if [ ! -z "$(grep "^ \{0,\}rules:" "$CLASH_CONFIG")" ]; then
+	sed -i '/rules:/a\#CUSTOMRULESTART#' "$CLASH_CONFIG" 2>/dev/null
 else
    echo "#CUSTOMRULESTART#" >> "$CLASH_CONFIG" 2>/dev/null
 fi

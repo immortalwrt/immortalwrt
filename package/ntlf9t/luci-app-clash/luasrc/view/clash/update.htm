@@ -14,13 +14,10 @@
 			<td align="center" width="35%">clash</td> <td align="center" width="35%" id="_core"><%:Collecting data...%></td> <td width="35%" align="center" id="_corebutt"><font color="red"><%:Checking...%></font> </td> 
 		</tr>
 		<tr>
-			<td align="center" width="35%">clashr</td> <td align="center" width="35%" id="_corer"><%:Collecting data...%></td> <td width="35%" align="center" id="_corerbutt"><font color="red"><%:Checking...%></font> </td> 
-		</tr>
-		<tr>
 			<td align="center" width="35%">clash(ctun)</td> <td align="center" width="35%" id="_coretun"><%:Collecting data...%></td> <td width="35%" align="center" id="_coretunbutt"><font color="red"><%:Checking...%></font> </td> 
 		</tr>	
 		<tr>
-			<td align="center" width="35%">clash(dtun)</td> <td align="center" width="35%" id="_coredtun"><%:Collecting data...%></td> <td width="35%" align="center" id="_coredtunbutt"><font color="red"><%:Checking...%></font> </td> 
+			<td align="center" width="35%">clash(premium)</td> <td align="center" width="35%" id="_coredtun"><%:Collecting data...%></td> <td width="35%" align="center" id="_coredtunbutt"><font color="red"><%:Checking...%></font> </td> 
 		</tr>	
 		<tr>
 			<td align="center" width="35%">luci-app-clash</td> <td align="center" width="35%" id="_version"><%:Collecting data...%> </td> <td width="35%" align="center" id="_versionbutt"><font color="red"><%:Checking...%></font> </td>
@@ -38,7 +35,6 @@
 	
 	var version = document.getElementById('_version');
 	var core = document.getElementById('_core');
-	var corer = document.getElementById('_corer');
 	var coretun = document.getElementById('_coretun');
 	var version_butt = document.getElementById('_versionbutt');
 	var core_butt = document.getElementById('_corebutt');
@@ -54,11 +50,6 @@
 				core.innerHTML = status.clash_core ? '<b><font color="red"><%:Not Installed%></font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
 			}else{
 				core.innerHTML = status.clash_core ? '<b><font color="green">'+status.clash_core+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
-			}
-			if(status.clashr_core==0){
-				corer.innerHTML = status.clashr_core ? '<b><font color="red"><%:Not Installed%></font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
-			}else{
-				corer.innerHTML = status.clashr_core ? '<b><font color="green">'+status.clashr_core+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
 			}
 			if(status.clashtun_core==0){
 				coretun.innerHTML = status.clashtun_core ? '<b><font color="red"><%:Not Installed%></font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
@@ -83,7 +74,6 @@
 		if ( x && x.status == 200 ) {
 			version_butt.innerHTML = status.current_version ? '<b><font color="green">'+status.new_version+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
 			core_butt.innerHTML = status.current_version ? '<b><font color="green">'+status.new_core_version+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
-			corer_butt.innerHTML = status.current_version ? '<b><font color="green">'+status.new_clashr_core_version+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
 			coretun_butt.innerHTML = status.current_version ? '<b><font color="green">'+status.new_clashtun_core_version+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
 			coredtun_butt.innerHTML = status.current_version ? '<b><font color="green">'+status.new_dtun_core+'</font> </b>' : '<em><b><font color="red"><%:Checking...%></font></b></em>';
 						
