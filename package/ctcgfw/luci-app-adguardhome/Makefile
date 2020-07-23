@@ -17,15 +17,23 @@ define Package/luci-app-adguardhome
 	SECTION:=luci
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
-	TITLE:=LuCI app for adguardhome
+	TITLE:=LuCI app for AdGuardHome
 	PKG_MAINTAINER:=<https://github.com/rufengsuixing/luci-app-adguardhome>
 	PKGARCH:=all
-	DEPENDS:=+!wget&&!curl:wget
+	DEPENDS:=+ca-certs +curl +wget +PACKAGE_$(PKG_NAME)_INCLUDE_binary:AdGuardHome
 endef
 
 define Package/luci-app-adguardhome/description
-	LuCI support for adguardhome
+	LuCI support for AdGuardHome
 endef
+
+define Package/$(PKG_NAME)/config
+config PACKAGE_$(PKG_NAME)_INCLUDE_binary
+	bool "Include Binary File"
+	default y
+endef
+
+PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_binary
 
 define Build/Prepare
 endef
