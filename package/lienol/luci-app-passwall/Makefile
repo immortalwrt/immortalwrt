@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.9
-PKG_RELEASE:=20
-PKG_DATE:=20200719
+PKG_RELEASE:=22
+PKG_DATE:=20200724
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -118,10 +118,10 @@ endef
 define Package/$(PKG_NAME)/conffiles
 /etc/config/passwall
 /etc/config/passwall_server
-/usr/share/passwall/rules/blacklist_host
-/usr/share/passwall/rules/blacklist_ip
-/usr/share/passwall/rules/whitelist_host
-/usr/share/passwall/rules/whitelist_ip
+/usr/share/passwall/rules/proxy_host
+/usr/share/passwall/rules/proxy_ip
+/usr/share/passwall/rules/direct_host
+/usr/share/passwall/rules/direct_ip
 endef
 
 define Package/$(PKG_NAME)/install

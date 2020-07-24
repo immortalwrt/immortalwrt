@@ -52,7 +52,7 @@ if node.type == "Trojan-Go" then
         enabled = node.plugin_type ~= nil,
         type = node.plugin_type or "plaintext",
         command = node.plugin_type ~= "plaintext" and node.plugin_cmd or nil,
-        plugin_option = node.plugin_type ~= "plaintext" and node.plugin_option or nil,
+        option = node.plugin_type ~= "plaintext" and node.plugin_option or nil,
         arg = node.plugin_type ~= "plaintext" and { node.plugin_arg } or nil,
         env = {}
     } or nil

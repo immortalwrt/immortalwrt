@@ -15,7 +15,7 @@ t = m:section(TypedSection, "user", translate("Users Manager"))
 t.anonymous = true
 t.addremove = true
 t.template = "cbi/tblsection"
-t.extedit = d.build_url("admin", "vpn", "passwall", "server_user", "%s")
+t.extedit = d.build_url("admin", "services", "passwall", "server_user", "%s")
 function t.create(e, t)
     local uuid = _api.gen_uuid()
     t = uuid
@@ -25,7 +25,7 @@ end
 function t.remove(e, t)
     e.map.proceed = true
     e.map:del(t)
-    luci.http.redirect(d.build_url("admin", "vpn", "passwall", "server"))
+    luci.http.redirect(d.build_url("admin", "services", "passwall", "server"))
 end
 
 e = t:option(Flag, "enable", translate("Enable"))

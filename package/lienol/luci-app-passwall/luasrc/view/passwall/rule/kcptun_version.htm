@@ -71,7 +71,7 @@ local kcptun_version = require "luci.model.cbi.passwall.api.api".get_kcptun_vers
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
 
-		XHR.get('<%=url([[admin]], [[vpn]], [[passwall]], [[kcptun_check]])%>', {
+		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[kcptun_check]])%>', {
 			token: tokenStr,
 			arch: ''
 		}, function(x,json) {
@@ -111,7 +111,7 @@ local kcptun_version = require "luci.model.cbi.passwall.api.api".get_kcptun_vers
 
 		addPageNotice_kcptun();
 
-		var kcptunUpdateUrl = '<%=url([[admin]], [[vpn]], [[passwall]], [[kcptun_update]])%>';
+		var kcptunUpdateUrl = '<%=url([[admin]], [[services]], [[passwall]], [[kcptun_update]])%>';
 		// Download file
 		XHR.get(kcptunUpdateUrl, {
 			token: tokenStr,

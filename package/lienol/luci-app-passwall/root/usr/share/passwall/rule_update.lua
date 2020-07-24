@@ -26,6 +26,7 @@ local ipsetname = 'gfwlist'
 
 -- custom url
 local enable_custom_url = ucic:get_first(name, 'global_rules', "enable_custom_url", 0)
+enable_custom_url = 1
 local gfwlist_url = ucic:get_first(name, 'global_rules', "gfwlist_url", "https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt")
 local chnroute_url = ucic:get_first(name, 'global_rules', "chnroute_url", "https://ispip.clang.cn/all_cn.txt")
 local chnlist_url_1 = 'https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/accelerated-domains.china.conf'

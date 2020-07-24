@@ -169,7 +169,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 	var kcptun_status = document.getElementById('_kcptun_status');
 	var baidu_status = document.getElementById('_baidu_status');
 	var google_status = document.getElementById('_google_status');
-	XHR.poll(3, '<%=dsp.build_url("admin/vpn/passwall/status")%>', null,
+	XHR.poll(3, '<%=dsp.build_url("admin/services/passwall/status")%>', null,
 		function(x, json) {
 			if (x && x.status == 200) {
 				var tcp_node_status = document.getElementById('_tcp_node_status');
@@ -247,7 +247,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 		btn.disabled = true;
 		btn.value = '<%:Check...%>';
 		var sendDate = (new Date()).getTime();
-		XHR.get('<%=dsp.build_url("admin/vpn/passwall/connect_status")%>', {
+		XHR.get('<%=dsp.build_url("admin/services/passwall/connect_status")%>', {
 				type: type,
 				url: url
 			},
@@ -286,7 +286,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 	function check_port(btn) {
 		btn.disabled = true;
 		btn.value = '<%:Check...%>';
-		XHR.get('<%=dsp.build_url("admin/vpn/passwall/check_port")%>', null,
+		XHR.get('<%=dsp.build_url("admin/services/passwall/check_port")%>', null,
 			function(x, rv) {
 				var s = document.getElementById('_node_status');
 				if (s) {

@@ -33,7 +33,7 @@ function gen_config(user)
             enabled = user.plugin_type ~= nil,
             type = user.plugin_type or "plaintext",
             command = user.plugin_type ~= "plaintext" and user.plugin_cmd or nil,
-            plugin_option = user.plugin_type ~= "plaintext" and user.plugin_option or nil,
+            option = user.plugin_type ~= "plaintext" and user.plugin_option or nil,
             arg = user.plugin_type ~= "plaintext" and { user.plugin_arg } or nil,
             env = {}
         } or nil,
