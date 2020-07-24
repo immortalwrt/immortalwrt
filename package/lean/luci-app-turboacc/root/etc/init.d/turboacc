@@ -261,10 +261,10 @@ start(){
 stop(){
 	inital_conf
 
-    uci set firewall.@defaults[0].flow_offloading="${sw_flow}"
-    uci set firewall.@defaults[0].flow_offloading_hw="${hw_flow}"
+	uci set firewall.@defaults[0].flow_offloading="${sw_flow}"
+	uci set firewall.@defaults[0].flow_offloading_hw="${hw_flow}"
 	uci set firewall.@defaults[0].fullcone="${fullcone_nat}"
-    uci commit firewall
+	uci commit firewall
 
 	[ "${sfe_flow}" -eq "0" ] && {
 		echo "0" > "/sys/fast_classifier/skip_to_bridge_ingress"
@@ -275,7 +275,7 @@ stop(){
 	[ "${dns_acc}" -eq "0" ] && rm -f "/tmp/dnsmasq.d/dnsmasq-googlehosts.conf"
 
 	stop_dnscache
-    revert_dns
+	revert_dns
 
 	if [ "${restart_utils}" = "true" ]; then
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1 && echo "DNSMASQ revert"
@@ -284,9 +284,9 @@ stop(){
 }
 
 restart(){
-    restart_utils="false"
-    stop
-    start
+	restart_utils="false"
+	stop
+	start
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1 && echo "DNSMASQ restart"
 	/etc/init.d/firewall restart >/dev/null 2>&1
 }
