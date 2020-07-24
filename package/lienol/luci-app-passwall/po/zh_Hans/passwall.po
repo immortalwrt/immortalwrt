@@ -49,8 +49,8 @@ msgstr "TCP服务器"
 msgid "UDP Server"
 msgstr "UDP服务器"
 
-msgid "Global Settings"
-msgstr "全局设置"
+msgid "Main Settings"
+msgstr "节点选择"
 
 msgid "Basic Settings"
 msgstr "基本设置"
@@ -72,12 +72,6 @@ msgstr "自动更新"
 
 msgid "Access control"
 msgstr "访问控制"
-
-msgid "Set Blacklist"
-msgstr "黑名单设置"
-
-msgid "Set whitelist"
-msgstr "白名单设置"
 
 msgid "Watch Logs"
 msgstr "查看日志"
@@ -165,6 +159,9 @@ msgstr "如果勾选，则使用TCP节点解析DNS解决污染。"
 
 msgid "Socks Server"
 msgstr "Socks服务器"
+
+msgid "Misconfigured"
+msgstr "配置不当"
 
 msgid "Fair Mode"
 msgstr "公平模式"
@@ -763,35 +760,23 @@ msgstr "访问控制列表是用于指定特殊IP代理模式的工具。IP、MA
 msgid "Remarks"
 msgstr "备注"
 
-msgid "Set Blacklist And Whitelist"
-msgstr "黑白名单"
+msgid "Direct List"
+msgstr "直连列表"
 
-msgid "Whitelist Hosts"
-msgstr "域名白名单"
+msgid "Proxy List"
+msgstr "代理列表"
 
-msgid "Whitelist IP"
-msgstr "IP白名单"
+msgid "Join the direct hosts list of domain names will not proxy."
+msgstr "加入的域名不走代理，对所有模式有效。且优先级最高。"
 
-msgid "Blacklist Hosts"
-msgstr "域名黑名单"
+msgid "These had been joined ip addresses will not proxy. Please input the ip address or ip address segment,every line can input only one ip address. For example: 192.168.0.0/24 or 223.5.5.5."
+msgstr "加入的IP段不走代理，对所有模式有效。且优先级最高。可输入IP地址或地址段，如：192.168.0.0/24或223.5.5.5，每个地址段一行。"
 
-msgid "Blacklist IP"
-msgstr "IP黑名单"
+msgid "These had been joined websites will use proxy. Please input the domain names of websites,every line can input only one website domain. For example: google.com."
+msgstr "加入的域名将走代理。输入网站域名，如：google.com，每个地址段一行。"
 
-msgid "Router Hosts"
-msgstr "路由器本机黑名单"
-
-msgid "Join the white list of domain names will not go agent."
-msgstr "加入的域名不走代理通道，对所有模式有效。且优先于黑名单。"
-
-msgid "These had been joined ip addresses will not use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,192.168.0.0/24 or 223.5.5.5."
-msgstr "加入的IP段不走代理通道，对所有模式有效。且优先于黑名单。可输入IP地址或地址段，如：192.168.0.0/24或223.5.5.5，每个地址段一行。"
-
-msgid "These had been joined websites will use proxy.Please input the domain names of websites,every line can input only one website domain.For example,google.com."
-msgstr "加入的域名将走代理，对所有模式有效。输入网站域名，如：google.com，每个地址段一行。"
-
-msgid "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,35.24.0.0/24 or 8.8.4.4."
-msgstr "加入的IP段将走代理，对所有模式有效。可输入IP地址或地址段，如：35.24.0.0/24或8.8.4.4，每个地址段一行。"
+msgid "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example: 35.24.0.0/24 or 8.8.4.4."
+msgstr "加入的IP段将走代理。可输入IP地址或地址段，如：35.24.0.0/24或8.8.4.4，每个地址段一行。"
 
 msgid "Clear logs"
 msgstr "清空日志"
@@ -1029,3 +1014,6 @@ msgstr "客户端文件不适合当前设备。"
 
 msgid "Can't move new file to path: %s"
 msgstr "无法移动新文件到：%s"
+
+msgid "DNS Settings"
+msgstr "DNS设置"

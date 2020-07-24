@@ -71,7 +71,7 @@ local trojan_go_version = require "luci.model.cbi.passwall.api.api".get_trojan_g
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
 
-		XHR.get('<%=url([[admin]], [[vpn]], [[passwall]], [[trojan_go_check]])%>', {
+		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[trojan_go_check]])%>', {
 			token: tokenStr,
 			arch: ''
 		}, function(x,json) {
@@ -111,7 +111,7 @@ local trojan_go_version = require "luci.model.cbi.passwall.api.api".get_trojan_g
 
 		addPageNotice_trojan();
 
-		var trojanUpdateUrl = '<%=url([[admin]], [[vpn]], [[passwall]], [[trojan_go_update]])%>';
+		var trojanUpdateUrl = '<%=url([[admin]], [[services]], [[passwall]], [[trojan_go_update]])%>';
 		// Download file
 		XHR.get(trojanUpdateUrl, {
 			token: tokenStr,

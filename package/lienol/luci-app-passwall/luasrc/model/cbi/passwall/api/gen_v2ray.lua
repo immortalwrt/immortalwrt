@@ -27,7 +27,7 @@ local function gen_outbound(node, tag)
                 local node_type = (proto and proto ~= "nil") and proto or "socks"
                 local new_port = sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port auto tcp)", appname))
                 node.port = new_port
-                sys.call(string.format("/usr/share/%s/app.sh run_socks %s %s %s %s %s", 
+                sys.call(string.format("/usr/share/%s/app.sh run_socks %s %s %s %s %s > /dev/null", 
                     appname,
                     node_id,
                     "127.0.0.1",
