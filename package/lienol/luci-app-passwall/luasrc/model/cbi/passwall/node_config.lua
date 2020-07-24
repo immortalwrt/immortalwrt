@@ -66,7 +66,7 @@ local encrypt_methods_ss_aead = {
 }
 
 m = Map(appname, translate("Node Config"))
-m.redirect = d.build_url("admin", "vpn", appname)
+m.redirect = d.build_url("admin", "services", appname)
 
 s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false

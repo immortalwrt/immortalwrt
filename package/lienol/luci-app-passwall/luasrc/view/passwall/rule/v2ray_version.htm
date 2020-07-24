@@ -71,7 +71,7 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
 
-		XHR.get('<%=url([[admin]], [[vpn]], [[passwall]], [[v2ray_check]])%>', {
+		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[v2ray_check]])%>', {
 			token: tokenStr,
 			arch: ''
 		}, function(x,json) {
@@ -111,7 +111,7 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 
 		addPageNotice_v2ray();
 
-		var v2rayUpdateUrl = '<%=url([[admin]], [[vpn]], [[passwall]], [[v2ray_update]])%>';
+		var v2rayUpdateUrl = '<%=url([[admin]], [[services]], [[passwall]], [[v2ray_update]])%>';
 		// Download file
 		XHR.get(v2rayUpdateUrl, {
 			token: tokenStr,

@@ -264,8 +264,8 @@ add_firewall_rule() {
 	ipset -! create $IPSET_WHITELIST nethash
 
 	cat $RULES_PATH/chnroute | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	cat $RULES_PATH/blacklist_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	cat $RULES_PATH/whitelist_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/proxy_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/direct_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 
 	ipset -! -R <<-EOF || return 1
 		$(gen_laniplist | sed -e "s/^/add $IPSET_LANIPLIST /")
@@ -348,7 +348,7 @@ add_firewall_rule() {
 			p_r=$(get_redirect_ipt $LOCALHOST_TCP_PROXY_MODE 1 MARK)
 		fi
 		_proxy_tcp_access() {
-			[ -n "${2}" ] && return 0
+			[ -n "${2}" ] || return 0
 			ipset test $IPSET_LANIPLIST ${2} 2>/dev/null
 			[ $? == 0 ] && return 0
 			$ipt_tmp -I $dns_l 2 -p tcp -d ${2} --dport ${3} $dns_r
@@ -400,7 +400,7 @@ add_firewall_rule() {
 	if [ "$UDP_NODE1" != "nil" ]; then
 		local UDP_NODE1_TYPE=$(echo $(config_n_get $UDP_NODE1 type) | tr 'A-Z' 'a-z')
 		_proxy_udp_access() {
-			[ -n "${2}" ] && return 0
+			[ -n "${2}" ] || return 0
 			ipset test $IPSET_LANIPLIST ${2} 2>/dev/null
 			[ $? == 0 ] && return 0
 			local ADD_INDEX=2

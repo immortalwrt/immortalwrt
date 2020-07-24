@@ -16,13 +16,14 @@ TMP_DNSMASQ_PATH=/var/etc/dnsmasq-passwall.d
 DNSMASQ_PATH=/etc/dnsmasq.d
 RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
 DNS_PORT=7913
+NO_PROXY=
 LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
 API_GEN_SS=$LUA_API_PATH/gen_shadowsocks.lua
 API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray.lua
 API_GEN_TROJAN=$LUA_API_PATH/gen_trojan.lua
 echolog() {
 	local d="$(date "+%Y-%m-%d %H:%M:%S")"
-	echo -e "$d: $1" >>$LOG_FILE
+	echo -e "$d: $@" >>$LOG_FILE
 }
 
 find_bin() {
@@ -224,10 +225,10 @@ load_config() {
 		done
 	}
 	
-	[ "$ENABLED" != 1 ] && return 1
+	[ "$ENABLED" != 1 ] && NO_PROXY=1
 	[ "$TCP_NODE1" == "nil" -a "$UDP_NODE1" == "nil" ] && {
 		echolog "没有选择节点！"
-		return 1
+		NO_PROXY=1
 	}
 	
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
@@ -275,17 +276,21 @@ run_socks() {
 	local remarks=$(config_n_get $node remarks)
 	local server_host=$(config_n_get $node address)
 	local port=$(config_n_get $node port)
-	[ -n "$server_host" -a -n "$port" ] && {
-		# 判断节点服务器地址是否URL并去掉~
-		local server_host=$(echo $server_host | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}')
-		# 判断节点服务器地址是否包含汉字~
-		local tmp=$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')
-		[ -n "$tmp" ] && {
-			echolog "$remarks，非法的服务器地址，无法启动！"
-			return 1
-		}
-		[ "$bind" != "127.0.0.1" ] && echolog "Socks节点：$remarks，地址：${server_host}:${port}，监听端口：$local_port"
+	local msg
+
+	echolog "分析 Socks 服务 ${bind}:${local_port} 的代理服务器配置...."
+	if [ -n "$server_host" ] && [ -n "$port" ]; then
+		server_host=$(echo $server_host | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}')
+		[ -n "$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')" ] && msg="$remarks，非法的代理服务器地址，无法启动 ！"
+	else
+		msg="某种原因，此 Socks 服务的相关配置已失联，启动中止！"
+	fi
+
+	[ -n "${msg}" ] && {
+		echolog ${msg}
+		return 1
 	}
+	echolog "使用代理服务器：$remarks，地址：${server_host}:${port}"
 
 	if [ "$type" == "socks" ]; then
 		echolog "Socks节点不能使用Socks代理节点！"
@@ -309,6 +314,11 @@ run_socks() {
 		lua $API_GEN_SS $node $local_port > $config_file
 		ln_start_bin $(find_bin ${type}-local) ${type}-local "-c $config_file -b $bind -u"
 	fi
+
+	msg="此 Sock 服务启动失败！"
+	netstat -netplu | grep ":${local_port} "
+	[ $? -eq 0 ] && msg="看起来这个 Socks 服务已经成功开启了。"
+	echolog $msg
 }
 
 run_redir() {
@@ -522,6 +532,11 @@ start_crontab() {
 			echolog "配置定时任务：每天 $time_restart 点重启服务。"
 		}
 	fi
+	[ "$NO_PROXY" == 1 ] && {
+		echolog "运行于非代理模式，仅允许服务启停的定时任务。"
+		/etc/init.d/cron restart
+		return
+	}
 
 	autoupdate=$(config_t_get global_rules auto_update)
 	weekupdate=$(config_t_get global_rules week_update)
@@ -561,7 +576,7 @@ stop_crontab() {
 }
 
 start_dns() {
-	DNS2SOCKS_SOCKS_SERVER=$(echo $(config_t_get global socks_server nil) | sed "s/#/:/g")
+	DNS2SOCKS_SOCKS_SERVER=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
 	DNS2SOCKS_FORWARD=$(get_first_dns DNS_FORWARD 53 | sed 's/#/:/g')
 	case "$DNS_MODE" in
 	nonuse)
@@ -571,11 +586,9 @@ start_dns() {
 		echolog "DNS：使用本机7913端口DNS服务器解析域名..."
 	;;
 	dns2socks)
-		[ "$DNS2SOCKS_SOCKS_SERVER" != "nil" ] && {
-			[ "$DNS_CACHE" == "0" ] && local _cache="/d"
-			ln_start_bin $(find_bin dns2socks) dns2socks "$DNS2SOCKS_SOCKS_SERVER $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT $_cache"
-			echolog "DNS：dns2socks(${DNS2SOCKS_FORWARD-D46.182.19.48:53})..."
-		}
+		[ "$DNS_CACHE" == "0" ] && local _cache="/d"
+		ln_start_bin $(find_bin dns2socks) dns2socks "$DNS2SOCKS_SOCKS_SERVER $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT $_cache"
+		echolog "DNS：dns2socks(${DNS2SOCKS_FORWARD-D46.182.19.48:53})..."
 	;;
 	pdnsd)
 		if [ -z "$TCP_NODE1" -o "$TCP_NODE1" == "nil" ]; then
@@ -593,12 +606,12 @@ start_dns() {
 		other_port=$(expr $DNS_PORT + 1)
 		[ -f "$RULES_PATH/gfwlist.conf" ] && cat $RULES_PATH/gfwlist.conf | sort | uniq | sed -e '/127.0.0.1/d' | sed 's/ipset=\/.//g' | sed 's/\/gfwlist//g' > $TMP_PATH/gfwlist.txt
 		[ -f "$TMP_PATH/gfwlist.txt" ] && {
-			[ -f "$RULES_PATH/blacklist_host" -a -s "$RULES_PATH/blacklist_host" ] && cat $RULES_PATH/blacklist_host >> $TMP_PATH/gfwlist.txt
+			[ -f "$RULES_PATH/proxy_host" -a -s "$RULES_PATH/proxy_host" ] && cat $RULES_PATH/proxy_host >> $TMP_PATH/gfwlist.txt
 			local gfwlist_param="-g $TMP_PATH/gfwlist.txt"
 		}
 		[ -f "$RULES_PATH/chnlist" ] && cp -a $RULES_PATH/chnlist $TMP_PATH/chnlist
 		[ -f "$TMP_PATH/chnlist" ] && {
-			[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host >> $TMP_PATH/chnlist
+			[ -f "$RULES_PATH/direct_host" -a -s "$RULES_PATH/direct_host" ] && cat $RULES_PATH/direct_host >> $TMP_PATH/chnlist
 			local chnlist_param="-m $TMP_PATH/chnlist -M"
 		}
 		
@@ -621,12 +634,10 @@ start_dns() {
 				echolog "DNS：ChinaDNS-NG + pdnsd($china_ng_gfw)，国内DNS：$china_ng_chn"
 			fi
 		elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
-			[ "$DNS2SOCKS_SOCKS_SERVER" != "nil" ] && {
-				[ "$DNS_CACHE" == "0" ] && local _cache="/d"
-				ln_start_bin $(find_bin dns2socks) dns2socks "$DNS2SOCKS_SOCKS_SERVER $DNS2SOCKS_FORWARD 127.0.0.1:$other_port $_cache"
-				ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $china_ng_chn -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param $fair_mode"
-				echolog "DNS：ChinaDNS-NG + dns2socks(${DNS2SOCKS_FORWARD:-D46.182.19.48:53})，国内DNS：$china_ng_chn"
-			}
+			[ "$DNS_CACHE" == "0" ] && local _cache="/d"
+			ln_start_bin $(find_bin dns2socks) dns2socks "$DNS2SOCKS_SOCKS_SERVER $DNS2SOCKS_FORWARD 127.0.0.1:$other_port $_cache"
+			ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $china_ng_chn -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param $fair_mode"
+			echolog "DNS：ChinaDNS-NG + dns2socks(${DNS2SOCKS_FORWARD:-D46.182.19.48:53})，国内DNS：$china_ng_chn"
 		elif [ "$up_trust_chinadns_ng_dns" == "udp" ]; then
 			use_udp_node_resolve_dns=1
 			ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $china_ng_chn -t $china_ng_gfw $gfwlist_param $chnlist_param $fair_mode"
@@ -646,9 +657,9 @@ add_dnsmasq() {
 	}
 	
 	[ "$DNS_MODE" != "nonuse" ] && {
-		[ -f "$RULES_PATH/whitelist_host" -a -s "$RULES_PATH/whitelist_host" ] && cat $RULES_PATH/whitelist_host | sed -e "/^$/d" | sort -u | awk '{if (mode == 0 && dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (mode == 0 && dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/whitelist"}' mode=$chinadns_mode dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/whitelist_host.conf
+		[ -f "$RULES_PATH/direct_host" -a -s "$RULES_PATH/direct_host" ] && cat $RULES_PATH/direct_host | sed -e "/^$/d" | sort -u | awk '{if (mode == 0 && dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (mode == 0 && dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/whitelist"}' mode=$chinadns_mode dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/direct_host.conf
 		uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort -u | awk '{if (dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/vpsiplist"}' dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
-		[ -f "$RULES_PATH/blacklist_host" -a -s "$RULES_PATH/blacklist_host" ] && cat $RULES_PATH/blacklist_host | sed -e "/^$/d" | sort -u | awk '{if (mode == 0) print "server=/."$1"/127.0.0.1#'$DNS_PORT'"; print "ipset=/."$1"/blacklist"}' mode=$chinadns_mode > $TMP_DNSMASQ_PATH/blacklist_host.conf
+		[ -f "$RULES_PATH/proxy_host" -a -s "$RULES_PATH/proxy_host" ] && cat $RULES_PATH/proxy_host | sed -e "/^$/d" | sort -u | awk '{if (mode == 0) print "server=/."$1"/127.0.0.1#'$DNS_PORT'"; print "ipset=/."$1"/blacklist"}' mode=$chinadns_mode > $TMP_DNSMASQ_PATH/proxy_host.conf
 		if [ "$chinadns_mode" == 0 ]; then
 			[ -f "$RULES_PATH/gfwlist.conf" -a -s "$RULES_PATH/gfwlist.conf" ] && ln -s $RULES_PATH/gfwlist.conf $TMP_DNSMASQ_PATH/gfwlist.conf
 		else
@@ -733,7 +744,7 @@ gen_pdnsd_config() {
 			min_ttl = 1h;
 			max_ttl = 1w;
 			timeout = 10;
-			par_queries = 1;
+			par_queries = 2;
 			neg_domain_pol = on;
 			udpbufsize = 1024;
 			proc_limit = 2;
@@ -755,6 +766,7 @@ gen_pdnsd_config() {
 				interval = 10m;
 				uptest = none;
 				purge_cache = off;
+				proxy_only = on;
 				caching = $_cache;
 			}
 		EOF
@@ -914,15 +926,17 @@ boot() {
 }
 
 start() {
-	! load_config && return 1
-	start_haproxy
+	load_config
 	start_socks
-	start_redir TCP tcp
-	start_redir UDP udp
-	start_dns
-	add_dnsmasq
-	source $APP_PATH/iptables.sh start
-	/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	[ "$NO_PROXY" == 1 ] || {
+		start_haproxy
+		start_redir TCP tcp
+		start_redir UDP udp
+		start_dns
+		add_dnsmasq
+		source $APP_PATH/iptables.sh start
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	}
 	start_crontab
 	echolog "运行完成！\n"
 }
