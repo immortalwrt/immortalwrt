@@ -241,7 +241,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 			document.getElementsByTagName('img')[i].setAttribute("oncontextmenu","return false;");
 			document.getElementsByTagName('img')[i].setAttribute("ondragstart","return false;");
 		}
-		XHR.poll(5, '<%=dsp.build_url("admin/vpn/passwall/status")%>', null,
+		XHR.poll(5, '<%=dsp.build_url("admin/services/passwall/status")%>', null,
 			function (x, data) {
 				var status_dns = document.getElementById('status_dns');
 				var status_haproxy = document.getElementById('status_haproxy');
@@ -334,7 +334,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 				div.removeAttribute('onclick');
 				s.innerHTML = '<%:Check...%>';
 				var sendDate = (new Date()).getTime();
-				XHR.get('<%=dsp.build_url("admin/vpn/passwall/connect_status")%>', {
+				XHR.get('<%=dsp.build_url("admin/services/passwall/connect_status")%>', {
 						type: type,
 						url : url
 					},
@@ -369,7 +369,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 			if (s) {
 				dom.removeAttribute('onclick');
 				s.innerHTML = '<%:Check...%>';
-				XHR.get('<%=dsp.build_url("admin/vpn/passwall/check_port")%>', null,
+				XHR.get('<%=dsp.build_url("admin/services/passwall/check_port")%>', null,
 					function(x, rv) {
 						if (rv.ret) {
 							s.innerHTML = rv.ret;

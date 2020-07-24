@@ -173,12 +173,12 @@ table td, .table .td {
 				}
 			}
 			if (confirm('<%:Are you sure to delete select nodes?%>') == true){
-				XHR.get('<%=dsp.build_url("admin/vpn/passwall/delete_select_nodes")%>', {
+				XHR.get('<%=dsp.build_url("admin/services/passwall/delete_select_nodes")%>', {
 					ids: ids.join()
 				},
 				function(x, data) {
 					if(x && x.status == 200) {
-						window.location.href = '<%=dsp.build_url("admin/vpn/passwall/node_list")%>';
+						window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
 					}
 					else {
 						alert("<%:Error%>");
@@ -192,7 +192,7 @@ table td, .table .td {
 	
 	function set_node(protocol,number) {
 		if (confirm('<%:Are you sure set to%> ' + protocol.toUpperCase() + "_" + number + '<%:the server?%>')==true){
-			window.location.href = '<%=dsp.build_url("admin/vpn/passwall/set_node")%>?protocol=' + protocol + '&number=' + number + '&section=' + section;
+			window.location.href = '<%=dsp.build_url("admin/services/passwall/set_node")%>?protocol=' + protocol + '&number=' + number + '&section=' + section;
 		}
 	}
 	
@@ -224,7 +224,7 @@ table td, .table .td {
 	function ping_node(cbi_id, dom) {
 		var full = get_address_full(cbi_id);
 		if (full != null) {
-			XHR.get('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+			XHR.get('<%=dsp.build_url("admin/services/passwall/ping_node")%>', {
 					address: full.address,
 					port: full.port
 				},
@@ -277,7 +277,7 @@ table td, .table .td {
 		return new Promise((res) => {
 			const dom = nodes[index];
 			if (!dom) res()
-			ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+			ajax.post('<%=dsp.build_url("admin/services/passwall/ping_node")%>', {
 					index: dom.indexs,
 					address: dom.address,
 					port: dom.port
@@ -333,7 +333,7 @@ table td, .table .td {
 		var indexs = nodes[index].indexs;
 		var address = nodes[index].address;
 		var port = nodes[index].port;
-		ajax.post('<%=dsp.build_url("admin/vpn/passwall/ping_node")%>', {
+		ajax.post('<%=dsp.build_url("admin/services/passwall/ping_node")%>', {
 				index: indexs,
 				address: address,
 				port: port
