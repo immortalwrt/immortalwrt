@@ -550,7 +550,7 @@ footer a {
 }
 .main .main-left .nav li.slide .menu[data-title=VPN]:before {
   content: "\e90b";
-  color: #172b4d;
+  color: #5603ad;
 }
 .main .main-left .nav li.slide .menu[data-title=Network]:before {
   content: "\e908";
@@ -566,7 +566,7 @@ footer a {
 }
 .main .main-left .nav li.slide .menu[data-title=Statistics]:before {
   content: "\e913";
-  color: #172b4d;
+  color: #5603ad;
 }
 .main .main-left .nav li.slide .menu[data-title=Control]:before {
   content: "\e912";
@@ -578,7 +578,7 @@ footer a {
 }
 .main .main-left .nav li.slide .menu[data-title=Logout]:before {
   content: "\e907";
-  color: #32325d;
+  color: #adb5bd;
 }
 .main .main-left .nav li.slide .slide-menu li a {
   position: relative;
@@ -2840,9 +2840,15 @@ input[name="nslookup"] {
     color: #adb5bd;
     border-bottom: #adb5bd 1px solid !important;
     border-radius: 0;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none;
+  }
+  .login-page .login-container .login-form .form-login .input-group input:focus {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
   }
   .login-page .login-container .login-form .form-login .cbi-button-apply {
     background-image: linear-gradient(-135deg, #6c61ab 0%, #594ca9 100%);
@@ -3050,6 +3056,9 @@ input[name="nslookup"] {
   .cbi-tabmenu > li {
     background: #2d2d2d;
   }
+  .cbi-tabmenu {
+    border-bottom: 0px solid #ddd !important;
+  }
   .cbi-tabmenu li[class~="cbi-tab"] a {
     color: #ccc;
   }
@@ -3069,14 +3078,16 @@ input[name="nslookup"] {
   select,
   input {
     color: #ccc;
-    background-color: #3c3c3c !important;
-    border: 1px solid #252526;
+    background-color: transparent;
+    border: 1px solid #3c3c3c !important;
     box-shadow: 0 3px 2px rgba(0, 0, 0, 0.05);
   }
   select:not([multiple="multiple"]):focus,
   input:focus {
-    border-color: darkslateblue;
+    border-color: darkslateblue !important;
+    background-color: transparent;
     outline: 0;
+    box-shadow: none;
   }
   #cbi-dropbear h2,
   #cbi-dropbear .cbi-map-descr,
