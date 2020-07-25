@@ -11,11 +11,11 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 ---
  .../bindings/phy/phy-rockchip-inno-usb3.yaml  |  157 +++
  .../devicetree/bindings/soc/rockchip/grf.txt  |    2 +
- arch/arm64/boot/dts/rockchip/rk3328.dtsi      |   72 ++
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi      |   69 +
  drivers/phy/rockchip/Kconfig                  |    9 +
  drivers/phy/rockchip/Makefile                 |    1 +
  drivers/phy/rockchip/phy-rockchip-inno-usb3.c | 1107 +++++++++++++++++
- 6 files changed, 1348 insertions(+)
+ 6 files changed, 1345 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-inno-usb3.yaml
  create mode 100644 drivers/phy/rockchip/phy-rockchip-inno-usb3.c
 
@@ -196,7 +196,7 @@ index 46e27cd69..ab1265c82 100644
    region.
  
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 31cc1541f..072e988ad 100644
+index 31cc1541f..032a3d7a6 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -805,6 +805,47 @@
@@ -247,7 +247,7 @@ index 31cc1541f..072e988ad 100644
  	sdmmc: dwmmc@ff500000 {
  		compatible = "rockchip,rk3328-dw-mshc", "rockchip,rk3288-dw-mshc";
  		reg = <0x0 0xff500000 0x0 0x4000>;
-@@ -936,6 +977,37 @@
+@@ -936,6 +977,34 @@
  		status = "disabled";
  	};
  
@@ -268,8 +268,6 @@ index 31cc1541f..072e988ad 100644
 +			reg = <0x0 0xff600000 0x0 0x100000>;
 +			interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
 +			dr_mode = "otg";
-+			phys = <&u3phy_utmi>, <&u3phy_pipe>;
-+			phy-names = "usb2-phy", "usb3-phy";
 +			phy_type = "utmi_wide";
 +			snps,dis_enblslpm_quirk;
 +			snps,dis-u2-freeclk-exists-quirk;
@@ -277,7 +275,6 @@ index 31cc1541f..072e988ad 100644
 +			snps,dis_u3_susphy_quirk;
 +			snps,dis-del-phy-power-chg-quirk;
 +			snps,dis-tx-ipgap-linecheck-quirk;
-+			snps,xhci-trb-ent-quirk;
 +			status = "disabled";
 +		};
 +	};
