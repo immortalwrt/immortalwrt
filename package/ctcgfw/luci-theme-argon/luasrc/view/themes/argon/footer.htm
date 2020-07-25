@@ -17,12 +17,16 @@
 -%>
 
 <% local ver = require "luci.version" %>
+</div>
+<footer class="mobile-hide">
+	<div>
+		<a class="luci-link" href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> /
+						<a href="https://github.com/jerrykuku/luci-theme-argon">ArgonTheme v1.6</a> /
+						<%= ver.distversion %>
+		<ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
 	</div>
-	<footer class="mobile-hide">
-	<a href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> / <%= ver.distversion %>
-	<ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
-	</footer>
-	</div>
+</footer>
+</div>
 </div>
 <script>
 	// thanks for Jo-Philipp Wich <jow@openwrt.org>
@@ -30,5 +34,5 @@
 </script>
 <script src="<%=media%>/js/script.js"></script>
 </body>
-</html>
 
+</html>

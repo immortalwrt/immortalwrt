@@ -60,17 +60,29 @@
 		<%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %>
 		- LuCI</title>
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="format-detection" content="telephone=no, email=no" />
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="theme-color" content="#09c">
+	<meta name="x5-fullscreen" content="true">
+	<meta name="full-screen" content="yes">
+	<meta name="x5-page-mode" content="app">
+	<meta name="browsermode" content="application">
 	<meta name="msapplication-tap-highlight" content="no">
-	<meta name="msapplication-TileColor" content="#09c">
+	<meta name="msapplication-TileColor" content="#5e72e4">
 	<meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
 	<meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
-	<meta name="msapplication-TileImage" content="<%=media%>/logo.png" />
-	<link rel="icon" href="<%=media%>/logo.png" sizes="144x144">
-	<link rel="apple-touch-icon-precomposed" href="<%=media%>/logo.png" sizes="144x144">
-	<link rel="stylesheet" href="<%=media%>/cascade.css">
+	<link rel="apple-touch-icon" sizes="60x60" href="<%=media%>/icon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="<%=media%>/icon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="<%=media%>/icon/apple-icon-144x144.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="<%=media%>/icon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="<%=media%>/icon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="<%=media%>/icon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="<%=media%>/icon/favicon-16x16.png">
+	<link rel="manifest" href="<%=media%>/icon/manifest.json">
+	<meta name="msapplication-TileColor" content="#5e72e4">
+	<meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
+	<meta name="theme-color" content="#5e72e4">
+	<link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -78,11 +90,12 @@
 	<% if css then %>
 	<style title="text/css">
 		<%=css %>
+
 	</style>
 	<% end -%>
 	<script src="<%=url('admin/translations', luci.i18n.context.lang)%><%# ?v=PKG_VERSION %>"></script>
 	<script src="<%=resource%>/cbi.js"></script>
-	<script src="<%=resource%>/xhr.js"></script>
+	<script src="<%=resource%>/luci.js"></script>
 	<script src="<%=media%>/js/jquery.min.js"></script>
 	<script type="text/javascript">//<![CDATA[
 		(function () {
@@ -117,97 +130,97 @@
 				for (var i = 0; i < children.length; i++) {
 					var submenu = render_mainmenu(children[i], url + '/' + children[i].name, l),
 						hasChildren = submenu.children.length;
-						isLogout = (children[i].name == 'logout');
+					isLogout = (children[i].name == 'logout');
 					ul.appendChild(E('li', { 'class': hasChildren ? 'slide' : isLogout ? 'lg' : null }, [
 						E('a', {
 							'href': hasChildren ? '#' : L.url(url, children[i].name),
-							'class': hasChildren ? 'menu' : isLogout?"logout":null,
-							'data-title': children[i].title,
+							'class': hasChildren ? 'menu' : isLogout ? "logout" : null,
+							'data-title': children[i].title.replace(" ", "_"),
 						}, [_(children[i].title)]),
 						submenu
 					]));
+				}
+
+				if (l == 1) {
+					var container = document.querySelector('#mainmenu');
+
+					container.appendChild(ul);
+					container.style.display = '';
+				}
+
+				return ul;
 			}
 
-			if (l == 1) {
-				var container = document.querySelector('#mainmenu');
+			function render_modemenu(tree) {
+				var ul = document.querySelector('#modemenu'),
+					children = get_children(tree);
+
+				for (var i = 0; i < children.length; i++) {
+					var isActive = (L.env.requestpath.length ? children[i].name == L.env.requestpath[0] : i == 0);
+
+					ul.appendChild(E('li', {}, [
+						E('a', {
+							'href': L.url(children[i].name),
+							'class': isActive ? 'active' : null
+						}, [_(children[i].title)])
+					]));
+
+					if (isActive)
+						render_mainmenu(children[i], children[i].name);
+				}
+
+				if (ul.children.length > 1)
+					ul.style.display = '';
+			}
+
+			function render_tabmenu(tree, url, level) {
+				var container = document.querySelector('#tabmenu'),
+					l = (level || 0) + 1,
+					ul = E('ul', { 'class': 'tabs' }),
+					children = get_children(tree),
+					activeNode = null;
+
+				if (children.length == 0)
+					return E([]);
+
+				for (var i = 0; i < children.length; i++) {
+					var isActive = (L.env.dispatchpath[l + 2] == children[i].name),
+						activeClass = isActive ? ' active' : '',
+						className = 'tabmenu-item-%s %s'.format(children[i].name, activeClass);
+
+					ul.appendChild(E('li', { 'class': className }, [
+						E('a', { 'href': L.url(url, children[i].name) }, [_(children[i].title)])
+					]));
+
+					if (isActive)
+						activeNode = children[i];
+				}
 
 				container.appendChild(ul);
 				container.style.display = '';
+
+				if (activeNode)
+					container.appendChild(render_tabmenu(activeNode, url + '/' + activeNode.name, l));
+
+				return ul;
 			}
 
-			return ul;
-		}
+			document.addEventListener('luci-loaded', function (ev) {
+				var tree = <%= luci.http.write_json(luci.dispatcher.menu_json() or { }) %>,
+				node = tree,
+				url = '';
 
-			function render_modemenu(tree) {
-			var ul = document.querySelector('#modemenu'),
-				children = get_children(tree);
+			render_modemenu(tree);
 
-			for (var i = 0; i < children.length; i++) {
-				var isActive = (L.env.requestpath.length ? children[i].name == L.env.requestpath[0] : i == 0);
+			if (L.env.dispatchpath.length >= 3) {
+				for (var i = 0; i < 3 && node; i++) {
+					node = node.children[L.env.dispatchpath[i]];
+					url = url + (url ? '/' : '') + L.env.dispatchpath[i];
+				}
 
-				ul.appendChild(E('li', {}, [
-					E('a', {
-						'href': L.url(children[i].name),
-						'class': isActive ? 'active' : null
-					}, [_(children[i].title)])
-				]));
-
-				if (isActive)
-					render_mainmenu(children[i], children[i].name);
+				if (node)
+					render_tabmenu(node, url);
 			}
-
-			if (ul.children.length > 1)
-				ul.style.display = '';
-		}
-
-		function render_tabmenu(tree, url, level) {
-			var container = document.querySelector('#tabmenu'),
-				l = (level || 0) + 1,
-				ul = E('ul', { 'class': 'tabs' }),
-				children = get_children(tree),
-				activeNode = null;
-
-			if (children.length == 0)
-				return E([]);
-
-			for (var i = 0; i < children.length; i++) {
-				var isActive = (L.env.dispatchpath[l + 2] == children[i].name),
-					activeClass = isActive ? ' active' : '',
-					className = 'tabmenu-item-%s %s'.format(children[i].name, activeClass);
-
-				ul.appendChild(E('li', { 'class': className }, [
-					E('a', { 'href': L.url(url, children[i].name) }, [_(children[i].title)])
-				]));
-
-				if (isActive)
-					activeNode = children[i];
-			}
-
-			container.appendChild(ul);
-			container.style.display = '';
-
-			if (activeNode)
-				container.appendChild(render_tabmenu(activeNode, url + '/' + activeNode.name, l));
-
-			return ul;
-		}
-
-		document.addEventListener('luci-loaded', function (ev) {
-			var tree = <%= luci.http.write_json(luci.dispatcher.menu_json() or { }) %>,
-			node = tree,
-			url = '';
-
-		render_modemenu(tree);
-
-		if (L.env.dispatchpath.length >= 3) {
-			for (var i = 0; i < 3 && node; i++) {
-				node = node.children[L.env.dispatchpath[i]];
-				url = url + (url ? '/' : '') + L.env.dispatchpath[i];
-			}
-
-			if (node)
-				render_tabmenu(node, url);
-		}
 		});
 		}) ();
 	//]]></script>
@@ -218,14 +231,6 @@
 	data-page="<%= table.concat(disp.context.requestpath, "-") %>">
 
 	<div class="main">
-		<div style="" class="loading">
-			<div class="sk-folding-cube">
-				<div class="sk-cube1 sk-cube"></div>
-				<div class="sk-cube2 sk-cube"></div>
-				<div class="sk-cube4 sk-cube"></div>
-				<div class="sk-cube3 sk-cube"></div>
-			</div>
-		</div>
 		<div class="main-left" id="mainmenu" style="display:none">
 			<div class="sidenav-header d-flex align-items-center">
 				<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
@@ -248,20 +253,16 @@
 					<div class="container">
 						<a class="showSide"></a>
 						<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
-						<div class="pull-right">
-							<span id="xhr_poll_status" style="display:none"
-								onclick="XHR.running() ? XHR.halt() : XHR.run()">
-								<span class="label success" id="xhr_poll_status_on"><span
-										class="mobile-hide"><%:Auto Refresh%></span> <%:on%></span>
-								<span class="label" id="xhr_poll_status_off" style="display:none"><span
-										class="mobile-hide"><%:Auto Refresh%></span> <%:off%></span>
-							</span>
-						</div>
+						<div class="status" id="indicators">
+						<span id="xhr_poll_status" style="display:none" onclick="XHR.running() ? XHR.halt() : XHR.run()">
+							<span class="label success" id="xhr_poll_status_on"><span class="mobile-hide"><%:Auto Refresh%></span> <%:on%></span>
+							<span class="label" id="xhr_poll_status_off" style="display:none"><span class="mobile-hide"><%:Auto Refresh%></span> <%:off%></span>
+						</span>
+					</div>
 					</div>
 				</div>
 			</header>
 			<div class="darkMask"></div>
-			<div class="login-bg" style="background-image:url(<%=media%>/img/bg<%=math.random(1,bgcount)%>.jpg)"></div>
 			<div id="maincontent">
 				<div class="container">
 					<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>

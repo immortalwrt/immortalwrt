@@ -23,7 +23,6 @@
 
 document.addEventListener('luci-loaded', function(ev) {
 (function ($) {
-	$(".main > .loading").fadeOut();
 
 	/**
 	 * trim text, Remove spaces, wrap
@@ -109,7 +108,6 @@ document.addEventListener('luci-loaded', function(ev) {
 	$(".main > .main-left > .nav > .slide > .slide-menu > li > a").click(function () {
 		if (lastNode != undefined) lastNode.removeClass("active");
 		$(this).parent().addClass("active");
-		$(".main > .loading").fadeIn("fast");
 		return true;
 	});
 
@@ -119,7 +117,6 @@ document.addEventListener('luci-loaded', function(ev) {
 	$(".main > .main-left > .nav > .slide > .slide-menu > li").click(function () {
 		if (lastNode != undefined) lastNode.removeClass("active");
 		$(this).addClass("active");
-		$(".main > .loading").fadeIn("fast");
 		window.location = $($(this).find("a")[0]).attr("href");
 		return false;
 	});
@@ -140,16 +137,12 @@ document.addEventListener('luci-loaded', function(ev) {
 	$(".showSide").click(function () {
 		if (showSide) {
 			$(".darkMask").stop(true).fadeOut("fast");
-			$(".main-left").stop(true).animate({
-				width: "0"
-			}, "200");
+			$(".main-left").width(0);
 			$(".main-right").css("overflow-y", "visible");
 			showSide = false;
 		} else {
 			$(".darkMask").stop(true).fadeIn("fast");
-			$(".main-left").stop(true).animate({
-				width: "13rem"
-			}, "200");
+			$(".main-left").width("13rem")
 			$(".main-right").css("overflow-y", "hidden");
 			showSide = true;
 		}
@@ -159,9 +152,7 @@ document.addEventListener('luci-loaded', function(ev) {
 		if (showSide) {
 			showSide = false;
 			$(".darkMask").stop(true).fadeOut("fast");
-			$(".main-left").stop(true).animate({
-				width: "0"
-			}, "fast");
+			$(".main-left").width(0);
 			$(".main-right").css("overflow-y", "visible");
 		}
 	});
