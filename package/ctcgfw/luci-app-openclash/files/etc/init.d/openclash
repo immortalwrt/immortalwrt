@@ -62,8 +62,11 @@ change_dns() {
    if [ "$2" -eq "1" ]; then
       uci set dhcp.@dnsmasq[0].cachesize=0 2>/dev/null
    fi
+   
    uci commit dhcp
    uci commit openclash
+   
+   /usr/share/openclash/openclash_custom_domain_dns.sh
 }
 
 revert_dns() {
@@ -93,6 +96,7 @@ revert_dns() {
    uci commit dhcp
    uci commit openclash
    rm -rf /tmp/dnsmasq.d/dnsmasq_openclash.conf >/dev/null 2>&1
+   rm -rf /tmp/dnsmasq.d/dnsmasq_openclash_custom_domain.conf >/dev/null 2>&1
 }
 
 kill_clash()
@@ -1022,7 +1026,7 @@ do_run_core()
        core_type="Game"
     fi
     
-    if [ "$proxy_mode" = "Script" ] || [ "$rule_source" = "ConnersHua" ]; then
+    if [ "$proxy_mode" = "script" ] || [ "$rule_source" = "ConnersHua" ]; then
        ln -s /etc/openclash/core/clash_tun /etc/openclash/clash 2>/dev/null
        core_type="Tun"
     fi
@@ -1077,6 +1081,21 @@ cat > "/var/etc/openclash.include" <<-EOF
 /etc/init.d/openclash reload >/dev/null 2>&1
 EOF
 
+if [ "$china_ip_route" -eq 1 ]; then
+   if [ ! -f "/tmp/china_ip_route.ipset" ]; then
+      cp /etc/openclash/rule_provider/ChinaIP.yaml /tmp/china_ip_route.list 2>/dev/null
+      sed -i "s/'//g" /tmp/china_ip_route.list 2>/dev/null
+      sed -i "s/^ \{0,\}- //g" /tmp/china_ip_route.list 2>/dev/null
+      sed -i '/payload:/d' /tmp/china_ip_route.list 2>/dev/null
+      sed -i '/^ \{0,\}#/d' /tmp/china_ip_route.list 2>/dev/null
+      echo "create china_ip_route hash:net family inet hashsize 1024 maxelem 65536" >/tmp/china_ip_route.ipset
+      awk '!/^$/&&!/^#/{printf("add china_ip_route %s'" "'\n",$0)}' /tmp/china_ip_route.list >>/tmp/china_ip_route.ipset
+      rm -rf /tmp/china_ip_route.list 2>/dev/null
+   fi
+   ipset -! flush china_ip_route 2>/dev/null
+   ipset -! restore </tmp/china_ip_route.ipset 2>/dev/null
+fi
+
 #lan_ac
 if [ "$operation_mode" = "redir-host" ] && [ "$en_mode" = "redir-host" ]; then
    if [ "$lan_ac_mode" = "0" ] && [ -n "$(uci get openclash.config.lan_ac_black_ips 2>/dev/null)" ]; then
@@ -1114,6 +1133,9 @@ if [ -z "$en_mode_tun" ]; then
    iptables -t nat -A openclash -m set --match-set localnetwork dst -j RETURN
    iptables -t nat -A openclash -m set --match-set lan_ac_black_ips src -j RETURN >/dev/null 2>&1
    iptables -t nat -A openclash -m set ! --match-set lan_ac_white_ips src -j RETURN >/dev/null 2>&1
+   if [ "$en_mode" = "redir-host" ]; then
+      iptables -t nat -A openclash -m set --match-set china_ip_route dst -j RETURN >/dev/null 2>&1
+   fi
    iptables -t nat -A openclash -p tcp -j REDIRECT --to-ports "$proxy_port"
    iptables -t nat -I PREROUTING -p tcp -d 8.8.8.8 -j REDIRECT --to-ports "$proxy_port"
    iptables -t nat -I PREROUTING -p tcp -d 8.8.4.4 -j REDIRECT --to-ports "$proxy_port"
@@ -1127,6 +1149,9 @@ if [ -z "$en_mode_tun" ]; then
       iptables -t mangle -A openclash -m set --match-set localnetwork dst -j RETURN
       iptables -t mangle -A openclash -m set --match-set lan_ac_black_ips src -j RETURN >/dev/null 2>&1
       iptables -t mangle -A openclash -m set ! --match-set lan_ac_white_ips src -j RETURN >/dev/null 2>&1
+      if [ "$en_mode" = "redir-host" ]; then
+   	     iptables -t mangle -A openclash -m set --match-set china_ip_route dst -j RETURN >/dev/null 2>&1
+      fi
       iptables -t mangle -A openclash -p udp --dport 53 -j RETURN >/dev/null 2>&1
       #端口转发
       config_load "firewall"
@@ -1201,6 +1226,7 @@ else
    #其他流量
    iptables -t mangle -A openclash -m set --match-set lan_ac_black_ips src -j RETURN >/dev/null 2>&1
    iptables -t mangle -A openclash -m set ! --match-set lan_ac_white_ips src -j RETURN >/dev/null 2>&1
+   iptables -t mangle -A openclash -m set --match-set china_ip_route dst -j RETURN >/dev/null 2>&1
    iptables -t mangle -A openclash -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"
    iptables -t mangle -I PREROUTING -j openclash
    iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
@@ -1278,6 +1304,7 @@ revert_firewall()
    #ip6tables -t mangle -D PREROUTING -j MARK --set-mark "$PROXY_FWMARK" >/dev/null 2>&1
 
    ipset destroy localnetwork >/dev/null 2>&1
+   ipset destroy china_ip_route >/dev/null 2>&1
    ipset destroy lan_ac_white_ips >/dev/null 2>&1
    ipset destroy lan_ac_black_ips >/dev/null 2>&1
 }
@@ -1306,6 +1333,7 @@ get_config()
    lan_ac_mode=$(uci get openclash.config.lan_ac_mode 2>/dev/null)
    enable_rule_proxy=$(uci get openclash.config.enable_rule_proxy 2>/dev/null)
    stack_type=$(uci get openclash.config.stack_type 2>/dev/null)
+   china_ip_route=$(uci get openclash.config.china_ip_route 2>/dev/null)
 }
 
 start()
@@ -1423,7 +1451,9 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
                    mv "$START_BACKUP" /tmp/configrules.bak
                    sed -i -n '/^rules:/,$p' /tmp/configrules.bak
                    sed -i '/^rules:/,$d' "$CONFIG_FILE" 2>/dev/null
-                   sed -i '/##Other-rule-providers##/,/##Other-rule-providers-end##/d' "$CONFIG_FILE" 2>/dev/null
+                   if [ -z "$(grep "##source:" /tmp/configrules.bak 2>/dev/null)" ]; then
+                      sed -i '/##Other-rule-providers##/,/##Other-rule-providers-end##/d' "$CONFIG_FILE" 2>/dev/null
+                   fi
                    cat /tmp/configrules.bak >> "$CONFIG_FILE"
                    rm -rf /tmp/configrules.bak
                    nohup "$CLASH" -d "$CLASH_CONFIG" -f "$CONFIG_FILE" >> $LOG_FILE 2>&1 &
