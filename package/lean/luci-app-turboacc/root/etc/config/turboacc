@@ -1,7 +1,7 @@
 
 config turboacc 'config'
 	option sw_flow '1'
-	option hw_flow '0'
+	option hw_flow '1'
 	option sfe_flow '1'
 	option sfe_bridge '1'
 	option sfe_ipv6 '0'
