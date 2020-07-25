@@ -470,7 +470,7 @@ function rand_geturl(){
 							uci delete network.wan.mtu
 							uci commit network
 							uci set dhcp.@dnsmasq[0].port='53'
-							uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
+							uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.d/resolv.conf.auto'
 							uci delete dhcp.@dnsmasq[0].server
 							uci delete dhcp.@dnsmasq[0].noresolv
 							uci commit dhcp
