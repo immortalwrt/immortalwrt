@@ -37,7 +37,7 @@ define KernelPackage/sched-cake-virtual
   SUBMENU:=Network Support
   TITLE:=Virtual package for sched-cake
   URL:=https://github.com/dtaht/sch_cake
-  DEPENDS:=+!LINUX_4_14:kmod-sched-cake +LINUX_4_14:kmod-sched-cake-oot
+  DEPENDS:=+!(LINUX_4_9||LINUX_4_14):kmod-sched-cake +(LINUX_4_9||LINUX_4_14):kmod-sched-cake-oot
 endef
 
 define KernelPackage/sched-cake-virtual/description
