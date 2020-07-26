@@ -1298,6 +1298,67 @@ static struct device_info boards[] = {
 		.last_sysupgrade_partition = "file-system"
 	},
 
+	/** Firmware layout for the EAP225-Wall v2 */
+	{
+		.id     = "EAP225-WALL-V2",
+		.support_list =
+			"SupportList:\r\n"
+			"EAP225-Wall(TP-Link|UN|AC1200-D):2.0\r\n",
+		.support_trail = '\xff',
+		.soft_ver = NULL,
+		.soft_ver_compat_level = 1,
+
+		.partitions = {
+			{"fs-uboot", 0x00000, 0x20000},
+			{"partition-table", 0x20000, 0x02000},
+			{"default-mac", 0x30000, 0x01000},
+			{"support-list", 0x31000, 0x00100},
+			{"product-info", 0x31100, 0x00400},
+			{"soft-version", 0x32000, 0x00100},
+			{"firmware", 0x40000, 0xd80000},
+			{"user-config", 0xdc0000, 0x30000},
+			{"mutil-log", 0xf30000, 0x80000},
+			{"oops", 0xfb0000, 0x40000},
+			{"radio", 0xff0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system"
+	},
+
+	/** Firmware layout for the EAP245 v3 */
+	{
+		.id     = "EAP245-V3",
+		.support_list =
+			"SupportList:\r\n"
+			"EAP245(TP-Link|UN|AC1750-D):3.0\r\n",
+		.support_trail = '\xff',
+		.soft_ver = NULL,
+		.soft_ver_compat_level = 1,
+
+		/** Firmware partition with dynamic kernel/rootfs split */
+		.partitions = {
+			{"factroy-boot", 0x00000, 0x40000},
+			{"fs-uboot", 0x40000, 0x40000},
+			{"partition-table", 0x80000, 0x10000},
+			{"default-mac", 0x90000, 0x01000},
+			{"support-list", 0x91000, 0x00100},
+			{"product-info", 0x91100, 0x00400},
+			{"soft-version", 0x92000, 0x00100},
+			{"radio", 0xa0000, 0x10000},
+			{"extra-para", 0xb0000, 0x10000},
+			{"firmware", 0xc0000, 0xe40000},
+			{"config", 0xf00000, 0x30000},
+			{"mutil-log", 0xf30000, 0x80000},
+			{"oops", 0xfb0000, 0x40000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system"
+	},
+
 	/** Firmware layout for the TL-WA850RE v2 */
 	{
 		.id     = "TLWA850REV2",
@@ -1373,6 +1434,78 @@ static struct device_info boards[] = {
 			{"user-config", 0x3d0000, 0x10000},
 			{"default-config", 0x3e0000, 0x10000},
 			{"radio", 0x3f0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system"
+	},
+
+	/** Firmware layout for the TL-WPA8630P v2 (EU)*/
+	{
+		.id     = "TL-WPA8630P-V2-EU",
+		.vendor = "",
+		.support_list =
+			"SupportList:\n"
+			"{product_name:TL-WPA8630P,product_ver:2.0.0,special_id:45550000}\n",
+		.support_trail = '\x00',
+		.soft_ver = NULL,
+
+		.partitions = {
+			{"factory-uboot", 0x00000, 0x20000},
+			{"fs-uboot", 0x20000, 0x20000},
+			{"firmware", 0x40000, 0x5e0000},
+			{"partition-table", 0x620000, 0x02000},
+			{"default-mac", 0x630000, 0x00020},
+			{"pin", 0x630100, 0x00020},
+			{"device-id", 0x630200, 0x00030},
+			{"product-info", 0x631100, 0x01000},
+			{"extra-para", 0x632100, 0x01000},
+			{"soft-version", 0x640000, 0x01000},
+			{"support-list", 0x641000, 0x01000},
+			{"profile", 0x642000, 0x08000},
+			{"user-config", 0x650000, 0x10000},
+			{"default-config", 0x660000, 0x10000},
+			{"default-nvm", 0x670000, 0xc0000},
+			{"default-pib", 0x730000, 0x40000},
+			{"radio", 0x7f0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system"
+	},
+
+	/** Firmware layout for the TL-WPA8630P v2 (INT)*/
+	{
+		.id     = "TL-WPA8630P-V2-INT",
+		.vendor = "",
+		.support_list =
+			"SupportList:\n"
+			"{product_name:TL-WPA8630P,product_ver:2.0.0,special_id:41550000}\n"
+			"{product_name:TL-WPA8630P,product_ver:2.0.0,special_id:44450000}\n"
+			"{product_name:TL-WPA8630P,product_ver:2.1.0,special_id:41550000}\n",
+		.support_trail = '\x00',
+		.soft_ver = NULL,
+
+		.partitions = {
+			{"factory-uboot", 0x00000, 0x20000},
+			{"fs-uboot", 0x20000, 0x20000},
+			{"firmware", 0x40000, 0x5e0000},
+			{"partition-table", 0x620000, 0x02000},
+			{"extra-para", 0x632100, 0x01000},
+			{"soft-version", 0x640000, 0x01000},
+			{"support-list", 0x641000, 0x01000},
+			{"profile", 0x642000, 0x08000},
+			{"user-config", 0x650000, 0x10000},
+			{"default-config", 0x660000, 0x10000},
+			{"default-nvm", 0x670000, 0xc0000},
+			{"default-pib", 0x730000, 0x40000},
+			{"default-mac", 0x7e0000, 0x00020},
+			{"pin", 0x7e0100, 0x00020},
+			{"device-id", 0x7e0200, 0x00030},
+			{"product-info", 0x7e1100, 0x01000},
+			{"radio", 0x7f0000, 0x10000},
 			{NULL, 0, 0}
 		},
 
@@ -1538,6 +1671,50 @@ static struct device_info boards[] = {
 			"{product_name:RE200,product_ver:2.0.0,special_id:52550000}\n"
 			"{product_name:RE200,product_ver:2.0.0,special_id:54570000}\n"
 			"{product_name:RE200,product_ver:2.0.0,special_id:55530000}\n",
+		.support_trail = '\x00',
+		.soft_ver = NULL,
+
+		.partitions = {
+			{"fs-uboot", 0x00000, 0x20000},
+			{"firmware", 0x20000, 0x7a0000},
+			{"partition-table", 0x7c0000, 0x02000},
+			{"default-mac", 0x7c2000, 0x00020},
+			{"pin", 0x7c2100, 0x00020},
+			{"product-info", 0x7c3100, 0x01000},
+			{"soft-version", 0x7c4200, 0x01000},
+			{"support-list", 0x7c5200, 0x01000},
+			{"profile", 0x7c6200, 0x08000},
+			{"config-info", 0x7ce200, 0x00400},
+			{"user-config", 0x7d0000, 0x10000},
+			{"default-config", 0x7e0000, 0x10000},
+			{"radio", 0x7f0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system"
+	},
+
+  /** Firmware layout for the RE200 v3 */
+	{
+		.id     = "RE200-V3",
+		.vendor = "",
+		.support_list =
+			"SupportList:\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:00000000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:41520000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:41550000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:42520000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:43410000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:45470000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:45530000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:45550000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:49440000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:4A500000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:4B520000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:52550000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:54570000}\n"
+			"{product_name:RE200,product_ver:3.0.0,special_id:55530000}\n",
 		.support_trail = '\x00',
 		.soft_ver = NULL,
 
@@ -2397,6 +2574,9 @@ static void build_image(const char *output,
 	} else if (strcasecmp(info->id, "ARCHER-C6-V2-US") == 0) {
 		const char mdat[11] = {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00};
 		parts[5] = put_data("extra-para", mdat, 11);
+	} else if (strcasecmp(info->id, "EAP245-V3") == 0) {
+		const char mdat[10] = {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01};
+		parts[5] = put_data("extra-para", mdat, 10);
 	}
 
 	size_t len;
