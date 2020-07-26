@@ -44,6 +44,7 @@ struct dtd_rockchip_rk3328_dw_mshc {
 	fdt64_t		reg[2];
 	bool		u_boot_spl_fifo_mode;
 	fdt32_t		vmmc_supply;
+	fdt32_t		vqmmc_supply;
 };
 struct dtd_rockchip_rk3328_grf {
 	fdt64_t		reg[2];

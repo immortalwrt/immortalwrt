@@ -1,4 +1,4 @@
-From 42e21846e8faa537f2eda0297e1faa7d8a0abddb Mon Sep 17 00:00:00 2001
+From bd067ecdb13efb78e0f166b53837dc141ca47380 Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
 Date: Fri, 10 Jul 2020 14:58:30 +0200
 Subject: [PATCH] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
@@ -18,17 +18,19 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 ---
  arch/arm/dts/Makefile                      |   1 +
  arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi |  34 +++
- arch/arm/dts/rk3328-nanopi-r2s.dts         | 317 +++++++++++++++++++++
+ arch/arm/dts/rk3328-nanopi-r2s.dts         | 323 +++++++++++++++++++++
  board/rockchip/evb_rk3328/MAINTAINERS      |   7 +
  configs/nanopi-r2s-rk3328_defconfig        |  99 +++++++
- 5 files changed, 458 insertions(+)
+ 5 files changed, 464 insertions(+)
  create mode 100644 arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3328-nanopi-r2s.dts
  create mode 100644 configs/nanopi-r2s-rk3328_defconfig
 
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index cee10f533f..a6bd8ea0d8 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -106,6 +106,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -107,6 +107,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
@@ -36,6 +38,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	rk3328-roc-cc.dtb \
  	rk3328-rock64.dtb \
  	rk3328-rock-pi-e.dtb
+diff --git a/arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi b/arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
+new file mode 100644
+index 0000000000..4159348402
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 @@ -0,0 +1,34 @@
@@ -73,9 +78,12 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +&vcc_sd {
 +	u-boot,dm-spl;
 +};
+diff --git a/arch/arm/dts/rk3328-nanopi-r2s.dts b/arch/arm/dts/rk3328-nanopi-r2s.dts
+new file mode 100644
+index 0000000000..073cfd7bb2
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2s.dts
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,323 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
@@ -113,6 +121,23 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		vin-supply = <&vcc_io>;
 +	};
 +
++	vcc_sdio: sdmmcio-regulator {
++		compatible = "regulator-gpio";
++		gpios = <&gpio1 RK_PD4 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		states = <1800000 0x1
++			  3300000 0x0>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&sdio_vcc_pin>;
++		regulator-always-on;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-name = "vcc_sdio";
++		regulator-settling-time-us = <5000>;
++		regulator-type = "voltage";
++		vin-supply = <&vcc_io>;
++	};
++
 +	vcc_sys: vcc-sys {
 +		compatible = "regulator-fixed";
 +		regulator-name = "vcc_sys";
@@ -120,18 +145,6 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		regulator-boot-on;
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
-+	};
-+
-+	vcc_rtl8153: vcc-rtl8153-regulator {
-+		compatible = "regulator-fixed";
-+		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rtl8153_en_drv>;
-+		regulator-always-on;
-+		regulator-name = "vcc_rtl8153";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		enable-active-high;
 +	};
 +
 +	leds {
@@ -321,7 +334,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +	vccio1-supply = <&vcc_io>;
 +	vccio2-supply = <&vcc18_emmc>;
-+	vccio3-supply = <&vcc_io>;
++	vccio3-supply = <&vcc_sdio>;
 +	vccio4-supply = <&vcc_18>;
 +	vccio5-supply = <&vcc_io>;
 +	vccio6-supply = <&vcc_io>;
@@ -330,7 +343,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +&pinctrl {
 +	leds {
-+		led_pins: led_pins {
++		led_pins: led-pins {
 +			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>,
 +							<2 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>,
 +							<2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -338,7 +351,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	};
 +
 +	button {
-+		button_pins: button_pins {
++		button_pins: button-pins {
 +			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
@@ -349,9 +362,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		};
 +	};
 +
-+	usb {
-+		rtl8153_en_drv: rtl8153-en-drv {
-+			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
++	sd {
++		sdio_vcc_pin: sdio-vcc-pin {
++			rockchip,pins = <1 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
 +};
@@ -365,6 +378,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&sdmmc0_clk &sdmmc0_cmd &sdmmc0_dectn &sdmmc0_bus4>;
 +	vmmc-supply = <&vcc_sd>;
++	vqmmc-supply = <&vcc_sdio>;
 +	status = "okay";
 +};
 +
@@ -393,6 +407,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +&usb_host0_ohci {
 +	status = "okay";
 +};
+diff --git a/board/rockchip/evb_rk3328/MAINTAINERS b/board/rockchip/evb_rk3328/MAINTAINERS
+index e7dd59ff4e..14fda46e8f 100644
 --- a/board/rockchip/evb_rk3328/MAINTAINERS
 +++ b/board/rockchip/evb_rk3328/MAINTAINERS
 @@ -5,6 +5,13 @@ F:      board/rockchip/evb_rk3328
@@ -409,6 +425,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  ROC-RK3328-CC
  M:      Loic Devulder <ldevulder@suse.com>
  M:      Chen-Yu Tsai <wens@csie.org>
+diff --git a/configs/nanopi-r2s-rk3328_defconfig b/configs/nanopi-r2s-rk3328_defconfig
+new file mode 100644
+index 0000000000..2c028e9d0b
 --- /dev/null
 +++ b/configs/nanopi-r2s-rk3328_defconfig
 @@ -0,0 +1,99 @@
@@ -511,3 +530,6 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +CONFIG_TPL_TINY_MEMSET=y
 +CONFIG_ERRNO_STR=y
 +CONFIG_SMBIOS_MANUFACTURER="pine64"
+-- 
+2.27.0
+

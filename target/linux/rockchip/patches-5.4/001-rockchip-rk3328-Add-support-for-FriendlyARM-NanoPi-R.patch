@@ -1,9 +1,9 @@
-From 7e772d77a4ac5174803c1524598c5eb677360aec Mon Sep 17 00:00:00 2001
+From c222b8b15193f3ed15562fe7e06f3573aac05b70 Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
 Date: Fri, 10 Jul 2020 15:57:46 +0200
 Subject: [PATCH] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
 
-This adds support for the NanoPi R2S from FriendlyArm.
+This adds support for the NanoPi R2S from FriendlyARM.
 
 Rockchip RK3328 SoC
 1GB DDR4 RAM
@@ -17,8 +17,8 @@ WAN - LAN - SYS LED
 Signed-off-by: David Bauer <mail@david-bauer.net>
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   | 299 ++++++++++++++++++
- 2 files changed, 300 insertions(+)
+ .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   | 323 ++++++++++++++++++
+ 2 files changed, 324 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
@@ -33,7 +33,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-evb-act8846.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -0,0 +1,299 @@
+@@ -0,0 +1,323 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
@@ -68,6 +68,23 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		regulator-name = "vcc_sd";
 +		regulator-min-microvolt = <3300000>;
 +		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc_io>;
++	};
++
++	vcc_sdio: sdmmcio-regulator {
++		compatible = "regulator-gpio";
++		gpios = <&gpio1 RK_PD4 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		states = <1800000 0x1
++			  3300000 0x0>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&sdio_vcc_pin>;
++		regulator-always-on;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-name = "vcc_sdio";
++		regulator-settling-time-us = <5000>;
++		regulator-type = "voltage";
 +		vin-supply = <&vcc_io>;
 +	};
 +
@@ -267,7 +284,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +	vccio1-supply = <&vcc_io>;
 +	vccio2-supply = <&vcc18_emmc>;
-+	vccio3-supply = <&vcc_io>;
++	vccio3-supply = <&vcc_sdio>;
 +	vccio4-supply = <&vcc_18>;
 +	vccio5-supply = <&vcc_io>;
 +	vccio6-supply = <&vcc_io>;
@@ -276,7 +293,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +&pinctrl {
 +	leds {
-+		led_pins: led_pins {
++		led_pins: led-pins {
 +			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>,
 +							<2 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>,
 +							<2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -284,7 +301,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	};
 +
 +	button {
-+		button_pins: button_pins {
++		button_pins: button-pins {
 +			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
@@ -292,6 +309,12 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	pmic {
 +		pmic_int_l: pmic-int-l {
 +			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
++	sd {
++		sdio_vcc_pin: sdio-vcc-pin {
++			rockchip,pins = <1 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
 +};
@@ -305,6 +328,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&sdmmc0_clk &sdmmc0_cmd &sdmmc0_dectn &sdmmc0_bus4>;
 +	vmmc-supply = <&vcc_sd>;
++	vqmmc-supply = <&vcc_sdio>;
 +	status = "okay";
 +};
 +

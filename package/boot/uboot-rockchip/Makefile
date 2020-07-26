@@ -20,15 +20,8 @@ define U-Boot/Default
   HIDDEN:=1
 endef
 
-define U-Boot/rockpro64-rk3399
-  BUILD_SUBTARGET:=armv8
-  NAME:=RockPro64
-  BUILD_DEVICES:= \
-    pine64_rockpro64
-  DEPENDS:=+PACKAGE_u-boot-rockpro64-rk3399:arm-trusted-firmware-rockchip
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3399_bl31.elf
-endef
+
+# RK3328 boards
 
 define U-Boot/nanopi-r2s-rk3328
   BUILD_SUBTARGET:=armv8
@@ -39,6 +32,19 @@ define U-Boot/nanopi-r2s-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3328_bl31.elf
   OF_PLATDATA:=$(1)
+endef
+
+
+# RK3399 boards
+
+define U-Boot/rockpro64-rk3399
+  BUILD_SUBTARGET:=armv8
+  NAME:=RockPro64
+  BUILD_DEVICES:= \
+    pine64_rockpro64
+  DEPENDS:=+PACKAGE_u-boot-rockpro64-rk3399:arm-trusted-firmware-rockchip
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
+  ATF:=rk3399_bl31.elf
 endef
 
 UBOOT_TARGETS := \
