@@ -29,7 +29,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	gmac_clkin: external-gmac-clock {
  		compatible = "fixed-clock";
  		clock-frequency = <125000000>;
-@@ -50,7 +57,7 @@
+@@ -67,7 +74,7 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&led_pins>;
  
