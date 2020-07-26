@@ -25,10 +25,10 @@ local dsp = require "luci.dispatcher"
 	//<![CDATA[
 	function link_clear_temp() {
 		if (confirm('<%:Are you sure to clear all cached links?%>') == true){
-			XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_clear_temp")%>', null,
+			XHR.get('<%=dsp.build_url("admin/services/passwall/link_clear_temp")%>', null,
 			function(x, data) {
 				if(x && x.status == 200) {
-					window.location.href = '<%=dsp.build_url("admin/vpn/passwall/node_list")%>';
+					window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
 				}
 				else {
 					alert("<%:Error%>");
@@ -39,7 +39,7 @@ local dsp = require "luci.dispatcher"
 
 	function link_load_temp() {
 		var inputer = document.getElementById("nodes_link");
-		XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_load_temp")%>', null,
+		XHR.get('<%=dsp.build_url("admin/services/passwall/link_load_temp")%>', null,
 		function(x, data) {
 			if(x.readyState === 4 && x.status === 200) {
 				try {
@@ -60,12 +60,12 @@ local dsp = require "luci.dispatcher"
 
 	function ajax_add_node(link) {
 		if (link) {
-			XHR.get('<%=dsp.build_url("admin/vpn/passwall/link_add_node")%>', {
+			XHR.get('<%=dsp.build_url("admin/services/passwall/link_add_node")%>', {
 				'link': link
 			},
 			function(x, data) {
 				if(x && x.status == 200) {
-					window.location.href = '<%=dsp.build_url("admin/vpn/passwall/node_list")%>';
+					window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
 				}
 				else {
 					alert("<%:Error%>");
@@ -100,10 +100,10 @@ local dsp = require "luci.dispatcher"
 	
 	function clear_all_nodes() {
 		if (confirm('<%:Are you sure to clear all nodes?%>') == true){
-			XHR.get('<%=dsp.build_url("admin/vpn/passwall/clear_all_nodes")%>', null,
+			XHR.get('<%=dsp.build_url("admin/services/passwall/clear_all_nodes")%>', null,
 			function(x, data) {
 				if(x && x.status == 200) {
-					window.location.href = '<%=dsp.build_url("admin/vpn/passwall/node_list")%>';
+					window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
 				}
 				else {
 					alert("<%:Error%>");

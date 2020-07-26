@@ -208,7 +208,7 @@ menu "Target Images"
 	config GRUB_CONSOLE
 		bool "Use Console Terminal (in addition to Serial)"
 		depends on GRUB_IMAGES || EFI_IMAGES
-		default n
+		default y
 
 	config GRUB_SERIAL
 		string "Serial port device"

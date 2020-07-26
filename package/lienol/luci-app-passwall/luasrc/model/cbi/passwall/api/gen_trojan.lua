@@ -52,19 +52,19 @@ if node.type == "Trojan-Go" then
         enabled = node.plugin_type ~= nil,
         type = node.plugin_type or "plaintext",
         command = node.plugin_type ~= "plaintext" and node.plugin_cmd or nil,
-        plugin_option = node.plugin_type ~= "plaintext" and node.plugin_option or nil,
+        option = node.plugin_type ~= "plaintext" and node.plugin_option or nil,
         arg = node.plugin_type ~= "plaintext" and { node.plugin_arg } or nil,
         env = {}
     } or nil
     trojan.websocket = node.trojan_transport and node.trojan_transport:find('ws') and {
         enabled = true,
-        path = (node.ws_path ~= nil) and node.ws_path or "/",
-        host = (node.ws_host ~= nil) and node.ws_host or (node.tls_serverName ~= nil and node.tls_serverName or node.address)
+        path = node.ws_path or "/",
+        host = node.ws_host or (node.tls_serverName or node.address)
     } or nil
     trojan.shadowsocks = (node.ss_aead == "1") and {
         enabled = true,
-        method = (node.ss_aead_method ~= nil) and node.ss_aead_method or "aead_aes_128_gcm",
-        password = (node.ss_aead_pwd ~= nil) and node.ss_aead_pwd or ""
+        method = node.ss_aead_method or "aead_aes_128_gcm",
+        password = node.ss_aead_pwd or ""
     } or nil
 end
 print(json.stringify(trojan, 1))

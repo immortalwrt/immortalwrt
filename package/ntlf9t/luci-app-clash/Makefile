@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk 
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=v1.7.5.4
+PKG_VERSION:=v1.7.5.5
 PKG_MAINTAINER:=frainzy1477
 
 include $(INCLUDE_DIR)/package.mk
@@ -117,7 +117,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/clash/yacd
 	$(INSTALL_DIR) $(1)/etc/clash/clashtun
 	$(INSTALL_DIR) $(1)/etc/clash/dtun
-	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/share/clashbackup
 	$(INSTALL_DIR) $(1)/usr/share/clash/create
 	$(INSTALL_DIR) $(1)/etc/clash/provider
@@ -145,10 +144,10 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/clash.txt $(1)/usr/share/clash
 	
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/etc/clash/dashboard
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.4563da698059d88c08dc.css $(1)/etc/clash/dashboard
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.3f7e8457ba9e97b6d7c9.css $(1)/etc/clash/dashboard
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/img/ffac0fa1d89f15922b4594863b8b32e9.png $(1)/etc/clash/dashboard/img
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/1.bundle.4563da698059d88c08dc.min.js $(1)/etc/clash/dashboard/js
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.4563da698059d88c08dc.min.js $(1)/etc/clash/dashboard/js
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/1.bundle.3f7e8457ba9e97b6d7c9.min.js $(1)/etc/clash/dashboard/js
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.3f7e8457ba9e97b6d7c9.min.js $(1)/etc/clash/dashboard/js
 	$(INSTALL_BIN) ./root/usr/share/clash/yacd/* $(1)/usr/share/clash/yacd
 	
 	$(INSTALL_DATA) ./luasrc/clash.lua $(1)/usr/lib/lua/luci

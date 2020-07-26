@@ -194,8 +194,6 @@
 	end
 	
 	math.randomseed(os.time())
-	local bgTable = glob("/www/luci-static/argon/img/*")
-	local  bgcount = table.getn(bgTable) 
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
@@ -213,17 +211,23 @@
 	<meta name="full-screen" content="yes">
 	<meta name="x5-page-mode" content="app">
 	<meta name="browsermode" content="application">
-	<meta name="theme-color" content="#5e72e4">
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="msapplication-TileColor" content="#5e72e4">
 
 	<meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
 	<meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
-	<meta name="msapplication-TileImage" content="<%=media%>/logo.png" />
-	<link rel="icon" href="<%=media%>/logo.png" sizes="144x144">
-	<link rel="apple-touch-icon-precomposed" href="<%=media%>/logo.png" sizes="144x144">
-	<link rel="stylesheet" href="<%=media%>/css/purecss.css?v=1.4">
-	<link rel="stylesheet" href="<%=media%>/css/style.css?v=<%=math.random(1,100000)%>">
+	<link rel="apple-touch-icon" sizes="60x60" href="<%=media%>/icon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="<%=media%>/icon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="<%=media%>/icon/apple-icon-144x144.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="<%=media%>/icon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="<%=media%>/icon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="<%=media%>/icon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="<%=media%>/icon/favicon-16x16.png">
+	<link rel="manifest" href="<%=media%>/icon/manifest.json">
+	<meta name="msapplication-TileColor" content="#5e72e4">
+	<meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
+	<meta name="theme-color" content="#5e72e4">
+	<link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -244,17 +248,6 @@
 		<div class="main-left">
 			<div class="sidenav-header d-flex align-items-center">
 				<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
-				<div class="ml-auto">
-					<!-- Sidenav toggler -->
-					<div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin"
-						data-target="#sidenav-main">
-						<div class="sidenav-toggler-inner">
-							<i class="sidenav-toggler-line"></i>
-							<i class="sidenav-toggler-line"></i>
-							<i class="sidenav-toggler-line"></i>
-						</div>
-					</div>
-				</div>
 			</div>
 			<% render_topmenu() %>
 		</div>
@@ -278,9 +271,6 @@
 				</div>
 			</header>
 			<div class="darkMask"></div>
-			
-			<div class="login-bg" style="background-image:url(<%=media%>/img/bg<%=math.random(1,bgcount)%>.jpg)"></div>
-			
 			
 			<div id="maincontent">
 				<div class="container">

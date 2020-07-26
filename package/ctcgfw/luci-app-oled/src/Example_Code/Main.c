@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     int scroll=atoi(argv[18]);
     char *text=argv[19];   
     char *eth = argv[20];
-    
+    int needinit=atoi(argv[21]);
 
 
     /* Initialize I2C bus and connect to the I2C Device */
@@ -77,9 +77,9 @@ int main(int argc, char* argv[])
     /* Register the Alarm Handler */
     signal(SIGALRM, ALARMhandler);
     signal(SIGINT, BreakDeal);
-    signal(SIGTERM, BreakDeal);    
+    //signal(SIGTERM, BreakDeal);
 /* Run SDD1306 Initialization Sequence */
-    display_Init_seq();
+    if (needinit==1) {display_Init_seq();}
 
     /* Clear display */
     clearDisplay();

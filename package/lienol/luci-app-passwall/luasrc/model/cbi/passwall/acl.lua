@@ -8,70 +8,55 @@ m = Map(appname)
 s = m:section(TypedSection, "global_rules")
 s.anonymous = true
 
----- Whitelist Hosts
-s:tab("w_hosts", translate("Whitelist Hosts"), "<font color='red'>" ..
-          translate("Join the white list of domain names will not go agent.") ..
-          "</font>")
-local w_host_file = string.format("/usr/share/%s/rules/whitelist_host", appname)
-o = s:taboption("w_hosts", TextValue, "whitelist_host")
-o.rows = 8
-o.wrap = "off"
-o.cfgvalue = function(self, section) return fs.readfile(w_host_file) or "" end
-o.write = function(self, section, value)
-    fs.writefile(w_host_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
-                     "http://", ""))
-end
-o.remove = function(self, section, value) fs.writefile(w_host_file, "") end
+s:tab("direct_list", translate("Direct List"))
+s:tab("proxy_list", translate("Proxy List"))
 
----- Whitelist IP
-s:tab("w_ip", translate("Whitelist IP"), "<font color='red'>" .. translate(
-          "These had been joined ip addresses will not use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,192.168.0.0/24 or 223.5.5.5.") ..
-          "</font>")
-local w_ip_file = string.format("/usr/share/%s/rules/whitelist_ip", appname)
-o = s:taboption("w_ip", TextValue, "whitelist_ip")
+---- Direct Hosts
+local direct_host = string.format("/usr/share/%s/rules/direct_host", appname)
+o = s:taboption("direct_list", TextValue, "direct_hosts", "", "<font color='red'>" .. translate("Join the direct hosts list of domain names will not proxy.") .. "</font>")
 o.rows = 8
 o.wrap = "off"
-o.cfgvalue = function(self, section) return fs.readfile(w_ip_file) or "" end
+o.cfgvalue = function(self, section) return fs.readfile(direct_host) or "" end
 o.write = function(self, section, value)
-    fs.writefile(w_ip_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
-                     "http://", ""))
+    fs.writefile(direct_host, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub("http://", ""))
 end
-o.remove = function(self, section, value) fs.writefile(w_ip_file, "") end
+o.remove = function(self, section, value) fs.writefile(direct_host, "") end
 
----- Blacklist Hosts
-s:tab("b_hosts", translate("Blacklist Hosts"),
-      "<font color='red'>" .. translate(
-          "These had been joined websites will use proxy.Please input the domain names of websites,every line can input only one website domain.For example,google.com.") ..
-          "</font>")
-local b_host_file = string.format("/usr/share/%s/rules/blacklist_host", appname)
-o = s:taboption("b_hosts", TextValue, "blacklist_host")
+---- Direct IP
+local direct_ip = string.format("/usr/share/%s/rules/direct_ip", appname)
+o = s:taboption("direct_list", TextValue, "direct_ip", "", "<font color='red'>" .. translate("These had been joined ip addresses will not proxy. Please input the ip address or ip address segment,every line can input only one ip address. For example: 192.168.0.0/24 or 223.5.5.5.") .. "</font>")
 o.rows = 8
 o.wrap = "off"
-o.cfgvalue = function(self, section) return fs.readfile(b_host_file) or "" end
+o.cfgvalue = function(self, section) return fs.readfile(direct_ip) or "" end
 o.write = function(self, section, value)
-    fs.writefile(b_host_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
-                     "http://", ""))
+    fs.writefile(direct_ip, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub("http://", ""))
 end
-o.remove = function(self, section, value) fs.writefile(b_host_file, "") end
+o.remove = function(self, section, value) fs.writefile(direct_ip, "") end
 
----- Blacklist IP
-s:tab("b_ip", translate("Blacklist IP"), "<font color='red'>" .. translate(
-          "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example,35.24.0.0/24 or 8.8.4.4.") ..
-          "</font>")
-local b_ip_file = string.format("/usr/share/%s/rules/blacklist_ip", appname)
-o = s:taboption("b_ip", TextValue, "blacklist_ip")
+---- Proxy Hosts
+local proxy_host = string.format("/usr/share/%s/rules/proxy_host", appname)
+o = s:taboption("proxy_list", TextValue, "proxy_host", "", "<font color='red'>" .. translate("These had been joined websites will use proxy. Please input the domain names of websites,every line can input only one website domain. For example: google.com.") .. "</font>")
 o.rows = 8
 o.wrap = "off"
-o.cfgvalue = function(self, section) return fs.readfile(b_ip_file) or "" end
+o.cfgvalue = function(self, section) return fs.readfile(proxy_host) or "" end
 o.write = function(self, section, value)
-    fs.writefile(b_ip_file, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub(
-                     "http://", ""))
+    fs.writefile(proxy_host, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub("http://", ""))
 end
-o.remove = function(self, section, value) fs.writefile(b_ip_file, "") end
+o.remove = function(self, section, value) fs.writefile(proxy_host, "") end
+
+---- Proxy IP
+local proxy_ip = string.format("/usr/share/%s/rules/proxy_ip", appname)
+o = s:taboption("proxy_list", TextValue, "blacklist_ip", "", "<font color='red'>" .. translate("These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example: 35.24.0.0/24 or 8.8.4.4.") .. "</font>")
+o.rows = 8
+o.wrap = "off"
+o.cfgvalue = function(self, section) return fs.readfile(proxy_ip) or "" end
+o.write = function(self, section, value)
+    fs.writefile(proxy_ip, value:gsub("\r\n", "\n"):gsub("https://", ""):gsub("http://", ""))
+end
+o.remove = function(self, section, value) fs.writefile(proxy_ip, "") end
 
 -- [[ ACLs Settings ]]--
-s = m:section(TypedSection, "acl_rule", translate("ACLs"), "<font color='red'>" .. translate(
-                  "ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered.") .. "</font>")
+s = m:section(TypedSection, "acl_rule", translate("ACLs"), "<font color='red'>" .. translate("ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered.") .. "</font>")
 s.template = "cbi/tblsection"
 s.sortable = true
 s.anonymous = true

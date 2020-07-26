@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=AdGuardHome
-PKG_VERSION:=0.102.0
+PKG_VERSION:=0.103.3
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/AdguardTeam/AdGuardHome
-PKG_MIRROR_HASH:=e877e2d911248666862133c05cc007bb04c8a09ca727f6b4f3060bf06af0d562
+PKG_MIRROR_HASH:=11ffc493604c10c6c22c973bc69e5697738c12b05219dd123597cadfd174d2af
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE.txt
@@ -55,7 +55,9 @@ define Build/Compile
 endef
 
 define Package/AdGuardHome/install
-	$(call GoPackage/Package/Install/Bin,$(1))
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+	$(INSTALL_DIR) $(1)/usr/bin/AdGuardHome
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome $(1)/usr/bin/AdGuardHome/AdGuardHome
 endef
 
 $(eval $(call GoBinPackage,AdGuardHome))

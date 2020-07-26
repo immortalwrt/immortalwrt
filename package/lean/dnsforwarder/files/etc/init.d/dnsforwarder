@@ -21,11 +21,11 @@ del_cron()
 	/etc/init.d/cron restart
 }
 
-fixflowoffload(){
-    dns=$(uci get flowoffload.@flow[0].dns 2>/dev/null)
+fixturboacc(){
+    dns=$(uci get turboacc.config.dns_caching 2>/dev/null)
     if [ $dns -eq 1 ];  then
-        uci set flowoffload.@flow[0].dns=0 && uci commit flowoffload
-        /etc/init.d/flowoffload restart
+        uci set turboacc.config.dns_caching=0 && uci commit turboacc
+        /etc/init.d/turboacc restart
     fi
 }
 
@@ -170,7 +170,7 @@ start()
         exit
     fi 	
     makeconfig
-	fixflowoffload	
+	fixturboacc
     dnsforwarder -f $DNSFORWARDER_CONF -d
 	sleep 10
     mkdir -p ${PID_PATH}
@@ -202,7 +202,7 @@ stop()
     local addr=$(uci get dnsforwarder.@arguments[0].addr 2>/dev/null)
     addr=${addr/:/#}
     uci del_list dhcp.@dnsmasq[0].server=$addr 2>/dev/null
-    uci set dhcp.@dnsmasq[0].resolvfile=/tmp/resolv.conf.auto 2>/dev/null
+    uci set dhcp.@dnsmasq[0].resolvfile=/tmp/resolv.conf.d/resolv.conf.auto 2>/dev/null
     uci delete dhcp.@dnsmasq[0].noresolv 2>/dev/null
 	uci delete dhcp.@dnsmasq[0].serversfile 2>/dev/null
     uci commit dhcp	

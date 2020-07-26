@@ -4,7 +4,7 @@
 	for(var i = 0; i < _users_status.length; i++) {
 		var id = _users_status[i].parentElement.parentElement.parentElement.id;
 		id = id.substr(id.lastIndexOf("-") + 1);
-		XHR.poll(1,'<%=url([[admin]], [[vpn]], [[passwall]], [[server_user_status]])%>', {
+		XHR.poll(1,'<%=url([[admin]], [[services]], [[passwall]], [[server_user_status]])%>', {
 				index: i,
 				id: id
 			},

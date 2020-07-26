@@ -1,4 +1,3 @@
-local _api = require "luci.model.cbi.passwall.api.api"
 local uci = require"luci.model.uci".cursor()
 local appname = "passwall"
 
@@ -180,35 +179,5 @@ uci:foreach(appname, "nodes", function(e)
          }
     end
 end)
-
--- [[ Node List ]]--
-s = m:section(TypedSection, "socks", translate("Socks Config"))
-s.anonymous = true
-s.addremove = true
-s.template = "cbi/tblsection"
-function s.create(e, t)
-    TypedSection.create(e, _api.gen_uuid())
-end
-
-o = s:option(DummyValue, "status", translate("Status"))
-o.template = appname .. "/other/socks_status"
-
----- Enable
-o = s:option(Flag, "enabled", translate("Enable"))
-o.default = 1
-o.rmempty = false
-
-o = s:option(ListValue, "node", translate("Socks Node"))
-local tcp_node_num = tonumber(m:get("@global_other[0]", "tcp_node_num") or 1)
-for i = 1, tcp_node_num, 1 do
-    o:value("tcp" .. i, translatef("Same as the tcp %s node", i))
-end
-for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
-
-o = s:option(Value, "port", translate("Listen Port"))
-o.datatype = "port"
-o.rmempty = false
-
-m:append(Template(appname .. "/other/footer"))
 
 return m
