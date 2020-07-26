@@ -1054,8 +1054,8 @@ define Device/xiaomi_mir3g
   DEVICE_MODEL := Mi Router 3G
   SUPPORTED_DEVICES += R3G
   SUPPORTED_DEVICES += mir3g
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
-	kmod-usb-ledtrig-usbport wpad-basic uboot-envtools
+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt76x2e kmod-usb3 \
+	kmod-usb-ledtrig-usbport luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir3g
 
@@ -1068,7 +1068,7 @@ define Device/xiaomi_mir3g-v2
   DEVICE_ALT0_VENDOR := Xiaomi
   DEVICE_ALT0_MODEL := Mi Router 4A
   DEVICE_ALT0_VARIANT := Gigabit Edition
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 wpad-basic
+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt76x2e luci-app-mtwifi
 endef
 TARGET_DEVICES += xiaomi_mir3g-v2
 
