@@ -283,6 +283,7 @@ li {
   margin-top: auto;
   padding: 0px 0px 30px;
   z-index: 10;
+  color: #525461;
 }
 .login-page .login-container footer .luci-link {
   display: block;
@@ -2861,6 +2862,9 @@ input[name="nslookup"] {
   .login-page .login-container .login-form .form-login .cbi-button-apply:hover,
   .login-page .login-container .login-form .form-login .cbi-button-apply:focus {
     background-image: linear-gradient(-135deg, #554c8a 0%, #483d8b 100%);
+  }
+  .login-page .login-container footer {
+    color: #adb5bd;
   }
   header::after {
     background-color: #1e1e1e !important;

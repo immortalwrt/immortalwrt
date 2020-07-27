@@ -37,12 +37,24 @@
 	local category = request[1]
 	local tree = disp.node()
 	local categories = disp.node_childs(tree)
+	local ipkg = require "luci.model.ipkg"
+
+	function split( str,reps )
+		local resultStrList = {}
+		string.gsub(str,'[^'..reps..']+',function ( w )
+			table.insert(resultStrList,w)
+		end)
+		return resultStrList
+	end
+	
+	local themepkg = ipkg.info("luci-theme-argon")
+	local theme_version = split(themepkg["luci-theme-argon"]["Version"],"-")
 %>
                 </div>
                 <footer class="mobile-hide">
 					<div>
 						<a class="luci-link" href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> /
-						<a href="https://github.com/jerrykuku/luci-theme-argon">ArgonTheme v1.6</a> /
+						<a href="https://github.com/jerrykuku/luci-theme-argon">ArgonTheme v<%=theme_version[1]%></a> /
 						<%= ver.distversion %>
 						<% if #categories > 1 then %>
 						<ul class="breadcrumb pull-right" id="modemenu">
@@ -61,6 +73,6 @@
         var luciLocation = <%= luci.http.write_json(luci.dispatcher.context.path) %>;
     </script>
     
-    <script src="<%=media%>/js/script.js?v=<%=math.random(1,100000)%>"></script>
+    <script src="<%=media%>/js/script.js"></script>
 </body>
 </html>

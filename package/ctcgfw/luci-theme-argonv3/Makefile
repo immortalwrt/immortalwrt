@@ -8,8 +8,8 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Argon Theme
 LUCI_DEPENDS:=
-PKG_VERSION:=1.6.3
-PKG_RELEASE:=20200725
+PKG_VERSION:=1.6.4
+PKG_RELEASE:=20200727
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
@@ -18,7 +18,7 @@ define Package/luci-theme-argon/postinst
 #!/bin/sh
 sed -i ":a;$!N;s/tmpl.render.*sysauth_template.*return/local scope = { duser = default_user, fuser = user }\nlocal ok, res = luci.util.copcall\(luci.template.render_string, [[<% include\(\"themes\/\" .. theme .. \"\/sysauth\"\) %>]], scope\)\nif ok then\nreturn res\nend\nreturn luci.template.render\(\"sysauth\", scope\)/;ba" /usr/lib/lua/luci/dispatcher.lua
 sed -i ":a;$!N;s/t.render.*sysauth_template.*return/local scope = { duser = h, fuser = a }\nlocal ok, res = luci.util.copcall\(luci.template.render_string, [[<% include\(\"themes\/\" .. theme .. \"\/sysauth\"\) %>]], scope\)\nif ok then\nreturn res\nend\nreturn luci.template.render\(\"sysauth\", scope\)/;ba" /usr/lib/lua/luci/dispatcher.lua
-[ -f /usr/lib/lua/luci/view/themes/header_login.htm ] && mv -f /usr/lib/lua/luci/view/themes/header_login.htm /usr/lib/lua/luci/view/header_login.htm
+[ -f /usr/lib/lua/luci/view/themes/argon/out_header_login.htm ] && mv -f /usr/lib/lua/luci/view/themes/argon/out_header_login.htm /usr/lib/lua/luci/view/header_login.htm
 rm -Rf /var/luci-modulecache
 rm -Rf /var/luci-indexcache
 exit 0
