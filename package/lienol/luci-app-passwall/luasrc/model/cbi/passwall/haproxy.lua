@@ -19,7 +19,7 @@ end)
 m = Map(appname)
 
 -- [[ Haproxy Settings ]]--
-s = m:section(TypedSection, "global_haproxy", translate("Load Balancing"))
+s = m:section(TypedSection, "global_haproxy")
 s.anonymous = true
 
 s:append(Template(appname .. "/haproxy/status"))
@@ -47,7 +47,7 @@ o.default = "1188"
 o:depends("balancing_enable", 1)
 
 -- [[ Balancing Settings ]]--
-s = m:section(TypedSection, "haproxy_config", translate("Load Balancing Setting"),
+s = m:section(TypedSection, "haproxy_config", "",
               "<font color='red'>" .. translate("Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline! Multiple groups can be set, Haproxy port same one for each group.").."</font>")
 s.template = "cbi/tblsection"
 s.sortable = true
