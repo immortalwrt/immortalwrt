@@ -95,8 +95,8 @@ hosts_foreach() {
 	[ -z "${__hosts}" ] && return 0
 	local __ip __port
 	for __host in $(echo $__hosts | sed 's/[ ,]/\n/g'); do
-		__ip=$(echo $__host | sed -n 's/\(^[^:#]*\).*$/\1/p')
-		[ -n "${__default_port}" ] && __port=$(echo $__host | sed -n 's/^[^:#]*[:#]\([0-9]*\).*$/\1/p')
+		__port=$(echo $__host | sed -n 's/^.*[:#]\(^[0-9]*\)$/\1/p')
+		__ip="${__host%%${__port:+[:#]${__port}*}}"
 		eval "$__func \"${__host}\" \"\${__ip}\" \"\${__port:-${__default_port}}\" $@"
 		__ret=$?
 		[ ${__ret} -ge ${ERROR_NO_CATCH:-1} ] && return ${__ret}
@@ -278,7 +278,7 @@ run_socks() {
 	local port=$(config_n_get $node port)
 	local msg
 
-	echolog "分析 Socks 服务 ${bind}:${local_port} 的代理服务器配置...."
+	echolog "  启用 ${bind}:${local_port}"
 	if [ -n "$server_host" ] && [ -n "$port" ]; then
 		server_host=$(echo $server_host | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}')
 		[ -n "$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')" ] && msg="$remarks，非法的代理服务器地址，无法启动 ！"
@@ -287,13 +287,13 @@ run_socks() {
 	fi
 
 	[ -n "${msg}" ] && {
-		echolog ${msg}
+		echolog "    ${msg}"
 		return 1
 	}
-	echolog "使用代理服务器：$remarks，地址：${server_host}:${port}"
+	echolog "    节点：$remarks，${server_host}:${port}"
 
 	if [ "$type" == "socks" ]; then
-		echolog "Socks节点不能使用Socks代理节点！"
+		echolog "    不能使用 Socks 类型的代理节点"
 	elif [ "$type" == "v2ray" ]; then
 		lua $API_GEN_V2RAY $node nil nil $local_port > $config_file
 		ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
@@ -314,11 +314,6 @@ run_socks() {
 		lua $API_GEN_SS $node $local_port > $config_file
 		ln_start_bin $(find_bin ${type}-local) ${type}-local "-c $config_file -b $bind -u"
 	fi
-
-	msg="此 Sock 服务启动失败！"
-	netstat -netplu | grep ":${local_port} "
-	[ $? -eq 0 ] && msg="看起来这个 Socks 服务已经成功开启了。"
-	echolog $msg
 }
 
 run_redir() {
@@ -488,6 +483,7 @@ start_redir() {
 
 start_socks() {
 	local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
+	echolog "分析 Socks 服务的节点配置..."
 	for id in $ids; do
 		local enabled=$(config_n_get $id enabled 0)
 		[ "$enabled" == "0" ] && continue
@@ -732,6 +728,7 @@ gen_pdnsd_config() {
 	local perm_cache=2048
 	local _cache="on"
 	[ "$DNS_CACHE" == "0" ] && _cache="off" && perm_cache=0
+	echolog "准备 pdnsd 配置文件..."
 	cat > $pdnsd_dir/pdnsd.conf <<-EOF
 		global {
 			perm_cache = $perm_cache;
@@ -754,8 +751,8 @@ gen_pdnsd_config() {
 	EOF
 
 	append_pdnsd_updns() {
-		[ -z "${2}" ] && echolog "略过错误配置的 DNS : [${1}]" && return 0
-		echolog "配置 pdnsd 的上游DNS[${2}:${3}]"
+		[ -z "${2}" ] && echolog "    略过错误 : [${1}]" && return 0
+		echolog "    上游DNS[${2}:${3}]"
 		cat >> $pdnsd_dir/pdnsd.conf <<-EOF
 			server {
 				label = "node-${2}_${3}";
@@ -936,6 +933,7 @@ start() {
 		add_dnsmasq
 		source $APP_PATH/iptables.sh start
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		echolog "重启 dnsmasq 服务[$?]"
 	}
 	start_crontab
 	echolog "运行完成！\n"
@@ -953,6 +951,7 @@ stop() {
 	stop_crontab
 	del_dnsmasq
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	echolog "重启 dnsmasq 服务[$?]"
 	echolog "清空并关闭相关程序和缓存完成。"
 }
 

@@ -67,8 +67,8 @@ msgstr "负载均衡"
 msgid "Enter interface"
 msgstr "进入界面"
 
-msgid "Rule Update"
-msgstr "自动更新"
+msgid "Rule"
+msgstr "规则"
 
 msgid "Access control"
 msgstr "访问控制"
@@ -585,9 +585,6 @@ msgstr "在浏览器输入路由IP加端口访问，如：192.168.1.1:1188"
 
 msgid "Haproxy Port"
 msgstr "负载均衡端口"
-
-msgid "Load Balancing Setting"
-msgstr "负载均衡设置"
 
 msgid "Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline! Multiple groups can be set, Haproxy port same one for each group."
 msgstr "添加节点，指定出口功能是为多WAN用户准备的。负载比重范围1-256。多个主服务器可以负载均衡，备用只有在主服务器离线时才会启用！可以设置多个组，负载均衡端口相同则为一组。"
