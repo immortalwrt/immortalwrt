@@ -369,7 +369,7 @@ hr {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #adb5bd;
+  color: #525461;
   font-size: 1.5rem;
   position: absolute;
   z-index: 100;
@@ -394,10 +394,10 @@ hr {
   margin: 0.825rem 0;
   box-sizing: border-box;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  color: #8898aa;
+  color: #525461;
   border: 0;
   border-radius: 0;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid #fff;
   background-color: transparent;
   background-clip: padding-box;
   box-shadow: 0 3px 2px rgba(233, 236, 239, 0.05);
@@ -455,6 +455,13 @@ hr {
 }
 .login-page .login-container footer .luci-link {
   display: block;
+}
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  .login-page .login-container .login-form {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(244, 245, 247, 0.7);
+  }
 }
 header,
 .main {
@@ -3141,13 +3148,6 @@ pre.command-output {
     border-bottom: var(--white) 1px solid;
     border-radius: 0;
   }
-  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-    .login-page .login-container .login-form {
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      background-color: rgba(244, 245, 247, 0.7);
-    }
-  }
 }
 @media (prefers-color-scheme: dark) {
   body {
@@ -3707,17 +3707,17 @@ pre.command-output {
   [data-page="admin-system-opkg"] h2 {
     color: #ccc !important;
   }
-}
-@media (prefers-color-scheme: dark) and (max-width: 480px) {
-  .node-status-iptables > .main div > .cbi-map > form {
-    background-color: #1e1e1e;
-    box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.35);
-  }
   @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
     .login-page .login-container .login-form {
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       background-color: rgba(0, 0, 0, 0.7);
     }
+  }
+}
+@media (prefers-color-scheme: dark) and (max-width: 480px) {
+  .node-status-iptables > .main div > .cbi-map > form {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.35);
   }
 }
