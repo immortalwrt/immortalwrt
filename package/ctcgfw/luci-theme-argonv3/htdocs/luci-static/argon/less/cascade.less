@@ -226,7 +226,7 @@ li {
                         line-height: 1;
                         -webkit-font-smoothing: antialiased;
                         -moz-osx-font-smoothing: grayscale;
-                        color: #adb5bd;
+                        color: #525461;
                         font-size: 1.5rem;
                         position: absolute;
                         z-index: 100;
@@ -253,10 +253,10 @@ li {
                         margin: 0.825rem 0;
                         box-sizing: border-box;
                         transition: all .3s cubic-bezier(.68, -.55, .265, 1.55);
-                        color: #8898aa;
+                        color: #525461;
                         border: 0;
                         border-radius: 0;
-                        border-bottom: 1px solid #dee2e6;
+                        border-bottom: 1px solid #fff;
                         background-color: transparent;
                         background-clip: padding-box;
                         box-shadow: 0 3px 2px rgba(233, 236, 239, .05);
@@ -338,6 +338,15 @@ li {
 
 .pull-left {
     float: left;
+}
+
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    .login-page .login-container .login-form {
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        background-color: rgba(244, 245, 247, 0.7);
+
+    }
 }
 
 
@@ -1295,6 +1304,11 @@ small {
 
 .cbi-section>legend {
     display: none !important;
+}
+.cbi-section-error {
+    padding: 1.5rem;
+    color: #fb6340;
+    font-weight: 600;
 }
 
 fieldset>fieldset {
@@ -3379,14 +3393,7 @@ input[name="nslookup"] {
 
     }
 
-    @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-        .login-page .login-container .login-form {
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            background-color: rgba(244, 245, 247, 0.7);
-
-        }
-    }
+    
 
     fieldset {
         padding: 0;
@@ -4110,12 +4117,8 @@ input[name="nslookup"] {
         background: #252525;
     }
 
-}
-
-@media (prefers-color-scheme: dark) and (max-width: 480px) {
-    .node-status-iptables>.main div>.cbi-map>form {
-        background-color: #1e1e1e;
-        box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, .35);
+    .cbi-section-error {
+        color: darkorange;
     }
 
     @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
@@ -4126,4 +4129,14 @@ input[name="nslookup"] {
 
         }
     }
+
+}
+
+@media (prefers-color-scheme: dark) and (max-width: 480px) {
+    .node-status-iptables>.main div>.cbi-map>form {
+        background-color: #1e1e1e;
+        box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, .35);
+    }
+
+    
 }

@@ -24,13 +24,13 @@ sul.addremove=false
 o = sul:option(FileUpload, "")
 o.description =''..font_red..bold_on..translate("Manually download, unzip and rename clash core from links below and upload")..bold_off..font_off..' '
 .."<br />"
-..translate("Dreamacro clash tun core (dtun) - (https://github.com/Dreamacro/clash/releases/tag/premium)")
+..translatef("<a href=\"%s\" target=\"_blank\">" .. "Dreamacro clash core - clash</a>", translate("https://github.com/Dreamacro/clash/releases/latest"))
 .."<br />"
-..translate("Dreamacro clash core - (https://github.com/Dreamacro/clash/releases)")
+..translatef("<a href=\"%s\" target=\"_blank\">" .. "Frainzy1477 clashr core - clash</a>", translate("https://github.com/frainzy1477/clash_dev/releases/latest"))
 .."<br />"
-..translate("comzyh clash tun core (ctun) - (https://github.com/comzyh/clash/releases)")
+..translatef("<a href=\"%s\" target=\"_blank\">" .. "comzyh clash tun core - clash(ctun)</a>", translate("https://github.com/comzyh/clash/releases/latest"))
 .."<br />"
-..translate("Frainzy1477 clash core - (https://github.com/frainzy1477/clash_dev/releases)")
+..translatef("<a href=\"%s\" target=\"_blank\">" .. "Dreamacro clash tun core - clash(premium)</a>", translate("https://github.com/Dreamacro/clash/releases/tag/premium"))
 
 
 o.title = translate("  ")

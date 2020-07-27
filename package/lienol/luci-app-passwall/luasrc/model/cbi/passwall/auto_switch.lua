@@ -20,7 +20,7 @@ end)
 m = Map(appname)
 
 -- [[ Auto Switch Settings ]]--
-s = m:section(TypedSection, "auto_switch", translate("Auto Switch"))
+s = m:section(TypedSection, "auto_switch")
 s.anonymous = true
 
 ---- Enable
