@@ -16,7 +16,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/autocore-arm
   TITLE:=ARM auto core script.
   MAINTAINER:=CN_SZTL
-  DEPENDS:=@(TARGET_bcm27xx||TARGET_ipq806x||TARGET_rockchip)
+  DEPENDS:=@(TARGET_bcm27xx||TARGET_ipq40xx||TARGET_ipq806x||TARGET_rockchip) +TARGET_ipq40xx:lm-sensors
   VARIANT:=arm
 endef
 
@@ -46,7 +46,11 @@ define Package/autocore-arm/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/arm/090-cover-index_files $(1)/etc/uci-defaults/090-cover-index_files
 	$(INSTALL_DIR) $(1)/sbin
+ifneq ($(BOARD),ipq40xx)
 	$(INSTALL_BIN) ./files/arm/cpuinfo $(1)/sbin/cpuinfo
+else
+	$(INSTALL_BIN) ./files/arm/cpuinfo-ipq40xx $(1)/sbin/cpuinfo
+endif
 endef
 
 define Package/autocore-x86/install
