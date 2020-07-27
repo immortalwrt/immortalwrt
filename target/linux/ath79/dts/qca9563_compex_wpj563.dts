@@ -7,48 +7,56 @@
 #include "qca956x.dtsi"
 
 / {
-	model = "Phicomm K2T";
-	compatible = "phicomm,k2t", "qca,qca9563";
+	model = "Compex WPJ563";
+	compatible = "compex,wpj563", "qca,qca9563";
 
 	aliases {
-		led-boot = &led_status_red;
-		led-failsafe = &led_status_red;
-		led-running = &led_status_red;
-		led-upgrade = &led_status_red;
+		label-mac-device = &eth0;
+		led-boot = &led_sig4;
+		led-failsafe = &led_sig4;
+		led-running = &led_sig4;
+		led-upgrade = &led_sig4;
 	};
 
-	leds {
-		compatible = "gpio-leds";
-
-		status_blue {
-			label = "phicomm:blue:status";
-			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
-		};
-
-		led_status_red: status_red {
-			label = "phicomm:red:status";
-			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
-		};
-
-		status_yellow {
-			label = "phicomm:yellow:status";
-			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
-		};
+	beeper {
+		compatible = "gpio-beeper";
+		gpios = <&gpio 19 GPIO_ACTIVE_HIGH>;
 	};
 
 	keys {
 		compatible = "gpio-keys";
 
 		reset {
+			label = "reset";
 			linux,code = <KEY_RESTART>;
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 		};
 	};
-};
 
-&uart {
-	status = "okay";
+	leds {
+		compatible = "gpio-leds";
+
+		sig1 {
+			label = "wpj563:green:sig1";
+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
+		};
+
+		sig2 {
+			label = "wpj563:green:sig2";
+			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
+		};
+
+		sig3 {
+			label = "wpj563:green:sig4";
+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
+		};
+
+		led_sig4: sig4 {
+			label = "wpj563:green:sig4";
+			gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
+		};
+	};
 };
 
 &pcie {
@@ -56,9 +64,9 @@
 };
 
 &spi {
-	num-cs = <1>;
-
 	status = "okay";
+
+	num-cs = <1>;
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
@@ -70,28 +78,16 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partition@0 {
+			uboot: partition@0 {
 				label = "u-boot";
-				reg = <0x000000 0x30000>;
+				reg = <0x000000 0x030000>;
 				read-only;
 			};
 
 			partition@30000 {
-				label = "config";
-				reg = <0x030000 0x10000>;
-				read-only;
-			};
-
-			partition@40000 {
-				label = "permanent";
-				reg = <0x040000 0x50000>;
-				read-only;
-			};
-
-			partition@90000 {
 				compatible = "denx,uimage";
 				label = "firmware";
-				reg = <0x090000 0xf60000>;
+				reg = <0x030000 0xfc0000>;
 			};
 
 			art: partition@ff0000 {
@@ -111,16 +107,12 @@
 	phy0: ethernet-phy@0 {
 		reg = <0>;
 		phy-mode = "sgmii";
+		qca,mib-poll-interval = <500>;
 
 		qca,ar8327-initvals = <
 			0x04 0x00080080 /* PORT0 PAD MODE CTRL */
-			0x10 0x81000080 /* POWER_ON_STRAP */
-			0x50 0xcc35cc35 /* LED_CTRL0 */
-			0x54 0xcb37cb37 /* LED_CTRL1 */
-			0x58 0x00000000 /* LED_CTRL2 */
-			0x5c 0x00f3cf00 /* LED_CTRL3 */
 			0x7c 0x0000007e /* PORT0_STATUS */
-			>;
+		>;
 	};
 };
 
@@ -129,11 +121,25 @@
 
 	pll-data = <0x03000101 0x00000101 0x00001919>;
 
+	mtd-mac-address = <&uboot 0x2e010>;
 	phy-mode = "sgmii";
 	phy-handle = <&phy0>;
 };
 
+&usb_phy0 {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&uart {
+	status = "okay";
+};
+
 &wmac {
 	status = "okay";
+
 	mtd-cal-data = <&art 0x1000>;
 };
