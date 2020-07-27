@@ -48,7 +48,7 @@ TARGET_DEVICES += akitio_mycloud
 define Device/cloudengines_pogoplugpro
   DEVICE_TITLE := Cloud Engines PogoPlug Pro (with mPCIe)
   SUPPORTED_DEVICES += pogoplug-pro
-  DEVICE_PACKAGES := kmod-usb2-oxnas kmod-usb-ledtrig-usbport kmod-rt2800-pci wpad-basic
+  DEVICE_PACKAGES := kmod-usb2-oxnas kmod-usb-ledtrig-usbport kmod-rt2800-pci wpad-basic-openssl
 endef
 TARGET_DEVICES += cloudengines_pogoplugpro
 

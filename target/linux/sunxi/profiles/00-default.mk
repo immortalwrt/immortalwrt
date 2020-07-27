@@ -17,7 +17,7 @@ define Profile/Default
 	kmod-sun4i-emac \
 	rtl8188eu-firmware \
 	swconfig \
-	wpad-basic
+	wpad-basic-openssl
   PRIORITY := 1
 endef
 

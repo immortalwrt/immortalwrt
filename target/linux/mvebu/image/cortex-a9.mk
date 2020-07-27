@@ -11,7 +11,7 @@ ifeq ($(SUBTARGET),cortexa9)
 define Device/linksys
   $(Device/NAND-128K)
   DEVICE_TITLE := Linksys $(1)
-  DEVICE_PACKAGES := kmod-mwlwifi swconfig wpad-basic
+  DEVICE_PACKAGES := kmod-mwlwifi swconfig wpad-basic-openssl
   IMAGES += factory.img
   KERNEL_SIZE := 6144k
 endef
@@ -172,7 +172,7 @@ define Device/cznic_turris-omnia
   DEVICE_TITLE := Turris Omnia
   DEVICE_PACKAGES :=  \
     mkf2fs e2fsprogs kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 \
-    wpad-basic kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
+    wpad-basic-openssl kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
     partx-utils kmod-i2c-core kmod-i2c-mux kmod-i2c-mux-pca954x
   IMAGES := $$(DEVICE_IMG_PREFIX)-sysupgrade.img.gz omnia-medkit-$$(DEVICE_IMG_PREFIX)-initramfs.tar.gz
   IMAGE/$$(DEVICE_IMG_PREFIX)-sysupgrade.img.gz := boot-img | sdcard-img | gzip | append-metadata

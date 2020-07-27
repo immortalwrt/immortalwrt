@@ -14,6 +14,6 @@ KERNEL_PATCHVER:=4.19
 include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
 	kmod-mt76 kmod-leds-gpio kmod-gpio-button-hotplug \
-	wpad-basic
+	wpad-basic-openssl
 
 $(eval $(call BuildTarget))
