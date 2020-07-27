@@ -1,4 +1,4 @@
-From c222b8b15193f3ed15562fe7e06f3573aac05b70 Mon Sep 17 00:00:00 2001
+From 749cbb7b1a4bc2244b6af8cd7d8b471d4e33c80f Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
 Date: Fri, 10 Jul 2020 15:57:46 +0200
 Subject: [PATCH] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
@@ -17,8 +17,8 @@ WAN - LAN - SYS LED
 Signed-off-by: David Bauer <mail@david-bauer.net>
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   | 323 ++++++++++++++++++
- 2 files changed, 324 insertions(+)
+ .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   | 334 ++++++++++++++++++
+ 2 files changed, 335 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
@@ -33,7 +33,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-evb-act8846.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -0,0 +1,323 @@
+@@ -0,0 +1,334 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
@@ -156,16 +156,27 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	assigned-clock-parents = <&gmac_clkin>, <&gmac_clkin>;
 +	clock_in_out = "input";
 +	phy-supply = <&vcc_io>;
++	phy-handle = <&rtl8211e>;
 +	phy-mode = "rgmii";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&rgmiim1_pins>;
-+	snps,force_thresh_dma_mode;
++	snps,aal;
 +	snps,reset-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
 +	snps,reset-active-low;
 +	snps,reset-delays-us = <0 10000 50000>;
 +	tx_delay = <0x24>;
 +	rx_delay = <0x18>;
 +	status = "okay";
++
++	mdio {
++		compatible = "snps,dwmac-mdio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		rtl8211e: ethernet-phy@0 {
++			reg = <0>;
++		};
++	};
 +};
 +
 +&i2c1 {
