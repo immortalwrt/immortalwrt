@@ -89,8 +89,7 @@ function gen_config(user)
                     tlsSettings = (node.stream_security == "tls") and {
                         disableSessionResumption = node.sessionTicket ~= "1" and true or false,
                         serverName = node.tls_serverName,
-                        allowInsecure = (node.tls_allowInsecure == "1") and true or
-                            false
+                        allowInsecure = (node.tls_allowInsecure == "1") and true or false
                     } or nil,
                     tcpSettings = (node.transport == "tcp") and {
                         header = {
@@ -107,25 +106,23 @@ function gen_config(user)
                         mtu = tonumber(node.mkcp_mtu),
                         tti = tonumber(node.mkcp_tti),
                         uplinkCapacity = tonumber(node.mkcp_uplinkCapacity),
-                        downlinkCapacity = tonumber(
-                            node.mkcp_downlinkCapacity),
-                        congestion = (node.mkcp_congestion == "1") and
-                            true or false,
+                        downlinkCapacity = tonumber(node.mkcp_downlinkCapacity),
+                        congestion = (node.mkcp_congestion == "1") and true or false,
                         readBufferSize = tonumber(node.mkcp_readBufferSize),
-                        writeBufferSize = tonumber(
-                            node.mkcp_writeBufferSize),
+                        writeBufferSize = tonumber(node.mkcp_writeBufferSize),
+                        seed = (node.mkcp_seed and node.mkcp_seed ~= "") and node.mkcp_seed or nil,
                         header = {type = node.mkcp_guise}
                     } or nil,
                     wsSettings = (node.transport == "ws") and {
                         path = node.ws_path or "",
-                        headers = (node.ws_host ~= nil) and
-                            {Host = node.ws_host} or nil
+                        headers = (node.ws_host ~= nil) and {Host = node.ws_host} or nil
                     } or nil,
-                    httpSettings = (node.transport == "h2") and
-                        {path = node.h2_path, host = node.h2_host} or
-                        nil,
-                    dsSettings = (node.transport == "ds") and
-                        {path = node.ds_path} or nil,
+                    httpSettings = (node.transport == "h2") and {
+                        path = node.h2_path, host = node.h2_host
+                    } or nil,
+                    dsSettings = (node.transport == "ds") and {
+                        path = node.ds_path
+                    } or nil,
                     quicSettings = (node.transport == "quic") and {
                         security = node.quic_security,
                         key = node.quic_key,
@@ -165,6 +162,12 @@ function gen_config(user)
                     } or nil
                 }
             }
+
+            if node.transport == "mkcp" or node.transport == "ds" or node.transport == "quic" then
+                transit_node.streamSettings.security = "none"
+                transit_node.streamSettings.tlsSettings = nil
+            end
+
             table.insert(outbounds, 1, transit_node)
         end
     end
@@ -214,6 +217,7 @@ function gen_config(user)
                         congestion = (user.mkcp_congestion == "1") and true or false,
                         readBufferSize = tonumber(user.mkcp_readBufferSize),
                         writeBufferSize = tonumber(user.mkcp_writeBufferSize),
+                        seed = (user.mkcp_seed and user.mkcp_seed ~= "") and user.mkcp_seed or nil,
                         header = {type = user.mkcp_guise}
                     } or nil,
                     wsSettings = (user.transport == "ws") and {
@@ -238,5 +242,11 @@ function gen_config(user)
         outbounds = outbounds,
         routing = routing
     }
+
+    if user.transport == "mkcp" or user.transport == "ds" or user.transport == "quic" then
+        user.streamSettings.security = "none"
+        user.streamSettings.tlsSettings = nil
+    end
+
     return config
 end
