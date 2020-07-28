@@ -1,4 +1,4 @@
-From bd067ecdb13efb78e0f166b53837dc141ca47380 Mon Sep 17 00:00:00 2001
+From 67f4c228c2bf515386cd54073104dc2e6eae85ea Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
 Date: Fri, 10 Jul 2020 14:58:30 +0200
 Subject: [PATCH] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
@@ -18,19 +18,17 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 ---
  arch/arm/dts/Makefile                      |   1 +
  arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi |  34 +++
- arch/arm/dts/rk3328-nanopi-r2s.dts         | 323 +++++++++++++++++++++
+ arch/arm/dts/rk3328-nanopi-r2s.dts         | 334 +++++++++++++++++++++
  board/rockchip/evb_rk3328/MAINTAINERS      |   7 +
- configs/nanopi-r2s-rk3328_defconfig        |  99 +++++++
- 5 files changed, 464 insertions(+)
+ configs/nanopi-r2s-rk3328_defconfig        |  99 ++++++
+ 5 files changed, 475 insertions(+)
  create mode 100644 arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3328-nanopi-r2s.dts
  create mode 100644 configs/nanopi-r2s-rk3328_defconfig
 
-diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index cee10f533f..a6bd8ea0d8 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -107,6 +107,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -106,6 +106,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
@@ -38,9 +36,6 @@ index cee10f533f..a6bd8ea0d8 100644
  	rk3328-roc-cc.dtb \
  	rk3328-rock64.dtb \
  	rk3328-rock-pi-e.dtb
-diff --git a/arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi b/arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
-new file mode 100644
-index 0000000000..4159348402
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 @@ -0,0 +1,34 @@
@@ -78,12 +73,9 @@ index 0000000000..4159348402
 +&vcc_sd {
 +	u-boot,dm-spl;
 +};
-diff --git a/arch/arm/dts/rk3328-nanopi-r2s.dts b/arch/arm/dts/rk3328-nanopi-r2s.dts
-new file mode 100644
-index 0000000000..073cfd7bb2
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2s.dts
-@@ -0,0 +1,323 @@
+@@ -0,0 +1,334 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
@@ -206,16 +198,27 @@ index 0000000000..073cfd7bb2
 +	assigned-clock-parents = <&gmac_clkin>, <&gmac_clkin>;
 +	clock_in_out = "input";
 +	phy-supply = <&vcc_io>;
++	phy-handle = <&rtl8211e>;
 +	phy-mode = "rgmii";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&rgmiim1_pins>;
-+	snps,force_thresh_dma_mode;
++	snps,aal;
 +	snps,reset-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
 +	snps,reset-active-low;
 +	snps,reset-delays-us = <0 10000 50000>;
 +	tx_delay = <0x24>;
 +	rx_delay = <0x18>;
 +	status = "okay";
++
++	mdio {
++		compatible = "snps,dwmac-mdio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		rtl8211e: ethernet-phy@0 {
++			reg = <0>;
++		};
++	};
 +};
 +
 +&i2c1 {
@@ -407,8 +410,6 @@ index 0000000000..073cfd7bb2
 +&usb_host0_ohci {
 +	status = "okay";
 +};
-diff --git a/board/rockchip/evb_rk3328/MAINTAINERS b/board/rockchip/evb_rk3328/MAINTAINERS
-index e7dd59ff4e..14fda46e8f 100644
 --- a/board/rockchip/evb_rk3328/MAINTAINERS
 +++ b/board/rockchip/evb_rk3328/MAINTAINERS
 @@ -5,6 +5,13 @@ F:      board/rockchip/evb_rk3328
@@ -425,9 +426,6 @@ index e7dd59ff4e..14fda46e8f 100644
  ROC-RK3328-CC
  M:      Loic Devulder <ldevulder@suse.com>
  M:      Chen-Yu Tsai <wens@csie.org>
-diff --git a/configs/nanopi-r2s-rk3328_defconfig b/configs/nanopi-r2s-rk3328_defconfig
-new file mode 100644
-index 0000000000..2c028e9d0b
 --- /dev/null
 +++ b/configs/nanopi-r2s-rk3328_defconfig
 @@ -0,0 +1,99 @@
@@ -530,6 +528,3 @@ index 0000000000..2c028e9d0b
 +CONFIG_TPL_TINY_MEMSET=y
 +CONFIG_ERRNO_STR=y
 +CONFIG_SMBIOS_MANUFACTURER="pine64"
--- 
-2.27.0
-
