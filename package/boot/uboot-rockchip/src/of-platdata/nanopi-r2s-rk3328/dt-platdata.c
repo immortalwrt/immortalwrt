@@ -98,8 +98,8 @@ U_BOOT_DEVICE(gpio0_at_ff210000) = {
 };
 
 static const struct dtd_regulator_fixed dtv_sdmmc_regulator = {
-	.gpio			= {0x5f, 0x1e, 0x1},
-	.pinctrl_0		= 0x60,
+	.gpio			= {0x60, 0x1e, 0x1},
+	.pinctrl_0		= 0x61,
 	.pinctrl_names		= "default",
 	.regulator_max_microvolt = 0x325aa0,
 	.regulator_min_microvolt = 0x325aa0,
