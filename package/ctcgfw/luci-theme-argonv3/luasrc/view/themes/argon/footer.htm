@@ -47,8 +47,12 @@
 		return resultStrList
 	end
 	
-	local themepkg = ipkg.info("luci-theme-argon")
-	local theme_version = split(themepkg["luci-theme-argon"]["Version"],"-")
+	local themepkg = ipkg.info("luci-theme-argon*")
+	local theme_info
+	for k,v in pairs(themepkg) do
+		theme_info = v
+	end
+	local theme_version = split(theme_info["Version"],"-")
 %>
                 </div>
                 <footer class="mobile-hide">
