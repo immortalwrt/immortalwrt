@@ -48,6 +48,10 @@ config_t_get() {
 	echo ${ret:=$3}
 }
 
+get_enabled_anonymous_secs() {
+	uci -q show $CONFIG | grep "${1}\[.*\.enabled='1'" | cut -d'.' -sf2
+}
+
 get_host_ip() {
 	local host=$2
 	local count=$3
@@ -85,6 +89,17 @@ get_node_host_ip() {
 	echo $ip
 }
 
+get_ip_port_from() {
+	local __host=${1}; shift 1
+	local __ipv=${1}; shift 1
+	local __portv=${1}; shift 1
+
+	local val1 val2
+	val2=$(echo $__host | sed -n 's/^.*[:#]\([0-9]*\)$/\1/p')
+	val1="${__host%%${val2:+[:#]${val2}*}}"
+	eval "${__ipv}=\"$val1\"; ${__portv}=\"$val2\""
+}
+
 hosts_foreach() {
 	local __hosts
 	eval "__hosts=\$${1}"; shift 1
@@ -95,8 +110,7 @@ hosts_foreach() {
 	[ -z "${__hosts}" ] && return 0
 	local __ip __port
 	for __host in $(echo $__hosts | sed 's/[ ,]/\n/g'); do
-		__port=$(echo $__host | sed -n 's/^.*[:#]\(^[0-9]*\)$/\1/p')
-		__ip="${__host%%${__port:+[:#]${__port}*}}"
+		get_ip_port_from "$__host" "__ip" "__port"
 		eval "$__func \"${__host}\" \"\${__ip}\" \"\${__port:-${__default_port}}\" $@"
 		__ret=$?
 		[ ${__ret} -ge ${ERROR_NO_CATCH:-1} ] && return ${__ret}
@@ -278,7 +292,7 @@ run_socks() {
 	local port=$(config_n_get $node port)
 	local msg
 
-	echolog "  启用 ${bind}:${local_port}"
+	echolog "  - 启用 ${bind}:${local_port}"
 	if [ -n "$server_host" ] && [ -n "$port" ]; then
 		server_host=$(echo $server_host | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}')
 		[ -n "$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')" ] && msg="$remarks，非法的代理服务器地址，无法启动 ！"
@@ -287,13 +301,13 @@ run_socks() {
 	fi
 
 	[ -n "${msg}" ] && {
-		echolog "    ${msg}"
+		echolog "  - ${msg}"
 		return 1
 	}
-	echolog "    节点：$remarks，${server_host}:${port}"
+	echolog "  - 节点：$remarks，${server_host}:${port}"
 
 	if [ "$type" == "socks" ]; then
-		echolog "    不能使用 Socks 类型的代理节点"
+		echolog "  - 不能使用 Socks 类型的代理节点"
 	elif [ "$type" == "v2ray" ]; then
 		lua $API_GEN_V2RAY $node nil nil $local_port > $config_file
 		ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
@@ -584,7 +598,7 @@ start_dns() {
 	dns2socks)
 		[ "$DNS_CACHE" == "0" ] && local _cache="/d"
 		ln_start_bin $(find_bin dns2socks) dns2socks "$DNS2SOCKS_SOCKS_SERVER $DNS2SOCKS_FORWARD 127.0.0.1:$DNS_PORT $_cache"
-		echolog "DNS：dns2socks(${DNS2SOCKS_FORWARD-D46.182.19.48:53})..."
+		echolog "DNS：dns2socks，${DNS2SOCKS_FORWARD-D46.182.19.48:53}"
 	;;
 	pdnsd)
 		if [ -z "$TCP_NODE1" -o "$TCP_NODE1" == "nil" ]; then
@@ -593,7 +607,7 @@ start_dns() {
 		else
 			gen_pdnsd_config $DNS_PORT
 			ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
-			echolog "DNS：pdnsd + 使用TCP节点解析DNS..."
+			echolog "DNS：pdnsd + 使用TCP节点解析DNS"
 		fi
 	;;
 	chinadns-ng)
@@ -627,32 +641,37 @@ start_dns() {
 				gen_pdnsd_config $other_port
 				ln_start_bin $(find_bin pdnsd) pdnsd "--daemon -c $pdnsd_dir/pdnsd.conf -d"
 				ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $china_ng_chn -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param $fair_mode"
-				echolog "DNS：ChinaDNS-NG + pdnsd($china_ng_gfw)，国内DNS：$china_ng_chn"
+				echolog "DNS：ChinaDNS-NG + pdnsd，$china_ng_gfw，国内DNS：$china_ng_chn"
 			fi
 		elif [ "$up_trust_chinadns_ng_dns" == "dns2socks" ]; then
 			[ "$DNS_CACHE" == "0" ] && local _cache="/d"
 			ln_start_bin $(find_bin dns2socks) dns2socks "$DNS2SOCKS_SOCKS_SERVER $DNS2SOCKS_FORWARD 127.0.0.1:$other_port $_cache"
 			ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $china_ng_chn -t 127.0.0.1#$other_port $gfwlist_param $chnlist_param $fair_mode"
-			echolog "DNS：ChinaDNS-NG + dns2socks(${DNS2SOCKS_FORWARD:-D46.182.19.48:53})，国内DNS：$china_ng_chn"
+			echolog "DNS：ChinaDNS-NG + dns2socks，${DNS2SOCKS_FORWARD:-D46.182.19.48:53}，国内DNS：$china_ng_chn"
 		elif [ "$up_trust_chinadns_ng_dns" == "udp" ]; then
 			use_udp_node_resolve_dns=1
 			ln_start_bin $(find_bin chinadns-ng) chinadns-ng "-l $DNS_PORT -c $china_ng_chn -t $china_ng_gfw $gfwlist_param $chnlist_param $fair_mode"
-			echolog "DNS：ChinaDNS-NG，国内DNS：$china_ng_chn，可信DNS：$up_trust_chinadns_ng_dns[$china_ng_gfw]，如果不能使用，请确保UDP节点已打开并且支持UDP转发。"
+			echolog "DNS：ChinaDNS-NG，国内DNS：$china_ng_chn，可信DNS：$up_trust_chinadns_ng_dns，$china_ng_gfw"
+			echolog "  - 如非直连地址，请确保UDP节点已打开并且支持UDP转发。"
 		fi
 	;;
 	esac
 }
 
 add_dnsmasq() {
+	local msg
+	echolog "准备 dnsmasq 配置文件..."
 	mkdir -p $TMP_DNSMASQ_PATH $DNSMASQ_PATH /var/dnsmasq.d
 	local adblock=$(config_t_get global_rules adblock 0)
 	local chinadns_mode=0
-	[ "$DNS_MODE" == "chinadns-ng" ] && [ "$IS_DEFAULT_CHINA_DNS" != 1 ] && chinadns_mode=1
+	[ "$DNS_MODE" == "chinadns-ng" ] && [ "$IS_DEFAULT_CHINA_DNS" != 1 ] && chinadns_mode=1 && msg="chinadns-ng"
 	[ "$adblock" == "1" ] && {
+		msg="${msg}，adblock"
 		[ -f "$RULES_PATH/adblock.conf" -a -s "$RULES_PATH/adblock.conf" ] && ln -s $RULES_PATH/adblock.conf $TMP_DNSMASQ_PATH/adblock.conf
 	}
 	
 	[ "$DNS_MODE" != "nonuse" ] && {
+		msg="${msg}：$UP_CHINA_DNS1,$UP_CHINA_DNS2"
 		[ -f "$RULES_PATH/direct_host" -a -s "$RULES_PATH/direct_host" ] && cat $RULES_PATH/direct_host | sed -e "/^$/d" | sort -u | awk '{if (mode == 0 && dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (mode == 0 && dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/whitelist"}' mode=$chinadns_mode dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/direct_host.conf
 		uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | sed 's/^\(https:\/\/\|http:\/\/\)//g' | awk -F '/' '{print $1}' | grep -v "google.c" | grep -E '.*\..*$' | grep '[a-zA-Z]$' | sort -u | awk '{if (dns1 != "") print "server=/."$1"/'$UP_CHINA_DNS1'"; if (dns2 != "") print "server=/."$1"/'$UP_CHINA_DNS2'"; print "ipset=/."$1"/vpsiplist"}' dns1=$UP_CHINA_DNS1 dns2=$UP_CHINA_DNS2 > $TMP_DNSMASQ_PATH/vpsiplist_host.conf
 		[ -f "$RULES_PATH/proxy_host" -a -s "$RULES_PATH/proxy_host" ] && cat $RULES_PATH/proxy_host | sed -e "/^$/d" | sort -u | awk '{if (mode == 0) print "server=/."$1"/127.0.0.1#'$DNS_PORT'"; print "ipset=/."$1"/blacklist"}' mode=$chinadns_mode > $TMP_DNSMASQ_PATH/proxy_host.conf
@@ -663,18 +682,12 @@ add_dnsmasq() {
 		fi
 		
 		subscribe_proxy=$(config_t_get global_subscribe subscribe_proxy 0)
-		[ "$subscribe_proxy" -eq 1 ] && {
-			local count=$(uci show $CONFIG | grep "@subscribe_list" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
-			[ -n "$count" ] && [ "$count" -ge 0 ] && {
-				u_get() {
-					local ret=$(uci -q get $CONFIG.@subscribe_list[$1].$2)
-					echo ${ret:=$3}
-				}
-				for i in $(seq 0 $count); do
-					local enabled=$(u_get $i enabled 0)
-					[ "$enabled" == "0" ] && continue
-					local url=$(u_get $i url)
-					[ -n "$url" -a "$url" != "" ] && {
+		[ "$subscribe_proxy" == "1" ] && {
+			local items=$(get_enabled_anonymous_secs "@subscribe_list")
+			[ -n "$items" ] && {
+				for item in ${items}; do
+					local url=$(config_n_get ${item} url)
+					[ -n "$url" ] && [ "$url" != "" ] && {
 						if [ -n "$(echo -n "$url" | grep "//")" ]; then
 							[ "$chinadns_mode" == 0 ] && echo -n "$url" | awk -F '/' '{print $3}' | sed "s/^/server=&\/./g" | sed "s/$/\/127.0.0.1#$DNS_PORT/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
 							echo -n "$url" | awk -F '/' '{print $3}' | sed "s/^/ipset=&\/./g" | sed "s/$/\/blacklist/g" >>$TMP_DNSMASQ_PATH/subscribe.conf
@@ -687,8 +700,9 @@ add_dnsmasq() {
 			}
 		}
 	}
+	echolog "  - ${msg}"
 	
-	if [ -z "$IS_DEFAULT_CHINA_DNS" -o "$IS_DEFAULT_CHINA_DNS" == 0 ]; then
+	if [ -z "$IS_DEFAULT_CHINA_DNS" ] || [ "$IS_DEFAULT_CHINA_DNS" == 0 ]; then
 		server="server=127.0.0.1#$DNS_PORT"
 		[ "$DNS_MODE" != "chinadns-ng" ] && {
 			[ -n "$UP_CHINA_DNS1" ] && server="server=$UP_CHINA_DNS1"
@@ -700,6 +714,7 @@ add_dnsmasq() {
 			no-poll
 			no-resolv
 		EOF
+		echolog "  - 默认DNS：${server}"
 	else
 		[ -z "$DEFAULT_DNS1" ] && {
 			local tmp=$(get_host_ip ipv4 www.baidu.com 1)
@@ -709,7 +724,7 @@ add_dnsmasq() {
 					no-poll
 					no-resolv
 				EOF
-				echolog "你没有设置接口DNS，请前往设置！"
+				echolog "  - 你没有设置接口DNS，请前往设置！"
 				/etc/init.d/dnsmasq restart >/dev/null 2>&1
 			}
 		}
@@ -717,7 +732,6 @@ add_dnsmasq() {
 	
 	echo "conf-dir=$TMP_DNSMASQ_PATH" >> /var/dnsmasq.d/dnsmasq-$CONFIG.conf
 	cp -rf /var/dnsmasq.d/dnsmasq-$CONFIG.conf $DNSMASQ_PATH/dnsmasq-$CONFIG.conf
-	echolog "dnsmasq：生成配置文件。"
 }
 
 gen_pdnsd_config() {
@@ -751,8 +765,8 @@ gen_pdnsd_config() {
 	EOF
 
 	append_pdnsd_updns() {
-		[ -z "${2}" ] && echolog "    略过错误 : [${1}]" && return 0
-		echolog "    上游DNS[${2}:${3}]"
+		[ -z "${2}" ] && echolog "  - 略过错误 : ${1}" && return 0
+		echolog "  - 上游DNS：${2}:${3}"
 		cat >> $pdnsd_dir/pdnsd.conf <<-EOF
 			server {
 				label = "node-${2}_${3}";
@@ -780,14 +794,14 @@ del_dnsmasq() {
 }
 
 start_haproxy() {
-	enabled=$(config_t_get global_haproxy balancing_enable 0)
-	[ "$enabled" = "1" ] && {
+	local haproxy_bin HAPROXY_PATH HAPROXY_FILE item lport sorted_items
+	[ "$(config_t_get global_haproxy balancing_enable 0)" == "1" ] && {
+		echolog "HAPROXY 负载均衡..."
 		haproxy_bin=$(find_bin haproxy)
 		[ -f "$haproxy_bin" ] && {
-			local HAPROXY_PATH=$TMP_PATH/haproxy
+			HAPROXY_PATH=$TMP_PATH/haproxy
 			mkdir -p $HAPROXY_PATH
-			local HAPROXY_FILE=$HAPROXY_PATH/config.cfg
-			bport=$(config_t_get global_haproxy haproxy_port)
+			HAPROXY_FILE=$HAPROXY_PATH/config.cfg
 			cat <<-EOF > $HAPROXY_FILE
 				global
 				    log         127.0.0.1 local2
@@ -817,65 +831,62 @@ start_haproxy() {
 					
 			EOF
 			
-			local ports=$(uci show $CONFIG | grep "@haproxy_config" | grep haproxy_port | cut -d "'" -f 2 | sort -u)
-			for p in $ports; do
-				cat <<-EOF >> $HAPROXY_FILE
-					listen $p
-					    mode tcp
-					    bind 0.0.0.0:$p
-						
-				EOF
+			items=$(get_enabled_anonymous_secs "@haproxy_config")
+			for item in $items; do
+				lport=$(config_n_get ${item} haproxy_port 0)
+				[ "${lport}" == "0" ] && echolog "  - 丢弃1个明显无效的节点" && continue
+				sorted_items="${sorted_items}${IFS}${lport} ${item}"
 			done
+
+			items=$(echo "${sorted_items}" | sort -n | cut -d' ' -sf 2)
 			
-			local count=$(uci show $CONFIG | grep "@haproxy_config" | sed -n '$p' | cut -d '[' -f 2 | cut -d ']' -f 1)
-			[ -n "$count" ] && [ "$count" -ge 0 ] && {
-				u_get() {
-					local ret=$(uci -q get $CONFIG.@haproxy_config[$1].$2)
-					echo ${ret:=$3}
-				}
-				for i in $(seq 0 $count); do
-					local enabled=$(u_get $i enabled 0)
-					[ -z "$enabled" -o "$enabled" == "0" ] && continue
+			unset lport
+			[ -n "$items" ] && {
+				local haproxy_port lbss lbort lbweight export backup
+				local msg bip bport bline bbackup failcount interface
+				for item in ${items}; do
+					unset haproxy_port lbort bbackup
+
+					eval $(uci -q show $CONFIG.${item} | cut -d'.' -sf 3- | grep -v '^$')
+					get_ip_port_from "$lbss" bip bport
 					
-					local haproxy_port=$(u_get $i haproxy_port)
-					[ -z "$haproxy_port" ] && continue
-					
-					local bips=$(u_get $i lbss)
-					local bports=$(u_get $i lbort)
-					if [ -z "$bips" ] || [ -z "$bports" ]; then
-						continue
-					fi
-					
-					local bip=$(echo $bips | awk -F ":" '{print $1}')
-					local bport=$(echo $bips | awk -F ":" '{print $2}')
-					[ "$bports" != "default" ] && bport=$bports
-					[ -z "$bport" ] && continue
-					
-					local line=$(cat $HAPROXY_FILE | grep -n "bind 0.0.0.0:$haproxy_port" | awk -F ":" '{print $1}')
-					[ -z "$line" ] && continue
-					
-					local bweight=$(u_get $i lbweight)
-					local exports=$(u_get $i export)
-					local backup=$(u_get $i backup)
-					local bbackup=""
+					[ "$lbort" == "default" ] && lbort=$bport || bport=$lbort
+					[ -z "$haproxy_port" ] || [ -z "$bip" ] || [ -z "$lbort" ] && echolog "  - 丢弃1个明显无效的节点" && continue
 					[ "$backup" = "1" ] && bbackup="backup"
-					sed -i "${line}i \ \ \ \ server $bip:$bport $bip:$bport weight $bweight check inter 1500 rise 1 fall 3 $bbackup" $HAPROXY_FILE
-					if [ "$exports" != "0" ]; then
+
+					[ "$lport" == "${haproxy_port}" ] || {
+						lport=${haproxy_port}
+						echolog "  - 入口 0.0.0.0:${lport}..."
+						cat <<-EOF >> $HAPROXY_FILE
+							listen $lport
+							    mode tcp
+							    bind 0.0.0.0:$lport
+						EOF
+					}
+					
+					cat <<-EOF >> $HAPROXY_FILE
+						    server $bip:$bport $bip:$bport weight $lbweight check inter 1500 rise 1 fall 3 $bbackup
+					EOF
+
+					if [ "$export" != "0" ]; then
+						unset msg
 						failcount=0
 						while [ "$failcount" -lt "3" ]; do
-							interface=$(ifconfig | grep "$exports" | awk '{print $1}')
-							if [ -z "$interface" ]; then
-								echolog "找不到出口接口：$exports，1分钟后再重试"
+							ubus list network.interface.${export} >/dev/null 2>&1
+							if [ $? -ne 0 ]; then
+								echolog "  - 找不到出口接口：$export，1分钟后再重试(${failcount}/3)，${bip}"
 								let "failcount++"
 								[ "$failcount" -ge 3 ] && exit 0
 								sleep 1m
 							else
-								route add -host ${bip} dev ${exports}
+								route add -host ${bip} dev ${export}
+								msg="[$?] 从 ${export} 接口路由，"
 								echo "$bip" >>/tmp/balancing_ip
 								break
 							fi
 						done
 					fi
+					echolog "  - ${msg}出口节点：${bip}:${bport}，权重：${lbweight}"
 				done
 			}
 			
@@ -886,6 +897,7 @@ start_haproxy() {
 			local auth=""
 			[ -n "$console_user" -a -n "console_password" ] && auth="stats auth $console_user:$console_password"
 			cat <<-EOF >> $HAPROXY_FILE
+			
 				listen console
 				    bind 0.0.0.0:$console_port
 				    mode http                   
@@ -896,6 +908,7 @@ start_haproxy() {
 			EOF
 			
 			ln_start_bin $haproxy_bin haproxy "-f $HAPROXY_FILE"
+			echolog "  - 控制台端口：${console_port}/，${auth:-公开}"
 		}
 	}
 }

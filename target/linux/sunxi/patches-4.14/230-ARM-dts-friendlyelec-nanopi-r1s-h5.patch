@@ -1,15 +1,15 @@
---- a/arch/arm64/boot/dts/allwinner/Makefile	2019-12-22 13:59:07.075152708 +0800
-+++ b/arch/arm64/boot/dts/allwinner/Makefile	2019-12-22 14:03:57.208779217 +0800
-@@ -11,6 +11,7 @@
+--- a/arch/arm64/boot/dts/allwinner/Makefile
++++ b/arch/arm64/boot/dts/allwinner/Makefile
+@@ -11,6 +11,7 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-or
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-orangepi-zero-plus2.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-nanopi-neo2.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-nanopi-neo-plus2.dtb
 +dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-nanopi-r1s.dtb
-
+ 
  always		:= $(dtb-y)
  subdir-y	:= $(dts-dirs)
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s.dts	2019-12-22 14:04:36.978610138 +0800
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s.dts
 @@ -0,0 +1,232 @@
 +/*
 + * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>

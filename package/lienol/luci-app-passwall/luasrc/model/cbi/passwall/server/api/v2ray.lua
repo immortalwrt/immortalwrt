@@ -244,8 +244,8 @@ function gen_config(user)
     }
 
     if user.transport == "mkcp" or user.transport == "ds" or user.transport == "quic" then
-        user.streamSettings.security = "none"
-        user.streamSettings.tlsSettings = nil
+        config.inbounds[1].streamSettings.security = "none"
+        config.inbounds[1].streamSettings.tlsSettings = nil
     end
 
     return config

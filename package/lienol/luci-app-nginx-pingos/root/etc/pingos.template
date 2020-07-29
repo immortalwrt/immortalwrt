@@ -37,9 +37,10 @@ rtmp {
 
     server {
         listen |RTMP_PORT|;
+        listen [::]:|RTMP_PORT| ipv6only=on;
         serverid 000;
         out_queue 2048;
-        server_name live.pingos.io;
+        server_name localhost;
         rtmp_auto_pull on;
         rtmp_auto_pull_port unix:|TMP_PATH|/rtmp;
    
@@ -114,6 +115,7 @@ http {
 
     server {
         listen |HTTP_PORT|;
+        listen [::]:|HTTP_PORT|;
         |ssl_certificate|
         |ssl_certificate_key|
         ssl_session_cache shared:SSL:1m;
