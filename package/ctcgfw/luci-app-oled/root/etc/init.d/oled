@@ -44,7 +44,7 @@ start() {
 
  
 stop() {
-	kill -9 $(pgrep /usr/bin/oled)
+	kill -2 $(pgrep /usr/bin/oled)
 	kill -9 $(pgrep -f /usr/sbin/netspeed)
 	echo "oled exit..."
 }
