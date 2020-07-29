@@ -68,8 +68,7 @@ else
 end
 
 -- [[ Global Settings ]]--
-s = m:section(TypedSection, "global", translate("Main Settings"))
--- s.description = translate("If you can use it, very stable. If not, GG !!!")
+s = m:section(TypedSection, "global")
 s.anonymous = true
 s.addremove = false
 

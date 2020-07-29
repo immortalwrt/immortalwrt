@@ -23,6 +23,9 @@ ifeq ($(ARCH),arm)
 endif
 ifeq ($(BOARD),bcm53xx)
 	PKG_ARCH_BROOK:=_linux_arm6
+ifeq ($(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE)))),)
+	PKG_ARCH_BROOK:=_linux_arm5
+endif
 endif
 ifeq ($(BOARD),kirkwood)
 	PKG_ARCH_BROOK:=_linux_arm5
@@ -32,7 +35,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 PKG_NAME:=brook
-PKG_VERSION:=20200201
+PKG_VERSION:=20200701
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=brook$(PKG_ARCH_BROOK)

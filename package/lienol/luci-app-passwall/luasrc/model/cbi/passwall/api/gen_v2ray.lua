@@ -75,6 +75,7 @@ local function gen_outbound(node, tag)
                     congestion = (node.mkcp_congestion == "1") and true or false,
                     readBufferSize = tonumber(node.mkcp_readBufferSize),
                     writeBufferSize = tonumber(node.mkcp_writeBufferSize),
+                    seed = (node.mkcp_seed and node.mkcp_seed ~= "") and node.mkcp_seed or nil,
                     header = {type = node.mkcp_guise}
                 } or nil,
                 wsSettings = (node.transport == "ws") and {
@@ -122,6 +123,12 @@ local function gen_outbound(node, tag)
             }
         }
     end
+
+    if node.transport == "mkcp" or node.transport == "ds" or node.transport == "quic" then
+        result.streamSettings.security = "none"
+        result.streamSettings.tlsSettings = nil
+    end
+
     return result
 end
 

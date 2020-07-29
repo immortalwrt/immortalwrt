@@ -200,7 +200,7 @@ li {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #adb5bd;
+  color: #525461;
   font-size: 1.5rem;
   position: absolute;
   z-index: 100;
@@ -225,10 +225,10 @@ li {
   margin: 0.825rem 0;
   box-sizing: border-box;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  color: #8898aa;
+  color: #525461;
   border: 0;
   border-radius: 0;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid #fff;
   background-color: transparent;
   background-clip: padding-box;
   box-shadow: 0 3px 2px rgba(233, 236, 239, 0.05);
@@ -283,6 +283,7 @@ li {
   margin-top: auto;
   padding: 0px 0px 30px;
   z-index: 10;
+  color: #525461;
 }
 .login-page .login-container footer .luci-link {
   display: block;
@@ -292,6 +293,13 @@ li {
 }
 .pull-left {
   float: left;
+}
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  .login-page .login-container .login-form {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(244, 245, 247, 0.7);
+  }
 }
 /***********************
 *
@@ -1068,6 +1076,11 @@ small {
 }
 .cbi-section > legend {
   display: none !important;
+}
+.cbi-section-error {
+  padding: 1.5rem;
+  color: #fb6340;
+  font-weight: 600;
 }
 fieldset > fieldset {
   margin: 0;
@@ -2676,13 +2689,6 @@ input[name="nslookup"] {
     border-bottom: var(--white) 1px solid;
     border-radius: 0;
   }
-  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-    .login-page .login-container .login-form {
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      background-color: rgba(244, 245, 247, 0.7);
-    }
-  }
   fieldset {
     padding: 0;
     margin: 1rem 0 0 0;
@@ -2856,6 +2862,9 @@ input[name="nslookup"] {
   .login-page .login-container .login-form .form-login .cbi-button-apply:hover,
   .login-page .login-container .login-form .form-login .cbi-button-apply:focus {
     background-image: linear-gradient(-135deg, #554c8a 0%, #483d8b 100%);
+  }
+  .login-page .login-container footer {
+    color: #adb5bd;
   }
   header::after {
     background-color: #1e1e1e !important;
@@ -3213,11 +3222,8 @@ input[name="nslookup"] {
     padding: 5px;
     background: #252525;
   }
-}
-@media (prefers-color-scheme: dark) and (max-width: 480px) {
-  .node-status-iptables > .main div > .cbi-map > form {
-    background-color: #1e1e1e;
-    box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.35);
+  .cbi-section-error {
+    color: darkorange;
   }
   @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
     .login-page .login-container .login-form {
@@ -3225,5 +3231,11 @@ input[name="nslookup"] {
       backdrop-filter: blur(10px);
       background-color: rgba(0, 0, 0, 0.7);
     }
+  }
+}
+@media (prefers-color-scheme: dark) and (max-width: 480px) {
+  .node-status-iptables > .main div > .cbi-map > form {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.35);
   }
 }

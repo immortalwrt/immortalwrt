@@ -47,15 +47,6 @@
 	local c = tree
 	local i, r
 	
-	function glob(...)
-		local iter, code, msg = fs.glob(...)
-		if iter then
-			return nutil.consume(iter)
-		else
-			return nil, code, msg
-		end
-	end
-	
 	-- tag all nodes leading to this page
 	for i, r in ipairs(request) do
 		if c.nodes and c.nodes[r] then
@@ -228,6 +219,9 @@
 	<meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
 	<meta name="theme-color" content="#5e72e4">
 	<link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
+	<% if nixio.fs.access("/etc/dark") then %>
+	<link rel="stylesheet" href="<%=media%>/css/dark.css?v=<%=math.random(1,100000)%>">
+	<% end -%>
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
