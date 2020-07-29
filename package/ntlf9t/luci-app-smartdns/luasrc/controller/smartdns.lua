@@ -68,7 +68,7 @@ function act_status()
 		end
 	elseif e.redirect == 2 then
 		local str;
-		local dnsmasq_server = luci.sys.exec("uci get dhcp.@dnsmasq[0].server")
+		local dnsmasq_server = luci.sys.exec("uci -q get dhcp.@dnsmasq[0].server")
 		if e.local_port ~= nil then
 			str = "127.0.0.1#" .. e.local_port 
 			if  string.sub(dnsmasq_server,1,string.len(str)) == str then 
