@@ -67,8 +67,8 @@ msgstr "负载均衡"
 msgid "Enter interface"
 msgstr "进入界面"
 
-msgid "Rule"
-msgstr "规则"
+msgid "Rule Manage"
+msgstr "规则管理"
 
 msgid "Access control"
 msgstr "访问控制"
@@ -680,7 +680,7 @@ msgid "Moving..."
 msgstr "移动中"
 
 msgid "App Update"
-msgstr "更新主程序"
+msgstr "组件更新"
 
 msgid "Please confirm that your firmware supports FPU."
 msgstr "请确认你的固件支持FPU。"

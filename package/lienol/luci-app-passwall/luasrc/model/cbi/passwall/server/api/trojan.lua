@@ -4,10 +4,10 @@ function gen_config(user)
     local cipher13 = "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384"
     local config = {
         run_type = "server",
-        local_addr = "0.0.0.0",
+        local_addr = "::",
         local_port = tonumber(user.port),
         remote_addr = (user.remote_enable == "1" and user.remote_address) and user.remote_address or nil,
-        remote_port = (user.remote_enable == "1" and user.remote_port) and user.remote_port or nil,
+        remote_port = (user.remote_enable == "1" and user.remote_port) and tonumber(user.remote_port) or nil,
         password = user.type == "Trojan-Go" and user.passwords or { user.password },
         log_level = 1,
         ssl = (user.stream_security == nil  or user.stream_security == "tls") and {
