@@ -10,15 +10,19 @@ uci commit system
 uci set fstab.@global[0].anon_mount=1
 uci commit fstab
 
+rm -f /www/luci-static/resources/view/status/include/50_dsl.js
+rm -f /www/luci-static/resources/view/status/include/70_ddns.js
+rm -f /www/luci-static/resources/view/status/include/80_minidlna.js
+rm -f /www/luci-static/resources/view/status/include/80_upnp.js
+
 sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/aria2.lua
 sed -i 's#admin/services#admin/nas#g' /usr/lib/lua/luci/view/aria2/settings_header.htm
-sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/hd_idle.lua
-sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/minidlna.lua
-sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/mjpg-streamer.lua
-sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/p910nd.lua
+sed -i 's/services/nas/g' /root/usr/share/luci/menu.d/luci-app-hd-idle.json
+sed -i 's/services/nas/g' /root/usr/share/luci/menu.d/luci-app-minidlna.json
+sed -i 's/services/nas/g' /root/usr/share/luci/menu.d/luci-app-mjpg-streamer.json
+sed -i 's/services/nas/g' /root/usr/share/luci/menu.d/luci-app-p910nd.json
 sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/usb_printer.lua
 sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/xunlei.lua
-sed -i 's/services/nas/g'  /usr/lib/lua/luci/view/minidlna_status.htm
 
 ln -sf /sbin/ip /usr/bin/ip
 
