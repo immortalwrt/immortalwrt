@@ -16,6 +16,7 @@ config_t_get() {
 }
 
 gen_nginx_config() {
+	ipv6=$(config_t_get global ipv6 0)
 	http_port=$(config_t_get global http_port)
 	[ "$(config_t_get global https 0)" == "1" ] && {
 		http_port="$http_port ssl"
@@ -44,6 +45,8 @@ gen_nginx_config() {
 	    -e "s#|FLV_RECORD|#$flv_record#g" \
 	    -e "s#|RECORD_PATH|#$record_path#g" \
 	    /etc/$CONFIG.template > $1
+		
+	[ "$ipv6" = "0" ] && sed -i '/listen \[::\]:/d' $1
 }
 
 start() {
