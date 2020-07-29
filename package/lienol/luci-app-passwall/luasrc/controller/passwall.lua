@@ -26,7 +26,7 @@ function index()
 		entry({"admin", "services", appname, "haproxy"}, cbi("passwall/haproxy"), _("Load Balancing"), 94).leaf = true
 	end
 	entry({"admin", "services", appname, "node_subscribe"}, cbi("passwall/node_subscribe"), _("Node Subscribe"), 95).dependent = true
-	entry({"admin", "services", appname, "rule"}, cbi("passwall/rule"), _("Rule"), 96).leaf = true
+	entry({"admin", "services", appname, "rule"}, cbi("passwall/rule"), _("Rule Manage"), 96).leaf = true
 	entry({"admin", "services", appname, "app_update"}, cbi("passwall/app_update"), _("App Update"), 97).leaf = true
 	entry({"admin", "services", appname, "node_config"}, cbi("passwall/node_config")).leaf = true
 	entry({"admin", "services", appname, "shunt_rules"}, cbi("passwall/shunt_rules")).leaf = true
