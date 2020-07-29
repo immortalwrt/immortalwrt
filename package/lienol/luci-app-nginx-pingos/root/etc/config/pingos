@@ -1,7 +1,8 @@
 
 config global
-	option https '0'
 	option enable '0'
+	option ipv6 '0'
+	option https '0'
 	option ts_record '0'
 	option flv_record '0'
 	option http_port '18080'
