@@ -40,7 +40,8 @@ MT-Wifi 5.0.4.0: [MeIsReallyBa/mt7615-dbdc-linux5.4](https://github.com/MeIsReal
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
 luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
 luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
-luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).
+luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
+luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).
 
 ## License
 ### Depend on their own License.
