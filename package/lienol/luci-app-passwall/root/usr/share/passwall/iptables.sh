@@ -186,9 +186,9 @@ load_acl() {
 	#  加载TCP默认代理模式
 	local ipt_tmp=$ipt_n
 	local is_tproxy msg
+	unset is_tproxy msg
 	[ "$TCP_NODE1" != "nil" ] && [ "$TCP_PROXY_MODE" != "disable" ] && {
 		local TCP_NODE1_TYPE=$(echo $(config_n_get $TCP_NODE1 type) | tr 'A-Z' 'a-z')
-		unset is_tproxy
 		[ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 brook_protocol client)" == "client" ] && is_tproxy=1
 		[ "$TCP_NODE1_TYPE" == "trojan-go" ] && is_tproxy=1
 			msg="TCP默认代理：使用TCP节点1 [$(get_action_chain_name $TCP_PROXY_MODE)]"
@@ -202,10 +202,10 @@ load_acl() {
 		msg="${msg}所有端口"
 		$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $TCP_REDIR_PORT1 $is_tproxy)
 		$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $TCP_PROXY_MODE $TCP_REDIR_PORT1 $is_tproxy)
+		echolog "${msg}"
 	}
 	$ipt_tmp -A PSW $(comment "默认") -p tcp -j RETURN
-	echolog "${msg}"
-	
+
 	#  加载UDP默认代理模式
 	if [ "$UDP_NODE1" != "nil" ] && [ "$UDP_PROXY_MODE" != "disable" ]; then
 		msg="UDP默认代理：使用UDP节点1 [$(get_action_chain_name $UDP_PROXY_MODE)](TPROXY:${UDP_REDIR_PORT1})代理"
@@ -213,9 +213,9 @@ load_acl() {
 		msg="${msg}所有端口"
 		$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $UDP_REDIR_PORT1 TPROXY)
 		$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $UDP_PROXY_MODE $UDP_REDIR_PORT1 TPROXY)
+		echolog "${msg}"
 	fi
 	$ipt_m -A PSW $(comment "默认") -p udp -j RETURN
-	echolog "${msg}"
 }
 
 filter_vpsip() {
