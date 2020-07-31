@@ -71,13 +71,13 @@ define Build/Compile
   "$$$$(go env GOPATH)/bin/packr" -v -z -i $(PKG_BUILD_DIR)/home ; \
   $(call GoPackage/Build/Compile) ; \
 )
+ifeq ($(CONFIG_ADGUARDHOME_COMPRESS_UPX),y)
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome
+endif
 endef
 
 define Package/AdGuardHome/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-ifeq ($(CONFIG_ADGUARDHOME_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome
-endif
 	$(INSTALL_DIR) $(1)/usr/bin/AdGuardHome
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome $(1)/usr/bin/AdGuardHome/AdGuardHome
 endef
