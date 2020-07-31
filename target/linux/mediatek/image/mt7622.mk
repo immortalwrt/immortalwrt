@@ -53,7 +53,7 @@ define Device/mediatek_mt7622-ubi
   IMAGE_SIZE := 32768k
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-                check-size $$$$(IMAGE_SIZE)
+                check-size
   IMAGE/sysupgrade.bin := sysupgrade-tar
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-usb3 kmod-ata-ahci-mtk
 endef

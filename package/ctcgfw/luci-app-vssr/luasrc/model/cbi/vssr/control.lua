@@ -18,44 +18,28 @@ o.datatype = "ip4addr"
 -- Part of LAN
 s:tab("lan_ac", translate("LAN IP AC"))
 
-o = s:taboption("lan_ac", ListValue, "lan_ac_mode", translate("LAN Access Control"))
-o:value("0", translate("Disable"))
-o:value("w", translate("Allow listed only"))
-o:value("b", translate("Allow all except listed"))
-o.rmempty = false
-
-o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Host List"))
+o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Bypassed Host List"))
 o.datatype = "ipaddr"
 luci.ip.neighbors({ family = 4 }, function(entry)
-		if entry.reachable then
-			o:value(entry.dest:string())
-		end
-end)
-o:depends("lan_ac_mode", "w")
-o:depends("lan_ac_mode", "b")
-
-o = s:taboption("lan_ac", DynamicList, "lan_bp_ips", translate("LAN Bypassed Host List"))
-o.datatype = "ipaddr"
-luci.ip.neighbors({ family = 4 }, function(entry)
-		if entry.reachable then
-			o:value(entry.dest:string())
-		end
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
 end)
 
 o = s:taboption("lan_ac", DynamicList, "lan_fp_ips", translate("LAN Force Proxy Host List"))
 o.datatype = "ipaddr"
 luci.ip.neighbors({ family = 4 }, function(entry)
-		if entry.reachable then
-			o:value(entry.dest:string())
-		end
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
 end)
 
 o = s:taboption("lan_ac", DynamicList, "lan_gm_ips", translate("Game Mode Host List"))
 o.datatype = "ipaddr"
 luci.ip.neighbors({ family = 4 }, function(entry)
-		if entry.reachable then
-			o:value(entry.dest:string())
-		end
+       if entry.reachable then
+               o:value(entry.dest:string())
+       end
 end)
 
 -- Part of Self
@@ -66,9 +50,7 @@ end)
 -- o:value("2", translatef("Forwarded Proxy"))
 -- o.rmempty = false
 
-s:tab("esc",  translate("Bypass Domain List"), "<font color='red'>" ..
-          translate("Join the white list of domain names will not go agent.") ..
-          "</font>")
+s:tab("esc",  translate("Bypass Domain List"))
 
 local escconf = "/etc/config/white.list"
 o = s:taboption("esc", TextValue, "escconf")
@@ -86,10 +68,7 @@ o.remove = function(self, section, value)
 end
 
 
-s:tab("block",  translate("Black Domain List"),
-      "<font color='red'>" .. translate(
-          "These had been joined websites will use proxy.Please input the domain names of websites,every line can input only one website domain.For example,google.com.") ..
-          "</font>")
+s:tab("block",  translate("Black Domain List"))
 
 local blockconf = "/etc/config/black.list"
 o = s:taboption("block", TextValue, "blockconf")

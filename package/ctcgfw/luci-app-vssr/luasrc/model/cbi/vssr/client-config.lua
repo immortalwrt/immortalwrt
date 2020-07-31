@@ -41,14 +41,14 @@ local protocol = {
     "auth_chain_d", "auth_chain_e", "auth_chain_f"
 }
 
-local obfs = {
+obfs = {
     "plain", "http_simple", "http_post", "random_head", "tls1.2_ticket_auth"
 }
 
 local securitys = {"auto", "none", "aes-128-gcm", "chacha20-poly1305"}
 
 m = Map(vssr, translate("Edit vssr Server"))
-m.redirect = luci.dispatcher.build_url("admin/vpn/vssr/servers")
+m.redirect = luci.dispatcher.build_url("admin/services/vssr/servers")
 if m.uci:get(vssr, sid) ~= "servers" then
     luci.http.redirect(m.redirect)
     return
@@ -65,29 +65,24 @@ o.template = "vssr/ssrurl"
 o.value = sid
 
 o = s:option(ListValue, "type", translate("Server Node Type"))
-if nixio.fs.access("/usr/sbin/trojan") then
-o:value("trojan", translate("Trojan"))
-end
-
-if nixio.fs.access("/usr/bin/v2ray/v2ray") then
-o:value("v2ray", translate("V2Ray"))
-end
 o:value("ssr", translate("ShadowsocksR"))
-if nixio.fs.access("/usr/bin/ss-redir") then
-o:value("ss", translate("Shadowsocks"))
+
+if nixio.fs.access("/usr/bin/v2ray/v2ray") or nixio.fs.access("/usr/bin/v2ray") then
+    o:value("ss", translate("Shadowsocks New Version"))
+    o:value("v2ray", translate("V2Ray"))
 end
 
-if nixio.fs.access("/usr/bin/ipt2socks") then
-o:value("socks5", translate("Socks5"))
+if nixio.fs.access("/usr/sbin/trojan") then
+    o:value("trojan", translate("Trojan"))
 end
+
 o.description = translate(
                     "Using incorrect encryption mothod may causes service fail to start")
 
 o = s:option(Value, "alias", translate("Alias(optional)"))
 
-o = s:option(Value, "flag", translate("Country"))
-o.description = translate(
-                    "请自己指定。格式：cn us hk 等")
+o = s:option(Value, "flag", translate("Area"))
+o.description = translate("请自己指定。格式：cn us hk 等")
 o.rmempty = true
 
 o = s:option(Value, "server", translate("Server Address"))
@@ -103,24 +98,17 @@ o.rmempty = false
 -- o.default = 60
 -- o.rmempty = false
 
-o = s:option(Flag, "auth_enable", translate("Enable Authentication"))
-o.rmempty = false
-o.default = "0"
-o:depends("type", "socks5")
-
-o = s:option(Value, "username", translate("Username"))
-o.rmempty = true
-o:depends("type", "socks5")
-
-
 o = s:option(Value, "password", translate("Password"))
 o.password = true
 o.rmempty = true
 o:depends("type", "ssr")
 o:depends("type", "ss")
 o:depends("type", "trojan")
-o:depends("type", "socks5")
 
+o = s:option(Value, "peer", translate("Peer"))
+o.datatype = "host"
+o.rmempty = true
+o:depends("type", "trojan")
 
 o = s:option(ListValue, "encrypt_method", translate("Encrypt Method"))
 for _, v in ipairs(encrypt_methods) do o:value(v) end
@@ -131,29 +119,6 @@ o = s:option(ListValue, "encrypt_method_ss", translate("Encrypt Method"))
 for _, v in ipairs(encrypt_methods_ss) do o:value(v) end
 o.rmempty = true
 o:depends("type", "ss")
-
--- Shadowsocks Plugin
-
-o = s:option(ListValue, "plugin", translate("plugin"))
-o:value("none", "None")
-if nixio.fs.access("/usr/bin/v2ray-plugin") then
-o:value("/usr/bin/v2ray-plugin", "v2ray-plugin")
-end
-if nixio.fs.access("/usr/bin/obfs-local") then
-o:value("/usr/bin/obfs-local", "obfs-local")
-end
-if nixio.fs.access("/usr/bin/goquiet-client") then
-o:value("/usr/bin/goquiet-client", "GoQuiet")
-end
-o.rmempty = false
-o.default = "none"
-o:depends("type", "ss")
-
-o = s:option(Value, "plugin_opts", translate("Plugin Opts"))
-o.rmempty = true
-o:depends("plugin", "/usr/bin/v2ray-plugin")
-o:depends("plugin", "/usr/bin/obfs-local")
-o:depends("plugin", "/usr/bin/goquiet-client")
 
 o = s:option(ListValue, "protocol", translate("Protocol"))
 for _, v in ipairs(protocol) do o:value(v) end
@@ -167,6 +132,27 @@ o = s:option(ListValue, "obfs", translate("Obfs"))
 for _, v in ipairs(obfs) do o:value(v) end
 o.rmempty = true
 o:depends("type", "ssr")
+
+o = s:option(Flag, "v2ray_plugin", translate("V2ray-plugin"))
+o.rmempty = false
+o:depends("type", "ss")
+
+o = s:option(Value, "obfs_transport", translate("V2ray-plugin-transport"))
+o.rmempty = true
+o.default = "ws"
+o:depends("v2ray_plugin", "1")
+
+o = s:option(Value, "obfs_host", translate("V2ray-plugin-host"))
+o.rmempty = true
+o:depends("v2ray_plugin", "1")
+
+o = s:option(Value, "obfs_path", translate("V2ray-plugin-path"))
+o.rmempty = true
+o:depends("v2ray_plugin", "1")
+
+o = s:option(Flag, "obfs_opts", translate("TLS"))
+o.rmempty = false
+o:depends("v2ray_plugin", "1")
 
 o = s:option(Value, "obfs_param", translate("Obfs param(optional)"))
 o:depends("type", "ssr")
@@ -265,7 +251,6 @@ o:value("utp", translate("BitTorrent (uTP)"))
 o:value("wechat-video", translate("WechatVideo"))
 o:value("dtls", "DTLS 1.2")
 o:value("wireguard", "WireGuard")
-
 -- [[ mKCP部分 ]]--
 
 o = s:option(ListValue, "kcp_guise", translate("Camouflage Type"))
@@ -330,12 +315,6 @@ o.rmempty = true
 o.default = "0"
 o:depends("type", "v2ray")
 o:depends("type", "trojan")
-
-o = s:option(Value, "tls_host", translate("TLS Host"))
---o:depends("type", "trojan")
-o:depends("tls", "1")
-o.rmempty = true
-
 
 -- [[ Mux ]]--
 o = s:option(Flag, "mux", translate("Mux"))
