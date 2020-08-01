@@ -18,6 +18,15 @@ msgstr "CPU温度"
 msgid "Scroll Text"
 msgstr "文字滚动"
 
+msgid "Enable Auto switch"
+msgstr "启用定时开关"
+
+msgid "From"
+msgstr "起始时间"
+
+msgid "To"
+msgstr "结束时间"
+
 msgid "Text you want to scroll"
 msgstr "你想要显示的文字"
 

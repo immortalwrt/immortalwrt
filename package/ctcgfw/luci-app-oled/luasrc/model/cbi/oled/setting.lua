@@ -14,6 +14,23 @@ s:tab("screensaver", translate("screensaver"))
 
 o = s:taboption("info", Flag, "enable", translate("Enable"))
 o.default=0
+o = s:taboption("info", Flag, "autoswitch", translate("Enable Auto switch"))
+o.default=0
+from = s:taboption("info", ListValue, "from", translate("From"))
+to = s:taboption("info", ListValue, "to", translate("To"))
+for i=0,23 do
+	for j=0,30,30 do
+		from:value(i*60+j,string.format("%02d:%02d",i,j))
+		to:value(i*60+j,string.format("%02d:%02d",i,j))
+	end
+end
+from:value(1440,"24:00")
+to:value(1440,"24:00")
+from:depends("autoswitch",'1')
+to:depends("autoswitch",'1')
+from.default=0
+to.default=1440
+
 --informtion  options----
 o = s:taboption("info", Flag, "date", translate("Date"), translate('Format YYYY-MM-DD HH:MM:SS'))
 o.default=0
