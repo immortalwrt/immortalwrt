@@ -1,9 +1,0 @@
-#!/bin/sh
-
-cpu_arch="$(cat "/proc/cpuinfo" | grep "model name" | sed -n "1p" | awk -F ': ' '{print $2}')"
-cpu_cores="$(cat "/proc/cpuinfo" | grep "processor" | wc -l)"
-
-cpu_freq="$(expr $(cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq) / 1000)MHz"
-sys_temp="$(sensors | grep -Eo '\+[0-9]+.+C' | sed ':a;N;$!ba;s/\n/ /g;s/+//g')"
-
-echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq}, ${sys_temp})"
