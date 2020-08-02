@@ -12,7 +12,7 @@ PKG_VERSION:=8.2.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=cryptopp$(subst .,,$(PKG_VERSION)).zip
-PKG_SOURCE_URL:=http://www.cryptopp.com/
+PKG_SOURCE_URL:=https://www.cryptopp.com/
 PKG_MD5SUM:=8a8bcb436af83e16d2227bd4ac642243
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_VERSION)
@@ -27,7 +27,7 @@ define Package/libcryptopp
   CATEGORY:=Libraries
   DEPENDS:=+libpthread +libstdcpp
   TITLE:=Crypto++ is library for creating C++ programs which use cryptographic algorithms
-  URL:=http://packages.debian.org/sid/libcrypto++-dev
+  URL:=https://packages.debian.org/sid/libcrypto++-dev
 endef
 
 define Package/package/libcryptopp
@@ -42,7 +42,6 @@ CMAKE_OPTIONS += -DBUILD_SHARED=ON
 
 UNPACK_CMD=cd $(PKG_BUILD_DIR) && unzip "$(DL_DIR)/$(PKG_SOURCE)"
 define Build/Prepare
-	[ ! -f $(BUILD_DIR)/$(PKG_NAME)/CRYPTOPP_8_2_0.zip ] && wget https://github.com/noloader/cryptopp-cmake/archive/CRYPTOPP_8_2_0.zip -O $(BUILD_DIR)/$(PKG_NAME)/CRYPTOPP_8_2_0.zip && unzip -o $(BUILD_DIR)/$(PKG_NAME)/CRYPTOPP_8_2_0.zip -d $(BUILD_DIR)/$(PKG_NAME) && cd $(BUILD_DIR)/$(PKG_NAME)/cryptopp-cmake-CRYPTOPP_8_2_0 && cp CMakeLists.txt cryptopp-config.cmake $(PKG_BUILD_DIR)
 	$(Build/Prepare/Default)
 	cd $(PKG_BUILD_DIR) && rm -f GNUmakefile GNUmakefile-cross
 endef
