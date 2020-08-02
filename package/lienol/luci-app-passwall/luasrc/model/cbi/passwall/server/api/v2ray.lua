@@ -5,7 +5,7 @@ function gen_config(user)
     local settings = nil
     local routing = nil
     local outbounds = {
-        {protocol = "freedom"}, {protocol = "blackhole", tag = "blocked"}
+        {protocol = "freedom", tag = "direct"}, {protocol = "blackhole", tag = "blocked"}
     }
 
     if user.protocol == "vmess" then
@@ -59,18 +59,16 @@ function gen_config(user)
         }
     end
 
-    if user.accept_lan == nil or user.accept_lan == "0" then
-        routing = {
-            domainStrategy = "IPOnDemand",
-            rules = {
-                {
-                    type = "field",
-                    ip = {"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"},
-                    outboundTag = "blocked"
-                }
+    routing = {
+        domainStrategy = "IPOnDemand",
+        rules = {
+            {
+                type = "field",
+                ip = {"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"},
+                outboundTag = (user.accept_lan == nil or user.accept_lan == "0") and "blocked" or "direct"
             }
         }
-    end
+    }
 
     if user.transit_node and user.transit_node ~= "nil" then
         local node = ucic:get_all("passwall", user.transit_node)
