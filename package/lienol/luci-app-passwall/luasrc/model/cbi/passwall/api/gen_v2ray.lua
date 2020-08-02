@@ -39,6 +39,7 @@ local function gen_outbound(node, tag)
                 node.transport = "tcp"
                 node.address = "127.0.0.1"
             end
+            node.stream_security = "none"
         end
         result = {
             tag = tag,
@@ -248,7 +249,7 @@ table.insert(outbounds, {protocol = "freedom", tag = "direct", settings = {keep 
 
 local v2ray = {
     log = {
-        -- error = "/var/log/v2ray.log",
+        -- error = string.format("/var/etc/passwall/%s.log", node[".name"]),
         loglevel = "warning"
     },
     -- 传入连接
