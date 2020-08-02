@@ -1,0 +1,318 @@
+From e7bef4525c22b5624f05ba37c8e79fc60ca12453 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?D=C3=A9vai=20Tam=C3=A1s?= <gonosztopi@amule.org>
+Date: Mon, 5 Aug 2019 18:29:08 +0200
+Subject: [PATCH] Fix deprecation warnings about std::auto_ptr
+
+std::auto_ptr is deprecated in C++11 and removed in C++17. std::unique_ptr
+is an almost drop-in replacement for std::auto_ptr introduced in C++11
+(with proper move operators).
+
+To find out more about the background of removing std::auto_ptr and introducing std::unique_ptr,
+see http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1856.html#20.4.5%20-%20Class%20template%20auto_ptr
+---
+ src/SearchList.cpp                |  4 +-
+ src/SearchList.h                  | 10 ++---
+ src/UPnPBase.cpp                  |  4 +-
+ src/UPnPBase.h                    |  6 ++-
+ src/libs/common/FileFunctions.cpp |  6 +--
+ src/libs/common/Makefile.am       |  1 +
+ src/libs/common/SmartPtr.h        | 64 +++++++++++++++++++++++++++++++
+ src/libs/ec/cpp/ECSocket.cpp      |  4 +-
+ src/libs/ec/cpp/ECSocket.h        |  7 ++--
+ src/libs/ec/cpp/RemoteConnect.cpp |  7 ++--
+ 10 files changed, 90 insertions(+), 23 deletions(-)
+ create mode 100644 src/libs/common/SmartPtr.h
+
+diff --git a/src/SearchList.cpp b/src/SearchList.cpp
+index 342a18f0d..4935aeeeb 100644
+--- a/src/SearchList.cpp
++++ b/src/SearchList.cpp
+@@ -702,13 +702,13 @@ CSearchList::CMemFilePtr CSearchList::CreateSearchData(CSearchParams& params, Se
+ 			AddLogLineNS(CFormat(wxT("Error %u: %s\n")) % i % _astrParserErrors[i]);
+ 		}
+ 
+-		return CMemFilePtr(NULL);
++		return CMemFilePtr(nullptr);
+ 	}
+ 
+ 	if (iParseResult != 0) {
+ 		_astrParserErrors.Add(CFormat(wxT("Undefined error %i on search expression")) % iParseResult);
+ 
+-		return CMemFilePtr(NULL);
++		return CMemFilePtr(nullptr);
+ 	}
+ 
+ 	if (type == KadSearch && s_strCurKadKeyword != params.strKeyword) {
+diff --git a/src/SearchList.h b/src/SearchList.h
+index 6db7508a3..33428754c 100644
+--- a/src/SearchList.h
++++ b/src/SearchList.h
+@@ -26,10 +26,10 @@
+ #ifndef SEARCHLIST_H
+ #define SEARCHLIST_H
+ 
+-#include "Timer.h"				// Needed for CTimer
++#include "Timer.h"		// Needed for CTimer
+ #include "ObservableQueue.h"	// Needed for CQueueObserver
+-#include "SearchFile.h"			// Needed for CSearchFile
+-#include <memory>		// Do_not_auto_remove (lionel's Mac, 10.3)
++#include "SearchFile.h"		// Needed for CSearchFile
++#include <common/SmartPtr.h>	// Needed for CSmartPtr
+ 
+ 
+ class CMemFile;
+@@ -187,8 +187,8 @@ class CSearchList : public wxEvtHandler
+ 	 */
+ 	bool AddToList(CSearchFile* toadd, bool clientResponse = false);
+ 
+-	//! This auto-pointer is used to safely prevent leaks.
+-	typedef std::auto_ptr<CMemFile> CMemFilePtr;
++	//! This smart pointer is used to safely prevent leaks.
++	typedef CSmartPtr<CMemFile> CMemFilePtr;
+ 
+ 	/** Create a basic search-packet for the given search-type. */
+ 	CMemFilePtr CreateSearchData(CSearchParams& params, SearchType type, bool supports64bit, bool& packetUsing64bit);
+diff --git a/src/UPnPBase.cpp b/src/UPnPBase.cpp
+index 774ebfc32..81cb98fb7 100644
+--- a/src/UPnPBase.cpp
++++ b/src/UPnPBase.cpp
+@@ -436,7 +436,7 @@ m_SCPDURL    (IXML::Element::GetChildValueByTag(service, "SCPDURL")),
+ m_controlURL (IXML::Element::GetChildValueByTag(service, "controlURL")),
+ m_eventSubURL(IXML::Element::GetChildValueByTag(service, "eventSubURL")),
+ m_timeout(1801),
+-m_SCPD(NULL)
++m_SCPD(nullptr)
+ {
+ 	std::ostringstream msg;
+ 	int errcode;
+@@ -552,7 +552,7 @@ bool CUPnPService::Execute(
+ 	const std::vector<CUPnPArgumentValue> &ArgValue) const
+ {
+ 	std::ostringstream msg;
+-	if (m_SCPD.get() == NULL) {
++	if (m_SCPD.get() == nullptr) {
+ 		msg << "Service without SCPD Document, cannot execute action '" << ActionName <<
+ 			"' for service '" << GetServiceType() << "'.";
+ 		AddDebugLogLineN(logUPnP, msg);
+diff --git a/src/UPnPBase.h b/src/UPnPBase.h
+index efe63bf0f..7554d6609 100644
+--- a/src/UPnPBase.h
++++ b/src/UPnPBase.h
+@@ -32,10 +32,12 @@
+ #include <map>
+ #include <string>
+ #include <sstream>
+-#include <memory>
+ 
+ #include "UPnPCompatibility.h"
+ 
++#include <common/SmartPtr.h>		// Needed for CSmartPtr
++
++
+ extern std::string stdEmptyString;
+ 
+ 
+@@ -327,7 +329,7 @@ class CUPnPService
+ 	std::string m_absEventSubURL;
+ 	int m_timeout;
+ 	Upnp_SID m_SID;
+-	std::auto_ptr<CUPnPSCPD> m_SCPD;
++	CSmartPtr<CUPnPSCPD> m_SCPD;
+ 
+ public:
+ 	CUPnPService(
+diff --git a/src/libs/common/FileFunctions.cpp b/src/libs/common/FileFunctions.cpp
+index 6d0db3496..447773c2e 100644
+--- a/src/libs/common/FileFunctions.cpp
++++ b/src/libs/common/FileFunctions.cpp
+@@ -34,11 +34,11 @@
+ #ifdef __WXMAC__
+ #include <zlib.h> // Do_not_auto_remove
+ #endif
+-#include <memory>		// Needed for std::auto_ptr
+-#include <algorithm>	// Needed for std::min
++#include <algorithm>		// Needed for std::min
+ 
+ #include "FileFunctions.h"
+ #include "StringFunctions.h"
++#include "SmartPtr.h"		// Needed for CSmartPtr
+ 
+ //
+ // This class assumes that the following line has been executed:
+@@ -135,7 +135,7 @@ EFileType GuessFiletype(const wxString& file)
+ bool UnpackZipFile(const wxString& file, const wxChar* files[])
+ {
+ 	wxTempFile target(file);
+-	std::auto_ptr<wxZipEntry> entry;
++	CSmartPtr<wxZipEntry> entry;
+ 	wxFFileInputStream fileInputStream(file);
+ 	wxZipInputStream zip(fileInputStream);
+ 	bool run = true;
+diff --git a/src/libs/common/Makefile.am b/src/libs/common/Makefile.am
+index fbcbe6487..6656c2e16 100644
+--- a/src/libs/common/Makefile.am
++++ b/src/libs/common/Makefile.am
+@@ -24,6 +24,7 @@ noinst_HEADERS =  \
+ 	MD5Sum.h \
+ 	MuleDebug.h \
+ 	Path.h \
++	SmartPtr.h \
+ 	strerror_r.h \
+ 	StringFunctions.h \
+ 	TextFile.h
+diff --git a/src/libs/common/SmartPtr.h b/src/libs/common/SmartPtr.h
+new file mode 100644
+index 000000000..e5324c787
+--- /dev/null
++++ b/src/libs/common/SmartPtr.h
+@@ -0,0 +1,64 @@
++//							-*- C++ -*-
++// This file is part of the aMule Project.
++//
++// Copyright (c) 2019 aMule Team ( admin@amule.org / http://www.amule.org )
++//
++// Any parts of this program derived from the xMule, lMule or eMule project,
++// or contributed by third-party developers are copyrighted by their
++// respective authors.
++//
++// This program is free software; you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation; either version 2 of the License, or
++// (at your option) any later version.
++//
++// This program is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++//
++// You should have received a copy of the GNU General Public License
++// along with this program; if not, write to the Free Software
++// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
++//
++
++#ifndef SMARTPTR_H
++#define SMARTPTR_H
++
++// std::auto_ptr is deprecated in C++11 and removed in C++17. We should use
++// std::unique_ptr instead, which was introduced in C++11.
++//
++// Considering the above, we shall use std::unique_ptr if we're using C++11 or
++// a later standard, and std::auto_ptr otherwise.
++
++#include <memory>
++
++#if __cplusplus >= 201103L
++
++// It seems like Apple has (or had, hopefully) a configuration where a new
++// clang compiler supporting C++11 is accompanied by an old c++ library not
++// supporting std::unique_ptr.
++// See https://stackoverflow.com/questions/31655462/no-type-named-unique-ptr-in-namespace-std-when-compiling-under-llvm-clang
++#	ifdef __clang__
++#		if __has_include(<forward_list>)
++			// either using libc++ or a libstdc++ that's
++			// new enough to have unique_ptr
++#			define HAVE_UNIQUE_PTR 1
++#		endif
++#	else
++		// not clang, assume unique_ptr available
++#		define HAVE_UNIQUE_PTR 1
++#	endif
++
++#endif
++
++#ifdef HAVE_UNIQUE_PTR
++template<typename T> using CSmartPtr = std::unique_ptr<T>;
++#else
++#	define CSmartPtr std::auto_ptr
++#	define nullptr	 NULL
++#endif
++
++#undef HAVE_UNIQUE_PTR
++
++#endif /* SMARTPTR_H */
+diff --git a/src/libs/ec/cpp/ECSocket.cpp b/src/libs/ec/cpp/ECSocket.cpp
+index a0283cca3..daea1db52 100644
+--- a/src/libs/ec/cpp/ECSocket.cpp
++++ b/src/libs/ec/cpp/ECSocket.cpp
+@@ -397,10 +397,10 @@ void CECSocket::OnInput()
+ 					return;
+ 				}
+ 			} else {
+-				std::auto_ptr<const CECPacket> packet(ReadPacket());
++				CSmartPtr<const CECPacket> packet(ReadPacket());
+ 				m_curr_rx_data->Rewind();
+ 				if (packet.get()) {
+-					std::auto_ptr<const CECPacket> reply(OnPacketReceived(packet.get(), m_curr_packet_len));
++					CSmartPtr<const CECPacket> reply(OnPacketReceived(packet.get(), m_curr_packet_len));
+ 					if (reply.get()) {
+ 						SendPacket(reply.get());
+ 					}
+diff --git a/src/libs/ec/cpp/ECSocket.h b/src/libs/ec/cpp/ECSocket.h
+index 121e833f3..82b0c7be9 100644
+--- a/src/libs/ec/cpp/ECSocket.h
++++ b/src/libs/ec/cpp/ECSocket.h
+@@ -28,7 +28,6 @@
+ 
+ 
+ #include <deque>	// Needed for std::deque
+-#include <memory>	// Needed for std::auto_ptr	// Do_not_auto_remove (mingw-gcc-3.4.5)
+ #include <string>
+ #include <vector>
+ 
+@@ -38,6 +37,8 @@
+ #include <wx/defs.h>	// Needed for wx/debug.h
+ #include <wx/debug.h>	// Needed for wxASSERT
+ 
++#include <common/SmartPtr.h>	// Needed for CSmartPtr
++
+ enum ECSocketErrors {
+ 	EC_ERROR_NOERROR,
+ 	EC_ERROR_INVOP,
+@@ -77,8 +78,8 @@ class CECSocket{
+ 	// zlib (deflation) buffers
+ 	std::vector<unsigned char> m_in_ptr;
+ 	std::vector<unsigned char> m_out_ptr;
+-	std::auto_ptr<CQueuedData> m_curr_rx_data;
+-	std::auto_ptr<CQueuedData> m_curr_tx_data;
++	CSmartPtr<CQueuedData> m_curr_rx_data;
++	CSmartPtr<CQueuedData> m_curr_tx_data;
+ 
+ 	// This transfer only
+ 	uint32_t m_rx_flags;
+diff --git a/src/libs/ec/cpp/RemoteConnect.cpp b/src/libs/ec/cpp/RemoteConnect.cpp
+index ed62abac0..79e908869 100644
+--- a/src/libs/ec/cpp/RemoteConnect.cpp
++++ b/src/libs/ec/cpp/RemoteConnect.cpp
+@@ -25,14 +25,13 @@
+ 
+ #include "RemoteConnect.h"
+ 
++#include <common/SmartPtr.h>	// Needed for CSmartPtr
+ #include <common/MD5Sum.h>
+ #include <common/Format.h>
+ #include "../../../amuleIPV4Address.h"
+ 
+ #include <wx/intl.h>
+ 
+-using std::auto_ptr;
+-
+ DEFINE_LOCAL_EVENT_TYPE(wxEVT_EC_CONNECTION)
+ 
+ CECLoginPacket::CECLoginPacket(const wxString& client, const wxString& version,
+@@ -139,14 +138,14 @@ bool CRemoteConnect::ConnectToCore(const wxString &host, int port,
+ 		// Otherwise we continue in OnConnect.
+ 		CECLoginPacket login_req(m_client, m_version, m_canZLIB, m_canUTF8numbers, m_canNotify);
+ 
+-		std::auto_ptr<const CECPacket> getSalt(SendRecvPacket(&login_req));
++		CSmartPtr<const CECPacket> getSalt(SendRecvPacket(&login_req));
+ 		m_ec_state = EC_REQ_SENT;
+ 
+ 		ProcessAuthPacket(getSalt.get());
+ 
+ 		CECAuthPacket passwdPacket(m_connectionPassword);
+ 
+-		std::auto_ptr<const CECPacket> reply(SendRecvPacket(&passwdPacket));
++		CSmartPtr<const CECPacket> reply(SendRecvPacket(&passwdPacket));
+ 		m_ec_state = EC_PASSWD_SENT;
+ 
+ 		return ProcessAuthPacket(reply.get());
