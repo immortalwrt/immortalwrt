@@ -1,10 +1,8 @@
-diff --git a/src/amule.h b/src/amule.h
-index f25702f..240c02d 100644
 --- a/src/amule.h
 +++ b/src/amule.h
-@@ -553,6 +553,13 @@ class CamuleDaemonApp : public CamuleApp
- 	int OnExit();
+@@ -194,6 +194,13 @@ public:
  
+ 	// derived classes may override those
  	virtual int InitGui(bool geometry_enable, wxString &geometry_string);
 +	// The GTK wxApps sets its file name conversion properly
 +	// in wxApp::Initialize(), while wxAppConsole::Initialize()
@@ -14,14 +12,12 @@ index f25702f..240c02d 100644
 +	// This function are overrided to perform this.
 +	virtual bool Initialize(int& argc_, wxChar **argv_);
  
- #ifdef AMULED_APPTRAITS
- 	struct sigaction m_oldSignalChildAction;
-diff --git a/src/amuled.cpp b/src/amuled.cpp
-index 486da59..86e1ff8 100644
+ #ifndef ASIO_SOCKETS
+ 	// Socket handlers
 --- a/src/amuled.cpp
 +++ b/src/amuled.cpp
-@@ -704,6 +704,41 @@ int CamuleDaemonApp::InitGui(bool ,wxString &)
- 	return 0;
+@@ -773,6 +773,41 @@ int CamuleDaemonApp::OnExit()
+ 	return CamuleApp::OnExit();
  }
  
 +bool CamuleDaemonApp::Initialize(int& argc_, wxChar **argv_)
@@ -60,19 +56,15 @@ index 486da59..86e1ff8 100644
 +	return true;
 +}
  
- int CamuleDaemonApp::OnExit()
+ int CamuleDaemonApp::ShowAlert(wxString msg, wxString title, int flags)
  {
-diff --git a/src/libs/common/Path.cpp b/src/libs/common/Path.cpp
-index 28152a2..5efefd0 100644
 --- a/src/libs/common/Path.cpp
 +++ b/src/libs/common/Path.cpp
-@@ -229,7 +229,8 @@ CPath::CPath(const wxString& filename)
+@@ -230,6 +230,7 @@ CPath::CPath(const wxString& filename)
  	}
  
  	wxCharBuffer fn = filename2char(filename);
--	if (fn.data()) {
 +	// add fn.length() for wx 3.x
-+	if (fn.data()) {
+ 	if (fn.data()) {
  		// Filename is valid in the current locale. This means that
  		// it either originated from a (wx)system-call, or from a
- 		// user with a properly setup system.
