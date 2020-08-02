@@ -753,7 +753,7 @@ local function update_node(manual)
 
 	if next(CONFIG) then
 		local nodes = {}
-		local ucic3 = uci.cursor()
+		local ucic3 = luci.model.uci.cursor()
 		ucic3:foreach(application, uciType, function(node)
 			nodes[node['.name']] = node
 		end)

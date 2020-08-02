@@ -44,11 +44,7 @@ define Package/autocore-arm/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/arm/090-cover-index_htm $(1)/etc/uci-defaults/090-cover-index_htm
 	$(INSTALL_DIR) $(1)/sbin
-ifneq ($(BOARD),ipq40xx)
-	$(CP) ./files/arm/sbin/cpuinfo $(1)/sbin/cpuinfo
-else
-	$(CP) ./files/arm/sbin/cpuinfo-ipq40xx $(1)/sbin/cpuinfo
-endif
+	$(INSTALL_BIN) ./files/arm/sbin/cpuinfo $(1)/sbin/cpuinfo
 endef
 
 define Package/autocore-x86/install
