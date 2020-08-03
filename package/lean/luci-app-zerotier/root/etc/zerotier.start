@@ -5,7 +5,7 @@ zero_enable="$(uci get zerotier.sample_config.enabled)"
 [ "${zero_enable}" -ne "1" ] && exit 0
 
 [ -f "/tmp/zero.log" ] && {
-	while [ "$(ifconfig | grep 'zt' | awk '{print $1}')" = "" ]  
+	while [ "$(ifconfig | grep 'zt' | awk '{print $1}')" = "" ]
 	do
 		sleep 1
 	done
@@ -14,13 +14,6 @@ zero_enable="$(uci get zerotier.sample_config.enabled)"
 nat_enable="$(uci get zerotier.sample_config.nat)"
 zt0="$(ifconfig | grep 'zt' | awk '{print $1}')"
 echo "${zt0}" > "/tmp/zt.nif"
-
-for i in ${zt0}
-do
-	iptables -D FORWARD -i "$i" -j ACCEPT 2>/dev/null
-	iptables -D FORWARD -o "$i" -j ACCEPT 2>/dev/null
-	iptables -t nat -D POSTROUTING -o "$i" -j MASQUERADE 2>/dev/null
-done
 
 [ "${nat_enable}" -eq "1" ] && {
 	for i in ${zt0}

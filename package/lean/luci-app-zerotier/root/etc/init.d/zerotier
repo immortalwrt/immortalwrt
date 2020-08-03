@@ -8,7 +8,8 @@ PROG=/usr/bin/zerotier-one
 CONFIG_PATH=/var/lib/zerotier-one
 
 service_triggers() {
-	procd_add_reload_trigger zerotier
+	procd_add_reload_trigger "zerotier"
+	procd_add_interface_trigger "interface.*.up" wan /etc/init.d/zerotier restart
 }
 
 section_enabled() {
@@ -93,6 +94,8 @@ start_service() {
 stop_instance() {
   rm -f /tmp/zero.log
 	local cfg="$1"
+
+	/etc/zerotier.stop > /tmp/zero.log 2>&1 &
 
 	# Remove existing link or folder
 	rm -f $CONFIG_PATH/networks.d/*.conf
