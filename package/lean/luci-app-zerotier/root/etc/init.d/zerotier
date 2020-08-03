@@ -95,10 +95,16 @@ stop_instance() {
 	local cfg="$1"
 
 	# Remove existing link or folder
+	rm -f $CONFIG_PATH/networks.d/*.conf
 	rm -rf $CONFIG_PATH
 }
 
 stop_service() {
 	config_load 'zerotier'
 	config_foreach stop_instance 'zerotier'
+}
+
+reload_service() {
+	stop
+	start
 }
