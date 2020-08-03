@@ -46,7 +46,7 @@ wifi up
 sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION=''" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
-echo "DISTRIB_DESCRIPTION='OpenWrt 19.07 | Mod20.07 by CTCGFW'" >> /etc/openwrt_release
+echo "DISTRIB_DESCRIPTION='OpenWrt 19.07 | Mod20.08 by CTCGFW'" >> /etc/openwrt_release
 
 sed -i 's/LuCI openwrt-19.07 branch/LuCI 19.07/g' /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
