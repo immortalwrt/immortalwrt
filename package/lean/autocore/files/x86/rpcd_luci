@@ -217,8 +217,9 @@ local methods = {
 			rv.ipv6          = fs.access("/proc/net/ipv6_route")
 			rv.dropbear      = fs.access("/usr/sbin/dropbear")
 			rv.cabundle      = fs.access("/etc/ssl/certs/ca-certificates.crt")
+			rv.relayd        = fs.access("/usr/sbin/relayd")
 
-			local wifi_features = { "eap", "11n", "11ac", "11r", "11w", "acs", "sae", "owe", "suiteb192" }
+			local wifi_features = { "eap", "11n", "11ac", "11r", "11w", "acs", "sae", "owe", "suiteb192", "wep" }
 
 			if fs.access("/usr/sbin/hostapd") then
 				rv.hostapd = { cli = fs.access("/usr/sbin/hostapd_cli") }
@@ -367,7 +368,7 @@ local methods = {
 						break
 					end
 
-					local pnum = line:match("^Port (%d+):")
+					local pnum = line:match("^Port (%d+):$")
 					if pnum then
 						port = {
 							port = tonumber(pnum),

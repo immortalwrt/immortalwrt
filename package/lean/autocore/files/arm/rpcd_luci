@@ -368,7 +368,7 @@ local methods = {
 						break
 					end
 
-					local pnum = line:match("^Port (%d+):")
+					local pnum = line:match("^Port (%d+):$")
 					if pnum then
 						port = {
 							port = tonumber(pnum),

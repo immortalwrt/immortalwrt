@@ -128,5 +128,5 @@
 				"hostapd.*": [ "del_client" ]
 			}
 		}
-	},
+	}
 }
