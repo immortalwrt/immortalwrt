@@ -143,7 +143,7 @@ EOF
 
 start_dnsforwarder() {
 	mkdir -p "/var/run/dnscache"
-	cat > /var/run/dnscache/dnscache.conf <<EOF
+	cat > "/var/run/dnscache/dnscache.conf" <<EOF
 LogOn false
 LogFileThresholdLength 102400
 LogFileFolder /var/run/dnscache
@@ -184,15 +184,15 @@ EOF
 }
 
 stop_dnscache() {
-	killall -9 "AdGuardHome" 2>/dev/null
-	killall -9 "dnscache" 2>/dev/null
-	kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') 2>/dev/null
+	killall -9 "AdGuardHome" 2>"/dev/null"
+	killall -9 "dnscache" 2>"/dev/null"
+	kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') 2>"/dev/null"
 	rm -rf "/var/dnscache" "/var/run/dnscache"
 	echo "Stop DNS Caching"
 }
 
 change_dns() {
- 	uci delete dhcp.@dnsmasq[0].server 2>/dev/null
+ 	uci -q delete dhcp.@dnsmasq[0].server
 	uci add_list dhcp.@dnsmasq[0].server="127.0.0.1#5333"
 	uci set dhcp.@dnsmasq[0].noresolv="1"
 	uci commit dhcp
@@ -200,7 +200,7 @@ change_dns() {
 }
 
 revert_dns() {
-	uci del_list dhcp.@dnsmasq[0].server="127.0.0.1#5333" 2>/dev/null
+	uci -q del_list dhcp.@dnsmasq[0].server="127.0.0.1#5333"
 	uci set dhcp.@dnsmasq[0].resolvfile="/tmp/resolv.conf.d/resolv.conf.auto"
 	uci set dhcp.@dnsmasq[0].noresolv="0"
 	uci commit dhcp
@@ -215,10 +215,10 @@ start(){
 	uci commit firewall
 
 	[ "${sw_flow}" -ne "1" ] && [ "${sfe_flow}" -eq "1" ] && {
-		lsmod | grep -q fast_classifier || modprobe fast_classifier 2>/dev/null
-		echo "${sfe_bridge}" > "/sys/fast_classifier/skip_to_bridge_ingress"
+		lsmod | grep -q fast_classifier || modprobe fast_classifier 2>"/dev/null"
+		echo "${sfe_bridge}" > "/sys/fast_classifier/skip_to_bridge_ingress" 2>"/dev/null"
 		if [ "${sfe_ipv6}" -eq "1" ]; then
-			[ ! -f "/dev/sfe_ipv6" ] && mknod "/dev/sfe_ipv6" "c" "$(cat /sys/sfe_ipv6/debug_dev)" "0"
+			[ ! -f "/dev/sfe_ipv6" ] && mknod "/dev/sfe_ipv6" "c" "$(cat "/sys/sfe_ipv6/debug_dev")" "0"
 		else
 			rm -f "/dev/sfe_ipv6"
 		fi
@@ -232,14 +232,13 @@ start(){
 
 	[ "${dns_acc}" -eq "1" ] && {
 	mkdir -p "/tmp/dnsmasq.d"
-	wget-ssl -t "20" -T "5" "https://cdn.jsdelivr.net/gh/googlehosts/hosts@master/hosts-files/dnsmasq.conf" -O "/tmp/dnsmasq.d/dnsmasq-googlehosts.conf" &
+	wget-ssl -q -t "20" -T "5" "https://cdn.jsdelivr.net/gh/googlehosts/hosts@master/hosts-files/dnsmasq.conf" -O "/tmp/dnsmasq.d/dnsmasq-googlehosts.conf" &
 }
 
 	if [ "${dns_caching}" -eq "1" ];  then
 		stop_dnscache
 		sleep 1
 		rm -f "/var/log/dnscache.file"
-		rm -f "/etc/AdGuardHome/data/querylog.json*"
 		if [ "${dns_caching_mode}" = "1" ];  then
 			start_pdnsd
 		elif [ "${dns_caching_mode}" = "2" ];  then
@@ -266,10 +265,10 @@ stop(){
 	uci set firewall.@defaults[0].fullcone="${fullcone_nat}"
 	uci commit firewall
 
-	[ "${sfe_flow}" -eq "0" ] && {
-		echo "0" > "/sys/fast_classifier/skip_to_bridge_ingress"
+	[ "${sfe_flow}" -ne "1" ] && {
+		echo "0" > "/sys/fast_classifier/skip_to_bridge_ingress" 2>"/dev/null"
 		rm -f "/dev/sfe_ipv6"
-		rmmod "fast_classifier" 2>/dev/null
+		rmmod "fast_classifier" 2>"/dev/null"
 }
 
 	[ "${dns_acc}" -eq "0" ] && rm -f "/tmp/dnsmasq.d/dnsmasq-googlehosts.conf"
