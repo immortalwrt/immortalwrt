@@ -32,6 +32,15 @@ start()
 	config_load softethervpn
 	config_foreach get_config softether
 	[ $enable -ne 1 ] && exit 0
+
+	[ -d /var/softethervpn ] || mkdir -p -m 0775 /var/softethervpn
+
+	[ -f /var/softethervpn/hamcore.se2 ] || ln -sf /usr/libexec/softethervpn/hamcore.se2 /var/softethervpn/
+	[ -f /var/softethervpn/lang.config  ] || ln -sf /usr/libexec/softethervpn/lang.config /var/softethervpn/
+
+	[ -f /var/softethervpn/vpnserver ] || ln -sf /usr/libexec/softethervpn/vpnserver /var/softethervpn/
+	[ -f /var/softethervpn/vpn_server.config ] || ln -sf /usr/libexec/softethervpn/vpn_server.config /var/softethervpn/
+
 	logger -t 'softethervpn' "Starting softether vpnserver service."
 	/usr/bin/env LANG=en_US.UTF-8 /usr/libexec/softethervpn/vpnserver start > /dev/null 2>&1
 	fw3 reload
