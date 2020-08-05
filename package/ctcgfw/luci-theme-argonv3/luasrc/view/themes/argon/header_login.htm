@@ -26,9 +26,9 @@
 	local util = require "luci.util"
 	local http = require "luci.http"
 	local disp = require "luci.dispatcher"
-	local fs	= require "nixio.fs"
-	local nutil = require "nixio.util"
 
+    local fs	= require "nixio.fs"
+	local nutil = require "nixio.util"
 	local boardinfo = util.ubus("system", "board")
 
 	local request  = disp.context.path
@@ -187,7 +187,7 @@
 	end
 	
 	math.randomseed(os.time())
-	
+    
 -%>
 
 <!DOCTYPE html>
@@ -233,12 +233,49 @@
 	<% if css then %>
 	<style title="text/css"><%=css %></style>
 	<% end -%>
-	<script src="<%=resource%>/cbi.js"></script>
-	<script src="<%=resource%>/xhr.js"></script>
-	<script src="<%=media%>/js/jquery.min.js"></script>
+	<script src="<%=resource%>/cbi.js?v=1.6.4"></script>
+	<script src="<%=resource%>/xhr.js?v=1.6.4"></script>
+	<script src="<%=media%>/js/jquery.min.js?v=1.6.4"></script>
 </head>
 
 <body class="<%- if node then %><%= striptags( node.title ) %><%- end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %> lang_<%=luci.i18n.context.lang%>  ">
 	<div class="login-page">
+        <%
+        function glob(...)
+            local iter, code, msg = fs.glob(...)
+            if iter then
+                return nutil.consume(iter)
+            else
+                return nil, code, msg
+            end
+        end
+        function getExtension(str)
+            return str:match(".+%.(%w+)$")
+        end
+        local videocount = 0
+        local attr = {}
+        local vvits = {}
+        local theme_dir = "/luci-static/argon/background/"
+        for i, f in ipairs(glob("/www" .. theme_dir .. "*")) do
+            attr = fs.stat(f)
+            if attr then
+                local ext = getExtension(fs.basename(f))
+                if ext == "mp4" then
+                    vvits[videocount] = theme_dir .. fs.basename(f)
+                    videocount = videocount + 1
+                end
+                
+            end
+        end
+        
+        if videocount > 0 then
+        %>
+        <div class="video">
+            <video autoplay="" loop="" muted="" >
+                    <source src="<%=vvits[math.random(0,videocount-1)]%>" type="video/mp4">
+            </video>
+        </div>
+        <% end %>
+
 		<div class="login-container">
 			<div class="login-form">

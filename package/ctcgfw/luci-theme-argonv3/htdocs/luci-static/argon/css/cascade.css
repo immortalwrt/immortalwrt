@@ -127,6 +127,20 @@ li {
   background-size: cover;
   transition: all 0.5s;
 }
+.login-page .video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  overflow: hidden;
+}
+.login-page .video video {
+  width: 100%;
+  height: auto;
+}
 .login-page .login-container {
   height: 100%;
   margin-left: 4.5rem;
@@ -558,7 +572,7 @@ footer a {
 }
 .main .main-left .nav li.slide .menu[data-title=VPN]:before {
   content: "\e90b";
-  color: #5603ad;
+  color: #aaad03;
 }
 .main .main-left .nav li.slide .menu[data-title=Network]:before {
   content: "\e908";
@@ -2675,6 +2689,10 @@ input[name="nslookup"] {
   .pull-right {
     float: right;
     margin-top: 0rem !important;
+  }
+  .login-page .video video {
+    width: auto !important;
+    height: 100% !important;
   }
   .login-page .login-container {
     margin-left: 0rem !important;
