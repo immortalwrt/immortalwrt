@@ -66,7 +66,6 @@ define Build/Compile
   $(TARGET_CC) -c -O3 -o duk_module_node.o -I. ../extras/module-node/duk_module_node.c; \
   $(TARGET_AR) cr libduktape.a duktape.o; \
   $(TARGET_AR) cr libduktape_module.a duk_module_node.o; \
-  cd ../../../..; \
   env $(call Build/Compile/Default) \
 )
 endef
