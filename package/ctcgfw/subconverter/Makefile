@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=subconverter
-PKG_VERSION:=0.6.1-4f039bd
+PKG_VERSION:=0.6.2
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tindy2013/subconverter.git
-PKG_SOURCE_VERSION:=4f039bd726a82e77fecc613d0c4aa120c2ca26e1
+PKG_SOURCE_VERSION:=f54160cfad807592f7e01f384a80b342ec19f985
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -43,7 +43,7 @@ define Package/$(PKG_NAME)/description
 	Utility to convert between various subscription format.
 endef
 
-# CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
+CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin

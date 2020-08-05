@@ -1,6 +1,6 @@
 <%+cbi/valueheader%>
 <link rel="stylesheet" href="/luci-static/vssr/css/vssr.css?v=72883">
-<label class="cbi-value-title"><%= translate("Update All Subscribe Severs") %></label>
+<label class="cbi-value-title"><%= translate("Update") %></label>
 <div class="cbi-value-field">
 	<input class="cbi-button cbi-button-reload" id="update_subscribe" type="button"
 		size="0" value="<%= translate("Save And Start Subscribe") %>">
@@ -8,8 +8,8 @@
 
 <script type="text/javascript">
 
-	const SAVE_SUBSCRIBE_URL = '<%=luci.dispatcher.build_url("admin", "vpn", "vssr","subscribe")%>';
-	const SERVERS_URL = '<%=luci.dispatcher.build_url("admin", "vpn", "vssr","servers")%>';
+	const SAVE_SUBSCRIBE_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","subscribe")%>';
+	const SERVERS_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","servers")%>';
 
 	var _responseLen;
 	var noChange = 0;

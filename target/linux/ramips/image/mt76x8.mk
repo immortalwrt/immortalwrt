@@ -34,7 +34,7 @@ TARGET_DEVICES += buffalo_wcr-1166ds
 define Device/cudy_wr1000
   IMAGE_SIZE := 7872k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size $$$$(IMAGE_SIZE) | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	jcg-header 92.122
   JCG_MAXSIZE := 7872k
   DEVICE_VENDOR := Cudy
@@ -181,7 +181,7 @@ define Device/netgear_r6120
   IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE)| append-rootfs | \
 	pad-rootfs
   IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | \
-	check-size $$$$(IMAGE_SIZE)
+	check-size
   IMAGE/factory.img := pad-extra 576k | $$(IMAGE/default) | \
 	pad-to $$$$(BLOCKSIZE) | sercom-footer | pad-to 128 | zip R6120.bin | \
 	sercom-seal
@@ -429,7 +429,7 @@ define Device/tplink_tl-wr841n-v14
   IMAGE_SIZE := 3968k
   DEVICE_MODEL := TL-WR841N
   DEVICE_VARIANT := v14
-  TPLINK_FLASHLAYOUT := 4Mmtk
+  TPLINK_FLASHLAYOUT := 4MLmtk
   TPLINK_HWID := 0x08410014
   TPLINK_HWREVADD := 0x14
   IMAGES := sysupgrade.bin tftp-recovery.bin
@@ -593,6 +593,6 @@ define Device/zyxel_keenetic-extra-ii
 	kmod-usb-ledtrig-usbport
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to $$$$(BLOCKSIZE) | \
-	check-size $$$$(IMAGE_SIZE) | zyimage -d 6162 -v "ZyXEL Keenetic Extra II"
+	check-size | zyimage -d 6162 -v "ZyXEL Keenetic Extra II"
 endef
 TARGET_DEVICES += zyxel_keenetic-extra-ii

@@ -5,8 +5,8 @@
 </fieldset>
 <!-- tblsection -->
 <fieldset class="cbi-section" id="cbi-<%=self.config%>-<%=self.sectiontype%>">
-     <button class="cbi-button  cbi-button-check "><%:Ping All Servers%></button><span class="panel-title"><%:Node list%>    （<%:total%>  
-        &nbsp; <%- print(self.des)-%><%:Nodes%>）</span>
+    <button class="cbi-button  cbi-button-check "><%:Ping All Servers%></button><span class="panel-title">总计
+        <%- print(self.des)-%>个节点</span>
     <div class="cbi-section-node">
         <%- local count = 0 -%>
         <div class="cbi-section-table pure-g p-in5">
@@ -90,9 +90,9 @@
 <script type="text/javascript">
     const CONFIG = '<%=self.config%>';
     const CURRENT = '<%=self.current%>';
-    const CHANGE_NODE_URL = '<%=luci.dispatcher.build_url("admin", "vpn", "vssr","change")%>';
-    const CHECK_PING_URL = '<%=luci.dispatcher.build_url("admin", "vpn", "vssr","checkport")%>';
-    const SWITCH_NODE_URL = '<%=luci.dispatcher.build_url("admin", "vpn", "vssr","switch")%>';
+    const CHANGE_NODE_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","change")%>';
+    const CHECK_PING_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","checkport")%>';
+    const SWITCH_NODE_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","switch")%>';
 
     var servers = JSON.parse('<%= self.servers%>'.replace(/\t/g, ""));
     var ajaxArray = new Array();

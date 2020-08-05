@@ -19,7 +19,6 @@ Package zxlhhyccc: [zxlhhyccc/MY-lede](https://github.com/zxlhhyccc/MY-lede).<br
 luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
 luci-theme-darkmatter source: [apollo-ng/luci-theme-darkmatter](https://github.com/apollo-ng/luci-theme-darkmatter).<br/>
 openwrt-chinadns-ng source: [pexcn/openwrt-chinadns-ng](https://github.com/pexcn/openwrt-chinadns-ng).<br/>
-luci-app-ssr-plus-Jo source: [Leo-Jo-My/luci-app-ssr-plus-Jo](https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo).<br/>
 openwrt-udpspeeder source: [zhfreal/openwrt-UDPspeeder](https://github.com/zhfreal/openwrt-UDPspeeder).<br/>
 luci-app-onliner source: [rufengsuixing/luci-app-onliner](https://github.com/rufengsuixing/luci-app-onliner).<br/>
 luci-app-dockerman source: [KFERMercer/luci-app-dockerman](https://github.com/KFERMercer/luci-app-dockerman).<br/>
@@ -29,7 +28,6 @@ luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://
 luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).<br/>
 Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-OpenWrt).<br/>
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
-luci-app-vssr source: [Leo-Jo-My/luci-app-vssr](https://github.com/Leo-Jo-My/luci-app-vssr).<br/>
 luci-app-diskman source: [lisaac/luci-app-diskman](https://github.com/lisaac/luci-app-diskman).<br/>
 NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jerrykuku/openwrt-nanopi-r1s-h5).<br/>
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
@@ -55,7 +53,8 @@ node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-
 luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
 luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
 luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypang13/luci-theme-edge).<br/>
-luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).
+luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
+luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).
 
 ## License
 ### Depend on their own License.

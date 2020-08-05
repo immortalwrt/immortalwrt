@@ -74,7 +74,7 @@ define Device/iom_ix2_200
   KERNEL_IN_UBI := 0
   UBINIZE_OPTS := -E 5  
   IMAGE_SIZE := 32505856
-  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | check-size
 endef
 TARGET_DEVICES += iom_ix2_200
 

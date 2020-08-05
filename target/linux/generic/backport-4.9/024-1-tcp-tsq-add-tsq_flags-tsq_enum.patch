@@ -18,7 +18,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/include/linux/tcp.h
 +++ b/include/linux/tcp.h
-@@ -368,7 +368,7 @@ struct tcp_sock {
+@@ -370,7 +370,7 @@ struct tcp_sock {
  	u32	*saved_syn;
  };
  
@@ -27,7 +27,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	TSQ_THROTTLED,
  	TSQ_QUEUED,
  	TCP_TSQ_DEFERRED,	   /* tcp_tasklet_func() found socket was owned */
-@@ -379,6 +379,15 @@ enum tsq_flags {
+@@ -381,6 +381,15 @@ enum tsq_flags {
  				    */
  };
  
