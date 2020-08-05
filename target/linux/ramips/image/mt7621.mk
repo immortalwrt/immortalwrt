@@ -1006,7 +1006,7 @@ define Device/xiaomi_mir4
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router 4
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 wpad-openssl uboot-envtools
+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt76x2e luci-app-mtwifi uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mir4
 
