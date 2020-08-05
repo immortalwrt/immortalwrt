@@ -1,0 +1,11 @@
+{
+	"luci-app-ps3netsrv": {
+		"description": "Grant UCI access for luci-app-ps3netsrv",
+		"read": {
+			"uci": [ "ps3netsrv" ]
+		},
+		"write": {
+			"uci": [ "ps3netsrv" ]
+		}
+	}
+}
