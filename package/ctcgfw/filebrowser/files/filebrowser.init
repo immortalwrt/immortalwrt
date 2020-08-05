@@ -19,11 +19,7 @@ init_conf() {
 	config_get "enabled" "config" "enabled" "0"
 	config_get "port" "config" "port" "8989"
 	config_get "root_dir" "config" "root_dir" "/"
-
-	config_load "network"
-	config_get "lan_addr" "lan" "ipaddr" "192.168.1.1"
 }
-
 
 start_service() {
 	init_conf
