@@ -1,15 +1,6 @@
 <%
-local api = require "luci.model.cbi.passwall.api.api"
 local dsp = require "luci.dispatcher"
-local ipkg = require "luci.model.ipkg"
-
-local function is_finded(e)
-	local result=luci.sys.exec("find /usr/*bin -iname "..e.." -type f")
-	if result~="" then
-		return true
-	end
-	return false
-end
+local api = require "luci.model.cbi.passwall.api.api"
 
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
@@ -81,7 +72,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 			</div>
 		</div>
 		
-		<% if ipkg.installed("kcptun") or is_finded("kcptun*") then %>
+		<% if api.is_finded("kcptun-client") then %>
 			<div class="cbi-value">
 				<label class="cbi-value-title">Kcptun
 					<%:Status%>
@@ -92,7 +83,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 			</div>
 		<% end %>
 		
-		<% if ipkg.installed("haproxy") or is_finded("haproxy*") then %>
+		<% if api.is_finded("haproxy") then %>
 		<div class="cbi-value">
 			<label class="cbi-value-title">
 				<%:Load Balancing%>

@@ -1,15 +1,6 @@
 <%
-local api = require "luci.model.cbi.passwall.api.api"
 local dsp = require "luci.dispatcher"
-local ipkg = require "luci.model.ipkg"
-
-local function is_finded(e)
-	local result=luci.sys.exec("find /usr/*bin -iname "..e.." -type f")
-	if result~="" then
-		return true
-	end
-	return false
-end
+local api = require "luci.model.cbi.passwall.api.api"
 
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)

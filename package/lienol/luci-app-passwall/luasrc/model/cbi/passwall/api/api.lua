@@ -43,6 +43,14 @@ function chmod_755(file)
     end
 end
 
+function get_customed_path(e)
+    return uci_get_type("global_app", e .. "_file")
+end
+
+function is_finded(e)
+    return luci.sys.exec('type -t -p "%s/%s" -p "/usr/bin/v2ray/%s" "%s"' % {get_customed_path(e), e, e, e}) ~= "" and true or false
+end
+
 function get_v2ray_path()
     local path = uci_get_type("global_app", "v2ray_file")
     return path .. "/v2ray"
