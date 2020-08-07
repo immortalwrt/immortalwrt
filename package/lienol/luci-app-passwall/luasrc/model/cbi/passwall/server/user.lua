@@ -1,16 +1,6 @@
 local d = require "luci.dispatcher"
-local ipkg = require("luci.model.ipkg")
 local uci = require"luci.model.uci".cursor()
 local api = require "luci.model.cbi.passwall.api.api"
-
-local function is_finded(e)
-    local function get_customed_path(e)
-        return api.uci_get_type("global_app", e .. "_file")
-    end
-    return luci.sys.exec("find /usr/*bin %s -iname %s -type f" % {get_customed_path(e), e}) ~= "" and true or false
-end
-
-local function is_installed(e) return ipkg.installed(e) end
 
 local ssr_encrypt_method_list = {
     "none", "table", "rc2-cfb", "rc4", "rc4-md5", "rc4-md5-6", "aes-128-cfb",
@@ -70,19 +60,19 @@ remarks.default = translate("Remarks")
 remarks.rmempty = false
 
 type = s:option(ListValue, "type", translate("Type"))
-if is_finded("ssr-server") then
+if api.is_finded("ssr-server") then
     type:value("SSR", translate("ShadowsocksR"))
 end
-if is_installed("v2ray") or is_finded("v2ray") then
+if api.is_finded("v2ray") then
     type:value("V2ray", translate("V2ray"))
 end
-if is_installed("brook") or is_finded("brook") then
+if api.is_finded("brook") then
     type:value("Brook", translate("Brook"))
 end
-if is_installed("trojan-plus") or is_finded("trojan-plus") then
-    type:value("Trojan", translate("Trojan-Plus"))
+if api.is_finded("trojan-plus") or api.is_finded("trojan") then
+    type:value("Trojan-Plus", translate("Trojan-Plus"))
 end
-if is_installed("trojan-go") or is_finded("trojan-go") then
+if api.is_finded("trojan-go") then
     type:value("Trojan-Go", translate("Trojan-Go"))
 end
 
@@ -115,7 +105,7 @@ password = s:option(Value, "password", translate("Password"))
 password.password = true
 password:depends("type", "SSR")
 password:depends("type", "Brook")
-password:depends("type", "Trojan")
+password:depends("type", "Trojan-Plus")
 password:depends({ type = "V2ray", protocol = "http" })
 password:depends({ type = "V2ray", protocol = "socks" })
 password:depends({ type = "V2ray", protocol = "shadowsocks" })
@@ -170,7 +160,7 @@ tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"),
 tcp_fast_open:value("false")
 tcp_fast_open:value("true")
 tcp_fast_open:depends("type", "SSR")
-tcp_fast_open:depends("type", "Trojan")
+tcp_fast_open:depends("type", "Trojan-Plus")
 tcp_fast_open:depends("type", "Trojan-Go")
 
 udp_forward = s:option(Flag, "udp_forward", translate("UDP Forward"))
@@ -203,7 +193,7 @@ stream_security:depends({ type = "V2ray", protocol = "vmess", transport = "ws" }
 stream_security:depends({ type = "V2ray", protocol = "vmess", transport = "h2" })
 stream_security:depends({ type = "V2ray", protocol = "socks" })
 stream_security:depends({ type = "V2ray", protocol = "shadowsocks" })
-stream_security:depends("type", "Trojan")
+stream_security:depends("type", "Trojan-Plus")
 stream_security:depends("type", "Trojan-Go")
 stream_security.validate = function(self, value)
     if value == "none" and type:formvalue(arg[1]) == "Trojan" then
@@ -373,7 +363,7 @@ quic_guise:depends("transport", "quic")
 remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"), translate("You can forward to Nginx/Caddy/V2ray WebSocket and more."))
 remote_enable.default = "1"
 remote_enable.rmempty = false
-remote_enable:depends("type", "Trojan")
+remote_enable:depends("type", "Trojan-Plus")
 remote_enable:depends("type", "Trojan-Go")
 
 remote_address = s:option(Value, "remote_address", translate("Remote Address"))
