@@ -1,17 +1,7 @@
 local o = require "luci.dispatcher"
-local sys = require "luci.sys"
-local ipkg = require("luci.model.ipkg")
 local uci = require"luci.model.uci".cursor()
-local _api = require "luci.model.cbi.passwall.api.api"
+local api = require "luci.model.cbi.passwall.api.api"
 local appname = "passwall"
-
-local function is_installed(e) return ipkg.installed(e) end
-
-local function is_finded(e)
-    return
-        sys.exec("find /usr/*bin -iname " .. e .. " -type f") ~= "" and true or
-            false
-end
 
 local nodes_table = {}
 uci:foreach(appname, "nodes", function(e)
@@ -127,20 +117,19 @@ o:value("210.2.4.8", "210.2.4.8 (CNNIC DNS)")
 o:value("180.76.76.76", "180.76.76.76 (" .. translate("Baidu") .. "DNS)")
 
 ---- DNS Forward Mode
-o = s:taboption("DNS", ListValue, "dns_mode", translate("DNS Mode"))
+o = s:taboption("DNS", Value, "dns_mode", translate("DNS Mode"))
 -- o.description = translate("if has problem, please try another mode.<br />if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq.")
 o.rmempty = false
 o:reset_values()
-if is_finded("chinadns-ng") then
+if api.is_finded("chinadns-ng") then
     o:value("chinadns-ng", "ChinaDNS-NG")
 end
-if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
+if api.is_finded("pdnsd") then
     o:value("pdnsd", "pdnsd")
 end
-if is_finded("dns2socks") then
+if api.is_finded("dns2socks") then
     o:value("dns2socks", "dns2socks")
 end
-o:value("local_7913", translate("Use local port 7913 as DNS"))
 o:value("nonuse", translate("No patterns are used"))
 
 ---- Upstream trust DNS Server for ChinaDNS-NG
@@ -148,17 +137,17 @@ o = s:taboption("DNS", ListValue, "up_trust_chinadns_ng_dns",
              translate("Upstream trust DNS Server for ChinaDNS-NG") .. "(UDP)")
 -- o.description = translate("You can use other resolving DNS services as trusted DNS, Example: dns2socks, dns-forwarder... 127.0.0.1#5353<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53.")
 o.default = "pdnsd"
-if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
+if api.is_finded("pdnsd") then
     o:value("pdnsd", "pdnsd + " .. translate("Use TCP Node Resolve DNS"))
 end
-if is_finded("dns2socks") then
+if api.is_finded("dns2socks") then
     o:value("dns2socks", "dns2socks")
 end
 o:value("udp", translate("Use UDP Node Resolve DNS"))
 o:depends("dns_mode", "chinadns-ng")
 
 ---- Use TCP Node Resolve DNS
---[[ if is_installed("pdnsd") or is_installed("pdnsd-alt") or is_finded("pdnsd") then
+--[[ if api.is_finded("pdnsd") then
     o = s:taboption("DNS", Flag, "use_tcp_node_resolve_dns", translate("Use TCP Node Resolve DNS"))
     o.description = translate("If checked, DNS is resolved using the TCP node.")
     o.default = 1
@@ -247,7 +236,7 @@ s.anonymous = true
 s.addremove = true
 s.template = "cbi/tblsection"
 function s.create(e, t)
-    TypedSection.create(e, _api.gen_uuid())
+    TypedSection.create(e, api.gen_uuid())
 end
 
 o = s:option(DummyValue, "status", translate("Status"))
@@ -266,6 +255,7 @@ end
 for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 
 o = s:option(Value, "port", translate("Listen Port"))
+o.default = 9050
 o.datatype = "port"
 o.rmempty = false
 
