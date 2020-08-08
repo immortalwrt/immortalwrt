@@ -24,10 +24,9 @@ sudo bash -c "bash <(curl -s https://build-scripts.project-openwrt.eu.org/init_b
 
 ## Clone the source
 ```bash
-git clone -b 18.06-kernel5.4 --single-branch https://github.com/project-openwrt/openwrt && cd openwrt
+git clone -b openwrt-18.06-k5.4 --single-branch https://github.com/project-openwrt/openwrt && cd openwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
-#### For developer, you may use `openwrt-18.06-dev` branch instead of `openwrt-18.06`.
 
 ## Configure your firmware
 ```bash
