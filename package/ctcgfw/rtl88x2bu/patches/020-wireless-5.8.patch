@@ -1,0 +1,137 @@
+From 0e9e9ddd31552bed86f2521a559397d99bffec3c Mon Sep 17 00:00:00 2001
+From: Mark Brand <mabrand@mabrand.nl>
+Date: Thu, 18 Jun 2020 14:07:49 +0200
+Subject: [PATCH] linux kernel 5.8 compatibility
+
+Adopted from: https://github.com/aircrack-ng/rtl8812au/issues/658
+---
+ core/rtw_security.c    | 7 +++++++
+ include/rtw_security.h | 6 ------
+ os_dep/linux/ioctl_cfg80211.c | 26 ++++++++++++++++++++++++++
+ os_dep/linux/ioctl_cfg80211.h |  4 ++++
+ 4 files changed, 37 insertions(+), 6 deletions(-)
+
+diff --git a/core/rtw_security.c b/core/rtw_security.c
+index b537a26..a4fab3b 100644
+--- a/core/rtw_security.c
++++ b/core/rtw_security.c
+@@ -2132,6 +2132,13 @@ u32	rtw_BIP_verify(_adapter *padapter, u8 *whdr_pos, sint flen
+ 
+ #ifndef PLATFORM_FREEBSD
+ #if defined(CONFIG_TDLS)
++
++struct sha256_state {
++    u64 length;
++    u32 state[8], curlen;
++    u8 buf[64];
++};
++
+ /* compress 512-bits */
+ static int sha256_compress(struct sha256_state *md, unsigned char *buf)
+ {
+diff --git a/include/rtw_security.h b/include/rtw_security.h
+index ac8432e..ab07f5f 100644
+--- a/include/rtw_security.h
++++ b/include/rtw_security.h
+@@ -249,12 +249,6 @@ struct security_priv {
+ #define SEC_IS_BIP_KEY_INSTALLED(sec) _FALSE
+ #endif
+ 
+-struct sha256_state {
+-	u64 length;
+-	u32 state[8], curlen;
+-	u8 buf[64];
+-};
+-
+ #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst)\
+ 	do {\
+ 		switch (psecuritypriv->dot11AuthAlgrthm) {\
+diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
+index 6c88287..a65edf7 100755
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -7325,6 +7325,8 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
+ 	return ret;
+ }
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
++
+ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
+ 	struct wireless_dev *wdev,
+@@ -7332,7 +7334,17 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+ 	struct net_device *ndev,
+ #endif
+ 	u16 frame_type, bool reg)
++
++#else
++static void cfg80211_rtw_update_mgmt_frame_register(struct wiphy *wiphy,
++						    struct wireless_dev *wdev,
++						    struct mgmt_frame_regs *upd)
++#endif
+ {
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
++	u32 rtw_mask = BIT(IEEE80211_STYPE_PROBE_REQ >> 4);
++#endif
++
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
+ 	struct net_device *ndev = wdev_to_ndev(wdev);
+ #endif
+@@ -7347,13 +7359,19 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+ 	pwdev_priv = adapter_wdev_data(adapter);
+ 
+ #ifdef CONFIG_DEBUG_CFG80211
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	RTW_INFO(FUNC_ADPT_FMT" frame_type:%x, reg:%d\n", FUNC_ADPT_ARG(adapter),
+ 		frame_type, reg);
++#else
++	RTW_INFO(FUNC_ADPT_FMT " old_regs:%x new_regs:%x\n",
++		 FUNC_ADPT_ARG(adapter), pwdev_priv->mgmt_mask, upd->interface_stypes);
++#endif
+ #endif
+ 
+ 	/* Wait QC Verify */
+ 	return;
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	switch (frame_type) {
+ 	case IEEE80211_STYPE_PROBE_REQ: /* 0x0040 */
+ 		SET_CFG80211_REPORT_MGMT(pwdev_priv, IEEE80211_STYPE_PROBE_REQ, reg);
+@@ -7364,6 +7382,7 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+ 	default:
+ 		break;
+ 	}
++#endif
+ 
+ exit:
+ 	return;
+@@ -9649,7 +9668,14 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
+ 
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
+ 	.mgmt_tx = cfg80211_rtw_mgmt_tx,
++
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	.mgmt_frame_register = cfg80211_rtw_mgmt_frame_register,
++#else
++	.update_mgmt_frame_registrations =
++		cfg80211_rtw_update_mgmt_frame_register,
++#endif
++
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34) && LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
+ 	.action = cfg80211_rtw_mgmt_tx,
+ #endif
+diff --git a/os_dep/linux/ioctl_cfg80211.h b/os_dep/linux/ioctl_cfg80211.h
+index d16cfdd..7bc9740 100644
+--- a/os_dep/linux/ioctl_cfg80211.h
++++ b/os_dep/linux/ioctl_cfg80211.h
+@@ -168,6 +168,10 @@ struct rtw_wdev_priv {
+ 	bool block_scan;
+ 	bool power_mgmt;
+ 
++	#if LINUX_VERSION_CODE <= KERNEL_VERSION(5,8,0)
++	u32 mgmt_mask;
++	#endif
++
+ 	/* report mgmt_frame registered */
+ 	u16 report_mgmt;
+ 
