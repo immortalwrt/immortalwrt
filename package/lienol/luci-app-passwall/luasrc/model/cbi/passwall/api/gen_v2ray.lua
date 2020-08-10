@@ -114,9 +114,9 @@ local function gen_outbound(node, tag)
                     {
                         address = node.address,
                         port = tonumber(node.port),
-                        method = node.v_ss_encrypt_method or nil,
+                        method = node.method or nil,
                         password = node.password or "",
-                        ota = node.ss_ota == '1' and true or false,
+                        ota = node.ota == '1' and true or false,
                         users = (node.username and node.password) and
                             {{user = node.username, pass = node.password}} or nil
                     }

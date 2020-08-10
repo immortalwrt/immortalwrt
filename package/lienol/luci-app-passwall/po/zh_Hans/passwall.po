@@ -101,7 +101,7 @@ msgid "Clear"
 msgstr "清除"
 
 msgid "Main switch"
-msgstr "总开关"
+msgstr "主开关"
 
 msgid "TCP Node"
 msgstr "TCP节点"
@@ -124,38 +124,47 @@ msgstr "与TCP%s节点相同"
 msgid "New process"
 msgstr "另开进程"
 
-msgid "For used to surf the Internet."
-msgstr "用于科学上网。"
+msgid "For proxy specific list."
+msgstr "用于代理特定的列表。"
 
-msgid "For Game Mode or DNS resolution and more."
-msgstr "用于游戏模式或DNS解析等。"
+msgid "For proxy game network, DNS hijack etc."
+msgstr "用于代理游戏或DNS劫持等..."
 
 msgid "The selected server will not use Kcptun."
 msgstr "选中的服务器不会使用Kcptun。"
 
-msgid "The client can use the router's Socks proxy."
-msgstr "客户端可以使用路由器的Socks代理。"
+msgid "The client can use the router's Socks Servie."
+msgstr "客户端可以使用路由器的 Socks 服务。"
 
-msgid "DNS Mode"
-msgstr "DNS模式"
+msgid "Filter Mode"
+msgstr "过滤模式"
 
-msgid "Use local port 7913 as DNS"
-msgstr "使用本机7913端口的DNS"
+msgid "No Filter"
+msgstr "不过滤"
 
-msgid "No patterns are used"
-msgstr "不使用"
+msgid "IP:Port mode ecceptable for specify other filtered name services."
+msgstr "定义接受 IP:Port 形式的输入，以指定其它域名服务的过滤服务。"
 
-msgid "if has problem, please try another mode.<br />if you use no patterns are used, DNS of wan will be used by default as upstream of dnsmasq."
-msgstr "如果有问题，请尝试其他模式。<br />如果您没有使用任何模式，则会使用WAN的DNS。"
+msgid "Resolver For Local/WhiteList Domains"
+msgstr "解析本地和白名单域名"
 
-msgid "Use TCP Node Resolve DNS"
-msgstr "使用TCP节点解析DNS"
+msgid "Forced to local filter mode on 'Not China List' mode<br />IP:Port mode acceptable, multi value split with english comma."
+msgstr "在 '中国列表以外' 模式下会被强制设置为设定的DNS过滤服务<br />接受 IP:Port 形式的输入，多个以英文逗号分隔。"
 
-msgid "Use UDP Node Resolve DNS"
-msgstr "使用UDP节点解析DNS"
+msgid "Ali"
+msgstr "阿里"
 
-msgid "If checked, DNS is resolved using the TCP node."
-msgstr "如果勾选，则使用TCP节点解析DNS解决污染。"
+msgid "Baidu"
+msgstr "百度"
+
+msgid "Resolver For The List Proxied"
+msgstr "解析被代理的域名列表"
+
+msgid "Access Filtered DNS By"
+msgstr "由过滤DNS解析，经过"
+
+msgid "Forward To Socks Server"
+msgstr "转发至 Socks 服务器"
 
 msgid "Socks Server"
 msgstr "Socks服务器"
@@ -163,26 +172,20 @@ msgstr "Socks服务器"
 msgid "Misconfigured"
 msgstr "配置不当"
 
-msgid "Fair Mode"
-msgstr "公平模式"
+msgid "Make sure socks service is available on this address if 'dns2socks' selected."
+msgstr "如启用了 'dns2socks' 请确保此Socks服务可用。"
 
-msgid "DNS Address"
-msgstr "DNS地址"
+msgid "ChinaDNS-NG Fair Mode"
+msgstr "ChinaDNS-NG 公平模式"
 
-msgid "DNS Cache"
-msgstr "DNS缓存"
+msgid "Filtered DNS(For Proxied Domains)"
+msgstr "域名过滤服务(用于被代理的域名)"
 
-msgid "China DNS Server"
-msgstr "国内DNS服务器"
+msgid "Cache Resolved"
+msgstr "缓存解析结果"
 
-msgid "If you want to work with other DNS acceleration services, use the default.<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
-msgstr "如果你想和其他DNS加速服务一起工作，请使用默认。<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
-
-msgid "Upstream trust DNS Server for ChinaDNS-NG"
-msgstr "ChinaDNS-NG可信DNS"
-
-msgid "You can use other resolving DNS services as trusted DNS, Example: dns2socks, dns-forwarder... 127.0.0.1#5353<br />Only use two at most, english comma separation, If you do not fill in the # and the following port, you are using port 53."
-msgstr "你可以使用其他解决污染DNS服务作为可信DNS，例：dns2socks，dns-forwarder等等。127.0.0.1#5353<br />最多使用2个DNS服务器，英文逗号分隔，如果没有填#和后面的端口，则使用53端口。"
+msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
+msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
 
 msgid "The server client can also use this rule to scientifically surf the Internet."
 msgstr "本机服务器的客户端也可以使用这个代理模式上网。"
@@ -196,15 +199,6 @@ msgstr "可以使用负载均衡实现故障切换功能。"
 msgid "Restore the default configuration method. Input example in the address bar:"
 msgstr "恢复默认配置方法，地址栏输入例："
 
-msgid "dnsbyisp"
-msgstr "运营商DNS(自动分配)"
-
-msgid "Ali"
-msgstr "阿里"
-
-msgid "Baidu"
-msgstr "百度"
-
 msgid "DNS Export Of Multi WAN"
 msgstr "国内DNS指定解析出口"
 
@@ -217,17 +211,8 @@ msgstr "只有多线接入才有效。"
 msgid "Not Specify"
 msgstr "不指定"
 
-msgid "DNS Hijack"
-msgstr "DNS劫持"
-
 msgid "custom"
 msgstr "自定义"
-
-msgid "DNS Server"
-msgstr "DNS服务器"
-
-msgid "Use Socks Node Resolve DNS"
-msgstr "使用Socks节点解析DNS"
 
 msgid "Multi Process Option"
 msgstr "多进程并发"
@@ -254,16 +239,16 @@ msgid "Global Proxy"
 msgstr "全局代理"
 
 msgid "GFW List"
-msgstr "GFW名单"
+msgstr "防火墙表"
 
-msgid "China WhiteList"
-msgstr "大陆白名单"
+msgid "Not China List"
+msgstr "中国列表以外"
 
 msgid "Game Mode"
 msgstr "游戏模式"
 
-msgid "Return Home"
-msgstr "回国模式"
+msgid "China List"
+msgstr "中国列表"
 
 msgid "Localhost"
 msgstr "本机"
@@ -616,14 +601,14 @@ msgstr "备用"
 msgid "Manually update"
 msgstr "手动更新"
 
-msgid "Enable custom url"
+msgid "Enable custom URL"
 msgstr "启用自定义规则地址"
 
-msgid "gfwlist Update url"
-msgstr "GFWList更新URL"
+msgid "GFW domains(gfwlist) Update URL"
+msgstr "防火墙域名列表(gfwlist)更新URL"
 
-msgid "Chnroute Update url"
-msgstr "国内IP段(Chnroute)更新URL"
+msgid "China IPs(chnroute) Update URL"
+msgstr "中国IP段(chnroute)更新URL"
 
 msgid "Rule status"
 msgstr "规则版本"
