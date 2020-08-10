@@ -114,8 +114,8 @@ o:value("default", translate("Default"))
 o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("China WhiteList"))
-o:value("returnhome", translate("Return Home"))
+o:value("chnroute", translate("Not China List"))
+o:value("returnhome", translate("China List"))
 
 ---- UDP Proxy Mode
 o = s:option(ListValue, "udp_proxy_mode", "UDP" .. translate("Proxy Mode"))
@@ -125,8 +125,8 @@ o:value("default", translate("Default"))
 o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode") .. "（" .. translate("China WhiteList") .. "）")
-o:value("returnhome", translate("Return Home"))
+o:value("chnroute", translate("Game Mode") .. "（" .. translate("Not China List") .. "）")
+o:value("returnhome", translate("China List"))
 
 ---- TCP No Redir Ports
 o = s:option(Value, "tcp_no_redir_ports", translate("TCP No Redir Ports"))

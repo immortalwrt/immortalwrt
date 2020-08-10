@@ -70,6 +70,9 @@ if api.is_finded("brook") then
     type:value("Brook", translate("Brook"))
 end
 if api.is_finded("trojan-plus") or api.is_finded("trojan") then
+    type:value("Trojan", translate("Trojan"))
+end
+if api.is_finded("trojan-plus") then
     type:value("Trojan-Plus", translate("Trojan-Plus"))
 end
 if api.is_finded("trojan-go") then
@@ -105,6 +108,7 @@ password = s:option(Value, "password", translate("Password"))
 password.password = true
 password:depends("type", "SSR")
 password:depends("type", "Brook")
+password:depends("type", "Trojan")
 password:depends("type", "Trojan-Plus")
 password:depends({ type = "V2ray", protocol = "http" })
 password:depends({ type = "V2ray", protocol = "socks" })
@@ -160,6 +164,7 @@ tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"),
 tcp_fast_open:value("false")
 tcp_fast_open:value("true")
 tcp_fast_open:depends("type", "SSR")
+tcp_fast_open:depends("type", "Trojan")
 tcp_fast_open:depends("type", "Trojan-Plus")
 tcp_fast_open:depends("type", "Trojan-Go")
 
@@ -193,10 +198,11 @@ stream_security:depends({ type = "V2ray", protocol = "vmess", transport = "ws" }
 stream_security:depends({ type = "V2ray", protocol = "vmess", transport = "h2" })
 stream_security:depends({ type = "V2ray", protocol = "socks" })
 stream_security:depends({ type = "V2ray", protocol = "shadowsocks" })
+stream_security:depends("type", "Trojan")
 stream_security:depends("type", "Trojan-Plus")
 stream_security:depends("type", "Trojan-Go")
 stream_security.validate = function(self, value)
-    if value == "none" and type:formvalue(arg[1]) == "Trojan" then
+    if value == "none" and (type:formvalue(arg[1]) == "Trojan" or type:formvalue(arg[1]) == "Trojan-Plus") then
         return nil, translate("'none' not supported for original Trojan.")
     end
     return value
@@ -363,6 +369,7 @@ quic_guise:depends("transport", "quic")
 remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"), translate("You can forward to Nginx/Caddy/V2ray WebSocket and more."))
 remote_enable.default = "1"
 remote_enable.rmempty = false
+remote_enable:depends("type", "Trojan")
 remote_enable:depends("type", "Trojan-Plus")
 remote_enable:depends("type", "Trojan-Go")
 

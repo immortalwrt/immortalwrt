@@ -12,20 +12,19 @@ local config = {
     local_address = "0.0.0.0",
     local_port = tonumber(local_port),
     password = node.password,
+    method = node.method,
     timeout = tonumber(node.timeout),
     fast_open = (node.tcp_fast_open and node.tcp_fast_open == "true") and true or false,
     reuse_port = true
 }
 
 if node.type == "SS" then
-    config.method = node.ss_encrypt_method
-    if node.ss_plugin and node.ss_plugin ~= "none" then
-        config.plugin = node.ss_plugin
-        config.plugin_opts = node.ss_plugin_opts or nil
+    if node.plugin and node.plugin ~= "none" then
+        config.plugin = node.plugin
+        config.plugin_opts = node.plugin_opts or nil
     end
 elseif node.type == "SSR" then
-    config.method = node.ssr_encrypt_method
-    config.protocol = node.ssr_protocol
+    config.protocol = node.protocol
     config.protocol_param = node.protocol_param
     config.obfs = node.obfs
     config.obfs_param = node.obfs_param
