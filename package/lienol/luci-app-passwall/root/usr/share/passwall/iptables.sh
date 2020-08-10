@@ -82,13 +82,13 @@ get_action_chain_name() {
 		echo "全局代理"
 		;;
 	gfwlist)
-		echo "GFW名单"
+		echo "防火墙列表"
 		;;
 	chnroute)
-		echo "大陆白名单"
+		echo "中国列表以外"
 		;;
 	returnhome)
-		echo "回国模式"
+		echo "中国列表"
 		;;
 	esac
 }
@@ -115,7 +115,7 @@ load_acl() {
 		local TCP_NODE UDP_NODE TCP_NODE_TYPE UDP_NODE_TYPE ipt_tmp is_tproxy tcp_port udp_port msg msg2
 		for item in $items; do
 			unset ip mac tcp_port udp_port is_tproxy msg
-			eval $(uci -q show $CONFIG.${item} | cut -d'.' -sf 3- | grep -v '^$')
+			eval $(uci -q show "${CONFIG}.${item}" | cut -d'.' -sf 3-)
 			[ -z "${ip}${mac}" ] && continue
 			tcp_proxy_mode=${tcp_proxy_mode:-default}
 			udp_proxy_mode=${udp_proxy_mode:-default}
@@ -144,7 +144,7 @@ load_acl() {
 				[ "$TCP_NODE" != "nil" ] && {
 					eval tcp_port=\$TCP_REDIR_PORT$tcp_node
 					eval TCP_NODE_TYPE=$(echo $(config_n_get $TCP_NODE type) | tr 'A-Z' 'a-z')
-					[ "$TCP_NODE_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE brook_protocol client)" == "client" ] && is_tproxy=1
+					[ "$TCP_NODE_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE protocol client)" == "client" ] && is_tproxy=1
 					[ "$TCP_NODE_TYPE" == "trojan-go" ] && is_tproxy=1
 					msg2="${msg}使用TCP节点${tcp_node} [$(get_action_chain_name $tcp_proxy_mode)]"
 					if [ -n "${is_tproxy}" ]; then
@@ -190,7 +190,7 @@ load_acl() {
 	unset is_tproxy msg
 	[ "$TCP_NODE1" != "nil" ] && [ "$TCP_PROXY_MODE" != "disable" ] && {
 		local TCP_NODE1_TYPE=$(echo $(config_n_get $TCP_NODE1 type) | tr 'A-Z' 'a-z')
-		[ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 brook_protocol client)" == "client" ] && is_tproxy=1
+		[ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 protocol client)" == "client" ] && is_tproxy=1
 		[ "$TCP_NODE1_TYPE" == "trojan-go" ] && is_tproxy=1
 			msg="TCP默认代理：使用TCP节点1 [$(get_action_chain_name $TCP_PROXY_MODE)]"
 		if [ -n "$is_tproxy" ]; then
@@ -244,7 +244,7 @@ filter_node() {
 			ipt_tmp=$ipt_n
 			ip6t_tmp=$ip6t_n
 			[ "$stream" == "udp" ] && is_tproxy=1
-			[ "$type" == "brook" ] && [ "$(config_n_get $node brook_protocol client)" == "client" ] && is_tproxy=1
+			[ "$type" == "brook" ] && [ "$(config_n_get $node protocol client)" == "client" ] && is_tproxy=1
 			[ "$type" == "trojan-go" ] && is_tproxy=1
 			if [ -n "$is_tproxy" ]; then
 				ipt_tmp=$ipt_m
@@ -402,7 +402,7 @@ add_firewall_rule() {
 		local p_r=$(get_redirect_ipt $LOCALHOST_TCP_PROXY_MODE $TCP_REDIR_PORT1)
 		TCP_NODE1_TYPE=$(echo $(config_n_get $TCP_NODE1 type) | tr 'A-Z' 'a-z')
 		echolog "加载路由器自身 TCP 代理..."
-		if [ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 brook_protocol client)" == "client" ]; then
+		if [ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 protocol client)" == "client" ]; then
 			echolog "  - 启用 TPROXY 模式"
 			ipt_tmp=$ipt_m
 			dns_l="PSW"

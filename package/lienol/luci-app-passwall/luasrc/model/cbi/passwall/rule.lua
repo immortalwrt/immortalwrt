@@ -14,20 +14,20 @@ o.rmempty = false
 
 ---- Enable custom url
 --[[
-o = s:option(Flag, "enable_custom_url", translate("Enable custom url"))
+o = s:option(Flag, "enable_custom_url", translate("Enable custom URL"))
 o.default = 0
 o.rmempty = false
 ]]--
 
 ---- gfwlist URL
-o = s:option(Value, "gfwlist_url", translate("gfwlist Update url"))
+o = s:option(Value, "gfwlist_url", translate("GFW domains(gfwlist) Update URL"))
 o:value("https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt", translate("Loukky/gfwlist-by-loukky"))
 o:value("https://cdn.jsdelivr.net/gh/gfwlist/gfwlist/gfwlist.txt", translate("gfwlist/gfwlist"))
 o.default = "https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt"
 --o:depends("enable_custom_url", 1)
 
 ----chnroute  URL
-o = s:option(Value, "chnroute_url", translate("Chnroute Update url"))
+o = s:option(Value, "chnroute_url", translate("China IPs(chnroute) Update URL"))
 o:value("https://ispip.clang.cn/all_cn.txt", translate("Clang.CN"))
 o:value("https://ispip.clang.cn/all_cn_cidr.txt", translate("Clang.CN.CIDR"))
 o.default = "https://ispip.clang.cn/all_cn.txt"
