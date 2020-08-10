@@ -516,62 +516,62 @@ void testcpufreq(int mode, int y)
 
 void testnetspeed(int mode, int y)
 {
-    int in,out;
+    int rx,tx;
     if((fp=popen(NETPATH,"r")) != NULL)
-    {	
-	    	
-        fscanf(fp,"%d %d", &in, &out);
+    {
+        fscanf(fp,"%d %d", &rx, &tx);
         fclose(fp);
-	in = in;
-        out = out;
+        rx = rx;
+        tx = tx;
         switch(mode)
-	{
-	    case SPLIT:	
-        	setTextSize(2);
-	        if (in < 1000) sprintf(buf, "%03dB", in);
-	        else if (in > 1000000) sprintf(buf, "%03dM", in/1000000);
-	        else sprintf(buf, "%03dK", in/1000);
-		setCursor((127-(strlen(buf)+1)*11)/2,0);
-		oled_write(24);
-            	print_str(buf);
-	        
-	        if (out < 1000) sprintf(buf, "%03dB", out);
-	        else if (out > 1000000) sprintf(buf, "%03dM", out/1000000);
-	        else sprintf(buf, "%03dK", out/1000);
-		setCursor((127-(strlen(buf)+1)*11)/2,16);
-	        oled_write(25);
-            	print_str(buf);
-	    	break;
-	    case MERGE:
-	    	setTextSize(1);
-            	if (in < 1000) sprintf(buf, "%03dB ", in);
-	    	else if (in > 1000000) sprintf(buf, "%03dM", in/1000000);
-	    	else sprintf(buf, "%03dK ", in/1000);
-		setCursor((127-(2*strlen(buf)-1)*6)/2-4, y+4);
-		oled_write(24);
-            	print_str(buf);  
-	    	if (out < 1000) sprintf(buf, "%03dB", out);
-	    	else if (out > 1000000) sprintf(buf, "%03dM", out/1000000);
-	    	else sprintf(buf, "%03dK", out/1000);
-		oled_write(25);
-            	print_str(buf);  	
-		break;  
-	    case FULL:
-	    	setTextSize(1);
-		setCursor(display_offset, y);
-	    	oled_write(24);
-            	if (in < 1000) sprintf(buf, "%03dB ", in);
-	    	else if (in > 1000000) sprintf(buf, "%03dM", in/1000000);
-	    	else sprintf(buf, "%03dK ", in/1000);
-            	print_str(buf);  
-            	oled_write(25);
-	    	if (out < 1000) sprintf(buf, "%03dB", out);
-	    	else if (out > 1000000) sprintf(buf, "%03dM", out/1000000);
-	    	else sprintf(buf, "%03dK", out/1000);
-            	print_str(buf);          
-	}	
-    }
+        {
+        case SPLIT:
+            setTextSize(2);
+            if (tx < 1000) sprintf(buf, "%03dB", tx);
+            else if (tx > 1000000) sprintf(buf, "%03dM", tx/1000000);
+            else sprintf(buf, "%03dK", tx/1000);
+            setCursor((127-(strlen(buf)+1)*11)/2,0);
+            oled_write(24);
+            print_str(buf);
 
+            if (rx < 1000) sprintf(buf, "%03dB", rx);
+            else if (rx > 1000000) sprintf(buf, "%03dM", rx/1000000);
+            else sprintf(buf, "%03dK", rx/1000);
+            setCursor((127-(strlen(buf)+1)*11)/2,16);
+            oled_write(25);
+            print_str(buf);
+            break;
+        case MERGE:
+            setTextSize(1);
+            if (tx < 1000) sprintf(buf, "%03dB ", tx);
+            else if (tx > 1000000) sprintf(buf, "%03dM", tx/1000000);
+            else sprintf(buf, "%03dK ", tx/1000);
+            setCursor((127-(2*strlen(buf)-1)*6)/2-4, y+4);
+            oled_write(24);
+            print_str(buf);
+
+            if (rx < 1000) sprintf(buf, "%03dB", rx);
+            else if (rx > 1000000) sprintf(buf, "%03dM", rx/1000000);
+            else sprintf(buf, "%03dK", rx/1000);
+            oled_write(25);
+            print_str(buf);
+            break;
+        case FULL:
+            setTextSize(1);
+            setCursor(display_offset, y);
+            oled_write(24);
+            if (tx < 1000) sprintf(buf, "%03dB ", tx);
+            else if (tx > 1000000) sprintf(buf, "%03dM", tx/1000000);
+            else sprintf(buf, "%03dK ", tx/1000);
+            print_str(buf);
+
+            oled_write(25);
+            if (rx < 1000) sprintf(buf, "%03dB", rx);
+            else if (rx > 1000000) sprintf(buf, "%03dM", rx/1000000);
+            else sprintf(buf, "%03dK", rx/1000);
+            print_str(buf);
+        }
+    }
 }
 void testcpu(int y)
 {
