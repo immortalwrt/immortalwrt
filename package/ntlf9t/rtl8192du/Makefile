@@ -40,7 +40,7 @@ define KernelPackage/rtl8192du
   TITLE:=Realtek RTL8192DU wireless USB 802.11n driver
   DEPENDS:=@USB_SUPPORT +kmod-cfg80211 +kmod-mac80211 +kmod-usb-core
   FILES:= $(PKG_BUILD_DIR)/8192du.$(LINUX_KMOD_SUFFIX)
-# AUTOLOAD:=$(call AutoProbe,8192du)
+  AUTOLOAD:=$(call AutoProbe,8192du)
 endef
 
 define KernelPackage/rtl8192du/description
