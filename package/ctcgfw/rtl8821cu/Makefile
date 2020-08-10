@@ -22,12 +22,30 @@ PKG_MIRROR_HASH:=0b0c12c69efa680481abc3a7703a1a224f7fcd6271f8eb3c038fbaef02945bf
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
 
+STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
+
+include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
+
+NOSTDINC_FLAGS = \
+	-I$(PKG_BUILD_DIR)/include \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport \
+	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211 \
+	-include backport/autoconf.h \
+	-include backport/backport.h
+
+NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_CONCURRENT_MODE -DBUILD_OPENWRT
 
 define KernelPackage/rtl8821cu
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek rtl8821cu Support
+<<<<<<< HEAD
   DEPENDS:=@BROKEN +@USB_SUPPORT +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +kmod-mac80211 +kmod-usb-core
+=======
+  DEPENDS:=+@USB_SUPPORT +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +kmod-mac80211 +kmod-usb-core
+>>>>>>> openwrt-18.06-dev
   FILES:=$(PKG_BUILD_DIR)/rtl8821cu.ko
   AUTOLOAD:=$(call AutoProbe,rtl8821cu)
   PROVIDES:=kmod-rtl8821cu
