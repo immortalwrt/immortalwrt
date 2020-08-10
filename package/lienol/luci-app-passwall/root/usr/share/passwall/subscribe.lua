@@ -317,8 +317,8 @@ local function processData(szType, content, add_mode)
 		result.type = "SSR"
 		result.address = hostInfo[1]
 		result.port = hostInfo[2]
-		result.ssr_protocol = hostInfo[3]
-		result.ssr_encrypt_method = hostInfo[4]
+		result.protocol = hostInfo[3]
+		result.method = hostInfo[4]
 		result.obfs = hostInfo[5]
 		result.password = base64Decode(hostInfo[6])
 		local params = {}
@@ -421,20 +421,20 @@ local function processData(szType, content, add_mode)
 				local plugin_info = UrlDecode(params.plugin)
 				local idx_pn = plugin_info:find(";")
 				if idx_pn then
-					result.ss_plugin = plugin_info:sub(1, idx_pn - 1)
-					result.ss_plugin_opts =
+					result.plugin = plugin_info:sub(1, idx_pn - 1)
+					result.plugin_opts =
 						plugin_info:sub(idx_pn + 1, #plugin_info)
 				else
-					result.ss_plugin = plugin_info
+					result.plugin = plugin_info
 				end
 			end
-			if result.ss_plugin and result.ss_plugin == "simple-obfs" then
-				result.ss_plugin = "obfs-local"
+			if result.plugin and result.plugin == "simple-obfs" then
+				result.plugin = "obfs-local"
 			end
 		else
 			result.port = host[2]
 		end
-		result.ss_encrypt_method = method
+		result.method = method
 		result.password = password
 	elseif szType == "trojan" then
 		local alias = ""
@@ -443,7 +443,7 @@ local function processData(szType, content, add_mode)
 			alias = content:sub(idx_sp + 1, -1)
 			content = content:sub(0, idx_sp - 1)
 		end
-		result.type = "Trojan"
+		result.type = "Trojan-Plus"
 		result.remarks = UrlDecode(alias)
 		if content:find("@") then
 			local Info = split(content, "@")
@@ -566,9 +566,9 @@ local function processData(szType, content, add_mode)
 		result.address = content.server
 		result.port = content.port
 		result.password = content.password
-		result.ss_encrypt_method = content.encryption
-		result.ss_plugin = content.plugin
-		result.ss_plugin_opts = content.plugin_options
+		result.method = content.encryption
+		result.plugin = content.plugin
+		result.plugin_opts = content.plugin_options
 		result.group = content.airport
 		result.remarks = content.remarks
 	else
