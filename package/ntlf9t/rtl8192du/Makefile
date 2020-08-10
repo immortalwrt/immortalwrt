@@ -50,7 +50,6 @@ endef
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(LINUX_DIR) \
 		$(KERNEL_MAKE_FLAGS) \
-		SUBDIRS="$(PKG_BUILD_DIR)" \
 		CONFIG_RTL8192DU=m \
 		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
 		M="$(PKG_BUILD_DIR)" \
