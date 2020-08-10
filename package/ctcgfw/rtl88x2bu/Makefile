@@ -16,13 +16,26 @@ PKG_MIRROR_HASH:=3532897af3cd3b327c825708d1c4db750c171647ddeaf21fb003f575f6b1ec8
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 PKG_BUILD_PARALLEL:=1
 
+STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
+
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
+
+NOSTDINC_FLAGS = \
+	-I$(PKG_BUILD_DIR)/include \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport \
+	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211 \
+	-include backport/autoconf.h \
+	-include backport/backport.h
+
+NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_CONCURRENT_MODE -DBUILD_OPENWRT
 
 define KernelPackage/rtl88x2bu
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek 8812BU/8822BU support
-  DEPENDS:=@USB_SUPPORT +kmod-cfg80211 +kmod-mac80211 +kmod-usb-core +wireless-tools +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
+  DEPENDS:=+@USB_SUPPORT +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +kmod-mac80211 +kmod-usb-core
   FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
   AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
   PROVIDES:=kmod-rtl88x2bu
