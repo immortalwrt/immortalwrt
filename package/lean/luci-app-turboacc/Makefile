@@ -23,17 +23,14 @@ define Package/$(PKG_NAME)/config
 config PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe
 	bool "Include Shortcut-FE"
 	depends on PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload=n
-	default y if LINUX_4_9
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload
 	bool "Include Flow Offload"
-	depends on !LINUX_4_9
 	default y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca
 	bool "Include BBR CCA"
-	default n if LINUX_4_9
 	default y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder

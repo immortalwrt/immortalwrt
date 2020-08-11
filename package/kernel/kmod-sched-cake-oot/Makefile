@@ -26,7 +26,7 @@ define KernelPackage/sched-cake-oot
   URL:=https://github.com/dtaht/sch_cake
   FILES:=$(PKG_BUILD_DIR)/sch_cake.ko
   AUTOLOAD:=$(call AutoLoad,75,sch_cake)
-  DEPENDS:=@(LINUX_4_9||LINUX_4_14) +kmod-sched-core +kmod-ipt-conntrack
+  DEPENDS:=@LINUX_4_14 +kmod-sched-core +kmod-ipt-conntrack
 endef
 
 define KernelPackage/sched-cake-oot/description
@@ -37,7 +37,7 @@ define KernelPackage/sched-cake-virtual
   SUBMENU:=Network Support
   TITLE:=Virtual package for sched-cake
   URL:=https://github.com/dtaht/sch_cake
-  DEPENDS:=+!(LINUX_4_9||LINUX_4_14):kmod-sched-cake +(LINUX_4_9||LINUX_4_14):kmod-sched-cake-oot
+  DEPENDS:=+!LINUX_4_14:kmod-sched-cake +LINUX_4_14:kmod-sched-cake-oot
 endef
 
 define KernelPackage/sched-cake-virtual/description
