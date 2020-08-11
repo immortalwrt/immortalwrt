@@ -50,16 +50,16 @@ ath9k_patch_firmware_mac() {
 board=$(board_name)
 
 case "$FIRMWARE" in
-"pci_wmac0.eeprom")
-	case $board in
-	netgear,wndr4700)
+"ath9k-eeprom-pci-0000:43:00.0.bin")
+        case $board in
+        netgear,wndr4700)
 		. /lib/upgrade/nand.sh
 
 		if [ -n "$(nand_find_volume ubi0 caldata)" ]; then
-			ath9k_ubi_eeprom_extract "caldata" 20480 4096
+			ath9k_ubi_eeprom_extract "caldata" 4096 4096
 		else
-			ath9k_eeprom_extract "wifi_data" 20480 4096
-			ath9k_patch_firmware_mac $(mtd_get_mac_binary wifi_data 12)
+			ath9k_eeprom_extract "wifi_data" 4096 4096
+			ath9k_patch_firmware_mac $(mtd_get_mac_binary wifi_data 0)
 		fi
 		;;
 	*)
@@ -68,16 +68,16 @@ case "$FIRMWARE" in
 	esac
 	;;
 
-"pci_wmac1.eeprom")
-	case $board in
-	netgear,wndr4700)
+"ath9k-eeprom-pci-0000:44:00.0.bin")
+        case $board in
+        netgear,wndr4700)
 		. /lib/upgrade/nand.sh
 
 		if [ -n "$(nand_find_volume ubi0 caldata)" ]; then
-			ath9k_ubi_eeprom_extract "caldata" 4096 4096
+			ath9k_ubi_eeprom_extract "caldata" 20480 4096
 		else
-			ath9k_eeprom_extract "wifi_data" 4096 4096
-			ath9k_patch_firmware_mac $(mtd_get_mac_binary wifi_data 0)
+			ath9k_eeprom_extract "wifi_data" 20480 4096
+			ath9k_patch_firmware_mac $(mtd_get_mac_binary wifi_data 12)
 		fi
 		;;
 	*)
