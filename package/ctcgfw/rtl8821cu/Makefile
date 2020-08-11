@@ -27,21 +27,10 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-NOSTDINC_FLAGS = \
-	-I$(PKG_BUILD_DIR)/include \
-	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
-	-I$(STAGING_DIR)/usr/include/mac80211-backport \
-	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
-	-I$(STAGING_DIR)/usr/include/mac80211 \
-	-include backport/autoconf.h \
-	-include backport/backport.h
-
-NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_CONCURRENT_MODE
-
 define KernelPackage/rtl8821cu
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek rtl8821cu Support
-  DEPENDS:=+@USB_SUPPORT +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +kmod-mac80211 +kmod-usb-core
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/rtl8821cu.ko
   AUTOLOAD:=$(call AutoProbe,rtl8821cu)
   PROVIDES:=kmod-rtl8821cu
@@ -50,6 +39,15 @@ endef
 define KernelPackage/rtl8821cu/description
  Kernel module for rtl8821cu wireless module.
 endef
+
+NOSTDINC_FLAGS = \
+	-I$(PKG_BUILD_DIR) \
+	-I$(PKG_BUILD_DIR)/include \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211 \
+	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-include backport/backport.h
 
 EXTRA_KCONFIG:=\
 	CONFIG_RTL8821CU=m \
@@ -76,6 +74,7 @@ endif
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
 	M="$(PKG_BUILD_DIR)" \
+	NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
 	USER_EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 	$(EXTRA_KCONFIG)
 
