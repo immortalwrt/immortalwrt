@@ -60,6 +60,9 @@ TARGET_DEVICES += friendlyarm_nanopi-duo2
 define Device/friendlyarm_nanopi-r1
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL:=FriendlyARM NanoPi R1
+  DEVICE_PACKAGES := kmod-rtc-sunxi kmod-usb2 kmod-usb-net-rtl8152 \
+	 kmod-brcmfmac kmod-leds-gpio kmod-ledtrig-heartbeat wpad-basic \
+	 brcmfmac-firmware-43430-sdio
   SOC := sun8i-h3
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r1
