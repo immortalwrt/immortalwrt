@@ -224,7 +224,7 @@
  };
  
  static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
-@@ -3106,6 +3146,7 @@ static const struct mtk_soc_data mt7622_
+@@ -3108,6 +3148,7 @@ static const struct mtk_soc_data mt7622_
  	.hw_features = MTK_HW_FEATURES,
  	.required_clks = MT7622_CLKS_BITMAP,
  	.required_pctl = false,
