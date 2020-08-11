@@ -983,7 +983,7 @@
  };
  
  static const struct net_device_ops mtk_netdev_ops = {
-@@ -2463,6 +2519,7 @@ static int mtk_probe(struct platform_dev
+@@ -2465,6 +2521,7 @@ static int mtk_probe(struct platform_dev
  {
  	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	struct device_node *mac_np;
@@ -991,7 +991,7 @@
  	struct mtk_eth *eth;
  	int err;
  	int i;
-@@ -2471,7 +2528,8 @@ static int mtk_probe(struct platform_dev
+@@ -2473,7 +2530,8 @@ static int mtk_probe(struct platform_dev
  	if (!eth)
  		return -ENOMEM;
  
@@ -1001,7 +1001,7 @@
  
  	eth->dev = &pdev->dev;
  	eth->base = devm_ioremap_resource(&pdev->dev, res);
-@@ -2489,26 +2547,37 @@ static int mtk_probe(struct platform_dev
+@@ -2491,26 +2549,37 @@ static int mtk_probe(struct platform_dev
  		return PTR_ERR(eth->ethsys);
  	}
  
@@ -1048,7 +1048,7 @@
  		eth->irq[i] = platform_get_irq(pdev, i);
  		if (eth->irq[i] < 0) {
  			dev_err(&pdev->dev, "no IRQ%d resource found\n", i);
-@@ -2552,15 +2621,22 @@ static int mtk_probe(struct platform_dev
+@@ -2554,15 +2623,22 @@ static int mtk_probe(struct platform_dev
  			goto err_deinit_hw;
  	}
  
@@ -1079,7 +1079,7 @@
  
  	err = mtk_mdio_init(eth);
  	if (err)
-@@ -2626,27 +2702,48 @@ static int mtk_remove(struct platform_de
+@@ -2628,27 +2704,48 @@ static int mtk_remove(struct platform_de
  }
  
  static const struct mtk_soc_data mt2701_data = {
