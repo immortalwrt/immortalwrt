@@ -184,7 +184,6 @@ EOF
 }
 
 stop_dnscache() {
-	killall -9 "AdGuardHome" 2>"/dev/null"
 	killall -9 "dnscache" 2>"/dev/null"
 	kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') 2>"/dev/null"
 	rm -rf "/var/dnscache" "/var/run/dnscache"
