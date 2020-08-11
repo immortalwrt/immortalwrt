@@ -91,29 +91,31 @@ ifneq ($(LOCAL_VARIANT),mini)
   DRIVER_MAKEOPTS += CONFIG_IEEE80211W=$(CONFIG_DRIVER_11W_SUPPORT)
 endif
 
-ifeq ($(LOCAL_VARIANT),full)
-  ifeq ($(SSL_VARIANT),openssl)
-    DRIVER_MAKEOPTS += CONFIG_TLS=openssl CONFIG_SAE=y CONFIG_OWE=y CONFIG_SUITEB192=y CONFIG_AP=y CONFIG_MESH=y
-    TARGET_LDFLAGS += -lcrypto -lssl
+ifeq ($(SSL_VARIANT),openssl)
+  DRIVER_MAKEOPTS += CONFIG_TLS=openssl CONFIG_SAE=y
+  TARGET_LDFLAGS += -lcrypto -lssl
+
+  ifeq ($(LOCAL_VARIANT),mesh)
+    DRIVER_MAKEOPTS += CONFIG_AP=y CONFIG_MESH=y
   endif
-  ifeq ($(SSL_VARIANT),wolfssl)
-    DRIVER_MAKEOPTS += CONFIG_TLS=wolfssl CONFIG_WPS_NFC=1 CONFIG_SAE=y CONFIG_OWE=y CONFIG_SUITEB192=y CONFIG_AP=y CONFIG_MESH=y
-    TARGET_LDFLAGS += -lwolfssl
+  ifeq ($(LOCAL_VARIANT),full)
+    DRIVER_MAKEOPTS += CONFIG_OWE=y CONFIG_SUITEB192=y CONFIG_AP=y CONFIG_MESH=y
+  endif
+endif
+
+ifeq ($(SSL_VARIANT),wolfssl)
+  DRIVER_MAKEOPTS += CONFIG_TLS=wolfssl CONFIG_SAE=y
+  TARGET_LDFLAGS += -lwolfssl
+
+  ifeq ($(LOCAL_VARIANT),mesh)
+    DRIVER_MAKEOPTS += CONFIG_AP=y CONFIG_MESH=y CONFIG_WPS_NFC=1
+  endif
+  ifeq ($(LOCAL_VARIANT),full)
+    DRIVER_MAKEOPTS += CONFIG_OWE=y CONFIG_SUITEB192=y CONFIG_AP=y CONFIG_MESH=y CONFIG_WPS_NFC=1
   endif
 endif
 
 ifneq ($(LOCAL_TYPE),hostapd)
-  ifeq ($(LOCAL_VARIANT),mesh)
-    ifeq ($(SSL_VARIANT),openssl)
-      DRIVER_MAKEOPTS += CONFIG_TLS=openssl CONFIG_AP=y CONFIG_SAE=y CONFIG_MESH=y
-      TARGET_LDFLAGS += -lcrypto -lssl
-    endif
-    ifeq ($(SSL_VARIANT),wolfssl)
-      DRIVER_MAKEOPTS += CONFIG_TLS=wolfssl CONFIG_WPS_NFC=1 CONFIG_AP=y CONFIG_SAE=y CONFIG_MESH=y
-      TARGET_LDFLAGS += -lwolfssl
-    endif
-  endif
-
   ifdef CONFIG_WPA_RFKILL_SUPPORT
     DRIVER_MAKEOPTS += NEED_RFKILL=y
   endif
@@ -237,6 +239,17 @@ endef
 
 define Package/wpad-basic/description
  This package contains a basic IEEE 802.1x/WPA Authenticator and Supplicant with WPA-PSK, 802.11r and 802.11w support.
+endef
+
+define Package/wpad-basic-wolfssl
+$(call Package/wpad/Default,$(1))
+  TITLE+= (wolfSSL, 11r, 11w)
+  VARIANT:=wpad-basic-wolfssl
+  DEPENDS+=+libwolfssl
+endef
+
+define Package/wpad-basic-wolfssl/description
+ This package contains a basic IEEE 802.1x/WPA Authenticator and Supplicant with WPA-PSK, SAE (WPA3-Personal), 802.11r and 802.11w support.
 endef
 
 define Package/wpad-mini
@@ -554,6 +567,7 @@ define Package/wpad/install
 	$(LN) wpad $(1)/usr/sbin/wpa_supplicant
 endef
 Package/wpad-basic/install = $(Package/wpad/install)
+Package/wpad-basic-wolfssl/install = $(Package/wpad/install)
 Package/wpad-mini/install = $(Package/wpad/install)
 Package/wpad-openssl/install = $(Package/wpad/install)
 Package/wpad-wolfssl/install = $(Package/wpad/install)
@@ -609,6 +623,7 @@ $(eval $(call BuildPackage,wpad))
 $(eval $(call BuildPackage,wpad-mesh-openssl))
 $(eval $(call BuildPackage,wpad-mesh-wolfssl))
 $(eval $(call BuildPackage,wpad-basic))
+$(eval $(call BuildPackage,wpad-basic-wolfssl))
 $(eval $(call BuildPackage,wpad-mini))
 $(eval $(call BuildPackage,wpad-openssl))
 $(eval $(call BuildPackage,wpad-wolfssl))
