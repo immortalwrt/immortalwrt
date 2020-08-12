@@ -22,6 +22,8 @@ PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
+PKG_BUILD_DEPENDS:=python2
+
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
@@ -56,6 +58,9 @@ endef
 define Build/Compile
 ( \
   cd $(PKG_BUILD_DIR); \
+  mkdir dist; \
+  $(STAGING_DIR_HOSTPKG)/bin/pip2 install PyYAML; \
+  $(STAGING_DIR_HOSTPKG)/bin/python2 util/dist.py; \
   cd dist/source/src; \
   $(TARGET_CC) -c -O3 -o duktape.o duktape.c; \
   $(TARGET_CC) -c -O3 -o duk_module_node.o -I. ../extras/module-node/duk_module_node.c; \
