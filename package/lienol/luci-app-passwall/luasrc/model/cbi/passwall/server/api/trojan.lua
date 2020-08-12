@@ -8,7 +8,7 @@ function gen_config(user)
         local_port = tonumber(user.port),
         remote_addr = (user.remote_enable == "1" and user.remote_address) and user.remote_address or nil,
         remote_port = (user.remote_enable == "1" and user.remote_port) and tonumber(user.remote_port) or nil,
-        password = user.type == "Trojan-Go" and user.passwords or { user.password },
+        password = user.type == "Trojan-Go" and user.uuid or { user.password },
         log_level = 1,
         ssl = (user.stream_security == nil  or user.stream_security == "tls") and {
             cert = user.tls_certificateFile,
