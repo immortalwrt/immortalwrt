@@ -22,11 +22,11 @@ LUCI_PKGARCH:=all
 define Package/$(PKG_NAME)/config
 config PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe
 	bool "Include Shortcut-FE"
-	depends on PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload=n
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload
 	bool "Include Flow Offload"
+	depends on PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe=n
 	default y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca
