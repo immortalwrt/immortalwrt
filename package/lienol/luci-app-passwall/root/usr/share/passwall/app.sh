@@ -452,7 +452,8 @@ run_redir() {
 					local run_kcptun_ip=$server_host
 					[ -n "$kcptun_server_host" ] && run_kcptun_ip=$(get_host_ip $network_type $kcptun_server_host)
 					KCPTUN_REDIR_PORT=$(get_new_port $KCPTUN_REDIR_PORT tcp)
-					ln_start_bin "$(first_type $(config_t_get global_app kcptun_client_file notset) kcptun-client)" "kcptun_tcp_$6" -l "0.0.0.0:$KCPTUN_REDIR_PORT" -r "$run_kcptun_ip:$kcptun_port" "$kcptun_config"
+					kcptun_params="-l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
+					ln_start_bin "$(first_type $(config_t_get global_app kcptun_client_file notset) kcptun-client)" "kcptun_tcp_$6" $kcptun_params
 				fi
 			fi
 			if [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
