@@ -25,7 +25,7 @@ local trojan = {
         sni = node.tls_serverName,
         alpn = {"h2", "http/1.1"},
         reuse_session = true,
-        session_ticket = (node.tls_sessionTicket == "1") and true or false,
+        session_ticket = (node.tls_sessionTicket and node.tls_sessionTicket == "1") and true or false,
         curves = ""
     },
     udp_timeout = 60,

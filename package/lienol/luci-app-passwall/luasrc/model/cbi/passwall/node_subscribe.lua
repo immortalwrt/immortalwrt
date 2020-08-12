@@ -57,7 +57,7 @@ o = s:option(Flag, "filter_keyword_discarded", translate("Filter keyword discard
 o.default = "1"
 o.rmempty = false
 
-o = s:option(Flag, "allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host by default."))
+o = s:option(Flag, "allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
 o.default = "1"
 o.rmempty = false
 

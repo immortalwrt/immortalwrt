@@ -81,11 +81,6 @@ define Build/iodata-mstc-header
 	)
 endef
 
-define Build/ubootpad96
-	uimage_padhdr -i $@ -o $@.new -l 96
-	mv $@.new $@
-endef
-
 define Build/ubnt-erx-factory-image
 	if [ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) -a "$$(stat -c%s $@)" -lt "$(KERNEL_SIZE)" ]; then \
 		echo '21001:7' > $(1).compat; \

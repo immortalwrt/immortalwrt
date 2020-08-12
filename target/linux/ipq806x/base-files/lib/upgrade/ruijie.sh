@@ -1,6 +1,5 @@
 #
 # Copyright (C) 2016 lede-project.org
-# Copyright (C) 2020 AnYun
 #
 
 ruijie_do_flash() {

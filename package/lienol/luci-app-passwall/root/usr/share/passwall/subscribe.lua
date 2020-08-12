@@ -339,7 +339,7 @@ local function processData(szType, content, add_mode)
 		result.protocol = 'vmess'
 		result.transport = info.net
 		result.alter_id = info.aid
-		result.vmess_id = info.id
+		result.uuid = info.id
 		result.remarks = info.ps
 		-- result.mux = 1
 		-- result.mux_concurrency = 8
