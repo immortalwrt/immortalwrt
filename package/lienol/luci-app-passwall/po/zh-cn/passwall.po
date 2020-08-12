@@ -490,6 +490,9 @@ msgstr "TCP转发端口"
 msgid "UDP Redir Ports"
 msgstr "UDP转发端口"
 
+msgid "No patterns are used"
+msgstr "不使用"
+
 msgid "All"
 msgstr "所有"
 
@@ -588,6 +591,9 @@ msgstr "负载比重"
 
 msgid "Export Of Multi WAN"
 msgstr "多WAN指定出口"
+
+msgid "Main"
+msgstr "主要"
 
 msgid "Mode"
 msgstr "模式"

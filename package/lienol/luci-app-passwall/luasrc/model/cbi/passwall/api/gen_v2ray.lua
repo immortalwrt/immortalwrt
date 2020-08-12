@@ -43,13 +43,13 @@ local function gen_outbound(node, tag)
         end
         result = {
             tag = tag,
-            protocol = node.protocol or "vmess",
+            protocol = node.protocol,
             mux = {
                 enabled = (node.mux == "1") and true or false,
                 concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = (node.protocol == "vmess" or node.protocol == "socks" or node.protocol == "shadowsocks") and {
+            streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks") and {
                 network = node.transport,
                 security = node.stream_security,
                 tlsSettings = (node.stream_security == "tls") and {
@@ -96,16 +96,17 @@ local function gen_outbound(node, tag)
                 } or nil
             } or nil,
             settings = {
-                vnext = (node.protocol == "vmess") and {
+                vnext = (node.protocol == "vmess" or node.protocol == "vless") and {
                     {
                         address = node.address,
                         port = tonumber(node.port),
                         users = {
                             {
-                                id = node.vmess_id,
+                                id = node.uuid,
                                 alterId = tonumber(node.alter_id),
-                                level = tonumber(node.vmess_level),
-                                security = node.security
+                                level = node.level and tonumber(node.level) or 0,
+                                security = node.security,
+                                encryption = node.encryption
                             }
                         }
                     }
