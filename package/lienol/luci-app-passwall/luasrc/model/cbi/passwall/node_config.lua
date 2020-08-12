@@ -244,9 +244,9 @@ security = s:option(ListValue, "security", translate("Encrypt Method"))
 for a, t in ipairs(security_list) do security:value(t) end
 security:depends("protocol", "vmess")
 
-security = s:option(Value, "encryption", translate("Encrypt Method"))
-security.default = "none"
-security:depends("protocol", "vless")
+encryption = s:option(Value, "encryption", translate("Encrypt Method"))
+encryption.default = "none"
+encryption:depends("protocol", "vless")
 
 v_ss_encrypt_method = s:option(ListValue, "v_ss_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(v_ss_encrypt_method_list) do v_ss_encrypt_method:value(t) end
@@ -357,7 +357,7 @@ level.default = 1
 level:depends("protocol", "vmess")
 level:depends("protocol", "vless")
 
-stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
+stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted and "TLS" for using TLS.'))
 stream_security:value("none", "none")
 stream_security:value("tls", "tls")
 stream_security.default = "tls"
@@ -370,7 +370,7 @@ stream_security:depends("type", "Trojan-Plus")
 stream_security:depends("type", "Trojan-Go")
 stream_security.validate = function(self, value)
     if value == "none" and (type:formvalue(arg[1]) == "Trojan" or type:formvalue(arg[1]) == "Trojan-Plus") then
-        return nil, translate("'none' not supported for original Trojan.")
+        return nil, translate("'none' not supported for original Trojan, please choose 'tls'.")
     end
     return value
 end
@@ -389,7 +389,7 @@ trojan_force_fp:depends({ type = "Trojan-Go", stream_security = "tls" })
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
 tls_serverName:depends("stream_security", "tls")
 
-tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."))
+tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
 tls_allowInsecure.default = "0"
 tls_allowInsecure:depends("stream_security", "tls")
 
