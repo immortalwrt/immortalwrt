@@ -7,22 +7,22 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=duktape
-PKG_VERSION:=2.99.99-65f1e02
+PKG_VERSION:=2.99.99-19cc8f5
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/svaarala/duktape.git
-PKG_SOURCE_VERSION:=65f1e02e580796929e92e91ba4776d4b0131beb5
+PKG_SOURCE_VERSION:=19cc8f5bb855791ff55cbf60d2cea72df485e86f
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
-PKG_LICENSE:=GPLv3
+PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
-PKG_BUILD_DEPENDS:=python2
+PKG_BUILD_DEPENDS:=node/host
 
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
@@ -42,7 +42,6 @@ define Package/libduktape
 	SECTION:=lib
 	CATEGORY:=Libraries
 	TITLE+= (Libraries)
-	VARIANT:=lib
 endef
 
 define Package/duktape/description
@@ -58,9 +57,9 @@ endef
 define Build/Compile
 ( \
   cd $(PKG_BUILD_DIR); \
-  mkdir dist; \
-  $(STAGING_DIR_HOSTPKG)/bin/pip2 install PyYAML; \
-  $(STAGING_DIR_HOSTPKG)/bin/python2 util/dist.py; \
+  make -C src-tools; \
+  mkdir -p dist; \
+  node src-tools/index.js dist --output-directory dist/source; \
   cd dist/source/src; \
   $(TARGET_CC) -c -O3 -o duktape.o duktape.c; \
   $(TARGET_CC) -c -O3 -o duk_module_node.o -I. ../extras/module-node/duk_module_node.c; \
