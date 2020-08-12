@@ -97,6 +97,7 @@ end
 
 protocol = s:option(ListValue, "protocol", translate("Protocol"))
 protocol:value("vmess", translate("Vmess"))
+protocol:value("vless", translate("VLESS"))
 protocol:value("http", translate("HTTP"))
 protocol:value("socks", translate("Socks"))
 protocol:value("shadowsocks", translate("Shadowsocks"))
@@ -159,6 +160,7 @@ address:depends("type", "Socks")
 address:depends("type", "SS")
 address:depends("type", "SSR")
 address:depends({ type = "V2ray", protocol = "vmess" })
+address:depends({ type = "V2ray", protocol = "vless" })
 address:depends({ type = "V2ray", protocol = "http" })
 address:depends({ type = "V2ray", protocol = "socks" })
 address:depends({ type = "V2ray", protocol = "shadowsocks" })
@@ -174,6 +176,7 @@ use_ipv6:depends("type", "Socks")
 use_ipv6:depends("type", "SS")
 use_ipv6:depends("type", "SSR")
 use_ipv6:depends({ type = "V2ray", protocol = "vmess" })
+use_ipv6:depends({ type = "V2ray", protocol = "vless" })
 use_ipv6:depends({ type = "V2ray", protocol = "http" })
 use_ipv6:depends({ type = "V2ray", protocol = "socks" })
 use_ipv6:depends({ type = "V2ray", protocol = "shadowsocks" })
@@ -190,6 +193,7 @@ port:depends("type", "Socks")
 port:depends("type", "SS")
 port:depends("type", "SSR")
 port:depends({ type = "V2ray", protocol = "vmess" })
+port:depends({ type = "V2ray", protocol = "vless" })
 port:depends({ type = "V2ray", protocol = "http" })
 port:depends({ type = "V2ray", protocol = "socks" })
 port:depends({ type = "V2ray", protocol = "shadowsocks" })
@@ -239,6 +243,10 @@ end
 security = s:option(ListValue, "security", translate("Encrypt Method"))
 for a, t in ipairs(security_list) do security:value(t) end
 security:depends("protocol", "vmess")
+
+security = s:option(Value, "encryption", translate("Encrypt Method"))
+security.default = "none"
+security:depends("protocol", "vless")
 
 v_ss_encrypt_method = s:option(ListValue, "v_ss_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(v_ss_encrypt_method_list) do v_ss_encrypt_method:value(t) end
@@ -336,22 +344,25 @@ kcp_opts = s:option(TextValue, "kcp_opts", translate("Kcptun Config"), translate
 kcp_opts.placeholder = "--crypt aes192 --key abc123 --mtu 1350 --sndwnd 128 --rcvwnd 1024 --mode fast"
 kcp_opts:depends("use_kcp", "1")
 
-vmess_id = s:option(Value, "vmess_id", translate("ID"))
-vmess_id.password = true
-vmess_id:depends("protocol", "vmess")
+uuid = s:option(Value, "uuid", translate("ID"))
+uuid.password = true
+uuid:depends("protocol", "vmess")
+uuid:depends("protocol", "vless")
 
 alter_id = s:option(Value, "alter_id", translate("Alter ID"))
 alter_id:depends("protocol", "vmess")
 
-vmess_level = s:option(Value, "vmess_level", translate("User Level"))
-vmess_level.default = 1
-vmess_level:depends("protocol", "vmess")
+level = s:option(Value, "level", translate("User Level"))
+level.default = 1
+level:depends("protocol", "vmess")
+level:depends("protocol", "vless")
 
 stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, the supported options are "none" for unencrypted (default) and "TLS" for using TLS.'))
 stream_security:value("none", "none")
 stream_security:value("tls", "tls")
 stream_security.default = "tls"
 stream_security:depends("protocol", "vmess")
+stream_security:depends("protocol", "vless")
 stream_security:depends("protocol", "socks")
 stream_security:depends("protocol", "shadowsocks")
 stream_security:depends("type", "Trojan")
@@ -425,6 +436,7 @@ transport:value("h2", "HTTP/2")
 transport:value("ds", "DomainSocket")
 transport:value("quic", "QUIC")
 transport:depends("protocol", "vmess")
+transport:depends("protocol", "vless")
 transport:depends("protocol", "socks")
 transport:depends("protocol", "shadowsocks")
 
@@ -549,6 +561,7 @@ ss_aead_pwd:depends("ss_aead", "1")
 -- [[ Mux ]]--
 mux = s:option(Flag, "mux", translate("Mux"))
 mux:depends({ type = "V2ray", protocol = "vmess" })
+mux:depends({ type = "V2ray", protocol = "vless" })
 mux:depends({ type = "V2ray", protocol = "http" })
 mux:depends({ type = "V2ray", protocol = "socks" })
 mux:depends({ type = "V2ray", protocol = "shadowsocks" })
