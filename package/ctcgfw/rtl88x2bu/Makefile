@@ -13,8 +13,10 @@ PKG_SOURCE_DATE:=2020-07-21
 PKG_SOURCE_VERSION:=a2abcaf523dfab2afeda8cc2cdb5e3c9510fc5f3
 PKG_MIRROR_HASH:=ba79fb9a823a38c5acf22999210645ba881da0b5498ee765383dc5eaa8234e62
 
-PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
+PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
+
+STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
@@ -22,13 +24,22 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/rtl88x2bu
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek 8812BU/8822BU support
-  DEPENDS:=@BROKEN +@USB_SUPPORT +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +kmod-mac80211 +kmod-usb-core
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
   AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
   PROVIDES:=kmod-rtl88x2bu
 endef
 
-EXTRA_CFLAGS=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_RADIO_WORK -DCONFIG_CONCURRENT_MODE 
+NOSTDINC_FLAGS = \
+	-I$(PKG_BUILD_DIR) \
+	-I$(PKG_BUILD_DIR)/include \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211 \
+	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-include backport/backport.h
+
+EXTRA_CFLAGS=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_RADIO_WORK -DCONFIG_CONCURRENT_MODE -DBUILD_OPENWRT
 
 # CONFIG_IOCTL_CFG80211: If kernel version is after 2.6.35, we recommend user to use the new nl80211 API.
 # RTW_USE_CFG80211_STA_EVENT:It is used for driver to indicate new cfg80211 STA event, 
@@ -40,6 +51,7 @@ define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
 		$(KERNEL_MAKE_FLAGS) \
 		M="$(PKG_BUILD_DIR)" \
+		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
 		USER_EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 		CONFIG_RTL8822BU=m \
 		USER_MODULE_NAME=rtl88x2bu \
