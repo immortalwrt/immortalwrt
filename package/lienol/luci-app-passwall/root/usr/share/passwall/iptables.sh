@@ -145,7 +145,7 @@ load_acl() {
 					eval tcp_port=\$TCP_REDIR_PORT$tcp_node
 					eval TCP_NODE_TYPE=$(echo $(config_n_get $TCP_NODE type) | tr 'A-Z' 'a-z')
 					[ "$TCP_NODE_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE protocol client)" == "client" ] && is_tproxy=1
-					[ "$TCP_NODE_TYPE" == "trojan-go" ] && is_tproxy=1
+					#[ "$TCP_NODE_TYPE" == "trojan-go" ] && is_tproxy=1
 					msg2="${msg}使用TCP节点${tcp_node} [$(get_action_chain_name $tcp_proxy_mode)]"
 					if [ -n "${is_tproxy}" ]; then
 						msg2="${msg2}(TPROXY:${tcp_port})代理"
@@ -191,7 +191,7 @@ load_acl() {
 	[ "$TCP_NODE1" != "nil" ] && [ "$TCP_PROXY_MODE" != "disable" ] && {
 		local TCP_NODE1_TYPE=$(echo $(config_n_get $TCP_NODE1 type) | tr 'A-Z' 'a-z')
 		[ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 protocol client)" == "client" ] && is_tproxy=1
-		[ "$TCP_NODE1_TYPE" == "trojan-go" ] && is_tproxy=1
+		#[ "$TCP_NODE1_TYPE" == "trojan-go" ] && is_tproxy=1
 			msg="TCP默认代理：使用TCP节点1 [$(get_action_chain_name $TCP_PROXY_MODE)]"
 		if [ -n "$is_tproxy" ]; then
 			ipt_tmp=$ipt_m && is_tproxy="TPROXY"
@@ -245,7 +245,7 @@ filter_node() {
 			ip6t_tmp=$ip6t_n
 			[ "$stream" == "udp" ] && is_tproxy=1
 			[ "$type" == "brook" ] && [ "$(config_n_get $node protocol client)" == "client" ] && is_tproxy=1
-			[ "$type" == "trojan-go" ] && is_tproxy=1
+			#[ "$type" == "trojan-go" ] && is_tproxy=1
 			if [ -n "$is_tproxy" ]; then
 				ipt_tmp=$ipt_m
 				ip6t_tmp=$ip6t_m
