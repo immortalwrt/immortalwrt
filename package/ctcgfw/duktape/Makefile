@@ -42,7 +42,6 @@ define Package/libduktape
 	SECTION:=lib
 	CATEGORY:=Libraries
 	TITLE+= (Libraries)
-	VARIANT:=lib
 endef
 
 define Package/duktape/description
