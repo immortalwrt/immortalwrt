@@ -733,9 +733,6 @@ msgstr "关键字丢弃"
 msgid "When checked, the keywords in the list are discarded. Otherwise, it is not discarded."
 msgstr "当勾选时，将丢弃包含列表里的关键字的节点。否则，将保留列表的关键字的节点（反过来）。"
 
-msgid "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host by default."
-msgstr "是否允许不安全连接。当勾选时，缺省情况下客户端不会检查远端主机所提供的 TLS 证书的有效性。"
-
 msgid "Add"
 msgstr "添加"
 
@@ -862,20 +859,26 @@ msgstr "伪装类型"
 msgid "Transport Layer Encryption"
 msgstr "传输层加密"
 
-msgid "Whether or not transport layer encryption is enabled, the supported options are \"none\" for unencrypted (default) and \"TLS\" for using TLS."
-msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密（默认值），\"tls\" 表示使用 TLS。"
+msgid "Whether or not transport layer encryption is enabled, the supported options are \"none\" for unencrypted and \"TLS\" for using TLS."
+msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密，\"tls\" 表示使用 TLS。"
+
+msgid "'none' not supported for original Trojan, please choose 'tls'."
+msgstr "原版Trojan不支持'none'，请选择TLS。"
 
 msgid "Domain"
 msgstr "域名"
 
-msgid "Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."
-msgstr "是否允许不安全连接。当勾选时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。"
+msgid "Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."
+msgstr "是否允许不安全连接。当勾选时，将跳过证书验证。"
 
 msgid "<br />none: default, no masquerade, data sent is packets with no characteristics.<br />srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br />utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br />wechat-video: packets disguised as WeChat video calls.<br />dtls: disguised as DTLS 1.2 packet.<br />wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)"
 msgstr "<br />none：默认值，不进行伪装，发送的数据是没有特征的数据包。<br />srtp：伪装成 SRTP 数据包，会被识别为视频通话数据（如 FaceTime）。<br />utp：伪装成 uTP 数据包，会被识别为 BT 下载数据。<br />wechat-video：伪装成微信视频通话的数据包。<br />dtls：伪装成 DTLS 1.2 数据包。<br />wireguard：伪装成 WireGuard 数据包。(并不是真正的 WireGuard 协议)"
 
 msgid "A legal file path. This file must not exist before running V2Ray."
 msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
+
+msgid "UNIX domain socket, absolute path, you can add @ at the beginning to represent abstract, and it is empty by default. If this value is filled in, addr and port will be ignored."
+msgstr "UNIX domain socket，绝对路径，可在开头加 @ 代表 abstract，默认为空。若填写了该值，addr 和 port 将被忽略。"
 
 msgid "TCP Open Socks"
 msgstr "开启Socks"
@@ -919,8 +922,8 @@ msgstr "隐藏菜单方法，地址栏输入例："
 msgid "After the hidden to the display, input example in the address bar:"
 msgstr "当你隐藏后想再次显示，地址栏输入例："
 
-msgid "When OTA is enabled, V2Ray will reject connections that are not OTA enabled. This option is invalid when using AEAD encryption."
-msgstr "开启 OTA 后，V2Ray 会拒绝未启用 OTA 的连接。当使用 AEAD 加密时，该选项无效。"
+msgid "When OTA is enabled, a connection that is not OTA enabled is rejected. This option is invalid when using AEAD encryption."
+msgstr "开启 OTA 后，将拒绝未启用 OTA 的连接。当使用 AEAD 加密时，该选项无效。"
 
 msgid "transit node"
 msgstr "中转到此节点"

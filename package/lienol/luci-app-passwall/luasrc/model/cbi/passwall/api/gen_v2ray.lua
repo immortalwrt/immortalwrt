@@ -41,6 +41,11 @@ local function gen_outbound(node, tag)
             end
             node.stream_security = "none"
         end
+
+        if node.transport == "mkcp" or node.transport == "ds" or node.transport == "quic" then
+            node.stream_security = "none"
+        end
+
         result = {
             tag = tag,
             protocol = node.protocol,
@@ -106,7 +111,7 @@ local function gen_outbound(node, tag)
                                 alterId = tonumber(node.alter_id),
                                 level = node.level and tonumber(node.level) or 0,
                                 security = node.security,
-                                encryption = node.encryption
+                                encryption = node.encryption or "none"
                             }
                         }
                     }
@@ -124,11 +129,6 @@ local function gen_outbound(node, tag)
                 } or nil
             }
         }
-    end
-
-    if node.transport == "mkcp" or node.transport == "ds" or node.transport == "quic" then
-        result.streamSettings.security = "none"
-        result.streamSettings.tlsSettings = nil
     end
 
     return result
