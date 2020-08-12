@@ -13,7 +13,6 @@ PKG_LICENSE:=GPLv3.0+
 
 LUCI_TITLE:=LuCI support for Flow Offload / Shortcut-FE
 LUCI_DEPENDS:=+pdnsd-alt \
-              +PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe-old:kmod-fast-classifier-old \
               +PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe:kmod-fast-classifier \
               +PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload:kmod-ipt-offload \
               +PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca:kmod-tcp-bbr \
@@ -21,19 +20,14 @@ LUCI_DEPENDS:=+pdnsd-alt \
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/config
-config PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe-old
-	bool "Include Shortcut-FE"
-	depends on LINUX_4_9
-	default y
-
 config PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe
 	bool "Include Shortcut-FE"
-	depends on !LINUX_4_9
+	depends on PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload=n
+	default y if LINUX_4_9
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload
 	bool "Include Flow Offload"
-	depends on PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe=n
 	depends on !LINUX_4_9
 	default y
 
@@ -48,7 +42,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
 endef
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe-old \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca \
