@@ -566,7 +566,7 @@ local dsp = require "luci.dispatcher"
 			opt.set('address', ssm.add);
 			opt.set('port', ssm.port);
 			opt.set('alter_id', ssm.aid);
-			opt.set('vmess_id', ssm.id);
+			opt.set('uuid', ssm.id);
 			opt.set('stream_security', ssm.tls === "tls" ? "tls" : "none");
 			opt.get('stream_security').dispatchEvent(event);
 			if (ssm.tls === "tls") {
