@@ -192,7 +192,8 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"4:lan" "0:wan" "6@eth0"
 		;;
-	phicomm,k2g)
+	phicomm,k2g|\
+	wavlink,wl-wn530hg4)
 		ucidef_add_switch "switch0" \
 			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "5:wan" "6@eth0"
 		;;
@@ -346,6 +347,7 @@ ramips_setup_macs()
 	lenovo,newifi-y1|\
 	lenovo,newifi-y1s|\
 	ohyeah,oy-0001|\
+	wavlink,wl-wn530hg4|\
 	youku,yk-l1|\
 	youku,yk-l1c)
 		wan_mac=$(mtd_get_mac_binary factory 0x2e)
