@@ -69,9 +69,11 @@ end
 if api.is_finded("brook") then
     type:value("Brook", translate("Brook"))
 end
+--[[
 if api.is_finded("trojan-plus") or api.is_finded("trojan") then
     type:value("Trojan", translate("Trojan"))
 end
+]]--
 if api.is_finded("trojan-plus") then
     type:value("Trojan-Plus", translate("Trojan-Plus"))
 end
@@ -246,7 +248,7 @@ tls_sessionTicket:depends("stream_security", "tls")
 tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
 tls_serverName:depends("stream_security", "tls")
 
-tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, V2Ray does not check the validity of the TLS certificate provided by the remote host."))
+tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
 tls_allowInsecure.default = "0"
 tls_allowInsecure:depends("stream_security", "tls")
 
