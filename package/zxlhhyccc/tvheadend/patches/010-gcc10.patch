@@ -1,0 +1,28 @@
+diff --git a/src/input.h b/src/input.h
+index 516f850ef..378996a80 100644
+--- a/src/input.h
++++ b/src/input.h
+@@ -129,8 +129,8 @@ void tvh_hardware_delete ( tvh_hardware_t *th );
+ extern const idclass_t tvh_input_class;
+ extern const idclass_t tvh_input_instance_class;
+ 
+-tvh_input_list_t    tvh_inputs;
+-tvh_hardware_list_t tvh_hardware;
++extern tvh_input_list_t    tvh_inputs;
++extern tvh_hardware_list_t tvh_hardware;
+ 
+ #define TVH_INPUT_FOREACH(x) LIST_FOREACH(x, &tvh_inputs, ti_link)
+ #define TVH_HARDWARE_FOREACH(x) LIST_FOREACH(x, &tvh_hardware, th_link)
+diff --git a/src/input/mpegts.h b/src/input/mpegts.h
+index 9d29d56ca..fd46e4f9e 100644
+--- a/src/input/mpegts.h
++++ b/src/input/mpegts.h
+@@ -1144,7 +1144,7 @@ typedef struct mpegts_listener
+   void (*ml_mux_delete) (mpegts_mux_t *mm, void *p);
+ } mpegts_listener_t;
+ 
+-LIST_HEAD(,mpegts_listener) mpegts_listeners;
++static LIST_HEAD(,mpegts_listener) mpegts_listeners;
+ 
+ #define mpegts_add_listener(ml)\
+   LIST_INSERT_HEAD(&mpegts_listeners, ml, ml_link)
