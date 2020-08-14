@@ -99,6 +99,7 @@ case "$FIRMWARE" in
 		ath10kcal_extract "ART" 4096 12064
 		ath10kcal_patch_mac_crc $(mtd_get_mac_binary ART 30)
 		;;
+	linksys,ea7500-v1 |\
 	linksys,ea8500)
 		ath10kcal_extract "art" 4096 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii devinfo hw_mac_addr) +1)
@@ -133,6 +134,7 @@ case "$FIRMWARE" in
 		ath10kcal_extract "ART" 20480 12064
 		ath10kcal_patch_mac_crc $(mtd_get_mac_binary ART 24)
 		;;
+	linksys,ea7500-v1 |\
 	linksys,ea8500)
 		ath10kcal_extract "art" 20480 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii devinfo hw_mac_addr) +2)

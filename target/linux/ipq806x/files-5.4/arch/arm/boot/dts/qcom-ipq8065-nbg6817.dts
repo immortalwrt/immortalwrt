@@ -179,11 +179,11 @@
 		status = "okay";
 	};
 	/*
-	 * The i2c device on gsbi4 should not be enabled.
-	 * On ipq806x designs gsbi4 i2c is meant for exclusive
-	 * RPM usage. Turning this on in kernel manifests as
-	 * i2c failure for the RPM.
-	 */
+		* The i2c device on gsbi4 should not be enabled.
+		* On ipq806x designs gsbi4 i2c is meant for exclusive
+		* RPM usage. Turning this on in kernel manifests as
+		* i2c failure for the RPM.
+		*/
 };
 
 &gsbi5 {
@@ -246,6 +246,7 @@
 
 	pinctrl-0 = <&mdio0_pins>;
 	pinctrl-names = "default";
+
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;

@@ -256,15 +256,6 @@
 	};
 };
 
-&sata_phy {
-	status = "okay";
-};
-
-&sata {
-	ports-implemented = <0x1>;
-	status = "okay";
-};
-
 &usb3_0 {
 	status = "okay";
 };

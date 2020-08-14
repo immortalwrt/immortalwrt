@@ -26,6 +26,7 @@ platform_do_upgrade() {
 	zyxel,nbg6817)
 		nand_do_upgrade "$ARGV"
 		;;
+	linksys,ea7500-v1 |\
 	linksys,ea8500)
 		platform_do_upgrade_linksys "$ARGV"
 		;;
