@@ -1,7 +1,17 @@
-From: QiuSimons
+From 3b7eb946b1d640d684a921e53e1e50985ab7eb89 Mon Sep 17 00:00:00 2001
+From: QiuSimons <45143996+QiuSimons@users.noreply.github.com>
+Date: Tue, 4 Aug 2020 20:17:53 +0800
+Subject: [PATCH] rockchip: add i2c0 controller for nanopi r2s
+
+---
+ arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts | 4 ++++
+ 1 files changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
+index 9bfbe80af0..2aaf8e1391 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -254,6 +254,10 @@
+@@ -142,6 +142,10 @@
  	};
  };
  
@@ -9,6 +19,6 @@ From: QiuSimons
 +	status = "okay";
 +};
 +
- &io_domains {
- 	pmuio-supply = <&vcc_io_33>;
- 	vccio1-supply = <&vcc_io_33>;
+ &i2c1 {
+ 	status = "okay";
+ 
