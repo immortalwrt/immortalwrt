@@ -14,7 +14,7 @@ platform_check_image_sdcard() {
 		return 1
 	}
 
-	export_bootdevice && export_partdevice diskdev 0 || {
+	export_bootdevice && export_partdevice diskdev -2 || {
 		echo "Unable to determine upgrade device"
 	return 1
 	}
@@ -42,7 +42,7 @@ platform_do_upgrade_sdcard() {
 	local board=$(board_name)
 	local diskdev partdev diff
 
-	export_bootdevice && export_partdevice diskdev 0 || {
+	export_bootdevice && export_partdevice diskdev -2 || {
 		echo "Unable to determine upgrade device"
 	return 1
 	}
@@ -75,6 +75,10 @@ platform_do_upgrade_sdcard() {
 		get_image "$@" | dd of="$diskdev" bs=512 skip=1 seek=1 count=2048 conv=fsync
 		#iterate over each partition from the image and write it to the boot disk
 		while read part start size; do
+			# root is /dev/sd[a|b]2 and not /dev/sd[a|b] this causes some problem
+			# one of which is this offset, I'm not sure what's the best fix, so
+			# here's a WA.
+			let part=$((part - 2))
 			if export_partdevice partdev $part; then
 				echo "Writing image to /dev/$partdev..."
 				get_image "$@" | dd of="/dev/$partdev" ibs="512" obs=1M skip="$start" count="$size" conv=fsync
@@ -103,7 +107,8 @@ platform_do_upgrade_sdcard() {
 platform_copy_config_sdcard() {
 	local partdev
 
-	if export_partdevice partdev 1; then
+	# Same as above /dev/sd[a|b]2 is root, so /boot is -1
+	if export_partdevice partdev -1; then
 		mkdir -p /boot
 		[ -f /boot/kernel.img ] || mount -o rw,noatime /dev/$partdev /boot
 		cp -af "$CONF_TAR" /boot/
