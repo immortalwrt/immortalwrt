@@ -133,7 +133,7 @@ platform_pre_upgrade() {
 	toradex,apalis_imx6q-eval |\
 	toradex,apalis_imx6q-ixora |\
 	toradex,apalis_imx6q-ixora-v1.1 )
-		[ -z "$UPGRADE_BACKUP" ] && {
+		[ -z "$CONF_TAR" ] && {
 			jffs2reset -y
 			umount /overlay
 		}
