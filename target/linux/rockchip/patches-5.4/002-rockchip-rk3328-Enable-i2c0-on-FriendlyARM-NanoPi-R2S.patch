@@ -10,5 +10,5 @@ From: QiuSimons
 +};
 +
  &io_domains {
- 	status = "okay";
- 
+ 	pmuio-supply = <&vcc_io_33>;
+ 	vccio1-supply = <&vcc_io_33>;
