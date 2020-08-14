@@ -29,6 +29,7 @@ PKG_CONFIG_DEPENDS:=\
 
 include $(INCLUDE_DIR)/uclibc++.mk
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
 define Package/libpcre/default
   SECTION:=libs
@@ -60,6 +61,14 @@ define Package/libpcrecpp
   TITLE:=C++ wrapper for Perl Compatible Regular Expression library
   DEPENDS:=+libpcre $(CXX_DEPENDS)
 endef
+
+
+HOST_CONFIGURE_ARGS += \
+	--enable-utf8 \
+	--enable-unicode-properties \
+	--enable-pcre16 \
+	--with-match-limit-recursion=16000 \
+	--enable-cpp
 
 TARGET_CFLAGS += $(FPIC)
 
@@ -117,3 +126,4 @@ $(eval $(call BuildPackage,libpcre))
 $(eval $(call BuildPackage,libpcre16))
 $(eval $(call BuildPackage,libpcre32))
 $(eval $(call BuildPackage,libpcrecpp))
+$(eval $(call HostBuild))
