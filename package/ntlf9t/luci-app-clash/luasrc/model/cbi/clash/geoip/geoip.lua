@@ -25,9 +25,7 @@ o.description = translate("NB: Upload GEOIP Database file Country.mmdb")
 .."<br />"
 ..translate("https://github.com/Dreamacro/maxmind-geoip/releases")
 .."<br />"
-..translate("https://static.clash.to/GeoIP2/GeoIP2-Country.tar.gz")
-.."<br />"
-..translate("https://geolite.clash.dev/Country.mmdb")
+..translate("https://raw.githubusercontent.com/alecthw/mmdb_china_ip_list/release/Country.mmdb")
 
 o.title = translate("  ")
 o.template = "clash/clash_upload"
@@ -118,11 +116,15 @@ update_time = SYS.exec("ls -l --full-time /etc/clash/Country.mmdb|awk '{print $6
 o.description = translate("Update Time")..'- ' ..font_red..bold_on..update_time..bold_off..font_off..' '
 o:depends("up_time", "monthly")
 
+o = s:option(ListValue, "geoip_source", translate("GeoIP Source"))
+o:value("1", translate("MaxMind"))
+o:value("2", translate("Github"))
 
 o = s:option(Value, "license_key")
 o.title = translate("License Key")
 o.description = translate("MaxMind License Key")..translate(" https://www.maxmind.com/en/geolite2/signup")
 o.rmempty = true
+o:depends("geoip_source", "1")
 
 o=s:option(Button,"update_geoip")
 o.inputtitle = translate("Save & Apply")
