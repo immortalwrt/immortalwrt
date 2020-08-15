@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk 
 
 PKG_NAME:=luci-app-clash
-PKG_VERSION:=v1.7.5.5
+PKG_VERSION:=v1.7.5.6
 PKG_MAINTAINER:=frainzy1477
 
 include $(INCLUDE_DIR)/package.mk
@@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=luci
 	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
+	SUBMENU:=3. Applications For OpenWRT
 	TITLE:=LuCI app for clash
 	DEPENDS:=+luci-base +wget +iptables +coreutils-base64 +coreutils +coreutils-nohup +bash +ipset +libustream-openssl +curl +jsonfilter +ca-certificates +iptables-mod-tproxy +kmod-tun
 	PKGARCH:=all
@@ -39,12 +39,12 @@ define Package/$(PKG_NAME)/prerm
 # check if we are on real system
 if [ -z "$${IPKG_INSTROOT}" ]; then
     echo "Removing rc.d symlink for clash"
-     /etc/init.d/clash disable
-     /etc/init.d/clash stop
+    /etc/init.d/clash disable
+    /etc/init.d/clash stop
     echo "Removing firewall rule for clash"
-	  uci -q batch <<-EOF >/dev/null
-		delete firewall.clash
-		commit firewall
+	uci -q batch <<-EOF >/dev/null
+	delete firewall.clash
+	commit firewall
 EOF
 fi
 
@@ -53,7 +53,7 @@ endef
 
 define Package/$(PKG_NAME)/preinst
 #!/bin/sh
-
+/etc/init.d/clash disable 2>/dev/null
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	rm -rf /tmp/dnsmasq.d/custom_list.conf 2>/dev/null
 	rm -rf /tmp/dnsmasq.clash 2>/dev/null
@@ -70,6 +70,7 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 	mv /usr/share/clash/rule.yaml /usr/share/clashbackup/rule.bak 2>/dev/null
 fi
 
+
 exit 0
 endef
 
@@ -85,6 +86,7 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 	mv /usr/share/clashbackup/rule.bak /usr/share/clash/rule.yaml 2>/dev/null
 	/etc/init.d/clash disable 2>/dev/null
 fi
+/etc/init.d/clash disable 2>/dev/null
 
 exit 0
 endef
@@ -144,10 +146,10 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./root/usr/share/clash/clash.txt $(1)/usr/share/clash
 	
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/index.html $(1)/etc/clash/dashboard
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.3f7e8457ba9e97b6d7c9.css $(1)/etc/clash/dashboard
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/main.658aa6a6e3feec8f168b.css $(1)/etc/clash/dashboard
 	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/img/ffac0fa1d89f15922b4594863b8b32e9.png $(1)/etc/clash/dashboard/img
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/1.bundle.3f7e8457ba9e97b6d7c9.min.js $(1)/etc/clash/dashboard/js
-	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.3f7e8457ba9e97b6d7c9.min.js $(1)/etc/clash/dashboard/js
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/1.bundle.658aa6a6e3feec8f168b.min.js $(1)/etc/clash/dashboard/js
+	$(INSTALL_BIN) ./root/usr/share/clash/dashboard/js/bundle.658aa6a6e3feec8f168b.min.js $(1)/etc/clash/dashboard/js
 	$(INSTALL_BIN) ./root/usr/share/clash/yacd/* $(1)/usr/share/clash/yacd
 	
 	$(INSTALL_DATA) ./luasrc/clash.lua $(1)/usr/lib/lua/luci

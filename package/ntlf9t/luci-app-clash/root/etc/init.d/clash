@@ -624,7 +624,6 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		echo "设置 Clash iptables" >$REAL_LOG
 	fi
 
-
 	rules >/dev/null 2>&1
 	
 	if [ "${lang}" == "en" ] || [ $lang == "auto" ];then
@@ -928,16 +927,22 @@ restart(){
 		if pidof clash >/dev/null; then
 			stop  >/dev/null 2>&1
 			start >/dev/null 2>&1
+			echo "Clash Successfully Restarted"			
 		else
 		    start >/dev/null 2>&1
+			echo "Clash Successfully Started"
 		fi
 #=========================================================================================================================== 
 }
 
 reload()
 {
-   if pidof clash >/dev/null; then
+if pidof clash >/dev/null; then
       remove_mark 2>/dev/null
-      rules 2>/dev/null
-   fi
+      yml_dns_change 2>/dev/null
+      rules 2>/dev/null	
+      sleep 5
+      echo "Clash for OpenWRT" >$REAL_LOG
+      echo "Clash Reload Completed"	
+fi	  
 }
