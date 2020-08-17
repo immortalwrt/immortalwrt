@@ -64,9 +64,6 @@ define Device/shuttle_kd20
   DEVICE_TITLE := Shuttle KD20
   SUPPORTED_DEVICES += kd20
   KERNEL := kernel-bin | append-dtb | uImage none
-  KERNEL_INITRAMFS_PREFIX = $$(IMAGE_PREFIX)-factory
-  KERNEL_INITRAMFS_SUFFIX := .tar.gz
-  KERNEL_INITRAMFS = kernel-bin | append-dtb | uImage none | omninas-factory | encrypt-3des sohmuntitnlaes
   DEVICE_PACKAGES := kmod-usb2-oxnas kmod-ata-oxnas-sata kmod-usb-ledtrig-usbport \
                      kmod-usb3 kmod-i2c-gpio kmod-rtc-pcf8563 kmod-gpio-beeper \
                      kmod-hwmon-core kmod-hwmon-gpiofan \

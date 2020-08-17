@@ -47,7 +47,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
 +	bool "Enables kernel network stack path for Shortcut Forwarding Engine"
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -2974,7 +2974,15 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -2974,7 +2974,16 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
  #else
  	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
  #endif
@@ -56,6 +56,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
 +	 * go to any taps (by definition we're trying to bypass them).
 +	 */
 +	if (!skb->fast_forwarded) {
++#endif
  		dev_queue_xmit_nit(skb, dev);
 +#ifdef CONFIG_SHORTCUT_FE
 +	}

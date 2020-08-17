@@ -86,11 +86,14 @@ msgstr "启用/启动/重新启动客户端"
 msgid "Disable/Stop Client"
 msgstr "禁用/停止客户端"
 
-msgid "Stop Client"
+msgid "Stop"
 msgstr "停用客户端"
 
-msgid "Start Client"
+msgid "Start"
 msgstr "启用客户端"
+
+msgid "Reload"
+msgstr "重装客户端"
 
 msgid "enabled"
 msgstr "启用"
@@ -990,8 +993,8 @@ msgstr "选择类型"
 msgid "Set custom rules under Setting=>Others , will take effect when client start"
 msgstr "在“设置”=>“其他”下设置自定义规则，将在客户端启动时生效"
 
-msgid "Append Customs Rules"
-msgstr "附加自定义规则"
+msgid "Customs Rules"
+msgstr "自定义规则"
 
 msgid "Edit Custom Rule & Group"
 msgstr "编辑自定义规则组"
@@ -1271,3 +1274,6 @@ msgstr "下载最新版本客户端"
 
 msgid "No Protocol"
 msgstr "不带协议"
+
+msgid "GeoIP Source"
+msgstr "GeoIP下载连接"

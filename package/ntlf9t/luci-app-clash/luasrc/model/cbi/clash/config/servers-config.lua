@@ -45,6 +45,7 @@ local encrypt_methods_ssr = {
 	"aes-256-ctr",
 	"rc4-md5",
 	"chacha20-ietf",
+	"xchacha20",
 
 }
 
