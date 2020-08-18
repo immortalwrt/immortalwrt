@@ -21,20 +21,22 @@ function index()
 	entry({"admin", "services", appname, "settings"}, cbi("passwall/global"), _("Basic Settings"), 1).dependent = true
 	entry({"admin", "services", appname, "node_list"}, cbi("passwall/node_list"), _("Node List"), 2).dependent = true
 	entry({"admin", "services", appname, "auto_switch"}, cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
-	entry({"admin", "services", appname, "other"}, cbi("passwall/other", {autoapply = true}), _("Other Settings"), 93).leaf = true
+	entry({"admin", "services", appname, "other"}, cbi("passwall/other", {autoapply = true}), _("Other Settings"), 92).leaf = true
 	if nixio.fs.access("/usr/sbin/haproxy") then
-		entry({"admin", "services", appname, "haproxy"}, cbi("passwall/haproxy"), _("Load Balancing"), 94).leaf = true
+		entry({"admin", "services", appname, "haproxy"}, cbi("passwall/haproxy"), _("Load Balancing"), 93).leaf = true
 	end
-	entry({"admin", "services", appname, "node_subscribe"}, cbi("passwall/node_subscribe"), _("Node Subscribe"), 95).dependent = true
+	entry({"admin", "services", appname, "node_subscribe"}, cbi("passwall/node_subscribe"), _("Node Subscribe"), 94).dependent = true
+	entry({"admin", "services", appname, "app_update"}, cbi("passwall/app_update"), _("App Update"), 95).leaf = true
 	entry({"admin", "services", appname, "rule"}, cbi("passwall/rule"), _("Rule Manage"), 96).leaf = true
-	entry({"admin", "services", appname, "app_update"}, cbi("passwall/app_update"), _("App Update"), 97).leaf = true
+	entry({"admin", "services", appname, "rule_list"}, cbi("passwall/rule_list"), _("Rule List Manage"), 97).leaf = true
 	entry({"admin", "services", appname, "node_config"}, cbi("passwall/node_config")).leaf = true
 	entry({"admin", "services", appname, "shunt_rules"}, cbi("passwall/shunt_rules")).leaf = true
 	entry({"admin", "services", appname, "acl"}, cbi("passwall/acl"), _("Access control"), 98).leaf = true
-	entry({"admin", "services", appname, "log"}, form("passwall/log"), _("Watch Logs"), 999).leaf = true
 	entry({"admin", "services", appname, "server"}, cbi("passwall/server/index"), _("Server-Side"), 99).leaf = true
+	entry({"admin", "services", appname, "log"}, form("passwall/log"), _("Watch Logs"), 999).leaf = true
 	entry({"admin", "services", appname, "server_user"}, cbi("passwall/server/user")).leaf = true
 
+	--[[ API ]]
 	entry({"admin", "services", appname, "server_user_status"}, call("server_user_status")).leaf = true
 	entry({"admin", "services", appname, "server_get_log"}, call("server_get_log")).leaf = true
 	entry({"admin", "services", appname, "server_clear_log"}, call("server_clear_log")).leaf = true

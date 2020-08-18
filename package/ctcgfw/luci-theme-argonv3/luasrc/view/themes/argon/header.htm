@@ -229,19 +229,18 @@
 	<% if css then %>
 	<style title="text/css"><%=css %></style>
 	<% end -%>
-	<script src="<%=resource%>/cbi.js?v=git-19.190.55614-35357e4"></script>
-	<script src="<%=resource%>/xhr.js?v=git-19.190.55614-35357e4"></script>
-	<script src="<%=media%>/js/jquery.min.js?v=git-19.190.55614-35357e4"></script>
+	<script src="<%=resource%>/cbi.js<%# ?v=PKG_VERSION %>"></script>
+	<script src="<%=resource%>/xhr.js<%# ?v=PKG_VERSION %>"></script>
+	<script src="<%=media%>/js/jquery.min.js<%# ?v=PKG_VERSION %>"></script>
 </head>
 
 <body
 	class="<%- if node then %><%= striptags( node.title ) %><%- end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %> lang_<%=luci.i18n.context.lang%>  ">
 
 	<div class="main">
-
 		<div class="main-left">
 			<div class="sidenav-header d-flex align-items-center">
-				<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
+				<a class="brand" href="#"><%=boardinfo.hostname or "?"%></a>
 			</div>
 			<% render_topmenu() %>
 		</div>
@@ -250,7 +249,7 @@
 				<div class="fill">
 					<div class="container">
 						<a class="showSide"></a>
-						<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
+						<a class="brand" href="#"><%=boardinfo.hostname or "?"%></a>
 						<div class="pull-right">
 							<% render_changes() %>
 							<span id="xhr_poll_status" style="display:none"
@@ -265,7 +264,6 @@
 				</div>
 			</header>
 			<div class="darkMask"></div>
-			
 			<div id="maincontent">
 				<div class="container">
 					<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>
