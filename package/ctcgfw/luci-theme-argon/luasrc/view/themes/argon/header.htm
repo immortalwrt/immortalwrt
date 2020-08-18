@@ -2,7 +2,7 @@
 	Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material Argon Template
 
 	luci-theme-argon
-	Copyright 2019 Jerrykuku <jerrykuku@qq.com>
+	Copyright 2020 Jerrykuku <jerrykuku@qq.com>
 
 	Have a bug? Please create an issue here on GitHub!
 	https://github.com/jerrykuku/luci-theme-argon/issues 
@@ -29,27 +29,9 @@
     local fs	= require "nixio.fs"
 	local nutil = require "nixio.util"
     
-    
-    
 	-- send as HTML5
 	http.prepare_content("text/html")
-    
     math.randomseed(os.time())
-	function glob(...)
-		local iter, code, msg = fs.glob(...)
-		if iter then
-			return nutil.consume(iter)
-		else
-			return nil, code, msg
-		end
-	end
-
-	local bgcount = 0
-	for f in ipairs(glob("/www/luci-static/argon/img/*")) do
-		bgcount = bgcount + 1
-	end
-    
-
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
@@ -83,6 +65,9 @@
 	<meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
 	<meta name="theme-color" content="#5e72e4">
 	<link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
+	<% if nixio.fs.access("/etc/dark") then %>
+	<link rel="stylesheet" href="<%=media%>/css/dark.css?v=<%=math.random(1,100000)%>">
+	<% end -%>
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -90,13 +75,12 @@
 	<% if css then %>
 	<style title="text/css">
 		<%=css %>
-
 	</style>
 	<% end -%>
 	<script src="<%=url('admin/translations', luci.i18n.context.lang)%><%# ?v=PKG_VERSION %>"></script>
-	<script src="<%=resource%>/cbi.js"></script>
-	<script src="<%=resource%>/luci.js"></script>
-	<script src="<%=media%>/js/jquery.min.js"></script>
+	<script src="<%=resource%>/cbi.js<%# ?v=PKG_VERSION %>"></script>
+	<script src="<%=resource%>/luci.js<%# ?v=PKG_VERSION %>"></script>
+	<script src="<%=media%>/js/jquery.min.js<%# ?v=PKG_VERSION %>"></script>
 	<script type="text/javascript">//<![CDATA[
 		(function () {
 			function get_children(node) {
@@ -233,7 +217,7 @@
 	<div class="main">
 		<div class="main-left" id="mainmenu" style="display:none">
 			<div class="sidenav-header d-flex align-items-center">
-				<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
+				<a class="brand" href="#"><%=boardinfo.hostname or "?"%></a>
 				<div class="ml-auto">
 					<!-- Sidenav toggler -->
 					<div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin"
