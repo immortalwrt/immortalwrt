@@ -70,6 +70,9 @@ msgstr "进入界面"
 msgid "Rule Manage"
 msgstr "规则管理"
 
+msgid "Rule List Manage"
+msgstr "直连/代理名单管理"
+
 msgid "Access control"
 msgstr "访问控制"
 
@@ -762,6 +765,12 @@ msgstr "加入的域名将走代理。输入网站域名，如：google.com，�
 
 msgid "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example: 35.24.0.0/24 or 8.8.4.4."
 msgstr "加入的IP段将走代理。可输入IP地址或地址段，如：35.24.0.0/24或8.8.4.4，每个地址段一行。"
+
+msgid "Not valid domain name, please re-enter!"
+msgstr "不是有效域名，请重新输入！"
+
+msgid "Not valid IP format, please re-enter!"
+msgstr "不是有效IP格式，请重新输入！"
 
 msgid "Clear logs"
 msgstr "清空日志"
