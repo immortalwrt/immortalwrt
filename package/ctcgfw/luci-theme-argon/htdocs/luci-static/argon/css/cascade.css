@@ -2,7 +2,7 @@
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
  *  luci-theme-argon
- *      Copyright 2019 Jerrykuku <jerrykuku@qq.com>
+ *      Copyright 2020 Jerrykuku <jerrykuku@qq.com>
  *
  *  Have a bug? Please create an issue here on GitHub!
  *      https://github.com/jerrykuku/luci-theme-argon/issues
@@ -69,6 +69,10 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
+  --blur-radius: 10px;
+  --blur-opacity: 0.5;
+  --blur-radius-dark: 10px;
+  --blur-opacity-dark: 0.5;
   --font-family-sans-serif: "Google Sans", "Microsoft Yahei", "WenQuanYi Micro Hei", "sans-serif", "Helvetica Neue", "Helvetica", "Hiragino Sans GB";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --font-family-normal: Open Sans, PingFangSC-Regular, Microsoft Yahei, WenQuanYi Micro Hei, "Helvetica Neue", Helvetica, Hiragino Sans GB, sans-serif;
@@ -99,8 +103,8 @@ body {
   box-sizing: border-box;
 }
 ::selection {
-  background-color: var(--primary);
   background-color: #5e72e4;
+  background-color: var(--primary);
   color: #ffffff;
   color: var(--white);
 }
@@ -296,6 +300,36 @@ hr {
   background-size: cover;
   transition: all 0.5s;
 }
+.login-page .video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  background-color: var(--darker);
+  overflow: hidden;
+  pointer-events: none;
+}
+.login-page .video video {
+  width: 100%;
+  height: auto;
+}
+.login-page .volume-control {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  z-index: 5000;
+  cursor: pointer;
+  background-size: contain;
+  background-image: url(../img/volume_high.svg);
+}
+.login-page .volume-control.mute {
+  background-image: url(../img/volume_off.svg);
+}
 .login-page .login-container {
   height: 100%;
   margin-left: 4.5rem;
@@ -426,7 +460,7 @@ hr {
   width: 100%;
   cursor: pointer;
   min-height: 50px;
-  background-image: linear-gradient(-135deg, #8692de 0%, #788aef 100%);
+  background-color: #5e72e4 !important;
   border-radius: 6px;
   outline: none;
   border-width: initial;
@@ -440,7 +474,7 @@ hr {
 }
 .login-page .login-container .login-form .cbi-button-apply:hover,
 .login-page .login-container .login-form .cbi-button-apply :focus {
-  background-image: linear-gradient(-135deg, #828fe0 0%, #5e72e4 100%);
+  background-color: #5065d8 !important;
 }
 .login-page .login-container footer {
   box-sizing: border-box;
@@ -451,16 +485,22 @@ hr {
   justify-content: space-evenly;
   margin-top: auto;
   padding: 0px 0px 30px;
+  color: #525461;
   z-index: 10;
+}
+.login-page .login-container footer .ftc {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
 }
 .login-page .login-container footer .luci-link {
   display: block;
 }
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
   .login-page .login-container .login-form {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    background-color: rgba(244, 245, 247, 0.7);
+    -webkit-backdrop-filter: blur(var(--blur-radius));
+    backdrop-filter: blur(var(--blur-radius));
+    background-color: rgba(244, 245, 247, var(--blur-opacity));
   }
 }
 header,
@@ -3709,9 +3749,9 @@ pre.command-output {
   }
   @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
     .login-page .login-container .login-form {
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      background-color: rgba(0, 0, 0, 0.7);
+      -webkit-backdrop-filter: blur(var(--blur-radius-dark));
+      backdrop-filter: blur(var(--blur-radius-dark));
+      background-color: rgba(0, 0, 0, var(--blur-opacity-dark));
     }
   }
 }

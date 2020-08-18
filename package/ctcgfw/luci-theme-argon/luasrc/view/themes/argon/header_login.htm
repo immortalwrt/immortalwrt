@@ -2,7 +2,7 @@
 	edge is a clean HTML5 theme for LuCI. It is based on luci-theme-material edge Template
 
 	luci-theme-edge
-	Copyright 2019 Jerrykuku <jerrykuku@qq.com>
+	Copyright 2020 Jerrykuku <jerrykuku@qq.com>
 
 	Have a bug? Please create an issue here on GitHub!
 	https://github.com/jerrykuku/luci-theme-edge/issues 
@@ -23,33 +23,14 @@
 	local disp = require "luci.dispatcher"
 
 	local boardinfo = util.ubus("system", "board")
-
 	local node = disp.context.dispatched
-    
     local fs	= require "nixio.fs"
 	local nutil = require "nixio.util"
-    
-    
     
 	-- send as HTML5
 	http.prepare_content("text/html")
     
-    math.randomseed(os.time())
-	function glob(...)
-		local iter, code, msg = fs.glob(...)
-		if iter then
-			return nutil.consume(iter)
-		else
-			return nil, code, msg
-		end
-	end
-
-	local bgcount = 0
-	for f in ipairs(glob("/www/luci-static/edge/img/*")) do
-		bgcount = bgcount + 1
-	end
-    
-
+    math.randomseed(tonumber(tostring(os.time()):reverse():sub(1, 9)))
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
@@ -84,25 +65,25 @@
     <meta name="theme-color" content="#5e72e4">
     <link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
     <link rel="shortcut icon" href="<%=media%>/favicon.ico">
+    <% if nixio.fs.access("/etc/dark") then %>
+	<link rel="stylesheet" href="<%=media%>/css/dark.css?v=<%=math.random(1,100000)%>">
+	<% end -%>
     <% if node and node.css then %>
     <link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
     <% end -%>
     <% if css then %>
     <style title="text/css">
         <%=css %>
-
     </style>
     <% end -%>
-    <script src="<%=url('admin/translations', luci.i18n.context.lang)%>?v=2.1"></script>
-    <script src="<%=resource%>/cbi.js?v=2.1"></script>
-    <script src="<%=resource%>/xhr.js?v=2.1"></script>
-    <script src="<%=media%>/js/jquery.min.js?v=2.1"></script>
+    <script src="<%=url('admin/translations', luci.i18n.context.lang)%><%# ?v=PKG_VERSION %>"></script>
+    <script src="<%=resource%>/cbi.js<%# ?v=PKG_VERSION %>"></script>
+    <script src="<%=resource%>/xhr.js<%# ?v=PKG_VERSION %>"></script>
+    <script src="<%=media%>/js/jquery.min.js<%# ?v=PKG_VERSION %>"></script>
     
 </head>
 
 <body
     class="lang_<%=luci.i18n.context.lang%> <% if node then %><%= striptags( node.title ) %><% end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %>"
     data-page="<%= table.concat(disp.context.requestpath, "-") %>">
-    <div class="login-page">
-		<div class="login-container">
-			<div class="login-form">
+    
