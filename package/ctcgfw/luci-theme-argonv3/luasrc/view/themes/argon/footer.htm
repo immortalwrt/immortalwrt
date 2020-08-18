@@ -38,29 +38,42 @@
 	local tree = disp.node()
 	local categories = disp.node_childs(tree)
 %>
-                </div>
-                <footer class="mobile-hide">
-					<div>
-						<a class="luci-link" href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> /
-						<a href="https://github.com/jerrykuku/luci-theme-argon">ArgonTheme v1.6.5</a> /
-						<%= ver.distversion %>
-						<% if #categories > 1 then %>
-						<ul class="breadcrumb pull-right" id="modemenu">
-							<% for i, r in ipairs(categories) do %>
-							<li<% if request[1] == r then %> class="active"<%end%>><a href="<%=controller%>/<%=r%>/"><%=striptags(translate(tree.nodes[r].title))%></a> <span class="divider">|</span></li>
-							<% end %>
-						</ul>
-						<% end %>
-					</div>
-                </footer>
-            </div>
-        </div>
+</div>
+<footer class="mobile-hide">
+	<div class="ftc">
+		<a class="luci-link" href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %>
+			(<%= ver.luciversion %>)</a> /
+		<a href="https://github.com/jerrykuku/luci-theme-argon">ArgonTheme <%# vPKG_VERSION %></a> /
+		<%= ver.distversion %>
+		<% if #categories > 1 then %>
+		<ul class="breadcrumb pull-right" id="modemenu">
+			<% for i, r in ipairs(categories) do %>
+			<li<% if request[1] == r then %> class="active" <%end%>><a
+					href="<%=controller%>/<%=r%>/"><%=striptags(translate(tree.nodes[r].title))%></a> <span
+					class="divider">|</span></li>
+				<% end %>
+		</ul>
+		<% end %>
+	</div>
+</footer>
+</div>
+</div>
 
-    <script>
-        // thanks for Jo-Philipp Wich <jow@openwrt.org>
-        var luciLocation = <%= luci.http.write_json(luci.dispatcher.context.path) %>;
-    </script>
-    
-    <script src="<%=media%>/js/script.js"></script>
+<script>
+	// thanks for Jo-Philipp Wich <jow@openwrt.org>
+	var luciLocation = <%= luci.http.write_json(luci.dispatcher.context.path) %>;
+	var winHeight = $(window).height();
+	$(window).resize(function () {
+		var winWidth = $(window).width()
+		if(winWidth < 600){
+			var newHeight = $(this).height();
+			var keyboradHeight = newHeight - winHeight;
+			$(".ftc").css("bottom", keyboradHeight + 30);
+		}
+	})
+</script>
+
+<script src="<%=media%>/js/script.js"></script>
 </body>
+
 </html>

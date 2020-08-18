@@ -35,6 +35,16 @@
 @import url("fonts.css?v=3");
 @import url("pure-min.css?v=1");
 :root {
+  --primary: #5e72e4;
+  --dark-primary: #5065d8;
+  --darker: black;
+  --default: #525461;
+  --background-color: #f4f5f7;
+  --warning: #fb6340;
+  --footer-color: #aaa;
+  --menubar-background: #fff;
+  --menubar-scrollbar-thumb: #f6f9fc;
+  --menubar-text-color: #4c4c4c;
   --blue: #5e72e4;
   --indigo: #5603ad;
   --purple: #8965e0;
@@ -45,29 +55,28 @@
   --green: #2dce89;
   --teal: #11cdef;
   --cyan: #2bffc6;
+  --white: #fff;
   --gray: #8898aa;
   --gray-dark: #32325d;
   --light: #ced4da;
   --lighter: #e9ecef;
-  --primary: #5e72e4;
   --secondary: #f7fafc;
   --success: #2dce89;
   --info: #11cdef;
-  --warning: #fb6340;
   --danger: #f5365c;
   --light: #adb5bd;
   --dark: #212529;
-  --default: #172b4d;
-  --white: #fff;
   --neutral: #fff;
-  --darker: black;
-  --background-color: #f4f5f7;
   --login-form-bg-color: rgba(244, 245, 247, 0.8);
   --breakpoint-xs: 0;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
+  --blur-radius: 10px;
+  --blur-opacity: 0.5;
+  --blur-radius-dark: 10px;
+  --blur-opacity-dark: 0.5;
   --font-family-sans-serif: "Google Sans", "Microsoft Yahei", "WenQuanYi Micro Hei", "sans-serif", "Helvetica Neue", "Helvetica", "Hiragino Sans GB";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --font-family-normal: Open Sans, PingFangSC-Regular, Microsoft Yahei, WenQuanYi Micro Hei, "Helvetica Neue", Helvetica, Hiragino Sans GB, sans-serif;
@@ -94,10 +103,11 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 ::selection {
-  background-color: var(--primary);
   background-color: #5e72e4;
+  background-color: var(--primary);
   color: #ffffff;
   color: var(--white);
 }
@@ -135,11 +145,26 @@ li {
   align-items: center;
   justify-content: center;
   background-color: #000;
+  background-color: var(--darker);
   overflow: hidden;
 }
 .login-page .video video {
   width: 100%;
   height: auto;
+}
+.login-page .volume-control {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  z-index: 5000;
+  cursor: pointer;
+  background-size: contain;
+  background-image: url(../img/volume_high.svg);
+}
+.login-page .volume-control.mute {
+  background-image: url(../img/volume_off.svg);
 }
 .login-page .login-container {
   height: 100%;
@@ -168,7 +193,8 @@ li {
   width: 100%;
   min-height: 100%;
   max-width: 420px;
-  background-color: #ffffff;
+  background-color: #fff;
+  background-color: var(--white);
 }
 .login-page .login-container .login-form .brand {
   display: flex;
@@ -176,6 +202,7 @@ li {
   align-items: center;
   margin: 50px auto 100px 50px;
   color: #525461;
+  color: var(--default);
 }
 .login-page .login-container .login-form .brand .icon {
   width: 50px;
@@ -215,6 +242,7 @@ li {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #525461;
+  color: var(--default);
   font-size: 1.5rem;
   position: absolute;
   z-index: 100;
@@ -227,6 +255,7 @@ li {
   height: 1px;
   bottom: 0;
   border-bottom: 1px #5e72e4 solid;
+  border-bottom: 1px var(--primary) solid;
   transform: scaleX(0);
   transition: transform 0.3s;
 }
@@ -240,9 +269,11 @@ li {
   box-sizing: border-box;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   color: #525461;
+  color: var(--default);
   border: 0;
   border-radius: 0;
   border-bottom: 1px solid #fff;
+  border-bottom: 1px solid var(--white);
   background-color: transparent;
   background-clip: padding-box;
   box-shadow: 0 3px 2px rgba(233, 236, 239, 0.05);
@@ -266,12 +297,14 @@ li {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 50px 0px;
   font-weight: 600;
   font-size: 15px;
-  color: #ffffff;
+  color: #fff;
+  color: var(--white);
   text-align: center;
   width: 100%;
   cursor: pointer;
   min-height: 50px;
-  background-image: linear-gradient(-135deg, #8692de 0%, #788aef 100%);
+  background-color: #5e72e4 !important;
+  background-color: var(--primary) !important;
   border-radius: 6px;
   outline: none;
   border-width: initial;
@@ -285,7 +318,8 @@ li {
 }
 .login-page .login-container .login-form .cbi-button-apply:hover,
 .login-page .login-container .login-form .cbi-button-apply :focus {
-  background-image: linear-gradient(-135deg, #828fe0 0%, #5e72e4 100%);
+  background-color: #5065d8 !important;
+  background-color: var(--dark-primary) !important;
 }
 .login-page .login-container footer {
   box-sizing: border-box;
@@ -298,6 +332,13 @@ li {
   padding: 0px 0px 30px;
   z-index: 10;
   color: #525461;
+  color: var(--default);
+  position: relative;
+}
+.login-page .login-container footer .ftc {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
 }
 .login-page .login-container footer .luci-link {
   display: block;
@@ -310,9 +351,9 @@ li {
 }
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
   .login-page .login-container .login-form {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    background-color: rgba(244, 245, 247, 0.7);
+    -webkit-backdrop-filter: blur(var(--blur-radius));
+    backdrop-filter: blur(var(--blur-radius));
+    background-color: rgba(244, 245, 247, var(--blur-opacity));
   }
 }
 /***********************
@@ -340,9 +381,11 @@ header::after {
   height: 2rem;
   width: 100%;
   background-color: #5e72e4 !important;
+  background-color: var(--primary) !important;
 }
 header.bg-primary {
   background-color: #5e72e4 !important;
+  background-color: var(--primary) !important;
 }
 header .fill {
   padding: 0.8rem 0;
@@ -355,6 +398,7 @@ header .fill .container {
 header .fill .container .brand {
   font-size: 1.5rem;
   color: #fff;
+  color: var(--white);
   font-family: "TypoGraphica";
   text-decoration: none;
   padding-left: 1rem;
@@ -371,10 +415,12 @@ footer {
   text-align: right;
   padding: 1rem;
   color: #aaa;
+  color: var(--footer-color);
   font-size: 0.8rem;
 }
 footer a {
   color: #aaa;
+  color: var(--footer-color);
   text-decoration: none;
 }
 /***********************
@@ -408,11 +454,12 @@ footer a {
   width: calc(0% + 15rem);
   height: 100%;
   background-color: #fff !important;
+  background-color: var(--menubar-background) !important;
   box-shadow: rgba(0, 0, 0, 0.75) 0px 0px 15px -5px;
   overflow-x: auto;
   position: fixed;
   z-index: 100;
-  transition: width 0.3s ease-in-out;
+  transition: width 0.2s ease-in-out;
 }
 .main .main-left::-webkit-scrollbar {
   width: 5px;
@@ -420,9 +467,11 @@ footer a {
 }
 .main .main-left::-webkit-scrollbar-thumb {
   background-color: #f6f9fc;
+  background-color: var(--menubar-scrollbar-thumb);
 }
 .main .main-left::-webkit-scrollbar-track {
   background-color: #fff;
+  background-color: var(--menubar-background);
 }
 .main .main-left .sidenav-header {
   padding: 1.5rem;
@@ -431,6 +480,7 @@ footer a {
 .main .main-left .sidenav-header .brand {
   font-size: 1.8rem;
   color: #5e72e4;
+  color: var(--primary);
   font-family: "TypoGraphica", sans-serif;
   text-decoration: none;
   padding-left: 0;
@@ -447,6 +497,7 @@ footer a {
 }
 .main .main-left .nav li a {
   color: #525f7f;
+  color: var(--default);
   display: block;
 }
 .main .main-left .nav li:nth-last-child(1) {
@@ -467,7 +518,8 @@ footer a {
   padding: 0.5rem 0rem 0.5rem 0;
   text-decoration: none;
   white-space: nowrap;
-  color: rgba(0, 0, 0, 0.7);
+  color: #4c4c4c;
+  color: var(--menubar-text-color);
   transition: all 0.2s;
   font-size: 0.875rem;
 }
@@ -479,10 +531,12 @@ footer a {
   left: 0;
   bottom: 0;
   background-color: #5e72e4;
+  background-color: var(--primary);
   transition: all 0.2s;
 }
 .main .main-left .nav li.slide ul li a:hover::after {
   color: #000;
+  color: var(--darker);
   width: 100%;
 }
 .main .main-left .nav li.slide .menu {
@@ -2634,6 +2688,25 @@ input[name="nslookup"] {
     font-size: 0.7rem;
   }
 }
+@media screen and (min-width: 600px) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #9e9e9e;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #757575;
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background: #424242;
+  }
+}
 @media screen and (max-width: 992px) {
   .main .main-left {
     width: 0;
@@ -3245,9 +3318,9 @@ input[name="nslookup"] {
   }
   @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
     .login-page .login-container .login-form {
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      background-color: rgba(0, 0, 0, 0.7);
+      -webkit-backdrop-filter: blur(var(--blur-radius-dark));
+      backdrop-filter: blur(var(--blur-radius-dark));
+      background-color: rgba(0, 0, 0, var(--blur-opacity-dark));
     }
   }
 }
