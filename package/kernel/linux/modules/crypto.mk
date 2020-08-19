@@ -828,7 +828,6 @@ define KernelPackage/crypto-wq
   AUTOLOAD:=$(call AutoLoad,09,crypto_wq)
   $(call AddDepends/crypto)
 endef
-
 $(eval $(call KernelPackage,crypto-wq))
 
 
@@ -843,14 +842,3 @@ endef
 
 $(eval $(call KernelPackage,crypto-xts))
 
-
-define KernelPackage/crypto-rk3328
-  TITLE:=Rockchip RK3328 CryptoAPI module
-  DEPENDS:=@TARGET_rockchip +kmod-crypto-des +kmod-crypto-md5 +kmod-crypto-sha1 +kmod-crypto-sha256
-  KCONFIG:=CONFIG_CRYPTO_DEV_ROCKCHIP
-  FILES:=$(LINUX_DIR)/drivers/crypto/rockchip/rk_crypto.ko
-  AUTOLOAD:=$(call AutoLoad,09,rk_crypto)
-  $(call AddDepends/crypto)
-endef
-
-$(eval $(call KernelPackage,crypto-rk3328))
