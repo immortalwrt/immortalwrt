@@ -15,10 +15,10 @@ Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 
 --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
 +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-@@ -3258,7 +3258,8 @@ failed_platform_init:
- 
+@@ -3259,7 +3259,8 @@ failed_platform_init:
  static int vchiq_remove(struct platform_device *pdev)
  {
+ 	platform_device_unregister(bcm2835_audio);
 -	platform_device_unregister(bcm2835_camera);
 +	if (!IS_ERR(bcm2835_camera))
 +		platform_device_unregister(bcm2835_camera);

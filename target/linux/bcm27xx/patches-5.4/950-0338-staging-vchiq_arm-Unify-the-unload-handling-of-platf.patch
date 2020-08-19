@@ -17,10 +17,10 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
 --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
 +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-@@ -3268,8 +3268,7 @@ failed_platform_init:
- 
+@@ -3269,8 +3269,7 @@ failed_platform_init:
  static int vchiq_remove(struct platform_device *pdev)
  {
+ 	platform_device_unregister(bcm2835_audio);
 -	if (!IS_ERR(bcm2835_camera))
 -		platform_device_unregister(bcm2835_camera);
 +	platform_device_unregister(bcm2835_camera);

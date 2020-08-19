@@ -58,7 +58,7 @@ Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
  obj-$(CONFIG_DRM_IMX_CDNS_MHDP) += cdn-mhdp-imxdrv.o cdn-mhdp-dp-phy.o cdn-mhdp-hdmi-phy.o cdn-mhdp-imx8qm.o cdn-mhdp-ls1028a.o
 --- a/drivers/gpu/drm/imx/imx-drm-core.c
 +++ b/drivers/gpu/drm/imx/imx-drm-core.c
-@@ -343,23 +343,7 @@ static struct platform_driver imx_drm_pd
+@@ -344,23 +344,7 @@ static struct platform_driver imx_drm_pd
  		.of_match_table = imx_drm_dt_ids,
  	},
  };
@@ -96,7 +96,7 @@ Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
  struct drm_gem_cma_object *imx_drm_fb_get_obj(struct drm_framebuffer *fb);
 --- a/drivers/gpu/drm/imx/ipuv3-crtc.c
 +++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -492,10 +492,16 @@ static int ipu_drm_remove(struct platfor
+@@ -491,10 +491,16 @@ static int ipu_drm_remove(struct platfor
  	return 0;
  }
  

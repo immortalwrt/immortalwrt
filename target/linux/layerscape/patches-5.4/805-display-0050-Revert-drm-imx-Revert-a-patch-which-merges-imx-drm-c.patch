@@ -49,7 +49,7 @@ This reverts commit 1e7f3c4066d9afb4bc036b9d4b6f5b18f3c918c7.
  obj-$(CONFIG_DRM_IMX_CDNS_MHDP) += cdn-mhdp-imxdrv.o cdn-mhdp-dp-phy.o cdn-mhdp-hdmi-phy.o cdn-mhdp-imx8qm.o cdn-mhdp-ls1028a.o
 --- a/drivers/gpu/drm/imx/imx-drm-core.c
 +++ b/drivers/gpu/drm/imx/imx-drm-core.c
-@@ -361,7 +361,23 @@ static struct platform_driver imx_drm_pd
+@@ -362,7 +362,23 @@ static struct platform_driver imx_drm_pd
  		.of_match_table = imx_drm_dt_ids,
  	},
  };
@@ -87,7 +87,7 @@ This reverts commit 1e7f3c4066d9afb4bc036b9d4b6f5b18f3c918c7.
  struct drm_gem_cma_object *imx_drm_fb_get_obj(struct drm_framebuffer *fb);
 --- a/drivers/gpu/drm/imx/ipuv3-crtc.c
 +++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -492,16 +492,10 @@ static int ipu_drm_remove(struct platfor
+@@ -491,16 +491,10 @@ static int ipu_drm_remove(struct platfor
  	return 0;
  }
  
