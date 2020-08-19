@@ -11,7 +11,7 @@ REQUIRE_IMAGE_METADATA=1
 platform_check_image_sdboot() {
 	local diskdev partdev diff
 
-	export_bootdevice && export_partdevice diskdev -2 || {
+	export_bootdevice && export_partdevice diskdev 0 || {
 		echo "Unable to determine upgrade device"
 		return 1
 	}
@@ -38,7 +38,7 @@ platform_check_image_sdboot() {
 platform_do_upgrade_sdboot() {
 	local diskdev partdev diff
 
-	export_bootdevice && export_partdevice diskdev -2 || {
+	export_bootdevice && export_partdevice diskdev 0 || {
 		echo "Unable to determine upgrade device"
 		return 1
 	}
@@ -77,10 +77,6 @@ platform_do_upgrade_sdboot() {
 
 	# iterate over each partition from the image and write it to the boot disk
 	while read part start size; do
-		# root is /dev/sd[a|b]2 and not /dev/sd[a|b] this causes some problem
-		# one of which is this offset, I'm not sure what's the best fix, so
-		# here's a WA.
-		let part=$((part - 2))
 		if export_partdevice partdev $part; then
 			echo "Writing image to /dev/$partdev..."
 			dd if="$1" of="/dev/$partdev" bs=512 skip="$start" count="$size" > /dev/null 2>&1
@@ -111,8 +107,7 @@ platform_do_upgrade_traverse_nandubi() {
 platform_copy_config() {
 	local partdev parttype=ext4
 
-	# Same as above /dev/sd[a|b]2 is root, so /boot is -1
-	if export_partdevice partdev -1; then
+	if export_partdevice partdev 1; then
 		mount -t $parttype -o rw,noatime "/dev/$partdev" /mnt
 		cp -af "$CONF_TAR" "/mnt/$CONF_TAR"
 		umount /mnt

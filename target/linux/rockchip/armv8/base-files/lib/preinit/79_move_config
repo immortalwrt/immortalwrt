@@ -3,7 +3,7 @@ move_config() {
 
 	. /lib/upgrade/common.sh
 
-	if export_bootdevice && export_partdevice partdev -1; then
+	if export_bootdevice && export_partdevice partdev 1; then
 		if mount -o rw,noatime "/dev/$partdev" /mnt; then
 			if [ -f "/mnt/$CONF_TAR" ]; then
 				mv -f "/mnt/$CONF_TAR" /
