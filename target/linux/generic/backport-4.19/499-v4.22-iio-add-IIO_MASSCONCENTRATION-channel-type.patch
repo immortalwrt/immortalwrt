@@ -30,7 +30,7 @@ Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 --- a/Documentation/ABI/testing/sysfs-bus-iio
 +++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1684,4 +1684,19 @@ KernelVersion:	4.18
+@@ -1685,4 +1685,19 @@ KernelVersion:	4.18
  Contact:	linux-iio@vger.kernel.org
  Description:
  		Raw (unscaled) phase difference reading from channel Y
