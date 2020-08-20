@@ -90,10 +90,10 @@ xiaomi,mir3p)
 	ucidef_set_led_switch "lan3-amber" "LAN3 (amber)" "$boardname:amber:lan3" "switch0" "0x08" "0x08"
 	;;
 xiaomi,mi-router-ac2100)
-	ucidef_set_led_netdev "wan" "wan" "$boardname:blue:wan" "wan"
+	ucidef_set_led_switch "wan" "wan" "$boardname:blue:wan" "switch0" "0x1"
 	;;
 xiaomi,redmi-router-ac2100)
-	ucidef_set_led_netdev "wan" "wan" "$boardname:white:wan" "wan"
+	ucidef_set_led_switch "wan" "wan" "$boardname:white:wan" "switch0" "0x1"
 	;;
 xzwifi,creativebox-v1)
 	ucidef_set_led_switch "internet" "internet" "$boardname:blue:internet" "switch0" "0x10"
