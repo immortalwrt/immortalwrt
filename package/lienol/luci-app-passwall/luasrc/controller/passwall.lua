@@ -1,4 +1,4 @@
--- Copyright 2018-2020 Lienol <lawlienol@gmail.com>
+-- Copyright (C) 2018-2020 L-WRT Team
 module("luci.controller.passwall", package.seeall)
 local appname = "passwall"
 local ucic = luci.model.uci.cursor()
@@ -187,7 +187,8 @@ function ping_node()
 	local port = luci.http.formvalue("port")
 	local e = {}
 	e.index = index
-	if (ucic:get(appname, "@global_other[0]", "use_tcping") or 1)  == "1" and luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
+	local nodes_ping = ucic:get(appname, "@global_other[0]", "nodes_ping") or ""
+	if nodes_ping:find("tcping") and luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
 		e.ping = luci.sys.exec(string.format("echo -n $(tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}') 2>/dev/null", port, address))
 	end
 	if e.ping == nil or tonumber(e.ping) == 0 then

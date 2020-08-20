@@ -144,21 +144,10 @@ o:value("1")
 o:value("2")
 o:value("3")
 
----- 状态使用大图标
-o = s:option(Flag, "status_use_big_icon", translate("Status Use Big Icon"))
-o.default = "1"
-o.rmempty = false
-
----- 显示节点检测
-o =
-    s:option(Flag, "status_show_check_port", translate("Status Show Check Port"))
-o.default = "0"
-o.rmempty = false
-
----- 显示IP111
-o = s:option(Flag, "status_show_ip111", translate("Status Show IP111"))
-o.default = "0"
-o.rmempty = false
+o = s:option(MultiValue, "status", translate("Status info"))
+o:value("big_icon", translate("Big icon")) -- 大图标
+o:value("show_check_port", translate("Show node check")) -- 显示节点检测
+o:value("show_ip111", translate("Show Show IP111")) -- 显示IP111
 
 local nodes_table = {}
 uci:foreach(appname, "nodes", function(e)
