@@ -187,6 +187,9 @@ msgstr "域名过滤服务(用于被代理的域名)"
 msgid "Cache Resolved"
 msgstr "缓存解析结果"
 
+msgid "Clear IPSET"
+msgstr "清空 IPSET"
+
 msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
 msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
 
@@ -916,14 +919,17 @@ msgstr "节点数量"
 msgid "You can only set up a maximum of %s nodes for the time being, Used for access control."
 msgstr "目前最多只能设置%s个节点，用于给访问控制使用。"
 
-msgid "Status Use Big Icon"
-msgstr "状态信息使用大图标"
+msgid "Status info"
+msgstr "状态信息"
 
-msgid "Status Show Check Port"
-msgstr "状态信息显示节点检测"
+msgid "Big icon"
+msgstr "大图标"
 
-msgid "Status Show IP111"
-msgstr "状态信息显示IP111"
+msgid "Show node check"
+msgstr "显示节点检测"
+
+msgid "Show Show IP111"
+msgstr "显示IP111"
 
 msgid "Hide menu method, input example in the address bar:"
 msgstr "隐藏菜单方法，地址栏输入例："
