@@ -632,8 +632,8 @@ td>.ifacebadge,
 .cbi-button[value="Kill"],
 .cbi-button[onclick="reboot(this)"],
 .cbi-button-neutral[value="Restart"] {
-    border: thin solid darkorange;
-    background-color: darkorange;
+    border: thin solid darkorange !important;
+    background-color: darkorange !important;
 }
 
 .cbi-section,
@@ -659,6 +659,28 @@ div[style="width:100%;height:300px;border:1px solid #000;background:#fff"] {
 [data-page="admin-system-admin"] .cbi-map .cbi-map-descr,
 [data-page="admin-system-admin-password"] .cbi-map .cbi-map-descr {
     color: #ccc;
+}
+
+[data-page="admin-system-flash"] {
+    .modal {
+        label>input[type="checkbox"] {
+            top: -0.35rem;
+        }
+
+        .btn {
+            white-space: normal !important;
+            background-color: darkseagreen;
+        }
+
+        .alert-message {
+            background-color: transparent !important;
+        }
+
+        .danger {
+            border: thin solid darkorange !important;
+            background-color: darkorange !important;
+        }
+    }
 }
 
 .cbi-value input[type="password"]+.cbi-button-neutral {

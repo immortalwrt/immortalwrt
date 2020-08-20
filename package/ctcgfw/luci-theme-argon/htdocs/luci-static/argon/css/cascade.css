@@ -802,6 +802,8 @@ div[style="width:100%;height:300px;border:1px solid #000;background:#fff"] {
   left: 0.8rem;
   padding-top: 3px;
   transition: all 0.3s;
+  content: "\e915";
+  color: #5e72e4;
 }
 .main .main-left .nav li.slide .menu::after {
   position: absolute;
@@ -2023,7 +2025,6 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
   color: #808080;
 }
 .modal p {
-  padding-left: 0.25rem;
   word-break: break-word;
 }
 .modal .label {
@@ -2566,6 +2567,12 @@ input[name="nslookup"] {
   font-weight: 600;
   padding: 1rem 0 1rem 1.5rem;
   color: #525f7f;
+}
+[data-page="admin-system-flash"] .modal label > input[type="checkbox"] {
+  top: -0.35rem;
+}
+[data-page="admin-system-flash"] .modal .btn {
+  white-space: normal !important;
 }
 /* wireless overview */
 #cbi-wireless > #wifi_assoclist_table > .tr {
@@ -3641,8 +3648,8 @@ pre.command-output {
   .cbi-button[value="Kill"],
   .cbi-button[onclick="reboot(this)"],
   .cbi-button-neutral[value="Restart"] {
-    border: thin solid darkorange;
-    background-color: darkorange;
+    border: thin solid darkorange !important;
+    background-color: darkorange !important;
   }
   .cbi-section,
   .cbi-section-error,
@@ -3665,6 +3672,20 @@ pre.command-output {
   [data-page="admin-system-admin"] .cbi-map .cbi-map-descr,
   [data-page="admin-system-admin-password"] .cbi-map .cbi-map-descr {
     color: #ccc;
+  }
+  [data-page="admin-system-flash"] .modal label > input[type="checkbox"] {
+    top: -0.35rem;
+  }
+  [data-page="admin-system-flash"] .modal .btn {
+    white-space: normal !important;
+    background-color: darkseagreen;
+  }
+  [data-page="admin-system-flash"] .modal .alert-message {
+    background-color: transparent !important;
+  }
+  [data-page="admin-system-flash"] .modal .danger {
+    border: thin solid darkorange !important;
+    background-color: darkorange !important;
   }
   .cbi-value input[type="password"] + .cbi-button-neutral {
     background-color: darkslateblue !important;

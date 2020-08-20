@@ -369,13 +369,14 @@ hr {
         background-color: var(--darker);
         overflow: hidden;
         pointer-events: none;
+
         video {
             width: 100%;
             height: auto;
         }
     }
 
-    .volume-control{
+    .volume-control {
         position: fixed;
         right: 1rem;
         top: 1rem;
@@ -385,7 +386,8 @@ hr {
         cursor: pointer;
         background-size: contain;
         background-image: url(../img/volume_high.svg);
-        &.mute{
+
+        &.mute {
             background-image: url(../img/volume_off.svg);
         }
     }
@@ -566,11 +568,13 @@ hr {
             padding: 0px 0px 30px;
             color: #525461;
             z-index: 10;
-            .ftc{
+
+            .ftc {
                 position: absolute;
                 bottom: 30px;
                 width: 100%;
             }
+
             .luci-link {
                 display: block;
             }
@@ -949,6 +953,8 @@ div[style="width:100%;height:300px;border:1px solid #000;background:#fff"] {
                             left: 0.8rem;
                             padding-top: 3px;
                             transition: all 0.3s;
+                            content: "\e915";
+                            color: #5e72e4;
                         }
 
                         &::after {
@@ -2402,7 +2408,7 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
 }
 
 .modal p {
-    padding-left: .25rem;
+    
     word-break: break-word;
 }
 
@@ -2438,6 +2444,8 @@ body.modal-overlay-active #modal_overlay {
     left: 0;
     opacity: 1;
 }
+
+
 
 .spinning {
     position: relative;
@@ -3023,37 +3031,54 @@ input[name="nslookup"] {
 }
 
 /*admin-system-flash*/
-[data-page="admin-system-flash"] .cbi-value {
-    padding: 0;
-}
 
-[data-page="admin-system-flash"] .cbi-section .cbi-section {
-    margin-top: 0;
-}
+[data-page="admin-system-flash"] {
+    .cbi-value {
+        padding: 0;
+    }
 
-[data-page="admin-system-flash"] .cbi-map-tabbed {
-    border-radius: 0.375rem;
-}
+    .cbi-section {
+        .cbi-section {
+            margin-top: 0;
+        }
+    }
 
-[data-page="admin-system-flash"] legend {
-    display: block !important;
-    font-size: 1.2rem;
-    width: 100%;
-    display: block;
-    margin-bottom: 0;
-    padding: 1rem 0 1rem 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, .05);
-    line-height: 1.5;
-    margin-bottom: 0rem;
-    letter-spacing: 0.1rem;
-    color: #32325d;
-    font-weight: bold;
-}
+    .cbi-map-tabbed {
+        border-radius: 0.375rem;
+    }
 
-[data-page="admin-system-flash"] .cbi-section-descr {
-    font-weight: 600;
-    padding: 1rem 0 1rem 1.5rem;
-    color: #525f7f;
+    legend {
+        display: block !important;
+        font-size: 1.2rem;
+        width: 100%;
+        display: block;
+        margin-bottom: 0;
+        padding: 1rem 0 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, .05);
+        line-height: 1.5;
+        margin-bottom: 0rem;
+        letter-spacing: 0.1rem;
+        color: #32325d;
+        font-weight: bold;
+    }
+
+    .cbi-section-descr {
+        font-weight: 600;
+        padding: 1rem 0 1rem 1.5rem;
+        color: #525f7f;
+    }
+
+    .modal {
+        
+
+        label>input[type="checkbox"] {
+            top: -0.35rem;
+        }
+
+        .btn {
+            white-space: normal !important;
+        }
+    }
 }
 
 /* wireless overview */
@@ -4463,8 +4488,8 @@ pre.command-output {
     .cbi-button[value="Kill"],
     .cbi-button[onclick="reboot(this)"],
     .cbi-button-neutral[value="Restart"] {
-        border: thin solid darkorange;
-        background-color: darkorange;
+        border: thin solid darkorange !important;
+        background-color: darkorange !important;
     }
 
     .cbi-section,
@@ -4490,6 +4515,28 @@ pre.command-output {
     [data-page="admin-system-admin"] .cbi-map .cbi-map-descr,
     [data-page="admin-system-admin-password"] .cbi-map .cbi-map-descr {
         color: #ccc;
+    }
+
+    [data-page="admin-system-flash"] {
+        .modal {
+            label>input[type="checkbox"] {
+                top: -0.35rem;
+            }
+
+            .btn {
+                white-space: normal !important;
+                background-color: darkseagreen;
+            }
+
+            .alert-message {
+                background-color: transparent !important;
+            }
+
+            .danger {
+                border: thin solid darkorange !important;
+                background-color: darkorange !important;
+            }
+        }
     }
 
     .cbi-value input[type="password"]+.cbi-button-neutral {

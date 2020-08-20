@@ -48,11 +48,11 @@
 
 @font-face {
     font-family: 'argon';
-    src: url('../fonts/argon.eot?sv3bol');
-    src: url('../fonts/argon.eot?sv3bol#iefix') format('embedded-opentype'),
-        url('../fonts/argon.ttf?sv3bol') format('truetype'),
-        url('../fonts/argon.woff?sv3bol') format('woff'),
-        url('../fonts/argon.svg?sv3bol#argon') format('svg');
+    src: url('../fonts/argon.eot?u6kthm');
+    src: url('../fonts/argon.eot?u6kthm#iefix') format('embedded-opentype'),
+        url('../fonts/argon.ttf?u6kthm') format('truetype'),
+        url('../fonts/argon.woff?u6kthm') format('woff'),
+        url('../fonts/argon.svg?u6kthm#argon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -181,3 +181,6 @@
     content: "\e914";
 }
 
+.icon-app:before {
+    content: "\e915";
+}
