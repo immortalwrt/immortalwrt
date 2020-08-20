@@ -5,8 +5,7 @@ local api = require "luci.model.cbi.passwall.api.api"
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 
-local status_show_check_port = api.uci_get_type("global_other", "status_show_check_port", 0)
-local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 0)
+local status = api.uci_get_type("global_other", "status", "")
 -%>
 
 <style>
@@ -130,7 +129,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 				<font id="_github_status"></font>
 			</div>
 		</div>
-		<% if tonumber(status_show_check_port) == 1 then %>
+		<% if status:find("show_check_port") then %>
 		<div class="cbi-value">
 			<label class="cbi-value-title">
 				<%:Node Check%>
@@ -142,7 +141,7 @@ local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 
 			</div>
 		</div>
 		<% end %>
-		<% if tonumber(status_show_ip111) == 1 then %>
+		<% if status:find("show_ip111") then %>
 		<div class="cbi-value">
 			<label class="cbi-value-title"></label>
 			<div class="cbi-value-field">
