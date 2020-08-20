@@ -5,8 +5,7 @@ local api = require "luci.model.cbi.passwall.api.api"
 local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
 local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 
-local status_show_check_port = api.uci_get_type("global_other", "status_show_check_port", 0)
-local status_show_ip111 = api.uci_get_type("global_other", "status_show_ip111", 0)
+local status = api.uci_get_type("global_other", "status", "")
 -%>
 
 <style>
@@ -195,7 +194,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 				</div>
 			</div>
 		</div>
-		<% if tonumber(status_show_check_port) == 1 then %>
+		<% if status:find("show_check_port") then %>
 		<div class="pure-u-1-2 check" onclick="check_port(this)">
 			<div class="block pure-g">
 				<div class="pure-u-1-5">
@@ -210,7 +209,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 			</div>
 		</div>
 		<% end %>
-		<% if tonumber(status_show_ip111) == 1 then %>
+		<% if status:find("show_ip111") then %>
 		<div class="pure-u-1-2 check" onclick="javascript:window.open('http://www.ip111.cn/','target');">
 			<div class="block pure-g">
 				<div class="pure-u-1-5">

@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
+# Copyright (C) 2018-2020 L-WRT Team
 #
 # This is free software, licensed under the GNU General Public License v3.
 #
@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.9
-PKG_RELEASE:=39
-PKG_DATE:=20200819
+PKG_RELEASE:=41
+PKG_DATE:=20200820
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
