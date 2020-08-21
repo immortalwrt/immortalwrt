@@ -1,8 +1,6 @@
-diff --git a/drivers/net/ethernet/qualcomm/essedma/edma.c b/drivers/net/ethernet/qualcomm/essedma/edma.c
-index 724f355..7a16236 100644
 --- a/drivers/net/ethernet/qualcomm/essedma/edma.c
 +++ b/drivers/net/ethernet/qualcomm/essedma/edma.c
-@@ -22,14 +22,6 @@ extern struct net_device *edma_netdev[EDMA_MAX_PORTID_SUPPORTED];
+@@ -22,14 +22,6 @@ extern struct net_device *edma_netdev[ED
  bool edma_stp_rstp;
  u16 edma_ath_eth_type;
  
@@ -17,7 +15,7 @@ index 724f355..7a16236 100644
  /* edma_alloc_tx_ring()
   *	Allocate Tx descriptors ring
   */
-@@ -1014,13 +1006,14 @@ static inline u16 edma_tpd_available(struct edma_common_info *edma_cinfo,
+@@ -1018,13 +1010,14 @@ static inline u16 edma_tpd_available(str
  /* edma_tx_queue_get()
   *	Get the starting number of  the queue
   */
@@ -34,7 +32,7 @@ index 724f355..7a16236 100644
  }
  
  /* edma_tx_update_hw_idx()
-@@ -1389,8 +1382,9 @@ netdev_tx_t edma_xmit(struct sk_buff *skb,
+@@ -1393,8 +1386,9 @@ netdev_tx_t edma_xmit(struct sk_buff *sk
  	}
  
  	/* this will be one of the 4 TX queues exposed to linux kernel */
@@ -46,7 +44,7 @@ index 724f355..7a16236 100644
  	etdr = edma_cinfo->tpd_ring[queue_id];
  	nq = netdev_get_tx_queue(net_dev, txq_id);
  
-@@ -1871,8 +1865,8 @@ void edma_free_irqs(struct edma_adapter *adapter)
+@@ -1875,8 +1869,8 @@ void edma_free_irqs(struct edma_adapter
  	int i, j;
  	int k = ((edma_cinfo->num_rx_queues == 4) ? 1 : 2);
  
@@ -57,8 +55,6 @@ index 724f355..7a16236 100644
  			free_irq(edma_cinfo->tx_irq[j], &edma_cinfo->edma_percpu_info[i]);
  
  		for (j = edma_cinfo->edma_percpu_info[i].rx_start; j < (edma_cinfo->edma_percpu_info[i].rx_start + k); j++)
-diff --git a/drivers/net/ethernet/qualcomm/essedma/edma.h b/drivers/net/ethernet/qualcomm/essedma/edma.h
-index 015e5f5..abb0bd5 100644
 --- a/drivers/net/ethernet/qualcomm/essedma/edma.h
 +++ b/drivers/net/ethernet/qualcomm/essedma/edma.h
 @@ -324,6 +324,7 @@ struct edma_common_info {
@@ -76,7 +72,7 @@ index 015e5f5..abb0bd5 100644
 -	struct edma_per_cpu_queues_info edma_percpu_info[CONFIG_NR_CPUS]; /* per cpu information */
 +	struct edma_per_cpu_queues_info edma_percpu_info[EDMA_CPU_CORES_SUPPORTED]; /* per cpu information */
  	spinlock_t stats_lock; /* protect edma stats area for updation */
- 	struct timer_list edma_stats_timer;
+ 
  	bool is_single_phy;
 @@ -401,7 +402,7 @@ struct edma_adapter {
  	u32 link_state; /* phy link state */
@@ -87,11 +83,9 @@ index 015e5f5..abb0bd5 100644
  	u32 default_vlan_tag; /* vlan tag */
  	u32 dp_bitmap;
  	uint8_t phy_id[MII_BUS_ID_SIZE + 3];
-diff --git a/drivers/net/ethernet/qualcomm/essedma/edma_axi.c b/drivers/net/ethernet/qualcomm/essedma/edma_axi.c
-index d53c63b..2d4770c 100644
 --- a/drivers/net/ethernet/qualcomm/essedma/edma_axi.c
 +++ b/drivers/net/ethernet/qualcomm/essedma/edma_axi.c
-@@ -719,11 +719,7 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -721,11 +721,7 @@ static int edma_axi_probe(struct platfor
  	int i, j, k, err = 0;
  	int portid_bmp;
  	int idx = 0, idx_mac = 0;
@@ -104,7 +98,7 @@ index d53c63b..2d4770c 100644
  
  	if ((num_rxq != 4) && (num_rxq != 8)) {
  		dev_err(&pdev->dev, "Invalid RX queue, edma probe failed\n");
-@@ -747,7 +743,7 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -749,7 +745,7 @@ static int edma_axi_probe(struct platfor
  	/* Initialize the netdev array before allocation
  	 * to avoid double free
  	 */
@@ -113,7 +107,7 @@ index d53c63b..2d4770c 100644
  		edma_netdev[i] = NULL;
  
  	for (i = 0 ; i < edma_cinfo->num_gmac ; i++) {
-@@ -768,8 +764,11 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -770,8 +766,11 @@ static int edma_axi_probe(struct platfor
  
  	/* Fill ring details */
  	edma_cinfo->num_tx_queues = EDMA_MAX_TRANSMIT_QUEUE;
@@ -126,7 +120,7 @@ index d53c63b..2d4770c 100644
  
  	/* Update num rx queues based on module parameter */
  	edma_cinfo->num_rx_queues = num_rxq;
-@@ -939,6 +938,13 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -941,6 +940,13 @@ static int edma_axi_probe(struct platfor
  		idx_mac++;
  	}
  
@@ -140,7 +134,7 @@ index d53c63b..2d4770c 100644
  	/* Populate the adapter structure register the netdevice */
  	for (i = 0; i < edma_cinfo->num_gmac; i++) {
  		int k, m;
-@@ -946,17 +952,16 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -948,17 +954,16 @@ static int edma_axi_probe(struct platfor
  		adapter[i] = netdev_priv(edma_netdev[i]);
  		adapter[i]->netdev = edma_netdev[i];
  		adapter[i]->pdev = pdev;
@@ -162,7 +156,7 @@ index d53c63b..2d4770c 100644
  				if (edma_fill_netdev(edma_cinfo, k, i, j)) {
  					pr_err("Netdev overflow Error\n");
  					goto err_register;
-@@ -1109,9 +1114,12 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -1111,9 +1116,12 @@ static int edma_axi_probe(struct platfor
  	/* populate per_core_info, do a napi_Add, request 16 TX irqs,
  	 * 8 RX irqs, do a napi enable
  	 */
@@ -176,7 +170,7 @@ index d53c63b..2d4770c 100644
  		edma_cinfo->edma_percpu_info[i].napi.state = 0;
  
  		netif_napi_add(edma_netdev[0],
-@@ -1131,7 +1139,7 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -1133,7 +1141,7 @@ static int edma_axi_probe(struct platfor
  
  		/* Request irq per core */
  		for (j = edma_cinfo->edma_percpu_info[i].tx_start;
@@ -185,7 +179,7 @@ index d53c63b..2d4770c 100644
  			sprintf(&edma_tx_irq[j][0], "edma_eth_tx%d", j);
  			err = request_irq(edma_cinfo->tx_irq[j],
  					  edma_interrupt,
-@@ -1253,7 +1261,7 @@ static int edma_axi_probe(struct platform_device *pdev)
+@@ -1258,7 +1266,7 @@ err_configure:
  #endif
  err_rmap_add_fail:
  	edma_free_irqs(adapter[0]);
@@ -194,7 +188,7 @@ index d53c63b..2d4770c 100644
  		napi_disable(&edma_cinfo->edma_percpu_info[i].napi);
  err_reset:
  err_unregister_sysctl_tbl:
-@@ -1301,7 +1309,7 @@ static int edma_axi_remove(struct platform_device *pdev)
+@@ -1306,7 +1314,7 @@ static int edma_axi_remove(struct platfo
  		unregister_netdev(edma_netdev[i]);
  
  	edma_stop_rx_tx(hw);

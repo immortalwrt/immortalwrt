@@ -21,7 +21,6 @@
 	Licensed to the public under the Apache License 2.0
 -%>
 
-
 <%+header_login%>
 <%
 	local util = require "luci.util"
@@ -29,7 +28,6 @@
 	local fs	= require "nixio.fs"
 	local nutil = require "nixio.util"
 
-	-- get files from folder
 	function glob(...)
 		local iter, code, msg = fs.glob(...)
 		if iter then
@@ -39,7 +37,6 @@
 		end
 	end
 
-	-- get file extension
 	function getExtension(str)
 		return str:match(".+%.(%w+)$")
 	end
@@ -62,12 +59,9 @@
 		end
 	end
 
-
 	if bgcount > 0 then
 		currentBg =  bgs[math.random(1,bgcount)]
 	end
-
-
 %>
 <div class="login-page">
 	<% if (bgcount > 0 and currentBg.type == "mp4") then %>
@@ -77,7 +71,6 @@
 		</video>
 	</div>
 	<div class="volume-control mute"></div>
-	
 	<script>
 		$(".volume-control").click(function(){
 			if($(this).hasClass("mute")){
@@ -89,24 +82,43 @@
 			}
 		})
 	</script>
+	<% else %>
+	<div class="main-bg" id="main-bg" 
+	<%
+	if (bgcount == 0 ) then
+		local http = require "luci.sys"
+		local json = require "luci.jsonc"
+		local bg_url = media .. "/img/bg1.jpg"
+		local bing = http.httpget("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US")
+		if (bing and bing ~= '') then
+			local bingjson  = json.parse(bing)
+			bg_url = "https://www.bing.com" .. bingjson.images[1].url
+		end
+	%>
+		style="background-image:url(<%=bg_url%>)"
+	<% elseif  (bgcount > 0 and currentBg["type"] ~= "mp4") then %>
+		style="background-image:url(<%=currentBg.url%>)"
+	<% end  %>
+	></div>
+	
 	<% end %>
 	<div class="login-container">
 		<div class="login-form">
 			<a class="brand" href="/"><img src="<%=media%>/img/argon.svg" class="icon"><span
 					class="brand-text"><%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %></span></a>
 			<form class="form-login" method="post" action="<%=pcdata(luci.http.getenv("REQUEST_URI"))%>">
+
 				<%- if fuser then %>
 				<div class="errorbox"><%:Invalid username and/or password! Please try again.%></div>
 				<% end -%>
+
 				<div class="input-container">
 					<div class="input-group user-icon">
-						<input class="cbi-input-user" id="cbi-input-user" type="text" name="luci_username"
-							value="<%=duser%>" />
+						<input class="cbi-input-user" id="cbi-input-user" type="text" name="luci_username" value="<%=duser%>" />
 						<label class="border" for="cbi-input-user"></label>
 					</div>
 					<div class="input-group pass-icon">
-						<input class="cbi-input-password" id="cbi-input-password" type="password"
-							name="luci_password" />
+						<input class="cbi-input-password" id="cbi-input-password" type="password" name="luci_password" />
 						<label class="border" for="cbi-input-password"></label>
 					</div>
 				</div>
@@ -114,40 +126,13 @@
 					<input type="submit" value="<%:Login%>" class="cbi-button cbi-button-apply" />
 				</div>
 			</form>
+
 			<script type="text/javascript">//<![CDATA[
 				var input = document.getElementsByName('luci_password')[0];
 				if (input)
 					input.focus();
 			//]]></script>
 			<%
-			if (bgcount == 0 ) then
-				local bingjson = "{}"
-				local http = require "socket.http"
-				local bing = http.request("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US")
-				if (bing and bing ~= '') then
-					bingjson = bing
-				end
-			%>
-			<script type="text/javascript">//<![CDATA[
-				try {
-					var bing = <%=bingjson%>;
-					var bg = "https://www.bing.com" + bing.images[0].url;
-					$(".login-page").css("background-image", "url(" + bg + ")");
-				} catch{
-					console.log("can not access bing api");
-					$(".login-page").css("background-image", "url(<%=media%>/img/bg1.jpg)");
-				}
-		//]]></script>
-			<% elseif  (bgcount > 0 and currentBg["type"] ~= "mp4") then%>
-			<script type="text/javascript">//<![CDATA[
-				console.log("can not access bing api");
-				$(".login-page").css("background-image", "url(<%=currentBg.url%>)");
-
-		//]]></script>
-
-			<%
-			end 
-
 			local uci  = require "luci.model.uci".cursor()
 			local fs  = require "nixio.fs"
 			local https_key = uci:get("uhttpd", "main", "key")
@@ -169,7 +154,6 @@
 						img.src = ''
 					}, 5000);
 				}
-		//]]></script>
+			//]]></script>
 			<% end %>
-
-			<%+footer%>
+<%+footer%>
