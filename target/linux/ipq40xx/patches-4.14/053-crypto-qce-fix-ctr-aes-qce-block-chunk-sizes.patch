@@ -11,7 +11,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
 
 --- a/drivers/crypto/qce/skcipher.c
 +++ b/drivers/crypto/qce/skcipher.c
-@@ -261,6 +261,7 @@ struct qce_skcipher_def {
+@@ -264,6 +264,7 @@ struct qce_skcipher_def {
  	const char *name;
  	const char *drv_name;
  	unsigned int blocksize;
@@ -19,7 +19,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  	unsigned int ivsize;
  	unsigned int min_keysize;
  	unsigned int max_keysize;
-@@ -289,7 +290,8 @@ static const struct qce_skcipher_def skc
+@@ -292,7 +293,8 @@ static const struct qce_skcipher_def skc
  		.flags		= QCE_ALG_AES | QCE_MODE_CTR,
  		.name		= "ctr(aes)",
  		.drv_name	= "ctr-aes-qce",
@@ -29,7 +29,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  		.ivsize		= AES_BLOCK_SIZE,
  		.min_keysize	= AES_MIN_KEY_SIZE,
  		.max_keysize	= AES_MAX_KEY_SIZE,
-@@ -359,6 +361,7 @@ static int qce_skcipher_register_one(con
+@@ -362,6 +364,7 @@ static int qce_skcipher_register_one(con
  		 def->drv_name);
  
  	alg->base.cra_blocksize		= def->blocksize;

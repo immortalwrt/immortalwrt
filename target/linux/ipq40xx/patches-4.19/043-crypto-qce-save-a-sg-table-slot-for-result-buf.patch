@@ -21,9 +21,11 @@ for the result buffer is guaranteed to be unused.
 
 Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
 
+diff --git a/drivers/crypto/qce/dma.c b/drivers/crypto/qce/dma.c
+index 4797e795c9b9..db560c3d3e4f 100644
 --- a/drivers/crypto/qce/dma.c
 +++ b/drivers/crypto/qce/dma.c
-@@ -55,7 +55,8 @@ void qce_dma_release(struct qce_dma_data
+@@ -55,7 +55,8 @@ void qce_dma_release(struct qce_dma_data *dma)
  }
  
  struct scatterlist *
@@ -33,7 +35,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  {
  	struct scatterlist *sg = sgt->sgl, *sg_last = NULL;
  
-@@ -68,12 +69,13 @@ qce_sgtable_add(struct sg_table *sgt, st
+@@ -68,12 +69,13 @@ qce_sgtable_add(struct sg_table *sgt, struct scatterlist *new_sgl)
  	if (!sg)
  		return ERR_PTR(-EINVAL);
  
@@ -48,9 +50,11 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  	}
  
  	return sg_last;
+diff --git a/drivers/crypto/qce/dma.h b/drivers/crypto/qce/dma.h
+index 130235d17bb4..0be71f7f7a58 100644
 --- a/drivers/crypto/qce/dma.h
 +++ b/drivers/crypto/qce/dma.h
-@@ -50,6 +50,7 @@ int qce_dma_prep_sgs(struct qce_dma_data
+@@ -50,6 +50,7 @@ int qce_dma_prep_sgs(struct qce_dma_data *dma, struct scatterlist *sg_in,
  void qce_dma_issue_pending(struct qce_dma_data *dma);
  int qce_dma_terminate_all(struct qce_dma_data *dma);
  struct scatterlist *
@@ -59,9 +63,11 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
 +		int max_ents);
  
  #endif /* _DMA_H_ */
+diff --git a/drivers/crypto/qce/skcipher.c b/drivers/crypto/qce/skcipher.c
+index 12f882032544..33d998f5cf5f 100644
 --- a/drivers/crypto/qce/skcipher.c
 +++ b/drivers/crypto/qce/skcipher.c
-@@ -103,13 +103,13 @@ qce_skcipher_async_req_handle(struct cry
+@@ -103,13 +103,13 @@ qce_skcipher_async_req_handle(struct crypto_async_request *async_req)
  
  	sg_init_one(&rctx->result_sg, qce->dma.result_buf, QCE_RESULT_BUF_SZ);
  
