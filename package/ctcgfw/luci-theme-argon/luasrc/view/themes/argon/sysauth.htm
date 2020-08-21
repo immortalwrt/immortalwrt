@@ -71,7 +71,6 @@
 		</video>
 	</div>
 	<div class="volume-control mute"></div>
-	
 	<script>
 		$(".volume-control").click(function(){
 			if($(this).hasClass("mute")){
@@ -83,6 +82,25 @@
 			}
 		})
 	</script>
+	<% else %>
+	<div class="main-bg" id="main-bg" 
+	<%
+	if (bgcount == 0 ) then
+		local http = require "luci.sys"
+		local json = require "luci.jsonc"
+		local bg_url = media .. "/img/bg1.jpg"
+		local bing = http.httpget("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US")
+		if (bing and bing ~= '') then
+			local bingjson  = json.parse(bing)
+			bg_url = "https://www.bing.com" .. bingjson.images[1].url
+		end
+	%>
+		style="background-image:url(<%=bg_url%>)"
+	<% elseif  (bgcount > 0 and currentBg["type"] ~= "mp4") then %>
+		style="background-image:url(<%=currentBg.url%>)"
+	<% end  %>
+	></div>
+	
 	<% end %>
 	<div class="login-container">
 		<div class="login-form">
@@ -115,32 +133,6 @@
 					input.focus();
 			//]]></script>
 			<%
-			if (bgcount == 0 ) then
-				local bingjson = "{}"
-				local http = require "socket.http"
-				local bing = http.request("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US")
-				if (bing and bing ~= '') then
-					bingjson = bing
-				end
-			%>
-			<script type="text/javascript">//<![CDATA[
-				try {
-					var bing = <%=bingjson%>;
-					var bg = "https://www.bing.com" + bing.images[0].url;
-					$(".login-page").css("background-image", "url(" + bg + ")");
-				} catch{
-					console.log("can not access bing api");
-					$(".login-page").css("background-image", "url(<%=media%>/img/bg1.jpg)");
-				}
-		//]]></script>
-			<% elseif  (bgcount > 0 and currentBg["type"] ~= "mp4") then%>
-			<script type="text/javascript">//<![CDATA[
-				console.log("can not access bing api");
-				$(".login-page").css("background-image", "url(<%=currentBg.url%>)");
-			//]]></script>
-			<%
-			end 
-
 			local uci  = require "luci.model.uci".cursor()
 			local fs  = require "nixio.fs"
 			local https_key = uci:get("uhttpd", "main", "key")
