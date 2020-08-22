@@ -10,9 +10,9 @@ function index()
 	end
 
 	local page
-	page = entry({"admin", "vpn", "gost"}, cbi("gost"), _("Gost"), 100)
+	page = entry({"admin", "services", "gost"}, cbi("gost"), _("Gost"), 100)
 	page.dependent = true
-	entry({"admin", "vpn", "gost", "status"},call("act_status")).leaf=true
+	entry({"admin", "services", "gost", "status"},call("act_status")).leaf=true
 end
 
 function act_status()
