@@ -128,14 +128,14 @@ EOF
 
 fw_rule() {
 	$IPT -N SS_SPEC_WAN_FW
-  $IPT -A SS_SPEC_WAN_FW -d 0.0.0.0/8 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 10.0.0.0/8 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 127.0.0.0/8 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 169.254.0.0/16 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 172.16.0.0/12 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 192.168.0.0/16 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 224.0.0.0/4 -j RETURN
-  $IPT -A SS_SPEC_WAN_FW -d 240.0.0.0/4 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 0.0.0.0/8 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 10.0.0.0/8 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 127.0.0.0/8 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 169.254.0.0/16 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 172.16.0.0/12 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 192.168.0.0/16 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 224.0.0.0/4 -j RETURN
+	$IPT -A SS_SPEC_WAN_FW -d 240.0.0.0/4 -j RETURN
 	$IPT -A SS_SPEC_WAN_FW  -p tcp $PROXY_PORTS \
 		-j REDIRECT --to-ports $local_port 2>/dev/null || {
 		loger 3 "Can't redirect, please check the iptables."
@@ -189,15 +189,15 @@ tp_rule() {
 	local ipt="iptables -t mangle"
 	$ipt -N SS_SPEC_TPROXY
 	$ipt -A SS_SPEC_TPROXY -p udp --dport 53 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 0.0.0.0/8 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 10.0.0.0/8 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 127.0.0.0/8 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 169.254.0.0/16 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 172.16.0.0/12 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 192.168.0.0/16 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 224.0.0.0/4 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d 240.0.0.0/4 -j RETURN
-  $ipt -A SS_SPEC_TPROXY -p udp -d $SERVER -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 0.0.0.0/8 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 10.0.0.0/8 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 127.0.0.0/8 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 169.254.0.0/16 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 172.16.0.0/12 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 192.168.0.0/16 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 224.0.0.0/4 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d 240.0.0.0/4 -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp -d $SERVER -j RETURN
   
   $ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src \
 		-j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01

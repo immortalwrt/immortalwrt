@@ -102,6 +102,11 @@ for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
 o:depends("v2ray_flow", "1")
 o.default = "nil"
 
+o = s:option(ListValue, "tvb_server", translate("TVB Video Proxy"))
+o:value("nil", translate("Same as Global Server"))
+for _,key in pairs(key_table_v2) do o:value(key,v2ray_table[key]) end
+o:depends("v2ray_flow", "1")
+o.default = "nil"
 
 o = s:option(ListValue, "threads", translate("Multi Threads Option"))
 o:value("0", translate("Auto Threads"))

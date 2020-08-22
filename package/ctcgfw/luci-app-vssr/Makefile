@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-vssr
-PKG_VERSION:=1.11
-PKG_RELEASE:=20200719
+PKG_VERSION:=1.12
+PKG_RELEASE:=20200822
 
 PKG_CONFIG_DEPENDS:= CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
@@ -35,7 +35,7 @@ define Package/luci-app-vssr
 	SUBMENU:=3. Applications
 	TITLE:=A New SS/SSR/V2Ray/Trojan LuCI interface
 	PKGARCH:=all
-	DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +bash +pdnsd-alt +wget +luasocket +jshn +lua-cjson +coreutils-nohup +lua-maxminddb \
+	DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +bash +pdnsd-alt +wget +luasocket +coreutils-nohup +lua-maxminddb \
             +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
