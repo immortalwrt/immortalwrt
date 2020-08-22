@@ -21,7 +21,6 @@ function to_check(arch)
     end
 
     file_tree = "_linux_" .. file_tree
-    if file_tree == "_linux_amd64" then file_tree = "" end
 
     local json = api.get_api_json(brook_api)
 
