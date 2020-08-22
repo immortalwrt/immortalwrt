@@ -636,6 +636,9 @@ msgstr "Diseny+ 代理"
 msgid "Prime Video Proxy"
 msgstr "Prime Video 代理"
 
+msgid "TVB Video Proxy"
+msgstr "TVB 视频代理"
+
 msgid "adblock settings"
 msgstr "广告屏蔽设置"
 
