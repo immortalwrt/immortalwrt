@@ -1,6 +1,6 @@
 #!/bin/sh /etc/rc.common
 
-START=80
+START=96
 STOP=10
 
 lan_addr="$(uci get network.lan.ipaddr)"
@@ -12,6 +12,7 @@ music_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_source
 music_customize_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].music_customize_source)"
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
 endpoint="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_enable)"
+force_best_quality="$(uci get unblockneteasemusic.@unblockneteasemusic[0].force_best_quality)"
 extFile="/usr/share/UnblockNeteaseMusic/extFile.txt"
 serverCrt="/usr/share/UnblockNeteaseMusic/server.crt"
 serverKey="/usr/share/UnblockNeteaseMusic/server.key"
@@ -134,6 +135,9 @@ start() {
 		fi
 		if [ "${endpoint}" = "1" ]; then
 			exArgs="-e"
+		fi
+		if [ "${force_best_quality}" = "1" ]; then
+			exArgs="${exArgs} -b"
 		fi
 		if [ "${music_source}" = "default" ]; then
 			nohup UnblockNeteaseMusic -p "${http_port}" -sp "${https_port}" -o kuwo -m 0 -c "${serverCrt}" -k "${serverKey}" ${exArgs} >>"${logFile}" 2>&1 &
