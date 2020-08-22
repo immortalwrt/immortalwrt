@@ -772,6 +772,7 @@ add_dnsmasq() {
 		[ -n "${gfwlist}" ] || [ "${filtered_dns}" = "1" ] && [ -z "${returnhome}" ] && {
 			[ "${filtered_dns}" = "1" ] && [ "${DNS_MODE}" != "chinadns-ng" ] && unset fwd_dns
 			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
+			#sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
 			echolog "  - [$?]防火墙域名表(gfwlist)：${fwd_dns:-默认}"
 		}
 

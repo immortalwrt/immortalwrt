@@ -622,6 +622,9 @@ msgstr "防火墙域名列表(gfwlist)更新URL"
 msgid "China IPs(chnroute) Update URL"
 msgstr "中国IP段(chnroute)更新URL"
 
+msgid "China IPv6s(chnroute) Update URL"
+msgstr "中国IPv6段(chnroute)更新URL"
+
 msgid "Rule status"
 msgstr "规则版本"
 
@@ -879,6 +882,9 @@ msgstr "原版Trojan不支持'none'，请选择TLS。"
 
 msgid "Domain"
 msgstr "域名"
+
+msgid "allowInsecure"
+msgstr "允许不安全连接"
 
 msgid "Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."
 msgstr "是否允许不安全连接。当勾选时，将跳过证书验证。"
