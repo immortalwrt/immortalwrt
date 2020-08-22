@@ -57,7 +57,7 @@ end
 -- 执行订阅
 function get_subscribe()
 
-    local cjson = require "cjson"
+    local cjson = require "luci.jsonc"
     local e = {}
     local uci = luci.model.uci.cursor()
     local auto_update = luci.http.formvalue("auto_update")
@@ -74,7 +74,7 @@ function get_subscribe()
         luci.sys.call(cmd1)
         luci.sys.call(cmd2)
         luci.sys.call(cmd3)
-        for k, v in ipairs(cjson.decode(subscribe_url)) do
+        for k, v in ipairs(cjson.parse(subscribe_url)) do
             luci.sys.call(
                 'uci add_list vssr.@server_subscribe[0].subscribe_url="' .. v ..
                     '"')
@@ -292,46 +292,6 @@ function check_port()
 
 end
 
-function JudgeIPString(ipStr)
-    if type(ipStr) ~= "string" then return false end
-
-    -- 判断长度
-    local len = string.len(ipStr)
-    if len < 7 or len > 15 then -- 长度不对
-        return false
-    end
-
-    -- 判断出现的非数字字符
-    local point = string.find(ipStr, "%p", 1) -- 字符"."出现的位置
-    local pointNum = 0 -- 字符"."出现的次数 正常ip有3个"."
-    while point ~= nil do
-        if string.sub(ipStr, point, point) ~= "." then -- 得到非数字符号不是字符"."
-            return false
-        end
-        pointNum = pointNum + 1
-        point = string.find(ipStr, "%p", point + 1)
-        if pointNum > 3 then return false end
-    end
-    if pointNum ~= 3 then -- 不是正确的ip格式
-        return false
-    end
-
-    -- 判断数字对不对
-    local num = {}
-    for w in string.gmatch(ipStr, "%d+") do
-        num[#num + 1] = w
-        local kk = tonumber(w)
-        if kk == nil or kk > 255 then -- 不是数字或超过ip正常取值范围了
-            return false
-        end
-    end
-
-    if #num ~= 4 then -- 不是4段数字
-        return false
-    end
-
-    return ipStr
-end
 
 -- 检测 当前节点ip 和 网站访问情况
 function check_ip()
@@ -341,7 +301,8 @@ function check_ip()
     local d = {}
     local mm = require 'maxminddb'
     local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
-    local ip = string.gsub(luci.sys.exec("content=`wget --no-check-certificate -q -O - https://api.ip.sb/ip`;echo $content"), "\n", "")
+    local http = require "luci.sys"
+    local ip = string.gsub(http.httpget("https://api.ip.sb/ip"), "\n", "")
     local res = db:lookup(ip)
     d.flag = string.lower(res:get("country", "iso_code"))
     d.country = res:get("country", "names", "zh-CN")
