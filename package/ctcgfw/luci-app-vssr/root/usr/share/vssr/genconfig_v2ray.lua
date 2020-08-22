@@ -12,6 +12,7 @@ local tw_video_server = ucursor:get_first(name, 'global', 'tw_video_server')
 local netflix_server = ucursor:get_first(name, 'global', 'netflix_server')
 local disney_server = ucursor:get_first(name, 'global', 'disney_server')
 local prime_server = ucursor:get_first(name, 'global', 'prime_server')
+local tvb_server = ucursor:get_first(name, 'global', 'tvb_server')
 
 function gen_outbound(server_node, tags)
     local bound = {}
@@ -87,21 +88,44 @@ if v2ray_flow == "1" then
     table.insert(outbounds_table, gen_outbound(netflix_server, "netflix"))
     table.insert(outbounds_table, gen_outbound(disney_server, "disney"))
     table.insert(outbounds_table, gen_outbound(prime_server, "prime"))
+    table.insert(outbounds_table, gen_outbound(tvb_server, "tvb"))
 end
 
 -- rules gen
 
 local youtube_rule = {
     type = "field",
-    domain = {"youtube", "googlevideo.com", "gvt2.com", "youtu.be"},
+    domain = {
+        "youtube",
+        "ggpht.com",
+        "googlevideo.com",
+        "withyoutube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "youtube.com",
+        "youtubeeducation.com",
+        "youtubegaming.com",
+        "youtubei.googleapis.com",
+        "youtubekids.com",
+        "youtubemobilesupport.com",
+        "yt.be",
+        "ytimg.com"
+    },
     outboundTag = "youtube"
 }
 
 local tw_video_rule = {
     type = "field",
     domain = {
-        "vidol.tv", "hinet.net", "books.com", "litv.tv", "pstatic.net",
-        "app-measurement.com", "kktv.com.tw", "gamer.com.tw","wetv.vip"
+        "vidol.tv",
+        "hinet.net",
+        "books.com",
+        "litv.tv",
+        "pstatic.net",
+        "app-measurement.com",
+        "kktv.com.tw",
+        "gamer.com.tw",
+        "wetv.vip"
     },
     outboundTag = "twvideo"
 }
@@ -109,8 +133,18 @@ local tw_video_rule = {
 local netflix_rule = {
     type = "field",
     domain = {
-        "netflix",  "nflxso.net", "nflxext.com",
-        "nflximg.com", "nflximg.net", "nflxvideo.net"
+        "fast.com",
+        "netflix.ca",
+        "netflix.com",
+        "netflix.net",
+        "netflixinvestor.com",
+        "netflixtechblog.com",
+        "nflxext.com",
+        "nflximg.com",
+        "nflximg.net",
+        "nflxsearch.net",
+        "nflxso.net",
+        "nflxvideo.net"
     },
     
     outboundTag = "netflix"
@@ -127,8 +161,30 @@ local disney_rule = {
 
 local prime_rule = {
     type = "field",
-    domain = {"aiv-cdn.net", "amazonaws.com", "amazonvideo.com", "llnwd.net"},
+    domain = {
+        "aiv-cdn.net",
+        "amazonaws.com",
+        "amazonvideo.com",
+        "llnwd.net",
+        "amazonprimevideos.com",
+        "amazonvideo.cc",
+        "prime-video.com",
+        "primevideo.cc",
+        "primevideo.com",
+        "primevideo.info",
+        "primevideo.org",
+        "rimevideo.tv"
+    },
     outboundTag = "prime"
+}
+
+local tvb_rule = {
+    type = "field",
+    domain = {
+        "tvsuper.com",
+        "tvb.com"
+    },
+    outboundTag = "tvb"
 }
 
 local rules_table = {}
@@ -153,6 +209,10 @@ if (prime_server ~= "nil" and v2ray_flow == "1") then
     table.insert(rules_table, prime_rule)
 end
 
+if (tvb_server ~= "nil" and v2ray_flow == "1") then
+    table.insert(rules_table, tvb_rule)
+end
+
 local v2ray = {
     log = {
         -- error = "/var/ssrplus.log",
@@ -171,6 +231,6 @@ local v2ray = {
     },
     -- 传出连接
     outbounds = outbounds_table,
-    routing = {domainStrategy = "IPIfNonMatch", rules = rules_table}
+    routing = {domainStrategy = "AsIs", rules = rules_table}
 }
 print(json.stringify(v2ray, 1))

@@ -33,6 +33,12 @@ o:value("https://ispip.clang.cn/all_cn_cidr.txt", translate("Clang.CN.CIDR"))
 o.default = "https://ispip.clang.cn/all_cn.txt"
 --o:depends("enable_custom_url", 1)
 
+----chnroute6 URL
+o = s:option(Value, "chnroute6_url", translate("China IPv6s(chnroute6) Update URL"))
+o:value("https://ispip.clang.cn/all_cn_ipv6.txt", translate("Clang.CN.IPv6"))
+o.default = "https://ispip.clang.cn/all_cn_ipv6.txt"
+--o:depends("enable_custom_url", 1)
+
 ---- Auto Update
 o = s:option(Flag, "auto_update", translate("Enable auto update rules"))
 o.default = 0
