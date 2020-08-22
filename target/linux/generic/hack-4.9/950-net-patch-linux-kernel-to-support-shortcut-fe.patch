@@ -47,7 +47,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
 +	bool "Enables kernel network stack path for Shortcut Forwarding Engine"
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -2974,7 +2974,16 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -2975,7 +2975,16 @@ static int xmit_one(struct sk_buff *skb,
  #else
  	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
  #endif
@@ -64,7 +64,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
  
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (!dev->eth_mangle_tx ||
-@@ -4126,6 +4134,11 @@ void netdev_rx_handler_unregister(struct net_device *dev)
+@@ -4127,6 +4136,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -76,7 +76,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -4174,6 +4187,10 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
+@@ -4175,6 +4189,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -87,7 +87,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
  	net_timestamp_check(!netdev_tstamp_prequeue, skb);
  
  	trace_netif_receive_skb(skb);
-@@ -4199,6 +4216,14 @@ another_round:
+@@ -4200,6 +4218,14 @@ another_round:
  			goto out;
  	}
  
