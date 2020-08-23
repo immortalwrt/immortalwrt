@@ -266,13 +266,10 @@ filter_node() {
 			[ "$_ipt" == "6" ] && _ipt=$ip6t_tmp
 			$_ipt -n -L PSW_OUTPUT | grep -q "${address}:${port}"
 			if [ $? -ne 0 ]; then
+				unset dst_rule
 				local dst_rule=$(REDIRECT 1 MARK)
 				msg2="按规则路由(${msg})"
-				[ "$_ipt" == "$ipt_m" ] || {
-					dst_rule=$(REDIRECT $_port)
-					msg2="套娃使用(${msg}:${port}>>${_port})"
-				}
-				[ "$_ipt" == "$ip6t_tmp" ] || {
+				[ "$_ipt" == "$ipt_m" -o "$_ipt" == "$ip6t_m" ] || {
 					dst_rule=$(REDIRECT $_port)
 					msg2="套娃使用(${msg}:${port}>>${_port})"
 				}
