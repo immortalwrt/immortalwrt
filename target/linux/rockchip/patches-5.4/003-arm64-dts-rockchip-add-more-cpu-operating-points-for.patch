@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leonidas P. Papadakos <papadakospan@gmail.com>
+Date: Fri, 1 Mar 2019 21:55:53 +0200
+Subject: [PATCH v2] arm64: dts: rockchip: add more cpu operating points for
+ RK3328
+
+---
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 15 +++++++++++++++
+ 1 files changed, 15 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -123,6 +123,21 @@
+ 			opp-microvolt = <1300000>;
+ 			clock-latency-ns = <40000>;
+ 		};
++		opp-1392000000 {
++			opp-hz = /bits/ 64 <1392000000>;
++			opp-microvolt = <1350000>;
++			clock-latency-ns = <40000>;
++		};
++		opp-1512000000 {
++			opp-hz = /bits/ 64 <1512000000>;
++			opp-microvolt = <1400000>;
++			clock-latency-ns = <40000>;
++		};
++		opp-1608000000 {
++			opp-hz = /bits/ 64 <1608000000>;
++			opp-microvolt = <1450000>;
++			clock-latency-ns = <40000>;
++		};
+ 	};
+ 
+ 	amba {
