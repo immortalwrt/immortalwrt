@@ -5,6 +5,7 @@ local server_section = arg[1]
 local proto = arg[2]
 local local_port = arg[3]
 local host = arg[4]
+local main_port = arg[5]
 
 local v2ray_flow = ucursor:get_first(name, 'global', 'v2ray_flow', '0')
 local youtube_server = ucursor:get_first(name, 'global', 'youtube_server')
@@ -14,81 +15,100 @@ local disney_server = ucursor:get_first(name, 'global', 'disney_server')
 local prime_server = ucursor:get_first(name, 'global', 'prime_server')
 local tvb_server = ucursor:get_first(name, 'global', 'tvb_server')
 
-function gen_outbound(server_node, tags)
+function gen_outbound(server_node, tags, local_ports)
     local bound = {}
     if server_node == "nil" then
         bound = nil
     else
+         
         local server = ucursor:get_all(name, server_node)
-        bound = {
-            tag = tags,
-            protocol = "vmess",
-            settings = {
-                vnext = {
-                    {
-                        address = server.server,
-                        port = tonumber(server.server_port),
-                        users = {
-                            {
-                                id = server.vmess_id,
-                                alterId = tonumber(server.alter_id),
-                                security = server.security
-                            }
+        if server.type ~= "v2ray" then
+            bound = {
+                tag = tags,
+                protocol = "socks",
+                settings = {
+                    servers = {
+                        {
+                            address = "127.0.0.1",
+                            port = tonumber(local_ports)
                         }
                     }
                 }
-            },
-            -- 底层传输配置
-            streamSettings = {
-                network = server.transport,
-                security = (server.tls == '1') and "tls" or "none",
-                tlsSettings = {
-                    allowInsecure = (server.insecure == "1") and true or false,
-                    serverName = server.ws_host
-                },
-                kcpSettings = (server.transport == "kcp") and {
-                    mtu = tonumber(server.mtu),
-                    tti = tonumber(server.tti),
-                    uplinkCapacity = tonumber(server.uplink_capacity),
-                    downlinkCapacity = tonumber(server.downlink_capacity),
-                    congestion = (server.congestion == "1") and true or false,
-                    readBufferSize = tonumber(server.read_buffer_size),
-                    writeBufferSize = tonumber(server.write_buffer_size),
-                    header = {type = server.kcp_guise}
-                } or nil,
-                wsSettings = (server.transport == "ws") and
-                    (server.ws_path ~= nil or server.ws_host ~= nil) and {
-                    path = server.ws_path,
-                    headers = (server.ws_host ~= nil) and
-                        {Host = server.ws_host} or nil
-                } or nil,
-                httpSettings = (server.transport == "h2") and
-                    {path = server.h2_path, host = server.h2_host} or nil,
-                quicSettings = (server.transport == "quic") and {
-                    security = server.quic_security,
-                    key = server.quic_key,
-                    header = {type = server.quic_guise}
-                } or nil
-            },
-            mux = {
-                enabled = (server.mux == "1") and true or false,
-                concurrency = tonumber(server.concurrency)
             }
-        }
+        else
+            bound = {
+                tag = tags,
+                protocol = "vmess",
+                settings = {
+                    vnext = {
+                        {
+                            address = server.server,
+                            port = tonumber(server.server_port),
+                            users = {
+                                {
+                                    id = server.vmess_id,
+                                    alterId = tonumber(server.alter_id),
+                                    security = server.security
+                                }
+                            }
+                        }
+                    }
+                },
+                -- 底层传输配置
+                streamSettings = {
+                    network = server.transport,
+                    security = (server.tls == '1') and "tls" or "none",
+                    tlsSettings = {
+                        allowInsecure = (server.insecure == "1") and true or false,
+                        serverName = server.ws_host
+                    },
+                    kcpSettings = (server.transport == "kcp") and {
+                        mtu = tonumber(server.mtu),
+                        tti = tonumber(server.tti),
+                        uplinkCapacity = tonumber(server.uplink_capacity),
+                        downlinkCapacity = tonumber(server.downlink_capacity),
+                        congestion = (server.congestion == "1") and true or false,
+                        readBufferSize = tonumber(server.read_buffer_size),
+                        writeBufferSize = tonumber(server.write_buffer_size),
+                        header = {type = server.kcp_guise}
+                    } or nil,
+                    wsSettings = (server.transport == "ws") and
+                        (server.ws_path ~= nil or server.ws_host ~= nil) and {
+                        path = server.ws_path,
+                        headers = (server.ws_host ~= nil) and
+                            {Host = server.ws_host} or nil
+                    } or nil,
+                    httpSettings = (server.transport == "h2") and
+                        {path = server.h2_path, host = server.h2_host} or nil,
+                    quicSettings = (server.transport == "quic") and {
+                        security = server.quic_security,
+                        key = server.quic_key,
+                        header = {type = server.quic_guise}
+                    } or nil
+                },
+                mux = {
+                    enabled = (server.mux == "1") and true or false,
+                    concurrency = tonumber(server.concurrency)
+                }
+            }
+        end
     end
     return bound
 end
 
 local outbounds_table = {}
 
-table.insert(outbounds_table, gen_outbound(server_section, "main"))
+
 if v2ray_flow == "1" then
-    table.insert(outbounds_table, gen_outbound(youtube_server, "youtube"))
-    table.insert(outbounds_table, gen_outbound(tw_video_server, "twvideo"))
-    table.insert(outbounds_table, gen_outbound(netflix_server, "netflix"))
-    table.insert(outbounds_table, gen_outbound(disney_server, "disney"))
-    table.insert(outbounds_table, gen_outbound(prime_server, "prime"))
-    table.insert(outbounds_table, gen_outbound(tvb_server, "tvb"))
+    table.insert(outbounds_table, gen_outbound(server_section, "global",2080))
+    table.insert(outbounds_table, gen_outbound(youtube_server, "youtube",2081))
+    table.insert(outbounds_table, gen_outbound(tw_video_server, "twvideo",2082))
+    table.insert(outbounds_table, gen_outbound(netflix_server, "netflix",2083))
+    table.insert(outbounds_table, gen_outbound(disney_server, "disney",2084))
+    table.insert(outbounds_table, gen_outbound(prime_server, "prime",2085))
+    table.insert(outbounds_table, gen_outbound(tvb_server, "tvb",2086))
+else
+    table.insert(outbounds_table, gen_outbound(server_section, "main",local_port))
 end
 
 -- rules gen
@@ -215,17 +235,18 @@ end
 
 local v2ray = {
     log = {
-        -- error = "/var/ssrplus.log",
+        -- error = "/var/vssrsss.log",
         -- access = "/var/v2rays.log", 
         loglevel = "warning"
     },
     -- 传入连接
     inbounds = {
         {
-            port = local_port,
+            port = tonumber(local_port),
             protocol = "dokodemo-door",
             settings = {network = proto, followRedirect = true},
-            sniffing = {enabled = true, destOverride = {"http", "tls"}}
+            sniffing = {enabled = true, destOverride = {"http", "tls"}},
+            streamSettings = {sockopt = { tproxy = (proto == "tcp") and "redirect" or "tproxy"}}
         }
 
     },
