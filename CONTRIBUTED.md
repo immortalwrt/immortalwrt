@@ -7,7 +7,8 @@ luci-theme-netgearv2 source: [tracemouse/luci-theme-netgear](https://github.com/
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
 OpenAppFilter source: [destan19/OpenAppFilter](https://github.com/destan19/OpenAppFilter).<br/>
 luci-app-smartinfo source: [animefansxj/luci-app-smartinfo](https://github.com/animefansxj/luci-app-smartinfo).<br/>
-luci-app-k3screenctrl source: [Hill-98/luci-app-k3screenctrl](https://github.com/Hill-98/luci-app-k3screenctrl).<br/>
+luci-app-k3screenctrl source: [lwz322/luci-app-k3screenctrl](https://github.com/lwz322/luci-app-k3screenctrl).<br/>
+phicomm-k3screenctrl source: [lwz322/k3screenctrl\_build](https://github.com/lwz322/k3screenctrl_build).<br/>
 luci-app-smstool source: [f8q8/luci-app-smstool-master](https://github.com/f8q8/luci-app-smstool-master).<br/>
 luci-app-airwhu source: [KyleRicardo/luci-app-airwhu](https://github.com/KyleRicardo/luci-app-airwhu).<br/>
 Package Lienol: [Lienol/openwrt-package](https://github.com/Lienol/openwrt-package).<br/>

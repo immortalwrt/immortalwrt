@@ -4,7 +4,7 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for k3screenctrl
 LUCI_DESCRIPTION:=LuCI Support for k3screenctrl.
-LUCI_DEPENDS:=+phicomm-k3screenctrl +@BUSYBOX_CONFIG_ARPING
+LUCI_DEPENDS:=+phicomm-k3screenctrl
 LUCI_PKGARCH:=all
 
 PKG_NAME:=luci-app-k3screenctrl
