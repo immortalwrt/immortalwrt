@@ -20,16 +20,35 @@ o.default = 10
 o.rmempty = false
 
 o = s:option(ListValue, "refresh_time", translate("Refresh interval :"), translate("Screen data refresh interval."))
+o:value("1",translate("1 s"))
 o:value("2",translate("2 s"))
 o:value("5",translate("5 s"))
 o:value("10",translate("10 s"))
 o.default = 2
 o.rmempty = false
 
+o = s:option(ListValue, "update_time", translate("Weather update interval :"))
+o:value("0",translate("off"))
+o:value("3600",translate("1h"))
+o:value("14400",translate("4h"))
+o:value("43200",translate("12h"))
+o.default = 0
+o.rmempty = false
+
+o = s:option(Value, "key", translate("Private Key :"), 
+translate("Input private key, visit: https://docs.seniverse.com/api/start/key.html"))
+
+o = s:option(Flag, "city_checkip", translate("Check city from ip"), translate("Check city from local ip."))
+o.default = 0
+
+o = s:option(Value, "city", translate("City :"), 
+translate("For more information, visit: https://docs.seniverse.com/api/start/common.html#地点-location"))
+--o.rmempty = false
+
 o = s:option(Flag, "psk_hide", translate("Hide Wireless password"))
 o.default = 0
 
-o = s:option(Flag, "cputemp", translate("Display CPU temperature"), translate("The first page shows the CPU temperature."))
+o = s:option(Flag, "showmore", translate("Display More Info"), translate("The first page shows more information including: CPU temprature, Load, RAM useage, uptime, etc."))
 o.default = 0
 
 o = s:option(Button,"test_print",translate("Test"),translate("Execute k3screenctrl -t and return the result"))
@@ -52,8 +71,10 @@ luci.sys.net.mac_hints(function(t,a)
 end)
 
 o = s:option(Value,"name",translate("Hostname"))
+o.rmempty = false
 
 o = s:option(ListValue,"icon",translate("Icon"))
+o.rmempty = false
 o:value("0",translate("Auto"))
 o:value("1",translate("OnePlus"))
 o:value("2","360")
