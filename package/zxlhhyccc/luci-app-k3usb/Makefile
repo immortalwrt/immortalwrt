@@ -4,7 +4,7 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for k3usb3.0 on or off
 LUCI_DESCRIPTION:=LuCI Support for k3usb3.0 on or off.
-LUCI_DEPENDS:=@TARGET_bcm53xx_generic_DEVICE_phicomm-k3
+LUCI_DEPENDS:=@TARGET_bcm53xx_generic_DEVICE_phicomm_k3
 LUCI_PKGARCH:=all
 
 PKG_NAME:=luci-app-k3usb
