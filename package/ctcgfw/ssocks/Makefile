@@ -29,21 +29,37 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/ssocks
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=sSocks
+	TITLE:=sSocks Relay
 	URL:=https://github.com/david378/ssocks
 	DEPENDS:=+libopenssl
 endef
 
-define Package/$(PKG_NAME)/description
-sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) and RFC 1929 (Authentication for SOCKS V5), a reverse socks server and client, a netcat like tool and a socks5 relay.
+define Package/ssocks/description
+sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) and RFC 1929 (Authentication for SOCKS V5),
+a reverse socks server and client, a netcat like tool and a socks5 relay.
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/ssocksd
+  $(call Package/ssocks)
+  TITLE:=sSocks Server
+endef
+
+define Package/ssocksd/description
+  $(call Package/ssocks/description)
+endef
+
+define Package/ssocks/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocksd $(1)/usr/bin/ssocks
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocks $(1)/usr/bin/
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+define Package/ssocksd/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocksd $(1)/usr/bin/
+endef
+
+$(eval $(call BuildPackage,ssocks))
+$(eval $(call BuildPackage,ssocksd))
