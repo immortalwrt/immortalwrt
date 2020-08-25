@@ -101,7 +101,7 @@ end
 s:tab("DNS", translate("DNS"))
 
 o = s:taboption("DNS", Value, "up_china_dns", translate("Resolver For Local/WhiteList Domains") .. "(UDP)")
-o.description = translate("Forced to local filter mode on 'Not China List' mode<br />IP:Port mode acceptable, multi value split with english comma.")
+o.description = translate("IP:Port mode acceptable, multi value split with english comma.")
 o.default = "default"
 o:value("default", translate("Default"))
 o:value("223.5.5.5", "223.5.5.5 (" .. translate("Ali") .. "DNS)")
@@ -182,7 +182,12 @@ o:depends({dns_mode = "chinadns-ng", up_trust_chinadns_ng_dns = "dns2socks"})
 o:depends({dns_mode = "dns2socks"})
 o:depends({dns_mode = "pdnsd"})
 
-o = s:taboption("DNS", Button, "clear_ipset", translate("Clear IPSET"))
+o = s:taboption("DNS", ListValue, "dns_default", translate("Dnsmasq default dns"), translate("When the accessed domain name does not exist in the rule list, the default DNS used."))
+o.default = "china"
+o:value("china", translate("China"))
+o:value("remote", translate("Remote"))
+
+o = s:taboption("DNS", Button, "clear_ipset", translate("Clear IPSET"), translate("Try this feature if the rule modification does not take effect."))
 o.inputstyle = "remove"
 function o.write(e, e)
     luci.sys.call("/etc/init.d/" .. appname .. " stop && /usr/share/" .. appname .. "/iptables.sh flush_ipset && /etc/init.d/" .. appname .. " restart")

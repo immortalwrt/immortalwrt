@@ -151,8 +151,8 @@ msgstr "定义接受 IP:Port 形式的输入，以指定其它域名服务的过
 msgid "Resolver For Local/WhiteList Domains"
 msgstr "解析本地和白名单域名"
 
-msgid "Forced to local filter mode on 'Not China List' mode<br />IP:Port mode acceptable, multi value split with english comma."
-msgstr "在 '中国列表以外' 模式下会被强制设置为设定的DNS过滤服务<br />接受 IP:Port 形式的输入，多个以英文逗号分隔。"
+msgid "IP:Port mode acceptable, multi value split with english comma."
+msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔。"
 
 msgid "Ali"
 msgstr "阿里"
@@ -184,14 +184,23 @@ msgstr "ChinaDNS-NG 公平模式"
 msgid "Filtered DNS(For Proxied Domains)"
 msgstr "域名过滤服务(用于被代理的域名)"
 
+msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
+msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
+
 msgid "Cache Resolved"
 msgstr "缓存解析结果"
+
+msgid "Dnsmasq default dns"
+msgstr "Dnsmasq的默认DNS"
+
+msgid "When the accessed domain name does not exist in the rule list, the default DNS used."
+msgstr "当访问的域名不存在规则列表中，使用的默认DNS。"
 
 msgid "Clear IPSET"
 msgstr "清空 IPSET"
 
-msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
-msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
+msgid "Try this feature if the rule modification does not take effect."
+msgstr "如果修改规则后没有生效，请尝试此功能。"
 
 msgid "The server client can also use this rule to scientifically surf the Internet."
 msgstr "本机服务器的客户端也可以使用这个代理模式上网。"
@@ -622,8 +631,8 @@ msgstr "防火墙域名列表(gfwlist)更新URL"
 msgid "China IPs(chnroute) Update URL"
 msgstr "中国IP段(chnroute)更新URL"
 
-msgid "China IPv6s(chnroute) Update URL"
-msgstr "中国IPv6段(chnroute)更新URL"
+msgid "China IPv6s(chnroute6) Update URL"
+msgstr "中国IPv6段(chnroute6)更新URL"
 
 msgid "Rule status"
 msgstr "规则版本"
@@ -702,6 +711,12 @@ msgstr "Kcptun 客户端路径"
 
 msgid "Brook Path"
 msgstr "Brook 路径"
+
+msgid "Trojan-Go Version API"
+msgstr "Trojan-Go 版本 API"
+
+msgid "alternate API URL for version checking"
+msgstr "用于版本检查的 API URL"
 
 msgid "Node Subscribe"
 msgstr "节点订阅"
