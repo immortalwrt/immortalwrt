@@ -7,7 +7,7 @@ function index()
 
     if nixio.fs.access("/usr/bin/ssr-redir") then
         entry({"admin", "services", "vssr"},
-              alias("admin", "services", "vssr", "client"), _("Hello World"), 10).dependent =
+              alias("admin", "services", "vssr", "client"), _("Hello World"), 0).dependent =
             true -- 首页
         entry({"admin", "services", "vssr", "client"}, cbi("vssr/client"),
               _("SSR Client"), 10).leaf = true -- 基本设置
@@ -47,7 +47,7 @@ function index()
     entry({"admin", "services", "vssr", "checkport"}, call("check_port")) -- 检测单个端口并返回Ping
     entry({"admin", "services", "vssr", "run"}, call("act_status")) -- 检测全局服务器状态
     entry({"admin", "services", "vssr", "change"}, call("change_node")) -- 切换节点
-    entry({"admin", "services", "vssr", "allserver"}, call("get_servers")) -- 获取所有节点Json
+    --entry({"admin", "services", "vssr", "allserver"}, call("get_servers")) -- 获取所有节点Json
     entry({"admin", "services", "vssr", "subscribe"}, call("get_subscribe")) -- 执行订阅
     entry({"admin", "services", "vssr", "flag"}, call("get_flag")) -- 获取节点国旗 iso code
     entry({"admin", "services", "vssr", "ip"}, call("check_ip")) -- 获取ip情况
@@ -99,10 +99,6 @@ function get_servers()
     uci:foreach("vssr", "servers", function(s)
         local e = {}
         e["name"] = s[".name"]
-        local t1 = luci.sys.exec(
-                       "ping -c 1 -W 1 %q 2>&1 | grep -o 'time=[0-9]*.[0-9]' | awk -F '=' '{print$2}'" %
-                           s["server"])
-        e["t1"] = t1
         table.insert(server_table, e)
     end)
     luci.http.prepare_content("application/json")
@@ -114,14 +110,12 @@ function change_node()
     local e = {}
     local uci = luci.model.uci.cursor()
     local sid = luci.http.formvalue("set")
-    local name = ""
-    uci:foreach("vssr", "global", function(s) name = s[".name"] end)
     e.status = false
     e.sid = sid
     if sid ~= "" then
-        uci:set("vssr", name, "global_server", sid)
+		uci:set("vssr", '@global[0]', 'global_server', sid)
         uci:commit("vssr")
-        luci.sys.call("/etc/init.d/vssr restart")
+        luci.sys.exec("/etc/init.d/vssr reload")
         e.status = true
     end
     luci.http.prepare_content("application/json")
