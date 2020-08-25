@@ -106,9 +106,9 @@ s = k:section(TypedSection, "clash",translate("Download Online"))
 s.anonymous = true
 o = s:option(ListValue, "dcore", translate("Core Type"))
 o.default = "clashcore"
-o:value("1", translate("Clash"))
-o:value("3", translate("Clash(ctun)"))
-o:value("4", translate("Clash(premium)"))
+o:value("1", translate("clash"))
+o:value("3", translate("clash(ctun)"))
+o:value("4", translate("clash(premium)"))
 
 
 

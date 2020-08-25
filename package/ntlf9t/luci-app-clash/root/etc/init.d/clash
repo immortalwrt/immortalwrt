@@ -263,7 +263,7 @@ rules(){
 				 ipset add localnetwork "$wan_ip4s" 2>/dev/null
 			  done
 		    fi			
-
+			sh /usr/share/clash/chinaipset.sh >/dev/null 2>&1
 
 		
 		if [ "$(iptables -t nat -nL PREROUTING --line-number |grep "udp dpt:53" |grep "0.0.0.0/0 \{0,\}0.0.0.0/0" |wc -l)" -gt 1 ] && [ "$dnsforwader" -eq "1" ]; then
@@ -304,24 +304,24 @@ rules(){
 			iptables -t nat -F clash
 			iptables -t nat -A clash -m set --match-set localnetwork dst -j RETURN
 			iptables -t nat -A clash -m set --match-set reject_lan src -j RETURN
-			iptables -t nat -A clash -m set ! --match-set proxy_lan src -j RETURN		
+			iptables -t nat -A clash -m set ! --match-set proxy_lan src -j RETURN
+			iptables -t nat -A clash -m set --match-set china dst -j RETURN			
 			iptables -t nat -A clash -p tcp -j REDIRECT --to-ports "${redir_port}"
 			iptables -t nat -I PREROUTING -p tcp -d 8.8.8.8 -j REDIRECT --to-ports "${redir_port}"
 			iptables -t nat -I PREROUTING -p tcp -d 8.8.4.4 -j REDIRECT --to-ports "${redir_port}"			
-            iptables -t nat -A PREROUTING -p tcp -j clash
+           	iptables -t nat -A PREROUTING -p tcp -j clash
+
 				
-				
-				
-			if [ "${enable_udp}" -eq 1 ]; then				
-				ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
-				ip route add local 0.0.0.0/0 dev lo table "$PROXY_ROUTE_TABLE"			
-				iptables -t mangle -N clash
-				iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
-				iptables -t mangle -A clash -m set --match-set reject_lan src -j RETURN
-				iptables -t mangle -A clash -m set ! --match-set proxy_lan src -j RETURN
-				iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark "$PROXY_FWMARK"
-				iptables -t mangle -A PREROUTING -p udp -j clash
-			fi
+			ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
+			ip route add local 0.0.0.0/0 dev lo table "$PROXY_ROUTE_TABLE"			
+			iptables -t mangle -N clash
+			iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
+			iptables -t mangle -A clash -m set --match-set reject_lan src -j RETURN
+			iptables -t mangle -A clash -m set ! --match-set proxy_lan src -j RETURN
+			iptables -t mangle -A clash -m set --match-set china dst -j RETURN
+			iptables -t mangle -A clash -p udp -j TPROXY --on-port "${redir_port}" --tproxy-mark "$PROXY_FWMARK"
+			iptables -t mangle -A PREROUTING -p udp -j clash
+			
 				
 			
 		   if [ "${fake_ip}" == "fake-ip" ];then
@@ -383,12 +383,14 @@ rules(){
             iptables -t mangle -N clash
             iptables -t mangle -F clash
             iptables -t mangle -A clash -m set --match-set localnetwork dst -j RETURN
+			iptables -t mangle -A TROJAN_GO -m set --match-set china dst -j RETURN
 			if [ "${fake_ip}" == "fake-ip" ];then
 			iptables -t mangle -A clash -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
 			fi
 			
             iptables -t mangle -I OUTPUT -j clash
             iptables -t mangle -I PREROUTING -m set ! --match-set localnetwork dst -j MARK --set-mark "$PROXY_FWMARK"
+			iptables -t mangle -I PREROUTING -m set ! --match-set china dst -j MARK --set-mark "$PROXY_FWMARK"
 			iptables -t mangle -I PREROUTING -m set --match-set reject_lan src -j RETURN >/dev/null 2>&1
 			iptables -t mangle -I PREROUTING -m set ! --match-set proxy_lan src -j RETURN >/dev/null 2>&1			
 			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
@@ -734,11 +736,17 @@ remove_mark(){
 			iptables -t mangle -D PREROUTING $prer 2>/dev/null
 		done
 
+		pre1=$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/! match-set china dst MARK set 0x162/=' | sort -r)
+		for prer in $pre1; do
+			iptables -t mangle -D PREROUTING $prer 2>/dev/null
+		done
+		
 	   pre_lines=$(iptables -nvL PREROUTING -t nat |sed 1,2d |sed -n '/8\.8\./=' 2>/dev/null |sort -rn)
 	   for pre_line in $pre_lines; do
 		  iptables -t nat -D PREROUTING "$pre_line" >/dev/null 2>&1
 	   done
-   
+
+	   
 		iptables -t nat -D PREROUTING -p tcp --dport 53 -j ACCEPT >/dev/null 2>&1
 		iptables -t nat -D PREROUTING -p udp --dport 53 -j DNAT --to "127.0.0.1:$dns_port"
 
@@ -757,6 +765,8 @@ remove_mark(){
 		ipset -! flush reject_lan >/dev/null 2>&1
 		ipset destroy reject_lan >/dev/null 2>&1
 		ipset destroy proxy_lan >/dev/null 2>&1
+		ipset -! flush china >/dev/null 2>&1
+		ipset destroy china >/dev/null 2>&1
 		
 		proxy_lan=$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/! match-set proxy_lan src/=' | sort -r)
 		for natx in $proxy_lan; do
@@ -790,6 +800,16 @@ remove_mark(){
 		
 	    iptables -t nat -D OUTPUT -p tcp -j clash_output >/dev/null 2>&1
 		
+
+		china_lan2=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/match-set china/=' | sort -r)
+		for natx in $china_lan2; do
+			iptables -t mangle -D PREROUTING $natx >/dev/null 2>&1
+		done
+
+		china_lan3$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/match-set china/=' | sort -r)
+		for natx in $china_lan3; do
+			iptables -t mangle -D PREROUTING $natx >/dev/null 2>&1
+		done
 		
 		ipset destroy localnetwork 2>/dev/null
 		
@@ -939,10 +959,8 @@ reload()
 {
 if pidof clash >/dev/null; then
       remove_mark 2>/dev/null
-      yml_dns_change 2>/dev/null
-      rules 2>/dev/null	
-      sleep 5
-      echo "Clash for OpenWRT" >$REAL_LOG
-      echo "Clash Reload Completed"	
+	  yml_dns_change 2>/dev/null
+      rules 2>/dev/null	 
+	  echo "Clash Reload Completed"	
 fi	  
 }
