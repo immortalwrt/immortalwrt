@@ -34,9 +34,9 @@ switch_server=$1
 MAXFD=32768
 CRON_FILE=/etc/crontabs/root
 threads=1
-shunt_type=("global" "youtube" "tw_video" "netflix" "disney" "prime" "tvb")
-shunt_port=(2080 2081 2082 2083 2084 2085 2086)
-shunt_array=("youtube" "tw_video" "netflix" "disney" "prime" "tvb")
+shunt_type=("global" "youtube" "tw_video" "netflix" "disney" "prime" "tvb" "custom")
+shunt_port=(2080 2081 2082 2083 2084 2085 2086 2087)
+shunt_array=("youtube" "tw_video" "netflix" "disney" "prime" "tvb" "custom")
 scount=0
 uci_get_by_name() {
 	local ret=$(uci get $NAME.$1.$2 2>/dev/null)

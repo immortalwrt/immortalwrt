@@ -639,6 +639,15 @@ msgstr "Prime Video 代理"
 msgid "TVB Video Proxy"
 msgstr "TVB 视频代理"
 
+msgid "Custom Proxy"
+msgstr "自定义代理"
+
+msgid "Custom Proxy Domain Name"
+msgstr "自定义分流域名"
+
+msgid "Proxy Domain Name"
+msgstr "需要被分流的域名"
+
 msgid "adblock settings"
 msgstr "广告屏蔽设置"
 
@@ -649,4 +658,4 @@ msgid "Licence"
 msgstr "许可"
 
 msgid "Area"
-msgstr "区域"
+msgstr "国家或地区"
