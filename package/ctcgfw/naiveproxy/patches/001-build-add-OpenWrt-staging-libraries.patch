@@ -1,0 +1,33 @@
+From 5b476d92f8dbee8b83061faa8cd18a46e5ab4aae Mon Sep 17 00:00:00 2001
+From: CN_SZTL <cnsztl@project-openwrt.eu.org>
+Date: Tue, 18 Aug 2020 20:36:39 +0000
+Subject: [PATCH 1/3] build: add OpenWrt staging libraries
+
+---
+ src/build/config/posix/BUILD.gn | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/build/config/posix/BUILD.gn b/src/build/config/posix/BUILD.gn
+index 9ccb89f27..de9e5501d 100644
+--- a/src/build/config/posix/BUILD.gn
++++ b/src/build/config/posix/BUILD.gn
+@@ -28,6 +28,9 @@ config("runtime_library") {
+   if (!is_mac && !is_ios && sysroot != "") {
+     # Pass the sysroot to all C compiler variants, the assembler, and linker.
+     sysroot_flags = [ "--sysroot=" + rebase_path(sysroot, root_build_dir) ]
++    sysroot_flags += [ "-I" + getenv("OP_STAGING_DIR") + "/usr/include" ]
++    sysroot_flags += [ "-I" + getenv("OP_STAGING_DIR") + "/usr/include/nss" ]
++    sysroot_flags += [ "-I" + getenv("OP_STAGING_DIR") + "/usr/include/nspr" ]
+     if (is_linux) {
+       # This is here so that all files get recompiled after a sysroot roll and
+       # when turning the sysroot on or off. (defines are passed via the command
+@@ -57,6 +60,7 @@ config("runtime_library") {
+     cflags_objcc += sysroot_flags
+ 
+     # Need to get some linker flags out of the sysroot.
++    ldflags += [ "-L" + getenv("OP_STAGING_DIR") + "/usr/lib" ]
+     ld_paths = exec_script("sysroot_ld_path.py",
+                            [
+                              rebase_path("//build/linux/sysroot_ld_path.sh",
+-- 
+2.17.1
