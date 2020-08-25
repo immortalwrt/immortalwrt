@@ -299,6 +299,33 @@ define Device/xiaomi_mir3g
 endef
 TARGET_DEVICES += xiaomi_mir3g
 
+define Device/xiaomi-ac2100
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 120320k
+  UBINIZE_OPTS := -E 5
+  IMAGES += kernel1.bin rootfs0.bin
+  IMAGE/kernel1.bin := append-kernel
+  IMAGE/rootfs0.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e wpad-openssl uboot-envtools
+endef
+
+define Device/xiaomi_mi-ac2100
+  $(Device/xiaomi-ac2100)
+  DTS := REDMI-AC2100
+  DEVICE_TITLE := Mi Router AC2100
+endef
+TARGET_DEVICES += xiaomi_mi-ac2100
+
+define Device/xiaomi_redmi-ac2100
+  $(Device/xiaomi-ac2100)
+  DTS := XIAOMI-AC2100
+  DEVICE_TITLE := Redmi Router AC2100
+endef
+TARGET_DEVICES += xiaomi_redmi-ac2100
+
 define Device/mt7621
   DTS := MT7621
   BLOCKSIZE := 64k

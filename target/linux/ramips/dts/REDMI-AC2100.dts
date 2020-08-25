@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include "MI-AC2100.dtsi"
+
+/ {
+	compatible = "xiaomi,redmi-ac2100", "mediatek,mt7621-soc";
+	model = "Xiaomi Redmi Router AC2100";
+
+	aliases {
+		led-boot = &led_status_amber;
+		led-failsafe = &led_status_amber;
+		led-running = &led_status_white;
+		led-upgrade = &led_status_white;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status_amber: status_amber {
+			label = "rm2100:amber:status";
+			gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+		};
+
+		led_status_white: status_white {
+			label = "rm2100:white:status";
+			gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
+		};
+
+		wan_amber {
+			label = "rm2100:amber:wan";
+			gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+		};
+
+		wan_white {
+			label = "rm2100:white:wan";
+			gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
