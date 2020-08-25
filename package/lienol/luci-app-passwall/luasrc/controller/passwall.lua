@@ -1,4 +1,4 @@
--- Copyright 2018-2020 Lienol <lawlienol@gmail.com>
+-- Copyright (C) 2018-2020 L-WRT Team
 module("luci.controller.passwall", package.seeall)
 local appname = "passwall"
 local ucic = luci.model.uci.cursor()
@@ -18,23 +18,28 @@ function index()
 	if nixio.fs.access("/etc/config/passwall_show") then
 		entry({"admin", "services", appname}, alias("admin", "services", appname, "settings"), _("Pass Wall"), 1).dependent = true
 	end
-	entry({"admin", "services", appname, "settings"}, cbi("passwall/global"), _("Basic Settings"), 1).dependent = true
-	entry({"admin", "services", appname, "node_list"}, cbi("passwall/node_list"), _("Node List"), 2).dependent = true
-	entry({"admin", "services", appname, "auto_switch"}, cbi("passwall/auto_switch"), _("Auto Switch"), 3).leaf = true
-	entry({"admin", "services", appname, "other"}, cbi("passwall/other", {autoapply = true}), _("Other Settings"), 93).leaf = true
+	--[[ Client ]]
+	entry({"admin", "services", appname, "settings"}, cbi(appname .. "/client/global"), _("Basic Settings"), 1).dependent = true
+	entry({"admin", "services", appname, "node_list"}, cbi(appname .. "/client/node_list"), _("Node List"), 2).dependent = true
+	entry({"admin", "services", appname, "auto_switch"}, cbi(appname .. "/client/auto_switch"), _("Auto Switch"), 3).leaf = true
+	entry({"admin", "services", appname, "other"}, cbi(appname .. "/client/other", {autoapply = true}), _("Other Settings"), 92).leaf = true
 	if nixio.fs.access("/usr/sbin/haproxy") then
-		entry({"admin", "services", appname, "haproxy"}, cbi("passwall/haproxy"), _("Load Balancing"), 94).leaf = true
+		entry({"admin", "services", appname, "haproxy"}, cbi(appname .. "/client/haproxy"), _("Load Balancing"), 93).leaf = true
 	end
-	entry({"admin", "services", appname, "node_subscribe"}, cbi("passwall/node_subscribe"), _("Node Subscribe"), 95).dependent = true
-	entry({"admin", "services", appname, "rule"}, cbi("passwall/rule"), _("Rule Manage"), 96).leaf = true
-	entry({"admin", "services", appname, "app_update"}, cbi("passwall/app_update"), _("App Update"), 97).leaf = true
-	entry({"admin", "services", appname, "node_config"}, cbi("passwall/node_config")).leaf = true
-	entry({"admin", "services", appname, "shunt_rules"}, cbi("passwall/shunt_rules")).leaf = true
-	entry({"admin", "services", appname, "acl"}, cbi("passwall/acl"), _("Access control"), 98).leaf = true
-	entry({"admin", "services", appname, "log"}, form("passwall/log"), _("Watch Logs"), 999).leaf = true
-	entry({"admin", "services", appname, "server"}, cbi("passwall/server/index"), _("Server-Side"), 99).leaf = true
-	entry({"admin", "services", appname, "server_user"}, cbi("passwall/server/user")).leaf = true
+	entry({"admin", "services", appname, "node_subscribe"}, cbi(appname .. "/client/node_subscribe"), _("Node Subscribe"), 94).dependent = true
+	entry({"admin", "services", appname, "app_update"}, cbi(appname .. "/client/app_update"), _("App Update"), 95).leaf = true
+	entry({"admin", "services", appname, "rule"}, cbi(appname .. "/client/rule"), _("Rule Manage"), 96).leaf = true
+	entry({"admin", "services", appname, "rule_list"}, cbi(appname .. "/client/rule_list"), _("Rule List Manage"), 97).leaf = true
+	entry({"admin", "services", appname, "node_config"}, cbi(appname .. "/client/node_config")).leaf = true
+	entry({"admin", "services", appname, "shunt_rules"}, cbi(appname .. "/client/shunt_rules")).leaf = true
+	entry({"admin", "services", appname, "acl"}, cbi(appname .. "/client/acl"), _("Access control"), 98).leaf = true
+	entry({"admin", "services", appname, "log"}, form(appname .. "/client/log"), _("Watch Logs"), 999).leaf = true
 
+	--[[ Server ]]
+	entry({"admin", "services", appname, "server"}, cbi(appname .. "/server/index"), _("Server-Side"), 99).leaf = true
+	entry({"admin", "services", appname, "server_user"}, cbi(appname .. "/server/user")).leaf = true
+
+	--[[ API ]]
 	entry({"admin", "services", appname, "server_user_status"}, call("server_user_status")).leaf = true
 	entry({"admin", "services", appname, "server_get_log"}, call("server_get_log")).leaf = true
 	entry({"admin", "services", appname, "server_clear_log"}, call("server_clear_log")).leaf = true
@@ -54,8 +59,6 @@ function index()
 	entry({"admin", "services", appname, "clear_all_nodes"}, call("clear_all_nodes")).leaf = true
 	entry({"admin", "services", appname, "delete_select_nodes"}, call("delete_select_nodes")).leaf = true
 	entry({"admin", "services", appname, "update_rules"}, call("update_rules")).leaf = true
-	entry({"admin", "services", appname, "luci_check"}, call("luci_check")).leaf = true
-	entry({"admin", "services", appname, "luci_update"}, call("luci_update")).leaf = true
 	entry({"admin", "services", appname, "kcptun_check"}, call("kcptun_check")).leaf = true
 	entry({"admin", "services", appname, "kcptun_update"}, call("kcptun_update")).leaf = true
 	entry({"admin", "services", appname, "brook_check"}, call("brook_check")).leaf = true
@@ -167,7 +170,7 @@ function connect_status()
 	local e = {}
 	e.use_time = ""
 	local url = luci.http.formvalue("url")
-	local result = luci.sys.exec('curl --connect-timeout 5 -o /dev/null -I -skL -w "%{http_code}:%{time_starttransfer}" ' .. url)
+	local result = luci.sys.exec('curl --connect-timeout 3 -o /dev/null -I -skL -w "%{http_code}:%{time_starttransfer}" ' .. url)
 	local code = tonumber(luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $1}'") or "0")
 	if code ~= 0 then
 		local use_time = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
@@ -184,7 +187,8 @@ function ping_node()
 	local port = luci.http.formvalue("port")
 	local e = {}
 	e.index = index
-	if (ucic:get(appname, "@global_other[0]", "use_tcping") or 1)  == "1" and luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
+	local nodes_ping = ucic:get(appname, "@global_other[0]", "nodes_ping") or ""
+	if nodes_ping:find("tcping") and luci.sys.exec("echo -n $(command -v tcping)") ~= "" then
 		e.ping = luci.sys.exec(string.format("echo -n $(tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}') 2>/dev/null", port, address))
 	end
 	if e.ping == nil or tonumber(e.ping) == 0 then

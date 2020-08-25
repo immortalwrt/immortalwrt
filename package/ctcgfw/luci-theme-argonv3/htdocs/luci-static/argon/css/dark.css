@@ -296,6 +296,9 @@ input:focus {
   outline: 0;
   box-shadow: none;
 }
+select {
+  background-color: #1e1e1e !important;
+}
 #cbi-dropbear h2,
 #cbi-dropbear .cbi-map-descr,
 #cbi-dropbear .cbi-map-descr abbr,
@@ -354,7 +357,7 @@ td.cbi-value-field var {
   background-color: #1e1e1e;
 }
 .node-services-vssr .block {
-  background-color: #3c3c3c !important;
+  background-color: #1e1e1e !important;
   box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.35);
 }
 .node-services-vssr .block h4 {
@@ -379,6 +382,9 @@ td.cbi-value-field var {
 }
 .node-services-vssr .incon:nth-child(2) {
   border-right: #1e1e1e 1px solid;
+}
+.main .main-right #maincontent .container p {
+  color: #ccc;
 }
 #xhr_poll_status > .label.success {
   color: #ccc !important;
@@ -423,11 +429,14 @@ fieldset[id^="cbi-apply-"] {
 .cbi-section-error {
   color: darkorange;
 }
+.node-services-vssr .block h4 span {
+  color: #ccc !important;
+}
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
   .login-page .login-container .login-form {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    background-color: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(var(--blur-radius-dark));
+    backdrop-filter: blur(var(--blur-radius-dark));
+    background-color: rgba(0, 0, 0, var(--blur-opacity-dark));
   }
 }
 @media screen and (max-width: 480px) {

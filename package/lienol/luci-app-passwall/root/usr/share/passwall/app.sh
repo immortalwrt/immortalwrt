@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
+# Copyright (C) 2018-2020 L-WRT Team
 
 . $IPKG_INSTROOT/lib/functions.sh
 . $IPKG_INSTROOT/lib/functions/service.sh
@@ -283,6 +283,7 @@ load_config() {
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
 	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4:53 | sed 's/:/#/g')
 	DNS_CACHE=$(config_t_get global dns_cache 1)
+	DNS_DEFAULT=$(config_t_get global dns_default china)
 	process=1
 	if [ "$(config_t_get global_forwarding process 0)" = "0" ]; then
 		process=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
@@ -346,7 +347,7 @@ run_socks() {
 		[ "$protocol" == "wsclient" ] && {
 			[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}" 
 		}
-		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_socks_$5" "$protocol" -l "$bind:$local_port" -i "$bind" -s "$server_host:$port" -p "$(config_n_get $node password)"
+		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_socks_$5" "$protocol" --socks5 "$bind:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 	elif [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
 		lua $API_GEN_SS $node $local_port > $config_file
 		ln_start_bin "$(first_type ${type}-local)" "${type}-local" -c "$config_file" -b "$bind" -u
@@ -401,7 +402,7 @@ run_redir() {
 			if [ "$protocol" == "wsclient" ]; then
 				echolog "Brook的WebSocket不支持UDP转发！"
 			else
-				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_udp_$6" tproxy -l "0.0.0.0:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
+				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_udp_$6" tproxy -l ":$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 			fi
 		elif [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
 			lua $API_GEN_SS $node $local_port > $config_file
@@ -474,7 +475,7 @@ run_redir() {
 				if [ "$protocol" == "wsclient" ]; then
 					[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}" 
 					socks_port=$(get_new_port 2081 tcp)
-					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" wsclient -l "127.0.0.1:$socks_port" -i 127.0.0.1 -s "$server_ip:$port" -p "$(config_n_get $node password)"
+					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" wsclient --socks5 "127.0.0.1:$socks_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
 					eval port=\$TCP_REDIR_PORT$6
 					ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp_$6" -T -l "$port" -b 0.0.0.0 -s 127.0.0.1 -p "$socks_port" -R
 					echolog "Brook的WebSocket不支持透明代理，将使用ipt2socks转换透明代理！"
@@ -484,7 +485,7 @@ run_redir() {
 						server_ip=127.0.0.1
 						port=$KCPTUN_REDIR_PORT
 					}
-					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" tproxy -l "0.0.0.0:$local_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
+					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" tproxy -l ":$local_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
 				fi
 			fi
 		fi
@@ -696,7 +697,7 @@ start_dns() {
 		[ "$(config_t_get global fair_mode 1)" = "1" ] && extra_mode="-f"
 		ln_start_bin "$(first_type chinadns-ng)" chinadns-ng -l "${DNS_PORT}" ${china_ng_chn:+-c "${china_ng_chn}"} ${chnlist_param:+-m "${chnlist_param}" -M} ${china_ng_gfw:+-t "${china_ng_gfw}"} ${gfwlist_param:+-g "${gfwlist_param}"} $extra_mode
 		echolog "  + 过滤服务：ChinaDNS-NG(:${DNS_PORT}${extra_mode}) + ${msg}：中国域名列表：${china_ng_chn:-D114.114.114.114}，防火墙域名列表：${china_ng_gfw:-D8.8.8.8}"
-		[ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS="${china_ng_gfw}"
+		#[ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS="${china_ng_gfw}"
 	;;
 	*)
 		TUN_DNS="$(echo ${DNS_MODE} | sed 's/:/#/g')"
@@ -740,24 +741,29 @@ add_dnsmasq() {
 			[ "${DNS_MODE}" = "other_dns" ] || [ "${DNS_MODE}" = "chinadns-ng" ] && force_local=3
 		fi
 		[ "${DNS_MODE}" = "other_dns" ] || [ "${DNS_MODE}" = "chinadns-ng" ] || [ -n "${global}${chnlist}" ] && filtered_dns=1
+		[ "${DNS_DEFAULT}" = "china" ] && unset filtered_dns
+		
+		#始终用国内DNS解析节点域名
+		fwd_dns="${LOCAL_DNS}"
+		servers=$(uci show "${CONFIG}" | grep ".address=" | cut -d "'" -f 2)
+		hosts_foreach "servers" host_from_url | grep -v "google.c" | grep '[a-zA-Z]$' | sort -u | gen_dnsmasq_items "vpsiplist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/vpsiplist_host.conf"
+		echolog "  - [$?]节点列表中的域名(vpsiplist)：${fwd_dns:-默认}"
 
 		fwd_dns="${LOCAL_DNS}"
 		[ -z "${global}" ] && {
 			[ -z "${chnlist}" ] || [ -n "${returnhome}" ] && [ -n "${force_local}" ] && unset fwd_dns
+			[ "${DNS_DEFAULT}" = "china" ] && unset fwd_dns
+			[ "${DNS_MODE}" = "chinadns-ng" ] && unset fwd_dns
 			[ "${DNS_MODE}" = "other_dns" ] && fwd_dns="${TUN_DNS}"
 			sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/direct_host.conf"
 			echolog "  - [$?]域名白名单(whitelist)：${fwd_dns:-默认}"
 		}
 
-		servers=$(uci show "${CONFIG}" | grep ".address=" | cut -d "'" -f 2)
-		[ "${filtered_dns}" = "1" ] && [ "${DNS_MODE}" != "chinadns-ng" ] && [ -z "${global}${chnlist}" ] && unset fwd_dns
-		hosts_foreach "servers" host_from_url | grep -v "google.c" | grep '[a-zA-Z]$' | sort -u | gen_dnsmasq_items "vpsiplist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/vpsiplist_host.conf"
-		echolog "  - [$?]节点列表中的域名(vpsiplist)：${fwd_dns:-默认}"
-
 		[ -n "${returnhome}" ] || [ "${filtered_dns}" = "1" ] && {
 			[ -n "${gfwlist}" ] && fwd_dns="${LOCAL_DNS}"
 			[ -n "${returnhome}" ] && fwd_dns="${TUN_DNS}"
 			[ "${filtered_dns}" = "1" ] && [ -z "${chnlist}" ] && unset fwd_dns
+			[ "${DNS_DEFAULT}" = "china" ] && unset fwd_dns
 			[ -n "${global}" ] && unset fwd_dns
 			sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/chinalist_host.conf"
 			echolog "  - [$?]中国域名表(chnroute)：${fwd_dns:-默认}"
@@ -769,9 +775,10 @@ add_dnsmasq() {
 		sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/proxy_host.conf"
 		echolog "  - [$?]代理域名表(blacklist)：${fwd_dns:-默认}"
 
-		[ -n "${gfwlist}" ] || [ "${filtered_dns}" = "1" ] && [ -z "${returnhome}" ] && {
+		[ -z "${returnhome}" ] && {
 			[ "${filtered_dns}" = "1" ] && [ "${DNS_MODE}" != "chinadns-ng" ] && unset fwd_dns
 			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
+			#sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
 			echolog "  - [$?]防火墙域名表(gfwlist)：${fwd_dns:-默认}"
 		}
 
@@ -791,14 +798,15 @@ add_dnsmasq() {
 		echo "conf-dir=${TMP_DNSMASQ_PATH}" > "${DNSMASQ_PATH}/dnsmasq-${CONFIG}.conf"
 
 		[ "${filtered_dns}" = "1" ] && [ -z "${returnhome}" ] && servers="${TUN_DNS}"
-		if [ "${DNS_MODE}" = "chinadns-ng" ]; then
-			[ -z "${global}${chnlist}" ] && servers="127.0.0.1#${DNS_PORT}" && msg="chinadns-ng"
-		fi
 		[ -n "${chnlist}" ] && msg="中国列表以外"
 		[ -n "${returnhome}" ] && msg="中国列表"
 		[ -n "${global}" ] && msg="全局"
 		if [ "${DNS_MODE}" = "other_dns" ]; then
 			msg="指定DNS"
+		elif [ "${DNS_MODE}" = "chinadns-ng" ]; then
+			#[ -z "${global}${chnlist}" ] && servers="127.0.0.1#${DNS_PORT}" && msg="chinadns-ng"
+			#直接交给Chinadns-ng处理
+			servers="${TUN_DNS}" && msg="chinadns-ng"
 		else
 			[ "${IS_DEFAULT_DNS}" = "1" ] && [ "${filtered_dns}" != "1" ] && {
 				echolog "  - 不强制设置默认DNS(上级分配)！"

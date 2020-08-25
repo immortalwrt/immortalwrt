@@ -45,16 +45,16 @@ end
 
 upthreshold = s:option(Value, "upthreshold", translate("CPU Switching Threshold"))
 upthreshold.datatype="range(1,99)"
-upthreshold.rmempty = false
 upthreshold.description = translate("Kernel make a decision on whether it should increase the frequency (%)")
 upthreshold.placeholder = 50
 upthreshold.default = 50
+upthreshold:depends("governor", "ondemand")
 
 factor = s:option(Value, "factor", translate("CPU Switching Sampling rate"))
 factor.datatype="range(1,100000)"
-factor.rmempty = false
 factor.description = translate("The sampling rate determines how frequently the governor checks to tune the CPU (ms)")
 factor.placeholder = 10
 factor.default = 10
+factor:depends("governor", "ondemand")
 
 return mp

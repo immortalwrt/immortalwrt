@@ -199,16 +199,12 @@
     $(".showSide").click(function () {
         if (showSide) {
             $(".darkMask").stop(true).fadeOut("fast");
-            $(".main-left").stop(true).animate({
-                width: "0"
-            }, "fast");
+            $(".main-left").width(0);
             $(".main-right").css("overflow-y", "auto");
             showSide = false;
         } else {
             $(".darkMask").stop(true).fadeIn("fast");
-            $(".main-left").stop(true).animate({
-                width: "15rem"
-            }, "fast");
+            $(".main-left").width("15rem");
             $(".main-right").css("overflow-y", "hidden");
             showSide = true;
         }
@@ -219,9 +215,7 @@
         if (showSide) {
             showSide = false;
             $(".darkMask").stop(true).fadeOut("fast");
-            $(".main-left").stop(true).animate({
-                width: "0"
-            }, "fast");
+            $(".main-left").width(0);
             $(".main-right").css("overflow-y", "auto");
         }
     });

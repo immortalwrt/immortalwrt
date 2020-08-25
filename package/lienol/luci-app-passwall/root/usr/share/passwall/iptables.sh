@@ -3,7 +3,9 @@
 IPSET_LANIPLIST="laniplist"
 IPSET_VPSIPLIST="vpsiplist"
 IPSET_GFW="gfwlist"
+#IPSET_GFW6="gfwlist6"
 IPSET_CHN="chnroute"
+IPSET_CHN6="chnroute6"
 IPSET_BLACKLIST="blacklist"
 IPSET_WHITELIST="whitelist"
 
@@ -264,13 +266,10 @@ filter_node() {
 			[ "$_ipt" == "6" ] && _ipt=$ip6t_tmp
 			$_ipt -n -L PSW_OUTPUT | grep -q "${address}:${port}"
 			if [ $? -ne 0 ]; then
+				unset dst_rule
 				local dst_rule=$(REDIRECT 1 MARK)
 				msg2="按规则路由(${msg})"
-				[ "$_ipt" == "$ipt_m" ] || {
-					dst_rule=$(REDIRECT $_port)
-					msg2="套娃使用(${msg}:${port}>>${_port})"
-				}
-				[ "$_ipt" == "$ip6t_tmp" ] || {
+				[ "$_ipt" == "$ipt_m" -o "$_ipt" == "$ip6t_m" ] || {
 					dst_rule=$(REDIRECT $_port)
 					msg2="套娃使用(${msg}:${port}>>${_port})"
 				}
@@ -333,11 +332,14 @@ add_firewall_rule() {
 	ipset -! create $IPSET_LANIPLIST nethash
 	ipset -! create $IPSET_VPSIPLIST nethash
 	ipset -! create $IPSET_GFW nethash
+	#ipset -! create $IPSET_GFW6 nethash family inet6
 	ipset -! create $IPSET_CHN nethash
+	ipset -! create $IPSET_CHN6 nethash family inet6
 	ipset -! create $IPSET_BLACKLIST nethash
 	ipset -! create $IPSET_WHITELIST nethash
 
 	cat $RULES_PATH/chnroute | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/chnroute6 | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	cat $RULES_PATH/proxy_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	cat $RULES_PATH/direct_ip | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 
@@ -577,7 +579,9 @@ del_firewall_rule() {
 	ipset -F $IPSET_LANIPLIST >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_VPSIPLIST >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST >/dev/null 2>&1 &
 	#ipset -F $IPSET_GFW >/dev/null 2>&1 && ipset -X $IPSET_GFW >/dev/null 2>&1 &
+	#ipset -F $IPSET_GFW6 >/dev/null 2>&1 && ipset -X $IPSET_GFW6 >/dev/null 2>&1 &
 	#ipset -F $IPSET_CHN >/dev/null 2>&1 && ipset -X $IPSET_CHN >/dev/null 2>&1 &
+	#ipset -F $IPSET_CHN6 >/dev/null 2>&1 && ipset -X $IPSET_CHN6 >/dev/null 2>&1 &
 	#ipset -F $IPSET_BLACKLIST >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_WHITELIST >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST >/dev/null 2>&1 &
 	#echolog "删除相关防火墙规则完成。"
@@ -587,7 +591,9 @@ flush_ipset() {
 	ipset -F $IPSET_LANIPLIST >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_VPSIPLIST >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_GFW >/dev/null 2>&1 && ipset -X $IPSET_GFW >/dev/null 2>&1 &
+	#ipset -F $IPSET_GFW6 >/dev/null 2>&1 && ipset -X $IPSET_GFW6 >/dev/null 2>&1 &
 	ipset -F $IPSET_CHN >/dev/null 2>&1 && ipset -X $IPSET_CHN >/dev/null 2>&1 &
+	ipset -F $IPSET_CHN6 >/dev/null 2>&1 && ipset -X $IPSET_CHN6 >/dev/null 2>&1 &
 	ipset -F $IPSET_BLACKLIST >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST >/dev/null 2>&1 &
 	ipset -F $IPSET_WHITELIST >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST >/dev/null 2>&1 &
 }

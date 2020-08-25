@@ -1,7 +1,7 @@
 local http = luci.http
 
 mp = Map("unblockneteasemusic", translate("解除网易云音乐播放限制 (Golang)"))
-mp.description = translate("原理：采用 [酷我/酷狗/咕咪] 音源(后续有空补充)，替换网易云音乐 灰色 歌曲链接<br/>具体使用方法参见：https://github.com/cnsilvan/luci-app-unblockneteasemusic<br/>首次使用会自动生成证书，可能较慢")
+mp.description = translate("原理：采用 [酷我/酷狗/咕咪] 音源(后续有空补充)，替换网易云音乐 灰色 歌曲链接<br/>具体使用方法参见：https://github.com/cnsilvan/luci-app-unblockneteasemusic<br/>提示：客户端网易云音乐能用就别升级app，最新版本不一定能用")
 mp:section(SimpleSection).template = "unblockneteasemusic/unblockneteasemusic_status"
 
 s = mp:section(TypedSection, "unblockneteasemusic")
@@ -48,15 +48,21 @@ hijack.description = translate("如果使用Hosts劫持，请将HTTP/HTTPS端口
 hijack.default = "dont_hijack"
 hijack.rmempty = false
 
+
 daemon_enable = s:option(Flag, "daemon_enable", translate("启用进程守护"))
 daemon_enable.description = translate("开启后，附属程序会自动检测主程序运行状态，在主程序退出时自动重启")
 daemon_enable.default = 0
 daemon_enable.rmempty = false
 
 endpoint_enable = s:option(Flag, "endpoint_enable", translate("启用地址转换"))
-endpoint_enable.description = translate("开启后，设备需要信任证书，经测试ios设备需要开启，其他设备无法使用时再开启尝试")
+endpoint_enable.description = translate("开启后，设备需要信任证书，经测试ios设备需要开启，android设备使用咪咕源下载时需要开启，其他情况无法使用时再开启尝试")
 endpoint_enable.default = 0
 endpoint_enable.rmempty = false
+
+force_best_quality = s:option(Flag, "force_best_quality", translate("强制音质优先"))
+force_best_quality.description = translate("开启后，客户端选择音质将失效")
+force_best_quality.default = 0
+force_best_quality.rmempty = false
 
 delete = s:option(Button,"_delete", translate("删除根证书"))
 delete.description = translate("删除证书，以便下次启动时生成，可用于解决过期证书等问题")
@@ -65,7 +71,7 @@ delete.write = function()
 	delete_()
 end
 download = s:option(Button,"_download", translate("下载根证书"))
-download.description = translate("请在客户端信任该证书。该证书由你设备自动生成，安全可靠")
+download.description = translate("请在客户端信任该证书。该证书由你设备自动生成，安全可靠<br/>IOS信任证书步骤：1. 安装证书--设置-描述文件-安装 2. 通用-关于本机-证书信任设置-启动完全信任")
 download.inputstyle = "reload"
 download.write = function()
 	download_()
