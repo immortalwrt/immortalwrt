@@ -993,8 +993,8 @@ msgstr "选择类型"
 msgid "Set custom rules under Setting=>Others , will take effect when client start"
 msgstr "在“设置”=>“其他”下设置自定义规则，将在客户端启动时生效"
 
-msgid "Customs Rules"
-msgstr "自定义规则"
+msgid "Append Customs Rules"
+msgstr "附加自定义规则"
 
 msgid "Edit Custom Rule & Group"
 msgstr "编辑自定义规则组"

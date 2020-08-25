@@ -11,7 +11,7 @@ function index()
 		return
 	end
 
-	local page = entry({"admin", "services", "clash"},alias("admin", "services", "clash", "overview"), _("Clash"), 5)
+	local page = entry({"admin", "services", "clash"},alias("admin", "services", "clash", "overview"), _("Clash"), 1)
 	page.dependent = true
 	page.acl_depends = {"luci-app-clash"}
 	
