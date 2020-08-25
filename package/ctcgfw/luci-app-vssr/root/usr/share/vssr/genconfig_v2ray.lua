@@ -14,6 +14,8 @@ local netflix_server = ucursor:get_first(name, 'global', 'netflix_server')
 local disney_server = ucursor:get_first(name, 'global', 'disney_server')
 local prime_server = ucursor:get_first(name, 'global', 'prime_server')
 local tvb_server = ucursor:get_first(name, 'global', 'tvb_server')
+local custom_server = ucursor:get_first(name, 'global', 'custom_server')
+local proxy_domain_name = ucursor:get_list(name,"@access_control[0]","proxy_domain_name")
 
 function gen_outbound(server_node, tags, local_ports)
     local bound = {}
@@ -107,6 +109,7 @@ if v2ray_flow == "1" then
     table.insert(outbounds_table, gen_outbound(disney_server, "disney",2084))
     table.insert(outbounds_table, gen_outbound(prime_server, "prime",2085))
     table.insert(outbounds_table, gen_outbound(tvb_server, "tvb",2086))
+    table.insert(outbounds_table, gen_outbound(custom_server, "custom",2087))
 else
     table.insert(outbounds_table, gen_outbound(server_section, "main",local_port))
 end
@@ -207,6 +210,12 @@ local tvb_rule = {
     outboundTag = "tvb"
 }
 
+local custom_rule = {
+    type = "field",
+    domain = proxy_domain_name,
+    outboundTag = "custom"
+}
+
 local rules_table = {}
 
 if (youtube_server ~= "nil" and v2ray_flow == "1") then
@@ -231,6 +240,10 @@ end
 
 if (tvb_server ~= "nil" and v2ray_flow == "1") then
     table.insert(rules_table, tvb_rule)
+end
+
+if (custom_server ~= "nil" and v2ray_flow == "1") then
+    table.insert(rules_table, custom_rule)
 end
 
 local v2ray = {

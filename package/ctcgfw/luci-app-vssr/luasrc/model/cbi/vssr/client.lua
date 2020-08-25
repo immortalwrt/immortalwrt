@@ -6,6 +6,8 @@ local m, s, sec, o, kcp_enable
 local vssr = "vssr"
 local gfwmode=0
 
+
+
 if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
 gfwmode=1		
 end
@@ -34,6 +36,9 @@ end
 
 table.sort(key_table) 
 
+local route_name = {"youtube_server","tw_video_server","netflix_server","disney_server","prime_server","tvb_server","custom_server"}
+local route_label = {"Youtube Proxy","TaiWan Video Proxy","Netflix Proxy","Diseny+ Proxy","Prime Video Proxy","TVB Video Proxy","Custom Proxy"}
+
 -- [[ Global Setting ]]--
 s = m:section(TypedSection, "global",translate("Basic Settings [SS|SSR|V2ray|Trojan]"))
 s.anonymous = true
@@ -53,46 +58,13 @@ o = s:option(Flag, "v2ray_flow", translate("Open v2ray route"))
 o.rmempty = false
 o.description = translate("When open v2ray routed,Apply may take more time.")
 
-o = s:option(ListValue, "youtube_server", translate("Youtube Proxy"))
-o:value("nil", translate("Same as Main Server"))
-for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-
-o = s:option(ListValue, "tw_video_server", translate("TaiWan Video Proxy"))
-o:value("nil", translate("Same as Main Server"))
-for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-o = s:option(ListValue, "netflix_server", translate("Netflix Proxy"))
-o:value("nil", translate("Same as Main Server"))
-for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-o = s:option(ListValue, "disney_server", translate("Diseny+ Proxy"))
-o:value("nil", translate("Same as Main Server"))
-for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-
-o = s:option(ListValue, "prime_server", translate("Prime Video Proxy"))
-o:value("nil", translate("Same as Main Server"))
-for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
-
-o = s:option(ListValue, "tvb_server", translate("TVB Video Proxy"))
-o:value("nil", translate("Same as Main Server"))
-for _,key in pairs(key_table) do o:value(key,server_table[key]) end
-o:depends("v2ray_flow", "1")
-o.default = "nil"
+for i,v in pairs(route_name) do  
+	o = s:option(ListValue, v, translate(route_label[i]))
+	o:value("nil", translate("Same as Main Server"))
+	for _,key in pairs(key_table) do o:value(key,server_table[key]) end
+	o:depends("v2ray_flow", "1")
+	o.default = "nil"
+end 
 
 o = s:option(ListValue, "threads", translate("Multi Threads Option"))
 o:value("0", translate("Auto Threads"))

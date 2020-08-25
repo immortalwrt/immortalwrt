@@ -132,7 +132,7 @@ o.description = translate(
 
 o = s:option(Value, "alias", translate("Alias(optional)"))
 
-o = s:option(Value, "flag", translate("Country"))
+o = s:option(Value, "flag", translate("Area"))
 o.description = translate("请自己指定。格式：cn us hk 等")
 o.rmempty = true
 

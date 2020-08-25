@@ -27,7 +27,7 @@ cd "$PWD/src"
 # AFDO profile
 [ ! -f "chrome/android/profiles/afdo.prof" ] && {
 	AFDO_NAME="$(cat "chrome/android/profiles/newest.txt")"
-	[ ! -f "${dl_dir}/${AFDO_NAME}" ] && curl -L "https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm/${AFDO_NAME}" -o "${dl_dir}/${AFDO_NAME}"
+	[ ! -f "${dl_dir}/${AFDO_NAME}" ] && curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm/${AFDO_NAME}" -o "${dl_dir}/${AFDO_NAME}"
 	bzip2 -cd > "chrome/android/profiles/afdo.prof" < "${dl_dir}/${AFDO_NAME}"
 }
 
@@ -35,7 +35,7 @@ cd "$PWD/src"
 [ ! -d "third_party/llvm-build/Release+Asserts/bin" ] && {
 	mkdir -p "third_party/llvm-build/Release+Asserts"
 	CLANG_REVISION="$(python3 "tools/clang/scripts/update.py" --print-revision)"
-	[ ! -f "${dl_dir}/clang-${CLANG_REVISION}.tgz" ] && curl -L "https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64/clang-${CLANG_REVISION}.tgz" -o "${dl_dir}/clang-${CLANG_REVISION}.tgz"
+	[ ! -f "${dl_dir}/clang-${CLANG_REVISION}.tgz" ] && curl -f --connect-timeout 20 --retry 5 --location --insecure "https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64/clang-${CLANG_REVISION}.tgz" -o "${dl_dir}/clang-${CLANG_REVISION}.tgz"
 	tar -xzf "${dl_dir}/clang-${CLANG_REVISION}.tgz" -C "third_party/llvm-build/Release+Asserts"
 }
 
@@ -43,7 +43,7 @@ cd "$PWD/src"
 [ ! -f "gn/out/gn" ] && {
 	mkdir -p "gn/out"
 	GN_VERSION="$(grep "'gn_version':" "buildtools/DEPS" | cut -d"'" -f4)"
-	[ ! -f "${dl_dir}/gn-${GN_VERSION}.zip" ] && curl -L "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/${GN_VERSION}" -o "${dl_dir}/gn-${GN_VERSION}.zip"
+	[ ! -f "${dl_dir}/gn-${GN_VERSION}.zip" ] && curl -f --connect-timeout 20 --retry 5 --location --insecure "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/${GN_VERSION}" -o "${dl_dir}/gn-${GN_VERSION}.zip"
 	unzip -o "${dl_dir}/gn-${GN_VERSION}.zip" -d "gn/out"
 }
 
