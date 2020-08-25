@@ -25,11 +25,6 @@ y:value("0", translate("disabled"))
 y:value("1", translate("enabled"))
 y.description = translate("Set to enable or disable dns cache")
 
-y = s:option(ListValue, "enable_udp", translate("Enable UDP"))
-y:value("0", translate("disabled"))
-y:value("1", translate("enabled"))
-y.description = translate("Enable udp traffic ,make sure your server support udp")
-
 y = s:option(ListValue, "access_control", translate("Access Control"))
 y:value("0", translate("disabled"))
 y:value("1", translate("Whitelist IPs"))
