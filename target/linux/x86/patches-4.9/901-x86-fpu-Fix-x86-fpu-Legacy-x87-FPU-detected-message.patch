@@ -1,8 +1,6 @@
-diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-index 1d7770447b3e..1691311e5b23 100644
 --- a/arch/x86/kernel/fpu/xstate.c
 +++ b/arch/x86/kernel/fpu/xstate.c
-@@ -705,8 +705,14 @@ void __init fpu__init_system_xstate(void)
+@@ -703,8 +703,14 @@ void __init fpu__init_system_xstate(void
  	WARN_ON_FPU(!on_boot_cpu);
  	on_boot_cpu = 0;
  

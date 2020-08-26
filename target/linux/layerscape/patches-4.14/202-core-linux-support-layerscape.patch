@@ -539,7 +539,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2354,7 +2354,8 @@ int register_netdevice_notifier(struct n
+@@ -2377,7 +2377,8 @@ int register_netdevice_notifier(struct n
  int unregister_netdevice_notifier(struct notifier_block *nb);
  
  struct netdev_notifier_info {
@@ -549,7 +549,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  };
  
  struct netdev_notifier_info_ext {
-@@ -2386,6 +2387,7 @@ static inline void netdev_notifier_info_
+@@ -2409,6 +2410,7 @@ static inline void netdev_notifier_info_
  					     struct net_device *dev)
  {
  	info->dev = dev;
@@ -557,7 +557,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  }
  
  static inline struct net_device *
-@@ -2394,6 +2396,12 @@ netdev_notifier_info_to_dev(const struct
+@@ -2417,6 +2419,12 @@ netdev_notifier_info_to_dev(const struct
  	return info->dev;
  }
  
@@ -623,7 +623,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  EXPORT_SYMBOL(dma_noop_ops);
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -4367,8 +4367,14 @@ void page_frag_free(void *addr)
+@@ -4372,8 +4372,14 @@ void page_frag_free(void *addr)
  {
  	struct page *page = virt_to_head_page(addr);
  
@@ -642,7 +642,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -166,7 +166,6 @@ static struct list_head offload_base __r
+@@ -167,7 +167,6 @@ static struct workqueue_struct *napi_wor
  
  static int netif_rx_internal(struct sk_buff *skb);
  static int call_netdevice_notifiers_info(unsigned long val,
@@ -650,7 +650,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  					 struct netdev_notifier_info *info);
  static struct napi_struct *napi_by_id(unsigned int napi_id);
  
-@@ -1311,10 +1310,11 @@ EXPORT_SYMBOL(netdev_features_change);
+@@ -1312,10 +1311,11 @@ EXPORT_SYMBOL(netdev_features_change);
  void netdev_state_change(struct net_device *dev)
  {
  	if (dev->flags & IFF_UP) {
@@ -665,7 +665,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  					      &change_info.info);
  		rtmsg_ifinfo(RTM_NEWLINK, dev, 0, GFP_KERNEL);
  	}
-@@ -1535,9 +1535,10 @@ EXPORT_SYMBOL(dev_disable_lro);
+@@ -1536,9 +1536,10 @@ EXPORT_SYMBOL(dev_disable_lro);
  static int call_netdevice_notifier(struct notifier_block *nb, unsigned long val,
  				   struct net_device *dev)
  {
@@ -678,7 +678,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  	return nb->notifier_call(nb, val, &info);
  }
  
-@@ -1662,11 +1663,9 @@ EXPORT_SYMBOL(unregister_netdevice_notif
+@@ -1663,11 +1664,9 @@ EXPORT_SYMBOL(unregister_netdevice_notif
   */
  
  static int call_netdevice_notifiers_info(unsigned long val,
@@ -690,7 +690,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  	return raw_notifier_call_chain(&netdev_chain, val, info);
  }
  
-@@ -1681,9 +1680,11 @@ static int call_netdevice_notifiers_info
+@@ -1682,9 +1681,11 @@ static int call_netdevice_notifiers_info
  
  int call_netdevice_notifiers(unsigned long val, struct net_device *dev)
  {
@@ -704,7 +704,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  }
  EXPORT_SYMBOL(call_netdevice_notifiers);
  
-@@ -1706,7 +1707,7 @@ static int call_netdevice_notifiers_mtu(
+@@ -1707,7 +1708,7 @@ static int call_netdevice_notifiers_mtu(
  
  	BUILD_BUG_ON(offsetof(struct netdev_notifier_info_ext, info) != 0);
  
@@ -713,7 +713,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  }
  
  #ifdef CONFIG_NET_INGRESS
-@@ -6375,7 +6376,15 @@ static int __netdev_upper_dev_link(struc
+@@ -6434,7 +6435,15 @@ static int __netdev_upper_dev_link(struc
  				   struct net_device *upper_dev, bool master,
  				   void *upper_priv, void *upper_info)
  {
@@ -730,7 +730,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  	int ret = 0;
  
  	ASSERT_RTNL();
-@@ -6393,12 +6402,7 @@ static int __netdev_upper_dev_link(struc
+@@ -6452,12 +6461,7 @@ static int __netdev_upper_dev_link(struc
  	if (master && netdev_master_upper_dev_get(dev))
  		return -EBUSY;
  
@@ -744,7 +744,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  					    &changeupper_info.info);
  	ret = notifier_to_errno(ret);
  	if (ret)
-@@ -6410,7 +6414,7 @@ static int __netdev_upper_dev_link(struc
+@@ -6469,7 +6473,7 @@ static int __netdev_upper_dev_link(struc
  		return ret;
  
  	netdev_update_addr_mask(dev);
@@ -753,7 +753,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  					    &changeupper_info.info);
  	ret = notifier_to_errno(ret);
  	if (ret)
-@@ -6474,21 +6478,25 @@ EXPORT_SYMBOL(netdev_master_upper_dev_li
+@@ -6533,21 +6537,25 @@ EXPORT_SYMBOL(netdev_master_upper_dev_li
  void netdev_upper_dev_unlink(struct net_device *dev,
  			     struct net_device *upper_dev)
  {
@@ -784,7 +784,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  				      &changeupper_info.info);
  }
  EXPORT_SYMBOL(netdev_upper_dev_unlink);
-@@ -6504,11 +6512,13 @@ EXPORT_SYMBOL(netdev_upper_dev_unlink);
+@@ -6563,11 +6571,13 @@ EXPORT_SYMBOL(netdev_upper_dev_unlink);
  void netdev_bonding_info_change(struct net_device *dev,
  				struct netdev_bonding_info *bonding_info)
  {
@@ -800,7 +800,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  				      &info.info);
  }
  EXPORT_SYMBOL(netdev_bonding_info_change);
-@@ -6634,11 +6644,13 @@ EXPORT_SYMBOL(dev_get_nest_level);
+@@ -6693,11 +6703,13 @@ EXPORT_SYMBOL(dev_get_nest_level);
  void netdev_lower_state_changed(struct net_device *lower_dev,
  				void *lower_state_info)
  {
@@ -816,7 +816,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  				      &changelowerstate_info.info);
  }
  EXPORT_SYMBOL(netdev_lower_state_changed);
-@@ -6929,11 +6941,14 @@ void __dev_notify_flags(struct net_devic
+@@ -6988,11 +7000,14 @@ void __dev_notify_flags(struct net_devic
  
  	if (dev->flags & IFF_UP &&
  	    (changes & ~(IFF_UP | IFF_PROMISC | IFF_ALLMULTI | IFF_VOLATILE))) {
