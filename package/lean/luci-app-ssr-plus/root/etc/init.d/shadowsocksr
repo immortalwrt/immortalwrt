@@ -700,10 +700,6 @@ start() {
 	cat <<-EOF >/tmp/dnsmasq.d/dnsmasq-ssr.conf
 		conf-dir=/tmp/dnsmasq.ssr
 	EOF
-	if [ "$(uci_get_by_type global adblock 0)" == "1" ]; then
-		cp -rf /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
-		awk '!/^$/&&!/^#/{printf("address=/%s/''\n",$0)}' /etc/ssr/deny.list >/tmp/dnsmasq.ssr/denylist.conf
-	fi
 	if rules; then
 		if start_redir_tcp; then
 			start_redir_udp
