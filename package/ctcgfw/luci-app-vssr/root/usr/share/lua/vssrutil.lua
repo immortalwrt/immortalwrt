@@ -11,8 +11,7 @@ local _M = {}
 function _M.get_flag(remark, host)
     local nixio = require "nixio"
     local ip = require "luci.ip"
-    local mm = require 'maxminddb'
-    local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
+    
     local iso_table = {
         "AC", "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
         "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH",
@@ -100,16 +99,39 @@ function _M.get_flag(remark, host)
 
     if (iso_code == nil ) then
         if( host ~= "") then
-            local ret = nixio.getaddrinfo(host, "any")
-            local hostip = ret[1].address
-            local res = db:lookup(hostip)
-            iso_code = string.lower(res:get("country", "iso_code"))
+            local ret = nixio.getaddrinfo(_M.trim(host), "any")
+            if(ret == nil) then
+                iso_code = "un"
+            else
+                local hostip = ret[1].address
+                local status,code = pcall(_M.get_iso,hostip)
+                if(status) then
+                    iso_code = code
+                else
+                    iso_code = "un"
+                end
+            end
         else
             iso_code = "un"
         end
     end
     return string.gsub(iso_code, '\n', '')
 end
+
+function _M.get_iso(ip)
+    local mm = require 'maxminddb'
+    local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
+    local res = db:lookup(ip)
+    return string.lower(res:get("country", "iso_code"))
+end
+
+function _M.get_cname(ip)
+    local mm = require 'maxminddb'
+    local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
+    local res = db:lookup(ip)
+    return string.lower(res:get("country", "names", "zh-CN"))
+end
+
 
 -- Get status of conncet to any site with host and port
 -- Return String:true or nil
@@ -129,7 +151,8 @@ function _M.trim(text)
 end
 
 function _M.wget(url)
-    local stdout = luci.sys.exec(
+    local sys = require "luci.sys"
+    local stdout = sys.exec(
                        'wget-ssl -q --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" --no-check-certificate -t 3 -T 10 -O- "' ..
                            url .. '"')
     return _M.trim(stdout)
