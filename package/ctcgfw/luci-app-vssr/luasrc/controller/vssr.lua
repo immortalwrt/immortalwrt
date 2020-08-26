@@ -2,7 +2,6 @@
 -- Licensed to the public under the GNU General Public License v3.
 module("luci.controller.vssr", package.seeall)
 
-
 function index()
     if not nixio.fs.access("/etc/config/vssr") then return end
 
@@ -59,20 +58,23 @@ end
 function get_subscribe()
     local cjson = require "luci.jsonc"
     local e = {}
-    local name  = "vssr"
+    local name = "vssr"
     local uci = luci.model.uci.cursor()
     local auto_update = luci.http.formvalue("auto_update")
     local auto_update_time = luci.http.formvalue("auto_update_time")
     local proxy = luci.http.formvalue("proxy")
     local subscribe_url = luci.http.formvalue("subscribe_url")
     if subscribe_url ~= "[]" then
-        uci:delete(name,"@server_subscribe[0]",subscribe_url)
-        uci:set(name,"@server_subscribe[0]","auto_update",auto_update)
-        uci:set(name,"@server_subscribe[0]","auto_update_time",auto_update_time)
-        uci:set(name,"@server_subscribe[0]","proxy",proxy)
-        uci:set_list(name,"@server_subscribe[0]","subscribe_url",cjson.parse(subscribe_url))
+        uci:delete(name, "@server_subscribe[0]", subscribe_url)
+        uci:set(name, "@server_subscribe[0]", "auto_update", auto_update)
+        uci:set(name, "@server_subscribe[0]", "auto_update_time",
+                auto_update_time)
+        uci:set(name, "@server_subscribe[0]", "proxy", proxy)
+        uci:set_list(name, "@server_subscribe[0]", "subscribe_url",
+                     cjson.parse(subscribe_url))
         uci:commit(name)
-        luci.sys.exec("nohup /usr/bin/lua /usr/share/vssr/subscribe.lua >/www/check_update.htm 2>/dev/null &")
+        luci.sys.exec(
+            "nohup /usr/bin/lua /usr/share/vssr/subscribe.lua >/www/check_update.htm 2>/dev/null &")
         e.error = 0
     else
         e.error = 1
@@ -102,16 +104,18 @@ function change_node()
     local uci = luci.model.uci.cursor()
     local sid = luci.http.formvalue("set")
     local server = luci.http.formvalue("server")
-    local flow_table = {"youtube","tw_video","netflix","disney","prime","tvb","custom"}
+    local flow_table = {
+        "youtube", "tw_video", "netflix", "disney", "prime", "tvb", "custom"
+    }
     e.status = false
     e.sid = sid
     if sid ~= "" and server ~= "" then
-        uci:set("vssr", '@global[0]', server..'_server', sid)
-        if( server ~= "global" and  server ~= "udp_relay" ) then
+        uci:set("vssr", '@global[0]', server .. '_server', sid)
+        if (server ~= "global" and server ~= "udp_relay") then
             uci:set("vssr", '@global[0]', 'v2ray_flow', "1")
             for i, v in pairs(flow_table) do
-                if( v ~= server) then
-                    uci:set("vssr", '@global[0]', v..'_server', 'nil')
+                if (v ~= server) then
+                    uci:set("vssr", '@global[0]', v .. '_server', 'nil')
                 end
             end
         end
@@ -123,14 +127,14 @@ function change_node()
     luci.http.write_json(e)
 end
 
---设置节点为自动切换
+-- 设置节点为自动切换
 function switch()
     local e = {}
     local uci = luci.model.uci.cursor()
     local sid = luci.http.formvalue("node")
     local isSwitch = uci:get("vssr", sid, "switch_enable")
     local toSwitch = (isSwitch == "1") and "0" or "1"
-    uci:set("vssr", sid, "switch_enable",toSwitch)
+    uci:set("vssr", sid, "switch_enable", toSwitch)
     uci:commit("vssr")
     if isSwitch == "1" then
         e.switch = false
@@ -147,19 +151,19 @@ function act_status()
     math.randomseed(os.time())
     local e = {}
     -- 全局服务器
-    e.global = luci.sys.call("busybox ps -w | grep vssr_t | grep -v grep >/dev/null") == 0
+    e.global = luci.sys.call(
+                   "busybox ps -w | grep vssr_t | grep -v grep >/dev/null") == 0
     -- 检测PDNSD状态
     e.pdnsd = luci.sys.call("pidof pdnsd >/dev/null") == 0
     -- 检测游戏模式状态
-    e.game = luci.sys.call("busybox ps -w | grep vssr_u | grep -v grep >/dev/null") == 0
+    e.game = luci.sys.call(
+                 "busybox ps -w | grep vssr_u | grep -v grep >/dev/null") == 0
     -- 检测Socks5
-    e.socks5 = luci.sys.call("busybox ps -w | grep vssr_s | grep -v grep >/dev/null") == 0
+    e.socks5 = luci.sys.call(
+                   "busybox ps -w | grep vssr_s | grep -v grep >/dev/null") == 0
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
-
-
-
 
 -- 检测单个节点状态并返回连接速度
 function check_port()
@@ -171,38 +175,47 @@ function check_port()
     local t0 = sockets.gettime()
     ret = vssr.check_site(set, port)
     local t1 = sockets.gettime()
-    retstring =  tostring(ret) == "true" and "1" or "0"
+    retstring = tostring(ret) == "true" and "1" or "0"
     local tt = t1 - t0
     luci.http.prepare_content("application/json")
-    luci.http.write_json({ret = retstring , used = math.floor(tt*1000 + 0.5)})
+    luci.http.write_json({ret = retstring, used = math.floor(tt * 1000 + 0.5)})
 end
 
+function get_iso(ip)
+    local mm = require 'maxminddb'
+    local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
+    local res = db:lookup(ip)
+    return string.lower(res:get("country", "iso_code"))
+end
 
+function get_cname(ip)
+    local mm = require 'maxminddb'
+    local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
+    local res = db:lookup(ip)
+    return string.lower(res:get("country", "names", "zh-CN"))
+end
 
 -- 获取当前代理状态 与节点ip
 function check_ip()
     local e = {}
     local d = {}
-    local mm = require 'maxminddb'
     local vssr = require "vssrutil"
     local port = 80
-    local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
     local ip = vssr.wget("http://api.ipify.org/")
+    d.flag = "un"
+    d.country = "Unknown"
     if (ip ~= "") then
-        local res = db:lookup(ip)
-        d.flag = string.lower(res:get("country", "iso_code"))
-        d.country = res:get("country", "names", "zh-CN")
-    else
-        d.flag = "un"
-        d.country = "Unknown"
-        ip = "Unknown"
+        local status, code = pcall(get_iso, ip)
+        if (status) then d.flag = code end
+        local status1, country = pcall(get_cname, ip)
+        if (status1) then d.country = country end
     end
     e.outboard = ip
     e.outboardip = d
-    e.baidu = vssr.check_site("www.baidu.com",port)
-    e.taobao = vssr.check_site("www.taobao.com",port)
-    e.google = vssr.check_site("www.google.com",port)
-    e.youtube = vssr.check_site("www.youtube.com",port)
+    e.baidu = vssr.check_site("www.baidu.com", port)
+    e.taobao = vssr.check_site("www.taobao.com", port)
+    e.google = vssr.check_site("www.google.com", port)
+    e.youtube = vssr.check_site("www.youtube.com", port)
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
@@ -214,11 +227,10 @@ function get_flag()
     local host = luci.http.formvalue("host")
     local remark = luci.http.formvalue("remark")
     e.host = host
-    e.flag = vssr.get_flag(remark,host)
+    e.flag = vssr.get_flag(remark, host)
     luci.http.prepare_content("application/json")
     luci.http.write_json(e)
 end
-
 
 -- 刷新检测文件
 function refresh_data()
