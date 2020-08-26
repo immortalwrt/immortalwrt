@@ -98,11 +98,15 @@ function _M.get_flag(remark, host)
         end
     end
 
-    if (iso_code == nil) then
-        local ret = nixio.getaddrinfo(host, "any")
-        local hostip = ret[1].address
-        local res = db:lookup(hostip)
-        iso_code = string.lower(res:get("country", "iso_code"))
+    if (iso_code == nil ) then
+        if( host ~= "") then
+            local ret = nixio.getaddrinfo(host, "any")
+            local hostip = ret[1].address
+            local res = db:lookup(hostip)
+            iso_code = string.lower(res:get("country", "iso_code"))
+        else
+            iso_code = "un"
+        end
     end
     return string.gsub(iso_code, '\n', '')
 end
@@ -119,17 +123,16 @@ function _M.check_site(host, port)
     return ret
 end
 
-
 function _M.trim(text)
-	if not text or text == "" then
-		return ""
-	end
-	return (string.gsub(text, "^%s*(.-)%s*$", "%1"))
+    if not text or text == "" then return "" end
+    return (string.gsub(text, "^%s*(.-)%s*$", "%1"))
 end
 
 function _M.wget(url)
-	local stdout = luci.sys.exec('wget-ssl -q --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" --no-check-certificate -t 3 -T 10 -O- "' .. url .. '"')
-	return _M.trim(stdout)
+    local stdout = luci.sys.exec(
+                       'wget-ssl -q --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" --no-check-certificate -t 3 -T 10 -O- "' ..
+                           url .. '"')
+    return _M.trim(stdout)
 end
 
 return _M
