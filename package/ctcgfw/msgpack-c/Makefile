@@ -15,7 +15,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/msgpack/msgpack-c/tar.gz/cpp-$(PKG_V
 PKG_HASH:=754c3ace499a63e45b77ef4bcab4ee602c2c414f58403bce826b76ffc2f77d0b
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-cpp-$(PKG_VERSION)
 
-PKG_LICENSE:=GPLv3
+PKG_LICENSE:=BSL-1.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 
