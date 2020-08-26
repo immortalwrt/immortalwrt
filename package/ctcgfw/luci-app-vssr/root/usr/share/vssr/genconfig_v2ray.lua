@@ -15,14 +15,15 @@ local disney_server = ucursor:get_first(name, 'global', 'disney_server')
 local prime_server = ucursor:get_first(name, 'global', 'prime_server')
 local tvb_server = ucursor:get_first(name, 'global', 'tvb_server')
 local custom_server = ucursor:get_first(name, 'global', 'custom_server')
-local proxy_domain_name = ucursor:get_list(name,"@access_control[0]","proxy_domain_name")
+local proxy_domain_name = ucursor:get_list(name, "@access_control[0]",
+                                           "proxy_domain_name")
 
 function gen_outbound(server_node, tags, local_ports)
     local bound = {}
     if server_node == "nil" then
         bound = nil
     else
-         
+
         local server = ucursor:get_all(name, server_node)
         if server.type ~= "v2ray" then
             bound = {
@@ -30,10 +31,7 @@ function gen_outbound(server_node, tags, local_ports)
                 protocol = "socks",
                 settings = {
                     servers = {
-                        {
-                            address = "127.0.0.1",
-                            port = tonumber(local_ports)
-                        }
+                        {address = "127.0.0.1", port = tonumber(local_ports)}
                     }
                 }
             }
@@ -61,7 +59,8 @@ function gen_outbound(server_node, tags, local_ports)
                     network = server.transport,
                     security = (server.tls == '1') and "tls" or "none",
                     tlsSettings = {
-                        allowInsecure = (server.insecure == "1") and true or false,
+                        allowInsecure = (server.insecure == "1") and true or
+                            false,
                         serverName = server.ws_host
                     },
                     kcpSettings = (server.transport == "kcp") and {
@@ -69,7 +68,8 @@ function gen_outbound(server_node, tags, local_ports)
                         tti = tonumber(server.tti),
                         uplinkCapacity = tonumber(server.uplink_capacity),
                         downlinkCapacity = tonumber(server.downlink_capacity),
-                        congestion = (server.congestion == "1") and true or false,
+                        congestion = (server.congestion == "1") and true or
+                            false,
                         readBufferSize = tonumber(server.read_buffer_size),
                         writeBufferSize = tonumber(server.write_buffer_size),
                         header = {type = server.kcp_guise}
@@ -100,18 +100,18 @@ end
 
 local outbounds_table = {}
 
-
 if v2ray_flow == "1" then
-    table.insert(outbounds_table, gen_outbound(server_section, "global",2080))
-    table.insert(outbounds_table, gen_outbound(youtube_server, "youtube",2081))
-    table.insert(outbounds_table, gen_outbound(tw_video_server, "twvideo",2082))
-    table.insert(outbounds_table, gen_outbound(netflix_server, "netflix",2083))
-    table.insert(outbounds_table, gen_outbound(disney_server, "disney",2084))
-    table.insert(outbounds_table, gen_outbound(prime_server, "prime",2085))
-    table.insert(outbounds_table, gen_outbound(tvb_server, "tvb",2086))
-    table.insert(outbounds_table, gen_outbound(custom_server, "custom",2087))
+    table.insert(outbounds_table, gen_outbound(server_section, "global", 2080))
+    table.insert(outbounds_table, gen_outbound(youtube_server, "youtube", 2081))
+    table.insert(outbounds_table, gen_outbound(tw_video_server, "twvideo", 2082))
+    table.insert(outbounds_table, gen_outbound(netflix_server, "netflix", 2083))
+    table.insert(outbounds_table, gen_outbound(disney_server, "disney", 2084))
+    table.insert(outbounds_table, gen_outbound(prime_server, "prime", 2085))
+    table.insert(outbounds_table, gen_outbound(tvb_server, "tvb", 2086))
+    table.insert(outbounds_table, gen_outbound(custom_server, "custom", 2087))
 else
-    table.insert(outbounds_table, gen_outbound(server_section, "main",local_port))
+    table.insert(outbounds_table,
+                 gen_outbound(server_section, "main", local_port))
 end
 
 -- rules gen
@@ -119,20 +119,10 @@ end
 local youtube_rule = {
     type = "field",
     domain = {
-        "youtube",
-        "ggpht.com",
-        "googlevideo.com",
-        "withyoutube.com",
-        "youtu.be",
-        "youtube-nocookie.com",
-        "youtube.com",
-        "youtubeeducation.com",
-        "youtubegaming.com",
-        "youtubei.googleapis.com",
-        "youtubekids.com",
-        "youtubemobilesupport.com",
-        "yt.be",
-        "ytimg.com"
+        "youtube", "ggpht.com", "googlevideo.com", "withyoutube.com",
+        "youtu.be", "youtube-nocookie.com", "youtube.com",
+        "youtubeeducation.com", "youtubegaming.com", "youtubei.googleapis.com",
+        "youtubekids.com", "youtubemobilesupport.com", "yt.be", "ytimg.com"
     },
     outboundTag = "youtube"
 }
@@ -140,15 +130,8 @@ local youtube_rule = {
 local tw_video_rule = {
     type = "field",
     domain = {
-        "vidol.tv",
-        "hinet.net",
-        "books.com",
-        "litv.tv",
-        "pstatic.net",
-        "app-measurement.com",
-        "kktv.com.tw",
-        "gamer.com.tw",
-        "wetv.vip"
+        "vidol.tv", "hinet.net", "books.com", "litv.tv", "pstatic.net",
+        "app-measurement.com", "kktv.com.tw", "gamer.com.tw", "wetv.vip"
     },
     outboundTag = "twvideo"
 }
@@ -156,20 +139,12 @@ local tw_video_rule = {
 local netflix_rule = {
     type = "field",
     domain = {
-        "fast.com",
-        "netflix.ca",
-        "netflix.com",
-        "netflix.net",
-        "netflixinvestor.com",
-        "netflixtechblog.com",
-        "nflxext.com",
-        "nflximg.com",
-        "nflximg.net",
-        "nflxsearch.net",
-        "nflxso.net",
+        "fast.com", "netflix.ca", "netflix.com", "netflix.net",
+        "netflixinvestor.com", "netflixtechblog.com", "nflxext.com",
+        "nflximg.com", "nflximg.net", "nflxsearch.net", "nflxso.net",
         "nflxvideo.net"
     },
-    
+
     outboundTag = "netflix"
 }
 
@@ -185,17 +160,9 @@ local disney_rule = {
 local prime_rule = {
     type = "field",
     domain = {
-        "aiv-cdn.net",
-        "amazonaws.com",
-        "amazonvideo.com",
-        "llnwd.net",
-        "amazonprimevideos.com",
-        "amazonvideo.cc",
-        "prime-video.com",
-        "primevideo.cc",
-        "primevideo.com",
-        "primevideo.info",
-        "primevideo.org",
+        "aiv-cdn.net", "amazonaws.com", "amazonvideo.com", "llnwd.net",
+        "amazonprimevideos.com", "amazonvideo.cc", "prime-video.com",
+        "primevideo.cc", "primevideo.com", "primevideo.info", "primevideo.org",
         "rimevideo.tv"
     },
     outboundTag = "prime"
@@ -203,10 +170,7 @@ local prime_rule = {
 
 local tvb_rule = {
     type = "field",
-    domain = {
-        "tvsuper.com",
-        "tvb.com"
-    },
+    domain = {"tvsuper.com", "tvb.com"},
     outboundTag = "tvb"
 }
 
@@ -259,7 +223,9 @@ local v2ray = {
             protocol = "dokodemo-door",
             settings = {network = proto, followRedirect = true},
             sniffing = {enabled = true, destOverride = {"http", "tls"}},
-            streamSettings = {sockopt = { tproxy = (proto == "tcp") and "redirect" or "tproxy"}}
+            streamSettings = {
+                sockopt = {tproxy = (proto == "tcp") and "redirect" or "tproxy"}
+            }
         }
 
     },

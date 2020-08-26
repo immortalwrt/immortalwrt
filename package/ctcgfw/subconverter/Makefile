@@ -7,12 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=subconverter
-PKG_VERSION:=0.6.3
+PKG_VERSION:=0.6.3-2abbd90
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tindy2013/subconverter.git
-PKG_SOURCE_VERSION:=66f6c6f528bd933b3e82214649fa2d318b8f5a38
+PKG_SOURCE_VERSION:=2abbd901e4211a771704aaed336cfb1a80b26cf0
+PKG_MIRROR_HASH:=de349763b748e80b076c1ebed87c5df80e3aa0fcead472bde768d205be5084b1
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -23,7 +24,6 @@ PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_INSTALL:=1
-PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_DEPENDS:=duktape jpcre2 rapidjson
@@ -42,6 +42,10 @@ endef
 define Package/$(PKG_NAME)/description
 	Utility to convert between various subscription format.
 endef
+
+TARGET_CXXFLAGS := $(FPIC) $(filter-out -O%,$(TARGET_CXXFLAGS)) -O3
+TARGET_CXXFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -flto
+TARGET_LDFLAGS += -Wl,--gc-sections -flto
 
 CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
 
