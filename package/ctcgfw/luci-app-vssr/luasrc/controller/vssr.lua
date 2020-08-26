@@ -97,19 +97,26 @@ end
 
 -- 切换节点
 function change_node()
+    local sockets = require "socket"
     local e = {}
     local uci = luci.model.uci.cursor()
     local sid = luci.http.formvalue("set")
     local server = luci.http.formvalue("server")
+    local flow_table = {"youtube","tw_video","netflix","disney","prime","tvb","custom"}
     e.status = false
     e.sid = sid
     if sid ~= "" and server ~= "" then
-		uci:set("vssr", '@global[0]', server..'_server', sid)
-        if( server ~= "global" ) then
+        uci:set("vssr", '@global[0]', server..'_server', sid)
+        if( server ~= "global" and  server ~= "udp_relay" ) then
             uci:set("vssr", '@global[0]', 'v2ray_flow', "1")
+            for i, v in pairs(flow_table) do
+                if( v ~= server) then
+                    uci:set("vssr", '@global[0]', v..'_server', 'nil')
+                end
+            end
         end
         uci:commit("vssr")
-        luci.sys.exec("/etc/init.d/vssr restart")
+        luci.sys.call("/etc/init.d/vssr restart >/www/restartlog.htm 2>&1")
         e.status = true
     end
     luci.http.prepare_content("application/json")
@@ -178,12 +185,18 @@ function check_ip()
     local d = {}
     local mm = require 'maxminddb'
     local vssr = require "vssrutil"
+    local port = 80
     local db = mm.open('/usr/share/vssr/GeoLite2-Country.mmdb')
     local ip = vssr.wget("http://api.ipify.org/")
-    local res = db:lookup(ip)
-    local port = 80
-    d.flag = string.lower(res:get("country", "iso_code"))
-    d.country = res:get("country", "names", "zh-CN")
+    if (ip ~= "") then
+        local res = db:lookup(ip)
+        d.flag = string.lower(res:get("country", "iso_code"))
+        d.country = res:get("country", "names", "zh-CN")
+    else
+        d.flag = "un"
+        d.country = "Unknown"
+        ip = "Unknown"
+    end
     e.outboard = ip
     e.outboardip = d
     e.baidu = vssr.check_site("www.baidu.com",port)

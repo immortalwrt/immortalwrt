@@ -6,6 +6,7 @@ local gfwmode = 0
 local gfw_count = 0
 local ip_count = 0
 local ad_count = 0
+local server_count = 0
 
 if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then gfwmode = 1 end
 
@@ -23,24 +24,11 @@ if nixio.fs.access("/etc/china_ssr.txt") then
     ip_count = sys.exec("cat /etc/china_ssr.txt | wc -l")
 end
 
-uci:foreach(vssr, "servers", function(s)
-    if s["type"] == "v2ray" then
-        if s.alias then
-            server_table[s[".name"]] = "[%s]:%s" %
-                                           {string.upper(s.type), s.alias}
-        elseif s.server and s.server_port then
-            server_table[s[".name"]] = "[%s]:%s:%s" %
-                                           {
-                    string.upper(s.type), s.server, s.server_port
-                }
-        end
-    end
+
+uci:foreach("vssr", "servers", function(s)
+    server_count = server_count + 1
 end)
 
-local key_table = {}
-for key, _ in pairs(server_table) do table.insert(key_table, key) end
-
-table.sort(key_table)
 m = Map(vssr)
 
 -- [[ 服务器节点故障自动切换设置 ]]--
@@ -98,14 +86,22 @@ o = s:option(DummyValue, "", "")
 o.rawhtml = true
 o.template = "vssr/update_subscribe"
 
-o = s:option(Button, "delete", translate("Delete all severs"))
+o = s:option(Button,"delete",translate("Delete All Subscribe Severs"))
 o.inputstyle = "reset"
+o.description = string.format(translate("Server Count") .. ": %d", server_count)
 o.write = function()
-    uci:delete_all("vssr", "servers", function(s) return true end)
-    uci:commit("vssr")
-    luci.sys.exec("/etc/init.d/vssr stop")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "services", "vssr",
-                                                 "advanced"))
+	uci:delete_all("vssr", "servers", function(s)
+		if s.hashkey or s.isSubscribe then
+			return true
+		else
+			return false
+		end
+	end)
+	uci:save("vssr")
+	uci:commit("vssr")
+	luci.sys.exec("/etc/init.d/vssr restart")
+	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "vssr", "servers"))
+	return
 end
 
 -- [[ adblock ]]--
