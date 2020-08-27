@@ -104,20 +104,12 @@ function change_node()
     local uci = luci.model.uci.cursor()
     local sid = luci.http.formvalue("set")
     local server = luci.http.formvalue("server")
-    local flow_table = {
-        "youtube", "tw_video", "netflix", "disney", "prime", "tvb", "custom"
-    }
     e.status = false
     e.sid = sid
     if sid ~= "" and server ~= "" then
         uci:set("vssr", '@global[0]', server .. '_server', sid)
         if (server ~= "global" and server ~= "udp_relay") then
             uci:set("vssr", '@global[0]', 'v2ray_flow', "1")
-            for i, v in pairs(flow_table) do
-                if (v ~= server) then
-                    uci:set("vssr", '@global[0]', v .. '_server', 'nil')
-                end
-            end
         end
         uci:commit("vssr")
         luci.sys.call("/etc/init.d/vssr restart >/www/restartlog.htm 2>&1")
