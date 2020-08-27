@@ -335,6 +335,7 @@ local execute = function()
                             if result.alias:find("过期时间") or
                                 result.alias:find("剩余流量") or
                                 result.alias:find("QQ群") or
+                                result.alias:find("不支持") or
                                 result.alias:find("官网") or not result.server then
                                 log('丢弃无效节点: ' .. result.type ..
                                         ' 节点, ' .. result.alias)
