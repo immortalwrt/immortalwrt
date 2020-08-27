@@ -1,10 +1,15 @@
 #!/bin/sh
 NAME=shadowsocksr
+switch_server=$1
 uci_get_by_type() {
 	local ret=$(uci get $NAME.@$1[0].$2 2>/dev/null)
 	echo ${ret:=$3}
 }
-GLOBAL_SERVER=$(uci_get_by_type global global_server)
+if [ -z "$switch_server" ]; then
+	GLOBAL_SERVER=$(uci_get_by_type global global_server nil)
+else
+	GLOBAL_SERVER=$switch_server
+fi
 NETFLIX_SERVER=$(uci_get_by_type global netflix_server nil)
 [ "$NETFLIX_SERVER" == "same" ] && NETFLIX_SERVER=$GLOBAL_SERVER
 if [ "$NETFLIX_SERVER" != "nil" ]; then
