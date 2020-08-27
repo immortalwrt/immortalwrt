@@ -13,6 +13,9 @@ function _M.get_flag(remark, host)
     local ip = require "luci.ip"
     
     local iso_table = {
+        "US", "US", "US", "US", "US", "HK", "HK", "TW", "TW", "TW", "TW", "TW", 
+        "JP", "JP", "JP", "GB", "GB", "DE", "DE", "FR", "IN", "TR", "SG", "SG", 
+        "KR", "KR", "KR", "KR", "RU", "IE", "CA", "CA", "AU", "CH", "AU", "AR","RU",
         "AC", "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
         "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH",
         "BI", "BJ", "BL", "BM", "BN", "BO", "BQ", "BR", "BS", "BT", "BV", "BW",
@@ -34,11 +37,14 @@ function _M.get_flag(remark, host)
         "SX", "SY", "SZ", "TA", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL",
         "TM", "TN", "TO", "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "UN",
         "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU", "WF", "WS",
-        "XK", "YE", "YT", "ZA", "ZM", "ZW", "US", "HK", "TW", "JP", "GB", "GB",
-        "DE", "FR", "IN", "TR", "SG", "KR", "RU", "IE"
+        "XK", "YE", "YT", "ZA", "ZM", "ZW"
     }
 
     local emoji_table = {
+        "美国", "US", "洛杉矶","芝加哥","达拉斯", "香港","HK", "台湾", "TW", "TAIWAN","彰化","台北", 
+        "日本", "JP", "JAPAN", "英国", "UK", "德国", "DE", "法国", "印度", "土耳其", "新加坡", "SG", 
+        "韩国", "首尔", "KR", "KOREA", "俄罗斯", "爱尔兰", "CANADA", "加拿大","SYDNEY", "瑞士", "澳大利亚", "阿根廷","RU",
+        
         "🇦🇨", "🇦🇩", "🇦🇪", "🇦🇫", "🇦🇬", "🇦🇮",
         "🇦🇱", "🇦🇲", "🇦🇴", "🇦🇶", "🇦🇷", "🇦🇸",
         "🇦🇹", "🇦🇺", "🇦🇼", "🇦🇽", "🇦🇿", "🇧🇦",
@@ -81,16 +87,13 @@ function _M.get_flag(remark, host)
         "🇹🇼", "🇹🇿", "🇺🇦", "🇺🇬", "🇺🇲", "🇺🇳",
         "🇺🇸", "🇺🇾", "🇺🇿", "🇻🇦", "🇻🇨", "🇻🇪",
         "🇻🇬", "🇻🇮", "🇻🇳", "🇻🇺", "🇼🇫", "🇼🇸",
-        "🇽🇰", "🇾🇪", "🇾🇹", "🇿🇦", "🇿🇲", "🇿🇼",
-        "美国", "香港", "台湾", "日本", "英国", "UK", "德国",
-        "法国", "印度", "土耳其", "新加坡", "韩国", "俄罗斯",
-        "爱尔兰"
+        "🇽🇰", "🇾🇪", "🇾🇹", "🇿🇦", "🇿🇲", "🇿🇼"
     }
 
     local iso_code = nil
     if (remark ~= nil) then
         for i, v in pairs(emoji_table) do
-            if (string.find(remark, v)) then
+            if (string.find(string.lower(remark), string.lower(v))) then
                 iso_code = string.lower(iso_table[i])
                 break
             end
