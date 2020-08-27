@@ -749,9 +749,19 @@ start() {
 				cp -rf /etc/ssr/gfw_list.conf /tmp/dnsmasq.ssr/
 				cp -rf /etc/ssr/gfw_base.conf /tmp/dnsmasq.ssr/
 			fi
-			/usr/share/shadowsocksr/gfw2ipset.sh
+			/usr/share/shadowsocksr/gfw2ipset.sh $switch_server
 		else
 			/usr/bin/ssr-rules -f
+		fi
+	else
+		awk '!/^$/&&!/^#/{printf("address=/%s/''\n",$0)}' /etc/ssr/deny.list >/tmp/dnsmasq.ssr/denylist.conf
+		if [ "$(uci_get_by_type global adblock 0)" == "1" ]; then
+			[ "$1" == "" ] && cp -f /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
+			if [ -f "/tmp/dnsmasq.ssr/ad.conf" ]; then
+				for line in $(cat /etc/ssr/black.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+				for line in $(cat /etc/ssr/white.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+				for line in $(cat /etc/ssr/deny.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+			fi
 		fi
 	fi
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
