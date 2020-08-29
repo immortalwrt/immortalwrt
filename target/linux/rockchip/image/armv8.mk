@@ -10,8 +10,7 @@ define Device/friendlyarm_nanopi-r2s
   DEVICE_MODEL := NanoPi R2S
   SOC := rk3328
   UBOOT_DEVICE_NAME := nanopi-r2s-rk3328
-  DEVICE_PACKAGES := kmod-usb-net kmod-usb-net-rtl8152 \
-    kmod-crypto-rng rng-tools
+  DEVICE_PACKAGES := kmod-usb-net kmod-usb-net-rtl8152
   $(call Device/FitImageLzma)
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r2s
