@@ -142,6 +142,17 @@ platform_check_image() {
 	return 0;
 }
 
+askey_do_upgrade() {
+	local tar_file="$1"
+
+	local board_dir=$(tar tf $tar_file | grep -m 1 '^sysupgrade-.*/$')
+	board_dir=${board_dir%/}
+
+	tar Oxf $tar_file ${board_dir}/root | mtd write - rootfs
+
+	nand_do_upgrade "$1"
+}
+
 zyxel_do_upgrade() {
 	local tar_file="$1"
 
@@ -162,9 +173,11 @@ platform_do_upgrade() {
 	8dev,jalapeno |\
 	aruba,ap-303 |\
 	aruba,ap-303h |\
+	aruba,ap-365 |\
 	avm,fritzbox-7530 |\
 	avm,fritzrepeater-1200 |\
 	avm,fritzrepeater-3000 |\
+	buffalo,wtr-m2133hp |\
 	cilab,meshpoint-one |\
 	hiwifi,c526a |\
 	mobipromo,cm520-79f |\
@@ -187,8 +200,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	asus,rt-acrh17|\
-	asus,rt-ac58u|\
-	asus,rt-ac1300uhp)
+	asus,rt-ac58u)
 		local magic=$(get_magic_long "$1")
 		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
@@ -199,9 +211,12 @@ platform_do_upgrade() {
 			asus_nand_upgrade_tar 20951040 "$1"
 		fi
 		;;
+	cellc,rtl30vw)
+		CI_UBIPART="ubifs"
+		askey_do_upgrade "$1"
+		;;
 	compex,wpj419|\
-	p2w,r619ac|\
-	p2w,r619ac-pcie)
+	p2w,r619ac)
 		nand_do_upgrade "$1"
 		;;
 	linksys,ea6350v3 |\
