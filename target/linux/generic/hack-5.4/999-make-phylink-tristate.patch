@@ -1,0 +1,13 @@
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index e351d65533aa..ac3b50090502 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -239,7 +239,7 @@ endif
+ endif
+ 
+ config PHYLINK
+-	tristate
++	tristate "Phylink config support"
+ 	depends on NETDEVICES
+ 	select PHYLIB
+ 	select SWPHY
