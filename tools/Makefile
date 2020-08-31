@@ -74,7 +74,6 @@ $(curdir)/sdcc/compile := $(curdir)/bison/compile
 $(curdir)/squashfs/compile := $(curdir)/lzma-old/compile
 $(curdir)/squashfskit4/compile := $(curdir)/xz/compile $(curdir)/zlib/compile
 $(curdir)/upx/compile := $(curdir)/ucl/compile
-$(curdir)/wrt350nv2-builder/compile := $(curdir)/zlib/compile
 $(curdir)/zlib/compile := $(curdir)/cmake/compile
 
 ifneq ($(HOST_OS),Linux)
