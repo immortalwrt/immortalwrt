@@ -96,6 +96,9 @@ end
 if api.is_finded("trojan-go") then
     type:value("Trojan-Go", translate("Trojan-Go"))
 end
+if api.is_finded("naive") then
+    type:value("Naiveproxy", translate("NaiveProxy"))
+end
 
 protocol = s:option(ListValue, "protocol", translate("Protocol"))
 protocol:value("vmess", translate("Vmess"))
@@ -156,6 +159,18 @@ end
 brook_tls = s:option(Flag, "brook_tls", translate("Use TLS"))
 brook_tls:depends("brook_protocol", "wsclient")
 
+-- Naiveproxy协议
+naiveproxy_protocol = s:option(ListValue, "naiveproxy_protocol", translate("Naiveproxy Protocol"))
+naiveproxy_protocol:value("https", translate("HTTPS"))
+naiveproxy_protocol:value("quic", translate("QUIC"))
+naiveproxy_protocol:depends("type", "Naiveproxy")
+function naiveproxy_protocol.cfgvalue(self, section)
+	return m:get(section, "protocol")
+end
+function naiveproxy_protocol.write(self, section, value)
+	m:set(section, "protocol", value)
+end
+
 address = s:option(Value, "address", translate("Address (Support Domain Name)"))
 address.rmempty = false
 address:depends("type", "Socks")
@@ -170,6 +185,7 @@ address:depends("type", "Brook")
 address:depends("type", "Trojan")
 address:depends("type", "Trojan-Plus")
 address:depends("type", "Trojan-Go")
+address:depends("type", "Naiveproxy")
 
 --[[
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
@@ -203,9 +219,11 @@ port:depends("type", "Brook")
 port:depends("type", "Trojan")
 port:depends("type", "Trojan-Plus")
 port:depends("type", "Trojan-Go")
+port:depends("type", "Naiveproxy")
 
 username = s:option(Value, "username", translate("Username"))
 username:depends("type", "Socks")
+username:depends("type", "Naiveproxy")
 username:depends("protocol", "http")
 username:depends("protocol", "socks")
 
@@ -218,6 +236,7 @@ password:depends("type", "Brook")
 password:depends("type", "Trojan")
 password:depends("type", "Trojan-Plus")
 password:depends("type", "Trojan-Go")
+password:depends("type", "Naiveproxy")
 password:depends("protocol", "http")
 password:depends("protocol", "socks")
 password:depends("protocol", "shadowsocks")

@@ -154,6 +154,21 @@ msgstr "解析本地和白名单域名"
 msgid "IP:Port mode acceptable, multi value split with english comma."
 msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔。"
 
+msgid "When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS."
+msgstr "当选择的不是默认，则将此DNS强制设置为dnsmasq上游DNS。"
+
+msgid "When the selection is chinadns-ng, forced to be set to dnsmasq upstream DNS."
+msgstr "当选择的是ChinaDNS-NG，则将强制设置为dnsmasq上游DNS。"
+
+msgid "Use ChinaList"
+msgstr "使用chnlist"
+
+msgid "Only useful in non-gfwlist mode."
+msgstr "仅可用于非防火墙表。"
+
+msgid "When used, the domestic DNS will be used only when the chnlist rule is hit, and the domain name that misses the rule will be resolved by remote DNS."
+msgstr "当使用时，只有当命中chnlist规则时，才会使用国内DNS，未命中规则的域名将会使用远程DNS解析。"
+
 msgid "Ali"
 msgstr "阿里"
 
@@ -183,6 +198,15 @@ msgstr "ChinaDNS-NG 公平模式"
 
 msgid "Filtered DNS(For Proxied Domains)"
 msgstr "域名过滤服务(用于被代理的域名)"
+
+msgid "DoH request address"
+msgstr "DoH 请求地址"
+
+msgid "DoH bootstrap DNS"
+msgstr "DoH Bootstrap DNS"
+
+msgid "The Bootstrap DNS server is used to resolve the IP address of the DoH resolver you specify as the upstream."
+msgstr "Bootstrap DNS 服务器用于解析您指定为上游的 DoH 解析器的 IP 地址。"
 
 msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
 msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
@@ -870,6 +894,9 @@ msgstr "Brook协议"
 
 msgid "Use TLS"
 msgstr "使用TLS"
+
+msgid "Naiveproxy Protocol"
+msgstr "Naiveproxy协议"
 
 msgid "V2ray Protocol"
 msgstr "V2ray协议"
