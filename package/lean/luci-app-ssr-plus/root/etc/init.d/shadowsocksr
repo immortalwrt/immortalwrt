@@ -114,8 +114,9 @@ find_bin() {
 	ssr) ret="/usr/bin/ssr-redir" ;;
 	ssr-local) ret="/usr/bin/ssr-local" ;;
 	ssr-server) ret="/usr/bin/ssr-server" ;;
-	v2ray) ret="/usr/bin/v2ray/v2ray" && [ ! -f "$ret" ] && ret="/usr/bin/v2ray" ;;
+	v2ray | vless) ret="/usr/bin/v2ray/v2ray" && [ ! -f "$ret" ] && ret="/usr/bin/v2ray" ;;
 	trojan) ret="/usr/sbin/trojan" ;;
+	naiveproxy) ret="/usr/bin/naive" ;;
 	socks5 | tun) ret="/usr/sbin/redsocks2" ;;
 	esac
 	echo $ret
@@ -185,13 +186,27 @@ gen_config_file() {
 			}
 		EOF
 		;;
-	v2ray)
-		lua /usr/share/shadowsocksr/genv2config.lua $GLOBAL_SERVER tcp $(uci_get_by_name $1 local_port) >/var/etc/v2-ssr-retcp.json
+	v2ray | vless)
+		lua /usr/share/shadowsocksr/gen${type}config.lua $GLOBAL_SERVER tcp $(uci_get_by_name $1 local_port) >/var/etc/v2-ssr-retcp.json
 		sed -i 's/\\//g' /var/etc/v2-ssr-retcp.json
 		;;
 	trojan)
 		lua /usr/share/shadowsocksr/gentrojanconfig.lua $GLOBAL_SERVER nat $(uci_get_by_name $1 local_port) >/var/etc/trojan-ssr-retcp.json
 		sed -i 's/\\//g' /var/etc/trojan-ssr-retcp.json
+		;;
+	naiveproxy)
+		case "$2" in
+		0) PROTO="redir"; FILE_NAME="retcp" ;;
+		1) PROTO="redir"; FILE_NAME="netflix" ;;
+		2) PROTO="socks"; FILE_NAME="socksdns" ;;
+		3) PROTO="socks"; FILE_NAME="local" ;;
+		esac
+		cat <<-EOF >/var/etc/naive-ssr-$FILE_NAME.json
+			{
+			"listen": "$PROTO://0.0.0.0:$3",
+			"proxy": "https://$(uci_get_by_name $1 username):$(uci_get_by_name $1 password)@$(uci_get_by_name $1 server):$(uci_get_by_name $1 server_port)"
+			}
+		EOF
 		;;
 	esac
 }
@@ -343,7 +358,7 @@ start_redir_tcp() {
 		done
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$name $threads Threads Started!" >>/tmp/ssrplus.log
 		;;
-	v2ray)
+	v2ray | vless)
 		$bin -config /var/etc/v2-ssr-retcp.json >/dev/null 2>&1 &
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
 		;;
@@ -352,6 +367,10 @@ start_redir_tcp() {
 			$bin --config /var/etc/trojan-ssr-retcp.json >/dev/null 2>&1 &
 		done
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin --version 2>&1 | head -1) , $threads Threads Started!" >>/tmp/ssrplus.log
+		;;
+	naiveproxy)
+		$bin /var/etc/naive-ssr-retcp.json >/dev/null 2>&1 &
+		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin --version 2>&1 | head -1) Started!" >>/tmp/ssrplus.log
 		;;
 	socks5)
 		/usr/share/shadowsocksr/genred2config.sh "/var/etc/redsocks-ssr-retcp.conf" socks5 tcp $(uci_get_by_name $GLOBAL_SERVER local_port) \
@@ -375,7 +394,7 @@ start_redir_tcp() {
 
 start_redir_udp() {
 	if [ -n "$UDP_RELAY_SERVER" ]; then
-    redir_udp=1
+		redir_udp=1
 		local type=$(uci_get_by_name $UDP_RELAY_SERVER type)
 		local bin=$(find_bin $type)
 		[ ! -f "$bin" ] && echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:Can't find $bin program, can't start!" >>/tmp/ssrplus.log && redir_udp=0 && return 1
@@ -392,8 +411,8 @@ start_redir_udp() {
 			$bin -c $last_config_file $ARG_OTA -U -f /var/run/ssr-reudp.pid >/dev/null 2>&1
 			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:$name Started!" >>/tmp/ssrplus.log
 			;;
-		v2ray)
-			lua /usr/share/shadowsocksr/genv2config.lua $UDP_RELAY_SERVER udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) >/var/etc/v2-ssr-reudp.json
+		v2ray | vless)
+			lua /usr/share/shadowsocksr/gen${type}config.lua $UDP_RELAY_SERVER udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) >/var/etc/v2-ssr-reudp.json
 			sed -i 's/\\//g' /var/etc/v2-ssr-reudp.json
 			$bin -config /var/etc/v2-ssr-reudp.json >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
@@ -404,6 +423,10 @@ start_redir_udp() {
 			$bin --config /var/etc/trojan-ssr-reudp.json >/dev/null 2>&1 &
 			ipt2socks -U -b 0.0.0.0 -4 -s 127.0.0.1 -p 10801 -l $(uci_get_by_name $UDP_RELAY_SERVER local_port) >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:$($bin --version 2>&1 | head -1) Started!" >>/tmp/ssrplus.log
+			;;
+		naiveproxy)
+			redir_udp=0
+			echo "$(date "+%Y-%m-%d %H:%M:%S") $($bin --version | head -1) UDP TPROXY Relay not supported!" >>/tmp/ssrplus.log
 			;;
 		socks5)
 			/usr/share/shadowsocksr/genred2config.sh "/var/etc/redsocks-ssr-reudp.conf" socks5 udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) \
@@ -439,8 +462,9 @@ start_shunt() {
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$name Started!" >>/tmp/ssrplus.log
 			;;
-		v2ray)
-			lua /usr/share/shadowsocksr/genv2config.lua $NETFLIX_SERVER tcp 4321 1088 >/var/etc/v2-ssr-netflix.json
+		v2ray | vless)
+			lua /usr/share/shadowsocksr/gen${type}config.lua $NETFLIX_SERVER tcp 4321 1088 >/var/etc/v2-ssr-netflix.json
+			sed -i 's/\\//g' /var/etc/v2-ssr-netflix.json
 			$bin -config /var/etc/v2-ssr-netflix.json >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
@@ -454,6 +478,14 @@ start_shunt() {
 			$bin --config /var/etc/trojan-ssr-socksdns.json >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$($bin --version 2>&1 | head -1) Started!" >>/tmp/ssrplus.log
+			;;
+		naiveproxy)
+			gen_config_file $NETFLIX_SERVER 1 4321
+			$bin /var/etc/naive-ssr-netflix.json >/dev/null 2>&1 &
+			gen_config_file $NETFLIX_SERVER 2 1088
+			$bin /var/etc/naive-ssr-socksdns.json >/dev/null 2>&1 &
+			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$($bin --version | head -1) Started!" >>/tmp/ssrplus.log
 			;;
 		socks5)
 			/usr/share/shadowsocksr/genred2config.sh "/var/etc/redsocks-ssr-netflix.conf" socks5 tcp 4321 \
@@ -493,8 +525,8 @@ start_local() {
 		$bin -c $CONFIG_SOCK5_FILE -u -f /var/run/ssr-local.pid >/dev/null 2>&1
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$name Started!" >>/tmp/ssrplus.log
 		;;
-	v2ray)
-		lua /usr/share/shadowsocksr/genv2config.lua $local_server tcp 0 $(uci_get_by_type socks5_proxy local_port 1080) >/var/etc/v2-ssr-local.json
+	v2ray | vless)
+		lua /usr/share/shadowsocksr/gen${type}config.lua $local_server tcp 0 $(uci_get_by_type socks5_proxy local_port 1080) >/var/etc/v2-ssr-local.json
 		sed -i 's/\\//g' /var/etc/v2-ssr-local.json
 		$bin -config /var/etc/v2-ssr-local.json >/dev/null 2>&1 &
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
@@ -504,6 +536,11 @@ start_local() {
 		sed -i 's/\\//g' /var/etc/trojan-ssr-local.json
 		$bin --config /var/etc/trojan-ssr-local.json >/dev/null 2>&1 &
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$($bin --version 2>&1 | head -1) Started!" >>/tmp/ssrplus.log
+		;;
+	naiveproxy)
+		gen_config_file $local_server 3 $(uci_get_by_type socks5_proxy local_port 1080)
+		$bin /var/etc/naive-ssr-local.json >/dev/null 2>&1 &
+		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$($bin --version | head -1) Started!" >>/tmp/ssrplus.log
 		;;
 	*)
 		[ -e /proc/sys/net/ipv6 ] && local listenip='-i ::'
@@ -700,10 +737,6 @@ start() {
 	cat <<-EOF >/tmp/dnsmasq.d/dnsmasq-ssr.conf
 		conf-dir=/tmp/dnsmasq.ssr
 	EOF
-	if [ "$(uci_get_by_type global adblock 0)" == "1" ]; then
-		cp -rf /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
-		awk '!/^$/&&!/^#/{printf("address=/%s/''\n",$0)}' /etc/ssr/deny.list >/tmp/dnsmasq.ssr/denylist.conf
-	fi
 	if rules; then
 		if start_redir_tcp; then
 			start_redir_udp
@@ -717,9 +750,19 @@ start() {
 				cp -rf /etc/ssr/gfw_list.conf /tmp/dnsmasq.ssr/
 				cp -rf /etc/ssr/gfw_base.conf /tmp/dnsmasq.ssr/
 			fi
-			/usr/share/shadowsocksr/gfw2ipset.sh
+			/usr/share/shadowsocksr/gfw2ipset.sh $switch_server
 		else
 			/usr/bin/ssr-rules -f
+		fi
+	else
+		awk '!/^$/&&!/^#/{printf("address=/%s/''\n",$0)}' /etc/ssr/deny.list >/tmp/dnsmasq.ssr/denylist.conf
+		if [ "$(uci_get_by_type global adblock 0)" == "1" ]; then
+			[ "$1" == "" ] && cp -f /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
+			if [ -f "/tmp/dnsmasq.ssr/ad.conf" ]; then
+				for line in $(cat /etc/ssr/black.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+				for line in $(cat /etc/ssr/white.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+				for line in $(cat /etc/ssr/deny.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+			fi
 		fi
 	fi
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
@@ -754,7 +797,7 @@ stop() {
 	ps -w | grep -v "grep" | grep ssr-monitor | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "sleep $(uci_get_by_type global switch_time)s" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "sleep 30s" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	killall -q -9 ss-redir ss-local obfs-local ssr-redir ssr-local ssr-server v2ray v2ray-plugin trojan microsocks ipt2socks dns2socks redsocks2 pdnsd
+	killall -q -9 ss-redir ss-local obfs-local ssr-redir ssr-local ssr-server v2ray v2ray-plugin trojan naive microsocks ipt2socks dns2socks redsocks2 pdnsd
 	rm -f /var/lock/ssr-chinaipset.lock /var/lock/ssr-monitor.lock
 	if [ -f "/tmp/dnsmasq.d/dnsmasq-ssr.conf" ]; then
 		rm -rf /tmp/dnsmasq.d/dnsmasq-ssr.conf /tmp/dnsmasq.ssr /tmp/dnsmasq.oversea

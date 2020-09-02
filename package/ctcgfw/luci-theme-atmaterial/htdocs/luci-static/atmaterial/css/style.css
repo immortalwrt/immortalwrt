@@ -1,4 +1,4 @@
-/**
+﻿/**
  *  Material is a clean HTML5 theme for LuCI. It is based on luci-theme-bootstrap and MUI
  *
  *  luci-theme-material
@@ -476,38 +476,57 @@ header > .container > a[class="brand"]:after {
 
 .main > .main-left > .nav > .slide > a[data-title="Status"]:before {
     content: "\e026";
+   color: #5e72e4!important;
+  
 }
 
 .main > .main-left > .nav > .slide > a[data-title="System"]:before {
     content: "\e00a";
+color: #fb6340!important;
 }
 
 .main > .main-left > .nav > .slide > a[data-title="Network"]:before {
     content: "\e00e";
+color: #8965e0!important;
 }
 .main > .main-left > .nav > .slide > a[data-title="VPN"]:before {
     content: "\e029";
+ color: #5F9EA0!important;
 }
 
 .main > .main-left > .nav > .slide > a[data-title="Services"]:before {
     content: "\e01b";
+ color: #11cdef!important;
+}
+.main > .main-left > .nav > .slide > a[data-title="Docker"]:before {
+    content: "\e02c";
+ color: #00b2ee!important;
 }
 
 .main > .main-left > .nav > .slide > a[data-title="NAS"]:before {
     content: "\e00b";
+   color: #f3a4b5!important;
 }
 
 .main > .main-left > .nav > .slide > a[data-title="Control"]:before {
-    content: "\e023";
+    content: "\e021";
+  color: #FFD700!important;
 }
+.main > .main-left > .nav > .slide > a[data-title="Statistics"]:before {
+    content: "\e023";
+  color: #1E90FF!important;
+}
+
 
 .main > .main-left > .nav > .slide > a[data-title="Bandwidth Monitor"]:before {
     content: "\e00f";
+color: #2dce89!important;
 }
 
 .main > .main-left > .nav > li > a[data-title="Logout"] {
     padding-left:36px;
     line-height:40px;
+ color: #9400D3!important;
 }
 .main > .main-left > .nav > li > a[data-title="Logout"]:before {
     content: "\e005";

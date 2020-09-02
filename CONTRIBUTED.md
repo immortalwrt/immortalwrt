@@ -34,7 +34,7 @@ NanoPi R1s(h5) support: [jerrykuku/openwrt-nanopi-r1s-h5](https://github.com/jer
 NanoPi support: [speedyworldclub/nlede](https://github.com/speedyworldclub/nlede).<br/>
 luci-theme-opentomato source: [Leo-Jo-My/luci-theme-opentomato](https://github.com/Leo-Jo-My/luci-theme-opentomato).<br/>
 luci-theme-opentomcat source: [Leo-Jo-My/luci-theme-opentomcat](https://github.com/Leo-Jo-My/luci-theme-opentomcat).<br/>
-qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
+luci-theme-atmaterial source: [yangsongli/luci-theme-atmaterial](https://github.com/yangsongli/luci-theme-atmaterial).<br/>
 luci-theme-Butterfly source: [Leo-Jo-My/luci-theme-Butterfly](https://github.com/Leo-Jo-My/luci-theme-Butterfly).<br/>
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
 package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>
@@ -55,7 +55,8 @@ luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github
 luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
 luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypang13/luci-theme-edge).<br/>
 luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
-luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).
+luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
+luci-theme-infinityfreedom source: [xiaoqingfengATGH/luci-theme-infinityfreedom](https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom).
 
 ## License
 ### Depend on their own License.
