@@ -108,6 +108,14 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan"
 		;;
+	netgear,rbr50|\
+	netgear,rbs50|\
+	netgear,srr60|\
+	netgear,srs60)
+		ucidef_add_switch "switch0" \
+			"0u@eth0" "2:lan" "3:lan" "4:lan"
+		ucidef_set_interface_wan "eth1"
+		;;
 	p2w,r619ac|\
 	zyxel,nbg6617)
 		ucidef_add_switch "switch0" \
