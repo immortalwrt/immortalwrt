@@ -26,7 +26,7 @@
  obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
 --- /dev/null
 +++ b/drivers/net/phy/ar40xx.c
-@@ -0,0 +1,2118 @@
+@@ -0,0 +1,2151 @@
 +/*
 + * Copyright (c) 2016, The Linux Foundation. All rights reserved.
 + *

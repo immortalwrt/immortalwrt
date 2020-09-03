@@ -13,10 +13,38 @@ __target_inc=1
 DEVICE_TYPE?=router
 
 # Default packages - the really basic set
-DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd \
-		  coreutils kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
-		  default-settings luci luci-lib-base luci-compat luci-lib-fs luci-lib-ipkg luci-proto-relay \
-		  luci-app-cpufreq luci-app-turboacc
+DEFAULT_PACKAGES:=\
+	base-files \
+	busybox \
+	ca-bundle \
+	ca-certificates \
+	coreutils \
+	default-settings \
+	dropbear \
+	fstools \
+	kmod-ipt-raw \
+	kmod-nf-nathelper \
+	kmod-nf-nathelper-extra \
+	libc \
+	libgcc \
+	libustream-wolfssl \
+	logd \
+	luci \
+	luci-app-cpufreq \
+	luci-app-turboacc \
+	luci-compat \
+	luci-lib-base \
+	luci-lib-fs \
+	luci-lib-ipkg \
+	luci-proto-relay \
+	mtd \
+	netifd \
+	opkg \
+	uci \
+	uclient-fetch \
+	urandom-seed \
+	urngd \
+	wget
 # For the basic set
 DEFAULT_PACKAGES.basic:=
 # For nas targets
@@ -26,7 +54,16 @@ DEFAULT_PACKAGES.nas:=\
 	lsblk \
 	mdadm
 # For router targets
-DEFAULT_PACKAGES.router:=dnsmasq-full iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c
+DEFAULT_PACKAGES.router:=\
+	dnsmasq-full \
+	firewall \
+	ip6tables \
+	iptables \
+	kmod-ipt-offload \
+	odhcp6c \
+	odhcpd-ipv6only \
+	ppp \
+	ppp-mod-pppoe
 
 ifneq ($(DUMP),)
   all: dumpinfo
