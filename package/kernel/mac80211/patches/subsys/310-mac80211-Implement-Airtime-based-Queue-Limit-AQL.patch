@@ -289,7 +289,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	mutex_init(&local->chanctx_mtx);
 --- a/net/mac80211/sta_info.c
 +++ b/net/mac80211/sta_info.c
-@@ -411,6 +411,9 @@ struct sta_info *sta_info_alloc(struct i
+@@ -412,6 +412,9 @@ struct sta_info *sta_info_alloc(struct i
  		skb_queue_head_init(&sta->ps_tx_buf[i]);
  		skb_queue_head_init(&sta->tx_filtered[i]);
  		sta->airtime[i].deficit = sta->airtime_weight;
@@ -299,7 +299,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	}
  
  	for (i = 0; i < IEEE80211_NUM_TIDS; i++)
-@@ -1913,6 +1916,41 @@ void ieee80211_sta_register_airtime(stru
+@@ -1914,6 +1917,41 @@ void ieee80211_sta_register_airtime(stru
  }
  EXPORT_SYMBOL(ieee80211_sta_register_airtime);
  

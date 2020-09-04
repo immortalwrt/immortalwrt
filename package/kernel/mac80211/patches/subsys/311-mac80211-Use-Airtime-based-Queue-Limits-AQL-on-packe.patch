@@ -57,7 +57,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
   *
 --- a/net/mac80211/status.c
 +++ b/net/mac80211/status.c
-@@ -670,12 +670,26 @@ static void ieee80211_report_used_skb(st
+@@ -669,12 +669,26 @@ static void ieee80211_report_used_skb(st
  				      struct sk_buff *skb, bool dropped)
  {
  	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
@@ -84,7 +84,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	if (info->flags & IEEE80211_TX_INTFL_MLME_CONN_TX) {
  		struct ieee80211_sub_if_data *sdata;
  
-@@ -885,6 +899,7 @@ static void __ieee80211_tx_status(struct
+@@ -884,6 +898,7 @@ static void __ieee80211_tx_status(struct
  	struct ieee80211_bar *bar;
  	int shift = 0;
  	int tid = IEEE80211_NUM_TIDS;
@@ -92,7 +92,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
  	rates_idx = ieee80211_tx_get_rates(hw, info, &retry_count);
  
-@@ -996,6 +1011,17 @@ static void __ieee80211_tx_status(struct
+@@ -995,6 +1010,17 @@ static void __ieee80211_tx_status(struct
  			ieee80211_sta_register_airtime(&sta->sta, tid,
  						       info->status.tx_time, 0);
  
