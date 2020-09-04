@@ -55,8 +55,7 @@ end
 
 local log = function(...)
     if arg1 then
-        local result = os.date("%Y-%m-%d %H:%M:%S: ") ..
-                           table.concat({...}, " ")
+        local result = os.date("%Y-%m-%d %H:%M:%S: ") .. table.concat({...}, " ")
         if arg1 == "log" then
             local f, err = io.open("/var/log/passwall.log", "a")
             if f and err == nil then

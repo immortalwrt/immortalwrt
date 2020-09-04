@@ -46,7 +46,7 @@ config_t_get() {
 }
 
 get_enabled_anonymous_secs() {
-	uci -q show "${CONFIG}" | grep "${1}\[.*\.enabled='1'" | cut -d'.' -sf2
+	uci -q show "${CONFIG}" | grep "${1}\[.*\.enabled='1'" | cut -d '.' -sf2
 }
 
 get_host_ip() {
@@ -282,6 +282,7 @@ load_config() {
 		NO_PROXY=1
 	}
 	
+	CHINADNS_NG=$(config_t_get global chinadns_ng 0)
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
 	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4:53 | sed 's/:/#/g')
 	DNS_CACHE=$(config_t_get global dns_cache 1)
@@ -597,7 +598,7 @@ start_crontab() {
 	if [ "$autoupdate" = "1" ]; then
 		local t="0 $dayupdate * * $weekupdate"
 		[ "$weekupdate" = "7" ] && t="0 $dayupdate * * *"
-		echo "$t lua $APP_PATH/rule_update.lua nil log > /dev/null 2>&1 &" >>/etc/crontabs/root
+		echo "$t lua $APP_PATH/rule_update.lua log > /dev/null 2>&1 &" >>/etc/crontabs/root
 		echolog "配置定时任务：自动更新规则。"
 	fi
 
@@ -630,30 +631,78 @@ stop_crontab() {
 
 start_dns() {
 	if [ "${LOCAL_DNS}" = "https-dns-proxy" ]; then
-		up_china_dns_doh_url=$(config_t_get global up_china_dns_doh_url "https://dns.alidns.com/dns-query")
-		up_china_dns_doh_bootstrap=$(config_t_get global up_china_dns_doh_bootstrap "223.5.5.5,223.6.6.6")
-		ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${LOCAL_DOH_PORT}" -b "${up_china_dns_doh_bootstrap}" -r "${up_china_dns_doh_url}" -4
+		_doh=$(config_t_get global up_china_dns_doh "https://dns.alidns.com/dns-query,223.5.5.5,223.6.6.6,2400:3200::1,2400:3200:baba::1")
+		_doh_url=$(echo $_doh | awk -F ',' '{print $1}')
+		_doh_bootstrap=$(echo $_doh | cut -d ',' -sf 2-)
+		ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${LOCAL_DOH_PORT}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4
 		LOCAL_DNS="127.0.0.1#${LOCAL_DOH_PORT}"
+		unset _doh _doh_url _doh_bootstrap
 	fi
 
-	local dns2socks_socks_server dns2socks_forward dns2sock_cache doh_port pdnsd_port pdnsd_forward other_port up_trust_pdnsd_dns msg
-	local global chnlist returnhome china_ng_chn china_ng_gfw chnlist_param gfwlist_param extra_mode up_trust_chinadns_ng_dns
-	dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
-	dns2socks_forward=$(get_first_dns DNS_FORWARD 53 | sed 's/#/:/g')
-	dns2socks_listen="127.0.0.1:${DNS_PORT}"
-	[ "$DNS_CACHE" == "0" ] && dns2sock_cache="/d"
-	doh_port=${DNS_PORT}
-	pdnsd_port=${DNS_PORT}
+	local pdnsd_forward other_port up_trust_pdnsd_dns msg
+	local global chnlist returnhome china_ng_chn china_ng_gfw chnlist_param gfwlist_param extra_mode
+	dns_listen_port=${DNS_PORT}
 	pdnsd_forward=${DNS_FORWARD}
-	china_ng_chn="${LOCAL_DNS}"
 	other_port=$(expr $DNS_PORT + 1)
 	china_ng_gfw="127.0.0.1#${other_port}"
+	china_ng_chn="${LOCAL_DNS}"
 	returnhome=$(echo "${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE}${UDP_PROXY_MODE}${LOCALHOST_UDP_PROXY_MODE}" | grep "returnhome")
 	global=$(echo "${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE}${UDP_PROXY_MODE}${LOCALHOST_UDP_PROXY_MODE}" | grep "global")
 	chnlist=$(echo "${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE}${UDP_PROXY_MODE}${LOCALHOST_UDP_PROXY_MODE}" | grep "chnroute")
 	[ -n "${returnhome}" ] && china_ng_chn="${china_ng_gfw}" && china_ng_gfw="${LOCAL_DNS}"
 	sed -n 's/^ipset=\/\.\?\([^/]*\).*$/\1/p' "${RULES_PATH}/gfwlist.conf" | sort -u > "${TMP_PATH}/gfwlist.txt"
 	echolog "过滤服务配置：准备接管域名解析[$?]..."
+	
+	[ "$CHINADNS_NG" = "1" ] && {
+		echolog "  | - (chinadns-ng) 只支持2~4级的域名过滤..."
+		[ -z "${global}${chnlist}" ] && echolog "  | - (chinadns-ng) 此模式下，列表外的域名查询会同时发送给本地DNS(可切换到Pdnsd + TCP节点模式解决)..."
+		[ -n "${returnhome}" ] && msg="本地" || msg="代理"
+		[ -z "${global}${chnlist}" ] && echolog "  | - (chinadns-ng) 列表外域名查询的结果，不在中国IP段内(chnroute/chnroute6)时，只采信${msg} DNS 的应答..."
+		echolog "  | - (chinadns-ng) 上游 DNS (${china_ng_gfw}) 有一定概率会比 DNS (${china_ng_chn}) 先返回的话(比如 DNS 的本地查询缓存)，启用 '公平模式' 可以优先接受${msg} DNS 的中国IP段内(chnroute/chnroute6)的应答..."
+		if [ "$DNS_MODE" = "pdnsd" ]; then
+			msg="pdnsd"
+		elif [ "$DNS_MODE" = "dns2socks" ]; then
+			#[ -n "${global}${chnlist}" ] && TUN_DNS=${china_ng_gfw}
+			msg="dns2socks"
+		elif [ "$DNS_MODE" = "https-dns-proxy" ]; then
+			msg="https-dns-proxy(DoH)"
+		elif [ "$DNS_MODE" = "udp" ]; then
+			use_udp_node_resolve_dns=1
+			if [ -z "${returnhome}" ]; then
+				china_ng_gfw="${DNS_FORWARD}"
+			else
+				china_ng_chn="${DNS_FORWARD}"
+			fi
+			msg="udp"
+		elif [ "$DNS_MODE" = "custom" ]; then
+			custom_dns=$(config_t_get global custom_dns)
+			china_ng_gfw="$(echo ${custom_dns} | sed 's/:/#/g')"
+			msg="自定义DNS"
+		fi
+		chnlist_param=
+		[ "$USE_CHNLIST" = "1" ] && {
+			cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
+			if [ -z "${returnhome}" ]; then
+				cat "${RULES_PATH}/direct_host" >> "${TMP_PATH}/chnlist"
+				echolog "  | - [$?](chinadns-ng) 域名白名单合并到中国域名表"
+				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/gfwlist.txt"
+				echolog "  | - [$?](chinadns-ng) 代理域名表合并到防火墙域名表"
+				gfwlist_param="${TMP_PATH}/gfwlist.txt"
+			else
+				echolog "  | - (chinadns-ng) 白名单不与中国域名表合并"
+				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/chnlist"
+				echolog "  | - [$?](chinadns-ng) 忽略防火墙域名表，代理域名表合并到中国域名表"
+			fi
+			chnlist_param="${TMP_PATH}/chnlist"
+			chnlist_param=${chnlist_param:+-m "${chnlist_param}" -M}
+		}
+		[ "$(config_t_get global fair_mode 1)" = "1" ] && extra_mode="-f"
+		ln_start_bin "$(first_type chinadns-ng)" chinadns-ng -l "${dns_listen_port}" ${china_ng_chn:+-c "${china_ng_chn}"} ${chnlist_param} ${china_ng_gfw:+-t "${china_ng_gfw}"} ${gfwlist_param:+-g "${gfwlist_param}"} $extra_mode
+		echolog "  + 过滤服务：ChinaDNS-NG(:${dns_listen_port}${extra_mode}) + ${msg}：中国域名列表：${china_ng_chn:-D114.114.114.114}，防火墙域名列表：${china_ng_gfw:-D8.8.8.8}"
+		#[ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS="${china_ng_gfw}"
+		dns_listen_port=${other_port}
+	}
+	
 	case "$DNS_MODE" in
 	nonuse)
 		echolog "  - 被禁用，设置为非 '默认DNS' 并开启广告过滤可以按本插件内置的广告域名表进行过滤..."
@@ -675,11 +724,7 @@ start_dns() {
 	;;
 	pdnsd)
 		up_trust_pdnsd_dns=$(config_t_get global up_trust_pdnsd_dns "nil")
-		if [ "$up_trust_pdnsd_dns" = "dns2socks" ]; then
-			[ -n "${returnhome}" ] && pdnsd_forward=${china_ng_chn} || pdnsd_forward=${china_ng_gfw}
-			dns2socks_listen=${pdnsd_forward}
-			msg="dns2socks"
-		elif [ "$up_trust_pdnsd_dns" = "udp" ]; then
+		if [ "$up_trust_pdnsd_dns" = "udp" ]; then
 			use_udp_node_resolve_dns=1
 			msg="UDP节点"
 		elif [ "${up_trust_pdnsd_dns}" = "nil" ]; then
@@ -687,82 +732,50 @@ start_dns() {
 		fi
 		echolog "  - 域名解析：pdnsd + 使用(${msg})解析域名..."
 	;;
-	chinadns-ng)
-		up_trust_chinadns_ng_dns=$(config_t_get global up_trust_chinadns_ng_dns "pdnsd")
-		echolog "  | - (chinadns-ng) 只支持2~4级的域名过滤..."
-		[ -z "${global}${chnlist}" ] && echolog "  | - (chinadns-ng) 此模式下，列表外的域名查询会同时发送给本地DNS(可切换到Pdnsd + TCP节点模式解决)..."
-		[ -n "${returnhome}" ] && msg="本地" || msg="代理"
-		[ -z "${global}${chnlist}" ] && echolog "  | - (chinadns-ng) 列表外域名查询的结果，不在中国IP段内(chnroute/chnroute6)时，只采信${msg} DNS 的应答..."
-		echolog "  | - (chinadns-ng) 上游 DNS (${china_ng_gfw}) 有一定概率会比 DNS (${china_ng_chn}) 先返回的话(比如 DNS 的本地查询缓存)，启用 '公平模式' 可以优先接受${msg} DNS 的中国IP段内(chnroute/chnroute6)的应答..."
-		if [ "$up_trust_chinadns_ng_dns" = "pdnsd" ]; then
-			pdnsd_port=${other_port}
-			msg="pdnsd"
-		elif [ "$up_trust_chinadns_ng_dns" = "dns2socks" ]; then
-			dns2socks_listen=${china_ng_gfw}
-			#[ -n "${global}${chnlist}" ] && TUN_DNS="${dns2socks_listen}"
-			msg="dns2socks"
-		elif [ "$up_trust_chinadns_ng_dns" = "https-dns-proxy" ]; then
-			doh_port=${other_port}
-			msg="https-dns-proxy(DoH)"
-		elif [ "$up_trust_chinadns_ng_dns" = "udp" ]; then
-			use_udp_node_resolve_dns=1
-			if [ -z "${returnhome}" ]; then
-				china_ng_gfw=${DNS_FORWARD}
-			else
-				china_ng_chn="${DNS_FORWARD}"
-			fi
-			msg="udp"
-		fi
-		chnlist_param=
-		[ "$USE_CHNLIST" = "1" ] && {
-			cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
-			if [ -z "${returnhome}" ]; then
-				cat "${RULES_PATH}/direct_host" >> "${TMP_PATH}/chnlist"
-				echolog "  | - [$?](chinadns-ng) 域名白名单合并到中国域名表"
-				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/gfwlist.txt"
-				echolog "  | - [$?](chinadns-ng) 代理域名表合并到防火墙域名表"
-				gfwlist_param="${TMP_PATH}/gfwlist.txt"
-			else
-				echolog "  | - (chinadns-ng) 白名单不与中国域名表合并"
-				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/chnlist"
-				echolog "  | - [$?](chinadns-ng) 忽略防火墙域名表，代理域名表合并到中国域名表"
-			fi
-			chnlist_param="${TMP_PATH}/chnlist"
-			chnlist_param=${chnlist_param:+-m "${chnlist_param}" -M}
-		}
-		[ "$(config_t_get global fair_mode 1)" = "1" ] && extra_mode="-f"
-		ln_start_bin "$(first_type chinadns-ng)" chinadns-ng -l "${DNS_PORT}" ${china_ng_chn:+-c "${china_ng_chn}"} ${chnlist_param} ${china_ng_gfw:+-t "${china_ng_gfw}"} ${gfwlist_param:+-g "${gfwlist_param}"} $extra_mode
-		echolog "  + 过滤服务：ChinaDNS-NG(:${DNS_PORT}${extra_mode}) + ${msg}：中国域名列表：${china_ng_chn:-D114.114.114.114}，防火墙域名列表：${china_ng_gfw:-D8.8.8.8}"
-		#[ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS="${china_ng_gfw}"
+	udp)
+		use_udp_node_resolve_dns=1
+		msg="直接使用UDP节点请求DNS"
 	;;
-	*)
-		TUN_DNS="$(echo ${DNS_MODE} | sed 's/:/#/g')"
-		DNS_MODE="other_dns"
-		echolog "  - 域名解析：指定DNS服务器(支持UDP查询)解析域名：${TUN_DNS}"
+	custom)
+		[ "$CHINADNS_NG" != "1" ] && {
+			custom_dns=$(config_t_get global custom_dns)
+			TUN_DNS="$(echo ${custom_dns} | sed 's/:/#/g')"
+			echolog "  - 域名解析 直接使用UDP协议自定义DNS（$TUN_DNS）解析..."
+		}
 	;;
 	esac
-	if [ -n "$(echo ${DNS_MODE}${up_trust_chinadns_ng_dns} | grep pdnsd)" ]; then
-		gen_pdnsd_config "${pdnsd_port}" "${pdnsd_forward}"
+	if [ -n "$(echo ${DNS_MODE} | grep pdnsd)" ]; then
+		gen_pdnsd_config "${dns_listen_port}" "${pdnsd_forward}"
 		ln_start_bin "$(first_type pdnsd)" pdnsd --daemon -c "${TMP_PATH}/pdnsd/pdnsd.conf" -d
 	fi
-	if [ -n "$(echo ${DNS_MODE}${up_trust_chinadns_ng_dns} | grep 'https-dns-proxy')" ]; then
-		doh_url=$(config_t_get global doh_url "https://dns.google/dns-query")
-		doh_bootstrap=$(config_t_get global doh_bootstrap "8.8.4.4")
+	if [ -n "$(echo ${DNS_MODE} | grep 'https-dns-proxy')" ]; then
+		up_trust_doh=$(config_t_get global up_trust_doh "https://dns.google/dns-query,8.8.8.8,8.8.4.4")
+		_doh_url=$(echo $up_trust_doh | awk -F ',' '{print $1}')
+		_doh_bootstrap=$(echo $up_trust_doh | cut -d ',' -sf 2-)
 		
 		up_trust_doh_dns=$(config_t_get global up_trust_doh_dns "tcp")
 		if [ "$up_trust_doh_dns" = "socks" ]; then
 			socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
-			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${doh_port}" -b "${doh_bootstrap}" -r "${doh_url}" -4 -t socks5h://${socks_server}
+			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${dns_listen_port}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4 -t socks5h://${socks_server}
 		elif [ "${up_trust_doh_dns}" = "tcp" ]; then
-			DNS_FORWARD=${doh_bootstrap}:443
-			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${doh_port}" -b "${doh_bootstrap}" -r "${doh_url}" -4
+			DNS_FORWARD=""
+			_doh_bootstrap_dns=$(echo $_doh_bootstrap | sed "s/,/ /g")
+			for _dns in $_doh_bootstrap_dns; do
+				_dns=$(echo $_dns | awk -F ':' '{print $1}'):443
+				[ -n "$DNS_FORWARD" ] && DNS_FORWARD=${DNS_FORWARD},${_dns} || DNS_FORWARD=${_dns}
+			done
+			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${dns_listen_port}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4
+			unset _dns _doh_bootstrap_dns
 		fi
+		unset _doh_url _doh_bootstrap
 	fi
-	if [ -n "$(echo ${DNS_MODE}${up_trust_chinadns_ng_dns}${up_trust_pdnsd_dns} | grep dns2socks)" ]; then
-		dns2socks_listen=$(echo "${dns2socks_listen}" | sed 's/#/:/g')
-		ln_start_bin "$(first_type dns2socks)" dns2socks "$dns2socks_socks_server" "$dns2socks_forward" "$dns2socks_listen" $dns2sock_cache
-		echolog "  - dns2sock(${dns2socks_listen}${dns2sock_cache})，${dns2socks_socks_server:-127.0.0.1:9050} -> ${dns2socks_forward-D46.182.19.48:53}"
-		#[ "${DNS_MODE}" = "chinadns-ng" ] && [ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS=$(echo "${dns2socks_listen}" | sed 's/:/#/g')
+	if [ -n "$(echo ${DNS_MODE}${up_trust_pdnsd_dns} | grep dns2socks)" ]; then
+		local dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
+		local dns2socks_forward=$(get_first_dns DNS_FORWARD 53 | sed 's/#/:/g')
+		[ "$DNS_CACHE" == "0" ] && local dns2sock_cache="/d"
+		ln_start_bin "$(first_type dns2socks)" dns2socks "$dns2socks_socks_server" "$dns2socks_forward" "127.0.0.1:$dns_listen_port" $dns2sock_cache
+		echolog "  - dns2sock(127.0.0.1:${dns_listen_port}${dns2sock_cache})，${dns2socks_socks_server:-127.0.0.1:9050} -> ${dns2socks_forward-D46.182.19.48:53}"
+		#[ "$CHINADNS_NG" = "1" ] && [ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS=$(echo "${dns_listen_port}" | sed 's/:/#/g')
 	fi
 	[ "${use_udp_node_resolve_dns}" = "1" ] && echolog "  * 要求代理 DNS 请求，如上游 DNS 非直连地址，确保 UDP 代理打开，并且已经正确转发"
 	[ "${use_tcp_node_resolve_dns}" = "1" ] && echolog "  * 请确认上游 DNS 支持 TCP 查询，如非直连地址，确保 TCP 代理打开，并且已经正确转发"
@@ -798,7 +811,7 @@ add_dnsmasq() {
 		#始终用国内DNS解析直连（白名单）列表		
 		fwd_dns="${LOCAL_DNS}"
 		#如果使用Chinadns-NG直接交给Chinadns-NG处理
-		[ "${DNS_MODE}" = "chinadns-ng" ] && unset fwd_dns
+		[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 		#如果没使用chnlist直接使用默认DNS
 		[ "${USE_CHNLIST}" = "0" ] && unset fwd_dns
 		sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/direct_host.conf"
@@ -810,7 +823,7 @@ add_dnsmasq() {
 			[ -n "${returnhome}" ] || [ -n "${chnlist}" ] && {
 				[ -n "${global}" ] && unset fwd_dns
 				#如果使用Chinadns-NG直接交给Chinadns-NG处理
-				[ "${DNS_MODE}" = "chinadns-ng" ] && unset fwd_dns
+				[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 				#如果使用回国模式，设置dns为远程DNS。
 				[ -n "${returnhome}" ] && fwd_dns="${TUN_DNS}"
 				sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/chinalist_host.conf"
@@ -821,7 +834,7 @@ add_dnsmasq() {
 		#始终使用远程DNS解析代理（黑名单）列表
 		fwd_dns="${TUN_DNS}"
 		#如果使用Chinadns-NG直接交给Chinadns-NG处理
-		[ "${DNS_MODE}" = "chinadns-ng" ] && unset fwd_dns
+		[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 		#如果使用chnlist直接使用默认DNS
 		[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
 		sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/proxy_host.conf"
@@ -831,7 +844,7 @@ add_dnsmasq() {
 		[ -z "${returnhome}" ] && {
 			fwd_dns="${TUN_DNS}"
 			#如果使用Chinadns-NG直接交给Chinadns-NG处理
-			[ "${DNS_MODE}" = "chinadns-ng" ] && unset fwd_dns
+			[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 			#如果使用chnlist直接使用默认DNS
 			[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
 			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
@@ -843,7 +856,7 @@ add_dnsmasq() {
 		[ "$(config_t_get global_subscribe subscribe_proxy 0)" = "1" ] && {
 			fwd_dns="${TUN_DNS}"
 			#如果使用Chinadns-NG直接交给Chinadns-NG处理
-			[ "${DNS_MODE}" = "chinadns-ng" ] && unset fwd_dns
+			[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 			#如果使用chnlist直接使用默认DNS
 			[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
 			items=$(get_enabled_anonymous_secs "@subscribe_list")
@@ -865,7 +878,7 @@ add_dnsmasq() {
 		[ -n "${chnlist}" ] && msg="中国列表以外"
 		[ -n "${returnhome}" ] && msg="中国列表"
 		[ -n "${global}" ] && msg="全局"
-		if [ "${DNS_MODE}" = "chinadns-ng" ]; then
+		if [ "$CHINADNS_NG" = "1" ]; then
 			#直接交给Chinadns-ng处理
 			servers="${TUN_DNS}" && msg="chinadns-ng"
 		else
@@ -1009,7 +1022,7 @@ start_haproxy() {
 		sort_items="${sort_items}${IFS}${lport} ${item}"
 	done
 
-	items=$(echo "${sort_items}" | sort -n | cut -d' ' -sf 2)
+	items=$(echo "${sort_items}" | sort -n | cut -d ' ' -sf 2)
 
 	unset lport
 	local haproxy_port lbss lbort lbweight export backup
@@ -1017,7 +1030,7 @@ start_haproxy() {
 	for item in ${items}; do
 		unset haproxy_port lbort bbackup
 
-		eval $(uci -q show "${CONFIG}.${item}" | cut -d'.' -sf 3-)
+		eval $(uci -q show "${CONFIG}.${item}" | cut -d '.' -sf 3-)
 		get_ip_port_from "$lbss" bip bport
 
 		[ "$lbort" = "default" ] && lbort=$bport || bport=$lbort

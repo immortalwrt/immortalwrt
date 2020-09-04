@@ -145,6 +145,9 @@ msgstr "过滤模式"
 msgid "No Filter"
 msgstr "不过滤"
 
+msgid "Custom DNS"
+msgstr "自定义DNS"
+
 msgid "IP:Port mode ecceptable for specify other filtered name services."
 msgstr "定义接受 IP:Port 形式的输入，以指定其它域名服务的过滤服务。"
 
@@ -157,8 +160,14 @@ msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔。"
 msgid "When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS."
 msgstr "当选择的不是默认，则将此DNS强制设置为dnsmasq上游DNS。"
 
-msgid "When the selection is chinadns-ng, forced to be set to dnsmasq upstream DNS."
-msgstr "当选择的是ChinaDNS-NG，则将强制设置为dnsmasq上游DNS。"
+msgid "When custom, Please follow the format strictly:"
+msgstr "当自定义时，请严格遵循以下格式："
+
+msgid "Use ChinaDNS-NG"
+msgstr "使用ChinaDNS-NG"
+
+msgid "When checked, forced to be set to dnsmasq upstream DNS."
+msgstr "当勾选，则将强制设置为dnsmasq上游DNS。"
 
 msgid "Use ChinaList"
 msgstr "使用chnlist"
@@ -178,8 +187,8 @@ msgstr "百度"
 msgid "Resolver For The List Proxied"
 msgstr "解析被代理的域名列表"
 
-msgid "Access Filtered DNS By"
-msgstr "由过滤DNS解析，经过"
+msgid "Requery DNS By %s"
+msgstr "通过%s请求DNS"
 
 msgid "Forward To Socks Server"
 msgstr "转发至 Socks 服务器"
@@ -190,8 +199,8 @@ msgstr "Socks服务器"
 msgid "Misconfigured"
 msgstr "配置不当"
 
-msgid "Make sure socks service is available on this address if 'dns2socks' selected."
-msgstr "如启用了 'dns2socks' 请确保此Socks服务可用。"
+msgid "Make sure socks service is available on this address."
+msgstr "请确保此Socks服务可用。"
 
 msgid "ChinaDNS-NG Fair Mode"
 msgstr "ChinaDNS-NG 公平模式"
