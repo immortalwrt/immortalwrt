@@ -575,7 +575,7 @@ local function processData(szType, content, add_mode)
 		log('暂时不支持' .. szType .. "类型的节点订阅，跳过此节点。")
 		return nil
 	end
-	if not result.remarks then
+	if not result.remarks or result.remarks == "" then
 		if result.address and result.port then
 			result.remarks = result.address .. ':' .. result.port
 		else
@@ -841,7 +841,7 @@ local function parse_link(raw, remark, manual)
 				end
 				-- log(result)
 				if result then
-					if is_filter_keyword(result.remarks) or
+					if (not manual and is_filter_keyword(result.remarks)) or
 						not result.address or
 						result.remarks == "NULL" or
 						result.address:match("[^0-9a-zA-Z%-%_%.%s]") or -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场

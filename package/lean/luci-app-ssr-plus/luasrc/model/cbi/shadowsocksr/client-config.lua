@@ -123,6 +123,7 @@ o:value("ss", translate("Shadowsocks New Version"))
 end
 if nixio.fs.access("/usr/bin/v2ray/v2ray") or nixio.fs.access("/usr/bin/v2ray") then
 o:value("v2ray", translate("V2Ray"))
+o:value("vless", translate("VLESS"))
 end
 if nixio.fs.access("/usr/sbin/trojan") then
 o:value("trojan", translate("Trojan"))
@@ -151,6 +152,7 @@ o.rmempty = false
 o:depends("type", "ssr")
 o:depends("type", "ss")
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
@@ -161,6 +163,7 @@ o.rmempty = false
 o:depends("type", "ssr")
 o:depends("type", "ss")
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
@@ -227,10 +230,17 @@ o.rmempty = true
 o:depends("type", "v2ray")
 
 -- VmessId
-o = s:option(Value, "vmess_id", translate("VmessId (UUID)"))
+o = s:option(Value, "vmess_id", translate("Vmess/VLESS ID (UUID)"))
 o.rmempty = true
 o.default = uuid
 o:depends("type", "v2ray")
+o:depends("type", "vless")
+
+-- VLESS Encryption
+o = s:option(Value, "vless_encryption", translate("VLESS Encryption"))
+o.rmempty = true
+o.default = "none"
+o:depends("type", "vless")
 
 -- 加密方式
 o = s:option(ListValue, "security", translate("Encrypt Method"))
@@ -247,6 +257,7 @@ o:value("h2", "HTTP/2")
 o:value("quic", "QUIC")
 o.rmempty = true
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 
 -- [[ TCP部分 ]]--
 
@@ -370,6 +381,7 @@ o.rmempty = true
 o = s:option(Flag, "insecure", translate("allowInsecure"))
 o.rmempty = false
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 o:depends("type", "trojan")
 o.default = "1"
 o.description = translate("If true, allowss insecure connection at TLS client, e.g., TLS server uses unverifiable certificates.")
@@ -378,6 +390,7 @@ o = s:option(Flag, "tls", translate("TLS"))
 o.rmempty = true
 o.default = "0"
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 o:depends("type", "trojan")
 
 o = s:option(Value, "tls_host", translate("TLS Host"))
@@ -390,6 +403,7 @@ o = s:option(Flag, "mux", translate("Mux"))
 o.rmempty = true
 o.default = "0"
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 
 o = s:option(Value, "concurrency", translate("Concurrency"))
 o.datatype = "uinteger"
@@ -403,6 +417,7 @@ o.rmempty = true
 o.default = "0"
 o:depends("type", "trojan")
 o:depends("type", "v2ray")
+o:depends("type", "vless")
 o.description = translate("If you have a self-signed certificate,please check the box")
 
 o = s:option(DummyValue, "upload", translate("Upload"))
