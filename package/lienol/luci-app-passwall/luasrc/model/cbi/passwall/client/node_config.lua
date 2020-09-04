@@ -96,6 +96,9 @@ end
 if api.is_finded("trojan-go") then
     type:value("Trojan-Go", translate("Trojan-Go"))
 end
+if api.is_finded("naive") then
+    type:value("Naiveproxy", translate("NaiveProxy"))
+end
 
 protocol = s:option(ListValue, "protocol", translate("Protocol"))
 protocol:value("vmess", translate("Vmess"))
@@ -142,7 +145,7 @@ for k, v in pairs(nodes_table) do default_node:value(v.id, v.remarks) end
 default_node:depends("protocol", "_shunt")
 
 -- Brook协议
-brook_protocol = s:option(ListValue, "brook_protocol", translate("Brook Protocol"))
+brook_protocol = s:option(ListValue, "brook_protocol", translate("Protocol"))
 brook_protocol:value("client", translate("Brook"))
 brook_protocol:value("wsclient", translate("WebSocket"))
 brook_protocol:depends("type", "Brook")
@@ -155,6 +158,18 @@ end
 
 brook_tls = s:option(Flag, "brook_tls", translate("Use TLS"))
 brook_tls:depends("brook_protocol", "wsclient")
+
+-- Naiveproxy协议
+naiveproxy_protocol = s:option(ListValue, "naiveproxy_protocol", translate("Protocol"))
+naiveproxy_protocol:value("https", translate("HTTPS"))
+naiveproxy_protocol:value("quic", translate("QUIC"))
+naiveproxy_protocol:depends("type", "Naiveproxy")
+function naiveproxy_protocol.cfgvalue(self, section)
+	return m:get(section, "protocol")
+end
+function naiveproxy_protocol.write(self, section, value)
+	m:set(section, "protocol", value)
+end
 
 address = s:option(Value, "address", translate("Address (Support Domain Name)"))
 address.rmempty = false
@@ -170,6 +185,7 @@ address:depends("type", "Brook")
 address:depends("type", "Trojan")
 address:depends("type", "Trojan-Plus")
 address:depends("type", "Trojan-Go")
+address:depends("type", "Naiveproxy")
 
 --[[
 use_ipv6 = s:option(Flag, "use_ipv6", translate("Use IPv6"))
@@ -203,9 +219,11 @@ port:depends("type", "Brook")
 port:depends("type", "Trojan")
 port:depends("type", "Trojan-Plus")
 port:depends("type", "Trojan-Go")
+port:depends("type", "Naiveproxy")
 
 username = s:option(Value, "username", translate("Username"))
 username:depends("type", "Socks")
+username:depends("type", "Naiveproxy")
 username:depends("protocol", "http")
 username:depends("protocol", "socks")
 
@@ -218,6 +236,7 @@ password:depends("type", "Brook")
 password:depends("type", "Trojan")
 password:depends("type", "Trojan-Plus")
 password:depends("type", "Trojan-Go")
+password:depends("type", "Naiveproxy")
 password:depends("protocol", "http")
 password:depends("protocol", "socks")
 password:depends("protocol", "shadowsocks")
@@ -405,7 +424,7 @@ trojan_transport:value("original", "Original")
 trojan_transport:value("ws", "WebSocket")
 trojan_transport:value("h2", "HTTP/2")
 trojan_transport:value("h2+ws", "HTTP/2 & WebSocket")
-trojan_transport.default = "ws"
+trojan_transport.default = "original"
 trojan_transport:depends("type", "Trojan-Go")
 
 trojan_plugin = s:option(ListValue, "plugin_type", translate("Plugin Type"))
