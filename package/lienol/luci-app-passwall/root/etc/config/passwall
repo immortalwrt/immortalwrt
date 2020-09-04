@@ -6,7 +6,7 @@ config global
 	option dns_mode 'pdnsd'
 	option up_china_dns 'default'
 	option dns_forward '8.8.4.4'
-	option use_chnlist '1'
+	option use_chnlist '0'
 	option use_tcp_node_resolve_dns '1'
 	option tcp_proxy_mode 'chnroute'
 	option udp_proxy_mode 'chnroute'
