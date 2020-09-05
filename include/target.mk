@@ -27,7 +27,7 @@ DEFAULT_PACKAGES:=\
 	kmod-nf-nathelper-extra \
 	libc \
 	libgcc \
-	libustream-wolfssl \
+	libustream-openssl \
 	logd \
 	luci \
 	luci-app-cpufreq \
