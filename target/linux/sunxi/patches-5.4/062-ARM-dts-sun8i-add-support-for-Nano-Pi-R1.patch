@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -923,6 +923,7 @@
+@@ -1109,6 +1109,7 @@ dtb-$(CONFIG_MACH_SUN8I) += \
  	sun8i-h3-nanopi-m1-plus.dtb \
  	sun8i-h3-nanopi-neo.dtb \
  	sun8i-h3-nanopi-neo-air.dtb \
@@ -163,33 +163,34 @@
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
 @@ -78,6 +78,7 @@
-                        clock-names = "cpu";
-                        operating-points-v2 = <&cpu0_opp_table>;
-                        #cooling-cells = <2>;
-+                       clock-frequency = <1296000000>;
-                };
-
-                cpu1: cpu@1 {
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
+ 			#cooling-cells = <2>;
++			clock-frequency = <1296000000>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
 @@ -88,6 +89,7 @@
-                        clock-names = "cpu";
-                        operating-points-v2 = <&cpu0_opp_table>;
-                        #cooling-cells = <2>;
-+                       clock-frequency = <1296000000>;
-                };
-
-                cpu2: cpu@2 {
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
+ 			#cooling-cells = <2>;
++			clock-frequency = <1296000000>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
 @@ -98,6 +100,7 @@
-                        clock-names = "cpu";
-                        operating-points-v2 = <&cpu0_opp_table>;
-                        #cooling-cells = <2>;
-+                       clock-frequency = <1296000000>;
-                };
-
-                cpu3: cpu@3 {
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
+ 			#cooling-cells = <2>;
++			clock-frequency = <1296000000>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
 @@ -108,6 +111,7 @@
-                        clock-names = "cpu";
-                        operating-points-v2 = <&cpu0_opp_table>;
-                        #cooling-cells = <2>;
-+                       clock-frequency = <1296000000>;
-                };
-        };
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
+ 			#cooling-cells = <2>;
++			clock-frequency = <1296000000>;
+ 		};
+ 	};
+ 
