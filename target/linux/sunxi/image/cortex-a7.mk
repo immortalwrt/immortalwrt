@@ -54,6 +54,7 @@ define Device/friendlyarm_nanopi-duo2
 	mt7601u-firmware mwl8k-firmware p54-usb-firmware prism54-firmware r8169-firmware rpcd rpcd-mod-rrdns rrdtool1 rs9113-firmware rt2800-usb-firmware rt73-usb-firmware rtl8188eu-firmware rtl8192ce-firmware rtl8192cu-firmware rtl8192de-firmware rtl8192se-firmware rtl8192su-firmware rtl8821ae-firmware swconfigti-3410-firmware ti-5052-firmware triggerhappy uclibcxx usb-modeswitch usbutils wireless-regdb wl12xx-firmware wl18xx-firmware  wpad-mini zlib \
 	travelmate luci-app-travelmate
   SOC := sun8i-h3
+  DEFAULT := n
 endef
 TARGET_DEVICES += friendlyarm_nanopi-duo2
 
@@ -64,6 +65,7 @@ define Device/friendlyarm_nanopi-r1
 	 kmod-brcmfmac kmod-leds-gpio kmod-ledtrig-heartbeat wpad-basic \
 	 brcmfmac-firmware-43430-sdio
   SOC := sun8i-h3
+  DEFAULT := n
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r1
 

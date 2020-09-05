@@ -47,6 +47,7 @@ define Device/friendlyarm_nanopi-r1s
     kmod-usb-net kmod-usb-net-rtl8152
   SUPPORTED_DEVICES:=nanopi-r1s
   $(Device/sun50i-h5)
+  DEFAULT := n
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r1s
 
