@@ -45,7 +45,7 @@ function gen_config(user)
         }
     elseif user.protocol == "shadowsocks" then
         settings = {
-            method = user.v_ss_encrypt_method,
+            method = user.method,
             password = user.password,
             level = tonumber(user.level) or 1,
             network = user.ss_network or "TCP,UDP",

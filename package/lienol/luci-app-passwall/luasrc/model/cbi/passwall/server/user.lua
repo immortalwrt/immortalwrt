@@ -113,7 +113,7 @@ username = s:option(Value, "username", translate("Username"))
 username:depends("protocol", "http")
 username:depends("protocol", "socks")
 
-password = s:option(Value, "password", translate("Password"))
+password = s:option(Value, "password", translate("Password"), translate("The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."))
 password.password = true
 password:depends("type", "SSR")
 password:depends("type", "Brook")
@@ -404,15 +404,14 @@ quic_guise:depends("transport", "quic")
 fallback = s:option(Flag, "fallback", translate("Fallback"))
 fallback:depends({ type = "V2ray", protocol = "vless", transport = "tcp", stream_security = "tls" })
 
-fallback_addr = s:option(Value, "fallback_addr", "Fallback" .. translate("Address (Support Domain Name)"))
-fallback_addr:depends("fallback", "1")
+fallback_alpn = s:option(Value, "fallback_alpn", "Fallback alpn")
+fallback_alpn:depends("fallback", "1")
 
-fallback_port = s:option(Value, "fallback_port", "Fallback" .. translate("Port"))
-fallback_port.datatype = "port"
-fallback_port:depends("fallback", "1")
+fallback_path = s:option(Value, "fallback_path", "Fallback path")
+fallback_path:depends("fallback", "1")
 
-fallback_unix = s:option(Value, "fallback_unix", "Fallback UNIX domain socket", translate("UNIX domain socket, absolute path, you can add @ at the beginning to represent abstract, and it is empty by default. If this value is filled in, addr and port will be ignored."))
-fallback_unix:depends("fallback", "1")
+fallback_dest = s:option(Value, "fallback_dest", "Fallback dest")
+fallback_dest:depends("fallback", "1")
 
 fallback_xver = s:option(Value, "fallback_xver", "Fallback xver")
 fallback_xver.default = 0
