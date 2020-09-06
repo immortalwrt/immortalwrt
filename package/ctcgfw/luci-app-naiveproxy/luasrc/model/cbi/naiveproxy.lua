@@ -22,7 +22,7 @@ server_addr = s:option(Value, "server_addr", translate("Server Address"))
 server_addr.description = translate("proto://user:pass@hostname[:port]")
 server_addr.rmempty = false
 
-extra_argument= s:option(Value, "extra_argument", translate("Extra Argument"))
+extra_argument = s:option(Value, "extra_argument", translate("Extra Argument"))
 extra_argument.description = translate("Appends extra argument to NaiveProxy")
 
 return mp
