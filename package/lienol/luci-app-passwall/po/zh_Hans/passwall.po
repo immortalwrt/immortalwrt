@@ -127,6 +127,9 @@ msgstr "与TCP%s节点相同"
 msgid "New process"
 msgstr "另开进程"
 
+msgid "Current node: %s"
+msgstr "当前节点：%s"
+
 msgid "For proxy specific list."
 msgstr "用于代理特定的列表。"
 
@@ -595,11 +598,11 @@ msgstr "检测时间"
 msgid "Automatic switching cannot be used when this option is checked"
 msgstr "当勾选此选项时，不能使用自动切换"
 
+msgid "Main node"
+msgstr "主节点"
+
 msgid "List of backup nodes"
 msgstr "备用节点的列表"
-
-msgid "List of backup nodes, the first of which must be the primary node and the others the standby node."
-msgstr "备用节点的列表，第一个必须是主节点，其他是备用节点。"
 
 msgid "Configure this node with 127.0.0.1: this port"
 msgstr "使用127.0.0.1和此端口配置节点"

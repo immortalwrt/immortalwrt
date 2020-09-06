@@ -9,6 +9,11 @@ echolog() {
 	echo -e "$d: $1" >> $LOG_FILE
 }
 
+config_n_get() {
+	local ret=$(uci -q get "${CONFIG}.${1}.${2}" 2>/dev/null)
+	echo "${ret:=$3}"
+}
+
 config_t_get() {
 	local index=0
 	[ -n "$4" ] && index=$4
@@ -63,7 +68,7 @@ test_auto_switch() {
 
 	status=$(test_proxy)
 	if [ "$status" == 0 ]; then
-		#echolog "自动切换检测：${type}_${index}节点正常。"
+		echolog "自动切换检测：${type}_${index}节点正常。"
 		return 0
 	elif [ "$status" == 2 ]; then
 		echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"
@@ -71,13 +76,21 @@ test_auto_switch() {
 	elif [ "$status" == 1 ]; then
 		echolog "自动切换检测：${type}_${index}节点异常，开始切换节点！"
 		
-		#检测自动切换列表主节点是否能使用
-		local main_node=$(echo $b_tcp_nodes | awk -F ' ' '{print $1}')
+		#检测主节点是否能使用
+		local main_node=$(config_t_get auto_switch tcp_main1)
 		if [ "$now_node" != "$main_node" ]; then
-			local tmp_port=$(/usr/share/passwall/app.sh get_new_port 61080 tcp)
-			/usr/share/passwall/app.sh run_socks "$main_node" "127.0.0.1" "$tmp_port" "/var/etc/passwall/auto_switch_main.json" "10"
-			proxy_status=$(test_url "https://www.google.com/generate_204" 3 3 "-x socks5h://127.0.0.1:$tmp_port")
-			ps -w | grep -v "grep" | grep "/var/etc/passwall/auto_switch_main.json" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
+			local node_type=$(echo $(config_n_get $main_node type) | tr 'A-Z' 'a-z')
+			if [ "$node_type" == "socks" ]; then
+				local node_address=$(config_n_get $main_node address)
+				local node_port=$(config_n_get $main_node port)
+				[ -n "$node_address" ] && [ -n "$node_port" ] && local curlx="socks5h://$node_address:$node_port"
+			else
+				local tmp_port=$(/usr/share/passwall/app.sh get_new_port 61080 tcp)
+				/usr/share/passwall/app.sh run_socks "$main_node" "127.0.0.1" "$tmp_port" "/var/etc/passwall/auto_switch_$index.json" "10"
+				local curlx="socks5h://127.0.0.1:$tmp_port"
+			fi
+			proxy_status=$(test_url "https://www.google.com/generate_204" 3 3 "-x $curlx")
+			ps -w | grep -v "grep" | grep "/var/etc/passwall/auto_switch_$index.json" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
 			if [ "$proxy_status" -eq 200 ]; then
 				#主节点正常，切换到主节点
 				echolog "自动切换检测：${type}_${index}主节点正常，切换到主节点！"
@@ -90,7 +103,7 @@ test_auto_switch() {
 		in_backup_nodes=$(echo $b_tcp_nodes | grep $now_node)
 		# 判断当前节点是否存在于备用节点列表里
 		if [ -z "$in_backup_nodes" ]; then
-			# 如果不存在，设置第一次节点为新的节点
+			# 如果不存在，设置第一个节点为新的节点
 			new_node=$(echo $b_tcp_nodes | awk -F ' ' '{print $1}')
 		else
 			# 如果存在，设置下一个备用节点为新的节点

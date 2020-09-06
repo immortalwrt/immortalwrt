@@ -29,8 +29,7 @@ o.default = 0
 o.rmempty = false
 
 ---- Testing Time
-o = s:option(Value, "testing_time", translate("How often is a diagnosis made"),
-             translate("Units:minutes"))
+o = s:option(Value, "testing_time", translate("How often is a diagnosis made"), translate("Units:minutes"))
 o.default = "3"
 
 ---- TCP Node
@@ -38,7 +37,12 @@ o.default = "3"
 -- 暂时只支持TCP1
 local tcp_node_num = 1
 for i = 1, tcp_node_num, 1 do
-    o = s:option(DynamicList, "tcp_node" .. i, "TCP " .. i .. " " .. translate("List of backup nodes"), translate("List of backup nodes, the first of which must be the primary node and the others the standby node."))
+    o = s:option(ListValue, "tcp_main" .. i, "TCP " .. i .. " " .. translate("Main node"))
+    for k, v in pairs(nodes_table) do
+        o:value(v.id, v.remarks)
+    end
+    
+    o = s:option(DynamicList, "tcp_node" .. i, "TCP " .. i .. " " .. translate("List of backup nodes"))
     for k, v in pairs(nodes_table) do
         o:value(v.id, v.remarks)
     end
