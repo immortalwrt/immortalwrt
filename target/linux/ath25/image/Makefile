@@ -88,6 +88,7 @@ TARGET_DEVICES += ubnt2
 define Device/ubnt5
   DEVICE_TITLE := Ubiquiti XS5
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 128k | mkfwimage XS5 -v XS5.ar2313
+  DEFAULT := n
 endef
 TARGET_DEVICES += ubnt5
 
