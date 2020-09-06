@@ -514,9 +514,9 @@ node_switch() {
 		local port=$(cat $TMP_PORT_PATH/${1}_${i})
 		run_redir $node "0.0.0.0" $port $config_file $1 $i
 		echo $node > $TMP_ID_PATH/${1}_${i}
-		local node_net=$(echo $1 | tr 'A-Z' 'a-z')
-		uci set $CONFIG.@global[0].${node_net}_node${i}=$node
-		uci commit $CONFIG
+		#local node_net=$(echo $1 | tr 'A-Z' 'a-z')
+		#uci set $CONFIG.@global[0].${node_net}_node${i}=$node
+		#uci commit $CONFIG
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	}
 }
