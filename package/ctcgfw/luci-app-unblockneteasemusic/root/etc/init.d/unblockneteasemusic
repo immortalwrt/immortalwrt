@@ -25,37 +25,37 @@ uci_get_by_name() {
 
 lan_addr="$(uci get network.lan.ipaddr)"
 
-enable="$(uci_get_by_type "unblockneteasemusic" "enable" "0")"
+enable="$(uci_get_by_type "$NAME" "enable" "0")"
 
-music_source="$(uci_get_by_type "unblockneteasemusic" "music_source" "default")"
-neteasemusic_cookie="$(uci_get_by_type "unblockneteasemusic" "neteasemusic_cookie")"
-qq_cookie="$(uci_get_by_type "unblockneteasemusic" "qq_cookie")"
-youtube_key="$(uci_get_by_type "unblockneteasemusic" "youtube_key")"
+music_source="$(uci_get_by_type "$NAME" "music_source" "default")"
+neteasemusic_cookie="$(uci_get_by_type "$NAME" "neteasemusic_cookie")"
+qq_cookie="$(uci_get_by_type "$NAME" "qq_cookie")"
+youtube_key="$(uci_get_by_type "$NAME" "youtube_key")"
 
-replace_music_source="$(uci_get_by_type "unblockneteasemusic" "replace_music_source" "dont_replace")"
-enable_flac="$(uci_get_by_type "unblockneteasemusic" "enable_flac" "0")"
+replace_music_source="$(uci_get_by_type "$NAME" "replace_music_source" "dont_replace")"
+enable_flac="$(uci_get_by_type "$NAME" "enable_flac" "0")"
 [ "${enable_flac}" -eq "1" ] && un_env="ENABLE_FLAC=true"
 
-endpoint_url="$(uci_get_by_type "unblockneteasemusic" "endpoint_url" "http://music.163.com")"
-hijack_ways="$(uci_get_by_type "unblockneteasemusic" "hijack_ways" "use_ipset")"
+endpoint_url="$(uci_get_by_type "$NAME" "endpoint_url" "http://music.163.com")"
+hijack_ways="$(uci_get_by_type "$NAME" "hijack_ways" "use_ipset")"
 
-auto_update="$(uci_get_by_type "unblockneteasemusic" "auto_update" "1")"
-update_time="$(uci_get_by_type "unblockneteasemusic" "update_time" "3")"
+auto_update="$(uci_get_by_type "$NAME" "auto_update" "1")"
+update_time="$(uci_get_by_type "$NAME" "update_time" "3")"
 
-http_port="$(uci_get_by_type "unblockneteasemusic" "http_port" "5200")"
-https_port="$(uci_get_by_type "unblockneteasemusic" "https_port" "5201")"
+http_port="$(uci_get_by_type "$NAME" "http_port" "5200")"
+https_port="$(uci_get_by_type "$NAME" "https_port" "5201")"
 
-keep_core_when_upgrade="$(uci_get_by_type "unblockneteasemusic" "keep_core_when_upgrade")"
-[ "$(uci_get_by_type "unblockneteasemusic" "pub_access")" = "1" ] && addr="0.0.0.0" || addr="${lan_addr}"
-[ "$(uci_get_by_type "unblockneteasemusic" "strict_mode")" = "1" ] && strict_mode="-s"
+keep_core_when_upgrade="$(uci_get_by_type "$NAME" "keep_core_when_upgrade")"
+[ "$(uci_get_by_type "$NAME" "pub_access")" = "1" ] && addr="0.0.0.0" || addr="${lan_addr}"
+[ "$(uci_get_by_type "$NAME" "strict_mode")" = "1" ] && strict_mode="-s"
 
-netease_server_ip="$(uci_get_by_type "unblockneteasemusic" "netease_server_ip")"
+netease_server_ip="$(uci_get_by_type "$NAME" "netease_server_ip")"
 [ -n "${netease_server_ip}" ] && netease_server_ip="-f ${netease_server_ip}"
-proxy_server_ip="$(uci_get_by_type "unblockneteasemusic" "proxy_server_ip")"
+proxy_server_ip="$(uci_get_by_type "$NAME" "proxy_server_ip")"
 [ -n "${proxy_server_ip}" ] && proxy_server_ip="-u ${proxy_server_ip}"
 
-self_issue_cert_crt="$(uci_get_by_type "unblockneteasemusic" "self_issue_cert_crt")"
-self_issue_cert_key="$(uci_get_by_type "unblockneteasemusic" "self_issue_cert_key")"
+self_issue_cert_crt="$(uci_get_by_type "$NAME" "self_issue_cert_crt")"
+self_issue_cert_key="$(uci_get_by_type "$NAME" "self_issue_cert_key")"
 
 set_ipset()
 {
@@ -76,7 +76,7 @@ ipset=/clientlog3.music.163.com/neteasemusic
 
 		if ! ipset list "acl_neteasemusic_http" > "/dev/null"; then ipset create "acl_neteasemusic_http" hash:ip; fi
 		if ! ipset list "acl_neteasemusic_https" > "/dev/null"; then ipset create "acl_neteasemusic_https" hash:ip; fi
-		ip_addr_num="$(uci show "unblockneteasemusic" | grep -c "filter_mode")"
+		ip_addr_num="$(uci show "$NAME" | grep -c "filter_mode")"
 		let ip_addr_num="ip_addr_num-1"
 		[ "${ip_addr_num}" -ge "0" ] && for i in $(seq 0 "${ip_addr_num}")
 		do
@@ -178,6 +178,11 @@ start()
 
 	[ "${enable}" -ne "1" ] && exit 0
 
+	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
+	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/unblockneteasemusic/update.sh update_core" >> "/etc/crontabs/root"
+	echo "*/5 * * * * /usr/share/unblockneteasemusic/log_check.sh" >> "/etc/crontabs/root"
+	/etc/init.d/cron restart > "/dev/null" 2>&1
+
 	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && { rm -f "/usr/share/unblockneteasemusic/local_ver"; bash "/usr/share/unblockneteasemusic/update.sh" "update_core_non_restart"; }
 	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && { echo "Core Not Found, please download it before starting." >> "/tmp/unblockneteasemusic.log"; exit 1; }
 
@@ -225,12 +230,7 @@ start()
 		set_hosts > "/dev/null" 2>&1
 	fi
 
-	[ "$(uci_get_by_type "unblockneteasemusic" pub_access)" = "1" ] && set_ports > "/dev/null" 2>&1
-
-	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
-	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/unblockneteasemusic/update.sh update_core" >> "/etc/crontabs/root"
-	echo "*/5 * * * * /usr/share/unblockneteasemusic/log_check.sh" >> "/etc/crontabs/root"
-	/etc/init.d/cron restart > "/dev/null" 2>&1
+	[ "$(uci_get_by_type "$NAME" pub_access)" = "1" ] && set_ports > "/dev/null" 2>&1
 }
 
 stop()
