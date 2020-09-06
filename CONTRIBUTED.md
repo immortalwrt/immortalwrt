@@ -26,7 +26,6 @@ luci-app-autoipsetadder source: [rufengsuixing/luci-app-autoipsetadder](https://
 luci-app-adguardhome source: [rufengsuixing/luci-app-adguardhome](https://github.com/rufengsuixing/luci-app-adguardhome).<br/>
 Rclone-OpenWrt source: [ElonH/Rclone-OpenWrt](https://github.com/ElonH/Rclone-OpenWrt).<br/>
 luci-app-usb3disable source: [rufengsuixing/luci-app-usb3disable](https://github.com/rufengsuixing/luci-app-usb3disable).<br/>
-qntfs-driver source: [lbbboy/qntfs-driver](https://github.com/lbbboy/qntfs-driver).<br/>
 lua-maxminddb source: [jerrykuku/lua-maxminddb](https://github.com/jerrykuku/lua-maxminddb).<br/>
 package openwrt-mwol: [Mleaf/openwrt-mwol](https://github.com/Mleaf/openwrt-mwol).<br/>
 package gargoyle: [ericpaulbishop/gargoyle](https://github.com/ericpaulbishop/gargoyle).<br/>
