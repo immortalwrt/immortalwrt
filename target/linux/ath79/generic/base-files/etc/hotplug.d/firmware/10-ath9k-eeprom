@@ -82,10 +82,19 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath9k-eeprom-ahb-18100000.wmac.bin")
 	case $board in
+	8dev,lima|\
+	ubnt,unifi)
+		ath9k_eeprom_extract "art" 0x1000 0x800
+		;;
 	avm,fritz1750e|\
 	avm,fritz4020|\
-	avm,fritz450e)
+	avm,fritz450e|\
+	avm,fritzdvbc)
 		ath9k_eeprom_extract_reverse "urlader" 0x1541 0x440
+		;;
+	dlink,dap-2695-a1)
+		ath9k_eeprom_extract "art" 0x1000 0x440
+		ath9k_patch_fw_mac $(mtd_get_mac_ascii bdcfg "wlanmac") 0x2
 		;;
 	dlink,dir-505|\
 	dlink,dir-825-c1|\
@@ -111,9 +120,14 @@ case "$FIRMWARE" in
 	iodata,wn-ac1600dgr|\
 	iodata,wn-ac1600dgr2|\
 	iodata,wn-ag300dgr|\
-	sitecom,wlr-7100)
+	sitecom,wlr-7100|\
+	sitecom,wlr-8100)
 		ath9k_eeprom_extract "art" 0x1000 0x440
 		ath9k_patch_fw_mac $(mtd_get_mac_ascii u-boot-env ethaddr) 0x2
+		;;
+	enterasys,ws-ap3705i)
+		ath9k_eeprom_extract "calibrate" 0x1000 0x440
+		ath9k_patch_fw_mac $(mtd_get_mac_ascii u-boot-env0 RADIOADDR1) 0x2
 		;;
 	nec,wg800hp)
 		ath9k_eeprom_extract "art" 0x1000 0x440
@@ -133,7 +147,8 @@ case "$FIRMWARE" in
 	avm,fritz300e)
 		ath9k_eeprom_extract_reverse "urloader" 0x1541 0x440
 		;;
-	buffalo,wzr-hp-g302h-a1a0)
+	buffalo,wzr-hp-g302h-a1a0|\
+	engenius,enh202-v1)
 		ath9k_eeprom_extract "art" 0x1000 0xeb8
 		;;
 	buffalo,wzr-hp-g450h)
@@ -144,11 +159,16 @@ case "$FIRMWARE" in
 		ath9k_eeprom_extract "art" 0x5000 0x440
 		ath9k_patch_fw_mac $(macaddr_add $(mtd_get_mac_text "mac" 0x18) 1) 0x2
 		;;
+	enterasys,ws-ap3705i)
+		ath9k_eeprom_extract "calibrate" 0x5000 0x440
+		ath9k_patch_fw_mac $(mtd_get_mac_ascii u-boot-env0 RADIOADDR0) 0x2
+		;;
 	ocedo,raccoon|\
 	tplink,tl-wdr3500-v1|\
 	tplink,tl-wdr3600-v1|\
 	tplink,tl-wdr4300-v1|\
 	tplink,tl-wdr4300-v1-il|\
+	tplink,tl-wdr4310-v1|\
 	tplink,tl-wdr4900-v2|\
 	winchannel,wb2000)
 		ath9k_eeprom_extract "art" 0x5000 0x440
@@ -165,11 +185,9 @@ case "$FIRMWARE" in
 	ubnt,nanostation-loco-m|\
 	ubnt,nanostation-m|\
 	ubnt,picostation-m|\
+	ubnt,powerbridge-m|\
 	ubnt,rocket-m)
 		ath9k_eeprom_extract "art" 0x1000 0x1000
-		;;
-	ubnt,unifi)
-		ath9k_eeprom_extract "art" 0x1000 0x800
 		;;
 	wd,mynet-n750)
 		ath9k_eeprom_extract "art" 0x5000 0x440
@@ -190,12 +208,17 @@ case "$FIRMWARE" in
 	netgear,wndr3700|\
 	netgear,wndr3700-v2|\
 	netgear,wndr3800|\
-	netgear,wndr3800ch)
+	netgear,wndr3800ch|\
+	netgear,wndrmac-v1|\
+	netgear,wndrmac-v2)
 		ath9k_eeprom_extract "art" 0x1000 0xeb8
 		;;
 	dlink,dir-825-b1)
 		ath9k_eeprom_extract "caldata" 0x1000 0xeb8
 		ath9k_patch_fw_mac_crc $(mtd_get_mac_text "caldata" 0xffa0) 0x20c
+		;;
+	meraki,mr16)
+		ath9k_eeprom_extract "art" 0x11000 0xeb8
 		;;
 	*)
 		ath9k_eeprom_die "board $board is not supported yet"
@@ -208,12 +231,17 @@ case "$FIRMWARE" in
 	netgear,wndr3700|\
 	netgear,wndr3700-v2|\
 	netgear,wndr3800|\
-	netgear,wndr3800ch)
+	netgear,wndr3800ch|\
+	netgear,wndrmac-v1|\
+	netgear,wndrmac-v2)
 		ath9k_eeprom_extract "art" 0x5000 0xeb8
 		;;
 	dlink,dir-825-b1)
 		ath9k_eeprom_extract "caldata" 0x5000 0xeb8
 		ath9k_patch_fw_mac_crc $(macaddr_add $(mtd_get_mac_text "caldata" 0xffb4) 1) 0x20c
+		;;
+	meraki,mr16)
+		ath9k_eeprom_extract "art" 0x15000 0xeb8
 		;;
 	*)
 		ath9k_eeprom_die "board $board is not supported yet"

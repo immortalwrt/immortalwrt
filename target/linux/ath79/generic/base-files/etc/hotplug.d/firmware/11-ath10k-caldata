@@ -71,7 +71,12 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath10k/cal-pci-0000:00:00.0.bin")
 	case $board in
-	avm,fritz1750e)
+	allnet,all-wap02860ac|\
+	glinet,gl-x750)
+		ath10kcal_extract "art" 0x5000 0x844
+		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_binary art 0x0) +2)
+	avm,fritz1750e|\
+	avm,fritzdvbc)
 		ath10kcal_extract "urlader" 0x198a 0x844
 		;;
 	comfast,cf-wr650ac-v1|\
@@ -86,6 +91,8 @@ case "$FIRMWARE" in
 	ubnt,nanobeam-ac|\
 	ubnt,nanostation-ac|\
 	ubnt,nanostation-ac-loco|\
+	ubnt,powerbeam-5ac-500|\
+	ubnt,powerbeam-5ac-gen2|\
 	ubnt,unifiac-pro|\
 	yuncore,a770)
 		ath10kcal_extract "art" 0x5000 0x844
@@ -99,6 +106,9 @@ case "$FIRMWARE" in
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_binary art 0x0) -1)
 		;;
+	dlink,dap-2695-a1)
+		ath10kcal_extract "art" 0x5000 0x844
+		ath10kcal_patch_mac $(mtd_get_mac_ascii bdcfg wlanmac_a)
 	dlink,dir-859-a1)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(mtd_get_mac_ascii devdata "wlan5mac")
@@ -113,7 +123,8 @@ case "$FIRMWARE" in
 	engenius,epg5000|\
 	iodata,wn-ac1167dgr|\
 	iodata,wn-ac1600dgr2|\
-	sitecom,wlr-7100)
+	sitecom,wlr-7100|\
+	zyxel,nbg6616)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +1)
 		;;
@@ -124,10 +135,6 @@ case "$FIRMWARE" in
 	glinet,gl-ar750)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary art 0x0) +1)
-		;;
-	glinet,gl-x750)
-		ath10kcal_extract "art" 0x5000 0x844
-		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary art 0x0) +2)
 		;;
 	nec,wg800hp)
 		ath10kcal_extract "art" 0x5000 0x844
@@ -177,7 +184,8 @@ case "$FIRMWARE" in
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(cat /sys/class/net/eth0/address) -2)
 		;;
-	tplink,re450-v2)
+	tplink,re450-v2|\
+	tplink,re450-v3)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(macaddr_add $(mtd_get_mac_binary info 0x8) +1)
 		;;
@@ -243,6 +251,13 @@ case "$FIRMWARE" in
 	tplink,archer-c6-v2-us)
 		ath10kcal_extract "art" 0x5000 0x2f20
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_binary mac 0x8) -1)
+		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
+			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
+		;;
+	tplink,tl-wpa8630p-v2-eu|\
+	tplink,tl-wpa8630p-v2-int)
+		ath10kcal_extract "art" 0x5000 0x2f20
+		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_binary mac 0x8) +1)
 		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
 			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
 		;;

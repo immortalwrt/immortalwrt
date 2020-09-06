@@ -42,6 +42,11 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath9k-eeprom-ahb-18100000.wmac.bin")
 	case $board in
+	mikrotik,routerboard-lhg-2nd|\
+	mikrotik,routerboard-sxt-5nd-r2)
+		mikrotik_caldata_extract "art" 0x1000 0x440
+		ath9k_patch_fw_mac $(macaddr_add "$mac_base" +1)
+		;;
 	mikrotik,routerboard-wap-g-5hact2hnd)
 		mikrotik_caldata_extract "art" 0x1000 0x440
 		ath9k_patch_fw_mac $(macaddr_add $(mtd_get_mac_binary art 0x10) +2)

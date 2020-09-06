@@ -11,18 +11,26 @@ ath79_setup_interfaces()
 	case "$board" in
 	adtran,bsap1800-v2|\
 	adtran,bsap1840|\
+	allnet,all-wap02860ac|\
 	alfa-network,ap121f|\
+	arduino,yun|\
 	aruba,ap-105|\
 	avm,fritz1750e|\
 	avm,fritz300e|\
+	avm,fritzdvbc|\
 	comfast,cf-wr752ac-v1|\
+	comfast,cf-e130n-v2|\
 	devolo,dvl1200i|\
 	devolo,dvl1750c|\
 	devolo,dvl1750i|\
 	devolo,dvl1750x|\
+	dlink,dap-1330-a1|\
+	dlink,dap-1365-a1|\
 	dlink,dir-505|\
 	engenius,ecb1750|\
+	enterasys,ws-ap3705i|\
 	glinet,gl-ar300m-lite|\
+	meraki,mr16|\
 	netgear,ex6400|\
 	netgear,ex7300|\
 	ocedo,koala|\
@@ -37,10 +45,12 @@ ath79_setup_interfaces()
 	tplink,cpe510-v2|\
 	tplink,cpe510-v3|\
 	tplink,cpe610-v1|\
+	tplink,cpe610-v2|\
 	tplink,re350k-v1|\
 	tplink,re355-v1|\
 	tplink,re450-v1|\
 	tplink,re450-v2|\
+	tplink,re450-v3|\
 	tplink,tl-wr902ac-v1|\
 	ubnt,bullet-m-ar7240|\
 	ubnt,bullet-m-ar7241|\
@@ -53,6 +63,9 @@ ath79_setup_interfaces()
 	ubnt,nanostation-loco-m|\
 	ubnt,nanostation-loco-m-xw|\
 	ubnt,picostation-m|\
+	ubnt,powerbeam-5ac-500|\
+	ubnt,powerbeam-5ac-gen2|\
+	ubnt,powerbridge-m|\
 	ubnt,rocket-m|\
 	ubnt,unifiac-lite|\
 	ubnt,unifiac-lr|\
@@ -101,10 +114,12 @@ ath79_setup_interfaces()
 	comfast,cf-e110n-v2|\
 	comfast,cf-e120a-v3|\
 	comfast,cf-e314n-v2|\
+	compex,wpj531-16m|\
 	tplink,cpe210-v1|\
 	tplink,cpe220-v2|\
 	tplink,cpe220-v3|\
 	tplink,cpe510-v1|\
+	tplink,wbs210-v1|\
 	tplink,wbs210-v2|\
 	tplink,wbs510-v1|\
 	tplink,wbs510-v2|\
@@ -118,9 +133,15 @@ ath79_setup_interfaces()
 			"0@eth0" "1:lan" "2:lan" "3:lan" "4:lan"
 		;;
 	comfast,cf-wr650ac-v1|\
-	comfast,cf-wr650ac-v2)
+	comfast,cf-wr650ac-v2|\
+	zyxel,nbg6616)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan" "6@eth1"
+		;;
+	compex,wpj344-16m|\
+	compex,wpj563)
+		ucidef_add_switch "switch0" \
+			"0@eth0" "3:lan" "2:wan"
 		;;
 	devolo,dvl1200e|\
 	devolo,dvl1750e|\
@@ -130,6 +151,13 @@ ath79_setup_interfaces()
 	devolo,magic-2-wifi)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "2:wan" "3:lan" "4:lan"
+		;;
+	dlink,dap-2695-a1)
+		ucidef_add_switch "switch0" "0@eth0" "2:lan" "3:wan" "6@eth1"
+		;;
+	dlink,dch-g020-a1)
+		ucidef_add_switch "switch0" \
+			"0@eth0" "1:lan:2" "2:lan:1"
 		;;
 	dlink,dir-825-b1)
 		ucidef_set_interface_wan "eth1"
@@ -158,6 +186,16 @@ ath79_setup_interfaces()
 	embeddedwireless,dorin)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:wan" "2:lan:3" "3:lan:2"
+		;;
+	engenius,enh202-v1)
+		ucidef_set_interface_wan "eth0"
+		ucidef_add_switch "switch0" \
+			"0@eth1" "4:lan:1"
+		;;
+	engenius,ens202ext-v1)
+		ucidef_set_interface_wan "eth1"
+		ucidef_add_switch "switch0" \
+			"0@eth0" "1:lan"
 		;;
 	engenius,ews511ap)
 		ucidef_set_interface_lan "eth0 eth1" "dhcp"
@@ -199,7 +237,9 @@ ath79_setup_interfaces()
 	netgear,wndr3700|\
 	netgear,wndr3700-v2|\
 	netgear,wndr3800|\
-	netgear,wndr3800ch)
+	netgear,wndr3800ch|\
+	netgear,wndrmac-v1|\
+	netgear,wndrmac-v2)
 		ucidef_set_interface_wan "eth1"
 		ucidef_add_switch "switch0" \
 			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "5u@eth0"
@@ -265,6 +305,13 @@ ath79_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth0.1 eth1" "usb0"
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan:1" "2:lan:3" "3:lan:2"
+		;;
+	tplink,tl-wpa8630-v1|\
+	tplink,tl-wpa8630p-v2-eu|\
+	tplink,tl-wpa8630p-v2-int)
+		# port 5 (internal) is the power-line port
+		ucidef_add_switch "switch0" \
+			"0@eth0" "2:lan:3" "3:lan:2" "4:lan:1" "5:lan:4"
 		;;
 	tplink,tl-wr842n-v2)
 		ucidef_set_interface_wan "eth1"
@@ -336,11 +383,18 @@ ath79_setup_macs()
 		lan_mac=$(mtd_get_mac_binary "Board data" 2)
 		label_mac=$lan_mac
 		;;
-	alfa-network,ap121f)
+	alfa-network,ap121f|\
+	engenius,ens202ext-v1)
 		label_mac=$(mtd_get_mac_binary art 0x1002)
 		;;
+	arduino,yun)
+		base_mac=$(mtd_get_mac_binary art 0x1002)
+		lan_mac=$(macaddr_setbit $base_mac 29)
+		[ $lan_mac = $base_mac ] && lan_mac=$(macaddr_unsetbit $base_mac 29)
+		;;
 	avm,fritz1750e|\
-	avm,fritz450e)
+	avm,fritz450e|\
+	avm,fritzdvbc)
 		label_mac=$(fritz_tffs -n macwlan -i $(find_mtd_part "tffs (1)"))
 		;;
 	avm,fritz300e)
@@ -351,8 +405,21 @@ ath79_setup_macs()
 		lan_mac=$(fritz_tffs -n maca -i $(find_mtd_part "tffs (1)"))
 		wan_mac=$(fritz_tffs -n macb -i $(find_mtd_part "tffs (1)"))
 		;;
+	compex,wpj344-16m|\
+	compex,wpj563)
+		wan_mac=$(mtd_get_mac_binary u-boot 0x2e018)
+		;;
 	devolo,magic-2-wifi)
 		label_mac=$(macaddr_add "$(mtd_get_mac_binary art 0x1002)" 3)
+		;;
+	dlink,dap-1330-a1|\
+	dlink,dap-1365-a1|\
+	dlink,dch-g020-a1)
+		lan_mac=$(mtd_get_mac_text "mp" 0x1)
+		label_mac=$lan_mac
+		;;
+	dlink,dap-2695-a1)
+		label_mac=$(mtd_get_mac_ascii bdcfg "wlanmac")
 		;;
 	dlink,dir-825-b1)
 		lan_mac=$(mtd_get_mac_text "caldata" 0xffa0)
@@ -388,6 +455,19 @@ ath79_setup_macs()
 		lan_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
 		label_mac=$(mtd_get_mac_ascii u-boot-env athaddr)
 		;;
+	engenius,enh202-v1|\
+	ubnt,airrouter|\
+	ubnt,bullet-m-ar7240|\
+	ubnt,bullet-m-ar7241|\
+	ubnt,nanobridge-m|\
+	ubnt,nanostation-loco-m|\
+	ubnt,nanostation-m|\
+	ubnt,picostation-m|\
+	ubnt,powerbridge-m|\
+	ubnt,rocket-m|\
+	ubnt,unifi)
+		label_mac=$(cat /sys/class/ieee80211/phy0/macaddress)
+		;;
 	engenius,epg5000)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
 		wan_mac=$(mtd_get_mac_ascii u-boot-env wanaddr)
@@ -397,6 +477,9 @@ ath79_setup_macs()
 		eth1_mac=$(macaddr_add "$lan_mac" 1)
 		ucidef_set_interface "eth0" ifname "eth0" protocol "none" macaddr "$lan_mac"
 		ucidef_set_interface "eth1" ifname "eth1" protocol "none" macaddr "$eth1_mac"
+		;;
+	enterasys,ws-ap3705i)
+		label_mac=$(mtd_get_mac_ascii u-boot-env0 ethaddr)
 		;;
 	iodata,etg3-r)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
@@ -422,7 +505,9 @@ ath79_setup_macs()
 		;;
 	netgear,wndr3700|\
 	netgear,wndr3700-v2|\
-	netgear,wndr3800)
+	netgear,wndr3800|\
+	netgear,wndrmac-v1|\
+	netgear,wndrmac-v2)
 		lan_mac=$(macaddr_setbit_la "$(mtd_get_mac_binary art 0x0)")
 		;;
 	phicomm,k2t)
@@ -458,18 +543,9 @@ ath79_setup_macs()
 		wan_mac=$(mtd_get_mac_text mac 0x18)
 		label_mac=$wan_mac
 		;;
-	ubnt,airrouter|\
-	ubnt,bullet-m-ar7240|\
-	ubnt,bullet-m-ar7241|\
-	ubnt,nanobridge-m|\
-	ubnt,nanostation-loco-m|\
-	ubnt,nanostation-m|\
-	ubnt,picostation-m|\
-	ubnt,rocket-m|\
-	ubnt,unifi)
-		label_mac=$(cat /sys/class/ieee80211/phy0/macaddress)
-		;;
-	ubnt,litebeam-ac-gen2)
+	ubnt,litebeam-ac-gen2|\
+	ubnt,powerbeam-5ac-500|\
+	ubnt,powerbeam-5ac-gen2)
 		label_mac=$(mtd_get_mac_binary art 0x5006)
 		;;
 	ubnt,routerstation|\
@@ -479,6 +555,9 @@ ath79_setup_macs()
 		;;
 	wd,mynet-wifi-rangeextender)
 		lan_mac=$(nvram get et0macaddr)
+		;;
+	zyxel,nbg6616)
+		label_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
 		;;
 	esac
 
