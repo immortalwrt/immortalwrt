@@ -10,7 +10,8 @@ get_dt_led() {
 	[ -f "$nodepath" ] && ledpath=$(cat "$nodepath")
 	[ -n "$ledpath" ] && \
 		label=$(cat "$basepath$ledpath/label" 2>/dev/null) || \
-		label=$(cat "$basepath$ledpath/chan-name" 2>/dev/null)
+		label=$(cat "$basepath$ledpath/chan-name" 2>/dev/null) || \
+		label=$(basename "$basepath$ledpath")
 
 	echo "$label"
 }
