@@ -38,19 +38,6 @@ define Device/friendlyarm_nanopi-neo2
 endef
 TARGET_DEVICES += friendlyarm_nanopi-neo2
 
-define Device/friendlyarm_nanopi-r1s
-  DEVICE_VENDOR := FriendlyARM
-  DEVICE_MODEL:=Nanopi R1S (H5)
-  DEVICE_PACKAGES:=kmod-rtc-sunxi \
-    kmod-leds-gpio kmod-ledtrig-heartbeat \
-    kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic \
-    kmod-usb-net kmod-usb-net-rtl8152
-  SUPPORTED_DEVICES:=nanopi-r1s
-  $(Device/sun50i-h5)
-  DEFAULT := n
-endef
-TARGET_DEVICES += friendlyarm_nanopi-r1s
-
 define Device/olimex_a64-olinuxino
   DEVICE_VENDOR := Olimex
   DEVICE_MODEL := A64-Olinuxino
