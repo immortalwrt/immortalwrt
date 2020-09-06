@@ -69,9 +69,28 @@ for i = 1, tcp_node_num, 1 do
     if i == 1 then
         o = s:taboption("Main", ListValue, "tcp_node" .. i, translate("TCP Node"))
         o.description = translate("For proxy specific list.")
+
+        if tonumber(m:get("@auto_switch[0]", "enable") or 0) == 1 then
+            local now_node = luci.sys.exec(string.format("[ -f '/var/etc/%s/id/TCP_%s' ] && echo -n $(cat /var/etc/%s/id/TCP_%s)", appname, i, appname, i))
+            if now_node and now_node ~= "" then
+                local e = uci:get_all(appname, now_node)
+                if e then
+                    local remarks = ""
+                    if e.type == "V2ray" and (e.protocol == "_balancing" or e.protocol == "_shunt") then
+                        remarks = "%s：[%s] " % {translatef(e.type .. e.protocol), e.remarks}
+                    else
+                        if e.use_kcp and e.use_kcp == "1" then
+                            remarks = "%s+%s：[%s] %s" % {e.type, "Kcptun", e.remarks, e.address}
+                        else
+                            remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
+                        end
+                    end
+                    o.description = o.description .. "<br />" ..translatef("Current node: %s", remarks)
+                end
+            end
+        end
     else
-        o = s:taboption("Main", ListValue, "tcp_node" .. i,
-                     translate("TCP Node") .. " " .. i)
+        o = s:taboption("Main", ListValue, "tcp_node" .. i, translate("TCP Node") .. " " .. i)
     end
     o:value("nil", translate("Close"))
     for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
@@ -88,8 +107,7 @@ for i = 1, udp_node_num, 1 do
         --o:value("tcp", translate("Same as the tcp node"))
         --o:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
     else
-        o = s:taboption("Main", ListValue, "udp_node" .. i,
-                     translate("UDP Node") .. " " .. i)
+        o = s:taboption("Main", ListValue, "udp_node" .. i, translate("UDP Node") .. " " .. i)
         o:value("nil", translate("Close"))
     end
     for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
