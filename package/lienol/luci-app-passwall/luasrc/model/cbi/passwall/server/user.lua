@@ -2,6 +2,15 @@ local d = require "luci.dispatcher"
 local uci = require"luci.model.uci".cursor()
 local api = require "luci.model.cbi.passwall.api.api"
 
+local ss_encrypt_method_list = {
+    "rc4-md5", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "aes-128-ctr",
+    "aes-192-ctr", "aes-256-ctr", "bf-cfb", "camellia-128-cfb",
+    "camellia-192-cfb", "camellia-256-cfb", "salsa20", "chacha20",
+    "chacha20-ietf", -- aead
+    "aes-128-gcm", "aes-192-gcm", "aes-256-gcm", "chacha20-ietf-poly1305",
+    "xchacha20-ietf-poly1305"
+}
+
 local ssr_encrypt_method_list = {
     "none", "table", "rc2-cfb", "rc4", "rc4-md5", "rc4-md5-6", "aes-128-cfb",
     "aes-192-cfb", "aes-256-cfb", "aes-128-ctr", "aes-192-ctr", "aes-256-ctr",
@@ -60,6 +69,12 @@ remarks.default = translate("Remarks")
 remarks.rmempty = false
 
 type = s:option(ListValue, "type", translate("Type"))
+if api.is_finded("ssocksd") then
+    type:value("Socks", translate("Socks"))
+end
+if api.is_finded("ss-server") then
+    type:value("SS", translate("Shadowsocks"))
+end
 if api.is_finded("ssr-server") then
     type:value("SSR", translate("ShadowsocksR"))
 end
@@ -91,7 +106,7 @@ protocol:value("mtproto", "MTProto")
 protocol:depends("type", "V2ray")
 
 -- Brook协议
-brook_protocol = s:option(ListValue, "brook_protocol", translate("Brook Protocol"))
+brook_protocol = s:option(ListValue, "brook_protocol", translate("Protocol"))
 brook_protocol:value("server", "Brook")
 brook_protocol:value("wsserver", "WebSocket")
 brook_protocol:depends("type", "Brook")
@@ -112,9 +127,12 @@ port.rmempty = false
 username = s:option(Value, "username", translate("Username"))
 username:depends("protocol", "http")
 username:depends("protocol", "socks")
+username:depends("type", "Socks")
 
-password = s:option(Value, "password", translate("Password"), translate("The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."))
+password = s:option(Value, "password", translate("Password"))
 password.password = true
+password:depends("type", "Socks")
+password:depends("type", "SS")
 password:depends("type", "SSR")
 password:depends("type", "Brook")
 password:depends("type", "Trojan")
@@ -122,11 +140,30 @@ password:depends("type", "Trojan-Plus")
 password:depends({ type = "V2ray", protocol = "http" })
 password:depends({ type = "V2ray", protocol = "socks" })
 password:depends({ type = "V2ray", protocol = "shadowsocks" })
-password:depends({ type = "V2ray", protocol = "mtproto" })
+
+mtproto_password = s:option(Value, "mtproto_password", translate("Password"), translate("The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."))
+mtproto_password:depends({ type = "V2ray", protocol = "mtproto" })
+mtproto_password.default = arg[1]
+function mtproto_password.cfgvalue(self, section)
+	return m:get(section, "password")
+end
+function mtproto_password.write(self, section, value)
+	m:set(section, "password", value)
+end
 
 decryption = s:option(Value, "decryption", translate("Encrypt Method"))
 decryption.default = "none"
 decryption:depends("protocol", "vless")
+
+ss_encrypt_method = s:option(ListValue, "ss_encrypt_method", translate("Encrypt Method"))
+for a, t in ipairs(ss_encrypt_method_list) do ss_encrypt_method:value(t) end
+ss_encrypt_method:depends("type", "SS")
+function ss_encrypt_method.cfgvalue(self, section)
+	return m:get(section, "method")
+end
+function ss_encrypt_method.write(self, section, value)
+	m:set(section, "method", value)
+end
 
 ssr_encrypt_method = s:option(ListValue, "ssr_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(ssr_encrypt_method_list) do ssr_encrypt_method:value(t) end
@@ -188,11 +225,13 @@ obfs_param:depends("type", "SSR")
 timeout = s:option(Value, "timeout", translate("Connection Timeout"))
 timeout.datatype = "uinteger"
 timeout.default = 300
+timeout:depends("type", "SS")
 timeout:depends("type", "SSR")
 
 tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"), translate("Need node support required"))
 tcp_fast_open:value("false")
 tcp_fast_open:value("true")
+tcp_fast_open:depends("type", "SS")
 tcp_fast_open:depends("type", "SSR")
 tcp_fast_open:depends("type", "Trojan")
 tcp_fast_open:depends("type", "Trojan-Plus")
