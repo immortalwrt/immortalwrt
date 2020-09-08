@@ -65,6 +65,7 @@ treat_warnings_as_errors=false
 
 fieldtrial_testing_like_official_build=true
 
+enable_base_tracing=false
 enable_nacl=false
 enable_print_preview=false
 enable_remoting=false
@@ -78,7 +79,6 @@ use_system_libdrm=false
 use_gnome_keyring=false
 use_libpci=false
 use_pangocairo=false
-use_aura=false
 use_glib=false
 use_pulseaudio=false
 use_udev=false
@@ -109,5 +109,5 @@ ldso_path=\"${ldso_path}\""
 }
 [[ "mips mips64 mipsel mips64el" =~ (^|[[:space:]])"${target_arch}"($|[[:space:]]) ]] && {
 	naive_flags="${naive_flags} use_gold=false is_cfi=false use_cfi_icall=false use_thin_lto=false mips_arch_variant=\"r2\""
-	[[ "${target_arch}" =~ ^"mips"$|^"mipsel"$ ]] && naive_flags="mips_float_abi=\"soft\" mips_tune=\"${cpu_type}\""
+	[[ "${target_arch}" =~ ^"mips"$|^"mipsel"$ ]] && naive_flags="${naive_flags} mips_float_abi=\"soft\" mips_tune=\"${cpu_type}\""
 }

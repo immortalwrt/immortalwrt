@@ -75,7 +75,7 @@ do
 	done
 
 	#dns
-	if [ "$dns_mode" != "nonuse" ]; then
+	if [ "$dns_mode" != "nonuse" ] && [ "$dns_mode" != "custom" ]; then
 		icount=$(netstat -apn | grep 7913 | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/passwall restart

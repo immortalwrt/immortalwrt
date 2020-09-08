@@ -127,6 +127,9 @@ msgstr "与TCP%s节点相同"
 msgid "New process"
 msgstr "另开进程"
 
+msgid "Current node: %s"
+msgstr "当前节点：%s"
+
 msgid "For proxy specific list."
 msgstr "用于代理特定的列表。"
 
@@ -145,6 +148,9 @@ msgstr "过滤模式"
 msgid "No Filter"
 msgstr "不过滤"
 
+msgid "Custom DNS"
+msgstr "自定义DNS"
+
 msgid "IP:Port mode ecceptable for specify other filtered name services."
 msgstr "定义接受 IP:Port 形式的输入，以指定其它域名服务的过滤服务。"
 
@@ -153,6 +159,27 @@ msgstr "解析本地和白名单域名"
 
 msgid "IP:Port mode acceptable, multi value split with english comma."
 msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔。"
+
+msgid "When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS."
+msgstr "当选择的不是默认，则将此DNS强制设置为dnsmasq上游DNS。"
+
+msgid "When custom, Please follow the format strictly:"
+msgstr "当自定义时，请严格遵循以下格式："
+
+msgid "Use ChinaDNS-NG"
+msgstr "使用ChinaDNS-NG"
+
+msgid "When checked, forced to be set to dnsmasq upstream DNS."
+msgstr "当勾选，则将强制设置为dnsmasq上游DNS。"
+
+msgid "Use ChinaList"
+msgstr "使用chnlist"
+
+msgid "Only useful in non-gfwlist mode."
+msgstr "仅可用于非防火墙表。"
+
+msgid "When used, the domestic DNS will be used only when the chnlist rule is hit, and the domain name that misses the rule will be resolved by remote DNS."
+msgstr "当使用时，只有当命中chnlist规则时，才会使用国内DNS，未命中规则的域名将会使用远程DNS解析。"
 
 msgid "Ali"
 msgstr "阿里"
@@ -163,8 +190,8 @@ msgstr "百度"
 msgid "Resolver For The List Proxied"
 msgstr "解析被代理的域名列表"
 
-msgid "Access Filtered DNS By"
-msgstr "由过滤DNS解析，经过"
+msgid "Requery DNS By %s"
+msgstr "通过%s请求DNS"
 
 msgid "Forward To Socks Server"
 msgstr "转发至 Socks 服务器"
@@ -175,14 +202,23 @@ msgstr "Socks服务器"
 msgid "Misconfigured"
 msgstr "配置不当"
 
-msgid "Make sure socks service is available on this address if 'dns2socks' selected."
-msgstr "如启用了 'dns2socks' 请确保此Socks服务可用。"
+msgid "Make sure socks service is available on this address."
+msgstr "请确保此Socks服务可用。"
 
 msgid "ChinaDNS-NG Fair Mode"
 msgstr "ChinaDNS-NG 公平模式"
 
 msgid "Filtered DNS(For Proxied Domains)"
 msgstr "域名过滤服务(用于被代理的域名)"
+
+msgid "DoH request address"
+msgstr "DoH 请求地址"
+
+msgid "DoH bootstrap DNS"
+msgstr "DoH Bootstrap DNS"
+
+msgid "The Bootstrap DNS server is used to resolve the IP address of the DoH resolver you specify as the upstream."
+msgstr "Bootstrap DNS 服务器用于解析您指定为上游的 DoH 解析器的 IP 地址。"
 
 msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
 msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
@@ -562,11 +598,11 @@ msgstr "检测时间"
 msgid "Automatic switching cannot be used when this option is checked"
 msgstr "当勾选此选项时，不能使用自动切换"
 
+msgid "Main node"
+msgstr "主节点"
+
 msgid "List of backup nodes"
 msgstr "备用节点的列表"
-
-msgid "List of backup nodes, the first of which must be the primary node and the others the standby node."
-msgstr "备用节点的列表，第一个必须是主节点，其他是备用节点。"
 
 msgid "Configure this node with 127.0.0.1: this port"
 msgstr "使用127.0.0.1和此端口配置节点"
@@ -871,6 +907,9 @@ msgstr "Brook协议"
 msgid "Use TLS"
 msgstr "使用TLS"
 
+msgid "Naiveproxy Protocol"
+msgstr "Naiveproxy协议"
+
 msgid "V2ray Protocol"
 msgstr "V2ray协议"
 
@@ -909,9 +948,6 @@ msgstr "<br />none：默认值，不进行伪装，发送的数据是没有特�
 
 msgid "A legal file path. This file must not exist before running V2Ray."
 msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
-
-msgid "UNIX domain socket, absolute path, you can add @ at the beginning to represent abstract, and it is empty by default. If this value is filled in, addr and port will be ignored."
-msgstr "UNIX domain socket，绝对路径，可在开头加 @ 代表 abstract，默认为空。若填写了该值，addr 和 port 将被忽略。"
 
 msgid "TCP Open Socks"
 msgstr "开启Socks"
@@ -957,6 +993,9 @@ msgstr "隐藏菜单方法，地址栏输入例："
 
 msgid "After the hidden to the display, input example in the address bar:"
 msgstr "当你隐藏后想再次显示，地址栏输入例："
+
+msgid "The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."
+msgstr "MTProto 协议必须为 32 个字符，仅可包含 0 到 9 和 a 到 f 之间的字符。"
 
 msgid "When OTA is enabled, a connection that is not OTA enabled is rejected. This option is invalid when using AEAD encryption."
 msgstr "开启 OTA 后，将拒绝未启用 OTA 的连接。当使用 AEAD 加密时，该选项无效。"
