@@ -949,9 +949,6 @@ msgstr "<br />none：默认值，不进行伪装，发送的数据是没有特�
 msgid "A legal file path. This file must not exist before running V2Ray."
 msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
 
-msgid "UNIX domain socket, absolute path, you can add @ at the beginning to represent abstract, and it is empty by default. If this value is filled in, addr and port will be ignored."
-msgstr "UNIX domain socket，绝对路径，可在开头加 @ 代表 abstract，默认为空。若填写了该值，addr 和 port 将被忽略。"
-
 msgid "TCP Open Socks"
 msgstr "开启Socks"
 
@@ -996,6 +993,9 @@ msgstr "隐藏菜单方法，地址栏输入例："
 
 msgid "After the hidden to the display, input example in the address bar:"
 msgstr "当你隐藏后想再次显示，地址栏输入例："
+
+msgid "The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."
+msgstr "MTProto 协议必须为 32 个字符，仅可包含 0 到 9 和 a 到 f 之间的字符。"
 
 msgid "When OTA is enabled, a connection that is not OTA enabled is rejected. This option is invalid when using AEAD encryption."
 msgstr "开启 OTA 后，将拒绝未启用 OTA 的连接。当使用 AEAD 加密时，该选项无效。"
