@@ -1,7 +1,8 @@
 #!/bin/sh
 . /lib/functions.sh
+. /usr/share/openclash/openclash_ps.sh
 
-status=$(ps|grep -c /usr/share/openclash/yml_proxys_set.sh)
+status=$(unify_ps_status "yml_proxys_set.sh")
 [ "$status" -gt "3" ] && exit 0
 
 START_LOG="/tmp/openclash_start.log"
@@ -80,10 +81,11 @@ yml_proxy_provider_set()
       return
    fi
    
+   #避免重复代理集
    if [ "$config" = "$CONFIG_NAME" ] || [ "$config" = "all" ]; then
       if [ -n "$(grep -w "path: $path" "$PROXY_PROVIDER_FILE" 2>/dev/null)" ]; then
          return
-      elif [ "$(grep -Fw "$name" "$proxy_provider_name" |wc -l 2>/dev/null)" -ge 2 ] && [ -z "$(grep -w "path: $path" "$PROXY_PROVIDER_FILE" 2>/dev/null)" ]; then
+      elif [ "$(grep -w "$name$" "$proxy_provider_name" |wc -l 2>/dev/null)" -ge 2 ] && [ -z "$(grep -w "path: $path" "$PROXY_PROVIDER_FILE" 2>/dev/null)" ]; then
       	 sed -i "1,/${name}/{//d}" "$proxy_provider_name" 2>/dev/null
          return
       fi
@@ -207,8 +209,9 @@ yml_servers_set()
       return
    fi
    
+   #避免重复节点
    if [ "$config" = "$CONFIG_NAME" ] || [ "$config" = "all" ]; then
-      if [ "$(grep -Fw "$name" "$servers_name" |wc -l 2>/dev/null)" -ge 2 ] && [ -n "$(grep -w "name: \"$name\"" "$SERVER_FILE" 2>/dev/null)" ]; then
+      if [ "$(grep -w "$name$" "$servers_name" |wc -l 2>/dev/null)" -ge 2 ] && [ -n "$(grep -w "name: \"$name\"" "$SERVER_FILE" 2>/dev/null)" ]; then
          return
       fi
    fi
@@ -216,12 +219,11 @@ yml_servers_set()
    if [ "$config" = "$CONFIG_NAME" ] || [ "$config" = "all" ]; then
       if [ -n "$(grep -w "name: \"$name\"" "$SERVER_FILE" 2>/dev/null)" ]; then
          return
-      elif [ "$(grep -Fw "$name" "$servers_name" |wc -l 2>/dev/null)" -ge 2 ] && [ -z "$(grep -w "name: \"$name\"" "$SERVER_FILE" 2>/dev/null)" ]; then
+      elif [ "$(grep -w "$name$" "$servers_name" |wc -l 2>/dev/null)" -ge 2 ] && [ -z "$(grep -w "name: \"$name\"" "$SERVER_FILE" 2>/dev/null)" ]; then
       	 sed -i "1,/${name}/{//d}" "$servers_name" 2>/dev/null
          return
       fi
    fi
-   
    echo "正在写入【$type】-【$name】节点到配置文件【$CONFIG_NAME】..." >$START_LOG
    
    if [ "$obfs" != "none" ] && [ -n "$obfs" ]; then
@@ -616,6 +618,7 @@ cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
 cat >> "$SERVER_FILE" <<-EOF
   url: https://cp.cloudflare.com/generate_204
   interval: "600"
+  tolerance: "150"
 - name: Proxy
   type: select
   proxies:
@@ -704,6 +707,7 @@ cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
 cat >> "$SERVER_FILE" <<-EOF
   url: https://cp.cloudflare.com/generate_204
   interval: "600"
+  tolerance: "150"
 - name: Proxy
   type: select
   proxies:
@@ -870,20 +874,6 @@ cat >> "$SERVER_FILE" <<-EOF
 EOF
 fi
 cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-- name: Netease Music
-  type: select
-  proxies:
-  - DIRECT
-  - Proxy
-EOF
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-  use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
 ${UCI_SET}rule_source="lhie1"
 ${UCI_SET}GlobalTV="GlobalTV"
 ${UCI_SET}AsianTV="AsianTV"
@@ -895,7 +885,6 @@ ${UCI_SET}Netflix="Netflix"
 ${UCI_SET}Spotify="Spotify"
 ${UCI_SET}Steam="Steam"
 ${UCI_SET}AdBlock="AdBlock"
-${UCI_SET}Netease_Music="Netease Music"
 ${UCI_SET}Speedtest="Speedtest"
 ${UCI_SET}Telegram="Telegram"
 ${UCI_SET}PayPal="PayPal"
@@ -914,7 +903,6 @@ ${UCI_SET}Others="Others"
 	${UCI_DEL_LIST}="Telegram" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Telegram" >/dev/null 2>&1
 	${UCI_DEL_LIST}="PayPal" >/dev/null 2>&1 && ${UCI_ADD_LIST}="PayPal" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Speedtest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Speedtest" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Netease Music" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Netease Music" >/dev/null 2>&1
 }
 elif [ "$rule_sources" = "ConnersHua_return" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
 echo "使用ConnersHua回国规则创建中..." >$START_LOG
@@ -938,6 +926,7 @@ cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
 cat >> "$SERVER_FILE" <<-EOF
   url: https://cp.cloudflare.com/generate_204
   interval: "600"
+  tolerance: "150"
 - name: Proxy
   type: select
   proxies:

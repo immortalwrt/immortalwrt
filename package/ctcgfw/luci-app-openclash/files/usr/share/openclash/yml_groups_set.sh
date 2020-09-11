@@ -1,7 +1,8 @@
 #!/bin/sh
 . /lib/functions.sh
+. /usr/share/openclash/openclash_ps.sh
 
-status=$(ps|grep -c /usr/share/openclash/yml_groups_set.sh)
+status=$(unify_ps_status "yml_groups_set.sh")
 [ "$status" -gt "3" ] && exit 0
 
 START_LOG="/tmp/openclash_start.log"
@@ -149,6 +150,7 @@ yml_groups_set()
    config_get "old_name" "$section" "old_name" ""
    config_get "test_url" "$section" "test_url" ""
    config_get "test_interval" "$section" "test_interval" ""
+   config_get "tolerance" "$section" "tolerance" ""
    
    if [ ! -z "$if_game_group" ] && [ "$if_game_group" != "$name" ]; then
       return
@@ -228,6 +230,9 @@ yml_groups_set()
    }
    [ ! -z "$test_interval" ] && {
       echo "  interval: \"$test_interval\"" >>$GROUP_FILE
+   }
+   [ ! -z "$tolerance" ] && {
+      echo "  tolerance: \"$tolerance\"" >>$GROUP_FILE
    }
 }
 

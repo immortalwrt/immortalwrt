@@ -1,6 +1,8 @@
 #!/bin/bash
 . /lib/functions.sh
-status=$(ps|grep -c /usr/share/openclash/yml_groups_get.sh)
+. /usr/share/openclash/openclash_ps.sh
+
+status=$(unify_ps_status "yml_groups_get.sh")
 [ "$status" -gt "3" ] && exit 0
 
 START_LOG="/tmp/openclash_start.log"
@@ -185,6 +187,8 @@ do
    group_test_url="$(cfg_get "url:" "$single_group")"
    #test_interval
    group_test_interval="$(cfg_get "interval:" "$single_group")"
+   #test_tolerance
+   group_test_tolerance="$(cfg_get "tolerance:" "$single_group")"
 
    echo "正在读取【$CONFIG_NAME】-【$group_type】-【$group_name】策略组配置..." >$START_LOG
    
@@ -200,6 +204,7 @@ do
    ${uci_set}type="$group_type"
    ${uci_set}test_url="$group_test_url"
    ${uci_set}test_interval="$group_test_interval"
+   ${uci_set}tolerance="$group_test_tolerance"
    
    #other_group
    if [ "$group_type" = "select" ]; then
