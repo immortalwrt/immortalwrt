@@ -1,3 +1,4 @@
+//  compress: true
 /**
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
@@ -63,16 +64,14 @@ body {
                         border-right: none !important;
                     }
                 }
-
-
             }
 
             .cbi-button-apply {
-                background-image: linear-gradient(-135deg, #6c61ab 0%, #594ca9 100%);
-
+                background-color: #483d8b !important;
+                background-color: var(--dark-primary) !important;
                 &:hover,
                 &:focus {
-                    background-image: linear-gradient(-135deg, rgb(85, 76, 138) 0%, rgb(72, 61, 139) 100%);
+                    opacity: 0.9;
                 }
             }
         }
@@ -126,7 +125,8 @@ header::after {
                 }
 
                 .menu.active {
-                    background-color: darkslateblue !important;
+                    background-color: #483d8b !important;
+                    background-color: var(--dark-primary) !important;
                     color: #cccccc !important;
 
                     a::after {
@@ -141,7 +141,8 @@ header::after {
                 }
 
                 a:hover {
-                    background-color: darkslateblue !important;
+                    background-color: #483d8b !important;
+                    background-color: var(--dark-primary) !important;
                     color: #cccccc !important;
 
 
@@ -178,7 +179,8 @@ h3 {
 a:-webkit-any-link {
     color: -webkit-link;
     cursor: pointer;
-    color: darkslateblue;
+    color: #483d8b;
+    color: var(--dark-primary);
 }
 
 
@@ -190,13 +192,16 @@ input:-webkit-autofill {
 .cbi-button-apply,
 .cbi-button-edit {
     color: #fff !important;
-    background-color: darkslateblue !important;
-    border-color: darkslateblue !important;
+    background-color: #483d8b !important;
+    background-color: var(--dark-primary) !important;
+    border-color: #483d8b !important;
+    border-color: var(--dark-primary) !important;
 }
 
 
 .cbi-section em {
-    color: darkslateblue;
+    color: #483d8b;
+    color: var(--dark-primary);
 }
 
 
@@ -310,7 +315,8 @@ table>thead>tr>th {
 }
 
 abbr {
-    color: #5e72e4;
+    color: #483d8b;
+    color: var(--dark-primary);
 
 }
 
@@ -346,7 +352,8 @@ div>.table>.tbody>.tr:nth-of-type(2n) {
 
 .tabs>li[class~="active"],
 .tabs>li:hover {
-    border-bottom: 0.18751rem solid darkslateblue;
+    border-bottom: 0.18751rem solid #483d8b;
+    border-bottom: 0.18751rem solid var(--dark-primary);
     color: #ccc;
     background-color: #181819;
 }
@@ -399,7 +406,8 @@ input {
 
 select:not([multiple="multiple"]):focus,
 input:focus {
-    border-color: darkslateblue !important;
+    border-color: #483d8b !important;
+    border-color: var(--dark-primary) !important;
     background-color: transparent;
     outline: 0;
     box-shadow: none;
@@ -445,7 +453,9 @@ select {
 
 .node-system-packages>.main table tr td:nth-last-child(1) {
     color: #ccc;
-
+}
+.node-system-packages > .main .cbi-value > pre {
+    background-color: #333;
 }
 
 .cbi-section-node .cbi-value {
@@ -475,7 +485,8 @@ select {
 
 div.cbi-value var,
 td.cbi-value-field var {
-    color: #5e72e4;
+    color: #483d8b;
+    color: var(--dark-primary);
 }
 
 #diag-rc-output>pre {
@@ -505,7 +516,8 @@ td.cbi-value-field var {
 }
 
 .node-services-vssr .cbi-section-table-row.fast {
-    background: darkslateblue !important;
+    background: #483d8b !important;
+    background: var(--dark-primary) !important;
     color: #fff;
 }
 
@@ -529,7 +541,8 @@ td.cbi-value-field var {
 }
 
 .notice {
-    background-color: darkslateblue !important;
+    background-color: #483d8b !important;
+    background-color: var(--dark-primary) !important;
 }
 
 .cbi-input-find,
@@ -556,7 +569,8 @@ td.cbi-value-field var {
 .cbi-button-apply.important,
 .cbi-button-reload.important,
 .cbi-button-action.important {
-    border: 1px darkslateblue solid !important;
+    border: 1px #483d8b solid !important;
+    border: 1px var(--dark-primary) solid !important;
 }
 
 

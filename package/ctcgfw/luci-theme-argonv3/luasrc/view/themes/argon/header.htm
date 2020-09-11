@@ -26,8 +26,9 @@
 	local util = require "luci.util"
 	local http = require "luci.http"
 	local disp = require "luci.dispatcher"
-	local fs	= require "nixio.fs"
+	local fs   = require "nixio.fs"
 	local nutil = require "nixio.util"
+	local uci = require 'luci.model.uci'.cursor()
 
 	local boardinfo = util.ubus("system", "board")
 
@@ -185,6 +186,24 @@
 	end
 	
 	math.randomseed(os.time())
+
+	-- Custom settings
+	local mode = 'normal'
+	local dark_css = fs.readfile('/www/luci-static/argon/css/dark.css')
+	local bar_color = '#5e72e4'
+	local primary, dark_primary, blur_radius, blur_radius_dark, blur_opacity
+	if fs.access('/etc/config/argon') then
+		primary = uci:get_first('argon', 'global', 'primary')
+		dark_primary = uci:get_first('argon', 'global', 'dark_primary')
+		blur_radius = uci:get_first('argon', 'global', 'blur')
+		blur_radius_dark = uci:get_first('argon', 'global', 'blur_dark')
+		blur_opacity = uci:get_first('argon', 'global', 'transparency')
+		blur_opacity_dark = uci:get_first('argon', 'global', 'transparency_dark')
+		mode = uci:get_first('argon', 'global', 'mode')
+		bar_color = mode == 'dark' and dark_primary or primary
+	end
+	
+	
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
@@ -203,7 +222,7 @@
 	<meta name="x5-page-mode" content="app">
 	<meta name="browsermode" content="application">
 	<meta name="msapplication-tap-highlight" content="no">
-	<meta name="msapplication-TileColor" content="#5e72e4">
+	<meta name="msapplication-TileColor" content="<%=bar_color%>">
 
 	<meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
 	<meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
@@ -215,13 +234,29 @@
 	<link rel="icon" type="image/png" sizes="96x96" href="<%=media%>/icon/favicon-96x96.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="<%=media%>/icon/favicon-16x16.png">
 	<link rel="manifest" href="<%=media%>/icon/manifest.json">
-	<meta name="msapplication-TileColor" content="#5e72e4">
+	<meta name="msapplication-TileColor" content="<%=bar_color%>">
 	<meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
-	<meta name="theme-color" content="#5e72e4">
+	<meta name="theme-color" content="<%=bar_color%>">
 	<link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
-	<% if nixio.fs.access("/etc/dark") then %>
-	<link rel="stylesheet" href="<%=media%>/css/dark.css?v=<%=math.random(1,100000)%>">
+	<style title="text/css">
+	<% if mode == 'normal' then %>
+		@media (prefers-color-scheme: dark) {
+			<%=dark_css%>
+		}
+	<% elseif mode == 'dark' then %>
+		<%=dark_css%>
 	<% end -%>
+	<% if fs.access('/etc/config/argon') then %>
+	:root {
+		--primary: <%=primary%>;
+		--dark-primary: <%=dark_primary%>;
+		--blur-radius:<%=blur_radius%>px;
+		--blur-opacity:<%=blur_opacity%>;
+		--blur-radius-dark:<%=blur_radius_dark%>px;
+		--blur-opacity-dark:<%=blur_opacity_dark%>;
+	}
+	<% end -%>
+	</style>
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
