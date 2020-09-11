@@ -14,6 +14,7 @@ e.rmempty = false
 t = m:section(TypedSection, "user", translate("Users Manager"))
 t.anonymous = true
 t.addremove = true
+t.sortable = true
 t.template = "cbi/tblsection"
 t.extedit = d.build_url("admin", "services", "passwall", "server_user", "%s")
 function t.create(e, t)

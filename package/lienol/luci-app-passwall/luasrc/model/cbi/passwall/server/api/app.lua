@@ -68,14 +68,26 @@ local function start()
             local config_file = CONFIG_PATH .. "/" .. id .. ".json"
             local udp_forward = 1
             local type = user.type or ""
-            if type == "SSR" then
-                config = require("luci.model.cbi.passwall.server.api.ssr").gen_config(user)
+            if type == "Socks" then
+                local port = user.port
+                local username = user.username
+                local password = user.password
+                if username and password then
+                    local auth_file = CONFIG_PATH .. "/" .. id .. ".auth"
+                    cmd(string.format('echo %s:%s > %s', username, password, auth_file))
+                    bin = ln_start("/usr/bin/ssocksd", "ssocksd_" .. id, "-p " .. port .. " -a " .. auth_file)
+                else
+                    bin = ln_start("/usr/bin/ssocksd", "ssocksd_" .. id, "-p " .. port)
+                end
+            elseif type == "SS" or type == "SSR" then
+                config = require("luci.model.cbi.passwall.server.api.shadowsocks").gen_config(user)
                 local udp_param = ""
                 udp_forward = tonumber(user.udp_forward) or 1
                 if udp_forward == 1 then
                     udp_param = "-u"
                 end
-                bin = ln_start("/usr/bin/ssr-server", "ssr-server", "-c " .. config_file .. " " .. udp_param)
+                type = type:lower()
+                bin = ln_start("/usr/bin/" .. type .. "-server", type .. "-server", "-c " .. config_file .. " " .. udp_param)
             elseif type == "V2ray" then
                 config = require("luci.model.cbi.passwall.server.api.v2ray").gen_config(user)
                 bin = ln_start(_api.get_v2ray_path(), "v2ray", "-config=" .. config_file)
