@@ -227,8 +227,8 @@ msgstr "（如您不知道选项有何用，请不要随意修改）"
 msgid "Specify DNS Server"
 msgstr "指定（第二）DNS服务器"
 
-msgid "Specify DNS Server For List, Only One IP Server Address Support"
-msgstr "指定下方列表中域名的DNS服务器，只支持填写一个IP地址"
+msgid "Specify DNS Server For List and Server Nodes With Fake-IP Mode, Only One IP Server Address Support"
+msgstr "指定下方列表中域名和Fake-IP模式下非代理集内节点的DNS服务器，只支持填写一个IP地址"
 
 msgid "Domain Names In The List Do Not Return Fake-IP, One rule per line"
 msgstr "每行请只填写一个域名，列表中的域名在（Fake-IP模式）下查询DNS时将返回真实IP地址，更改后点击上方按钮生效"
@@ -393,6 +393,15 @@ msgstr "自动更新GEOIP数据库"
 
 msgid "Update GEOIP Database"
 msgstr "更新GEOIP数据库"
+
+msgid "Auto Update Chnroute Lists"
+msgstr "自动更新大陆白名单"
+
+msgid "Update Chnroute Lists"
+msgstr "更新大陆白名单"
+
+msgid "Chnroute Update"
+msgstr "大陆白名单订阅"
 
 msgid "Other Rules Update(Only in Use)"
 msgstr "正在使用第三方规则时才能更新"
@@ -756,6 +765,9 @@ msgstr "检测地址（URL）"
 msgid "Test Interval(s)"
 msgstr "检测频率（秒）"
 
+msgid "Tolerance(ms)"
+msgstr "节点切换容忍值（毫秒）"
+
 msgid "Select"
 msgstr "Select【手动选择】"
 
@@ -980,3 +992,12 @@ msgstr "*仅代理命中规则流量"
 
 msgid "Only Proxy Rules Match, Prevent BT Passing"
 msgstr "仅允许代理命中规则的流量，防止BT下载流量经过代理"
+
+msgid "Provider File Manage"
+msgstr "代理（规则）集文件管理"
+
+msgid "Config File Edit"
+msgstr "配置文件编辑"
+
+msgid "Delete All File"
+msgstr "删除所有文件"
