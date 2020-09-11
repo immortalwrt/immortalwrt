@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ssocks
 PKG_VERSION:=0.0.14
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tostercx/ssocks.git
@@ -34,6 +34,7 @@ define Package/ssocks
 	CATEGORY:=Network
 	TITLE:=sSocks Relay
 	URL:=https://github.com/david378/ssocks
+	DEPENDS:=+libopenssl
 endef
 
 define Package/ssocks/description
