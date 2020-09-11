@@ -10,11 +10,9 @@ local _M = {}
 -- Return String:iso_code
 function _M.get_flag(remark, host)
     local nixio = require "nixio"
-    local ip = require "luci.ip"
-    
     local iso_table = {
-        "US", "US", "US", "US", "US", "HK", "HK", "TW", "TW", "TW", "TW", "TW", 
-        "JP", "JP", "JP", "GB", "GB", "DE", "DE", "FR", "IN", "TR", "SG", "SG", 
+        "US", "US", "US", "US", "US", "HK", "HK", "TW", "TW", "TW", "TW", "TW",
+        "JP", "JP", "JP", "GB", "GB", "DE", "DE", "FR", "IN", "TR", "SG", "SG",
         "KR", "KR", "KR", "KR", "RU", "IE", "CA", "CA", "AU", "CH", "AU", "AR","RU",
         "AC", "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
         "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH",
@@ -41,10 +39,9 @@ function _M.get_flag(remark, host)
     }
 
     local emoji_table = {
-        "美国", "US", "洛杉矶","芝加哥","达拉斯", "香港","HK", "台湾", "TW", "TAIWAN","彰化","台北", 
-        "日本", "JP", "JAPAN", "英国", "UK", "德国", "DE", "法国", "印度", "土耳其", "新加坡", "SG", 
+        "美国", "US", "洛杉矶","芝加哥","达拉斯", "香港","HK", "台湾", "TW", "TAIWAN","彰化","台北",
+        "日本", "JP", "JAPAN", "英国", "UK", "德国", "DE", "法国", "印度", "土耳其", "新加坡", "SG",
         "韩国", "首尔", "KR", "KOREA", "俄罗斯", "爱尔兰", "CANADA", "加拿大","SYDNEY", "瑞士", "澳大利亚", "阿根廷","RU",
-        
         "🇦🇨", "🇦🇩", "🇦🇪", "🇦🇫", "🇦🇬", "🇦🇮",
         "🇦🇱", "🇦🇲", "🇦🇴", "🇦🇶", "🇦🇷", "🇦🇸",
         "🇦🇹", "🇦🇺", "🇦🇼", "🇦🇽", "🇦🇿", "🇧🇦",
