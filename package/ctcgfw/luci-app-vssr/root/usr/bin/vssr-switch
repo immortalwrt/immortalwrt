@@ -151,7 +151,6 @@ start() {
             #当前代理错误，判断有无可用的服务器
             #echo "current error"
             echo "$(date "+%Y-%m-%d %H:%M:%S") 当前节点不可用，尝试切换其他节点。" >>/tmp/vssr.log
-
             select_proxy
             if [ "$ENABLE_SERVER" != nil ]; then
                 #有其他服务器可用，进行切换
