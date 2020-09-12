@@ -36,7 +36,8 @@
 			label = "dir-882-a1:green:net";
 			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
 		};
-				usb2 {
+
+		usb2 {
 			label = "dir-882-a1:green:usb2";
 			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&ehci_port2>;

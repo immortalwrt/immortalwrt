@@ -25,6 +25,10 @@ d-team,newifi-d2)
 d-team,pbr-m1)
 	ucidef_set_led_netdev "internet" "internet" "$boardname:blue:internet" "wan"
 	;;
+dlink,dir-1960-a1|\
+dlink,dir-2660-a1)
+	ucidef_set_led_netdev "wan" "wan" "$boardname:white:net" "wan"
+	;;
 dlink,dir-860l-b1)
 	ucidef_set_led_netdev "wan" "wan" "$boardname:green:net" "wan"
 	;;
@@ -44,12 +48,16 @@ gnubee,gb-pc2)
 	ucidef_set_led_netdev "lan1" "lan1" "$boardname:green:lan1" "lan1"
 	ucidef_set_led_netdev "lan2" "lan2" "$boardname:green:lan2" "lan2"
 	;;
+linksys,ea7300-v1|\
 linksys,ea7500-v2)
 	ucidef_set_led_netdev "lan1" "lan1 link" "$boardname:green:lan1" "lan1" "link"
 	ucidef_set_led_netdev "lan2" "lan2 link" "$boardname:green:lan2" "lan2" "link"
 	ucidef_set_led_netdev "lan3" "lan3 link" "$boardname:green:lan3" "lan3" "link"
 	ucidef_set_led_netdev "lan4" "lan4 link" "$boardname:green:lan4" "lan4" "link"
 	ucidef_set_led_netdev "wan" "wan link" "$boardname:green:wan" "wan" "link"
+	;;
+mikrotik,routerboard-760igs)
+	ucidef_set_led_netdev "sfp" "SFP" "$boardname:blue:sfp" "sfp"
 	;;
 mikrotik,routerboard-m11g)
 	ucidef_set_rssimon "wlan0" "200000" "1"
@@ -66,6 +74,7 @@ netgear,r6220|\
 netgear,r6260|\
 netgear,r6350|\
 netgear,r6850|\
+netgear,wac124|\
 netgear,wndr3700-v5)
 	ucidef_set_led_netdev "wan" "wan" "$boardname:green:wan" "wan"
 	;;
@@ -77,26 +86,25 @@ netgear,r6800)
 	ucidef_set_led_netdev "lan3" "LAN3" "$boardname:white:lan3" "lan3"
 	ucidef_set_led_netdev "lan4" "LAN4" "$boardname:white:lan4" "lan4"
 	;;
-tplink,re350-v1|\
-tplink,re650-v1)
+tplink,re350-v1)
 	ucidef_set_led_netdev "wifi2g" "Wifi 2.4G" "$boardname:blue:wifi2G" "wlan0"
 	ucidef_set_led_netdev "wifi5g" "Wifi 5G" "$boardname:blue:wifi5G" "wlan1"
 	ucidef_set_led_netdev "eth_act" "LAN act" "$boardname:green:eth_act" "lan" "tx rx"
 	ucidef_set_led_netdev "eth_link" "LAN link" "$boardname:green:eth_link" "lan" "link"
 	;;
-xiaomi,mir3g)
-	ucidef_set_led_switch "wan-amber"  "WAN (amber)"  "$boardname:amber:wan"  "switch0" "0x02" "0x08"
-	ucidef_set_led_switch "lan1-amber" "LAN1 (amber)" "$boardname:amber:lan1" "switch0" "0x08" "0x08"
-	ucidef_set_led_switch "lan2-amber" "LAN2 (amber)" "$boardname:amber:lan2" "switch0" "0x04" "0x08"
+tplink,re500-v1|\
+tplink,re650-v1)
+	ucidef_set_led_netdev "eth_act" "LAN act" "$boardname:green:eth_act" "lan" "tx rx"
+	ucidef_set_led_netdev "eth_link" "LAN link" "$boardname:green:eth_link" "lan" "link"
+	;;
+xzwifi,creativebox-v1)
+	ucidef_set_led_netdev "internet" "internet" "$boardname:blue:internet" "wan"
 	;;
 xiaomi,mi-router-ac2100)
 	ucidef_set_led_switch "wan" "wan" "$boardname:blue:wan" "switch0" "0x1"
 	;;
 xiaomi,redmi-router-ac2100)
 	ucidef_set_led_switch "wan" "wan" "$boardname:white:wan" "switch0" "0x1"
-	;;
-xzwifi,creativebox-v1)
-	ucidef_set_led_netdev "internet" "internet" "$boardname:blue:internet" "wan"
 	;;
 youhua,wr1200js)
 	ucidef_set_led_netdev "internet" "INTERNET" "$boardname:green:wan" "wan"

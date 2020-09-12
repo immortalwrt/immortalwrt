@@ -12,7 +12,6 @@ ramips_setup_interfaces()
 	aigale,ai-br100|\
 	alfa-network,ac1200rm|\
 	asus,rt-n12p|\
-	dlink,dir-810l|\
 	dlink,dwr-116-a1|\
 	dlink,dwr-921-c1|\
 	dlink,dwr-922-e2|\
@@ -47,6 +46,7 @@ ramips_setup_interfaces()
 	edimax,ew-7476rpc|\
 	edimax,ew-7478ac|\
 	elecom,wrh-300cr|\
+	hootoo,ht-tm05|\
 	kimax,u25awf-h1|\
 	kimax,u35wf|\
 	kingston,mlw221|\
@@ -54,12 +54,13 @@ ramips_setup_interfaces()
 	microduino,microwrt|\
 	netgear,ex2700|\
 	netgear,ex3700|\
+	netgear,ex6120|\
 	netgear,ex6130|\
 	netgear,wn3000rp-v3|\
 	planex,cs-qr10|\
 	planex,mzk-ex300np|\
 	planex,mzk-ex750np|\
-	ravpower,wd03|\
+	ravpower,rp-wd03|\
 	sercomm,na930|\
 	tplink,re200-v1|\
 	tplink,re210-v1|\
@@ -106,6 +107,13 @@ ramips_setup_interfaces()
 	dlink,dir-510l)
 		ucidef_add_switch "switch0" \
 			"0:lan" "6@eth0"
+		;;
+	dlink,dir-810l|\
+	netgear,jwnr2010-v5|\
+	trendnet,tew-810dr|\
+	zbtlink,zbt-we2026)
+		ucidef_add_switch "switch0" \
+			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "6@eth0"
 		;;
 	dlink,dwr-118-a1)
 		ucidef_add_switch "switch0" \
@@ -216,10 +224,6 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "6t@eth0"
 		;;
-	zbtlink,zbt-we2026)
-		ucidef_add_switch "switch0" \
-			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan:5" "6@eth0"
-		;;
 	zyxel,keenetic-viva)
 		ucidef_add_switch "switch1" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "7t@eth0"
@@ -242,6 +246,7 @@ ramips_setup_macs()
 	edimax,ew-7478apc|\
 	fon,fon2601|\
 	head-weblink,hdrm200|\
+	netgear,jwnr2010-v5|\
 	nexx,wt3020-4m|\
 	nexx,wt3020-8m|\
 	phicomm,psg1208|\
@@ -263,7 +268,8 @@ ramips_setup_macs()
 	alfa-network,ac1200rm|\
 	dlink,dir-810l|\
 	phicomm,psg1218a|\
-	phicomm,psg1218b)
+	phicomm,psg1218b|\
+	trendnet,tew-810dr)
 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x28)" 1)
 		;;
 	alfa-network,r36m-e4g|\

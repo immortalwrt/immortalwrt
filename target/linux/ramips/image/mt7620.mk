@@ -372,8 +372,7 @@ define Device/elecom_wrh-300cr
   SOC := mt7620n
   IMAGE_SIZE := 14272k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	elecom-header
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | elecom-header
   DEVICE_VENDOR := Elecom
   DEVICE_MODEL := WRH-300CR
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
@@ -401,8 +400,8 @@ define Device/fon_fon2601
   DEVICE_VENDOR := Fon
   DEVICE_MODEL := FON2601
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci
-  KERNEL_INITRAMFS := $$(KERNEL) | fonfxcimage
-  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | fonfxcimage | \
+  KERNEL_INITRAMFS := $$(KERNEL) | uimage-padhdr
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | uimage-padhdr | \
 	pad-rootfs | append-metadata | check-size
 endef
 TARGET_DEVICES += fon_fon2601
@@ -488,6 +487,29 @@ define Device/hnet_c108
   SUPPORTED_DEVICES += c108
 endef
 TARGET_DEVICES += hnet_c108
+
+define Device/sunvalley_filehub_common
+  SOC := mt7620n
+  IMAGE_SIZE := 6144k
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-i2c-ralink
+  LOADER_TYPE := bin
+  LOADER_FLASH_OFFS := 0x200000
+  COMPILE := loader-$(1).bin
+  COMPILE/loader-$(1).bin := loader-okli-compile | pad-to 64k | lzma | \
+	uImage lzma
+  KERNEL := $(KERNEL_DTB) | uImage lzma -M 0x4f4b4c49
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | uImage lzma
+  IMAGES += kernel.bin rootfs.bin
+  IMAGE/kernel.bin := append-loader-okli $(1) | check-size 64k
+  IMAGE/rootfs.bin := $$(sysupgrade_bin) | check-size
+endef
+
+define Device/hootoo_ht-tm05
+  $(Device/sunvalley_filehub_common)
+  DEVICE_VENDOR := HooToo
+  DEVICE_MODEL := HT-TM05
+endef
+TARGET_DEVICES += hootoo_ht-tm05
 
 define Device/iodata_wn-ac1167gr
   SOC := mt7620a
@@ -623,8 +645,7 @@ define Device/linksys_e1700
   SOC := mt7620a
   IMAGE_SIZE := 7872k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	umedia-header 0x013326
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | umedia-header 0x013326
   DEVICE_VENDOR := Linksys
   DEVICE_MODEL := E1700
   SUPPORTED_DEVICES += e1700
@@ -650,8 +671,7 @@ define Device/netgear_ex2700
   IMAGES += factory.bin
   KERNEL := $(KERNEL_DTB) | uImage lzma | pad-offset 64k 64 | \
 	append-uImage-fakehdr filesystem
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	netgear-dni
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | netgear-dni
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := EX2700
   SUPPORTED_DEVICES += ex2700
@@ -665,8 +685,7 @@ define Device/netgear_ex3700
   BLOCKSIZE := 4k
   IMAGE_SIZE := 7744k
   IMAGES += factory.chk
-  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | \
-	netgear-chk
+  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | netgear-chk
   DEVICE_PACKAGES := kmod-mt76x2
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := EX3700/EX3800
@@ -674,19 +693,47 @@ define Device/netgear_ex3700
 endef
 TARGET_DEVICES += netgear_ex3700
 
+define Device/netgear_ex6120
+  SOC := mt7620a
+  NETGEAR_BOARD_ID := U12H319T30_NETGEAR
+  BLOCKSIZE := 4k
+  IMAGE_SIZE := 7744k
+  IMAGES += factory.chk
+  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | netgear-chk
+  DEVICE_PACKAGES := kmod-mt76x2
+  DEVICE_VENDOR := NETGEAR
+  DEVICE_MODEL := EX6120
+endef
+TARGET_DEVICES += netgear_ex6120
+
 define Device/netgear_ex6130
   SOC := mt7620a
   NETGEAR_BOARD_ID := U12H319T50_NETGEAR
   BLOCKSIZE := 4k
   IMAGE_SIZE := 7744k
   IMAGES += factory.chk
-  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | \
-	netgear-chk
+  IMAGE/factory.chk := $$(sysupgrade_bin) | check-size | netgear-chk
   DEVICE_PACKAGES := kmod-mt76x2
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := EX6130
 endef
 TARGET_DEVICES += netgear_ex6130
+
+define Device/netgear_jwnr2010-v5
+  $(Device/netgear_sercomm_nor)
+  SOC := mt7620n
+  BLOCKSIZE := 4k
+  IMAGE_SIZE := 3840k
+  DEVICE_MODEL := JWNR2010
+  DEVICE_VARIANT := v5
+  SERCOMM_HWNAME := N300
+  SERCOMM_HWID := ASW
+  SERCOMM_HWVER := A001
+  SERCOMM_SWVER := 0x0040
+  SERCOMM_PAD := 128k
+  DEFAULT := n
+endef
+TARGET_DEVICES += netgear_jwnr2010-v5
 
 define Device/netgear_wn3000rp-v3
   SOC := mt7620a
@@ -697,8 +744,7 @@ define Device/netgear_wn3000rp-v3
   IMAGES += factory.bin
   KERNEL := $(KERNEL_DTB) | uImage lzma | pad-offset 64k 64 | \
 	append-uImage-fakehdr filesystem
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	netgear-dni
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | netgear-dni
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := WN3000RP
   DEVICE_VARIANT := v3
@@ -882,14 +928,16 @@ define Device/ralink_mt7620a-v22sg-evb
 endef
 TARGET_DEVICES += ralink_mt7620a-v22sg-evb
 
-define Device/ravpower_wd03
-  SOC := mt7620n
-  IMAGE_SIZE := 7872k
-  DEVICE_VENDOR := Ravpower
-  DEVICE_MODEL := WD03
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
+define Device/ravpower_rp-wd03
+  $(Device/sunvalley_filehub_common)
+  DEVICE_VENDOR := RAVPower
+  DEVICE_MODEL := RP-WD03
+  SUPPORTED_DEVICES += ravpower,wd03
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := Partition design has changed compared to older versions (up to 19.07) due to kernel size restrictions. \
+	Upgrade via sysupgrade mechanism is not possible, so new installation via TFTP is required.
 endef
-TARGET_DEVICES += ravpower_wd03
+TARGET_DEVICES += ravpower_rp-wd03
 
 define Device/sanlinking_d240
   SOC := mt7620a
@@ -980,7 +1028,7 @@ define Device/tplink_archer-mr200
   TPLINK_HWID := 0xd7500001
   TPLINK_HWREV := 0x4a
   IMAGES := sysupgrade.bin
-  DEVICE_PACKAGES := kmod-mt76x0e kmod-usb2 kmod-usb-net kmod-usb-net-rndis \
+  DEVICE_PACKAGES := kmod-mt76x0e kmod-usb2 kmod-usb-net-rndis \
 	kmod-usb-serial kmod-usb-serial-option adb-enablemodem
   DEVICE_MODEL := Archer MR200
   SUPPORTED_DEVICES += mr200
@@ -1010,6 +1058,15 @@ define Device/tplink_re210-v1
   TPLINK_FLASHLAYOUT := 8Mmtk
 endef
 TARGET_DEVICES += tplink_re210-v1
+
+define Device/trendnet_tew-810dr
+  SOC := mt7620a
+  DEVICE_PACKAGES := kmod-mt76x0e
+  DEVICE_VENDOR := TRENDnet
+  DEVICE_MODEL := TEW-810DR
+  IMAGE_SIZE := 6720k
+endef
+TARGET_DEVICES += trendnet_tew-810dr
 
 define Device/vonets_var11n-300
   SOC := mt7620n
@@ -1199,8 +1256,8 @@ define Device/zyxel_keenetic-omni
   DEVICE_MODEL := Keenetic Omni
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | \
-	check-size | zyimage -d 4882 -v "ZyXEL Keenetic Omni"
+  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
+	zyimage -d 4882 -v "ZyXEL Keenetic Omni"
   SUPPORTED_DEVICES += kn_rc
 endef
 TARGET_DEVICES += zyxel_keenetic-omni
@@ -1212,8 +1269,7 @@ define Device/zyxel_keenetic-omni-ii
   DEVICE_MODEL := Keenetic Omni II
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | \
-	check-size | \
+  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
 	zyimage -d 2102034 -v "ZyXEL Keenetic Omni II"
   SUPPORTED_DEVICES += kn_rf
 endef
@@ -1227,8 +1283,8 @@ define Device/zyxel_keenetic-viva
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
 	kmod-switch-rtl8366-smi kmod-switch-rtl8367b
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | \
-	check-size | zyimage -d 8997 -v "ZyXEL Keenetic Viva"
+  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
+	zyimage -d 8997 -v "ZyXEL Keenetic Viva"
   SUPPORTED_DEVICES += kng_rc
 endef
 TARGET_DEVICES += zyxel_keenetic-viva

@@ -309,8 +309,7 @@ define Device/buffalo_whr-g300n
   DEVICE_VENDOR := Buffalo
   DEVICE_MODEL := WHR-G300N
   IMAGES += tftp.bin
-  IMAGE/tftp.bin := $$(sysupgrade_bin) | check-size | \
-	buffalo-tftp-header
+  IMAGE/tftp.bin := $$(sysupgrade_bin) | check-size | buffalo-tftp-header
   SUPPORTED_DEVICES += whr-g300n
   DEFAULT := n
 endef
@@ -475,7 +474,7 @@ define Device/dlink_dwr-512-b
   DEVICE_MODEL := DWR-512
   DEVICE_VARIANT := B
   DEVICE_PACKAGES := jboot-tools kmod-usb2 kmod-spi-dev kmod-usb-serial \
-	kmod-usb-serial-option kmod-usb-net kmod-usb-net-cdc-ether comgt-ncm
+	kmod-usb-serial-option kmod-usb-net-cdc-ether comgt-ncm
   DLINK_ROM_ID := DLK6E2412001
   DLINK_FAMILY_MEMBER := 0x6E24
   DLINK_FIRMWARE_SIZE := 0x7E0000
@@ -588,8 +587,7 @@ define Device/hilink_hlk-rm04
   SOC := rt5350
   IMAGE_SIZE := 3776k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	hilink-header
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | hilink-header
   DEVICE_VENDOR := Hi-Link
   DEVICE_MODEL := HLK-RM04
   SUPPORTED_DEVICES += hlk-rm04
@@ -643,8 +641,7 @@ define Device/jcg_jhr-n805r
   SOC := rt3050
   IMAGE_SIZE := 3776k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	jcg-header 29.24
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | jcg-header 29.24
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := JHR-N805R
   SUPPORTED_DEVICES += jhr-n805r
@@ -656,8 +653,7 @@ define Device/jcg_jhr-n825r
   SOC := rt3052
   IMAGE_SIZE := 3776k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	jcg-header 23.24
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | jcg-header 23.24
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := JHR-N825R
   SUPPORTED_DEVICES += jhr-n825r
@@ -669,8 +665,7 @@ define Device/jcg_jhr-n926r
   SOC := rt3052
   IMAGE_SIZE := 3776k
   IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	jcg-header 25.24
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | jcg-header 25.24
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := JHR-N926R
   SUPPORTED_DEVICES += jhr-n926r
@@ -1194,11 +1189,20 @@ define Device/zyxel_keenetic
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := ZyXEL
   DEVICE_MODEL := Keenetic
-  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ehci \
-	kmod-usb-ledtrig-usbport kmod-usb-dwc2
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ehci kmod-usb-ledtrig-usbport \
+	kmod-usb-dwc2
   SUPPORTED_DEVICES += kn
 endef
 TARGET_DEVICES += zyxel_keenetic
+
+define Device/zyxel_keenetic-lite-b
+  SOC := rt5350
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := ZyXEL
+  DEVICE_MODEL := Keenetic Lite
+  DEVICE_VARIANT := B
+endef
+TARGET_DEVICES += zyxel_keenetic-lite-b
 
 define Device/zyxel_keenetic-start
   SOC := rt5350
