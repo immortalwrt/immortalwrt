@@ -314,12 +314,12 @@ run_socks() {
 	local remarks=$(config_n_get $node remarks)
 	local server_host=$(config_n_get $node address)
 	local port=$(config_n_get $node port)
-	local msg
+	local msg tmp
 
-	echolog "  - 启用 ${bind}:${local_port}"
 	if [ -n "$server_host" ] && [ -n "$port" ]; then
 		server_host=$(host_from_url "$server_host")
 		[ -n "$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')" ] && msg="$remarks，非法的代理服务器地址，无法启动 ！"
+		tmp="（${server_host}:${port}）"
 	else
 		msg="某种原因，此 Socks 服务的相关配置已失联，启动中止！"
 	fi
@@ -329,10 +329,10 @@ run_socks() {
 	fi
 
 	[ -n "${msg}" ] && {
-		echolog "  - ${msg}"
+		[ "$bind" != "127.0.0.1" ] && echolog "  - 启动中止 ${bind}:${local_port} ${msg}"
 		return 1
 	}
-	echolog "  - 节点：$remarks，${server_host}:${port}"
+	[ "$bind" != "127.0.0.1" ] && echolog "  - 启动 ${bind}:${local_port}  - 节点：$remarks${tmp}"
 
 	case "$type" in
 	socks)
@@ -893,7 +893,7 @@ add_dnsmasq() {
 			items=$(get_enabled_anonymous_secs "@subscribe_list")
 			for item in ${items}; do
 				host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/subscribe.conf"
-				echolog "  - [$?]节点订阅用域名，$(host_from_url $(config_n_get ${item} url))：${fwd_dns:-默认}"
+				echolog "  - [$?]节点订阅域名，$(host_from_url $(config_n_get ${item} url))：${fwd_dns:-默认}"
 			done
 		}
 	fi
