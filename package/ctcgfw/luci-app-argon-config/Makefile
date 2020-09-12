@@ -11,6 +11,7 @@ PKG_VERSION:=0.7
 PKG_RELEASE:=beta
 
 LUCI_TITLE:=LuCI page for Argon Config
+LUCI_DEPENDS:=+luci-theme-argon
 LUCI_PKGARCH:=all
 
 include $(TOPDIR)/feeds/luci/luci.mk
