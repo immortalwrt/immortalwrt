@@ -25,7 +25,7 @@ start()
 		echo "${username}:${password}" > /etc/config/ssocks-authorization
 		auth_arg="--auth /etc/config/ssocks-authorization"
 	fi
-	/usr/bin/ssocks --port "${listen_port}" --bind "${bind_address}" ${auth_arg} >/dev/null 2>&1 &
+	/usr/bin/ssocksd --port "${listen_port}" --bind "${bind_address}" ${auth_arg} >/dev/null 2>&1 &
 	iptables -I INPUT -p tcp --dport "${listen_port}" -j ACCEPT
 	cat <<-EOF > "/var/etc/ssocks.include"
 iptables -I INPUT -p tcp --dport "${listen_port}" -j ACCEPT
