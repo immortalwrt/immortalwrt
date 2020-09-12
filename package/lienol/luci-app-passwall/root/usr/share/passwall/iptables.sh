@@ -115,6 +115,7 @@ load_acl() {
 		local item enabled remarks ip mac tcp_proxy_mode udp_proxy_mod
 		local tcp_node udp_node tcp_no_redir_ports udp_no_redir_ports tcp_redir_ports udp_redir_ports
 		local TCP_NODE UDP_NODE TCP_NODE_TYPE UDP_NODE_TYPE ipt_tmp is_tproxy tcp_port udp_port msg msg2
+		echolog "访问控制："
 		for item in $items; do
 			unset ip mac tcp_port udp_port is_tproxy msg
 			eval $(uci -q show "${CONFIG}.${item}" | cut -d'.' -sf 3-)
@@ -138,7 +139,7 @@ load_acl() {
 			eval TCP_NODE=\$TCP_NODE$tcp_node
 			eval UDP_NODE=\$UDP_NODE$udp_node
 
-			echolog "访问控制：${item}..."
+			#echolog "访问控制：${item}..."
 			[ -n "$ip" ] && msg="IP：$ip，"
 			[ -n "$mac" ] && msg="${msg:+${msg}和}MAC：$mac，"
 			ipt_tmp=$ipt_n
@@ -271,19 +272,19 @@ filter_node() {
 				msg2="按规则路由(${msg})"
 				[ "$_ipt" == "$ipt_m" -o "$_ipt" == "$ip6t_m" ] || {
 					dst_rule=$(REDIRECT $_port)
-					msg2="套娃使用(${msg}:${port}>>${_port})"
+					msg2="套娃使用(${msg}:${port} -> ${_port})"
 				}
 				[ -n "$_proxy" ] && [ "$_proxy" == "1" ] && [ -n "$_port" ] || {
 					ADD_INDEX=$(RULE_LAST_INDEX "$_ipt" PSW_OUT_PUT "$IPSET_VPSIPLIST" $FORCE_INDEX)
 					dst_rule=" -j RETURN"
-					msg2="直连代理(${msg})"
+					msg2="直连代理"
 				}
 				$_ipt -I PSW_OUTPUT $ADD_INDEX $(comment "${address}:${port}") -p $stream -d $address --dport $port $dst_rule 2>/dev/null
-			else
-				msg2="已配置过的节点，"
+			#else
+			#	msg2="已配置过的节点，"
 			fi
 		done
-		msg="[$?]${msg2}使用链${ADD_INDEX}，节点（${type}）：${address}:${port}"
+		msg="[$?]$(echo ${2} | tr 'a-z' 'A-Z')${msg2}使用链${ADD_INDEX}，节点（${type}）：${address}:${port}"
 		echolog "  - ${msg}"
 	}
 	
@@ -291,7 +292,7 @@ filter_node() {
 	local proxy_type=$(echo $(config_n_get $proxy_node type nil) | tr 'A-Z' 'a-z')
 	[ "$proxy_type" == "nil" ] && echolog "  - 节点配置不正常，略过！：${proxy_node}" && return 0
 	if [ "$proxy_protocol" == "_shunt" ]; then
-		echolog "  - 按请求目的地址分流（${proxy_type}）..."
+		#echolog "  - 按请求目的地址分流（${proxy_type}）..."
 		local default_node=$(config_n_get $proxy_node default_node nil)
 		filter_rules $default_node $stream
 		local default_node_address=$(get_host_ip ipv4 $(config_n_get $default_node address) 1)
@@ -301,23 +302,25 @@ filter_node() {
 		for shunt_id in $shunt_ids; do
 			local shunt_proxy=$(config_n_get $proxy_node "${shunt_id}_proxy" 0)
 			local shunt_node=$(config_n_get $proxy_node "${shunt_id}" nil)
-			[ "$shunt_proxy" == 1 ] && {
-				local shunt_node_address=$(get_host_ip ipv4 $(config_n_get $shunt_node address) 1)
-				local shunt_node_port=$(config_n_get $shunt_node port)
-				[ "$shunt_node_address" == "$default_node_address" ] && [ "$shunt_node_port" == "$default_node_port" ] && {
-					shunt_proxy=0
+			[ "$shunt_node" != "nil" ] && {
+				[ "$shunt_proxy" == 1 ] && {
+					local shunt_node_address=$(get_host_ip ipv4 $(config_n_get $shunt_node address) 1)
+					local shunt_node_port=$(config_n_get $shunt_node port)
+					[ "$shunt_node_address" == "$default_node_address" ] && [ "$shunt_node_port" == "$default_node_port" ] && {
+						shunt_proxy=0
+					}
 				}
+				filter_rules "$(config_n_get $proxy_node $shunt_id)" "$stream" "$shunt_proxy" "$proxy_port"
 			}
-			filter_rules "$(config_n_get $proxy_node $shunt_id)" "$stream" "$shunt_proxy" "$proxy_port"
 		done
 	elif [ "$proxy_protocol" == "_balancing" ]; then
-		echolog "  - 多节点负载均衡（${proxy_type}）..."
+		#echolog "  - 多节点负载均衡（${proxy_type}）..."
 		proxy_node=$(config_n_get $proxy_node balancing_node)
 		for _node in $proxy_node; do
 			filter_rules "$_node" "$stream"
 		done
 	else
-		echolog "  - 普通节点（${proxy_type}）..."
+		#echolog "  - 普通节点（${proxy_type}）..."
 		filter_rules "$proxy_node" "$stream"
 	fi
 }
@@ -488,8 +491,8 @@ add_firewall_rule() {
 			eval "node=\${TCP_NODE$num}"
 			msg="${msg} 使用与 TCP 代理自动切换${num} 相同的节点，延后处理"
 		else
-			filter_node $node tcp
-			filter_node $node udp
+			filter_node $node TCP
+			filter_node $node UDP
 		fi
 		echolog "  - ${msg}"
 	done
