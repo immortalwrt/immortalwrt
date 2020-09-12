@@ -48,6 +48,10 @@ hijack.description = translate("如果使用Hosts劫持，请将HTTP/HTTPS端口
 hijack.default = "dont_hijack"
 hijack.rmempty = false
 
+search_limit = s:option(Value, "search_limit", translate("搜索结果限制"))
+search_limit.description = translate("在搜索页面显示其他平台搜索结果个数，可填（0-3）")
+search_limit.default = "0"
+search_limit.rmempty = false
 
 daemon_enable = s:option(Flag, "daemon_enable", translate("启用进程守护"))
 daemon_enable.description = translate("开启后，附属程序会自动检测主程序运行状态，在主程序退出时自动重启")
