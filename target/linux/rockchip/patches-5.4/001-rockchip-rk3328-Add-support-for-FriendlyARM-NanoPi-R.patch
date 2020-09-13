@@ -1,7 +1,7 @@
-From 0df6e9c9e497401f72a243f7afc57dfad6efceca Mon Sep 17 00:00:00 2001
+From 0720be5371c806c1b89936984a321248fa739bea Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
 Date: Fri, 10 Jul 2020 15:57:46 +0200
-Subject: [PATCH 2/2] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
+Subject: [PATCH] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
 
 This adds support for the NanoPi R2S from FriendlyARM.
 
@@ -53,10 +53,10 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		stdout-path = "serial2:1500000n8";
 +	};
 +
-+	gmac_clkin: external-gmac-clock {
++	gmac_clk: gmac-clock {
 +		compatible = "fixed-clock";
 +		clock-frequency = <125000000>;
-+		clock-output-names = "gmac_clkin";
++		clock-output-names = "gmac_clk";
 +		#clock-cells = <0>;
 +	};
 +
@@ -66,7 +66,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		pinctrl-names = "default";
 +
 +		reset {
-+			label = "Reset Button";
++			label = "reset";
 +			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
 +			linux,code = <KEY_RESTART>;
 +			debounce-interval = <50>;
@@ -152,7 +152,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +&gmac2io {
 +	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
-+	assigned-clock-parents = <&gmac_clkin>, <&gmac_clkin>;
++	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
 +	clock_in_out = "input";
 +	phy-handle = <&rtl8211e>;
 +	phy-mode = "rgmii";
@@ -357,7 +357,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	bus-width = <4>;
 +	cap-sd-highspeed;
 +	disable-wp;
-+	pinctrl-0 = <&sdmmc0_clk &sdmmc0_cmd &sdmmc0_dectn &sdmmc0_bus4>;
++	pinctrl-0 = <&sdmmc0_clk>, <&sdmmc0_cmd>, <&sdmmc0_dectn>, <&sdmmc0_bus4>;
 +	pinctrl-names = "default";
 +	sd-uhs-sdr12;
 +	sd-uhs-sdr25;
