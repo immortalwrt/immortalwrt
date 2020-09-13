@@ -1,8 +1,7 @@
-From 1d2f7edaeefe5a6985b50a012eb8e6172df8bbea Mon Sep 17 00:00:00 2001
+From 0df6e9c9e497401f72a243f7afc57dfad6efceca Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
 Date: Fri, 10 Jul 2020 15:57:46 +0200
-Subject: [PATCH v2 2/2] rockchip: rk3328: Add support for FriendlyARM NanoPi
- R2S
+Subject: [PATCH 2/2] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
 
 This adds support for the NanoPi R2S from FriendlyARM.
 
@@ -17,17 +16,9 @@ WAN - LAN - SYS LED
 
 Signed-off-by: David Bauer <mail@david-bauer.net>
 ---
-Changes in v2:
- - Enable SD UHS modes
- - Add startup delay to SDIO regulator to improve
-   issues reported with some cards
- - Fix PMIC interrupt pin
- - Add pinctrl node for ethernet-PHY
- - Fix various formatting issues
-
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   | 367 ++++++++++++++++++
- 2 files changed, 368 insertions(+)
+ .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   | 368 ++++++++++++++++++
+ 2 files changed, 369 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
@@ -42,7 +33,7 @@ Changes in v2:
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-evb-act8846.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -0,0 +1,367 @@
+@@ -0,0 +1,368 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 David Bauer <mail@david-bauer.net>
@@ -84,7 +75,7 @@ Changes in v2:
 +
 +	leds {
 +		compatible = "gpio-leds";
-+		pinctrl-0 = <&wan_led_pin &sys_led_pin &wan_led_pin>;
++		pinctrl-0 = <&lan_led_pin>,  <&sys_led_pin>, <&wan_led_pin>;
 +		pinctrl-names = "default";
 +
 +		lan_led: led-0 {
@@ -103,18 +94,6 @@ Changes in v2:
 +		};
 +	};
 +
-+	vcc_sd: sdmmc-regulator {
-+		compatible = "regulator-fixed";
-+		gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_LOW>;
-+		pinctrl-0 = <&sdmmc0m1_gpio>;
-+		pinctrl-names = "default";
-+		regulator-name = "vcc_sd";
-+		regulator-boot-on;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		vin-supply = <&vcc_io_33>;
-+	};
-+
 +	vcc_io_sdio: sdmmcio-regulator {
 +		compatible = "regulator-gpio";
 +		enable-active-high;
@@ -130,6 +109,18 @@ Changes in v2:
 +		startup-delay-us = <2000>;
 +		states = <1800000 0x1
 +			  3300000 0x0>;
++		vin-supply = <&vcc_io_33>;
++	};
++
++	vcc_sd: sdmmc-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_LOW>;
++		pinctrl-0 = <&sdmmc0m1_gpio>;
++		pinctrl-names = "default";
++		regulator-name = "vcc_sd";
++		regulator-boot-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
 +		vin-supply = <&vcc_io_33>;
 +	};
 +
@@ -178,10 +169,10 @@ Changes in v2:
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
-+		rtl8211e: ethernet-phy@0 {
++		rtl8211e: ethernet-phy@1 {
++			reg = <1>;
 +			pinctrl-0 = <&eth_phy_reset_pin>;
 +			pinctrl-names = "default";
-+			reg = <1>;
 +			reset-assert-us = <10000>;
 +			reset-deassert-us = <50000>;
 +			reset-gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
@@ -194,15 +185,15 @@ Changes in v2:
 +
 +	rk805: pmic@18 {
 +		compatible = "rockchip,rk805";
++		reg = <0x18>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
 +		#clock-cells = <1>;
 +		clock-output-names = "xin32k", "rk805-clkout2";
 +		gpio-controller;
 +		#gpio-cells = <2>;
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-0 = <&pmic_int_l>;
 +		pinctrl-names = "default";
-+		reg = <0x18>;
 +		rockchip,system-power-controller;
 +		wakeup-source;
 +
@@ -326,7 +317,7 @@ Changes in v2:
 +	};
 +
 +	ethernet-phy {
-+		eth_phy_reset_pin: reset-pin {
++		eth_phy_reset_pin: eth-phy-reset-pin {
 +			rockchip,pins = <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_down>;
 +		};
 +	};
@@ -401,6 +392,7 @@ Changes in v2:
 +
 +&usb20_otg {
 +	status = "okay";
++	dr_mode = "host";
 +};
 +
 +&usb_host0_ehci {
