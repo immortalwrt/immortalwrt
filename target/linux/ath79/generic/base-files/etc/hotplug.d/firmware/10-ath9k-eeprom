@@ -161,10 +161,7 @@ case "$FIRMWARE" in
 		ath9k_eeprom_extract "art" 0x5000 0x440
 		ath9k_patch_fw_mac $(macaddr_add $(mtd_get_mac_text "mac" 0x18) 1) 0x2
 		;;
-	enterasys,ws-ap3705i)
-		ath9k_eeprom_extract "calibrate" 0x5000 0x440
-		ath9k_patch_fw_mac $(mtd_get_mac_ascii u-boot-env0 RADIOADDR0) 0x2
-		;;
+	engenius,ecb600|\
 	mercury,mw4530r-v1|\
 	ocedo,raccoon|\
 	tplink,tl-wdr3500-v1|\
@@ -176,6 +173,10 @@ case "$FIRMWARE" in
 	ubnt,unifi-ap-pro|\
 	winchannel,wb2000)
 		ath9k_eeprom_extract "art" 0x5000 0x440
+		;;
+	enterasys,ws-ap3705i)
+		ath9k_eeprom_extract "calibrate" 0x5000 0x440
+		ath9k_patch_fw_mac $(mtd_get_mac_ascii u-boot-env0 RADIOADDR0) 0x2
 		;;
 	netgear,wnr2200-8m|\
 	netgear,wnr2200-16m|\
