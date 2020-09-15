@@ -146,11 +146,11 @@ case "$FIRMWARE" in
 				;;
 			bt,homehub-v3a)
 				ath9k_eeprom_extract "art-copy" 0 1
-				ath9k_patch_fw_mac_crc $(macaddr_add $(mtd_get_mac_ascii uboot_env ethaddr) +2) 268
+				ath9k_patch_fw_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +2) 268
 				;;
 			netgear,dgn3500|netgear,dgn3500b)
 				ath9k_eeprom_extract "calibration" 61440 0
-				ath9k_patch_fw_mac_crc $(macaddr_add $(mtd_get_mac_ascii uboot-env ethaddr) +2) 524
+				ath9k_patch_fw_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +2) 524
 				;;
 			avm,fritz7312|avm,fritz7320)
 				ath9k_eeprom_extract "urlader" 2437 0
