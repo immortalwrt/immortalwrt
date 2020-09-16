@@ -28,46 +28,79 @@
     
     local fs	= require "nixio.fs"
 	local nutil = require "nixio.util"
+	local uci = require 'luci.model.uci'.cursor()
     
 	-- send as HTML5
 	http.prepare_content("text/html")
-    math.randomseed(os.time())
+	math.randomseed(os.time())
+	
+	-- Custom settings
+	local mode = 'normal'
+	local dark_css = fs.readfile('/www/luci-static/argon/css/dark.css')
+	local bar_color = '#5e72e4'
+	local primary, dark_primary, blur_radius, blur_radius_dark, blur_opacity
+	if fs.access('/etc/config/argon') then
+		primary = uci:get_first('argon', 'global', 'primary')
+		dark_primary = uci:get_first('argon', 'global', 'dark_primary')
+		blur_radius = uci:get_first('argon', 'global', 'blur')
+		blur_radius_dark = uci:get_first('argon', 'global', 'blur_dark')
+		blur_opacity = uci:get_first('argon', 'global', 'transparency')
+		blur_opacity_dark = uci:get_first('argon', 'global', 'transparency_dark')
+		mode = uci:get_first('argon', 'global', 'mode')
+		bar_color = mode == 'dark' and dark_primary or primary
+	end
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
 
 <head>
 	<meta charset="utf-8">
-	<title>
-		<%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %>
-		- LuCI</title>
-	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-	<meta name="format-detection" content="telephone=no, email=no" />
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="x5-fullscreen" content="true">
-	<meta name="full-screen" content="yes">
-	<meta name="x5-page-mode" content="app">
-	<meta name="browsermode" content="application">
-	<meta name="msapplication-tap-highlight" content="no">
-	<meta name="msapplication-TileColor" content="#5e72e4">
-	<meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
-	<meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
-	<link rel="apple-touch-icon" sizes="60x60" href="<%=media%>/icon/apple-icon-60x60.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="<%=media%>/icon/apple-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="<%=media%>/icon/apple-icon-144x144.png">
-	<link rel="icon" type="image/png" sizes="192x192"  href="<%=media%>/icon/android-icon-192x192.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="<%=media%>/icon/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="96x96" href="<%=media%>/icon/favicon-96x96.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="<%=media%>/icon/favicon-16x16.png">
-	<link rel="manifest" href="<%=media%>/icon/manifest.json">
-	<meta name="msapplication-TileColor" content="#5e72e4">
-	<meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
-	<meta name="theme-color" content="#5e72e4">
-	<link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
-	<% if nixio.fs.access("/etc/dark") then %>
-	<link rel="stylesheet" href="<%=media%>/css/dark.css?v=<%=math.random(1,100000)%>">
-	<% end -%>
+    <title>
+        <%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %>
+        - LuCI</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="format-detection" content="telephone=no, email=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-page-mode" content="app">
+    <meta name="browsermode" content="application">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="msapplication-TileColor" content="<%=bar_color%>">
+    <meta name="application-name" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
+    <meta name="apple-mobile-web-app-title" content="<%=striptags( (boardinfo.hostname or "?") ) %> - LuCI">
+    <link rel="apple-touch-icon" sizes="60x60" href="<%=media%>/icon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="<%=media%>/icon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="<%=media%>/icon/apple-icon-144x144.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="<%=media%>/icon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%=media%>/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="<%=media%>/icon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%=media%>/icon/favicon-16x16.png">
+    <link rel="manifest" href="<%=media%>/icon/manifest.json">
+    <meta name="msapplication-TileColor" content="<%=bar_color%>">
+    <meta name="msapplication-TileImage" content="<%=media%>/icon/ms-icon-144x144.png">
+    <meta name="theme-color" content="<%=bar_color%>">
+    <link rel="stylesheet" href="<%=media%>/css/cascade.css?v=<%=math.random(1,100000)%>">
+    <style title="text/css">
+        <% if mode == 'normal' then %>
+            @media (prefers-color-scheme: dark) {
+                <%=dark_css%>
+            }
+        <% elseif mode == 'dark' then %>
+            <%=dark_css%>
+        <% end -%>
+        <% if fs.access('/etc/config/argon') then %>
+        :root {
+            --primary: <%=primary%>;
+            --dark-primary: <%=dark_primary%>;
+            --blur-radius:<%=blur_radius%>px;
+            --blur-opacity:<%=blur_opacity%>;
+            --blur-radius-dark:<%=blur_radius_dark%>px;
+            --blur-opacity-dark:<%=blur_opacity_dark%>;
+        }
+        <% end -%>
+    </style>
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -77,136 +110,110 @@
 		<%=css %>
 	</style>
 	<% end -%>
-	<script src="<%=url('admin/translations', luci.i18n.context.lang)%><%# ?v=PKG_VERSION %>"></script>
-	<script src="<%=resource%>/cbi.js<%# ?v=PKG_VERSION %>"></script>
-	<script src="<%=resource%>/luci.js<%# ?v=PKG_VERSION %>"></script>
-	<script src="<%=media%>/js/jquery.min.js<%# ?v=PKG_VERSION %>"></script>
-	<script type="text/javascript">//<![CDATA[
-		(function () {
+	<script src=”https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+	<script src="<%=url('admin/translations', luci.i18n.context.lang)%>?v=2.2.4"></script>
+	<script src="<%=resource%>/cbi.js?v=2.2.4"></script>
+	<script src="<%=resource%>/luci.js?v=2.2.4"></script>
+	<script src="<%=media%>/js/jquery.min.js?v=2.2.4"></script>
+		<script type="text/javascript">//<![CDATA[
+	function EF() { return L.dom.create.apply(L.dom, arguments) }
+		(function() {
 			function get_children(node) {
 				var children = [];
-
 				for (var k in node.children) {
 					if (!node.children.hasOwnProperty(k))
 						continue;
-
 					if (!node.children[k].satisfied)
 						continue;
-
 					if (!node.children[k].hasOwnProperty('title'))
 						continue;
-
 					children.push(Object.assign(node.children[k], { name: k }));
 				}
-
-				return children.sort(function (a, b) {
+				return children.sort(function(a, b) {
 					return ((a.order || 1000) - (b.order || 1000));
 				});
 			}
-
 			function render_mainmenu(tree, url, level) {
 				var l = (level || 0) + 1,
-					ul = E('ul', { 'class': level ? 'slide-menu' : 'nav' }),
-					children = get_children(tree);
+				    ul = EF('ul', { 'class': level ? 'slide-menu' : 'nav' }),
+				    children = get_children(tree);
 				if (children.length == 0 || l > 2)
-					return E([]);
-
+					return EF([]);
 				for (var i = 0; i < children.length; i++) {
 					var submenu = render_mainmenu(children[i], url + '/' + children[i].name, l),
-						hasChildren = submenu.children.length;
-					isLogout = (children[i].name == 'logout');
-					ul.appendChild(E('li', { 'class': hasChildren ? 'slide' : isLogout ? 'lg' : null }, [
-						E('a', {
+					    hasChildren = submenu.children.length;
+					ul.appendChild(EF('li', { 'class': hasChildren ? 'slide' : null }, [
+						EF('a', {
 							'href': hasChildren ? '#' : L.url(url, children[i].name),
-							'class': hasChildren ? 'menu' : isLogout ? "logout" : null,
-							'data-title': children[i].title.replace(" ", "_"),
-						}, [_(children[i].title)]),
+							'class': hasChildren ? 'menu' : null,
+							'data-title': hasChildren ?  children[i].title.replace(" ", "_") :  children[i].title.replace(" ", "_"),
+						}, [ _(children[i].title) ]),
 						submenu
 					]));
 				}
-
 				if (l == 1) {
 					var container = document.querySelector('#mainmenu');
-
 					container.appendChild(ul);
 					container.style.display = '';
 				}
-
 				return ul;
 			}
-
 			function render_modemenu(tree) {
 				var ul = document.querySelector('#modemenu'),
-					children = get_children(tree);
-
+				    children = get_children(tree);
 				for (var i = 0; i < children.length; i++) {
 					var isActive = (L.env.requestpath.length ? children[i].name == L.env.requestpath[0] : i == 0);
-
-					ul.appendChild(E('li', {}, [
-						E('a', {
+					ul.appendChild(EF('li', {}, [
+						EF('a', {
 							'href': L.url(children[i].name),
 							'class': isActive ? 'active' : null
-						}, [_(children[i].title)])
+						}, [ _(children[i].title) ])
 					]));
-
 					if (isActive)
 						render_mainmenu(children[i], children[i].name);
 				}
-
 				if (ul.children.length > 1)
 					ul.style.display = '';
 			}
-
 			function render_tabmenu(tree, url, level) {
 				var container = document.querySelector('#tabmenu'),
-					l = (level || 0) + 1,
-					ul = E('ul', { 'class': 'tabs' }),
-					children = get_children(tree),
-					activeNode = null;
-
+				    l = (level || 0) + 1,
+				    ul = EF('ul', { 'class': 'tabs' }),
+				    children = get_children(tree),
+				    activeNode = null;
 				if (children.length == 0)
-					return E([]);
-
+					return EF([]);
 				for (var i = 0; i < children.length; i++) {
 					var isActive = (L.env.dispatchpath[l + 2] == children[i].name),
-						activeClass = isActive ? ' active' : '',
-						className = 'tabmenu-item-%s %s'.format(children[i].name, activeClass);
-
-					ul.appendChild(E('li', { 'class': className }, [
-						E('a', { 'href': L.url(url, children[i].name) }, [_(children[i].title)])
+					    activeClass = isActive ? ' active' : '',
+					    className = 'tabmenu-item-%s %s'.format(children[i].name, activeClass);
+					ul.appendChild(EF('li', { 'class': className }, [
+						EF('a', { 'href': L.url(url, children[i].name) }, [ _(children[i].title) ] )
 					]));
-
 					if (isActive)
 						activeNode = children[i];
 				}
-
 				container.appendChild(ul);
 				container.style.display = '';
-
 				if (activeNode)
 					container.appendChild(render_tabmenu(activeNode, url + '/' + activeNode.name, l));
-
 				return ul;
 			}
-
-			document.addEventListener('luci-loaded', function (ev) {
-				var tree = <%= luci.http.write_json(luci.dispatcher.menu_json() or { }) %>,
-				node = tree,
-				url = '';
-
-			render_modemenu(tree);
-
-			if (L.env.dispatchpath.length >= 3) {
-				for (var i = 0; i < 3 && node; i++) {
-					node = node.children[L.env.dispatchpath[i]];
-					url = url + (url ? '/' : '') + L.env.dispatchpath[i];
+			document.addEventListener('luci-loaded', function(ev) {
+				var tree = <%= luci.http.write_json(luci.dispatcher.menu_json() or {}) %>,
+				    node = tree,
+				    url = '';
+				render_modemenu(tree);
+				if (L.env.dispatchpath.length >= 3) {
+					for (var i = 0; i < 3 && node; i++) {
+						node = node.children[L.env.dispatchpath[i]];
+						url = url + (url ? '/' : '') + L.env.dispatchpath[i];
+					}
+					if (node)
+						render_tabmenu(node, url);
 				}
-
-				if (node)
-					render_tabmenu(node, url);
-			}
-		});
-		}) ();
+			});
+		})();
 	//]]></script>
 </head>
 
