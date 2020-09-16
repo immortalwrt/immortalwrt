@@ -9,3 +9,12 @@
  			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
  			reg = <0x78b0000 0x200>;
  			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
+@@ -591,7 +591,7 @@
+ 			status = "disabled";
+ 		};
+ 
+-		mdio@90000 {
++		mdio: mdio@90000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "qcom,ipq4019-mdio";
