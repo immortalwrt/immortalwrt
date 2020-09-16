@@ -271,7 +271,7 @@ define Device/ruijie_rg-mtfi-m520
 	KERNEL = kernel-bin | append-dtb | uImage none | pad-to $${KERNEL_SIZE}
 	KERNEL_NAME := zImage
 	IMAGES := factory.bin sysupgrade.bin mmcblk0p2-kernel.bin mmcblk0p3-rootfs.bin
-	IMAGE/factory.bin := qsdk-ipq-factory-nor
+	IMAGE/factory.bin := qsdk-ipq-factory-mmc
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to $$$${BLOCKSIZE} | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	IMAGE/mmcblk0p2-kernel.bin := append-kernel | pad-to $$$${KERNEL_SIZE}
 	IMAGE/mmcblk0p3-rootfs.bin := append-rootfs | pad-rootfs

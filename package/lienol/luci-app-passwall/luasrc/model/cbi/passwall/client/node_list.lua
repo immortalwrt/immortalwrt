@@ -55,12 +55,14 @@ s.sortable = true
 if nodes_display:find("compact_display_nodes") then
     if show_group then show_group.width = "25%" end
     o = s:option(DummyValue, "remarks", translate("Remarks"))
+    o.rawhtml = true
     o.cfgvalue = function(t, n)
         local str = ""
         local is_sub = m:get(n, "is_sub") or ""
         local group = m:get(n, "group") or ""
         local remarks = m:get(n, "remarks") or ""
         local type = m:get(n, "type") or ""
+        str = str .. string.format("<input type='hidden' id='cbid.%s.%s.type' value='%s'>", appname, n, type)
         if type == "V2ray" then
             local protocol = m:get(n, "protocol")
             if protocol == "_balancing" then
@@ -73,8 +75,9 @@ if nodes_display:find("compact_display_nodes") then
         local port = m:get(n, "port") or ""
         str = str .. translate(type) .. "：" .. remarks
         if address ~= "" and port ~= "" then
-            local s = " （" .. address .. ":" .. port .. "）"
-            str = str .. s
+            str = str .. string.format("（%s:%s）", address, port)
+            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.address' value='%s'>", appname, n, address)
+            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.port' value='%s'>", appname, n, port)
         end
         return str
     end
@@ -89,7 +92,6 @@ else
             else
                 return '手动'
             end
-            return str
         end
     end
 
@@ -130,23 +132,12 @@ end
 
 ---- Ping
 o = s:option(DummyValue, "ping", translate("Latency"))
-o.width = "6%"
+o.width = "8%"
 if not nodes_ping:find("auto_ping") then
     o.template = appname .. "/node_list/ping"
 else
     o.template = appname .. "/node_list/auto_ping"
 end
---[[
-o.cfgvalue = function(t, n)
-    local type = m:get(n, "type") or ""
-    if type == "V2ray" then
-        local protocol = m:get(n, "protocol","")
-        if protocol == "_balancing" or protocol == "_shunt" then
-            return "---"
-        end
-    end
-end
---]]
 
 m:append(Template(appname .. "/node_list/node_list"))
 

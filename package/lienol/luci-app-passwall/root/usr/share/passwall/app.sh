@@ -314,50 +314,63 @@ run_socks() {
 	local remarks=$(config_n_get $node remarks)
 	local server_host=$(config_n_get $node address)
 	local port=$(config_n_get $node port)
-	local msg
+	local msg tmp
 
-	echolog "  - 启用 ${bind}:${local_port}"
 	if [ -n "$server_host" ] && [ -n "$port" ]; then
 		server_host=$(host_from_url "$server_host")
 		[ -n "$(echo -n $server_host | awk '{print gensub(/[!-~]/,"","g",$0)}')" ] && msg="$remarks，非法的代理服务器地址，无法启动 ！"
+		tmp="（${server_host}:${port}）"
 	else
 		msg="某种原因，此 Socks 服务的相关配置已失联，启动中止！"
 	fi
+	
+	if [ "$type" == "v2ray" ] && ([ -n "$(config_n_get $node balancing_node)" ] || [ "$(config_n_get $node default_node)" != "nil" ]); then
+		unset msg
+	fi
 
 	[ -n "${msg}" ] && {
-		echolog "  - ${msg}"
+		[ "$bind" != "127.0.0.1" ] && echolog "  - 启动中止 ${bind}:${local_port} ${msg}"
 		return 1
 	}
-	echolog "  - 节点：$remarks，${server_host}:${port}"
+	[ "$bind" != "127.0.0.1" ] && echolog "  - 启动 ${bind}:${local_port}  - 节点：$remarks${tmp}"
 
-	if [ "$type" == "socks" ]; then
-		echolog "  - 不能使用 Socks 类型的代理节点"
-	elif [ "$type" == "v2ray" ]; then
+	case "$type" in
+	socks)
+		local _username=$(config_n_get $node username)
+		local _password=$(config_n_get $node password)
+		[ -n "$_username" ] && [ -n "$_password" ] && local _auth="--uname $_username --passwd $_password"
+		ln_start_bin "$(first_type ssocks)" ssocks_SOCKS_$5 --listen $local_port --socks $server_host:$port $_auth
+		unset _username _password _auth
+	;;
+	v2ray)
 		lua $API_GEN_V2RAY $node nil nil $local_port > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
-	elif [ "$type" == "trojan" ]; then
-		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
-		ln_start_bin "$(first_type trojan trojan-plus)" trojan -c "$config_file"
-	elif [ "$type" == "trojan-plus" ]; then
-		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
-		ln_start_bin "$(first_type trojan-plus trojan)" trojan-plus -c "$config_file"
-	elif [ "$type" == "trojan-go" ]; then
+	;;
+	trojan-go)
 		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app trojan_go_file notset) trojan-go)" trojan-go -config "$config_file"
-	elif [ "$type" == "naiveproxy" ]; then
+	;;
+	trojan*)
+		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
+		ln_start_bin "$(first_type ${type})" "${type}" -c "$config_file"
+	;;
+	naiveproxy)
 		lua $API_GEN_NAIVE $node socks $bind $local_port > $config_file
 		ln_start_bin "$(first_type naive)" naive "$config_file"
-	elif [ "$type" == "brook" ]; then
+	;;
+	brook)
 		local protocol=$(config_n_get $node protocol client)
 		local brook_tls=$(config_n_get $node brook_tls 0)
 		[ "$protocol" == "wsclient" ] && {
 			[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}" 
 		}
-		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_socks_$5" "$protocol" --socks5 "$bind:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
-	elif [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
+		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_SOCKS_$5" "$protocol" --socks5 "$bind:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
+	;;
+	ss|ssr)
 		lua $API_GEN_SS $node $local_port > $config_file
 		ln_start_bin "$(first_type ${type}-local)" "${type}-local" -c "$config_file" -b "$bind" -u
-	fi
+	;;
+	esac
 }
 
 run_redir() {
@@ -379,47 +392,54 @@ run_redir() {
 			echolog "$remarks节点，非法的服务器地址，无法启动！"
 			return 1
 		}
+		[ "$server_host" == "127.0.0.1" ] && process=1
 		[ "$bind" != "127.0.0.1" ] && echolog "${redir_type}_${6}节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
 	}
 	eval ${redir_type}_NODE${6}_PORT=$port
-
-	if [ "$redir_type" == "UDP" ]; then
-		if [ "$type" == "socks" ]; then
+	
+	case "$redir_type" in
+	UDP)
+		case "$type" in
+		socks)
 			local node_address=$(config_n_get $node address)
 			local node_port=$(config_n_get $node port)
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT$6
 			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_udp_$6" -U -l "$port" -b 0.0.0.0 -s "$node_address" -p "$node_port" -R
-		elif [ "$type" == "v2ray" ]; then
+		;;
+		v2ray)
 			lua $API_GEN_V2RAY $node udp $local_port nil > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
-		elif [ "$type" == "trojan" ]; then
-			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
-			ln_start_bin "$(first_type trojan trojan-plus)" trojan -c "$config_file"
-		elif [ "$type" == "trojan-plus" ]; then
-			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
-			ln_start_bin "$(first_type trojan-plus trojan)" trojan-plus -c "$config_file"
-		elif [ "$type" == "trojan-go" ]; then
+		;;
+		trojan-go)
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
 			ln_start_bin "$(first_type $(config_t_get global_app trojan_go_file notset) trojan-go)" trojan-go -config "$config_file"
-		elif [ "$type" == "naiveproxy" ]; then
+		;;
+		trojan*)
+			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
+			ln_start_bin "$(first_type ${type})" "${type}" -c "$config_file"
+		;;
+		naiveproxy)
 			echolog "Naiveproxy不支持UDP转发！"
-		elif [ "$type" == "brook" ]; then
+		;;
+		brook)
 			local protocol=$(config_n_get $node protocol client)
 			if [ "$protocol" == "wsclient" ]; then
 				echolog "Brook的WebSocket不支持UDP转发！"
 			else
 				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_udp_$6" tproxy -l ":$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 			fi
-		elif [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
+		;;
+		ss|ssr)
 			lua $API_GEN_SS $node $local_port > $config_file
 			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" -c "$config_file" -U
-		fi
-	fi
-
-	if [ "$redir_type" == "TCP" ]; then
-		if [ "$type" == "socks" ]; then
+		;;
+		esac
+	;;
+	TCP)
+		case "$type" in
+		socks)
 			local node_address=$(config_n_get $node address)
 			local node_port=$(config_n_get $node port)
 			local server_username=$(config_n_get $node username)
@@ -428,28 +448,36 @@ run_redir() {
 			local extra_param="-T"
 			[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param=""
 			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp_$6" -l "$port" -b 0.0.0.0 -s "$node_address" -p "$node_port" -R $extra_param
-		elif [ "$type" == "v2ray" ]; then
+		;;
+		v2ray)
 			local extra_param="tcp"
 			[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param="tcp,udp"
 			lua $API_GEN_V2RAY $node $extra_param $local_port nil > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
-		elif [ "$type" == "trojan" ]; then
-			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
-			for k in $(seq 1 $process); do
-				ln_start_bin "$(first_type trojan trojan-plus)" trojan -c "$config_file"
-			done
-		elif [ "$type" == "trojan-plus" ]; then
-			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
-			for k in $(seq 1 $process); do
-				ln_start_bin "$(first_type trojan-plus trojan)" trojan-plus -c "$config_file"
-			done
-		elif [ "$type" == "trojan-go" ]; then
+		;;
+		trojan-go)
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app trojan_go_file notset) trojan-go)" trojan-go -config "$config_file"
-		elif [ "$type" == "naiveproxy" ]; then
+		;;
+		trojan*)
+			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
+			for k in $(seq 1 $process); do
+				ln_start_bin "$(first_type ${type})" "${type}" -c "$config_file"
+			done
+		;;
+		naiveproxy)
 			lua $API_GEN_NAIVE $node redir "0.0.0.0" $local_port > $config_file
 			ln_start_bin "$(first_type naive)" naive "$config_file"
-		else
+		;;
+		brook)
+			local protocol=$(config_n_get $node protocol client)
+			if [ "$protocol" == "wsclient" ]; then
+				echolog "Brook的WebSocket不支持UDP转发！"
+			else
+				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_udp_$6" tproxy -l ":$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
+			fi
+		;;
+		*)
 			local kcptun_use=$(config_n_get $node use_kcp 0)
 			if [ "$kcptun_use" == "1" ]; then
 				local kcptun_server_host=$(config_n_get $node kcp_server)
@@ -499,8 +527,10 @@ run_redir() {
 					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" tproxy -l ":$local_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
 				fi
 			fi
-		fi
-	fi
+		;;
+		esac
+	;;
+	esac
 	return 0
 }
 
@@ -751,6 +781,7 @@ start_dns() {
 	if [ -n "$(echo ${DNS_MODE} | grep 'https-dns-proxy')" ]; then
 		up_trust_doh=$(config_t_get global up_trust_doh "https://dns.google/dns-query,8.8.8.8,8.8.4.4")
 		_doh_url=$(echo $up_trust_doh | awk -F ',' '{print $1}')
+		_doh_port=$(echo $_doh_url | sed "s/:\/\///g" | awk -F ':' '{print $2}'| awk -F '/' '{print $1}')
 		_doh_bootstrap=$(echo $up_trust_doh | cut -d ',' -sf 2-)
 		
 		up_trust_doh_dns=$(config_t_get global up_trust_doh_dns "tcp")
@@ -761,13 +792,13 @@ start_dns() {
 			DNS_FORWARD=""
 			_doh_bootstrap_dns=$(echo $_doh_bootstrap | sed "s/,/ /g")
 			for _dns in $_doh_bootstrap_dns; do
-				_dns=$(echo $_dns | awk -F ':' '{print $1}'):443
+				_dns=$(echo $_dns | awk -F ':' '{print $1}'):${_doh_port:-443}
 				[ -n "$DNS_FORWARD" ] && DNS_FORWARD=${DNS_FORWARD},${_dns} || DNS_FORWARD=${_dns}
 			done
 			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy -a 127.0.0.1 -p "${dns_listen_port}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4
 			unset _dns _doh_bootstrap_dns
 		fi
-		unset _doh_url _doh_bootstrap
+		unset _doh_url _doh_port _doh_bootstrap
 	fi
 	if [ -n "$(echo ${DNS_MODE}${up_trust_pdnsd_dns} | grep dns2socks)" ]; then
 		local dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
@@ -862,7 +893,7 @@ add_dnsmasq() {
 			items=$(get_enabled_anonymous_secs "@subscribe_list")
 			for item in ${items}; do
 				host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/subscribe.conf"
-				echolog "  - [$?]节点订阅用域名，$(host_from_url $(config_n_get ${item} url))：${fwd_dns:-默认}"
+				echolog "  - [$?]节点订阅域名，$(host_from_url $(config_n_get ${item} url))：${fwd_dns:-默认}"
 			done
 		}
 	fi

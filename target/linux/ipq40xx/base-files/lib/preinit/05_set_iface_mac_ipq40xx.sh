@@ -9,14 +9,16 @@ preinit_set_mac_address() {
 		ip link set dev eth0 address $(macaddr_add "$base_mac" +1)
 		;;
 	asus,rt-acrh17|\
-	asus,rt-ac58u|\
-	asus,rt-ac1300uhp)
+	asus,rt-ac58u)
 		CI_UBIPART=UBI_DEV
 		base_mac=$(mtd_get_mac_binary_ubi Factory 4102)
 		ip link set dev eth0 address $(macaddr_add "$base_mac" +1)
 		;;
 	ezviz,cs-w3-wd1200g-eup)
 		ip link set dev eth0 address $(mtd_get_mac_binary "ART" 6)
+		;;
+	engenius,eap2200)
+		base_mac=$(cat /sys/class/net/eth0/address)
 		;;
 	linksys,ea8300)
 		base_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
