@@ -1,3 +1,4 @@
+//  compress: true
 /**
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
@@ -61,11 +62,12 @@ body {
             }
 
             .cbi-button-apply {
-                background-image: linear-gradient(-135deg, #6c61ab 0%, #594ca9 100%);
+                background-color: #483d8b !important;
+                background-color: var(--dark-primary) !important;
 
                 &:hover,
                 &:focus {
-                    background-image: linear-gradient(-135deg, rgb(85, 76, 138) 0%, rgb(72, 61, 139) 100%);
+                    opacity: 0.9;
                 }
             }
         }
@@ -113,7 +115,8 @@ header::after {
                 }
 
                 .menu.active {
-                    background-color: darkslateblue !important;
+                    background-color: #483d8b !important;
+                    background-color: var(--dark-primary) !important;
                     color: #cccccc !important;
 
                     a::after {
@@ -128,7 +131,8 @@ header::after {
                 }
 
                 a:hover {
-                    background-color: darkslateblue !important;
+                    background-color: #483d8b !important;
+                    background-color: var(--dark-primary) !important;
                     color: #cccccc !important;
                 }
             }
@@ -163,7 +167,8 @@ h3 {
 a:-webkit-any-link {
     color: -webkit-link;
     cursor: pointer;
-    color: darkslateblue;
+    color: #483d8b;
+    color: var(--dark-primary);
 }
 
 
@@ -175,8 +180,10 @@ input:-webkit-autofill {
 .cbi-button-apply,
 .cbi-button-edit {
     color: #fff !important;
-    background-color: darkslateblue !important;
-    border-color: darkslateblue !important;
+    background-color: #483d8b !important;
+    background-color: var(--dark-primary) !important;
+    border-color: #483d8b !important;
+    border-color: var(--dark-primary) !important;
 }
 
 
@@ -316,7 +323,8 @@ h4 {
 
 .cbi-button {
     color: #ccc !important;
-    background-color: darkslateblue;
+    background-color: #483d8b;
+    background-color: var(--dark-primary);
 }
 
 .cbi-section-node {
@@ -361,7 +369,8 @@ div>.table>.tbody>.tr:nth-of-type(2n) {
 
 .tabs>li[class~="active"],
 .tabs>li:hover {
-    border-bottom: 0.18751rem solid darkslateblue;
+    border-bottom: 0.18751rem solid #483d8b;
+    border-bottom: 0.18751rem solid var(--dark-primary);
     color: #ccc;
     background-color: #181819;
 }
@@ -410,7 +419,8 @@ input {
 
 select:not([multiple="multiple"]):focus,
 input:focus {
-    border-color: darkslateblue !important;
+    border-color: #483d8b !important;
+    border-color: var(--dark-primary) !important;
     outline: 0;
 
 }
@@ -515,7 +525,8 @@ td.cbi-value-field var {
 }
 
 .node-services-vssr .cbi-section-table-row.fast {
-    background: darkslateblue !important;
+    background: #483d8b !important;
+    background: var(--dark-primary) !important;
     color: #fff;
 }
 
@@ -535,7 +546,8 @@ td.cbi-value-field var {
 }
 
 .notice {
-    background-color: darkslateblue !important;
+    background-color: #483d8b !important;
+    background-color: var(--dark-primary) !important;
 }
 
 .cbi-input-find,
@@ -563,7 +575,8 @@ td.cbi-value-field var {
 .cbi-button-apply.important,
 .cbi-button-reload.important,
 .cbi-button-action.important {
-    border: 1px darkslateblue solid !important;
+    border: 1px #483d8b solid !important;
+    border: 1px var(--dark-primary) solid !important;
 }
 
 .btn[value="Dismiss"],
@@ -575,8 +588,8 @@ td.cbi-value-field var {
 .cbi-button-neutral[value="Disable"] {
     font-weight: normal;
     color: #fff;
-    border: thin solid darkorange!important;
-    background-color: darkorange!important;
+    border: thin solid darkorange !important;
+    background-color: darkorange !important;
 }
 
 fieldset[id^="cbi-apply-"] {
@@ -619,7 +632,8 @@ header .fill .status span[data-style="active"] {
 td>.ifacebadge,
 .td>.ifacebadge {
 
-    background-color: darkslateblue;
+    background-color: #483d8b;
+    background-color: var(--dark-primary);
     border: 0;
 }
 
@@ -684,7 +698,8 @@ div[style="width:100%;height:300px;border:1px solid #000;background:#fff"] {
 }
 
 .cbi-value input[type="password"]+.cbi-button-neutral {
-    background-color: darkslateblue !important;
+    background-color: #483d8b !important;
+    background-color: var(--dark-primary) !important;
 }
 
 .btn,
@@ -722,7 +737,8 @@ input,
 }
 
 .cbi-dropdown[open] {
-    border-color: darkslateblue !important;
+    border-color: #483d8b !important;
+    border-color: var(--dark-primary) !important;
 }
 
 .cbi-dropdown[open]>ul.dropdown {
@@ -740,12 +756,14 @@ input,
 }
 
 .cbi-dropdown[open]>ul.dropdown>li[selected] {
-    background-color: darkslateblue !important;
+    background-color: #483d8b !important;
+    background-color: var(--dark-primary) !important;
     border-bottom: 1px solid #3c3c3c !important;
 }
 
 .cbi-dropdown[open]>ul.dropdown>li.focus {
-    background: darkslateblue;
+    background: #483d8b;
+    background: var(--dark-primary);
     outline: none;
 }
 
@@ -767,7 +785,8 @@ input,
 .cbi-button[value="Upload"],
 .cbi-button[value$="Apply"],
 .cbi-button[onclick="addKey(event)"] {
-    background: darkslateblue !important;
+    background: #483d8b !important;
+    background: var(--dark-primary) !important;
 }
 
 .btn.primary,
@@ -781,7 +800,8 @@ input,
 .cbi-button[value="Scan"],
 .cbi-button[value^="Back"],
 .cbi-button-neutral[onclick="handleConfig(event)"] {
-    background: darkslateblue;
+    background: #483d8b;
+    background: var(--dark-primary);
 }
 
 [data-page="admin-system-opkg"] h2 {
