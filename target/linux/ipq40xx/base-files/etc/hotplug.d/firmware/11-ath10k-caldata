@@ -98,6 +98,8 @@ case "$FIRMWARE" in
 	cellc,rtl30vw |\
 	compex,wpj419 |\
 	compex,wpj428 |\
+	edgecore,ecw5211 |\
+	edgecore,oap100 |\
 	engenius,eap1300 |\
 	engenius,eap2200 |\
 	openmesh,a42 |\
@@ -193,6 +195,8 @@ case "$FIRMWARE" in
 	cellc,rtl30vw |\
 	compex,wpj419 |\
 	compex,wpj428 |\
+	edgecore,ecw5211 |\
+	edgecore,oap100 |\
 	engenius,eap1300 |\
 	engenius,eap2200 |\
 	openmesh,a42 |\
