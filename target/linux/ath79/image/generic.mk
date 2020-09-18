@@ -202,7 +202,7 @@ define Device/8dev_carambola2
   SOC := ar9331
   DEVICE_VENDOR := 8devices
   DEVICE_MODEL := Carambola2
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-chipidea2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   IMAGE_SIZE := 16000k
   SUPPORTED_DEVICES += carambola2
 endef
@@ -249,7 +249,7 @@ define Device/alfa-network_ap121f
   SOC := ar9331
   DEVICE_VENDOR := ALFA Network
   DEVICE_MODEL := AP121F
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-chipidea2 kmod-usb-storage -swconfig
+  DEVICE_PACKAGES := kmod-usb-chipidea2 kmod-usb-storage -swconfig
   IMAGE_SIZE := 16064k
   SUPPORTED_DEVICES += ap121f
 endef
@@ -277,7 +277,7 @@ define Device/arduino_yun
   SOC := ar9331
   DEVICE_VENDOR := Arduino
   DEVICE_MODEL := Yun
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-chipidea2 kmod-usb-ledtrig-usbport \
+  DEVICE_PACKAGES := kmod-usb-chipidea2 kmod-usb-ledtrig-usbport \
 	kmod-usb-storage block-mount -swconfig
   IMAGE_SIZE := 15936k
   SUPPORTED_DEVICES += arduino-yun
@@ -1381,7 +1381,7 @@ define Device/pisen_ts-d084
   SOC := ar9331
   DEVICE_VENDOR := PISEN
   DEVICE_MODEL := TS-D084
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-chipidea2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   TPLINK_HWID := 0x07030101
 endef
 TARGET_DEVICES += pisen_ts-d084
@@ -1409,7 +1409,7 @@ define Device/pisen_wmm003n
   SOC := ar9331
   DEVICE_VENDOR := PISEN
   DEVICE_MODEL := Cloud Easy Power (WMM003N)
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-chipidea2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   TPLINK_HWID := 0x07030101
 endef
 TARGET_DEVICES += pisen_wmm003n
