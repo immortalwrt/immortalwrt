@@ -19,12 +19,18 @@ endef
 # <https://wireless.wiki.kernel.org/en/users/drivers/ath10k/boardfiles>
 
 ALLWIFIBOARDS:= \
+	8dev_habanero-dvk \
 	aruba_ap-303 \
 	asus_rt-acrh17 \
 	avm_fritzrepeater-1200 \
+	buffalo_wtr-m2133hp \
+	cellc_rtl30vw \
 	dlink_dap2610 \
+	engenius_eap2200 \
 	engenius_emd1 \
+	engenius_emr3500 \
 	ezviz_cs-w3-wd1200g-eup \
+	glinet_gl-s1300 \
 	hiwifi_c526a \
 	hugo_ac1200 \
 	linksys_ea8300 \
@@ -38,7 +44,7 @@ define Package/ipq-wifi-default
   SUBMENU:=ath10k Board-Specific Overrides
   SECTION:=firmware
   CATEGORY:=Firmware
-  DEPENDS:=@TARGET_ipq40xx
+  DEPENDS:=@(TARGET_ipq40xx||TARGET_ipq806x)
   TITLE:=Custom Board
 endef
 
@@ -91,12 +97,18 @@ endef
 # Place files in this directory as board-<devicename>.<qca4019|qca9888|qca9984>
 # Add $(eval $(call generate-ipq-wifi-package,<devicename>,<display name>))
 
+$(eval $(call generate-ipq-wifi-package,8dev_habanero-dvk,8devices Habanero DVK))
 $(eval $(call generate-ipq-wifi-package,aruba_ap-303,Aruba AP-303))
 $(eval $(call generate-ipq-wifi-package,asus_rt-acrh17,ASUS RT-ACRH17/RT-AC82U/RT-AC42U))
 $(eval $(call generate-ipq-wifi-package,avm_fritzrepeater-1200,AVM FRITZRepeater 1200))
+$(eval $(call generate-ipq-wifi-package,buffalo_wtr-m2133hp,Buffalo WTR-M2133HP))
+$(eval $(call generate-ipq-wifi-package,cellc_rtl30vw, Cell C RTL30VW))
 $(eval $(call generate-ipq-wifi-package,dlink_dap2610,D-Link DAP-2610))
+$(eval $(call generate-ipq-wifi-package,engenius_eap2200,EnGenius EAP2200))
 $(eval $(call generate-ipq-wifi-package,engenius_emd1,EnGenius EMD1))
+$(eval $(call generate-ipq-wifi-package,engenius_emr3500,EnGenius EMR3500))
 $(eval $(call generate-ipq-wifi-package,ezviz_cs-w3-wd1200g-eup,EZVIZ CS-W3-WD1200G EUP))
+$(eval $(call generate-ipq-wifi-package,glinet_gl-s1300,GL.iNet GL-S1300))
 $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,hugo_ac1200,Hugo AC1200))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
