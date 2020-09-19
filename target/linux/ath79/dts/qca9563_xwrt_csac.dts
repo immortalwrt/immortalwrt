@@ -32,13 +32,11 @@
 		wlan2g {
 			label = "xwrt:blue:wlan2g";
 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy0tpt";
 		};
 
 		wlan5g {
 			label = "xwrt:blue:wlan5g";
 			gpios = <&gpio 9 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy1tpt";
 		};
 	};
 
@@ -48,6 +46,7 @@
 		reset {
 			linux,code = <KEY_RESTART>;
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+			debounce-interval = <60>;
 		};
 	};
 
@@ -103,15 +102,27 @@
 			};
 
 			partition@50000 {
-				compatible = "denx,uimage";
 				label = "firmware";
 				reg = <0x050000 0xfa0000>;
+
+				compatible = "fixed-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				partition@0 {
+					label = "rootfs";
+					reg = <0x000000 0xe30000>;
+				};
+
+				partition@e30000 {
+					label = "kernel";
+					reg = <0xe30000 0x170000>;
+				};
 			};
 
 			art: partition@ff0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
-				read-only;
 			};
 		};
 	};
