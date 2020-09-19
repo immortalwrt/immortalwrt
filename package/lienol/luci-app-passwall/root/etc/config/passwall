@@ -52,6 +52,7 @@ config global_app
 	option trojan_go_file '/usr/bin/trojan-go'
 	option kcptun_client_file '/usr/bin/kcptun-client'
 	option brook_file '/usr/bin/brook'
+	option trojan_go_latest 'https://api.github.com/repos/peter-tank/trojan-go/releases/latest'
 
 config global_subscribe
 	option subscribe_proxy '0'

@@ -96,8 +96,8 @@ o.default = "default"
 o:value("default", translate("Default"))
 o:value("1:65535", translate("All"))
 o:value("80,443", "80,443")
-o:value("80:", "80 " .. translate("or more"))
-o:value(":443", "443 " .. translate("or less"))
+o:value("80:65535", "80 " .. translate("or more"))
+o:value("1:443", "443 " .. translate("or less"))
 
 ---- UDP Redir Ports
 o = s:option(Value, "udp_redir_ports", translate("UDP Redir Ports"))
