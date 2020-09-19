@@ -249,26 +249,28 @@ o.rmempty = false
 o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode") .. "（" .. translate("Not China List") .. "）")
+o:value("chnroute", translate("Game Mode"))
 o:value("returnhome", translate("China List"))
 
 ---- Localhost TCP Proxy Mode
 o = s:taboption("Proxy", ListValue, "localhost_tcp_proxy_mode", translate("Router Localhost") .. "TCP" .. translate("Proxy Mode"))
 -- o.description = translate("The server client can also use this rule to scientifically surf the Internet.")
 o:value("default", translate("Default"))
+o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
 o:value("chnroute", translate("Not China List"))
-o:value("global", translate("Global Proxy"))
+o:value("returnhome", translate("China List"))
 o.default = "default"
 o.rmempty = false
 
 ---- Localhost UDP Proxy Mode
 o = s:taboption("Proxy", ListValue, "localhost_udp_proxy_mode", translate("Router Localhost") .. "UDP" .. translate("Proxy Mode"))
-o:value("disable", translate("No Proxy"))
 o:value("default", translate("Default"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode") .. "（" .. translate("Not China List") .. "）")
 o:value("global", translate("Global Proxy"))
+o:value("gfwlist", translate("GFW List"))
+o:value("chnroute", translate("Game Mode"))
+o:value("returnhome", translate("China List"))
+o:value("disable", translate("No Proxy"))
 o.default = "default"
 o.rmempty = false
 
@@ -287,7 +289,10 @@ function s.create(e, t)
 end
 
 o = s:option(DummyValue, "status", translate("Status"))
-o.template = appname .. "/global/socks_status"
+o.rawhtml = true
+o.cfgvalue = function(t, n)
+    return string.format('<font class="_status" socks_id="%s"></font>', n)
+end
 
 ---- Enable
 o = s:option(Flag, "enabled", translate("Enable"))
@@ -305,9 +310,6 @@ o = s:option(Value, "port", translate("Listen Port"))
 o.default = 9050
 o.datatype = "port"
 o.rmempty = false
-
----- Tips
---m:append(Template(appname .. "/global/tips"))
 
 m:append(Template(appname .. "/global/footer"))
 
