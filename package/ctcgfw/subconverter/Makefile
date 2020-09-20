@@ -12,8 +12,8 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tindy2013/subconverter.git
-PKG_SOURCE_VERSION:=629b1bf2226eeec53b325d816dad43cca1d92457
-PKG_MIRROR_HASH:=ff2c296e959df7f15c710c4c9dd635b46a80bd054d1207e2235941ea90548263
+PKG_SOURCE_VERSION:=ab4d7543cec46cd9e45680f3b43d82de16f38a3d
+PKG_MIRROR_HASH:=c5dc3c224d9229df09428a28a1306bba28790b328f8d644ae41e929bee58426c
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
@@ -23,7 +23,6 @@ PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=[CTCGFW]Project OpenWrt
 
-PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_DEPENDS:=duktape jpcre2 rapidjson
@@ -36,7 +35,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Utilities
 	TITLE:=Utility to convert between various subscription format.
 	URL:=https://github.com/tindy2013/subconverter
-	DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +libopenssl +zlib
+	DEPENDS:=+libpthread +libstdcpp +libevent2 +libyaml-cpp +libpcre2 +libcurl +zlib
 endef
 
 define Package/$(PKG_NAME)/description
