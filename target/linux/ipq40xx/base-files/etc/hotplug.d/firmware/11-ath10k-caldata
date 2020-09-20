@@ -145,6 +145,8 @@ case "$FIRMWARE" in
 	8dev,habanero-dvk |\
 	8dev,jalapeno |\
 	alfa-network,ap120c-ac |\
+	century,wr142ac |\
+	century,wr142ac-nand |\
 	cilab,meshpoint-one |\
 	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
@@ -246,6 +248,8 @@ case "$FIRMWARE" in
 	8dev,habanero-dvk |\
 	8dev,jalapeno |\
 	alfa-network,ap120c-ac |\
+	century,wr142ac |\
+	century,wr142ac-nand |\
 	cilab,meshpoint-one |\
 	ezviz,cs-w3-wd1200g-eup |\
 	glinet,gl-b1300 |\
