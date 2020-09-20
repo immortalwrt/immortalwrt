@@ -73,7 +73,7 @@ o:value("default", translate("Default"))
 o:value("disable", translate("No Proxy"))
 o:value("global", translate("Global Proxy"))
 o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode") .. "（" .. translate("Not China List") .. "）")
+o:value("chnroute", translate("Game Mode"))
 o:value("returnhome", translate("China List"))
 
 ---- TCP No Redir Ports

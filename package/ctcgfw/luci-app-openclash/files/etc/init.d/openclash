@@ -122,6 +122,7 @@ kill_clash()
 yml_merge()
 {
 #合并文件
+sed -i "s/^ \{0,\}Proxy:/proxies:/g" "$PROXY_FILE" 2>/dev/null
 cat "$CHANGE_FILE" "$DNS_FILE" "$PROXY_PROVIDER_FILE" "$PROXY_FILE" "$GROUP_FILE" "$RULE_PROVIDER_FILE" "$SCRIPT_FILE" "$RULE_FILE" > "$CONFIG_FILE" 2>/dev/null
 }
 
@@ -277,7 +278,6 @@ yml_dns_check()
    	cat >> "$DNS_FILE" <<-EOF
   - 114.114.114.114
   - 119.29.29.29
-  - https://doh.rixcloud.dev/dns-query
   fallback:
   - https://cloudflare-dns.com/dns-query
   - https://dns.google/dns-query
@@ -1446,7 +1446,6 @@ if [ "$enable" -eq 1 ] && [ -f "$CONFIG_FILE" ]; then
                 nohup /usr/share/openclash/openclash_core.sh "$core_type" &
                 exit 0
              }
-             sed -i "s/^ \{0,\}Proxy:/proxies:/g" "$CONFIG_FILE" 2>/dev/null
              ulimit -SHn 65535 2>/dev/null
              config_reload=$(uci get openclash.config.config_reload 2>/dev/null)
              if [ -n "$(pidof clash)" ] && [ "$core_type" != "Tun" ] && [ "$config_reload" != "0" ]; then

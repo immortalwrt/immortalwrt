@@ -4,6 +4,9 @@
 # --------------------------------------------------------
 # Init build dependencies for naiveproxy
 
+# Exit immediately with any error
+set -e
+
 # Read args from shell
 target_arch="$1"
 target_board="$2"
@@ -21,6 +24,7 @@ ldso_path="/lib/$(find "${toolchain_dir}/" | grep -Eo "ld-musl-[a-z0-9_-]+\\.so\
 
 # OS detection
 [ "$(uname)" != "Linux" -o "$(uname -m)" != "x86_64" ] && { echo -e "Support Linux AMD64 only."; exit 1; }
+[ "$(free | grep "Mem" | awk -F ' ' '{print $2}')" -lt "4000000" ] && { echo -e "Memory too low."; exit 1; }
 
 cd "$PWD/src"
 
