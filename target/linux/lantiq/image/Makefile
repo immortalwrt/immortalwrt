@@ -52,7 +52,7 @@ define Build/fullimage
 	rm $@.tmp
 endef
 
-DEVICE_VARS += IMAGE_SIZE SIGNATURE MAGIC CRC32_POLY
+DEVICE_VARS += SIGNATURE MAGIC CRC32_POLY
 DTS_DIR := $(DTS_DIR)/lantiq
 
 # Shared device definition: applies to every defined device
@@ -63,7 +63,6 @@ define Device/Default
   KERNEL := kernel-bin | append-dtb | lzma | uImage lzma
   KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | uImage lzma
   FILESYSTEMS := squashfs
-  IMAGE_SIZE :=
   SOC := $(DEFAULT_SOC)
   DEVICE_DTS = $$(SOC)_$(1)
   SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
