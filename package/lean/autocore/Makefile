@@ -17,8 +17,7 @@ define Package/autocore-arm
   TITLE:=Arm auto core loadbalance script.
   MAINTAINER:=CN_SZTL
   DEPENDS:=@(TARGET_bcm27xx||TARGET_bcm53xx||TARGET_ipq40xx||TARGET_ipq806x) \
-    +TARGET_bcm53xx:nvram \
-    +TARGET_ipq40xx:lm-sensors
+    +TARGET_bcm53xx:nvram +(TARGET_ipq40xx||TARGET_ipq806x):lm-sensors
   VARIANT:=arm
 endef
 
@@ -47,6 +46,9 @@ define Package/autocore-arm/install
 	$(INSTALL_BIN) ./files/arm/090-cover-index_htm $(1)/etc/uci-defaults/090-cover-index_htm
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/sbin/cpuinfo $(1)/sbin/cpuinfo
+ifeq ($(BOARD),ipq806x)
+	$(INSTALL_BIN) ./files/arm/sbin/tempinfo $(1)/sbin/tempinfo
+endif
 endef
 
 define Package/autocore-x86/install
