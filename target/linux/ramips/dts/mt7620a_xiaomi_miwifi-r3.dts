@@ -1,4 +1,4 @@
-/dts-v1/;
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include "mt7620a.dtsi"
 
