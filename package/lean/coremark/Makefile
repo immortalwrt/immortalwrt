@@ -1,26 +1,27 @@
-# Copyright 2018 Embedded Microprocessor Benchmark Consortium (EEMBC)
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Copyright (C) 2018 Lim Guo Wei
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coremark
-PKG_RELEASE:=15
+PKG_SOURCE_DATE:=2020-09-16
+PKG_SOURCE_VERSION:=41537ea30b0104438b4ff993e7d349af26900acf
+PKG_RELEASE:=2
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/eembc/coremark.git
-PKG_SOURCE_VERSION:=7685fd32bd7919581bfff2881a6dac6320581400
-PKG_SOURCE_DATE:=2020-05-28
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_SOURCE_DATE).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/eembc/coremark/tar.gz/$(PKG_SOURCE_VERSION)?
+PKG_HASH:=ebbaa7463084b3261438b9b378c1968532156f7fb90bf3f94f45f0b0b817e181
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)
+
+PKG_MAINTAINER:=Lim Guo Wei <limguowei@gmail.com>
+PKG_LICENSE:=Apache-2.0
+PKG_LICENSE_FILES:=LICENSE.md
+
+PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -35,22 +36,47 @@ define Package/coremark/description
   Embedded Microprocessor Benchmark
 endef
 
-DIR_ARCH:=linux
+DIR_ARCH:=linux$(if $(CONFIG_ARCH_64BIT),64)
 
-ifeq ($(CONFIG_ARCH_64BIT),y)
-	DIR_ARCH:=linux64
-else ifeq ($(CONFIG_64BIT),y)
-	DIR_ARCH:=linux64
+define Package/coremark/config
+	config COREMARK_OPTIMIZE_O3
+		bool "Use all optimizations (-O3)"
+		depends on PACKAGE_coremark
+		default y
+		help
+			This enables additional optmizations using the -O3 compilation flag.
+
+	config COREMARK_ENABLE_MULTITHREADING
+		bool "Enable multithreading support"
+		depends on PACKAGE_coremark
+		default n
+		help
+			This enables multithreading support
+
+	config COREMARK_NUMBER_OF_THREADS
+		int "Number of threads"
+		depends on COREMARK_ENABLE_MULTITHREADING
+		default 16
+		help
+			Number of threads to run in parallel
+endef
+
+TARGET_CFLAGS += -flto
+
+ifeq ($(CONFIG_COREMARK_OPTIMIZE_O3),y)
+	TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
 endif
 
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3 -flto
+ifeq ($(CONFIG_COREMARK_ENABLE_MULTITHREADING),y)
+	EXTRA_CFLAGS := -DMULTITHREAD=$(CONFIG_COREMARK_NUMBER_OF_THREADS) -DUSE_PTHREAD
+endif
 
 define Build/Compile
 	$(SED) 's|EXE = .exe|EXE =|' $(PKG_BUILD_DIR)/$(DIR_ARCH)/core_portme.mak
 	mkdir $(PKG_BUILD_DIR)/$(ARCH)
-	cp -r $(PKG_BUILD_DIR)/$(DIR_ARCH)/* $(PKG_BUILD_DIR)/$(ARCH)
-	$(MAKE) XCFLAGS="-DMULTITHREAD=16 -DUSE_PTHREAD" -C $(PKG_BUILD_DIR) PORT_DIR=$(ARCH) $(MAKE_FLAGS) \
-		compile 
+	$(CP) -r $(PKG_BUILD_DIR)/$(DIR_ARCH)/* $(PKG_BUILD_DIR)/$(ARCH)
+	$(MAKE) -C $(PKG_BUILD_DIR) PORT_DIR=$(ARCH) $(MAKE_FLAGS) \
+		PORT_CFLAGS="$(TARGET_CFLAGS)" XCFLAGS="$(EXTRA_CFLAGS)" compile
 endef
 
 define Package/coremark/install
