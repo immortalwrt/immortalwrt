@@ -32,6 +32,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 +	qcom-ipq4018-nbg6617.dtb \
 +	qcom-ipq4018-rt-ac58u.dtb \
 +	qcom-ipq4018-wre6606.dtb \
++	qcom-ipq4018-wrtq-329acn.dtb \
  	qcom-ipq4019-ap.dk01.1-c1.dtb \
  	qcom-ipq4019-ap.dk04.1-c1.dtb \
  	qcom-ipq4019-ap.dk04.1-c3.dtb \
@@ -45,6 +46,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 +	qcom-ipq4019-fritzrepeater-1200.dtb \
 +	qcom-ipq4019-fritzrepeater-3000.dtb \
 +	qcom-ipq4019-map-ac2200.dtb \
++	qcom-ipq4019-mr8300.dtb \
 +	qcom-ipq4019-e2600ac-c1.dtb \
 +	qcom-ipq4019-e2600ac-c2.dtb \
 +	qcom-ipq4019-r619ac.dtb \

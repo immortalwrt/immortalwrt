@@ -540,6 +540,34 @@ define Device/linksys_ea8300
 endef
 TARGET_DEVICES += linksys_ea8300
 
+define Device/linksys_mr8300
+	$(call Device/FitzImage)
+	DEVICE_VENDOR := Linksys
+	DEVICE_MODEL := MR8300
+	SOC := qcom-ipq4019
+	KERNEL_SIZE := 3072k
+	IMAGE_SIZE := 87040k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
+	IMAGES += factory.bin
+	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MR8300
+	DEVICE_PACKAGES := uboot-envtools ath10k-firmware-qca9888-ct ipq-wifi-linksys_mr8300-v0 kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += linksys_mr8300
+
+define Device/luma_wrtq-329acn
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Luma Home
+	DEVICE_MODEL := WRTQ-329ACN
+	SOC := qcom-ipq4018
+	DEVICE_PACKAGES := ipq-wifi-luma_wrtq-329acn kmod-ath3k kmod-eeprom-at24 kmod-i2c-gpio uboot-envtools
+	IMAGE_SIZE := 76632k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+endef
+TARGET_DEVICES += luma_wrtq-329acn
+
 define Device/meraki_mr33
 	$(call Device/FitImage)
 	DEVICE_VENDOR := Cisco Meraki
