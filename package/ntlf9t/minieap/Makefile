@@ -8,17 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=minieap
-PKG_VERSION:=0.92
+PKG_VERSION:=0.93
 PKG_RELEASE:=1
-PKG_REV=ddad50c
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-r$(PKG_REV).tar.bz2
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_URL:=https://github.com/updateing/minieap.git
+PKG_REV=9e10f320a9fce46c8f4286324a0fc70e572f61dc
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_VERSION:=$(PKG_REV)
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 
 PKG_INSTALL:=1
 
@@ -37,18 +37,16 @@ define Package/minieap/description
 Extendable 802.1x client
 endef
 
-define Build/Prepare
-	$(call Build/Prepare/Default)
+define Package/minieap/conffiles
+/etc/minieap.conf
 endef
 
 define Build/Install
-	true
 endef
 
 define Package/minieap/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/minieap $(1)/usr/sbin/
-	chmod 755 $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,minieap))
