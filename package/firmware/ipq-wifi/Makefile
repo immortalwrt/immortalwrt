@@ -25,6 +25,7 @@ ALLWIFIBOARDS:= \
 	avm_fritzrepeater-1200 \
 	buffalo_wtr-m2133hp \
 	cellc_rtl30vw \
+	century_wr142ac \
 	dlink_dap2610 \
 	engenius_eap2200 \
 	engenius_emd1 \
@@ -103,6 +104,7 @@ $(eval $(call generate-ipq-wifi-package,asus_rt-acrh17,ASUS RT-ACRH17/RT-AC82U/R
 $(eval $(call generate-ipq-wifi-package,avm_fritzrepeater-1200,AVM FRITZRepeater 1200))
 $(eval $(call generate-ipq-wifi-package,buffalo_wtr-m2133hp,Buffalo WTR-M2133HP))
 $(eval $(call generate-ipq-wifi-package,cellc_rtl30vw, Cell C RTL30VW))
+$(eval $(call generate-ipq-wifi-package,century_wr142ac,Century WR142AC))
 $(eval $(call generate-ipq-wifi-package,dlink_dap2610,D-Link DAP-2610))
 $(eval $(call generate-ipq-wifi-package,engenius_eap2200,EnGenius EAP2200))
 $(eval $(call generate-ipq-wifi-package,engenius_emd1,EnGenius EMD1))

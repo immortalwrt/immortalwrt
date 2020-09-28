@@ -299,6 +299,34 @@ define Device/cellc_rtl30vw
 endef
 TARGET_DEVICES += cellc_rtl30vw
 
+define Device/century_wr142ac
+	$(call Device/FitzImage)
+	DEVICE_VENDOR := Century
+	DEVICE_MODEL := WR142AC
+	DEVICE_DTS := qcom-ipq4019-wr142ac
+	KERNEL_SIZE := 4096k
+	IMAGE_SIZE := 31232k
+	IMAGES += factory.bin
+	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
+	IMAGE/factory.bin := qsdk-ipq-factory-nor | check-size
+	DEVICE_PACKAGES := ipq-wifi-century_wr142ac kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += century_wr142ac
+
+define Device/century_wr142ac-nand
+	$(call Device/FitzImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Century
+	DEVICE_MODEL := WR142AC
+	DEVICE_VARIANT := NAND
+	DEVICE_DTS := qcom-ipq4019-wr142ac-nand
+	DEVICE_DTS_CONFIG := config@10
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := ipq-wifi-century_wr142ac kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += century_wr142ac-nand
+
 define Device/cilab_meshpoint-one
 	$(call Device/8dev_jalapeno-common)
 	DEVICE_VENDOR := Crisis Innovation Lab
