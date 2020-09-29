@@ -15,9 +15,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -17,6 +17,13 @@
- 		stdout-path = "serial2:1500000n8";
- 	};
+@@ -13,6 +13,13 @@
+ 	model = "FriendlyElec NanoPi R2S";
+ 	compatible = "friendlyarm,nanopi-r2s", "rockchip,rk3328";
  
 +	aliases {
 +		led-boot = &sys_led;
@@ -26,6 +26,6 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		led-upgrade = &sys_led;
 +	};
 +
- 	gmac_clkin: external-gmac-clock {
- 		compatible = "fixed-clock";
- 		clock-frequency = <125000000>;
+ 	chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
