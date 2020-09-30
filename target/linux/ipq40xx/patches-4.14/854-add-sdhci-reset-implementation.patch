@@ -10,7 +10,7 @@ drivers/mmc/host/sdhci-msm.c | 29 ++++++++++++++++++++++++++++-
 
 --- a/drivers/mmc/host/sdhci-msm.c
 +++ b/drivers/mmc/host/sdhci-msm.c
-@@ -1123,6 +1123,33 @@ out:
+@@ -1139,6 +1139,33 @@ out:
  	__sdhci_msm_set_clock(host, clock);
  }
  
@@ -44,7 +44,7 @@ drivers/mmc/host/sdhci-msm.c | 29 ++++++++++++++++++++++++++++-
  static void sdhci_msm_write_w(struct sdhci_host *host, u16 val, int reg)
  {
  	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-@@ -1154,7 +1181,7 @@ static const struct of_device_id sdhci_m
+@@ -1170,7 +1197,7 @@ static const struct of_device_id sdhci_m
  MODULE_DEVICE_TABLE(of, sdhci_msm_dt_match);
  
  static const struct sdhci_ops sdhci_msm_ops = {
