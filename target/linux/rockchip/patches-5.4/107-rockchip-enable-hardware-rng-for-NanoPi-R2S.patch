@@ -9,7 +9,7 @@ Signed-off-by: wevsty <ty@wevs.org>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -410,3 +410,7 @@
+@@ -411,3 +411,7 @@
  		realtek,led-data = <0x87>;
  	};
  };
