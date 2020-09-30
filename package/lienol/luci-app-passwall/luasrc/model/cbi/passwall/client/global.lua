@@ -45,6 +45,28 @@ uci:foreach(appname, "socks", function(s)
     end
 end)
 
+local doh_validate = function(self, value, t)
+    if value ~= "" then
+        local flag = 0
+        local util = require "luci.util"
+        local val = util.split(value, ",")
+        local url = val[1]
+        val[1] = nil
+        for i = 1, #val do
+            local v = val[i]
+            if v then
+                if not datatypes.ipmask4(v) then
+                    flag = 1
+                end
+            end
+        end
+        if flag == 0 then
+            return value
+        end
+    end
+    return nil, translate("DoH request address") .. " " .. translate("Format must be:") .. " URL,IP"
+end
+
 m = Map(appname)
 local status = m:get("@global_other[0]", "status") or ""
 if status:find("big_icon") then
@@ -143,10 +165,10 @@ o:value("180.76.76.76", "180.76.76.76 (" .. translate("Baidu") .. "DNS)")
 
 ---- DoH
 o = s:taboption("DNS", Value, "up_china_dns_doh", translate("DoH request address"))
-o.description = translate("When custom, Please follow the format strictly:") .. "<br />" .. "https://dns.alidns.com/dns-query,223.5.5.5,223.6.6.6<br />" .. "https://doh.pub/dns-query,119.29.29.29"
 o:value("https://dns.alidns.com/dns-query,223.5.5.5,223.6.6.6", "AliDNS")
 o:value("https://doh.pub/dns-query,119.29.29.29,119.28.28.28", "DNSPod")
 o.default = "https://dns.alidns.com/dns-query,223.5.5.5,223.6.6.6"
+o.validate = doh_validate
 o:depends("up_china_dns", "https-dns-proxy")
 
 ---- DNS Forward Mode
@@ -169,6 +191,13 @@ o:value("custom", translate("Custom DNS"))
 ---- Custom DNS
 o = s:taboption("DNS", Value, "custom_dns", translate("Custom DNS"))
 o.default = "127.0.0.1#5353"
+o.validate = function(self, value, t)
+    local v = string.gsub(value, "#", ":")
+    if not datatypes.ipaddrport(v) then
+        return nil, translate("Custom DNS") .. " " .. translate("Not valid IP format, please re-enter!")
+    end
+    return value
+end
 o:depends({dns_mode = "custom"})
 
 o = s:taboption("DNS", ListValue, "up_trust_pdnsd_dns", translate("Resolver For The List Proxied"))
@@ -185,12 +214,17 @@ o:depends("dns_mode", "https-dns-proxy")
 
 o = s:taboption("DNS", Value, "socks_server", translate("Socks Server"), translate("Make sure socks service is available on this address."))
 for k, v in pairs(socks_table) do o:value(v.id, v.remarks) end
+o.validate = function(self, value, t)
+    if not datatypes.ipaddrport(value) then
+        return nil, translate("Socks Server") .. " " .. translate("Not valid IP format, please re-enter!")
+    end
+    return value
+end
 o:depends({dns_mode = "dns2socks"})
 o:depends({dns_mode = "https-dns-proxy", up_trust_doh_dns = "socks"})
 
 ---- DoH
 o = s:taboption("DNS", Value, "up_trust_doh", translate("DoH request address"))
-o.description = translate("When custom, Please follow the format strictly:") .. "<br />" .. "https://dns.google/dns-query,8.8.8.8,8.8.4.4<br />" .. "https://doh.opendns.com/dns-query,208.67.222.222"
 o:value("https://dns.adguard.com/dns-query,176.103.130.130,176.103.130.131", "AdGuard")
 o:value("https://cloudflare-dns.com/dns-query,1.1.1.1,1.0.0.1", "Cloudflare")
 o:value("https://security.cloudflare-dns.com/dns-query,1.1.1.2,1.0.0.2", "Cloudflare-Security")
@@ -200,6 +234,7 @@ o:value("https://doh.libredns.gr/dns-query,116.202.176.26", "LibreDNS")
 o:value("https://doh.libredns.gr/ads,116.202.176.26", "LibreDNS (No Ads)")
 o:value("https://dns.quad9.net/dns-query,9.9.9.9,149.112.112.112", "Quad9-Recommended")
 o.default = "https://dns.google/dns-query,8.8.8.8,8.8.4.4"
+o.validate = doh_validate
 o:depends({dns_mode = "https-dns-proxy"})
 
 ---- DNS Forward
