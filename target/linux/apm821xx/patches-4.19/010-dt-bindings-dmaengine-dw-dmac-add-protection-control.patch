@@ -42,7 +42,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -14075,9 +14075,11 @@ SYNOPSYS DESIGNWARE DMAC DRIVER
+@@ -14084,9 +14084,11 @@ SYNOPSYS DESIGNWARE DMAC DRIVER
  M:	Viresh Kumar <vireshk@kernel.org>
  R:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
  S:	Maintained
