@@ -45,7 +45,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pwm2 {
-@@ -372,3 +390,12 @@
+@@ -373,3 +391,12 @@
  &usb_host0_ohci {
  	status = "okay";
  };
