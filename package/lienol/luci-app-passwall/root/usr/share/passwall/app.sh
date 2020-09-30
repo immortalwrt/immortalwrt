@@ -438,16 +438,32 @@ run_redir() {
 		esac
 	;;
 	TCP)
+		local kcptun_use=$(config_n_get $node use_kcp 0)
+		if [ "$kcptun_use" == "1" ]; then
+			local kcptun_server_host=$(config_n_get $node kcp_server)
+			local network_type="ipv4"
+			local kcptun_port=$(config_n_get $node kcp_port)
+			local kcptun_config="$(config_n_get $node kcp_opts)"
+			if [ -z "$kcptun_port" -o -z "$kcptun_config" ]; then
+				echolog "Kcptun未配置参数，错误！"
+				return 1
+			fi
+			if [ -n "$kcptun_port" -a -n "$kcptun_config" ]; then
+				local run_kcptun_ip=$server_host
+				[ -n "$kcptun_server_host" ] && run_kcptun_ip=$(get_host_ip $network_type $kcptun_server_host)
+				KCPTUN_REDIR_PORT=$(get_new_port $KCPTUN_REDIR_PORT tcp)
+				kcptun_params="-l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
+				ln_start_bin "$(first_type $(config_t_get global_app kcptun_client_file notset) kcptun-client)" "kcptun_tcp_$6" $kcptun_params
+			fi
+		fi
+		local _socks_flag _socks_address _socks_port _socks_username _socks_password
 		case "$type" in
 		socks)
-			local node_address=$(config_n_get $node address)
-			local node_port=$(config_n_get $node port)
-			local server_username=$(config_n_get $node username)
-			local server_password=$(config_n_get $node password)
-			eval port=\$TCP_REDIR_PORT$6
-			local extra_param="-T"
-			[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param=""
-			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp_$6" -l "$port" -b 0.0.0.0 -s "$node_address" -p "$node_port" -R $extra_param
+			_socks_flag=1
+			_socks_address=$(config_n_get $node address)
+			_socks_port=$(config_n_get $node port)
+			_socks_username=$(config_n_get $node username)
+			_socks_password=$(config_n_get $node password)
 		;;
 		v2ray)
 			local extra_param="tcp"
@@ -470,65 +486,46 @@ run_redir() {
 			ln_start_bin "$(first_type naive)" naive "$config_file"
 		;;
 		brook)
+			local server_ip=$server_host
 			local protocol=$(config_n_get $node protocol client)
+			local brook_tls=$(config_n_get $node brook_tls 0)
 			if [ "$protocol" == "wsclient" ]; then
-				echolog "Brook的WebSocket不支持UDP转发！"
+				[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}" 
+				socks_port=$(get_new_port 2081 tcp)
+				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" wsclient --socks5 "127.0.0.1:$socks_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
+				_socks_flag=1
+				_socks_address="127.0.0.1"
+				_socks_port=$socks_port
+				echolog "Brook的WebSocket不支持透明代理，将使用ipt2socks转换透明代理！"
+				[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Brook的WebSocket不支持UDP转发！"
 			else
-				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_udp_$6" tproxy -l ":$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
+				[ "$kcptun_use" == "1" ] && {
+					server_ip=127.0.0.1
+					port=$KCPTUN_REDIR_PORT
+				}
+				ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" tproxy -l ":$local_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
 			fi
 		;;
-		*)
-			local kcptun_use=$(config_n_get $node use_kcp 0)
+		ss|ssr)
 			if [ "$kcptun_use" == "1" ]; then
-				local kcptun_server_host=$(config_n_get $node kcp_server)
-				local network_type="ipv4"
-				local kcptun_port=$(config_n_get $node kcp_port)
-				local kcptun_config="$(config_n_get $node kcp_opts)"
-				if [ -z "$kcptun_port" -o -z "$kcptun_config" ]; then
-					echolog "Kcptun未配置参数，错误！"
-					force_stop
-				fi
-				if [ -n "$kcptun_port" -a -n "$kcptun_config" ]; then
-					local run_kcptun_ip=$server_host
-					[ -n "$kcptun_server_host" ] && run_kcptun_ip=$(get_host_ip $network_type $kcptun_server_host)
-					KCPTUN_REDIR_PORT=$(get_new_port $KCPTUN_REDIR_PORT tcp)
-					kcptun_params="-l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
-					ln_start_bin "$(first_type $(config_t_get global_app kcptun_client_file notset) kcptun-client)" "kcptun_tcp_$6" $kcptun_params
-				fi
+				lua $API_GEN_SS $node $local_port 127.0.0.1 $KCPTUN_REDIR_PORT > $config_file
+				process=1
+				[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Kcptun不支持UDP转发！"
+			else
+				lua $API_GEN_SS $node $local_port > $config_file
+				[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param="-u"
 			fi
-			if [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
-				if [ "$kcptun_use" == "1" ]; then
-					lua $API_GEN_SS $node $local_port 127.0.0.1 $KCPTUN_REDIR_PORT > $config_file
-					[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Kcptun不支持UDP转发！"
-				else
-					lua $API_GEN_SS $node $local_port > $config_file
-					[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param="-u"
-				fi
-				for k in $(seq 1 $process); do
-					ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" -c "$config_file" $extra_param
-				done
-			elif [ "$type" == "brook" ]; then
-				local server_ip=$server_host
-				local protocol=$(config_n_get $node protocol client)
-				local brook_tls=$(config_n_get $node brook_tls 0)
-				if [ "$protocol" == "wsclient" ]; then
-					[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}" 
-					socks_port=$(get_new_port 2081 tcp)
-					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" wsclient --socks5 "127.0.0.1:$socks_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
-					eval port=\$TCP_REDIR_PORT$6
-					ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp_$6" -T -l "$port" -b 0.0.0.0 -s 127.0.0.1 -p "$socks_port" -R
-					echolog "Brook的WebSocket不支持透明代理，将使用ipt2socks转换透明代理！"
-					[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Brook的WebSocket不支持UDP转发！"
-				else
-					[ "$kcptun_use" == "1" ] && {
-						server_ip=127.0.0.1
-						port=$KCPTUN_REDIR_PORT
-					}
-					ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_tcp_$6" tproxy -l ":$local_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
-				fi
-			fi
+			for k in $(seq 1 $process); do
+				ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" -c "$config_file" $extra_param
+			done
 		;;
 		esac
+		if [ -n "$_socks_flag" ]; then
+			local extra_param="-T"
+			[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param=""
+			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp_$6" -l "$local_port" -b 0.0.0.0 -s "$_socks_address" -p "$_socks_port" -R $extra_param
+		fi
+		unset _socks_flag _socks_address _socks_port _socks_username _socks_password
 	;;
 	esac
 	return 0
