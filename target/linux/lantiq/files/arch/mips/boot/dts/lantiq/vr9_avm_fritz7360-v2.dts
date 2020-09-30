@@ -3,13 +3,13 @@
 #include "vr9_avm_fritz736x.dtsi"
 
 / {
-	compatible = "avm,fritz7360sl", "avm,fritz736x", "lantiq,xway", "lantiq,vr9";
-	model = "AVM FRITZ!Box 7360 SL";
+	compatible = "avm,fritz7360-v2", "avm,fritz736x", "lantiq,xway", "lantiq,vr9";
+	model = "AVM FRITZ!Box 7360 V2";
 };
 
 &state_default {
 	pcie-rst {
-		lantiq,pins = "io38";
+		lantiq,pins = "io21";
 		lantiq,pull = <0>;
 		lantiq,output = <1>;
 	};
@@ -19,7 +19,7 @@
 	flash@0 {
 		compatible = "lantiq,nor";
 		bank-width = <2>;
-		reg = <0 0x0 0x1000000>;
+		reg = <0 0x0 0x2000000>;
 
 		partitions {
 			#address-cells = <1>;
@@ -34,18 +34,18 @@
 
 			partition@20000 {
 				label = "firmware";
-				reg = <0x20000 0xf60000>;
+				reg = <0x20000 0x1f60000>;
 			};
 
-			partition@f80000 {
+			partition@1f80000 {
 				label = "tffs (1)";
-				reg = <0xf80000 0x40000>;
+				reg = <0x1f80000 0x40000>;
 				read-only;
 			};
 
-			partition@fc0000 {
+			partition@1fc0000 {
 				label = "tffs (2)";
-				reg = <0xfc0000 0x40000>;
+				reg = <0x1fc0000 0x40000>;
 				read-only;
 			};
 		};
