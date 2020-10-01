@@ -33,7 +33,7 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns $(1)/usr/share/ddns/services
 	$(INSTALL_BIN) $(CURDIR)/files/*.sh $(1)/usr/lib/ddns
-	$(INSTALL_DATA) $(CURDIR)/files/*.json /usr/share/ddns/services
+	$(INSTALL_DATA) $(CURDIR)/files/*.json $(1)/usr/share/ddns/services
 endef
 
 define Package/$(PKG_NAME)/prerm
