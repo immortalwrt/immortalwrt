@@ -31,9 +31,9 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns $(1)/usr/share/ddns/services
+	$(INSTALL_DIR) $(1)/usr/lib/ddns $(1)/usr/share/ddns/default
 	$(INSTALL_BIN) $(CURDIR)/files/*.sh $(1)/usr/lib/ddns
-	$(INSTALL_DATA) $(CURDIR)/files/*.json $(1)/usr/share/ddns/services
+	$(INSTALL_DATA) $(CURDIR)/files/*.json $(1)/usr/share/ddns/default
 endef
 
 define Package/$(PKG_NAME)/prerm
