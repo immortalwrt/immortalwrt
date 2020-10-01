@@ -17,8 +17,7 @@ enable.rmempty = false
 
 select_server = s:option(ListValue, "select_server", translate("服务器位置"))
 select_server:value("tencent_shanghai_nodejs", translate("[CTCGFW] 腾讯云上海（高音质）"))
-select_server:value("aliyun_beijing_nodejs", translate("[hyird] 阿里云北京（高音质）"))
-select_server:value("aliyun_beijing_nodejs_2", translate("[Sunsky] 阿里云北京（高音质）"))
+select_server:value("ucloud_guangzhou_nodejs", translate("[CTCGFW] UCloud广州（高音质）"))
 select_server.description = translate("请合理使用本插件与各个服务器，请勿滥用")
 select_server.default = "tencent_shanghai_nodejs"
 select_server.rmempty = false
