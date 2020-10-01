@@ -17,7 +17,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=IP Addresses and Names
 	TITLE:=DDNS extension for AliYun.com
 	PKGARCH:=all
-	DEPENDS:=+ddns-scripts +wget +openssl-util
+	DEPENDS:=ddns-scripts +wget +openssl-util
 endef
 
 define Package/$(PKG_NAME)/description
@@ -28,44 +28,18 @@ define Build/Configure
 endef
 
 define Build/Compile
-	$(CP) ./*.sh $(PKG_BUILD_DIR)
-endef
-
-define Package/$(PKG_NAME)/preinst
-	#!/bin/sh
-	# if NOT run buildroot then stop service
-	[ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
-	exit 0 # suppress errors
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/update_aliyun_com.sh $(1)/usr/lib/ddns
-endef
-
-define Package/$(PKG_NAME)/postinst
-	#!/bin/sh
-	# remove old services file entries
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services >/dev/null 2>&1
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services_ipv6 >/dev/null 2>&1
-	# and create new
-	printf "%s\\t\\t%s\\n" '"aliyun.com"' '"update_aliyun_com.sh"' >> $${IPKG_INSTROOT}/etc/ddns/services
-	printf "%s\\t\\t%s\\n" '"aliyun.com"' '"update_aliyun_com.sh"' >> $${IPKG_INSTROOT}/etc/ddns/services_ipv6
-	# on real system restart service if enabled
-	[ -z "$${IPKG_INSTROOT}" ] && {
-		/etc/init.d/ddns enabled && \
-			/etc/init.d/ddns start >/dev/null 2>&1
-	}
-	exit 0 # suppress errors
+	$(INSTALL_DIR) $(1)/usr/lib/ddns $(1)/usr/share/ddns/services
+	$(INSTALL_BIN) $(CURDIR)/files/update_aliyun_com.sh $(1)/usr/lib/ddns
+	$(INSTALL_DATA) $(CURDIR)/files/aliyun_com.json /usr/share/ddns/services
 endef
 
 define Package/$(PKG_NAME)/prerm
 	#!/bin/sh
 	# if NOT run buildroot then stop service
 	[ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
-	# remove services file entries
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services >/dev/null 2>&1
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services_ipv6 >/dev/null 2>&1
 	exit 0 # suppress errors
 endef
 
