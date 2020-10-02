@@ -178,6 +178,7 @@ platform_do_upgrade() {
 	avm,fritzrepeater-1200 |\
 	avm,fritzrepeater-3000 |\
 	buffalo,wtr-m2133hp |\
+	century,wr142ac-nand |\
 	cilab,meshpoint-one |\
 	hiwifi,c526a |\
 	mobipromo,cm520-79f |\

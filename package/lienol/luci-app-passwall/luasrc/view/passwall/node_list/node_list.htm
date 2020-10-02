@@ -34,6 +34,11 @@ table td, .table .td {
 ._select {
 	background: #dad8d8;
 }
+
+._now_use {
+	background: #94e1ff;
+}
+
 .ping a:hover{
 	text-decoration : underline;
 }
@@ -214,6 +219,36 @@ table td, .table .td {
 		}
 	}
 	
+	//获取当前使用的节点
+	function get_now_use_node() {
+		XHR.get('<%=dsp.build_url("admin/services/passwall/get_now_use_node")%>', null,
+			function(x, result) {
+				for (var i = 1; i <= result.udp; i++) {
+					var id = result["UDP" + i];
+					if (id) {
+						var dom = document.getElementById("cbi-passwall-" + id);
+						if (dom) {
+							dom.classList.add("_now_use");
+							dom.title = "当前UDP" + i + "节点";
+						}
+					}
+				}
+				for (var i = 1; i <= result.tcp; i++) {
+					var id = result["TCP" + i];
+					if (id) {
+						var dom = document.getElementById("cbi-passwall-" + id);
+						if (dom) {
+							dom.classList.add("_now_use");
+							dom.title = "当前TCP" + i + "节点";
+							//var v = "当前使用：" + document.getElementById("cbid.passwall." + id + ".remarks").value;
+							//document.getElementById("cbi-passwall-" + id + "-remarks").innerHTML = v;
+						}
+					}
+				}
+			}
+		);
+	}
+	
 	function ping_node(cbi_id, dom) {
 		var full = get_address_full(cbi_id);
 		if (full != null) {
@@ -265,6 +300,8 @@ table td, .table .td {
 			});
 		}
 	}
+	
+	get_now_use_node();
 	
 	const _xhr = (index) => {
 		return new Promise((res) => {
@@ -365,7 +402,7 @@ table td, .table .td {
 	*/
 	
 	var edit_btn = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-button cbi-button-edit");
-	for(var i = 0; i < edit_btn.length; i++) {
+	for (var i = 0; i < edit_btn.length; i++) {
 		try {
 			var onclick_str = edit_btn[i].getAttribute("onclick");
 			var id = onclick_str.substring(onclick_str.lastIndexOf('/') + 1, onclick_str.length - 1);

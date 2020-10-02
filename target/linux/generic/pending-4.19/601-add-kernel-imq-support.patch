@@ -1264,7 +1264,7 @@
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -3922,8 +3941,12 @@ static inline void __nf_copy(struct sk_b
+@@ -3935,8 +3954,12 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif

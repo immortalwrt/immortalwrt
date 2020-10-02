@@ -69,7 +69,7 @@ remarks.default = translate("Remarks")
 remarks.rmempty = false
 
 type = s:option(ListValue, "type", translate("Type"))
-if api.is_finded("ssocksd") then
+if api.is_finded("microsocks") then
     type:value("Socks", translate("Socks"))
 end
 if api.is_finded("ss-server") then
@@ -125,12 +125,28 @@ port.datatype = "port"
 port.rmempty = false
 
 username = s:option(Value, "username", translate("Username"))
+username.validate = function(self, value, t)
+    if value then
+        if not password:formvalue(t) or password:formvalue(t) == "" then
+            return nil, translate("Username and Password must be used together!")
+        end
+    end
+    return value
+end
 username:depends("protocol", "http")
 username:depends("protocol", "socks")
 username:depends("type", "Socks")
 
 password = s:option(Value, "password", translate("Password"))
 password.password = true
+password.validate = function(self, value, t)
+    if value then
+        if (protocol:formvalue(t) == "http" or protocol:formvalue(t) == "socks" or type:formvalue(t) == "Socks") and (not username:formvalue(t) or username:formvalue(t) == "") then
+            return nil, translate("Username and Password must be used together!")
+        end
+    end
+    return value
+end
 password:depends("type", "Socks")
 password:depends("type", "SS")
 password:depends("type", "SSR")

@@ -13,13 +13,9 @@ if [ "${select_server}" = "tencent_shanghai_nodejs" ]; then
 	[ -z "${unblock_server_ip}" ] && unblock_server_ip="122.51.88.18"
 	unblock_server_http_port="30000"
 	unblock_server_https_port="30001"
-elif [ "${select_server}" = "aliyun_beijing_nodejs" ]; then
-	unblock_server_ip="$(ping "hyird.xyz" -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')"
-	[ -z "${unblock_server_ip}" ] && unblock_server_ip="182.92.84.98"
-	unblock_server_http_port="30000"
-	unblock_server_https_port="30001"
-elif [ "${select_server}" = "aliyun_beijing_nodejs_2" ]; then
-	unblock_server_ip="39.96.56.58"
+elif [ "${select_server}" = "ucloud_guangzhou_nodejs" ]; then
+	unblock_server_ip="$(ping "uc-gz.service.project-openwrt.eu.org" -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')"
+	[ -z "${unblock_server_ip}" ] && unblock_server_ip="106.75.156.183"
 	unblock_server_http_port="30000"
 	unblock_server_https_port="30001"
 fi

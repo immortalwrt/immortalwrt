@@ -85,6 +85,7 @@ endif
 	$(CP) $(STAGING_DIR_HOST)/bin/* $(PKG_BUILD_DIR)/staging_dir/host/bin/
 	(cd $(PKG_BUILD_DIR); find staging_dir/host/bin/ $(IB_LDIR)/scripts/dtc/ -type f | \
 		$(XARGS) $(SCRIPT_DIR)/bundle-libraries.sh $(PKG_BUILD_DIR)/staging_dir/host)
+	$(CP) $(TOPDIR)/staging_dir/host/lib/libfakeroot* $(PKG_BUILD_DIR)/staging_dir/host/lib
 	STRIP=sstrip $(SCRIPT_DIR)/rstrip.sh $(PKG_BUILD_DIR)/staging_dir/host/bin/
 	$(TAR) -cf - -C $(BUILD_DIR) $(IB_NAME) | xz -T$(if $(filter 1,$(NPROC)),2,0) -zc -7e > $@
 
