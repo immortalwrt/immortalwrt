@@ -2,13 +2,11 @@
 . /lib/functions/migrations.sh
 
 board=$(board_name)
-boardonly="${board##*,}"
 
 case "$board" in
-mikrotik,*)
-	migrate_leds "^rb:=mikrotik:"
-	;;
 esac
+
+remove_devicename_leds
 
 migrations_apply system
 
