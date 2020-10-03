@@ -4,6 +4,7 @@ local node_section = arg[1]
 local run_type = arg[2]
 local local_addr = arg[3]
 local local_port = arg[4]
+local relay_port = arg[5]
 local node = ucursor:get_all("passwall", node_section)
 
 local cipher = "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA"
@@ -22,7 +23,7 @@ local trojan = {
         cert = node.trojan_cert_path,
         cipher = cipher,
         cipher_tls13 = cipher13,
-        sni = node.tls_serverName,
+        sni = node.tls_serverName or node.address,
         alpn = {"h2", "http/1.1"},
         reuse_session = true,
         session_ticket = (node.tls_sessionTicket and node.tls_sessionTicket == "1") and true or false,
@@ -66,5 +67,9 @@ if node.type == "Trojan-Go" then
         method = node.ss_aead_method or "aead_aes_128_gcm",
         password = node.ss_aead_pwd or ""
     } or nil
+end
+if relay_port and relay_port ~= "nil" then
+    trojan.remote_addr = "127.0.0.1"
+    trojan.remote_port = tonumber(relay_port)
 end
 print(json.stringify(trojan, 1))
