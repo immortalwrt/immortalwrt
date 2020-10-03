@@ -931,8 +931,8 @@ msgstr "伪装类型"
 msgid "Transport Layer Encryption"
 msgstr "传输层加密"
 
-msgid "Whether or not transport layer encryption is enabled, the supported options are \"none\" for unencrypted and \"TLS\" for using TLS."
-msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密，\"tls\" 表示使用 TLS。"
+msgid "Whether or not transport layer encryption is enabled, \"none\" for unencrypted, \"tls\" for using TLS, \"xtls\" for using XTLS."
+msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密，\"tls\" 表示使用 TLS，\"xtls\" 表示使用 XTLS。"
 
 msgid "'none' not supported for original Trojan, please choose 'tls'."
 msgstr "原版Trojan不支持'none'，请选择TLS。"
@@ -1002,9 +1002,6 @@ msgstr "当你隐藏后想再次显示，地址栏输入例："
 
 msgid "The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."
 msgstr "MTProto 协议必须为 32 个字符，仅可包含 0 到 9 和 a 到 f 之间的字符。"
-
-msgid "When OTA is enabled, a connection that is not OTA enabled is rejected. This option is invalid when using AEAD encryption."
-msgstr "开启 OTA 后，将拒绝未启用 OTA 的连接。当使用 AEAD 加密时，该选项无效。"
 
 msgid "transit node"
 msgstr "中转到此节点"
