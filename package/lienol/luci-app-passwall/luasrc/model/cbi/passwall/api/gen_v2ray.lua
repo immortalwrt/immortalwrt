@@ -11,8 +11,18 @@ local inbounds = {}
 local outbounds = {}
 local network = proto
 local routing = nil
+local new_port
 
-local function gen_outbound(node, tag)
+local function get_new_port()
+    if new_port then
+        new_port = tonumber(sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port %s tcp)", appname, new_port + 1)))
+    else
+        new_port = tonumber(sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port auto tcp)", appname)))
+    end
+    return new_port
+end
+
+local function gen_outbound(node, tag, relay_port)
     local result = nil
     if node then
         local node_id = node[".name"]
@@ -25,15 +35,17 @@ local function gen_outbound(node, tag)
                 node.transport = "tcp"
             else
                 local node_type = (proto and proto ~= "nil") and proto or "socks"
-                local new_port = sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port auto tcp)", appname))
+                new_port = get_new_port()
                 node.port = new_port
-                sys.call(string.format("/usr/share/%s/app.sh run_socks %s %s %s %s %s > /dev/null", 
+                sys.call(string.format('/usr/share/%s/app.sh run_socks "%s" "%s" "%s" "%s" "%s" "%s"> /dev/null', 
                     appname,
                     node_id,
                     "127.0.0.1",
                     new_port,
                     string.format("/var/etc/%s/v2_%s_%s.json", appname, node_type, node_id),
-                    "4")
+                    "4",
+                    relay_port and tostring(relay_port) or ""
+                    )
                 )
                 node.protocol = "socks"
                 node.transport = "tcp"
@@ -140,7 +152,7 @@ end
 if socks_proxy_port ~= "nil" then
     table.insert(inbounds, {
         listen = "0.0.0.0",
-        port = socks_proxy_port,
+        port = tonumber(socks_proxy_port),
         protocol = "socks",
         settings = {auth = "noauth", udp = true, ip = "127.0.0.1"}
     })
@@ -149,7 +161,7 @@ end
 
 if redir_port ~= "nil" then
     table.insert(inbounds, {
-        port = redir_port,
+        port = tonumber(redir_port),
         protocol = "dokodemo-door",
         settings = {network = proto, followRedirect = true},
         sniffing = {enabled = true, destOverride = {"http", "tls"}}
@@ -175,14 +187,39 @@ end
 
 if node.protocol == "_shunt" then
     local rules = {}
-
     ucursor:foreach(appname, "shunt_rules", function(e)
-        local _node_id = node[e[".name"]] or nil
+        local name = e[".name"]
+        local _node_id = node[name] or nil
         if _node_id and _node_id ~= "nil" then
             local _node = ucursor:get_all(appname, _node_id)
-            local _outbound = gen_outbound(_node, e[".name"])
+            local is_proxy = node[name .. "_proxy"]
+            local relay_port
+            if is_proxy and is_proxy == "1" then
+                new_port = get_new_port()
+                relay_port = new_port
+                table.insert(inbounds, {
+                    tag = "proxy_" .. name,
+                    listen = "127.0.0.1",
+                    port = new_port,
+                    protocol = "dokodemo-door",
+                    settings = {network = "tcp,udp", address = _node.address, port = tonumber(_node.port)}
+                })
+                if _node.tls_serverName == nil then
+                    _node.tls_serverName = _node.address
+                end
+                _node.address = "127.0.0.1"
+                _node.port = new_port
+            end
+            local _outbound = gen_outbound(_node, name, relay_port)
             if _outbound then
                 table.insert(outbounds, _outbound)
+                if is_proxy and is_proxy == "1" then
+                    table.insert(rules, {
+                        type = "field",
+                        inboundTag = {"proxy_" .. name},
+                        outboundTag = "default"
+                    })
+                end
                 if e.domain_list then
                     local _domain = {}
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
@@ -190,7 +227,7 @@ if node.protocol == "_shunt" then
                     end)
                     table.insert(rules, {
                         type = "field",
-                        outboundTag = e[".name"],
+                        outboundTag = name,
                         domain = _domain
                     })
                 end
@@ -201,7 +238,7 @@ if node.protocol == "_shunt" then
                     end)
                     table.insert(rules, {
                         type = "field",
-                        outboundTag = e[".name"],
+                        outboundTag = name,
                         ip = _ip
                     })
                 end
