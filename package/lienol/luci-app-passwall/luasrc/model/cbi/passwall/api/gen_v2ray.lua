@@ -42,7 +42,7 @@ local function gen_outbound(node, tag)
             node.stream_security = "none"
         end
 
-        if node.transport == "mkcp" or node.transport == "ds" or node.transport == "quic" then
+        if node.transport == "mkcp" or node.transport == "quic" then
             node.stream_security = "none"
         end
 
@@ -54,23 +54,26 @@ local function gen_outbound(node, tag)
                 concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks") and {
+            streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                 network = node.transport,
                 security = node.stream_security,
+                xtlsSettings = (node.stream_security == "xtls") and {
+                    serverName = node.tls_serverName,
+                    allowInsecure = (node.tls_allowInsecure == "1") and true or false
+                } or nil,
                 tlsSettings = (node.stream_security == "tls") and {
-                    disableSessionResumption = node.sessionTicket ~= "1" and true or false,
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
                 } or nil,
                 tcpSettings = (node.transport == "tcp" and node.protocol ~= "socks") and {
                     header = {
                         type = node.tcp_guise,
-                        request = {
+                        request = (node.tcp_guise == "http") and {
                             path = node.tcp_guise_http_path or {"/"},
                             headers = {
                                 Host = node.tcp_guise_http_host or {}
                             }
-                        } or {}
+                        } or nil
                     }
                 } or nil,
                 kcpSettings = (node.transport == "mkcp") and {
@@ -110,19 +113,19 @@ local function gen_outbound(node, tag)
                                 id = node.uuid,
                                 alterId = tonumber(node.alter_id),
                                 level = node.level and tonumber(node.level) or 0,
-                                security = node.security,
-                                encryption = node.encryption or "none"
+                                security = (node.protocol == "vmess") and node.security or nil,
+                                encryption = node.encryption or "none",
+                                flow = (node.stream_security == "xtls") and node.flow or nil
                             }
                         }
                     }
                 } or nil,
-                servers = (node.protocol == "socks" or node.protocol == "http" or node.protocol == "shadowsocks") and {
+                servers = (node.protocol == "socks" or node.protocol == "http" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                     {
                         address = node.address,
                         port = tonumber(node.port),
                         method = node.method or nil,
                         password = node.password or "",
-                        ota = node.ota == '1' and true or false,
                         users = (node.username and node.password) and
                             {{user = node.username, pass = node.password}} or nil
                     }
