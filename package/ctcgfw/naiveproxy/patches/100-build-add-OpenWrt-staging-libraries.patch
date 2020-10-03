@@ -1,7 +1,7 @@
 From 5b476d92f8dbee8b83061faa8cd18a46e5ab4aae Mon Sep 17 00:00:00 2001
 From: CN_SZTL <cnsztl@project-openwrt.eu.org>
 Date: Tue, 18 Aug 2020 20:36:39 +0000
-Subject: [PATCH 1/3] build: add OpenWrt staging libraries
+Subject: [PATCH] build: add OpenWrt staging libraries
 
 ---
  src/build/config/posix/BUILD.gn | 4 ++++

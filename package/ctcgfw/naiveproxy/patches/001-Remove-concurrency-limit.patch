@@ -1,0 +1,44 @@
+From f1a49736010170a70123db07ca41256ba92c0002 Mon Sep 17 00:00:00 2001
+From: klzgrad <kizdiv@gmail.com>
+Date: Sat, 3 Oct 2020 08:54:59 +0800
+Subject: [PATCH] Remove concurrency limit
+
+---
+ src/net/tools/naive/naive_proxy.cc     | 3 +--
+ src/net/tools/naive/naive_proxy_bin.cc | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/net/tools/naive/naive_proxy.cc b/src/net/tools/naive/naive_proxy.cc
+index b4d5feee6..a38f79124 100644
+--- a/src/net/tools/naive/naive_proxy.cc
++++ b/src/net/tools/naive/naive_proxy.cc
+@@ -5,7 +5,6 @@
+ 
+ #include "net/tools/naive/naive_proxy.h"
+ 
+-#include <algorithm>
+ #include <utility>
+ 
+ #include "base/bind.h"
+@@ -35,7 +34,7 @@ NaiveProxy::NaiveProxy(std::unique_ptr<ServerSocket> listen_socket,
+                        const NetworkTrafficAnnotationTag& traffic_annotation)
+     : listen_socket_(std::move(listen_socket)),
+       protocol_(protocol),
+-      concurrency_(std::min(4, std::max(1, concurrency))),
++      concurrency_(concurrency),
+       resolver_(resolver),
+       session_(session),
+       net_log_(
+diff --git a/src/net/tools/naive/naive_proxy_bin.cc b/src/net/tools/naive/naive_proxy_bin.cc
+index 4ba08712d..00acd7756 100644
+--- a/src/net/tools/naive/naive_proxy_bin.cc
++++ b/src/net/tools/naive/naive_proxy_bin.cc
+@@ -289,7 +289,7 @@ bool ParseCommandLine(const CommandLine& cmdline, Params* params) {
+ 
+   if (!cmdline.concurrency.empty()) {
+     if (!base::StringToInt(cmdline.concurrency, &params->concurrency) ||
+-        params->concurrency < 1 || params->concurrency > 4) {
++        params->concurrency < 1) {
+       std::cerr << "Invalid concurrency" << std::endl;
+       return false;
+     }
