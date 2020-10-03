@@ -184,47 +184,52 @@ start()
 
 	[ "${enable}" -ne "1" ] && exit 0
 
-	sed -i '/unblockneteasemusic/d' /etc/crontabs/root
-	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/unblockneteasemusic/update.sh update_core" >> "/etc/crontabs/root"
-	echo "*/5 * * * * /usr/share/unblockneteasemusic/log_check.sh" >> "/etc/crontabs/root"
+	sed -i "/$NAME/d" /etc/crontabs/root
+	[ "${auto_update}" -eq "1" ] && echo "0 ${update_time} * * * /usr/share/$NAME/update.sh update_core" >> "/etc/crontabs/root"
+	echo "*/5 * * * * /usr/share/$NAME/log_check.sh" >> "/etc/crontabs/root"
 	/etc/init.d/cron restart > "/dev/null" 2>&1
 
-	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && { rm -f "/usr/share/unblockneteasemusic/local_ver"; bash "/usr/share/unblockneteasemusic/update.sh" "update_core_non_restart"; }
-	[ ! -e "/usr/share/unblockneteasemusic/core/app.js" ] && { echo "Core Not Found, please download it before starting." >> "/tmp/unblockneteasemusic.log"; exit 1; }
+	[ ! -e "/usr/share/$NAME/core/app.js" ] && { rm -f "/usr/share/$NAME/local_ver"; bash "/usr/share/$NAME/update.sh" "update_core_non_restart"; }
+	[ ! -e "/usr/share/$NAME/core/app.js" ] && { echo "Core Not Found, please download it before starting." >> "/tmp/$NAME.log"; exit 1; }
 
 	[ "${use_remote_qq_server}" -ne "1" ] && qq_server_mode="local" || qq_server_mode="remote"
-	bash "/usr/share/unblockneteasemusic/gen_remote_qq_server.sh" "${qq_server_mode}" "${enable_flac}" > "/usr/share/unblockneteasemusic/core/src/provider/qq.js"
+	bash "/usr/share/$NAME/gen_qq_provider.sh" "${qq_server_mode}" "${enable_flac}" > "/usr/share/$NAME/core/src/provider/qq.js"
 
 	[ -n "${neteasemusic_cookie}" ] && {
-		ub_cookie_line="$(sed -n -e "/netease.path.includes('song\/enhance')/=" "/usr/share/unblockneteasemusic/core/src/hook.js")";
-		[ -n "${ub_cookie_line}" ] && { let ub_cookie_endline="ub_cookie_line+6"; sed -i "${ub_cookie_line},${ub_cookie_endline}d" "/usr/share/unblockneteasemusic/core/src/hook.js"; }
-		sed -i "/netease.path == '\/api\/song\/enhance\/download\/url'/i\\\t\\t\\t\\tif (netease.path.includes('song\/enhance')) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
-		sed -i "/if (netease.path.includes('song\/enhance')) {/a\\\t\\t\\t\\t\\treq.headers.cookie = [" "/usr/share/unblockneteasemusic/core/src/hook.js"
-		sed -i "/req.headers.cookie = \[/a\\\t\\t\\t\\t\\t\\t'MUSIC_U=${neteasemusic_cookie}'," "/usr/share/unblockneteasemusic/core/src/hook.js"
-		sed -i "/'MUSIC_U=${neteasemusic_cookie}',/a\\\t\\t\\t\\t\\t\\treq.headers.cookie.replace(\/\\\s*MUSIC_\\\w=[^\\\s;]+;*\/g, '')" "/usr/share/unblockneteasemusic/core/src/hook.js"
-		sed -i "/req.headers.cookie.replace(\/\\\s\\*MUSIC_\\\w=[^\\\s;]\\+/a\\\t\\t\\t\\t\\t].filter(line => line).join('; ')" "/usr/share/unblockneteasemusic/core/src/hook.js"
-		sed -i "/].filter(line => line).join('; ')/a\\\t\\t\\t\\t}\\n" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		ub_cookie_line="$(sed -n -e "/netease.path.includes('song\/enhance')/=" "/usr/share/$NAME/core/src/hook.js")";
+		[ -n "${ub_cookie_line}" ] && { let ub_cookie_endline="ub_cookie_line+6"; sed -i "${ub_cookie_line},${ub_cookie_endline}d" "/usr/share/$NAME/core/src/hook.js"; }
+		sed -i "/netease.path == '\/api\/song\/enhance\/download\/url'/i\\\t\\t\\t\\tif (netease.path.includes('song\/enhance')) {" "/usr/share/$NAME/core/src/hook.js"
+		sed -i "/if (netease.path.includes('song\/enhance')) {/a\\\t\\t\\t\\t\\treq.headers.cookie = [" "/usr/share/$NAME/core/src/hook.js"
+		sed -i "/req.headers.cookie = \[/a\\\t\\t\\t\\t\\t\\t'MUSIC_U=${neteasemusic_cookie}'," "/usr/share/$NAME/core/src/hook.js"
+		sed -i "/'MUSIC_U=${neteasemusic_cookie}',/a\\\t\\t\\t\\t\\t\\treq.headers.cookie.replace(\/\\\s*MUSIC_\\\w=[^\\\s;]+;*\/g, '')" "/usr/share/$NAME/core/src/hook.js"
+		sed -i "/req.headers.cookie.replace(\/\\\s\\*MUSIC_\\\w=[^\\\s;]\\+/a\\\t\\t\\t\\t\\t].filter(line => line).join('; ')" "/usr/share/$NAME/core/src/hook.js"
+		sed -i "/].filter(line => line).join('; ')/a\\\t\\t\\t\\t}\\n" "/usr/share/$NAME/core/src/hook.js"
 }
 
-	quality_check_line="$(awk "/target == 0 \|\| item.id == target/{print NR}" "/usr/share/unblockneteasemusic/core/src/hook.js")"
-	sed -i "${quality_check_line}d" "/usr/share/unblockneteasemusic/core/src/hook.js"
+	quality_check_line="$(awk "/target == 0 \|\| item.id == target/{print NR}" "/usr/share/$NAME/core/src/hook.js")"
+	sed -i "${quality_check_line}d" "/usr/share/$NAME/core/src/hook.js"
 	if [ "${replace_music_source}" = "dont_replace" ]; then
-		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo) && (target == 0 || item.id == target)) {" "/usr/share/$NAME/core/src/hook.js"
 	elif [ "${replace_music_source}" = "lower_than_192kbps" ]; then
-		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 192000) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 192000) && (target == 0 || item.id == target)) {" "/usr/share/$NAME/core/src/hook.js"
 	elif [ "${replace_music_source}" = "lower_than_320kbps" ]; then
-		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 320000) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 320000) && (target == 0 || item.id == target)) {" "/usr/share/$NAME/core/src/hook.js"
 	elif [ "${replace_music_source}" = "lower_than_999kbps" ]; then
-		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 999000) && (target == 0 || item.id == target)) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i -e "${quality_check_line}i \\\t\\tif ((item.code != 200 || item.freeTrialInfo || item.br < 999000) && (target == 0 || item.id == target)) {" "/usr/share/$NAME/core/src/hook.js"
 	elif [ "${replace_music_source}" = "replace_all" ]; then
-		sed -i -e "${quality_check_line}i \\\t\\tif (target == 0 || item.id == target) {" "/usr/share/unblockneteasemusic/core/src/hook.js"
+		sed -i -e "${quality_check_line}i \\\t\\tif (target == 0 || item.id == target) {" "/usr/share/$NAME/core/src/hook.js"
 	fi
 
-	{ [ -f "${self_issue_cert_crt}" ] && [ -f "${self_issue_cert_key}" ]; } && { ln -sf "${self_issue_cert_crt}" "/usr/share/unblockneteasemusic/core/server.crt"; ln -sf "${self_issue_cert_key}" "/usr/share/unblockneteasemusic/core/server.key"; }
+	{ [ -f "${self_issue_cert_crt}" ] && [ -f "${self_issue_cert_key}" ]; } && {
+		{ [ "${self_issue_cert_crt}" != "/usr/share/$NAME/core/server.crt" ] && [ "${self_issue_cert_key}" != "/usr/share/$NAME/core/server.key" ]; } && {
+			ln -sf "${self_issue_cert_crt}" "/usr/share/$NAME/core/server.crt"
+			ln -sf "${self_issue_cert_key}" "/usr/share/$NAME/core/server.key"
+		}
+	}
 
 	[ "${hijack_ways}" = "use_hosts" ] && { http_port="80"; https_port="443"; }
 	[ "${music_source}" = "default" ] && music_source="" || music_source="-o ${music_source}"
-	nohup node "/usr/share/unblockneteasemusic/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" ${music_source} -e "${endpoint_url}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/$NAME.log" 2>&1 &
+	nohup node "/usr/share/$NAME/core/app.js" -a "${addr}" -p "${http_port}":"${https_port}" ${music_source} -e "${endpoint_url}" ${netease_server_ip} ${proxy_server_ip} ${strict_mode} >> "/tmp/$NAME.log" 2>&1 &
 
 	set_type="start"
 	if [ "${hijack_ways}" = "use_ipset" ]; then
@@ -237,16 +242,24 @@ start()
 
 stop()
 {
-	{ ps |grep "unblockneteasemusic" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } > "/dev/null" 2>&1
+	{ ps |grep "$NAME" |grep "app.js" |grep -v "grep" |awk '{print $1}' |xargs kill -9; } > "/dev/null" 2>&1
 
-	sed -i '/unblockneteasemusic/d' "/etc/crontabs/root"
+	sed -i "/$NAME/d" "/etc/crontabs/root"
 	/etc/init.d/cron restart > "/dev/null" 2>&1
 
 	[ ! -f "${UPGRADE_CONF}" ] && touch "${UPGRADE_CONF}"
-	sed -i '/unblockneteasemusic\/core/d;/unblockneteasemusic\/local_ver/d' "${UPGRADE_CONF}"
-	[ "${keep_core_when_upgrade}" -eq "1" ] && { echo "/usr/share/unblockneteasemusic/core/" >> "${UPGRADE_CONF}"; echo "/usr/share/unblockneteasemusic/local_ver" >> "${UPGRADE_CONF}"; }
-	[ -f "${self_issue_cert_crt}" ] && { sed -i "/${self_issue_cert_crt//\//\\/}/d"; echo "${self_issue_cert_crt}" >> "${UPGRADE_CONF}"; }
-	[ -f "${self_issue_cert_key}" ] && { sed -i "/${self_issue_cert_key//\//\\/}/d"; echo "${self_issue_cert_key}" >> "${UPGRADE_CONF}"; }
+	sed -i "/$NAME\/core/d;/$NAME\/local_ver/d" "${UPGRADE_CONF}"
+	[ "${keep_core_when_upgrade}" -eq "1" ] && { echo "/usr/share/$NAME/core/" >> "${UPGRADE_CONF}"; echo "/usr/share/$NAME/local_ver" >> "${UPGRADE_CONF}"; }
+
+	{ [ -f "${self_issue_cert_crt}" ] && [ -f "${self_issue_cert_key}" ]; } && {
+		{ [ "${self_issue_cert_crt}" != "/usr/share/$NAME/core/server.crt" ] && [ "${self_issue_cert_key}" != "/usr/share/$NAME/core/server.key" ]; } && {
+			sed -i "/${self_issue_cert_crt//\//\\/}/d"
+			echo "${self_issue_cert_crt}" >> "${UPGRADE_CONF}"
+
+			sed -i "/${self_issue_cert_key//\//\\/}/d"
+			echo "${self_issue_cert_key}" >> "${UPGRADE_CONF}"
+		}
+	}
 
 	rm -f "/tmp/$NAME.log"
 
