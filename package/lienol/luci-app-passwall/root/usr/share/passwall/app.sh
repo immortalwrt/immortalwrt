@@ -218,12 +218,12 @@ ln_start_bin() {
 	shift 2;
 	if [  "${file_func%%/*}" != "${file_func}" ]; then
 		[ ! -L "${file_func}" ] && {
-			ln -s "${file_func}" "${TMP_BIN_PATH}/${ln_name}"
+			ln -s "${file_func}" "${TMP_BIN_PATH}/${ln_name}" >/dev/null 2>&1
 			file_func="${TMP_BIN_PATH}/${ln_name}"
 		}
 		[ -x "${file_func}" ] || echolog "  - $(readlink ${file_func}) 没有执行权限，无法启动：${file_func} $*"
 	fi
-	echo "${file_func} $*" >&2
+	#echo "${file_func} $*" >&2
 	[ -n "${file_func}" ] || echolog "  - 找不到 ${ln_name}，无法启动..."
 	${file_func:-echolog "  - ${ln_name}"} "$@" >/dev/null 2>&1 &
 }
@@ -310,10 +310,16 @@ run_socks() {
 	local bind=$2
 	local local_port=$3
 	local config_file=$4
+	local relay_port=$6
 	local type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
 	local remarks=$(config_n_get $node remarks)
 	local server_host=$(config_n_get $node address)
 	local port=$(config_n_get $node port)
+	[ -n "$relay_port" ] && {
+		server_host="127.0.0.1"
+		port=$relay_port
+		echo $relay_port
+	}
 	local msg tmp
 
 	if [ -n "$server_host" ] && [ -n "$port" ]; then
@@ -347,15 +353,15 @@ run_socks() {
 		ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
 	;;
 	trojan-go)
-		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
+		lua $API_GEN_TROJAN $node client $bind $local_port $port > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app trojan_go_file notset) trojan-go)" trojan-go -config "$config_file"
 	;;
 	trojan*)
-		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
+		lua $API_GEN_TROJAN $node client $bind $local_port $port > $config_file
 		ln_start_bin "$(first_type ${type})" "${type}" -c "$config_file"
 	;;
 	naiveproxy)
-		lua $API_GEN_NAIVE $node socks $bind $local_port > $config_file
+		lua $API_GEN_NAIVE $node socks $bind $local_port $port > $config_file
 		ln_start_bin "$(first_type naive)" naive "$config_file"
 	;;
 	brook)
@@ -367,7 +373,7 @@ run_socks() {
 		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_SOCKS_$5" "$protocol" --socks5 "$bind:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 	;;
 	ss|ssr)
-		lua $API_GEN_SS $node $local_port > $config_file
+		lua $API_GEN_SS $node $local_port $server_host $port > $config_file
 		ln_start_bin "$(first_type ${type}-local)" "${type}-local" -c "$config_file" -b "$bind" -u
 	;;
 	esac
@@ -863,6 +869,16 @@ add_dnsmasq() {
 				echolog "  - [$?]中国域名表(chnroute)：${fwd_dns:-默认}"
 			}
 		}
+		
+		#分流规则
+		fwd_dns="${TUN_DNS}"
+		#如果使用chnlist直接使用默认DNS
+		[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
+		local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
+		for shunt_id in $shunt_ids; do
+			config_n_get $shunt_id domain_list | tr -s "\r\n" "\n" | gen_dnsmasq_items "shuntlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/shunt_host.conf"
+			echolog "  - [$?]$shunt_id分流规则(shuntlist)：${fwd_dns:-默认}"
+		done
 
 		#始终使用远程DNS解析代理（黑名单）列表
 		fwd_dns="${TUN_DNS}"
@@ -1184,21 +1200,23 @@ stop() {
 	echolog "清空并关闭相关程序和缓存完成。"
 }
 
-case $1 in
+arg1=$1
+shift
+case $arg1 in
 get_new_port)
-	get_new_port $2 $3
+	get_new_port $@
 	;;
 run_socks)
-	run_socks $2 $3 $4 $5 $6
+	run_socks $@
 	;;
 run_redir)
-	run_redir $2 $3 $4 $5 $6 $7
+	run_redir $@
 	;;
 node_switch)
-	node_switch $2 $3 $4 $5
+	node_switch $@
 	;;
 stop)
-	[ "$2" = "force" ] && force_stop
+	[ "$1" = "force" ] && force_stop
 	stop
 	;;
 start)
