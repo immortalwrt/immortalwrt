@@ -205,7 +205,7 @@ gen_config_file() {
 			{
 			"listen": "$PROTO://0.0.0.0:$3",
 			"proxy": "https://$(uci_get_by_name $1 username):$(uci_get_by_name $1 password)@$(uci_get_by_name $1 server):$(uci_get_by_name $1 server_port)",
-			"concurrency": "$4"
+			"concurrency": "${4:-1}"
 			}
 		EOF
 		;;
