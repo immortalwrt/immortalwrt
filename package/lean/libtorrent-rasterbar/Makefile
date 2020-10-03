@@ -1,14 +1,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtorrent-rasterbar
-PKG_VERSION:=1.2.7
+PKG_VERSION:=1.2.10
 PKG_RELEASE=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/arvidn/libtorrent.git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=8e710151c80e655ee0513ca37c367f75a448c6bd
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-libtorrent-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/arvidn/libtorrent/tar.gz/libtorrent-$(PKG_VERSION)?
+PKG_HASH:=e0fedb583f1e7bdcc0eb80a9df064a1e6fb0b825d8423e64bdb0f7a35879a09e
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(firstword $(subst -, ,$(PKG_NAME)))-libtorrent-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD
 PKG_LICENSE_FILES:=COPYING
