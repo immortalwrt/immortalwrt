@@ -8,7 +8,7 @@
 #include <dm.h>
 #include <dt-structs.h>
 
-static const struct dtd_rockchip_rk3328_grf dtv_syscon_at_ff100000 = {
+static struct dtd_rockchip_rk3328_grf dtv_syscon_at_ff100000 = {
 	.reg			= {0xff100000, 0x1000},
 };
 U_BOOT_DEVICE(syscon_at_ff100000) = {
@@ -17,7 +17,7 @@ U_BOOT_DEVICE(syscon_at_ff100000) = {
 	.platdata_size	= sizeof(dtv_syscon_at_ff100000),
 };
 
-static const struct dtd_rockchip_rk3328_cru dtv_clock_controller_at_ff440000 = {
+static struct dtd_rockchip_rk3328_cru dtv_clock_controller_at_ff440000 = {
 	.reg			= {0xff440000, 0x1000},
 	.rockchip_grf		= 0x3a,
 };
@@ -27,11 +27,11 @@ U_BOOT_DEVICE(clock_controller_at_ff440000) = {
 	.platdata_size	= sizeof(dtv_clock_controller_at_ff440000),
 };
 
-static const struct dtd_rockchip_rk3328_uart dtv_serial_at_ff130000 = {
+static struct dtd_ns16550_serial dtv_serial_at_ff130000 = {
 	.clock_frequency	= 0x16e3600,
 	.clocks			= {
-			{&dtv_clock_controller_at_ff440000, {40}},
-			{&dtv_clock_controller_at_ff440000, {212}},},
+			{NULL, {40}},
+			{NULL, {212}},},
 	.dma_names		= {"tx", "rx"},
 	.dmas			= {0x10, 0x6, 0x10, 0x7},
 	.interrupts		= {0x0, 0x39, 0x4},
@@ -42,20 +42,19 @@ static const struct dtd_rockchip_rk3328_uart dtv_serial_at_ff130000 = {
 	.reg_shift		= 0x2,
 };
 U_BOOT_DEVICE(serial_at_ff130000) = {
-	.name		= "rockchip_rk3328_uart",
+	.name		= "ns16550_serial",
 	.platdata	= &dtv_serial_at_ff130000,
 	.platdata_size	= sizeof(dtv_serial_at_ff130000),
 };
 
-static const struct dtd_rockchip_rk3328_dw_mshc dtv_mmc_at_ff500000 = {
+static struct dtd_rockchip_rk3288_dw_mshc dtv_mmc_at_ff500000 = {
 	.bus_width		= 0x4,
-	.cap_mmc_highspeed	= true,
 	.cap_sd_highspeed	= true,
 	.clocks			= {
-			{&dtv_clock_controller_at_ff440000, {317}},
-			{&dtv_clock_controller_at_ff440000, {33}},
-			{&dtv_clock_controller_at_ff440000, {74}},
-			{&dtv_clock_controller_at_ff440000, {78}},},
+			{NULL, {317}},
+			{NULL, {33}},
+			{NULL, {74}},
+			{NULL, {78}},},
 	.disable_wp		= true,
 	.fifo_depth		= 0x100,
 	.interrupts		= {0x0, 0xc, 0x4},
@@ -63,17 +62,21 @@ static const struct dtd_rockchip_rk3328_dw_mshc dtv_mmc_at_ff500000 = {
 	.pinctrl_0		= {0x47, 0x48, 0x49, 0x4a},
 	.pinctrl_names		= "default",
 	.reg			= {0xff500000, 0x4000},
+	.sd_uhs_sdr104		= true,
+	.sd_uhs_sdr12		= true,
+	.sd_uhs_sdr25		= true,
+	.sd_uhs_sdr50		= true,
 	.u_boot_spl_fifo_mode	= true,
 	.vmmc_supply		= 0x4b,
 	.vqmmc_supply		= 0x1e,
 };
 U_BOOT_DEVICE(mmc_at_ff500000) = {
-	.name		= "rockchip_rk3328_dw_mshc",
+	.name		= "rockchip_rk3288_dw_mshc",
 	.platdata	= &dtv_mmc_at_ff500000,
 	.platdata_size	= sizeof(dtv_mmc_at_ff500000),
 };
 
-static const struct dtd_rockchip_rk3328_pinctrl dtv_pinctrl = {
+static struct dtd_rockchip_rk3328_pinctrl dtv_pinctrl = {
 	.ranges			= true,
 	.rockchip_grf		= 0x3a,
 };
@@ -83,9 +86,9 @@ U_BOOT_DEVICE(pinctrl) = {
 	.platdata_size	= sizeof(dtv_pinctrl),
 };
 
-static const struct dtd_rockchip_gpio_bank dtv_gpio0_at_ff210000 = {
+static struct dtd_rockchip_gpio_bank dtv_gpio0_at_ff210000 = {
 	.clocks			= {
-			{&dtv_clock_controller_at_ff440000, {200}},},
+			{NULL, {200}},},
 	.gpio_controller	= true,
 	.interrupt_controller	= true,
 	.interrupts		= {0x0, 0x33, 0x4},
@@ -97,10 +100,11 @@ U_BOOT_DEVICE(gpio0_at_ff210000) = {
 	.platdata_size	= sizeof(dtv_gpio0_at_ff210000),
 };
 
-static const struct dtd_regulator_fixed dtv_sdmmc_regulator = {
-	.gpio			= {0x60, 0x1e, 0x1},
-	.pinctrl_0		= 0x61,
+static struct dtd_regulator_fixed dtv_sdmmc_regulator = {
+	.gpio			= {0x61, 0x1e, 0x1},
+	.pinctrl_0		= 0x67,
 	.pinctrl_names		= "default",
+	.regulator_boot_on	= true,
 	.regulator_max_microvolt = 0x325aa0,
 	.regulator_min_microvolt = 0x325aa0,
 	.regulator_name		= "vcc_sd",
@@ -112,7 +116,7 @@ U_BOOT_DEVICE(sdmmc_regulator) = {
 	.platdata_size	= sizeof(dtv_sdmmc_regulator),
 };
 
-static const struct dtd_rockchip_rk3328_dmc dtv_dmc = {
+static struct dtd_rockchip_rk3328_dmc dtv_dmc = {
 	.reg			= {0xff400000, 0x1000, 0xff780000, 0x3000, 0xff100000, 0x1000, 0xff440000, 0x1000,
 		0xff720000, 0x1000, 0xff798000, 0x1000},
 	.rockchip_sdram_params	= {0x1, 0xa, 0x2, 0x1, 0x0, 0x0, 0x11, 0x0,
@@ -147,3 +151,12 @@ U_BOOT_DEVICE(dmc) = {
 	.platdata_size	= sizeof(dtv_dmc),
 };
 
+void dm_populate_phandle_data(void) {
+	dtv_serial_at_ff130000.clocks[0].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+	dtv_serial_at_ff130000.clocks[1].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+	dtv_mmc_at_ff500000.clocks[0].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+	dtv_mmc_at_ff500000.clocks[1].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+	dtv_mmc_at_ff500000.clocks[2].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+	dtv_mmc_at_ff500000.clocks[3].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+	dtv_gpio0_at_ff210000.clocks[0].node = DM_GET_DEVICE(clock_controller_at_ff440000);
+}
