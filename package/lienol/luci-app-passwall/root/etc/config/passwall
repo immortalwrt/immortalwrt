@@ -80,14 +80,25 @@ gvt2.com'
 
 config shunt_rules 'netflix'
 	option remarks '奈飞'
-	option domain_list 'netflix
+	option domain_list 'fast.com
+netflix
 netflix.com
+netflix.net
 nflxso.net
 nflxext.com
 nflximg.com
 nflximg.net
 nflxvideo.net
-fast.com'
+netflixdnstest0.com
+netflixdnstest1.com
+netflixdnstest2.com
+netflixdnstest3.com
+netflixdnstest4.com
+netflixdnstest5.com
+netflixdnstest6.com
+netflixdnstest7.com
+netflixdnstest8.com
+netflixdnstest9.com'
 
 config shunt_rules 'TVB'
 	option remarks 'TVB'
