@@ -371,7 +371,7 @@ start_redir_tcp() {
 		;;
 	naiveproxy)
 		$bin /var/etc/naive-ssr-retcp.json >/dev/null 2>&1 &
-		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin --version 2>&1 | head -1) Started!" >>/tmp/ssrplus.log
+		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin --version 2>&1 | head -1) , $threads Threads Started!" >>/tmp/ssrplus.log
 		;;
 	socks5)
 		/usr/share/shadowsocksr/genred2config.sh "/var/etc/redsocks-ssr-retcp.conf" socks5 tcp $(uci_get_by_name $GLOBAL_SERVER local_port) \
