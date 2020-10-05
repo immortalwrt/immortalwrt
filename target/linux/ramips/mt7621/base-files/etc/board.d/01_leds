@@ -36,6 +36,7 @@ dlink,dir-860l-b1)
 dlink,dir-867-a1|\
 dlink,dir-878-a1|\
 dlink,dir-882-a1|\
+dlink,dir-882-r1|\
 motorola,mr2600)
 	ucidef_set_led_netdev "wan" "wan" "green:net" "wan"
 	ucidef_set_led_netdev "wlan2g" "WiFi 2.4GHz" "green:wlan2g" "ra0"
