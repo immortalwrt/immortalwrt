@@ -84,18 +84,18 @@
 		pinctrl-names = "default";
 
 		led_sys: sys {
-			label = "r619ac:blue:sys";
+			label = "blue:sys";
 			gpios = <&tlmm 39 GPIO_ACTIVE_HIGH>;
 		};
 
 		wlan2g {
-			label = "r619ac:blue:wlan2g";
+			label = "blue:wlan2g";
 			gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "phy0tpt";
 		};
 
 		wlan5g {
-			label = "r619ac:blue:wlan5g";
+			label = "blue:wlan5g";
 			gpios = <&tlmm 50 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "phy1tpt";
 		};
