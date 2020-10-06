@@ -127,7 +127,7 @@ local function gen_outbound(node, tag, relay_port)
                                 level = node.level and tonumber(node.level) or 0,
                                 security = (node.protocol == "vmess") and node.security or nil,
                                 encryption = node.encryption or "none",
-                                flow = (node.stream_security == "xtls") and node.flow or nil
+                                flow = node.flow or nil
                             }
                         }
                     }
