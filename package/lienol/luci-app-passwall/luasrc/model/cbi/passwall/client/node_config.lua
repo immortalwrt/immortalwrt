@@ -374,6 +374,14 @@ level:depends({ type = "V2ray", protocol = "vmess" })
 level:depends({ type = "V2ray", protocol = "vless" })
 level:depends({ type = "V2ray", protocol = "trojan" })
 
+flow = s:option(Value, "flow", translate("flow"))
+flow.placeholder = "xtls-rprx-origin"
+--flow:value("xtls-rprx-origin")
+--flow:value("xtls-rprx-origin-udp443")
+--flow:value("xtls-rprx-direct")
+--flow:value("xtls-rprx-direct-udp443")
+flow:depends({ type = "V2ray", protocol = "vless" })
+
 stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, "none" for unencrypted, "tls" for using TLS, "xtls" for using XTLS.'))
 stream_security:value("none", "none")
 stream_security:value("tls", "tls")
@@ -393,12 +401,6 @@ stream_security.validate = function(self, value)
     end
     return value
 end
-
-flow = s:option(Value, "flow", translate("flow"))
-flow.default = "xtls-rprx-origin"
-flow:value("xtls-rprx-origin")
-flow:value("xtls-rprx-origin-udp443")
-flow:depends("stream_security", "xtls")
 
 -- [[ TLS部分 ]] --
 tls_sessionTicket = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))

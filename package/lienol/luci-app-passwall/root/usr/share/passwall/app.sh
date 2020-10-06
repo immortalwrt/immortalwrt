@@ -318,7 +318,6 @@ run_socks() {
 	[ -n "$relay_port" ] && {
 		server_host="127.0.0.1"
 		port=$relay_port
-		echo $relay_port
 	}
 	local msg tmp
 
@@ -353,15 +352,15 @@ run_socks() {
 		ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
 	;;
 	trojan-go)
-		lua $API_GEN_TROJAN $node client $bind $local_port $port > $config_file
+		lua $API_GEN_TROJAN $node client $bind $local_port $server_host $port > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app trojan_go_file notset) trojan-go)" trojan-go -config "$config_file"
 	;;
 	trojan*)
-		lua $API_GEN_TROJAN $node client $bind $local_port $port > $config_file
+		lua $API_GEN_TROJAN $node client $bind $local_port $server_host $port > $config_file
 		ln_start_bin "$(first_type ${type})" "${type}" -c "$config_file"
 	;;
 	naiveproxy)
-		lua $API_GEN_NAIVE $node socks $bind $local_port $port > $config_file
+		lua $API_GEN_NAIVE $node socks $bind $local_port $server_host $port > $config_file
 		ln_start_bin "$(first_type naive)" naive "$config_file"
 	;;
 	brook)
@@ -373,7 +372,7 @@ run_socks() {
 		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_SOCKS_$5" "$protocol" --socks5 "$bind:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 	;;
 	ss|ssr)
-		lua $API_GEN_SS $node $local_port $server_host $port > $config_file
+		lua $API_GEN_SS $node "0.0.0.0" $local_port $server_host $port > $config_file
 		ln_start_bin "$(first_type ${type}-local)" "${type}-local" -c "$config_file" -b "$bind" -u
 	;;
 	esac
@@ -438,7 +437,7 @@ run_redir() {
 			fi
 		;;
 		ss|ssr)
-			lua $API_GEN_SS $node $local_port > $config_file
+			lua $API_GEN_SS $node "0.0.0.0" $local_port > $config_file
 			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" -c "$config_file" -U
 		;;
 		esac
@@ -514,11 +513,11 @@ run_redir() {
 		;;
 		ss|ssr)
 			if [ "$kcptun_use" == "1" ]; then
-				lua $API_GEN_SS $node $local_port 127.0.0.1 $KCPTUN_REDIR_PORT > $config_file
+				lua $API_GEN_SS $node "0.0.0.0" $local_port "127.0.0.1" $KCPTUN_REDIR_PORT > $config_file
 				process=1
 				[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Kcptun不支持UDP转发！"
 			else
-				lua $API_GEN_SS $node $local_port > $config_file
+				lua $API_GEN_SS $node "0.0.0.0" $local_port > $config_file
 				[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param="-u"
 			fi
 			for k in $(seq 1 $process); do
