@@ -20,9 +20,6 @@ ramips_setup_interfaces()
 	xiaomi,mir3g-v2)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" "wan"
 		;;
-	d-team,newifi-d2)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rai0" "wan"
-		;;
 	edimax,re23s|\
 	mikrotik,routerboard-m11g|\
 	netgear,ex6150|\
@@ -38,7 +35,7 @@ ramips_setup_interfaces()
 	xiaomi,mi-router-ac2100|\
 	xiaomi,mir3p|\
 	xiaomi,redmi-router-ac2100)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 ra0 rai0" "wan"
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
 		;;
 	gnubee,gb-pc1|\
 	gnubee,gb-pc2)
@@ -53,9 +50,6 @@ ramips_setup_interfaces()
 		;;
 	mikrotik,routerboard-760igs)
 		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
-		;;
-	phicomm,k2p)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rax0" "wan"
 		;;
 	ubnt,edgerouter-x)
 		ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4" "eth0"
