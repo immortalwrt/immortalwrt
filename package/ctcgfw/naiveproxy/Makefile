@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=naiveproxy
-PKG_VERSION:=85.0.4183.83-3
+PKG_VERSION:=85.0.4183.83-4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/klzgrad/naiveproxy/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=66a8f275a9aa0fa04649062fb141a10add9bd76855f32ee65e6ee60a7fc4649c
+PKG_HASH:=68b3ec22aba04a671ddb14a1f55dc7425c73adf781cbe87a95097c782f269a07
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD 3-Clause
@@ -36,13 +36,17 @@ endif
 
 include $(INCLUDE_DIR)/package.mk
 
+define Package/naiveproxy/config
+	depends on !(arc||armeb||mips||mips64||powerpc)
+endef
+
 define Package/naiveproxy
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Web Servers/Proxies
 	URL:=https://github.com/klzgrad/naiveproxy
 	TITLE:=Make a fortune quietly
-	DEPENDS:=@!(arc||armeb||powerpc) +libatomic +libnss
+	DEPENDS:=+libatomic +libnss
 endef
 
 define Package/naiveproxy/description

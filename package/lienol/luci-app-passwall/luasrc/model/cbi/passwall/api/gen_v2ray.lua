@@ -11,8 +11,18 @@ local inbounds = {}
 local outbounds = {}
 local network = proto
 local routing = nil
+local new_port
 
-local function gen_outbound(node, tag)
+local function get_new_port()
+    if new_port then
+        new_port = tonumber(sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port %s tcp)", appname, new_port + 1)))
+    else
+        new_port = tonumber(sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port auto tcp)", appname)))
+    end
+    return new_port
+end
+
+local function gen_outbound(node, tag, relay_port)
     local result = nil
     if node then
         local node_id = node[".name"]
@@ -25,15 +35,17 @@ local function gen_outbound(node, tag)
                 node.transport = "tcp"
             else
                 local node_type = (proto and proto ~= "nil") and proto or "socks"
-                local new_port = sys.exec(string.format("echo -n $(/usr/share/%s/app.sh get_new_port auto tcp)", appname))
+                new_port = get_new_port()
                 node.port = new_port
-                sys.call(string.format("/usr/share/%s/app.sh run_socks %s %s %s %s %s > /dev/null", 
+                sys.call(string.format('/usr/share/%s/app.sh run_socks "%s" "%s" "%s" "%s" "%s" "%s"> /dev/null', 
                     appname,
                     node_id,
                     "127.0.0.1",
                     new_port,
                     string.format("/var/etc/%s/v2_%s_%s.json", appname, node_type, node_id),
-                    "4")
+                    "4",
+                    relay_port and tostring(relay_port) or ""
+                    )
                 )
                 node.protocol = "socks"
                 node.transport = "tcp"
@@ -42,7 +54,7 @@ local function gen_outbound(node, tag)
             node.stream_security = "none"
         end
 
-        if node.transport == "mkcp" or node.transport == "ds" or node.transport == "quic" then
+        if node.transport == "mkcp" or node.transport == "quic" then
             node.stream_security = "none"
         end
 
@@ -54,23 +66,26 @@ local function gen_outbound(node, tag)
                 concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
             },
             -- 底层传输配置
-            streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks") and {
+            streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                 network = node.transport,
                 security = node.stream_security,
+                xtlsSettings = (node.stream_security == "xtls") and {
+                    serverName = node.tls_serverName,
+                    allowInsecure = (node.tls_allowInsecure == "1") and true or false
+                } or nil,
                 tlsSettings = (node.stream_security == "tls") and {
-                    disableSessionResumption = node.sessionTicket ~= "1" and true or false,
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
                 } or nil,
                 tcpSettings = (node.transport == "tcp" and node.protocol ~= "socks") and {
                     header = {
                         type = node.tcp_guise,
-                        request = {
+                        request = (node.tcp_guise == "http") and {
                             path = node.tcp_guise_http_path or {"/"},
                             headers = {
                                 Host = node.tcp_guise_http_host or {}
                             }
-                        } or {}
+                        } or nil
                     }
                 } or nil,
                 kcpSettings = (node.transport == "mkcp") and {
@@ -110,19 +125,19 @@ local function gen_outbound(node, tag)
                                 id = node.uuid,
                                 alterId = tonumber(node.alter_id),
                                 level = node.level and tonumber(node.level) or 0,
-                                security = node.security,
-                                encryption = node.encryption or "none"
+                                security = (node.protocol == "vmess") and node.security or nil,
+                                encryption = node.encryption or "none",
+                                flow = node.flow or nil
                             }
                         }
                     }
                 } or nil,
-                servers = (node.protocol == "socks" or node.protocol == "http" or node.protocol == "shadowsocks") and {
+                servers = (node.protocol == "socks" or node.protocol == "http" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                     {
                         address = node.address,
                         port = tonumber(node.port),
                         method = node.method or nil,
                         password = node.password or "",
-                        ota = node.ota == '1' and true or false,
                         users = (node.username and node.password) and
                             {{user = node.username, pass = node.password}} or nil
                     }
@@ -137,7 +152,7 @@ end
 if socks_proxy_port ~= "nil" then
     table.insert(inbounds, {
         listen = "0.0.0.0",
-        port = socks_proxy_port,
+        port = tonumber(socks_proxy_port),
         protocol = "socks",
         settings = {auth = "noauth", udp = true, ip = "127.0.0.1"}
     })
@@ -146,7 +161,7 @@ end
 
 if redir_port ~= "nil" then
     table.insert(inbounds, {
-        port = redir_port,
+        port = tonumber(redir_port),
         protocol = "dokodemo-door",
         settings = {network = proto, followRedirect = true},
         sniffing = {enabled = true, destOverride = {"http", "tls"}}
@@ -172,14 +187,39 @@ end
 
 if node.protocol == "_shunt" then
     local rules = {}
-
     ucursor:foreach(appname, "shunt_rules", function(e)
-        local _node_id = node[e[".name"]] or nil
+        local name = e[".name"]
+        local _node_id = node[name] or nil
         if _node_id and _node_id ~= "nil" then
             local _node = ucursor:get_all(appname, _node_id)
-            local _outbound = gen_outbound(_node, e[".name"])
+            local is_proxy = node[name .. "_proxy"]
+            local relay_port
+            if is_proxy and is_proxy == "1" then
+                new_port = get_new_port()
+                relay_port = new_port
+                table.insert(inbounds, {
+                    tag = "proxy_" .. name,
+                    listen = "127.0.0.1",
+                    port = new_port,
+                    protocol = "dokodemo-door",
+                    settings = {network = "tcp,udp", address = _node.address, port = tonumber(_node.port)}
+                })
+                if _node.tls_serverName == nil then
+                    _node.tls_serverName = _node.address
+                end
+                _node.address = "127.0.0.1"
+                _node.port = new_port
+            end
+            local _outbound = gen_outbound(_node, name, relay_port)
             if _outbound then
                 table.insert(outbounds, _outbound)
+                if is_proxy and is_proxy == "1" then
+                    table.insert(rules, {
+                        type = "field",
+                        inboundTag = {"proxy_" .. name},
+                        outboundTag = "default"
+                    })
+                end
                 if e.domain_list then
                     local _domain = {}
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
@@ -187,7 +227,7 @@ if node.protocol == "_shunt" then
                     end)
                     table.insert(rules, {
                         type = "field",
-                        outboundTag = e[".name"],
+                        outboundTag = name,
                         domain = _domain
                     })
                 end
@@ -198,7 +238,7 @@ if node.protocol == "_shunt" then
                     end)
                     table.insert(rules, {
                         type = "field",
-                        outboundTag = e[".name"],
+                        outboundTag = name,
                         ip = _ip
                     })
                 end

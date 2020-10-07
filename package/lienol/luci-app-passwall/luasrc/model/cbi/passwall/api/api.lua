@@ -14,8 +14,11 @@ command_timeout = 300
 LEDE_BOARD = nil
 DISTRIB_TARGET = nil
 
-function gen_uuid()
-    local uuid = string.gsub(sys.exec("echo -n $(cat /proc/sys/kernel/random/uuid)"), "-", "")
+function gen_uuid(format)
+    local uuid = sys.exec("echo -n $(cat /proc/sys/kernel/random/uuid)")
+    if format == nil then
+        uuid = string.gsub(uuid, "-", "")
+    end
     return uuid
 end
 

@@ -44,6 +44,16 @@ e.width = "15%"
 
 ---- Type
 e = t:option(DummyValue, "type", translate("Type"))
+e.cfgvalue = function(t, n)
+    local v = Value.cfgvalue(t, n)
+    if v then
+        if v == "V2ray" then
+            local protocol = m:get(n, "protocol")
+            return v .. " -> " .. protocol
+        end
+        return v
+    end
+end
 
 e = t:option(DummyValue, "port", translate("Port"))
 
