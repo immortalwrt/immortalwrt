@@ -151,9 +151,6 @@ struct ar40xx_mib_desc {
 #define   AR40XX_MIB_FUNC_NO_OP		0x0
 #define   AR40XX_MIB_FUNC_FLUSH		0x1
 
-#define AR40XX_ESS_SERVICE_TAG		0x48
-#define AR40XX_ESS_SERVICE_TAG_STAG	BIT(17)
-
 #define AR40XX_REG_PORT_STATUS(_i)		(0x07c + (_i) * 4)
 #define   AR40XX_PORT_SPEED			BITS(0, 2)
 #define   AR40XX_PORT_STATUS_SPEED_S	0
@@ -182,8 +179,6 @@ struct ar40xx_mib_desc {
 #define   AR40XX_PORT_VLAN0_DEF_CVID_S		16
 
 #define AR40XX_REG_PORT_VLAN1(_i)		(0x424 + (_i) * 0x8)
-#define   AR40XX_PORT_VLAN1_CORE_PORT		BIT(9)
-#define   AR40XX_PORT_VLAN1_PORT_TLS_MODE	BIT(7)
 #define   AR40XX_PORT_VLAN1_PORT_VLAN_PROP	BIT(6)
 #define   AR40XX_PORT_VLAN1_OUT_MODE		BITS(12, 2)
 #define   AR40XX_PORT_VLAN1_OUT_MODE_S		12
