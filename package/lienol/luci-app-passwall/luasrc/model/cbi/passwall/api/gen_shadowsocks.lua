@@ -1,15 +1,16 @@
 local ucursor = require "luci.model.uci".cursor()
 local jsonc = require "luci.jsonc"
 local node_section = arg[1]
-local local_port = arg[2]
-local server_host = arg[3]
-local server_port = arg[4]
+local local_addr = arg[2]
+local local_port = arg[3]
+local server_host = arg[4]
+local server_port = arg[5]
 local node = ucursor:get_all("passwall", node_section)
 
 local config = {
     server = server_host or node.address,
-    server_port = server_port or tonumber(node.port),
-    local_address = "0.0.0.0",
+    server_port = tonumber(server_port) or tonumber(node.port),
+    local_address = local_addr,
     local_port = tonumber(local_port),
     password = node.password,
     method = node.method,
