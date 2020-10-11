@@ -149,24 +149,4 @@ o:value("big_icon", translate("Big icon")) -- 大图标
 o:value("show_check_port", translate("Show node check")) -- 显示节点检测
 o:value("show_ip111", translate("Show Show IP111")) -- 显示IP111
 
-local nodes_table = {}
-uci:foreach(appname, "nodes", function(e)
-    if e.type and e.remarks then
-        local remarks = ""
-        if e.type == "V2ray" and (e.protocol == "_balancing" or e.protocol == "_shunt") then
-            remarks = "%s：[%s] " % {translatef(e.type .. e.protocol), e.remarks}
-        else
-            if e.use_kcp and e.use_kcp == "1" then
-                remarks = "%s+%s：[%s] %s" % {e.type, "Kcptun", e.remarks, e.address}
-            else
-                remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
-            end
-        end
-        nodes_table[#nodes_table + 1] = {
-            id = e[".name"],
-            remarks = remarks
-         }
-    end
-end)
-
 return m
