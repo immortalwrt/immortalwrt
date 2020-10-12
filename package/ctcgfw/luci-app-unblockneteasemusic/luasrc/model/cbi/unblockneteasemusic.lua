@@ -1,5 +1,5 @@
 mp = Map("unblockneteasemusic", translate("解除网易云音乐播放限制"))
-mp.description = translate("原理：采用 [QQ/虾米/百度/酷狗/酷我/咕咪/JOOX] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>具体使用方法参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic")
+mp.description = translate("原理：采用 [QQ/虾米/百度/酷狗/酷我/咪咕/JOOX] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>具体使用方法参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic")
 
 mp:section(SimpleSection).template = "unblockneteasemusic/unblockneteasemusic_status"
 
@@ -17,7 +17,7 @@ music_source:value("default", translate("默认"))
 music_source:value("netease", translate("网易云音乐"))
 music_source:value("qq", translate("QQ音乐"))
 music_source:value("kuwo", translate("酷我音乐"))
-music_source:value("migu", translate("咕咪音乐"))
+music_source:value("migu", translate("咪咕音乐"))
 music_source:value("kugou", translate("酷狗音乐"))
 music_source:value("xiami", translate("虾米音乐"))
 music_source:value("baidu", translate("百度音乐"))
