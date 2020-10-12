@@ -1,7 +1,7 @@
 local http = luci.http
 
 mp = Map("unblockneteasemusic", translate("解除网易云音乐播放限制 (Golang)"))
-mp.description = translate("原理：采用 [酷我/酷狗/咕咪] 音源(后续有空补充)，替换网易云音乐 灰色 歌曲链接<br/>具体使用方法参见：https://github.com/cnsilvan/luci-app-unblockneteasemusic<br/>提示：客户端网易云音乐能用就别升级app，最新版本不一定能用")
+mp.description = translate("原理：采用 [酷我/酷狗/咪咕] 音源(后续有空补充)，替换网易云音乐 灰色 歌曲链接<br/>具体使用方法参见：https://github.com/cnsilvan/luci-app-unblockneteasemusic<br/>提示：客户端网易云音乐能用就别升级app，最新版本不一定能用")
 mp:section(SimpleSection).template = "unblockneteasemusic/unblockneteasemusic_status"
 
 s = mp:section(TypedSection, "unblockneteasemusic")
