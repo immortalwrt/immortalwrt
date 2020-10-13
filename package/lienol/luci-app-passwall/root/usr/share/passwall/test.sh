@@ -68,7 +68,7 @@ test_auto_switch() {
 
 	status=$(test_proxy)
 	if [ "$status" == 0 ]; then
-		echolog "自动切换检测：${type}_${index}节点正常。"
+		#echolog "自动切换检测：${type}_${index}节点正常。"
 		return 0
 	elif [ "$status" == 2 ]; then
 		echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"

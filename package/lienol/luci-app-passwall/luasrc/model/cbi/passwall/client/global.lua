@@ -314,7 +314,7 @@ end
 o = s:option(DummyValue, "status", translate("Status"))
 o.rawhtml = true
 o.cfgvalue = function(t, n)
-    return string.format('<font class="_status" socks_id="%s"></font>', n)
+    return string.format('<div class="_status" socks_id="%s"></div>', n)
 end
 
 ---- Enable
@@ -329,10 +329,16 @@ for i = 1, tcp_node_num, 1 do
 end
 for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 
-o = s:option(Value, "port", translate("Listen Port"))
+o = s:option(Value, "port", "Socks" .. translate("Listen Port"))
 o.default = 9050
 o.datatype = "port"
 o.rmempty = false
+
+if api.is_finded("v2ray") then
+    o = s:option(Value, "http_port", "HTTP" .. translate("Listen Port") .. " " .. translate("0 is not use"))
+    o.default = 0
+    o.datatype = "port"
+end
 
 m:append(Template(appname .. "/global/footer"))
 

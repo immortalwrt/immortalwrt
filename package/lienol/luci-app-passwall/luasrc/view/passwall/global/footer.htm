@@ -8,9 +8,24 @@
 				id: id
 			},
 			function(x, result) {
-				_status[result.index].setAttribute("style","font-weight:bold;");
-				_status[result.index].setAttribute("color",result.status ? "green":"red");
-				_status[result.index].innerHTML = (result.status ? '✓' : 'X');
+				var index = result.index;
+				var div = '';
+				var div1 = '<font style="font-weight:bold;" color="green">✓</font>&nbsp';
+				var div2 = '<font style="font-weight:bold;" color="red">X</font>&nbsp';
+				
+				if (result.socks_status) {
+					div += div1;
+				} else {
+					div += div2;
+				}
+				if (result.use_http) {
+					if (result.http_status) {
+						div += div1;
+					} else {
+						div += div2;
+					}
+				}
+				_status[index].innerHTML = div;
 			}
 		);
 	}
