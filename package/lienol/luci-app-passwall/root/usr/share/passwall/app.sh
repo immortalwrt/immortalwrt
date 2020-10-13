@@ -27,6 +27,7 @@ use_udp_node_resolve_dns=0
 LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
 API_GEN_SS=$LUA_API_PATH/gen_shadowsocks.lua
 API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray.lua
+API_GEN_V2RAY_PROTO=$LUA_API_PATH/gen_v2ray_proto.lua
 API_GEN_TROJAN=$LUA_API_PATH/gen_trojan.lua
 API_GEN_NAIVE=$LUA_API_PATH/gen_naiveproxy.lua
 echolog() {
@@ -308,9 +309,12 @@ load_config() {
 run_socks() {
 	local node=$1
 	local bind=$2
-	local local_port=$3
+	local socks_port=$3
 	local config_file=$4
-	local relay_port=$6
+	local http_port=$5
+	local http_config_file=$6
+	local id=$7
+	local relay_port=$8
 	local type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
 	local remarks=$(config_n_get $node remarks)
 	local server_host=$(config_n_get $node address)
@@ -334,33 +338,32 @@ run_socks() {
 	fi
 
 	[ -n "${msg}" ] && {
-		[ "$bind" != "127.0.0.1" ] && echolog "  - 启动中止 ${bind}:${local_port} ${msg}"
+		[ "$bind" != "127.0.0.1" ] && echolog "  - 启动中止 ${bind}:${socks_port} ${msg}"
 		return 1
 	}
-	[ "$bind" != "127.0.0.1" ] && echolog "  - 启动 ${bind}:${local_port}  - 节点：$remarks${tmp}"
+	[ "$bind" != "127.0.0.1" ] && echolog "  - 启动 ${bind}:${socks_port}  - 节点：$remarks${tmp}"
 
 	case "$type" in
 	socks)
-		local _username=$(config_n_get $node username)
-		local _password=$(config_n_get $node password)
+		_username=$(config_n_get $node username)
+		_password=$(config_n_get $node password)
 		[ -n "$_username" ] && [ -n "$_password" ] && local _auth="--uname $_username --passwd $_password"
-		ln_start_bin "$(first_type ssocks)" ssocks_SOCKS_$5 --listen $local_port --socks $server_host:$port $_auth
-		unset _username _password _auth
+		ln_start_bin "$(first_type ssocks)" ssocks_SOCKS_$id --listen $socks_port --socks $server_host:$port $_auth
 	;;
 	v2ray)
-		lua $API_GEN_V2RAY $node nil nil $local_port > $config_file
+		lua $API_GEN_V2RAY $node nil nil $socks_port > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
 	;;
 	trojan-go)
-		lua $API_GEN_TROJAN $node client $bind $local_port $server_host $port > $config_file
+		lua $API_GEN_TROJAN $node client $bind $socks_port $server_host $port > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app trojan_go_file notset) trojan-go)" trojan-go -config "$config_file"
 	;;
 	trojan*)
-		lua $API_GEN_TROJAN $node client $bind $local_port $server_host $port > $config_file
+		lua $API_GEN_TROJAN $node client $bind $socks_port $server_host $port > $config_file
 		ln_start_bin "$(first_type ${type})" "${type}" -c "$config_file"
 	;;
 	naiveproxy)
-		lua $API_GEN_NAIVE $node socks $bind $local_port $server_host $port > $config_file
+		lua $API_GEN_NAIVE $node socks $bind $socks_port $server_host $port > $config_file
 		ln_start_bin "$(first_type naive)" naive "$config_file"
 	;;
 	brook)
@@ -369,13 +372,20 @@ run_socks() {
 		[ "$protocol" == "wsclient" ] && {
 			[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}" 
 		}
-		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_SOCKS_$5" "$protocol" --socks5 "$bind:$local_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
+		ln_start_bin "$(first_type $(config_t_get global_app brook_file notset) brook)" "brook_SOCKS_$id" "$protocol" --socks5 "$bind:$socks_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 	;;
 	ss|ssr)
-		lua $API_GEN_SS $node "0.0.0.0" $local_port $server_host $port > $config_file
+		lua $API_GEN_SS $node "0.0.0.0" $socks_port $server_host $port > $config_file
 		ln_start_bin "$(first_type ${type}-local)" "${type}-local" -c "$config_file" -b "$bind" -u
 	;;
 	esac
+	
+	# socks to http
+	[ "$http_port" != "0" ] && [ "$http_config_file" != "nil" ] && {
+		lua $API_GEN_V2RAY_PROTO http "0.0.0.0" $http_port socks "127.0.0.1" $socks_port $_username $_password > $http_config_file
+		ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$http_config_file"
+	}
+	unset _username _password _auth
 }
 
 run_redir() {
@@ -583,9 +593,11 @@ start_socks() {
 			eval node=\$TCP_NODE$num
 		fi
 		[ "$node" == "nil" ] && continue
-		local config_file=$TMP_PATH/SOCKS_${id}.json
 		local port=$(config_n_get $id port)
-		run_socks $node "0.0.0.0" $port $config_file $id
+		local config_file=$TMP_PATH/SOCKS_${id}.json
+		local http_port=$(config_n_get $id http_port 0)
+		local http_config_file=$TMP_PATH/SOCKS2HTTP_${id}.json
+		run_socks $node "0.0.0.0" $port $config_file $http_port $http_config_file $id
 	done
 }
 

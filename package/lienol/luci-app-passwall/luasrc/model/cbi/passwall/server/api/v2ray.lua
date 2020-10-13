@@ -14,7 +14,7 @@ function gen_config(user)
             for i = 1, #user.uuid do
                 clients[i] = {
                     id = user.uuid[i],
-                    flow = (user.stream_security == "xtls") and user.flow or nil,
+                    flow = (user.xtls and user.xtls == "1") and user.flow or nil,
                     level = tonumber(user.level),
                     alterId = tonumber(user.alter_id)
                 }
@@ -26,24 +26,26 @@ function gen_config(user)
         end
     elseif user.protocol == "socks" then
         settings = {
-            auth = (user.username == nil and user.password == nil) and "noauth" or "password",
-            accounts = {
+            auth = (user.auth and user.auth == "1") and "password" or "noauth",
+            accounts = (user.auth and user.auth == "1") and {
                 {
-                    user = (user.username == nil) and "" or user.username,
-                    pass = (user.password == nil) and "" or user.password
+                    user = user.username,
+                    pass = user.password
                 }
             }
         }
     elseif user.protocol == "http" then
         settings = {
             allowTransparent = false,
-            accounts = {
+            accounts = (user.auth and user.auth == "1") and {
                 {
-                    user = (user.username == nil) and "" or user.username,
-                    pass = (user.password == nil) and "" or user.password
+                    user = user.username,
+                    pass = user.password
                 }
             }
         }
+        user.transport = "tcp"
+        user.tcp_guise = "none"
     elseif user.protocol == "shadowsocks" then
         settings = {
             method = user.method,
@@ -106,8 +108,8 @@ function gen_config(user)
                 settings = settings,
                 streamSettings = {
                     network = user.transport,
-                    security = user.stream_security,
-                    xtlsSettings = (user.stream_security == 'xtls') and {
+                    security = "none",
+                    xtlsSettings = (user.tls and user.tls == "1" and user.xtls and user.xtls == "1") and {
                         --alpn = {"http/1.1"},
                         disableSystemRoot = false,
                         certificates = {
@@ -117,7 +119,7 @@ function gen_config(user)
                             }
                         }
                     } or nil,
-                    tlsSettings = (user.stream_security == 'tls') and {
+                    tlsSettings = (user.tls and user.tls == "1") and {
                         disableSystemRoot = false,
                         certificates = {
                             {
@@ -171,6 +173,14 @@ function gen_config(user)
         outbounds = outbounds,
         routing = routing
     }
+
+    if user.tls and user.tls == "1" then
+        config.inbounds[1].streamSettings.security = "tls"
+        if user.xtls and user.xtls == "1" then
+            config.inbounds[1].streamSettings.security = "xtls"
+            config.inbounds[1].streamSettings.tlsSettings = nil
+        end
+    end
 
     if user.transport == "mkcp" or user.transport == "quic" then
         config.inbounds[1].streamSettings.security = "none"

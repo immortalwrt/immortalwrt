@@ -5,7 +5,7 @@ function gen_config(user)
     config.server_port = tonumber(user.port)
     config.password = user.password
     config.timeout = tonumber(user.timeout)
-    config.fast_open = (user.tcp_fast_open and user.tcp_fast_open == "true") and true or false
+    config.fast_open = (user.tcp_fast_open and user.tcp_fast_open == "1") and true or false
     config.method = user.method
 
     if user.type == "SSR" then
