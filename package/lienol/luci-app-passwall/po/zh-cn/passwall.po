@@ -118,6 +118,12 @@ msgstr "Socks配置"
 msgid "Socks Node"
 msgstr "Socks节点"
 
+msgid "Listen Port"
+msgstr "监听端口"
+
+msgid "0 is not use"
+msgstr "0为不使用"
+
 msgid "Same as the tcp node"
 msgstr "与TCP节点相同"
 
@@ -934,8 +940,8 @@ msgstr "传输层加密"
 msgid "Whether or not transport layer encryption is enabled, \"none\" for unencrypted, \"tls\" for using TLS, \"xtls\" for using XTLS."
 msgstr "是否启入传输层加密，支持的选项有 \"none\" 表示不加密，\"tls\" 表示使用 TLS，\"xtls\" 表示使用 XTLS。"
 
-msgid "'none' not supported for original Trojan, please choose 'tls'."
-msgstr "原版Trojan不支持'none'，请选择TLS。"
+msgid "Original Trojan only supported 'tls', please choose 'tls'."
+msgstr "原版Trojan只支持'tls'，请选择'tls'。"
 
 msgid "Domain"
 msgstr "域名"
@@ -960,6 +966,9 @@ msgstr "使用此TCP节点时，是否同时打开socks代理"
 
 msgid "Do not conflict with other ports"
 msgstr "端口不能冲突"
+
+msgid "Auth"
+msgstr "身份认证"
 
 msgid "Socks for authentication"
 msgstr "Socks认证方式"
@@ -1038,6 +1047,12 @@ msgstr "公钥文件绝对路径"
 
 msgid "Private key absolute path"
 msgstr "私钥文件绝对路径"
+
+msgid "Can't find this file!"
+msgstr "找不到这个文件！"
+
+msgid "Public key and Private key path can not be empty!"
+msgstr "公钥和私钥文件路径不能为空！"
 
 msgid "Server-Side"
 msgstr "服务器端"

@@ -39,12 +39,14 @@ function gen_outbound(node, tag, relay_port)
                 local node_type = (proto and proto ~= "nil") and proto or "socks"
                 new_port = get_new_port()
                 node.port = new_port
-                sys.call(string.format('/usr/share/%s/app.sh run_socks "%s" "%s" "%s" "%s" "%s" "%s"> /dev/null', 
+                sys.call(string.format('/usr/share/%s/app.sh run_socks "%s" "%s" "%s" "%s" "%s" "%s" "%s" "%s"> /dev/null', 
                     appname,
                     node_id,
                     "127.0.0.1",
                     new_port,
                     string.format("/var/etc/%s/v2_%s_%s.json", appname, node_type, node_id),
+                    "0",
+                    "nil",
                     "4",
                     relay_port and tostring(relay_port) or ""
                     )
