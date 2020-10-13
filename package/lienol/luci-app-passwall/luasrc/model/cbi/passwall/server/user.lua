@@ -125,37 +125,30 @@ port = s:option(Value, "port", translate("Port"))
 port.datatype = "port"
 port.rmempty = false
 
-username = s:option(Value, "username", translate("Username"))
-username.validate = function(self, value, t)
-    if value then
-        if not password:formvalue(t) or password:formvalue(t) == "" then
+auth = s:option(Flag, "auth", translate("Auth"))
+auth.validate = function(self, value, t)
+    if value and value == "1" then
+        local user_v = username:formvalue(t) or ""
+        local pass_v = password:formvalue(t) or ""
+        if user_v == "" or pass_v == "" then
             return nil, translate("Username and Password must be used together!")
         end
     end
     return value
 end
-username:depends("type", "Socks")
-username:depends({ type = "V2ray", protocol = "http" })
-username:depends({ type = "V2ray", protocol = "socks" })
+auth:depends("type", "Socks")
+auth:depends({ type = "V2ray", protocol = "socks" })
+auth:depends({ type = "V2ray", protocol = "http" })
+
+username = s:option(Value, "username", translate("Username"))
+username:depends("auth", "1")
 
 password = s:option(Value, "password", translate("Password"))
 password.password = true
-password.validate = function(self, value, t)
-    if value then
-        if (protocol:formvalue(t) == "http" or protocol:formvalue(t) == "socks" or type:formvalue(t) == "Socks") and (not username:formvalue(t) or username:formvalue(t) == "") then
-            return nil, translate("Username and Password must be used together!")
-        end
-    end
-    return value
-end
-password:depends("type", "Socks")
+password:depends("auth", "1")
 password:depends("type", "SS")
 password:depends("type", "SSR")
 password:depends("type", "Brook")
-password:depends("type", "Trojan")
-password:depends("type", "Trojan-Plus")
-password:depends({ type = "V2ray", protocol = "http" })
-password:depends({ type = "V2ray", protocol = "socks" })
 password:depends({ type = "V2ray", protocol = "shadowsocks" })
 
 mtproto_password = s:option(Value, "mtproto_password", translate("Password"), translate("The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."))
@@ -235,15 +228,6 @@ timeout.default = 300
 timeout:depends("type", "SS")
 timeout:depends("type", "SSR")
 
-tcp_fast_open = s:option(ListValue, "tcp_fast_open", translate("TCP Fast Open"), translate("Need node support required"))
-tcp_fast_open:value("false")
-tcp_fast_open:value("true")
-tcp_fast_open:depends("type", "SS")
-tcp_fast_open:depends("type", "SSR")
-tcp_fast_open:depends("type", "Trojan")
-tcp_fast_open:depends("type", "Trojan-Plus")
-tcp_fast_open:depends("type", "Trojan-Go")
-
 udp_forward = s:option(Flag, "udp_forward", translate("UDP Forward"))
 udp_forward.default = "1"
 udp_forward.rmempty = false
@@ -256,7 +240,9 @@ end
 uuid:depends({ type = "V2ray", protocol = "vmess" })
 uuid:depends({ type = "V2ray", protocol = "vless" })
 uuid:depends({ type = "V2ray", protocol = "trojan" })
+uuid:depends("type", "Trojan")
 uuid:depends("type", "Trojan-Go")
+uuid:depends("type", "Trojan-Plus")
 
 alter_id = s:option(Value, "alter_id", translate("Alter ID"))
 alter_id.default = 16
@@ -270,56 +256,84 @@ level:depends({ type = "V2ray", protocol = "shadowsocks" })
 level:depends({ type = "V2ray", protocol = "trojan" })
 level:depends({ type = "V2ray", protocol = "mtproto" })
 
-stream_security = s:option(ListValue, "stream_security", translate("Transport Layer Encryption"), translate('Whether or not transport layer encryption is enabled, "none" for unencrypted, "tls" for using TLS, "xtls" for using XTLS.'))
-stream_security:value("none", "none")
-stream_security:value("tls", "tls")
-stream_security:value("xtls", "xtls")
-stream_security.default = "none"
-stream_security:depends({ type = "V2ray", protocol = "vmess" })
-stream_security:depends({ type = "V2ray", protocol = "vless" })
-stream_security:depends({ type = "V2ray", protocol = "socks" })
-stream_security:depends({ type = "V2ray", protocol = "shadowsocks" })
-stream_security:depends({ type = "V2ray", protocol = "trojan" })
-stream_security:depends("type", "Trojan")
-stream_security:depends("type", "Trojan-Plus")
-stream_security:depends("type", "Trojan-Go")
-stream_security.validate = function(self, value)
-    if value == "none" and (type:formvalue(arg[1]) == "Trojan" or type:formvalue(arg[1]) == "Trojan-Plus") then
-        return nil, translate("'none' not supported for original Trojan, please choose 'tls'.")
+tls = s:option(Flag, "tls", translate("TLS"))
+tls.default = 0
+tls.validate = function(self, value, t)
+    if value then
+        local type = type:formvalue(t) or ""
+        if value == "0" and (type == "Trojan" or type == "Trojan-Plus") then
+            return nil, translate("Original Trojan only supported 'tls', please choose 'tls'.")
+        end
+        if value == "1" then
+            local ca = tls_certificateFile:formvalue(t) or ""
+            local key = tls_keyFile:formvalue(t) or ""
+            if ca == "" or key == "" then
+                return nil, translate("Public key and Private key path can not be empty!")
+            end
+        end
+        return value
     end
-    return value
 end
+tls:depends({ type = "V2ray", protocol = "vmess" })
+tls:depends({ type = "V2ray", protocol = "vless" })
+tls:depends({ type = "V2ray", protocol = "socks" })
+tls:depends({ type = "V2ray", protocol = "shadowsocks" })
+tls:depends("type", "Trojan")
+tls:depends("type", "Trojan-Plus")
+tls:depends("type", "Trojan-Go")
+
+xtls = s:option(Flag, "xtls", translate("XTLS"))
+xtls.default = 0
+xtls:depends({ type = "V2ray", protocol = "vless", tls = "1" })
 
 flow = s:option(Value, "flow", translate("flow"))
 flow.default = "xtls-rprx-origin"
 flow:value("xtls-rprx-origin")
 flow:value("xtls-rprx-origin-udp443")
-flow:depends("stream_security", "xtls")
+flow:depends("xtls", "1")
 
 -- [[ TLS部分 ]] --
 
-tls_sessionTicket = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))
-tls_sessionTicket.default = "0"
-tls_sessionTicket:depends({ type = "Trojan", stream_security = "tls" })
-tls_sessionTicket:depends({ type = "Trojan-Plus", stream_security = "tls" })
-tls_sessionTicket:depends({ type = "Trojan-Go", stream_security = "tls" })
-
-tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
-tls_serverName:depends("stream_security", "tls")
-tls_serverName:depends("stream_security", "xtls")
-
 tls_allowInsecure = s:option(Flag, "tls_allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
 tls_allowInsecure.default = "0"
-tls_allowInsecure:depends("stream_security", "tls")
-tls_allowInsecure:depends("stream_security", "xtls")
+tls_allowInsecure:depends({ type = "Trojan", tls = "1" })
+tls_allowInsecure:depends({ type = "Trojan-Plus", tls = "1" })
+tls_allowInsecure:depends({ type = "Trojan-Go", tls = "1" })
+
+tls_serverName = s:option(Value, "tls_serverName", translate("Domain"))
+tls_serverName:depends("tls", "1")
 
 tls_certificateFile = s:option(Value, "tls_certificateFile", translate("Public key absolute path"), translate("as:") .. "/etc/ssl/fullchain.pem")
-tls_certificateFile:depends("stream_security", "tls")
-tls_certificateFile:depends("stream_security", "xtls")
+tls_certificateFile.validate = function(self, value, t)
+    if value and value ~= "" then
+        if not nixio.fs.access(value) then
+            return nil, translate("Can't find this file!")
+        else
+            return value
+        end
+    end
+    return nil
+end
+tls_certificateFile:depends("tls", "1")
 
 tls_keyFile = s:option(Value, "tls_keyFile", translate("Private key absolute path"), translate("as:") .. "/etc/ssl/private.key")
-tls_keyFile:depends("stream_security", "tls")
-tls_keyFile:depends("stream_security", "xtls")
+tls_keyFile.validate = function(self, value, t)
+    if value and value ~= "" then
+        if not nixio.fs.access(value) then
+            return nil, translate("Can't find this file!")
+        else
+            return value
+        end
+    end
+    return nil
+end
+tls_keyFile:depends("tls", "1")
+
+tls_sessionTicket = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))
+tls_sessionTicket.default = "0"
+tls_sessionTicket:depends({ type = "Trojan", tls = "1" })
+tls_sessionTicket:depends({ type = "Trojan-Plus", tls = "1" })
+tls_sessionTicket:depends({ type = "Trojan-Go", tls = "1" })
 
 transport = s:option(ListValue, "transport", translate("Transport"))
 transport:value("tcp", "TCP")
@@ -347,7 +361,7 @@ trojan_plugin:value("plaintext", "Plain Text")
 trojan_plugin:value("shadowsocks", "ShadowSocks")
 trojan_plugin:value("other", "Other")
 trojan_plugin.default = "plaintext"
-trojan_plugin:depends({ stream_security = "none", trojan_transport = "original" })
+trojan_plugin:depends({ tls = "0", trojan_transport = "original" })
 
 trojan_plugin_cmd = s:option(Value, "plugin_cmd", translate("Plugin Binary"))
 trojan_plugin_cmd.placeholder = "eg: /usr/bin/v2ray-plugin"
@@ -363,6 +377,34 @@ trojan_plugin_arg = s:option(DynamicList, "plugin_arg", translate("Plugin Option
 trojan_plugin_arg.placeholder = "eg: [\"-config\", \"test.json\"]"
 trojan_plugin_arg:depends({ plugin_type = "shadowsocks" })
 trojan_plugin_arg:depends({ plugin_type = "other" })
+
+-- [[ WebSocket部分 ]]--
+
+ws_host = s:option(Value, "ws_host", translate("WebSocket Host"))
+ws_host:depends("transport", "ws")
+ws_host:depends("ss_transport", "ws")
+ws_host:depends("trojan_transport", "h2+ws")
+ws_host:depends("trojan_transport", "ws")
+
+ws_path = s:option(Value, "ws_path", translate("WebSocket Path"))
+ws_path:depends("transport", "ws")
+ws_path:depends("ss_transport", "ws")
+ws_path:depends("trojan_transport", "h2+ws")
+ws_path:depends("trojan_transport", "ws")
+
+-- [[ HTTP/2部分 ]]--
+
+h2_host = s:option(Value, "h2_host", translate("HTTP/2 Host"))
+h2_host:depends("transport", "h2")
+h2_host:depends("ss_transport", "h2")
+h2_host:depends("trojan_transport", "h2+ws")
+h2_host:depends("trojan_transport", "h2")
+
+h2_path = s:option(Value, "h2_path", translate("HTTP/2 Path"))
+h2_path:depends("transport", "h2")
+h2_path:depends("ss_transport", "h2")
+h2_path:depends("trojan_transport", "h2+ws")
+h2_path:depends("trojan_transport", "h2")
 
 -- [[ TCP部分 ]]--
 
@@ -416,34 +458,6 @@ mkcp_writeBufferSize:depends("transport", "mkcp")
 mkcp_seed = s:option(Value, "mkcp_seed", translate("KCP Seed"))
 mkcp_seed:depends("transport", "mkcp")
 
--- [[ WebSocket部分 ]]--
-
-ws_host = s:option(Value, "ws_host", translate("WebSocket Host"))
-ws_host:depends("transport", "ws")
-ws_host:depends("ss_transport", "ws")
-ws_host:depends("trojan_transport", "h2+ws")
-ws_host:depends("trojan_transport", "ws")
-
-ws_path = s:option(Value, "ws_path", translate("WebSocket Path"))
-ws_path:depends("transport", "ws")
-ws_path:depends("ss_transport", "ws")
-ws_path:depends("trojan_transport", "h2+ws")
-ws_path:depends("trojan_transport", "ws")
-
--- [[ HTTP/2部分 ]]--
-
-h2_host = s:option(Value, "h2_host", translate("HTTP/2 Host"))
-h2_host:depends("transport", "h2")
-h2_host:depends("ss_transport", "h2")
-h2_host:depends("trojan_transport", "h2+ws")
-h2_host:depends("trojan_transport", "h2")
-
-h2_path = s:option(Value, "h2_path", translate("HTTP/2 Path"))
-h2_path:depends("transport", "h2")
-h2_path:depends("ss_transport", "h2")
-h2_path:depends("trojan_transport", "h2+ws")
-h2_path:depends("trojan_transport", "h2")
-
 -- [[ DomainSocket部分 ]]--
 
 ds_path = s:option(Value, "ds_path", "Path", translate("A legal file path. This file must not exist before running V2Ray."))
@@ -466,7 +480,7 @@ quic_guise:depends("transport", "quic")
 -- [[ VLESS Fallback部分 ]]--
 --[[
 fallback = s:option(Flag, "fallback", translate("Fallback"))
-fallback:depends({ type = "V2ray", protocol = "vless", transport = "tcp", stream_security = "tls" })
+fallback:depends({ type = "V2ray", protocol = "vless", transport = "tcp", tls = "1" })
 
 fallback_alpn = s:option(Value, "fallback_alpn", "Fallback alpn")
 fallback_alpn:depends("fallback", "1")
@@ -481,6 +495,27 @@ fallback_xver = s:option(Value, "fallback_xver", "Fallback xver")
 fallback_xver.default = 0
 fallback_xver:depends("fallback", "1")
 ]]--
+
+ss_aead = s:option(Flag, "ss_aead", translate("Shadowsocks2"))
+ss_aead:depends("type", "Trojan-Go")
+ss_aead.default = "0"
+
+ss_aead_method = s:option(ListValue, "ss_aead_method", translate("Encrypt Method"))
+for _, v in ipairs(encrypt_methods_ss_aead) do ss_aead_method:value(v, v) end
+ss_aead_method.default = "aead_aes_128_gcm"
+ss_aead_method:depends("ss_aead", "1")
+
+ss_aead_pwd = s:option(Value, "ss_aead_pwd", translate("Password"))
+ss_aead_pwd.password = true
+ss_aead_pwd:depends("ss_aead", "1")
+
+tcp_fast_open = s:option(Flag, "tcp_fast_open", translate("TCP Fast Open"))
+tcp_fast_open.default = "0"
+tcp_fast_open:depends("type", "SS")
+tcp_fast_open:depends("type", "SSR")
+tcp_fast_open:depends("type", "Trojan")
+tcp_fast_open:depends("type", "Trojan-Plus")
+tcp_fast_open:depends("type", "Trojan-Go")
 
 remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"), translate("You can forward to Nginx/Caddy/V2ray WebSocket and more."))
 remote_enable.default = "1"
@@ -498,20 +533,14 @@ remote_port.datatype = "port"
 remote_port.default = "80"
 remote_port:depends("remote_enable", 1)
 
-ss_aead = s:option(Flag, "ss_aead", translate("Shadowsocks2"))
-ss_aead:depends("type", "Trojan-Go")
-ss_aead.default = "0"
+bind_local = s:option(Flag, "bind_local", translate("Bind Local"), translate("When selected, it can only be accessed locally,It is recommended to turn on when using reverse proxies."))
+bind_local.default = "0"
+bind_local:depends("type", "V2ray")
 
-ss_aead_method = s:option(ListValue, "ss_aead_method", translate("Encrypt Method"))
-for _, v in ipairs(encrypt_methods_ss_aead) do ss_aead_method:value(v, v) end
-ss_aead_method.default = "aead_aes_128_gcm"
-ss_aead_method.rmempty = false
-ss_aead_method:depends("ss_aead", "1")
-
-ss_aead_pwd = s:option(Value, "ss_aead_pwd", translate("Password"))
-ss_aead_pwd.password = true
-ss_aead_pwd.rmempty = false
-ss_aead_pwd:depends("ss_aead", "1")
+accept_lan = s:option(Flag, "accept_lan", translate("Accept LAN Access"), translate("When selected, it can accessed lan , this will not be safe!"))
+accept_lan.default = "0"
+accept_lan.rmempty = false
+accept_lan:depends("type", "V2ray")
 
 local nodes_table = {}
 for k, e in ipairs(api.get_valid_nodes()) do
@@ -528,14 +557,5 @@ transit_node:value("nil", translate("Close"))
 for k, v in pairs(nodes_table) do transit_node:value(v.id, v.remarks) end
 transit_node.default = "nil"
 transit_node:depends("type", "V2ray")
-
-bind_local = s:option(Flag, "bind_local", translate("Bind Local"), translate("When selected, it can only be accessed locally,It is recommended to turn on when using reverse proxies."))
-bind_local.default = "0"
-bind_local:depends("type", "V2ray")
-
-accept_lan = s:option(Flag, "accept_lan", translate("Accept LAN Access"), translate("When selected, it can accessed lan , this will not be safe!"))
-accept_lan.default = "0"
-accept_lan.rmempty = false
-accept_lan:depends("type", "V2ray")
 
 return m

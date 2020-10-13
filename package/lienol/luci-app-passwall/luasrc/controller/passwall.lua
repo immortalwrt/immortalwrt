@@ -185,7 +185,13 @@ function socks_status()
 	local index = luci.http.formvalue("index")
 	local id = luci.http.formvalue("id")
 	e.index = index
-	e.status = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/' | grep 'SOCKS_%s' > /dev/null", appname, id)) == 0
+	e.socks_status = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/' | grep 'SOCKS_%s' > /dev/null", appname, id)) == 0
+	local use_http = ucic:get(appname, id, "http_port") or 0
+	e.use_http = 0
+	if tonumber(use_http) > 0 then
+		e.use_http = 1
+		e.http_status = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/' | grep 'SOCKS2HTTP_%s' > /dev/null", appname, id)) == 0
+	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end

@@ -70,12 +70,14 @@ local function start()
             local type = user.type or ""
             if type == "Socks" then
                 local auth = ""
-                local username = user.username
-                local password = user.password
-                if username and username ~= "" and password and password ~= "" then
-                    username = "-u " .. username
-                    password = "-P " .. password
-                    auth = username .. " " .. password
+                if user.auth and user.auth == "1" then
+                    local username = user.username or ""
+                    local password = user.password or ""
+                    if username ~= "" and password ~= "" then
+                        username = "-u " .. username
+                        password = "-P " .. password
+                        auth = username .. " " .. password
+                    end
                 end
                 bin = ln_start("/usr/bin/microsocks", "microsocks_" .. id, string.format("-i :: -p %s %s", port, auth))
             elseif type == "SS" or type == "SSR" then
