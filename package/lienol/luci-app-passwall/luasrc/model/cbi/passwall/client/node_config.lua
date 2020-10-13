@@ -112,16 +112,14 @@ protocol:value("_shunt", translate("Shunt"))
 protocol:depends("type", "V2ray")
 
 local nodes_table = {}
-uci:foreach(appname, "nodes", function(e)
-    if e.type and e.remarks and e.port then
-        if e.address:match("[\u4e00-\u9fa5]") and e.address:find("%.") and e.address:sub(#e.address) ~= "." then
-            nodes_table[#nodes_table + 1] = {
-                id = e[".name"],
-                remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
-            }
-        end
+for k, e in ipairs(api.get_valid_nodes()) do
+    if e.node_type == "normal" then
+        nodes_table[#nodes_table + 1] = {
+            id = e[".name"],
+            remarks = e.remarks_name
+        }
     end
-end)
+end
 
 -- 负载均衡列表
 balancing_node = s:option(DynamicList, "balancing_node", translate("Load balancing node list"), translate("Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"))

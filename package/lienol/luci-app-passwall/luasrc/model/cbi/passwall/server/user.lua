@@ -514,14 +514,14 @@ ss_aead_pwd.rmempty = false
 ss_aead_pwd:depends("ss_aead", "1")
 
 local nodes_table = {}
-uci:foreach("passwall", "nodes", function(e)
-    if e.type and e.type == "V2ray" and e.remarks and e.address and e.port then
+for k, e in ipairs(api.get_valid_nodes()) do
+    if e.node_type == "normal" and e.type == "V2ray" then
         nodes_table[#nodes_table + 1] = {
             id = e[".name"],
-            remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
+            remarks = e.remarks_name
         }
     end
-end)
+end
 
 transit_node = s:option(ListValue, "transit_node", translate("transit node"))
 transit_node:value("nil", translate("Close"))
