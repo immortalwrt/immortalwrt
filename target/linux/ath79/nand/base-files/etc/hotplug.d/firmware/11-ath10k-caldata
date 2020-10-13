@@ -32,7 +32,8 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath10k/cal-pci-0000:00:00.0.bin")
 	case $board in
-	domywifi,dw33d)
+	domywifi,dw33d|\
+	domywifi,dw33d-nor)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(mtd_get_mac_binary art 0x12)
 		;;

@@ -1,0 +1,19 @@
+#include "qca9558_domywifi_dw33d.dts"
+
+/ {
+	compatible = "domywifi,dw33d-nor", "qca,qca9558";
+	model = "DomyWifi DW33D (NOR)";
+};
+
+&okli_firmware {
+	compatible = "openwrt,okli";
+	label = "firmware";
+};
+
+&nand_kernel {
+	label = "nand-kernel";
+};
+
+&nand_ubi {
+	label = "nand-ubi";
+};
