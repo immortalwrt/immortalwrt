@@ -4,24 +4,12 @@ local api = require "luci.model.cbi.passwall.api.api"
 local appname = "passwall"
 
 local nodes_table = {}
-uci:foreach(appname, "nodes", function(e)
-    if e.type and e.remarks then
-        local remarks = ""
-        if e.type == "V2ray" and (e.protocol == "_balancing" or e.protocol == "_shunt") then
-            remarks = "%s：[%s] " % {translatef(e.type .. e.protocol), e.remarks}
-        else
-            if e.use_kcp and e.use_kcp == "1" then
-                remarks = "%s+%s：[%s] %s" % {e.type, "Kcptun", e.remarks, e.address}
-            else
-                remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
-            end
-        end
-        nodes_table[#nodes_table + 1] = {
-            id = e[".name"],
-            remarks = remarks
-         }
-    end
-end)
+for k, e in ipairs(api.get_valid_nodes()) do
+    nodes_table[#nodes_table + 1] = {
+        id = e[".name"],
+        remarks = e.remarks_name
+    }
+end
 
 local socks_table = {}
 uci:foreach(appname, "socks", function(s)
@@ -326,7 +314,7 @@ end
 o = s:option(DummyValue, "status", translate("Status"))
 o.rawhtml = true
 o.cfgvalue = function(t, n)
-    return string.format('<font class="_status" socks_id="%s"></font>', n)
+    return string.format('<div class="_status" socks_id="%s"></div>', n)
 end
 
 ---- Enable
@@ -341,10 +329,16 @@ for i = 1, tcp_node_num, 1 do
 end
 for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 
-o = s:option(Value, "port", translate("Listen Port"))
+o = s:option(Value, "port", "Socks" .. translate("Listen Port"))
 o.default = 9050
 o.datatype = "port"
 o.rmempty = false
+
+if api.is_finded("v2ray") then
+    o = s:option(Value, "http_port", "HTTP" .. translate("Listen Port") .. " " .. translate("0 is not use"))
+    o.default = 0
+    o.datatype = "port"
+end
 
 m:append(Template(appname .. "/global/footer"))
 
