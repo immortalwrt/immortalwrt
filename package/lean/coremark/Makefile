@@ -43,6 +43,8 @@ else ifeq ($(CONFIG_64BIT),y)
 	DIR_ARCH:=linux64
 endif
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3 -flto
+
 define Build/Compile
 	$(SED) 's|EXE = .exe|EXE =|' $(PKG_BUILD_DIR)/$(DIR_ARCH)/core_portme.mak
 	mkdir $(PKG_BUILD_DIR)/$(ARCH)
