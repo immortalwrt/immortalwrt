@@ -21,8 +21,8 @@ Cc: stable@vger.kernel.org
 
 --- a/net/bluetooth/hci_conn.c
 +++ b/net/bluetooth/hci_conn.c
-@@ -1282,8 +1282,13 @@ int hci_conn_check_link_mode(struct hci_
- 			return 0;
+@@ -1299,8 +1299,13 @@ int hci_conn_check_link_mode(struct hci_
+ 		return 0;
  	}
  
 -	if (hci_conn_ssp_enabled(conn) &&

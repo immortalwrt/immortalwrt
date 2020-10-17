@@ -18,7 +18,7 @@
  
  /* 4G Systems products */
  /* This is the 4G XS Stick W14 a.k.a. Mobilcom Debitel Surf-Stick *
-@@ -575,6 +576,16 @@ static void option_instat_callback(struc
+@@ -576,6 +577,16 @@ static void option_instat_callback(struc
  /* Device needs ZLP */
  #define ZLP		BIT(17)
  
@@ -35,7 +35,7 @@
  
  static const struct usb_device_id option_ids[] = {
  	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
-@@ -609,6 +620,8 @@ static const struct usb_device_id option
+@@ -610,6 +621,8 @@ static const struct usb_device_id option
  	{ USB_DEVICE(QUANTA_VENDOR_ID, QUANTA_PRODUCT_GLE) },
  	{ USB_DEVICE(QUANTA_VENDOR_ID, 0xea42),
  	  .driver_info = RSVD(4) },

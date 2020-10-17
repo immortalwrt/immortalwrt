@@ -312,7 +312,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3288,9 +3301,15 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3290,9 +3303,15 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
