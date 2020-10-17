@@ -2,7 +2,7 @@
 -- https://github.com/project-openwrt
 
 mp = Map("unblockneteasemusic-mini", translate("解除网易云音乐播放限制 (Mini)"))
-mp.description = translate("原理：采用 [QQ/酷狗/酷我/咕咪] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>由 [CTCGFW]Project-OpenWrt & hyird & Sunsky 提供服务器支持<br/>详细说明参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic-mini")
+mp.description = translate("原理：采用 [QQ/酷狗/酷我/咪咕] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>由 [CTCGFW]Project-OpenWrt & hyird & Sunsky 提供服务器支持<br/>详细说明参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic-mini")
 
 mp:section(SimpleSection).template = "unblockneteasemusic-mini/unblockneteasemusic_mini_status"
 

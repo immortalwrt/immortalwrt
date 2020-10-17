@@ -1,6 +1,6 @@
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -531,6 +531,13 @@ config MDIO_IPQ40XX
+@@ -532,6 +532,13 @@ config MDIO_IPQ40XX
  	  This driver supports the MDIO interface found in Qualcomm
  	  Atheros ipq40xx Soc chip.
  
