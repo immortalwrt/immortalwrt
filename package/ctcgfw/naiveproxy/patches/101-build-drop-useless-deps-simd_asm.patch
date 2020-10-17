@@ -15,18 +15,13 @@ So, let's drop it in global build file.
  src/BUILD.gn | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/src/BUILD.gn b/src/BUILD.gn
-index 97494c0a0..daddf5213 100644
 --- a/src/BUILD.gn
 +++ b/src/BUILD.gn
-@@ -746,7 +746,6 @@ group("gn_all") {
+@@ -751,7 +751,6 @@ group("gn_all") {
        if (enable_nacl) {
          deps += [ "//native_client/src/trusted/platform_qualify:vcpuid" ]
        }
 -      deps += [ "//third_party/libjpeg_turbo:simd_asm" ]
      }
-     if (is_linux && current_toolchain == host_toolchain) {
+     if ((is_linux || is_chromeos) && current_toolchain == host_toolchain) {
        deps += [ "//v8:v8_shell" ]
--- 
-2.17.1
-

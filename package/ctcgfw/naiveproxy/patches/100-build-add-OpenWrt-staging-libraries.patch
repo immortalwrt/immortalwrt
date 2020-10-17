@@ -7,8 +7,6 @@ Subject: [PATCH] build: add OpenWrt staging libraries
  src/build/config/posix/BUILD.gn | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/src/build/config/posix/BUILD.gn b/src/build/config/posix/BUILD.gn
-index 9ccb89f27..de9e5501d 100644
 --- a/src/build/config/posix/BUILD.gn
 +++ b/src/build/config/posix/BUILD.gn
 @@ -28,6 +28,9 @@ config("runtime_library") {
@@ -18,7 +16,7 @@ index 9ccb89f27..de9e5501d 100644
 +    sysroot_flags += [ "-I" + getenv("OP_STAGING_DIR") + "/usr/include" ]
 +    sysroot_flags += [ "-I" + getenv("OP_STAGING_DIR") + "/usr/include/nss" ]
 +    sysroot_flags += [ "-I" + getenv("OP_STAGING_DIR") + "/usr/include/nspr" ]
-     if (is_linux) {
+     if (is_linux || is_chromeos) {
        # This is here so that all files get recompiled after a sysroot roll and
        # when turning the sysroot on or off. (defines are passed via the command
 @@ -57,6 +60,7 @@ config("runtime_library") {
@@ -29,5 +27,3 @@ index 9ccb89f27..de9e5501d 100644
      ld_paths = exec_script("sysroot_ld_path.py",
                             [
                               rebase_path("//build/linux/sysroot_ld_path.sh",
--- 
-2.17.1

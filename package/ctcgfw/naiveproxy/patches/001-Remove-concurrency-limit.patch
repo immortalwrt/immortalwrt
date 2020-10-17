@@ -8,8 +8,6 @@ Subject: [PATCH] Remove concurrency limit
  src/net/tools/naive/naive_proxy_bin.cc | 2 +-
  2 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/src/net/tools/naive/naive_proxy.cc b/src/net/tools/naive/naive_proxy.cc
-index b4d5feee6..a38f79124 100644
 --- a/src/net/tools/naive/naive_proxy.cc
 +++ b/src/net/tools/naive/naive_proxy.cc
 @@ -5,7 +5,6 @@
@@ -20,7 +18,7 @@ index b4d5feee6..a38f79124 100644
  #include <utility>
  
  #include "base/bind.h"
-@@ -35,7 +34,7 @@ NaiveProxy::NaiveProxy(std::unique_ptr<ServerSocket> listen_socket,
+@@ -35,7 +34,7 @@ NaiveProxy::NaiveProxy(std::unique_ptr<S
                         const NetworkTrafficAnnotationTag& traffic_annotation)
      : listen_socket_(std::move(listen_socket)),
        protocol_(protocol),
@@ -29,11 +27,9 @@ index b4d5feee6..a38f79124 100644
        resolver_(resolver),
        session_(session),
        net_log_(
-diff --git a/src/net/tools/naive/naive_proxy_bin.cc b/src/net/tools/naive/naive_proxy_bin.cc
-index 4ba08712d..00acd7756 100644
 --- a/src/net/tools/naive/naive_proxy_bin.cc
 +++ b/src/net/tools/naive/naive_proxy_bin.cc
-@@ -289,7 +289,7 @@ bool ParseCommandLine(const CommandLine& cmdline, Params* params) {
+@@ -289,7 +289,7 @@ bool ParseCommandLine(const CommandLine&
  
    if (!cmdline.concurrency.empty()) {
      if (!base::StringToInt(cmdline.concurrency, &params->concurrency) ||
