@@ -28,7 +28,7 @@ new file mode 100644
 index 0000000..4992ef5
 --- /dev/null
 +++ b/arch/arm/dts/sun50i-h5-nanopi-r1s.dts
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,85 @@
 +/*
 + * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
 + * Copyright (C) 2017 Jagan Teki <jteki@openedev.com>
@@ -103,7 +103,6 @@ index 0000000..4992ef5
 +		     "allwinner,sun50i-a64-mmc",
 +		     "allwinner,sun5i-a13-mmc";
 +	pinctrl-names = "default";
-+	pinctrl-0 = <&mmc0_pins_a>, <&mmc0_cd_pin>;
 +	vmmc-supply = <&reg_vcc3v3>;
 +	bus-width = <4>;
 +	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */

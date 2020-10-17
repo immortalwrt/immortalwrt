@@ -1,0 +1,33 @@
+From a8ec9a8d2247076290e6c8b8f353c948c2a84a62 Mon Sep 17 00:00:00 2001
+From: wuweidong <625769020@qq.com>
+Date: Wed, 18 Sep 2019 14:32:26 +0800
+Subject: [PATCH] r8152: init LED for RTL_VER_09
+
+---
+ drivers/net/usb/r8152.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 8ccb22b098a6b..a22e113fe17dd 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -4217,6 +4217,10 @@ static void r8153b_init(struct r8152 *tp)
+ 	rtl_tally_reset(tp);
+ 
+ 	tp->coalesce = 15000;	/* 15 us */
++
++	ocp_data = ocp_read_word(tp, MCU_TYPE_PLA, PLA_LEDSEL);
++	ocp_data = 0x78;
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_LEDSEL, ocp_data);
+ }
+ 
+ static int rtl8152_pre_reset(struct usb_interface *intf)
+@@ -5141,7 +5145,7 @@ static u8 rtl_get_version(struct usb_interface *intf)
+ 		break;
+ 	}
+ 
+-	dev_dbg(&intf->dev, "Detected version 0x%04x\n", version);
++	dev_info(&intf->dev, "Detected version 0x%04x\n", version);
+ 
+ 	return version;
+ }

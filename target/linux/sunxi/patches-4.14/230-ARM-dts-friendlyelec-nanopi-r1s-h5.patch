@@ -10,7 +10,7 @@
  subdir-y	:= $(dts-dirs)
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s.dts
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,258 @@
 +/*
 + * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
 + *
@@ -61,36 +61,19 @@
 +#include <dt-bindings/pinctrl/sun4i-a10.h>
 +#include <dt-bindings/thermal/thermal.h>
 +/ {
-+	model = "FriendlyElec NanoPi-R1S-H5";
++	model = "FriendlyElec NanoPi R1S (H5)";
 +	compatible = "friendlyelec,nanopi-r1s-h5", "allwinner,sun50i-h5";
 +
 +	aliases {
 +		ethernet0 = &emac;
++		ethernet1 = &emac;
++		ethernet2 = &sdio_wifi;
 +		serial0 = &uart0;
 +	};
-+
 +
 +	chosen {
 +		stdout-path = "serial0:115200n8";
 +	};
-+	
-+	wifi_pwrseq: wifi_pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_en_npi>;
-+		reset-gpios = <&r_pio 0 7 GPIO_ACTIVE_LOW>; /* PL7 */
-+		post-power-on-delay-ms = <200>;
-+	};
-+	
-+	r-gpio-keys {
-+        compatible = "gpio-keys";
-+
-+        k1@0 {
-+            label = "k1";
-+            linux,code = <KEY_POWER>;
-+            gpios = <&r_pio 0 3 GPIO_ACTIVE_LOW>;
-+        };
-+    };
 +
 +	leds {
 +		compatible = "gpio-leds";
@@ -142,10 +125,25 @@
 +		gpio = <&r_pio 0 2 GPIO_ACTIVE_HIGH>; /* PL2 */
 +		status = "okay";
 +	};
++
++	r-gpio-keys {
++        compatible = "gpio-keys";
++
++        k1@0 {
++            label = "k1";
++            linux,code = <KEY_POWER>;
++            gpios = <&r_pio 0 3 GPIO_ACTIVE_LOW>;
++        };
++    };
++
++	wifi_pwrseq: wifi_pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_en_npi>;
++		reset-gpios = <&r_pio 0 7 GPIO_ACTIVE_LOW>; /* PL7 */
++		post-power-on-delay-ms = <200>;
++	};
 +};
-+
-+
-+
 +
 +&ehci0 {
 +    status = "okay";
@@ -185,13 +183,14 @@
 +	phy-supply = <&reg_gmac_3v3>;
 +	phy-handle = <&ext_rgmii_phy>;
 +	phy-mode = "rgmii";
++
 +	status = "okay";
 +};
 +
-+&external_mdio {
-+	ext_rgmii_phy: ethernet-phy@7 {
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
 +		compatible = "ethernet-phy-ieee802.3-c22";
-+		reg = <7>;
++		reg = <0>;
 +	};
 +};
 +
@@ -213,12 +212,32 @@
 +	bus-width = <4>;
 +	non-removable;
 +	status = "okay";
++
++	sdio_wifi: sdio_wifi@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";
++		interrupt-parent = <&pio>;
++		interrupts = <6 10 IRQ_TYPE_LEVEL_LOW>; /* PG10 / EINT10 */
++		interrupt-names = "host-wake";
++	};
 +};
-+&r_pio {
-+	wifi_en_npi: wifi_en_pin {
-+		pins = "PL7";
-+		function = "gpio_out";
-+    };
++
++&mmc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc2_8bit_pins>;
++	vmmc-supply = <&reg_vcc3v3>;
++	vqmmc-supply = <&reg_vcc3v3>;
++	bus-width = <8>;
++	non-removable;
++	status = "okay";
++};
++
++&ohci0 {
++	status = "okay";
++};
++
++&ohci1 {
++	status = "okay";
 +};
 +
 +&uart0 {
@@ -231,10 +250,6 @@
 +	dr_mode = "peripheral";
 +	status = "okay";
 +};
-+&reg_usb0_vbus {
-+    gpio = <&r_pio 0 2 GPIO_ACTIVE_HIGH>; /* PL2 */
-+    status = "okay";
-+};
 +
 +&usbphy {
 +	/* USB Type-A port's VBUS is always on */
@@ -243,3 +258,14 @@
 +	status = "okay";
 +};
 +
++&r_pio {
++	wifi_en_npi: wifi_en_pin {
++		pins = "PL7";
++		function = "gpio_out";
++    };
++};
++
++&reg_usb0_vbus {
++    gpio = <&r_pio 0 2 GPIO_ACTIVE_HIGH>; /* PL2 */
++    status = "okay";
++};
