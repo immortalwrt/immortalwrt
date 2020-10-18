@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
 PKG_VERSION:=1
-PKG_RELEASE:=35
+PKG_RELEASE:=36
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -46,7 +46,7 @@ define Package/autocore-arm/install
 	$(INSTALL_BIN) ./files/arm/090-cover-index_htm $(1)/etc/uci-defaults/090-cover-index_htm
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/sbin/cpuinfo $(1)/sbin/cpuinfo
-ifeq ($(BOARD),ipq806x)
+ifneq (, $(findstring $(BOARD), ipq40xx ipq806x))
 	$(INSTALL_BIN) ./files/arm/sbin/tempinfo $(1)/sbin/tempinfo
 endif
 endef

@@ -11,12 +11,7 @@ else
 fi
 
 if grep -q "ipq" "/etc/openwrt_release"; then
-	if grep -q "ipq40xx" "/etc/openwrt_release"; then
-		sys_temp="$(sensors | grep -Eo '\+[0-9]+.+C' | sed ':a;N;$!ba;s/\n/ /g;s/+//g')"
-		echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq}, ${sys_temp})"
-	else
-		echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq})"
-	fi
+	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq})"
 else
 	sys_temp="$(awk "BEGIN{printf (\"%.1f\n\",$(cat /sys/class/thermal/thermal_zone0/temp)/1000) }")°C"
 	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq}, ${sys_temp})"
