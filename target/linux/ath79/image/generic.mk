@@ -1502,6 +1502,48 @@ define Device/qihoo_c301
 endef
 TARGET_DEVICES += qihoo_c301
 
+define Device/qxwlan_e1700ac-v2
+  SOC := qca9563
+  DEVICE_VENDOR := Qxwlan
+  DEVICE_MODEL := E1700AC
+  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
+endef
+
+define Device/qxwlan_e1700ac-v2-16m
+  $(Device/qxwlan_e1700ac-v2)
+  DEVICE_VARIANT := v2 (16M)
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += qxwlan_e1700ac-v2-16m
+
+define Device/qxwlan_e1700ac-v2-8m
+  $(Device/qxwlan_e1700ac-v2)
+  DEVICE_VARIANT := v2 (8M)
+  IMAGE_SIZE := 7744k
+endef
+TARGET_DEVICES += qxwlan_e1700ac-v2-8m
+
+define Device/qxwlan_e558-v2
+  SOC := qca9558
+  DEVICE_VENDOR := Qxwlan
+  DEVICE_MODEL := E558
+  DEVICE_PACKAGES := kmod-usb2
+endef
+
+define Device/qxwlan_e558-v2-16m
+  $(Device/qxwlan_e558-v2)
+  DEVICE_VARIANT := v2 (16M)
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += qxwlan_e558-v2-16m
+
+define Device/qxwlan_e558-v2-8m
+  $(Device/qxwlan_e558-v2)
+  DEVICE_VARIANT := v2 (8M)
+  IMAGE_SIZE := 7744k
+endef
+TARGET_DEVICES += qxwlan_e558-v2-8m
+
 define Device/qxwlan_e750a-v4
   SOC := ar9344
   DEVICE_VENDOR := Qxwlan
@@ -1522,6 +1564,27 @@ define Device/qxwlan_e750a-v4-8m
   IMAGE_SIZE := 7744k
 endef
 TARGET_DEVICES += qxwlan_e750a-v4-8m
+
+define Device/qxwlan_e750g-v8
+  SOC := ar9344
+  DEVICE_VENDOR := Qxwlan
+  DEVICE_MODEL := E750G
+  DEVICE_PACKAGES := kmod-usb2
+endef
+
+define Device/qxwlan_e750g-v8-16m
+  $(Device/qxwlan_e750g-v8)
+  DEVICE_VARIANT := v8 (16M)
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += qxwlan_e750g-v8-16m
+
+define Device/qxwlan_e750g-v8-8m
+  $(Device/qxwlan_e750g-v8)
+  DEVICE_VARIANT := v8 (8M)
+  IMAGE_SIZE := 7744k
+endef
+TARGET_DEVICES += qxwlan_e750g-v8-8m
 
 define Device/rosinson_wr818
   SOC := qca9563
