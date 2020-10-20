@@ -94,33 +94,29 @@
         return ret;
     }
 
-    /**
-     * menu click
-     */
-    $(".main > .main-left > .nav > .slide > .menu").click(function () {
-        var ul = $(this).next(".slide-menu");
-        var menu = $(this);
-        if (!menu.hasClass("exit")) {
-            $(".main > .main-left > .nav > .slide > .active").next(".slide-menu").stop(true).slideUp("fast");
-            $(".main > .main-left > .nav > .slide > .menu").removeClass("active");
-            if (!ul.is(":visible")) {
-                menu.addClass("active");
-                ul.addClass("active");
-                ul.stop(true).slideDown("fast");
-            } else {
-                ul.stop(true).slideUp("fast", function () {
-                    menu.removeClass("active");
-                    ul.removeClass("active");
-                });
-            }
-
-            return false;
-        }
-
-    });
-
-
-
+	/**
+	 * menu click
+	 */
+	$(".main > .main-left > .nav > .slide > .menu").click(function () {
+		var ul = $(this).next(".slide-menu");
+		var menu = $(this);
+		$(".main > .main-left > .nav > .slide > .menu").each(function () {
+			var ulNode = $(this);
+			ulNode.removeClass("active");
+			ulNode.next(".slide-menu").stop(true).slideUp("fast")
+		});
+		if (!ul.is(":visible")) {
+			menu.addClass("active");
+			ul.addClass("active");
+			ul.stop(true).slideDown("fast");
+		} else {
+			ul.stop(true).slideUp("fast", function () {
+				menu.removeClass("active");
+				ul.removeClass("active");
+			});
+		}
+		return false;
+	});
 
 // define what element should be observed by the observer
 // and what types of mutations trigger the callback
@@ -284,25 +280,92 @@
         }
     }
 
+   var getaudio = $('#player')[0];
+   /* Get the audio from the player (using the player's ID), the [0] is necessary */
+   var mouseovertimer;
+   /* Global variable for a timer. When the mouse is hovered over the speaker it will start playing after hovering for 1 second, if less than 1 second it won't play (incase you accidentally hover over the speaker) */
+   var audiostatus = 'off';
+   /* Global variable for the audio's status (off or on). It's a bit crude but it works for determining the status. */
+
+   $(document).on('mouseenter', '.speaker', function() {
+     /* Bonus feature, if the mouse hovers over the speaker image for more than 1 second the audio will start playing */
+     if (!mouseovertimer) {
+       mouseovertimer = window.setTimeout(function() {
+         mouseovertimer = null;
+         if (!$('.speaker').hasClass("speakerplay")) {
+           getaudio.load();
+           /* Loads the audio */
+           getaudio.play();
+           /* Play the audio (starting at the beginning of the track) */
+           $('.speaker').addClass('speakerplay');
+           return false;
+         }
+       }, 1000);
+     }
+   });
+
+   $(document).on('mouseleave', '.speaker', function() {
+     /* If the mouse stops hovering on the image (leaves the image) clear the timer, reset back to 0 */
+     if (mouseovertimer) {
+       window.clearTimeout(mouseovertimer);
+       mouseovertimer = null;
+     }
+   });
+
+   $(document).on('click touchend', '.speaker', function() {
+     /* Touchend is necessary for mobile devices, click alone won't work */
+     if (!$('.speaker').hasClass("speakerplay")) {
+       if (audiostatus == 'off') {
+         $('.speaker').addClass('speakerplay');
+         getaudio.load();
+         getaudio.play();
+         window.clearTimeout(mouseovertimer);
+         audiostatus = 'on';
+         return false;
+       } else if (audiostatus == 'on') {
+         $('.speaker').addClass('speakerplay');
+         getaudio.play()
+       }
+     } else if ($('.speaker').hasClass("speakerplay")) {
+       getaudio.pause();
+       $('.speaker').removeClass('speakerplay');
+       window.clearTimeout(mouseovertimer);
+       audiostatus = 'on';
+     }
+   });
+
+   $('#player').on('ended', function() {
+     $('.speaker').removeClass('speakerplay');
+     /*When the audio has finished playing, remove the class speakerplay*/
+     audiostatus = 'off';
+     /*Set the status back to off*/
+   });
 	setTimeout(function(){
 var config = {
     // How long Waves effect duration 
     // when it's clicked (in milliseconds)
     duration: 600
 };
-    Waves.attach('.cbi-button,.btn', ['waves-light']);
+    Waves.attach("button,input[type='button'],input[type='reset'],input[type='submit']", ['waves-light']);
 	// Ripple on hover
-$('.cbi-button,.btn').mouseenter(function() {
+$("button,input[type='button'],input[type='reset'],input[type='submit']").mouseenter(function() {
     Waves.ripple(this, {wait: null});
 }).mouseleave(function() {
     Waves.calm(this);
 });
   Waves.init(config);
 $(".waves-input-wrapper").filter(function () {
-  return ($(this).children().is(":hidden"))
+  if($(this).children().css("display")=="none"){
+        return true;
+    }else{
+        return false;
+    }
 }).hide();
-	$("div>select:first-child,div>input[type='text']:first-child,div>input[type='email']:first-child,div>input[type='url']:first-child,div>input[type='date']:first-child,div>input[type='datetime']:first-child,div>input[type='tel']:first-child,div>input[type='number']:first-child,div>input[type='search']:first-child").after("<span class='focus-input'></span>");
 
+$("div>select:first-child,div>input[type='text']:first-child,div>input[type='email']:first-child,div>input[type='url']:first-child,div>input[type='date']:first-child,div>input[type='datetime']:first-child,div>input[type='tel']:first-child,div>input[type='number']:first-child,div>input[type='search']:first-child").filter(function () {
+return (!$(this).parents(".cbi-dynlist").length&&!$("body.Diagnostics").length)
+}).after("<span class='focus-input'></span>");
+	
 $("input[type='checkbox']").filter(function () {
   return (!$(this).next("label").length)
 }).css({"position":"relative","opacity":"1","pointer-events":"auto"});
@@ -314,5 +377,6 @@ $("select,input").filter(function () {
 }).blur(function(){
   $(this).css("border-bottom","1px solid #9e9e9e");
 });
-	}, 100);
+	}, 400);
+	$(".cbi-value").has("textarea").css("background","none");
 })(jQuery);

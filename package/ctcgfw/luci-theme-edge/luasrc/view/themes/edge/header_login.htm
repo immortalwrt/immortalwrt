@@ -216,9 +216,9 @@
 	<meta name="msapplication-TileImage" content="<%=media%>/logo.png" />
 	<link rel="icon" href="<%=media%>/logo.png" sizes="144x144">
 	<link rel="apple-touch-icon-precomposed" href="<%=media%>/logo.png" sizes="144x144">
-		<link rel="stylesheet" href="<%=media%>/cascade.css">
-			<link rel="stylesheet" href="<%=media%>/landscape.css">
+	<link rel="stylesheet" href="<%=media%>/landscape.css">
 	<link rel="stylesheet" href="<%=media%>/waves.css">
+		<link rel="stylesheet" href="<%=media%>/cascade.css">
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -233,3 +233,22 @@
 
 <body
 	class="<%- if node then %><%= striptags( node.title ) %><%- end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %> lang_<%=luci.i18n.context.lang%>  ">
+<!--[if lt IE 9]>
+<style>
+.chromeframe{
+padding:2rem 3rem;
+margin:0 auto;
+font-size:14px;
+color:#fff;
+position:relative;
+z-index:9999;
+text-align:center;
+}
+.chromeframe a{
+color:orangered;
+}
+</style>
+<p class="chromeframe">您使用的IE浏览器版本过低,
+<a href="https://www.microsoft.com/edge/" target="_blank" class="textToLink one-pan-link-mark"> 升级 </a>您的IE浏览器<br/>
+或使用<a href="http://www.google.com/chromeframe/?redirect=true"> Chrome </a>, <a href="https://www.mozilla.org/zh-CN/firefox/new/"> Firefox </a>等高级浏览器，将会得到更好的体验！</a></p>
+<![endif]-->

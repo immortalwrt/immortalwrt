@@ -1,1 +1,1076 @@
-img{border:0;-ms-interpolation-mode:bicubic;vertical-align:middle}#landscape,.land,#bottom,.stags,.stag,.counter:before,#lensFlare,.sunMask{animation-duration:20s;animation-iteration-count:infinite;animation-timing-function:linear}#sky{height:60%;margin-bottom:-6px;position:absolute;top:0px;z-index:2}#reflection,#sunMask{height:40%;position:absolute;top:60%;z-index:4}#sunMask{background:#0D133A;height:40%;position:absolute;top:60%;width:100%}#stag{position:absolute;bottom:15.3%;width:6.3%;left:38%;z-index:5}.stag{width:100%;position:absolute;bottom:0px}.stags{animation-name:stags;animation-delay:1s}#stag1{animation-name:stag_one;width:108%;left:-20%}#stag2{animation-name:stag_two}#stag3{animation-name:stag_three;width:144%;left:-10%;bottom:-3%}.sunMask{position:absolute;width:100%;height:100%;-webkit-mask-image:gradient(linear,left 50%,left 60%,from(rgba(0,0,0,1)),to(rgba(0,0,0,0)));z-index:4;mix-blend-mode:screen;animation-name:sunFocus}.sun{width:100%;padding-bottom:100%;position:absolute;right:-51%;top:-330%}.sun div{background:transparent url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/21555/sun.svg);position:absolute;top:0;bottom:0;left:0;right:0}.suncrane{animation:suncrane 20s linear infinite;position:absolute;width:21%;height:4%;background:transparent;top:57%;left:0;right:0;margin:auto}.sun:before{display:block;content:' ';animation:glare 20s linear infinite;position:absolute;width:120%;height:120%;background:url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/21555/glare.svg) no-repeat scroll center;top:-10%;left:-10%;background-size:100%}.sun:after{display:block;content:' ';position:absolute;background:#fff;width:10%;height:10%;top:45%;border-radius:100%;left:0;right:0;box-shadow:0px 0px 80px 30px #fff;margin:auto}.clouds{position:absolute;width:100%;z-index:4;mix-blend-mode:screen;height:100%}.clouds svg{width:60%;position:absolute;top:51%;filter:blur(2px);opacity:0.4;left:-60%;animation-duration:20s;animation-iteration-count:infinite;animation-timing-function:linear;animation-name:clouds}.lighting{width:100%;height:100%;position:absolute;z-index:8;opacity:0.3;-webkit-mask-image:gradient(linear,left 50%,left 60%,from(rgba(0,0,0,1)),to(rgba(0,0,0,1)));mix-blend-mode:screen;pointer-events:none;filter:blur(3px)}.lighting .suncrane{width:100%}#lensFlare{transform:rotate(16deg) translate3d(9%,-47%,0px) scale(1);animation-name:flaring}.twinkleWrap{position:absolute;z-index:4;width:100%;height:100%;top:0;opacity:0.55}.twinkles{width:2.3%;position:absolute;right:49.2%;top:72.5%;animation:twinkles 20s linear infinite}.twinkles:before{content:' ';display:none;position:absolute;height:600px;width:3px;background:red;top:-600px;left:50%}.twinkles svg{width:100%;position:absolute;top:0}#twinkle1{animation:twinkle1 2s linear infinite}#twinkle2{animation:twinkle2 2s linear infinite}#twinkle3{animation:twinkle3 2s linear infinite}.vignette{background:radial-gradient(transparent 60%,rgb(1,14,39) 130%);background-size:cover;height:100%;z-index:9;position:absolute;width:100%;pointer-events:none}.stars{height:100%;z-index:2;position:absolute;width:100%;overflow:hidden}.starWrap{height:60%;width:100%;position:relative}.starReflect{overflow:hidden;height:40%;opacity:0.9;top:1%}#stars{position:absolute;width:120%;border-radius:100%;left:-10%;right:0;animation:stars 120s linear infinite;transform:rotate(0deg);top:-35%;margin:auto}#starReflection{position:absolute;width:120%;border-radius:100%;left:-10%;right:0;animation:starsReflect 120s linear infinite;transform:rotate(0deg);top:initial;bottom:-102%;margin:auto}.spriteWrap{height:100%;width:100%;position:absolute;z-index:13;animation:sprites 20s linear infinite;pointer-events:none}#sprites{height:100%;width:100%}#landscape{width:100.02%;position:absolute;bottom:11%;z-index:5;animation-name:focus}#bottom{animation-name:bottomFill;height:100%;position:absolute;top:88%;width:100%;z-index:5;animation-delay:1s}#landscape .layer1{fill:#F1F2F2;animation-name:layer1;animation-delay:1s}#landscape .layer2{fill:#E6E7E8;animation-name:layer2;animation-delay:1s}#landscape .layer3{fill:#D1D3D4;animation-name:layer3;animation-delay:1s}#landscape .layer4{fill:#BCBEC0;animation-name:layer4;animation-delay:1s}#landscape .layer5{fill:#A7A9AC;animation-name:layer5;animation-delay:1s}#landscape .layer6{fill:#939598;animation-name:layer6;animation-delay:1s}#landscape .layer7{fill:#808285;animation-name:layer7;animation-delay:1s}#landscape .layer8{fill:#6D6E71;animation-name:layer8;animation-delay:1s}#landscape .layer9{fill:#58595B;animation-name:layer9;animation-delay:1s}#landscape .layer10{fill:#414042;animation-name:layer10;animation-delay:1s}#landscape .layer11{fill:#232323;animation-name:layer11;animation-delay:1s}svg:not(:root),.starProject{overflow:hidden}#sky-rect,#reflection-rect{height:100%}@keyframes stags{0%{fill:#22214F}24%{fill:#262262}28%{fill:#1D4065}32%{fill:#125768}36%{fill:#1E4553}40%{fill:#1E404E}44%{fill:#1E3B49}48%{fill:#1D3643}52%{fill:#1C313E}56%{fill:#1C3344}60%{fill:#1C3449}64%{fill:#1B344F}68%{fill:#183454}72%{fill:#242B4A}76%{fill:#2B2241}80%{fill:#24203C}84%{fill:#1D1D37}88%{fill:#151A32}92%{fill:#14192C}96%{fill:#111725}100%{fill:#0D141E}}@keyframes stag_one{0%,15%,95%,100%{opacity:1.0}20%,90%{opacity:0.0}}@keyframes stag_two{0%,17%,45%,65%,95%,100%{opacity:0.0}20%,40%,70%,90%{opacity:1.0}}@keyframes stag_three{0%,15%,20%,40%,70%,100%{opacity:0.0}45%,65%{opacity:1.0}}@keyframes sunFocus{0%{filter:blur(10px)}100%{filter:blur(10px);opacity:0}10%,88%{filter:blur(5px);opacity:0}15%,80%{filter:blur(0px);opacity:1}}@keyframes suncrane{0%{transform:rotate(90deg)}100%{transform:rotate(-270deg)}}@keyframes glare{from{transform:rotate(90deg);opacity:0.0}to{transform:rotate(450deg);opacity:0.0}30%,74%{opacity:0.0}36%,68%{opacity:1.0}}@keyframes clouds{0%{opacity:0.0;filter:blur(5px)}25%{opacity:0.3;filter:blur(2px)}50%{opacity:0.6}75%{opacity:0.2}90%{opacity:0.0}100%{transform:translate3d(150%,0px,0px);opacity:0.0}}@keyframes flaring{0%,28%,78%,100%{opacity:0.0;transform:rotate(16deg) translate3d(9%,-47%,0px) scale(1)}35%,70%{opacity:1.0;transform:rotate(16deg) translate3d(9%,-47%,0px) scale(1)}}@keyframes twinkles{0%{transform:translate(450%,0%);opacity:0.0}34%{opacity:1.0}36.5%{transform:translate(450%,0%)}54%{transform:translate(0%,0%)}72%{transform:translate(-450%,0%);opacity:1.0}100%{transform:translate(-450%,0%);opacity:0.0}32%,78%{opacity:0.0}}@keyframes twinkle1{0%,99.99%,100%{opacity:1.0}33.33%,66.66%{opacity:0.0}}@keyframes twinkle2{33.33%{opacity:1.0}0%,66.66%,99.99%,100%{opacity:0.0}}@keyframes twinkle3{66.66%{opacity:1.0}0%,33.33%,99.99%,100%{opacity:0.0}}@keyframes stars{100%{transform:rotate(-360deg)}}@keyframes starsReflect{100%{transform:rotate(360deg)}}@keyframes sprites{0%,20%,90%,100%{opacity:0.8}25%,73%{opacity:0.0}}@keyframes focus{88%{filter:blur(2px)}100%{filter:blur(5px)}20%,80%{filter:blur(0px)}}@keyframes bottomFill{0%{background:#22214F}24%{background:#262262}28%{background:#1D4065}32%{background:#125768}36%{background:#1E4553}40%{background:#1E404E}44%{background:#1E3B49}48%{background:#1D3643}52%{background:#1C313E}56%{background:#1C3344}60%{background:#1C3449}64%{background:#1B344F}68%{background:#183454}72%{background:#242B4A}76%{background:#2B2241}80%{background:#24203C}84%{background:#1D1D37}88%{background:#151A32}92%{background:#14192C}96%{background:#111725}100%{background:#0D141E}}@keyframes layer1{0%{fill:#A3517F}24%{fill:#F3829F}28%{fill:#D4B2AF}32%{fill:#AEDABB}36%{fill:#A1D6D6}40%{fill:#9ED5DD}44%{fill:#9AD4E4}48%{fill:#97D3EA}52%{fill:#92D3F4}56%{fill:#95C8DA}60%{fill:#96BDC5}64%{fill:#96B3B2}68%{fill:#96AA9E}72%{fill:#AF866A}76%{fill:#C0633B}80%{fill:#9D5E51}84%{fill:#7B5960}88%{fill:#59546D}92%{fill:#484E64}96%{fill:#37475C}100%{fill:#244154}}@keyframes layer2{0%{fill:#913776}24%{fill:#D94A93}28%{fill:#BB94AD}32%{fill:#76CCCE}36%{fill:#6BAEC9}40%{fill:#62A7CA}44%{fill:#59A0CB}48%{fill:#5099CC}52%{fill:#4692CF}56%{fill:#4D8FBD}60%{fill:#518CAF}64%{fill:#548AA1}68%{fill:#578793}72%{fill:#7E6768}76%{fill:#8F4244}80%{fill:#74404D}84%{fill:#593D55}88%{fill:#393B5D}92%{fill:#2C3655}96%{fill:#1F304E}100%{fill:#0F2B46}}@keyframes layer3{0%{fill:#863572}24%{fill:#C8458D}28%{fill:#A48BAB}32%{fill:#68BFC7}36%{fill:#54A4C8}40%{fill:#4F9EC8}44%{fill:#4B98C7}48%{fill:#4691C7}52%{fill:#408BC8}56%{fill:#4688B7}60%{fill:#4984A9}64%{fill:#4C819C}68%{fill:#4E7E8F}72%{fill:#776167}76%{fill:#893E45}80%{fill:#6F3C4C}84%{fill:#543A52}88%{fill:#353758}92%{fill:#2A3351}96%{fill:#1E2E4A}100%{fill:#0F2944}}@keyframes layer4{0%{fill:#7C336D}24%{fill:#B84089}28%{fill:#9683A5}32%{fill:#57B5C1}36%{fill:#4798BD}40%{fill:#4391BC}44%{fill:#408BBB}48%{fill:#3D85BA}52%{fill:#397FBA}56%{fill:#3E7DAC}60%{fill:#407AA1}64%{fill:#427896}68%{fill:#44768B}72%{fill:#705B66}76%{fill:#823B46}80%{fill:#69394B}84%{fill:#503650}88%{fill:#323454}92%{fill:#27304D}96%{fill:#1C2C47}100%{fill:#0F2841}}@keyframes layer5{0%{fill:#6E3068}24%{fill:#A23B82}28%{fill:#84799F}32%{fill:#44AABC}36%{fill:#3A8DB3}40%{fill:#3887B1}44%{fill:#3680AF}48%{fill:#347AAD}52%{fill:#3273AB}56%{fill:#3672A1}60%{fill:#387198}64%{fill:#396F90}68%{fill:#3A6E87}72%{fill:#695565}76%{fill:#7C3747}80%{fill:#64354A}84%{fill:#4B334D}88%{fill:#2E314F}92%{fill:#252D4A}96%{fill:#1B2A44}100%{fill:#0E263F}}@keyframes layer6{0%{fill:#612D63}24%{fill:#8D357C}28%{fill:#6F719B}32%{fill:#00A1BC}36%{fill:#2583A8}40%{fill:#287CA3}44%{fill:#2A759F}48%{fill:#2D6F9A}52%{fill:#2E6895}56%{fill:#2F6891}60%{fill:#30678D}64%{fill:#306788}68%{fill:#306683}72%{fill:#625064}76%{fill:#753347}80%{fill:#5E3249}84%{fill:#47304A}88%{fill:#2B2E4B}92%{fill:#222A46}96%{fill:#192741}100%{fill:#0E243C}}@keyframes layer7{0%{fill:#542A5E}24%{fill:#793177}28%{fill:#5F668F}32%{fill:#0A8FA7}36%{fill:#237595}40%{fill:#256F90}44%{fill:#27698C}48%{fill:#286387}52%{fill:#285D82}56%{fill:#285E82}60%{fill:#285F81}64%{fill:#275F81}68%{fill:#255F7F}72%{fill:#574A63}76%{fill:#683148}80%{fill:#542F48}84%{fill:#3F2D47}88%{fill:#242742}92%{fill:#202841}96%{fill:#19253C}100%{fill:#102237}}@keyframes layer8{0%{fill:#472759}24%{fill:#662C71}28%{fill:#4F5C83}32%{fill:#118095}36%{fill:#206983}40%{fill:#21637E}44%{fill:#225D7A}48%{fill:#225775}52%{fill:#225270}56%{fill:#235372}60%{fill:#235574}64%{fill:#235675}68%{fill:#235676}72%{fill:#4C445F}76%{fill:#5B2F49}80%{fill:#4A2C47}84%{fill:#382A44}88%{fill:#242742}92%{fill:#1E253D}96%{fill:#182338}100%{fill:#111F31}}@keyframes layer9{0%{fill:#3A2454}24%{fill:#52296C}28%{fill:#405279}32%{fill:#137185}36%{fill:#1C5C72}40%{fill:#1C576E}44%{fill:#1C5269}48%{fill:#1B4C64}52%{fill:#1A475F}56%{fill:#1C4A63}60%{fill:#1E4B67}64%{fill:#1F4D6A}68%{fill:#204E6D}72%{fill:#413E5A}76%{fill:#4E2D49}80%{fill:#402A45}84%{fill:#312742}88%{fill:#20243E}92%{fill:#1B2238}96%{fill:#171F32}100%{fill:#111C2B}}@keyframes layer10{0%{fill:#2C214F}24%{fill:#3D2567}28%{fill:#30486F}32%{fill:#136476}36%{fill:#165163}40%{fill:#154C5E}44%{fill:#144759}48%{fill:#134254}52%{fill:#113D4F}56%{fill:#154055}60%{fill:#19425A}64%{fill:#1B445F}68%{fill:#1E4564}72%{fill:#363856}76%{fill:#412A49}80%{fill:#352744}84%{fill:#29243F}88%{fill:#1C203A}92%{fill:#191F33}96%{fill:#151C2C}100%{fill:#101825}}@keyframes layer11{0%{fill:#22214F;transform:skew(1deg,0deg) translate3d(-0.5%,0px,0px)}24%{fill:#262262;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}28%{fill:#1D4065;transform:skew(-1deg,0deg) translate3d(0.5%,0px,0px)}32%{fill:#125768;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}36%{fill:#1E4553;transform:skew(1deg,0deg) translate3d(-0.5%,0px,0px)}40%{fill:#1E404E;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}44%{fill:#1E3B49;transform:skew(-1deg,0deg) translate3d(0.5%,0px,0px)}48%{fill:#1D3643;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}52%{fill:#1C313E;transform:skew(1deg,0deg) translate3d(-0.5%,0px,0px)}56%{fill:#1C3344;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}60%{fill:#1C3449;transform:skew(-1deg,0deg) translate3d(0.5%,0px,0px)}64%{fill:#1B344F;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}68%{fill:#183454;transform:skew(1deg,0deg) translate3d(-0.5%,0px,0px)}72%{fill:#242B4A;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}76%{fill:#2B2241;transform:skew(-1deg,0deg) translate3d(0.5%,0px,0px)}80%{fill:#24203C;transform:skew(0deg,0deg) translate3d(0px,0px,0px)}84%{fill:#1D1D37}88%{fill:#151A32}92%{fill:#14192C}96%{fill:#111725}100%{fill:#0D141E}}@media screen and (min-aspect-ratio: 3/1) and (max-aspect-ratio: 6/1){body{background:rgb(31,60,80)}body:before{content:'Aspect ratio out of range - too wide';color:#fff;text-align:center;width:100%;height:100%;display:block;position:absolute;top:50%}#sky,#reflection,#sunMask,#landscape,#bottom,#stag,.controls,.stars,.sunMask,.clouds,.lighting,.vignette,.twinkleWrap,.spriteWrap{display:none}}@media screen and (min-aspect-ratio: 14/5) and (max-aspect-ratio: 7/2){#reflection,#sunMask{height:42%}#landscape{bottom:-3%}#bottom{top:101%}#stag{bottom:3%}.sun{top:-570%}.twinkles{top:77%}}@media screen and (min-aspect-ratio: 5/2) and (max-aspect-ratio: 14/5){.twinkles{top:75%}#landscape{bottom:1%}#bottom{top:98%}#stag{bottom:7%}.sun{top:-532%}}@media screen and (min-aspect-ratio: 9/4) and (max-aspect-ratio: 5/2){.twinkles{top:75%}#reflection,#sunMask{height:40%}#landscape{bottom:5%}#bottom{top:94%}#stag{bottom:10%}.sun{top:-452%}}@media screen and (min-aspect-ratio: 11/5) and (max-aspect-ratio: 9/4){#landscape{bottom:6%}#bottom{top:93%}#stag{bottom:11%}.sun{top:-410%}}@media screen and (min-aspect-ratio: 13/6) and (max-aspect-ratio: 11/5){#reflection,#sunMask{height:37%}#landscape{bottom:6%}#bottom{top:93%}#stag{bottom:11%}}@media screen and (min-aspect-ratio: 15/7) and (max-aspect-ratio: 13/6){#reflection,#sunMask{height:31%}#landscape{bottom:7%}#bottom{top:92%}#stag{bottom:12%}}@media screen and (min-aspect-ratio: 2/1) and (max-aspect-ratio: 15/7){#reflection,#sunMask{height:31%}#landscape{bottom:8%}#bottom{top:91%}#stag{bottom:12%}.sun{top:-370%}}@media screen and (min-aspect-ratio: 15/8) and (max-aspect-ratio: 2/1){#reflection,#sunMask{height:30%}#stag{bottom:15%}}@media screen and (min-aspect-ratio: 7/4) and (max-aspect-ratio: 15/8){.twinkles{top:71%}#reflection,#sunMask{height:28%}#landscape{bottom:13%}#bottom{top:86%}#stag{bottom:17%}.sun{top:-300%}}@media screen and (min-aspect-ratio: 11/7) and (max-aspect-ratio: 7/4){.twinkles{top:69%}#reflection,#sunMask{height:24%}#landscape{bottom:16%}#bottom{top:83%}#stag{bottom:20%}.sun{top:-270%}}@media screen and (min-aspect-ratio: 13/9) and (max-aspect-ratio: 11/7){.twinkles{top:68%}#reflection,#sunMask{height:22%}#landscape{bottom:18%}#bottom{top:81%}#stag{bottom:21.6%}.sun{top:-240%}}@media screen and (min-aspect-ratio: 4/3) and (max-aspect-ratio: 13/9){.twinkles{top:66%}#reflection,#sunMask{height:19%}#landscape{bottom:22%}#bottom{top:77%}#stag{bottom:25%}.sun{top:-230%}}@media screen and (min-aspect-ratio: 8/7) and (max-aspect-ratio: 4/3){.twinkles{top:65%}#reflection,#sunMask{height:18%}#landscape{bottom:23%}#bottom{top:76%}#stag{bottom:25.3%}.sun{top:-180%}}@media screen and (min-aspect-ratio: 14/15) and (max-aspect-ratio: 8/7){.twinkles{top:63%;width:3%}#reflection,#sunMask{height:17%}#landscape{bottom:26%}#bottom{top:73.8%}#stag{bottom:28.3%}.sun{top:-140%}}@media screen and (min-aspect-ratio: 5/6) and (max-aspect-ratio: 14/15){.twinkles{top:63%;width:3%}#reflection,#sunMask{height:13%}#landscape{bottom:28%}#bottom{top:71.5%}#stag{bottom:30%}.sun{top:-110%}}@media screen and (min-aspect-ratio: 7/10) and (max-aspect-ratio: 5/6){.twinkles{top:62%;width:3%}#reflection,#sunMask{height:11%}#landscape{bottom:30%}#bottom{top:69.6%}#stag{bottom:31.8%}.sun{top:-70%}}@media screen and (min-aspect-ratio: 5/9) and (max-aspect-ratio: 7/10){.twinkles{top:62%;width:3%}#reflection,#sunMask{height:8%}#landscape{bottom:32%}#bottom{top:67.5%}#stag{bottom:33.5%}.sun{top:-55%}}@media screen and (min-aspect-ratio: 1/10) and (max-aspect-ratio: 5/9){body{background:rgb(31,60,80)}body:before{content:'Aspect ratio out of range - too narrow';color:#fff;text-align:center;width:100%;height:100%;display:block;position:absolute;top:50%}#sky,#reflection,#sunMask,#landscape,#bottom,#stag,.controls,.stars,.sunMask,.clouds,.lighting,.vignette,.twinkleWrap,.spriteWrap{display:none}}
+/* Global Styles
+  ---------------------------------------------- */
+  html {font-family: 'Open Sans', sans-serif; background: #0D133A; height:100%; font-size: 100%; text-size-adjust: 100%; -ms-text-size-adjust: 100%; font-smoothing: antialiased;overflow: hidden;position: relative;}
+  img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+  svg:not(:root) { overflow: hidden; }
+
+
+/* Animation globals
+  ---------------------------------------------- */
+  #landscape, .land, #bottom, .stags,.stag, .counter:before, #lensFlare, .sunMask{
+    animation-duration: 15s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;  
+  }
+
+/* Background gradients
+  ---------------------------------------------- */
+  #sky{
+    height: 60%;
+    margin-bottom: -6px;
+    position: absolute;
+    top: 0px;
+    z-index: 2;
+  }
+#sky-rect{height:100%;}
+
+  #reflection, #sunMask{
+    height: 40%;
+    position: absolute;
+    top: 60%;
+    z-index: 4;
+  }
+#reflection-rect{height:100%;}
+  #sunMask{
+    background: #0D133A;
+    height: 40%;
+    position: absolute;
+    top: 60%;
+    width: 100%;
+  }
+
+/* Stag
+  ---------------------------------------------- */
+  #stag{
+    position: absolute;
+    bottom: 15.3%;
+    width: 6.3%;
+    left: 38%;
+    z-index: 5;
+  }
+  .stag{
+    width:100%;
+    position: absolute;
+    bottom: 0px;
+  }
+  .stags{
+    animation-name: stags;
+    animation-delay:1s;
+  }
+  @keyframes stags{ 
+    0% { fill:#0D141E;}
+    4% { fill:#101522;}
+    8% { fill:#121726;}
+    12% { fill:#141829;}
+    16% { fill:#1C1E3C;}
+    20% { fill:#22214F;}
+    24% { fill:#262262;}
+    28% { fill:#1D4065;}
+    32% { fill:#125768;}
+    36% { fill:#1E4553;}
+    40% { fill:#1E404E;}
+    44% { fill:#1E3B49;}
+    48% { fill:#1D3643;}
+    52% { fill:#1C313E;}
+    56% { fill:#1C3344;}
+    60% { fill:#1C3449;}
+    64% { fill:#1B344F;}
+    68% { fill:#183454;}
+    72% { fill:#242B4A;}
+    76% { fill:#2B2241;}
+    80% { fill:#24203C;}
+    84% { fill:#1D1D37;}
+    88% { fill:#151A32;}
+    92% { fill:#14192C;}
+    96% { fill:#111725;}
+    100% { fill:#0D141E;}
+  }
+  #stag1{
+    animation-name: stag_one;
+    width: 108%;
+    left: -20%;
+    
+  }
+  @keyframes stag_one{ 
+    0% {opacity:1.0;}
+    15% {opacity:1.0;}
+    20% {opacity:0.0;}
+    90% {opacity:0.0;}
+    95% {opacity:1.0;}
+    100% {opacity:1.0;}
+  }
+  #stag2{
+    animation-name: stag_two;
+  }
+  @keyframes stag_two{ 
+    0% {opacity:0.0;}
+    17% {opacity:0.0;}
+    20% {opacity:1.0;}
+    40% {opacity:1.0;}
+    45% {opacity:0.0;}
+    65% {opacity:0.0;}
+    70% {opacity:1.0;}
+    90% {opacity:1.0;}
+    95% {opacity:0.0;}
+    100% {opacity:0.0;}
+  }
+  #stag3{
+    animation-name: stag_three;
+    width: 144%;
+    left: -10%;
+    bottom: -3%;
+  }
+  @keyframes stag_three{ 
+    0% {opacity:0.0;}
+    15% {opacity:0.0;}
+    20% {opacity:0.0;}
+    40% {opacity:0.0;}
+    45% {opacity:1.0;}
+    65% {opacity:1.0;}
+    70% {opacity:0.0;}
+    100% {opacity:0.0;}
+  }
+
+/* Sun
+  ---------------------------------------------- */
+  .sunMask{
+    position:absolute;
+    width:100%;
+    height:100%;
+    -webkit-mask-image: gradient(linear, left 50%, left 60%, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
+    z-index: 4;
+    mix-blend-mode: screen;  
+    animation-name: sunFocus;
+  }
+  @keyframes sunFocus{ 
+    0% { filter: blur(10px);opacity:0;}
+    16% {filter: blur(10px);}
+    20% {filter: blur(10px);}
+    25% {filter: blur(5px);opacity:0;}
+    30% {filter: blur(0px);opacity:1;}
+    80% {filter: blur(0px);opacity:1;}
+    88% {filter: blur(5px);opacity:0;}
+    100% {filter: blur(10px);opacity:0;}
+  }
+  .sun{
+    width: 100%;
+    padding-bottom: 100%;
+    position:absolute;   
+    right: -51%;
+    top: -330%;
+  }
+  .sun div{
+    background: transparent url(./sun.svg);
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+  }    
+  .suncrane{
+    animation: suncrane 15s linear infinite; 
+    position:absolute;
+    width: 21%;
+    height: 4%;
+    background: transparent;
+    margin: auto;
+    top: 40%;
+    left: 0;
+    right: 0;
+  }
+  @keyframes suncrane{ 
+    0% {transform:rotate(90deg);}
+    100% {transform:rotate(-270deg);}
+  }
+  .sun:before{
+    display:block; 
+    content:' '; 
+    animation: glare 15s linear infinite;  
+    position:absolute;
+    width: 120%;
+    height: 120%;
+    background: url(./glare.svg) no-repeat scroll center;
+    top: -10%;
+    left: -10%;
+    background-size: 100%;
+  } 
+
+  @keyframes glare{ 
+    from {transform:rotate(90deg);opacity:0.0;}
+    30%{opacity:0.0;}
+    36%{opacity:1.0;}
+    68%{opacity:1.0;}
+    74%{opacity:0.0;}
+    to {transform:rotate(450deg);opacity:0.0;}
+  }
+
+
+  .sun:after{display: block; content:' '; position:absolute;background: white;width: 10%;height: 10%;top: 45%;border-radius: 100%;margin: auto;left: 0;right: 0;box-shadow: 0px 0px 80px 30px white;}
+
+/* Clouds
+  ---------------------------------------------- */
+  .clouds{
+    position: absolute;
+    width: 100%;
+    z-index: 4;  mix-blend-mode: screen;
+    height: 100%;
+  }
+  .clouds svg{
+    width: 60%;
+    position: absolute;
+    top: 51%;
+    filter: blur(2px);
+    opacity: 0.4;
+    left: -60%;
+    animation-duration: 15s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;  
+  animation-name: clouds;
+  }
+  @keyframes clouds{ 
+    0% {transform: translate3d(110%, 0px, 0px);opacity: 0.0;}
+    19%{opacity: 0.0;filter: blur(5px);}
+    25%{opacity: 0.3;filter: blur(2px);}
+    50%{opacity: 0.6;}
+    75%{opacity: 0.2;}
+    90%{opacity: 0.0;}
+    100% {transform: translate3d(150%, 0px, 0px);opacity: 0.0}
+  }
+
+/* Lens flare
+  ---------------------------------------------- */
+  .lighting{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 8;  
+    opacity: 0.3;
+    -webkit-mask-image: gradient(linear, left 50%, left 60%, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)));
+    mix-blend-mode: screen;
+    pointer-events: none;
+    filter: blur(3px);
+  }
+  .lighting .suncrane{
+    width: 100%;
+  }
+  #lensFlare{ 
+    transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); 
+    animation-name: flaring;
+  }
+
+  @keyframes flaring{ 
+    0% { transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); opacity: 0.0;}
+    28% { transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); opacity: 0.0; }
+    35% { transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); opacity: 1.0; }
+    70% { transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); opacity: 1.0; } 
+    78% { transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); opacity: 0.0; }
+    100% { transform: rotate(16deg) translate3d(9%, -47%, 0px) scale(1); opacity: 0.0; }
+  }
+
+/* Sun on lake twinkles
+  ---------------------------------------------- */
+  .twinkleWrap{
+    position: absolute;
+    z-index: 4;
+    width:100%;
+    height:100%;
+    top:0; 
+    opacity: 0.55;
+  }
+
+  .twinkles{
+      width: 2.3%;
+      position: absolute;
+      right: 49.2%;
+      top: 72.5%;
+      animation: twinkles 15s linear infinite;
+  }
+  @keyframes twinkles{ 
+    0% {transform: translate(450%, 0%);opacity:0.0;}
+    32%{opacity:0.0;}
+    34%{opacity:1.0;}
+    36.5% {transform: translate(450%, 0%);}
+    54% {transform: translate(0%, 0%);}
+    72% {transform: translate(-450%, 0%);opacity:1.0;}
+    78%{opacity:0.0;}
+    100% {transform: translate(-450%, 0%);opacity:0.0;}
+  }
+  .twinkles:before{
+    content:' '; 
+    display: none;
+    position:absolute;
+    height: 600px;
+    width:3px;
+    background:red;
+    top: -600px;
+    left: 50%;
+  }
+  .twinkles svg{
+      width: 100%;
+      position: absolute;
+      top: 0;
+  }
+  #twinkle1{
+    animation: twinkle1 2s linear infinite;
+  }
+  @keyframes twinkle1{ 
+    0% {opacity:1.0;}
+    33.33% {opacity:0.0;}
+    66.66% {opacity:0.0;}
+    99.99% {opacity:1.0;}
+    100% {opacity:1.0;}
+  }
+  #twinkle2{  animation: twinkle2 2s linear infinite;
+  }
+  @keyframes twinkle2{ 
+    0% {opacity:0.0;}
+    33.33% {opacity:1.0;}
+    66.66% {opacity:0.0;}
+    99.99% {opacity:0.0;}
+    100% {opacity:0.0;}
+  }
+  #twinkle3{ animation: twinkle3 2s linear infinite;
+  }
+  @keyframes twinkle3{ 
+    0% {opacity:0.0;}
+    33.33% {opacity:0.0;}
+    66.66% {opacity:1.0;}
+    99.99% {opacity:0.0;}
+    100% {opacity:0.0;}
+  }
+
+/* Vignette
+  ---------------------------------------------- */
+  .vignette{
+    background: radial-gradient(transparent 60%, rgb(1, 14, 39) 130%);
+    background-size: cover;
+    height: 100%;
+    z-index: 9;
+    position: absolute;
+    width: 100%; 
+    pointer-events: none;
+}
+
+/* Stars
+  ---------------------------------------------- */
+  .stars{
+    height: 100%;
+    z-index: 2;
+    position: absolute;
+    width: 100%; 
+     
+    overflow: hidden;
+  }
+  .starWrap{
+    height: 60%;
+    width: 100%; 
+    position:relative;
+  }
+  .starProject{
+    overflow: hidden;
+  }
+  .starReflect{
+    overflow: hidden;
+    height: 40%;
+    opacity: 0.9;
+    top: 1%;
+  }
+  #stars{
+    position: absolute;
+    width: 120%;
+    border-radius: 100%;
+    margin: auto;
+    left: -10%;
+    right: 0;
+    animation: stars 30s linear infinite;  
+    transform: rotate(0deg);
+    top: -35%;
+  }
+
+  @keyframes stars{ 
+    100% {transform: rotate(-360deg);}
+  }
+
+  #starReflection{
+    position: absolute;
+    width: 120%;
+    border-radius: 100%;
+    margin: auto;
+    left: -10%;
+    right: 0;
+    animation: starsReflect 30s linear infinite;  
+    transform: rotate(0deg);
+    top:initial;
+    bottom: -102%;
+  }
+  @keyframes starsReflect{ 
+    100% {transform: rotate(360deg);}
+  }
+
+/* Sprites 
+  ----------------------------------------------- */
+  .spriteWrap{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 13;
+    animation: sprites 15s linear infinite;    
+    pointer-events: none;
+  }
+  @keyframes sprites{ 
+    0% {opacity:0.8;}
+    20% {opacity:0.8;}
+    25%{opacity:0.0;}
+    73% {opacity:0.0;}
+    90% {opacity:0.8;}
+    100% {opacity:0.8;}
+  }
+
+  #sprites{
+    height: 100%;
+    width: 100%;
+  }
+
+
+
+/* Landscape
+  ---------------------------------------------- */
+  #landscape{
+    width: 100.02%;
+    position: absolute;
+    bottom: 11%;
+    z-index: 5;
+    animation-name: focus;
+  }
+   @keyframes focus{ 
+    0% { filter: blur(5px);}
+    16% {filter: blur(2px);}
+    20% {filter: blur(0px);}
+    80% {filter: blur(0px);}
+    88% {filter: blur(2px);}
+    100% {filter: blur(5px);}
+  }
+
+  #bottom{
+    animation-name: bottomFill;
+    height: 100%;
+    position: absolute;
+    top: 88%;
+    width: 100%;
+    z-index: 5;
+    animation-delay:1s;
+  }
+  @keyframes bottomFill{ 
+    0% { background:#0D141E; }
+    4% { background:#101522; }
+    8% { background:#121726; }
+    12% { background:#141829; }
+    16% { background:#1C1E3C; }
+    20% { background:#22214F; }
+    24% { background:#262262; }
+    28% { background:#1D4065; }
+    32% { background:#125768; }
+    36% { background:#1E4553; }
+    40% { background:#1E404E; }
+    44% { background:#1E3B49; }
+    48% { background:#1D3643; }
+    52% { background:#1C313E; }
+    56% { background:#1C3344; }
+    60% { background:#1C3449; }
+    64% { background:#1B344F; }
+    68% { background:#183454; }
+    72% { background:#242B4A; }
+    76% { background:#2B2241; }
+    80% { background:#24203C; }
+    84% { background:#1D1D37; }
+    88% { background:#151A32; }
+    92% { background:#14192C; }
+    96% { background:#111725; }
+    100% { background:#0D141E; }
+  }
+
+  /* Land - layer 1 animation */
+  #landscape .layer1 {
+      fill:#F1F2F2;
+      animation-name: layer1;
+      animation-delay:1s;
+  }
+  @keyframes layer1{ 
+    0% { fill:#244154; }
+    4% { fill:#344358; }
+    8% { fill:#42465D; }
+    12% { fill:#4F4761; }
+    16% { fill:#7E5773; }
+    20% { fill:#A3517F; }
+    24% { fill:#F3829F; }
+    28% { fill:#D4B2AF; }
+    32% { fill:#AEDABB; }
+    36% { fill:#A1D6D6; }
+    40% { fill:#9ED5DD; }
+    44% { fill:#9AD4E4; }
+    48% { fill:#97D3EA; }
+    52% { fill:#92D3F4; }
+    56% { fill:#95C8DA; }
+    60% { fill:#96BDC5; }
+    64% { fill:#96B3B2; }
+    68% { fill:#96AA9E; }
+    72% { fill:#AF866A; }
+    76% { fill:#C0633B; }
+    80% { fill:#9D5E51; }
+    84% { fill:#7B5960; }
+    88% { fill:#59546D; }
+    92% { fill:#484E64; }
+    96% { fill:#37475C; }
+    100% { fill:#244154; }
+  }
+
+  /* Land - layer 2 animation */
+  #landscape .layer2 {
+      fill:#E6E7E8;
+      animation-name: layer2;
+      animation-delay:1s;
+  }
+  @keyframes layer2{ 
+    0% { fill:#0F2B46; }
+    4% { fill:#1C2D4A; }
+    8% { fill:#272E4E; }
+    12% { fill:#302F52; }
+    16% { fill:#663966; }
+    20% { fill:#913776; }
+    24% { fill:#D94A93; }
+    28% { fill:#BB94AD; }
+    32% { fill:#76CCCE; }
+    36% { fill:#6BAEC9; }
+    40% { fill:#62A7CA; }
+    44% { fill:#59A0CB; }
+    48% { fill:#5099CC; }
+    52% { fill:#4692CF; }
+    56% { fill:#4D8FBD; }
+    60% { fill:#518CAF; }
+    64% { fill:#548AA1; }
+    68% { fill:#578793; }
+    72% { fill:#7E6768; }
+    76% { fill:#8F4244; }
+    80% { fill:#74404D; }
+    84% { fill:#593D55; }
+    88% { fill:#393B5D; }
+    92% { fill:#2C3655; }
+    96% { fill:#1F304E; }
+    100% { fill:#0F2B46; }
+  }
+
+  /* Land - layer 3 animation */
+  #landscape .layer3 {
+      fill:#D1D3D4;
+      animation-name: layer3;
+      animation-delay:1s;
+  }
+  @keyframes layer3{ 
+    0% { fill:#0F2944; }
+    4% { fill:#1B2B47; }
+    8% { fill:#252C4B; }
+    12% { fill:#2E2D4E; }
+    16% { fill:#5F3663; }
+    20% { fill:#863572; }
+    24% { fill:#C8458D; }
+    28% { fill:#A48BAB; }
+    32% { fill:#68BFC7; }
+    36% { fill:#54A4C8; }
+    40% { fill:#4F9EC8; }
+    44% { fill:#4B98C7; }
+    48% { fill:#4691C7; }
+    52% { fill:#408BC8; }
+    56% { fill:#4688B7; }
+    60% { fill:#4984A9; }
+    64% { fill:#4C819C; }
+    68% { fill:#4E7E8F; }
+    72% { fill:#776167; }
+    76% { fill:#893E45; }
+    80% { fill:#6F3C4C; }
+    84% { fill:#543A52; }
+    88% { fill:#353758; }
+    92% { fill:#2A3351; }
+    96% { fill:#1E2E4A; }
+    100% { fill:#0F2944; }
+  }
+
+  /* Land - layer 4 animation */
+  #landscape .layer4 {
+      fill:#BCBEC0;
+      animation-name: layer4;
+      animation-delay:1s;
+  }
+  @keyframes layer4{ 
+    0% { fill:#0F2841; }
+    4% { fill:#1A2945; }
+    8% { fill:#232A48; }
+    12% { fill:#2B2A4B; }
+    16% { fill:#59335F; }
+    20% { fill:#7C336D; }
+    24% { fill:#B84089; }
+    28% { fill:#9683A5; }
+    32% { fill:#57B5C1; }
+    36% { fill:#4798BD; }
+    40% { fill:#4391BC; }
+    44% { fill:#408BBB; }
+    48% { fill:#3D85BA; }
+    52% { fill:#397FBA; }
+    56% { fill:#3E7DAC; }
+    60% { fill:#407AA1; }
+    64% { fill:#427896; }
+    68% { fill:#44768B; }
+    72% { fill:#705B66; }
+    76% { fill:#823B46; }
+    80% { fill:#69394B; }
+    84% { fill:#503650; }
+    88% { fill:#323454; }
+    92% { fill:#27304D; }
+    96% { fill:#1C2C47; }
+    100% { fill:#0F2841; }
+  }
+
+  /* Land - layer 5 animation */
+  #landscape .layer5 {
+      fill:#A7A9AC;
+      animation-name: layer5;
+      animation-delay:1s;
+  }
+  @keyframes layer5{ 
+    0% { fill:#0E263F; }
+    4% { fill:#192742; }
+    8% { fill:#212745; }
+    12% { fill:#292848; }
+    16% { fill:#51305B; }
+    20% { fill:#6E3068; }
+    24% { fill:#A23B82; }
+    28% { fill:#84799F; }
+    32% { fill:#44AABC; }
+    36% { fill:#3A8DB3; }
+    40% { fill:#3887B1; }
+    44% { fill:#3680AF; }
+    48% { fill:#347AAD; }
+    52% { fill:#3273AB; }
+    56% { fill:#3672A1; }
+    60% { fill:#387198; }
+    64% { fill:#396F90; }
+    68% { fill:#3A6E87; }
+    72% { fill:#695565; }
+    76% { fill:#7C3747; }
+    80% { fill:#64354A; }
+    84% { fill:#4B334D; }
+    88% { fill:#2E314F; }
+    92% { fill:#252D4A; }
+    96% { fill:#1B2A44; }
+    100% { fill:#0E263F; }
+  }
+
+  /* Land - layer 6 animation */
+  #landscape .layer6 {
+      fill:#939598;
+      animation-name: layer6;
+      animation-delay:1s;
+  }
+  @keyframes layer6{ 
+    0% { fill:#0E243C; }
+    4% { fill:#18253F; }
+    8% { fill:#202542; }
+    12% { fill:#262544; }
+    16% { fill:#482C56; }
+    20% { fill:#612D63; }
+    24% { fill:#8D357C; }
+    28% { fill:#6F719B; }
+    32% { fill:#00A1BC; }
+    36% { fill:#2583A8; }
+    40% { fill:#287CA3; }
+    44% { fill:#2A759F; }
+    48% { fill:#2D6F9A; }
+    52% { fill:#2E6895; }
+    56% { fill:#2F6891; }
+    60% { fill:#30678D; }
+    64% { fill:#306788; }
+    68% { fill:#306683; }
+    72% { fill:#625064; }
+    76% { fill:#753347; }
+    80% { fill:#5E3249; }
+    84% { fill:#47304A; }
+    88% { fill:#2B2E4B; }
+    92% { fill:#222A46; }
+    96% { fill:#192741; }
+    100% { fill:#0E243C; }
+  }
+
+  /* Land - layer 7 animation */
+  #landscape .layer7 {
+      fill:#808285;
+      animation-name: layer7;
+      animation-delay:1s;
+  }
+  @keyframes layer7{ 
+    0% { fill:#102237; }
+    4% { fill:#18223A; }
+    8% { fill:#1E233D; }
+    12% { fill:#242340; }
+    16% { fill:#402952; }
+    20% { fill:#542A5E; }
+    24% { fill:#793177; }
+    28% { fill:#5F668F; }
+    32% { fill:#0A8FA7; }
+    36% { fill:#237595; }
+    40% { fill:#256F90; }
+    44% { fill:#27698C; }
+    48% { fill:#286387; }
+    52% { fill:#285D82; }
+    56% { fill:#285E82; }
+    60% { fill:#285F81; }
+    64% { fill:#275F81; }
+    68% { fill:#255F7F; }
+    72% { fill:#574A63; }
+    76% { fill:#683148; }
+    80% { fill:#542F48; }
+    84% { fill:#3F2D47; }
+    88% { fill:#242742; }
+    92% { fill:#202841; }
+    96% { fill:#19253C; }
+    100% { fill:#102237; }
+  }
+
+  /* Land - layer 8 animation */
+  #landscape .layer8 {
+      fill:#6D6E71;
+      animation-name: layer8;
+      animation-delay:1s;
+  }
+  @keyframes layer8{ 
+    0% { fill:#111F31; }
+    4% { fill:#172034; }
+    8% { fill:#1C2037; }
+    12% { fill:#20213B; }
+    16% { fill:#37274C; }
+    20% { fill:#472759; }
+    24% { fill:#662C71; }
+    28% { fill:#4F5C83; }
+    32% { fill:#118095; }
+    36% { fill:#206983; }
+    40% { fill:#21637E; }
+    44% { fill:#225D7A; }
+    48% { fill:#225775; }
+    52% { fill:#225270; }
+    56% { fill:#235372; }
+    60% { fill:#235574; }
+    64% { fill:#235675; }
+    68% { fill:#235676; }
+    72% { fill:#4C445F; }
+    76% { fill:#5B2F49; }
+    80% { fill:#4A2C47; }
+    84% { fill:#382A44; }
+    88% { fill:#242742; }
+    92% { fill:#1E253D; }
+    96% { fill:#182338; }
+    100% { fill:#111F31; }
+  }
+
+  /* Land - layer 9 animation */
+  #landscape .layer9 {
+      fill:#58595B;
+      animation-name: layer9;
+      animation-delay:1s;
+  }
+  @keyframes layer9{ 
+    0% { fill:#111C2B; }
+    4% { fill:#151D2E; }
+    8% { fill:#191E32; }
+    12% { fill:#1D1E35; }
+    16% { fill:#2F2447; }
+    20% { fill:#3A2454; }
+    24% { fill:#52296C; }
+    28% { fill:#405279; }
+    32% { fill:#137185; }
+    36% { fill:#1C5C72; }
+    40% { fill:#1C576E; }
+    44% { fill:#1C5269; }
+    48% { fill:#1B4C64; }
+    52% { fill:#1A475F; }
+    56% { fill:#1C4A63; }
+    60% { fill:#1E4B67; }
+    64% { fill:#1F4D6A; }
+    68% { fill:#204E6D; }
+    72% { fill:#413E5A; }
+    76% { fill:#4E2D49; }
+    80% { fill:#402A45; }
+    84% { fill:#312742; }
+    88% { fill:#20243E; }
+    92% { fill:#1B2238; }
+    96% { fill:#171F32; }
+    100% { fill:#111C2B; }
+  }
+
+  /* Land - layer 10 animation */
+  #landscape .layer10 {
+      fill:#414042;
+      animation-name: layer10;
+      animation-delay:1s;
+  }
+  @keyframes layer10{ 
+    0% { fill:#101825; }
+    4% { fill:#131928; }
+    8% { fill:#161A2C; }
+    12% { fill:#181B2F; }
+    16% { fill:#262141; }
+    20% { fill:#2C214F; }
+    24% { fill:#3D2567; }
+    28% { fill:#30486F; }
+    32% { fill:#136476; }
+    36% { fill:#165163; }
+    40% { fill:#154C5E; }
+    44% { fill:#144759; }
+    48% { fill:#134254; }
+    52% { fill:#113D4F; }
+    56% { fill:#154055; }
+    60% { fill:#19425A; }
+    64% { fill:#1B445F; }
+    68% { fill:#1E4564; }
+    72% { fill:#363856; }
+    76% { fill:#412A49; }
+    80% { fill:#352744; }
+    84% { fill:#29243F; }
+    88% { fill:#1C203A; }
+    92% { fill:#191F33; }
+    96% { fill:#151C2C; }
+    100% { fill:#101825; }
+  }
+
+  /* Land - layer 11 animation */
+  #landscape .layer11 {
+      fill:#232323;
+      animation-name: layer11;
+      animation-delay:1s;
+  }
+  @keyframes layer11{ 
+    0% { fill:#0D141E;  transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    4% { fill:#101522;  transform: skew(1deg, 0deg) translate3d(-0.5%, 0px, 0px);}
+    8% { fill:#121726;  transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    12% { fill:#141829; transform: skew(-1deg, 0deg) translate3d(0.5%, 0px, 0px);}
+    16% { fill:#1C1E3C; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    20% { fill:#22214F; transform: skew(1deg, 0deg) translate3d(-0.5%, 0px, 0px);}
+    24% { fill:#262262; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    28% { fill:#1D4065; transform: skew(-1deg, 0deg) translate3d(0.5%, 0px, 0px);}
+    32% { fill:#125768; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    36% { fill:#1E4553; transform: skew(1deg, 0deg) translate3d(-0.5%, 0px, 0px);}
+    40% { fill:#1E404E; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    44% { fill:#1E3B49; transform: skew(-1deg, 0deg) translate3d(0.5%, 0px, 0px);}
+    48% { fill:#1D3643; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    52% { fill:#1C313E; transform: skew(1deg, 0deg) translate3d(-0.5%, 0px, 0px);}
+    56% { fill:#1C3344; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    60% { fill:#1C3449; transform: skew(-1deg, 0deg) translate3d(0.5%, 0px, 0px);}
+    64% { fill:#1B344F; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    68% { fill:#183454; transform: skew(1deg, 0deg) translate3d(-0.5%, 0px, 0px);}
+    72% { fill:#242B4A; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    76% { fill:#2B2241; transform: skew(-1deg, 0deg) translate3d(0.5%, 0px, 0px);}
+    80% { fill:#24203C; transform: skew(0deg, 0deg) translate3d(0px, 0px, 0px);}
+    84% { fill:#1D1D37; }
+    88% { fill:#151A32; }
+    92% { fill:#14192C; }
+    96% { fill:#111725; }
+    100% { fill:#0D141E; }
+  }
+
+/* Aspect ratio media queries
+  ---------------------------------------------- */
+
+  /* 3/2 and 6/1 -- out of range*/
+  @media screen and (min-aspect-ratio: 3/1) and (max-aspect-ratio: 6/1){
+    body{background: rgb(31, 60, 80);}
+    body:before{content:'Aspect ratio out of range - too wide';color: white;text-align: center;width: 100%;height: 100%;display: block;position: absolute;top: 50%;}
+    #sky, #reflection, #sunMask, #landscape, #bottom, #stag, .controls, .stars, .sunMask, .clouds, .lighting, .vignette, .twinkleWrap,.spriteWrap{display: none;}
+  }
+
+  /* 14/5 and 3/1 */
+  @media screen and (min-aspect-ratio: 14/5) and (max-aspect-ratio: 7/2){
+    .twinkles{}
+    #reflection, #sunMask{height: 42%;}
+    #landscape{bottom: -3%;}
+    #bottom{top: 101%;}
+    #stag{bottom: 3%;}
+    .sun{top: -570%;}
+    .twinkles{top: 77%;}
+  }
+  /* 5/2 and 14/5 */
+  @media screen and (min-aspect-ratio: 5/2) and (max-aspect-ratio: 14/5){
+    .twinkles{top: 75%;}
+    #reflection, #sunMask{}
+    #landscape{bottom: 1%;}
+    #bottom{top: 98%;}
+    #stag{bottom: 7%;}
+    .sun{top: -532%;}
+  }
+  /* 9/4 and 5/2 */
+  @media screen and (min-aspect-ratio: 9/4) and (max-aspect-ratio: 5/2){
+    .twinkles{top: 75%;}
+    #reflection, #sunMask{height: 40%;}
+    #landscape{bottom: 5%;}
+    #bottom{top: 94%;}
+    #stag{bottom: 10%;}
+    .sun{top: -452%;}
+  }
+  /* 11/5 and 9/4 */
+  @media screen and (min-aspect-ratio: 11/5) and (max-aspect-ratio: 9/4){
+    .twinkles{}
+    #reflection, #sunMask{}
+    #landscape{bottom: 6%;}
+    #bottom{top: 93%;}
+    #stag{
+    bottom: 11%;}
+    .sun{top: -410%;}
+  }
+  /* 13/6 and 11/5 */
+  @media screen and (min-aspect-ratio: 13/6) and (max-aspect-ratio: 11/5){
+    .twinkles{}
+    #reflection, #sunMask{height: 37%;}
+    #landscape{bottom: 6%;}
+    #bottom{top: 93%;}
+    #stag{bottom: 11%;}
+    .sun{}
+  }
+
+  /* 15/7 and 13/6 */
+  @media screen and (min-aspect-ratio: 15/7) and (max-aspect-ratio: 13/6){
+    .twinkles{}
+    #reflection, #sunMask{height: 31%;}
+    #landscape{bottom: 7%;}
+    #bottom{top: 92%;}
+    #stag{bottom: 12%;}
+    .sun{}
+  }
+
+  /* 2/1 and 15/7 */
+  @media screen and (min-aspect-ratio: 2/1) and (max-aspect-ratio: 15/7){
+    .twinkles{}
+    #reflection, #sunMask{height: 31%;}
+    #landscape{bottom: 8%;}
+    #bottom{top: 91%;}
+    #stag{bottom: 12%;}
+    .sun{top: -370%;}
+  }
+
+  @media screen and (min-aspect-ratio: 15/8) and (max-aspect-ratio: 2/1){
+    .twinkles{}
+    #reflection, #sunMask{height: 30%;}
+    #landscape{}
+    #bottom{}
+    #stag{bottom: 15%;}
+    .sun{}
+  }
+
+  /* 7/4 and 15/8 */
+  @media screen and (min-aspect-ratio: 7/4) and (max-aspect-ratio: 15/8){
+    .twinkles{top: 71%;}
+    #reflection, #sunMask{height: 28%;}
+    #landscape{bottom: 13%;}
+    #bottom{top: 86%;}
+    #stag{bottom: 17%;}
+    .sun{top: -300%;}
+  }
+  /* 11/7 and 7/4 */
+  @media screen and (min-aspect-ratio: 11/7) and (max-aspect-ratio: 7/4){
+    .twinkles{top: 69%;}
+    #reflection, #sunMask{height: 24%;}
+    #landscape{bottom: 16%;}
+    #bottom{top: 83%;}
+    #stag{bottom: 20%;}
+    .sun{top: -270%;}
+  }
+  /* 13/9 and 11/7 */
+  @media screen and (min-aspect-ratio: 13/9) and (max-aspect-ratio: 11/7){
+    .twinkles{top: 68%;}
+    #reflection, #sunMask{height: 22%;}
+    #landscape{bottom: 18%;}
+    #bottom{top: 81%;}
+    #stag{bottom: 21.6%;}
+    .sun{top: -240%;}
+  }
+  /* 4/3 and 13/9 */
+  @media screen and (min-aspect-ratio: 4/3) and (max-aspect-ratio: 13/9){
+    .twinkles{top: 66%;}
+    #reflection, #sunMask{height: 19%;}
+    #landscape{bottom: 22%;}
+    #bottom{top: 77%;}
+    #stag{bottom: 25%;}
+    .sun{top: -230%;}
+  }
+  /* 8/7 and 4/3 */
+  @media screen and (min-aspect-ratio: 8/7) and (max-aspect-ratio: 4/3){
+    .twinkles{top: 65%;}
+    #reflection, #sunMask{height: 18%;}
+    #landscape{bottom: 23%;}
+    #bottom{top: 76%;}
+    #stag{bottom: 25.3%;}
+    .sun{top: -180%;}
+  }
+  /* 14/15 and 8/7 */
+  @media screen and (min-aspect-ratio: 14/15) and (max-aspect-ratio: 8/7){
+    .twinkles{top: 63%;width: 3%;}
+    #reflection, #sunMask{height: 17%;}
+    #landscape{bottom: 26%;}
+    #bottom{top: 73.8%;}
+    #stag{bottom: 28.3%;}
+    .sun{top: -140%;}
+  }
+  /* 5/6 and 14/15 */
+  @media screen and (min-aspect-ratio: 5/6) and (max-aspect-ratio: 14/15){
+    .twinkles{top: 63%; width: 3%;}
+    #reflection, #sunMask{height: 13%;}
+    #landscape{bottom: 28%;}
+    #bottom{top: 71.5%;}
+    #stag{bottom: 30%;}
+    .sun{top: -110%;}
+  }
+  /* 7/10 and 5/6 */
+  @media screen and (min-aspect-ratio: 7/10) and (max-aspect-ratio: 5/6){
+    .twinkles{top: 62%; width: 3%;}
+    #reflection, #sunMask{height: 11%;}
+    #landscape{bottom: 30%;}
+    #bottom{top: 69.6%;}
+    #stag{bottom: 31.8%;}
+    .sun{top: -70%;}
+  }
+  /* 4/9 and 7/10 */
+  @media screen and (min-aspect-ratio: 4/9) and (max-aspect-ratio: 7/10){
+    .twinkles{top: 62%; width: 3%;}
+    #reflection, #sunMask{height: 8%;}
+    #landscape{bottom: 32%;}
+    #bottom{top: 67.5%;}
+    #stag{bottom: 33.5%;}
+    .sun{top: -55%;}
+  }
+
+  /* 1/10 and 4/9 --- out of range*/
+  @media screen and (min-aspect-ratio: 1/10) and (max-aspect-ratio: 4/9){
+    body{background: rgb(31, 60, 80);}
+    body:before{content:'Aspect ratio out of range - too narrow';color: white;text-align: center;width: 100%;height: 100%;display: block;position: absolute;top: 50%;}
+    #sky, #reflection, #sunMask, #landscape, #bottom, #stag, .controls, .stars, .sunMask, .clouds, .lighting, .vignette, .twinkleWrap,.spriteWrap{display: none;}
+  }
+  
+ #player {
+  height: 0;
+  width: 0
+}
+
+/* Apologies for the large base64 image file */
+
+.speaker {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARAAAACACAYAAAG0HAZ0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MEFERTNEQzA3QTMxMTFFMzgzNTFFRDRCMzk1MDA0NUIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MEFERTNEQzE3QTMxMTFFMzgzNTFFRDRCMzk1MDA0NUIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowQURFM0RCRTdBMzExMUUzODM1MUVENEIzOTUwMDQ1QiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowQURFM0RCRjdBMzExMUUzODM1MUVENEIzOTUwMDQ1QiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvEtsecAABjVSURBVHjaYvz//z/D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);
+  background-repeat: no-repeat;
+  background-size: 200%;
+  background-position: 100% 0;
+  height: 34px;
+  width: 28px;
+  cursor: pointer;
+  display: block;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: block;
+  z-index:9999;
+  opacity:.5;
+}
+
+.speakerplay {
+  background-position: 0 0;
+}
