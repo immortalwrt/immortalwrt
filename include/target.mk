@@ -27,10 +27,6 @@ else
 DEFAULT_PACKAGES+=busybox procd
 endif
 
-ifeq ($(CONFIG_SMALL_FLASH),)
-DEFAULT_PACKAGES+=procd-ujail procd-seccomp
-endif
-
 # For nas targets
 DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm
 # For router targets
