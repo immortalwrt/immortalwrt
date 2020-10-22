@@ -138,7 +138,7 @@ config OPENSSL_WITH_CHACHA_POLY1305
 
 config OPENSSL_PREFER_CHACHA_OVER_GCM
 	bool
-	default y if !x86_64 && !aarch64
+	default y if !x86_64
 	prompt "Prefer ChaCha20-Poly1305 over AES-GCM by default"
 	depends on OPENSSL_WITH_CHACHA_POLY1305
 	help
