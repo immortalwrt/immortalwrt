@@ -15,7 +15,6 @@ DEVICE_TYPE?=router
 # Default packages - the really basic set
 DEFAULT_PACKAGES:=\
 	base-files \
-	busybox \
 	ca-bundle \
 	ca-certificates \
 	coreutils \
@@ -45,6 +44,13 @@ DEFAULT_PACKAGES:=\
 	urandom-seed \
 	urngd \
 	wget
+
+ifneq ($(CONFIG_SELINUX),)
+DEFAULT_PACKAGES+=busybox-selinux procd-selinux
+else
+DEFAULT_PACKAGES+=busybox procd
+endif
+
 # For the basic set
 DEFAULT_PACKAGES.basic:=
 # For nas targets
