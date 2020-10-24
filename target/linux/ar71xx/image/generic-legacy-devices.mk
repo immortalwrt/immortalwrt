@@ -427,3 +427,8 @@ define LegacyDevice/ZCN1523H516
   DEVICE_TITLE := Zcomax ZCN-1523H-5-16
 endef
 LEGACY_DEVICES += ZCN1523H516
+
+define LegacyDevice/ZK400
+  DEVICE_TITLE := Lute ZK400
+endef
+LEGACY_DEVICES += ZK400

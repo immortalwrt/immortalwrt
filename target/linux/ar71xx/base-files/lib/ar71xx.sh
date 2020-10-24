@@ -1577,6 +1577,9 @@ ar71xx_board_detect() {
 	*"ZCN-1523H-5")
 		name="zcn-1523h-5"
 		;;
+	*"ZK400")
+		name="zk400"
+		;;
 	esac
 
 	[ -z "$AR71XX_MODEL" ] && [ "${machine:0:8}" = 'TP-LINK ' ] && \

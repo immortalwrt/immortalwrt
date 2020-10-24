@@ -240,7 +240,7 @@ enum ath79_mach_type {
 	ATH79_MACH_SC1750,			/* Abicom SC1750 */
 	ATH79_MACH_SC300M,			/* Abicom SC300M */
 	ATH79_MACH_SC450,			/* Abicom SC450 */
-        ATH79_MACH_SGR_W500_N85B_V2,	        /* GRENTECH SGR_W500_N85B_V2.0 */
+	ATH79_MACH_SGR_W500_N85B_V2,	        /* GRENTECH SGR_W500_N85B_V2.0 */
 	ATH79_MACH_SMART_300,			/* NC-LINK SMART-300 */
 	ATH79_MACH_SOM9331,			/* OpenEmbed SOM9331 */
 	ATH79_MACH_SR3200,			/* YunCore SR3200 */
@@ -385,6 +385,7 @@ enum ath79_mach_type {
 	ATH79_MACH_ZBT_WE1526,			/* Zbtlink ZBT-WE1526 */
 	ATH79_MACH_ZCN_1523H_2,			/* Zcomax ZCN-1523H-2-xx */
 	ATH79_MACH_ZCN_1523H_5,			/* Zcomax ZCN-1523H-5-xx */
+	ATH79_MACH_ZK400,			/* Lute ZK400 */
 };
 
 #endif /* _ATH79_MACHTYPE_H */
