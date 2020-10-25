@@ -65,7 +65,8 @@ endif
 AFDO_VER:=86.0.4237.0_rc-r1-merged
 AFDO_FILE:=chromeos-chrome-amd64-$$(AFDO_VER).afdo.bz2
 define Download/AFDO_PROF
-	URL:=https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm
+	URL:=https://storage.googleapis.com.cnpmjs.org/chromeos-prebuilt/afdo-job/llvm \
+	     https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm
 	URL_FILE:=$$(AFDO_FILE)
 	FILE:=$$(URL_FILE)
 	HASH:=d5730bd681766bcf4fd22c0e560ad500b2d6eb09164a9b80146cc327a156c98c
@@ -80,12 +81,13 @@ define Download/CLANG
 	HASH:=05df154999115386fb390a5ec7e6ca9e28aeae2ea1cbf76435247c0eee5b9ef3
 endef
 
-GN_VER:=git_revision\:e327ffdc503815916db2543ec000226a8df45163
+COLON:= :
++GN_VER:=git_revision$$(COLON)e327ffdc503815916db2543ec000226a8df45163
 GN_FILE:=gn-$$(GN_VER).zip
 define Download/GN_TOOL
 	URL:=https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+
-	URL_FILE:=$$(GN_FILE)
-	FILE:=$$(URL_FILE)
+	URL_FILE:=$$(GN_VER)
+	FILE:=$$(GN_FILE)
 	HASH:=6d141b84a541e31ed7d3cd4d938987fdfa7988d5081d3089bc1509a43d6b742f
 endef
 
@@ -105,7 +107,7 @@ endef
 define Build/Compile
 ( \
 	cd $(PKG_BUILD_DIR)/src ; \
-	. ../init_env.sh "$(ARCH)" "$(BOARD)" $(CPU_TYPE) $(CPU_SUBTYPE) "$(TOOLCHAIN_DIR)"; \
+	. ../init_env.sh "$(ARCH)" "$(BOARD)" $(CPU_TYPE) $(CPU_SUBTYPE) "$(TOOLCHAIN_DIR)" ; \
 	export naive_flags="$$$${naive_flags} $$$${naive_ccache_flags}" ; \
 	export OP_STAGING_DIR="$(STAGING_DIR)" ; \
 	mkdir -p out ; \
