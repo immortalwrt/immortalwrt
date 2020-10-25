@@ -13,6 +13,8 @@ music_customize_source="$(uci get unblockneteasemusic.@unblockneteasemusic[0].mu
 hijack_ways="$(uci get unblockneteasemusic.@unblockneteasemusic[0].hijack_ways)"
 endpoint="$(uci get unblockneteasemusic.@unblockneteasemusic[0].endpoint_enable)"
 force_best_quality="$(uci get unblockneteasemusic.@unblockneteasemusic[0].force_best_quality)"
+search_limit="$(uci get unblockneteasemusic.@unblockneteasemusic[0].search_limit)"
+auto_update="$(uci get unblockneteasemusic.@unblockneteasemusic[0].auto_update)"
 extFile="/usr/share/UnblockNeteaseMusic/extFile.txt"
 serverCrt="/usr/share/UnblockNeteaseMusic/server.crt"
 serverKey="/usr/share/UnblockNeteaseMusic/server.key"
@@ -50,22 +52,31 @@ set_ipset() {
 		iptables -t nat -A cloud_unblockneteasemusic -p tcp --dport 80 -j REDIRECT --to-ports "${http_port}"
 		iptables -t nat -A cloud_unblockneteasemusic -p tcp --dport 443 -j REDIRECT --to-ports "${https_port}"
 		iptables -t nat -I PREROUTING -p tcp -m set --match-set unblockneteasemusic dst -j cloud_unblockneteasemusic
-		# ipv6
-		if ! ipset list unblockneteasemusic6 >"/dev/null"; then ipset create unblockneteasemusic6 hash:ip family inet6; fi
-		domains="music.163.com"
-		for domain in $domains; do
-			ip=$(ping6 ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')
-			ipset add unblockneteasemusic6 $ip
-		done
-		ipset add unblockneteasemusic unblockneteasemusic6
-		ip6tables -t nat -N cloud_unblockneteasemusic
-		ip6tables -t nat -A cloud_unblockneteasemusic -d ::/8 -j RETURN
-		ip6tables -t nat -A cloud_unblockneteasemusic -d FE80::/10 -j RETURN
-		ip6tables -t nat -A cloud_unblockneteasemusic -d FC00::/7 -j RETURN
-		ip6tables -t nat -A cloud_unblockneteasemusic -d FEC0::/10 -j RETURN
-		ip6tables -t nat -A cloud_unblockneteasemusic -p tcp --dport 80 -j REDIRECT --to-ports "${http_port}"
-		ip6tables -t nat -A cloud_unblockneteasemusic -p tcp --dport 443 -j REDIRECT --to-ports "${https_port}"
-		ip6tables -t nat -I PREROUTING -p tcp -m set --match-set unblockneteasemusic dst -j cloud_unblockneteasemusic
+		ip6tables -h
+		if [ $? -eq 0 ]; then
+			# ipv6
+			if ! ipset list unblockneteasemusic6 >"/dev/null"; then ipset create unblockneteasemusic6 hash:ip family inet6; fi
+			domains="music.163.com"
+			for domain in $domains; do
+				ip=$(ping6 ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')
+				if [ -n "$ip" ]; then 
+				 ipset add unblockneteasemusic6 $ip
+				else
+				 echo "ping6 bad address,please check IPv6 DNS forwards.if IPv6 DNS forwards is enabled, please restart" >>"${logFile}"
+				fi
+			done
+			ipset add unblockneteasemusic unblockneteasemusic6
+			ip6tables -t nat -N cloud_unblockneteasemusic
+			ip6tables -t nat -A cloud_unblockneteasemusic -d ::/8 -j RETURN
+			ip6tables -t nat -A cloud_unblockneteasemusic -d FE80::/10 -j RETURN
+			ip6tables -t nat -A cloud_unblockneteasemusic -d FC00::/7 -j RETURN
+			ip6tables -t nat -A cloud_unblockneteasemusic -d FEC0::/10 -j RETURN
+			ip6tables -t nat -A cloud_unblockneteasemusic -p tcp --dport 80 -j REDIRECT --to-ports "${http_port}"
+			ip6tables -t nat -A cloud_unblockneteasemusic -p tcp --dport 443 -j REDIRECT --to-ports "${https_port}"
+			ip6tables -t nat -I PREROUTING -p tcp -m set --match-set unblockneteasemusic dst -j cloud_unblockneteasemusic
+		else
+			echo "ip6tables is not supported" >>"${logFile}"
+		fi
 		mkdir -p /var/etc
 		cat <<-EOF >>"/var/etc/unblockneteasemusic.include"
 			/etc/init.d/unblockneteasemusic restart
@@ -74,12 +85,15 @@ set_ipset() {
 		iptables -t nat -D PREROUTING -p tcp -m set --match-set unblockneteasemusic dst -j cloud_unblockneteasemusic
 		iptables -t nat -F cloud_unblockneteasemusic
 		iptables -t nat -X cloud_unblockneteasemusic
-		ip6tables -t nat -D PREROUTING -p tcp -m set --match-set unblockneteasemusic dst -j cloud_unblockneteasemusic
-		ip6tables -t nat -F cloud_unblockneteasemusic
-		ip6tables -t nat -X cloud_unblockneteasemusic
 		ipset destroy unblockneteasemusic
 		ipset destroy unblockneteasemusic4
-		ipset destroy unblockneteasemusic6
+		ip6tables -h
+		if [ $? -eq 0 ]; then
+			ip6tables -t nat -D PREROUTING -p tcp -m set --match-set unblockneteasemusic dst -j cloud_unblockneteasemusic
+			ip6tables -t nat -F cloud_unblockneteasemusic
+			ip6tables -t nat -X cloud_unblockneteasemusic
+			ipset destroy unblockneteasemusic6
+		fi
 		echo "" >"/var/etc/unblockneteasemusic.include"
 		rm -f "/tmp/dnsmasq.d/dnsmasq-unblockneteasemusic.conf"
 		/etc/init.d/dnsmasq reload >"/dev/null" 2>&1
@@ -108,15 +122,10 @@ set_hosts() {
 }
 createCertificate() {
 	echo "create certificate..." >>"${logFile}"
-	# 生成 CA 私钥
 	openssl genrsa -out "${caKey}" 2048
-	# 生成 CA 证书
 	openssl req -x509 -new -nodes -key "${caKey}" -sha256 -days 825 -out "${caCrt}" -subj "/C=CN/CN=UnblockNeteaseMusic Root CA/O=UnblockNeteaseMusic"
-	# 生成服务器私钥
 	openssl genrsa -out "${serverKey}" 2048
-	# 生成证书签发请求
 	openssl req -new -sha256 -key "${serverKey}" -out "${serverCsr}" -subj "/C=CN/L=Hangzhou/O=NetEase (Hangzhou) Network Co., Ltd/OU=IT Dept./CN=*.music.163.com"
-	# 使用 CA 签发服务器证书
 	touch "${extFile}"
 	echo "authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
@@ -124,6 +133,7 @@ keyUsage=digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 extendedKeyUsage=serverAuth,OCSPSigning
 subjectAltName=DNS:music.163.com,DNS:*.music.163.com" >"${extFile}"
 	openssl x509 -req -extfile "${extFile}" -days 825 -in "${serverCsr}" -CA "${caCrt}" -CAkey "${caKey}" -CAcreateserial -out "${serverCrt}"
+	rm -f "${extFile}"
 }
 start() {
 	stop >>"${logFile}" 2>&1
@@ -151,10 +161,11 @@ start() {
 			set_hosts >"/dev/null" 2>&1
 		fi
 	else
-		echo "$(date -R) 网络连接异常" >>"${logFile}"
+		echo "$(date -R) network connection error" >>"${logFile}"
 	fi
 	sed -i '/UnblockNeteaseMusic/d' /etc/crontabs/root
 	echo "*/1 * * * * /usr/share/UnblockNeteaseMusic/log_check.sh" >>"/etc/crontabs/root"
+	echo "0 5 * * * /usr/share/UnblockNeteaseMusic/version_check.sh" >>"/etc/crontabs/root"
 	/etc/init.d/cron restart >"/dev/null" 2>&1
 }
 
