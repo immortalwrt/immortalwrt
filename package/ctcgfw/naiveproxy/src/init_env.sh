@@ -10,7 +10,6 @@ target_board="$2"
 cpu_type="$3"
 cpu_subtype="$4"
 toolchain_dir="$5"
-dl_dir="$6"
 
 # Set arch info
 naive_arch="${target_arch}"
@@ -21,31 +20,6 @@ ldso_path="/lib/$(find "${toolchain_dir}/" | grep -Eo "ld-musl-[a-z0-9_-]+\\.so\
 
 # OS detection
 [ "$(uname)" != "Linux" -o "$(uname -m)" != "x86_64" ] && { echo -e "Support Linux AMD64 only."; exit 1; }
-
-cd "$PWD/src"
-
-# AFDO profile
-[ ! -f "chrome/android/profiles/afdo.prof" ] && {
-	AFDO_NAME="$(cat "chrome/android/profiles/newest.txt")"
-	[ ! -f "${dl_dir}/${AFDO_NAME}" ] && curl -f --connect-timeout 20 --retry 5 --location --insecure "https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm/${AFDO_NAME}" -o "${dl_dir}/${AFDO_NAME}"
-	bzip2 -cd > "chrome/android/profiles/afdo.prof" < "${dl_dir}/${AFDO_NAME}"
-}
-
-# Download Clang
-[ ! -d "third_party/llvm-build/Release+Asserts/bin" ] && {
-	mkdir -p "third_party/llvm-build/Release+Asserts"
-	CLANG_REVISION="$(python3 "tools/clang/scripts/update.py" --print-revision)"
-	[ ! -f "${dl_dir}/clang-${CLANG_REVISION}.tgz" ] && curl -f --connect-timeout 20 --retry 5 --location --insecure "https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64/clang-${CLANG_REVISION}.tgz" -o "${dl_dir}/clang-${CLANG_REVISION}.tgz"
-	tar -xzf "${dl_dir}/clang-${CLANG_REVISION}.tgz" -C "third_party/llvm-build/Release+Asserts"
-}
-
-# Download GN tool
-[ ! -f "gn/out/gn" ] && {
-	mkdir -p "gn/out"
-	GN_VERSION="$(grep "'gn_version':" "buildtools/DEPS" | cut -d"'" -f4)"
-	[ ! -f "${dl_dir}/gn-${GN_VERSION}.zip" ] && curl -f --connect-timeout 20 --retry 5 --location --insecure "https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/${GN_VERSION}" -o "${dl_dir}/gn-${GN_VERSION}.zip"
-	unzip -o "${dl_dir}/gn-${GN_VERSION}.zip" -d "gn/out"
-}
 
 # Set ENV
 export DEPOT_TOOLS_WIN_TOOLCHAIN=0
