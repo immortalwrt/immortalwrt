@@ -96,16 +96,21 @@ add_cron() {
 serverchan() {
     sckey=$(uci_get_by_type global serverchan)
     failed=$(uci_get_by_type global failed)
-    desc=$(cat /www/JD_DailyBonus.htm | sed 's/$/&\n/g' | sed -e '/左滑/d')
+    desc=$(cat /www/JD_DailyBonus.htm | grep -E '签到号|签到概览|签到总计|账号总计|其他总计' | sed 's/$/&\n/g')
+    serverurlflag=$(uci_get_by_type global serverurl)
+    serverurl=https://sc.ftqq.com/
+    if [ "$serverurlflag" = "sct" ]; then
+        serverurl=https://sctapi.ftqq.com/
+    fi
     if [ $failed -eq 1 ]; then
         grep "Cookie失效" /www/JD_DailyBonus.htm > /dev/null
         if [ $? -eq 0 ]; then
             title="$(date '+%Y年%m月%d日') 京东签到 Cookie 失效"
-            wget-ssl -q --output-document=/dev/null --post-data="text=$title~&desp=$desc" https://sc.ftqq.com/$sckey.send
+            wget-ssl -q --output-document=/dev/null --post-data="text=$title~&desp=$desc" $serverurl$sckey.send
         fi
     else
         title="$(date '+%Y年%m月%d日') 京东签到"
-        wget-ssl -q --output-document=/dev/null --post-data="text=$title~&desp=$desc" https://sc.ftqq.com/$sckey.send
+        wget-ssl -q --output-document=/dev/null --post-data="text=$title~&desp=$desc" $serverurl$sckey.send
     fi
 
 }
@@ -155,10 +160,14 @@ update() {
     fi
 }
 
-while getopts ":anruswh" arg; do
+while getopts ":alnruswh" arg; do
     case "$arg" in
     a)
         add_cron
+        exit 0
+        ;;
+    l)
+        serverchan
         exit 0
         ;;
     n)
