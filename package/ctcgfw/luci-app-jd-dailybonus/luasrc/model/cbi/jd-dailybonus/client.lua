@@ -14,7 +14,7 @@ o.rawhtml = true
 o.template = "jd-dailybonus/cookie_tools"
 
 o = s:option(ListValue, "remote_url", translate("Source Update Url"))
-o:value("https://raw.githubusercontent.com/NobyDa/Script/master/JD-DailyBonus/JD_DailyBonus.js", translate("GitHub"))
+o:value("https://cdn.jsdelivr.net/gh/NobyDa/Script/JD-DailyBonus/JD_DailyBonus.js", translate("GitHub"))
 o:value("https://gitee.com/jerrykuku/staff/raw/master/JD_DailyBonus.js", translate("Gitee"))
 o.default = "nil"
 o.rmempty = false
@@ -32,6 +32,13 @@ o.rmempty = false
 o.default = 0
 o.datatype = integer
 o.description = translate("自定义延迟签到,单位毫秒. 默认分批并发无延迟. (延迟作用于每个签到接口, 如填入延迟则切换顺序签到. ) ")
+
+o = s:option(ListValue, "serverurl", translate("ServerURL"))
+o:value("scu", translate("SCU"))
+o:value("sct", translate("SCT"))
+o.default = "scu"
+o.rmempty = false
+o.description = translate('选择Server酱的推送接口')
 
 o = s:option(Value, "serverchan", translate("ServerChan SCKEY"))
 o.rmempty = true
