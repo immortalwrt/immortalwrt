@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=naiveproxy
 PKG_VERSION:=86.0.4240.75-1
-PKG_RELEASE:=1
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/klzgrad/naiveproxy/tar.gz/v$(PKG_VERSION)?
@@ -19,7 +19,7 @@ PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 
-PKG_BUILD_DEPENDS:=ninja/host python3/host
+PKG_BUILD_DEPENDS:=ncurses/host ninja/host python3/host
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
@@ -62,11 +62,50 @@ ifneq ($(CONFIG_CCACHE),)
 	export naive_ccache_flags=cc_wrapper="ccache"
 endif
 
+AFDO_VER:=86.0.4237.0_rc-r1-merged
+AFDO_FILE:=chromeos-chrome-amd64-$$(AFDO_VER).afdo.bz2
+define Download/AFDO_PROF
+	URL:=https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm
+	URL_FILE:=$$(AFDO_FILE)
+	FILE:=$$(URL_FILE)
+	HASH:=d5730bd681766bcf4fd22c0e560ad500b2d6eb09164a9b80146cc327a156c98c
+endef
+
+CLANG_VER:=llvmorg-12-init-3492-ga1caa302-1
+CLANG_FILE:=clang-$$(CLANG_VER).tgz
+define Download/CLANG
+	URL:=https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64
+	URL_FILE:=$$(CLANG_FILE)
+	FILE:=$$(URL_FILE)
+	HASH:=05df154999115386fb390a5ec7e6ca9e28aeae2ea1cbf76435247c0eee5b9ef3
+endef
+
+GN_VER:=git_revision\:e327ffdc503815916db2543ec000226a8df45163
+GN_FILE:=gn-$$(GN_VER).zip
+define Download/GN_TOOL
+	URL:=https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+
+	URL_FILE:=$$(GN_FILE)
+	FILE:=$$(URL_FILE)
+	HASH:=6d141b84a541e31ed7d3cd4d938987fdfa7988d5081d3089bc1509a43d6b742f
+endef
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+
+	( \
+		cd $(PKG_BUILD_DIR)/src ; \
+		bzip2 -cd > "chrome/android/profiles/afdo.prof" < $(DL_DIR)/$(AFDO_FILE) ; \
+		mkdir -p "third_party/llvm-build/Release+Asserts" ; \
+		$(TAR) -xzf $(DL_DIR)/$(CLANG_FILE) -C "third_party/llvm-build/Release+Asserts" ; \
+		mkdir -p "gn/out" ; \
+		unzip -o $(DL_DIR)/$(GN_FILE) -d "gn/out" ; \
+	)
+endef
+
 define Build/Compile
 ( \
-	cd $(PKG_BUILD_DIR) ; \
-	./tools/import-upstream.sh ; \
-	. ./init_env.sh "$(ARCH)" "$(BOARD)" $(CPU_TYPE) $(CPU_SUBTYPE) "$(TOOLCHAIN_DIR)" "$(DL_DIR)"; \
+	cd $(PKG_BUILD_DIR)/src ; \
+	. ../init_env.sh "$(ARCH)" "$(BOARD)" $(CPU_TYPE) $(CPU_SUBTYPE) "$(TOOLCHAIN_DIR)"; \
 	export naive_flags="$$$${naive_flags} $$$${naive_ccache_flags}" ; \
 	export OP_STAGING_DIR="$(STAGING_DIR)" ; \
 	mkdir -p out ; \
@@ -76,18 +115,19 @@ define Build/Compile
 endef
 
 define Package/naiveproxy/conffiles
-/etc/chromium/policies/managed/proxy.json
 /etc/config/naiveproxy
 endef
 
 define Package/naiveproxy/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/out/Release/naive $(1)/usr/bin/naive
-	$(INSTALL_DIR) $(1)/etc/chromium/policies/managed
-	$(INSTALL_CONF) $(CURDIR)/files/proxy.json $(1)/etc/chromium/policies/managed/proxy.json
 	$(INSTALL_DIR) $(1)/etc/config $(1)/etc/init.d
 	$(INSTALL_CONF) $(CURDIR)/files/naiveproxy.config $(1)/etc/config/naiveproxy
 	$(INSTALL_BIN) $(CURDIR)/files/naiveproxy.init $(1)/etc/init.d/naiveproxy
 endef
+
+$(eval $(call Download,AFDO_PROF))
+$(eval $(call Download,CLANG))
+$(eval $(call Download,GN_TOOL))
 
 $(eval $(call BuildPackage,naiveproxy))
