@@ -82,7 +82,7 @@ define Download/CLANG
 endef
 
 COLON:= :
-+GN_VER:=git_revision$$(COLON)e327ffdc503815916db2543ec000226a8df45163
+GN_VER:=git_revision$$(COLON)e327ffdc503815916db2543ec000226a8df45163
 GN_FILE:=gn-$$(GN_VER).zip
 define Download/GN_TOOL
 	URL:=https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+
