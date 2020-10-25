@@ -6,3 +6,7 @@ config unblockneteasemusic
 	option music_source 'default'
 	option hijack_ways 'use_ipset'
 	option daemon_enable '0'
+	option search_limit '0'
+	option endpoint_enable '0'
+	option force_best_quality '0'
+	option auto_update '0'
