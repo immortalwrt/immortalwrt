@@ -2,7 +2,7 @@
 	edge is a clean HTML5 theme for LuCI. It is based on luci-theme-material edge Template
 
 	luci-theme-edge
-	Copyright 2019 Jerrykuku <jerrykuku@qq.com>
+	Copyright 2020 GaryPang <garyp@qq.com>
 
 	Have a bug? Please create an issue here on GitHub!
 	https://github.com/jerrykuku/luci-theme-edge/issues 
@@ -153,7 +153,7 @@
 				else
 					local title = pcdata(striptags(translate(nnode.title)))
                                         local en_title = pcdata(striptags(nnode.title))
-					write('<li  class="slide"><a  class="logout" data-title="%s" href="%s">%s</a></li>' %{
+					write('<li  class="slide"><a  class="Logout" data-title="%s" href="%s">%s</a></li>' %{
 						en_title,
 						nodeurl(category, r, nnode.query),
 						title
@@ -216,8 +216,8 @@
 	<meta name="msapplication-TileImage" content="<%=media%>/logo.png" />
 	<link rel="icon" href="<%=media%>/logo.png" sizes="144x144">
 	<link rel="apple-touch-icon-precomposed" href="<%=media%>/logo.png" sizes="144x144">
+			<link rel="stylesheet" href="<%=media%>/waves.css">
 		<link rel="stylesheet" href="<%=media%>/cascade.css">
-	<link rel="stylesheet" href="<%=media%>/waves.css">
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<% if node and node.css then %>
 	<link rel="stylesheet" href="<%=resource%>/<%=node.css%>">
@@ -254,6 +254,7 @@
 		</div>
 			
 		<div class="main-right">
+			<hr/>
 						<div id="indicators" class="pull-right">
 							<% render_changes() %>
 							<span data-indicator="poll-status" id="xhr_poll_status" style="display:none"

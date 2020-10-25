@@ -77,7 +77,7 @@ change_dns() {
    uci commit dhcp
    uci commit openclash
    
-   /usr/share/openclash/openclash_custom_domain_dns.sh
+   /usr/share/openclash/openclash_custom_domain_dns.sh >/dev/null 2>&1
 }
 
 revert_dns() {
@@ -628,7 +628,7 @@ yml_rule_group_get()
       return
    fi
    
-   /usr/share/openclash/yml_groups_set.sh "$group"
+   /usr/share/openclash/yml_groups_set.sh >/dev/null 2>&1 "$group"
 }
 
 yml_game_custom()
@@ -1024,7 +1024,7 @@ do_run_file()
       core_start_log="检测到配置了【Tun】内核专属功能，调用【Tun】内核启动..."
    fi
 
-   if [ -n "$(grep "^ \{0,\}rule-providers:" "$CONFIG_FILE" 2>/dev/null)" ] && [ -n "$(grep "^ \{0,\}behavior" "$CONFIG_FILE" 2>/dev/null |grep -v "^ \{0,\}#")" ]; then
+   if [ -n "$(grep "^ \{0,\}- RULE-SET," "$CONFIG_FILE" 2>/dev/null)" ]; then
       ln -s "$tun_core_path" /etc/openclash/clash 2>/dev/null
       core_type="Tun"
       core_start_log="检测到配置了【Tun】内核专属功能，调用【Tun】内核启动..."
@@ -1088,16 +1088,23 @@ do_run_file()
 start_run_core()
 {
    echo "$core_start_log" >$START_LOG
-   sleep 1
+   sleep 2
    ulimit -SHn 65535 2>/dev/null
+   ulimit -v unlimited 2>/dev/null
+   modprobe tun >/dev/null 2>&1
    config_reload=$(uci get openclash.config.config_reload 2>/dev/null)
    if [ -n "$(pidof clash)" ] && [ "$core_type" != "Tun" ] && [ "$config_reload" != "0" ]; then
       curl -s --connect-timeout 5 -m 5 -H 'Content-Type: application/json' -H "Authorization: Bearer ${da_password}" -XPUT http://"$lan_ip":"$cn_port"/configs -d "{\"path\": \"$CONFIG_FILE\"}" 2>/dev/null
    else
       kill_clash
+      #防止赋权失败
+      chmod o+w /etc/openclash/proxy_provider/* 2>/dev/null
+      chmod o+w /etc/openclash/rule_provider/* 2>/dev/null
+      chmod o+w /tmp/openclash.log 2>/dev/null
+      chown nobody:nogroup /etc/openclash/core/* 2>/dev/null
       #使用nobody启动内核方便代理路由自身流量
       capabilties="cap_sys_resource,cap_dac_override,cap_net_raw,cap_net_bind_service,cap_net_admin"
-      capsh --caps="${capabilties}+eip" -- -c "capsh --user=nobody --addamb='${capabilties}' -- -c 'nohup $CLASH -d $CLASH_CONFIG -f \"$CONFIG_FILE\" >> $LOG_FILE 2>&1 &'" >> $LOG_FILE 2>&1
+      capsh --caps="${capabilties}+eip" -- -c "capsh --user=nobody --addamb='${capabilties}' -- -c 'nohup $CLASH -d $CLASH_CONFIG -f \"$CONFIG_FILE\" >> $LOG_FILE 2>&1 &'"
    fi
    uci set openclash.config.config_reload=1 2>/dev/null
    uci commit openclash
@@ -1241,6 +1248,55 @@ ac_add()
    ipset add "$2" "$1" 2>/dev/null
 }
 
+firewall_rule_exclude()
+{
+   local section="$1"
+   local name src src_port dest dest_port proto target enabled
+
+   config_get "name" "$section" "name" ""
+   config_get "src" "$section" "src" ""
+   config_get "src_port" "$section" "src_port" ""
+   config_get "dest" "$section" "dest" ""
+   config_get "dest_port" "$section" "dest_port" ""
+   config_get "proto" "$section" "proto" ""
+   config_get "target" "$section" "target" ""
+   config_get "enabled" "$section" "enabled" ""
+
+   if [ a"$target" != aACCEPT  ] || [ a"$enabled" == a0 ]; then
+      return
+   fi
+
+   local e_udp=false
+   local e_tcp=false
+   for p in $proto; do
+       if [ $p == tcp ]; then e_tcp=true; fi
+       if [ $p == udp ]; then e_udp=true; fi
+   done
+
+   if ! $e_udp && ! $e_tcp ; then
+       return
+   fi
+
+   if [ -z "$en_mode_tun" ] || [ "$en_mode_tun" -eq 3 ]; then
+      if $e_tcp ; then
+          iptables -t nat -I openclash_output -p tcp --sport "$dest_port" -j RETURN >/dev/null 2>&1
+      fi
+      if $e_udp ; then
+          iptables -t mangle -I openclash_output -p udp --sport "$dest_port" -j RETURN >/dev/null 2>&1
+          iptables -t mangle -I openclash -p udp --dport "$dest_port" -j RETURN >/dev/null 2>&1
+      fi
+   elif [ "$en_mode_tun" -ne 3 ]; then
+      if $e_tcp ; then
+          iptables -t mangle -I openclash_output -p tcp --sport "$dest_port" -j RETURN >/dev/null 2>&1
+          iptables -t mangle -I openclash -p tcp --dport "$dest_port" -j RETURN >/dev/null 2>&1
+      fi
+      if $e_udp ; then
+          iptables -t mangle -I openclash_output -p udp --sport "$dest_port" -j RETURN >/dev/null 2>&1
+          iptables -t mangle -I openclash -p udp --dport "$dest_port" -j RETURN >/dev/null 2>&1
+      fi
+   fi
+}
+
 firewall_redirect_exclude()
 {
    local section="$1"
@@ -1293,13 +1349,13 @@ if [ "$(uci get firewall.@defaults[0].forward)" != "ACCEPT" ]; then
    uci commit firewall >/dev/null 2>&1
    /etc/init.d/firewall reload >/dev/null 2>&1
 fi
-          
+
 mkdir -p /var/etc
 cat > "/var/etc/openclash.include" <<-EOF
 /etc/init.d/openclash reload >/dev/null 2>&1
 EOF
 
-if [ "$china_ip_route" -eq 1 ]; then
+if [ "$china_ip_route" = "1" ]; then
    if [ ! -f "/usr/share/openclash/res/china_ip_route.ipset" ]; then
       cp /etc/openclash/rule_provider/ChinaIP.yaml /tmp/china_ip_route.list 2>/dev/null
       sed -i "s/'//g" /tmp/china_ip_route.list 2>/dev/null
@@ -1412,7 +1468,10 @@ if [ -z "$en_mode_tun" ] || [ "$en_mode_tun" -eq 3 ]; then
       iptables -t nat -F openclash_output
       iptables -t nat -A openclash_output -m set --match-set localnetwork dst -j RETURN
       #iptables -t nat -A openclash_output -p tcp -d 198.18.0.0/16 -j REDIRECT --to-ports "$proxy_port"
-      iptables -t nat -A openclash_output -m owner ! --uid-owner 65534 -p tcp -j REDIRECT --to-ports "$proxy_port"
+      iptables -t nat -A openclash_output -m owner ! --uid-owner 65534 -p tcp -m multiport --dport 80,443 -j REDIRECT --to-ports "$proxy_port"
+      if [ "$en_mode" = "fake-ip" ]; then
+         iptables -t nat -A openclash_output -m owner ! --uid-owner 65534 -p tcp -d 198.18.0.0/16 -j REDIRECT --to-ports "$proxy_port"
+      fi
       iptables -t nat -I OUTPUT -j openclash_output
    #fi
 
@@ -1461,15 +1520,24 @@ if [ -n "$en_mode_tun" ]; then
    ip rule add fwmark "$PROXY_FWMARK" table "$PROXY_ROUTE_TABLE"
    
    #设置防火墙
-   iptables -t mangle -N openclash_output
-   iptables -t mangle -F openclash_output
-   iptables -t mangle -A openclash_output -m set --match-set localnetwork dst -j RETURN
-   if [ "$en_mode_tun" -ne 3 ]; then
-      iptables -t mangle -A openclash_output -m owner ! --uid-owner 65534 -j MARK --set-mark "$PROXY_FWMARK"
-   else
-      iptables -t mangle -A openclash_output -m owner ! --uid-owner 65534 -p udp -j MARK --set-mark "$PROXY_FWMARK"
+   if [ "$en_mode" = "fake-ip" ]; then
+      iptables -t mangle -N openclash_output
+      iptables -t mangle -F openclash_output
+      iptables -t mangle -A openclash_output -m set --match-set localnetwork dst -j RETURN
+      if [ "$en_mode_tun" -ne 3 ]; then
+         iptables -t mangle -A openclash_output -m owner ! --uid-owner 65534 -p tcp -m multiport --dport 80,443 -j MARK --set-mark "$PROXY_FWMARK"
+         iptables -t mangle -A openclash_output -m owner ! --uid-owner 65534 -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
+      else
+         iptables -t mangle -A openclash_output -m owner ! --uid-owner 65534 -p udp -d 198.18.0.0/16 -j MARK --set-mark "$PROXY_FWMARK"
+      fi  
+      iptables -t mangle -I OUTPUT -j openclash_output
+   elif [ "$en_mode" = "redir-host" ] && [ "$en_mode_tun" -ne 3 ]; then
+      iptables -t mangle -N openclash_output
+      iptables -t mangle -F openclash_output
+      iptables -t mangle -A openclash_output -m set --match-set localnetwork dst -j RETURN
+      iptables -t mangle -A openclash_output -m owner ! --uid-owner 65534 -p tcp -m multiport --dport 80,443 -j MARK --set-mark "$PROXY_FWMARK"
+      iptables -t mangle -I OUTPUT -j openclash_output
    fi
-   iptables -t mangle -I OUTPUT -j openclash_output
    
    iptables -t mangle -N openclash
    iptables -t mangle -F openclash
@@ -1508,6 +1576,7 @@ fi
 #端口转发
 config_load "firewall"
 config_foreach firewall_redirect_exclude "redirect"
+config_foreach firewall_rule_exclude "rule"
 }
 
 revert_firewall()
@@ -1650,28 +1719,29 @@ start()
    config_foreach yml_auth_get "authentication"
    yml_auth_custom "$CHANGE_FILE"
    yml_dns_custom "$enable_custom_dns" "$DNS_FILE" "$FALLBACK_FILTER_FILE"
-   /usr/share/openclash/yml_change.sh >/dev/null 2>&1 "$LOGTIME" "$en_mode" "$enable_custom_dns" "$da_password" "$cn_port" "$proxy_port" "$CHANGE_FILE" "$ipv6_enable" "$http_port" "$socks_port" "$lan_ip" "$log_level" "$proxy_mode" "$intranet_allowed" "$en_mode_tun" "$stack_type" "$dns_port" &
+   /usr/share/openclash/yml_change.sh >/dev/null 2>&1 "$LOGTIME" "$en_mode" "$enable_custom_dns" "$da_password" "$cn_port" "$proxy_port" "$CHANGE_FILE" "$ipv6_enable" "$http_port" "$socks_port" "$lan_ip" "$log_level" "$proxy_mode" "$intranet_allowed" "$en_mode_tun" "$stack_type" "$dns_port" "$core_type" &
    /usr/share/openclash/yml_rules_change.sh >/dev/null 2>&1 "$LOGTIME" "$rule_source" "$enable_custom_clash_rules" "$RULE_FILE" "$set_rule_file" "$en_mode" "$enable_rule_proxy" "$BACKUP_FILE" "$RULE_PROVIDER_FILE" &
    wait
+
    yml_provider_path "$PROXY_PROVIDER_FILE" "proxy_provider"
    yml_provider_path "$RULE_PROVIDER_FILE" "rule_provider"
    yml_custom_rule_provider
    yml_game_custom
-   
+
    echo "第四步: 合并配置文件修改..." >$START_LOG
    yml_merge
    
    echo "第五步: 启动主程序..." >$START_LOG
-   sleep 1
    start_run_core
-             
+   
+   echo "第六步: 检查内核启动状态..." >$START_LOG
+   check_core_status
+
    #检测proxy_provider配置文件状态
-   echo "第六步: 等待主程序下载外部文件..." >$START_LOG
+   echo "第七步: 等待主程序下载外部文件..." >$START_LOG
    yml_provider_check "$PROXY_PROVIDER_FILE" "proxy_provider"
    yml_provider_check "$RULE_PROVIDER_FILE" "rule_provider"
-   
-   echo "第七步: 检查内核启动状态..." >$START_LOG
-   check_core_status
+
    try_restore_start
    
    echo "第八步: 设置控制面板..." >$START_LOG

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+sys_temp="$(sensors | grep -Eo '\+[0-9]+.+C' | grep -Ev 'high' | sed ':a;N;$!ba;s/\n/ /g;s/+//g')"
+
+if grep -q "ipq40xx" "/etc/openwrt_release"; then
+	echo -n "WiFi: ${sys_temp}"
+else
+	cpu_temp="$(awk "BEGIN{printf (\"%.1f\n\",$(cat /sys/class/thermal/thermal_zone0/temp)/1000) }")°C"
+	echo -n "CPU: ${cpu_temp}, WiFi: ${sys_temp}"
+fi
