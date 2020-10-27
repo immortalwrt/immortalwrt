@@ -224,13 +224,18 @@ case "$FIRMWARE" in
 		;;
 	dlink,dir-842-c1|\
 	dlink,dir-842-c2|\
-	dlink,dir-842-c3|\
+	dlink,dir-842-c3)
+		ath10kcal_extract "art" 0x5000 0x2f20
+		ath10kcal_is_caldata_valid "202f" || ath10kcal_extract "reserved" 0x15000 0x2f20
+		ath10kcal_patch_mac_crc $(mtd_get_mac_ascii devdata wlan5mac)
+		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
+			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
+		;;
 	nec,wg1200cr)
 		ath10kcal_extract "art" 0x5000 0x2f20
 		ath10kcal_patch_mac_crc $(mtd_get_mac_ascii devdata wlan5mac)
 		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
 			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
-		;;
 	netgear,ex6400|\
 	netgear,ex7300)
 		ath10kcal_extract "caldata" 0x5000 0x2f20
