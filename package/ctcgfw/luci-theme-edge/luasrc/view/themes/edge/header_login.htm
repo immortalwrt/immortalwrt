@@ -41,16 +41,7 @@
 
 	local c = tree
 	local i, r
-	
-	function glob(...)
-		local iter, code, msg = fs.glob(...)
-		if iter then
-			return nutil.consume(iter)
-		else
-			return nil, code, msg
-		end
-	end
-	
+
 	-- tag all nodes leading to this page
 	for i, r in ipairs(request) do
 		if c.nodes and c.nodes[r] then
@@ -188,9 +179,7 @@
 		end
 	end
 	
-	math.randomseed(os.time())
-	local bgTable = glob("/www/luci-static/argon/img/*")
-	local  bgcount = table.getn(bgTable) 
+	math.randomseed(os.time()) 
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
@@ -233,22 +222,5 @@
 
 <body
 	class="<%- if node then %><%= striptags( node.title ) %><%- end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %> lang_<%=luci.i18n.context.lang%>  ">
-<!--[if lt IE 9]>
-<style>
-.chromeframe{
-padding:2rem 3rem;
-margin:0 auto;
-font-size:14px;
-color:#fff;
-position:relative;
-z-index:9999;
-text-align:center;
-}
-.chromeframe a{
-color:orangered;
-}
-</style>
-<p class="chromeframe">您使用的IE浏览器版本过低,
-<a href="https://www.microsoft.com/edge/" target="_blank" class="textToLink one-pan-link-mark"> 升级 </a>您的IE浏览器<br/>
-或使用<a href="http://www.google.com/chromeframe/?redirect=true"> Chrome </a>, <a href="https://www.mozilla.org/zh-CN/firefox/new/"> Firefox </a>等高级浏览器，将会得到更好的体验！</a></p>
-<![endif]-->
+<p class="chromeframe">您使用的浏览器过于老旧,
+请使用<a href="https://www.microsoft.com/zh-cn/edge"> Edge </a>, <a href="https://www.mozilla.org/zh-CN/firefox/new/"> Firefox </a>等高级浏览器.</a></p>
