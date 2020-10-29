@@ -197,7 +197,8 @@ function gen_outbound(server_node, tags, local_ports)
                             congestion = (server.congestion == '1') and true or false,
                             readBufferSize = tonumber(server.read_buffer_size),
                             writeBufferSize = tonumber(server.write_buffer_size),
-                            header = {type = server.kcp_guise}
+                            header = {type = server.kcp_guise},
+                            seed = server.seed
                         } or
                         nil,
                     wsSettings = (server.transport == 'ws') and (server.ws_path ~= nil or server.ws_host ~= nil) and
