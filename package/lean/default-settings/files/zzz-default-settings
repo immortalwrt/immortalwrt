@@ -36,12 +36,14 @@ sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 wifi up
 
+# NEVER DROP THE EXISTING AUTHORS INFO | 禁止删除现有作者信息
 sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION=''" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
-echo "DISTRIB_DESCRIPTION='OpenWrt Snapshot | Mod20.10 By CTCGFW'" >> /etc/openwrt_release
+echo "DISTRIB_DESCRIPTION='OpenWrt Snapshot Official | Mod20.10 By CTCGFW'" >> /etc/openwrt_release
 
-sed -i 's/LuCI Master/LuCI Snapshot/g' /usr/lib/lua/luci/version.lua
+# NEVER DROP THE EXISTING AUTHORS INFO | 禁止删除现有作者信息
+sed -i 's/LuCI Master/LuCI Snapshot Official/g' /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
 echo 'luciversion = "Mod20.10 by CTCGFW"' >> /usr/lib/lua/luci/version.lua
 
