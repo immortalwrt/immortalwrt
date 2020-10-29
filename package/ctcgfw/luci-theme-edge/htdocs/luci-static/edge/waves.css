@@ -8,6 +8,8 @@
 .waves-effect {
   position: relative;
   cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -93,7 +95,7 @@
 }
 .waves-button-input {
   margin: 0;
-  padding: 0;
+  padding: 0.85em 1.1em;
 }
 .waves-input-wrapper {
   border-radius: 0.2em;
