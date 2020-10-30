@@ -42,15 +42,6 @@
 	local c = tree
 	local i, r
 	
-	function glob(...)
-		local iter, code, msg = fs.glob(...)
-		if iter then
-			return nutil.consume(iter)
-		else
-			return nil, code, msg
-		end
-	end
-	
 	-- tag all nodes leading to this page
 	for i, r in ipairs(request) do
 		if c.nodes and c.nodes[r] then
@@ -189,8 +180,6 @@
 	end
 	
 	math.randomseed(os.time())
-	local bgTable = glob("/www/luci-static/argon/img/*")
-	local  bgcount = table.getn(bgTable) 
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">

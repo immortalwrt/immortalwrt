@@ -264,7 +264,11 @@ local function processData(szType, content)
         result.alias = '[' .. content.airport .. '] ' .. content.remarks
     end
     if not result.alias then
-        result.alias = result.server .. ':' .. result.server_port
+        if result.server and result.server_port then
+            result.alias = result.server .. ':' .. result.server_port
+        else
+            result.alias = "NULL"
+        end
     end
     -- alias 不参与 hashkey 计算
     local alias = result.alias
