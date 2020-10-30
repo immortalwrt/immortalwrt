@@ -52,7 +52,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  static inline void cprman_write(struct bcm2835_cprman *cprman, u32 reg, u32 val)
  {
  	writel(CM_PASSWORD | val, cprman->regs + reg);
-@@ -1528,22 +1535,28 @@ typedef struct clk_hw *(*bcm2835_clk_reg
+@@ -1530,22 +1537,28 @@ typedef struct clk_hw *(*bcm2835_clk_reg
  					       const void *data);
  struct bcm2835_clk_desc {
  	bcm2835_clk_register clk_register;
@@ -89,7 +89,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  					  &(struct bcm2835_gate_data)	\
  					  {__VA_ARGS__})
  
-@@ -1557,7 +1570,8 @@ static const char *const bcm2835_clock_o
+@@ -1559,7 +1572,8 @@ static const char *const bcm2835_clock_o
  	"testdebug1"
  };
  
@@ -99,7 +99,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	.num_mux_parents = ARRAY_SIZE(bcm2835_clock_osc_parents),	\
  	.parents = bcm2835_clock_osc_parents,				\
  	__VA_ARGS__)
-@@ -1574,7 +1588,8 @@ static const char *const bcm2835_clock_p
+@@ -1576,7 +1590,8 @@ static const char *const bcm2835_clock_p
  	"pllh_aux",
  };
  
@@ -109,7 +109,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	.num_mux_parents = ARRAY_SIZE(bcm2835_clock_per_parents),	\
  	.parents = bcm2835_clock_per_parents,				\
  	__VA_ARGS__)
-@@ -1599,7 +1614,8 @@ static const char *const bcm2835_pcm_per
+@@ -1601,7 +1616,8 @@ static const char *const bcm2835_pcm_per
  	"-",
  };
  
@@ -119,7 +119,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	.num_mux_parents = ARRAY_SIZE(bcm2835_pcm_per_parents),		\
  	.parents = bcm2835_pcm_per_parents,				\
  	__VA_ARGS__)
-@@ -1618,7 +1634,8 @@ static const char *const bcm2835_clock_v
+@@ -1620,7 +1636,8 @@ static const char *const bcm2835_clock_v
  	"pllc_core2",
  };
  
@@ -129,7 +129,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	.num_mux_parents = ARRAY_SIZE(bcm2835_clock_vpu_parents),	\
  	.parents = bcm2835_clock_vpu_parents,				\
  	__VA_ARGS__)
-@@ -1654,12 +1671,14 @@ static const char *const bcm2835_clock_d
+@@ -1656,12 +1673,14 @@ static const char *const bcm2835_clock_d
  	"dsi1_byte_inv",
  };
  
@@ -146,7 +146,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	.num_mux_parents = ARRAY_SIZE(bcm2835_clock_dsi1_parents),	\
  	.parents = bcm2835_clock_dsi1_parents,				\
  	__VA_ARGS__)
-@@ -1679,6 +1698,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1681,6 +1700,7 @@ static const struct bcm2835_clk_desc clk
  	 * AUDIO domain is on.
  	 */
  	[BCM2835_PLLA]		= REGISTER_PLL(
@@ -154,7 +154,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plla",
  		.cm_ctrl_reg = CM_PLLA,
  		.a2w_ctrl_reg = A2W_PLLA_CTRL,
-@@ -1693,6 +1713,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1695,6 +1715,7 @@ static const struct bcm2835_clk_desc clk
  		.max_rate = 2400000000u,
  		.max_fb_rate = BCM2835_MAX_FB_RATE),
  	[BCM2835_PLLA_CORE]	= REGISTER_PLL_DIV(
@@ -162,7 +162,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plla_core",
  		.source_pll = "plla",
  		.cm_reg = CM_PLLA,
-@@ -1702,6 +1723,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1704,6 +1725,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLA_PER]	= REGISTER_PLL_DIV(
@@ -170,7 +170,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plla_per",
  		.source_pll = "plla",
  		.cm_reg = CM_PLLA,
-@@ -1711,6 +1733,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1713,6 +1735,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLA_DSI0]	= REGISTER_PLL_DIV(
@@ -178,7 +178,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plla_dsi0",
  		.source_pll = "plla",
  		.cm_reg = CM_PLLA,
-@@ -1719,6 +1742,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1721,6 +1744,7 @@ static const struct bcm2835_clk_desc clk
  		.hold_mask = CM_PLLA_HOLDDSI0,
  		.fixed_divider = 1),
  	[BCM2835_PLLA_CCP2]	= REGISTER_PLL_DIV(
@@ -186,7 +186,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plla_ccp2",
  		.source_pll = "plla",
  		.cm_reg = CM_PLLA,
-@@ -1730,6 +1754,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1732,6 +1756,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* PLLB is used for the ARM's clock. */
  	[BCM2835_PLLB]		= REGISTER_PLL(
@@ -194,7 +194,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllb",
  		.cm_ctrl_reg = CM_PLLB,
  		.a2w_ctrl_reg = A2W_PLLB_CTRL,
-@@ -1744,6 +1769,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1746,6 +1771,7 @@ static const struct bcm2835_clk_desc clk
  		.max_rate = 3000000000u,
  		.max_fb_rate = BCM2835_MAX_FB_RATE),
  	[BCM2835_PLLB_ARM]	= REGISTER_PLL_DIV(
@@ -202,7 +202,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllb_arm",
  		.source_pll = "pllb",
  		.cm_reg = CM_PLLB,
-@@ -1760,6 +1786,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1762,6 +1788,7 @@ static const struct bcm2835_clk_desc clk
  	 * AUDIO domain is on.
  	 */
  	[BCM2835_PLLC]		= REGISTER_PLL(
@@ -210,7 +210,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllc",
  		.cm_ctrl_reg = CM_PLLC,
  		.a2w_ctrl_reg = A2W_PLLC_CTRL,
-@@ -1774,6 +1801,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1776,6 +1803,7 @@ static const struct bcm2835_clk_desc clk
  		.max_rate = 3000000000u,
  		.max_fb_rate = BCM2835_MAX_FB_RATE),
  	[BCM2835_PLLC_CORE0]	= REGISTER_PLL_DIV(
@@ -218,7 +218,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllc_core0",
  		.source_pll = "pllc",
  		.cm_reg = CM_PLLC,
-@@ -1783,6 +1811,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1785,6 +1813,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLC_CORE1]	= REGISTER_PLL_DIV(
@@ -226,7 +226,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllc_core1",
  		.source_pll = "pllc",
  		.cm_reg = CM_PLLC,
-@@ -1792,6 +1821,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1794,6 +1823,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLC_CORE2]	= REGISTER_PLL_DIV(
@@ -234,7 +234,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllc_core2",
  		.source_pll = "pllc",
  		.cm_reg = CM_PLLC,
-@@ -1801,6 +1831,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1803,6 +1833,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLC_PER]	= REGISTER_PLL_DIV(
@@ -242,7 +242,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllc_per",
  		.source_pll = "pllc",
  		.cm_reg = CM_PLLC,
-@@ -1817,6 +1848,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1819,6 +1850,7 @@ static const struct bcm2835_clk_desc clk
  	 * AUDIO domain is on.
  	 */
  	[BCM2835_PLLD]		= REGISTER_PLL(
@@ -250,7 +250,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plld",
  		.cm_ctrl_reg = CM_PLLD,
  		.a2w_ctrl_reg = A2W_PLLD_CTRL,
-@@ -1831,6 +1863,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1833,6 +1865,7 @@ static const struct bcm2835_clk_desc clk
  		.max_rate = 2400000000u,
  		.max_fb_rate = BCM2835_MAX_FB_RATE),
  	[BCM2835_PLLD_CORE]	= REGISTER_PLL_DIV(
@@ -258,7 +258,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plld_core",
  		.source_pll = "plld",
  		.cm_reg = CM_PLLD,
-@@ -1840,6 +1873,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1842,6 +1875,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLD_PER]	= REGISTER_PLL_DIV(
@@ -266,7 +266,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plld_per",
  		.source_pll = "plld",
  		.cm_reg = CM_PLLD,
-@@ -1849,6 +1883,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1851,6 +1885,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLD_DSI0]	= REGISTER_PLL_DIV(
@@ -274,7 +274,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plld_dsi0",
  		.source_pll = "plld",
  		.cm_reg = CM_PLLD,
-@@ -1857,6 +1892,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1859,6 +1894,7 @@ static const struct bcm2835_clk_desc clk
  		.hold_mask = CM_PLLD_HOLDDSI0,
  		.fixed_divider = 1),
  	[BCM2835_PLLD_DSI1]	= REGISTER_PLL_DIV(
@@ -282,7 +282,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "plld_dsi1",
  		.source_pll = "plld",
  		.cm_reg = CM_PLLD,
-@@ -1872,6 +1908,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1874,6 +1910,7 @@ static const struct bcm2835_clk_desc clk
  	 * It is in the HDMI power domain.
  	 */
  	[BCM2835_PLLH]		= REGISTER_PLL(
@@ -290,7 +290,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		"pllh",
  		.cm_ctrl_reg = CM_PLLH,
  		.a2w_ctrl_reg = A2W_PLLH_CTRL,
-@@ -1886,6 +1923,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1888,6 +1925,7 @@ static const struct bcm2835_clk_desc clk
  		.max_rate = 3000000000u,
  		.max_fb_rate = BCM2835_MAX_FB_RATE),
  	[BCM2835_PLLH_RCAL]	= REGISTER_PLL_DIV(
@@ -298,7 +298,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllh_rcal",
  		.source_pll = "pllh",
  		.cm_reg = CM_PLLH,
-@@ -1895,6 +1933,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1897,6 +1935,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 10,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLH_AUX]	= REGISTER_PLL_DIV(
@@ -306,7 +306,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllh_aux",
  		.source_pll = "pllh",
  		.cm_reg = CM_PLLH,
-@@ -1904,6 +1943,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1906,6 +1945,7 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  	[BCM2835_PLLH_PIX]	= REGISTER_PLL_DIV(
@@ -314,7 +314,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pllh_pix",
  		.source_pll = "pllh",
  		.cm_reg = CM_PLLH,
-@@ -1919,6 +1959,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1921,6 +1961,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* One Time Programmable Memory clock.  Maximum 10Mhz. */
  	[BCM2835_CLOCK_OTP]	= REGISTER_OSC_CLK(
@@ -322,7 +322,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "otp",
  		.ctl_reg = CM_OTPCTL,
  		.div_reg = CM_OTPDIV,
-@@ -1930,6 +1971,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1932,6 +1973,7 @@ static const struct bcm2835_clk_desc clk
  	 * bythe watchdog timer and the camera pulse generator.
  	 */
  	[BCM2835_CLOCK_TIMER]	= REGISTER_OSC_CLK(
@@ -330,7 +330,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "timer",
  		.ctl_reg = CM_TIMERCTL,
  		.div_reg = CM_TIMERDIV,
-@@ -1940,12 +1982,14 @@ static const struct bcm2835_clk_desc clk
+@@ -1942,12 +1984,14 @@ static const struct bcm2835_clk_desc clk
  	 * Generally run at 2Mhz, max 5Mhz.
  	 */
  	[BCM2835_CLOCK_TSENS]	= REGISTER_OSC_CLK(
@@ -345,7 +345,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "tec",
  		.ctl_reg = CM_TECCTL,
  		.div_reg = CM_TECDIV,
-@@ -1954,6 +1998,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1956,6 +2000,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* clocks with vpu parent mux */
  	[BCM2835_CLOCK_H264]	= REGISTER_VPU_CLK(
@@ -353,7 +353,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "h264",
  		.ctl_reg = CM_H264CTL,
  		.div_reg = CM_H264DIV,
-@@ -1961,6 +2006,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1963,6 +2008,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 1),
  	[BCM2835_CLOCK_ISP]	= REGISTER_VPU_CLK(
@@ -361,7 +361,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "isp",
  		.ctl_reg = CM_ISPCTL,
  		.div_reg = CM_ISPDIV,
-@@ -1973,6 +2019,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1975,6 +2021,7 @@ static const struct bcm2835_clk_desc clk
  	 * in the SDRAM controller can't be used.
  	 */
  	[BCM2835_CLOCK_SDRAM]	= REGISTER_VPU_CLK(
@@ -369,7 +369,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "sdram",
  		.ctl_reg = CM_SDCCTL,
  		.div_reg = CM_SDCDIV,
-@@ -1980,6 +2027,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1982,6 +2029,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 0,
  		.tcnt_mux = 3),
  	[BCM2835_CLOCK_V3D]	= REGISTER_VPU_CLK(
@@ -377,7 +377,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "v3d",
  		.ctl_reg = CM_V3DCTL,
  		.div_reg = CM_V3DDIV,
-@@ -1993,6 +2041,7 @@ static const struct bcm2835_clk_desc clk
+@@ -1995,6 +2043,7 @@ static const struct bcm2835_clk_desc clk
  	 * in various hardware documentation.
  	 */
  	[BCM2835_CLOCK_VPU]	= REGISTER_VPU_CLK(
@@ -385,7 +385,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "vpu",
  		.ctl_reg = CM_VPUCTL,
  		.div_reg = CM_VPUDIV,
-@@ -2004,6 +2053,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2006,6 +2055,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* clocks with per parent mux */
  	[BCM2835_CLOCK_AVEO]	= REGISTER_PER_CLK(
@@ -393,7 +393,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "aveo",
  		.ctl_reg = CM_AVEOCTL,
  		.div_reg = CM_AVEODIV,
-@@ -2011,6 +2061,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2013,6 +2063,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 0,
  		.tcnt_mux = 38),
  	[BCM2835_CLOCK_CAM0]	= REGISTER_PER_CLK(
@@ -401,7 +401,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "cam0",
  		.ctl_reg = CM_CAM0CTL,
  		.div_reg = CM_CAM0DIV,
-@@ -2018,6 +2069,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2020,6 +2071,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 14),
  	[BCM2835_CLOCK_CAM1]	= REGISTER_PER_CLK(
@@ -409,7 +409,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "cam1",
  		.ctl_reg = CM_CAM1CTL,
  		.div_reg = CM_CAM1DIV,
-@@ -2025,12 +2077,14 @@ static const struct bcm2835_clk_desc clk
+@@ -2027,12 +2079,14 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 15),
  	[BCM2835_CLOCK_DFT]	= REGISTER_PER_CLK(
@@ -424,7 +424,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "dpi",
  		.ctl_reg = CM_DPICTL,
  		.div_reg = CM_DPIDIV,
-@@ -2040,6 +2094,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2042,6 +2096,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* Arasan EMMC clock */
  	[BCM2835_CLOCK_EMMC]	= REGISTER_PER_CLK(
@@ -432,7 +432,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "emmc",
  		.ctl_reg = CM_EMMCCTL,
  		.div_reg = CM_EMMCDIV,
-@@ -2049,6 +2104,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2051,6 +2106,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* General purpose (GPIO) clocks */
  	[BCM2835_CLOCK_GP0]	= REGISTER_PER_CLK(
@@ -440,7 +440,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "gp0",
  		.ctl_reg = CM_GP0CTL,
  		.div_reg = CM_GP0DIV,
-@@ -2057,6 +2113,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2059,6 +2115,7 @@ static const struct bcm2835_clk_desc clk
  		.is_mash_clock = true,
  		.tcnt_mux = 20),
  	[BCM2835_CLOCK_GP1]	= REGISTER_PER_CLK(
@@ -448,7 +448,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "gp1",
  		.ctl_reg = CM_GP1CTL,
  		.div_reg = CM_GP1DIV,
-@@ -2066,6 +2123,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2068,6 +2125,7 @@ static const struct bcm2835_clk_desc clk
  		.is_mash_clock = true,
  		.tcnt_mux = 21),
  	[BCM2835_CLOCK_GP2]	= REGISTER_PER_CLK(
@@ -456,7 +456,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "gp2",
  		.ctl_reg = CM_GP2CTL,
  		.div_reg = CM_GP2DIV,
-@@ -2075,6 +2133,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2077,6 +2135,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* HDMI state machine */
  	[BCM2835_CLOCK_HSM]	= REGISTER_PER_CLK(
@@ -464,7 +464,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "hsm",
  		.ctl_reg = CM_HSMCTL,
  		.div_reg = CM_HSMDIV,
-@@ -2082,6 +2141,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2084,6 +2143,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 22),
  	[BCM2835_CLOCK_PCM]	= REGISTER_PCM_CLK(
@@ -472,7 +472,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pcm",
  		.ctl_reg = CM_PCMCTL,
  		.div_reg = CM_PCMDIV,
-@@ -2091,6 +2151,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2093,6 +2153,7 @@ static const struct bcm2835_clk_desc clk
  		.low_jitter = true,
  		.tcnt_mux = 23),
  	[BCM2835_CLOCK_PWM]	= REGISTER_PER_CLK(
@@ -480,7 +480,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "pwm",
  		.ctl_reg = CM_PWMCTL,
  		.div_reg = CM_PWMDIV,
-@@ -2099,6 +2160,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2101,6 +2162,7 @@ static const struct bcm2835_clk_desc clk
  		.is_mash_clock = true,
  		.tcnt_mux = 24),
  	[BCM2835_CLOCK_SLIM]	= REGISTER_PER_CLK(
@@ -488,7 +488,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "slim",
  		.ctl_reg = CM_SLIMCTL,
  		.div_reg = CM_SLIMDIV,
-@@ -2107,6 +2169,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2109,6 +2171,7 @@ static const struct bcm2835_clk_desc clk
  		.is_mash_clock = true,
  		.tcnt_mux = 25),
  	[BCM2835_CLOCK_SMI]	= REGISTER_PER_CLK(
@@ -496,7 +496,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "smi",
  		.ctl_reg = CM_SMICTL,
  		.div_reg = CM_SMIDIV,
-@@ -2114,6 +2177,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2116,6 +2179,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 27),
  	[BCM2835_CLOCK_UART]	= REGISTER_PER_CLK(
@@ -504,7 +504,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "uart",
  		.ctl_reg = CM_UARTCTL,
  		.div_reg = CM_UARTDIV,
-@@ -2123,6 +2187,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2125,6 +2189,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* TV encoder clock.  Only operating frequency is 108Mhz.  */
  	[BCM2835_CLOCK_VEC]	= REGISTER_PER_CLK(
@@ -512,7 +512,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "vec",
  		.ctl_reg = CM_VECCTL,
  		.div_reg = CM_VECDIV,
-@@ -2137,6 +2202,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2139,6 +2204,7 @@ static const struct bcm2835_clk_desc clk
  
  	/* dsi clocks */
  	[BCM2835_CLOCK_DSI0E]	= REGISTER_PER_CLK(
@@ -520,7 +520,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "dsi0e",
  		.ctl_reg = CM_DSI0ECTL,
  		.div_reg = CM_DSI0EDIV,
-@@ -2144,6 +2210,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2146,6 +2212,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 18),
  	[BCM2835_CLOCK_DSI1E]	= REGISTER_PER_CLK(
@@ -528,7 +528,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "dsi1e",
  		.ctl_reg = CM_DSI1ECTL,
  		.div_reg = CM_DSI1EDIV,
-@@ -2151,6 +2218,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2153,6 +2220,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 19),
  	[BCM2835_CLOCK_DSI0P]	= REGISTER_DSI0_CLK(
@@ -536,7 +536,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "dsi0p",
  		.ctl_reg = CM_DSI0PCTL,
  		.div_reg = CM_DSI0PDIV,
-@@ -2158,6 +2226,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2160,6 +2228,7 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 0,
  		.tcnt_mux = 12),
  	[BCM2835_CLOCK_DSI1P]	= REGISTER_DSI1_CLK(
@@ -544,7 +544,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "dsi1p",
  		.ctl_reg = CM_DSI1PCTL,
  		.div_reg = CM_DSI1PDIV,
-@@ -2174,6 +2243,7 @@ static const struct bcm2835_clk_desc clk
+@@ -2176,6 +2245,7 @@ static const struct bcm2835_clk_desc clk
  	 * non-stop vpu clock.
  	 */
  	[BCM2835_CLOCK_PERI_IMAGE] = REGISTER_GATE(
@@ -552,7 +552,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  		.name = "peri_image",
  		.parent = "vpu",
  		.ctl_reg = CM_PERIICTL),
-@@ -2221,11 +2291,16 @@ static int bcm2835_clk_probe(struct plat
+@@ -2223,11 +2293,16 @@ static int bcm2835_clk_probe(struct plat
  	struct resource *res;
  	const struct bcm2835_clk_desc *desc;
  	const size_t asize = ARRAY_SIZE(clk_desc_array);
@@ -569,7 +569,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	cprman = devm_kzalloc(dev,
  			      struct_size(cprman, onecell.hws, asize),
  			      GFP_KERNEL);
-@@ -2276,8 +2351,10 @@ static int bcm2835_clk_probe(struct plat
+@@ -2278,8 +2353,10 @@ static int bcm2835_clk_probe(struct plat
  
  	for (i = 0; i < asize; i++) {
  		desc = &clk_desc_array[i];
@@ -581,7 +581,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	}
  
  	ret = bcm2835_mark_sdc_parent_critical(hws[BCM2835_CLOCK_SDRAM]->clk);
-@@ -2295,8 +2372,12 @@ static int bcm2835_clk_probe(struct plat
+@@ -2297,8 +2374,12 @@ static int bcm2835_clk_probe(struct plat
  	return 0;
  }
  

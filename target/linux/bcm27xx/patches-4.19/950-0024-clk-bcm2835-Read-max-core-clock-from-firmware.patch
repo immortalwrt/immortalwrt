@@ -90,7 +90,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
  	.set_rate = bcm2835_clock_set_rate,
  	.determine_rate = bcm2835_clock_determine_rate,
  	.set_parent = bcm2835_clock_set_parent,
-@@ -2165,6 +2193,7 @@ static int bcm2835_clk_probe(struct plat
+@@ -2167,6 +2195,7 @@ static int bcm2835_clk_probe(struct plat
  	struct resource *res;
  	const struct bcm2835_clk_desc *desc;
  	const size_t asize = ARRAY_SIZE(clk_desc_array);
@@ -98,7 +98,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
  	size_t i;
  	u32 clk_id;
  	int ret;
-@@ -2182,6 +2211,14 @@ static int bcm2835_clk_probe(struct plat
+@@ -2184,6 +2213,14 @@ static int bcm2835_clk_probe(struct plat
  	if (IS_ERR(cprman->regs))
  		return PTR_ERR(cprman->regs);
  

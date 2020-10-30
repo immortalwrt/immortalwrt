@@ -26,7 +26,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
 
 --- a/drivers/media/i2c/tc358743.c
 +++ b/drivers/media/i2c/tc358743.c
-@@ -1680,12 +1680,23 @@ static int tc358743_enum_mbus_code(struc
+@@ -1682,12 +1682,23 @@ static int tc358743_enum_mbus_code(struc
  	return 0;
  }
  
@@ -51,7 +51,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
  
  	if (format->pad != 0)
  		return -EINVAL;
-@@ -1695,23 +1706,7 @@ static int tc358743_get_fmt(struct v4l2_
+@@ -1697,23 +1708,7 @@ static int tc358743_get_fmt(struct v4l2_
  	format->format.height = state->timings.bt.height;
  	format->format.field = V4L2_FIELD_NONE;
  
@@ -76,7 +76,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
  
  	return 0;
  }
-@@ -1726,18 +1721,11 @@ static int tc358743_set_fmt(struct v4l2_
+@@ -1728,18 +1723,11 @@ static int tc358743_set_fmt(struct v4l2_
  	int ret = tc358743_get_fmt(sd, cfg, format);
  
  	format->format.code = code;
