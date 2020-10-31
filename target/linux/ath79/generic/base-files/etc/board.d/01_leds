@@ -199,6 +199,10 @@ glinet,gl-ar300m16)
 	ucidef_set_led_netdev "lan" "LAN" "gl-ar300m:green:lan" "eth0"
 	;;
 glinet,gl-mifi|\
+qxwlan,e600g-v2-8m|\
+qxwlan,e600g-v2-16m|\
+qxwlan,e600gac-v2-8m|\
+qxwlan,e600gac-v2-16m|\
 qxwlan,e750a-v4-8m|\
 qxwlan,e750a-v4-16m)
 	ucidef_set_led_switch "lan" "LAN" "$boardname:green:lan" "switch0" "0x02"
