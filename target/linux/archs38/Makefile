@@ -13,8 +13,7 @@ BOARDNAME:=Synopsys DesignWare ARC HS38
 MAINTAINER:=Alexey Brodkin <abrodkin@synopsys.com>
 SUBTARGETS:=generic
 
-KERNEL_PATCHVER:=4.14
-KERNEL_TESTING_PATCHVER:=5.4
+KERNEL_PATCHVER:=5.4
 
 DEVICE_TYPE:=developerboard
 

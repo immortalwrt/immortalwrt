@@ -13,9 +13,7 @@ INITRAMFS_EXTRA_FILES:=
 MAINTAINER:=Florian Fainelli <florian@openwrt.org>
 FEATURES:=cpiogz ext4 ramdisk squashfs targz
 
-KERNEL_PATCHVER:=4.19
-KERNEL_TESTING_PATCHVER:=5.4
-
+KERNEL_PATCHVER:=5.4
 
 include $(INCLUDE_DIR)/target.mk
 
