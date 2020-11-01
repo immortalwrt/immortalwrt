@@ -124,6 +124,7 @@ case "$FIRMWARE" in
 	elecom,wrc-1750ghbk2-i)
 		ath10kcal_extract "art" 0x5000 0x844
 		;;
+	engenius,ecb1200|\
 	engenius,ecb1750)
 		ath10kcal_extract "art" 0x5000 0x844
 		ath10kcal_patch_mac $(mtd_get_mac_ascii u-boot-env athaddr)
