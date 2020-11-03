@@ -25,10 +25,6 @@ end
 
 function add_vif_into_lan(vif)
     local mtkwifi = require("mtkwifi")
-    local wanif = mtkwifi.__trim(mtkwifi.read_pipe("uci get network.wan.ifname"))
-    if ('' ~= wanif and string.match(vif, wanif)) then
-        return
-    end
     local brvifs = mtkwifi.__trim(
         mtkwifi.read_pipe("uci get network.lan.ifname"))
     if not string.match(brvifs, esc(vif)) then
@@ -102,7 +98,6 @@ function mt7615_up(devname)
     end
 
     os.execute(" rm -rf /tmp/mtk/wifi/mt7615*.need_reload")
-    os.execute("/etc/init.d/network restart")
 end
 
 function mt7615_down(devname)
