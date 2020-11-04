@@ -58,7 +58,7 @@ endef
 
 ifeq ($(CONFIG_ANNIE_COMPRESS_GOPROXY),y)
 	export GO111MODULE=on
-	export GOPROXY=https://goproxy.cn
+	export GOPROXY=https://goproxy.io
 endif
 
 define Build/Prepare
