@@ -24,11 +24,11 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/p4gefau1t/trojan-go
+GO_PKG_TAG:=-tags full
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/constant.Version=$(PKG_VERSION) \
 	$(GO_PKG)/constant.Commit=$(PKG_SOURCE_VERSION)
-GO_PKG_TAG:=-tags full
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
