@@ -60,8 +60,7 @@ endef
 
 ifeq ($(CONFIG_TROJAN_GO_COMPRESS_GOPROXY),y)
 export GO111MODULE=on
-GOPROXY=https://goproxy.cn
-#export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.io
 #export GOPROXY=https://mirrors.aliyun.com/goproxy/
 endif
 
