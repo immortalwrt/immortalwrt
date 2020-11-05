@@ -132,7 +132,7 @@ extra_command "enabled" "Check if service is started on boot"
 	extra_command "running" "Check if service is running"
 	extra_command "status" "Service status"
 	extra_command "trace" "Start with syscall trace"
-echo -e "$EXTRA_HELP"
+${EXTRA_HELP}"
 
 	. $IPKG_INSTROOT/lib/functions/procd.sh
 	basescript=$(readlink "$initscript")
