@@ -261,7 +261,7 @@ server {
 }
 EOF
 
-    /usr/sbin/pdnsd -c /var/etc/pdnsd.conf -d
+    /usr/sbin/pdnsd -c /var/etc/pdnsd.conf &
 }
 
 find_bin() {
