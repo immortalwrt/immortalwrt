@@ -78,6 +78,13 @@ help() {
 Syntax: $initscript [command]
 
 Available commands:
+	start	Start the service
+	stop	Stop the service
+	restart	Restart the service
+	reload	Reload configuration files (or restart if service does not implement reload)
+	enable	Enable service autostart
+	disable	Disable service autostart
+	enabled	Check if service is started on boot
 EOF
 	echo -e "$EXTRA_HELP"
 }
@@ -118,9 +125,14 @@ extra_command "enabled" "Check if service is started on boot"
 . "$initscript"
 
 [ -n "$USE_PROCD" ] && {
+	EXTRA_COMMANDS="${EXTRA_COMMANDS} running status trace"
+	EXTRA_HELP="\
+	running	Check if service is running
+	status	Service status
 	extra_command "running" "Check if service is running"
 	extra_command "status" "Service status"
 	extra_command "trace" "Start with syscall trace"
+echo -e "$EXTRA_HELP"
 
 	. $IPKG_INSTROOT/lib/functions/procd.sh
 	basescript=$(readlink "$initscript")
@@ -175,6 +187,6 @@ extra_command "enabled" "Check if service is started on boot"
 	}
 }
 
-ALL_COMMANDS="${EXTRA_COMMANDS}"
+ALL_COMMANDS="start stop reload restart boot shutdown enable disable enabled depends ${EXTRA_COMMANDS}"
 list_contains ALL_COMMANDS "$action" || action=help
 $action "$@"
