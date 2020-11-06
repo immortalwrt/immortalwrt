@@ -1,3 +1,4 @@
+#
 # Copyright (C) 2006-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -7,16 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8192du
-PKG_VERSION:=2020-06-11
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/lwfinger/rtl8192du
-PKG_SOURCE_VERSION:=d6185ff4a242ebf553e9e9980da21591660e8f8c
-PKG_MIRROR_HASH:=8d7ca5ea8a6daa07ff9dbd8669337ee8b999fdbfb2a8d7216a2eb4d5601537fd
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
+PKG_SOURCE_DATE:=2019-06-01
+PKG_SOURCE_VERSION:=54c95aaa23fe332afaa1ed4aacbb0db43aa3c7dd
+PKG_MIRROR_HASH:=d7cee3b7e8601c8e850570401628128f595faa4ad2895237708ba0e58bee3020
 
+PKG_BUILD_PARALLEL:=1
 PKG_MAINTAINER:=Larry Finger <Larry.Finger@lwfinger.net>
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
@@ -24,22 +24,11 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-NOSTDINC_FLAGS = \
-	-I$(PKG_BUILD_DIR)/include \
-	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
-	-I$(STAGING_DIR)/usr/include/mac80211-backport \
-	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
-	-I$(STAGING_DIR)/usr/include/mac80211 \
-	-include backport/autoconf.h \
-	-include backport/backport.h
-
-NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_CONCURRENT_MODE -DBUILD_OPENWRT
-
 define KernelPackage/rtl8192du
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek RTL8192DU wireless USB 802.11n driver
-  DEPENDS:=@USB_SUPPORT +kmod-cfg80211 +kmod-mac80211 +kmod-usb-core
-  FILES:= $(PKG_BUILD_DIR)/8192du.$(LINUX_KMOD_SUFFIX)
+  TITLE:=Realtek RTL8192DU support
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT
+  FILES:= $(PKG_BUILD_DIR)/8192du.ko
   AUTOLOAD:=$(call AutoProbe,8192du)
 endef
 
@@ -47,18 +36,25 @@ define KernelPackage/rtl8192du/description
   Kernel modules for the Realtek 8192DU USB 802.11n wireless USB adapters
 endef
 
+NOSTDINC_FLAGS = \
+	-I$(PKG_BUILD_DIR) \
+	-I$(PKG_BUILD_DIR)/include \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport \
+	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
+	-I$(STAGING_DIR)/usr/include/mac80211 \
+	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-include backport/autoconf.h \
+	-include backport/backport.h
+
+NOSTDINC_FLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_CONCURRENT_MODE -DBUILD_OPENWRT
+
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(LINUX_DIR) \
 		$(KERNEL_MAKE_FLAGS) \
-		CONFIG_RTL8192DU=m \
-		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
 		M="$(PKG_BUILD_DIR)" \
-		src="$(PKG_BUILD_DIR)" \
-		TopDIR="$(PKG_BUILD_DIR)" \
+		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
+		CONFIG_RTL8192DU=m \
 		modules
-endef
-
-define Build/Configure
 endef
 
 define KernelPackage/rtl8192du/install
