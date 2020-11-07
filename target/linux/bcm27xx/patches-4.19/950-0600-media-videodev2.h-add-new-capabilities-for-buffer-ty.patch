@@ -98,7 +98,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
  ============
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -872,9 +872,16 @@ struct v4l2_requestbuffers {
+@@ -871,9 +871,16 @@ struct v4l2_requestbuffers {
  	__u32			count;
  	__u32			type;		/* enum v4l2_buf_type */
  	__u32			memory;		/* enum v4l2_memory */
@@ -116,7 +116,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
  /**
   * struct v4l2_plane - plane info for multi-planar buffers
   * @bytesused:		number of bytes occupied by data in the plane (payload)
-@@ -2318,6 +2325,7 @@ struct v4l2_dbg_chip_info {
+@@ -2317,6 +2324,7 @@ struct v4l2_dbg_chip_info {
   *		return: number of created buffers
   * @memory:	enum v4l2_memory; buffer memory type
   * @format:	frame format, for which buffers are requested
@@ -124,7 +124,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
   * @reserved:	future extensions
   */
  struct v4l2_create_buffers {
-@@ -2325,7 +2333,8 @@ struct v4l2_create_buffers {
+@@ -2324,7 +2332,8 @@ struct v4l2_create_buffers {
  	__u32			count;
  	__u32			memory;
  	struct v4l2_format	format;
