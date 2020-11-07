@@ -6,8 +6,7 @@
 
 START=50
 
-EXTRA_COMMANDS=show
-EXTRA_HELP="	show	Show current Qos configuration (if active)"
+extra_command "show" "Show current Qos configuration (if active)"
 
 include /lib/network
 include /usr/lib/gargoyle_firewall_util
