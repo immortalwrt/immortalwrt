@@ -21,6 +21,6 @@ DEFAULT_PACKAGES += \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019 \
 	autocore-arm automount autosamba luci-app-ipsec-vpnd v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server \
 	luci-app-unblockmusic luci-app-cpufreq luci-app-zerotier ca-certificates \
-	htop fdisk e2fsprogs ethtool
+	htop fdisk e2fsprogs ethtool openssh-sftp-server
 
 $(eval $(call BuildTarget))

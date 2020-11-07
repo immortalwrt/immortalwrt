@@ -26,6 +26,7 @@ KERNELNAME:=zImage dtbs
 DEFAULT_PACKAGES += swconfig nvram \
 	osafeloader oseama otrx \
 	kmod-gpio-button-hotplug \
-	kmod-leds-gpio kmod-ledtrig-default-on kmod-ledtrig-timer
+	kmod-leds-gpio kmod-ledtrig-default-on kmod-ledtrig-timer \
+	autocore-arm openssh-sftp-server
 
 $(eval $(call BuildTarget))
