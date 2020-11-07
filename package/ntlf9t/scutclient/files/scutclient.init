@@ -7,10 +7,7 @@ USE_PROCD=1
 SCUTCLIENT_PATH=/usr/bin/scutclient
 SCUTCLIENT_CONFIG=scutclient
 
-EXTRA_COMMANDS="logoff"
-EXTRA_HELP=<<EOF
-	logoff	Log off manually
-EOF
+extra_command "logoff" "Log off manually"
 
 scutclient_validate_drcom() {
 	uci_validate_section scutclient drcom "${1}" \

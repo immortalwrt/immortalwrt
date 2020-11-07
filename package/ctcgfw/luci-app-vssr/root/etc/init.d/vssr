@@ -11,9 +11,10 @@
 START=90
 STOP=15
 
+extra_command "rules"
+
 SERVICE_DAEMONIZE=1
 NAME=vssr
-EXTRA_COMMANDS=rules
 
 #定义配置文件名称
 CONFIG_FILE=/var/etc/${NAME}_t.json
