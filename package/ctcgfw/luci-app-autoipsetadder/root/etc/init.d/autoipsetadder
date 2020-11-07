@@ -1,14 +1,15 @@
 #!/bin/sh /etc/rc.common
- 
+
 USE_PROCD=1
- 
+
 START=99
 STOP=01
+
+extra_command "test_crontab" "test_crontab"
+
 CRON_FILE=/etc/crontabs/root
 CONFIGURATION=autoipsetadder
-EXTRA_COMMANDS="test_crontab"
-EXTRA_HELP="
-		test_crontab"
+
 set_dnsmasq_log()
 {
 	sed -i '/log-facility/d' /etc/dnsmasq.conf

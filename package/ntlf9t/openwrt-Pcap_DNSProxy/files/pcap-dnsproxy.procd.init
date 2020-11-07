@@ -7,11 +7,9 @@ START=95
 USE_PROCD=1
 #PROCD_DEBUG=1
 
-EXTRA_COMMANDS="status flush libver"
-EXTRA_HELP=\
-"	flush	Flush DNS cache stored in Pcap_DNSProxy and DNSMasq
-	libver	Print library version Pcap_DNSProxy linked to
-	status	Show the running status of Pcap_DNSProxy"
+extra_command "flush" "Flush DNS cache stored in Pcap_DNSProxy and DNSMasq"
+extra_command "libver" "Print library version Pcap_DNSProxy linked to"
+extra_command "status" "Show the running status of Pcap_DNSProxy"
 
 PROG=/usr/sbin/Pcap_DNSProxy
 CONFDIR=/etc/pcap-dnsproxy
