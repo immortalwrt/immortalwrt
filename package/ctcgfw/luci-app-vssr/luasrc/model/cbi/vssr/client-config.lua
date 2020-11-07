@@ -343,7 +343,7 @@ o.default = 2
 o.rmempty = true
 
 o = s:option(Value, 'seed', translate('Seed'))
-o.depends('transport', 'kcp')
+o:depends('transport', 'kcp')
 o.default = ''
 o.rmempty = true
 
