@@ -205,6 +205,15 @@
 };
 
 &tlmm {
+	pcie_pins: pcie_pinmux {
+		mux {
+			pins = "gpio2";
+			function = "gpio";
+			bias-pull-down;
+			output-low;
+		};
+	};
+
 	mdio_pins: mdio_pinmux {
 		mux_1 {
 			pins = "gpio6";
