@@ -11,7 +11,6 @@
 START=95
 STOP=15
 SERVICE_DAEMONIZE=1
-EXTRA_COMMANDS=rules
 MAXFD=32768
 NAME=shadowsocksr
 LOCK_FILE=/var/lock/${NAME}.lock
@@ -31,6 +30,11 @@ switch_enable=0
 switch_server=$1
 CRON_FILE=/etc/crontabs/root
 threads=1
+run_mode="router"
+GLOBAL_SERVER="nil"
+NETFLIX_SERVER="nil"
+UDP_RELAY_SERVER="nil"
+kcp_server=""
 
 uci_get_by_name() {
 	local ret=$(uci get $NAME.$1.$2 2>/dev/null)
@@ -263,7 +267,6 @@ start_dns() {
 		local usr_port="$2"
 		[ -z "$usr_dns" ] && usr_dns="8.8.8.8"
 		[ -z "$usr_port" ] && usr_port="53"
-		[ -d /var/etc ] || mkdir -p /var/etc
 		if [ ! -f "/var/pdnsd/pdnsd.cache" ]; then
 			mkdir -p /var/pdnsd
 			touch /var/pdnsd/pdnsd.cache
@@ -512,8 +515,8 @@ start_shunt() {
 
 start_local() {
 	local local_server=$(uci_get_by_type socks5_proxy server nil)
-	[ "$local_server" == "nil" ] && return 1
 	[ "$local_server" == "same" ] && local_server=$GLOBAL_SERVER
+	[ "$local_server" == "nil" ] && return 1
 	local type=$(uci_get_by_name $local_server type)
 	local bin=$(find_bin $type)
 	[ ! -f "$bin" ] && echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:Can't find $bin program, can't start!" >>/tmp/ssrplus.log && local_enable=0 && return 1
@@ -581,7 +584,6 @@ start_server() {
 		iptables -t filter -A SSR-SERVER-RULE -p udp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
 		return 0
 	}
-	mkdir -p /var/run /var/etc
 	config_load $NAME
 	config_foreach server_service server_config
 	gen_serv_include
@@ -627,69 +629,76 @@ check_server() {
 }
 
 start_rules() {
-	local server=$(get_host_ip $(uci_get_by_name $GLOBAL_SERVER server))
-	if [ "$server" == "ERROR" ]; then
-		server=$(uci_get_by_name $GLOBAL_SERVER ip)
+	if [ -z "$switch_server" ]; then
+		GLOBAL_SERVER=$(uci_get_by_type global global_server nil)
+	else
+		GLOBAL_SERVER=$switch_server
+		switch_enable=1
 	fi
-	local kcp_enable=$(uci_get_by_name $GLOBAL_SERVER kcp_enable 0)
-	if [ $kcp_enable == "1" ]; then
+	[ "$GLOBAL_SERVER" == "nil" ] && return 1
+	local server=$(get_host_ip $(uci_get_by_name $GLOBAL_SERVER server))
+	[ "$server" == "ERROR" ] && server=$(uci_get_by_name $GLOBAL_SERVER ip)
+	local local_port=$(uci_get_by_name $GLOBAL_SERVER local_port 1234)
+	local netflix="0"
+	NETFLIX_SERVER=$(uci_get_by_type global netflix_server nil)
+	if [ "$NETFLIX_SERVER" != "nil" ]; then
+		if [ "$NETFLIX_SERVER" == "same" ]; then
+			netflix="2"
+			NETFLIX_SERVER=$GLOBAL_SERVER
+		else
+			netflix="1"
+		fi
+	fi
+	netflix_ip=$(get_host_ip $(uci_get_by_name $NETFLIX_SERVER server))
+	if [ "$netflix_ip" == "ERROR" ]; then
+		netflix_ip=$(uci_get_by_name $NETFLIX_SERVER ip)
+	fi
+	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
+	[ "$UDP_RELAY_SERVER" == "same" ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
+	if [ "$(uci_get_by_name $GLOBAL_SERVER kcp_enable 0)" == "1" ]; then
 		kcp_server=$server
 		kcp_flag=1
 	fi
-	local local_port=$(uci_get_by_name $GLOBAL_SERVER local_port 1234)
-	local lan_ac_ips=$(uci_get_by_type access_control lan_ac_ips)
-	local lan_ac_mode=$(uci_get_by_type access_control lan_ac_mode)
-	local router_proxy=$(uci_get_by_type access_control router_proxy)
-	local ARG_UDP=""
 	if [ -n "$UDP_RELAY_SERVER" ]; then
 		if [ "$kcp_flag" == "0" ]; then
 			local type=$(uci_get_by_name $UDP_RELAY_SERVER type)
 			case "$type" in
-			tun | naiveproxy) ;;
-			*) ARG_UDP="-U";;
+			tun | naiveproxy) local ARG_UDP="";;
+			*) local ARG_UDP="-U";;
 			esac
 			local udp_server=$(uci_get_by_name $UDP_RELAY_SERVER server)
 			local udp_local_port=1357
 		fi
 	fi
+	local lan_ac_ips=$(uci_get_by_type access_control lan_ac_ips)
+	local lan_ac_mode=$(uci_get_by_type access_control lan_ac_mode)
 	if [ -n "$lan_ac_ips" ]; then
 		case "$lan_ac_mode" in
 		w | W | b | B) local ac_ips="$lan_ac_mode$lan_ac_ips" ;;
 		esac
 	fi
-	#deal gfw firewall rule
-	local gfwmode=""
-	case "$run_mode" in
-	gfw) gfwmode="-g" ;;
-	router) gfwmode="-r" ;;
-	oversea) gfwmode="-c" ;;
-	all) gfwmode="-z" ;;
-	esac
-	local dports=$(uci_get_by_type global dports 1)
-	if [ $dports == "1" ]; then
-		proxyport=" "
-	else
-		proxyport="-m multiport --dports 22,53,587,465,995,993,143,80,443,853"
-	fi
-	if [ "$NETFLIX_SERVER" == "nil" ]; then
-		netflix="0"
-	else
-		if [ "$NETFLIX_SERVER" != "$GLOBAL_SERVER" ]; then
-			netflix="1"
-		else
-			netflix="2"
-		fi
-	fi
+	get_proxyport() {
+		local dports=$(uci_get_by_type global dports 1)
+		case "$dports" in
+		1) echo "" ;;
+		2) echo "-m multiport --dports 22,53,587,465,995,993,143,80,443,853" ;;
+		esac
+	}
+	get_mode() {
+		run_mode=$(uci_get_by_type global run_mode router)
+		case "$run_mode" in
+		gfw) echo "-g" ;;
+		router) echo "-r" ;;
+		oversea) echo "-c" ;;
+		all) echo "-z" ;;
+		esac
+	}
 	get_arg_out() {
 		case "$(uci_get_by_type access_control router_proxy 1)" in
 		1) echo "-o" ;;
 		2) echo "-O" ;;
 		esac
 	}
-	netflix_ip=$(get_host_ip $(uci_get_by_name $NETFLIX_SERVER server))
-	if [ "$netflix_ip" == "ERROR" ]; then
-		netflix_ip=$(uci_get_by_name $NETFLIX_SERVER ip)
-	fi
 	/usr/bin/ssr-rules \
 	-s "$server" \
 	-l "$local_port" \
@@ -702,49 +711,24 @@ start_rules() {
 	-B "$(uci_get_by_type access_control lan_bp_ips)" \
 	-p "$(uci_get_by_type access_control lan_fp_ips)" \
 	-G "$(uci_get_by_type access_control lan_gm_ips)" \
-	-D "$proxyport" \
+	-D "$(get_proxyport)" \
 	-F "$netflix" \
 	-N "$netflix_ip" \
 	-M "$(uci_get_by_type global netflix_proxy 0)" \
 	-I "/etc/ssr/netflixip.list" \
-	$(get_arg_out) $gfwmode $ARG_UDP
+	$(get_arg_out) $(get_mode) $ARG_UDP
 	return $?
-}
-
-rules() {
-	if [ "$GLOBAL_SERVER" == "nil" ]; then
-		return 1
-	fi
-	mkdir -p /var/run /var/etc
-	run_mode=$(uci_get_by_type global run_mode)
-	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
-	[ "$UDP_RELAY_SERVER" == "same" ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
-	if start_rules; then
-		return 0
-	else
-		return 1
-	fi
 }
 
 start() {
 	[ -f "$LOCK_FILE" ] && exit 2
 	touch "$LOCK_FILE"
 	echo "-----------start-----------" >>/tmp/ssrplus.log
-	if [ -z "$switch_server" ]; then
-		GLOBAL_SERVER=$(uci_get_by_type global global_server nil)
-	else
-		GLOBAL_SERVER=$switch_server
-		switch_enable=1
-	fi
-	NETFLIX_SERVER=$(uci_get_by_type global netflix_server nil)
-	if [ "$NETFLIX_SERVER" == "same" ]; then
-		NETFLIX_SERVER=$GLOBAL_SERVER
-	fi
-	mkdir -p /tmp/dnsmasq.d /tmp/dnsmasq.ssr
+	mkdir -p /tmp/dnsmasq.d /tmp/dnsmasq.ssr /var/run /var/etc
 	cat <<-EOF >/tmp/dnsmasq.d/dnsmasq-ssr.conf
 		conf-dir=/tmp/dnsmasq.ssr
 	EOF
-	if rules; then
+	if start_rules; then
 		if start_redir_tcp; then
 			start_redir_udp
 			start_shunt
@@ -778,7 +762,7 @@ start() {
 	start_monitor
 	check_server
 	clean_log
-	echo "------------end------------" >>/tmp/ssrplus.log
+	echo "-----------end------------" >>/tmp/ssrplus.log
 	rm -f $LOCK_FILE
 }
 
