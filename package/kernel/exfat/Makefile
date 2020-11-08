@@ -7,12 +7,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=exfat
-PKG_VERSION:=5.8.7
+PKG_VERSION:=5.10.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/namjaejeon/linux-exfat-oot/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=20254677bed3f456e89cc9d757c1a47abbadab4d75640eef4a995370a37be3f4
+PKG_HASH:=0ff77dd7d39eb231d00c3c4909b9fad31ebeeb618bd6fa18fce142becc9c1f98
 
 PKG_MAINTAINER:=
 PKG_LICENSE:=GPL-2.0-only

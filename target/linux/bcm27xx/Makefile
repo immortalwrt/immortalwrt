@@ -28,7 +28,7 @@ DEFAULT_PACKAGES += \
 	kmod-sound-core kmod-sound-arm-bcm2835 \
 	kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 \
 	partx-utils mkf2fs e2fsprogs \
-	htop autocore-arm
+	htop autocore-arm openssh-sftp-server
 
 KERNELNAME:=Image dtbs
 

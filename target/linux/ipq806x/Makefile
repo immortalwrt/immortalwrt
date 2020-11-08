@@ -23,6 +23,7 @@ DEFAULT_PACKAGES += \
 	kmod-phy-qcom-ipq806x-usb kmod-usb3 kmod-usb-dwc3-qcom \
 	kmod-ath10k-ct wpad-openssl uboot-envtools e2fsprogs \
 	automount autosamba v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server \
-	luci-app-ipsec-vpnd luci-app-unblockmusic luci-app-zerotier ca-certificates
+	luci-app-ipsec-vpnd luci-app-unblockmusic luci-app-zerotier ca-certificates \
+	autocore-arm openssh-sftp-server
 
 $(eval $(call BuildTarget))

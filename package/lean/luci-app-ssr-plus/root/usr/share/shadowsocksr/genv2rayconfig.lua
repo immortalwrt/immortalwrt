@@ -78,7 +78,8 @@ outbound = {
 			writeBufferSize = tonumber(server.write_buffer_size),
 			header = {
 				type = server.kcp_guise
-			}
+			},
+			seed = server.seed or nil
 		} or nil,
 		wsSettings = (server.transport == "ws") and (server.ws_path ~= nil or server.ws_host ~= nil) and {
 			path = server.ws_path,
