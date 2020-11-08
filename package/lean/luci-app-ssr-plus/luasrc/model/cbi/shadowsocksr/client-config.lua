@@ -380,6 +380,10 @@ o:depends("transport", "kcp")
 o.default = 2
 o.rmempty = true
 
+o = s:option(Value, "seed", translate("Obfuscate password (optional)"))
+o:depends("transport", "kcp")
+o.rmempty = true
+
 o = s:option(Flag, "congestion", translate("Congestion"))
 o:depends("transport", "kcp")
 o.rmempty = true
