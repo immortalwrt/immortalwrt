@@ -183,7 +183,7 @@ ac_rule() {
 			;;
 		esac
 	fi
-	IFNAME=$(uci get -P/var/state network.lan.ifname 2>/dev/null)
+	IFNAME=$(uci -P /var/state get network.lan.ifname 2>/dev/null)
 	ipset -! -R <<-EOF || return 1
 		create ss_spec_lan_ac hash:net
 		$(for ip in ${LAN_AC_IP:1}; do echo "add ss_spec_lan_ac $ip"; done)
