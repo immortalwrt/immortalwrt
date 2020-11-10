@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yq
 PKG_VERSION:=3.4.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/mikefarah/yq/tar.gz/$(PKG_VERSION)?
@@ -18,6 +18,7 @@ PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_YQ_COMPRESS_GOPROXY \
@@ -31,7 +32,7 @@ include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 define Package/yq
   SECTION:=utils
   CATEGORY:=Utilities
-  TITLE:=yq is a portable command-line YAML processor
+  TITLE:=Portable command-line YAML processor
   URL:=https://mikefarah.gitbook.io/yq/
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
@@ -62,9 +63,5 @@ ifeq ($(CONFIG_YQ_COMPRESS_UPX),y)
 endif
 endef
 
-define Package/yq/install
-	$(INSTALL_DIR) $(1)/usr/bin/
-	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/yq $(1)/usr/bin/
-endef
-
+$(eval $(call GoBinPackage,yq))
 $(eval $(call BuildPackage,yq))
