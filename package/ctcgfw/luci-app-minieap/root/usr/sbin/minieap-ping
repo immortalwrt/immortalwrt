@@ -1,0 +1,24 @@
+#!/bin/sh
+
+kill $(cat /var/log/minieap-ping.pid 2>/dev/null) 2>/dev/null
+
+echo $$ > /var/log/minieap-ping.pid
+
+ping_host=$(uci get minieap.@minieap[0].pinghost)
+ping_intval=$(uci get minieap.@minieap[0].pingintval)
+ping_command=$(uci get minieap.@minieap[0].pingcommand)
+ipint=$(echo $ping_host | awk -F "." '{print $1*2**8**3 + $2*2**8**2 + $3*2**8 + $4}')
+if [[ $ipint -le 0 ]] || [[ $ipint -ge 4294967295 ]]; then
+    exit
+fi
+
+if [ ! -z $ping_host ]; then
+    while true
+    do
+        ping -c1 -w1 $ping_host > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            $ping_command
+        fi
+        sleep $ping_intval
+    done
+fi
