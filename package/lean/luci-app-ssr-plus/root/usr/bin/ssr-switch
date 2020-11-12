@@ -38,14 +38,10 @@ CURRENT_SERVER=$DEFAULT_SERVER
 #解析ip
 get_host_ip() {
 	local host=$1
-	local isip=""
-	local ip=$host
-	isip=$(echo $host | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
-	if [ -z "$isip" ]; then
-		if [ "$host" != "${host#*:[0-9a-fA-F]}" ]; then
-			ip=$host
-		else
-			local ip=$(resolveip -4 -t 3 $host | awk 'NR==1{print}')
+	local ip=$1
+	if [ -z "$(echo $1 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")" ]; then
+		if [ "$1" == "${1#*:[0-9a-fA-F]}" ]; then
+			ip=$(resolveip -4 -t 3 $1 | awk 'NR==1{print}')
 			[ -z "$ip" ] && ip=$(wget -q -O- http://119.29.29.29/d?dn=$1 | awk -F ';' '{print $1}')
 		fi
 	fi

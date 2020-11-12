@@ -87,12 +87,14 @@ ipset_r() {
 	$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 	case "$RUNMODE" in
 	router)
+		set_china_ip
 		ipset -! -R <<-EOF || return 1
 			create ss_spec_wan_ac hash:net
 			$(gen_iplist | sed -e "s/^/add ss_spec_wan_ac /")
 		EOF
 		ipset -N gfwlist hash:net 2>/dev/null
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set ss_spec_wan_ac dst -j RETURN
+		$IPT -A SS_SPEC_WAN_AC -m set --match-set china dst -j RETURN
 		$IPT -A SS_SPEC_WAN_AC -j SS_SPEC_WAN_FW
 		;;
 	gfw)
@@ -280,8 +282,11 @@ gen_iplist() {
 		240.0.0.0/4
 		255.255.255.255
 		$(get_wan_ip)
-		$(cat ${IGNORE_LIST:=/dev/null} 2>/dev/null)
 	EOF
+}
+
+set_china_ip() {
+	[ -f "$IGNORE_LIST" ] && /usr/share/shadowsocksr/chinaipset.sh $IGNORE_LIST
 }
 
 gen_spec_iplist() {
