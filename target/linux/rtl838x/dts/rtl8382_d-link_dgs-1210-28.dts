@@ -3,8 +3,8 @@
 #include "rtl8382_d-link_dgs-1210.dtsi"
 
 / {
-	compatible = "d-link,dgs-1210-16", "realtek,rtl838x-soc";
-	model = "D-Link DGS-1210-16";
+	compatible = "d-link,dgs-1210-28", "realtek,rtl838x-soc";
+	model = "D-Link DGS-1210-28";
 };
 
 &ethernet0 {
@@ -31,6 +31,15 @@
 		INTERNAL_PHY(13)
 		INTERNAL_PHY(14)
 		INTERNAL_PHY(15)
+
+		EXTERNAL_PHY(16)
+		EXTERNAL_PHY(17)
+		EXTERNAL_PHY(18)
+		EXTERNAL_PHY(19)
+		EXTERNAL_PHY(20)
+		EXTERNAL_PHY(21)
+		EXTERNAL_PHY(22)
+		EXTERNAL_PHY(23)
 
 		EXTERNAL_SFP_PHY(24)
 		EXTERNAL_SFP_PHY(25)
@@ -62,10 +71,19 @@
 		SWITCH_PORT(14, 15, internal)
 		SWITCH_PORT(15, 16, internal)
 
-		SWITCH_PORT(24, 17, qsgmii)
-		SWITCH_PORT(25, 18, qsgmii)
-		SWITCH_PORT(26, 19, qsgmii)
-		SWITCH_PORT(27, 20, qsgmii)
+		SWITCH_PORT(16, 17, qsgmii)
+		SWITCH_PORT(17, 18, qsgmii)
+		SWITCH_PORT(18, 19, qsgmii)
+		SWITCH_PORT(19, 20, qsgmii)
+		SWITCH_PORT(20, 21, qsgmii)
+		SWITCH_PORT(21, 22, qsgmii)
+		SWITCH_PORT(22, 23, qsgmii)
+		SWITCH_PORT(23, 24, qsgmii)
+
+		SWITCH_PORT(24, 25, qsgmii)
+		SWITCH_PORT(25, 26, qsgmii)
+		SWITCH_PORT(26, 27, qsgmii)
+		SWITCH_PORT(27, 28, qsgmii)
 
 		port@28 {
 			ethernet = <&ethernet0>;
