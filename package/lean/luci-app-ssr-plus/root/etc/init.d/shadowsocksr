@@ -30,10 +30,10 @@ switch_enable=0
 switch_server=$1
 CRON_FILE=/etc/crontabs/root
 threads=1
-run_mode="router"
 GLOBAL_SERVER="nil"
 NETFLIX_SERVER="nil"
 UDP_RELAY_SERVER="nil"
+run_mode="router"
 kcp_server=""
 
 uci_get_by_name() {
@@ -663,7 +663,7 @@ start_rules() {
 			tun | naiveproxy) local ARG_UDP="";;
 			*) local ARG_UDP="-U";;
 			esac
-			local udp_server=$(uci_get_by_name $UDP_RELAY_SERVER server)
+			local udp_server=$(get_host_ip $(uci_get_by_name $UDP_RELAY_SERVER server))
 			local udp_local_port=1357
 		fi
 	fi
@@ -720,7 +720,7 @@ start_rules() {
 start() {
 	[ -f "$LOCK_FILE" ] && exit 2
 	touch "$LOCK_FILE"
-	echo "-----------start-----------" >>/tmp/ssrplus.log
+	echo "----------start------------" >>/tmp/ssrplus.log
 	mkdir -p /tmp/dnsmasq.d /tmp/dnsmasq.ssr /var/run /var/etc
 	cat <<-EOF >/tmp/dnsmasq.d/dnsmasq-ssr.conf
 		conf-dir=/tmp/dnsmasq.ssr
@@ -732,12 +732,6 @@ start() {
 			start_switch
 			start_dns
 			add_cron
-			if [ "$run_mode" == "oversea" ]; then
-				cp -rf /etc/ssr/oversea_list.conf /tmp/dnsmasq.ssr/
-			else
-				cp -rf /etc/ssr/gfw_list.conf /tmp/dnsmasq.ssr/
-				cp -rf /etc/ssr/gfw_base.conf /tmp/dnsmasq.ssr/
-			fi
 			/usr/share/shadowsocksr/gfw2ipset.sh $switch_server
 		else
 			/usr/bin/ssr-rules -f
@@ -788,7 +782,7 @@ stop() {
 	ps -w | grep -v "grep" | grep "sleep $(uci_get_by_type global switch_time)s" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "sleep 30s" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	killall -q -9 ss-redir ss-local obfs-local ssr-redir ssr-local ssr-server v2ray v2ray-plugin trojan naive microsocks ipt2socks dns2socks redsocks2 pdnsd
-	rm -f /var/lock/ssr-chinaipset.lock /var/lock/ssr-monitor.lock
+	rm -f /var/lock/ssr-monitor.lock
 	if [ -f "/tmp/dnsmasq.d/dnsmasq-ssr.conf" ]; then
 		rm -rf /tmp/dnsmasq.d/dnsmasq-ssr.conf /tmp/dnsmasq.ssr /tmp/dnsmasq.oversea
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1

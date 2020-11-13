@@ -2157,6 +2157,11 @@ div#cbi-passwall.cbi-map fieldset > fieldset > div > div > div  label input.cbi-
 	margin-top: 3px;
 }
 
+div#cbi-passwall.cbi-map div#set_node_div
+{
+	background : rgba(7,34,62,.9);
+}
+
 @media screen and (max-width: 1600px) {
     .main-left {
         /*width: calc(0% + 15rem);*/
