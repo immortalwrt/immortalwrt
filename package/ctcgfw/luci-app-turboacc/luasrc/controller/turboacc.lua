@@ -13,7 +13,7 @@ function index()
 end
 
 local function fastpath_status()
-	return luci.sys.call("[ x$(cat /sys/module/xt_FLOWOFFLOAD/refcnt 2>/dev/null) != x0 ] || lsmod | grep -q fast_classifier") == 0
+	return luci.sys.call("{ [ -e /sys/module/xt_FLOWOFFLOAD/refcnt ] && [ x$(cat /sys/module/xt_FLOWOFFLOAD/refcnt 2>/dev/null) != x0 ]; } || lsmod | grep -q fast_classifier") == 0
 end
 
 local function bbr_status()
@@ -21,7 +21,7 @@ local function bbr_status()
 end
 
 local function fullconebat_status()
-	return luci.sys.call("[ x$(cat /sys/module/xt_FULLCONENAT/refcnt 2>/dev/null) != x0 ]") == 0
+	return luci.sys.call("[ -e /sys/module/xt_FULLCONENAT/refcnt ] && [ x$(cat /sys/module/xt_FULLCONENAT/refcnt 2>/dev/null) != x0 ]") == 0
 end
 
 local function dnscaching_status()
