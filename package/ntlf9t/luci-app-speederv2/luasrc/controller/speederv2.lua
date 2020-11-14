@@ -18,6 +18,6 @@ end
 function action_status()
 	luci.http.prepare_content("application/json")
 	luci.http.write_json({
-		running = is_running("speederv2")
+		running = is_running("udpspeeder")
 	})
 end
