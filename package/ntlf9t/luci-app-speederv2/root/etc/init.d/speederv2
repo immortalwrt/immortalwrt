@@ -74,7 +74,7 @@ start_instance() {
 	[ $? -eq 0 ] && server_ip="[$server_ip]"
 
 	procd_open_instance
-	procd_set_param command /usr/bin/speederv2
+	procd_set_param command /usr/bin/udpspeeder
 	procd_append_param command -c
 	procd_append_param command -r ${server_ip}:${server_port}
 	procd_append_param command -l ${listen_ip}:${listen_port} && _log "info" "listening on: ${listen_ip}:${listen_port}"

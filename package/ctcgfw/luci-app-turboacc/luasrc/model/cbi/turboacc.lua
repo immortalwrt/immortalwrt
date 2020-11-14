@@ -1,5 +1,3 @@
-local ipkg = require('luci.model.ipkg')
-
 local kernel_version = luci.sys.exec("echo -n $(uname -r)")
 
 m = Map("turboacc")
@@ -38,7 +36,7 @@ sfe_bridge.default = 0
 sfe_bridge.description = translate("Enable Bridge Acceleration (may be functional conflict with bridge-mode VPN server)")
 sfe_bridge:depends("sfe_flow", 1)
 
-if ipkg.installed("ip6tables") then
+if nixio.fs.access("/proc/sys/net/ipv6") then
 sfe_ipv6 = s:option(Flag, "sfe_ipv6", translate("IPv6 Acceleration"))
 sfe_ipv6.default = 0
 sfe_ipv6.description = translate("Enable IPv6 Acceleration")
@@ -48,14 +46,12 @@ end
 if nixio.fs.access("/lib/modules/" .. kernel_version .. "/tcp_bbr.ko") then
 bbr_cca = s:option(Flag, "bbr_cca", translate("BBR CCA"))
 bbr_cca.default = 0
-bbr_cca.rmempty = false
 bbr_cca.description = translate("Using BBR CCA can improve TCP network performance effectively")
 end 
 
 if nixio.fs.access("/lib/modules/" .. kernel_version .. "/xt_FULLCONENAT.ko") then
 fullcone_nat = s:option(Flag, "fullcone_nat", translate("FullCone NAT"))
 fullcone_nat.default = 0
-fullcone_nat.rmempty = false
 fullcone_nat.description = translate("Using FullCone NAT can improve gaming performance effectively")
 end 
 

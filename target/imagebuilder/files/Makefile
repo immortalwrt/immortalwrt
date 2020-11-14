@@ -114,6 +114,7 @@ _call_image: staging_dir/host/.prereq-build
 	$(MAKE) package_install
 	$(MAKE) -s prepare_rootfs
 	$(MAKE) -s build_image
+	$(MAKE) -s json_overview_image_info
 	$(MAKE) -s checksum
 
 _call_manifest: FORCE
@@ -162,12 +163,21 @@ prepare_rootfs: FORCE
 	$(CP) $(TARGET_DIR) $(TARGET_DIR_ORIG)
 	$(call prepare_rootfs,$(TARGET_DIR),$(USER_FILES))
 
+
 build_image: FORCE
 	@echo
 	@echo Building images...
 	rm -rf $(BUILD_DIR)/json_info_files/
 	$(NO_TRACE_MAKE) -C target/linux/$(BOARD)/image install TARGET_BUILD=1 IB=1 EXTRA_IMAGE_NAME="$(EXTRA_IMAGE_NAME)" \
 		$(if $(USER_PROFILE),PROFILE="$(USER_PROFILE)")
+
+$(BIN_DIR)/profiles.json: FORCE
+	$(if $(CONFIG_JSON_OVERVIEW_IMAGE_INFO), \
+		WORK_DIR=$(BUILD_DIR)/json_info_files \
+			$(SCRIPT_DIR)/json_overview_image_info.py $@ \
+	)
+
+json_overview_image_info: $(BIN_DIR)/profiles.json
 
 checksum: FORCE
 	@echo
