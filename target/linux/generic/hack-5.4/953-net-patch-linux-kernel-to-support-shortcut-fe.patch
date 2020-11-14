@@ -172,7 +172,7 @@
  static int nf_ct_tcp_loose __read_mostly = 1;
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -162,7 +162,11 @@ int nf_conntrack_eventmask_report(unsign
+@@ -158,7 +158,11 @@ int nf_conntrack_eventmask_report(unsign
  
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -199,7 +199,7 @@
  		if (unlikely(ret < 0 || missed)) {
  			spin_lock_bh(&ct->lock);
  			if (ret < 0) {
-@@ -263,7 +274,11 @@ void nf_ct_deliver_cached_events(struct
+@@ -259,7 +270,11 @@ void nf_ct_deliver_cached_events(struct
  
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -211,7 +211,7 @@
  		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
-@@ -283,7 +296,15 @@ void nf_ct_deliver_cached_events(struct
+@@ -283,7 +298,15 @@ void nf_ct_deliver_cached_events(struct
  	item.portid = 0;
  	item.report = 0;
  
@@ -227,7 +227,7 @@
  
  	if (likely(ret == 0 && !missed))
  		goto out_unlock;
-@@ -340,6 +363,11 @@ int nf_conntrack_register_notifier(struct net *net, struct notifier_block *nb)
+@@ -337,6 +358,11 @@ int nf_conntrack_register_notifier(struc
  {
          return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
  }
@@ -239,7 +239,7 @@
  #else
  int nf_conntrack_register_notifier(struct net *net,
  				   struct nf_ct_event_notifier *new)
-@@ -369,6 +397,11 @@ int nf_conntrack_unregister_notifier(struct net *net, struct notifier_block *nb)
+@@ -366,6 +392,11 @@ int nf_conntrack_unregister_notifier(str
  {
  	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
  }
