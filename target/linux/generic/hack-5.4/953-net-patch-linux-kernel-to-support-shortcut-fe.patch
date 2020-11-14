@@ -211,7 +211,7 @@
  		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
-@@ -283,7 +296,13 @@ void nf_ct_deliver_cached_events(struct
+@@ -283,7 +296,15 @@ void nf_ct_deliver_cached_events(struct
  	item.portid = 0;
  	item.report = 0;
  
@@ -219,6 +219,8 @@
 +	ret = atomic_notifier_call_chain(&net->ct.nf_conntrack_chain,
 +			events | missed,
 +			&item);
++	if (notify != NULL)
++		ret = notify->fcn(events | missed, &item);
 +#else
  	ret = notify->fcn(events | missed, &item);
 +#endif
