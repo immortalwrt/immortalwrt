@@ -637,7 +637,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		return received;
 --- a/drivers/net/ethernet/freescale/gianfar.c
 +++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -3203,7 +3203,7 @@ static int gfar_poll_rx_sq(struct napi_s
+@@ -3195,7 +3195,7 @@ static int gfar_poll_rx_sq(struct napi_s
  
  	if (work_done < budget) {
  		u32 imask;
@@ -646,7 +646,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		/* Clear the halt bit in RSTAT */
  		gfar_write(&regs->rstat, gfargrp->rstat);
  
-@@ -3292,7 +3292,7 @@ static int gfar_poll_rx(struct napi_stru
+@@ -3284,7 +3284,7 @@ static int gfar_poll_rx(struct napi_stru
  
  	if (!num_act_queues) {
  		u32 imask;
@@ -1390,7 +1390,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		if (more_to_do)
 --- a/drivers/staging/octeon/ethernet-rx.c
 +++ b/drivers/staging/octeon/ethernet-rx.c
-@@ -429,7 +429,7 @@ static int cvm_oct_napi_poll(struct napi
+@@ -433,7 +433,7 @@ static int cvm_oct_napi_poll(struct napi
  
  	if (rx_count < budget) {
  		/* No more work */

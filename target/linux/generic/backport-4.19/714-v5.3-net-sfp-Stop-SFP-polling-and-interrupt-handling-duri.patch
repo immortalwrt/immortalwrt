@@ -38,12 +38,13 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  	sfp = sfp_alloc(&pdev->dev);
  	if (IS_ERR(sfp))
-@@ -1885,19 +1886,22 @@ static int sfp_probe(struct platform_dev
+@@ -1885,20 +1886,22 @@ static int sfp_probe(struct platform_dev
  		if (gpio_flags[i] != GPIOD_IN || !sfp->gpio[i])
  			continue;
  
 -		irq = gpiod_to_irq(sfp->gpio[i]);
--		if (!irq) {
+-		if (irq < 0) {
+-			irq = 0;
 +		sfp->gpio_irq[i] = gpiod_to_irq(sfp->gpio[i]);
 +		if (!sfp->gpio_irq[i]) {
  			poll = true;
@@ -65,7 +66,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	}
  
  	if (poll)
-@@ -1928,9 +1932,26 @@ static int sfp_remove(struct platform_de
+@@ -1929,9 +1932,26 @@ static int sfp_remove(struct platform_de
  	return 0;
  }
  
