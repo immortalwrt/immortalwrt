@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for speederv2-tunnel
-LUCI_DEPENDS:=+speederv2-tunnel
+LUCI_DEPENDS:=+UDPspeeder
 LUCI_PKGARCH:=all
 
 PKG_NAME:=luci-app-speederv2
 PKG_VERSION:=1.1.0
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
