@@ -1,5 +1,3 @@
-local ipkg = require('luci.model.ipkg')
-
 local kernel_version = luci.sys.exec("echo -n $(uname -r)")
 
 m = Map("turboacc")
@@ -38,7 +36,7 @@ sfe_bridge.default = 0
 sfe_bridge.description = translate("Enable Bridge Acceleration (may be functional conflict with bridge-mode VPN server)")
 sfe_bridge:depends("sfe_flow", 1)
 
-if ipkg.installed("ip6tables") then
+if nixio.fs.access("/proc/sys/net/ipv6") then
 sfe_ipv6 = s:option(Flag, "sfe_ipv6", translate("IPv6 Acceleration"))
 sfe_ipv6.default = 0
 sfe_ipv6.description = translate("Enable IPv6 Acceleration")
