@@ -109,7 +109,7 @@
 
 		led_power: power {
 			label = "wr142ac:green:power";
-			gpios = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
 		};
 
 		usb {

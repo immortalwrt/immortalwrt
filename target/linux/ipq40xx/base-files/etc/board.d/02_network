@@ -31,6 +31,8 @@ ipq40xx_setup_interfaces()
 	asus,rt-acrh17|\
 	asus,rt-ac58u|\
 	avm,fritzbox-4040|\
+	century,wr142ac|\
+	century,wr142ac-nand|\
 	ezviz,cs-w3-wd1200g-eup|\
 	linksys,ea6350v3|\
 	linksys,ea8300|\
@@ -95,8 +97,6 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan"
 		;;
-	century,wr142ac|\
-	century,wr142ac-nand|\
 	p2w,r619ac|\
 	zyxel,nbg6617)
 		ucidef_add_switch "switch0" \
