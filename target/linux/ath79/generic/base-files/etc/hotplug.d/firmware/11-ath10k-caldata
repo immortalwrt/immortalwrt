@@ -236,6 +236,7 @@ case "$FIRMWARE" in
 		ath10kcal_patch_mac_crc $(mtd_get_mac_ascii devdata wlan5mac)
 		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
 			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
+		;;
 	netgear,ex6400|\
 	netgear,ex7300)
 		ath10kcal_extract "caldata" 0x5000 0x2f20
