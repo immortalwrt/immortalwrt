@@ -114,6 +114,11 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
 		;;
+	jcg,y2)
+		ucidef_add_switch "switch0" \
+			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "6@eth0"
+		ucidef_set_interface_lan "eth0.1 ra0 rax0 apcli0 apclix0"
+		;;
 	lenovo,newifi-d1)
 		ucidef_add_switch "switch0" \
 		"1:lan:2" "2:lan:1" "4:wan" "6@eth0"
@@ -259,11 +264,6 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii u-boot-env wanaddr)
 		label_mac=$wan_mac
 		;;
-	linksys,ea7500-v2)
-		lan_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
-		wan_mac=$lan_mac
-		label_mac=$lan_mac
-		;;
 	iptime,a6ns-m|\
 	iptime,a8004t)
 		wan_mac=$(mtd_get_mac_binary u-boot 0x1fc40)
@@ -271,6 +271,16 @@ ramips_setup_macs()
 	jcg,jhr-ac876m)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		wan_mac=$label_mac
+		;;
+	jcg,y2|\
+	zbtlink,zbt-we1326)
+		wan_mac=$(mtd_get_mac_binary factory 0xe006)
+		label_mac=$(mtd_get_mac_binary factory 0x4)
+		;;
+	linksys,ea7500-v2)
+		lan_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
+		wan_mac=$lan_mac
+		label_mac=$lan_mac
 		;;
 	mediatek,ap-mt7621a-v60)
 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x5)" 1)
@@ -307,10 +317,6 @@ ramips_setup_macs()
 	xiaomi,mir4)
 		lan_mac=$(mtd_get_mac_binary factory 0xe006)
 		label_mac=$lan_mac
-		;;
-	zbtlink,zbt-we1326)
-		wan_mac=$(mtd_get_mac_binary factory 0xe006)
-		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
 	zbtlink,zbt-wg3526-16m|\
 	zbtlink,zbt-wg3526-32m)

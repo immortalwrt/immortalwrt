@@ -23,7 +23,8 @@ d-team,newifi-d2)
 	ucidef_set_led_netdev "wlan5g" "WiFi 5GHz" "$boardname:blue:wlan5g" "wlan1"
 	;;
 d-team,pbr-m1|\
-gehua,ghl-r-001)
+gehua,ghl-r-001|\
+jcg,y2)
 	ucidef_set_led_netdev "internet" "internet" "$boardname:blue:internet" "eth0.2"
 	;;
 dlink,dir-860l-b1)
