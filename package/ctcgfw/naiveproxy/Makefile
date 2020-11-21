@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=naiveproxy
-PKG_VERSION:=86.0.4240.75-1
-PKG_RELEASE:=3
+PKG_VERSION:=87.0.4280.66-1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/klzgrad/naiveproxy/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=91f946e137565115649bc5787788a6889d84e0a20e9878553a832b89c0cb161f
+PKG_HASH:=17e79172fa32cb3b619614af989569aec7e866046f17e4a1b2179940f1915290
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD 3-Clause
@@ -62,33 +62,42 @@ ifneq ($(CONFIG_CCACHE),)
 	export naive_ccache_flags=cc_wrapper="ccache"
 endif
 
-AFDO_VER:=86.0.4237.0_rc-r1-merged
+AFDO_VER:=87.0.4278.0_rc-r1-merged
 AFDO_FILE:=chromeos-chrome-amd64-$$(AFDO_VER).afdo.bz2
 define Download/AFDO_PROF
 	URL:=https://storage.googleapis.com.cnpmjs.org/chromeos-prebuilt/afdo-job/llvm \
 	     https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm
-	URL_FILE:=$$(AFDO_FILE)
-	FILE:=$$(URL_FILE)
-	HASH:=d5730bd681766bcf4fd22c0e560ad500b2d6eb09164a9b80146cc327a156c98c
+	URL_FILE:=$(AFDO_FILE)
+	FILE:=$(AFDO_FILE)
+	HASH:=7625590b588195918b30c63db20e06339132bbe8975f39e2e429b929682ee3ff
 endef
 
-CLANG_VER:=llvmorg-12-init-3492-ga1caa302-1
+CLANG_VER:=llvmorg-12-init-5035-gd0abc757-3
 CLANG_FILE:=clang-$$(CLANG_VER).tgz
 define Download/CLANG
 	URL:=https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64
-	URL_FILE:=$$(CLANG_FILE)
-	FILE:=$$(URL_FILE)
-	HASH:=05df154999115386fb390a5ec7e6ca9e28aeae2ea1cbf76435247c0eee5b9ef3
+	URL_FILE:=$(CLANG_FILE)
+	FILE:=$(CLANG_FILE)
+	HASH:=b0c3015209b6d624844ad230064eb5c9b4429a2eafd4854981e73217c563d93d
 endef
 
-COLON:= :
-GN_VER:=git_revision$$(COLON)e327ffdc503815916db2543ec000226a8df45163
-GN_FILE:=gn-$$(GN_VER).zip
+GN_VER:=e002e68a48d1c82648eadde2f6aafa20d08c36f2
+GN_FILE:=gn-git_revision-$(GN_VER).zip
 define Download/GN_TOOL
 	URL:=https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+
-	URL_FILE:=$$(GN_VER)
-	FILE:=$$(GN_FILE)
-	HASH:=6d141b84a541e31ed7d3cd4d938987fdfa7988d5081d3089bc1509a43d6b742f
+	URL_FILE:=git_revision:$(GN_VER)
+	FILE:=$(GN_FILE)
+	HASH:=67a733dc12803f61a0565ba3a390fa08576b2c4dc1d615c5c15c2b681e900675
+endef
+
+PGO_VER:=4280-1605284980-f890b7d0344c87909c28619fe56e1dd48953d29e
+PGO_FILE:=chrome-linux-$(PGO_VER).profdata
+define Download/PGO_PROF
+	URL:=https://storage.googleapis.com.cnpmjs.org/chromium-optimization-profiles/pgo_profiles \
+	     https://storage.googleapis.com/chromium-optimization-profiles/pgo_profiles
+	URL_FILE:=$(PGO_FILE)
+	FILE:=$(PGO_FILE)
+	HASH:=8d87e67b84b2694776c931d8eabf0760144420718fe6a5352951fae38a3a25f6
 endef
 
 define Build/Prepare
@@ -96,21 +105,24 @@ define Build/Prepare
 
 	( \
 		cd $(PKG_BUILD_DIR)/src ; \
-		bzip2 -cd > "chrome/android/profiles/afdo.prof" < $(DL_DIR)/$(AFDO_FILE) ; \
+		bzip2 -cd > "chrome/android/profiles/afdo.prof" < "$(DL_DIR)/$(AFDO_FILE)" ; \
+		mkdir -p "chrome/build/pgo_profiles" ; \
+		$(CP) "$(DL_DIR)/$(PGO_FILE)" "chrome/build/pgo_profiles" ; \
 		mkdir -p "third_party/llvm-build/Release+Asserts" ; \
-		$(TAR) -xzf $(DL_DIR)/$(CLANG_FILE) -C "third_party/llvm-build/Release+Asserts" ; \
+		$(TAR) -xzf "$(DL_DIR)/$(CLANG_FILE)" -C "third_party/llvm-build/Release+Asserts" ; \
 		mkdir -p "gn/out" ; \
-		unzip -o $(DL_DIR)/$(GN_FILE) -d "gn/out" ; \
+		unzip -o "$(DL_DIR)/$(GN_FILE)" -d "gn/out" ; \
 	)
 endef
 
 define Build/Compile
 ( \
-	cd $(PKG_BUILD_DIR)/src ; \
+	cd "$(PKG_BUILD_DIR)/src" ; \
 	. ../init_env.sh "$(ARCH)" "$(BOARD)" $(CPU_TYPE) $(CPU_SUBTYPE) "$(TOOLCHAIN_DIR)" ; \
+	export naive_flags="$$$${naive_flags} pgo_data_path=\"$(PKG_BUILD_DIR)/src/chrome/build/pgo_profiles/$(PGO_FILE)\"" ; \
 	export naive_flags="$$$${naive_flags} $$$${naive_ccache_flags}" ; \
 	export OP_STAGING_DIR="$(STAGING_DIR)" ; \
-	mkdir -p out ; \
+	mkdir -p "out" ; \
 	./gn/out/gn gen "out/Release" --args="$$$${naive_flags}" --script-executable="$(STAGING_DIR_HOSTPKG)/bin/python3" ; \
 	$(STAGING_DIR_HOSTPKG)/bin/ninja -C "out/Release" naive ; \
 )
@@ -131,5 +143,6 @@ endef
 $(eval $(call Download,AFDO_PROF))
 $(eval $(call Download,CLANG))
 $(eval $(call Download,GN_TOOL))
+$(eval $(call Download,PGO_PROF))
 
 $(eval $(call BuildPackage,naiveproxy))
