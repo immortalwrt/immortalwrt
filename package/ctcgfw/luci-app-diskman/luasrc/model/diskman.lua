@@ -412,8 +412,8 @@ d.list_devices = function()
   for i, bname in pairs(target_devnames) do
     local device_info = {}
     local device = "/dev/" .. bname
-    local size = tonumber(fs.readfile(string.format("/sys/class/block/%s/size", bname)))
-    local ss = tonumber(fs.readfile(string.format("/sys/class/block/%s/queue/logical_block_size", bname)))
+    local size = tonumber(fs.readfile(string.format("/sys/class/block/%s/size", bname)) or "0")
+    local ss = tonumber(fs.readfile(string.format("/sys/class/block/%s/queue/logical_block_size", bname)) or "0")
     local model = fs.readfile(string.format("/sys/class/block/%s/device/model", bname))
     local partitions = {}
     for part in nixio.fs.glob("/sys/block/" .. bname .."/" .. bname .. "*") do
