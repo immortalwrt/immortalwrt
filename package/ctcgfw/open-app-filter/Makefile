@@ -14,6 +14,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/appfilter
   SECTION:=net
   CATEGORY:=Network
+  DEPENDS:=+libubox-lua
   TITLE:=App filter userspace module
 endef
 
@@ -39,6 +40,7 @@ define Package/appfilter/install
 	$(INSTALL_BIN) ./files/appfilter.init $(1)/etc/init.d/appfilter
 	$(INSTALL_BIN) ./files/appfilter.sh $(1)/usr/bin
 	$(INSTALL_BIN) ./files/gen_class.sh $(1)/usr/bin
+	$(INSTALL_BIN) ./files/appfilter.lua $(1)/usr/bin/appfilter
 	$(INSTALL_BIN) ./files/appfilter.config $(1)/etc/config/appfilter
 endef
 
