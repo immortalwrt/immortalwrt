@@ -68,7 +68,7 @@ define Build/Compile
   npm --prefix client ci ; \
   npm --prefix client run build-prod ; \
   GOOS=$$$$(go env GOOS) GOARCH=$$$$(go env GOARCH) GO111MODULE=off go get -v github.com/gobuffalo/packr/... ; \
-  "$$$$(go env GOPATH)/bin/packr" -v -z -i $(PKG_BUILD_DIR)/home ; \
+  "$$$$(go env GOPATH)/bin/packr" -v -z -i $(PKG_BUILD_DIR)/internal/home ; \
   $(call GoPackage/Build/Compile) ; \
 )
 ifeq ($(CONFIG_ADGUARDHOME_COMPRESS_UPX),y)
