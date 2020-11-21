@@ -1,15 +1,10 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
-PKG_VERSION:=181
-PKG_RELEASE:=1
+PKG_VERSION:=180
+PKG_RELEASE:=10
 
 include $(INCLUDE_DIR)/package.mk
-
-define Package/$(PKG_NAME)/conffiles
-/etc/config/shadowsocksr
-/etc/ssr/
-endef
 
 define Package/$(PKG_NAME)/config
 config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin
