@@ -5,6 +5,7 @@ start() {
 	lsmod | grep -q oaf 2>/dev/null || modprobe oaf
 	gen_class.sh /etc/appfilter/feature.cfg
 	appfilter.sh
+	/usr/bin/appfilter &
 }
 
 stop() {
