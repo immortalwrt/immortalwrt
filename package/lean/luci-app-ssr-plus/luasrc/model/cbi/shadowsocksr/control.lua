@@ -24,7 +24,6 @@ o:value("0", translate("Disable"))
 o:value("w", translate("Allow listed only"))
 o:value("b", translate("Allow all except listed"))
 o.rmempty = false
-o.default = "0"
 
 o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Host List"))
 o.datatype = "ipaddr"

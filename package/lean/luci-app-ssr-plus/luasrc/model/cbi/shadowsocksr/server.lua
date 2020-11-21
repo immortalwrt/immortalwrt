@@ -54,7 +54,6 @@ sec.anonymous = true
 
 o = sec:option(Flag, "enable_server", translate("Enable Server"))
 o.rmempty = false
-o.default = "0"
 
 -- [[ Server Setting ]]--
 sec = m:section(TypedSection, "server_config", translate("Server Setting"))
