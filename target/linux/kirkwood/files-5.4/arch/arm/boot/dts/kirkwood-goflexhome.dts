@@ -61,18 +61,18 @@
 		compatible = "gpio-leds";
 
 		led_health: health {
-			label = "status:green:health";
+			label = "green:health";
 			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		led_fault: fault {
-			label = "status:orange:fault";
+			label = "orange:fault";
 			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
 		};
 
 		misc {
-			label = "status:white:misc";
+			label = "white:misc";
 			gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "disk-activity";
 		};

@@ -61,7 +61,7 @@
 		pinctrl-names = "default";
 
 		led_power: power {
-			label = "audi:green:power";
+			label = "green:power";
 			gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};

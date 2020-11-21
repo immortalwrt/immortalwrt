@@ -88,53 +88,53 @@
 		compatible = "gpio-leds";
 
 		led_green_sys: green-sys {
-			label = "nsa310:green:sys";
+			label = "green:sys";
 			gpios = <&gpio0 28 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 
 		led_red_sys: red-sys {
-			label = "nsa310:red:sys";
+			label = "red:sys";
 			gpios = <&gpio0 29 GPIO_ACTIVE_HIGH>;
 		};
 
 		green-hdd {
-			label = "nsa310:green:hdd";
+			label = "green:hdd";
 			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
 		};
 
 		red-hdd {
-			label = "nsa310:red:hdd";
+			label = "red:hdd";
 			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
 		};
 
 		green-esata {
-			label = "nsa310:green:esata";
+			label = "green:esata";
 			gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
 		};
 
 		red-esata {
-			label = "nsa310:red:esata";
+			label = "red:esata";
 			gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
 		};
 
 		green-usb {
-			label = "nsa310:green:usb";
+			label = "green:usb";
 			gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
 		};
 
 		red-usb {
-			label = "nsa310:red:usb";
+			label = "red:usb";
 			gpios = <&gpio0 16 GPIO_ACTIVE_HIGH>;
 		};
 
 		green-copy {
-			label = "nsa310:green:copy";
+			label = "green:copy";
 			gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
 		};
 
 		red-copy {
-			label = "nsa310:red:copy";
+			label = "red:copy";
 			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
 		};
 	};

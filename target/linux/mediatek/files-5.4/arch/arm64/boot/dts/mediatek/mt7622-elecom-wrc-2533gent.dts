@@ -91,37 +91,37 @@
 		compatible = "gpio-leds";
 
 		led_power: power_g {
-			label = "wrc-2533:green:power";
+			label = "green:power";
 			gpios = <&pio 2 GPIO_ACTIVE_HIGH>;
 		};
 
 		power_b {
-			label = "wrc-2533:blue:power";
+			label = "blue:power";
 			gpios = <&pio 19 GPIO_ACTIVE_HIGH>;
 		};
 
 		power_r {
-			label = "wrc-2533:red:power";
+			label = "red:power";
 			gpios = <&pio 73 GPIO_ACTIVE_HIGH>;
 		};
 
 		usb {
-			label = "wrc-2533:blue:usb";
+			label = "blue:usb";
 			gpios = <&pio 74 GPIO_ACTIVE_HIGH>;
 		};
 
 		wps {
-			label = "wrc-2533:red:wps";
+			label = "red:wps";
 			gpios = <&pio 76 GPIO_ACTIVE_LOW>;
 		};
 
 		wifi2 {
-			label = "wrc-2533:blue:wifi2g";
+			label = "blue:wifi2g";
 			gpios = <&pio 85 GPIO_ACTIVE_LOW>;
 		};
 
 		wifi5 {
-			label = "wrc-2533:blue:wifi5g";
+			label = "blue:wifi5g";
 			gpios = <&pio 91 GPIO_ACTIVE_LOW>;
 		};
 	};

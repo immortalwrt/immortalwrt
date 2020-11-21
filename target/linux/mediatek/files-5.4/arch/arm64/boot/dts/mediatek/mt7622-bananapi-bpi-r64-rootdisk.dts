@@ -57,12 +57,12 @@
 		compatible = "gpio-leds";
 
 		green {
-			label = "bpi-r64:pio:green";
+			label = "pio:green";
 			gpios = <&pio 89 GPIO_ACTIVE_HIGH>;
 		};
 
 		red {
-			label = "bpi-r64:pio:red";
+			label = "pio:red";
 			gpios = <&pio 88 GPIO_ACTIVE_HIGH>;
 		};
 	};

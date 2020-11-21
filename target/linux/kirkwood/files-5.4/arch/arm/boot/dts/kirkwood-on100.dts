@@ -45,23 +45,23 @@
 		pinctrl-names = "default";
 
 		led_health_green: health-green {
-			label = "on100:green:health";
+			label = "green:health";
 			gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		led_health_red: health-red {
-			label = "on100:red:health";
+			label = "red:health";
 			gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
 		};
 
 		health2-green {
-			label = "on100:green:health2";
+			label = "green:health2";
 			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
 		};
 
 		health2-red {
-			label = "on100:red:health2";
+			label = "red:health2";
 			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
 		};
 	};
