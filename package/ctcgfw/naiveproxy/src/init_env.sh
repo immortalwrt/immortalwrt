@@ -21,12 +21,16 @@ ldso_path="/lib/$(find "${toolchain_dir}/" | grep -Eo "ld-musl-[a-z0-9_-]+\\.so\
 # OS detection
 [ "$(uname)" != "Linux" -o "$(uname -m)" != "x86_64" ] && { echo -e "Support Linux AMD64 only."; exit 1; }
 
+# Create TMP dir
+mkdir -p "$PWD/tmp"
+export TMPDIR="$PWD/tmp"
+
 # Set ENV
 export DEPOT_TOOLS_WIN_TOOLCHAIN=0
 export naive_flags="
 is_official_build=true
 exclude_unwind_tables=true
-enable_resource_whitelist_generation=false
+enable_resource_allowlist_generation=false
 symbol_level=0
 is_clang=true
 use_sysroot=false
@@ -56,6 +60,7 @@ use_pangocairo=false
 use_glib=false
 use_pulseaudio=false
 use_udev=false
+use_x11=false
 
 disable_file_support=true
 enable_websockets=false
@@ -67,6 +72,7 @@ include_transport_security_state_preload_list=false
 rtc_use_pipewire=false
 
 use_xkbcommon=false
+use_system_libdrm=false
 use_ozone=true
 ozone_auto_platforms=false
 ozone_platform=\"headless\"
