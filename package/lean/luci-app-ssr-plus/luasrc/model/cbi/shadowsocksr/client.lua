@@ -101,7 +101,6 @@ o:value("114.114.115.115:53", translate("Oversea Mode DNS-2 (114.114.115.115)"))
 o:depends("pdnsd_enable", "1")
 o:depends("pdnsd_enable", "2")
 o.description = translate("Custom DNS Server format as IP:PORT (default: 8.8.4.4:53)")
-o.default = "8.8.4.4:53"
 
 return m
 

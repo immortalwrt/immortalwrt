@@ -20,7 +20,6 @@ s.anonymous = true
 o = s:option(Flag, "auto_update", translate("Auto Update"))
 o.rmempty = false
 o.description = translate("Auto Update Server subscription, GFW list and CHN route")
-o.default = "1"
 
 
 o = s:option(ListValue, "auto_update_time", translate("Update time (every day)"))
@@ -36,7 +35,6 @@ o.rmempty = true
 o = s:option(Value, "filter_words", translate("Subscribe Filter Words"))
 o.rmempty = true
 o.description = translate("Filter Words splited by /")
-o.default = "过期时间/剩余流量/QQ群/官网/防失联地址/回国"
 
 o = s:option(Button,"update_Sub",translate("Update Subscribe List"))
 o.inputstyle = "reload"
@@ -53,7 +51,6 @@ o.default="1"
 o = s:option(Flag, "proxy", translate("Through proxy update"))
 o.rmempty = false
 o.description = translate("Through proxy update list, Not Recommended ")
-o.default="0"
 
 
 o = s:option(Button,"subscribe", translate("Update All Subscribe Severs"))
