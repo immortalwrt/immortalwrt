@@ -1368,7 +1368,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	}
 --- a/drivers/net/xen-netback/interface.c
 +++ b/drivers/net/xen-netback/interface.c
-@@ -104,7 +104,7 @@ static int xenvif_poll(struct napi_struc
+@@ -120,7 +120,7 @@ static int xenvif_poll(struct napi_struc
  	work_done = xenvif_tx_action(queue, budget);
  
  	if (work_done < budget) {
