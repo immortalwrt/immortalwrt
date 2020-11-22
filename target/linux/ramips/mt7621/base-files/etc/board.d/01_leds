@@ -9,7 +9,6 @@ set_wifi_led() {
 
 
 board=$(board_name)
-boardname="${board##*,}"
 
 board_config_update
 

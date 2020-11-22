@@ -8,7 +8,6 @@
 board_config_update
 
 board=$(board_name)
-boardname="${board##*,}"
 
 case "$board" in
 buffalo,wxr-2533dhp)
@@ -16,8 +15,8 @@ buffalo,wxr-2533dhp)
 	ucidef_set_led_switch "wan" "WAN" "white:internet" "switch0" "0x20"
 	;;
 compex,wpq864)
-	ucidef_set_led_usbport "usb" "USB" "wpq864:green:usb" "usb1-port1" "usb2-port1"
-	ucidef_set_led_usbport "pcie-usb" "PCIe USB" "wpq864:green:usb-pcie" "usb3-port1"
+	ucidef_set_led_usbport "usb" "USB" "green:usb" "usb1-port1" "usb2-port1"
+	ucidef_set_led_usbport "pcie-usb" "PCIe USB" "green:usb-pcie" "usb3-port1"
 	;;
 nec,wg2600hp)
 	ucidef_set_led_wlan "wlan2g" "WLAN2G" "green:wlan2g" "phy1tpt"
