@@ -392,8 +392,8 @@ wd,mynet-wifi-rangeextender)
 	ucidef_set_led_rssi "rssihigh" "RSSIMAX" "blue:rssi-max" "wlan0" "66" "100"
 	;;
 xwrt,csac)
-	ucidef_set_led_wlan "wlan5g" "WLAN5G" "xwrt:blue:wlan5g" "phy1tpt"
-	ucidef_set_led_wlan "wlan2g" "WLAN2G" "xwrt:blue:wlan2g" "phy0tpt"
+	ucidef_set_led_wlan "wlan5g" "WLAN5G" "blue:wlan5g" "phy1tpt"
+	ucidef_set_led_wlan "wlan2g" "WLAN2G" "blue:wlan2g" "phy0tpt"
 	;;
 yuncore,a770)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
