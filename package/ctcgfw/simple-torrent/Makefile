@@ -1,17 +1,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-torrent
-PKG_VERSION:=2ae7de9
+PKG_VERSION:=1.2.12
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/boypt/simple-torrent.git
-PKG_SOURCE_VERSION:=2ae7de933624625e3d01c00ad2a3a3a524818b57
-PKG_MAINTAINER:=[CTCGFW] Project OpenWrt / CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_SOURCE_VERSION:=7d2662c35ac0a566b39b56c0d42de81067cc1670
 
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+
+PKG_LICENSE:=AGPL-3.0
+PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -36,7 +39,8 @@ endef
 
 define Package/$(PKG_NAME)/description
 	SimpleTorrent is a a self-hosted remote torrent client, written in Go (golang).
-	Started torrents remotely, download sets of files on the local disk of the server, which are then retrievable or streamable via HTTP.
+	Started torrents remotely, download sets of files on the local disk of the server,
+	which are then retrievable or streamable via HTTP.
 endef
 
 define Build/Prepare
