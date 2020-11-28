@@ -57,15 +57,6 @@ endef
 define Build/Compile
 endef
 
-define Package/luci-app-vssr/conffiles
-	/etc/ssr_ip
-	/etc/dnsmasq.ssr/gfw_list.conf
-	/etc/china_ssr.txt
-	/etc/dnsmasq.ssr/gfw_list.conf
-	/etc/dnsmasq.ssr/gfw_base.conf
-	/etc/dnsmasq.oversea/oversea_list.conf
-endef
-
 define Package/luci-app-vssr/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci
