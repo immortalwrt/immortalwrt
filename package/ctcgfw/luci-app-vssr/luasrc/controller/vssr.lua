@@ -228,9 +228,9 @@ function refresh_data()
             luci.sys.call('/usr/bin/vssr-gfw')
             icount = luci.sys.exec('cat /tmp/gfwnew.txt | wc -l')
             if tonumber(icount) > 1000 then
-                oldcount = luci.sys.exec('cat /etc/dnsmasq.ssr/gfw_list.conf | wc -l')
+                oldcount = luci.sys.exec('cat /etc/vssr/gfw_list.conf | wc -l')
                 if tonumber(icount) ~= tonumber(oldcount) then
-                    luci.sys.exec('cp -f /tmp/gfwnew.txt /etc/dnsmasq.ssr/gfw_list.conf')
+                    luci.sys.exec('cp -f /tmp/gfwnew.txt /etc/vssr/gfw_list.conf')
                     retstring = tostring(math.ceil(tonumber(icount) / 2))
                 else
                     retstring = '0'
@@ -248,9 +248,9 @@ function refresh_data()
         sret = luci.sys.call(refresh_cmd)
         icount = luci.sys.exec('cat /tmp/china_ssr.txt | wc -l')
         if sret == 0 and tonumber(icount) > 1000 then
-            oldcount = luci.sys.exec('cat /etc/china_ssr.txt | wc -l')
+            oldcount = luci.sys.exec('cat /etc/vssr/china_ssr.txt | wc -l')
             if tonumber(icount) ~= tonumber(oldcount) then
-                luci.sys.exec('cp -f /tmp/china_ssr.txt /etc/china_ssr.txt')
+                luci.sys.exec('cp -f /tmp/china_ssr.txt /etc/vssr/china_ssr.txt')
                 retstring = tostring(tonumber(icount))
             else
                 retstring = '0'
@@ -274,13 +274,13 @@ function refresh_data()
             end
             icount = luci.sys.exec('cat /tmp/ad.conf | wc -l')
             if tonumber(icount) > 1000 then
-                if nixio.fs.access('/etc/dnsmasq.ssr/ad.conf') then
-                    oldcount = luci.sys.exec('cat /etc/dnsmasq.ssr/ad.conf | wc -l')
+                if nixio.fs.access('/etc/vssr/ad.conf') then
+                    oldcount = luci.sys.exec('cat /etc/vssr/ad.conf | wc -l')
                 else
                     oldcount = 0
                 end
                 if tonumber(icount) ~= tonumber(oldcount) then
-                    luci.sys.exec('cp -f /tmp/ad.conf /etc/dnsmasq.ssr/ad.conf')
+                    luci.sys.exec('cp -f /tmp/ad.conf /etc/vssr/ad.conf')
                     retstring = tostring(math.ceil(tonumber(icount)))
                     if oldcount == 0 then
                         luci.sys.call('/etc/init.d/dnsmasq restart')

@@ -543,7 +543,7 @@ start() {
     if rules; then
         start_redir
 
-        mkdir -p /tmp/dnsmasq.d && cp -a /etc/dnsmasq.ssr /tmp/ && cp -a /etc/dnsmasq.oversea /tmp/
+        mkdir -p /tmp/dnsmasq.d && cp -a /etc/vssr/ad.conf gfw_base.conf gfw_list.conf /tmp/ && cp -a /etc/vssr/oversea_list.conf /tmp/
         if ! [ "$run_mode" = "oversea" ]; then
             cat >/tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
 conf-dir=/tmp/dnsmasq.ssr
