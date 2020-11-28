@@ -89,12 +89,12 @@ return baseclass.extend({
 			_('CPU usage (%)'),    cpuusage.cpuusage
 		];
 
-		var table = E('div', { 'class': 'table' });
+		var table = E('table', { 'class': 'table' });
 
 		for (var i = 0; i < fields.length; i += 2) {
 			table.appendChild(E('div', { 'class': 'tr' }, [
-				E('div', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
-				E('div', { 'class': 'td left' }, [ (fields[i + 1] != null) ? fields[i + 1] : '?' ])
+				E('td', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
+				E('td', { 'class': 'td left' }, [ (fields[i + 1] != null) ? fields[i + 1] : '?' ])
 			]));
 		}
 
