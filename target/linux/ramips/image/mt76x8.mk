@@ -498,6 +498,22 @@ define Device/tplink_tl-mr6400-v4
 endef
 TARGET_DEVICES += tplink_tl-mr6400-v4
 
+define Device/tplink_tl-mr6400-v5
+  $(Device/tplink-v2)
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := TL-MR6400
+  DEVICE_VARIANT := v5
+  TPLINK_FLASHLAYOUT := 8Mmtk
+  TPLINK_HWID := 0x64000005
+  TPLINK_HWREV := 0x5
+  TPLINK_HWREVADD := 0x5
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
+	kmod-usb-serial kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
+  IMAGES := sysupgrade.bin tftp-recovery.bin
+  IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
+endef
+TARGET_DEVICES += tplink_tl-mr6400-v5
+
 define Device/tplink_tl-wa801nd-v5
   $(Device/tplink-v2)
   IMAGE_SIZE := 7808k
@@ -735,6 +751,14 @@ define Device/xiaomi_mir4a-100m
   DEVICE_PACKAGES := kmod-mt76x2
 endef
 TARGET_DEVICES += xiaomi_mir4a-100m
+
+define Device/xiaomi_mi-router-4c
+  IMAGE_SIZE := 14976k
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Mi Router 4C
+  DEVICE_PACKAGES := uboot-envtools
+endef
+TARGET_DEVICES += xiaomi_mi-router-4c
 
 define Device/xiaomi_miwifi-nano
   IMAGE_SIZE := 16064k
