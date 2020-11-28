@@ -120,7 +120,7 @@ define PrepareStaging
 		$(if $(QUIET),,set -x;) \
 		mkdir -p "$$dir"; \
 		cd "$$dir"; \
-		mkdir -p bin lib stamp; \
+		mkdir -p bin lib stamp usr/include usr/lib; \
 	); done
 endef
 

@@ -2,6 +2,7 @@
 	"whitelist": [
 		"read",
 		"write",
+		"writev",
 		"open",
 		"close",
 		"time",
