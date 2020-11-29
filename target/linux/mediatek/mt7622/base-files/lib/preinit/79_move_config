@@ -12,7 +12,7 @@ move_config() {
 		insmod vfat
 		mkdir -p /recovery
 		mount -o rw,noatime $RECOVERY_PART /recovery
-		[ -f "/recovery/$CONF_TAR" ] && mv -f "/recovery/$CONF_TAR" /
+		[ -f "/recovery/sysupgrade.tgz" ] && mv -f "/recovery/sysupgrade.tgz" /
 		umount /recovery
 	fi
 }

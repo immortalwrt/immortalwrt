@@ -60,7 +60,7 @@ platform_copy_config_sdboot() {
 	if export_partdevice partdev 1; then
 		mount -t $parttype -o rw,noatime "/dev/$partdev" /mnt 2>&1
 		echo "Saving config backup..."
-		cp -af "$CONF_TAR" "/mnt/$CONF_TAR"
+		cp -af "$CONF_TAR" "/mnt/sysupgrade.tgz"
 		umount /mnt
 	fi
 }

@@ -27,12 +27,12 @@ preinit_mount_syscfg() {
 		fi
 		mkdir /tmp/syscfg
 		mount -t ubifs ubi1:syscfg /tmp/syscfg
-		[ -f "/tmp/syscfg/$CONF_TAR" ] && {
+		[ -f "/tmp/syscfg/sysupgrade.tgz" ] && {
 		echo "- config restore -"
 		cd /
-		mv "/tmp/syscfg/$CONF_TAR" /tmp
-		tar xzf "/tmp/$CONF_TAR"
-		rm -f "/tmp/$CONF_TAR"
+		mv "/tmp/syscfg/sysupgrade.tgz" /tmp
+		tar xzf "$CONF_TAR"
+		rm -f "$CONF_TAR"
 		sync
 		}
 		;;

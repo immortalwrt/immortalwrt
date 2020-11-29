@@ -40,7 +40,7 @@ platform_check_image() {
 platform_copy_config_emmc() {
 	mkdir -p /recovery
 	mount -o rw,noatime /dev/mmcblk0p6 /recovery
-	cp -af "$CONF_TAR" "/recovery/$CONF_TAR"
+	cp -af "$CONF_TAR" "/recovery/sysupgrade.tgz"
 	sync
 	umount /recovery
 }
