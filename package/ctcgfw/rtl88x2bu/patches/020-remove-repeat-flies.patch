@@ -27,8 +27,8 @@ index 0d20a7e..f0a9f88 100644
 +#include <generated/autoconf.h>
 +#include "rtl_autoconf.h"
  #include "hal_ic_cfg.h"
- 
  #if defined(PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
+ 
 diff --git a/include/linux/wireless.h b/include/linux/old_unused_rtl_wireless.h
 similarity index 100%
 rename from include/linux/wireless.h
