@@ -1,11 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl88x2bu
-PKG_VERSION:=5.6.1
 PKG_RELEASE=1
-
-PKG_LICENSE:=GPLv2
-PKG_LICENSE_FILES:=
 
 PKG_SOURCE_URL:=https://github.com/cilynx/rtl88x2bu.git
 PKG_SOURCE_PROTO:=git
@@ -15,6 +11,9 @@ PKG_MIRROR_HASH:=ba79fb9a823a38c5acf22999210645ba881da0b5498ee765383dc5eaa8234e6
 
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
+
+PKG_LICENSE:=GPLv2
+PKG_LICENSE_FILES:=LICENSE
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
@@ -37,9 +36,10 @@ NOSTDINC_FLAGS = \
 	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
 	-I$(STAGING_DIR)/usr/include/mac80211 \
 	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-include backport/autoconf.h \
 	-include backport/backport.h
 
-EXTRA_CFLAGS=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_RADIO_WORK -DCONFIG_CONCURRENT_MODE 
+EXTRA_CFLAGS=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DRTW_SINGLE_WIPHY -DCONFIG_CONCURRENT_MODE
 
 # CONFIG_IOCTL_CFG80211: If kernel version is after 2.6.35, we recommend user to use the new nl80211 API.
 # RTW_USE_CFG80211_STA_EVENT:It is used for driver to indicate new cfg80211 STA event, 
