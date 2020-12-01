@@ -47,6 +47,7 @@ NOSTDINC_FLAGS = \
 	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
 	-I$(STAGING_DIR)/usr/include/mac80211 \
 	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
+	-include backport/autoconf.h \
 	-include backport/backport.h
 
 EXTRA_KCONFIG:=\
@@ -58,6 +59,7 @@ ifeq ($(ARCH),aarch64)
 endif
 
 EXTRA_CFLAGS:= \
+	-DRTW_SINGLE_WIPHY \
 	-DRTW_USE_CFG80211_STA_EVENT \
 	-DCONFIG_RADIO_WORK \
 	-DCONFIG_IOCTL_CFG80211 \
