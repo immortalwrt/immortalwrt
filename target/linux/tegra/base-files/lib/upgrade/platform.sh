@@ -8,8 +8,6 @@ get_magic_at() {
 platform_check_image() {
 	local diskdev partdev diff
 
-	[ "$#" -gt 1 ] && return 1
-
 	case "$(get_magic_at "$1" 510)" in
 		55aa) ;;
 		*)
