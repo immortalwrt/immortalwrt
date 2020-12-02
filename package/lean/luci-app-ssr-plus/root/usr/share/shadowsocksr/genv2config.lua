@@ -57,7 +57,7 @@ outbound = {
 	-- 底层传输配置
 	streamSettings = {
 		network = server.transport,
-		security = (server.tls == '1') and (server.xtls == '1') and "xtls" or "tls" or "none",
+		security = (server.tls == '1') and ((server.xtls == '1') and "xtls" or "tls") or "none",
 		tlsSettings = (server.tls == '1') and {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,} or nil,
 		xtlsSettings = (server.xtls == '1') and {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,} or nil,
 		tcpSettings = (server.transport == "tcp") and {
