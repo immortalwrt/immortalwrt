@@ -19,7 +19,7 @@ define Package/luci-app-autoipsetadder
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for autoipsetadder
 	PKGARCH:=all
-	DEPENDS:= +httping +curl
+	DEPENDS:= +httping +curl +coreutils-stdbuf
 endef
 
 define Package/luci-app-autoipsetadder/description
