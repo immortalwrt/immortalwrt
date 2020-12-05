@@ -49,8 +49,6 @@ cancel() {
     exit 1
 }
 
-REMOTE_SCRIPT=$(uci_get_by_type global remote_url)
-
 fill_cookie() {
     cookie1=$(uci_get_by_type global cookie)
     if [ ! "$cookie1" = "" ]; then
@@ -77,13 +75,6 @@ fill_cookie() {
     fi
 }
 
-if [ -e $TEMP_SCRIPT ]; then
-    remote_ver=$(cat $TEMP_SCRIPT | sed -n '/更新时间/p' | awk '{for (i=1;i<=NF;i++){if ($i ~/v/) {print $i}}}' | sed 's/v//')
-else
-    remote_ver=$(cat $JD_SCRIPT | sed -n '/更新时间/p' | awk '{for (i=1;i<=NF;i++){if ($i ~/v/) {print $i}}}' | sed 's/v//')
-fi
-local_ver=$(uci_get_by_type global version)
-
 add_cron() {
     sed -i '/jd-dailybonus/d' $CRON_FILE
     [ $(uci_get_by_type global auto_run 0) -eq 1 ] && echo '5 '$(uci_get_by_type global auto_run_time)' * * * sleep '$(expr $(head -n 128 /dev/urandom | tr -dc "0123456789" | head -c4) % 180)'s; /usr/share/jd-dailybonus/newapp.sh -w' >>$CRON_FILE
@@ -96,7 +87,7 @@ add_cron() {
 serverchan() {
     sckey=$(uci_get_by_type global serverchan)
     failed=$(uci_get_by_type global failed)
-    desc=$(cat /www/JD_DailyBonus.htm | grep -E '签到号|签到概览|签到总计|账号总计|其他总计' | sed 's/$/&\n/g')
+    desc=$(cat /www/JD_DailyBonus.htm | grep -E '签到号|签到概览|签到奖励|其他奖励|账号总计|其他总计' | sed 's/$/&\n/g')
     serverurlflag=$(uci_get_by_type global serverurl)
     serverurl=https://sc.ftqq.com/
     if [ "$serverurlflag" = "sct" ]; then
@@ -118,15 +109,13 @@ serverchan() {
 run() {
     fill_cookie
     echo -e $(date '+%Y-%m-%d %H:%M:%S %A') >$LOG_HTM 2>/dev/null
-    [ ! -f "/usr/bin/node" ] && echo "未安装node,请安装后再试!">>$LOG_HTM && exit 1
-    node $JD_SCRIPT >>$LOG_HTM 2>&1 &
+    [ ! -f "/usr/bin/node" ] && echo -e "未安装node.js,请安装后再试!\nNode.js is not installed, please try again after installation!">>$LOG_HTM && exit 1
+    node $JD_SCRIPT >>$LOG_HTM 2>/dev/null
 }
 
 back_run() {
-    fill_cookie
-    echo -e $(date '+%Y-%m-%d %H:%M:%S %A') >$LOG_HTM 2>/dev/null
-    [ ! -f "/usr/bin/node" ] && echo "未安装node,请安装后再试!">>$LOG_HTM && exit 1
-    node $JD_SCRIPT >>$LOG_HTM 2>/dev/null
+    run
+    sleep 1s
     serverchan
 }
 
@@ -136,22 +125,37 @@ save() {
 }
 
 # Update Script From Server
+download() {
+    REMOTE_SCRIPT=$(uci_get_by_type global remote_url)
+    wget-ssl --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36" --no-check-certificate -t 3 -T 10 -q $REMOTE_SCRIPT -O $TEMP_SCRIPT
+    return $?
+}
+
+get_ver() {
+    echo $(cat $1 | sed -n '/更新时间/p' | awk '{for (i=1;i<=NF;i++){if ($i ~/v/) {print $i}}}' | sed 's/v//')
+}
 
 check_ver() {
-    wget-ssl --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36" --no-check-certificate -t 3 -T 10 -q $REMOTE_SCRIPT -O $TEMP_SCRIPT
+    download
     if [ $? -ne 0 ]; then
         cancel "501"
     else
-        echo $remote_ver
+        echo $(get_ver $TEMP_SCRIPT)
     fi
 }
 
 update() {
-    wget-ssl --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36" --no-check-certificate -t 3 -T 10 -q $REMOTE_SCRIPT -O $TEMP_SCRIPT
+    download
     if [ $? -ne 0 ]; then
         cancel "501"
     fi
-    if [ $(expr $local_ver \< $remote_ver) -eq 1 ]; then
+    if [ -e $JD_SCRIPT ]; then
+        local_ver=$(get_ver $JD_SCRIPT)
+    else
+        local_ver=0
+    fi
+    remote_ver=$(get_ver $TEMP_SCRIPT)
+    if [ $(expr "$local_ver" \< "$remote_ver") -eq 1 ]; then
         cp -r $TEMP_SCRIPT $JD_SCRIPT
         fill_cookie
         uci set jd-dailybonus.@global[0].version=$remote_ver
