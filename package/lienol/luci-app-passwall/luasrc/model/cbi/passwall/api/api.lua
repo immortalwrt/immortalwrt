@@ -19,7 +19,7 @@ function get_valid_nodes()
     local nodes = {}
     uci:foreach(appname, "nodes", function(e)
         if e.type and e.remarks then
-            if e.type == "V2ray" and (e.protocol == "_balancing" or e.protocol == "_shunt") then
+            if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt") then
                 e.remarks_name = "%s：[%s] " % {i18n.translatef(e.type .. e.protocol), e.remarks}
                 e.node_type = "special"
                 nodes[#nodes + 1] = e
@@ -79,19 +79,55 @@ function get_customed_path(e)
 end
 
 function is_finded(e)
-    return luci.sys.exec('type -t -p "%s/%s" -p "/usr/bin/v2ray/%s" "%s"' % {get_customed_path(e), e, e, e}) ~= "" and true or false
+    return luci.sys.exec('type -t -p "%s/%s" "%s"' % {get_customed_path(e), e, e}) ~= "" and true or false
+end
+
+function get_xray_path()
+    local path = uci_get_type("global_app", "xray_file")
+    return path
+end
+
+function get_xray_version(file)
+    if file == nil then file = get_xray_path() end
+    chmod_755(file)
+    if fs.access(file) then
+        if file == get_xray_path() then
+            local md5 = sys.exec("echo -n $(md5sum " .. file .. " | awk '{print $1}')")
+            if fs.access("/tmp/psw_" .. md5) then
+                return sys.exec("cat /tmp/psw_" .. md5)
+            else
+                local version = sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+                sys.call("echo '" .. version .. "' > " .. "/tmp/psw_" .. md5)
+                return version
+            end
+        else
+            return sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+        end
+    end
+    return ""
 end
 
 function get_v2ray_path()
     local path = uci_get_type("global_app", "v2ray_file")
-    return path .. "/v2ray"
+    return path
 end
 
 function get_v2ray_version(file)
     if file == nil then file = get_v2ray_path() end
     chmod_755(file)
     if fs.access(file) then
-        return sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+        if file == get_v2ray_path() then
+            local md5 = sys.exec("echo -n $(md5sum " .. file .. " | awk '{print $1}')")
+            if fs.access("/tmp/psw_" .. md5) then
+                return sys.exec("cat /tmp/psw_" .. md5)
+            else
+                local version = sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+                sys.call("echo '" .. version .. "' > " .. "/tmp/psw_" .. md5)
+                return version
+            end
+        else
+            return sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+        end
     end
     return ""
 end
@@ -105,7 +141,18 @@ function get_trojan_go_version(file)
     if file == nil then file = get_trojan_go_path() end
     chmod_755(file)
     if fs.access(file) then
-        return sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+        if file == get_trojan_go_path() then
+            local md5 = sys.exec("echo -n $(md5sum " .. file .. " | awk '{print $1}')")
+            if fs.access("/tmp/psw_" .. md5) then
+                return sys.exec("cat /tmp/psw_" .. md5)
+            else
+                local version = sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+                sys.call("echo '" .. version .. "' > " .. "/tmp/psw_" .. md5)
+                return version
+            end
+        else
+            return sys.exec("echo -n $(%s -version | awk '{print $2}' | sed -n 1P)" % file)
+        end
     end
     return ""
 end
@@ -119,7 +166,18 @@ function get_kcptun_version(file)
     if file == nil then file = get_kcptun_path() end
     chmod_755(file)
     if fs.access(file) then
-        return sys.exec("echo -n $(%s -v | awk '{print $3}')" % file)
+        if file == get_kcptun_path() then
+            local md5 = sys.exec("echo -n $(md5sum " .. file .. " | awk '{print $1}')")
+            if fs.access("/tmp/psw_" .. md5) then
+                return sys.exec("cat /tmp/psw_" .. md5)
+            else
+                local version = sys.exec("echo -n $(%s -v | awk '{print $3}')" % file)
+                sys.call("echo '" .. version .. "' > " .. "/tmp/psw_" .. md5)
+                return version
+            end
+        else
+            return sys.exec("echo -n $(%s -v | awk '{print $3}')" % file)
+        end
     end
     return ""
 end
@@ -133,9 +191,36 @@ function get_brook_version(file)
     if file == nil then file = get_brook_path() end
     chmod_755(file)
     if fs.access(file) then
-        return sys.exec("echo -n $(%s -v | awk '{print $3}')" % file)
+        if file == get_brook_path() then
+            local md5 = sys.exec("echo -n $(md5sum " .. file .. " | awk '{print $1}')")
+            if fs.access("/tmp/psw_" .. md5) then
+                return sys.exec("cat /tmp/psw_" .. md5)
+            else
+                local version = sys.exec("echo -n $(%s -v | awk '{print $3}')" % file)
+                sys.call("echo '" .. version .. "' > " .. "/tmp/psw_" .. md5)
+                return version
+            end
+        else
+            return sys.exec("echo -n $(%s -v | awk '{print $3}')" % file)
+        end
     end
     return ""
+end
+
+function get_free_space(dir)
+    if dir == nil then dir = "/" end
+    if sys.call("df -k " .. dir .. " >/dev/null") == 0 then
+        return tonumber(sys.exec("echo -n $(df -k " .. dir .. " | awk 'NR>1' | awk '{print $4}')"))
+    end
+    return 0
+end
+
+function get_file_space(file)
+    if file == nil then return 0 end
+    if fs.access(file) then
+        return tonumber(sys.exec("echo -n $(du -k " .. file .. " | awk '{print $1}')"))
+    end
+    return 0
 end
 
 function _unpack(t, i)

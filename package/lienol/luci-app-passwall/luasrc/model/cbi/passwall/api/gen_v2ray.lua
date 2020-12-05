@@ -56,10 +56,14 @@ function gen_outbound(node, tag, relay_port)
                 node.address = "127.0.0.1"
             end
             node.stream_security = "none"
-        end
-
-        if node.transport == "mkcp" or node.transport == "quic" then
-            node.stream_security = "none"
+        else
+            if node.tls and node.tls == "1" then
+                node.stream_security = "tls"
+            end
+    
+            if node.transport == "mkcp" or node.transport == "quic" then
+                node.stream_security = "none"
+            end
         end
 
         result = {
@@ -73,10 +77,6 @@ function gen_outbound(node, tag, relay_port)
             streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                 network = node.transport,
                 security = node.stream_security,
-                xtlsSettings = (node.stream_security == "xtls") and {
-                    serverName = node.tls_serverName,
-                    allowInsecure = (node.tls_allowInsecure == "1") and true or false
-                } or nil,
                 tlsSettings = (node.stream_security == "tls") and {
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
@@ -265,7 +265,10 @@ if node then
             end
         end
 
-        routing = {domainStrategy = "IPOnDemand", rules = rules}
+        routing = {
+            domainStrategy = node.domainStrategy or "AsIs",
+            rules = rules
+        }
 
     elseif node.protocol == "_balancing" then
         if node.balancing_node then
@@ -277,7 +280,7 @@ if node then
                 if outbound then table.insert(outbounds, outbound) end
             end
             routing = {
-                domainStrategy = "IPOnDemand",
+                domainStrategy = node.domainStrategy or "AsIs",
                 balancers = {{tag = "balancer", selector = nodes}},
                 rules = {
                     {type = "field", network = "tcp,udp", balancerTag = "balancer"}

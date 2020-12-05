@@ -1,3 +1,9 @@
+<%
+local api = require "luci.model.cbi.passwall.api.api"
+local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
+local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
+local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
+-%>
 <script type="text/javascript">
 	//<![CDATA[
 	var _status = document.getElementsByClassName('_status');
@@ -29,5 +35,40 @@
 			}
 		);
 	}
+	
+	var global = document.getElementById("cbi-passwall-global");
+	if (global) {
+		var node = global.getElementsByClassName("cbi-section-node")[0];
+		var node_id = node.getAttribute("id");
+		
+		for (var i = 0; i <= 1; i++) {
+			var proto = "udp";
+			var num = <%=udp_node_num%>;
+			if (i == 0) {
+				if (<%=auto_switch%> > 0) {
+					continue;
+				}
+				proto = "tcp";
+				num = <%=tcp_node_num%>;
+			}
+			if (num >= 1) {
+				for (var j = 0; j < num; j++) {
+					var index = j + 1;
+					var node = document.getElementById(node_id + "-" + proto + "_node" + index);
+					var node_select = document.getElementById(node.id.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), "."));
+					var node_select_value = node_select.value;
+					if (node_select_value && node_select_value != "nil") {
+						var new_a = document.createElement("a");
+						new_a.setAttribute("href","node_config/" + node_select_value);
+						new_a.innerHTML = "<%:Edit Current Node%>";
+						
+						node_select.outerHTML = node_select.outerHTML + "&nbsp&nbsp" + new_a.outerHTML;
+						//node_select.parentNode.insertBefore(new_a, node_select.nextSibling);
+					}
+				}
+			}
+		}
+	}
+	
 	//]]>
 </script>

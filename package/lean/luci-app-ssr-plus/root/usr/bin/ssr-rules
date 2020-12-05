@@ -31,6 +31,7 @@ Valid options are:
     -F                      netflix mode
     -N                      netflix server IP
     -M                      netflix proxy mode
+    -m <Interface>          Interface name
     -I <ip_list_file>       a file content is bypassed netflix ip list
     -e <extra_options>      extra options for iptables
     -o                      apply the rules to the OUTPUT chain
@@ -39,8 +40,10 @@ Valid options are:
     -U                      enable udprelay mode, using different IP
                             and ports for TCP and UDP
     -f                      flush the rules
-    -g                      gfw list mode
-    -r                      return china mode
+    -g                      gfwlist mode
+    -r                      router mode
+    -c                      oversea mode
+    -z                      all mode
     -h                      show this help message and exit
 EOF
 exit $1
@@ -79,40 +82,36 @@ flush_r() {
 }
 
 ipset_r() {
+	[ -f "$IGNORE_LIST" ] && /usr/share/shadowsocksr/chinaipset.sh $IGNORE_LIST
+	$IPT -N SS_SPEC_WAN_AC
+	$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 	ipset -N gmlan hash:net 2>/dev/null
 	for ip in $LAN_GM_IP; do ipset -! add gmlan $ip; done
 	case "$RUNMODE" in
 	router)
 		ipset -! -R <<-EOF || return 1
 			create ss_spec_wan_ac hash:net
-			$(gen_iplist | sed -e "s/^/add ss_spec_wan_ac /")
+			$(gen_spec_iplist | sed -e "s/^/add ss_spec_wan_ac /")
 		EOF
-		ipset -N gfwlist hash:net 2>/dev/null
-		$IPT -N SS_SPEC_WAN_AC
-		$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set ss_spec_wan_ac dst -j RETURN
+		$IPT -A SS_SPEC_WAN_AC -m set --match-set gmlan src -m set ! --match-set china dst -j SS_SPEC_WAN_FW
+		$IPT -A SS_SPEC_WAN_AC -m set --match-set china dst -j RETURN
 		$IPT -A SS_SPEC_WAN_AC -j SS_SPEC_WAN_FW
 		;;
 	gfw)
 		ipset -N gfwlist hash:net 2>/dev/null
-		$IPT -N SS_SPEC_WAN_AC
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set gfwlist dst -j SS_SPEC_WAN_FW
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set gmlan src -m set ! --match-set china dst -j SS_SPEC_WAN_FW
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set china dst -j RETURN
-		$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 		;;
 	oversea)
 		ipset -N oversea hash:net 2>/dev/null
-		$IPT -N SS_SPEC_WAN_AC
-		ipset -N gmlan hash:net 2>/dev/null
-		for ip in $LAN_GM_IP; do ipset -! add gmlan $ip; done
+		$IPT -I SS_SPEC_WAN_AC -m set --match-set oversea dst -j SS_SPEC_WAN_FW
+		$IPT -A SS_SPEC_WAN_AC -m set --match-set gmlan src -j SS_SPEC_WAN_FW
 		$IPT -A SS_SPEC_WAN_AC -m set --match-set china dst -j SS_SPEC_WAN_FW
-		$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 		;;
 	all)
-		$IPT -N SS_SPEC_WAN_AC
 		$IPT -A SS_SPEC_WAN_AC -j SS_SPEC_WAN_FW
-		$IPT -I SS_SPEC_WAN_AC -p tcp ! --dport 53 -d $server -j RETURN
 		;;
 	esac
 	ipset -N fplan hash:net 2>/dev/null
@@ -183,17 +182,25 @@ ac_rule() {
 			;;
 		esac
 	fi
-	IFNAME=$(uci get -P/var/state network.lan.ifname 2>/dev/null)
 	ipset -! -R <<-EOF || return 1
 		create ss_spec_lan_ac hash:net
 		$(for ip in ${LAN_AC_IP:1}; do echo "add ss_spec_lan_ac $ip"; done)
 	EOF
-	$IPT -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p tcp $EXT_ARGS $MATCH_SET \
-	-m comment --comment "$TAG" -j SS_SPEC_WAN_AC
-	if [ "$OUTPUT" = 1 ]; then
+	if [ -z "$Interface" ]; then
+		$IPT -I PREROUTING 1 -p tcp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_WAN_AC
+	else
+		for name in $Interface;do 
+		local IFNAME=$(uci -P /var/state get network.$name.ifname 2>/dev/null)
+		[ -n "$IFNAME" ] && $IPT -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p tcp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_WAN_AC
+		done
+	fi
+
+	case "$OUTPUT" in
+	1)
 		$IPT -I OUTPUT 1 -p tcp $EXT_ARGS \
 		-m comment --comment "$TAG" -j SS_SPEC_WAN_AC
-	elif [ "$OUTPUT" = 2 ]; then
+		;;
+	2)
 		ipset -! -R <<-EOF || return 1
 			create ssr_gen_router hash:net
 			$(gen_spec_iplist | sed -e "s/^/add ssr_gen_router /")
@@ -202,7 +209,8 @@ ac_rule() {
 		$IPT -A SS_SPEC_ROUTER -m set --match-set ssr_gen_router dst -j RETURN && \
 		$IPT -A SS_SPEC_ROUTER -j SS_SPEC_WAN_FW
 		$IPT -I OUTPUT 1 -p tcp -m comment --comment "$TAG" -j SS_SPEC_ROUTER
-	fi
+		;;
+	esac
 	return $?
 }
 
@@ -223,7 +231,8 @@ tp_rule() {
 	$ipt -A SS_SPEC_TPROXY -p udp -d 192.168.0.0/16 -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp -d 224.0.0.0/4 -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp -d 240.0.0.0/4 -j RETURN
-	$ipt -A SS_SPEC_TPROXY -p udp ! --dport 53 -d $server -j RETURN
+	$ipt -A SS_SPEC_TPROXY -p udp ! --dport 53 -d $SERVER -j RETURN
+	[ "$server" != "$SERVER" ] && ipset -! add whitelist $SERVER
 	$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set bplan src -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src \
 	-j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
@@ -249,8 +258,14 @@ tp_rule() {
 		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
 		;;
 	esac
-	$ipt -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p udp $EXT_ARGS $MATCH_SET \
-	-m comment --comment "$TAG" -j SS_SPEC_TPROXY
+	if [ -z "$Interface" ]; then
+		$ipt -I PREROUTING 1 -p udp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_TPROXY
+	else
+		for name in $Interface;do 
+		local IFNAME=$(uci -P /var/state get network.$name.ifname 2>/dev/null)
+		[ -n "$IFNAME" ] && $ipt -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p udp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_TPROXY
+		done
+	fi
 	return $?
 }
 
@@ -259,29 +274,6 @@ get_wan_ip() {
 		$server
 		$SERVER
 		$WAN_BP_IP
-	EOF
-}
-
-gen_iplist() {
-	cat <<-EOF
-		0.0.0.0/8
-		10.0.0.0/8
-		100.64.0.0/10
-		127.0.0.0/8
-		169.254.0.0/16
-		172.16.0.0/12
-		192.0.0.0/24
-		192.0.2.0/24
-		192.88.99.0/24
-		192.168.0.0/16
-		198.18.0.0/15
-		198.51.100.0/24
-		203.0.113.0/24
-		224.0.0.0/4
-		240.0.0.0/4
-		255.255.255.255
-		$(get_wan_ip)
-		$(cat ${IGNORE_LIST:=/dev/null} 2>/dev/null)
 	EOF
 }
 
@@ -325,8 +317,11 @@ gen_include() {
 	return 0
 }
 
-while getopts ":s:l:S:L:i:e:a:B:b:w:p:G:D:F:N:M:I:oOuUfgrczh" arg; do
+while getopts ":m:s:l:S:L:i:e:a:B:b:w:p:G:D:F:N:M:I:oOuUfgrczh" arg; do
 	case "$arg" in
+	m)
+		Interface=$OPTARG
+		;;
 	s)
 		server=$OPTARG
 		;;
@@ -414,14 +409,18 @@ if [ -z "$server" -o -z "$local_port" ]; then
 	usage 2
 fi
 
-if [ "$TPROXY" == 1 ]; then
-	SERVER=$server
-	LOCAL_PORT=$local_port
-elif [ "$TPROXY" == 2 ]; then
-	: ${SERVER:?"You must assign an ip for the udp relay server."}
-	: ${LOCAL_PORT:?"You must assign a port for the udp relay server."}
-fi
+	case "$TPROXY" in
+	1)
+		SERVER=$server
+		LOCAL_PORT=$local_port
+		;;
+	2)
+		: ${SERVER:?"You must assign an ip for the udp relay server."}
+		: ${LOCAL_PORT:?"You must assign a port for the udp relay server."}
+	;;
+	esac
 
 flush_r && fw_rule && ipset_r && ac_rule && tp_rule && gen_include
-[ "$?" == 0 ] || loger 3 "Start failed!"
-exit $?
+RET=$?
+[ "$RET" = 0 ] || loger 3 "Start failed!"
+exit $RET

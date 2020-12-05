@@ -102,7 +102,7 @@ local route_label = {
 }
 
 -- [[ Global Setting ]]--
-s = m:section(TypedSection, 'global', translate('Basic Settings [SS|SSR|V2ray|Trojan]'))
+s = m:section(TypedSection, 'global', translate('Basic Settings [SS|SSR|V2ray|Xray|Trojan]'))
 s.anonymous = true
 
 o = s:option(ListValue, 'global_server', translate('Main Server'))
@@ -119,6 +119,9 @@ o:value('same', translate('Same as Main Server'))
 for _, key in pairs(key_table) do
     o:value(key, server_table[key])
 end
+
+o = s:option(Flag, 'use_xray', translate('Use Xray instead of V2ray'))
+o.rmempty = false
 
 o = s:option(Flag, 'v2ray_flow', translate('Open v2ray route'))
 o.rmempty = false

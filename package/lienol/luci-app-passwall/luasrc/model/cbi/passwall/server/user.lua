@@ -1,5 +1,4 @@
 local d = require "luci.dispatcher"
-local uci = require"luci.model.uci".cursor()
 local api = require "luci.model.cbi.passwall.api.api"
 
 local ss_encrypt_method_list = {
@@ -78,6 +77,9 @@ end
 if api.is_finded("ssr-server") then
     type:value("SSR", translate("ShadowsocksR"))
 end
+if api.is_finded("xray") then
+    type:value("Xray", translate("Xray"))
+end
 if api.is_finded("v2ray") then
     type:value("V2ray", translate("V2ray"))
 end
@@ -104,6 +106,7 @@ protocol:value("socks", "Socks")
 protocol:value("shadowsocks", "Shadowsocks")
 protocol:value("trojan", "Trojan")
 protocol:value("mtproto", "MTProto")
+protocol:depends("type", "Xray")
 protocol:depends("type", "V2ray")
 
 -- Brook协议
@@ -137,6 +140,8 @@ auth.validate = function(self, value, t)
     return value
 end
 auth:depends("type", "Socks")
+auth:depends({ type = "Xray", protocol = "socks" })
+auth:depends({ type = "Xray", protocol = "http" })
 auth:depends({ type = "V2ray", protocol = "socks" })
 auth:depends({ type = "V2ray", protocol = "http" })
 
@@ -149,9 +154,11 @@ password:depends("auth", "1")
 password:depends("type", "SS")
 password:depends("type", "SSR")
 password:depends("type", "Brook")
+password:depends({ type = "Xray", protocol = "shadowsocks" })
 password:depends({ type = "V2ray", protocol = "shadowsocks" })
 
 mtproto_password = s:option(Value, "mtproto_password", translate("Password"), translate("The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."))
+mtproto_password:depends({ type = "Xray", protocol = "mtproto" })
 mtproto_password:depends({ type = "V2ray", protocol = "mtproto" })
 mtproto_password.default = arg[1]
 function mtproto_password.cfgvalue(self, section)
@@ -163,6 +170,7 @@ end
 
 decryption = s:option(Value, "decryption", translate("Encrypt Method"))
 decryption.default = "none"
+decryption:depends({ type = "Xray", protocol = "vless" })
 decryption:depends({ type = "V2ray", protocol = "vless" })
 
 ss_encrypt_method = s:option(ListValue, "ss_encrypt_method", translate("Encrypt Method"))
@@ -187,6 +195,7 @@ end
 
 v_ss_encrypt_method = s:option(ListValue, "v_ss_encrypt_method", translate("Encrypt Method"))
 for a, t in ipairs(v_ss_encrypt_method_list) do v_ss_encrypt_method:value(t) end
+v_ss_encrypt_method:depends({ type = "Xray", protocol = "shadowsocks" })
 v_ss_encrypt_method:depends({ type = "V2ray", protocol = "shadowsocks" })
 function v_ss_encrypt_method.cfgvalue(self, section)
 	return m:get(section, "method")
@@ -200,6 +209,7 @@ ss_network.default = "tcp,udp"
 ss_network:value("tcp", "TCP")
 ss_network:value("udp", "UDP")
 ss_network:value("tcp,udp", "TCP,UDP")
+ss_network:depends({ type = "Xray", protocol = "shadowsocks" })
 ss_network:depends({ type = "V2ray", protocol = "shadowsocks" })
 
 ssr_protocol = s:option(ListValue, "ssr_protocol", translate("Protocol"))
@@ -237,6 +247,9 @@ uuid = s:option(DynamicList, "uuid", translate("ID") .. "/" .. translate("Passwo
 for i = 1, 3 do
     uuid:value(api.gen_uuid(1))
 end
+uuid:depends({ type = "Xray", protocol = "vmess" })
+uuid:depends({ type = "Xray", protocol = "vless" })
+uuid:depends({ type = "Xray", protocol = "trojan" })
 uuid:depends({ type = "V2ray", protocol = "vmess" })
 uuid:depends({ type = "V2ray", protocol = "vless" })
 uuid:depends({ type = "V2ray", protocol = "trojan" })
@@ -246,10 +259,16 @@ uuid:depends("type", "Trojan-Plus")
 
 alter_id = s:option(Value, "alter_id", translate("Alter ID"))
 alter_id.default = 16
+alter_id:depends({ type = "Xray", protocol = "vmess" })
 alter_id:depends({ type = "V2ray", protocol = "vmess" })
 
 level = s:option(Value, "level", translate("User Level"))
 level.default = 1
+level:depends({ type = "Xray", protocol = "vmess" })
+level:depends({ type = "Xray", protocol = "vless" })
+level:depends({ type = "Xray", protocol = "shadowsocks" })
+level:depends({ type = "Xray", protocol = "trojan" })
+level:depends({ type = "Xray", protocol = "mtproto" })
 level:depends({ type = "V2ray", protocol = "vmess" })
 level:depends({ type = "V2ray", protocol = "vless" })
 level:depends({ type = "V2ray", protocol = "shadowsocks" })
@@ -274,6 +293,10 @@ tls.validate = function(self, value, t)
         return value
     end
 end
+tls:depends({ type = "Xray", protocol = "vmess" })
+tls:depends({ type = "Xray", protocol = "vless" })
+tls:depends({ type = "Xray", protocol = "socks" })
+tls:depends({ type = "Xray", protocol = "shadowsocks" })
 tls:depends({ type = "V2ray", protocol = "vmess" })
 tls:depends({ type = "V2ray", protocol = "vless" })
 tls:depends({ type = "V2ray", protocol = "socks" })
@@ -284,12 +307,16 @@ tls:depends("type", "Trojan-Go")
 
 xtls = s:option(Flag, "xtls", translate("XTLS"))
 xtls.default = 0
-xtls:depends({ type = "V2ray", protocol = "vless", tls = "1" })
+xtls:depends({ type = "Xray", protocol = "vless", tls = "1" })
 
 flow = s:option(Value, "flow", translate("flow"))
 flow.default = "xtls-rprx-origin"
 flow:value("xtls-rprx-origin")
 flow:value("xtls-rprx-origin-udp443")
+flow:value("xtls-rprx-direct")
+flow:value("xtls-rprx-direct-udp443")
+flow:value("xtls-rprx-splice")
+flow:value("xtls-rprx-splice-udp443")
 flow:depends("xtls", "1")
 
 -- [[ TLS部分 ]] --
@@ -342,6 +369,11 @@ transport:value("ws", "WebSocket")
 transport:value("h2", "HTTP/2")
 transport:value("ds", "DomainSocket")
 transport:value("quic", "QUIC")
+transport:depends({ type = "Xray", protocol = "vmess" })
+transport:depends({ type = "Xray", protocol = "vless" })
+transport:depends({ type = "Xray", protocol = "socks" })
+transport:depends({ type = "Xray", protocol = "shadowsocks" })
+transport:depends({ type = "Xray", protocol = "trojan" })
 transport:depends({ type = "V2ray", protocol = "vmess" })
 transport:depends({ type = "V2ray", protocol = "vless" })
 transport:depends({ type = "V2ray", protocol = "socks" })
@@ -460,7 +492,7 @@ mkcp_seed:depends("transport", "mkcp")
 
 -- [[ DomainSocket部分 ]]--
 
-ds_path = s:option(Value, "ds_path", "Path", translate("A legal file path. This file must not exist before running V2Ray."))
+ds_path = s:option(Value, "ds_path", "Path", translate("A legal file path. This file must not exist before running."))
 ds_path:depends("transport", "ds")
 
 -- [[ QUIC部分 ]]--
@@ -480,6 +512,7 @@ quic_guise:depends("transport", "quic")
 -- [[ VLESS Fallback部分 ]]--
 --[[
 fallback = s:option(Flag, "fallback", translate("Fallback"))
+fallback:depends({ type = "Xray", protocol = "vless", transport = "tcp", tls = "1" })
 fallback:depends({ type = "V2ray", protocol = "vless", transport = "tcp", tls = "1" })
 
 fallback_alpn = s:option(Value, "fallback_alpn", "Fallback alpn")
@@ -517,7 +550,7 @@ tcp_fast_open:depends("type", "Trojan")
 tcp_fast_open:depends("type", "Trojan-Plus")
 tcp_fast_open:depends("type", "Trojan-Go")
 
-remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"), translate("You can forward to Nginx/Caddy/V2ray WebSocket and more."))
+remote_enable = s:option(Flag, "remote_enable", translate("Enable Remote"), translate("You can forward to Nginx/Caddy/Xray/V2ray WebSocket and more."))
 remote_enable.default = "1"
 remote_enable.rmempty = false
 remote_enable:depends("type", "Trojan")
@@ -535,16 +568,18 @@ remote_port:depends("remote_enable", 1)
 
 bind_local = s:option(Flag, "bind_local", translate("Bind Local"), translate("When selected, it can only be accessed locally,It is recommended to turn on when using reverse proxies."))
 bind_local.default = "0"
+bind_local:depends("type", "Xray")
 bind_local:depends("type", "V2ray")
 
 accept_lan = s:option(Flag, "accept_lan", translate("Accept LAN Access"), translate("When selected, it can accessed lan , this will not be safe!"))
 accept_lan.default = "0"
 accept_lan.rmempty = false
+accept_lan:depends("type", "Xray")
 accept_lan:depends("type", "V2ray")
 
 local nodes_table = {}
 for k, e in ipairs(api.get_valid_nodes()) do
-    if e.node_type == "normal" and e.type == "V2ray" then
+    if e.node_type == "normal" and e.type == "Xray" or e.type == "V2ray" then
         nodes_table[#nodes_table + 1] = {
             id = e[".name"],
             remarks = e.remarks_name
@@ -556,6 +591,7 @@ transit_node = s:option(ListValue, "transit_node", translate("transit node"))
 transit_node:value("nil", translate("Close"))
 for k, v in pairs(nodes_table) do transit_node:value(v.id, v.remarks) end
 transit_node.default = "nil"
+transit_node:depends("type", "Xray")
 transit_node:depends("type", "V2ray")
 
 return m

@@ -97,6 +97,10 @@ table td, .table .td {
 		}
 	}
 	
+	function copy_node(cbi_id) {
+		window.location.href = '<%=dsp.build_url("admin/services/passwall/copy_node")%>' + "?section=" + cbi_id;
+	}
+	
 	var section = "";
 	function open_set_node_div(cbi_id) {
 		section = cbi_id;
@@ -212,7 +216,7 @@ table td, .table .td {
 		catch(err){}
 		//判断是否含有汉字
 		var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
-		if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false && (address.indexOf(".") != -1 && address.charAt(address.address - 1) != ".")) {
+		if ((address != null && address != "") && (port != null && port != "") && reg.test(address) == false) {
 			return { address: address, port: port };
 		} else {
 			return null;
@@ -408,12 +412,14 @@ table td, .table .td {
 			var id = onclick_str.substring(onclick_str.lastIndexOf('/') + 1, onclick_str.length - 1);
 			var td = edit_btn[i].parentNode;
 			var new_div = "";
-			//添加"置顶"按钮到"修改"按钮前
+			//添加"置顶"按钮
 			new_div += '<input class="cbi-button" type="button" value="<%:To Top%>" onclick="_cbi_row_top(\'' + id + '\')"/>&nbsp;&nbsp;';
-			//添加"选择"按钮到"修改"按钮前
+			//添加"选择"按钮
 			new_div += '<input class="cbi-button cbi-button-add" type="button" value="<%:Select%>" id="select_' + id + '" onclick="select_node_div(this, \'' + id + '\')"/>&nbsp;&nbsp;';
-			//添加"应用"按钮到"修改"按钮前
+			//添加"应用"按钮
 			new_div += '<input class="cbi-button cbi-button-apply" type="button" value="<%:Use%>" id="apply_' + id + '" onclick="open_set_node_div(\'' + id + '\')"/>&nbsp;&nbsp;';
+			//添加"复制"按钮
+			new_div += '<input class="cbi-button cbi-button-add" type="button" value="<%:Copy%>" onclick="copy_node(\'' + id + '\')"/>&nbsp;&nbsp;';
 			td.innerHTML = new_div + td.innerHTML;
 		}
 		catch(err) {

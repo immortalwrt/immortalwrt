@@ -26,6 +26,8 @@ use_tcp_node_resolve_dns=0
 use_udp_node_resolve_dns=0
 LUA_API_PATH=/usr/lib/lua/luci/model/cbi/$CONFIG/api
 API_GEN_SS=$LUA_API_PATH/gen_shadowsocks.lua
+API_GEN_XRAY=$LUA_API_PATH/gen_xray.lua
+API_GEN_XRAY_PROTO=$LUA_API_PATH/gen_xray_proto.lua
 API_GEN_V2RAY=$LUA_API_PATH/gen_v2ray.lua
 API_GEN_V2RAY_PROTO=$LUA_API_PATH/gen_v2ray_proto.lua
 API_GEN_TROJAN=$LUA_API_PATH/gen_trojan.lua
@@ -209,7 +211,7 @@ get_new_port() {
 
 first_type() {
 	local path_name=${1}
-	type -t -p "/bin/${path_name}" -p "${TMP_BIN_PATH}/${path_name}" -p "${path_name}" -p "/usr/bin/v2ray/{path_name}" "$@" | head -n1
+	type -t -p "/bin/${path_name}" -p "${TMP_BIN_PATH}/${path_name}" -p "${path_name}" "$@" | head -n1
 }
 
 ln_start_bin() {
@@ -333,7 +335,7 @@ run_socks() {
 		msg="某种原因，此 Socks 服务的相关配置已失联，启动中止！"
 	fi
 	
-	if [ "$type" == "v2ray" ] && ([ -n "$(config_n_get $node balancing_node)" ] || [ "$(config_n_get $node default_node)" != "nil" ]); then
+	if [ "$type" == "xray" -o "$type" == "v2ray" ] && ([ -n "$(config_n_get $node balancing_node)" ] || [ "$(config_n_get $node default_node)" != "nil" ]); then
 		unset msg
 	fi
 
@@ -349,6 +351,10 @@ run_socks() {
 		_password=$(config_n_get $node password)
 		[ -n "$_username" ] && [ -n "$_password" ] && local _auth="--uname $_username --passwd $_password"
 		ln_start_bin "$(first_type ssocks)" ssocks_SOCKS_$id --listen $socks_port --socks $server_host:$port $_auth
+	;;
+	xray)
+		lua $API_GEN_XRAY $node nil nil $socks_port > $config_file
+		ln_start_bin "$(first_type $(config_t_get global_app xray_file notset)/xray xray)" xray -config="$config_file"
 	;;
 	v2ray)
 		lua $API_GEN_V2RAY $node nil nil $socks_port > $config_file
@@ -423,6 +429,10 @@ run_redir() {
 			eval port=\$UDP_REDIR_PORT$6
 			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_udp_$6" -U -l "$port" -b 0.0.0.0 -s "$node_address" -p "$node_port" -R
 		;;
+		xray)
+			lua $API_GEN_XRAY $node udp $local_port nil > $config_file
+			ln_start_bin "$(first_type $(config_t_get global_app xray_file notset)/xray xray)" xray -config="$config_file"
+		;;
 		v2ray)
 			lua $API_GEN_V2RAY $node udp $local_port nil > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app v2ray_file notset)/v2ray v2ray)" v2ray -config="$config_file"
@@ -479,6 +489,12 @@ run_redir() {
 			_socks_port=$(config_n_get $node port)
 			_socks_username=$(config_n_get $node username)
 			_socks_password=$(config_n_get $node password)
+		;;
+		xray)
+			local extra_param="tcp"
+			[ "$6" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && extra_param="tcp,udp"
+			lua $API_GEN_XRAY $node $extra_param $local_port nil > $config_file
+			ln_start_bin "$(first_type $(config_t_get global_app xray_file notset)/xray xray)" xray -config="$config_file"
 		;;
 		v2ray)
 			local extra_param="tcp"
@@ -603,15 +619,22 @@ start_socks() {
 
 clean_log() {
 	logsnum=$(cat $LOG_FILE 2>/dev/null | wc -l)
-	[ "$logsnum" -gt 300 ] && {
+	[ "$logsnum" -gt 1000 ] && {
 		echo "" > $LOG_FILE
 		echolog "日志文件过长，清空处理！"
 	}
 }
 
-start_crontab() {
+clean_crontab() {
 	touch /etc/crontabs/root
-	sed -i "/$CONFIG/d" /etc/crontabs/root >/dev/null 2>&1 &
+	#sed -i "/${CONFIG}/d" /etc/crontabs/root >/dev/null 2>&1 &
+	sed -i "/$(echo "/etc/init.d/${CONFIG}" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1 &
+	sed -i "/$(echo "lua ${APP_PATH}/rule_update.lua log" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1 &
+	sed -i "/$(echo "lua ${APP_PATH}/subscribe.lua start log" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1 &
+}
+
+start_crontab() {
+	clean_crontab
 	auto_on=$(config_t_get global_delay auto_on 0)
 	if [ "$auto_on" = "1" ]; then
 		time_off=$(config_t_get global_delay time_off)
@@ -666,8 +689,7 @@ start_crontab() {
 }
 
 stop_crontab() {
-	touch /etc/crontabs/root
-	sed -i "/$CONFIG/d" /etc/crontabs/root >/dev/null 2>&1 &
+	clean_crontab
 	ps | grep "$APP_PATH/test.sh" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	/etc/init.d/cron restart
 	#echolog "清除定时执行命令。"
@@ -1118,7 +1140,7 @@ start_haproxy() {
 			unset msg
 			failcount=0
 			while [ "$failcount" -lt "3" ]; do
-				ubus list network.interface.${export} >/dev/null 2>&1
+				ip route show dev ${export} >/dev/null 2>&1
 				if [ $? -ne 0 ]; then
 					let "failcount++"
 					echolog "  - 找不到出口接口：$export，1分钟后再重试(${failcount}/3)，${bip}"

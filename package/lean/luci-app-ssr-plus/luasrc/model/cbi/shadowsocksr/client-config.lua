@@ -103,7 +103,9 @@ local flows = {
 "xtls-rprx-origin",
 "xtls-rprx-origin-udp443",
 "xtls-rprx-direct",
-"xtls-rprx-direct-udp443"
+"xtls-rprx-direct-udp443",
+"xtls-rprx-splice",
+"xtls-rprx-splice-udp443"
 }
 
 m = Map(shadowsocksr, translate("Edit ShadowSocksR Server"))
@@ -128,7 +130,7 @@ o:value("ssr", translate("ShadowsocksR"))
 if nixio.fs.access("/usr/bin/ss-redir") then
 o:value("ss", translate("Shadowsocks New Version"))
 end
-if nixio.fs.access("/usr/bin/v2ray/v2ray") or nixio.fs.access("/usr/bin/v2ray") then
+if nixio.fs.access("/usr/bin/xray") or nixio.fs.access("/usr/bin/xray/xray") or nixio.fs.access("/usr/bin/v2ray/v2ray") or nixio.fs.access("/usr/bin/v2ray") then
 o:value("v2ray", translate("V2Ray"))
 o:value("vless", translate("VLESS"))
 end
@@ -380,6 +382,10 @@ o:depends("transport", "kcp")
 o.default = 2
 o.rmempty = true
 
+o = s:option(Value, "seed", translate("Obfuscate password (optional)"))
+o:depends({type="vless", transport="kcp"})
+o.rmempty = true
+
 o = s:option(Flag, "congestion", translate("Congestion"))
 o:depends("transport", "kcp")
 o.rmempty = true
@@ -390,7 +396,7 @@ o.rmempty = false
 o:depends("type", "v2ray")
 o:depends("type", "vless")
 o:depends("type", "trojan")
-o.default = "1"
+o.default = "0"
 o.description = translate("If true, allowss insecure connection at TLS client, e.g., TLS server uses unverifiable certificates.")
 -- [[ TLS ]]--
 o = s:option(Flag, "tls", translate("TLS"))
@@ -406,10 +412,12 @@ o:depends("tls", "1")
 o.rmempty = true
 
 -- XTLS
+if nixio.fs.access("/usr/bin/xray") or nixio.fs.access("/usr/bin/xray/xray") then
 o = s:option(Flag, "xtls", translate("XTLS"))
 o.rmempty = true
 o.default = "0"
-o:depends({type="vless", tls="1"})
+o:depends({type="vless", tls=true})
+end
 
 -- Flow
 o = s:option(Value, "vless_flow", translate("Flow"))
@@ -423,7 +431,7 @@ o = s:option(Flag, "mux", translate("Mux"))
 o.rmempty = true
 o.default = "0"
 o:depends("type", "v2ray")
-o:depends("type", "vless")
+o:depends({type="vless", xtls=false})
 
 o = s:option(Value, "concurrency", translate("Concurrency"))
 o.datatype = "uinteger"
