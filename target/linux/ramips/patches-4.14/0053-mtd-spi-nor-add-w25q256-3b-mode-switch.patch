@@ -13,18 +13,19 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
 --- a/drivers/mtd/spi-nor/spi-nor.c
 +++ b/drivers/mtd/spi-nor/spi-nor.c
-@@ -89,6 +89,10 @@ struct flash_info {
+@@ -89,7 +89,10 @@ struct flash_info {
  #define NO_CHIP_ERASE		BIT(12) /* Chip does not support chip erase */
  #define SPI_NOR_SKIP_SFDP	BIT(13)	/* Skip parsing of SFDP tables */
  #define USE_CLSR		BIT(14)	/* use CLSR command */
+-
 +#define SPI_NOR_4B_READ_OP	BIT(15)	/*
 +					 * Like SPI_NOR_4B_OPCODES, but for read
 +					 * op code only.
 +					 */
+ 	int	(*quad_enable)(struct spi_nor *nor);
  };
  
- #define JEDEC_MFR(info)	((info)->id[0])
-@@ -240,6 +244,15 @@ static inline u8 spi_nor_convert_3to4_er
+@@ -242,6 +245,15 @@ static inline u8 spi_nor_convert_3to4_er
  				      ARRAY_SIZE(spi_nor_3to4_erase));
  }
  
@@ -40,7 +41,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  static void spi_nor_set_4byte_opcodes(struct spi_nor *nor,
  				      const struct flash_info *info)
  {
-@@ -467,6 +480,36 @@ static int spi_nor_erase_sector(struct s
+@@ -469,6 +481,36 @@ static int spi_nor_erase_sector(struct s
  	return nor->write_reg(nor, nor->erase_opcode, buf, nor->addr_width);
  }
  
@@ -77,7 +78,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  /*
   * Erase an address range on the nor chip.  The address range may extend
   * one or more erase sectors.  Return an error is there is a problem erasing.
-@@ -492,6 +535,10 @@ static int spi_nor_erase(struct mtd_info
+@@ -494,6 +536,10 @@ static int spi_nor_erase(struct mtd_info
  	if (ret)
  		return ret;
  
@@ -88,7 +89,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	/* whole-chip erase? */
  	if (len == mtd->size && !(nor->flags & SNOR_F_NO_OP_CHIP_ERASE)) {
  		unsigned long timeout;
-@@ -542,6 +589,7 @@ static int spi_nor_erase(struct mtd_info
+@@ -544,6 +590,7 @@ static int spi_nor_erase(struct mtd_info
  	write_disable(nor);
  
  erase_err:
@@ -96,7 +97,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_ERASE);
  
  	instr->state = ret ? MTD_ERASE_FAILED : MTD_ERASE_DONE;
-@@ -834,7 +882,9 @@ static int spi_nor_lock(struct mtd_info
+@@ -836,7 +883,9 @@ static int spi_nor_lock(struct mtd_info
  	if (ret)
  		return ret;
  
@@ -106,7 +107,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_UNLOCK);
  	return ret;
-@@ -849,7 +899,9 @@ static int spi_nor_unlock(struct mtd_inf
+@@ -851,7 +900,9 @@ static int spi_nor_unlock(struct mtd_inf
  	if (ret)
  		return ret;
  
@@ -116,7 +117,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_LOCK);
  	return ret;
-@@ -1182,7 +1234,7 @@ static const struct flash_info spi_nor_i
+@@ -1192,7 +1243,7 @@ static const struct flash_info spi_nor_i
  	{ "w25q80", INFO(0xef5014, 0, 64 * 1024,  16, SECT_4K) },
  	{ "w25q80bl", INFO(0xef4014, 0, 64 * 1024,  16, SECT_4K) },
  	{ "w25q128", INFO(0xef4018, 0, 64 * 1024, 256, SECT_4K) },
@@ -125,7 +126,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	{ "w25m512jv", INFO(0xef7119, 0, 64 * 1024, 1024,
  			SECT_4K | SPI_NOR_QUAD_READ | SPI_NOR_DUAL_READ) },
  
-@@ -1245,6 +1297,9 @@ static int spi_nor_read(struct mtd_info
+@@ -1255,6 +1306,9 @@ static int spi_nor_read(struct mtd_info
  	if (ret)
  		return ret;
  
@@ -135,7 +136,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	while (len) {
  		loff_t addr = from;
  
-@@ -1269,6 +1324,18 @@ static int spi_nor_read(struct mtd_info
+@@ -1279,6 +1333,18 @@ static int spi_nor_read(struct mtd_info
  	ret = 0;
  
  read_err:
@@ -154,7 +155,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_READ);
  	return ret;
  }
-@@ -1370,6 +1437,10 @@ static int spi_nor_write(struct mtd_info
+@@ -1380,6 +1446,10 @@ static int spi_nor_write(struct mtd_info
  	if (ret)
  		return ret;
  
@@ -165,7 +166,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	for (i = 0; i < len; ) {
  		ssize_t written;
  		loff_t addr = to + i;
-@@ -1410,6 +1481,7 @@ static int spi_nor_write(struct mtd_info
+@@ -1420,6 +1490,7 @@ static int spi_nor_write(struct mtd_info
  	}
  
  write_err:
@@ -173,7 +174,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_WRITE);
  	return ret;
  }
-@@ -2826,8 +2898,10 @@ int spi_nor_scan(struct spi_nor *nor, co
+@@ -2845,8 +2916,10 @@ int spi_nor_scan(struct spi_nor *nor, co
  	} else if (mtd->size > 0x1000000) {
  		/* enable 4-byte addressing if the device exceeds 16MiB */
  		nor->addr_width = 4;

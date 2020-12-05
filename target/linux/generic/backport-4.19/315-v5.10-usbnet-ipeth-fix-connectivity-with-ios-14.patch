@@ -33,7 +33,7 @@ Cc: stable@vger.kernel.org
 
 --- a/drivers/net/usb/ipheth.c
 +++ b/drivers/net/usb/ipheth.c
-@@ -59,7 +59,7 @@
+@@ -70,7 +70,7 @@
  #define IPHETH_USBINTF_SUBCLASS 253
  #define IPHETH_USBINTF_PROTO    1
  

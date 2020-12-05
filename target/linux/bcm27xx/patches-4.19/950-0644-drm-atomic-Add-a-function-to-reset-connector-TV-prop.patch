@@ -26,7 +26,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/84a7b657f09303a2850e1cc79e68
 
 --- a/drivers/gpu/drm/drm_atomic_helper.c
 +++ b/drivers/gpu/drm/drm_atomic_helper.c
-@@ -3737,6 +3737,24 @@ void drm_atomic_helper_connector_reset(s
+@@ -3756,6 +3756,24 @@ void drm_atomic_helper_connector_reset(s
  EXPORT_SYMBOL(drm_atomic_helper_connector_reset);
  
  /**

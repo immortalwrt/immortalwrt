@@ -18,7 +18,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20181206142439.10441-3-boris
 
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -346,7 +346,7 @@ int drm_display_info_set_bus_formats(str
+@@ -393,7 +393,7 @@ int drm_display_info_set_bus_formats(str
  /**
   * struct drm_tv_connector_state - TV connector related states
   * @subconnector: selected subconnector

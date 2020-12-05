@@ -258,7 +258,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/777da16e42db757c1f5b414b5ca3
  	return true;
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -857,6 +857,16 @@ struct drm_cmdline_mode {
+@@ -904,6 +904,16 @@ struct drm_cmdline_mode {
  	 * state to one of the DRM_FORCE_* values.
  	 */
  	enum drm_connector_force force;

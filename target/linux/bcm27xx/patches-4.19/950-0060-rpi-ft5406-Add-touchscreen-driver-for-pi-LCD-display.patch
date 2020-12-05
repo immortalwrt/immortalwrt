@@ -19,7 +19,7 @@ Signed-off-by: Gerhard de Clercq <gerharddeclercq@outlook.com>
 
 --- a/drivers/input/touchscreen/Kconfig
 +++ b/drivers/input/touchscreen/Kconfig
-@@ -696,6 +696,13 @@ config TOUCHSCREEN_EDT_FT5X06
+@@ -697,6 +697,13 @@ config TOUCHSCREEN_EDT_FT5X06
  	  To compile this driver as a module, choose M here: the
  	  module will be called edt-ft5x06.
  

@@ -18,7 +18,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20181206142439.10441-2-boris
 
 --- a/drivers/gpu/drm/drm_connector.c
 +++ b/drivers/gpu/drm/drm_connector.c
-@@ -1110,7 +1110,7 @@ void drm_hdmi_avi_infoframe_content_type
+@@ -1111,7 +1111,7 @@ void drm_hdmi_avi_infoframe_content_type
  EXPORT_SYMBOL(drm_hdmi_avi_infoframe_content_type);
  
  /**

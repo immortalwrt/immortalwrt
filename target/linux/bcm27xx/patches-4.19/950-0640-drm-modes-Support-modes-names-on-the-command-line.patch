@@ -158,7 +158,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/18443e0c3bdbbd16cea4ec63bc7f
  	return true;
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -765,6 +765,13 @@ struct drm_connector_funcs {
+@@ -812,6 +812,13 @@ struct drm_connector_funcs {
   */
  struct drm_cmdline_mode {
  	/**

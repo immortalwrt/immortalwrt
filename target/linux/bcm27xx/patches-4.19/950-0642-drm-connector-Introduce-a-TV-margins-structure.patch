@@ -22,7 +22,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/38b773b03f15ec7a135cdf8f7db6
 
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -344,13 +344,37 @@ int drm_display_info_set_bus_formats(str
+@@ -391,13 +391,37 @@ int drm_display_info_set_bus_formats(str
  				     unsigned int num_formats);
  
  /**
@@ -65,7 +65,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/38b773b03f15ec7a135cdf8f7db6
   * @mode: TV mode
   * @brightness: brightness in percent
   * @contrast: contrast in percent
-@@ -361,12 +385,7 @@ int drm_display_info_set_bus_formats(str
+@@ -408,12 +432,7 @@ int drm_display_info_set_bus_formats(str
   */
  struct drm_tv_connector_state {
  	enum drm_mode_subconnector subconnector;

@@ -23,7 +23,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20181206142439.10441-4-boris
 
 --- a/drivers/gpu/drm/drm_connector.c
 +++ b/drivers/gpu/drm/drm_connector.c
-@@ -1110,6 +1110,70 @@ void drm_hdmi_avi_infoframe_content_type
+@@ -1111,6 +1111,70 @@ void drm_hdmi_avi_infoframe_content_type
  EXPORT_SYMBOL(drm_hdmi_avi_infoframe_content_type);
  
  /**
@@ -94,7 +94,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20181206142439.10441-4-boris
   * drm_mode_create_tv_properties - create TV specific connector properties
   * @dev: DRM device
   * @num_modes: number of different TV formats (modes) supported
-@@ -1155,24 +1219,7 @@ int drm_mode_create_tv_properties(struct
+@@ -1156,24 +1220,7 @@ int drm_mode_create_tv_properties(struct
  	/*
  	 * Other, TV specific properties: margins & TV modes.
  	 */
@@ -122,7 +122,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20181206142439.10441-4-boris
  	dev->mode_config.tv_mode_property =
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -1175,9 +1175,11 @@ const char *drm_get_tv_select_name(int v
+@@ -1242,9 +1242,11 @@ const char *drm_get_tv_select_name(int v
  const char *drm_get_content_protection_name(int val);
  
  int drm_mode_create_dvi_i_properties(struct drm_device *dev);

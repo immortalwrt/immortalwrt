@@ -88,7 +88,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/e481f1628e3768ca49226ec2115c
  		}
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -886,6 +886,11 @@ struct drm_cmdline_mode {
+@@ -933,6 +933,11 @@ struct drm_cmdline_mode {
  	 * DRM_MODE_ROTATE_0 and DRM_MODE_ROTATE_180.
  	 */
  	unsigned int rotation_reflection;

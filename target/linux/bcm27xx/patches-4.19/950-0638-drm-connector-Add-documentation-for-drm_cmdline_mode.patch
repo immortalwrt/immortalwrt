@@ -20,7 +20,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/963c893c16c6a25fc469b53c726f
 
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -755,18 +755,100 @@ struct drm_connector_funcs {
+@@ -802,18 +802,100 @@ struct drm_connector_funcs {
  				   const struct drm_connector_state *state);
  };
  
