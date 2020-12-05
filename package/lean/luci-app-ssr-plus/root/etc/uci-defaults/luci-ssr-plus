@@ -56,6 +56,7 @@ add_list shadowsocksr.@access_control[0].wan_fw_ips=67.198.55.0/24
 add_list shadowsocksr.@access_control[0].wan_fw_ips=91.108.4.0/22
 add_list shadowsocksr.@access_control[0].wan_fw_ips=91.108.56.0/22
 add_list shadowsocksr.@access_control[0].wan_fw_ips=109.239.140.0/24
+add_list shadowsocksr.@access_control[0].Interface='lan'
 add shadowsocksr socks5_proxy
 set shadowsocksr.@socks5_proxy[0].server='nil'
 set shadowsocksr.@socks5_proxy[0].local_port='1080'

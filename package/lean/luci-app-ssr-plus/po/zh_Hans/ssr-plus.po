@@ -421,8 +421,8 @@ msgstr "GFW列表"
 msgid "ShadowSocksR Plus+ Settings"
 msgstr "ShadowSocksR Plus+ 设置"
 
-msgid "<h3>Support SS/SSR/V2RAY/XRAY/TROJAN/NAIVEPROXY/SOCKS5/TUN etc.</h3>"
-msgstr "<h3>支持 SS/SSR/V2RAY/XRAY/TROJAN/NAIVEPROXY/SOCKS5/TUN 等协议</h3>"
+msgid "<h3>Support SS/SSR/V2RAY/TROJAN/NAIVEPROXY/SOCKS5/TUN etc.</h3>"
+msgstr "<h3>支持 SS/SSR/V2RAY/TROJAN/NAIVEPROXY/SOCKS5/TUN 等协议</h3>"
 
 msgid "Main Server"
 msgstr "主服务器"
@@ -463,8 +463,8 @@ msgstr "更新"
 msgid "Server Count"
 msgstr "服务器节点数量"
 
-msgid "Block and Allow List"
-msgstr "禁止/通行名单"
+msgid "Interface control"
+msgstr "接口控制"
 
 msgid "WAN IP AC"
 msgstr "WAN IP访问控制"
@@ -687,3 +687,6 @@ msgstr "禁止连接的域名"
 
 msgid "Obfuscate password (optional)"
 msgstr "混淆密码（可选）"
+
+msgid "Select the interface that needs to transmit data. If unchecked, all interfaces will pass data by default!"
+msgstr "选择需要传递数据的接口。如果未选择，则默认情况下所有接口都将传递数据！"
