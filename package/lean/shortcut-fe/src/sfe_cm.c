@@ -1049,11 +1049,7 @@ static int __init sfe_cm_init(void)
 	 */
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 #ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
 	(void)nf_conntrack_register_chain_notifier(&init_net, &sfe_cm_conntrack_notifier);
-#else
-	(void)nf_conntrack_register_notifier(&init_net, &sfe_cm_conntrack_notifier);
-#endif /*KERNEL_VERSION(4, 14, 0)*/
 #else
 	result = nf_conntrack_register_notifier(&init_net, &sfe_cm_conntrack_notifier);
 	if (result < 0) {
@@ -1128,11 +1124,7 @@ static void __exit sfe_cm_exit(void)
 
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 #ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
 	nf_conntrack_unregister_chain_notifier(&init_net, &sfe_cm_conntrack_notifier);
-#else
-	nf_conntrack_unregister_notifier(&init_net, &sfe_cm_conntrack_notifier);
-#endif /*KERNEL_VERSION(4, 14, 0)*/
 #else
 	nf_conntrack_unregister_notifier(&init_net, &sfe_cm_conntrack_notifier);
 #endif
