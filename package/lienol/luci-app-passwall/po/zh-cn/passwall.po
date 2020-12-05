@@ -112,6 +112,9 @@ msgstr "TCP节点"
 msgid "UDP Node"
 msgstr "UDP节点"
 
+msgid "Edit Current Node"
+msgstr "编辑当前节点"
+
 msgid "Socks Config"
 msgstr "Socks配置"
 
@@ -391,11 +394,17 @@ msgstr "类型"
 msgid "Balancing"
 msgstr "负载均衡"
 
+msgid "Xray_balancing"
+msgstr "Xray 负载均衡"
+
 msgid "V2ray_balancing"
 msgstr "V2ray 负载均衡"
 
 msgid "Shunt"
 msgstr "分流"
+
+msgid "Xray_shunt"
+msgstr "Xray 分流"
 
 msgid "V2ray_shunt"
 msgstr "V2ray 分流"
@@ -405,6 +414,21 @@ msgstr "前置代理"
 
 msgid "Use the default node for the transit."
 msgstr "使用默认节点代理转发。"
+
+msgid "No shunt rules? Click me to go to add."
+msgstr "没有分流规则？点我前往去添加。"
+
+msgid "Domain Strategy"
+msgstr "域名解析策略"
+
+msgid "'AsIs': Only use domain for routing. Default value."
+msgstr "AsIs：只使用域名进行路由选择。默认值。"
+
+msgid "'IPIfNonMatch': When no rule matches current domain, resolves it into IP addresses (A or AAAA records) and try all rules again."
+msgstr "IPIfNonMatch：当域名没有匹配任何规则时，将域名解析成 IP（A 记录或 AAAA 记录）再次进行匹配。"
+
+msgid "'IPOnDemand': As long as there is a IP-based rule, resolves the domain into IP immediately."
+msgstr "IPOnDemand：当匹配时碰到任何基于 IP 的规则，将域名立即解析为 IP 进行匹配。"
 
 msgid "Load balancing node list"
 msgstr "负载均衡节点列表"
@@ -504,6 +528,9 @@ msgstr "应用"
 
 msgid "Use"
 msgstr "使用"
+
+msgid "Copy"
+msgstr "复制"
 
 msgid "Delay Settings"
 msgstr "定时配置"
@@ -613,6 +640,12 @@ msgstr "主节点"
 msgid "List of backup nodes"
 msgstr "备用节点的列表"
 
+msgid "Restore Switch"
+msgstr "恢复切换"
+
+msgid "When detects main node is available, switch back to the main node."
+msgstr "当检测到主节点可用时，切换回主节点。"
+
 msgid "Configure this node with 127.0.0.1: this port"
 msgstr "使用127.0.0.1和此端口配置节点"
 
@@ -636,6 +669,9 @@ msgstr "负载均衡端口"
 
 msgid "Add a node, Export Of Multi WAN Only support Multi Wan. Load specific gravity range 1-256. Multiple primary servers can be load balanced, standby will only be enabled when the primary server is offline! Multiple groups can be set, Haproxy port same one for each group."
 msgstr "添加节点，指定出口功能是为多WAN用户准备的。负载比重范围1-256。多个主服务器可以负载均衡，备用只有在主服务器离线时才会启用！可以设置多个组，负载均衡端口相同则为一组。"
+
+msgid "Note that the node configuration parameters for load balancing must be consistent, otherwise problems can arise!"
+msgstr "注意，负载均衡的节点配置参数必须一致，否则会出问题！"
 
 msgid "Node"
 msgstr "节点"
@@ -739,23 +775,20 @@ msgstr "组件更新"
 msgid "Please confirm that your firmware supports FPU."
 msgstr "请确认你的固件支持FPU。"
 
-msgid "if you want to run from memory, change the path, such as %s, Then save the application and update it manually."
-msgstr "如果你希望从内存中运行，请更改路径，例如%s，然后保存应用后，再手动更新。"
+msgid "if you want to run from memory, change the path, /tmp beginning then save the application and update it manually."
+msgstr "如果你希望从内存中运行，请更改路径，/tmp 开头，然后保存应用后，再手动更新。"
 
 msgid "Make sure there is enough space to install %s"
-msgstr "确保有足够的空间安装%s"
+msgstr "确保有足够的空间安装 %s"
 
-msgid "V2ray Path"
-msgstr "V2ray 路径"
+msgid "App Path"
+msgstr "程序路径"
 
-msgid "Trojan-Go Path"
-msgstr "Trojan-Go 路径"
+msgid "%s App Path"
+msgstr "%s 程序路径"
 
-msgid "Kcptun Client Path"
-msgstr "Kcptun 客户端路径"
-
-msgid "Brook Path"
-msgstr "Brook 路径"
+msgid "%s Client App Path"
+msgstr "%s 客户端程序路径"
 
 msgid "Trojan-Go Version API"
 msgstr "Trojan-Go 版本 API"
@@ -838,6 +871,36 @@ msgstr "不是有效域名，请重新输入！"
 msgid "Not valid IP format, please re-enter!"
 msgstr "不是有效IP格式，请重新输入！"
 
+msgid "Plaintext: If this string matches any part of the targeting domain, this rule takes effet. Example: rule 'sina.com' matches targeting domain 'sina.com', 'sina.com.cn' and 'www.sina.com', but not 'sina.cn'."
+msgstr "纯字符串: 当此字符串匹配目标域名中任意部分，该规则生效。比如'sina.com'可以匹配'sina.com'、'sina.com.cn'和'www.sina.com'，但不匹配'sina.cn'。"
+
+msgid "Regular expression: Begining with 'regexp:', the rest is a regular expression. When the regexp matches targeting domain, this rule takes effect. Example: rule 'regexp:\\.goo.*\\.com$' matches 'www.google.com' and 'fonts.googleapis.com', but not 'google.com'."
+msgstr "正则表达式: 由'regexp:'开始，余下部分是一个正则表达式。当此正则表达式匹配目标域名时，该规则生效。例如'regexp:\\.goo.*\\.com$'匹配'www.google.com'、'fonts.googleapis.com'，但不匹配'google.com'。"
+
+msgid "Subdomain (recommended): Begining with 'domain:' and the rest is a domain. When the targeting domain is exactly the value, or is a subdomain of the value, this rule takes effect. Example: rule 'domain:v2ray.com' matches 'www.v2ray.com', 'v2ray.com', but not 'xv2ray.com'."
+msgstr "子域名 (推荐): 由'domain:'开始，余下部分是一个域名。当此域名是目标域名或其子域名时，该规则生效。例如'domain:v2ray.com'匹配'www.v2ray.com'、'v2ray.com'，但不匹配'xv2ray.com'。"
+
+msgid "Full domain: Begining with 'full:' and the rest is a domain. When the targeting domain is exactly the value, the rule takes effect. Example: rule 'domain:v2ray.com' matches 'v2ray.com', but not 'www.v2ray.com'."
+msgstr "完整匹配: 由'full:'开始，余下部分是一个域名。当此域名完整匹配目标域名时，该规则生效。例如'full:v2ray.com'匹配'v2ray.com'但不匹配'www.v2ray.com'。"
+
+msgid "Pre-defined domain list: Begining with 'geosite:' and the rest is a name, such as geosite:google or geosite:cn."
+msgstr "预定义域名列表：由'geosite:'开头，余下部分是一个名称，如geosite:google或者geosite:cn。"
+
+msgid "Domains from file: Such as 'ext:file:tag'. The value must begin with ext: (lowercase), and followed by filename and tag. The file is placed in resource directory, and has the same format of geosite.dat. The tag must exist in the file."
+msgstr "从文件中加载域名: 形如'ext:file:tag'，必须以ext:（小写）开头，后面跟文件名和标签，文件存放在资源目录中，文件格式与geosite.dat相同，标签必须在文件中存在。"
+
+msgid "IP: such as '127.0.0.1'."
+msgstr "IP: 形如'127.0.0.1'。"
+
+msgid "CIDR: such as '127.0.0.0/8'."
+msgstr "CIDR: 形如'10.0.0.0/8'."
+
+msgid "GeoIP: such as 'geoip:cn'. It begins with geoip: (lower case) and followed by two letter of country code."
+msgstr "GeoIP: 形如'geoip:cn'，必须以geoip:（小写）开头，后面跟双字符国家代码，支持几乎所有可以上网的国家。"
+
+msgid "IPs from file: Such as 'ext:file:tag'. The value must begin with ext: (lowercase), and followed by filename and tag. The file is placed in resource directory, and has the same format of geoip.dat. The tag must exist in the file."
+msgstr "从文件中加载 IP: 形如'ext:file:tag'，必须以ext:（小写）开头，后面跟文件名和标签，文件存放在资源目录中，文件格式与geoip.dat相同标签必须在文件中存在。"
+
 msgid "Clear logs"
 msgstr "清空日志"
 
@@ -867,6 +930,9 @@ msgstr "插件"
 
 msgid "opts"
 msgstr "插件选项"
+
+msgid "Xray is currently directly compatible with V2ray and used."
+msgstr "Xray 目前可直接兼容 V2ray 并使用。"
 
 msgid "Protocol"
 msgstr "协议名称"
@@ -955,8 +1021,8 @@ msgstr "是否允许不安全连接。当勾选时，将跳过证书验证。"
 msgid "<br />none: default, no masquerade, data sent is packets with no characteristics.<br />srtp: disguised as an SRTP packet, it will be recognized as video call data (such as FaceTime).<br />utp: packets disguised as uTP will be recognized as bittorrent downloaded data.<br />wechat-video: packets disguised as WeChat video calls.<br />dtls: disguised as DTLS 1.2 packet.<br />wireguard: disguised as a WireGuard packet. (not really WireGuard protocol)"
 msgstr "<br />none：默认值，不进行伪装，发送的数据是没有特征的数据包。<br />srtp：伪装成 SRTP 数据包，会被识别为视频通话数据（如 FaceTime）。<br />utp：伪装成 uTP 数据包，会被识别为 BT 下载数据。<br />wechat-video：伪装成微信视频通话的数据包。<br />dtls：伪装成 DTLS 1.2 数据包。<br />wireguard：伪装成 WireGuard 数据包。(并不是真正的 WireGuard 协议)"
 
-msgid "A legal file path. This file must not exist before running V2Ray."
-msgstr "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在。"
+msgid "A legal file path. This file must not exist before running."
+msgstr "一个合法的文件路径。在运行之前，这个文件必须不存在。"
 
 msgid "TCP Open Socks"
 msgstr "开启Socks"
@@ -1068,6 +1134,12 @@ msgstr "日志"
 
 msgid "UDP Forward"
 msgstr "UDP转发"
+
+msgid "You did not fill in the %s path. Please save and apply then update manually."
+msgstr "您没有填写 %s 路径。请保存应用后再手动更新。"
+
+msgid "Not installed unzip, Can't unzip!"
+msgstr "未安装unzip，无法解压。"
 
 msgid "Can't determine ARCH, or ARCH not supported."
 msgstr "无法确认ARCH架构，或是不支持。"

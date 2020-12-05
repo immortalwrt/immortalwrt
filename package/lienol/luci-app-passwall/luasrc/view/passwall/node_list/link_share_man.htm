@@ -172,14 +172,14 @@ local dsp = require "luci.dispatcher"
 				"&protoparam=" + b64encsafe(v_protocol_param.value) +
 				"&remarks=" + b64encutf8safe(v_alias.value);
 			url = b64encsafe(ssr_str);
-		} else if (v_type === "Trojan" || v_type === "Trojan-Go") {
+		} else if (v_type === "Trojan" || v_type === "Trojan-Plus" || v_type === "Trojan-Go") {
 			var v_password = opt.get(!opt.client && v_type === "Trojan-Go"  ? "passwords" : "password");
 			var v_server = opt.get("address");
 			var v_port = opt.get("port");
 			url = encodeURIComponent(v_password.value) +
 				"@" + v_server.value +
 				":" + v_port.value + "/?";
-			if (opt.get("stream_security").value === "tls") {
+			if (opt.get("tls").checked) {
 				url += "tls=1";
 				url += opt.query("sni", "tls_serverName");
 				url += opt.query("allowinsecure", "tls_allowInsecure");
@@ -187,7 +187,7 @@ local dsp = require "luci.dispatcher"
 				url += "tls=0";
 			}
 			if (v_type === "Trojan-Go") {
-				if (opt.get("stream_security").value === "none" && opt.get("trojan_transport").value === "original") {
+				if (!opt.get("tls").checked && opt.get("trojan_transport").value === "original") {
 					var plugin = {};
 					plugin.type = opt.get("plugin_type").value;
 					if (plugin.type !== "plaintext") {
@@ -432,8 +432,8 @@ local dsp = require "luci.dispatcher"
 				tls = queryParam.plugin === undefined;
 			}
 			if (tls === false) { alert("TODO: plugin params for trojan-go."); }
-			opt.set('stream_security', tls ? "tls" : "none");
-			opt.get('stream_security').dispatchEvent(event);
+			opt.set('tls', tls);
+			opt.get('tls').dispatchEvent(event);
 			if (tls) {
 				opt.set('tls_serverName', queryParam.peer || queryParam.sni || '');
 				opt.set('tls_allowInsecure', queryParam.allowinsecure === '1');
@@ -490,8 +490,8 @@ local dsp = require "luci.dispatcher"
 			opt.set('address', m.hostname);
 			opt.set('port', m.port || "443");
 			opt.set(opt.client ? 'password' : 'passwords', decodeURIComponent(password));
-			opt.set('stream_security', (queryParam.tls && queryParam.tls === '1') ? 'tls' : 'none');
-			opt.get('stream_security').dispatchEvent(event);
+			opt.set('tls', (queryParam.tls && queryParam.tls === '1'));
+			opt.get('tls').dispatchEvent(event);
 			var plugin = queryParam.plugin !== undefined;
 			if (plugin) {
 				opt.set('trojan_transport', 'original');
@@ -509,8 +509,8 @@ local dsp = require "luci.dispatcher"
 					alert(queryParam.plugin);
 			}
 			var tls = !plugin && queryParam.tls === '1';
-			opt.set('stream_security', tls ? "tls" : "none");
-			opt.get('stream_security').dispatchEvent(event);
+			opt.set('tls', tls);
+			opt.get('tls').dispatchEvent(event);
 			if (tls) {
 				opt.set('tls_serverName', queryParam.peer || queryParam.sni || '');
 				opt.set('tls_allowInsecure', queryParam.allowinsecure === '1');
@@ -562,13 +562,14 @@ local dsp = require "luci.dispatcher"
 				param = sstr.substr(ploc + 2);
 			}
 			var ssm = JSON.parse(sstr);
+			console.log(ssm);
 			opt.set('remarks', ssm.ps);
 			opt.set('address', ssm.add);
 			opt.set('port', ssm.port);
 			opt.set('alter_id', ssm.aid);
 			opt.set('uuid', ssm.id);
-			opt.set('stream_security', ssm.tls === "tls" ? "tls" : "none");
-			opt.get('stream_security').dispatchEvent(event);
+			opt.set('tls', ssm.tls === "tls");
+			opt.get('tls').dispatchEvent(event);
 			if (ssm.tls === "tls") {
 				opt.set('tls_serverName', ssm.host);
 			}

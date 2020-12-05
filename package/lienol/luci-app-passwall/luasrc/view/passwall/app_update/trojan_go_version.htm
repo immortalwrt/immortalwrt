@@ -6,6 +6,7 @@ local trojan_go_version = require "luci.model.cbi.passwall.api.api".get_trojan_g
 	//<![CDATA[
 	var trojanInfo;
 	var tokenStr = '<%=token%>';
+	var manuallyUpdateText = '<%:Manually update%>';
 	var noUpdateText = '<%:It is the latest version%>';
 	var updateSuccessText = '<%:Update successful%>';
 	var clickToUpdateText = '<%:Click to update%>';
@@ -48,7 +49,7 @@ local trojan_go_version = require "luci.model.cbi.passwall.api.api".get_trojan_g
 
 	function onRequestError_trojan(btn, errorMessage) {
 		btn.disabled = false;
-		btn.value = btn.placeholder;
+		btn.value = manuallyUpdateText;
 
 		if(errorMessage) {
 			alert(errorMessage);
