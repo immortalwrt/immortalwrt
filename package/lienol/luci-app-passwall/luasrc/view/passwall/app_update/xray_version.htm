@@ -1,10 +1,10 @@
 <%
-local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_version()
+local xray_version = require "luci.model.cbi.passwall.api.api".get_xray_version()
 -%>
 
 <script type="text/javascript">
 	//<![CDATA[
-	var v2rayInfo;
+	var xrayInfo;
 	var tokenStr = '<%=token%>';
 	var manuallyUpdateText = '<%:Manually update%>';
 	var noUpdateText = '<%:It is the latest version%>';
@@ -18,22 +18,22 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 	var movingText = '<%:Moving...%>';
 
 	window.onload = function() {
-		var v2rayCheckBtn = document.getElementById('_v2ray-check_btn');
-		var v2rayDetailElm = document.getElementById('_v2ray-check_btn-detail');
+		var xrayCheckBtn = document.getElementById('_xray-check_btn');
+		var xrayDetailElm = document.getElementById('_xray-check_btn-detail');
 	};
 
-	function addPageNotice_v2ray() {
+	function addPageNotice_xray() {
 		window.onbeforeunload = function(e) {
 			e.returnValue = updateInProgressNotice;
 			return updateInProgressNotice;
 		};
 	}
 
-	function removePageNotice_v2ray() {
+	function removePageNotice_xray() {
 		window.onbeforeunload = undefined;
 	}
 
-	function onUpdateSuccess_v2ray(btn) {
+	function onUpdateSuccess_xray(btn) {
 		alert(updateSuccessText);
 
 		if(btn) {
@@ -47,7 +47,7 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 		}, 1000);
 	}
 
-	function onRequestError_v2ray(btn, errorMessage) {
+	function onRequestError_xray(btn, errorMessage) {
 		btn.disabled = false;
 		btn.value = manuallyUpdateText;
 
@@ -56,34 +56,34 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 		}
 	}
 
-	function onBtnClick_v2ray(btn) {
-		if(v2rayInfo === undefined) {
-			checkUpdate_v2ray(btn);
+	function onBtnClick_xray(btn) {
+		if(xrayInfo === undefined) {
+			checkUpdate_xray(btn);
 		} else {
-			doUpdate_v2ray(btn);
+			doUpdate_xray(btn);
 		}
 	}
 
-	function checkUpdate_v2ray(btn) {
+	function checkUpdate_xray(btn) {
 		btn.disabled = true;
 		btn.value = inProgressText;
 
-		addPageNotice_v2ray();
+		addPageNotice_xray();
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
 
-		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[v2ray_check]])%>', {
+		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[xray_check]])%>', {
 			token: tokenStr,
 			arch: ''
 		}, function(x,json) {
-			removePageNotice_v2ray();
+			removePageNotice_xray();
 
 			if(json.code) {
-				v2rayInfo = undefined;
-				onRequestError_v2ray(btn, json.error);
+				xrayInfo = undefined;
+				onRequestError_xray(btn, json.error);
 			} else {
 				if(json.update) {
-					v2rayInfo = json;
+					xrayInfo = json;
 					btn.disabled = false;
 					btn.value = clickToUpdateText;
 					btn.placeholder = clickToUpdateText;
@@ -106,48 +106,48 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 		},300);
 	}
 
-	function doUpdate_v2ray(btn) {
+	function doUpdate_xray(btn) {
 		btn.disabled = true;
 		btn.value = downloadingText;
 
-		addPageNotice_v2ray();
+		addPageNotice_xray();
 
-		var v2rayUpdateUrl = '<%=url([[admin]], [[services]], [[passwall]], [[v2ray_update]])%>';
+		var xrayUpdateUrl = '<%=url([[admin]], [[services]], [[passwall]], [[xray_update]])%>';
 		// Download file
-		XHR.get(v2rayUpdateUrl, {
+		XHR.get(xrayUpdateUrl, {
 			token: tokenStr,
-			url: v2rayInfo ? v2rayInfo.url.download : ''
+			url: xrayInfo ? xrayInfo.url.download : ''
 		}, function(x,json) {
 			if(json.code) {
-				removePageNotice_v2ray();
-				onRequestError_v2ray(btn, json.error);
+				removePageNotice_xray();
+				onRequestError_xray(btn, json.error);
 			} else {
 				btn.value = decompressioningText;
 
 				// Extract file
-				XHR.get(v2rayUpdateUrl, {
+				XHR.get(xrayUpdateUrl, {
 					token: tokenStr,
 					task: 'extract',
 					file: json.file,
-					subfix: v2rayInfo ? v2rayInfo.type : ''
+					subfix: xrayInfo ? xrayInfo.type : ''
 				}, function(x,json) {
 					if(json.code) {
-						removePageNotice_v2ray();
-						onRequestError_v2ray(btn, json.error);
+						removePageNotice_xray();
+						onRequestError_xray(btn, json.error);
 					} else {
 						btn.value = movingText;
 
 						// Move file to target dir
-						XHR.get(v2rayUpdateUrl, {
+						XHR.get(xrayUpdateUrl, {
 							token: tokenStr,
 							task: 'move',
 							file: json.file
 						}, function(x,json) {
-							removePageNotice_v2ray();
+							removePageNotice_xray();
 							if(json.code) {
-								onRequestError_v2ray(btn, json.error);
+								onRequestError_xray(btn, json.error);
 							} else {
-								onUpdateSuccess_v2ray(btn);
+								onUpdateSuccess_xray(btn);
 							}
 						},300)
 					}
@@ -159,14 +159,14 @@ local v2ray_version = require "luci.model.cbi.passwall.api.api".get_v2ray_versio
 </script>
 
 <div class="cbi-value">
-	<label class="cbi-value-title">V2ray
+	<label class="cbi-value-title">Xray
 		<%:Version%>
 	</label>
 	<div class="cbi-value-field">
 		<div class="cbi-value-description">
-			<span>【 <%=v2ray_version%> 】</span>
-			<input class="cbi-button cbi-input-apply" type="button" id="_v2ray-check_btn" onclick="onBtnClick_v2ray(this);" value="<%:Manually update%>" />
-			<span id="_v2ray-check_btn-detail"></span>
+			<span>【 <%=xray_version%> 】</span>
+			<input class="cbi-button cbi-input-apply" type="button" id="_xray-check_btn" onclick="onBtnClick_xray(this);" value="<%:Manually update%>" />
+			<span id="_xray-check_btn-detail"></span>
 		</div>
 	</div>
 </div>

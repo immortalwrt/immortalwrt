@@ -76,17 +76,17 @@ o.rmempty = false
 ---- TCP Node
 local tcp_node_num = tonumber(m:get("@global_other[0]", "tcp_node_num") or 1)
 for i = 1, tcp_node_num, 1 do
+    o = s:taboption("Main", ListValue, "tcp_node" .. i, translate("TCP Node") .. " " .. i)
     if i == 1 then
-        o = s:taboption("Main", ListValue, "tcp_node" .. i, translate("TCP Node"))
-        o.description = translate("For proxy specific list.")
-
+        o.title = translate("TCP Node")
+        o.description = translate("For proxy specific list.") .. o.description
         if tonumber(m:get("@auto_switch[0]", "enable") or 0) == 1 then
-            local now_node = luci.sys.exec(string.format("[ -f '/var/etc/%s/id/TCP_%s' ] && echo -n $(cat /var/etc/%s/id/TCP_%s)", appname, i, appname, i))
-            if now_node and now_node ~= "" then
-                local e = uci:get_all(appname, now_node)
+            local current_node = luci.sys.exec(string.format("[ -f '/var/etc/%s/id/TCP_%s' ] && echo -n $(cat /var/etc/%s/id/TCP_%s)", appname, i, appname, i))
+            if current_node and current_node ~= "" and current_node ~= "nil" then
+                local e = uci:get_all(appname, current_node)
                 if e then
                     local remarks = ""
-                    if e.type == "V2ray" and (e.protocol == "_balancing" or e.protocol == "_shunt") then
+                    if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt") then
                         remarks = "%s：[%s] " % {translatef(e.type .. e.protocol), e.remarks}
                     else
                         if e.use_kcp and e.use_kcp == "1" then
@@ -95,12 +95,10 @@ for i = 1, tcp_node_num, 1 do
                             remarks = "%s：[%s] %s:%s" % {e.type, e.remarks, e.address, e.port}
                         end
                     end
-                    o.description = o.description .. "<br />" ..translatef("Current node: %s", remarks)
+                    o.description = translate("For proxy specific list.") .. "<br />" .. translatef("Current node: %s", '<a href="node_config/' .. current_node .. '">' .. remarks .. '</a>')
                 end
             end
         end
-    else
-        o = s:taboption("Main", ListValue, "tcp_node" .. i, translate("TCP Node") .. " " .. i)
     end
     o:value("nil", translate("Close"))
     for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
@@ -109,16 +107,14 @@ end
 ---- UDP Node
 local udp_node_num = tonumber(m:get("@global_other[0]", "udp_node_num") or 1)
 for i = 1, udp_node_num, 1 do
+    o = s:taboption("Main", ListValue, "udp_node" .. i, translate("UDP Node") .. " " .. i)
+    o:value("nil", translate("Close"))
     if i == 1 then
-        o = s:taboption("Main", ListValue, "udp_node" .. i, translate("UDP Node"))
-        o.description = translate("For proxy game network, DNS hijack etc.") .. translate(" The selected server will not use Kcptun.")
-        o:value("nil", translate("Close"))
+        o.title = translate("UDP Node")
+        o.description = translate("For proxy game network, DNS hijack etc.") .. o.description .. "<br />" .. translate("The selected server will not use Kcptun.")
         o:value("tcp_", translate("Same as the tcp node"))
         --o:value("tcp", translate("Same as the tcp node"))
         --o:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
-    else
-        o = s:taboption("Main", ListValue, "udp_node" .. i, translate("UDP Node") .. " " .. i)
-        o:value("nil", translate("Close"))
     end
     for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 end
@@ -334,7 +330,7 @@ o.default = 9050
 o.datatype = "port"
 o.rmempty = false
 
-if api.is_finded("v2ray") then
+if api.is_finded("xray") or api.is_finded("v2ray") then
     o = s:option(Value, "http_port", "HTTP" .. translate("Listen Port") .. " " .. translate("0 is not use"))
     o.default = 0
     o.datatype = "port"

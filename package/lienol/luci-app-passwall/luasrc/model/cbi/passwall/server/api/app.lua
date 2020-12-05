@@ -89,6 +89,9 @@ local function start()
                 end
                 type = type:lower()
                 bin = ln_start("/usr/bin/" .. type .. "-server", type .. "-server", "-c " .. config_file .. " " .. udp_param)
+            elseif type == "Xray" then
+                config = require("luci.model.cbi.passwall.server.api.xray").gen_config(user)
+                bin = ln_start(_api.get_xray_path(), "xray", "-config=" .. config_file)
             elseif type == "V2ray" then
                 config = require("luci.model.cbi.passwall.server.api.v2ray").gen_config(user)
                 bin = ln_start(_api.get_v2ray_path(), "v2ray", "-config=" .. config_file)

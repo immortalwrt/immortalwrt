@@ -6,9 +6,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
-PKG_VERSION:=3.9
-PKG_RELEASE:=72
-PKG_DATE:=20201012
+PKG_VERSION:=4
+PKG_RELEASE:=1
+PKG_DATE:=20201204
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -33,9 +33,13 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
 	bool "Include ShadowsocksR Server"
 	default y
 	
+config PACKAGE_$(PKG_NAME)_INCLUDE_Xray
+	bool "Include Xray"
+	default y if i386||x86_64||arm||aarch64
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
 	bool "Include V2ray"
-	default y if i386||x86_64||arm||aarch64
+	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Plus
 	bool "Include Trojan_Plus"
@@ -48,7 +52,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_GO
 config PACKAGE_$(PKG_NAME)_INCLUDE_Brook
 	bool "Include Brook"
 	default n
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy
 	bool "Include NaiveProxy"
 	default n
@@ -60,19 +64,19 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_kcptun
 config PACKAGE_$(PKG_NAME)_INCLUDE_haproxy
 	bool "Include haproxy"
 	default y
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_ChinaDNS_NG
 	bool "Include ChinaDNS-NG"
 	default n
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_https_dns_proxy
 	bool "Include Https DNS Proxy(DoH)"
 	default y
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_dns2socks
 	bool "Include dns2socks"
 	default n
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_v2ray-plugin
 	bool "Include v2ray-plugin (Shadowsocks plugin)"
 	default y if i386||x86_64||arm||aarch64
@@ -101,6 +105,7 @@ define Package/$(PKG_NAME)
   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-alt \
   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-ssr-local \
   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray \
   +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Plus:trojan-plus \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_GO:trojan-go \
@@ -137,24 +142,24 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./root/etc/config/passwall $(1)/etc/config/passwall
 	$(INSTALL_CONF) ./root/etc/config/passwall_server $(1)/etc/config/passwall_server
-	
+
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./root/etc/init.d/passwall $(1)/etc/init.d/passwall
 	$(INSTALL_BIN) ./root/etc/init.d/passwall_server $(1)/etc/init.d/passwall_server
-	
+
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_CONF) ./root/etc/uci-defaults/* $(1)/etc/uci-defaults
-	
+
 	$(INSTALL_DIR) $(1)/usr/share/passwall
 	cp -pR ./root/usr/share/passwall/* $(1)/usr/share/passwall
 	$(INSTALL_CONF) ./root/etc/config/passwall $(1)/usr/share/passwall/config.default
-	
+
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	cp -pR ./root/usr/share/rpcd/acl.d/* $(1)/usr/share/rpcd/acl.d
-	
+
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
 	cp -pR ./luasrc/* $(1)/usr/lib/lua/luci/
-	
+
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	po2lmo ./po/zh_Hans/passwall.po $(1)/usr/lib/lua/luci/i18n/passwall.zh-cn.lmo
 endef

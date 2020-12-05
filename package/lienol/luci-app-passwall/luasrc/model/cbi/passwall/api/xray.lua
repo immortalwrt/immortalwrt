@@ -1,19 +1,19 @@
-module("luci.model.cbi.passwall.api.v2ray", package.seeall)
+module("luci.model.cbi.passwall.api.xray", package.seeall)
 local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local util = require "luci.util"
 local i18n = require "luci.i18n"
 local api = require "luci.model.cbi.passwall.api.api"
 
-local v2ray_api = "https://api.github.com/repos/v2fly/v2ray-core/releases/latest"
+local xray_api = "https://api.github.com/repos/XTLS/Xray-core/releases/latest"
 local is_armv7 = false
 
 function to_check(arch)
-   local app_path = api.get_v2ray_path() or ""
+    local app_path = api.get_xray_path() or ""
     if app_path == "" then
         return {
             code = 1,
-            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "V2ray")
+            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "Xray")
         }
     end
     if not arch or arch == "" then arch = api.auto_get_arch() end
@@ -31,7 +31,7 @@ function to_check(arch)
     if file_tree == "amd64" then file_tree = "64" end
     if file_tree == "386" then file_tree = "32" end
 
-    local json = api.get_api_json(v2ray_api)
+    local json = api.get_api_json(xray_api)
 
     if json.tag_name == nil then
         return {
@@ -40,7 +40,7 @@ function to_check(arch)
         }
     end
 
-    local now_version = api.get_v2ray_version()
+    local now_version = api.get_xray_version()
     local remote_version = json.tag_name:match("[^v]+")
     local needs_update = api.compare_versions(now_version, "<", remote_version)
     local html_url, download_url
@@ -75,20 +75,20 @@ function to_check(arch)
 end
 
 function to_download(url)
-    local app_path = api.get_v2ray_path() or ""
+    local app_path = api.get_xray_path() or ""
     if app_path == "" then
         return {
             code = 1,
-            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "V2ray")
+            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "Xray")
         }
     end
     if not url or url == "" then
         return {code = 1, error = i18n.translate("Download url is required.")}
     end
 
-    sys.call("/bin/rm -f /tmp/v2ray_download.*")
+    sys.call("/bin/rm -f /tmp/xray_download.*")
 
-    local tmp_file = util.trim(util.exec("mktemp -u -t v2ray_download.XXXXXX"))
+    local tmp_file = util.trim(util.exec("mktemp -u -t xray_download.XXXXXX"))
 
     local result = api.exec(api.curl, {api._unpack(api.curl_args), "-o", tmp_file, url}, nil, api.command_timeout) == 0
 
@@ -104,11 +104,11 @@ function to_download(url)
 end
 
 function to_extract(file, subfix)
-    local app_path = api.get_v2ray_path() or ""
+    local app_path = api.get_xray_path() or ""
     if app_path == "" then
         return {
             code = 1,
-            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "V2ray")
+            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "Xray")
         }
     end
 
@@ -124,8 +124,8 @@ function to_extract(file, subfix)
         }
     end
 
-    sys.call("/bin/rm -rf /tmp/v2ray_extract.*")
-    local tmp_dir = util.trim(util.exec("mktemp -d -t v2ray_extract.XXXXXX"))
+    sys.call("/bin/rm -rf /tmp/xray_extract.*")
+    local tmp_dir = util.trim(util.exec("mktemp -d -t xray_extract.XXXXXX"))
 
     local output = {}
     api.exec("/usr/bin/unzip", {"-o", file, "-d", tmp_dir},
@@ -139,15 +139,15 @@ function to_extract(file, subfix)
 end
 
 function to_move(file)
-    local app_path = api.get_v2ray_path() or ""
+    local app_path = api.get_xray_path() or ""
     if app_path == "" then
         return {
             code = 1,
-            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "V2ray")
+            error = i18n.translatef("You did not fill in the %s path. Please save and apply then update manually.", "Xray")
         }
     end
     if not file or file == "" then
-        sys.call("/bin/rm -rf /tmp/v2ray_extract.*")
+        sys.call("/bin/rm -rf /tmp/xray_extract.*")
         return {code = 1, error = i18n.translate("Client file is required.")}
     end
 
@@ -157,8 +157,8 @@ function to_move(file)
     sys.call("/etc/init.d/passwall stop")
     local result = nil
     if sub_version and sub_version == "7" then t = "_armv7" end
-    result = api.exec("/bin/mv", { "-f", file .. "/v2ray" .. t, app_path }, nil, api.command_timeout) == 0
-    sys.call("/bin/rm -rf /tmp/v2ray_extract.*")
+    result = api.exec("/bin/mv", { "-f", file .. "/xray" .. t, app_path }, nil, api.command_timeout) == 0
+    sys.call("/bin/rm -rf /tmp/xray_extract.*")
     if not result or not fs.access(app_path) then
         return {
             code = 1,
