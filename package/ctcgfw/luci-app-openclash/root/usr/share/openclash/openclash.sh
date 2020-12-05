@@ -1,6 +1,7 @@
 #!/bin/bash
 . /lib/functions.sh
 . /usr/share/openclash/openclash_ps.sh
+. /usr/share/openclash/ruby.sh
 
 status=$(unify_ps_status "openclash.sh")
 [ "$status" -gt 3 ] && exit 0
@@ -103,12 +104,6 @@ config_su_check()
 {
    echo "配置文件下载成功，检查是否有更新..." >$START_LOG
    sed -i 's/!<str> //g' "$CFG_FILE" >/dev/null 2>&1
-   #关键字还原
-   if [ -z "$(grep "^Proxy:#d" "$CFG_FILE")" ]; then
-      sed -i "s/^Proxy:/proxies:/g" "$CFG_FILE" 2>/dev/null
-   else
-      sed -i "s/^Proxy:#d/proxies:/g" "$CFG_FILE" 2>/dev/null
-   fi
    if [ -f "$CONFIG_FILE" ]; then
       cmp -s "$BACKPACK_FILE" "$CFG_FILE"
       if [ "$?" -ne 0 ]; then
@@ -129,11 +124,6 @@ config_su_check()
       cp "$CONFIG_FILE" "$BACKPACK_FILE"
       config_cus_up
    fi
-}
-
-config_encode()
-{
-   /usr/share/openclash/yml_field_name_ch.sh "$CFG_FILE"
 }
 
 config_error()
@@ -168,7 +158,7 @@ change_dns()
 config_download_direct()
 {
    if pidof clash >/dev/null; then
-      echo "配置文件【$name】下载失败，尝试不使用代理下载配置文件..." >$START_LOG
+      echo "配置文件【$name】订阅失败，尝试不使用代理下载配置文件..." >$START_LOG
       
       kill_watchdog
 
@@ -301,21 +291,14 @@ sub_info_get()
    config_download
 
    if [ "$?" -eq 0 ] && [ -s "$CFG_FILE" ]; then
-   	  config_encode
-   	  if [ -n "$(grep "^ \{0,\}proxy-groups:" "$CFG_FILE")" ]; then
-         if [ -n "$(grep "^ \{0,\}Proxy:" "$CFG_FILE" 2>/dev/null)" ] || [ -n "$(grep "^ \{0,\}proxy-providers:" "$CFG_FILE" 2>/dev/null)" ]; then
-            if [ -n "$(grep "^ \{0,\}rules:" "$CFG_FILE" 2>/dev/null)" ] || [ -n "$(grep "^ \{0,\}script:" "$CFG_FILE" 2>/dev/null)" ]; then
-               config_su_check
-            else
-               config_download_direct
-            fi
-         else
-            config_download_direct
-         fi
-      else
+      if [ -n "$(ruby_read "$CFG_FILE" "['proxy-groups']")" ]; then
+   	     config_su_check
+   	  else
+         echo "${LOGTIME} Config 【$name】 Grammar Check Faild" >>$LOG_FILE
          config_download_direct
-      fi
+   	  fi
    else
+      echo "${LOGTIME} Config 【$name】 Download Faild" >>$LOG_FILE
       config_download_direct
    fi
 }
@@ -327,7 +310,7 @@ uci delete openclash.config.config_update_path >/dev/null 2>&1
 uci commit openclash
 
 if [ "$if_restart" -eq 1 ]; then
-   /etc/init.d/openclash restart >/dev/null 2>&1
+   /etc/init.d/openclash restart >/dev/null 2>&1 &
 else
    sed -i '/openclash.sh/d' $CRON_FILE 2>/dev/null
    [ "$(uci get openclash.config.auto_update 2>/dev/null)" -eq 1 ] && [ "$(uci get openclash.config.config_auto_update_mode 2>/dev/null)" -ne 1 ] && echo "0 $(uci get openclash.config.auto_update_time 2>/dev/null) * * $(uci get openclash.config.config_update_week_time 2>/dev/null) /usr/share/openclash/openclash.sh" >> $CRON_FILE

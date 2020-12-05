@@ -7,7 +7,6 @@ status=$(unify_ps_status "yml_groups_set.sh")
 
 START_LOG="/tmp/openclash_start.log"
 GROUP_FILE="/tmp/yaml_groups.yaml"
-CONFIG_GROUP_FILE="/tmp/yaml_group.yaml"
 CFG_FILE="/etc/config/openclash"
 servers_update=$(uci get openclash.config.servers_update 2>/dev/null)
 CONFIG_FILE=$(uci get openclash.config.config_path 2>/dev/null)
@@ -83,7 +82,7 @@ yml_servers_add()
 	      config_list_foreach "$section" "groups" set_groups "$name" "$2"
      fi
 	   
-	   if [ ! -z "$if_game_group" ] && [ -z "$(grep -F $name /tmp/yaml_proxy.yaml)" ]; then
+	   if [ ! -z "$if_game_group" ] && [ -z "$(ruby -ryaml -E UTF-8 -e "Value = YAML.load_file('$CONFIG_FILE'); Value['proxies'].each{|x| if x['name'].eql?('$name') then puts x['name'] end}" 2>/dev/null)" ]; then
 	      /usr/share/openclash/yml_proxys_set.sh "$name" "proxy"
 	   fi
 	fi
@@ -120,7 +119,7 @@ set_proxy_provider()
 	      config_list_foreach "$section" "groups" set_provider_groups "$name" "$2"
      fi
 	   
-	   if [ ! -z "$if_game_group" ] && [ -z "$(grep "^ \{0,\}$name" /tmp/yaml_proxy_provider.yaml)" ]; then
+	   if [ ! -z "$if_game_group" ] && [ -z "$(ruby -ryaml -E UTF-8 -e "Value = YAML.load_file('$CONFIG_FILE'); Value['proxy-providers'].keys.each{|x| if x.eql?('$name') then puts x end}" 2>/dev/null)" ]; then
 	      /usr/share/openclash/yml_proxys_set.sh "$name" "proxy-provider"
 	   fi
 	fi
@@ -147,6 +146,8 @@ yml_groups_set()
    config_get "config" "$section" "config" ""
    config_get "type" "$section" "type" ""
    config_get "name" "$section" "name" ""
+   config_get "disable_udp" "$section" "disable_udp" ""
+   config_get "strategy" "$section" "strategy" ""
    config_get "old_name" "$section" "old_name" ""
    config_get "test_url" "$section" "test_url" ""
    config_get "test_interval" "$section" "test_interval" ""
@@ -183,13 +184,20 @@ yml_groups_set()
    
    echo "  - name: $name" >>$GROUP_FILE
    echo "    type: $type" >>$GROUP_FILE
+   if [ "$type" = "load-balance" ]; then
+      [ -n "$strategy" ] && {
+   	     echo "    strategy: $strategy" >>$GROUP_FILE
+      }
+   fi
+   [ -n "$disable_udp" ] && {
+      echo "    disable-udp: $disable_udp" >>$GROUP_FILE
+   }
    group_name="$name"
    echo "    proxies: $group_name" >>$GROUP_FILE
    
    #名字变化时处理规则部分
    if [ "$name" != "$old_name" ] && [ ! -z "$old_name" ]; then
       sed -i "s/,${old_name}/,${name}#d/g" "$CONFIG_FILE" 2>/dev/null
-      sed -i "s/:${old_name}$/:${name}#d/g" "$CONFIG_FILE" 2>/dev/null #修改第三方规则分组对应标签
       sed -i "s/old_name \'${old_name}/old_name \'${name}/g" "$CFG_FILE" 2>/dev/null
       config_load "openclash"
    fi
@@ -261,7 +269,6 @@ if [ "$create_config" = "0" ] || [ "$servers_if_update" = "1" ] || [ ! -z "$if_g
       config_foreach yml_groups_set "groups"
       sed -i "s/#d//g" "$CONFIG_FILE" 2>/dev/null
       rm -rf /tmp/relay_server.list 2>/dev/null
-      echo "配置文件【$CONFIG_NAME】的策略组写入完成！" >$START_LOG
    fi
 fi
 if [ -z "$if_game_group" ]; then
