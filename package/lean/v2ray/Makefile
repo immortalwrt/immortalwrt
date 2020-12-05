@@ -45,7 +45,7 @@ define Package/$(PKG_NAME)
   URL:=https://www.v2fly.org
   SECTION:=net
   CATEGORY:=Network
-  SUBMENU:=Project V
+  SUBMENU:=Web Servers/Proxies
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-certificates
 endef
 
