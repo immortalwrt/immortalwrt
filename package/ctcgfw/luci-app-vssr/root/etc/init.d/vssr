@@ -72,7 +72,7 @@ count_shunt() {
 }
 count_shunt
 run_mode=$(uci_get_by_type global run_mode)
-
+is_xray=$(uci_get_by_type global use_xray)
 gen_config_file() {
     local hostip=$(uci_get_by_name $1 server)
 
@@ -95,6 +95,9 @@ gen_config_file() {
 
     local stype=$(uci_get_by_name $1 type)
     local port=$(uci_get_by_name $1 local_port)
+    if [ "$stype" == "vless" ]; then
+        stype="v2ray"
+    fi
     if [ "$stype" == "trojan" ]; then
         if [ "$re_type" == "udp" ]; then
             re_type="client"
@@ -193,18 +196,18 @@ start_rules() {
     fi
 
     /usr/bin/vssr-rules \
-        -s "$server" \
-        -l "$local_port" \
-        -S "$udp_server" \
-        -L "$udp_local_port" \
-        -a "$ac_ips" \
-        -i "$(uci_get_by_type access_control wan_bp_list)" \
-        -b "$(uci_get_by_type access_control wan_bp_ips)" \
-        -w "$(uci_get_by_type access_control wan_fw_ips)" \
-        -p "$(uci_get_by_type access_control lan_fp_ips)" \
-        -G "$(uci_get_by_type access_control lan_gm_ips)" \
-        -D "$proxyport" \
-        $(get_arg_out) $gfwmode $ARG_UDP
+    -s "$server" \
+    -l "$local_port" \
+    -S "$udp_server" \
+    -L "$udp_local_port" \
+    -a "$ac_ips" \
+    -i "$(uci_get_by_type access_control wan_bp_list)" \
+    -b "$(uci_get_by_type access_control wan_bp_ips)" \
+    -w "$(uci_get_by_type access_control wan_fw_ips)" \
+    -p "$(uci_get_by_type access_control lan_fp_ips)" \
+    -G "$(uci_get_by_type access_control lan_gm_ips)" \
+    -D "$proxyport" \
+    $(get_arg_out) $gfwmode $ARG_UDP
     return $?
 }
 
@@ -271,7 +274,12 @@ find_bin() {
     ssr) ret="/usr/bin/ssr-redir" ;;
     ssr-local) ret="/usr/bin/ssr-local" ;;
     ssr-server) ret="/usr/bin/ssr-server" ;;
-    v2ray) ret="/usr/bin/v2ray/v2ray" && [ ! -f "$ret" ] && ret="/usr/bin/v2ray" ;;
+    v2ray | vless) 
+        ret="/usr/bin/v2ray/v2ray" && [ ! -f "$ret" ] && ret="/usr/bin/v2ray" 
+        if [ $is_xray = "1" ]; then
+            ret="/usr/bin/xray" && [ ! -f "$ret" ] && ret="/usr/bin/xray/xray" 
+        fi
+        ;;
     trojan) ret="/usr/sbin/trojan" ;;
     socks5 | tun) ret="/usr/sbin/redsocks2" ;;
     esac
@@ -284,6 +292,9 @@ start_shunt() {
         local server_port=${shunt_port[i]}
         local server_type=$(uci_get_by_name $server_index type)
         local server_ip=$(uci_get_by_name $server_index server)
+        if ["$server_type" == "vless"]; then
+            server_type="v2ray"
+        fi
         [ "$server_type" == "trojan" ] && re_type="client" || re_type="tcp"
         if [ "$server_type" != "v2ray" -a "$server_type" != "" ]; then
             local config_file=/var/etc/${NAME}_${shunt_type[i]}.json
@@ -325,8 +336,8 @@ start_redir() {
         local kcp_param=$(uci_get_by_name $GLOBAL_SERVER kcp_param)
         [ "$password" != "" ] && password="--key "${password}
         service_start /usr/bin/kcptun-client \
-            -r $kcp_server:$kcp_port \
-            -l :$server_port $password $kcp_param
+        -r $kcp_server:$kcp_port \
+        -l :$server_port $password $kcp_param
         kcp_enable_flag=1
     fi
 
@@ -356,7 +367,7 @@ start_redir() {
             done
             echo "$(date "+%Y-%m-%d %H:%M:%S") $name $threads 线程 已启动!" >>/tmp/vssr.log
             ;;
-        v2ray)
+        v2ray | vless)
             $sscmd -config $last_config_file >/dev/null 2>&1 &
             echo $sscmd
             echo "$(date "+%Y-%m-%d %H:%M:%S") $($sscmd -version | head -1) 已启动!" >>/tmp/vssr.log
@@ -397,7 +408,7 @@ start_redir() {
             $ucmd -c $last_config_file $ARG_OTA -U -f /var/run/ssr-reudp.pid >/dev/null 2>&1
             echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay: $name 已启动!" >>/tmp/vssr.log
             ;;
-        v2ray)
+        v2ray | vless)
             $ucmd -config $last_config_file >/dev/null 2>&1 &
             echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay: V2ray 已启动!" >>/tmp/vssr.log
             ;;
@@ -598,7 +609,7 @@ stop() {
     if [ $(uci_get_by_type global monitor_enable) = 1 ]; then
         kill -9 $(busybox ps -w | grep vssr-monitor | grep -v grep | awk '{print $1}') >/dev/null 2>&1
     fi
-    killall -q -9 ss-redir ss-local obfs-local ssr-redir ssr-local ssr-server v2ray v2ray-plugin trojan microsocks ipt2socks dns2socks redsocks2 pdnsd
+    killall -q -9 ss-redir ss-local obfs-local ssr-redir ssr-local ssr-server v2ray v2ray-plugin trojan microsocks ipt2socks dns2socks redsocks2 pdnsd xray
 
     if [ -f "/tmp/dnsmasq.d/dnsmasq-ssr.conf" ]; then
         rm -f /tmp/dnsmasq.d/dnsmasq-ssr.conf
