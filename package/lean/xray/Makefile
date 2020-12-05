@@ -43,7 +43,7 @@ define Package/$(PKG_NAME)
   TITLE:=A platform for building proxies
   SECTION:=net
   CATEGORY:=Network
-  SUBMENU:=Project X
+  SUBMENU:=Web Servers/Proxies
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-certificates
 endef
 
