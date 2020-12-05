@@ -386,8 +386,8 @@ msgstr "通过代理更新"
 msgid "GFW List"
 msgstr "GFW列表"
 
-msgid "Basic Settings [SS|SSR|V2ray|Trojan]"
-msgstr "基本设置 [SS|SSR|V2ray|Trojan]"
+msgid "Basic Settings [SS|SSR|V2ray|Xray|Trojan]"
+msgstr "基本设置 [SS|SSR|V2ray|Xray|Trojan]"
 
 msgid "Main Server"
 msgstr "主服务器"
@@ -420,7 +420,7 @@ msgid "Server Count"
 msgstr "节点数量"
 
 msgid "IP black-and-white list"
-msgstr "黑白名单"
+msgstr "禁止/通行名单"
 
 msgid "WAN IP AC"
 msgstr "广域网访问控制"
@@ -659,3 +659,18 @@ msgstr "许可"
 
 msgid "Area"
 msgstr "国家或地区"
+
+msgid "Use Xray instead of V2ray"
+msgstr "使用Xray替代V2ray"
+
+msgid "Subscribe Filter Words"
+msgstr "订阅过滤关键词"
+
+msgid "Filter Words splited by /"
+msgstr "使用 / 分隔关键词"
+
+msgid "VLESS Encryption"
+msgstr "VLESS 加密"
+
+msgid "You can manually add group names in front of the URL, splited by ,"
+msgstr "你可以在URL前面手动添加组名，使用 , 分隔"

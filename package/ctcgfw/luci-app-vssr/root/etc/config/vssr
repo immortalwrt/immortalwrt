@@ -2,7 +2,7 @@
 config global
 	option tunnel_forward '8.8.4.4:53'
 	option tunnel_address '0.0.0.0'
-	option run_mode 'router'
+	option run_mode 'gfw'
 	option pdnsd_enable '1'
 	option monitor_enable '1'
 	option global_server 'nil'
@@ -11,6 +11,7 @@ config global
 	option switch_time '667'
 	option switch_try_count '3'
 	option adblock '0'
+	option dports '2'
 
 config socks5_proxy
 	option enable_server '0'
