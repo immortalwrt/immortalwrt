@@ -1,4 +1,4 @@
-module("luci.model.cbi.passwall.api.gen_v2ray", package.seeall)
+module("luci.model.cbi.passwall.api.gen_xray", package.seeall)
 local ucursor = require"luci.model.uci".cursor()
 local sys = require "luci.sys"
 local json = require "luci.jsonc"
@@ -31,7 +31,7 @@ function gen_outbound(node, tag, relay_port)
         if tag == nil then
             tag = node_id
         end
-        if node.type ~= "V2ray" then
+        if node.type ~= "Xray" then
             if node.type == "Socks" then
                 node.protocol = "socks"
                 node.transport = "tcp"
@@ -59,6 +59,9 @@ function gen_outbound(node, tag, relay_port)
         else
             if node.tls and node.tls == "1" then
                 node.stream_security = "tls"
+                if node.xtls and node.xtls == "1" then
+                    node.stream_security = "xtls"
+                end
             end
     
             if node.transport == "mkcp" or node.transport == "quic" then
@@ -69,14 +72,18 @@ function gen_outbound(node, tag, relay_port)
         result = {
             tag = tag,
             protocol = node.protocol,
-            mux = {
+            mux = (node.stream_security ~= "xtls") and {
                 enabled = (node.mux == "1") and true or false,
                 concurrency = (node.mux_concurrency) and tonumber(node.mux_concurrency) or 8
-            },
+            } or nil,
             -- 底层传输配置
             streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                 network = node.transport,
                 security = node.stream_security,
+                xtlsSettings = (node.stream_security == "xtls") and {
+                    serverName = node.tls_serverName,
+                    allowInsecure = (node.tls_allowInsecure == "1") and true or false
+                } or nil,
                 tlsSettings = (node.stream_security == "tls") and {
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
@@ -295,7 +302,7 @@ if node then
     -- 额外传出连接
     table.insert(outbounds, {protocol = "freedom", tag = "direct", settings = {keep = ""}})
 
-    local v2ray = {
+    local xray = {
         log = {
             -- error = string.format("/var/etc/passwall/%s.log", node[".name"]),
             loglevel = "warning"
@@ -307,5 +314,5 @@ if node then
         -- 路由
         routing = routing
     }
-    print(json.stringify(v2ray, 1))
+    print(json.stringify(xray, 1))
 end

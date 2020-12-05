@@ -8,7 +8,7 @@ require 'luci.model.uci'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
-local _api = require "luci.model.cbi.passwall.api.api"
+local api = require "luci.model.cbi.passwall.api.api"
 
 -- these global functions are accessed all the time by the event handler
 -- so caching them is worth the effort
@@ -135,7 +135,7 @@ do
 	end
 
 	ucic2:foreach(application, uciType, function(node)
-		if node.type == 'V2ray' and node.protocol == '_shunt' then
+		if node.protocol and node.protocol == '_shunt' then
 			local node_id = node[".name"]
 			ucic2:foreach(application, "shunt_rules", function(e)
 				local _node_id = node[e[".name"]] or nil
@@ -146,7 +146,7 @@ do
 				CONFIG[#CONFIG + 1] = {
 					log = false,
 					currentNode = _node,
-					remarks = "V2ray分流" .. e.remarks .. "节点",
+					remarks = "分流" .. e.remarks .. "节点",
 					set = function(server)
 						ucic2:set(application, node_id, e[".name"], server)
 					end
@@ -161,12 +161,12 @@ do
 			CONFIG[#CONFIG + 1] = {
 				log = false,
 				currentNode = default_node,
-				remarks = "V2ray分流默认节点",
+				remarks = "分流默认节点",
 				set = function(server)
 					ucic2:set(application, node_id, "default_node", server)
 				end
 			}
-		elseif node.type == 'V2ray' and node.protocol == '_balancing' then
+		elseif node.protocol and node.protocol == '_balancing' then
 			local node_id = node[".name"]
 			local nodes = {}
 			local new_nodes = {}
@@ -184,7 +184,7 @@ do
 						remarks = node,
 						set = function(server)
 							for kk, vv in pairs(CONFIG) do
-								if (vv.remarks == "V2ray负载均衡节点列表" .. node_id) then
+								if (vv.remarks == "负载均衡节点列表" .. node_id) then
 									table.insert(vv.new_nodes, server)
 								end
 							end
@@ -193,13 +193,13 @@ do
 				end
 			end
 			CONFIG[#CONFIG + 1] = {
-				remarks = "V2ray负载均衡节点列表" .. node_id,
+				remarks = "负载均衡节点列表" .. node_id,
 				nodes = nodes,
 				new_nodes = new_nodes,
 				set = function()
 					for kk, vv in pairs(CONFIG) do
-						if (vv.remarks == "V2ray负载均衡节点列表" .. node_id) then
-							log("刷新V2ray负载均衡节点列表")
+						if (vv.remarks == "负载均衡节点列表" .. node_id) then
+							log("刷新负载均衡节点列表")
 							ucic2:foreach(application, uciType, function(node2)
 								if node2[".name"] == node[".name"] then
 									local index = node2[".index"]
@@ -315,7 +315,7 @@ local function base64Decode(text)
 end
 -- 处理数据
 local function processData(szType, content, add_mode)
-	log(content, add_mode)
+	--log(content, add_mode)
 	local result = {
 		timeout = 60,
 		add_mode = add_mode,
@@ -344,6 +344,9 @@ local function processData(szType, content, add_mode)
 	elseif szType == 'vmess' then
 		local info = jsonParse(content)
 		result.type = 'V2ray'
+		if api.is_finded("xray") then
+			result.type = 'Xray'
+		end
 		result.address = info.add
 		result.port = info.port
 		result.protocol = 'vmess'
@@ -385,11 +388,11 @@ local function processData(szType, content, add_mode)
 		end
 		if not info.security then result.security = "auto" end
 		if info.tls == "tls" or info.tls == "1" then
-			result.stream_security = "tls"
+			result.tls = "1"
 			result.tls_serverName = info.host
 			result.tls_allowInsecure = allowInsecure_default and "1" or "0"
 		else
-			result.stream_security = "none"
+			result.tls = "0"
 		end
 	elseif szType == "ss" then
 		local idx_sp = 0
@@ -506,7 +509,7 @@ local function processData(szType, content, add_mode)
 				result.type = "Trojan-Go"
 				result.fingerprint = "firefox"
 			end
-			result.stream_security = 'tls'
+			result.tls = '1'
 			result.tls_serverName = peer and peer or sni
 			result.tls_allowInsecure = allowInsecure and "1" or "0"
 		end
@@ -567,7 +570,7 @@ local function processData(szType, content, add_mode)
 			end
 			result.port = port
 			result.fingerprint = "firefox"
-			result.stream_security = 'tls'
+			result.tls = '1'
 			result.tls_serverName = peer and peer or sni
 			result.tls_allowInsecure = allowInsecure and "1" or "0"
 		end
@@ -647,21 +650,21 @@ end
 local function select_node(nodes, config)
 	local server
 	if config.currentNode then
-		-- 特别优先级 V2ray分流 + 备注
-		if config.currentNode.type == 'V2ray' and config.currentNode.protocol == '_shunt' then
+		-- 特别优先级 分流 + 备注
+		if config.currentNode.protocol and config.currentNode.protocol == '_shunt' then
 			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
-					log('选择【' .. config.remarks .. '】V2ray分流匹配节点：' .. node.remarks)
+					log('选择【' .. config.remarks .. '】分流匹配节点：' .. node.remarks)
 					server = id
 					break
 				end
 			end
 		end
-		-- 特别优先级 V2ray负载均衡 + 备注
-		if config.currentNode.type == 'V2ray' and config.currentNode.protocol == '_balancing' then
+		-- 特别优先级 负载均衡 + 备注
+		if config.currentNode.protocol and config.currentNode.protocol == '_balancing' then
 			for id, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
-					log('选择【' .. config.remarks .. '】V2ray负载均衡匹配节点：' .. node.remarks)
+					log('选择【' .. config.remarks .. '】负载均衡匹配节点：' .. node.remarks)
 					server = id
 					break
 				end
@@ -679,11 +682,11 @@ local function select_node(nodes, config)
 				end
 			end
 		end
-		-- 第二优先级 IP + 端口
+		-- 第二优先级 类型 + IP + 端口
 		if not server then
 			for id, node in pairs(nodes) do
-				if node.address and node.port then
-					if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
+				if node.type and node.address and node.port then
+					if node.type == config.currentNode.type and (node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port) then
 						if config.log == nil or config.log == true then
 							log('选择【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
 						end
@@ -693,11 +696,11 @@ local function select_node(nodes, config)
 				end
 			end
 		end
-		-- 第三优先级 IP
+		-- 第三优先级 IP + 端口
 		if not server then
 			for id, node in pairs(nodes) do
-				if node.address then
-					if node.address == config.currentNode.address then
+				if node.address and node.port then
+					if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
 						if config.log == nil or config.log == true then
 							log('选择【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
 						end
@@ -707,13 +710,27 @@ local function select_node(nodes, config)
 				end
 			end
 		end
-		-- 第四优先级备注
+		-- 第四优先级 IP
+		if not server then
+			for id, node in pairs(nodes) do
+				if node.address then
+					if node.address == config.currentNode.address then
+						if config.log == nil or config.log == true then
+							log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+						end
+						server = id
+						break
+					end
+				end
+			end
+		end
+		-- 第五优先级备注
 		if not server then
 			for id, node in pairs(nodes) do
 				if node.remarks then
 					if node.remarks == config.currentNode.remarks then
 						if config.log == nil or config.log == true then
-							log('选择【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+							log('选择【' .. config.remarks .. '】第五匹配节点：' .. node.remarks)
 						end
 						server = id
 						break
@@ -751,7 +768,7 @@ local function update_node(manual)
 	end)
 	for _, v in ipairs(nodeResult) do
 		for _, vv in ipairs(v) do
-			local uuid = _api.gen_uuid()
+			local uuid = api.gen_uuid()
 			local cfgid = ucic2:section(application, uciType, uuid)
 			cfgid = uuid
 			for kkk, vvv in pairs(vv) do
@@ -858,7 +875,7 @@ local function parse_link(raw, remark, manual)
 						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧
 						result.address:sub(#result.address) == "." -- 结尾是.
 					then
-						log('丢弃无效节点: ' .. result.type .. ' 节点, ' .. result.remarks)
+						log('丢弃过滤节点: ' .. result.type .. ' 节点, ' .. result.remarks)
 					else
 						tinsert(all_nodes, result)
 					end
