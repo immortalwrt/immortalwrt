@@ -56,9 +56,10 @@ o:depends("adblock", "1")
 o.description = translate("Support AdGuardHome and DNSMASQ format list")
 
 o = s:option(Value, "gfwlist_url", translate("gfwlist Update url"))
+o:value("https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/gfwlist.txt", translate("v2fly/domain-list-community"))
 o:value("https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt", translate("Loukky/gfwlist-by-loukky"))
 o:value("https://cdn.jsdelivr.net/gh/gfwlist/gfwlist/gfwlist.txt", translate("gfwlist/gfwlist"))
-o.default = "https://cdn.jsdelivr.net/gh/gfwlist/gfwlist/gfwlist.txt"
+o.default = "https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/gfwlist.txt"
 
 o = s:option(Value, "chnroute_url", translate("Chnroute Update url"))
 o:value("https://ispip.clang.cn/all_cn.txt", translate("Clang.CN"))
