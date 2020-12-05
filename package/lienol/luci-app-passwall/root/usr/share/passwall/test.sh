@@ -136,32 +136,27 @@ test_auto_switch() {
 }
 
 start() {
-	(
-		flock -xn 200
-		[ "$?" != "0" ] && exit 0
-		
-		ENABLED=$(config_t_get global enabled 0)
-		[ "$ENABLED" != 1 ] && return 1
-		ENABLED=$(config_t_get auto_switch enable 0)
-		[ "$ENABLED" != 1 ] && return 1
+	ENABLED=$(config_t_get global enabled 0)
+	[ "$ENABLED" != 1 ] && _return 1
+	ENABLED=$(config_t_get auto_switch enable 0)
+	[ "$ENABLED" != 1 ] && _return 1
+	delay=$(config_t_get auto_switch testing_time 1)
+	sleep ${delay}m
+	while [ "$ENABLED" -eq 1 ]
+	do
+		# TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
+		# 暂时只能检测TCP1
+		TCP_NODE_NUM=1
+		for i in $(seq 1 $TCP_NODE_NUM); do
+			eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
+			eval tmp=\$TCP_NODE$i
+			[ -n "$tmp" -a "$tmp" != "nil" ] && {
+				test_auto_switch TCP tcp $i "$tmp"
+			}
+		done
 		delay=$(config_t_get auto_switch testing_time 1)
 		sleep ${delay}m
-		while [ "$ENABLED" -eq 1 ]
-		do
-			# TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
-			# 暂时只能检测TCP1
-			TCP_NODE_NUM=1
-			for i in $(seq 1 $TCP_NODE_NUM); do
-				eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
-				eval tmp=\$TCP_NODE$i
-				[ -n "$tmp" -a "$tmp" != "nil" ] && {
-					test_auto_switch TCP tcp $i "$tmp"
-				}
-			done
-			delay=$(config_t_get auto_switch testing_time 1)
-			sleep ${delay}m
-		done
-	) 200>"/var/lock/passwall_auto_switch.lock"
+	done
 }
 
 case $1 in

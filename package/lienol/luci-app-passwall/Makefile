@@ -134,8 +134,10 @@ define Package/$(PKG_NAME)/conffiles
 /etc/config/passwall_server
 /usr/share/passwall/rules/proxy_host
 /usr/share/passwall/rules/proxy_ip
-/usr/share/passwall/rules/direct_host
-/usr/share/passwall/rules/direct_ip
+/usr/share/passwall/rules/proxy_host2
+/usr/share/passwall/rules/proxy_ip2
+/usr/share/passwall/rules/proxy_host3
+/usr/share/passwall/rules/proxy_ip3
 endef
 
 define Package/$(PKG_NAME)/install
