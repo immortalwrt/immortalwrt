@@ -114,8 +114,12 @@ find_bin() {
 	ssr) ret="/usr/bin/ssr-redir" ;;
 	ssr-local) ret="/usr/bin/ssr-local" ;;
 	ssr-server) ret="/usr/bin/ssr-server" ;;
-	v2ray | vless) ret="/usr/bin/v2ray/v2ray" && [ ! -f "$ret" ] && ret="/usr/bin/v2ray" ;;
-	xray) ret="/usr/bin/xray/xray" && [ ! -f "$ret" ] && ret="/usr/bin/xray" ;;
+	v2ray | vless)
+	ret="/usr/bin/xray"
+	[ ! -f "$ret" ] && ret="/usr/bin/xray/xray"
+	[ ! -f "$ret" ] && ret="/usr/bin/v2ray"
+	[ ! -f "$ret" ] && ret="/usr/bin/v2ray/v2ray"
+	;;
 	trojan) ret="/usr/sbin/trojan" ;;
 	naiveproxy) ret="/usr/bin/naive" ;;
 	socks5 | tun) ret="/usr/sbin/redsocks2" ;;
@@ -188,12 +192,8 @@ gen_config_file() {
 		EOF
 		;;
 	v2ray | vless)
-		lua /usr/share/shadowsocksr/gen${type}config.lua $GLOBAL_SERVER tcp $(uci_get_by_name $1 local_port) >/var/etc/v2-ssr-retcp.json
+		lua /usr/share/shadowsocksr/genv2config.lua $GLOBAL_SERVER tcp $(uci_get_by_name $1 local_port) >/var/etc/v2-ssr-retcp.json
 		sed -i 's/\\//g' /var/etc/v2-ssr-retcp.json
-		;;
-	xray)
-		lua /usr/share/shadowsocksr/gen${type}config.lua $GLOBAL_SERVER tcp $(uci_get_by_name $1 local_port) >/var/etc/xray-ssr-retcp.json
-		sed -i 's/\\//g' /var/etc/xray-ssr-retcp.json
 		;;
 	trojan)
 		lua /usr/share/shadowsocksr/gentrojanconfig.lua $GLOBAL_SERVER nat $(uci_get_by_name $1 local_port) >/var/etc/trojan-ssr-retcp.json
@@ -368,10 +368,6 @@ start_redir_tcp() {
 		$bin -config /var/etc/v2-ssr-retcp.json >/dev/null 2>&1 &
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
 		;;
-	xray)
-		$bin -config /var/etc/xray-ssr-retcp.json >/dev/null 2>&1 &
-		echo "$(date "+%Y-%m-%d %H:%M:%S") Main node:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
-		;;
 	trojan)
 		for i in $(seq 1 $threads); do
 			$bin --config /var/etc/trojan-ssr-retcp.json >/dev/null 2>&1 &
@@ -422,15 +418,9 @@ start_redir_udp() {
 			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:$name Started!" >>/tmp/ssrplus.log
 			;;
 		v2ray | vless)
-			lua /usr/share/shadowsocksr/gen${type}config.lua $UDP_RELAY_SERVER udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) >/var/etc/v2-ssr-reudp.json
+			lua /usr/share/shadowsocksr/genv2config.lua $UDP_RELAY_SERVER udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) >/var/etc/v2-ssr-reudp.json
 			sed -i 's/\\//g' /var/etc/v2-ssr-reudp.json
 			$bin -config /var/etc/v2-ssr-reudp.json >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
-			;;
-		xray)
-			lua /usr/share/shadowsocksr/gen${type}config.lua $UDP_RELAY_SERVER udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) >/var/etc/xray-ssr-reudp.json
-			sed -i 's/\\//g' /var/etc/xray-ssr-reudp.json
-			$bin -config /var/etc/xray-ssr-reudp.json >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
 			;;
 		trojan)
@@ -479,16 +469,9 @@ start_shunt() {
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$name Started!" >>/tmp/ssrplus.log
 			;;
 		v2ray | vless)
-			lua /usr/share/shadowsocksr/gen${type}config.lua $NETFLIX_SERVER tcp 4321 1088 >/var/etc/v2-ssr-netflix.json
+			lua /usr/share/shadowsocksr/genv2config.lua $NETFLIX_SERVER tcp 4321 1088 >/var/etc/v2-ssr-netflix.json
 			sed -i 's/\\//g' /var/etc/v2-ssr-netflix.json
 			$bin -config /var/etc/v2-ssr-netflix.json >/dev/null 2>&1 &
-			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
-			;;
-		xray)
-			lua /usr/share/shadowsocksr/gen${type}config.lua $NETFLIX_SERVER tcp 4321 1088 >/var/etc/xray-ssr-netflix.json
-			sed -i 's/\\//g' /var/etc/xray-ssr-netflix.json
-			$bin -config /var/etc/xray-ssr-netflix.json >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Netflix shunt:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
 			;;
@@ -533,8 +516,8 @@ start_shunt() {
 
 start_local() {
 	local local_server=$(uci_get_by_type socks5_proxy server nil)
-	[ "$local_server" == "nil" ] && return 1
 	[ "$local_server" == "same" ] && local_server=$GLOBAL_SERVER
+	[ "$local_server" == "nil" ] && return 1
 	local type=$(uci_get_by_name $local_server type)
 	local bin=$(find_bin $type)
 	[ ! -f "$bin" ] && echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:Can't find $bin program, can't start!" >>/tmp/ssrplus.log && local_enable=0 && return 1
@@ -549,15 +532,9 @@ start_local() {
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$name Started!" >>/tmp/ssrplus.log
 		;;
 	v2ray | vless)
-		lua /usr/share/shadowsocksr/gen${type}config.lua $local_server tcp 0 $(uci_get_by_type socks5_proxy local_port 1080) >/var/etc/v2-ssr-local.json
+		lua /usr/share/shadowsocksr/genv2config.lua $local_server tcp 0 $(uci_get_by_type socks5_proxy local_port 1080) >/var/etc/v2-ssr-local.json
 		sed -i 's/\\//g' /var/etc/v2-ssr-local.json
 		$bin -config /var/etc/v2-ssr-local.json >/dev/null 2>&1 &
-		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
-		;;
-	xray)
-		lua /usr/share/shadowsocksr/gen${type}config.lua $local_server tcp 0 $(uci_get_by_type socks5_proxy local_port 1080) >/var/etc/xray-ssr-local.json
-		sed -i 's/\\//g' /var/etc/xray-ssr-local.json
-		$bin -config /var/etc/xray-ssr-local.json >/dev/null 2>&1 &
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Global_Socks5:$($bin -version | head -1) Started!" >>/tmp/ssrplus.log
 		;;
 	trojan)
@@ -724,6 +701,7 @@ start_rules() {
 	-B "$(uci_get_by_type access_control lan_bp_ips)" \
 	-p "$(uci_get_by_type access_control lan_fp_ips)" \
 	-G "$(uci_get_by_type access_control lan_gm_ips)" \
+	-m "$(uci_get_by_type access_control Interface)" \
 	-D "$proxyport" \
 	-F "$netflix" \
 	-N "$netflix_ip" \

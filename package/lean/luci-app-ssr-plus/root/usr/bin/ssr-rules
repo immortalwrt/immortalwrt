@@ -31,6 +31,7 @@ Valid options are:
     -F                      netflix mode
     -N                      netflix server IP
     -M                      netflix proxy mode
+    -m <Interface>          Interface name
     -I <ip_list_file>       a file content is bypassed netflix ip list
     -e <extra_options>      extra options for iptables
     -o                      apply the rules to the OUTPUT chain
@@ -181,13 +182,19 @@ ac_rule() {
 			;;
 		esac
 	fi
-	IFNAME=$(uci -P /var/state get network.lan.ifname 2>/dev/null)
 	ipset -! -R <<-EOF || return 1
 		create ss_spec_lan_ac hash:net
 		$(for ip in ${LAN_AC_IP:1}; do echo "add ss_spec_lan_ac $ip"; done)
 	EOF
-	$IPT -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p tcp $EXT_ARGS $MATCH_SET \
-	-m comment --comment "$TAG" -j SS_SPEC_WAN_AC
+	if [ -z "$Interface" ]; then
+		$IPT -I PREROUTING 1 -p tcp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_WAN_AC
+	else
+		for name in $Interface;do 
+		local IFNAME=$(uci -P /var/state get network.$name.ifname 2>/dev/null)
+		[ -n "$IFNAME" ] && $IPT -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p tcp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_WAN_AC
+		done
+	fi
+
 	case "$OUTPUT" in
 	1)
 		$IPT -I OUTPUT 1 -p tcp $EXT_ARGS \
@@ -251,8 +258,14 @@ tp_rule() {
 		$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
 		;;
 	esac
-	$ipt -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p udp $EXT_ARGS $MATCH_SET \
-	-m comment --comment "$TAG" -j SS_SPEC_TPROXY
+	if [ -z "$Interface" ]; then
+		$ipt -I PREROUTING 1 -p udp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_TPROXY
+	else
+		for name in $Interface;do 
+		local IFNAME=$(uci -P /var/state get network.$name.ifname 2>/dev/null)
+		[ -n "$IFNAME" ] && $ipt -I PREROUTING 1 ${IFNAME:+-i $IFNAME} -p udp $EXT_ARGS $MATCH_SET -m comment --comment "$TAG" -j SS_SPEC_TPROXY
+		done
+	fi
 	return $?
 }
 
@@ -304,8 +317,11 @@ gen_include() {
 	return 0
 }
 
-while getopts ":s:l:S:L:i:e:a:B:b:w:p:G:D:F:N:M:I:oOuUfgrczh" arg; do
+while getopts ":m:s:l:S:L:i:e:a:B:b:w:p:G:D:F:N:M:I:oOuUfgrczh" arg; do
 	case "$arg" in
+	m)
+		Interface=$OPTARG
+		;;
 	s)
 		server=$OPTARG
 		;;
