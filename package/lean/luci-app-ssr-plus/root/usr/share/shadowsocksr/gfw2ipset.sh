@@ -10,6 +10,15 @@ if [ -z "$switch_server" ]; then
 else
 	GLOBAL_SERVER=$switch_server
 fi
+
+mkdir -p /tmp/dnsmasq.ssr
+if [ "$(uci_get_by_type global run_mode router)" == "oversea" ]; then
+	cp -rf /etc/ssr/oversea_list.conf /tmp/dnsmasq.ssr/
+else
+	cp -rf /etc/ssr/gfw_list.conf /tmp/dnsmasq.ssr/
+	cp -rf /etc/ssr/gfw_base.conf /tmp/dnsmasq.ssr/
+fi
+
 NETFLIX_SERVER=$(uci_get_by_type global netflix_server nil)
 [ "$NETFLIX_SERVER" == "same" ] && NETFLIX_SERVER=$GLOBAL_SERVER
 if [ "$NETFLIX_SERVER" != "nil" ]; then
@@ -40,11 +49,13 @@ awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5335"'\n",$0)}' /etc/ssr/black.
 awk '!/^$/&&!/^#/{printf("ipset=/%s/'"whitelist"'\n",$0)}' /etc/ssr/white.list >/tmp/dnsmasq.ssr/whitelist_forward.conf
 awk '!/^$/&&!/^#/{printf("address=/%s/''\n",$0)}' /etc/ssr/deny.list >/tmp/dnsmasq.ssr/denylist.conf
 if [ "$(uci_get_by_type global adblock 0)" == "1" ]; then
-	[ "$1" == "" ] && cp -f /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
+	[ -z "$switch_server" ] && cp -f /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
 	if [ -f "/tmp/dnsmasq.ssr/ad.conf" ]; then
 		for line in $(cat /etc/ssr/black.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
 		for line in $(cat /etc/ssr/white.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
 		for line in $(cat /etc/ssr/deny.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
 		for line in $(cat /etc/ssr/netflix.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
 	fi
+else
+	rm -f /tmp/dnsmasq.ssr/ad.conf
 fi
