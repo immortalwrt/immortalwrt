@@ -2,10 +2,19 @@ require "luci.ip"
 require "nixio.fs"
 local m, s, o
 
-m = Map("shadowsocksr", translate("Block and Allow List"))
+m = Map("shadowsocksr")
 
 s = m:section(TypedSection, "access_control")
 s.anonymous = true
+
+-- Interface control
+s:tab("Interface", translate("Interface control"))
+o = s:taboption("Interface", DynamicList, "Interface", translate("Interface"))
+o.template = "cbi/network_netlist"
+o.widget = "checkbox"
+o.nocreate = true
+o.unspecified = true
+o.description = translate("Select the interface that needs to transmit data. If unchecked, all interfaces will pass data by default!")
 
 -- Part of WAN
 s:tab("wan_ac", translate("WAN IP AC"))
