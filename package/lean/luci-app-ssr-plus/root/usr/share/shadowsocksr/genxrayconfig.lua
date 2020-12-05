@@ -5,7 +5,17 @@ local proto = arg[2]
 local local_port = arg[3] or "0"
 local socks_port = arg[4] or "0"
 local server = ucursor:get_all("shadowsocksr", server_section)
-local v2ray = {
+local outbound_security = "none"
+
+if (server.xtls == '1')
+then
+	outbound_security = "xtls"
+elseif (server.tls == '1')
+then
+	outbound_security = "tls"
+end
+
+local vless = {
 log = {
 -- error = "/var/ssrplus.log",
 loglevel = "warning"
@@ -36,7 +46,7 @@ inboundDetour = (proto == "tcp" and socks_port ~= "0") and {
 } or nil,
 -- 传出连接
 outbound = {
-	protocol = "vmess",
+	protocol = "vless",
 	settings = {
 		vnext = {
 			{
@@ -45,8 +55,8 @@ outbound = {
 				users = {
 					{
 						id = server.vmess_id,
-						alterId = tonumber(server.alter_id),
-						security = server.security
+						flow = (server.xtls == '1') and (server.vless_flow and server.vless_flow or "xtls-rprx-origin") or nil,
+						encryption = server.vless_encryption
 					}
 				}
 			}
@@ -55,8 +65,9 @@ outbound = {
 	-- 底层传输配置
 	streamSettings = {
 		network = server.transport,
-		security = (server.tls == '1') and "tls" or "none",
-		tlsSettings = {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,},
+		security = outbound_security,
+		tlsSettings = (outbound_security == "tls") and {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,} or nil,
+		xtlsSettings = (outbound_security == "xtls") and {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,} or nil,
 		tcpSettings = (server.transport == "tcp") and {
 			header = {
 				type = server.tcp_guise,
@@ -113,4 +124,4 @@ outboundDetour = {
 		}
 	}
 }
-print(json.stringify(v2ray, 1))
+print(json.stringify(vless, 1))
