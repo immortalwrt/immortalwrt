@@ -606,7 +606,6 @@ local function curl(url)
 end
 
 local function truncate_nodes()
-	local is_stop = 0
 	local function clear(type)
 		local node_num = ucic2:get(application, "@global_other[0]", type .. "_node_num") or 1
 		for i = 1, node_num, 1 do
@@ -614,7 +613,6 @@ local function truncate_nodes()
 			if node then
 				local is_sub_node = ucic2:get(application, node, "is_sub") or 0
 				if is_sub_node == "1" then
-					is_stop = 1
 					ucic2:set(application, '@global[0]', type .. "_node" .. i, "nil")
 				end
 			end
@@ -628,7 +626,6 @@ local function truncate_nodes()
 		if node then
 			local is_sub_node = ucic2:get(application, node, "is_sub") or 0
 			if is_sub_node == "1" then
-				is_stop = 1
 				ucic2:set(application, t[".name"], "node", "nil")
 			end
 		end
@@ -641,9 +638,6 @@ local function truncate_nodes()
 	end)
 	ucic2:commit(application)
 
-	if is_stop == 1 then
-		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
-	end
 	log('在线订阅节点已全部删除')
 end
 
@@ -808,7 +802,7 @@ local function update_node(manual)
 		]]--
 
 		ucic2:commit(application)
-		luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
+		--luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end
 end
 
