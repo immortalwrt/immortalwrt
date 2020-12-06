@@ -28,7 +28,7 @@ function index()
     end
 
     entry({'admin', 'services', 'vssr', 'log'}, cbi('vssr/log'), _('Log'), 30).leaf = true
-    entry({'admin', 'services', 'vssr', 'licence'}, template('vssr/licence'), _('Licence'), 40).leaf = true
+    --entry({'admin', 'services', 'vssr', 'licence'}, template('vssr/licence'), _('Licence'), 40).leaf = true
 
     entry({'admin', 'services', 'vssr', 'refresh'}, call('refresh_data')) -- 更新白名单和GFWLIST
     entry({'admin', 'services', 'vssr', 'checkport'}, call('check_port')) -- 检测单个端口并返回Ping
@@ -60,7 +60,7 @@ function get_subscribe()
         uci:set(name, '@server_subscribe[0]', 'filter_words', filter_words)
         uci:set_list(name, '@server_subscribe[0]', 'subscribe_url', cjson.parse(subscribe_url))
         uci:commit(name)
-        luci.sys.exec('nohup /usr/bin/lua /usr/share/vssr/subscribe.lua >/www/check_update.htm 2>/dev/null &')
+        luci.sys.exec('/usr/bin/lua /usr/share/vssr/subscribe.lua >/www/check_update.htm 2>/dev/null &')
         e.error = 0
     else
         e.error = 1
@@ -215,6 +215,7 @@ function get_flag()
 end
 
 -- 刷新检测文件
+
 function refresh_data()
     local set = luci.http.formvalue('set')
     local icount = 0
@@ -245,8 +246,7 @@ function refresh_data()
             retstring = '-1'
         end
     elseif set == 'ip_data' then
-        refresh_cmd =
-            "wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'  2>/dev/null| awk -F\\| '/CN\\|ipv4/ { printf(\"%s/%d\\n\", $4, 32-log($5)/log(2)) }' > /tmp/china_ssr.txt"
+        refresh_cmd = "wget -O- 'https://ispip.clang.cn/all_cn.txt' > /tmp/china_ssr.txt"
         sret = luci.sys.call(refresh_cmd)
         icount = luci.sys.exec('cat /tmp/china_ssr.txt | wc -l')
         if sret == 0 and tonumber(icount) > 1000 then
