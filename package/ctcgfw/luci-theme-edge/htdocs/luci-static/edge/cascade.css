@@ -364,46 +364,6 @@ a {
 	width: 100%;
 }
 
-.col-1 {
-	flex: 1 1 30px !important;
-}
-
-.col-2 {
-	flex: 2 2 60px !important;
-}
-
-.col-3 {
-	flex: 3 3 90px !important;
-}
-
-.col-4 {
-	flex: 4 4 120px !important;
-}
-
-.col-5 {
-	flex: 5 5 150px !important;
-}
-
-.col-6 {
-	flex: 6 6 180px !important;
-}
-
-.col-7 {
-	flex: 7 7 210px !important;
-}
-
-.col-8 {
-	flex: 8 8 240px !important;
-}
-
-.col-9 {
-	flex: 9 9 270px !important;
-}
-
-.col-10 {
-	flex: 10 10 300px !important;
-}
-
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -480,7 +440,7 @@ input:not([type]), input[type=text]:not(.browser-default), input[type=password]:
 	border-radius: 0;
 	outline: none;
 	margin: 0;
-	padding: 0;
+	padding: 0 0.5rem;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	-webkit-box-sizing: content-box;
@@ -900,7 +860,7 @@ header .fill .status * {
 
 .main .main-left .nav>li>a {
 	display: block;
-	font-size: 0.9rem !important;
+	font-size: 0.93rem !important;
 	margin: 0.4rem 0.5rem !important;
 	padding: 0.5rem 0 0.5rem 2.5rem !important;
 	transition: box-shadow .25s, -webkit-box-shadow .25s;
@@ -1113,7 +1073,15 @@ body[class*="node-"] > .main > .main-left > .nav > .slide > .menu.active::before
 }
 
 #maincontent > .container {
-	margin: 1rem 0 1rem 0;
+	margin: 0 2%;
+}
+
+.Overview.node-admin-status #maincontent > .container {
+	padding:0;
+}
+
+.Overview.node-admin-status #maincontent > .container h2{
+	padding-left:2rem;
 }
 
 ul {
@@ -1143,7 +1111,7 @@ h3 {
 
 h4 {
 	font-size: 1.2rem;
-	margin: 2rem 0 0 0;
+	margin: 1.2rem 0 0 0;
 	padding: 0rem 2rem 0.75rem 2rem;
 }
 
@@ -1153,25 +1121,9 @@ h5 {
 	padding-bottom: 10px;
 }
 
-.cbi-section,
-.cbi-section-error,
-#iptables,
-.Firewall form,
-#cbi-network > .cbi-section-node,
-#cbi-wireless > .cbi-section-node,
-#cbi-wireless > #wifi_assoclist_table,
-[data-tab-title],
-[data-page^="admin-system-admin"]:not(.node-main-login) .cbi-map:not(#cbi-dropbear),
-[data-page="admin-system-opkg"] #maincontent > .container {
-	font-family: inherit;
-	font-weight: normal;
-	font-style: normal;
-	line-height: normal;
-	min-width: inherit;
-	margin: 1rem 0;
-	padding: 0rem;
-	border: 0;
-	background-color: #fff;
+.container .cbi-section{
+	margin-bottom:1rem;
+
 }
 
 .cbi-modal .cbi-section,
@@ -1188,7 +1140,7 @@ h5 {
 .cbi-section-descr {
 	font-size: small;
 	line-height: 2rem;
-	padding: 0 0 0.5rem 2rem;
+	padding: 0 0 0.5rem 0;
 }
 
 .cbi-section-node {
@@ -1210,6 +1162,10 @@ h5 {
 .cbi-map-descr > abbr {
 	cursor: help;
 	text-decoration: underline;
+}
+
+fieldset.cbi-section{
+border:none;	
 }
 
 .cbi-section > legend {
@@ -1411,46 +1367,17 @@ td > table > tbody > tr > td,
 	-webkit-appearance: none !important;
 }
 
-.btn:hover,
-.btn:focus,
-.btn:active,
-.cbi-button:hover,
-.cbi-button:focus,
-.cbi-button:active,
-.item:hover::after,
-.item:focus::after,
-.item:active::after,
-.cbi-page-actions .cbi-button-apply + .cbi-button-save:hover,
-.cbi-page-actions .cbi-button-apply + .cbi-button-save:focus,
-.cbi-page-actions .cbi-button-apply + .cbi-button-save:active {
-	text-decoration: none;
-	outline: 0;
-}
-
 button:hover,
 .waves-input-wrapper:hover,
 .btn:hover,
-.btn:focus,
 .cbi-button:hover,
-.cbi-button:focus,
-.item:hover::after,
-.item:focus::after {
+.item:hover::after {
 	opacity: 0.7;
-	top: 0.15rem;
-}
-
-.btn:active,
-.cbi-button:active,
-.item:active::after {
-	opacity: 0.7;
+	top: 0.1rem;
 }
 
 .cbi-button-up:hover,
 .cbi-button-up:focus {
-	opacity: 0.7;
-}
-
-.cbi-button-up:active {
 	opacity: 0.7;
 }
 
@@ -1598,7 +1525,7 @@ button:hover,
 }
 
 ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu {
-	padding-left: 2rem;
+	padding-left: 2.5%;
 	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
 	transition: box-shadow .25s, -webkit-box-shadow .25s;
 	border-radius: 2px;
@@ -1606,6 +1533,11 @@ ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu {
 	margin-bottom: 10px;
 	background-color: #fff;
 	padding-top: 1rem;
+}
+
+#packages{
+	margin-left: -2%;
+    width: 105%;
 }
 
 .cbi-tabmenu > li:hover {
@@ -1873,7 +1805,7 @@ ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu {
 	outline: 0;
 }
 
-.cbi-dropdown > ul.preview {
+#cbi-adblock-global-adb_sources .cbi-dropdown > ul.preview {
 	display: none;
 }
 
@@ -1959,6 +1891,7 @@ ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu {
 .cbi-dropdown > ul > li > form > input[type="checkbox"] {
 	height: auto;
 	margin: 0;
+	display:inline-block;
 }
 
 .cbi-dropdown > ul > li input[type="text"] {
@@ -1972,7 +1905,7 @@ ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu {
 	width: auto;
 	min-width: 100%;
 	max-width: none;
-	max-height: 200px !important;
+	max-height: 200px;
 	border: thin solid #918e8c;
 	background: #f6f6f6;
 	box-shadow: 0 0 4px #918e8c;
@@ -2259,7 +2192,6 @@ body.modal-overlay-active #modal_overlay {
 .cbi-page-actions {
 	padding-top: 1rem;
 	text-align: right;
-	padding-right: 2rem;
 }
 
 .node-main-login .cbi-page-actions {
@@ -2347,8 +2279,12 @@ textarea {
 	transition: box-shadow .25s, -webkit-box-shadow .25s;
 	border-radius: 2px;
 	border: 0 !important;
-	margin: 0 2rem;
-	width: 95% !important;
+}
+
+textarea:focus{
+	outline: none;
+	border: 1px solid #5A8DEE !important;
+	box-shadow: 0 0px 5px 0 #5A8DEE;
 }
 
 .cbi-section textarea {
@@ -2647,8 +2583,8 @@ span[data-tooltip] .label {
 	background-color: #D2FFE8;
 }
 
-label > input[type="checkbox"],
-label > input[type="radio"] {
+input[type="checkbox"],
+input[type="radio"] {
 	position: relative;
 	right: 0.2rem;
 	margin: 0;
@@ -2758,7 +2694,7 @@ input[name="nslookup"] {
 	transition: box-shadow .25s, -webkit-box-shadow .25s;
 	border-radius: 2px;
 	text-align: left;
-	background: #faf5f3c2;
+	background: rgba(255, 255, 255, 0.75);
 	margin: 0;
 }
 
@@ -2975,15 +2911,9 @@ input[name="nslookup"] {
 	color: #32325d;
 	color: var(--gray-dark);
 }
-/* software */
-[data-page="admin-system-opkg"] h2 {
-	margin-left: 1.5rem;
-	color: #32325d;
-	color: var(--gray-dark);
-}
 
 .controls {
-	margin: 0.5em 2rem 1em 2rem !important;
+	margin: 0.5em 0 1em 0 !important;
 }
 
 .controls > * > .btn:not([aria-label$="page"]) {
@@ -3006,12 +2936,6 @@ input[name="nslookup"] {
 [data-page^="admin-system-admin"]:not(.node-main-login) .cbi-map:not(#cbi-dropbear) {
 	margin-top: 2rem;
 	padding-top: 0.1rem;
-}
-
-.td.version,
-.td.size {
-	white-space: normal !important;
-	word-break: break-word;
 }
 
 .cbi-tabmenu + .cbi-section {
@@ -3223,11 +3147,8 @@ input[type="checkbox"] {
 	padding: 0;
 	cursor: pointer;
 	transition: all 0.2s;
-	position: absolute;
-	opacity: 0;
-	pointer-events: none;
+	display:none;
 }
-
 input[type="checkbox"]:checked {
 	border: 1px solid #5A8DEE;
 	background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 8 8\'%3e%3cpath fill=\'%23fff\' d=\'M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z\'/%3e%3c/svg%3e') !important;
@@ -3236,19 +3157,17 @@ input[type="checkbox"]:checked {
 	background-repeat: no-repeat;
 	background-position: center;
 }
-/* IE hacks */
-@media all and (-ms-high-contrast: none) {
-	.main > .main-left > .nav > .slide > .menu::before {
-		top: 30.25%;
-	}
+.cbi-dropdown[open]>ul.dropdown>li label {
+    margin-left: .5rem;
+}
 
-	.main > .main-left > .nav > li:last-child::before {
-		top: 20%;
-	}
+#cbi-adblock-global-adb_sources .cbi-dropdown-open .cbi-dropdown[open] > ul.dropdown{
+	position:relative !important;
+	bottom:0 !important;
+}
 
-	.showSide::before {
-		top: -12px;
-	}
+#cbi-adblock-global-adb_sources .cbi-dropdown-open .preview,#cbi-adblock-global-adb_sources .cbi-dropdown-open .more,.cbi-dropdown-open .open{
+display:none !important;	
 }
 
 @media screen and (max-width: 1600px) {
@@ -3420,10 +3339,6 @@ input[type="checkbox"]:checked {
 		font-size: 1rem;
 	}
 
-	.table {
-		display: block;
-	}
-
 	.Interfaces .table {
 		overflow-x: hidden;
 	}
@@ -3446,6 +3361,12 @@ input[type="checkbox"]:checked {
   .cbi-section #wifi_assoclist_table .tr > .td {
 		border-top: 0;
 	}
+
+.node-admin-status.Overview .tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 
 	.th,
   .td {
@@ -3548,6 +3469,14 @@ input[type="checkbox"]:checked {
 		width: 100% !important;
 		margin-left: 0 !important;
 	}
+#packages .tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+#packages .td {
+    padding: 1em 2rem;
+}
 }
 
 @media screen and (max-width: 768px) {
@@ -3611,20 +3540,8 @@ input[type="checkbox"]:checked {
 		display: inline-block;
 	}
 
-	.main > .main-left > .nav > .slide > .menu {
-		font-size: 1.2rem;
-	}
-
-	.main > .main-left > .nav > .slide > .slide-menu > li > a {
-		font-size: 0.8rem;
-	}
-
 	.cbi-section > div {
 		overflow-x: auto;
-	}
-
-	.cbi-map >.cbi-section {
-		padding: 0 1rem !important;
 	}
 }
 
@@ -3722,6 +3639,7 @@ input[type="checkbox"]:checked {
 	margin: 0.5rem 0;
 	background: none;
 	padding: 0;
+	border:none;
 }
 
 .cbi-map style+fieldset.cbi-section:first-of-type p font {
@@ -4002,10 +3920,6 @@ code,.cbi-progressbar::after {
 	background-color: white !important;
 }
 
-.cbi-map >.cbi-section {
-	padding: 0 2rem;
-}
-
 .cbi-map >.cbi-section .cbi-value {
 	padding-left: 1rem;
 	padding-right: 1rem;
@@ -4059,15 +3973,9 @@ i input {
 	flex-basis: auto !important;
 }
 
-h2,.cbi-map-descr {
-	padding-left: 2rem;
-}
-
-@media screen and (max-width: 1680px) and (min-width: 1280px) {
-.cbi-map >.cbi-section .cbi-section-table,.cbi-map >.cbi-section .cbi-tabmenu,.cbi-map >.cbi-section .table {
-	margin-left: -1.95rem !important;
-	width: 105.5% !important;
-}
+.cbi-map >.cbi-section .cbi-section-table,.container .cbi-tabmenu,.container #tabmenu,.cbi-map >.cbi-section .table {
+	margin-left: -2%;
+    width: 105%;
 }
 
 .admin-status-overview h2.content {
@@ -4137,8 +4045,12 @@ cbi-button.cbi-button-neutral {
 }
 
 input[type=password]+.cbi-button.cbi-button-neutral {
-	padding: 0.1rem 0.4rem;
+	padding: 0 0.4rem;
 	color: #fff !important;
+}
+
+.cbi-input-password[type=text]+.cbi-button.cbi-button-neutral {
+	padding: 0.2rem 0.5rem;
 }
 
 .main-right>hr {
@@ -4166,6 +4078,10 @@ div[id^="cbi-unblockmusic"] .cbi-button {
 	padding: 0 2rem;
 }
 
+.cbi-section-table .tr>.td:last-child,#packages .tr>.td:last-child{
+	padding-right:3%;
+}
+
 .chromeframe {
 	padding: 2rem 3rem;
 	margin: 0 auto;
@@ -4188,8 +4104,12 @@ div[id^="cbi-unblockmusic"] .cbi-button {
 	color: orangered;
 }
 
-.landscape {
-	position: absolute;
-	width: 100%;
-	height: 100%;
+[data-page="admin-network-wifi"] tr > td .cbi-button{
+	margin-left: 0 !important;
+}
+[data-page="admin-network-wifi"] tr > td input[type="button"]{
+	    padding: 0.5rem 1rem !important;
+}
+table.interfaces .th{
+	padding:1.1em 0.5rem !important;
 }
