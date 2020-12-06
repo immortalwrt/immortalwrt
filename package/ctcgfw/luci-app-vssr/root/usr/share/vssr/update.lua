@@ -43,7 +43,7 @@ else
 end
 
 log('正在更新【国内IP段】数据库')
-refresh_cmd = "wget -O- 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'  2>/dev/null| awk -F\\| '/CN\\|ipv4/ { printf(\"%s/%d\\n\", $4, 32-log($5)/log(2)) }' > /tmp/china_ssr.txt"
+refresh_cmd ="wget -O- 'https://ispip.clang.cn/all_cn.txt' > /tmp/china_ssr.txt 2>/dev/null"
 sret = luci.sys.call(refresh_cmd)
 icount = luci.sys.exec('cat /tmp/china_ssr.txt | wc -l')
 if sret == 0 then
