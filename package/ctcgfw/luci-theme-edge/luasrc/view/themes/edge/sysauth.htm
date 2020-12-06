@@ -1,0 +1,139 @@
+<%#
+ Copyright 2008 Steven Barth <steven@midlink.org>
+ Copyright 2008-2012 Jo-Philipp Wich <jow@openwrt.org>
+ Licensed to the public under the Apache License 2.0.
+-%>
+
+<%+header_login%>
+
+<div id="CrossFade"><img src="<%=media%>/background/1.jpg" alt="img"/><img src="<%=media%>/background/2.jpg" alt="img"/><img src="<%=media%>/background/3.jpg" alt="img"/>
+</div>
+
+<div class="speaker"></div>
+<audio loop id="player" autoplay type="audio/mpeg"></audio>
+<script>
+setTimeout(function(){
+var sound = document.getElementById("player");
+sound.setAttribute('src','https://cdn.jsdelivr.net/gh/kkkidding/custom2@master/audio.ogg');
+},0);
+     setTimeout(function(){
+   if (!$('#player')[0].paused) {
+         $('.speaker').addClass('speakerplay');
+       }
+}, 1200); 
+if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+	$("audio").prop("autoplay", false);
+	$("audio")[0].load();
+};
+</script>
+
+<!-- partial -->
+<div class="main">
+		<div style="" class="loading">
+			<div class="sk-folding-cube">
+				<div class="sk-cube1 sk-cube"></div>
+				<div class="sk-cube2 sk-cube"></div>
+				<div class="sk-cube4 sk-cube"></div>
+				<div class="sk-cube3 sk-cube"></div>
+			</div>
+		</div>
+	
+<div class="main-right">
+	<div class="darkMask"></div>
+			<div id="maincontent">
+					<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>
+					<div class="alert-message error">
+						<h4><%:No password set!%></h4>
+						<p><%:There is no password set on this router. Please configure a root password to protect the web interface and enable SSH.%>
+						</p>
+					</div>
+						<%- end -%>
+							<%- if fuser then %>
+		<div class="alert-message warning">
+			<p><%:Invalid username and/or password! Please try again.%></p>
+		</div>
+	<% end -%>
+						<noscript>
+						<div class="alert-message error">
+							<h4><%:JavaScript required!%></h4>
+							<p><%:You must enable JavaScript in your browser or LuCI will not work properly.%></p>
+						</div>
+					</noscript>
+			<div class="container">
+		
+
+
+<form method="post" action="<%=pcdata(FULL_REQUEST_URI)%>">
+
+
+	<div class="cbi-map">
+		<h2 name="content"><img src="<%=media%>/logo.png" width="200"></h2>
+		<div class="cbi-map-descr">
+			<%:Have a nice day. ✨%>
+		</div>
+		<div class="cbi-section"><div class="cbi-section-node">
+			<div class="cbi-value">
+				<label class="cbi-value-title"><%:Username%></label>
+				<div class="cbi-value-field">
+					<input class="cbi-input-text" type="text" name="luci_username" placeholder="User name" value="<%=duser%>" />
+				</div>
+			</div>
+			<div class="cbi-value cbi-value-last">
+				<label class="cbi-value-title"><%:Password%></label>
+				<div class="cbi-value-field">
+					<input class="cbi-input-text" type="password" placeholder="Password" name="luci_password" />
+				</div>
+			</div>
+		</div></div>
+	</div>
+
+	<div class="cbi-page-actions">
+		<input type="submit" value="<%:Login%>" class="btn cbi-button cbi-button-apply" />
+		<input type="reset" value="<%:Reset%>" class="btn cbi-button cbi-button-reset" />
+	</div>
+</form>
+
+<script>
+ if (!!window.ActiveXObject || "ActiveXObject" in window){
+  $('.chromeframe').show();
+  $('.landscape').hide();
+  $('.main').hide();
+  }
+</script>
+
+			<script type="text/javascript">//<![CDATA[
+				var input = document.getElementsByName('luci_password')[0];
+				if (input)
+					input.focus();
+			//]]></script>
+			<%
+			local uci  = require "luci.model.uci".cursor()
+			local fs  = require "nixio.fs"
+			local https_key = uci:get("uhttpd", "main", "key")
+			local https_port = uci:get("uhttpd", "main", "listen_https")
+			if type(https_port) == "table" then
+				https_port = https_port[1]
+			end
+
+			if https_port and fs.access(https_key) then
+				https_port = https_port:match("(%d+)$")
+			%>
+			<script type="text/javascript">//<![CDATA[
+				if (document.location.protocol != 'https:') {
+					var url = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + window.location.pathname;
+					var img = new Image;
+					img.onload = function () { window.location = url };
+					img.src = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + '<%=resource%>/cbi/up.gif?' + Math.random();;
+					setTimeout(function () {
+						img.src = ''
+					}, 5000);
+				}
+			//]]></script>
+			<% end %>
+
+<%+footer%>
+<%
+luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720/?wallpapers -o /www/luci-static/edge/background/1.jpg) &")
+luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720/?fashion -o /www/luci-static/edge/background/2.jpg) &")
+luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720 -o /www/luci-static/edge/background/3.jpg) &")
+%>
