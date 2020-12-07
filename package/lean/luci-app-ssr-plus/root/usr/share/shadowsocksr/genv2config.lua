@@ -46,15 +46,15 @@ outbound = {
 					{
 						id = server.vmess_id,
 						alterId = (server.type == "v2ray") and tonumber(server.alter_id) or nil,
+						security = (server.type == "v2ray") and server.security or nil,
+						encryption = (server.type == "vless") and server.vless_encryption or nil,
 						flow = (server.xtls == '1') and (server.vless_flow and server.vless_flow or "xtls-rprx-origin") or nil,
-						security = server.security,
-						encryption = server.vless_encryption
 					}
 				}
 			}
 		}
 	},
-	-- 底层传输配置
+-- 底层传输配置
 	streamSettings = {
 		network = server.transport,
 		security = (server.tls == '1') and ((server.xtls == '1') and "xtls" or "tls") or "none",
@@ -64,12 +64,12 @@ outbound = {
 			header = {
 				type = server.tcp_guise,
 				request = {
-					path = server.http_path or "/",
+					path = {server.http_path} or {"/"},
 					headers = {
-						Host = server.http_host or {}
+						Host = {server.http_host} or {}
 					}
-				} or {}
-			} or nil
+				}
+			}
 		} or nil,
 		kcpSettings = (server.transport == "kcp") and {
 			mtu = tonumber(server.mtu),
@@ -91,8 +91,8 @@ outbound = {
 			} or nil,
 		} or nil,
 		httpSettings = (server.transport == "h2") and {
-			path = server.h2_path,
-			host = server.h2_host,
+			path = server.h2_path or "",
+			host = {server.h2_host} or nil
 		} or nil,
 		quicSettings = (server.transport == "quic") and {
 			security = server.quic_security,
@@ -106,14 +106,6 @@ outbound = {
 		enabled = (server.mux == "1") and true or false,
 		concurrency = tonumber(server.concurrency)
 	} or nil
-} or nil,
--- 额外传出连接
-outboundDetour = {
-		{
-			protocol = "freedom",
-			tag = "direct",
-			settings = { keep = "" }
-		}
-	}
+} or nil
 }
-print(json.stringify(Xray, 1))
+print(json.stringify(Xray,1))
