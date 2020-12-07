@@ -58,18 +58,18 @@ outbound = {
 	streamSettings = {
 		network = server.transport,
 		security = (server.tls == '1') and ((server.xtls == '1') and "xtls" or "tls") or "none",
-		tlsSettings = (server.tls == '1') and {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,} or nil,
-		xtlsSettings = (server.xtls == '1') and {allowInsecure = (server.insecure ~= "0") and true or false,serverName=server.tls_host,} or nil,
-		tcpSettings = (server.transport == "tcp") and {
+		tlsSettings = (server.tls == '1' and server.xtls == '0') and {allowInsecure = (server.insecure ~= "0") and true or nil,serverName=server.tls_host,} or nil,
+		xtlsSettings = (server.xtls == '1') and {allowInsecure = (server.insecure ~= "0") and true or nil,serverName=server.tls_host,} or nil,
+		tcpSettings = (server.transport == "tcp" and server.tcp_guise == "http") and {
 			header = {
 				type = server.tcp_guise,
 				request = {
-					path = server.http_path or {"/"},
+					path = server.http_path or "/",
 					headers = {
 						Host = server.http_host or {}
 					}
 				} or {}
-			}
+			} or nil
 		} or nil,
 		kcpSettings = (server.transport == "kcp") and {
 			mtu = tonumber(server.mtu),
@@ -105,7 +105,7 @@ outbound = {
 	mux = (server.xtls ~= "1") and {
 		enabled = (server.mux == "1") and true or false,
 		concurrency = tonumber(server.concurrency)
-	}
+	} or nil
 } or nil,
 -- 额外传出连接
 outboundDetour = {
