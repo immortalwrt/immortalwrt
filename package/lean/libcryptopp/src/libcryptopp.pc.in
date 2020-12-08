@@ -1,6 +1,6 @@
 ## libcryptopp.pc.in - Autotools package configuration file for Crypto++.
 ##                     written and placed in public domain by Jeffrey Walton.
-##                     based on Debian package configuration by László Böszörményi.
+##                     based on Debian package configuration by LÃ¡szlÃ³ BÃ¶szÃ¶rmÃ©nyi.
 ##
 
 ## libdir=@libdir@ is not working as expected for Fedora, Solaris,
