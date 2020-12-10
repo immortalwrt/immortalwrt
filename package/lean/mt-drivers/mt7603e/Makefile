@@ -39,6 +39,7 @@ define KernelPackage/mt7603e
   DEPENDS:=@TARGET_ramips
   FILES:=$(PKG_BUILD_DIR)/mt7603_wifi_ap/mt7603e.ko
   SUBMENU:=Wireless Drivers
+  AUTOLOAD:=$(call AutoLoad,91,mt7603e)
   MENU:=1
 endef
 

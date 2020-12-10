@@ -27,6 +27,7 @@ define KernelPackage/mt76x2e
   DEPENDS:=@TARGET_ramips
   FILES:=$(PKG_BUILD_DIR)/mt76x2_ap/mt76x2_ap.ko
   SUBMENU:=Wireless Drivers
+  AUTOLOAD:=$(call AutoLoad,90,mt76x2_ap)
   MENU:=1
 endef
 
