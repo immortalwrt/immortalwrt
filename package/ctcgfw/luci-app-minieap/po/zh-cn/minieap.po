@@ -1,0 +1,227 @@
+msgid "minieap Settings"
+msgstr "minieap 设置"
+
+msgid "minieap LOG"
+msgstr "minieap 日志"
+
+msgid "Log file:/var/log/minieap.log"
+msgstr "日志文件: /var/log/minieap.log"
+
+msgid "RUNNING"
+msgstr "运行中"
+
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+msgid "Pinghost not set"
+msgstr "没有设置Ping主机"
+
+msgid "ONLINE"
+msgstr "能访问互联网"
+
+msgid "NOT ONLINE"
+msgstr "不能访问互联网"
+
+msgid "Configure minieap 802.11x."
+msgstr "配置minieap 802.11x验证。"
+
+msgid "Network Status"
+msgstr "网络状态"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Normal Settings"
+msgstr "常规设置"
+
+msgid "Plugins List"
+msgstr "插件列表"
+
+msgid "Ruijie EAP Settings"
+msgstr "锐捷认证设置"
+
+msgid "The username given to you by your network administrator"
+msgstr "您的用户名(或管理员分配的用户名)"
+
+msgid "The password you set or given to you by your network administrator"
+msgstr "您的密码(或管理员分配的密码)"
+
+msgid "Physical interface of WAN"
+msgstr "WAN口的物理接口"
+
+msgid "PingHost"
+msgstr "Ping主机"
+
+msgid "Ping host for drop detection, 0.0.0.0 to turn off this feature."
+msgstr "Ping主机，用于掉线检测，0.0.0.0表示关闭该功能"
+
+msgid "Packets flow through these plug-ins in sequence. Pay attention to the order in the environment where the package plug-in is modified"
+msgstr "数据包会按顺序流经这些插件。在有修改数据包插件的环境中请注意顺序"
+
+msgid "printer: Print length of packets"
+msgstr "printer：打印流入流出数据包的大小"
+
+msgid "rjv3: Ruijie 802.11X. Support V3 verification algorithm"
+msgstr "rjv3：锐捷认证，支持V3算法"
+
+msgid "Heartbeat interval"
+msgstr "心跳间隔"
+
+msgid "Interval for sending Heartbeat packets (seconds) [Default: 60]"
+msgstr "发送心跳包的间隔（秒）[默认：60]"
+
+msgid "Broadcast address"
+msgstr "广播地址类型"
+
+msgid "Broadcast address type when searching for servers [Default: Standard]"
+msgstr "寻找服务器时的广播地址类型 [默认：标准]"
+
+msgid "Standard"
+msgstr "标准"
+
+msgid "Ruijie private"
+msgstr "锐捷私有"
+
+msgid "DhcpMode"
+msgstr "DHCP方式"
+
+msgid "DHCP method [Default: After certification]"
+msgstr "DHCP方式 [默认：认证后]"
+
+msgid "None"
+msgstr "无"
+
+msgid "Secondary authentication"
+msgstr "二次认证"
+
+msgid "Before certification"
+msgstr "认证前"
+
+msgid "After certification"
+msgstr "认证后"
+
+msgid "DhcpScript"
+msgstr "DHCP脚本"
+
+msgid "DHCP script [Default: None]"
+msgstr "DHCP脚本 [默认：无]"
+
+msgid "Service"
+msgstr "服务"
+
+msgid "Service From Ruijie Server [Default: internet]"
+msgstr "锐捷认证服务器上配置的用户服务"
+
+msgid "Version String"
+msgstr "版本信息"
+
+msgid "Custom version [Default: RG-SU For Linux V1.0]"
+msgstr "自定义版本信息 [默认：RG-SU For Linux V1.0]"
+
+msgid "Main DNS server"
+msgstr "主DNS服务器"
+
+msgid "Custom main DNS server [Default: FromSystem]"
+msgstr "自定义主DNS服务器 [默认：自动获取]"
+
+msgid "Second DNS server"
+msgstr "从DNS服务器"
+
+msgid "Custom second DNS server [Default: FromSystem]"
+msgstr "自定义从DNS服务器 [默认：自动获取]"
+
+msgid "Disk serial"
+msgstr "磁盘序列号"
+
+msgid "Custom disk serial [Default: From /etc/mtab]"
+msgstr "自定义磁盘序列号 [默认：自动获取]"
+
+msgid "DHCP try times"
+msgstr "DHCP尝试次数"
+
+msgid "DHCP try times [Default: 3]"
+msgstr "二次认证的DHCP尝试次数 [默认：3]"
+
+msgid "Custom EAP Options"
+msgstr "自定义EAP字段"
+
+msgid "Format &lt;type&gt;:&lt;value&gt;[:r]. Add a option type: &lt;type&gt;, value: &lt;value&gt;. :r for replace"
+msgstr "格式： &lt;type&gt;:&lt;value&gt;[:r]。 不带r为增加字段，带r为替换字段"
+
+msgid "Configfile encoding"
+msgstr "配置文件编码"
+
+msgid "Auth Timeout"
+msgstr "认证超时"
+
+msgid "802.11X auth timeout (in second). [default: 5]"
+msgstr "单个认证阶段的超时时间 [默认：5]"
+
+msgid "Wait after failed"
+msgstr "认证失败等待"
+
+msgid "Wait time between failed and next time (in second). [default: 30]"
+msgstr "认证失败后重新认证前的等待时间[默认：30]"
+
+msgid "Max fail"
+msgstr "最大失败次数"
+
+msgid "Maximum allowed number of failures. [default: 3]"
+msgstr "最大允许认证失败次数 [默认：3]"
+
+msgid "Disable auto reauth"
+msgstr "禁止自动重连"
+
+msgid "Disable auto reauth after offline. [default: True]"
+msgstr "认证掉线后不允许自动重连 [默认：是]"
+
+msgid "False"
+msgstr "否"
+
+msgid "True"
+msgstr "是"
+
+msgid "Daemon mode"
+msgstr "运行模式"
+
+msgid "Proxy LAN's name"
+msgstr "代理LAN口名称"
+
+msgid "Name of LAN interface when use proxy auth. [default: None]"
+msgstr "代理认证时的 LAN 网络界面名 [默认：无]"
+
+msgid "Auth times"
+msgstr "认证次数"
+
+msgid "Number of times required for auth. [default: 1]"
+msgstr "需要认证的次数 [默认：1]"
+
+msgid "Max timeout"
+msgstr "最大超时重试"
+
+msgid "Maximum retry time after timeout. [default: 3]"
+msgstr "最大超时重试的次数 [默认：3]"
+
+msgid "PID file"
+msgstr "PID文件"
+
+msgid "Path of PID file. (Set 'None' to disable) [default: /var/run/minieap.pid]"
+msgstr "PID 文件路径，设为none可禁用 [默认：/var/run/minieap.pid]"
+
+msgid "Network Module"
+msgstr "网络操作模块"
+
+msgid "Network module for send and recv packages (openwrt support sockraw only)"
+msgstr "选择此网络操作模块（openwrt只支持sockraw）"
+
+msgid "Ping intval"
+msgstr "Ping间隔"
+
+msgid "Interval of each ping. (in second) [default: 30]"
+msgstr "Ping Ping主机的间隔（秒） [默认：30]"
+
+msgid "Offline command"
+msgstr "掉线执行命令"
+
+msgid "Run Command when ping failed. [default: minieap -k 1]"
+msgstr "Ping 检测到掉线后执行的命令 [默认： minieap -k 1]"

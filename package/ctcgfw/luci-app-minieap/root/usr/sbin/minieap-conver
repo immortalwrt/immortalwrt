@@ -1,0 +1,13 @@
+#!/bin/sh
+
+default_config='''daemonize=3
+'''
+
+echo $default_config
+config_keys=$(uci show minieap | cut -d "." -f3- | awk -F "=" '{if ($0 != "") print $1}')
+for key in $config_keys
+do
+    if [[ "$key" != "pinghost" ]] && [[ "$key" != "pingintval" ]]; then
+        echo ${key//_/-}=$(uci get minieap.@minieap[0].$key)
+    fi
+done
