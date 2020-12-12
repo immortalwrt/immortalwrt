@@ -630,8 +630,8 @@ msgstr "台湾视频服务代理"
 msgid "Netflix Proxy"
 msgstr "Netflix 代理"
 
-msgid "Diseny+ Proxy"
-msgstr "Diseny+ 代理"
+msgid "Disney+ Proxy"
+msgstr "Disney+ 代理"
 
 msgid "Prime Video Proxy"
 msgstr "Prime Video 代理"
@@ -674,3 +674,30 @@ msgstr "VLESS 加密"
 
 msgid "You can manually add group names in front of the URL, splited by ,"
 msgstr "你可以在URL前面手动添加组名，使用 , 分隔"
+
+msgid "Router Config"
+msgstr "分流设置"
+
+msgid "Router domain config"
+msgstr "分流域名设置"
+
+msgid "Youtube Domain"
+msgstr "YouTube 域名"
+
+msgid "Tw Video Domain"
+msgstr "台湾视频域名"
+
+msgid "Netflix Domain"
+msgstr "Netflix 域名"
+
+msgid "Disney+ Domain"
+msgstr "Disney+ 域名"
+
+msgid "Prime Video Domain"
+msgstr "Prime Video 域名"
+
+msgid "TVB Domain"
+msgstr "TVB 域名"
+
+msgid "Custom Domain"
+msgstr "自定义域名"
