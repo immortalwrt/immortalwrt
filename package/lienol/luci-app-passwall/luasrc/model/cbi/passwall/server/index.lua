@@ -57,6 +57,10 @@ end
 
 e = t:option(DummyValue, "port", translate("Port"))
 
+e = t:option(Flag, "log", translate("Enable") .. translate("Log"))
+e.default = "1"
+e.rmempty = false
+
 m:append(Template("passwall/server/log"))
 
 m:append(Template("passwall/server/users_list_status"))

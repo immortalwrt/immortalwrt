@@ -1,11 +1,24 @@
+local api = require "luci.model.cbi.passwall.api.api"
 local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
-local node_section = arg[1]
-local run_type = arg[2]
-local local_addr = arg[3]
-local local_port = arg[4]
-local server_host = arg[5]
-local server_port = arg[6]
+
+local myarg = {
+    "-node", "-run_type", "-local_addr", "-local_port", "-server_host", "-server_port", "-loglevel"
+}
+
+local var = api.get_args(arg, myarg)
+
+local node_section = var["-node"]
+if not node_section then
+    print("-node 不能为空")
+    return
+end
+local run_type = var["-run_type"]
+local local_addr = var["-local_addr"]
+local local_port = var["-local_port"]
+local server_host = var["-server_host"]
+local server_port = var["-server_port"]
+local loglevel = var["-loglevel"] or 2
 local node = ucursor:get_all("passwall", node_section)
 
 local cipher = "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA"
@@ -17,7 +30,7 @@ local trojan = {
     remote_addr = server_host or node.address,
     remote_port = tonumber(server_port) or tonumber(node.port),
     password = {node.password},
-    log_level = 1,
+    log_level = tonumber(loglevel),
     ssl = {
         verify = (node.tls_allowInsecure ~= "1") and true or false,
         verify_hostname = true,
