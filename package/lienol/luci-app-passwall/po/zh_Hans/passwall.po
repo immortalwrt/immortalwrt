@@ -1132,6 +1132,15 @@ msgstr "用户管理"
 msgid "Logs"
 msgstr "日志"
 
+msgid "Log"
+msgstr "日志"
+
+msgid "Log Level"
+msgstr "日志等级"
+
+msgid "Not enabled log"
+msgstr "未启用日志"
+
 msgid "UDP Forward"
 msgstr "UDP转发"
 

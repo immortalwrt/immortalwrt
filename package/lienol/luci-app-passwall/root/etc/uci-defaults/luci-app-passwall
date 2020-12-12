@@ -26,24 +26,10 @@ uci -q batch <<-EOF >/dev/null
 EOF
 
 tmp=$(uci -q get passwall.@global_app[0].xray_file)
-if [ -z "$tmp" ]; then
-	uci set passwall.@global_app[0].xray_file="/usr/bin/xray"
-else
-	[ -n "$(echo $tmp | grep -E "^.*/xray/$")" ] && {
-		uci set passwall.@global_app[0].xray_file="${tmp%?}"
-	}
-fi
+[ -z "$tmp" ] && uci set passwall.@global_app[0].xray_file="/usr/bin/xray"
 tmp=$(uci -q get passwall.@global_app[0].v2ray_file)
-if [ -z "$tmp" ]; then
-	uci set passwall.@global_app[0].v2ray_file="/usr/bin/v2ray"
-else
-	[ -n "$(echo $tmp | grep -E "^.*/v2ray/$")" ] && {
-		uci set passwall.@global_app[0].v2ray_file="${tmp%?}"
-	}
-fi
+[ -z "$tmp" ] && uci set passwall.@global_app[0].v2ray_file="/usr/bin/v2ray"
 uci commit passwall
 
-/etc/init.d/https-dns-proxy stop >/dev/null 2>&1 &
-/etc/init.d/https-dns-proxy disable >/dev/null 2>&1 &
 rm -rf /tmp/luci-*cache
 exit 0
