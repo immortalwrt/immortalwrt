@@ -9,7 +9,7 @@ function gen_config(user)
         remote_addr = (user.remote_enable == "1" and user.remote_address) and user.remote_address or nil,
         remote_port = (user.remote_enable == "1" and user.remote_port) and tonumber(user.remote_port) or nil,
         password = user.uuid,
-        log_level = 1,
+        log_level = (user.log and user.log == "1") and tonumber(user.loglevel) or 5,
         ssl = {
             cert = user.tls_certificateFile,
             key = user.tls_keyFile,

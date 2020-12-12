@@ -594,4 +594,34 @@ transit_node.default = "nil"
 transit_node:depends("type", "Xray")
 transit_node:depends("type", "V2ray")
 
+log = s:option(Flag, "log", translate("Enable") .. translate("Log"))
+log.default = "1"
+log.rmempty = false
+
+loglevel = s:option(ListValue, "loglevel", translate("Log Level"))
+loglevel.default = "warning"
+loglevel:value("debug")
+loglevel:value("info")
+loglevel:value("warning")
+loglevel:value("error")
+loglevel:depends({ type = "Xray", log = true })
+loglevel:depends({ type = "V2ray", log = true })
+
+trojan_loglevel = s:option(ListValue, "trojan_loglevel", translate("Log Level"))
+trojan_loglevel.default = "2"
+trojan_loglevel:value("0", "all")
+trojan_loglevel:value("1", "info")
+trojan_loglevel:value("2", "warn")
+trojan_loglevel:value("3", "error")
+trojan_loglevel:value("4", "fatal")
+function trojan_loglevel.cfgvalue(self, section)
+	return m:get(section, "loglevel")
+end
+function trojan_loglevel.write(self, section, value)
+	m:set(section, "loglevel", value)
+end
+trojan_loglevel:depends({ type = "Trojan", log = true })
+trojan_loglevel:depends({ type = "Trojan-Plus", log = true })
+trojan_loglevel:depends({ type = "Trojan-Go", log = true })
+
 return m

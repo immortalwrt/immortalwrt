@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=4
-PKG_RELEASE:=1
-PKG_DATE:=20201204
+PKG_RELEASE:=3
+PKG_DATE:=20201211
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -16,15 +16,15 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)/config
 menu "Configuration"
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
 	bool "Include Shadowsocks"
 	default y
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server
 	bool "Include Shadowsocks Server"
 	default y
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR
 	bool "Include ShadowsocksR"
 	default y
@@ -32,7 +32,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
 	bool "Include ShadowsocksR Server"
 	default y
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_Xray
 	bool "Include Xray"
 	default y if i386||x86_64||arm||aarch64
@@ -44,11 +44,11 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
 config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Plus
 	bool "Include Trojan_Plus"
 	default y
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_GO
 	bool "Include Trojan_GO"
 	default y if i386||x86_64||arm||aarch64
-	
+
 config PACKAGE_$(PKG_NAME)_INCLUDE_Brook
 	bool "Include Brook"
 	default n
@@ -132,6 +132,8 @@ endef
 define Package/$(PKG_NAME)/conffiles
 /etc/config/passwall
 /etc/config/passwall_server
+/usr/share/passwall/rules/direct_host
+/usr/share/passwall/rules/direct_ip
 /usr/share/passwall/rules/proxy_host
 /usr/share/passwall/rules/proxy_ip
 /usr/share/passwall/rules/proxy_host2

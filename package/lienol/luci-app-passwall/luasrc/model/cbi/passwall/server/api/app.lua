@@ -24,10 +24,13 @@ local function cmd(cmd)
     sys.call(cmd)
 end
 
-local function ln_start(s, d, command)
+local function ln_start(s, d, command, output)
+    if not output then
+        output = "/dev/null"
+    end
     d = TMP_BIN_PATH .. "/" .. d
     cmd(string.format('[ ! -f "%s" ] && ln -s %s %s 2>/dev/null', d, s, d))
-    return string.format("%s >/dev/null 2>&1 &", d .. " " ..command)
+    return string.format("%s >%s 2>&1 &", d .. " " ..command, output)
 end
 
 local function gen_include()
@@ -61,6 +64,13 @@ local function start()
         local id = user[".name"]
         local enable = user.enable
         if enable and tonumber(enable) == 1 then
+            local enable_log = user.log
+            local log_path = nil
+            if enable_log and enable_log == "1" then
+                log_path = CONFIG_PATH .. "/" .. id .. ".log"
+            else
+                log_path = nil
+            end
             local remarks = user.remarks
             local port = tonumber(user.port)
             local bin
@@ -79,7 +89,7 @@ local function start()
                         auth = username .. " " .. password
                     end
                 end
-                bin = ln_start("/usr/bin/microsocks", "microsocks_" .. id, string.format("-i :: -p %s %s", port, auth))
+                bin = ln_start("/usr/bin/microsocks", "microsocks_" .. id, string.format("-i :: -p %s %s", port, auth), log_path)
             elseif type == "SS" or type == "SSR" then
                 config = require("luci.model.cbi.passwall.server.api.shadowsocks").gen_config(user)
                 local udp_param = ""
@@ -88,26 +98,26 @@ local function start()
                     udp_param = "-u"
                 end
                 type = type:lower()
-                bin = ln_start("/usr/bin/" .. type .. "-server", type .. "-server", "-c " .. config_file .. " " .. udp_param)
+                bin = ln_start("/usr/bin/" .. type .. "-server", type .. "-server", "-c " .. config_file .. " " .. udp_param, log_path)
             elseif type == "Xray" then
                 config = require("luci.model.cbi.passwall.server.api.xray").gen_config(user)
-                bin = ln_start(_api.get_xray_path(), "xray", "-config=" .. config_file)
+                bin = ln_start(_api.get_xray_path(), "xray", "-config=" .. config_file, log_path)
             elseif type == "V2ray" then
                 config = require("luci.model.cbi.passwall.server.api.v2ray").gen_config(user)
-                bin = ln_start(_api.get_v2ray_path(), "v2ray", "-config=" .. config_file)
+                bin = ln_start(_api.get_v2ray_path(), "v2ray", "-config=" .. config_file, log_path)
             elseif type == "Trojan" then
                 config = require("luci.model.cbi.passwall.server.api.trojan").gen_config(user)
-                bin = ln_start("/usr/sbin/trojan", "trojan", "-c " .. config_file)
+                bin = ln_start("/usr/sbin/trojan", "trojan", "-c " .. config_file, log_path)
             elseif type == "Trojan-Plus" then
                 config = require("luci.model.cbi.passwall.server.api.trojan").gen_config(user)
-                bin = ln_start("/usr/sbin/trojan-plus", "trojan-plus", "-c " .. config_file)
+                bin = ln_start("/usr/sbin/trojan-plus", "trojan-plus", "-c " .. config_file, log_path)
             elseif type == "Trojan-Go" then
                 config = require("luci.model.cbi.passwall.server.api.trojan").gen_config(user)
-                bin = ln_start(_api.get_trojan_go_path(), "trojan-go", "-config " .. config_file)
+                bin = ln_start(_api.get_trojan_go_path(), "trojan-go", "-config " .. config_file, log_path)
             elseif type == "Brook" then
                 local brook_protocol = user.protocol
                 local brook_password = user.password
-                bin = ln_start(_api.get_brook_path(), "brook_" .. id, string.format("%s -l :%s -p %s", brook_protocol, port, brook_password))
+                bin = ln_start(_api.get_brook_path(), "brook_" .. id, string.format("%s -l :%s -p %s", brook_protocol, port, brook_password), log_path)
             end
 
             if next(config) then
