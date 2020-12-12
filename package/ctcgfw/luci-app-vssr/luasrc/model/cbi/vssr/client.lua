@@ -6,7 +6,7 @@ local vssr = 'vssr'
 local gfwmode = 0
 
 
-if nixio.fs.access('/etc/dnsmasq.ssr/gfw_list.conf') then
+if nixio.fs.access('/etc/vssr/gfw_list.conf') then 
     gfwmode = 1
 end
 
@@ -26,9 +26,12 @@ uci:foreach(
     'vssr',
     'servers',
     function(s)
-        s['name'] = s['.name']
-        s['gname'] = '[%s]:%s' % {string.upper(s.type), s.alias}
-        table.insert(server_table, s)
+        if s.type ~= nil then
+            s['name'] = s['.name']
+            local alias = (s.alias ~= nil) and s.alias or "未命名节点"
+            s['gname'] = '[%s]:%s' % {string.upper(s.type), alias}
+            table.insert(server_table, s)
+        end
     end
 )
 function my_sort(a,b)
@@ -52,7 +55,7 @@ local route_label = {
     'Youtube Proxy',
     'TaiWan Video Proxy',
     'Netflix Proxy',
-    'Diseny+ Proxy',
+    'Disney+ Proxy',
     'Prime Video Proxy',
     'TVB Video Proxy',
     'Custom Proxy'
@@ -119,7 +122,6 @@ o:value('router', translate('IP Route Mode'))
 o:value('all', translate('Global Mode'))
 o:value('oversea', translate('Oversea Mode'))
 o.default = 'router'
-
 o = s:option(ListValue, 'dports', translate('Proxy Ports'))
 o:value('1', translate('All Ports'))
 o:value('2', translate('Only Common Ports'))

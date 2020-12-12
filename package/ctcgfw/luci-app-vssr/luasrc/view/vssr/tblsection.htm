@@ -1,7 +1,6 @@
 <script type="text/javascript" src="/luci-static/vssr/emoji.js?v=1.16"></script>
 <script type="text/javascript" src="/luci-static/vssr/sweetalert.js?v=1.16"></script>
 <script type="text/javascript" src="/luci-static/vssr/polyfill.js?v=1.16"></script>
-
 <!-- tblsection -->
 <fieldset class="cbi-section" id="cbi-<%=self.config%>-<%=self.sectiontype%>">
     <button class="cbi-button  cbi-button-check "><%:Ping All Servers%></button><span class="panel-title">总计
@@ -39,10 +38,9 @@
                            %> onclick="location.href='<%=self:extedit(section.name)%>'" <%- end
                            %> alt="<%:Edit%>" title="<%:Edit%>"><span class="icon-edit"></span> <%:Edit%></a>
                         <%- end; if self.addremove then %>
-                        <button class="cbi-button  ssr-button" type="submit" value=""
-                            onclick="this.form.cbi_state = 'del-section'; return true"
-                            name="cbi.rts.<%=self.config%>.<%=section.name%>" alt="<%:Delete%>" title="<%:Delete%>" /><span
-                            class="icon-delete"></span> <%:Delete%></button>
+                        <a class="cbi-button  ssr-button" type="button" value="" onclick="delete_node('<%=section.name%>')"
+                            alt="<%:Delete%>" title="<%:Delete%>" /><span
+                            class="icon-delete"></span> <%:Delete%></a>
                         <%- end -%>
                     </div>
                     <%- end -%>
@@ -93,6 +91,7 @@
     const CONFIG = '<%=self.config%>';
     const CURRENT = '<%=self.current%>';
     const CHANGE_NODE_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","change")%>';
+    const DELETE_NODE_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","delnode")%>';
     const CHECK_PING_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","checkport")%>';
     const SWITCH_NODE_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","switch")%>';
 
@@ -165,6 +164,21 @@
                 })
             }
         })
+    }
+    
+    //删除节点
+    function delete_node(node){
+        XHR.halt();
+        $.each(ajaxArray, function (n, value) { value.abort(); }) //中断所有的ajax请求
+        $.get(DELETE_NODE_URL, { node: node },
+            function (data, status) {
+                if (data.status) {
+                    var id = '#cbi-<%=self.config%>-' + node;
+                    $(id).parent().remove();
+                    XHR.run();
+                    check()
+                }
+            });
     }
 
     //设定自动切换
