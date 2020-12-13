@@ -1,16 +1,23 @@
+local api = require "luci.model.cbi.passwall.api.api"
 local json = require "luci.jsonc"
 local inbounds = {}
 local outbounds = {}
 local routing = nil
 
-local local_proto = arg[1]
-local local_address = arg[2]
-local local_port = arg[3]
-local server_proto = arg[4]
-local server_address = arg[5]
-local server_port = arg[6]
-local server_username = arg[7] or "nil"
-local server_password = arg[8] or "nil"
+local myarg = {
+    "-local_proto", "-local_address", "-local_port", "-server_proto", "-server_address", "-server_port", "-server_username", "-server_password"
+}
+
+local var = api.get_args(arg, myarg)
+
+local local_proto = var["-local_proto"]
+local local_address = var["-local_address"]
+local local_port = var["-local_port"]
+local server_proto = var["-server_proto"]
+local server_address = var["-server_address"]
+local server_port = var["-server_port"]
+local server_username = var["-server_username"]
+local server_password = var["-server_password"]
 
 function gen_outbound(proto, address, port, username, password)
     local result = {
@@ -24,7 +31,7 @@ function gen_outbound(proto, address, port, username, password)
                 {
                     address = address,
                     port = tonumber(port),
-                    users = (username ~= "nil" and password ~= "nil") and {
+                    users = (username and password) and {
                         {
                             user = username,
                             pass = password

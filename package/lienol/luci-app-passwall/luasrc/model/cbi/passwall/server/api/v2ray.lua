@@ -97,7 +97,7 @@ function gen_config(user)
     local config = {
         log = {
             -- error = "/var/etc/passwall_server/log/" .. user[".name"] .. ".log",
-            loglevel = "warning"
+            loglevel = (user.log and user.log == "1") and user.loglevel or "none"
         },
         -- 传入连接
         inbounds = {

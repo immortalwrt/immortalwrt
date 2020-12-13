@@ -6,6 +6,29 @@ local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
 -%>
 <script type="text/javascript">
 	//<![CDATA[
+	function get_redir_log(proto, index) {
+		if (proto && index) {
+			proto = proto.toUpperCase();
+			XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[get_redir_log]])%>', {
+					proto: proto,
+					index: index
+				},
+				function(x, result) {
+					if (x && x.status == 200) {
+						if (result.code == 200) {
+							var content = result.data;
+							content = content.replace(/\n/g, "<br />");
+							var new_window = window.open();
+							new_window.document.write(content);
+						} else {
+							alert('<%:Not enabled log%>');
+						}
+					}
+				}
+			);
+		}
+	}
+	
 	var _status = document.getElementsByClassName('_status');
 	for (var i = 0; i < _status.length; i++) {
 		var id = _status[i].getAttribute("socks_id");
@@ -36,36 +59,86 @@ local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
 		);
 	}
 	
+	var global_id = null;
 	var global = document.getElementById("cbi-passwall-global");
 	if (global) {
 		var node = global.getElementsByClassName("cbi-section-node")[0];
 		var node_id = node.getAttribute("id");
+		global_id = node_id;
 		
 		for (var i = 0; i <= 1; i++) {
 			var proto = "udp";
 			var num = <%=udp_node_num%>;
 			if (i == 0) {
-				if (<%=auto_switch%> > 0) {
-					continue;
-				}
 				proto = "tcp";
 				num = <%=tcp_node_num%>;
 			}
 			if (num >= 1) {
 				for (var j = 0; j < num; j++) {
 					var index = j + 1;
-					var node = document.getElementById(node_id + "-" + proto + "_node" + index);
-					var node_select = document.getElementById(node.id.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), "."));
+					var dom_id = node_id + "-" + proto + "_node" + index;
+					dom_id = dom_id.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), ".");
+					var node_select = document.getElementById(dom_id);
 					var node_select_value = node_select.value;
 					if (node_select_value && node_select_value != "nil") {
-						var new_a = document.createElement("a");
-						new_a.setAttribute("href","node_config/" + node_select_value);
-						new_a.innerHTML = "<%:Edit Current Node%>";
+						var v = document.getElementById(dom_id + "-" + node_select_value);
+						node_select.title = v.text;
 						
-						node_select.outerHTML = node_select.outerHTML + "&nbsp&nbsp" + new_a.outerHTML;
+						var edit_btn = document.createElement("input");
+						edit_btn.setAttribute("class", "cbi-button cbi-button-edit");
+						edit_btn.setAttribute("type", "button");
+						edit_btn.setAttribute("value", "<%:Edit%>");
+						edit_btn.setAttribute("onclick", "location.href='" + '<%=url([[admin]], [[services]], [[passwall]], [[node_config]])%>' + "/" + node_select_value + "'");
+						
+						var log_btn = document.createElement("input");
+						log_btn.setAttribute("class", "cbi-button cbi-button-add");
+						log_btn.setAttribute("type", "button");
+						log_btn.setAttribute("value", "<%:Log%>");
+						log_btn.setAttribute("onclick", 'get_redir_log("' + proto + '","' + index + '")');
+						
+						node_select.outerHTML = node_select.outerHTML + "&nbsp&nbsp" + edit_btn.outerHTML + log_btn.outerHTML;
 						//node_select.parentNode.insertBefore(new_a, node_select.nextSibling);
 					}
 				}
+			}
+		}
+	}
+	
+	var socks = document.getElementById("cbi-passwall-socks");
+	if (socks) {
+		rows = socks.getElementsByClassName("cbi-section-table-row");
+		for (var i = 0; i < rows.length; i++) {
+			var row = rows[i];
+			var id = row.id;
+			var dom_id = id + "-node";
+			var node = document.getElementById(dom_id);
+			var dom_id = dom_id.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), ".");
+			var node_select = document.getElementById(dom_id);
+			var node_select_value = node_select.value;
+			if (node_select_value && node_select_value != "nil") {
+				if (global_id != null && node_select_value.indexOf("tcp") == 0) {
+					var num = node_select_value.replace("tcp", "");
+					var d = global_id + "-tcp_node" + index;
+					d = d.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), ".");
+					var dom = document.getElementById(d);
+					var _node_select_value = dom.value;
+					if (_node_select_value && _node_select_value != "nil") {
+						node_select_value = _node_select_value;
+					}
+				}
+				var v = document.getElementById(dom_id + "-" + node_select_value);
+				node_select.title = v.text;
+				
+				var new_input = document.createElement("input");
+				new_input.setAttribute("class", "cbi-button cbi-button-edit");
+				new_input.setAttribute("type", "button");
+				new_input.setAttribute("value", "<%:Edit%>");
+				new_input.setAttribute("alt", "<%:Edit%>");
+				new_input.setAttribute("title", "<%:Edit%>");
+				new_input.setAttribute("onclick","location.href='" + '<%=url([[admin]], [[services]], [[passwall]], [[node_config]])%>' + "/" + node_select_value + "'");
+				
+				node_select.outerHTML = node_select.outerHTML + "&nbsp&nbsp" + new_input.outerHTML;
+				//node_select.parentNode.insertBefore(new_input, node_select.nextSibling);
 			}
 		}
 	}

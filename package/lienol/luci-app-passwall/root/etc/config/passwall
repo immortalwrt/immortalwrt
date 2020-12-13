@@ -13,6 +13,10 @@ config global
 	option localhost_tcp_proxy_mode 'gfwlist'
 	option localhost_udp_proxy_mode 'gfwlist'
 	option socks_server '0.0.0.0:1080'
+	option close_log_tcp_1 '1'
+	option close_log_udp_1 '1'
+	option loglevel 'warning'
+	option trojan_loglevel '2'
 
 config global_haproxy
 	option balancing_enable '0'
@@ -48,8 +52,8 @@ config global_rules
 	option chnroute6_url 'https://ispip.clang.cn/all_cn_ipv6.txt'
 
 config global_app
-	option xray_file '/usr/bin/xray/'
-	option v2ray_file '/usr/bin/v2ray/'
+	option xray_file '/usr/bin/xray'
+	option v2ray_file '/usr/bin/v2ray'
 	option trojan_go_file '/usr/bin/trojan-go'
 	option kcptun_client_file '/usr/bin/kcptun-client'
 	option brook_file '/usr/bin/brook'

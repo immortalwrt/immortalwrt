@@ -216,7 +216,7 @@ local get_parted_info = function(device)
       table.insert(partitions_temp, partition_temp)
     end
   end
-  if disk_temp["p_table"] == "MBR" then
+  if disk_temp and disk_temp["p_table"] == "MBR" then
     for i, p in ipairs(partitions_temp) do
       if disk_temp["extended_partition_index"] and p["number"] > 4 then
         if tonumber(p["sec_end"]) <= tonumber(partitions_temp[disk_temp["extended_partition_index"]]["sec_end"]) and tonumber(p["sec_start"]) >= tonumber(partitions_temp[disk_temp["extended_partition_index"]]["sec_start"]) then
