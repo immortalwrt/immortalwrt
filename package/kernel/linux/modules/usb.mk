@@ -1105,7 +1105,7 @@ endef
 
 
 define KernelPackage/usb-net-aqc111
-  TITLE:=Kernel module for Aquantia AQtion USB to 5/2.5GbE Controllers
+  TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
   DEPENDS:=+kmod-libphy
   KCONFIG:=CONFIG_USB_NET_AQC111
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/aqc111.ko
@@ -1114,8 +1114,7 @@ define KernelPackage/usb-net-aqc111
 endef
 
 define KernelPackage/usb-net-aqc111/description
- Kernel module for Aquantia AQtion USB Ethernet adapters
- based on AQC111U/AQC112 chips.
+ Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
 endef
 
 $(eval $(call KernelPackage,usb-net-aqc111))
