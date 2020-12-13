@@ -82,7 +82,7 @@ define Device/comtrend_vr-3032u
 endef
 TARGET_DEVICES += comtrend_vr-3032u
 
-### Huawei ###
+### Huawei ###
 define Device/huawei_hg253s-v2
   $(Device/bcm63xx-nand)
   IMAGES := flash.bin sysupgrade.bin
