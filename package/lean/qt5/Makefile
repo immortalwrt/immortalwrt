@@ -17,7 +17,7 @@ PKG_NAME:=qt5
 PKG_VERSION:=$(QT5_VERSION_MAJOR_MINOR)$(if $(QT5_VERSION_PATCH),.$(QT5_VERSION_PATCH))
 PKG_RELEASE:=2
 
-PKG_SOURCE:=qt-everywhere-src-$(PKG_VERSION).$(PKG_RELEASE).tar.xz
+PKG_SOURCE:=qt-everywhere-src-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/qt/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
 		https://mirrors.tuna.tsinghua.edu.cn/qt/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
 		https://mirrors.ustc.edu.cn/qtproject/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
