@@ -3,6 +3,6 @@
 #include "qca9558_belkin_f9x-v2.dtsi"
 
 / {
-	model = "Belkin F9J1108 v2 (AC1750 DB Wi-Fi)";
-	compatible = "belkin,f9j1108-v2", "qca,qca9558";
+	model = "Belkin F9K1115 v2 (AC 1750 DB)";
+	compatible = "belkin,f9k1115-v2", "qca,qca9558";
 };
