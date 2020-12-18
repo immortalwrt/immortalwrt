@@ -19,8 +19,8 @@ DEFAULT_PACKAGES += \
 	kmod-leds-gpio kmod-gpio-button-hotplug swconfig \
 	kmod-ath10k wpad-openssl \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019 \
-	autocore-arm automount autosamba shadowsocks-libev-ss-redir \
-	shadowsocksr-libev-server luci-app-cpufreq luci-app-ipsec-vpnd \
-	luci-app-unblockmusic luci-app-zerotier htop ethtool
+	autocore-arm automount autosamba shadowsocksr-libev-server \
+	luci-app-ipsec-vpnd luci-app-zerotier openssh-sftp-server \
+	e2fsprogs ethtool htop
 
 $(eval $(call BuildTarget))
