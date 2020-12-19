@@ -712,7 +712,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		 * then check once more to make sure we are done.
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1028,7 +1028,7 @@ restart_poll:
+@@ -1034,7 +1034,7 @@ restart_poll:
  
  	if (frames_processed < budget) {
  		enable_scrq_irq(adapter, adapter->rx_scrq[scrq_num]);
@@ -949,7 +949,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/ethernet/pasemi/pasemi_mac.c
 +++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
-@@ -1575,7 +1575,7 @@ static int pasemi_mac_poll(struct napi_s
+@@ -1579,7 +1579,7 @@ static int pasemi_mac_poll(struct napi_s
  	pkts = pasemi_mac_clean_rx(rx_ring(mac), budget);
  	if (pkts < budget) {
  		/* all done, no more packets present */

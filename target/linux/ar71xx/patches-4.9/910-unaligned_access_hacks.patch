@@ -589,7 +589,7 @@
  #include <linux/netdevice.h>
 --- a/include/net/inet_ecn.h
 +++ b/include/net/inet_ecn.h
-@@ -124,9 +124,9 @@ static inline int IP6_ECN_set_ce(struct
+@@ -125,9 +125,9 @@ static inline int IP6_ECN_set_ce(struct
  	if (INET_ECN_is_not_ect(ipv6_get_dsfield(iph)))
  		return 0;
  
@@ -601,7 +601,7 @@
  	if (skb->ip_summed == CHECKSUM_COMPLETE)
  		skb->csum = csum_add(csum_sub(skb->csum, (__force __wsum)from),
  				     (__force __wsum)to);
-@@ -135,7 +135,7 @@ static inline int IP6_ECN_set_ce(struct
+@@ -136,7 +136,7 @@ static inline int IP6_ECN_set_ce(struct
  
  static inline void IP6_ECN_clear(struct ipv6hdr *iph)
  {
@@ -771,7 +771,7 @@
  static struct fib6_node *node_alloc(void)
 --- a/net/netfilter/nf_conntrack_proto_tcp.c
 +++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -462,7 +462,7 @@ static void tcp_sack(const struct sk_buf
+@@ -460,7 +460,7 @@ static void tcp_sack(const struct sk_buf
  
  	/* Fast path for timestamp-only option */
  	if (length == TCPOLEN_TSTAMP_ALIGNED
