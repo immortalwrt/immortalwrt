@@ -4,6 +4,7 @@ local appname = "passwall"
 local ucic = luci.model.uci.cursor()
 local http = require "luci.http"
 local util = require "luci.util"
+local i18n = require "luci.i18n"
 local api = require "luci.model.cbi.passwall.api.api"
 local kcptun = require "luci.model.cbi.passwall.api.kcptun"
 local brook = require "luci.model.cbi.passwall.api.brook"
@@ -155,17 +156,17 @@ function get_now_use_node()
 end
 
 function get_redir_log()
-	local e = {}
 	local proto = luci.http.formvalue("proto")
+	proto = proto:upper()
 	local index = luci.http.formvalue("index")
 	local filename = proto .. "_" .. index
 	if nixio.fs.access("/var/etc/passwall/" .. filename .. ".log") then
-		e.code = 200
+		local content = luci.sys.exec("cat /var/etc/passwall/" .. filename .. ".log")
+		content = content:gsub("\n", "<br />")
+		luci.http.write(content)
 	else
-		e.code = 400
+		luci.http.write(string.format("<script>alert('%s');window.close();</script>", i18n.translate("Not enabled log")))
 	end
-	e.data = luci.sys.exec("cat /var/etc/passwall/" .. filename .. ".log")
-	http_write_json(e)
 end
 
 function get_log()
@@ -224,7 +225,11 @@ function connect_status()
 	local code = tonumber(luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $1}'") or "0")
 	if code ~= 0 then
 		local use_time = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
-		e.use_time = string.format("%.2f", use_time * 1000)
+		if use_time:find("%.") then
+			e.use_time = string.format("%.2f", use_time * 1000)
+		else
+			e.use_time = string.format("%.2f", use_time / 1000)
+		end
 		e.ping_type = "curl"
 	end
 	luci.http.prepare_content("application/json")
@@ -311,18 +316,14 @@ function check_port()
 	local node_name = ""
 
 	local retstring = "<br />"
-	-- retstring = retstring .. "<font color='red'>暂时不支持UDP检测</font><br />"
-
-	retstring = retstring .. "<font color='green'>检测端口可用性</font><br />"
+	retstring = retstring .. "<font color='green'>检测端口连通性，不支持UDP检测</font><br />"
 	ucic:foreach(appname, "nodes", function(s)
 		local ret = ""
 		local tcp_socket
 		if (s.use_kcp and s.use_kcp == "1" and s.kcp_port) or (s.transport and s.transport == "mkcp" and s.port) then
 		else
 			local type = s.type
-			local protocol = s.protocol
-			if type and (protocol and protocol ~= "_balancing" and protocol ~= "_shunt") and
-				s.address and s.port and s.remarks then
+			if type and s.address and s.port and s.remarks then
 				node_name = "%s：[%s] %s:%s" % {s.type, s.remarks, s.address, s.port}
 				tcp_socket = nixio.socket("inet", "stream")
 				tcp_socket:setopt("socket", "rcvtimeo", 3)
