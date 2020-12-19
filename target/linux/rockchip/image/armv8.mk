@@ -22,7 +22,7 @@ define Device/friendlyarm_nanopi-r4s
   SOC := rk3399
   UBOOT_DEVICE_NAME := nanopi-r4s-rk3399
   IMAGE/sysupgrade.img.gz := boot-common | boot-script nanopi-r4s | pine64-img | gzip | append-metadata
-  DEVICE_PACKAGES := kmod-r8169
+  DEVICE_PACKAGES := kmod-r8168
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r4s
 
