@@ -2,7 +2,7 @@
 <div id="upload-container" class="cbi-value cbi-value-last">
   <label class="cbi-value-title" for="archive"><%:Upload%></label>
   <div class="cbi-value-field">
-    <input type="file" name="upload_archive" accept="application/x-tar" id="upload_archive" />
+    <input type="file" name="upload_archive" accept="*/*" multiple="multiple" id="upload_archive" />
   </div>
   <br>
   <label class="cbi-value-title" for="path"><%:Path%></label>
@@ -15,9 +15,63 @@
     <input type="button"" class="cbi-button cbi-button-action important" id="download" name="download" value="<%:Download%>" />
   </div>
 </div>
+<script type="text/javascript" src="<%=resource%>/dockerman/tar.min.js"></script>
 <script type="text/javascript">
+  async function file2Tar(tarFile, fileToLoad) {
+    if (fileToLoad == null) return
+    function file2Byte(file) {
+      return new Promise((resolve, reject) => {
+        var fileReader = new FileReader();
+        fileReader.onerror = () => {
+          fileReader.abort();
+          reject(new DOMException("Problem parsing input file."));
+        };
+        fileReader.onload = (fileLoadedEvent) =>
+        {
+          resolve(ByteHelper.stringUTF8ToBytes(fileLoadedEvent.target.result));
+        }
+        fileReader.readAsBinaryString(file);
+    })}
+    const x = await file2Byte(fileToLoad)
+    return fileByte2Tar(tarFile, fileToLoad.name, x).downloadAs( fileToLoad.name + ".tar" )
+  }
+
+  function fileByte2Tar(tarFile, fileName, fileBytes) {
+    if(!tarFile) tarFile = TarFile.create(fileName)
+
+    var tarHeader = TarFileEntryHeader.default();
+    var tarFileEntryHeader = new TarFileEntryHeader
+    (
+      fileName,
+      tarHeader.fileMode,
+      tarHeader.userIDOfOwner,
+      tarHeader.userIDOfGroup,
+      fileBytes.length, // fileSizeInBytes,
+      tarHeader.timeModifiedInUnixFormat, // todo
+      0, // checksum,
+      TarFileTypeFlag.Instances().Normal,
+      tarHeader.nameOfLinkedFile,
+      tarHeader.uStarIndicator,
+      tarHeader.uStarVersion,
+      tarHeader.userNameOfOwner,
+      tarHeader.groupNameOfOwner,
+      tarHeader.deviceNumberMajor,
+      tarHeader.deviceNumberMinor,
+      tarHeader.filenamePrefix
+    );
+
+    tarFileEntryHeader.checksumCalculate();
+    var entryForFileToAdd = new TarFileEntry
+    (
+      tarFileEntryHeader,
+      fileBytes
+    );
+
+    tarFile.entries.push(entryForFileToAdd);
+    return tarFile
+  }
   let btnUpload = document.getElementById('upload')
-  btnUpload.onclick = function (e) {
+  btnUpload.onclick = async function (e) {
     let uploadArchive = document.getElementById('upload_archive')
     let uploadPath = document.getElementById('path').value
     if (!uploadArchive.value || !uploadPath) {
@@ -27,11 +81,17 @@
         })
       return
     }
-    let fileName = uploadArchive.files[0].name
+    let uploadPromises = new Array()
+    Globals.Instance.tarFile = TarFile.create("Archive.tar")
+    let bytesToWriteAsBlob
+    for (let i = 0; i < uploadArchive.files.length; i++){
+      let fileName = uploadArchive.files[i].name
+      bytesToWriteAsBlob = await file2Tar(Globals.Instance.tarFile, uploadArchive.files[i])
+    }
     let formData = new FormData()
-    formData.append('upload-filename', fileName)
+    formData.append('upload-filename', "Archive.tar")
     formData.append('upload-path', uploadPath)
-    formData.append('upload-archive', uploadArchive.files[0])
+    formData.append('upload-archive', bytesToWriteAsBlob)
     let xhr = new XMLHttpRequest()
     xhr.open("POST", '<%=luci.dispatcher.build_url("admin/docker/container_put_archive")%>/<%=self.container%>', true)
     xhr.onload = function() {

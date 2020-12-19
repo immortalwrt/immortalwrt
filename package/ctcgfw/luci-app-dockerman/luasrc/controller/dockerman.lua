@@ -10,7 +10,7 @@ module("luci.controller.dockerman",package.seeall)
 
 function index()
 
-  loocal e = entry({"admin", "docker"}, firstchild(), "Docker", 40)
+  local e = entry({"admin", "docker"}, firstchild(), "Docker", 40)
   e.dependent = false
   e.acl_depends = { "luci-app-dockerman" }
 
