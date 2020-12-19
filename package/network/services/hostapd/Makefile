@@ -396,6 +396,7 @@ define Package/eapol-test
   SECTION:=net
   SUBMENU:=WirelessAPD
   CATEGORY:=Network
+  SUBMENU:=WirelessAPD
   VARIANT:=supplicant-full-internal
   DEPENDS:=$(DRV_DEPENDS) +libubus
 endef
