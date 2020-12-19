@@ -1,24 +1,30 @@
+#
+# Copyright (C) 2019 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=webdav-hacdias
-PKG_VERSION:=3.0.0
+PKG_NAME:=webdav-go
+PKG_VERSION:=3.2.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/hacdias/webdav.git
-PKG_SOURCE_DATE:=2019-11-10
-PKG_SOURCE_VERSION:=72d8e39927e5f2187949d5b6449e2f860a7fe223
+PKG_SOURCE_DATE:=2020-12-18
+PKG_SOURCE_VERSION:=fca4e548391e8198d0a651a3f22af1ceee966d5c
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_MIRROR_HASH:=5587cf5bddfb5f8b57f8ad23e521ddfd6c623ebb2f7381555c3f20d7f147d7e8
+PKG_MIRROR_HASH:=510999ec95faef0f8d9d6e5d5f7813b10cc2432c1c859e342a7deabe8de3af2b
 
-PKG_LICENSE:=GPLv3
+PKG_LICENSE:=MIT
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0 # https://github.com/openwrt/packages/issues/8498
+PKG_USE_MIPS16:=0
 GO_PKG:=github.com/hacdias/webdav
 GO_PKG_LDFLAGS:=-s -w
 
@@ -27,8 +33,8 @@ include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
-        CATEGORY:=Network
-        SUBMENU:=File Transfer
+	CATEGORY:=Network
+	SUBMENU:=File Transfer
 	TITLE:=A powerful WebDav server written in Golang.
 	URL:=https://github.com/hacdias/webdav
 	DEPENDS:=$(GO_ARCH_DEPENDS) 
