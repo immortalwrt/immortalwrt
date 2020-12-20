@@ -3,6 +3,7 @@
 . /lib/functions/uci-defaults.sh
 
 board=$(board_name)
+boardname="${board##*,}"
 
 board_config_update
 
