@@ -582,7 +582,7 @@ run_redir() {
 		;;
 		ss|ssr)
 			if [ "$kcptun_use" == "1" ]; then
-				lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $socks_port -server_host "127.0.0.1" -server_port $KCPTUN_REDIR_PORT > $config_file
+				lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port -server_host "127.0.0.1" -server_port $KCPTUN_REDIR_PORT > $config_file
 				process=1
 				[ "${index}" == 1 ] && [ "$UDP_NODE1" == "tcp" ] && echolog "Kcptun不支持UDP转发！"
 			else
