@@ -28,7 +28,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_ADGUARDHOME_COMPRESS_UPX
 
 GO_PKG:=github.com/AdguardTeam/AdGuardHome
-GO_PKG_EXCLUDES:=dhcpd/standalone
+GO_PKG_EXCLUDES:=internal/dhcpd/standalone
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION) main.channel=release
 
