@@ -10,6 +10,7 @@ define Device/friendlyarm_nanopi-r2s
   DEVICE_MODEL := NanoPi R2S
   SOC := rk3328
   UBOOT_DEVICE_NAME := nanopi-r2s-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script nanopi-r2s | pine64-img | gzip | append-metadata
   DEVICE_PACKAGES := kmod-usb-net kmod-usb-net-rtl8152
   $(call Device/FitImageLzma)
 endef
@@ -20,6 +21,7 @@ define Device/pine64_rockpro64
   DEVICE_MODEL := RockPro64
   SOC := rk3399
   UBOOT_DEVICE_NAME := rockpro64-rk3399
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
 endef
 TARGET_DEVICES += pine64_rockpro64
 
