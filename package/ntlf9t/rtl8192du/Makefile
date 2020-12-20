@@ -38,7 +38,7 @@ NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DCONFIG_CO
 define KernelPackage/rtl8192du
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek RTL8192DU wireless USB 802.11n driver
-  DEPENDS:=@BROKEN @USB_SUPPORT +kmod-cfg80211 +kmod-mac80211 +kmod-usb-core
+  DEPENDS:=@USB_SUPPORT +kmod-cfg80211 +kmod-mac80211 +kmod-usb-core
   FILES:= $(PKG_BUILD_DIR)/8192du.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoProbe,8192du)
 endef
