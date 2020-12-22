@@ -57,5 +57,5 @@ reload_service()
 }
 
 service_triggers() {
-        procd_add_reload_trigger "filebrowser"
+	procd_add_reload_trigger "filebrowser"
 }

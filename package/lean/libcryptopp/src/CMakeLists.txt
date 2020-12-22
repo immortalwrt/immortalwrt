@@ -33,11 +33,11 @@ cmake_minimum_required(VERSION 2.8.6)
 if (${CMAKE_VERSION} VERSION_LESS "3.0.0")
   project(cryptopp)
   set(cryptopp_VERSION_MAJOR 8)
-  set(cryptopp_VERSION_MINOR 2)
+  set(cryptopp_VERSION_MINOR 3)
   set(cryptopp_VERSION_PATCH 0)
 else ()
   cmake_policy(SET CMP0048 NEW)
-  project(cryptopp VERSION 8.2.0)
+  project(cryptopp VERSION 8.3.0)
   if (NOT ${CMAKE_VERSION} VERSION_LESS "3.1.0")
     cmake_policy(SET CMP0054 NEW)
   endif ()
@@ -116,8 +116,23 @@ endif ()
 if (DISABLE_SSE4)
   list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_SSSE4)
 endif ()
+if (DISABLE_CLMUL)
+  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_CLMUL)
+endif ()
 if (DISABLE_AESNI)
   list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_AESNI)
+endif ()
+if (DISABLE_RDRAND)
+  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_RDRAND)
+endif ()
+if (DISABLE_RDSEED)
+  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_RDSEED)
+endif ()
+if (DISABLE_AVX)
+  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_AVX)
+endif ()
+if (DISABLE_AVX2)
+  list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_AVX2)
 endif ()
 if (DISABLE_SHA)
   list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_SHA)
@@ -225,31 +240,26 @@ function(CheckCompileLinkOption opt var prog)
 
     # TODO: improve this...
     CHECK_CXX_COMPILER_FLAG(${opt} ${var})
+    
+  elseif (APPLE)
+
+    message(STATUS "Performing Test ${var}")
+    try_compile(COMMAND_SUCCESS ${CMAKE_BINARY_DIR} ${prog} COMPILE_DEFINITIONS ${opt})
+    if (COMMAND_SUCCESS)
+      set(${var} 1 PARENT_SCOPE)
+      message(STATUS "Performing Test ${var} - Success")
+    else ()
+      set(${var} 0 PARENT_SCOPE)
+      message(STATUS "Performing Test ${var} - Failed")
+    endif ()
 
   else ()
 
     message(STATUS "Performing Test ${var}")
-    execute_process(
-      COMMAND sh -c "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} ${opt} ${prog} 2>&1"
-      RESULT_VARIABLE COMMAND_RESULT
-      OUTPUT_VARIABLE COMMAND_OUTPUT
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    # message(STATUS "RESULT_VARIABLE ${RESULT_VARIABLE}")
-    # message(STATUS "COMMAND_RESULT ${COMMAND_RESULT}")
-    # message(STATUS "OUTPUT_VARIABLE ${OUTPUT_VARIABLE}")
-    # message(STATUS "COMMAND_OUTPUT ${COMMAND_OUTPUT}")
-
-    # This test is strict. We require two things. First, the invocation
-    # of the compile command must return 0. Second, there must be no
-    # messages on the console. We are interested in diagnostics like
-    # warnings to decide when to reject an option. But we will probably
-    # capture chatty compiler that want to say, "Hooray, success". For
-    # chatty compilers we will need to find a quiet option and use it
-    # for the test. Microsoft compilers come to mind.
-    if ("${COMMAND_RESULT}" EQUAL 0 AND "${COMMAND_OUTPUT}" STREQUAL "")
-      set(${var} 1 PARENT_SCOPE)
-      message(STATUS "Performing Test ${var} - Success")
+    try_compile(COMMAND_SUCCESS ${CMAKE_BINARY_DIR} ${prog} COMPILE_DEFINITIONS ${opt})
+    if (COMMAND_SUCCESS)
+        set(${var} 1 PARENT_SCOPE)
+        message(STATUS "Performing Test ${var} - Success")
     else ()
       set(${var} 0 PARENT_SCOPE)
       message(STATUS "Performing Test ${var} - Failed")
@@ -278,35 +288,30 @@ function(DumpMachine output pattern)
     set(${output} 0 PARENT_SCOPE)
 
   else ()
-
-    execute_process(
-      COMMAND sh -c "${CMAKE_CXX_COMPILER} -dumpmachine 2>&1"
-      COMMAND ${GREP_CMD} -i -c -E "${pattern}"
-      OUTPUT_VARIABLE ${output}
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(${output} "${${output}}" PARENT_SCOPE)
-
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES ${pattern})
+          set(${output} TRUE PARENT_SCOPE)
+      endif()
   endif()
 
 endfunction(DumpMachine)
 
 # Thansk to Anonimal for MinGW; see http://github.com/weidai11/cryptopp/issues/466
-DumpMachine(CRYPTOPP_AMD64 "amd64|x86_64")
-DumpMachine(CRYPTOPP_I386 "i.86")
-DumpMachine(CRYPTOPP_MINGW32 "\\<mingw32\\>")
-DumpMachine(CRYPTOPP_MINGW64 "w64-mingw32|mingw64")
-DumpMachine(CRYPTOPP_X32 "x32")
-DumpMachine(CRYPTOPP_AARCH32 "Aarch32")
-DumpMachine(CRYPTOPP_AARCH64 "Aarch64")
-DumpMachine(CRYPTOPP_ARMHF "armhf|arm7l|eabihf")
-DumpMachine(CRYPTOPP_ARM "\\<arm\\>")
+DumpMachine(CRYPTOPP_AMD64 "(x86_64)|(AMD64|amd64)")
+DumpMachine(CRYPTOPP_I386 "^i.86$")
+DumpMachine(CRYPTOPP_MINGW32 "^mingw32")
+DumpMachine(CRYPTOPP_MINGW64 "(w64-mingw32)|(mingw64)")
+DumpMachine(CRYPTOPP_X32 "(x32)")
+DumpMachine(CRYPTOPP_AARCH32 "^aarch32")
+DumpMachine(CRYPTOPP_AARCH64 "^aarch64")
+DumpMachine(CRYPTOPP_ARMHF "(armhf)|(arm7l)|(eabihf)")
+DumpMachine(CRYPTOPP_ARM "^arm")
 
 # Detecting PowerPC is only good with GCC. IBM XLC compiler is
 # a little different and I don't know how to ask to the triplet
 # XLC is targeting. Below we punt by setting CRYPTOPP_POWERPC64
 # if we detect the compiler is XLC.
-DumpMachine(CRYPTOPP_POWERPC "ppc|powerpc")
-DumpMachine(CRYPTOPP_POWERPC64 "ppc64")
+DumpMachine(CRYPTOPP_POWERPC "^(powerpc|ppc)")
+DumpMachine(CRYPTOPP_POWERPC64 "^ppc64")
 
 ###############################################################################
 
@@ -377,77 +382,12 @@ endif ()
 
 ###############################################################################
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-
-  execute_process(COMMAND sh -c "${CMAKE_CXX_COMPILER} --version 2>&1"
-    COMMAND ${GREP_CMD} -i -c "macports"
-    OUTPUT_VARIABLE MACPORTS
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  if (MACPORTS EQUAL 0)
-    # Get GAS version, add defs + set as appropriate
-    set(GAS_CMD sh -c "${CMAKE_CXX_COMPILER} -xc -c /dev/null -Wa,-v -o/dev/null 2>&1")
-
-    execute_process(COMMAND ${GAS_CMD}
-      OUTPUT_VARIABLE GAS_STRING
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    string(FIND "${GAS_STRING}" "GNU assembler" GAS_OUTPUT)
-
-    if (NOT GAS_OUTPUT EQUAL -1)
-      #.intel_syntax wasn't supported until GNU assembler 2.10
-
-      # TODO(unassigned): string() REGEX was not cooperating at time of writing. Re-implement as needed.
-      execute_process(COMMAND echo ${GAS_STRING}
-        COMMAND ${GREP_CMD} -i -c -E "GNU.[Aa]ssembler.*(2\\.[1-9][0-9]|[3-9])"
-        OUTPUT_VARIABLE GAS210_OR_LATER)
-      if (GAS210_OR_LATER EQUAL 0)
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_ASM)
-        set(DISABLE_ASM 1)
-      endif ()
-
-      execute_process(COMMAND echo ${GAS_STRING}
-        COMMAND ${GREP_CMD} -i -c -E "GNU.[Aa]ssembler.*(2\\.1[7-9]|2\\.[2-9]|[3-9])"
-        OUTPUT_VARIABLE GAS217_OR_LATER)
-      if (GAS217_OR_LATER EQUAL 0)
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_SSSE3)
-        set(DISABLE_SSSE3 1)
-      endif ()
-
-      # OpenBSD and CentOS 5 needed this one due to ARIA and BLAKE2
-      execute_process(COMMAND echo ${GAS_STRING}
-        COMMAND ${GREP_CMD} -i -c -E "GNU.[Aa]ssembler.*(2\\.1[8-9]|2\\.[2-9]|[3-9])"
-        OUTPUT_VARIABLE GAS218_OR_LATER)
-      if (GAS218_OR_LATER EQUAL 0)
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_SSSE4)
-        set(DISABLE_SSE4 1)
-      endif ()
-
-      execute_process(COMMAND echo ${GAS_STRING}
-        COMMAND ${GREP_CMD} -i -c -E "GNU.[Aa]ssembler.*(2\\.19|2\\.[2-9]|[3-9])"
-        OUTPUT_VARIABLE GAS219_OR_LATER)
-      if (GAS219_OR_LATER EQUAL 0)
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_AESNI)
-        set(DISABLE_AESNI 1)
-      endif ()
-
-      # Ubuntu 10 and Ubuntu 12 needed this one
-      execute_process(COMMAND echo ${GAS_STRING}
-        COMMAND ${GREP_CMD} -i -c -E "GNU.[Aa]ssembler.*(2\\.2[3-9]|2\\.[3-9]|[3-9])"
-        OUTPUT_VARIABLE GAS223_OR_LATER)
-      if (GAS223_OR_LATER EQUAL 0)
-        list(APPEND CRYPTOPP_COMPILE_DEFINITIONS CRYPTOPP_DISABLE_SHA)
-        set(DISABLE_SHA 1)
-      endif ()
-    endif ()
-  endif ()
-endif ()
-
 # TODO: what about ICC and LLVM on Windows?
 if (MSVC)
   if (CMAKE_SYSTEM_VERSION MATCHES "10\\.0.*")
     list(APPEND CRYPTOPP_COMPILE_DEFINITIONS "_WIN32_WINNT=0x0A00")
   endif ()
-  list(APPEND CRYPTOPP_COMPILE_OPTIONS "/FI\"winapifamily.h\"")
+  list(APPEND CRYPTOPP_COMPILE_OPTIONS /FI winapifamily.h)
 endif ()
 
 # Enable PIC for all target machines except 32-bit i386 due to register pressures.
@@ -562,6 +502,11 @@ set(cryptopp_SOURCES
     ${cryptopp_SOURCES}
     )
 
+if(ANDROID)
+    include_directories(${ANDROID_NDK}/sources/android/cpufeatures)
+    list(APPEND cryptopp_SOURCES ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
+endif()
+
 set(cryptopp_SOURCES_ASM)
 
 if (MSVC AND NOT DISABLE_ASM)
@@ -571,6 +516,7 @@ if (MSVC AND NOT DISABLE_ASM)
     enable_language(ASM_MASM)
     list(APPEND cryptopp_SOURCES_ASM
       ${SRC_DIR}/rdrand.asm
+      ${SRC_DIR}/rdseed.asm
       )
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
       list(APPEND cryptopp_SOURCES_ASM
@@ -615,8 +561,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
                            "${TEST_PROG_DIR}/test_x86_avx2.cxx")
     CheckCompileLinkOption("-msse4.2 -msha" CRYPTOPP_IA32_SHA
                            "${TEST_PROG_DIR}/test_x86_sha.cxx")
-    CheckCompileLinkOption("" CRYPTOPP_MIXED_ASM
-                           "${TEST_PROG_DIR}/test_mixed_asm.cxx")
+    if (EXISTS "${TEST_PROG_DIR}/test_asm_mixed.cxx")
+      CheckCompileLinkOption("" CRYPTOPP_MIXED_ASM
+                             "${TEST_PROG_DIR}/test_asm_mixed.cxx")
+    else ()
+      CheckCompileLinkOption("" CRYPTOPP_MIXED_ASM
+                             "${TEST_PROG_DIR}/test_mixed_asm.cxx")
+    endif ()
 
     # https://github.com/weidai11/cryptopp/issues/756
     if (NOT CRYPTOPP_MIXED_ASM)
@@ -637,7 +588,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
       set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3")
       set_source_files_properties(${SRC_DIR}/keccak_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3")
       set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3")
-      set_source_files_properties(${SRC_DIR}/simeck_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3")
       set_source_files_properties(${SRC_DIR}/simon128_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3")
       set_source_files_properties(${SRC_DIR}/speck128_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3")
       if (NOT CRYPTOPP_IA32_SSE41 AND NOT DISABLE_SSE4)
@@ -645,16 +595,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
       elseif (CRYPTOPP_IA32_SSE41 AND NOT DISABLE_SSE4)
         set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.1")
         set_source_files_properties(${SRC_DIR}/blake2b_simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.1")
-        set_source_files_properties(${SRC_DIR}/simon64_simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.1")
-        set_source_files_properties(${SRC_DIR}/speck64_simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.1")
       endif ()
       if (NOT CRYPTOPP_IA32_SSE42 AND NOT DISABLE_SSE4)
         list(APPEND CRYPTOPP_COMPILE_OPTIONS "-DCRYPTOPP_DISABLE_SSE4")
       elseif (CRYPTOPP_IA32_SSE42 AND NOT DISABLE_SSE4)
         set_source_files_properties(${SRC_DIR}/crc_simd.cpp PROPERTIES COMPILE_FLAGS "-msse4.2")
-        if (NOT CRYPTOPP_IA32_CLMUL AND NOT DISABLE_AES)
+        if (NOT CRYPTOPP_IA32_CLMUL AND NOT DISABLE_CLMUL)
           list(APPEND CRYPTOPP_COMPILE_OPTIONS "-DCRYPTOPP_DISABLE_CLMUL")
-        elseif (CRYPTOPP_IA32_CLMUL AND NOT DISABLE_AES)
+        elseif (CRYPTOPP_IA32_CLMUL AND NOT DISABLE_CLMUL)
           set_source_files_properties(${SRC_DIR}/gcm_simd.cpp PROPERTIES COMPILE_FLAGS "-mssse3 -mpclmul")
           set_source_files_properties(${SRC_DIR}/gf2n_simd.cpp PROPERTIES COMPILE_FLAGS "-mpclmul")
         endif ()
@@ -698,10 +646,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
       set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
       set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
       set_source_files_properties(${SRC_DIR}/neon_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
-      set_source_files_properties(${SRC_DIR}/simeck_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
-      set_source_files_properties(${SRC_DIR}/simon64_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
       set_source_files_properties(${SRC_DIR}/simon128_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
-      set_source_files_properties(${SRC_DIR}/speck64_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
       set_source_files_properties(${SRC_DIR}/speck128_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv8-a")
     endif ()
     if (CRYPTOPP_ARMV8A_CRC)
@@ -717,71 +662,79 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 
   elseif (CRYPTOPP_ARM OR CRYPTOPP_ARMHF)
 
-    # Need to set floating point ABI to something, like "hard" of "softfp".
-    # Most Linux use hard floats.
     CheckCompileLinkOption("-march=armv7-a -mfpu=neon" CRYPTOPP_ARMV7A_NEON
                            "${TEST_PROG_DIR}/test_arm_neon.cxx")
-    CheckCompileLinkOption("-march=armv7-a -mfloat-abi=hard -mfpu=neon" CRYPTOPP_ARMV7A_HARD
-                           "${TEST_PROG_DIR}/test_arm_neon.cxx")
-    CheckCompileLinkOption("-march=armv7-a -mfloat-abi=softfp -mfpu=neon" CRYPTOPP_ARMV7A_SOFTFP
+    CheckCompileLinkOption("-march=armv7-a -mthumb -mfpu=neon" CRYPTOPP_ARMV7A_THUMB_NEON
                            "${TEST_PROG_DIR}/test_arm_neon.cxx")
 
-    if (CRYPTOPP_ARMV7A_HARD)
-      set(CRYPTOPP_ARMV7A_FLAGS "-march=armv7-a -mfloat-abi=hard -mfpu=neon")
-    elseif (CRYPTOPP_ARMV7A_SOFTFP)
-      set(CRYPTOPP_ARMV7A_FLAGS "-march=armv7-a -mfloat-abi=softfp -mfpu=neon")
-    else ()
-      AddCompileOption("-DCRYPTOPP_DISABLE_NEON")
-    endif()
+    if (CRYPTOPP_ARMV7A_NEON)
 
-    if (CRYPTOPP_ARMV7A_HARD OR CRYPTOPP_ARMV7A_SOFTFP)
-      # Add ASM files for ARM
-      if (NOT MSVC)
+      # Add Cryptogams ASM files for ARM on Linux. Linux is required due to GNU Assembler.
+      # AES requires -mthumb under Clang. Do not add -mthumb for SHA for any files.
+      if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
         list(APPEND cryptopp_SOURCES ${SRC_DIR}/aes_armv4.S)
-        set_source_files_properties(${SRC_DIR}/aes_armv4.S PROPERTIES LANGUAGE C)
+        list(APPEND cryptopp_SOURCES ${SRC_DIR}/sha1_armv4.S)
+        list(APPEND cryptopp_SOURCES ${SRC_DIR}/sha256_armv4.S)
+        list(APPEND cryptopp_SOURCES ${SRC_DIR}/sha512_armv4.S)
+
+        set_source_files_properties(${SRC_DIR}/aes_armv4.S PROPERTIES LANGUAGE CXX)
+        set_source_files_properties(${SRC_DIR}/sha1_armv4.S PROPERTIES LANGUAGE CXX)
+        set_source_files_properties(${SRC_DIR}/sha256_armv4.S PROPERTIES LANGUAGE CXX)
+        set_source_files_properties(${SRC_DIR}/sha512_armv4.S PROPERTIES LANGUAGE CXX)
+
+        if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+          set_source_files_properties(${SRC_DIR}/aes_armv4.S PROPERTIES COMPILE_FLAGS "-march=armv7-a -mthumb -mfpu=neon -Wa,--noexecstack")
+        else ()
+          set_source_files_properties(${SRC_DIR}/aes_armv4.S PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
+        endif ()
+        
+        set_source_files_properties(${SRC_DIR}/sha1_armv4.S PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
+        set_source_files_properties(${SRC_DIR}/sha256_armv4.S PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
+        set_source_files_properties(${SRC_DIR}/sha512_armv4.S PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon -Wa,--noexecstack")
       endif ()
 
-      set_source_files_properties(${SRC_DIR}/aes_armv4.S PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/aria_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/blake2b_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/chacha_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/crc_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/gcm_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/rijndael_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/neon_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/sha_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/simeck_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/simon64_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/simon128_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/speck64_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/speck128_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
-      set_source_files_properties(${SRC_DIR}/sm4_simd.cpp PROPERTIES COMPILE_FLAGS "${CRYPTOPP_ARMV7A_FLAGS}")
+      set_source_files_properties(${SRC_DIR}/aria_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/blake2b_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/chacha_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/crc_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/gcm_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/rijndael_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/neon_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/sha_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/simon128_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/speck128_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+      set_source_files_properties(${SRC_DIR}/sm4_simd.cpp PROPERTIES COMPILE_FLAGS "-march=armv7-a -mfpu=neon")
+    else ()
+      list(APPEND CRYPTOPP_COMPILE_OPTIONS "-DCRYPTOPP_ARM_NEON_AVAILABLE=0")
     endif ()
 
   elseif (CRYPTOPP_POWERPC OR CRYPTOPP_POWERPC64)
 
+    # XLC requires -qaltivec in addition to Arch or CPU option
     if (CMAKE_CXX_COMPILER MATCHES "xlC")
       set(CRYPTOPP_ALTIVEC_FLAGS "-qaltivec")
       set(CRYPTOPP_POWER4_FLAGS "-qarch=pwr4 -qaltivec")
       set(CRYPTOPP_POWER5_FLAGS "-qarch=pwr5 -qaltivec")
       set(CRYPTOPP_POWER6_FLAGS "-qarch=pwr6 -qaltivec")
-      set(CRYPTOPP_POWER7_FLAGS "-qarch=pwr7 -qaltivec")
+      set(CRYPTOPP_POWER7_VSX_FLAG  "-qarch=pwr7 -qvsx -qaltivec")
+      set(CRYPTOPP_POWER7_PWR_FLAGS "-qarch=pwr7 -qaltivec")
       set(CRYPTOPP_POWER8_FLAGS "-qarch=pwr8 -qaltivec")
       set(CRYPTOPP_POWER9_FLAGS "-qarch=pwr9 -qaltivec")
     else ()
       set(CRYPTOPP_ALTIVEC_FLAGS "-maltivec")
-      set(CRYPTOPP_POWER7_FLAGS "-mcpu=power7 -maltivec")
-      set(CRYPTOPP_POWER8_FLAGS "-mcpu=power8 -maltivec")
-      set(CRYPTOPP_POWER9_FLAGS "-mcpu=power9 -maltivec")
+      set(CRYPTOPP_POWER7_VSX_FLAGS "-mcpu=power7 -mvsx")
+      set(CRYPTOPP_POWER7_PWR_FLAGS "-mcpu=power7")
+      set(CRYPTOPP_POWER8_FLAGS "-mcpu=power8")
+      set(CRYPTOPP_POWER9_FLAGS "-mcpu=power9")
     endif ()
 
     CheckCompileLinkOption("${CRYPTOPP_ALTIVEC_FLAGS}" PPC_ALTIVEC_FLAG
                            "${TEST_PROG_DIR}/test_ppc_altivec.cxx")
 
-    # Hack for XLC
+    # Hack for XLC. Find the lowest PWR architecture.
     if (CMAKE_CXX_COMPILER MATCHES "xlC")
       if (NOT PPC_ALTIVEC_FLAG)
         CheckCompileLinkOption("${CRYPTOPP_POWER4_FLAGS}" PPC_POWER4_FLAG
@@ -809,8 +762,18 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
       endif ()
     endif ()
 
-    CheckCompileLinkOption("${CRYPTOPP_POWER7_FLAGS}" PPC_POWER7_FLAG
+    # Hack for XLC and GCC. Find the right combination for PWR7 and the VSX unit.
+    CheckCompileLinkOption("${CRYPTOPP_POWER7_VSX_FLAGS}" PPC_POWER7_FLAG
                            "${TEST_PROG_DIR}/test_ppc_power7.cxx")
+    if (PPC_POWER7_FLAG)
+      set (CRYPTOPP_POWER7_FLAGS "${CRYPTOPP_POWER7_VSX_FLAGS}")
+    else ()
+      CheckCompileLinkOption("${CRYPTOPP_POWER7_PWR_FLAGS}" PPC_POWER7_FLAG
+                             "${TEST_PROG_DIR}/test_ppc_power7.cxx")
+      if (PPC_POWER7_FLAG)
+        set (CRYPTOPP_POWER7_FLAGS "${CRYPTOPP_POWER7_PWR_FLAGS}")
+      endif ()
+    endif ()
 
     CheckCompileLinkOption("${CRYPTOPP_POWER8_FLAGS}" PPC_POWER8_FLAG
                            "${TEST_PROG_DIR}/test_ppc_power8.cxx")
@@ -824,10 +787,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 
     if (PPC_POWER8_FLAG AND NOT DISABLE_POWER8)
       set_source_files_properties(${SRC_DIR}/ppc_power8.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
+      #set_source_files_properties(${SRC_DIR}/aria_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       set_source_files_properties(${SRC_DIR}/blake2b_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
+      set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       #set_source_files_properties(${SRC_DIR}/crc_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       set_source_files_properties(${SRC_DIR}/gcm_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       set_source_files_properties(${SRC_DIR}/gf2n_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
+      set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       set_source_files_properties(${SRC_DIR}/rijndael_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       set_source_files_properties(${SRC_DIR}/sha_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
       set_source_files_properties(${SRC_DIR}/shacal2_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER8_FLAGS})
@@ -837,34 +803,18 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 
     if (PPC_POWER7_FLAG AND NOT DISABLE_POWER7)
       set_source_files_properties(${SRC_DIR}/ppc_power7.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/aria_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/chacha_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/simeck_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/simon64_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      set_source_files_properties(${SRC_DIR}/speck64_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
     endif ()
 
     if (PPC_ALTIVEC_FLAG AND NOT DISABLE_ALTIVEC)
       set_source_files_properties(${SRC_DIR}/ppc_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
+      set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
+      set_source_files_properties(${SRC_DIR}/chacha_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
     endif ()
 
-    # Drop to Power7 if Power8 unavailable
+    # Drop to Altivec if Power8 unavailable
     if (NOT PPC_POWER8_FLAG)
-      if (PPC_POWER7_FLAG)
-        set_source_files_properties(${SRC_DIR}/gcm_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_POWER7_FLAGS})
-      endif ()
-    endif ()
-
-    # Drop to Altivec if Power7 unavailable
-    if (NOT PPC_POWER7_FLAG)
       if (PPC_ALTIVEC_FLAG)
-        set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
-        set_source_files_properties(${SRC_DIR}/chacha_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
-        set_source_files_properties(${SRC_DIR}/simon64_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
-        set_source_files_properties(${SRC_DIR}/speck64_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
+        set_source_files_properties(${SRC_DIR}/gcm_simd.cpp PROPERTIES COMPILE_FLAGS ${CRYPTOPP_ALTIVEC_FLAGS})
       endif ()
     endif ()
 
@@ -917,15 +867,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
       set_source_files_properties(${SRC_DIR}/aria_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=ssse3")
       set_source_files_properties(${SRC_DIR}/cham_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=ssse3")
       set_source_files_properties(${SRC_DIR}/lea_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=ssse3")
-      set_source_files_properties(${SRC_DIR}/simeck_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=ssse3")
       set_source_files_properties(${SRC_DIR}/simon128_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=ssse3")
       set_source_files_properties(${SRC_DIR}/speck128_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=ssse3")
       set(XARCH_LDFLAGS "${XARCH_LDFLAGS} -xarch=ssse3")
       if (CRYPTOPP_IA32_SSE41 AND NOT DISABLE_SSE4)
         set_source_files_properties(${SRC_DIR}/blake2s_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=sse4_1")
         set_source_files_properties(${SRC_DIR}/blake2b_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=sse4_1")
-        set_source_files_properties(${SRC_DIR}/simon64_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=sse4_1")
-        set_source_files_properties(${SRC_DIR}/speck64_simd.cpp PROPERTIES COMPILE_FLAGS "-xarch=sse4_1")
         set(XARCH_LDFLAGS "${XARCH_LDFLAGS} -xarch=sse4_1")
       endif ()
       if (CRYPTOPP_IA32_SSE42 AND NOT DISABLE_SSE4)
@@ -1000,7 +947,7 @@ function(cryptopp_target_compile_properties target)
     set_target_properties(${target} PROPERTIES COMPILE_DEFINITIONS "${CRYPTOPP_COMPILE_DEFINITIONS}")
   endif()
   if (NOT ${CMAKE_VERSION} VERSION_LESS "2.8.12")
-    target_compile_options(${target} PUBLIC ${CRYPTOPP_COMPILE_OPTIONS})
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
   else()
     string (REPLACE ";" " " PROP_STR "${CRYPTOPP_COMPILE_OPTIONS}")
     set_target_properties(${target} PROPERTIES COMPILE_FLAGS "${PROP_STR}")
