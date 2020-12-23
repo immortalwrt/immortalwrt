@@ -690,3 +690,57 @@ msgstr "混淆密码（可选）"
 
 msgid "Select the interface that needs to transmit data. If unchecked, all interfaces will pass data by default!"
 msgstr "选择需要传递数据的接口。如果未选择，则默认情况下所有接口都将传递数据！"
+
+msgid "Please fill in the Host, for example: www.baidu.com"
+msgstr "请填写Host，例如：www.baidu.com"
+
+msgid "Camouflage Type"
+msgstr "伪装类型"
+
+msgid "VideoCall (SRTP)"
+msgstr "视频通话 (SRTP)"
+
+msgid "BitTorrent (uTP)"
+msgstr "BT下载 (uTP)"
+
+msgid "WechatVideo"
+msgstr "微信视频通话"
+
+msgid "DTLS 1.2"
+msgstr "DTLS 1.2 数据包"
+
+msgid "WireGuard"
+msgstr "WireGuard 数据包"
+
+msgid "MTU"
+msgstr "最大传输单元"
+
+msgid "TTI"
+msgstr "传输时间间隔"
+
+msgid "Uplink Capacity"
+msgstr "上行链路容量"
+
+msgid "Downlink Capacity"
+msgstr "下行链路容量"
+
+msgid "Read Buffer Size"
+msgstr "读取缓冲区大小"
+
+msgid "Write Buffer Size"
+msgstr "写入缓冲区大小"
+
+msgid "Congestion"
+msgstr "拥塞控制"
+
+msgid "Network interface to use"
+msgstr "使用的网络接口"
+
+msgid "Please fill in reset"
+msgstr "请填写 reset"
+
+msgid "The content entered is incorrect!"
+msgstr "输入的内容不正确！"
+
+msgid "Reset complete"
+msgstr "重置完成"

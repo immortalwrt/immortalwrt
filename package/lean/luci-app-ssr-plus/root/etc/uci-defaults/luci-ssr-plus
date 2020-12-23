@@ -11,19 +11,19 @@ set firewall.shadowsocksr.path=/var/etc/shadowsocksr.include
 set firewall.shadowsocksr.reload=1
 commit firewall
 EOF
-rm -rf /etc/config/shadowsocksr-opkg /etc/ssr/*opkg
-touch /etc/ssr/china_ssr.txt
-touch /etc/ssr/deny.list
-touch /etc/ssr/white.list
-touch /etc/ssr/black.list
-touch /etc/ssr/netflix.list
-touch /etc/ssr/netflixip.list
-touch /etc/ssr/gfw_base.conf
-touch /etc/ssr/gfw_list.conf
-touch /etc/ssr/oversea_list.conf
-touch /etc/ssr/ad.conf
+rm -rf /etc/config/shadowsocksr-opkg /etc/ssrplus/*opkg
+touch /etc/ssrplus/china_ssr.txt
+touch /etc/ssrplus/deny.list
+touch /etc/ssrplus/white.list
+touch /etc/ssrplus/black.list
+touch /etc/ssrplus/netflix.list
+touch /etc/ssrplus/netflixip.list
+touch /etc/ssrplus/gfw_base.conf
+touch /etc/ssrplus/gfw_list.conf
+touch /etc/ssrplus/oversea_list.conf
+touch /etc/ssrplus/ad.conf
 touch /etc/config/shadowsocksr
-if [ ! -s "/etc/config/shadowsocksr" ] ; then
+if [ ! -s "/etc/config/shadowsocksr" ]; then
 uci -q batch <<-EOF >/dev/null
 add shadowsocksr global
 set shadowsocksr.@global[0].global_server='nil'
@@ -42,7 +42,7 @@ set shadowsocksr.@global[0].switch_try_count='3'
 set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/gfwlist.txt'
 set shadowsocksr.@global[0].chnroute_url='https://ispip.clang.cn/all_cn.txt'
 set shadowsocksr.@global[0].nfip_url='https://cdn.jsdelivr.net/gh/QiuSimons/Netflix_IP/getflix.txt'
-set shadowsocksr.@global[0].adblock_url='https://anti-ad.net/anti-ad-for-dnsmasq.conf'
+set shadowsocksr.@global[0].adblock_url='https://neodev.team/lite_host_dnsmasq.conf'
 add shadowsocksr server_subscribe
 set shadowsocksr.@server_subscribe[0].proxy='0'
 set shadowsocksr.@server_subscribe[0].auto_update_time='2'
