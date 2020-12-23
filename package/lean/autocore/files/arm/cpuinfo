@@ -9,9 +9,9 @@ if grep -q "bcm53xx" "/etc/openwrt_release"; then
 elif grep -q "mvebu" "/etc/openwrt_release"; then
 	cpu_freq="$(cat "/proc/cpuinfo" | grep "BogoMIPS" | sed -n "1p" | awk -F ': ' '{print $2}')MHz"
 else
-	little_cpu_freq="$(expr $(cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq) / 1000)MHz"
-	big_cpu_freq="$(expr $(cat /sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq) / 1000)MHz"
-	[ -n "${big_cpu_freq}" ] && big_cpu_freq="${big_cpu_freq} "
+	cpu_freq="$(expr $(cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq) / 1000)MHz"
+	big_cpu_freq="$(expr $(cat /sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq) / 1000)"
+	[ -n "${big_cpu_freq}" ] && big_cpu_freq="${big_cpu_freq}MHz "
 fi
 
 if grep -q "ipq40xx" "/etc/openwrt_release"; then
@@ -20,4 +20,4 @@ else
 	cpu_temp="$(awk "BEGIN{printf (\"%.1f\n\",$(cat /sys/class/thermal/thermal_zone0/temp)/1000) }")°C"
 fi
 
-echo -n "${cpu_arch} x ${cpu_cores} (${big_cpu_freq}${little_cpu_freq}, ${cpu_temp})"
+echo -n "${cpu_arch} x ${cpu_cores} (${big_cpu_freq}${cpu_freq}, ${cpu_temp})"
