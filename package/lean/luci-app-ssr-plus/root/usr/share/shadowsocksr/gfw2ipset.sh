@@ -1,61 +1,47 @@
 #!/bin/sh
-NAME=shadowsocksr
-switch_server=$1
-uci_get_by_type() {
-	local ret=$(uci get $NAME.@$1[0].$2 2>/dev/null)
-	echo ${ret:=$3}
+. $IPKG_INSTROOT/etc/init.d/shadowsocksr
+netflix() {
+	if [ -f "$TMP_DNSMASQ_PATH/gfw_list.conf" ]; then
+		for line in $(cat /etc/ssrplus/netflix.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_list.conf; done
+		for line in $(cat /etc/ssrplus/netflix.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_base.conf; done
+	fi
+	cat /etc/ssrplus/netflix.list | sed '/^$/d' | sed '/#/d' | sed "/.*/s/.*/server=\/&\/127.0.0.1#$1\nipset=\/&\/netflix/" >$TMP_DNSMASQ_PATH/netflix_forward.conf
 }
-if [ -z "$switch_server" ]; then
-	GLOBAL_SERVER=$(uci_get_by_type global global_server nil)
-else
-	GLOBAL_SERVER=$switch_server
-fi
-
-mkdir -p /tmp/dnsmasq.ssr
+mkdir -p $TMP_DNSMASQ_PATH
 if [ "$(uci_get_by_type global run_mode router)" == "oversea" ]; then
-	cp -rf /etc/ssr/oversea_list.conf /tmp/dnsmasq.ssr/
+	cp -rf /etc/ssrplus/oversea_list.conf $TMP_DNSMASQ_PATH/
 else
-	cp -rf /etc/ssr/gfw_list.conf /tmp/dnsmasq.ssr/
-	cp -rf /etc/ssr/gfw_base.conf /tmp/dnsmasq.ssr/
+	cp -rf /etc/ssrplus/gfw_list.conf $TMP_DNSMASQ_PATH/
+	cp -rf /etc/ssrplus/gfw_base.conf $TMP_DNSMASQ_PATH/
 fi
-
-NETFLIX_SERVER=$(uci_get_by_type global netflix_server nil)
-[ "$NETFLIX_SERVER" == "same" ] && NETFLIX_SERVER=$GLOBAL_SERVER
-if [ "$NETFLIX_SERVER" != "nil" ]; then
-	netflix() {
-		if [ -f "/tmp/dnsmasq.ssr/gfw_list.conf" ]; then
-			for line in $(cat /etc/ssr/netflix.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_list.conf; done
-			for line in $(cat /etc/ssr/netflix.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_base.conf; done
-		fi
-		awk '!/^$/&&!/^#/{printf("ipset=/%s/'"netflix"'\n",$0)}' /etc/ssr/netflix.list >/tmp/dnsmasq.ssr/netflix_forward.conf
-		awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#$1"'\n",$0)}' /etc/ssr/netflix.list >>/tmp/dnsmasq.ssr/netflix_forward.conf
-	}
-	if [ "$NETFLIX_SERVER" != "$GLOBAL_SERVER" ]; then
-		netflix 5555
-	else
-		netflix 5335
-	fi
-else
-	rm -f /tmp/dnsmasq.ssr/netflix_forward.conf
-fi
-for line in $(cat /etc/ssr/black.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_list.conf; done
-for line in $(cat /etc/ssr/black.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_base.conf; done
-for line in $(cat /etc/ssr/white.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_list.conf; done
-for line in $(cat /etc/ssr/white.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_base.conf; done
-for line in $(cat /etc/ssr/deny.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_list.conf; done
-for line in $(cat /etc/ssr/deny.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/gfw_base.conf; done
-awk '!/^$/&&!/^#/{printf("ipset=/%s/'"blacklist"'\n",$0)}' /etc/ssr/black.list >/tmp/dnsmasq.ssr/blacklist_forward.conf
-awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5335"'\n",$0)}' /etc/ssr/black.list >>/tmp/dnsmasq.ssr/blacklist_forward.conf
-awk '!/^$/&&!/^#/{printf("ipset=/%s/'"whitelist"'\n",$0)}' /etc/ssr/white.list >/tmp/dnsmasq.ssr/whitelist_forward.conf
-awk '!/^$/&&!/^#/{printf("address=/%s/''\n",$0)}' /etc/ssr/deny.list >/tmp/dnsmasq.ssr/denylist.conf
+case "$(uci_get_by_type global netflix_server nil)" in
+nil)
+	rm -f $TMP_DNSMASQ_PATH/netflix_forward.conf
+	;;
+same)
+	netflix 5335
+	;;
+*)
+	netflix $tmp_shunt_dns_port
+	;;
+esac
+for line in $(cat /etc/ssrplus/black.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_list.conf; done
+for line in $(cat /etc/ssrplus/black.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_base.conf; done
+for line in $(cat /etc/ssrplus/white.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_list.conf; done
+for line in $(cat /etc/ssrplus/white.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_base.conf; done
+for line in $(cat /etc/ssrplus/deny.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_list.conf; done
+for line in $(cat /etc/ssrplus/deny.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/gfw_base.conf; done
+cat /etc/ssrplus/black.list | sed '/^$/d' | sed '/#/d' | sed "/.*/s/.*/server=\/&\/127.0.0.1#5335\nipset=\/&\/blacklist/" >$TMP_DNSMASQ_PATH/blacklist_forward.conf
+cat /etc/ssrplus/white.list | sed '/^$/d' | sed '/#/d' | sed "/.*/s/.*/server=\/&\/127.0.0.1\nipset=\/&\/whitelist/" >$TMP_DNSMASQ_PATH/whitelist_forward.conf
+cat /etc/ssrplus/deny.list | sed '/^$/d' | sed '/#/d' | sed "/.*/s/.*/address=\/&\//" >$TMP_DNSMASQ_PATH/denylist.conf
 if [ "$(uci_get_by_type global adblock 0)" == "1" ]; then
-	[ -z "$switch_server" ] && cp -f /etc/ssr/ad.conf /tmp/dnsmasq.ssr/
-	if [ -f "/tmp/dnsmasq.ssr/ad.conf" ]; then
-		for line in $(cat /etc/ssr/black.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
-		for line in $(cat /etc/ssr/white.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
-		for line in $(cat /etc/ssr/deny.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
-		for line in $(cat /etc/ssr/netflix.list); do sed -i "/$line/d" /tmp/dnsmasq.ssr/ad.conf; done
+	cp -f /etc/ssrplus/ad.conf $TMP_DNSMASQ_PATH/
+	if [ -f "$TMP_DNSMASQ_PATH/ad.conf" ]; then
+		for line in $(cat /etc/ssrplus/black.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
+		for line in $(cat /etc/ssrplus/white.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
+		for line in $(cat /etc/ssrplus/deny.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
+		for line in $(cat /etc/ssrplus/netflix.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
 	fi
 else
-	rm -f /tmp/dnsmasq.ssr/ad.conf
+	rm -f $TMP_DNSMASQ_PATH/ad.conf
 fi

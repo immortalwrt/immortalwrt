@@ -2,9 +2,6 @@
  Copyright 2018-2019 Lienol <lawlienol@gmail.com>
  Licensed to the public under the Apache License 2.0.
 -%>
-<%
-local dsp = require "luci.dispatcher"
--%>
 <script type="text/javascript">
 	//<![CDATA[
 	const doms = document.getElementsByClassName('pingtime');
@@ -15,8 +12,7 @@ local dsp = require "luci.dispatcher"
 			const port = ports[index];
 			if (!dom) res()
 			port.innerHTML = '<font color="#0072c3">connect</font>';
-
-			XHR.get('<%=dsp.build_url("admin/services/shadowsocksr/ping")%>', {
+			XHR.get('<%=luci.dispatcher.build_url("admin/services/shadowsocksr/ping")%>', {
 				index,
 				domain: dom.getAttribute("hint"),
 				port: port.getAttribute("hint")
@@ -48,7 +44,6 @@ local dsp = require "luci.dispatcher"
 	for (let i = 0; i < 20; i++) {
 		thread()
 	}
-	
 	function cbi_row_drop(fromId, toId, store, isToBottom) {
 		var fromNode = document.getElementById(fromId);
 		var toNode = document.getElementById(toId);
@@ -65,7 +60,6 @@ local dsp = require "luci.dispatcher"
 		} else {
 			fromNode.parentNode.insertBefore(fromNode, toNode);
 		}
-
 		for (var idx = 2; idx < table.rows.length; idx++) {
 			table.rows[idx].className = table.rows[idx].className.replace(
 				/cbi-rowstyle-[12]/,
@@ -75,53 +69,43 @@ local dsp = require "luci.dispatcher"
 			if (table.rows[idx].id && table.rows[idx].id.match(/-([^\-]+)$/))
 				ids.push(RegExp.$1);
 		}
-
 		var input = document.getElementById(store);
 		if (input) input.value = ids.join(" ");
-
 		return false;
 	}
-
 	// set tr draggable
 	function enableDragForTable(table_selecter, store) {
 		var trs = document.querySelectorAll(table_selecter + " tr");
 		if (!trs || trs.length.length < 3) {
 			return;
 		}
-
 		function ondragstart(ev) {
 			ev.dataTransfer.setData("Text", ev.target.id);
 		}
-
 		function ondrop(ev) {
 			var from = ev.dataTransfer.getData("Text");
 			cbi_row_drop(from, this.id, store);
 		}
-
 		function ondragover(ev) {
 			ev.preventDefault();
 			ev.dataTransfer.dropEffect = "move";
 		}
-
 		function moveToTop(id) {
 			var top = document.querySelectorAll(table_selecter + " tr")[2];
 			cbi_row_drop(id, top.id, store);
 		}
-
 		function moveToBottom(id) {
 			console.log('moveToBottom:', id);
 			var trList = document.querySelectorAll(table_selecter + " tr");
 			var bottom = trList[trList.length - 1];
 			cbi_row_drop(id, bottom.id, store, true);
 		}
-
 		for (let index = 2; index < trs.length; index++) {
 			const el = trs[index];
 			el.setAttribute("draggable", true);
 			el.ondragstart = ondragstart;
 			el.ondrop = ondrop;
 			el.ondragover = ondragover;
-
 			// reset the behaviors of the btns
 			var upBtns = el.querySelectorAll(".cbi-button.cbi-button-up");
 			if (upBtns && upBtns.length > 0) {
@@ -131,7 +115,6 @@ local dsp = require "luci.dispatcher"
 					};
 				});
 			}
-
 			var downBtns = el.querySelectorAll(".cbi-button.cbi-button-down");
 			if (downBtns && downBtns.length > 0) {
 				downBtns.forEach(function (_el) {
@@ -142,7 +125,6 @@ local dsp = require "luci.dispatcher"
 			}
 		}
 	}
-
 	// enable
 	enableDragForTable(
 		"#cbi-shadowsocksr-servers table",

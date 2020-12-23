@@ -12,16 +12,18 @@
 			var s = document.getElementById(dataname+'-status');
 			if (s)
 			{
-				if (rv.ret=="0")
-				s.innerHTML ="<font color='green'>"+"<%:No new data!%> "+"</font>";
-				else if(rv.ret=="-1")
+				if(rv.ret=="-1")
 				{
 					s.innerHTML ="<font color='red'>"+"<%:Refresh Error!%> "+"</font>";
 				}
+				if (rv.ret=="0")
+				{
+					s.innerHTML ="<font color='green'>"+"<%:No new data!%> "+"</font>";
+				}
 				else
-					{
-				s.innerHTML ="<font color='green'>"+"<%:Refresh OK!%> "+"<%:Total Records:%>"+rv.ret+"</font>";
-			}
+				{
+					s.innerHTML ="<font color='green'>"+"<%:Refresh OK!%> "+"<%:Total Records:%>"+rv.ret+"</font>";
+				}
 			}
 				btn.disabled = false;
 				btn.value    = '<%:Refresh Data %>';
