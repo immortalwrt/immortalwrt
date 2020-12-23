@@ -7,8 +7,8 @@ t = f:field(TextValue, "conf")
 t.rmempty = true
 t.rows = 20
 function t.cfgvalue()
-	if nixio.fs.access("/tmp/ssrplus.log") then
-		local logs = luci.util.execi("cat /tmp/ssrplus.log")
+	if nixio.fs.access("/var/log/ssrplus.log") then
+		local logs = luci.util.execi("cat /var/log/ssrplus.log")
 		local s = ""
 		for line in logs do
 			s = line .. "\n" .. s
@@ -16,5 +16,5 @@ function t.cfgvalue()
 		return s
 	end
 end
-t.readonly="readonly"
+t.readonly = "readonly"
 return f
