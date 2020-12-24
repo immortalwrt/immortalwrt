@@ -49,7 +49,7 @@ define Package/coremark/config
 	config COREMARK_ENABLE_MULTITHREADING
 		bool "Enable multithreading support"
 		depends on PACKAGE_coremark
-		default n
+		default y
 		help
 			This enables multithreading support
 
