@@ -9,11 +9,11 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mtk-eip93
-PKG_RELEASE:=1.2
+PKG_RELEASE:=1.3
 
 PKG_SOURCE_URL:=https://github.com/vschagen/mtk-eip93.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=ae6492aba2388de54afa52700fcc21c3a6e6f1ad
+PKG_SOURCE_VERSION:=bb5fd1c88a8a74de06b70c281bceeb14d0d960ef
 
 MAKE_PATH:=src
 
@@ -29,8 +29,7 @@ define KernelPackage/crypto-hw-eip93
 	+kmod-crypto-des \
 	+kmod-crypto-md5 \
 	+kmod-crypto-sha1 \
-	+kmod-crypto-sha256 \
-	@LINUX_5_4
+	+kmod-crypto-sha256
   KCONFIG:=
   TITLE:=MTK EIP93 crypto module.
   FILES:=$(PKG_BUILD_DIR)/src/crypto-hw-eip93.ko
