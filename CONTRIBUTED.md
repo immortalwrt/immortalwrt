@@ -44,7 +44,8 @@ luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github
 luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
 luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
-luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com/garypang13/luci-theme-edge).
+luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com/garypang13/luci-theme-edge).<br/>
+luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
 ## License
 ### Depend on their own License.
