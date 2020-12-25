@@ -176,7 +176,6 @@ endef
 TARGET_DEVICES += asus_rt-ac85p
 
 define Device/asus_rt-n56u-b1
-  $(Device/dsa-migration)
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := RT-N56U
   DEVICE_VARIANT := B1
@@ -225,10 +224,9 @@ define Device/dlink_dir-8xx-a1
 endef
 
 define Device/dlink_dir-8xx-r1
-  $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := D-Link
-  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
+  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi -wpad-openssl
   KERNEL_INITRAMFS := $$(KERNEL)
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs |\
@@ -480,7 +478,6 @@ endef
 TARGET_DEVICES += gehua_ghl-r-001
 
 define Device/glinet_gl-mt1300
-  $(Device/dsa-migration)
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := GL-MT1300
