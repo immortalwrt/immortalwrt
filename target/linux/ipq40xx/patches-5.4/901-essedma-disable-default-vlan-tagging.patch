@@ -24,7 +24,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
 
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -647,8 +647,7 @@
+@@ -665,8 +665,7 @@
  			qcom,page-mode = <0>;
  			qcom,rx_head_buf_size = <1540>;
  			qcom,mdio_supported;
@@ -34,7 +34,7 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  			interrupts = <0  65 IRQ_TYPE_EDGE_RISING
  				      0  66 IRQ_TYPE_EDGE_RISING
  				      0  67 IRQ_TYPE_EDGE_RISING
-@@ -686,7 +685,7 @@
+@@ -704,7 +704,7 @@
  
  			gmac0: gmac0 {
  				local-mac-address = [00 00 00 00 00 00];
@@ -43,33 +43,3 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  			};
  
  			gmac1: gmac1 {
---- a/drivers/net/ethernet/qualcomm/essedma/edma.c
-+++ b/drivers/net/ethernet/qualcomm/essedma/edma.c
-@@ -721,13 +721,11 @@ static u16 edma_rx_complete(struct edma_
- 			edma_receive_checksum(rd, skb);
- 
- 			/* Process VLAN HW acceleration indication provided by HW */
--			if (unlikely(adapter->default_vlan_tag != rd->rrd4)) {
--				vlan = rd->rrd4;
--				if (likely(rd->rrd7 & EDMA_RRD_CVLAN))
--					__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan);
--				else if (rd->rrd1 & EDMA_RRD_SVLAN)
--					__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021AD), vlan);
--			}
-+			vlan = rd->rrd4;
-+			if (likely(rd->rrd7 & EDMA_RRD_CVLAN))
-+				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan);
-+			else if (rd->rrd1 & EDMA_RRD_SVLAN)
-+				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021AD), vlan);
- 
- 			/* Update rx statistics */
- 			adapter->stats.rx_packets++;
-@@ -1408,8 +1406,6 @@ netdev_tx_t edma_xmit(struct sk_buff *sk
- 	if (!adapter->edma_cinfo->is_single_phy) {
- 		if (unlikely(skb_vlan_tag_present(skb)))
- 			flags_transmit |= EDMA_VLAN_TX_TAG_INSERT_FLAG;
--		else if (adapter->default_vlan_tag)
--			flags_transmit |= EDMA_VLAN_TX_TAG_INSERT_DEFAULT_FLAG;
- 	}
- 
- 	/* Check and mark checksum offload */
