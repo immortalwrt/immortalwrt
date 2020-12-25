@@ -59,7 +59,8 @@ luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypan
 luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
 luci-proto-modemmanager source: [nickberry17/luci-proto-modemmanager](https://github.com/nickberry17/luci-proto-modemmanager).<br/>
-luci-theme-infinityfreedom source: [xiaoqingfengATGH/luci-theme-infinityfreedom](https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom).
+luci-theme-infinityfreedom source: [xiaoqingfengATGH/luci-theme-infinityfreedom](https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom).<br/>
+luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
 ## License
 ### Depend on their own License.
