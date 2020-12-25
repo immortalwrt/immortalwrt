@@ -1,0 +1,95 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Auth Round"
+msgstr ""
+
+msgid "DHCP After Auth"
+msgstr ""
+
+msgid "DHCP Before Auth"
+msgstr ""
+
+msgid "DHCP script"
+msgstr ""
+
+msgid "DHCP type"
+msgstr ""
+
+msgid "Disabled"
+msgstr ""
+
+msgid "Double Auth"
+msgstr ""
+
+msgid "EAP broadcast address"
+msgstr ""
+
+msgid "Fake DNS 1"
+msgstr ""
+
+msgid "Fake DNS 2"
+msgstr ""
+
+msgid "Fake HDD serial"
+msgstr ""
+
+msgid "Heartbeat interval"
+msgstr ""
+
+msgid "Log file"
+msgstr ""
+
+msgid "Max DHCP count"
+msgstr ""
+
+msgid "Max fail"
+msgstr ""
+
+msgid "Max retries"
+msgstr ""
+
+msgid "MiniEAP client"
+msgstr ""
+
+msgid "Missing username or password"
+msgstr ""
+
+msgid "No auto reauth"
+msgstr ""
+
+msgid "Packet plugins"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Program exited with failure. See system log for more information."
+msgstr ""
+
+msgid "RJ option"
+msgstr ""
+
+msgid "RJ private"
+msgstr ""
+
+msgid "RJv3 Plugin Settings"
+msgstr ""
+
+msgid "Service name"
+msgstr ""
+
+msgid "Stage timeout"
+msgstr ""
+
+msgid "Standard"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Version string"
+msgstr ""
+
+msgid "Wait after fail"
+msgstr ""
