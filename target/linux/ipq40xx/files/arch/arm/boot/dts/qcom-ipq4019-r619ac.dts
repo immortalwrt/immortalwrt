@@ -315,6 +315,36 @@
 	};
 };
 
+&ethphy0 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy1 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy2 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy3 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy4 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
 &usb3_ss_phy {
 	status = "okay";
 };
