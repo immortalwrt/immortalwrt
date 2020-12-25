@@ -181,6 +181,8 @@
 
 &pcie0 {
 	status = "okay";
+	pinctrl-0 = <&pcie_pins>;
+	pinctrl-names = "default";
 	perst-gpio = <&tlmm 4 GPIO_ACTIVE_LOW>;
 	wake-gpio = <&tlmm 40 GPIO_ACTIVE_HIGH>;
 
@@ -272,6 +274,36 @@
 			output-high;
 		};
 	};
+};
+
+&ethphy0 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy1 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy2 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy3 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy4 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
 };
 
 &usb3_ss_phy {
