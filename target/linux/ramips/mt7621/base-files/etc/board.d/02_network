@@ -14,7 +14,6 @@ ramips_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan" "wan"
 		;;
 	asiarf,ap7621-nv1|\
-	glinet,gl-mt1300|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
 	xiaomi,mir3g|\
@@ -50,6 +49,9 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "4:wan" "6@eth0"
 		ucidef_set_interface_lan "eth0.1 ra0 rai0"
+		;;
+	glinet,gl-mt1300)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 ra0 rax0" "wan"
 		;;
 	gnubee,gb-pc1|\
 	gnubee,gb-pc2)

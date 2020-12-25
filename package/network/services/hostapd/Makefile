@@ -394,7 +394,6 @@ endef
 define Package/eapol-test
   TITLE:=802.1x authentication test utility
   SECTION:=net
-  SUBMENU:=WirelessAPD
   CATEGORY:=Network
   SUBMENU:=WirelessAPD
   VARIANT:=supplicant-full-internal

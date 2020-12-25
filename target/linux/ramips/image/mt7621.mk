@@ -1190,12 +1190,13 @@ define Device/xiaomi-ac2100
   KERNEL_SIZE := 4096k
   IMAGE_SIZE := 120320k
   UBINIZE_OPTS := -E 5
-  IMAGES += kernel1.bin rootfs0.bin factory.bin
+  IMAGES += kernel1.bin rootfs0.bin factory.bin breed-factory.bin
   IMAGE/kernel1.bin := append-kernel
   IMAGE/rootfs0.bin := append-ubi | check-size
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size
+  IMAGE/breed-factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | \
+			     append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size
   DEVICE_VENDOR := Xiaomi
   DEVICE_PACKAGES := kmod-mt7603e kmod-mt7615d luci-app-mtwifi \
 	uboot-envtools -wpad-openssl
