@@ -47,19 +47,19 @@ local chnlist_update = api.uci_get_type("global_rules", "chnlist_update", "1") =
 			<div class="cbi-value-field">
 				<div>
 					<label>
-						<input class="cbi-input-checkbox" type="checkbox" name="gfwlist" value="1" <%=gfwlist_update%>>
+						<input class="cbi-input-checkbox" type="checkbox" name="gfwlist" value="1" <%=gfwlist_update%> />
 						gfwlist
 					</label>
 					<label>
-						<input class="cbi-input-checkbox" type="checkbox" name="chnroute" value="1" <%=chnroute_update%>>
+						<input class="cbi-input-checkbox" type="checkbox" name="chnroute" value="1" <%=chnroute_update%> />
 						chnroute
 					</label>
 					<label>
-						<input class="cbi-input-checkbox" type="checkbox" name="chnroute6" value="1" <%=chnroute6_update%>>
+						<input class="cbi-input-checkbox" type="checkbox" name="chnroute6" value="1" <%=chnroute6_update%> />
 						chnroute6
 					</label>
 					<label>
-						<input class="cbi-input-checkbox" type="checkbox" name="chnlist" value="1" <%=chnlist_update%>>
+						<input class="cbi-input-checkbox" type="checkbox" name="chnlist" value="1" <%=chnlist_update%> />
 						chnlist
 					</label>
 					<input class="cbi-button cbi-input-apply" type="button" id="update_rules_btn" onclick="update_rules(this)" value="<%:Manually update%>" />
