@@ -62,7 +62,7 @@ if nodes_display:find("compact_display_nodes") then
         local group = m:get(n, "group") or ""
         local remarks = m:get(n, "remarks") or ""
         local type = m:get(n, "type") or ""
-        str = str .. string.format("<input type='hidden' id='cbid.%s.%s.type' value='%s'>", appname, n, type)
+        str = str .. string.format("<input type='hidden' id='cbid.%s.%s.type' value='%s'/>", appname, n, type)
         if type == "Xray" or type == "V2ray" then
             local protocol = m:get(n, "protocol")
             if protocol == "_balancing" then
@@ -80,8 +80,8 @@ if nodes_display:find("compact_display_nodes") then
             else
                 str = str .. string.format("（%s:%s）", address, port)
             end
-            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.address' value='%s'>", appname, n, address)
-            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.port' value='%s'>", appname, n, port)
+            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.address' value='%s'/>", appname, n, address)
+            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.port' value='%s'/>", appname, n, port)
         end
         return str
     end
