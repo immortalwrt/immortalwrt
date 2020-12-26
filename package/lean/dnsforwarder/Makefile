@@ -21,7 +21,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Network
   TITLE:=A simple DNS forwarder
   URL:=https://github.com/holmium/dnsforwarder
-  DEPENDS:=+wget +dnsmasq-full +libpthread +coreutils-base64
+  DEPENDS:=+wget-ssl +dnsmasq-full +libpthread +coreutils-base64
 endef
 
 define Package/$(PKG_NAME)/description
