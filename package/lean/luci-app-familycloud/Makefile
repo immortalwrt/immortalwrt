@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for FamilyCloudSpeeder
-LUCI_DEPENDS:=+coreutils +coreutils-nohup +libreadline +libcurl +libopenssl +bash +curl +wget +openssl-util +ca-certificates +ca-bundle
+LUCI_DEPENDS:=+coreutils +coreutils-nohup +libreadline +libcurl +libopenssl +bash +curl +wget-ssl +openssl-util +ca-certificates +ca-bundle
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-familycloud
 PKG_VERSION:=1
