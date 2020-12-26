@@ -23,7 +23,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=6. Libraries
 	TITLE:=Docker Engine API for LuCI
 	PKGARCH:=all
-	DEPENDS:=+luci-lib-jsonc
+	DEPENDS:=@(aarch64||arm||x86_64) @HAS_FPU +luci-lib-jsonc
 endef
 
 define Package/$(PKG_NAME)/description
