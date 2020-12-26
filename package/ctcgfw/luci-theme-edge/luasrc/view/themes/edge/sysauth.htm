@@ -120,7 +120,7 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
 
 <%+footer%>
 <%
-luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720/?wallpapers -o /www/luci-static/edge/background/1.jpg) &")
+luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720/?wallpaper -o /www/luci-static/edge/background/1.jpg) &")
 luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720/?fashion -o /www/luci-static/edge/background/2.jpg) &")
 luci.sys.exec("(sleep 1;curl -k -L https://source.unsplash.com/featured/1080x720/?nature -o /www/luci-static/edge/background/3.jpg) &")
 %>
