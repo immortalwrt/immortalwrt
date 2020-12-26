@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI for FRPC
-LUCI_DEPENDS:=+wget +frpc
+LUCI_DEPENDS:=+wget-ssl +frpc
 LUCI_PKGARCH:=all
 PKG_VERSION:=1.2
 PKG_RELEASE:=1
