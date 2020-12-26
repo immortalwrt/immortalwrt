@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Edge Theme
-LUCI_DEPENDS:=
+LUCI_DEPENDS:=+curl
 
 PKG_LICENSE:=Apache-2.0
 
