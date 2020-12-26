@@ -61,6 +61,10 @@ netgear,ex6150v2)
 	ucidef_set_led_wlan "wlan2g" "WLAN2G" "ex61x0v2:green:router" "phy0tpt"
 	ucidef_set_led_wlan "wlan5g" "WLAN5G" "ex61x0v2:green:client" "phy1tpt"
 	;;
+p2w,r619ac)
+	ucidef_set_led_wlan "wlan2g" "WLAN2G" "${boardname}:blue:wlan2g" "phy0tpt"
+	ucidef_set_led_wlan "wlan5g" "WLAN5G" "${boardname}:blue:wlan5g" "phy1tpt"
+	;;
 qxwlan,e2600ac-c1 |\
 qxwlan,e2600ac-c2)
 	ucidef_set_led_wlan "wlan2g" "WLAN0" "e2600ac:green:wlan0" "phy0tpt"
