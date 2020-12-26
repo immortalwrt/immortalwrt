@@ -80,7 +80,7 @@
  	struct net_bridge_port *p;
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3198,9 +3198,17 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3199,9 +3199,17 @@ static int xmit_one(struct sk_buff *skb,
  	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
  #endif
  
@@ -99,7 +99,7 @@
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (!dev->eth_mangle_tx ||
  	    (skb = dev->eth_mangle_tx(dev, skb)) != NULL)
-@@ -4694,6 +4702,11 @@ void netdev_rx_handler_unregister(struct
+@@ -4695,6 +4703,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -111,7 +111,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -4744,6 +4757,10 @@ static int __netif_receive_skb_core(stru
+@@ -4745,6 +4758,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -122,7 +122,7 @@
  	net_timestamp_check(!netdev_tstamp_prequeue, skb);
  
  	trace_netif_receive_skb(skb);
-@@ -4783,6 +4800,16 @@ another_round:
+@@ -4784,6 +4801,16 @@ another_round:
  			goto out;
  	}
  
@@ -227,7 +227,7 @@
  
  	if (likely(ret == 0 && !missed))
  		goto out_unlock;
-@@ -337,6 +358,11 @@ int nf_conntrack_register_notifier(struc
+@@ -337,6 +360,11 @@ int nf_conntrack_register_notifier(struc
  {
          return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
  }
@@ -239,7 +239,7 @@
  #else
  int nf_conntrack_register_notifier(struct net *net,
  				   struct nf_ct_event_notifier *new)
-@@ -366,6 +392,11 @@ int nf_conntrack_unregister_notifier(str
+@@ -366,6 +394,11 @@ int nf_conntrack_unregister_notifier(str
  {
  	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
  }
