@@ -12,11 +12,9 @@ PKG_VERSION := r11518-$(PKG_REV)
 PKG_RELEASE := 1
 
 PKG_SOURCE_PROTO:= git
-#PKG_SOURCE_PROTO := svn
 PKG_SOURCE_VERSION := $(PKG_REV)
 PKG_SOURCE_URL := https://github.com/nx111/oscam.git
-#PKG_SOURCE_URL := http://www.streamboard.tv/svn/oscam/trunk
-#PKG_SOURCE_URL := http://www.oscam.cc/svn/oscam-mirror/trunk
+PKG_MIRROR_HASH := 6873d24637f14ec695e32a8a91f17bd8ef38d615a55fb76e6440f6a37da906e3
 
 PKG_LICENSE := GPL-3.0
 PKG_LICENSE_FILE := COPYING
