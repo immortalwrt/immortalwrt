@@ -6,6 +6,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/xxxserxxx/gotop.git
+PKG_MIRROR_HASH:=b4de9c3fdd144f57dfd713471c9ac7e99ff82b110e1dc0d7ecf1e3d0aaf5058d
 PKG_SOURCE_VERSION:=a8a238ac18725e377addae8a23bf08cf476b404c
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 
