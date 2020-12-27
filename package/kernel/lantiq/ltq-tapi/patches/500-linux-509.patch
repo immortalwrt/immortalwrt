@@ -1,0 +1,11 @@
+--- a/src/drv_tapi_kpi.c
++++ b/src/drv_tapi_kpi.c
+@@ -134,7 +134,7 @@ extern IFX_int32_t           block_ingre
+ /* ========================================================================== */
+ static IFX_void_t ifx_tapi_KPI_IngressHandler (IFX_ulong_t foo);
+ #ifdef KPI_TASKLET
+-DECLARE_TASKLET(tl_kpi_ingress, ifx_tapi_KPI_IngressHandler, 0L);
++DECLARE_TASKLET_OLD(tl_kpi_ingress, ifx_tapi_KPI_IngressHandler);
+ #endif /* KPI_TASKLET */
+ static IFX_int32_t ifx_tapi_KPI_IngressThread (IFXOS_ThreadParams_t *pThread);
+ static IFX_return_t ifx_tapi_KPI_GroupInit(IFX_uint32_t nKpiGroup);
