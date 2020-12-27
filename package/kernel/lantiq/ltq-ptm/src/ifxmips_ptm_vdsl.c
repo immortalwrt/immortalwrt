@@ -77,7 +77,7 @@ static int ptm_stop(struct net_device *);
   static int ptm_napi_poll(struct napi_struct *, int);
 static int ptm_hard_start_xmit(struct sk_buff *, struct net_device *);
 static int ptm_ioctl(struct net_device *, struct ifreq *, int);
-static void ptm_tx_timeout(struct net_device *);
+static void ptm_tx_timeout(struct net_device *, unsigned int txqueue);
 
 static inline struct sk_buff* alloc_skb_rx(void);
 static inline struct sk_buff* alloc_skb_tx(unsigned int);
@@ -125,7 +125,7 @@ static char *g_net_dev_name[1] = {"dsl0"};
 
 static int g_ptm_prio_queue_map[8];
 
-static DECLARE_TASKLET(g_swap_desc_tasklet, do_swap_desc_tasklet, 0);
+static DECLARE_TASKLET_OLD(g_swap_desc_tasklet, do_swap_desc_tasklet);
 
 
 unsigned int ifx_ptm_dbg_enable = DBG_ENABLE_MASK_ERR;
@@ -451,7 +451,7 @@ static int ptm_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
     return 0;
 }
 
-static void ptm_tx_timeout(struct net_device *dev)
+static void ptm_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
     ASSERT(dev == g_net_dev[0], "incorrect device");
 

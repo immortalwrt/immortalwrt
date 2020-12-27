@@ -199,7 +199,7 @@ static inline void mailbox_aal_rx_handler(void);
 static irqreturn_t mailbox_irq_handler(int, void *);
 static inline void mailbox_signal(unsigned int, int);
 static void do_ppe_tasklet(unsigned long);
-DECLARE_TASKLET(g_dma_tasklet, do_ppe_tasklet, 0);
+DECLARE_TASKLET_OLD(g_dma_tasklet, do_ppe_tasklet);
 
 /*
  *  QSB & HTU setting functions
