@@ -3,17 +3,16 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=rtl8812au-ac
 PKG_RELEASE:=1
 
-PKG_LICENSE:=GPLv2
-PKG_LICENSE_FILES:=
-
 PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8812au.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2020-06-26
 PKG_SOURCE_VERSION:=58f6be25f7c86d7ba67b0ccc638cf667755e6e1b
 PKG_MIRROR_HASH:=60359df8b49fa433d38b968b0df7eaddaca10f13cdd57471394bac1f6e5a162e
 
-# PKG_MAINTAINER:=
 PKG_BUILD_PARALLEL:=1
+
+PKG_LICENSE:=GPLv2
+PKG_LICENSE_FILES:=LICENSE
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
@@ -22,10 +21,9 @@ include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/rtl8812au-ac
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek rtl8812au/21au and rtl8814au driver
+  TITLE:=Realtek rtl8812au/21au wireless drivers
   DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
-  FILES:=\
-	$(PKG_BUILD_DIR)/rtl8812au.ko
+  FILES:=$(PKG_BUILD_DIR)/rtl8812au.ko
   AUTOLOAD:=$(call AutoProbe,rtl8812au)
 endef
 
@@ -40,7 +38,8 @@ NOSTDINC_FLAGS = \
 	-include backport/backport.h
 
 NOSTDINC_FLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT \
-	-D_LINUX_BYTEORDER_SWAB_H -DBUILD_OPENWRT -DRTW_SINGLE_WIPHY
+	-DRTW_SINGLE_WIPHY -DCONFIG_CONCURRENT_MODE -D_LINUX_BYTEORDER_SWAB_H
+
 ifeq ($(CONFIG_BIG_ENDIAN), y)
 NOSTDINC_FLAGS += -DCONFIG_BIG_ENDIAN
 endif
