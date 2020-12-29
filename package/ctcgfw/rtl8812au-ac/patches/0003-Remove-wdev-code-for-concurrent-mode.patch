@@ -1,0 +1,13 @@
+--- a/os_dep/linux/os_intfs.c
++++ b/os_dep/linux/os_intfs.c
+@@ -2817,8 +2817,10 @@ static int netdev_vir_if_close(struct net_device *pnetdev)
+ #endif
+ 
+ #ifdef CONFIG_IOCTL_CFG80211
++#ifndef CONFIG_CONCURRENT_MODE
+ 	wdev->iftype = NL80211_IFTYPE_MONITOR;
+ 	wdev->current_bss = NULL;
++#endif
+ 	rtw_scan_abort(padapter);
+ 	rtw_cfg80211_wait_scan_req_empty(padapter, 200);
+ 	adapter_wdev_data(padapter)->bandroid_scan = _FALSE;
