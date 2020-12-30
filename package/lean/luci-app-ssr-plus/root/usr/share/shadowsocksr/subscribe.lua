@@ -257,6 +257,72 @@ local function processData(szType, content)
 			result.server_port = host[2]
 		end
 		result.password = password
+	elseif szType == "vless" then
+		local idx_sp = 0
+		local alias = ""
+		if content:find("#") then
+			idx_sp = content:find("#")
+			alias = content:sub(idx_sp + 1, -1)
+		end
+		local info = content:sub(1, idx_sp - 1)
+		local hostInfo = split(info, "@")
+		local host = split(hostInfo[2], ":")
+		local uuid = hostInfo[1]
+		if host[2]:find("?") then
+			local query = split(host[2], "?")
+			local params = {}
+			for _, v in pairs(split(UrlDecode(query[2]), '&')) do
+				local t = split(v, '=')
+				params[t[1]] = t[2]
+			end
+			result.alias = UrlDecode(alias)
+			result.type = "vless"
+			result.server = host[1]
+			result.server_port = query[1]
+			result.vmess_id = uuid
+			result.vless_encryption = params.encryption or "none"
+			result.transport = params.type or "tcp"
+			if not params.type or params.type == "tcp" then
+				if params.security == "xtls" then
+					result.xtls = "1"
+					result.tls_host = params.sni or host[1]
+					result.vless_flow = params.flow
+				else
+					result.xtls = "0"
+				end
+			end
+			if params.type == 'ws' then
+				result.ws_host = params.host
+				result.ws_path = params.path or "/"
+			end
+			if params.type == 'http' then
+				result.h2_host = params.host or host[1]
+				result.h2_path = params.path or "/"
+			end
+			if params.type == 'kcp' then
+				result.kcp_guise = params.headerType or "none"
+				result.mtu = 1350
+				result.tti = 50
+				result.uplink_capacity = 5
+				result.downlink_capacity = 20
+				result.read_buffer_size = 2
+				result.write_buffer_size = 2
+				result.seed = params.seed
+			end
+			if params.type == 'quic' then
+				result.quic_guise = params.headerType or "none"
+				result.quic_key = params.key
+				result.quic_security = params.quicSecurity or "none"
+			end
+			if params.security == "tls" then
+				result.tls = "1"
+				result.tls_host = params.sni or host[1]
+			else
+				result.tls = "0"
+			end
+		else
+			result.server_port = host[2]
+		end
 	end
 	if not result.alias then
 		if result.server and result.server_port then

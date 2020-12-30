@@ -87,7 +87,7 @@ if Process_list:find("ssr.server") then
 	server_run = 1
 end
 
-if Process_list:find("ssrplus/bin/pdnsd") or (Process_list:find("ssrplus.dns") and Process_list:find("dns2socks 127.0.0.1:.*127.0.0.1:5335")) then
+if Process_list:find("ssrplus/bin/pdnsd") or (Process_list:find("ssrplus.dns") and Process_list:find("dns2socks.127.0.0.1.*127.0.0.1.5335")) then
 	pdnsd_run = 1
 end
 
