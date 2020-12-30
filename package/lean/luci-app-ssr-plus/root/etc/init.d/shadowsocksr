@@ -75,13 +75,13 @@ get_host_ip() {
 	local host=$(uci_get_by_name $1 server)
 	local ip=$host
 	if [ -z "$(echo $host | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")" ]; then
-		if [ "$host" == "${host1#*:[0-9a-fA-F]}" ]; then
+		if [ "$host" == "${host#*:[0-9a-fA-F]}" ]; then
 			ip=$(resolveip -4 -t 3 $host | awk 'NR==1{print}')
 			[ -z "$ip" ] && ip=$(wget -q -O- http://119.29.29.29/d?dn=$host | awk -F ';' '{print $1}')
 		fi
 	fi
+	[ -z "$ip" ] || uci_set_by_name $1 ip $ip
 	echo ${ip:="$(uci_get_by_name $1 ip "ERROR")"}
-	[ "$ip" == "ERROR" ] || uci_set_by_name $1 ip $hostip
 }
 
 clean_log() {
@@ -343,9 +343,9 @@ start_udp() {
 		;;
 	trojan) #client
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_local_port
-		ln_start_bin $(first_type $type) $type --config $udp_config_file
+		ln_start_bin $(first_type ${type}-go ${type}) $type --config $udp_config_file
 		ln_start_bin $(first_type ipt2socks) ipt2socks -U -b 0.0.0.0 -4 -s 127.0.0.1 -p $tmp_udp_local_port -l $tmp_udp_port
-		echolog "UDP TPROXY Relay:$($(first_type $type) --version 2>&1 | head -1) Started!"
+		echolog "UDP TPROXY Relay:$($(first_type ${type}-go ${type}) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		echolog "NaïveProxy UDP TPROXY Relay not supported!"
@@ -394,15 +394,15 @@ start_shunt() {
 		;;
 	trojan)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
-		ln_start_bin $(first_type ${type}) $type --config $shunt_config_file
+		ln_start_bin $(first_type ${type}-go ${type}) $type --config $shunt_config_file
 		if [ -n "$tmp_local_port" ]; then
 			local tmp_port=$tmp_local_port
 		else
 			local tmp_port=$tmp_shunt_local_port
-			ln_start_bin $(first_type ${type}) $type --config $shunt_dns_config_file
+			ln_start_bin $(first_type ${type}-go ${type}) $type --config $shunt_dns_config_file
 		fi
 		ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_port 8.8.8.8:53 127.0.0.1:$tmp_shunt_dns_port -q
-		echolog "shunt:$($(first_type $type) --version 2>&1 | head -1) Started!"
+		echolog "shunt:$($(first_type ${type}-go ${type}) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
@@ -452,8 +452,8 @@ start_local() {
 		;;
 	trojan) #client
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
-		ln_start_bin $(first_type $type) $type --config $local_config_file
-		echolog "Global_Socks5:$($(first_type $type) --version 2>&1 | head -1) Started!"
+		ln_start_bin $(first_type ${type}-go ${type}) $type --config $local_config_file
+		echolog "Global_Socks5:$($(first_type ${type}-go ${type}) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
@@ -512,10 +512,8 @@ Start_Run() {
 		;;
 	trojan)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
-		for i in $(seq 1 $threads); do
-			ln_start_bin $(first_type $type) $type --config $tcp_config_file
-		done
-		echolog "Main node:$($(first_type $type) --version 2>&1 | head -1) , $threads Threads Started!"
+			ln_start_bin $(first_type ${type}-go ${type}) $type --config $tcp_config_file
+		echolog "Main node:$($(first_type $type) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
@@ -716,7 +714,7 @@ start_rules() {
 	local local_port=$(uci_get_by_name $GLOBAL_SERVER local_port)
 	local lan_ac_ips=$(uci_get_by_type access_control lan_ac_ips)
 	local lan_ac_mode=$(uci_get_by_type access_control lan_ac_mode)
-	if [ "$kcp_enable_flag" == "0" ]; then
+	if [ "$kcp_enable_flag" == "0" -a "$redir_udp" == "1" ]; then
 		local udp_server=$(get_host_ip $UDP_RELAY_SERVER)
 		local udp_local_port=$tmp_udp_port
 	fi
