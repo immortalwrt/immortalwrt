@@ -93,7 +93,7 @@ end
 
 local log = function(...)
 	if args then
-		print(...)
+		print("{ret=" .. table.concat({...}, ",retcount=") .. "}")
 	else
 		print(os.date("%Y-%m-%d %H:%M:%S ") .. table.concat({...}, " "))
 	end
@@ -136,7 +136,7 @@ local function update(url, file, type, file2)
 		local old_md5 = luci.sys.exec("echo -n $([ -f '" .. file .. "' ] && md5sum " .. file .. " | awk '{print $1}')")
 		if new_md5 == old_md5 then
 			if args then
-				log("0")
+				log(1)
 			else
 				log("你已经是最新数据，无需更新！")
 			end
@@ -152,14 +152,14 @@ local function update(url, file, type, file2)
 				luci.sys.call("/usr/share/shadowsocksr/chinaipset.sh " .. TMP_PATH .. "/china_ssr.txt")
 			end
 			if args then
-				log(tonumber(icount) / Num)
+				log(0, tonumber(icount) / Num)
 			else
 				log("更新成功！ 新的总纪录数：" .. tostring(tonumber(icount) / Num))
 			end
 		end
 	else
 		if args then
-			log("-1")
+			log(-1)
 		else
 			log("更新失败！")
 		end

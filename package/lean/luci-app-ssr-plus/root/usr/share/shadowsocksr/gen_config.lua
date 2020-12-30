@@ -1,4 +1,4 @@
-local ucursor = require"luci.model.uci".cursor()
+local ucursor = require "luci.model.uci".cursor()
 local json = require "luci.jsonc"
 local server_section = arg[1]
 local proto = arg[2]
@@ -141,21 +141,22 @@ local ss = {
 	local_address = "0.0.0.0",
 	local_port = tonumber(local_port),
 	password = server.password,
-	method = server.encrypt_method,
-	timeout = tonumber(server.timeout) or 60,
+	method = server.encrypt_method_ss,
+	timeout = tonumber(server.timeout),
 	fast_open = (server.fast_open == "1") and true or false,
 	reuse_port = true
 }
 if server.type == "ss" then
-	if server.plugin then
+	if server.plugin and server.plugin ~= "none" then
 		ss.plugin = server.plugin
-		ss.plugin_opts = (server.simple_obfs) and server.simple_obfs .. server.plugin_opts or (server.v2ray_plugin ~= "none") and server.v2ray_plugin .. server.plugin_opts or nil
+		ss.plugin_opts = server.plugin_opts or nil
 	end
 	print(json.stringify(ss, 1))
 end
 if server.type == "ssr" then
 	ss.protocol = server.protocol
 	ss.protocol_param = server.protocol_param
+	ss.method = server.encrypt_method
 	ss.obfs = server.obfs
 	ss.obfs_param = server.obfs_param
 	print(json.stringify(ss, 1))
