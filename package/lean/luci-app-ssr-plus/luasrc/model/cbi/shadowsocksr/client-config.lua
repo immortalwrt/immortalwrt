@@ -139,7 +139,7 @@ if nixio.fs.access("/usr/bin/xray") or nixio.fs.access("/usr/bin/v2ray") then
 	o:value("vmess", translate("Vmess"))
 	o:value("vless", translate("VLESS"))
 end
-if nixio.fs.access("/usr/sbin/trojan") then
+if nixio.fs.access("/usr/sbin/trojan") or nixio.fs.access("/usr/bin/trojan-go") then
 	o:value("trojan", translate("Trojan"))
 end
 if nixio.fs.access("/usr/bin/naive") then
@@ -219,7 +219,7 @@ o:depends("type", "ss")
 
 -- Shadowsocks Plugin
 o = s:option(ListValue, "plugin", translate("Obfs"))
-o:value("", translate("None"))
+o:value("none", translate("None"))
 if nixio.fs.access("/usr/bin/obfs-local") then
 	o:value("obfs-local", translate("simple-obfs"))
 end
@@ -229,24 +229,10 @@ end
 o.rmempty = true
 o:depends("type", "ss")
 
-o = s:option(ListValue, "simple_obfs", translate("Plugin Opts"))
-o:value("obfs=tls;obfs-host=", translate("TLS"))
-o:value("obfs=http;obfs-host=", translate("HTTP"))
-o:depends("plugin", "obfs-local")
-o.rmempty = true
-
-o = s:option(ListValue, "v2ray_plugin", translate("Plugin Opts"))
-o:value("tls;host=", translate("TLS"))
-o:value("mode=quic;host=", translate("QUIC"))
-o:value("none", translate("HTTP"))
-o:depends("plugin", "v2ray-plugin")
-o.rmempty = true
-
-o = s:option(Value, "plugin_opts", translate("Plugin Opts"), translate("Please fill in the Host, for example: www.baidu.com"))
+o = s:option(Value, "plugin_opts", translate("Plugin Opts"))
 o.rmempty = true
 o:depends({type = "ss", plugin = "obfs-local"})
-o:depends({type = "ss", v2ray_plugin = "tls;host="})
-o:depends({type = "ss", v2ray_plugin = "mode=quic;host="})
+o:depends({type = "ss", plugin = "v2ray-plugin"})
 
 o = s:option(ListValue, "protocol", translate("Protocol"))
 for _, v in ipairs(protocol) do

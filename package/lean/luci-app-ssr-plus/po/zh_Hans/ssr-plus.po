@@ -382,23 +382,23 @@ msgstr "DNS 防污染服务"
 msgid "Use Other DNS Tunnel(Need to install)"
 msgstr "使用其他DNS转发(需要自己安装)"
 
-msgid "Import SSR"
-msgstr "导入ssr配置信息"
+msgid "Import"
+msgstr "导入配置信息"
 
 msgid "Export SSR"
 msgstr "导出ssr配置信息"
 
-msgid "Import SSR successfully."
-msgstr "成功导入SSR。"
+msgid "Import configuration information successfully."
+msgstr "导入配置信息成功。"
 
-msgid "Invalid SSR format."
-msgstr "无效的SSR格式。"
+msgid "Invalid format."
+msgstr "无效的格式。"
 
 msgid "User cancelled."
 msgstr "用户已取消。"
 
-msgid "Paste ssr url here"
-msgstr "在此处粘贴ssr://网址"
+msgid "Paste sharing link here"
+msgstr "在此处粘贴分享链接"
 
 msgid "Unable to copy SSR to clipboard."
 msgstr "无法复制SSR网址到剪贴板。"
@@ -690,9 +690,6 @@ msgstr "混淆密码（可选）"
 
 msgid "Select the interface that needs to transmit data. If unchecked, all interfaces will pass data by default!"
 msgstr "选择需要传递数据的接口。如果未选择，则默认情况下所有接口都将传递数据！"
-
-msgid "Please fill in the Host, for example: www.baidu.com"
-msgstr "请填写Host，例如：www.baidu.com"
 
 msgid "Camouflage Type"
 msgstr "伪装类型"
