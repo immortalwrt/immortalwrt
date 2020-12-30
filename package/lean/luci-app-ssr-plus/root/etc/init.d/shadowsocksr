@@ -589,12 +589,14 @@ load_config() {
 		LOCAL_SERVER=$GLOBAL_SERVER
 		local_config_file=$TMP_PATH/tcp-udp-ssr-local.json
 		start_local
+		local_enable=0
 		;;
 	*)
 		if [ "$LOCAL_SERVER" == "$GLOBAL_SERVER" ]; then
 			_local="1"
 			local_config_file=$TMP_PATH/tcp-udp-ssr-local.json
 			start_local
+			local_enable=0
 		else
 			_local="2"
 			local_config_file=$TMP_PATH/tcp-udp-ssr-local.json
