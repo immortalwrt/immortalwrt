@@ -4,7 +4,7 @@ module("luci.controller.shadowsocksr", package.seeall)
 
 function index()
 	if not nixio.fs.access("/etc/config/shadowsocksr") then
-		call("act_reset")
+		return
 	end
 	entry({"admin", "services", "shadowsocksr"}, alias("admin", "services", "shadowsocksr", "client"), _("ShadowSocksR Plus+"), 10).dependent = true
 	entry({"admin", "services", "shadowsocksr", "client"}, cbi("shadowsocksr/client"), _("SSR Client"), 10).leaf = true
