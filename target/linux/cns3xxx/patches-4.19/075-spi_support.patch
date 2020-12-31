@@ -39,7 +39,7 @@
  /**
 --- a/drivers/spi/spi.c
 +++ b/drivers/spi/spi.c
-@@ -1032,6 +1032,9 @@ static int spi_transfer_one_message(stru
+@@ -1033,6 +1033,9 @@ static int spi_transfer_one_message(stru
  	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
  		trace_spi_transfer_start(msg, xfer);
  
