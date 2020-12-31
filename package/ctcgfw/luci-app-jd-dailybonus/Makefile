@@ -12,8 +12,8 @@ LUCI_DEPENDS:=+node +node-request +coreutils +coreutils-nohup +wget
 LUCI_PKGARCH:=all
 
 PKG_NAME:=luci-app-jd-dailybonus
-PKG_VERSION:=0.8.8
-PKG_RELEASE:=20201204
+PKG_VERSION:=0.8.9
+PKG_RELEASE:=20201230
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
