@@ -34,8 +34,8 @@ while [ "1" == "1" ]; do #死循环
 	if [ "$redir_tcp_process" -gt 0 ]; then
 		icount=$(busybox ps -w | grep ssr-retcp | grep -v grep | wc -l)
 		if [ "$icount" == 0 ]; then
-			logger -t "$NAME" "ssr redir tcp error.restart!"
-			echolog "ssr redir tcp error.restart!"
+			logger -t "$NAME" "ssrplus redir tcp error.restart!"
+			echolog "ssrplus redir tcp error.restart!"
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
@@ -44,8 +44,8 @@ while [ "1" == "1" ]; do #死循环
 	if [ "$redir_udp_process" -gt 0 ]; then
 		icount=$(busybox ps -w | grep ssr-reudp | grep -v grep | wc -l)
 		if [ "$icount" == 0 ]; then
-			logger -t "$NAME" "ssr redir udp error.restart!"
-			echolog "ssr redir udp error.restart!"
+			logger -t "$NAME" "ssrplus redir udp error.restart!"
+			echolog "ssrplus redir udp error.restart!"
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
@@ -54,8 +54,8 @@ while [ "1" == "1" ]; do #死循环
 	if [ "$server_process_count" -gt 0 ]; then
 		icount=$(busybox ps -w | grep ssr-server | grep -v grep | wc -l)
 		if [ "$icount" -lt "$server_process_count" ]; then #如果进程挂掉就重启它
-			logger -t "$NAME" "ssr server error.restart!"
-			echolog "ssr server error.restart!"
+			logger -t "$NAME" "ssrplus server error.restart!"
+			echolog "ssrplus server error.restart!"
 			kill -9 $(busybox ps -w | grep ssr-server | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 			/etc/init.d/shadowsocksr restart
 			exit 0
@@ -65,8 +65,8 @@ while [ "1" == "1" ]; do #死循环
 	if [ "$kcp_process" -gt 0 ]; then
 		icount=$(busybox ps -w | grep kcptun-client | grep -v grep | wc -l)
 		if [ "$icount" -lt "$kcp_process" ]; then #如果进程挂掉就重启它
-			logger -t "$NAME" "ssr kcptun error.restart!"
-			echolog "ssr kcptun error.restart!"
+			logger -t "$NAME" "ssrplus kcptun error.restart!"
+			echolog "ssrplus kcptun error.restart!"
 			killall -q -9 kcptun-client
 			(/usr/bin/kcptun-client -r $server:$kcp_port -l :$server_port $password $kcp_param &)
 		fi

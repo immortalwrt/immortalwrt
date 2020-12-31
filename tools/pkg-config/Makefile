@@ -19,6 +19,8 @@ include $(INCLUDE_DIR)/host-build.mk
 
 unexport PKG_CONFIG
 
+HOSTCC := $(HOSTCC_NOCACHE)
+
 HOST_CONFIGURE_ARGS += --with-internal-glib
 
 ifeq ($(HOST_OS),Darwin)
