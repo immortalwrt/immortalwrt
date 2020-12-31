@@ -1,67 +1,43 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtorrent-rasterbar
-PKG_VERSION:=1.2.10
-PKG_RELEASE=1
+PKG_VERSION:=1.2.11
+PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-libtorrent-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/arvidn/libtorrent/tar.gz/libtorrent-$(PKG_VERSION)?
-PKG_HASH:=e0fedb583f1e7bdcc0eb80a9df064a1e6fb0b825d8423e64bdb0f7a35879a09e
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/arvidn/libtorrent/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=885ed33eca50a1db01723a3e52ed4bc478a58592f430c231995a35d701efbd0b
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(firstword $(subst -, ,$(PKG_NAME)))-libtorrent-$(PKG_VERSION)
-
-PKG_LICENSE:=BSD
+PKG_MAINTAINER:=David Yang <mmyangfl@gmail.com>
+PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
 
-PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/libtorrent-rasterbar
-  SECTION:=libs
-  CATEGORY:=Libraries
-  TITLE:=Rasterbar BitTorrent library
-  URL:=https://www.libtorrent.org/
-  DEPENDS:=+libstdcpp +libopenssl +boost +boost-system +boost-chrono +boost-random $(ICONV_DEPENDS)
-  MAINTAINER:=Arvid Norberg <arvid@libtorrent.org>
+	TITLE:=Rasterbar BitTorrent library
+	URL:=https://libtorrent.org/
+	SECTION:=libs
+	CATEGORY:=Libraries
+	DEPENDS:=+boost-system +libopenssl
 endef
 
 define Package/libtorrent-rasterbar/description
-Rasterbar libtorrent is a C++ library that aims to be a good alternative to
-all the other bittorrent implementations around. It is a library and not a
-full featured client, although it comes with a working example client.
+	Rasterbar libtorrent is a C++ library that aims to be a good alternative to
+	all the other bittorrent implementations around.
 endef
 
-TARGET_CFLAGS += $(if $(CONFIG_SOFT_FLOAT),-DBOOST_NO_FENV_H) -fPIC
-
-EXTRA_CXXFLAGS += $(if $(CONFIG_GCC_VERSION_4_8),-std=gnu++11,-std=gnu++14)
-
-TARGET_LDFLAGS += -lstdc++
-
-CONFIGURE_ARGS += \
-	--disable-debug \
-	--disable-rpath \
-	--enable-encryption \
-	--enable-deprecated-functions \
-	--with-gnu-ld \
-	--with-openssl=$(STAGING_DIR)/usr \
-	--with-boost=$(STAGING_DIR)/usr \
-	--with-libiconv \
-	--with-libiconv-prefix=$(ICONV_PREFIX)
-
-define Build/Configure
-	cd $(PKG_BUILD_DIR) ; \
-		sh autotool.sh
-	$(call Build/Configure/Default)
-endef
+PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/libtorrent $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libtorrent-rasterbar.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libtorrent-rasterbar.so* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libtorrent-rasterbar.pc $(1)/usr/lib/pkgconfig/
 endef
