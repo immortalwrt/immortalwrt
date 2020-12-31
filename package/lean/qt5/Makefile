@@ -24,10 +24,11 @@ PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/qt/archive/qt/$(QT5_VERSION_MA
 		http://download.qt-project.org/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/
 PKG_HASH:=55e8273536be41f4f63064a79e552a22133848bb419400b6fa8e9fc0dc05de08
 
+PKG_BUILD_DIR=$(BUILD_DIR)/qt-everywhere-src-$(PKG_VERSION)
+
+PKG_BUILD_DEPENDS:=libdouble-conversion pcre2 zlib
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
-
-PKG_BUILD_DIR=$(BUILD_DIR)/qt-everywhere-src-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -194,7 +195,7 @@ define Package/qt5-xml/install
 	$(CP) $(PKG_BUILD_DIR)/qtbase/lib/libQt5Xml.so* $(1)/usr/lib
 endef
 
-$(eval $(call BuildPackage,qt5-core,+zlib,+libpcre2-16,+libdouble-conversion))
+$(eval $(call BuildPackage,qt5-core))
 $(eval $(call BuildPackage,qt5-network))
 $(eval $(call BuildPackage,qt5-sql))
 $(eval $(call BuildPackage,qt5-xml))
