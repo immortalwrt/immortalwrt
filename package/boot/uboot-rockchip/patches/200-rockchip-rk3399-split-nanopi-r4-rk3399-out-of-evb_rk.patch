@@ -20,8 +20,8 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
  board/friendlyarm/nanopi4/hwrev.h     |  27 ++++
  board/friendlyarm/nanopi4/nanopi4.c   | 148 +++++++++++++++++++++
  drivers/clk/rockchip/clk_rk3399.c     |   2 +
- include/configs/nanopi4.h             |  28 ++++
- 9 files changed, 433 insertions(+)
+ include/configs/nanopi4.h             |  24 ++++
+ 9 files changed, 429 insertions(+)
  create mode 100644 board/friendlyarm/nanopi4/Kconfig
  create mode 100644 board/friendlyarm/nanopi4/MAINTAINERS
  create mode 100644 board/friendlyarm/nanopi4/Makefile
@@ -482,7 +482,7 @@ index 22c373a623..38975c0c65 100644
  
 --- /dev/null
 +++ b/include/configs/nanopi4.h
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,24 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +/*
 + * Copyright (C) Guangzhou FriendlyELEC Computer Tech. Co., Ltd.
@@ -505,9 +505,5 @@ index 22c373a623..38975c0c65 100644
 +
 +#define CONFIG_SERIAL_TAG
 +#define CONFIG_REVISION_TAG
-+
-+/* Environment configs */
-+#define CONFIG_SYS_MMC_ENV_DEV		1
-+#define CONFIG_SYS_MMC_ENV_PART		0
 +
 +#endif
