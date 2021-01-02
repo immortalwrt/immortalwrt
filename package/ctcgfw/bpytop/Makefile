@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bpytop
-PKG_VERSION:=1.0.53
+PKG_VERSION:=1.0.54
 PKG_RELEASE:=1
 
 PYPI_NAME:=bpytop
-PKG_HASH:=d08b8120444e7f35fe032b33495ca551b5890702130c45ad8a56c1fa978fc358
+PKG_HASH:=a25665e71627a5ec918e6ecf4422bea1ba449069958f64c3879029cfb58a0ac1
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -35,17 +35,11 @@ define Package/bpytop/description
 endef
 
 define Package/bpytop/install
-	$(call Py3Package/$(1)/install,$(1))
-	$(call Py3Package/ProcessFilespec,$(1),$(PKG_INSTALL_DIR),$(1))
-	$(FIND) $(1) -name '*.exe' -delete
-	$(call Python3/CompileAll,$(1))
-	$(call Python3/DeleteSourceFiles,$(1))
-	$(call Python3/DeleteEmptyDirs,$(1))
-	if [ -d "$(1)/usr/bin" ]; then \
-		$(call Python3/FixShebang,$(1)/usr/bin/*) ; \
-	fi
-	$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/share/bpytop
-	$(CP) $(PKG_BUILD_DIR)/bpytop-themes/* $(PKG_INSTALL_DIR)/usr/share/bpytop/
+	$(call Py3Package/$(1)/install,$(PKG_BUILD_DIR))
+	$(INSTALL_DIR) $(1)/usr
+	$(CP) $(PKG_INSTALL_DIR)/usr/* $(1)/usr/
+	$(INSTALL_DIR) $(1)/usr/share/bpytop
+	$(CP) $(PKG_BUILD_DIR)/bpytop-themes/* $(1)/usr/share/bpytop/
 endef
 
 $(eval $(call Py3Package,bpytop))
