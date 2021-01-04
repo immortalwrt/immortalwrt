@@ -74,62 +74,51 @@ o = s:taboption("Main", Flag, "enabled", translate("Main switch"))
 o.rmempty = false
 
 ---- TCP Node
-local tcp_node_num = tonumber(m:get("@global_other[0]", "tcp_node_num") or 1)
-for i = 1, tcp_node_num, 1 do
-    o = s:taboption("Main", ListValue, "tcp_node" .. i, translate("TCP Node") .. " " .. i)
-    if i == 1 then
-        o.title = translate("TCP Node")
-        o.description = ""
-        --o.description = translate("For proxy specific list.")
-        --o.description = o.description .. "<br />"
-        local current_node = luci.sys.exec(string.format("[ -f '/var/etc/%s/id/TCP_%s' ] && echo -n $(cat /var/etc/%s/id/TCP_%s)", appname, i, appname, i))
-        if current_node and current_node ~= "" and current_node ~= "nil" then
-            local n = uci:get_all(appname, current_node)
-            if n then
-                if tonumber(m:get("@auto_switch[0]", "enable") or 0) == 1 then
-                    local remarks = api.get_full_node_remarks(n)
-                    local url = d.build_url("admin", "services", appname, "node_config", current_node)
-                    o.description = o.description .. translatef("Current node: %s", string.format('<a href="%s">%s</a>', url, remarks)) .. "<br />"
+o = s:taboption("Main", ListValue, "tcp_node", translate("TCP Node"))
+o.title = translate("TCP Node")
+o.description = ""
+--o.description = translate("For proxy specific list.")
+--o.description = o.description .. "<br />"
+local current_node = luci.sys.exec(string.format("[ -f '/var/etc/%s/id/TCP' ] && echo -n $(cat /var/etc/%s/id/TCP)", appname, appname))
+if current_node and current_node ~= "" and current_node ~= "nil" then
+    local n = uci:get_all(appname, current_node)
+    if n then
+        if tonumber(m:get("@auto_switch[0]", "enable") or 0) == 1 then
+            local remarks = api.get_full_node_remarks(n)
+            local url = d.build_url("admin", "services", appname, "node_config", current_node)
+            o.description = o.description .. translatef("Current node: %s", string.format('<a href="%s">%s</a>', url, remarks)) .. "<br />"
+        end
+        if n.protocol and n.protocol == "_shunt" then
+            uci:foreach(appname, "shunt_rules", function(e)
+                local id = e[".name"]
+                local remarks = translate(e.remarks)
+                if n[id] and n[id] ~= "nil" then
+                    local url = d.build_url("admin", "services", appname, "node_config", n[id])
+                    local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
+                    o.description = o.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
                 end
-                if n.protocol and n.protocol == "_shunt" then
-                    uci:foreach(appname, "shunt_rules", function(e)
-                        local id = e[".name"]
-                        local remarks = translate(e.remarks)
-                        if n[id] and n[id] ~= "nil" then
-                            local url = d.build_url("admin", "services", appname, "node_config", n[id])
-                            local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                            o.description = o.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
-                        end
-                    end)
-                    local id = "default_node"
-                    local remarks = translate("Default")
-                    if n[id] and n[id] ~= "nil" then
-                        local url = d.build_url("admin", "services", appname, "node_config", n[id])
-                        local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                         o.description = o.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
-                    end
-                end
+            end)
+            local id = "default_node"
+            local remarks = translate("Default")
+            if n[id] and n[id] ~= "nil" then
+                local url = d.build_url("admin", "services", appname, "node_config", n[id])
+                local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
+                o.description = o.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
             end
         end
     end
-    o:value("nil", translate("Close"))
-    for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 end
+o:value("nil", translate("Close"))
+for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 
----- UDP Node
-local udp_node_num = tonumber(m:get("@global_other[0]", "udp_node_num") or 1)
-for i = 1, udp_node_num, 1 do
-    o = s:taboption("Main", ListValue, "udp_node" .. i, translate("UDP Node") .. " " .. i)
-    o:value("nil", translate("Close"))
-    if i == 1 then
-        o.title = translate("UDP Node")
-        --o.description = translate("For proxy game network, DNS hijack etc.") .. "<br />" .. translate("The selected server will not use Kcptun.")
-        o:value("tcp_", translate("Same as the tcp node"))
-        --o:value("tcp", translate("Same as the tcp node"))
-        --o:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
-    end
-    for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
-end
+o = s:taboption("Main", ListValue, "udp_node", translate("UDP Node"))
+o:value("nil", translate("Close"))
+o.title = translate("UDP Node")
+--o.description = translate("For proxy game network, DNS hijack etc.") .. "<br />" .. translate("The selected server will not use Kcptun.")
+o:value("tcp_", translate("Same as the tcp node"))
+--o:value("tcp", translate("Same as the tcp node"))
+--o:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
+for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 
 s:tab("DNS", translate("DNS"))
 
@@ -306,14 +295,12 @@ o.default = "default"
 o.rmempty = false
 
 s:tab("log", translate("Log"))
-for i = 1, tcp_node_num, 1 do
-    o = s:taboption("log", Flag, "close_log_tcp_" .. i , translate("Close") .. translate("Log") .. " " .. translate("TCP Node") .. " " .. i)
-    o.rmempty = false
-end
-for i = 1, udp_node_num, 1 do
-    o = s:taboption("log", Flag, "close_log_udp_" .. i, translate("Close") .. translate("Log") .. " " .. translate("UDP Node") .. " " .. i)
-    o.rmempty = false
-end
+o = s:taboption("log", Flag, "close_log_tcp", translate("Close") .. translate("Log") .. " " .. translate("TCP Node"))
+o.rmempty = false
+
+o = s:taboption("log", Flag, "close_log_udp", translate("Close") .. translate("Log") .. " " .. translate("UDP Node"))
+o.rmempty = false
+
 loglevel = s:taboption("log", ListValue, "loglevel", "X/V2ray" .. translate("Log Level"))
 loglevel.default = "warning"
 loglevel:value("debug")
@@ -355,10 +342,7 @@ o.default = 1
 o.rmempty = false
 
 o = s:option(ListValue, "node", translate("Socks Node"))
-local tcp_node_num = tonumber(m:get("@global_other[0]", "tcp_node_num") or 1)
-for i = 1, tcp_node_num, 1 do
-    o:value("tcp" .. i, translatef("Same as the tcp %s node", i))
-end
+o:value("tcp", translate("Same as the tcp node"))
 for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
 
 o = s:option(Value, "port", "Socks" .. translate("Listen Port"))

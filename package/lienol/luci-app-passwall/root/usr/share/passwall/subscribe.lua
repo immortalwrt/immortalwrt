@@ -44,27 +44,24 @@ end
 local CONFIG = {}
 do
 	local function import_config(protocol)
-		local node_num = ucic2:get(application, "@global_other[0]", protocol .. "_node_num") or 1
-		for i = 1, node_num, 1 do
-			local name = string.upper(protocol)
-			local szType = "@global[0]"
-			local option = protocol .. "_node" .. i
-			
-			local node = ucic2:get(application, szType, option)
-			local currentNode
-			if node then
-				currentNode = ucic2:get_all(application, node)
-			end
-			CONFIG[#CONFIG + 1] = {
-				log = true,
-				remarks = name .. "节点" .. i,
-				node = node,
-				currentNode = currentNode,
-				set = function(server)
-					ucic2:set(application, szType, option, server)
-				end
-			}
+		local name = string.upper(protocol)
+		local szType = "@global[0]"
+		local option = protocol .. "_node"
+		
+		local node = ucic2:get(application, szType, option)
+		local currentNode
+		if node then
+			currentNode = ucic2:get_all(application, node)
 		end
+		CONFIG[#CONFIG + 1] = {
+			log = true,
+			remarks = name .. "节点",
+			node = node,
+			currentNode = currentNode,
+			set = function(server)
+				ucic2:set(application, szType, option, server)
+			end
+		}
 	end
 	import_config("tcp")
 	import_config("udp")
@@ -85,21 +82,21 @@ do
 		}
 	end)
 
-	local tcp_main1 = ucic2:get(application, "@auto_switch[0]", "tcp_main1") or "nil"
+	local tcp_main = ucic2:get(application, "@auto_switch[0]", "tcp_main") or "nil"
 	CONFIG[#CONFIG + 1] = {
 		log = false,
-		remarks = "自动切换TCP_1主节点",
-		currentNode = ucic2:get_all(application, tcp_main1),
+		remarks = "自动切换TCP主节点",
+		currentNode = ucic2:get_all(application, tcp_main),
 		set = function(server)
 			ucic2:set(application, "@auto_switch[0]", "tcp_main1", server)
 		end
 	}
 
-	local tcp_node1_table = ucic2:get(application, "@auto_switch[0]", "tcp_node1")
-	if tcp_node1_table then
+	local tcp_node_table = ucic2:get(application, "@auto_switch[0]", "tcp_node")
+	if tcp_node_table then
 		local nodes = {}
 		local new_nodes = {}
-		for k,v in ipairs(tcp_node1_table) do
+		for k,v in ipairs(tcp_node_table) do
 			local node = v
 			local currentNode
 			if node then
@@ -120,14 +117,14 @@ do
 			}
 		end
 		CONFIG[#CONFIG + 1] = {
-			remarks = "自动切换TCP_1节点列表",
+			remarks = "自动切换TCP节点列表",
 			nodes = nodes,
 			new_nodes = new_nodes,
 			set = function()
 				for kk, vv in pairs(CONFIG) do
 					if (vv.remarks == "自动切换TCP_1节点列表") then
 						log("刷新自动切换列表")
-						ucic2:set_list(application, "@auto_switch[0]", "tcp_node1", vv.new_nodes)
+						ucic2:set_list(application, "@auto_switch[0]", "tcp_node", vv.new_nodes)
 					end
 				end
 			end

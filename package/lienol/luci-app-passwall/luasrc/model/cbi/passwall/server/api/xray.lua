@@ -58,6 +58,7 @@ function gen_config(user)
             local clients = {}
             for i = 1, #user.uuid do
                 clients[i] = {
+                    flow = (user.xtls and user.xtls == "1") and user.flow or nil,
                     password = user.uuid[i],
                     level = tonumber(user.level)
                 }
@@ -75,6 +76,31 @@ function gen_config(user)
                 }
             }
         }
+    end
+
+    if user.fallback and user.fallback == "1" then
+        local fallbacks = {}
+        for i = 1, #user.fallback_list do
+            local fallbackStr = user.fallback_list[i]
+            if fallbackStr then
+                local tmp = {}
+                string.gsub(fallbackStr, '[^' .. "," .. ']+', function(w)
+                    table.insert(tmp, w)
+                end)
+                local dest = tmp[1] or ""
+                local path = tmp[2]
+                if dest:find("%.") then
+                else
+                    dest = tonumber(dest)
+                end
+                fallbacks[i] = {
+                    path = path,
+                    dest = dest,
+                    xver = 1
+                }
+            end
+        end
+        settings.fallbacks = fallbacks
     end
 
     routing = {
@@ -110,7 +136,7 @@ function gen_config(user)
                     network = user.transport,
                     security = "none",
                     xtlsSettings = (user.tls and user.tls == "1" and user.xtls and user.xtls == "1") and {
-                        --alpn = {"http/1.1"},
+                        alpn = {"http/1.1"},
                         disableSystemRoot = false,
                         certificates = {
                             {
@@ -120,6 +146,7 @@ function gen_config(user)
                         }
                     } or nil,
                     tlsSettings = (user.tls and user.tls == "1") and {
+                        alpn = {"http/1.1"},
                         disableSystemRoot = false,
                         certificates = {
                             {
@@ -151,7 +178,7 @@ function gen_config(user)
                         header = {type = user.mkcp_guise}
                     } or nil,
                     wsSettings = (user.transport == "ws") and {
-                        acceptProxyProtocol = false,
+                        acceptProxyProtocol = true,
                         headers = (user.ws_host) and {Host = user.ws_host} or nil,
                         path = user.ws_path
                     } or nil,
