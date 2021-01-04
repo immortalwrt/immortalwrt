@@ -125,34 +125,28 @@ load_acl() {
 			[ -z "${ip}${mac}" ] && continue
 			tcp_proxy_mode=${tcp_proxy_mode:-default}
 			udp_proxy_mode=${udp_proxy_mode:-default}
-			tcp_node=${tcp_node:-1}
-			udp_node=${udp_node:-1}
 			tcp_no_redir_ports=${tcp_no_redir_ports:-default}
 			udp_no_redir_ports=${udp_no_redir_ports:-default}
 			tcp_redir_ports=${tcp_redir_ports:-default}
 			udp_redir_ports=${udp_redir_ports:-default}
 			[ "$tcp_proxy_mode" = "default" ] && tcp_proxy_mode=$TCP_PROXY_MODE
 			[ "$udp_proxy_mode" = "default" ] && udp_proxy_mode=$UDP_PROXY_MODE
-			[ "$tcp_node" -gt "$TCP_NODE_NUM" ] && tcp_node=1
-			[ "$udp_node" -gt "$UDP_NODE_NUM" ] && udp_node=1
 			[ "$tcp_no_redir_ports" = "default" ] && tcp_no_redir_ports=$TCP_NO_REDIR_PORTS
 			[ "$udp_no_redir_ports" = "default" ] && udp_no_redir_ports=$UDP_NO_REDIR_PORTS
 			[ "$tcp_redir_ports" = "default" ] && tcp_redir_ports=$TCP_REDIR_PORTS
 			[ "$udp_redir_ports" = "default" ] && udp_redir_ports=$UDP_REDIR_PORTS
-			eval TCP_NODE=\$TCP_NODE$tcp_node
-			eval UDP_NODE=\$UDP_NODE$udp_node
-
+			
 			#echolog "访问控制：${item}..."
 			[ -n "$ip" ] && msg="IP：$ip，"
 			[ -n "$mac" ] && msg="${msg:+${msg}和}MAC：$mac，"
 			ipt_tmp=$ipt_n
 			[ "$tcp_proxy_mode" != "disable" ] && {
 				[ "$TCP_NODE" != "nil" ] && {
-					eval tcp_port=\$TCP_REDIR_PORT$tcp_node
+					tcp_port=$TCP_REDIR_PORT
 					eval TCP_NODE_TYPE=$(echo $(config_n_get $TCP_NODE type) | tr 'A-Z' 'a-z')
 					[ "$TCP_NODE_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE protocol client)" == "client" ] && is_tproxy=1
 					#[ "$TCP_NODE_TYPE" == "trojan-go" ] && is_tproxy=1
-					msg2="${msg}使用TCP节点${tcp_node} [$(get_action_chain_name $tcp_proxy_mode)]"
+					msg2="${msg}使用TCP节点 [$(get_action_chain_name $tcp_proxy_mode)]"
 					if [ -n "${is_tproxy}" ]; then
 						msg2="${msg2}(TPROXY:${tcp_port})代理"
 						ipt_tmp=$ipt_m && is_tproxy="TPROXY"
@@ -173,9 +167,9 @@ load_acl() {
 			$ipt_tmp -A PSW $(comment "$remarks") $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p tcp -j RETURN
 			
 			[ "$udp_proxy_mode" != "disable" ] && {
-				msg2="${msg}使用UDP节点${udp_node} [$(get_action_chain_name $udp_proxy_mode)]"
+				msg2="${msg}使用UDP节点 [$(get_action_chain_name $udp_proxy_mode)]"
 				[ "$UDP_NODE" != "nil" ] && {
-					eval udp_port=\$UDP_REDIR_PORT$udp_node
+					udp_port=$UDP_REDIR_PORT
 					msg2="${msg2}(TPROXY:${udp_port})代理"
 					[ "$udp_no_redir_ports" != "disable" ] && {
 						$ipt_m -A PSW $(comment "$remarks") $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -p udp -m multiport --dport $udp_no_redir_ports -j RETURN
@@ -201,58 +195,22 @@ load_acl() {
 		[ "$TCP_NO_REDIR_PORTS" != "disable" ] && $ipt_tmp -A PSW $(comment "默认") -p tcp -m multiport --dport $TCP_NO_REDIR_PORTS -j RETURN
 		ipt_tmp=$ipt_n
 		unset is_tproxy msg
-		[ "3" -le "$TCP_NODE_NUM" ] && [ "$TCP_NODE3" != "nil" ] && {
-			local TCP_NODE3_TYPE=$(echo $(config_n_get $TCP_NODE3 type) | tr 'A-Z' 'a-z')
-			[ "$TCP_NODE3_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE3 protocol client)" == "client" ] && is_tproxy=1
-			#[ "$TCP_NODE3_TYPE" == "trojan-go" ] && is_tproxy=1
-				msg="TCP代理列表3：使用TCP节点3"
+		[ "$TCP_NODE" != "nil" ] && {
+			local TCP_NODE_TYPE=$(echo $(config_n_get $TCP_NODE type) | tr 'A-Z' 'a-z')
+			[ "$TCP_NODE_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE protocol client)" == "client" ] && is_tproxy=1
+			#[ "$TCP_NODE_TYPE" == "trojan-go" ] && is_tproxy=1
+				msg="TCP默认代理：使用TCP节点 [$(get_action_chain_name $TCP_PROXY_MODE)]"
 			if [ -n "$is_tproxy" ]; then
 				ipt_tmp=$ipt_m && is_tproxy="TPROXY"
-				msg="${msg}(TPROXY:${TCP_REDIR_PORT3})代理"
+				msg="${msg}(TPROXY:${TCP_REDIR_PORT})代理"
 			else
-				msg="${msg}(REDIRECT:${TCP_REDIR_PORT3})代理"
+				msg="${msg}(REDIRECT:${TCP_REDIR_PORT})代理"
 			fi
 			[ "$TCP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
 			msg="${msg}所有端口"
-			$ipt_tmp -A PSW $(comment "列表3") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST3) $(REDIRECT $TCP_REDIR_PORT3 $is_tproxy)
-			echolog "${msg}"
-		}
-		ipt_tmp=$ipt_n
-		unset is_tproxy msg
-		[ "2" -le "$TCP_NODE_NUM" ] && [ "$TCP_NODE2" != "nil" ] && {
-			local TCP_NODE2_TYPE=$(echo $(config_n_get $TCP_NODE2 type) | tr 'A-Z' 'a-z')
-			[ "$TCP_NODE2_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE2 protocol client)" == "client" ] && is_tproxy=1
-			#[ "$TCP_NODE2_TYPE" == "trojan-go" ] && is_tproxy=1
-				msg="TCP代理列表2：使用TCP节点2"
-			if [ -n "$is_tproxy" ]; then
-				ipt_tmp=$ipt_m && is_tproxy="TPROXY"
-				msg="${msg}(TPROXY:${TCP_REDIR_PORT2})代理"
-			else
-				msg="${msg}(REDIRECT:${TCP_REDIR_PORT2})代理"
-			fi
-			[ "$TCP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
-			msg="${msg}所有端口"
-			$ipt_tmp -A PSW $(comment "列表2") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST2) $(REDIRECT $TCP_REDIR_PORT2 $is_tproxy)
-			echolog "${msg}"
-		}
-		ipt_tmp=$ipt_n
-		unset is_tproxy msg
-		[ "$TCP_NODE1" != "nil" ] && {
-			local TCP_NODE1_TYPE=$(echo $(config_n_get $TCP_NODE1 type) | tr 'A-Z' 'a-z')
-			[ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 protocol client)" == "client" ] && is_tproxy=1
-			#[ "$TCP_NODE1_TYPE" == "trojan-go" ] && is_tproxy=1
-				msg="TCP默认代理：使用TCP节点1 [$(get_action_chain_name $TCP_PROXY_MODE)]"
-			if [ -n "$is_tproxy" ]; then
-				ipt_tmp=$ipt_m && is_tproxy="TPROXY"
-				msg="${msg}(TPROXY:${TCP_REDIR_PORT1})代理"
-			else
-				msg="${msg}(REDIRECT:${TCP_REDIR_PORT1})代理"
-			fi
-			[ "$TCP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
-			msg="${msg}所有端口"
-			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $TCP_REDIR_PORT1 $is_tproxy)
-			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $TCP_REDIR_PORT1 $is_tproxy)
-			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $TCP_PROXY_MODE $TCP_REDIR_PORT1 $is_tproxy)
+			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $TCP_REDIR_PORT $is_tproxy)
+			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $TCP_REDIR_PORT $is_tproxy)
+			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $TCP_PROXY_MODE $TCP_REDIR_PORT $is_tproxy)
 			echolog "${msg}"
 		}
 	fi
@@ -262,27 +220,13 @@ load_acl() {
 	#  加载UDP默认代理模式
 	if [ "$UDP_PROXY_MODE" != "disable" ]; then
 		[ "$UDP_NO_REDIR_PORTS" != "disable" ] && $ipt_m -A PSW $(comment "默认") -p udp -m multiport --dport $UDP_NO_REDIR_PORTS -j RETURN
-		[ "3" -le "$UDP_NODE_NUM" ] && [ "$UDP_NODE3" != "nil" ] && {
-			msg="UDP代理列表3：使用UDP节点3 (TPROXY:${UDP_REDIR_PORT3})代理"
+		[ "$UDP_NODE" != "nil" ] && {
+			msg="UDP默认代理：使用UDP节点 [$(get_action_chain_name $UDP_PROXY_MODE)](TPROXY:${UDP_REDIR_PORT})代理"
 			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
 			msg="${msg}所有端口"
-			$ipt_m -A PSW $(comment "列表3") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST3) $(REDIRECT $UDP_REDIR_PORT3 TPROXY)
-			echolog "${msg}"
-		}
-		[ "2" -le "$UDP_NODE_NUM" ] && [ "$UDP_NODE2" != "nil" ] && {
-			msg="UDP代理列表2：使用UDP节点2 (TPROXY:${UDP_REDIR_PORT2})代理"
-			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
-			msg="${msg}所有端口"
-			$ipt_m -A PSW $(comment "列表2") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST2) $(REDIRECT $UDP_REDIR_PORT2 TPROXY)
-			echolog "${msg}"
-		}
-		[ "$UDP_NODE1" != "nil" ] && {
-			msg="UDP默认代理：使用UDP节点1 [$(get_action_chain_name $UDP_PROXY_MODE)](TPROXY:${UDP_REDIR_PORT1})代理"
-			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
-			msg="${msg}所有端口"
-			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $UDP_REDIR_PORT1 TPROXY)
-			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $UDP_REDIR_PORT1 TPROXY)
-			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $UDP_PROXY_MODE $UDP_REDIR_PORT1 TPROXY)
+			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $UDP_REDIR_PORT TPROXY)
+			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $UDP_REDIR_PORT TPROXY)
+			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $UDP_PROXY_MODE $UDP_REDIR_PORT TPROXY)
 			echolog "${msg}"
 		}
 	fi
@@ -477,19 +421,19 @@ add_firewall_rule() {
 	ip route add local 0.0.0.0/0 dev lo table 100
 	
 	# 加载路由器自身代理 TCP
-	if [ "$TCP_NODE1" != "nil" ]; then
+	if [ "$TCP_NODE" != "nil" ]; then
 		local ipt_tmp=$ipt_n
 		local dns_l="PSW_OUTPUT"
-		local dns_r=$(REDIRECT $TCP_REDIR_PORT1)
-		local blist_r=$(REDIRECT $TCP_REDIR_PORT1)
-		local p_r=$(get_redirect_ipt $LOCALHOST_TCP_PROXY_MODE $TCP_REDIR_PORT1)
-		TCP_NODE1_TYPE=$(echo $(config_n_get $TCP_NODE1 type) | tr 'A-Z' 'a-z')
+		local dns_r=$(REDIRECT $TCP_REDIR_PORT)
+		local blist_r=$(REDIRECT $TCP_REDIR_PORT)
+		local p_r=$(get_redirect_ipt $LOCALHOST_TCP_PROXY_MODE $TCP_REDIR_PORT)
+		TCP_NODE_TYPE=$(echo $(config_n_get $TCP_NODE type) | tr 'A-Z' 'a-z')
 		echolog "加载路由器自身 TCP 代理..."
-		if [ "$TCP_NODE1_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE1 protocol client)" == "client" ]; then
+		if [ "$TCP_NODE_TYPE" == "brook" ] && [ "$(config_n_get $TCP_NODE protocol client)" == "client" ]; then
 			echolog "  - 启用 TPROXY 模式"
 			ipt_tmp=$ipt_m
 			dns_l="PSW"
-			dns_r="$(REDIRECT $TCP_REDIR_PORT1 TPROXY)"
+			dns_r="$(REDIRECT $TCP_REDIR_PORT TPROXY)"
 			blist_r=$(REDIRECT 1 MARK)
 			p_r=$(get_redirect_ipt $LOCALHOST_TCP_PROXY_MODE 1 MARK)
 		fi
@@ -547,9 +491,9 @@ add_firewall_rule() {
 	
 	if [ "$PROXY_IPV6" == "1" ]; then
 		local msg="IPv6 配置不当，无法代理"
-		$ip6t_n -A PSW -p tcp $(REDIRECT $TCP_REDIR_PORT1)
-		$ip6t_n -A PSW_OUTPUT -p tcp $(REDIRECT $TCP_REDIR_PORT1)
-		msg="${msg}，转发 IPv6 TCP 流量到节点1[$?]"
+		$ip6t_n -A PSW -p tcp $(REDIRECT $TCP_REDIR_PORT)
+		$ip6t_n -A PSW_OUTPUT -p tcp $(REDIRECT $TCP_REDIR_PORT)
+		msg="${msg}，转发 IPv6 TCP 流量到节点[$?]"
 		echolog "$msg"
 	fi
 
@@ -566,8 +510,7 @@ add_firewall_rule() {
 		if [ "$node" == "nil" ] || [ "$port" == "0" ]; then
 			msg="${msg} 未配置完全，略过"
 		elif [ "$(echo $node | grep ^tcp)" ]; then
-			num=$(echo $node | sed "s/tcp//g")
-			eval "node=\${TCP_NODE$num}"
+			eval "node=\${TCP_NODE}"
 			msg="${msg} 使用与 TCP 代理自动切换${num} 相同的节点，延后处理"
 		else
 			filter_node $node TCP
@@ -579,28 +522,25 @@ add_firewall_rule() {
 	# 处理轮换节点的分流或套娃
 	local node port stream switch
 	for stream in TCP UDP; do
-		for switch in $(eval "seq 1 \${${stream}_NODE_NUM}"); do
-			eval "node=\${${stream}_NODE$switch}"
-			eval "port=\${${stream}_REDIR_PORT$switch}"
-			echolog "分析 $stream 代理自动切换$switch..."
-			[ "$node" == "tcp" ] && [ "$stream" == "UDP" ] && {
-				eval "node=\${TCP_NODE$switch}"
-				eval "port=\${TCP_REDIR_PORT$switch}"
-				echolog "  - 采用 TCP 代理的配置"
-			}
-
-			if [ "$node" != "nil" ]; then
-				filter_node $node $stream $port
-			else
-				echolog "  - 忽略无效的 $stream 代理自动切换$switch"
-			fi
-		done
+		eval "node=\${${stream}_NODE}"
+		eval "port=\${${stream}_REDIR_PORT}"
+		echolog "分析 $stream 代理自动切换..."
+		[ "$node" == "tcp" ] && [ "$stream" == "UDP" ] && {
+			eval "node=\${TCP_NODE}"
+			eval "port=\${TCP_REDIR_PORT}"
+			echolog "  - 采用 TCP 代理的配置"
+		}
+		if [ "$node" != "nil" ]; then
+			filter_node $node $stream $port
+		else
+			echolog "  - 忽略无效的 $stream 代理自动切换"
+		fi
 	done
 	
 	# 加载路由器自身代理 UDP
-	if [ "$UDP_NODE1" != "nil" ]; then
+	if [ "$UDP_NODE" != "nil" ]; then
 		echolog "加载路由器自身 UDP 代理..."
-		local UDP_NODE1_TYPE=$(echo $(config_n_get $UDP_NODE1 type) | tr 'A-Z' 'a-z')
+		local UDP_NODE_TYPE=$(echo $(config_n_get $UDP_NODE type) | tr 'A-Z' 'a-z')
 		local ADD_INDEX=$FORCE_INDEX
 		_proxy_udp_access() {
 			[ -n "${2}" ] || return 0
@@ -609,7 +549,7 @@ add_firewall_rule() {
 				echolog "  - 上游 DNS 服务器 ${2} 已在直接访问的列表中，不强制向 UDP 代理转发对该服务器 UDP/${3} 端口的访问"
 				return 0
 			}
-			$ipt_m -I PSW $ADD_INDEX -p udp -d ${2} --dport ${3} $(REDIRECT $UDP_REDIR_PORT1 TPROXY)
+			$ipt_m -I PSW $ADD_INDEX -p udp -d ${2} --dport ${3} $(REDIRECT $UDP_REDIR_PORT TPROXY)
 			$ipt_m -I PSW_OUTPUT $ADD_INDEX -p udp -d ${2} --dport ${3} $(REDIRECT 1 MARK)
 			echolog "  - [$?]将上游 DNS 服务器 ${2}:${3} 加入到路由器自身代理的 UDP 转发链${ADD_INDEX}"
 		}

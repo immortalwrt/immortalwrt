@@ -1,8 +1,8 @@
 
 config global
 	option enabled '0'
-	option tcp_node1 'nil'
-	option udp_node1 'nil'
+	option tcp_node 'nil'
+	option udp_node 'nil'
 	option dns_mode 'pdnsd'
 	option up_china_dns 'default'
 	option dns_forward '8.8.4.4'
@@ -13,8 +13,8 @@ config global
 	option localhost_tcp_proxy_mode 'gfwlist'
 	option localhost_udp_proxy_mode 'gfwlist'
 	option socks_server '0.0.0.0:1080'
-	option close_log_tcp_1 '1'
-	option close_log_udp_1 '1'
+	option close_log_tcp '1'
+	option close_log_udp '1'
 	option loglevel 'warning'
 	option trojan_loglevel '2'
 
@@ -35,8 +35,6 @@ config global_forwarding
 	option proxy_ipv6 '0'
 	
 config global_other
-	option tcp_node_num '1'
-	option udp_node_num '1'
 	option status 'big_icon show_check_port show_ip111'
 	option nodes_ping 'auto_ping tcping'
 	option nodes_display 'compact_display_nodes show_add_mode'

@@ -3,8 +3,6 @@
 	local api = require "luci.model.cbi.passwall.api.api"
 	local dsp = require "luci.dispatcher"
 	
-	local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
-	local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 	local nodes_display = api.uci_get_type("global_other", "nodes_display", "")
 -%>
 
@@ -202,9 +200,9 @@ table td, .table .td {
 		}
 	}
 	
-	function set_node(protocol,number) {
-		if (confirm('<%:Are you sure set to%> ' + protocol.toUpperCase() + "_" + number + '<%:the server?%>')==true){
-			window.location.href = '<%=dsp.build_url("admin/services/passwall/set_node")%>?protocol=' + protocol + '&number=' + number + '&section=' + section;
+	function set_node(protocol) {
+		if (confirm('<%:Are you sure set to%> ' + protocol.toUpperCase() + '<%:the server?%>')==true){
+			window.location.href = '<%=dsp.build_url("admin/services/passwall/set_node")%>?protocol=' + protocol + '&section=' + section;
 		}
 	}
 	
@@ -434,17 +432,8 @@ table td, .table .td {
 	<div id="set_node_div">
 		<div class="cbi-value"><%:You choose node is:%><span id="set_node_name"></span></div>
 		<div class="cbi-value">
-			<% if tcp_node_num and tonumber(tcp_node_num) >= 1 then %>
-				<% for i = 1, tcp_node_num, 1 do %>
-					<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('tcp',<%=i%>)" value="TCP_<%=i%>" />
-				<% end %>
-			<% end %>
-			
-			<% if udp_node_num and tonumber(udp_node_num) >= 1 then %>
-				<% for i = 1, udp_node_num, 1 do %>
-					<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('udp',<%=i%>)" value="UDP_<%=i%>" />
-				<% end %>
-			<% end %>
+			<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('tcp')" value="TCP" />
+			<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('udp')" value="UDP" />
 			<input class="cbi-button cbi-button-remove" type="button" onclick="close_set_node_div()" value="<%:Close%>" />
 		</div>
 	</div>

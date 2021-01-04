@@ -2,9 +2,6 @@
 local dsp = require "luci.dispatcher"
 local api = require "luci.model.cbi.passwall.api.api"
 
-local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
-local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
-
 local status = api.uci_get_type("global_other", "status", "")
 -%>
 
@@ -240,13 +237,13 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 				var status_haproxy = document.getElementById('status_haproxy');
 				var status_kcptun = document.getElementById('status_kcptun');
 				if (data) {
-					var tcp_node_num = <%=tcp_node_num%>;
+					var tcp_node_num = 1;
 					if (tcp_node_num >= 1) {
 						var status_tcp_node = document.getElementById('status_tcp_node');
 						if (status_tcp_node) {
 							var text = 'TCP<br />';
 							if (tcp_node_num == 1) {
-								if (data["tcp_node1_status"])
+								if (data["tcp_node_status"])
 									text += '<span class="green"><%:RUNNING%></span>';
 								else
 									text += '<span class="red"><%:NOT RUNNING%></span>';
@@ -265,7 +262,7 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 						if (status_kcptun) {
 							var text = 'Kcptun<br />';
 							if (tcp_node_num == 1) {
-								if (data["kcptun_tcp_node1_status"])
+								if (data["kcptun_tcp_node_status"])
 									text += '<span class="green"><%:RUNNING%></span>';
 								else
 									text += '<span class="red"><%:NOT RUNNING%></span>';
@@ -282,13 +279,13 @@ https://github.com/pure-css/pure/blob/master/LICENSE.md
 						}
 					}
 					
-					var udp_node_num = <%=udp_node_num%>;
+					var udp_node_num = 1;
 					if (udp_node_num >= 1) {
 						var status_udp_node = document.getElementById('status_udp_node');
 						if (status_udp_node) {
 							var text = 'UDP<br />';
 							if (udp_node_num == 1) {
-								if (data["udp_node1_status"])
+								if (data["udp_node_status"])
 									text += '<span class="green"><%:RUNNING%></span>';
 									else
 									text += '<span class="red"><%:NOT RUNNING%></span>';

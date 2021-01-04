@@ -135,21 +135,13 @@ end
 
 function get_now_use_node()
 	local e = {}
-	local tcp_node_num = ucic:get(appname, "@global_other[0]", "tcp_node_num") or 1
-	e.tcp = tonumber(tcp_node_num)
-	for i = 1, tcp_node_num, 1 do
-		local data, code, msg = nixio.fs.readfile("/var/etc/passwall/id/TCP_" .. i)
-		if data then
-			e["TCP" .. i] = util.trim(data)
-		end
+	local data, code, msg = nixio.fs.readfile("/var/etc/passwall/id/TCP")
+	if data then
+		e["TCP"] = util.trim(data)
 	end
-	local udp_node_num = ucic:get(appname, "@global_other[0]", "udp_node_num") or 1
-	e.udp = tonumber(udp_node_num)
-	for i = 1, udp_node_num, 1 do
-		local data, code, msg = nixio.fs.readfile("/var/etc/passwall/id/UDP_" .. i)
-		if data then
-			e["UDP" .. i] = util.trim(data)
-		end
+	local data, code, msg = nixio.fs.readfile("/var/etc/passwall/id/UDP")
+	if data then
+		e["UDP"] = util.trim(data)
 	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
@@ -158,8 +150,7 @@ end
 function get_redir_log()
 	local proto = luci.http.formvalue("proto")
 	proto = proto:upper()
-	local index = luci.http.formvalue("index")
-	local filename = proto .. "_" .. index
+	local filename = proto
 	if nixio.fs.access("/var/etc/passwall/" .. filename .. ".log") then
 		local content = luci.sys.exec("cat /var/etc/passwall/" .. filename .. ".log")
 		content = content:gsub("\n", "<br />")
@@ -183,19 +174,13 @@ function status()
 	local e = {}
 	e.dns_mode_status = luci.sys.call("netstat -apn | grep ':7913 ' >/dev/null") == 0
 	e.haproxy_status = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/' | grep haproxy >/dev/null", appname)) == 0
-	local tcp_node_num = ucic:get(appname, "@global_other[0]", "tcp_node_num") or 1
-	for i = 1, tcp_node_num, 1 do
-		e["kcptun_tcp_node%s_status" % i] = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/kcptun' | grep -i 'tcp_%s' >/dev/null", appname, i)) == 0
-		e["tcp_node%s_status" % i] = luci.sys.call(string.format("ps -w | grep -v -E 'grep|kcptun' | grep '%s/bin/' | grep -i 'TCP_%s' >/dev/null", appname, i)) == 0
-	end
+	e["kcptun_tcp_node_status"] = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/kcptun' | grep -i 'tcp' >/dev/null", appname)) == 0
+	e["tcp_node_status"] = luci.sys.call(string.format("ps -w | grep -v -E 'grep|kcptun' | grep '%s/bin/' | grep -i 'TCP' >/dev/null", appname)) == 0
 
-	local udp_node_num = ucic:get(appname, "@global_other[0]", "udp_node_num") or 1
-	for i = 1, udp_node_num, 1 do
-		if (ucic:get(appname, "@global[0]", "udp_node" .. i) or "nil") == "tcp" then
-			e["udp_node%s_status" % i] = e["tcp_node%s_status" % i]
-		else
-			e["udp_node%s_status" % i] = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/' | grep -i 'UDP_%s' >/dev/null", appname, i)) == 0
-		end
+	if (ucic:get(appname, "@global[0]", "udp_node") or "nil") == "tcp" then
+		e["udp_node_status"] = e["tcp_node_status"]
+	else
+		e["udp_node_status"] = luci.sys.call(string.format("ps -w | grep -v grep | grep '%s/bin/' | grep -i 'UDP' >/dev/null", appname)) == 0
 	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
@@ -255,9 +240,8 @@ end
 
 function set_node()
 	local protocol = luci.http.formvalue("protocol")
-	local number = luci.http.formvalue("number")
 	local section = luci.http.formvalue("section")
-	ucic:set(appname, "@global[0]", protocol .. "_node" .. number, section)
+	ucic:set(appname, "@global[0]", protocol .. "_node", section)
 	ucic:commit(appname)
 	luci.sys.call("/etc/init.d/passwall restart > /dev/null 2>&1 &")
 	luci.http.redirect(luci.dispatcher.build_url("admin", "services", appname, "log"))
