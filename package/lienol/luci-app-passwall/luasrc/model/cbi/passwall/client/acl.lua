@@ -40,20 +40,6 @@ o = s:option(Value, "mac", translate("MAC"))
 o.rmempty = true
 sys.net.mac_hints(function(e, t) o:value(e, "%s (%s)" % {e, t}) end)
 
----- TCP Node
-local tcp_node_num = m:get("@global_other[0]", "tcp_node_num") or 1
-if tonumber(tcp_node_num) > 1 then
-    o = s:option(ListValue, "tcp_node", translate("TCP Node"))
-    for i = 1, tcp_node_num, 1 do o:value(i, "TCP_" .. i) end
-end
-
----- UDP Node
-local udp_node_num = m:get("@global_other[0]", "udp_node_num") or 1
-if tonumber(udp_node_num) > 1 then
-    o = s:option(ListValue, "udp_node", translate("UDP Node"))
-    for i = 1, udp_node_num, 1 do o:value(i, "UDP_" .. i) end
-end
-
 ---- TCP Proxy Mode
 o = s:option(ListValue, "tcp_proxy_mode", "TCP" .. translate("Proxy Mode"))
 o.default = "default"

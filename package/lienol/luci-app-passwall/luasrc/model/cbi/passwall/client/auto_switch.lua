@@ -25,22 +25,16 @@ o.rmempty = false
 o = s:option(Value, "testing_time", translate("How often is a diagnosis made"), translate("Units:minutes"))
 o.default = "3"
 
----- TCP Node
--- local tcp_node_num = tonumber(m:get("@global_other[0]", "tcp_node_num") or 1)
--- 暂时只支持TCP1
-local tcp_node_num = 1
-for i = 1, tcp_node_num, 1 do
-    o = s:option(ListValue, "tcp_main" .. i, "TCP " .. i .. " " .. translate("Main node"))
-    for k, v in pairs(nodes_table) do
-        o:value(v.id, v.remarks)
-    end
-    
-    o = s:option(DynamicList, "tcp_node" .. i, "TCP " .. i .. " " .. translate("List of backup nodes"))
-    for k, v in pairs(nodes_table) do
-        o:value(v.id, v.remarks)
-    end
-
-    o = s:option(Flag, "restore_switch" .. i, "TCP " .. i .. " " .. translate("Restore Switch"), translate("When detects main node is available, switch back to the main node."))
+o = s:option(ListValue, "tcp_main", "TCP " .. translate("Main node"))
+for k, v in pairs(nodes_table) do
+     o:value(v.id, v.remarks)
 end
+    
+o = s:option(DynamicList, "tcp_node", "TCP " .. translate("List of backup nodes"))
+for k, v in pairs(nodes_table) do
+    o:value(v.id, v.remarks)
+end
+
+o = s:option(Flag, "restore_switch", "TCP " .. translate("Restore Switch"), translate("When detects main node is available, switch back to the main node."))
 
 return m

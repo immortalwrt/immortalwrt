@@ -57,11 +57,10 @@ test_proxy() {
 
 test_auto_switch() {
 	local type=$1
-	local index=$3
-	local b_tcp_nodes=$4
+	local b_tcp_nodes=$3
 	local now_node
-	if [ -f "/var/etc/$CONFIG/id/${type}_${index}" ]; then
-		now_node=$(cat /var/etc/$CONFIG/id/${type}_${index})
+	if [ -f "/var/etc/$CONFIG/id/${type}" ]; then
+		now_node=$(cat /var/etc/$CONFIG/id/${type})
 	else
 		return 1
 	fi
@@ -72,10 +71,10 @@ test_auto_switch() {
 		return 2
 	fi
 	
-	local restore_switch=$(config_t_get auto_switch restore_switch${index} 0)
+	local restore_switch=$(config_t_get auto_switch restore_switch 0)
 	if [ "$restore_switch" == "1" ]; then
 		#检测主节点是否能使用
-		local main_node=$(config_t_get auto_switch tcp_main${index})
+		local main_node=$(config_t_get auto_switch tcp_main)
 		if [ "$now_node" != "$main_node" ]; then
 			local node_type=$(echo $(config_n_get $main_node type) | tr 'A-Z' 'a-z')
 			if [ "$node_type" == "socks" ]; then
@@ -84,26 +83,26 @@ test_auto_switch() {
 				[ -n "$node_address" ] && [ -n "$node_port" ] && local curlx="socks5h://$node_address:$node_port"
 			else
 				local tmp_port=$(/usr/share/passwall/app.sh get_new_port 61080 tcp)
-				/usr/share/passwall/app.sh run_socks "$main_node" "127.0.0.1" "$tmp_port" "/var/etc/passwall/auto_switch_$index.json" "10"
+				/usr/share/passwall/app.sh run_socks "$main_node" "127.0.0.1" "$tmp_port" "/var/etc/passwall/auto_switch.json" "10"
 				local curlx="socks5h://127.0.0.1:$tmp_port"
 			fi
 			sleep 10s
 			proxy_status=$(test_url "https://www.google.com/generate_204" 3 3 "-x $curlx")
-			ps -w | grep -v "grep" | grep "/var/etc/passwall/auto_switch_$index.json" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
+			ps -w | grep -v "grep" | grep "/var/etc/passwall/auto_switch.json" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
 			if [ "$proxy_status" -eq 200 ]; then
 				#主节点正常，切换到主节点
-				echolog "自动切换检测：${type}_${index}主节点正常，切换到主节点！"
-				/usr/share/passwall/app.sh node_switch $type $2 $index $main_node
+				echolog "自动切换检测：${type}主节点正常，切换到主节点！"
+				/usr/share/passwall/app.sh node_switch $type $2 $main_node
 				return 0
 			fi
 		fi
 	fi
 	
 	if [ "$status" == 0 ]; then
-		echolog "自动切换检测：${type}_${index}节点$(config_n_get $now_node type) $(config_n_get $now_node address) $(config_n_get $now_node port)正常。"
+		echolog "自动切换检测：${type}节点$(config_n_get $now_node type) $(config_n_get $now_node address) $(config_n_get $now_node port)正常。"
 		return 0
 	elif [ "$status" == 1 ]; then
-		echolog "自动切换检测：${type}_${index}节点异常，开始切换节点！"
+		echolog "自动切换检测：${type}节点异常，开始切换节点！"
 		local new_node
 		in_backup_nodes=$(echo $b_tcp_nodes | grep $now_node)
 		# 判断当前节点是否存在于备用节点列表里
@@ -120,15 +119,15 @@ test_auto_switch() {
 				new_node=$next_node
 			fi
 		fi
-		/usr/share/passwall/app.sh node_switch $type $2 $index $new_node
+		/usr/share/passwall/app.sh node_switch $type $2 $new_node
 		sleep 10s
 		# 切换节点后等待10秒后再检测一次，如果还是不通继续切，直到可用为止
 		status2=$(test_proxy)
 		if [ "$status2" -eq 0 ]; then
-			echolog "自动切换检测：${type}_${index}节点切换完毕！"
+			echolog "自动切换检测：${type}节点切换完毕！"
 			return 0
 		elif [ "$status2" -eq 1 ]; then
-			test_auto_switch $1 $2 $3 "$4"
+			test_auto_switch $1 $2 "$3"
 		elif [ "$status2" -eq 2 ]; then
 			return 2
 		fi
@@ -144,16 +143,10 @@ start() {
 	sleep ${delay}m
 	while [ "$ENABLED" -eq 1 ]
 	do
-		# TCP_NODE_NUM=$(config_t_get global_other tcp_node_num 1)
-		# 暂时只能检测TCP1
-		TCP_NODE_NUM=1
-		for i in $(seq 1 $TCP_NODE_NUM); do
-			eval TCP_NODE$i=\"$(config_t_get auto_switch tcp_node$i nil)\"
-			eval tmp=\$TCP_NODE$i
-			[ -n "$tmp" -a "$tmp" != "nil" ] && {
-				test_auto_switch TCP tcp $i "$tmp"
-			}
-		done
+		TCP_NODE=$(config_t_get auto_switch tcp_node nil)
+		[ -n "$TCP_NODE" -a "$TCP_NODE" != "nil" ] && {
+			test_auto_switch TCP tcp "$TCP_NODE"
+		}
 		delay=$(config_t_get auto_switch testing_time 1)
 		sleep ${delay}m
 	done

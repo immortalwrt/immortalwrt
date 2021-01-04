@@ -130,9 +130,6 @@ msgstr "0为不使用"
 msgid "Same as the tcp node"
 msgstr "与TCP节点相同"
 
-msgid "Same as the tcp %s node"
-msgstr "与TCP%s节点相同"
-
 msgid "New process"
 msgstr "另开进程"
 
