@@ -3,8 +3,8 @@
 #include "qca955x_dlink_dap-2xxx.dtsi"
 
 / {
-	compatible = "dlink,dap-2660-a1", "qca,qca9557";
-	model = "D-Link DAP-2660 A1";
+	compatible = "dlink,dap-2680-a1", "qca,qca9558";
+	model = "D-Link DAP-2680 A1";
 
 	aliases {
 		led-boot = &led_power_green;
@@ -19,7 +19,7 @@
 		reset {
 			label = "reset";
 			linux,code = <KEY_RESTART>;
-			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -28,12 +28,12 @@
 
 		led_power_red: power_red {
 			label = "red:power";
-			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
 		};
 
 		led_power_green: power_green {
 			label = "green:power";
-			gpios = <&gpio 23 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 	};

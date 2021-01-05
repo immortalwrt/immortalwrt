@@ -219,7 +219,7 @@ local methods = {
 			rv.cabundle      = fs.access("/etc/ssl/certs/ca-certificates.crt")
 			rv.relayd        = fs.access("/usr/sbin/relayd")
 
-			local wifi_features = { "eap", "11n", "11ac", "11r", "11w", "acs", "sae", "owe", "suiteb192", "wep" }
+			local wifi_features = { "eap", "11n", "11ac", "11r", "acs", "sae", "owe", "suiteb192", "wep" }
 
 			if fs.access("/usr/sbin/hostapd") then
 				rv.hostapd = { cli = fs.access("/usr/sbin/hostapd_cli") }

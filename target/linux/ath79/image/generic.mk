@@ -776,6 +776,17 @@ define Device/dlink_dap-2xxx
   KERNEL_INITRAMFS := $$(KERNEL) | mkwrggimg
 endef
 
+define Device/dlink_dap-2230-a1
+  $(Device/dlink_dap-2xxx)
+  SOC := qca9533
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DAP-2230
+  DEVICE_VARIANT := A1
+  IMAGE_SIZE := 15232k
+  DAP_SIGNATURE := wapn31_dkbs_dap2230
+endef
+TARGET_DEVICES += dlink_dap-2230-a1
+
 define Device/dlink_dap-2660-a1
   $(Device/dlink_dap-2xxx)
   SOC := qca9557
@@ -787,6 +798,18 @@ define Device/dlink_dap-2660-a1
   DAP_SIGNATURE := wapac09_dkbs_dap2660
 endef
 TARGET_DEVICES += dlink_dap-2660-a1
+
+define Device/dlink_dap-2680-a1
+  $(Device/dlink_dap-2xxx)
+  SOC := qca9558
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DAP-2680
+  DEVICE_VARIANT := A1
+  DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct kmod-ath10k-ct
+  IMAGE_SIZE := 15232k
+  DAP_SIGNATURE := wapac36_dkbs_dap2680
+endef
+TARGET_DEVICES += dlink_dap-2680-a1
 
 define Device/dlink_dap-2695-a1
   SOC := qca9558
@@ -807,6 +830,17 @@ define Device/dlink_dap-2695-a1
   SUPPORTED_DEVICES += dap-2695-a1
 endef
 TARGET_DEVICES += dlink_dap-2695-a1
+
+define Device/dlink_dap-3320-a1
+  $(Device/dlink_dap-2xxx)
+  SOC := qca9533
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DAP-3320
+  DEVICE_VARIANT := A1
+  IMAGE_SIZE := 15296k
+  DAP_SIGNATURE := wapn29_dkbs_dap3320
+endef
+TARGET_DEVICES += dlink_dap-3320-a1
 
 define Device/dlink_dch-g020-a1
   SOC := qca9531
