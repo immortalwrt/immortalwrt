@@ -1,3 +1,10 @@
+#
+# Copyright (C) 2020 CTCGFW Project-OpenWrt
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl88x2bu
@@ -7,7 +14,7 @@ PKG_SOURCE_URL:=https://github.com/cilynx/rtl88x2bu.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2020-07-21
 PKG_SOURCE_VERSION:=a2abcaf523dfab2afeda8cc2cdb5e3c9510fc5f3
-PKG_MIRROR_HASH:=ba79fb9a823a38c5acf22999210645ba881da0b5498ee765383dc5eaa8234e62
+PKG_MIRROR_HASH:=26d5504c9323c9c133265f2c2e4213acca0ddf390b1b4399d1003e9fd45f9368
 
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
@@ -39,22 +46,29 @@ NOSTDINC_FLAGS = \
 	-include backport/autoconf.h \
 	-include backport/backport.h
 
-EXTRA_CFLAGS=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DRTW_SINGLE_WIPHY -DCONFIG_CONCURRENT_MODE
+EXTRA_CFLAGS:= \
+	-DRTW_SINGLE_WIPHY \
+	-DRTW_USE_CFG80211_STA_EVENT \
+	-DCONFIG_RADIO_WORK \
+	-DCONFIG_IOCTL_CFG80211 \
+	-DCONFIG_CONCURRENT_MODE
 
-# CONFIG_IOCTL_CFG80211: If kernel version is after 2.6.35, we recommend user to use the new nl80211 API.
-# RTW_USE_CFG80211_STA_EVENT:It is used for driver to indicate new cfg80211 STA event, 
-#		which is required by wpa_supplicant_8. Linux kernel supports this feature after kernel 3.2.
-# CONFIG_RADIO_WORK:It is used for driver to fit ‘radio work’ mechanism of wpa_supplicant_8_L & wpa_supplicant_8_M.
-# CONFIG_CONCURRENT_MODE:Realtek’s Linux Wi-Fi driver can support Station+AP and Station+P2P single channel concurrent mode.
+EXTRA_KCONFIG:= \
+	CONFIG_POWER_SAVING=n \
+	CONFIG_RTW_DEBUG=y \
+	CONFIG_RTL8822BU=m \
+	USER_MODULE_NAME=rtl88x2bu
+
+MAKE_OPTS:= \
+	$(KERNEL_MAKE_FLAGS) \
+	M="$(PKG_BUILD_DIR)" \
+	NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
+	USER_EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+	$(EXTRA_KCONFIG)
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(KERNEL_MAKE_FLAGS) \
-		M="$(PKG_BUILD_DIR)" \
-		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
-		USER_EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-		CONFIG_RTL8822BU=m \
-		USER_MODULE_NAME=rtl88x2bu \
+		$(MAKE_OPTS) \
 		modules
 endef
 
