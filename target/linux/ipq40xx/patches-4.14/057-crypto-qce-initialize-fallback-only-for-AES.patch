@@ -30,7 +30,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  	ctx->fallback = crypto_alloc_skcipher(crypto_tfm_alg_name(&tfm->base),
  					      0, CRYPTO_ALG_ASYNC |
  						 CRYPTO_ALG_NEED_FALLBACK);
-@@ -375,14 +383,18 @@ static int qce_skcipher_register_one(con
+@@ -378,14 +386,18 @@ static int qce_skcipher_register_one(con
  
  	alg->base.cra_priority		= 300;
  	alg->base.cra_flags		= CRYPTO_ALG_ASYNC |

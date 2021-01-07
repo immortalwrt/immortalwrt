@@ -37,7 +37,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  		SKCIPHER_REQUEST_ON_STACK(subreq, ctx->fallback);
  
  		skcipher_request_set_tfm(subreq, ctx->fallback);
-@@ -302,8 +304,8 @@ static const struct qce_skcipher_def skc
+@@ -305,8 +307,8 @@ static const struct qce_skcipher_def skc
  		.drv_name	= "xts-aes-qce",
  		.blocksize	= AES_BLOCK_SIZE,
  		.ivsize		= AES_BLOCK_SIZE,

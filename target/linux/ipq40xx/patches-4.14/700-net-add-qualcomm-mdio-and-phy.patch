@@ -2142,7 +2142,6 @@ Subject: [PATCH 30/38] NET: add qualcomm mdio and PHY
 +module_platform_driver(ar40xx_drv);
 +
 +MODULE_DESCRIPTION("IPQ40XX ESS driver");
-+MODULE_LICENSE("Dual BSD/GPL");
 --- /dev/null
 +++ b/drivers/net/phy/ar40xx.h
 @@ -0,0 +1,337 @@

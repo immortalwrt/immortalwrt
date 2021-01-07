@@ -10,40 +10,34 @@ Signed-off-by: William <gw826943555@qq.com>
 ---
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -116,24 +116,29 @@
+@@ -116,19 +116,23 @@
  
  		opp-48000000 {
  			opp-hz = /bits/ 64 <48000000>;
 -			clock-latency-ns = <256000>;
 +			clock-latency-ns = <100000>;
- 			opp-microvolt = <1100000>;
  		};
  		opp-200000000 {
  			opp-hz = /bits/ 64 <200000000>;
 -			clock-latency-ns = <256000>;
 +			clock-latency-ns = <100000>;
- 			opp-microvolt = <1100000>;
  		};
  		opp-500000000 {
  			opp-hz = /bits/ 64 <500000000>;
 -			clock-latency-ns = <256000>;
 +			clock-latency-ns = <100000>;
- 			opp-microvolt = <1100000>;
  		};
  		opp-716000000 {
  			opp-hz = /bits/ 64 <716000000>;
 -			clock-latency-ns = <256000>;
 +			clock-latency-ns = <100000>;
- 			opp-microvolt = <1100000>;
- 		};
++		};
 +		opp-896000000 {
-+                       opp-hz = /bits/ 64 <896000000>;
-+                       clock-latency-ns = <100000>;
-+			opp-microvolt = <1100000>;
-+               };
++			opp-hz = /bits/ 64 <896000000>;
++			clock-latency-ns = <100000>;
+ 		};
  	};
  
- 	pmu {
 --- a/drivers/clk/qcom/gcc-ipq4019.c
 +++ b/drivers/clk/qcom/gcc-ipq4019.c
 @@ -589,6 +589,9 @@ static const struct freq_tbl ftbl_gcc_ap
