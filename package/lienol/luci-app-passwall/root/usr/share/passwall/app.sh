@@ -1234,7 +1234,7 @@ start() {
 		start_redir UDP udp
 		start_dns
 		add_dnsmasq
-		source $APP_PATH/iptables.sh start &
+		source $APP_PATH/iptables.sh start
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 		echolog "重启 dnsmasq 服务[$?]"
 	}

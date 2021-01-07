@@ -340,15 +340,14 @@ function server_user_status()
 end
 
 function server_user_log()
-	local e = {}
 	local id = luci.http.formvalue("id")
 	if nixio.fs.access("/var/etc/passwall_server/" .. id .. ".log") then
-		e.code = 200
+		local content = luci.sys.exec("cat /var/etc/passwall_server/" .. id .. ".log")
+		content = content:gsub("\n", "<br />")
+		luci.http.write(content)
 	else
-		e.code = 400
+		luci.http.write(string.format("<script>alert('%s');window.close();</script>", i18n.translate("Not enabled log")))
 	end
-	e.data = luci.sys.exec("cat /var/etc/passwall_server/" .. id .. ".log")
-	http_write_json(e)
 end
 
 function server_get_log()
