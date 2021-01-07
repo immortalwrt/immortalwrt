@@ -1,7 +1,5 @@
 <%
 local api = require "luci.model.cbi.passwall.api.api"
-local tcp_node_num = api.uci_get_type("global_other", "tcp_node_num", 1)
-local udp_node_num = api.uci_get_type("global_other", "udp_node_num", 1)
 local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
 -%>
 <script type="text/javascript">
@@ -45,36 +43,29 @@ local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
 		
 		for (var i = 0; i <= 1; i++) {
 			var proto = "udp";
-			var num = <%=udp_node_num%>;
 			if (i == 0) {
 				proto = "tcp";
-				num = <%=tcp_node_num%>;
 			}
-			if (num >= 1) {
-				for (var j = 0; j < num; j++) {
-					var index = j + 1;
-					var dom_id = node_id + "-" + proto + "_node" + index;
-					dom_id = dom_id.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), ".");
-					var node_select = document.getElementById(dom_id);
-					var node_select_value = node_select.value;
-					if (node_select_value && node_select_value != "nil") {
-						var v = document.getElementById(dom_id + "-" + node_select_value);
-						node_select.title = v.text;
-						
-						var new_a = document.createElement("a");
-						new_a.innerHTML = "<%:Edit%>";
-						new_a.href = "#";
-						new_a.setAttribute("onclick", "location.href='" + '<%=url([[admin]], [[services]], [[passwall]], [[node_config]])%>' + "/" + node_select_value + "'");
-						
-						var log_a = document.createElement("a");
-						log_a.innerHTML = "<%:Log%>";
-						log_a.href = "#";
-						log_a.setAttribute("onclick", "window.open('" + '<%=url([[admin]], [[services]], [[passwall]], [[get_redir_log]])%>' + "?proto=" + proto + "&index=" + index + "', '_blank')");
-						
-						node_select.outerHTML = node_select.outerHTML + "&nbsp&nbsp" + new_a.outerHTML + "&nbsp&nbsp" + log_a.outerHTML;
-						//node_select.parentNode.insertBefore(new_a, node_select.nextSibling);
-					}
-				}
+			var dom_id = node_id + "-" + proto + "_node";
+			dom_id = dom_id.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), ".");
+			var node_select = document.getElementById(dom_id);
+			var node_select_value = node_select.value;
+			if (node_select_value && node_select_value != "nil") {
+				var v = document.getElementById(dom_id + "-" + node_select_value);
+				node_select.title = v.text;
+				
+				var new_a = document.createElement("a");
+				new_a.innerHTML = "<%:Edit%>";
+				new_a.href = "#";
+				new_a.setAttribute("onclick", "location.href='" + '<%=url([[admin]], [[services]], [[passwall]], [[node_config]])%>' + "/" + node_select_value + "'");
+				
+				var log_a = document.createElement("a");
+				log_a.innerHTML = "<%:Log%>";
+				log_a.href = "#";
+				log_a.setAttribute("onclick", "window.open('" + '<%=url([[admin]], [[services]], [[passwall]], [[get_redir_log]])%>' + "?proto=" + proto + "', '_blank')");
+				
+				node_select.outerHTML = node_select.outerHTML + "&nbsp&nbsp" + new_a.outerHTML + "&nbsp&nbsp" + log_a.outerHTML;
+				//node_select.parentNode.insertBefore(new_a, node_select.nextSibling);
 			}
 		}
 	}
@@ -93,7 +84,7 @@ local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
 			if (node_select_value && node_select_value != "nil") {
 				if (global_id != null && node_select_value.indexOf("tcp") == 0) {
 					var num = node_select_value.replace("tcp", "");
-					var d = global_id + "-tcp_node" + index;
+					var d = global_id + "-tcp_node";
 					d = d.replace("cbi-", "cbid-").replace(new RegExp("-", 'g'), ".");
 					var dom = document.getElementById(d);
 					var _node_select_value = dom.value;

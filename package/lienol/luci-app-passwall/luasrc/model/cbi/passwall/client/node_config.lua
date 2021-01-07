@@ -454,8 +454,10 @@ tls:depends("type", "Trojan-Go")
 xtls = s:option(Flag, "xtls", translate("XTLS"))
 xtls.default = 0
 xtls:depends({ type = "Xray", protocol = "vless", tls = "1" })
+xtls:depends({ type = "Xray", protocol = "trojan", tls = "1" })
 
 flow = s:option(Value, "flow", translate("flow"))
+flow.default = "xtls-rprx-direct"
 flow:value("xtls-rprx-origin")
 flow:value("xtls-rprx-origin-udp443")
 flow:value("xtls-rprx-direct")

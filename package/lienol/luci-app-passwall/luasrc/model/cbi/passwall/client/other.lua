@@ -121,28 +121,9 @@ o.rmempty = true
 --]]
 
 -- [[ Other Settings ]]--
-s = m:section(TypedSection, "global_other", translate("Other Settings"),
-              "<font color='red'>" .. translatef(
-                  "You can only set up a maximum of %s nodes for the time being, Used for access control.",
-                  "3") .. "</font>")
+s = m:section(TypedSection, "global_other", translate("Other Settings"))
 s.anonymous = true
 s.addremove = false
-
----- TCP Node Number Option
-o = s:option(ListValue, "tcp_node_num", "TCP" .. translate("Node Number"))
-o.default = "1"
-o.rmempty = false
-o:value("1")
-o:value("2")
-o:value("3")
-
----- UDP Node Number Option
-o = s:option(ListValue, "udp_node_num", "UDP" .. translate("Node Number"))
-o.default = "1"
-o.rmempty = false
-o:value("1")
-o:value("2")
-o:value("3")
 
 o = s:option(MultiValue, "status", translate("Status info"))
 o:value("big_icon", translate("Big icon")) -- 大图标

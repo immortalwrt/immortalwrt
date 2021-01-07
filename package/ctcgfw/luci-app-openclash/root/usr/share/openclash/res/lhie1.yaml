@@ -4,12 +4,14 @@ rules:
 - RULE-SET,Netflix,Netflix
 - RULE-SET,Spotify,Spotify
 - RULE-SET,YouTube,YouTube
+- RULE-SET,Disney Plus,Disney
 - RULE-SET,Bilibili,AsianTV
 - RULE-SET,iQiyi,AsianTV
 - RULE-SET,Letv,AsianTV
 - RULE-SET,Netease Music,AsianTV
 - RULE-SET,Tencent Video,AsianTV
 - RULE-SET,Youku,AsianTV
+- RULE-SET,WeTV,AsianTV
 - RULE-SET,ABC,GlobalTV
 - RULE-SET,Abema TV,GlobalTV
 - RULE-SET,Amazon,GlobalTV
@@ -18,7 +20,7 @@ rules:
 - RULE-SET,Bahamut,GlobalTV
 - RULE-SET,BBC iPlayer,GlobalTV
 - RULE-SET,DAZN,GlobalTV
-- RULE-SET,Disney Plus,GlobalTV
+- RULE-SET,Discovery Plus,GlobalTV
 - RULE-SET,encoreTVB,GlobalTV
 - RULE-SET,Fox Now,GlobalTV
 - RULE-SET,Fox+,GlobalTV
@@ -57,12 +59,14 @@ script:
             "Netflix": "Netflix",
             "Spotify": "Spotify",
             "YouTube": "YouTube",
+            "Disney Plus": "Disney",
             "Bilibili": "AsianTV",
             "iQiyi": "AsianTV",
             "Letv": "AsianTV",
             "Netease Music": "AsianTV",
             "Tencent Video": "AsianTV",
             "Youku": "AsianTV",
+            "WeTV": "AsianTV",
             "ABC": "GlobalTV",
             "Abema TV": "GlobalTV",
             "Amazon": "GlobalTV",
@@ -71,7 +75,7 @@ script:
             "Bahamut": "GlobalTV",
             "BBC iPlayer": "GlobalTV",
             "DAZN": "GlobalTV",
-            "Disney Plus": "GlobalTV",
+            "Discovery Plus": "GlobalTV",
             "encoreTVB": "GlobalTV",
             "Fox Now": "GlobalTV",
             "Fox+": "GlobalTV",
@@ -187,6 +191,12 @@ rule-providers:
     url: https://cdn.jsdelivr.net/gh/lhie1/Rules@master/Clash/Provider/Media/Youku.yaml
     path: "./Rules/Media/Youku"
     interval: 86400
+  WeTV:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/lhie1/Rules@master/Clash/Provider/Media/WeTV.yaml
+    path: "./Rules/Media/WeTV"
+    interval: 86400
   ABC:
     type: http
     behavior: classical
@@ -234,6 +244,12 @@ rule-providers:
     behavior: classical
     url: https://cdn.jsdelivr.net/gh/lhie1/Rules@master/Clash/Provider/Media/DAZN.yaml
     path: "./Rules/Media/DAZN"
+    interval: 86400
+  Discovery Plus:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/lhie1/Rules@master/Clash/Provider/Media/Discovery%20Plus.yaml
+    path: "./Rules/Media/Discovery_Plus"
     interval: 86400
   Disney Plus:
     type: http
