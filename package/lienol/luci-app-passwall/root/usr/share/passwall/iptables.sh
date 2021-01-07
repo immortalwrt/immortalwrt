@@ -575,7 +575,7 @@ add_firewall_rule() {
 }
 
 del_firewall_rule() {
-	ib_nat_exist=`$ipt_n -L PREROUTING | grep -c PSW`
+	ib_nat_exist=$($ipt_n -nL PREROUTING | grep -c PSW)
 	if [ ! -z "$ib_nat_exist" ];then
 		until [ "$ib_nat_exist" = 0 ]
 	do
@@ -592,7 +592,7 @@ del_firewall_rule() {
 		$ip6t_m -D PREROUTING -j PSW 2>/dev/null
 		$ip6t_m -D OUTPUT -p tcp -j PSW_OUTPUT 2>/dev/null
 		
-		ib_nat_exist=`expr $ib_nat_exist - 1`
+		ib_nat_exist=$(expr $ib_nat_exist - 1)
 	done
 	fi
 	$ipt_n -F PSW 2>/dev/null && $ipt_n -X PSW 2>/dev/null
