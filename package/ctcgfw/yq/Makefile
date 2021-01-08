@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yq
-PKG_VERSION:=4.2.0
+PKG_VERSION:=4.2.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/mikefarah/yq/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=19a75856c35cf99d7547faa5d00144b7a0d9e03ef04d10a20cd739dd8280ea7d
+PKG_HASH:=83d0bc17078552084eeeebd7c505add331baa89ffde2253119340d22f3b80685
 
 PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 PKG_LICENSE:=MIT
@@ -25,6 +25,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_YQ_COMPRESS_UPX
 
 GO_PKG:=github.com/mikefarah/yq
+GO_PKG_LDFLAGS:=-s -w
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
