@@ -157,9 +157,6 @@ msgstr "服务端配置"
 msgid "KcpTun Enable"
 msgstr "KcpTun 启用"
 
-msgid "bin:/usr/bin/kcptun-client"
-msgstr "二进制文件：/usr/bin/kcptun-client"
-
 msgid "KcpTun Port"
 msgstr "KcpTun 端口"
 
@@ -168,12 +165,6 @@ msgstr "KcpTun 参数"
 
 msgid "KcpTun Password"
 msgstr "KcpTun 密码"
-
-msgid "Haven't a Kcptun executable file"
-msgstr "不存在Kcptun可执行文件，请下载Kcptun可执行文件并改名放入/usr/bin/kcptun-client"
-
-msgid "Not a Kcptun executable file"
-msgstr "Kcptun可执行文件格式不正确，请确认是否正确下载了路由器对应的可执行文件"
 
 msgid "Enable Process Monitor"
 msgstr "启用进程监控"
@@ -688,9 +679,6 @@ msgstr "禁止连接的域名"
 msgid "Obfuscate password (optional)"
 msgstr "混淆密码（可选）"
 
-msgid "Select the interface that needs to transmit data. If unchecked, all interfaces will pass data by default!"
-msgstr "选择需要传递数据的接口。如果未选择，则默认情况下所有接口都将传递数据！"
-
 msgid "Camouflage Type"
 msgstr "伪装类型"
 
@@ -741,3 +729,9 @@ msgstr "输入的内容不正确！"
 
 msgid "Reset complete"
 msgstr "重置完成"
+
+msgid "Shadowsocks2"
+msgstr "二次加密"
+
+msgid "Finger Print"
+msgstr "指纹伪造"
