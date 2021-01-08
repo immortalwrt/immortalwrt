@@ -1,26 +1,26 @@
 #
-# Copyright (C) 2008 OpenWrt.org
+# Copyright (C) 2020 CTCGFW Project-OpenWrt
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
-include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=rtl8821cu
-PKG_VERSION:=5.8.1
 PKG_RELEASE:=1
-PKG_LICENSE:=GPLv3
 
 PKG_SOURCE_URL:=https://github.com/brektrou/rtl8821CU.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2020-07-27
 PKG_SOURCE_VERSION:=93b04bfcd293fdd7d98d5a7c964ae9416a40159c
-PKG_MIRROR_HASH:=0b0c12c69efa680481abc3a7703a1a224f7fcd6271f8eb3c038fbaef02945bfa
+PKG_MIRROR_HASH:=e3d798355625bd71596ce08741e1f7f3523951e91be775edf2a936ab260bd5de
 
 PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
+
+PKG_LICENSE:=GPLv2
+PKG_LICENSE_FILES:=LICENSE
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
@@ -29,7 +29,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/rtl8821cu
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek rtl8821cu Support
+  TITLE:=Realtek RTL8811CU/RTL8821CU support
   DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/rtl8821cu.ko
   AUTOLOAD:=$(call AutoProbe,rtl8821cu)
@@ -37,7 +37,7 @@ define KernelPackage/rtl8821cu
 endef
 
 define KernelPackage/rtl8821cu/description
- Kernel module for rtl8821cu wireless module.
+  Realtek RTL8811CU/RTL8821CU USB Wi-Fi adapter driver.
 endef
 
 NOSTDINC_FLAGS = \
