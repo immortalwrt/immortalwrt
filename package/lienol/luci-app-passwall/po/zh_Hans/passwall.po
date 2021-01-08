@@ -1075,14 +1075,17 @@ msgstr "当你隐藏后想再次显示，地址栏输入例："
 msgid "The MTProto protocol must be 32 characters and can only contain characters from 0 to 9 and a to f."
 msgstr "MTProto 协议必须为 32 个字符，仅可包含 0 到 9 和 a 到 f 之间的字符。"
 
+msgid "Whether to receive PROXY protocol, when this node want to be fallback or forwarded by proxy, it must be enable, otherwise it cannot be used."
+msgstr "是否接收 PROXY protocol，当该节点要被回落或被代理转发时，必须启用，否则不能使用。"
+
 msgid "transit node"
 msgstr "中转到此节点"
 
 msgid "Bind Local"
 msgstr "本机监听"
 
-msgid "When selected, it can only be accessed locally,It is recommended to turn on when using reverse proxies."
-msgstr "当勾选时，只能由本机访问此端口，当开启反向代理时建议勾选此项。"
+msgid "When selected, it can only be accessed locally, It is recommended to turn on when using reverse proxies or be fallback."
+msgstr "当勾选时，只能由本机访问此端口，当想被反向代理或被回落时建议勾选此项。"
 
 msgid "Accept LAN Access"
 msgstr "接受局域网访问"
