@@ -258,12 +258,10 @@ uuid:depends("type", "Trojan-Go")
 uuid:depends("type", "Trojan-Plus")
 
 alter_id = s:option(Value, "alter_id", translate("Alter ID"))
-alter_id.default = 16
 alter_id:depends({ type = "Xray", protocol = "vmess" })
 alter_id:depends({ type = "V2ray", protocol = "vmess" })
 
 level = s:option(Value, "level", translate("User Level"))
-level.default = 1
 level:depends({ type = "Xray", protocol = "vmess" })
 level:depends({ type = "Xray", protocol = "vless" })
 level:depends({ type = "Xray", protocol = "shadowsocks" })
@@ -511,6 +509,12 @@ quic_guise = s:option(ListValue, "quic_guise", translate("Camouflage Type"))
 for a, t in ipairs(header_type_list) do quic_guise:value(t) end
 quic_guise:depends("transport", "quic")
 
+acceptProxyProtocol = s:option(Flag, "acceptProxyProtocol", translate("acceptProxyProtocol"), translate("Whether to receive PROXY protocol, when this node want to be fallback or forwarded by proxy, it must be enable, otherwise it cannot be used."))
+acceptProxyProtocol:depends({ type = "Xray", transport = "tcp" })
+acceptProxyProtocol:depends({ type = "Xray", transport = "ws" })
+acceptProxyProtocol:depends({ type = "V2ray", transport = "tcp" })
+acceptProxyProtocol:depends({ type = "V2ray", transport = "ws" })
+
 -- [[ Fallback部分 ]]--
 fallback = s:option(Flag, "fallback", translate("Fallback"))
 fallback:depends({ type = "Xray", protocol = "vless", transport = "tcp" })
@@ -573,7 +577,7 @@ remote_port.datatype = "port"
 remote_port.default = "80"
 remote_port:depends("remote_enable", 1)
 
-bind_local = s:option(Flag, "bind_local", translate("Bind Local"), translate("When selected, it can only be accessed locally,It is recommended to turn on when using reverse proxies."))
+bind_local = s:option(Flag, "bind_local", translate("Bind Local"), translate("When selected, it can only be accessed locally, It is recommended to turn on when using reverse proxies or be fallback."))
 bind_local.default = "0"
 bind_local:depends("type", "Xray")
 bind_local:depends("type", "V2ray")
