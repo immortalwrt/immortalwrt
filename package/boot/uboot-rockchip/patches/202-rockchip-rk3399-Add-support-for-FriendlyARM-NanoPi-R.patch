@@ -1,6 +1,6 @@
-From 6997a44b545a60b82031c02ea144abc8df561352 Mon Sep 17 00:00:00 2001
+From 8dc76bbce30c3f63f290f008f8410c00fee13c9a Mon Sep 17 00:00:00 2001
 From: Tianling Shen <cnsztl@gmail.com>
-Date: Fri, 25 Dec 2020 13:11:28 +0000
+Date: Fri, 8 Jan 2021 05:55:50 +0000
 Subject: [PATCH] rockchip: rk3399: Add support for FriendlyARM NanoPi R4S
 
 This adds support for the NanoPi R4S from FriendlyArm.
@@ -22,10 +22,10 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 ---
  arch/arm/dts/Makefile                      |   1 +
  arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi |   9 ++
- arch/arm/dts/rk3399-nanopi-r4s.dts         | 163 +++++++++++++++++++++
+ arch/arm/dts/rk3399-nanopi-r4s.dts         | 178 +++++++++++++++++++++
  board/friendlyarm/nanopi4/MAINTAINERS      |   6 +
  configs/nanopi-r4s-rk3399_defconfig        |  63 ++++++++
- 5 files changed, 242 insertions(+)
+ 5 files changed, 257 insertions(+)
  create mode 100644 arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3399-nanopi-r4s.dts
  create mode 100644 configs/nanopi-r4s-rk3399_defconfig
@@ -54,7 +54,7 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +#include "rk3399-sdram-ddr3-1866.dtsi"
 --- /dev/null
 +++ b/arch/arm/dts/rk3399-nanopi-r4s.dts
-@@ -0,0 +1,163 @@
+@@ -0,0 +1,178 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 Jensen Huang <jensenhuang@friendlyarm.com>
@@ -74,7 +74,42 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +		led-failsafe = &sys_led;
 +		led-running = &sys_led;
 +		led-upgrade = &sys_led;
-+		ethernet1 = &r8169;
++	};
++
++	/delete-node/ gpio-leds;
++	gpio-leds {
++		compatible = "gpio-leds";
++		pinctrl-0 = <&lan_led_pin>, <&sys_led_pin>, <&wan_led_pin>;
++		pinctrl-names = "default";
++
++		lan_led: led-0 {
++			gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_HIGH>;
++			label = "nanopi-r4s:green:lan";
++		};
++
++		sys_led: led-1 {
++			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
++			label = "nanopi-r4s:red:sys";
++		};
++
++		wan_led: led-2 {
++			gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
++			label = "nanopi-r4s:green:wan";
++		};
++	};
++
++	/delete-node/ gpio-keys;
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&reset_button_pin>;
++
++		reset {
++			debounce-interval = <50>;
++			gpios = <&gpio1 RK_PC6 GPIO_ACTIVE_LOW>;
++			label = "reset";
++			linux,code = <KEY_RESTART>;
++		};
 +	};
 +
 +	vdd_5v: vdd-5v {
@@ -133,47 +168,6 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +	status = "disabled";
 +};
 +
-+&keys {
-+	reset {
-+		label = "reset";
-+		gpios = <&gpio1 RK_PC6 GPIO_ACTIVE_LOW>;
-+		linux,code = <KEY_RESTART>;
-+		debounce-interval = <50>;
-+	};
-+};
-+
-+&key_pins {
-+	rockchip,pins =
-+		<0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
-+		<1 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
-+};
-+
-+&leds {
-+	/delete-node/ status;
-+
-+	lan_led: led-0 {
-+		gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s:green:lan";
-+	};
-+
-+	sys_led: led-1 {
-+		gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s:red:sys";
-+	};
-+
-+	wan_led: led-2 {
-+		gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s:green:wan";
-+	};
-+};
-+
-+&leds_gpio {
-+	rockchip,pins =
-+		<0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>,
-+		<1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>,
-+		<1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-+};
-+
 +&pcie0 {
 +	max-link-speed = <1>;
 +	num-lanes = <1>;
@@ -183,10 +177,29 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +		reg = <0x00000000 0 0 0 0>;
 +		#address-cells = <3>;
 +		#size-cells = <2>;
++	};
++};
 +
-+		r8169: pcie@0,0 {
-+			reg = <0x000000 0 0 0 0>;
-+			local-mac-address = [ 00 00 00 00 00 00 ];
++&pinctrl {
++	/delete-node/ gpio-leds;
++	gpio-leds {
++		lan_led_pin: lan-led-pin {
++			rockchip,pins = <1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		sys_led_pin: sys-led-pin {
++			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		wan_led_pin: wan-led-pin {
++			rockchip,pins = <1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	/delete-node/ rockchip-key;
++	rockchip-key {
++		reset_button_pin: reset-button-pin {
++			rockchip,pins = <1 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
 +};
@@ -200,7 +213,9 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +};
 +
 +&sdmmc {
-+	host-index-min = <1>;
++	sd-uhs-sdr12;
++	sd-uhs-sdr25;
++	sd-uhs-sdr50;
 +};
 +
 +&u2phy0_host {
