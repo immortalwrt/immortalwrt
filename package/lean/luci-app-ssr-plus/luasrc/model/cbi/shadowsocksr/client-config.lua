@@ -7,12 +7,8 @@ local m, s, o, kcp_enable
 local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
 
-local function isKcptun(file)
-	if not nixio.fs.access(file, "rwx", "rx", "rx") then
-		nixio.fs.chmod(file, 755)
-	end
-	local str = luci.sys.exec(file .. " -v | awk '{printf $1}'")
-	return (str:lower() == "kcptun")
+function is_finded(e)
+	return luci.sys.exec('type -t -p "%s"' % e) ~= "" and true or false
 end
 
 local server_table = {}
@@ -129,23 +125,27 @@ o.template = "shadowsocksr/ssrurl"
 o.value = sid
 
 o = s:option(ListValue, "type", translate("Server Node Type"))
-if nixio.fs.access("/usr/bin/ssr-redir") then
+if is_finded("ssr-redir") then
 	o:value("ssr", translate("ShadowsocksR"))
 end
-if nixio.fs.access("/usr/bin/ss-redir") then
+if is_finded("ss-redir") then
 	o:value("ss", translate("Shadowsocks New Version"))
 end
-if nixio.fs.access("/usr/bin/xray") or nixio.fs.access("/usr/bin/v2ray") then
+if is_finded("xray") or is_finded("v2ray") then
 	o:value("vmess", translate("Vmess"))
 	o:value("vless", translate("VLESS"))
 end
-if nixio.fs.access("/usr/sbin/trojan") or nixio.fs.access("/usr/bin/trojan-go") then
+if is_finded("trojan")then
 	o:value("trojan", translate("Trojan"))
 end
-if nixio.fs.access("/usr/bin/naive") then
+if is_finded("trojan-go") then
+	o:value("trojan", translate("Trojan"))
+	o:value("trojan-go", translate("Trojan-Go"))
+end
+if is_finded("naive") then
 	o:value("naiveproxy", translate("NaiveProxy"))
 end
-if nixio.fs.access("/usr/sbin/redsocks2") then
+if is_finded("redsocks2") then
 	o:value("socks5", translate("Socks5"))
 	o:value("tun", translate("Network Tunnel"))
 end
@@ -172,6 +172,7 @@ o:depends("type", "vless")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
+o:depends("type", "trojan-go")
 
 o = s:option(Value, "server_port", translate("Server Port"))
 o.datatype = "port"
@@ -183,6 +184,7 @@ o:depends("type", "vless")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
+o:depends("type", "trojan-go")
 
 o = s:option(Flag, "auth_enable", translate("Enable Authentication"))
 o.rmempty = false
@@ -202,6 +204,7 @@ o:depends("type", "ss")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends({type = "socks5", auth_enable = true})
+o:depends("type", "trojan-go")
 
 o = s:option(ListValue, "encrypt_method", translate("Encrypt Method"))
 for _, v in ipairs(encrypt_methods) do
@@ -220,10 +223,10 @@ o:depends("type", "ss")
 -- Shadowsocks Plugin
 o = s:option(ListValue, "plugin", translate("Obfs"))
 o:value("none", translate("None"))
-if nixio.fs.access("/usr/bin/obfs-local") then
+if is_finded("obfs-local") then
 	o:value("obfs-local", translate("simple-obfs"))
 end
-if nixio.fs.access("/usr/bin/v2ray-plugin") then
+if is_finded("v2ray-plugin") then
 	o:value("v2ray-plugin", translate("v2ray-plugin"))
 end
 o.rmempty = true
@@ -293,6 +296,14 @@ o.rmempty = true
 o:depends("type", "vmess")
 o:depends("type", "vless")
 
+trojan_transport = s:option(ListValue, "trojan_transport", translate("Transport"))
+trojan_transport:value("original", "Original")
+trojan_transport:value("ws", "WebSocket")
+trojan_transport:value("h2", "HTTP/2")
+trojan_transport:value("h2+ws", "HTTP/2 & WebSocket")
+trojan_transport.default = "original"
+trojan_transport:depends("type", "trojan-go")
+
 -- [[ TCP部分 ]]--
 -- TCP伪装
 o = s:option(ListValue, "tcp_guise", translate("Camouflage Type"))
@@ -315,11 +326,16 @@ o.rmempty = true
 -- WS域名
 o = s:option(Value, "ws_host", translate("WebSocket Host"))
 o:depends({transport = "ws", tls = false})
+o:depends("trojan_transport", "h2+ws")
+o:depends("trojan_transport", "ws")
+o.datatype = "hostname"
 o.rmempty = true
 
 -- WS路径
 o = s:option(Value, "ws_path", translate("WebSocket Path"))
 o:depends("transport", "ws")
+o:depends("trojan_transport", "h2+ws")
+o:depends("trojan_transport", "ws")
 o.rmempty = true
 
 -- [[ H2部分 ]]--
@@ -411,6 +427,44 @@ o = s:option(Flag, "congestion", translate("Congestion"))
 o:depends("transport", "kcp")
 o.rmempty = true
 
+o = s:option(ListValue, "plugin_type", translate("Plugin Type"))
+o:value("plaintext", translate("Plain Text"))
+o:value("shadowsocks", translate("ShadowSocks"))
+o:value("other", translate("Other"))
+o.default = "plaintext"
+o:depends({tls = false, trojan_transport = "original"})
+
+o = s:option(Value, "plugin_cmd", translate("Plugin Binary"))
+o.placeholder = "eg: /usr/bin/v2ray-plugin"
+o:depends({plugin_type = "shadowsocks"})
+o:depends({plugin_type = "other"})
+
+o = s:option(Value, "plugin_option", translate("Plugin Option"))
+o.placeholder = "eg: obfs=http;obfs-host=www.baidu.com"
+o:depends({plugin_type = "shadowsocks"})
+o:depends({plugin_type = "other"})
+
+o = s:option(DynamicList, "plugin_arg", translate("Plugin Option Args"))
+o.placeholder = "eg: [\"-config\", \"test.json\"]"
+o:depends({plugin_type = "shadowsocks"})
+o:depends({plugin_type = "other"})
+
+-- [[ Trojan-Go Shadowsocks2 ]] --
+o = s:option(Flag, "ss_aead", translate("Shadowsocks2"))
+o:depends("type", "trojan-go")
+o.default = "0"
+
+o = s:option(ListValue, "ss_aead_method", translate("Encrypt Method"))
+o:value("aes-128-gcm")
+o:value("aes-256-gcm")
+o:value("chacha20-ietf-poly1305")
+o.default = "aes-128-gcm"
+o:depends("ss_aead", "1")
+
+o = s:option(Value, "ss_aead_pwd", translate("Password"))
+o.password = true
+o:depends("ss_aead", "1")
+
 -- [[ TLS ]]--
 o = s:option(Flag, "tls", translate("TLS"))
 o.rmempty = true
@@ -418,9 +472,10 @@ o.default = "0"
 o:depends("type", "vmess")
 o:depends({type = "vless", xtls = false})
 o:depends("type", "trojan")
+o:depends("type", "trojan-go")
 
 -- XTLS
-if nixio.fs.access("/usr/bin/xray") then
+if is_finded("xray") then
 	o = s:option(Flag, "xtls", translate("XTLS"))
 	o.rmempty = true
 	o.default = "0"
@@ -430,14 +485,29 @@ end
 -- Flow
 o = s:option(Value, "vless_flow", translate("Flow"))
 for _, v in ipairs(flows) do
-	o:value(v, v)
+	o:value(v, translate(v))
 end
 o.rmempty = true
 o.default = "xtls-rprx-splice"
 o:depends("xtls", true)
 
+-- [[ TLS部分 ]] --
+o = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))
+o:depends({type = "trojan", tls = true})
+o:depends({type = "trojan-go", tls = true})
+o.default = "0"
+
+-- [[ Trojan TLS ]]--
+o = s:option(ListValue, "fingerprint", translate("Finger Print"))
+o:value("disable", translate("disable"))
+o:value("firefox", translate("firefox"))
+o:value("chrome", translate("chrome"))
+o:value("ios", translate("ios"))
+o:depends({type = "trojan-go", tls = true})
+o.default = "firefox"
+
 o = s:option(Value, "tls_host", translate("TLS Host"))
-o:depends("type", "trojan")
+o.datatype = "hostname"
 o:depends("tls", true)
 o:depends("xtls", true)
 o.rmempty = true
@@ -465,9 +535,12 @@ o:depends("mux", "1")
 o = s:option(Flag, "certificate", translate("Self-signed Certificate"))
 o.rmempty = true
 o.default = "0"
-o:depends("type", "trojan")
-o:depends("type", "vmess")
-o:depends("type", "vless")
+o:depends({type = "trojan", tls = true, insecure = false})
+o:depends({type = "trojan-go", tls = true, insecure = false})
+o:depends({type = "vmess", tls = true, insecure = false})
+o:depends({type = "vless", tls = true, insecure = false})
+o:depends({type = "vmess", xtls = true, insecure = false})
+o:depends({type = "vless", xtls = true, insecure = false})
 o.description = translate("If you have a self-signed certificate,please check the box")
 
 o = s:option(DummyValue, "upload", translate("Upload"))
@@ -516,6 +589,7 @@ o.default = "0"
 o:depends("type", "ssr")
 o:depends("type", "ss")
 o:depends("type", "trojan")
+o:depends("type", "trojan-go")
 
 o = s:option(Flag, "switch_enable", translate("Enable Auto Switch"))
 o.rmempty = false
@@ -526,8 +600,8 @@ o.datatype = "port"
 o.default = 1234
 o.rmempty = false
 
-if nixio.fs.access("/usr/bin/kcptun-client") then
-	kcp_enable = s:option(Flag, "kcp_enable", translate("KcpTun Enable"), translate("bin:/usr/bin/kcptun-client"))
+if is_finded("kcptun-client") then
+	kcp_enable = s:option(Flag, "kcp_enable", translate("KcpTun Enable"))
 	kcp_enable.rmempty = true
 	kcp_enable.default = "0"
 	kcp_enable:depends("type", "ssr")
@@ -536,19 +610,6 @@ if nixio.fs.access("/usr/bin/kcptun-client") then
 	o = s:option(Value, "kcp_port", translate("KcpTun Port"))
 	o.datatype = "port"
 	o.default = 4000
-	function o.validate(self, value, section)
-		local kcp_file = "/usr/bin/kcptun-client"
-		local enable = kcp_enable:formvalue(section) or kcp_enable.disabled
-		if enable == kcp_enable.enabled then
-			if not nixio.fs.access(kcp_file) then
-				return nil, translate("Haven't a Kcptun executable file")
-			elseif not isKcptun(kcp_file) then
-				return nil, translate("Not a Kcptun executable file")
-			end
-		end
-
-		return value
-	end
 	o:depends("type", "ssr")
 	o:depends("type", "ss")
 

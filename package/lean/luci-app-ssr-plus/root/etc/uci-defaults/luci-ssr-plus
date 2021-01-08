@@ -24,46 +24,7 @@ touch /etc/ssrplus/oversea_list.conf
 touch /etc/ssrplus/ad.conf
 touch /etc/config/shadowsocksr
 if [ ! -s "/etc/config/shadowsocksr" ]; then
-uci -q batch <<-EOF >/dev/null
-add shadowsocksr global
-set shadowsocksr.@global[0].global_server='nil'
-set shadowsocksr.@global[0].netflix_server='nil'
-set shadowsocksr.@global[0].netflix_proxy='0'
-set shadowsocksr.@global[0].threads='0'
-set shadowsocksr.@global[0].run_mode='router'
-set shadowsocksr.@global[0].dports='2'
-set shadowsocksr.@global[0].pdnsd_enable='1'
-set shadowsocksr.@global[0].tunnel_forward='8.8.4.4:53'
-set shadowsocksr.@global[0].monitor_enable='1'
-set shadowsocksr.@global[0].enable_switch='1'
-set shadowsocksr.@global[0].switch_time='667'
-set shadowsocksr.@global[0].switch_timeout='5'
-set shadowsocksr.@global[0].switch_try_count='3'
-set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/YW5vbnltb3Vz/domain-list-community@release/gfwlist.txt'
-set shadowsocksr.@global[0].chnroute_url='https://ispip.clang.cn/all_cn.txt'
-set shadowsocksr.@global[0].nfip_url='https://cdn.jsdelivr.net/gh/QiuSimons/Netflix_IP/getflix.txt'
-set shadowsocksr.@global[0].adblock_url='https://neodev.team/lite_host_dnsmasq.conf'
-add shadowsocksr server_subscribe
-set shadowsocksr.@server_subscribe[0].proxy='0'
-set shadowsocksr.@server_subscribe[0].auto_update_time='2'
-set shadowsocksr.@server_subscribe[0].auto_update='1'
-set shadowsocksr.@server_subscribe[0].filter_words='过期时间/剩余流量/QQ群/官网/防失联地址/回国'
-add shadowsocksr access_control
-set shadowsocksr.@access_control[0].lan_ac_mode='0'
-set shadowsocksr.@access_control[0].router_proxy='1'
-add_list shadowsocksr.@access_control[0].wan_fw_ips=149.154.160.0/20
-add_list shadowsocksr.@access_control[0].wan_fw_ips=67.198.55.0/24
-add_list shadowsocksr.@access_control[0].wan_fw_ips=91.108.4.0/22
-add_list shadowsocksr.@access_control[0].wan_fw_ips=91.108.56.0/22
-add_list shadowsocksr.@access_control[0].wan_fw_ips=109.239.140.0/24
-add_list shadowsocksr.@access_control[0].Interface='lan'
-add shadowsocksr socks5_proxy
-set shadowsocksr.@socks5_proxy[0].server='nil'
-set shadowsocksr.@socks5_proxy[0].local_port='1080'
-add shadowsocksr server_global
-set shadowsocksr.@server_global[0].enable_server='0'
-commit shadowsocksr
-EOF
+/etc/init.d/shadowsocksr reset
 fi
 rm -rf /tmp/luci-modulecache /tmp/luci-indexcache
 exit 0
