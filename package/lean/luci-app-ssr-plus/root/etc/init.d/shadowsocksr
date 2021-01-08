@@ -282,7 +282,7 @@ gen_config_file() { #server1 type2 code3 local_port4 socks_port5 threads5
 	vmess | vless)
 		lua /usr/share/shadowsocksr/gen_config.lua $1 $mode $4 $5 >$config_file
 		;;
-	trojan)
+	trojan | trojan-go)
 		case "$3" in
 		1)
 			lua /usr/share/shadowsocksr/gen_config.lua $1 nat $4 >$config_file
@@ -341,11 +341,11 @@ start_udp() {
 		ln_start_bin $(first_type xray v2ray) v2ray -config $udp_config_file
 		echolog "UDP TPROXY Relay:$($(first_type "xray" "v2ray") -version | head -1) Started!"
 		;;
-	trojan) #client
+	trojan | trojan-go) #client
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_local_port
-		ln_start_bin $(first_type ${type}-go ${type}) $type --config $udp_config_file
+		ln_start_bin $(first_type trojan-go trojan) $type --config $udp_config_file
 		ln_start_bin $(first_type ipt2socks) ipt2socks -U -b 0.0.0.0 -4 -s 127.0.0.1 -p $tmp_udp_local_port -l $tmp_udp_port
-		echolog "UDP TPROXY Relay:$($(first_type ${type}-go ${type}) --version 2>&1 | head -1) Started!"
+		echolog "UDP TPROXY Relay:$($(first_type trojan-go trojan) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		echolog "NaïveProxy UDP TPROXY Relay not supported!"
@@ -392,17 +392,17 @@ start_shunt() {
 		ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_port 8.8.8.8:53 127.0.0.1:$tmp_shunt_dns_port -q
 		echolog "shunt:$($(first_type xray v2ray) -version | head -1) Started!"
 		;;
-	trojan)
+	trojan | trojan-go)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
-		ln_start_bin $(first_type ${type}-go ${type}) $type --config $shunt_config_file
+		ln_start_bin $(first_type trojan-go trojan) $type --config $shunt_config_file
 		if [ -n "$tmp_local_port" ]; then
 			local tmp_port=$tmp_local_port
 		else
 			local tmp_port=$tmp_shunt_local_port
-			ln_start_bin $(first_type ${type}-go ${type}) $type --config $shunt_dns_config_file
+			ln_start_bin $(first_type trojan-go trojan) $type --config $shunt_dns_config_file
 		fi
 		ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_port 8.8.8.8:53 127.0.0.1:$tmp_shunt_dns_port -q
-		echolog "shunt:$($(first_type ${type}-go ${type}) --version 2>&1 | head -1) Started!"
+		echolog "shunt:$($(first_type trojan-go trojan) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
@@ -450,10 +450,10 @@ start_local() {
 			echolog "Global_Socks5:$($(first_type "xray" "v2ray") -version | head -1) Started!"
 		fi
 		;;
-	trojan) #client
+	trojan | trojan-go) #client
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
-		ln_start_bin $(first_type ${type}-go ${type}) $type --config $local_config_file
-		echolog "Global_Socks5:$($(first_type ${type}-go ${type}) --version 2>&1 | head -1) Started!"
+		ln_start_bin $(first_type trojan-go trojan) $type --config $local_config_file
+		echolog "Global_Socks5:$($(first_type trojan-go trojan) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
@@ -510,9 +510,9 @@ Start_Run() {
 		ln_start_bin $(first_type xray v2ray) v2ray -config $tcp_config_file
 		echolog "Main node:$($(first_type xray v2ray) -version | head -1) Started!"
 		;;
-	trojan)
+	trojan | trojan-go)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
-			ln_start_bin $(first_type ${type}-go ${type}) $type --config $tcp_config_file
+		ln_start_bin $(first_type trojan-go trojan) $type --config $tcp_config_file
 		echolog "Main node:$($(first_type $type) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
@@ -842,6 +842,7 @@ stop() {
 
 reset() {
 	stop
+	set_lock
 	rm -rf /etc/config/shadowsocksr $LOG_FILE
 	touch /etc/config/shadowsocksr $LOG_FILE
 	uci -q batch <<-EOF >/dev/null
@@ -859,7 +860,7 @@ reset() {
 		set shadowsocksr.@global[0].switch_time='667'
 		set shadowsocksr.@global[0].switch_timeout='5'
 		set shadowsocksr.@global[0].switch_try_count='3'
-		set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/gfwlist.txt'
+		set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/YW5vbnltb3Vz/domain-list-community@release/gfwlist.txt'
 		set shadowsocksr.@global[0].chnroute_url='https://ispip.clang.cn/all_cn.txt'
 		set shadowsocksr.@global[0].nfip_url='https://cdn.jsdelivr.net/gh/QiuSimons/Netflix_IP/getflix.txt'
 		set shadowsocksr.@global[0].adblock_url='https://anti-ad.net/anti-ad-for-dnsmasq.conf'
@@ -884,4 +885,5 @@ reset() {
 		set shadowsocksr.@server_global[0].enable_server='0'
 		commit shadowsocksr
 	EOF
+	unset_lock
 }
