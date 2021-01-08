@@ -1,5 +1,5 @@
 # PROJECT OPENWRT
-## The Testing Source Code of OpenWrt-19.07 Modified by CTCGFW
+## The Source Code of OpenWrt-19.07 Modified by CTCGFW
 ### Welcome to our Telegram Group: [@ctcgfw\_openwrt\_discuss](https://t.me/ctcgfw_openwrt_discuss).
 - - -
 
