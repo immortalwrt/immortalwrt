@@ -56,6 +56,15 @@
 		}
 	},
 
+	"luci-mod-status-channel_analysis": {
+		"description": "Grant access to the system route status",
+		"read": {
+			"ubus": {
+				"iwinfo": [ "info", "freqlist" ]
+			}
+		}
+	},
+
 	"luci-mod-status-firewall": {
 		"description": "Grant access to firewall status",
 		"read": {
@@ -125,7 +134,7 @@
 		},
 		"write": {
 			"ubus": {
-				"hostapd.*": [ "del_client" ]
+				"hostapd.*": [ "del_client", "wps_start", "wps_cancel", "wps_status" ]
 			}
 		}
 	}
