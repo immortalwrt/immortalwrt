@@ -1,0 +1,23 @@
+From 1bb8f8887c65543ccd9f6664a23001d72fec24a6 Mon Sep 17 00:00:00 2001
+From: Punk <punkdm@gmail.com>
+Date: Wed, 6 Jan 2021 18:34:47 +0800
+Subject: [PATCH] fix a Out-Of-Bounds Read in the _dns_decode_domain() function
+
+https://github.com/pymumu/smartdns/issues/669
+---
+ src/dns.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/dns.c b/src/dns.c
+index 83b15dc..fa45577 100644
+--- a/src/dns.c
++++ b/src/dns.c
+@@ -940,7 +940,7 @@ static int _dns_decode_domain(struct dns_context *context, char *output, int siz
+ 
+ 	/*[len]string[len]string...[0]0 */
+ 	while (1) {
+-		if (ptr > context->data + context->maxsize || ptr < context->data || output_len >= size - 1 || ptr_jump > 4) {
++		if (ptr >= context->data + context->maxsize || ptr < context->data || output_len >= size - 1 || ptr_jump > 4) {
+ 			return -1;
+ 		}
+ 

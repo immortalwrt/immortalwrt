@@ -738,7 +738,7 @@ start_rules() {
 		esac
 	}
 	if [ "$(uci_get_by_type global dports 1)" == "2" ]; then
-		local proxyport="-m multiport --dports 22,53,587,465,995,993,143,80,443,853"
+		local proxyport="-m multiport --dports 22,53,587,465,995,993,143,80,443,853,9418"
 	fi
 	get_arg_out() {
 		case "$(uci_get_by_type access_control router_proxy 1)" in
