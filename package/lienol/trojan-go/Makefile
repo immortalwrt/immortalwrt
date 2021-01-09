@@ -7,16 +7,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=trojan-go
 PKG_VERSION:=0.8.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/p4gefau1t/trojan-go.git
-PKG_MIRROR_HASH:=ccec21f4f2bac17abf41978221a0e5ed16d8c8135ae54a292fdeddce62fa9127
-PKG_SOURCE_VERSION:=d051cf4c8852d708769ca1c4e514306a88da830b
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/p4gefau1t/trojan-go/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=a335006813067f70763596c41ddf09454b151899b356661b055eb9113ec3081b
 
-PKG_CONFIG_DEPENDS := \
+PKG_CONFIG_DEPENDS:= \
 	CONFIG_TROJAN_GO_COMPRESS_GOPROXY \
 	CONFIG_TROJAN_GO_COMPRESS_UPX
 
@@ -25,11 +22,13 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/p4gefau1t/trojan-go
-GO_PKG_TAG:=-tags full
+GO_PKG_BUILD_PKG:=$$(GO_PKG)
+
+GO_PKG_TAGS:=full
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/constant.Version=$(PKG_VERSION) \
-	$(GO_PKG)/constant.Commit=$(PKG_SOURCE_VERSION)
+	$(GO_PKG)/constant.Commit=v$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
@@ -63,26 +62,13 @@ endef
 ifeq ($(CONFIG_TROJAN_GO_COMPRESS_GOPROXY),y)
 export GO111MODULE=on
 export GOPROXY=https://goproxy.io
-#export GOPROXY=https://mirrors.aliyun.com/goproxy/
 endif
 
-define Build/Prepare
-	tar -zxvf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components 1
-endef
-
 define Build/Compile
-	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG))
-	$(call GoPackage/Build/Configure)
 	$(call GoPackage/Build/Compile)
 ifeq ($(CONFIG_TROJAN_GO_COMPRESS_UPX),y)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/$(PKG_NAME)
 endif
-endef
-
-define Package/$(PKG_NAME)/install
-	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/$(PKG_NAME) $(1)/usr/bin/$(PKG_NAME)
 endef
 
 $(eval $(call GoBinPackage,$(PKG_NAME)))
