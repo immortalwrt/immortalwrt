@@ -299,6 +299,7 @@ function import_ssr_url(btn, urlname, sid) {
 					ssm.type = "none"
 				}
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.tcp_guise')[0].value = ssm.type;
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.tcp_guise')[0].dispatchEvent(event);
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.http_host')[0].value = ssm.host;
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.http_path')[0].value = ssm.path;
 			}
