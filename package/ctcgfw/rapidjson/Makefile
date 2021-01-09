@@ -1,7 +1,8 @@
 #
-# Copyright (C) 2019 OpenWrt.org
+# Copyright (C) 2020 CTCGFW Project-OpenWrt
+# (https://project-openwrt.eu.org)
 #
-# This is free software, licensed under the GNU General Public License v2.
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 include $(TOPDIR)/rules.mk
