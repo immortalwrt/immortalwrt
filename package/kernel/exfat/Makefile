@@ -20,7 +20,7 @@ PKG_LICENSE:=GPL-2.0-only
 
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/fs-exfat
+define KernelPackage/fs-exfat0
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Filesystems
@@ -28,10 +28,10 @@ define KernelPackage/fs-exfat
   URL:=https://github.com/namjaejeon/linux-exfat-oot
   FILES:=$(PKG_BUILD_DIR)/exfat.ko
   AUTOLOAD:=$(call AutoProbe,exfat)
-  DEPENDS:= +kmod-nls-base
+  DEPENDS:=+kmod-nls-base
 endef
 
-define KernelPackage/exfat/description
+define KernelPackage/exfat0/description
   This package provides the kernel module for exfat.
 endef
 
@@ -43,4 +43,4 @@ define Build/Compile
 	modules
 endef
 
-$(eval $(call KernelPackage,fs-exfat))
+$(eval $(call KernelPackage,fs-exfat0))
