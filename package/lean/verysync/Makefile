@@ -28,17 +28,10 @@ ifeq ($(ARCH),powerpc64)
 	PKG_ARCH_VERYSYNC:=ppc64
 endif
 
-LATEST_VERSION:=$(shell curl http://www.verysync.com/shell/latest)
 
 PKG_NAME:=verysync
-
-ifneq ($(LATEST_VERSION),)
-	PKG_VERSION:=$(LATEST_VERSION)
-else
-	PKG_VERSION:=v2.4.2
-endif
-
-PKG_RELEASE:=1
+PKG_VERSION:=v2.4.2
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://dl.verysync.com/releases/$(PKG_VERSION)/
