@@ -4,7 +4,7 @@ START=99
 USE_PROCD=1
 
 BIN="/usr/bin/subconverter"
-CONF="/etc/subconverter/pref.ini"
+CONF="/etc/subconverter/pref.example.ini"
 LOG_FILE="/tmp/subconverter.log"
 
 start_service() {
@@ -28,5 +28,6 @@ stop_service() {
 reload_service() {
 	logger -t Subconverter 'Restarting Subconverter service'
 	stop
+	sleep 2s
 	start
 }
