@@ -72,6 +72,10 @@ local auto_switch = api.uci_get_type("auto_switch", "enable", 0)
 	
 	var socks = document.getElementById("cbi-passwall-socks");
 	if (socks) {
+		var socks_enabled_dom = document.getElementById(global_id + "-socks_enabled");
+		socks_enabled_dom.parentNode.removeChild(socks_enabled_dom);
+		var descr = socks.getElementsByClassName("cbi-section-descr")[0];
+		descr.outerHTML = socks_enabled_dom.outerHTML;
 		rows = socks.getElementsByClassName("cbi-section-table-row");
 		for (var i = 0; i < rows.length; i++) {
 			var row = rows[i];

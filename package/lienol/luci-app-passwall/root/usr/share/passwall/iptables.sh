@@ -498,26 +498,28 @@ add_firewall_rule() {
 	fi
 
 	# 过滤Socks节点
-	local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
-	echolog "分析 Socks 服务所使用节点..."
-	local id enabled node port msg num
-	for id in $ids; do
-		enabled=$(config_n_get $id enabled 0)
-		[ "$enabled" == "1" ] || continue
-		node=$(config_n_get $id node nil)
-		port=$(config_n_get $id port 0)
-		msg="Socks 服务 [:${port}]"
-		if [ "$node" == "nil" ] || [ "$port" == "0" ]; then
-			msg="${msg} 未配置完全，略过"
-		elif [ "$(echo $node | grep ^tcp)" ]; then
-			eval "node=\${TCP_NODE}"
-			msg="${msg} 使用与 TCP 代理自动切换${num} 相同的节点，延后处理"
-		else
-			filter_node $node TCP
-			filter_node $node UDP
-		fi
-		echolog "  - ${msg}"
-	done
+	[ "$SOCKS_ENABLED" = "1" ] && {
+		local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
+		echolog "分析 Socks 服务所使用节点..."
+		local id enabled node port msg num
+		for id in $ids; do
+			enabled=$(config_n_get $id enabled 0)
+			[ "$enabled" == "1" ] || continue
+			node=$(config_n_get $id node nil)
+			port=$(config_n_get $id port 0)
+			msg="Socks 服务 [:${port}]"
+			if [ "$node" == "nil" ] || [ "$port" == "0" ]; then
+				msg="${msg} 未配置完全，略过"
+			elif [ "$(echo $node | grep ^tcp)" ]; then
+				eval "node=\${TCP_NODE}"
+				msg="${msg} 使用与 TCP 代理自动切换${num} 相同的节点，延后处理"
+			else
+				filter_node $node TCP
+				filter_node $node UDP
+			fi
+			echolog "  - ${msg}"
+		done
+	}
 
 	# 处理轮换节点的分流或套娃
 	local node port stream switch
