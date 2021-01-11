@@ -926,14 +926,21 @@ add_dnsmasq() {
 		}
 		
 		#分流规则
-		fwd_dns="${TUN_DNS}"
-		#如果使用chnlist直接使用默认DNS
-		[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
-		local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
-		for shunt_id in $shunt_ids; do
-			config_n_get $shunt_id domain_list | tr -s "\r\n" "\n" | gen_dnsmasq_items "shuntlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/shunt_host.conf"
-			echolog "  - [$?]$shunt_id分流规则(shuntlist)：${fwd_dns:-默认}"
-		done
+		[ "$(config_n_get $TCP_NODE protocol)" = "_shunt" ] && {
+			fwd_dns="${TUN_DNS}"
+			#如果使用chnlist直接使用默认DNS
+			[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
+			local default_node_id=$(config_n_get $TCP_NODE default_node nil)
+			local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
+			for shunt_id in $shunt_ids; do
+				local shunt_node_id=$(config_n_get $TCP_NODE ${shunt_id} nil)
+				[ "$shunt_node_id" = "nil" ] && continue
+				local shunt_node=$(config_n_get $shunt_node_id address nil)
+				[ "$shunt_node" = "nil" ] && continue
+				config_n_get $shunt_id domain_list | tr -s "\r\n" "\n" | gen_dnsmasq_items "shuntlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/shunt_host.conf"
+				echolog "  - [$?]$shunt_id分流规则(shuntlist)：${fwd_dns:-默认}"
+			done
+		}
 
 		#始终使用远程DNS解析代理（黑名单）列表
 		fwd_dns="${TUN_DNS}"
