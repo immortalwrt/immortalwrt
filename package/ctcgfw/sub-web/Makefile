@@ -1,0 +1,54 @@
+#
+# Copyright (C) 2020 CTCGFW Project-OpenWrt
+# (https://project-openwrt.eu.org)
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=sub-web
+PKG_VERSION:=1.0.0
+PKG_RELEASE:=1
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/CareyWang/sub-web.git
+PKG_SOURCE_DATE:=2021-01-07
+PKG_SOURCE_VERSION:=26d278800cc42025f8ceecff64b26f47b9fc2d14
+PKG_MIRROR_HASH:=3de3d95a04b0e4596e86581f2e066fa40d140c29709307ee97acd6893a0d5602
+
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+
+PKG_BUILD_DEPENDS:=node/host node-yarn/host
+
+include $(INCLUDE_DIR)/package.mk
+
+define Package/sub-web
+  SECTION:=net
+  CATEGORY:=Network
+  URL:=https://github.com/CareyWang/sub-web
+  TITLE:=A WebUI for generating proxy subscription url
+  DEPENDS:=+subconverter
+endef
+
+define Package/sub-web/description
+  Based on vue-cli and subconverter, for generating proxy subscription
+  url automatically.
+endef
+
+define Build/Compile
+	( \
+		cd $(PKG_BUILD_DIR); \
+		yarn install; \
+		yarn build; \
+	)
+endef
+
+define Package/sub-web/install
+	$(INSTALL_DIR) $(1)/www
+	$(CP) $(PKG_BUILD_DIR)/dist $(1)/www/sub-web
+endef
+
+$(eval $(call BuildPackage,sub-web))
