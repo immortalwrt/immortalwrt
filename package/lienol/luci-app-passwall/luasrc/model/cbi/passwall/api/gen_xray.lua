@@ -174,7 +174,7 @@ if node_section then
             listen = "0.0.0.0",
             port = tonumber(socks_proxy_port),
             protocol = "socks",
-            settings = {auth = "noauth", udp = true, ip = "127.0.0.1"}
+            settings = {auth = "noauth", udp = true}
         })
         network = "tcp,udp"
     end

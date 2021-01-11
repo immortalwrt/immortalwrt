@@ -322,6 +322,9 @@ o = s:taboption("tips", DummyValue, "")
 o.template = appname .. "/global/tips"
 
 -- [[ Socks Server ]]--
+o = s:taboption("Main", Flag, "socks_enabled", "Socks" .. translate("Main switch"))
+o.rmempty = false
+
 s = m:section(TypedSection, "socks", translate("Socks Config"))
 s.anonymous = true
 s.addremove = true
