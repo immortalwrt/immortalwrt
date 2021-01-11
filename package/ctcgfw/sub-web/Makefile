@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sub-web
 PKG_VERSION:=1.0.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/CareyWang/sub-web.git
@@ -21,6 +21,7 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 
+PKG_ARCH:=all
 PKG_BUILD_DEPENDS:=node/host node-yarn/host
 
 include $(INCLUDE_DIR)/package.mk
