@@ -161,65 +161,33 @@ local status = api.uci_get_type("global_other", "status", "")
 			if (x && x.status == 200) {
 				var tcp_node_status = document.getElementById('_tcp_node_status');
 				if (tcp_node_status) {
-					var tcp_node_num = 1;
-					if (tcp_node_num >= 1) {
+					if (true) {
 						var text = '';
-						if (tcp_node_num == 1) {
-							if (json["tcp_node_status"])
-								text += '<font color="green"><%:RUNNING%> ✓</font>';
-							else
-								text += '<font color="red"><%:NOT RUNNING%> X</font>';
-						} else {
-							for(var i = 0; i < tcp_node_num; i++) {
-								var k = i + 1;
-								if (json["tcp_node" + k + "_status"])
-									text += '<font color="green" size="3"> ✓</font>';
-								else
-									text += '<font color="red" size="3"> X</font>';
-							}
-						}
+						if (json["tcp_node_status"])
+							text += '<font color="green"><%:RUNNING%> ✓</font>';
+						else
+							text += '<font color="red"><%:NOT RUNNING%> X</font>';
 						tcp_node_status.innerHTML = text;
 						
 						var kcptun_tcp_node_status = document.getElementById('_kcptun_tcp_node_status');
 						text = "";
-						if (tcp_node_num == 1) {
-							if (json["kcptun_tcp_node_status"])
-								text += '<font color="green"><%:RUNNING%> ✓</font>';
-							else
-								text += '<font color="red"><%:NOT RUNNING%> X</font>';
-						} else {
-							for(var i = 0; i < tcp_node_num; i++) {
-								var k = i + 1;
-								if (json["tcp_node" + k + "_status"])
-									text += '<font color="green" size="3"> ✓</font>';
-								else
-									text += '<font color="red" size="3"> X</font>';
-							}
-						}
-						if(kcptun_tcp_node_status)
+						if (json["kcptun_tcp_node_status"])
+							text += '<font color="green"><%:RUNNING%> ✓</font>';
+						else
+							text += '<font color="red"><%:NOT RUNNING%> X</font>';
+						if (kcptun_tcp_node_status)
 							kcptun_tcp_node_status.innerHTML = text;
 					}
 				}
 				
 				var udp_node_status = document.getElementById('_udp_node_status');
 				if (udp_node_status) {
-					var udp_node_num = 1;
-					if (udp_node_num >= 1) {
+					if (true) {
 						var text = '';
-						if (udp_node_num == 1) {
-							if (json["udp_node_status"])
-								text += '<font color="green"><%:RUNNING%> ✓</font>';
-							else
-								text += '<font color="red"><%:NOT RUNNING%> X</font>';
-						} else {
-							for(var i = 0; i < udp_node_num; i++) {
-								var k = i + 1;
-								if (json["udp_node" + k + "_status"])
-									text += '<font color="green" size="3"> ✓</font>';
-								else
-									text += '<font color="red" size="3"> X</font>';
-							}
-						}
+						if (json["udp_node_status"])
+							text += '<font color="green"><%:RUNNING%> ✓</font>';
+						else
+							text += '<font color="red"><%:NOT RUNNING%> X</font>';
 						udp_node_status.innerHTML = text;
 					}
 				}
@@ -251,20 +219,18 @@ local status = api.uci_get_type("global_other", "status", "")
 						} else {
 							color = "red";
 						}
-						//s.setAttribute("color", color);
-						btn.setAttribute("style","color: " + color + " !important");
-						btn.value = use_time + " ms";;
+						s.setAttribute("color", color);
+						s.innerHTML = use_time + " ms";
 					} else if (rv.status) {
-						btn.setAttribute("style","color: green !important");
-						btn.value = "<%:Working...%>";
+						s.setAttribute("color", "green");
+						s.innerHTML = "<%:Working...%>";
 					} else {
-						//s.setAttribute("color", "red");
-						btn.setAttribute("style","color: red !important");
-						btn.value = '<%:Problem detected!%> X';
+						s.setAttribute("color", "red");
+						s.innerHTML = '<%:Problem detected!%> X';
 					}
 				}
 				btn.disabled = false;
-				//btn.value = '<%:Check%>';
+				btn.value = '<%:Check%>';
 			}
 		);
 		return false;
