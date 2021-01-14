@@ -173,7 +173,10 @@ msgid "Alias"
 msgstr "别名"
 
 msgid "V2ray SOCKS5 Proxy"
-msgstr "V2ray SOCKS5代理"
+msgstr "V2ray SOCKS5 代理"
+
+msgid "V2ray HTTP Proxy"
+msgstr "V2ray HTTP 代理"
 
 msgid "Server"
 msgstr "服务器"
@@ -537,6 +540,12 @@ msgid "Socks user"
 msgstr "用户名"
 
 msgid "Socks pass"
+msgstr "密码"
+
+msgid "HTTP user"
+msgstr "用户名"
+
+msgid "HTTP pass"
 msgstr "密码"
 
 msgid "Enable Servers"

@@ -13,8 +13,8 @@
 
     var _responseLen;
     var noChange = 0;
-    var modal = '<div class="modals-bg">' +
-        '<div class="modals">' +
+    var modal = '<div class="modals-bg hide">' +
+        '<div class="modals hide">' +
         '<h2><%:Subscription%></h2>' +
         '<h3 style="margin-left:0;"><%:Subscribing,Please do not refresh!%></h3>' +
         '<textarea cols="63" rows="28" wrap="on" readonly="readonly" id="log_content3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>' +
@@ -24,7 +24,10 @@
     //显示并开始刷新订阅
     function update_subscribe() {
         $("body").append(modal);
-        $(".modals-bg").show();
+        $(".modals-bg").removeClass("hide");
+        setTimeout(function(){
+            $(".modals").removeClass("hide");
+        }, 200);
         setTimeout("get_realtime_log();", 500);
     }
     //保存订阅按钮

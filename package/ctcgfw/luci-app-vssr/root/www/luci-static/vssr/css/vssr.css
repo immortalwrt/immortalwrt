@@ -622,7 +622,12 @@ footer.mobile-hide {
     left: 0;
     top: 0;
     background: rgba(255, 255, 255, 0.8);
-    display: none;
+    transition: all 0.2s;
+}
+
+.modals-bg.hide{
+    visibility: hidden;
+    opacity: 0;
 }
 
 .modals {
@@ -642,6 +647,14 @@ footer.mobile-hide {
     /* Firefox */
     -webkit-box-sizing: border-box;
     /* Safari */
+    transition: all 0.3s ease-in-out;
+    transform: scale(1);
+}
+
+.modals.hide{
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(0.5);
 }
 
 .modals h2 {
