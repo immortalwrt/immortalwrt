@@ -21,6 +21,8 @@ function index()
 	entry({"admin", "services", "shadowsocksr", "run"}, call("act_status")).leaf = true
 	entry({"admin", "services", "shadowsocksr", "ping"}, call("act_ping")).leaf = true
 	entry({"admin", "services", "shadowsocksr", "reset"}, call("act_reset"))
+	entry({"admin", "services", "shadowsocksr", "restart"}, call("act_restart"))
+	entry({"admin", "services", "shadowsocksr", "delete"}, call("act_delete"))
 end
 
 function subscribe()
@@ -109,7 +111,16 @@ function check_port()
 end
 
 function act_reset()
-	nixio.exec("/etc/init.d/shadowsocksr", "reset")
-	http.redirect(luci.dispatcher.build_url('admin/services/shadowsocksr'))
-	return
+	luci.sys.call("/etc/init.d/shadowsocksr reset &")
+	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "shadowsocksr"))
+end
+
+function act_restart()
+	luci.sys.call("/etc/init.d/shadowsocksr restart &")
+	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "shadowsocksr"))
+end
+
+function act_delete()
+	luci.sys.call("/etc/init.d/shadowsocksr restart &")
+	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "shadowsocksr", "servers"))
 end
