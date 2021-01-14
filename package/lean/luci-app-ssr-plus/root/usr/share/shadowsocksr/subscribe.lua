@@ -457,9 +457,15 @@ local execute = function()
 				end
 			else
 				if not old.alias then
-					old.alias = old.server .. ':' .. old.server_port
+					if not old.server or old.server_port then
+						ucic:delete(name, old['.name'])
+					else
+						old.alias = old.server .. ':' .. old.server_port
+						log('忽略手动添加的节点: ' .. old.alias)
+					end
+				else
+					log('忽略手动添加的节点: ' .. old.alias)
 				end
-				log('忽略手动添加的节点: ' .. old.alias)
 			end
 		end)
 		for k, v in ipairs(nodeResult) do
