@@ -5,7 +5,6 @@
     const GET_FLAG_URL = '<%=luci.dispatcher.build_url("admin", "services", "vssr","flag")%>';
     var sid;
 
-
     function getFlag(remark, hosts, sid) {
         XHR.get(GET_FLAG_URL,
             { host: hosts, remark: remark },
@@ -66,7 +65,6 @@
     function el(id) {
         return document.getElementById('cbid.vssr.' + sid + id);
     }
-
 
     function import_ssr_url(btn, urlname, sids) {
         sid = sids;

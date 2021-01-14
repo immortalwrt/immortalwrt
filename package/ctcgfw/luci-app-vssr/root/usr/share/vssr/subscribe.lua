@@ -390,7 +390,7 @@ local execute = function()
     end
     -- diff
     do
-        assert(next(nodeResult), 'node result is empty')
+        assert(next(nodeResult), '获取不到节点信息，请检查路由器是否能够访问网络，或者订阅链接是否正确')
         local add, del = 0, 0
         ucic:foreach(
             name,
@@ -453,7 +453,7 @@ if subscribe_url and #subscribe_url > 0 then
         execute,
         function(e)
             log(e)
-            log(debug.traceback())
+            -- log(debug.traceback())
             log('发生错误, 正在恢复服务')
             log('END SUBSCRIBE')
             local firstServer = ucic:get_first(name, uciType)
