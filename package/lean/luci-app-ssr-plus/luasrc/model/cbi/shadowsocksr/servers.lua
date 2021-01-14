@@ -66,7 +66,8 @@ o.write = function()
 		end
 	end)
 	uci:save("shadowsocksr")
-	m.uci:commit("shadowsocksr")
+	uci:commit("shadowsocksr")
+	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "shadowsocksr", "delete"))
 	return
 end
 
@@ -113,7 +114,8 @@ node.inputstyle = "apply"
 node.write = function(self, section)
 	uci:set("shadowsocksr", '@global[0]', 'global_server', section)
 	uci:save("shadowsocksr")
-	m.uci:commit("shadowsocksr")
+	uci:commit("shadowsocksr")
+	luci.http.redirect(luci.dispatcher.build_url("admin", "services", "shadowsocksr", "restart"))
 end
 
 o = s:option(Flag, "switch_enable", translate("Auto Switch"))
