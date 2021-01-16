@@ -28,20 +28,6 @@ define Device/friendlyarm_nanopi-neo2
 endef
 TARGET_DEVICES += friendlyarm_nanopi-neo2
 
-define Device/friendlyarm_nanopi-r1s
-  DEVICE_VENDOR := FriendlyARM
-  DEVICE_MODEL:=Nanopi R1S (H5)
-  DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-    kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic \
-    kmod-usb-net kmod-usb-net-rtl8152
-  SUPPORTED_DEVICES:=nanopi-r1s
-  SUNXI_DTS_DIR := allwinner/
-  SOC := sun50i-h5
-  KERNEL_NAME := Image
-  KERNEL := kernel-bin
-endef
-TARGET_DEVICES += friendlyarm_nanopi-r1s
-
 define Device/pine64_pine64-plus
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := Pine64+
