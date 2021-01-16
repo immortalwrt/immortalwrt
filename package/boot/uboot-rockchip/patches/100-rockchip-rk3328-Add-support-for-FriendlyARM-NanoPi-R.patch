@@ -1,6 +1,6 @@
-From 82cab423557470769a14fd3d1258cb02ec5b052b Mon Sep 17 00:00:00 2001
+From 4189a8db90ca7edc16cf9509576ca2e74f028c1c Mon Sep 17 00:00:00 2001
 From: David Bauer <mail@david-bauer.net>
-Date: Fri, 10 Jul 2020 14:58:30 +0200
+Date: Thu, 7 Jan 2021 00:05:46 +0100
 Subject: [PATCH] rockchip: rk3328: Add support for FriendlyARM NanoPi R2S
 
 This adds support for the NanoPi R2S from FriendlyArm.
@@ -20,15 +20,15 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi |  40 +++
  arch/arm/dts/rk3328-nanopi-r2s.dts         | 370 +++++++++++++++++++++
  board/rockchip/evb_rk3328/MAINTAINERS      |   7 +
- configs/nanopi-r2s-rk3328_defconfig        |  99 ++++++
- 5 files changed, 517 insertions(+)
+ configs/nanopi-r2s-rk3328_defconfig        |  98 ++++++
+ 5 files changed, 516 insertions(+)
  create mode 100644 arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
  create mode 100644 arch/arm/dts/rk3328-nanopi-r2s.dts
  create mode 100644 configs/nanopi-r2s-rk3328_defconfig
 
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -108,6 +108,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -110,6 +110,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
@@ -470,7 +470,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  M:      Chen-Yu Tsai <wens@csie.org>
 --- /dev/null
 +++ b/configs/nanopi-r2s-rk3328_defconfig
-@@ -0,0 +1,99 @@
+@@ -0,0 +1,98 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SYS_TEXT_BASE=0x00200000
@@ -485,7 +485,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +CONFIG_NR_DRAM_BANKS=1
 +CONFIG_DEBUG_UART_BASE=0xFF130000
 +CONFIG_DEBUG_UART_CLOCK=24000000
-+CONFIG_SMBIOS_PRODUCT_NAME="nanopi_r2s_rk3328"
++CONFIG_SYSINFO=y
 +CONFIG_DEBUG_UART=y
 +CONFIG_TPL_SYS_MALLOC_F_LEN=0x800
 +# CONFIG_ANDROID_BOOT_IMAGE is not set
@@ -569,4 +569,3 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +CONFIG_SPL_TINY_MEMSET=y
 +CONFIG_TPL_TINY_MEMSET=y
 +CONFIG_ERRNO_STR=y
-+CONFIG_SMBIOS_MANUFACTURER="pine64"

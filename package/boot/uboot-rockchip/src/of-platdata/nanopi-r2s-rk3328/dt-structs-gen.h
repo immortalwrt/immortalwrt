@@ -69,9 +69,3 @@ struct dtd_rockchip_rk3328_pinctrl {
 	bool		ranges;
 	fdt32_t		rockchip_grf;
 };
-#define dtd_syscon dtd_rockchip_rk3328_cru
-#define dtd_simple_mfd dtd_rockchip_rk3328_grf
-#define dtd_rockchip_rk3328_uart dtd_ns16550_serial
-#define dtd_snps_dw_apb_uart dtd_ns16550_serial
-#define dtd_rockchip_cru dtd_rockchip_rk3328_cru
-#define dtd_rockchip_rk3328_dw_mshc dtd_rockchip_rk3288_dw_mshc
