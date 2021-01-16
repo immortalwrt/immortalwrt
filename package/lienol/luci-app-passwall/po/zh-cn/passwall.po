@@ -160,11 +160,17 @@ msgstr "自定义DNS"
 msgid "IP:Port mode ecceptable for specify other filtered name services."
 msgstr "定义接受 IP:Port 形式的输入，以指定其它域名服务的过滤服务。"
 
-msgid "Resolver For Local/WhiteList Domains"
-msgstr "解析本地和白名单域名"
+msgid "Local DNS"
+msgstr "本地DNS"
+
+msgid "Remote DNS"
+msgstr "远程DNS"
 
 msgid "IP:Port mode acceptable, multi value split with english comma."
 msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔。"
+
+msgid "If you use dns2socks, only the first one is valid."
+msgstr "如果使用dns2socks，只有第一个生效。"
 
 msgid "When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS."
 msgstr "当选择的不是默认，则将此DNS强制设置为dnsmasq上游DNS。"
@@ -214,9 +220,6 @@ msgstr "请确保此Socks服务可用。"
 msgid "ChinaDNS-NG Fair Mode"
 msgstr "ChinaDNS-NG 公平模式"
 
-msgid "Filtered DNS(For Proxied Domains)"
-msgstr "域名过滤服务(用于被代理的域名)"
-
 msgid "Format must be:"
 msgstr "格式必须为："
 
@@ -228,9 +231,6 @@ msgstr "DoH Bootstrap DNS"
 
 msgid "The Bootstrap DNS server is used to resolve the IP address of the DoH resolver you specify as the upstream."
 msgstr "Bootstrap DNS 服务器用于解析您指定为上游的 DoH 解析器的 IP 地址。"
-
-msgid "IP:Port mode acceptable, the 1st for 'dns2socks' if split with english comma."
-msgstr "接受 IP:Port 形式的输入，多个以英文逗号分隔 ，'dns2socks' 模式下仅首个有效。"
 
 msgid "Cache Resolved"
 msgstr "缓存解析结果"

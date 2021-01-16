@@ -1,15 +1,8 @@
 module("luci.model.cbi.passwall.api.gen_xray", package.seeall)
 local api = require "luci.model.cbi.passwall.api.api"
-local ucursor = require"luci.model.uci".cursor()
-local sys = require "luci.sys"
-local json = require "luci.jsonc"
-local appname = "passwall"
-local inbounds = {}
-local outbounds = {}
-local routing = nil
 
 local myarg = {
-    "-node", "-proto", "-redir_port", "-socks_proxy_port", "-loglevel"
+    "-node", "-proto", "-redir_port", "-socks_proxy_port", "-http_proxy_port", "-dns_listen_port", "-dns_server", "-doh_url", "-doh_host", "-doh_socks_address", "-doh_socks_port", "-loglevel"
 }
 
 local var = api.get_args(arg, myarg)
@@ -18,9 +11,25 @@ local node_section = var["-node"]
 local proto = var["-proto"]
 local redir_port = var["-redir_port"]
 local socks_proxy_port = var["-socks_proxy_port"]
+local http_proxy_port = var["-http_proxy_port"]
+local dns_listen_port = var["-dns_listen_port"]
+local dns_server = var["-dns_server"]
+local doh_url = var["-doh_url"]
+local doh_host = var["-doh_host"]
+local doh_socks_address = var["-doh_socks_address"]
+local doh_socks_port = var["-doh_socks_port"]
 local loglevel = var["-loglevel"] or "warning"
 local network = proto
 local new_port
+
+local ucursor = require"luci.model.uci".cursor()
+local sys = require "luci.sys"
+local json = require "luci.jsonc"
+local appname = "passwall"
+local dns = nil
+local inbounds = {}
+local outbounds = {}
+local routing = nil
 
 local function get_new_port()
     if new_port then
@@ -142,7 +151,7 @@ function gen_outbound(node, tag, relay_port)
                             {
                                 id = node.uuid,
                                 alterId = tonumber(node.alter_id),
-                                level = node.level and tonumber(node.level) or 0,
+                                level = 0,
                                 security = (node.protocol == "vmess") and node.security or nil,
                                 encryption = node.encryption or "none",
                                 flow = node.flow or nil
@@ -177,6 +186,14 @@ if node_section then
             settings = {auth = "noauth", udp = true}
         })
         network = "tcp,udp"
+    end
+    if http_proxy_port then
+        table.insert(inbounds, {
+            listen = "0.0.0.0",
+            port = tonumber(http_proxy_port),
+            protocol = "http",
+            settings = {allowTransparent = false}
+        })
     end
 
     if redir_port then
@@ -307,21 +324,132 @@ if node_section then
         local outbound = gen_outbound(node)
         if outbound then table.insert(outbounds, outbound) end
     end
+end
 
-    -- 额外传出连接
-    table.insert(outbounds, {protocol = "freedom", tag = "direct", settings = {keep = ""}})
+if dns_server then
+    local rules = {}
+
+    dns = {
+        tag = "dns-in1",
+        servers = {
+            dns_server
+        }
+    }
+    if doh_url and doh_host then
+        dns.hosts = {
+            [doh_host] = dns_server
+        }
+        dns.servers = {
+            doh_url
+        }
+    end
+
+    if dns_listen_port then
+        table.insert(inbounds, {
+            listen = "127.0.0.1",
+            port = tonumber(dns_listen_port),
+            protocol = "dokodemo-door",
+            tag = "dns-in",
+            settings = {
+                address = dns_server,
+                port = 53,
+                network = "udp"
+            }
+        })
+        table.insert(outbounds, {
+            protocol = "dns",
+            tag = "dns-out"
+        })
+    end
+
+    table.insert(rules, {
+        type = "field",
+        inboundTag = {
+            "dns-in"
+        },
+        outboundTag = "dns-out"
+    })
+
+    if doh_socks_address and doh_socks_port then
+        table.insert(outbounds, {
+            tag = "out",
+            protocol = "socks",
+            streamSettings = {
+                network = "tcp",
+                security = "none"
+            },
+            settings = {
+                servers = {
+                    {
+                        address = doh_socks_address,
+                        port = tonumber(doh_socks_port)
+                    }
+                }
+            }
+        })
+        table.insert(rules, {
+            type = "field",
+            inboundTag = {
+                "dns-in1"
+            },
+            outboundTag = "out"
+        })
+    else
+        table.insert(rules, {
+            type = "field",
+            inboundTag = {
+                "dns-in1"
+            },
+            outboundTag = "direct"
+        })
+    end
+    
+    routing = {
+        domainStrategy = "IPOnDemand",
+        rules = rules
+    }
+end
+
+if inbounds or outbounds then
+    table.insert(outbounds, {
+        protocol = "freedom",
+        tag = "direct",
+        settings = {domainStrategy = "UseIPv4"}
+    })
 
     local xray = {
         log = {
             -- error = string.format("/var/etc/passwall/%s.log", node[".name"]),
             loglevel = loglevel
         },
+        -- DNS
+        dns = dns,
         -- 传入连接
         inbounds = inbounds,
         -- 传出连接
         outbounds = outbounds,
         -- 路由
-        routing = routing
+        routing = routing,
+        -- 本地策略
+        --[[
+        policy = {
+            levels = {
+                [0] = {
+                    handshake = 4,
+                    connIdle = 300,
+                    uplinkOnly = 2,
+                    downlinkOnly = 5,
+                    bufferSize = 10240,
+                    statsUserUplink = false,
+                    statsUserDownlink = false
+                }
+            },
+            system = {
+                statsInboundUplink = false,
+                statsInboundDownlink = false
+            }
+        }
+        ]]--
     }
     print(json.stringify(xray, 1))
 end
