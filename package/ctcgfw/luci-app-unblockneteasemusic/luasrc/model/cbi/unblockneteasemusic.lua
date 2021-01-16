@@ -42,6 +42,27 @@ replace_music_source.description = translate("当音乐音质低于指定数值�
 replace_music_source.default = "dont_replace"
 replace_music_source.rmempty = false
 
+use_custom_cookie = s:option(Flag, "use_custom_cookie", translate("使用自定义 Cookie"))
+use_custom_cookie.description = translate("使用自定义 Cookie 请求音源接口")
+use_custom_cookie.default = 0
+use_custom_cookie.rmempty = false
+
+neteasemusic_cookie = s:option(Value, "neteasemusic_cookie", translate("NeteaseMusic Cookie"))
+neteasemusic_cookie.description = translate("在 music.163.com 获取，需要MUSIC_U值")
+neteasemusic_cookie.datatype = "string"
+neteasemusic_cookie:depends("use_custom_cookie", 1)
+
+qq_cookie = s:option(Value, "qq_cookie", translate("QQ Cookie"))
+qq_cookie.description = translate("在 y.qq.com 获取，需要uin和qm_keyst值")
+qq_cookie.placeholder = "uin=; qm_keyst="
+qq_cookie.datatype = "string"
+qq_cookie:depends("use_custom_cookie", 1)
+
+youtube_key = s:option(Value, "youtube_key", translate("Youtube API Key"))
+youtube_key.description = translate("API Key申请地址：https://developers.google.com/youtube/v3/getting-started#before-you-start")
+youtube_key.datatype = "string"
+youtube_key:depends("use_custom_cookie", 1)
+
 use_remote_qq_server = s:option(Flag, "use_remote_qq_server", translate("使用云端QQ音源解析"))
 use_remote_qq_server.description = translate("通过云端服务器以获取QQ音源信息，无需开通QQ绿钻")
 use_remote_qq_server.default = 0
@@ -123,27 +144,6 @@ hijack:value("use_hosts", translate("使用Hosts劫持"))
 hijack.description = translate("如果使用Hosts劫持，程序监听的HTTP/HTTPS端口将被锁定为80/443")
 hijack.default = "dont_hijack"
 hijack:depends("advanced_mode", 1)
-
-use_custom_cookie = s:option(Flag, "use_custom_cookie", translate("使用自定义 Cookie"))
-use_custom_cookie.description = translate("使用自定义 Cookie 请求音源接口")
-use_custom_cookie.default = 0
-use_custom_cookie:depends("advanced_mode", 1)
-
-neteasemusic_cookie = s:option(Value, "neteasemusic_cookie", translate("NeteaseMusic Cookie"))
-neteasemusic_cookie.description = translate("在 music.163.com 获取，需要MUSIC_U值")
-neteasemusic_cookie.datatype = "string"
-neteasemusic_cookie:depends("use_custom_cookie", 1)
-
-qq_cookie = s:option(Value, "qq_cookie", translate("QQ Cookie"))
-qq_cookie.description = translate("在 y.qq.com 获取，需要uin和qm_keyst值")
-qq_cookie.placeholder = "uin=; qm_keyst="
-qq_cookie.datatype = "string"
-qq_cookie:depends("use_custom_cookie", 1)
-
-youtube_key = s:option(Value, "youtube_key", translate("Youtube API Key"))
-youtube_key.description = translate("API Key申请地址：https://developers.google.com/youtube/v3/getting-started#before-you-start")
-youtube_key.datatype = "string"
-youtube_key:depends("use_custom_cookie", 1)
 
 keep_core_when_upgrade = s:option(Flag, "keep_core_when_upgrade", translate("升级时保留核心程序"))
 keep_core_when_upgrade.description = translate("默认情况下，在OpenWrt升级后会导致核心程序丢失，开启此选项后会保留当前下载的核心程序")
