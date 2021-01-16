@@ -417,15 +417,6 @@ uuid:depends({ type = "V2ray", protocol = "vless" })
 alter_id = s:option(Value, "alter_id", translate("Alter ID"))
 alter_id:depends("protocol", "vmess")
 
-level = s:option(Value, "level", translate("User Level"))
-level.default = 1
-level:depends({ type = "Xray", protocol = "vmess" })
-level:depends({ type = "Xray", protocol = "vless" })
-level:depends({ type = "Xray", protocol = "trojan" })
-level:depends({ type = "V2ray", protocol = "vmess" })
-level:depends({ type = "V2ray", protocol = "vless" })
-level:depends({ type = "V2ray", protocol = "trojan" })
-
 tls = s:option(Flag, "tls", translate("TLS"))
 tls.default = 0
 tls.validate = function(self, value, t)
