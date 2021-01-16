@@ -1,6 +1,7 @@
 
 config global
 	option enabled '0'
+	option socks_enabled '0'
 	option tcp_node 'nil'
 	option udp_node 'nil'
 	option dns_mode 'pdnsd'

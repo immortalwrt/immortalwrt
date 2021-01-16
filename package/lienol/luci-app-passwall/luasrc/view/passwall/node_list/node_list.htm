@@ -2,8 +2,6 @@
 	-- Copyright (C) 2018-2020 L-WRT Team
 	local api = require "luci.model.cbi.passwall.api.api"
 	local dsp = require "luci.dispatcher"
-	
-	local nodes_display = api.uci_get_type("global_other", "nodes_display", "")
 -%>
 
 <style>
@@ -30,11 +28,11 @@ table td, .table .td {
 }
 
 ._select {
-	background: #dad8d8;
+	background: #dad8d8 !important;
 }
 
 ._now_use {
-	background: #94e1ff;
+	background: #94e1ff !important;
 }
 
 .ping a:hover{
@@ -225,26 +223,22 @@ table td, .table .td {
 	function get_now_use_node() {
 		XHR.get('<%=dsp.build_url("admin/services/passwall/get_now_use_node")%>', null,
 			function(x, result) {
-				for (var i = 1; i <= result.udp; i++) {
-					var id = result["UDP" + i];
-					if (id) {
-						var dom = document.getElementById("cbi-passwall-" + id);
-						if (dom) {
-							dom.classList.add("_now_use");
-							dom.title = "当前UDP" + i + "节点";
-						}
+				var id = result["TCP"];
+				if (id) {
+					var dom = document.getElementById("cbi-passwall-" + id);
+					if (dom) {
+						dom.classList.add("_now_use");
+						dom.title = "当前TCP节点";
+						//var v = "<a style='color: red'>当前TCP节点：</a>" + document.getElementById("cbid.passwall." + id + ".remarks").value;
+						//document.getElementById("cbi-passwall-" + id + "-remarks").innerHTML = v;
 					}
 				}
-				for (var i = 1; i <= result.tcp; i++) {
-					var id = result["TCP" + i];
-					if (id) {
-						var dom = document.getElementById("cbi-passwall-" + id);
-						if (dom) {
-							dom.classList.add("_now_use");
-							dom.title = "当前TCP" + i + "节点";
-							//var v = "当前使用：" + document.getElementById("cbid.passwall." + id + ".remarks").value;
-							//document.getElementById("cbi-passwall-" + id + "-remarks").innerHTML = v;
-						}
+				id = result["UDP"];
+				if (id) {
+					var dom = document.getElementById("cbi-passwall-" + id);
+					if (dom) {
+						dom.classList.add("_now_use");
+						dom.title = "当前UDP节点";
 					}
 				}
 			}
@@ -430,7 +424,7 @@ table td, .table .td {
 
 <div style="display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;">
 	<div id="set_node_div">
-		<div class="cbi-value"><%:You choose node is:%><span id="set_node_name"></span></div>
+		<div class="cbi-value"><%:You choose node is:%><a style="color: red" id="set_node_name"></a></div>
 		<div class="cbi-value">
 			<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('tcp')" value="TCP" />
 			<input class="cbi-button cbi-button-edit" type="button" onclick="set_node('udp')" value="UDP" />
