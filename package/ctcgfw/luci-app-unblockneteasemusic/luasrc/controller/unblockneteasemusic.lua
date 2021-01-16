@@ -56,8 +56,8 @@ function act_update_luci()
 end
 
 function update_core()
-	core_cloud_ver=luci.sys.exec("curl -s 'https://github.com/nondanee/UnblockNeteaseMusic/commits/master' |tr -d '\n' |grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g'")
-	core_cloud_ver_mini=luci.sys.exec("curl -s 'https://github.com/nondanee/UnblockNeteaseMusic/commits/master' |tr -d '\n' |grep -Eo 'BtnGroup-item.>      [0-9a-z]+' |sed -n 1p |sed 's#BtnGroup-item.>      ##g'")
+	core_cloud_ver=luci.sys.exec("curl -s 'https://github.com/1715173329/UnblockNeteaseMusic/commits/enhanced' |tr -d '\n' |grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g'")
+	core_cloud_ver_mini=luci.sys.exec("curl -s 'https://github.com/1715173329/UnblockNeteaseMusic/commits/enhanced' |tr -d '\n' |grep -Eo 'BtnGroup-item.>      [0-9a-z]+' |sed -n 1p |sed 's#BtnGroup-item.>      ##g'")
 	if not core_cloud_ver or not core_cloud_ver_mini then
 		return "1"
 	else
