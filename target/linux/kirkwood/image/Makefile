@@ -24,7 +24,6 @@ define Device/Default
   IMAGES := sysupgrade.bin factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-ubi
-  SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
 endef
 
 define Device/cisco_on100

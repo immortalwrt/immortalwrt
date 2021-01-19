@@ -437,7 +437,7 @@ define Device/Init
 
   BOARD_NAME :=
   UIMAGE_NAME :=
-  SUPPORTED_DEVICES :=
+  SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
   IMAGE_METADATA :=
 
   FILESYSTEMS := $(TARGET_FILESYSTEMS)

@@ -38,7 +38,6 @@ define Device/Default
   DEVICE_DTS_DIR := $(DTS_DIR)
   IMAGES := sysupgrade.bin
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
-  SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
 ifeq ($(SUBTARGET),mt7623)
   KERNEL_NAME := zImage
   KERNEL := kernel-bin | append-dtb | uImage none
