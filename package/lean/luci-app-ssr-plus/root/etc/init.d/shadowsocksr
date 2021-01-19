@@ -617,7 +617,7 @@ load_config() {
 		if [ "$SHUNT_SERVER" == "$GLOBAL_SERVER" ]; then
 			shunt="1"
 		else
-			shunt="$tmp_shunt_dns_port"
+			shunt="$tmp_shunt_port"
 			shunt_config_file=$TMP_PATH/shunt-ssr-retcp.json
 			shunt_dns_config_file=$TMP_PATH/shunt-dns-ssr-plus.json
 			start_shunt
