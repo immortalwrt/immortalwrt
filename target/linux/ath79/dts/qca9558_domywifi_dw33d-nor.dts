@@ -6,7 +6,8 @@
 };
 
 &okli_firmware {
-	compatible = "openwrt,okli";
+	compatible = "openwrt,uimage", "denx,uimage";
+	openwrt,ih-magic = <IH_MAGIC_OKLI>;
 	label = "firmware";
 };
 
