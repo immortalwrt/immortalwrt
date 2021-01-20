@@ -37,6 +37,14 @@ Subject: [PATCH] add filter-aaaa option
      { NULL, 0, 0, 0 }
    };
  
+@@ -524,6 +526,7 @@ static struct {
+   { LOPT_DUMPFILE, ARG_ONE, "<path>", gettext_noop("Path to debug packet dump file"), NULL },
+   { LOPT_DUMPMASK, ARG_ONE, "<hex>", gettext_noop("Mask which packets to dump"), NULL },
+   { LOPT_SCRIPT_TIME, OPT_LEASE_RENEW, NULL, gettext_noop("Call dhcp-script when lease expiry changes."), NULL },
++  { LOPT_FILTER_AAAA, OPT_FILTER_AAAA, NULL, gettext_noop("Filter all AAAA requests."), NULL },
+   { 0, 0, NULL, NULL, NULL }
+ }; 
+ 
 --- a/src/rfc1035.c
 +++ b/src/rfc1035.c
 @@ -1926,6 +1926,16 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,

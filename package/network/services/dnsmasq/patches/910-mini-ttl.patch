@@ -81,7 +81,7 @@
  	  for (j = 0; j < ntohs(header->ancount); j++) 
  	    {
  	      int secflag = 0;
-+		  unsigned long mttl = 0;
++	      unsigned long mttl = 0;
  	      
  	      if (!(res = extract_name(header, qlen, &p1, name, 0, 10)))
  		return 0; /* bad packet */
