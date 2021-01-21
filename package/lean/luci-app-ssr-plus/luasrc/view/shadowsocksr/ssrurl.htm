@@ -361,8 +361,8 @@ function import_ssr_url(btn, urlname, sid) {
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.vless_encryption')[0].value = queryParam.encryption || "none";
 			if (queryParam.security == "tls") {
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls')[0].checked = true;
-				document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls_host')[0].value = queryParam.sni || serverPart[0];
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls')[0].dispatchEvent(event);
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls_host')[0].value = queryParam.sni || serverPart[0];
 			}
 			switch (queryParam.type) {
 			case "ws":
