@@ -44,7 +44,6 @@ CRON_FILE=/etc/crontabs/root
 EXTRA_COMMANDS='reset'
 EXTRA_HELP="        reset   Reset to default settings"
 #extra_command "reset" "Reset to default settings"
-trap 'rm -f "$LOCK_FILE"; exit $?' INT TERM EXIT
 
 uci_get_by_name() {
 	local ret=$(uci get $NAME.$1.$2 2>/dev/null)
@@ -283,7 +282,7 @@ gen_config_file() { #server1 type2 code3 local_port4 socks_port5 threads5
 	vmess | vless)
 		lua /usr/share/shadowsocksr/gen_config.lua $1 $mode $4 $5 >$config_file
 		;;
-	trojan | trojan-go)
+	trojan)
 		case "$3" in
 		1)
 			lua /usr/share/shadowsocksr/gen_config.lua $1 nat $4 >$config_file
@@ -292,10 +291,25 @@ gen_config_file() { #server1 type2 code3 local_port4 socks_port5 threads5
 			lua /usr/share/shadowsocksr/gen_config.lua $1 client $4 >$config_file
 			;;
 		3)
+			lua /usr/share/shadowsocksr/gen_config.lua $1 nat $4 >$config_file
 			lua /usr/share/shadowsocksr/gen_config.lua $1 client $tmp_port >$shunt_dns_config_file
 			;;
 		4)
-			lua /usr/share/shadowsocksr/gen_config.lua $1 $mode $4 >$config_file
+			lua /usr/share/shadowsocksr/gen_config.lua $1 client $4 >$config_file
+			;;
+		esac
+		;;
+	trojan-go)
+		case "$3" in
+		1 | 2)
+			lua /usr/share/shadowsocksr/gen_config.lua $1 nat $4 >$config_file
+			;;
+		3)
+			lua /usr/share/shadowsocksr/gen_config.lua $1 nat $4 >$config_file
+			lua /usr/share/shadowsocksr/gen_config.lua $1 client $tmp_port >$shunt_dns_config_file
+			;;
+		4)
+			lua /usr/share/shadowsocksr/gen_config.lua $1 client $4 >$config_file
 			;;
 		esac
 		;;
@@ -342,10 +356,15 @@ start_udp() {
 		ln_start_bin $(first_type xray v2ray) v2ray -config $udp_config_file
 		echolog "UDP TPROXY Relay:$($(first_type "xray" "v2ray") -version | head -1) Started!"
 		;;
-	trojan | trojan-go) #client
+	trojan) #client
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_local_port
 		ln_start_bin $(first_type trojan-go trojan) $type --config $udp_config_file
 		ln_start_bin $(first_type ipt2socks) ipt2socks -U -b 0.0.0.0 -4 -s 127.0.0.1 -p $tmp_udp_local_port -l $tmp_udp_port
+		echolog "UDP TPROXY Relay:$($(first_type trojan-go trojan) --version 2>&1 | head -1) Started!"
+		;;
+	trojan-go)
+		gen_config_file $UDP_RELAY_SERVER $type 2 $udp_config_file
+		ln_start_bin $(first_type trojan-go trojan) $type --config $udp_config_file
 		echolog "UDP TPROXY Relay:$($(first_type trojan-go trojan) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
@@ -354,8 +373,12 @@ start_udp() {
 		ARG_UDP=""
 		;;
 	socks5)
-		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_port
-		ln_start_bin $(first_type redsocks2) redsocks2 -c $udp_config_file
+		if [ "$(uci_get_by_name $UDP_RELAY_SERVER auth_enable 0)" == "1" ]; then
+			local auth="-a $(uci_get_by_name $UDP_RELAY_SERVER username) -k $(uci_get_by_name $UDP_RELAY_SERVER password)"
+		fi
+		ln_start_bin $(first_type ipt2socks) ipt2socks $udp_config_file -U -4 -s $(uci_get_by_name $UDP_RELAY_SERVER server) -p $(uci_get_by_name $UDP_RELAY_SERVER server_port) -l $tmp_udp_port $auth
+		#gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_port
+		#ln_start_bin $(first_type redsocks2) redsocks2 -c $udp_config_file
 		echolog "UDP TPROXY Relay:Socks5 REDIRECT/TPROXY Started!"
 		;;
 	tun)
@@ -371,7 +394,6 @@ start_shunt() {
 	case "$type" in
 	ss | ssr)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
-		#gen_config_file $SHUNT_SERVER $type 3 $tmp_local_port
 		ln_start_bin $(first_type ${type}-redir) ${type}-redir -c $shunt_config_file
 		if [ -n "$tmp_local_port" ]; then
 			local tmp_port=$tmp_local_port
@@ -418,6 +440,22 @@ start_shunt() {
 		echolog "shunt:$($(first_type "naive") --version 2>&1 | head -1) Started!"
 		redir_udp=0
 		;;
+	socks5)
+		if [ "$(uci_get_by_name $SHUNT_SERVER auth_enable 0)" == "1" ]; then
+			local auth="-a $(uci_get_by_name $SHUNT_SERVER username) -k $(uci_get_by_name $SHUNT_SERVER password)"
+		fi
+		ln_start_bin $(first_type ipt2socks) ipt2socks $shunt_config_file -R -4 -s $(uci_get_by_name $SHUNT_SERVER server) -p $(uci_get_by_name $SHUNT_SERVER server_port) -l $tmp_shunt_port $auth
+		#gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
+		#ln_start_bin $(first_type redsocks2) redsocks2 -c $shunt_config_file
+		if [ -n "$tmp_local_port" ]; then
+			local tmp_port=$tmp_local_port
+		else
+			local tmp_port=$tmp_shunt_local_port
+			ln_start_bin $(first_type microsocks) microsocks -i 127.0.0.1 -p $tmp_port shunt-dns-ssr-plus
+		fi
+		ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_port 8.8.8.8:53 127.0.0.1:$tmp_shunt_dns_port -q
+		echolog "shunt:$type REDIRECT/TPROXY Started!"
+		;;
 	*)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
 		ln_start_bin $(first_type redsocks2) redsocks2 -c $shunt_config_file
@@ -445,7 +483,7 @@ start_local() {
 		echolog "Global_Socks5:$(get_name $type) Started!"
 		;;
 	vmess | vless)
-		if [ "_local" == "1" ]; then
+		if [ "$_local" == "2" ]; then
 			gen_config_file $LOCAL_SERVER $type 4 0 $local_port
 			ln_start_bin $(first_type xray v2ray) v2ray -config $local_config_file
 			echolog "Global_Socks5:$($(first_type "xray" "v2ray") -version | head -1) Started!"
@@ -514,7 +552,7 @@ Start_Run() {
 	trojan | trojan-go)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
 		ln_start_bin $(first_type trojan-go trojan) $type --config $tcp_config_file
-		echolog "Main node:$($(first_type $type) --version 2>&1 | head -1) Started!"
+		echolog "Main node:$($(first_type trojan-go trojan) --version 2>&1 | head -1) Started!"
 		;;
 	naiveproxy)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
@@ -522,10 +560,14 @@ Start_Run() {
 		echolog "Main node:$($(first_type naive) --version 2>&1 | head -1) , $threads Threads Started!"
 		;;
 	socks5)
-		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
-		for i in $(seq 1 $threads); do
-			ln_start_bin $(first_type redsocks2) redsocks2 -c $tcp_config_file
-		done
+		if [ "$(uci_get_by_name $GLOBAL_SERVER auth_enable 0)" == "1" ]; then
+			local auth="-a $(uci_get_by_name $GLOBAL_SERVER username) -k $(uci_get_by_name $GLOBAL_SERVER password)"
+		fi
+		ln_start_bin $(first_type ipt2socks) ipt2socks $tcp_config_file -R -4 -j $threads -s $(uci_get_by_name $GLOBAL_SERVER server) -p $(uci_get_by_name $GLOBAL_SERVER server_port) -l $tcp_port $auth
+		#gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
+		#for i in $(seq 1 $threads); do
+		#	ln_start_bin $(first_type redsocks2) redsocks2 -c $tcp_config_file
+		#done
 		echolog "Main node:Socks5 REDIRECT/TPROXY $threads Threads Started!"
 		;;
 	tun)
@@ -729,7 +771,6 @@ start_rules() {
 		w | W | b | B) local ac_ips="$lan_ac_mode$lan_ac_ips" ;;
 		esac
 	fi
-	#deal gfw firewall rule
 	gfwmode() {
 		case "$(uci_get_by_type global run_mode)" in
 		gfw) echo "-g" ;;
@@ -830,7 +871,6 @@ stop() {
 	ps -w | grep -v "grep" | grep ssr-monitor | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "sleep 0000" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	#killall -q -9 ss-redir ss-local obfs-local ssr-redir ssr-local ssr-server v2ray v2ray-plugin xray trojan naive microsocks ipt2socks dns2socks redsocks2 pdnsd
 	killall -q -9 v2ray-plugin obfs-local
 	rm -f /var/lock/ssr-monitor.lock
 	if [ -f "/var/dnsmasq.d/dnsmasq-ssrplus.conf" ]; then
