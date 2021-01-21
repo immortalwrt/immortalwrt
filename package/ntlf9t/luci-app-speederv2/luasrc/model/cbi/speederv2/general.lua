@@ -6,7 +6,7 @@ local function has_bin(name)
 	return luci.sys.call("command -v %s >/dev/null" %{name}) == 0
 end
 
-if has_bin("speederv2") then
+if has_bin("udpspeeder") then
     uci:foreach("speederv2", "servers", function(s)
         if s.server_port and s.listen_port then
             servers[#servers+1] = {name = s[".name"], alias = s.alias or "%s:%s" %{s.server_port, s.listen_port}}
