@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
 PKG_VERSION:=182
-PKG_RELEASE:=5
+PKG_RELEASE:=9
 
 define Package/$(PKG_NAME)/conffiles
 /etc/config/shadowsocksr
@@ -10,69 +10,89 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/config
-config PACKAGE_$(PKG_NAME)_INCLUDE_Xray
-	bool "Include Xray"
-	default y if i386||x86_64||arm||aarch64
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan
-	bool "Include Trojan"
-	default y if i386||x86_64||arm||aarch64
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_Redsocks2
-	bool "Include Redsocks2"
-	default y if i386||x86_64||arm||aarch64
+config PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun
+	bool "Include Kcptun"
+	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy
 	bool "Include NaiveProxy"
 	depends on !(arc||armeb||mips||mips64||powerpc)
 	default y if i386||x86_64||arm||aarch64
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
-	bool "Include V2ray"
+config PACKAGE_$(PKG_NAME)_INCLUDE_Redsocks2
+	bool "Include Redsocks2"
 	default n
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Go
-	bool "Include Trojan-Go"
-	default n
+config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
+	bool "Include Shadowsocks-libev"
+	default y
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun
-	bool "Include Kcptun"
-	default n
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin
-	bool "Include Shadowsocks V2ray Plugin"
-	default n
+config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR
+	bool "Include ShadowsocksR-libev"
+	default y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
 	bool "Include ShadowsocksR Server"
 	default y if i386||x86_64||arm||aarch64
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_Simple_Obfs
+	bool "Include Shadowsocks Simple Obfs Plugin"
+	default y
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan
+	bool "Include Trojan"
+	default y if i386||arm
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Go
+	bool "Include Trojan-Go"
+	default y if x86_64||aarch64
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
+	bool "Include V2ray"
+	default n
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin
+	bool "Include Shadowsocks V2ray Plugin"
+	default n
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_Xray
+	bool "Include Xray"
+	default y if i386||x86_64||arm||aarch64
 endef
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Go \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Redsocks2 \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Simple_Obfs \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Go \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray
 
 LUCI_TITLE:=SS/SSR/V2Ray/Trojan/NaiveProxy/Socks5/Tun LuCI interface
 LUCI_PKGARCH:=all
-LUCI_DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +pdnsd-alt +wget-ssl +lua +libuci-lua \
-	+microsocks +dns2socks +shadowsocks-libev-ss-local +shadowsocksr-libev-ssr-local +shadowsocks-libev-ss-redir +simple-obfs +tcping +resolveip\
-	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin:v2ray-plugin \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Go:trojan-go \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
+LUCI_DEPENDS:=+coreutils +coreutils-base64 +dns2socks +dnsmasq-full +ipset +ip-full \
+	+iptables-mod-tproxy +lua +libuci-lua +microsocks +pdnsd-alt +tcping +resolveip \
+	+shadowsocksr-libev-alt +wget-ssl \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun:kcptun-client \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy:naiveproxy \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Redsocks2:redsocks2 \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun:kcptun-client \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-local \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-redir \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-ssr-local \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Simple_Obfs:simple-obfs \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_Go:trojan-go \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin:v2ray-plugin \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
