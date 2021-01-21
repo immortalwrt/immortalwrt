@@ -232,6 +232,7 @@ gen_service_file() {
 	cat <<-EOF >$2
 		{
 		"server": "0.0.0.0",
+		"server_ipv6": "::",
 		"server_port": $(uci_get_by_name $1 server_port),
 		"password": "$(uci_get_by_name $1 password)",
 		"timeout": $(uci_get_by_name $1 timeout 60),
@@ -616,7 +617,7 @@ load_config() {
 		if [ "$SHUNT_SERVER" == "$GLOBAL_SERVER" ]; then
 			shunt="1"
 		else
-			shunt="$tmp_shunt_dns_port"
+			shunt="$tmp_shunt_port"
 			shunt_config_file=$TMP_PATH/shunt-ssr-retcp.json
 			shunt_dns_config_file=$TMP_PATH/shunt-dns-ssr-plus.json
 			start_shunt

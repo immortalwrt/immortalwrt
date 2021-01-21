@@ -12,6 +12,7 @@ local n={
 "rc4",
 "rc4-md5",
 "rc4-md5-6",
+"chacha20",
 }
 local s={
 "origin",

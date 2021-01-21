@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=naiveproxy
-PKG_VERSION:=87.0.4280.66-1
+PKG_VERSION:=88.0.4324.96-1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/klzgrad/naiveproxy/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=17e79172fa32cb3b619614af989569aec7e866046f17e4a1b2179940f1915290
+PKG_HASH:=287c5291d0371a0d1e06f08fcb29c1d80da4a07e557fb8d2bf770b357a8eb29a
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD 3-Clause
@@ -62,42 +62,42 @@ ifneq ($(CONFIG_CCACHE),)
 	export naive_ccache_flags=cc_wrapper="ccache"
 endif
 
-AFDO_VER:=87.0.4278.0_rc-r1-merged
+AFDO_VER:=88.0.4324.91_rc-r1-merged
 AFDO_FILE:=chromeos-chrome-amd64-$$(AFDO_VER).afdo.bz2
 define Download/AFDO_PROF
 	URL:=https://storage.googleapis.com.cnpmjs.org/chromeos-prebuilt/afdo-job/llvm \
 	     https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm
 	URL_FILE:=$(AFDO_FILE)
 	FILE:=$(AFDO_FILE)
-	HASH:=7625590b588195918b30c63db20e06339132bbe8975f39e2e429b929682ee3ff
+	HASH:=d918ae36f535ffd7a3c36c7d06a0a58a3d93f03d07a670cee0f7cb4538925b34
 endef
 
-CLANG_VER:=llvmorg-12-init-5035-gd0abc757-3
+CLANG_VER:=llvmorg-12-init-11462-g418f18c6-1
 CLANG_FILE:=clang-$$(CLANG_VER).tgz
 define Download/CLANG
 	URL:=https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64
 	URL_FILE:=$(CLANG_FILE)
 	FILE:=$(CLANG_FILE)
-	HASH:=b0c3015209b6d624844ad230064eb5c9b4429a2eafd4854981e73217c563d93d
+	HASH:=59e4682179bbda9b1cf7fcc5c6e3e24445d6e9e8411bd1c893882f63c6b65308
 endef
 
-GN_VER:=e002e68a48d1c82648eadde2f6aafa20d08c36f2
+GN_VER:=53d92014bf94c3893886470a1c7c1289f8818db0
 GN_FILE:=gn-git_revision-$(GN_VER).zip
 define Download/GN_TOOL
 	URL:=https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+
 	URL_FILE:=git_revision:$(GN_VER)
 	FILE:=$(GN_FILE)
-	HASH:=67a733dc12803f61a0565ba3a390fa08576b2c4dc1d615c5c15c2b681e900675
+	HASH:=e39d3da74cb2802614c0edc4877483ff50045abedb98adb40eaadb68ab4066ff
 endef
 
-PGO_VER:=4280-1605284980-f890b7d0344c87909c28619fe56e1dd48953d29e
+PGO_VER:=4324-1610733451-8576f5ff23113bddfb13d417df9ef2a9be1f740d
 PGO_FILE:=chrome-linux-$(PGO_VER).profdata
 define Download/PGO_PROF
 	URL:=https://storage.googleapis.com.cnpmjs.org/chromium-optimization-profiles/pgo_profiles \
 	     https://storage.googleapis.com/chromium-optimization-profiles/pgo_profiles
 	URL_FILE:=$(PGO_FILE)
 	FILE:=$(PGO_FILE)
-	HASH:=8d87e67b84b2694776c931d8eabf0760144420718fe6a5352951fae38a3a25f6
+	HASH:=82e03005e7fb7810a2db7eb9a07bde4c19742ac0b4709ef9e734678d155c04fc
 endef
 
 define Build/Prepare

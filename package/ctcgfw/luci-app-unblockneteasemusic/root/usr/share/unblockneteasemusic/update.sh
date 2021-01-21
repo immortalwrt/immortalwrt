@@ -55,7 +55,7 @@ function update_luci(){
 }
 
 function check_core_latest_version(){
-	core_latest_ver="$(curl -s https://github.com/nondanee/UnblockNeteaseMusic/commits/master |tr -d '\n' |grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g')"
+	core_latest_ver="$(curl -s https://github.com/1715173329/UnblockNeteaseMusic/commits/enhanced |tr -d '\n' |grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g')"
 	[ -z "${core_latest_ver}" ] && { echo -e "\nFailed to check latest core version, please try again later." >> "/tmp/$NAME.log"; exit 1; }
 	if [ ! -e "/usr/share/$NAME/core_local_ver" ]; then
 		clean_log
@@ -80,10 +80,10 @@ function update_core(){
 	mkdir -p "/usr/share/$NAME/core" > "/dev/null" 2>&1
 	rm -rf /usr/share/$NAME/core/* > "/dev/null" 2>&1
 
-	curl -sL "https://github.com/nondanee/UnblockNeteaseMusic/archive/master.tar.gz" -o "/usr/share/$NAME/core/core.tar.gz" > "/dev/null" 2>&1
+	curl -sL "https://github.com/1715173329/UnblockNeteaseMusic/archive/enhanced.tar.gz" -o "/usr/share/$NAME/core/core.tar.gz" > "/dev/null" 2>&1
 	tar -zxf "/usr/share/$NAME/core/core.tar.gz" -C "/usr/share/$NAME/core/" > "/dev/null" 2>&1
-	mv /usr/share/$NAME/core/UnblockNeteaseMusic-master/* "/usr/share/$NAME/core/"
-	rm -rf "/usr/share/$NAME/core/core.tar.gz" "/usr/share/$NAME/core/UnblockNeteaseMusic-master" > "/dev/null" 2>&1
+	mv /usr/share/$NAME/core/UnblockNeteaseMusic-enhanced/* "/usr/share/$NAME/core/"
+	rm -rf "/usr/share/$NAME/core/core.tar.gz" "/usr/share/$NAME/core/UnblockNeteaseMusic-enhanced" > "/dev/null" 2>&1
 
 	if [ ! -e "/usr/share/$NAME/core/app.js" ]; then
 		echo -e "Failed to download core." >> "/tmp/$NAME.log"
