@@ -412,6 +412,9 @@ msgstr "前置代理"
 msgid "Use the default node for the transit."
 msgstr "使用默认节点代理转发。"
 
+msgid "Use the under node for the transit."
+msgstr "使用下面的节点代理转发。"
+
 msgid "No shunt rules? Click me to go to add."
 msgstr "没有分流规则？点我前往去添加。"
 

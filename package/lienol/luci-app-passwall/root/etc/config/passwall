@@ -50,7 +50,6 @@ config global_rules
 
 config global_app
 	option xray_file '/usr/bin/xray'
-	option v2ray_file '/usr/bin/v2ray'
 	option trojan_go_file '/usr/bin/trojan-go'
 	option kcptun_client_file '/usr/bin/kcptun-client'
 	option brook_file '/usr/bin/brook'

@@ -1,7 +1,7 @@
 local d = require "luci.dispatcher"
 local appname = "passwall"
 
-m = Map(appname, "Xray/V2ray" .. translate("Shunt") .. translate("Rule"))
+m = Map(appname, "Xray" .. translate("Shunt") .. translate("Rule"))
 m.redirect = d.build_url("admin", "services", appname)
 
 s = m:section(NamedSection, arg[1], "shunt_rules", "")
