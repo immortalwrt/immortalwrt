@@ -83,7 +83,7 @@ test_auto_switch() {
 				[ -n "$node_address" ] && [ -n "$node_port" ] && local curlx="socks5h://$node_address:$node_port"
 			else
 				local tmp_port=$(/usr/share/passwall/app.sh get_new_port 61080 tcp)
-				/usr/share/passwall/app.sh run_socks "$main_node" "127.0.0.1" "$tmp_port" "/var/etc/passwall/auto_switch.json" "10"
+				/usr/share/passwall/app.sh run_socks "auto_switch" "$main_node" "127.0.0.1" "$tmp_port" "/var/etc/passwall/auto_switch.json"
 				local curlx="socks5h://127.0.0.1:$tmp_port"
 			fi
 			sleep 10s

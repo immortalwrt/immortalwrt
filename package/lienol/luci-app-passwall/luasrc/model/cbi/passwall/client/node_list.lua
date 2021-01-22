@@ -63,7 +63,7 @@ if nodes_display:find("compact_display_nodes") then
         local remarks = m:get(n, "remarks") or ""
         local type = m:get(n, "type") or ""
         str = str .. string.format("<input type='hidden' id='cbid.%s.%s.type' value='%s'/>", appname, n, type)
-        if type == "Xray" or type == "V2ray" then
+        if type == "Xray" then
             local protocol = m:get(n, "protocol")
             if protocol == "_balancing" then
                 type = type .. " 负载均衡"
@@ -106,7 +106,7 @@ else
         local v = Value.cfgvalue(t, n)
         if v then
             result = translate(v)
-            if v == "Xray" or v == "V2ray" then
+            if v == "Xray" then
                 local protocol = m:get(n, "protocol")
                 if protocol == "_balancing" then
                     result = result .. " 负载均衡"
