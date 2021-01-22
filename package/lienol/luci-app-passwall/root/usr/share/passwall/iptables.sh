@@ -35,7 +35,8 @@ dst() {
 }
 
 comment() {
-	echo "-m comment --comment '$1'"
+	local name=$(echo $1 | sed 's/ /_/g')
+	echo "-m comment --comment '$name'"
 }
 
 RULE_LAST_INDEX() {
@@ -222,7 +223,7 @@ load_acl() {
 		[ "$UDP_NO_REDIR_PORTS" != "disable" ] && $ipt_m -A PSW $(comment "默认") -p udp -m multiport --dport $UDP_NO_REDIR_PORTS -j RETURN
 		[ "$UDP_NODE" != "nil" ] && {
 			msg="UDP默认代理：使用UDP节点 [$(get_action_chain_name $UDP_PROXY_MODE)](TPROXY:${UDP_REDIR_PORT})代理"
-			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
+			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${UDP_NO_REDIR_PORTS}外的"
 			msg="${msg}所有端口"
 			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $UDP_REDIR_PORT TPROXY)
 			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $UDP_REDIR_PORT TPROXY)
@@ -311,14 +312,21 @@ filter_node() {
 	elif [ "$proxy_protocol" == "_shunt" ]; then
 		#echolog "  - 按请求目的地址分流（${proxy_type}）..."
 		local default_node=$(config_n_get $proxy_node default_node nil)
-		filter_rules $default_node $stream
+		local default_proxy=$(config_n_get $proxy_node default_proxy 0)
+		if [ "$default_proxy" == 1 ]; then
+			local main_node=$(config_n_get $proxy_node main_node nil)
+			filter_rules $main_node $stream
+		else
+			filter_rules $default_node $stream
+		fi
 :<<!
 		local default_node_address=$(get_host_ip ipv4 $(config_n_get $default_node address) 1)
 		local default_node_port=$(config_n_get $default_node port)
 		
 		local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 		for shunt_id in $shunt_ids; do
-			local shunt_proxy=$(config_n_get $proxy_node "${shunt_id}_proxy" 0)
+			#local shunt_proxy=$(config_n_get $proxy_node "${shunt_id}_proxy" 0)
+			local shunt_proxy=0
 			local shunt_node=$(config_n_get $proxy_node "${shunt_id}" nil)
 			[ "$shunt_node" != "nil" ] && {
 				[ "$shunt_proxy" == 1 ] && {

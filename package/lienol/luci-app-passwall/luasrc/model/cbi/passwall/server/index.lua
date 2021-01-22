@@ -47,7 +47,7 @@ e = t:option(DummyValue, "type", translate("Type"))
 e.cfgvalue = function(t, n)
     local v = Value.cfgvalue(t, n)
     if v then
-        if v == "Xray" or v == "V2ray" then
+        if v == "Xray" then
             local protocol = m:get(n, "protocol")
             return v .. " -> " .. protocol
         end

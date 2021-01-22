@@ -49,7 +49,7 @@ for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update", 1)
 
-s = m:section(TypedSection, "shunt_rules", "Xray/V2ray" .. translate("Shunt") .. translate("Rule"))
+s = m:section(TypedSection, "shunt_rules", "Xray" .. translate("Shunt") .. translate("Rule"))
 s.template = "cbi/tblsection"
 s.anonymous = false
 s.addremove = true

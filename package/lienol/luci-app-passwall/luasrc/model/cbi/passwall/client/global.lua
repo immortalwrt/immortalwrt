@@ -2,16 +2,27 @@ local d = require "luci.dispatcher"
 local uci = require"luci.model.uci".cursor()
 local api = require "luci.model.cbi.passwall.api.api"
 local appname = "passwall"
+local has_xray = api.is_finded("xray")
+
+m = Map(appname)
 
 local nodes_table = {}
 for k, e in ipairs(api.get_valid_nodes()) do
     nodes_table[#nodes_table + 1] = {
         id = e[".name"],
-        remarks = e.remarks_name
+        remarks = e.remarks_name,
+        type = e["type"]
     }
 end
 
 local socks_table = {}
+if tonumber(m:get("@global[0]", "tcp_node_socks") or 0) == 1 then
+    local id = "127.0.0.1" .. ":" .. m:get("@global[0]", "tcp_node_socks_port")
+    socks_table[#socks_table + 1] = {
+        id = id,
+        remarks = id .. " - " .. translate("TCP Node")
+    }
+end
 uci:foreach(appname, "socks", function(s)
     if s.enabled == "1" and s.node then
         local id, remarks
@@ -25,7 +36,7 @@ uci:foreach(appname, "socks", function(s)
                 end
             end
         end
-        id = "0.0.0.0" .. ":" .. s.port
+        id = "127.0.0.1" .. ":" .. s.port
         socks_table[#socks_table + 1] = {
             id = id,
             remarks = id .. " - " .. (remarks or translate("Misconfigured"))
@@ -55,7 +66,6 @@ local doh_validate = function(self, value, t)
     return nil, translate("DoH request address") .. " " .. translate("Format must be:") .. " URL,IP"
 end
 
-m = Map(appname)
 local status = m:get("@global_other[0]", "status") or ""
 if status:find("big_icon") then
     m:append(Template(appname .. "/global/status"))
@@ -74,11 +84,11 @@ o = s:taboption("Main", Flag, "enabled", translate("Main switch"))
 o.rmempty = false
 
 ---- TCP Node
-o = s:taboption("Main", ListValue, "tcp_node", translate("TCP Node"))
-o.title = translate("TCP Node")
-o.description = ""
---o.description = translate("For proxy specific list.")
---o.description = o.description .. "<br />"
+tcp_node = s:taboption("Main", ListValue, "tcp_node", translate("TCP Node"))
+tcp_node.title = translate("TCP Node")
+tcp_node.description = ""
+--tcp_node.description = translate("For proxy specific list.")
+--tcp_node.description = o.description .. "<br />"
 local current_node = luci.sys.exec(string.format("[ -f '/var/etc/%s/id/TCP' ] && echo -n $(cat /var/etc/%s/id/TCP)", appname, appname))
 if current_node and current_node ~= "" and current_node ~= "nil" then
     local n = uci:get_all(appname, current_node)
@@ -86,7 +96,7 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
         if tonumber(m:get("@auto_switch[0]", "enable") or 0) == 1 then
             local remarks = api.get_full_node_remarks(n)
             local url = d.build_url("admin", "services", appname, "node_config", current_node)
-            o.description = o.description .. translatef("Current node: %s", string.format('<a href="%s">%s</a>', url, remarks)) .. "<br />"
+            tcp_node.description = tcp_node.description .. translatef("Current node: %s", string.format('<a href="%s">%s</a>', url, remarks)) .. "<br />"
         end
         if n.protocol and n.protocol == "_shunt" then
             uci:foreach(appname, "shunt_rules", function(e)
@@ -95,7 +105,7 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
                 if n[id] and n[id] ~= "nil" then
                     local url = d.build_url("admin", "services", appname, "node_config", n[id])
                     local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                    o.description = o.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
+                    tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
                 end
             end)
             local id = "default_node"
@@ -103,22 +113,32 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
             if n[id] and n[id] ~= "nil" then
                 local url = d.build_url("admin", "services", appname, "node_config", n[id])
                 local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                o.description = o.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
+                tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
             end
         end
     end
 end
-o:value("nil", translate("Close"))
-for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
+tcp_node:value("nil", translate("Close"))
 
-o = s:taboption("Main", ListValue, "udp_node", translate("UDP Node"))
-o:value("nil", translate("Close"))
-o.title = translate("UDP Node")
---o.description = translate("For proxy game network, DNS hijack etc.") .. "<br />" .. translate("The selected server will not use Kcptun.")
-o:value("tcp_", translate("Same as the tcp node"))
---o:value("tcp", translate("Same as the tcp node"))
---o:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
-for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
+udp_node = s:taboption("Main", ListValue, "udp_node", translate("UDP Node"))
+udp_node:value("nil", translate("Close"))
+udp_node.title = translate("UDP Node")
+--udp_node.description = translate("For proxy game network, DNS hijack etc.") .. "<br />" .. translate("The selected server will not use Kcptun.")
+udp_node:value("tcp_", translate("Same as the tcp node"))
+--udp_node:value("tcp", translate("Same as the tcp node"))
+--udp_node:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
+
+tcp_node_socks = s:taboption("Main", Flag, "tcp_node_socks", translate("Enable") .. translate("TCP Node") .. "Socks")
+o = s:taboption("Main", Value, "tcp_node_socks_port", "Socks" .. translate("Listen Port"))
+o.default = 1080
+o.datatype = "port"
+o:depends("tcp_node_socks", true)
+
+tcp_node_http = s:taboption("Main", Flag, "tcp_node_http", translate("Enable") .. translate("TCP Node") .. "Http")
+o = s:taboption("Main", Value, "tcp_node_http_port", "HTTP" .. translate("Listen Port"))
+o.default = 1180
+o.datatype = "port"
+o:depends("tcp_node_http", true)
 
 s:tab("DNS", translate("DNS"))
 
@@ -135,7 +155,7 @@ o = s:taboption("DNS", Value, "up_china_dns", translate("Local DNS") .. "(UDP)")
 o.description = translate("IP:Port mode acceptable, multi value split with english comma.") .. "<br />" .. translate("When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS.")
 o.default = "default"
 o:value("default", translate("Default"))
-if api.is_finded("xray") then
+if has_xray then
     o:value("xray_doh", "Xray DNS(DoH)")
 end
 o:value("223.5.5.5", "223.5.5.5 (" .. translate("Ali") .. "DNS)")
@@ -166,7 +186,7 @@ end
 if api.is_finded("dns2socks") then
     o:value("dns2socks", "dns2socks")
 end
-if api.is_finded("xray") then
+if has_xray then
     o:value("xray_doh", "Xray DNS(DoH)")
 end
 o:value("udp", translatef("Requery DNS By %s", translate("UDP Node")))
@@ -335,19 +355,33 @@ o = s:option(Flag, "enabled", translate("Enable"))
 o.default = 1
 o.rmempty = false
 
-o = s:option(ListValue, "node", translate("Socks Node"))
-o:value("tcp", translate("Same as the tcp node"))
-for k, v in pairs(nodes_table) do o:value(v.id, v.remarks) end
+socks_node = s:option(ListValue, "node", translate("Socks Node"))
 
 o = s:option(Value, "port", "Socks" .. translate("Listen Port"))
 o.default = 9050
 o.datatype = "port"
 o.rmempty = false
 
-if api.is_finded("xray") or api.is_finded("v2ray") then
+if has_xray then
     o = s:option(Value, "http_port", "HTTP" .. translate("Listen Port") .. " " .. translate("0 is not use"))
     o.default = 0
     o.datatype = "port"
+end
+
+for k, v in pairs(nodes_table) do
+    tcp_node:value(v.id, v.remarks)
+    tcp_node_socks:depends("tcp_node", v.id)
+    if has_xray then
+        tcp_node_http:depends("tcp_node", v.id)
+    end
+    udp_node:value(v.id, v.remarks)
+    if v.type == "Socks" then
+        if has_xray then
+            socks_node:value(v.id, v.remarks)
+        end
+    else
+        socks_node:value(v.id, v.remarks)
+    end
 end
 
 m:append(Template(appname .. "/global/footer"))

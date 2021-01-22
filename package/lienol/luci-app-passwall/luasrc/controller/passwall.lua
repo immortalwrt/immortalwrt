@@ -9,7 +9,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 local kcptun = require "luci.model.cbi.passwall.api.kcptun"
 local brook = require "luci.model.cbi.passwall.api.brook"
 local xray = require "luci.model.cbi.passwall.api.xray"
-local v2ray = require "luci.model.cbi.passwall.api.v2ray"
 local trojan_go = require "luci.model.cbi.passwall.api.trojan_go"
 
 function index()
@@ -72,8 +71,6 @@ function index()
 	entry({"admin", "services", appname, "brook_update"}, call("brook_update")).leaf = true
 	entry({"admin", "services", appname, "xray_check"}, call("xray_check")).leaf = true
 	entry({"admin", "services", appname, "xray_update"}, call("xray_update")).leaf = true
-	entry({"admin", "services", appname, "v2ray_check"}, call("v2ray_check")).leaf = true
-	entry({"admin", "services", appname, "v2ray_update"}, call("v2ray_update")).leaf = true
 	entry({"admin", "services", appname, "trojan_go_check"}, call("trojan_go_check")).leaf = true
 	entry({"admin", "services", appname, "trojan_go_update"}, call("trojan_go_update")).leaf = true
 end
@@ -408,25 +405,6 @@ function xray_update()
 		json = xray.to_move(http.formvalue("file"))
 	else
 		json = xray.to_download(http.formvalue("url"))
-	end
-
-	http_write_json(json)
-end
-
-function v2ray_check()
-	local json = v2ray.to_check("")
-	http_write_json(json)
-end
-
-function v2ray_update()
-	local json = nil
-	local task = http.formvalue("task")
-	if task == "extract" then
-		json = v2ray.to_extract(http.formvalue("file"), http.formvalue("subfix"))
-	elseif task == "move" then
-		json = v2ray.to_move(http.formvalue("file"))
-	else
-		json = v2ray.to_download(http.formvalue("url"))
 	end
 
 	http_write_json(json)
