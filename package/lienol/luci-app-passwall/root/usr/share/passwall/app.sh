@@ -298,7 +298,6 @@ load_config() {
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
 	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4:53 | sed 's/:/#/g')
 	DNS_CACHE=$(config_t_get global dns_cache 1)
-	USE_CHNLIST=$(config_t_get global use_chnlist 0)
 	process=1
 	if [ "$(config_t_get global_forwarding process 0)" = "0" ]; then
 		process=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
@@ -318,13 +317,13 @@ load_config() {
 }
 
 run_socks() {
-	local node=$1
-	local bind=$2
-	local socks_port=$3
-	local config_file=$4
-	local http_port=$5
-	local http_config_file=$6
-	local id=$7
+	local flag=$1
+	local node=$2
+	local bind=$3
+	local socks_port=$4
+	local config_file=$5
+	local http_port=$6
+	local http_config_file=$7
 	local relay_port=$8
 	local log_file="/dev/null"
 	local type=$(echo $(config_n_get $node type) | tr 'A-Z' 'a-z')
@@ -345,7 +344,7 @@ run_socks() {
 		msg="某种原因，此 Socks 服务的相关配置已失联，启动中止！"
 	fi
 	
-	if [ "$type" == "xray" -o "$type" == "v2ray" ] && ([ -n "$(config_n_get $node balancing_node)" ] || [ "$(config_n_get $node default_node)" != "nil" ]); then
+	if [ "$type" == "xray" ] && ([ -n "$(config_n_get $node balancing_node)" ] || [ "$(config_n_get $node default_node)" != "nil" ]); then
 		unset msg
 	fi
 
@@ -356,19 +355,14 @@ run_socks() {
 	[ "$bind" != "127.0.0.1" ] && echolog "  - 启动 ${bind}:${socks_port}  - 节点：$remarks${tmp}"
 
 	case "$type" in
-	socks)
-		_username=$(config_n_get $node username)
-		_password=$(config_n_get $node password)
-		[ -n "$_username" ] && [ -n "$_password" ] && local _auth="--uname $_username --passwd $_password"
-		ln_start_bin "$(first_type ssocks)" ssocks_SOCKS_$id $log_file --listen $socks_port --socks $server_host:$port $_auth
-	;;
+	socks|\
 	xray)
-		lua $API_GEN_XRAY -node $node -socks_proxy_port $socks_port > $config_file
+		[ "$http_port" != "0" ] && {
+			local extra_param="-http_proxy_port $http_port"
+			config_file=$(echo $config_file | sed "s/SOCKS/HTTP_SOCKS/g")
+		}
+		lua $API_GEN_XRAY -node $node -socks_proxy_port $socks_port $extra_param > $config_file
 		ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $log_file -config="$config_file"
-	;;
-	v2ray)
-		lua $API_GEN_XRAY -node $node -socks_proxy_port $socks_port > $config_file
-		ln_start_bin "$(first_type $(config_t_get global_app v2ray_file) v2ray)" v2ray $log_file -config="$config_file"
 	;;
 	trojan-go)
 		lua $API_GEN_TROJAN -node $node -run_type client -local_addr $bind -local_port $socks_port -server_host $server_host -server_port $port > $config_file
@@ -388,21 +382,20 @@ run_socks() {
 		[ "$protocol" == "wsclient" ] && {
 			[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}" 
 		}
-		ln_start_bin "$(first_type $(config_t_get global_app brook_file) brook)" "brook_SOCKS_$id" $log_file "$protocol" --socks5 "$bind:$socks_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
+		ln_start_bin "$(first_type $(config_t_get global_app brook_file) brook)" "brook_SOCKS_${flag}" $log_file "$protocol" --socks5 "$bind:$socks_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 	;;
 	ss|ssr)
 		lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $socks_port -server_host $server_host -server_port $port > $config_file
-		ln_start_bin "$(first_type ${type}-local)" "${type}-local" $log_file -c "$config_file" -b "$bind" -u
+		ln_start_bin "$(first_type ${type}-local)" "${type}-local" $log_file -c "$config_file" -b "$bind" -u -v
 	;;
 	esac
 	
 	# socks to http
-	[ "$http_port" != "0" ] && [ "$http_config_file" != "nil" ] && {
+	[ "$type" != "xray" ] && [ "$type" != "socks" ] && [ "$http_port" != "0" ] && [ "$http_config_file" != "nil" ] && {
 		lua $API_GEN_XRAY_PROTO -local_proto http -local_address "0.0.0.0" -local_port $http_port -server_proto socks -server_address "127.0.0.1" -server_port $socks_port -server_username $_username -server_password $_password > $http_config_file
 		echo lua $API_GEN_XRAY_PROTO -local_proto http -local_address "0.0.0.0" -local_port $http_port -server_proto socks -server_address "127.0.0.1" -server_port $socks_port -server_username $_username -server_password $_password
 		ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $log_file -config="$http_config_file"
 	}
-	unset _username _password _auth
 }
 
 run_redir() {
@@ -443,17 +436,12 @@ run_redir() {
 			local server_username=$(config_n_get $node username)
 			local server_password=$(config_n_get $node password)
 			eval port=\$UDP_REDIR_PORT
-			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_udp" $log_file -U -l "$port" -b 0.0.0.0 -s "$node_address" -p "$node_port" -R
+			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_udp" $log_file -U -l "$port" -b 0.0.0.0 -s "$node_address" -p "$node_port" -R -v
 		;;
 		xray)
 			local loglevel=$(config_t_get global loglevel "warning")
 			lua $API_GEN_XRAY -node $node -proto udp -redir_port $local_port -loglevel $loglevel > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $log_file -config="$config_file"
-		;;
-		v2ray)
-			local loglevel=$(config_t_get global loglevel "warning")
-			lua $API_GEN_XRAY -node $node -proto udp -redir_port $local_port -loglevel $loglevel > $config_file
-			ln_start_bin "$(first_type $(config_t_get global_app v2ray_file) v2ray)" v2ray $log_file -config="$config_file"
 		;;
 		trojan-go)
 			local loglevel=$(config_t_get global trojan_loglevel "2")
@@ -478,7 +466,7 @@ run_redir() {
 		;;
 		ss|ssr)
 			lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port > $config_file
-			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -U
+			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -U -v
 		;;
 		esac
 	;;
@@ -512,17 +500,19 @@ run_redir() {
 		;;
 		xray)
 			local loglevel=$(config_t_get global loglevel "warning")
-			local extra_param="tcp"
-			[ "$UDP_NODE" == "tcp" ] && extra_param="tcp,udp"
-			lua $API_GEN_XRAY -node $node -proto $extra_param -redir_port $local_port -loglevel $loglevel > $config_file
+			local proto="-proto tcp"
+			[ "$UDP_NODE" == "tcp" ] && proto="-proto tcp,udp"
+			local extra_param="${proto}"
+			[ "$(config_t_get global tcp_node_socks 0)" = "1" ] && {
+				local socks_param="-socks_proxy_port $(config_t_get global tcp_node_socks_port 1080)"
+				extra_param="${extra_param} ${socks_param}"
+			}
+			[ "$(config_t_get global tcp_node_http 0)" = "1" ] && {
+				local http_param="-http_proxy_port $(config_t_get global tcp_node_http_port 1180)"
+				extra_param="${extra_param} ${http_param}"
+			}
+			lua $API_GEN_XRAY -node $node -redir_port $local_port -loglevel $loglevel $extra_param > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $log_file -config="$config_file"
-		;;
-		v2ray)
-			local loglevel=$(config_t_get global loglevel "warning")
-			local extra_param="tcp"
-			[ "$UDP_NODE" == "tcp" ] && extra_param="tcp,udp"
-			lua $API_GEN_XRAY -node $node -proto $extra_param -redir_port $local_port -loglevel $loglevel > $config_file
-			ln_start_bin "$(first_type $(config_t_get global_app v2ray_file) v2ray)" v2ray $log_file -config="$config_file"
 		;;
 		trojan-go)
 			local loglevel=$(config_t_get global trojan_loglevel "2")
@@ -571,14 +561,14 @@ run_redir() {
 				[ "$UDP_NODE" == "tcp" ] && extra_param="-u"
 			fi
 			for k in $(seq 1 $process); do
-				ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" $extra_param
+				ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -v $extra_param
 			done
 		;;
 		esac
 		if [ -n "$_socks_flag" ]; then
 			local extra_param="-T"
 			[ "$UDP_NODE" == "tcp" ] && extra_param=""
-			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp" $log_file -l "$local_port" -b 0.0.0.0 -s "$_socks_address" -p "$_socks_port" -R $extra_param
+			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp" $log_file -l "$local_port" -b 0.0.0.0 -s "$_socks_address" -p "$_socks_port" -R -v $extra_param
 		fi
 		unset _socks_flag _socks_address _socks_port _socks_username _socks_password
 	;;
@@ -620,22 +610,32 @@ start_redir() {
 }
 
 start_socks() {
+	[ "$(config_n_get $TCP_NODE type nil)" != "xray" ] && {
+		[ "$(config_t_get global tcp_node_socks 0)" = "1" ] && {
+			local port=$(config_t_get global tcp_node_socks_port 1080)
+			local config_file=$TMP_PATH/SOCKS_TCP.json
+			local log_file=$TMP_PATH/SOCKS_TCP.log
+		}
+		local http_port=0
+		local http_config_file=$TMP_PATH/HTTP2SOCKS_TCP.json
+		[ "$(config_t_get global tcp_node_http 0)" = "1" ] && {
+			http_port=$(config_t_get global tcp_node_http_port 1180)
+		}
+		run_socks TCP $TCP_NODE "0.0.0.0" $port $config_file $http_port $http_config_file
+	}
 	local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 	echolog "分析 Socks 服务的节点配置..."
 	for id in $ids; do
 		local enabled=$(config_n_get $id enabled 0)
 		[ "$enabled" == "0" ] && continue
 		local node=$(config_n_get $id node nil)
-		if [ "$(echo $node | grep ^tcp)" ]; then
-			eval node=\$TCP_NODE
-		fi
 		[ "$node" == "nil" ] && continue
 		local port=$(config_n_get $id port)
 		local config_file=$TMP_PATH/SOCKS_${id}.json
 		local log_file=$TMP_PATH/SOCKS_${id}.log
 		local http_port=$(config_n_get $id http_port 0)
-		local http_config_file=$TMP_PATH/SOCKS2HTTP_${id}.json
-		run_socks $node "0.0.0.0" $port $config_file $http_port $http_config_file $id
+		local http_config_file=$TMP_PATH/HTTP2SOCKS_${id}.json
+		run_socks $id $node "0.0.0.0" $port $config_file $http_port $http_config_file
 	done
 }
 
@@ -718,16 +718,20 @@ stop_crontab() {
 }
 
 start_dns() {
-	if [ "${LOCAL_DNS}" = "https-dns-proxy" ]; then
-		_doh=$(config_t_get global up_china_dns_doh "https://dns.alidns.com/dns-query,223.5.5.5,223.6.6.6,2400:3200::1,2400:3200:baba::1")
+	if [ "${LOCAL_DNS}" = "xray_doh" ]; then
+		_doh=$(config_t_get global up_china_dns_doh "https://dns.alidns.com/dns-query,223.5.5.5")
 		_doh_url=$(echo $_doh | awk -F ',' '{print $1}')
+		_doh_host_port=$(echo $_doh_url | sed "s/https:\/\///g" | awk -F '/' '{print $1}')
+		_doh_host=$(echo $_doh_host_port | awk -F ':' '{print $1}')
+		_doh_port=$(echo $_doh_host_port | awk -F ':' '{print $2}')
 		_doh_bootstrap=$(echo $_doh | cut -d ',' -sf 2-)
-		ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy "/dev/null" -a 127.0.0.1 -p "${LOCAL_DOH_PORT}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4
+		lua $API_GEN_XRAY -dns_listen_port "${LOCAL_DOH_PORT}" -dns_server "${_doh_bootstrap}" -doh_url "${_doh_url}" -doh_host "${_doh_host}" > $TMP_PATH/DNS1.json
+		ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $TMP_PATH/DNS1.log -config="$TMP_PATH/DNS1.json"
 		LOCAL_DNS="127.0.0.1#${LOCAL_DOH_PORT}"
 		unset _doh _doh_url _doh_bootstrap
 	fi
 
-	local pdnsd_forward other_port up_trust_pdnsd_dns msg
+	local pdnsd_forward other_port msg
 	local global chnlist returnhome china_ng_chn china_ng_gfw chnlist_param gfwlist_param extra_mode
 	dns_listen_port=${DNS_PORT}
 	pdnsd_forward=${DNS_FORWARD}
@@ -741,6 +745,12 @@ start_dns() {
 	sed -n 's/^ipset=\/\.\?\([^/]*\).*$/\1/p' "${RULES_PATH}/gfwlist.conf" | sort -u > "${TMP_PATH}/gfwlist.txt"
 	echolog "过滤服务配置：准备接管域名解析[$?]..."
 	
+	USE_CHNLIST=1
+	if [ ! -f "${RULES_PATH}/chnlist" ]; then
+		USE_CHNLIST=0
+	else
+		cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
+	fi
 	[ "$CHINADNS_NG" = "1" ] && {
 		echolog "  | - (chinadns-ng) 只支持2~4级的域名过滤..."
 		[ -z "${global}${chnlist}" ] && echolog "  | - (chinadns-ng) 此模式下，列表外的域名查询会同时发送给本地DNS(可切换到Pdnsd + TCP节点模式解决)..."
@@ -752,8 +762,8 @@ start_dns() {
 		elif [ "$DNS_MODE" = "dns2socks" ]; then
 			#[ -n "${global}${chnlist}" ] && TUN_DNS=${china_ng_gfw}
 			msg="dns2socks"
-		elif [ "$DNS_MODE" = "https-dns-proxy" ]; then
-			msg="https-dns-proxy(DoH)"
+		elif [ "$DNS_MODE" = "xray_doh" ]; then
+			msg="Xray DNS(DoH)"
 		elif [ "$DNS_MODE" = "udp" ]; then
 			use_udp_node_resolve_dns=1
 			if [ -z "${returnhome}" ]; then
@@ -767,27 +777,27 @@ start_dns() {
 			china_ng_gfw="$(echo ${custom_dns} | sed 's/:/#/g')"
 			msg="自定义DNS"
 		fi
-		chnlist_param=
-		[ "$USE_CHNLIST" = "1" ] && {
-			cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
-			if [ -z "${returnhome}" ]; then
-				cat "${RULES_PATH}/direct_host" >> "${TMP_PATH}/chnlist"
-				echolog "  | - [$?](chinadns-ng) 域名白名单合并到中国域名表"
-				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/gfwlist.txt"
-				[ -f "${RULES_PATH}/proxy_host2" ] && cat "${RULES_PATH}/proxy_host2" >> "${TMP_PATH}/gfwlist.txt"
-				[ -f "${RULES_PATH}/proxy_host3" ] && cat "${RULES_PATH}/proxy_host3" >> "${TMP_PATH}/gfwlist.txt"
-				echolog "  | - [$?](chinadns-ng) 代理域名表合并到防火墙域名表"
-				gfwlist_param="${TMP_PATH}/gfwlist.txt"
-			else
-				echolog "  | - (chinadns-ng) 白名单不与中国域名表合并"
-				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/chnlist"
-				[ -f "${RULES_PATH}/proxy_host2" ] && cat "${RULES_PATH}/proxy_host2" >> "${TMP_PATH}/chnlist"
-				[ -f "${RULES_PATH}/proxy_host3" ] && cat "${RULES_PATH}/proxy_host3" >> "${TMP_PATH}/chnlist"
+		
+		chnlist_param="${TMP_PATH}/chnlist"
+		if [ -n "${returnhome}" ]; then
+			echolog "  | - (chinadns-ng) 白名单不与中国域名表合并"
+			[ -f "${RULES_PATH}/proxy_host" ] && {
+				cat "${RULES_PATH}/proxy_host" >> "${chnlist_param}"
 				echolog "  | - [$?](chinadns-ng) 忽略防火墙域名表，代理域名表合并到中国域名表"
-			fi
-			chnlist_param="${TMP_PATH}/chnlist"
-			chnlist_param=${chnlist_param:+-m "${chnlist_param}" -M}
-		}
+			}
+		else
+			[ -f "${RULES_PATH}/direct_host" ] && {
+				cat "${RULES_PATH}/direct_host" >> "${chnlist_param}"
+				echolog "  | - [$?](chinadns-ng) 域名白名单合并到中国域名表"
+			}
+			[ -f "${RULES_PATH}/proxy_host" ] && {
+				gfwlist_param="${TMP_PATH}/gfwlist.txt"
+				cat "${RULES_PATH}/proxy_host" >> "${gfwlist_param}"
+				echolog "  | - [$?](chinadns-ng) 代理域名表合并到防火墙域名表"
+			}
+		fi
+		chnlist_param=${chnlist_param:+-m "${chnlist_param}" -M}
+		
 		[ "$(config_t_get global fair_mode 1)" = "1" ] && extra_mode="-f"
 		ln_start_bin "$(first_type chinadns-ng)" chinadns-ng "/dev/null" -l "${dns_listen_port}" ${china_ng_chn:+-c "${china_ng_chn}"} ${chnlist_param} ${china_ng_gfw:+-t "${china_ng_gfw}"} ${gfwlist_param:+-g "${gfwlist_param}"} $extra_mode
 		echolog "  + 过滤服务：ChinaDNS-NG(:${dns_listen_port}${extra_mode}) + ${msg}：中国域名列表：${china_ng_chn:-D114.114.114.114}，防火墙域名列表：${china_ng_gfw:-D8.8.8.8}"
@@ -801,9 +811,14 @@ start_dns() {
 		TUN_DNS=""
 	;;
 	dns2socks)
+		local dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
+		local dns2socks_forward=$(get_first_dns DNS_FORWARD 53 | sed 's/#/:/g')
+		[ "$DNS_CACHE" == "0" ] && local dns2sock_cache="/d"
+		ln_start_bin "$(first_type dns2socks)" dns2socks "/dev/null" "$dns2socks_socks_server" "$dns2socks_forward" "127.0.0.1:$dns_listen_port" $dns2sock_cache
+		echolog "  - dns2sock(127.0.0.1:${dns_listen_port}${dns2sock_cache})，${dns2socks_socks_server:-127.0.0.1:9050} -> ${dns2socks_forward-D8.8.8.8:53}"
 		echolog "  - 域名解析：dns2socks..."
 	;;
-	https-dns-proxy)
+	xray_doh)
 		up_trust_doh_dns=$(config_t_get global up_trust_doh_dns "tcp")
 		if [ "$up_trust_doh_dns" = "socks" ]; then
 			use_tcp_node_resolve_dns=0
@@ -812,17 +827,38 @@ start_dns() {
 			use_tcp_node_resolve_dns=1
 			msg="TCP节点"
 		fi
-		echolog "  - 域名解析 https-dns-proxy(DOH)..."
+		up_trust_doh=$(config_t_get global up_trust_doh "https://dns.google/dns-query,8.8.4.4")
+		_doh_url=$(echo $up_trust_doh | awk -F ',' '{print $1}')
+		_doh_host_port=$(echo $_doh_url | sed "s/https:\/\///g" | awk -F '/' '{print $1}')
+		_doh_host=$(echo $_doh_host_port | awk -F ':' '{print $1}')
+		_doh_port=$(echo $_doh_host_port | awk -F ':' '{print $2}')
+		_doh_bootstrap=$(echo $up_trust_doh | cut -d ',' -sf 2-)
+		
+		up_trust_doh_dns=$(config_t_get global up_trust_doh_dns "tcp")
+		if [ "$up_trust_doh_dns" = "socks" ]; then
+			socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
+			socks_address=$(echo $socks_server | awk -F ':' '{print $1}')
+			socks_port=$(echo $socks_server | awk -F ':' '{print $2}')
+			lua $API_GEN_XRAY -dns_listen_port "${dns_listen_port}" -dns_server "${_doh_bootstrap}" -doh_url "${_doh_url}" -doh_host "${_doh_host}" -doh_socks_address "${socks_address}" -doh_socks_port "${socks_port}" > $TMP_PATH/DNS.json
+			ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $TMP_PATH/DNS.log -config="$TMP_PATH/DNS.json"
+		elif [ "${up_trust_doh_dns}" = "tcp" ]; then
+			DNS_FORWARD=""
+			_doh_bootstrap_dns=$(echo $_doh_bootstrap | sed "s/,/ /g")
+			for _dns in $_doh_bootstrap_dns; do
+				_dns=$(echo $_dns | awk -F ':' '{print $1}'):${_doh_port:-443}
+				[ -n "$DNS_FORWARD" ] && DNS_FORWARD=${DNS_FORWARD},${_dns} || DNS_FORWARD=${_dns}
+			done
+			lua $API_GEN_XRAY -dns_listen_port "${dns_listen_port}" -dns_server "${_doh_bootstrap}" -doh_url "${_doh_url}" -doh_host "${_doh_host}" > $TMP_PATH/DNS.json
+			ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $TMP_PATH/DNS.log -config="$TMP_PATH/DNS.json"
+			unset _dns _doh_bootstrap_dns
+		fi
+		unset _doh_url _doh_port _doh_bootstrap
+		echolog "  - 域名解析 Xray DNS(DOH)..."
 	;;
 	pdnsd)
-		up_trust_pdnsd_dns=$(config_t_get global up_trust_pdnsd_dns "nil")
-		if [ "$up_trust_pdnsd_dns" = "udp" ]; then
-			use_udp_node_resolve_dns=1
-			msg="UDP节点"
-		elif [ "${up_trust_pdnsd_dns}" = "nil" ]; then
-			msg="TCP节点"
-		fi
-		echolog "  - 域名解析：pdnsd + 使用(${msg})解析域名..."
+		gen_pdnsd_config "${dns_listen_port}" "${pdnsd_forward}"
+		ln_start_bin "$(first_type pdnsd)" pdnsd "/dev/null" --daemon -c "${TMP_PATH}/pdnsd/pdnsd.conf" -d
+		echolog "  - 域名解析：pdnsd + 使用(TCP节点)解析域名..."
 	;;
 	udp)
 		use_udp_node_resolve_dns=1
@@ -837,40 +873,7 @@ start_dns() {
 		}
 	;;
 	esac
-	if [ -n "$(echo ${DNS_MODE} | grep pdnsd)" ]; then
-		gen_pdnsd_config "${dns_listen_port}" "${pdnsd_forward}"
-		ln_start_bin "$(first_type pdnsd)" pdnsd "/dev/null" --daemon -c "${TMP_PATH}/pdnsd/pdnsd.conf" -d
-	fi
-	if [ -n "$(echo ${DNS_MODE} | grep 'https-dns-proxy')" ]; then
-		up_trust_doh=$(config_t_get global up_trust_doh "https://dns.google/dns-query,8.8.8.8,8.8.4.4")
-		_doh_url=$(echo $up_trust_doh | awk -F ',' '{print $1}')
-		_doh_port=$(echo $_doh_url | sed "s/:\/\///g" | awk -F ':' '{print $2}'| awk -F '/' '{print $1}')
-		_doh_bootstrap=$(echo $up_trust_doh | cut -d ',' -sf 2-)
-		
-		up_trust_doh_dns=$(config_t_get global up_trust_doh_dns "tcp")
-		if [ "$up_trust_doh_dns" = "socks" ]; then
-			socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
-			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy "/dev/null" -a 127.0.0.1 -p "${dns_listen_port}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4 -t socks5h://${socks_server}
-		elif [ "${up_trust_doh_dns}" = "tcp" ]; then
-			DNS_FORWARD=""
-			_doh_bootstrap_dns=$(echo $_doh_bootstrap | sed "s/,/ /g")
-			for _dns in $_doh_bootstrap_dns; do
-				_dns=$(echo $_dns | awk -F ':' '{print $1}'):${_doh_port:-443}
-				[ -n "$DNS_FORWARD" ] && DNS_FORWARD=${DNS_FORWARD},${_dns} || DNS_FORWARD=${_dns}
-			done
-			ln_start_bin "$(first_type https-dns-proxy)" https-dns-proxy "/dev/null" -a 127.0.0.1 -p "${dns_listen_port}" -b "${_doh_bootstrap}" -r "${_doh_url}" -4
-			unset _dns _doh_bootstrap_dns
-		fi
-		unset _doh_url _doh_port _doh_bootstrap
-	fi
-	if [ -n "$(echo ${DNS_MODE}${up_trust_pdnsd_dns} | grep dns2socks)" ]; then
-		local dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
-		local dns2socks_forward=$(get_first_dns DNS_FORWARD 53 | sed 's/#/:/g')
-		[ "$DNS_CACHE" == "0" ] && local dns2sock_cache="/d"
-		ln_start_bin "$(first_type dns2socks)" dns2socks "/dev/null" "$dns2socks_socks_server" "$dns2socks_forward" "127.0.0.1:$dns_listen_port" $dns2sock_cache
-		echolog "  - dns2sock(127.0.0.1:${dns_listen_port}${dns2sock_cache})，${dns2socks_socks_server:-127.0.0.1:9050} -> ${dns2socks_forward-D46.182.19.48:53}"
-		#[ "$CHINADNS_NG" = "1" ] && [ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS=$(echo "${dns_listen_port}" | sed 's/:/#/g')
-	fi
+	
 	[ "${use_udp_node_resolve_dns}" = "1" ] && echolog "  * 要求代理 DNS 请求，如上游 DNS 非直连地址，确保 UDP 代理打开，并且已经正确转发！"
 	[ "${use_tcp_node_resolve_dns}" = "1" ] && echolog "  * 请确认上游 DNS 支持 TCP 查询，如非直连地址，确保 TCP 代理打开，并且已经正确转发！"
 }
@@ -904,10 +907,6 @@ add_dnsmasq() {
 
 		#始终用国内DNS解析直连（白名单）列表
 		fwd_dns="${LOCAL_DNS}"
-		#如果使用ChinaDNS-NG则直接交给它处理
-		[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
-		#如果没使用chnlist直接使用默认DNS
-		[ "${USE_CHNLIST}" = "0" ] && unset fwd_dns
 		sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/00-direct_host.conf"
 		echolog "  - [$?]域名白名单(whitelist)：${fwd_dns:-默认}"
 

@@ -18,7 +18,7 @@ local Xray = {
 		sniffing = {enabled = true, destOverride = {"http", "tls"}}
 	} or nil,
 	-- 开启 socks 代理
-	inboundDetour = (proto == "tcp" and socks_port ~= "0") and {
+	inboundDetour = (proto:find("tcp") and socks_port ~= "0") and {
 		{
 			protocol = "socks",
 			port = tonumber(socks_port),
