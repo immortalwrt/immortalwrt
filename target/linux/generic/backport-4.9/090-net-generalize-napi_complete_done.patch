@@ -960,7 +960,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		pasemi_mac_restart_tx_intr(mac);
 --- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
 +++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
-@@ -2391,7 +2391,7 @@ static int netxen_nic_poll(struct napi_s
+@@ -2386,7 +2386,7 @@ static int netxen_nic_poll(struct napi_s
  		work_done = budget;
  
  	if (work_done < budget) {

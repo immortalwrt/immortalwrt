@@ -29,7 +29,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
  
  	for_each_online_cpu(i) {
  		struct cpuinfo_arm64 *cpuinfo = &per_cpu(cpu_data, i);
-@@ -177,6 +182,26 @@ static int c_show(struct seq_file *m, vo
+@@ -176,6 +181,26 @@ static int c_show(struct seq_file *m, vo
  		seq_printf(m, "CPU revision\t: %d\n\n", MIDR_REVISION(midr));
  	}
  

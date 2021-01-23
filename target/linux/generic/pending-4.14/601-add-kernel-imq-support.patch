@@ -1569,7 +1569,7 @@
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -3860,8 +3879,12 @@ static inline void __nf_copy(struct sk_b
+@@ -3876,8 +3895,12 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif
@@ -1761,7 +1761,7 @@
  
  /**
   *	skb_panic - private function for out-of-line support
-@@ -615,6 +696,28 @@ void skb_release_head_state(struct sk_bu
+@@ -620,6 +701,28 @@ void skb_release_head_state(struct sk_bu
  		WARN_ON(in_irq());
  		skb->destructor(skb);
  	}
@@ -1790,7 +1790,7 @@
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  	nf_conntrack_put(skb_nfct(skb));
  #endif
-@@ -804,6 +907,10 @@ static void __copy_skb_header(struct sk_
+@@ -809,6 +912,10 @@ static void __copy_skb_header(struct sk_
  	new->sp			= secpath_get(old->sp);
  #endif
  	__nf_copy(new, old, false);
@@ -1801,7 +1801,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -3949,6 +4056,13 @@ void __init skb_init(void)
+@@ -3954,6 +4061,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
