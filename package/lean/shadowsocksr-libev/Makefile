@@ -60,7 +60,6 @@ define Package/shadowsocksr-libev-ssr-local/install
 	$(LN) ssr-local $(1)/usr/bin/ssr-tunnel
 endef
 
-$(eval $(call BuildPackage,shadowsocksr-libev))
 $(eval $(call BuildPackage,shadowsocksr-libev-alt))
 $(eval $(call BuildPackage,shadowsocksr-libev-server))
 $(eval $(call BuildPackage,shadowsocksr-libev-ssr-local))
