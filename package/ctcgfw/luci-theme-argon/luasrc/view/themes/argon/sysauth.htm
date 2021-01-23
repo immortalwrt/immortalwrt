@@ -14,18 +14,18 @@
 
 	MUI:
 	https://github.com/muicss/mui
-	
-	Agron Theme
+
+	Argon Theme
 	https://demos.creative-tim.com/argon-dashboard/index.html
 
 	Licensed to the public under the Apache License 2.0
 -%>
 
-<%+header_login%>
+<%+themes/argon/out_header_login%>
 <%
 	local util = require "luci.util"
 	local boardinfo = util.ubus("system", "board")
-	local fs	= require "nixio.fs"
+	local fs = require "nixio.fs"
 	local nutil = require "nixio.util"
 
 	function glob(...)
@@ -60,7 +60,7 @@
 	end
 
 	if bgcount > 0 then
-		currentBg =  bgs[math.random(1,bgcount)]
+		currentBg = bgs[math.random(1,bgcount)]
 	end
 %>
 <div class="login-page">
@@ -83,9 +83,9 @@
 		})
 	</script>
 	<% else %>
-	<div class="main-bg" id="main-bg" 
+	<div class="main-bg" id="main-bg"
 	<%
-	if (bgcount == 0 ) then
+	if (bgcount == 0) then
 		local http = require "luci.sys"
 		local json = require "luci.jsonc"
 		local bg_url = media .. "/img/bg1.jpg"
@@ -96,11 +96,11 @@
 		end
 	%>
 		style="background-image:url(<%=bg_url%>)"
-	<% elseif  (bgcount > 0 and currentBg["type"] ~= "mp4") then %>
+	<% elseif (bgcount > 0 and currentBg["type"] ~= "mp4") then %>
 		style="background-image:url(<%=currentBg.url%>)"
 	<% end  %>
 	></div>
-	
+
 	<% end %>
 	<div class="login-container">
 		<div class="login-form">
@@ -156,4 +156,4 @@
 				}
 			//]]></script>
 			<% end %>
-<%+footer%>
+<%+themes/argon/out_footer_login%>

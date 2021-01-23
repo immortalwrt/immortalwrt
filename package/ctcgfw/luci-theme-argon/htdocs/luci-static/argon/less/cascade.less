@@ -1,4 +1,4 @@
-// out: ../css/cascade.css, compress: true , sourceMap: false
+// out: ../css/cascade.css, compress: false , sourceMap: false
 /**
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
@@ -8,7 +8,7 @@
  *  Have a bug? Please create an issue here on GitHub!
  *      https://github.com/jerrykuku/luci-theme-argon/issues
  *
- *  luci-theme-material: 
+ *  luci-theme-material:
  *      Copyright 2015 Lutty Yang <lutty@wcan.in>
  *		https://github.com/LuttyYang/luci-theme-material/
  *
@@ -780,11 +780,12 @@ header {
             right: 1.25rem;
             float: right;
 
-            span[data-indicator="poll-status"] {
-                display: block;
+            span[data-indicator] {
+                display: inline-block;
                 font-size: 0.8rem;
                 font-weight: bold;
                 padding: 0.3rem 0.8rem;
+                margin: 0 0.5rem;
                 white-space: nowrap;
                 text-decoration: none;
                 text-transform: uppercase;
@@ -2416,8 +2417,8 @@ body:not(.Interfaces) .cbi-rowstyle-2:first-child {
     width: 0;
     height: 100%;
     transition: width .25s ease-in;
-    background: #5bc0de;
-    background: var(--bar-bg);
+    background: #5e72e4;
+    background: var(--primary);
 }
 
 .cbi-progressbar::after {
@@ -3813,7 +3814,7 @@ pre.command-output {
         display: inline-block;
     }
 
-    
+
 
     .main>.main-left>.nav>.slide>.slide-menu>li>a {
         font-size: 0.8rem;

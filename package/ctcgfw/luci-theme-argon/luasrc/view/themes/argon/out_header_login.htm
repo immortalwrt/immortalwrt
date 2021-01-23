@@ -13,8 +13,8 @@
 	local applyconf = luci.config and luci.config.apply
 %>
 
-<script type="text/javascript" src="<%=resource%>/promis.min.js?v=git-20.186.82389-282dbf8"></script>
-<script type="text/javascript" src="<%=resource%>/luci.js?v=git-20.186.82389-282dbf8"></script>
+<script type="text/javascript" src="<%=resource%>/promis.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/luci.js"></script>
 <script type="text/javascript">
 	L = new LuCI(<%= luci.http.write_json({
 		token          = token,
@@ -29,7 +29,7 @@
 		ubuspath       = luci.config.main.ubuspath or '/ubus/',
 		sessionid      = luci.dispatcher.context.authsession,
 		nodespec       = luci.dispatcher.context.dispatched,
-		apply_rollback = math.max(applyconf and applyconf.rollback or 30, 30),
+		apply_rollback = math.max(applyconf and applyconf.rollback or 90, 90),
 		apply_holdoff  = math.max(applyconf and applyconf.holdoff or 4, 1),
 		apply_timeout  = math.max(applyconf and applyconf.timeout or 5, 1),
 		apply_display  = math.max(applyconf and applyconf.display or 1.5, 1),
