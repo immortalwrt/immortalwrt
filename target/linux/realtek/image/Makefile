@@ -70,6 +70,7 @@ define Device/zyxel_gs1900-10hp
   IMAGE_SIZE := 6976k
   DEVICE_VENDOR := ZyXEL
   DEVICE_MODEL := GS1900-10HP
+  UIMAGE_MAGIC := 0x83800000
 endef
 TARGET_DEVICES += zyxel_gs1900-10hp
 
@@ -80,6 +81,7 @@ define Device/zyxel_gs1900-8hp-v1
   DEVICE_MODEL := GS1900-8HP
   DEVICE_VARIANT := v1
   DEVICE_PACKAGES += lua-rs232
+  UIMAGE_MAGIC := 0x83800000
 endef
 TARGET_DEVICES += zyxel_gs1900-8hp-v1
 
@@ -90,6 +92,7 @@ define Device/zyxel_gs1900-8hp-v2
   DEVICE_MODEL := GS1900-8HP
   DEVICE_VARIANT := v2
   DEVICE_PACKAGES += lua-rs232
+  UIMAGE_MAGIC := 0x83800000
 endef
 TARGET_DEVICES += zyxel_gs1900-8hp-v2
 
