@@ -48,7 +48,7 @@ Signed-off-by: Richard Weinberger <richard@nod.at>
  			       HRTIMER_MODE_REL);
  }
  
-@@ -1071,10 +1077,6 @@ int ubifs_wbuf_init(struct ubifs_info *c
+@@ -1080,10 +1086,6 @@ int ubifs_wbuf_init(struct ubifs_info *c
  
  	hrtimer_init(&wbuf->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
  	wbuf->timer.function = wbuf_timer_callback_nolock;

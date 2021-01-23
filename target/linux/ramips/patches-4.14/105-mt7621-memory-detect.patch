@@ -90,7 +90,7 @@ Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
  void __init ralink_clk_init(void)
  {
  	u32 syscfg, xtal_sel, clkcfg, clk_sel, curclk, ffiv, ffrac;
-@@ -328,10 +353,7 @@ void prom_soc_init(struct ralink_soc_inf
+@@ -319,10 +344,7 @@ void prom_soc_init(struct ralink_soc_inf
  		(rev >> CHIP_REV_VER_SHIFT) & CHIP_REV_VER_MASK,
  		(rev & CHIP_REV_ECO_MASK));
  
