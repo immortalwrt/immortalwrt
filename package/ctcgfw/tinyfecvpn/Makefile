@@ -9,20 +9,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tinyfecVPN
 PKG_VERSION:=20180820.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/wangyu-/tinyfecVPN.git
-PKG_SOURCE_VERSION:=e8364ba8ff94415ee3bedcbdb9557bfe5994a469
-PKG_MIRROR_HASH:=30fd808b0203c70e8e6cfe8ca55b907faaea6a8be12a7a7fef6658f4ddbb523c
-
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/wangyu-/tinyfecVPN/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=ab758480e3ae43e851d2285a4441dee9c0b524b1a279e38e701302aa61617a5d
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Yu Wang
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -43,8 +38,7 @@ endef
 
 MAKE_FLAGS += cross
 
-define Build/Prepare
-	$(PKG_UNPACK)
+define Build/Configure
 	sed -i 's/cc_cross=.*/cc_cross=$(TARGET_CXX)/g' $(PKG_BUILD_DIR)/makefile
 	sed -i '/\*gitversion/d' $(PKG_BUILD_DIR)/makefile
 	echo 'const char *gitversion = "$(PKG_VERSION)";' > $(PKG_BUILD_DIR)/git_version.h
