@@ -1,39 +1,41 @@
 <%#
-	edge is a clean HTML5 theme for LuCI. It is based on luci-theme-material edge Template
+	Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material Argon Template
 
-	luci-theme-edge
+	luci-theme-argon
 	Copyright 2020 Jerrykuku <jerrykuku@qq.com>
 
 	Have a bug? Please create an issue here on GitHub!
-	https://github.com/jerrykuku/luci-theme-edge/issues 
+	https://github.com/jerrykuku/luci-theme-argon/issues
 
-	luci-theme-material: 
+	luci-theme-material:
 	Copyright 2015 Lutty Yang <lutty@wcan.in>
-	
-	Agron Theme
-	https://demos.creative-tim.com/edge-dashboard/index.html 
+
+	Argon Theme
+	https://demos.creative-tim.com/argon-dashboard/index.html
 
 	Licensed to the public under the Apache License 2.0
 -%>
 
 <%
-    local sys  = require "luci.sys"
+	local sys = require "luci.sys"
 	local util = require "luci.util"
 	local http = require "luci.http"
 	local disp = require "luci.dispatcher"
 
 	local boardinfo = util.ubus("system", "board")
+
 	local node = disp.context.dispatched
-    local fs	= require "nixio.fs"
-    local nutil = require "nixio.util"
-    local uci = require 'luci.model.uci'.cursor()
-    
+
+	local fs = require "nixio.fs"
+	local nutil = require "nixio.util"
+	local uci = require 'luci.model.uci'.cursor()
+
 	-- send as HTML5
 	http.prepare_content("text/html")
-    
-    math.randomseed(tonumber(tostring(os.time()):reverse():sub(1, 9)))
 
-    -- Custom settings
+	math.randomseed(tonumber(tostring(os.time()):reverse():sub(1, 9)))
+
+	-- Custom settings
 	local mode = 'normal'
 	local dark_css = fs.readfile('/www/luci-static/argon/css/dark.css')
 	local bar_color = '#5e72e4'
@@ -47,8 +49,7 @@
 		blur_opacity_dark = uci:get_first('argon', 'global', 'transparency_dark')
 		mode = uci:get_first('argon', 'global', 'mode')
 		bar_color = mode == 'dark' and dark_primary or primary
-    end
-    
+	end
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
@@ -114,10 +115,9 @@
     <script src="<%=resource%>/cbi.js<%# ?v=PKG_VERSION %>"></script>
     <script src="<%=resource%>/xhr.js<%# ?v=PKG_VERSION %>"></script>
     <script src="<%=media%>/js/jquery.min.js<%# ?v=PKG_VERSION %>"></script>
-    
+
 </head>
 
 <body
     class="lang_<%=luci.i18n.context.lang%> <% if node then %><%= striptags( node.title ) %><% end %> <% if luci.dispatcher.context.authsession then %>logged-in<% end %>"
     data-page="<%= table.concat(disp.context.requestpath, "-") %>">
-    

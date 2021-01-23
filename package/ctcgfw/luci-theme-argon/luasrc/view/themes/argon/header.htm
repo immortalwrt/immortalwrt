@@ -5,19 +5,19 @@
 	Copyright 2020 Jerrykuku <jerrykuku@qq.com>
 
 	Have a bug? Please create an issue here on GitHub!
-	https://github.com/jerrykuku/luci-theme-argon/issues 
+	https://github.com/jerrykuku/luci-theme-argon/issues
 
-	luci-theme-material: 
+	luci-theme-material:
 	Copyright 2015 Lutty Yang <lutty@wcan.in>
-	
-	Agron Theme
-	https://demos.creative-tim.com/argon-dashboard/index.html 
+
+	Argon Theme
+	https://demos.creative-tim.com/argon-dashboard/index.html
 
 	Licensed to the public under the Apache License 2.0
 -%>
 
 <%
-    local sys  = require "luci.sys"
+	local sys = require "luci.sys"
 	local util = require "luci.util"
 	local http = require "luci.http"
 	local disp = require "luci.dispatcher"
@@ -25,15 +25,16 @@
 	local boardinfo = util.ubus("system", "board")
 
 	local node = disp.context.dispatched
-    
-    local fs	= require "nixio.fs"
+
+	local fs = require "nixio.fs"
 	local nutil = require "nixio.util"
 	local uci = require 'luci.model.uci'.cursor()
-    
+
 	-- send as HTML5
 	http.prepare_content("text/html")
+
 	math.randomseed(os.time())
-	
+
 	-- Custom settings
 	local mode = 'normal'
 	local dark_css = fs.readfile('/www/luci-static/argon/css/dark.css')
@@ -49,12 +50,15 @@
 		mode = uci:get_first('argon', 'global', 'mode')
 		bar_color = mode == 'dark' and dark_primary or primary
 	end
+
+	-- Brand name
+	local brand_name = boardinfo.hostname or "?"
 -%>
 <!DOCTYPE html>
 <html lang="<%=luci.i18n.context.lang%>">
 
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <title>
         <%=striptags( (boardinfo.hostname or "?") .. ( (node and node.title) and ' - ' .. translate(node.title) or '')) %>
         - LuCI</title>
@@ -224,7 +228,7 @@
 	<div class="main">
 		<div class="main-left" id="mainmenu" style="display:none">
 			<div class="sidenav-header d-flex align-items-center">
-				<a class="brand" href="#"><%=boardinfo.hostname or "?"%></a>
+				<a class="brand" href="#"><%=brand_name%></a>
 				<div class="ml-auto">
 					<!-- Sidenav toggler -->
 					<div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin"
@@ -243,7 +247,7 @@
 				<div class="fill">
 					<div class="container">
 						<a class="showSide"></a>
-						<a class="brand" href="#"><%=boardinfo.hostname or "?"%> ™</a>
+						<a class="brand" href="#"><%=brand_name%></a>
 						<div class="status" id="indicators">
 						<span id="xhr_poll_status" style="display:none" onclick="XHR.running() ? XHR.halt() : XHR.run()">
 							<span class="label success" id="xhr_poll_status_on"><span class="mobile-hide"><%:Auto Refresh%></span> <%:on%></span>
@@ -259,7 +263,7 @@
 					<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>
 					<div class="alert-message error">
 						<h4><%:No password set!%></h4>
-						<p><%:There is no password set on this router. Please configure a root password to protect the web interface and enable SSH.%>
+						<p><%:There is no password set on this router. Please configure a root password to protect the web interface.%>
 						</p>
 						<% if disp.lookup("admin/system/admin") then %>
 						<div class="right"><a class="btn"
