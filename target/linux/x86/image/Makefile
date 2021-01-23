@@ -9,6 +9,8 @@ include $(INCLUDE_DIR)/image.mk
 
 export PATH=$(TARGET_PATH):/sbin
 
+SUPPORTED_DEVICES :=
+
 GRUB2_MODULES = biosdisk boot chain configfile ext2 linux ls part_msdos reboot serial vga
 GRUB2_MODULES_LEGACY = $(GRUB2_MODULES)
 GRUB2_MODULES_LEGACY += part_gpt search fat exfat
