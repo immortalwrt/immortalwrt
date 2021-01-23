@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cpu_arch="$(cat "/proc/cpuinfo" | grep "model name" | sed -n "1p" | awk -F ': ' '{print $2}')"
+[ -z "${cpu_arch}" ] && cpu_arch="?"
 cpu_cores="$(cat "/proc/cpuinfo" | grep "processor" | wc -l)"
 
 if grep -q "bcm27xx" "/etc/openwrt_release"; then
