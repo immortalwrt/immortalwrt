@@ -1456,7 +1456,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4155,6 +4230,13 @@ void __init skb_init(void)
+@@ -4161,6 +4236,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
