@@ -9,20 +9,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tinyPortMapper
 PKG_VERSION:=20200818.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/wangyu-/tinyPortMapper.git
-PKG_SOURCE_VERSION:=b6c5c05ba9a9db00571d185edcd534434f41b50a
-PKG_MIRROR_HASH:=93946ec018ef515d0f443fd9a6e6510ce3ceb1be373a2393fe2daeeb5e7ced95
-
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/wangyu-/tinyPortMapper/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=094aef3fa0646fe3d0418f87767c1dd24ba1a80518f1e8a7cae2783aed88e732
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Yu Wang
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -42,8 +37,7 @@ endef
 
 MAKE_FLAGS += cross
 
-define Build/Prepare
-	$(PKG_UNPACK)
+define Build/Configure
 	sed -i 's/cc_cross=.*/cc_cross=$(TARGET_CXX)/g' $(PKG_BUILD_DIR)/makefile
 	sed -i '/\*gitversion/d' $(PKG_BUILD_DIR)/makefile
 	echo 'const char *gitversion = "$(PKG_VERSION)";' > $(PKG_BUILD_DIR)/git_version.h
