@@ -1,5 +1,6 @@
 #!/bin/sh
 # Copyright (C) 2018-2020 L-WRT Team
+# Copyright (C) 2021 xiaorouji
 
 . $IPKG_INSTROOT/lib/functions.sh
 . $IPKG_INSTROOT/lib/functions/service.sh
@@ -571,15 +572,29 @@ run_redir() {
 			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp" $log_file -l "$local_port" -b 0.0.0.0 -s "$_socks_address" -p "$_socks_port" -R -v $extra_param
 		fi
 		unset _socks_flag _socks_address _socks_port _socks_username _socks_password
+		
+		[ "$type" != "xray" ] && {
+			[ "$(config_t_get global tcp_node_socks 0)" = "1" ] && {
+				local port=$(config_t_get global tcp_node_socks_port 1080)
+				local config_file=$TMP_PATH/SOCKS_TCP.json
+				local log_file=$TMP_PATH/SOCKS_TCP.log
+				local http_port=0
+				local http_config_file=$TMP_PATH/HTTP2SOCKS_TCP.json
+				[ "$(config_t_get global tcp_node_http 0)" = "1" ] && {
+					http_port=$(config_t_get global tcp_node_http_port 1180)
+				}
+				run_socks TCP $TCP_NODE "0.0.0.0" $port $config_file $http_port $http_config_file
+			}
+		}
 	;;
 	esac
 	return 0
 }
 
 node_switch() {
-	local node=$3
 	[ -n "$1" -a -n "$2" -a -n "$3" ] && {
-		ps -w | grep -E "$TMP_PATH" | grep -i "${1}" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+		local node=$3
+		top -bn1 | grep -E "$TMP_PATH" | grep -i "${1}" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 		local config_file=$TMP_PATH/${1}.json
 		local log_file=$TMP_PATH/${1}.log
 		eval current_port=\$${1}_REDIR_PORT
@@ -610,19 +625,6 @@ start_redir() {
 }
 
 start_socks() {
-	[ "$(config_n_get $TCP_NODE type nil)" != "xray" ] && {
-		[ "$(config_t_get global tcp_node_socks 0)" = "1" ] && {
-			local port=$(config_t_get global tcp_node_socks_port 1080)
-			local config_file=$TMP_PATH/SOCKS_TCP.json
-			local log_file=$TMP_PATH/SOCKS_TCP.log
-		}
-		local http_port=0
-		local http_config_file=$TMP_PATH/HTTP2SOCKS_TCP.json
-		[ "$(config_t_get global tcp_node_http 0)" = "1" ] && {
-			http_port=$(config_t_get global tcp_node_http_port 1180)
-		}
-		run_socks TCP $TCP_NODE "0.0.0.0" $port $config_file $http_port $http_config_file
-	}
 	local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 	echolog "分析 Socks 服务的节点配置..."
 	for id in $ids; do
@@ -1099,10 +1101,9 @@ start_haproxy() {
 	cat <<-EOF > "${haproxy_file}"
 		global
 		    log         127.0.0.1 local2
-		    chroot      /usr/bin
+		    chroot      ${haproxy_path}
 		    maxconn     60000
 		    stats socket  ${haproxy_path}/haproxy.sock
-		    user        root
 		    daemon
 
 		defaults
@@ -1193,6 +1194,7 @@ start_haproxy() {
 	local auth=""
 	[ -n "$console_user" ] && [ -n "$console_password" ] && auth="stats auth $console_user:$console_password"
 	cat <<-EOF >> "${haproxy_file}"
+	
 		listen console
 		    bind 0.0.0.0:$console_port
 		    mode http
@@ -1202,7 +1204,7 @@ start_haproxy() {
 		    $auth
 	EOF
 
-	[ "${hasvalid}" != "1" ] && echolog "  - 没有发现任何有效节点信息..." && return 0
+	[ "${hasvalid}" != "1" ] && echolog "  - 没有发现任何有效节点信息，不启动。" && return 0
 	ln_start_bin "$(first_type haproxy)" haproxy "/dev/null" -f "${haproxy_file}"
 	echolog "  * 控制台端口：${console_port}/，${auth:-公开}"
 }
@@ -1257,10 +1259,10 @@ stop() {
 	clean_log
 	source $APP_PATH/iptables.sh stop
 	kill_all v2ray-plugin obfs-local
-	ps -w | grep -v "grep" | grep $CONFIG/test.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	ps -w | grep -v "grep" | grep $CONFIG/monitor.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	ps -w | grep -v -E "grep|${TMP_PATH}_server" | grep -E "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	ps -w | grep -v "grep" | grep "sleep 1m" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	top -bn1 | grep -v "grep" | grep $CONFIG/test.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	top -bn1 | grep -v "grep" | grep $CONFIG/monitor.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	top -bn1 | grep -v -E "grep|${TMP_PATH}_server" | grep -E "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	top -bn1 | grep -v "grep" | grep "sleep 1m" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf $TMP_DNSMASQ_PATH $TMP_PATH
 	stop_crontab
 	del_dnsmasq

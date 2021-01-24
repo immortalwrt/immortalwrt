@@ -9,11 +9,24 @@ local i18n = require "luci.i18n"
 appname = "passwall"
 curl = "/usr/bin/curl"
 curl_args = {"-skL", "--connect-timeout 3", "--retry 3", "-m 60"}
-wget = "/usr/bin/wget"
-wget_args = {"--no-check-certificate", "--quiet", "--timeout=100", "--tries=3"}
 command_timeout = 300
 LEDE_BOARD = nil
 DISTRIB_TARGET = nil
+
+function url(...)
+    local url = string.format("admin/services/%s", appname)
+    local args = { ... }
+    for i, v in pairs(args) do
+        if v ~= "" then
+            url = url .. "/" .. v
+        end
+    end
+    return require "luci.dispatcher".build_url(url)
+end
+
+function trim(s)
+    return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
 
 function is_exist(table, value)
     for index, k in ipairs(table) do

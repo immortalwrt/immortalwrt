@@ -1,8 +1,5 @@
 <%
-function trim(s)
-  return (s:gsub("^%s*(.-)%s*$", "%1"))
-end
-local dsp = require "luci.dispatcher"
+local api = require "luci.model.cbi.passwall.api.api"
 -%>
 
 <style>
@@ -25,10 +22,10 @@ local dsp = require "luci.dispatcher"
 	//<![CDATA[
 	function link_clear_temp() {
 		if (confirm('<%:Are you sure to clear all cached links?%>') == true){
-			XHR.get('<%=dsp.build_url("admin/services/passwall/link_clear_temp")%>', null,
+			XHR.get('<%=api.url("link_clear_temp")%>', null,
 			function(x, data) {
 				if(x && x.status == 200) {
-					window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
+					window.location.href = '<%=api.url("node_list")%>';
 				}
 				else {
 					alert("<%:Error%>");
@@ -39,7 +36,7 @@ local dsp = require "luci.dispatcher"
 
 	function link_load_temp() {
 		var inputer = document.getElementById("nodes_link");
-		XHR.get('<%=dsp.build_url("admin/services/passwall/link_load_temp")%>', null,
+		XHR.get('<%=api.url("link_load_temp")%>', null,
 		function(x, data) {
 			if(x.readyState === 4 && x.status === 200) {
 				try {
@@ -60,12 +57,12 @@ local dsp = require "luci.dispatcher"
 
 	function ajax_add_node(link) {
 		if (link) {
-			XHR.get('<%=dsp.build_url("admin/services/passwall/link_add_node")%>', {
+			XHR.get('<%=api.url("link_add_node")%>', {
 				'link': link
 			},
 			function(x, data) {
 				if(x && x.status == 200) {
-					window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
+					window.location.href = '<%=api.url("node_list")%>';
 				}
 				else {
 					alert("<%:Error%>");
@@ -100,10 +97,10 @@ local dsp = require "luci.dispatcher"
 	
 	function clear_all_nodes() {
 		if (confirm('<%:Are you sure to clear all nodes?%>') == true){
-			XHR.get('<%=dsp.build_url("admin/services/passwall/clear_all_nodes")%>', null,
+			XHR.get('<%=api.url("clear_all_nodes")%>', null,
 			function(x, data) {
 				if(x && x.status == 200) {
-					window.location.href = '<%=dsp.build_url("admin/services/passwall/node_list")%>';
+					window.location.href = '<%=api.url("node_list")%>';
 				}
 				else {
 					alert("<%:Error%>");
@@ -117,7 +114,7 @@ local dsp = require "luci.dispatcher"
 
 <div id="add_link_div">
 	<div class="cbi-value">
-		<label class="cbi-value-title"><%:SS/SSR/V2ray/Trojan Link%></label>
+		<label class="cbi-value-title"><%:SS/SSR/Vmess/Trojan Link%></label>
 		<div class="cbi-value-field">
 			<textarea id="nodes_link" rows="5" cols="50"></textarea>
 		</div>
@@ -135,6 +132,7 @@ local dsp = require "luci.dispatcher"
 <div class="cbi-value">
 	<label class="cbi-value-title"></label>
 	<div class="cbi-value-field">
+		<input class="cbi-button cbi-button-add" type="submit" name="cbi.cts.<%=api.appname%>.nodes." value="<%:Add%>" />
 		<input class="cbi-button cbi-button-add" type="button" onclick="open_add_link_div()" value="<%:Add the node via the link%>" />
 		<input class="cbi-button cbi-button-remove" type="button" onclick="clear_all_nodes()" value="<%:Clear all nodes%>" />
 		<input class="cbi-button cbi-button-remove" type="button" onclick="delete_select_nodes()" value="<%:Delete select nodes%>" />

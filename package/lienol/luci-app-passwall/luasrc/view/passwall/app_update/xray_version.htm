@@ -1,5 +1,6 @@
 <%
-local xray_version = require "luci.model.cbi.passwall.api.api".get_xray_version()
+local api = require "luci.model.cbi.passwall.api.api"
+local xray_version = api.get_xray_version()
 -%>
 
 <script type="text/javascript">
@@ -72,7 +73,7 @@ local xray_version = require "luci.model.cbi.passwall.api.api".get_xray_version(
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
 
-		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[xray_check]])%>', {
+		XHR.get('<%=api.url("xray_check")%>', {
 			token: tokenStr,
 			arch: ''
 		}, function(x,json) {
@@ -112,7 +113,7 @@ local xray_version = require "luci.model.cbi.passwall.api.api".get_xray_version(
 
 		addPageNotice_xray();
 
-		var xrayUpdateUrl = '<%=url([[admin]], [[services]], [[passwall]], [[xray_update]])%>';
+		var xrayUpdateUrl = '<%=api.url("xray_update")%>';
 		// Download file
 		XHR.get(xrayUpdateUrl, {
 			token: tokenStr,

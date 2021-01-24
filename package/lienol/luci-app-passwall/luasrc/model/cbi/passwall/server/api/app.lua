@@ -4,7 +4,7 @@ local action = arg[1]
 local sys = require 'luci.sys'
 local jsonc = require "luci.jsonc"
 local ucic = require"luci.model.uci".cursor()
-local _api = require "luci.model.cbi.passwall.api.api"
+local api = require "luci.model.cbi.passwall.api.api"
 
 local CONFIG = "passwall_server"
 local CONFIG_PATH = "/var/etc/" .. CONFIG
@@ -111,7 +111,7 @@ local function start()
                 bin = ln_start("/usr/bin/" .. type .. "-server", type .. "-server", "-c " .. config_file .. " " .. udp_param, log_path)
             elseif type == "Xray" then
                 config = require("luci.model.cbi.passwall.server.api.xray").gen_config(user)
-                bin = ln_start(_api.get_xray_path(), "xray", "-config=" .. config_file, log_path)
+                bin = ln_start(api.get_xray_path(), "xray", "-config=" .. config_file, log_path)
             elseif type == "Trojan" then
                 config = require("luci.model.cbi.passwall.server.api.trojan").gen_config(user)
                 bin = ln_start("/usr/sbin/trojan", "trojan", "-c " .. config_file, log_path)
@@ -120,11 +120,11 @@ local function start()
                 bin = ln_start("/usr/sbin/trojan-plus", "trojan-plus", "-c " .. config_file, log_path)
             elseif type == "Trojan-Go" then
                 config = require("luci.model.cbi.passwall.server.api.trojan").gen_config(user)
-                bin = ln_start(_api.get_trojan_go_path(), "trojan-go", "-config " .. config_file, log_path)
+                bin = ln_start(api.get_trojan_go_path(), "trojan-go", "-config " .. config_file, log_path)
             elseif type == "Brook" then
                 local brook_protocol = user.protocol
                 local brook_password = user.password
-                bin = ln_start(_api.get_brook_path(), "brook_" .. id, string.format("%s -l :%s -p %s", brook_protocol, port, brook_password), log_path)
+                bin = ln_start(api.get_brook_path(), "brook_" .. id, string.format("%s -l :%s -p %s", brook_protocol, port, brook_password), log_path)
             end
 
             if next(config) then
