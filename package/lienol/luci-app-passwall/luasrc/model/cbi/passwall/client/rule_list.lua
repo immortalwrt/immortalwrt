@@ -1,5 +1,6 @@
 local fs = require "nixio.fs"
-local appname = "passwall"
+local api = require "luci.model.cbi.passwall.api.api"
+local appname = api.appname
 
 m = Map(appname)
 m.apply_on_parse=true

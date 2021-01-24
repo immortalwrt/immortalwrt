@@ -1,10 +1,13 @@
+<%
+local api = require "luci.model.cbi.passwall.api.api"
+-%>
 <script type="text/javascript">
 	//<![CDATA[
 	var _users_status = document.getElementsByClassName('_users_status');
 	for(var i = 0; i < _users_status.length; i++) {
 		var id = _users_status[i].parentElement.parentElement.parentElement.id;
 		id = id.substr(id.lastIndexOf("-") + 1);
-		XHR.get('<%=url([[admin]], [[services]], [[passwall]], [[server_user_status]])%>', {
+		XHR.get('<%=api.url("server_user_status")%>', {
 				index: i,
 				id: id
 			},
@@ -24,7 +27,7 @@
 			var td = edit_btn[i].parentNode;
 			var new_div = "";
 			//添加"日志"按钮
-			new_div += '<input class="cbi-button cbi-button-add" type="button" value="<%:Log%>" onclick="window.open(\'' + '<%=url([[admin]], [[services]], [[passwall]], [[server_user_log]])%>' + '?id=' + id + '\', \'_blank\')"/>&nbsp;&nbsp;';
+			new_div += '<input class="cbi-button cbi-button-add" type="button" value="<%:Log%>" onclick="window.open(\'' + '<%=api.url("server_user_log")%>' + '?id=' + id + '\', \'_blank\')"/>&nbsp;&nbsp;';
 			td.innerHTML = new_div + td.innerHTML;
 		}
 		catch(err) {

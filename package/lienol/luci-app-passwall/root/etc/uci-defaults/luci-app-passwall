@@ -27,8 +27,6 @@ EOF
 
 tmp=$(uci -q get passwall.@global_app[0].xray_file)
 [ -z "$tmp" ] && uci set passwall.@global_app[0].xray_file="/usr/bin/xray"
-tmp=$(uci -q get passwall.@global_app[0].v2ray_file)
-[ -z "$tmp" ] && uci set passwall.@global_app[0].v2ray_file="/usr/bin/v2ray"
 uci commit passwall
 
 rm -rf /tmp/luci-*cache

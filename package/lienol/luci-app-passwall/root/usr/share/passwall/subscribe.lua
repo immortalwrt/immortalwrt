@@ -82,16 +82,6 @@ do
 		}
 	end)
 
-	local tcp_main = ucic2:get(application, "@auto_switch[0]", "tcp_main") or "nil"
-	CONFIG[#CONFIG + 1] = {
-		log = false,
-		remarks = "自动切换TCP主节点",
-		currentNode = ucic2:get_all(application, tcp_main),
-		set = function(server)
-			ucic2:set(application, "@auto_switch[0]", "tcp_main1", server)
-		end
-	}
-
 	local tcp_node_table = ucic2:get(application, "@auto_switch[0]", "tcp_node")
 	if tcp_node_table then
 		local nodes = {}
