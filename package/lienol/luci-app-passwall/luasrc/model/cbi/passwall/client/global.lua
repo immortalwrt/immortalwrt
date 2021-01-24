@@ -1,7 +1,6 @@
-local d = require "luci.dispatcher"
 local uci = require"luci.model.uci".cursor()
 local api = require "luci.model.cbi.passwall.api.api"
-local appname = "passwall"
+local appname = api.appname
 local has_xray = api.is_finded("xray")
 
 m = Map(appname)
@@ -95,7 +94,7 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
     if n then
         if tonumber(m:get("@auto_switch[0]", "enable") or 0) == 1 then
             local remarks = api.get_full_node_remarks(n)
-            local url = d.build_url("admin", "services", appname, "node_config", current_node)
+            local url = api.url("node_config", current_node)
             tcp_node.description = tcp_node.description .. translatef("Current node: %s", string.format('<a href="%s">%s</a>', url, remarks)) .. "<br />"
         end
         if n.protocol and n.protocol == "_shunt" then
@@ -103,7 +102,7 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
                 local id = e[".name"]
                 local remarks = translate(e.remarks)
                 if n[id] and n[id] ~= "nil" then
-                    local url = d.build_url("admin", "services", appname, "node_config", n[id])
+                    local url = api.url("node_config", n[id])
                     local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
                     tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
                 end
@@ -111,7 +110,7 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
             local id = "default_node"
             local remarks = translate("Default")
             if n[id] and n[id] ~= "nil" then
-                local url = d.build_url("admin", "services", appname, "node_config", n[id])
+                local url = api.url("node_config", n[id])
                 local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
                 tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
             end
@@ -371,8 +370,12 @@ end
 for k, v in pairs(nodes_table) do
     tcp_node:value(v.id, v.remarks)
     tcp_node_socks:depends("tcp_node", v.id)
-    if has_xray then
-        tcp_node_http:depends("tcp_node", v.id)
+    if v.type == "Xray" then
+        if has_xray then
+            tcp_node_http:depends("tcp_node", v.id)
+        end
+    else
+        tcp_node_http:depends("tcp_node_socks", true)
     end
     udp_node:value(v.id, v.remarks)
     if v.type == "Socks" then
