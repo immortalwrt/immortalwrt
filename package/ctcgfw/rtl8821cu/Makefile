@@ -1,6 +1,5 @@
 #
-# Copyright (C) 2021 CTCGFW Project-OpenWrt
-# <https://project-openwrt.eu.org>
+# Copyright (C) 2020 CN_SZTL <cnsztl@gmail.com>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -20,6 +19,7 @@ PKG_MIRROR_HASH:=e3d798355625bd71596ce08741e1f7f3523951e91be775edf2a936ab260bd5d
 PKG_LICENSE:=GPLv2
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
