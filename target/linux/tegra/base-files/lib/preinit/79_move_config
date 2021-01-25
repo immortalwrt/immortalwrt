@@ -1,5 +1,3 @@
-#!/bin/sh
-
 move_config() {
 	local partdev
 
