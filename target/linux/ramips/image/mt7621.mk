@@ -1285,6 +1285,7 @@ endef
 TARGET_DEVICES += youku_yk-l2
 
 define Device/zbtlink_zbt-we1326
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WE1326
@@ -1303,6 +1304,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-wg108
 
 define Device/zbtlink_zbt-we3526
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WE3526
@@ -1312,6 +1314,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-we3526
 
 define Device/zbtlink_zbt-wg2626
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Zbtlink
   DEVICE_MODEL := ZBT-WG2626
