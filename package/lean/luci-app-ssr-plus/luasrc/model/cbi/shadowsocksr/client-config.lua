@@ -65,6 +65,24 @@ local encrypt_methods_ss = {
 	"chacha20-ietf"
 }
 
+local encrypt_methods_v2ray_ss = {
+	-- xray_ss
+	"none",
+	"plain",
+	"aes-128-cfb",
+	"aes-256-cfb",
+	"chacha20",
+	"chacha20-ietf",
+	-- aead
+	"aes-128-gcm",
+	"aes-256-gcm",
+	"chacha20-poly1305",
+	"chacha20-ietf-poly1305",
+	"aead_aes_128_gcm",
+	"aead_aes_256_gcm",
+	"aead_chacha20_poly1305"
+}
+
 local protocol = {
 	-- ssr
 	"origin",
@@ -132,10 +150,9 @@ if is_finded("ss-redir") then
 	o:value("ss", translate("Shadowsocks New Version"))
 end
 if is_finded("xray") or is_finded("v2ray") then
-	o:value("vmess", translate("Vmess"))
-	o:value("vless", translate("VLESS"))
+	o:value("v2ray", translate("V2Ray/XRay"))
 end
-if is_finded("trojan")then
+if is_finded("trojan") then
 	o:value("trojan", translate("Trojan"))
 end
 if is_finded("trojan-go") then
@@ -145,10 +162,13 @@ end
 if is_finded("naive") then
 	o:value("naiveproxy", translate("NaiveProxy"))
 end
-if is_finded("redsocks2") then
+if is_finded("ipt2socks-alt") or is_finded("ipt2socks") then
 	o:value("socks5", translate("Socks5"))
+end
+if is_finded("redsocks2") then
 	o:value("tun", translate("Network Tunnel"))
 end
+
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
 o = s:option(Value, "alias", translate("Alias(optional)"))
@@ -162,13 +182,21 @@ end
 o:depends("type", "tun")
 o.description = translate("Redirect traffic to this network interface")
 
+o = s:option(ListValue, "v2ray_protocol", translate("V2Ray/XRay protocol"))
+o:value("vmess", translate("VMess"))
+o:value("vless", translate("VLESS"))
+o:value("trojan", translate("Trojan"))
+o:value("shadowsocks", translate("Shadowsocks"))
+o:value("socks", translate("Socks"))
+o:value("http", translate("HTTP"))
+o:depends("type", "v2ray")
+
 o = s:option(Value, "server", translate("Server Address"))
 o.datatype = "host"
 o.rmempty = false
 o:depends("type", "ssr")
 o:depends("type", "ss")
-o:depends("type", "vmess")
-o:depends("type", "vless")
+o:depends("type", "v2ray")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
@@ -179,8 +207,7 @@ o.datatype = "port"
 o.rmempty = false
 o:depends("type", "ssr")
 o:depends("type", "ss")
-o:depends("type", "vmess")
-o:depends("type", "vless")
+o:depends("type", "v2ray")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
@@ -190,11 +217,15 @@ o = s:option(Flag, "auth_enable", translate("Enable Authentication"))
 o.rmempty = false
 o.default = "0"
 o:depends("type", "socks5")
+o:depends({type = "v2ray", v2ray_protocol = "http"})
+o:depends({type = "v2ray", v2ray_protocol = "socks"})
 
 o = s:option(Value, "username", translate("Username"))
 o.rmempty = true
 o:depends("type", "naiveproxy")
 o:depends({type = "socks5", auth_enable = true})
+o:depends({type = "v2ray", v2ray_protocol = "http", auth_enable = true})
+o:depends({type = "v2ray", v2ray_protocol = "socks", auth_enable = true})
 
 o = s:option(Value, "password", translate("Password"))
 o.password = true
@@ -204,6 +235,10 @@ o:depends("type", "ss")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends({type = "socks5", auth_enable = true})
+o:depends({type = "v2ray", v2ray_protocol = "http", auth_enable = true})
+o:depends({type = "v2ray", v2ray_protocol = "socks", auth_enable = true})
+o:depends({type = "v2ray", v2ray_protocol = "shadowsocks"})
+o:depends({type = "v2ray", v2ray_protocol = "trojan"})
 o:depends("type", "trojan-go")
 
 o = s:option(ListValue, "encrypt_method", translate("Encrypt Method"))
@@ -219,6 +254,13 @@ for _, v in ipairs(encrypt_methods_ss) do
 end
 o.rmempty = true
 o:depends("type", "ss")
+
+o = s:option(ListValue, "encrypt_method_v2ray_ss", translate("Encrypt Method"))
+for _, v in ipairs(encrypt_methods_v2ray_ss) do
+	o:value(v)
+end
+o.rmempty = true
+o:depends({type = "v2ray", v2ray_protocol = "shadowsocks"})
 
 -- Shadowsocks Plugin
 o = s:option(ListValue, "plugin", translate("Obfs"))
@@ -262,20 +304,20 @@ o = s:option(Value, "alter_id", translate("AlterId"))
 o.datatype = "port"
 o.default = 16
 o.rmempty = true
-o:depends("type", "vmess")
+o:depends({type = "v2ray", v2ray_protocol = "vmess"})
 
 -- VmessId
 o = s:option(Value, "vmess_id", translate("Vmess/VLESS ID (UUID)"))
 o.rmempty = true
 o.default = uuid
-o:depends("type", "vmess")
-o:depends("type", "vless")
+o:depends({type = "v2ray", v2ray_protocol = "vmess"})
+o:depends({type = "v2ray", v2ray_protocol = "vless"})
 
 -- VLESS Encryption
 o = s:option(Value, "vless_encryption", translate("VLESS Encryption"))
 o.rmempty = true
 o.default = "none"
-o:depends("type", "vless")
+o:depends({type = "v2ray", v2ray_protocol = "vless"})
 
 -- 加密方式
 o = s:option(ListValue, "security", translate("Encrypt Method"))
@@ -283,7 +325,7 @@ for _, v in ipairs(securitys) do
 	o:value(v, v:upper())
 end
 o.rmempty = true
-o:depends("type", "vmess")
+o:depends({type = "v2ray", v2ray_protocol = "vmess"})
 
 -- 传输协议
 o = s:option(ListValue, "transport", translate("Transport"))
@@ -293,8 +335,7 @@ o:value("ws", "WebSocket")
 o:value("h2", "HTTP/2")
 o:value("quic", "QUIC")
 o.rmempty = true
-o:depends("type", "vmess")
-o:depends("type", "vless")
+o:depends("type", "v2ray")
 
 trojan_transport = s:option(ListValue, "trojan_transport", translate("Transport"))
 trojan_transport:value("original", "Original")
@@ -469,8 +510,8 @@ o:depends("ss_aead", "1")
 o = s:option(Flag, "tls", translate("TLS"))
 o.rmempty = true
 o.default = "0"
-o:depends("type", "vmess")
-o:depends({type = "vless", xtls = false})
+o:depends({type = "v2ray", xtls = false})
+-- o:depends({type = "v2ray", v2ray_protocol = "vless", xtls = false})
 o:depends("type", "trojan")
 o:depends("type", "trojan-go")
 
@@ -479,7 +520,10 @@ if is_finded("xray") then
 	o = s:option(Flag, "xtls", translate("XTLS"))
 	o.rmempty = true
 	o.default = "0"
-	o:depends({type = "vless", transport = "tcp", tls = false})
+	o:depends({type = "v2ray", v2ray_protocol = "vless", transport = "tcp", tls = false})
+	o:depends({type = "v2ray", v2ray_protocol = "vless", transport = "kcp", tls = false})
+	o:depends({type = "v2ray", v2ray_protocol = "trojan", transport = "tcp", tls = false})
+	o:depends({type = "v2ray", v2ray_protocol = "trojan", transport = "kcp", tls = false})
 end
 
 -- Flow
@@ -522,8 +566,7 @@ o.description = translate("If true, allowss insecure connection at TLS client, e
 -- [[ Mux ]]--
 o = s:option(Flag, "mux", translate("Mux"))
 o.rmempty = false
-o:depends("type", "vmess")
-o:depends({type = "vless", xtls = false})
+o:depends({type = "v2ray", xtls = false})
 
 o = s:option(Value, "concurrency", translate("Concurrency"))
 o.datatype = "uinteger"
@@ -537,10 +580,10 @@ o.rmempty = true
 o.default = "0"
 o:depends({type = "trojan", tls = true, insecure = false})
 o:depends({type = "trojan-go", tls = true, insecure = false})
-o:depends({type = "vmess", tls = true, insecure = false})
-o:depends({type = "vless", tls = true, insecure = false})
-o:depends({type = "vmess", xtls = true, insecure = false})
-o:depends({type = "vless", xtls = true, insecure = false})
+o:depends({type = "v2ray", v2ray_protocol = "vmess", tls = true, insecure = false})
+o:depends({type = "v2ray", v2ray_protocol = "vless", tls = true, insecure = false})
+o:depends({type = "v2ray", v2ray_protocol = "vmess", xtls = true, insecure = false})
+o:depends({type = "v2ray", v2ray_protocol = "vless", xtls = true, insecure = false})
 o.description = translate("If you have a self-signed certificate,please check the box")
 
 o = s:option(DummyValue, "upload", translate("Upload"))

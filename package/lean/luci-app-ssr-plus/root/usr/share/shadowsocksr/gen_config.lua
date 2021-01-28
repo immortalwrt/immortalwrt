@@ -1,10 +1,96 @@
-local ucursor = require "luci.model.uci".cursor()
+local ucursor = require"luci.model.uci".cursor()
 local json = require "luci.jsonc"
 local server_section = arg[1]
 local proto = arg[2]
 local local_port = arg[3] or "0"
 local socks_port = arg[4] or "0"
 local server = ucursor:get_all("shadowsocksr", server_section)
+local outbound_settings = nil
+function vmess_vless()
+	outbound_settings = {
+		vnext = {
+			{
+				address = server.server,
+				port = tonumber(server.server_port),
+				users = {
+					{
+						id = server.vmess_id,
+						alterId = (server.v2ray_protocol == "vmess" or not server.v2ray_protocol) and tonumber(server.alter_id) or nil,
+						security = (server.v2ray_protocol == "vmess" or not server.v2ray_protocol) and server.security or nil,
+						encryption = (server.v2ray_protocol == "vless") and server.vless_encryption or nil,
+						flow = (server.xtls == '1') and (server.vless_flow and server.vless_flow or "xtls-rprx-splice") or nil
+					}
+				}
+			}
+		}
+	}
+end
+function trojan_shadowsocks()
+	outbound_settings = {
+		servers = {
+			{
+				address = server.server,
+				port = tonumber(server.server_port),
+				password = server.password,
+				method = (server.v2ray_protocol == "shadowsocks") and server.encrypt_method_v2ray_ss or nil,
+				flow = (server.v2ray_protocol == "trojan") and (server.xtls == '1') and (server.vless_flow and server.vless_flow or "xtls-rprx-splice") or nil
+			}
+		}
+	}
+end
+function socks_http()
+	outbound_settings = {
+		--
+		servers = {
+			{
+				--
+				address = server.server,
+				port = tonumber(server.server_port),
+				users = (server.auth_enable == "1") and {
+					{
+						--
+						user = server.username,
+						pass = server.password
+					}
+				} or nil
+			}
+		}
+	}
+end
+local outbound = {}
+function outbound:new(o)
+	o = o or {}
+	setmetatable(o, self)
+	self.__index = self
+	return o
+end
+function outbound:handleIndex(index)
+	local switch = {
+		vmess = function()
+			vmess_vless()
+		end,
+		vless = function()
+			vmess_vless()
+		end,
+		trojan = function()
+			trojan_shadowsocks()
+		end,
+		shadowsocks = function()
+			trojan_shadowsocks()
+		end,
+		socks = function()
+			socks_http()
+		end,
+		http = function()
+			socks_http()
+		end
+	}
+	if switch[index] then
+		switch[index]()
+	end
+end
+local settings = outbound:new()
+settings:handleIndex(server.v2ray_protocol)
 local Xray = {
 	log = {
 		-- error = "/var/ssrplus.log",
@@ -12,6 +98,7 @@ local Xray = {
 	},
 	-- 传入连接
 	inbound = (local_port ~= "0") and {
+		-- listening
 		port = tonumber(local_port),
 		protocol = "dokodemo-door",
 		settings = {network = proto, followRedirect = true},
@@ -20,6 +107,7 @@ local Xray = {
 	-- 开启 socks 代理
 	inboundDetour = (proto:find("tcp") and socks_port ~= "0") and {
 		{
+			-- socks
 			protocol = "socks",
 			port = tonumber(socks_port),
 			settings = {auth = "noauth", udp = true}
@@ -27,40 +115,28 @@ local Xray = {
 	} or nil,
 	-- 传出连接
 	outbound = {
-		protocol = server.type,
-		settings = {
-			vnext = {
-				{
-					address = server.server,
-					port = tonumber(server.server_port),
-					users = {
-						{
-							id = server.vmess_id,
-							alterId = (server.type == "vmess") and tonumber(server.alter_id) or nil,
-							security = (server.type == "vmess") and server.security or nil,
-							encryption = (server.type == "vless") and server.vless_encryption or nil,
-							flow = (server.xtls == '1') and (server.vless_flow and server.vless_flow or "xtls-rprx-splice") or nil
-						}
-					}
-				}
-			}
-		},
+		protocol = server.v2ray_protocol or "vmess",
+		settings = outbound_settings,
 		-- 底层传输配置
 		streamSettings = {
-			network = server.transport,
-			security = (server.xtls == '1') and "xtls" or (server.tls == '1') and "tls" or "none",
+			network = server.transport or "tcp",
+			security = (server.xtls == '1') and "xtls" or (server.tls == '1') and "tls" or nil,
 			tlsSettings = (server.tls == '1' and (server.insecure == "1" or server.tls_host)) and {
+				-- tls
 				allowInsecure = (server.insecure == "1") and true or nil,
 				serverName = server.tls_host
 			} or nil,
 			xtlsSettings = (server.xtls == '1' and (server.insecure == "1" or server.tls_host)) and {
+				-- xtls
 				allowInsecure = (server.insecure == "1") and true or nil,
 				serverName = server.tls_host
 			} or nil,
 			tcpSettings = (server.transport == "tcp" and server.tcp_guise == "http") and {
+				-- tcp
 				header = {
 					type = server.tcp_guise,
 					request = {
+						-- request
 						path = {server.http_path} or {"/"},
 						headers = {Host = {server.http_host} or {}}
 					}
@@ -78,28 +154,34 @@ local Xray = {
 				seed = server.seed or nil
 			} or nil,
 			wsSettings = (server.transport == "ws") and (server.ws_path or server.ws_host or server.tls_host) and {
+				-- ws
 				path = server.ws_path,
 				headers = (server.ws_host or server.tls_host) and {
+					-- headers
 					Host = server.ws_host or server.tls_host
 				} or nil
 			} or nil,
 			httpSettings = (server.transport == "h2") and {
+				-- h2
 				path = server.h2_path or "",
 				host = {server.h2_host} or nil
 			} or nil,
 			quicSettings = (server.transport == "quic") and {
+				-- quic
 				security = server.quic_security,
 				key = server.quic_key,
 				header = {type = server.quic_guise}
 			} or nil
 		},
 		mux = (server.mux == "1" and server.xtls ~= "1") and {
+			-- mux
 			enabled = true,
 			concurrency = tonumber(server.concurrency)
 		} or nil
 	} or nil
 }
-local cipher = "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA"
+local cipher =
+				"ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA"
 local cipher13 = "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384"
 local trojan = {
 	log_level = 3,
@@ -125,12 +207,14 @@ local trojan = {
 		session_ticket = (server.tls_sessionTicket == "1") and true or false
 	},
 	udp_timeout = 60,
-    mux = (server.mux == "1") and {
-        enabled = true,
-        concurrency = tonumber(server.concurrency),
-        idle_timeout = 60,
-        } or nil,
+	mux = (server.mux == "1") and {
+		-- mux
+		enabled = true,
+		concurrency = tonumber(server.concurrency),
+		idle_timeout = 60
+	} or nil,
 	tcp = {
+		-- tcp
 		no_delay = true,
 		keep_alive = true,
 		reuse_port = true,
@@ -154,55 +238,74 @@ local ss = {
 	fast_open = (server.fast_open == "1") and true or false,
 	reuse_port = true
 }
-if server.type == "ss" then
-	if server.plugin and server.plugin ~= "none" then
-		ss.plugin = server.plugin
-		ss.plugin_opts = server.plugin_opts or nil
+local config = {}
+function config:new(o)
+	o = o or {}
+	setmetatable(o, self)
+	self.__index = self
+	return o
+end
+function config:handleIndex(index)
+	local switch = {
+		ss = function()
+			if server.plugin and server.plugin ~= "none" then
+				ss.plugin = server.plugin
+				ss.plugin_opts = server.plugin_opts or nil
+			end
+			print(json.stringify(ss, 1))
+		end,
+		ssr = function()
+			ss.protocol = server.protocol
+			ss.protocol_param = server.protocol_param
+			ss.method = server.encrypt_method
+			ss.obfs = server.obfs
+			ss.obfs_param = server.obfs_param
+			print(json.stringify(ss, 1))
+		end,
+		v2ray = function()
+			print(json.stringify(Xray, 1))
+		end,
+		trojan = function()
+			print(json.stringify(trojan, 1))
+		end,
+		trojan_go = function()
+			trojan.ssl.cipher = server.fingerprint == nil and cipher or (server.fingerprint == "disable" and cipher13 .. ":" .. cipher or "")
+			trojan.ssl.cipher_tls13 = server.fingerprint == nil and cipher13 or nil
+			trojan.ssl.fingerprint = (server.fingerprint ~= nil and server.fingerprint ~= "disable") and server.fingerprint or ""
+			trojan.ssl.alpn = server.trojan_transport == 'ws' and {} or {"h2", "http/1.1"}
+			if server.tls ~= "1" and server.trojan_transport == "original" then
+				--
+				trojan.ssl = nil
+				trojan.transport_plugin = server.trojan_transport == "original" and {
+					enabled = server.plugin_type ~= nil,
+					type = server.plugin_type or "plaintext",
+					command = server.plugin_type ~= "plaintext" and server.plugin_cmd or nil,
+					option = server.plugin_type ~= "plaintext" and server.plugin_option or nil,
+					arg = server.plugin_type ~= "plaintext" and {server.plugin_arg} or nil,
+					env = {}
+				} or nil
+			end
+			trojan.websocket = server.trojan_transport and server.trojan_transport:find('ws') and {
+				--
+				enabled = true,
+				path = server.ws_path or "/",
+				host = server.ws_host or (server.tls_host or server.server)
+			} or nil
+			trojan.shadowsocks = (server.ss_aead == "1") and {
+				--
+				enabled = true,
+				method = server.ss_aead_method or "aead_aes_128_gcm",
+				password = server.ss_aead_pwd or ""
+			} or nil
+			print(json.stringify(trojan, 1))
+		end,
+		naiveproxy = function()
+			print(json.stringify(naiveproxy, 1))
+		end
+	}
+	if switch[index] then
+		switch[index]()
 	end
-	print(json.stringify(ss, 1))
 end
-if server.type == "ssr" then
-	ss.protocol = server.protocol
-	ss.protocol_param = server.protocol_param
-	ss.method = server.encrypt_method
-	ss.obfs = server.obfs
-	ss.obfs_param = server.obfs_param
-	print(json.stringify(ss, 1))
-end
-if server.type == "vless" or server.type == "vmess" then
-	print(json.stringify(Xray, 1))
-end
-if server.type == "trojan" then
-	print(json.stringify(trojan, 1))
-end
-if server.type == "trojan-go" then
-    trojan.ssl.cipher = server.fingerprint == nil and cipher or (server.fingerprint == "disable" and cipher13 .. ":" .. cipher or "")
-    trojan.ssl.cipher_tls13 = server.fingerprint == nil and cipher13 or nil
-    trojan.ssl.fingerprint = (server.fingerprint ~= nil and server.fingerprint ~= "disable" ) and server.fingerprint or ""
-    trojan.ssl.alpn = server.trojan_transport == 'ws' and {} or {"h2", "http/1.1"}
-	if server.tls ~= "1" and server.trojan_transport == "original" then
-		trojan.ssl = nil
-		trojan.transport_plugin = server.trojan_transport == "original" and {
-			enabled = server.plugin_type ~= nil,
-			type = server.plugin_type or "plaintext",
-			command = server.plugin_type ~= "plaintext" and server.plugin_cmd or nil,
-			option = server.plugin_type ~= "plaintext" and server.plugin_option or nil,
-			arg = server.plugin_type ~= "plaintext" and { server.plugin_arg } or nil,
-			env = {}
-		} or nil	
-	end
-    trojan.websocket = server.trojan_transport and server.trojan_transport:find('ws') and {
-        enabled = true,
-        path = server.ws_path or "/",
-        host = server.ws_host or (server.tls_host or server.server)
-    } or nil
-    trojan.shadowsocks = (server.ss_aead == "1") and {
-        enabled = true,
-        method = server.ss_aead_method or "aead_aes_128_gcm",
-        password = server.ss_aead_pwd or ""
-    } or nil
-	print(json.stringify(trojan, 1))
-end
-if server.type == "naiveproxy" then
-	print(json.stringify(naiveproxy, 1))
-end
+local f = config:new()
+f:handleIndex(server.type)
