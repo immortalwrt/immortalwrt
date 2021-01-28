@@ -143,14 +143,14 @@ o.template = "shadowsocksr/ssrurl"
 o.value = sid
 
 o = s:option(ListValue, "type", translate("Server Node Type"))
+if is_finded("xray") or is_finded("v2ray") then
+	o:value("v2ray", translate("V2Ray/XRay"))
+end
 if is_finded("ssr-redir") then
 	o:value("ssr", translate("ShadowsocksR"))
 end
 if is_finded("ss-redir") then
 	o:value("ss", translate("Shadowsocks New Version"))
-end
-if is_finded("xray") or is_finded("v2ray") then
-	o:value("v2ray", translate("V2Ray/XRay"))
 end
 if is_finded("trojan") then
 	o:value("trojan", translate("Trojan"))
@@ -183,8 +183,8 @@ o:depends("type", "tun")
 o.description = translate("Redirect traffic to this network interface")
 
 o = s:option(ListValue, "v2ray_protocol", translate("V2Ray/XRay protocol"))
-o:value("vmess", translate("VMess"))
 o:value("vless", translate("VLESS"))
+o:value("vmess", translate("VMess"))
 o:value("trojan", translate("Trojan"))
 o:value("shadowsocks", translate("Shadowsocks"))
 o:value("socks", translate("Socks"))
@@ -546,8 +546,15 @@ o = s:option(ListValue, "fingerprint", translate("Finger Print"))
 o:value("disable", translate("disable"))
 o:value("firefox", translate("firefox"))
 o:value("chrome", translate("chrome"))
-o:value("ios", translate("ios"))
+if is_finded("Trojan-go") then
+	o:value("ios", translate("ios"))
+end
+if is_finded("xray") then
+	o:value("safari", translate("safari"))
+	o:value("randomized", translate("random"))
+end
 o:depends({type = "trojan-go", tls = true})
+o:depends({type = "v2ray", tls = true})
 o.default = "firefox"
 
 o = s:option(Value, "tls_host", translate("TLS Host"))
