@@ -264,7 +264,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	/* Some drivers may have called napi_schedule
  	 * prior to exhausting their budget.
  	 */
-@@ -9906,6 +9965,10 @@ static int __init net_dev_init(void)
+@@ -9911,6 +9970,10 @@ static int __init net_dev_init(void)
  		sd->backlog.weight = weight_p;
  	}
  
