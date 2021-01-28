@@ -234,10 +234,18 @@ load_acl() {
 	$ipt_m -A PSW $(comment "默认") -p udp -j RETURN
 }
 
+filter_haproxy() {
+	uci show $CONFIG | grep "@haproxy_config" | grep "lbss=" | cut -d "'" -f 2 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | awk -F ":" '{print $1}' | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIPLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	for host in $(uci show $CONFIG | grep "@haproxy_config" | grep "lbss=" | cut -d "'" -f 2 | grep -v -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | awk -F ":" '{print $1}'); do
+		ipset -q add $IPSET_VPSIPLIST $(get_host_ip ipv4 $host 1)
+	done
+	echolog "加入负载均衡的节点到ipset[$IPSET_VPSIPLIST]直连完成"
+}
+
 filter_vpsip() {
 	uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIPLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	#uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | grep -E "([[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){0,7}::[a-f0-9]{0,4}(:[a-f0-9]{1,4}){0,7}])" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIP6LIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	echolog "过滤所有节点直接 IP 地址完成[$?]"
+	echolog "加入所有节点到ipset[$IPSET_VPSIPLIST]直连完成"
 }
 
 filter_node() {
@@ -403,7 +411,8 @@ add_firewall_rule() {
 	}
 	
 	#  过滤所有节点IP
-	filter_vpsip
+	filter_vpsip > /dev/null 2>&1 &
+	filter_haproxy > /dev/null 2>&1 &
 	
 	$ipt_n -N PSW
 	$ipt_n -A PSW $(dst $IPSET_LANIPLIST) -j RETURN
@@ -447,7 +456,7 @@ add_firewall_rule() {
 		fi
 		_proxy_tcp_access() {
 			[ -n "${2}" ] || return 0
-			ipset test $IPSET_LANIPLIST ${2} 2>/dev/null
+			ipset -q test $IPSET_LANIPLIST ${2}
 			[ $? -eq 0 ] && {
 				echolog "  - 上游 DNS 服务器 ${2} 已在直接访问的列表中，不强制向 TCP 代理转发对该服务器 TCP/${3} 端口的访问"
 				return 0
@@ -522,8 +531,8 @@ add_firewall_rule() {
 				eval "node=\${TCP_NODE}"
 				msg="${msg} 使用与 TCP 代理自动切换${num} 相同的节点，延后处理"
 			else
-				filter_node $node TCP
-				filter_node $node UDP
+				filter_node $node TCP > /dev/null 2>&1 &
+				filter_node $node UDP > /dev/null 2>&1 &
 			fi
 			echolog "  - ${msg}"
 		done
@@ -541,7 +550,7 @@ add_firewall_rule() {
 			echolog "  - 采用 TCP 代理的配置"
 		}
 		if [ "$node" != "nil" ]; then
-			filter_node $node $stream $port
+			filter_node $node $stream $port > /dev/null 2>&1 &
 		else
 			echolog "  - 忽略无效的 $stream 代理自动切换"
 		fi
@@ -554,7 +563,7 @@ add_firewall_rule() {
 		local ADD_INDEX=$FORCE_INDEX
 		_proxy_udp_access() {
 			[ -n "${2}" ] || return 0
-			ipset test $IPSET_LANIPLIST ${2} 2>/dev/null
+			ipset -q test $IPSET_LANIPLIST ${2}
 			[ $? == 0 ] && {
 				echolog "  - 上游 DNS 服务器 ${2} 已在直接访问的列表中，不强制向 UDP 代理转发对该服务器 UDP/${3} 端口的访问"
 				return 0

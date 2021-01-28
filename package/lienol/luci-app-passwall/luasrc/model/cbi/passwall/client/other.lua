@@ -1,5 +1,5 @@
-local uci = require"luci.model.uci".cursor()
-local appname = "passwall"
+local api = require "luci.model.cbi.passwall.api.api"
+local appname = api.appname
 
 m = Map(appname)
 

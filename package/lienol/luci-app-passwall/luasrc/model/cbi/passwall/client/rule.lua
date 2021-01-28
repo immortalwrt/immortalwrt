@@ -1,5 +1,5 @@
-local d = require "luci.dispatcher"
-local appname = "passwall"
+local api = require "luci.model.cbi.passwall.api.api"
+local appname = api.appname
 
 m = Map(appname)
 -- [[ Rule Settings ]]--
@@ -53,7 +53,7 @@ s = m:section(TypedSection, "shunt_rules", "Xray" .. translate("Shunt") .. trans
 s.template = "cbi/tblsection"
 s.anonymous = false
 s.addremove = true
-s.extedit = d.build_url("admin", "services", appname, "shunt_rules", "%s")
+s.extedit = api.url("shunt_rules", "%s")
 function s.create(e, t)
     TypedSection.create(e, t)
     luci.http.redirect(e.extedit:format(t))

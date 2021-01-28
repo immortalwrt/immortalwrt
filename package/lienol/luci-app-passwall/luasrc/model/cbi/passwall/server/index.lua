@@ -1,6 +1,5 @@
-local d = require "luci.dispatcher"
-local _api = require "luci.model.cbi.passwall.api.api"
-local e = luci.model.uci.cursor()
+local api = require "luci.model.cbi.passwall.api.api"
+local appname = api.appname
 
 m = Map("passwall_server", translate("Server-Side"))
 
@@ -16,9 +15,9 @@ t.anonymous = true
 t.addremove = true
 t.sortable = true
 t.template = "cbi/tblsection"
-t.extedit = d.build_url("admin", "services", "passwall", "server_user", "%s")
+t.extedit = api.url("server_user", "%s")
 function t.create(e, t)
-    local uuid = _api.gen_uuid()
+    local uuid = api.gen_uuid()
     t = uuid
     TypedSection.create(e, t)
     luci.http.redirect(e.extedit:format(t))
@@ -26,7 +25,7 @@ end
 function t.remove(e, t)
     e.map.proceed = true
     e.map:del(t)
-    luci.http.redirect(d.build_url("admin", "services", "passwall", "server"))
+    luci.http.redirect(api.url("server"))
 end
 
 e = t:option(Flag, "enable", translate("Enable"))
