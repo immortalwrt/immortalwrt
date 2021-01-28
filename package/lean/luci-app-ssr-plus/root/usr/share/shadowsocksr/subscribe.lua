@@ -121,7 +121,8 @@ local function processData(szType, content)
 		result.alias = result.alias .. base64Decode(params.remarks)
 	elseif szType == 'vmess' then
 		local info = jsonParse(content)
-		result.type = 'vmess'
+		result.type = 'v2ray'
+		result.v2ray_protocol = 'vmess'
 		result.server = info.add
 		result.server_port = info.port
 		result.transport = info.net
@@ -231,7 +232,8 @@ local function processData(szType, content)
 		local userinfo = hostInfo[1]
 		local password = userinfo
 		result.alias = UrlDecode(alias)
-		result.type = "trojan"
+		result.type = "v2ray"
+		result.v2ray_protocol = "trojan"
 		result.server = host[1]
 		-- 按照官方的建议 默认验证ssl证书
 		result.insecure = "0"
@@ -276,7 +278,8 @@ local function processData(szType, content)
 				params[t[1]] = t[2]
 			end
 			result.alias = UrlDecode(alias)
-			result.type = "vless"
+			result.type = 'v2ray'
+			result.v2ray_protocol = 'vless'
 			result.server = host[1]
 			result.server_port = query[1]
 			result.vmess_id = uuid
@@ -457,11 +460,11 @@ local execute = function()
 				end
 			else
 				if not old.alias then
-					if not old.server or old.server_port then
-						ucic:delete(name, old['.name'])
-					else
+					if old.server or old.server_port then
 						old.alias = old.server .. ':' .. old.server_port
 						log('忽略手动添加的节点: ' .. old.alias)
+					else
+						ucic:delete(name, old['.name'])
 					end
 				else
 					log('忽略手动添加的节点: ' .. old.alias)
