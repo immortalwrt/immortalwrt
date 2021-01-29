@@ -29,10 +29,10 @@ define Package/cups-bjnp
 endef
 
 define Package/cups-bjnp/description
-CUPS backend for the canon printers using the proprietary USB over
-IP BJNP protocol. This backend allows Cups to print over the network
-to a Canon printer. It currently supports Cups 1.2 and Cups 1.3 and
-is designed by reverse engineering.
+  CUPS backend for the canon printers using the proprietary USB over
+  IP BJNP protocol. This backend allows Cups to print over the network
+  to a Canon printer. It currently supports Cups 1.2 and Cups 1.3 and
+  is designed by reverse engineering.
 endef
 
 CONFIGURE_ARGS += --with-cupsbackenddir=$(STAGING_DIR)/usr/include/cups

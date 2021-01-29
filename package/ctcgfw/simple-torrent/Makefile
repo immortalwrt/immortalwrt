@@ -1,21 +1,28 @@
+#
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-torrent
 PKG_VERSION:=1.2.12
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/boypt/simple-torrent.git
-PKG_MIRROR_HASH:=2eefc27ca66e2e2bad9950cd6059b5b4f25f3565319e22ac6b8d00e7cbd27938
-PKG_SOURCE_VERSION:=7d2662c35ac0a566b39b56c0d42de81067cc1670
-
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_VERSION).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/boypt/simple-torrent/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=82cfa9cd9e9dca839ad542a24ecf67073fbcb703f9d890381148be99e8689716
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_SIMPLE_TORRENT_COMPRESS_GOPROXY \
+	CONFIG_SIMPLE_TORRENT_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -29,39 +36,49 @@ GO_PKG_LDFLAGS_X:= \
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-define Package/$(PKG_NAME)
+define Package/simple-torrent
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=BitTorrent
-	TITLE:=a self-hosted remote torrent client
+	TITLE:=A self-hosted remote torrent client
 	URL:=https://github.com/ginuerzh/gost
-	DEPENDS:=$(GO_ARCH_DEPENDS)
+	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +libstdcpp
 endef
 
-define Package/$(PKG_NAME)/description
+define Package/simple-torrent/description
 	SimpleTorrent is a a self-hosted remote torrent client, written in Go (golang).
 	Started torrents remotely, download sets of files on the local disk of the server,
 	which are then retrievable or streamable via HTTP.
 endef
 
-define Build/Prepare
-	tar -zxf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components 1
+define Package/simple-torrent/config
+config SIMPLE_TORRENT_COMPRESS_GOPROXY
+	bool "Compiling with GOPROXY proxy"
+	default n
+
+config SIMPLE_TORRENT_COMPRESS_UPX
+	bool "Compress executable files with UPX"
+	default y
 endef
 
-define Build/Configure
-endef
+ifeq ($(CONFIG_SIMPLE_TORRENT_COMPRESS_GOPROXY),y)
+	export GO111MODULE=on
+	export GOPROXY=https://goproxy.io
+endif
 
 define Build/Compile
-	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG))
-	$(call GoPackage/Build/Configure)
 	$(call GoPackage/Build/Compile)
+ifeq ($(CONFIG_SIMPLE_TORRENT_COMPRESS_UPX),y)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/cloud-torrent
+endif
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/simple-torrent/install
+	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
+
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/cloud-torrent $(1)/usr/bin/simple-torrent
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cloud-torrent $(1)/usr/bin/simple-torrent
 endef
 
-$(eval $(call GoBinPackage,$(PKG_NAME)))
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call GoBinPackage,simple-torrent))
+$(eval $(call BuildPackage,simple-torrent))
