@@ -51,7 +51,7 @@ define Package/simple-torrent/description
 	which are then retrievable or streamable via HTTP.
 endef
 
-define Package/gowebdav/config
+define Package/simple-torrent/config
 config SIMPLE_TORRENT_COMPRESS_GOPROXY
 	bool "Compiling with GOPROXY proxy"
 	default n

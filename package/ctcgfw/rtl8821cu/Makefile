@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2020 Marty Jones <mj8263788@gmail.com>
-#
 # Copyright (C) 2021 CTCGFW Project-OpenWrt
 # <https://project-openwrt.eu.org>
 #
