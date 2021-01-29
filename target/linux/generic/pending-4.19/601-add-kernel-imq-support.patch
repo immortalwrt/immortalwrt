@@ -1427,7 +1427,7 @@
  
  /**
   *	skb_panic - private function for out-of-line support
-@@ -620,6 +672,28 @@ void skb_release_head_state(struct sk_bu
+@@ -624,6 +676,28 @@ void skb_release_head_state(struct sk_bu
  		WARN_ON(in_irq());
  		skb->destructor(skb);
  	}
@@ -1456,7 +1456,7 @@
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  	nf_conntrack_put(skb_nfct(skb));
  #endif
-@@ -809,6 +883,9 @@ static void __copy_skb_header(struct sk_
+@@ -813,6 +887,9 @@ static void __copy_skb_header(struct sk_
  	new->sp			= secpath_get(old->sp);
  #endif
  	__nf_copy(new, old, false);
@@ -1466,7 +1466,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -3980,6 +4057,13 @@ void __init skb_init(void)
+@@ -3984,6 +4061,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);

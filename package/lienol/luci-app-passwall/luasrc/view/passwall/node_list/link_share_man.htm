@@ -1,6 +1,6 @@
 <%+cbi/valueheader%>
 <%
-local dsp = require "luci.dispatcher"
+local api = require "luci.model.cbi.passwall.api.api"
 -%>
 <script type="text/javascript">//<![CDATA[
 	function padright(str, cnt, pad) {
@@ -77,7 +77,7 @@ local dsp = require "luci.dispatcher"
 	}
 
 	function link_append_temp(link) {
-		XHR.get('<%=dsp.build_url("admin/services/passwall/link_append_temp")%>', {
+		XHR.get('<%=api.url("link_append_temp")%>', {
 			'link': link
 		},
 		function(x, data) {

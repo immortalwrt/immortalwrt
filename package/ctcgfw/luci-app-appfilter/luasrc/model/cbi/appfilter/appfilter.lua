@@ -1,5 +1,6 @@
 
 local ds = require "luci.dispatcher"
+local utl = require "luci.util"
 
 local m, s
 
@@ -36,7 +37,7 @@ if class_fd then
 		--apps.delimiter=";"
 		-- select 
 		apps.widget="checkbox"
-		apps.size=12
+		apps.size=10
 
 		local fd = io.open(path)
 		if fd then
@@ -94,23 +95,33 @@ function get_hostname_by_mac(dst_mac)
 	fd:close()
     return nil
 end
-
+function get_cmd_result(command)
+	local fd      
+	local result
+	fd = io.popen(command);
+	if not fd then return "" end                                              
+	result = fd:read("*l");
+	fd:close()                
+	return result  
+end
 users.widget="checkbox"
 --users.widget="select"
 users.size=1
 
 local fd = io.open("/proc/net/arp", "r")
-if not fd then return end
+if not fd then return m end
 while true do
 	local line = fd:read("*l")
 	if not line then
 		break
 	end
 	if not line:match("Ip*") then
-		local ip, hw_type, flags, mac, mask, device = line:match("(%S+) %s+ (%S+) %s+ (%S+) %s+ (%S+) %s+ (%S+) %s+ (%S+)")
+		local ip=get_cmd_result(string.format("echo '%s' | awk '{print $1}'", line))
+		local mac=get_cmd_result(string.format("echo '%s' | awk '{print $4}'", line))
+		local device=get_cmd_result(string.format("echo '%s' | awk '{print $6}'", line))
 		if device ~= nil and mac ~= nil and device:match("lan") then
 			local hostname=get_hostname_by_mac(mac)
-			if not hostname then
+			if not hostname or hostname == "*" then
 				users:value(mac, mac);
 			else
 				users:value(mac, hostname);
@@ -119,6 +130,14 @@ while true do
 	end
 end
 
+local config_users=m.uci:get_all("appfilter.user.users")
+if config_users~=nil then
+local r=utl.split(config_users, "%s+", nil, true)
+local max = table.getn(r)
+for i=1,max,1 do
+	users:value(r[i], r[i]);
+end
+end
 m:section(SimpleSection).template = "admin_network/user_status"
 
 

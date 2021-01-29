@@ -328,8 +328,8 @@ msgstr "添加节点"
 msgid "Add the node via the link"
 msgstr "通过链接添加节点"
 
-msgid "SS/SSR/V2ray/Trojan Link"
-msgstr "SS/SSR/V2ray/Trojan链接"
+msgid "SS/SSR/Vmess/Trojan Link"
+msgstr "SS/SSR/Vmess/Trojan链接"
 
 msgid "Please enter the correct link, ss:// ssr:// vmess:// trojan://"
 msgstr "请输入正确的链接，ss:// ssr:// vmess:// trojan://"

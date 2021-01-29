@@ -1,5 +1,5 @@
-local d = require "luci.dispatcher"
 local api = require "luci.model.cbi.passwall.api.api"
+local appname = api.appname
 
 local ss_encrypt_method_list = {
     "rc4-md5", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "aes-128-ctr",
@@ -48,7 +48,7 @@ local encrypt_methods_ss_aead = {
 }
 
 m = Map("passwall_server", translate("Server Config"))
-m.redirect = d.build_url("admin", "services", "passwall", "server")
+m.redirect = api.url("server")
 
 s = m:section(NamedSection, arg[1], "user", "")
 s.addremove = false

@@ -679,6 +679,9 @@ msgstr "禁止连接的域名"
 msgid "Obfuscate password (optional)"
 msgstr "混淆密码（可选）"
 
+msgid "V2Ray/XRay protocol"
+msgstr "V2Ray/XRay 协议"
+
 msgid "Camouflage Type"
 msgstr "伪装类型"
 

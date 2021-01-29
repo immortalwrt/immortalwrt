@@ -1,6 +1,5 @@
-local d = require "luci.dispatcher"
-local _api = require "luci.model.cbi.passwall.api.api"
-local appname = "passwall"
+local api = require "luci.model.cbi.passwall.api.api"
+local appname = api.appname
 
 m = Map(appname)
 
@@ -28,9 +27,9 @@ s = m:section(TypedSection, "nodes")
 s.anonymous = true
 s.addremove = true
 s.template = "cbi/tblsection"
-s.extedit = d.build_url("admin", "services", appname, "node_config", "%s")
+s.extedit = api.url("node_config", "%s")
 function s.create(e, t)
-    local uuid = _api.gen_uuid()
+    local uuid = api.gen_uuid()
     t = uuid
     TypedSection.create(e, t)
     luci.http.redirect(e.extedit:format(t))
@@ -39,7 +38,7 @@ end
 function s.remove(e, t)
     s.map.proceed = true
     s.map:del(t)
-    luci.http.redirect(d.build_url("admin", "services", appname, "node_list"))
+    luci.http.redirect(api.url("node_list"))
 end
 
 if nodes_display:find("show_group") then
