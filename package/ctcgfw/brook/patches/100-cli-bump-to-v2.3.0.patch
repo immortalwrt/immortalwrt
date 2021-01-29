@@ -1,9 +1,9 @@
 From 4b60c0151ef9e0b5901ba3825033c78269c1442f Mon Sep 17 00:00:00 2001
-From: CN_SZTL <cnsztl@gmail.com>
+From: CN_SZTL <cnsztl@project-openwrt.eu.org>
 Date: Fri, 29 Jan 2021 06:43:12 +0000
 Subject: [PATCH] cli: bump to v2.3.0
 
-Signed-off-by: CN_SZTL <cnsztl@gmail.com>
+Signed-off-by: CN_SZTL <cnsztl@project-openwrt.eu.org>
 ---
  cli/brook/main.go |  2 +-
  go.mod            | 21 ++++++++++++++++
