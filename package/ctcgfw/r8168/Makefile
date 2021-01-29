@@ -11,9 +11,6 @@ PKG_NAME:=r8168
 PKG_VERSION:=8.048.03
 PKG_RELEASE:=3
 
-#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-#PKG_CAT:=bzcat
-
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -27,25 +24,20 @@ define KernelPackage/r8168
 endef
 
 define Package/r8168/description
- This package contains a driver for Realtek r8168 chipsets.
+  This package contains a driver for Realtek r8168 chipsets.
 endef
 
 R8168_MAKEOPTS= -C $(PKG_BUILD_DIR) \
-		PATH="$(TARGET_PATH)" \
-		ARCH="$(LINUX_KARCH)" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		TARGET="$(HAL_TARGET)" \
-		TOOLPREFIX="$(KERNEL_CROSS)" \
-		TOOLPATH="$(KERNEL_CROSS)" \
-		KERNELPATH="$(LINUX_DIR)" \
-		KERNELDIR="$(LINUX_DIR)" \
-		LDOPTS=" " \
-		DOMULTI=1
-
-define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) ./src/* $(PKG_BUILD_DIR)
-endef
+	PATH="$(TARGET_PATH)" \
+	ARCH="$(LINUX_KARCH)" \
+	CROSS_COMPILE="$(TARGET_CROSS)" \
+	TARGET="$(HAL_TARGET)" \
+	TOOLPREFIX="$(KERNEL_CROSS)" \
+	TOOLPATH="$(KERNEL_CROSS)" \
+	KERNELPATH="$(LINUX_DIR)" \
+	KERNELDIR="$(LINUX_DIR)" \
+	LDOPTS=" " \
+	DOMULTI=1
 
 define Build/Compile
 	$(MAKE) $(R8168_MAKEOPTS) modules

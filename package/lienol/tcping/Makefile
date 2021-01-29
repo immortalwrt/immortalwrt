@@ -1,7 +1,8 @@
 #
-# Copyright (C) 2014 OpenWrt-dist
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
 #
-# This is free software, licensed under the GNU General Public License v2.
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
@@ -13,11 +14,14 @@ PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/Mattraks/tcping.git
-PKG_MIRROR_HASH:=2af5100ba3ab1a6a4460da3a21d16a96d3b08b656276a9fa321d58ef95bb57b0
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_DATE:=2020-11-18
 PKG_SOURCE_VERSION:=de2b709f8c386507678041d11102c671d470fea7
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_MIRROR_HASH:=07359ac47f0da4fb30215e5160f7c0c942f0a4af4e7b2e2d2b4ffd9769823054
+
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILE:=LICENSE
+
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,12 +30,6 @@ define Package/tcping
 	CATEGORY:=Network
 	TITLE:=tcping measures the latency of a tcp-connection
 	URL:=https://github.com/jlyo/tcping
-endef
-
-define Package/tcping/description
-endef
-
-define Package/tcping/conffiles
 endef
 
 define Package/tcping/install

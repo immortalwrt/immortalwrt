@@ -30,7 +30,7 @@ define KernelPackage/usb-net-rtl8152-vendor
 endef
 
 define KernelPackage/usb-net-rtl8152-vendor/description
- Kernel module for Realtek RTL8152/RTL8153 Based USB Ethernet Adapters
+  Kernel module for Realtek RTL8152/RTL8153 Based USB Ethernet Adapters
 endef
 
 R8152_MAKEOPTS= -C $(PKG_BUILD_DIR) \

@@ -1,5 +1,7 @@
 #
-# Copyright (C) 2020 Project OpenWrt
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE.txt for more information.
 #
@@ -7,22 +9,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=annie
-PKG_VERSION:=0.10.3-abc3c9d
-PKG_RELEASE:=1
+PKG_VERSION:=0.10.3
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-12-15
 PKG_SOURCE_URL:=https://github.com/iawia002/annie.git
-PKG_MIRROR_HASH:=7ee175f0dec4ca2efbaaca746f33ab3f138d70c76eca1f87d1e3950478f4e110
+PKG_SOURCE_DATE:=2020-12-15
 PKG_SOURCE_VERSION:=abc3c9df18173c91a5ca7a77fecc0665dea01aa1
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
+PKG_MIRROR_HASH:=d49d79c342377a1edbf6870f7dd49cb4de70718934151793298004db72fc538a
 
 PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_CONFIG_DEPENDS := \
+PKG_CONFIG_DEPENDS:= \
 	CONFIG_ANNIE_COMPRESS_GOPROXY \
 	CONFIG_ANNIE_COMPRESS_UPX
 
@@ -31,6 +31,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/iawia002/annie
+GO_PKG_BUILD_PKG:=$$(GO_PKG)
 GO_PKG_LDFLAGS:=-s -w
 
 include $(INCLUDE_DIR)/package.mk
@@ -63,25 +64,11 @@ ifeq ($(CONFIG_ANNIE_COMPRESS_GOPROXY),y)
 	export GOPROXY=https://goproxy.io
 endif
 
-define Build/Prepare
-	tar -zxf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components 1
-endef
-
-define Build/Configure
-endef
-
 define Build/Compile
-	$(eval GO_PKG_BUILD_PKG:=$(GO_PKG))
-	$(call GoPackage/Build/Configure)
 	$(call GoPackage/Build/Compile)
 ifeq ($(CONFIG_ANNIE_COMPRESS_UPX),y)
 	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/annie
 endif
-endef
-
-define Package/annie/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/annie $(1)/usr/bin/annie
 endef
 
 $(eval $(call GoBinPackage,annie))

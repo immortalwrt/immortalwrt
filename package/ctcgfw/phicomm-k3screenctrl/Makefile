@@ -1,24 +1,36 @@
+#
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=phicomm-k3screenctrl
 PKG_VERSION:=1.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/lwz322/k3screenctrl.git
-PKG_MIRROR_HASH:=88ca32df297bb7a0e730c2e445909bb9ab37f7144433302e0e7f929c1074b108
-PKG_SOURCE_VERSION:=7b81497bb3719d7f3a741307417e39a4505d309d
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_SOURCE_VERSION)
-PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.xz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+PKG_SOURCE_DATE:=2020-09-18
+PKG_SOURCE_VERSION:=d8896cfad4bdf39f58999f9420807f986300bada
+PKG_MIRROR_HASH:=9eab074f5ac366013d394be2c57905a8585439d1ca2a8b602a09a098a8aa8fb7
 
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=Hamster Tian <haotia@gmail.com>
+
+PKG_FIXUP:=autoreconf
+PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
 TARGET_CFLAGS+= -D_GNU_SOURCE
 
-define Package/$(PKG_NAME)
+define Package/phicomm-k3screenctrl
   SECTION:=utils
   CATEGORY:=Utilities
   DEPENDS:=@TARGET_bcm53xx_generic_DEVICE_phicomm_k3 +@KERNEL_DEVMEM +@BUSYBOX_CONFIG_ARPING +bc +bash +curl +coreutils +coreutils-od +jq
@@ -26,14 +38,14 @@ define Package/$(PKG_NAME)
   URL:=https://github.com/lwz322/k3screenctrl.git
 endef
 
-define Package/$(PKG_NAME)/description
- K3 Screen Controller (k3screenctrl) is a program utilizing
-the LCD screen on PHICOMM K3 to display some stats.
+define Package/phicomm-k3screenctrl/description
+  K3 Screen Controller (k3screenctrl) is a program utilizing
+  the LCD screen on PHICOMM K3 to display some stats.
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/phicomm-k3screenctrl/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/k3screenctrl $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/k3screenctrl $(1)/usr/bin/k3screenctrl
 
 	$(INSTALL_DIR) $(1)/lib/k3screenctrl $(1)/lib/k3screenctrl/oui
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lib/k3screenctrl/*.sh $(1)/lib/k3screenctrl/
@@ -44,4 +56,4 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) $(CURDIR)/files/k3screenctrl.init $(1)/etc/init.d/k3screenctrl
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,phicomm-k3screenctrl))
