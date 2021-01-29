@@ -1,7 +1,9 @@
 #
-# Copyright (C) 2015-2016 OpenWrt.org
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
@@ -28,10 +30,9 @@ ifeq ($(ARCH),powerpc64)
 	PKG_ARCH_VERYSYNC:=ppc64
 endif
 
-
 PKG_NAME:=verysync
 PKG_VERSION:=v2.4.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://dl.verysync.com/releases/$(PKG_VERSION)/
@@ -39,31 +40,26 @@ PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+TAR_CMD:=$(HOST_TAR) -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
+
+define Package/verysync
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=A efficient data transmission tool
-	DEPENDS:=
 	URL:=http://www.verysync.com
 endef
 
-define Package/$(PKG_NAME)/description
-  Verysync is a efficient data transmission tool.
-endef
-
-define Build/Prepare
-	tar -xzvf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR)
-endef
-
-define Build/Configure
+define Package/verysync/description
+	Verysync is a efficient data transmission tool.
 endef
 
 define Build/Compile
+	true
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/verysync/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) $(PKG_BUILD_DIR)/$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION)/verysync $(1)/usr/bin/verysync
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/verysync-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION)/verysync $(1)/usr/bin/verysync
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,verysync))
