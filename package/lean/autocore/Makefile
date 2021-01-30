@@ -1,7 +1,10 @@
 #
-# Copyright (C) 2010-2011 OpenWrt.org
+# Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
 #
-# This is free software, licensed under the GNU General Public License v2.
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
@@ -21,10 +24,11 @@ define Package/autocore
 endef
 
 define Package/autocore/description
-A usb autoconfig hotplug script.
+  A usb autoconfig hotplug script.
 endef
 
 define Build/Compile
+	true
 endef
 
 define Package/autocore/install
@@ -32,11 +36,14 @@ define Package/autocore/install
 	$(INSTALL_BIN) ./files/rpcd_luci $(1)/etc/rpcd_luci
 	$(INSTALL_DATA) ./files/rpcd_luci-base.json $(1)/etc/rpcd_luci-base.json
 	$(INSTALL_DATA) ./files/rpcd_10_system.js $(1)/etc/rpcd_10_system.js
+
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/autocore $(1)/etc/init.d/autocore
+
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/cpuinfo
 	$(INSTALL_BIN) ./files/ethinfo $(1)/sbin/ethinfo
+
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
 	$(INSTALL_DATA) ./files/rpcd_21_ethinfo.js $(1)/www/luci-static/resources/view/status/include/21_ethinfo.js
 endef

@@ -7,9 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ipset-lists
 PKG_VERSION:=20181104
-PKG_RELEASE:=1
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_RELEASE:=2
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -24,17 +22,12 @@ define Package/ipset-lists/conffiles
 /etc/gfwlist/china-banned
 endef
 
-define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
+define Build/Compile
+	true
 endef
-
-define Build/Compile/Default
-
-endef
-Build/Compile = $(Build/Compile/Default)
 
 define Package/ipset-lists/install
-	$(CP) -a files/* $(1)/
+	$(CP) files/* $(1)/
 endef
 
 define Package/ipset-lists/postinst

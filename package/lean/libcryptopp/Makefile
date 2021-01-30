@@ -1,7 +1,8 @@
 #
-# Copyright (C) 2009-2012 OpenWrt.org
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
 #
-# This is free software, licensed under the GNU General Public License v2.
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
@@ -9,25 +10,26 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcryptopp
 PKG_VERSION:=8.3.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=cryptopp$(subst .,,$(PKG_VERSION)).zip
 PKG_SOURCE_URL:=https://www.cryptopp.com/
 PKG_HASH:=db38a15a6b1c337c665e2ebeb731dd0754b05e45504897d0f2fe4ae9f5ee589a
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-
 PKG_FIXUP:=autoreconf
+PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+UNZIP_CMD:=unzip -q -d $(PKG_BUILD_DIR) $(DL_DIR)/$(PKG_SOURCE)
+
 define Package/libcryptopp
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libpthread +libstdcpp
   TITLE:=Crypto++ is library for creating C++ programs which use cryptographic algorithms
   URL:=https://packages.debian.org/sid/libcrypto++-dev
+  DEPENDS:=+libpthread +libstdcpp
 endef
 
 define Package/package/libcryptopp
@@ -36,11 +38,9 @@ define Package/package/libcryptopp
   abstract base classes.
 endef
 
-UNPACK_CMD=cd $(PKG_BUILD_DIR) && unzip "$(DL_DIR)/$(PKG_SOURCE)"
-
 define Build/Prepare
 	$(Build/Prepare/Default)
-	cd $(PKG_BUILD_DIR) && rm -f GNUmakefile GNUmakefile-cross
+	cd $(PKG_BUILD_DIR); rm -f GNUmakefile GNUmakefile-cross
 endef
 
 define Build/InstallDev

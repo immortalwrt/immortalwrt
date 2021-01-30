@@ -1,39 +1,49 @@
+#
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=microsocks
-PKG_VERSION=1.0
+PKG_VERSION=1.0.1
 PKG_RELEASE:=1
-
-PKG_MAINTAINER:=lean
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rofl0r/microsocks.git
-PKG_MIRROR_HASH:=94356d864ba39a978becc59cf5cacbc71fdd16c0c9c868aaef006ddf8742a944
-PKG_SOURCE_VERSION:=be545814aeca1158ae38e2d6c66b1197679dab63
+PKG_SOURCE_DATE:=2020-10-25
+PKG_SOURCE_VERSION:=31557857ccce5e4fdd2cfdae7ab640d589aa2b41
+PKG_MIRROR_HASH:=fd914984fa8314d73630a31c2daad8d34de85597953669691e0c69d52f6a6010
 
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)
-PKG_SOURCE:=$(PKG_NAME).$(PKG_VERSION).$(PKG_RELEASE).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=COPYING
+PKG_MAINTAINER:=lean
+
 PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/microsocks
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=microsocks for OpenWRT
-	DEPENDS:=
+	SUBMENU:=Web Servers/Proxies
+	TITLE:=tiny, portable SOCKS5 server with very moderate resource usage
+	URL:=https://github.com/rofl0r/microsocks
+	DEPENDS:=+libpthread
 endef
 
 define Package/microsocks/description
-	microsocks is a Tiny Proxy in C.
+	A SOCKS5 service that you can run on your remote boxes to tunnel connections
+	through them, if for some reason SSH doesn't cut it for you.
 endef
 
 define Package/microsocks/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/microsocks $(1)/usr/bin/microsocks
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/local/bin/microsocks $(1)/usr/bin/microsocks
 endef
 
 $(eval $(call BuildPackage,microsocks))
