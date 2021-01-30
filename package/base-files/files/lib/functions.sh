@@ -16,6 +16,22 @@ NO_EXPORT=1
 LOAD_STATE=1
 LIST_SEP=" "
 
+# xor multiple hex values of the same length
+xor() {
+	local val
+	local ret="0x$1"
+	local retlen=${#1}
+
+	shift
+	while [ -n "$1" ]; do
+		val="0x$1"
+		ret=$((ret ^ val))
+		shift
+	done
+
+	printf "%0${retlen}x" "$ret"
+}
+
 append() {
 	local var="$1"
 	local value="$2"
@@ -310,7 +326,7 @@ group_add_next() {
 	gids=$(cat ${IPKG_INSTROOT}/etc/group | cut -d: -f3)
 	gid=65536
 	while [ -n "$(echo "$gids" | grep "^$gid$")" ] ; do
-	        gid=$((gid + 1))
+		gid=$((gid + 1))
 	done
 	group_add $1 $gid
 	echo $gid
@@ -338,7 +354,7 @@ user_add() {
 		uids=$(cat ${IPKG_INSTROOT}/etc/passwd | cut -d: -f3)
 		uid=65536
 		while [ -n "$(echo "$uids" | grep "^$uid$")" ] ; do
-		        uid=$((uid + 1))
+			uid=$((uid + 1))
 		done
 	}
 	[ -z "$gid" ] && gid=$uid
