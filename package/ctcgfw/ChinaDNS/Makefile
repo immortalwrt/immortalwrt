@@ -41,7 +41,7 @@ define Package/ChinaDNS/description
 endef
 
 define Package/ChinaDNS/conffiles
-	/etc/chinadns_chnroute.txt
+/etc/chinadns_chnroute.txt
 endef
 
 define Package/ChinaDNS/install

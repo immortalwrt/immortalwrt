@@ -1,7 +1,10 @@
 #
-# Copyright (C) 2010-2011 OpenWrt.org
+# Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
 #
-# This is free software, licensed under the GNU General Public License v2.
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
@@ -39,13 +42,16 @@ define Package/autocore-x86/description
 endef
 
 define Build/Compile
+	true
 endef
 
 define Package/autocore-arm/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DATA) ./files/arm/index.htm $(1)/etc/index.htm
+
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/arm/090-cover-index_htm $(1)/etc/uci-defaults/090-cover-index_htm
+
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/sbin/cpuinfo $(1)/sbin/cpuinfo
 ifneq (, $(findstring $(BOARD), ipq40xx ipq806x))
@@ -56,8 +62,10 @@ endef
 define Package/autocore-x86/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/x86/autocore $(1)/etc/init.d/autocore
+
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DATA) ./files/x86/index.htm $(1)/etc/index.htm
+
 	$(INSTALL_DIR) $(1)/sbin
 	$(CP) ./files/x86/sbin/* $(1)/sbin
 endef

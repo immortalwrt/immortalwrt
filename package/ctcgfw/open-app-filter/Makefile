@@ -54,7 +54,7 @@ define Build/Compile
 endef
 
 define Package/appfilter/conffiles
-	/etc/config/appfilter
+/etc/config/appfilter
 endef
 
 define Package/appfilter/install

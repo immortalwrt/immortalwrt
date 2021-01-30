@@ -9,17 +9,16 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wxbase
 PKG_VERSION:=2.8.12
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=wxGTK-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/wxwindows
 PKG_HASH:=f4193c29fb0e790c9a5c8936f082377a7e51c76bccafe41f4f9da7ca15c0ef1a
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/wxGTK-$(PKG_VERSION)
-
-PKG_INSTALL:=1
-
 PKG_CHECK_FORMAT_SECURITY:=0
+PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -32,21 +31,15 @@ define Package/libwxbase
 endef
 
 define Package/libwxbase/description
- wxBase contains most of the non-GUI classes from the wxWindows cross-
- -platform C++ framework. There are 2 categories: generally useful portable
- code (date/time handling, command line parsing, regular expression support)
- and wrappers for the OS objects (files, directories, sockets, threads,
- etc.) allowing you to write portable programs easily.
+  wxBase contains most of the non-GUI classes from the wxWindows cross-
+  -platform C++ framework. There are 2 categories: generally useful portable
+  code (date/time handling, command line parsing, regular expression support)
+  and wrappers for the OS objects (files, directories, sockets, threads,
+  etc.) allowing you to write portable programs easily.
 endef
 
 TARGET_CFLAGS += $(FPIC)
 
-# XXX: aMule *needs* the following configure options to be enabled:
-#	--enable-intl
-#	--enable-largefile
-#	--disable-no_rtti
-#	--with-regex
-#	--enable-unicode
 CONFIGURE_ARGS+= \
 	--enable-shared \
 	--disable-rpath \
@@ -77,6 +70,7 @@ CONFIGURE_ARGS+= \
 	--enable-exceptions \
 	--disable-sound \
 	--enable-largefile \
+	--enable-unicode \
 	\
 	--without-gtk \
 	--without-motif \
@@ -108,28 +102,22 @@ CONFIGURE_ARGS+= \
 	--without-cppunit-prefix \
 	--disable-precomp-headers 
 
-UNICODE=yes
-
-ifeq ($(UNICODE),yes)
-  CONFIGURE_ARGS+= --enable-unicode
-  LIB_PFX:=u
-else
-  CONFIGURE_ARGS+= --disable-unicode
-  LIB_PFX:=
-endif
-
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/bin $(1)/usr/include $(1)/usr/lib
-	$(CP) -L $(PKG_BUILD_DIR)/wx-config $(1)/usr/bin/
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/wx-2.8 $(1)/usr/include/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwx_base$(LIB_PFX){,_net,_xml}-*.so* $(1)/usr/lib/
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/wx $(1)/usr/lib/
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/wx-config $(1)/usr/bin/
 	$(SED) "s,$(PKG_BUILD_DIR),$(STAGING_DIR)/usr,g" $(1)/usr/bin/wx-config
+
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/wx-2.8 $(1)/usr/include/
+
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwx_*.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/wx $(1)/usr/lib/
 endef
 
 define Package/libwxbase/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwx_base$(LIB_PFX){,_net,_xml}-*.so.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwx_*.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libwxbase))
