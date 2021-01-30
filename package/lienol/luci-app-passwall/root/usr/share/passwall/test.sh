@@ -56,11 +56,11 @@ test_proxy() {
 }
 
 test_auto_switch() {
-	local type=$1
-	local b_tcp_nodes=$3
+	local TYPE=$1
+	local b_tcp_nodes=$2
 	local now_node
-	if [ -f "/var/etc/$CONFIG/id/${type}" ]; then
-		now_node=$(cat /var/etc/$CONFIG/id/${type})
+	if [ -f "/var/etc/$CONFIG/id/${TYPE}" ]; then
+		now_node=$(cat /var/etc/$CONFIG/id/${TYPE})
 	else
 		return 1
 	fi
@@ -96,18 +96,18 @@ test_auto_switch() {
 			top -bn1 | grep -v "grep" | grep "/var/etc/${CONFIG}/auto_switch.json" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
 			if [ "$proxy_status" -eq 200 ]; then
 				#主节点正常，切换到主节点
-				echolog "自动切换检测：${type}主节点正常，切换到主节点！"
-				/usr/share/${CONFIG}/app.sh node_switch $type $2 $main_node
+				echolog "自动切换检测：${TYPE}主节点正常，切换到主节点！"
+				/usr/share/${CONFIG}/app.sh node_switch ${TYPE} ${main_node}
 				return 0
 			fi
 		fi
 	fi
 	
 	if [ "$status" == 0 ]; then
-		#echolog "自动切换检测：${type}节点【$(config_n_get $now_node type) $(config_n_get $now_node remarks)】正常。"
+		#echolog "自动切换检测：${TYPE}节点【$(config_n_get $now_node type) $(config_n_get $now_node remarks)】正常。"
 		return 0
 	elif [ "$status" == 1 ]; then
-		echolog "自动切换检测：${type}节点异常，开始切换节点！"
+		echolog "自动切换检测：${TYPE}节点异常，开始切换节点！"
 		local new_node
 		in_backup_nodes=$(echo $b_tcp_nodes | grep $now_node)
 		# 判断当前节点是否存在于备用节点列表里
@@ -124,15 +124,15 @@ test_auto_switch() {
 				new_node=$next_node
 			fi
 		fi
-		/usr/share/${CONFIG}/app.sh node_switch $type $2 $new_node
+		/usr/share/${CONFIG}/app.sh node_switch ${TYPE} ${new_node}
 		sleep 10s
 		# 切换节点后等待10秒后再检测一次，如果还是不通继续切，直到可用为止
 		status2=$(test_proxy)
 		if [ "$status2" -eq 0 ]; then
-			echolog "自动切换检测：${type}节点切换完毕！"
+			echolog "自动切换检测：${TYPE}节点切换完毕！"
 			return 0
 		elif [ "$status2" -eq 1 ]; then
-			test_auto_switch $1 $2 "$3"
+			test_auto_switch ${TYPE} "${b_tcp_nodes}"
 		elif [ "$status2" -eq 2 ]; then
 			return 2
 		fi
@@ -150,7 +150,7 @@ start() {
 	do
 		TCP_NODE=$(config_t_get auto_switch tcp_node nil)
 		[ -n "$TCP_NODE" -a "$TCP_NODE" != "nil" ] && {
-			test_auto_switch TCP tcp "$TCP_NODE"
+			test_auto_switch TCP "$TCP_NODE"
 		}
 		delay=$(config_t_get auto_switch testing_time 1)
 		sleep ${delay}m
