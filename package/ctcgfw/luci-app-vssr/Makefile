@@ -6,10 +6,10 @@ PKG_RELEASE:=20210119
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray \
 
 LUCI_TITLE:=LuCI support for PassWall
@@ -53,7 +53,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Xray
 	default y if i386||x86_64||arm||aarch64
 endef
 
-define Package/luci-app-vssr/conffiles
+define Package/$(PKG_NAME)/conffiles
 /etc/vssr/
 /etc/config/vssr
 endef
