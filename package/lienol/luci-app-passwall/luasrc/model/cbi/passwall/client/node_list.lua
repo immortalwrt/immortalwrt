@@ -65,10 +65,17 @@ if nodes_display:find("compact_display_nodes") then
         if type == "Xray" then
             local protocol = m:get(n, "protocol")
             if protocol == "_balancing" then
-                type = type .. " 负载均衡"
+                protocol = "负载均衡"
             elseif protocol == "_shunt" then
-                type = type .. " 分流"
+                protocol = "分流"
+            elseif protocol == "vmess" then
+                protocol = "VMess"
+            elseif protocol == "vless" then
+                protocol = "VLESS"
+            else
+                protocol = protocol:gsub("^%l",string.upper)
             end
+            type = type .. " " .. protocol
         end
         local address = m:get(n, "address") or ""
         local port = m:get(n, "port") or ""
@@ -108,10 +115,17 @@ else
             if v == "Xray" then
                 local protocol = m:get(n, "protocol")
                 if protocol == "_balancing" then
-                    result = result .. " 负载均衡"
+                    protocol = "负载均衡"
                 elseif protocol == "_shunt" then
-                    result = result .. " 分流"
+                    protocol = "分流"
+                elseif protocol == "vmess" then
+                    protocol = "VMess"
+                elseif protocol == "vless" then
+                    protocol = "VLESS"
+                else
+                    protocol = protocol:gsub("^%l",string.upper)
                 end
+                result = result .. " " .. protocol
             end
         end
         return result

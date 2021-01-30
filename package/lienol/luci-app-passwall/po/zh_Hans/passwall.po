@@ -820,20 +820,14 @@ msgstr "手动订阅"
 msgid "Delete All Subscribe Node"
 msgstr "删除所有订阅节点"
 
-msgid "Filter keyword switch"
-msgstr "过滤关键字开关"
+msgid "Filter keyword Mode"
+msgstr "过滤关键字模式"
 
-msgid "When checked, below options can only be take effect."
-msgstr "当勾选时，下面的选项才生效。"
+msgid "Discard List"
+msgstr "丢弃列表"
 
-msgid "Filter keyword"
-msgstr "过滤关键字"
-
-msgid "Filter keyword discarded"
-msgstr "关键字丢弃"
-
-msgid "When checked, the keywords in the list are discarded. Otherwise, it is not discarded."
-msgstr "当勾选时，将丢弃包含列表里的关键字的节点。否则，将保留列表的关键字的节点（反过来）。"
+msgid "Keep List"
+msgstr "保留列表"
 
 msgid "Add"
 msgstr "添加"

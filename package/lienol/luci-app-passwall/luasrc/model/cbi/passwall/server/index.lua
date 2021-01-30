@@ -48,6 +48,13 @@ e.cfgvalue = function(t, n)
     if v then
         if v == "Xray" then
             local protocol = m:get(n, "protocol")
+            if protocol == "vmess" then
+                protocol = "VMess"
+            elseif protocol == "vless" then
+                protocol = "VLESS"
+            else
+                protocol = protocol:gsub("^%l",string.upper)
+            end
             return v .. " -> " .. protocol
         end
         return v
