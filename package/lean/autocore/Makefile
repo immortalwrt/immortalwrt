@@ -1,7 +1,10 @@
 #
-# Copyright (C) 2010-2011 OpenWrt.org
+# Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
 #
-# This is free software, licensed under the GNU General Public License v2.
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
@@ -39,6 +42,7 @@ define Package/autocore-x86/description
 endef
 
 define Build/Compile
+	true
 endef
 
 define Package/autocore-arm/install
@@ -46,8 +50,10 @@ define Package/autocore-arm/install
 	$(INSTALL_BIN) ./files/arm/rpcd_luci $(1)/etc/rpcd_luci
 	$(INSTALL_DATA) ./files/arm/rpcd_luci-mod-status.json $(1)/etc/rpcd_luci-mod-status.json
 	$(INSTALL_DATA) ./files/arm/rpcd_10_system.js $(1)/etc/rpcd_10_system.js
+
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/arm/090-cover-index_files $(1)/etc/uci-defaults/090-cover-index_files
+
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/cpuinfo $(1)/sbin/cpuinfo
 endef
@@ -57,11 +63,14 @@ define Package/autocore-x86/install
 	$(INSTALL_BIN) ./files/x86/rpcd_luci $(1)/etc/rpcd_luci
 	$(INSTALL_DATA) ./files/x86/rpcd_luci-mod-status.json $(1)/etc/rpcd_luci-mod-status.json
 	$(INSTALL_DATA) ./files/x86/rpcd_10_system.js $(1)/etc/rpcd_10_system.js
+
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/x86/autocore $(1)/etc/init.d/autocore
+
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/x86/cpuinfo $(1)/sbin/cpuinfo
 	$(INSTALL_BIN) ./files/x86/ethinfo $(1)/sbin/ethinfo
+
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
 	$(INSTALL_DATA) ./files/x86/rpcd_21_ethinfo.js $(1)/www/luci-static/resources/view/status/include/21_ethinfo.js
 endef

@@ -40,7 +40,7 @@ define Package/mentohust/description
 endef
 
 define Package/mentohust/conffiles
-	/etc/mentohust.conf
+/etc/mentohust.conf
 endef
 
 define Package/mentohust/install
