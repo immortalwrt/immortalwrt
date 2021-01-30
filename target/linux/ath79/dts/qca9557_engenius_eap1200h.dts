@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include "ar7242.dtsi"
+#include "qca955x.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/mtd/partitions/uimage.h>
 
 / {
-	compatible = "engenius,ecb350-v1", "qca,ar7242";
-	model = "EnGenius ECB350 v1";
+	compatible = "engenius,eap1200h", "qca,qca9557";
+	model = "EnGenius EAP1200H";
 
 	aliases {
-		label-mac-device = &ath9k;
+		label-mac-device = &eth0;
 		led-boot = &led_power;
 		led-failsafe = &led_power;
 		led-running = &led_power;
@@ -23,7 +23,7 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 			linux,code = <KEY_RESTART>;
 		};
@@ -33,19 +33,26 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			label = "green:power";
-			gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+			label = "amber:power";
+			gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
-	};
 
-	ath9k-leds {
-		compatible = "gpio-leds";
+		wifi2g {
+			label = "blue:wifi2g";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
 
-		wlan {
-			label = "green:wlan";
-			gpios = <&ath9k 1 GPIO_ACTIVE_LOW>;
+		wifi5g {
+			label = "green:wifi5g";
+			gpios = <&gpio 23 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
+		};
+
+		wps {
+			label = "blue:wps";
+			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -79,7 +86,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <20000000>;
+		spi-max-frequency = <40000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -88,52 +95,52 @@
 
 			partition@0 {
 				label = "u-boot";
-				reg = <0x0 0x40000>;
+				reg = <0x000000 0x040000>;
 				read-only;
 			};
 
 			partition@40000 {
 				label = "u-boot-env";
-				reg = <0x40000 0x10000>;
+				reg = <0x040000 0x010000>;
 			};
 
 			partition@50000 {
 				label = "custom";
-				reg = <0x50000 0x50000>;
+				reg = <0x050000 0x050000>;
 				read-only;
 			};
 
 			partition@a0000 {
 				label = "loader";
-				reg = <0xa0000 0x10000>;
+				reg = <0x0a0000 0x010000>;
 				read-only;
 			};
 
 			fwconcat1: partition@b0000 {
 				label = "fwconcat1";
-				reg = <0xb0000 0xf0000>;
+				reg = <0x0b0000 0x170000>;
 			};
 
-			partition@1a0000 {
+			partition@220000 {
 				label = "fakeroot";
-				reg = <0x1a0000 0x10000>;
+				reg = <0x220000 0x010000>;
 				read-only;
 			};
 
-			fwconcat0: partition@1b0000 {
+			fwconcat0: partition@230000 {
 				label = "fwconcat0";
-				reg = <0x1b0000 0x4c0000>;
+				reg = <0x230000 0xb40000>;
 			};
 
-			partition@670000 {
+			partition@d70000 {
 				label = "failsafe";
-				reg = <0x670000 0x180000>;
+				reg = <0xd70000 0x280000>;
 				read-only;
 			};
 
-			art: partition@7f0000 {
+			art: partition@ff0000 {
 				label = "art";
-				reg = <0x7f0000 0x10000>;
+				reg = <0xff0000 0x010000>;
 				read-only;
 			};
 		};
@@ -143,8 +150,8 @@
 &mdio0 {
 	status = "okay";
 
-	phy4: ethernet-phy@4 {
-		reg = <4>;
+	phy5: ethernet-phy@5 {
+		reg = <5>;
 		eee-broken-100tx;
 		eee-broken-1000t;
 	};
@@ -155,22 +162,26 @@
 
 	mtd-mac-address = <&art 0x0>;
 
-	phy-handle = <&phy4>;
+	phy-handle = <&phy5>;
 	phy-mode = "rgmii-id";
 
-	pll-data = <0x02000000 0x00000101 0x00001313>;
+	pll-data = <0x82000000 0x80000101 0x80001313>;
 };
 
-&pcie {
+&pcie0 {
 	status = "okay";
 
-	ath9k: wifi@0,0,0 {
-		compatible = "pci168c,002a";
+	wifi@0,0,0 {
+		compatible = "qcom,ath10k";
 		reg = <0x0 0 0 0 0>;
-		mtd-mac-address = <&art 0x0>;
-		mtd-mac-address-increment = <(-1)>;
 		qca,no-eeprom;
-		#gpio-cells = <2>;
-		gpio-controller;
 	};
+};
+
+&wmac {
+	status = "okay";
+
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&art 0x0>;
+	mtd-mac-address-increment = <1>;
 };
