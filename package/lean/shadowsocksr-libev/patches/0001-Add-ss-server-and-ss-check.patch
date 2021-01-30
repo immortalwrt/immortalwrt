@@ -1,5 +1,3 @@
-diff --git a/.gitignore b/.gitignore
-index 4eab18e..64b8d9f 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -2,6 +2,7 @@ build/
@@ -10,8 +8,6 @@ index 4eab18e..64b8d9f 100644
  libev/Makefile
  libudns/Makefile
  libcork/Makefile
-diff --git a/Makefile.am b/Makefile.am
-index 690af43..75e158e 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -1,7 +1,7 @@
@@ -24,8 +20,6 @@ index 690af43..75e158e 100644
  endif
  
  if ENABLE_DOCUMENTATION
-diff --git a/Makefile.in b/Makefile.in
-index 4cb3deb..e210bc0 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -195,7 +195,7 @@ am__define_uniq_tagged_files = \
@@ -49,8 +43,6 @@ index 4cb3deb..e210bc0 100644
  @USE_SYSTEM_SHARED_LIB_TRUE@	$(am__append_1)
  ACLOCAL_AMFLAGS = -I m4
  pkgconfiglibdir = $(libdir)/pkgconfig
-diff --git a/configure b/configure
-index 7d854c4..01d66ab 100755
 --- a/configure
 +++ b/configure
 @@ -649,7 +649,6 @@ PTHREAD_CC
@@ -102,7 +94,7 @@ index 7d854c4..01d66ab 100755
  do
    eval ac_val=\$$ac_var
    # Remove trailing slashes.
-@@ -1399,6 +1409,7 @@ Fine tuning of the installation directories:
+@@ -1399,6 +1409,7 @@ Fine tuning of the installation director
    --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
    --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
    --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
@@ -110,7 +102,7 @@ index 7d854c4..01d66ab 100755
    --libdir=DIR            object code libraries [EPREFIX/lib]
    --includedir=DIR        C header files [PREFIX/include]
    --oldincludedir=DIR     C header files for non-gcc [/usr/include]
-@@ -2472,8 +2483,8 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
+@@ -2472,8 +2483,8 @@ ac_configure="$SHELL $ac_aux_dir/configu
  
  
  
@@ -121,7 +113,7 @@ index 7d854c4..01d66ab 100755
  
  ac_ext=c
  ac_cpp='$CPP $CPPFLAGS'
-@@ -3783,7 +3794,7 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
+@@ -3783,7 +3794,7 @@ $as_echo "$ac_cv_safe_to_define___extens
  
  
  
@@ -139,7 +131,7 @@ index 7d854c4..01d66ab 100755
    case $am_aux_dir in
    *\ * | *\	*)
      install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
-@@ -4363,8 +4374,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
+@@ -4363,8 +4374,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}ma
  # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
  mkdir_p='$(MKDIR_P)'
  
@@ -206,7 +198,7 @@ index 7d854c4..01d66ab 100755
    # Extract the first word of "mv", so it can be a program name with args.
  set dummy mv; ac_word=$2
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-@@ -16204,15 +16175,162 @@ $as_echo "#define HAVE_IPv6 1" >>confdefs.h
+@@ -16204,15 +16175,162 @@ $as_echo "#define HAVE_IPv6 1" >>confdef
  
  
  if test -z "$USE_SYSTEM_SHARED_LIB_TRUE"; then :
@@ -391,8 +383,6 @@ index 7d854c4..01d66ab 100755
  
      cat <<_LT_EOF >> "$cfgfile"
  #! $SHELL
-diff --git a/configure.ac b/configure.ac
-index 6586f2b..f9c51ab 100755
 --- a/configure.ac
 +++ b/configure.ac
 @@ -315,7 +315,8 @@ AC_CONFIG_FILES([ shadowsocks-libev.pc
@@ -405,9 +395,6 @@ index 6586f2b..f9c51ab 100755
  AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
      AC_CHECK_LIB([udns], [dns_dnlen], ,[AC_MSG_ERROR([Couldn't find libudns. Try installing libudns-dev or udns-devel.])])
      AC_CHECK_LIB([ev], [ev_loop_destroy], ,[AC_MSG_ERROR([Couldn't find libev. Try installing libev-dev@<:@el@:>@.])])
-diff --git a/server/Makefile.am b/server/Makefile.am
-new file mode 100644
-index 0000000..3ae8bc2
 --- /dev/null
 +++ b/server/Makefile.am
 @@ -0,0 +1,55 @@
@@ -466,9 +453,6 @@ index 0000000..3ae8bc2
 +
 +ss_check_CFLAGS = $(AM_CFLAGS) 
 +ss_server_CFLAGS = $(AM_CFLAGS) -DMODULE_REMOTE
-diff --git a/server/Makefile.in b/server/Makefile.in
-new file mode 100644
-index 0000000..3bfa53e
 --- /dev/null
 +++ b/server/Makefile.in
 @@ -0,0 +1,919 @@
@@ -1391,18 +1375,12 @@ index 0000000..3bfa53e
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
-diff --git a/server/README.md b/server/README.md
-new file mode 100644
-index 0000000..ef6a20e
 --- /dev/null
 +++ b/server/README.md
 @@ -0,0 +1,3 @@
 +# server
 +
 +`ss-server` and `ss-check` from https://github.com/ywb94/shadowsocks-libev
-diff --git a/server/acl.c b/server/acl.c
-new file mode 100644
-index 0000000..60d4b72
 --- /dev/null
 +++ b/server/acl.c
 @@ -0,0 +1,597 @@
@@ -2003,9 +1981,6 @@ index 0000000..60d4b72
 +
 +    return ret;
 +}
-diff --git a/server/acl.h b/server/acl.h
-new file mode 100644
-index 0000000..d6f18b8
 --- /dev/null
 +++ b/server/acl.h
 @@ -0,0 +1,53 @@
@@ -2062,9 +2037,6 @@ index 0000000..d6f18b8
 +int outbound_block_match_host(const char *host);
 +
 +#endif // _ACL_H
-diff --git a/server/auth.c b/server/auth.c
-new file mode 100644
-index 0000000..a36257a
 --- /dev/null
 +++ b/server/auth.c
 @@ -0,0 +1,993 @@
@@ -3061,9 +3033,6 @@ index 0000000..a36257a
 +
 +    return datalength - 4;
 +}
-diff --git a/server/auth.h b/server/auth.h
-new file mode 100644
-index 0000000..f7730df
 --- /dev/null
 +++ b/server/auth.h
 @@ -0,0 +1,30 @@
@@ -3097,9 +3066,6 @@ index 0000000..f7730df
 +int auth_aes128_sha1_client_post_decrypt(obfs *self, char **pplaindata, int datalength, size_t* capacity);
 +
 +#endif // _AUTH_H
-diff --git a/server/base64.c b/server/base64.c
-new file mode 100644
-index 0000000..7cf9552
 --- /dev/null
 +++ b/server/base64.c
 @@ -0,0 +1,119 @@
@@ -3222,9 +3188,6 @@ index 0000000..7cf9552
 +
 +    return BASE64_OK;
 +}
-diff --git a/server/base64.h b/server/base64.h
-new file mode 100644
-index 0000000..6432ba3
 --- /dev/null
 +++ b/server/base64.h
 @@ -0,0 +1,16 @@
@@ -3244,9 +3207,6 @@ index 0000000..6432ba3
 +
 +
 +#endif /* __BASE64_H__ */
-diff --git a/server/cache.c b/server/cache.c
-new file mode 100644
-index 0000000..c1a2995
 --- /dev/null
 +++ b/server/cache.c
 @@ -0,0 +1,308 @@
@@ -3558,9 +3518,6 @@ index 0000000..c1a2995
 +
 +    return 0;
 +}
-diff --git a/server/cache.h b/server/cache.h
-new file mode 100644
-index 0000000..0ec98f5
 --- /dev/null
 +++ b/server/cache.h
 @@ -0,0 +1,62 @@
@@ -3626,9 +3583,6 @@ index 0000000..0ec98f5
 +int cache_key_exist(struct cache *cache, char *key, size_t key_len);
 +
 +#endif
-diff --git a/server/check.c b/server/check.c
-new file mode 100644
-index 0000000..ad035e0
 --- /dev/null
 +++ b/server/check.c
 @@ -0,0 +1,236 @@
@@ -3869,9 +3823,6 @@ index 0000000..ad035e0
 +
 +}
 \ No newline at end of file
-diff --git a/server/common.h b/server/common.h
-new file mode 100644
-index 0000000..000f084
 --- /dev/null
 +++ b/server/common.h
 @@ -0,0 +1,58 @@
@@ -3933,9 +3884,6 @@ index 0000000..000f084
 +#define STAGE_STREAM     5  /* Stream between client and server */
 +
 +#endif // _COMMON_H
-diff --git a/server/crc32.c b/server/crc32.c
-new file mode 100644
-index 0000000..6d328d2
 --- /dev/null
 +++ b/server/crc32.c
 @@ -0,0 +1,97 @@
@@ -4036,9 +3984,6 @@ index 0000000..6d328d2
 +            | (uint32_t)buffer[0]);
 +}
 +
-diff --git a/server/encrypt.c b/server/encrypt.c
-new file mode 100644
-index 0000000..37dd5cd
 --- /dev/null
 +++ b/server/encrypt.c
 @@ -0,0 +1,1645 @@
@@ -5687,9 +5632,6 @@ index 0000000..37dd5cd
 +
 +    return 0;
 +}
-diff --git a/server/encrypt.h b/server/encrypt.h
-new file mode 100644
-index 0000000..3bb7940
 --- /dev/null
 +++ b/server/encrypt.h
 @@ -0,0 +1,222 @@
@@ -5915,9 +5857,6 @@ index 0000000..3bb7940
 +void bfree(buffer_t *ptr);
 +
 +#endif // _ENCRYPT_H
-diff --git a/server/http.c b/server/http.c
-new file mode 100644
-index 0000000..3bd4a32
 --- /dev/null
 +++ b/server/http.c
 @@ -0,0 +1,152 @@
@@ -6073,9 +6012,6 @@ index 0000000..3bd4a32
 +
 +    return header_len;
 +}
-diff --git a/server/http.h b/server/http.h
-new file mode 100644
-index 0000000..914815a
 --- /dev/null
 +++ b/server/http.h
 @@ -0,0 +1,34 @@
@@ -6113,9 +6049,6 @@ index 0000000..914815a
 +const protocol_t *const http_protocol;
 +
 +#endif
-diff --git a/server/http_simple.c b/server/http_simple.c
-new file mode 100644
-index 0000000..c1e34ee
 --- /dev/null
 +++ b/server/http_simple.c
 @@ -0,0 +1,625 @@
@@ -6744,9 +6677,6 @@ index 0000000..c1e34ee
 +    }
 +    return outlength;
 +}
-diff --git a/server/http_simple.h b/server/http_simple.h
-new file mode 100644
-index 0000000..cce24cc
 --- /dev/null
 +++ b/server/http_simple.h
 @@ -0,0 +1,21 @@
@@ -6771,9 +6701,6 @@ index 0000000..cce24cc
 +int http_simple_server_decode(obfs *self, char **pencryptdata, int datalength, size_t* capacity, int *needsendback);
 +
 +#endif // _HTTP_SIMPLE_H
-diff --git a/server/jconf.c b/server/jconf.c
-new file mode 100644
-index 0000000..494aa5f
 --- /dev/null
 +++ b/server/jconf.c
 @@ -0,0 +1,260 @@
@@ -7037,9 +6964,6 @@ index 0000000..494aa5f
 +    json_value_free(obj);
 +    return &conf;
 +}
-diff --git a/server/jconf.h b/server/jconf.h
-new file mode 100644
-index 0000000..9a7e5e3
 --- /dev/null
 +++ b/server/jconf.h
 @@ -0,0 +1,78 @@
@@ -7121,9 +7045,6 @@ index 0000000..9a7e5e3
 +void free_addr(ss_addr_t *addr);
 +
 +#endif // _JCONF_H
-diff --git a/server/json.c b/server/json.c
-new file mode 100644
-index 0000000..18e95ef
 --- /dev/null
 +++ b/server/json.c
 @@ -0,0 +1,1002 @@
@@ -8129,9 +8050,6 @@ index 0000000..18e95ef
 +    settings.mem_free = default_free;
 +    json_value_free_ex(&settings, value);
 +}
-diff --git a/server/json.h b/server/json.h
-new file mode 100644
-index 0000000..016fc5a
 --- /dev/null
 +++ b/server/json.h
 @@ -0,0 +1,249 @@
@@ -8384,9 +8302,6 @@ index 0000000..016fc5a
 +#endif
 +
 +#endif
-diff --git a/server/list.c b/server/list.c
-new file mode 100644
-index 0000000..dde085d
 --- /dev/null
 +++ b/server/list.c
 @@ -0,0 +1,370 @@
@@ -8760,9 +8675,6 @@ index 0000000..dde085d
 +
 +    return l;
 +}
-diff --git a/server/list.h b/server/list.h
-new file mode 100644
-index 0000000..ab49720
 --- /dev/null
 +++ b/server/list.h
 @@ -0,0 +1,61 @@
@@ -8827,9 +8739,6 @@ index 0000000..ab49720
 +//释放链表
 +List list_destroy(List l);
 +#endif
-diff --git a/server/netutils.c b/server/netutils.c
-new file mode 100644
-index 0000000..3a32b4d
 --- /dev/null
 +++ b/server/netutils.c
 @@ -0,0 +1,297 @@
@@ -9130,9 +9039,6 @@ index 0000000..3a32b4d
 +
 +    return 1;
 +}
-diff --git a/server/netutils.h b/server/netutils.h
-new file mode 100644
-index 0000000..0725592
 --- /dev/null
 +++ b/server/netutils.h
 @@ -0,0 +1,98 @@
@@ -9234,9 +9140,6 @@ index 0000000..0725592
 +int validate_hostname(const char *hostname, const int hostname_len);
 +
 +#endif
-diff --git a/server/obfs.c b/server/obfs.c
-new file mode 100644
-index 0000000..5c885bf
 --- /dev/null
 +++ b/server/obfs.c
 @@ -0,0 +1,205 @@
@@ -9445,9 +9348,6 @@ index 0000000..5c885bf
 +void free_obfs_class(obfs_class *plugin) {
 +    free(plugin);
 +}
-diff --git a/server/obfs.h b/server/obfs.h
-new file mode 100644
-index 0000000..74c60c9
 --- /dev/null
 +++ b/server/obfs.h
 @@ -0,0 +1,100 @@
@@ -9551,9 +9451,6 @@ index 0000000..74c60c9
 +void dispose_obfs(obfs *self);
 +
 +#endif // _OBFS_H
-diff --git a/server/obfsutil.c b/server/obfsutil.c
-new file mode 100644
-index 0000000..d00959b
 --- /dev/null
 +++ b/server/obfsutil.c
 @@ -0,0 +1,36 @@
@@ -9593,9 +9490,6 @@ index 0000000..d00959b
 +    return x + y;
 +}
 +
-diff --git a/server/protocol.h b/server/protocol.h
-new file mode 100644
-index 0000000..eaa866e
 --- /dev/null
 +++ b/server/protocol.h
 @@ -0,0 +1,34 @@
@@ -9633,9 +9527,6 @@ index 0000000..eaa866e
 +} protocol_t;
 +
 +#endif
-diff --git a/server/resolv.c b/server/resolv.c
-new file mode 100644
-index 0000000..f580d06
 --- /dev/null
 +++ b/server/resolv.c
 @@ -0,0 +1,444 @@
@@ -10083,9 +9974,6 @@ index 0000000..f580d06
 +
 +    return result;
 +}
-diff --git a/server/resolv.h b/server/resolv.h
-new file mode 100644
-index 0000000..0552922
 --- /dev/null
 +++ b/server/resolv.h
 @@ -0,0 +1,50 @@
@@ -10139,9 +10027,6 @@ index 0000000..0552922
 +void resolv_shutdown(struct ev_loop *);
 +
 +#endif
-diff --git a/server/rule.c b/server/rule.c
-new file mode 100644
-index 0000000..8aae04e
 --- /dev/null
 +++ b/server/rule.c
 @@ -0,0 +1,137 @@
@@ -10282,9 +10167,6 @@ index 0000000..8aae04e
 +        pcre_free(rule->pattern_re);
 +    ss_free(rule);
 +}
-diff --git a/server/rule.h b/server/rule.h
-new file mode 100644
-index 0000000..015bc42
 --- /dev/null
 +++ b/server/rule.h
 @@ -0,0 +1,58 @@
@@ -10346,9 +10228,6 @@ index 0000000..015bc42
 +int accept_rule_arg(rule_t *, const char *);
 +
 +#endif
-diff --git a/server/server.c b/server/server.c
-new file mode 100644
-index 0000000..65b0e42
 --- /dev/null
 +++ b/server/server.c
 @@ -0,0 +1,2209 @@
@@ -12561,9 +12440,6 @@ index 0000000..65b0e42
 +
 +    return 0;
 +}
-diff --git a/server/server.h b/server/server.h
-new file mode 100644
-index 0000000..4cd3cf6
 --- /dev/null
 +++ b/server/server.h
 @@ -0,0 +1,115 @@
@@ -12682,9 +12558,6 @@ index 0000000..4cd3cf6
 +} remote_t;
 +
 +#endif // _SERVER_H
-diff --git a/server/tls.c b/server/tls.c
-new file mode 100644
-index 0000000..5c42216
 --- /dev/null
 +++ b/server/tls.c
 @@ -0,0 +1,263 @@
@@ -12951,9 +12824,6 @@ index 0000000..5c42216
 +
 +    return -2;
 +}
-diff --git a/server/tls.h b/server/tls.h
-new file mode 100644
-index 0000000..3998913
 --- /dev/null
 +++ b/server/tls.h
 @@ -0,0 +1,33 @@
@@ -12990,9 +12860,6 @@ index 0000000..3998913
 +const protocol_t *const tls_protocol;
 +
 +#endif
-diff --git a/server/tls1.2_ticket.c b/server/tls1.2_ticket.c
-new file mode 100644
-index 0000000..88970c0
 --- /dev/null
 +++ b/server/tls1.2_ticket.c
 @@ -0,0 +1,609 @@
@@ -13605,9 +13472,6 @@ index 0000000..88970c0
 +
 +    return 0;
 +}
-diff --git a/server/tls1.2_ticket.h b/server/tls1.2_ticket.h
-new file mode 100644
-index 0000000..10a57c9
 --- /dev/null
 +++ b/server/tls1.2_ticket.h
 @@ -0,0 +1,20 @@
@@ -13631,9 +13495,6 @@ index 0000000..10a57c9
 +int tls12_ticket_auth_server_decode(obfs *self, char **pencryptdata, int datalength, size_t* capacity, int *needsendback);
 +
 +#endif // _TLS1_2_TICKET_H
-diff --git a/server/udprelay.c b/server/udprelay.c
-new file mode 100644
-index 0000000..d9251ee
 --- /dev/null
 +++ b/server/udprelay.c
 @@ -0,0 +1,1452 @@
@@ -15089,9 +14950,6 @@ index 0000000..d9251ee
 +        server_ctx_list[server_num] = NULL;
 +    }
 +}
-diff --git a/server/udprelay.h b/server/udprelay.h
-new file mode 100644
-index 0000000..89876d4
 --- /dev/null
 +++ b/server/udprelay.h
 @@ -0,0 +1,95 @@
@@ -15190,9 +15048,6 @@ index 0000000..89876d4
 +} remote_ctx_t;
 +
 +#endif // _UDPRELAY_H
-diff --git a/server/uthash.h b/server/uthash.h
-new file mode 100644
-index 0000000..45d1f9f
 --- /dev/null
 +++ b/server/uthash.h
 @@ -0,0 +1,1074 @@
@@ -16270,9 +16125,6 @@ index 0000000..45d1f9f
 +} UT_hash_handle;
 +
 +#endif /* UTHASH_H */
-diff --git a/server/utils.c b/server/utils.c
-new file mode 100644
-index 0000000..14a60c7
 --- /dev/null
 +++ b/server/utils.c
 @@ -0,0 +1,448 @@
@@ -16724,9 +16576,6 @@ index 0000000..14a60c7
 +}
 +
 +#endif
-diff --git a/server/utils.h b/server/utils.h
-new file mode 100644
-index 0000000..0fb7f5a
 --- /dev/null
 +++ b/server/utils.h
 @@ -0,0 +1,232 @@
@@ -16962,9 +16811,6 @@ index 0000000..0fb7f5a
 +    } while (0)
 +
 +#endif // _UTILS_H
-diff --git a/server/verify.c b/server/verify.c
-new file mode 100644
-index 0000000..9e7393d
 --- /dev/null
 +++ b/server/verify.c
 @@ -0,0 +1,188 @@
@@ -17156,9 +17002,6 @@ index 0000000..9e7393d
 +    free(out_buffer);
 +    return len;
 +}
-diff --git a/server/verify.h b/server/verify.h
-new file mode 100644
-index 0000000..57c6ff9
 --- /dev/null
 +++ b/server/verify.h
 @@ -0,0 +1,19 @@
@@ -17181,6 +17024,3 @@ index 0000000..57c6ff9
 +int verify_simple_server_post_decrypt(obfs *self, char **pplaindata, int datalength, size_t* capacity);
 +
 +#endif // _VERIFY_H
--- 
-2.19.1
-

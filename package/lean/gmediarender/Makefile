@@ -1,26 +1,29 @@
 #
-# Copyright (C) 2020 coolsnowwolf@gmail.com
+# Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
 #
-# This is free software, licensed under the GNU General Public License v2.
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gmediarender
-PKG_VERSION:=2020-01-10
-PKG_RELEASE=$(PKG_SOURCE_VERSION)
+PKG_VERSION:=0.0.8
+PKG_RELEASE=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/hzeller/gmrender-resurrect.git
-PKG_MIRROR_HASH:=beed710b377845665e90c20ea734ed9fbb9d2105321b43b7d12dc5a142e4f392
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=26d8f7edf5336bc30f7334c6ad459bf7f4f90ff2
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
+PKG_SOURCE_DATE:=2021-01-15
+PKG_SOURCE_VERSION:=7cd74525e89a1dcd8869b8f6f67f2565afa59abe
+PKG_MIRROR_HASH:=98514528690a6bcf0d6611c12f1dd498e795943085e916501f5442c19d98e162
 
-PKG_FIXUP:=autoreconf
-PKG_INSTALL=1
 PKG_REMOVE_FILES:=autogen.sh aclocal.m4
+PKG_FIXUP:=autoreconf
+PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -28,8 +31,8 @@ include $(INCLUDE_DIR)/nls.mk
 define Package/gmediarender
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  DEPENDS:= +gstreamer1 +libgstreamer1 +gstreamer1-libs +glib2 +libupnp
   TITLE:=A Headless UPnP Renderer
+  DEPENDS:=+glib2 +gstreamer1 +libgstreamer1 +gstreamer1-libs +libupnp
 endef
 
 define Package/gmediarender/description
@@ -39,13 +42,13 @@ define Package/gmediarender/description
 endef
 
 CONFIGURE_ARGS+= \
-	CFLAGS="$(TARGET_CFLAGS) -std=gnu99" --with-build-cc="$(HOSTCC)" \
+	CFLAGS="$(TARGET_CFLAGS) -std=gnu99" \
+	--with-build-cc="$(HOSTCC)" \
 	--prefix="\usr"
 
 define Package/gmediarender/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME) $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/gmediarender $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,gmediarender))
-

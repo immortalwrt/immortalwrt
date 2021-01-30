@@ -1,8 +1,6 @@
-diff --git a/src/obfs/obfs.c b/src/obfs/obfs.c
-index 463359f..4cd750a 100644
 --- a/src/obfs/obfs.c
 +++ b/src/obfs/obfs.c
-@@ -88,7 +88,7 @@
+@@ -88,7 +88,7 @@ obfs_class *new_obfs_class(const char *p
          plugin->client_decode = tls12_ticket_auth_client_decode;
  
          return plugin;
@@ -11,7 +9,7 @@ index 463359f..4cd750a 100644
              obfs_class * plugin = (obfs_class*)malloc(sizeof(obfs_class));
              plugin->init_data = init_data;
              plugin->new_obfs = verify_simple_new_obfs;
-@@ -115,7 +115,7 @@
+@@ -115,7 +115,7 @@ obfs_class *new_obfs_class(const char *p
              plugin->client_udp_pre_encrypt = NULL;
              plugin->client_udp_post_decrypt = NULL;
  

@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ipv6helper
 PKG_VERSION:=1.0
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
@@ -22,21 +22,17 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ipv6helper
 	SECTION:=ipv6
 	TITLE:=IPv6 Helper and Dynamic Update he.net of ip
+	DEPENDS:=+luci-proto-ipv6 +wget-ssl +libip6tc +ip6tables +ip6tables-mod-nat \
+		+kmod-ipt-nat6 +kmod-nf-nat6 +odhcpd-ipv6only +odhcp6c +6in4
 	PKGARCH:=all
-	DEPENDS:=+luci-proto-ipv6 +wget-ssl +libip6tc +ip6tables +ip6tables-mod-nat +kmod-ipt-nat6 +kmod-nf-nat6 +odhcpd-ipv6only +odhcp6c +6in4
 endef
 
 define Package/ipv6helper/description
 	IPv6 Helper and Dynamic Update he.net of ip
 endef
 
-define Build/Prepare
-endef
-
-define Build/Configure
-endef
-
 define Build/Compile
+	true
 endef
 
 define Package/ipv6helper/install
