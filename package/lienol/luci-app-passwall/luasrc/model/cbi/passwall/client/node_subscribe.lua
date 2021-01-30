@@ -48,15 +48,14 @@ function o.write(e, e)
     luci.http.redirect(api.url("log"))
 end
 
-filter_enabled = s:option(Flag, "filter_enabled", translate("Filter keyword switch"), translate("When checked, below options can only be take effect."))
-o.default = 1
-o.rmempty = false
+o = s:option(ListValue, "filter_keyword_mode", translate("Filter keyword Mode"))
+o:value("0", translate("Close"))
+o:value("1", translate("Discard List"))
+o:value("2", translate("Keep List"))
 
-filter_keyword = s:option(DynamicList, "filter_keyword", translate("Filter keyword"))
-    
-o = s:option(Flag, "filter_keyword_discarded", translate("Filter keyword discarded"), translate("When checked, the keywords in the list are discarded. Otherwise, it is not discarded."))
-o.default = "1"
-o.rmempty = false
+o = s:option(DynamicList, "filter_discard_list", translate("Discard List"))
+
+o = s:option(DynamicList, "filter_keep_list", translate("Keep List"))
 
 o = s:option(Flag, "allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
 o.default = "1"
