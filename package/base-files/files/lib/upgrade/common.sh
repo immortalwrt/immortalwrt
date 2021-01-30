@@ -1,5 +1,3 @@
-#!/bin/sh
-
 RAM_ROOT=/tmp/root
 
 [ -x /usr/bin/ldd ] || ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; }

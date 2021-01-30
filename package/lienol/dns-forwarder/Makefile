@@ -2,6 +2,9 @@
 # Copyright (C) 2015 OpenWrt-dist
 # Copyright (C) 2015 Jian Chang <aa65535@live.com>
 #
+# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# <https://project-openwrt.eu.org>
+#
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
@@ -10,20 +13,17 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dns-forwarder
 PKG_VERSION:=1.2.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/aa65535/hev-dns-forwarder.git
-PKG_MIRROR_HASH:=b2f104d563881be9e9f744d631af23fd0b1f088cd6813f90e3851bb0bd5aab1a
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
+PKG_SOURCE_DATE:=2017-07-21
 PKG_SOURCE_VERSION:=289e8c9c7167200668dff83b1e0cbce258665387
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
+PKG_MIRROR_HASH:=a06f61c2b87f61cf68517d3b4a23439366f3c806dd736594a814ee0245adca43
 
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jian Chang <aa65535@live.com>
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_SOURCE_SUBDIR)
 
 PKG_BUILD_PARALLEL:=1
 
@@ -37,11 +37,11 @@ define Package/dns-forwarder
 endef
 
 define Package/dns-forwarder/description
-Forwarding DNS queries on TCP transport.
+	Forwarding DNS queries on TCP transport.
 endef
 
 define Package/dns-forwarder/conffiles
-/etc/config/dns-forwarder
+	/etc/config/dns-forwarder
 endef
 
 define Package/dns-forwarder/install
