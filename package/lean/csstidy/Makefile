@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=csstidy
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/jow-/csstidy-cpp.git
@@ -11,8 +11,10 @@ PKG_MIRROR_HASH:=3210d475f6ae966d4dfcd3e1f7fcbf0ad9507a37878d50de015ffe795c1d160
 
 PKG_LICENSE:=LGPL-2.1
 PKG_LICENSE_FILES:=COPYING
-
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
+
+HOST_BUILD_PARALLEL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk

@@ -41,7 +41,7 @@ define Package/dns-forwarder/description
 endef
 
 define Package/dns-forwarder/conffiles
-	/etc/config/dns-forwarder
+/etc/config/dns-forwarder
 endef
 
 define Package/dns-forwarder/install

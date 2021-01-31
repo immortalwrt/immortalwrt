@@ -9,19 +9,23 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vsftpd-alt
 PKG_VERSION:=3.0.3
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 
-PKG_SOURCE:=vsftpd-$(PKG_VERSION).tar.gz
+PKG_SOURCE_NAME:=$(firstword $(subst -, ,$(PKG_NAME)))
+PKG_SOURCE:=$(PKG_SOURCE_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://security.appspot.com/downloads/
 PKG_HASH:=9d4d2bf6e6e2884852ba4e69e157a2cecd68c5a7635d66a3a8cf8d898c955ef7
-PKG_LICENSE:=GPLv2
 
-BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DIR:=$(BUILD_DIR)/vsftpd-$(PKG_VERSION)
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILE:=LICENSE
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_NAME)-$(PKG_VERSION)
+PKG_BUILD_PARALLEL:=1
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/vsftpd-alt/Default
+define Package/vsftpd-alt
   SUBMENU:=File Transfer
   SECTION:=net
   CATEGORY:=Network
@@ -29,85 +33,43 @@ define Package/vsftpd-alt/Default
   URL:=http://vsftpd.beasts.org/
   MAINTAINER:=Cezary Jackiewicz <cezary@eko.one.pl>
   DEPENDS=+libuci 
-  #+PACKAGE_libpam:libpam 
 endef
-
-define Package/vsftpd-alt/conffiles
-/etc/vsftpd.conf
-endef
-
-#EXTRA_LDFLAGS:= -lcrypt -lcrypto -lssl
-
-define Package/vsftpd-alt/config
-config VSFTPD_USE_UCI_SCRIPTS
-	bool "Uses UCI scripts"
-	depends on PACKAGE_vsftpd-alt
-	default y
-#config VSFTPD_ENABLE_AIO
-#	bool "Enable async I/O (Currently Buggy)"
-#	depends on PACKAGE_vsftpd-alt
-#	default n
-endef
-
-ifneq ($(CONFIG_USE_MUSL),)
-  NLSSTRING:=-lcrypt
-else
-  NLSSTRING:=-lcrypt -lnsl
-endif
 
 TARGET_CFLAGS += -D_GNU_SOURCE -include fcntl.h
 
-#ifdef CONFIG_PACKAGE_libpam
-#  EXTRA_LDFLAGS += -lpam
-#endif
-
-#ifeq ($(CONFIG_VSFTPD_ENABLE_AIO),y)
-#define Package/vsftpd-alt
-#$(call Package/vsftpd-alt/Default)
-#  DEPENDS=+PACKAGE_libpam:libpam +libopenssl +libuci +libaio
-#endef
-#  EXTRA_LDFLAGS += -laio
-#  EXTRA_CFLAGS += -DVSFTPD_ASYNC_IO
-#else
-define Package/vsftpd-alt
-$(call Package/vsftpd-alt/Default)
+define Build/Configure
+	$(call Build/Configure/Default)
+ifneq ($(CONFIG_USE_MUSL)$(CONFIG_USE_GLIBC),)
+	$(SED) 's/-lcrypt -lnsl/-lcrypt/' $(PKG_BUILD_DIR)/Makefile
+endif
 endef
-#endif
-
 
 define Build/Compile
-	$(SED) 's/-lcrypt -lnsl/$(NLSSTRING)/' $(PKG_BUILD_DIR)/Makefile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
+	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		CC="$(TARGET_CC)" \
 		CFLAGS="$(TARGET_CFLAGS)" \
 		LDFLAGS="$(TARGET_LDFLAGS)" \
 		vsftpd
 endef
 
-ifeq ($(CONFIG_VSFTPD_USE_UCI_SCRIPTS),y)
+define Package/vsftpd-alt/conffiles
+#/etc/vsftpd.conf
+/etc/config/vsftpd
+endef
+
 define Package/vsftpd-alt/install
-$(call Package/vsftpd-alt/install/default, $(1))
-	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/vsftpd $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/vsftpd_wrapper $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/vsftpd_prepare $(1)/usr/sbin/
+
+	#$(INSTALL_DIR) $(1)/etc
+	#$(INSTALL_CONF) ./files/vsftpd.conf $(1)/etc/vsftpd.conf
+
 	$(INSTALL_DIR) $(1)/etc/config
-ifdef CONFIG_PACKAGE_libpam
-	$(INSTALL_DIR) $(1)/etc/pam.d
-endif
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/vsftpd $(1)/usr/sbin
-	$(INSTALL_BIN) ./files/vsftpd-uci.init $(1)/etc/init.d/vsftpd
 	$(INSTALL_BIN) ./files/vsftpd.uci $(1)/etc/config/vsftpd
-	$(INSTALL_BIN) ./files/vsftpd_wrapper $(1)/usr/sbin
-	$(INSTALL_BIN) ./files/vsftpd_prepare $(1)/usr/sbin
-endef
-else
-define Package/vsftpd-alt/install
-$(call Package/vsftpd-alt/install/default, $(1))
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_CONF) ./files/vsftpd.conf $(1)/etc/vsftpd.conf
-	$(INSTALL_BIN) ./files/vsftpd.init $(1)/etc/init.d/vsftpd
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/vsftpd $(1)/usr/sbin	
+	$(INSTALL_BIN) ./files/vsftpd-uci.init $(1)/etc/init.d/vsftpd
 endef
-endif
 
 $(eval $(call BuildPackage,vsftpd-alt))

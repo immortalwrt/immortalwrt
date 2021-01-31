@@ -1,5 +1,3 @@
-diff --git a/src/utils.c b/src/utils.c
-index 94f8a83..01bcbac 100644
 --- a/src/utils.c
 +++ b/src/utils.c
 @@ -258,8 +258,6 @@ usage()
@@ -11,11 +9,10 @@ index 94f8a83..01bcbac 100644
      printf("  usage:\n\n");
  #ifdef MODULE_LOCAL
      printf("    ss-local\n");
-@@ -298,6 +296,25 @@ usage()
-     printf(
+@@ -299,6 +297,25 @@ usage()
          "                                  The default cipher is rc4-md5.\n");
      printf("\n");
-+    printf(
+     printf(
 +        "       -o <obfs>                  Obfs of your remote server: plain,\n");
 +    printf(
 +        "                                  http_simple, http_post and tls1.2_ticket_auth.\n");
@@ -34,9 +31,7 @@ index 94f8a83..01bcbac 100644
 +    printf(
 +        "       -G <protocol-param>        Protocol-Param of your remote server.\n");
 +    printf("\n");
-     printf(
++    printf(
          "       [-a <user>]                Run as another user.\n");
      printf(
--- 
-2.19.1
-
+         "       [-f <pid_file>]            The file path to store pid.\n");

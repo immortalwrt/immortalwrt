@@ -21,10 +21,11 @@ define Package/autosamba
 endef
 
 define Package/autosamba/description
-A hotplug script to config Samba share automatically.
+  A hotplug script to config Samba share automatically.
 endef
 
 define Build/Compile
+	true
 endef
 
 define Package/autosamba/install

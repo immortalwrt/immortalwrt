@@ -592,9 +592,9 @@ run_redir() {
 }
 
 node_switch() {
-	[ -n "$1" -a -n "$2" -a -n "$3" ] && {
-		local node=$3
-		top -bn1 | grep -E "$TMP_PATH" | grep -i "${1}" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	[ -n "$1" -a -n "$2" ] && {
+		local node=$2
+		top -bn1 | grep -E "$TMP_PATH" | grep -i "${1}" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
 		local config_file=$TMP_PATH/${1}.json
 		local log_file=$TMP_PATH/${1}.log
 		eval current_port=\$${1}_REDIR_PORT
