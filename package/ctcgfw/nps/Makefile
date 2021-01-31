@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nps
 PKG_VERSION:=0.26.9
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ehang-io/nps/tar.gz/v$(PKG_VERSION)?
@@ -17,6 +17,7 @@ PKG_HASH:=7df414180ed4f0049dc08f0e3c625a6de4ebed34da591515f9514b3763dd578d
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILE:=LICENSE
+PKG_MAINTAINTER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
 
 PKG_CONFIG_DEPENDS := \
 	CONFIG_NPC_COMPRESS_UPX \
@@ -71,24 +72,13 @@ define Package/nps/config
 		default y
 endef
 
-define Package/nps/install/template
-	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-
-	$(INSTALL_DIR) $(1)/usr/bin/
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $(1)/usr/bin/
-endef
-
-define Package/npc/install
-	$(call Package/nps/install/template,$(1),npc)
+define Build/Compile
+	$(call GoPackage/Build/Compile)
 ifeq ($(CONFIG_NPC_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(1)/usr/bin/*
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/npc
 endif
-endef
-
-define Package/nps/install
-	$(call Package/nps/install/template,$(1),nps)
 ifeq ($(CONFIG_NPS_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(1)/usr/bin/*
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/nps
 endif
 endef
 
