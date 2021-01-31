@@ -39,12 +39,12 @@ define Package/vlmcsd/description
 	Solaris, Minix, Mac OS, iOS, Windows with or without Cygwin)
 endef
 
-MAKE_PATH:=vlmcsd
+MAKE_PATH:=vlmcsd-svn1113
 
 define Package/vlmcsd/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	#$(INSTALL_BIN) $(PKG_BUILD_DIR)/vlmcsd/bin/vlmcs $(1)/usr/bin/vlmcs
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/vlmcsd/bin/vlmcsd $(1)/usr/bin/vlmcsd
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/vlmcsd-svn1113/bin/vlmcsd $(1)/usr/bin/vlmcsd
 
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_BIN) ./files/vlmcsd.ini $(1)/etc/vlmcsd.ini
