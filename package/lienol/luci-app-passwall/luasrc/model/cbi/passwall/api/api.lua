@@ -66,11 +66,23 @@ function get_valid_nodes()
             if e.port and e.address then
                 local address = e.address
                 if datatypes.ipaddr(address) or datatypes.hostname(address) then
+                    local type2 = e.type
                     local address2 = address
+                    if type2 == "Xray" and e.protocol then
+                        local protocol = e.protocol
+                        if protocol == "vmess" then
+                            protocol = "VMess"
+                        elseif protocol == "vless" then
+                            protocol = "VLESS"
+                        else
+                            protocol = protocol:gsub("^%l",string.upper)
+                        end
+                        type2 = type2 .. " " .. protocol
+                    end
                     if datatypes.ip6addr(address) then address2 = "[" .. address .. "]" end
-                    e.remarks_name = "%s：[%s] %s:%s" % {e.type, e.remarks, address2, e.port}
+                    e.remarks_name = "%s：[%s] %s:%s" % {type2, e.remarks, address2, e.port}
                     if e.use_kcp and e.use_kcp == "1" then
-                    e.remarks_name = "%s+%s：[%s] %s" % {e.type, "Kcptun", e.remarks, address2}
+                    e.remarks_name = "%s+%s：[%s] %s" % {type2, "Kcptun", e.remarks, address2}
                     end
                     e.node_type = "normal"
                     nodes[#nodes + 1] = e
@@ -87,10 +99,22 @@ function get_full_node_remarks(n)
         if n.protocol and (n.protocol == "_balancing" or n.protocol == "_shunt") then
             remarks = "%s：[%s] " % {i18n.translatef(n.type .. n.protocol), n.remarks}
         else
+            local type2 = n.type
+            if n.type == "Xray" and n.protocol then
+                local protocol = n.protocol
+                if protocol == "vmess" then
+                    protocol = "VMess"
+                elseif protocol == "vless" then
+                    protocol = "VLESS"
+                else
+                    protocol = protocol:gsub("^%l",string.upper)
+                end
+                type2 = type2 .. " " .. protocol
+            end
             if n.use_kcp and n.use_kcp == "1" then
-                remarks = "%s+%s：[%s] %s" % {n.type, "Kcptun", n.remarks, n.address}
+                remarks = "%s+%s：[%s] %s" % {type2, "Kcptun", n.remarks, n.address}
             else
-                remarks = "%s：[%s] %s:%s" % {n.type, n.remarks, n.address, n.port}
+                remarks = "%s：[%s] %s:%s" % {type2, n.remarks, n.address, n.port}
             end
         end
     end

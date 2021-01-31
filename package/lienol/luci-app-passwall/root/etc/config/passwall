@@ -58,13 +58,12 @@ config global_app
 config global_subscribe
 	option subscribe_proxy '0'
 	option auto_update_subscribe '0'
-	option filter_enabled '1'
-	option filter_keyword_discarded '1'
 	option allowInsecure '1'
-	list filter_keyword '过期时间'
-	list filter_keyword '剩余流量'
-	list filter_keyword 'QQ群'
-	list filter_keyword '官网'
+	option filter_keyword_mode '1'
+	list filter_discard_list '过期时间'
+	list filter_discard_list '剩余流量'
+	list filter_discard_list 'QQ群'
+	list filter_discard_list '官网'
 
 config auto_switch
 	option testing_time '1'
