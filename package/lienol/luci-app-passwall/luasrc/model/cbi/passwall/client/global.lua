@@ -157,6 +157,15 @@ if api.is_finded("chinadns-ng") then
     o:depends("chinadns_ng", "1")
 end
 
+if nixio.fs.access("/usr/share/" .. appname .. "/rules/chnlist") then
+    o = s:taboption("DNS", Flag, "use_chnlist", translate("Use ChinaList"), translate("Only useful in non-gfwlist mode.") .. "<br />" .. translate("When used, the domestic DNS will be used only when the chnlist rule is hit, and the domain name that misses the rule will be resolved by remote DNS."))
+    o.default = "0"
+    o:depends("tcp_proxy_mode", "chnroute")
+    o:depends("udp_proxy_mode", "chnroute")
+    o:depends("localhost_tcp_proxy_mode", "chnroute")
+    o:depends("localhost_udp_proxy_mode", "chnroute")
+end
+
 o = s:taboption("DNS", Value, "up_china_dns", translate("Local DNS") .. "(UDP)")
 o.description = translate("IP:Port mode acceptable, multi value split with english comma.") .. "<br />" .. translate("When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS.")
 o.default = "default"
@@ -165,13 +174,8 @@ if has_xray then
     o:value("xray_doh", "Xray DNS(DoH)")
 end
 o:value("223.5.5.5", "223.5.5.5 (" .. translate("Ali") .. "DNS)")
-o:value("223.6.6.6", "223.6.6.6 (" .. translate("Ali") .. "DNS)")
 o:value("114.114.114.114", "114.114.114.114 (114DNS)")
-o:value("114.114.115.115", "114.114.115.115 (114DNS)")
 o:value("119.29.29.29", "119.29.29.29 (DNSPOD DNS)")
-o:value("182.254.116.116", "182.254.116.116 (DNSPOD DNS)")
-o:value("1.2.4.8", "1.2.4.8 (CNNIC DNS)")
-o:value("210.2.4.8", "210.2.4.8 (CNNIC DNS)")
 o:value("180.76.76.76", "180.76.76.76 (" .. translate("Baidu") .. "DNS)")
 
 ---- DoH

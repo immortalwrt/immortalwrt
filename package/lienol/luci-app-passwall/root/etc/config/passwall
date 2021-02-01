@@ -12,8 +12,8 @@ config global
 	option localhost_tcp_proxy_mode 'chnroute'
 	option localhost_udp_proxy_mode 'chnroute'
 	option socks_server '127.0.0.1:9050'
-	option close_log_tcp '1'
-	option close_log_udp '1'
+	option close_log_tcp '0'
+	option close_log_udp '0'
 	option loglevel 'warning'
 	option trojan_loglevel '2'
 
@@ -36,7 +36,6 @@ config global_forwarding
 config global_other
 	option status 'big_icon show_check_port show_ip111'
 	option nodes_ping 'auto_ping tcping'
-	option nodes_display 'compact_display_nodes show_add_mode'
 
 config global_rules
 	option auto_update '0'
@@ -53,7 +52,6 @@ config global_app
 	option trojan_go_file '/usr/bin/trojan-go'
 	option kcptun_client_file '/usr/bin/kcptun-client'
 	option brook_file '/usr/bin/brook'
-	option trojan_go_latest 'https://api.github.com/repos/peter-tank/trojan-go/releases/latest'
 
 config global_subscribe
 	option subscribe_proxy '0'
