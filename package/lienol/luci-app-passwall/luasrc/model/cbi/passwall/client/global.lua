@@ -114,6 +114,13 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
                 local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
                 tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
             end
+            local id = "main_node"
+            local remarks = translate("Default") .. translate("Preproxy")
+            if n[id] and n[id] ~= "nil" then
+                local url = api.url("node_config", n[id])
+                local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
+                tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
+            end
         end
     end
 end

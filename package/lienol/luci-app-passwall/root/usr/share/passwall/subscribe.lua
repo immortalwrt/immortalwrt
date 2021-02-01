@@ -9,6 +9,7 @@ require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
 local api = require "luci.model.cbi.passwall.api.api"
+local has_xray = api.is_finded("xray")
 
 -- these global functions are accessed all the time by the event handler
 -- so caching them is worth the effort
@@ -211,28 +212,24 @@ do
 end
 
 -- 判断是否过滤节点关键字
-local filter_keyword_enabled = ucic2:get(application, "@global_subscribe[0]", "filter_enabled")
-local filter_keyword_table = ucic2:get(application, "@global_subscribe[0]", "filter_keyword")
-local filter_keyword_discarded = ucic2:get(application, "@global_subscribe[0]", "filter_keyword_discarded")
+local filter_keyword_mode = ucic2:get(application, "@global_subscribe[0]", "filter_keyword_mode") or "0"
+local filter_keyword_discard_list = ucic2:get(application, "@global_subscribe[0]", "filter_discard_list") or {}
+local filter_keyword_keep_list = ucic2:get(application, "@global_subscribe[0]", "filter_keep_list") or {}
 local function is_filter_keyword(value)
-	if filter_keyword_enabled and filter_keyword_enabled == "1" then
-		if filter_keyword_table then
-			if filter_keyword_discarded and filter_keyword_discarded == "1" then
-				for k,v in ipairs(filter_keyword_table) do
-					if value:find(v) then
-						return true
-					end
-				end
-			else
-				local result = true
-				for k,v in ipairs(filter_keyword_table) do
-					if value:find(v) then
-						result = false
-					end
-				end
-				return result
+	if filter_keyword_mode == "1" then
+		for k,v in ipairs(filter_keyword_discard_list) do
+			if value:find(v) then
+				return true
 			end
 		end
+	elseif filter_keyword_mode == "2" then
+		local result = true
+		for k,v in ipairs(filter_keyword_keep_list) do
+			if value:find(v) then
+				result = false
+			end
+		end
+		return result
 	end
 	return false
 end
@@ -436,6 +433,10 @@ local function processData(szType, content, add_mode)
 			content = content:sub(0, idx_sp - 1)
 		end
 		result.type = "Trojan-Plus"
+		if has_xray then
+			result.type = 'Xray'
+			result.protocol = 'trojan'
+		end
 		result.remarks = UrlDecode(alias)
 		if content:find("@") then
 			local Info = split(content, "@")
