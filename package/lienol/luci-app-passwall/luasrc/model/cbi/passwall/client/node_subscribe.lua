@@ -32,6 +32,19 @@ for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update_subscribe", 1)
 
+o = s:option(ListValue, "filter_keyword_mode", translate("Filter keyword Mode"))
+o:value("0", translate("Close"))
+o:value("1", translate("Discard List"))
+o:value("2", translate("Keep List"))
+
+o = s:option(DynamicList, "filter_discard_list", translate("Discard List"))
+
+o = s:option(DynamicList, "filter_keep_list", translate("Keep List"))
+
+o = s:option(Flag, "allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
+o.default = "1"
+o.rmempty = false
+
 ---- Manual subscription
 o = s:option(Button, "_update", translate("Manual subscription"))
 o.inputstyle = "apply"
@@ -47,19 +60,6 @@ function o.write(e, e)
     luci.sys.call("lua /usr/share/" .. appname .. "/subscribe.lua truncate log > /dev/null 2>&1 &")
     luci.http.redirect(api.url("log"))
 end
-
-o = s:option(ListValue, "filter_keyword_mode", translate("Filter keyword Mode"))
-o:value("0", translate("Close"))
-o:value("1", translate("Discard List"))
-o:value("2", translate("Keep List"))
-
-o = s:option(DynamicList, "filter_discard_list", translate("Discard List"))
-
-o = s:option(DynamicList, "filter_keep_list", translate("Keep List"))
-
-o = s:option(Flag, "allowInsecure", translate("allowInsecure"), translate("Whether unsafe connections are allowed. When checked, Certificate validation will be skipped."))
-o.default = "1"
-o.rmempty = false
 
 s = m:section(TypedSection, "subscribe_list", "",
               "<font color='red'>" .. translate(

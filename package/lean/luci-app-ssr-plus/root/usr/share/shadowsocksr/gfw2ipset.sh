@@ -18,7 +18,7 @@ case "$(uci_get_by_type global netflix_server nil)" in
 nil)
 	rm -f $TMP_DNSMASQ_PATH/netflix_forward.conf
 	;;
-same)
+$(uci_get_by_type global global_server nil) | same)
 	netflix 5335
 	;;
 *)

@@ -8,12 +8,6 @@ s = m:section(TypedSection, "global_delay", translate("Delay Settings"))
 s.anonymous = true
 s.addremove = false
 
----- Delay Start
-o = s:option(Value, "start_delay", translate("Delay Start"),
-             translate("Units:seconds"))
-o.default = "1"
-o.rmempty = true
-
 ---- Open and close Daemon
 o = s:option(Flag, "start_daemon", translate("Open and close Daemon"))
 o.default = 1
@@ -82,16 +76,6 @@ o = s:option(Value, "udp_redir_ports", translate("UDP Redir Ports"))
 o.default = "1:65535"
 o:value("1:65535", translate("All"))
 o:value("53", "DNS")
-
----- Multi SS/SSR Process Option
-o = s:option(Value, "process", translate("Multi Process Option"))
-o.default = "0"
-o.rmempty = false
-o:value("0", translate("Auto"))
-o:value("1", translate("1 Process"))
-o:value("2", "2 " .. translate("Process"))
-o:value("3", "3 " .. translate("Process"))
-o:value("4", "4 " .. translate("Process"))
 
 --[[
 ---- Proxy IPv6

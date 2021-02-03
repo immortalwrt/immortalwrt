@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
 PKG_VERSION:=183
-PKG_RELEASE:=5
+PKG_RELEASE:=6
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
@@ -35,7 +35,7 @@ LUCI_DEPENDS:=+coreutils +coreutils-base64 +dns2socks +dnsmasq-full +ipset +ip-f
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin:v2ray-plugin \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray-core
 
 define Package/$(PKG_NAME)/config
 config PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun

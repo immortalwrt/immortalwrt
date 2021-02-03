@@ -24,7 +24,7 @@ LUCI_DEPENDS:= \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin:v2ray-plugin \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray-core
 
 define Package/$(PKG_NAME)/config
 
