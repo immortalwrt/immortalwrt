@@ -5,7 +5,7 @@ local util = require "luci.util"
 local i18n = require "luci.i18n"
 local api = require "luci.model.cbi.passwall.api.api"
 
-local trojan_go_api = api.uci_get_type("global_app", "trojan_go_latest", "https://api.github.com/repos/trojan-gfw/trojan-go/releases/latest")
+local trojan_go_api = "https://api.github.com/repos/peter-tank/trojan-go/releases/latest"
 
 function to_check(arch)
     local app_path = api.get_trojan_go_path() or ""

@@ -87,8 +87,8 @@ function s.create(...)
 end
 
 o = s:option(DummyValue, "type", translate("Type"))
-function o.cfgvalue(...)
-	return Value.cfgvalue(...)
+function o.cfgvalue(self, section)
+	return m:get(section, "v2ray_protocol") or Value.cfgvalue(self, section) or translate("None")
 end
 
 o = s:option(DummyValue, "alias", translate("Alias"))

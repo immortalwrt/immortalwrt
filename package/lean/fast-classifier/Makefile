@@ -6,7 +6,7 @@ PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/fast-classifier/template
+define KernelPackage/fast-classifier
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Support
@@ -19,37 +19,20 @@ define KernelPackage/fast-classifier/template
   PROVIDES:=fast-classifier
 endef
 
-define KernelPackage/fast-classifier
-  $(call KernelPackage/fast-classifier/template)
-  AUTOLOAD:=$(call AutoLoad,10,fast-classifier)
-endef
-
-define KernelPackage/fast-classifier-noload
-  $(call KernelPackage/fast-classifier/template)
-  TITLE+= (no autoload)
-endef
-
-define KernelPackage/fast-classifier/description/template
+define KernelPackage/fast-classifier/description
   FAST Classifier talks to SFE to make decisions about offloading connections
-endef
-
-KernelPackage/fast-classifier/description = $(KernelPackage/fast-classifier/description/template)
-
-define KernelPackage/fast-classifier-noload/description
-  $(call KernelPackage/fast-classifier/description/template)
-  This package does not load fast-classifier at boot by default
 endef
 
 define Package/fast-classifier-example
   SECTION:=net
   CATEGORY:=Network
   TITLE:=Example user space program for fast-classifier
-  DEPENDS:=+libnl +kmod-fast-classifier
+  DEPENDS:=+kmod-fast-classifier +libnl
 endef
 
 define Package/fast-classifier-example/description
   Example user space program that communicates with fast
-  classifier kernel module
+  classifier kernel module.
 endef
 
 SFE_MAKE_OPTS:=SFE_SUPPORT_IPV6=y
@@ -84,5 +67,4 @@ define Package/fast-classifier-example/install
 endef
 
 $(eval $(call KernelPackage,fast-classifier))
-$(eval $(call KernelPackage,fast-classifier-noload))
 $(eval $(call BuildPackage,fast-classifier-example))

@@ -16,11 +16,10 @@ APP_PATH=/usr/share/$CONFIG
 RULES_PATH=/usr/share/${CONFIG}/rules
 TMP_DNSMASQ_PATH=/var/etc/dnsmasq-passwall.d
 DNSMASQ_PATH=/etc/dnsmasq.d
-RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
 LOCAL_DOH_PORT=7912
 DNS_PORT=7913
 TUN_DNS="127.0.0.1#${DNS_PORT}"
-IS_DEFAULT_DNS=
+IS_DEFAULT_DNS=0
 LOCAL_DNS=
 DEFAULT_DNS=
 NO_PROXY=
@@ -298,18 +297,17 @@ load_config() {
 	CHINADNS_NG=$(config_t_get global chinadns_ng 0)
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
 	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4:53 | sed 's/:/#/g')
-	DNS_CACHE=$(config_t_get global dns_cache 1)
-	process=1
-	if [ "$(config_t_get global_forwarding process 0)" = "0" ]; then
-		process=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
-	else
-		process=$(config_t_get global_forwarding process)
-	fi
+	DNS_CACHE=$(config_t_get global dns_cache 0)
 	LOCAL_DNS=$(config_t_get global up_china_dns default | sed 's/:/#/g')
-	[ -f "${RESOLVFILE}" ] && [ -s "${RESOLVFILE}" ] || RESOLVFILE=/tmp/resolv.conf.auto
-	DEFAULT_DNS=$(echo -n $(sed -n 's/^nameserver[ \t]*\([^ ]*\)$/\1/p' "${RESOLVFILE}" | grep -v "0.0.0.0" | grep -v "127.0.0.1" | grep -v "^::$" | head -2) | tr ' ' ',')
 	if [ "${LOCAL_DNS}" = "default" ]; then
-		IS_DEFAULT_DNS=1
+		DEFAULT_DNS=$(uci show dhcp | grep "@dnsmasq" | grep ".server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
+		if [ -n "${DEFAULT_DNS}" ]; then
+			IS_DEFAULT_DNS=1
+		else
+			RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
+			[ -f "${RESOLVFILE}" ] && [ -s "${RESOLVFILE}" ] || RESOLVFILE=/tmp/resolv.conf.auto
+			DEFAULT_DNS=$(echo -n $(sed -n 's/^nameserver[ \t]*\([^ ]*\)$/\1/p' "${RESOLVFILE}" | grep -v "0.0.0.0" | grep -v "127.0.0.1" | grep -v "^::$" | head -2) | tr ' ' ',')
+		fi
 		LOCAL_DNS="${DEFAULT_DNS:-119.29.29.29}"
 	fi
 	PROXY_IPV6=$(config_t_get global_forwarding proxy_ipv6 0)
@@ -423,7 +421,6 @@ run_redir() {
 			echolog "$remarks节点，非法的服务器地址，无法启动！"
 			return 1
 		}
-		[ "$server_host" == "127.0.0.1" ] && process=1
 		[ "$bind" != "127.0.0.1" ] && echolog "${REDIR_TYPE}节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
 	}
 	eval ${REDIR_TYPE}_NODE_PORT=$port
@@ -523,9 +520,7 @@ run_redir() {
 		trojan*)
 			local loglevel=$(config_t_get global trojan_loglevel "2")
 			lua $API_GEN_TROJAN -node $node -run_type nat -local_addr "0.0.0.0" -local_port $local_port -loglevel $loglevel > $config_file
-			for k in $(seq 1 $process); do
-				ln_start_bin "$(first_type ${type})" "${type}" $log_file -c "$config_file"
-			done
+			ln_start_bin "$(first_type ${type})" "${type}" $log_file -c "$config_file"
 		;;
 		naiveproxy)
 			lua $API_GEN_NAIVE -node $node -run_type redir -local_addr "0.0.0.0" -local_port $local_port > $config_file
@@ -555,15 +550,12 @@ run_redir() {
 		ss|ssr)
 			if [ "$kcptun_use" == "1" ]; then
 				lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port -server_host "127.0.0.1" -server_port $KCPTUN_REDIR_PORT > $config_file
-				process=1
 				[ "$UDP_NODE" == "tcp" ] && echolog "Kcptun不支持UDP转发！"
 			else
 				lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port > $config_file
 				[ "$UDP_NODE" == "tcp" ] && extra_param="-u"
 			fi
-			for k in $(seq 1 $process); do
-				ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -v $extra_param
-			done
+			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -v $extra_param
 		;;
 		esac
 		if [ -n "$_socks_flag" ]; then
@@ -604,7 +596,7 @@ node_switch() {
 		#local node_net=$(echo $1 | tr 'A-Z' 'a-z')
 		#uci set $CONFIG.@global[0].${node_net}_node=$node
 		#uci commit $CONFIG
-		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		restart_dnsmasq
 	}
 }
 
@@ -747,12 +739,14 @@ start_dns() {
 	sed -n 's/^ipset=\/\.\?\([^/]*\).*$/\1/p' "${RULES_PATH}/gfwlist.conf" | sort -u > "${TMP_PATH}/gfwlist.txt"
 	echolog "过滤服务配置：准备接管域名解析[$?]..."
 	
-	USE_CHNLIST=1
-	if [ ! -f "${RULES_PATH}/chnlist" ]; then
-		USE_CHNLIST=0
-	else
-		cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
-	fi
+	USE_CHNLIST=$(config_t_get global use_chnlist 0)
+	[ "$USE_CHNLIST" = "1" ] && {
+		if [ -f "${RULES_PATH}/chnlist" ]; then
+			cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
+		else
+			USE_CHNLIST=0
+		fi
+	}
 	[ "$CHINADNS_NG" = "1" ] && {
 		echolog "  | - (chinadns-ng) 只支持2~4级的域名过滤..."
 		[ -z "${global}${chnlist}" ] && echolog "  | - (chinadns-ng) 此模式下，列表外的域名查询会同时发送给本地DNS(可切换到Pdnsd + TCP节点模式解决)..."
@@ -904,24 +898,24 @@ add_dnsmasq() {
 		#始终用国内DNS解析节点域名
 		fwd_dns="${LOCAL_DNS}"
 		servers=$(uci show "${CONFIG}" | grep ".address=" | cut -d "'" -f 2)
-		hosts_foreach "servers" host_from_url | grep -v "google.c" | grep '[a-zA-Z]$' | sort -u | gen_dnsmasq_items "vpsiplist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/01-vpsiplist_host.conf"
+		hosts_foreach "servers" host_from_url | grep -v "google.c" | grep '[a-zA-Z]$' | sort -u | gen_dnsmasq_items "vpsiplist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/00-vpsiplist_host.conf"
 		echolog "  - [$?]节点列表中的域名(vpsiplist)：${fwd_dns:-默认}"
 
 		#始终用国内DNS解析直连（白名单）列表
 		fwd_dns="${LOCAL_DNS}"
-		sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/00-direct_host.conf"
+		sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/01-direct_host.conf"
 		echolog "  - [$?]域名白名单(whitelist)：${fwd_dns:-默认}"
 
 		#当勾选使用chnlist，仅当使用大陆白名单或回国模式
 		[ "${USE_CHNLIST}" = "1" ] && {
 			fwd_dns="${LOCAL_DNS}"
 			[ -n "${returnhome}" ] || [ -n "${chnlist}" ] && {
-				[ -n "${global}" ] && unset fwd_dns
+				#[ -n "${global}" ] && unset fwd_dns
 				#如果使用Chinadns-NG直接交给它处理
 				[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 				#如果使用回国模式，设置DNS为远程DNS。
 				[ -n "${returnhome}" ] && fwd_dns="${TUN_DNS}"
-				sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/chinalist_host.conf"
+				sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/02-chinalist_host.conf"
 				echolog "  - [$?]中国域名表(chnroute)：${fwd_dns:-默认}"
 			}
 		}
@@ -929,8 +923,6 @@ add_dnsmasq() {
 		#分流规则
 		[ "$(config_n_get $TCP_NODE protocol)" = "_shunt" ] && {
 			fwd_dns="${TUN_DNS}"
-			#如果使用chnlist直接使用默认DNS
-			[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
 			local default_node_id=$(config_n_get $TCP_NODE default_node nil)
 			local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 			for shunt_id in $shunt_ids; do
@@ -938,7 +930,7 @@ add_dnsmasq() {
 				[ "$shunt_node_id" = "nil" ] && continue
 				local shunt_node=$(config_n_get $shunt_node_id address nil)
 				[ "$shunt_node" = "nil" ] && continue
-				config_n_get $shunt_id domain_list | tr -s "\r\n" "\n" | gen_dnsmasq_items "shuntlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/shunt_host.conf"
+				config_n_get $shunt_id domain_list | grep -v 'regexp:\|geosite:\|ext:' | sed 's/domain:\|full:\|//g' | tr -s "\r\n" "\n" | gen_dnsmasq_items "shuntlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-shunt_host.conf"
 				echolog "  - [$?]$shunt_id分流规则(shuntlist)：${fwd_dns:-默认}"
 			done
 		}
@@ -946,21 +938,17 @@ add_dnsmasq() {
 		#始终使用远程DNS解析代理（黑名单）列表
 		fwd_dns="${TUN_DNS}"
 		#如果使用Chinadns-NG直接交给它处理
-		[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
-		#如果使用chnlist直接使用默认DNS
-		[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
-		sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/12-proxy_host.conf"
+		#[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
+		sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-proxy_host.conf"
 		echolog "  - [$?]代理域名表(blacklist)：${fwd_dns:-默认}"
 
 		#如果没有使用回国模式
 		[ -z "${returnhome}" ] && {
 			fwd_dns="${TUN_DNS}"
 			#如果使用Chinadns-NG直接交给它处理
-			[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
-			#如果使用chnlist直接使用默认DNS
-			[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
-			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
-			#sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/gfwlist.conf"
+			#[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
+			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-gfwlist.conf"
+			#sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-gfwlist.conf"
 			echolog "  - [$?]防火墙域名表(gfwlist)：${fwd_dns:-默认}"
 		}
 
@@ -968,58 +956,43 @@ add_dnsmasq() {
 		[ "$(config_t_get global_subscribe subscribe_proxy 0)" = "1" ] && {
 			fwd_dns="${TUN_DNS}"
 			#如果使用Chinadns-NG直接交给它处理
-			[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
-			#如果使用chnlist直接使用默认DNS
-			[ "${USE_CHNLIST}" = "1" ] && unset fwd_dns
+			#[ "$CHINADNS_NG" = "1" ] && unset fwd_dns
 			items=$(get_enabled_anonymous_secs "@subscribe_list")
 			for item in ${items}; do
-				host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/subscribe.conf"
+				host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "blacklist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-subscribe.conf"
 				echolog "  - [$?]节点订阅域名，$(host_from_url $(config_n_get ${item} url))：${fwd_dns:-默认}"
 			done
 		}
 	fi
 	
-	if [ "${DNS_MODE}" != "nouse" ] || [ "${IS_DEFAULT_DNS}" != "1" ]; then
-		msg="ISP"
-		servers="${LOCAL_DNS}"
+	if [ "${DNS_MODE}" != "nouse" ]; then
 		echo "conf-dir=${TMP_DNSMASQ_PATH}" > "/var/dnsmasq.d/dnsmasq-${CONFIG}.conf"
-		#兼容旧版dnsmasq
-		echo "conf-dir=${TMP_DNSMASQ_PATH}" > "${DNSMASQ_PATH}/dnsmasq-${CONFIG}.conf"
-
-		[ "${USE_CHNLIST}" = "1" ] && [ -z "${returnhome}" ] && [ -n "${chnlist}" ] && servers="${TUN_DNS}"
-		[ -n "${chnlist}" ] && msg="中国列表以外"
-		[ -n "${returnhome}" ] && msg="中国列表"
-		[ -n "${global}" ] && msg="全局"
-		if [ "$CHINADNS_NG" = "1" ]; then
-			#直接交给Chinadns-ng处理
-			servers="${TUN_DNS}" && msg="chinadns-ng"
+		
+		if [ "${CHINADNS_NG}" = "0" ] && [ "${USE_CHNLIST}" = "0" ] && [ "${IS_DEFAULT_DNS}" = "1" ]; then
+			echolog "  - 不强制设置默认DNS"
+			return
 		else
-			[ "${IS_DEFAULT_DNS}" = "1" ] && [ "${USE_CHNLIST}" = "0" ] && {
-				echolog "  - 不强制设置默认DNS(上级分配)！"
-				return
+			echo "${DEFAULT_DNS}" > $TMP_PATH/default_DNS
+			msg="ISP"
+			servers="${LOCAL_DNS}"
+			[ -n "${chnlist}" ] && msg="中国列表以外"
+			[ -n "${returnhome}" ] && msg="中国列表"
+			[ -n "${global}" ] && msg="全局"
+			
+			[ "${USE_CHNLIST}" = "1" ] && [ -z "${returnhome}" ] && [ -n "${chnlist}" ] && servers="${TUN_DNS}"
+			#直接交给Chinadns-ng处理
+			[ "$CHINADNS_NG" = "1" ] && {
+				servers="${TUN_DNS}" && msg="chinadns-ng"
 			}
+			
+			cat <<-EOF >> "/var/dnsmasq.d/dnsmasq-${CONFIG}.conf"
+				$(echo "${servers}" | sed 's/,/\n/g' | gen_dnsmasq_items)
+				all-servers
+				no-poll
+				no-resolv
+			EOF
+			echolog "  - [$?]以上所列以外及默认(${msg})：${servers}"
 		fi
-		cat <<-EOF >> "/var/dnsmasq.d/dnsmasq-${CONFIG}.conf"
-			$(echo "${servers}" | sed 's/,/\n/g' | gen_dnsmasq_items)
-			all-servers
-			no-poll
-			no-resolv
-		EOF
-		echolog "  - [$?]以上所列以外及默认(${msg})：${servers}"
-	else
-		echolog "  - 从系统 dnsmasq 自行手动处理..."
-		[ -z "$DEFAULT_DNS" ] && {
-			local tmp=$(get_host_ip ipv4 www.baidu.com 1)
-			[ -z "$tmp" ] && {
-				cat <<-EOF > /var/dnsmasq.d/dnsmasq-$CONFIG.conf
-					server=$(get_first_dns LOCAL_DNS 53)
-					no-poll
-					no-resolv
-				EOF
-				echolog "  - [$?]发现暂时无法解析度娘域名，临时接管并设置默认上游DNS：$(get_first_dns LOCAL_DNS 53)"
-				return 99
-			}
-		}
 	fi
 }
 
@@ -1218,16 +1191,38 @@ force_stop() {
 	exit 0
 }
 
+backup_dnsmasq_servers() {
+	DNSMASQ_DNS=$(uci show dhcp | grep "@dnsmasq" | grep ".server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
+	if [ -n "${DNSMASQ_DNS}" ]; then
+		uci -q set $CONFIG.@global[0].dnsmasq_servers="${DNSMASQ_DNS}"
+		uci commit $CONFIG
+	fi
+}
+
+restore_dnsmasq_servers() {
+	OLD_SERVER=$(uci -q get $CONFIG.@global[0].dnsmasq_servers | tr "," " ")
+	for server in $OLD_SERVER; do
+		uci -q del_list dhcp.@dnsmasq[0].server=$server
+		uci add_list dhcp.@dnsmasq[0].server=$server
+	done
+	uci commit dhcp
+	uci -q delete $CONFIG.@global[0].dnsmasq_servers
+	uci commit $CONFIG
+}
+
+restart_dnsmasq() {
+	if [ -f "$TMP_PATH/default_DNS" ]; then
+		backup_dnsmasq_servers
+		sed -i "/list server/d" /etc/config/dhcp >/dev/null 2>&1
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		restore_dnsmasq_servers
+	else
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	fi
+}
+
 boot() {
-	[ "$ENABLED" == 1 ] && {
-		local delay=$(config_t_get global_delay start_delay 1)
-		if [ "$delay" -gt 0 ]; then
-			echolog "执行启动延时 $delay 秒后再启动!"
-			sleep $delay && start >/dev/null 2>&1 &
-		else
-			start
-		fi
-	}
+	[ "$ENABLED" == 1 ] && start
 	return 0
 }
 
@@ -1245,7 +1240,7 @@ start() {
 		start_dns
 		add_dnsmasq
 		source $APP_PATH/iptables.sh start
-		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		restart_dnsmasq
 		echolog "重启 dnsmasq 服务[$?]"
 	}
 	start_crontab
