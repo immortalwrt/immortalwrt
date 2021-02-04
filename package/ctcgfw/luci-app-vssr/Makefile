@@ -8,11 +8,10 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray \
 
-LUCI_TITLE:=LuCI support for PassWall
+LUCI_TITLE:=A New SS/SSR/Xray/Trojan LuCI interface
 LUCI_PKGARCH:=all
 LUCI_DEPENDS:= \
 	+bash +coreutils +coreutils-base64 +dnsmasq-full +ip-full +ipset +iptables-mod-tproxy \
@@ -22,7 +21,6 @@ LUCI_DEPENDS:= \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-ssr-server \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin:v2ray-plugin \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray-core
 
@@ -39,10 +37,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
 config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan
 	bool "Include Trojan"
 	default y if i386||x86_64||arm||aarch64
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
-	bool "Include V2ray"
-	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin
 	bool "Include Shadowsocks V2ray Plugin"
