@@ -286,6 +286,8 @@ LOCALHOST_TCP_PROXY_MODE=$(config_t_get global localhost_tcp_proxy_mode default)
 LOCALHOST_UDP_PROXY_MODE=$(config_t_get global localhost_udp_proxy_mode default)
 [ "$LOCALHOST_TCP_PROXY_MODE" == "default" ] && LOCALHOST_TCP_PROXY_MODE=$TCP_PROXY_MODE
 [ "$LOCALHOST_UDP_PROXY_MODE" == "default" ] && LOCALHOST_UDP_PROXY_MODE=$UDP_PROXY_MODE
+RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
+[ -f "${RESOLVFILE}" ] && [ -s "${RESOLVFILE}" ] || RESOLVFILE=/tmp/resolv.conf.auto
 
 load_config() {
 	[ "$ENABLED" != 1 ] && NO_PROXY=1
@@ -304,8 +306,6 @@ load_config() {
 		if [ -n "${DEFAULT_DNS}" ]; then
 			IS_DEFAULT_DNS=1
 		else
-			RESOLVFILE=/tmp/resolv.conf.d/resolv.conf.auto
-			[ -f "${RESOLVFILE}" ] && [ -s "${RESOLVFILE}" ] || RESOLVFILE=/tmp/resolv.conf.auto
 			DEFAULT_DNS=$(echo -n $(sed -n 's/^nameserver[ \t]*\([^ ]*\)$/\1/p' "${RESOLVFILE}" | grep -v "0.0.0.0" | grep -v "127.0.0.1" | grep -v "^::$" | head -2) | tr ' ' ',')
 		fi
 		LOCAL_DNS="${DEFAULT_DNS:-119.29.29.29}"
@@ -501,13 +501,15 @@ run_redir() {
 			local proto="-proto tcp"
 			[ "$UDP_NODE" == "tcp" ] && proto="-proto tcp,udp"
 			local extra_param="${proto}"
-			[ "$(config_t_get global tcp_node_socks 0)" = "1" ] && {
-				local socks_param="-socks_proxy_port $(config_t_get global tcp_node_socks_port 1080)"
+			[ "$tcp_node_socks" = "1" ] && {
+				local socks_param="-socks_proxy_port $tcp_node_socks_port"
 				extra_param="${extra_param} ${socks_param}"
+				config_file=$(echo $config_file | sed "s/TCP/TCP_SOCKS_$tcp_node_socks_id/g")
 			}
-			[ "$(config_t_get global tcp_node_http 0)" = "1" ] && {
-				local http_param="-http_proxy_port $(config_t_get global tcp_node_http_port 1180)"
+			[ "$tcp_node_http" = "1" ] && {
+				local http_param="-http_proxy_port $tcp_node_http_port"
 				extra_param="${extra_param} ${http_param}"
+				config_file=$(echo $config_file | sed "s/TCP/TCP_HTTP_$tcp_node_http_id/g")
 			}
 			lua $API_GEN_XRAY -node $node -redir_port $local_port -loglevel $loglevel $extra_param > $config_file
 			ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $log_file -config="$config_file"
@@ -566,14 +568,14 @@ run_redir() {
 		unset _socks_flag _socks_address _socks_port _socks_username _socks_password
 		
 		[ "$type" != "xray" ] && {
-			[ "$(config_t_get global tcp_node_socks 0)" = "1" ] && {
-				local port=$(config_t_get global tcp_node_socks_port 1080)
-				local config_file=$TMP_PATH/SOCKS_TCP.json
-				local log_file=$TMP_PATH/SOCKS_TCP.log
+			[ "$tcp_node_socks" = "1" ] && {
+				local port=$tcp_node_socks_port
+				local config_file=$TMP_PATH/SOCKS_$tcp_node_socks_id.json
+				local log_file=$TMP_PATH/SOCKS_$tcp_node_socks_id.log
 				local http_port=0
-				local http_config_file=$TMP_PATH/HTTP2SOCKS_TCP.json
-				[ "$(config_t_get global tcp_node_http 0)" = "1" ] && {
-					http_port=$(config_t_get global tcp_node_http_port 1180)
+				local http_config_file=$TMP_PATH/HTTP2SOCKS_$tcp_node_http_id.json
+				[ "$tcp_node_http" = "1" ] && {
+					http_port=$tcp_node_http_port
 				}
 				run_socks TCP $TCP_NODE "0.0.0.0" $port $config_file $http_port $http_config_file
 			}
@@ -629,6 +631,17 @@ start_socks() {
 		local log_file=$TMP_PATH/SOCKS_${id}.log
 		local http_port=$(config_n_get $id http_port 0)
 		local http_config_file=$TMP_PATH/HTTP2SOCKS_${id}.json
+		[ "$node" == "tcp" ] && {
+			tcp_node_socks=1
+			tcp_node_socks_port=$port
+			tcp_node_socks_id=$id
+			[ "$http_port" != "0" ] && {
+				tcp_node_http=1
+				tcp_node_http_port=$http_port
+				tcp_node_http_id=$id
+			}
+			continue
+		}
 		run_socks $id $node "0.0.0.0" $port $config_file $http_port $http_config_file
 	done
 }
