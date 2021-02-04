@@ -30,6 +30,8 @@ function to_check(arch)
 
     if file_tree == "amd64" then file_tree = "64" end
     if file_tree == "386" then file_tree = "32" end
+    if file_tree == "mipsle" then file_tree = "mips32le" end
+    if file_tree == "mips" then file_tree = "mips32" end
 
     local json = api.get_api_json(xray_api)
 
