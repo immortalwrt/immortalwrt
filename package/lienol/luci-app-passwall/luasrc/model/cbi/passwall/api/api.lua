@@ -57,6 +57,7 @@ end
 function get_valid_nodes()
     local nodes = {}
     uci:foreach(appname, "nodes", function(e)
+        e.id = e[".name"]
         if e.type and e.remarks then
             if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt") then
                 e.remarks_name = "%s：[%s] " % {i18n.translatef(e.type .. e.protocol), e.remarks}
