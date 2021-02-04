@@ -232,8 +232,8 @@ msgstr "DoH Bootstrap DNS"
 msgid "The Bootstrap DNS server is used to resolve the IP address of the DoH resolver you specify as the upstream."
 msgstr "Bootstrap DNS 服务器用于解析您指定为上游的 DoH 解析器的 IP 地址。"
 
-msgid "China list cannot be used together with outside China list!"
-msgstr "中国列表不能和中国列表外一起使用！"
+msgid "China list or gfwlist cannot be used together with outside China list!"
+msgstr "中国列表不能和中国列表外或防火墙表一起使用！"
 
 msgid "Cache Resolved"
 msgstr "缓存解析结果"
