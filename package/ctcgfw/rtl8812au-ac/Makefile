@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2020 stepheny
 #
-# Copyright (C) 2021 CTCGFW Project-OpenWrt
+# Copyright (C) 2021 ImmortalWrt
 # <https://project-openwrt.eu.org>
 #
 # This is free software, licensed under the GNU General Public License v3.

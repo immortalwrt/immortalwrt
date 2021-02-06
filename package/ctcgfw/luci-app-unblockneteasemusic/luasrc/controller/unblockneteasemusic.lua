@@ -1,6 +1,6 @@
 -- This is a free software, use it under GNU General Public License v3.0.
--- Created By [CTCGFW]Project OpenWRT
--- https://github.com/project-openwrt
+-- Created By ImmortalWrt
+-- https://github.com/immortalwrt
 
 module("luci.controller.unblockneteasemusic", package.seeall)
 
@@ -28,7 +28,7 @@ function act_status()
 end
 
 function update_luci()
-	luci_cloud_ver=luci.sys.exec("curl -s 'https://github.com/project-openwrt/luci-app-unblockneteasemusic/releases/latest'| grep -Eo '[0-9\.]+\-[0-9]+'")
+	luci_cloud_ver=luci.sys.exec("curl -s 'https://github.com/immortalwrt/luci-app-unblockneteasemusic/releases/latest'| grep -Eo '[0-9\.]+\-[0-9]+'")
 	if not luci_cloud_ver then
 		return "1"
 	else

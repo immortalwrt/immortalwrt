@@ -1,26 +1,22 @@
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
 #
-# This is free software, licensed under the GNU General Public License v3.
+# This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=rtl88x2bu
-PKG_RELEASE=1
+PKG_NAME:=rtl8189es
+PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/cilynx/rtl88x2bu.git
+PKG_SOURCE_URL:=https://github.com/jwrdegoede/rtl8189ES_linux.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-07-21
-PKG_SOURCE_VERSION:=a2abcaf523dfab2afeda8cc2cdb5e3c9510fc5f3
-PKG_MIRROR_HASH:=26d5504c9323c9c133265f2c2e4213acca0ddf390b1b4399d1003e9fd45f9368
+PKG_SOURCE_DATE:=2020-06-15
+PKG_SOURCE_VERSION:=42f293406700988c10655aaa5ee865b411389aeb
+PKG_MIRROR_HASH:=1609e1dd2c8c7b664c9c012ff6b2f04d6a3989573d01b6e31e5988a88b2f8ef0
 
-PKG_LICENSE:=GPL-2.0
-PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINTER:=ElonH <elonh@project-openwrt.eu.org>
-
+PKG_MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
 PKG_BUILD_PARALLEL:=1
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
@@ -28,13 +24,12 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/rtl88x2bu
+define KernelPackage/rtl8189es
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek 8812BU/8822BU support
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
-  FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
-  AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
-  PROVIDES:=kmod-rtl88x2bu
+  TITLE:=Realtek RTL8189ETV SDIO WiFi
+  DEPENDS:=+kmod-cfg80211 +kmod-mmc +@DRIVER_11N_SUPPORT
+  FILES:=$(PKG_BUILD_DIR)/rtl8189es.ko
+  AUTOLOAD:=$(call AutoProbe,rtl8189es)
 endef
 
 NOSTDINC_FLAGS = \
@@ -47,18 +42,14 @@ NOSTDINC_FLAGS = \
 	-include backport/autoconf.h \
 	-include backport/backport.h
 
+EXTRA_KCONFIG:= \
+	CONFIG_RTL8189ES=m \
+	USER_MODULE_NAME=rtl8189es
+
 EXTRA_CFLAGS:= \
 	-DRTW_SINGLE_WIPHY \
 	-DRTW_USE_CFG80211_STA_EVENT \
-	-DCONFIG_RADIO_WORK \
-	-DCONFIG_IOCTL_CFG80211 \
-	-DCONFIG_CONCURRENT_MODE
-
-EXTRA_KCONFIG:= \
-	CONFIG_POWER_SAVING=n \
-	CONFIG_RTW_DEBUG=y \
-	CONFIG_RTL8822BU=m \
-	USER_MODULE_NAME=rtl88x2bu
+	-DCONFIG_IOCTL_CFG80211
 
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
@@ -73,4 +64,9 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,rtl88x2bu))
+define KernelPackage/rtl8189es/install
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_DATA) ./files/50_rtl-wifi $(1)/etc/uci-defaults/
+endef
+
+$(eval $(call KernelPackage,rtl8189es))

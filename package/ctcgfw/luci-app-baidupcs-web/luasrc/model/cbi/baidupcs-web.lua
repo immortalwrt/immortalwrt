@@ -1,7 +1,7 @@
 --[[
 
 Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
-Copyright (C) 2020 [CTCGFW] Project OpenWRT
+Copyright (C) 2021 ImmortalWrt
 
 THIS IS FREE SOFTWARE, LICENSED UNDER GPLv3
 

@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2010 [CTCGFW] Project OpenWRT
+# Copyright (C) 2021 ImmortalWrt
 
 . /lib/functions.sh
 . /lib/functions/procd.sh

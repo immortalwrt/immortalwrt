@@ -1,5 +1,5 @@
--- Created By [CTCGFW]Project-OpenWrt
--- https://github.com/project-openwrt
+-- Created By ImmortalWrt
+-- https://github.com/immortalwrt
 
 mp = Map("gost", translate("Gost"))
 mp.description = translate("A simple security tunnel written in Golang.")
