@@ -1,8 +1,8 @@
--- Created By [CTCGFW]Project-OpenWrt
+-- Created By ImmortalWrt
 -- https://github.com/project-openwrt
 
 mp = Map("unblockneteasemusic-mini", translate("解除网易云音乐播放限制 (Mini)"))
-mp.description = translate("原理：采用 [QQ/酷狗/酷我/咪咕] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>由 [CTCGFW]Project-OpenWrt & hyird & Sunsky 提供服务器支持<br/>详细说明参见：https://github.com/project-openwrt/luci-app-unblockneteasemusic-mini")
+mp.description = translate("原理：采用 [QQ/酷狗/酷我/咪咕] 等音源，替换网易云音乐 无版权/收费 歌曲链接<br/>由 Project ImmortalWrt 提供服务器支持<br/>详细说明参见：https://github.com/immortalwrt/luci-app-unblockneteasemusic-mini")
 
 mp:section(SimpleSection).template = "unblockneteasemusic-mini/unblockneteasemusic_mini_status"
 
@@ -16,7 +16,6 @@ enable.default = 0
 enable.rmempty = false
 
 select_server = s:option(ListValue, "select_server", translate("服务器位置"))
-select_server:value("tencent_shanghai_nodejs", translate("[CTCGFW] 腾讯云上海（高音质）"))
 select_server:value("ucloud_guangzhou_nodejs", translate("[CTCGFW] UCloud广州（高音质）"))
 select_server.description = translate("请合理使用本插件与各个服务器，请勿滥用")
 select_server.default = "tencent_shanghai_nodejs"
