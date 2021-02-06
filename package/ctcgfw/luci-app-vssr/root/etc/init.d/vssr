@@ -418,7 +418,7 @@ start_redir() {
         ucmd=$(find_bin $utype)
         gen_config_file $UDP_RELAY_SERVER 1 0
         last_config_file=$CONFIG_UDP_FILE
-        case "$stype" in
+        case "$utype" in
         ss | ssr)
             case "$(uci_get_by_name $UDP_RELAY_SERVER auth_enable)" in
             1 | on | true | yes | enabled) ARG_OTA="-A" ;;
