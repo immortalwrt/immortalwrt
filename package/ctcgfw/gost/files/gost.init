@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Created By [CTCGFW]Project OpenWRT
+# Created By ImmortalWrt
 # https://github.com/project-openwrt
 
 START=99

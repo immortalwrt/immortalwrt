@@ -2,7 +2,7 @@
 #
 # This is a free software, use it under GNU General Public License v3.0.
 #
-# Created By [CTCGFW]Project-OpenWrt
+# Created By ImmortalWrt
 # https://github.com/project-openwrt
 
 include $(TOPDIR)/rules.mk
@@ -14,7 +14,7 @@ PKG_NAME:=luci-app-unblockneteasemusic
 PKG_VERSION:=2.8
 PKG_RELEASE:=8
 
-PKG_MAINTAINER:=[CTCGFW]Project-OpenWrt
+PKG_MAINTAINER:=ImmortalWrt
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

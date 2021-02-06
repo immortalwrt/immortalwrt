@@ -21,7 +21,7 @@ end
 if nixio.fs.access("/usr/share/UnblockNeteaseMusic/app.js") then
 apptype:value("nodejs", translate("NodeJS 版本"))
 end
-apptype:value("cloud", translate("云解锁（ [CTCGFW] 云服务器）"))
+apptype:value("cloud", translate("云解锁（ 云服务器）"))
 
 speedtype = s:option(Value, "musicapptype", translate("音源选择"))
 speedtype:value("default", translate("默认"))
@@ -38,7 +38,7 @@ speedtype:depends("apptype", "nodejs")
 speedtype:depends("apptype", "go")
 
 cloudserver = s:option(Value, "cloudserver", translate("服务器位置"))
-cloudserver:value("uc-gz.service.project-openwrt.eu.org:30000:30001", translate("[CTCGFW] UCloud广州（高音质）"))
+cloudserver:value("uc-gz.service.project-openwrt.eu.org:30000:30001", translate("[ImmortalWrt] UCloud广州（高音质）"))
 cloudserver.description = translate("自定义服务器格式为 IP[域名]:HTTP端口:HTTPS端口<br />如果服务器为LAN内网IP，需要将这个服务器IP放入例外客户端 (不代理HTTP和HTTPS)")
 cloudserver.default = "uc-gz.service.project-openwrt.eu.org:30000:30001"
 cloudserver.rmempty = true

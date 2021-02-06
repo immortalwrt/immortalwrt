@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2020 [CTCGFW] Project OpenWRT
+# Copyright (C) 2021 ImmortalWrt
 
 START=99
 STOP=10

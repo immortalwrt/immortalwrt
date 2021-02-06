@@ -1,6 +1,6 @@
 -- This is a free software, use it under GNU General Public License v3.0.
--- Created By [CTCGFW]Project OpenWRT
--- https://github.com/project-openwrt
+-- Created By ImmortalWrt
+-- https://github.com/immortalwrt
 
 mp = Map("ssocks", translate("sSocks Server"))
 mp.description = translate("sSocks Server is a simple, small, and easy-to-use Socks5 server program, but supports TCP on IPv4 only.")
