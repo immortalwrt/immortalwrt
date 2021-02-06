@@ -2,7 +2,7 @@
 #
 # This is a free software, use it under GNU General Public License v3.0.
 #
-# Created By [CTCGFW]Project-OpenWrt
+# Created By ImmortalWrt
 # https://github.com/project-openwrt
 
 include $(TOPDIR)/rules.mk

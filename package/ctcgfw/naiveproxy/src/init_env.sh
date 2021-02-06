@@ -1,5 +1,5 @@
 #!/bin/bash
-# [CTCGFW] Project-OpenWrt
+# Project ImmortalWrt
 # Use it under GPLv3.
 # --------------------------------------------------------
 # Init build dependencies for naiveproxy

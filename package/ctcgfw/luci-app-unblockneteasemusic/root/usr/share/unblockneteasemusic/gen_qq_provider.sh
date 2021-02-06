@@ -1,5 +1,5 @@
 #!/bin/bash
-# Created By [CTCGFW]Project OpenWRT
+# Created By ImmortalWrt
 # https://github.com/project-openwrt
 
 header="const cache = require('../cache')

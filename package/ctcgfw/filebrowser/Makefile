@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020 Project OpenWrt
+# Copyright (C) 2021 ImmortalWrt
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE.txt for more information.
 #

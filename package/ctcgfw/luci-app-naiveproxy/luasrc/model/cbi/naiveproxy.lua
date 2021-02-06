@@ -1,5 +1,5 @@
--- Created By [CTCGFW]Project-OpenWrt
--- https://github.com/project-openwrt
+-- Created By ImmortalWrt
+-- https://github.com/immortalwrt
 
 mp = Map("naiveproxy", translate("NaiveProxy"))
 mp.description = translate("NaïveProxy uses Chrome's network stack to camouflage traffic with strong censorship resistance and low detectability. Reusing Chrome's stack also ensures best practices in performance and security.")

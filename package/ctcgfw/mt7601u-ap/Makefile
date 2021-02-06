@@ -1,7 +1,7 @@
 #
-# Copyright (C) 2020 CTCGFW Project-OpenWrt
+# Copyright (C) 2021 ImmortalWrt
 #
-# This is free software, licensed under the GNU General Public License v2.
+# This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
 
@@ -16,10 +16,9 @@ PKG_SOURCE_URL:=https://github.com/Anthony96922/mt7601u-ap.git
 PKG_SOURCE_VERSION:=624307427149e53b75937ccbe7cb235ec3ef2f58
 PKG_MIRROR_HASH:=70e8f7e94ddca09e1f55ef1b30a47fa7c504750ec654bc0c500f1a3d491eca97
 
-PKG_MAINTAINER:=[CTCGFW] Project OpenWrt
 PKG_BUILD_PARALLEL:=1
 
-PKG_LICENSE:=GPLv2
+PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/kernel.mk
