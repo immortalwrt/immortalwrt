@@ -107,7 +107,7 @@ define Device/linksys_wrt1900ac-v1
   DEVICE_ALT0_MODEL := Mamba
   DEVICE_DTS := armada-xp-linksys-mamba
   DEVICE_PACKAGES += mwlwifi-firmware-88w8864
-  KERNEL_SIZE := 3072k
+  KERNEL_SIZE := 4096k
   SUPPORTED_DEVICES += armada-xp-linksys-mamba linksys,mamba
   DEFAULT := n
 endef
