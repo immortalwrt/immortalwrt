@@ -49,6 +49,10 @@ for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
 o:depends("auto_update", 1)
 
+o = s:option(Value, "xray_location_asset", translate("Location of Xray asset"), translate("This variable specifies a directory where geoip.dat and geosite.dat files are."))
+o.default = "/usr/share/xray/"
+o.rmempty = false
+
 s = m:section(TypedSection, "shunt_rules", "Xray" .. translate("Shunt") .. translate("Rule"))
 s.template = "cbi/tblsection"
 s.anonymous = false

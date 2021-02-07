@@ -412,6 +412,12 @@ msgstr "V2ray 分流"
 msgid "Preproxy"
 msgstr "前置代理"
 
+msgid "Direct Connection"
+msgstr "直连"
+
+msgid "Blackhole"
+msgstr "黑洞"
+
 msgid "Use the default node for the transit."
 msgstr "使用默认节点代理转发。"
 
@@ -742,6 +748,12 @@ msgstr "周"
 msgid "oclock"
 msgstr "点"
 
+msgid "Location of Xray asset"
+msgstr "Xray 资源文件目录"
+
+msgid "This variable specifies a directory where geoip.dat and geosite.dat files are."
+msgstr "此变量指定geoip.dat和geosite.dat文件所在的目录。"
+
 msgid "Update..."
 msgstr "更新中"
 
@@ -1053,6 +1065,12 @@ msgstr "节点数量"
 
 msgid "You can only set up a maximum of %s nodes for the time being, Used for access control."
 msgstr "目前最多只能设置%s个节点，用于给访问控制使用。"
+
+msgid "IPv6 TProxy"
+msgstr "IPv6透明代理(TProxy)"
+
+msgid "Experimental feature.Make sure that your node supports IPv6."
+msgstr "实验特性，请确保你的节点支持IPv6"
 
 msgid "Status info"
 msgstr "状态信息"

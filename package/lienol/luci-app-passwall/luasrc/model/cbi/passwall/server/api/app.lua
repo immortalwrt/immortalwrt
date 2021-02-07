@@ -155,7 +155,7 @@ local function start()
 end
 
 local function stop()
-    cmd(string.format("ps -w | grep -v 'grep' | grep '%s/' | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &", CONFIG_PATH))
+    cmd(string.format("top -bn1 | grep -v 'grep' | grep '%s/' | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1", CONFIG_PATH))
     cmd("iptables -D INPUT -j PSW-SERVER 2>/dev/null")
     cmd("iptables -F PSW-SERVER 2>/dev/null")
     cmd("iptables -X PSW-SERVER 2>/dev/null")
