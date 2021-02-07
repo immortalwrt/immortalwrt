@@ -190,8 +190,6 @@ load_acl() {
 	#  加载TCP默认代理模式
 	local ipt_tmp=$ipt_n
 	local is_tproxy msg
-	unset is_tproxy msg
-
 	if [ "$TCP_PROXY_MODE" != "disable" ]; then
 		[ "$TCP_NO_REDIR_PORTS" != "disable" ] && $ipt_tmp -A PSW $(comment "默认") -p tcp -m multiport --dport $TCP_NO_REDIR_PORTS -j RETURN
 		ipt_tmp=$ipt_n
@@ -232,6 +230,7 @@ load_acl() {
 		}
 	fi
 	$ipt_m -A PSW $(comment "默认") -p udp -j RETURN
+	unset is_tproxy msg
 }
 
 filter_haproxy() {
@@ -397,16 +396,16 @@ add_firewall_rule() {
 	lan_ifname=$(uci -q -p /var/state get network.lan.ifname)
 	[ -n "$lan_ifname" ] && {
 		lan_ip=$(ip address show $lan_ifname | grep -w "inet" | awk '{print $2}')
-		echolog "本机网段互访直连：${lan_ip}"
+		#echolog "本机网段互访直连：${lan_ip}"
 		[ -n "$lan_ip" ] && ipset -! add $IPSET_LANIPLIST $lan_ip >/dev/null 2>&1 &
 	}
 
 	local ISP_DNS=$(cat $RESOLVFILE 2>/dev/null | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | sort -u | grep -v 0.0.0.0 | grep -v 127.0.0.1)
 	[ -n "$ISP_DNS" ] && {
-		echolog "处理 ISP DNS 例外..."
+		#echolog "处理 ISP DNS 例外..."
 		for ispip in $ISP_DNS; do
 			ipset -! add $IPSET_WHITELIST $ispip >/dev/null 2>&1 &
-			echolog "  - 追加到白名单：${ispip}"
+			#echolog "  - 追加到白名单：${ispip}"
 		done
 	}
 	
