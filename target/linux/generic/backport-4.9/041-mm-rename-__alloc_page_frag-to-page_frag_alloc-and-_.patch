@@ -117,7 +117,7 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  }
  
  void *napi_alloc_frag(unsigned int fragsz)
-@@ -445,7 +445,7 @@ struct sk_buff *__netdev_alloc_skb(struc
+@@ -449,7 +449,7 @@ struct sk_buff *__netdev_alloc_skb(struc
  	local_irq_save(flags);
  
  	nc = this_cpu_ptr(&netdev_alloc_cache);
@@ -126,7 +126,7 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  	pfmemalloc = nc->pfmemalloc;
  
  	local_irq_restore(flags);
-@@ -514,7 +514,7 @@ struct sk_buff *__napi_alloc_skb(struct
+@@ -518,7 +518,7 @@ struct sk_buff *__napi_alloc_skb(struct
  	if (sk_memalloc_socks())
  		gfp_mask |= __GFP_MEMALLOC;
  

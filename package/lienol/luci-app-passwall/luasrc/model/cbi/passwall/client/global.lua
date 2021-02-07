@@ -7,31 +7,20 @@ m = Map(appname)
 
 local nodes_table = {}
 for k, e in ipairs(api.get_valid_nodes()) do
-    nodes_table[#nodes_table + 1] = {
-        id = e[".name"],
-        remarks = e.remarks_name,
-        type = e["type"]
-    }
+    nodes_table[#nodes_table + 1] = e
 end
 
 local socks_table = {}
-if tonumber(m:get("@global[0]", "tcp_node_socks") or 0) == 1 then
-    local id = "127.0.0.1" .. ":" .. m:get("@global[0]", "tcp_node_socks_port")
-    socks_table[#socks_table + 1] = {
-        id = id,
-        remarks = id .. " - " .. translate("TCP Node")
-    }
-end
 uci:foreach(appname, "socks", function(s)
     if s.enabled == "1" and s.node then
         local id, remarks
-        local same, i = s.node:match("^(tcp)([1-9])$")
+        local same, i = s.node:match("^(tcp)")
         if same then
-            remarks = translatef("Same as the tcp %s node", i)
+            remarks = translatef("Same as the tcp node")
         else
             for k, n in pairs(nodes_table) do
                 if (s.node == n.id) then
-                    remarks = n.remarks; break
+                    remarks = n.remarks_name; break
                 end
             end
         end
@@ -65,6 +54,18 @@ local doh_validate = function(self, value, t)
     return nil, translate("DoH request address") .. " " .. translate("Format must be:") .. " URL,IP"
 end
 
+local redir_mode_validate = function(self, value, t)
+    local tcp_proxy_mode_v = tcp_proxy_mode:formvalue(t) or ""
+    local udp_proxy_mode_v = udp_proxy_mode:formvalue(t) or ""
+    local localhost_tcp_proxy_mode_v = localhost_tcp_proxy_mode:formvalue(t) or ""
+    local localhost_udp_proxy_mode_v = localhost_udp_proxy_mode:formvalue(t) or ""
+    local s = tcp_proxy_mode_v .. udp_proxy_mode_v .. localhost_tcp_proxy_mode_v .. localhost_udp_proxy_mode_v
+    if s:find("chnroute") and s:find("returnhome") then
+        return nil, translate("China list cannot be used together with outside China list!")
+    end
+    return value
+end
+
 local status = m:get("@global_other[0]", "status") or ""
 if status:find("big_icon") then
     m:append(Template(appname .. "/global/status"))
@@ -83,8 +84,7 @@ o = s:taboption("Main", Flag, "enabled", translate("Main switch"))
 o.rmempty = false
 
 ---- TCP Node
-tcp_node = s:taboption("Main", ListValue, "tcp_node", translate("TCP Node"))
-tcp_node.title = translate("TCP Node")
+tcp_node = s:taboption("Main", ListValue, "tcp_node", "<a style='color: red'>" .. translate("TCP Node") .. "</a>")
 tcp_node.description = ""
 --tcp_node.description = translate("For proxy specific list.")
 --tcp_node.description = o.description .. "<br />"
@@ -97,54 +97,81 @@ if current_node and current_node ~= "" and current_node ~= "nil" then
             local url = api.url("node_config", current_node)
             tcp_node.description = tcp_node.description .. translatef("Current node: %s", string.format('<a href="%s">%s</a>', url, remarks)) .. "<br />"
         end
-        if n.protocol and n.protocol == "_shunt" then
-            uci:foreach(appname, "shunt_rules", function(e)
-                local id = e[".name"]
-                local remarks = translate(e.remarks)
-                if n[id] and n[id] ~= "nil" then
-                    local url = api.url("node_config", n[id])
-                    local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                    tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
-                end
-            end)
-            local id = "default_node"
-            local remarks = translate("Default")
-            if n[id] and n[id] ~= "nil" then
-                local url = api.url("node_config", n[id])
-                local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
-            end
-            local id = "main_node"
-            local remarks = translate("Default") .. translate("Preproxy")
-            if n[id] and n[id] ~= "nil" then
-                local url = api.url("node_config", n[id])
-                local r = api.get_full_node_remarks(uci:get_all(appname, n[id]))
-                tcp_node.description = tcp_node.description .. remarks .. "：" .. string.format('<a href="%s">%s</a>', url, r) .. "<br />"
-            end
-        end
     end
 end
 tcp_node:value("nil", translate("Close"))
 
-udp_node = s:taboption("Main", ListValue, "udp_node", translate("UDP Node"))
+-- 分流
+if has_xray and #nodes_table > 0 then
+    local normal_list = {}
+    local shunt_list = {}
+    for k, v in pairs(nodes_table) do
+        if v.node_type == "normal" then
+            normal_list[#normal_list + 1] = v
+        end
+        if v.type == "Xray" and v.protocol == "_shunt" then
+            shunt_list[#shunt_list + 1] = v
+        end
+    end
+    if #normal_list > 0 and #shunt_list > 0 then
+        uci:foreach(appname, "shunt_rules", function(e)
+            local id = e[".name"]
+            o = s:taboption("Main", ListValue, id .. "_node", string.format('* <a href="%s">%s</a>', api.url("shunt_rules", id), translate(e.remarks)))
+            for k, v in pairs(shunt_list) do
+                o:depends("tcp_node", v.id)
+                o.cfgvalue = function(self, section)
+                    return m:get(v.id, id) or "nil"
+                end
+                o.write = function(self, section, value)
+                    m:set(v.id, id, value)
+                end
+            end
+            o:value("nil", translate("Close"))
+            for k, v in pairs(normal_list) do
+                o:value(v.id, v.remarks_name)
+            end
+        end)
+
+        local id = "default_node"
+        o = s:taboption("Main", ListValue, id, "* " .. translate("Default"))
+        for k, v in pairs(shunt_list) do
+            o:depends("tcp_node", v.id)
+            o.cfgvalue = function(self, section)
+                return m:get(v.id, id) or "nil"
+            end
+            o.write = function(self, section, value)
+                m:set(v.id, id, value)
+            end
+        end
+        o:value("nil", translate("Close"))
+        for k, v in pairs(normal_list) do
+            o:value(v.id, v.remarks_name)
+        end
+        
+        local id = "main_node"
+        o = s:taboption("Main", ListValue, id, "* " .. translate("Default") .. translate("Preproxy"))
+        for k, v in pairs(shunt_list) do
+            o:depends("tcp_node", v.id)
+            o.cfgvalue = function(self, section)
+                return m:get(v.id, id) or "nil"
+            end
+            o.write = function(self, section, value)
+                m:set(v.id, id, value)
+            end
+        end
+        o:value("nil", translate("Close"))
+        for k, v in pairs(normal_list) do
+            o:value(v.id, v.remarks_name)
+        end
+    end
+end
+
+udp_node = s:taboption("Main", ListValue, "udp_node", "<a style='color: red'>" .. translate("UDP Node") .. "</a>")
 udp_node:value("nil", translate("Close"))
-udp_node.title = translate("UDP Node")
 --udp_node.description = translate("For proxy game network, DNS hijack etc.") .. "<br />" .. translate("The selected server will not use Kcptun.")
 udp_node:value("tcp_", translate("Same as the tcp node"))
 --udp_node:value("tcp", translate("Same as the tcp node"))
 --udp_node:value("tcp_", translate("Same as the tcp node") .. "（" .. translate("New process") .. "）")
-
-tcp_node_socks = s:taboption("Main", Flag, "tcp_node_socks", translate("Enable") .. translate("TCP Node") .. "Socks")
-o = s:taboption("Main", Value, "tcp_node_socks_port", "Socks" .. translate("Listen Port"))
-o.default = 1080
-o.datatype = "port"
-o:depends("tcp_node_socks", true)
-
-tcp_node_http = s:taboption("Main", Flag, "tcp_node_http", translate("Enable") .. translate("TCP Node") .. "Http")
-o = s:taboption("Main", Value, "tcp_node_http_port", "HTTP" .. translate("Listen Port"))
-o.default = 1180
-o.datatype = "port"
-o:depends("tcp_node_http", true)
 
 s:tab("DNS", translate("DNS"))
 
@@ -273,47 +300,47 @@ end
 s:tab("Proxy", translate("Mode"))
 
 ---- TCP Default Proxy Mode
-o = s:taboption("Proxy", ListValue, "tcp_proxy_mode", "TCP" .. translate("Default") .. translate("Proxy Mode"))
+tcp_proxy_mode = s:taboption("Proxy", ListValue, "tcp_proxy_mode", "TCP" .. translate("Default") .. translate("Proxy Mode"))
 -- o.description = translate("If not available, try clearing the cache.")
-o.default = "chnroute"
-o.rmempty = false
-o:value("disable", translate("No Proxy"))
-o:value("global", translate("Global Proxy"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Not China List"))
-o:value("returnhome", translate("China List"))
+tcp_proxy_mode:value("disable", translate("No Proxy"))
+tcp_proxy_mode:value("global", translate("Global Proxy"))
+tcp_proxy_mode:value("gfwlist", translate("GFW List"))
+tcp_proxy_mode:value("chnroute", translate("Not China List"))
+tcp_proxy_mode:value("returnhome", translate("China List"))
+tcp_proxy_mode.default = "chnroute"
+--tcp_proxy_mode.validate = redir_mode_validate
 
 ---- UDP Default Proxy Mode
-o = s:taboption("Proxy", ListValue, "udp_proxy_mode", "UDP" .. translate("Default") .. translate("Proxy Mode"))
-o.default = "chnroute"
-o.rmempty = false
-o:value("disable", translate("No Proxy"))
-o:value("global", translate("Global Proxy"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode"))
-o:value("returnhome", translate("China List"))
+udp_proxy_mode = s:taboption("Proxy", ListValue, "udp_proxy_mode", "UDP" .. translate("Default") .. translate("Proxy Mode"))
+udp_proxy_mode:value("disable", translate("No Proxy"))
+udp_proxy_mode:value("global", translate("Global Proxy"))
+udp_proxy_mode:value("gfwlist", translate("GFW List"))
+udp_proxy_mode:value("chnroute", translate("Game Mode"))
+udp_proxy_mode:value("returnhome", translate("China List"))
+udp_proxy_mode.default = "chnroute"
+--udp_proxy_mode.validate = redir_mode_validate
 
 ---- Localhost TCP Proxy Mode
-o = s:taboption("Proxy", ListValue, "localhost_tcp_proxy_mode", translate("Router Localhost") .. "TCP" .. translate("Proxy Mode"))
+localhost_tcp_proxy_mode = s:taboption("Proxy", ListValue, "localhost_tcp_proxy_mode", translate("Router Localhost") .. "TCP" .. translate("Proxy Mode"))
 -- o.description = translate("The server client can also use this rule to scientifically surf the Internet.")
-o:value("default", translate("Default"))
-o:value("global", translate("Global Proxy"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Not China List"))
-o:value("returnhome", translate("China List"))
-o.default = "default"
-o.rmempty = false
+localhost_tcp_proxy_mode:value("default", translate("Default"))
+localhost_tcp_proxy_mode:value("global", translate("Global Proxy"))
+localhost_tcp_proxy_mode:value("gfwlist", translate("GFW List"))
+localhost_tcp_proxy_mode:value("chnroute", translate("Not China List"))
+localhost_tcp_proxy_mode:value("returnhome", translate("China List"))
+localhost_tcp_proxy_mode.default = "default"
+--localhost_tcp_proxy_mode.validate = redir_mode_validate
 
 ---- Localhost UDP Proxy Mode
-o = s:taboption("Proxy", ListValue, "localhost_udp_proxy_mode", translate("Router Localhost") .. "UDP" .. translate("Proxy Mode"))
-o:value("default", translate("Default"))
-o:value("global", translate("Global Proxy"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode"))
-o:value("returnhome", translate("China List"))
-o:value("disable", translate("No Proxy"))
-o.default = "default"
-o.rmempty = false
+localhost_udp_proxy_mode = s:taboption("Proxy", ListValue, "localhost_udp_proxy_mode", translate("Router Localhost") .. "UDP" .. translate("Proxy Mode"))
+localhost_udp_proxy_mode:value("default", translate("Default"))
+localhost_udp_proxy_mode:value("global", translate("Global Proxy"))
+localhost_udp_proxy_mode:value("gfwlist", translate("GFW List"))
+localhost_udp_proxy_mode:value("chnroute", translate("Game Mode"))
+localhost_udp_proxy_mode:value("returnhome", translate("China List"))
+localhost_udp_proxy_mode:value("disable", translate("No Proxy"))
+localhost_udp_proxy_mode.default = "default"
+localhost_udp_proxy_mode.validate = redir_mode_validate
 
 s:tab("log", translate("Log"))
 o = s:taboption("log", Flag, "close_log_tcp", translate("Close") .. translate("Log") .. " " .. translate("TCP Node"))
@@ -366,6 +393,7 @@ o.default = 1
 o.rmempty = false
 
 socks_node = s:option(ListValue, "node", translate("Socks Node"))
+socks_node:value("tcp", translate("Same as the tcp node"))
 
 o = s:option(Value, "port", "Socks" .. translate("Listen Port"))
 o.default = 9050
@@ -379,32 +407,17 @@ if has_xray then
 end
 
 for k, v in pairs(nodes_table) do
-    tcp_node:value(v.id, v.remarks)
-    tcp_node_socks:depends("tcp_node", v.id)
-    if v.type == "Xray" then
-        if has_xray then
-            tcp_node_http:depends("tcp_node", v.id)
-        end
-    else
-        tcp_node_http:depends("tcp_node_socks", true)
-    end
-    udp_node:value(v.id, v.remarks)
+    tcp_node:value(v.id, v.remarks_name)
+    udp_node:value(v.id, v.remarks_name)
     if v.type == "Socks" then
         if has_xray then
-            socks_node:value(v.id, v.remarks)
+            socks_node:value(v.id, v.remarks_name)
         end
     else
-        socks_node:value(v.id, v.remarks)
+        socks_node:value(v.id, v.remarks_name)
     end
 end
 
 m:append(Template(appname .. "/global/footer"))
-
---[[
-local apply = luci.http.formvalue("cbi.apply")
-if apply then
-os.execute("/etc/init.d/" .. appname .." restart")
-end
---]]
 
 return m

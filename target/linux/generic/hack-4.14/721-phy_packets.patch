@@ -136,7 +136,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  #include <net/protocol.h>
  #include <net/dst.h>
-@@ -589,6 +590,22 @@ skb_fail:
+@@ -593,6 +594,22 @@ skb_fail:
  }
  EXPORT_SYMBOL(__napi_alloc_skb);
  

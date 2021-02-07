@@ -1,5 +1,5 @@
--- Created By [CTCGFW]Project-OpenWrt
--- https://github.com/project-openwrt
+-- Created By ImmortalWrt
+-- https://github.com/immortalwrt
 
 m = Map("gowebdav", translate("GoWebDav"), translate("GoWebDav is a tiny, simple, fast WevDav server."))
 
