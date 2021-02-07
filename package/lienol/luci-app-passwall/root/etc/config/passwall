@@ -36,6 +36,7 @@ config global_forwarding
 config global_other
 	option status 'big_icon show_check_port show_ip111'
 	option nodes_ping 'auto_ping tcping'
+	option ipv6_tproxy '0'
 
 config global_rules
 	option auto_update '0'
@@ -66,6 +67,26 @@ config global_subscribe
 config auto_switch
 	option testing_time '1'
 	option enable '0'
+	
+config nodes '696cd32c1d5149ee95fd1b3accbad6df'
+	option remarks '分流总节点'
+	option type 'Xray'
+	option protocol '_shunt'
+	option youtube 'nil'
+	option netflix 'nil'
+	option TVB 'nil'
+	option Telegram 'nil'
+	option default_node 'nil'
+	option default_proxy '0'
+	option domainStrategy 'IPIfNonMatch'
+	
+config shunt_rules 'Telegram'
+	option remarks 'Telegram'
+	option ip_list '149.154.160.0/20
+91.108.4.0/22
+91.108.56.0/24
+109.239.140.0/24
+67.198.55.0/24'
 
 config shunt_rules 'youtube'
 	option remarks 'youtube'

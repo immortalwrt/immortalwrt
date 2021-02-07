@@ -82,7 +82,6 @@ o.default = "5"
 o.rmempty = false
 
 ---- Export
---[[
 o = s:option(ListValue, "export", translate("Export Of Multi WAN"))
 o:value(0, translate("Auto"))
 local ifaces = e.net:devices()
@@ -97,7 +96,6 @@ for _, iface in ipairs(ifaces) do
 end
 o.default = 0
 o.rmempty = false
-]]--
 
 ---- Mode
 o = s:option(ListValue, "backup", translate("Mode"))

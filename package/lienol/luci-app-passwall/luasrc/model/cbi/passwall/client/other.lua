@@ -8,6 +8,12 @@ s = m:section(TypedSection, "global_delay", translate("Delay Settings"))
 s.anonymous = true
 s.addremove = false
 
+---- Delay Start
+o = s:option(Value, "start_delay", translate("Delay Start"),
+             translate("Units:seconds"))
+o.default = "1"
+o.rmempty = true
+
 ---- Open and close Daemon
 o = s:option(Flag, "start_daemon", translate("Open and close Daemon"))
 o.default = 1
@@ -108,6 +114,14 @@ o.rmempty = true
 s = m:section(TypedSection, "global_other", translate("Other Settings"))
 s.anonymous = true
 s.addremove = false
+
+---- IPv6 TProxy
+o = s:option(Flag, "ipv6_tproxy", translate("IPv6 TProxy"),
+             "<font color='red'>" .. translate(
+                 "Experimental feature.Make sure that your node supports IPv6.") ..
+                 "</font>")
+o.default = 0
+o.rmempty = false
 
 o = s:option(MultiValue, "status", translate("Status info"))
 o:value("big_icon", translate("Big icon")) -- 大图标
