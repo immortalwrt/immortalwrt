@@ -12,7 +12,8 @@ elif grep -q "mvebu" "/etc/openwrt_release"; then
 	cpu_freq="$(cat "/proc/cpuinfo" | grep "BogoMIPS" | sed -n "1p" | awk -F ': ' '{print $2}')MHz"
 elif [ -e "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq" ]; then
 	cpu_freq="$(expr $(cat "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq") / 1000)MHz"
-elif [ -e "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq" ]; then
+fi
+if [ -e "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq" ]; then
 	big_cpu_freq="$(expr $(cat "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq") / 1000)MHz "
 fi
 
