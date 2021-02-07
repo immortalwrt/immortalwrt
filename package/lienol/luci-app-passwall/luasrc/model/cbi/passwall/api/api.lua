@@ -57,6 +57,7 @@ end
 function get_valid_nodes()
     local nodes = {}
     uci:foreach(appname, "nodes", function(e)
+        e.id = e[".name"]
         if e.type and e.remarks then
             if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt") then
                 e.remarks_name = "%s：[%s] " % {i18n.translatef(e.type .. e.protocol), e.remarks}
@@ -158,7 +159,7 @@ function get_customed_path(e)
 end
 
 function is_finded(e)
-    return luci.sys.exec('type -t -p "%s/%s" "%s"' % {get_customed_path(e), e, e}) ~= "" and true or false
+    return luci.sys.exec('type -t -p "/bin/%s" -p "%s" "%s"' % {e, get_customed_path(e), e}) ~= "" and true or false
 end
 
 function get_xray_path()

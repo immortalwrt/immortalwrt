@@ -3,6 +3,8 @@ local appname = "passwall"
 
 m = Map(appname)
 
+local global_proxy_mode = (m.uci:get(appname, "@global[0]", "tcp_proxy_mode") or "") .. (m.uci:get(appname, "@global[0]", "udp_proxy_mode") or "")
+
 -- [[ ACLs Settings ]]--
 s = m:section(TypedSection, "acl_rule", translate("ACLs"), "<font color='red'>" .. translate("ACLs is a tools which used to designate specific IP proxy mode, IP or MAC address can be entered.") .. "</font>")
 s.template = "cbi/tblsection"
@@ -41,26 +43,32 @@ o.rmempty = true
 sys.net.mac_hints(function(e, t) o:value(e, "%s (%s)" % {e, t}) end)
 
 ---- TCP Proxy Mode
-o = s:option(ListValue, "tcp_proxy_mode", "TCP" .. translate("Proxy Mode"))
-o.default = "default"
-o.rmempty = false
-o:value("default", translate("Default"))
-o:value("disable", translate("No Proxy"))
-o:value("global", translate("Global Proxy"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Not China List"))
-o:value("returnhome", translate("China List"))
+tcp_proxy_mode = s:option(ListValue, "tcp_proxy_mode", "TCP" .. translate("Proxy Mode"))
+tcp_proxy_mode.default = "default"
+tcp_proxy_mode.rmempty = false
+tcp_proxy_mode:value("default", translate("Default"))
+tcp_proxy_mode:value("disable", translate("No Proxy"))
+tcp_proxy_mode:value("global", translate("Global Proxy"))
+if global_proxy_mode:find("returnhome") then
+    tcp_proxy_mode:value("returnhome", translate("China List"))
+else
+    tcp_proxy_mode:value("gfwlist", translate("GFW List"))
+    tcp_proxy_mode:value("chnroute", translate("Not China List"))
+end
 
 ---- UDP Proxy Mode
-o = s:option(ListValue, "udp_proxy_mode", "UDP" .. translate("Proxy Mode"))
-o.default = "default"
-o.rmempty = false
-o:value("default", translate("Default"))
-o:value("disable", translate("No Proxy"))
-o:value("global", translate("Global Proxy"))
-o:value("gfwlist", translate("GFW List"))
-o:value("chnroute", translate("Game Mode"))
-o:value("returnhome", translate("China List"))
+udp_proxy_mode = s:option(ListValue, "udp_proxy_mode", "UDP" .. translate("Proxy Mode"))
+udp_proxy_mode.default = "default"
+udp_proxy_mode.rmempty = false
+udp_proxy_mode:value("default", translate("Default"))
+udp_proxy_mode:value("disable", translate("No Proxy"))
+udp_proxy_mode:value("global", translate("Global Proxy"))
+if global_proxy_mode:find("returnhome") then
+    udp_proxy_mode:value("returnhome", translate("China List"))
+else
+    udp_proxy_mode:value("gfwlist", translate("GFW List"))
+    udp_proxy_mode:value("chnroute", translate("Game Mode"))
+end
 
 ---- TCP No Redir Ports
 o = s:option(Value, "tcp_no_redir_ports", translate("TCP No Redir Ports"))
