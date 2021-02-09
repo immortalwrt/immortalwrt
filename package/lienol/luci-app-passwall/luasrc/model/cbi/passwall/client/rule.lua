@@ -28,6 +28,9 @@ o = s:option(Value, "chnroute6_url", translate("China IPv6s(chnroute6) Update UR
 o:value("https://ispip.clang.cn/all_cn_ipv6.txt", translate("Clang.CN.IPv6"))
 o.default = "https://ispip.clang.cn/all_cn_ipv6.txt"
 
+----chnlist URL
+o = s:option(DynamicList, "chnlist_url", translate("China List(Chnlist) Update URL"))
+
 s:append(Template(appname .. "/rule/rule_version"))
 
 ---- Auto Update
@@ -57,6 +60,7 @@ s = m:section(TypedSection, "shunt_rules", "Xray" .. translate("Shunt") .. trans
 s.template = "cbi/tblsection"
 s.anonymous = false
 s.addremove = true
+s.sortable = true
 s.extedit = api.url("shunt_rules", "%s")
 function s.create(e, t)
     TypedSection.create(e, t)
