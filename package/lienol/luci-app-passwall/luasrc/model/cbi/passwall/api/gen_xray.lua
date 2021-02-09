@@ -226,59 +226,69 @@ if node_section then
         local rules = {}
         ucursor:foreach(appname, "shunt_rules", function(e)
             local name = e[".name"]
-            local _node_id = node[name] or nil
-            if _node_id and _node_id ~= "nil" then
-                local _node = ucursor:get_all(appname, _node_id)
-                local is_proxy = node[name .. "_proxy"]
-                local relay_port
-                if is_proxy and is_proxy == "1" then
-                    new_port = get_new_port()
-                    relay_port = new_port
-                    table.insert(inbounds, {
-                        tag = "proxy_" .. name,
-                        listen = "127.0.0.1",
-                        port = new_port,
-                        protocol = "dokodemo-door",
-                        settings = {network = "tcp,udp", address = _node.address, port = tonumber(_node.port)}
-                    })
-                    if _node.tls_serverName == nil then
-                        _node.tls_serverName = _node.address
-                    end
-                    _node.address = "127.0.0.1"
-                    _node.port = new_port
-                end
-                local _outbound = gen_outbound(_node, name, relay_port)
-                if _outbound then
-                    table.insert(outbounds, _outbound)
+            local _node_id = node[name] or "nil"
+            local outboundTag
+            if _node_id == "_direct" then
+                outboundTag = "direct"
+            elseif _node_id == "_blackhole" then
+                outboundTag = "blackhole"
+            else
+                if _node_id ~= "nil" then
+                    local _node = ucursor:get_all(appname, _node_id)
+                    local is_proxy = node[name .. "_proxy"]
+                    local relay_port
                     if is_proxy and is_proxy == "1" then
-                        table.insert(rules, {
-                            type = "field",
-                            inboundTag = {"proxy_" .. name},
-                            outboundTag = "default"
+                        new_port = get_new_port()
+                        relay_port = new_port
+                        table.insert(inbounds, {
+                            tag = "proxy_" .. name,
+                            listen = "127.0.0.1",
+                            port = new_port,
+                            protocol = "dokodemo-door",
+                            settings = {network = "tcp,udp", address = _node.address, port = tonumber(_node.port)}
                         })
+                        if _node.tls_serverName == nil then
+                            _node.tls_serverName = _node.address
+                        end
+                        _node.address = "127.0.0.1"
+                        _node.port = new_port
                     end
-                    if e.domain_list then
-                        local _domain = {}
-                        string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
-                            table.insert(_domain, w)
-                        end)
-                        table.insert(rules, {
-                            type = "field",
-                            outboundTag = name,
-                            domain = _domain
-                        })
+                    local _outbound = gen_outbound(_node, name, relay_port)
+                    if _outbound then
+                        table.insert(outbounds, _outbound)
+                        if is_proxy and is_proxy == "1" then
+                            table.insert(rules, {
+                                type = "field",
+                                inboundTag = {"proxy_" .. name},
+                                outboundTag = "default"
+                            })
+                        end
+                        outboundTag = name
                     end
-                    if e.ip_list then
-                        local _ip = {}
-                        string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
-                            table.insert(_ip, w)
-                        end)
-                        table.insert(rules, {
-                            type = "field",
-                            outboundTag = name,
-                            ip = _ip
-                        })
-                    end
+                end
+            end
+            if outboundTag then
+                if e.domain_list then
+                    local _domain = {}
+                    string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
+                        table.insert(_domain, w)
+                    end)
+                    table.insert(rules, {
+                        type = "field",
+                        outboundTag = outboundTag,
+                        domain = _domain
+                    })
+                end
+                if e.ip_list then
+                    local _ip = {}
+                    string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
+                        table.insert(_ip, w)
+                    end)
+                    table.insert(rules, {
+                        type = "field",
+                        outboundTag = outboundTag,
+                        ip = _ip
+                    })
                 end
             end
         end)
@@ -447,6 +457,10 @@ if inbounds or outbounds then
         protocol = "freedom",
         tag = "direct",
         settings = {domainStrategy = "UseIPv4"}
+    })
+    table.insert(outbounds, {
+        protocol = "blackhole",
+        tag = "blackhole"
     })
 
     local xray = {

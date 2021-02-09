@@ -461,7 +461,7 @@ o.default = 2
 o.rmempty = true
 
 o = s:option(Value, "seed", translate("Obfuscate password (optional)"))
-o:depends({type = "vless", transport = "kcp"})
+o:depends({v2ray_protocol = "vless", transport = "kcp"})
 o.rmempty = true
 
 o = s:option(Flag, "congestion", translate("Congestion"))
