@@ -5,6 +5,8 @@ local gfwlist_update = api.uci_get_type("global_rules", "gfwlist_update", "1") =
 local chnroute_update = api.uci_get_type("global_rules", "chnroute_update", "1") == "1" and "checked='checked'" or ""
 local chnroute6_update = api.uci_get_type("global_rules", "chnroute6_update", "1") == "1" and "checked='checked'" or ""
 local chnlist_update = api.uci_get_type("global_rules", "chnlist_update", "1") == "1" and "checked='checked'" or ""
+local geoip_update = api.uci_get_type("global_rules", "geoip_update", "1") == "1" and "checked='checked'" or ""
+local geosite_update = api.uci_get_type("global_rules", "geosite_update", "1") == "1" and "checked='checked'" or ""
 -%>
 
 <script type="text/javascript">
@@ -61,6 +63,14 @@ local chnlist_update = api.uci_get_type("global_rules", "chnlist_update", "1") =
 					<label>
 						<input class="cbi-input-checkbox" type="checkbox" name="chnlist" value="1" <%=chnlist_update%> />
 						chnlist
+					</label>
+					<label>
+						<input class="cbi-input-checkbox" type="checkbox" name="geoip" value="1" <%=geoip_update%> />
+						geoip
+					</label>
+					<label>
+						<input class="cbi-input-checkbox" type="checkbox" name="geosite" value="1" <%=geosite_update%> />
+						geosite
 					</label>
 					<input class="cbi-button cbi-input-apply" type="button" id="update_rules_btn" onclick="update_rules(this)" value="<%:Manually update%>" />
 				</div>

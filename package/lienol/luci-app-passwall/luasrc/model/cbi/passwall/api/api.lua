@@ -162,6 +162,24 @@ function is_finded(e)
     return luci.sys.exec('type -t -p "/bin/%s" -p "%s" "%s"' % {e, get_customed_path(e), e}) ~= "" and true or false
 end
 
+
+function clone(org)
+    local function copy(org, res)
+        for k,v in pairs(org) do
+            if type(v) ~= "table" then
+                res[k] = v;
+            else
+                res[k] = {};
+                copy(v, res[k])
+            end
+        end
+    end
+ 
+    local res = {}
+    copy(org, res)
+    return res
+end
+
 function get_xray_path()
     local path = uci_get_type("global_app", "xray_file")
     return path
