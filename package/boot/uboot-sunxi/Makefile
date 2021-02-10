@@ -340,7 +340,7 @@ UBOOT_TARGETS := \
 	nanopi_neo_plus2 \
 	nanopi_neo2 \
 	nanopi_r1 \
-  nanopi_r1s_h5 \
+	nanopi_r1s_h5 \
 	orangepi_zero \
 	orangepi_r1 \
 	orangepi_one \

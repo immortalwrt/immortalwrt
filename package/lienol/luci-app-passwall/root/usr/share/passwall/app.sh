@@ -10,6 +10,7 @@ TMP_PATH=/var/etc/$CONFIG
 TMP_BIN_PATH=$TMP_PATH/bin
 TMP_ID_PATH=$TMP_PATH/id
 TMP_PORT_PATH=$TMP_PATH/port
+TMP_ROUTE_PATH=$TMP_PATH/route
 LOCK_FILE=/var/lock/$CONFIG.lock
 LOG_FILE=/var/log/$CONFIG.log
 APP_PATH=/usr/share/$CONFIG
@@ -305,7 +306,7 @@ load_config() {
 	DNS_CACHE=$(config_t_get global dns_cache 0)
 	LOCAL_DNS=$(config_t_get global up_china_dns default | sed 's/:/#/g')
 	if [ "${LOCAL_DNS}" = "default" ]; then
-		DEFAULT_DNS=$(uci show dhcp | grep "@dnsmasq" | grep ".server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
+		DEFAULT_DNS=$(uci show dhcp | grep "@dnsmasq" | grep "\.server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
 		if [ -z "${DEFAULT_DNS}" ]; then
 			DEFAULT_DNS=$(echo -n $(sed -n 's/^nameserver[ \t]*\([^ ]*\)$/\1/p' "${RESOLVFILE}" | grep -v "0.0.0.0" | grep -v "127.0.0.1" | grep -v "^::$" | head -2) | tr ' ' ',')
 		fi
@@ -313,7 +314,8 @@ load_config() {
 		IS_DEFAULT_DNS=1
 	fi
 	PROXY_IPV6=$(config_t_get global_forwarding proxy_ipv6 0)
-	mkdir -p /var/etc $TMP_PATH $TMP_BIN_PATH $TMP_ID_PATH $TMP_PORT_PATH
+	export XRAY_LOCATION_ASSET=$(config_t_get global_rules xray_location_asset "/usr/share/xray/")
+	mkdir -p /var/etc $TMP_PATH $TMP_BIN_PATH $TMP_ID_PATH $TMP_PORT_PATH $TMP_ROUTE_PATH
 	return 0
 }
 
@@ -595,8 +597,36 @@ node_switch() {
 		local log_file=$TMP_PATH/${1}.log
 		eval current_port=\$${1}_REDIR_PORT
 		local port=$(cat $TMP_PORT_PATH/${1})
+		
+		local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
+		for id in $ids; do
+			[ "$(config_n_get $id enabled 0)" == "0" ] && continue
+			[ "$(config_n_get $id node nil)" != "tcp" ] && continue
+			local socks_port=$(config_n_get $id port)
+			local http_port=$(config_n_get $id http_port 0)
+			top -bn1 | grep -E "$TMP_PATH" | grep -i "SOCKS" | grep "$id" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
+			tcp_node_socks=1
+			tcp_node_socks_port=$socks_port
+			tcp_node_socks_id=$id
+			[ "$http_port" != "0" ] && {
+				tcp_node_http=1
+				tcp_node_http_port=$http_port
+				tcp_node_http_id=$id
+			}
+			break
+		done
+		
 		run_redir $node "0.0.0.0" $port $config_file $1 $log_file
 		echo $node > $TMP_ID_PATH/${1}
+		
+		[ "$1" = "TCP" ] && {
+			[ "$(config_t_get global udp_node nil)" = "tcp_" ] && {
+				top -bn1 | grep -E "$TMP_PATH" | grep -i "UDP" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
+				UDP_NODE=$node
+				start_redir UDP
+			}
+		}
+		
 		#local node_net=$(echo $1 | tr 'A-Z' 'a-z')
 		#uci set $CONFIG.@global[0].${node_net}_node=$node
 		#uci commit $CONFIG
@@ -658,10 +688,10 @@ clean_log() {
 
 clean_crontab() {
 	touch /etc/crontabs/root
-	#sed -i "/${CONFIG}/d" /etc/crontabs/root >/dev/null 2>&1 &
-	sed -i "/$(echo "/etc/init.d/${CONFIG}" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1 &
-	sed -i "/$(echo "lua ${APP_PATH}/rule_update.lua log" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1 &
-	sed -i "/$(echo "lua ${APP_PATH}/subscribe.lua start log" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1 &
+	#sed -i "/${CONFIG}/d" /etc/crontabs/root >/dev/null 2>&1
+	sed -i "/$(echo "/etc/init.d/${CONFIG}" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1
+	sed -i "/$(echo "lua ${APP_PATH}/rule_update.lua log" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1
+	sed -i "/$(echo "lua ${APP_PATH}/subscribe.lua start log" | sed 's#\/#\\\/#g')/d" /etc/crontabs/root >/dev/null 2>&1
 }
 
 start_crontab() {
@@ -721,7 +751,6 @@ start_crontab() {
 
 stop_crontab() {
 	clean_crontab
-	ps | grep "$APP_PATH/test.sh" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	/etc/init.d/cron restart
 	#echolog "清除定时执行命令。"
 }
@@ -914,7 +943,9 @@ add_dnsmasq() {
 			local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 			for shunt_id in $shunt_ids; do
 				local shunt_node_id=$(config_n_get $TCP_NODE ${shunt_id} nil)
-				[ "$shunt_node_id" = "nil" ] && continue
+				if [ "$shunt_node_id" = "nil" ] || [ "$shunt_node_id" = "_direct" ] || [ "$shunt_node_id" = "_blackhole" ]; then
+					continue
+				fi
 				local shunt_node=$(config_n_get $shunt_node_id address nil)
 				[ "$shunt_node" = "nil" ] && continue
 				config_n_get $shunt_id domain_list | grep -v 'regexp:\|geosite:\|ext:' | sed 's/domain:\|full:\|//g' | tr -s "\r\n" "\n" | sort -u | gen_dnsmasq_items "shuntlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/998-shunt_host.conf"
@@ -928,8 +959,8 @@ add_dnsmasq() {
 			[ -n "$CHINADNS_NG" ] && fwd_dns="${china_ng_gfw}"
 			[ -n "$CHINADNS_NG" ] && unset fwd_dns
 			[ ! -f "${TMP_PATH}/gfwlist.txt" ] && sed -n 's/^ipset=\/\.\?\([^/]*\).*$/\1/p' "${RULES_PATH}/gfwlist.conf" | sort -u > "${TMP_PATH}/gfwlist.txt"
-			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/999-gfwlist.conf"
-			#sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/999-gfwlist.conf"
+			#sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/999-gfwlist.conf"
+			sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/999-gfwlist.conf"
 			echolog "  - [$?]防火墙域名表(gfwlist)：${fwd_dns:-默认}"
 		else
 			#回国模式
@@ -1035,6 +1066,44 @@ del_dnsmasq() {
 	rm -rf $TMP_DNSMASQ_PATH
 }
 
+add_ip2route() {
+	local ip=$(get_host_ip "ipv4" $1)
+	[ -z "$ip" ] && {
+		echolog "  - 无法解析${1}，路由表添加失败！"
+		return 1
+	}
+	local remarks="${1}"
+	[ "$remarks" != "$ip" ] && remarks="${1}(${ip})"
+	local interface=$2
+	local retries=5
+	local failcount=0
+	while [ "$failcount" -lt $retries ]; do
+		unset msg
+		ip route show dev ${interface} >/dev/null 2>&1
+		if [ $? -ne 0 ]; then
+			let "failcount++"
+			echolog "  - 找不到出口接口：$interface，1分钟后再重试(${failcount}/${retries})，${ip}"
+			[ "$failcount" -ge $retries ] && return 1
+			sleep 1m
+		else
+			route add -host ${ip} dev ${interface} >/dev/null 2>&1
+			echolog "  - ${remarks}添加路由表${interface}接口成功！"
+			echo "$ip" >> $TMP_ROUTE_PATH/${interface}
+			break
+		fi
+	done
+}
+
+delete_ip2route() {
+	[ -d "${TMP_ROUTE_PATH}" ] && {
+		for interface in $(ls ${TMP_ROUTE_PATH}); do
+			for ip in $(cat ${TMP_ROUTE_PATH}/${interface}); do
+				route del -host ${ip} dev ${interface} >/dev/null 2>&1
+			done
+		done
+	}
+}
+
 start_haproxy() {
 	local haproxy_path haproxy_file item items lport sort_items
 
@@ -1109,28 +1178,10 @@ start_haproxy() {
 			    server $bip:$bport $bip:$bport weight $lbweight check inter 1500 rise 1 fall 3 $bbackup
 		EOF
 
-		#暂时不开启此功能，以后抽时间改成后台执行，防止卡luci。
-:<<!
 		if [ "$export" != "0" ]; then
-			unset msg
-			failcount=0
-			while [ "$failcount" -lt "3" ]; do
-				ip route show dev ${export} >/dev/null 2>&1
-				if [ $? -ne 0 ]; then
-					let "failcount++"
-					echolog "  - 找不到出口接口：$export，1分钟后再重试(${failcount}/3)，${bip}"
-					[ "$failcount" -ge 3 ] && exit 0
-					sleep 1m
-				else
-					route add -host ${bip} dev ${export}
-					msg="[$?] 从 ${export} 接口路由，"
-					echo "$bip" >>/tmp/balancing_ip
-					break
-				fi
-			done
+			add_ip2route ${bip} ${export} > /dev/null 2>&1 &
 		fi
-		echolog "  | - ${msg}出口节点：${bip}:${bport}，权重：${lbweight}"
-!
+		echolog "  | - 出口节点：${bip}:${bport}，权重：${lbweight}"
 	done
 
 	# 控制台配置
@@ -1156,7 +1207,7 @@ start_haproxy() {
 }
 
 kill_all() {
-	kill -9 $(pidof "$@") >/dev/null 2>&1 &
+	kill -9 $(pidof "$@") >/dev/null 2>&1
 }
 
 force_stop() {
@@ -1195,7 +1246,15 @@ restart_dnsmasq() {
 }
 
 boot() {
-	[ "$ENABLED" == 1 ] && start
+	[ "$ENABLED" == 1 ] && {
+		local delay=$(config_t_get global_delay start_delay 1)
+		if [ "$delay" -gt 0 ]; then
+			echolog "执行启动延时 $delay 秒后再启动!"
+			sleep $delay && start >/dev/null 2>&1 &
+		else
+			start
+		fi
+	}
 	return 0
 }
 
@@ -1226,12 +1285,12 @@ stop() {
 	set_lock
 	clean_log
 	source $APP_PATH/iptables.sh stop
+	delete_ip2route
 	kill_all v2ray-plugin obfs-local
-	top -bn1 | grep -v "grep" | grep $CONFIG/test.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	top -bn1 | grep -v "grep" | grep $CONFIG/monitor.sh | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	top -bn1 | grep -v -E "grep|${TMP_PATH}_server" | grep -E "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	top -bn1 | grep -v "grep" | grep "sleep 1m" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	top -bn1 | grep -v "grep" | grep "sleep" | grep -E "9s|58s" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
+	top -bn1 | grep -v "grep" | grep -v "app.sh" | grep "${CONFIG}/" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
 	rm -rf $TMP_DNSMASQ_PATH $TMP_PATH
+	unset XRAY_LOCATION_ASSET
 	stop_crontab
 	del_dnsmasq
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1

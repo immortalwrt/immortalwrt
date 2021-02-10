@@ -6,7 +6,6 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-
 	model = "P&W R619AC";
 	compatible = "p2w,r619ac";
 
@@ -222,7 +221,7 @@
 	status = "okay";
 	pinctrl-0 = <&pcie_pins>;
 	pinctrl-names = "default";
-	perst-gpio = <&tlmm 4 GPIO_ACTIVE_LOW>;
+	perst-gpio = <&tlmm 4 GPIO_ACTIVE_HIGH>;
 	wake-gpio = <&tlmm 40 GPIO_ACTIVE_HIGH>;
 
 	/* Free slot for use */

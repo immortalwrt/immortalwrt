@@ -70,6 +70,7 @@ do
 		local node_id = t.node
 		CONFIG[#CONFIG + 1] = {
 			log = true,
+			id = t[".name"],
 			remarks = "Socks节点列表[" .. i .. "]",
 			currentNodeId = node_id,
 			currentNode = node_id and ucic2:get_all(application, node_id) or nil,
@@ -106,7 +107,7 @@ do
 			set = function(o)
 				for kk, vv in pairs(CONFIG) do
 					if (vv.remarks == "TCP备用节点的列表") then
-						log("刷新自动切换的TCP备用节点的列表")
+						--log("刷新自动切换的TCP备用节点的列表")
 						ucic2:set_list(application, "@auto_switch[0]", "tcp_node", vv.new_nodes)
 					end
 				end
@@ -133,7 +134,7 @@ do
 
 			local default_node_id = node.default_node
 			CONFIG[#CONFIG + 1] = {
-				log = false,
+				log = true,
 				currentNodeId = default_node_id,
 				currentNode = default_node_id and ucic2:get_all(application, default_node_id) or nil,
 				remarks = "分流默认节点",
@@ -145,7 +146,7 @@ do
 
 			local main_node_id = node.main_node
 			CONFIG[#CONFIG + 1] = {
-				log = false,
+				log = true,
 				currentNodeId = main_node_id,
 				currentNode = main_node_id and ucic2:get_all(application, main_node_id) or nil,
 				remarks = "分流默认前置代理节点",
@@ -182,7 +183,7 @@ do
 				set = function(o)
 					for kk, vv in pairs(CONFIG) do
 						if (vv.remarks == "负载均衡节点列表" .. node_id) then
-							log("刷新负载均衡节点列表")
+							--log("刷新负载均衡节点列表")
 							ucic2:foreach(application, uciType, function(node2)
 								if node2[".name"] == node[".name"] then
 									local index = node2[".index"]
@@ -586,31 +587,24 @@ local function curl(url)
 end
 
 local function truncate_nodes()
-	local function clear(type)
-		local node_num = ucic2:get(application, "@global_other[0]", type .. "_node_num") or 1
-		for i = 1, node_num, 1 do
-			local node = ucic2:get(application, "@global[0]", type .. "_node" .. i)
-			if node then
-				local is_sub_node = ucic2:get(application, node, "is_sub") or 0
-				if is_sub_node == "1" then
-					ucic2:set(application, '@global[0]', type .. "_node" .. i, "nil")
+	for _, config in pairs(CONFIG) do
+		if config.nodes and type(config.nodes) == "table" then
+			for kk, vv in pairs(config.nodes) do
+				if vv.currentNode.is_sub and vv.currentNode.is_sub == "1" then
+				else
+					vv.set(vv, vv.currentNodeId)
+				end
+			end
+			config.set(config)
+		else
+			if config.currentNode.is_sub and config.currentNode.is_sub == "1" then
+				config.set(config, "nil")
+				if config.id then
+					ucic2:delete(application, config.id)
 				end
 			end
 		end
 	end
-	clear("tcp")
-	clear("udp")
-
-	ucic2:foreach(application, "socks", function(t)
-		local node = t.node
-		if node then
-			local is_sub_node = ucic2:get(application, node, "is_sub") or 0
-			if is_sub_node == "1" then
-				ucic2:set(application, t[".name"], "node", "nil")
-			end
-		end
-	end)
-
 	ucic2:foreach(application, uciType, function(node)
 		if (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
 			ucic2:delete(application, node['.name'])
@@ -624,84 +618,96 @@ end
 local function select_node(nodes, config)
 	local server
 	if config.currentNode then
-		for id, node in pairs(nodes) do
-			-- 特别优先级 分流 + 备注
-			if config.currentNode.protocol and config.currentNode.protocol == '_shunt' then
+		-- 特别优先级 分流 + 备注
+		if config.currentNode.protocol and config.currentNode.protocol == '_shunt' then
+			for index, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
 					log('更新【' .. config.remarks .. '】分流匹配节点：' .. node.remarks)
-					server = id
+					server = node[".name"]
 					break
 				end
 			end
-			-- 特别优先级 负载均衡 + 备注
-			if config.currentNode.protocol and config.currentNode.protocol == '_balancing' then
+		end
+		-- 特别优先级 负载均衡 + 备注
+		if config.currentNode.protocol and config.currentNode.protocol == '_balancing' then
+			for index, node in pairs(nodes) do
 				if node.remarks == config.currentNode.remarks then
 					log('更新【' .. config.remarks .. '】负载均衡匹配节点：' .. node.remarks)
-					server = id
+					server = node[".name"]
 					break
 				end
 			end
-			-- 第一优先级 cfgid
-			if not server then
-				if id == config.currentNode['.name'] then
+		end
+		-- 第一优先级 cfgid
+		if not server then
+			for index, node in pairs(nodes) do
+				if node[".name"] == config.currentNode['.name'] then
 					if config.log == nil or config.log == true then
 						log('更新【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
 					end
-					server = id
+					server = node[".name"]
 					break
 				end
 			end
-			-- 第二优先级 类型 + IP + 端口
-			if not server then
+		end
+		-- 第二优先级 类型 + IP + 端口
+		if not server then
+			for index, node in pairs(nodes) do
 				if config.currentNode.type and config.currentNode.address and config.currentNode.port then
 					if node.type and node.address and node.port then
 						if node.type == config.currentNode.type and (node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port) then
 							if config.log == nil or config.log == true then
 								log('更新【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
 							end
-							server = id
+							server = node[".name"]
 							break
 						end
 					end
 				end
 			end
-			-- 第三优先级 IP + 端口
-			if not server then
+		end
+		-- 第三优先级 IP + 端口
+		if not server then
+			for index, node in pairs(nodes) do
 				if config.currentNode.address and config.currentNode.port then
 					if node.address and node.port then
 						if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
 							if config.log == nil or config.log == true then
 								log('更新【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
 							end
-							server = id
+							server = node[".name"]
 							break
 						end
 					end
 				end
 			end
-			-- 第四优先级 IP
-			if not server then
+		end
+		-- 第四优先级 IP
+		if not server then
+			for index, node in pairs(nodes) do
 				if config.currentNode.address then
 					if node.address then
 						if node.address == config.currentNode.address then
 							if config.log == nil or config.log == true then
 								log('更新【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
 							end
-							server = id
+							server = node[".name"]
 							break
 						end
 					end
 				end
 			end
-			-- 第五优先级备注
-			if not server then
+		end
+		-- 第五优先级备注
+		if not server then
+			for index, node in pairs(nodes) do
 				if config.currentNode.remarks then
 					if node.remarks then
 						if node.remarks == config.currentNode.remarks then
 							if config.log == nil or config.log == true then
 								log('更新【' .. config.remarks .. '】第五匹配节点：' .. node.remarks)
 							end
-							server = id
+							server = node[".name"]
 							break
 						end
 					end
@@ -752,7 +758,7 @@ local function update_node(manual)
 		local nodes = {}
 		local ucic3 = luci.model.uci.cursor()
 		ucic3:foreach(application, uciType, function(node)
-			nodes[node['.name']] = node
+			nodes[#nodes + 1] = node
 		end)
 
 		for _, config in pairs(CONFIG) do
