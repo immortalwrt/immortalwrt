@@ -44,10 +44,7 @@ define Device/friendlyarm_nanopi-r1s-h5
   DEVICE_PACKAGES:= kmod-eeprom-at24 kmod-gpio-button-hotplug kmod-leds-gpio \
 	kmod-rtl8189es kmod-usb2 kmod-usb-net-rtl8152 wpad-basic
   SUPPORTED_DEVICES:=nanopi-r1s-h5
-  SUNXI_DTS_DIR := allwinner/
-  SOC := sun50i-h5
-  KERNEL_NAME := Image
-  KERNEL := kernel-bin
+  $(Device/sun50i-h5)
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r1s-h5
 
