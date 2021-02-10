@@ -1,0 +1,66 @@
+From c35a516a46187c8eeb7a56c64505ec6f7e22a0c7 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Thu, 21 Nov 2019 01:18:34 +0000
+Subject: [PATCH] arm64: dts: allwinner: H5: Add PMU node
+
+Add the Performance Monitoring Unit (PMU) device tree node to the H5
+.dtsi, which tells DT users which interrupts are triggered by PMU
+overflow events on each core.
+As with the A64, the interrupt numbers from the manual were wrong (off
+by 4), the actual SPI IDs have been gathered in U-Boot, and were
+verified with perf in Linux.
+
+Tested with perf record and taskset on an OrangePi PC2.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
+index e92c4de5bf3b4..7c775a918a4e7 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
+@@ -54,21 +54,21 @@
+ 			enable-method = "psci";
+ 		};
+ 
+-		cpu@1 {
++		cpu1: cpu@1 {
+ 			compatible = "arm,cortex-a53", "arm,armv8";
+ 			device_type = "cpu";
+ 			reg = <1>;
+ 			enable-method = "psci";
+ 		};
+ 
+-		cpu@2 {
++		cpu2: cpu@2 {
+ 			compatible = "arm,cortex-a53", "arm,armv8";
+ 			device_type = "cpu";
+ 			reg = <2>;
+ 			enable-method = "psci";
+ 		};
+ 
+-		cpu@3 {
++		cpu3: cpu@3 {
+ 			compatible = "arm,cortex-a53", "arm,armv8";
+ 			device_type = "cpu";
+ 			reg = <3>;
+@@ -76,6 +76,16 @@
+ 		};
+ 	};
+ 
++	pmu {
++		compatible = "arm,cortex-a53-pmu",
++			     "arm,armv8-pmuv3";
++		interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++	};
++
+ 	psci {
+ 		compatible = "arm,psci-0.2";
+ 		method = "smc";
