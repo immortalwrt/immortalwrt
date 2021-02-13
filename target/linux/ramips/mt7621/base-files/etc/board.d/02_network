@@ -73,6 +73,7 @@ ramips_setup_interfaces()
 	mikrotik,routerboard-760igs)
 		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
 		;;
+	netgear,r6700-v2|\
 	netgear,r6800)
 		ucidef_add_switch "switch0" \
 			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "6@eth0"
@@ -174,6 +175,7 @@ ramips_setup_macs()
 		wan_mac=$label_mac
 		lan_mac=$(macaddr_add $label_mac 1)
 		;;
+	netgear,r6700-v2|\
 	netgear,r6800)
 		lan_mac=$(mtd_get_mac_binary factory 0x4)
 		wan_mac=$(macaddr_add "$lan_mac" 2)
