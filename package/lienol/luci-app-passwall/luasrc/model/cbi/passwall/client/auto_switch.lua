@@ -3,10 +3,7 @@ local appname = api.appname
 
 local nodes_table = {}
 for k, e in ipairs(api.get_valid_nodes()) do
-    nodes_table[#nodes_table + 1] = {
-        id = e[".name"],
-        remarks = e.remarks_name
-    }
+    nodes_table[#nodes_table + 1] = e
 end
 
 m = Map(appname)
@@ -26,7 +23,9 @@ o.default = "1"
     
 o = s:option(DynamicList, "tcp_node", "TCP " .. translate("List of backup nodes"))
 for k, v in pairs(nodes_table) do
-    o:value(v.id, v.remarks)
+    if v.node_type == "normal" then
+        o:value(v.id, v.remarks_name)
+    end
 end
 
 o = s:option(Flag, "restore_switch", "TCP " .. translate("Restore Switch"), translate("When detects main node is available, switch back to the main node."))

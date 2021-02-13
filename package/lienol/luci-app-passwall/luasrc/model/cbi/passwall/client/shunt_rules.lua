@@ -57,7 +57,7 @@ ip_list.validate = function(self, value)
         if ipmask:find("geoip:") and ipmask:find("geoip:") == 1 then
         elseif ipmask:find("ext:") and ipmask:find("ext:") == 1 then
         else
-            if not datatypes.ipmask4(ipmask) then
+            if not (datatypes.ipmask4(ipmask) or datatypes.ipmask6(ipmask)) then
                 return nil, ipmask .. " " .. translate("Not valid IP format, please re-enter!")
             end
         end

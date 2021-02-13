@@ -47,6 +47,12 @@ config global_rules
 	option gfwlist_url 'https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt'
 	option chnroute_url 'https://ispip.clang.cn/all_cn.txt'
 	option chnroute6_url 'https://ispip.clang.cn/all_cn_ipv6.txt'
+	list chnlist_url 'https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/accelerated-domains.china.conf'
+	list chnlist_url 'https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/apple.china.conf'
+	list chnlist_url 'https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/google.china.conf'
+	option xray_location_asset '/usr/share/xray/'
+	option geosite_update '1'
+	option geoip_update '1'
 
 config global_app
 	option xray_file '/usr/bin/xray'
@@ -79,6 +85,15 @@ config nodes '696cd32c1d5149ee95fd1b3accbad6df'
 	option default_node 'nil'
 	option default_proxy '0'
 	option domainStrategy 'IPIfNonMatch'
+	
+config shunt_rules 'ads'
+	option remarks '广告'
+	option domain_list 'geosite:category-ads'
+	
+config shunt_rules 'China'
+	option remarks 'China'
+	option domain_list 'geosite:cn'
+	option ip_list 'geoip:cn'
 	
 config shunt_rules 'Telegram'
 	option remarks 'Telegram'
