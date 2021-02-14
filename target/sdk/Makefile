@@ -137,6 +137,7 @@ $(BIN_DIR)/$(SDK_NAME).tar.xz: clean
 	./convert-config.pl $(TOPDIR)/.config > $(SDK_BUILD_DIR)/Config-build.in
 	$(CP) -L \
 		$(TOPDIR)/LICENSES \
+		$(TOPDIR)/COPYING \
 		$(TOPDIR)/rules.mk \
 		./files/Config.in \
 		./files/Makefile \
