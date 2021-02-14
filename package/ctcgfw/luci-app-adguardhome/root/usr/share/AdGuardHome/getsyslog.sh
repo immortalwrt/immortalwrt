@@ -1,4 +1,5 @@
 #!/bin/sh
+
 PATH="/usr/sbin:/usr/bin:/sbin:/bin"
 logread -e AdGuardHome > /tmp/AdGuardHometmp.log
 logread -e AdGuardHome -f >> /tmp/AdGuardHometmp.log &
