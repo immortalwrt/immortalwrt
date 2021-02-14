@@ -14,7 +14,7 @@ entry({"admin", "services", "AdGuardHome", "getlog"}, call("get_log"))
 entry({"admin", "services", "AdGuardHome", "dodellog"}, call("do_dellog"))
 entry({"admin", "services", "AdGuardHome", "reloadconfig"}, call("reload_config"))
 entry({"admin", "services", "AdGuardHome", "gettemplateconfig"}, call("get_template_config"))
-end 
+end
 function get_template_config()
 	local b
 	local d=""
