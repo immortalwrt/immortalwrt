@@ -1,5 +1,3 @@
-DEVICE_VARS += RAS_ROOTFS_SIZE RAS_BOARD RAS_VERSION
-
 define Build/append-okli-kernel
 	dd if="$(KDIR)/loader-$(word 1,$(1)).uImage" >> "$@"
 endef
