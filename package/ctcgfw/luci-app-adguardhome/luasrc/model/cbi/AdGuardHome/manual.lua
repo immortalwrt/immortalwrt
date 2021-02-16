@@ -70,7 +70,7 @@ o.template = "AdGuardHome/yamleditor"
 if not fs.access(binpath) then
 	o.description=translate("WARNING!!! no bin found apply config will not be test")
 end
---- log 
+--- log
 if (fs.access("/tmp/AdGuardHometmpconfig.yaml")) then
 local c=fs.readfile("/tmp/AdGuardHometest.log")
 if (c~="") then

@@ -1,4 +1,5 @@
 #!/bin/sh
+
 PATH="/usr/sbin:/usr/bin:/sbin:/bin"
 configpath=$(uci get AdGuardHome.AdGuardHome.configpath)
 while :

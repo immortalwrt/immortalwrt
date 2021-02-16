@@ -724,6 +724,9 @@ msgstr "中国IP段(chnroute)更新URL"
 msgid "China IPv6s(chnroute6) Update URL"
 msgstr "中国IPv6段(chnroute6)更新URL"
 
+msgid "China List(Chnlist) Update URL"
+msgstr "中国域名列表(Chnlist)更新URL"
+
 msgid "Rule status"
 msgstr "规则版本"
 
