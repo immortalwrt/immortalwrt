@@ -24,7 +24,7 @@ sudo bash -c "bash <(curl -s https://build-scripts.project-openwrt.eu.org/init_b
 
 ## Clone the source
 ```bash
-git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
+git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
 
@@ -43,7 +43,7 @@ You'd better not use **root** to make it, or you may be not able to use.<br/>
 Default login address: 192.168.1.1, username is **root** and password is **password**.
 
 # Contributed
-### See [CONTRIBUTED.md](https://github.com/immortalwrt/immortalwrt/blob/master/CONTRIBUTED.md).
+### See [CONTRIBUTED.md](https://github.com/immortalwrt/immortalwrt/blob/openwrt-21.02/CONTRIBUTED.md).
 
 # License
-### [GNU General Public License v3.0](https://github.com/immortalwrt/immortalwrt/blob/master/LICENSES/GPL-3.0).
+### [GNU General Public License v3.0](https://github.com/immortalwrt/immortalwrt/blob/openwrt-21.02/LICENSES/GPL-3.0).

@@ -1,7 +1,7 @@
 # CONTRIBUTED
 ## The Source of Packages
 
-### Based on: [openwrt/openwrt](https://github.com/openwrt/openwrt).<br/>
+### Based on: [openwrt/openwrt@openwrt-21.02](https://github.com/openwrt/openwrt/tree/openwrt-21.02).<br/>
 Package lean: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 Package ntlf9t: [jsda/packages2](https://github.com/jsda/packages2).<br/>
 luci-app-serverchan source: [tty228/luci-app-serverchan](https://github.com/tty228/luci-app-serverchan).<br/>
