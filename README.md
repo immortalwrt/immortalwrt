@@ -46,4 +46,4 @@ Default login address: 192.168.1.1, username is **root** and password is **passw
 ### See [CONTRIBUTED.md](https://github.com/immortalwrt/immortalwrt/blob/master/CONTRIBUTED.md).
 
 # License
-### [GNU General Public License v3.0](https://github.com/immortalwrt/immortalwrt/blob/master/LICENSE).
+### [GNU General Public License v3.0](https://github.com/immortalwrt/immortalwrt/blob/master/LICENSES/GPL-3.0).
