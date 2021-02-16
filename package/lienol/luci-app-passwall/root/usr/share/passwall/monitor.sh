@@ -65,7 +65,7 @@ do
 
 	#dns
 	dns_mode=$(config_t_get global dns_mode)
-	if [ "$dns_mode" != "nonuse" ] && [ "$dns_mode" != "custom" ]; then
+	if [ "$dns_mode" != "nonuse" ] && [ "$dns_mode" != "custom" ] && [ "$dns_mode" != "fake_ip" ]; then
 		icount=$(netstat -apn | grep 7913 | wc -l)
 		if [ $icount = 0 ]; then
 			/etc/init.d/$CONFIG restart
