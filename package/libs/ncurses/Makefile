@@ -170,7 +170,7 @@ define Host/Compile
 	$(MAKE) -C $(HOST_BUILD_DIR)/progs tic
 endef
 
-$(eval $(call HostBuild))
-$(eval $(call BuildPackage,terminfo))
 $(eval $(call BuildPackage,libncurses))
 $(eval $(call BuildPackage,libncurses-dev))
+$(eval $(call BuildPackage,terminfo))
+$(eval $(call HostBuild))

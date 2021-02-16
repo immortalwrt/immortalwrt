@@ -66,5 +66,5 @@ define Package/libreadline/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.so.* $(1)/usr/lib/
 endef
 
-$(eval $(call HostBuild))
 $(eval $(call BuildPackage,libreadline))
+$(eval $(call HostBuild))
