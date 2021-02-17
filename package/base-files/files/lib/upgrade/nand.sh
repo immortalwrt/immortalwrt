@@ -119,6 +119,8 @@ nand_upgrade_prepare_ubi() {
 	local rootfs_type="$2"
 	local kernel_length="$3"
 	local has_env="${4:-0}"
+	local rootfs_data_max="$(fw_printenv -n rootfs_data_max 2>/dev/null)"
+	[ -n "$rootfs_data_max" ] && rootfs_data_max=$(($rootfs_data_max))
 
 	[ -n "$rootfs_length" -o -n "$kernel_length" ] || return 1
 
@@ -176,11 +178,11 @@ nand_upgrade_prepare_ubi() {
 
 	# update rootfs
 	if [ -n "$rootfs_length" ]; then
-		local root_size_param
+		local rootfs_size_param
 		if [ "$rootfs_type" = "ubifs" ]; then
-			root_size_param="-m"
+			rootfs_size_param="-m"
 		else
-			root_size_param="-s $rootfs_length"
+			rootfs_size_param="-s $rootfs_length"
 		fi
 		if ! ubimkvol /dev/$ubidev -N $CI_ROOTPART $rootfs_size_param; then
 			echo "cannot create rootfs volume"
@@ -190,7 +192,16 @@ nand_upgrade_prepare_ubi() {
 
 	# create rootfs_data for non-ubifs rootfs
 	if [ "$rootfs_type" != "ubifs" ]; then
-		if ! ubimkvol /dev/$ubidev -N rootfs_data -m; then
+		local availeb=$(cat /sys/devices/virtual/ubi/$ubidev/avail_eraseblocks)
+		local ebsize=$(cat /sys/devices/virtual/ubi/$ubidev/eraseblock_size)
+		local avail_size=$(( $availeb * $ebsize ))
+		local rootfs_data_size_param="-m"
+		if [ -n "$rootfs_data_max" ] &&
+		   [ "$rootfs_data_max" != "0" ] &&
+		   [ "$rootfs_data_max" -le "$avail_size" ]; then
+			rootfs_data_size_param="-s $rootfs_data_max"
+		fi
+		if ! ubimkvol /dev/$ubidev -N rootfs_data $rootfs_data_size_param; then
 			echo "cannot initialize rootfs_data volume"
 			return 1
 		fi
