@@ -1155,6 +1155,7 @@ endef
 TARGET_DEVICES += wavlink_wl-wn531a6
 
 define Device/wevo_11acnas
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   UIMAGE_NAME := 11AC-NAS-Router(0.0.0)
   DEVICE_VENDOR := WeVO
@@ -1166,6 +1167,7 @@ endef
 TARGET_DEVICES += wevo_11acnas
 
 define Device/wevo_w2914ns-v2
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   UIMAGE_NAME := W2914NS-V2(0.0.0)
   DEVICE_VENDOR := WeVO
