@@ -1,8 +1,7 @@
 #
-# Copyright (C) 2021 ImmortalWrt
-# (https://project-openwrt.eu.org)
+# Copyright (C) 2021 Van Waholtz <vanwaholtz@gmail.com>
 #
-# This is free software, licensed under the GNU General Public License v3.
+# This is free software, licensed under the Apache License, Version 2.0.
 # See /LICENSE for more information.
 #
 
