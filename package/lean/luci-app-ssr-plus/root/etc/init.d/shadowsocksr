@@ -139,8 +139,7 @@ _exit() {
 }
 
 first_type() {
-	local ret=$(which "/bin/${path_name}" "${TMP_BIN_PATH}/${path_name}" "${path_name}" "$@" | head -n1)
-	echo ${ret:=$@}
+	type -t -p "/bin/${1}" -p "${TMP_BIN_PATH}/${1}" -p "${1}" "$@" | head -n1
 }
 
 ln_start_bin() {
