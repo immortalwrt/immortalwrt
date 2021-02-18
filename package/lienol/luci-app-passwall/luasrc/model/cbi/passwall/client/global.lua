@@ -120,7 +120,8 @@ if has_xray and #nodes_table > 0 then
             local id = e[".name"]
             o = s:taboption("Main", ListValue, v.id .. "." .. id .. "_node", string.format('* <a href="%s" target="_blank">%s</a>', api.url("shunt_rules", id), translate(e.remarks)))
             o:depends("tcp_node", v.id)
-            o:value("nil", translate("Default"))
+            o:value("nil", translate("Close"))
+            o:value("_default", translate("Default"))
             o:value("_direct", translate("Direct Connection"))
             o:value("_blackhole", translate("Blackhole"))
             for k1, v1 in pairs(normal_list) do
