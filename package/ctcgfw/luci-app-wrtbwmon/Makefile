@@ -1,7 +1,8 @@
 #
-# Copyright (C) 2020 xxx <xxx@xxx.com>
+# Copyright (C) 2021 Van Waholtz <vanwaholtz@gmail.com>
 #
-# This is free software, licensed under the Apache License, Version 2.0 .
+# This is free software, licensed under the Apache License, Version 2.0.
+# See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
@@ -11,7 +12,7 @@ PKG_VERSION:=2.0.8
 PKG_RELEASE:=1
 
 PKG_LICENSE:=Apache-2.0
-PKG_MAINTAINER:=
+PKG_MAINTAINER:=Van Waholtz <vanwaholtz@gmail.com>
 
 LUCI_TITLE:=A Luci module that uses wrtbwmon to track bandwidth usage
 LUCI_DEPENDS:=+@BUSYBOX_CONFIG_IP +iptables
