@@ -260,77 +260,12 @@ if node_section then
     if node.protocol == "_shunt" then
         local rules = {}
 
-        ucursor:foreach(appname, "shunt_rules", function(e)
-            local name = e[".name"]
-            local _node_id = node[name] or "nil"
-            local is_proxy = node[name .. "_proxy"] or "0"
-            local outboundTag
-            if _node_id == "_direct" then
-                outboundTag = "direct"
-            elseif _node_id == "_blackhole" then
-                outboundTag = "blackhole"
-            else
-                if _node_id ~= "nil" then
-                    local has_outbound
-                    for index, value in ipairs(outbounds) do
-                        if value["_flag_tag"] == _node_id and value["_flag_is_proxy"] == is_proxy then
-                            has_outbound = api.clone(value)
-                            break
-                        end
-                    end
-                    if has_outbound then
-                        has_outbound["tag"] = name
-                        table.insert(outbounds, has_outbound)
-                        outboundTag = name
-                    else
-                        local _node = ucursor:get_all(appname, _node_id)
-                        local _outbound = gen_outbound(_node, name, is_proxy)
-                        if _outbound then
-                            if is_proxy == "1" then
-                                table.insert(rules, 1, {
-                                    type = "field",
-                                    inboundTag = {"proxy_" .. name},
-                                    outboundTag = "default"
-                                })
-                            end
-                            table.insert(outbounds, _outbound)
-                            outboundTag = name
-                        end
-                    end
-                end
-            end
-            if outboundTag then
-                if e.domain_list then
-                    local _domain = {}
-                    string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
-                        table.insert(_domain, w)
-                    end)
-                    table.insert(rules, {
-                        type = "field",
-                        outboundTag = outboundTag,
-                        domain = _domain
-                    })
-                end
-                if e.ip_list then
-                    local _ip = {}
-                    string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
-                        table.insert(_ip, w)
-                    end)
-                    table.insert(rules, {
-                        type = "field",
-                        outboundTag = outboundTag,
-                        ip = _ip
-                    })
-                end
-            end
-        end)
-
         local default_node_id = node.default_node or "_direct"
-        local outboundTag
+        local default_outboundTag
         if default_node_id == "_direct" then
-            outboundTag = "direct"
+            default_outboundTag = "direct"
         elseif default_node_id == "_blackhole" then
-            outboundTag = "blackhole"
+            default_outboundTag = "blackhole"
         else
             local default_node = ucursor:get_all(appname, default_node_id)
             local main_node_id = node.main_node or "nil"
@@ -365,13 +300,85 @@ if node_section then
             local default_outbound = gen_outbound(default_node, "default")
             if default_outbound then
                 table.insert(outbounds, default_outbound)
-                outboundTag = "default"
+                default_outboundTag = "default"
             end
         end
-        if outboundTag then 
+
+        ucursor:foreach(appname, "shunt_rules", function(e)
+            local name = e[".name"]
+            local _node_id = node[name] or "nil"
+            local is_proxy = node[name .. "_proxy"] or "0"
+            local outboundTag
+            if _node_id == "_direct" then
+                outboundTag = "direct"
+            elseif _node_id == "_blackhole" then
+                outboundTag = "blackhole"
+            elseif _node_id == "_default" then
+                outboundTag = "default"
+            else
+                if _node_id ~= "nil" then
+                    local has_outbound
+                    for index, value in ipairs(outbounds) do
+                        if value["_flag_tag"] == _node_id and value["_flag_is_proxy"] == is_proxy then
+                            has_outbound = api.clone(value)
+                            break
+                        end
+                    end
+                    if has_outbound then
+                        has_outbound["tag"] = name
+                        table.insert(outbounds, has_outbound)
+                        outboundTag = name
+                    else
+                        local _node = ucursor:get_all(appname, _node_id)
+                        local _outbound = gen_outbound(_node, name, is_proxy)
+                        if _outbound then
+                            if is_proxy == "1" then
+                                table.insert(rules, 1, {
+                                    type = "field",
+                                    inboundTag = {"proxy_" .. name},
+                                    outboundTag = "default"
+                                })
+                            end
+                            table.insert(outbounds, _outbound)
+                            outboundTag = name
+                        end
+                    end
+                end
+            end
+            if outboundTag then
+                if outboundTag == "default" then 
+                    outboundTag = default_outboundTag
+                end
+                if e.domain_list then
+                    local _domain = {}
+                    string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
+                        table.insert(_domain, w)
+                    end)
+                    
+                    table.insert(rules, {
+                        type = "field",
+                        outboundTag = outboundTag,
+                        domain = _domain
+                    })
+                end
+                if e.ip_list then
+                    local _ip = {}
+                    string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
+                        table.insert(_ip, w)
+                    end)
+                    table.insert(rules, {
+                        type = "field",
+                        outboundTag = outboundTag,
+                        ip = _ip
+                    })
+                end
+            end
+        end)
+
+        if default_outboundTag then 
             table.insert(rules, {
                 type = "field",
-                outboundTag = outboundTag,
+                outboundTag = default_outboundTag,
                 network = network
             })
         end
