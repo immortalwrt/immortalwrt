@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@wrtbwmon[-1]
+	add ucitrack wrtbwmon
+	set ucitrack.@wrtbwmon[-1].init=wrtbwmon
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

@@ -195,6 +195,7 @@ local function fetch_chnlist()
 			end
 		else
 			sret = 0
+			log("chnlist 第"..k.."条规则:"..v.."下载失败！")
 		end
 		os.remove("/tmp/chnlist_dl"..k)
 	end

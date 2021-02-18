@@ -1,0 +1,579 @@
+<%#
+ Licensed to the public under the Apache License 2.0.
+-%>
+
+<%
+	local fs = require "nixio.fs"
+	local stat = require "luci.tools.status"
+	local dba = luci.model.uci.cursor():get("wrtbwmon", "general", "path")
+
+--	Function to generate table from string.
+	local function strToTable(str)
+		local tb = {}
+		local cmd = nil
+		setmetatable(tb, {__index = table.insert})
+		str:gsub("[^%s,]+", tb)
+		tb.__index = nil
+		return tb
+	end
+
+--	Function to update the mac-hostname table.
+	local function getmactable(family)
+		local mactable = {}
+		local leases = (family == 4 and {stat.dhcp_leases()} or {stat.dhcp6_leases()})[1]
+
+		if fs.access("/etc/wrtbwmon.user") then
+			for line in io.lines("/etc/wrtbwmon.user") do
+				local macpair = strToTable(line)
+				mactable[macpair[1]:lower()] = macpair[2]
+			end
+		end
+
+		for _, line in pairs(leases) do
+			if line.macaddr and not mactable[line.macaddr:lower()] then
+				mactable[line.macaddr:lower()] = line.hostname
+			end
+		end
+
+		return mactable
+	end
+
+--	Rename the db file for ipv6.
+	local function fileRename(fn, tag)
+		local idx = fn:match(".+()%.%w+$")
+		if(idx) then
+			return fn:sub(1, idx-1) .. tag .. fn:sub(idx, -1)
+		else
+			return fn .. tag
+		end
+	end
+
+	local function procressData(db, family)
+		local dbc = (family == 6 and {fileRename(db, ".6")} or {db})[1]
+		local cmd_setup = "/etc/init.d/wrtbwmon restart"
+		local cmd_update = "wrtbwmon -" .. family .. " -f " .. db .. " >>/dev/null 2>&1"
+		local data, total, mactable, firstline = {}, {0.0, 0.0, 0.0, 0.0, 0.0}, getmactable(family), true
+		local isshow = luci.http.formvalue("isShow")
+
+--		Setup the background update process.
+		if not fs.access("/var/run/wrtbwmon.pid") then
+			io.popen(cmd_setup)
+		else
+			io.popen(cmd_update)
+		end
+
+--		Process the database.
+		for line in io.lines(dbc) do
+			if firstline then
+				firstline = false
+			else
+				local tbl = strToTable(line)
+				if isshow == "1" or tbl[8] ~= "0" then
+					tbl[1] = tbl[1]:lower()
+
+					if mactable[tbl[1]] then
+						tbl[3] = mactable[tbl[1]]
+					else
+						tbl[3] = tbl[1]
+					end
+
+					for i = 1,#total do
+						total[i] = total[i] + (tbl[i+3] .. ".0")
+					end
+
+					data[#data+1] = {tbl[3], tbl[1], unpack(tbl, 4)}
+					table.insert(data[#data], tbl[2])
+				end
+			end
+		end
+
+--		Transfer the database to js.
+		luci.http.prepare_content("application/json")
+		luci.http.write_json({data, total})
+		return
+	end
+
+	if  luci.http.formvalue("proto") == "ipv4" then
+		procressData(dba, 4)
+		return
+	elseif  luci.http.formvalue("proto") == "ipv6" then
+		procressData(dba, 6)
+		return
+	end
+
+	if  luci.http.formvalue("reset") == "1" then
+		os.execute("ip -4 neigh flush dev br-lan && ip -6 neigh flush dev br-lan")
+		os.execute("rm -f " .. fileRename(dba, "*") .. " && wrtbwmon -46 -f " .. dba .. " >>/dev/null 2>&1")
+		luci.http.status(200, "OK")
+		return
+	end
+-%>
+
+<%+header%>
+
+<style type="text/css">
+	.showMore.hide {
+		display: none;
+	}
+
+	.tr.table-totals {
+		background: #eee !important;
+	}
+
+	.cbi-progressbar {
+		position: relative;
+		height: 18px;
+		margin: 3px 0;
+		border: thin solid #999;
+		background: #fff;
+	}
+
+	.cbi-progressbar > div {
+		width: 0;
+		height: 100%;
+		transition: width .1s ease-in;
+	}
+
+	.cbi-progressbar::after {
+		line-height: normal;
+		position: absolute;
+		bottom 0;
+		left 0;
+		right 0;
+		top 0;
+		overflow: hidden;
+		content: attr(title);
+		text-align: center;
+		white-space: pre;
+		text-overflow: ellipsis;
+	}
+
+</style>
+
+<div class="cbi-map">
+	<h2><%:Usage - Details%></h2>
+
+	<div class="cbi-section">
+		<div class="table">
+			<div class="tr">
+				<div class="td left" style="width:10%"><label><%:protocol:%></label></div>
+				<div class="td left" style="width:30%">
+					<select id="Select46" style="width:auto">
+						<option value="ipv4" selected="selected">ipv4</option>
+						<option value="ipv6">ipv6</option>
+					</select>
+				</div>
+				<div class="td left" style="width:10%"><label for="isShow"><%:Show Zeros:%></label></div>
+				<div class="td left" style="width:30%">
+					<input class="cbi-input-checkbox" type="checkbox" id="isShow"/>
+				</div>
+				<div class="td right">
+					<input type="button" id="resetDatabase" class="cbi-button" value="<%:Reset Database%>"/>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="td left" style="width:10%"><label><%:bandwidth:%></label></div>
+				<div class="td left" style="width:30%">
+					<input type="text" id="setBD" value="1M" /><label id="checkBD"></label>
+				</div>
+				<div class="td left" style="width:10%">
+					<label for="showMore"><%:Show More:%></label>
+				</div>
+				<div class="td left" style="width:30%">
+					<input class="cbi-input-checkbox" type="checkbox" id="showMore"/>
+				</div>
+				<div class="td"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="cbi-section">
+		<div class="table">
+			<div class="tr">
+				<div class="td left" style="width:70%">
+					<small><div id="updated" style="display:inline"></div><div id="updating" style="display:inline"></div></small>
+				</div>
+				<div class="td right" style="width:30%">
+					<label for="intervalSelect"><%:Auto update every%></label>
+					<select id="intervalSelect">
+						<option value="-1"><%:Disabled%></option>
+						<option value="1"><%:1 second%></option>
+						<option value="2"  selected="selected"><%:2 seconds%></option>
+						<option value="5"><%:5 seconds%></option>
+						<option value="10"><%:10 seconds%></option>
+						<option value="20"><%:20 seconds%></option>
+						<option value="30"><%:30 seconds%></option>
+						<option value="60"><%:60 seconds%></option>
+						<option value="120"><%:2 minutes%></option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<div class="table">
+			<div class="tr"><div class="td left" width="10%"><%:downflow:%></div><div class="td left"  style="width:90%"><div id="downflow" class="cbi-progressbar" title="-"><div></div></div></div></div>
+			<div class="tr"><div class="td left" width="10%"><%:upflow:%></div><div class="td left" style="width:90%"><div id="upflow" class="cbi-progressbar" title="-"><div></div></div></div></div>
+		</div>
+
+		<div class="table" id="traffic">
+			<div class="tr table-titles">
+				<div class="th" id="thClient" style="width:17%"><%:Clients%></div>
+				<div class="th showMore hide" id="thMAC" style="width:10%"><%:MAC%></div>
+				<div class="th" id="thDownload" style="width:8%"><%:Download%></div>
+				<div class="th" id="thUpload" style="width:8%"><%:Upload%></div>
+				<div class="th" id="thTotalDown" style="width:9%"><%:Total Down%></div>
+				<div class="th" id="thTotalUp" style="width:9%"><%:Total Up%></div>
+				<div class="th" id="thTotal" style="width:9%"><%:Total%></div>
+				<div class="th showMore hide" id="thFirstSeen" style="width:15%"><%:First Seen%></div>
+				<div class="th showMore hide" id="thLastSeen" style="width:15%"><%:Last Seen%></div>
+			</div>
+			<div class="tr placeholder">
+				<div class="td"><em><%:Collecting data...%></em></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="<%=resource%>/cbi.js"></script>
+<script type="text/javascript">//<![CDATA[
+
+(function () {
+	var sortedId = "thTotal", sortedBy = "desc";
+	var cachedData = null;
+
+	function parseSize(size){
+		var num = parseFloat((size).match(/^[0-9]+\.?[0-9]*/g));
+		var base = (size).match(/[KMGTPEZ]/i).toString();
+		var unit = ["" , "K", "M", "G", "T", "P", "E", "Z"];
+		var ex = unit.indexOf(base);
+
+		return Math.round((num ? num : 1) * (ex != "-1" ? 1024 ** ex : 1));
+	}
+
+	function padstr(str) {
+		return str < 10 ? '0' + str : str;
+	}
+
+	function dateToString(date) {
+		var d = new Date((/\W/g).test(date) ? date : date * 1000);
+		var Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
+		var hh = d.getHours(), mm = d.getMinutes(), ss = d.getSeconds();
+		return Y + '/' + padstr(M) + '/' + padstr(D) + ' ' + padstr(hh) + ':' + padstr(mm) + ':' + padstr(ss);
+	}
+
+	function isArray(obj) {
+		return obj instanceof Array;
+	}
+
+	function handleError() {
+		// TODO handle errors
+		// var message = 'Something went wrong...';
+	}
+
+	function displayTable(eltid) {
+		var tb = $('traffic'), bdw = parseSize($('setBD').value);
+		var col = setSortColumn(eltid);
+
+		cachedData[0].sort(function(x, y) {
+			var byCol = x[col] == y[col] ? 1 : col;
+			var n1 = x[byCol], n2 = y[byCol];
+			var flag = sortedBy =="desc" ? 1 : -1;
+			return sortingFunction(n1, n2, byCol) * flag;
+		});
+
+//		display data
+//		console.time('update_table');
+		updateTable(tb, cachedData, '<em><%:Loading...%></em>');
+//		console.timeEnd('update_table');
+
+		progressbar('downflow', cachedData[1][0], bdw, true);
+		progressbar('upflow', cachedData[1][1], bdw, true);
+		return
+	}
+
+	function updateTable(tb, values, placeholder) {
+		var dom = document.createDocumentFragment(), nodeLen = tb.childElementCount - 2;
+		var tbData = values[0], shadowNode, newNode, childTD, tabTitle = tb.firstElementChild;
+		var showMore = $('showMore').checked;
+		// Create the shadow node, which will be used in the following.
+		if (tbData.length > nodeLen) {
+			if (tb.childElementCount > 2) {
+				shadowNode = tabTitle.nextElementSibling.cloneNode(true);
+			} else {
+				shadowNode = document.createElement('div');
+				childTD = document.createElement('div');
+				childTD.appendChild(document.createTextNode(''));
+				for (var j = 0; j < tabTitle.children.length; j++) {
+					childTD.className = 'td' + (!showMore && '178'.indexOf(j) != -1 ? ' hide showMore' : '');
+					childTD.setAttribute('data-title', tabTitle.children[j].innerHTML);
+					shadowNode.appendChild(childTD.cloneNode(true));
+				}
+				shadowNode.firstElementChild.appendChild(document.createElement('br'));
+				shadowNode.firstElementChild.appendChild(document.createTextNode(''));
+			}
+		}
+		// Update the table data.
+		for (var i = 0; i < tbData.length; i++) {
+			if (i < nodeLen) {
+				newNode = tabTitle.nextElementSibling;
+			} else {
+				newNode = shadowNode.cloneNode(true);
+				newNode.className = 'tr cbi-rowstyle-%d'.format(i % 2 ? 2 : 1);
+			}
+			childTD = newNode.firstElementChild;
+			childTD.title = tbData[i][1];
+			childTD.lastChild.nodeValue = tbData[i].slice(-1);
+			for (var j = 0; j < tabTitle.childElementCount; j++, childTD = childTD.nextElementSibling){
+				childTD.firstChild.nodeValue = ('23456'.indexOf(j) != -1 ?
+					'%1024.2mB' + ('23'.indexOf(j) != -1  ? '/s' : '') :
+					'%s').format('78'.indexOf(j) != -1 ? dateToString(tbData[i][j]) : tbData[i][j]);
+			}
+			dom.appendChild(newNode);
+		}
+		// Remove the table data which has been deleted from the database.
+		while (tb.childElementCount > 2) {
+			tb.removeChild(tabTitle.nextElementSibling);
+		}
+		//Append the totals or placeholder row.
+		dom.appendChild(tb.lastElementChild);
+		newNode = dom.lastElementChild;
+		if (newNode.classList.contains('table-totals')) {
+			if (tbData.length == 0) {
+				while (newNode.firstElementChild.firstChild.nextSibling) {
+					newNode.removeChild(newNode.lastElementChild);
+				};
+				newNode.className = 'tr placeholder';
+				newNode.firstChild.innerHTML = placeholder;
+			}
+		} else {
+			if (tbData.length > 0) {
+				dom.replaceChild(shadowNode.cloneNode(true), newNode);
+				newNode = dom.lastElementChild;
+				newNode.className = 'tr table-totals';
+				while (newNode.firstElementChild.firstChild.nextSibling) {
+					newNode.firstElementChild.removeChild(newNode.firstElementChild.lastChild);
+				};
+				newNode.firstElementChild.style.fontWeight = 'bold';
+				newNode.firstElementChild.nextSibling.style.fontWeight = 'bold';
+			}
+		}
+
+		if (newNode.classList.contains('table-totals')) {
+			newNode.firstElementChild.firstChild.nodeValue = !showMore ? '<%:TOTAL%>: ' + tbData.length : '<%:TOTAL%>:';
+			newNode.firstElementChild.nextSibling.firstChild.nodeValue = !showMore ? '' : tbData.length + ' <%:Clients%>';
+			for (var j = 0; j < values[1].length; j++) {
+				newNode.children[j + 2].firstChild.nodeValue = '%1024.2mB'.format(values[1][j]) + (j < 2 ? '/s' : '');
+			}
+		}
+		tb.appendChild(dom);
+	}
+
+	function sortingFunction(x, y, byCol) {
+		var toHex = false;
+		var a = x.split(/[^\w\d]/g), b = y.split(/[^\w\d]/g);
+
+		if ( byCol == "9" ) {
+			var ipCk1 = cbi_validators.ipaddr.apply(x) ? 1 : 0;
+			var ipCk2 = cbi_validators.ipaddr.apply(y) ? 1 : 0;
+
+			if (ipCk1 * ipCk2 == 0) {
+				return ipCk2 - ipCk1;
+			} else {
+				a = cbi_validators.ip6addr.apply(x) ? (toHex = true, IPv6(x)) : a;
+				b = cbi_validators.ip6addr.apply(y) ? (toHex = true, IPv6(y)) : b;
+			}
+		}
+
+		var len = (a.length <= b.length ? a.length : b.length);
+		var num1, num2;
+
+		for (var i = 0 ; i < len ; i++ ) {
+			if (byCol == "1" || (byCol == "9" && toHex)) {
+				num1 = parseInt(a[i], 16);
+				num2 = parseInt(b[i], 16);
+			} else if (a[i].match(/[a-z]/ig) || b[i].match(/[a-z]/ig)){
+				num1 = a[i].toLowerCase();
+				num2 = b[i].toLowerCase();
+			} else {
+				num1 = parseInt(a[i]);
+				num2 = parseInt(b[i]);
+			}
+
+			if (num1 != num2) return num2 - num1;
+		}
+		return "1";
+	}
+
+	function progressbar(query, v, m, byte) {
+		var pg = $(query),
+			vn = parseInt(v) || 0,
+			mn = parseInt(m) || 100,
+			fv = byte ? String.format('%1024.2mB', v) : v,
+			pc = ((100 / mn) * vn).toFixed(2),
+			wt = Math.floor(pc > 100 ? 100 : pc),
+			bgc = (pc >= 95 ? "red" : (pc >= 80 ? "magenta" : (pc >= 60 ? "yellow" : "lime")));
+
+		if (pg) {
+			pg.firstElementChild.style.width = wt + '%';
+			pg.firstElementChild.style.background = bgc;
+			pg.setAttribute('title', '%s/s (%d%%)'.format(fv, pc));
+		}
+	}
+
+	function $(tid) {
+		return document.getElementById(tid);
+	}
+
+	function registerTableEventHandlers() {
+		$('xhr_poll_status').onclick = function() {
+			var e = $('intervalSelect');
+			XHR.running() ? (XHR.halt(), e.value = -1) : (XHR.run(), e.value = XHR._q[0].interval);
+		}
+
+		$('traffic').querySelectorAll('.th').forEach( function(e) {
+			if (e) {
+				e.addEventListener('click', function () {
+					displayTable(this.id);
+				});
+			}
+		});
+
+		$('intervalSelect').addEventListener('change', function () {
+			if (this.value > 0) {
+				XHR._q[0].interval = this.value;
+				if (!XHR.running()) XHR.run();
+			} else {
+				XHR.halt();
+				setUpdateMessage('');
+			}
+		});
+
+		$('resetDatabase').addEventListener('click', function () {
+			if (confirm('<%:This will delete the database file. Are you sure?%>')) {
+				(new XHR()).post('<%=REQUEST_URI%>', {reset: 1}, function(xhr) {
+					document.location.reload();
+				})
+			}
+		});
+
+		$('setBD').addEventListener('input', function () {
+			var strTest = (/^[0-9]+\.?[0-9]*[\s]*[KMGTP]?B?(\/s)?$/g).test(this.value);
+			$("checkBD").innerHTML = strTest ? '\u2714' : '\u2716';
+		});
+
+		$('setBD').addEventListener('focusout', function () {
+			if ($("checkBD").innerHTML == '\u2716') {
+				alert('Error! Bandwidth reset!!!');
+				this.value = '1M';
+			}
+			$("checkBD").innerHTML = "";
+		});
+
+		$('Select46').addEventListener('change', function () {
+			XHR._q[0].data["proto"] = this.value;
+		});
+
+		$('isShow').addEventListener('click', function () {
+			XHR._q[0].data["isShow"] = this.checked ? 1 : 0;
+		});
+
+		$('showMore').addEventListener('click', function () {
+			var tot = document.querySelector('.tr.table-totals').firstElementChild;
+			var showMore = this.checked;
+			tot.firstChild.nodeValue = '<%:TOTAL%>:' + (showMore ? '' : ' ' + $('traffic').childElementCount - 2);
+			tot.nextElementSibling.firstChild.nodeValue = showMore ? $('traffic').childElementCount - 2 + ' <%:Clients%>' : '';
+			document.querySelectorAll('.showMore').forEach(function(e) {
+				if(e) {
+					showMore ? e.classList.remove('hide') :e.classList.add('hide');
+				}
+			});
+			if (!showMore && ["thMAC", "thFirstSeen", "thLastSeen"].indexOf(sortedId)!= -1) displayTable("thTotal");
+		});
+	}
+
+	function updateData() {
+		var interval = $('intervalSelect').value;
+		var status = {
+			proto: $('Select46').value,
+			isShow: 0
+		}
+
+		XHR.poll(interval, '<%=REQUEST_URI%>', status,
+		function(x, info) {
+//			console.time('start');
+			if (!info) {
+				handleError();
+			} else {
+				cachedData = info;
+
+				// Display the sorted values.
+				displayTable(null);
+
+				$('updated').innerHTML = '<%:Last updated %>' + dateToString(Math.round(Date.now() / 1000)) +'<%:.%> ';
+			}
+//			console.timeEnd('start');
+		});
+		updatePerSec();
+	}
+
+	function updatePerSec() {
+		var post;
+		XHR.poll(1, "", "", function(x, data) {
+			var itv = XHR._q[0].interval;
+			var sec = XHR._t % itv ? itv - XHR._t % itv : 0;
+			setUpdateMessage('<%:Updating again in%> <b>' + sec + '</b> <%:seconds.%>');
+			if(sec == 0) {
+				setTimeout(function() {
+					setUpdateMessage('<%:Updating again in%> <b>' + XHR._q[0].interval + '</b> <%:seconds.%>');
+				}, 50);
+			}
+		}, post);
+
+		(XHR._q.slice(-1)[0]).xhr[post ? 'post' : 'get'] = function(url, data, callback, timeout) {
+			callback("", "");
+		}
+	}
+
+	function setUpdateMessage(msg) {
+		$('updating').innerHTML = msg;
+	}
+
+	function setSortColumn(eltid) {
+		var label = ["", "thMAC", "thDownload", "thUpload", "thTotalDown", "thTotalUp", "thTotal", "thFirstSeen", "thLastSeen", "thClient"];
+
+		// Remove the old sorted sign.
+		var e = $(sortedId);
+		if (e) {
+			e.innerHTML = e.innerHTML.replace(/\u25B2|\u25BC/, "");
+		}
+
+		// Toggle the sort direction.
+		if (eltid) {
+			if ( eltid == sortedId ) {
+				sortedBy = (sortedBy == "desc") ? "asc" : "desc";
+			} else {
+				sortedBy = "desc";
+				sortedId = eltid;
+			}
+		}
+
+		e = $(sortedId);
+		if (e) {
+			e.innerHTML += (sortedBy == "asc" ? "\u25B2" : "\u25BC");
+		}
+
+		return label.indexOf(sortedId)
+	}
+
+	if (<%=luci.http.write_json(io.popen("opkg status wrtbwmon") == "")%>) {
+		alert("<%:wrtbwmon is not installed!%>");
+	} else {
+		registerTableEventHandlers();
+		updateData();
+	}
+
+	return 0;
+})();
+//]]></script>
+
+<%+footer%>
