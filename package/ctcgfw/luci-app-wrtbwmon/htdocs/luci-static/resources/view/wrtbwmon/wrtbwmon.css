@@ -1,0 +1,73 @@
+.th.sorted::after {
+	content: '\25bc';
+}
+.th.sorted.ascent::after {
+	content: '\25b2';
+}
+.hide {
+	display: none !important;
+}
+#control_panel {
+	display: flex;
+	margin-bottom: 1rem;
+	padding: .5rem;
+	line-height: 2rem;
+	background-color: #fff;
+}
+#control_panel > :nth-child(1), #control_panel > :nth-child(2) {
+	display: inline-block;
+	flex: 1 1 25%;
+}
+#control_panel > :nth-child(3) {
+	flex: 1 1 50%;
+	text-align: right;
+}
+#control_panel > * > * {
+	vertical-align: middle;
+}
+div > label {
+	margin-right: .5rem;
+}
+div > label + select {
+	min-width: unset;
+	width: auto;
+}
+#control_panel + div {
+	display: flex;
+	margin-bottom: .5rem;
+}
+#control_panel + div > div:nth-of-type(1) {
+	flex: 1 1 65%;
+}
+#control_panel + div > div:nth-of-type(2) {
+	flex: 1 1 35%;
+	text-align: right;
+}
+#updated, #updating {
+	display: inline;
+}
+#thClient {
+	width: 17%;
+}
+#thMAC {
+	width: 10%;
+}
+#thDownload, #thUpload {
+	width: 8%;
+}
+#thTotalDown, #thTotalUp, #thTotal {
+	width: 9%;
+}
+#thFirstSeen, #thLastSeen {
+	width: 15%;
+}
+#progressbar_panel > .tr > .td:nth-child(1) {
+	width: 10%;
+}
+.tr.table-totals {
+	background: #e0e0e0 !important;
+}
+#traffic .tr:not(.table-totals):not(.placeholder) > .td:not(.th):first-child::before {
+	content: attr(title)'\a';
+	white-space: pre-line;
+}

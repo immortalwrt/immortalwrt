@@ -1,0 +1,260 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:175
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:585
+msgid "10 seconds"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:175
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:583
+msgid "2 seconds"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:175
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:586
+msgid "30 seconds"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:175
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:584
+msgid "5 seconds"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:577
+msgid "Auto update every:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:199
+msgid "Cancel"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:497
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:612
+msgid "Clients"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:122
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:623
+msgid "Collecting data..."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:46
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:165
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:208
+#: luasrc/controller/wrtbwmon.lua:16
+msgid "Configuration"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:568
+msgid "Configure Options"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:193
+msgid "Configure the default values for luci-app-wrtbwmon."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:39
+msgid "Database path"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "Default More Columns"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:174
+msgid "Default Protocol"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:175
+msgid "Default Refresh Interval"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:13
+msgid "Details"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:175
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:582
+msgid "Disabled"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:614
+msgid "Download"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:182
+msgid "Downstream Bandwidth"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:592
+msgid "Downstream:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:17
+msgid "Each line must have the following format:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:619
+msgid "First Seen"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:33
+msgid "General settings"
+msgstr ""
+
+#: root/usr/share/rpcd/acl.d/luci-app-wrtbwmon.json:3
+msgid "Grant access to LuCI app wrtbwmon"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:183
+msgid "Hide MAC Addresses"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:179
+msgid "IEC - 1024"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:36
+msgid "Keep running in the background"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:620
+msgid "Last Seen"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:411
+msgid "Last updated at %s."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:166
+msgid "Loading configuration data..."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:613
+msgid "MAC"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:179
+msgid "Multiple of Unit"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:541
+msgid "Protocol:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:563
+msgid "Reset Database"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:179
+msgid "SI - 1000"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:40
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:205
+msgid "Save"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:47
+msgid "Saving configuration data..."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:551
+msgid "Show More Columns:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+msgid "Show Zeros"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:80
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:496
+msgid "TOTAL"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:39
+msgid ""
+"This box is used to select the Database path, which is /tmp/usage.db by "
+"default."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:29
+msgid "This will delete the database file. Are you sure?"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:90
+msgid "This will revert the changes. Are you sure?"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:618
+msgid "Total"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:616
+msgid "Total Down"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:617
+msgid "Total Up"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:10
+msgid "Traffic Status"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:178
+msgid "Transfer Speed in Bits"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:8
+msgid "Unable to load the customized hostname file:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:52
+msgid "Unable to save %s: %s"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:368
+msgid "Updating again in %s second(s)."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:615
+msgid "Upload"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "Upstream Bandwidth"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:601
+msgid "Upstream:"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:31
+msgid "Usage - Configuration"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:15
+msgid "Usage - Custom User File"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:537
+msgid "Usage - Details"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:180
+msgid "Use DSL Bandwidth"
+msgstr ""
+
+#: luasrc/controller/wrtbwmon.lua:19
+msgid "User file"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:174
+msgid "ipv4"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:174
+msgid "ipv6"
+msgstr ""
