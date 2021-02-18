@@ -1,0 +1,152 @@
+msgid "Traffic Status"
+msgstr "流量监控"
+
+msgid "Usage - Configuration"
+msgstr "文件设置"
+
+msgid "Details"
+msgstr "流量信息"
+
+msgid "Configuration"
+msgstr "设置"
+
+msgid "User file"
+msgstr "用户文件"
+
+msgid "General settings"
+msgstr "通用设置"
+
+msgid "Wrtbwmon is a mointor of the traffic usage."
+msgstr "Wrtbwmon是一个流量监控器"
+
+msgid "This box is used to select the Database path, which is /tmp/usage.db by default."
+msgstr "该选项用于选择数据存储路径，默认路径为/tmp/usage.db。"
+
+msgid "This box is used to set the total bandwidth (Byte/s), which is 1000000Byte/s by default."
+msgstr "该选项用于选设置总的带宽（Byte/s），默认带宽值1000000Byte/s。"
+
+msgid "Usage - Custom User File"
+msgstr "用户文件配置"
+
+msgid "This file is used to match users with MAC addresses. Each line must have the following format: <b><font color=\"red\">\"00:aa:bb:cc:ee:ff,username\"</font></b>."
+msgstr "该文件用来进行MAC和主机进行匹配。每行必须满足<b><font color=\"red\">\"00:aa:bb:cc:ee:ff,用户名\"</font></b>的格式"
+
+msgid "Usage - Details"
+msgstr "流量详情"
+
+msgid "downflow:"
+msgstr "下行:"
+
+msgid "upflow:"
+msgstr "上行:"
+
+msgid "protocol:"
+msgstr "协议:"
+
+msgid "Reset Database"
+msgstr "重置"
+
+msgid "Auto update every"
+msgstr "自动刷新"
+
+msgid "Database Path"
+msgstr "数据存储位置"
+
+msgid "Show Zeros:"
+msgstr "显示0流量:"
+
+msgid "Show More:"
+msgstr "显示更多:"
+
+msgid "bandwidth:"
+msgstr "带宽:"
+
+msgid "Calculate per host totals"
+msgstr "单主机总流量统计"
+
+msgid "Disabled"
+msgstr "禁用"
+
+msgid "1 second"
+msgstr "1秒"
+
+msgid "2 seconds"
+msgstr "2秒"
+
+msgid "5 seconds"
+msgstr "5秒"
+
+msgid "10 seconds"
+msgstr "10秒"
+
+msgid "20 seconds"
+msgstr "20秒"
+
+msgid "30 seconds"
+msgstr "30秒"
+
+msgid "40 seconds"
+msgstr "40秒"
+
+msgid "50 seconds"
+msgstr "50秒"
+
+msgid "60 seconds"
+msgstr "60秒"
+
+msgid "2 minutes"
+msgstr "2分"
+
+msgid "3 minutes"
+msgstr "3分"
+
+msgid "Loading..."
+msgstr "数据载入中"
+
+msgid "Clients"
+msgstr "客户端"
+
+msgid "MAC Address"
+msgstr "MAC地址"
+
+msgid "Download"
+msgstr "下载"
+
+msgid "Upload"
+msgstr "上传"
+
+msgid "Total Down"
+msgstr "总下载"
+
+msgid "Total Up"
+msgstr "总上传"
+
+msgid "Total"
+msgstr "总计"
+
+msgid "First Seen"
+msgstr "初次记录"
+
+msgid "Last Seen"
+msgstr "最后记录"
+
+msgid "TOTAL"
+msgstr "总共"
+
+msgid "Last updated"
+msgstr "最后更新于"
+
+msgid "This will delete the database file. Are you sure?"
+msgstr "该操作将删除数据统计文件，确定执行该操作？"
+
+msgid "Updating again in"
+msgstr "下次更新将于"
+
+msgid "seconds."
+msgstr "秒以后。"
+
+msgid "wrtbwmon is not installed!"
+msgstr "wrtbwmon插件尚未安装"
+
+msgid "."
+msgstr "。"
