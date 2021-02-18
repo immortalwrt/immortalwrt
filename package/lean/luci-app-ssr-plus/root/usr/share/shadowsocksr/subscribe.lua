@@ -232,7 +232,7 @@ local function processData(szType, content)
 		local userinfo = hostInfo[1]
 		local password = userinfo
 		result.alias = UrlDecode(alias)
-		result.type = "trojan"
+		result.type = luci.sys.exec('type -t -p trojan') ~= "" and "trojan" or "v2ray"
 		result.v2ray_protocol = "trojan"
 		result.server = host[1]
 		-- 按照官方的建议 默认验证ssl证书
