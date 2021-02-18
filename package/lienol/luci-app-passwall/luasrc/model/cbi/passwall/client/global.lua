@@ -174,26 +174,6 @@ udp_node:value("tcp_", translate("Same as the tcp node"))
 
 s:tab("DNS", translate("DNS"))
 
-o = s:taboption("DNS", Value, "up_china_dns", translate("Local DNS") .. "(UDP)")
-o.description = translate("IP:Port mode acceptable, multi value split with english comma.") .. "<br />" .. translate("When the selection is not the default, this DNS is forced to be set to dnsmasq upstream DNS.")
-o.default = "default"
-o:value("default", translate("Default"))
-if has_xray then
-    o:value("xray_doh", "Xray DNS(DoH)")
-end
-o:value("223.5.5.5", "223.5.5.5 (" .. translate("Ali") .. "DNS)")
-o:value("114.114.114.114", "114.114.114.114 (114DNS)")
-o:value("119.29.29.29", "119.29.29.29 (DNSPOD DNS)")
-o:value("180.76.76.76", "180.76.76.76 (" .. translate("Baidu") .. "DNS)")
-
----- DoH
-o = s:taboption("DNS", Value, "up_china_dns_doh", translate("DoH request address"))
-o:value("https://dns.alidns.com/dns-query,223.5.5.5", "AliDNS")
-o:value("https://doh.pub/dns-query,119.29.29.29", "DNSPod")
-o.default = "https://dns.alidns.com/dns-query,223.5.5.5"
-o.validate = doh_validate
-o:depends("up_china_dns", "xray_doh")
-
 ---- DNS Forward Mode
 o = s:taboption("DNS", ListValue, "dns_mode", translate("Filter Mode"))
 o.rmempty = false
@@ -209,8 +189,8 @@ if has_xray then
     o:value("xray_doh", "Xray DNS(DoH)")
 end
 o:value("udp", translatef("Requery DNS By %s", translate("UDP Node")))
+o:value("custom", translate("Custom DNS") .. "(UDP)")
 o:value("nonuse", translate("No Filter"))
-o:value("custom", translate("Custom DNS"))
 
 ---- Custom DNS
 o = s:taboption("DNS", Value, "custom_dns", translate("Custom DNS"))

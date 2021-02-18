@@ -324,7 +324,7 @@ load_config() {
 	DNS_MODE=$(config_t_get global dns_mode pdnsd)
 	DNS_FORWARD=$(config_t_get global dns_forward 8.8.4.4:53 | sed 's/:/#/g')
 	DNS_CACHE=$(config_t_get global dns_cache 0)
-	LOCAL_DNS=$(config_t_get global up_china_dns default | sed 's/:/#/g')
+	LOCAL_DNS="default"
 	if [ "${LOCAL_DNS}" = "default" ]; then
 		DEFAULT_DNS=$(uci show dhcp | grep "@dnsmasq" | grep "\.server=" | awk -F '=' '{print $2}' | sed "s/'//g" | tr ' ' ',')
 		if [ -z "${DEFAULT_DNS}" ]; then
@@ -776,19 +776,6 @@ stop_crontab() {
 }
 
 start_dns() {
-	if [ "${LOCAL_DNS}" = "xray_doh" ]; then
-		_doh=$(config_t_get global up_china_dns_doh "https://dns.alidns.com/dns-query,223.5.5.5")
-		_doh_url=$(echo $_doh | awk -F ',' '{print $1}')
-		_doh_host_port=$(echo $_doh_url | sed "s/https:\/\///g" | awk -F '/' '{print $1}')
-		_doh_host=$(echo $_doh_host_port | awk -F ':' '{print $1}')
-		_doh_port=$(echo $_doh_host_port | awk -F ':' '{print $2}')
-		_doh_bootstrap=$(echo $_doh | cut -d ',' -sf 2-)
-		lua $API_GEN_XRAY -dns_listen_port "${LOCAL_DOH_PORT}" -dns_server "${_doh_bootstrap}" -doh_url "${_doh_url}" -doh_host "${_doh_host}" > $TMP_PATH/DNS1.json
-		ln_start_bin "$(first_type $(config_t_get global_app xray_file) xray)" xray $TMP_PATH/DNS1.log -config="$TMP_PATH/DNS1.json"
-		LOCAL_DNS="127.0.0.1#${LOCAL_DOH_PORT}"
-		unset _doh _doh_url _doh_bootstrap
-	fi
-
 	local pdnsd_forward other_port msg
 	dns_listen_port=${DNS_PORT}
 	pdnsd_forward=${DNS_FORWARD}
