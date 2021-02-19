@@ -66,6 +66,10 @@ ifeq ($(ARCH),arm)
 	EXTRA_CFLAGS += -mfloat-abi=softfp
 endif
 
+ifeq ($(BOARD),x86)
+	EXTRA_CFLAGS += -mhard-float
+endif
+
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
 	M="$(PKG_BUILD_DIR)" \
