@@ -52,7 +52,7 @@ define Package/autocore-arm/install
 	$(INSTALL_DATA) ./files/arm/rpcd_10_system.js $(1)/etc/rpcd_10_system.js
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/arm/090-cover-index_files $(1)/etc/uci-defaults/090-cover-index_files
+	$(INSTALL_BIN) ./files/090-cover-index_files $(1)/etc/uci-defaults/090-cover-index_files
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/cpuinfo $(1)/sbin/cpuinfo
@@ -66,6 +66,9 @@ define Package/autocore-x86/install
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/x86/autocore $(1)/etc/init.d/autocore
+
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/090-cover-index_files $(1)/etc/uci-defaults/090-cover-index_files
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/x86/cpuinfo $(1)/sbin/cpuinfo

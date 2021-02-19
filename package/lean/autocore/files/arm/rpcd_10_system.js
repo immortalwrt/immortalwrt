@@ -47,16 +47,14 @@ return baseclass.extend({
 		    systeminfo  = data[1],
 		    cpubench    = data[2],
 		    cpuinfo     = data[3],
-		    cpuusage    = data[4]; //,
-//		    luciversion = data[5];
+		    cpuusage    = data[4],
+		    luciversion = data[5];
 
-/*
 		luciversion = luciversion.filter(function(l) {
 			return l.match(/^\s*(luciname|luciversion)\s*=/);
 		}).map(function(l) {
 			return l.replace(/^\s*\w+\s*=\s*['"]([^'"]+)['"].*$/, '$1');
 		}).join(' ');
-*/
 
 		var datestr = null;
 
@@ -77,7 +75,7 @@ return baseclass.extend({
 			_('Hostname'),         boardinfo.hostname,
 			_('Model'),            boardinfo.model + cpubench.cpubench,
 			_('Architecture'),     cpuinfo.cpuinfo,
-			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description: '')/* + ' / ' : '') + (luciversion || '')*/,
+			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
 			_('Kernel Version'),   boardinfo.kernel,
 			_('Local Time'),       datestr,
 			_('Uptime'),           systeminfo.uptime ? '%t'.format(systeminfo.uptime) : null,
