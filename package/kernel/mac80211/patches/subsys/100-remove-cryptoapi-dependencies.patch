@@ -8,7 +8,7 @@
  	wpa.o \
  	scan.o offchannel.o \
  	ht.o agg-tx.o agg-rx.o \
-@@ -18,8 +17,8 @@ mac80211-y := \
+@@ -19,8 +18,8 @@ mac80211-y := \
  	rate.o \
  	michael.o \
  	tkip.o \
@@ -64,7 +64,7 @@
 -	aead_request_set_ad(aead_req, sg[0].length);
 -
 -	crypto_aead_encrypt(aead_req);
--	kzfree(aead_req);
+-	kfree_sensitive(aead_req);
 -
 -	return 0;
 -}
@@ -99,7 +99,7 @@
 -	aead_request_set_ad(aead_req, sg[0].length);
 -
 -	err = crypto_aead_decrypt(aead_req);
--	kzfree(aead_req);
+-	kfree_sensitive(aead_req);
 -
 -	return err;
 -}
@@ -654,7 +654,7 @@
 -	depends on CRYPTO_GCM
  	depends on CRYPTO_CMAC
  	depends on CRC32
- 	---help---
+ 	help
 --- a/net/mac80211/aes_gmac.h
 +++ b/net/mac80211/aes_gmac.h
 @@ -12,10 +12,22 @@
@@ -687,7 +687,7 @@
  #endif /* AES_GMAC_H */
 --- a/net/mac80211/key.h
 +++ b/net/mac80211/key.h
-@@ -88,7 +88,7 @@ struct ieee80211_key {
+@@ -89,7 +89,7 @@ struct ieee80211_key {
  			 * Management frames.
  			 */
  			u8 rx_pn[IEEE80211_NUM_TIDS + 1][IEEE80211_CCMP_PN_LEN];
