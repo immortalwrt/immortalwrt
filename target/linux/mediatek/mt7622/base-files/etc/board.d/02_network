@@ -13,6 +13,9 @@ mediatek_setup_interfaces()
 	bananapi,bpi-r64)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" wan
 		;;
+	mediatek,mt7622-rfb1)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
+		;;
 	ubnt,unifi-6-lr)
 		ucidef_set_interfaces_lan "eth0"
 		;;
