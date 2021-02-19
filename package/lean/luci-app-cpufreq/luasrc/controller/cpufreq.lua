@@ -5,6 +5,9 @@ function index()
 	if not nixio.fs.access("/etc/config/cpufreq") then
 		return
 	end
-	
-	entry({"admin", "system", "cpufreq"}, cbi("cpufreq"), _("CPU Freq"), 900).dependent=false
+
+	local page
+	page = entry({"admin", "system", "cpufreq"}, cbi("cpufreq"), _("CPU Freq"), 900)
+	page.dependent = false
+	page.acl_depends = { "luci-app-cpufreq" }
 end
