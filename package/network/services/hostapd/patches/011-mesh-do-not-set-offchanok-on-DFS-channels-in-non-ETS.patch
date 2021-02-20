@@ -1,7 +1,7 @@
-From 71e9c65a7c8af90a5fd11072062b596421316452 Mon Sep 17 00:00:00 2001
+From af8dcbc87466ed6472850a4f1cfe252652cb3d26 Mon Sep 17 00:00:00 2001
 From: Peter Oh <peter.oh@bowerswilkins.com>
-Date: Mon, 27 Aug 2018 14:28:46 -0700
-Subject: [PATCH 4/7] mesh: do not set offchanok on DFS channels in non-ETSI
+Date: Tue, 30 Jun 2020 14:18:59 +0200
+Subject: [PATCH 11/19] mesh: do not set offchanok on DFS channels in non-ETSI
 
 mac80211 does not allow mgmt tx to use off channel on
 DFS channels in non-ETSI domain, because it will invalidate
@@ -12,23 +12,24 @@ in non-ETSI.
 
 Signed-off-by: Peter Oh <peter.oh@bowerswilkins.com>
 ---
- src/drivers/driver_nl80211.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ src/drivers/driver_nl80211.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
 --- a/src/drivers/driver_nl80211.c
 +++ b/src/drivers/driver_nl80211.c
-@@ -7462,6 +7462,10 @@ static int wpa_driver_nl80211_send_actio
+@@ -7788,7 +7788,11 @@ static int wpa_driver_nl80211_send_actio
  	int ret = -1;
  	u8 *buf;
  	struct ieee80211_hdr *hdr;
 +	struct hostapd_hw_modes *modes;
-+	int i, offchanok = 1;
+ 	int offchanok = 1;
 +	u16 num_modes, flags;
 +	u8 dfs_domain;
++	int i;
  
- 	wpa_printf(MSG_DEBUG, "nl80211: Send Action frame (ifindex=%d, "
- 		   "freq=%u MHz wait=%d ms no_cck=%d)",
-@@ -7486,6 +7490,21 @@ static int wpa_driver_nl80211_send_actio
+ 	if (is_ap_interface(drv->nlmode) && (int) freq == bss->freq &&
+ 	    bss->beacon_set)
+@@ -7817,6 +7821,21 @@ static int wpa_driver_nl80211_send_actio
  		os_memset(bss->rand_addr, 0, ETH_ALEN);
  	}
  
@@ -50,12 +51,3 @@ Signed-off-by: Peter Oh <peter.oh@bowerswilkins.com>
  	if (is_ap_interface(drv->nlmode) &&
  	    (!(drv->capa.flags & WPA_DRIVER_FLAGS_OFFCHANNEL_TX) ||
  	     (int) freq == bss->freq || drv->device_ap_sme ||
-@@ -7497,7 +7516,7 @@ static int wpa_driver_nl80211_send_actio
- 		ret = nl80211_send_frame_cmd(bss, freq, wait_time, buf,
- 					     24 + data_len,
- 					     &drv->send_action_cookie,
--					     no_cck, 0, 1, NULL, 0);
-+					     no_cck, 0, offchanok, NULL, 0);
- 
- 	os_free(buf);
- 	return ret;
