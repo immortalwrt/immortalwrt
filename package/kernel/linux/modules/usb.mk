@@ -441,10 +441,8 @@ define KernelPackage/usb-dwc2
 	CONFIG_USB_DWC2_VERBOSE=n \
 	CONFIG_USB_DWC2_TRACK_MISSED_SOFS=n \
 	CONFIG_USB_DWC2_DEBUG_PERIODIC=n
-  FILES:= \
-	$(LINUX_DIR)/drivers/usb/dwc2/dwc2.ko \
-	$(LINUX_DIR)/drivers/usb/dwc2/dwc2_platform.ko@lt4.3
-  AUTOLOAD:=$(call AutoLoad,54,dwc2 dwc2_platform@lt4.3,1)
+  FILES:=$(LINUX_DIR)/drivers/usb/dwc2/dwc2.ko
+  AUTOLOAD:=$(call AutoLoad,54,dwc2,1)
   $(call AddDepends/usb)
 endef
 
@@ -1638,7 +1636,6 @@ define KernelPackage/usb-chipidea
 	CONFIG_USB_CHIPIDEA_UDC=y \
 	CONFIG_USB_CHIPIDEA_DEBUG=y
   FILES:= \
-	$(LINUX_DIR)/drivers/extcon/extcon.ko@lt4.9 \
 	$(LINUX_DIR)/drivers/extcon/extcon-core.ko@ge4.9 \
 	$(LINUX_DIR)/drivers/usb/chipidea/ci_hdrc.ko \
 	$(LINUX_DIR)/drivers/usb/common/ulpi.ko@ge4.18
@@ -1663,7 +1660,6 @@ define KernelPackage/usb-chipidea2
 	CONFIG_USB_CHIPIDEA_UDC=y \
 	CONFIG_USB_CHIPIDEA_DEBUG=y
   FILES:= \
-	$(LINUX_DIR)/drivers/extcon/extcon.ko@lt4.9 \
 	$(LINUX_DIR)/drivers/extcon/extcon-core.ko@ge4.9 \
 	$(LINUX_DIR)/drivers/usb/chipidea/ci_hdrc_usb2.ko
   AUTOLOAD:=$(call AutoLoad,39,ci_hdrc_usb2,1)

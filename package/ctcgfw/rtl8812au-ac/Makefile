@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2020 stepheny
+# <https://github.com/aircrack-ng/rtl8812au/pull/619>
 #
 # Copyright (C) 2021 ImmortalWrt
 # <https://project-openwrt.eu.org>
@@ -15,9 +16,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8812au.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-06-26
-PKG_SOURCE_VERSION:=58f6be25f7c86d7ba67b0ccc638cf667755e6e1b
-PKG_MIRROR_HASH:=60359df8b49fa433d38b968b0df7eaddaca10f13cdd57471394bac1f6e5a162e
+PKG_SOURCE_DATE:=2021-02-03
+PKG_SOURCE_VERSION:=b65dcf4105641716d16f3a6c96507fdd9c1862b4
+PKG_MIRROR_HASH:=5416d4a6e671c6b07f44f35fae54662baef71f448c4be4ade58bf7fc5ca4f192
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -32,10 +33,11 @@ include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/rtl8812au-ac
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek rtl8812au/21au wireless drivers
+  TITLE:=Realtek RTL8812AU/21AU wireless drivers
   DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/rtl8812au.ko
   AUTOLOAD:=$(call AutoProbe,rtl8812au)
+  CONFLICTS:=kmod-rtl8812au-ct
 endef
 
 NOSTDINC_FLAGS = \
@@ -48,18 +50,32 @@ NOSTDINC_FLAGS = \
 	-include backport/autoconf.h \
 	-include backport/backport.h
 
-NOSTDINC_FLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT \
-	-DRTW_SINGLE_WIPHY -DCONFIG_CONCURRENT_MODE -D_LINUX_BYTEORDER_SWAB_H
+EXTRA_KCONFIG:= \
+	CONFIG_88XXAU=m \
+	USER_MODULE_NAME=rtl8812au
 
-PKG_MAKE_FLAGS += USER_MODULE_NAME=rtl8812au
-KERNEL_MAKE_FLAGS += CONFIG_88XXAU=m
+EXTRA_CFLAGS:= \
+	-DRTW_SINGLE_WIPHY \
+	-DRTW_USE_CFG80211_STA_EVENT \
+	-DCONFIG_IOCTL_CFG80211 \
+	-DCONFIG_CONCURRENT_MODE
+
+ifeq ($(CONFIG_BIG_ENDIAN),y)
+EXTRA_CFLAGS += -DCONFIG_BIG_ENDIAN
+else
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+endif
+
+MAKE_OPTS:= \
+	$(KERNEL_MAKE_FLAGS) \
+	M="$(PKG_BUILD_DIR)" \
+	NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
+	USER_EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+	$(EXTRA_KCONFIG)
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(KERNEL_MAKE_FLAGS) \
-		$(PKG_MAKE_FLAGS) \
-		M="$(PKG_BUILD_DIR)" \
-		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
+		$(MAKE_OPTS) \
 		modules
 endef
 

@@ -132,7 +132,7 @@ $(eval $(call KernelPackage,crypto-crc32c))
 
 define KernelPackage/crypto-ctr
   TITLE:=Counter Mode CryptoAPI module
-  DEPENDS:=+kmod-crypto-manager +kmod-crypto-seqiv +kmod-crypto-iv
+  DEPENDS:=+kmod-crypto-manager +kmod-crypto-seqiv
   KCONFIG:=CONFIG_CRYPTO_CTR
   FILES:=$(LINUX_DIR)/crypto/ctr.ko
   AUTOLOAD:=$(call AutoLoad,09,ctr)
@@ -169,9 +169,7 @@ $(eval $(call KernelPackage,crypto-deflate))
 define KernelPackage/crypto-des
   TITLE:=DES/3DES cipher CryptoAPI module
   KCONFIG:=CONFIG_CRYPTO_DES
-  FILES:= \
-	$(LINUX_DIR)/crypto/des_generic.ko \
-	$(LINUX_DIR)/lib/crypto/libdes.ko@ge5.4
+  FILES:=$(LINUX_DIR)/crypto/des_generic.ko
   AUTOLOAD:=$(call AutoLoad,09,des_generic)
   $(call AddDepends/crypto)
 endef
@@ -195,9 +193,7 @@ define KernelPackage/crypto-ecdh
   TITLE:=ECDH algorithm
   DEPENDS:=+kmod-crypto-kpp
   KCONFIG:= CONFIG_CRYPTO_ECDH
-  FILES:= \
-	$(LINUX_DIR)/crypto/ecdh_generic.ko \
-	$(LINUX_DIR)/crypto/ecc.ko@ge5.2
+  FILES:=$(LINUX_DIR)/crypto/ecdh_generic.ko
   AUTOLOAD:=$(call AutoLoad,10,ecdh_generic)
   $(call AddDepends/crypto)
 endef
@@ -417,20 +413,6 @@ define KernelPackage/crypto-hw-talitos
 endef
 
 $(eval $(call KernelPackage,crypto-hw-talitos))
-
-define KernelPackage/crypto-iv
-  TITLE:=CryptoAPI initialization vectors
-  DEPENDS:=+kmod-crypto-manager +kmod-crypto-rng +kmod-crypto-wq
-  KCONFIG:= CONFIG_CRYPTO_BLKCIPHER2
-  HIDDEN:=1
-  FILES:= \
-	$(LINUX_DIR)/crypto/eseqiv.ko@lt4.9 \
-	$(LINUX_DIR)/crypto/chainiv.ko@lt4.9
-  AUTOLOAD:=$(call AutoLoad,10,eseqiv chainiv)
-  $(call AddDepends/crypto)
-endef
-
-$(eval $(call KernelPackage,crypto-iv))
 
 define KernelPackage/crypto-kpp
   TITLE:=Key-agreement Protocol Primitives
@@ -743,9 +725,7 @@ define KernelPackage/crypto-sha256
 	CONFIG_CRYPTO_SHA256 \
 	CONFIG_CRYPTO_SHA256_OCTEON \
 	CONFIG_CRYPTO_SHA256_SSSE3
-  FILES:= \
-	$(LINUX_DIR)/crypto/sha256_generic.ko \
-	$(LINUX_DIR)/lib/crypto/libsha256.ko@ge5.4
+  FILES:=$(LINUX_DIR)/crypto/sha256_generic.ko
   AUTOLOAD:=$(call AutoLoad,09,sha256_generic)
   $(call AddDepends/crypto)
 endef

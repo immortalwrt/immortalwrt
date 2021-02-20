@@ -114,9 +114,7 @@ define KernelPackage/geneve
 	+kmod-udptunnel4 \
 	+IPV6:kmod-udptunnel6
   KCONFIG:=CONFIG_GENEVE
-  FILES:= \
-	$(LINUX_DIR)/net/ipv4/geneve.ko@le4.1 \
-	$(LINUX_DIR)/drivers/net/geneve.ko@ge4.2
+  FILES:=$(LINUX_DIR)/drivers/net/geneve.ko
   AUTOLOAD:=$(call AutoLoad,13,geneve)
 endef
 
@@ -130,7 +128,7 @@ $(eval $(call KernelPackage,geneve))
 define KernelPackage/nsh
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=Network Service Header (NSH) protocol
-  DEPENDS:=
+  DEPENDS:=@!LINUX_4_9
   KCONFIG:=CONFIG_NET_NSH
   FILES:=$(LINUX_DIR)/net/nsh/nsh.ko@ge4.14
   AUTOLOAD:=$(call AutoLoad,13,nsh)
@@ -246,7 +244,7 @@ define KernelPackage/ipsec
   DEPENDS:= \
 	+kmod-crypto-authenc +kmod-crypto-cbc +kmod-crypto-deflate \
 	+kmod-crypto-des +kmod-crypto-echainiv +kmod-crypto-hmac \
-	+kmod-crypto-iv +kmod-crypto-md5 +kmod-crypto-sha1
+	+kmod-crypto-md5 +kmod-crypto-sha1
   KCONFIG:= \
 	CONFIG_NET_KEY \
 	CONFIG_XFRM_USER \
@@ -1178,9 +1176,8 @@ define KernelPackage/rxrpc
 	CONFIG_AF_RXRPC_DEBUG=n
   FILES:= \
 	$(LINUX_DIR)/net/rxrpc/af-rxrpc.ko@lt4.11 \
-	$(LINUX_DIR)/net/rxrpc/rxrpc.ko@ge4.11 \
-	$(LINUX_DIR)/net/rxrpc/rxkad.ko@lt4.7
-  AUTOLOAD:=$(call AutoLoad,30,rxkad@lt4.7 af-rxrpc.ko@lt4.11 rxrpc.ko@ge4.11)
+	$(LINUX_DIR)/net/rxrpc/rxrpc.ko@ge4.11
+  AUTOLOAD:=$(call AutoLoad,30,af-rxrpc.ko@lt4.11 rxrpc.ko@ge4.11)
   DEPENDS:= +kmod-crypto-manager +kmod-crypto-pcbc +kmod-crypto-fcrypt
 endef
 

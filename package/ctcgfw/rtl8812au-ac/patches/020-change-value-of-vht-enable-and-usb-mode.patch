@@ -18,4 +18,3 @@
  
  #ifdef CONFIG_USB_AUTOSUSPEND
  int rtw_enusbss = 1;/* 0:disable,1:enable */
---

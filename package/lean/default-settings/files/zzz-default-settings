@@ -39,17 +39,6 @@ sed -i 's/root::0:0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999
 sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 
-# NEVER DROP THE EXISTING AUTHORS INFO | 禁止删除现有作者信息
-sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-echo "DISTRIB_REVISION='| Mod 21.02'" >> /etc/openwrt_release
-sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
-echo "DISTRIB_DESCRIPTION='ImmortalWrt 18.06 '" >> /etc/openwrt_release
-
-# NEVER DROP THE EXISTING AUTHORS INFO | 禁止删除现有作者信息
-sed -i 's/LuCI openwrt-18.06 branch/LuCI 18.06 by Lean/g' /usr/lib/lua/luci/version.lua
-sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
-echo 'luciversion = "Mod 21.02 by ImmortalWrt"' >> /usr/lib/lua/luci/version.lua
-
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 

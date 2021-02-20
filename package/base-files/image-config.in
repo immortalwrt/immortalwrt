@@ -158,10 +158,10 @@ if VERSIONOPT
 	config VERSION_DIST
 		string
 		prompt "Release distribution"
-		default "OpenWrt"
+		default "ImmortalWrt"
 		help
 			This is the name of the release distribution.
-			If unspecified, it defaults to OpenWrt.
+			If unspecified, it defaults to ImmortalWrt.
 
 	config VERSION_NUMBER
 		string

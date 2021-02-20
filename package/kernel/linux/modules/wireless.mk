@@ -12,9 +12,7 @@ define KernelPackage/net-prism54
   TITLE:=Intersil Prism54 support
   DEPENDS:=@PCI_SUPPORT +@DRIVER_WEXT_SUPPORT +prism54-firmware
   KCONFIG:=CONFIG_PRISM54
-  FILES:= \
-	$(LINUX_DIR)/drivers/net/wireless/prism54/prism54.ko@lt4.5 \
-	$(LINUX_DIR)/drivers/net/wireless/intersil/prism54/prism54.ko@ge4.5
+  FILES:=$(LINUX_DIR)/drivers/net/wireless/intersil/prism54/prism54.ko
   AUTOLOAD:=$(call AutoProbe,prism54)
 endef
 

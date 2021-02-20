@@ -507,9 +507,7 @@ define KernelPackage/sound-hda-intel
   KCONFIG:= \
 	CONFIG_SOUND_PCI \
 	CONFIG_SND_HDA_INTEL
-  FILES:= \
-	$(LINUX_DIR)/sound/pci/hda/snd-hda-intel.ko \
-	$(LINUX_DIR)/sound/hda/snd-intel-nhlt.ko@ge5.4
+  FILES:=$(LINUX_DIR)/sound/pci/hda/snd-hda-intel.ko
   AUTOLOAD:=$(call AutoProbe,snd-hda-intel)
   $(call AddDepends/sound,kmod-sound-hda-core)
 endef
