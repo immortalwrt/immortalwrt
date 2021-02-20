@@ -96,10 +96,6 @@ function gen_outbound(node, tag, is_proxy)
                     node.stream_security = "xtls"
                 end
             end
-    
-            if node.transport == "mkcp" or node.transport == "quic" then
-                node.stream_security = "none"
-            end
         end
 
         result = {
@@ -349,16 +345,23 @@ if node_section then
                 if outboundTag == "default" then 
                     outboundTag = default_outboundTag
                 end
+                local protocols = nil
+                if e["protocol"] and e["protocol"] ~= "" then
+                    protocols = {}
+                    string.gsub(e["protocol"], '[^' .. " " .. ']+', function(w)
+                        table.insert(protocols, w)
+                    end)
+                end
                 if e.domain_list then
                     local _domain = {}
                     string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
                         table.insert(_domain, w)
                     end)
-                    
                     table.insert(rules, {
                         type = "field",
                         outboundTag = outboundTag,
-                        domain = _domain
+                        domain = _domain,
+                        protocol = protocols
                     })
                 end
                 if e.ip_list then
@@ -369,7 +372,15 @@ if node_section then
                     table.insert(rules, {
                         type = "field",
                         outboundTag = outboundTag,
-                        ip = _ip
+                        ip = _ip,
+                        protocol = protocols
+                    })
+                end
+                if not e.domain_list and not e.ip_list and protocols then
+                    table.insert(rules, {
+                        type = "field",
+                        outboundTag = outboundTag,
+                        protocol = protocols
                     })
                 end
             end
