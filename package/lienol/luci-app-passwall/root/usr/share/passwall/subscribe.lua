@@ -473,7 +473,6 @@ local function processData(szType, content, add_mode)
 			end
 			if params.peer then peer = params.peer end
 			sni = params.sni and params.sni or ""
-			if params.mux and params.mux == "1" then result.mux = "1" end
 			if params.ws and params.ws == "1" then
 				result.trojan_transport = "ws"
 				if params.wshost then result.ws_host = params.wshost end
@@ -486,9 +485,10 @@ local function processData(szType, content, add_mode)
 				if params.sspasswd then result.ss_aead_pwd = params.sspasswd end
 			end
 			result.port = port
-			if result.mux or result.trojan_transport == "ws" or result.ss_aead then
+			if result.trojan_transport == "ws" or result.ss_aead then
 				result.type = "Trojan-Go"
 				result.fingerprint = "firefox"
+				result.mux = "1"
 			end
 			result.tls = '1'
 			result.tls_serverName = peer and peer or sni
@@ -525,19 +525,14 @@ local function processData(szType, content, add_mode)
 				result.address = hostInfo and hostInfo[1] or Info[2]
 			end
 			local peer, sni = nil, ""
-			local allowInsecure = allowInsecure_default
 			local query = split(Info[2], "?")
 			local params = {}
 			for _, v in pairs(split(query[2], '&')) do
 				local t = split(v, '=')
 				params[string.lower(t[1])] = UrlDecode(t[2])
 			end
-			if params.allowinsecure then
-				allowInsecure = params.allowinsecure
-			end
 			if params.peer then peer = params.peer end
 			sni = params.sni and params.sni or ""
-			if params.mux and params.mux == "1" then result.mux = "1" end
 			if params.type and params.type == "ws" then
 				result.trojan_transport = "ws"
 				if params.host then result.ws_host = params.host end
@@ -551,9 +546,10 @@ local function processData(szType, content, add_mode)
 			end
 			result.port = port
 			result.fingerprint = "firefox"
-			result.tls = '1'
+			result.tls = "1"
 			result.tls_serverName = peer and peer or sni
-			result.tls_allowInsecure = allowInsecure and "1" or "0"
+			result.tls_allowInsecure = "0"
+			result.mux = "1"
 		end
 	elseif szType == "ssd" then
 		result.type = "SS"
