@@ -21,6 +21,8 @@ boot() {
 	[ -f /proc/mounts ] || /sbin/mount_root
 	[ -f /proc/jffs2_bbc ] && echo "S" > /proc/jffs2_bbc
 
+	[ -f /etc/modules.d/ath9k ] && mv /etc/modules.d/ath9k /etc/modules.d/98-ath9k
+	[ -f /etc/modules.d/ath10k ] && mv /etc/modules.d/ath10k /etc/modules.d/99-ath10k
 	mkdir -p /var/run
 	mkdir -p /var/log
 	mkdir -p /var/lock
