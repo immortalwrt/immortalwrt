@@ -180,11 +180,11 @@ local api = require "luci.model.cbi.passwall.api.api"
 				"@" + v_server.value +
 				":" + v_port.value + "/?";
 			if (opt.get("tls").checked) {
-				url += "tls=1";
 				url += opt.query("sni", "tls_serverName");
-				url += opt.query("allowinsecure", "tls_allowInsecure");
-			} else if (v_type === "Trojan-Go") {
-				url += "tls=0";
+				if (v_type !== "Trojan-Go") {
+					url += "tls=1"
+					url += opt.query("allowinsecure", "tls_allowInsecure");
+				}
 			}
 			if (v_type === "Trojan-Go") {
 				if (!opt.get("tls").checked && opt.get("trojan_transport").value === "original") {
@@ -214,7 +214,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 						":" + opt.get("ss_aead_pwd").value;
 				}
 				url += "&encryption=" + encodeURIComponent(enc);
-				url += opt.query("mux", "mux");
 			}
 			url += "#" + encodeURI(v_alias.value);
 		}
@@ -492,8 +491,10 @@ local api = require "luci.model.cbi.passwall.api.api"
 			opt.set('address', m.hostname);
 			opt.set('port', m.port || "443");
 			opt.set(opt.client ? 'password' : 'passwords', decodeURIComponent(password));
-			opt.set('tls', (queryParam.tls && queryParam.tls === '1'));
+			opt.set('tls', '1');
 			opt.get('tls').dispatchEvent(event);
+			opt.set('tls_allowInsecure', '0');
+			opt.set('tls_serverName', queryParam.peer || queryParam.sni || '');
 			var plugin = queryParam.plugin !== undefined;
 			if (plugin) {
 				opt.set('trojan_transport', 'original');
@@ -509,13 +510,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 					}
 				} else
 					alert(queryParam.plugin);
-			}
-			var tls = !plugin && queryParam.tls === '1';
-			opt.set('tls', tls);
-			opt.get('tls').dispatchEvent(event);
-			if (tls) {
-				opt.set('tls_serverName', queryParam.peer || queryParam.sni || '');
-				opt.set('tls_allowInsecure', queryParam.allowinsecure === '1');
 			}
 			var tran = 'original';
 			var or = queryParam.type === undefined || queryParam.type === 'original';
@@ -549,7 +543,7 @@ local api = require "luci.model.cbi.passwall.api.api"
 				opt.set('ss_aead_method', enc.method.toLowerCase() || '');
 				opt.set('ss_aead_pwd', enc.password || '');
 			}
-			opt.set('mux', queryParam.mux === '1');
+			opt.set('mux', '1');
 			if (m.hash) {
 				opt.set('remarks', decodeURI(m.hash.substr(1)));
 			}
