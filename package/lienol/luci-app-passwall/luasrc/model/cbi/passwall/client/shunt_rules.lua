@@ -12,6 +12,11 @@ remarks = s:option(Value, "remarks", translate("Remarks"))
 remarks.default = arg[1]
 remarks.rmempty = false
 
+protocol = s:option(MultiValue, "protocol", translate("Protocol"))
+protocol:value("http")
+protocol:value("tls")
+protocol:value("bittorrent")
+
 domain_list = s:option(TextValue, "domain_list", translate("Domain"))
 domain_list.rows = 10
 domain_list.wrap = "off"
