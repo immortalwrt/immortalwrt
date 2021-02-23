@@ -9,6 +9,10 @@
 	#size-cells = <1>;
 	compatible = "mediatek,mt7621-soc";
 
+	aliases {
+		serial0 = &uartlite;
+	};
+
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -46,10 +50,6 @@
 			console-size = <0x10000>;
 			ftrace-size = <0x20000>;
 		};
-	};
-
-	aliases {
-		serial0 = &uartlite;
 	};
 
 	chosen {
