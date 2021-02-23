@@ -421,11 +421,11 @@ msgstr "黑洞"
 msgid "Use the default node for the transit."
 msgstr "使用默认节点代理转发。"
 
-msgid "Use the under node for the transit."
-msgstr "使用下面的节点代理转发。"
-
 msgid "No shunt rules? Click me to go to add."
 msgstr "没有分流规则？点我前往去添加。"
+
+msgid "Use this node proxy to forward the default node."
+msgstr "使用此节点代理转发默认节点。"
 
 msgid "Domain Strategy"
 msgstr "域名解析策略"
@@ -756,6 +756,9 @@ msgstr "Xray 资源文件目录"
 
 msgid "This variable specifies a directory where geoip.dat and geosite.dat files are."
 msgstr "此变量指定geoip.dat和geosite.dat文件所在的目录。"
+
+msgid "Please note attention to the priority, the higher the order, the higher the priority."
+msgstr "请注意优先级问题，排序越上面优先级越高。"
 
 msgid "Update..."
 msgstr "更新中"
@@ -1101,6 +1104,12 @@ msgstr "是否接收 PROXY protocol，当该节点要被回落或被代理转发
 
 msgid "transit node"
 msgstr "中转到此节点"
+
+msgid "Custom Socks"
+msgstr "自定义 Socks"
+
+msgid "Custom HTTP"
+msgstr "自定义 HTTP"
 
 msgid "Bind Local"
 msgstr "本机监听"
