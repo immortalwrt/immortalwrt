@@ -144,9 +144,20 @@ o:value("debug", translate("Debug Mode"))
 o:value("silent", translate("Silent Mode"))
 o.default = "silent"
 
+o = s:taboption("settings", Value, "log_size", translate("Log Size (KB)"))
+o.description = translate("Set Log File Size (KB)")
+o.default=1024
+
 o = s:taboption("settings", Flag, "intranet_allowed", translate("Only intranet allowed"))
 o.description = translate("When Enabled, The Control Panel And The Connection Broker Port Will Not Be Accessible From The Public Network")
 o.default=0
+
+o = s:taboption("settings", Value, "dns_port")
+o.title = translate("DNS Port")
+o.default = 7874
+o.datatype = "port"
+o.rmempty = false
+o.description = translate("Please Make Sure Ports Available")
 
 o = s:taboption("settings", Value, "proxy_port")
 o.title = translate("Redir Port")
