@@ -18,9 +18,10 @@ config_t_get() {
 	echo ${ret:=$3}
 }
 
+project_directory=$(config_t_get global project_directory)
+
 gen_nginx_config() {
 	port=$(config_t_get global port)
-	project_directory=$(config_t_get global project_directory)
 	cat <<-EOF > $1
 		user root root;
 		worker_processes  1;
@@ -77,7 +78,7 @@ gen_php_config() {
 		unserialize_callback_func =
 		serialize_precision = 100
 
-		open_basedir = $storage_device_path:/tmp/:/proc/:/usr/bin/
+		open_basedir = $storage_device_path:$project_directory:/tmp/:/proc/:/usr/bin/
 		disable_functions =
 		disable_classes =
 		expose_php = On
