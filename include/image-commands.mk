@@ -446,22 +446,6 @@ define Build/uImage
 	mv $@.new $@
 endef
 
-define Build/uImage-with-ramdisk
-	mkimage \
-		-A $(LINUX_KARCH) \
-		-O linux \
-		-T kernel \
-		-C $(word 1,$(1)) \
-		-a $(KERNEL_LOADADDR) \
-		-e $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR)) \
-		-i $(KERNEL_BUILD_DIR)/initrd.cpio.$(strip $(call Build/initrd_compression)) \
-		-n '$(if $(UIMAGE_NAME),$(UIMAGE_NAME),$(call toupper,$(LINUX_KARCH)) $(VERSION_DIST) Linux-$(LINUX_VERSION))' \
-		$(if $(UIMAGE_MAGIC),-M $(UIMAGE_MAGIC)) \
-		$(wordlist 2,$(words $(1)),$(1)) \
-		-d $@ $@.new
-	mv $@.new $@
-endef
-
 define Build/append-metadata
 	$(if $(SUPPORTED_DEVICES),-echo $(call metadata_json,$(SUPPORTED_DEVICES)) | fwtool -I - $@)
 	[ ! -s "$(BUILD_KEY)" -o ! -s "$(BUILD_KEY).ucert" -o ! -s "$@" ] || { \
