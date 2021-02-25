@@ -24,13 +24,13 @@ PROXY_FWMARK="0x162"
 PROXY_ROUTE_TABLE="0x162"
 
 set_lock() {
-	exec 888>"$LOCK_FILE" 2>/dev/null
-	flock -x 888 2>/dev/null
+   exec 888>"$LOCK_FILE" 2>/dev/null
+   flock -x 888 2>/dev/null
 }
 
 del_lock() {
-	flock -u 888 2>/dev/null
-	rm -rf "$LOCK_FILE" 2>/dev/null
+   flock -u 888 2>/dev/null
+   rm -rf "$LOCK_FILE" 2>/dev/null
 }
 
 add_cron()
@@ -139,27 +139,9 @@ start_fail()
    exit 0
 }
 
-yml_check()
-{
-   
-   #创建原始备份
-   if [ ! -f "$2" ]; then
-      cp "$1" "$2"
-   fi
-   
-   dns_port="$(ruby_read "$1" "['dns']['listen'].split(':')[1]")"
-   if [ -z "$dns_port" ] || [ "$dns_port" -eq 53 ]; then
-      dns_port=7874
-   fi
-
-   #保存DNS端口方便后续调用
-   uci set openclash.config.dns_port="$dns_port" && uci commit openclash
-
-}
-
 yml_dns_check()
 {
-	#检查DNS服务
+   #检查DNS服务
    if [ -z "$(ruby_read "$1" "['dns']['nameserver']")" ]; then
       echo "检测到DNS选项下的Nameserver未设置服务器，开始补全..." >$START_LOG
       echo "  nameserver:" > "$DNS_FILE" 2>/dev/null
@@ -946,17 +928,22 @@ do_run_file()
      sleep 5
      start_fail
    fi
+   
+   #创建原始备份
+   if [ ! -f "$2" ]; then
+      cp "$1" "$2"
+   fi
 
 }
 
 #绑定interface防止回环
 check_interface_name()
 {
-	if [ -n "$interface_name" ] && [ "$interface_name" != "0" ]; then
-	   ruby_edit "$CONFIG_FILE" "['interface-name']='$interface_name'"
-  else
-     sed -i "/^interface-name:/d" "$CONFIG_FILE" 2>/dev/null
-  fi
+   if [ -n "$interface_name" ] && [ "$interface_name" != "0" ]; then
+      ruby_edit "$CONFIG_FILE" "['interface-name']='$interface_name'"
+   else
+      sed -i "/^interface-name:/d" "$CONFIG_FILE" 2>/dev/null
+   fi
 }
 
 start_run_core()
@@ -1341,7 +1328,7 @@ if [ -z "$en_mode_tun" ] || [ "$en_mode_tun" -eq 3 ]; then
             iptables -t mangle -A openclash -m set --match-set china_ip_route dst -j RETURN >/dev/null 2>&1
          fi
          iptables -t mangle -A openclash -p udp --dport 53 -j RETURN >/dev/null 2>&1
-         iptables -t mangle -A openclash -p udp -j TPROXY --on-port "$proxy_port" --on-ip 0.0.0.0 --tproxy-mark "$PROXY_FWMARK"
+         iptables -t mangle -A openclash -p udp -j TPROXY --on-port "$proxy_port" --tproxy-mark "$PROXY_FWMARK"
          iptables -t mangle -A PREROUTING -p udp -j openclash
       fi
    fi
@@ -1605,6 +1592,8 @@ get_config()
    mixed_port=$(uci get openclash.config.mixed_port 2>/dev/null)
    interface_name=$(uci get openclash.config.interface_name 2>/dev/null)
    common_ports=$(uci get openclash.config.common_ports 2>/dev/null)
+   dns_port=$(uci get openclash.config.dns_port 2>/dev/null)
+   [ -z "$dns_port" ] && dns_port=7874 && uci set openclash.config.dns_port=7874 2>/dev/null
    uci set openclash.config.restricted_mode=0 && uci commit openclash
 }
 
@@ -1622,11 +1611,9 @@ start()
    echo "第一步: 获取配置..." >$START_LOG
    get_config
    
+   echo "第二步: 组件运行前检查..." >$START_LOG
    #检查文件是否存在
-   do_run_file
-
-   echo "第二步: 配置文件检查..." >$START_LOG
-   yml_check "$CONFIG_FILE" "$BACKUP_FILE"
+   do_run_file "$CONFIG_FILE" "$BACKUP_FILE"
 
    echo "第三步: 修改配置文件..." >$START_LOG
    config_load "openclash"
@@ -1746,7 +1733,7 @@ restart()
    [ -f "$LOCK_FILE" ] && echo "${LOGTIME} Warning: Multiple Restart Scripts Running, Exit..." >> $LOG_FILE && exit 0
    mkdir -p /tmp/lock
    touch $LOCK_FILE
-	 set_lock
+   set_lock
    stop
    start
    del_lock

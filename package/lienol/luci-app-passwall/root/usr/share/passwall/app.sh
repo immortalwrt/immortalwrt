@@ -601,7 +601,7 @@ run_redir() {
 				[ "$tcp_node_http" = "1" ] && {
 					http_port=$tcp_node_http_port
 				}
-				run_socks TCP $TCP_NODE "0.0.0.0" $port $config_file $http_port $http_config_file
+				run_socks TCP $node "0.0.0.0" $port $config_file $http_port $http_config_file
 			}
 		}
 	;;
