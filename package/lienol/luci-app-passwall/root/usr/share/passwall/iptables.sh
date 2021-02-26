@@ -6,19 +6,17 @@ IPSET_SHUNTLIST="shuntlist"
 IPSET_GFW="gfwlist"
 IPSET_CHN="chnroute"
 IPSET_BLACKLIST="blacklist"
-IPSET_BLACKLIST2="blacklist2"
-IPSET_BLACKLIST3="blacklist3"
 IPSET_WHITELIST="whitelist"
+IPSET_BLOCKLIST="blocklist"
 
-IPSET_LANIPLIST_6="laniplist6"
-IPSET_VPSIPLIST_6="vpsiplist6"
-IPSET_SHUNTLIST_6="shuntlist6"
+IPSET_LANIPLIST6="laniplist6"
+IPSET_VPSIPLIST6="vpsiplist6"
+IPSET_SHUNTLIST6="shuntlist6"
 IPSET_GFW6="gfwlist6"
 IPSET_CHN6="chnroute6"
-IPSET_BLACKLIST_6="blacklist_6"
-IPSET_BLACKLIST2_6="blacklist2_6"
-IPSET_BLACKLIST3_6="blacklist3_6"
-IPSET_WHITELIST_6="whitelist_6"
+IPSET_BLACKLIST6="blacklist6"
+IPSET_WHITELIST6="whitelist6"
+IPSET_BLOCKLIST6="blocklist6"
 
 PROXY_IPV6=0
 
@@ -47,6 +45,11 @@ dst() {
 comment() {
 	local name=$(echo $1 | sed 's/ /_/g')
 	echo "-m comment --comment '$name'"
+}
+
+destroy_ipset() {
+	#ipset -q -F $1
+	ipset -q -X $1
 }
 
 RULE_LAST_INDEX() {
@@ -208,14 +211,14 @@ load_acl() {
 						msg2="${msg2}[$?]除${tcp_no_redir_ports}外的"
 					}
 					msg2="${msg2}所有端口"
-					$ipt_tmp -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -d 1.2.3.4 $(REDIRECT $tcp_port $is_tproxy)
+					$ipt_tmp -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -d 11.1.1.1 $(REDIRECT $tcp_port $is_tproxy)
 					$ipt_tmp -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $tcp_port $is_tproxy)
 					$ipt_tmp -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $tcp_port $is_tproxy)
 					$ipt_tmp -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(get_redirect_ipt $tcp_proxy_mode $tcp_port $is_tproxy)
 
 					if [ "$PROXY_IPV6" == "1" ]; then
-						$ip6t_m -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(dst $IPSET_SHUNTLIST_6) $(REDIRECT $tcp_port TPROXY)
-						$ip6t_m -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(dst $IPSET_BLACKLIST_6) $(REDIRECT $tcp_port TPROXY)
+						$ip6t_m -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(dst $IPSET_SHUNTLIST6) $(REDIRECT $tcp_port TPROXY)
+						$ip6t_m -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(dst $IPSET_BLACKLIST6) $(REDIRECT $tcp_port TPROXY)
 						$ip6t_m -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $tcp_redir_ports "-m multiport --dport") $(get_redirect_ip6t $tcp_proxy_mode $tcp_port TPROXY)
 					fi
 				}
@@ -235,14 +238,14 @@ load_acl() {
 						msg2="${msg2}[$?]除${udp_no_redir_ports}外的"
 					}
 					msg2="${msg2}所有端口"
-					$ipt_m -A PSW $(comment "$remarks") -p tcp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -d 1.2.3.4 $(REDIRECT $udp_port TPROXY)
+					$ipt_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") -d 11.1.1.1 $(REDIRECT $udp_port TPROXY)
 					$ipt_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $udp_port TPROXY)
 					$ipt_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $udp_port TPROXY)
 					$ipt_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(get_redirect_ipt $udp_proxy_mode $udp_port TPROXY)
 
 					if [ "$PROXY_IPV6" == "1" ]; then
-						$ip6t_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(dst $IPSET_SHUNTLIST_6) $(REDIRECT $udp_port TPROXY)
-						$ip6t_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(dst $IPSET_BLACKLIST_6) $(REDIRECT $udp_port TPROXY)
+						$ip6t_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(dst $IPSET_SHUNTLIST6) $(REDIRECT $udp_port TPROXY)
+						$ip6t_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(dst $IPSET_BLACKLIST6) $(REDIRECT $udp_port TPROXY)
 						$ip6t_m -A PSW $(comment "$remarks") -p udp $(factor $ip "-s") $(factor $mac "-m mac --mac-source") $(factor $udp_redir_ports "-m multiport --dport") $(get_redirect_ip6t $udp_proxy_mode $udp_port TPROXY)
 					fi
 				}
@@ -277,14 +280,14 @@ load_acl() {
 			fi
 			[ "$TCP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${TCP_NO_REDIR_PORTS}外的"
 			msg="${msg}所有端口"
-			$ipt_tmp -A PSW $(comment "默认") -p tcp -d 1.2.3.4 $(REDIRECT $TCP_REDIR_PORT $is_tproxy)
+			$ipt_tmp -A PSW $(comment "默认") -p tcp -d 11.1.1.1 $(REDIRECT $TCP_REDIR_PORT $is_tproxy)
 			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $TCP_REDIR_PORT $is_tproxy)
 			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $TCP_REDIR_PORT $is_tproxy)
 			$ipt_tmp -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $TCP_PROXY_MODE $TCP_REDIR_PORT $is_tproxy)
 
 			if [ "$PROXY_IPV6" == "1" ]; then
-				$ip6t_m -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST_6) $(REDIRECT $TCP_REDIR_PORT TPROXY)
-				$ip6t_m -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST_6) $(REDIRECT $TCP_REDIR_PORT TPROXY)
+				$ip6t_m -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST6) $(REDIRECT $TCP_REDIR_PORT TPROXY)
+				$ip6t_m -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST6) $(REDIRECT $TCP_REDIR_PORT TPROXY)
 				$ip6t_m -A PSW $(comment "默认") -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ip6t $TCP_PROXY_MODE $TCP_REDIR_PORT TPROXY)
 			fi
 
@@ -306,14 +309,14 @@ load_acl() {
 			msg="UDP默认代理：使用UDP节点 [$(get_action_chain_name $UDP_PROXY_MODE)](TPROXY:${UDP_REDIR_PORT})代理"
 			[ "$UDP_NO_REDIR_PORTS" != "disable" ] && msg="${msg}除${UDP_NO_REDIR_PORTS}外的"
 			msg="${msg}所有端口"
-			$ipt_m -A PSW $(comment "默认") -p udp -d 1.2.3.4 $(REDIRECT $UDP_REDIR_PORT TPROXY)
+			$ipt_m -A PSW $(comment "默认") -p udp -d 11.1.1.1 $(REDIRECT $UDP_REDIR_PORT TPROXY)
 			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT $UDP_REDIR_PORT TPROXY)
 			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT $UDP_REDIR_PORT TPROXY)
 			$ipt_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $UDP_PROXY_MODE $UDP_REDIR_PORT TPROXY)
 
 			if [ "$PROXY_IPV6" == "1" ]; then
-				$ip6t_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST_6) $(REDIRECT $UDP_REDIR_PORT TPROXY)
-				$ip6t_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST_6) $(REDIRECT $UDP_REDIR_PORT TPROXY)
+				$ip6t_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST6) $(REDIRECT $UDP_REDIR_PORT TPROXY)
+				$ip6t_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST6) $(REDIRECT $UDP_REDIR_PORT TPROXY)
 				$ip6t_m -A PSW $(comment "默认") -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ip6t $UDP_PROXY_MODE $UDP_REDIR_PORT TPROXY)
 			fi
 
@@ -335,7 +338,7 @@ filter_haproxy() {
 
 filter_vpsip() {
 	uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIPLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | grep -E "([[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){0,7}::[a-f0-9]{0,4}(:[a-f0-9]{1,4}){0,7}])" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIPLIST_6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	uci show $CONFIG | grep ".address=" | cut -d "'" -f 2 | grep -E "([[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){0,7}::[a-f0-9]{0,4}(:[a-f0-9]{1,4}){0,7}])" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_VPSIPLIST6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	echolog "加入所有节点到ipset[$IPSET_VPSIPLIST]直连完成"
 }
 
@@ -459,19 +462,17 @@ add_firewall_rule() {
 	ipset -! create $IPSET_GFW nethash
 	ipset -! create $IPSET_CHN nethash
 	ipset -! create $IPSET_BLACKLIST nethash
-	ipset -! create $IPSET_BLACKLIST2 nethash
-	ipset -! create $IPSET_BLACKLIST3 nethash
 	ipset -! create $IPSET_WHITELIST nethash
+	ipset -! create $IPSET_BLOCKLIST nethash
 
-	ipset -! create $IPSET_LANIPLIST_6 nethash family inet6
-	ipset -! create $IPSET_VPSIPLIST_6 nethash family inet6
-	ipset -! create $IPSET_SHUNTLIST_6 nethash family inet6
+	ipset -! create $IPSET_LANIPLIST6 nethash family inet6
+	ipset -! create $IPSET_VPSIPLIST6 nethash family inet6
+	ipset -! create $IPSET_SHUNTLIST6 nethash family inet6
 	ipset -! create $IPSET_GFW6 nethash family inet6
 	ipset -! create $IPSET_CHN6 nethash family inet6
-	ipset -! create $IPSET_BLACKLIST_6 nethash family inet6
-	ipset -! create $IPSET_BLACKLIST2_6 nethash family inet6
-	ipset -! create $IPSET_BLACKLIST3_6 nethash family inet6
-	ipset -! create $IPSET_WHITELIST_6 nethash family inet6
+	ipset -! create $IPSET_BLACKLIST6 nethash family inet6
+	ipset -! create $IPSET_WHITELIST6 nethash family inet6
+	ipset -! create $IPSET_BLOCKLIST6 nethash family inet6
 
 	local shunt_ids=$(uci show $CONFIG | grep "=shunt_rules" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 
@@ -480,20 +481,18 @@ add_firewall_rule() {
 	done
 
 	for shunt_id in $shunt_ids; do
-		config_n_get $shunt_id ip_list | tr -s "\r\n" "\n" | sed -e "/^$/d" | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "s/^/add $IPSET_SHUNTLIST_6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+		config_n_get $shunt_id ip_list | tr -s "\r\n" "\n" | sed -e "/^$/d" | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "s/^/add $IPSET_SHUNTLIST6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	done
 
 	cat $RULES_PATH/chnroute | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	cat $RULES_PATH/proxy_ip | sed -e "/^$/d" | grep -E "(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}" | sed -e "s/^/add $IPSET_BLACKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	[ -f "$RULES_PATH/proxy_ip2" ] && cat $RULES_PATH/proxy_ip2 | grep -E "(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST2 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	[ -f "$RULES_PATH/proxy_ip3" ] && cat $RULES_PATH/proxy_ip3 | grep -E "(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST3 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 	cat $RULES_PATH/direct_ip | sed -e "/^$/d" | grep -E "(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}" | sed -e "s/^/add $IPSET_WHITELIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/block_ip | sed -e "/^$/d" | grep -E "(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}" | sed -e "s/^/add $IPSET_BLOCKLIST &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 
 	cat $RULES_PATH/chnroute6 | sed -e "/^$/d" | sed -e "s/^/add $IPSET_CHN6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	cat $RULES_PATH/proxy_ip | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST_6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	[ -f "$RULES_PATH/proxy_ip2" ] && cat $RULES_PATH/proxy_ip2 | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST2_6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	[ -f "$RULES_PATH/proxy_ip3" ] && cat $RULES_PATH/proxy_ip3 | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST3_6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
-	cat $RULES_PATH/direct_ip | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST_6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/proxy_ip | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLACKLIST6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/direct_ip | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_WHITELIST6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
+	cat $RULES_PATH/block_ip | grep -E "([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4}" | sed -e "/^$/d" | sed -e "s/^/add $IPSET_BLOCKLIST6 &/g" | awk '{print $0} END{print "COMMIT"}' | ipset -! -R
 
 	ipset -! -R <<-EOF
 		$(gen_laniplist | sed -e "s/^/add $IPSET_LANIPLIST /")
@@ -504,7 +503,7 @@ add_firewall_rule() {
 	}
 
 	ipset -! -R <<-EOF
-		$(gen_laniplist_6 | sed -e "s/^/add $IPSET_LANIPLIST_6 /")
+		$(gen_laniplist_6 | sed -e "s/^/add $IPSET_LANIPLIST6 /")
 	EOF
 #	[ $? -eq 0 ] || {
 #		echolog "系统不兼容IPv6，终止执行！"
@@ -525,7 +524,7 @@ add_firewall_rule() {
 		EOF
 
 		[ -n "$lan_ip6" ] && ipset -! -R <<-EOF
-			$(echo $lan_ip6 | sed -e "s/ /\n/g" | sed -e "s/^/add $IPSET_LANIPLIST_6 /")
+			$(echo $lan_ip6 | sed -e "s/ /\n/g" | sed -e "s/^/add $IPSET_LANIPLIST6 /")
 		EOF
 	}
 
@@ -542,7 +541,7 @@ add_firewall_rule() {
 	[ -n "$ISP_DNS" ] && {
 		#echolog "处理 ISP IPv6 DNS 例外..."
 		for ispip6 in $ISP_DNS; do
-			ipset -! add $IPSET_WHITELIST_6 $ispip6 >/dev/null 2>&1 &
+			ipset -! add $IPSET_WHITELIST6 $ispip6 >/dev/null 2>&1 &
 			#echolog "  - 追加到白名单：${ispip6}"
 		done
 	} 
@@ -568,12 +567,14 @@ add_firewall_rule() {
 	$ipt_m -A PSW $(dst $IPSET_VPSIPLIST) -j RETURN
 	$ipt_m -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_m -A PSW -m mark --mark 0xff -j RETURN
+	$ipt_m -A PSW $(dst $IPSET_BLOCKLIST) -j DROP
 
 	$ipt_m -N PSW_OUTPUT
 	$ipt_m -A PSW_OUTPUT $(dst $IPSET_LANIPLIST) -j RETURN
 	$ipt_m -A PSW_OUTPUT $(dst $IPSET_VPSIPLIST) -j RETURN
 	$ipt_m -A PSW_OUTPUT $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_m -A PSW_OUTPUT -m mark --mark 0xff -j RETURN
+	$ipt_m -A PSW_OUTPUT $(dst $IPSET_BLOCKLIST) -j DROP
 
 	ip rule add fwmark 1 lookup 100
 	ip route add local 0.0.0.0/0 dev lo table 100
@@ -595,17 +596,19 @@ add_firewall_rule() {
 	#$ip6t_n -A OUTPUT -p tcp -j PSW_OUTPUT
 
 	$ip6t_m -N PSW
-	$ip6t_m -A PSW $(dst $IPSET_LANIPLIST_6) -j RETURN
-	$ip6t_m -A PSW $(dst $IPSET_VPSIPLIST_6) -j RETURN
-	$ip6t_m -A PSW $(dst $IPSET_WHITELIST_6) -j RETURN
+	$ip6t_m -A PSW $(dst $IPSET_LANIPLIST6) -j RETURN
+	$ip6t_m -A PSW $(dst $IPSET_VPSIPLIST6) -j RETURN
+	$ip6t_m -A PSW $(dst $IPSET_WHITELIST6) -j RETURN
 	$ip6t_m -A PSW -m mark --mark 0xff -j RETURN
+	$ip6t_m -A PSW $(dst $IPSET_BLOCKLIST6) -j DROP
 	$ip6t_m -A PREROUTING -j PSW
 
 	$ip6t_m -N PSW_OUTPUT
-	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_LANIPLIST_6) -j RETURN
-	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_VPSIPLIST_6) -j RETURN
-	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_WHITELIST_6) -j RETURN
+	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_LANIPLIST6) -j RETURN
+	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_VPSIPLIST6) -j RETURN
+	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_WHITELIST6) -j RETURN
 	$ip6t_m -A PSW_OUTPUT -m mark --mark 0xff -j RETURN
+	$ip6t_m -A PSW_OUTPUT $(dst $IPSET_BLOCKLIST6) -j DROP
 	$ip6t_m -A OUTPUT -j PSW_OUTPUT
 
 	ip -6 rule add fwmark 1 table 100
@@ -644,17 +647,19 @@ add_firewall_rule() {
 		$ipt_tmp -A OUTPUT -p tcp -j PSW_OUTPUT
 		[ "$TCP_NO_REDIR_PORTS" != "disable" ] && {
 			$ipt_tmp -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_NO_REDIR_PORTS -j RETURN
+			$ipt_tmp -A PSW_OUTPUT -p tcp -m multiport --sport $TCP_NO_REDIR_PORTS -j RETURN
 			$ip6t_m -A PSW_OUTPUT -p tcp -m multiport --dport $TCP_NO_REDIR_PORTS -j RETURN
+			$ip6t_m -A PSW_OUTPUT -p tcp -m multiport --sport $TCP_NO_REDIR_PORTS -j RETURN
 			echolog "  - [$?]不代理TCP 端口：$TCP_NO_REDIR_PORTS"
 		}
-		$ipt_tmp -A PSW_OUTPUT -p tcp -d 1.2.3.4 $blist_r
+		$ipt_tmp -A PSW_OUTPUT -p tcp -d 11.1.1.1 $blist_r
 		$ipt_tmp -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $blist_r
 		$ipt_tmp -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $blist_r
 		$ipt_tmp -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $p_r
 
 		if [ "$PROXY_IPV6" == "1" ]; then
-			$ip6t_m -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST_6) $(REDIRECT 1 MARK)
-			$ip6t_m -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST_6) $(REDIRECT 1 MARK)
+			$ip6t_m -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST6) $(REDIRECT 1 MARK)
+			$ip6t_m -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST6) $(REDIRECT 1 MARK)
 			$ip6t_m -A PSW_OUTPUT -p tcp $(factor $TCP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ip6t $LOCALHOST_TCP_PROXY_MODE 1 MARK)
 		fi
 	fi
@@ -737,17 +742,19 @@ add_firewall_rule() {
 		$ipt_m -A OUTPUT -p udp -j PSW_OUTPUT
 		[ "$UDP_NO_REDIR_PORTS" != "disable" ] && {
 			$ipt_m -A PSW_OUTPUT -p udp -m multiport --dport $UDP_NO_REDIR_PORTS -j RETURN
+			$ipt_m -A PSW_OUTPUT -p udp -m multiport --sport $UDP_NO_REDIR_PORTS -j RETURN
 			$ip6t_m -A PSW_OUTPUT -p udp -m multiport --dport $UDP_NO_REDIR_PORTS -j RETURN
+			$ip6t_m -A PSW_OUTPUT -p udp -m multiport --sport $UDP_NO_REDIR_PORTS -j RETURN
 			echolog "  - [$?]不代理 UDP 端口：$UDP_NO_REDIR_PORTS"
 		}
-		$ipt_m -A PSW_OUTPUT -p udp -d 1.2.3.4 $(REDIRECT 1 MARK)
+		$ipt_m -A PSW_OUTPUT -p udp -d 11.1.1.1 $(REDIRECT 1 MARK)
 		$ipt_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST) $(REDIRECT 1 MARK)
 		$ipt_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST) $(REDIRECT 1 MARK)
 		$ipt_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ipt $LOCALHOST_UDP_PROXY_MODE 1 MARK)
 
 		if [ "$PROXY_IPV6" == "1" ]; then
-			$ip6t_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST_6) $(REDIRECT 1 MARK)
-			$ip6t_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST_6) $(REDIRECT 1 MARK)
+			$ip6t_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_SHUNTLIST6) $(REDIRECT 1 MARK)
+			$ip6t_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(dst $IPSET_BLACKLIST6) $(REDIRECT 1 MARK)
 			$ip6t_m -A PSW_OUTPUT -p udp $(factor $UDP_REDIR_PORTS "-m multiport --dport") $(get_redirect_ip6t $LOCALHOST_UDP_PROXY_MODE 1 MARK)
 		fi
 	fi
@@ -774,12 +781,11 @@ del_firewall_rule() {
 		$ipt_m -D OUTPUT -p tcp -j PSW_OUTPUT 2>/dev/null
 		$ipt_m -D OUTPUT -p udp -j PSW_OUTPUT 2>/dev/null
 		
-		$ip6t_n -D PREROUTING -j PSW 2>/dev/null
-		$ip6t_n -D OUTPUT -p tcp -j PSW_OUTPUT 2>/dev/null
+		#$ip6t_n -D PREROUTING -j PSW 2>/dev/null
+		#$ip6t_n -D OUTPUT -p tcp -j PSW_OUTPUT 2>/dev/null
 		
 		$ip6t_m -D PREROUTING -j PSW 2>/dev/null
-		$ip6t_m -D OUTPUT -p tcp -j PSW_OUTPUT 2>/dev/null
-		$ip6t_m -D OUTPUT -p udp -j PSW_OUTPUT 2>/dev/null
+		$ip6t_m -D OUTPUT -j PSW_OUTPUT 2>/dev/null
 		
 		ib_nat_exist=$(expr $ib_nat_exist - 1)
 	done
@@ -789,8 +795,8 @@ del_firewall_rule() {
 	$ipt_n -F PSW_OUTPUT 2>/dev/null && $ipt_n -X PSW_OUTPUT 2>/dev/null
 	$ipt_m -F PSW 2>/dev/null && $ipt_m -X PSW 2>/dev/null
 	$ipt_m -F PSW_OUTPUT 2>/dev/null && $ipt_m -X PSW_OUTPUT 2>/dev/null
-	$ip6t_n -F PSW 2>/dev/null && $ip6t_n -X PSW 2>/dev/null
-	$ip6t_n -F PSW_OUTPUT 2>/dev/null && $ip6t_n -X PSW_OUTPUT 2>/dev/null
+	#$ip6t_n -F PSW 2>/dev/null && $ip6t_n -X PSW 2>/dev/null
+	#$ip6t_n -F PSW_OUTPUT 2>/dev/null && $ip6t_n -X PSW_OUTPUT 2>/dev/null
 	$ip6t_m -F PSW 2>/dev/null && $ip6t_m -X PSW 2>/dev/null
 	$ip6t_m -F PSW_OUTPUT 2>/dev/null && $ip6t_m -X PSW_OUTPUT 2>/dev/null
 	
@@ -799,50 +805,47 @@ del_firewall_rule() {
 
 	ip -6 rule del fwmark 1 table 100 2>/dev/null
 	ip -6 route del local ::/0 dev lo table 100 2>/dev/null
-
-	ipset -F $IPSET_LANIPLIST >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST >/dev/null 2>&1 &
-	ipset -F $IPSET_VPSIPLIST >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST >/dev/null 2>&1 &
-	#ipset -F $IPSET_SHUNTLIST >/dev/null 2>&1 && ipset -X $IPSET_SHUNTLIST >/dev/null 2>&1 &
-	#ipset -F $IPSET_GFW >/dev/null 2>&1 && ipset -X $IPSET_GFW >/dev/null 2>&1 &
-	#ipset -F $IPSET_CHN >/dev/null 2>&1 && ipset -X $IPSET_CHN >/dev/null 2>&1 &
-	#ipset -F $IPSET_BLACKLIST >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST >/dev/null 2>&1 &
-	#ipset -F $IPSET_BLACKLIST2 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST2 >/dev/null 2>&1 &
-	#ipset -F $IPSET_BLACKLIST3 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST3 >/dev/null 2>&1 &
-	ipset -F $IPSET_WHITELIST >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST >/dev/null 2>&1 &
-
-	ipset -F $IPSET_LANIPLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_VPSIPLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST_6 >/dev/null 2>&1 &
-	#ipset -F $IPSET_SHUNTLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_SHUNTLIST_6 >/dev/null 2>&1 &
-	#ipset -F $IPSET_GFW6 >/dev/null 2>&1 && ipset -X $IPSET_GFW6 >/dev/null 2>&1 &
-	#ipset -F $IPSET_CHN6 >/dev/null 2>&1 && ipset -X $IPSET_CHN6 >/dev/null 2>&1 &
-	#ipset -F $IPSET_BLACKLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST_6 >/dev/null 2>&1 &
-	#ipset -F $IPSET_BLACKLIST2_6 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST2_6 >/dev/null 2>&1 &
-	#ipset -F $IPSET_BLACKLIST3_6 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST3_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_WHITELIST_6 >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST_6 >/dev/null 2>&1 &
-
+	
+	destroy_ipset $IPSET_LANIPLIST
+	destroy_ipset $IPSET_VPSIPLIST
+	#destroy_ipset $IPSET_SHUNTLIST
+	#destroy_ipset $IPSET_GFW
+	#destroy_ipset $IPSET_CHN
+	#destroy_ipset $IPSET_BLACKLIST
+	destroy_ipset $IPSET_BLOCKLIST
+	destroy_ipset $IPSET_WHITELIST
+	
+	destroy_ipset $IPSET_LANIPLIST6
+	destroy_ipset $IPSET_VPSIPLIST6
+	#destroy_ipset $IPSET_SHUNTLIST6
+	#destroy_ipset $IPSET_GFW6
+	#destroy_ipset $IPSET_CHN6
+	#destroy_ipset $IPSET_BLACKLIST6
+	destroy_ipset $IPSET_BLOCKLIST6
+	destroy_ipset $IPSET_WHITELIST6
+	
 	echolog "删除相关防火墙规则完成。"
 }
 
 flush_ipset() {
-	ipset -F $IPSET_LANIPLIST >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST >/dev/null 2>&1 &
-	ipset -F $IPSET_VPSIPLIST >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST >/dev/null 2>&1 &
-	ipset -F $IPSET_SHUNTLIST >/dev/null 2>&1 && ipset -X $IPSET_SHUNTLIST >/dev/null 2>&1 &
-	ipset -F $IPSET_GFW >/dev/null 2>&1 && ipset -X $IPSET_GFW >/dev/null 2>&1 &
-	ipset -F $IPSET_CHN >/dev/null 2>&1 && ipset -X $IPSET_CHN >/dev/null 2>&1 &
-	ipset -F $IPSET_BLACKLIST >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST >/dev/null 2>&1 &
-	ipset -F $IPSET_BLACKLIST2 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST2 >/dev/null 2>&1 &
-	ipset -F $IPSET_BLACKLIST3 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST3 >/dev/null 2>&1 &
-	ipset -F $IPSET_WHITELIST >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST >/dev/null 2>&1 &
-
-	ipset -F $IPSET_LANIPLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_LANIPLIST_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_VPSIPLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_VPSIPLIST_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_SHUNTLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_SHUNTLIST_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_GFW6 >/dev/null 2>&1 && ipset -X $IPSET_GFW6 >/dev/null 2>&1 &
-	ipset -F $IPSET_CHN6 >/dev/null 2>&1 && ipset -X $IPSET_CHN6 >/dev/null 2>&1 &
-	ipset -F $IPSET_BLACKLIST_6 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_BLACKLIST2_6 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST2_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_BLACKLIST3_6 >/dev/null 2>&1 && ipset -X $IPSET_BLACKLIST3_6 >/dev/null 2>&1 &
-	ipset -F $IPSET_WHITELIST_6 >/dev/null 2>&1 && ipset -X $IPSET_WHITELIST_6 >/dev/null 2>&1 &
+	destroy_ipset $IPSET_LANIPLIST
+	destroy_ipset $IPSET_VPSIPLIST
+	destroy_ipset $IPSET_SHUNTLIST
+	destroy_ipset $IPSET_GFW
+	destroy_ipset $IPSET_CHN
+	destroy_ipset $IPSET_BLACKLIST
+	destroy_ipset $IPSET_BLOCKLIST
+	destroy_ipset $IPSET_WHITELIST
+	
+	destroy_ipset $IPSET_LANIPLIST6
+	destroy_ipset $IPSET_VPSIPLIST6
+	destroy_ipset $IPSET_SHUNTLIST6
+	destroy_ipset $IPSET_GFW6
+	destroy_ipset $IPSET_CHN6
+	destroy_ipset $IPSET_BLACKLIST6
+	destroy_ipset $IPSET_BLOCKLIST6
+	destroy_ipset $IPSET_WHITELIST6
+	/etc/init.d/passwall reload
 }
 
 flush_include() {
