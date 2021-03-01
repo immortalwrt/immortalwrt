@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ PKG_HASH:=5e822fb24348dbb75aeb33c3e9f558d629892089bc918186d5e68c3341e70049
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
-PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_CDNSPEEDTEST_COMPRESS_GOPROXY \
