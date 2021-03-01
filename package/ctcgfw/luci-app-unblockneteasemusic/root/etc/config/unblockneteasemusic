@@ -5,7 +5,6 @@ config unblockneteasemusic
 	option enable_flac '0'
 	option replace_music_source 'dont_replace'
 	option use_custom_cookie '0'
-	option use_remote_qq_server '0'
 	option auto_update '1'
 	option update_time '3'
 	option daemon_enable '1'

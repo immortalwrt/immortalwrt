@@ -1,6 +1,6 @@
 #!/bin/bash
 # Created By ImmortalWrt
-# https://github.com/project-openwrt
+# https://github.com/immortalwrt
 
 NAME="unblockneteasemusic"
 
