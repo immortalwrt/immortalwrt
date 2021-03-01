@@ -192,9 +192,6 @@ start()
 	[ ! -e "/usr/share/$NAME/core/app.js" ] && { rm -f "/usr/share/$NAME/local_ver"; bash "/usr/share/$NAME/update.sh" "update_core_non_restart"; }
 	[ ! -e "/usr/share/$NAME/core/app.js" ] && { echo "Core Not Found, please download it before starting." >> "/tmp/$NAME.log"; exit 1; }
 
-	[ "${use_remote_qq_server}" -ne "1" ] && qq_server_mode="local" || qq_server_mode="remote"
-	bash "/usr/share/$NAME/gen_qq_provider.sh" "${qq_server_mode}" "${enable_flac}" > "/usr/share/$NAME/core/src/provider/qq.js"
-
 	[ -n "${neteasemusic_cookie}" ] && {
 		ub_cookie_line="$(sed -n -e "/netease.path.includes('song\/enhance')/=" "/usr/share/$NAME/core/src/hook.js")";
 		[ -n "${ub_cookie_line}" ] && { let ub_cookie_endline="ub_cookie_line+6"; sed -i "${ub_cookie_line},${ub_cookie_endline}d" "/usr/share/$NAME/core/src/hook.js"; }
@@ -253,10 +250,10 @@ stop()
 
 	{ [ -f "${self_issue_cert_crt}" ] && [ -f "${self_issue_cert_key}" ]; } && {
 		{ [ "${self_issue_cert_crt}" != "/usr/share/$NAME/core/server.crt" ] && [ "${self_issue_cert_key}" != "/usr/share/$NAME/core/server.key" ]; } && {
-			sed -i "/${self_issue_cert_crt//\//\\/}/d"
+			sed -i "/${self_issue_cert_crt//\//\\/}/d" "${UPGRADE_CONF}"
 			echo "${self_issue_cert_crt}" >> "${UPGRADE_CONF}"
 
-			sed -i "/${self_issue_cert_key//\//\\/}/d"
+			sed -i "/${self_issue_cert_key//\//\\/}/d" "${UPGRADE_CONF}"
 			echo "${self_issue_cert_key}" >> "${UPGRADE_CONF}"
 		}
 	}

@@ -11,9 +11,9 @@ function index()
 
 	entry({"admin", "services", "unblockneteasemusic"},firstchild(), _("解除网易云音乐播放限制"), 50).dependent = false
 
-	entry({"admin", "services", "unblockneteasemusic", "general"},cbi("unblockneteasemusic"), _("基本设定"), 1)
-	entry({"admin", "services", "unblockneteasemusic", "upgrade"},form("unblockneteasemusic_upgrade"), _("更新组件"), 2).leaf = true
-	entry({"admin", "services", "unblockneteasemusic", "log"},form("unblockneteasemusiclog"), _("日志"), 3)
+	entry({"admin", "services", "unblockneteasemusic", "general"},cbi("unblockneteasemusic/unblockneteasemusic"), _("基本设定"), 1)
+	entry({"admin", "services", "unblockneteasemusic", "upgrade"},form("unblockneteasemusic/unblockneteasemusic_upgrade"), _("更新组件"), 2).leaf = true
+	entry({"admin", "services", "unblockneteasemusic", "log"},form("unblockneteasemusic/unblockneteasemusiclog"), _("日志"), 3)
 
 	entry({"admin", "services", "unblockneteasemusic", "status"},call("act_status")).leaf=true
 	entry({"admin", "services", "unblockneteasemusic", "update_luci"},call("act_update_luci"))
@@ -57,7 +57,7 @@ end
 
 function update_core()
 	core_cloud_ver=luci.sys.exec("curl -s 'https://github.com/1715173329/UnblockNeteaseMusic/commits/enhanced' |tr -d '\n' |grep -Eo 'commit\/[0-9a-z]+' |sed -n 1p |sed 's#commit/##g'")
-	core_cloud_ver_mini=luci.sys.exec("curl -s 'https://github.com/1715173329/UnblockNeteaseMusic/commits/enhanced' |tr -d '\n' |grep -Eo 'BtnGroup-item.>      [0-9a-z]+' |sed -n 1p |sed 's#BtnGroup-item.>      ##g'")
+	core_cloud_ver_mini=string.sub(core_cloud_ver, 1, 7)
 	if not core_cloud_ver or not core_cloud_ver_mini then
 		return "1"
 	else
