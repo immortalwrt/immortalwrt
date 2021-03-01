@@ -15,7 +15,7 @@ LUCI_TITLE:=LuCI support for GoWebDav
 LUCI_DEPENDS:=+gowebdav
 LUCI_PKGARCH:=all
 
-PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
