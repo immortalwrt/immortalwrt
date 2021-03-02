@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -16,7 +16,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/1715173329/gowebdav/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=64867ab2925c79d8d8ff9851729bafd1270cd72b981e422136fdd4d82dc75506
 
-PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_GOWEBDAV_COMPRESS_GOPROXY \

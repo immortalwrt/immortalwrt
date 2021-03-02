@@ -2,14 +2,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-vssr
 PKG_VERSION:=1.22
-PKG_RELEASE:=20210119
+PKG_RELEASE:=20210227
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray_plugin
 
 LUCI_TITLE:=A New SS/SSR/Xray/Trojan LuCI interface
 LUCI_PKGARCH:=all
@@ -21,8 +21,8 @@ LUCI_DEPENDS:= \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-ssr-server \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin:v2ray-plugin \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray-core
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:xray-core \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray_plugin:xray-plugin
 
 define Package/$(PKG_NAME)/config
 
@@ -38,12 +38,12 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan
 	bool "Include Trojan"
 	default y if i386||x86_64||arm||aarch64
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin
-	bool "Include Shadowsocks V2ray Plugin"
-	default y if i386||x86_64||arm||aarch64
-
 config PACKAGE_$(PKG_NAME)_INCLUDE_Xray
 	bool "Include Xray"
+	default y if i386||x86_64||arm||aarch64
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_Xray_plugin
+	bool "Include Shadowsocks Xray Plugin"
 	default y if i386||x86_64||arm||aarch64
 endef
 

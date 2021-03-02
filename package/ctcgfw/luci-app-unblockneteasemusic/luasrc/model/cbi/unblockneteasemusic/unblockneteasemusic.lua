@@ -23,6 +23,7 @@ music_source:value("xiami", translate("虾米音乐"))
 music_source:value("baidu", translate("百度音乐"))
 music_source:value("joox", translate("JOOX音乐"))
 music_source:value("youtube", translate("Youtube音乐"))
+music_source:value("bilibili", translate("Bilibili音乐"))
 music_source.description = translate("自定义模式下，多个音源请用空格隔开")
 music_source.default = "default"
 music_source.rmempty = false
@@ -62,11 +63,6 @@ youtube_key = s:option(Value, "youtube_key", translate("Youtube API Key"))
 youtube_key.description = translate("API Key申请地址：https://developers.google.com/youtube/v3/getting-started#before-you-start")
 youtube_key.datatype = "string"
 youtube_key:depends("use_custom_cookie", 1)
-
-use_remote_qq_server = s:option(Flag, "use_remote_qq_server", translate("使用云端QQ音源解析"))
-use_remote_qq_server.description = translate("通过云端服务器以获取QQ音源信息，无需开通QQ绿钻")
-use_remote_qq_server.default = 0
-use_remote_qq_server.rmempty = false
 
 auto_update = s:option(Flag, "auto_update", translate("启用自动更新"))
 auto_update.description = translate("启用后，每天将定时自动检查最新版本并更新")

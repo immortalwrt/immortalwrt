@@ -1,6 +1,6 @@
 #!/bin/bash
 # Created By ImmortalWrt
-# https://github.com/project-openwrt
+# https://github.com/immortalwrt
 
 NAME="unblockneteasemusic"
 
@@ -19,7 +19,7 @@ function clean_log(){
 }
 
 function check_luci_latest_version(){
-	luci_latest_ver="$(curl -s 'https://github.com/project-openwrt/luci-app-unblockneteasemusic/releases/latest'| grep -Eo '[0-9\.]+\-[0-9]+')"
+	luci_latest_ver="$(curl -s 'https://github.com/immortalwrt/luci-app-unblockneteasemusic/releases/latest'| grep -Eo '[0-9\.]+\-[0-9]+')"
 	[ -z "${luci_latest_ver}" ] && { echo -e "\nFailed to check latest LuCI version, please try again later." >> "/tmp/$NAME.log"; exit 1; }
 	if [ "$(opkg info "luci-app-unblockneteasemusic" |sed -n "2p" |tr -d "Version: ")" != "${luci_latest_ver}" ]; then
 		clean_log
@@ -37,7 +37,7 @@ function update_luci(){
 
 	mkdir -p "/tmp" > "/dev/null" 2>&1
 
-	curl -sL "https://github.com/project-openwrt/luci-app-unblockneteasemusic/releases/download/v${luci_latest_ver}/luci-app-unblockneteasemusic_${luci_latest_ver}_all.ipk" -o "/tmp/luci-app-unblockneteasemusic_${luci_latest_ver}_all.ipk" > "/dev/null" 2>&1
+	curl -sL "https://github.com/immortalwrt/luci-app-unblockneteasemusic/releases/download/v${luci_latest_ver}/luci-app-unblockneteasemusic_${luci_latest_ver}_all.ipk" -o "/tmp/luci-app-unblockneteasemusic_${luci_latest_ver}_all.ipk" > "/dev/null" 2>&1
 	opkg install "/tmp/luci-app-unblockneteasemusic_${luci_latest_ver}_all.ipk"
 	rm -f "/tmp/luci-app-unblockneteasemusic_${luci_latest_ver}_all.ipk"
 	rm -rf "/tmp/luci-indexcache" "/tmp/luci-modulecache"

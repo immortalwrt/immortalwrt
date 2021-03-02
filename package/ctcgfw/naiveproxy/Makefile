@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=ncurses/host ninja/host python3/host
 PKG_USE_MIPS16:=0
