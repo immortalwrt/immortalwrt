@@ -168,6 +168,7 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
+	linksys,e5600|\
 	linksys,ea7300-v1|\
 	linksys,ea7500-v2)
 		lan_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
