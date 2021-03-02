@@ -2162,6 +2162,13 @@ div#cbi-passwall.cbi-map div#set_node_div
 	background : rgba(7,34,62,.9);
 }
 
+/* For luci-app-softethervpn */
+div#cbi-softethervpn.cbi-map .cbi-value div.cbi-value-field font.softethervpn_status
+{
+	display: block;
+	padding-top:6px;
+}
+
 @media screen and (max-width: 1600px) {
     .main-left {
         /*width: calc(0% + 15rem);*/

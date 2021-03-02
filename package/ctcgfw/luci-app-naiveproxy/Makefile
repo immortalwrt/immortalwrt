@@ -14,7 +14,7 @@ LUCI_TITLE:=LuCI support for NaiveProxy
 LUCI_DEPENDS:=+naiveproxy
 LUCI_PKGARCH:=all
 
-PKG_MAINTAINER:=CN_SZTL <cnsztl@project-openwrt.eu.org>
+PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
