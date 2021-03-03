@@ -16,21 +16,20 @@ endef
 
 define Build/mt7622-gpt
 	cp $@ $@.tmp || true
-	ptgen -g -o $@.tmp -h 4 -s 31 -a 1 -l 1024 -g \
-		-t 0xef \
+	ptgen -g -o $@.tmp -a 1 -l 1024 \
 		$(if $(findstring sdmmc,$1), \
-			-N bl2		-r	-p 512k@512k \
+			-H \
+			-t 0x83	-N bl2       -r	-p 512k@512k \
 		) \
-			-N fip		-r	-p 1M@2M \
-			-N ubootenv	-r	-p 1M@4M \
-			-N recovery	-r	-p 32M@6M \
+			-t 0xef	-N fip	     -r	-p 1M@2M \
+			-t 0x83	-N ubootenv  -r	-p 1M@4M \
+				-N recovery  -r	-p 32M@6M \
 		$(if $(findstring sdmmc,$1), \
 			-t 0x2e -N production	-p 216M@40M \
 		) \
 		$(if $(findstring emmc,$1), \
 			-t 0x2e -N production	-p 980M@40M \
 		)
-	dd if=$(STAGING_DIR_IMAGE)/mt7622-header_$1.bin bs=512 count=1 of=$@.tmp conv=notrunc
 	cat $@.tmp >> $@
 	rm $@.tmp
 endef
@@ -52,8 +51,8 @@ define Device/bananapi_bpi-r64
 				   bl2 emmc-2ddr | pad-to 512k | bl2 sdmmc-2ddr | pad-to 1M | bl31-uboot bananapi_bpi-r64-emmc | pad-to 2M |\
 				   bl31-uboot bananapi_bpi-r64-sdmmc | pad-to 6M
   KERNEL			:= kernel-bin | gzip
-  KERNEL_INITRAMFS		:= kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 128k
-  IMAGE/sysupgrade.itb		:= append-kernel | fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+  KERNEL_INITRAMFS		:= kernel-bin | lzma | fit lzma $$(DTS_DIR)/$$(DEVICE_DTS).dtb with-initrd | pad-to 128k
+  IMAGE/sysupgrade.itb		:= append-kernel | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb external-static-with-rootfs | append-metadata
 endef
 TARGET_DEVICES += bananapi_bpi-r64
 
