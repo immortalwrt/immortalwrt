@@ -43,6 +43,15 @@ define Package/$(PKG_NAME)/description
 BaiduPCS-Web is a web controller for BaiduPCS-Go
 endef
 
+define Build/Compile
+( \
+  GOOS=$$$$(go env GOOS) GOARCH=$$$$(go env GOARCH) go get -v github.com/GeertJohan/go.rice/rice/... ; \
+  cd $(PKG_BUILD_DIR)/internal/pcsweb ; \
+  "$$$$(go env GOPATH)/bin/rice" embed-go ; \
+  $(call GoPackage/Build/Compile) ; \
+)
+endef
+
 define Package/$(PKG_NAME)/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
 	$(INSTALL_DIR) $(1)/usr/bin

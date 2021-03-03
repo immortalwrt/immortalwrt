@@ -3,7 +3,7 @@
 # Copyright (C) 2015 Jian Chang <aa65535@live.com>
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
