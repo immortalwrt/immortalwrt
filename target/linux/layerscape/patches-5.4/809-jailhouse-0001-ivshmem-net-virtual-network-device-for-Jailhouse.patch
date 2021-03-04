@@ -15,7 +15,7 @@ Work in progress.
 
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
-@@ -647,4 +647,8 @@ config NET_FAILOVER
+@@ -571,4 +571,8 @@ config NET_FAILOVER
  	  a VM with direct attached VF by failing over to the paravirtual
  	  datapath when the VF is unplugged.
  
