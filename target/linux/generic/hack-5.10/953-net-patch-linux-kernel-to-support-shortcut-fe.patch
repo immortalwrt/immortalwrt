@@ -98,7 +98,7 @@
  
  	len = skb->len;
  	PRANDOM_ADD_NOISE(skb, dev, txq, len + jiffies);
-@@ -5106,6 +5115,11 @@ void netdev_rx_handler_unregister(struct
+@@ -5108,6 +5117,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -110,7 +110,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -5154,6 +5168,10 @@ static int __netif_receive_skb_core(stru
+@@ -5156,6 +5170,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -121,7 +121,7 @@
  	net_timestamp_check(!netdev_tstamp_prequeue, skb);
  
  	trace_netif_receive_skb(skb);
-@@ -5193,6 +5211,16 @@ another_round:
+@@ -5195,6 +5213,16 @@ another_round:
  			goto out;
  	}
  
