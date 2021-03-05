@@ -1,6 +1,6 @@
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -52,6 +52,9 @@ struct br_ip_list {
+@@ -61,6 +61,9 @@ struct br_ip_list {
  
  extern void brioctl_set(int (*ioctl_hook)(struct net *, unsigned int, void __user *));
  
@@ -12,7 +12,7 @@
  			       struct list_head *br_ip_list);
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -826,6 +826,10 @@ struct sk_buff {
+@@ -860,6 +860,10 @@ struct sk_buff {
  #endif
  	__u8			gro_skip:1;
  
@@ -49,7 +49,7 @@
  	int (*fcn)(unsigned int events, struct nf_ct_event *item);
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -746,6 +746,28 @@ void br_port_flags_change(struct net_bri
+@@ -762,6 +762,28 @@ void br_port_flags_change(struct net_bri
  		br_recalculate_neigh_suppress_enabled(br);
  }
  
@@ -78,10 +78,9 @@
  bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag)
  {
  	struct net_bridge_port *p;
- 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3189,8 +3189,17 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -3602,8 +3602,17 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -97,9 +96,9 @@
 +	}
 +#endif
  
- #ifdef CONFIG_ETHERNET_PACKET_MANGLE
- 	if (!dev->eth_mangle_tx ||
-@@ -4683,6 +4691,11 @@ void netdev_rx_handler_unregister(struct
+ 	len = skb->len;
+ 	PRANDOM_ADD_NOISE(skb, dev, txq, len + jiffies);
+@@ -5108,6 +5117,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -111,7 +110,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -4733,6 +4746,10 @@ static int __netif_receive_skb_core(stru
+@@ -5156,6 +5170,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -122,7 +121,7 @@
  	net_timestamp_check(!netdev_tstamp_prequeue, skb);
  
  	trace_netif_receive_skb(skb);
-@@ -4772,6 +4789,16 @@ another_round:
+@@ -5195,6 +5213,16 @@ another_round:
  			goto out;
  	}
  
@@ -141,7 +140,7 @@
  
 --- a/net/Kconfig
 +++ b/net/Kconfig
-@@ -473,3 +473,6 @@ config HAVE_CBPF_JIT
+@@ -475,3 +475,6 @@ config HAVE_CBPF_JIT
  # Extended BPF JIT (eBPF)
  config HAVE_EBPF_JIT
  	bool
@@ -172,7 +171,7 @@
  static int nf_ct_tcp_loose __read_mostly = 1;
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -162,7 +162,11 @@ int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
+@@ -171,7 +171,11 @@ int nf_conntrack_eventmask_report(unsign
  
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -184,7 +183,7 @@
  		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
-@@ -181,7 +185,14 @@ int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
+@@ -190,7 +194,14 @@ int nf_conntrack_eventmask_report(unsign
  		if (!((eventmask | missed) & e->ctmask))
  			goto out_unlock;
  
@@ -199,7 +198,7 @@
  		if (unlikely(ret < 0 || missed)) {
  			spin_lock_bh(&ct->lock);
  			if (ret < 0) {
-@@ -263,7 +274,11 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
+@@ -272,7 +283,11 @@ void nf_ct_deliver_cached_events(struct
  
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -210,8 +209,8 @@
 +#endif
  		goto out_unlock;
  
- 	e = nf_ct_ecache_find(ct);
-@@ -287,7 +302,15 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
+ 	if (!nf_ct_is_confirmed(ct) || nf_ct_is_dying(ct))
+@@ -296,7 +311,15 @@ void nf_ct_deliver_cached_events(struct
  	item.portid = 0;
  	item.report = 0;
  
@@ -227,9 +226,9 @@
  
  	if (likely(ret == 0 && !missed))
  		goto out_unlock;
-@@ -340,6 +363,11 @@ int nf_conntrack_register_notifier(struct net *net, struct notifier_block *nb)
+@@ -350,6 +373,11 @@ int nf_conntrack_register_notifier(struc
  {
- 	return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
+         return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
  }
 +int nf_conntrack_register_chain_notifier(struct net *net, struct notifier_block *nb)
 +{
@@ -239,7 +238,7 @@
  #else
  int nf_conntrack_register_notifier(struct net *net,
  				   struct nf_ct_event_notifier *new)
-@@ -369,6 +397,11 @@ int nf_conntrack_unregister_notifier(struct net *net, struct notifier_block *nb)
+@@ -379,6 +407,11 @@ int nf_conntrack_unregister_notifier(str
  {
  	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
  }
