@@ -108,7 +108,7 @@ while [ "1" == "1" ]; do #死循环
 			kill -9 $(busybox ps -w | grep ssrplus-dns | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 			kill -9 $(busybox ps -w | grep "dns2socks 127.0.0.1 $tmp_dns_port" | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 			ln_start_bin $(first_type microsocks) microsocks -i 127.0.0.1 -p $tmp_dns_port ssrplus-dns
-			ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_dns_port $dnsserver:$dnsport 127.0.0.1:5335 -q
+			ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_dns_port $dnsserver:$dnsport 127.0.0.1:$dns_port -q
 		fi
 	fi
 done
