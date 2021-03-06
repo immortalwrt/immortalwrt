@@ -14,7 +14,7 @@ $(if $(findstring $(space),$(TOPDIR)),$(error ERROR: The path to the OpenWrt dir
 
 world:
 
-DISTRO_PKG_CONFIG:=$(shell command -pv pkg-config | grep -E '\/usr' | head -n 1)
+DISTRO_PKG_CONFIG:=$(shell which -a pkg-config | grep -E '\/usr' | head -n 1)
 export PATH:=$(TOPDIR)/staging_dir/host/bin:$(PATH)
 
 ifneq ($(OPENWRT_BUILD),1)
@@ -82,6 +82,12 @@ endif
 
 # check prerequisites before starting to build
 prereq: $(target/stamp-prereq) tmp/.prereq_packages
+	@if [ ! -f "$(INCLUDE_DIR)/site/$(ARCH)" ]; then \
+		echo 'ERROR: Missing site config for architecture "$(ARCH)" !'; \
+		echo '       The missing file will cause configure scripts to fail during compilation.'; \
+		echo '       Please provide a "$(INCLUDE_DIR)/site/$(ARCH)" file and restart the build.'; \
+		exit 1; \
+	fi
 
 $(BIN_DIR)/profiles.json: FORCE
 	$(if $(CONFIG_JSON_OVERVIEW_IMAGE_INFO), \
