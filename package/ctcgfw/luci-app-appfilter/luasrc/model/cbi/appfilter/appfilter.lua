@@ -31,11 +31,10 @@ local display_str="<strong>当前版本:  </strong>"..version.."<br><strong>特�
 s = m:section(TypedSection, "feature", translate("特征库更新"), display_str )
 
 fu = s:option(FileUpload, "")
-fu.template = "cbi/other_upload"
+fu.template = "cbi/oaf_upload"
 s.anonymous = true
 
 um = s:option(DummyValue, "rule_data")
-um.template = "cbi/other_dvalue"
 
 --um.value =rule_count .. " " .. translate("Records").. "  "..version
 s = m:section(TypedSection, "appfilter", translate("App Filter Rules"))
@@ -172,7 +171,6 @@ http.setfilehandler(
 			if not meta then return end
 			if	meta and chunk then fd = nixio.open(dir .. meta.file, "w") end
 			if not fd then
-				--um.value = translate("Create upload file error.")
 				return
 			end
 		end
@@ -182,7 +180,8 @@ http.setfilehandler(
 		if eof and fd then   
 			fd:close()   
 			local fd2 = io.open("/tmp/upload/"..meta.file)
-			local line=fd2:read("*l");               
+			local line=fd2:read("*l");       
+			fd2:close()        
 			local ret=string.match(line, "#version")
 			if ret ~= nil then 
 					local cmd="cp /tmp/upload/"..meta.file.." /etc/appfilter/feature.cfg";
