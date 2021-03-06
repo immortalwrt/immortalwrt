@@ -11,6 +11,7 @@ define Device/Default
 	KERNEL_INITRAMFS_PREFIX := $$(IMG_PREFIX)-$(1)-initramfs
 	KERNEL_PREFIX := $$(IMAGE_PREFIX)
 	KERNEL_LOADADDR := 0x80208000
+	DEVICE_DTS_CONFIG := config@1
 	IMAGES := sysupgrade.bin
 	IMAGE/sysupgrade.bin = sysupgrade-tar | append-metadata
 	IMAGE/sysupgrade.bin/squashfs :=
