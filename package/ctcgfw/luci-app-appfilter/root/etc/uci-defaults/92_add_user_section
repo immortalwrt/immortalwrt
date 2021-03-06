@@ -2,6 +2,7 @@
 
 uci -q batch <<-EOF >/dev/null
 	set appfilter.user=user
+	appfilter.feature=feature
 	commit appfilter
 EOF
 exit 0
