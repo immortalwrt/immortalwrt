@@ -2,4 +2,3 @@ src-git packages https://github.com/immortalwrt/packages.git;openwrt-21.02
 src-git luci https://github.com/immortalwrt/luci.git;openwrt-21.02
 src-git routing https://github.com/openwrt-routing/packages.git;openwrt-21.02
 src-git telephony https://github.com/openwrt/telephony.git;openwrt-21.02
-src-git freifunk https://github.com/freifunk/openwrt-packages.git;openwrt-21.02
