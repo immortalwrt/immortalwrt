@@ -155,14 +155,10 @@ end
 if is_finded("trojan") then
 	o:value("trojan", translate("Trojan"))
 end
-if is_finded("trojan-go") then
-	o:value("trojan", translate("Trojan"))
-	o:value("trojan-go", translate("Trojan-Go"))
-end
 if is_finded("naive") then
 	o:value("naiveproxy", translate("NaiveProxy"))
 end
-if is_finded("ipt2socks-alt") or is_finded("ipt2socks") then
+if is_finded("ipt2socks") then
 	o:value("socks5", translate("Socks5"))
 end
 if is_finded("redsocks2") then
@@ -200,7 +196,6 @@ o:depends("type", "v2ray")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
-o:depends("type", "trojan-go")
 
 o = s:option(Value, "server_port", translate("Server Port"))
 o.datatype = "port"
@@ -211,7 +206,6 @@ o:depends("type", "v2ray")
 o:depends("type", "trojan")
 o:depends("type", "naiveproxy")
 o:depends("type", "socks5")
-o:depends("type", "trojan-go")
 
 o = s:option(Flag, "auth_enable", translate("Enable Authentication"))
 o.rmempty = false
@@ -239,7 +233,6 @@ o:depends({type = "v2ray", v2ray_protocol = "http", auth_enable = true})
 o:depends({type = "v2ray", v2ray_protocol = "socks", auth_enable = true})
 o:depends({type = "v2ray", v2ray_protocol = "shadowsocks"})
 o:depends({type = "v2ray", v2ray_protocol = "trojan"})
-o:depends("type", "trojan-go")
 
 o = s:option(ListValue, "encrypt_method", translate("Encrypt Method"))
 for _, v in ipairs(encrypt_methods) do
@@ -271,6 +264,9 @@ end
 if is_finded("v2ray-plugin") then
 	o:value("v2ray-plugin", translate("v2ray-plugin"))
 end
+if is_finded("xray-plugin") then
+	o:value("xray-plugin", translate("xray-plugin"))
+end
 o.rmempty = true
 o:depends("type", "ss")
 
@@ -278,6 +274,7 @@ o = s:option(Value, "plugin_opts", translate("Plugin Opts"))
 o.rmempty = true
 o:depends({type = "ss", plugin = "obfs-local"})
 o:depends({type = "ss", plugin = "v2ray-plugin"})
+o:depends({type = "ss", plugin = "xray-plugin"})
 
 o = s:option(ListValue, "protocol", translate("Protocol"))
 for _, v in ipairs(protocol) do
@@ -336,14 +333,6 @@ o:value("h2", "HTTP/2")
 o:value("quic", "QUIC")
 o.rmempty = true
 o:depends("type", "v2ray")
-
-trojan_transport = s:option(ListValue, "trojan_transport", translate("Transport"))
-trojan_transport:value("original", "Original")
-trojan_transport:value("ws", "WebSocket")
-trojan_transport:value("h2", "HTTP/2")
-trojan_transport:value("h2+ws", "HTTP/2 & WebSocket")
-trojan_transport.default = "original"
-trojan_transport:depends("type", "trojan-go")
 
 -- [[ TCP部分 ]]--
 -- TCP伪装
@@ -490,22 +479,6 @@ o.placeholder = "eg: [\"-config\", \"test.json\"]"
 o:depends({plugin_type = "shadowsocks"})
 o:depends({plugin_type = "other"})
 
--- [[ Trojan-Go Shadowsocks2 ]] --
-o = s:option(Flag, "ss_aead", translate("Shadowsocks2"))
-o:depends("type", "trojan-go")
-o.default = "0"
-
-o = s:option(ListValue, "ss_aead_method", translate("Encrypt Method"))
-o:value("aes-128-gcm")
-o:value("aes-256-gcm")
-o:value("chacha20-ietf-poly1305")
-o.default = "aes-128-gcm"
-o:depends("ss_aead", "1")
-
-o = s:option(Value, "ss_aead_pwd", translate("Password"))
-o.password = true
-o:depends("ss_aead", "1")
-
 -- [[ TLS ]]--
 o = s:option(Flag, "tls", translate("TLS"))
 o.rmempty = true
@@ -513,7 +486,6 @@ o.default = "0"
 o:depends({type = "v2ray", xtls = false})
 -- o:depends({type = "v2ray", v2ray_protocol = "vless", xtls = false})
 o:depends("type", "trojan")
-o:depends("type", "trojan-go")
 
 -- XTLS
 if is_finded("xray") then
@@ -538,7 +510,6 @@ o:depends("xtls", true)
 -- [[ TLS部分 ]] --
 o = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))
 o:depends({type = "trojan", tls = true})
-o:depends({type = "trojan-go", tls = true})
 o.default = "0"
 
 -- [[ Trojan TLS ]]--
@@ -546,14 +517,10 @@ o = s:option(ListValue, "fingerprint", translate("Finger Print"))
 o:value("disable", translate("disable"))
 o:value("firefox", translate("firefox"))
 o:value("chrome", translate("chrome"))
-if is_finded("Trojan-go") then
-	o:value("ios", translate("ios"))
-end
 if is_finded("xray") then
 	o:value("safari", translate("safari"))
 	o:value("randomized", translate("random"))
 end
-o:depends({type = "trojan-go", tls = true})
 o:depends({type = "v2ray", tls = true})
 o.default = "firefox"
 
@@ -586,7 +553,6 @@ o = s:option(Flag, "certificate", translate("Self-signed Certificate"))
 o.rmempty = true
 o.default = "0"
 o:depends({type = "trojan", tls = true, insecure = false})
-o:depends({type = "trojan-go", tls = true, insecure = false})
 o:depends({type = "v2ray", v2ray_protocol = "vmess", tls = true, insecure = false})
 o:depends({type = "v2ray", v2ray_protocol = "vless", tls = true, insecure = false})
 o:depends({type = "v2ray", v2ray_protocol = "vmess", xtls = true, insecure = false})
@@ -629,9 +595,9 @@ end
 
 o = s:option(Value, "certpath", translate("Current Certificate Path"))
 o:depends("certificate", 1)
-o:value("/etc/ssl/private/")
+o:value("/etc/ssl/private/ca.pem")
 o.description = translate("Please confirm the current certificate path")
-o.default = "/etc/ssl/private/"
+o.default = "/etc/ssl/private/ca.pem"
 
 o = s:option(Flag, "fast_open", translate("TCP Fast Open"))
 o.rmempty = true
@@ -639,7 +605,6 @@ o.default = "0"
 o:depends("type", "ssr")
 o:depends("type", "ss")
 o:depends("type", "trojan")
-o:depends("type", "trojan-go")
 
 o = s:option(Flag, "switch_enable", translate("Enable Auto Switch"))
 o.rmempty = false
