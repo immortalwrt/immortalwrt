@@ -1,4 +1,8 @@
 <style type="text/css">
+<%
+local dsp = require "luci.dispatcher"
+-%>
+
 table.imagetable {
     font-family: verdana,arial,sans-serif;
     font-size:11px;
@@ -25,6 +29,7 @@ table.imagetable td {
 </style>
 <script type="text/javascript">//<![CDATA[
 
+/*
 	XHR.poll(10, '<%=url('admin/network/user_status')%>', null,
 		function(x, st)
 		{
@@ -32,7 +37,6 @@ table.imagetable td {
 			var str=JSON.stringify(st);
 			if (st && tb)
 			{
-				/* clear all rows */
 				while(tb.rows.length > 1)
 					tb.deleteRow(1);
 				for(var i = 0; i < st.length; i++ )
@@ -51,33 +55,93 @@ table.imagetable td {
 					}
 					var tr = tb.insertRow(-1);
 					//tr.className = 'cbi-section-table-row cbi-rowstyle-' + ((i % 2) + 1);
-					tr.insertCell(-1).innerHTML = hostname;
-					tr.insertCell(-1).innerHTML = st[i].mac;
-					tr.insertCell(-1).innerHTML = st[i].ip;
 					tr.insertCell(-1).innerHTML = st[i].appname;
-					tr.insertCell(-1).innerHTML = st[i].drop_num;
-					tr.insertCell(-1).innerHTML = st[i].total_num;
-					tr.insertCell(-1).innerHTML = st[i].latest_time;
+					tr.insertCell(-1).innerHTML = hostname;
+					tr.insertCell(-1).innerHTML = "<a href='<%=url('admin/network/appfilter/')%>"+st[i].mac+"'>"+st[i].mac+"</a>";
+					tr.insertCell(-1).innerHTML = st[i].first_time;
+					var hour=parseInt(st[i].total_time / 3600);
+					var seconds=st[i].total_time % 3600;
+					var min=parseInt(seconds / 60)
+					var total_time_str;
+					if (st[i].latest_action == 1)
+						total_time_str="-"
+					else {
+						if (hour > 0)
+							total_time_str=hour + "小时" + min + "分"
+						else{
+							if (min == 0)
+								min = 1;
+							total_time_str=min + "分"
+						}
+					}
+
+					tr.insertCell(-1).innerHTML = total_time_str;
 					tr.insertCell(-1).innerHTML = action_status;
+
 				}
 			}
 		}
 	);
+*/
+
+	XHR.poll(5, '<%=url('admin/network/dev_app_status')%>', null,
+		function(x, st)
+		{
+			var tb = document.getElementById('user_status_table');
+			var dev_list_str=JSON.stringify(st);
+			if (st && tb)
+			{
+				while(tb.rows.length > 1)
+					tb.deleteRow(1);
+				var devlist = st.devlist
+				for(var i = 0; i < devlist.length; i++ )
+				{
+					var hostname=""
+					if(devlist[i].hostname == "" || devlist[i].hostname == "*"){
+						hostname="?";
+					}
+					else{
+						hostname=devlist[i].hostname;
+					}
+					var tr = tb.insertRow(-1);
+					//tr.className = 'cbi-section-table-row cbi-rowstyle-' + ((i % 2) + 1);
+					tr.insertCell(-1).innerHTML = hostname;
+					tr.insertCell(-1).innerHTML = "<a href='<%=url('admin/network/appfilter/')%>"+devlist[i].mac+"'>"+devlist[i].mac+"</a>";
+					tr.insertCell(-1).innerHTML = devlist[i].ip;
+					var app_list_str="";
+					for (var j = 0; j < devlist[i].applist.length; j++){
+						console.log(devlist[i].applist[j].name);
+						app_list_str+=devlist[i].applist[j].name;
+						if (j != devlist[i].applist.length - 1)
+						app_list_str+=","
+					}
+					tr.insertCell(-1).innerHTML = app_list_str;
+				}
+			}
+		}
+	);
+
 //]]></script>
 
 
 <fieldset class="cbi-section">
-	<legend><%:访问记录%></legend>
+	<legend><%:终端列表%></legend>
 	<table class="imagetable" id="user_status_table">
+		<!--
+		<tr>
+			<th ><%:App%></th>
+			<th ><%:主机名%></th>
+			<th ><%:mac地址%></th>
+			<th><%:开始时间%></th>
+			<th><%:访问时长%></th>
+			<th><%:过滤状态%></th>
+		</tr>
+		-->
 		<tr>
 			<th ><%:主机名%></th>
 			<th ><%:mac地址%></th>
 			<th ><%:ip地址%></th>
-			<th ><%:App名称%></th>
-			<th><%:丢包次数%></th>
-			<th ><%:访问次数%></th>
-			<th><%:最后访问时间%></th>
-			<th><%:过滤状态%></th>
+			<th><%:常用APP(TOP5)%></th>
 		</tr>
 		<tr>
 			<td colspan="8"><em><br /><%:Collecting data...%></em></td>
