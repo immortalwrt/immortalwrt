@@ -13,28 +13,14 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/mtk-openwrt/arm-trusted-firmware.git
-PKG_SOURCE_DATE:=2020-11-09
-PKG_SOURCE_VERSION:=03017334ccd8c0fac12e7db36749b95b9a7d745f
-PKG_MIRROR_HASH:=b211b2f9143d4debc7ad8dc959cb606888af20af790855dd66c87e451b6a1bc7
+PKG_SOURCE_DATE:=2021-02-25
+PKG_SOURCE_VERSION:=1220acb044a9db9a201aba3be0bb4ce0c9ed3702
+PKG_MIRROR_HASH:=f2ca44b9b8acfbd3a6be30aba316c765f73bad6231a821f524c9f21a845e50a3
 
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
 
-PKG_LICENSE_FILES:=LICENCE.mediatek
-
-BLOBS_TARBALL:=tfa-mtk-files-for-2020-11-09.tgz
-BROMIMAGE_EXEC:=bromimage-x64
-
 include $(INCLUDE_DIR)/trusted-firmware-a.mk
 include $(INCLUDE_DIR)/package.mk
-
-PKG_LICENSE+=proprietary
-
-define Download/tfa-files
-  URL:=@OPENWRT
-  URL_FILE:=$(BLOBS_TARBALL)
-  FILE:=$(BLOBS_TARBALL)
-  HASH:=689b097e4531d3eeca0c477675ab3dc3cace6ba4ed8a339116a9ede6537839d7
-endef
 
 define Trusted-Firmware-A/Default
   BUILD_TARGET:=mediatek
@@ -42,100 +28,73 @@ define Trusted-Firmware-A/Default
   PLAT:=mt7622
   TFA_IMAGE:=bl2.img bl31.bin
   BOOT_DEVICE:=
-  DDR_BLOB:=
+  DDR3_FLYBY:=
 endef
 
 define Trusted-Firmware-A/mt7622-nor-1ddr
   NAME:=MediaTek MT7622 (SPI-NOR, 1x DDR3)
   BOOT_DEVICE:=nor
-  DDR_BLOB:=1
 endef
 
 define Trusted-Firmware-A/mt7622-nor-2ddr
   NAME:=MediaTek MT7622 (SPI-NOR, 2x DDR3)
   BOOT_DEVICE:=nor
-  DDR_BLOB:=2
+  DDR3_FLYBY:=1
 endef
 
 define Trusted-Firmware-A/mt7622-snand-1ddr
   NAME:=MediaTek MT7622 (SPI-NAND, 1x DDR3)
   BOOT_DEVICE:=snand
-  DDR_BLOB:=1
 endef
 
 define Trusted-Firmware-A/mt7622-snand-2ddr
   NAME:=MediaTek MT7622 (SPI-SNAND, 2x DDR3)
   BOOT_DEVICE:=snand
-  DDR_BLOB:=2
+  DDR3_FLYBY:=1
 endef
 
 define Trusted-Firmware-A/mt7622-emmc-1ddr
   NAME:=MediaTek MT7622 (eMMC, 1x DDR3)
   BOOT_DEVICE:=emmc
-  DDR_BLOB:=1
 endef
 
 define Trusted-Firmware-A/mt7622-emmc-2ddr
   NAME:=MediaTek MT7622 (eMMC, 2x DDR3)
   BOOT_DEVICE:=emmc
-  DDR_BLOB:=2
+  DDR3_FLYBY:=1
 endef
 
 define Trusted-Firmware-A/mt7622-sdmmc-1ddr
   NAME:=MediaTek MT7622 (SDcard, 1x DDR3)
   BOOT_DEVICE:=sdmmc
-  DDR_BLOB:=1
 endef
 
 define Trusted-Firmware-A/mt7622-sdmmc-2ddr
   NAME:=MediaTek MT7622 (SDcard, 2x DDR3)
   BOOT_DEVICE:=sdmmc
-  DDR_BLOB:=2
+  DDR3_FLYBY:=1
 endef
 
 TFA_TARGETS:= \
-        mt7622-nor-1ddr \
-        mt7622-nor-2ddr \
-        mt7622-snand-1ddr \
-        mt7622-snand-2ddr \
-        mt7622-emmc-1ddr \
-        mt7622-emmc-2ddr \
-        mt7622-sdmmc-1ddr \
-        mt7622-sdmmc-2ddr
+	mt7622-nor-1ddr \
+	mt7622-nor-2ddr \
+	mt7622-snand-1ddr \
+	mt7622-snand-2ddr \
+	mt7622-emmc-1ddr \
+	mt7622-emmc-2ddr \
+	mt7622-sdmmc-1ddr \
+	mt7622-sdmmc-2ddr
 
-TFA_MAKE_FLAGS += BOOT_DEVICE=$(BOOT_DEVICE) all
-
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	$(eval $(call Download,tfa-files))
-# replace 'bromimage' tool by static version
-	$(TAR) -vxzf $(DL_DIR)/$(BLOBS_TARBALL) --wildcards \
-		-O "*/$(BROMIMAGE_EXEC)" > $(PKG_BUILD_DIR)/tools/mediatek/bromimage/bromimage
-	$(TAR) -vxzf $(DL_DIR)/$(BLOBS_TARBALL) --wildcards \
-		-C $(PKG_BUILD_DIR) \
-		--strip-components=1 */LICENCE.mediatek
-endef
+TFA_MAKE_FLAGS += BOOT_DEVICE=$(BOOT_DEVICE) $(if $(DDR3_FLYBY),DDR3_FLYBY=1) all
 
 define Build/Configure
 	$(call Build/Configure/Default)
-# replace DRAM calib blobs if needed (variant '2' is shipped upstream)
-ifeq ($(DDR_BLOB),1)
-	$(TAR) -vxzf $(DL_DIR)/$(BLOBS_TARBALL) --wildcards \
-		-C $(PKG_BUILD_DIR)/plat/mediatek/mt7622/drivers/dram/release \
-		--strip-components=1 */*.o
-endif
 endef
 
 define Package/trusted-firmware-a/install
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/build/mt7622/release/bl2.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-bl2.img
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/build/mt7622/release/bl31.bin $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-bl31.bin
-ifeq ($(BOOT_DEVICE),emmc)
-	$(INSTALL_DATA) $(DL_DIR)/mt7622-header_emmc.bin $(STAGING_DIR_IMAGE)/
-endif
-ifeq ($(BOOT_DEVICE),sdmmc)
-	$(INSTALL_DATA) $(DL_DIR)/mt7622-header_sdmmc.bin $(STAGING_DIR_IMAGE)/
-endif
 endef
 
 $(eval $(call BuildPackage/Trusted-Firmware-A))
