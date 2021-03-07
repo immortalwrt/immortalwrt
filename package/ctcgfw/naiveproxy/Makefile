@@ -8,13 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=naiveproxy
-PKG_VERSION:=88.0.4324.96-1
-PKG_RELEASE:=2
+PKG_VERSION:=89.0.4389.72-1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/klzgrad/naiveproxy/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=287c5291d0371a0d1e06f08fcb29c1d80da4a07e557fb8d2bf770b357a8eb29a
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_HASH:=94b1c3f1e63ecab43eb8006a38ed1a76f1e510364ba651abaef0ec575449f687
 
 PKG_LICENSE:=BSD 3-Clause
 PKG_LICENSE_FILES:=LICENSE
@@ -63,32 +62,32 @@ ifneq ($(CONFIG_CCACHE),)
 	export naive_ccache_flags=cc_wrapper="ccache"
 endif
 
-AFDO_VER:=88.0.4324.91_rc-r1-merged
-AFDO_FILE:=chromeos-chrome-amd64-$$(AFDO_VER).afdo.bz2
+AFDO_VER:=89.0.4389.65_rc-r1-merged
+AFDO_FILE:=chromeos-chrome-amd64-$(AFDO_VER).afdo.bz2
 define Download/AFDO_PROF
 	URL:=https://storage.googleapis.com.cnpmjs.org/chromeos-prebuilt/afdo-job/llvm \
 	     https://storage.googleapis.com/chromeos-prebuilt/afdo-job/llvm
 	URL_FILE:=$(AFDO_FILE)
 	FILE:=$(AFDO_FILE)
-	HASH:=d918ae36f535ffd7a3c36c7d06a0a58a3d93f03d07a670cee0f7cb4538925b34
+	HASH:=75a176d57c9b5fb12bff7e9442ddf21226df8aa25de19266f7ceb426eafd3421
 endef
 
-CLANG_VER:=llvmorg-12-init-11462-g418f18c6-1
-CLANG_FILE:=clang-$$(CLANG_VER).tgz
+CLANG_VER:=llvmorg-12-init-16296-g5e476061-1
+CLANG_FILE:=clang-$(CLANG_VER).tgz
 define Download/CLANG
 	URL:=https://commondatastorage.googleapis.com/chromium-browser-clang/Linux_x64
 	URL_FILE:=$(CLANG_FILE)
 	FILE:=$(CLANG_FILE)
-	HASH:=59e4682179bbda9b1cf7fcc5c6e3e24445d6e9e8411bd1c893882f63c6b65308
+	HASH:=78729dfab39fb9d52ede2841e408cf505959b26a5d0b086ed7cf4f784f2b393a
 endef
 
-GN_VER:=53d92014bf94c3893886470a1c7c1289f8818db0
+GN_VER:=595e3be7c8381d4eeefce62a63ec12bae9ce5140
 GN_FILE:=gn-git_revision-$(GN_VER).zip
 define Download/GN_TOOL
 	URL:=https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+
 	URL_FILE:=git_revision:$(GN_VER)
 	FILE:=$(GN_FILE)
-	HASH:=e39d3da74cb2802614c0edc4877483ff50045abedb98adb40eaadb68ab4066ff
+	HASH:=9d61dcab3814868786768c9dfab71e0cd850a61dbad9a049536d2f1aae784fe4
 endef
 
 PGO_VER:=4324-1610733451-8576f5ff23113bddfb13d417df9ef2a9be1f740d
