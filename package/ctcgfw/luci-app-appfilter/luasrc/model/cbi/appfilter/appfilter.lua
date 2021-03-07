@@ -36,6 +36,20 @@ s.anonymous = true
 
 um = s:option(DummyValue, "rule_data")
 
+s=m:section(TypedSection,"time",translate("时间控制")) s.anonymous = true
+hv = s:option(Value, "start_time", translate("开始时间")) hv.default="00:00"
+hv.optional=false
+hv = s:option(Value, "end_time", translate("结束时间")) hv.default="23:59"
+hv.optional=false days = s:option(MultiValue, "days", "", translate("")) 
+days.widget="checkbox" days.size=10 
+days:value("0", "周日");
+days:value("1", "周一"); 
+days:value("2", "周二");
+days:value("3", "周三"); 
+days:value("4", "周四"); 
+days:value("5", "周五"); 
+days:value("6", "周六"); 
+
 --um.value =rule_count .. " " .. translate("Records").. "  "..version
 s = m:section(TypedSection, "appfilter", translate("App Filter Rules"))
 s.anonymous = true
@@ -95,10 +109,7 @@ if class_fd then
 end
 
 
-s=m:section(TypedSection,"user",translate("Select users"))
-s.anonymous = true
-users = s:option(MultiValue, "users", "", translate("Select at least one user, otherwise it will take effect for all users"))
-users.widget="checkbox"
+
 
 function get_hostname_by_mac(dst_mac)
     leasefile="/tmp/dhcp.leases"
@@ -128,6 +139,10 @@ function get_cmd_result(command)
 	fd:close()                
 	return result  
 end
+
+s=m:section(TypedSection,"user",translate("Select users"))
+s.anonymous = true
+users = s:option(MultiValue, "users", "", translate("Select at least one user, otherwise it will take effect for all users"))
 users.widget="checkbox"
 --users.widget="select"
 users.size=1
