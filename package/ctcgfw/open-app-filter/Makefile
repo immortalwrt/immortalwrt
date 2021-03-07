@@ -2,14 +2,14 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=open-app-filter
-PKG_VERSION:=5.0
+PKG_VERSION:=5.0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://github.com/destan19/OpenAppFilter.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-03-04
-PKG_SOURCE_VERSION:=4483aab7d158031adc99b8669d5e7cf4f1023c14
-PKG_MIRROR_HASH:=07ba70f41ae62704b8698703f2f3a0b06d4317d4292297514a7ffa13ccecebfc
+PKG_SOURCE_DATE:=2021-03-08
+PKG_SOURCE_VERSION:=59aa2a1f40ebee65e48c7fd5d28d6c2706e60145
+PKG_MIRROR_HASH:=a969d5a5c16e418844a63fc6d23facb5ad0327d0bcadc72814bbecc2f9c4a099
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -32,7 +32,7 @@ endef
 define Package/appfilter
 	SECTION:=net
 	CATEGORY:=Network
-	DEPENDS:=+libubox-lua +kmod-oaf
+	DEPENDS:=+libblobmsg-json +libjson-c +libpthread +libubox +libubus +libuci +kmod-oaf
 	TITLE:=App filter userspace module
 endef
 
