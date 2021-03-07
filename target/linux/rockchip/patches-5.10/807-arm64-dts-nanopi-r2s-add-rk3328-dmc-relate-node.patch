@@ -24,7 +24,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  #include "rk3328.dtsi"
  
  / {
-@@ -115,6 +116,72 @@
+@@ -103,6 +104,72 @@
  		regulator-min-microvolt = <5000000>;
  		regulator-max-microvolt = <5000000>;
  	};
@@ -97,7 +97,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  };
  
  &cpu0 {
-@@ -137,6 +204,10 @@
+@@ -125,6 +192,10 @@
  	status = "disabled";
  };
  
@@ -108,7 +108,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &gmac2io {
  	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
  	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
-@@ -202,6 +273,7 @@
+@@ -190,6 +261,7 @@
  				regulator-name = "vdd_log";
  				regulator-always-on;
  				regulator-boot-on;
@@ -116,7 +116,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
-@@ -216,6 +288,7 @@
+@@ -204,6 +276,7 @@
  				regulator-name = "vdd_arm";
  				regulator-always-on;
  				regulator-boot-on;
