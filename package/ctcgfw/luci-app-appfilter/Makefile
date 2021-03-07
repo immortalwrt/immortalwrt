@@ -11,7 +11,7 @@ LUCI_PKGARCH:=all
 LUCI_DEPENDS:=+appfilter
 
 PKG_NAME:=luci-app-appfilter
-PKG_VERSION:=3.0
+PKG_VERSION:=5.0
 PKG_RELEASE:=1
 
 # call BuildPackage - OpenWrt buildroot signature
