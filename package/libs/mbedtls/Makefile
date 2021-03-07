@@ -65,9 +65,9 @@ config LIBMBEDTLS_DEBUG_C
 config LIBMBEDTLS_HAVE_ARMV8CE_AES
 	depends on PACKAGE_libmbedtls
 	bool
-	default y if !TARGET_bcm27xx || !TARGET_bcm4908
+	default y
 	prompt "Enable use of the ARMv8 Crypto Extensions"
-	depends on aarch64
+	depends on aarch64 && !TARGET_bcm27xx && !TARGET_bcm4908
 	help
 	 Use of the ARMv8 Crypto Extensions greatly increase performance
 	 (up to 4x faster on AES-GCM while 10x faster on raw AES).
