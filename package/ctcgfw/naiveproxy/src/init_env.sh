@@ -16,7 +16,7 @@ naive_arch="${target_arch}"
 [ "${target_arch}" == "i386" ] && naive_arch="x86"
 [ "${target_arch}" == "x86_64" ] && naive_arch="x64"
 [ "${target_arch}" == "aarch64" ] && naive_arch="arm64"
-ldso_path="/lib/$(find "${toolchain_dir}/" | grep -Eo "ld-musl-[a-z0-9_-]+\\.so\\.1")"
+# ldso_path="/lib/$(find "${toolchain_dir}/" | grep -Eo "ld-musl-[a-z0-9_-]+\\.so\\.1")"
 
 # OS detection
 [ "$(uname)" != "Linux" -o "$(uname -m)" != "x86_64" ] && { echo -e "Support Linux AMD64 only."; exit 1; }
@@ -81,8 +81,8 @@ ozone_platform_headless=true
 current_os=\"linux\"
 current_cpu=\"${naive_arch}\"
 sysroot=\"${toolchain_dir}\"
-custom_toolchain=\"//build/toolchain/linux:clang_${naive_arch}_openwrt\"
-ldso_path=\"${ldso_path}\""
+custom_toolchain=\"//build/toolchain/linux:clang_${naive_arch}_openwrt\""
+# ldso_path=\"${ldso_path}\""
 [ "${target_arch}" == "arm" ] && {
 	naive_flags="${naive_flags} arm_version=0 arm_cpu=\"${cpu_type}\""
 	[ -n "${cpu_subtype}" ] && { echo "${cpu_subtype}" | grep -q "neon" && neon_flag="arm_use_neon=true" || neon_flag="arm_use_neon=false"; naive_flags="${naive_flags} arm_fpu=\"${cpu_subtype}\" arm_float_abi=\"hard\" ${neon_flag}"; } || naive_flags="${naive_flags} arm_float_abi=\"soft\" arm_use_neon=false"
