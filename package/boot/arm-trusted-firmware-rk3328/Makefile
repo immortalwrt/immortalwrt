@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2020 Tobias Maedel <openwrt@tbspace.de>
-#
 # Copyright (C) 2021 ImmortalWrt
 # (https://immortalwrt.org)
 #
