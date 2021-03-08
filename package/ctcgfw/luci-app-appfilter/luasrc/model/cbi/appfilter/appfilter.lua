@@ -31,11 +31,24 @@ local display_str="<strong>当前版本:  </strong>"..version.."<br><strong>特�
 s = m:section(TypedSection, "feature", translate("特征库更新"), display_str )
 
 fu = s:option(FileUpload, "")
-fu.template = "cbi/other_upload"
+fu.template = "cbi/oaf_upload"
 s.anonymous = true
 
 um = s:option(DummyValue, "rule_data")
-um.template = "cbi/other_dvalue"
+
+s=m:section(TypedSection,"time",translate("时间控制")) s.anonymous = true
+hv = s:option(Value, "start_time", translate("开始时间")) hv.default="00:00"
+hv.optional=false
+hv = s:option(Value, "end_time", translate("结束时间")) hv.default="23:59"
+hv.optional=false days = s:option(MultiValue, "days", "", translate("")) 
+days.widget="checkbox" days.size=10 
+days:value("0", "周日");
+days:value("1", "周一"); 
+days:value("2", "周二");
+days:value("3", "周三"); 
+days:value("4", "周四"); 
+days:value("5", "周五"); 
+days:value("6", "周六"); 
 
 --um.value =rule_count .. " " .. translate("Records").. "  "..version
 s = m:section(TypedSection, "appfilter", translate("App Filter Rules"))
@@ -96,10 +109,7 @@ if class_fd then
 end
 
 
-s=m:section(TypedSection,"user",translate("Select users"))
-s.anonymous = true
-users = s:option(MultiValue, "users", "", translate("Select at least one user, otherwise it will take effect for all users"))
-users.widget="checkbox"
+
 
 function get_hostname_by_mac(dst_mac)
     leasefile="/tmp/dhcp.leases"
@@ -129,6 +139,10 @@ function get_cmd_result(command)
 	fd:close()                
 	return result  
 end
+
+s=m:section(TypedSection,"user",translate("Select users"))
+s.anonymous = true
+users = s:option(MultiValue, "users", "", translate("Select at least one user, otherwise it will take effect for all users"))
 users.widget="checkbox"
 --users.widget="select"
 users.size=1
@@ -172,7 +186,6 @@ http.setfilehandler(
 			if not meta then return end
 			if	meta and chunk then fd = nixio.open(dir .. meta.file, "w") end
 			if not fd then
-				--um.value = translate("Create upload file error.")
 				return
 			end
 		end
@@ -182,7 +195,8 @@ http.setfilehandler(
 		if eof and fd then   
 			fd:close()   
 			local fd2 = io.open("/tmp/upload/"..meta.file)
-			local line=fd2:read("*l");               
+			local line=fd2:read("*l");       
+			fd2:close()        
 			local ret=string.match(line, "#version")
 			if ret ~= nil then 
 					local cmd="cp /tmp/upload/"..meta.file.." /etc/appfilter/feature.cfg";

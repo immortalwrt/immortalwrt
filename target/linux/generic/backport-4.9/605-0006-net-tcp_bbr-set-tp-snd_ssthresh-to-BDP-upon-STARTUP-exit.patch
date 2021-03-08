@@ -1,0 +1,50 @@
+From b1f4eb4e4f9626fccb396f7998841506117a5916 Mon Sep 17 00:00:00 2001
+From: Yousuk Seung <ysseung@google.com>
+Date: Fri, 16 Mar 2018 10:51:49 -0700
+Subject: [PATCH] BACKPORT: net-tcp_bbr: set tp->snd_ssthresh to BDP upon
+ STARTUP exit
+
+Set tp->snd_ssthresh to BDP upon STARTUP exit. This allows us
+to check if a BBR flow exited STARTUP and the BDP at the
+time of STARTUP exit with SCM_TIMESTAMPING_OPT_STATS. Since BBR does not
+use snd_ssthresh this fix has no impact on BBR's behavior.
+
+Signed-off-by: Yousuk Seung <ysseung@google.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Priyaranjan Jha <priyarjha@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Albert I <kras@raphielgang.org>
+---
+ net/ipv4/tcp_bbr.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -704,6 +704,8 @@ static void bbr_check_drain(struct sock
+ 		bbr->mode = BBR_DRAIN;	/* drain queue we created */
+ 		bbr->pacing_gain = bbr_drain_gain;	/* pace slow to drain */
+ 		bbr->cwnd_gain = bbr_high_gain;	/* maintain cwnd */
++		tcp_sk(sk)->snd_ssthresh =
++				bbr_target_cwnd(sk, bbr_max_bw(sk), BBR_UNIT);
+ 	}	/* fall through to check if in-flight is already small: */
+ 	if (bbr->mode == BBR_DRAIN &&
+ 	    tcp_packets_in_flight(tcp_sk(sk)) <=
+@@ -809,6 +811,7 @@ static void bbr_init(struct sock *sk)
+ 	struct bbr *bbr = inet_csk_ca(sk);
+ 
+ 	bbr->prior_cwnd = 0;
++	tp->snd_ssthresh = TCP_INFINITE_SSTHRESH;
+ 	bbr->rtt_cnt = 0;
+ 	bbr->next_rtt_delivered = 0;
+ 	bbr->prev_ca_state = TCP_CA_Open;
+@@ -861,7 +864,7 @@ static u32 bbr_undo_cwnd(struct sock *sk
+ static u32 bbr_ssthresh(struct sock *sk)
+ {
+ 	bbr_save_cwnd(sk);
+-	return TCP_INFINITE_SSTHRESH;	 /* BBR does not use ssthresh */
++	return tcp_sk(sk)->snd_ssthresh;
+ }
+ 
+ static size_t bbr_get_info(struct sock *sk, u32 ext, int *attr,

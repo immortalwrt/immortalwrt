@@ -1,0 +1,140 @@
+From a03defe0b7f9d9378599c986aaf1418ee6cec231 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 28 Feb 2018 14:40:46 -0800
+Subject: [PATCH] BACKPORT: tcp_bbr: better deal with suboptimal GSO (II)
+
+This is second part of dealing with suboptimal device gso parameters.
+In first patch (45fa6615258e "tcp_bbr: better deal with suboptimal GSO")
+we dealt with devices having low gso_max_segs
+
+Some devices lower gso_max_size from 64KB to 16 KB (r8152 is an example)
+
+In order to probe an optimal cwnd, we want BBR being not sensitive
+to whatever GSO constraint a device can have.
+
+This patch removes tso_segs_goal() CC callback in favor of
+min_tso_segs() for CC wanting to override sysctl_tcp_min_tso_segs
+
+Next patch will remove bbr->tso_segs_goal since it does not have
+to be persistent.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[kras: Replace sk_pacing_shift with 10 (which is default value) to
+       avoid backporting mainline commit 3a9b76fd0db9]
+Signed-off-by: Albert I <kras@raphielgang.org>
+---
+ include/net/tcp.h     |  6 ++----
+ net/ipv4/tcp_bbr.c    | 23 +++++++++++++----------
+ net/ipv4/tcp_output.c | 15 ++++++++-------
+ 3 files changed, 23 insertions(+), 21 deletions(-)
+
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -544,8 +544,6 @@ __u32 cookie_v6_init_sequence(const stru
+ #endif
+ /* tcp_output.c */
+ 
+-u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+-		     int min_tso_segs);
+ void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
+ 			       int nonagle);
+ bool tcp_may_send_now(struct sock *sk);
+@@ -938,8 +936,8 @@ struct tcp_congestion_ops {
+ 	u32  (*undo_cwnd)(struct sock *sk);
+ 	/* hook for packet ack accounting (optional) */
+ 	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
+-	/* suggest number of segments for each skb to transmit (optional) */
+-	u32 (*tso_segs_goal)(struct sock *sk);
++	/* override sysctl_tcp_min_tso_segs */
++	u32 (*min_tso_segs)(struct sock *sk);
+ 	/* returns the multiplier used in tcp_sndbuf_expand (optional) */
+ 	u32 (*sndbuf_expand)(struct sock *sk);
+ 	/* call when packets are delivered to update cwnd and pacing rate,
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -231,23 +231,26 @@ static void bbr_set_pacing_rate(struct s
+ 		sk->sk_pacing_rate = rate;
+ }
+ 
+-/* Return count of segments we want in the skbs we send, or 0 for default. */
+-static u32 bbr_tso_segs_goal(struct sock *sk)
++/* override sysctl_tcp_min_tso_segs */
++static u32 bbr_min_tso_segs(struct sock *sk)
+ {
+-	struct bbr *bbr = inet_csk_ca(sk);
+-
+-	return bbr->tso_segs_goal;
++	return sk->sk_pacing_rate < (bbr_min_tso_rate >> 3) ? 1 : 2;
+ }
+ 
+ static void bbr_set_tso_segs_goal(struct sock *sk)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct bbr *bbr = inet_csk_ca(sk);
+-	u32 min_segs;
++	u32 segs, bytes;
++
++	/* Sort of tcp_tso_autosize() but ignoring
++	 * driver provided sk_gso_max_size.
++	 */
++	bytes = min_t(u32, sk->sk_pacing_rate >> 10,
++		      GSO_MAX_SIZE - 1 - MAX_TCP_HEADER);
++	segs = max_t(u32, bytes / tp->mss_cache, bbr_min_tso_segs(sk));
+ 
+-	min_segs = sk->sk_pacing_rate < (bbr_min_tso_rate >> 3) ? 1 : 2;
+-	bbr->tso_segs_goal = min(tcp_tso_autosize(sk, tp->mss_cache, min_segs),
+-				 0x7FU);
++	bbr->tso_segs_goal = min(segs, 0x7FU);
+ }
+ 
+ /* Save "last known good" cwnd so we can restore it after losses or PROBE_RTT */
+@@ -911,7 +914,7 @@ static struct tcp_congestion_ops tcp_bbr
+ 	.undo_cwnd	= bbr_undo_cwnd,
+ 	.cwnd_event	= bbr_cwnd_event,
+ 	.ssthresh	= bbr_ssthresh,
+-	.tso_segs_goal	= bbr_tso_segs_goal,
++	.min_tso_segs	= bbr_min_tso_segs,
+ 	.get_info	= bbr_get_info,
+ 	.set_state	= bbr_set_state,
+ };
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1672,8 +1672,8 @@ static bool tcp_nagle_check(bool partial
+ /* Return how many segs we'd like on a TSO packet,
+  * to send one TSO packet per ms
+  */
+-u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+-		     int min_tso_segs)
++static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
++			    int min_tso_segs)
+ {
+ 	u32 bytes, segs;
+ 
+@@ -1689,7 +1689,6 @@ u32 tcp_tso_autosize(const struct sock *
+ 
+ 	return segs;
+ }
+-EXPORT_SYMBOL(tcp_tso_autosize);
+ 
+ /* Return the number of segments we want in the skb we are transmitting.
+  * See if congestion control module wants to decide; otherwise, autosize.
+@@ -1697,11 +1696,13 @@ EXPORT_SYMBOL(tcp_tso_autosize);
+ static u32 tcp_tso_segs(struct sock *sk, unsigned int mss_now)
+ {
+ 	const struct tcp_congestion_ops *ca_ops = inet_csk(sk)->icsk_ca_ops;
+-	u32 tso_segs = ca_ops->tso_segs_goal ? ca_ops->tso_segs_goal(sk) : 0;
++	u32 min_tso, tso_segs;
+ 
+-	if (!tso_segs)
+-		tso_segs = tcp_tso_autosize(sk, mss_now,
+-					    sysctl_tcp_min_tso_segs);
++	min_tso = ca_ops->min_tso_segs ?
++			ca_ops->min_tso_segs(sk) :
++			sysctl_tcp_min_tso_segs;
++
++	tso_segs = tcp_tso_autosize(sk, mss_now, min_tso);
+ 	return min_t(u32, tso_segs, sk->sk_gso_max_segs);
+ }
+ 

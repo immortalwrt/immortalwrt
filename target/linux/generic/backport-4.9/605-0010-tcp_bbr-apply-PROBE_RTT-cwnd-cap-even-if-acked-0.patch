@@ -1,0 +1,41 @@
+From 3638356eff0cedaae1ad779c0920662ab068e312 Mon Sep 17 00:00:00 2001
+From: Kevin Yang <yyd@google.com>
+Date: Wed, 22 Aug 2018 17:43:16 -0400
+Subject: [PATCH] BACKPORT: tcp_bbr: apply PROBE_RTT cwnd cap even if acked==0
+
+This commit fixes a corner case where TCP BBR would enter PROBE_RTT
+mode but not reduce its cwnd. If a TCP receiver ACKed less than one
+full segment, the number of delivered/acked packets was 0, so that
+bbr_set_cwnd() would short-circuit and exit early, without cutting
+cwnd to the value we want for PROBE_RTT.
+
+The fix is to instead make sure that even when 0 full packets are
+ACKed, we do apply all the appropriate caps, including the cap that
+applies in PROBE_RTT mode.
+
+Fixes: 0f8782ea1497 ("tcp_bbr: add BBR congestion control")
+Signed-off-by: Kevin Yang <yyd@google.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Reviewed-by: Yuchung Cheng <ycheng@google.com>
+Reviewed-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Albert I <kras@raphielgang.org>
+---
+ net/ipv4/tcp_bbr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -390,10 +390,10 @@ static void bbr_set_cwnd(struct sock *sk
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct bbr *bbr = inet_csk_ca(sk);
+-	u32 cwnd = 0, target_cwnd = 0;
++	u32 cwnd = tp->snd_cwnd, target_cwnd = 0;
+ 
+ 	if (!acked)
+-		return;
++		goto done;  /* no packet fully ACKed; just apply caps */
+ 
+ 	if (bbr_set_cwnd_to_recover_or_restore(sk, rs, acked, &cwnd))
+ 		goto done;

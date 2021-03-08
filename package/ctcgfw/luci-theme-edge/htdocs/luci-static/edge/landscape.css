@@ -4,12 +4,13 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 }
 #CrossFade img {
   position: absolute;
   min-width: 100%;
   min-height: 100%;
-  height: auto;
+  width:100%;
   background: #fff;
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
