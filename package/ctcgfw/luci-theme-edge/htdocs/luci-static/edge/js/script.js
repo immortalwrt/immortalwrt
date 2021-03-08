@@ -317,5 +317,8 @@ $("input[type='checkbox']").filter(function () {
 var mutationObserver = new MutationObserver(callback);
  mutationObserver.observe($("body")[0], options);
  $(".cbi-value").has("textarea").css("background","none");
+if(document.body.scrollHeight > window.innerHeight){
+	$(".cbi-page-actions.control-group").addClass("fixed")
+}
 })(jQuery);
 });
