@@ -90,14 +90,14 @@ define Download/GN_TOOL
 	HASH:=9d61dcab3814868786768c9dfab71e0cd850a61dbad9a049536d2f1aae784fe4
 endef
 
-PGO_VER:=4324-1610733451-8576f5ff23113bddfb13d417df9ef2a9be1f740d
+PGO_VER:=4389-1614333145-3fb545b30f8abc065d64d3b5af88abd66c7abb5e
 PGO_FILE:=chrome-linux-$(PGO_VER).profdata
 define Download/PGO_PROF
 	URL:=https://storage.googleapis.com.cnpmjs.org/chromium-optimization-profiles/pgo_profiles \
 	     https://storage.googleapis.com/chromium-optimization-profiles/pgo_profiles
 	URL_FILE:=$(PGO_FILE)
 	FILE:=$(PGO_FILE)
-	HASH:=82e03005e7fb7810a2db7eb9a07bde4c19742ac0b4709ef9e734678d155c04fc
+	HASH:=2dafccee5abb30bcc2dc627cfd8af203cac17b522f66e3e4a90301a70d237ce1
 endef
 
 define Build/Prepare
