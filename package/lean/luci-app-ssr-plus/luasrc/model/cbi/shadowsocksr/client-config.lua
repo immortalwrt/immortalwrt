@@ -256,7 +256,7 @@ o.rmempty = true
 o:depends({type = "v2ray", v2ray_protocol = "shadowsocks"})
 
 -- Shadowsocks Plugin
-o = s:option(ListValue, "plugin", translate("Obfs"))
+o = s:option(Value, "plugin", translate("Obfs"))
 o:value("none", translate("None"))
 if is_finded("obfs-local") then
 	o:value("obfs-local", translate("simple-obfs"))
