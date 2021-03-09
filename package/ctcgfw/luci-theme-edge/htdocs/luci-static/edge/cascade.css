@@ -384,12 +384,11 @@ h5,
 h6 {
 	font-family: inherit;
 	font-weight: normal;
-	line-height: 1.1 !important;
+	line-height: 1.1rem;
 	color: inherit;
 }
 
 html {
-	overflow-y: hidden;
 	-webkit-text-size-adjust: 100%;
 	-ms-text-size-adjust: 100%;
 }
@@ -402,7 +401,6 @@ body {
 
 html,
 body {
-	height: 100%;
 	margin: 0;
 	padding: 0;
 	overflow-x: hidden;
@@ -1461,7 +1459,7 @@ button:hover,
 	font-weight: normal;
 	color: #fff;
 	border: none;
-	background-color: #00CFDD !important;
+	background-color: #23bd70 !important;
 }
 /* green */
 .cbi-button-success,
@@ -1534,12 +1532,6 @@ ul.tabs,.tabmenu .tabs,#tabmenu .tabs,ul.cbi-tabmenu {
 	background-color: #fff;
 	padding-top: 1rem;
 }
-
-#packages{
-	margin-left: -2%;
-    width: 105%;
-}
-
 .cbi-tabmenu > li:hover {
 	background-color: rgba(246,178,181,0.2);
 }
@@ -2679,6 +2671,7 @@ input[name="nslookup"] {
 .node-main-login .main .main-right #maincontent {
 	height: 100%;
 	padding-top: 23vh;
+	padding-bottom:1rem;
 	margin-top: 0rem;
 	background-color: transparent !important;
 	text-align: center;
@@ -3611,16 +3604,12 @@ display:none !important;
 	background-color: #475F7B;
 }
 
-.waves-input-wrapper {
-	background-color: #475F7B;
-}
-
 .cbi-button,.btn {
-	background-color: #00CFDD;
+	background-color: #23bd70;
 }
 
 .cbi-button.reconnect {
-	background-color: #00CFDD !important;
+	background-color: #23bd70 !important;
 }
 
 .cpu .cbi-progressbar > div {
@@ -3973,11 +3962,6 @@ i input {
 	flex-basis: auto !important;
 }
 
-.cbi-map >.cbi-section .cbi-section-table,.container .cbi-tabmenu,.container #tabmenu,.cbi-map >.cbi-section .table {
-	margin-left: -2%;
-    width: 105%;
-}
-
 .admin-status-overview h2.content {
 	display: none;
 }
@@ -4023,9 +4007,8 @@ i input {
 	min-width: 5rem !important;
 }
 
-#cbi-passwall .status .red, #cbi-passwall .status .green {
-	font-size: 0.83rem !important;
-	line-height: 2rem;
+#cbi-passwall .block h4 {
+	padding:0;
 }
 
 .waves-input-wrapper .waves-button-input {
@@ -4078,8 +4061,11 @@ div[id^="cbi-unblockmusic"] .cbi-button {
 	padding: 0 2rem;
 }
 
-.cbi-section-table .tr>.td:last-child,#packages .tr>.td:last-child{
+#packages .tr>.td:last-child{
 	padding-right:3%;
+}
+.cbi-section-table .tr>.td:last-child{
+	padding-right:2rem;
 }
 
 .chromeframe {
@@ -4112,4 +4098,7 @@ div[id^="cbi-unblockmusic"] .cbi-button {
 }
 table.interfaces .th{
 	padding:1.1em 0.5rem !important;
+}
+.cbi-value>.cbi-value-field>div:first-child+br{
+display:none;
 }

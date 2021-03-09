@@ -351,4 +351,7 @@ $("select,input").filter(function () {
 });
 	}, 0);
 	$(".cbi-value").has("textarea").css("background","none");
+if(document.body.scrollHeight > window.innerHeight){
+	$(".cbi-page-actions.control-group").addClass("fixed")
+}
 })(jQuery);
