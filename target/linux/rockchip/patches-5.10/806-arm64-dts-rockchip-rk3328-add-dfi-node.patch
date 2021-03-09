@@ -11,8 +11,8 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -995,6 +995,13 @@
- 		status = "disabled";
+@@ -1021,6 +1021,13 @@
+ 		};
  	};
  
 +	dfi: dfi@ff790000 {
