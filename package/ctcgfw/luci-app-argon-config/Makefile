@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-argon-config
-PKG_VERSION:=0.7
-PKG_RELEASE:=beta
+PKG_VERSION:=0.9
+PKG_RELEASE:=20210309
 
 LUCI_TITLE:=LuCI page for Argon Config
 LUCI_DEPENDS:=+luci-theme-argon

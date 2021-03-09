@@ -23,6 +23,7 @@ if nxfs.access('/etc/config/argon') then
 	blur_opacity = uci:get_first('argon', 'global', 'transparency')
 	blur_opacity_dark = uci:get_first('argon', 'global', 'transparency_dark')
 	mode = uci:get_first('argon', 'global', 'mode')
+	bing_background = uci:get_first('argon', 'global', 'bing_background')
 end
 
 function glob(...)
@@ -49,10 +50,16 @@ local transparency_sets = {
 }
 
 -- [[ 模糊设置 ]]--
-br = SimpleForm('config', translate('Argon Config'), translate('Here you can set the blur and transparency of the login page of argon theme, and manage the background pictures and videos.'))
+br = SimpleForm('config', translate('Argon Config'), translate('Here you can set the blur and transparency of the login page of argon theme, and manage the background pictures and videos.[Chrome is recommended]'))
 br.reset = false
 br.submit = false
-s = br:section(SimpleSection)
+s = br:section(SimpleSection) 
+
+o = s:option(ListValue, 'bing_background', translate('Wallpaper Source'))
+o:value('0', translate('Built-in'))
+o:value('1', translate('Bing Wallpapers'))
+o.default = bing_background
+o.rmempty = false
 
 o = s:option(ListValue, 'mode', translate('Theme mode'))
 o:value('normal', translate('Follow System'))
@@ -63,7 +70,7 @@ o.rmempty = false
 o.description = translate('You can choose Theme color mode here')
 
 o = s:option(Value, 'primary', translate('[Light mode] Primary Color'), translate('A HEX Color ; ( Default: #5e72e4 )'))
-o.value = primary
+o.default = primary
 o.datatype = ufloat
 o.rmempty = false
 
@@ -78,12 +85,12 @@ o.datatype = ufloat
 o.rmempty = false
 
 o = s:option(Value, 'blur', translate('[Light mode] Frosted Glass Radius'), translate('Larger value will more blurred ; ( Suggest:  clear: 1 or blur preset: 10 )'))
-o.value = blur_radius
+o.default = blur_radius
 o.datatype = ufloat
 o.rmempty = false
 
 o = s:option(Value, 'dark_primary', translate('[Dark mode] Primary Color'), translate('A HEX Color ; ( Default: #483d8b )'))
-o.value = dark_primary
+o.default = dark_primary
 o.datatype = ufloat
 o.rmempty = false
 
@@ -96,7 +103,7 @@ o.datatype = ufloat
 o.rmempty = false
 
 o = s:option(Value, 'blur_dark', translate('[Dark mode] Frosted Glass Radius'), translate('Larger value will more blurred ; ( Suggest:  clear: 1 or blur preset: 10 )'))
-o.value = blur_radius_dark
+o.default = blur_radius_dark
 o.datatype = ufloat
 o.rmempty = false
 
