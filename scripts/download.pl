@@ -197,7 +197,7 @@ foreach my $mirror (@ARGV) {
 	} elsif ($mirror =~ /^\@OPENWRT$/) {
 		# use OpenWrt source server directly
 	} elsif ($mirror =~ /^\@APACHE\/(.+)$/) {
-		push @mirrors, "https://mirrors.cloud.tencent.com/apache/$1";
+		push @mirrors, "https://mirrors.tencent.com/apache/$1";
 		push @mirrors, "https://mirrors.aliyun.com/apache/$1";
 		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/apache/$1";
 		push @mirrors, "https://mirrors.ustc.edu.cn/apache/$1";
@@ -215,12 +215,13 @@ foreach my $mirror (@ARGV) {
 		my $i = 0;
 		# replace the 2nd '/' with '@' for jsDelivr mirror
 		push @mirrors, "https://cdn.jsdelivr.net/gh/". $dir =~ s{\/}{++$i == 2 ? '@' : $&}ger;
+		push @mirrors, "https://raw.sevencdn.com/$dir";
 		# give github a few more tries (different mirrors)
 		for (1 .. 5) {
 			push @mirrors, "https://raw.githubusercontent.com/$dir";
 		}
 	} elsif ($mirror =~ /^\@GNU\/(.+)$/) {
-		push @mirrors, "https://mirrors.cloud.tencent.com/gnu/$1";
+		push @mirrors, "https://mirrors.tencent.com/gnu/$1";
 		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/gnu/$1";
 		push @mirrors, "https://mirrors.cqu.edu.cn/gnu/$1";
 		push @mirrors, "https://mirrors.ustc.edu.cn/gnu/$1";
