@@ -10,19 +10,19 @@
 
 include $(TOPDIR)/rules.mk
 
-QT5_VERSION_MAJOR_MINOR:=5.13
+QT5_VERSION_MAJOR_MINOR:=5.15
 QT5_VERSION_PATCH:=2
 
 PKG_NAME:=qt5
 PKG_VERSION:=$(QT5_VERSION_MAJOR_MINOR)$(if $(QT5_VERSION_PATCH),.$(QT5_VERSION_PATCH))
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=qt-everywhere-src-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=https://mirrors.cloud.tencent.com/qt/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
+PKG_SOURCE_URL:=https://mirrors.tencent.com/qt/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
 		https://mirrors.tuna.tsinghua.edu.cn/qt/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
 		https://mirrors.ustc.edu.cn/qtproject/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
 		http://download.qt-project.org/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/
-PKG_HASH:=55e8273536be41f4f63064a79e552a22133848bb419400b6fa8e9fc0dc05de08
+PKG_HASH:=3a530d1b243b5dec00bc54937455471aaa3e56849d2593edb8ded07228202240
 
 PKG_BUILD_DIR=$(BUILD_DIR)/qt-everywhere-src-$(PKG_VERSION)
 
@@ -66,7 +66,7 @@ endef
 define Package/qt5-sql
 	$(call Package/qt5/Default)
 	TITLE+=sql
-	DEPENDS+=+qt5-core
+	DEPENDS+=+qt5-core +libsqlite3
 endef
 
 define Package/qt5-xml
@@ -90,6 +90,8 @@ CONFIGURE_ARGS = \
 		-system-pcre \
 		-system-zlib \
 		-openssl-runtime \
+		-sql-sqlite \
+		-sqlite \
 		-no-cups \
 		-no-freetype \
 		-no-harfbuzz \
@@ -116,9 +118,7 @@ CONFIGURE_ARGS = \
 		-no-sql-oci \
 		-no-sql-odbc \
 		-no-sql-psql \
-		-no-sql-sqlite \
 		-no-sql-sqlite2 \
-		-no-sqlite \
 		-no-sql-tds \
 		-no-strip \
 		-no-xcb \
@@ -186,8 +186,9 @@ define Package/qt5-network/install
 endef
 
 define Package/qt5-sql/install
-	$(INSTALL_DIR) $(1)/usr/lib/
+	$(INSTALL_DIR) $(1)/usr/lib/Qt/plugins/sqldrivers
 	$(CP) $(PKG_BUILD_DIR)/qtbase/lib/libQt5Sql.so* $(1)/usr/lib/
+	$(CP) $(PKG_BUILD_DIR)/qtbase/plugins/sqldrivers/*.so $(1)/usr/lib/Qt/plugins/sqldrivers/
 endef
 
 define Package/qt5-xml/install
