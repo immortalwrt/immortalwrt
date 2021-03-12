@@ -149,7 +149,7 @@ end
 if is_finded("ssr-redir") then
 	o:value("ssr", translate("ShadowsocksR"))
 end
-if is_finded("ss-redir") then
+if is_finded("sslocal") or is_finded("ss-redir") then
 	o:value("ss", translate("Shadowsocks New Version"))
 end
 if is_finded("trojan") then
