@@ -339,7 +339,10 @@ start_udp() {
 	case "$type" in
 	ss | ssr)
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_port
-		ln_start_bin $(first_type ${type}-redir) ${type}-redir -c $udp_config_file -U
+		ss_program="$(first_type ${type}local ${type}-redir)"
+		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
+			ss_extra_arg="--protocol redir -u" || ss_extra_arg="-U"
+		ln_start_bin $ss_program ${type}-redir -c $udp_config_file $ss_extra_arg
 		echolog "UDP TPROXY Relay:$(get_name $type) Started!"
 		;;
 	v2ray)
@@ -380,12 +383,14 @@ start_shunt() {
 	case "$type" in
 	ss | ssr)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
-		ln_start_bin $(first_type ${type}-redir) ${type}-redir -c $shunt_config_file
+		ss_program="$(first_type ${type}local ${type}-redir)"
+		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && ss_extra_arg="--protocol redir"
+		ln_start_bin $ss_program ${type}-redir -c $shunt_config_file $ss_extra_arg
 		if [ -n "$tmp_local_port" ]; then
 			local tmp_port=$tmp_local_port
 		else
 			local tmp_port=$tmp_shunt_local_port
-			ln_start_bin $(first_type ${type}-local) ${type}-local -c $shunt_dns_config_file
+			ln_start_bin $(first_type ${type}local ${type}-local) ${type}-local -c $shunt_dns_config_file
 		fi
 		ln_start_bin $(first_type dns2socks) dns2socks 127.0.0.1:$tmp_port 8.8.8.8:53 127.0.0.1:$tmp_shunt_dns_port -q
 		echolog "shunt:$(get_name $type) Started!"
@@ -465,7 +470,10 @@ start_local() {
 	case "$type" in
 	ss | ssr)
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
-		ln_start_bin $(first_type ${type}-local) ${type}-local -c $local_config_file -u
+		ss_program="$(first_type ${type}local ${type}-redir)"
+		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
+			ss_extra_arg="-U" || ss_extra_arg="-u"
+		ln_start_bin $ss_program ${type}-local -c $local_config_file $ss_extra_arg
 		echolog "Global_Socks5:$(get_name $type) Started!"
 		;;
 	v2ray)
@@ -525,8 +533,11 @@ Start_Run() {
 	case "$type" in
 	ss | ssr)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
+		ss_program="$(first_type ${type}local ${type}-redir)"
+		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
+			{ ss_extra_arg="--protocol redir"; case ${ARG_OTA} in '-u') ARG_OTA='-U';; '-U') ARG_OTA='-u';; esac; }
 		for i in $(seq 1 $threads); do
-			ln_start_bin "$(first_type ${type}-redir)" ${type}-redir -c $tcp_config_file $ARG_OTA
+			ln_start_bin "$ss_program" ${type}-redir -c $tcp_config_file $ARG_OTA $ss_extra_arg
 		done
 		echolog "Main node:$(get_name $type) $threads Threads Started!"
 		;;

@@ -6,3 +6,4 @@ config global
 	option transparency '0.5'
 	option transparency_dark '0.5'
 	option mode 'normal'
+	option bing_background '0'
