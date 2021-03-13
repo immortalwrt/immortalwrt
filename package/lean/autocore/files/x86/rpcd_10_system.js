@@ -1,4 +1,5 @@
 'use strict';
+'require baseclass';
 'require fs';
 'require rpc';
 
@@ -27,7 +28,7 @@ var callCPUUsage = rpc.declare({
 	method: 'getCPUUsage'
 });
 
-return L.Class.extend({
+return baseclass.extend({
 	title: _('System'),
 
 	load: function() {
@@ -89,7 +90,7 @@ return L.Class.extend({
 		var table = E('table', { 'class': 'table' });
 
 		for (var i = 0; i < fields.length; i += 2) {
-			table.appendChild(E('div', { 'class': 'tr' }, [
+			table.appendChild(E('tr', { 'class': 'tr' }, [
 				E('td', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
 				E('td', { 'class': 'td left' }, [ (fields[i + 1] != null) ? fields[i + 1] : '?' ])
 			]));
