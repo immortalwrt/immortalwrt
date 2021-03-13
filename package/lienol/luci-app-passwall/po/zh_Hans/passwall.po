@@ -532,6 +532,9 @@ msgstr "选中后保存应用后即使用tcping替换ping检测节点"
 msgid "Concise display nodes"
 msgstr "简洁显示节点"
 
+msgid "Show server address and port"
+msgstr "显示服务器地址和端口"
+
 msgid "Apply"
 msgstr "应用"
 

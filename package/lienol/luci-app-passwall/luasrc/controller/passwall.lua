@@ -292,7 +292,7 @@ function delete_select_nodes()
 		ucic:delete(appname, w)
 	end)
 	ucic:commit(appname)
-	luci.sys.call("/etc/init.d/" .. appname .. " restart")
+	luci.sys.call("/etc/init.d/" .. appname .. " restart > /dev/null 2>&1 &")
 end
 
 function check_port()
