@@ -90,7 +90,7 @@ return baseclass.extend({
 		var table = E('table', { 'class': 'table' });
 
 		for (var i = 0; i < fields.length; i += 2) {
-			table.appendChild(E('div', { 'class': 'tr' }, [
+			table.appendChild(E('tr', { 'class': 'tr' }, [
 				E('td', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
 				E('td', { 'class': 'td left' }, [ (fields[i + 1] != null) ? fields[i + 1] : '?' ])
 			]));
