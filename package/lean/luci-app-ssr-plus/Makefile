@@ -58,7 +58,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust
 	bool "Include Shadowsocks Rust (AEAD cipher only)"
 	depends on aarch64||arm||i386||mips||mipsel||x86_64
-	default y if aarch64||x86_64
+	default y if aarch64
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR
 	bool "Include ShadowsocksR Libev"
