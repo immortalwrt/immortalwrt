@@ -149,7 +149,7 @@ end
 if is_finded("ssr-redir") then
 	o:value("ssr", translate("ShadowsocksR"))
 end
-if is_finded("ss-redir") then
+if is_finded("sslocal") or is_finded("ss-redir") then
 	o:value("ss", translate("Shadowsocks New Version"))
 end
 if is_finded("trojan") then
@@ -256,7 +256,7 @@ o.rmempty = true
 o:depends({type = "v2ray", v2ray_protocol = "shadowsocks"})
 
 -- Shadowsocks Plugin
-o = s:option(ListValue, "plugin", translate("Obfs"))
+o = s:option(Value, "plugin", translate("Obfs"))
 o:value("none", translate("None"))
 if is_finded("obfs-local") then
 	o:value("obfs-local", translate("simple-obfs"))

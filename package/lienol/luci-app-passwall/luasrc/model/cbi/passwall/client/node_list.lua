@@ -7,15 +7,15 @@ m = Map(appname)
 s = m:section(TypedSection, "global_other")
 s.anonymous = true
 
-o = s:option(MultiValue, "nodes_ping", "Ping")
+o = s:option(MultiValue, "nodes_ping", " ")
 o:value("auto_ping", translate("Auto Ping"), translate("This will automatically ping the node for latency"))
 o:value("tcping", translate("Tcping"), translate("This will use tcping replace ping detection of node"))
+o:value("info", translate("Show server address and port"), translate("Show server address and port"))
 
 -- [[ Add the node via the link ]]--
 s:append(Template(appname .. "/node_list/link_add_node"))
 
 local nodes_ping = m:get("@global_other[0]", "nodes_ping") or ""
-local nodes_display = m:get("@global_other[0]", "nodes_display") or ""
 
 -- [[ Node List ]]--
 s = m:section(TypedSection, "nodes")
@@ -38,58 +38,58 @@ end
 
 s.sortable = true
 -- 简洁模式
-if true then
-    o = s:option(DummyValue, "add_mode", "")
-    o.cfgvalue = function(t, n)
-        local v = Value.cfgvalue(t, n)
-        if v and v ~= '' then
-            local group = m:get(n, "group") or ""
-            if group ~= "" then
-                v = v .. " " .. group
-            end
-            return v
-        else
-            return ''
-        end
-    end
-    o = s:option(DummyValue, "remarks", translate("Remarks"))
-    o.rawhtml = true
-    o.cfgvalue = function(t, n)
-        local str = ""
-        local is_sub = m:get(n, "is_sub") or ""
+o = s:option(DummyValue, "add_mode", "")
+o.cfgvalue = function(t, n)
+    local v = Value.cfgvalue(t, n)
+    if v and v ~= '' then
         local group = m:get(n, "group") or ""
-        local remarks = m:get(n, "remarks") or ""
-        local type = m:get(n, "type") or ""
-        str = str .. string.format("<input type='hidden' id='cbid.%s.%s.type' value='%s'/>", appname, n, type)
-        if type == "Xray" then
-            local protocol = m:get(n, "protocol")
-            if protocol == "_balancing" then
-                protocol = "负载均衡"
-            elseif protocol == "_shunt" then
-                protocol = "分流"
-            elseif protocol == "vmess" then
-                protocol = "VMess"
-            elseif protocol == "vless" then
-                protocol = "VLESS"
-            else
-                protocol = protocol:gsub("^%l",string.upper)
-            end
-            type = type .. " " .. protocol
+        if group ~= "" then
+            v = v .. " " .. group
         end
-        local address = m:get(n, "address") or ""
-        local port = m:get(n, "port") or ""
-        str = str .. translate(type) .. "：" .. remarks
-        if address ~= "" and port ~= "" then
+        return v
+    else
+        return ''
+    end
+end
+o = s:option(DummyValue, "remarks", translate("Remarks"))
+o.rawhtml = true
+o.cfgvalue = function(t, n)
+    local str = ""
+    local is_sub = m:get(n, "is_sub") or ""
+    local group = m:get(n, "group") or ""
+    local remarks = m:get(n, "remarks") or ""
+    local type = m:get(n, "type") or ""
+    str = str .. string.format("<input type='hidden' id='cbid.%s.%s.type' value='%s'/>", appname, n, type)
+    if type == "Xray" then
+        local protocol = m:get(n, "protocol")
+        if protocol == "_balancing" then
+            protocol = "负载均衡"
+        elseif protocol == "_shunt" then
+            protocol = "分流"
+        elseif protocol == "vmess" then
+            protocol = "VMess"
+        elseif protocol == "vless" then
+            protocol = "VLESS"
+        else
+            protocol = protocol:gsub("^%l",string.upper)
+        end
+        type = type .. " " .. protocol
+    end
+    local address = m:get(n, "address") or ""
+    local port = m:get(n, "port") or ""
+    str = str .. translate(type) .. "：" .. remarks
+    if address ~= "" and port ~= "" then
+        if nodes_ping:find("info") then
             if datatypes.ip6addr(address) then
                 str = str .. string.format("（[%s]:%s）", address, port)
             else
                 str = str .. string.format("（%s:%s）", address, port)
             end
-            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.address' value='%s'/>", appname, n, address)
-            str = str .. string.format("<input type='hidden' id='cbid.%s.%s.port' value='%s'/>", appname, n, port)
         end
-        return str
+        str = str .. string.format("<input type='hidden' id='cbid.%s.%s.address' value='%s'/>", appname, n, address)
+        str = str .. string.format("<input type='hidden' id='cbid.%s.%s.port' value='%s'/>", appname, n, port)
     end
+    return str
 end
 
 ---- Ping
