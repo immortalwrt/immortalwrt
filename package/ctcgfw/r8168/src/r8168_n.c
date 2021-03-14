@@ -24441,6 +24441,7 @@ rtl8168_init_software_variable(struct net_device *dev)
                 tp->NotWrMcuPatchCode = TRUE;
         }
 
+        RTL_W16(tp, CustomLED, 0x870);
         tp->NicCustLedValue = RTL_R16(tp, CustomLED);
 
         rtl8168_get_hw_wol(dev);
