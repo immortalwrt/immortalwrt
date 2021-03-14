@@ -71,6 +71,7 @@ platform_do_upgrade() {
 	netgear,wac104|\
 	netgear,wac124|\
 	netis,wf2881|\
+	sercomm,na502|\
 	xiaomi,mir3g|\
 	xiaomi,mir3p|\
 	xiaomi,mir4|\
