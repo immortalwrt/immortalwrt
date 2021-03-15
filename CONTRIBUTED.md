@@ -65,5 +65,8 @@ luci-proto-modemmanager source: [nickberry17/luci-proto-modemmanager](https://gi
 luci-theme-infinityfreedom source: [xiaoqingfengATGH/luci-theme-infinityfreedom](https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
+## Download Mirrors
+[182.140.223.146](http://182.140.223.146/dl) by [hzjnet@163.com](mailto://hzjnet@163.com)
+
 ## License
 ### Depend on their own License.
