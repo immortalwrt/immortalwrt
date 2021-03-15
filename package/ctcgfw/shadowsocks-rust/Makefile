@@ -67,8 +67,6 @@ include $(INCLUDE_DIR)/package.mk
 TAR_CMD:=$(HOST_TAR) -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
 
 define Package/shadowsocks-rust/Default
-  PKG_CONFIG_DEPENDS+=CONFIG_SHADOWSOCKS_RUST_$(1)_COMPRESS_UPX
-
   define Package/shadowsocks-rust-$(1)
     SECTION:=net
     CATEGORY:=Network
@@ -78,19 +76,12 @@ define Package/shadowsocks-rust/Default
     DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64) @USE_MUSL
   endef
 
-  define Package/shadowsocks-rust-$(1)/config
-    config SHADOWSOCKS_RUST_$(1)_COMPRESS_UPX
-      bool "Compress $(1) with UPX"
-      default y
-  endef
-
   define Package/shadowsocks-rust-$(1)/install
 	$$(INSTALL_DIR) $$(1)/usr/bin
 	$$(INSTALL_BIN) $$(PKG_BUILD_DIR)/$(1) $$(1)/usr/bin
   endef
 endef
 
-PKG_CONFIG_DEPENDS:=
 SHADOWSOCKS_COMPONENTS:=sslocal ssmanager ssserver ssurl
 define shadowsocks-rust/templates
   $(foreach component,$(SHADOWSOCKS_COMPONENTS),
@@ -100,11 +91,6 @@ endef
 $(eval $(call shadowsocks-rust/templates))
 
 define Build/Compile
-$(foreach component,$(SHADOWSOCKS_COMPONENTS),
-  ifneq ($(CONFIG_SHADOWSOCKS_RUST_$(component)_COMPRESS_UPX),)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/$(component)
-  endif
-)
 endef
 
 $(foreach component,$(SHADOWSOCKS_COMPONENTS), \
