@@ -14,7 +14,7 @@ PKG_VERSION:=2.0.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
-PKG_SOURCE_URL:=https://github.com/rclone/rclone-webui-react/releases/download/v$(PKG_VERSION)/currentbuild.zip?
+PKG_SOURCE_URL:=@GHREPO/rclone/rclone-webui-react/releases/download/v$(PKG_VERSION)/currentbuild.zip?
 PKG_HASH:=38ca0a73071b70d25ecc5995f0da912edd448669715c1b177a44fafa08460990
 
 PKG_LICENSE:=MIT

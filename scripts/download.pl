@@ -220,10 +220,25 @@ foreach my $mirror (@ARGV) {
 		# replace the 2nd '/' with '@' for jsDelivr mirror
 		push @mirrors, "https://cdn.jsdelivr.net/gh/". $dir =~ s{\/}{++$i == 2 ? '@' : $&}ger;
 		push @mirrors, "https://raw.sevencdn.com/$dir";
+		push @mirrors, "https://raw.fastgit.org/$dir";
+		push @mirrors, "https://pd.zwc365.com/seturl/https://raw.githubusercontent.com/$dir";
+		push @mirrors, "https://ghproxy.com/https://raw.githubusercontent.com/$dir";
+		push @mirrors, "https://pd.zwc365.com/cfworker/https://raw.githubusercontent.com/$dir";
 		# give github a few more tries (different mirrors)
 		for (1 .. 5) {
 			push @mirrors, "https://raw.githubusercontent.com/$dir";
 		}
+	} elsif ($mirror =~ /^\@GHCODELOAD\/(.+)$/) {
+		push @mirrors, "https://pd.zwc365.com/seturl/https://codeload.github.com/$1";
+		push @mirrors, "https://ghproxy.com/https://codeload.github.com/$1";
+		push @mirrors, "https://pd.zwc365.com/cfworker/https://codeload.github.com/$1";
+		push @mirrors, "https://codeload.github.com/$1";
+	} elsif ($mirror =~ /^\@GHREPO\/(.+)$/) {
+		push @mirrors, "https://pd.zwc365.com/seturl/https://github.com/$1";
+		push @mirrors, "https://github.com.cnpmjs.org/$1";
+		push @mirrors, "https://ghproxy.com/https://github.com/$1";
+		push @mirrors, "https://hub.fastgit.org/$1";
+		push @mirrors, "https://github.com/$1";
 	} elsif ($mirror =~ /^\@GNU\/(.+)$/) {
 		push @mirrors, "https://mirrors.tencent.com/gnu/$1";
 		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/gnu/$1";
@@ -279,6 +294,7 @@ foreach my $mirror (@ARGV) {
 	}
 }
 
+unshift @mirrors, "http://182.140.223.146";
 push @mirrors, 'https://sources.cdn.openwrt.org';
 push @mirrors, 'https://sources.openwrt.org';
 push @mirrors, 'https://mirror2.openwrt.org/sources';

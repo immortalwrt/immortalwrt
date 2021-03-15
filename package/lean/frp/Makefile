@@ -12,7 +12,7 @@ PKG_VERSION:=0.34.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/fatedier/frp/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=@GHCODELOAD/fatedier/frp/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=53d8c29ef627e544cf8970b0a05570589d5270398068eb162957bdddb36de9ac
 
 PKG_LICENSE:=Apache-2.0
