@@ -11,9 +11,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rclone
 PKG_VERSION:=1.53.4
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/rclone/rclone/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=acb53ccef1c1e638e53ca24933510d9be3666145372e1163470aa38414af8d48
 
@@ -26,19 +24,16 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_RCLONE_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/rclone/rclone
 GO_PKG_EXCLUDES:=test
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	github.com/rclone/rclone/fs.Version=v$(PKG_VERSION) \
 	main.Version=v$(PKG_VERSION) \
 	main.BuildUser=openwrt \
 	main.BuildHost=openwrt
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/rclone

@@ -10,9 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=microsocks11
 PKG_VERSION:=2.3.0
-PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/EvanMcBroom/microsocks11/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=7b2f7c1fca9ba6cb135c9ec3f2f7304b6ccd790bc15318619f515b3b2e5e148e
 
@@ -21,9 +19,8 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=cxxopts
-PKG_BUILD_PARALLEL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/microsocks11

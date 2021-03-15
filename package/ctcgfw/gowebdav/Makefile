@@ -10,9 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gowebdav
 PKG_VERSION:=0.0.2
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/1715173329/gowebdav/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=0a6a2af4f24905ffea247b6044d01129d938af4b3a256bf19b42c52bb452f947
 
@@ -23,13 +21,10 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_GOWEBDAV_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/1715173329/gowebdav
-GO_PKG_LDFLAGS:=-s -w
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/gowebdav
