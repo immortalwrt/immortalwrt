@@ -50,5 +50,8 @@ luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luc
 luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com/garypang13/luci-theme-edge).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
+## Download Mirrors
+[182.140.223.146](http://182.140.223.146/dl) by [hzjnet@163.com](mailto://hzjnet@163.com)
+
 ## License
 ### Depend on their own License.
