@@ -11,10 +11,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtar
 PKG_VERSION:=1.2.20
-PKG_RELEASE:=4
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/ElonH/libtar.git
+PKG_SOURCE_REPO:=ElonH/libtar
 PKG_SOURCE_DATE:=2020-03-08
 PKG_SOURCE_VERSION:=987a29eaf8c68f8a502dd3880c58e0e1ef99d6a7
 PKG_MIRROR_HASH:=7d9d7d8d33d39ac1e6a586361247f53a33ad0063c3940521b431a7d9b6170eac
@@ -24,10 +23,9 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
 PKG_FIXUP:=autoreconf
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 CONFIGURE_ARGS+= --enable-shared=yes --enable-static=no
 

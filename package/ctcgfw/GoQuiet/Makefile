@@ -10,7 +10,7 @@ PKG_NAME:=GoQuiet
 PKG_VERSION:=1.2.2
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/cbeuw/GoQuiet.git
+PKG_SOURCE_REPO:=cbeuw/GoQuiet
 PKG_SOURCE_VERSION:=013cdfdf72000dcd4691799c37a0cf960ab4c82f
 PKG_MIRROR_HASH:=c9c97463e5286e8ad10de5e86512b98f60672235c47cfd9696188a16496fc56c
 
@@ -18,18 +18,15 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_GQ_CLIENT_COMPRESS_UPX \
 	CONFIG_GQ_SERVER_COMPRESS_UPX
 
 GO_PKG:=github.com/cbeuw/GoQuiet
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION)
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/GoQuiet/template

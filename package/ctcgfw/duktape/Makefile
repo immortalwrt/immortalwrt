@@ -4,14 +4,14 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=duktape
 PKG_VERSION:=2.99.99-19cc8f5
-PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/svaarala/duktape.git
+PKG_SOURCE_REPO:=svaarala/duktape
 PKG_MIRROR_HASH:=7e9caaf9c7e82bc01f859019359b3a13fa038f0e5e82a6541687a30c1ccfa604
 PKG_SOURCE_VERSION:=19cc8f5bb855791ff55cbf60d2cea72df485e86f
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -27,9 +27,8 @@ PKG_BUILD_DEPENDS:=node/host
 
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
-PKG_BUILD_PARALLEL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/duktape
 	SECTION:=utils

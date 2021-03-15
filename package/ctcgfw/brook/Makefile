@@ -9,9 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=brook
 PKG_VERSION:=20210214
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/txthinking/brook/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=a8e2e989f6d09e36c1fbe8593404d53a0615dc93e91a0be94dda898f0d55ff1d
 
@@ -20,8 +18,6 @@ PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_BROOK_COMPRESS_GOPROXY \
@@ -29,9 +25,8 @@ PKG_CONFIG_DEPENDS:= \
 
 GO_PKG:=github.com/txthinking/brook
 GO_PKG_BUILD_PKG:=github.com/txthinking/brook/cli/brook
-GO_PKG_LDFLAGS:=-s -w
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/brook

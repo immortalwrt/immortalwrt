@@ -9,15 +9,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cups-bjnp
 PKG_VERSION:=2.0
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/cups-bjnp
 PKG_HASH:=2acb716680d66f1378cf8dcd45fedf7f72ccc9b66fa80214d6dcb042b5e3c9ab
 
 PKG_BUILD_DEPENDS:=cups
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/cups-bjnp
   SECTION:=net

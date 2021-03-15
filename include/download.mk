@@ -199,19 +199,23 @@ endef
 # Only intends to be called as a submethod from other DownloadMethod
 define DownloadMethod/rawgit
 	echo "Checking out files from the git repository..."; \
-	mkdir -p $(TMP_DIR)/dl && \
-	cd $(TMP_DIR)/dl && \
-	rm -rf $(SUBDIR) && \
-	[ \! -d $(SUBDIR) ] && \
-	git clone $(OPTS) $(URL) $(SUBDIR) && \
-	(cd $(SUBDIR) && git checkout $(VERSION) && \
-	git submodule update --init --recursive) && \
-	echo "Packing checkout..." && \
-	export TAR_TIMESTAMP=`cd $(SUBDIR) && git log -1 --format='@%ct'` && \
-	rm -rf $(SUBDIR)/.git && \
-	$(call dl_tar_pack,$(TMP_DIR)/dl/$(FILE),$(SUBDIR)) && \
-	mv $(TMP_DIR)/dl/$(FILE) $(DL_DIR)/ && \
-	rm -rf $(SUBDIR);
+	for eachurl in $(URL); \
+	do \
+		mkdir -p $(TMP_DIR)/dl && \
+		cd $(TMP_DIR)/dl && \
+		rm -rf $(SUBDIR) && \
+		[ \! -d $(SUBDIR) ] && \
+		git clone $(OPTS) $$$${eachurl} $(SUBDIR) && \
+		(cd $(SUBDIR) && git checkout $(VERSION) && \
+			git submodule update --init --recursive) && \
+		echo "Packing checkout..." && \
+		export TAR_TIMESTAMP=`cd $(SUBDIR) && git log -1 --format='@%ct'` && \
+		rm -rf $(SUBDIR)/.git && \
+		$(call dl_tar_pack,$(TMP_DIR)/dl/$(FILE),$(SUBDIR)) && \
+		mv $(TMP_DIR)/dl/$(FILE) $(DL_DIR)/ && \
+		rm -rf $(SUBDIR) && \
+		break; \
+	done;
 endef
 
 define DownloadMethod/bzr
