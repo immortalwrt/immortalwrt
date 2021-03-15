@@ -12,7 +12,7 @@ PKG_VERSION:=0.26.9
 PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/ehang-io/nps/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=@GHCODELOAD/ehang-io/nps/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=7df414180ed4f0049dc08f0e3c625a6de4ebed34da591515f9514b3763dd578d
 
 PKG_LICENSE:=Apache-2.0

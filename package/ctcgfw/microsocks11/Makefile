@@ -13,7 +13,7 @@ PKG_VERSION:=2.3.0
 PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/EvanMcBroom/microsocks11/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=@GHCODELOAD/EvanMcBroom/microsocks11/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=7b2f7c1fca9ba6cb135c9ec3f2f7304b6ccd790bc15318619f515b3b2e5e148e
 
 PKG_LICENSE:=MIT
