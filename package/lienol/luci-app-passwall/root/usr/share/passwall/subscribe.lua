@@ -8,6 +8,7 @@ require 'luci.model.uci'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
+local datatypes = require "luci.cbi.datatypes"
 local api = require "luci.model.cbi.passwall.api.api"
 local has_xray = api.is_finded("xray")
 
@@ -731,7 +732,7 @@ local function update_node(manual)
 		log("更新失败，没有可用的节点信息")
 		return
 	end
-	-- delet all for subscribe nodes
+	-- delete all for subscribe nodes
 	ucic2:foreach(application, uciType, function(node)
 		-- 如果是手动导入的节点就不参与删除
 		if manual == 0 and (node.is_sub or node.hashkey) and node.add_mode ~= '导入' then
@@ -785,8 +786,8 @@ local function update_node(manual)
 		]]--
 
 		ucic2:commit(application)
-		--luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
 	end
+	luci.sys.call("/etc/init.d/" .. application .. " restart > /dev/null 2>&1 &")
 end
 
 local function parse_link(raw, remark, manual)
@@ -848,9 +849,7 @@ local function parse_link(raw, remark, manual)
 					if (not manual and is_filter_keyword(result.remarks)) or
 						not result.address or
 						result.remarks == "NULL" or
-						result.address:match("[^0-9a-zA-Z%-%_%.%s]") or -- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
-						not result.address:find("%.") or -- 虽然没有.也算域，不过应该没有人会这样干吧
-						result.address:sub(#result.address) == "." -- 结尾是.
+						(not datatypes.hostname(result.address) and not (datatypes.ipmask4(result.address) or datatypes.ipmask6(result.address)))
 					then
 						log('丢弃过滤节点: ' .. result.type .. ' 节点, ' .. result.remarks)
 					else

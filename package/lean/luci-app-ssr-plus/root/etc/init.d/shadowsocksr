@@ -470,7 +470,7 @@ start_local() {
 	case "$type" in
 	ss | ssr)
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
-		ss_program="$(first_type ${type}local ${type}-redir)"
+		ss_program="$(first_type ${type}local ${type}-local)"
 		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
 			ss_extra_arg="-U" || ss_extra_arg="-u"
 		ln_start_bin $ss_program ${type}-local -c $local_config_file $ss_extra_arg

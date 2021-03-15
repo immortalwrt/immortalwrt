@@ -55,13 +55,14 @@ function get_args(arg, myarg)
 end
 
 function get_valid_nodes()
+    local nodes_ping = uci_get_type("global_other", "nodes_ping") or ""
     local nodes = {}
     uci:foreach(appname, "nodes", function(e)
         e.id = e[".name"]
         if e.type and e.remarks then
             if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt") then
-                e.remarks_name = "%s：[%s] " % {i18n.translatef(e.type .. e.protocol), e.remarks}
-                e.node_type = "special"
+                e["remark"] = "%s：[%s] " % {i18n.translatef(e.type .. e.protocol), e.remarks}
+                e["node_type"] = "special"
                 nodes[#nodes + 1] = e
             end
             if e.port and e.address then
@@ -81,9 +82,15 @@ function get_valid_nodes()
                         type2 = type2 .. " " .. protocol
                     end
                     if datatypes.ip6addr(address) then address2 = "[" .. address .. "]" end
-                    e.remarks_name = "%s：[%s] %s:%s" % {type2, e.remarks, address2, e.port}
+                    e["remark"] = "%s：[%s]" % {type2, e.remarks}
+                    if nodes_ping:find("info") then
+                        e["remark"] = "%s：[%s] %s:%s" % {type2, e.remarks, address2, e.port}
+                    end
                     if e.use_kcp and e.use_kcp == "1" then
-                    e.remarks_name = "%s+%s：[%s] %s" % {type2, "Kcptun", e.remarks, address2}
+                        e["remark"] = "%s+%s：[%s]" % {type2, "Kcptun", e.remarks}
+                        if nodes_ping:find("info") then
+                            e["remark"] = "%s+%s：[%s] %s" % {type2, "Kcptun", e.remarks, address2}
+                        end
                     end
                     e.node_type = "normal"
                     nodes[#nodes + 1] = e
