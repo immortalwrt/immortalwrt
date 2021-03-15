@@ -5,20 +5,19 @@
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=parted
 PKG_VERSION:=3.3
-PKG_RELEASE:=2
 
-PKG_SOURCE:=parted-$(PKG_VERSION).tar.xz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/parted
 PKG_HASH:=57e2b4bd87018625c515421d4524f6e3b55175b472302056391c5f7eccb83d44
 
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/parted
   SECTION:=utils

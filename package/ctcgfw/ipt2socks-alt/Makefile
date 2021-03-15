@@ -12,18 +12,16 @@ PKG_NAME:=ipt2socks-alt
 PKG_VERSION:=1.0.2
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/zfl9/ipt2socks/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=f247d72b61b1f40ce347904c43523bff257fc9f00ff269ecccf06f1d0f4b9d5e
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(firstword $(subst -, ,$(PKG_NAME)))-$(PKG_VERSION)
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILE:=LICENSE
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/ipt2socks-alt
 	SECTION:=net

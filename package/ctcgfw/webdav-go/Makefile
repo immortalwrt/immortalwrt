@@ -10,9 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=webdav-go
 PKG_VERSION:=4.0.0
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/hacdias/webdav/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=3a6754933cc138623830944cb1ce9151baebe780b8111415c2e0044970586ca5
 
@@ -26,13 +24,10 @@ PKG_CONFIG_DEPENDS:= \
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(firstword $(subst -, ,$(PKG_NAME)))-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/hacdias/webdav
-GO_PKG_LDFLAGS:=-s -w
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/webdav-go

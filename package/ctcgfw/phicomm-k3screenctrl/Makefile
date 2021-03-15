@@ -10,10 +10,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=phicomm-k3screenctrl
 PKG_VERSION:=1.0
-PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/lwz322/k3screenctrl.git
+PKG_SOURCE_REPO:=lwz322/k3screenctrl
 PKG_SOURCE_DATE:=2020-09-18
 PKG_SOURCE_VERSION:=d8896cfad4bdf39f58999f9420807f986300bada
 PKG_MIRROR_HASH:=9eab074f5ac366013d394be2c57905a8585439d1ca2a8b602a09a098a8aa8fb7
@@ -23,10 +22,9 @@ PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=Hamster Tian <haotia@gmail.com>
 
 PKG_FIXUP:=autoreconf
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 TARGET_CFLAGS+= -D_GNU_SOURCE
 

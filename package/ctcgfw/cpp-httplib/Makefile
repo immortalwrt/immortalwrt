@@ -11,9 +11,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cpp-httplib
 PKG_VERSION:=0.5.7
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/yhirose/cpp-httplib/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=27b7f6346bdeb1ead9d17bd7cea89d9ad491f50f0479081053cc6e5742a89e64
 
@@ -21,12 +19,10 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
-HOST_BUILD_PARALLEL:=1
-PKG_BUILD_PARALLEL:=1
 CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/host-build.mk
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/cpp-httplib

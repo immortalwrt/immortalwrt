@@ -1,17 +1,24 @@
+#
+# Copyright (C) 2021 ImmortalWrt
+# (https://immortalwrt.org)
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
 include $(TOPDIR)/rules.mk
-include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=open-app-filter
 PKG_VERSION:=5.0.1
-PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/destan19/OpenAppFilter.git
 PKG_SOURCE_PROTO:=git
+PKG_SOURCE_REPO:=destan19/OpenAppFilter
 PKG_SOURCE_DATE:=2021-03-08
 PKG_SOURCE_VERSION:=59aa2a1f40ebee65e48c7fd5d28d6c2706e60145
 PKG_MIRROR_HASH:=a969d5a5c16e418844a63fc6d23facb5ad0327d0bcadc72814bbecc2f9c4a099
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/kernel.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 RSTRIP:=:
 

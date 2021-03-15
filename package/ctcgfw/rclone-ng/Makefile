@@ -11,7 +11,6 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rclone-ng
 PKG_VERSION:=0.5.0
-PKG_RELEASE:=2
 
 PKG_SOURCE:=RcloneNg-v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHREPO/ElonH/RcloneNg/releases/download/v$(PKG_VERSION)/
@@ -21,7 +20,7 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 TAR_CMD:=$(HOST_TAR) -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
 

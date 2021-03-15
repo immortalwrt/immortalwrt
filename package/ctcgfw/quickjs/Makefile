@@ -10,7 +10,6 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=quickjs
 PKG_VERSION:=2020-11-08
-PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://bellard.org/quickjs/
@@ -20,10 +19,9 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/quickjs
 	SECTION:=lib

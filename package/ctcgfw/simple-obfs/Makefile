@@ -12,10 +12,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=simple-obfs
 PKG_VERSION:=0.0.5
-PKG_RELEASE:=6
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/shadowsocks/simple-obfs.git
+PKG_SOURCE_REPO:=shadowsocks/simple-obfs
 PKG_SOURCE_DATE:=2019-08-17
 PKG_SOURCE_VERSION:=486bebd9208539058e57e23a12f23103016e09b4
 PKG_MIRROR_HASH:=b1ae62a6826616b35b6aea0c6b2d55b5f36da96be0cd1c229c263b508d1aeef0
@@ -26,10 +25,9 @@ PKG_MAINTAINER:=Jian Chang <aa65535@live.com>
 
 PKG_BUILD_DEPENDS:=libev
 PKG_FIXUP:=autoreconf
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/simple-obfs/template
 	SECTION:=net

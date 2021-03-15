@@ -12,9 +12,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2ray-plugin
 PKG_VERSION:=4.36.2
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/teddysun/v2ray-plugin/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=70cf85958a5233c8798990f4b7de57ce6f2e9a4535345260df06a4962a21e85a
 
@@ -27,14 +25,11 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_V2RAY_PLUGIN_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/shadowsocks/v2ray-plugin
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.VERSION=v$(PKG_VERSION)
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/v2ray-plugin/config

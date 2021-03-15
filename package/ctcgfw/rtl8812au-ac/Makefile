@@ -12,10 +12,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8812au-ac
-PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8812au.git
 PKG_SOURCE_PROTO:=git
+PKG_SOURCE_REPO:=aircrack-ng/rtl8812au
 PKG_SOURCE_DATE:=2021-02-03
 PKG_SOURCE_VERSION:=b65dcf4105641716d16f3a6c96507fdd9c1862b4
 PKG_MIRROR_HASH:=5416d4a6e671c6b07f44f35fae54662baef71f448c4be4ade58bf7fc5ca4f192
@@ -24,12 +23,10 @@ PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Marty Jones <mj8263788@gmail.com>
 
-PKG_BUILD_PARALLEL:=1
-
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
 include $(INCLUDE_DIR)/kernel.mk
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define KernelPackage/rtl8812au-ac
   SUBMENU:=Wireless Drivers

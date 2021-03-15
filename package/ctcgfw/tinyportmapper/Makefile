@@ -9,18 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tinyPortMapper
 PKG_VERSION:=20200818.0
-PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/wangyu-/tinyPortMapper/tar.gz/$(PKG_VERSION)?
 PKG_HASH:=094aef3fa0646fe3d0418f87767c1dd24ba1a80518f1e8a7cae2783aed88e732
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Yu Wang
 
-PKG_BUILD_PARALLEL:=1
-
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/tinyPortMapper
   SECTION:=net
