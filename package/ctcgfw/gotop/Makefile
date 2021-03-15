@@ -13,7 +13,7 @@ PKG_VERSION:=4.1.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/xxxserxxx/gotop/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=@GHCODELOAD/xxxserxxx/gotop/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=314dcfc4b0faa0bb735e5fa84b2406492bf94f7948af43e2b9d2982d69d542ed
 
 PKG_LICENSE:=MIT

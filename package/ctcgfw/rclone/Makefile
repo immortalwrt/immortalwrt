@@ -14,7 +14,7 @@ PKG_VERSION:=1.53.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/rclone/rclone/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=@GHCODELOAD/rclone/rclone/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=acb53ccef1c1e638e53ca24933510d9be3666145372e1163470aa38414af8d48
 
 PKG_LICENSE:=MIT
