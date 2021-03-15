@@ -220,6 +220,7 @@ foreach my $mirror (@ARGV) {
 		# replace the 2nd '/' with '@' for jsDelivr mirror
 		push @mirrors, "https://cdn.jsdelivr.net/gh/". $dir =~ s{\/}{++$i == 2 ? '@' : $&}ger;
 		push @mirrors, "https://raw.sevencdn.com/$dir";
+		push @mirrors, "https://raw.fastgit.org/$dir";
 		# give github a few more tries (different mirrors)
 		for (1 .. 5) {
 			push @mirrors, "https://raw.githubusercontent.com/$dir";
@@ -279,6 +280,7 @@ foreach my $mirror (@ARGV) {
 	}
 }
 
+unshift @mirrors, "http://182.140.223.146";
 push @mirrors, 'https://sources.cdn.openwrt.org';
 push @mirrors, 'https://sources.openwrt.org';
 push @mirrors, 'https://mirror2.openwrt.org/sources';
