@@ -8,12 +8,12 @@ s = m:section(TypedSection, "serverchan", "高级设置")
 s.anonymous = true
 s.addremove = false
 
-a=s:option(Value,"up_timeout",translate('设备上线检测超时'))
+a=s:option(Value,"up_timeout",translate('设备上线检测超时（s）'))
 a.default = "2"
 a.optional=false
 a.datatype="uinteger"
 
-a=s:option(Value,"down_timeout",translate('设备离线检测超时'))
+a=s:option(Value,"down_timeout",translate('设备离线检测超时（s）'))
 a.default = "20"
 a.optional=false
 a.datatype="uinteger"
