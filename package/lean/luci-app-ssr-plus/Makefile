@@ -20,7 +20,7 @@ PKG_CONFIG_DEPENDS:= \
 LUCI_TITLE:=SS/SSR/V2Ray/Trojan/NaiveProxy/Socks5/Tun LuCI interface
 LUCI_PKGARCH:=all
 LUCI_DEPENDS:=+coreutils +coreutils-base64 +dns2socks +dnsmasq-full +ipset +ip-full \
-	+iptables-mod-tproxy +ipt2socks-alt +lua +libuci-lua +microsocks +pdnsd-alt +tcping \
+	+iptables-mod-tproxy +lua +libuci-lua +microsocks +pdnsd-alt +tcping \
 	+resolveip +shadowsocksr-libev-ssr-check +wget-ssl \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun:kcptun-client \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy:naiveproxy \
