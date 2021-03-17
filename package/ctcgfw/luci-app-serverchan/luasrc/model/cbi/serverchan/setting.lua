@@ -25,33 +25,23 @@ s.anonymous = true
 
 --基本设置
 a=s:taboption("basic", Flag,"serverchan_enable",translate("启用"))
-a.default=0
 a.rmempty = true
 
-a=s:taboption("basic", ListValue,"send_tg",translate("推送模式"))
-a.default=""
+a=s:taboption("basic", Value,"sckey",translate('微信推送/新旧共用'), translate("").."<br>旧版调用代码<a href='http://sc.ftqq.com' target='_blank'>点击这里</a><br>调用代码获取<a href='https://sct.ftqq.com/' target='_blank'>点击这里</a><br>")
 a.rmempty = true
-a:value("",translate("微信"))
-a:value("2",translate("微信测试号版"))
-a:value("1",translate("Telegram"))
 
-a=s:taboption("basic", Value,"sckey",translate('SCKEY'), translate("Serverchan Sckey").."<br>调用代码获取<a href='http://sc.ftqq.com' target='_blank'>点击这里</a><br><br>")
+a=s:taboption("basic", Value, "tg_token", translate("TG_token"),translate("").."<br>获取机器人<a href='https://telegram.me/botfather' target='_blank'>点击这里</a><br>新建机器人并拉入群组/频道，填入 token<br>")
 a.rmempty = true
-a:depends("send_tg","")
 
-a=s:taboption("basic", Value,"sctkey",translate('SCKEY'), translate("Serverchan Sckey").."<br>调用代码获取<a href='https://sct.ftqq.com/' target='_blank'>点击这里</a><br><br>")
+a=s:taboption("basic", Value,"chat_id",translate('TG_chatid'))
 a.rmempty = true
-a:depends("send_tg","2")
-
-a=s:taboption("basic", Value, "tgtoken", translate("tg推送链接"),translate("").."<br>目前公众号已停用，需要自建服务器<br>获取机器人<a href='https://github.com/Fndroid/tg_push_bot' target='_blank'>点击这里</a><br>此处填入推送链接，如https://tgbot.lbyczf.com/sendMessage/:Token<br>")
-a.rmempty = true
-a:depends("send_tg","1")
+a.description = translate('用 tg_token 替换下列URL中的****，并用浏览器打开<br> https://api.telegram.org/bot****/getUpdates<br>找到你的chat_id，并填入<br>{"chat":{"id":TG_chatid,"title":"群组名","type":"channel"}')
 
 a=s:taboption("basic", Value,"device_name",translate('本设备名称'))
 a.rmempty = true
 a.description = translate("在推送信息标题中会标识本设备名称，用于区分推送信息的来源设备")
 
-a=s:taboption("basic", Value,"sleeptime",translate('检测时间间隔'))
+a=s:taboption("basic", Value,"sleeptime",translate('检测时间间隔（s）'))
 a.rmempty = true
 a.optional = false
 a.default = "60"
@@ -71,6 +61,9 @@ a.rmempty = true
 a:depends("oui_data","1")
 a:depends("oui_data","2")
 a.description = translate("懒得做自动更新了，下载到内存中，重启会重新下载 <br/>若无梯子，还是下到机身吧")
+
+a=s:taboption("basic", Flag,"reset_regularly",translate("每天零点重置流量数据"))
+a.rmempty = true
 
 a=s:taboption("basic", Flag,"debuglevel",translate("开启日志"))
 a.rmempty = true
