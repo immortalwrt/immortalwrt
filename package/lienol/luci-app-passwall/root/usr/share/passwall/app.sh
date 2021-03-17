@@ -801,6 +801,7 @@ start_dns() {
 	nonuse)
 		echolog "  - 不过滤DNS..."
 		TUN_DNS=""
+		return
 	;;
 	dns2socks)
 		local dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
@@ -1033,7 +1034,7 @@ add_dnsmasq() {
 		echo "conf-dir=${TMP_DNSMASQ_PATH}" > "/var/dnsmasq.d/dnsmasq-${CONFIG}.conf"
 
 		if [ -z "${CHINADNS_NG}" ] && [ "${IS_DEFAULT_DNS}" = "1" ]; then
-			echolog "  - 不强制设置默认DNS"
+			#echolog "  - 不强制设置默认DNS"
 			return
 		else
 			echo "${DEFAULT_DNS}" > $TMP_PATH/default_DNS
