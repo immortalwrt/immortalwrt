@@ -331,11 +331,17 @@ msgstr "添加节点"
 msgid "Add the node via the link"
 msgstr "通过链接添加节点"
 
-msgid "SS/SSR/Vmess/Trojan Link"
-msgstr "SS/SSR/Vmess/Trojan链接"
+msgid "SS/SSR/Vmess/VLESS/Trojan Link"
+msgstr "SS/SSR/Vmess/VLESS/Trojan链接"
 
-msgid "Please enter the correct link, ss:// ssr:// vmess:// trojan://"
-msgstr "请输入正确的链接，ss:// ssr:// vmess:// trojan://"
+msgid "Please enter the correct link, ss:// ssr:// vmess:// vless:// trojan://"
+msgstr "请输入正确的链接，ss:// ssr:// vmess:// vless:// trojan://"
+
+msgid "Load Cached"
+msgstr "加载缓存"
+
+msgid "Clear Cached"
+msgstr "清除缓存"
 
 msgid "Clear all nodes"
 msgstr "清空所有节点"
