@@ -379,6 +379,7 @@ local function processData(szType, content, add_mode)
 			idx_sp = content:find("#")
 			alias = content:sub(idx_sp + 1, -1)
 		end
+		result.remarks = UrlDecode(alias)
 		local info = content:sub(1, idx_sp - 1)
 		local hostInfo = split(base64Decode(info), "@")
 		local hostInfoLen = #hostInfo
@@ -397,7 +398,6 @@ local function processData(szType, content, add_mode)
 		end
 		local method = userinfo:sub(1, userinfo:find(":") - 1)
 		local password = userinfo:sub(userinfo:find(":") + 1, #userinfo)
-		result.remarks = UrlDecode(alias)
 		result.type = "SS"
 		result.address = host[1]
 		if host[2] and host[2]:find("/%?") then
@@ -434,12 +434,12 @@ local function processData(szType, content, add_mode)
 			alias = content:sub(idx_sp + 1, -1)
 			content = content:sub(0, idx_sp - 1)
 		end
+		result.remarks = UrlDecode(alias)
 		result.type = "Trojan-Plus"
 		if has_xray then
 			result.type = 'Xray'
 			result.protocol = 'trojan'
 		end
-		result.remarks = UrlDecode(alias)
 		if content:find("@") then
 			local Info = split(content, "@")
 			result.password = UrlDecode(Info[1])
@@ -502,8 +502,8 @@ local function processData(szType, content, add_mode)
 			alias = content:sub(idx_sp + 1, -1)
 			content = content:sub(0, idx_sp - 1)
 		end
-		result.type = "Trojan-Go"
 		result.remarks = UrlDecode(alias)
+		result.type = "Trojan-Go"
 		if content:find("@") then
 			local Info = split(content, "@")
 			result.password = UrlDecode(Info[1])
@@ -562,6 +562,90 @@ local function processData(szType, content, add_mode)
 		result.plugin_opts = content.plugin_options
 		result.group = content.airport
 		result.remarks = content.remarks
+	elseif szType == "vless" then
+		result.type = "Xray"
+		result.protocol = "vless"
+		local alias = ""
+		if content:find("#") then
+			local idx_sp = content:find("#")
+			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1)
+		end
+		result.remarks = UrlDecode(alias)
+		if content:find("@") then
+			local Info = split(content, "@")
+			result.uuid = UrlDecode(Info[1])
+			local port = "443"
+			Info[2] = (Info[2] or ""):gsub("/%?", "?")
+			local hostInfo = nil
+			if Info[2]:find(":") then
+				hostInfo = split(Info[2], ":")
+				result.address = hostInfo[1]
+				local idx_port = 2
+				if hostInfo[2]:find("?") then
+					hostInfo = split(hostInfo[2], "?")
+					idx_port = 1
+				end
+				if hostInfo[idx_port] ~= "" then port = hostInfo[idx_port] end
+			else
+				if Info[2]:find("?") then
+					hostInfo = split(Info[2], "?")
+				end
+				result.address = hostInfo and hostInfo[1] or Info[2]
+			end
+			
+			local query = split(Info[2], "?")
+			local params = {}
+			for _, v in pairs(split(query[2], '&')) do
+				local t = split(v, '=')
+				params[string.lower(t[1])] = UrlDecode(t[2])
+			end
+
+			if params.type == 'ws' then
+				result.ws_host = params.host
+				result.ws_path = params.path
+			end
+			if params.type == 'h2' then
+				result.h2_host = params.host
+				result.h2_path = params.path
+			end
+			if params.type == 'tcp' then
+				result.tcp_guise = params.headerType or "none"
+				result.tcp_guise_http_host = params.host
+				result.tcp_guise_http_path = params.path
+			end
+			if params.type == 'kcp' then
+				result.mkcp_guise = params.headerType or "none"
+				result.mkcp_mtu = 1350
+				result.mkcp_tti = 50
+				result.mkcp_uplinkCapacity = 5
+				result.mkcp_downlinkCapacity = 20
+				result.mkcp_readBufferSize = 2
+				result.mkcp_writeBufferSize = 2
+			end
+			if params.type == 'quic' then
+				result.quic_guise = params.headerType or "none"
+				result.quic_key = params.key
+				result.quic_security = params.quicSecurity or "none"
+			end
+			
+			result.encryption = params.encryption or "none"
+
+			result.tls = "0"
+			if params.security == "tls" or params.security == "xtls" then
+				result.tls = "1"
+				if params.security == "xtls" then
+					result.xtls = "1"
+					result.flow = params.flow or "xtls-rprx-direct"
+				end
+				if params.sni then
+					result.tls_serverName = params.sni
+				end
+			end
+
+			result.port = port
+			result.tls_allowInsecure = allowInsecure_default and "1" or "0"
+		end
 	else
 		log('暂时不支持' .. szType .. "类型的节点订阅，跳过此节点。")
 		return nil

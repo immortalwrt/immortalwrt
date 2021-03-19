@@ -5,16 +5,16 @@ local api = require "luci.model.cbi.passwall.api.api"
 <style>
 #add_link_div{
 	display: none;
-	width: 30rem;
+	width: auto;
 	position: absolute;
 	left:50%;
 	top:50%;
 	transform: translate(-50%, -50%);
-	padding-top: 30px;
 	z-index: 99;
 	text-align: center;
 	background: white;
     box-shadow: darkgrey 10px 10px 30px 5px;
+	padding: 30px 15px;
 }
 </style>
 
@@ -83,11 +83,11 @@ local api = require "luci.model.cbi.passwall.api.api"
 	function add_node() {
 		var nodes_link = document.getElementById("nodes_link").value;
 		if (nodes_link.trim() != "") {
-			if (nodes_link.indexOf("ss://") == 0 || nodes_link.indexOf("ssr://") == 0 || nodes_link.indexOf("vmess://") == 0 || nodes_link.indexOf("trojan://") == 0 || nodes_link.indexOf("trojan-go://") == 0) {
+			if (nodes_link.indexOf("ss://") == 0 || nodes_link.indexOf("ssr://") == 0 || nodes_link.indexOf("vmess://") == 0 || nodes_link.indexOf("vless://") == 0 || nodes_link.indexOf("trojan://") == 0 || nodes_link.indexOf("trojan-go://") == 0) {
 				ajax_add_node(nodes_link);
 			}
 			else {
-				alert("<%:Please enter the correct link, ss:// ssr:// vmess:// trojan://%>");
+				alert("<%:Please enter the correct link, ss:// ssr:// vmess:// vless:// trojan://%>");
 			}
 		}
 		else {
@@ -114,16 +114,16 @@ local api = require "luci.model.cbi.passwall.api.api"
 
 <div id="add_link_div">
 	<div class="cbi-value">
-		<label class="cbi-value-title"><%:SS/SSR/Vmess/Trojan Link%></label>
+		<label class="cbi-value-title"><%:SS/SSR/Vmess/VLESS/Trojan Link%></label>
 		<div class="cbi-value-field">
 			<textarea id="nodes_link" rows="5" cols="50"></textarea>
 		</div>
 	</div>
 	<div class="cbi-value">
-		<div class="cbi-value-field">
+		<div class="cbi-value-field" style="display: unset">
 			<input class="cbi-button cbi-button-add" type="button" onclick="add_node()" value="<%:Add%>" />
-			<input class="cbi-button cbi-button-apply" type="button" onclick="link_load_temp()" value="<%:Load %><%:Cached%>" />
-			<input class="cbi-button cbi-button-refresh" type="button" onclick="link_clear_temp()" value="<%:Clear %><%:Cached%>" />
+			<!-- <input class="cbi-button cbi-button-apply" type="button" onclick="link_load_temp()" value="<%:Load Cached%>" /> -->
+			<!-- <input class="cbi-button cbi-button-refresh" type="button" onclick="link_clear_temp()" value="<%:Clear Cached%>" /> -->
 			<input class="cbi-button cbi-button-remove" type="button" onclick="close_add_link_div()" value="<%:Close%>" />
 		</div>
 	</div>
