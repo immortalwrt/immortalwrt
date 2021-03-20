@@ -49,9 +49,6 @@ function index()
 	entry({"admin", "services", appname, "server_user_log"}, call("server_user_log")).leaf = true
 	entry({"admin", "services", appname, "server_get_log"}, call("server_get_log")).leaf = true
 	entry({"admin", "services", appname, "server_clear_log"}, call("server_clear_log")).leaf = true
-	entry({"admin", "services", appname, "link_append_temp"}, call("link_append_temp")).leaf = true
-	entry({"admin", "services", appname, "link_load_temp"}, call("link_load_temp")).leaf = true
-	entry({"admin", "services", appname, "link_clear_temp"}, call("link_clear_temp")).leaf = true
 	entry({"admin", "services", appname, "link_add_node"}, call("link_add_node")).leaf = true
 	entry({"admin", "services", appname, "get_now_use_node"}, call("get_now_use_node")).leaf = true
 	entry({"admin", "services", appname, "get_redir_log"}, call("get_redir_log")).leaf = true
@@ -97,38 +94,10 @@ function hide_menu()
 	luci.http.redirect(luci.dispatcher.build_url("admin", "status", "overview"))
 end
 
-function link_append_temp()
-	local link = luci.http.formvalue("link")
-	local lfile = "/tmp/links.conf"
-	local ret, ldata="empty", {}
-	luci.sys.call('touch ' .. lfile .. ' && echo \'' .. link .. '\' >> ' .. lfile)
-	ret = luci.sys.exec([[awk -F'://' 'BEGIN{ all=0 } /.{2,9}:\/\/.{4,}$/ {gsub(/:\/\/.*$/,""); arr[$0]++; all++ } END { for(typ in arr) { printf("%s: %d, ", typ, arr[typ]) }; printf("\ntotal: %d", all) }' ]] .. lfile)
-	luci.http.prepare_content("application/json")
-	luci.http.write_json({counter = ret})
-end
-
-function link_load_temp()
-	local lfile = "/tmp/links.conf"
-	local ret, ldata="empty", {}
-	ldata[#ldata+1] = nixio.fs.readfile(lfile) or "_nofile_"
-	if ldata[1] == "" then
-		ldata[1] = "_nodata_"
-	else
-		ret = luci.sys.exec([[awk -F'://' 'BEGIN{ all=0 } /.{2,9}:\/\/.{4,}$/ {gsub(/:\/\/.*$/,""); arr[$0]++; all++ } END { for(typ in arr) { printf("%s: %d, ", typ, arr[typ]) }; printf("\ntotal: %d", all) }' ]] .. lfile)
-	end
-	luci.http.prepare_content("application/json")
-	luci.http.write_json({counter = ret, data = ldata})
-end
-
-function link_clear_temp()
-	local lfile = "/tmp/links.conf"
-	luci.sys.call('cat /dev/null > ' .. lfile)
-end
-
 function link_add_node()
 	local lfile = "/tmp/links.conf"
 	local link = luci.http.formvalue("link")
-	luci.sys.call('echo \'' .. link .. '\' >> ' .. lfile)
+	luci.sys.call('echo \'' .. link .. '\' > ' .. lfile)
 	luci.sys.call("lua /usr/share/passwall/subscribe.lua add log")
 end
 

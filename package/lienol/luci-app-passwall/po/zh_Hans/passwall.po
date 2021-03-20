@@ -292,6 +292,9 @@ msgstr "单进程"
 msgid "Proxy Mode"
 msgstr "代理模式"
 
+msgid "%s Proxy Mode"
+msgstr "%s 代理模式"
+
 msgid "If not available, try clearing the cache."
 msgstr "如果无法使用，请尝试清除缓存。"
 
@@ -336,12 +339,6 @@ msgstr "SS/SSR/Vmess/VLESS/Trojan链接"
 
 msgid "Please enter the correct link, ss:// ssr:// vmess:// vless:// trojan://"
 msgstr "请输入正确的链接，ss:// ssr:// vmess:// vless:// trojan://"
-
-msgid "Load Cached"
-msgstr "加载缓存"
-
-msgid "Clear Cached"
-msgstr "清除缓存"
 
 msgid "Clear all nodes"
 msgstr "清空所有节点"
@@ -451,14 +448,11 @@ msgstr "负载均衡节点列表"
 msgid "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"
 msgstr "负载均衡节点列表，<a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>文档原理</a>"
 
-msgid "Share Current"
-msgstr "所见即所得"
-
 msgid "From Share URL"
-msgstr "导入配置信息"
+msgstr "导入分享URL"
 
 msgid "Build Share URL"
-msgstr "导出配置信息"
+msgstr "导出分享URL"
 
 msgid "Import Finished"
 msgstr "导入完成："
@@ -467,19 +461,16 @@ msgid "Not a supported scheme:"
 msgstr "不支持这种样式的："
 
 msgid "Invalid Share URL Format"
-msgstr "无效的分享信息"
-
-msgid "User cancelled"
-msgstr "用户已取消"
+msgstr "无效的分享URL信息"
 
 msgid "Paste Share URL Here"
 msgstr "在此处粘贴分享信息"
 
-msgid "Unable share to clipboard, copy to batch mode still:"
-msgstr "无法分享网址到剪贴板，复制到批量导入临时输入："
+msgid "Share url to clipboard unable."
+msgstr "无法分享URL到剪贴板。"
 
-msgid "Share to clipboard successfully, copy to batch mode still:"
-msgstr "成功复制分享网址到剪贴板和批量导入临时输入："
+msgid "Share url to clipboard successfully."
+msgstr "成功复制分享URL到剪贴板。"
 
 msgid "Faltal on get option, please help in debug:"
 msgstr "代码错误，请协助捉虫："
@@ -765,6 +756,9 @@ msgstr "Xray 资源文件目录"
 
 msgid "This variable specifies a directory where geoip.dat and geosite.dat files are."
 msgstr "此变量指定geoip.dat和geosite.dat文件所在的目录。"
+
+msgid "Shunt Rule"
+msgstr "分流规则"
 
 msgid "Please note attention to the priority, the higher the order, the higher the priority."
 msgstr "请注意优先级问题，排序越上面优先级越高。"
@@ -1182,6 +1176,9 @@ msgstr "日志"
 
 msgid "Log"
 msgstr "日志"
+
+msgid "%s Node Log Close"
+msgstr "%s 节点日志关闭"
 
 msgid "Log Level"
 msgstr "日志等级"
