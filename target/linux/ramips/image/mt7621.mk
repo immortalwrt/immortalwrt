@@ -802,6 +802,7 @@ endef
 TARGET_DEVICES += mqmaker_witi
 
 define Device/mtc_wr1201
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := MTC
   DEVICE_MODEL := Wireless Router WR1201
