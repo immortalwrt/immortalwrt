@@ -20,41 +20,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 
 <script type="text/javascript">
 	//<![CDATA[
-	function link_clear_temp() {
-		if (confirm('<%:Are you sure to clear all cached links?%>') == true){
-			XHR.get('<%=api.url("link_clear_temp")%>', null,
-			function(x, data) {
-				if(x && x.status == 200) {
-					window.location.href = '<%=api.url("node_list")%>';
-				}
-				else {
-					alert("<%:Error%>");
-				}
-			});
-		}
-	}
-
-	function link_load_temp() {
-		var inputer = document.getElementById("nodes_link");
-		XHR.get('<%=api.url("link_load_temp")%>', null,
-		function(x, data) {
-			if(x.readyState === 4 && x.status === 200) {
-				try {
-					res = JSON.parse(x.responseText);
-				}
-				catch(e) {
-					res = null;
-				}
-				if(res !== null && typeof(res) === "object") {
-					alert(res.counter);
-					if(res.data) inputer.value = res.data;
-				}
-			} else {
-				alert("<%:Error%>");
-			}
-		});
-	}
-
 	function ajax_add_node(link) {
 		if (link) {
 			XHR.get('<%=api.url("link_add_node")%>', {
@@ -122,8 +87,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 	<div class="cbi-value">
 		<div class="cbi-value-field" style="display: unset">
 			<input class="cbi-button cbi-button-add" type="button" onclick="add_node()" value="<%:Add%>" />
-			<!-- <input class="cbi-button cbi-button-apply" type="button" onclick="link_load_temp()" value="<%:Load Cached%>" /> -->
-			<!-- <input class="cbi-button cbi-button-refresh" type="button" onclick="link_clear_temp()" value="<%:Clear Cached%>" /> -->
 			<input class="cbi-button cbi-button-remove" type="button" onclick="close_add_link_div()" value="<%:Close%>" />
 		</div>
 	</div>

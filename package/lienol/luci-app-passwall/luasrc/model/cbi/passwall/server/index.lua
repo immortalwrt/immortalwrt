@@ -63,7 +63,7 @@ end
 
 e = t:option(DummyValue, "port", translate("Port"))
 
-e = t:option(Flag, "log", translate("Enable") .. translate("Log"))
+e = t:option(Flag, "log", translate("Log"))
 e.default = "1"
 e.rmempty = false
 

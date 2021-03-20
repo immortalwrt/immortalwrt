@@ -59,7 +59,7 @@ s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false
 s.dynamic = false
 
-share = s:option(DummyValue, "passwall", translate("Share Current"))
+share = s:option(DummyValue, "passwall", " ")
 share.rawhtml  = true
 share.template = "passwall/node_list/link_share_man"
 share.value = arg[1]
