@@ -29,6 +29,7 @@ define KernelPackage/fs-exfat0
   FILES:=$(PKG_BUILD_DIR)/exfat.ko
   AUTOLOAD:=$(call AutoProbe,exfat)
   DEPENDS:=+kmod-nls-base
+  CONFLICTS:=kmod-fs-exfat
 endef
 
 define KernelPackage/exfat0/description
