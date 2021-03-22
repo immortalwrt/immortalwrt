@@ -170,7 +170,7 @@ Includes support for:
 endef
 
 define Package/iptables-mod-cgroup
-$(call Package/iptables/Module, +kmod-ipt-cgroup)
+$(call Package/iptables/Module, +kmod-ipt-extra)
   TITLE:=cgroup extension
   endef
 
@@ -714,7 +714,7 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
 $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
 $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
-$(eval $(call BuildPlugin,iptables-mod-cgroup,$(IPT_CGROUP-m)))
+$(eval $(call BuildPlugin,iptables-mod-cgroup,$(IPT_EXTRA-m)))
 $(eval $(call BuildPlugin,iptables-mod-imq,$(IPT_IMQ-m)))
 $(eval $(call BuildPlugin,iptables-mod-bandwidth,$(IPT_BANDWIDTH-m)))
 $(eval $(call BuildPlugin,iptables-mod-timerange,$(IPT_TIMERANGE-m)))
