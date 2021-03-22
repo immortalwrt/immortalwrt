@@ -169,19 +169,6 @@ Includes support for:
 
 endef
 
-define Package/iptables-mod-cgroup
-$(call Package/iptables/Module, +kmod-ipt-extra)
-  TITLE:=cgroup extension
-  endef
-
-define Package/iptables-mod-cgroup/description
-iptables extension for cgroup support.
-
- Matches:
-   - cgroup
-
-endef
-
 define Package/iptables-mod-imq
 $(call Package/iptables/Module, +kmod-ipt-imq)
   TITLE:=IMQ support
