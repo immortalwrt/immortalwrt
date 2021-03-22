@@ -10,15 +10,12 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cups
 PKG_VERSION:=2.1.4
-PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-source.tar.gz
 PKG_SOURCE_URL:=http://www.cups.org/software/$(PKG_VERSION)
 PKG_HASH:=4b14fd833180ac529ebebea766a09094c2568bf8426e219cb3a1715304ef728d
 
-TARGET_LDFLAGS+=-Wl,-rpath-link=$(STAGING_DIR)/usr/lib
-
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/cups/Default
   URL:=http://www.cups.org/
@@ -154,6 +151,8 @@ endef
 define Package/libcupsppdc/description
   Common UNIX Printing System - PPDC library
 endef
+
+TARGET_LDFLAGS+=-Wl,-rpath-link=$(STAGING_DIR)/usr/lib
 
 define Build/Configure
 	$(call Build/Configure/Default, \

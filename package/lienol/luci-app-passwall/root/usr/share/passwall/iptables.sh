@@ -62,7 +62,7 @@ RULE_LAST_INDEX() {
 	local chain=${1}; shift
 	local list=${1}; shift
 	local default=${1:-0}; shift
-	local _index=$($ipt_tmp -n -L $chain --line-numbers 2>/dev/null | grep "$list" | sed -n '$p' | awk '{print $1}')
+	local _index=$($ipt_tmp -n -L $chain --line-numbers 2>/dev/null | grep "$list" | head -n 1 | awk '{print $1}')
 	echo "${_index:-${default}}"
 }
 
@@ -550,27 +550,29 @@ add_firewall_rule() {
 	#  过滤所有节点IP
 	filter_vpsip > /dev/null 2>&1 &
 	filter_haproxy > /dev/null 2>&1 &
-	
-	# 据说能提升性能？
-	$ipt_m -N PSW_DIVERT
-	$ipt_m -A PSW_DIVERT -j MARK --set-mark 1
-	$ipt_m -A PSW_DIVERT -j ACCEPT
-	$ipt_m -A PREROUTING -p tcp -m socket -j PSW_DIVERT
 
 	$ipt_n -N PSW
 	$ipt_n -A PSW $(dst $IPSET_LANIPLIST) -j RETURN
 	$ipt_n -A PSW $(dst $IPSET_VPSIPLIST) -j RETURN
 	$ipt_n -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_n -A PSW -m mark --mark 0xff -j RETURN
-	local PR_INDEX=$(RULE_LAST_INDEX "$ipt_n" PREROUTING prerouting_rule)
+	PR_INDEX=$(RULE_LAST_INDEX "$ipt_n" PREROUTING prerouting_rule)
 	PR_INDEX=$((PR_INDEX + 1))
 	$ipt_n -I PREROUTING $PR_INDEX -p tcp -j PSW
+	unset PR_INDEX
 
 	$ipt_n -N PSW_OUTPUT
 	$ipt_n -A PSW_OUTPUT $(dst $IPSET_LANIPLIST) -j RETURN
 	$ipt_n -A PSW_OUTPUT $(dst $IPSET_VPSIPLIST) -j RETURN
 	$ipt_n -A PSW_OUTPUT $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_n -A PSW_OUTPUT -m mark --mark 0xff -j RETURN
+	
+	# 据说能提升性能？
+	PR_INDEX=$(RULE_LAST_INDEX "$ipt_m" PREROUTING mwan3 1)
+	$ipt_m -N PSW_DIVERT
+	$ipt_m -A PSW_DIVERT -j MARK --set-mark 1
+	$ipt_m -A PSW_DIVERT -j ACCEPT
+	$ipt_m -I PREROUTING $PR_INDEX -p tcp -m socket -j PSW_DIVERT
 
 	$ipt_m -N PSW
 	$ipt_m -A PSW $(dst $IPSET_LANIPLIST) -j RETURN
@@ -578,7 +580,9 @@ add_firewall_rule() {
 	$ipt_m -A PSW $(dst $IPSET_WHITELIST) -j RETURN
 	$ipt_m -A PSW -m mark --mark 0xff -j RETURN
 	$ipt_m -A PSW $(dst $IPSET_BLOCKLIST) -j DROP
-	$ipt_m -A PREROUTING -j PSW
+	PR_INDEX=$((PR_INDEX + 1))
+	$ipt_m -I PREROUTING $PR_INDEX -j PSW
+	unset PR_INDEX
 
 	$ipt_m -N PSW_OUTPUT
 	$ipt_m -A PSW_OUTPUT $(dst $IPSET_LANIPLIST) -j RETURN

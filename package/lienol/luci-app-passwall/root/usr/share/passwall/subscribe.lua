@@ -328,7 +328,6 @@ local function processData(szType, content, add_mode)
 		result.address = info.add
 		result.port = info.port
 		result.protocol = 'vmess'
-		result.transport = info.net
 		result.alter_id = info.aid
 		result.uuid = info.id
 		result.remarks = info.ps
@@ -350,7 +349,8 @@ local function processData(szType, content, add_mode)
 			result.tcp_guise_http_host = info.host
 			result.tcp_guise_http_path = info.path
 		end
-		if info.net == 'kcp' then
+		if info.net == 'kcp' or info.net == 'mkcp' then
+			info.net = "mkcp"
 			result.mkcp_guise = info.type
 			result.mkcp_mtu = 1350
 			result.mkcp_tti = 50
@@ -364,10 +364,11 @@ local function processData(szType, content, add_mode)
 			result.quic_key = info.key
 			result.quic_security = info.securty
 		end
+		result.transport = info.net
 		if not info.security then result.security = "auto" end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
-			result.tls_serverName = info.host
+			result.tls_serverName = info.sni
 			result.tls_allowInsecure = allowInsecure_default and "1" or "0"
 		else
 			result.tls = "0"
@@ -598,7 +599,7 @@ local function processData(szType, content, add_mode)
 			local params = {}
 			for _, v in pairs(split(query[2], '&')) do
 				local t = split(v, '=')
-				params[string.lower(t[1])] = UrlDecode(t[2])
+				params[t[1]] = UrlDecode(t[2])
 			end
 
 			if params.type == 'ws' then
@@ -614,7 +615,8 @@ local function processData(szType, content, add_mode)
 				result.tcp_guise_http_host = params.host
 				result.tcp_guise_http_path = params.path
 			end
-			if params.type == 'kcp' then
+			if params.type == 'kcp' or params.type == 'mkcp' then
+				params.type = "mkcp"
 				result.mkcp_guise = params.headerType or "none"
 				result.mkcp_mtu = 1350
 				result.mkcp_tti = 50
@@ -628,6 +630,7 @@ local function processData(szType, content, add_mode)
 				result.quic_key = params.key
 				result.quic_security = params.quicSecurity or "none"
 			end
+			result.transport = params.type
 			
 			result.encryption = params.encryption or "none"
 

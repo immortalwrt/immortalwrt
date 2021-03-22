@@ -63,9 +63,9 @@ o.cfgvalue = function(t, n)
     if type == "Xray" then
         local protocol = m:get(n, "protocol")
         if protocol == "_balancing" then
-            protocol = "负载均衡"
+            protocol = translate("Balancing")
         elseif protocol == "_shunt" then
-            protocol = "分流"
+            protocol = translate("Shunt")
         elseif protocol == "vmess" then
             protocol = "VMess"
         elseif protocol == "vless" then

@@ -10,9 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xray-plugin
 PKG_VERSION:=1.4.0
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/teddysun/xray-plugin/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=6247235aa8bf1ebb994032de932d8c41ab6641d68d0cb448b32a236494cc6c42
 
@@ -26,13 +24,10 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_XRAY_PLUGIN_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/teddysun/xray-plugin
-GO_PKG_LDFLAGS:=-s -w
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/xray-plugin/config

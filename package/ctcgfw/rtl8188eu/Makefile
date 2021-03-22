@@ -8,20 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8188eu
-PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8188eus.git
 PKG_SOURCE_PROTO:=git
+PKG_SOURCE_REPO:=aircrack-ng/rtl8188eus
 PKG_SOURCE_DATE:=2021-02-06
 PKG_SOURCE_VERSION:=1e7145f3237b3eeb3baf775f4a883e6d79c1cfe6
 PKG_MIRROR_HASH:=3f68779aed2b9fabca042ea4effbdf35e25e632a00febe6c3f09646a8c75ee5d
 
-PKG_BUILD_PARALLEL:=1
-
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
 include $(INCLUDE_DIR)/kernel.mk
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define KernelPackage/rtl8188eu
   SUBMENU:=Wireless Drivers

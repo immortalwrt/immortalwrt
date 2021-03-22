@@ -12,10 +12,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ssocks
 PKG_VERSION:=0.0.14
-PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/tostercx/ssocks.git
+PKG_SOURCE_REPO:=tostercx/ssocks
 PKG_SOURCE_DATE:=2020-07-09
 PKG_SOURCE_VERSION:=c2024789c1ee076d171fd6061d7c133302216ea7
 PKG_MIRROR_HASH:=3654e9f1fb54646e1e89c19e7aa3e105b84b2e20b5b634662c21c66691d1d22e
@@ -24,9 +23,7 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
-PKG_BUILD_PARALLEL:=1
-
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/ssocks/template

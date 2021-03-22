@@ -32,13 +32,12 @@ endif
 
 PKG_NAME:=verysync
 PKG_VERSION:=v2.4.2
-PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://dl.verysync.com/releases/$(PKG_VERSION)/
 PKG_HASH:=skip
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 TAR_CMD:=$(HOST_TAR) -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
 

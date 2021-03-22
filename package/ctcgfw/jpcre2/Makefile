@@ -5,13 +5,12 @@
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jpcre2
 PKG_VERSION:=10.32.01
-PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/jpcre2/jpcre2/tar.gz/$(PKG_VERSION)?
 PKG_HASH:=668cbc6d2c0a065bb6abe8494d5a1bb3549a14cd956a44a2df9095045623ea47
 
@@ -20,10 +19,9 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=pcre2
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/jpcre2
 	SECTION:=lib
@@ -39,7 +37,7 @@ endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/jpcre2.hpp $(1)/usr/include/jpcre2.hpp
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/jpcre2.hpp $(1)/usr/include/jpcre2.hpp
 endef
 
 $(eval $(call BuildPackage,jpcre2))

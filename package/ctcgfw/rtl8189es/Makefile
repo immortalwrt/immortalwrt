@@ -8,21 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8189es
-PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/jwrdegoede/rtl8189ES_linux.git
 PKG_SOURCE_PROTO:=git
+PKG_SOURCE_REPO:=jwrdegoede/rtl8189ES_linux
 PKG_SOURCE_DATE:=2021-01-11
 PKG_SOURCE_VERSION:=249b65ba1db0fc88556f8202b43f70cb171ea022
 PKG_MIRROR_HASH:=f613fad49a3c21432bb9ca5c60202ad7f137a943a59b38cc023d710d875c1b0d
 
 PKG_MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
-PKG_BUILD_PARALLEL:=1
 
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
 include $(INCLUDE_DIR)/kernel.mk
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define KernelPackage/rtl8189es
   SUBMENU:=Wireless Drivers

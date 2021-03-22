@@ -7,33 +7,29 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=filebrowser
-PKG_VERSION:=2.11.0
-PKG_RELEASE:=1
+PKG_VERSION:=2.13.0
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=948e05c
+PKG_SOURCE_VERSION:=e1f6586
 PKG_SOURCE_URL:=https://github.com/filebrowser/filebrowser
-PKG_MIRROR_HASH:=4a7a38a873129313ee53747774ca5371dd1d4790616bb0558d98fcf5555911c7
+PKG_MIRROR_HASH:=d2b9af0b58442f2e214a957cef455b9852e34203e813870f6e2166ea7cf407c7
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=golang/host node/host
-PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_FILEBROWSER_COMPRESS_GOPROXY \
 	CONFIG_FILEBROWSER_COMPRESS_UPX
 
 GO_PKG:=github.com/filebrowser/filebrowser
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/v2/version.CommitSHA=$(PKG_SOURCE_VERSION) \
 	$(GO_PKG)/v2/version.Version=$(PKG_VERSION)
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/filebrowser
@@ -68,16 +64,10 @@ endif
 
 define Build/Compile
 ( \
-  cd $(PKG_BUILD_DIR) ; \
-  rm -rf frontend/dist ; \
-  rm -f http/rice-box.go ; \
   cd $(PKG_BUILD_DIR)/frontend ; \
   npm ci; \
   npm run lint ; \
   npm run build ; \
-  GOOS=$$$$(go env GOOS) GOARCH=$$$$(go env GOARCH) GO111MODULE=off go get -v github.com/GeertJohan/go.rice/rice/... ; \
-  cd $(PKG_BUILD_DIR)/http ; \
-  "$$$$(go env GOPATH)/bin/rice" embed-go ; \
   $(call GoPackage/Build/Compile) ; \
 )
 ifeq ($(CONFIG_FILEBROWSER_COMPRESS_UPX),y)

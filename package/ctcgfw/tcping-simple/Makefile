@@ -10,9 +10,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tcping-simple
 PKG_VERSION:=1.3.5
-PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://raw.githubusercontent.com/MushrooM93/tcping/b9ee61a5c1d05f228aa70027331556f0c27dd4c2/
+PKG_SOURCE_URL:=@GITHUB/MushrooM93/tcping/b9ee61a5c1d05f228aa70027331556f0c27dd4c2/
 PKG_SOURCE:=tcping.c
 PKG_HASH:=3459b9f15621920dc632b5871da96c62c8a77ad15ee7bfdba4adee29f4eed089
 PKG_BUILD_DIR:=$(BUILD_DIR)/tcping-$(PKG_VERSION)
@@ -21,12 +20,9 @@ PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=MushrooM93 <799163169@qq.com>
 
-PKG_INSTALL:=1
-PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
-PKG_BUILD_PARALLEL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
@@ -45,9 +41,6 @@ endef
 
 define Build/Compile
 	$(TARGET_CROSS)gcc $(PKG_BUILD_DIR)/$(PKG_SOURCE) -o $(PKG_BUILD_DIR)/tcping-simple
-endef
-
-define Build/Install
 endef
 
 define Package/$(PKG_NAME)/install

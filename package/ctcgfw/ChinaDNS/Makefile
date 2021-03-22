@@ -13,9 +13,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ChinaDNS
 PKG_VERSION:=2.0.1
-PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHREPO/lrinQVQ/openwrt-chinadns/releases/download/v$(PKG_VERSION)
 PKG_HASH:=caab37a27c444d917f0b92c65d7082543dc22acc7c24322be07a108a44794369
 
@@ -24,10 +22,9 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jian Chang <aa65535@live.com>
 
 PKG_FIXUP:=autoreconf
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/package-immortalwrt.mk
 
 define Package/ChinaDNS
 	SECTION:=net
