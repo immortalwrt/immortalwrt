@@ -48,7 +48,7 @@ comment() {
 
 destroy_ipset() {
 	for i in "$@"; do
-		#ipset -q -F $i
+		ipset -q -F $i
 		ipset -q -X $i
 	done
 }
