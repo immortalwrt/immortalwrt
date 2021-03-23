@@ -1,7 +1,0 @@
-#!/bin/sh
-uci batch <<-EOF
-	set luci.themes.Edge=/luci-static/edge
-	set luci.main.mediaurlbase=/luci-static/edge
-	commit luci
-EOF
-exit 0
