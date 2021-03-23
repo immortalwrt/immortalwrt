@@ -12,16 +12,19 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mentohust
 PKG_VERSION:=0.3.1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_REPO:=KyleRicardo/MentoHUST-OpenWrt-ipk
+PKG_SOURCE_URL:=https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk.git
 PKG_SOURCE_DATE:=2018-11-27
 PKG_SOURCE_VERSION:=557cffca8032b6d8ac948be8a79255dc64a1915d
 PKG_MIRROR_HASH:=1db6cd4402ea3e1fa2adc3adcc1490fffdac224ae83024d883429b8b67fb9c74
 
+PKG_BUILD_PARALLEL:=1
+
 MAKE_PATH:=src
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 
 define Package/mentohust
 	SECTION:=net

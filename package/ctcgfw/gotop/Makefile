@@ -10,7 +10,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gotop
 PKG_VERSION:=4.1.1
+PKG_RELEASE:=1
 
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/xxxserxxx/gotop/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=314dcfc4b0faa0bb735e5fa84b2406492bf94f7948af43e2b9d2982d69d542ed
 
@@ -23,11 +25,14 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_GOTOP_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/xxxserxxx/gotop
+GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/gotop

@@ -9,9 +9,10 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8821cu
+PKG_RELEASE:=1
 
+PKG_SOURCE_URL:=https://github.com/brektrou/rtl8821CU.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_REPO:=brektrou/rtl8821CU
 PKG_SOURCE_DATE:=2020-12-19
 PKG_SOURCE_VERSION:=428a0820487418ec69c0edb91726d1cf19763b1e
 PKG_MIRROR_HASH:=77958d3bff8b0145504a10959765be0e3743b9c4880a5173d156238c2c569a56
@@ -20,10 +21,12 @@ PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINTER:=CN_SZTL <cnsztl@immortalwrt.org>
 
+PKG_BUILD_PARALLEL:=1
+
 STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backport/autoconf.h
 
 include $(INCLUDE_DIR)/kernel.mk
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/rtl8821cu
   SUBMENU:=Wireless Drivers
