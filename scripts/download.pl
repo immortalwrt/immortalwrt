@@ -281,6 +281,7 @@ foreach my $mirror (@ARGV) {
 }
 
 unshift @mirrors, "http://182.140.223.146/dl";
+unshift @mirrors, "https://mirror01.download.immortalwrt.org/openwrt-18.06";
 unshift @mirrors, "https://openwrt.cc/dl/immortalwrt/openwrt-18.06";
 push @mirrors, 'https://sources.cdn.openwrt.org';
 push @mirrors, 'https://sources.openwrt.org';
