@@ -9,9 +9,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=subweb
 PKG_VERSION:=20200702
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_REPO:=lzdnico/subweb
+PKG_SOURCE_URL:=https://github.com/lzdnico/subweb.git
 PKG_MIRROR_HASH:=61855d9412056f2f0eb588840bb35b9b47dea97db887e47c15c52fe897f8b7bd
 PKG_SOURCE_VERSION:=9acc47d2e9cda1b16d7fe184a16f528848467810
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -25,8 +26,9 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_INSTALL:=1
 PKG_FIXUP:=autoreconf
 PKG_USE_MIPS16:=0
+PKG_BUILD_PARALLEL:=1
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
