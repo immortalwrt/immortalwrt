@@ -13,7 +13,7 @@ PKG_VERSION:=1.4.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@GHCODELOAD/teddysun/xray-plugin/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=https://codeload.github.com/teddysun/xray-plugin/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=6247235aa8bf1ebb994032de932d8c41ab6641d68d0cb448b32a236494cc6c42
 
 PKG_LICENSE:=MIT

@@ -13,7 +13,7 @@ PKG_VERSION:=0.2.9
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@GHCODELOAD/cnsilvan/UnblockNeteaseMusic/tar.gz/$(PKG_VERSION)?
+PKG_SOURCE_URL:=https://codeload.github.com/cnsilvan/UnblockNeteaseMusic/tar.gz/$(PKG_VERSION)?
 PKG_HASH:=9d352a0080c33e75e39586c531f9b3b88eea1d8a9d49c9e95c19d6a7d29f1419
 
 PKG_LICENSE:=GPL-3.0
