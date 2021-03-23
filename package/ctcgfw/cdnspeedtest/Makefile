@@ -10,7 +10,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=CloudflareSpeedTest
 PKG_VERSION:=1.4.9
+PKG_RELEASE:=1
 
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/XIU2/CloudflareSpeedTest/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=7b7a18b54eae74d70f18105cc9c74822ce05336b2b894c59a388f46430733dcd
 
@@ -23,10 +25,13 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_CDNSPEEDTEST_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 GO_PKG:=CloudflareSpeedTest
+GO_PKG_LDFLAGS:=-s -w
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/cdnspeedtest
