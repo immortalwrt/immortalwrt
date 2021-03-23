@@ -10,9 +10,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=annie
 PKG_VERSION:=0.10.3
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_REPO:=iawia002/annie
+PKG_SOURCE_URL:=https://github.com/iawia002/annie.git
 PKG_SOURCE_DATE:=2020-12-15
 PKG_SOURCE_VERSION:=abc3c9df18173c91a5ca7a77fecc0665dea01aa1
 PKG_MIRROR_HASH:=d49d79c342377a1edbf6870f7dd49cb4de70718934151793298004db72fc538a
@@ -26,11 +27,14 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_ANNIE_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/iawia002/annie
 GO_PKG_BUILD_PKG:=$$(GO_PKG)
+GO_PKG_LDFLAGS:=-s -w
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/annie

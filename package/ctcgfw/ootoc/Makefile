@@ -11,18 +11,20 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ootoc
 PKG_VERSION:=2.2.3
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_REPO:=ElonH/ootoc
+PKG_SOURCE_URL:=https://github.com/ElonH/ootoc.git
 PKG_SOURCE_DATE:=2020-03-21
 PKG_SOURCE_VERSION:=8e7495e49018a100043b2e013b65b589900ddabe
 PKG_MIRROR_HASH:=9fe7b360241a070cfe623cd59330b7305a59d329056bbf04666f1840e3ec8988
 
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
+PKG_BUILD_PARALLEL:=1
 CMAKE_INSTALL:=1
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 CMAKE_OPTIONS+= -DOOTOC_TEST:BOOL=OFF

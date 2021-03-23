@@ -11,6 +11,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rclone-webui-react
 PKG_VERSION:=2.0.3
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
 PKG_SOURCE_URL:=@GHREPO/rclone/rclone-webui-react/releases/download/v$(PKG_VERSION)/currentbuild.zip?
@@ -20,7 +21,7 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
 PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 
 UNZIP_CMD:=unzip -q -d $(PKG_BUILD_DIR) $(DL_DIR)/$(PKG_SOURCE)
 

@@ -5,12 +5,13 @@
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
 #
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=naiveproxy
 PKG_VERSION:=89.0.4389.72-1
+PKG_RELEASE:=2
 
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GHCODELOAD/klzgrad/naiveproxy/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=94b1c3f1e63ecab43eb8006a38ed1a76f1e510364ba651abaef0ec575449f687
 
@@ -20,6 +21,7 @@ PKG_MAINTAINER:=CN_SZTL <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=ncurses/host ninja/host python3/host
 PKG_USE_MIPS16:=0
+PKG_BUILD_PARALLEL:=1
 
 ifneq ($(CONFIG_CPU_TYPE)," ")
 	CPU_TYPE:=$(word 1, $(subst +," ,$(CONFIG_CPU_TYPE)))
@@ -32,7 +34,7 @@ else
 	CPU_SUBTYPE:=""
 endif
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+include $(INCLUDE_DIR)/package.mk
 
 define Package/naiveproxy/config
 	depends on !(arc||armeb||mips||mips64||powerpc)

@@ -9,9 +9,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tinyfecVPN
 PKG_VERSION:=20210116.0
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_REPO:=wangyu-/tinyfecVPN
+PKG_SOURCE_URL:=https://github.com/wangyu-/tinyfecVPN.git
 PKG_SOURCE_DATE:=2021-01-17
 PKG_SOURCE_VERSION:=c9b98721ea1d62ab8e1c4c9e2a0ed04394dfe0ae
 PKG_MIRROR_HASH:=28cdadf0f162e52d3c6b10b6a6cdcd22e80783b36b33e341b5dea156bfb75b74
@@ -19,7 +20,9 @@ PKG_MIRROR_HASH:=28cdadf0f162e52d3c6b10b6a6cdcd22e80783b36b33e341b5dea156bfb75b7
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Yu Wang
 
-include $(INCLUDE_DIR)/package-immortalwrt.mk
+PKG_BUILD_PARALLEL:=1
+
+include $(INCLUDE_DIR)/package.mk
 
 define Package/tinyfecvpn
   SECTION:=net
