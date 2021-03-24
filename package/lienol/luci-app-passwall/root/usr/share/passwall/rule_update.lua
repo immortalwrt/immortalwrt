@@ -25,11 +25,6 @@ local ip6_ipset_pattern = ":-[%x]+%:+[%x]-[%/][%d]+$"
 local domain_pattern = "([%w%-%_]+%.[%w%.%-%_]+)[%/%*]*"
 local excluded_domain = {"apple.com","sina.cn","sina.com.cn","baidu.com","byr.cn","jlike.com","weibo.com","zhongsou.com","youdao.com","sogou.com","so.com","soso.com","aliyun.com","taobao.com","jd.com","qq.com"}
 
--- gfwlist parameter
-local mydnsip = '127.0.0.1'
-local mydnsport = '7913'
-local ipsetname = 'gfwlist'
-
 local gfwlist_url = ucic:get_first(name, 'global_rules', "gfwlist_url", "https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt")
 local chnroute_url = ucic:get_first(name, 'global_rules', "chnroute_url", "https://ispip.clang.cn/all_cn.txt")
 local chnroute6_url =  ucic:get_first(name, 'global_rules', "chnroute6_url", "https://ispip.clang.cn/all_cn_ipv6.txt")
@@ -124,8 +119,7 @@ local function fetch_gfwlist()
 
 		local out = io.open("/tmp/gfwlist_tmp", "w")
 		for k,v in pairs(domains) do
-			out:write(string.format("server=/.%s/%s#%s\n", k,mydnsip,mydnsport))
-			out:write(string.format("ipset=/.%s/%s\n", k,ipsetname))
+			out:write(string.format("%s\n", k))
 		end
 		out:close()
 	end
@@ -350,12 +344,12 @@ end
 log("开始更新规则...")
 if tonumber(gfwlist_update) == 1 then
 	log("gfwlist 开始更新...")
-	local old_md5 = luci.sys.exec("echo -n $(md5sum " .. rule_path .. "/gfwlist.conf | awk '{print $1}')")
+	local old_md5 = luci.sys.exec("echo -n $(md5sum " .. rule_path .. "/gfwlist | awk '{print $1}')")
 	local status = fetch_gfwlist()
 	if status == 200 then
 		local new_md5 = luci.sys.exec("echo -n $([ -f '/tmp/gfwlist_tmp' ] && md5sum /tmp/gfwlist_tmp | awk '{print $1}')")
 		if old_md5 ~= new_md5 then
-			luci.sys.exec("mv -f /tmp/gfwlist_tmp " .. rule_path .. "/gfwlist.conf")
+			luci.sys.exec("mv -f /tmp/gfwlist_tmp " .. rule_path .. "/gfwlist")
 			reboot = 1
 			log("gfwlist 更新成功...")
 		else
