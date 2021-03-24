@@ -11,6 +11,10 @@ define rootfs_align
 $(patsubst %-256k,0x40000,$(patsubst %-128k,0x20000,$(patsubst %-64k,0x10000,$(patsubst squashfs%,0x4,$(patsubst root.%,%,$(1))))))
 endef
 
+define Build/append-image
+	dd if=$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED))-$(1) >> $@
+endef
+
 define Build/buffalo-enc
 	$(eval product=$(word 1,$(1)))
 	$(eval version=$(word 2,$(1)))
