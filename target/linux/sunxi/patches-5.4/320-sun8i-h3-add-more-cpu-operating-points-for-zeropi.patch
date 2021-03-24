@@ -1,0 +1,76 @@
+From 2b1e20ffe0617af3a13288b509532cf8429d10ff Mon Sep 17 00:00:00 2001
+From: Register <458892+aieu@users.noreply.github.com>
+Date: Sat, 27 Feb 2021 16:33:08 +0800
+Subject: [PATCH] sun8i h3: add more cpu operating points for zeropi
+
+add 1.368GHz/1.3v overlay for zeropi
+
+https://github.com/armbian/build/blob/master/patch/kernel/sunxi-current/sun8i-h3-add-overclock-overlays.patch
+
+Signed-off-by: Register <458892+aieu@users.noreply.github.com>
+---
+ arch/arm/boot/dts/sun8i-h3.dtsi | 48 +++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
+index 6056f206c..96cf1330a 100644
+--- a/arch/arm/boot/dts/sun8i-h3.dtsi
++++ b/arch/arm/boot/dts/sun8i-h3.dtsi
+@@ -64,6 +64,54 @@
+ 			opp-microvolt = <1200000 1200000 1300000>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
+ 		};
++
++		opp-1056000000 {
++			opp-hz = /bits/ 64 <1056000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1104000000 {
++			opp-hz = /bits/ 64 <1104000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1152000000 {
++			opp-hz = /bits/ 64 <1152000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1200000000 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1224000000 {
++			opp-hz = /bits/ 64 <1224000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1248000000 {
++			opp-hz = /bits/ 64 <1248000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1296000000 {
++			opp-hz = /bits/ 64 <1296000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1368000000 {
++			opp-hz = /bits/ 64 <1368000000>;
++			opp-microvolt = <1300000 1300000 1300000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
+ 	};
+ 
+ 	cpus {
+-- 
+2.24.3 (Apple Git-128)
+
