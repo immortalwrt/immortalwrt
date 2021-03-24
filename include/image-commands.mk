@@ -12,7 +12,7 @@ $(patsubst %-256k,0x40000,$(patsubst %-128k,0x20000,$(patsubst %-64k,0x10000,$(p
 endef
 
 define Build/append-image
-	dd if=$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED))-$(1) >> $@
+	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
 endef
 
 define Build/buffalo-enc
