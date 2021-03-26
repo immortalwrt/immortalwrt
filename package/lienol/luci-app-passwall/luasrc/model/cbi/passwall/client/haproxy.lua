@@ -30,19 +30,19 @@ o.default = false
 ---- Console Username
 o = s:option(Value, "console_user", translate("Console Username"))
 o.default = ""
-o:depends("balancing_enable", 1)
+o:depends("balancing_enable", true)
 
 ---- Console Password
 o = s:option(Value, "console_password", translate("Console Password"))
 o.password = true
 o.default = ""
-o:depends("balancing_enable", 1)
+o:depends("balancing_enable", true)
 
 ---- Console Port
 o = s:option(Value, "console_port", translate("Console Port"), translate(
                  "In the browser input routing IP plus port access, such as:192.168.1.1:1188"))
 o.default = "1188"
-o:depends("balancing_enable", 1)
+o:depends("balancing_enable", true)
 
 -- [[ Balancing Settings ]]--
 s = m:section(TypedSection, "haproxy_config", "",
