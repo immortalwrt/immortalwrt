@@ -466,10 +466,10 @@ msgstr "无效的分享URL信息"
 msgid "Paste Share URL Here"
 msgstr "在此处粘贴分享信息"
 
-msgid "Share url to clipboard unable."
+msgid "Share URL to clipboard unable."
 msgstr "无法分享URL到剪贴板。"
 
-msgid "Share url to clipboard successfully."
+msgid "Share URL to clipboard successfully."
 msgstr "成功复制分享URL到剪贴板。"
 
 msgid "Faltal on get option, please help in debug:"

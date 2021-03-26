@@ -17,7 +17,7 @@ config_t_get() {
 	echo ${ret:=$3}
 }
 
-if [ "$(top -bn1 | grep -v grep | grep $CONFIG/monitor.sh | wc -l)" -gt 2 ]; then
+if [ "$(pgrep -f $CONFIG/monitor.sh | wc -l)" -gt 2 ]; then
 	exit 1
 fi
 
@@ -35,13 +35,12 @@ do
 			#kcptun
 			use_kcp=$(config_n_get $TCP_NODE use_kcp 0)
 			if [ $use_kcp -gt 0 ]; then
-				icount=$(top -bn1 | grep -v grep | grep "$TMP_BIN_PATH/kcptun" | grep -i "tcp" | wc -l)
-				if [ $icount = 0 ]; then
+				if ! pgrep -af "$TMP_BIN_PATH/kcptun.*(tcp|TCP)" > /dev/null 2>&1; then
 					/etc/init.d/$CONFIG restart
 					exit 0
 				fi
 			fi
-			icount=$(top -bn1 | grep -v -E 'grep|kcptun' | grep "$TMP_BIN_PATH" | grep -i "TCP" | wc -l)
+			icount=$(pgrep -af "$TMP_BIN_PATH.*(tcp|TCP)" | grep -v kcptun | wc -l)
 			if [ $icount = 0 ]; then
 				/etc/init.d/$CONFIG restart
 				exit 0
@@ -55,8 +54,7 @@ do
 		if [ "$UDP_NODE" != "nil" ]; then
 			[ "$UDP_NODE" == "tcp" ] && continue
 			[ "$UDP_NODE" == "tcp_" ] && UDP_NODE=$TCP_NODE
-			icount=$(top -bn1 | grep -v grep | grep "$TMP_BIN_PATH" | grep -i "UDP" | wc -l)
-			if [ $icount = 0 ]; then
+			if ! pgrep -af "$TMP_BIN_PATH.*(udp|UDP)" > /dev/null 2>&1; then
 				/etc/init.d/$CONFIG restart
 				exit 0
 			fi
@@ -74,8 +72,7 @@ do
 	fi
 	
 	[ -f "$TMP_BIN_PATH/chinadns-ng" ] && {
-		icount=$(top -bn1 | grep -v grep | grep $TMP_BIN_PATH/chinadns-ng | wc -l)
-		if [ $icount = 0 ]; then
+		if ! pgrep -x "$TMP_BIN_PATH/chinadns-ng" > /dev/null 2>&1; then
 			/etc/init.d/$CONFIG restart
 			exit 0
 		fi
@@ -84,8 +81,7 @@ do
 	#haproxy
 	use_haproxy=$(config_t_get global_haproxy balancing_enable 0)
 	if [ $use_haproxy -gt 0 ]; then
-		icount=$(top -bn1 | grep -v grep | grep "$TMP_BIN_PATH/haproxy" | wc -l)
-		if [ $icount = 0 ]; then
+		if ! pgrep -x "$TMP_BIN_PATH/haproxy" > /dev/null 2>&1; then
 			/etc/init.d/$CONFIG restart
 			exit 0
 		fi
