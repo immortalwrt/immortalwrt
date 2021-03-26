@@ -205,7 +205,7 @@
  
  	return err;
  }
-@@ -1130,36 +1130,6 @@ static int mtk_pcie_request_resources(st
+@@ -1133,36 +1133,6 @@ static int mtk_pcie_request_resources(st
  		return err;
  
  	err = devm_pci_remap_iospace(dev, &pcie->pio, pcie->io.start);
@@ -242,7 +242,7 @@
  
  	return 0;
  }
-@@ -1190,7 +1160,14 @@ static int mtk_pcie_probe(struct platfor
+@@ -1193,7 +1163,14 @@ static int mtk_pcie_probe(struct platfor
  	if (err)
  		goto put_resources;
  
@@ -258,7 +258,7 @@
  	if (err)
  		goto put_resources;
  
-@@ -1203,6 +1180,80 @@ put_resources:
+@@ -1206,6 +1183,80 @@ put_resources:
  	return err;
  }
  
@@ -339,7 +339,7 @@
  static const struct mtk_pcie_soc mtk_pcie_soc_v1 = {
  	.ops = &mtk_pcie_ops,
  	.startup = mtk_pcie_startup_port,
-@@ -1241,10 +1292,13 @@ static const struct of_device_id mtk_pci
+@@ -1244,10 +1295,13 @@ static const struct of_device_id mtk_pci
  
  static struct platform_driver mtk_pcie_driver = {
  	.probe = mtk_pcie_probe,

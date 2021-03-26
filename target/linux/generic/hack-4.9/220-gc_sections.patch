@@ -190,7 +190,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  		__stop___dbe_table = .;
  	}
  
-@@ -121,7 +121,7 @@ SECTIONS
+@@ -122,7 +122,7 @@ SECTIONS
  	. = ALIGN(4);
  	.mips.machines.init : AT(ADDR(.mips.machines.init) - LOAD_OFFSET) {
  		__mips_machines_start = .;

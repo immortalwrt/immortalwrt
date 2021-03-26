@@ -214,7 +214,7 @@
  #include <linux/uaccess.h>
  #include <linux/ipv6.h>
  #include <linux/icmpv6.h>
-@@ -836,10 +837,10 @@ static void tcp_v6_send_response(const s
+@@ -837,10 +838,10 @@ static void tcp_v6_send_response(const s
  	topt = (__be32 *)(t1 + 1);
  
  	if (tsecr) {
@@ -231,7 +231,7 @@
  #ifdef CONFIG_TCP_MD5SIG
 --- a/include/linux/ipv6.h
 +++ b/include/linux/ipv6.h
-@@ -6,6 +6,7 @@
+@@ -7,6 +7,7 @@
  
  #define ipv6_optlen(p)  (((p)->hdrlen+1) << 3)
  #define ipv6_authlen(p) (((p)->hdrlen+2) << 2)

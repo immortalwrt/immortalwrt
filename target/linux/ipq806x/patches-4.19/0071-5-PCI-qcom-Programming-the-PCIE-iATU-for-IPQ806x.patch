@@ -100,7 +100,7 @@ Signed-off-by: Sham Muthayyan <smuthayy@codeaurora.org>
  static int qcom_pcie_get_resources_2_1_0(struct qcom_pcie *pcie)
  {
  	struct qcom_pcie_resources_2_1_0 *res = &pcie->res.v2_1_0;
-@@ -433,6 +508,9 @@ static int qcom_pcie_init_2_1_0(struct q
+@@ -435,6 +510,9 @@ static int qcom_pcie_init_2_1_0(struct q
  	writel(CFG_BRIDGE_SB_INIT,
  	       pci->dbi_base + PCIE20_AXI_MSTR_RESP_COMP_CTRL1);
  

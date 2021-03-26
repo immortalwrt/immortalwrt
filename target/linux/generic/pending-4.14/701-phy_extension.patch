@@ -9,7 +9,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 
 --- a/drivers/net/phy/phy.c
 +++ b/drivers/net/phy/phy.c
-@@ -382,6 +382,73 @@ void phy_ethtool_ksettings_get(struct ph
+@@ -383,6 +383,73 @@ void phy_ethtool_ksettings_get(struct ph
  }
  EXPORT_SYMBOL(phy_ethtool_ksettings_get);
  
