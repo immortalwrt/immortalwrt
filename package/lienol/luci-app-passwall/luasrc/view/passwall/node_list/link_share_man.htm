@@ -80,7 +80,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 		var opt = {
 			base: "cbid.passwall",
 			client : true,
-			fallback: "dummy",
 			get: function(opt) {
 				var id = this.base + "." + opt;
 				var obj = document.getElementsByName(id)[0] || document.getElementsByClassName(id)[0] || document.getElementById(id)
@@ -88,13 +87,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 					return obj;
 				} else {
 					return null;
-					/*
-					obj = document.getElementById(this.fallback);
-					if  (opt === "address") obj.value = "0.0.0.0";
-					else if (opt === "mux") obj.value = "0";
-					if (this.client || (opt !== "address" && opt !== "mux")) alert("<%:Faltal on get option, please help in debug: %>" + opt);
-					return obj;
-					*/
 				}
 			},
 			getlist: function(opt) {
@@ -131,7 +123,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 		}
 		opt.base = "cbid." + urlname + "." + sid;
 		opt.client = urlname.indexOf("server") === -1;
-		opt.fallback = urlname + "-dummy";
 		var v_type = opt.get("type").value;
 		var v_alias = opt.get("remarks");
 		var url = null;
@@ -352,7 +343,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 		var opt = {
 			base: 'cbid.passwall',
 			client : true,
-			fallback: 'dummy',
 			get: function(opt) {
 				var obj;
 				var id = this.base + '.' + opt;
@@ -360,8 +350,7 @@ local api = require "luci.model.cbi.passwall.api.api"
 				if (obj) {
 					return obj;
 				} else {
-					if (this.client || (opt !== "address" && opt !== "mux")) alert('<%:Faltal on get option, please help in debug: %>' + opt);
-					return document.getElementById(this.fallback);
+					return null;
 				}
 			},
 			set: function(opt, val) {
@@ -402,7 +391,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 		}
 		opt.base = "cbid." + urlname + "." + sid;
 		opt.client = urlname.indexOf("server") === -1;
-		opt.fallback = urlname + '-dummy';
 		var ssrurl = prompt('<%:Paste Share URL Here%>', '');
 		if (ssrurl === null || ssrurl === "") {
 			return false;
@@ -793,7 +781,6 @@ local api = require "luci.model.cbi.passwall.api.api"
 	}
 
 //]]></script>
-<input type="text" class="hidden" id='<%=self.option%>-dummy' value="" />
 <input type="button" class="cbi-button cbi-button-apply" value='<%:From Share URL%>' onclick="return fromUrl(this, '<%=self.option%>', '<%=self.value%>')" />
 <input type="button" class="cbi-button cbi-button-apply" value='<%:Build Share URL%>' onclick="return buildUrl(this, '<%=self.option%>', '<%=self.value%>')" />
 <span id="<%=self.option%>-status"></span>
