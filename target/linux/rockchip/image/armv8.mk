@@ -42,3 +42,13 @@ define Device/radxa_rock-pi-4
   DEVICE_PACKAGES := brcmfmac-firmware-43456-sdio brcmfmac-nvram-43456-sdio kmod-brcmfmac -urngd
 endef
 TARGET_DEVICES += radxa_rock-pi-4
+
+define Device/xunlong_orangepi-r1-plus
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi R1 Plus
+  SOC := rk3328
+  UBOOT_DEVICE_NAME := orangepi-r1-plus-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script nanopi-r2s | pine64-bin | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-usb-net-rtl8152
+endef
+TARGET_DEVICES += xunlong_orangepi-r1-plus
