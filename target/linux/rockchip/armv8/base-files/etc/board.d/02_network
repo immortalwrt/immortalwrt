@@ -38,8 +38,8 @@ rockchip_setup_macs()
 		lan_mac=$(macaddr_add "$wan_mac" +1)
 		;;
 	friendlyarm,nanopi-r4s)
-		wan_mac=$(cat /sys/class/net/eth0/address)
-		lan_mac=$(macaddr_add "$wan_mac" +1)
+		lan_mac=$(cat /sys/class/net/eth1/address)
+		wan_mac=$(macaddr_add "$lan_mac" +1)
 		;;
 	esac
 
