@@ -9,37 +9,33 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fcgiwrap
 PKG_VERSION:=1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_MAINTAINER:=Tobias Waldvogel <tobias.waldvogel@gmail.com>
+
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/fcgiwrap
   SECTION:=net
   CATEGORY:=Network
   TITLE:=FCGI wrapper for CGI
   DEPENDS:=+libpcre +spawn-fcgi +fcgi
-  MAINTAINER:=Tobias Waldvogel <tobias.waldvogel@gmail.com>
-endef
-
-define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) src/* $(PKG_BUILD_DIR)/
 endef
 
 define Build/Compile
 	$(TARGET_CC) \
 		-I$(STAGING_DIR)/usr/include $(TARGET_CFLAGS) -Wall -Werror \
 		-L$(STAGING_DIR)/usr/lib -lfcgi \
-		-o$(PKG_BUILD_DIR)/$(PKG_NAME) $(PKG_BUILD_DIR)/$(PKG_NAME).c
+		-o$(PKG_BUILD_DIR)/fcgiwrap $(PKG_BUILD_DIR)/fcgiwrap.c
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/fcgiwrap/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/fcgiwrap $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/fcgiwrap.init $(1)/etc/init.d/fcgiwrap
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,fcgiwrap))

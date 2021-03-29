@@ -6,20 +6,20 @@
 #
 include $(TOPDIR)/rules.mk
 
-PKG_NAME := oscam
-PKG_REV := 33e2d6
-PKG_VERSION := r11518-$(PKG_REV)
-PKG_RELEASE := 1
+PKG_NAME:=oscam
+PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_SOURCE_PROTO:= git
-PKG_SOURCE_VERSION := $(PKG_REV)
-PKG_SOURCE_URL := https://github.com/nx111/oscam.git
-PKG_MIRROR_HASH := 6873d24637f14ec695e32a8a91f17bd8ef38d615a55fb76e6440f6a37da906e3
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/nx111/oscam.git
+PKG_SOURCE_DATE:=2020-12-12
+PKG_SOURCE_VERSION:=aafda4bca3c347698ef1dc32f7ebeff76378d55a
+PKG_MIRROR_HASH:=d2cd4508ef80a3cbd8ef950e5446f2f754b339f179c4f774ef8660b39fd5c4c1
 
-PKG_LICENSE := GPL-3.0
-PKG_LICENSE_FILE := COPYING
+PKG_LICENSE:=GPL-3.0
+PKG_LICENSE_FILE:=COPYING
+PKG_MAINTAINER:=Tomasz Maciej Nowak <tomek_n@o2.pl>
 
-PKG_MAINTAINER := Tomasz Maciej Nowak <tomek_n@o2.pl>
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -28,23 +28,23 @@ define Package/oscam/config
 endef
 
 define Package/oscam
-  SECTION := net
-  CATEGORY := Network
-  TITLE := Open Source Conditional Access Modul
-  URL := http://www.streamboard.tv/oscam
-  DEPENDS := +OSCAM_USE_LIBCRYPTO:libopenssl +OSCAM_USE_LIBUSB:libusb-1.0 +OSCAM_USE_PCSC:pcscd
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=Open Source Conditional Access Modul
+  URL:=http://www.streamboard.tv/oscam
+  DEPENDS:=+OSCAM_USE_LIBCRYPTO:libopenssl +OSCAM_USE_LIBUSB:libusb-1.0 +OSCAM_USE_PCSC:pcscd
 endef
 
 define Package/list-smargo
-  SECTION := net
-  CATEGORY := Network
-  TITLE := List Smargo readers
-  URL := http://www.streamboard.tv/oscam
-  DEPENDS := oscam @OSCAM_CARDREADER_SMARGO
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=List Smargo readers
+  URL:=http://www.streamboard.tv/oscam
+  DEPENDS:=oscam @OSCAM_CARDREADER_SMARGO
 endef
 
-CONFIGURE_CMD = ./config.sh
-CONFIGURE_ARGS = \
+CONFIGURE_CMD:=./config.sh
+CONFIGURE_ARGS+= \
 	--restore \
 	$(if $(CONFIG_OSCAM_WEBIF),--enable,--disable) WEBIF \
 	$(if $(CONFIG_OSCAM_WEBIF_LIVELOG),--enable,--disable) WEBIF_LIVELOG \
@@ -133,7 +133,7 @@ define Package/oscam/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/Distribution/oscam $(1)/usr/bin/oscam
 
 	$(INSTALL_DIR) $(1)/etc/oscam
-#	$(CP) $(PKG_BUILD_DIR)/Distribution/doc/example/* $(1)/etc/oscam/
+	# $(CP) $(PKG_BUILD_DIR)/Distribution/doc/example/* $(1)/etc/oscam/
 	$(INSTALL_CONF) ./files/oscam.conf $(1)/etc/oscam/oscam.conf
 	$(INSTALL_CONF) ./files/oscam.user $(1)/etc/oscam/oscam.user
 	$(INSTALL_CONF) ./files/oscam.dvbapi $(1)/etc/oscam/oscam.dvbapi

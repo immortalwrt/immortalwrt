@@ -9,35 +9,30 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=udp2raw-tunnel
 PKG_VERSION:=20200818.0
-PKG_RELEASE:=1
+PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/wangyu-/udp2raw-tunnel.git
-PKG_MIRROR_HASH:=6b7c07f6277729ba8b3b287316b5b7a80c5b1e47258ecc8b1c8618be3aa73888
-PKG_SOURCE_VERSION:=cc6ea766c495cf4c69d1c7485728ba022b0f19de
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/wangyu-/udp2raw-tunnel/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=712b0cb819555cb374206e95005b0ca6b4af86c74d572e0570630f67dfeea313
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Yu Wang
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/udp2raw-tunnel
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=Tunnel which turns UDP Traffic into Encrypted FakeTCP/UDP/ICMP Traffic
-	URL:=https://github.com/wangyu-/udp2raw-tunnel
-	DEPENDS:= +libstdcpp +libpthread +librt
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=Tunnel which turns UDP Traffic into Encrypted FakeTCP/UDP/ICMP Traffic
+  URL:=https://github.com/wangyu-/udp2raw-tunnel
+  DEPENDS:=+libstdcpp +libpthread +librt
 endef
 
 define Package/udp2raw-tunnel/description
-	udp2raw-tunnel is a tunnel which turns UDP Traffic into Encrypted FakeTCP/UDP/ICMP Traffic by using Raw Socket.
+  udp2raw-tunnel is a tunnel which turns UDP Traffic into Encrypted FakeTCP/UDP/ICMP Traffic by using Raw Socket.
 endef
 
 MAKE_FLAGS += cross
