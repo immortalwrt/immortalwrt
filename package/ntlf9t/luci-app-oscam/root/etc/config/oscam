@@ -1,3 +1,0 @@
-
-config oscam 'config'
-	option enabled '0'
