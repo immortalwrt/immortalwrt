@@ -28,21 +28,21 @@ o.rmempty = false
 ---- Automatically turn off time
 o = s:option(ListValue, "time_off", translate("Automatically turn off time"))
 o.default = nil
-o:depends("auto_on", "1")
+o:depends("auto_on", true)
 o:value(nil, translate("Disable"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 
 ---- Automatically turn on time
 o = s:option(ListValue, "time_on", translate("Automatically turn on time"))
 o.default = nil
-o:depends("auto_on", "1")
+o:depends("auto_on", true)
 o:value(nil, translate("Disable"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 
 ---- Automatically restart time
 o = s:option(ListValue, "time_restart", translate("Automatically restart time"))
 o.default = nil
-o:depends("auto_on", "1")
+o:depends("auto_on", true)
 o:value(nil, translate("Disable"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 --]]
