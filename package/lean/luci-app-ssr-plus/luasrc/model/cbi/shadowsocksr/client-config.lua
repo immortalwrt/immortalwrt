@@ -512,17 +512,15 @@ o = s:option(Flag, "tls_sessionTicket", translate("Session Ticket"))
 o:depends({type = "trojan", tls = true})
 o.default = "0"
 
--- [[ Trojan TLS ]]--
+-- [[ uTLS ]]--
 o = s:option(ListValue, "fingerprint", translate("Finger Print"))
 o:value("disable", translate("disable"))
 o:value("firefox", translate("firefox"))
 o:value("chrome", translate("chrome"))
-if is_finded("xray") then
-	o:value("safari", translate("safari"))
-	o:value("randomized", translate("random"))
-end
+o:value("safari", translate("safari"))
+o:value("randomized", translate("randomized"))
 o:depends({type = "v2ray", tls = true})
-o.default = "firefox"
+o.default = "disable"
 
 o = s:option(Value, "tls_host", translate("TLS Host"))
 o.datatype = "hostname"
