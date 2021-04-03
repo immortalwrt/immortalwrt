@@ -56,14 +56,10 @@ Co-authored-by: gzelvis <gzelvis@gmail.com>
 +			opp-microvolt = <1125000>;
 +		};
 +		opp06 {
-+			opp-hz = /bits/ 64 <1512000000>;
-+			opp-microvolt = <1200000>;
-+		};
-+ 		opp07 {
 +			opp-hz = /bits/ 64 <1608000000>;
 +			opp-microvolt = <1225000>;
 +		};
-+		opp08 {
++		opp07 {
 +			opp-hz = /bits/ 64 <1800000000>;
 +			opp-microvolt = <1275000>;
 +		};
