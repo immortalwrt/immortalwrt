@@ -169,6 +169,7 @@ Co-authored-by: gzelvis <gzelvis@gmail.com>
 +&gpu {
 +	operating-points-v2 = <&gpu_opp_table>;
 +};
+
 --- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
 @@ -14,7 +14,7 @@
