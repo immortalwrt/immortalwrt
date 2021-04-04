@@ -22,7 +22,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  #include <linux/crc32.h>
  #include <linux/if_vlan.h>
  #include <linux/uaccess.h>
-@@ -4006,6 +4007,22 @@ static void rtl_tally_reset(struct r8152
+@@ -3978,6 +3979,22 @@ static void rtl_tally_reset(struct r8152
  	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RSTTALLY, ocp_data);
  }
  
@@ -45,7 +45,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  static void r8152b_init(struct r8152 *tp)
  {
  	u32 ocp_data;
-@@ -4047,6 +4064,8 @@ static void r8152b_init(struct r8152 *tp
+@@ -4019,6 +4036,8 @@ static void r8152b_init(struct r8152 *tp
  	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_USB_CTRL);
  	ocp_data &= ~(RX_AGG_DISABLE | RX_ZERO_EN);
  	ocp_write_word(tp, MCU_TYPE_USB, USB_USB_CTRL, ocp_data);
@@ -54,7 +54,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  }
  
  static void r8153_init(struct r8152 *tp)
-@@ -4168,6 +4187,8 @@ static void r8153_init(struct r8152 *tp)
+@@ -4145,6 +4164,8 @@ static void r8153_init(struct r8152 *tp)
  		tp->coalesce = COALESCE_SLOW;
  		break;
  	}
@@ -63,7 +63,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  }
  
  static void r8153b_init(struct r8152 *tp)
-@@ -4231,6 +4252,8 @@ static void r8153b_init(struct r8152 *tp
+@@ -4208,6 +4229,8 @@ static void r8153b_init(struct r8152 *tp
  	rtl_tally_reset(tp);
  
  	tp->coalesce = 15000;	/* 15 us */

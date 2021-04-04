@@ -137,7 +137,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/can/c_can/c_can.c
 +++ b/drivers/net/can/c_can/c_can.c
-@@ -1105,7 +1105,7 @@ static int c_can_poll(struct napi_struct
+@@ -1093,7 +1093,7 @@ static int c_can_poll(struct napi_struct
  
  end:
  	if (work_done < quota) {
@@ -181,7 +181,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -730,7 +730,7 @@ static int m_can_poll(struct napi_struct
+@@ -727,7 +727,7 @@ static int m_can_poll(struct napi_struct
  		work_done += m_can_do_rx_poll(dev, (quota - work_done));
  
  	if (work_done < quota) {
@@ -1324,7 +1324,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	return rxd_done;
 --- a/drivers/net/wan/fsl_ucc_hdlc.c
 +++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -578,7 +578,7 @@ static int ucc_hdlc_poll(struct napi_str
+@@ -582,7 +582,7 @@ static int ucc_hdlc_poll(struct napi_str
  	howmany += hdlc_rx_done(priv, budget - howmany);
  
  	if (howmany < budget) {
