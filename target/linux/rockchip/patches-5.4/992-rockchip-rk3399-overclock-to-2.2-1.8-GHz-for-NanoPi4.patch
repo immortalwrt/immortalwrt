@@ -16,7 +16,7 @@ Co-authored-by: gzelvis <gzelvis@gmail.com>
 
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4-opp.dtsi
-@@ -0,0 +1,156 @@
+@@ -0,0 +1,152 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2016-2017 Fuzhou Rockchip Electronics Co., Ltd
