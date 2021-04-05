@@ -14,12 +14,12 @@
 +#include "rk3328-nanopi-r2s-u-boot.dtsi"
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-orangepi-r1-plus.dts
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,38 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +#include "rk3328-nanopi-r2s.dts"
 +
 +/ {
-+	model = "Xunlong Orange Pi R1 PLUS";
++	model = "Xunlong Orange Pi R1 Plus";
 +	compatible = "xunlong,orangepi-r1-plus", "rockchip,rk3328";
 +};
 +
@@ -28,7 +28,6 @@
 +};
 +
 +&spi0 {
-+	max-freq = <48000000>;
 +	status = "okay";
 +
 +	flash@0 {
