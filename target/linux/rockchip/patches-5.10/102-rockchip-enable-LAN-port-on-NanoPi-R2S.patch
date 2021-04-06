@@ -13,11 +13,10 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -103,6 +103,18 @@
- 		regulator-min-microvolt = <5000000>;
- 		regulator-max-microvolt = <5000000>;
+@@ -44,6 +44,18 @@
+ 		};
  	};
-+
+ 
 +	vcc_rtl8153: vcc-rtl8153-regulator {
 +		compatible = "regulator-fixed";
 +		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
@@ -29,11 +28,12 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		regulator-max-microvolt = <5000000>;
 +		enable-active-high;
 +	};
- };
- 
- &cpu0 {
-@@ -324,6 +336,12 @@
- 			rockchip,pins = <1 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-0 = <&lan_led_pin>,  <&sys_led_pin>, <&wan_led_pin>;
+@@ -273,6 +285,12 @@
+ 			};
  		};
  	};
 +
@@ -44,13 +44,17 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	};
  };
  
- &pwm2 {
-@@ -379,3 +397,8 @@
+ &io_domains {
+@@ -379,3 +397,12 @@
  &usb_host0_ohci {
  	status = "okay";
  };
 +
 +&usbdrd3 {
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
 +	dr_mode = "host";
 +	status = "okay";
 +};

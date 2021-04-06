@@ -45,12 +45,16 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pwm2 {
-@@ -375,3 +393,8 @@
+@@ -375,3 +393,12 @@
  &usb_host0_ohci {
  	status = "okay";
  };
 +
 +&usbdrd3 {
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
 +	dr_mode = "host";
 +	status = "okay";
 +};
