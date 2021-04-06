@@ -25,7 +25,7 @@ Link: https://lore.kernel.org/r/20210319051627.814-2-cnsztl@gmail.com
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3399-nanopi-r4s.dts   | 133 ++++++++++++++++++
+ .../boot/dts/rockchip/rk3399-nanopi-r4s.dts   | 133 +++++++++++++++++++++
  2 files changed, 134 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 

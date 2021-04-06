@@ -25,8 +25,8 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  
  / {
 @@ -115,6 +116,72 @@
+ 		regulator-min-microvolt = <5000000>;
  		regulator-max-microvolt = <5000000>;
- 		enable-active-high;
  	};
 +
 +	dmc: dmc {
