@@ -41,6 +41,7 @@ ALLWIFIBOARDS:= \
 	linksys_ea8300 \
 	linksys_mr8300-v0 \
 	luma_wrtq-329acn \
+	mikrotik_cap-ac \
 	mikrotik_hap-ac2 \
 	mikrotik_hap-ac3 \
 	mikrotik_sxtsq-5-ac \
@@ -133,6 +134,7 @@ $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,linksys_mr8300-v0,Linksys MR8300))
 $(eval $(call generate-ipq-wifi-package,luma_wrtq-329acn,Luma WRTQ-329ACN))
+$(eval $(call generate-ipq-wifi-package,mikrotik_cap-ac,Mikrotik cAP ac))
 $(eval $(call generate-ipq-wifi-package,mikrotik_hap-ac2,Mikrotik hAP ac2))
 $(eval $(call generate-ipq-wifi-package,mikrotik_hap-ac3,Mikrotik hAP ac3))
 $(eval $(call generate-ipq-wifi-package,mikrotik_sxtsq-5-ac,MikroTik SXTsq 5 ac))
