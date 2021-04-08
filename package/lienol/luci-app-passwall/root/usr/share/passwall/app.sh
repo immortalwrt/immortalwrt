@@ -194,9 +194,9 @@ gen_dnsmasq_items() {
 	local fwd_dns=${1}; shift 1
 	local outf=${1}; shift 1
 
-	awk -v ipsetlist="${ipsetlist}" -v fwd_dns="${fwd_dns}" -v outf="${outf}" '
+	awk -v ipsetlist="${ipsetlist}" -v ipsetoutf="${TMP_DNSMASQ_PATH}/ipset.conf" -v fwd_dns="${fwd_dns}" -v outf="${outf}" '
 		BEGIN {
-			if(outf == "") outf="/dev/stdout";
+			if(outf == "") {outf="/dev/stdout"; ipsetoutf="/dev/stdout";}
 			split(fwd_dns, dns, ","); setdns=length(dns)>0; setlist=length(ipsetlist)>0;
 			if(setdns) for(i in dns) if(length(dns[i])==0) delete dns[i];
 			fail=1;
@@ -205,14 +205,15 @@ gen_dnsmasq_items() {
 			fail=0
 			if(! (setdns || setlist)) {printf("server=%s\n", $0) >>outf; next;}
 			if(setdns) for(i in dns) printf("server=/.%s/%s\n", $0, dns[i]) >>outf;
-			if(setlist) printf("ipset=/.%s/%s\n", $0, ipsetlist) >>outf;
+			
+			if(setlist) printf("ipset=/.%s/%s\n", $0, ipsetlist) >>ipsetoutf;
 		}
-		END {fflush(outf); close(outf); exit(fail);}
+		END {fflush(outf); close(outf); fflush(ipsetoutf); close(ipsetoutf); exit(fail);}
 	'
 }
 
 gen_dnsmasq_fake_items() {
-	local fwd_dns="1.2.3.4"
+	local fwd_dns=${1}; shift 1
 	local outf=${1}; shift 1
 
 	awk -v fwd_dns="${fwd_dns}" -v outf="${outf}" '
@@ -317,6 +318,20 @@ load_config() {
 		NO_PROXY=1
 	}
 	
+	count_hosts_str=
+	[ -f "${RULES_PATH}/direct_host" ] && direct_hosts_str="$(echo -n $(cat ${RULES_PATH}/direct_host) | sed "s/ /|/g")"
+	[ -f "${RULES_PATH}/proxy_host" ] && proxy_hosts_str="$(echo -n $(cat ${RULES_PATH}/proxy_host) | sed "s/ /|/g")"
+	[ -n "$direct_hosts_str" ] && {
+		tmp="${direct_hosts_str}"
+		[ -n "$count_hosts_str" ] && tmp="${count_hosts_str}|${direct_hosts_str}"
+		count_hosts_str="$tmp"
+	}
+	[ -n "$proxy_hosts_str" ] && {
+		tmp="${proxy_hosts_str}"
+		[ -n "$count_hosts_str" ] && tmp="${count_hosts_str}|${proxy_hosts_str}"
+		count_hosts_str="$tmp"
+	}
+
 	global=$(echo "${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE}${UDP_PROXY_MODE}${LOCALHOST_UDP_PROXY_MODE}" | grep "global")
 	returnhome=$(echo "${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE}${UDP_PROXY_MODE}${LOCALHOST_UDP_PROXY_MODE}" | grep "returnhome")
 	chnlist=$(echo "${TCP_PROXY_MODE}${LOCALHOST_TCP_PROXY_MODE}${UDP_PROXY_MODE}${LOCALHOST_UDP_PROXY_MODE}" | grep "chnroute")
@@ -366,7 +381,7 @@ run_socks() {
 	else
 		msg="某种原因，此 Socks 服务的相关配置已失联，启动中止！"
 	fi
-	
+
 	if [ "$type" == "xray" ] && ([ -n "$(config_n_get $node balancing_node)" ] || [ "$(config_n_get $node default_node)" != "_direct" -a "$(config_n_get $node default_node)" != "_blackhole" ]); then
 		unset msg
 	fi
@@ -403,17 +418,20 @@ run_socks() {
 		local protocol=$(config_n_get $node protocol client)
 		local brook_tls=$(config_n_get $node brook_tls 0)
 		[ "$protocol" == "wsclient" ] && {
-			[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}" 
+			[ "$brook_tls" == "1" ] && server_host="wss://${server_host}" || server_host="ws://${server_host}"
 		}
 		ln_start_bin "$(first_type $(config_t_get global_app brook_file) brook)" "brook_SOCKS_${flag}" $log_file "$protocol" --socks5 "$bind:$socks_port" -s "$server_host:$port" -p "$(config_n_get $node password)"
 	;;
 	ss|ssr)
 		lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $socks_port -server_host $server_host -server_port $port > $config_file
-		ln_start_bin "$(first_type ${type}-local)" "${type}-local" $log_file -c "$config_file" -b "$bind" -u -v
+		ss_program="$(first_type ${type}local ${type}-local)"
+		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
+			ss_extra_arg="-U" || ss_extra_arg="-u"
+		ln_start_bin "$ss_program" "${type}-local" $log_file -c "$config_file" -v $ss_extra_arg
 	;;
 	esac
-	
-	# socks to http
+
+	# http to socks
 	[ "$type" != "xray" ] && [ "$type" != "socks" ] && [ "$http_port" != "0" ] && [ "$http_config_file" != "nil" ] && {
 		lua $API_GEN_XRAY_PROTO -local_proto http -local_address "0.0.0.0" -local_port $http_port -server_proto socks -server_address "127.0.0.1" -server_port $socks_port -server_username $_username -server_password $_password > $http_config_file
 		echo lua $API_GEN_XRAY_PROTO -local_proto http -local_address "0.0.0.0" -local_port $http_port -server_proto socks -server_address "127.0.0.1" -server_port $socks_port -server_username $_username -server_password $_password
@@ -448,7 +466,7 @@ run_redir() {
 		[ "$bind" != "127.0.0.1" ] && echolog "${REDIR_TYPE}节点：$remarks，节点：${server_host}:${port}，监听端口：$local_port"
 	}
 	eval ${REDIR_TYPE}_NODE_PORT=$port
-	
+
 	case "$REDIR_TYPE" in
 	UDP)
 		case "$type" in
@@ -488,7 +506,10 @@ run_redir() {
 		;;
 		ss|ssr)
 			lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port > $config_file
-			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -U -v
+			ss_program="$(first_type ${type}local ${type}-redir)"
+			[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
+				ss_extra_arg="--protocol redir -u" || ss_extra_arg="-U"
+			ln_start_bin "$ss_program" "${type}-redir" $log_file -c "$config_file" -v $ss_extra_arg
 		;;
 		esac
 	;;
@@ -557,7 +578,7 @@ run_redir() {
 			local protocol=$(config_n_get $node protocol client)
 			local brook_tls=$(config_n_get $node brook_tls 0)
 			if [ "$protocol" == "wsclient" ]; then
-				[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}" 
+				[ "$brook_tls" == "1" ] && server_ip="wss://${server_ip}" || server_ip="ws://${server_ip}"
 				socks_port=$(get_new_port 2081 tcp)
 				ln_start_bin "$(first_type $(config_t_get global_app brook_file) brook)" "brook_tcp" $log_file wsclient --socks5 "127.0.0.1:$socks_port" -s "$server_ip:$port" -p "$(config_n_get $node password)"
 				_socks_flag=1
@@ -574,14 +595,17 @@ run_redir() {
 			fi
 		;;
 		ss|ssr)
+			ss_program="$(first_type ${type}local ${type}-redir)"
+			[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && \
+				ss_extra_arg="--protocol redir"
 			if [ "$kcptun_use" == "1" ]; then
 				lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port -server_host "127.0.0.1" -server_port $KCPTUN_REDIR_PORT > $config_file
 				[ "$UDP_NODE" == "tcp" ] && echolog "Kcptun不支持UDP转发！"
 			else
 				lua $API_GEN_SS -node $node -local_addr "0.0.0.0" -local_port $local_port > $config_file
-				[ "$UDP_NODE" == "tcp" ] && extra_param="-u"
+				[ "$UDP_NODE" == "tcp" ] && ss_extra_arg="$ss_extra_arg -u"
 			fi
-			ln_start_bin "$(first_type ${type}-redir)" "${type}-redir" $log_file -c "$config_file" -v $extra_param
+			ln_start_bin "$ss_program" "${type}-redir" $log_file -c "$config_file" -v $ss_extra_arg
 		;;
 		esac
 		if [ -n "$_socks_flag" ]; then
@@ -590,7 +614,7 @@ run_redir() {
 			ln_start_bin "$(first_type ipt2socks)" "ipt2socks_tcp" $log_file -l "$local_port" -b 0.0.0.0 -s "$_socks_address" -p "$_socks_port" -R -v $extra_param
 		fi
 		unset _socks_flag _socks_address _socks_port _socks_username _socks_password
-		
+
 		[ "$type" != "xray" ] && {
 			[ "$tcp_node_socks" = "1" ] && {
 				local port=$tcp_node_socks_port
@@ -617,7 +641,7 @@ node_switch() {
 		local log_file=$TMP_PATH/${1}.log
 		eval current_port=\$${1}_REDIR_PORT
 		local port=$(cat $TMP_PORT_PATH/${1})
-		
+
 		local ids=$(uci show $CONFIG | grep "=socks" | awk -F '.' '{print $2}' | awk -F '=' '{print $1}')
 		for id in $ids; do
 			[ "$(config_n_get $id enabled 0)" == "0" ] && continue
@@ -635,10 +659,10 @@ node_switch() {
 			}
 			break
 		done
-		
+
 		run_redir $node "0.0.0.0" $port $config_file $1 $log_file
 		echo $node > $TMP_ID_PATH/${1}
-		
+
 		[ "$1" = "TCP" ] && {
 			[ "$(config_t_get global udp_node nil)" = "tcp_" ] && {
 				top -bn1 | grep -E "$TMP_PATH" | grep -i "UDP" | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
@@ -646,7 +670,7 @@ node_switch() {
 				start_redir UDP
 			}
 		}
-		
+
 		#local node_net=$(echo $1 | tr 'A-Z' 'a-z')
 		#uci set $CONFIG.@global[0].${node_net}_node=$node
 		#uci commit $CONFIG
@@ -759,13 +783,13 @@ start_crontab() {
 		echo "$t lua $APP_PATH/subscribe.lua start log > /dev/null 2>&1 &" >>/etc/crontabs/root
 		echolog "配置定时任务：自动更新节点订阅。"
 	fi
-	
+
 	start_daemon=$(config_t_get global_delay start_daemon 0)
 	[ "$start_daemon" = "1" ] && $APP_PATH/monitor.sh > /dev/null 2>&1 &
-	
+
 	AUTO_SWITCH_ENABLE=$(config_t_get auto_switch enable 0)
 	[ "$AUTO_SWITCH_ENABLE" = "1" ] && $APP_PATH/test.sh > /dev/null 2>&1 &
-	
+
 	/etc/init.d/cron restart
 }
 
@@ -779,19 +803,21 @@ start_dns() {
 	local pdnsd_forward other_port msg
 	dns_listen_port=${DNS_PORT}
 	pdnsd_forward=${DNS_FORWARD}
-	
+
 	china_ng_listen_port=$(expr $dns_listen_port + 1)
 	china_ng_listen="127.0.0.1#${china_ng_listen_port}"
 	china_ng_chn=$(echo -n $(echo "${LOCAL_DNS}" | sed "s/,/\n/g" | head -n2) | tr " " ",")
 	china_ng_gfw="127.0.0.1#${dns_listen_port}"
 	[ -n "${returnhome}" ] && china_ng_chn="${china_ng_gfw}" && china_ng_gfw="${LOCAL_DNS}"
-	
-	echolog "过滤服务配置：准备接管域名解析[$?]..."
-	
+
+	echolog "过滤服务配置：准备接管域名解析..."
+
 	case "$DNS_MODE" in
 	nonuse)
-		echolog "  - 被禁用，设置为非 '默认DNS' 并开启广告过滤可以按本插件内置的广告域名表进行过滤..."
+		echolog "  - 不过滤DNS..."
 		TUN_DNS=""
+		use_chinadns_ng=$(config_t_get global always_use_chinadns_ng 0)
+		[ "$use_chinadns_ng" == "0" ] && return
 	;;
 	dns2socks)
 		local dns2socks_socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
@@ -816,7 +842,7 @@ start_dns() {
 		_doh_host=$(echo $_doh_host_port | awk -F ':' '{print $1}')
 		_doh_port=$(echo $_doh_host_port | awk -F ':' '{print $2}')
 		_doh_bootstrap=$(echo $up_trust_doh | cut -d ',' -sf 2-)
-		
+
 		up_trust_doh_dns=$(config_t_get global up_trust_doh_dns "tcp")
 		if [ "$up_trust_doh_dns" = "socks" ]; then
 			socks_server=$(echo $(config_t_get global socks_server 127.0.0.1:9050) | sed "s/#/:/g")
@@ -849,7 +875,7 @@ start_dns() {
 		echolog "  - 域名解析：直接使用UDP节点请求DNS（$TUN_DNS）"
 	;;
 	fake_ip)
-		TUN_DNS="1.2.3.4"
+		TUN_DNS="11.1.1.1"
 		echolog "  - 域名解析：使用FakeIP方案..."
 	;;
 	custom)
@@ -858,9 +884,8 @@ start_dns() {
 		echolog "  - 域名解析：使用UDP协议自定义DNS（$TUN_DNS）解析..."
 	;;
 	esac
-	
+
 	[ -n "$chnlist" ] && [ "$DNS_MODE" != "custom" ] && [ "$DNS_MODE" != "fake_ip" ] && {
-		[ -f "${RULES_PATH}/chnlist" ] && cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
 		[ -n "$(first_type chinadns-ng)" ] && {
 			echolog "发现ChinaDNS-NG，将启动。"
 			CHINADNS_NG=1
@@ -882,17 +907,19 @@ start_dns() {
 				china_ng_gfw="$(echo ${custom_dns} | sed 's/:/#/g')"
 				msg="自定义DNS"
 			fi
-			
-			local chnlist_param="${TMP_PATH}/chnlist"
+
+			local gfwlist_param="${TMP_PATH}/chinadns_gfwlist"
+			[ -f "${RULES_PATH}/gfwlist" ] && cp -a "${RULES_PATH}/gfwlist" "${gfwlist_param}"
+			local chnlist_param="${TMP_PATH}/chinadns_chnlist"
+			[ -f "${RULES_PATH}/chnlist" ] && cp -a "${RULES_PATH}/chnlist" "${chnlist_param}"
+
+			[ -f "${RULES_PATH}/proxy_host" ] && {
+				cat "${RULES_PATH}/proxy_host" >> "${gfwlist_param}"
+				echolog "  | - [$?](chinadns-ng) 代理域名表合并到防火墙域名表"
+			}
 			[ -f "${RULES_PATH}/direct_host" ] && {
 				cat "${RULES_PATH}/direct_host" >> "${chnlist_param}"
 				echolog "  | - [$?](chinadns-ng) 域名白名单合并到中国域名表"
-			}
-			sed -n 's/^ipset=\/\.\?\([^/]*\).*$/\1/p' "${RULES_PATH}/gfwlist.conf" | sort -u > "${TMP_PATH}/gfwlist.txt"
-			[ -f "${RULES_PATH}/proxy_host" ] && {
-				cat "${RULES_PATH}/proxy_host" >> "${TMP_PATH}/gfwlist.txt" && sort -u "${TMP_PATH}/gfwlist.txt" > "${TMP_PATH}/gfwlist2.txt" && mv -f "${TMP_PATH}/gfwlist2.txt" "${TMP_PATH}/gfwlist.txt"
-				local gfwlist_param="${TMP_PATH}/gfwlist.txt"
-				echolog "  | - [$?](chinadns-ng) 代理域名表合并到防火墙域名表"
 			}
 			chnlist_param=${chnlist_param:+-m "${chnlist_param}" -M}
 			ln_start_bin "$(first_type chinadns-ng)" chinadns-ng "${TMP_PATH}/chinadns-ng.log" -v -b 0.0.0.0 -l "${china_ng_listen_port}" ${china_ng_chn:+-c "${china_ng_chn}"} ${chnlist_param} ${china_ng_gfw:+-t "${china_ng_gfw}"} ${gfwlist_param:+-g "${gfwlist_param}"} -f
@@ -900,7 +927,7 @@ start_dns() {
 			#[ -n "${global}${chnlist}" ] && [ -z "${returnhome}" ] && TUN_DNS="${china_ng_gfw}"
 		}
 	}
-	
+
 	[ "${use_udp_node_resolve_dns}" = "1" ] && echolog "  * 要求代理 DNS 请求，如上游 DNS 非直连地址，确保 UDP 代理打开，并且已经正确转发！"
 	[ "${use_tcp_node_resolve_dns}" = "1" ] && echolog "  * 请确认上游 DNS 支持 TCP 查询，如非直连地址，确保 TCP 代理打开，并且已经正确转发！"
 }
@@ -917,43 +944,57 @@ add_dnsmasq() {
 	if [ "${DNS_MODE}" = "nonuse" ]; then
 		echolog "  - 不对域名进行分流解析"
 	else
+		#屏蔽列表
+		sort -u "${RULES_PATH}/block_host" | gen_dnsmasq_fake_items "0.0.0.0" "${TMP_DNSMASQ_PATH}/00-block_host.conf"
+
 		#始终用国内DNS解析节点域名
 		fwd_dns="${LOCAL_DNS}"
 		servers=$(uci show "${CONFIG}" | grep ".address=" | cut -d "'" -f 2)
-		hosts_foreach "servers" host_from_url | grep -v "google.c" | grep '[a-zA-Z]$' | sort -u | gen_dnsmasq_items "vpsiplist,vpsiplist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/00-vpsiplist_host.conf"
+		hosts_foreach "servers" host_from_url | grep -v "google.c" | grep '[a-zA-Z]$' | sort -u | gen_dnsmasq_items "vpsiplist,vpsiplist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/10-vpsiplist_host.conf"
 		echolog "  - [$?]节点列表中的域名(vpsiplist)：${fwd_dns:-默认}"
 
 		#始终用国内DNS解析直连（白名单）列表
-		fwd_dns="${LOCAL_DNS}"
-		[ -n "$CHINADNS_NG" ] && unset fwd_dns
-		sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist,whitelist_6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/01-direct_host.conf"
-		echolog "  - [$?]域名白名单(whitelist)：${fwd_dns:-默认}"
-		
-		#始终使用远程DNS解析代理（黑名单）列表
-		if [ "${DNS_MODE}" = "fake_ip" ]; then
-			sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_fake_items "${TMP_DNSMASQ_PATH}/99-proxy_host.conf"
-		else
-			fwd_dns="${TUN_DNS}"
-			[ -n "$CHINADNS_NG" ] && fwd_dns="${china_ng_gfw}"
+		[ -f "${RULES_PATH}/direct_host" ] && {
+			fwd_dns="${LOCAL_DNS}"
 			[ -n "$CHINADNS_NG" ] && unset fwd_dns
-			sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_items "blacklist,blacklist_6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-proxy_host.conf"
-			echolog "  - [$?]代理域名表(blacklist)：${fwd_dns:-默认}"
-		fi
+			sort -u "${RULES_PATH}/direct_host" | gen_dnsmasq_items "whitelist,whitelist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/11-direct_host.conf"
+			echolog "  - [$?]域名白名单(whitelist)：${fwd_dns:-默认}"
+		}
 		
-		#如果开启了通过代理订阅
-		[ "$(config_t_get global_subscribe subscribe_proxy 0)" = "1" ] && {
+		if [ "$(config_t_get global_subscribe subscribe_proxy 0)" = "0" ]; then
+			#如果没有开启通过代理订阅
+			fwd_dns="${LOCAL_DNS}"
+			for item in $(get_enabled_anonymous_secs "@subscribe_list"); do
+				host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "whitelist,whitelist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/12-subscribe.conf"
+			done
+			echolog "  - [$?]节点订阅域名(whitelist)：${fwd_dns:-默认}"
+		else
+			#如果开启了通过代理订阅
 			fwd_dns="${TUN_DNS}"
 			[ -n "$CHINADNS_NG" ] && fwd_dns="${china_ng_gfw}"
 			for item in $(get_enabled_anonymous_secs "@subscribe_list"); do
 				if [ "${DNS_MODE}" = "fake_ip" ]; then
-					host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_fake_items "${TMP_DNSMASQ_PATH}/99-subscribe.conf"
+					host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_fake_items "11.1.1.1" "${TMP_DNSMASQ_PATH}/91-subscribe.conf"
 				else
-					host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "blacklist,blacklist_6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-subscribe.conf"
+					host_from_url "$(config_n_get ${item} url)" | gen_dnsmasq_items "blacklist,blacklist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/91-subscribe.conf"
 				fi
 			done
 			[ "${DNS_MODE}" != "fake_ip" ] && echolog "  - [$?]节点订阅域名(blacklist)：${fwd_dns:-默认}"
-		}
+		fi
 		
+		#始终使用远程DNS解析代理（黑名单）列表
+		[ -f "${RULES_PATH}/proxy_host" ] && {
+			if [ "${DNS_MODE}" = "fake_ip" ]; then
+				sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_fake_items "11.1.1.1" "${TMP_DNSMASQ_PATH}/97-proxy_host.conf"
+			else
+				fwd_dns="${TUN_DNS}"
+				[ -n "$CHINADNS_NG" ] && fwd_dns="${china_ng_gfw}"
+				[ -n "$CHINADNS_NG" ] && unset fwd_dns
+				sort -u "${RULES_PATH}/proxy_host" | gen_dnsmasq_items "blacklist,blacklist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/97-proxy_host.conf"
+				echolog "  - [$?]代理域名表(blacklist)：${fwd_dns:-默认}"
+			fi
+		}
+
 		#分流规则
 		[ "$(config_n_get $TCP_NODE protocol)" = "_shunt" ] && {
 			fwd_dns="${TUN_DNS}"
@@ -967,9 +1008,9 @@ add_dnsmasq() {
 				local shunt_node=$(config_n_get $shunt_node_id address nil)
 				[ "$shunt_node" = "nil" ] && continue
 				if [ "${DNS_MODE}" = "fake_ip" ]; then
-					config_n_get $shunt_id domain_list | grep -v 'regexp:\|geosite:\|ext:' | sed 's/domain:\|full:\|//g' | tr -s "\r\n" "\n" | sort -u | gen_dnsmasq_fake_items "${TMP_DNSMASQ_PATH}/998-shunt_host.conf"
+					config_n_get $shunt_id domain_list | grep -v 'regexp:\|geosite:\|ext:' | sed 's/domain:\|full:\|//g' | tr -s "\r\n" "\n" | sort -u | gen_dnsmasq_fake_items "11.1.1.1" "${TMP_DNSMASQ_PATH}/98-shunt_host.conf"
 				else
-					config_n_get $shunt_id domain_list | grep -v 'regexp:\|geosite:\|ext:' | sed 's/domain:\|full:\|//g' | tr -s "\r\n" "\n" | sort -u | gen_dnsmasq_items "shuntlist,shuntlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/998-shunt_host.conf"
+					config_n_get $shunt_id domain_list | grep -v 'regexp:\|geosite:\|ext:' | sed 's/domain:\|full:\|//g' | tr -s "\r\n" "\n" | sort -u | gen_dnsmasq_items "shuntlist,shuntlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/98-shunt_host.conf"
 				fi
 			done
 			[ "${DNS_MODE}" != "fake_ip" ] && echolog "  - [$?]Xray分流规则(shuntlist)：${fwd_dns:-默认}"
@@ -977,33 +1018,63 @@ add_dnsmasq() {
 
 		#如果没有使用回国模式
 		if [ -z "${returnhome}" ]; then
-			[ ! -f "${TMP_PATH}/gfwlist.txt" ] && sed -n 's/^ipset=\/\.\?\([^/]*\).*$/\1/p' "${RULES_PATH}/gfwlist.conf" | sort -u > "${TMP_PATH}/gfwlist.txt"
+			[ -f "${RULES_PATH}/gfwlist" ] && {
+				if [ -n "$count_hosts_str" ]; then
+					grep -v -E "$count_hosts_str" "${RULES_PATH}/gfwlist" > "${TMP_PATH}/gfwlist"
+				else
+					cp -a "${RULES_PATH}/gfwlist" "${TMP_PATH}/gfwlist"
+				fi
+			}
 			if [ "${DNS_MODE}" = "fake_ip" ]; then
-				sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_fake_items "${TMP_DNSMASQ_PATH}/999-gfwlist.conf"
+				sort -u "${TMP_PATH}/gfwlist" | gen_dnsmasq_fake_items "11.1.1.1" "${TMP_DNSMASQ_PATH}/99-gfwlist.conf"
 			else
 				fwd_dns="${TUN_DNS}"
 				[ -n "$CHINADNS_NG" ] && fwd_dns="${china_ng_gfw}"
 				[ -n "$CHINADNS_NG" ] && unset fwd_dns
-				sort -u "${TMP_PATH}/gfwlist.txt" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/999-gfwlist.conf"
+				sort -u "${TMP_PATH}/gfwlist" | gen_dnsmasq_items "gfwlist,gfwlist6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-gfwlist.conf"
 				echolog "  - [$?]防火墙域名表(gfwlist)：${fwd_dns:-默认}"
+				rm -f "${TMP_PATH}/gfwlist"
 			fi
+			# Not China List 模式
+			[ -n "${chnlist}" ] && {
+				fwd_dns="${LOCAL_DNS}"
+				[ -n "$CHINADNS_NG" ] && unset fwd_dns
+				[ -f "${RULES_PATH}/chnlist" ] && {
+					if [ -n "$count_hosts_str" ]; then
+						grep -v -E "$count_hosts_str" "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute,chnroute6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/19-chinalist_host.conf"
+					else
+						sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute,chnroute6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/19-chinalist_host.conf"
+					fi
+					echolog "  - [$?]中国域名表(chnroute)：${fwd_dns:-默认}"
+				}
+			}
 		else
 			#回国模式
+			[ -f "${RULES_PATH}/chnlist" ] && {
+				if [ -n "$count_hosts_str" ]; then
+					grep -v -E "$count_hosts_str" "${RULES_PATH}/chnlist" > "${TMP_PATH}/chnlist"
+				else
+					cp -a "${RULES_PATH}/chnlist" "${TMP_PATH}/chnlist"
+				fi
+			}
 			if [ "${DNS_MODE}" = "fake_ip" ]; then
-				sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_fake_items "${TMP_DNSMASQ_PATH}/02-chinalist_host.conf"
+				[ -f "${TMP_PATH}/chnlist" ] && sort -u "${TMP_PATH}/chnlist" | gen_dnsmasq_fake_items "11.1.1.1" "${TMP_DNSMASQ_PATH}/99-chinalist_host.conf"
 			else
 				fwd_dns="${TUN_DNS}"
-				sort -u "${RULES_PATH}/chnlist" | gen_dnsmasq_items "chnroute,chnroute6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/02-chinalist_host.conf"
+				[ -f "${TMP_PATH}/chnlist" ] && sort -u "${TMP_PATH}/chnlist" | gen_dnsmasq_items "chnroute,chnroute6" "${fwd_dns}" "${TMP_DNSMASQ_PATH}/99-chinalist_host.conf"
 				echolog "  - [$?]中国域名表(chnroute)：${fwd_dns:-默认}"
 			fi
+			rm -f "${TMP_PATH}/chnlist"
 		fi
+		
+		#awk '{gsub(/ipset=\//,""); gsub(/\//," ");key=$1;value=$2;if (sum[key] != "") {sum[key]=sum[key]","value} else {sum[key]=sum[key]value}} END{for(i in sum) print "ipset=/"i"/"sum[i]}' "${TMP_DNSMASQ_PATH}/ipset.conf" > "${TMP_DNSMASQ_PATH}/ipset.conf2"
+		#mv -f "${TMP_DNSMASQ_PATH}/ipset.conf2" "${TMP_DNSMASQ_PATH}/ipset.conf"
 	fi
-	
 	if [ "${DNS_MODE}" != "nouse" ]; then
 		echo "conf-dir=${TMP_DNSMASQ_PATH}" > "/var/dnsmasq.d/dnsmasq-${CONFIG}.conf"
-		
+
 		if [ -z "${CHINADNS_NG}" ] && [ "${IS_DEFAULT_DNS}" = "1" ]; then
-			echolog "  - 不强制设置默认DNS"
+			#echolog "  - 不强制设置默认DNS"
 			return
 		else
 			echo "${DEFAULT_DNS}" > $TMP_PATH/default_DNS
@@ -1012,12 +1083,12 @@ add_dnsmasq() {
 			[ -n "${chnlist}" ] && msg="中国列表以外"
 			[ -n "${returnhome}" ] && msg="中国列表"
 			[ -n "${global}" ] && msg="全局"
-			
+
 			#默认交给Chinadns-ng处理
 			[ -n "$CHINADNS_NG" ] && {
 				servers="${china_ng_listen}" && msg="chinadns-ng"
 			}
-			
+
 			cat <<-EOF >> "/var/dnsmasq.d/dnsmasq-${CONFIG}.conf"
 				$(echo "${servers}" | sed 's/,/\n/g' | gen_dnsmasq_items)
 				all-servers
@@ -1064,7 +1135,7 @@ gen_pdnsd_config() {
 			proc_limit = 2;
 			procq_limit = 8;
 		}
-		
+
 	EOF
 	echolog "  + [$?]Pdnsd (127.0.0.1:${listen_port})..."
 
@@ -1082,6 +1153,8 @@ gen_pdnsd_config() {
 				purge_cache = off;
 				proxy_only = on;
 				caching = $_cache;
+				reject = ::/0;
+				reject_policy = negate;
 			}
 		EOF
 		echolog "  | - [$?]上游DNS：${2}:${3}"
@@ -1220,7 +1293,7 @@ start_haproxy() {
 	local auth=""
 	[ -n "$console_user" ] && [ -n "$console_password" ] && auth="stats auth $console_user:$console_password"
 	cat <<-EOF >> "${haproxy_file}"
-	
+
 		listen console
 		    bind 0.0.0.0:$console_port
 		    mode http

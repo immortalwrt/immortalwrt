@@ -1,0 +1,80 @@
+From 549a5e6d301748438255a9c014df6079e5a7dd28 Mon Sep 17 00:00:00 2001
+From: Yuchung Cheng <ycheng@google.com>
+Date: Wed, 17 Jan 2018 12:11:00 -0800
+Subject: [PATCH] BACKPORT: tcp: avoid min-RTT overestimation from delayed ACKs
+
+This patch avoids having TCP sender or congestion control
+overestimate the min RTT by orders of magnitude. This happens when
+all the samples in the windowed filter are one-packet transfer
+like small request and health-check like chit-chat, which is farily
+common for applications using persistent connections. This patch
+tries to conservatively labels and skip RTT samples obtained from
+this type of workload.
+
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Albert I <kras@raphielgang.org>
+---
+ net/ipv4/tcp_input.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -116,6 +116,7 @@ int sysctl_tcp_invalid_ratelimit __read_
+ #define FLAG_SACK_RENEGING	0x2000 /* snd_una advanced to a sacked seq */
+ #define FLAG_UPDATE_TS_RECENT	0x4000 /* tcp_replace_ts_recent() */
+ #define FLAG_NO_CHALLENGE_ACK	0x8000 /* do not call tcp_send_challenge_ack()	*/
++#define FLAG_ACK_MAYBE_DELAYED	0x10000 /* Likely a delayed ACK */
+ 
+ #define FLAG_ACKED		(FLAG_DATA_ACKED|FLAG_SYN_ACKED)
+ #define FLAG_NOT_DUP		(FLAG_DATA|FLAG_WIN_UPDATE|FLAG_ACKED)
+@@ -2972,11 +2973,18 @@ static void tcp_fastretrans_alert(struct
+ 	*rexmit = REXMIT_LOST;
+ }
+ 
+-static void tcp_update_rtt_min(struct sock *sk, u32 rtt_us)
++static void tcp_update_rtt_min(struct sock *sk, u32 rtt_us, const int flag)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	u32 wlen = sysctl_tcp_min_rtt_wlen * HZ;
+ 
++	if ((flag & FLAG_ACK_MAYBE_DELAYED) && rtt_us > tcp_min_rtt(tp)) {
++		/* If the remote keeps returning delayed ACKs, eventually
++		 * the min filter would pick it up and overestimate the
++		 * prop. delay when it expires. Skip suspected delayed ACKs.
++		 */
++		return;
++	}
+ 	minmax_running_min(&tp->rtt_min, wlen, tcp_time_stamp,
+ 			   rtt_us ? : jiffies_to_usecs(1));
+ }
+@@ -3012,7 +3020,7 @@ static inline bool tcp_ack_update_rtt(st
+ 	 * always taken together with ACK, SACK, or TS-opts. Any negative
+ 	 * values will be skipped with the seq_rtt_us < 0 check above.
+ 	 */
+-	tcp_update_rtt_min(sk, ca_rtt_us);
++	tcp_update_rtt_min(sk, ca_rtt_us, flag);
+ 	tcp_rtt_estimator(sk, seq_rtt_us);
+ 	tcp_set_rto(sk);
+ 
+@@ -3247,6 +3255,17 @@ static int tcp_clean_rtx_queue(struct so
+ 	if (likely(first_ackt.v64) && !(flag & FLAG_RETRANS_DATA_ACKED)) {
+ 		seq_rtt_us = skb_mstamp_us_delta(now, &first_ackt);
+ 		ca_rtt_us = skb_mstamp_us_delta(now, &last_ackt);
++
++		if (pkts_acked == 1 && last_in_flight < tp->mss_cache &&
++		    last_in_flight && !prior_sacked && fully_acked &&
++		    sack->rate->prior_delivered + 1 == tp->delivered &&
++		    !(flag & (FLAG_CA_ALERT | FLAG_SYN_ACKED))) {
++			/* Conservatively mark a delayed ACK. It's typically
++			 * from a lone runt packet over the round trip to
++			 * a receiver w/o out-of-order or CE events.
++			 */
++			flag |= FLAG_ACK_MAYBE_DELAYED;
++		}
+ 	}
+ 	if (sack->first_sackt.v64) {
+ 		sack_rtt_us = skb_mstamp_us_delta(now, &sack->first_sackt);

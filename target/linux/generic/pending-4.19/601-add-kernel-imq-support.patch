@@ -1120,7 +1120,7 @@
 +
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1905,6 +1905,11 @@ struct net_device {
+@@ -1906,6 +1906,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
@@ -1132,7 +1132,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -3959,6 +3964,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3969,6 +3974,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1466,7 +1466,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -3984,6 +4061,13 @@ void __init skb_init(void)
+@@ -3996,6 +4073,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);

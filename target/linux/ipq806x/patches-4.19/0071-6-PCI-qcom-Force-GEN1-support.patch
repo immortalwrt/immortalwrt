@@ -26,7 +26,7 @@ Signed-off-by: Sham Muthayyan <smuthayy@codeaurora.org>
  };
  
  #define to_qcom_pcie(x)		dev_get_drvdata((x)->dev)
-@@ -500,6 +503,11 @@ static int qcom_pcie_init_2_1_0(struct q
+@@ -502,6 +505,11 @@ static int qcom_pcie_init_2_1_0(struct q
  
  	/* wait for clock acquisition */
  	usleep_range(1000, 1500);
@@ -38,7 +38,7 @@ Signed-off-by: Sham Muthayyan <smuthayy@codeaurora.org>
  
  
  	/* Set the Max TLP size to 2K, instead of using default of 4K */
-@@ -1363,6 +1371,8 @@ static int qcom_pcie_probe(struct platfo
+@@ -1365,6 +1373,8 @@ static int qcom_pcie_probe(struct platfo
  	struct dw_pcie *pci;
  	struct qcom_pcie *pcie;
  	int ret;
@@ -47,7 +47,7 @@ Signed-off-by: Sham Muthayyan <smuthayy@codeaurora.org>
  
  	pcie = devm_kzalloc(dev, sizeof(*pcie), GFP_KERNEL);
  	if (!pcie)
-@@ -1393,6 +1403,9 @@ static int qcom_pcie_probe(struct platfo
+@@ -1395,6 +1405,9 @@ static int qcom_pcie_probe(struct platfo
  		goto err_pm_runtime_put;
  	}
  

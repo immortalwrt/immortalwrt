@@ -360,6 +360,7 @@ struct ngx_rtmp_session_s {
     unsigned                published:1;
     unsigned                closed:1;
     unsigned                publishing:1;
+    unsigned                finalized:1;
 
     /* live type: 0- RTMP 1- http-flv 2- hls */
     unsigned                live_type:2;

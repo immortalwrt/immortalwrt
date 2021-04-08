@@ -21,7 +21,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -1178,18 +1178,6 @@ static bool gc_worker_can_early_drop(con
+@@ -1179,18 +1179,6 @@ static bool gc_worker_can_early_drop(con
  	return false;
  }
  
@@ -40,7 +40,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  static void gc_worker(struct work_struct *work)
  {
  	unsigned int min_interval = max(HZ / GC_MAX_BUCKETS_DIV, 1u);
-@@ -1226,10 +1214,8 @@ static void gc_worker(struct work_struct
+@@ -1227,10 +1215,8 @@ static void gc_worker(struct work_struct
  			tmp = nf_ct_tuplehash_to_ctrack(h);
  
  			scanned++;

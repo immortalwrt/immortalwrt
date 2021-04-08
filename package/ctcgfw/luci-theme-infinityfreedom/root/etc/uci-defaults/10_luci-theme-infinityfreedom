@@ -1,7 +1,0 @@
-#!/bin/sh
-uci batch <<-EOF
-	set luci.themes.infinityfreedom=/luci-static/infinityfreedom
-	set luci.main.mediaurlbase=/luci-static/infinityfreedom
-	commit luci
-EOF
-exit 0

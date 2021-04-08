@@ -67,7 +67,7 @@ Signed-off-by: Abhishek Sahu <absahu@codeaurora.org>
  	ret = clk_prepare_enable(res->aux_clk);
  	if (ret) {
  		dev_err(dev, "cannot prepare/enable aux clock\n");
-@@ -509,6 +503,12 @@ static int qcom_pcie_init_2_1_0(struct q
+@@ -511,6 +505,12 @@ static int qcom_pcie_init_2_1_0(struct q
  		return ret;
  	}
  
@@ -80,7 +80,7 @@ Signed-off-by: Abhishek Sahu <absahu@codeaurora.org>
  	/* wait for clock acquisition */
  	usleep_range(1000, 1500);
  	if (pcie->force_gen1) {
-@@ -534,8 +534,6 @@ err_deassert_ahb:
+@@ -536,8 +536,6 @@ err_deassert_ahb:
  err_clk_ref:
  	clk_disable_unprepare(res->aux_clk);
  err_clk_aux:

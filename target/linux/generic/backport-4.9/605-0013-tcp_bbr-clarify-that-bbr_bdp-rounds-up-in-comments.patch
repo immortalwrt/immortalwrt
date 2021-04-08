@@ -1,0 +1,41 @@
+From 697ee116a6411b47c42d4b2facb9fbffad3f1abd Mon Sep 17 00:00:00 2001
+From: Luke Hsiao <lukehsiao@google.com>
+Date: Thu, 29 Aug 2019 10:02:44 -0400
+Subject: [PATCH] BACKPORT: tcp_bbr: clarify that bbr_bdp() rounds up in
+ comments
+
+This explicitly clarifies that bbr_bdp() returns the rounded-up value of
+the bandwidth-delay product and why in the comments.
+
+Signed-off-by: Luke Hsiao <lukehsiao@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Priyaranjan Jha <priyarjha@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Albert I <kras@raphielgang.org>
+---
+ net/ipv4/tcp_bbr.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -287,7 +287,7 @@ static void bbr_cwnd_event(struct sock *
+ 
+ /* Calculate bdp based on min RTT and the estimated bottleneck bandwidth:
+  *
+- * bdp = bw * min_rtt * gain
++ * bdp = ceil(bw * min_rtt * gain)
+  *
+  * The key factor, gain, controls the amount of queue. While a small gain
+  * builds a smaller queue, it becomes more vulnerable to noise in RTT
+@@ -311,7 +311,9 @@ static u32 bbr_bdp(struct sock *sk, u32
+ 
+ 	w = (u64)bw * bbr->min_rtt_us;
+ 
+-	/* Apply a gain to the given value, then remove the BW_SCALE shift. */
++	/* Apply a gain to the given value, remove the BW_SCALE shift, and
++	 * round the value up to avoid a negative feedback loop.
++	 */
+ 	bdp = (((w * gain) >> BBR_SCALE) + BW_UNIT - 1) / BW_UNIT;
+ 
+ 	return bdp;

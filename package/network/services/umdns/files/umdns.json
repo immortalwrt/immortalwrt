@@ -19,6 +19,7 @@
 		"socket",
 		"poll",
 		"fcntl64",
+		"fstat",
 		"epoll_create",
 		"epoll_ctl",
 		"epoll_wait",

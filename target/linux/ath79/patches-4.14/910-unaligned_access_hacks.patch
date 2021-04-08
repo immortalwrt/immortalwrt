@@ -231,7 +231,7 @@
  #ifdef CONFIG_TCP_MD5SIG
 --- a/include/linux/ipv6.h
 +++ b/include/linux/ipv6.h
-@@ -6,6 +6,7 @@
+@@ -7,6 +7,7 @@
  
  #define ipv6_optlen(p)  (((p)->hdrlen+1) << 3)
  #define ipv6_authlen(p) (((p)->hdrlen+2) << 2)
@@ -737,7 +737,7 @@
  EXPORT_SYMBOL(xfrm_parse_spi);
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -3881,14 +3881,16 @@ static bool tcp_parse_aligned_timestamp(
+@@ -3901,14 +3901,16 @@ static bool tcp_parse_aligned_timestamp(
  {
  	const __be32 *ptr = (const __be32 *)(th + 1);
  

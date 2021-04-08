@@ -26,7 +26,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -339,6 +339,7 @@ struct napi_struct {
+@@ -340,6 +340,7 @@ struct napi_struct {
  	struct list_head	dev_list;
  	struct hlist_node	napi_hash_node;
  	unsigned int		napi_id;
@@ -34,7 +34,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  };
  
  enum {
-@@ -349,6 +350,7 @@ enum {
+@@ -350,6 +351,7 @@ enum {
  	NAPI_STATE_HASHED,	/* In NAPI hash (busy polling possible) */
  	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
  	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
@@ -42,7 +42,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  };
  
  enum {
-@@ -359,6 +361,7 @@ enum {
+@@ -360,6 +362,7 @@ enum {
  	NAPIF_STATE_HASHED	 = BIT(NAPI_STATE_HASHED),
  	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
  	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
@@ -50,7 +50,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  };
  
  enum gro_result {
-@@ -2235,6 +2238,26 @@ void netif_napi_add(struct net_device *d
+@@ -2236,6 +2239,26 @@ void netif_napi_add(struct net_device *d
  		    int (*poll)(struct napi_struct *, int), int weight);
  
  /**

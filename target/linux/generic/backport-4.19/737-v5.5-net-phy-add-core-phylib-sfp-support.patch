@@ -24,7 +24,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  #include <linux/workqueue.h>
  #include <linux/mdio.h>
  #include <linux/io.h>
-@@ -871,6 +872,9 @@ void phy_stop(struct phy_device *phydev)
+@@ -872,6 +873,9 @@ void phy_stop(struct phy_device *phydev)
  	if (phy_interrupt_is_valid(phydev))
  		phy_disable_interrupts(phydev);
  
@@ -34,7 +34,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  	phydev->state = PHY_HALTED;
  
  out_unlock:
-@@ -899,6 +903,9 @@ void phy_start(struct phy_device *phydev
+@@ -900,6 +904,9 @@ void phy_start(struct phy_device *phydev
  
  	mutex_lock(&phydev->lock);
  

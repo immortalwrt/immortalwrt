@@ -1,7 +1,0 @@
-config chinadns
-	option chnroute '/etc/chinadns_chnroute.txt'
-	option enable '0'
-	option yn_use_proxy '0'
-	option port '5300'
-	option server '8.8.8.8'
-	option foreign_subnet '45.76.96.0'

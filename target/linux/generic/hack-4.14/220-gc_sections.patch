@@ -33,7 +33,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  # Read KERNELRELEASE from include/config/kernel.release (if it exists)
  KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
  KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
-@@ -779,11 +784,6 @@ ifdef CONFIG_DEBUG_SECTION_MISMATCH
+@@ -786,11 +791,6 @@ ifdef CONFIG_DEBUG_SECTION_MISMATCH
  KBUILD_CFLAGS += $(call cc-option, -fno-inline-functions-called-once)
  endif
  
@@ -190,7 +190,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  		__stop___dbe_table = .;
  	}
  
-@@ -123,7 +123,7 @@ SECTIONS
+@@ -124,7 +124,7 @@ SECTIONS
  	. = ALIGN(4);
  	.mips.machines.init : AT(ADDR(.mips.machines.init) - LOAD_OFFSET) {
  		__mips_machines_start = .;

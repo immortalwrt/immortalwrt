@@ -33,7 +33,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca
 	bool "Include BBR CCA"
-	default n if LINUX_4_9
 	default y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
