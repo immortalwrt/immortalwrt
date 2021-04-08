@@ -436,6 +436,14 @@ define Device/elecom_wrc-1750gs
 endef
 TARGET_DEVICES += elecom_wrc-1750gs
 
+define Device/elecom_wrc-1750gst2
+  $(Device/elecom_wrc-gs)
+  IMAGE_SIZE := 24576k
+  DEVICE_MODEL := WRC-1750GST2
+  ELECOM_HWNAME := WRC-1750GST2
+endef
+TARGET_DEVICES += elecom_wrc-1750gst2
+
 define Device/elecom_wrc-1750gsv
   $(Device/elecom_wrc-gs)
   IMAGE_SIZE := 11264k
@@ -784,6 +792,7 @@ endef
 TARGET_DEVICES += motorola_mr2600
 
 define Device/mqmaker_witi
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := MQmaker
   DEVICE_MODEL := WiTi
@@ -794,6 +803,7 @@ endef
 TARGET_DEVICES += mqmaker_witi
 
 define Device/mtc_wr1201
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := MTC
   DEVICE_MODEL := Wireless Router WR1201

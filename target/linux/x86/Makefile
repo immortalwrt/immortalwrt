@@ -12,6 +12,7 @@ SUBTARGETS:=64 generic zen legacy geode
 MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 KERNEL_PATCHVER:=5.4
+KERNEL_TESTING_PATCHVER:=5.10
 
 KERNELNAME:=bzImage
 

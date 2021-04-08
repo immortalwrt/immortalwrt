@@ -102,9 +102,8 @@ define KernelPackage/hsdma-mtk
 	CONFIG_MTK_HSDMA
   FILES:= \
 	$(LINUX_DIR)/drivers/dma/virt-dma.ko \
-	$(LINUX_DIR)/drivers/dma/mtk-hsdma.ko@lt5.4 \
-	$(LINUX_DIR)/drivers/staging/mt7621-dma/mtk-hsdma.ko@ge5.4
-  AUTOLOAD:=$(call AutoLoad,53,mtk-hsdma)
+	$(LINUX_DIR)/drivers/staging/mt7621-dma/hsdma-mt7621.ko
+  AUTOLOAD:=$(call AutoLoad,53,hsdma-mt7621)
 endef
 
 define KernelPackage/hsdma-mtk/description

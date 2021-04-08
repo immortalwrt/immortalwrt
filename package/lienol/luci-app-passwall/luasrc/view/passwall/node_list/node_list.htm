@@ -27,10 +27,6 @@ table td, .table .td {
     box-shadow: darkgrey 10px 10px 30px 5px;
 }
 
-._select {
-	background: #dad8d8 !important;
-}
-
 ._now_use {
 	background: #94e1ff !important;
 }
@@ -125,75 +121,58 @@ table td, .table .td {
 		}
 	}
 	
-	function select_node_div(btn, id) {
-		btn.value = "<%:DeSelect%>";
-		btn.setAttribute("onclick", "deselect_node_div(this, '" + id + "')");
-		var dom = document.getElementById("cbi-passwall-" + id);
-		if (dom) {
-			dom.classList.add("_select");
-			dom.setAttribute("nodes_id", id);
-		}
-	}
-	
-	function deselect_node_div(btn, id) {
-		btn.value = "<%:Select%>";
-		btn.setAttribute("onclick", "select_node_div(this, '" + id + "')");
-		var dom = document.getElementById("cbi-passwall-" + id);
-		if (dom) {
-			dom.classList.remove("_select");
-			dom.removeAttribute("nodes_id");
-		}
-	}
-	
-	function select_all(btn) {
-		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-section-table-row");
+	function checked_all_node(btn) {
+		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("nodes_select");
 		if (doms && doms.length > 0) {
 			for (var i = 0 ; i < doms.length; i++) {
-				var id = doms[i].id.replace("cbi-passwall-", "");
-				var btn2 = document.getElementById("select_" + id);
-				select_node_div(btn2, id);
+				doms[i].checked = true;
 			}
 			btn.value = "<%:DeSelect all%>";
-			btn.setAttribute("onclick", "deselect_all(this)");
+			btn.setAttribute("onclick", "dechecked_all_node(this)");
 		}
 	}
 	
-	function deselect_all(btn) {
-		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("cbi-section-table-row");
+	function dechecked_all_node(btn) {
+		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("nodes_select");
 		if (doms && doms.length > 0) {
 			for (var i = 0 ; i < doms.length; i++) {
-				var id = doms[i].id.replace("cbi-passwall-", "");
-				var btn2 = document.getElementById("select_" + id);
-				deselect_node_div(btn2, id);
+				doms[i].checked = false;
 			}
 			btn.value = "<%:Select all%>";
-			btn.setAttribute("onclick", "select_all(this)");
+			btn.setAttribute("onclick", "checked_all_node(this)");
 		}
 	}
 	
 	function delete_select_nodes() {
-		var doms = document.getElementsByClassName("_select");
+		var ids = [];
+		var doms = document.getElementById("cbi-passwall-nodes").getElementsByClassName("nodes_select");
 		if (doms && doms.length > 0) {
-			var ids = [];
 			for (var i = 0 ; i < doms.length; i++) {
-				if (doms[i].getAttribute("nodes_id")) {
-					ids.push(doms[i].getAttribute("nodes_id"))
+				if (doms[i].checked) {
+					ids.push(doms[i].getAttribute("cbid"))
 				}
 			}
-			if (confirm('<%:Are you sure to delete select nodes?%>') == true){
-				XHR.get('<%=api.url("delete_select_nodes")%>', {
-					ids: ids.join()
-				},
-				function(x, data) {
-					if(x && x.status == 200) {
-						window.location.href = '<%=api.url("node_list")%>';
-					}
-					else {
-						alert("<%:Error%>");
-					}
-				});
+			if (ids.length > 0) {
+				if (confirm('<%:Are you sure to delete select nodes?%>') == true){
+					XHR.get('<%=api.url("delete_select_nodes")%>', {
+						ids: ids.join()
+					},
+					function(x, data) {
+						if (x && x.status == 200) {
+							for (var i = 0 ; i < ids.length; i++) {
+								var box = document.getElementById("cbi-passwall-" + ids[i]);
+								box.remove();
+							}
+							//window.location.href = '<%=api.url("node_list")%>';
+						}
+						else {
+							alert("<%:Error%>");
+						}
+					});
+				}
 			}
-		} else {
+		}
+		if (ids.length <= 0) {
 			alert("<%:You no select nodes !%>");
 		}
 	}
@@ -404,10 +383,10 @@ table td, .table .td {
 			var id = onclick_str.substring(onclick_str.lastIndexOf('/') + 1, onclick_str.length - 1);
 			var td = edit_btn[i].parentNode;
 			var new_div = "";
+			//添加"勾选"框
+			new_div += '<input class="cbi-input-checkbox nodes_select" type="checkbox" cbid="' + id + '" />&nbsp;&nbsp;';
 			//添加"置顶"按钮
 			new_div += '<input class="cbi-button" type="button" value="<%:To Top%>" onclick="_cbi_row_top(\'' + id + '\')"/>&nbsp;&nbsp;';
-			//添加"选择"按钮
-			new_div += '<input class="cbi-button cbi-button-add" type="button" value="<%:Select%>" id="select_' + id + '" onclick="select_node_div(this, \'' + id + '\')"/>&nbsp;&nbsp;';
 			//添加"应用"按钮
 			new_div += '<input class="cbi-button cbi-button-apply" type="button" value="<%:Use%>" id="apply_' + id + '" onclick="open_set_node_div(\'' + id + '\')"/>&nbsp;&nbsp;';
 			//添加"复制"按钮

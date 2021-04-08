@@ -139,7 +139,7 @@ endef
 define Image/BuildKernel/MkFIT
 	$(TOPDIR)/scripts/mkits.sh \
 		-D $(1) -o $(KDIR)/fit-$(1).its -k $(2) $(if $(3),-d $(3)) -C $(4) -a $(5) -e $(6) \
-		-c $(if $(DEVICE_DTS_CONFIG),$(DEVICE_DTS_CONFIG),"config@1") \
+		-c $(if $(DEVICE_DTS_CONFIG),$(DEVICE_DTS_CONFIG),"config-1") \
 		-A $(LINUX_KARCH) -v $(LINUX_VERSION)
 	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $(KDIR)/fit-$(1).its $(KDIR)/fit-$(1)$(7).itb
 endef
@@ -190,6 +190,7 @@ define Image/BuildDTB
 		-o $(2).tmp $(1)
 	$(LINUX_DIR)/scripts/dtc/dtc -O dtb \
 		-i$(dir $(1)) $(DTC_FLAGS) $(4) \
+	$(if $(CONFIG_HAS_DT_OVERLAY_SUPPORT),-@) \
 		-o $(2) $(2).tmp
 	$(RM) $(2).tmp
 endef
@@ -393,6 +394,7 @@ define Device/Init
   DEVICE_DTS :=
   DEVICE_DTS_CONFIG :=
   DEVICE_DTS_DIR :=
+  DEVICE_DTS_OVERLAY :=
   DEVICE_FDT_NUM :=
   SOC :=
 
@@ -413,8 +415,8 @@ DEFAULT_DEVICE_VARS := \
   DEVICE_NAME KERNEL KERNEL_INITRAMFS KERNEL_INITRAMFS_IMAGE KERNEL_SIZE \
   CMDLINE UBOOTENV_IN_UBI KERNEL_IN_UBI BLOCKSIZE PAGESIZE SUBPAGESIZE \
   VID_HDR_OFFSET UBINIZE_OPTS UBINIZE_PARTS MKUBIFS_OPTS DEVICE_DTS \
-  DEVICE_DTS_CONFIG DEVICE_DTS_DIR DEVICE_FDT_NUM SOC BOARD_NAME \
-  UIMAGE_MAGIC UIMAGE_NAME \
+  DEVICE_DTS_CONFIG DEVICE_DTS_DIR DEVICE_DTS_OVERLAY DEVICE_FDT_NUM \
+  SOC BOARD_NAME UIMAGE_MAGIC UIMAGE_NAME \
   SUPPORTED_DEVICES IMAGE_METADATA KERNEL_ENTRY KERNEL_LOADADDR UBOOT_PATH \
   IMAGE_SIZE DEVICE_VENDOR DEVICE_MODEL DEVICE_VARIANT \
   DEVICE_ALT0_VENDOR DEVICE_ALT0_MODEL DEVICE_ALT0_VARIANT \
@@ -467,7 +469,8 @@ endef
 ifndef IB
 define Device/Build/initramfs
   $(call Device/Export,$(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE),$(1))
-  $$(_TARGET): $$(if $$(KERNEL_INITRAMFS),$(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE))
+  $$(_TARGET): $$(if $$(KERNEL_INITRAMFS),$(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE) \
+	  $$(if $$(CONFIG_JSON_OVERVIEW_IMAGE_INFO), $(BUILD_DIR)/json_info_files/$$(KERNEL_INITRAMFS_IMAGE).json,))
 
   $(KDIR)/$$(KERNEL_INITRAMFS_NAME):: image_prepare
   $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE): $(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE)
@@ -476,6 +479,38 @@ define Device/Build/initramfs
   $(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE): $(KDIR)/$$(KERNEL_INITRAMFS_NAME) $(CURDIR)/Makefile $$(KERNEL_DEPENDS) image_prepare
 	@rm -f $$@
 	$$(call concat_cmd,$$(KERNEL_INITRAMFS))
+
+  $(call Device/Export,$(BUILD_DIR)/json_info_files/$$(KERNEL_INITRAMFS_IMAGE).json,$(1))
+
+  $(BUILD_DIR)/json_info_files/$$(KERNEL_INITRAMFS_IMAGE).json: $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE)
+	@mkdir -p $$(shell dirname $$@)
+	DEVICE_ID="$(1)" \
+	BIN_DIR="$(BIN_DIR)" \
+	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
+	IMAGE_NAME="$$(notdir $$^)" \
+	IMAGE_TYPE="kernel" \
+	IMAGE_FILESYSTEM="initramfs" \
+	IMAGE_PREFIX="$$(IMAGE_PREFIX)" \
+	DEVICE_VENDOR="$$(DEVICE_VENDOR)" \
+	DEVICE_MODEL="$$(DEVICE_MODEL)" \
+	DEVICE_VARIANT="$$(DEVICE_VARIANT)" \
+	DEVICE_ALT0_VENDOR="$$(DEVICE_ALT0_VENDOR)" \
+	DEVICE_ALT0_MODEL="$$(DEVICE_ALT0_MODEL)" \
+	DEVICE_ALT0_VARIANT="$$(DEVICE_ALT0_VARIANT)" \
+	DEVICE_ALT1_VENDOR="$$(DEVICE_ALT1_VENDOR)" \
+	DEVICE_ALT1_MODEL="$$(DEVICE_ALT1_MODEL)" \
+	DEVICE_ALT1_VARIANT="$$(DEVICE_ALT1_VARIANT)" \
+	DEVICE_ALT2_VENDOR="$$(DEVICE_ALT2_VENDOR)" \
+	DEVICE_ALT2_MODEL="$$(DEVICE_ALT2_MODEL)" \
+	DEVICE_ALT2_VARIANT="$$(DEVICE_ALT2_VARIANT)" \
+	DEVICE_TITLE="$$(DEVICE_TITLE)" \
+	DEVICE_PACKAGES="$$(DEVICE_PACKAGES)" \
+	TARGET="$(BOARD)" \
+	SUBTARGET="$(if $(SUBTARGET),$(SUBTARGET),generic)" \
+	VERSION_NUMBER="$(VERSION_NUMBER)" \
+	VERSION_CODE="$(VERSION_CODE)" \
+	SUPPORTED_DEVICES="$$(SUPPORTED_DEVICES)" \
+	$(TOPDIR)/scripts/json_add_image_info.py $$@
 endef
 endif
 
@@ -501,7 +536,7 @@ endef
 endif
 
 define Device/Build/kernel
-  $$(eval $$(foreach dts,$$(DEVICE_DTS), \
+  $$(eval $$(foreach dts,$$(DEVICE_DTS) $$(DEVICE_DTS_OVERLAY), \
 	$$(call Device/Build/dtb,$$(notdir $$(dts)), \
 		$$(if $$(DEVICE_DTS_DIR),$$(DEVICE_DTS_DIR),$$(DTS_DIR)), \
 		$$(dts) \

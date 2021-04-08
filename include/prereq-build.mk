@@ -25,21 +25,21 @@ $(eval $(call TestHostCommand,proper-umask, \
 
 ifndef IB
 $(eval $(call SetupHostCommand,gcc, \
-	Please install the GNU C Compiler (gcc) 4.8 or later, \
-	$(CC) -dumpversion | grep -E '^(4\.[8-9]|[5-9]\.?|10\.?)', \
-	gcc -dumpversion | grep -E '^(4\.[8-9]|[5-9]\.?|10\.?)', \
+	Please install the GNU C Compiler (gcc) 6 or later, \
+	$(CC) -dumpversion | grep -E '^([6-9]\.?|1[0-9]\.?)', \
+	gcc -dumpversion | grep -E '^([6-9]\.?|1[0-9]\.?)', \
 	gcc --version | grep -E 'Apple.(LLVM|clang)' ))
 
 $(eval $(call TestHostCommand,working-gcc, \
-	\nPlease reinstall the GNU C Compiler (4.8 or later) - \
+	\nPlease reinstall the GNU C Compiler (6 or later) - \
 	it appears to be broken, \
 	echo 'int main(int argc, char **argv) { return 0; }' | \
 		gcc -x c -o $(TMP_DIR)/a.out -))
 
 $(eval $(call SetupHostCommand,g++, \
-	Please install the GNU C++ Compiler (g++) 4.8 or later, \
-	$(CXX) -dumpversion | grep -E '^(4\.[8-9]|[5-9]\.?|10\.?)', \
-	g++ -dumpversion | grep -E '^(4\.[8-9]|[5-9]\.?|10\.?)', \
+	Please install the GNU C++ Compiler (g++) 6 or later, \
+	$(CXX) -dumpversion | grep -E '^([6-9]\.?|1[0-9]\.?)', \
+	g++ -dumpversion | grep -E '^([6-9]\.?|1[0-9]\.?)', \
 	g++ --version | grep -E 'Apple.(LLVM|clang)' ))
 
 $(eval $(call TestHostCommand,working-g++, \
@@ -136,6 +136,10 @@ $(eval $(call SetupHostCommand,bzip2,Please install 'bzip2', \
 $(eval $(call SetupHostCommand,wget,Please install GNU 'wget', \
 	wget --version | grep GNU))
 
+$(eval $(call SetupHostCommand,install,Please install GNU 'install', \
+	install --version | grep GNU, \
+	ginstall --version | grep GNU))
+
 $(eval $(call SetupHostCommand,perl,Please install Perl 5.x, \
 	perl --version | grep "perl.*v5"))
 
@@ -165,6 +169,9 @@ $(eval $(call SetupHostCommand,file,Please install the 'file' package, \
 
 $(eval $(call SetupHostCommand,rsync,Please install 'rsync', \
 	rsync --version </dev/null))
+
+$(eval $(call SetupHostCommand,which,Please install 'which', \
+	which which | grep which))
 
 $(STAGING_DIR_HOST)/bin/mkhash: $(SCRIPT_DIR)/mkhash.c
 	mkdir -p $(dir $@)

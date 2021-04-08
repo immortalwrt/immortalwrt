@@ -164,6 +164,26 @@ endef
 $(eval $(call KernelPackage,fs-efivarfs))
 
 
+define KernelPackage/fs-exfat
+  SUBMENU:=$(FS_MENU)
+  TITLE:=exFAT filesystem support
+  KCONFIG:= \
+	CONFIG_EXFAT_FS \
+	CONFIG_EXFAT_DEFAULT_IOCHARSET="utf8"
+  FILES:= \
+	$(LINUX_DIR)/drivers/staging/exfat/exfat.ko@lt5.7 \
+	$(LINUX_DIR)/fs/exfat/exfat.ko@ge5.7
+  AUTOLOAD:=$(call AutoLoad,30,exfat,1)
+  DEPENDS:=+kmod-nls-base
+endef
+
+define KernelPackage/fs-exfat/description
+ Kernel module for exFAT filesystem support
+endef
+
+$(eval $(call KernelPackage,fs-exfat))
+
+
 define KernelPackage/fs-exportfs
   SUBMENU:=$(FS_MENU)
   TITLE:=exportfs kernel server support
@@ -368,7 +388,8 @@ define KernelPackage/fs-nfs-common
   FILES:= \
 	$(LINUX_DIR)/fs/lockd/lockd.ko \
 	$(LINUX_DIR)/net/sunrpc/sunrpc.ko \
-	$(LINUX_DIR)/fs/nfs_common/grace.ko
+	$(LINUX_DIR)/fs/nfs_common/grace.ko \
+	$(LINUX_DIR)/fs/nfs_common/nfs_ssc.ko@ge5.10
   AUTOLOAD:=$(call AutoLoad,30,grace sunrpc lockd)
 endef
 

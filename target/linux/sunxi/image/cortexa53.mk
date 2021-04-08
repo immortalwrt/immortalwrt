@@ -37,8 +37,8 @@ TARGET_DEVICES += friendlyarm_nanopi-neo2
 
 define Device/friendlyarm_nanopi-r1s-h5
   DEVICE_VENDOR := FriendlyARM
-  DEVICE_MODEL:=Nanopi R1S H5
-  DEVICE_PACKAGES:= kmod-eeprom-at24 kmod-gpio-button-hotplug kmod-leds-gpio \
+  DEVICE_MODEL := Nanopi R1S H5
+  DEVICE_PACKAGES := kmod-eeprom-at24 kmod-gpio-button-hotplug kmod-leds-gpio \
 	kmod-rtl8189es kmod-usb2 kmod-usb-net-rtl8152 wpad-basic
   SUPPORTED_DEVICES:=nanopi-r1s-h5
   $(Device/sun50i-h5)
@@ -76,6 +76,7 @@ TARGET_DEVICES += olimex_a64-olinuxino-emmc
 define Device/pine64_pine64-plus
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := Pine64+
+  DEVICE_PACKAGES := kmod-rtl8723bs rtl8723bs-firmware
   $(Device/sun50i-a64)
 endef
 TARGET_DEVICES += pine64_pine64-plus
@@ -83,6 +84,7 @@ TARGET_DEVICES += pine64_pine64-plus
 define Device/pine64_sopine-baseboard
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := SoPine
+  DEVICE_PACKAGES := kmod-rtl8723bs rtl8723bs-firmware
   $(Device/sun50i-a64)
 endef
 TARGET_DEVICES += pine64_sopine-baseboard

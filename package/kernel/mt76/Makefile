@@ -8,9 +8,9 @@ PKG_LICENSE_FILES:=
 
 PKG_SOURCE_URL:=https://github.com/openwrt/mt76
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-02-14
-PKG_SOURCE_VERSION:=289cd7804587dc48f776d450db9cd3762692a370
-PKG_MIRROR_HASH:=91885feca9d935586c6e33a8e3734bfa61991d869bf42ac0d1c8c3b19bfa9653
+PKG_SOURCE_DATE:=2021-04-07
+PKG_SOURCE_VERSION:=813db729c02ffa74fdda6d461afeb5aabc5706bb
+PKG_MIRROR_HASH:=63bd913f8ba3e85ae7a4575737a2c66377ebf59fa543e025150c650dd9ae13f2
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_BUILD_PARALLEL:=1
@@ -235,7 +235,8 @@ endef
 
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include/libnl-tiny
 
-NOSTDINC_FLAGS = \
+NOSTDINC_FLAGS := \
+	$(KERNEL_NOSTDINC_FLAGS) \
 	-I$(PKG_BUILD_DIR) \
 	-I$(STAGING_DIR)/usr/include/mac80211-backport/uapi \
 	-I$(STAGING_DIR)/usr/include/mac80211-backport \
@@ -403,6 +404,14 @@ define KernelPackage/mt7915e/install
 		$(PKG_BUILD_DIR)/firmware/mt7915_wa.bin \
 		$(PKG_BUILD_DIR)/firmware/mt7915_wm.bin \
 		$(PKG_BUILD_DIR)/firmware/mt7915_rom_patch.bin \
+		$(1)/lib/firmware/mediatek
+endef
+
+define KernelPackage/mt7921e/install
+	$(INSTALL_DIR) $(1)/lib/firmware/mediatek
+	cp \
+		$(PKG_BUILD_DIR)/firmware/WIFI_MT7961_patch_mcu_1_2_hdr.bin \
+		$(PKG_BUILD_DIR)/firmware/WIFI_RAM_CODE_MT7961_1.bin \
 		$(1)/lib/firmware/mediatek
 endef
 

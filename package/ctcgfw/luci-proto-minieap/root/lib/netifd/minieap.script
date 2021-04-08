@@ -1,7 +1,0 @@
-#!/bin/sh
-[ -z "$INTERFACE" ] && echo "Error: should be run by minieap" && exit 1
-
-. /lib/netifd/netifd-proto.sh
-
-proto_init_update "*" 1
-proto_send_update "$INTERFACE"

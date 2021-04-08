@@ -1,6 +1,6 @@
 --- a/net/wireless/wext-core.c
 +++ b/net/wireless/wext-core.c
-@@ -955,6 +955,9 @@ static int wireless_process_ioctl(struct
+@@ -956,6 +956,9 @@ static int wireless_process_ioctl(struct
  		else if (private)
  			return private(dev, iwr, cmd, info, handler);
  	}

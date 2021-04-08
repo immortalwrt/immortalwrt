@@ -2,7 +2,7 @@
 # Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.

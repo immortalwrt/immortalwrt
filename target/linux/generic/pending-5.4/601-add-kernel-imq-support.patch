@@ -1,6 +1,6 @@
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
-@@ -283,6 +283,125 @@ config RIONET_RX_SIZE
+@@ -326,6 +326,125 @@ config RIONET_RX_SIZE
  	depends on RIONET
  	default "128"
  
@@ -128,7 +128,7 @@
  	depends on INET
 --- a/drivers/net/Makefile
 +++ b/drivers/net/Makefile
-@@ -13,6 +13,7 @@ obj-$(CONFIG_DUMMY) += dummy.o
+@@ -14,6 +14,7 @@ obj-$(CONFIG_WIREGUARD) += wireguard/
  obj-$(CONFIG_EQUALIZER) += eql.o
  obj-$(CONFIG_IFB) += ifb.o
  obj-$(CONFIG_MACSEC) += macsec.o
@@ -1243,7 +1243,7 @@
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -4231,6 +4247,10 @@ static inline void __nf_copy(struct sk_b
+@@ -4236,6 +4252,10 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif
@@ -1402,7 +1402,7 @@
  /**
   *	skb_panic - private function for out-of-line support
   *	@skb:	buffer
-@@ -651,6 +701,28 @@ void skb_release_head_state(struct sk_bu
+@@ -660,6 +710,28 @@ void skb_release_head_state(struct sk_bu
  		WARN_ON(in_irq());
  		skb->destructor(skb);
  	}
@@ -1431,7 +1431,7 @@
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  	nf_conntrack_put(skb_nfct(skb));
  #endif
-@@ -935,6 +1007,9 @@ static void __copy_skb_header(struct sk_
+@@ -944,6 +1016,9 @@ static void __copy_skb_header(struct sk_
  	skb_dst_copy(new, old);
  	__skb_ext_copy(new, old);
  	__nf_copy(new, old, false);
@@ -1441,7 +1441,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4161,6 +4236,13 @@ void __init skb_init(void)
+@@ -4170,6 +4245,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);

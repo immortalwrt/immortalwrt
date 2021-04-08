@@ -1,6 +1,8 @@
 #!/bin/sh
 
 uci -q batch <<-EOF >/dev/null
+	set dhcp.@dnsmasq[0].localuse=1
+	commit dhcp
 	delete ucitrack.@passwall[-1]
 	add ucitrack passwall
 	set ucitrack.@passwall[-1].init=passwall
@@ -24,10 +26,6 @@ uci -q batch <<-EOF >/dev/null
 	set uhttpd.main.max_requests=50
 	commit uhttpd
 EOF
-
-tmp=$(uci -q get passwall.@global_app[0].xray_file)
-[ -z "$tmp" ] && uci set passwall.@global_app[0].xray_file="/usr/bin/xray"
-uci commit passwall
 
 rm -rf /tmp/luci-*cache
 exit 0

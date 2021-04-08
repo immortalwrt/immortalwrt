@@ -1,7 +1,0 @@
-#!/bin/sh
-uci batch <<-EOF
-	set luci.themes.Butterflyi=/luci-static/Butterfly
-	set luci.main.mediaurlbase=/luci-static/Butterfly
-	commit luci
-EOF
-exit 0

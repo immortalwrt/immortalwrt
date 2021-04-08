@@ -292,6 +292,9 @@ msgstr "单进程"
 msgid "Proxy Mode"
 msgstr "代理模式"
 
+msgid "%s Proxy Mode"
+msgstr "%s 代理模式"
+
 msgid "If not available, try clearing the cache."
 msgstr "如果无法使用，请尝试清除缓存。"
 
@@ -331,11 +334,11 @@ msgstr "添加节点"
 msgid "Add the node via the link"
 msgstr "通过链接添加节点"
 
-msgid "SS/SSR/Vmess/Trojan Link"
-msgstr "SS/SSR/Vmess/Trojan链接"
+msgid "SS/SSR/Vmess/VLESS/Trojan Link"
+msgstr "SS/SSR/Vmess/VLESS/Trojan链接"
 
-msgid "Please enter the correct link, ss:// ssr:// vmess:// trojan://"
-msgstr "请输入正确的链接，ss:// ssr:// vmess:// trojan://"
+msgid "Please enter the correct link, ss:// ssr:// vmess:// vless:// trojan://"
+msgstr "请输入正确的链接，ss:// ssr:// vmess:// vless:// trojan://"
 
 msgid "Clear all nodes"
 msgstr "清空所有节点"
@@ -445,14 +448,11 @@ msgstr "负载均衡节点列表"
 msgid "Load balancing node list, <a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>document</a>"
 msgstr "负载均衡节点列表，<a target='_blank' href='https://toutyrater.github.io/routing/balance2.html'>文档原理</a>"
 
-msgid "Share Current"
-msgstr "所见即所得"
-
 msgid "From Share URL"
-msgstr "导入配置信息"
+msgstr "导入分享URL"
 
 msgid "Build Share URL"
-msgstr "导出配置信息"
+msgstr "导出分享URL"
 
 msgid "Import Finished"
 msgstr "导入完成："
@@ -461,19 +461,16 @@ msgid "Not a supported scheme:"
 msgstr "不支持这种样式的："
 
 msgid "Invalid Share URL Format"
-msgstr "无效的分享信息"
-
-msgid "User cancelled"
-msgstr "用户已取消"
+msgstr "无效的分享URL信息"
 
 msgid "Paste Share URL Here"
 msgstr "在此处粘贴分享信息"
 
-msgid "Unable share to clipboard, copy to batch mode still:"
-msgstr "无法分享网址到剪贴板，复制到批量导入临时输入："
+msgid "Share URL to clipboard unable."
+msgstr "无法分享URL到剪贴板。"
 
-msgid "Share to clipboard successfully, copy to batch mode still:"
-msgstr "成功复制分享网址到剪贴板和批量导入临时输入："
+msgid "Share URL to clipboard successfully."
+msgstr "成功复制分享URL到剪贴板。"
 
 msgid "Faltal on get option, please help in debug:"
 msgstr "代码错误，请协助捉虫："
@@ -531,6 +528,9 @@ msgstr "选中后保存应用后即使用tcping替换ping检测节点"
 
 msgid "Concise display nodes"
 msgstr "简洁显示节点"
+
+msgid "Show server address and port"
+msgstr "显示服务器地址和端口"
 
 msgid "Apply"
 msgstr "应用"
@@ -757,6 +757,9 @@ msgstr "Xray 资源文件目录"
 msgid "This variable specifies a directory where geoip.dat and geosite.dat files are."
 msgstr "此变量指定geoip.dat和geosite.dat文件所在的目录。"
 
+msgid "Shunt Rule"
+msgstr "分流规则"
+
 msgid "Please note attention to the priority, the higher the order, the higher the priority."
 msgstr "请注意优先级问题，排序越上面优先级越高。"
 
@@ -868,17 +871,26 @@ msgstr "直连列表"
 msgid "Proxy List"
 msgstr "代理列表"
 
+msgid "Block List"
+msgstr "屏蔽列表"
+
 msgid "Join the direct hosts list of domain names will not proxy."
 msgstr "加入的域名不走代理，对所有模式有效。且优先级最高。"
 
 msgid "These had been joined ip addresses will not proxy. Please input the ip address or ip address segment,every line can input only one ip address. For example: 192.168.0.0/24 or 223.5.5.5."
 msgstr "加入的IP段不走代理，对所有模式有效。且优先级最高。可输入IP地址或地址段，如：192.168.0.0/24或223.5.5.5，每个地址段一行。"
 
-msgid "These had been joined websites will use proxy. Please input the domain names of websites,every line can input only one website domain. For example: google.com."
+msgid "These had been joined websites will use proxy. Please input the domain names of websites, every line can input only one website domain. For example: google.com."
 msgstr "加入的域名将走代理。输入网站域名，如：google.com，每个地址段一行。"
 
-msgid "These had been joined ip addresses will use proxy.Please input the ip address or ip address segment,every line can input only one ip address.For example: 35.24.0.0/24 or 8.8.4.4."
+msgid "These had been joined ip addresses will use proxy. Please input the ip address or ip address segment, every line can input only one ip address. For example: 35.24.0.0/24 or 8.8.4.4."
 msgstr "加入的IP段将走代理。可输入IP地址或地址段，如：35.24.0.0/24或8.8.4.4，每个地址段一行。"
+
+msgid "These had been joined websites will be block. Please input the domain names of websites, every line can input only one website domain. For example: twitter.com."
+msgstr "加入的域名将屏蔽。输入网站域名，如：twitter.com，每个地址段一行。"
+
+msgid "These had been joined ip addresses will be block. Please input the ip address or ip address segment, every line can input only one ip address."
+msgstr "加入的IP段将屏蔽。可输入IP地址或地址段，每个地址段一行。"
 
 msgid "Not valid domain name, please re-enter!"
 msgstr "不是有效域名，请重新输入！"
@@ -1164,6 +1176,9 @@ msgstr "日志"
 
 msgid "Log"
 msgstr "日志"
+
+msgid "%s Node Log Close"
+msgstr "%s 节点日志关闭"
 
 msgid "Log Level"
 msgstr "日志等级"
