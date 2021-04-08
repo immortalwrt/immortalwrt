@@ -374,6 +374,11 @@ ngx_rtmp_async_finalize_http_request(ngx_event_t *ev)
 
     ngx_log_error(NGX_LOG_INFO, s->log, 0, "asyn finalize http request");
 
+    if (!r) {
+        ngx_log_error(NGX_LOG_ERR, s->log, 0, "Http request is null");
+        return;
+    }
+
     if (r->header_sent) {
         ngx_http_finalize_request(r, NGX_HTTP_CLIENT_CLOSED_REQUEST);
         ngx_http_run_posted_requests(r->connection);
@@ -407,6 +412,13 @@ ngx_rtmp_finalize_session(ngx_rtmp_session_t *s)
         return;
     }
 
+    if (s->finalized) {
+        ngx_log_error(NGX_LOG_WARN, s->log, 0, "The session has been finalized.");
+        return;
+    }
+
+    s->finalized = 1;
+
     if (s->live_type != NGX_RTMP_LIVE) {
         e = &s->close;
         e->data = s;
@@ -436,6 +448,14 @@ void
 ngx_rtmp_finalize_fake_session(ngx_rtmp_session_t *s)
 {
     ngx_log_error(NGX_LOG_INFO, s->log, 0, "finalize fake session");
+
+
+    if (s->finalized) {
+        ngx_log_error(NGX_LOG_WARN, s->log, 0, "The fake session has been finalized.");
+        return;
+    }
+
+    s->finalized = 1;
 
     ngx_rtmp_fire_event(s, NGX_RTMP_DISCONNECT, NULL, NULL);
 

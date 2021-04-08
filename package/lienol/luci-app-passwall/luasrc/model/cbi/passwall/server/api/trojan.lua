@@ -16,7 +16,7 @@ function gen_config(user)
             key_password = "",
             cipher = user.fingerprint == nil and cipher or (user.fingerprint == "disable" and cipher13 .. ":" .. cipher or ""),
             cipher_tls13 = user.fingerprint == nil and cipher13 or nil,
-            sni = user.tls_serverName,
+            sni = nil,
             verify = (user.tls_allowInsecure ~= "1") and true or false,
             verify_hostname = false,
             reuse_session = true,
@@ -29,7 +29,7 @@ function gen_config(user)
         },
         udp_timeout = 60,
         disable_http_check = true,
-        transport_plugin = (user.tls == nil or user.tls ~= "1") and user.trojan_transport == "original" and {
+        transport_plugin = ((user.tls == nil or user.tls ~= "1") and user.trojan_transport == "original") and {
             enabled = user.plugin_type ~= nil,
             type = user.plugin_type or "plaintext",
             command = user.plugin_type ~= "plaintext" and user.plugin_cmd or nil,
@@ -37,10 +37,10 @@ function gen_config(user)
             arg = user.plugin_type ~= "plaintext" and { user.plugin_arg } or nil,
             env = {}
         } or nil,
-        websocket = user.trojan_transport and user.trojan_transport:find('ws') and {
+        websocket = (user.trojan_transport and user.trojan_transport:find('ws')) and {
             enabled = true,
             path = user.ws_path or "/",
-            host = user.ws_host or (user.tls_serverName or user.address)
+            host = user.ws_host or ""
         } or nil,
         shadowsocks = (user.ss_aead == "1") and {
             enabled = true,

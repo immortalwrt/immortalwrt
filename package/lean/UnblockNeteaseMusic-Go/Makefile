@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=UnblockNeteaseMusic-Go
-PKG_VERSION:=0.2.7
-PKG_RELEASE:=2
+PKG_VERSION:=0.2.9
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cnsilvan/UnblockNeteaseMusic/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=779a45272ee1d88674caaf792883c6f47619f37ec202082d38d15e090a7a2db9
+PKG_HASH:=9d352a0080c33e75e39586c531f9b3b88eea1d8a9d49c9e95c19d6a7d29f1419
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -79,6 +79,7 @@ define Package/UnblockNeteaseMusic-Go/install
 
 	$(INSTALL_DIR) $(1)/usr/share/UnblockNeteaseMusicGo
 	$(CP) ./files/* $(1)/usr/share/UnblockNeteaseMusicGo/
+	
 endef
 
 $(eval $(call GoBinPackage,UnblockNeteaseMusic-Go))

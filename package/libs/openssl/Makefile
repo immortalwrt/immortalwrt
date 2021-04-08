@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
 PKG_BASE:=1.1.1
-PKG_BUGFIX:=j
+PKG_BUGFIX:=k
 PKG_VERSION:=$(PKG_BASE)$(PKG_BUGFIX)
 PKG_RELEASE:=1
 PKG_USE_MIPS16:=0
@@ -19,8 +19,8 @@ PKG_BUILD_PARALLEL:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:= \
-	https://mirrors.cloud.tencent.com/openssl/source/ \
-	https://mirrors.cloud.tencent.com/openssl/source/old/$(PKG_BASE)/ \
+	https://mirrors.tencent.com/openssl/source/ \
+	https://mirrors.tencent.com/openssl/source/old/$(PKG_BASE)/ \
 	https://www.openssl.org/source/ \
 	https://www.openssl.org/source/old/$(PKG_BASE)/ \
 	https://ftp.fi.muni.cz/pub/openssl/source/ \
@@ -28,7 +28,7 @@ PKG_SOURCE_URL:= \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/old/$(PKG_BASE)/
 
-PKG_HASH:=aaf2fcb575cdf6491b98ab4829abf78a3dec8402b8b81efc8f23c00d443981bf
+PKG_HASH:=892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5
 
 PKG_LICENSE:=OpenSSL
 PKG_LICENSE_FILES:=LICENSE
@@ -54,7 +54,6 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_OPENSSL_WITH_DTLS \
 	CONFIG_OPENSSL_WITH_EC2M \
 	CONFIG_OPENSSL_WITH_ERROR_MESSAGES \
-	CONFIG_OPENSSL_WITH_GOST \
 	CONFIG_OPENSSL_WITH_IDEA \
 	CONFIG_OPENSSL_WITH_MDC2 \
 	CONFIG_OPENSSL_WITH_NPN \
@@ -289,10 +288,6 @@ ifdef CONFIG_OPENSSL_ENGINE
   endif
 else
   OPENSSL_OPTIONS += no-engine
-endif
-
-ifndef CONFIG_OPENSSL_WITH_GOST
-  OPENSSL_OPTIONS += no-gost
 endif
 
 ifndef CONFIG_OPENSSL_WITH_DTLS

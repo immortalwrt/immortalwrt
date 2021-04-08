@@ -28,7 +28,5 @@ if [ ! -s "/etc/config/shadowsocksr" ]; then
 fi
 sed -i "s/option type 'vmess'"/"option type 'v2ray'\n\toption v2ray_protocol 'vmess'/g" /etc/config/shadowsocksr
 sed -i "s/option type 'vless'"/"option type 'v2ray'\n\toption v2ray_protocol 'vless'/g" /etc/config/shadowsocksr
-sed -i "s/option type 'trojan'"/"option type 'v2ray'\n\toption v2ray_protocol 'trojan'/g" /etc/config/shadowsocksr
-sed -i "s/option type 'socks5'"/"option type 'v2ray'\n\toption v2ray_protocol 'socks'/g" /etc/config/shadowsocksr
 rm -rf /tmp/luci-modulecache /tmp/luci-indexcache
 exit 0

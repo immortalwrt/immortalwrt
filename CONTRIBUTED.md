@@ -1,6 +1,9 @@
 # CONTRIBUTED
-## The Source of Packages
 
+## Sponsors
+[![Dler Cloud](https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png)](https://dlercloud.com)
+
+## The Source of Packages
 ### Based on: [openwrt/openwrt](https://github.com/openwrt/openwrt).<br/>
 Package lean: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
 Package ntlf9t: [jsda/packages2](https://github.com/jsda/packages2).<br/>
@@ -46,6 +49,10 @@ luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelo
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
 luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com/garypang13/luci-theme-edge).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
+
+## Download Mirrors
+[182.140.223.146](http://182.140.223.146/dl) by [hzjnet@163.com](mailto://hzjnet@163.com).<br/>
+[openwrt.cc](https://openwrt.cc/dl/immortalwrt) by [@SuLingGG](https://github.com/SuLingGG).
 
 ## License
 ### Depend on their own License.

@@ -916,6 +916,13 @@ define KernelPackage/sched/description
  Extra kernel schedulers modules for IP traffic
 endef
 
+SCHED_TEQL_HOTPLUG:=hotplug-sched-teql.sh
+
+define KernelPackage/sched/install
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
+	$(INSTALL_DATA) ./files/$(SCHED_TEQL_HOTPLUG) $(1)/etc/hotplug.d/iface/15-teql
+endef
+
 $(eval $(call KernelPackage,sched))
 
 
@@ -1250,3 +1257,31 @@ define KernelPackage/netlink-diag/description
 endef
 
 $(eval $(call KernelPackage,netlink-diag))
+
+
+define KernelPackage/wireguard
+  SUBMENU:=$(NETWORK_SUPPORT_MENU)
+  TITLE:=WireGuard secure network tunnel
+  DEPENDS:= \
+	  +kmod-crypto-lib-blake2s \
+	  +kmod-crypto-lib-chacha20poly1305 \
+	  +kmod-crypto-lib-curve25519 \
+	  +kmod-udptunnel4 \
+	  +IPV6:kmod-udptunnel6
+  KCONFIG:= \
+	  CONFIG_WIREGUARD \
+	  CONFIG_WIREGUARD_DEBUG=n
+  FILES:=$(LINUX_DIR)/drivers/net/wireguard/wireguard.ko
+  AUTOLOAD:=$(call AutoProbe,wireguard)
+endef
+
+define KernelPackage/wireguard/description
+  WireGuard is a novel VPN that runs inside the Linux Kernel and utilizes
+  state-of-the-art cryptography. It aims to be faster, simpler, leaner, and
+  more useful than IPSec, while avoiding the massive headache. It intends to
+  be considerably more performant than OpenVPN.  WireGuard is designed as a
+  general purpose VPN for running on embedded interfaces and super computers
+  alike, fit for many different circumstances. It uses UDP.
+endef
+
+$(eval $(call KernelPackage,wireguard))

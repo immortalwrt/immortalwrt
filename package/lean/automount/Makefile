@@ -17,7 +17,7 @@ define Package/automount
   TITLE:=Mount autoconfig hotplug script.
   MAINTAINER:=Lean
   DEPENDS:=+block-mount +kmod-usb-storage +kmod-usb-storage-extras +!TARGET_ramips:kmod-usb-storage-uas \
-	+kmod-fs-vfat +kmod-fs-ext4 +kmod-fs-exfat +ntfs-3g
+	+kmod-fs-vfat +kmod-fs-ext4 +LINUX_5_4:kmod-fs-exfat0 +!LINUX_5_4:kmod-fs-exfat +ntfs-3g
   PKGARCH:=all
 endef
 

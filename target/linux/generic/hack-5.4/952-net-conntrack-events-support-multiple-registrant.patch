@@ -93,7 +93,7 @@
  	depends on NETFILTER_ADVANCED
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -2523,6 +2523,9 @@ int nf_conntrack_init_net(struct net *ne
+@@ -2592,6 +2592,9 @@ int nf_conntrack_init_net(struct net *ne
  	nf_conntrack_helper_pernet_init(net);
  	nf_conntrack_proto_pernet_init(net);
  
@@ -273,7 +273,7 @@
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3502,9 +3509,15 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3504,9 +3511,15 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS

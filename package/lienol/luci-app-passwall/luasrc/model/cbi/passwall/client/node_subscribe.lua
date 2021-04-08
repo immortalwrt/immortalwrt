@@ -24,13 +24,13 @@ o:value(7, translate("Every day"))
 for e = 1, 6 do o:value(e, translate("Week") .. e) end
 o:value(0, translate("Week") .. translate("day"))
 o.default = 0
-o:depends("auto_update_subscribe", 1)
+o:depends("auto_update_subscribe", true)
 
 ---- Day update rules
 o = s:option(ListValue, "time_update_subscribe", translate("Day update rules"))
 for e = 0, 23 do o:value(e, e .. translate("oclock")) end
 o.default = 0
-o:depends("auto_update_subscribe", 1)
+o:depends("auto_update_subscribe", true)
 
 o = s:option(ListValue, "filter_keyword_mode", translate("Filter keyword Mode"))
 o:value("0", translate("Close"))

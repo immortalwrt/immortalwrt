@@ -16,7 +16,7 @@ Co-authored-by: gzelvis <gzelvis@gmail.com>
 
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4-opp.dtsi
-@@ -0,0 +1,156 @@
+@@ -0,0 +1,152 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2016-2017 Fuzhou Rockchip Electronics Co., Ltd
@@ -53,19 +53,15 @@ Co-authored-by: gzelvis <gzelvis@gmail.com>
 +		};
 +		opp05 {
 +			opp-hz = /bits/ 64 <1416000000>;
-+			opp-microvolt = <1150000>;
++			opp-microvolt = <1125000>;
 +		};
 +		opp06 {
-+			opp-hz = /bits/ 64 <1512000000>;
-+			opp-microvolt = <1200000>;
-+		};
-+ 		opp07 {
 +			opp-hz = /bits/ 64 <1608000000>;
-+			opp-microvolt = <1250000>;
++			opp-microvolt = <1225000>;
 +		};
-+		opp08 {
++		opp07 {
 +			opp-hz = /bits/ 64 <1800000000>;
-+			opp-microvolt = <1300000>;
++			opp-microvolt = <1275000>;
 +		};
 +	};
 +
@@ -104,15 +100,15 @@ Co-authored-by: gzelvis <gzelvis@gmail.com>
 +		};
 +		opp07 {
 +			opp-hz = /bits/ 64 <1800000000>;
-+			opp-microvolt = <1250000>;
++			opp-microvolt = <1200000>;
 +		};
 +		opp08 {
 +			opp-hz = /bits/ 64 <2016000000>;
-+			opp-microvolt = <1350000>;
++			opp-microvolt = <1250000>;
 +		};
 +		opp09 {
 +			opp-hz = /bits/ 64 <2208000000>;
-+			opp-microvolt = <1400000>;
++			opp-microvolt = <1325000>;
 +		};
 +	};
 +

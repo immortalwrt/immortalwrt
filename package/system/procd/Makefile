@@ -12,9 +12,9 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/procd.git
-PKG_SOURCE_DATE:=2021-02-08
-PKG_SOURCE_VERSION:=08938fe1cbc06eeaafa39448057368391d165272
-PKG_MIRROR_HASH:=efc3deac56057e929789d44742858b2a16d976f6bfa0a2036e413d10afcaeee4
+PKG_SOURCE_DATE:=2021-03-21
+PKG_SOURCE_VERSION:=7ee456346baca29af40a6d1a5071e57f32ebf762
+PKG_MIRROR_HASH:=aad23bc8f0548a46e60e4967b3f6645f03bad61c395269244c3509cc41f2c3d0
 CMAKE_INSTALL:=1
 
 PKG_LICENSE:=GPL-2.0
@@ -82,7 +82,7 @@ endef
 define Package/procd-seccomp
   SECTION:=base
   CATEGORY:=Base system
-  DEPENDS:=@(arm||armeb||mips||mipsel||i386||powerpc||x86_64) @!TARGET_uml \
+  DEPENDS:=@(aarch64||arm||armeb||mips||mipsel||i386||powerpc||x86_64) @!TARGET_uml \
 	  @KERNEL_SECCOMP +libubox +libblobmsg-json
   TITLE:=OpenWrt process seccomp helper + utrace
 endef
