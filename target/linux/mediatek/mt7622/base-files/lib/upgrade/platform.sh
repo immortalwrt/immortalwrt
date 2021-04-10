@@ -48,13 +48,26 @@ platform_do_upgrade() {
 
 	case "$board" in
 	bananapi,bpi-r64)
-		local rootdev=$(get_rootdev)
-		local fitpart=$(get_partition $rootdev production)
-		[ "$fitpart" ] || exit 1
-		dd if=/dev/zero of=/dev/$fitpart bs=4096 count=1 2>/dev/null
-		blockdev --rereadpt /dev/$rootdev
-		get_image "$1" | dd of=/dev/$fitpart
-		echo $rootdev > /tmp/sysupgrade.rootdev
+		export_bootdevice
+		export_partdevice rootdev 0
+		case "$rootdev" in
+		mmc*)
+			local fitpart=$(get_partition_by_name $rootdev "production")
+			[ "$fitpart" ] || return 1
+			dd if=/dev/zero of=/dev/$fitpart bs=4096 count=1 2>/dev/null
+			blockdev --rereadpt /dev/$rootdev
+			get_image "$1" | dd of=/dev/$fitpart
+			blockdev --rereadpt /dev/$rootdev
+			local datapart=$(get_partition_by_name $rootdev "rootfs_data")
+			[ "$datapart" ] || return 0
+			dd if=/dev/zero of=/dev/$datapart bs=4096 count=1 2>/dev/null
+			echo $datapart > /tmp/sysupgrade.datapart
+			;;
+		*)
+			CI_KERNPART="fit"
+			nand_do_upgrade "$1"
+			;;
+		esac
 		;;
 	buffalo,wsr-2533dhp2)
 		local magic="$(get_magic_long "$1")"
@@ -124,7 +137,11 @@ platform_copy_config_mmc() {
 platform_copy_config() {
 	case "$(board_name)" in
 	bananapi,bpi-r64)
-		platform_copy_config_mmc
+		export_bootdevice
+		export_partdevice rootdev 0
+		if echo $rootdev | grep -q mmc; then
+			platform_copy_config_mmc
+		fi
 		;;
 	esac
 }
