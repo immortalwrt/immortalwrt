@@ -1,5 +1,5 @@
 From: Pablo Neira Ayuso <pablo@netfilter.org>
-Date: Thu, 4 Mar 2021 23:18:11 +0100
+Date: Wed, 24 Mar 2021 02:30:32 +0100
 Subject: [PATCH] net: resolve forwarding path from virtual netdevice and
  HW destination address
 
@@ -104,7 +104,7 @@ Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
  };
  
  /**
-@@ -2795,6 +2820,8 @@ void dev_remove_offload(struct packet_of
+@@ -2827,6 +2852,8 @@ void dev_remove_offload(struct packet_of
  
  int dev_get_iflink(const struct net_device *dev);
  int dev_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb);
