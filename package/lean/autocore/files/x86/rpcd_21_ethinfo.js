@@ -19,12 +19,12 @@ return L.Class.extend({
 	render: function(data) {
 		var ethinfo = Array.isArray(data[0].ethinfo) ? data[0].ethinfo : [];
 
-		var table = E('div', { 'class': 'table' }, [
-			E('div', { 'class': 'tr table-titles' }, [
-				E('div', { 'class': 'th' }, _('Ethernet Name')),
-				E('div', { 'class': 'th' }, _('Link Status')),
-				E('div', { 'class': 'th' }, _('Speed')),
-				E('div', { 'class': 'th' }, _('Duplex'))
+		var table = E('td', { 'class': 'table' }, [
+			E('tr', { 'class': 'tr table-titles' }, [
+				E('td', { 'class': 'th' }, _('Ethernet Name')),
+				E('td', { 'class': 'th' }, _('Link Status')),
+				E('td', { 'class': 'th' }, _('Speed')),
+				E('td', { 'class': 'th' }, _('Duplex'))
 			])
 		]);
 
