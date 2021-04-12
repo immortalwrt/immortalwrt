@@ -26,7 +26,6 @@ server_config_file=
 shunt_dns_config_file=
 tmp_local_port=
 ARG_UDP=
-ARG_OTA=
 dns_port="5335"            #dns port
 tmp_dns_port="300"         #dns2socks temporary port
 tmp_udp_port="301"         #udp temporary port
@@ -340,9 +339,7 @@ start_udp() {
 	ss | ssr)
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_port
 		ss_program="$(first_type ${type}local ${type}-redir)"
-		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] &&
-			local ss_extra_arg="--protocol redir -u" || local ss_extra_arg="-U"
-		ln_start_bin $ss_program ${type}-redir -c $udp_config_file $ss_extra_arg
+		ln_start_bin $ss_program ${type}-redir -c $udp_config_file
 		echolog "UDP TPROXY Relay:$(get_name $type) Started!"
 		;;
 	v2ray)
@@ -384,8 +381,7 @@ start_shunt() {
 	ss | ssr)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
 		ss_program="$(first_type ${type}local ${type}-redir)"
-		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] && local ss_extra_arg="--protocol redir"
-		ln_start_bin $ss_program ${type}-redir -c $shunt_config_file $ss_extra_arg
+		ln_start_bin $ss_program ${type}-redir -c $shunt_config_file
 		if [ -n "$tmp_local_port" ]; then
 			local tmp_port=$tmp_local_port
 		else
@@ -471,9 +467,7 @@ start_local() {
 	ss | ssr)
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
 		ss_program="$(first_type ${type}local ${type}-local)"
-		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] &&
-			local ss_extra_arg="-U" || local ss_extra_arg="-u"
-		ln_start_bin $ss_program ${type}-local -c $local_config_file $ss_extra_arg
+		ln_start_bin $ss_program ${type}-local -c $local_config_file
 		echolog "Global_Socks5:$(get_name $type) Started!"
 		;;
 	v2ray)
@@ -534,13 +528,8 @@ Start_Run() {
 	ss | ssr)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
 		ss_program="$(first_type ${type}local ${type}-redir)"
-		[ "$(printf '%s' "$ss_program" | awk -F '/' '{print $NF}')" = "${type}local" ] &&
-			{
-				local ss_extra_arg="--protocol redir"
-				case ${ARG_OTA} in '-u') ARG_OTA='-U' ;; esac
-			}
 		for i in $(seq 1 $threads); do
-			ln_start_bin "$ss_program" ${type}-redir -c $tcp_config_file $ARG_OTA $ss_extra_arg
+			ln_start_bin "$ss_program" ${type}-redir -c $tcp_config_file
 		done
 		echolog "Main node:$(get_name $type) $threads Threads Started!"
 		;;
@@ -605,16 +594,13 @@ load_config() {
 		mode="tcp,udp"
 		tcp_config_file=$TMP_PATH/tcp-udp-ssr-retcp.json
 		ARG_UDP="-u"
-		ARG_OTA="-u"
 		UDP_RELAY_SERVER=$GLOBAL_SERVER
 		;;
 	*)
 		mode="udp"
 		udp_config_file=$TMP_PATH/udp-only-ssr-reudp.json
 		ARG_UDP="-U"
-		ARG_OTA="-U"
 		start_udp
-		ARG_OTA=""
 		mode="tcp"
 		;;
 	esac
