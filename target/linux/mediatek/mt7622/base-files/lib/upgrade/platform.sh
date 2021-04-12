@@ -2,46 +2,6 @@ REQUIRE_IMAGE_METADATA=1
 RAMFS_COPY_BIN='fw_printenv fw_setenv blockdev'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
-get_cmdline_var() {
-	local var=$1
-	local cmdlinevar tmp
-	local cmdline="$(cat /proc/cmdline)"
-
-	for cmdlinevar in $cmdline; do
-		tmp=${cmdlinevar##${var}}
-		[ "=" = "${tmp:0:1}" ] && echo ${tmp:1}
-	done
-}
-
-get_rootdev() {
-	local rootvol rootdev
-	rootvol=$(get_cmdline_var root)
-	rootvol=$(basename $rootvol)
-	[ -e /sys/class/block/$rootvol ] || {
-		rootvol=${rootvol%%[0-9]}
-		[ -e /sys/class/block/$rootvol ] && echo $rootvol
-		rootvol=${rootvol%%p}
-		[ -e /sys/class/block/$rootvol ] && echo $rootvol
-		return
-	}
-	[ -e /sys/class/block/$rootvol/partition ] || {
-		echo $rootvol
-		return
-	}
-	rootdev=$(busybox readlink -f /sys/class/block/$rootvol)
-	rootdev=$(basename ${rootdev%%/${rootvol}})
-	[ -e /sys/class/block/$rootdev ] && echo $rootdev
-}
-
-get_partition() {
-	for partname in /sys/class/block/$1/*/name; do
-		[ "$(cat ${partname})" = "$2" ] && {
-			basename ${partname%%/name}
-			break
-		}
-	done
-}
-
 platform_do_upgrade() {
 	local board=$(board_name)
 	local file_type=$(identify $1)
@@ -126,11 +86,9 @@ platform_check_image() {
 
 platform_copy_config_mmc() {
 	[ -e "$UPGRADE_BACKUP" ] || return
-	local rootdev=$(cat /tmp/sysupgrade.rootdev)
-	blockdev --rereadpt /dev/$rootdev
-	local datadev=$(get_partition $rootdev rootfs_data)
-	[ "$datadev" ] || echo "no rootfs_data partition, cannot keep configuration." >&2
-	dd if="$CONF_TAR" of=/dev/$datadev
+	local datapart=$(cat /tmp/sysupgrade.datapart)
+	[ "$datapart" ] || echo "no rootfs_data partition, cannot keep configuration." >&2
+	dd if="$CONF_TAR" of=/dev/$datapart
 	sync
 }
 
