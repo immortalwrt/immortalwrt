@@ -323,11 +323,9 @@ mt7530_r32(struct mt7530_priv *priv, u32 reg)
 	if (priv->bus) {
 		u16 high, low;
 
-		mutex_lock(&priv->bus->mdio_lock);
-		__mdiobus_write(priv->bus, 0x1f, 0x1f, (reg >> 6) & 0x3ff);
-		low = __mdiobus_read(priv->bus, 0x1f, (reg >> 2) & 0xf);
-		high = __mdiobus_read(priv->bus, 0x1f, 0x10);
-		mutex_unlock(&priv->bus->mdio_lock);
+		mdiobus_write(priv->bus, 0x1f, 0x1f, (reg >> 6) & 0x3ff);
+		low = mdiobus_read(priv->bus, 0x1f, (reg >> 2) & 0xf);
+		high = mdiobus_read(priv->bus, 0x1f, 0x10);
 
 		return (high << 16) | (low & 0xffff);
 	}
@@ -342,11 +340,9 @@ static void
 mt7530_w32(struct mt7530_priv *priv, u32 reg, u32 val)
 {
 	if (priv->bus) {
-		mutex_lock(&priv->bus->mdio_lock);
-		__mdiobus_write(priv->bus, 0x1f, 0x1f, (reg >> 6) & 0x3ff);
-		__mdiobus_write(priv->bus, 0x1f, (reg >> 2) & 0xf,  val & 0xffff);
-		__mdiobus_write(priv->bus, 0x1f, 0x10, val >> 16);
-		mutex_unlock(&priv->bus->mdio_lock);
+		mdiobus_write(priv->bus, 0x1f, 0x1f, (reg >> 6) & 0x3ff);
+		mdiobus_write(priv->bus, 0x1f, (reg >> 2) & 0xf,  val & 0xffff);
+		mdiobus_write(priv->bus, 0x1f, 0x10, val >> 16);
 		return;
 	}
 
