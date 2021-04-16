@@ -51,7 +51,6 @@ luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com/garypang
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
 ## Download Mirrors
-[182.140.223.146](http://182.140.223.146/dl) by [hzjnet@163.com](mailto://hzjnet@163.com).<br/>
 [openwrt.cc](https://openwrt.cc/dl/immortalwrt) by [@SuLingGG](https://github.com/SuLingGG).
 
 ## License
