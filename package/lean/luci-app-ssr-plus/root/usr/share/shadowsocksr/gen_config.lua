@@ -224,6 +224,7 @@ local ss = {
 	local_address = "0.0.0.0",
 	local_port = tonumber(local_port),
 	mode = (proto == "tcp,udp") and "tcp_and_udp" or proto .. "_only",
+	protocol = socks_port,
 	password = server.password,
 	method = server.encrypt_method_ss,
 	timeout = tonumber(server.timeout),
