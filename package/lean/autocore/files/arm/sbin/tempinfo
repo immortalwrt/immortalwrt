@@ -1,9 +1,14 @@
 #!/bin/sh
 
+mt76_path="/sys/kernel/debug/ieee80211/phy0/mt76/temperature"
+if [ -e "${mt76_path}" ]; then
+	mt76_temp=" $(cat "${mt76_path}" | awk -F ': ' '{print $2}')°C"
+fi
+
 sys_temp="$(sensors | grep -Eo '\+[0-9]+.+C' | grep -Ev 'high' | sed ':a;N;$!ba;s/\n/ /g;s/+//g')"
 
 if grep -q "ipq40xx" "/etc/openwrt_release"; then
-	echo -n "WiFi: ${sys_temp}"
+	echo -n "WiFi:${mt76_temp} ${sys_temp}"
 else
 	cpu_temp="$(awk "BEGIN{printf (\"%.1f\n\",$(cat /sys/class/thermal/thermal_zone0/temp)/1000) }")°C"
 	echo -n "CPU: ${cpu_temp}, WiFi: ${sys_temp}"
