@@ -54,6 +54,28 @@ define U-Boot/mt7622_bananapi_bpi-r64-sdmmc
   DEPENDS:=+trusted-firmware-a-mt7622-sdmmc-2ddr
 endef
 
+define U-Boot/mt7622_bananapi_bpi-r64-snand
+  NAME:=BananaPi R64 (SNAND)
+  UBOOT_CONFIG:=mt7622_bananapi_bpi-r64-snand
+  BUILD_DEVICES:=bananapi_bpi-r64
+  BUILD_SUBTARGET:=mt7622
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=snand
+  BL2_DDRBLOB:=2
+  DEPENDS:=+trusted-firmware-a-mt7622-snand-2ddr
+endef
+
+define U-Boot/mt7622_ubnt_unifi-6-lr
+  NAME:=Ubiquiti UniFi 6 LR
+  UBOOT_CONFIG:=mt7622_ubnt_unifi-6-lr
+  BUILD_DEVICES:=ubnt_unifi-6-lr-ubootmod
+  BUILD_SUBTARGET:=mt7622
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=nor
+  BL2_DDRBLOB:=2
+  DEPENDS:=+trusted-firmware-a-mt7622-nor-2ddr
+endef
+
 define U-Boot/mt7623a_unielec_u7623
   NAME:=UniElec U7623 (mt7623)
   BUILD_DEVICES:=unielec_u7623-emmc unielec_u7623-02-emmc-512m-legacy
@@ -79,8 +101,10 @@ endef
 UBOOT_TARGETS := \
 	mt7622_bananapi_bpi-r64-emmc \
 	mt7622_bananapi_bpi-r64-sdmmc \
+	mt7622_bananapi_bpi-r64-snand \
 	mt7622_linksys_e8450 \
 	mt7622_rfb1 \
+	mt7622_ubnt_unifi-6-lr \
 	mt7623n_bpir2 \
 	mt7623a_unielec_u7623 \
 	mt7629_rfb

@@ -11,6 +11,7 @@ SUBTARGETS:=xrx200 xway xway_legacy falcon ase
 MAINTAINER:=John Crispin <john@phrozen.org>
 
 KERNEL_PATCHVER:=5.4
+KERNEL_TESTING_PATCHVER:=5.10
 
 define Target/Description
 	Build firmware images for Lantiq SoC
