@@ -1,6 +1,0 @@
-#!/bin/sh
-uci batch <<-EOF
-	set luci.themes.Bootstrap_Mod=/luci-static/bootstrap_mod
-	commit luci
-EOF
-exit 0
