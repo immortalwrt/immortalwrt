@@ -11,7 +11,7 @@ UNPACK_CMD=unzip -q -p $(DL_DIR)/$(PKG_SOURCE) $(PKG_SOURCE_UNZIP) | gzip -dc | 
 
 PKG_NAME:=cypress-firmware
 PKG_VERSION:=v5.4.18-2020_0925
-PKG_RELEASE:=3
+PKG_RELEASE:=1
 
 PKG_SOURCE_UNZIP:=cypress-firmware-$(PKG_VERSION).tar.gz
 PKG_SOURCE:=cypress-fmac-$(PKG_VERSION).zip
