@@ -522,6 +522,13 @@ define Device/hiwifi_c526a
 endef
 TARGET_DEVICES += hiwifi_c526a
 
+define Device/hiwifi_c526a-128m
+	$(call Device/hiwifi_c526a)
+	DEVICE_VARIANT := 128M
+	DEVICE_DTS := qcom-ipq4019-c526a-128m
+endef
+TARGET_DEVICES += hiwifi_c526a-128m
+
 define Device/hugo_ac1200
 	$(call Device/FitImage)
 	DEVICE_VENDOR := Hugo
