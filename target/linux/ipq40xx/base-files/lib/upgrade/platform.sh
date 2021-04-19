@@ -180,8 +180,8 @@ platform_do_upgrade() {
 	buffalo,wtr-m2133hp |\
 	century,wr142ac-nand |\
 	cilab,meshpoint-one |\
-	hiwifi,c526a|\
-	hiwifi,c526a-128m|\
+	hiwifi,c526a |\
+	hiwifi,c526a-128m |\
 	mobipromo,cm520-79f |\
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$ARGV"
