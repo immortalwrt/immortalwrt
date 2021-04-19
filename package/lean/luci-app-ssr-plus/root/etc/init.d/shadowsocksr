@@ -37,7 +37,6 @@ server_count=0
 redir_tcp=0
 redir_udp=0
 local_enable=0
-ss_protocol=
 kcp_enable_flag=0
 pdnsd_enable_flag=0
 switch_server=$1
@@ -843,7 +842,7 @@ stop() {
 	ps -w | grep -v "grep" | grep ssr-monitor | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "sleep 0000" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	ps -w | grep -v "grep" | grep "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	killall -q -9 v2ray-plugin obfs-local
+	killall -q -9 v2ray-plugin obfs-local xray-plugin
 	rm -f /var/lock/ssr-monitor.lock
 	if [ -f "/var/dnsmasq.d/dnsmasq-ssrplus.conf" ]; then
 		rm -rf /var/dnsmasq.d/dnsmasq-ssrplus.conf $TMP_DNSMASQ_PATH $TMP_PATH/*-ssr-*.json

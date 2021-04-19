@@ -733,5 +733,11 @@ msgstr "输入的内容不正确！"
 msgid "Reset complete"
 msgstr "重置完成"
 
+msgid "Reset Error"
+msgstr "重置错误"
+
+msgid "Reset pdnsd cache"
+msgstr "重置pdnsd缓存"
+
 msgid "Finger Print"
 msgstr "指纹伪造"
