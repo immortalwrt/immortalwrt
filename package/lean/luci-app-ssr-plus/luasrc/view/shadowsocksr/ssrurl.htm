@@ -220,8 +220,7 @@ function import_ssr_url(btn, urlname, sid) {
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.password')[0].value = password;
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls')[0].checked = true;
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls')[0].dispatchEvent(event);
-			document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls_host')[0].value = queryParam.peer || '';
-			document.getElementsByName('cbid.shadowsocksr.' + sid + '.insecure')[0].checked = queryParam.allowInsecure == '1';
+			document.getElementsByName('cbid.shadowsocksr.' + sid + '.tls_host')[0].value = queryParam.sni || '';
 			if (param != undefined) {
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.alias')[0].value = decodeURI(param);
 			}
