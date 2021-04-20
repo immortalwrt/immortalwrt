@@ -285,7 +285,7 @@ define Device/dlink_dir-xx60-a1
   DEVICE_VENDOR := D-Link
   DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3 \
 	kmod-usb-ledtrig-usbport
-  KERNEL := $$(KERNEL) | uimage-padhdr 96
+  KERNEL := $$(KERNEL) | uimage-sgehdr
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
