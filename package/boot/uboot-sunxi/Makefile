@@ -276,6 +276,7 @@ define U-Boot/nanopi_r1s_h5
   BUILD_DEVICES:=friendlyarm_nanopi-r1s-h5
   DEPENDS:=+PACKAGE_u-boot-nanopi_r1s_h5:arm-trusted-firmware-sunxi-a64
   UENV:=a64
+  ATF:=a64
 endef
 
 define U-Boot/pine64_plus
