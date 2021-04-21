@@ -6,8 +6,9 @@ function index()
 		return
 	end
 
-	entry({"admin", "services", "familycloud"},firstchild(), _("天翼家庭云/云盘提速"), 80).dependent = false
-	
+	local page = entry({"admin", "services", "familycloud"},firstchild(), _("天翼家庭云/云盘提速"), 80)
+	page.dependent = false
+	page.acl_depends = { "luci-app-familycloud" }
 	entry({"admin", "services", "familycloud", "general"},cbi("familycloud"), _("Base Setting"), 1)
   entry({"admin", "services", "familycloud", "log"},form("familycloudlog"), _("Log"), 2)
   

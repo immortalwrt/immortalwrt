@@ -8,6 +8,7 @@ function index()
 	page = entry({"admin", "services", "vlmcsd"}, cbi("vlmcsd"), _("KMS Server"), 100)
 	page.i18n = "vlmcsd"
 	page.dependent = true
+	page.acl_depends = { "luci-app-vlmcsd" }
 	entry({"admin","services","vlmcsd","status"},call("act_status")).leaf=true
 end
 

@@ -1,0 +1,11 @@
+{
+	"luci-app-mtwifi": {
+		"description": "Grant UCI access for luci-app-mtwifi",
+		"read": {
+			"uci": [ "wifi" ]
+		},
+		"write": {
+			"uci": [ "wifi" ]
+		}
+	}
+}

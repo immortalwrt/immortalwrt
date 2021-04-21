@@ -9,7 +9,9 @@ entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false
 	
 local page
 
-entry({"admin","vpn","ssrs"},cbi("ssrs"),_("SSR Python Server"),4).dependent=true
+page = entry({"admin","vpn","ssrs"},cbi("ssrs"),_("SSR Python Server"),4)
+page.dependent=true
+page.acl_depends = { "luci-app-ssrserver-python" }
 entry({"admin","vpn","ssrs","status"},call("act_status")).leaf=true
 end
 
