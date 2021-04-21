@@ -7,6 +7,7 @@ local e
 e=entry({"admin","services","nps"},cbi("nps"),_("Nps Setting"),100)
 e.i18n="nps"
 e.dependent=true
+e.acl_depends = { "luci-app-nps" }
 entry({"admin","services","nps","status"},call("status")).leaf=true
 end
 function status()

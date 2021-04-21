@@ -9,7 +9,9 @@ entry({"admin", "nas"}, firstchild(), "NAS", 44).dependent = false
 	
 local page
 
-entry({"admin", "nas","ps3netsrv"},cbi("ps3netsrv"),_("PS3 NET Server"),40).dependent=true
+page = entry({"admin", "nas","ps3netsrv"},cbi("ps3netsrv"),_("PS3 NET Server"),40)
+page.dependent=true
+page.acl_depends = { "luci-app-ps3netsrv" }
 entry({"admin", "nas","ps3netsrv","status"},call("act_status")).leaf=true
 end
 

@@ -6,6 +6,7 @@ end
 local e
 e=entry({"admin","network","syncdial"},cbi("syncdial"),_("多线多拨"),103)
 e.dependent=true
+e.acl_depends = { "luci-app-syncdial" }
 e=entry({"admin","network","macvlan_redial"},call("redial"),nil)
 e.leaf=true
 end

@@ -23,6 +23,7 @@ function index()
         
 	local page = entry({"admin", "nas", "amule"}, cbi("amule"), _("aMule Settings"))
 	page.dependent = true
+	page.acl_depends = { "luci-app-amule" }
 	entry( {"admin", "nas", "amule", "logview"}, call("logread") ).leaf = true
 	entry( {"admin", "nas", "amule", "status"}, call("get_pid") ).leaf = true
 	entry( {"admin", "nas", "amule", "amulecmd"}, call("amulecmd") ).leaf = true

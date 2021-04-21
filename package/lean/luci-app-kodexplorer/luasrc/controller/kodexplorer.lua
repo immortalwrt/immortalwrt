@@ -8,7 +8,9 @@ function index()
     if not nixio.fs.access("/etc/config/kodexplorer") then return end
 
     entry({"admin", "nas"}, firstchild(), "NAS", 44).dependent = false
-    entry({"admin", "nas", "kodexplorer"}, cbi("kodexplorer/settings"), _("KodExplorer"), 3).dependent = true
+    local page = entry({"admin", "nas", "kodexplorer"}, cbi("kodexplorer/settings"), _("KodExplorer"), 3)
+	page.dependent = true
+	page.acl_depends = { "luci-app-kodexplorer" }
 
     entry({"admin", "nas", "kodexplorer", "check"}, call("action_check")).leaf = true
     entry({"admin", "nas", "kodexplorer", "download"}, call("action_download")).leaf = true
