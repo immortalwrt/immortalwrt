@@ -3,8 +3,8 @@
 #include "qcom-ipq4019-c526a.dtsi"
 
 / {
-	model = "HiWiFi C526A";
-	compatible = "hiwifi,c526a";
+	model = "HiWiFi C526A 128M";
+	compatible = "hiwifi,c526a-128m";
 };
 
 &nand {
@@ -18,17 +18,7 @@
 
 			partition@0 {
 				label = "ubi";
-				reg = <0x0 0x2c00000>;
-			};
-
-			partition@2c00000 {
-				label = "hiwifi_rootfs";
-				reg = <0x2c00000 0x2c00000>;
-			};
-
-			partition@5800000 {
-				label = "hiwifi_opt";
-				reg = <0x5800000 0x2800000>;
+				reg = <0x0 0x8000000>;
 			};
 		};
 	};
