@@ -223,7 +223,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
 +	struct udevice *dev;
 +
 +	if (uclass_get_device_by_driver(UCLASS_CLK,
-+				DM_GET_DRIVER(clk_rk3399), &dev))
++				DM_DRIVER_GET(clk_rk3399), &dev))
 +		return;
 +#endif
 +
