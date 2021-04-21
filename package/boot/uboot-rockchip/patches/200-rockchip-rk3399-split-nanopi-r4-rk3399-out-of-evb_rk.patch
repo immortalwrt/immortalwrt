@@ -469,7 +469,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
 +#endif
 --- a/drivers/clk/rockchip/clk_rk3399.c
 +++ b/drivers/clk/rockchip/clk_rk3399.c
-@@ -1370,6 +1370,8 @@ static void rkclk_init(struct rockchip_c
+@@ -1372,6 +1372,8 @@ static void rkclk_init(struct rockchip_c
  		     pclk_div << PCLK_PERILP1_DIV_CON_SHIFT |
  		     hclk_div << HCLK_PERILP1_DIV_CON_SHIFT |
  		     HCLK_PERILP1_PLL_SEL_GPLL << HCLK_PERILP1_PLL_SEL_SHIFT);
