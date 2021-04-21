@@ -16,6 +16,7 @@ function index()
 	local page
 	page = entry({"admin", "vpn", "n2n_v2"}, cbi("n2n_v2"), _("N2N v2 VPN"), 45)
 	page.dependent = true
+	page..acl_depends = { "luci-app-n2n_v2" }
 end
 
 function n2n_status()

@@ -10,7 +10,9 @@ function index()
 	
 	local page
 
-	entry({"admin", "vpn", "openvpn-server"}, cbi("openvpn-server/openvpn-server"), _("OpenVPN Server"), 80).dependent=false
+	page = entry({"admin", "vpn", "openvpn-server"}, cbi("openvpn-server/openvpn-server"), _("OpenVPN Server"), 80)
+	page.dependent = false
+	page.acl_depends = { "luci-app-openvpn-server" }
 	entry({"admin", "vpn", "openvpn-server","status"},call("act_status")).leaf=true
 end
 

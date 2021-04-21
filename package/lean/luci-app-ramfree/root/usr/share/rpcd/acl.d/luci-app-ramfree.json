@@ -1,0 +1,11 @@
+{
+	"luci-app-ramfree": {
+		"description": "Free Your Boom",
+		"read": {
+			"uci": ["release_ram"]
+		},
+		"write": {
+			"uci": ["release_ram"]
+		}
+	}
+}

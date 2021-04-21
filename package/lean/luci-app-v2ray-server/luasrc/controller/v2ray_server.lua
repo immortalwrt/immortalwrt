@@ -5,8 +5,10 @@ local v2ray = require "luci.model.cbi.v2ray_server.api.v2ray"
 function index()
     if not nixio.fs.access("/etc/config/v2ray_server") then return end
     entry({"admin", "vpn"}, firstchild(), "VPN", 45).dependent = false
-    entry({"admin", "vpn", "v2ray_server"}, cbi("v2ray_server/index"),
-          _("V2ray Server"), 3).dependent = true
+    local page = entry({"admin", "vpn", "v2ray_server"}, cbi("v2ray_server/index"),
+          _("V2ray Server"), 3)
+    page.dependent = true
+    page.acl_depends = { "luci-app-v2ray-server" }
     entry({"admin", "vpn", "v2ray_server", "config"}, cbi("v2ray_server/config")).leaf =
         true
 
