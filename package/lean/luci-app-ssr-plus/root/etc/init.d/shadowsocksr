@@ -461,6 +461,7 @@ start_shunt() {
 }
 
 start_local() {
+	[ "$LOCAL_SERVER" = "nil" ] && return 1
 	local local_port=$(uci_get_by_type socks5_proxy local_port)
 	[ "$LOCAL_SERVER" == "$SHUNT_SERVER" ] && tmp_local_port=$local_port
 	local type=$(uci_get_by_name $LOCAL_SERVER type)
@@ -580,12 +581,16 @@ load_config() {
 	else
 		GLOBAL_SERVER=$switch_server
 	fi
+	LOCAL_SERVER=$(uci_get_by_type socks5_proxy server nil)
 	if [ "$GLOBAL_SERVER" == "nil" ]; then
+		mode="tcp,udp"
+		_local="2"
+		local_config_file=$TMP_PATH/tcp-udp-ssr-local.json
+		start_local
 		return 1
 	fi
 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server nil)
 	SHUNT_SERVER=$(uci_get_by_type global netflix_server nil)
-	LOCAL_SERVER=$(uci_get_by_type socks5_proxy server nil)
 	tcp_config_file=$TMP_PATH/tcp-only-ssr-retcp.json
 	case "$UDP_RELAY_SERVER" in
 	nil)
