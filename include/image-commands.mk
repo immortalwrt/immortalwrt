@@ -15,6 +15,18 @@ define Build/append-image
 	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
 endef
 
+ifdef IB
+define Build/append-image-stage
+	dd if=$(STAGING_DIR_IMAGE)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
+endef
+else
+define Build/append-image-stage
+	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) of=$(STAGING_DIR_IMAGE)/$(DEVICE_IMG_PREFIX)-$(1)
+	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
+endef
+endif
+
+
 define Build/buffalo-enc
 	$(eval product=$(word 1,$(1)))
 	$(eval version=$(word 2,$(1)))
