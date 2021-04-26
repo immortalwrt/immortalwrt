@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  		cfg->fc_flags |= RTF_REJECT;
  
  	if (rtm->rtm_type == RTN_LOCAL)
-@@ -5087,6 +5118,8 @@ static int ip6_route_dev_notify(struct n
+@@ -5089,6 +5120,8 @@ static int ip6_route_dev_notify(struct n
  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
  #endif
-@@ -5098,6 +5131,7 @@ static int ip6_route_dev_notify(struct n
+@@ -5100,6 +5133,7 @@ static int ip6_route_dev_notify(struct n
  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
  #endif
  	}
-@@ -5292,6 +5326,15 @@ static int __net_init ip6_route_net_init
+@@ -5294,6 +5328,15 @@ static int __net_init ip6_route_net_init
  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
  			 ip6_template_metrics, true);
@@ -218,7 +218,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  #endif
  
  	net->ipv6.sysctl.flush_delay = 0;
-@@ -5310,6 +5353,8 @@ out:
+@@ -5312,6 +5355,8 @@ out:
  	return ret;
  
  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
@@ -227,7 +227,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  out_ip6_prohibit_entry:
  	kfree(net->ipv6.ip6_prohibit_entry);
  out_ip6_null_entry:
-@@ -5330,6 +5375,7 @@ static void __net_exit ip6_route_net_exi
+@@ -5332,6 +5377,7 @@ static void __net_exit ip6_route_net_exi
  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
  	kfree(net->ipv6.ip6_prohibit_entry);
  	kfree(net->ipv6.ip6_blk_hole_entry);
@@ -235,7 +235,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  #endif
  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
  }
-@@ -5406,6 +5452,9 @@ void __init ip6_route_init_special_entri
+@@ -5408,6 +5454,9 @@ void __init ip6_route_init_special_entri
  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
