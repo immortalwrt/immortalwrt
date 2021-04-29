@@ -280,7 +280,7 @@ local function processData(szType, content)
 			result.server_port = query[1]
 			result.vmess_id = uuid
 			result.vless_encryption = params.encryption or "none"
-			result.transport = params.type or "tcp"
+			result.transport = params.type and (params.type == 'http' and 'h2' or params.type) or "tcp"
 			if not params.type or params.type == "tcp" then
 				if params.security == "xtls" then
 					result.xtls = "1"
