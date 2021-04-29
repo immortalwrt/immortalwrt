@@ -310,7 +310,7 @@ function import_ssr_url(btn, urlname, sid) {
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.server')[0].value = serverPart[0];
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.server_port')[0].value = port;
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.vmess_id')[0].value = uuid;
-			document.getElementsByName('cbid.shadowsocksr.' + sid + '.transport')[0].value = queryParam.type || "tcp";
+			document.getElementsByName('cbid.shadowsocksr.' + sid + '.transport')[0].value = queryParam.type ? (queryParam.type == "http" ? "h2" : queryParam.type) : "tcp";
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.transport')[0].dispatchEvent(event);
 			document.getElementsByName('cbid.shadowsocksr.' + sid + '.vless_encryption')[0].value = queryParam.encryption || "none";
 			if (queryParam.security == "tls") {
@@ -321,7 +321,7 @@ function import_ssr_url(btn, urlname, sid) {
 			switch (queryParam.type) {
 			case "ws":
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.ws_host')[0].value = queryParam.host;
-				document.getElementsByName('cbid.shadowsocksr.' + sid + '.ws_path')[0].value = queryParam.path;
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.ws_path')[0].value = queryParam.path || "/";
 				break;
 			case "kcp":
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.kcp_guise')[0].value = queryParam.headerType || "none";
@@ -329,13 +329,13 @@ function import_ssr_url(btn, urlname, sid) {
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.seed')[0].value = queryParam.seed;
 				break;
 			case "http":
-				document.getElementsByName('cbid.shadowsocksr.' + sid + '.h2_host')[0].value = queryParam.host;
-				document.getElementsByName('cbid.shadowsocksr.' + sid + '.h2_path')[0].value = queryParam.path;
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.h2_host')[0].value = queryParam.host || serverPart[0];
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.h2_path')[0].value = queryParam.path || "/";
 				break;
 			case "quic":
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_guise')[0].value = queryParam.headerType || "none";
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_guise')[0].dispatchEvent(event);
-				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_security')[0].value = queryParam.quicSecurity;
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_security')[0].value = queryParam.quicSecurity || "none";
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_key')[0].value = queryParam.key;
 				break;
 			default:
