@@ -44,6 +44,7 @@ CRON_FILE=/etc/crontabs/root
 EXTRA_COMMANDS='reset'
 EXTRA_HELP="        reset   Reset to default settings"
 #extra_command "reset" "Reset to default settings"
+PS="/bin/busybox ps"
 
 uci_get_by_name() {
 	local ret=$(uci get $NAME.$1.$2 2>/dev/null)
@@ -840,13 +841,13 @@ stop() {
 		iptables -X SSR-SERVER-RULE 2>/dev/null
 	fi
 	if [ -z "$switch_server" ]; then
-		ps -w | grep -v "grep" | grep ssr-switch | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+		$PS -w | grep -v "grep" | grep ssr-switch | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 		rm -f /var/lock/ssr-switch.lock
 		killall -q -9 kcptun-client
 	fi
-	ps -w | grep -v "grep" | grep ssr-monitor | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	ps -w | grep -v "grep" | grep "sleep 0000" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
-	ps -w | grep -v "grep" | grep "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	$PS -w | grep -v "grep" | grep ssr-monitor | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	$PS -w | grep -v "grep" | grep "sleep 0000" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	$PS -w | grep -v "grep" | grep "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	killall -q -9 v2ray-plugin obfs-local xray-plugin
 	rm -f /var/lock/ssr-monitor.lock
 	if [ -f "/var/dnsmasq.d/dnsmasq-ssrplus.conf" ]; then
