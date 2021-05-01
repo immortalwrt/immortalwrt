@@ -22,11 +22,57 @@ sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git
 sudo bash -c "bash <(curl -s https://build-scripts.project-openwrt.eu.org/init_build_environment.sh)"
 ```
 
+<details>
+  <summary>opde</summary>
+
+  you can also download and use pre-build container directly:
+
+  ```bash
+  docker pull immortalwrt/opde:base
+  # docker run --rm -it immortalwrt/opde:base
+  ```
+</details>
+
 ## Clone the source
 ```bash
 git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 ```
+
+<details>
+  <summary>opde</summary>
+  
+  1. For Linux User:
+  ```bash
+  git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
+  docker run --rm -it \
+    -v $PWD:/openwrt \
+    immortalwrt/opde:base zsh
+  ./scripts/feeds update -a && ./scripts/feeds install -a
+  ```
+
+  2. For Windows User: no test
+
+  Proxy Support:
+
+  ```bash
+  docker run --rm -it \
+    -e   all_proxy=http://example.com:1081 \
+    -e  http_proxy=http://example.com:1081 \
+    -e https_proxy=http://example.com:1081 \
+    -e   ALL_PROXY=http://example.com:1081 \
+    -e  HTTP_PROXY=http://example.com:1081 \
+    -e HTTPS_PROXY=http://example.com:1081 \
+    -v $PWD:/openwrt \
+    immortalwrt/opde:base zsh
+  ```
+
+  > recommand `http` rather `socks5` protocol
+  >
+  > ip can not be `localhost` or `127.0.0.1`
+
+
+</details>
 
 ## Configure your firmware
 ```bash
