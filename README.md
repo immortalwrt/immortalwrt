@@ -50,7 +50,7 @@ git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt &
     immortalwrt/opde:base zsh
   ./scripts/feeds update -a && ./scripts/feeds install -a
   ```
-
+  
   2. For Windows User:
 
   openwrt source code can not be cloned into NTFS filesystem(symbol link problem during compilation), 
@@ -68,7 +68,6 @@ git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt &
   docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base
   ./scripts/feeds update -a ​&&​ ./scripts/feeds install -a
   ```
-
 
   Proxy Support:
 
