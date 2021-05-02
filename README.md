@@ -50,8 +50,24 @@ git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt &
     immortalwrt/opde:base zsh
   ./scripts/feeds update -a && ./scripts/feeds install -a
   ```
+  
+  2. For Windows User:
 
-  2. For Windows User: no test
+  openwrt source code can not be cloned into NTFS filesystem(symbol link problem during compilation), 
+  but docker volume is fine.
+
+  Create a volume 'immortalwrt' and clone immortalwrt source into volume.
+
+  ```bash
+  docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base git clone -b master --single-branch  https://github.com/immortalwrt/immortalwrt .
+  ```
+
+  Enter docker container and update feeds
+
+  ```bash
+  docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base
+  ./scripts/feeds update -a ​&&​ ./scripts/feeds install -a
+  ```
 
   Proxy Support:
 
@@ -83,6 +99,17 @@ make menuconfig
 ```bash
 make -j$(nproc) V=s
 ```
+
+<details>
+  <summary>opde</summary>
+  For Windows User, binary is still in volume. It can be copied to outside via followed command
+
+  ```bash
+  docker run --rm -v <D:\path\to\dir>:/dst -v openwrt:/openwrt -w /dst immortalwrt:base cp /openwrt/bin /dst
+  ```
+  > make sure `D:\path]to\dir` has been appended in [File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
+
+</details>
 
 ## Tips
 You'd better not use **root** to make it, or you may be not able to use.<br/>
