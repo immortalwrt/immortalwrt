@@ -1,6 +1,6 @@
 --- a/src/dnsmasq.h
 +++ b/src/dnsmasq.h
-@@ -1042,7 +1042,7 @@ extern struct daemon {
+@@ -1059,7 +1059,7 @@ extern struct daemon {
    int max_logs;  /* queue limit */
    int cachesize, ftabsize;
    int port, query_port, min_port, max_port;
@@ -11,15 +11,15 @@
    struct dhcp_context *dhcp, *dhcp6;
 --- a/src/option.c
 +++ b/src/option.c
-@@ -168,6 +168,7 @@ struct myoption {
- #define LOPT_SINGLE_PORT   359
- #define LOPT_SCRIPT_TIME   360
+@@ -170,6 +170,7 @@ struct myoption {
  #define LOPT_PXE_VENDOR    361
-+#define LOPT_MINTTL        362
+ #define LOPT_DYNHOST       362
+ #define LOPT_LOG_DEBUG     363
++#define LOPT_MINTTL        364
   
  #ifdef HAVE_GETOPT_LONG
  static const struct option opts[] =  
-@@ -286,6 +287,7 @@ static const struct myoption opts[] =
+@@ -288,6 +289,7 @@ static const struct myoption opts[] =
      { "dhcp-name-match", 1, 0, LOPT_NAME_MATCH },
      { "dhcp-broadcast", 2, 0, LOPT_BROADCAST },
      { "neg-ttl", 1, 0, LOPT_NEGTTL },
@@ -27,7 +27,7 @@
      { "max-ttl", 1, 0, LOPT_MAXTTL },
      { "min-cache-ttl", 1, 0, LOPT_MINCTTL },
      { "max-cache-ttl", 1, 0, LOPT_MAXCTTL },
-@@ -413,6 +415,7 @@ static struct {
+@@ -417,6 +419,7 @@ static struct {
    { 't', ARG_ONE, "<host_name>", gettext_noop("Specify default target in an MX record."), NULL },
    { 'T', ARG_ONE, "<integer>", gettext_noop("Specify time-to-live in seconds for replies from /etc/hosts."), NULL },
    { LOPT_NEGTTL, ARG_ONE, "<integer>", gettext_noop("Specify time-to-live in seconds for negative caching."), NULL },
@@ -35,7 +35,7 @@
    { LOPT_MAXTTL, ARG_ONE, "<integer>", gettext_noop("Specify time-to-live in seconds for maximum TTL to send to clients."), NULL },
    { LOPT_MAXCTTL, ARG_ONE, "<integer>", gettext_noop("Specify time-to-live ceiling for cache."), NULL },
    { LOPT_MINCTTL, ARG_ONE, "<integer>", gettext_noop("Specify time-to-live floor for cache."), NULL },
-@@ -2823,6 +2826,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
+@@ -2835,6 +2838,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
        
      case 'T':         /* --local-ttl */
      case LOPT_NEGTTL: /* --neg-ttl */
@@ -43,7 +43,7 @@
      case LOPT_MAXTTL: /* --max-ttl */
      case LOPT_MINCTTL: /* --min-cache-ttl */
      case LOPT_MAXCTTL: /* --max-cache-ttl */
-@@ -2834,6 +2838,8 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
+@@ -2846,6 +2850,8 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
  	  ret_err(gen_err);
  	else if (option == LOPT_NEGTTL)
  	  daemon->neg_ttl = (unsigned long)ttl;
