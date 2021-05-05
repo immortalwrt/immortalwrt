@@ -247,14 +247,9 @@ local function processData(szType, content)
 				local t = split(v, '=')
 				params[t[1]] = t[2]
 			end
-			if params.peer then
+			if params.sni then
 				-- 未指定peer（sni）默认使用remote addr
-				result.tls_host = params.peer
-			end
-			if params.allowInsecure == "1" then
-				result.insecure = "1"
-			else
-				result.insecure = "0"
+				result.tls_host = params.sni
 			end
 		else
 			result.server_port = host[2]
@@ -285,7 +280,7 @@ local function processData(szType, content)
 			result.server_port = query[1]
 			result.vmess_id = uuid
 			result.vless_encryption = params.encryption or "none"
-			result.transport = params.type or "tcp"
+			result.transport = params.type and (params.type == 'http' and 'h2' or params.type) or "tcp"
 			if not params.type or params.type == "tcp" then
 				if params.security == "xtls" then
 					result.xtls = "1"

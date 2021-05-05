@@ -12,7 +12,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
 PKG_VERSION:=1
-PKG_RELEASE:=39
+PKG_RELEASE:=40
 
 include $(INCLUDE_DIR)/package.mk
 

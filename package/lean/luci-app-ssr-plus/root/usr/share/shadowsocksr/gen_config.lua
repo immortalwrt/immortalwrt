@@ -240,6 +240,7 @@ end
 function config:handleIndex(index)
 	local switch = {
 		ss = function()
+			ss.protocol = socks_port
 			if server.plugin and server.plugin ~= "none" then
 				ss.plugin = server.plugin
 				ss.plugin_opts = server.plugin_opts or nil

@@ -76,7 +76,8 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "3:lan" "4:lan" "5:wan"
 		;;
-	hiwifi,c526a)
+	hiwifi,c526a|\
+	hiwifi,c526a-128m)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "2:lan" "3:lan" "4:lan" "5:wan"
 		;;
@@ -154,7 +155,8 @@ ipq40xx_setup_macs()
 	ezviz,cs-w3-wd1200g-eup)
 		label_mac=$(mtd_get_mac_binary "ART" 6)
 		;;
-	hiwifi,c526a)
+	hiwifi,c526a|\
+	hiwifi,c526a-128m)
 		lan_mac=$(mtd_get_mac_ascii bdinfo "Vfac_mac ")
 		wan_mac=$(macaddr_add "$lan_mac" 1)
 		;;
