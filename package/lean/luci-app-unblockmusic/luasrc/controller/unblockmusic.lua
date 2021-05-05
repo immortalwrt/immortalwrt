@@ -6,7 +6,9 @@ function index()
 		return
 	end
 
-	entry({"admin", "services", "unblockmusic"},firstchild(), _("Unblock Netease Music"), 50).dependent = false
+	local page = entry({"admin", "services", "unblockmusic"},firstchild(), _("Unblock Netease Music"), 50)
+	page.dependent = false
+	page.acl_depends = { "luci-app-unblockmusic" }
 	
 	entry({"admin", "services", "unblockmusic", "general"},cbi("unblockmusic"), _("Base Setting"), 1)
 	entry({"admin", "services", "unblockmusic", "log"},form("unblockmusiclog"), _("Log"), 2)

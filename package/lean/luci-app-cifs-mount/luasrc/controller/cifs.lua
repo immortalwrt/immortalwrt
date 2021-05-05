@@ -10,4 +10,5 @@ function index()
 
 	page = entry({"admin", "nas", "cifs"}, cbi("cifs"), _("Mount SMB NetShare"))
 	page.dependent = true
+	page.acl_depends = { "luci-app-cifs-mount" }
 end

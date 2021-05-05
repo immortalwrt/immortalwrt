@@ -5,8 +5,10 @@ function index()
 		return
 	end
 
-	entry({"admin", "services", "xlnetacc"},
-		firstchild(), _("XLNetAcc")).dependent = false
+	local page = entry({"admin", "services", "xlnetacc"},
+		firstchild(), _("XLNetAcc"))
+	page.dependent = false
+	page.acl_depends = { "luci-app-xlnetacc" }
 
 	entry({"admin", "services", "xlnetacc", "general"},
 		cbi("xlnetacc"), _("Settings"), 1)

@@ -1,6 +1,6 @@
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -111,6 +111,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -109,6 +109,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
  	rk3328-nanopi-r2s.dtb \

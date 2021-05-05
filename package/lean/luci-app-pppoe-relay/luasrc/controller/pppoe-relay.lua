@@ -5,6 +5,8 @@ function index()
 	return
 end
 
-entry({"admin","services","pppoe-relay"},cbi("pppoe-relay"),_("PPPoE Relay"),90).dependent=true
+local page = entry({"admin","services","pppoe-relay"},cbi("pppoe-relay"),_("PPPoE Relay"),90)
+page.dependent = true
+page.acl_depends = { "luci-app-pppoe-relay" }
 
 end

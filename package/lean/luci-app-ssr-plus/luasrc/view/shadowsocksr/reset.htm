@@ -1,6 +1,6 @@
 <%+cbi/valueheader%>
 <script type="text/javascript">//<![CDATA[
-	function subscribe(btn,dataname) {
+	function reset(btn,dataname) {
 		var s = document.getElementById(dataname + '-status');
 		var reset = prompt('<%:Really reset all changes?%><%:Please fill in reset%>',"")
 		if (reset == null || reset == "") {
@@ -20,6 +20,6 @@
 		return false;
 	}
 //]]></script>
-<input type="button" class="cbi-button cbi-button-reset" value="<%:Perform reset%> " onclick="return subscribe(this,'<%=self.option%>')" />
+<input type="button" class="cbi-button cbi-button-reset" value="<%:Perform reset%> " onclick="return reset(this,'<%=self.option%>')" />
 <span id="<%=self.option%>-status"></span>
 <%+cbi/valuefooter%>
