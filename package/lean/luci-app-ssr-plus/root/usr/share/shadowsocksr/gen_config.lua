@@ -224,7 +224,6 @@ local ss = {
 	local_address = "0.0.0.0",
 	local_port = tonumber(local_port),
 	mode = (proto == "tcp,udp") and "tcp_and_udp" or proto .. "_only",
-	protocol = socks_port,
 	password = server.password,
 	method = server.encrypt_method_ss,
 	timeout = tonumber(server.timeout),
@@ -241,6 +240,7 @@ end
 function config:handleIndex(index)
 	local switch = {
 		ss = function()
+			ss.protocol = socks_port
 			if server.plugin and server.plugin ~= "none" then
 				ss.plugin = server.plugin
 				ss.plugin_opts = server.plugin_opts or nil

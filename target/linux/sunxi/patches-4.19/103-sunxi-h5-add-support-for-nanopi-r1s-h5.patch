@@ -10,7 +10,7 @@
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-orangepi-zero-plus.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-@@ -0,0 +1,217 @@
+@@ -0,0 +1,201 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (C) 2021 AmadeusGhost <amadeus@jmu.edu.cn>
@@ -32,7 +32,7 @@
 +
 +	aliases {
 +		ethernet0 = &emac;
-+		i2c0 = &i2c0;
++		ethernet1 = &rtl8189etv;
 +		serial0 = &uart0;
 +
 +		led-boot = &led_sys;
@@ -126,10 +126,6 @@
 +	cpu-supply = <&vdd_cpux>;
 +};
 +
-+&ehci0 {
-+	status = "okay";
-+};
-+
 +&ehci1 {
 +	status = "okay";
 +
@@ -137,15 +133,11 @@
 +		compatible = "realtek,rtl8153";
 +		reg = <1>;
 +
-+		realtek,led-data = <0x87>;
++		realtek,led-data = <0x78>;
 +	};
 +};
 +
 +&ehci2 {
-+	status = "okay";
-+};
-+
-+&ehci3 {
 +	status = "okay";
 +};
 +
@@ -195,19 +187,11 @@
 +	};
 +};
 +
-+&ohci0 {
-+	status = "okay";
-+};
-+
 +&ohci1 {
 +	status = "okay";
 +};
 +
 +&ohci2 {
-+	status = "okay";
-+};
-+
-+&ohci3 {
 +	status = "okay";
 +};
 +

@@ -217,7 +217,8 @@ case "$FIRMWARE" in
 		ath10kcal_extract "ART" 4096 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +2)
 		;;
-	hiwifi,c526a)
+	hiwifi,c526a|\
+	hiwifi,c526a-128m)
 		ath10kcal_extract "ART" 4096 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii bdinfo "Vfac_mac ") +2)
 		;;
@@ -319,7 +320,8 @@ case "$FIRMWARE" in
 		ath10kcal_extract "ART" 20480 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +3)
 		;;
-	hiwifi,c526a)
+	hiwifi,c526a|\
+	hiwifi,c526a-128m)
 		ath10kcal_extract "ART" 20480 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii bdinfo "Vfac_mac ") +3)
 		;;

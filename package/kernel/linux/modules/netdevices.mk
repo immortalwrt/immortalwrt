@@ -837,6 +837,22 @@ endef
 $(eval $(call KernelPackage,macvlan))
 
 
+define KernelPackage/ipvlan
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=IP-VLAN support
+  KCONFIG:=CONFIG_IPVLAN
+  FILES:=$(LINUX_DIR)/drivers/net/ipvlan/ipvlan.ko
+  AUTOLOAD:=$(call AutoProbe,ipvlan)
+endef
+
+define KernelPackage/ipvlan/description
+ A kernel module which allows one to create virtual interfaces that
+ map packets to or from specific IP addresses to a particular interface
+endef
+
+$(eval $(call KernelPackage,ipvlan))
+
+
 define KernelPackage/tulip
   TITLE:=Tulip family network device support
   DEPENDS:=@PCI_SUPPORT +kmod-mii
@@ -1126,27 +1142,60 @@ endef
 
 $(eval $(call KernelPackage,mlx5-core))
 
+
+define KernelPackage/qlcnic
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  DEPENDS:=@PCI_SUPPORT
+  TITLE:=QLogic QLE8240 and QLE8242 device support
+  KCONFIG:=CONFIG_QLCNIC
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/qlogic/qlcnic/qlcnic.ko
+  AUTOLOAD:=$(call AutoProbe,qlcnic)
+endef
+
+define KernelPackage/qlcnic/description
+  This driver supports QLogic QLE8240 and QLE8242 Converged Ethernet
+  devices.
+endef
+
+$(eval $(call KernelPackage,qlcnic))
+
+
 define KernelPackage/sfc
   SUBMENU:=$(NETWORK_DEVICES_MENU)
-  TITLE:=Solarflare SFC9000/SFC9100-family 10Gbps NIC support
-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-i2c-core +kmod-i2c-algo-bit +kmod-hwmon-core +kmod-ptp +kmod-lib-crc32c
-# add PCI_IOV
+  TITLE:=Solarflare SFC9000/SFC9100/EF100-family support
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-lib-crc32c +kmod-ptp +kmod-hwmon-core @!LINUX_4_9
   KCONFIG:= \
-    CONFIG_NET_VENDOR_SOLARFLARE=y \
-    CONFIG_SFC=y \
-    CONFIG_SFC_MTD=y \
-    CONFIG_MCDI_MON=y \
-    CONFIG_SFC_SRIOV=n \
-    CONFIG_SFC_MCDI_LOGGING=n \
+	CONFIG_SFC \
+	CONFIG_SFC_MTD=y \
+	CONFIG_SFC_MCDI_MON=y \
+	CONFIG_SFC_MCDI_LOGGING=y \
+	CONFIG_SFC_SRIOV=y
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/sfc.ko
-  AUTOLOAD:=$(call AutoProbe, sfc)
+  AUTOLOAD:=$(call AutoProbe,sfc)
 endef
 
 define KernelPackage/sfc/description
-  Solarflare SFC9000/SFC9100-family 10Gbps NIC support
+  Solarflare SFC9000/SFC9100/EF100-family support
 endef
 
 $(eval $(call KernelPackage,sfc))
+
+define KernelPackage/sfc-falcon
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Solarflare SFC4000 support
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-lib-crc32c +kmod-i2c-core +kmod-i2c-algo-bit @!LINUX_4_9
+  KCONFIG:= \
+	CONFIG_SFC_FALCON \
+	CONFIG_SFC_FALCON_MTD=y
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/falcon/sfc-falcon.ko
+  AUTOLOAD:=$(call AutoProbe,sfc-falcon)
+endef
+
+define KernelPackage/sfc-falcon/description
+  Solarflare SFC4000 support
+endef
+
+$(eval $(call KernelPackage,sfc-falcon))
 
 define KernelPackage/jme
   SUBMENU:=$(NETWORK_DEVICES_MENU)
