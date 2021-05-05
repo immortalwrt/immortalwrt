@@ -175,3 +175,18 @@ define KernelPackage/leds-pwm/description
 endef
 
 $(eval $(call KernelPackage,leds-pwm))
+
+define KernelPackage/leds-uleds
+  SUBMENU:=$(LEDS_MENU)
+  TITLE:=Userspace LEDs
+  DEPENDS:=@!LINUX_4_9
+  KCONFIG:=CONFIG_LEDS_USER
+  FILES:=$(LINUX_DIR)/drivers/leds/uleds.ko
+  AUTOLOAD:=$(call AutoLoad,60,leds-uleds,1)
+endef
+
+define KernelPackage/leds-uleds/description
+ This option enables support for userspace LEDs.
+endef
+
+$(eval $(call KernelPackage,leds-uleds))
