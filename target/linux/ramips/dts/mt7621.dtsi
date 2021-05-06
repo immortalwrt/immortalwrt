@@ -611,6 +611,7 @@
 			reg = <0x0000 0 0 0 0>;
 			#address-cells = <3>;
 			#size-cells = <2>;
+			device_type = "pci";
 			ranges;
 		};
 
@@ -618,6 +619,7 @@
 			reg = <0x0800 0 0 0 0>;
 			#address-cells = <3>;
 			#size-cells = <2>;
+			device_type = "pci";
 			ranges;
 		};
 
@@ -625,6 +627,7 @@
 			reg = <0x1000 0 0 0 0>;
 			#address-cells = <3>;
 			#size-cells = <2>;
+			device_type = "pci";
 			ranges;
 		};
 	};
