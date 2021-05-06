@@ -338,6 +338,9 @@ function import_ssr_url(btn, urlname, sid) {
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_security')[0].value = queryParam.quicSecurity || "none";
 				document.getElementsByName('cbid.shadowsocksr.' + sid + '.quic_key')[0].value = queryParam.key;
 				break;
+			case "grpc":
+				document.getElementsByName('cbid.shadowsocksr.' + sid + '.serviceName')[0].value = queryParam.serviceName;
+				break;
 			default:
 				if (queryParam.security == "xtls") {
 					document.getElementsByName('cbid.shadowsocksr.' + sid + '.xtls')[0].checked = true;
