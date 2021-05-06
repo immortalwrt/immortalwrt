@@ -332,6 +332,7 @@ o:value("kcp", "mKCP")
 o:value("ws", "WebSocket")
 o:value("h2", "HTTP/2")
 o:value("quic", "QUIC")
+o:value("grpc", "gRPC")
 o.rmempty = true
 o:depends("type", "v2ray")
 
@@ -379,6 +380,11 @@ o.rmempty = true
 -- H2路径
 o = s:option(Value, "h2_path", translate("HTTP/2 Path"))
 o:depends("transport", "h2")
+o.rmempty = true
+
+-- gRPC
+o = s:option(Value, "serviceName", translate("serviceName"))
+o:depends("transport", "grpc")
 o.rmempty = true
 
 -- [[ QUIC部分 ]]--
