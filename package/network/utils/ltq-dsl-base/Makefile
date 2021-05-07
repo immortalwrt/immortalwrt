@@ -10,6 +10,8 @@ PKG_RELEASE:=3
 
 PKG_FLAGS:=nonshared
 
+PKG_FLAGS:=nonshared
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/ltq-dsl-base

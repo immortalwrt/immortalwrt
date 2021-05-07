@@ -28,6 +28,32 @@ local encrypt_methods = {
 	"chacha20-ietf"
 }
 
+local encrypt_methods_ss = {
+	-- aead
+	"aes-128-gcm",
+	"aes-192-gcm",
+	"aes-256-gcm",
+	"chacha20-ietf-poly1305",
+	"xchacha20-ietf-poly1305"
+	--[[ stream
+	"table",
+	"rc4",
+	"rc4-md5",
+	"aes-128-cfb",
+	"aes-192-cfb",
+	"aes-256-cfb",
+	"aes-128-ctr",
+	"aes-192-ctr",
+	"aes-256-ctr",
+	"bf-cfb",
+	"camellia-128-cfb",
+	"camellia-192-cfb",
+	"camellia-256-cfb",
+	"salsa20",
+	"chacha20",
+	"chacha20-ietf" ]]
+}
+
 local protocol = {
 	"origin",
 	"verify_deflate",
@@ -76,7 +102,7 @@ o.rmempty = false
 
 o = sec:option(DummyValue, "type", translate("Server Type"))
 function o.cfgvalue(...)
-	return Value.cfgvalue(...) or "ssr"
+	return Value.cfgvalue(...) or "ss"
 end
 
 o = sec:option(DummyValue, "server_port", translate("Server Port"))
@@ -90,6 +116,12 @@ function o.cfgvalue(...)
 end
 
 o = sec:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
+function o.cfgvalue(...)
+	local v = Value.cfgvalue(...)
+	return v and v:upper() or "-"
+end
+
+o = sec:option(DummyValue, "encrypt_method_ss", translate("Encrypt Method"))
 function o.cfgvalue(...)
 	local v = Value.cfgvalue(...)
 	return v and v:upper() or "-"

@@ -22,7 +22,6 @@ tcp_config_file=
 udp_config_file=
 shunt_config_file=
 local_config_file=
-server_config_file=
 shunt_dns_config_file=
 tmp_local_port=
 ARG_UDP=
@@ -228,26 +227,43 @@ start_dns() {
 }
 
 gen_service_file() {
-	if [ $(uci_get_by_name $1 fast_open) == "1" ]; then
-		fastopen="true"
+	if [ $(uci_get_by_name $2 fast_open) == "1" ]; then
+		local fastopen="true"
 	else
-		fastopen="false"
+		local fastopen="false"
 	fi
-	cat <<-EOF >$2
-		{
-		"server": "0.0.0.0",
-		"server_ipv6": "::",
-		"server_port": $(uci_get_by_name $1 server_port),
-		"password": "$(uci_get_by_name $1 password)",
-		"timeout": $(uci_get_by_name $1 timeout 60),
-		"method": "$(uci_get_by_name $1 encrypt_method)",
-		"protocol": "$(uci_get_by_name $1 protocol)",
-		"protocol_param": "$(uci_get_by_name $1 protocol_param)",
-		"obfs": "$(uci_get_by_name $1 obfs)",
-		"obfs_param": "$(uci_get_by_name $1 obfs_param)",
-		"fast_open": $fastopen
-		}
-	EOF
+	if [ $1 == "ssr" ]; then
+		cat <<-EOF >$3
+			{
+			  "server": "0.0.0.0",
+			  "server_ipv6": "::",
+			  "server_port": $(uci_get_by_name $2 server_port),
+			  "mode": "tcp_and_udp",
+			  "password": "$(uci_get_by_name $2 password)",
+			  "timeout": $(uci_get_by_name $2 timeout 60),
+			  "method": "$(uci_get_by_name $2 encrypt_method)",
+			  "protocol": "$(uci_get_by_name $2 protocol)",
+			  "protocol_param": "$(uci_get_by_name $2 protocol_param)",
+			  "obfs": "$(uci_get_by_name $2 obfs)",
+			  "obfs_param": "$(uci_get_by_name $2 obfs_param)",
+			  "fast_open": $fastopen
+			}
+		EOF
+	else
+		cat <<-EOF >$3
+			{
+			  "server": "0.0.0.0",
+			  "server_ipv6": "::",
+			  "server_port": $(uci_get_by_name $2 server_port),
+			  "mode": "tcp_and_udp",
+			  "password": "$(uci_get_by_name $2 password)",
+			  "timeout": $(uci_get_by_name $2 timeout 60),
+			  "method": "$(uci_get_by_name $2 encrypt_method_ss)",
+			  "protocol": "socks",
+			  "fast_open": $fastopen
+			}
+		EOF
+	fi
 }
 
 get_name() {
@@ -674,15 +690,19 @@ start_server() {
 				iptables -N SSR-SERVER-RULE && iptables -t filter -I INPUT -j SSR-SERVER-RULE
 			fi
 		fi
-		if [ "$(uci_get_by_name $1 type ssr)" == "ssr" ]; then
-			gen_service_file $1 $server_config_file/ssr-server$server_count.json
-			ln_start_bin $(first_type ssr-server) ssr-server -c $server_config_file/ssr-server$server_count.json -u
-			echolog "Server:ShadowsocksR Server$server_count Started!"
-		else
+		local type=$(uci_get_by_name $1 type)
+		case "$type" in
+		ss | ssr)
+			gen_service_file ${type} $1 $TMP_PATH/ssr-server$server_count.json
+			ln_start_bin $(first_type ${type}server ${type}-server) ${type}-server -c $TMP_PATH/ssr-server$server_count.json
+			echolog "Server: $(get_name ${type}) Server$server_count Started!"
+			;;
+		socks5)
 			[ -e /proc/sys/net/ipv6 ] && local listenip='-i ::'
 			ln_start_bin $(first_type microsocks) microsocks $listenip -p $(uci_get_by_name $1 server_port) -1 -u $(uci_get_by_name $1 username) -P $(uci_get_by_name $1 password) ssr-server$server_count
 			echolog "Server:Socks5 Server$server_count Started!"
-		fi
+			;;
+		esac
 		iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
 		iptables -t filter -A SSR-SERVER-RULE -p udp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
 		return 0
@@ -851,7 +871,7 @@ stop() {
 	killall -q -9 v2ray-plugin obfs-local xray-plugin
 	rm -f /var/lock/ssr-monitor.lock
 	if [ -f "/var/dnsmasq.d/dnsmasq-ssrplus.conf" ]; then
-		rm -rf /var/dnsmasq.d/dnsmasq-ssrplus.conf $TMP_DNSMASQ_PATH $TMP_PATH/*-ssr-*.json
+		rm -rf /var/dnsmasq.d/dnsmasq-ssrplus.conf $TMP_DNSMASQ_PATH $TMP_PATH/*-ssr-*.json $TMP_PATH/ssr-server*.json
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
 	del_cron
