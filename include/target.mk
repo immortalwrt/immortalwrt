@@ -59,7 +59,7 @@ DEFAULT_PACKAGES.basic:=\
 	luci-lib-fs \
 	luci-lib-ipkg \
 	luci-proto-relay \
-	wget
+	wget-ssl
 # For nas targets
 DEFAULT_PACKAGES.nas:=\
 	block-mount \
