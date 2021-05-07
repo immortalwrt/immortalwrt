@@ -13,34 +13,19 @@ DEVICE_TYPE?=router
 DEFAULT_PACKAGES:=\
 	base-files \
 	ca-bundle \
-	ca-certificates \
-	coreutils \
-	default-settings \
 	dropbear \
 	fstools \
-	kmod-ipt-raw \
-	kmod-nf-nathelper \
-	kmod-nf-nathelper-extra \
 	libc \
 	libgcc \
 	libustream-openssl \
 	logd \
-	luci \
-	luci-app-cpufreq \
-	luci-app-turboacc \
-	luci-compat \
-	luci-lib-base \
-	luci-lib-fs \
-	luci-lib-ipkg \
-	luci-proto-relay \
 	mtd \
 	netifd \
 	opkg \
 	uci \
 	uclient-fetch \
 	urandom-seed \
-	urngd \
-	wget
+	urngd
 
 ifneq ($(CONFIG_SELINUX),)
 DEFAULT_PACKAGES+=busybox-selinux procd-selinux
@@ -49,7 +34,22 @@ DEFAULT_PACKAGES+=busybox procd
 endif
 
 # For the basic set
-DEFAULT_PACKAGES.basic:=
+DEFAULT_PACKAGES.basic:=\
+	ca-certificates \
+	coreutils \
+	default-settings \
+	kmod-ipt-raw \
+	kmod-nf-nathelper \
+	kmod-nf-nathelper-extra \
+	luci \
+	luci-app-cpufreq \
+	luci-app-turboacc \
+	luci-compat \
+	luci-lib-base \
+	luci-lib-fs \
+	luci-lib-ipkg \
+	luci-proto-relay \
+	wget-ssl
 # For nas targets
 DEFAULT_PACKAGES.nas:=\
 	block-mount \
