@@ -50,20 +50,19 @@ for _, policy_num in ipairs(string.split(policy_nums, " ")) do
 		if e ~= "" then maxfreq:value(e) end
 	end
 
+	sdfactor = s:taboption(policy_num, Value, "sdfactor" .. policy_num, translate("CPU Switching Sampling rate"))
+	sdfactor.datatype="range(1,100000)"
+	sdfactor.description = translate("The sampling rate determines how frequently the governor checks to tune the CPU (ms)")
+	sdfactor.placeholder = 10
+	sdfactor.default = 10
+	sdfactor:depends("governor", "ondemand")
+
 	upthreshold = s:taboption(policy_num, Value, "upthreshold" .. policy_num, translate("CPU Switching Threshold"))
 	upthreshold.datatype="range(1,99)"
 	upthreshold.description = translate("Kernel make a decision on whether it should increase the frequency (%)")
 	upthreshold.placeholder = 50
 	upthreshold.default = 50
 	upthreshold:depends("governor", "ondemand")
-
-	factor = s:taboption(policy_num, Value, "factor" .. policy_num, translate("CPU Switching Sampling rate"))
-	factor.datatype="range(1,100000)"
-	factor.description = translate("The sampling rate determines how frequently the governor checks to tune the CPU (ms)")
-	factor.placeholder = 10
-	factor.default = 10
-	factor:depends("governor", "ondemand")
-
 end
 
 return mp
