@@ -1,5 +1,3 @@
-diff --git a/src/jconf.c b/src/jconf.c
-index 710f70d..1613e20 100644
 --- a/src/jconf.c
 +++ b/src/jconf.c
 @@ -259,6 +259,19 @@ read_jconf(const char *file)
@@ -22,19 +20,15 @@ index 710f70d..1613e20 100644
                  } else {
                      match = 0;
                  }
-diff --git a/src/redir.c b/src/redir.c
-index feafd5e..64521a1 100644
 --- a/src/redir.c
 +++ b/src/redir.c
-@@ -1252,7 +1252,10 @@ main(int argc, char **argv)
+@@ -1252,6 +1252,9 @@ main(int argc, char **argv)
          if (user == NULL) {
              user = conf->user;
          }
--        if (mtu == 0) {
 +        if (mode == TCP_ONLY) {
 +            mode = conf->mode;
 +        }
-+       if (mtu == 0) {
+         if (mtu == 0) {
              mtu = conf->mtu;
          }
-         if (mptcp == 0) {
