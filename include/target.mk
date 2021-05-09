@@ -34,7 +34,27 @@ DEFAULT_PACKAGES+=busybox procd
 endif
 
 # For the basic set
-DEFAULT_PACKAGES.basic:=\
+DEFAULT_PACKAGES.basic:=
+# For nas targets
+DEFAULT_PACKAGES.nas:=\
+	block-mount \
+	fdisk \
+	lsblk \
+	mdadm
+# For router targets
+DEFAULT_PACKAGES.router:=\
+	dnsmasq-full \
+	firewall \
+	ip6tables \
+	iptables \
+	kmod-ipt-offload \
+	odhcp6c \
+	odhcpd-ipv6only \
+	ppp \
+	ppp-mod-pppoe
+# For easy usage
+DEFAULT_PACKAGES.tweak:=\
+	block-mount \
 	ca-certificates \
 	coreutils \
 	ddns-scripts_aliyun \
@@ -60,23 +80,6 @@ DEFAULT_PACKAGES.basic:=\
 	luci-lib-ipkg \
 	luci-proto-relay \
 	wget-ssl
-# For nas targets
-DEFAULT_PACKAGES.nas:=\
-	block-mount \
-	fdisk \
-	lsblk \
-	mdadm
-# For router targets
-DEFAULT_PACKAGES.router:=\
-	dnsmasq-full \
-	firewall \
-	ip6tables \
-	iptables \
-	kmod-ipt-offload \
-	odhcp6c \
-	odhcpd-ipv6only \
-	ppp \
-	ppp-mod-pppoe
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -109,8 +112,8 @@ else
   endif
 endif
 
-# Add basic packages
-DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.basic)
+# Add tweaked packages
+DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
 
 # Add device specific packages (here below to allow device type set from subtarget)
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
