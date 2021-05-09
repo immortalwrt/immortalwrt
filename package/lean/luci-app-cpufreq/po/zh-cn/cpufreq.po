@@ -32,14 +32,14 @@ msgstr "待机 CPU 最小频率"
 msgid "Max Turbo Boost CPU Freq"
 msgstr "最大 Turbo Boost CPU 频率"
 
-msgid "CPU Switching Threshold"
-msgstr "CPU 切换频率触发阈值"
-
-msgid "Kernel make a decision on whether it should increase the frequency (%)"
-msgstr "当 CPU 占用率超过 (%) 的情况下触发内核切换频率"
-
 msgid "CPU Switching Sampling rate"
 msgstr "CPU 切换周期"
 
 msgid "The sampling rate determines how frequently the governor checks to tune the CPU (ms)"
 msgstr "CPU 检查切换的周期 (ms)。注意：过于频繁的切换频率会引起网络延迟抖动"
+
+msgid "CPU Switching Threshold"
+msgstr "CPU 切换频率触发阈值"
+
+msgid "Kernel make a decision on whether it should increase the frequency (%)"
+msgstr "当 CPU 占用率超过 (%) 的情况下触发内核切换频率"
