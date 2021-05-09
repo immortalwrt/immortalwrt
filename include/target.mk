@@ -99,6 +99,9 @@ else
   endif
 endif
 
+# Add basic packages
+DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.basic)
+
 # Add device specific packages (here below to allow device type set from subtarget)
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 
