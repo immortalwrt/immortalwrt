@@ -30,6 +30,9 @@ case "$DISTRIB_TARGET" in
 			uci_write_config 0 schedutil 816000 1512000
 		fi
 		;;
+	"sunxi/cortexa53")
+		uci_write_config 0 ondemand 648000 1296000 10 50
+		;;
 esac
 
 uci -q batch <<-EOF >/dev/null
