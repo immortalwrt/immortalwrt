@@ -39,7 +39,7 @@ define Build/addpattern
 endef
 
 define Build/append-md5sum-bin
-	$(STAGING_DIR_HOST)/bin/mkhash md5 $@ | sed 's/../\\\\x&/g' |\
+	$(MKHASH) md5 $@ | sed 's/../\\\\x&/g' |\
 		xargs echo -ne >> $@
 endef
 
@@ -159,9 +159,9 @@ define Build/xwrt_csac10-factory
   -[ -f "$@" ] && \
   mkdir -p "$@.tmp" && \
   mv "$@" "$@.tmp/UploadBrush-bin.img" && \
-  binmd5=$$($(STAGING_DIR_HOST)/bin/mkhash md5 "$@.tmp/UploadBrush-bin.img" | head -c32) && \
-  oemmd5=$$(echo -n TB-CSAC10-QCA9563_9886-ROUTE-CSAC10 | $(STAGING_DIR_HOST)/bin/mkhash md5 | head -c32) && \
-  echo -n $${binmd5}$${oemmd5} | $(STAGING_DIR_HOST)/bin/mkhash md5 | head -c32 >"$@.tmp/bin_random_oem.txt" && \
+  binmd5=$$($(MKHASH) md5 "$@.tmp/UploadBrush-bin.img" | head -c32) && \
+  oemmd5=$$(echo -n TB-CSAC10-QCA9563_9886-ROUTE-CSAC10 | $(MKHASH) md5 | head -c32) && \
+  echo -n $${binmd5}$${oemmd5} | $(MKHASH) md5 | head -c32 >"$@.tmp/bin_random_oem.txt" && \
   echo -n V4.4-201910201745 >"$@.tmp/version.txt" && \
   $(TAR) -czf $@.tmp.tgz -C "$@.tmp" UploadBrush-bin.img bin_random_oem.txt version.txt && \
   $(STAGING_DIR_HOST)/bin/openssl aes-256-cbc -md md5 -salt -in $@.tmp.tgz -out "$@" -k QiLunSmartWL && \
@@ -173,9 +173,9 @@ define Build/xwrt_csac05-factory
   -[ -f "$@" ] && \
   mkdir -p "$@.tmp" && \
   mv "$@" "$@.tmp/UploadBrush-bin.img" && \
-  binmd5=$$($(STAGING_DIR_HOST)/bin/mkhash md5 "$@.tmp/UploadBrush-bin.img" | head -c32) && \
-  oemmd5=$$(echo -n TB-CSAC05-QCA9563_9886-ROUTE-CSAC05 | $(STAGING_DIR_HOST)/bin/mkhash md5 | head -c32) && \
-  echo -n $${binmd5}$${oemmd5} | $(STAGING_DIR_HOST)/bin/mkhash md5 | head -c32 >"$@.tmp/bin_random_oem.txt" && \
+  binmd5=$$($(MKHASH) md5 "$@.tmp/UploadBrush-bin.img" | head -c32) && \
+  oemmd5=$$(echo -n TB-CSAC05-QCA9563_9886-ROUTE-CSAC05 | $(MKHASH) md5 | head -c32) && \
+  echo -n $${binmd5}$${oemmd5} | $(MKHASH) md5 | head -c32 >"$@.tmp/bin_random_oem.txt" && \
   echo -n V4.4-201910201745 >"$@.tmp/version.txt" && \
   $(TAR) -czf $@.tmp.tgz -C "$@.tmp" UploadBrush-bin.img bin_random_oem.txt version.txt && \
   $(STAGING_DIR_HOST)/bin/openssl aes-256-cbc -md md5 -salt -in $@.tmp.tgz -out "$@" -k QiLunSmartWL && \

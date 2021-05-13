@@ -16,11 +16,17 @@ case "$DISTRIB_TARGET" in
 		uci_write_config 0 ondemand 600000 1200000 10 50
 		;;
 	"ipq40xx")
-		uci_write_config 0 ondemand 300000 716000 10 50
+		uci_write_config 0 ondemand 200000 896000 10 50
 		;;
 	"ipq806x")
-		uci_write_config 0 ondemand 600000 716000 10 50
-		echo "$CPU_POLICYS" | grep -q "1" && uci_write_config 1 ondemand 600000 716000 10 50
+		CPU_FREQS="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_available_frequencies')"
+		if echo "$CPU_FREQS" | grep -q "1725000"; then
+			CPU_MAX_FREQ="1725000"
+		else
+			CPU_MAX_FREQ="1400000"
+		fi
+		uci_write_config 0 ondemand 600000 $CPU_MAX_FREQ 10 50
+		echo "$CPU_POLICYS" | grep -q "1" && uci_write_config 1 ondemand 600000 $CPU_MAX_FREQ 10 50
 		;;
 	"rockchip/armv8")
 		if echo "$CPU_POLICYS" | grep -q "4"; then
@@ -29,6 +35,9 @@ case "$DISTRIB_TARGET" in
 		else
 			uci_write_config 0 schedutil 816000 1512000
 		fi
+		;;
+	"sunxi/cortexa53")
+		uci_write_config 0 ondemand 648000 1296000 10 50
 		;;
 esac
 
