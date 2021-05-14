@@ -1,8 +1,0 @@
-#!/bin/sh
-[ "$ACTION" = ifup ] || exit 0
-log_file="/tmp/unblockneteasemusic.log"
-sleep 10
-if [ "$(uci get unblockneteasemusic.@unblockneteasemusic[0].enable)" == "1" ]; then
-    echo "$(date -R) ifup--尝试重启应用..." >>"${log_file}"
-    /etc/init.d/unblockneteasemusic restart
-fi
