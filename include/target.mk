@@ -13,34 +13,19 @@ DEVICE_TYPE?=router
 DEFAULT_PACKAGES:=\
 	base-files \
 	ca-bundle \
-	ca-certificates \
-	coreutils \
-	default-settings \
 	dropbear \
 	fstools \
-	kmod-ipt-raw \
-	kmod-nf-nathelper \
-	kmod-nf-nathelper-extra \
 	libc \
 	libgcc \
 	libustream-openssl \
 	logd \
-	luci \
-	luci-app-cpufreq \
-	luci-app-turboacc \
-	luci-compat \
-	luci-lib-base \
-	luci-lib-fs \
-	luci-lib-ipkg \
-	luci-proto-relay \
 	mtd \
 	netifd \
 	opkg \
 	uci \
 	uclient-fetch \
 	urandom-seed \
-	urngd \
-	wget
+	urngd
 
 ifneq ($(CONFIG_SELINUX),)
 DEFAULT_PACKAGES+=busybox-selinux procd-selinux
@@ -67,6 +52,24 @@ DEFAULT_PACKAGES.router:=\
 	odhcpd-ipv6only \
 	ppp \
 	ppp-mod-pppoe
+# For easy usage
+DEFAULT_PACKAGES.tweak:=\
+	block-mount \
+	ca-certificates \
+	coreutils \
+	default-settings \
+	kmod-ipt-raw \
+	kmod-nf-nathelper \
+	kmod-nf-nathelper-extra \
+	luci \
+	luci-app-cpufreq \
+	luci-app-turboacc \
+	luci-compat \
+	luci-lib-base \
+	luci-lib-fs \
+	luci-lib-ipkg \
+	luci-proto-relay \
+	wget-ssl
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -98,6 +101,9 @@ else
     -include ./$(SUBTARGET)/target.mk
   endif
 endif
+
+# Add tweaked packages
+DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
 
 # Add device specific packages (here below to allow device type set from subtarget)
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
