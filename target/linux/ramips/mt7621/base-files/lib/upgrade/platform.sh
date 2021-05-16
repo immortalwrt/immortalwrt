@@ -49,6 +49,7 @@ platform_do_upgrade() {
 	dlink,dir-2640-a1|\
 	dlink,dir-2660-a1|\
 	hiwifi,hc5962|\
+	jcg,q20|\
 	linksys,ea7300-v1|\
 	linksys,ea7500-v2|\
 	netgear,r6220|\
@@ -80,6 +81,12 @@ platform_do_upgrade() {
 	ubnt,edgerouter-x|\
 	ubnt,edgerouter-x-sfp)
 		platform_upgrade_ubnt_erx "$1"
+		;;
+	zyxel,nr7101)
+		fw_setenv CheckBypass 0
+		fw_setenv Image1Stable 0
+		CI_KERNPART="Kernel"
+		nand_do_upgrade "$1"
 		;;
 	zyxel,wap6805)
 		local kernel2_mtd="$(find_mtd_part Kernel2)"

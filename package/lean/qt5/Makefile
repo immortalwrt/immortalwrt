@@ -15,7 +15,7 @@ QT5_VERSION_PATCH:=2
 
 PKG_NAME:=qt5
 PKG_VERSION:=$(QT5_VERSION_MAJOR_MINOR)$(if $(QT5_VERSION_PATCH),.$(QT5_VERSION_PATCH))
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=qt-everywhere-src-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://mirrors.tencent.com/qt/archive/qt/$(QT5_VERSION_MAJOR_MINOR)/$(PKG_VERSION)/single/ \
@@ -60,7 +60,7 @@ endef
 define Package/qt5-network
 	$(call Package/qt5/Default)
 	TITLE+=network
-	DEPENDS+=+qt5-core +libopenssl
+	DEPENDS+=+qt5-core +krb5-libs +libopenssl
 endef
 
 define Package/qt5-sql

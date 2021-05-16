@@ -12,7 +12,7 @@ DEVICE_VARS += ELECOM_HWNAME LINKSYS_HWNAME
 define Build/elecom-wrc-gs-factory
 	$(eval product=$(word 1,$(1)))
 	$(eval version=$(word 2,$(1)))
-	( $(STAGING_DIR_HOST)/bin/mkhash md5 $@ | tr -d '\n' ) >> $@
+	( $(MKHASH) md5 $@ | tr -d '\n' ) >> $@
 	( \
 		echo -n "ELECOM $(product) v$(version)" | \
 			dd bs=32 count=1 conv=sync; \
@@ -25,7 +25,7 @@ endef
 define Build/elecom-wrc-factory
 	$(eval product=$(word 1,$(1)))
 	$(eval version=$(word 2,$(1)))
-	$(STAGING_DIR_HOST)/bin/mkhash md5 $@ >> $@
+	$(MKHASH) md5 $@ >> $@
 	( \
 		echo -n "ELECOM $(product) v$(version)" | \
 			dd bs=32 count=1 conv=sync; \
@@ -73,13 +73,13 @@ define Build/ubnt-erx-factory-image
 		$(TAR) -cf $(1) --transform='s/^.*/compat/' $(1).compat; \
 		\
 		$(TAR) -rf $(1) --transform='s/^.*/vmlinux.tmp/' $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE); \
-		mkhash md5 $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) > $(1).md5; \
+		$(MKHASH) md5 $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) > $(1).md5; \
 		$(TAR) -rf $(1) --transform='s/^.*/vmlinux.tmp.md5/' $(1).md5; \
 		\
 		echo "dummy" > $(1).rootfs; \
 		$(TAR) -rf $(1) --transform='s/^.*/squashfs.tmp/' $(1).rootfs; \
 		\
-		mkhash md5 $(1).rootfs > $(1).md5; \
+		$(MKHASH) md5 $(1).rootfs > $(1).md5; \
 		$(TAR) -rf $(1) --transform='s/^.*/squashfs.tmp.md5/' $(1).md5; \
 		\
 		echo '$(BOARD) $(VERSION_CODE) $(VERSION_NUMBER)' > $(1).version; \
@@ -89,6 +89,13 @@ define Build/ubnt-erx-factory-image
 	else \
 		echo "WARNING: initramfs kernel image too big, cannot generate factory image" >&2; \
 	fi
+endef
+
+define Build/zytrx-header
+	$(eval board=$(word 1,$(1)))
+	$(eval version=$(word 2,$(1)))
+	$(STAGING_DIR_HOST)/bin/zytrx -B '$(board)' -v '$(version)' -i $@ -o $@.new
+	mv $@.new $@
 endef
 
 define Device/adslr_g7
@@ -648,6 +655,23 @@ define Device/jcg_jhr-ac876m
   DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3 kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += jcg_jhr-ac876m
+
+define Device/jcg_q20
+  $(Device/uimage-lzma-loader)
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 32768k
+  IMAGES += factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
+	check-size
+  DEVICE_VENDOR := JCG
+  DEVICE_MODEL := Q20
+  DEVICE_PACKAGES := kmod-mt7915e uboot-envtools
+endef
+TARGET_DEVICES += jcg_q20
 
 define Device/jcg_y2
   $(Device/uimage-lzma-loader)
@@ -1408,6 +1432,20 @@ define Device/zio_freezio
 	kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += zio_freezio
+
+define Device/zyxel_nr7101
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  DEVICE_VENDOR := ZyXEL
+  DEVICE_MODEL := NR7101
+  DEVICE_PACKAGES := kmod-mt7603 kmod-usb3 uboot-envtools kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+  KERNEL := $(KERNEL_DTB) | uImage lzma | zytrx-header $$(DEVICE_MODEL) $$(VERSION_DIST)-$$(REVISION)
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | uImage lzma | zytrx-header $$(DEVICE_MODEL) 9.99(ABUV.9)$$(VERSION_DIST)-recovery
+  KERNEL_INITRAMFS_SUFFIX := -recovery.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += zyxel_nr7101
 
 define Device/zyxel_wap6805
   BLOCKSIZE := 128k

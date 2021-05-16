@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-START=50
+START=15
 
 NAME="cpufreq"
 
@@ -20,8 +20,8 @@ start()
 		config_get_cpufreq "minfreq$i" > "/sys/devices/system/cpu/cpufreq/policy$i/scaling_min_freq"
 		config_get_cpufreq "maxfreq$i" > "/sys/devices/system/cpu/cpufreq/policy$i/scaling_max_freq"
 		if [ "$(config_get_cpufreq "governor$i")" = "ondemand" ]; then
+			config_get_cpufreq "sdfactor$i" > "/sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor"
 			config_get_cpufreq "upthreshold$i" > "/sys/devices/system/cpu/cpufreq/ondemand/up_threshold"
-			config_get_cpufreq "factor$i" > "/sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor"
 		fi
 	done
 }
