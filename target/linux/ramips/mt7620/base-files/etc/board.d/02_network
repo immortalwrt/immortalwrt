@@ -223,7 +223,8 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"1:lan" "4:lan" "0:wan" "6@eth0"
 		;;
-	youku,yk1)
+	youku,yk-l1|\
+	youku,yk-l1c)
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "4:wan" "6@eth0"
 		;;
@@ -344,8 +345,9 @@ ramips_setup_macs()
 		;;
 	lenovo,newifi-y1|\
 	lenovo,newifi-y1s|\
-	ohyeah,oy-0001)
-	youku,yk1)
+	ohyeah,oy-0001|\
+	youku,yk-l1|\
+	youku,yk-l1c)
 		wan_mac=$(mtd_get_mac_binary factory 0x2e)
 		;;
 	linksys,e1700)
