@@ -61,6 +61,7 @@ platform_do_upgrade() {
 	linksys,e5600|\
 	linksys,ea7300-v1|\
 	linksys,ea7500-v2|\
+	linksys,ea8100-v1|\
 	netgear,r6220|\
 	netgear,r6260|\
 	netgear,r6350|\
