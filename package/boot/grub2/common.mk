@@ -9,15 +9,16 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_CPE_ID:=cpe:/a:gnu:grub2
-PKG_VERSION:=2.04
+PKG_VERSION:=2.06~rc1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=grub-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@GNU/grub
-PKG_HASH:=e5292496995ad42dabe843a0192cf2a2c502e7ffcc7479398232b10a472df77d
+PKG_SOURCE_URL:=https://alpha.gnu.org/gnu/grub
+PKG_HASH:=2c87f1f21e2ab50043e6cd9163c08f1b6c3a6171556bf23ff9ed65b074145484
 
 HOST_BUILD_PARALLEL:=1
 
+PKG_ASLR_PIE:=0
 PKG_SSP:=0
 
 PKG_FLAGS:=nonshared
@@ -66,8 +67,9 @@ HOST_MAKE_FLAGS += \
 	TARGET_RANLIB=$(TARGET_RANLIB) \
 	LIBLZMA=$(STAGING_DIR_HOST)/lib/liblzma.a
 
+TARGET_CFLAGS := $(filter-out -O2 -O3 -fno-plt,$(TARGET_CFLAGS))
+
 define Host/Configure
 	$(SED) 's,(RANLIB),(TARGET_RANLIB),' $(HOST_BUILD_DIR)/grub-core/Makefile.in
 	$(Host/Configure/Default)
 endef
-
