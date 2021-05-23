@@ -25,12 +25,13 @@ define Package/default-settings
   CATEGORY:=LuCI
   TITLE:=LuCI support for Default Settings
   PKGARCH:=all
-  DEPENDS:=+luci-lib-base +@LUCI_LANG_en +DEFAULT_SETTINGS_OPTIMIZE_FOR_CHINESE:@LUCI_LANG_zh_Hans
+  DEPENDS:=+luci-lib-base +@LUCI_LANG_en
 endef
 
 define Package/default-settings/config
 config DEFAULT_SETTINGS_OPTIMIZE_FOR_CHINESE
 	bool "Optimize for mainland China users"
+	select LUCI_LANG_zh_Hans
 	default n
 endef
 
