@@ -5,9 +5,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/netifd.git
-PKG_SOURCE_DATE:=2021-01-09
-PKG_SOURCE_VERSION:=c00c8335d6188daa326ecfe5a62da15a9b9987e1
-PKG_MIRROR_HASH:=c740e51e0cec13eec336ba1c7a643db3b64a9a2235f8c1b73a566cb89e841190
+PKG_SOURCE_DATE:=2021-05-26
+PKG_SOURCE_VERSION:=899c2a4520526d43113f73cf673f20e2486a40fb
+PKG_MIRROR_HASH:=354905192b30af88ea953241ed332555e67cdb7e3b54dd139250bf1e6ad3a709
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 PKG_LICENSE:=GPL-2.0
@@ -25,6 +25,11 @@ define Package/netifd
   TITLE:=OpenWrt Network Interface Configuration Daemon
 endef
 
+define Package/netifd/conffiles
+/etc/udhcpc.user
+/etc/udhcpc.user.d/
+endef
+
 TARGET_CFLAGS += \
 	-I$(STAGING_DIR)/usr/include/libnl-tiny \
 	-I$(STAGING_DIR)/usr/include \
@@ -40,6 +45,7 @@ define Package/netifd/install
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/netifd $(1)/sbin/
 	$(CP) ./files/* $(1)/
+	$(INSTALL_DIR) $(1)/etc/udhcpc.user.d/
 	$(CP) $(PKG_BUILD_DIR)/scripts/* $(1)/lib/netifd/
 endef
 
