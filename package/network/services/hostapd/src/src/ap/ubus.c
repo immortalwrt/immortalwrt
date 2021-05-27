@@ -728,6 +728,8 @@ hostapd_switch_chan(struct ubus_context *ctx, struct ubus_object *obj,
 	struct blob_attr *tb[__CSA_MAX];
 	struct hostapd_data *hapd = get_hapd_from_object(obj);
 	struct csa_settings css;
+	int ret = UBUS_STATUS_OK;
+	int i;
 
 	blobmsg_parse(csa_policy, __CSA_MAX, tb, blob_data(msg), blob_len(msg));
 
@@ -752,10 +754,14 @@ hostapd_switch_chan(struct ubus_context *ctx, struct ubus_object *obj,
 	SET_CSA_SETTING(CSA_VHT, freq_params.vht_enabled, bool);
 	SET_CSA_SETTING(CSA_BLOCK_TX, block_tx, bool);
 
+	for (i = 0; i < hapd->iface->num_bss; i++) {
+		struct hostapd_data *bss = hapd->iface->bss[i];
 
-	if (hostapd_switch_channel(hapd, &css) != 0)
-		return UBUS_STATUS_NOT_SUPPORTED;
-	return UBUS_STATUS_OK;
+		if (hostapd_switch_channel(bss, &css) != 0)
+			ret = UBUS_STATUS_NOT_SUPPORTED;
+	}
+
+	return ret;
 #undef SET_CSA_SETTING
 }
 #endif
@@ -1586,4 +1592,25 @@ void hostapd_ubus_notify_beacon_report(
 	blobmsg_add_u16(&b, "parent-tsf", rep->parent_tsf);
 
 	ubus_notify(ctx, &hapd->ubus.obj, "beacon-report", b.head, -1);
+}
+
+void hostapd_ubus_notify_radar_detected(struct hostapd_iface *iface, int frequency,
+					int chan_width, int cf1, int cf2)
+{
+	struct hostapd_data *hapd;
+	int i;
+
+	if (!hapd->ubus.obj.has_subscribers)
+		return;
+
+	blob_buf_init(&b, 0);
+	blobmsg_add_u16(&b, "frequency", frequency);
+	blobmsg_add_u16(&b, "width", chan_width);
+	blobmsg_add_u16(&b, "center1", cf1);
+	blobmsg_add_u16(&b, "center2", cf2);
+
+	for (i = 0; i < iface->num_bss; i++) {
+		hapd = iface->bss[i];
+		ubus_notify(ctx, &hapd->ubus.obj, "radar-detected", b.head, -1);
+	}
 }
