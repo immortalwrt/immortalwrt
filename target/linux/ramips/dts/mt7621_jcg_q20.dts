@@ -62,7 +62,7 @@
 
 			partition@0 {
 				label = "ubi";
-				reg = <0x0 0x5980000>;
+				reg = <0x0 0x5900000>;
 			};
 		};
 	};
@@ -122,8 +122,12 @@
 
 		ubiconcat1: partition@4280000 {
 			label = "ubiconcat1";
-			reg = <0x4280000 0x3d80000>;
+			reg = <0x4280000 0x3d00000>;
 		};
+
+		/*
+		 * last 512 KiB are for the bad block table
+		 */
 	};
 };
 

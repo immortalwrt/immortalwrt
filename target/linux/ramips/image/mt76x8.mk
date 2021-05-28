@@ -34,6 +34,7 @@ define Device/alfa-network_awusfree1
   DEVICE_VENDOR := ALFA Network
   DEVICE_MODEL := AWUSFREE1
   DEVICE_PACKAGES := uboot-envtools
+  SUPPORTED_DEVICES += awusfree1
 endef
 TARGET_DEVICES += alfa-network_awusfree1
 
@@ -161,6 +162,14 @@ define Device/hilink_hlk-7628n
   DEVICE_MODEL := HLK-7628N
 endef
 TARGET_DEVICES += hilink_hlk-7628n
+
+define Device/hilink_hlk-7688a
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := Hi-Link
+  DEVICE_MODEL := HLK-7688A
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += hilink_hlk-7688a
 
 define Device/hiwifi_hc5661a
   IMAGE_SIZE := 15808k
@@ -709,6 +718,16 @@ define Device/wavlink_wl-wn577a2
   DEVICE_PACKAGES := kmod-mt76x0e
 endef
 TARGET_DEVICES += wavlink_wl-wn577a2
+
+define Device/wavlink_wl-wn578a2
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Wavlink
+  DEVICE_MODEL := WL-WN578A2
+  DEVICE_ALT0_VENDOR := SilverCrest
+  DEVICE_ALT0_MODEL := SWV 733 A2
+  DEVICE_PACKAGES := kmod-mt76x0e
+endef
+TARGET_DEVICES += wavlink_wl-wn578a2
 
 define Device/widora_neo-16m
   IMAGE_SIZE := 16064k

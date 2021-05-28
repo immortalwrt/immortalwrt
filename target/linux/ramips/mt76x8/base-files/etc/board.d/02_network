@@ -47,7 +47,8 @@ ramips_setup_interfaces()
 		;;
 	buffalo,wcr-1166ds|\
 	elecom,wrc-1167fs|\
-	wavlink,wl-wn577a2)
+	wavlink,wl-wn577a2|\
+	wavlink,wl-wn578a2)
 		ucidef_add_switch "switch0" \
 			"3:lan" "4:wan" "6@eth0"
 		;;
@@ -64,6 +65,7 @@ ramips_setup_interfaces()
 			"1:lan" "0:wan" "6@eth0"
 		;;
 	hilink,hlk-7628n|\
+	hilink,hlk-7688a|\
 	hiwifi,hc5861b|\
 	skylab,skw92a|\
 	tplink,archer-c20-v4|\
@@ -163,7 +165,9 @@ ramips_setup_macs()
 		lan_mac=$wan_mac
 		;;
 	cudy,wr1000|\
-	wavlink,wl-wn577a2)
+	hilink,hlk-7688a|\
+	wavlink,wl-wn577a2|\
+	wavlink,wl-wn578a2)
 		wan_mac=$(mtd_get_mac_binary factory 0x2e)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
