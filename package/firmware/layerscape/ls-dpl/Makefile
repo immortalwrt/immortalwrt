@@ -16,6 +16,8 @@ PKG_SOURCE_URL:=https://source.codeaurora.org/external/qoriq/qoriq-components/mc
 PKG_SOURCE_VERSION:=eeb8972a3d4137c87a54c2795452b17f254a68c7
 PKG_MIRROR_HASH:=e96e72793fb9fea1d4f5112d318059ea4c836d65c02852d207407edf13fc92af
 
+PKG_FLAGS:=nonshared
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
 

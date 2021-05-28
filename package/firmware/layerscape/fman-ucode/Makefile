@@ -16,6 +16,8 @@ PKG_SOURCE_URL:=https://github.com/NXP/qoriq-fm-ucode.git
 PKG_SOURCE_VERSION:=c275e91392e2adab1ed22f3867b8269ca3c54014
 PKG_MIRROR_HASH:=a630f1a86e4a67a0e390312291702560e3f64dd74fe6ccb8f3be4584d00c7f80
 
+PKG_FLAGS:=nonshared
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/layerscape-fman-ls1043ardb

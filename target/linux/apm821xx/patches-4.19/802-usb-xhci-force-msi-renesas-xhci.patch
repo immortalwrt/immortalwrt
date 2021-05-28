@@ -13,7 +13,7 @@ produce a noisy warning.
 
 --- a/drivers/usb/host/xhci-pci.c
 +++ b/drivers/usb/host/xhci-pci.c
-@@ -227,6 +227,7 @@ static void xhci_pci_quirks(struct devic
+@@ -229,6 +229,7 @@ static void xhci_pci_quirks(struct devic
  	    pdev->device == 0x0015) {
  		xhci->quirks |= XHCI_RESET_ON_RESUME;
  		xhci->quirks |= XHCI_ZERO_64B_REGS;
@@ -23,7 +23,7 @@ produce a noisy warning.
  		xhci->quirks |= XHCI_RESET_ON_RESUME;
 --- a/drivers/usb/host/xhci.c
 +++ b/drivers/usb/host/xhci.c
-@@ -422,10 +422,14 @@ static int xhci_try_enable_msi(struct us
+@@ -426,10 +426,14 @@ static int xhci_try_enable_msi(struct us
  		free_irq(hcd->irq, hcd);
  	hcd->irq = 0;
  
