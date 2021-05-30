@@ -1,79 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
 #include "qcom-ipq8064-v2.0.dtsi"
 
 #include <dt-bindings/input/input.h>
 
 / {
-	model = "Linksys EA7500 V1 WiFi Router";
-	compatible = "linksys,ea7500-v1", "qcom,ipq8064";
-
-	memory@0 {
-		reg = <0x42000000 0xe000000>;
-		device_type = "memory";
-	};
-
-	aliases {
-		led-boot = &led_power;
-		led-failsafe = &led_power;
-		led-running = &led_power;
-		led-upgrade = &led_power;
-	};
-
 	chosen {
 		bootargs = "console=ttyMSM0,115200n8";
-
-		append-rootblock = "ubi.mtd=";  /* append to bootargs adding the root deviceblock nbr from bootloader */
-		find-rootblock = "ubi.mtd=";  /* look for root deviceblock nbr in this bootarg */
-	};
-
-	keys {
-		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
-
-		reset {
-			label = "reset";
-			gpios = <&qcom_pinmux 68 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <&qcom_pinmux 65 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
-		};
-	};
-
-	leds {
-		compatible = "gpio-leds";
-		pinctrl-0 = <&led_pins>;
-		pinctrl-names = "default";
-
-		led_power: power {
-			label = "white:power";
-			gpios = <&qcom_pinmux 6 GPIO_ACTIVE_LOW>;
-			default-state = "keep";
-		};
-	};
-};
-
-&qcom_pinmux {
-	button_pins: button_pins {
-		mux {
-			pins = "gpio65", "gpio68";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-up;
-		};
-	};
-
-	led_pins: led_pins {
-		mux {
-			pins = "gpio6";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-up;
-		};
+		/* append to bootargs adding the root deviceblock nbr from bootloader */
+		append-rootblock = "ubi.mtd=";
 	};
 };
 
@@ -87,6 +22,7 @@
 
 &pcie0 {
 	status = "okay";
+
 	max-link-speed = <1>;
 };
 
@@ -197,7 +133,7 @@
 
 			partition@f80000 {
 				label = "kernel1";
-				reg = <0x0f80000 0x2800000>;  /* 3 MB spill to rootfs*/
+				reg = <0x0f80000 0x2800000>;  /* 3 MB spill to rootfs */
 			};
 
 			partition@1280000 {
@@ -213,16 +149,6 @@
 			partition@3a80000 {
 				label = "rootfs2";
 				reg = <0x3a80000 0x2500000>;
-			};
-
-			partition@5f80000 {
-				label = "sysdiag";
-				reg = <0x5f80000 0x100000>;
-			};
-
-			partition@6080000 {
-				label = "syscfg";
-				reg = <0x6080000 0x1f80000>;
 			};
 		};
 	};
@@ -251,6 +177,7 @@
 
 &gmac1 {
 	status = "okay";
+
 	phy-mode = "rgmii";
 	qcom,id = <1>;
 
@@ -265,6 +192,7 @@
 
 &gmac2 {
 	status = "okay";
+
 	phy-mode = "sgmii";
 	qcom,id = <2>;
 
