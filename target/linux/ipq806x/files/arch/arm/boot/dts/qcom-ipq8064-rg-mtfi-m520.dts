@@ -22,14 +22,6 @@
 		bootargs = "root=/dev/mmcblk0p3 rootfstype=squashfs,ext4 rootwait noinitrd";
 	};
 
-	cpus {
-		idle-states {
-			CPU_SPC: spc {
-				status = "disabled";
-			};
-		};
-	};
-
 	keys {
 		compatible = "gpio-keys";
 		pinctrl-0 = <&button_pins>;
@@ -232,6 +224,14 @@
 	};
 };
 
+&sata_phy {
+	status = "okay";
+};
+
+&sata {
+	status = "okay";
+};
+
 &usb3_0 {
 	status = "okay";
 };
@@ -242,16 +242,17 @@
 
 &pcie0 {
 	status = "okay";
-
 	reset-gpio = <&qcom_pinmux 3 GPIO_ACTIVE_HIGH>;
-	/delete-property/ perst-gpios;
+	pinctrl-0 = <&pcie0_pins>;
+	pinctrl-names = "default";
 };
 
 &pcie1 {
 	status = "okay";
-
 	reset-gpio = <&qcom_pinmux 48 GPIO_ACTIVE_HIGH>;
-	/delete-property/ perst-gpios;
+	pinctrl-0 = <&pcie1_pins>;
+	pinctrl-names = "default";
+	max-link-speed = <1>;
 };
 
 &mdio0 {
@@ -313,4 +314,8 @@
 
 &adm_dma {
 	status = "okay";
+};
+
+&CPU_SPC {
+	status = "disabled";
 };

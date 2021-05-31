@@ -27,6 +27,7 @@ ALLWIFIBOARDS:= \
 	cellc_rtl30vw \
 	century_wr142ac \
 	dlink_dap2610 \
+	edgecore_ecw5410 \
 	engenius_eap2200 \
 	engenius_emd1 \
 	engenius_emr3500 \
@@ -36,6 +37,7 @@ ALLWIFIBOARDS:= \
 	hugo_ac1200 \
 	linksys_ea8300 \
 	mobipromo_cm520-79f \
+	nec_wg2600hp3 \
 	p2w_r619ac \
 	qxwlan_e2600ac
 
@@ -106,6 +108,7 @@ $(eval $(call generate-ipq-wifi-package,buffalo_wtr-m2133hp,Buffalo WTR-M2133HP)
 $(eval $(call generate-ipq-wifi-package,cellc_rtl30vw, Cell C RTL30VW))
 $(eval $(call generate-ipq-wifi-package,century_wr142ac,Century WR142AC))
 $(eval $(call generate-ipq-wifi-package,dlink_dap2610,D-Link DAP-2610))
+$(eval $(call generate-ipq-wifi-package,edgecore_ecw5410,Edgecore ECW5410))
 $(eval $(call generate-ipq-wifi-package,engenius_eap2200,EnGenius EAP2200))
 $(eval $(call generate-ipq-wifi-package,engenius_emd1,EnGenius EMD1))
 $(eval $(call generate-ipq-wifi-package,engenius_emr3500,EnGenius EMR3500))
@@ -115,6 +118,7 @@ $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,hugo_ac1200,Hugo AC1200))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,mobipromo_cm520-79f,MobiPromo CM520-79F))
+$(eval $(call generate-ipq-wifi-package,nec_wg2600hp3,NEC Platforms WG2600HP3))
 $(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac,Qxwlan E2600AC))
 
