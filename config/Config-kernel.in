@@ -48,7 +48,8 @@ config KERNEL_DEBUG_FS
 
 config KERNEL_MIPS_FP_SUPPORT
 	bool
-	default y if TARGET_pistachio
+	default y
+	depends on (mips || mipsel || mips64 || mips64el)
 
 config KERNEL_ARM_PMU
 	bool
