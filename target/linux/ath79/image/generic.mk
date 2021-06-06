@@ -1655,6 +1655,26 @@ define Device/openmesh_common_256k
 	openmesh-image ce_type=$$$$(OPENMESH_CE_TYPE) | append-metadata
 endef
 
+define Device/openmesh_a40
+  $(Device/openmesh_common_64k)
+  SOC := qca9558
+  DEVICE_MODEL := A40
+  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  OPENMESH_CE_TYPE := A60
+  SUPPORTED_DEVICES += a40
+endef
+TARGET_DEVICES += openmesh_a40
+
+define Device/openmesh_a60
+  $(Device/openmesh_common_64k)
+  SOC := qca9558
+  DEVICE_MODEL := A60
+  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  OPENMESH_CE_TYPE := A60
+  SUPPORTED_DEVICES += a60
+endef
+TARGET_DEVICES += openmesh_a60
+
 define Device/openmesh_mr600-v1
   $(Device/openmesh_common_64k)
   SOC := ar9344
@@ -1906,6 +1926,43 @@ define Device/plasmacloud_pa300e
   DEVICE_MODEL := PA300E
 endef
 TARGET_DEVICES += plasmacloud_pa300e
+
+define Device/qca_ap143
+  SOC := qca9533
+  DEVICE_VENDOR := Qualcomm Atheros
+  DEVICE_MODEL := AP143
+  DEVICE_PACKAGES := kmod-usb2
+  SUPPORTED_DEVICES += ap143
+  LOADER_TYPE := bin
+  LOADER_FLASH_OFFS := 0x50000
+  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49
+  COMPILE := loader-$(1).bin loader-$(1).uImage
+  COMPILE/loader-$(1).bin := loader-okli-compile
+  COMPILE/loader-$(1).uImage := append-loader-okli $(1) | pad-to 64k | lzma | \
+	uImage lzma
+endef
+
+define Device/qca_ap143-8m
+  $(Device/qca_ap143)
+  DEVICE_VARIANT := (8M)
+  IMAGE_SIZE := 7744k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | check-size | pad-to 6336k | \
+	append-loader-okli-uimage $(1) | pad-to 64k
+endef
+TARGET_DEVICES += qca_ap143-8m
+
+define Device/qca_ap143-16m
+  $(Device/qca_ap143)
+  DEVICE_VARIANT := (16M)
+  IMAGE_SIZE := 15936k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | check-size | pad-to 14528k | \
+	append-loader-okli-uimage $(1) | pad-to 64k
+endef
+TARGET_DEVICES += qca_ap143-16m
 
 define Device/qihoo_c301
   $(Device/seama)
