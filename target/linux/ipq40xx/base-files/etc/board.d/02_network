@@ -58,7 +58,8 @@ ipq40xx_setup_interfaces()
 	compex,wpj419|\
 	compex,wpj428|\
 	engenius,eap1300|\
-	engenius,eap2200)
+	engenius,eap2200|\
+	linksys,whw01-v1)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "4:lan" "5:lan"
 		;;
