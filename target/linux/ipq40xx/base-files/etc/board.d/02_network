@@ -50,7 +50,7 @@ ipq40xx_setup_interfaces()
 		;;
 	avm,fritzbox-7530)
 		ucidef_add_switch "switch0" \
-			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan"
+			"0t@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1"
 		;;
 	aruba,ap-303|\
 	aruba,ap-365|\
