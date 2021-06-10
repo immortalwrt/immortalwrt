@@ -62,10 +62,12 @@ TARGET_DEVICES += alfa-network_tube-e4g
 define Device/amit_jboot
   DLINK_IMAGE_OFFSET := 0x10000
   KERNEL := $(KERNEL_DTB)
+  KERNEL_SIZE := 2048k
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := mkdlinkfw | pad-rootfs | append-metadata
   IMAGE/factory.bin := mkdlinkfw | pad-rootfs | mkdlinkfw-factory
   DEVICE_PACKAGES := jboot-tools kmod-usb2 kmod-usb-ohci
+  DEFAULT := n
 endef
 
 define Device/asus_rp-n53
@@ -1091,6 +1093,15 @@ define Device/wavlink_wl-wn530hg4
   DEVICE_PACKAGES := kmod-mt76x2
 endef
 TARGET_DEVICES += wavlink_wl-wn530hg4
+
+define Device/wavlink_wl-wn579x3
+  SOC := mt7620a
+  IMAGE_SIZE := 7744k
+  DEVICE_VENDOR := Wavlink
+  DEVICE_MODEL := WL-WN579X3
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-phy-realtek
+endef
+TARGET_DEVICES += wavlink_wl-wn579x3
 
 define Device/wrtnode_wrtnode
   SOC := mt7620n
