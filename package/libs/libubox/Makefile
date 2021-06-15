@@ -10,6 +10,8 @@ PKG_SOURCE_DATE:=2020-07-11
 PKG_SOURCE_VERSION:=f4e9bf73ac5c0ee6b8f240e2a2100e70ca56d705
 CMAKE_INSTALL:=1
 
+PKG_FLAGS := nonshared
+
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=
 
@@ -64,7 +66,7 @@ define Package/libubox-lua
 endef
 
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
-CMAKE_OPTIONS = \
+CMAKE_OPTIONS += \
 	-DLUAPATH=/usr/lib/lua
 
 define Package/libubox/install

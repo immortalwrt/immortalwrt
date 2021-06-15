@@ -31,7 +31,7 @@
 		compatible = "gpio-leds";
 
 		led_sys: sys {
-			label = "m520:green:sys";
+			label = "green:sys";
 			gpios = <&gpio_ext 15 GPIO_ACTIVE_LOW>;
 		};
 	};
