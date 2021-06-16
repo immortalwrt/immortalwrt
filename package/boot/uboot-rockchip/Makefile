@@ -31,9 +31,9 @@ define U-Boot/nanopi-r2s-rk3328
     friendlyarm_nanopi-r2s
   DEPENDS:=+PACKAGE_u-boot-nanopi-r2s-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rk3328
-  ATF:=rk322xh_bl31_v1.44.elf
-  USE_RKBIN:=1
+  ATF:=rk322xh_bl31_v1.46.elf
   OF_PLATDATA:=$(1)
+  USE_RKBIN:=1
 endef
 
 define U-Boot/orangepi-r1-plus-rk3328
@@ -43,9 +43,9 @@ define U-Boot/orangepi-r1-plus-rk3328
     xunlong_orangepi-r1-plus
   DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rk3328
-  ATF:=rk322xh_bl31_v1.44.elf
-  USE_RKBIN:=1
+  ATF:=rk322xh_bl31_v1.46.elf
   OF_PLATDATA:=$(1)
+  USE_RKBIN:=1
 endef
 
 
