@@ -190,6 +190,8 @@ sub cleanup
 
 foreach my $mirror (@ARGV) {
 	if ($mirror =~ /^\@SF\/(.+)$/) {
+		push @mirrors, "https://freefr.dl.sourceforge.net/$1";
+		push @mirrors, "https://netix.dl.sourceforge.net/$1";
 		# give sourceforge a few more tries, because it redirects to different mirrors
 		for (1 .. 5) {
 			push @mirrors, "https://downloads.sourceforge.net/$1";
