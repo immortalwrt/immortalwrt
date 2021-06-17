@@ -79,7 +79,7 @@ platform_do_upgrade() {
 
 	sync
 
-	if [ "$UPGRADE_OPT_SAVE_PARTITIONS" = "1" ]; then
+	if [ "$SAVE_PARTITIONS" = "1" ]; then
 		get_partitions "/dev/$diskdev" bootdisk
 
 		echo "Extract boot sector from the image"
