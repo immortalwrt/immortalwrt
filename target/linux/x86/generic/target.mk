@@ -1,4 +1,4 @@
-BOARDNAME:=x86 32bit
+BOARDNAME:=Generic
 CPU_TYPE :=pentium4
 FEATURES += audio pci pcie usb
 DEFAULT_PACKAGES += kmod-button-hotplug
