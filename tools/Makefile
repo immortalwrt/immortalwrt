@@ -23,7 +23,7 @@ endif
 
 tools-y += autoconf autoconf-archive automake bc bison cmake cpio dosfstools
 tools-y += e2fsprogs fakeroot findutils firmware-utils flex gengetopt
-tools-y += libressl libtool lzma m4 make-ext4fs missing-macros mkimage
+tools-y += libressl libtool lzma m4 make-ext4fs meson missing-macros mkimage
 tools-y += mklibs mtd-utils mtools ninja padjffs2 patch-image patchelf
 tools-y += pkg-config quilt squashfskit4 sstrip ucl upx xxd zip zlib zstd
 tools-$(BUILD_B43_TOOLS) += b43-tools
@@ -59,6 +59,7 @@ $(curdir)/libressl/compile := $(curdir)/pkg-config/compile
 $(curdir)/libtool/compile := $(curdir)/m4/compile $(curdir)/autoconf/compile $(curdir)/automake/compile $(curdir)/missing-macros/compile
 $(curdir)/lzma-old/compile := $(curdir)/zlib/compile
 $(curdir)/make-ext4fs/compile := $(curdir)/zlib/compile
+$(curdir)/meson/compile := $(curdir)/ninja/compile
 $(curdir)/missing-macros/compile := $(curdir)/autoconf/compile
 $(curdir)/mkimage/compile += $(curdir)/libressl/compile
 $(curdir)/mklibs/compile := $(curdir)/libtool/compile
