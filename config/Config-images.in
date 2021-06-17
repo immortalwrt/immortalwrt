@@ -243,6 +243,13 @@ menu "Target Images"
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default y if BUILDBOT
 
+	config QCOW2_IMAGES
+		bool "Build PVE/KVM image files (QCOW2)"
+		depends on TARGET_x86
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
+		select PACKAGE_kmod-e1000
+		default y if BUILDBOT
+
 	config VDI_IMAGES
 		bool "Build VirtualBox image files (VDI)"
 		depends on TARGET_x86
