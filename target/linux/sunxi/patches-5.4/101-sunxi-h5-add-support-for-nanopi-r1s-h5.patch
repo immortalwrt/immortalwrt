@@ -24,7 +24,7 @@
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-orangepi-zero-plus.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-@@ -0,0 +1,201 @@
+@@ -0,0 +1,202 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (C) 2021 AmadeusGhost <amadeus@jmu.edu.cn>
@@ -67,14 +67,14 @@
 +			gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>;
 +		};
 +
-+		wan {
-+			label = "nanopi:green:wan";
-+			gpios = <&pio 6 11 GPIO_ACTIVE_HIGH>;
-+		};
-+
 +		lan {
 +			label = "nanopi:green:lan";
 +			gpios = <&pio 0 9 GPIO_ACTIVE_HIGH>;
++		};
++
++		wan {
++			label = "nanopi:green:wan";
++			gpios = <&pio 6 11 GPIO_ACTIVE_HIGH>;
 +		};
 +	};
 +
@@ -175,9 +175,10 @@
 +	status = "okay";
 +
 +	eeprom@51 {
-+		compatible = "microchip,24c02";
-+		reg = <0x51>;
++		compatible = "atmel,24c02";
 +		pagesize = <16>;
++		reg = <0x51>;
++		read-only;
 +	};
 +};
 +

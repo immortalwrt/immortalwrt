@@ -62,10 +62,12 @@ TARGET_DEVICES += alfa-network_tube-e4g
 define Device/amit_jboot
   DLINK_IMAGE_OFFSET := 0x10000
   KERNEL := $(KERNEL_DTB)
+  KERNEL_SIZE := 2048k
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := mkdlinkfw | pad-rootfs | append-metadata
   IMAGE/factory.bin := mkdlinkfw | pad-rootfs | mkdlinkfw-factory
   DEVICE_PACKAGES := jboot-tools kmod-usb2 kmod-usb-ohci
+  DEFAULT := n
 endef
 
 define Device/asus_rp-n53
@@ -1096,6 +1098,24 @@ define Device/vonets_var11n-300
 endef
 TARGET_DEVICES += vonets_var11n-300
 
+define Device/wavlink_wl-wn530hg4
+  SOC := mt7620a
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Wavlink
+  DEVICE_MODEL := WL-WN530HG4
+  DEVICE_PACKAGES := kmod-mt76x2
+endef
+TARGET_DEVICES += wavlink_wl-wn530hg4
+
+define Device/wavlink_wl-wn579x3
+  SOC := mt7620a
+  IMAGE_SIZE := 7744k
+  DEVICE_VENDOR := Wavlink
+  DEVICE_MODEL := WL-WN579X3
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-phy-realtek
+endef
+TARGET_DEVICES += wavlink_wl-wn579x3
+
 define Device/wrtnode_wrtnode
   SOC := mt7620n
   IMAGE_SIZE := 16064k
@@ -1133,16 +1153,26 @@ define Device/xiaomi_miwifi-r3
 endef
 TARGET_DEVICES += xiaomi_miwifi-r3
 
-define Device/youku_yk1
+define Device/youku_yk-l1
   SOC := mt7620a
   IMAGE_SIZE := 32448k
-  DEVICE_VENDOR := YOUKU
-  DEVICE_MODEL := YK1
+  DEVICE_VENDOR := Youku
+  DEVICE_MODEL := YK-L1
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 \
 	kmod-usb-ledtrig-usbport
-  SUPPORTED_DEVICES += youku-yk1
+  SUPPORTED_DEVICES += youku-yk1 youku,yk1
 endef
-TARGET_DEVICES += youku_yk1
+TARGET_DEVICES += youku_yk-l1
+
+define Device/youku_yk-l1c
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Youku
+  DEVICE_MODEL := YK-L1c
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 \
+	kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += youku_yk-l1c
 
 define Device/yukai_bocco
   SOC := mt7620a

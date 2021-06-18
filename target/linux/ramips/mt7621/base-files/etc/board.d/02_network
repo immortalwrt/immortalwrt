@@ -9,6 +9,23 @@ ramips_setup_interfaces()
 	local board="$1"
 
 	case $board in
+	ampedwireless,ally-00x19k|\
+	edimax,re23s|\
+	mikrotik,routerboard-m11g|\
+	netgear,ex6150|\
+	sercomm,na502|\
+	thunder,timecloud|\
+	tplink,re350-v1|\
+	tplink,re500-v1|\
+	tplink,re650-v1|\
+	ubnt,unifi-nanohd)
+		ucidef_set_interface_lan "lan"
+		;;
+	ampedwireless,ally-r1900k|\
+	hiwifi,hc5962|\
+	xiaomi,mir3p)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+		;;
 	asiarf,ap7621-001|\
 	winstars,ws-wn583a6)
 		ucidef_set_interfaces_lan_wan "lan" "wan"
@@ -32,20 +49,6 @@ ramips_setup_interfaces()
 	dlink,dir-882-r1|\
 	motorola,mr2600)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rai0" "wan"
-		;;
-	edimax,re23s|\
-	mikrotik,routerboard-m11g|\
-	netgear,ex6150|\
-	thunder,timecloud|\
-	tplink,re350-v1|\
-	tplink,re500-v1|\
-	tplink,re650-v1|\
-	ubnt,unifi-nanohd)
-		ucidef_set_interface_lan "lan"
-		;;
-	hiwifi,hc5962|\
-	xiaomi,mir3p)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
 		;;
 	gehua,ghl-r-001)
 		ucidef_add_switch "switch0" \
@@ -126,6 +129,15 @@ ramips_setup_macs()
 	local label_mac=""
 
 	case $board in
+	ampedwireless,ally-00x19k)
+		lan_mac=$(mtd_get_mac_ascii hwconfig HW.LAN.MAC.Address)
+		label_mac=$lan_mac
+		;;
+	ampedwireless,ally-r1900k)
+		lan_mac=$(mtd_get_mac_ascii hwconfig HW.LAN.MAC.Address)
+		wan_mac=$(mtd_get_mac_ascii hwconfig HW.WAN.MAC.Address)
+		label_mac=$lan_mac
+		;;
 	asus,rt-ac65p|\
 	asus,rt-ac85p)
 		wan_mac=$(mtd_get_mac_ascii u-boot-env et1macaddr)
@@ -168,8 +180,10 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
+	linksys,e5600|\
 	linksys,ea7300-v1|\
-	linksys,ea7500-v2)
+	linksys,ea7500-v2|\
+	linksys,ea8100-v1)
 		lan_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
 		wan_mac=$lan_mac
 		label_mac=$lan_mac

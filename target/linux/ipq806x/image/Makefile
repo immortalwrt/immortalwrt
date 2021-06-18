@@ -92,6 +92,19 @@ define Device/ZyXELImage
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to $$$$(BLOCKSIZE) | sysupgrade-tar rootfs=$$$$@ | append-metadata
 endef
 
+define Device/askey_rt4230w-rev6
+	$(call Device/LegacyImage)
+	DEVICE_VENDOR := Askey
+	DEVICE_MODEL := RT4230W
+	DEVICE_VARIANT := REV6
+	SOC := qcom-ipq8065
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	KERNEL_IN_UBI := 1
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
+endef
+TARGET_DEVICES += askey_rt4230w-rev6
+
 define Device/asrock_g10
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
@@ -349,7 +362,7 @@ define Device/ruijie_rg-mtfi-m520
 	IMAGE/mmcblk0p2-kernel.bin := append-kernel | pad-to $$$${KERNEL_SIZE}
 	IMAGE/mmcblk0p3-rootfs.bin := append-rootfs | pad-rootfs
 	DEVICE_PACKAGES := ath10k-firmware-qca988x-ct e2fsprogs f2fs-tools \
-	kmod-gpio-pca953x kmod-hwmon-lm75 kmod-fs-ext4 kmod-fs-f2fs kmod-rtc-pcf8563 losetup
+	kmod-hwmon-lm75 kmod-fs-ext4 kmod-fs-f2fs kmod-rtc-pcf8563 losetup
 endef
 TARGET_DEVICES += ruijie_rg-mtfi-m520
 

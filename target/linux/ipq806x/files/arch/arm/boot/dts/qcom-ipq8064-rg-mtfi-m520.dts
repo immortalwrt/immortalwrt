@@ -16,10 +16,24 @@
 	aliases {
 		mdio-gpio0 = &mdio0;
 		sdcc1 = &sdcc1;
+
+		led-boot = &led_sys;
+		led-failsafe = &led_sys;
+		led-running = &led_sys;
+		led-upgrade = &led_sys;
 	};
 
 	chosen {
 		bootargs = "root=/dev/mmcblk0p3 rootfstype=squashfs,ext4 rootwait noinitrd";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_sys: sys {
+			label = "green:sys";
+			gpios = <&gpio_ext 15 GPIO_ACTIVE_LOW>;
+		};
 	};
 
 	keys {
@@ -42,15 +56,6 @@
 			function = "gpio";
 			drive-strength = <2>;
 			bias-pull-up;
-		};
-	};
-
-	led_pins: led_pins {
-		mux {
-			pins = "gpio7", "gpio8", "gpio9", "gpio53";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-down;
 		};
 	};
 
@@ -111,21 +116,21 @@
 		status = "okay";
 
 		lm75@48 {
-			status = "okay";
 			compatible = "lm75";
 			reg = <0x48>;
 		};
 
 		pcf8563: rtc@51 {
-			status = "okay";
 			compatible = "nxp,pcf8563";
 			reg = <0x51>;
 		};
 
-		tca9539@74 {
-			status = "okay";
+		gpio_ext: tca9539@74 {
 			compatible = "ti,tca9539";
 			reg = <0x74>;
+
+			gpio-controller;
+			#gpio-cells = <2>;
 		};
 	};
 };

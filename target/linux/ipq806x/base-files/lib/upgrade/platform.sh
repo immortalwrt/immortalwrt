@@ -10,15 +10,7 @@ platform_check_image() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
-	asrock,g10)
-		asrock_upgrade_prepare
-		nand_do_upgrade "$ARGV"
-		;;
-	buffalo,wxr-2533dhp)
-		buffalo_upgrade_prepare_ubi
-		CI_ROOTPART="ubi_rootfs"
-		nand_do_upgrade "$ARGV"
-		;;
+	askey,rt4230w-rev6 |\
 	compex,wpq864 |\
 	netgear,d7800 |\
 	netgear,r7500 |\
@@ -26,6 +18,15 @@ platform_do_upgrade() {
 	netgear,r7800 |\
 	qcom,ipq8064-ap148 |\
 	qcom,ipq8064-ap161)
+		nand_do_upgrade "$ARGV"
+		;;
+	asrock,g10)
+		asrock_upgrade_prepare
+		nand_do_upgrade "$ARGV"
+		;;
+	buffalo,wxr-2533dhp)
+		buffalo_upgrade_prepare_ubi
+		CI_ROOTPART="ubi_rootfs"
 		nand_do_upgrade "$ARGV"
 		;;
 	edgecore,ecw5410)

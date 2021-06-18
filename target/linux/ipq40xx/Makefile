@@ -16,7 +16,7 @@ include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
 	kmod-usb-dwc3-qcom \
 	kmod-leds-gpio kmod-gpio-button-hotplug swconfig \
-	kmod-ath10k wpad-openssl \
+	kmod-ath10k wpad-openssl uboot-envtools \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019 \
 	autocore-arm automount autosamba shadowsocksr-libev-server \
 	luci-app-zerotier openssh-sftp-server \
