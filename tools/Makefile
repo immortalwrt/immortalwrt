@@ -24,7 +24,7 @@ endif
 tools-y += autoconf autoconf-archive automake bc bison cmake cpio dosfstools
 tools-y += e2fsprogs fakeroot findutils firmware-utils flex gengetopt
 tools-y += libressl libtool lzma m4 make-ext4fs missing-macros mkimage
-tools-y += mklibs mm-macros mtd-utils mtools padjffs2 patch-image patchelf
+tools-y += mklibs mm-macros mtd-utils mtools ninja padjffs2 patch-image patchelf
 tools-y += pkg-config quilt squashfskit4 sstrip ucl upx xxd zip zlib zstd
 tools-$(BUILD_B43_TOOLS) += b43-tools
 tools-$(BUILD_ISL) += isl
@@ -35,7 +35,6 @@ tools-$(CONFIG_TARGET_ar71xx)$(CONFIG_TARGET_ath79) += squashfs
 tools-$(CONFIG_TARGET_mxs) += elftosb sdimage
 tools-$(CONFIG_TARGET_orion_generic) += wrt350nv2-builder upslug2
 tools-$(CONFIG_TARGET_tegra) += cbootimage cbootimage-configs
-tools-$(CONFIG_TARGET_x86) += qemu
 tools-$(CONFIG_USES_MINOR) += kernel2minor
 tools-$(CONFIG_USE_SPARSE) += sparse
 
@@ -46,7 +45,7 @@ $(curdir)/b43-tools/compile := $(curdir)/bison/compile
 $(curdir)/bc/compile := $(curdir)/bison/compile $(curdir)/libtool/compile
 $(curdir)/bison/compile := $(curdir)/flex/compile
 $(curdir)/cbootimage/compile += $(curdir)/automake/compile
-$(curdir)/cmake/compile += $(curdir)/libressl/compile
+$(curdir)/cmake/compile += $(curdir)/libressl/compile $(curdir)/ninja/compile
 $(curdir)/dosfstools/compile := $(curdir)/autoconf/compile $(curdir)/automake/compile
 $(curdir)/e2fsprogs/compile := $(curdir)/libtool/compile
 $(curdir)/fakeroot/compile := $(curdir)/libtool/compile
@@ -69,7 +68,6 @@ $(curdir)/mpfr/compile := $(curdir)/gmp/compile
 $(curdir)/mtd-utils/compile := $(curdir)/libtool/compile $(curdir)/e2fsprogs/compile $(curdir)/zlib/compile
 $(curdir)/padjffs2/compile := $(curdir)/findutils/compile
 $(curdir)/patchelf/compile := $(curdir)/libtool/compile
-$(curdir)/qemu/compile := $(curdir)/e2fsprogs/compile $(curdir)/zlib/compile
 $(curdir)/quilt/compile := $(curdir)/autoconf/compile $(curdir)/findutils/compile
 $(curdir)/sdcc/compile := $(curdir)/bison/compile
 $(curdir)/squashfs/compile := $(curdir)/lzma-old/compile
@@ -85,7 +83,7 @@ ifneq ($(HOST_OS),Linux)
 endif
 
 ifneq ($(CONFIG_CCACHE)$(CONFIG_SDK),)
-$(foreach tool, $(filter-out xz zstd patch pkgconf libressl cmake,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/compile))
+$(foreach tool, $(filter-out xz zstd patch pkg-config libressl ninja cmake,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/compile))
 tools-y += ccache
 $(curdir)/ccache/compile := $(curdir)/zstd/compile
 endif

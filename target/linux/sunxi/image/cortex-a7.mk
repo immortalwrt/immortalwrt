@@ -26,7 +26,7 @@ define Device/friendlyarm_nanopi-m1-plus
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi M1 Plus
   DEVICE_PACKAGES:=kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-	kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic
+	kmod-brcmfmac cypress-firmware-43430-sdio wpad-basic
   SOC := sun8i-h3
 endef
 TARGET_DEVICES += friendlyarm_nanopi-m1-plus
@@ -42,7 +42,7 @@ define Device/friendlyarm_nanopi-neo-air
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi NEO Air
   DEVICE_PACKAGES := kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-	kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic
+	kmod-brcmfmac cypress-firmware-43430-sdio wpad-basic
   SOC := sun8i-h3
 endef
 TARGET_DEVICES += friendlyarm_nanopi-neo-air
@@ -51,7 +51,7 @@ define Device/friendlyarm_nanopi-r1
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R1
   DEVICE_PACKAGES := kmod-rtc-sunxi kmod-leds-gpio kmod-ledtrig-heartbeat \
-	kmod-brcmfmac brcmfmac-firmware-43430-sdio wpad-basic \
+	kmod-brcmfmac cypress-firmware-43430-sdio wpad-basic \
 	kmod-usb2 kmod-usb-net kmod-usb-net-rtl8152
   SOC := sun8i-h3
 endef

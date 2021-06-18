@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libubox
-PKG_RELEASE=1
+PKG_RELEASE=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/libubox.git
@@ -9,6 +9,8 @@ PKG_MIRROR_HASH:=cb941cd33f43b38ef1a1f2b4fd212e0bb21c100dcdd2ab1976f8cc2071566d3
 PKG_SOURCE_DATE:=2020-07-11
 PKG_SOURCE_VERSION:=f4e9bf73ac5c0ee6b8f240e2a2100e70ca56d705
 CMAKE_INSTALL:=1
+
+PKG_FLAGS := nonshared
 
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=
@@ -64,7 +66,7 @@ define Package/libubox-lua
 endef
 
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
-CMAKE_OPTIONS = \
+CMAKE_OPTIONS += \
 	-DLUAPATH=/usr/lib/lua
 
 define Package/libubox/install
