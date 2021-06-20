@@ -22,8 +22,6 @@ Link: https://lore.kernel.org/r/20191219172823.1652600-2-anarsoul@gmail.com
  4 files changed, 662 insertions(+)
  create mode 100644 drivers/thermal/sun8i_thermal.c
 
-diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
-index dc36941aef6e5..5a05db5438d60 100644
 --- a/drivers/thermal/Kconfig
 +++ b/drivers/thermal/Kconfig
 @@ -262,6 +262,20 @@ config SPEAR_THERMAL
@@ -47,11 +45,9 @@ index dc36941aef6e5..5a05db5438d60 100644
  config ROCKCHIP_THERMAL
  	tristate "Rockchip thermal driver"
  	depends on ARCH_ROCKCHIP || COMPILE_TEST
-diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
-index d502a597a7174..9fb88e26fb102 100644
 --- a/drivers/thermal/Makefile
 +++ b/drivers/thermal/Makefile
-@@ -31,6 +31,7 @@ thermal_sys-$(CONFIG_DEVFREQ_THERMAL) += devfreq_cooling.o
+@@ -31,6 +31,7 @@ thermal_sys-$(CONFIG_DEVFREQ_THERMAL) +=
  obj-y				+= broadcom/
  obj-$(CONFIG_THERMAL_MMIO)		+= thermal_mmio.o
  obj-$(CONFIG_SPEAR_THERMAL)	+= spear_thermal.o

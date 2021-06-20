@@ -14,7 +14,7 @@
            - const: gemei,g9
 --- a/arch/arm64/boot/dts/allwinner/Makefile
 +++ b/arch/arm64/boot/dts/allwinner/Makefile
-@@ -17,6 +17,7 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-or
+@@ -17,6 +17,7 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-em
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-libretech-all-h3-cc.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-nanopi-neo2.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-nanopi-neo-plus2.dtb

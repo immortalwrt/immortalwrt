@@ -23,8 +23,6 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  arch/arm/boot/dts/sun8i-h3.dtsi | 25 +++++++++++++++++++++++++
  1 file changed, 25 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index 20217e2ca4d3a..e83aa6866e7ea 100644
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
 @@ -41,6 +41,7 @@

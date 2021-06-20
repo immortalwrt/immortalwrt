@@ -14,8 +14,6 @@ Link: https://lore.kernel.org/r/20200717160053.31191-6-wens@kernel.org
  arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi | 30 ++++++++++++++++++++
  1 file changed, 30 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
-index 09523f6011c5e..6735e316a39c3 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 @@ -42,6 +42,8 @@

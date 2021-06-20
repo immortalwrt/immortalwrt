@@ -13,8 +13,6 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  arch/arm/boot/dts/sunxi-h3-h5.dtsi |  6 ++++++
  2 files changed, 26 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index b4f1673df9ee0..20217e2ca4d3a 100644
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
 @@ -186,6 +186,26 @@
@@ -44,8 +42,6 @@ index b4f1673df9ee0..20217e2ca4d3a 100644
  	};
  };
  
-diff --git a/arch/arm/boot/dts/sunxi-h3-h5.dtsi b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-index 0afea59486c24..6e68ed8310159 100644
 --- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
 +++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
 @@ -230,6 +230,12 @@
