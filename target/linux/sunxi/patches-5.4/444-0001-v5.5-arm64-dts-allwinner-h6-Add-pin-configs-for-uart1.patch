@@ -1,0 +1,33 @@
+From cd380e0d00b2b21506f9319a626b6205e9d64aae Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Mon, 7 Oct 2019 22:31:51 +0200
+Subject: [PATCH] arm64: dts: allwinner: h6: Add pin configs for uart1
+
+Orange Pi 3 uses UART1 for bluetooth. Add pinconfigs so that we can use
+them.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -341,6 +341,16 @@
+ 				pins = "PH0", "PH1";
+ 				function = "uart0";
+ 			};
++
++			uart1_pins: uart1-pins {
++				pins = "PG6", "PG7";
++				function = "uart1";
++			};
++
++			uart1_rts_cts_pins: uart1-rts-cts-pins {
++				pins = "PG8", "PG9";
++				function = "uart1";
++			};
+ 		};
+ 
+ 		gic: interrupt-controller@3021000 {

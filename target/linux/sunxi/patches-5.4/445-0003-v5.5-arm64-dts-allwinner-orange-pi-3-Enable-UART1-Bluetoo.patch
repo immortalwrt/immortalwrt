@@ -1,0 +1,62 @@
+From 351170463471d2037aa034625d05f185e6d85f80 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Mon, 7 Oct 2019 22:31:52 +0200
+Subject: [PATCH] arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
+
+The board contains AP6256 WiFi/BT module that has its bluetooth part
+connected to SoC's UART1 port. Enable this port, and add node for the
+bluetooth device.
+
+Bluetooth part is named bcm4345c5.
+
+You'll need a BCM4345C5.hcd firmware file that can be found in the
+Xulongs's repository for H6:
+
+https://github.com/orangepi-xunlong/OrangePiH6_external/tree/master/ap6256
+
+The driver expects the firmware at the following path relative to the
+firmware directory:
+
+  brcm/BCM4345C5.hcd
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -15,6 +15,7 @@
+ 
+ 	aliases {
+ 		serial0 = &uart0;
++		serial1 = &uart1;
+ 	};
+ 
+ 	chosen {
+@@ -269,6 +270,24 @@
+ 	status = "okay";
+ };
+ 
++/* There's the BT part of the AP6256 connected to that UART */
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
++	uart-has-rtscts;
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm4345c5";
++		clocks = <&rtc 1>;
++		clock-names = "lpo";
++		device-wakeup-gpios = <&r_pio 1 2 GPIO_ACTIVE_HIGH>; /* PM2 */
++		host-wakeup-gpios = <&r_pio 1 1 GPIO_ACTIVE_HIGH>; /* PM1 */
++		shutdown-gpios = <&r_pio 1 4 GPIO_ACTIVE_HIGH>; /* PM4 */
++		max-speed = <1500000>;
++	};
++};
++
+ &usb2otg {
+ 	/*
+ 	 * This board doesn't have a controllable VBUS even though it

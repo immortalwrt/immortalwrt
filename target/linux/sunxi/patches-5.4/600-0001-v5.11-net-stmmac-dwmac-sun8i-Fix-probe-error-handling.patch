@@ -1,0 +1,87 @@
+From 7eeecc4b1f480c7ba1932cb9a7693f8c452640f2 Mon Sep 17 00:00:00 2001
+From: Samuel Holland <samuel@sholland.org>
+Date: Sun, 3 Jan 2021 05:17:41 -0600
+Subject: net: stmmac: dwmac-sun8i: Fix probe error handling
+
+stmmac_pltfr_remove does three things in one function, making it
+inapproprate for unwinding the steps in the probe function. Currently,
+a failure before the call to stmmac_dvr_probe would leak OF node
+references due to missing a call to stmmac_remove_config_dt. And an
+error in stmmac_dvr_probe would cause the driver to attempt to remove a
+netdevice that was never added. Fix these by reordering the init and
+splitting out the error handling steps.
+
+Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
+Fixes: 40a1dcee2d18 ("net: ethernet: dwmac-sun8i: Use the correct function in exit path")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 25 ++++++++++++++---------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
+
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -1127,10 +1127,6 @@ static int sun8i_dwmac_probe(struct plat
+ 	if (ret)
+ 		return ret;
+ 
+-	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
+-	if (IS_ERR(plat_dat))
+-		return PTR_ERR(plat_dat);
+-
+ 	gmac = devm_kzalloc(dev, sizeof(*gmac), GFP_KERNEL);
+ 	if (!gmac)
+ 		return -ENOMEM;
+@@ -1194,11 +1190,15 @@ static int sun8i_dwmac_probe(struct plat
+ 	ret = of_get_phy_mode(dev->of_node);
+ 	if (ret < 0)
+ 		return -EINVAL;
+-	plat_dat->interface = ret;
++
++	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
++	if (IS_ERR(plat_dat))
++		return PTR_ERR(plat_dat);
+ 
+ 	/* platform data specifying hardware features and callbacks.
+ 	 * hardware features were copied from Allwinner drivers.
+ 	 */
++	plat_dat->interface = ret;
+ 	plat_dat->rx_coe = STMMAC_RX_COE_TYPE2;
+ 	plat_dat->tx_coe = 1;
+ 	plat_dat->has_sun8i = true;
+@@ -1211,7 +1211,7 @@ static int sun8i_dwmac_probe(struct plat
+ 
+ 	ret = sun8i_dwmac_init(pdev, plat_dat->bsp_priv);
+ 	if (ret)
+-		return ret;
++		goto dwmac_deconfig;
+ 
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret)
+@@ -1234,7 +1234,7 @@ static int sun8i_dwmac_probe(struct plat
+ 	} else {
+ 		ret = sun8i_dwmac_reset(priv);
+ 		if (ret)
+-			goto dwmac_exit;
++			goto dwmac_remove;
+ 	}
+ 
+ 	return ret;
+@@ -1242,9 +1242,14 @@ dwmac_mux:
+ 	reset_control_put(gmac->rst_ephy);
+ 	clk_put(gmac->ephy_clk);
+ 	sun8i_dwmac_unset_syscon(gmac);
++dwmac_remove:
++	stmmac_dvr_remove(&pdev->dev);
+ dwmac_exit:
+-	stmmac_pltfr_remove(pdev);
+-return ret;
++	sun8i_dwmac_exit(pdev, gmac);
++dwmac_deconfig:
++	stmmac_remove_config_dt(pdev, plat_dat);
++
++	return ret;
+ }
+ 
+ static int sun8i_dwmac_remove(struct platform_device *pdev)

@@ -237,6 +237,18 @@ define U-Boot/orangepi_2
   BUILD_DEVICES:=xunlong_orangepi-2
 endef
 
+define U-Boot/orangepi_3
+  BUILD_SUBTARGET:=cortexa53
+  NAME:=Orange Pi 3 (H6)
+  DEPENDS:=+PACKAGE_u-boot-orangepi_3:arm-trusted-firmware-sunxi-h6 \
+    +@PACKAGE_u-boot-orangepi_3:ARM_TRUSTED_FIRMAWRE_SUNXI_WRAPPED_PCIE \
+    +PACKAGE_u-boot-orangepi_3:aw-el2-barebone
+  BUILD_DEVICES:=xunlong_orangepi-3
+  UENV:=h6
+  ATF:=h6
+  HYP:=1
+endef
+
 define U-Boot/pangolin
   BUILD_SUBTARGET:=cortexa7
   NAME:=Theobroma A31-yQ7 devboard
@@ -375,6 +387,7 @@ UBOOT_TARGETS := \
 	orangepi_pc_plus \
 	orangepi_plus \
 	orangepi_2 \
+	orangepi_3 \
 	orangepi_pc2 \
 	pangolin \
 	pine64_plus \
@@ -385,7 +398,8 @@ UBOOT_TARGETS := \
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_MAKE_FLAGS += \
-	BL31=$(STAGING_DIR_IMAGE)/bl31_sun50i_$(ATF).bin
+	BL31=$(STAGING_DIR_IMAGE)/bl31_sun50i_$(ATF).bin \
+	$(if $(HYP),HYP=$(STAGING_DIR_IMAGE)/hyp.bin)
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)

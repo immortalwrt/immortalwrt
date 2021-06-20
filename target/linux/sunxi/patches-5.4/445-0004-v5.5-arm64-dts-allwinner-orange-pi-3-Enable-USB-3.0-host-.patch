@@ -1,0 +1,39 @@
+From b5d84ff8ae180e443623ede8a16852f671b0bb05 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Sun, 20 Oct 2019 15:42:29 +0200
+Subject: [PATCH] arm64: dts: allwinner: orange-pi-3: Enable USB 3.0 host
+ support
+
+Enable Allwinner's USB 3.0 phy and the host controller. Orange Pi 3
+board has GL3510 USB 3.0 4-port hub connected to the SoC's USB 3.0
+port. All four ports are exposed via USB3-A connectors. VBUS is
+always on, since it's powered directly from DCIN (VCC-5V) and
+not switchable.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -95,6 +95,10 @@
+ 	status = "okay";
+ };
+ 
++&dwc3 {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -304,3 +308,7 @@
+ 	usb3_vbus-supply = <&reg_vcc5v>;
+ 	status = "okay";
+ };
++
++&usb3phy {
++	status = "okay";
++};

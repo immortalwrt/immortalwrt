@@ -1,0 +1,57 @@
+From 8a3a9535189d908f7e325238c9f09069d4fe9b8f Mon Sep 17 00:00:00 2001
+From: Yangtao Li <tiny.windzz@gmail.com>
+Date: Mon, 20 Apr 2020 15:00:13 +0200
+Subject: arm64: dts: allwinner: h6: Add clock to CPU cores
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The ARM CPU cores are fed by the CPU clock from the CCU. Add a
+reference to the clock for each CPU core, along with the clock
+transition latency.
+
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+Signed-off-by: Clément Péron <peron.clem@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -27,6 +27,8 @@
+ 			device_type = "cpu";
+ 			reg = <0>;
+ 			enable-method = "psci";
++			clocks = <&ccu CLK_CPUX>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -34,6 +36,8 @@
+ 			device_type = "cpu";
+ 			reg = <1>;
+ 			enable-method = "psci";
++			clocks = <&ccu CLK_CPUX>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -41,6 +45,8 @@
+ 			device_type = "cpu";
+ 			reg = <2>;
+ 			enable-method = "psci";
++			clocks = <&ccu CLK_CPUX>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -48,6 +54,8 @@
+ 			device_type = "cpu";
+ 			reg = <3>;
+ 			enable-method = "psci";
++			clocks = <&ccu CLK_CPUX>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
+ 		};
+ 	};
+ 

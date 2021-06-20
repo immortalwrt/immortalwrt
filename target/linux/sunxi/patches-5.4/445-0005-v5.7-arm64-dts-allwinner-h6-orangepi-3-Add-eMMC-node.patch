@@ -1,0 +1,34 @@
+From 221a690420fdad808eb0b39eebb19d4eda95568c Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Mon, 10 Feb 2020 18:40:07 +0100
+Subject: [PATCH] arm64: dts: allwinner: h6: orangepi-3: Add eMMC node
+
+OrangePi 3 can optionally have 8 GiB eMMC (soldered on board). Because
+those pins are dedicated to eMMC exclusively, node can be added for both
+variants (with and without eMMC). Kernel will then scan bus for presence
+of eMMC and act accordingly.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -141,6 +141,15 @@
+ 	};
+ };
+ 
++&mmc2 {
++	vmmc-supply = <&reg_cldo1>;
++	vqmmc-supply = <&reg_bldo2>;
++	cap-mmc-hw-reset;
++	non-removable;
++	bus-width = <8>;
++	status = "okay";
++};
++
+ &ohci0 {
+ 	status = "okay";
+ };

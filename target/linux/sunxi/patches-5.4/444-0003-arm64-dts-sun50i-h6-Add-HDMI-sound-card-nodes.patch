@@ -1,0 +1,66 @@
+From 2a63f7145be53b10c0e0c3b1be2e486a6bcadd51 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman
+Date: Fri, 20 Sep 2019 19:23:55 +0200
+Subject: arm64: dts: sun50i-h6: Add HDMI sound card nodes
+
+From Jernej / LibreELEC.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 31 ++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -109,6 +109,23 @@
+ 			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+ 	};
+ 
++	sound_hdmi: sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,name = "allwinner-hdmi";
++		simple-audio-card,mclk-fs = <256>;
++
++		simple-audio-card,codec {
++			sound-dai = <&hdmi>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&i2s1>;
++			dai-tdm-slot-num = <2>;
++			dai-tdm-slot-width = <32>;
++		};
++	};
++
+ 	soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <1>;
+@@ -536,6 +553,19 @@
+ 			status = "disabled";
+ 		};
+ 
++		i2s1: i2s@5091000 {
++			#sound-dai-cells = <0>;
++			compatible = "allwinner,sun50i-h6-i2s";
++			reg = <0x05091000 0x1000>;
++			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_I2S1>, <&ccu CLK_I2S1>;
++			clock-names = "apb", "mod";
++			dmas = <&dma 4>;
++			resets = <&ccu RST_BUS_I2S1>;
++			dma-names = "tx";
++			allwinner,playback-channels = <8>;
++		};
++
+ 		usb2otg: usb@5100000 {
+ 			compatible = "allwinner,sun50i-h6-musb",
+ 				     "allwinner,sun8i-a33-musb";
+@@ -655,6 +685,7 @@
+ 		};
+ 
+ 		hdmi: hdmi@6000000 {
++			#sound-dai-cells = <0>;
+ 			compatible = "allwinner,sun50i-h6-dw-hdmi";
+ 			reg = <0x06000000 0x10000>;
+ 			reg-io-width = <1>;

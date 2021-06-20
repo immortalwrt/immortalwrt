@@ -1,0 +1,34 @@
+From 87c558ad8da5661fcad961c4f92b9dd30db50d0e Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@immortalwrt.org>
+Date: Sat, 19 Jun 2021 12:09:34 +0800
+Subject: [PATCH] arm64: dts: allwinner: h6: orangepi-3: add status LED aliases
+
+Use the SYS LED on the casing for showing system status.
+
+Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -18,6 +18,10 @@
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 		ethernet0 = &emac;
++		led-boot = &sys_led;
++		led-failsafe = &sys_led;
++		led-running = &sys_led;
++		led-upgrade = &sys_led;
+ 	};
+ 
+ 	chosen {
+@@ -39,7 +43,7 @@
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		power {
++		sys_led: power {
+ 			label = "orangepi:red:power";
+ 			gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
+ 			default-state = "on";

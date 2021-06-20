@@ -1,0 +1,83 @@
+From 9f8a93b742e99dd93ca888161909e7245f1c7269 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Mon, 20 Apr 2020 15:00:14 +0200
+Subject: arm64: dts: allwinner: h6: Add thermal trip points/cooling map
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This enables passive cooling by down-regulating CPU voltage
+and frequency.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+Signed-off-by: Clément Péron <peron.clem@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -29,6 +29,7 @@
+ 			enable-method = "psci";
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -38,6 +39,7 @@
+ 			enable-method = "psci";
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -47,6 +49,7 @@
+ 			enable-method = "psci";
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -56,6 +59,7 @@
+ 			enable-method = "psci";
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
++			#cooling-cells = <2>;
+ 		};
+ 	};
+ 
+@@ -842,6 +846,30 @@
+ 			polling-delay-passive = <0>;
+ 			polling-delay = <0>;
+ 			thermal-sensors = <&ths 0>;
++
++			trips {
++				cpu_alert: cpu-alert {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++
++				cpu-crit {
++					temperature = <100000>;
++					hysteresis = <0>;
++					type = "critical";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&cpu_alert>;
++					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++							 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++							 <&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++							 <&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++			};
+ 		};
+ 
+ 		gpu-thermal {
