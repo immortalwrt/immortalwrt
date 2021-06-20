@@ -52,6 +52,9 @@ platform_do_upgrade() {
 		CI_KERNPART="bootkernel2"
 		nand_do_upgrade "$1"
 		;;
+	ruijie,rg-mtfi-m520)
+		ruijie_do_upgrade "$1"
+		;;
 	tplink,ad7200 |\
 	tplink,c2600)
 		PART_NAME="os-image:rootfs"
