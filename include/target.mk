@@ -47,7 +47,6 @@ DEFAULT_PACKAGES.router:=\
 	firewall \
 	ip6tables \
 	iptables \
-	kmod-ipt-offload \
 	odhcp6c \
 	odhcpd-ipv6only \
 	ppp \
