@@ -46,7 +46,6 @@ DEFAULT_PACKAGES.router:=\
 	dnsmasq-full \
 	firewall \
 	iptables \
-	kmod-ipt-offload \
 	ppp \
 	ppp-mod-pppoe
 # For easy usage
