@@ -1,7 +1,6 @@
 #!/bin/sh
 . /lib/netifd/netifd-wireless.sh
 . /lib/netifd/hostapd.sh
-. /lib/netifd/mac80211.sh
 
 init_wireless_driver "$@"
 
@@ -117,7 +116,7 @@ mac80211_add_he_capabilities() {
 		set -- $capab
 		[ "$(($4))" -gt 0 ] || continue
 		[ "$(((0x$2) & $3))" -gt 0 ] || {
-			eval "$4=0"
+			eval "$1=0"
 			continue
 		}
 		append base_cfg "$1=1" "$N"
@@ -546,7 +545,7 @@ mac80211_generate_mac() {
 find_phy() {
 	[ -n "$phy" -a -d /sys/class/ieee80211/$phy ] && return 0
 	[ -n "$path" ] && {
-		phy="$(mac80211_path_to_phy "$path")"
+		phy="$(iwinfo nl80211 phyname "path=$path")"
 		[ -n "$phy" ] && return 0
 	}
 	[ -n "$macaddr" ] && {
@@ -1022,10 +1021,8 @@ drv_mac80211_setup() {
 		return 1
 	}
 
-	[ -z "$(uci -q -P /var/state show wireless._${phy})" ] && {
-		uci -q -P /var/state set wireless._${phy}=phy
-		wireless_set_data phy="$phy"
-	}
+	wireless_set_data phy="$phy"
+	[ -z "$(uci -q -P /var/state show wireless._${phy})" ] && uci -q -P /var/state set wireless._${phy}=phy
 
 	OLDAPLIST=$(uci -q -P /var/state get wireless._${phy}.aplist)
 	OLDSPLIST=$(uci -q -P /var/state get wireless._${phy}.splist)
@@ -1118,6 +1115,7 @@ drv_mac80211_setup() {
 	[ -n "$hostapd_ctrl" ] && {
 		local no_reload=1
 		if [ -n "$(ubus list | grep hostapd.$primary_ap)" ]; then
+			no_reload=0
 			[ "${NEW_MD5}" = "${OLD_MD5}" ] || {
 				ubus call hostapd.$primary_ap reload
 				no_reload=$?
@@ -1192,6 +1190,10 @@ drv_mac80211_teardown() {
 	json_select data
 	json_get_vars phy
 	json_select ..
+	[ -n "$phy" ] || {
+		echo "Bug: PHY is undefined for device '$1'"
+		return 1
+	}
 
 	mac80211_interface_cleanup "$phy"
 	uci -q -P /var/state revert wireless._${phy}
