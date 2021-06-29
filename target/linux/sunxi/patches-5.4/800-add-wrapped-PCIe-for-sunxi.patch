@@ -1,0 +1,89 @@
+From 9e57b0de548676f361ff5085f3b44f48fd91784f Mon Sep 17 00:00:00 2001
+From: Icenowy Zheng <icenowy@aosc.io>
+Date: Sun, 29 Mar 2020 10:56:16 +0800
+Subject: [PATCH] add wrapped PCIe for sunxi
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  |  31 +
+ drivers/pci/controller/dwc/Kconfig            |   8 +
+ drivers/pci/controller/dwc/Makefile           |   1 +
+ .../pci/controller/dwc/pcie-sunxi.c           | 589 ++++++++++++++++++
+ 4 files changed, 629 insertions(+)
+ create mode 100644 drivers/pci/controller/dwc/pcie-sunxi.c
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -13,6 +13,8 @@
+ #include <dt-bindings/reset/sun8i-de2.h>
+ #include <dt-bindings/thermal/thermal.h>
+ 
++/memreserve/ 0x40010000 0x00070000;
++
+ / {
+ 	interrupt-parent = <&gic>;
+ 	#address-cells = <1>;
+@@ -764,6 +766,36 @@
+ 			status = "disabled";
+ 		};
+ 
++		/* On Allwinner H6 PCIe is quirky and needs to be wrapped */
++		pcie: pcie@5400000 {
++			#address-cells = <3>;
++			#size-cells = <2>;
++			compatible = "allwinner,sun50i-h6-pcie";
++			reg = <0x05400000 0x4000>,
++			      <0x05410000 0x10000>;
++			reg-names = "dbi", "config";
++			device_type = "pci";
++			bus-range = <0x00 0xff>;
++			ranges = <0x81000000 0 0          0x05e00000 0 0x00010000 /* downstream I/O */
++				  0x82000000 0 0x05500000 0x05500000 0 0x00800000>; /* non-prefetchable memory */
++			num-lanes = <1>;
++			max-link-speed = <2>;
++			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "msi", "linkup";
++			clocks = <&ccu CLK_PCIE_REF_OUT>,
++				 <&ccu CLK_PCIE_MAXI>,
++				 <&ccu CLK_PCIE_AUX>,
++				 <&ccu CLK_BUS_PCIE>;
++			clock-names = "ref", "axi", "aux", "bus";
++			resets = <&ccu RST_PCIE_POWERUP>, <&ccu RST_BUS_PCIE>;
++			reset-names = "power", "bus";
++			#interrupt-cells = <1>;
++			interrupt-map-mask = <0 0 0 0>;
++			interrupt-map = <0 0 0 1 &gic GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
++		};
++
+ 		hdmi: hdmi@6000000 {
+ 			#sound-dai-cells = <0>;
+ 			compatible = "allwinner,sun50i-h6-dw-hdmi";
+--- a/drivers/pci/controller/dwc/Kconfig
++++ b/drivers/pci/controller/dwc/Kconfig
+@@ -236,6 +236,14 @@ config PCI_MESON
+ 	  and therefore the driver re-uses the DesignWare core functions to
+ 	  implement the driver.
+ 
++config PCIE_SUNXI
++	bool "Allwinner SoCs PCIe controllers"
++	depends on PCI_MSI_IRQ_DOMAIN
++	select PCIE_DW_HOST
++	help
++	  Say Y here it you want PCIe controller support on Allwinner H6, wrapped
++	  to a regular PCIe controller by a hypervisor.
++
+ config PCIE_TEGRA194
+ 	tristate "NVIDIA Tegra194 (and later) PCIe controller"
+ 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
+--- a/drivers/pci/controller/dwc/Makefile
++++ b/drivers/pci/controller/dwc/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_PCIE_KIRIN) += pcie-kirin.o
+ obj-$(CONFIG_PCIE_HISI_STB) += pcie-histb.o
+ obj-$(CONFIG_PCI_MESON) += pci-meson.o
+ obj-$(CONFIG_PCIE_TEGRA194) += pcie-tegra194.o
++obj-$(CONFIG_PCIE_SUNXI) += pcie-sunxi.o
+ obj-$(CONFIG_PCIE_UNIPHIER) += pcie-uniphier.o
+ 
+ # The following drivers are for devices that use the generic ACPI

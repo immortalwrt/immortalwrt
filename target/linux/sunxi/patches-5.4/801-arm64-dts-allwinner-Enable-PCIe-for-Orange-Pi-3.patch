@@ -1,0 +1,44 @@
+From 84110d1e78e57a09a391f24dc69ac8b1c99740e4 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@immortalwrt.org>
+Date: Fri, 11 Jun 2021 15:27:06 +0800
+Subject: [PATCH] arm64: dts: allwinner: Enable PCIe for Orange Pi 3
+
+Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
+---
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts     | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -55,6 +55,16 @@
+ 		};
+ 	};
+ 
++	reg_pcie_slot: pcie-slot-power {
++		compatible = "regulator-fixed";
++		regulator-name = "pcie-slot-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <100000>;
++		gpio = <&pio 2 15 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the DC jack */
+ 		compatible = "regulator-fixed";
+@@ -202,6 +212,14 @@
+ 	status = "okay";
+ };
+ 
++&pcie {
++	vcc-supply = <&reg_bldo2>;
++	vdd-supply = <&reg_dcdcd>;
++	slot-supply = <&reg_pcie_slot>;
++	perst-gpio = <&pio 6 14 GPIO_ACTIVE_LOW>; /* PG14 */
++	status = "okay";
++};
++
+ &pio {
+ 	vcc-pc-supply = <&reg_bldo2>;
+ 	vcc-pd-supply = <&reg_cldo1>;

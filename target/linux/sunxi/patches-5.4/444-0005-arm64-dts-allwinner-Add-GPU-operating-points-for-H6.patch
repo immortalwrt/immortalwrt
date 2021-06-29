@@ -1,0 +1,96 @@
+From f6644778f7384fa954a78f228f5bc9b31aed58ed Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso
+Date: Wed, 29 May 2019 17:32:55 +0200
+Subject: arm64: dts: allwinner: Add GPU operating points for H6
+
+The GPU driver needs them to change the clock frequency and regulator
+voltage depending on the load.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: Clément Péron <peron.clem@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 66 ++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -188,6 +188,71 @@
+ 			allwinner,sram = <&ve_sram 1>;
+ 		};
+ 
++		gpu_opp_table: opp-table2 {
++			compatible = "operating-points-v2";
++
++			opp00 {
++				opp-hz = /bits/ 64 <756000000>;
++				opp-microvolt = <1040000>;
++			};
++			opp01 {
++				opp-hz = /bits/ 64 <624000000>;
++				opp-microvolt = <950000>;
++			};
++			opp02 {
++				opp-hz = /bits/ 64 <576000000>;
++				opp-microvolt = <930000>;
++			};
++			opp03 {
++				opp-hz = /bits/ 64 <540000000>;
++				opp-microvolt = <910000>;
++			};
++			opp04 {
++				opp-hz = /bits/ 64 <504000000>;
++				opp-microvolt = <890000>;
++			};
++			opp05 {
++				opp-hz = /bits/ 64 <456000000>;
++				opp-microvolt = <870000>;
++			};
++			opp06 {
++				opp-hz = /bits/ 64 <432000000>;
++				opp-microvolt = <860000>;
++			};
++			opp07 {
++				opp-hz = /bits/ 64 <420000000>;
++				opp-microvolt = <850000>;
++			};
++			opp08 {
++				opp-hz = /bits/ 64 <408000000>;
++				opp-microvolt = <840000>;
++			};
++			opp09 {
++				opp-hz = /bits/ 64 <384000000>;
++				opp-microvolt = <830000>;
++			};
++			opp10 {
++				opp-hz = /bits/ 64 <360000000>;
++				opp-microvolt = <820000>;
++			};
++			opp11 {
++				opp-hz = /bits/ 64 <336000000>;
++				opp-microvolt = <810000>;
++			};
++			opp12 {
++				opp-hz = /bits/ 64 <312000000>;
++				opp-microvolt = <810000>;
++			};
++			opp13 {
++				opp-hz = /bits/ 64 <264000000>;
++				opp-microvolt = <810000>;
++			};
++			opp14 {
++				opp-hz = /bits/ 64 <216000000>;
++				opp-microvolt = <810000>;
++			};
++		};
++
+ 		gpu: gpu@1800000 {
+ 			compatible = "allwinner,sun50i-h6-mali",
+ 				     "arm,mali-t720";
+@@ -199,6 +264,7 @@
+ 			clocks = <&ccu CLK_GPU>, <&ccu CLK_BUS_GPU>;
+ 			clock-names = "core", "bus";
+ 			resets = <&ccu RST_BUS_GPU>;
++			operating-points-v2 = <&gpu_opp_table>;
+ 			status = "disabled";
+ 		};
+ 

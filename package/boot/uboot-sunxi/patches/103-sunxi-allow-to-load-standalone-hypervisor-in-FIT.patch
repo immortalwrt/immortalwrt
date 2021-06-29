@@ -1,0 +1,60 @@
+From 5c6e0b11d5ba2f0570a3c148977d75884bf2b889 Mon Sep 17 00:00:00 2001
+From: Icenowy Zheng <icenowy@aosc.io>
+Date: Sun, 29 Mar 2020 10:55:22 +0800
+Subject: [PATCH] sunxi: allow to load standalone hypervisor in FIT
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ board/sunxi/mksunxi_fit_atf.sh | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+--- a/board/sunxi/mksunxi_fit_atf.sh
++++ b/board/sunxi/mksunxi_fit_atf.sh
+@@ -6,6 +6,7 @@
+ # usage: $0 <dt_name> [<dt_name> [<dt_name] ...]
+ 
+ [ -z "$BL31" ] && BL31="bl31.bin"
++[ -z "$HYP" ] && HYP="hyp.bin"
+ 
+ if [ ! -f $BL31 ]; then
+ 	echo "WARNING: BL31 file $BL31 NOT found, resulting binary is non-functional" >&2
+@@ -13,6 +14,10 @@ if [ ! -f $BL31 ]; then
+ 	BL31=/dev/null
+ fi
+ 
++if [ ! -f $HYP ]; then
++	HYP=
++fi
++
+ if grep -q "^CONFIG_MACH_SUN50I_H6=y" .config; then
+ 	BL31_ADDR=0x104000
+ else
+@@ -46,6 +51,19 @@ cat << __HEADER_EOF
+ 		};
+ __HEADER_EOF
+ 
++if [ "x$HYP" != "x" ]; then
++cat << __HYP_EOF
++		hyp {
++			description = "Standalone Hypervisor";
++			data = /incbin/("$HYP");
++			type = "firmware";
++			arch = "arm64";
++			compression = "none";
++			load = <0x40010000>;
++		};
++__HYP_EOF
++fi
++
+ cnt=1
+ for dtname in $*
+ do
+@@ -74,7 +92,7 @@ do
+ 		config_$cnt {
+ 			description = "$(basename $dtname .dtb)";
+ 			firmware = "uboot";
+-			loadables = "atf";
++			loadables = "atf"$([ "x$HYP" != "x" ] && echo ", \"hyp\"");
+ 			fdt = "fdt_$cnt";
+ 		};
+ __CONF_SECTION_EOF

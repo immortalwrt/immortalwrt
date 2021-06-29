@@ -94,6 +94,14 @@ define Device/pine64_sopine-baseboard
 endef
 TARGET_DEVICES += pine64_sopine-baseboard
 
+define Device/xunlong_orangepi-3
+  $(Device/sun50i-h6)
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi 3
+  SUNXI_DTS_DIR := allwinner/
+endef
+TARGET_DEVICES += xunlong_orangepi-3
+
 define Device/xunlong_orangepi-one-plus
   $(Device/sun50i-h6)
   DEVICE_VENDOR := Xunlong

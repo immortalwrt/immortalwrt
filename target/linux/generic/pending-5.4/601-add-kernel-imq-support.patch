@@ -1120,7 +1120,7 @@
 +
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1938,6 +1938,11 @@ struct net_device {
+@@ -1945,6 +1945,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
@@ -1132,7 +1132,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4037,6 +4042,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4072,6 +4077,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1282,7 +1282,7 @@
  	if (qdisc_run_begin(q)) {
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -796,6 +796,13 @@ static inline int qdisc_enqueue(struct s
+@@ -829,6 +829,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1441,7 +1441,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4170,6 +4245,13 @@ void __init skb_init(void)
+@@ -4182,6 +4257,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
@@ -1457,7 +1457,7 @@
  
 --- a/net/netfilter/Kconfig
 +++ b/net/netfilter/Kconfig
-@@ -941,6 +941,18 @@ config NETFILTER_XT_TARGET_LOG
+@@ -929,6 +929,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
  
@@ -1478,7 +1478,7 @@
  	depends on NETFILTER_ADVANCED
 --- a/net/netfilter/Makefile
 +++ b/net/netfilter/Makefile
-@@ -145,6 +145,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
+@@ -142,6 +142,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
  obj-$(CONFIG_NETFILTER_XT_TARGET_DSCP) += xt_DSCP.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HMARK) += xt_HMARK.o
@@ -1660,7 +1660,7 @@
 +
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -273,6 +273,14 @@ trace:
+@@ -296,6 +296,14 @@ trace:
  	return skb;
  }
  

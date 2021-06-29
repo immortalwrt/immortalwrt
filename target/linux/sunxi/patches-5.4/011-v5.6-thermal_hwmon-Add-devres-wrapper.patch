@@ -25,11 +25,9 @@ Link: https://lore.kernel.org/r/20191210164153.10463-12-andrew.smirnov@gmail.com
  drivers/thermal/thermal_hwmon.h |  7 +++++++
  2 files changed, 35 insertions(+)
 
-diff --git a/drivers/thermal/thermal_hwmon.c b/drivers/thermal/thermal_hwmon.c
-index dd5d8ee379287..c8d2620f2e427 100644
 --- a/drivers/thermal/thermal_hwmon.c
 +++ b/drivers/thermal/thermal_hwmon.c
-@@ -248,3 +248,31 @@ void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
+@@ -248,3 +248,31 @@ void thermal_remove_hwmon_sysfs(struct t
  	kfree(hwmon);
  }
  EXPORT_SYMBOL_GPL(thermal_remove_hwmon_sysfs);
@@ -61,8 +59,6 @@ index dd5d8ee379287..c8d2620f2e427 100644
 +	return ret;
 +}
 +EXPORT_SYMBOL_GPL(devm_thermal_add_hwmon_sysfs);
-diff --git a/drivers/thermal/thermal_hwmon.h b/drivers/thermal/thermal_hwmon.h
-index a160b9d62dd0a..1a9d65f6a6a8b 100644
 --- a/drivers/thermal/thermal_hwmon.h
 +++ b/drivers/thermal/thermal_hwmon.h
 @@ -17,6 +17,7 @@
@@ -73,16 +69,16 @@ index a160b9d62dd0a..1a9d65f6a6a8b 100644
  void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz);
  #else
  static inline int
-@@ -25,6 +26,12 @@ thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
+@@ -24,6 +25,12 @@ thermal_add_hwmon_sysfs(struct thermal_z
+ {
  	return 0;
  }
- 
++
 +static inline int
 +devm_thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
 +{
 +	return 0;
 +}
-+
+ 
  static inline void
  thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
- {

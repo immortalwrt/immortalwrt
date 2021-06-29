@@ -9,7 +9,7 @@ Subject: [PATCH] kernel: dma: adjust default coherent_pool to 2MiB
 
 --- a/kernel/dma/remap.c
 +++ b/kernel/dma/remap.c
-@@ -101,7 +101,7 @@ void dma_common_free_remap(void *cpu_addr, size_t size)
+@@ -101,7 +101,7 @@ void dma_common_free_remap(void *cpu_add
  #ifdef CONFIG_DMA_DIRECT_REMAP
  static struct gen_pool *atomic_pool __ro_after_init;
  
