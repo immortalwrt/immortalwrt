@@ -45,10 +45,8 @@ DEFAULT_PACKAGES.nas:=\
 DEFAULT_PACKAGES.router:=\
 	dnsmasq-full \
 	firewall \
-	ip6tables \
 	iptables \
-	odhcp6c \
-	odhcpd-ipv6only \
+	ipv6helper \
 	ppp \
 	ppp-mod-pppoe
 # For easy usage
