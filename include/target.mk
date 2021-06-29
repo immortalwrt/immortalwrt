@@ -10,13 +10,22 @@ __target_inc=1
 DEVICE_TYPE?=router
 
 # Default packages - the really basic set
-DEFAULT_PACKAGES:=base-files libc libgcc dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd \
-block-mount kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget-ssl libustream-openssl ca-certificates \
-default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
-luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-unblockmusic \
-luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree \
-luci-app-turboacc luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq \
-ddns-scripts_aliyun ddns-scripts_dnspod
+DEFAULT_PACKAGES:=\
+	base-files \
+	ca-bundle \
+	dropbear \
+	fstools \
+	libc \
+	libgcc \
+	libustream-openssl \
+	logd \
+	mtd \
+	netifd \
+	opkg \
+	uci \
+	uclient-fetch \
+	urandom-seed \
+	urngd
 
 ifneq ($(CONFIG_SELINUX),)
 DEFAULT_PACKAGES+=busybox-selinux procd-selinux
@@ -24,11 +33,51 @@ else
 DEFAULT_PACKAGES+=busybox procd
 endif
 
+# For the basic set
+DEFAULT_PACKAGES.basic:=
 # For nas targets
-DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm
+DEFAULT_PACKAGES.nas:=\
+	block-mount \
+	fdisk \
+	lsblk \
+	mdadm
 # For router targets
-DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall
-DEFAULT_PACKAGES.bootloader:=
+DEFAULT_PACKAGES.router:=\
+	dnsmasq-full \
+	firewall \
+	iptables \
+	ppp \
+	ppp-mod-pppoe
+# For easy usage
+DEFAULT_PACKAGES.tweak:=\
+	block-mount \
+	ca-certificates \
+	coreutils \
+	ddns-scripts_aliyun \
+	ddns-scripts_dnspod \
+	default-settings \
+	kmod-ipt-raw \
+	kmod-nf-nathelper \
+	kmod-nf-nathelper-extra \
+	luci \
+	luci-app-accesscontrol \
+	luci-app-arpbind \
+	luci-app-autoreboot \
+	luci-app-cpufreq \
+	luci-app-ddns \
+	luci-app-filetransfer \
+	luci-app-nlbwmon \
+	luci-app-turboacc \
+	luci-app-ramfree \
+	luci-app-ssr-plus \
+	luci-app-vlmcsd \
+	luci-app-wol \
+	luci-compat \
+	luci-lib-base \
+	luci-lib-fs \
+	luci-lib-ipkg \
+	luci-proto-relay \
+	wget-ssl
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -60,6 +109,9 @@ else
     -include ./$(SUBTARGET)/target.mk
   endif
 endif
+
+# Add tweaked packages
+DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
 
 # Add device specific packages (here below to allow device type set from subtarget)
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
@@ -178,6 +230,8 @@ ifeq ($(DUMP),1)
     CPU_CFLAGS += -mno-branch-likely
     CPU_CFLAGS_mips32 = -mips32 -mtune=mips32
     CPU_CFLAGS_mips64 = -mips64 -mtune=mips64 -mabi=64
+    CPU_CFLAGS_mips64r2 = -mips64r2 -mtune=mips64r2 -mabi=64
+    CPU_CFLAGS_4kec = -mips32r2 -mtune=4kec
     CPU_CFLAGS_24kc = -mips32r2 -mtune=24kc
     CPU_CFLAGS_74kc = -mips32r2 -mtune=74kc
     CPU_CFLAGS_octeonplus = -march=octeon+ -mabi=64
@@ -232,7 +286,9 @@ ifeq ($(DUMP),1)
     .PRECIOUS: $(TMP_CONFIG)
 
     ifdef KERNEL_TESTING_PATCHVER
-      FEATURES += testing-kernel
+      ifneq ($(KERNEL_TESTING_PATCHVER),$(KERNEL_PATCHVER))
+        FEATURES += testing-kernel
+      endif
     endif
     ifneq ($(CONFIG_OF),)
       FEATURES += dt

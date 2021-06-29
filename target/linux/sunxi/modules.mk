@@ -25,7 +25,7 @@ $(eval $(call KernelPackage,rtc-sunxi))
 define KernelPackage/sunxi-ir
     SUBMENU:=$(OTHER_MENU)
     TITLE:=Sunxi SoC built-in IR support (A20)
-    DEPENDS:=@TARGET_sunxi +kmod-input-core
+    DEPENDS:=@TARGET_sunxi +kmod-multimedia-input
     $(call AddDepends/rtc)
     KCONFIG:= \
 	CONFIG_MEDIA_SUPPORT=y \
