@@ -42,7 +42,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 +/dts-v1/;
 +
 +#include "sun50i-h6.dtsi"
-+#include "sun50i-h6-cpu-opp.dtsi"
++//#include "sun50i-h6-cpu-opp.dtsi"
 +
 +#include <dt-bindings/gpio/gpio.h>
 +
