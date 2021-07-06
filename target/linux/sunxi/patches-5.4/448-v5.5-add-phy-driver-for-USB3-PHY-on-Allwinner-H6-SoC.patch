@@ -1,0 +1,50 @@
+From a228890f94586c2f8417831c228ac8ed955ef856 Mon Sep 17 00:00:00 2001
+From: Icenowy Zheng <icenowy@aosc.io>
+Date: Tue, 29 Oct 2019 21:17:39 +0100
+Subject: [PATCH] phy: allwinner: add phy driver for USB3 PHY on Allwinner H6
+ SoC
+
+Allwinner H6 SoC contains a USB3 PHY (with USB2 DP/DM lines also
+controlled).
+
+Add a driver for it.
+
+The register operations in this driver is mainly extracted from the BSP
+USB3 driver.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Maxime Ripard <mripard@kernel.org>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+---
+ drivers/phy/allwinner/Kconfig           |  11 ++
+ drivers/phy/allwinner/Makefile          |   1 +
+ drivers/phy/allwinner/phy-sun50i-usb3.c | 190 ++++++++++++++++++++++++
+ 3 files changed, 202 insertions(+)
+ create mode 100644 drivers/phy/allwinner/phy-sun50i-usb3.c
+
+--- a/drivers/phy/allwinner/Kconfig
++++ b/drivers/phy/allwinner/Kconfig
+@@ -45,3 +45,14 @@ config PHY_SUN9I_USB
+ 	  sun9i SoCs.
+ 
+ 	  This driver controls each individual USB 2 host PHY.
++
++config PHY_SUN50I_USB3
++	tristate "Allwinner H6 SoC USB3 PHY driver"
++	depends on ARCH_SUNXI && HAS_IOMEM && OF
++	depends on RESET_CONTROLLER
++	select GENERIC_PHY
++	help
++	  Enable this to support the USB3.0-capable transceiver that is
++	  part of Allwinner H6 SoC.
++
++	  This driver controls each individual USB 2+3 host PHY combo.
+--- a/drivers/phy/allwinner/Makefile
++++ b/drivers/phy/allwinner/Makefile
+@@ -2,3 +2,4 @@
+ obj-$(CONFIG_PHY_SUN4I_USB)		+= phy-sun4i-usb.o
+ obj-$(CONFIG_PHY_SUN6I_MIPI_DPHY)	+= phy-sun6i-mipi-dphy.o
+ obj-$(CONFIG_PHY_SUN9I_USB)		+= phy-sun9i-usb.o
++obj-$(CONFIG_PHY_SUN50I_USB3)		+= phy-sun50i-usb3.o
