@@ -1071,7 +1071,7 @@ define Device/unbranded_a5-v11
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	poray-header -B A5-V11 -F 4M
-  DEVICE_VENDOR := 
+  DEVICE_VENDOR :=
   DEVICE_MODEL := A5-V11
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2
   SUPPORTED_DEVICES += a5-v11
@@ -1190,7 +1190,7 @@ define Device/zte_mf283plus
   DEVICE_VENDOR := ZTE
   DEVICE_MODEL := MF283+
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-usb-net-qmi-wwan uqmi \
-	kmod-usb-serial-option
+	kmod-usb-serial kmod-usb-serial-option
 endef
 TARGET_DEVICES += zte_mf283plus
 

@@ -6,21 +6,28 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	compatible = "jcg,y2", "mediatek,mt7621-soc";
-	model = "JCG Y2";
+	compatible = "totolink,x5000r", "mediatek,mt7621-soc";
+	model = "TOTOLINK X5000R";
 
 	aliases {
-		led-boot = &led_internet;
-		led-failsafe = &led_internet;
-		led-upgrade = &led_internet;
+		led-boot = &led_sys;
+		led-failsafe = &led_sys;
+		led-running = &led_sys;
+		led-upgrade = &led_sys;
+		label-mac-device = &gmac0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+		bootargs = "console=ttyS0,115200n8";
 	};
 
 	leds {
 		compatible = "gpio-leds";
 
-		led_internet: internet {
-			label = "blue:internet";
-			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+		led_sys: sys {
+			label = "blue:sys";
+			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -29,7 +36,8 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+			debounce-interval = <60>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
@@ -41,7 +49,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <80000000>;
+		spi-max-frequency = <50000000>;
 		m25p,fast-read;
 
 		partitions {
@@ -50,13 +58,13 @@
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "bootloader";
+				label = "u-boot";
 				reg = <0x0 0x30000>;
 				read-only;
 			};
 
 			partition@30000 {
-				label = "config";
+				label = "u-boot-env";
 				reg = <0x30000 0x10000>;
 				read-only;
 			};
@@ -80,32 +88,51 @@
 	status = "okay";
 };
 
-&pcie0 {
+&pcie1 {
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		mediatek,mtd-eeprom = <&factory 0x0>;
+		mediatek,mtd-eeprom = <&factory 0x0000>;
 	};
 };
 
-&ethernet {
-	compatible = "mediatek,ralink-mt7621-eth";
-	mediatek,switch = <&gsw>;
+&gmac0 {
 	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
-	/delete-property/ compatible;
-	phy-mode = "rgmii";
-};
+	ports {
+		port@0 {
+			status = "okay";
+			label = "lan1";
+		};
 
-&gsw {
-	compatible = "mediatek,ralink-mt7621-gsw";
+		port@1 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan3";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan4";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0xe006>;
+		};
+	};
 };
 
 &state_default {
 	gpio {
-		groups = "jtag", "wdt";
+		groups = "i2c", "wdt";
 		function = "gpio";
 	};
 };
