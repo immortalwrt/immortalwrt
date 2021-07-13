@@ -486,6 +486,18 @@ define Device/tplink_re450-v3
 endef
 TARGET_DEVICES += tplink_re450-v3
 
+define Device/tplink_re455-v1
+  $(Device/tplink-safeloader)
+  SOC := qca9563
+  IMAGE_SIZE := 7808k
+  DEVICE_MODEL := RE455
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
+  TPLINK_BOARD_ID := RE455-V1
+  LOADER_TYPE := elf
+endef
+TARGET_DEVICES += tplink_re455-v1
+
 define Device/tplink_tl-mr6400-v1
   $(Device/tplink-8mlzma)
   SOC := qca9531
@@ -692,7 +704,7 @@ define Device/tplink_tl-wr2543-v1
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport
   TPLINK_HWID := 0x25430001
   IMAGE/sysupgrade.bin := tplink-v1-image sysupgrade -v 3.13.99 | \
-	append-metadata | check-size
+	check-size | append-metadata
   IMAGE/factory.bin := tplink-v1-image factory -v 3.13.99
   SUPPORTED_DEVICES += tl-wr2543n
 endef
