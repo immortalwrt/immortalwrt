@@ -24,6 +24,11 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "4:lan" "5:wan"
 		;;
+	aruba,ap-303h|\
+	teltonika,rutx10)
+		ucidef_add_switch "switch0" \
+			"0t@eth0" "2:lan:1" "3:lan:2" "4:lan:3" "0u@eth1" "5:wan"
+		;;
 	asus,map-ac2200|\
 	cilab,meshpoint-one|\
 	edgecore,ecw5211|\
@@ -33,7 +38,6 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "5:lan" "4:wan"
 		;;
-	aruba,ap-303h|\
 	asus,rt-acrh17|\
 	asus,rt-ac58u|\
 	avm,fritzbox-4040|\
