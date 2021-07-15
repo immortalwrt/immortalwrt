@@ -137,6 +137,15 @@
 					drive-strength = <12>;
 				};
 			};
+
+			wdt0_pins: wdt0_pins {
+				mux {
+					pins = "gpio17";
+					function = "gpio";
+					drive-strength = <2>;
+					bias-pull-down;
+				};
+			};
 		};
 
 		gsbi2: gsbi@12480000 {
@@ -341,8 +350,6 @@
 			pinctrl-0 = <&rgmii2_pins>;
 			pinctrl-names = "default";
 
-			mtd-mac-address-ascii = <&PRODUCTINFO 0x86a>;
-
 			fixed-link {
 				speed = <1000>;
 				full-duplex;
@@ -353,10 +360,6 @@
 			status = "okay";
 			phy-mode = "sgmii";
 			qcom,id = <2>;
-
-			mtd-mac-address-ascii = <&PRODUCTINFO 0x86a>;
-			mtd-mac-address-increment = <1>;
-			mtd-mac-address-increment-byte = <0>;
 
 			fixed-link {
 				speed = <1000>;
@@ -370,6 +373,16 @@
 				pinctrl-0 = <&sdcc1_pins>;
 				pinctrl-names = "default";
 			};
+		};
+
+		watchdog {
+			compatible = "linux,wdt-gpio";
+			pinctrl-0 = <&wdt0_pins>;
+			pinctrl-names = "default";
+			gpios = <&qcom_pinmux 17 GPIO_ACTIVE_LOW>;
+			hw_algo = "toggle";
+			hw_margin_ms = <500>;
+			always-running;
 		};
 	};
 
