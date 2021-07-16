@@ -508,7 +508,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  
 --- a/drivers/usb/dwc3/ep0.c
 +++ b/drivers/usb/dwc3/ep0.c
-@@ -391,7 +391,7 @@ static int dwc3_ep0_handle_u1(struct dwc
+@@ -394,7 +394,7 @@ static int dwc3_ep0_handle_u1(struct dwc
  		return -EINVAL;
  
  	reg = dwc3_readl(dwc->regs, DWC3_DCTL);
@@ -517,7 +517,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  		reg |= DWC3_DCTL_INITU1ENA;
  	else
  		reg &= ~DWC3_DCTL_INITU1ENA;
-@@ -413,7 +413,7 @@ static int dwc3_ep0_handle_u2(struct dwc
+@@ -416,7 +416,7 @@ static int dwc3_ep0_handle_u2(struct dwc
  		return -EINVAL;
  
  	reg = dwc3_readl(dwc->regs, DWC3_DCTL);

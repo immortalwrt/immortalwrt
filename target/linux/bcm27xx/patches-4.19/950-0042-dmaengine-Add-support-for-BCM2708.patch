@@ -178,7 +178,7 @@ Signed-off-by: Andrei Gherzan <andrei@gherzan.com>
 
 --- a/drivers/dma/Kconfig
 +++ b/drivers/dma/Kconfig
-@@ -131,7 +131,7 @@ config COH901318
+@@ -132,7 +132,7 @@ config COH901318
  
  config DMA_BCM2835
  	tristate "BCM2835 DMA engine support"
@@ -187,7 +187,7 @@ Signed-off-by: Andrei Gherzan <andrei@gherzan.com>
  	select DMA_ENGINE
  	select DMA_VIRTUAL_CHANNELS
  
-@@ -576,6 +576,10 @@ config TIMB_DMA
+@@ -577,6 +577,10 @@ config TIMB_DMA
  	help
  	  Enable support for the Timberdale FPGA DMA engine.
  
