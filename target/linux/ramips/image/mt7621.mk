@@ -262,15 +262,15 @@ endef
 TARGET_DEVICES += cudy_wr2100
 
 define Device/dlink_dir-8xx-a1
-  IMAGE_SIZE := 16000k
+  IMAGE_SIZE := 16064k
   DEVICE_VENDOR := D-Link
-  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi uboot-envtools -wpad-openssl
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
 endef
 
 define Device/dlink_dir-8xx-r1
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := D-Link
-  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi -wpad-openssl
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
   KERNEL_INITRAMFS := $$(KERNEL)
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
 	check-size | append-metadata
@@ -912,8 +912,8 @@ define Device/motorola_mr2600
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Motorola
   DEVICE_MODEL := MR2600
-  DEVICE_PACKAGES := kmod-mt7615d kmod-usb3 kmod-usb-ledtrig-usbport \
-	luci-app-mtwifi -wpad-openssl uboot-envtools
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3 \
+	kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += motorola_mr2600
 

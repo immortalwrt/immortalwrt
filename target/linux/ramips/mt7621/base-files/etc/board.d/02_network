@@ -46,13 +46,6 @@ ramips_setup_interfaces()
 			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan:5" "6@eth0"
 		ucidef_set_interface_lan "eth0.1 ra0 rai0"
 		;;
-	dlink,dir-867-a1|\
-	dlink,dir-878-a1|\
-	dlink,dir-882-a1|\
-	dlink,dir-882-r1|\
-	motorola,mr2600)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rai0" "wan"
-		;;
 	gehua,ghl-r-001)
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "4:wan" "6@eth0"
