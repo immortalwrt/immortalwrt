@@ -1,0 +1,111 @@
+From 8abc4c4a154f658ac1f928eb5ccd9cb4706b2f3d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+Date: Wed, 30 Oct 2019 16:07:42 +0100
+Subject: [PATCH] arm64: dts: allwinner: Add mali GPU supply for H6 boards
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Enable and add supply to the Mali GPU node on all the
+H6 boards.
+
+Regarding the datasheet the maximum time for supply to reach
+its voltage is 32ms.
+
+Signed-off-by: Clément Péron <peron.clem@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts | 6 ++++++
+ arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts  | 6 ++++++
+ arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi   | 6 ++++++
+ arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts    | 6 ++++++
+ 4 files changed, 24 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
+@@ -89,6 +89,11 @@
+ 	status = "okay";
+ };
+ 
++&gpu {
++	mali-supply = <&reg_dcdcc>;
++	status = "okay";
++};
++
+ &hdmi {
+ 	status = "okay";
+ };
+@@ -225,6 +230,7 @@
+ 			};
+ 
+ 			reg_dcdcc: dcdcc {
++				regulator-enable-ramp-delay = <32000>;
+ 				regulator-min-microvolt = <810000>;
+ 				regulator-max-microvolt = <1080000>;
+ 				regulator-name = "vdd-gpu";
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -108,6 +108,11 @@
+ 	status = "okay";
+ };
+ 
++&gpu {
++	mali-supply = <&reg_dcdcc>;
++	status = "okay";
++};
++
+ &hdmi {
+ 	status = "okay";
+ };
+@@ -253,6 +258,7 @@
+ 			};
+ 
+ 			reg_dcdcc: dcdcc {
++				regulator-enable-ramp-delay = <32000>;
+ 				regulator-min-microvolt = <810000>;
+ 				regulator-max-microvolt = <1080000>;
+ 				regulator-ramp-delay = <2500>;
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
+@@ -55,6 +55,11 @@
+ 	status = "okay";
+ };
+ 
++&gpu {
++	mali-supply = <&reg_dcdcc>;
++	status = "okay";
++};
++
+ &mmc0 {
+ 	vmmc-supply = <&reg_cldo1>;
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;
+@@ -163,6 +168,7 @@
+ 			};
+ 
+ 			reg_dcdcc: dcdcc {
++				regulator-enable-ramp-delay = <32000>;
+ 				regulator-min-microvolt = <810000>;
+ 				regulator-max-microvolt = <1080000>;
+ 				regulator-name = "vdd-gpu";
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
+@@ -85,6 +85,11 @@
+ 	status = "okay";
+ };
+ 
++&gpu {
++	mali-supply = <&reg_dcdcc>;
++	status = "okay";
++};
++
+ &hdmi {
+ 	status = "okay";
+ };
+@@ -221,6 +226,7 @@
+ 			};
+ 
+ 			reg_dcdcc: dcdcc {
++				regulator-enable-ramp-delay = <32000>;
+ 				regulator-min-microvolt = <810000>;
+ 				regulator-max-microvolt = <1080000>;
+ 				regulator-name = "vdd-gpu";

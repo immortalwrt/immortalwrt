@@ -98,6 +98,7 @@ define Device/xunlong_orangepi-3
   $(Device/sun50i-h6)
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi 3
+  DEVICE_PACKAGES := kmod-usb3 kmod-usb-dwc3
   SUNXI_DTS_DIR := allwinner/
 endef
 TARGET_DEVICES += xunlong_orangepi-3

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/dts-v1/;
 
 #include "mt7621.dtsi"
 
@@ -14,10 +13,6 @@
 		led-boot = &led_internet;
 		led-failsafe = &led_internet;
 		led-upgrade = &led_internet;
-	};
-
-	chosen {
-		bootargs = "console=ttyS0,57600";
 	};
 
 	leds {
@@ -112,5 +107,19 @@
 	gpio {
 		groups = "jtag", "wdt";
 		function = "gpio";
+	};
+};
+
+&factory {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_factory_e000: macaddr@e000 {
+		reg = <0xe000 0x6>;
+	};
+
+	macaddr_factory_e006: macaddr@e006 {
+		reg = <0xe006 0x6>;
 	};
 };

@@ -4,7 +4,7 @@
 
 define KernelPackage/rtc-sunxi
     SUBMENU:=$(OTHER_MENU)
-    TITLE:=Allwinner A10/A20 built-in RTC support
+    TITLE:=AllWinner A10/A20 built-in RTC support
     DEPENDS:=@TARGET_sunxi
     $(call AddDepends/rtc)
     KCONFIG:= \
@@ -15,7 +15,7 @@ define KernelPackage/rtc-sunxi
 endef
 
 define KernelPackage/rtc-sunxi/description
- Support for the AllWinner sunXi SoC's onboard RTC
+ Support for the AllWinner A10/A20 SoC's onboard RTC
 endef
 
 $(eval $(call KernelPackage,rtc-sunxi))

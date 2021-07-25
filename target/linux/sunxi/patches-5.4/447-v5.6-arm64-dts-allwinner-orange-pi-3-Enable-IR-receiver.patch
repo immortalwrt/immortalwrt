@@ -1,0 +1,27 @@
+From 2c63afdafa5100397308036a9dfbde24db5aecd5 Mon Sep 17 00:00:00 2001
+From: Andre Heider <a.heider@gmail.com>
+Date: Sat, 9 Nov 2019 12:34:36 +0100
+Subject: [PATCH] arm64: dts: allwinner: orange-pi-3: Enable IR receiver
+
+Orange Pi 3 has an on-board IR receiver, enable it.
+
+Signed-off-by: Andre Heider <a.heider@gmail.com>
+Acked-by: Jernej Skrabec <jernej.skrabec@siol.net>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -286,6 +286,10 @@
+ 	};
+ };
+ 
++&r_ir {
++	status = "okay";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_ph_pins>;
