@@ -52,7 +52,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  };
  
  /* COBALT operates the Codel and BLUE algorithms in parallel, in order to
-@@ -1573,7 +1575,7 @@ static struct cake_tin_data *cake_select
+@@ -1577,7 +1579,7 @@ static struct cake_tin_data *cake_select
  					     struct sk_buff *skb)
  {
  	struct cake_sched_data *q = qdisc_priv(sch);
@@ -61,7 +61,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  	bool wash;
  	u8 dscp;
  
-@@ -1584,6 +1586,7 @@ static struct cake_tin_data *cake_select
+@@ -1588,6 +1590,7 @@ static struct cake_tin_data *cake_select
  	wash = !!(q->rate_flags & CAKE_FLAG_WASH);
  	if (wash)
  		dscp = cake_handle_diffserv(skb, wash);
@@ -69,7 +69,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  
  	if (q->tin_mode == CAKE_DIFFSERV_BESTEFFORT)
  		tin = 0;
-@@ -2202,6 +2205,7 @@ static const struct nla_policy cake_poli
+@@ -2206,6 +2209,7 @@ static const struct nla_policy cake_poli
  	[TCA_CAKE_MPU]		 = { .type = NLA_U32 },
  	[TCA_CAKE_INGRESS]	 = { .type = NLA_U32 },
  	[TCA_CAKE_ACK_FILTER]	 = { .type = NLA_U32 },
@@ -77,7 +77,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  };
  
  static void cake_set_rate(struct cake_tin_data *b, u64 rate, u32 mtu,
-@@ -2649,10 +2653,8 @@ static int cake_change(struct Qdisc *sch
+@@ -2653,10 +2657,8 @@ static int cake_change(struct Qdisc *sch
  	}
  
  	if (tb[TCA_CAKE_FWMARK]) {
@@ -90,7 +90,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  	}
  
  	if (q->tins) {
-@@ -2814,8 +2816,7 @@ static int cake_dump(struct Qdisc *sch,
+@@ -2818,8 +2820,7 @@ static int cake_dump(struct Qdisc *sch,
  			!!(q->rate_flags & CAKE_FLAG_SPLIT_GSO)))
  		goto nla_put_failure;
  

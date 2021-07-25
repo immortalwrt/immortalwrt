@@ -58,7 +58,6 @@ luci-theme-argon-mod source: [Leo-Jo-My/luci-theme-argon-mod](https://github.com
 node-request source: [jerrykuku/node-request](https://github.com/jerrykuku/node-request).<br/>
 luci-app-jd-dailybonus source: [jerrykuku/luci-app-jd-dailybonus](https://github.com/jerrykuku/luci-app-jd-dailybonus).<br/>
 luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-app-oled).<br/>
-luci-theme-edge source: [garypang13/luci-theme-edge](https://github.com//garypang13/luci-theme-edge).<br/>
 luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
 luci-proto-modemmanager source: [nickberry17/luci-proto-modemmanager](https://github.com/nickberry17/luci-proto-modemmanager).<br/>

@@ -56,7 +56,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}								\
  									\
  	/* __*init sections */						\
-@@ -863,6 +873,8 @@
+@@ -864,6 +874,8 @@
  	EXIT_TEXT							\
  	EXIT_DATA							\
  	EXIT_CALL							\
