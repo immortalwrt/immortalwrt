@@ -60,6 +60,7 @@ platform_do_upgrade() {
 	dlink,dir-853-a3|\
 	hiwifi,hc5962|\
 	iptime,a3004t|\
+	iptime,t5004|\
 	jcg,q20|\
 	linksys,e5600|\
 	linksys,ea6350-v4|\
