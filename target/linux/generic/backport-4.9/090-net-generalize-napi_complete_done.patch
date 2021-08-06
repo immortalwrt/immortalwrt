@@ -938,7 +938,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
 +++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -2391,7 +2391,7 @@ static int pch_gbe_napi_poll(struct napi
+@@ -2384,7 +2384,7 @@ static int pch_gbe_napi_poll(struct napi
  		poll_end_flag = true;
  
  	if (poll_end_flag) {

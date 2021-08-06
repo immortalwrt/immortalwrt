@@ -258,7 +258,7 @@
  
  	/* Using vdev_id as queue number will make it very easy to do per-vif
  	 * tx queue locking. This shouldn't wrap due to interface combinations
-@@ -8201,6 +8247,8 @@ int ath10k_mac_register(struct ath10k *a
+@@ -8202,6 +8248,8 @@ int ath10k_mac_register(struct ath10k *a
  	ieee80211_hw_set(ar->hw, QUEUE_CONTROL);
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_FRAG);
  	ieee80211_hw_set(ar->hw, REPORTS_LOW_ACK);

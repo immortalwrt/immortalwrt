@@ -214,7 +214,7 @@
  #include <linux/uaccess.h>
  #include <linux/ipv6.h>
  #include <linux/icmpv6.h>
-@@ -837,10 +838,10 @@ static void tcp_v6_send_response(const s
+@@ -853,10 +854,10 @@ static void tcp_v6_send_response(const s
  	topt = (__be32 *)(t1 + 1);
  
  	if (tsecr) {
@@ -278,7 +278,7 @@
  				 key, greh->protocol);
 --- a/net/ipv6/exthdrs.c
 +++ b/net/ipv6/exthdrs.c
-@@ -756,7 +756,7 @@ static bool ipv6_hop_jumbo(struct sk_buf
+@@ -755,7 +755,7 @@ static bool ipv6_hop_jumbo(struct sk_buf
  		goto drop;
  	}
  

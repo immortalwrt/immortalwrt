@@ -11,7 +11,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/lib/vsprintf.c
 +++ b/lib/vsprintf.c
-@@ -681,8 +681,10 @@ char *symbol_string(char *buf, char *end
+@@ -707,8 +707,10 @@ char *symbol_string(char *buf, char *end
  		    struct printf_spec spec, const char *fmt)
  {
  	unsigned long value;
@@ -23,7 +23,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  #endif
  
  	if (fmt[1] == 'R')
-@@ -696,11 +698,16 @@ char *symbol_string(char *buf, char *end
+@@ -722,11 +724,16 @@ char *symbol_string(char *buf, char *end
  		sprint_symbol(sym, value);
  	else
  		sprint_symbol_no_offset(sym, value);
