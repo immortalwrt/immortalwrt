@@ -56,9 +56,10 @@ define U-Boot/nanopi-r4s-rk3399
   NAME:=NanoPi R4S
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r4s
-  DEPENDS:=+PACKAGE_u-boot-nanopi-r4s-rk3399:arm-trusted-firmware-rockchip
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3399_bl31.elf
+  DEPENDS:=+PACKAGE_u-boot-nanopi-r4s-rk3399:arm-trusted-firmware-rk3399
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rkbin
+  ATF:=rk3399_bl31_v1.35.elf
+  USE_RKBIN:=1
 endef
 
 define U-Boot/rock-pi-4-rk3399
