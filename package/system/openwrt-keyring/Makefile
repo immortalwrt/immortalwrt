@@ -7,9 +7,9 @@ PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/immortalwrt/keyring.git
-PKG_MIRROR_HASH:=c8600265b922462431c8f87a8cf3cd12f3e55b3c54078bb15bad9a8f41be2424
 PKG_SOURCE_DATE:=2021-08-06
 PKG_SOURCE_VERSION:=746fa1a0c45bd82d9bf25d5334933a2e454fdeeb
+PKG_MIRROR_HASH:=c8600265b922462431c8f87a8cf3cd12f3e55b3c54078bb15bad9a8f41be2424
 
 PKG_MAINTAINER:=John Crispin <john@phrozen.org>
 PKG_LICENSE:=GPL-2.0
@@ -32,6 +32,8 @@ Build/Compile=
 
 define Package/openwrt-keyring/install
 	$(INSTALL_DIR) $(1)/etc/opkg/keys/
+	# Public usign key for OPDE
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/66ceb3e8f7432fed $(1)/etc/opkg/keys/
 	# Public usign key for unattended snapshot builds
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/b5043e70f9a75cde $(1)/etc/opkg/keys/
 endef
