@@ -4,26 +4,30 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=arm-trusted-firmware-rkbin
+PKG_NAME:=arm-trusted-firmware-rockchip-vendor
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/rockchip-linux/rkbin.git
 PKG_SOURCE_DATE:=2021-06-01
 PKG_SOURCE_VERSION:=7d631e0d5b2d373b54d4533580d08fb9bd2eaad4
-PKG_MIRROR_HASH:=972c978e2df63e1d2fc38f4537d2ad92f87c656c0dd89b7f8deffd6075fff632
+PKG_MIRROR_HASH:=3a4794d1d00890401b032a573fca3121935ea036468a67228f203d68b007d916
 
-PKG_MAINTAINER:=AmadeusGhost <amadeus@immortalwrt.org>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 MAKE_PATH:=$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/arm-trusted-firmware-rk3328
+define Package/arm-trusted-firmware-rockchip-vendor
     SECTION:=boot
     CATEGORY:=Boot Loaders
     TITLE:=ARM Trusted Firmware for Rockchip
     DEPENDS:=@TARGET_rockchip_armv8
+endef
+
+define Package/arm-trusted-firmware-rk3328
+    $(Package/arm-trusted-firmware-rockchip-vendor)
 ifneq ($(CONFIG_PACKAGE_arm-trusted-firmware-rk3328),)
     SOC:=rk3328
     ATF:=rk33/rk322xh_bl31_v1.46.elf
@@ -33,10 +37,7 @@ endif
 endef
 
 define Package/arm-trusted-firmware-rk3399
-    SECTION:=boot
-    CATEGORY:=Boot Loaders
-    TITLE:=ARM Trusted Firmware for Rockchip
-    DEPENDS:=@TARGET_rockchip_armv8
+    $(Package/arm-trusted-firmware-rockchip-vendor)
 ifneq ($(CONFIG_PACKAGE_arm-trusted-firmware-rk3399),)
     SOC:=rk3399
     ATF:=rk33/rk3399_bl31_v1.35.elf
