@@ -59,8 +59,13 @@ ask_bool() {
 	[ "$answer" -gt 0 ]
 }
 
+_v() {
+	[ -n "$VERBOSE" ] && [ "$VERBOSE" -ge 1 ] && echo "$*" >&2
+}
+
 v() {
-	[ -n "$VERBOSE" ] && [ "$VERBOSE" -ge 1 ] && echo "$@"
+	_v "$(date) upgrade: $@"
+	logger -p info -t upgrade "$@"
 }
 
 json_string() {
@@ -86,7 +91,7 @@ get_image() { # <source> [ <command> ]
 		esac
 	fi
 
-	cat "$from" 2>/dev/null | $cmd
+	$cmd <"$from"
 }
 
 get_image_dd() {
@@ -127,47 +132,18 @@ part_magic_fat() {
 }
 
 export_bootdevice() {
-	local cmdline uuid disk uevent line
+	local cmdline uuid blockdev uevent line class
 	local MAJOR MINOR DEVNAME DEVTYPE
+	local rootpart="$(cmdline_get_var root)"
 
-	if read cmdline < /proc/cmdline; then
-		case "$cmdline" in
-			*block2mtd=*)
-				disk="${cmdline##*block2mtd=}"
-				disk="${disk%%,*}"
-			;;
-			*root=*)
-				disk="${cmdline##*root=}"
-				disk="${disk%% *}"
-			;;
-		esac
-
-		case "$disk" in
-			PARTUUID=[A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9]-[A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9][A-F0-9]0002)
-				uuid="${disk#PARTUUID=}"
-				uuid="${uuid%0002}0002"
-				for disk in $(find /dev -type b); do
-					set -- $(dd if=$disk bs=1 skip=$((2*512+256+128+16)) count=16 2>/dev/null | hexdump -v -e '4/1 "%02x"' | awk '{ \
-							for(i=1;i<9;i=i+2) first=substr($0,i,1) substr($0,i+1,1) first; \
-							for(i=9;i<13;i=i+2) second=substr($0,i,1) substr($0,i+1,1) second; \
-							for(i=13;i<16;i=i+2) third=substr($0,i,1) substr($0,i+1,1) third; \
-							fourth = substr($0,17,4); \
-							five = substr($0,21,12); \
-						} END { print toupper(first"-"second"-"third"-"fourth"-"five) }')
-					if [ "$1" = "$uuid" ]; then
-						uevent="/sys/class/block/${disk##*/}/uevent"
-						export SAVE_PARTITIONS=0
-						break
-					fi
-				done
-			;;
-			PARTUUID=[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-02)
-				uuid="${disk#PARTUUID=}"
-				uuid="${uuid%-02}"
-				for disk in $(find /dev -type b); do
-					set -- $(dd if=$disk bs=1 skip=440 count=4 2>/dev/null | hexdump -v -e '4/1 "%02x "')
+	case "$rootpart" in
+		PARTUUID=[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-[a-f0-9][a-f0-9])
+			uuid="${rootpart#PARTUUID=}"
+			uuid="${uuid%-[a-f0-9][a-f0-9]}"
+			for blockdev in $(find /dev -type b); do
+				set -- $(dd if=$blockdev bs=1 skip=440 count=4 2>/dev/null | hexdump -v -e '4/1 "%02x "')
 					if [ "$4$3$2$1" = "$uuid" ]; then
-						uevent="/sys/class/block/${disk##*/}/uevent"
+					uevent="/sys/class/block/${blockdev##*/}/uevent"
 						break
 					fi
 				done
@@ -184,7 +160,19 @@ export_bootdevice() {
 				done
 			;;
 			/dev/*)
-				uevent="/sys/class/block/${disk##*/}/uevent"
+			uevent="/sys/class/block/${rootpart##*/}/../uevent"
+		;;
+		0x[a-f0-9][a-f0-9][a-f0-9] | 0x[a-f0-9][a-f0-9][a-f0-9][a-f0-9] | \
+		[a-f0-9][a-f0-9][a-f0-9] | [a-f0-9][a-f0-9][a-f0-9][a-f0-9])
+			rootpart=0x${rootpart#0x}
+			for class in /sys/class/block/*; do
+				while read line; do
+					export -n "$line"
+				done < "$class/uevent"
+				if [ $((rootpart/256)) = $MAJOR -a $((rootpart%256)) = $MINOR ]; then
+					uevent="$class/../uevent"
+				fi
+			done
 			;;
 		esac
 
@@ -195,7 +183,6 @@ export_bootdevice() {
 			export BOOTDEV_MAJOR=$MAJOR
 			export BOOTDEV_MINOR=$MINOR
 			return 0
-		fi
 	fi
 
 	return 1
