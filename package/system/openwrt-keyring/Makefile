@@ -31,6 +31,7 @@ endef
 Build/Compile=
 
 define Package/openwrt-keyring/install
+	$(INSTALL_DIR) $(1)/etc/opkg/keys/
 	# Public usign key for OPDE
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/66ceb3e8f7432fed $(1)/etc/opkg/keys/
 	# Public usign key for unattended snapshot builds
