@@ -1,4 +1,4 @@
-platform_check_image_sdcard() {
+sdcard_check_image() {
 	local file="$1"
 	local diskdev partdev diff
 
@@ -26,7 +26,7 @@ platform_check_image_sdcard() {
 	fi
 }
 
-platform_do_upgrade_sdcard() {
+sdcard_do_upgrade() {
 	local board=$(board_name)
 	local diskdev partdev diff
 
@@ -78,7 +78,7 @@ platform_do_upgrade_sdcard() {
 	sleep 1
 }
 
-platform_copy_config_sdcard() {
+sdcard_copy_config() {
 	local partdev
 
 	if export_partdevice partdev 1; then
