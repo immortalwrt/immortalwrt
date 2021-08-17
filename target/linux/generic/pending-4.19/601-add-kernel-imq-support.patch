@@ -1466,7 +1466,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -3996,6 +4073,13 @@ void __init skb_init(void)
+@@ -3999,6 +4076,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
