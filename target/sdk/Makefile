@@ -136,7 +136,7 @@ $(BIN_DIR)/$(SDK_NAME).tar.xz: clean
 		$(SDK_BUILD_DIR)/target/linux/*/patches*
 	./convert-config.pl $(TOPDIR)/.config > $(SDK_BUILD_DIR)/Config-build.in
 	$(CP) -L \
-		$(TOPDIR)/LICENSE \
+		$(TOPDIR)/LICENSES \
 		$(TOPDIR)/rules.mk \
 		./files/Config.in \
 		./files/Makefile \
@@ -156,11 +156,11 @@ $(BIN_DIR)/$(SDK_NAME).tar.xz: clean
 
 	-rm -f $(SDK_BUILD_DIR)/feeds.conf.default
 	$(if $(BASE_FEED),echo "$(BASE_FEED)" > $(SDK_BUILD_DIR)/feeds.conf.default)
-	if [ -f $(TOPDIR)/feeds.conf ]; then \
-		cat $(TOPDIR)/feeds.conf >> $(SDK_BUILD_DIR)/feeds.conf.default; \
-	else \
-		cat $(TOPDIR)/feeds.conf.default >> $(SDK_BUILD_DIR)/feeds.conf.default; \
-	fi
+	cat $(TOPDIR)/feeds.conf.default >> $(SDK_BUILD_DIR)/feeds.conf.default
+	$(if $(OPDE_PYTHON), \
+		LC_ALL=C.UTF-8 LANG=C.UTF-8 $(OPDE_PYTHON) $(OPDE_BUILDER) -s $(TOPDIR) @hack-sdk $(SDK_BUILD_DIR), \
+	        echo "env 'OPDE_PYTHON' missing... skip to hack sdk" \
+	)
 	$(SED) 's,^# REVISION:=.*,REVISION:=$(REVISION),g' $(SDK_BUILD_DIR)/include/version.mk
 	$(SED) 's,^# SOURCE_DATE_EPOCH:=.*,SOURCE_DATE_EPOCH:=$(SOURCE_DATE_EPOCH),g' $(SDK_BUILD_DIR)/include/version.mk
 	$(SED) '/LINUX_VERMAGIC:=/ { s,unknown,$(LINUX_VERMAGIC),g }' $(SDK_BUILD_DIR)/include/kernel.mk
