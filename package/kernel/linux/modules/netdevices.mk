@@ -1145,7 +1145,7 @@ $(eval $(call KernelPackage,mlx5-core))
 
 define KernelPackage/qlcnic
   SUBMENU:=$(NETWORK_DEVICES_MENU)
-  DEPENDS:=@PCI_SUPPORT
+  DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core
   TITLE:=QLogic QLE8240 and QLE8242 device support
   KCONFIG:=CONFIG_QLCNIC
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/qlogic/qlcnic/qlcnic.ko
