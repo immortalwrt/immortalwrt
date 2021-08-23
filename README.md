@@ -2,7 +2,7 @@
 
 # Project ImmortalWrt
 
-This project is a fork of [OpenWrt](https://openwrt.org), with more packages ported, more device supported, better performance, and special optimizations for mainland China users.<br/>
+ImmortalWrt is a fork of [OpenWrt](https://openwrt.org), with more packages ported, more device supported, better performance, and special optimizations for mainland China users.<br/>
 Compared the official one, we allow to use hacks or non-upstreamable patches / modifications to achieve our purpose. Source from anywhere.
 
 Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: __password__.
@@ -11,7 +11,7 @@ Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: _
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
 
   ### Requirements
-  To build with is project, Ubuntu 18.04 LTS is preferred. And you need use the CPU based on AMD64 architecture, with at least 4GB RAM and 25 GB available disk space. Make sure the __Internet__ is accessible.
+  To build with this project, Ubuntu 18.04 LTS is preferred. And you need use the CPU based on AMD64 architecture, with at least 4GB RAM and 25 GB available disk space. Make sure the __Internet__ is accessible.
 
   The following tools are needed to compile ImmortalWrt, the package names vary between distributions.
 
@@ -21,8 +21,8 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
         <summary>Setup dependencies via APT</summary>
 
         ```bash
-        sudo apt-get update -y
-        sudo apt-get full-upgrade -y
+        sudo apt update -y
+        sudo apt full-upgrade -y
         sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
           bzip2 ccache cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext git git-core gperf haveged \
           help2man intltool lib32gcc1 libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev \
@@ -45,6 +45,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
 
   Note:
   - For the for love of god please do __not__ use ROOT user to build your image.
+  - Using CPUs based on other architectures should be fine to compile ImmortalWrt, but more hacks are needed - No warranty at all.
   - You must __not__ have spaces in PATH or in the work folders on the drive.
   - If you're using Windows Subsystem for Linux (or WSL), removing Windows folders from PATH are required, please see [Build system setup WSL](https://openwrt.org/docs/guide-developer/build-system/wsl) documentation.
   - Using macOS as the host build OS is __not__ recommended. No warranty at all. You can get tips from [Build system setup macOS](https://openwrt.org/docs/guide-developer/build-system/buildroot.exigence.macosx) documentation.
@@ -53,12 +54,12 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
 
   ### Quickstart
   - Method 1:
-  1. Run `git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt` to clone the source code.
-  2. Run `cd immortalwrt` to enter source directory.
-  3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
-  4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
-  5. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
-  6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
+    1. Run `git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt` to clone the source code.
+    2. Run `cd immortalwrt` to enter source directory.
+    3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
+    4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
+    5. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
+    6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
   - Method 2:
     <details>
@@ -66,7 +67,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
 
       - For Linux User:
       ```bash
-      git clone -b master --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
+      git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
       docker run --rm -it \
           -v $PWD:/openwrt \
         immortalwrt/opde:base zsh
@@ -76,7 +77,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
       - For Windows User:
         1. Create a volume 'immortalwrt' and clone ImmortalWrt source into volume.
         ```bash
-        docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base git clone -b master --single-branch  https://github.com/immortalwrt/immortalwrt .
+        docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt .
         ```
         2. Enter docker container and update feeds.
         ```bash
