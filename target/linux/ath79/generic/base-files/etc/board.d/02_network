@@ -86,7 +86,8 @@ ath79_setup_interfaces()
 	ubnt,picostation-m|\
 	ubnt,powerbeam-5ac-500|\
 	ubnt,powerbeam-5ac-gen2|\
-	ubnt,powerbeam-m-xw|\
+	ubnt,powerbeam-m2-xw|\
+	ubnt,powerbeam-m5-xw|\
 	ubnt,powerbridge-m|\
 	ubnt,rocket-5ac-lite|\
 	ubnt,rocket-m|\
@@ -114,6 +115,12 @@ ath79_setup_interfaces()
 	ocedo,ursus|\
 	ubnt,unifi-ap-outdoor-plus)
 		ucidef_set_interface_lan "eth0 eth1"
+		;;
+	atheros,db120)
+		ucidef_add_switch "switch0" \
+			"0@eth0" "2:lan" "3:lan" "4:lan" "5:lan" "1:wan"
+		ucidef_add_switch "switch1" \
+			"0@eth1" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan"
 		;;
 	avm,fritz4020|\
 	pcs,cr3000|\
