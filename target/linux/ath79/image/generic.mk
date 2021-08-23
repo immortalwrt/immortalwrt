@@ -2232,7 +2232,7 @@ define Device/xwrt_csac
   KERNEL_SIZE := 1472k
   IMAGE_SIZE := 16000k
   IMAGES += factory-10.bin factory-05.bin
-  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 14528k | append-kernel | append-metadata | check-size
+  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 14528k | append-kernel | append-metadata | check-size $$$$(IMAGE_SIZE)
   IMAGE/factory-10.bin := $$(IMAGE/sysupgrade.bin) | xwrt_csac10-factory $(1)
   IMAGE/factory-05.bin := $$(IMAGE/sysupgrade.bin) | xwrt_csac05-factory $(1)
   DEVICE_PACKAGES := kmod-leds-reset kmod-ath10k-ct ath10k-firmware-qca9888-ct kmod-usb-core kmod-usb2
