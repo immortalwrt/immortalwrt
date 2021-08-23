@@ -33,9 +33,9 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
         ```
       </details>
     - Method 2:
-    ```bash
-    curl -s https://build-scripts.project-openwrt.eu.org/init_build_environment.sh | sudo bash
-    ```
+      ```bash
+      curl -s https://build-scripts.project-openwrt.eu.org/init_build_environment.sh | sudo bash
+      ```
 
   - You can also download and use prebuilt container directly:<br/>
     See #Quickstart - Build image via OPDE
@@ -79,14 +79,14 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
 
       - For Windows User:
         1. Create a volume 'immortalwrt' and clone ImmortalWrt source into volume.
-        ```bash
-        docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt .
-        ```
+          ```bash
+          docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt .
+          ```
         2. Enter docker container and update feeds.
-        ```bash
-        docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base
-        ./scripts/feeds update -a && ./scripts/feeds install -a
-        ```
+          ```bash
+          docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base
+          ./scripts/feeds update -a && ./scripts/feeds install -a
+          ```
         - Tips: ImmortalWrt source code can not be cloned into NTFS filesystem (symbol link problem during compilation), but docker volume is fine.
 
       - Proxy Support:
