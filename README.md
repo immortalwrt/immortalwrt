@@ -37,17 +37,14 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
     curl -s https://build-scripts.project-openwrt.eu.org/init_build_environment.sh | sudo bash
     ```
 
-  - You can also download and use prebuilt container directly:
-  ```bash
-  docker pull immortalwrt/opde:base
-  # docker run --rm -it immortalwrt/opde:base
-  ```
+  - You can also download and use prebuilt container directly:<br/>
+    See #Quickstart - Build image via OPDE
 
   Note:
   - For the for love of god please do __not__ use ROOT user to build your image.
   - Using CPUs based on other architectures should be fine to compile ImmortalWrt, but more hacks are needed - No warranty at all.
   - You must __not__ have spaces in PATH or in the work folders on the drive.
-  - If you're using Windows Subsystem for Linux (or WSL), removing Windows folders from PATH are required, please see [Build system setup WSL](https://openwrt.org/docs/guide-developer/build-system/wsl) documentation.
+  - If you're using Windows Subsystem for Linux (or WSL), removing Windows folders from PATH is required, please see [Build system setup WSL](https://openwrt.org/docs/guide-developer/build-system/wsl) documentation.
   - Using macOS as the host build OS is __not__ recommended. No warranty at all. You can get tips from [Build system setup macOS](https://openwrt.org/docs/guide-developer/build-system/buildroot.exigence.macosx) documentation.
     - As you're building ImmortalWrt, patching or disabling UPX tools is also required.
   - For more details, please see [Build system setup](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem) documentation.
@@ -65,14 +62,20 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
     <details>
       <summary>Build image via OPDE</summary>
 
+      - Pull the prebuilt container:
+        ```bash
+        docker pull immortalwrt/opde:base
+        # docker run --rm -it immortalwrt/opde:base
+        ```
+
       - For Linux User:
-      ```bash
-      git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
-      docker run --rm -it \
-          -v $PWD:/openwrt \
-        immortalwrt/opde:base zsh
-      ./scripts/feeds update -a && ./scripts/feeds install -a
-      ```
+        ```bash
+        git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
+        docker run --rm -it \
+            -v $PWD:/openwrt \
+          immortalwrt/opde:base zsh
+        ./scripts/feeds update -a && ./scripts/feeds install -a
+        ```
 
       - For Windows User:
         1. Create a volume 'immortalwrt' and clone ImmortalWrt source into volume.
@@ -87,27 +90,27 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
         - Tips: ImmortalWrt source code can not be cloned into NTFS filesystem (symbol link problem during compilation), but docker volume is fine.
 
       - Proxy Support:
-      ```bash
-      docker run --rm -it \
-        -e   all_proxy=http://example.com:1081 \
-        -e  http_proxy=http://example.com:1081 \
-        -e https_proxy=http://example.com:1081 \
-        -e   ALL_PROXY=http://example.com:1081 \
-        -e  HTTP_PROXY=http://example.com:1081 \
-        -e HTTPS_PROXY=http://example.com:1081 \
-        -v $PWD:/openwrt \
-        immortalwrt/opde:base zsh
-      ```
+        ```bash
+        docker run --rm -it \
+          -e   all_proxy=http://example.com:1081 \
+          -e  http_proxy=http://example.com:1081 \
+          -e https_proxy=http://example.com:1081 \
+          -e   ALL_PROXY=http://example.com:1081 \
+          -e  HTTP_PROXY=http://example.com:1081 \
+          -e HTTPS_PROXY=http://example.com:1081 \
+          -v $PWD:/openwrt \
+          immortalwrt/opde:base zsh
+        ```
 
-      > Recommand `http` rather `socks5` protocol
-      >
-      > IP can not be `localhost` or `127.0.0.1`
+        > Recommand `http` rather `socks5` protocol
+        >
+        > IP can not be `localhost` or `127.0.0.1`
 
       - For Windows User, binary is still in volume. It can be copied to outside via followed command:
-      ```bash
-      docker run --rm -v <D:\path\to\dir>:/dst -v openwrt:/openwrt -w /dst immortalwrt:base cp /openwrt/bin /dst
-      ```
-      > Make sure `D:\path]to\dir` has been appended in [File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing).
+        ```bash
+        docker run --rm -v <D:\path\to\dir>:/dst -v openwrt:/openwrt -w /dst immortalwrt:base cp /openwrt/bin /dst
+        ```
+        > Make sure `D:\path\to\dir` has been appended in [File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing).
 
     </details>
 
