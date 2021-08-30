@@ -883,7 +883,7 @@ define Device/dlink_dap-2695-a1
   SOC := qca9558
   DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
   DEVICE_VENDOR := D-Link
-  DEVICE_MODEL := DAP-2965
+  DEVICE_MODEL := DAP-2695
   DEVICE_VARIANT := A1
   IMAGES := factory.img sysupgrade.bin
   IMAGE_SIZE := 15360k
@@ -1732,7 +1732,6 @@ define Device/openmesh_common_64k
   DEVICE_VENDOR := OpenMesh
   DEVICE_PACKAGES := uboot-envtools
   IMAGE_SIZE := 7808k
-  BLOCKSIZE := 64k
   OPENMESH_CE_TYPE :=
   KERNEL := kernel-bin | append-dtb | lzma | uImage lzma | \
 	pad-to $$(BLOCKSIZE)
@@ -2005,7 +2004,6 @@ define Device/plasmacloud_pa300-common
   DEVICE_VENDOR := Plasma Cloud
   DEVICE_PACKAGES := uboot-envtools
   IMAGE_SIZE := 7168k
-  BLOCKSIZE := 64k
   IMAGES += factory.bin
   KERNEL := kernel-bin | append-dtb | lzma | uImage lzma | pad-to $$(BLOCKSIZE)
   IMAGE/factory.bin := append-rootfs | pad-rootfs | openmesh-image ce_type=PA300
