@@ -274,7 +274,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  	}
  
  	if (after(tcb->end_seq, tp->snd_nxt) || tcb->seq == tcb->end_seq)
-@@ -2125,6 +2192,12 @@ static int tcp_mtu_probe(struct sock *sk
+@@ -2126,6 +2193,12 @@ static int tcp_mtu_probe(struct sock *sk
  	return -1;
  }
  
@@ -287,7 +287,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  /* TCP Small Queues :
   * Control number of packets in qdisc/devices to two packets / or ~1 ms.
   * (These limits are doubled for retransmits)
-@@ -2208,6 +2281,9 @@ static bool tcp_write_xmit(struct sock *
+@@ -2209,6 +2282,9 @@ static bool tcp_write_xmit(struct sock *
  	while ((skb = tcp_send_head(sk))) {
  		unsigned int limit;
  
@@ -297,7 +297,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  		tso_segs = tcp_init_tso_segs(skb, mss_now);
  		BUG_ON(!tso_segs);
  
-@@ -2932,6 +3008,10 @@ void tcp_xmit_retransmit_queue(struct so
+@@ -2933,6 +3009,10 @@ void tcp_xmit_retransmit_queue(struct so
  
  		if (skb == tcp_send_head(sk))
  			break;

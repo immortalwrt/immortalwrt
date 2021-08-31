@@ -114,7 +114,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		if (nval != oval)
  			continue;
  
-@@ -2154,7 +2154,7 @@ static bool tcp_small_queue_check(struct
+@@ -2155,7 +2155,7 @@ static bool tcp_small_queue_check(struct
  		    skb->prev == sk->sk_write_queue.next)
  			return false;
  
@@ -123,7 +123,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		/* It is possible TX completion already happened
  		 * before we set TSQ_THROTTLED, so we must
  		 * test again the condition.
-@@ -2252,8 +2252,8 @@ static bool tcp_write_xmit(struct sock *
+@@ -2253,8 +2253,8 @@ static bool tcp_write_xmit(struct sock *
  		    unlikely(tso_fragment(sk, skb, limit, mss_now, gfp)))
  			break;
  
@@ -134,7 +134,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		if (tcp_small_queue_check(sk, skb, 0))
  			break;
  
-@@ -3577,8 +3577,6 @@ void __tcp_send_ack(struct sock *sk, u32
+@@ -3578,8 +3578,6 @@ void __tcp_send_ack(struct sock *sk, u32
  	/* We do not want pure acks influencing TCP Small Queues or fq/pacing
  	 * too much.
  	 * SKB_TRUESIZE(max(1 .. 66, MAX_TCP_HEADER)) is unfortunately ~784
@@ -165,7 +165,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	bh_unlock_sock(sk);
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -404,7 +404,7 @@ static void tcp_v6_err(struct sk_buff *s
+@@ -419,7 +419,7 @@ static void tcp_v6_err(struct sk_buff *s
  		if (!sock_owned_by_user(sk))
  			tcp_v6_mtu_reduced(sk);
  		else if (!test_and_set_bit(TCP_MTU_REDUCED_DEFERRED,

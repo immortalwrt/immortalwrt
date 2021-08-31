@@ -87,7 +87,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  static int netif_rx_internal(struct sk_buff *skb);
  static int call_netdevice_notifiers_info(unsigned long val,
-@@ -5901,6 +5902,11 @@ void __napi_schedule(struct napi_struct
+@@ -5902,6 +5903,11 @@ void __napi_schedule(struct napi_struct
  {
  	unsigned long flags;
  
@@ -99,7 +99,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	local_irq_save(flags);
  	____napi_schedule(this_cpu_ptr(&softnet_data), n);
  	local_irq_restore(flags);
-@@ -5948,6 +5954,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
+@@ -5953,6 +5959,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
   */
  void __napi_schedule_irqoff(struct napi_struct *n)
  {
@@ -108,10 +108,10 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 +		return;
 +	}
 +
- 	____napi_schedule(this_cpu_ptr(&softnet_data), n);
- }
- EXPORT_SYMBOL(__napi_schedule_irqoff);
-@@ -6196,6 +6207,82 @@ static void init_gro_hash(struct napi_st
+ 	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
+ 		____napi_schedule(this_cpu_ptr(&softnet_data), n);
+ 	else
+@@ -6204,6 +6215,82 @@ static void init_gro_hash(struct napi_st
  	napi->gro_bitmask = 0;
  }
  
@@ -194,7 +194,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
  		    int (*poll)(struct napi_struct *, int), int weight)
  {
-@@ -6213,6 +6300,7 @@ void netif_napi_add(struct net_device *d
+@@ -6221,6 +6308,7 @@ void netif_napi_add(struct net_device *d
  #ifdef CONFIG_NETPOLL
  	napi->poll_owner = -1;
  #endif
@@ -202,7 +202,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	set_bit(NAPI_STATE_SCHED, &napi->state);
  	set_bit(NAPI_STATE_NPSVC, &napi->state);
  	list_add_rcu(&napi->dev_list, &dev->napi_list);
-@@ -6253,6 +6341,7 @@ static void flush_gro_hash(struct napi_s
+@@ -6261,6 +6349,7 @@ static void flush_gro_hash(struct napi_s
  void netif_napi_del(struct napi_struct *napi)
  {
  	might_sleep();
@@ -210,7 +210,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (napi_hash_del(napi))
  		synchronize_net();
  	list_del_init(&napi->dev_list);
-@@ -6265,49 +6354,19 @@ EXPORT_SYMBOL(netif_napi_del);
+@@ -6273,49 +6362,19 @@ EXPORT_SYMBOL(netif_napi_del);
  
  static int napi_poll(struct napi_struct *n, struct list_head *repoll)
  {
@@ -264,7 +264,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	/* Some drivers may have called napi_schedule
  	 * prior to exhausting their budget.
  	 */
-@@ -9911,6 +9970,10 @@ static int __init net_dev_init(void)
+@@ -9919,6 +9978,10 @@ static int __init net_dev_init(void)
  		sd->backlog.weight = weight_p;
  	}
  

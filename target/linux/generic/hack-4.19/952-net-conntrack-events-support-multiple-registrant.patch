@@ -120,7 +120,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  	depends on NETFILTER_ADVANCED
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -2448,6 +2448,10 @@ int nf_conntrack_init_net(struct net *ne
+@@ -2453,6 +2453,10 @@ int nf_conntrack_init_net(struct net *ne
  	ret = nf_conntrack_proto_pernet_init(net);
  	if (ret < 0)
  		goto err_proto;
@@ -294,7 +294,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  #include <linux/slab.h>
  #include <linux/siphash.h>
  
-@@ -678,14 +683,22 @@ static size_t ctnetlink_nlmsg_size(const
+@@ -681,14 +686,22 @@ static size_t ctnetlink_nlmsg_size(const
  	       ;
  }
  
@@ -317,7 +317,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3482,9 +3495,15 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3485,9 +3498,15 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS

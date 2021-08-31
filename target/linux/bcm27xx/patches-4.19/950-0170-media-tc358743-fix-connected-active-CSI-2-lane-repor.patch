@@ -68,7 +68,7 @@ Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
  
  	return 0;
  }
-@@ -2054,6 +2055,7 @@ static int tc358743_probe(struct i2c_cli
+@@ -2055,6 +2056,7 @@ static int tc358743_probe(struct i2c_cli
  	if (pdata) {
  		state->pdata = *pdata;
  		state->bus.flags = V4L2_MBUS_CSI2_CONTINUOUS_CLOCK;
