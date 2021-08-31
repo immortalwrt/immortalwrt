@@ -1,26 +1,7 @@
+// SPDX-License-Identifier: BSD-2-Clause
 /*
   Copyright (c) 2014, Matthias Schiffer <mschiffer@universe-factory.net>
   All rights reserved.
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-
-    1. Redistributions of source code must retain the above copyright notice,
-       this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice,
-       this list of conditions and the following disclaimer in the documentation
-       and/or other materials provided with the distribution.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
@@ -1930,6 +1911,37 @@ static struct device_info boards[] = {
 		.last_sysupgrade_partition = "file-system",
 	},
 
+	/** Firmware layout for the TL-WR941HP v1 */
+	{
+		.id     = "TL-WR941HP-V1",
+		.vendor = "",
+		.support_list =
+			"SupportList:\n"
+			"{product_name:TL-WR941HP,product_ver:1.0.0,special_id:00000000}\n",
+		.part_trail = 0x00,
+		.soft_ver = NULL,
+
+		.partitions = {
+			{"fs-uboot", 0x00000, 0x20000},
+			{"firmware", 0x20000, 0x730000},
+			{"default-mac", 0x750000, 0x00200},
+			{"pin", 0x750200, 0x00200},
+			{"product-info", 0x750400, 0x0fc00},
+			{"soft-version", 0x760000, 0x0b000},
+			{"support-list", 0x76b000, 0x04000},
+			{"profile", 0x770000, 0x04000},
+			{"default-config", 0x774000, 0x0b000},
+			{"user-config", 0x780000, 0x40000},
+			{"partition-table", 0x7c0000, 0x10000},
+			{"log", 0x7d0000, 0x20000},
+			{"radio", 0x7f0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system",
+	},
+
 	/** Firmware layout for the TL-WR942N V1 */
 	{
 		.id     = "TLWR942NV1",
@@ -2375,6 +2387,46 @@ static struct device_info boards[] = {
 			"{product_name:RE450,product_ver:3.0.0,special_id:41530000}\r\n"
 			"{product_name:RE450,product_ver:3.0.0,special_id:4B520000}\r\n"
 			"{product_name:RE450,product_ver:3.0.0,special_id:42520000}\r\n",
+		.part_trail = 0x00,
+		.soft_ver = NULL,
+
+		/* We're using a dynamic kernel/rootfs split here */
+		.partitions = {
+			{"fs-uboot", 0x00000, 0x20000},
+			{"default-mac", 0x20000, 0x00020},
+			{"pin", 0x20020, 0x00020},
+			{"product-info", 0x21000, 0x01000},
+			{"partition-table", 0x22000, 0x02000},
+			{"soft-version", 0x24000, 0x01000},
+			{"support-list", 0x25000, 0x01000},
+			{"profile", 0x26000, 0x08000},
+			{"user-config", 0x2e000, 0x10000},
+			{"default-config", 0x3e000, 0x10000},
+			{"config-info", 0x4e000, 0x00400},
+			{"firmware", 0x50000, 0x7a0000},
+			{"radio", 0x7f0000, 0x10000},
+			{NULL, 0, 0}
+		},
+
+		.first_sysupgrade_partition = "os-image",
+		.last_sysupgrade_partition = "file-system"
+	},
+
+	/** Firmware layout for the RE455 v1 */
+	{
+		.id     = "RE455-V1",
+		.vendor = "",
+		.support_list =
+			"SupportList:\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:00000000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:55530000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:45550000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:4A500000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:43410000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:41550000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:41530000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:4B520000}\r\n"
+			"{product_name:RE455,product_ver:1.0.0,special_id:42520000}\r\n",
 		.part_trail = 0x00,
 		.soft_ver = NULL,
 

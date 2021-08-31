@@ -308,6 +308,33 @@ define Device/dlink_dwr-960
 endef
 TARGET_DEVICES += dlink_dwr-960
 
+define Device/domywifi_dm202
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := DomyWifi
+  DEVICE_MODEL := DM202
+  DEVICE_PACKAGES := kmod-mt76x0e kmod-sdhci-mt7620 kmod-usb2 kmod-usb-ohci
+endef
+TARGET_DEVICES += domywifi_dm202
+
+define Device/domywifi_dm203
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := DomyWifi
+  DEVICE_MODEL := DM203
+  DEVICE_PACKAGES := kmod-mt76x0e kmod-sdhci-mt7620 kmod-usb2 kmod-usb-ohci
+endef
+TARGET_DEVICES += domywifi_dm203
+
+define Device/domywifi_dw22d
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := DomyWifi
+  DEVICE_MODEL := DW22D
+  DEVICE_PACKAGES := kmod-mt76x0e kmod-sdhci-mt7620 kmod-usb2 kmod-usb-ohci
+endef
+TARGET_DEVICES += domywifi_dw22d
+
 define Device/dovado_tiny-ac
   SOC := mt7620a
   IMAGE_SIZE := 7872k
@@ -327,7 +354,7 @@ define Device/edimax_br-6478ac-v2
   IMAGE_SIZE := 7744k
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
 	edimax-header -s CSYS -m RN68 -f 0x70000 -S 0x01100000 | pad-rootfs | \
-	append-metadata | check-size
+	check-size | append-metadata
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci \
 	kmod-usb-ledtrig-usbport
 endef
@@ -341,7 +368,7 @@ define Device/edimax_ew-7476rpc
   IMAGE_SIZE := 7744k
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
 	edimax-header -s CSYS -m RN79 -f 0x70000 -S 0x01100000 | pad-rootfs | \
-	append-metadata | check-size
+	check-size | append-metadata
   DEVICE_PACKAGES := kmod-mt76x2 kmod-phy-realtek
 endef
 TARGET_DEVICES += edimax_ew-7476rpc
@@ -354,7 +381,7 @@ define Device/edimax_ew-7478ac
   IMAGE_SIZE := 7744k
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
 	edimax-header -s CSYS -m RN70 -f 0x70000 -S 0x01100000 | pad-rootfs | \
-	append-metadata | check-size
+	check-size | append-metadata
   DEVICE_PACKAGES := kmod-mt76x2 kmod-phy-realtek
 endef
 TARGET_DEVICES += edimax_ew-7478ac
@@ -367,7 +394,7 @@ define Device/edimax_ew-7478apc
   IMAGE_SIZE := 7744k
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
 	edimax-header -s CSYS -m RN75 -f 0x70000 -S 0x01100000 | pad-rootfs | \
-	append-metadata | check-size
+	check-size | append-metadata
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci \
 	kmod-usb-ledtrig-usbport
 endef
@@ -407,7 +434,7 @@ define Device/fon_fon2601
   DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci
   KERNEL_INITRAMFS := $$(KERNEL) | uimage-padhdr
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | uimage-padhdr | \
-	pad-rootfs | append-metadata | check-size
+	pad-rootfs | check-size | append-metadata
 endef
 TARGET_DEVICES += fon_fon2601
 
@@ -807,6 +834,27 @@ define Device/ohyeah_oy-0001
 endef
 TARGET_DEVICES += ohyeah_oy-0001
 
+define Device/phicomm_k2-v22.4
+  SOC := mt7620a
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Phicomm
+  DEVICE_MODEL := K2
+  DEVICE_VARIANT:= v22.4 or older
+  DEVICE_PACKAGES := kmod-mt76x2
+  SUPPORTED_DEVICES += psg1218 psg1218a phicomm,psg1218a
+endef
+TARGET_DEVICES += phicomm_k2-v22.4
+
+define Device/phicomm_k2-v22.5
+  SOC := mt7620a
+  IMAGE_SIZE := 7552k
+  DEVICE_VENDOR := Phicomm
+  DEVICE_MODEL := K2
+  DEVICE_VARIANT:= v22.5 or newer
+  DEVICE_PACKAGES := kmod-mt76x2
+endef
+TARGET_DEVICES += phicomm_k2-v22.5
+
 define Device/phicomm_k2g
   SOC := mt7620a
   IMAGE_SIZE := 7552k
@@ -825,17 +873,6 @@ define Device/phicomm_psg1208
   SUPPORTED_DEVICES += psg1208
 endef
 TARGET_DEVICES += phicomm_psg1208
-
-define Device/phicomm_psg1218a
-  SOC := mt7620a
-  IMAGE_SIZE := 7872k
-  DEVICE_VENDOR := Phicomm
-  DEVICE_MODEL := PSG1218
-  DEVICE_VARIANT:= Ax
-  DEVICE_PACKAGES := kmod-mt76x2
-  SUPPORTED_DEVICES += psg1218 psg1218a
-endef
-TARGET_DEVICES += phicomm_psg1218a
 
 define Device/phicomm_psg1218b
   SOC := mt7620a
