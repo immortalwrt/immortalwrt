@@ -13,6 +13,7 @@ MAINTAINER:=Álvaro Fernández Rojas <noltari@gmail.com>
 SUBTARGETS:=bcm2708 bcm2709 bcm2710 bcm2711
 
 KERNEL_PATCHVER:=5.4
+KERNEL_TESTING_PATCHVER:=5.10
 
 define Target/Description
 	Build firmware image for Broadcom BCM27xx SoC devices.
