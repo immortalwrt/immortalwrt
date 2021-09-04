@@ -73,9 +73,7 @@ DEFAULT_PACKAGES.tweak:=\
 	luci-app-vlmcsd \
 	luci-app-wol \
 	luci-compat \
-	luci-lib-base \
 	luci-lib-fs \
-	luci-lib-ipkg \
 	luci-proto-relay \
 	wget-ssl
 
