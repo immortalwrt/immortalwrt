@@ -72,5 +72,5 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  	bbr->prior_cwnd = 0;
 -	bbr->tso_segs_goal = 0;	 /* default segs per skb until first ACK */
  	bbr->rtt_cnt = 0;
- 	bbr->next_rtt_delivered = 0;
+ 	bbr->next_rtt_delivered = tp->delivered;
  	bbr->prev_ca_state = TCP_CA_Open;
