@@ -7,6 +7,13 @@ Compared the official one, we allow to use hacks or non-upstreamable patches / m
 
 Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: __password__.
 
+## Download
+Built firmware images are available for many architectures and come with a package selection to be used as WiFi home router. To quickly find a factory image usable to migrate from a vendor stock firmware to ImmortalWrt, try the *Firmware Selector*.
+
+- [ImmortalWrt Firmware Selector](https://firmware-selector.immortalwrt.org/)
+
+If your device is supported, please follow the **Info** link to see install instructions or consult the support resources listed below.
+
 ## Development
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
 
