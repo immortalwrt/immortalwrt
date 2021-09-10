@@ -34,7 +34,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
       </details>
     - Method 2:
       ```bash
-      curl -s https://build-scripts.project-openwrt.eu.org/init_build_environment.sh | sudo bash
+      curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh | sudo bash
       ```
 
   - You can also download and use prebuilt container directly:<br/>
