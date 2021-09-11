@@ -126,6 +126,11 @@ xzwifi,creativebox-v1)
 xiaomi,mi-router-ac2100)
 	ucidef_set_led_switch "wan" "wan" "blue:wan" "switch0" "0x1"
 	;;
+xiaomi,mi-router-cr6606|\
+xiaomi,mi-router-cr6608|\
+xiaomi,mi-router-cr6609)
+	ucidef_set_led_netdev "internet" "Internet" "blue:net" "wan"
+	;;
 xiaomi,redmi-router-ac2100)
 	ucidef_set_led_switch "wan" "wan" "white:wan" "switch0" "0x1"
 	;;
