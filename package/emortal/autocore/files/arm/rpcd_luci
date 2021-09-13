@@ -644,7 +644,7 @@ local methods = {
 			local sys = require "luci.sys"
 			local cpuusage = {}
 
-			cpuusage.cpuusage = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%%\", 100 - $8)}'") or "6%"
+			cpuusage.cpuusage = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\", 100 - $8)}'") or "6%"
 			return cpuusage
 		end
 	},
