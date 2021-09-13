@@ -780,7 +780,7 @@ endef
 TARGET_DEVICES += wrtnode_wrtnode2r
 
 define Device/xiaomi_mi-router-4a-100m
-  IMAGE_SIZE := 14976k
+  IMAGE_SIZE := 15808k
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router 4A
   DEVICE_VARIANT := 100M Edition
