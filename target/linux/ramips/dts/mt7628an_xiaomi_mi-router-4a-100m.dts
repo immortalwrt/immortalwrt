@@ -48,56 +48,57 @@
 &spi0 {
 	status = "okay";
 
-	flash0: flash@0 {
+	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <10000000>;
+		spi-max-frequency = <80000000>;
+		m25p,fast-read;
 
-		partitions: partitions {
+		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "bootloader";
-				reg = <0x0 0x20000>;
+				label = "u-boot";
+				reg = <0x0 0x30000>;
 				read-only;
 			};
 
-			partition@20000 {
-				label = "config";
-				reg = <0x20000 0x10000>;
-				read-only;
-			};
-
-			factory: partition@30000 {
-				label = "factory";
+			partition@30000 {
+				label = "hw_panic";
 				reg = <0x30000 0x10000>;
 				read-only;
 			};
 
-			partition@40000 {
-				label = "crash";
+			factory: partition@40000 {
+				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
 			};
 
 			partition@50000 {
-				label = "cfg_bak";
-				reg = <0x50000 0x10000>;
+				compatible = "denx,uimage";
+				label = "firmware";
+				reg = <0x50000 0xf70000>;
+			};
+
+			partition@fc0000 {
+				label = "oem";
+				reg = <0xfc0000 0x20000>;
 				read-only;
 			};
 
-			partition@60000 {
-				label = "overlay";
-				reg = <0x60000 0x100000>;
+			bdinfo: partition@fe0000 {
+				label = "bdinfo";
+				reg = <0xfe0000 0x10000>;
 				read-only;
-			};		
-			
-			partition@160000 {
-				label = "firmware";
-				reg = <0x160000 0xea0000>;
-				compatible = "denx,uimage";
+			};
+
+			partition@ff0000 {
+				label = "backup";
+				reg = <0xff0000 0x10000>;
+				read-only;
 			};
 		};
 	};
