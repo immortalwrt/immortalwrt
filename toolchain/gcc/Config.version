@@ -1,5 +1,5 @@
-config GCC_VERSION_8
-	default y if GCC_USE_VERSION_8
+config GCC_VERSION_10
+	default y if GCC_USE_VERSION_10
 	bool
 
 config GCC_VERSION_11
