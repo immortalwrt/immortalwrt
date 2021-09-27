@@ -1,0 +1,14 @@
+--- a/balloc.c
++++ b/balloc.c
+@@ -7,8 +7,10 @@
+ #include <linux/blkdev.h>
+ #include <linux/slab.h>
+ #include <linux/buffer_head.h>
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+ #include <linux/sched/signal.h>
++#else
++#include <linux/sched.h>
+ #endif
+ 
+ #include "exfat_raw.h"
