@@ -63,6 +63,7 @@ ath79_setup_interfaces()
 	tplink,cpe510-v3|\
 	tplink,cpe610-v1|\
 	tplink,cpe610-v2|\
+	tplink,cpe710-v1|\
 	tplink,eap225-outdoor-v1|\
 	tplink,eap225-v3|\
 	tplink,eap245-v1|\
@@ -72,6 +73,7 @@ ath79_setup_interfaces()
 	tplink,re450-v2|\
 	tplink,re450-v3|\
 	tplink,re455-v1|\
+	tplink,tl-wa1201-v2|\
 	tplink,tl-wr902ac-v1|\
 	ubnt,bullet-ac|\
 	ubnt,bullet-m-ar7240|\

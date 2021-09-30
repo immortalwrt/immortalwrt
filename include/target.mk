@@ -52,8 +52,6 @@ DEFAULT_PACKAGES.router:=\
 # For easy usage
 DEFAULT_PACKAGES.tweak:=\
 	block-mount \
-	ca-certificates \
-	coreutils \
 	default-settings \
 	kmod-ipt-raw \
 	kmod-nf-nathelper \
@@ -64,9 +62,7 @@ DEFAULT_PACKAGES.tweak:=\
 	luci-compat \
 	luci-lib-base \
 	luci-lib-fs \
-	luci-lib-ipkg \
-	luci-proto-relay \
-	wget-ssl
+	luci-lib-ipkg
 
 ifneq ($(DUMP),)
   all: dumpinfo
