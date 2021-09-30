@@ -37,7 +37,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  	bbr->prior_cwnd = 0;
 +	tp->snd_ssthresh = TCP_INFINITE_SSTHRESH;
  	bbr->rtt_cnt = 0;
- 	bbr->next_rtt_delivered = 0;
+ 	bbr->next_rtt_delivered = tp->delivered;
  	bbr->prev_ca_state = TCP_CA_Open;
 @@ -861,7 +864,7 @@ static u32 bbr_undo_cwnd(struct sock *sk
  static u32 bbr_ssthresh(struct sock *sk)

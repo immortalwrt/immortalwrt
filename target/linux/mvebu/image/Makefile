@@ -70,11 +70,11 @@ endef
 
 define Build/uDPU-firmware
 	(rm -fR $@-fw; mkdir -p $@-fw)
-	$(CP) $(BIN_DIR)/$(IMAGE_PREFIX)-initramfs.itb $@-fw/recovery.itb
+	$(CP) $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-initramfs.itb $@-fw/recovery.itb
 	$(CP) $@-boot.scr $@-fw/boot.scr
 	(cd $(TARGET_DIR); $(TAR) -cvzf $@-fw/rootfs.tgz .)
 	(cd $@.boot; $(TAR) -cvzf $@-fw/boot.tgz .)
-	(cd $@-fw; $(TAR) -cvzf $(KDIR_TMP)/$(IMAGE_PREFIX)-firmware.tgz .)
+	(cd $@-fw; $(TAR) -cvzf $(KDIR_TMP)/$(DEVICE_IMG_PREFIX)-firmware.tgz .)
 endef
 
 define Device/Default

@@ -1,6 +1,6 @@
 --- a/arch/x86/kernel/fpu/xstate.c
 +++ b/arch/x86/kernel/fpu/xstate.c
-@@ -703,8 +703,14 @@ void __init fpu__init_system_xstate(void
+@@ -735,8 +735,14 @@ void __init fpu__init_system_xstate(void
  	WARN_ON_FPU(!on_boot_cpu);
  	on_boot_cpu = 0;
  

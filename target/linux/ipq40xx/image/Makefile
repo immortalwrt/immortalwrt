@@ -9,7 +9,7 @@ define Device/Default
 	PROFILES := Default
 	KERNEL_DEPENDS = $$(wildcard $(DTS_DIR)/$$(DEVICE_DTS).dts)
 	KERNEL_INITRAMFS_PREFIX := $$(IMG_PREFIX)-$(1)-initramfs
-	KERNEL_PREFIX := $$(IMAGE_PREFIX)
+	KERNEL_PREFIX := $$(DEVICE_IMG_PREFIX)
 	KERNEL_LOADADDR := 0x80208000
 	IMAGES := sysupgrade.bin
 	IMAGE/sysupgrade.bin = sysupgrade-tar | append-metadata
@@ -426,6 +426,7 @@ define Device/engenius_emd1
 	IMAGES += factory.bin
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 	IMAGE/factory.bin := qsdk-ipq-factory-nor | check-size
+	DEVICE_PACKAGES := ipq-wifi-engenius_emd1
 endef
 TARGET_DEVICES += engenius_emd1
 
@@ -440,6 +441,7 @@ define Device/engenius_emr3500
 	IMAGES += factory.bin
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 	IMAGE/factory.bin := qsdk-ipq-factory-nor | check-size
+	DEVICE_PACKAGES := ipq-wifi-engenius_emr3500
 endef
 TARGET_DEVICES += engenius_emr3500
 

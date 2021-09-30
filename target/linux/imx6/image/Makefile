@@ -125,7 +125,7 @@ define Device/Default
   KERNEL_INSTALL := 1
   KERNEL_SUFFIX := -uImage
   KERNEL_NAME := zImage
-  KERNEL_PREFIX := $$(IMAGE_PREFIX)
+  KERNEL_PREFIX := $$(DEVICE_IMG_PREFIX)
   KERNEL := kernel-bin | uImage none
   IMAGES :=
 endef
@@ -157,12 +157,12 @@ define Device/ventana
 	kobs-ng
   KERNEL += | boot-overlay
   IMAGES := nand.ubi bootfs.tar.gz
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1).$$(2)
+  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(1).$$(2)
   UBINIZE_PARTS = boot=$$(KDIR_KERNEL_IMAGE).boot.ubifs=15
   BOOT_SCRIPT := bootscript-ventana
   IMAGE/nand.ubi := append-ubi
   IMAGE/bootfs.tar.gz := bootfs.tar.gz | install-dtb
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1)-$$(2)
+  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(1)-$$(2)
   PAGESIZE := 2048
   BLOCKSIZE := 128k
   MKUBIFS_OPTS := -m $$(PAGESIZE) -e 124KiB
@@ -215,7 +215,7 @@ define Device/apalis
   UBOOT := apalis_imx6
   FILESYSTEMS := squashfs
   IMAGES := combined.bin sysupgrade.bin
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1).$$(2)
+  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(1).$$(2)
   IMAGE/combined.bin := append-rootfs | pad-extra 128k | apalis-emmc
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   ARTIFACTS := recovery.scr

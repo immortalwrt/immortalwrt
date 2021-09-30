@@ -133,7 +133,7 @@
     connections. */
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -756,3 +756,26 @@ void br_port_flags_change(struct net_bri
+@@ -758,3 +758,26 @@ void br_port_flags_change(struct net_bri
  	if (mask & BR_NEIGH_SUPPRESS)
  		br_recalculate_neigh_suppress_enabled(br);
  }
