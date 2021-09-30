@@ -51,33 +51,15 @@ DEFAULT_PACKAGES.router:=\
 # For easy usage
 DEFAULT_PACKAGES.tweak:=\
 	block-mount \
-	ca-certificates \
-	coreutils \
-	ddns-scripts_aliyun \
-	ddns-scripts_dnspod \
 	default-settings \
 	kmod-ipt-raw \
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
 	luci \
-	luci-app-accesscontrol \
-	luci-app-arpbind \
-	luci-app-autoreboot \
 	luci-app-cpufreq \
-	luci-app-ddns \
 	luci-app-filetransfer \
-	luci-app-nlbwmon \
 	luci-app-turboacc \
-	luci-app-ramfree \
-	luci-app-ssr-plus \
-	luci-app-vlmcsd \
-	luci-app-wol \
-	luci-compat \
-	luci-lib-base \
-	luci-lib-fs \
-	luci-lib-ipkg \
-	luci-proto-relay \
-	wget-ssl
+	luci-lib-fs
 
 ifneq ($(DUMP),)
   all: dumpinfo
