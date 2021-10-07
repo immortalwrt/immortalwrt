@@ -1515,7 +1515,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  			return IRQ_HANDLED;
  		}
  	}
-@@ -920,12 +929,32 @@ int usb_otg_start(struct platform_device
+@@ -922,12 +931,32 @@ int usb_otg_start(struct platform_device
  	temp &= ~(PORTSC_PHY_TYPE_SEL | PORTSC_PTW);
  	switch (pdata->phy_mode) {
  	case FSL_USB2_PHY_ULPI:

@@ -1,6 +1,6 @@
 --- a/arch/x86/kernel/reboot.c
 +++ b/arch/x86/kernel/reboot.c
-@@ -487,6 +487,16 @@ static struct dmi_system_id __initdata r
+@@ -488,6 +488,16 @@ static struct dmi_system_id __initdata r
  		},
  	},
  

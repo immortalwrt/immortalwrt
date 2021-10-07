@@ -117,7 +117,7 @@ Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 +
 --- a/include/linux/compiler.h
 +++ b/include/linux/compiler.h
-@@ -612,4 +612,22 @@ unsigned long read_word_at_a_time(const
+@@ -614,4 +614,22 @@ unsigned long read_word_at_a_time(const
   */
  #define prevent_tail_call_optimization()	mb()
  
