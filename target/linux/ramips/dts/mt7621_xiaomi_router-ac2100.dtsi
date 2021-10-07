@@ -27,7 +27,8 @@
 &ethernet {
 	compatible = "mediatek,ralink-mt7621-eth";
 	mediatek,switch = <&gsw>;
-	mtd-mac-address = <&factory 0xe006>;
+	nvmem-cells = <&macaddr_factory_e000>;
+	nvmem-cell-names = "mac-address";
 };
 
 &switch0 {
