@@ -14,6 +14,7 @@ define Device/asus_rt-n56u
   DEVICE_MODEL := RT-N56U
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 swconfig
   SUPPORTED_DEVICES += rt-n56u
+  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n56u
 
