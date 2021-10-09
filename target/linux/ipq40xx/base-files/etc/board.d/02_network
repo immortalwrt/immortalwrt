@@ -44,6 +44,7 @@ ipq40xx_setup_interfaces()
 	linksys,ea8300|\
 	linksys,mr8300|\
 	mikrotik,hap-ac2|\
+	mikrotik,hap-ac3|\
 	unielec,u4019-32m)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan"
@@ -190,7 +191,8 @@ ipq40xx_setup_macs()
 		wan_mac=$(cat /sys/class/net/eth0/address)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
-	mikrotik,hap-ac2)
+	mikrotik,hap-ac2|\
+	mikrotik,hap-ac3)
 		wan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		lan_mac=$(macaddr_add $wan_mac 1)
 		label_mac="$wan_mac"
