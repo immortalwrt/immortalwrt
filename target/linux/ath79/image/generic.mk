@@ -1540,6 +1540,7 @@ define Device/nec_wg800hp
 	append-rootfs | pad-rootfs | check-size | \
 	xor-image -p 6A57190601121E4C004C1E1201061957 -x | nec-fw LASER_ATERM
   DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct-full-htt
+  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wg800hp
 
@@ -2232,6 +2233,7 @@ define Device/sitecom_wlr-7100
 	append-rootfs | pad-rootfs | check-size | \
 	senao-header -r 0x222 -p 0x53 -t 2
   IMAGE_SIZE := 7488k
+  DEFAULT := n
 endef
 TARGET_DEVICES += sitecom_wlr-7100
 
