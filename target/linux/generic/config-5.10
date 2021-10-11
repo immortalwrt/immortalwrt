@@ -4639,6 +4639,7 @@ CONFIG_PWRSEQ_SIMPLE=y
 # CONFIG_RANDOM_TRUST_CPU is not set
 # CONFIG_RAPIDIO is not set
 # CONFIG_RAS is not set
+# CONFIG_RAVE_SP_CORE is not set
 # CONFIG_RAW_DRIVER is not set
 # CONFIG_RBTREE_TEST is not set
 # CONFIG_RCU_BOOST is not set
