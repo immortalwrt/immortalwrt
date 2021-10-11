@@ -2,7 +2,7 @@
 
 mt76_path="/sys/kernel/debug/ieee80211/phy0/mt76/temperature"
 if [ -e "${mt76_path}" ]; then
-	mt76_temp=" $(cat "${mt76_path}" | awk -F ': ' '{print $2}')°C"
+	mt76_temp=" $(awk -F ': ' '{print $2}' "${mt76_path}")°C"
 fi
 
 wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
