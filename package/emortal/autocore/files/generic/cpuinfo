@@ -1,8 +1,12 @@
 #!/bin/sh
 
-cpu_arch="$(grep "model name" "/proc/cpuinfo" | head -n1 | awk -F ': ' '{print $2}')"
+cpu_arch="$(grep "model name" "/proc/cpuinfo" | head -n1 | awk -F ': ' '{print $2}' | xargs)"
 [ -z "${cpu_arch}" ] && cpu_arch="?"
-cpu_cores="$(grep "processor" "/proc/cpuinfo" | wc -l)"
+if grep -q "x86" "/etc/openwrt_release"; then
+	cpu_cores="$(grep "core id" "/proc/cpuinfo" | sort -u | wc -l)C $(grep -c "processor" "/proc/cpuinfo")T"
+else
+	cpu_cores="$(grep -c "processor" "/proc/cpuinfo")"
+fi
 
 if grep -q "bcm27xx" "/etc/openwrt_release"; then
 	cpu_freq="$(expr $(vcgencmd measure_clock arm | awk -F '=' '{print $2}') / 1000000)Mhz"
