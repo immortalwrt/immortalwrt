@@ -9,7 +9,7 @@
 
 / {
 	model = "XWRT CSAC";
-	compatible = "xwrt,csac2", "qca,qca9563";
+	compatible = "xwrt,csac", "qca,qca9563";
 
 	aliases {
 		led-boot = &led_sys;
