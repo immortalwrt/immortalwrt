@@ -389,6 +389,27 @@ endef
 
 $(eval $(call KernelPackage,drm-imx-ldb))
 
+define KernelPackage/drm-lima
+  SUBMENU:=$(VIDEO_MENU)
+  TITLE:=Mali-4xx GPU support
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm
+  KCONFIG:= \
+	CONFIG_DRM_VGEM \
+	CONFIG_DRM_GEM_CMA_HELPER=y \
+	CONFIG_DRM_LIMA
+  FILES:= \
+	$(LINUX_DIR)/drivers/gpu/drm/vgem/vgem.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/lima/lima.ko
+  AUTOLOAD:=$(call AutoProbe,lima vgem)
+endef
+
+define KernelPackage/drm-lima/description
+  Open-source reverse-engineered driver for Mali-4xx GPUs
+endef
+
+$(eval $(call KernelPackage,drm-lima))
+
 define KernelPackage/drm-radeon
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Radeon DRM support
