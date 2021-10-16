@@ -589,6 +589,7 @@ define Device/comfast_cf-e313ac
   DEVICE_PACKAGES := rssileds kmod-ath10k-ct-smallbuffers \
 	ath10k-firmware-qca9888-ct -swconfig -uboot-envtools
   IMAGE_SIZE := 7936k
+  DEFAULT := n
 endef
 TARGET_DEVICES += comfast_cf-e313ac
 
@@ -949,6 +950,7 @@ define Device/dlink_dir-825-b1
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-usb-ledtrig-usbport \
 	kmod-leds-reset kmod-owl-loader
   SUPPORTED_DEVICES += dir-825-b1
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dir-825-b1
 
@@ -1514,6 +1516,7 @@ define Device/nec_wf1200cr
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(IMAGE/default) | pad-rootfs -x 64 | seama | \
 	seama-seal | nec-enc ryztfyutcrqqo69d | check-size
+  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wf1200cr
 
@@ -1527,6 +1530,7 @@ define Device/nec_wg1200cr
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(IMAGE/default) | pad-rootfs -x 64 | seama | \
 	seama-seal | nec-enc 9gsiy9nzep452pad | check-size
+  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wg1200cr
 
@@ -1688,6 +1692,7 @@ define Device/ocedo_koala
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   SUPPORTED_DEVICES += koala
   IMAGE_SIZE := 7424k
+  DEFAULT := n
 endef
 TARGET_DEVICES += ocedo_koala
 
@@ -1696,6 +1701,7 @@ define Device/ocedo_raccoon
   DEVICE_VENDOR := Ocedo
   DEVICE_MODEL := Raccoon
   IMAGE_SIZE := 7424k
+  DEFAULT := n
 endef
 TARGET_DEVICES += ocedo_raccoon
 
@@ -1705,6 +1711,7 @@ define Device/ocedo_ursus
   DEVICE_MODEL := Ursus
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   IMAGE_SIZE := 7424k
+  DEFAULT := n
 endef
 TARGET_DEVICES += ocedo_ursus
 
@@ -1912,6 +1919,7 @@ define Device/openmesh_om5p-ac-v2
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct om-watchdog
   IMAGE_SIZE := 7808k
   SUPPORTED_DEVICES += om5p-acv2
+  DEFAULT := n
 endef
 TARGET_DEVICES += openmesh_om5p-ac-v2
 
@@ -2076,6 +2084,7 @@ define Device/qxwlan_e1700ac-v2-8m
   $(Device/qxwlan_e1700ac-v2)
   DEVICE_VARIANT := v2 (8M)
   IMAGE_SIZE := 7744k
+  DEFAULT := n
 endef
 TARGET_DEVICES += qxwlan_e1700ac-v2-8m
 
@@ -2142,6 +2151,7 @@ define Device/qxwlan_e600gac-v2-8m
   $(Device/qxwlan_e600gac-v2)
   DEVICE_VARIANT := v2 (8M)
   IMAGE_SIZE := 7744k
+  DEFAULT := n
 endef
 TARGET_DEVICES += qxwlan_e600gac-v2-8m
 
@@ -2363,6 +2373,7 @@ define Device/wd_mynet-wifi-rangeextender
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | cybertan-trx | \
 	addpattern | append-metadata
   SUPPORTED_DEVICES += mynet-rext
+  DEFAULT := n
 endef
 TARGET_DEVICES += wd_mynet-wifi-rangeextender
 
