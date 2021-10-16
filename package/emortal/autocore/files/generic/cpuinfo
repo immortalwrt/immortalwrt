@@ -19,6 +19,9 @@ elif grep -q "x86" "/etc/openwrt_release"; then
 elif [ -e "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq" ]; then
 	cpu_freq="$(expr $(cat "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq") / 1000)MHz"
 fi
+if ! grep -q "x86" "/etc/openwrt_release" && [ -e "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq" ]; then
+	big_cpu_freq="$(expr $(cat "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq") / 1000)MHz "
+fi
 
 if grep -q "bcm27xx" "/etc/openwrt_release"; then
 	cpu_temp="$(vcgencmd measure_temp | awk -F '=' '{print $2}' | awk -F "'" '{print $1}')°C"
@@ -36,5 +39,5 @@ elif [ -z "${cpu_temp}" ] || grep -q "ipq" "/etc/openwrt_release"; then
 elif [ -z "${cpu_freq}" ]; then
 	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_temp})"
 else
-	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq}, ${cpu_temp})"
+	echo -n "${cpu_arch} x ${cpu_cores} (${big_cpu_freq}${cpu_freq}, ${cpu_temp})"
 fi
