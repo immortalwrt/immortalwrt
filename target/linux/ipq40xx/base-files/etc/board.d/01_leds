@@ -60,7 +60,7 @@ engenius,ens620ext)
 	ucidef_set_led_switch "lan1" "LAN1" "${boardname}:green:lan1" "switch0" "0x10"
 	ucidef_set_led_switch "lan2" "LAN2" "${boardname}:green:lan2" "switch0" "0x20"
 	;;
-hugo,ac1200)
+leguang,ca100)
 	ucidef_set_led_default "green" "GREEN" "${boardname}:green:ctrl1" "1"
 	ucidef_set_led_default "red" "RED" "${boardname}:red:ctrl2" "1"
 	ucidef_set_led_default "blue" "BLUE" "${boardname}:blue:ctrl3" "1"

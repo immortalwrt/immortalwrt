@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /*
  * Copyright (c) 2019 Hugo Yuan <hugolxq@gmail.com>
  */
@@ -8,8 +9,8 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-	model = "Hugo AC1200";
-	compatible = "hugo,ac1200", "qcom,ipq4019";
+	model = "LEGUANG CA100";
+	compatible = "leguang,ca100", "qcom,ipq4019";
 
 	memory {
 		device_type = "memory";
@@ -132,17 +133,17 @@
 			compatible = "gpio-leds";
 
 			led1 {
-				label = "ac1200:green:ctrl1";
+				label = "ca100:green:ctrl1";
 				gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
 			};
 
 			led2 {
-				label = "ac1200:red:ctrl2";
+				label = "ca100:red:ctrl2";
 				gpios = <&tlmm 45 GPIO_ACTIVE_LOW>;
 			};
 
 			power: led3 {
-				label = "ac1200:blue:ctrl3";
+				label = "ca100:blue:ctrl3";
 				gpios = <&tlmm 46 GPIO_ACTIVE_LOW>;
 			};
 		};
