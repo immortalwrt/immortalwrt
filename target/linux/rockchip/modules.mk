@@ -43,3 +43,21 @@ define KernelPackage/drm-rockchip/description
 endef
 
 $(eval $(call KernelPackage,drm-rockchip))
+
+define KernelPackage/saradc-rockchip
+  SUBMENU:=$(IIO_MENU)
+  TITLE:=Rockchip SARADC support
+  DEPENDS:=@TARGET_rockchip +kmod-iio-core
+  KCONFIG:= \
+	CONFIG_RESET_CONTROLLER=y \
+  	CONFIG_ROCKCHIP_SARADC
+  FILES:= \
+	$(LINUX_DIR)/drivers/iio/adc/rockchip_saradc.ko
+  AUTOLOAD:=$(call AutoProbe,rockchip_saradc)
+endef
+
+define KernelPackage/saradc-rockchip/description
+  Support for the SARADC found in SoCs from Rockchip
+endef
+
+$(eval $(call KernelPackage,saradc-rockchip))
