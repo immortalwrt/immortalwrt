@@ -1,6 +1,6 @@
 From 04202df5cb497b1934c95211cf43784ef62245a4 Mon Sep 17 00:00:00 2001
 From: Tianling Shen <cnsztl@immortalwrt.org>
-Date: Sat, 19 Dec 2020 12:42:27 +0000
+Date: Mon, 18 Oct 2021 12:47:30 +0800
 Subject: [PATCH] rockchip: rk3399: overclock to 2.2/1.8 GHz
 
 It's stable enough to overclock cpu frequency to 2.2/1.8 GHz,
