@@ -18,7 +18,7 @@ KERNELNAME:=bzImage
 
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES += partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid kmod-e1000e kmod-igb kmod-igbvf \
+DEFAULT_PACKAGES += partx-utils mkf2fs fdisk e2fsprogs kmod-usb-hid kmod-e1000e kmod-igb kmod-igbvf \
 		    kmod-ixgbe kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-i40e kmod-iavf kmod-r8125 \
 		    kmod-r8168 kmod-8139cp kmod-8139too kmod-fs-f2fs autocore-x86 automount \
 		    kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via \
