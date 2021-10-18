@@ -47,7 +47,7 @@ $(eval $(call KernelPackage,drm-rockchip))
 define KernelPackage/saradc-rockchip
   SUBMENU:=$(IIO_MENU)
   TITLE:=Rockchip SARADC support
-  DEPENDS:=@TARGET_rockchip +kmod-iio-core
+  DEPENDS:=@TARGET_rockchip +kmod-industrialio-triggered-buffer
   KCONFIG:= \
 	CONFIG_RESET_CONTROLLER=y \
   	CONFIG_ROCKCHIP_SARADC
