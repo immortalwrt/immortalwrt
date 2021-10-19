@@ -103,7 +103,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  		return false;
  
  	if (!nf_ct_get_tuple_skb(&tuple, skb))
-@@ -1557,7 +1603,7 @@ static u8 cake_handle_diffserv(struct sk
+@@ -1561,7 +1607,7 @@ static u8 cake_handle_diffserv(struct sk
  	u16 *buf, buf_;
  	u8 dscp;
  

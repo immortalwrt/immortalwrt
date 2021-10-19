@@ -36,7 +36,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
  extern br_should_route_hook_t __rcu *br_should_route_hook;
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -654,3 +654,28 @@ void br_port_flags_change(struct net_bri
+@@ -671,3 +671,28 @@ void br_port_flags_change(struct net_bri
  	if (mask & BR_AUTO_MASK)
  		nbp_update_port_count(br);
  }

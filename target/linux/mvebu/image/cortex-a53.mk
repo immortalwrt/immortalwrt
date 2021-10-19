@@ -45,7 +45,7 @@ define Device/methode_udpu
   DEVICE_PACKAGES := f2fs-tools e2fsprogs fdisk ethtool kmod-usb2 kmod-usb3 \
 			kmod-e100 kmod-e1000 kmod-e1000e kmod-igb kmod-ixgbevf \
 			kmod-mdio-gpio kmod-switch-mvsw61xx kmod-i2c-pxa
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(2)
+  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(2)
   IMAGES := firmware.tgz
   IMAGE/firmware.tgz := boot-scr | boot-img-ext4 | uDPU-firmware | append-metadata
   BOOT_SCRIPT := udpu

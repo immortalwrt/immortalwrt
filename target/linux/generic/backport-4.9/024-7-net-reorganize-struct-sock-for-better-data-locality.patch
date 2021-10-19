@@ -113,7 +113,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  	/*
  	 * Because of non atomicity rules, all
-@@ -400,31 +421,17 @@ struct sock {
+@@ -400,33 +421,19 @@ struct sock {
  #define SK_PROTOCOL_MAX U8_MAX
  	kmemcheck_bitfield_end(flags);
  
@@ -137,15 +137,17 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	u32			sk_max_ack_backlog;
 -	__u32			sk_priority;
 -	__u32			sk_mark;
+ 	spinlock_t		sk_peer_lock;
  	struct pid		*sk_peer_pid;
  	const struct cred	*sk_peer_cred;
+ 
  	long			sk_rcvtimeo;
 -	long			sk_sndtimeo;
 -	struct timer_list	sk_timer;
  	ktime_t			sk_stamp;
  #if BITS_PER_LONG==32
  	seqlock_t		sk_stamp_seq;
-@@ -434,10 +441,6 @@ struct sock {
+@@ -436,10 +443,6 @@ struct sock {
  	u32			sk_tskey;
  	struct socket		*sk_socket;
  	void			*sk_user_data;

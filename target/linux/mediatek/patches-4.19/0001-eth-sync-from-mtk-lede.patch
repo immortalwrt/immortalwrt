@@ -759,7 +759,7 @@
  			     !eth->netdev[mac]))
  			goto release_desc;
 @@ -1044,6 +1067,7 @@ static int mtk_poll_rx(struct napi_struc
- 		    RX_DMA_VID(trxd.rxd3))
+ 		    (trxd.rxd2 & RX_DMA_VTAG))
  			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
  					       RX_DMA_VID(trxd.rxd3));
 +
@@ -1197,7 +1197,7 @@
  /* QDMA descriptor txd4 */
  #define TX_DMA_CHKSUM		(0x7 << 29)
  #define TX_DMA_TSO		BIT(28)
-@@ -316,6 +328,8 @@
+@@ -317,6 +329,8 @@
  #define MAC_MCR_RX_EN		BIT(13)
  #define MAC_MCR_BACKOFF_EN	BIT(9)
  #define MAC_MCR_BACKPR_EN	BIT(8)
@@ -1206,7 +1206,7 @@
  #define MAC_MCR_FORCE_RX_FC	BIT(5)
  #define MAC_MCR_FORCE_TX_FC	BIT(4)
  #define MAC_MCR_SPEED_1000	BIT(3)
-@@ -368,9 +382,11 @@
+@@ -369,9 +383,11 @@
  #define ETHSYS_SYSCFG0		0x14
  #define SYSCFG0_GE_MASK		0x3
  #define SYSCFG0_GE_MODE(x, y)	(x << (12 + (y * 2)))
@@ -1221,7 +1221,7 @@
  
  /* ethernet subsystem clock register */
  #define ETHSYS_CLKCFG0		0x2c
-@@ -398,6 +414,16 @@
+@@ -399,6 +415,16 @@
  #define SGMSYS_QPHY_PWR_STATE_CTRL 0xe8
  #define	SGMII_PHYA_PWD		BIT(4)
  
@@ -1238,7 +1238,7 @@
  struct mtk_rx_dma {
  	unsigned int rxd1;
  	unsigned int rxd2;
-@@ -462,15 +488,21 @@ enum mtk_tx_flags {
+@@ -463,15 +489,21 @@ enum mtk_tx_flags {
   */
  enum mtk_clks_map {
  	MTK_CLK_ETHIF,
@@ -1260,7 +1260,7 @@
  	MTK_CLK_SGMII_CK,
  	MTK_CLK_ETH2PLL,
  	MTK_CLK_MAX
-@@ -488,6 +520,22 @@ enum mtk_clks_map {
+@@ -489,6 +521,22 @@ enum mtk_clks_map {
  				 BIT(MTK_CLK_SGMII_CDR_FB) | \
  				 BIT(MTK_CLK_SGMII_CK) | \
  				 BIT(MTK_CLK_ETH2PLL))
@@ -1283,7 +1283,7 @@
  enum mtk_dev_state {
  	MTK_HW_INIT,
  	MTK_RESETTING
-@@ -557,35 +605,149 @@ struct mtk_rx_ring {
+@@ -558,35 +606,149 @@ struct mtk_rx_ring {
  	u32 crx_idx_reg;
  };
  
@@ -1442,7 +1442,7 @@
  /* struct mtk_eth -	This is the main datasructure for holding the state
   *			of the driver
   * @dev:		The device pointer
-@@ -601,14 +763,15 @@ struct mtk_soc_data {
+@@ -602,14 +764,15 @@ struct mtk_soc_data {
   * @msg_enable:		Ethtool msg level
   * @ethsys:		The register map pointing at the range used to setup
   *			MII modes
@@ -1461,7 +1461,7 @@
   * @tx_napi:		The TX NAPI struct
   * @rx_napi:		The RX NAPI struct
   * @scratch_ring:	Newer SoCs need memory for a second HW managed TX ring
-@@ -619,13 +782,16 @@ struct mtk_soc_data {
+@@ -620,13 +783,16 @@ struct mtk_soc_data {
   * @pending_work:	The workqueue used to reset the dma ring
   * @state:		Initialization and runtime state of the device
   * @soc:		Holding specific data among vaious SoCs
@@ -1478,7 +1478,7 @@
  	spinlock_t			rx_irq_lock;
  	struct net_device		dummy_dev;
  	struct net_device		*netdev[MTK_MAX_DEVS];
-@@ -634,10 +800,11 @@ struct mtk_eth {
+@@ -635,10 +801,11 @@ struct mtk_eth {
  	u32				msg_enable;
  	unsigned long			sysclk;
  	struct regmap			*ethsys;
@@ -1492,7 +1492,7 @@
  	struct mtk_tx_ring		tx_ring;
  	struct mtk_rx_ring		rx_ring[MTK_MAX_RX_RING_NUM];
  	struct mtk_rx_ring		rx_ring_qdma;
-@@ -653,6 +820,7 @@ struct mtk_eth {
+@@ -654,6 +821,7 @@ struct mtk_eth {
  	unsigned long			state;
  
  	const struct mtk_soc_data	*soc;
@@ -1500,7 +1500,7 @@
  };
  
  /* struct mtk_mac -	the structure that holds the info about the MACs of the
-@@ -664,6 +832,7 @@ struct mtk_eth {
+@@ -665,6 +833,7 @@ struct mtk_eth {
   * @hw_stats:		Packet statistics counter
   * @trgmii		Indicate if the MAC uses TRGMII connected to internal
  			switch
@@ -1508,7 +1508,7 @@
   */
  struct mtk_mac {
  	int				id;
-@@ -674,6 +843,7 @@ struct mtk_mac {
+@@ -675,6 +844,7 @@ struct mtk_mac {
  	__be32				hwlro_ip[MTK_MAX_LRO_IP_CNT];
  	int				hwlro_ip_cnt;
  	bool				trgmii;
@@ -1516,7 +1516,7 @@
  };
  
  /* the struct describing the SoC. these are declared in the soc_xyz.c files */
-@@ -685,4 +855,10 @@ void mtk_stats_update_mac(struct mtk_mac
+@@ -686,4 +856,10 @@ void mtk_stats_update_mac(struct mtk_mac
  void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg);
  u32 mtk_r32(struct mtk_eth *eth, unsigned reg);
  

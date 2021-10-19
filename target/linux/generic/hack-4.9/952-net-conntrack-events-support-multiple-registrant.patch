@@ -115,7 +115,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  	depends on NETFILTER_ADVANCED
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -2078,6 +2078,10 @@ int nf_conntrack_init_net(struct net *ne
+@@ -2083,6 +2083,10 @@ int nf_conntrack_init_net(struct net *ne
  	ret = nf_conntrack_proto_pernet_init(net);
  	if (ret < 0)
  		goto err_proto;

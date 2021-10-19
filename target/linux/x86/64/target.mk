@@ -1,5 +1,5 @@
 ARCH:=x86_64
-BOARDNAME:=x64 64bit
+BOARDNAME:=x64_64
 DEFAULT_PACKAGES += kmod-button-hotplug kmod-e1000e kmod-e1000 kmod-igb kmod-bnx2
 
 define Target/Description

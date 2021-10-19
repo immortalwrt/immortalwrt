@@ -92,11 +92,10 @@ endef
 define Device/glinet_gl-ar750s-nor-nand
   $(Device/glinet_gl-ar750s-common)
   DEVICE_VARIANT := NOR/NAND
+  KERNEL_SIZE:= 2048k
   BLOCKSIZE := 128k
-  GL_UBOOT_UBI_OFFSET := 2048k
   IMAGES += factory.img
-  IMAGE/factory.img := append-kernel | pad-to $$$$(GL_UBOOT_UBI_OFFSET) | \
-			append-ubi | check-kernel-size $$$$(GL_UBOOT_UBI_OFFSET)
+  IMAGE/factory.img := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   SUPPORTED_DEVICES += glinet,gl-ar750s-nor
 endef

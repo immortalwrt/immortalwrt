@@ -27,7 +27,7 @@ param_get_default = $(firstword $(call param_get,$(1),$(2)) $(3))
 param_mangle = $(subst $(space),_,$(strip $(1)))
 param_unmangle = $(subst _,$(space),$(1))
 
-mkfs_packages_id = $(shell echo $(sort $(1)) | mkhash md5 | cut -b1-8)
+mkfs_packages_id = $(shell echo $(sort $(1)) | $(MKHASH) md5 | cut -b1-8)
 mkfs_target_dir = $(if $(call param_get,pkg,$(1)),$(KDIR)/target-dir-$(call param_get,pkg,$(1)),$(TARGET_DIR))
 
 KDIR=$(KERNEL_BUILD_DIR)
@@ -41,7 +41,8 @@ IMG_PREFIX_VERCODE:=$(if $(CONFIG_VERSION_CODE_FILENAMES),$(call sanitize,$(VERS
 IMG_PREFIX:=$(VERSION_DIST_SANITIZED)-$(IMG_PREFIX_VERNUM)$(IMG_PREFIX_VERCODE)$(IMG_PREFIX_EXTRA)$(BOARD)$(if $(SUBTARGET),-$(SUBTARGET))
 IMG_ROOTFS:=$(IMG_PREFIX)-rootfs
 IMG_COMBINED:=$(IMG_PREFIX)-combined
-IMG_PART_SIGNATURE:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | mkhash md5 | cut -b1-8)
+IMG_PART_SIGNATURE:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | $(MKHASH) md5 | cut -b1-8)
+IMG_PART_DISKGUID:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | $(MKHASH) md5 | sed -r 's/(.{8})(.{4})(.{4})(.{4})(.{10})../\1-\2-\3-\4-\500/')
 
 MKFS_DEVTABLE_OPT := -D $(INCLUDE_DIR)/device_table.txt
 
@@ -75,6 +76,7 @@ JFFS2OPTS += $(MKFS_DEVTABLE_OPT)
 SQUASHFS_BLOCKSIZE := $(CONFIG_TARGET_SQUASHFS_BLOCK_SIZE)k
 SQUASHFSOPT := -b $(SQUASHFS_BLOCKSIZE)
 SQUASHFSOPT += -p '/dev d 755 0 0' -p '/dev/console c 600 0 0 5 1'
+SQUASHFSOPT += $(if $(CONFIG_SELINUX),-xattrs,-no-xattrs)
 SQUASHFSCOMP := gzip
 LZMA_XZ_OPTIONS := -Xpreset 9 -Xe -Xlc 0 -Xlp 2 -Xpb 2
 ifeq ($(CONFIG_SQUASHFS_XZ),y)
@@ -90,7 +92,6 @@ fs-types-$(CONFIG_TARGET_ROOTFS_SQUASHFS) += squashfs
 fs-types-$(CONFIG_TARGET_ROOTFS_JFFS2) += $(addprefix jffs2-,$(JFFS2_BLOCKSIZE))
 fs-types-$(CONFIG_TARGET_ROOTFS_JFFS2_NAND) += $(addprefix jffs2-nand-,$(NAND_BLOCKSIZE))
 fs-types-$(CONFIG_TARGET_ROOTFS_EXT4FS) += ext4
-fs-types-$(CONFIG_TARGET_ROOTFS_ISO) += iso
 fs-types-$(CONFIG_TARGET_ROOTFS_UBIFS) += ubifs
 fs-subtypes-$(CONFIG_TARGET_ROOTFS_JFFS2) += $(addsuffix -raw,$(addprefix jffs2-,$(JFFS2_BLOCKSIZE)))
 
@@ -399,14 +400,14 @@ define Device/Init
 
   IMAGES :=
   ARTIFACTS :=
-  IMAGE_PREFIX := $(IMG_PREFIX)-$(1)
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1)-$$(2)
+  DEVICE_IMG_PREFIX := $(IMG_PREFIX)-$(1)
+  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(1)-$$(2)
   IMAGE_SIZE :=
-  KERNEL_PREFIX = $$(IMAGE_PREFIX)
+  KERNEL_PREFIX = $$(DEVICE_IMG_PREFIX)
   KERNEL_SUFFIX := -kernel.bin
   KERNEL_INITRAMFS_SUFFIX = $$(KERNEL_SUFFIX)
   KERNEL_IMAGE = $$(KERNEL_PREFIX)$$(KERNEL_SUFFIX)
-  KERNEL_INITRAMFS_PREFIX = $$(IMAGE_PREFIX)-initramfs
+  KERNEL_INITRAMFS_PREFIX = $$(DEVICE_IMG_PREFIX)-initramfs
   KERNEL_INITRAMFS_IMAGE = $$(KERNEL_INITRAMFS_PREFIX)$$(KERNEL_INITRAMFS_SUFFIX)
   KERNEL_INITRAMFS_NAME = $$(KERNEL_NAME)-initramfs
   KERNEL_INSTALL :=
@@ -450,7 +451,7 @@ DEFAULT_DEVICE_VARS := \
   VID_HDR_OFFSET UBINIZE_OPTS UBINIZE_PARTS MKUBIFS_OPTS DEVICE_DTS \
   DEVICE_DTS_CONFIG DEVICE_DTS_DIR DEVICE_FDT_NUM SOC BOARD_NAME UIMAGE_NAME \
   SUPPORTED_DEVICES IMAGE_METADATA KERNEL_ENTRY KERNEL_LOADADDR UBOOT_PATH \
-  IMAGE_SIZE DEVICE_VENDOR DEVICE_MODEL DEVICE_VARIANT \
+  IMAGE_SIZE DEVICE_PACKAGES DEVICE_VENDOR DEVICE_MODEL DEVICE_VARIANT \
   DEVICE_ALT0_VENDOR DEVICE_ALT0_MODEL DEVICE_ALT0_VARIANT \
   DEVICE_ALT1_VENDOR DEVICE_ALT1_MODEL DEVICE_ALT1_VARIANT \
   DEVICE_ALT2_VENDOR DEVICE_ALT2_MODEL DEVICE_ALT2_VARIANT
@@ -519,10 +520,10 @@ define Device/Build/initramfs
 	DEVICE_ID="$(1)" \
 	BIN_DIR="$(BIN_DIR)" \
 	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
-	IMAGE_NAME="$$(notdir $$^)" \
-	IMAGE_TYPE="kernel" \
-	IMAGE_FILESYSTEM="initramfs" \
-	IMAGE_PREFIX="$$(IMAGE_PREFIX)" \
+	FILE_NAME="$$(notdir $$^)" \
+	FILE_TYPE="kernel" \
+	FILE_FILESYSTEM="initramfs" \
+	DEVICE_IMG_PREFIX="$$(DEVICE_IMG_PREFIX)" \
 	DEVICE_VENDOR="$$(DEVICE_VENDOR)" \
 	DEVICE_MODEL="$$(DEVICE_MODEL)" \
 	DEVICE_VARIANT="$$(DEVICE_VARIANT)" \
@@ -594,9 +595,9 @@ endef
 define Device/Build/image
   GZ_SUFFIX := $(if $(filter %dtb %gz,$(2)),,$(if $(and $(findstring ext4,$(1)),$(CONFIG_TARGET_IMAGES_GZIP)),.gz))
   $$(_TARGET): $(if $(CONFIG_JSON_OVERVIEW_IMAGE_INFO), \
-	  $(BUILD_DIR)/json_info_files/$(call IMAGE_NAME,$(1),$(2)).json, \
-	  $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2))$$(GZ_SUFFIX))
-  $(eval $(call Device/Export,$(KDIR)/tmp/$(call IMAGE_NAME,$(1),$(2)),$(1)))
+	  $(BUILD_DIR)/json_info_files/$(call DEVICE_IMG_NAME,$(1),$(2)).json, \
+	  $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))$$(GZ_SUFFIX))
+  $(eval $(call Device/Export,$(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2)),$(1)))
 
   ROOTFS/$(1)/$(3) := \
 	$(KDIR)/root.$(1)$$(strip \
@@ -607,28 +608,28 @@ define Device/Build/image
   ifndef IB
     $$(ROOTFS/$(1)/$(3)): $(if $(TARGET_PER_DEVICE_ROOTFS),target-dir-$$(ROOTFS_ID/$(3)))
   endif
-  $(KDIR)/tmp/$(call IMAGE_NAME,$(1),$(2)): $$(KDIR_KERNEL_IMAGE) $$(ROOTFS/$(1)/$(3))
+  $(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2)): $$(KDIR_KERNEL_IMAGE) $$(ROOTFS/$(1)/$(3))
 	@rm -f $$@
 	[ -f $$(word 1,$$^) -a -f $$(word 2,$$^) ]
 	$$(call concat_cmd,$(if $(IMAGE/$(2)/$(1)),$(IMAGE/$(2)/$(1)),$(IMAGE/$(2))))
 
-  .IGNORE: $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2))
+  .IGNORE: $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))
 
-  $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2)).gz: $(KDIR)/tmp/$(call IMAGE_NAME,$(1),$(2))
+  $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)).gz: $(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2))
 	gzip -c -9n $$^ > $$@
 
-  $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2)): $(KDIR)/tmp/$(call IMAGE_NAME,$(1),$(2))
+  $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)): $(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2))
 	cp $$^ $$@
 
-  $(BUILD_DIR)/json_info_files/$(call IMAGE_NAME,$(1),$(2)).json: $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2))$$(GZ_SUFFIX)
+  $(BUILD_DIR)/json_info_files/$(call DEVICE_IMG_NAME,$(1),$(2)).json: $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))$$(GZ_SUFFIX)
 	@mkdir -p $$(shell dirname $$@)
 	DEVICE_ID="$(DEVICE_NAME)" \
 	BIN_DIR="$(BIN_DIR)" \
 	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
-	IMAGE_NAME="$(IMAGE_NAME)" \
-	IMAGE_TYPE=$(word 1,$(subst ., ,$(2))) \
-	IMAGE_FILESYSTEM="$(1)" \
-	IMAGE_PREFIX="$(IMAGE_PREFIX)" \
+	FILE_NAME="$(DEVICE_IMG_NAME)" \
+	FILE_TYPE=$(word 1,$(subst ., ,$(2))) \
+	FILE_FILESYSTEM="$(1)" \
+	DEVICE_IMG_PREFIX="$(DEVICE_IMG_PREFIX)" \
 	DEVICE_VENDOR="$(DEVICE_VENDOR)" \
 	DEVICE_MODEL="$(DEVICE_MODEL)" \
 	DEVICE_VARIANT="$(DEVICE_VARIANT)" \
@@ -653,16 +654,47 @@ define Device/Build/image
 endef
 
 define Device/Build/artifact
-  $$(_TARGET): $(BIN_DIR)/$(IMAGE_PREFIX)-$(1)
-  $(eval $(call Device/Export,$(KDIR)/tmp/$(IMAGE_PREFIX)-$(1)))
-  $(KDIR)/tmp/$(IMAGE_PREFIX)-$(1): $$(KDIR_KERNEL_IMAGE)
+  $$(_TARGET): $(if $(CONFIG_JSON_OVERVIEW_IMAGE_INFO), \
+	  $(BUILD_DIR)/json_info_files/$(DEVICE_IMG_PREFIX)-$(1).json, \
+	  $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1))
+  $(eval $(call Device/Export,$(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1)))
+  $(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1): $$(KDIR_KERNEL_IMAGE)
 	@rm -f $$@
 	$$(call concat_cmd,$(ARTIFACT/$(1)))
 
-  .IGNORE: $(BIN_DIR)/$(IMAGE_PREFIX)-$(1)
+  .IGNORE: $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1)
 
-  $(BIN_DIR)/$(IMAGE_PREFIX)-$(1): $(KDIR)/tmp/$(IMAGE_PREFIX)-$(1)
+  $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1): $(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1)
 	cp $$^ $$@
+
+  $(BUILD_DIR)/json_info_files/$(DEVICE_IMG_PREFIX)-$(1).json: $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1)
+	@mkdir -p $$(shell dirname $$@)
+	DEVICE_ID="$(DEVICE_NAME)" \
+	BIN_DIR="$(BIN_DIR)" \
+	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
+	FILE_NAME="$(DEVICE_IMG_PREFIX)-$(1)" \
+	FILE_TYPE="$(1)" \
+	DEVICE_IMG_PREFIX="$(DEVICE_IMG_PREFIX)" \
+	DEVICE_VENDOR="$(DEVICE_VENDOR)" \
+	DEVICE_MODEL="$(DEVICE_MODEL)" \
+	DEVICE_VARIANT="$(DEVICE_VARIANT)" \
+	DEVICE_ALT0_VENDOR="$(DEVICE_ALT0_VENDOR)" \
+	DEVICE_ALT0_MODEL="$(DEVICE_ALT0_MODEL)" \
+	DEVICE_ALT0_VARIANT="$(DEVICE_ALT0_VARIANT)" \
+	DEVICE_ALT1_VENDOR="$(DEVICE_ALT1_VENDOR)" \
+	DEVICE_ALT1_MODEL="$(DEVICE_ALT1_MODEL)" \
+	DEVICE_ALT1_VARIANT="$(DEVICE_ALT1_VARIANT)" \
+	DEVICE_ALT2_VENDOR="$(DEVICE_ALT2_VENDOR)" \
+	DEVICE_ALT2_MODEL="$(DEVICE_ALT2_MODEL)" \
+	DEVICE_ALT2_VARIANT="$(DEVICE_ALT2_VARIANT)" \
+	DEVICE_TITLE="$(DEVICE_TITLE)" \
+	DEVICE_PACKAGES="$(DEVICE_PACKAGES)" \
+	TARGET="$(BOARD)" \
+	SUBTARGET="$(if $(SUBTARGET),$(SUBTARGET),generic)" \
+	VERSION_NUMBER="$(VERSION_NUMBER)" \
+	VERSION_CODE="$(VERSION_CODE)" \
+	SUPPORTED_DEVICES="$(SUPPORTED_DEVICES)" \
+	$(TOPDIR)/scripts/json_add_image_info.py $$@
 
 endef
 

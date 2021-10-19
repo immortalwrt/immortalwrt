@@ -133,7 +133,7 @@
     connections. */
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -653,3 +653,26 @@ void br_port_flags_change(struct net_bri
+@@ -670,3 +670,26 @@ void br_port_flags_change(struct net_bri
  	if (mask & BR_AUTO_MASK)
  		nbp_update_port_count(br);
  }

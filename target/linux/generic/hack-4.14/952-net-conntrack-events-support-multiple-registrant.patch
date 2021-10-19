@@ -1,3 +1,25 @@
+From 42824d4b753f84ccf885eca602c5037338b546c8 Mon Sep 17 00:00:00 2001
+From: Zhi Chen <zhichen@codeaurora.org>
+Date: Tue, 13 Jan 2015 14:28:18 -0800
+Subject: [PATCH 3/3] net: conntrack events, support multiple registrant
+
+Merging this patch from kernel 3.4:
+This was supported by old (.28) kernel versions but removed
+because of it's overhead.
+But we need this feature for NA connection manager. Both ipv4
+and ipv6 modules needs to register themselves to ct events.
+
+Change-Id: Iebfb254590fb594f5baf232f849d1b7ae45ef757
+Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
+---
+ include/net/netfilter/nf_conntrack_ecache.h | 42 ++++++++++++++++++-
+ include/net/netns/conntrack.h               |  4 ++
+ net/netfilter/Kconfig                       |  8 ++++
+ net/netfilter/nf_conntrack_core.c           |  4 ++
+ net/netfilter/nf_conntrack_ecache.c         | 63 +++++++++++++++++++++++++++++
+ net/netfilter/nf_conntrack_netlink.c        | 17 ++++++++
+ 6 files changed, 137 insertions(+), 1 deletion(-)
+
 --- a/include/net/netfilter/nf_conntrack_ecache.h
 +++ b/include/net/netfilter/nf_conntrack_ecache.h
 @@ -71,6 +71,10 @@ struct nf_ct_event {
@@ -98,7 +120,7 @@
  	depends on NETFILTER_ADVANCED
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -2250,6 +2250,10 @@ int nf_conntrack_init_net(struct net *ne
+@@ -2255,6 +2255,10 @@ int nf_conntrack_init_net(struct net *ne
  	ret = nf_conntrack_proto_pernet_init(net);
  	if (ret < 0)
  		goto err_proto;
@@ -272,7 +294,7 @@
  #include <linux/slab.h>
  #include <linux/siphash.h>
  
-@@ -621,14 +626,22 @@ static size_t ctnetlink_nlmsg_size(const
+@@ -624,14 +629,22 @@ static size_t ctnetlink_nlmsg_size(const
  	       ;
  }
  
@@ -295,7 +317,7 @@
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3337,9 +3350,15 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3340,9 +3353,15 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS

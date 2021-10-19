@@ -26,7 +26,7 @@ endef
 define Build/elecom-gst-factory
   $(eval product=$(word 1,$(1)))
   $(eval version=$(word 2,$(1)))
-  ( $(STAGING_DIR_HOST)/bin/mkhash md5 $@ | tr -d '\n' ) >> $@
+  ( $(MKHASH) md5 $@ | tr -d '\n' ) >> $@
   ( \
     echo -n "ELECOM $(product) v$(version)" | \
       dd bs=32 count=1 conv=sync; \
@@ -39,7 +39,7 @@ endef
 define Build/elecom-wrc-factory
   $(eval product=$(word 1,$(1)))
   $(eval version=$(word 2,$(1)))
-  $(STAGING_DIR_HOST)/bin/mkhash md5 $@ >> $@
+  $(MKHASH) md5 $@ >> $@
   ( \
     echo -n "ELECOM $(product) v$(version)" | \
       dd bs=32 count=1 conv=sync; \
@@ -83,7 +83,7 @@ endef
 
 define Build/netis-tail
 	echo -n $(1) >> $@
-	echo -n $(UIMAGE_NAME)-yun | $(STAGING_DIR_HOST)/bin/mkhash md5 | \
+	echo -n $(UIMAGE_NAME)-yun | $(MKHASH) md5 | \
 		sed 's/../\\\\x&/g' | xargs echo -ne >> $@
 endef
 
@@ -93,13 +93,13 @@ define Build/ubnt-erx-factory-image
 		$(TAR) -cf $(1) --transform='s/^.*/compat/' $(1).compat; \
 		\
 		$(TAR) -rf $(1) --transform='s/^.*/vmlinux.tmp/' $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE); \
-		mkhash md5 $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) > $(1).md5; \
+		$(MKHASH) md5 $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) > $(1).md5; \
 		$(TAR) -rf $(1) --transform='s/^.*/vmlinux.tmp.md5/' $(1).md5; \
 		\
 		echo "dummy" > $(1).rootfs; \
 		$(TAR) -rf $(1) --transform='s/^.*/squashfs.tmp/' $(1).rootfs; \
 		\
-		mkhash md5 $(1).rootfs > $(1).md5; \
+		$(MKHASH) md5 $(1).rootfs > $(1).md5; \
 		$(TAR) -rf $(1) --transform='s/^.*/squashfs.tmp.md5/' $(1).md5; \
 		\
 		echo '$(BOARD) $(VERSION_CODE) $(VERSION_NUMBER)' > $(1).version; \
@@ -445,6 +445,18 @@ define Device/jcg_jhr-ac876m
 endef
 TARGET_DEVICES += jcg_jhr-ac876m
 
+define Device/jcg_jhr-ac945m
+  IMAGE_SIZE := 16064k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
+	jcg-header 91.1
+  JCG_MAXSIZE := 16064k
+  DEVICE_VENDOR := JCG
+  DEVICE_MODEL := JHR-AC945M
+  DEVICE_PACKAGES := kmod-mt7615e kmod-usb3 wpad-openssl
+endef
+TARGET_DEVICES += jcg_jhr-ac945m
+
 define Device/jcg_y2
   IMAGE_SIZE := 16064k
   IMAGES += factory.bin
@@ -461,7 +473,8 @@ define Device/jdcloud_re-sp-01b
   IMAGE_SIZE := 27328k
   DEVICE_VENDOR := JDCloud
   DEVICE_MODEL := RE-SP-01B
-  DEVICE_PACKAGES := kmod-fs-ext4 kmod-mt7603 kmod-mt7615e kmod-sdhci-mt7620 kmod-usb3 wpad-openssl
+  DEVICE_PACKAGES := kmod-fs-ext4 kmod-mt7603 kmod-mt7615e kmod-sdhci-mt7620 \
+	kmod-usb3 wpad-openssl
 endef
 TARGET_DEVICES += jdcloud_re-sp-01b
 

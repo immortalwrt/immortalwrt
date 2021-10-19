@@ -27,15 +27,13 @@ QEMU seems to also need
 Then run normal make or cmake etc.
 ---
 
-diff -ruNa --binary a/ChangeLog.d/armv8_crypto_extensions.txt b/ChangeLog.d/armv8_crypto_extensions.txt
---- a/ChangeLog.d/armv8_crypto_extensions.txt	1970-01-01 08:00:00.000000000 +0800
-+++ b/ChangeLog.d/armv8_crypto_extensions.txt	2021-03-07 15:07:17.781911791 +0800
+--- a/ChangeLog.d/armv8_crypto_extensions.txt
++++ b/ChangeLog.d/armv8_crypto_extensions.txt
 @@ -0,0 +1,2 @@
 +Features
 +    * Support ARMv8 Cryptography Extensions for AES and GCM.
-diff -ruNa --binary a/include/mbedtls/armv8ce_aes.h b/include/mbedtls/armv8ce_aes.h
---- a/include/mbedtls/armv8ce_aes.h	1970-01-01 08:00:00.000000000 +0800
-+++ b/include/mbedtls/armv8ce_aes.h	2021-03-07 15:07:17.781911791 +0800
+--- a/include/mbedtls/armv8ce_aes.h
++++ b/include/mbedtls/armv8ce_aes.h
 @@ -0,0 +1,63 @@
 +/**
 + * \file armv8ce_aes.h
@@ -100,9 +98,8 @@ diff -ruNa --binary a/include/mbedtls/armv8ce_aes.h b/include/mbedtls/armv8ce_ae
 +                               const unsigned char b[16] );
 +
 +#endif /* MBEDTLS_ARMV8CE_AES_H */
-diff -ruNa --binary a/include/mbedtls/check_config.h b/include/mbedtls/check_config.h
---- a/include/mbedtls/check_config.h	2020-12-10 20:54:15.000000000 +0800
-+++ b/include/mbedtls/check_config.h	2021-03-07 15:06:45.625543309 +0800
+--- a/include/mbedtls/check_config.h
++++ b/include/mbedtls/check_config.h
 @@ -95,6 +95,10 @@
  #error "MBEDTLS_AESNI_C defined, but not all prerequisites"
  #endif
@@ -119,9 +116,8 @@ diff -ruNa --binary a/include/mbedtls/check_config.h b/include/mbedtls/check_con
  
  #endif /* MBEDTLS_CHECK_CONFIG_H */
 +
-diff -ruNa --binary a/include/mbedtls/config.h b/include/mbedtls/config.h
---- a/include/mbedtls/config.h	2020-12-10 20:54:15.000000000 +0800
-+++ b/include/mbedtls/config.h	2021-03-07 15:14:27.957855484 +0800
+--- a/include/mbedtls/config.h
++++ b/include/mbedtls/config.h
 @@ -73,6 +73,7 @@
   * Requires support for asm() in compiler.
   *
@@ -130,7 +126,7 @@ diff -ruNa --binary a/include/mbedtls/config.h b/include/mbedtls/config.h
   *      library/aria.c
   *      library/timing.c
   *      include/mbedtls/bn_mul.h
-@@ -1888,6 +1889,21 @@
+@@ -1905,6 +1906,21 @@
  #define MBEDTLS_AESNI_C
  
  /**
@@ -152,9 +148,8 @@ diff -ruNa --binary a/include/mbedtls/config.h b/include/mbedtls/config.h
   * \def MBEDTLS_AES_C
   *
   * Enable the AES block cipher.
-diff -ruNa --binary a/library/aes.c b/library/aes.c
---- a/library/aes.c	2020-12-10 20:54:15.000000000 +0800
-+++ b/library/aes.c	2021-03-07 15:06:45.625543309 +0800
+--- a/library/aes.c
++++ b/library/aes.c
 @@ -69,7 +69,9 @@
  #if defined(MBEDTLS_AESNI_C)
  #include "mbedtls/aesni.h"
@@ -178,9 +173,8 @@ diff -ruNa --binary a/library/aes.c b/library/aes.c
  #if defined(MBEDTLS_PADLOCK_C) && defined(MBEDTLS_HAVE_X86)
      if( aes_padlock_ace )
      {
-diff -ruNa --binary a/library/armv8ce_aes.c b/library/armv8ce_aes.c
---- a/library/armv8ce_aes.c	1970-01-01 08:00:00.000000000 +0800
-+++ b/library/armv8ce_aes.c	2021-03-07 15:07:17.781911791 +0800
+--- a/library/armv8ce_aes.c
++++ b/library/armv8ce_aes.c
 @@ -0,0 +1,142 @@
 +/*
 + *  ARMv8 Cryptography Extensions -- Optimized code for AES and GCM
@@ -324,9 +318,8 @@ diff -ruNa --binary a/library/armv8ce_aes.c b/library/armv8ce_aes.c
 +#endif /* MBEDTLS_GCM_C */
 +
 +#endif /* MBEDTLS_ARMV8CE_AES_C */
-diff -ruNa --binary a/library/CMakeLists.txt b/library/CMakeLists.txt
---- a/library/CMakeLists.txt	2020-12-10 20:54:15.000000000 +0800
-+++ b/library/CMakeLists.txt	2021-03-07 15:06:45.625543309 +0800
+--- a/library/CMakeLists.txt
++++ b/library/CMakeLists.txt
 @@ -7,6 +7,7 @@
      aesni.c
      arc4.c
@@ -335,9 +328,8 @@ diff -ruNa --binary a/library/CMakeLists.txt b/library/CMakeLists.txt
      asn1parse.c
      asn1write.c
      base64.c
-diff -ruNa --binary a/library/gcm.c b/library/gcm.c
---- a/library/gcm.c	2020-12-10 20:54:15.000000000 +0800
-+++ b/library/gcm.c	2021-03-07 15:06:45.625543309 +0800
+--- a/library/gcm.c
++++ b/library/gcm.c
 @@ -71,6 +71,10 @@
  #include "mbedtls/aesni.h"
  #endif
@@ -374,9 +366,8 @@ diff -ruNa --binary a/library/gcm.c b/library/gcm.c
  #if defined(MBEDTLS_AESNI_C) && defined(MBEDTLS_HAVE_X86_64)
      if( mbedtls_aesni_has_support( MBEDTLS_AESNI_CLMUL ) ) {
          unsigned char h[16];
-diff -ruNa --binary a/library/Makefile b/library/Makefile
---- a/library/Makefile	2020-12-10 20:54:15.000000000 +0800
-+++ b/library/Makefile	2021-03-07 15:12:49.277078224 +0800
+--- a/library/Makefile
++++ b/library/Makefile
 @@ -65,6 +65,7 @@
  
  OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
@@ -385,10 +376,9 @@ diff -ruNa --binary a/library/Makefile b/library/Makefile
  		base64.o	bignum.o	blowfish.o	\
  		camellia.o	ccm.o		chacha20.o	\
  		chachapoly.o	cipher.o	cipher_wrap.o	\
-diff -ruNa --binary a/library/version_features.c b/library/version_features.c
---- a/library/version_features.c	2020-12-10 20:54:15.000000000 +0800
-+++ b/library/version_features.c	2021-03-07 15:06:45.625543309 +0800
-@@ -583,6 +583,9 @@
+--- a/library/version_features.c
++++ b/library/version_features.c
+@@ -586,6 +586,9 @@
  #if defined(MBEDTLS_AESNI_C)
      "MBEDTLS_AESNI_C",
  #endif /* MBEDTLS_AESNI_C */
@@ -398,4 +388,3 @@ diff -ruNa --binary a/library/version_features.c b/library/version_features.c
  #if defined(MBEDTLS_AES_C)
      "MBEDTLS_AES_C",
  #endif /* MBEDTLS_AES_C */
-

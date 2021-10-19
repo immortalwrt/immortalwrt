@@ -74,7 +74,7 @@ Signed-off-by: Sham Muthayyan <smuthayy@codeaurora.org>
  	}
  
  	ret = reset_control_deassert(res->ahb_reset);
-@@ -412,10 +436,14 @@ static int qcom_pcie_init_2_1_0(struct q
+@@ -414,10 +438,14 @@ static int qcom_pcie_init_2_1_0(struct q
  	return 0;
  
  err_deassert_ahb:

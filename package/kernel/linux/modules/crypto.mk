@@ -307,7 +307,15 @@ $(eval $(call KernelPackage,crypto-hmac))
 
 define KernelPackage/crypto-hw-ccp
   TITLE:=AMD Cryptographic Coprocessor
-  DEPENDS:=+kmod-crypto-authenc +kmod-crypto-hash +kmod-crypto-manager +kmod-random-core +kmod-crypto-sha1 +kmod-crypto-sha256 +!LINUX_4_9:kmod-crypto-rsa
+  DEPENDS:= \
+	@TARGET_x86 \
+	+kmod-crypto-authenc \
+	+kmod-crypto-hash \
+	+kmod-crypto-manager \
+	+!LINUX_4_9:kmod-crypto-rsa \
+	+kmod-crypto-sha1 \
+	+kmod-crypto-sha256 \
+	+kmod-random-core
   KCONFIG:= \
 	CONFIG_CRYPTO_HW=y \
 	CONFIG_CRYPTO_DEV_CCP=y \
@@ -340,7 +348,7 @@ $(eval $(call KernelPackage,crypto-hw-geode))
 
 define KernelPackage/crypto-hw-hifn-795x
   TITLE:=HIFN 795x crypto accelerator
-  DEPENDS:=+kmod-random-core +kmod-crypto-manager
+  DEPENDS:=@PCI_SUPPORT +kmod-random-core +kmod-crypto-manager
   KCONFIG:= \
 	CONFIG_CRYPTO_HW=y \
 	CONFIG_CRYPTO_DEV_HIFN_795X \

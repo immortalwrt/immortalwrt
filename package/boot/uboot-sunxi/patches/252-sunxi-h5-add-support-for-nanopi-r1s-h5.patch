@@ -10,7 +10,7 @@
  	sun50i-h5-orangepi-prime.dtb \
 --- /dev/null
 +++ b/arch/arm/dts/sun50i-h5-nanopi-r1s-h5.dts
-@@ -0,0 +1,204 @@
+@@ -0,0 +1,188 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (C) 2021 AmadeusGhost <amadeus@jmu.edu.cn>
@@ -31,7 +31,7 @@
 +
 +	aliases {
 +		ethernet0 = &emac;
-+		i2c0 = &i2c0;
++		ethernet1 = &rtl8189etv;
 +		serial0 = &uart0;
 +	};
 +
@@ -120,19 +120,11 @@
 +	cpu-supply = <&vdd_cpux>;
 +};
 +
-+&ehci0 {
-+	status = "okay";
-+};
-+
 +&ehci1 {
 +	status = "okay";
 +};
 +
 +&ehci2 {
-+	status = "okay";
-+};
-+
-+&ehci3 {
 +	status = "okay";
 +};
 +
@@ -182,19 +174,11 @@
 +	};
 +};
 +
-+&ohci0 {
-+	status = "okay";
-+};
-+
 +&ohci1 {
 +	status = "okay";
 +};
 +
 +&ohci2 {
-+	status = "okay";
-+};
-+
-+&ohci3 {
 +	status = "okay";
 +};
 +

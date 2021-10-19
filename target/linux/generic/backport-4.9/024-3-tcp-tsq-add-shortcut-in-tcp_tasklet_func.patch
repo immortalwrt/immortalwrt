@@ -60,7 +60,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		nval = cmpxchg(&tp->tsq_flags, oval, nval);
  		if (nval != oval)
  			continue;
-@@ -2240,6 +2240,8 @@ static bool tcp_write_xmit(struct sock *
+@@ -2241,6 +2241,8 @@ static bool tcp_write_xmit(struct sock *
  		    unlikely(tso_fragment(sk, skb, limit, mss_now, gfp)))
  			break;
  

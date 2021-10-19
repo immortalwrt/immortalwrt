@@ -14,7 +14,7 @@ Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 
 --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
 +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-@@ -221,6 +221,11 @@
+@@ -222,6 +222,11 @@
  					groups = "uart2";
  					function = "uart";
  				};
@@ -26,7 +26,7 @@ Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
  			};
  
  			nb_pm: syscon@14000 {
-@@ -253,6 +258,11 @@
+@@ -254,6 +259,11 @@
  					function = "mii";
  				};
  

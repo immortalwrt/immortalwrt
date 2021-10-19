@@ -68,7 +68,7 @@ define Device/generic
   IMAGE/kernel.lzma := elf-kernel | lzma-kernel
   IMAGE/rootfs.bin := append-rootfs | pad-rootfs | pad-to 128k
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 128k | combined-image
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(if $$(findstring kernel,$$(2)),,$$(1)-)$$(2)
+  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(if $$(findstring kernel,$$(2)),,$$(1)-)$$(2)
 endef
 TARGET_DEVICES += generic
 
@@ -81,6 +81,7 @@ TARGET_DEVICES += ubnt2-pico2
 define Device/ubnt2
   DEVICE_TITLE := Ubiquiti XS2
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 128k | mkfwimage XS2 -v XS2.ar2316
+  DEFAULT := n
 endef
 TARGET_DEVICES += ubnt2
 

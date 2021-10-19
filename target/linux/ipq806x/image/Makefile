@@ -14,7 +14,7 @@ define Device/Default
 	PROFILES := Default
 	KERNEL_DEPENDS = $$(wildcard $(DTS_DIR)/$$(DEVICE_DTS).dts)
 	KERNEL_INITRAMFS_PREFIX := $$(IMG_PREFIX)-$(1)-initramfs
-	KERNEL_PREFIX := $$(IMAGE_PREFIX)
+	KERNEL_PREFIX := $$(DEVICE_IMG_PREFIX)
 	KERNEL_LOADADDR = 0x42208000
 	IMAGE/sysupgrade.bin = sysupgrade-tar | append-metadata
 	IMAGE/sysupgrade.bin/squashfs :=
@@ -275,7 +275,7 @@ define Device/ruijie_rg-mtfi-m520
 	IMAGE/mmcblk0p2-kernel.bin := append-kernel | pad-to $$$${KERNEL_SIZE}
 	IMAGE/mmcblk0p3-rootfs.bin := append-rootfs | pad-rootfs
 	DEVICE_PACKAGES := ath10k-firmware-qca988x-ct e2fsprogs f2fs-tools \
-	kmod-gpio-pca953x kmod-hwmon-lm75 kmod-fs-ext4 kmod-fs-f2fs kmod-rtc-pcf8563 losetup
+	kmod-hwmon-lm75 kmod-fs-ext4 kmod-fs-f2fs kmod-rtc-pcf8563 losetup
 endef
 TARGET_DEVICES += ruijie_rg-mtfi-m520
 

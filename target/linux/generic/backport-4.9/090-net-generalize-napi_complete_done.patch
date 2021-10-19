@@ -137,7 +137,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/can/c_can/c_can.c
 +++ b/drivers/net/can/c_can/c_can.c
-@@ -1105,7 +1105,7 @@ static int c_can_poll(struct napi_struct
+@@ -1093,7 +1093,7 @@ static int c_can_poll(struct napi_struct
  
  end:
  	if (work_done < quota) {
@@ -148,7 +148,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  			c_can_irq_control(priv, true);
 --- a/drivers/net/can/flexcan.c
 +++ b/drivers/net/can/flexcan.c
-@@ -703,7 +703,7 @@ static int flexcan_poll(struct napi_stru
+@@ -709,7 +709,7 @@ static int flexcan_poll(struct napi_stru
  		work_done += flexcan_poll_bus_err(dev, reg_esr);
  
  	if (work_done < quota) {
@@ -181,7 +181,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -730,7 +730,7 @@ static int m_can_poll(struct napi_struct
+@@ -727,7 +727,7 @@ static int m_can_poll(struct napi_struct
  		work_done += m_can_do_rx_poll(dev, (quota - work_done));
  
  	if (work_done < quota) {
@@ -388,7 +388,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  					BNX2_PCICFG_INT_ACK_CMD_INDEX_VALID |
 --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
 +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -3240,7 +3240,7 @@ static int bnx2x_poll(struct napi_struct
+@@ -3241,7 +3241,7 @@ static int bnx2x_poll(struct napi_struct
  		 * has been updated when NAPI was scheduled.
  		 */
  		if (IS_FCOE_FP(fp)) {
@@ -637,7 +637,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		return received;
 --- a/drivers/net/ethernet/freescale/gianfar.c
 +++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -3195,7 +3195,7 @@ static int gfar_poll_rx_sq(struct napi_s
+@@ -3199,7 +3199,7 @@ static int gfar_poll_rx_sq(struct napi_s
  
  	if (work_done < budget) {
  		u32 imask;
@@ -646,7 +646,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		/* Clear the halt bit in RSTAT */
  		gfar_write(&regs->rstat, gfargrp->rstat);
  
-@@ -3284,7 +3284,7 @@ static int gfar_poll_rx(struct napi_stru
+@@ -3288,7 +3288,7 @@ static int gfar_poll_rx(struct napi_stru
  
  	if (!num_act_queues) {
  		u32 imask;
@@ -863,7 +863,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	return work_done;
 --- a/drivers/net/ethernet/natsemi/natsemi.c
 +++ b/drivers/net/ethernet/natsemi/natsemi.c
-@@ -2261,7 +2261,7 @@ static int natsemi_poll(struct napi_stru
+@@ -2258,7 +2258,7 @@ static int natsemi_poll(struct napi_stru
  		np->intr_status = readl(ioaddr + IntrStatus);
  	} while (np->intr_status);
  
@@ -938,7 +938,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
 --- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
 +++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -2391,7 +2391,7 @@ static int pch_gbe_napi_poll(struct napi
+@@ -2384,7 +2384,7 @@ static int pch_gbe_napi_poll(struct napi
  		poll_end_flag = true;
  
  	if (poll_end_flag) {
@@ -960,7 +960,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		pasemi_mac_restart_tx_intr(mac);
 --- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
 +++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
-@@ -2386,7 +2386,7 @@ static int netxen_nic_poll(struct napi_s
+@@ -2388,7 +2388,7 @@ static int netxen_nic_poll(struct napi_s
  		work_done = budget;
  
  	if (work_done < budget) {
@@ -1324,7 +1324,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	return rxd_done;
 --- a/drivers/net/wan/fsl_ucc_hdlc.c
 +++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -578,7 +578,7 @@ static int ucc_hdlc_poll(struct napi_str
+@@ -582,7 +582,7 @@ static int ucc_hdlc_poll(struct napi_str
  	howmany += hdlc_rx_done(priv, budget - howmany);
  
  	if (howmany < budget) {

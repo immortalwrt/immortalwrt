@@ -171,7 +171,7 @@
  #define UDP_CORK	1	/* Never send partially complete segments */
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -263,8 +263,8 @@ nf_ct_get_tuple(const struct sk_buff *sk
+@@ -258,8 +258,8 @@ nf_ct_get_tuple(const struct sk_buff *sk
  
  	switch (l3num) {
  	case NFPROTO_IPV4:
@@ -214,7 +214,7 @@
  #include <linux/uaccess.h>
  #include <linux/ipv6.h>
  #include <linux/icmpv6.h>
-@@ -836,10 +837,10 @@ static void tcp_v6_send_response(const s
+@@ -853,10 +854,10 @@ static void tcp_v6_send_response(const s
  	topt = (__be32 *)(t1 + 1);
  
  	if (tsecr) {
@@ -231,7 +231,7 @@
  #ifdef CONFIG_TCP_MD5SIG
 --- a/include/linux/ipv6.h
 +++ b/include/linux/ipv6.h
-@@ -6,6 +6,7 @@
+@@ -7,6 +7,7 @@
  
  #define ipv6_optlen(p)  (((p)->hdrlen+1) << 3)
  #define ipv6_authlen(p) (((p)->hdrlen+2) << 2)
@@ -267,7 +267,7 @@
  		case IPV6_2292HOPOPTS:
 --- a/net/ipv6/ip6_gre.c
 +++ b/net/ipv6/ip6_gre.c
-@@ -455,7 +455,7 @@ static void ip6gre_err(struct sk_buff *s
+@@ -454,7 +454,7 @@ static void ip6gre_err(struct sk_buff *s
  		return;
  	ipv6h = (const struct ipv6hdr *)skb->data;
  	greh = (const struct gre_base_hdr *)(skb->data + offset);
@@ -278,7 +278,7 @@
  				 key, greh->protocol);
 --- a/net/ipv6/exthdrs.c
 +++ b/net/ipv6/exthdrs.c
-@@ -756,7 +756,7 @@ static bool ipv6_hop_jumbo(struct sk_buf
+@@ -755,7 +755,7 @@ static bool ipv6_hop_jumbo(struct sk_buf
  		goto drop;
  	}
  
@@ -316,7 +316,7 @@
  	list_for_each_entry(p, head, list) {
 --- a/net/ipv4/route.c
 +++ b/net/ipv4/route.c
-@@ -450,7 +450,7 @@ static struct neighbour *ipv4_neigh_look
+@@ -451,7 +451,7 @@ static struct neighbour *ipv4_neigh_look
  	else if (skb)
  		pkey = &ip_hdr(skb)->daddr;
  
@@ -728,7 +728,7 @@
  EXPORT_SYMBOL(xfrm_parse_spi);
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -3910,14 +3910,16 @@ static bool tcp_parse_aligned_timestamp(
+@@ -3914,14 +3914,16 @@ static bool tcp_parse_aligned_timestamp(
  {
  	const __be32 *ptr = (const __be32 *)(th + 1);
  

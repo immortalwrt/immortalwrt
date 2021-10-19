@@ -171,7 +171,7 @@ bcm2708_fb: Add ioctl for reading gpu memory through dma
  		return -ENOTTY;
 --- a/drivers/video/fbdev/core/fbmem.c
 +++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1081,6 +1081,31 @@ fb_blank(struct fb_info *info, int blank
+@@ -1091,6 +1091,31 @@ fb_blank(struct fb_info *info, int blank
  }
  EXPORT_SYMBOL(fb_blank);
  
@@ -203,7 +203,7 @@ bcm2708_fb: Add ioctl for reading gpu memory through dma
  static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
  			unsigned long arg)
  {
-@@ -1091,6 +1116,7 @@ static long do_fb_ioctl(struct fb_info *
+@@ -1101,6 +1126,7 @@ static long do_fb_ioctl(struct fb_info *
  	struct fb_cmap cmap_from;
  	struct fb_cmap_user cmap;
  	struct fb_event event;
@@ -211,7 +211,7 @@ bcm2708_fb: Add ioctl for reading gpu memory through dma
  	void __user *argp = (void __user *)arg;
  	long ret = 0;
  
-@@ -1208,6 +1234,15 @@ static long do_fb_ioctl(struct fb_info *
+@@ -1218,6 +1244,15 @@ static long do_fb_ioctl(struct fb_info *
  		unlock_fb_info(info);
  		console_unlock();
  		break;
@@ -227,7 +227,7 @@ bcm2708_fb: Add ioctl for reading gpu memory through dma
  	default:
  		if (!lock_fb_info(info))
  			return -ENODEV;
-@@ -1353,6 +1388,7 @@ static long fb_compat_ioctl(struct file
+@@ -1363,6 +1398,7 @@ static long fb_compat_ioctl(struct file
  	case FBIOPAN_DISPLAY:
  	case FBIOGET_CON2FBMAP:
  	case FBIOPUT_CON2FBMAP:

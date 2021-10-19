@@ -14,6 +14,7 @@ ramips_setup_interfaces()
 	d-team,pbr-m1|\
 	firefly,firewrt|\
 	jcg,jhr-ac876m|\
+	jcg,jhr-ac945m|\
 	mediatek,ap-mt7621a-v60|\
 	mediatek,mt7621-eval-board|\
 	mqmaker,witi|\
@@ -272,6 +273,7 @@ ramips_setup_macs()
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		wan_mac=$label_mac
 		;;
+	jcg,jhr-ac945m|\
 	jcg,y2|\
 	zbtlink,zbt-we1326)
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)

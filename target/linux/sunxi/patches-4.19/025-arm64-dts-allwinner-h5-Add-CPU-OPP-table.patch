@@ -31,7 +31,7 @@ new file mode 100644
 index 0000000000000..b2657201957eb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,97 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +// Copyright (C) 2020 Chen-Yu Tsai <wens@csie.org>
 +
@@ -90,6 +90,24 @@ index 0000000000000..b2657201957eb
 +
 +		opp-1152000000 {
 +			opp-hz = /bits/ 64 <1152000000>;
++			opp-microvolt = <1300000 1300000 1310000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1200000000 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <1300000 1300000 1310000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1248000000 {
++			opp-hz = /bits/ 64 <1248000000>;
++			opp-microvolt = <1300000 1300000 1310000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1296000000 {
++			opp-hz = /bits/ 64 <1296000000>;
 +			opp-microvolt = <1300000 1300000 1310000>;
 +			clock-latency-ns = <244144>; /* 8 32k periods */
 +		};
