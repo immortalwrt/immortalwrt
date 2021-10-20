@@ -33,6 +33,7 @@ ramips_setup_interfaces()
 		;;
 	asiarf,ap7621-nv1|\
 	jcg,q20|\
+	jdcloud,re-sp-01b|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
 	xiaomi,mi-router-3g|\
@@ -142,7 +143,10 @@ ramips_setup_macs()
 		wan_mac="$(grep -m1 mac= "/dev/mtd${index}" | cut -d= -f2)"
 		lan_mac=$wan_mac
 		;;
-	d-team,newifi-d2)
+	d-team,newifi-d2|\
+	phicomm,k2p|\
+	xiaomi,mi-router-ac2100|\
+	xiaomi,redmi-router-ac2100)
 		lan_mac=$(cat /sys/class/net/eth0/address)
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)
 		;;
@@ -174,10 +178,25 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii u-boot-env wanaddr)
 		label_mac=$wan_mac
 		;;
+	jcg,jhr-ac945m|\
+	wavlink,wl-wn531a6|\
+	winstars,ws-wn583a6|\
+	zbtlink,zbt-we1326|\
+	zbtlink,zbt-wg108|\
+	zbtlink,zbt-wg3526-16m|\
+	zbtlink,zbt-wg3526-32m)
+		label_mac=$(mtd_get_mac_binary factory 0x4)
+		;;
 	jcg,y2)
 		lan_mac=$(cat /sys/class/net/eth0/address)
 		wan_mac=$(mtd_get_mac_binary factory 0xe006)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
+		;;
+	jdcloud,re-sp-01b)
+		local index="$(find_mtd_index "config")"
+		label_mac=$(macaddr_canonicalize $(dd if="/dev/mtd${index}" bs=12 skip=17449 iflag=skip_bytes count=1 2>/dev/null))
+		lan_mac=$label_mac
+		wan_mac=$label_mac
 		;;
 	linksys,e5600|\
 	linksys,ea7300-v1|\
@@ -202,24 +221,8 @@ ramips_setup_macs()
 		lan_mac=$(mtd_get_mac_binary factory 0x4)
 		wan_mac=$(macaddr_add "$lan_mac" 2)
 		;;
-	phicomm,k2p)
-		wan_mac=$(mtd_get_mac_binary factory 0xe006)
-		;;
-	xiaomi,mi-router-ac2100|\
-	xiaomi,redmi-router-ac2100)
-		lan_mac=$(cat /sys/class/net/eth0/address)
-		wan_mac=$(mtd_get_mac_binary factory 0xe000)
-		;;
 	xiaoyu,xy-c5)
 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x4)" 1)
-		;;
-	wavlink,wl-wn531a6|\
-	winstars,ws-wn583a6|\
-	zbtlink,zbt-we1326|\
-	zbtlink,zbt-wg108|\
-	zbtlink,zbt-wg3526-16m|\
-	zbtlink,zbt-wg3526-32m)
-		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
 	esac
 
