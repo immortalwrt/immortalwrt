@@ -71,22 +71,6 @@ return baseclass.extend({
 			);
 		}
 
-		// TODO: This is ugly
-		var projectlink = document.createElement('a');
-		projectlink.append('Project ImmortalWrt');
-		projectlink.href = 'https://github.com/immortalwrt';
-		projectlink.target = '_blank';
-
-		var corelink = document.createElement('a');
-		corelink.append('ImmortalWrt Core');
-		corelink.href = 'https://github.com/immortalwrt/immortalwrt';
-		corelink.target = '_blank';
-
-		var sourcelink = document.createElement('placeholder');
-		sourcelink.append(projectlink);
-		sourcelink.append(' / ');
-		sourcelink.append(corelink);
-
 		var fields = [
 			_('Hostname'),         boardinfo.hostname,
 			_('Model'),            boardinfo.model + cpubench.cpubench,
@@ -101,8 +85,7 @@ return baseclass.extend({
 				systeminfo.load[1] / 65535.0,
 				systeminfo.load[2] / 65535.0
 			) : null,
-			_('CPU usage (%)'),    cpuusage.cpuusage,
-			_('Source Code'),      sourcelink
+			_('CPU usage (%)'),    cpuusage.cpuusage
 		];
 
 		var table = E('table', { 'class': 'table' });

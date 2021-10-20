@@ -171,6 +171,7 @@ define Device/linksys_ea7500-v1
 	IMAGES := factory.bin sysupgrade.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | pad-to $$$$(PAGESIZE)
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
+	DEFAULT := n
 endef
 TARGET_DEVICES += linksys_ea7500-v1
 
@@ -189,6 +190,7 @@ define Device/linksys_ea8500
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
+	DEFAULT := n
 endef
 TARGET_DEVICES += linksys_ea8500
 
@@ -390,6 +392,7 @@ define Device/tplink_vr2600v
 	SUPPORTED_DEVICES += vr2600v
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
 	IMAGE/sysupgrade.bin := pad-extra 512 | append-kernel | pad-to $$$$(KERNEL_SIZE) | append-rootfs | pad-rootfs | append-metadata
+	DEFAULT := n
 endef
 TARGET_DEVICES += tplink_vr2600v
 

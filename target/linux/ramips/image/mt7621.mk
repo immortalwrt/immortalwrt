@@ -248,6 +248,7 @@ define Device/buffalo_wsr-2533dhpl
   DEVICE_ALT0_MODEL := WSR-2533DHP
   IMAGE/sysupgrade.bin := trx | pad-rootfs | append-metadata
   DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
+  DEFAULT := n
 endef
 TARGET_DEVICES += buffalo_wsr-2533dhpl
 
@@ -825,7 +826,7 @@ define Device/linksys_e5600
   DEVICE_VENDOR := Linksys
   DEVICE_MODEL := E5600
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
-	kmod-mt7663-firmware-sta uboot-envtools
+	uboot-envtools
   UBINIZE_OPTS := -E 5
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | check-size | append-metadata
@@ -1066,7 +1067,7 @@ define Device/netgear_r6700-v2
   DEVICE_ALT0_MODEL := Nighthawk AC2400
   DEVICE_ALT0_VARIANT := v1
   DEVICE_ALT1_VENDOR := NETGEAR
-  DEVICE_ALT1_MODEL := R7200
+  DEVICE_ALT1_MODEL := Nighthawk AC2100
   DEVICE_ALT1_VARIANT := v1
   SERCOMM_HWNAME := R6950
   SERCOMM_HWID := BZV
@@ -1100,6 +1101,43 @@ define Device/netgear_r6850
   DEVICE_PACKAGES += kmod-mt7615e kmod-mt7615-firmware
 endef
 TARGET_DEVICES += netgear_r6850
+
+define Device/netgear_r6900-v2
+  $(Device/netgear_sercomm_nand)
+  DEVICE_MODEL := R6900
+  DEVICE_VARIANT := v2
+  SERCOMM_HWNAME := R6950
+  SERCOMM_HWID := BZV
+  SERCOMM_HWVER := A001
+  SERCOMM_SWVER := 0x1032
+  IMAGE_SIZE := 40960k
+  DEVICE_PACKAGES += kmod-mt7615e kmod-mt7615-firmware
+endef
+TARGET_DEVICES += netgear_r6900-v2
+
+define Device/netgear_r7200
+  $(Device/netgear_sercomm_nand)
+  DEVICE_MODEL := R7200
+  SERCOMM_HWNAME := R6950
+  SERCOMM_HWID := BZV
+  SERCOMM_HWVER := A001
+  SERCOMM_SWVER := 0x1032
+  IMAGE_SIZE := 40960k
+  DEVICE_PACKAGES += kmod-mt7615e kmod-mt7615-firmware
+endef
+TARGET_DEVICES += netgear_r7200
+
+define Device/netgear_r7450
+  $(Device/netgear_sercomm_nand)
+  DEVICE_MODEL := R7450
+  SERCOMM_HWNAME := R6950
+  SERCOMM_HWID := BZV
+  SERCOMM_HWVER := A001
+  SERCOMM_SWVER := 0x1032
+  IMAGE_SIZE := 40960k
+  DEVICE_PACKAGES += kmod-mt7615e kmod-mt7615-firmware
+endef
+TARGET_DEVICES += netgear_r7450
 
 define Device/netgear_wac104
   $(Device/netgear_sercomm_nand)
@@ -1279,7 +1317,7 @@ define Device/tplink_archer-a6-v3
   DEVICE_MODEL := Archer A6
   DEVICE_VARIANT := V3
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e \
-	kmod-mt7663-firmware-ap kmod-mt7663-firmware-sta
+	kmod-mt7663-firmware-ap
   TPLINK_BOARD_ID := ARCHER-A6-V3
   KERNEL := $(KERNEL_DTB) | uImage lzma
   IMAGE_SIZE := 15744k
@@ -1292,7 +1330,7 @@ define Device/tplink_archer-c6-v3
   DEVICE_MODEL := Archer C6
   DEVICE_VARIANT := V3
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e \
-	kmod-mt7663-firmware-ap kmod-mt7663-firmware-sta
+	kmod-mt7663-firmware-ap
   TPLINK_BOARD_ID := ARCHER-C6-V3
   KERNEL := $(KERNEL_DTB) | uImage lzma
   IMAGE_SIZE := 15744k
