@@ -445,6 +445,18 @@ define Device/jcg_jhr-ac876m
 endef
 TARGET_DEVICES += jcg_jhr-ac876m
 
+define Device/jcg_jhr-ac945m
+  IMAGE_SIZE := 16064k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
+	jcg-header 91.1
+  JCG_MAXSIZE := 16064k
+  DEVICE_VENDOR := JCG
+  DEVICE_MODEL := JHR-AC945M
+  DEVICE_PACKAGES := kmod-mt7615e kmod-usb3 wpad-openssl
+endef
+TARGET_DEVICES += jcg_jhr-ac945m
+
 define Device/jcg_y2
   IMAGE_SIZE := 16064k
   IMAGES += factory.bin
@@ -461,7 +473,8 @@ define Device/jdcloud_re-sp-01b
   IMAGE_SIZE := 27328k
   DEVICE_VENDOR := JDCloud
   DEVICE_MODEL := RE-SP-01B
-  DEVICE_PACKAGES := kmod-fs-ext4 kmod-mt7603 kmod-mt7615e kmod-sdhci-mt7620 kmod-usb3 wpad-openssl
+  DEVICE_PACKAGES := kmod-fs-ext4 kmod-mt7603 kmod-mt7615e kmod-sdhci-mt7620 \
+	kmod-usb3 wpad-openssl
 endef
 TARGET_DEVICES += jdcloud_re-sp-01b
 

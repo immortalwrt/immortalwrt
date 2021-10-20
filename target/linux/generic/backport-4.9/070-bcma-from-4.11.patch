@@ -73,7 +73,7 @@
  		return 0;
  	case BCMA_HOSTTYPE_SDIO:
  		return 0;
-@@ -253,7 +253,8 @@ void bcma_prepare_core(struct bcma_bus *
+@@ -254,7 +254,8 @@ void bcma_prepare_core(struct bcma_bus *
  		if (IS_ENABLED(CONFIG_OF) && bus->host_pdev) {
  			core->dma_dev = &bus->host_pdev->dev;
  			core->dev.parent = &bus->host_pdev->dev;

@@ -9,10 +9,19 @@
 	local util = require "luci.util"
 	local stat = require "luci.tools.status"
 	local ver = require "luci.version"
+	local uci = require("luci.model.uci").cursor()
 
 	local has_ipv6 = fs.access("/usr/sbin/ip6tables")
 	local has_dhcp = fs.access("/etc/config/dhcp")
 	local has_wifi = ((fs.stat("/etc/config/wireless", "size") or 0) > 0)
+	local has_temp = fs.access("/sbin/tempinfo")
+	local has_switch = false
+
+	uci:foreach("network", "switch",
+			function(s)
+				has_switch = true
+				return false
+			end)
 
 	local sysinfo = luci.util.ubus("system", "info") or { }
 	local boardinfo = luci.util.ubus("system", "board") or { }
@@ -24,7 +33,7 @@
 		buffered = 0,
 		shared = 0
 	}
-	
+
 	local mem_cached = luci.sys.exec("sed -e '/^Cached: /!d; s#Cached: *##; s# kB##g' /proc/meminfo")
 
 	local swapinfo = sysinfo.swap or {
@@ -46,19 +55,21 @@
 			"sysctl -n -e net.nf_conntrack_max net.ipv4.netfilter.ip_conntrack_max"
 		):match("%d+")) or 4096
 
-		local cpu_info = luci.sys.exec("cpuinfo")
+		local user_info = luci.sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l") or "0"
 
-		local eth_info = luci.sys.exec("ethinfo")
-
-		local user_info = luci.sys.exec("cat /proc/net/arp | grep '0x2' | wc -l") or 0
-		
 		local cpu_usage = luci.sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\", 100 - $8)}'") or "6%"
+		local cpu_info = luci.sys.exec("/sbin/cpuinfo") or "?"
+		if not has_switch then
+			local eth_info = luci.sys.exec("ethinfo")
+		else
+			local eth_info = ""
+		end
 
 		local rv = {
-			cpuusage    = cpu_usage,
 			cpuinfo    = cpu_info,
+			cpuusage   = cpu_usage,
 			ethinfo    = eth_info,
-			userinfo    = user_info,
+			userinfo   = user_info,
 			uptime     = sysinfo.uptime or 0,
 			localtime  = os.date(),
 			loadavg    = sysinfo.load or { 0, 0, 0 },
@@ -121,7 +132,7 @@
 
 <%+header%>
 
-<script type="text/javascript" src="<%=resource%>/cbi.js?v=git-19.167.54478-71e2af4"></script>
+<script type="text/javascript" src="<%=resource%>/cbi.js"></script>
 <script type="text/javascript">//<![CDATA[
 	function progressbar(v, m)
 	{
@@ -179,7 +190,7 @@
 		});
 	}
 
-	XHR.poll(1, '<%=REQUEST_URI%>', { status: 1 },
+	XHR.poll(5, '<%=REQUEST_URI%>', { status: 1 },
 		function(x, info)
 		{
 			if (!(npoll++ % 5))
@@ -638,7 +649,7 @@
 
 			var e;
 
-			if (e = document.getElementById('ethinfo'))			{
+			if (e = document.getElementById('ethinfo')) {
 				var ports = eval('(' + info.ethinfo + ')');
 				var tmp = "";
 				for (var i in ports)
@@ -660,12 +671,12 @@
 
 			if (e = document.getElementById('userinfo'))
 				e.innerHTML = info.userinfo;
-
-			if (e = document.getElementById('cpuinfo'))
-				e.innerHTML = info.cpuinfo;
 				
 			if (e = document.getElementById('cpuusage'))
 				e.innerHTML = info.cpuusage;
+
+			if (e = document.getElementById('cpuinfo'))
+				e.innerHTML = info.cpuinfo;
 
 			if (e = document.getElementById('loadavg'))
 				e.innerHTML = String.format(
@@ -713,8 +724,11 @@
 
 	<table width="100%" cellspacing="10">
 		<tr><td width="33%"><%:Hostname%></td><td><%=luci.sys.hostname() or "?"%></td></tr>
-		<tr><td width="33%"><%:Model%></td><td><%=pcdata(boardinfo.model or "?")%> <%=luci.sys.exec("cat /etc/bench.log") or " "%></td></tr>
-		<tr><td width="33%"><%:CPU Info%></td><td id="cpuinfo">-</td></tr>
+		<tr><td width="33%"><%:Model%></td><td><%=pcdata(boardinfo.model or "?")%> <%=luci.sys.exec("cat /etc/bench.log") or ""%></td></tr>
+		<tr><td width="33%"><%:Architecture%></td><td id="cpuinfo">-</td></tr>
+		<% if has_temp then %>
+		<tr><td width="33%"><%:Temperature%></td><td><%=luci.sys.exec("/sbin/tempinfo") or "?"%></td></tr>
+		<% end %>
 		<tr><td width="33%"><%:Firmware Version%></td><td>
 			<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%> /
 			<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>)
@@ -724,9 +738,6 @@
 		<tr><td width="33%"><%:Uptime%></td><td id="uptime">-</td></tr>
 		<tr><td width="33%"><%:Load Average%></td><td id="loadavg">-</td></tr>
 		<tr><td width="33%"><%:CPU usage (%)%></td><td id="cpuusage">-</td></tr>
-		<tr><td width="33%"><%:Source Code%></td><td><a href="https://github.com/immortalwrt" target="_blank">
-			Project ImmortalWrt</a> / <a href="https://github.com/immortalwrt/immortalwrt" target="_blank">ImmortalWrt Core</a>
-		</td></tr>
 	</table>
 </fieldset>
 
@@ -750,12 +761,14 @@
 </fieldset>
 <% end %>
 
+<% if not has_switch then %>
 <fieldset class="cbi-section">
 	<legend><%:Interfaces%></legend>
 
 	<table width="100%" cellspacing="10" id="ethinfo">
 	</table>
 </fieldset>
+<% end %>
 
 <fieldset class="cbi-section">
 	<legend><%:Network%></legend>

@@ -71,7 +71,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/include/uapi/linux/pkt_sched.h
 +++ b/include/uapi/linux/pkt_sched.h
-@@ -991,6 +991,7 @@ enum {
+@@ -993,6 +993,7 @@ enum {
  	TCA_CAKE_INGRESS,
  	TCA_CAKE_ACK_FILTER,
  	TCA_CAKE_SPLIT_GSO,

@@ -492,7 +492,6 @@ define Device/glinet_gl-b1300
 	DEVICE_MODEL := GL-B1300
 	BOARD_NAME := gl-b1300
 	DEVICE_DTS := qcom-ipq4029-gl-b1300
-	BOARD_NAME := gl-b1300
 	KERNEL_SIZE := 4096k
 	IMAGE_SIZE := 26624k
 	IMAGE/sysupgrade.bin := append-kernel |append-rootfs | pad-rootfs | append-metadata
@@ -530,18 +529,17 @@ define Device/hiwifi_c526a-128m
 endef
 TARGET_DEVICES += hiwifi_c526a-128m
 
-define Device/hugo_ac1200
+define Device/leguang_ca100
 	$(call Device/FitImage)
-	DEVICE_VENDOR := Hugo
-	DEVICE_MODEL := AC1200
-	BOARD_NAME := hugo_ac1200
-	DEVICE_DTS := qcom-ipq4019-hugo-ac1200
+	DEVICE_VENDOR := LEGUANG
+	DEVICE_MODEL := CA100
+	DEVICE_DTS := qcom-ipq4019-ca100
 	KERNEL_SIZE := 4096k
 	IMAGE_SIZE := 31232k
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
-	DEVICE_PACKAGES := ipq-wifi-hugo_ac1200
+	DEVICE_PACKAGES := ipq-wifi-leguang_ca100
 endef
-TARGET_DEVICES += hugo_ac1200
+TARGET_DEVICES += leguang_ca100
 
 define Device/linksys_ea6350v3
 	# The Linksys EA6350v3 has a uboot bootloader that does not

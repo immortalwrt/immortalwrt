@@ -123,7 +123,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  	long			sk_sndtimeo;
  	struct timer_list	sk_timer;
  	__u32			sk_priority;
-@@ -460,6 +462,12 @@ struct sock {
+@@ -462,6 +464,12 @@ struct sock {
  	struct rcu_head		sk_rcu;
  };
  

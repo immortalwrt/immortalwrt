@@ -57,7 +57,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  	select OF_EARLY_FLATTREE if OF
 --- a/arch/arm/boot/compressed/Makefile
 +++ b/arch/arm/boot/compressed/Makefile
-@@ -102,6 +102,7 @@ ifeq ($(CONFIG_FUNCTION_TRACER),y)
+@@ -104,6 +104,7 @@ ifeq ($(CONFIG_FUNCTION_TRACER),y)
  ORIG_CFLAGS := $(KBUILD_CFLAGS)
  KBUILD_CFLAGS = $(subst -pg, , $(ORIG_CFLAGS))
  endif

@@ -1295,7 +1295,7 @@
  void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
 --- a/include/net/pkt_sched.h
 +++ b/include/net/pkt_sched.h
-@@ -114,6 +114,8 @@ bool sch_direct_xmit(struct sk_buff *skb
+@@ -115,6 +115,8 @@ bool sch_direct_xmit(struct sk_buff *skb
  
  void __qdisc_run(struct Qdisc *q);
  

@@ -22,7 +22,7 @@
  	node = bcma_of_find_child_device(parent, core);
  	if (node)
  		core->dev.of_node = node;
-@@ -242,19 +239,18 @@ void bcma_prepare_core(struct bcma_bus *
+@@ -243,19 +240,18 @@ void bcma_prepare_core(struct bcma_bus *
  	core->dev.release = bcma_release_core_dev;
  	core->dev.bus = &bcma_bus_type;
  	dev_set_name(&core->dev, "bcma%d:%d", bus->num, core->core_index);

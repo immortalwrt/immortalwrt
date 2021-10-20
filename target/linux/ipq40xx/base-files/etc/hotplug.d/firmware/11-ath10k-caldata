@@ -193,7 +193,7 @@ case "$FIRMWARE" in
 	compex,wpj428 |\
 	engenius,eap1300 |\
 	engenius,eap2200 |\
-	hugo,ac1200 |\
+	leguang,ca100 |\
 	openmesh,a42 |\
 	openmesh,a62 |\
 	qxwlan,e2600ac-c1 |\
@@ -296,7 +296,7 @@ case "$FIRMWARE" in
 	compex,wpj428 |\
 	engenius,eap1300 |\
 	engenius,eap2200 |\
-	hugo,ac1200 |\
+	leguang,ca100 |\
 	openmesh,a42 |\
 	openmesh,a62 |\
 	qxwlan,e2600ac-c1 |\
