@@ -12,5 +12,5 @@ start_service() {
 }
 
 stop_service() {
-    :
+    echo 'do nothing' > /dev/null
 }
