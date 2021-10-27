@@ -9,6 +9,7 @@ FEATURES:=squashfs nand fpu ramdisk
 CPU_TYPE:=cortex-a15
 CPU_SUBTYPE:=neon-vfpv4
 MAINTAINER:=John Crispin <john@phrozen.org>
+SUBTARGETS:=generic
 
 KERNEL_PATCHVER:=5.4
 KERNEL_TESTING_PATCHVER:=5.10

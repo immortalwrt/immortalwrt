@@ -3,50 +3,37 @@
 
 START=99
 
-start()
-{
+start() {
 	rfc=4096
-	cc=$(grep -c processor /proc/cpuinfo)
-	rsfe=$(echo $cc*$rfc | bc)
-	sysctl -w net.core.rps_sock_flow_entries=$rsfe >/dev/null
-	for fileRps in $(ls /sys/class/net/eth*/queues/rx-*/rps_cpus)
+	threads="$(grep -c "processor" "/proc/cpuinfo")"
+
+	sysctl -w net.core.rps_sock_flow_entries="$(expr "$rfc" \* "$threads")" >"/dev/null" 2>&1
+
+	for fileRps in /sys/class/net/eth*/queues/rx-*/rps_cpus
 	do
-		echo $cc > $fileRps
+		echo "$threads" > "$fileRps" >"/dev/null" 2>&1
 	done
-	
-	for fileRfc in $(ls /sys/class/net/eth*/queues/rx-*/rps_flow_cnt)
+
+	for fileRfc in /sys/class/net/eth*/queues/rx-*/rps_flow_cnt
 	do
-		echo $rfc > $fileRfc
+		echo "$rfc" > "$fileRfc" >"/dev/null" 2>&1
 	done
-	
-	uci set network.@globals[0].packet_steering=1
+
+	uci set network.@globals[0].packet_steering="1"
 	uci commit network
-	
-	a=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq)
-	b=$(echo -n ' : ')
-	c=$(cat /proc/cpuinfo | grep 'core id' | sort -u | wc -l)
-	d=$(echo -n ' Core ')
-	e=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
-	f=$(echo -n ' Thread ')
-	g=${a}${b}${c}${d}${e}${f}
 
-	mkdir -p /tmp/sysinfo
-	echo $g > /tmp/sysinfo/model
-
-	a=$(ip address | grep ^[0-9] | awk -F: '{print $2}' | sed "s/ //g" | grep '^[e]' | grep -v "@" | grep -v "\.")
-	b=$(echo "$a" | wc -l)
-	for i in $(seq 1 $b)
+	for i in $(ip address | grep -E 'eth[0-9]+' | awk -F ': ' '{print $2}' | xargs)
 	do
-		c=$(echo "$a" | sed -n ${i}p)
-		ethtool -K $c rx-checksum on >/dev/null 2>&1
-		ethtool -K $c tx-checksum-ip-generic on >/dev/null 2>&1 || (
-		ethtool -K $c tx-checksum-ipv4 on >/dev/null 2>&1
-		ethtool -K $c tx-checksum-ipv6 on >/dev/null 2>&1)
-		ethtool -K $c tx-scatter-gather on >/dev/null 2>&1
-		ethtool -K $c gso on >/dev/null 2>&1
-		ethtool -K $c tso on >/dev/null 2>&1
-		ethtool -K $c ufo on >/dev/null 2>&1
+		(
+			ethtool -K "$i" rx-checksum on
+			ethtool -K "$i" tx-checksum-ip-generic on || {
+				ethtool -K "$i" tx-checksum-ipv4 on
+				ethtool -K "$i" tx-checksum-ipv6 on
+			}
+			ethtool -K "$i" tx-scatter-gather on
+			ethtool -K "$i" gso on
+			ethtool -K "$i" tso on
+			ethtool -K "$i" ufo on
+		) >"/dev/null" 2>&1
 	done
-
-	[ -f /etc/index.htm ] && mv /etc/index.htm /usr/lib/lua/luci/view/admin_status/index.htm
 }

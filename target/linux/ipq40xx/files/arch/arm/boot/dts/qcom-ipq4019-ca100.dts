@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /*
  * Copyright (c) 2019 Hugo Yuan <hugolxq@gmail.com>
  */
@@ -8,8 +9,8 @@
 #include <dt-bindings/soc/qcom,tcsr.h>
 
 / {
-	model = "Hugo AC1200";
-	compatible = "hugo,ac1200", "qcom,ipq4019";
+	model = "LEGUANG CA100";
+	compatible = "leguang,ca100", "qcom,ipq4019";
 
 	memory {
 		device_type = "memory";
