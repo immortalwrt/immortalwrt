@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -124,7 +124,7 @@ CONFIG_MP_VHT_HW_TX_MODE = n
+@@ -119,7 +119,7 @@ CONFIG_MP_VHT_HW_TX_MODE = n
  ###################### Platform Related #######################
  CONFIG_PLATFORM_ARM_RPI = n
  CONFIG_PLATFORM_ARM_AARCH64 = n
