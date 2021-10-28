@@ -1,6 +1,15 @@
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -7484,7 +7484,7 @@ exit:
+@@ -439,7 +439,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+ 
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
+ 	if (started) {
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0) || defined(BUILD_OPENWRT))
+ 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, false);
+ #else
+ 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0);
+@@ -7456,7 +7456,7 @@ exit:
  	return ret;
  }
  
@@ -9,7 +18,7 @@
  static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
  	struct wireless_dev *wdev,
-@@ -9948,7 +9948,7 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
+@@ -9920,7 +9920,7 @@ static struct cfg80211_ops rtw_cfg80211_
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	.mgmt_tx = cfg80211_rtw_mgmt_tx,
