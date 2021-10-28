@@ -16,7 +16,7 @@ Subject: [PATCH 25/36] NET: MIPS: lantiq: adds xrx200-net
 
 --- a/drivers/net/ethernet/Kconfig
 +++ b/drivers/net/ethernet/Kconfig
-@@ -106,7 +106,13 @@ config LANTIQ_ETOP
+@@ -107,7 +107,13 @@ config LANTIQ_ETOP
  	tristate "Lantiq SoC ETOP driver"
  	depends on SOC_TYPE_XWAY
  	---help---
