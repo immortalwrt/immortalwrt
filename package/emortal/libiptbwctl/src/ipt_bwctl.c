@@ -18,24 +18,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "ipt_bwctl.h"
 #define malloc ipt_bwctl_safe_malloc
 #define strdup ipt_bwctl_safe_strdup
 
-
 static int bandwidth_semaphore = -1;
 
-union semun 
+union semun
 {
-	int val; // Value for SETVAL 
-	struct semid_ds *buf; // Buffer for IPC_STAT, IPC_SET 
-	unsigned short *array; // Array for GETALL, SETALL 
-	struct seminfo *__buf; // Buffer for IPC_INFO (Linux specific) 
+	int val; // Value for SETVAL
+	struct semid_ds *buf; // Buffer for IPC_STAT, IPC_SET
+	unsigned short *array; // Array for GETALL, SETALL
+	struct seminfo *__buf; // Buffer for IPC_INFO (Linux specific)
 };
-
-
-
 
 /* semaphore functions */
 static int get_sem_val(int sid, int member);
@@ -47,64 +42,62 @@ static int unlock(void);
 
 
 /* needed to calculate history time intervals */
-static time_t get_next_node_start_time(		time_t current_start_time, 
-						time_t reset_interval, 
-						time_t reset_time, 
+static time_t get_next_node_start_time(		time_t current_start_time,
+						time_t reset_interval,
+						time_t reset_time,
 						unsigned char is_constant_interval
 						);
 
 /* functions used to get data from kernel module */
-static void parse_returned_ip_data(		void *out_data, 
-						uint32_t* out_index, 
-						unsigned char* in_buffer, 
-						uint32_t* in_index, 
-						unsigned char get_history, 
-						time_t reset_interval, 
-						time_t reset_time, 
+static void parse_returned_ip_data(		void *out_data,
+						uint32_t* out_index,
+						unsigned char* in_buffer,
+						uint32_t* in_index,
+						unsigned char get_history,
+						time_t reset_interval,
+						time_t reset_time,
 						unsigned char is_constant_interval
 						);
 
-static int get_bandwidth_data(			char* id, 
-						unsigned char get_history, 
-						char* ip, 
-						unsigned long* num_ips, 
-						void** data, 
+static int get_bandwidth_data(			char* id,
+						unsigned char get_history,
+						char* ip,
+						unsigned long* num_ips,
+						void** data,
 						unsigned long max_wait_milliseconds
 						);
 
 
 /* functions used to send/restore data to kernel module */
-static int set_ip_block(			void* ip_block_data, 
-						unsigned char is_history, 
-						unsigned char* output_buffer, 
-						uint32_t* current_output_index, 
+static int set_ip_block(			void* ip_block_data,
+						unsigned char is_history,
+						unsigned char* output_buffer,
+						uint32_t* current_output_index,
 						uint32_t output_buffer_length
 						);
 
-static int set_bandwidth_data(			char* id, 
-						unsigned char zero_unset, 
-						unsigned char set_history, 
-						unsigned long num_ips, 
-						time_t last_backup, 
-						void* data, 
+static int set_bandwidth_data(			char* id,
+						unsigned char zero_unset,
+						unsigned char set_history,
+						unsigned long num_ips,
+						time_t last_backup,
+						void* data,
 						unsigned long max_wait_milliseconds
 						);
 
 /* utility i/o functions when saving/restoring data to/from file */
-static unsigned char* read_entire_file(		FILE* in, 
-						unsigned long read_block_size, 
+static unsigned char* read_entire_file(		FILE* in,
+						unsigned long read_block_size,
 						unsigned long *length
 						);
 
-static char** split_on_separators(		char* line, 
-						char* separators, 
-						int num_separators, 
-						int max_pieces, 
-						int include_remainder_at_max, 
+static char** split_on_separators(		char* line,
+						char* separators,
+						int num_separators,
+						int max_pieces,
+						int include_remainder_at_max,
 						unsigned long *pieces_read
 						);
-
-
 
 static int get_sem_val(int sid, int member)
 {
@@ -119,12 +112,12 @@ static int get_sem(int *sid, key_t key)
         union semun semopts;
 	int members = 1;
 
-	
+
 	int success = ((*sid = semget(key, members, IPC_CREAT|IPC_EXCL|0777))== -1) ? 0 : 1;
 	if(success)
 	{
 		semopts.val = 1;
-        	/* Initialize all members (could be done with SETALL) */        
+        	/* Initialize all members (could be done with SETALL) */
         	for(cntr=0; cntr<members; cntr++)
 		{
 			semctl(*sid, cntr, SETVAL, semopts);
@@ -137,13 +130,12 @@ static int get_sem(int *sid, key_t key)
 	return success;
 }
 
-
 static int lock_sem(int sid)
 {
 	int member = 0;
         struct sembuf sem_lock={ 0, -1, IPC_NOWAIT};
 	int success = 0;
-	
+
 	//printf("locking sem, member count = %d\n", get_sem_member_count(sid)  );
 
        	/* Attempt to lock the semaphore set */
@@ -164,11 +156,11 @@ static int unlock_sem(int sid)
 {
 	int member = 0;
         struct sembuf sem_unlock={ member, 1, IPC_NOWAIT};
-	
-	/* will fail if we can't can't unlock semaphore for some reason, 
+
+	/* will fail if we can't can't unlock semaphore for some reason,
 	 * will NOT fail if semaphore is already unlocked
 	 */
-	int success = 1; 
+	int success = 1;
 
 
 	/* Is the semaphore set locked? */
@@ -181,8 +173,6 @@ static int unlock_sem(int sid)
 	}
 	return success;
 }
-
-
 
 static int lock(unsigned long max_wait_milliseconds)
 {
@@ -218,13 +208,11 @@ static int unlock(void)
 		unlocked = unlock_sem(bandwidth_semaphore);
 	}
 	return unlocked;
-	
 }
 
-
-static time_t get_next_node_start_time(		time_t current_start_time, 
-						time_t reset_interval, 
-						time_t reset_time, 
+static time_t get_next_node_start_time(		time_t current_start_time,
+						time_t reset_interval,
+						time_t reset_time,
 						unsigned char is_constant_interval
 						)
 {
@@ -286,18 +274,18 @@ static time_t get_next_node_start_time(		time_t current_start_time,
 				next = mktime(curr);
 			}
 		}
-		next = next + reset_time; 
+		next = next + reset_time;
 	}
 	return next;
 }
 
-static void parse_returned_ip_data(	void *out_data, 
-					uint32_t* out_index, 
-					unsigned char* in_buffer, 
-					uint32_t* in_index, 
-					unsigned char get_history, 
-					time_t reset_interval, 
-					time_t reset_time, 
+static void parse_returned_ip_data(	void *out_data,
+					uint32_t* out_index,
+					unsigned char* in_buffer,
+					uint32_t* in_index,
+					unsigned char get_history,
+					time_t reset_interval,
+					time_t reset_time,
 					unsigned char is_constant_interval
 					)
 {
@@ -324,7 +312,7 @@ static void parse_returned_ip_data(	void *out_data,
 			history->last_end    = ip_bw_data->last_end;
 
 			history->history_bws =  (uint64_t*)malloc( (history->num_nodes+1)*sizeof(uint64_t) );
-			
+
 			/* read bws */
 			int node_index = 0;
             *in_index += 32;
@@ -334,8 +322,7 @@ static void parse_returned_ip_data(	void *out_data,
 				(history->history_bws)[node_index] =  ip_bw_data->ipbw_data[node_index];
 			}
 
-
-			/* 
+			/*
 			 * We now need to deal with DST
 			 *
 			 * The problem is that the kernel can't tell the difference
@@ -344,7 +331,7 @@ static void parse_returned_ip_data(	void *out_data,
 			 * shifts values in the bandwidth history to reflect the time
 			 * as it would be if the current offset from UTC had always been
 			 * in effect.  So, we need to go backwards through the history and
-			 * anytime we go from DST to non-DST (or visa-versa) implement a 
+			 * anytime we go from DST to non-DST (or visa-versa) implement a
 			 * shift so that returned times reflect reality.
 			 */
 			time_t now;
@@ -357,10 +344,9 @@ static void parse_returned_ip_data(	void *out_data,
 	*out_index = *out_index + 1;
 }
 
-
 static int get_bandwidth_data(char* id, unsigned char get_history, char* ip, unsigned long* num_ips, void** data, unsigned long max_wait_milliseconds)
-{	
-	
+{
+
 	unsigned char buf[BANDWIDTH_QUERY_LENGTH];
 	memset(buf, '\0',  BANDWIDTH_QUERY_LENGTH);
 	int done = 0;
@@ -369,14 +355,12 @@ static int get_bandwidth_data(char* id, unsigned char get_history, char* ip, uns
 	*data = NULL;
 	*num_ips = 0;
 
-
 	int got_lock = lock(max_wait_milliseconds);
 	int sockfd = -1;
 	if(got_lock)
 	{
 		sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 	}
-
 
 	uint32_t* request_ip = (uint32_t*)buf;
 	uint32_t* request_index = (uint32_t*)(buf + 4);
@@ -393,6 +377,7 @@ static int get_bandwidth_data(char* id, unsigned char get_history, char* ip, uns
 		inet_aton(ip, &addr);
 		*request_ip = (uint32_t)addr.s_addr;
 	}
+
 	*request_index = 0;
 	*request_history = get_history;
 	sprintf(request_id, "%s", id);
@@ -419,7 +404,7 @@ static int get_bandwidth_data(char* id, unsigned char get_history, char* ip, uns
 			time_t reset_interval              = ip_bw_data->reset_interval;
 			time_t reset_time                  = ip_bw_data->reset_time;
 			unsigned char is_constant_interval = ip_bw_data->reset_is_constant_interval;
-			
+
 			if(!data_initialized)
 			{
 				*num_ips = total_ips;
@@ -490,7 +475,6 @@ static int get_bandwidth_data(char* id, unsigned char get_history, char* ip, uns
 	return got_lock && (error == 0);
 }
 
-
 static int set_ip_block(void* ip_block_data, unsigned char is_history, unsigned char* output_buffer, uint32_t* current_output_index, uint32_t output_buffer_length)
 {
 	if(is_history)
@@ -501,15 +485,14 @@ static int set_ip_block(void* ip_block_data, unsigned char is_history, unsigned 
 		{
 			return 1;
 		}
-	
+
 		*( (uint32_t*)(output_buffer + *current_output_index) ) = history->ip;
 		*current_output_index = *current_output_index + 4;
 
 		*( (uint32_t*)(output_buffer + *current_output_index) ) = history->num_nodes;
 		*current_output_index = *current_output_index + 4;
 
-		
-		/* 
+		/*
 		 * We now need to deal with DST
 		 *
 		 * The problem is that the kernel module can't tell the difference
@@ -517,9 +500,9 @@ static int set_ip_block(void* ip_block_data, unsigned char is_history, unsigned 
 		 * time.  Whenever the time offset from UTC shifts, the kernel module
 		 * shifts values in the bandwidth history to reflect the time
 		 * as it would be if the current offset from UTC had always been
-		 * in effect.  In order to keep all data in the kernel module 
+		 * in effect.  In order to keep all data in the kernel module
 		 * consistent we need to make sure values we send kernel module
-		 * are adjusted for current offset from UTC, not the real one, 
+		 * are adjusted for current offset from UTC, not the real one,
 		 * where the offset may be inconsistent because of DST.
 		 *
 		 * Also note we ignore all but the first, second and last values in the
@@ -529,7 +512,7 @@ static int set_ip_block(void* ip_block_data, unsigned char is_history, unsigned 
 		 * values are returned.  However, when setting data, it's perfectly ok
 		 * to just have the three necessary values and set everything else to zero
 		 */
-		time_t first_start = history->first_start;	
+		time_t first_start = history->first_start;
 		time_t first_end = history->first_end;
 		time_t last_end = history->last_end;
 
@@ -539,8 +522,8 @@ static int set_ip_block(void* ip_block_data, unsigned char is_history, unsigned 
 		first_start = first_start + (get_minutes_west(first_start)-current_minutes_west);
 		first_end = first_end + (get_minutes_west(first_end)-current_minutes_west);
 		last_end = last_end + (get_minutes_west(last_end)-current_minutes_west);
-		
-		
+
+
 		*( (uint64_t*)(output_buffer + *current_output_index) ) = (uint64_t)first_start;
 		*current_output_index = *current_output_index + 8;
 
@@ -563,13 +546,12 @@ static int set_ip_block(void* ip_block_data, unsigned char is_history, unsigned 
 		{
 			return 1;
 		}
-	
 
 		ip_bw* ib = (ip_bw*)ip_block_data;
 		*( (uint32_t*)(output_buffer + *current_output_index) ) = ib->ip;
 		*current_output_index = *current_output_index + 4;
 		*( (uint64_t*)(output_buffer + *current_output_index) ) = ib->bw;
-		
+
 		/*
 		struct in_addr addr;
 		addr.s_addr = ib->ip;
@@ -588,7 +570,6 @@ static int set_bandwidth_data(char* id, unsigned char zero_unset, unsigned char 
 	memset(buf, 0, BANDWIDTH_QUERY_LENGTH);
 	int done = 0;
 
-		
 	int got_lock = lock(max_wait_milliseconds);
 	int sockfd = -1;
 	if(got_lock)
@@ -603,7 +584,6 @@ static int set_bandwidth_data(char* id, unsigned char zero_unset, unsigned char 
 	unsigned char* zero_unset_ips = (unsigned char*)(buf+13);
 	uint64_t* last_backup_time = (uint64_t*)(buf+14);
 	unsigned char* set_id = (unsigned char*)(buf+22);
-
 
 	*total_ips = num_ips;
 	*next_ip_index = 0;
@@ -685,13 +665,13 @@ static unsigned char* read_entire_file(FILE* in, unsigned long read_block_size, 
 /*
  * line is the line to be parsed -- it is not modified in any way
  * max_pieces indicates number of pieces to return, if negative this is determined dynamically
- * include_remainder_at_max indicates whether the last piece, when max pieces are reached, 
+ * include_remainder_at_max indicates whether the last piece, when max pieces are reached,
  * 	should be what it would normally be (0) or the entire remainder of the line (1)
  * 	if max_pieces < 0 this parameter is ignored
  *
  *
  * returns all non-separator pieces in a line
- * result is dynamically allocated, MUST be freed after call-- even if 
+ * result is dynamically allocated, MUST be freed after call-- even if
  * line is empty (you still get a valid char** pointer to to a NULL char*)
  */
 static char** split_on_separators(char* line, char* separators, int num_separators, int max_pieces, int include_remainder_at_max, unsigned long *pieces_read)
@@ -726,7 +706,6 @@ static char** split_on_separators(char* line, char* separators, int num_separato
 		split = (char**)malloc((1+max_pieces)*sizeof(char*));
 		split_index = 0;
 		split[split_index] = NULL;
-
 
 		dup_line = strdup(line);
 		start = dup_line;
@@ -763,7 +742,7 @@ static char** split_on_separators(char* line, char* separators, int num_separato
 					first_separator_index++;
 				}
 			}
-			
+
 			/* copy next piece to split array */
 			if(first_separator_index > 0)
 			{
@@ -784,7 +763,6 @@ static char** split_on_separators(char* line, char* separators, int num_separato
 				*pieces_read = split_index;
 			}
 
-
 			/* find next non-separator index, indicating start of next piece */
 			start = start+ first_separator_index;
 			non_separator_found = 0;
@@ -804,7 +782,7 @@ static char** split_on_separators(char* line, char* separators, int num_separato
 			}
 		}
 		free(dup_line);
-		
+
 	}
 	else
 	{
@@ -814,14 +792,13 @@ static char** split_on_separators(char* line, char* separators, int num_separato
 	return split;
 }
 
-
 time_t* get_interval_starts_for_history(ip_bw_history history)
 {
 	time_t *start_times = NULL;
 	if(history.num_nodes > 0)
 	{
 		start_times = (time_t*)malloc(history.num_nodes*sizeof(time_t));
-		int node_index =0; 
+		int node_index =0;
 		time_t next_start = history.first_start;
 		time_t next_end = get_next_node_start_time(next_start, history.reset_interval, history.reset_time, history.is_constant_interval);
 		for(node_index=0; node_index < history.num_nodes; node_index++)
@@ -833,8 +810,6 @@ time_t* get_interval_starts_for_history(ip_bw_history history)
 	}
 	return start_times;
 }
-
-
 
 void free_ip_bw_histories(ip_bw_history* histories, int num_histories)
 {
@@ -853,30 +828,27 @@ void free_ip_bw_histories(ip_bw_history* histories, int num_histories)
 	free(histories);
 }
 
-
-
-
-
-
 int get_all_bandwidth_history_for_rule_id(char* id, unsigned long* num_ips, ip_bw_history** data, unsigned long max_wait_milliseconds)
 {
 	return get_bandwidth_data(id, 1, "ALL", num_ips, (void*)data, max_wait_milliseconds);
 }
+
 int get_ip_bandwidth_history_for_rule_id(char* id, char* ip, ip_bw_history** data, unsigned long max_wait_milliseconds)
 {
 	unsigned long num_ips;
 	return get_bandwidth_data(id, 1, ip, &num_ips, (void*)data, max_wait_milliseconds);
 }
+
 int get_all_bandwidth_usage_for_rule_id(char* id, unsigned long* num_ips, ip_bw** data, unsigned long max_wait_milliseconds)
 {
 	return get_bandwidth_data(id, 0, "ALL", num_ips, (void*)data, max_wait_milliseconds);
 }
+
 int get_ip_bandwidth_usage_for_rule_id(char* id,  char* ip, ip_bw** data, unsigned long max_wait_milliseconds)
 {
 	unsigned long num_ips;
 	return get_bandwidth_data(id, 0, ip, &num_ips, (void*)data, max_wait_milliseconds);
 }
-
 
 int set_bandwidth_history_for_rule_id(char* id, unsigned char zero_unset, unsigned long num_ips, ip_bw_history* data, unsigned long max_wait_milliseconds)
 {
@@ -888,15 +860,10 @@ int set_bandwidth_usage_for_rule_id(char* id, unsigned char zero_unset, unsigned
 	return set_bandwidth_data(id, zero_unset, 0, num_ips, last_backup, data, max_wait_milliseconds);
 }
 
-
-
-
-
-
 /* save single id in ascii */
 int save_usage_to_file(ip_bw* data, unsigned long num_ips, char* out_file_path)
 {
-		
+
 	int success = 0;
 	FILE* out_file = fopen(out_file_path, "w");
 	if(out_file != NULL)
@@ -904,8 +871,8 @@ int save_usage_to_file(ip_bw* data, unsigned long num_ips, char* out_file_path)
 		//dump backup time
 		time_t now;
 		time(&now);
-		fprintf(out_file, "%-15ld\n", now);
-		
+		fprintf(out_file, "%-15lld\n", now);
+
 		//dump ips
 		int out_index=0;
 		for(out_index=0; out_index < num_ips; out_index++)
@@ -928,7 +895,7 @@ int save_history_to_file(ip_bw_history* data, unsigned long num_ips, char* out_f
 	FILE* out_file = fopen(out_file_path, "wb");
 	if(out_file != NULL)
 	{
-		//dump number of ips & history interval parameter 
+		//dump number of ips & history interval parameter
 		//note that we assume interval is same for all histories
 		//(which will be the case if they all come from the same rule id)
 		fwrite((uint32_t*)(&num_ips), 4, 1, out_file);
@@ -961,7 +928,7 @@ int save_history_to_file(ip_bw_history* data, unsigned long num_ips, char* out_f
 		for(out_index=0; out_index < num_ips; out_index++)
 		{
 			ip_bw_history next = data[out_index];
-			
+
 			fwrite( &(next.ip), 4, 1, out_file);
 			fwrite( &(next.num_nodes), 4, 1, out_file);
 			if(next.num_nodes == 0)
@@ -986,7 +953,6 @@ int save_history_to_file(ip_bw_history* data, unsigned long num_ips, char* out_f
 					bw_bits = bw_bits == 32 && (bw <  INT32_MAX) ? 32 : 64;
 				}
 
-				
 				fwrite( &first_start, 8, 1, out_file);
 				fwrite( &first_end,   8, 1, out_file);
 				fwrite( &last_end,    8, 1, out_file);
@@ -1012,7 +978,6 @@ int save_history_to_file(ip_bw_history* data, unsigned long num_ips, char* out_f
 	}
 	return success;
 }
-
 
 ip_bw* load_usage_from_file(char* in_file_path, unsigned long* num_ips, time_t* last_backup)
 {
@@ -1040,7 +1005,7 @@ ip_bw* load_usage_from_file(char* in_file_path, unsigned long* num_ips, time_t* 
 			struct in_addr ipaddr;
 			if(data_part_index == 0)
 			{
-				sscanf(data_parts[data_part_index], "%ld", last_backup);
+				sscanf(data_parts[data_part_index], "%lld", last_backup);
 				//printf("last_backup = %ld\n", *last_backup);
 				data_part_index++;
 			}
@@ -1067,18 +1032,17 @@ ip_bw* load_usage_from_file(char* in_file_path, unsigned long* num_ips, time_t* 
 				*num_ips = *num_ips + 1;
 			}
 		}
-		
+
 		/* cleanup by freeing data_parts */
 		for(data_part_index = 0; data_part_index < num_data_parts; data_part_index++)
 		{
 			free(data_parts[data_part_index]);
 		}
-		
+
 		free(data_parts);
 	}
 	return data;
 }
-
 
 ip_bw_history* load_history_from_file(char* in_file_path, unsigned long* num_ips)
 {
@@ -1090,7 +1054,7 @@ ip_bw_history* load_history_from_file(char* in_file_path, unsigned long* num_ips
 		uint64_t reset_interval;
 		uint64_t reset_time;
 		unsigned char is_constant_interval;
-		
+
 		uint32_t nips = 0;
 		fread(&nips, 4, 1, in_file);
 		*num_ips = (unsigned long)nips;
@@ -1109,7 +1073,7 @@ ip_bw_history* load_history_from_file(char* in_file_path, unsigned long* num_ips
 
 			uint32_t ip;
 			uint32_t num_nodes;
-			uint64_t first_start;	
+			uint64_t first_start;
 			uint64_t first_end;
 			uint64_t last_end;
 			unsigned char bw_bits;
@@ -1159,7 +1123,6 @@ ip_bw_history* load_history_from_file(char* in_file_path, unsigned long* num_ips
 	return data;
 }
 
-
 void print_usage(FILE* out, ip_bw* usage, unsigned long num_ips)
 {
 	unsigned long usage_index;
@@ -1186,7 +1149,7 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 	for(history_index=0; history_index < num_histories; history_index++)
 	{
 		ip_bw_history history = histories[history_index];
-		
+
 		int history_initialized = 1;
 		if( history.first_start == 0 && history.first_end == 0 && history.last_end == 0)
 		{
@@ -1198,7 +1161,6 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 			char *ip_str = NULL;
 			time_t *times = NULL;
 
-
 			if(history.ip != 0)
 			{
 				struct in_addr ipaddr;
@@ -1209,8 +1171,7 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 			{
 				ip_str = strdup("COMBINED");
 			}
-		
-		
+
 			if(output_type == 'm' || output_type == 'h')
 			{
 				fprintf(out, "%s %-15s\n", id, ip_str);
@@ -1218,9 +1179,9 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 
 			if(output_type == 'm')
 			{
-				printf("%ld\n", history.first_start);
-				printf("%ld\n", history.first_end);
-				printf("%ld\n", history.last_end);
+				printf("%lld\n", history.first_start);
+				printf("%lld\n", history.first_end);
+				printf("%lld\n", history.last_end);
 			}
 			else
 			{
@@ -1240,7 +1201,7 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 				{
 					time_t start = times[hindex];
 					time_t end = hindex+1 < history.num_nodes ? times[hindex+1] : 0 ;
-	
+
 					char* start_str = strdup(asctime(localtime(&start)));
 					char* end_str = end == 0 ? strdup("(Now)") : strdup(asctime(localtime(&end)));
 					char* nl = strchr(start_str, '\n');
@@ -1253,17 +1214,16 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 					{
 						*nl = '\0';
 					}
-	
+
 					if(output_type == 'h')
 					{
 						fprintf(out, "%lld\t%s\t%s\n", (unsigned long long int)bw, start_str, end_str);
 					}
 					else
 					{
-						fprintf(out, "%s,%s,%ld,%ld,%lld\n", id, ip_str, start, end, (unsigned long long int)bw );
+						fprintf(out, "%s,%s,%lld,%lld,%lld\n", id, ip_str, start, end, (unsigned long long int)bw);
 					}
-				
-	
+
 					free(start_str);
 					free(end_str);
 				}
@@ -1274,9 +1234,6 @@ void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned lon
 		}
 	}
 }
-
-
-
 
 void unlock_bandwidth_semaphore(void)
 {
@@ -1322,12 +1279,11 @@ int get_minutes_west(time_t now)
 
 	utc_day = utc_day < tz_day  - 1 ? tz_day  + 1 : utc_day;
 	tz_day =  tz_day  < utc_day - 1 ? utc_day + 1 : tz_day;
-	
+
 	minuteswest = (24*60*utc_day + 60*utc_hour + utc_minute) - (24*60*tz_day + 60*tz_hour + tz_minute) ;
 
 	return minuteswest;
 }
-
 
 void set_kernel_timezone(void)
 {
@@ -1342,8 +1298,8 @@ void set_kernel_timezone(void)
 
 	/* Get tv to pass to settimeofday(2) to be sure we avoid hour-sized warp */
 	/* (see gettimeofday(2) man page, or /usr/src/linux/kernel/time.c) */
-	syscall(SYS_gettimeofday, &tv, &old_tz);
+	gettimeofday(&tv, &old_tz);
 
 	/* set timezone */
-	syscall(SYS_settimeofday, &tv, &new_tz);
+	settimeofday(&tv, &new_tz);
 }
