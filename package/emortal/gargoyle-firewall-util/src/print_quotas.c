@@ -18,7 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +26,7 @@
 #include <erics_tools.h>
 #include <uci.h>
 #include <ipt_bwctl.h>
+
 #define malloc safe_malloc
 #define strdup safe_strdup
 
@@ -34,7 +34,6 @@ list* get_all_sections_of_type(struct uci_context *ctx, char* package, char* sec
 void  backup_quota(char* quota_id, char* quota_backup_dir);
 char* get_uci_option(struct uci_context* ctx,char* package_name, char* section_name, char* option_name);
 char* get_option_value_string(struct uci_option* uopt);
-
 
 int main(void)
 {
@@ -44,18 +43,17 @@ int main(void)
 
 	/* for each ip have uint64_t[6], */
 	string_map *id_ip_to_bandwidth = initialize_string_map(1);
-	string_map *id_ip_to_percents  = initialize_string_map(1);	
+	string_map *id_ip_to_percents  = initialize_string_map(1);
 	string_map *id_ip_to_limits    = initialize_string_map(1);
 	list *id_to_time               = initialize_list();
 
 	while(quota_sections->length > 0)
 	{
 		char* next_quota = shift_list(quota_sections);
-		
 
 		/* base id for quota is the ip associated with it*/
 		char *id = get_uci_option(ctx, "firewall", next_quota, "id");
-		char* ip = get_uci_option(ctx, "firewall", next_quota, "ip");	
+		char* ip = get_uci_option(ctx, "firewall", next_quota, "ip");
 		if(ip == NULL)
 		{
 			ip = strdup("ALL");
@@ -74,10 +72,6 @@ int main(void)
 			free(id);
 			id = strdup(ip);
 		}
-
-
-
-
 
 		string_map* ip_to_bandwidth = get_string_map_element(id_ip_to_bandwidth, id);
 		ip_to_bandwidth = ip_to_bandwidth == NULL ? initialize_string_map(1) : ip_to_bandwidth;
@@ -104,7 +98,7 @@ int main(void)
 			char* weekdays_var = is_off_peak ? offpeak_weekdays : onpeak_weekdays;
 			char* weekly_ranges_var = is_off_peak ? offpeak_weekly_ranges : onpeak_weekly_ranges;
 			char* active_var = is_off_peak ? strdup("except") : strdup("only");
-			
+
 			if(weekly_ranges_var != NULL)
 			{
 				if(hours_var    != NULL) { free(hours_var); hours_var=NULL; }
@@ -114,7 +108,7 @@ int main(void)
 			weekdays_var = weekdays_var == NULL ? strdup("") : weekdays_var;
 			weekly_ranges_var = weekly_ranges_var == NULL ? strdup("") : weekly_ranges_var;
 			push_list(id_to_time, dynamic_strcat(11, "quotaTimes[\"", id, "\"] = [\"", hours_var, "\", \"", weekdays_var, "\", \"", weekly_ranges_var ,"\", \"", active_var, "\"];"));
-			
+
 			free(hours_var);
 			free(weekdays_var);
 			free(weekly_ranges_var);
@@ -127,8 +121,7 @@ int main(void)
 
 		char* types[] = { "combined_limit", "ingress_limit", "egress_limit" };
 		char* postfixes[] = { "_combined", "_ingress", "_egress" };
-		
-		
+
 		int type_index;
 		for(type_index=0; type_index < 3; type_index++)
 		{
@@ -156,8 +149,7 @@ int main(void)
 							addr.s_addr = next.ip;
 							next_ip = strdup(inet_ntoa(addr));
 						}
-						
-						
+
 						uint64_t *bw_list = get_string_map_element(ip_to_bandwidth,next_ip);
 						if(bw_list == NULL)
 						{
@@ -172,7 +164,7 @@ int main(void)
 						}
 						bw_list[type_index] = 1;
 						bw_list[type_index+3] = next.bw;
-						
+
 						char bw_str[50];
 						sprintf(bw_str, "%lld", next.bw);
 						double bw_percent;
@@ -190,7 +182,7 @@ int main(void)
 						{
 							bw_percent = 100.0;
 						}
-					
+
 						double* percent_list = get_string_map_element(ip_to_percents, next_ip);
 						if(percent_list == NULL)
 						{
@@ -216,14 +208,12 @@ int main(void)
 				}
 				free(type_id);
 				free(limit);
-
 			}
 		}
 		free(id);
 		free(ip);
 		free(next_quota);
 	}
-	
 
 	unsigned long num_ids;
 	char** id_list = (char**)get_string_map_keys(id_ip_to_bandwidth, &num_ids);
@@ -255,7 +245,7 @@ int main(void)
 			}
 			printf("];\n");
 		}
-	}	
+	}
 
 	printf("var quotaTimes    = new Array();\n");
 	printf("var quotaUsed     = new Array();\n");
@@ -275,12 +265,11 @@ int main(void)
 		string_map* ip_to_bandwidth = get_string_map_element(id_ip_to_bandwidth, next_id);
 		string_map* ip_to_percents = get_string_map_element(id_ip_to_percents, next_id);
 		string_map* ip_to_limits = get_string_map_element(id_ip_to_limits, next_id);
-		
+
 		printf("quotaUsed[ \"%s\" ] = [];\n", next_id);
 		printf("quotaPercents[ \"%s\" ] = [];\n", next_id);
 		printf("quotaLimits[ \"%s\" ] = [];\n", next_id);
-		
-		
+
 		if(ip_to_bandwidth != NULL)
 		{
 			unsigned long num_ips;
@@ -334,7 +323,6 @@ int main(void)
 		}
 	}
 
-
 	unsigned long num;
 	destroy_list(quota_sections, DESTROY_MODE_FREE_VALUES, &num);
 	uci_free_context(ctx);
@@ -344,7 +332,6 @@ int main(void)
 
 list* get_all_sections_of_type(struct uci_context *ctx, char* package, char* section_type)
 {
-
 	struct uci_package *p = NULL;
 	struct uci_element *e = NULL;
 
@@ -362,7 +349,6 @@ list* get_all_sections_of_type(struct uci_context *ctx, char* package, char* sec
 	}
 	return sections_of_type;
 }
-
 
 char* get_uci_option(struct uci_context* ctx, char* package_name, char* section_name, char* option_name)
 {
@@ -386,9 +372,6 @@ char* get_uci_option(struct uci_context* ctx, char* package_name, char* section_
 
 	return option_value;
 }
-
-
-
 
 // this function dynamically allocates memory for
 // the option string, but since this program exits
@@ -425,5 +408,3 @@ char* get_option_value_string(struct uci_option* uopt)
 
 	return opt_str;
 }
-
-
