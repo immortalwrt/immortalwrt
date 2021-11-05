@@ -270,6 +270,7 @@ define Device/cellc_rtl30vw
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_PACKAGES := kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi ipq-wifi-cellc_rtl30vw
+	DEFAULT := n
 endef
 TARGET_DEVICES += cellc_rtl30vw
 
@@ -308,6 +309,7 @@ define Device/compex_wpj428
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 	IMAGE/cpximg-6a04.bin := append-kernel | append-rootfs | pad-rootfs | mkmylofw_32m 0x8A2 3
 	DEVICE_PACKAGES := kmod-gpio-beeper
+	DEFAULT := n
 endef
 TARGET_DEVICES += compex_wpj428
 
@@ -327,6 +329,7 @@ define Device/devolo_magic-2-wifi-next
 	IMAGES := sysupgrade.bin
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 	DEVICE_PACKAGES := ipq-wifi-devolo_magic-2-wifi-next
+	DEFAULT := n
 endef
 TARGET_DEVICES += devolo_magic-2-wifi-next
 
@@ -435,6 +438,7 @@ define Device/engenius_emr3500
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 	IMAGE/factory.bin := qsdk-ipq-factory-nor | check-size
 	DEVICE_PACKAGES := ipq-wifi-engenius_emr3500
+	DEFAULT := n
 endef
 TARGET_DEVICES += engenius_emr3500
 
@@ -823,6 +827,7 @@ define Device/qcom_ap-dk01.1-c1
 	IMAGE_SIZE := 26624k
 	$(call Device/FitImage)
 	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-rootfs | pad-rootfs | append-metadata
+	DEFAULT := n
 endef
 TARGET_DEVICES += qcom_ap-dk01.1-c1
 
@@ -839,6 +844,7 @@ define Device/qcom_ap-dk04.1-c1
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	BOARD_NAME := ap-dk04.1-c1
+	DEFAULT := n
 endef
 TARGET_DEVICES += qcom_ap-dk04.1-c1
 
@@ -853,6 +859,7 @@ define Device/qxwlan_e2600ac-c1
 	IMAGE_SIZE := 31232k
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
 	DEVICE_PACKAGES := ipq-wifi-qxwlan_e2600ac
+	DEFAULT := n
 endef
 TARGET_DEVICES += qxwlan_e2600ac-c1
 
@@ -880,6 +887,7 @@ define Device/unielec_u4019-32m
 	KERNEL_SIZE := 4096k
 	IMAGE_SIZE := 31232k
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
+	DEFAULT := n
 endef
 TARGET_DEVICES += unielec_u4019-32m
 
@@ -902,6 +910,7 @@ define Device/zyxel_nbg6617
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | pad-to 64k | check-size $$$$(ROOTFS_SIZE) | zyxel-ras-image separate-kernel
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | check-size $$$$(ROOTFS_SIZE) | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	DEVICE_PACKAGES := kmod-usb-ledtrig-usbport
+	DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_nbg6617
 
