@@ -11,17 +11,13 @@ PKG_NAME:=automount
 PKG_FLAGS:=nonshared
 PKG_RELEASE:=$(COMMITCOUNT)
 
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_LINUX_5_4 \
-	CONFIG_LINUX_5_10
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/automount
   TITLE:=Mount autoconfig hotplug script.
   MAINTAINER:=Lean
-  DEPENDS:=+block-mount +kmod-usb-storage +kmod-usb-storage-extras +!TARGET_ramips:kmod-usb-storage-uas \
-	+kmod-fs-vfat +kmod-fs-ext4 +LINUX_5_4:kmod-fs-exfat0 +!LINUX_5_4:kmod-fs-exfat +ntfs-3g
+  DEPENDS:=+block-mount +kmod-fs-exfat0 +kmod-fs-ext4 +kmod-fs-vfat \
+	+kmod-usb-storage +kmod-usb-storage-extras +!TARGET_ramips:kmod-usb-storage-uas
   PKGARCH:=all
 endef
 
