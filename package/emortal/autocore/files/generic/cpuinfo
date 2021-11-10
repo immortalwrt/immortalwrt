@@ -27,7 +27,7 @@ if grep -q "bcm27xx" "/etc/openwrt_release"; then
 	cpu_temp="$(vcgencmd measure_temp | awk -F '=' '{print $2}' | awk -F "'" '{print $1}')°C"
 elif grep -q "x86" "/etc/openwrt_release"; then
 	# Intel
-	cpu_temp="$(sensors "coretemp-*" 2>"/dev/null" | grep -E "(Package id |Core )" | grep -Eo "\+[0-9]*" | head -n1 | tr -d "+")°C"
+	cpu_temp="$(sensors "coretemp-*" 2>"/dev/null" | grep -E "(Package id |Core )" | grep -Eo "\+[0-9.]*°C" | head -n1 | tr -d "+")"
 	# AMD
 	[ -z "${cpu_temp}" ] && cpu_temp="$(sensors "k*temp-*" 2>"/dev/null" | grep "Tdie" | head -n1 | awk '{print $2}' | tr -d "+")"
 else
