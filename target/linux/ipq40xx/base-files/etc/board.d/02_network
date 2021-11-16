@@ -50,7 +50,7 @@ ipq40xx_setup_interfaces()
 		;;
 	asus,rt-ac58u|\
 	mikrotik,hap-ac2|\
-	p2w,r619ac|\
+	p2w,r619ac-64m|\
 	p2w,r619ac-128m|\
 	zyxel,nbg6617)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
