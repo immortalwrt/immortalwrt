@@ -423,6 +423,7 @@ define Package/hostapd-utils
   TITLE:=IEEE 802.1x Authenticator (utils)
   URL:=http://hostap.epitest.fi/
   DEPENDS:=@$(subst $(space),||,$(foreach pkg,$(HOSTAPD_PROVIDERS),PACKAGE_$(pkg)))
+  VARIANT:=*
 endef
 
 define Package/hostapd-utils/description
@@ -436,6 +437,7 @@ define Package/wpa-cli
   SUBMENU:=WirelessAPD
   DEPENDS:=@$(subst $(space),||,$(foreach pkg,$(SUPPLICANT_PROVIDERS),PACKAGE_$(pkg)))
   TITLE:=WPA Supplicant command line control utility
+  VARIANT:=*
 endef
 
 define Package/eapol-test/Default
@@ -672,6 +674,9 @@ ifeq ($(BUILD_VARIANT),supplicant-full-wolfssl)
   endef
 endif
 
+# Build hostapd-common before its dependents, to avoid
+# spurious rebuilds when building multiple variants.
+$(eval $(call BuildPackage,hostapd-common))
 $(eval $(call BuildPackage,hostapd))
 $(eval $(call BuildPackage,hostapd-basic))
 $(eval $(call BuildPackage,hostapd-basic-openssl))
@@ -698,7 +703,6 @@ $(eval $(call BuildPackage,wpa-supplicant-openssl))
 $(eval $(call BuildPackage,wpa-supplicant-wolfssl))
 $(eval $(call BuildPackage,wpa-cli))
 $(eval $(call BuildPackage,hostapd-utils))
-$(eval $(call BuildPackage,hostapd-common))
 $(eval $(call BuildPackage,eapol-test))
 $(eval $(call BuildPackage,eapol-test-openssl))
 $(eval $(call BuildPackage,eapol-test-wolfssl))
