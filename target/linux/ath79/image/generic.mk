@@ -873,20 +873,13 @@ endef
 TARGET_DEVICES += dlink_dap-2680-a1
 
 define Device/dlink_dap-2695-a1
+  $(Device/dlink_dap-2xxx)
   SOC := qca9558
-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DAP-2695
   DEVICE_VARIANT := A1
-  IMAGES := factory.img sysupgrade.bin
+  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
   IMAGE_SIZE := 15360k
-  IMAGE/default := append-kernel | pad-offset 65536 160
-  IMAGE/factory.img := $$(IMAGE/default) | append-rootfs | wrgg-pad-rootfs | \
-	mkwrggimg | check-size
-  IMAGE/sysupgrade.bin := $$(IMAGE/default) | mkwrggimg | append-rootfs | \
-	wrgg-pad-rootfs | check-size | append-metadata
-  KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma
-  KERNEL_INITRAMFS := $$(KERNEL) | mkwrggimg
   DAP_SIGNATURE := wapac02_dkbs_dap2695
   SUPPORTED_DEVICES += dap-2695-a1
 endef
@@ -934,7 +927,7 @@ define Device/dlink_dir-505
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DIR-505
   IMAGE_SIZE := 7680k
-  DEVICE_PACKAGES := kmod-usb2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   SUPPORTED_DEVICES += dir-505-a1
 endef
 TARGET_DEVICES += dlink_dir-505
@@ -1442,6 +1435,21 @@ define Device/joyit_jt-or750i
   IMAGE_SIZE := 16000k
 endef
 TARGET_DEVICES += joyit_jt-or750i
+
+define Device/letv_lba-047-ch
+  $(Device/loader-okli-uimage)
+  SOC := qca9531
+  DEVICE_VENDOR := Letv
+  DEVICE_MODEL := LBA-047-CH
+  IMAGE_SIZE := 15936k
+  LOADER_FLASH_OFFS := 0x50000
+  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | check-size | pad-to 14528k | \
+	append-loader-okli-uimage $(1) | pad-to 64k
+endef
+TARGET_DEVICES += letv_lba-047-ch
 
 define Device/librerouter_librerouter-v1
   SOC := qca9558

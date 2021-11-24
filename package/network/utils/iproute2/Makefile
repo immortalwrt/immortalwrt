@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=iproute2
-PKG_VERSION:=5.14.0
+PKG_VERSION:=5.15.0
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/utils/net/iproute2
-PKG_HASH:=210fa785a52f3763c4287fd5ae63e246f6311bfaa48c424baab6d383bb7591d4
+PKG_HASH:=38e3e4a5f9a7f5575c015027a10df097c149111eeb739993128e5b2b35b291ff
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_DEPENDS:=iptables
 PKG_LICENSE:=GPL-2.0
@@ -173,10 +173,6 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
-	# Hack for qos-gargoyle
-	$(INSTALL_DIR) $(1)/usr/lib/iproute2/{tc,lib,include}
-	$(CP) $(PKG_BUILD_DIR)/{tc,include,lib} $(1)/usr/lib/iproute2
-	# Hack end
 endef
 
 define Package/ip-tiny/install
@@ -236,9 +232,11 @@ endef
 
 $(eval $(call BuildPackage,ip-tiny))
 $(eval $(call BuildPackage,ip-full))
+# build tc-mod-iptables before its dependents, to avoid
+# spurious rebuilds when building multiple variants.
+$(eval $(call BuildPackage,tc-mod-iptables))
 $(eval $(call BuildPackage,tc-tiny))
 $(eval $(call BuildPackage,tc-full))
-$(eval $(call BuildPackage,tc-mod-iptables))
 $(eval $(call BuildPackage,genl))
 $(eval $(call BuildPackage,ip-bridge))
 $(eval $(call BuildPackage,ss))

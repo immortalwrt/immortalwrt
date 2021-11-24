@@ -1,6 +1,6 @@
 
 REQUIRE_IMAGE_METADATA=1
-RAMFS_COPY_BIN='blockdev'
+RAMFS_COPY_BIN='fwtool'
 
 # Full system upgrade including preloader for MediaTek SoCs on eMMC or SD
 mtk_mmc_full_upgrade() {
@@ -84,18 +84,14 @@ platform_do_upgrade() {
 
 	case "$board" in
 	bananapi,bpi-r2)
+		sync
 		export_bootdevice
-		export_partdevice rootdev 0
 		export_partdevice fitpart 3
 		[ "$fitpart" ] || return 1
-		dd if=/dev/zero of=/dev/$fitpart bs=4096 count=1 2>/dev/null
-		blockdev --rereadpt /dev/$rootdev
-		get_image "$1" | dd of=/dev/$fitpart
-		blockdev --rereadpt /dev/$rootdev
-		local datapart=$(get_partition_by_name $rootdev "rootfs_data")
-		[ "$datapart" ] || return 0
-		dd if=/dev/zero of=/dev/$datapart bs=4096 count=1 2>/dev/null
-		echo $datapart > /tmp/sysupgrade.datapart
+		export UPGRADE_MMC_PARTDEV="/dev/$fitpart"
+		export UPGRADE_MMC_IMAGE_BLOCKS=$(($(get_image "$1" | fwtool -i /dev/null -T - | dd of=$UPGRADE_MMC_PARTDEV bs=512 2>&1 | grep "records out" | cut -d' ' -f1)))
+		[ "$UPGRADE_MMC_IMAGE_BLOCKS" ] || return 0
+		dd if=/dev/zero of=$UPGRADE_MMC_PARTDEV bs=512 seek=$UPGRADE_MMC_IMAGE_BLOCKS count=8
 		;;
 
 	unielec,u7623-02-emmc-512m)
@@ -171,10 +167,12 @@ platform_check_image() {
 }
 
 platform_copy_config_mmc() {
-	[ -e "$UPGRADE_BACKUP" ] || return
-	local datapart=$(cat /tmp/sysupgrade.datapart)
-	[ "$datapart" ] || echo "no rootfs_data partition, cannot keep configuration." >&2
-	dd if="$UPGRADE_BACKUP" of=/dev/$datapart
+	if [ ! -e "$UPGRADE_BACKUP" ] ||
+	   [ ! -e "$UPGRADE_MMC_PARTDEV" ] ||
+	   [ ! "$UPGRADE_MMC_IMAGE_BLOCKS" ]; then
+		return
+	fi
+	dd if="$UPGRADE_BACKUP" of="$UPGRADE_MMC_PARTDEV" bs=512 seek=$UPGRADE_MMC_IMAGE_BLOCKS
 	sync
 }
 
