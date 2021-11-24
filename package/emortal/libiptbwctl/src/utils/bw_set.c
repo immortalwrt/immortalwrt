@@ -34,10 +34,9 @@ int main(int argc, char **argv)
 	int last_backup_from_cl = 0;
 	int is_history_file = 0;
 
-
 	int c;
 	while((c = getopt(argc, argv, "i:I:b:B:f:F:UuHh")) != -1)
-	{	
+	{
 		switch(c)
 		{
 			case 'i':
@@ -55,7 +54,7 @@ int main(int argc, char **argv)
 				break;
 			case 'b':
 			case 'B':
-				if(sscanf(optarg, "%ld", &last_backup) == 0)
+				if(sscanf(optarg, "%lld", &last_backup) == 0)
 				{
 					fprintf(stderr, "ERROR: invalid backup time specified. Should be unix epoch seconds -- number of seconds since 1970 (UTC)\n");
 					exit(0);
@@ -82,7 +81,6 @@ int main(int argc, char **argv)
 			default:
 				fprintf(stderr, "USAGE:\n\t%s -i [ID] -b [LAST_BACKUP_TIME] -f [IN_FILE_NAME] [ IP BANDWIDTH PAIRS, IF -f NOT SPECIFIED ]\n", argv[0]);
 				exit(0);
-
 		}
 	}
 
@@ -91,14 +89,15 @@ int main(int argc, char **argv)
 		fprintf(stderr, "ERROR: you must specify an id for which to set data\n\n");
 		exit(0);
 	}
+
 	if(in_file_path == NULL && is_history_file)
 	{
 		fprintf(stderr, "ERROR: you need to specify file to load history from\n\t\t(history format is too complex to load from command line)\n");
 	}
 
-
 	set_kernel_timezone();
 	unlock_bandwidth_semaphore_on_exit();
+
 	int query_succeeded = 0;
 	if(in_file_path != NULL)
 	{
@@ -128,12 +127,11 @@ int main(int argc, char **argv)
 		unsigned long num_data_parts;
 		data_parts = argv+optind;
 		num_data_parts = argc - optind;
-	
-	
 		unsigned long num_ips = num_data_parts/2;
-       		ip_bw* buffer = (ip_bw*)malloc(num_ips*sizeof(ip_bw));
+		ip_bw* buffer = (ip_bw*)malloc(num_ips*sizeof(ip_bw));
 		unsigned long data_index = 0;
 		unsigned long buffer_index = 0;
+
 		while(data_index < num_data_parts)
 		{
 			ip_bw next;
@@ -141,10 +139,10 @@ int main(int argc, char **argv)
 			int valid = inet_aton(data_parts[data_index], &ipaddr);
 			if((!valid) && (!last_backup_from_cl))
 			{
-				sscanf(data_parts[data_index], "%ld", &last_backup);
+				sscanf(data_parts[data_index], "%lld", &last_backup);
 			}
 			data_index++;
-	
+
 			if(valid && data_index < num_data_parts)
 			{
 				next.ip = ipaddr.s_addr;
@@ -166,7 +164,7 @@ int main(int argc, char **argv)
 		num_ips = buffer_index; /* number that were successfully read */
 		query_succeeded = set_bandwidth_usage_for_rule_id(id, 1, num_ips, last_backup, buffer, 1000);
 	}
-	
+
 	if(!query_succeeded)
 	{
 		fprintf(stderr, "ERROR: Could not set data. Please try again.\n\n");
@@ -183,4 +181,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

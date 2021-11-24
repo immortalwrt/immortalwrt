@@ -284,6 +284,8 @@ foreach my $mirror (@ARGV) {
 	}
 }
 
+push @mirrors, "https://sources.immortalwrt.org";
+push @mirrors, "https://sources.cdn.immortalwrt.org";
 push @mirrors, "https://mirror01.download.immortalwrt.eu.org";
 push @mirrors, "https://mirror02.download.immortalwrt.eu.org";
 push @mirrors, "https://openwrt.cc/dl/immortalwrt/immortalwrt";

@@ -59,10 +59,10 @@
 
 		local cpu_usage = luci.sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\", 100 - $8)}'") or "6%"
 		local cpu_info = luci.sys.exec("/sbin/cpuinfo") or "?"
+
+		local eth_info = ""
 		if not has_switch then
-			local eth_info = luci.sys.exec("ethinfo")
-		else
-			local eth_info = ""
+			eth_info = luci.sys.exec("ethinfo")
 		end
 
 		local rv = {

@@ -55,7 +55,7 @@
 +	bool "Enables kernel network stack path for Shortcut  Forwarding Engine
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3258,7 +3258,16 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3264,7 +3264,16 @@ static int xmit_one(struct sk_buff *skb,
  #else
  	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
  #endif
@@ -72,7 +72,7 @@
  
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (!dev->eth_mangle_tx ||
-@@ -4754,6 +4763,11 @@ void netdev_rx_handler_unregister(struct
+@@ -4760,6 +4769,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -84,7 +84,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -4803,6 +4817,9 @@ static int __netif_receive_skb_core(stru
+@@ -4809,6 +4823,9 @@ static int __netif_receive_skb_core(stru
  	bool deliver_exact = false;
  	int ret = NET_RX_DROP;
  	__be16 type;
@@ -94,7 +94,7 @@
  
  	net_timestamp_check(!netdev_tstamp_prequeue, skb);
  
-@@ -4843,6 +4860,16 @@ another_round:
+@@ -4849,6 +4866,16 @@ another_round:
  			goto out;
  	}
  

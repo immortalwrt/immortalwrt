@@ -32,15 +32,15 @@
 #include <signal.h>
 #include <sys/ipc.h>
 #include <errno.h>
-#include <sys/sem.h> 
+#include <sys/sem.h>
 #include <sys/time.h>
 #include <sys/syscall.h>
+
 #define BANDWIDTH_QUERY_LENGTH		16384
 
 /* socket id parameters (for userspace i/o) */
 #define BANDWIDTH_SET 			2048
 #define BANDWIDTH_GET 			2049
-
 
 /* max id length */
 #define BANDWIDTH_MAX_ID_LENGTH		  50
@@ -56,7 +56,6 @@
 #define BANDWIDTH_WEEK			  83
 #define BANDWIDTH_MONTH			  84
 #define BANDWIDTH_NEVER			  85
-
 
 #pragma pack(push, 1)
 typedef struct ip_bw_struct
@@ -87,7 +86,7 @@ typedef struct ip_bw_kernel_data_item_struct
     uint64_t ipbw_data[0];
 }ip_bw_kernel_data_item;
 
-typedef struct 
+typedef struct
 {
     uint8_t error;
     uint32_t ip_total;
@@ -126,17 +125,11 @@ extern int get_ip_bandwidth_history_for_rule_id(char* id, char* ip, ip_bw_histor
 extern int get_all_bandwidth_usage_for_rule_id(char* id, unsigned long* num_ips, ip_bw** data, unsigned long max_wait_milliseconds);
 extern int get_ip_bandwidth_usage_for_rule_id(char* id,  char* ip, ip_bw** data, unsigned long max_wait_milliseconds);
 
-
-
 extern int set_bandwidth_history_for_rule_id(char* id, unsigned char zero_unset, unsigned long num_ips, ip_bw_history* data, unsigned long max_wait_milliseconds);
 extern int set_bandwidth_usage_for_rule_id(char* id, unsigned char zero_unset, unsigned long num_ips, time_t last_backup, ip_bw* data, unsigned long max_wait_milliseconds);
 
-
-
 extern int save_usage_to_file(ip_bw* data, unsigned long num_ips, char* out_file_path);
 extern int save_history_to_file(ip_bw_history* data, unsigned long num_ips, char* out_file_path);
-
-
 
 extern ip_bw* load_usage_from_file(char* in_file_path, unsigned long* num_ips, time_t* last_backup);
 extern ip_bw_history* load_history_from_file(char* in_file_path, unsigned long* num_ips);
@@ -144,17 +137,12 @@ extern ip_bw_history* load_history_from_file(char* in_file_path, unsigned long* 
 extern void print_usage(FILE* out, ip_bw* usage, unsigned long num_ips);
 extern void print_histories(FILE* out, char* id, ip_bw_history* histories, unsigned long num_histories, char output_type);
 
-
-
-
 extern void unlock_bandwidth_semaphore(void);
 extern void unlock_bandwidth_semaphore_on_exit(void);
-
 
 /* sets kernel timezone minuteswest to match user timezone */
 extern int get_minutes_west(time_t now);
 extern void set_kernel_timezone(void);
-
 
 /* safe malloc & strdup functions used to handle malloc errors cleanly */
 extern void* ipt_bwctl_safe_malloc(size_t size);

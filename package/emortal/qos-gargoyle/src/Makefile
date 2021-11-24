@@ -8,13 +8,12 @@ TCDIR:=$(STAGING_DIR)/usr/lib/iproute2
 
 LDLIBS += -lm
 
-
 TCOBJS := $(TCDIR)/tc/tc_util.o
 TCOBJS += $(TCDIR)/tc/tc_core.o
 TCOBJS += $(TCDIR)/tc/q_hfsc.o
 TCOBJS += $(TCDIR)/lib/libnetlink.a
 TCOBJS += $(TCDIR)/lib/libutil.a
-LDFLAGS += -Wl,-export-dynamic 
+LDFLAGS += -Wl,-export-dynamic
 
 all: qosmon
 
@@ -33,4 +32,3 @@ uninstall:
 
 clean:
 	rm -rf *.o *~ .*sw* qosmon
-

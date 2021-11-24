@@ -18,11 +18,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <ipt_bwctl.h>
 #define malloc ipt_bwctl_safe_malloc
 #define strdup ipt_bwctl_safe_strdup
-
 
 int main(int argc, char **argv)
 {
@@ -40,7 +38,7 @@ int main(int argc, char **argv)
 	int c;
 	struct in_addr read_addr;
 	while((c = getopt(argc, argv, "i:I:a:A:f:F:tThHmMuU")) != -1)
-	{	
+	{
 		switch(c)
 		{
 			case 'i':
@@ -96,16 +94,15 @@ int main(int argc, char **argv)
 		}
 	}
 
-
 	if(id == NULL)
 	{
 		fprintf(stderr, "ERROR: you must specify an id to query\n\n");
 		exit(0);
 	}
-	
-	set_kernel_timezone();	
+
+	set_kernel_timezone();
 	unlock_bandwidth_semaphore_on_exit();
-	
+
 	if(get_history == 0)
 	{
 		if(address == NULL)
@@ -135,7 +132,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "ERROR: Bandwidth query failed, make sure rule with specified id exists, and that you are performing only one query at a time.\n\n");
 		exit(0);
 	}
-
 
 	if(out_file_path != NULL)
 	{

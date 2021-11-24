@@ -5,6 +5,7 @@
 #include <sys/types.h>
 
 #include <erics_tools.h>
+
 #define malloc safe_malloc
 #define strdup safe_strdup
 
@@ -24,12 +25,10 @@ int main(int argc, char **argv)
 	unsigned long num_lines = 0;
 	char** table_dump = get_shell_command_output_lines(command, &num_lines);
 	free(command);
-	
 
 	unsigned long line_index;
 	char* current_chain = NULL;
 	list* delete_commands = initialize_list();
-
 
 	for(line_index=0; line_index < num_lines; line_index++)
 	{
@@ -42,7 +41,7 @@ int main(int argc, char **argv)
 			if(current_chain != NULL) { free(current_chain); }
 			current_chain = strdup(line_pieces[1]);
 		}
-		else 
+		else
 		{
 			unsigned long line_num;
 			int read = sscanf(line_pieces[0], "%ld", &line_num);
@@ -61,7 +60,7 @@ int main(int argc, char **argv)
 		free_null_terminated_string_array(line_pieces);
 	}
 	free_null_terminated_string_array(table_dump);
-	
+
 	/* final two commands to flush chain being deleted and whack it */
 	unshift_list(delete_commands, dynamic_strcat(5, "iptables -t ", table, " -F ", delete_chain, " 2>/dev/null"));
 	unshift_list(delete_commands, dynamic_strcat(5, "iptables -t ", table, " -X ", delete_chain, " 2>/dev/null"));
@@ -76,4 +75,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
