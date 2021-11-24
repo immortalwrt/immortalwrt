@@ -40,14 +40,6 @@ case "$FIRMWARE" in
 		caldata_extract "ART" 0x1000 0x2f20
 		ath10k_patch_mac $(mtd_get_mac_binary ART 0x1e)
 		;;
-	edgecore,ecw5410)
-		if [ -b "$(find_mtd_part 0:art)" ]; then
-			caldata_extract "0:art" 0x1000 0x2f20
-		else
-			# XXX: drop upper case after kernel v5.4 is gone (qcom-smem)
-			caldata_extract "0:ART" 0x1000 0x2f20
-		fi
-		;;
 	linksys,ea7500-v1 |\
 	linksys,ea8500)
 		caldata_extract "art" 0x1000 0x2f20
@@ -101,6 +93,14 @@ case "$FIRMWARE" in
 	buffalo,wxr-2533dhp)
 		caldata_extract "ART" 0x5000 0x2f20
 		ath10k_patch_mac $(mtd_get_mac_binary ART 0x18)
+		;;
+	edgecore,ecw5410)
+		if [ -b "$(find_mtd_part 0:art)" ]; then
+			caldata_extract "0:art" 0x1000 0x2f20
+		else
+			# XXX: drop upper case after kernel v5.4 is gone (qcom-smem)
+			caldata_extract "0:ART" 0x1000 0x2f20
+		fi
 		;;
 	linksys,ea7500-v1 |\
 	linksys,ea8500)

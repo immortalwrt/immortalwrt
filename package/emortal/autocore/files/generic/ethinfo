@@ -1,0 +1,25 @@
+#!/bin/sh
+
+for i in $(ip address | grep -E 'eth[0-9]+' | awk -F ': ' '{print $2}' | xargs)
+do
+	device_info="$(ethtool "$i" 2>"/dev/null")" || continue
+
+	if echo -e "$device_info" | grep -Eq 'Link detected.*yes'; then
+		link_stat=1
+	else
+		link_stat=0
+	fi
+
+	link_speed="$(echo -e "$device_info" | grep 'Speed' | awk -F ': ' '{print $2}' | tr -d 'Unknown!')"
+	[ -n "$link_speed" ] || link_speed=" - "
+
+	if echo -e "$device_info" | grep -Eq 'Duplex.*Full'; then
+		link_mode=1
+	else
+		link_mode=0
+	fi
+
+	json_body="${json_body:+$json_body,}{\"name\": \"$i\", \"status\": $link_stat, \"speed\": \"$link_speed\", \"duplex\": $link_mode}"
+done
+
+echo "[$json_body]"

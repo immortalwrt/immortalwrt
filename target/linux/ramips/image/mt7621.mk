@@ -581,6 +581,16 @@ define Device/gnubee_gb-pc2
 endef
 TARGET_DEVICES += gnubee_gb-pc2
 
+define Device/hilink_hlk-7621a-evb
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := HiLink
+  DEVICE_MODEL := HLK-7621A evaluation board
+  DEVICE_PACKAGES += kmod-mt76x2 kmod-usb3
+  IMAGE_SIZE := 32448k
+endef
+TARGET_DEVICES += hilink_hlk-7621a-evb
+
 define Device/hiwifi_hc5962
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -792,7 +802,7 @@ define Device/linksys_e5600
   DEVICE_VENDOR := Linksys
   DEVICE_MODEL := E5600
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
-	kmod-mt7663-firmware-sta uboot-envtools
+	uboot-envtools
   UBINIZE_OPTS := -E 5
   IMAGES += factory.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | check-size | append-metadata
@@ -1268,7 +1278,7 @@ define Device/tplink_archer-a6-v3
   DEVICE_MODEL := Archer A6
   DEVICE_VARIANT := V3
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e \
-	kmod-mt7663-firmware-ap kmod-mt7663-firmware-sta
+	kmod-mt7663-firmware-ap
   TPLINK_BOARD_ID := ARCHER-A6-V3
   KERNEL := $(KERNEL_DTB) | uImage lzma
   IMAGE_SIZE := 15744k
@@ -1280,7 +1290,7 @@ define Device/tplink_archer-c6-v3
   DEVICE_MODEL := Archer C6
   DEVICE_VARIANT := V3
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e \
-	kmod-mt7663-firmware-ap kmod-mt7663-firmware-sta
+	kmod-mt7663-firmware-ap
   TPLINK_BOARD_ID := ARCHER-C6-V3
   KERNEL := $(KERNEL_DTB) | uImage lzma
   IMAGE_SIZE := 15744k

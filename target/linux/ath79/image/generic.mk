@@ -937,7 +937,7 @@ define Device/dlink_dir-505
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DIR-505
   IMAGE_SIZE := 7680k
-  DEVICE_PACKAGES := kmod-usb2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   SUPPORTED_DEVICES += dir-505-a1
 endef
 TARGET_DEVICES += dlink_dir-505
@@ -1444,6 +1444,21 @@ define Device/joyit_jt-or750i
   IMAGE_SIZE := 16000k
 endef
 TARGET_DEVICES += joyit_jt-or750i
+
+define Device/letv_lba-047-ch
+  $(Device/loader-okli-uimage)
+  SOC := qca9531
+  DEVICE_VENDOR := Letv
+  DEVICE_MODEL := LBA-047-CH
+  IMAGE_SIZE := 15936k
+  LOADER_FLASH_OFFS := 0x50000
+  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | check-size | pad-to 14528k | \
+	append-loader-okli-uimage $(1) | pad-to 64k
+endef
+TARGET_DEVICES += letv_lba-047-ch
 
 define Device/librerouter_librerouter-v1
   SOC := qca9558

@@ -1,12 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
 # Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
-#
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -17,56 +12,50 @@ PKG_RELEASE:=$(COMMITCOUNT)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/autocore-arm
-  TITLE:=Arm auto core loadbalance script.
+  TITLE:=Arm auto core loadbalance script
   MAINTAINER:=CN_SZTL
   DEPENDS:=@(arm||aarch64) \
     +TARGET_bcm27xx:bcm27xx-userland \
-    +TARGET_bcm53xx:nvram
+    +TARGET_bcm53xx:nvram \
+    +ethtool
   VARIANT:=arm
 endef
 
 define Package/autocore-x86
-  TITLE:=x86/x64 auto core loadbalance script.
+  TITLE:=x86/x64 auto core loadbalance script
   MAINTAINER:=Lean
-  DEPENDS:=@TARGET_x86 +bc +lm-sensors +ethtool
+  DEPENDS:=@TARGET_x86 +lm-sensors +ethtool
   VARIANT:=x86
 endef
 
-define Package/autocore-arm/description
-  A luci autoconfig hotplug script.
-endef
-
-define Package/autocore-x86/description
-  A usb autoconfig hotplug script.
-endef
-
 define Build/Compile
-	true
+endef
+
+define Package/autocore/install/Default
+	$(INSTALL_DIR) $(1)/etc
+	$(CP) ./files/generic/index.htm $(1)/etc/
+
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/generic/090-cover-index_htm $(1)/etc/uci-defaults/
+
+	$(INSTALL_DIR) $(1)/sbin
+	$(INSTALL_BIN) ./files/generic/cpuinfo $(1)/sbin/
+	$(INSTALL_BIN) ./files/generic/ethinfo $(1)/sbin/
 endef
 
 define Package/autocore-arm/install
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_DATA) ./files/arm/index.htm $(1)/etc/index.htm
+	$(call Package/autocore/install/Default,$(1))
 
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/arm/090-cover-index_htm $(1)/etc/uci-defaults/090-cover-index_htm
-
-	$(INSTALL_DIR) $(1)/sbin
-	$(INSTALL_BIN) ./files/arm/sbin/cpuinfo $(1)/sbin/cpuinfo
 ifneq (, $(findstring $(BOARD), ipq40xx ipq806x))
-	$(INSTALL_BIN) ./files/arm/sbin/tempinfo $(1)/sbin/tempinfo
+	$(INSTALL_BIN) ./files/arm/tempinfo $(1)/sbin/
 endif
 endef
 
 define Package/autocore-x86/install
+	$(call Package/autocore/install/Default,$(1))
+
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/x86/autocore $(1)/etc/init.d/autocore
-
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_DATA) ./files/x86/index.htm $(1)/etc/index.htm
-
-	$(INSTALL_DIR) $(1)/sbin
-	$(CP) ./files/x86/sbin/* $(1)/sbin
+	$(INSTALL_BIN) ./files/x86/autocore $(1)/etc/init.d/
 endef
 
 $(eval $(call BuildPackage,autocore-arm))
