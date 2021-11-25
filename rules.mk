@@ -12,6 +12,8 @@ endif
 include $(TOPDIR)/include/debug.mk
 include $(TOPDIR)/include/verbose.mk
 
+LEGACY_1806:=1
+
 ifneq ($(filter check,$(MAKECMDGOALS)),)
 CHECK:=1
 DUMP:=1
