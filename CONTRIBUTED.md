@@ -49,8 +49,5 @@ luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelo
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
-## Download Mirrors
-[openwrt.cc](https://openwrt.cc/dl/immortalwrt) by [@SuLingGG](https://github.com/SuLingGG).
-
 ## License
 ### Depend on their own License.
