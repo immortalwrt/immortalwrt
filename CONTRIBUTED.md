@@ -64,8 +64,5 @@ luci-proto-modemmanager source: [nickberry17/luci-proto-modemmanager](https://gi
 luci-theme-infinityfreedom source: [xiaoqingfengATGH/luci-theme-infinityfreedom](https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
 
-## Download Mirrors
-[openwrt.cc](https://openwrt.cc/dl/immortalwrt) by [@SuLingGG](https://github.com/SuLingGG).
-
 ## License
 ### Depend on their own License.
