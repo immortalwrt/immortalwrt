@@ -225,14 +225,14 @@ menu "Target Images"
 	config GRUB_TIMEOUT
 		string "Seconds to wait before booting the default entry"
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default "0"
+		default "3"
 		help
 		  If you don't know, 5 seconds is a reasonable default.
 
 	config GRUB_TITLE
 		string "Title for the menu entry in GRUB"
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default "OpenWrt"
+		default "ImmortalWrt"
 		help
 		  This is the title of the GRUB menu entry.
 		  If unspecified, it defaults to OpenWrt.
