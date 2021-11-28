@@ -1226,7 +1226,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  	 * by reading property in device tree
 --- a/drivers/usb/host/xhci-hub.c
 +++ b/drivers/usb/host/xhci-hub.c
-@@ -689,12 +689,34 @@ void xhci_set_link_state(struct xhci_hcd
+@@ -690,12 +690,34 @@ void xhci_set_link_state(struct xhci_hcd
  				int port_id, u32 link_state)
  {
  	u32 temp;

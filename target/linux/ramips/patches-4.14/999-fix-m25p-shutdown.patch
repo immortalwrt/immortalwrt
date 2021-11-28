@@ -1,8 +1,6 @@
-diff --git a/drivers/mtd/devices/m25p80.c b/drivers/mtd/devices/m25p80.c
-index 24e1ea3..b1ff69a 100644
 --- a/drivers/mtd/devices/m25p80.c
 +++ b/drivers/mtd/devices/m25p80.c
-@@ -313,6 +313,21 @@ static int m25p_remove(struct spi_device *spi)
+@@ -313,6 +313,21 @@ static int m25p_remove(struct spi_device
  	return mtd_device_unregister(&flash->spi_nor.mtd);
  }
  
@@ -24,7 +22,7 @@ index 24e1ea3..b1ff69a 100644
  /*
   * Do NOT add to this array without reading the following:
   *
-@@ -387,6 +402,7 @@ static struct spi_driver m25p80_driver = {
+@@ -387,6 +402,7 @@ static struct spi_driver m25p80_driver =
  	.id_table	= m25p_ids,
  	.probe	= m25p_probe,
  	.remove	= m25p_remove,
