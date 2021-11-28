@@ -49,7 +49,7 @@ boot() {
 
 	/bin/config_generate
 	uci_apply_defaults
-	
+
 	# temporary hack until configd exists
 	/sbin/reload_config
 }
