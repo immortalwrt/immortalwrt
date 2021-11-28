@@ -1,4 +1,6 @@
-src-git packages https://github.com/immortalwrt/packages.git;openwrt-21.02
-src-git luci https://github.com/immortalwrt/luci.git;openwrt-21.02
-src-git routing https://github.com/openwrt/routing.git;openwrt-21.02
-src-git telephony https://github.com/openwrt/telephony.git;openwrt-21.02
+src-git packages https://github.com.cnpmjs.org/immortalwrt/packages.git;openwrt-21.02
+src-git luci https://github.com.cnpmjs.org/immortalwrt/luci.git;openwrt-21.02
+src-git routing https://github.com.cnpmjs.org/openwrt/routing.git;openwrt-21.02
+src-git telephony https://github.com.cnpmjs.org/openwrt/telephony.git;openwrt-21.02
+# git clone https://github.com.cnpmjs.org/kenzok8/openwrt-packages
+# src-git small https://github.com.cnpmjs.org/kenzok8/small
