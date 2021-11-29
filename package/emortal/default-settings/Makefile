@@ -44,6 +44,7 @@ define Package/default-settings/install
 endef
 
 define Package/default-settings-chn/install
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/zzz-default-settings-chinese $(1)/etc/uci-defaults/99-default-settings-chinese
 
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
