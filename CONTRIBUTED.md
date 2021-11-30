@@ -1,7 +1,8 @@
 # CONTRIBUTED
 
-## Sponsors
-[![Dler Cloud](https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png)](https://dlercloud.com)
+## Thanks to
+[![Dler Cloud](https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png)](https://dlercloud.com)<br/>
+<a href="https://osdn.net/"><img src="https://osdn.net/sflogo.php?group_id=13647&type=2" width="125" height="39" border="0" alt="OSDN"></a>
 
 ## The Source of Packages
 ### Based on: [openwrt/openwrt@openwrt-21.02](https://github.com/openwrt/openwrt/tree/openwrt-21.02).<br/>
@@ -48,6 +49,3 @@ luci-app-oled source: [NateLol/luci-app-oled](https://github.com/NateLol/luci-ap
 luci-app-beardropper source: [NateLol/natelol](https://github.com/NateLol/natelol).<br/>
 luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
-
-## License
-### Depend on their own License.
