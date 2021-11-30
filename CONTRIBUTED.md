@@ -1,7 +1,8 @@
 # CONTRIBUTED
 
-## Sponsors
-[![Dler Cloud](https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png)](https://dlercloud.com)
+## Thanks to
+[![Dler Cloud](https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png)](https://dlercloud.com)<br/>
+<a href="https://osdn.net/"><img src="https://osdn.net/sflogo.php?group_id=13647&type=2" width="125" height="39" border="0" alt="OSDN"></a>
 
 ## The Source of Packages
 ### Based on: [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede).<br/>
@@ -64,9 +65,3 @@ luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luc
 luci-proto-modemmanager source: [nickberry17/luci-proto-modemmanager](https://github.com/nickberry17/luci-proto-modemmanager).<br/>
 luci-theme-infinityfreedom source: [xiaoqingfengATGH/luci-theme-infinityfreedom](https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom).<br/>
 luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
-
-## Download Mirrors
-[openwrt.cc](https://openwrt.cc/dl/immortalwrt) by [@SuLingGG](https://github.com/SuLingGG).
-
-## License
-### Depend on their own License.

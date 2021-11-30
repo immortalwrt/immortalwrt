@@ -16,8 +16,6 @@ PKG_RELEASE:=$(COMMITCOUNT)
 
 PKG_LICENSE:=GPL-3.0
 
-PKG_CONFIG_DEPENDS:=CONFIG_DEFAULT_SETTINGS_OPTIMIZE_FOR_CHINESE
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/default-settings
@@ -28,15 +26,10 @@ define Package/default-settings
   DEPENDS:=+luci-base +@LUCI_LANG_en
 endef
 
-define Package/default-settings/config
-config DEFAULT_SETTINGS_OPTIMIZE_FOR_CHINESE
-	bool "Optimize for mainland China users"
-	select LUCI_LANG_zh-cn
-	default y
-endef
-
-define Package/default-settings/description
-  Language Support Packages.
+define Package/default-settings-chn
+  $(Package/default-settings)
+  TITLE+= (Optimize for CHN users)
+  DEPENDS:=+default-settings +@LUCI_LANG_zh-cn
 endef
 
 define Build/Compile
@@ -47,15 +40,17 @@ define Package/default-settings/install
 	$(INSTALL_DATA) ./files/openwrt_banner $(1)/etc/openwrt_banner
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/zzz-default-settings $(1)/etc/uci-defaults/99-default-settings
+	$(INSTALL_BIN) ./files/99-default-settings $(1)/etc/uci-defaults/
+endef
 
-ifeq ($(CONFIG_DEFAULT_SETTINGS_OPTIMIZE_FOR_CHINESE),y)
-	$(INSTALL_BIN) ./files/zzz-default-settings-chinese $(1)/etc/uci-defaults/99-default-settings-chinese
+define Package/default-settings-chn/install
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/99-default-settings-chinese $(1)/etc/uci-defaults/
 
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	po2lmo ./i18n/default.zh-cn.po $(1)/usr/lib/lua/luci/i18n/default.zh-cn.lmo
 	po2lmo ./i18n/more.zh-cn.po $(1)/usr/lib/lua/luci/i18n/more.zh-cn.lmo
-endif
 endef
 
 $(eval $(call BuildPackage,default-settings))
+$(eval $(call BuildPackage,default-settings-chn))

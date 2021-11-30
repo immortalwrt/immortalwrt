@@ -18,7 +18,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/automount
   TITLE:=Mount autoconfig hotplug script.
   MAINTAINER:=Lean
-  DEPENDS:=+block-mount +kmod-fs-exfat0 +kmod-fs-ext4 +kmod-fs-vfat \
+  DEPENDS:=+block-mount +kmod-fs-exfat0 +kmod-fs-ext4 +kmod-fs-vfat +ntfs-3g \
 	+kmod-usb-storage +kmod-usb-storage-extras +!TARGET_ramips:kmod-usb-storage-uas
   PKGARCH:=all
 endef
@@ -32,9 +32,8 @@ define Build/Compile
 endef
 
 define Package/automount/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/15-automount $(1)/etc/15-automount
-	$(INSTALL_BIN) ./files/zzz-move-automount $(1)/etc/uci-defaults/zzz-move-automount
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
+	$(INSTALL_BIN) ./files/15-automount $(1)/etc/hotplug.d/block/
 endef
 
 $(eval $(call BuildPackage,automount))
