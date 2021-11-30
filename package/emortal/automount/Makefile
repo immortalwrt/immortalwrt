@@ -11,6 +11,8 @@ PKG_NAME:=automount
 PKG_FLAGS:=nonshared
 PKG_RELEASE:=$(COMMITCOUNT)
 
+PKG_CONFIG_DEPENDS:=CONFIG_TARGET_ramips
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/automount
