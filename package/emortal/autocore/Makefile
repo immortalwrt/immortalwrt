@@ -9,6 +9,10 @@ PKG_NAME:=autocore
 PKG_VERSION:=2
 PKG_RELEASE:=$(COMMITCOUNT)
 
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_TARGET_bcm27xx \
+	CONFIG_TARGET_bcm53xx
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/autocore-arm
