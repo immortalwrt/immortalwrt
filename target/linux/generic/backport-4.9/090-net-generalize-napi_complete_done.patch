@@ -1161,7 +1161,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  			cpsw->rx_irq_disabled = false;
 --- a/drivers/net/ethernet/ti/davinci_emac.c
 +++ b/drivers/net/ethernet/ti/davinci_emac.c
-@@ -1295,7 +1295,7 @@ static int emac_poll(struct napi_struct
+@@ -1307,7 +1307,7 @@ static int emac_poll(struct napi_struct
  					&emac_rxhost_errcodes[cause][0], ch);
  		}
  	} else if (num_rx_pkts < budget) {

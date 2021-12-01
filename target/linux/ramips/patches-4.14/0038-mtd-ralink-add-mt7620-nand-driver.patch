@@ -15,8 +15,6 @@ Signed-off-by: Chen Minqiang <ptpt52@gmail.com>
  create mode 100644 drivers/mtd/maps/ralink_nand.c
  create mode 100644 drivers/mtd/maps/ralink_nand.h
 
-diff --git a/drivers/mtd/maps/Kconfig b/drivers/mtd/maps/Kconfig
-index 542fdf8..0f09ab5 100644
 --- a/drivers/mtd/maps/Kconfig
 +++ b/drivers/mtd/maps/Kconfig
 @@ -419,4 +419,8 @@ config MTD_LATCH_ADDR
@@ -28,8 +26,6 @@ index 542fdf8..0f09ab5 100644
 +	depends on RALINK && SOC_MT7620
 +
  endmenu
-diff --git a/drivers/mtd/maps/Makefile b/drivers/mtd/maps/Makefile
-index b849aaf..8e65523 100644
 --- a/drivers/mtd/maps/Makefile
 +++ b/drivers/mtd/maps/Makefile
 @@ -48,3 +48,5 @@ obj-$(CONFIG_MTD_VMU)		+= vmu-flash.o
@@ -38,9 +34,6 @@ index b849aaf..8e65523 100644
  obj-$(CONFIG_MTD_LANTIQ)	+= lantiq-flash.o
 +obj-$(CONFIG_MTD_NAND_MT7620)	+= ralink_nand.o
 +
-diff --git a/drivers/mtd/maps/ralink_nand.c b/drivers/mtd/maps/ralink_nand.c
-new file mode 100644
-index 0000000..370bbb2
 --- /dev/null
 +++ b/drivers/mtd/maps/ralink_nand.c
 @@ -0,0 +1,2098 @@
@@ -2142,9 +2135,6 @@ index 0000000..370bbb2
 +module_platform_driver(mtk_nand_driver);
 +
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/mtd/maps/ralink_nand.h b/drivers/mtd/maps/ralink_nand.h
-new file mode 100644
-index 0000000..30a0c37
 --- /dev/null
 +++ b/drivers/mtd/maps/ralink_nand.h
 @@ -0,0 +1,232 @@
@@ -2380,6 +2370,3 @@ index 0000000..30a0c37
 +
 +
 +#endif
--- 
-2.7.4
-

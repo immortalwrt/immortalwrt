@@ -12,7 +12,7 @@
  	/*
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -871,7 +871,7 @@ enum pcie_bus_config_types {
+@@ -873,7 +873,7 @@ enum pcie_bus_config_types {
  	PCIE_BUS_DEFAULT,	/* Ensure MPS matches upstream bridge */
  	PCIE_BUS_SAFE,		/* Use largest MPS boot-time devices support */
  	PCIE_BUS_PERFORMANCE,	/* Use MPS and MRRS for best performance */

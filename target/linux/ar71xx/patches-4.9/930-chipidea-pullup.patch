@@ -18,7 +18,7 @@
  static inline struct ci_role_driver *ci_role(struct ci_hdrc *ci)
 --- a/drivers/usb/chipidea/core.c
 +++ b/drivers/usb/chipidea/core.c
-@@ -839,7 +839,7 @@ static inline void ci_role_destroy(struc
+@@ -848,7 +848,7 @@ static inline void ci_role_destroy(struc
  {
  	ci_hdrc_gadget_destroy(ci);
  	ci_hdrc_host_destroy(ci);
@@ -27,7 +27,7 @@
  		ci_hdrc_otg_destroy(ci);
  }
  
-@@ -890,6 +890,9 @@ static int ci_hdrc_probe(struct platform
+@@ -899,6 +899,9 @@ static int ci_hdrc_probe(struct platform
  	ci->supports_runtime_pm = !!(ci->platdata->flags &
  		CI_HDRC_SUPPORTS_RUNTIME_PM);
  
@@ -37,7 +37,7 @@
  	ret = hw_device_init(ci, base);
  	if (ret < 0) {
  		dev_err(dev, "can't initialize hardware\n");
-@@ -970,7 +973,7 @@ static int ci_hdrc_probe(struct platform
+@@ -979,7 +982,7 @@ static int ci_hdrc_probe(struct platform
  		goto deinit_gadget;
  	}
  
