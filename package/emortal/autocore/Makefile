@@ -1,18 +1,17 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
 # Copyright (C) 2020 Lean <coolsnowwolf@gmail.com>
-#
-# Copyright (C) 2021 ImmortalWrt
-# <https://immortalwrt.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
 PKG_VERSION:=2
 PKG_RELEASE:=$(COMMITCOUNT)
+
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_TARGET_bcm27xx \
+	CONFIG_TARGET_bcm53xx
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -41,7 +40,6 @@ define Package/autocore-x86/description
 endef
 
 define Build/Compile
-	true
 endef
 
 define Package/autocore-arm/install

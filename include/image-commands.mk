@@ -27,6 +27,15 @@ define Build/append-kernel
 	dd if=$(IMAGE_KERNEL) >> $@
 endef
 
+define Build/package-kernel-ubifs
+	mkdir $@.kernelubifs
+	cp $@ $@.kernelubifs/kernel
+	$(STAGING_DIR_HOST)/bin/mkfs.ubifs \
+		$(KERNEL_UBIFS_OPTS) \
+		-r $@.kernelubifs $@
+	rm -r $@.kernelubifs
+endef
+
 define Build/append-image
 	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
 endef
@@ -103,13 +112,25 @@ define Build/append-ubi
 		$(if $(UBOOTENV_IN_UBI),--uboot-env) \
 		$(if $(KERNEL_IN_UBI),--kernel $(IMAGE_KERNEL)) \
 		$(foreach part,$(UBINIZE_PARTS),--part $(part)) \
-		$(IMAGE_ROOTFS) \
+		--rootfs $(IMAGE_ROOTFS) \
 		$@.tmp \
 		-p $(BLOCKSIZE:%k=%KiB) -m $(PAGESIZE) \
 		$(if $(SUBPAGESIZE),-s $(SUBPAGESIZE)) \
 		$(if $(VID_HDR_OFFSET),-O $(VID_HDR_OFFSET)) \
 		$(UBINIZE_OPTS)
 	cat $@.tmp >> $@
+	rm $@.tmp
+endef
+
+define Build/ubinize-kernel
+	cp $@ $@.tmp
+	sh $(TOPDIR)/scripts/ubinize-image.sh \
+		--kernel $@.tmp \
+		$@ \
+		-p $(BLOCKSIZE:%k=%KiB) -m $(PAGESIZE) \
+		$(if $(SUBPAGESIZE),-s $(SUBPAGESIZE)) \
+		$(if $(VID_HDR_OFFSET),-O $(VID_HDR_OFFSET)) \
+		$(UBINIZE_OPTS)
 	rm $@.tmp
 endef
 
