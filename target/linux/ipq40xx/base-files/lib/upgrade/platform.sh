@@ -210,6 +210,12 @@ platform_do_upgrade() {
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$ARGV"
 		;;
+	glinet,gl-b2200)
+		CI_KERNPART="0:HLOS"
+		CI_ROOTPART="rootfs"
+		CI_DATAPART="rootfs_data"
+		emmc_do_upgrade "$1"
+		;;
 	alfa-network,ap120c-ac)
 		part="$(awk -F 'ubi.mtd=' '{printf $2}' /proc/cmdline | sed -e 's/ .*$//')"
 		if [ "$part" = "rootfs1" ]; then
@@ -295,4 +301,13 @@ platform_nand_pre_upgrade() {
 		CI_KERNPART="part.safe"
 		;;
 	esac
+}
+
+platform_copy_config() {
+	case "$(board_name)" in
+	glinet,gl-b2200)
+		emmc_copy_config
+		;;
+	esac
+	return 0;
 }
