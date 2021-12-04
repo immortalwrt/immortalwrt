@@ -180,11 +180,13 @@ define Build/gzip
 endef
 
 define Build/zip
+	rm -rf $@.tmp
 	mkdir $@.tmp
-	mv $@ $@.tmp/$(1)
+	mv $@ $@.tmp/$(word 1,$(1))
 
-	TZ=UTC zip -j -X \
-		$@ $@.tmp/$(if $(1),$(1),$@)
+	TZ=UTC $(STAGING_DIR_HOST)/bin/zip -j -X \
+		$(wordlist 2,$(words $(1)),$(1)) \
+		$@ $@.tmp/$(if $(word 1,$(1)),$(word 1,$(1)),$$(basename $@))
 	rm -rf $@.tmp
 endef
 
