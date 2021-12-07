@@ -1159,7 +1159,7 @@ endef
 
 define KernelPackage/usb-net-aqc111
   TITLE:=Kernel module for Aquantia AQtion USB to 5/2.5GbE Controllers
-  DEPENDS:=+kmod-libphy
+  DEPENDS:=@!LINUX_4_9 +kmod-libphy
   KCONFIG:=CONFIG_USB_NET_AQC111
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/aqc111.ko
   AUTOLOAD:=$(call AutoProbe,aqc111)
