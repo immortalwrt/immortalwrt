@@ -1,11 +1,15 @@
 #!/bin/sh
 
-mt76_path="/sys/kernel/debug/ieee80211/phy0/mt76/temperature"
+mt76_path="/sys/class/ieee80211/phy0/hwmon0/temp1_input"
 if [ -e "${mt76_path}" ]; then
 	mt76_temp=" $(awk -F ': ' '{print $2}' "${mt76_path}")°C"
 fi
 
-wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
+if grep -q "mt7622" "/etc/openwrt_release"; then
+	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/hwmon*/temp1_input | awk '$1=$1')"
+else
+	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
+fi
 
 if grep -q "ipq40xx" "/etc/openwrt_release"; then
 	echo -n "WiFi:${mt76_temp} ${wifi_temp}"

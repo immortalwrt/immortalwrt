@@ -14,6 +14,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_TARGET_bcm53xx
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/target.mk
 
 define Package/autocore-arm
   TITLE:=Arm auto core loadbalance script
@@ -50,7 +51,7 @@ endef
 define Package/autocore-arm/install
 	$(call Package/autocore/install/Default,$(1))
 
-ifneq (, $(findstring $(BOARD), ipq40xx ipq806x))
+ifneq ($(filter ipq% %mt7622, $(TARGETID)),)
 	$(INSTALL_BIN) ./files/arm/tempinfo $(1)/sbin/
 endif
 endef
