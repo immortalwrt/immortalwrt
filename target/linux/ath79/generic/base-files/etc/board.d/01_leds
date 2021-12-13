@@ -407,6 +407,9 @@ wd,mynet-wifi-rangeextender)
 	ucidef_set_led_rssi "rssimedium" "RSSIMED" "blue:rssi-med" "wlan0" "33" "100"
 	ucidef_set_led_rssi "rssihigh" "RSSIMAX" "blue:rssi-max" "wlan0" "66" "100"
 	;;
+xiaomi,aiot-ac2350)
+	ucidef_set_led_switch "wan" "WAN" "blue:wan" "switch0" "0x02"
+	;;
 xwrt,csac)
 	ucidef_set_led_wlan "wlan5g" "WLAN5G" "blue:wlan5g" "phy1tpt"
 	ucidef_set_led_wlan "wlan2g" "WLAN2G" "blue:wlan2g" "phy0tpt"
