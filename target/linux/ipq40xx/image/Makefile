@@ -413,7 +413,7 @@ define Device/engenius_eap2200
 	DEVICE_DTS := qcom-ipq4019-eap2200
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_PACKAGES := ath10k-firmware-qca9888 ipq-wifi-engenius_eap2200 -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
+	DEVICE_PACKAGES := ath10k-firmware-qca9888 ipq-wifi-engenius_eap2200 -kmod-ath10k -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += engenius_eap2200
 
