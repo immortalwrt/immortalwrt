@@ -481,7 +481,7 @@ define Device/ezviz_cs-w3-wd1200g-eup
 	DEVICE_DTS := qcom-ipq4018-cs-w3-wd1200g-eup
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
 		append-metadata
-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers \
+	DEVICE_PACKAGES := -kmod-ath10k -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers \
 		ipq-wifi-ezviz_cs-w3-wd1200g-eup
 endef
 TARGET_DEVICES += ezviz_cs-w3-wd1200g-eup
