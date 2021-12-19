@@ -96,6 +96,7 @@ endif
 	$(SED) 's,^# REVISION:=.*,REVISION:=$(REVISION),g' $(PKG_BUILD_DIR)/include/version.mk
 	$(SED) 's,^# SOURCE_DATE_EPOCH:=.*,SOURCE_DATE_EPOCH:=$(SOURCE_DATE_EPOCH),g' $(PKG_BUILD_DIR)/include/version.mk
 	$(SED) '/LINUX_VERMAGIC:=/ { s,unknown,$(LINUX_VERMAGIC),g }' $(PKG_BUILD_DIR)/include/kernel.mk
+	$(SED) '/luci-app-cpufreq/d' $(PKG_BUILD_DIR)/include/target.mk
 	find $(PKG_BUILD_DIR) -name CVS -o -name .git -o -name .svn \
 	  | $(XARGS) rm -rf
 	$(INSTALL_DIR) $(IB_IDIR)
