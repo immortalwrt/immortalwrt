@@ -2,7 +2,8 @@
 
 ## Thanks to
 
-[![Dler Cloud](https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png)](https://dlercloud.com)<br/>
+<a href="https://dlercloud.com/"><img src="https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png" width="183" height="52" border="0" alt="Dler Cloud"></a><br/>
+<a href="https://www.jetbrains.com/"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.png" width="120" height="120" border="0" alt="JetBrains Black Box Logo logo"></a><br/>
 <a href="https://osdn.net/"><img src="https://osdn.net/sflogo.php?group_id=13647&type=2" width="125" height="39" border="0" alt="OSDN"></a>
 
 ## The Source of Packages
@@ -58,7 +59,7 @@ luci-app-vssr source: [jerrykuku/luci-app-vssr](https://github.com/jerrykuku/luc
 
 luci-lib-docker source: [lisaac/luci-lib-docker](https://github.com/lisaac/luci-lib-docker).<br/>
 
-luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).
+luci-proto-minieap source: [ysc3839/luci-proto-minieap](https://github.com/ysc3839/luci-proto-minieap).<br/>
 luci-proto-modemmanager source: [nickberry17/luci-proto-modemmanager](https://github.com/nickberry17/luci-proto-modemmanager).<br/>
 
 luci-theme-argonv3 source: [jerrykuku/luci-theme-argon](https://github.com/jerrykuku/luci-theme-argon).<br/>
