@@ -782,6 +782,22 @@ define Device/iptime_a3004ns-dual
 endef
 TARGET_DEVICES += iptime_a3004ns-dual
 
+define Device/iptime_a3004t
+  $(Device/uimage-lzma-loader)
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  FILESYSTEMS := squashfs
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 129280k
+  UIMAGE_NAME := a3004t
+  UBINIZE_OPTS := -E 5
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_VENDOR := ipTIME
+  DEVICE_MODEL := A3004T
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3
+endef
+TARGET_DEVICES += iptime_a3004t
+
 define Device/iptime_a6004ns-m
   IMAGE_SIZE := 16128k
   UIMAGE_NAME := a6004nm
