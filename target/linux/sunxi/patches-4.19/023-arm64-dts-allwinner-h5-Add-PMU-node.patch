@@ -18,8 +18,6 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi | 16 +++++++++++++---
  1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
-index e92c4de5bf3b4..7c775a918a4e7 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 @@ -54,21 +54,21 @@

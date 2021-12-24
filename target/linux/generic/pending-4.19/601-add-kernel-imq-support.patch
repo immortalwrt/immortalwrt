@@ -1132,7 +1132,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -3973,6 +3978,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3980,6 +3985,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1295,7 +1295,7 @@
  void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
 --- a/include/net/pkt_sched.h
 +++ b/include/net/pkt_sched.h
-@@ -115,6 +115,8 @@ bool sch_direct_xmit(struct sk_buff *skb
+@@ -116,6 +116,8 @@ bool sch_direct_xmit(struct sk_buff *skb
  
  void __qdisc_run(struct Qdisc *q);
  
@@ -1306,7 +1306,7 @@
  	if (qdisc_run_begin(q)) {
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -709,6 +709,13 @@ static inline int qdisc_enqueue(struct s
+@@ -724,6 +724,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  

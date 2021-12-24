@@ -40,11 +40,9 @@ Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
  include/uapi/linux/nsfs.h | 3 +++
  2 files changed, 5 insertions(+)
 
-diff --git a/fs/nsfs.c b/fs/nsfs.c
-index 8c9fb29c66732..5d534763c6626 100644
 --- a/fs/nsfs.c
 +++ b/fs/nsfs.c
-@@ -173,6 +173,8 @@ static long ns_ioctl(struct file *filp, unsigned int ioctl,
+@@ -173,6 +173,8 @@ static long ns_ioctl(struct file *filp,
  		if (!ns->ops->get_parent)
  			return -EINVAL;
  		return open_related_ns(ns, ns->ops->get_parent);
@@ -53,8 +51,6 @@ index 8c9fb29c66732..5d534763c6626 100644
  	default:
  		return -ENOTTY;
  	}
-diff --git a/include/uapi/linux/nsfs.h b/include/uapi/linux/nsfs.h
-index 3af617230d1b7..2b48df11056ac 100644
 --- a/include/uapi/linux/nsfs.h
 +++ b/include/uapi/linux/nsfs.h
 @@ -9,5 +9,8 @@
