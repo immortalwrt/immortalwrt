@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-@@ -208,6 +208,14 @@
+@@ -207,6 +207,14 @@
  	status = "okay";
  };
  
