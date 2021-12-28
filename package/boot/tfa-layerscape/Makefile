@@ -57,7 +57,8 @@ define Host/Compile
 	$(MAKE) -C \
 		$(HOST_BUILD_DIR)/tools/fiptool \
 		CFLAGS="$(HOST_CFLAGS)" \
-		LDFLAGS="$(HOST_LDFLAGS)"
+		LDFLAGS="$(HOST_LDFLAGS)" \
+		HOSTCCFLAGS="$(HOST_CFLAGS)"
 	$(MAKE) -C \
 		$(HOST_BUILD_DIR)/plat/nxp/tools \
 		CFLAGS="$(HOST_CFLAGS)"
