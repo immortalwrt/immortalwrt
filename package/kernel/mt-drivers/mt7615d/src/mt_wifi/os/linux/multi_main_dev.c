@@ -24,7 +24,6 @@
 	--------	----------		----------------------------------------------
 */
 
-
 #ifdef MULTI_INF_SUPPORT
 
 #include "rtmp_comm.h"
@@ -35,7 +34,7 @@
 #include "rt_config.h"
 #endif
 /* Index 0 for Card_1, Index 1 for Card_2 */
-VOID *adapt_list[MAX_NUM_OF_INF] = {NULL};
+VOID *adapt_list[MAX_NUM_OF_INF] = { NULL };
 
 int multi_inf_adapt_reg(VOID *pAd)
 {
@@ -51,12 +50,12 @@ int multi_inf_adapt_reg(VOID *pAd)
 		adapt_list[1] = pAd;
 	else if (GET_11N_ONLY(Value) && (adapt_list[0] != NULL)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): Both chips are 11N only  !\n", __func__));
+			 ("%s(): Both chips are 11N only  !\n", __func__));
 		status = NDIS_STATUS_FAILURE;
 		return status;
 	} else
 #endif
-	if (adapt_list[0] == NULL)
+		if (adapt_list[0] == NULL)
 		adapt_list[0] = pAd;
 	else if (adapt_list[1] == NULL)
 		adapt_list[1] = pAd;
@@ -64,13 +63,12 @@ int multi_inf_adapt_reg(VOID *pAd)
 		adapt_list[2] = pAd;
 	else {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): adapt_list assign error !\n", __func__));
+			 ("%s(): adapt_list assign error !\n", __func__));
 		status = NDIS_STATUS_FAILURE;
 	}
 
 	return status;
 }
-
 
 int multi_inf_adapt_unreg(VOID *pAd)
 {
@@ -84,13 +82,12 @@ int multi_inf_adapt_unreg(VOID *pAd)
 		adapt_list[2] = NULL;
 	else {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): adapt_list assign error !\n", __func__));
+			 ("%s(): adapt_list assign error !\n", __func__));
 		status = NDIS_STATUS_FAILURE;
 	}
 
 	return status;
 }
-
 
 int multi_inf_get_count(void)
 {
@@ -104,10 +101,10 @@ int multi_inf_get_count(void)
 
 	if (count == 0)
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s(): failed to find nonempty adapt_list!\n", __func__));
+			 ("%s(): failed to find nonempty adapt_list!\n",
+			  __func__));
 	return count;
 }
-
 
 int multi_inf_get_idx(VOID *pAd)
 {
@@ -119,10 +116,12 @@ int multi_inf_get_idx(VOID *pAd)
 	}
 
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s(): failed to find the index in adapt_list!\n", __func__));
+		 ("%s(): failed to find the index in adapt_list!\n", __func__));
 	return idx;
 }
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(multi_inf_get_idx);
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */
 
 /* Driver module load/unload function */
 static int __init wifi_drv_init_module(void)
@@ -134,7 +133,7 @@ static int __init wifi_drv_init_module(void)
 
 	if (status)
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Register RBUS device driver failed(%d)!\n", status));
+			 ("Register RBUS device driver failed(%d)!\n", status));
 
 #endif /* RTMP_RBUS_SUPPORT */
 
@@ -143,7 +142,7 @@ static int __init wifi_drv_init_module(void)
 
 	if (status)
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Register PCI device driver failed(%d)!\n", status));
+			 ("Register PCI device driver failed(%d)!\n", status));
 
 #endif /* RTMP_PCI_SUPPORT */
 
@@ -152,7 +151,6 @@ static int __init wifi_drv_init_module(void)
 	return status;
 }
 
-
 static void __exit wifi_drv_cleanup_module(void)
 {
 	/* Del out-of-memory notifier */
@@ -160,16 +158,14 @@ static void __exit wifi_drv_cleanup_module(void)
 #ifdef RTMP_PCI_SUPPORT
 	rt_pci_cleanup_module();
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("Unregister PCI device driver\n"));
+		 ("Unregister PCI device driver\n"));
 #endif /* RTMP_PCI_SUPPORT */
 #ifdef RTMP_RBUS_SUPPORT
 	wbsys_module_exit();
 #endif /* RTMP_RBUS_SUPPORT */
 }
 
-
 module_init(wifi_drv_init_module);
 module_exit(wifi_drv_cleanup_module);
 
 #endif /* MULTI_INF_SUPPORT */
-

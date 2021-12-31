@@ -27,26 +27,24 @@
 
 #ifdef DOT11_VHT_AC
 
-
 #ifndef __DOT11AC_VHT_H
 #define __DOT11AC_VHT_H
 
 #include "rtmp_type.h"
 #include "dot11_base.h"
 
-#define IE_VHT_CAP		191
-#define IE_VHT_OP		192
-#define IE_EXT_BSS_LOAD			193
-#define IE_WIDE_BW_CH_SWITCH		194
-#define IE_VHT_TXPWR_ENV			195
-#define IE_CH_SWITCH_WRAPPER		196
-#define IE_AID						197
-#define IE_QUIET_CHANNEL			198
+#define IE_VHT_CAP 191
+#define IE_VHT_OP 192
+#define IE_EXT_BSS_LOAD 193
+#define IE_WIDE_BW_CH_SWITCH 194
+#define IE_VHT_TXPWR_ENV 195
+#define IE_CH_SWITCH_WRAPPER 196
+#define IE_AID 197
+#define IE_QUIET_CHANNEL 198
 
-
-#define BW_SIGNALING_DISABLE	0
-#define BW_SIGNALING_STATIC	1
-#define BW_SIGNALING_DYNAMIC	2
+#define BW_SIGNALING_DISABLE 0
+#define BW_SIGNALING_STATIC 1
+#define BW_SIGNALING_DYNAMIC 2
 
 /*
 	IEEE 802.11AC D3.0 sec 8.4.1.50
@@ -78,18 +76,17 @@
 */
 typedef struct GNU_PACKED _OPERATING_MODE {
 #ifdef RT_BIG_ENDIAN
-	UCHAR rx_nss_type:1;
-	UCHAR rx_nss:3;
-	UCHAR rsv2:2;
-	UCHAR ch_width:2;
+	UCHAR rx_nss_type : 1;
+	UCHAR rx_nss : 3;
+	UCHAR rsv2 : 2;
+	UCHAR ch_width : 2;
 #else
-	UCHAR ch_width:2;
-	UCHAR rsv2:2;
-	UCHAR rx_nss:3;
-	UCHAR rx_nss_type:1;
+	UCHAR ch_width : 2;
+	UCHAR rsv2 : 2;
+	UCHAR rx_nss : 3;
+	UCHAR rx_nss_type : 1;
 #endif /* RT_BIG_ENDIAN */
 } OPERATING_MODE;
-
 
 /*
 	IEEE 802.11AC D3.0 sec 8.4.2.168
@@ -102,10 +99,9 @@ typedef struct GNU_PACKED _OPERATING_MODE_NOTIFICATION {
 	OPERATING_MODE operating_mode;
 } OPERATING_MODE_NOTIFICATION;
 
-
-#define DOT11_VHT_MAX_MPDU_LEN_3895		0
-#define DOT11_VHT_MAX_MPDU_LEN_7991		1
-#define DOT11_VHT_MAX_MPDU_LEN_11454	2
+#define DOT11_VHT_MAX_MPDU_LEN_3895 0
+#define DOT11_VHT_MAX_MPDU_LEN_7991 1
+#define DOT11_VHT_MAX_MPDU_LEN_11454 2
 
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.160.2
@@ -216,54 +212,53 @@ typedef struct GNU_PACKED _OPERATING_MODE_NOTIFICATION {
 */
 typedef struct GNU_PACKED _VHT_CAP_INFO {
 #ifdef RT_BIG_ENDIAN
-	UINT32 rsv:2;
-	UINT32 tx_ant_consistency:1;
-	UINT32 rx_ant_consistency:1;
-	UINT32 vht_link_adapt:2;
-	UINT32 max_ampdu_exp:3;
-	UINT32 htc_vht_cap:1;
-	UINT32 vht_txop_ps:1;
-	UINT32 bfee_cap_mu:1;
-	UINT32 bfer_cap_mu:1;
-	UINT32 num_snd_dimension:3;
+	UINT32 rsv : 2;
+	UINT32 tx_ant_consistency : 1;
+	UINT32 rx_ant_consistency : 1;
+	UINT32 vht_link_adapt : 2;
+	UINT32 max_ampdu_exp : 3;
+	UINT32 htc_vht_cap : 1;
+	UINT32 vht_txop_ps : 1;
+	UINT32 bfee_cap_mu : 1;
+	UINT32 bfer_cap_mu : 1;
+	UINT32 num_snd_dimension : 3;
 
-	UINT32 bfee_sts_cap:3;
-	UINT32 bfee_cap_su:1;
-	UINT32 bfer_cap_su:1;
-	UINT32 rx_stbc:3;
+	UINT32 bfee_sts_cap : 3;
+	UINT32 bfee_cap_su : 1;
+	UINT32 bfer_cap_su : 1;
+	UINT32 rx_stbc : 3;
 
-	UINT32 tx_stbc:1;
-	UINT32 sgi_160M:1;
-	UINT32 sgi_80M:1;
-	UINT32 rx_ldpc:1;
-	UINT32 ch_width:2;
-	UINT32 max_mpdu_len:2;
+	UINT32 tx_stbc : 1;
+	UINT32 sgi_160M : 1;
+	UINT32 sgi_80M : 1;
+	UINT32 rx_ldpc : 1;
+	UINT32 ch_width : 2;
+	UINT32 max_mpdu_len : 2;
 #else
-	UINT32 max_mpdu_len:2;	/* 0: 3895, 1: 7991, 2: 11454, 3: rsv */
-	UINT32 ch_width:2;	/* */
-	UINT32 rx_ldpc:1;
-	UINT32 sgi_80M:1;
-	UINT32 sgi_160M:1;
-	UINT32 tx_stbc:1;
+	UINT32 max_mpdu_len : 2; /* 0: 3895, 1: 7991, 2: 11454, 3: rsv */
+	UINT32 ch_width : 2; /* */
+	UINT32 rx_ldpc : 1;
+	UINT32 sgi_80M : 1;
+	UINT32 sgi_160M : 1;
+	UINT32 tx_stbc : 1;
 
-	UINT32 rx_stbc:3;
-	UINT32 bfer_cap_su:1;
-	UINT32 bfee_cap_su:1;
-	UINT32 bfee_sts_cap:3;
+	UINT32 rx_stbc : 3;
+	UINT32 bfer_cap_su : 1;
+	UINT32 bfee_cap_su : 1;
+	UINT32 bfee_sts_cap : 3;
 
-	UINT32 num_snd_dimension:3;
-	UINT32 bfer_cap_mu:1;
-	UINT32 bfee_cap_mu:1;
-	UINT32 vht_txop_ps:1;
-	UINT32 htc_vht_cap:1;
-	UINT32 max_ampdu_exp:3;
-	UINT32 vht_link_adapt:2;
-	UINT32 rx_ant_consistency:1;
-	UINT32 tx_ant_consistency:1;
-	UINT32 rsv:2;
+	UINT32 num_snd_dimension : 3;
+	UINT32 bfer_cap_mu : 1;
+	UINT32 bfee_cap_mu : 1;
+	UINT32 vht_txop_ps : 1;
+	UINT32 htc_vht_cap : 1;
+	UINT32 max_ampdu_exp : 3;
+	UINT32 vht_link_adapt : 2;
+	UINT32 rx_ant_consistency : 1;
+	UINT32 tx_ant_consistency : 1;
+	UINT32 rsv : 2;
 #endif /* RT_BIG_ENDIAN */
 } VHT_CAP_INFO;
-
 
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.160.3
@@ -287,33 +282,32 @@ typedef struct GNU_PACKED _VHT_CAP_INFO {
 	Note: some MCSs are not be valid for particular bandwidth and number of
 		spatial stream combinations.
 */
-#define VHT_MCS_CAP_7	0
-#define VHT_MCS_CAP_8	1
-#define VHT_MCS_CAP_9	2
-#define VHT_MCS_CAP_NA	3
+#define VHT_MCS_CAP_7 0
+#define VHT_MCS_CAP_8 1
+#define VHT_MCS_CAP_9 2
+#define VHT_MCS_CAP_NA 3
 
 typedef struct GNU_PACKED _VHT_MCS_MAP {
 #ifdef RT_BIG_ENDIAN
-	UINT16 mcs_ss8:2;
-	UINT16 mcs_ss7:2;
-	UINT16 mcs_ss6:2;
-	UINT16 mcs_ss5:2;
-	UINT16 mcs_ss4:2;
-	UINT16 mcs_ss3:2;
-	UINT16 mcs_ss2:2;
-	UINT16 mcs_ss1:2;
+	UINT16 mcs_ss8 : 2;
+	UINT16 mcs_ss7 : 2;
+	UINT16 mcs_ss6 : 2;
+	UINT16 mcs_ss5 : 2;
+	UINT16 mcs_ss4 : 2;
+	UINT16 mcs_ss3 : 2;
+	UINT16 mcs_ss2 : 2;
+	UINT16 mcs_ss1 : 2;
 #else
-	UINT16 mcs_ss1:2;
-	UINT16 mcs_ss2:2;
-	UINT16 mcs_ss3:2;
-	UINT16 mcs_ss4:2;
-	UINT16 mcs_ss5:2;
-	UINT16 mcs_ss6:2;
-	UINT16 mcs_ss7:2;
-	UINT16 mcs_ss8:2;
+	UINT16 mcs_ss1 : 2;
+	UINT16 mcs_ss2 : 2;
+	UINT16 mcs_ss3 : 2;
+	UINT16 mcs_ss4 : 2;
+	UINT16 mcs_ss5 : 2;
+	UINT16 mcs_ss6 : 2;
+	UINT16 mcs_ss7 : 2;
+	UINT16 mcs_ss8 : 2;
 #endif /* RT_BIG_ENDIAN */
 } VHT_MCS_MAP;
-
 
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.160.3
@@ -341,25 +335,24 @@ typedef struct GNU_PACKED _VHT_MCS_MAP {
 /* TODO: shiang-6590, check the layout of this data structure!!!! */
 typedef struct GNU_PACKED _VHT_MCS_SET {
 #ifdef RT_BIG_ENDIAN
-	UINT16 rsv2:3;
-	UINT16 tx_high_rate:13;
+	UINT16 rsv2 : 3;
+	UINT16 tx_high_rate : 13;
 	struct _VHT_MCS_MAP tx_mcs_map;
 
-	UINT16 rsv:3;
-	UINT16 rx_high_rate:13;
+	UINT16 rsv : 3;
+	UINT16 rx_high_rate : 13;
 	struct _VHT_MCS_MAP rx_mcs_map;
 #else
 	struct _VHT_MCS_MAP rx_mcs_map;
 
-	UINT16 rx_high_rate:13;
-	UINT16 rsv:3;
+	UINT16 rx_high_rate : 13;
+	UINT16 rsv : 3;
 	struct _VHT_MCS_MAP tx_mcs_map;
 
-	UINT16 tx_high_rate:13;
-	UINT16 rsv2:3;
+	UINT16 tx_high_rate : 13;
+	UINT16 rsv2 : 3;
 #endif /* RT_BIG_ENDIAN */
 } VHT_MCS_SET;
-
 
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.160.1
@@ -384,7 +377,7 @@ typedef struct GNU_PACKED _VHT_CAP_IE {
 //
 // Size of VHT capabilities IE, excluding element ID and length fields
 //
-#define SIZE_OF_VHT_CAP_IE    (sizeof(VHT_CAP_IE))
+#define SIZE_OF_VHT_CAP_IE (sizeof(VHT_CAP_IE))
 
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.161
@@ -424,7 +417,6 @@ typedef struct GNU_PACKED _VHT_OP_INFO {
 	UINT8 center_freq_2;
 } VHT_OP_INFO;
 
-
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.161
 	VHT Operation element, figure 8-401bu
@@ -444,7 +436,6 @@ typedef struct GNU_PACKED _VHT_OP_IE {
 	VHT_MCS_MAP basic_mcs_set;
 } VHT_OP_IE;
 
-
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.163
 	Wide Bandwidth Channel Switch element, figure 8-401bx
@@ -463,7 +454,6 @@ typedef struct GNU_PACKED _WIDE_BW_CH_SWITCH_ELEMENT {
 	UINT8 center_freq_2;
 } WIDE_BW_CH_SWITCH_ELEMENT;
 
-
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.164
 	VHT Transmit Power Envelope element
@@ -472,7 +462,6 @@ typedef struct GNU_PACKED _CH_SEG_PAIR {
 	UINT8 ch_center_freq;
 	UINT8 seg_ch_width;
 } CH_SEG_PAIR;
-
 
 /*
 	max_tx_pwr_cnt:
@@ -486,19 +475,18 @@ typedef struct GNU_PACKED _CH_SEG_PAIR {
 		0: EIRP
 		1~7: rsv
 */
-#define TX_PWR_INTERPRET_EIRP		0
+#define TX_PWR_INTERPRET_EIRP 0
 typedef struct GNU_PACKED _VHT_TX_PWR_INFO_ {
 #ifdef RT_BIG_ENDIAN
-	UINT8 rsv6:2;
-	UINT8 max_tx_pwr_interpretation:3;
-	UINT8 max_tx_pwr_cnt:3;
+	UINT8 rsv6 : 2;
+	UINT8 max_tx_pwr_interpretation : 3;
+	UINT8 max_tx_pwr_cnt : 3;
 #else
-	UINT8 max_tx_pwr_cnt:3;
-	UINT8 max_tx_pwr_interpretation:3;
-	UINT8 rsv6:2;
+	UINT8 max_tx_pwr_cnt : 3;
+	UINT8 max_tx_pwr_interpretation : 3;
+	UINT8 rsv6 : 2;
 #endif
 } VHT_TX_PWR_INFO;
-
 
 /*
 	IEEE 802.11AC D2.0, sec 8.4.2.164
@@ -519,45 +507,43 @@ typedef struct GNU_PACKED _VHT_TXPWR_ENV_IE {
 	UINT8 tx_pwr_bw[4];
 } VHT_TXPWR_ENV_IE;
 
-
-typedef struct  GNU_PACKED _VHT_CONTROL {
+typedef struct GNU_PACKED _VHT_CONTROL {
 #ifdef RT_BIG_ENDIAN
-	UINT32 RDG:1;
-	UINT32 ACConstraint:1;
-	UINT32 unso_mfb:1;
-	UINT32 fb_tx_type:1;
-	UINT32 coding:1;
-	UINT32 gid_h:3;
-	UINT32 mfb_snr:6;
-	UINT32 mfb_bw:2;
-	UINT32 mfb_mcs:4;
-	UINT32 mfb_n_sts:3;
-	UINT32 mfsi_gidl:3;
-	UINT32 stbc_ind:1;
-	UINT32 comp_msi:2;
-	UINT32 mrq:1;
-	UINT32 rsv:1;
-	UINT32 vht:1;
+	UINT32 RDG : 1;
+	UINT32 ACConstraint : 1;
+	UINT32 unso_mfb : 1;
+	UINT32 fb_tx_type : 1;
+	UINT32 coding : 1;
+	UINT32 gid_h : 3;
+	UINT32 mfb_snr : 6;
+	UINT32 mfb_bw : 2;
+	UINT32 mfb_mcs : 4;
+	UINT32 mfb_n_sts : 3;
+	UINT32 mfsi_gidl : 3;
+	UINT32 stbc_ind : 1;
+	UINT32 comp_msi : 2;
+	UINT32 mrq : 1;
+	UINT32 rsv : 1;
+	UINT32 vht : 1;
 #else
-	UINT32 vht:1;
-	UINT32 rsv:1;
-	UINT32 mrq:1;
-	UINT32 comp_msi:2;
-	UINT32 stbc_ind:1;
-	UINT32 mfsi_gidl:3;
-	UINT32 mfb_n_sts:3;
-	UINT32 mfb_mcs:4;
-	UINT32 mfb_bw:2;
-	UINT32 mfb_snr:6;
-	UINT32 gid_h:3;
-	UINT32 coding:1;
-	UINT32 fb_tx_type:1;
-	UINT32 unso_mfb:1;
-	UINT32 ACConstraint:1;
-	UINT32 RDG:1;
+	UINT32 vht : 1;
+	UINT32 rsv : 1;
+	UINT32 mrq : 1;
+	UINT32 comp_msi : 2;
+	UINT32 stbc_ind : 1;
+	UINT32 mfsi_gidl : 3;
+	UINT32 mfb_n_sts : 3;
+	UINT32 mfb_mcs : 4;
+	UINT32 mfb_bw : 2;
+	UINT32 mfb_snr : 6;
+	UINT32 gid_h : 3;
+	UINT32 coding : 1;
+	UINT32 fb_tx_type : 1;
+	UINT32 unso_mfb : 1;
+	UINT32 ACConstraint : 1;
+	UINT32 RDG : 1;
 #endif
 } VHT_CONTROL;
-
 
 /*
 	802.11 AC Draft3.1 - Section 8.3.1.19, Figure 8-29j
@@ -568,14 +554,13 @@ typedef struct  GNU_PACKED _VHT_CONTROL {
 */
 typedef struct GNU_PACKED _SNDING_DIALOG_TOKEN {
 #ifdef RT_BIG_ENDIAN
-	UINT8 token_num:6;
-	UINT8 rsv:2;
+	UINT8 token_num : 6;
+	UINT8 rsv : 2;
 #else
-	UINT8 rsv:2;
-	UINT8 token_num:6;
+	UINT8 rsv : 2;
+	UINT8 token_num : 6;
 #endif /* RT_BIG_ENDIAN */
 } SNDING_DIALOG_TOKEN;
-
 
 /*
 	802.11 AC Draft3.1 - Section 8.3.1.19, Figure 8-29k
@@ -605,16 +590,15 @@ typedef enum _SNDING_FB_TYPE {
 
 typedef struct GNU_PACKED _SNDING_STA_INFO {
 #ifdef RT_BIG_ENDIAN
-	UINT16 nc_idx:3;
-	UINT16 fb_type:1;
-	UINT16 aid12:12;
+	UINT16 nc_idx : 3;
+	UINT16 fb_type : 1;
+	UINT16 aid12 : 12;
 #else
-	UINT16 aid12:12;
-	UINT16 fb_type:1;
-	UINT16 nc_idx:3;
+	UINT16 aid12 : 12;
+	UINT16 fb_type : 1;
+	UINT16 nc_idx : 3;
 #endif /* RT_BIG_ENDIAN */
 } SNDING_STA_INFO;
-
 
 /*
 	802.11 AC Draft3.1 - Section 8.3.1.19, Figure 8-29i
@@ -659,19 +643,18 @@ typedef struct GNU_PACKED _NDPA_PKT {
 
 typedef struct GNU_PACKED _PLCP_SERVICE_FIELD {
 #ifdef RT_BIG_ENDIAN
-	UINT8 rsv7:1;
-	UINT8 cbw_in_non_ht:2;
-	UINT8 dyn_bw:1;
-	UINT8 rsv03:4;
+	UINT8 rsv7 : 1;
+	UINT8 cbw_in_non_ht : 2;
+	UINT8 dyn_bw : 1;
+	UINT8 rsv03 : 4;
 #else
-	UINT8 rsv03:4;
-	UINT8 dyn_bw:1;
-	UINT8 cbw_in_non_ht:2;
-	UINT8 rsv7:1;
+	UINT8 rsv03 : 4;
+	UINT8 dyn_bw : 1;
+	UINT8 cbw_in_non_ht : 2;
+	UINT8 rsv7 : 1;
 #endif /* RT_BIG_ENDIAN */
 } PLCP_SERVICE_FIELD;
 
 #endif /* __DOT11AC_VHT_H */
 
 #endif /* DOT11_VHT_AC */
-

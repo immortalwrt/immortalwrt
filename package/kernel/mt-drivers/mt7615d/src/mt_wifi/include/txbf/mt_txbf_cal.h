@@ -14,117 +14,116 @@
 	mt_txbf_cal.h
 */
 
-
 #ifndef _RT_TXBF_CAL_H_
 #define _RT_TXBF_CAL_H_
 
-#define TX_PATH_2   2
-#define TX_PATH_3   3
-#define TX_PATH_4   4
+#define TX_PATH_2 2
+#define TX_PATH_3 3
+#define TX_PATH_4 4
 
-#define GROUP_0     0
-#define CH_001      1
-#define CH_008      8
-#define CH_014      14
-#define GROUP_1     1
-#define CH_184      184
-#define CH_196      196
-#define GROUP_2     2
-#define CH_036      36
-#define CH_044      44
-#define GROUP_3     3
-#define CH_052      52
-#define CH_060      60
-#define CH_068      68
-#define GROUP_4     4
-#define CH_072      72
-#define CH_084      84
-#define CH_092      92
-#define GROUP_5     5
-#define CH_096      96
-#define CH_104      104
-#define CH_112      112
-#define GROUP_6     6
-#define CH_116      116
-#define CH_124      124
-#define CH_136      136
-#define GROUP_7     7
-#define CH_140      140
-#define CH_149      149
-#define CH_157      157
-#define GROUP_8     8
-#define CH_161      161
-#define CH_173      173
-#define CH_181      181
+#define GROUP_0 0
+#define CH_001 1
+#define CH_008 8
+#define CH_014 14
+#define GROUP_1 1
+#define CH_184 184
+#define CH_196 196
+#define GROUP_2 2
+#define CH_036 36
+#define CH_044 44
+#define GROUP_3 3
+#define CH_052 52
+#define CH_060 60
+#define CH_068 68
+#define GROUP_4 4
+#define CH_072 72
+#define CH_084 84
+#define CH_092 92
+#define GROUP_5 5
+#define CH_096 96
+#define CH_104 104
+#define CH_112 112
+#define GROUP_6 6
+#define CH_116 116
+#define CH_124 124
+#define CH_136 136
+#define GROUP_7 7
+#define CH_140 140
+#define CH_149 149
+#define CH_157 157
+#define GROUP_8 8
+#define CH_161 161
+#define CH_173 173
+#define CH_181 181
 
-#define GROUP_L     0
-#define GROUP_M     1
-#define GROUP_H     2
+#define GROUP_L 0
+#define GROUP_M 1
+#define GROUP_H 2
 
-#define IBF_PHASE_EEPROM_START      0x220
+#define IBF_PHASE_EEPROM_START 0x220
 
-#define IBF_LNA_PHASE_G0_ADDR       IBF_PHASE_EEPROM_START
-#define IBF_LNA_PHASE_G1_ADDR       (IBF_LNA_PHASE_G0_ADDR  + 0x15)
-#define IBF_LNA_PHASE_G2_ADDR       (IBF_LNA_PHASE_G1_ADDR  + 0x1E)
-#define IBF_LNA_PHASE_G3_ADDR       (IBF_LNA_PHASE_G2_ADDR  + 0x1A)
-#define IBF_LNA_PHASE_G4_ADDR       (IBF_LNA_PHASE_G3_ADDR  + 0x1E)
-#define IBF_LNA_PHASE_G5_ADDR       (IBF_LNA_PHASE_G4_ADDR  + 0x1E)
-#define IBF_LNA_PHASE_G6_ADDR       (IBF_LNA_PHASE_G5_ADDR  + 0x1E)
-#define IBF_LNA_PHASE_G7_ADDR       (IBF_LNA_PHASE_G6_ADDR  + 0x1E)
-#define IBF_LNA_PHASE_G8_ADDR       (IBF_PHASE_EEPROM_START + 0x120)
+#define IBF_LNA_PHASE_G0_ADDR IBF_PHASE_EEPROM_START
+#define IBF_LNA_PHASE_G1_ADDR (IBF_LNA_PHASE_G0_ADDR + 0x15)
+#define IBF_LNA_PHASE_G2_ADDR (IBF_LNA_PHASE_G1_ADDR + 0x1E)
+#define IBF_LNA_PHASE_G3_ADDR (IBF_LNA_PHASE_G2_ADDR + 0x1A)
+#define IBF_LNA_PHASE_G4_ADDR (IBF_LNA_PHASE_G3_ADDR + 0x1E)
+#define IBF_LNA_PHASE_G5_ADDR (IBF_LNA_PHASE_G4_ADDR + 0x1E)
+#define IBF_LNA_PHASE_G6_ADDR (IBF_LNA_PHASE_G5_ADDR + 0x1E)
+#define IBF_LNA_PHASE_G7_ADDR (IBF_LNA_PHASE_G6_ADDR + 0x1E)
+#define IBF_LNA_PHASE_G8_ADDR (IBF_PHASE_EEPROM_START + 0x120)
 
-#define IBF_R0_H_G0                 0
-#define IBF_R0_M_G0                 1
-#define IBF_R0_L_G0                 2
-#define IBF_R1_H_G0                 3
-#define IBF_R1_M_G0                 4
-#define IBF_R1_L_G0                 5
-#define IBF_R2_H_G0                 6
-#define IBF_R2_M_G0                 7
-#define IBF_R2_L_G0                 8
-#define IBF_R3_H_G0                 9
-#define IBF_R3_M_G0                 10
-#define IBF_R3_L_G0                 11
-#define IBF_T0_M_G0                 12
-#define IBF_T1_M_G0                 13
-#define IBF_T2_M_G0                 14
-#define IBF_T0_L_G0                 15
-#define IBF_T1_L_G0                 16
-#define IBF_T2_L_G0                 17
-#define IBF_T0_H_G0                 18
-#define IBF_T1_H_G0                 19
-#define IBF_T2_H_G0                 20
+#define IBF_R0_H_G0 0
+#define IBF_R0_M_G0 1
+#define IBF_R0_L_G0 2
+#define IBF_R1_H_G0 3
+#define IBF_R1_M_G0 4
+#define IBF_R1_L_G0 5
+#define IBF_R2_H_G0 6
+#define IBF_R2_M_G0 7
+#define IBF_R2_L_G0 8
+#define IBF_R3_H_G0 9
+#define IBF_R3_M_G0 10
+#define IBF_R3_L_G0 11
+#define IBF_T0_M_G0 12
+#define IBF_T1_M_G0 13
+#define IBF_T2_M_G0 14
+#define IBF_T0_L_G0 15
+#define IBF_T1_L_G0 16
+#define IBF_T2_L_G0 17
+#define IBF_T0_H_G0 18
+#define IBF_T1_H_G0 19
+#define IBF_T2_H_G0 20
 
-#define IBF_R0_H_Gx                 0
-#define IBF_R0_M_Gx                 1
-#define IBF_R0_L_Gx                 2
-#define IBF_R1_H_Gx                 3
-#define IBF_R1_M_Gx                 4
-#define IBF_R1_L_Gx                 5
-#define IBF_R2_H_Gx                 6
-#define IBF_R2_M_Gx                 7
-#define IBF_R2_L_Gx                 8
-#define IBF_R3_H_Gx                 9
-#define IBF_R3_M_Gx                 10
-#define IBF_R3_L_Gx                 11
-#define IBF_R2_SX2_H_Gx             12
-#define IBF_R2_SX2_M_Gx             13
-#define IBF_R2_SX2_L_Gx             14
-#define IBF_R3_SX2_H_Gx             15
-#define IBF_R3_SX2_M_Gx             16
-#define IBF_R3_SX2_L_Gx             17
-#define IBF_T0_M_Gx                 18
-#define IBF_T1_M_Gx                 19
-#define IBF_T2_M_Gx                 20
-#define IBF_T2_SX2_M_Gx             21
-#define IBF_T0_L_Gx                 22
-#define IBF_T1_L_Gx                 23
-#define IBF_T2_L_Gx                 24
-#define IBF_T2_SX2_L_Gx             25
-#define IBF_T0_H_Gx                 26
-#define IBF_T1_H_Gx                 27
-#define IBF_T2_H_Gx                 28
-#define IBF_T2_SX2_H_Gx             29
+#define IBF_R0_H_Gx 0
+#define IBF_R0_M_Gx 1
+#define IBF_R0_L_Gx 2
+#define IBF_R1_H_Gx 3
+#define IBF_R1_M_Gx 4
+#define IBF_R1_L_Gx 5
+#define IBF_R2_H_Gx 6
+#define IBF_R2_M_Gx 7
+#define IBF_R2_L_Gx 8
+#define IBF_R3_H_Gx 9
+#define IBF_R3_M_Gx 10
+#define IBF_R3_L_Gx 11
+#define IBF_R2_SX2_H_Gx 12
+#define IBF_R2_SX2_M_Gx 13
+#define IBF_R2_SX2_L_Gx 14
+#define IBF_R3_SX2_H_Gx 15
+#define IBF_R3_SX2_M_Gx 16
+#define IBF_R3_SX2_L_Gx 17
+#define IBF_T0_M_Gx 18
+#define IBF_T1_M_Gx 19
+#define IBF_T2_M_Gx 20
+#define IBF_T2_SX2_M_Gx 21
+#define IBF_T0_L_Gx 22
+#define IBF_T1_L_Gx 23
+#define IBF_T2_L_Gx 24
+#define IBF_T2_SX2_L_Gx 25
+#define IBF_T0_H_Gx 26
+#define IBF_T1_H_Gx 27
+#define IBF_T2_H_Gx 28
+#define IBF_T2_SX2_H_Gx 29
 
 typedef enum _IBF_PHASE_E2P_UPDATE_TYPE {
 	IBF_PHASE_ONE_GROUP_UPDATE,
@@ -313,9 +312,8 @@ typedef struct _MT7622_IBF_PHASE_Gx_T {
 #endif
 
 #if defined(MT7615)
-VOID mt7615_iBFPhaseComp(IN struct _RTMP_ADAPTER *pAd,
-						IN UCHAR ucGroup,
-						IN PCHAR pCmdBuf);
+VOID mt7615_iBFPhaseComp(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ucGroup,
+			 IN PCHAR pCmdBuf);
 
 VOID mt7615_iBFPhaseCalInit(IN struct _RTMP_ADAPTER *pAd);
 
@@ -323,24 +321,18 @@ VOID mt7615_iBFPhaseFreeMem(IN struct _RTMP_ADAPTER *pAd);
 
 VOID mt7615_iBFPhaseCalE2PInit(IN struct _RTMP_ADAPTER *pAd);
 
-VOID mt7615_iBFPhaseCalE2PUpdate(IN struct _RTMP_ADAPTER *pAd,
-						IN UCHAR   ucGroup,
-						IN BOOLEAN fgSX2,
-						IN UCHAR   ucUpdateAllType);
+VOID mt7615_iBFPhaseCalE2PUpdate(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ucGroup,
+				 IN BOOLEAN fgSX2, IN UCHAR ucUpdateAllType);
 
 VOID mt7615_iBFPhaseCalReport(IN struct _RTMP_ADAPTER *pAd,
-						IN UCHAR   ucGroupL_M_H,
-						IN UCHAR   ucGroup,
-						IN BOOLEAN fgSX2,
-						IN UCHAR   ucStatus,
-						IN UCHAR   ucPhaseCalType,
-						IN PUCHAR  pBuf);
+			      IN UCHAR ucGroupL_M_H, IN UCHAR ucGroup,
+			      IN BOOLEAN fgSX2, IN UCHAR ucStatus,
+			      IN UCHAR ucPhaseCalType, IN PUCHAR pBuf);
 #endif /* MT7615 */
 
 #if defined(MT7622)
-VOID mt7622_iBFPhaseComp(IN struct _RTMP_ADAPTER *pAd,
-						IN UCHAR ucGroup,
-						IN PCHAR pCmdBuf);
+VOID mt7622_iBFPhaseComp(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ucGroup,
+			 IN PCHAR pCmdBuf);
 
 VOID mt7622_iBFPhaseCalInit(IN struct _RTMP_ADAPTER *pAd);
 
@@ -348,17 +340,12 @@ VOID mt7622_iBFPhaseFreeMem(IN struct _RTMP_ADAPTER *pAd);
 
 VOID mt7622_iBFPhaseCalE2PInit(IN struct _RTMP_ADAPTER *pAd);
 
-VOID mt7622_iBFPhaseCalE2PUpdate(IN struct _RTMP_ADAPTER *pAd,
-						IN UCHAR   ucGroup,
-						IN BOOLEAN fgSX2,
-						IN UCHAR   ucUpdateAllType);
+VOID mt7622_iBFPhaseCalE2PUpdate(IN struct _RTMP_ADAPTER *pAd, IN UCHAR ucGroup,
+				 IN BOOLEAN fgSX2, IN UCHAR ucUpdateAllType);
 
 VOID mt7622_iBFPhaseCalReport(IN struct _RTMP_ADAPTER *pAd,
-						IN UCHAR   ucGroupL_M_H,
-						IN UCHAR   ucGroup,
-						IN BOOLEAN fgSX2,
-						IN UCHAR   ucStatus,
-						IN UCHAR   ucPhaseCalType,
-						IN PUCHAR  pBuf);
+			      IN UCHAR ucGroupL_M_H, IN UCHAR ucGroup,
+			      IN BOOLEAN fgSX2, IN UCHAR ucStatus,
+			      IN UCHAR ucPhaseCalType, IN PUCHAR pBuf);
 #endif /* MT7622 */
 #endif /* _RT_TXBF_CAL_H_ */

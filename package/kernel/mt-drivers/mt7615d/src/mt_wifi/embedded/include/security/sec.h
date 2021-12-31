@@ -26,8 +26,8 @@
 	Name		Date			Modification logs
 */
 
-#ifndef	__SEC_H__
-#define	__SEC_H__
+#ifndef __SEC_H__
+#define __SEC_H__
 
 #include "security/sec_cmm.h"
 #include "security/crypt_md5.h"
@@ -41,7 +41,6 @@
 #include "security/pmf.h"
 #endif /* DOT11W_PMF_SUPPORT */
 
-
 #ifdef DOT11_SAE_SUPPORT
 #include "security/sae.h"
 #include "security/sae_cmm.h"
@@ -54,175 +53,116 @@
 /*========================================
 	The prototype is defined in cmm_sec.c
   ========================================*/
-VOID SetWdevAuthMode(
-	IN struct _SECURITY_CONFIG *pSecConfig,
-	IN	RTMP_STRING * arg);
+VOID SetWdevAuthMode(IN struct _SECURITY_CONFIG *pSecConfig,
+		     IN RTMP_STRING *arg);
 
-VOID SetWdevEncrypMode(
-	IN struct _SECURITY_CONFIG *pSecConfig,
-	IN RTMP_STRING * arg);
+VOID SetWdevEncrypMode(IN struct _SECURITY_CONFIG *pSecConfig,
+		       IN RTMP_STRING *arg);
 
-INT Set_SecAuthMode_Proc(
-	IN RTMP_ADAPTER * pAd,
-	IN RTMP_STRING * arg);
+INT Set_SecAuthMode_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg);
 
-INT Set_SecEncrypType_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * arg);
+INT Set_SecEncrypType_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-INT Set_SecDefaultKeyID_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * arg);
+INT Set_SecDefaultKeyID_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-INT Set_SecWPAPSK_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * arg);
+INT Set_SecWPAPSK_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-INT Set_SecWEPKey_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN CHAR KeyId,
-	IN RTMP_STRING * arg);
+INT Set_SecWEPKey_Proc(IN PRTMP_ADAPTER pAd, IN CHAR KeyId,
+		       IN RTMP_STRING *arg);
 
-INT Set_SecKey1_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN	RTMP_STRING * arg);
+INT Set_SecKey1_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-INT Set_SecKey2_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN	RTMP_STRING * arg);
+INT Set_SecKey2_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-INT Set_SecKey3_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN	RTMP_STRING * arg);
+INT Set_SecKey3_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-INT Set_SecKey4_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN	RTMP_STRING * arg);
+INT Set_SecKey4_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
 
-UINT8 SecHWCipherSuitMapping(
-	IN UINT32 encryMode);
+UINT8 SecHWCipherSuitMapping(IN UINT32 encryMode);
 
-INT ParseWebKey(
-	IN  struct _SECURITY_CONFIG *pSecConfig,
-	IN  RTMP_STRING * buffer,
-	IN  INT KeyIdx,
-	IN  INT Keylength);
+INT ParseWebKey(IN struct _SECURITY_CONFIG *pSecConfig, IN RTMP_STRING *buffer,
+		IN INT KeyIdx, IN INT Keylength);
 
 #ifdef DOT1X_SUPPORT
-INT SetWdevOwnIPAddr(
-	IN struct _SECURITY_CONFIG *pSecConfig,
-	IN RTMP_STRING * arg);
+INT SetWdevOwnIPAddr(IN struct _SECURITY_CONFIG *pSecConfig,
+		     IN RTMP_STRING *arg);
 
-VOID ReadRadiusParameterFromFile(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * tmpbuf,
-	IN RTMP_STRING * pBuffer);
+VOID ReadRadiusParameterFromFile(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *tmpbuf,
+				 IN RTMP_STRING *pBuffer);
 
 #ifdef CONFIG_AP_SUPPORT
-VOID Dot1xIoctlQueryRadiusConf(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_IOCTL_INPUT_STRUCT * wrq);
+VOID Dot1xIoctlQueryRadiusConf(IN PRTMP_ADAPTER pAd,
+			       IN RTMP_IOCTL_INPUT_STRUCT *wrq);
 
-VOID Dot1xIoctlRadiusData(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_IOCTL_INPUT_STRUCT * wrq);
+VOID Dot1xIoctlRadiusData(IN PRTMP_ADAPTER pAd,
+			  IN RTMP_IOCTL_INPUT_STRUCT *wrq);
 
-VOID Dot1xIoctlAddWPAKey(
-	IN PRTMP_ADAPTER	pAd,
-	IN RTMP_IOCTL_INPUT_STRUCT * wrq);
+VOID Dot1xIoctlAddWPAKey(IN PRTMP_ADAPTER pAd, IN RTMP_IOCTL_INPUT_STRUCT *wrq);
 
-VOID Dot1xIoctlStaticWepCopy(
-	IN PRTMP_ADAPTER	pAd,
-	IN RTMP_IOCTL_INPUT_STRUCT * wrq);
+VOID Dot1xIoctlStaticWepCopy(IN PRTMP_ADAPTER pAd,
+			     IN RTMP_IOCTL_INPUT_STRUCT *wrq);
 #endif /* CONFIG_AP_SUPPORT */
 #endif /* DOT1X_SUPPORT */
 
 #ifdef APCLI_SUPPORT
-VOID ReadApcliSecParameterFromFile(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * tmpbuf,
-	IN RTMP_STRING * pBuffer);
+VOID ReadApcliSecParameterFromFile(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *tmpbuf,
+				   IN RTMP_STRING *pBuffer);
 #endif /* APCLI_SUPPORT */
 
-VOID ReadSecurityParameterFromFile(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * tmpbuf,
-	IN RTMP_STRING * pBuffer);
+VOID ReadSecurityParameterFromFile(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *tmpbuf,
+				   IN RTMP_STRING *pBuffer);
 
+#ifdef DOT11_SAE_PWD_ID_SUPPORT
+VOID sae_pwd_id_deinit(IN PRTMP_ADAPTER pAd);
+#endif
 
-VOID fill_wtbl_key_info_struc(
-	IN struct _ASIC_SEC_INFO *pInfo,
-	OUT CMD_WTBL_SECURITY_KEY_T * rWtblSecurityKey);
+VOID fill_wtbl_key_info_struc(IN struct _ASIC_SEC_INFO *pInfo,
+			      OUT CMD_WTBL_SECURITY_KEY_T *rWtblSecurityKey);
 
+VOID store_pmkid_cache_in_sec_config(IN RTMP_ADAPTER *pAd,
+				     IN MAC_TABLE_ENTRY *pEntry,
+				     IN INT32 cache_idx);
 
-VOID store_pmkid_cache_in_sec_config(
-	IN RTMP_ADAPTER *pAd,
-	IN MAC_TABLE_ENTRY *pEntry,
-	IN INT32 cache_idx);
+VOID process_pmkid(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		   MAC_TABLE_ENTRY *entry, INT CacheIdx);
 
-VOID process_pmkid(
-	RTMP_ADAPTER *pAd,
-	struct wifi_dev *wdev,
-	MAC_TABLE_ENTRY *entry,
-	INT CacheIdx);
+UCHAR is_pmkid_cache_in_sec_config(IN struct _SECURITY_CONFIG *pSecConfig);
 
-UCHAR is_pmkid_cache_in_sec_config(
-	IN struct _SECURITY_CONFIG *pSecConfig);
+INT build_rsnxe_ie(IN struct _SECURITY_CONFIG *sec_cfg, IN UCHAR *buf);
 
+UINT parse_rsnxe_ie(IN struct _SECURITY_CONFIG *sec_cfg, IN UCHAR *rsnxe_ie,
+		    IN UCHAR rsnxe_ie_len, IN UCHAR need_copy);
+
+INT set_wpa3_test(IN RTMP_ADAPTER *ad, RTMP_STRING *arg);
 
 #ifdef CONFIG_AP_SUPPORT
 /* ========================================
     The prototype is defined in ap/ap_sec.c
   ========================================*/
-INT APSecInit(
-	IN RTMP_ADAPTER * pAd,
-	IN struct wifi_dev *wdev);
+INT APSecInit(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev);
 
-INT APKeyTableInit(
-	IN RTMP_ADAPTER * pAd,
-	IN struct wifi_dev *wdev,
-	IN STA_REC_CTRL_T * sta_rec);
+INT ap_sec_deinit(IN struct wifi_dev *wdev);
+
+INT APKeyTableInit(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev,
+		   IN STA_REC_CTRL_T *sta_rec);
 
 DECLARE_TIMER_FUNCTION(GroupRekeyExec);
-VOID GroupRekeyExec(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3);
+VOID GroupRekeyExec(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
+		    IN PVOID SystemSpecific2, IN PVOID SystemSpecific3);
 
-VOID WPAGroupRekeyByWdev(
-	IN RTMP_ADAPTER * pAd,
-	IN struct wifi_dev *wdev);
+VOID WPAGroupRekeyByWdev(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev);
 
+VOID APStartRekeyTimer(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev);
 
-VOID APStartRekeyTimer(
-	IN RTMP_ADAPTER * pAd,
-	IN struct wifi_dev *wdev);
+VOID APStopRekeyTimer(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev);
 
+VOID APReleaseRekeyTimer(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev);
 
-VOID APStopRekeyTimer(
-	IN RTMP_ADAPTER * pAd,
-	IN struct wifi_dev *wdev);
+INT Show_APSecurityInfo_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg);
 
-
-VOID APReleaseRekeyTimer(
-	IN RTMP_ADAPTER * pAd,
-	IN struct wifi_dev *wdev);
-
-
-INT Show_APSecurityInfo_Proc(
-	IN RTMP_ADAPTER * pAd,
-	IN RTMP_STRING * arg);
-
-VOID CheckBMCPortSecured(
-	IN RTMP_ADAPTER * pAd,
-	IN MAC_TABLE_ENTRY * pEntry,
-	IN BOOLEAN isConnect);
-
+VOID CheckBMCPortSecured(IN RTMP_ADAPTER *pAd, IN MAC_TABLE_ENTRY *pEntry,
+			 IN BOOLEAN isConnect);
 
 #endif /* CONFIG_AP_SUPPORT */
 
-
-
 #endif
-

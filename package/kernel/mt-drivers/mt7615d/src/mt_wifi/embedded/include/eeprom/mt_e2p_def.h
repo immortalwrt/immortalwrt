@@ -17,10 +17,9 @@
 #ifndef __MT_E2P_DEF_H__
 #define __MT_E2P_DEF_H__
 
-
 #define NIC_CONFIGURE_0 0x34
 #define EXTERNAL_PA_MASK (0x3 << 8)
-#define GET_PA_TYPE(p) (((p) & EXTERNAL_PA_MASK) >> 8)
+#define GET_PA_TYPE(p) (((p)&EXTERNAL_PA_MASK) >> 8)
 
 #define NIC_CONFIGURE_0_TOP 0x35
 
@@ -315,7 +314,6 @@
 #define TX_PWR_G_BAND_OFDM_48M_SIGN (1 << 14)
 #define TX_PWR_G_BAND_OFDM_48M_EN (1 << 15)
 
-
 #define TX_PWR_G_BNAD_OFDM_48 0xA5
 
 #ifdef MT_MAC
@@ -339,7 +337,6 @@
 
 #define TX_PWR_HT_QPSK_MCS_1_2_9_10 0xA9
 
-
 #define TX_PWR_HT_16QAM_MCS_3_4_11_12 0xAA
 #define TX_PWR_HT_16QAM_MCS_3_4_11_12_MASK (0x3f)
 #define TX_PWR_HT_16QAM_MCS_3_4_11_12_SIGN (1 << 6)
@@ -349,7 +346,6 @@
 #define TX_PWR_HT_64QAM_MCS_5_13_EN (1 << 15)
 
 #define TX_PWR_HT_64QAM_MCS_5_13 0xAB
-
 
 #define TX_PWR_HT_64QAM_MCS_6_14 0xAC
 #define TX_PWR_HT_64QAM_MCS_6_14_MASK (0x3f)
@@ -391,21 +387,21 @@
 #define CONFIG2_A_BAND_CHL_GRP1_MASK (0xff)
 #define CONFIG2_A_BAND_CHL_GRP2_MASK (0xff << 8)
 
-#define ELAN_RX_MODE_GAIN	0xC0
-#define ELAN_RX_MODE_NF		0xC1
-#define ELAN_RX_MODE_P1DB	0xC2
-#define ELAN_BYPASS_MODE_GAIN	0xC3
-#define ELAN_BYPASS_MODE_NF		0xC4
-#define ELAN_BYPASS_MODE_P1DB	0xC5
+#define ELAN_RX_MODE_GAIN 0xC0
+#define ELAN_RX_MODE_NF 0xC1
+#define ELAN_RX_MODE_P1DB 0xC2
+#define ELAN_BYPASS_MODE_GAIN 0xC3
+#define ELAN_BYPASS_MODE_NF 0xC4
+#define ELAN_BYPASS_MODE_P1DB 0xC5
 
-#define STEP_NUM_NEG_7	0xC6
-#define STEP_NUM_NEG_6	0xC7
-#define STEP_NUM_NEG_5	0xC8
-#define STEP_NUM_NEG_4	0xC9
-#define STEP_NUM_NEG_3	0xCA
-#define STEP_NUM_NEG_2	0xCB
-#define STEP_NUM_NEG_1	0xCC
-#define STEP_NUM_NEG_0	0xCD
+#define STEP_NUM_NEG_7 0xC6
+#define STEP_NUM_NEG_6 0xC7
+#define STEP_NUM_NEG_5 0xC8
+#define STEP_NUM_NEG_4 0xC9
+#define STEP_NUM_NEG_3 0xCA
+#define STEP_NUM_NEG_2 0xCB
+#define STEP_NUM_NEG_1 0xCC
+#define STEP_NUM_NEG_0 0xCD
 
 #define REF_STEP_24G 0xCE
 #define REF_TEMP_24G 0xCF
@@ -420,7 +416,7 @@
 
 #define CP_FT_VERSION 0xF0
 #define XTAL_CALIB_FREQ_OFFSET 0xF4
-#define XTAL_TRIM_2_COMP	0xF5
+#define XTAL_TRIM_2_COMP 0xF5
 #define XTAL_TRIM_3_COMP 0xF6
 #define WF_RCAL 0xF7
 #define PCIE_RECAL 0xF8

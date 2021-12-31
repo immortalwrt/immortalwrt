@@ -36,11 +36,11 @@
 #include "rt_os_util.h"
 #include "security/dot11i_wpa.h"
 #include <linux/rtnetlink.h>
-#include <linux/fs.h>
 #include <linux/notifier.h>
 #include <linux/oom.h>
 #include <linux/netdevice.h>
 #include <linux/mm.h>
+#include <linux/fs.h>
 #include <net/sch_generic.h>
 #include "rt_os_net.h"
 #include "rt_config.h"
@@ -61,13 +61,12 @@
 #undef RT_CONFIG_IF_OPMODE_ON_STA
 
 #if defined(CONFIG_AP_SUPPORT) && defined(CONFIG_STA_SUPPORT)
-#define RT_CONFIG_IF_OPMODE_ON_AP(__OpMode)	if (__OpMode == OPMODE_AP)
-#define RT_CONFIG_IF_OPMODE_ON_STA(__OpMode)	if (__OpMode == OPMODE_STA)
+#define RT_CONFIG_IF_OPMODE_ON_AP(__OpMode) if (__OpMode == OPMODE_AP)
+#define RT_CONFIG_IF_OPMODE_ON_STA(__OpMode) if (__OpMode == OPMODE_STA)
 #else
 #define RT_CONFIG_IF_OPMODE_ON_AP(__OpMode)
 #define RT_CONFIG_IF_OPMODE_ON_STA(__OpMode)
 #endif
-
 
 #if (KERNEL_VERSION(2, 6, 0) <= LINUX_VERSION_CODE)
 #if (KERNEL_VERSION(2, 6, 3) > LINUX_VERSION_CODE)
@@ -98,49 +97,52 @@ static inline void netdev_priv_set(struct net_device *dev, void *priv)
 #endif
 }
 
-
 int DebugLevel = DBG_LVL_ERROR;
 
-UINT32 DebugCategory = DBG_CAT_EN_ALL_MASK
-				& ~(0x1 << DBG_CAT_TX)
-				& ~(0x1 << DBG_CAT_PS);
+UINT32 DebugCategory =
+	DBG_CAT_EN_ALL_MASK & ~(0x1 << DBG_CAT_TX) & ~(0x1 << DBG_CAT_PS);
 
 UINT32 DebugSubCategory[DBG_LVL_MAX + 1][32] = {
 	{
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_0, for DBG_CAT_INIT */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_1, for DBG_CAT_HW */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_2, for DBG_CAT_FW */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_3, for DBG_CAT_HIF */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_4, for DBG_CAT_FPGA */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_5, for DBG_CAT_TEST */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_6, for DBG_CAT_RA */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_7, for DBG_CAT_AP */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_8, for DBG_CAT_CLIENT */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_9, for DBG_CAT_TX */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_10, for DBG_CAT_RX */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_11, for DBG_CAT_CFG */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_12, for DBG_CAT_MLME */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_13, for DBG_CAT_PROTO */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_14, for DBG_CAT_SEC */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_15, for DBG_CAT_PS */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_16, for DBG_CAT_POWER */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_17, for DBG_CAT_COEX */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_18, for DBG_CAT_P2P */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_19 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_20 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_21 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_22 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_23 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_24 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_25 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_26 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_27 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_28 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_29 */
-		DBG_SUBCAT_EN_ALL_MASK,			/* bit_30, for DBG_CAT_RSV1 */
-		DBG_SUBCAT_EN_ALL_MASK			/* bir_31, for DBG_CAT_RSV2 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_0, for DBG_CAT_INIT */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_1, for DBG_CAT_HW */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_2, for DBG_CAT_FW */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_3, for DBG_CAT_HIF */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_4, for DBG_CAT_FPGA */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_5, for DBG_CAT_TEST */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_6, for DBG_CAT_RA */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_7, for DBG_CAT_AP */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_8, for DBG_CAT_CLIENT */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_9, for DBG_CAT_TX */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_10, for DBG_CAT_RX */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_11, for DBG_CAT_CFG */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_12, for DBG_CAT_MLME */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_13, for DBG_CAT_PROTO */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_14, for DBG_CAT_SEC */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_15, for DBG_CAT_PS */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_16, for DBG_CAT_POWER */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_17, for DBG_CAT_COEX */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_18, for DBG_CAT_P2P */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_19 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_20 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_21 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_22 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_23 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_24 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_25 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_26 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_27 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_28 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_29 */
+		DBG_SUBCAT_EN_ALL_MASK, /* bit_30, for DBG_CAT_RSV1 */
+		DBG_SUBCAT_EN_ALL_MASK /* bir_31, for DBG_CAT_RSV2 */
 	},
-	{[0 ... 31] = DBG_SUBCAT_EN_ALL_MASK}, {0}, {0}, {0}, {0}, {0}
+	{ [0 ... 31] = DBG_SUBCAT_EN_ALL_MASK },
+	{ 0 },
+	{ 0 },
+	{ 0 },
+	{ 0 },
+	{ 0 }
 };
 
 #ifdef OS_ABL_FUNC_SUPPORT
@@ -197,9 +199,8 @@ VOID RtmpUtilInit(VOID)
 }
 
 /* timeout -- ms */
-static inline VOID __RTMP_SetPeriodicTimer(
-	IN OS_NDIS_MINIPORT_TIMER * pTimer,
-	IN unsigned long timeout)
+static inline VOID __RTMP_SetPeriodicTimer(IN OS_NDIS_MINIPORT_TIMER *pTimer,
+					   IN unsigned long timeout)
 {
 	if (timer_pending(pTimer))
 		return;
@@ -210,11 +211,10 @@ static inline VOID __RTMP_SetPeriodicTimer(
 }
 
 /* convert NdisMInitializeTimer --> RTMP_OS_Init_Timer */
-static inline VOID __RTMP_OS_Init_Timer(
-	IN VOID *pReserved,
-	IN OS_NDIS_MINIPORT_TIMER * pTimer,
-	IN TIMER_FUNCTION function,
-	IN PVOID data)
+static inline VOID __RTMP_OS_Init_Timer(IN VOID *pReserved,
+					IN OS_NDIS_MINIPORT_TIMER *pTimer,
+					IN TIMER_FUNCTION function,
+					IN PVOID data)
 {
 	if (!timer_pending(pTimer)) {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
@@ -227,9 +227,8 @@ static inline VOID __RTMP_OS_Init_Timer(
 	}
 }
 
-static inline VOID __RTMP_OS_Add_Timer(
-	IN OS_NDIS_MINIPORT_TIMER * pTimer,
-	IN unsigned long timeout)
+static inline VOID __RTMP_OS_Add_Timer(IN OS_NDIS_MINIPORT_TIMER *pTimer,
+				       IN unsigned long timeout)
 {
 	if (timer_pending(pTimer))
 		return;
@@ -239,17 +238,15 @@ static inline VOID __RTMP_OS_Add_Timer(
 	add_timer(pTimer);
 }
 
-static inline VOID __RTMP_OS_Mod_Timer(
-	IN OS_NDIS_MINIPORT_TIMER * pTimer,
-	IN unsigned long timeout)
+static inline VOID __RTMP_OS_Mod_Timer(IN OS_NDIS_MINIPORT_TIMER *pTimer,
+				       IN unsigned long timeout)
 {
 	timeout = ((timeout * OS_HZ) / 1000);
 	mod_timer(pTimer, jiffies + timeout);
 }
 
-static inline VOID __RTMP_OS_Del_Timer(
-	IN OS_NDIS_MINIPORT_TIMER * pTimer,
-	OUT BOOLEAN *pCancelled)
+static inline VOID __RTMP_OS_Del_Timer(IN OS_NDIS_MINIPORT_TIMER *pTimer,
+				       OUT BOOLEAN *pCancelled)
 {
 	if (timer_pending(pTimer))
 		*pCancelled = del_timer_sync(pTimer);
@@ -257,12 +254,10 @@ static inline VOID __RTMP_OS_Del_Timer(
 		*pCancelled = TRUE;
 }
 
-static inline VOID __RTMP_OS_Release_Timer(
-	IN OS_NDIS_MINIPORT_TIMER * pTimer)
+static inline VOID __RTMP_OS_Release_Timer(IN OS_NDIS_MINIPORT_TIMER *pTimer)
 {
 	/* nothing to do */
 }
-
 
 /* Unify all delay routine by using udelay */
 VOID RtmpusecDelay(ULONG usec)
@@ -275,7 +270,6 @@ VOID RtmpusecDelay(ULONG usec)
 	if (usec % 50)
 		udelay(usec % 50);
 }
-
 
 VOID RtmpOsMsDelay(ULONG msec)
 {
@@ -297,21 +291,18 @@ ULONG RTMPMsecsToJiffies(UINT32 m)
 	return msecs_to_jiffies(m);
 }
 
-
-
-NDIS_STATUS os_alloc_mem_suspend(
-	IN VOID *pReserved,
-	OUT UCHAR * *mem,
-	IN ULONG size)
+NDIS_STATUS os_alloc_mem_suspend(IN VOID *pReserved, OUT UCHAR **mem,
+				 IN ULONG size)
 {
-	*mem = (PUCHAR) kmalloc(size, GFP_KERNEL);
+	*mem = (PUCHAR)kmalloc(size, GFP_KERNEL);
 
 	if (*mem) {
 #ifdef VENDOR_FEATURE4_SUPPORT
 		OS_NumOfMemAlloc++;
 #endif /* VENDOR_FEATURE4_SUPPORT */
 #ifdef MEM_ALLOC_INFO_SUPPORT
-		MIListAddHead(&MemInfoList, size, *mem, __builtin_return_address(0));
+		MIListAddHead(&MemInfoList, size, *mem,
+			      __builtin_return_address(0));
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 		return NDIS_STATUS_SUCCESS;
 	} else
@@ -323,7 +314,7 @@ PNDIS_PACKET RtmpOSNetPktAlloc(VOID *dummy, int size)
 	struct sk_buff *skb;
 	/* Add 2 more bytes for ip header alignment */
 	DEV_ALLOC_SKB(skb, (size + 2));
-	return (PNDIS_PACKET) skb;
+	return (PNDIS_PACKET)skb;
 }
 
 PNDIS_PACKET RTMP_AllocateFragPacketBuffer(VOID *dummy, ULONG len)
@@ -334,38 +325,33 @@ PNDIS_PACKET RTMP_AllocateFragPacketBuffer(VOID *dummy, ULONG len)
 
 	if (pkt == NULL) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("can't allocate frag rx %ld size packet\n", len));
+			 ("can't allocate frag rx %ld size packet\n", len));
 	}
 
-	return (PNDIS_PACKET) pkt;
+	return (PNDIS_PACKET)pkt;
 }
-
-
-
 
 /*
  * The allocated NDIS PACKET must be freed via RTMPFreeNdisPacket()
  */
-NDIS_STATUS RTMPAllocateNdisPacket(
-	IN VOID *pReserved,
-	OUT PNDIS_PACKET *ppPacket,
-	IN UCHAR * pHeader,
-	IN UINT HeaderLen,
-	IN UCHAR * pData,
-	IN UINT DataLen)
+NDIS_STATUS RTMPAllocateNdisPacket(IN VOID *pReserved,
+				   OUT PNDIS_PACKET *ppPacket,
+				   IN UCHAR *pHeader, IN UINT HeaderLen,
+				   IN UCHAR *pData, IN UINT DataLen)
 {
 	struct sk_buff *pPacket;
 	/* Add LEN_CCMP_HDR + LEN_CCMP_MIC for PMF */
 #ifdef BB_SOC
 	pPacket = skbmgr_dev_alloc_skb4k();
 #else
-	DEV_ALLOC_SKB(pPacket, (HeaderLen + DataLen + RTMP_PKT_TAIL_PADDING + LEN_CCMP_HDR + LEN_CCMP_MIC));
+	DEV_ALLOC_SKB(pPacket, (HeaderLen + DataLen + RTMP_PKT_TAIL_PADDING +
+				LEN_CCMP_HDR + LEN_CCMP_MIC));
 #endif
 	if (pPacket == NULL) {
 		*ppPacket = NULL;
 #ifdef DEBUG
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 (KERN_ERR "RTMPAllocateNdisPacket Fail\n\n"));
+			 (KERN_ERR "RTMPAllocateNdisPacket Fail\n\n"));
 #endif
 		return NDIS_STATUS_FAILURE;
 	}
@@ -381,7 +367,6 @@ NDIS_STATUS RTMPAllocateNdisPacket(
 	*ppPacket = (PNDIS_PACKET)pPacket;
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 /*
  * ========================================================================
@@ -399,7 +384,6 @@ VOID RTMPFreeNdisPacket(VOID *pReserved, PNDIS_PACKET pPacket)
 	}
 }
 
-
 VOID RTMPFreeNdisPacketIRQ(VOID *pReserved, PNDIS_PACKET pPacket)
 {
 	if (pPacket) {
@@ -409,33 +393,27 @@ VOID RTMPFreeNdisPacketIRQ(VOID *pReserved, PNDIS_PACKET pPacket)
 	}
 }
 
-
-void RTMP_QueryPacketInfo(
-	IN PNDIS_PACKET pPacket,
-	OUT PACKET_INFO * info,
-	OUT UCHAR * *pSrcBufVA,
-	OUT UINT * pSrcBufLen)
+void RTMP_QueryPacketInfo(IN PNDIS_PACKET pPacket, OUT PACKET_INFO *info,
+			  OUT UCHAR **pSrcBufVA, OUT UINT *pSrcBufLen)
 {
 	info->BufferCount = 1;
-	info->pFirstBuffer = (PNDIS_BUFFER) GET_OS_PKT_DATAPTR(pPacket);
+	info->pFirstBuffer = (PNDIS_BUFFER)GET_OS_PKT_DATAPTR(pPacket);
 	info->PhysicalBufferCount = 1;
 	info->TotalPacketLength = GET_OS_PKT_LEN(pPacket);
 	*pSrcBufVA = GET_OS_PKT_DATAPTR(pPacket);
 	*pSrcBufLen = GET_OS_PKT_LEN(pPacket);
 }
 
-
-
-
-PNDIS_PACKET ClonePacket(BOOLEAN moniflag, PNET_DEV ndev, PNDIS_PACKET pkt, UCHAR *buf, ULONG sz)
+PNDIS_PACKET ClonePacket(BOOLEAN moniflag, PNET_DEV ndev, PNDIS_PACKET pkt,
+			 UCHAR *buf, ULONG sz)
 {
 	struct sk_buff *pRxPkt, *pClonedPkt;
 
 	ASSERT(pkt);
 #ifdef SNIFFER_SUPPORT
-	if (moniflag == FALSE)								
+	if (moniflag == FALSE)
 #endif
-	ASSERT(sz < 1530);
+		ASSERT(sz < 1530);
 	pRxPkt = RTPKT_TO_OSPKT(pkt);
 	/* clone the packet */
 	pClonedPkt = skb_clone(pRxPkt, MEM_ALLOC_FLAG);
@@ -452,6 +430,22 @@ PNDIS_PACKET ClonePacket(BOOLEAN moniflag, PNET_DEV ndev, PNDIS_PACKET pkt, UCHA
 	return pClonedPkt;
 }
 
+#ifdef MAP_TS_TRAFFIC_SUPPORT
+PNDIS_PACKET CopyPacket(IN PNET_DEV if_dev, IN PNDIS_PACKET pkt)
+{
+	struct sk_buff *skb = NULL;
+	PNDIS_PACKET pkt_copy = NULL;
+
+	skb = skb_copy(RTPKT_TO_OSPKT(pkt), GFP_ATOMIC);
+
+	if (skb) {
+		skb->dev = if_dev;
+		pkt_copy = OSPKT_TO_RTPKT(skb);
+	}
+
+	return pkt_copy;
+}
+#endif
 
 PNDIS_PACKET DuplicatePacket(PNET_DEV pNetDev, PNDIS_PACKET pPacket)
 {
@@ -460,8 +454,8 @@ PNDIS_PACKET DuplicatePacket(PNET_DEV pNetDev, PNDIS_PACKET pPacket)
 	USHORT DataSize;
 	UCHAR *pData;
 
-	DataSize = (USHORT) GET_OS_PKT_LEN(pPacket);
-	pData = (PUCHAR) GET_OS_PKT_DATAPTR(pPacket);
+	DataSize = (USHORT)GET_OS_PKT_LEN(pPacket);
+	pData = (PUCHAR)GET_OS_PKT_DATAPTR(pPacket);
 	skb = skb_clone(RTPKT_TO_OSPKT(pPacket), MEM_ALLOC_FLAG);
 
 	if (skb) {
@@ -473,16 +467,10 @@ PNDIS_PACKET DuplicatePacket(PNET_DEV pNetDev, PNDIS_PACKET pPacket)
 	return pRetPacket;
 }
 
-
-PNDIS_PACKET duplicate_pkt_vlan(
-	IN PNET_DEV pNetDev,
-	IN USHORT VLAN_VID,
-	IN USHORT VLAN_Priority,
-	IN PUCHAR pHeader802_3,
-	IN UINT HdrLen,
-	IN PUCHAR pData,
-	IN ULONG DataSize,
-	IN UCHAR *TPID)
+PNDIS_PACKET duplicate_pkt_vlan(IN PNET_DEV pNetDev, IN USHORT VLAN_VID,
+				IN USHORT VLAN_Priority, IN PUCHAR pHeader802_3,
+				IN UINT HdrLen, IN PUCHAR pData,
+				IN ULONG DataSize, IN UCHAR *TPID)
 {
 	struct sk_buff *skb;
 	PNDIS_PACKET pPacket = NULL;
@@ -501,10 +489,10 @@ PNDIS_PACKET duplicate_pkt_vlan(
 		skb_reserve(skb, 2);
 
 		/* copy header (maybe with VLAN tag) */
-		VLAN_Size = VLAN_8023_Header_Copy(VLAN_VID, VLAN_Priority,
-										  pHeader802_3, HdrLen,
-										  GET_OS_PKT_DATATAIL(skb),
-										  TPID);
+		VLAN_Size =
+			VLAN_8023_Header_Copy(VLAN_VID, VLAN_Priority,
+					      pHeader802_3, HdrLen,
+					      GET_OS_PKT_DATATAIL(skb), TPID);
 		skb_put(skb, HdrLen + VLAN_Size);
 		/* copy data body */
 		os_move_mem(GET_OS_PKT_DATATAIL(skb), pData, DataSize);
@@ -517,8 +505,7 @@ PNDIS_PACKET duplicate_pkt_vlan(
 	return pPacket;
 }
 
-
-#define TKIP_TX_MIC_SIZE		8
+#define TKIP_TX_MIC_SIZE 8
 PNDIS_PACKET duplicate_pkt_with_TKIP_MIC(VOID *pReserved, PNDIS_PACKET pPacket)
 {
 	struct sk_buff *skb, *newskb;
@@ -527,12 +514,15 @@ PNDIS_PACKET duplicate_pkt_with_TKIP_MIC(VOID *pReserved, PNDIS_PACKET pPacket)
 
 	if (skb_tailroom(skb) < TKIP_TX_MIC_SIZE) {
 		/* alloc a new skb and copy the packet */
-		newskb = skb_copy_expand(skb, skb_headroom(skb), TKIP_TX_MIC_SIZE, GFP_ATOMIC);
+		newskb = skb_copy_expand(skb, skb_headroom(skb),
+					 TKIP_TX_MIC_SIZE, GFP_ATOMIC);
 		dev_kfree_skb_any(skb);
 		MEM_DBG_PKT_FREE_INC(skb);
 
 		if (newskb == NULL) {
-			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Extend Tx.MIC for packet failed!, dropping packet!\n"));
+			MTWF_LOG(
+				DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("Extend Tx.MIC for packet failed!, dropping packet!\n"));
 			return NULL;
 		}
 
@@ -542,7 +532,6 @@ PNDIS_PACKET duplicate_pkt_with_TKIP_MIC(VOID *pReserved, PNDIS_PACKET pPacket)
 
 	return OSPKT_TO_RTPKT(skb);
 }
-
 
 /*
  * ========================================================================
@@ -559,14 +548,11 @@ PNDIS_PACKET duplicate_pkt_with_TKIP_MIC(VOID *pReserved, PNDIS_PACKET pPacket)
  *
  * ========================================================================
  */
-BOOLEAN RTMPL2FrameTxAction(
-	IN VOID *pCtrlBkPtr,
-	IN PNET_DEV pNetDev,
-	IN RTMP_CB_8023_PACKET_ANNOUNCE _announce_802_3_packet,
-	IN UCHAR apidx,
-	IN UCHAR *pData,
-	IN UINT32 data_len,
-	IN UCHAR OpMode)
+BOOLEAN
+RTMPL2FrameTxAction(IN VOID *pCtrlBkPtr, IN PNET_DEV pNetDev,
+		    IN RTMP_CB_8023_PACKET_ANNOUNCE _announce_802_3_packet,
+		    IN UCHAR apidx, IN UCHAR *pData, IN UINT32 data_len,
+		    IN UCHAR OpMode)
 {
 	struct sk_buff *skb = NULL;
 
@@ -574,7 +560,7 @@ BOOLEAN RTMPL2FrameTxAction(
 
 	if (!skb) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s : Error! Can't allocate a skb.\n", __func__));
+			 ("%s : Error! Can't allocate a skb.\n", __func__));
 		return FALSE;
 	}
 
@@ -585,37 +571,36 @@ BOOLEAN RTMPL2FrameTxAction(
 	os_move_mem(GET_OS_PKT_DATAPTR(skb), pData, data_len);
 	/* End this frame */
 	skb_put(GET_OS_PKT_TYPE(skb), data_len);
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s doen\n", __func__));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s doen\n", __func__));
 	_announce_802_3_packet(pCtrlBkPtr, skb, OpMode);
 	return TRUE;
 }
 
-
-PNDIS_PACKET ExpandPacket(
-	IN VOID *pReserved,
-	IN PNDIS_PACKET pPacket,
-	IN UINT32 ext_head_len,
-	IN UINT32 ext_tail_len)
+PNDIS_PACKET ExpandPacket(IN VOID *pReserved, IN PNDIS_PACKET pPacket,
+			  IN UINT32 ext_head_len, IN UINT32 ext_tail_len)
 {
 	struct sk_buff *skb, *newskb;
 
 	skb = RTPKT_TO_OSPKT(pPacket);
 
-	if (skb_cloned(skb) ||
-		(skb_headroom(skb) < ext_head_len) ||
-		(skb_tailroom(skb) < ext_tail_len)) {
-		UINT32 head_len =
-			(skb_headroom(skb) < ext_head_len) ? ext_head_len : skb_headroom(skb);
-		UINT32 tail_len =
-			(skb_tailroom(skb) < ext_tail_len) ? ext_tail_len : skb_tailroom(skb);
+	if (skb_cloned(skb) || (skb_headroom(skb) < ext_head_len) ||
+	    (skb_tailroom(skb) < ext_tail_len)) {
+		UINT32 head_len = (skb_headroom(skb) < ext_head_len) ?
+					  ext_head_len :
+						skb_headroom(skb);
+		UINT32 tail_len = (skb_tailroom(skb) < ext_tail_len) ?
+					  ext_tail_len :
+						skb_tailroom(skb);
 		/* alloc a new skb and copy the packet */
 		newskb = skb_copy_expand(skb, head_len, tail_len, GFP_ATOMIC);
 		dev_kfree_skb_any(skb);
 		MEM_DBG_PKT_FREE_INC(skb);
 
 		if (newskb == NULL) {
-			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("Extend Tx buffer for WPI failed!, dropping packet!\n"));
+			MTWF_LOG(
+				DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("Extend Tx buffer for WPI failed!, dropping packet!\n"));
 			return NULL;
 		}
 
@@ -626,12 +611,8 @@ PNDIS_PACKET ExpandPacket(
 	return OSPKT_TO_RTPKT(skb);
 }
 
-
-VOID RtmpOsPktInit(
-	IN PNDIS_PACKET pNetPkt,
-	IN PNET_DEV pNetDev,
-	IN UCHAR *pData,
-	IN USHORT DataSize)
+VOID RtmpOsPktInit(IN PNDIS_PACKET pNetPkt, IN PNET_DEV pNetDev,
+		   IN UCHAR *pData, IN USHORT DataSize)
 {
 	PNDIS_PACKET pRxPkt;
 
@@ -642,17 +623,11 @@ VOID RtmpOsPktInit(
 	SET_OS_PKT_DATATAIL(pRxPkt, DataSize);
 }
 
-
-void wlan_802_11_to_802_3_packet(
-	IN PNET_DEV pNetDev,
-	IN UCHAR OpMode,
-	IN USHORT VLAN_VID,
-	IN USHORT VLAN_Priority,
-	IN PNDIS_PACKET pRxPacket,
-	IN UCHAR *pData,
-	IN ULONG DataSize,
-	IN PUCHAR pHeader802_3,
-	IN UCHAR *TPID)
+void wlan_802_11_to_802_3_packet(IN PNET_DEV pNetDev, IN UCHAR OpMode,
+				 IN USHORT VLAN_VID, IN USHORT VLAN_Priority,
+				 IN PNDIS_PACKET pRxPacket, IN UCHAR *pData,
+				 IN ULONG DataSize, IN PUCHAR pHeader802_3,
+				 IN UCHAR *TPID)
 {
 	struct sk_buff *pOSPkt;
 
@@ -665,7 +640,8 @@ void wlan_802_11_to_802_3_packet(
 
 	/* copy 802.3 header */
 #ifdef CONFIG_AP_SUPPORT
-	RT_CONFIG_IF_OPMODE_ON_AP(OpMode) {
+	RT_CONFIG_IF_OPMODE_ON_AP(OpMode)
+	{
 		/* maybe insert VLAN tag to the received packet */
 		UCHAR VLAN_Size = 0;
 		UCHAR *data_p;
@@ -674,13 +650,11 @@ void wlan_802_11_to_802_3_packet(
 			VLAN_Size = LENGTH_802_1Q;
 
 		data_p = skb_push(pOSPkt, LENGTH_802_3 + VLAN_Size);
-		VLAN_8023_Header_Copy(VLAN_VID, VLAN_Priority,
-							  pHeader802_3, LENGTH_802_3,
-							  data_p, TPID);
+		VLAN_8023_Header_Copy(VLAN_VID, VLAN_Priority, pHeader802_3,
+				      LENGTH_802_3, data_p, TPID);
 	}
 #endif /* CONFIG_AP_SUPPORT */
 }
-
 
 void hex_dump(char *str, UCHAR *pSrcBufVA, UINT SrcBufLen)
 {
@@ -700,14 +674,15 @@ void hex_dump_with_lvl(char *str, UCHAR *pSrcBufVA, UINT SrcBufLen, INT dbglvl)
 
 	pt = pSrcBufVA;
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, dbglvl,
-			 ("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen));
+		 ("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen));
 
 	for (x = 0; x < SrcBufLen; x++) {
 		if (x % 16 == 0)
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, dbglvl,
-					 ("0x%04x : ", x));
+				 ("0x%04x : ", x));
 
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, dbglvl, ("%02x ", ((unsigned char)pt[x])));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, dbglvl,
+			 ("%02x ", ((unsigned char)pt[x])));
 
 		if (x % 16 == 15)
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, dbglvl, ("\n"));
@@ -716,7 +691,6 @@ void hex_dump_with_lvl(char *str, UCHAR *pSrcBufVA, UINT SrcBufLen, INT dbglvl)
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, dbglvl, ("\n"));
 #endif /* DBG */
 }
-
 
 #ifdef SYSTEM_LOG_SUPPORT
 /*
@@ -741,33 +715,25 @@ void hex_dump_with_lvl(char *str, UCHAR *pSrcBufVA, UINT SrcBufLen, INT dbglvl)
  *
  * ========================================================================
  */
-VOID RtmpOsSendWirelessEvent(
-	IN VOID *pAd,
-	IN USHORT Event_flag,
-	IN PUCHAR pAddr,
-	IN UCHAR wdev_idx,
-	IN CHAR Rssi,
-	IN RTMP_OS_SEND_WLAN_EVENT pFunc)
+VOID RtmpOsSendWirelessEvent(IN VOID *pAd, IN USHORT Event_flag,
+			     IN PUCHAR pAddr, IN UCHAR wdev_idx, IN CHAR Rssi,
+			     IN RTMP_OS_SEND_WLAN_EVENT pFunc)
 {
 #if WIRELESS_EXT >= 15
 	pFunc(pAd, Event_flag, pAddr, wdev_idx, Rssi);
 #else
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s : The Wireless Extension MUST be v15 or newer.\n",
-			  __func__));
+		 ("%s : The Wireless Extension MUST be v15 or newer.\n",
+		  __func__));
 #endif /* WIRELESS_EXT >= 15 */
 }
 #endif /* SYSTEM_LOG_SUPPORT */
 
 #ifdef CONFIG_AP_SUPPORT
-VOID SendSignalToDaemon(
-	IN INT sig,
-	RTMP_OS_PID pid,
-	unsigned long pid_no)
+VOID SendSignalToDaemon(IN INT sig, RTMP_OS_PID pid, unsigned long pid_no)
 {
 }
 #endif /* CONFIG_AP_SUPPORT */
-
 
 /*******************************************************************************
  *	File open/close related functions.
@@ -789,13 +755,12 @@ RTMP_OS_FD RtmpOSFileOpen(char *pPath, int flag, int mode)
 
 	if (IS_ERR(filePtr)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): Error %ld opening %s\n", __func__,
-				  -PTR_ERR(filePtr), pPath));
+			 ("%s(): Error %ld opening %s\n", __func__,
+			  -PTR_ERR(filePtr), pPath));
 	}
 
-	return (RTMP_OS_FD) filePtr;
+	return (RTMP_OS_FD)filePtr;
 }
-
 
 int RtmpOSFileClose(RTMP_OS_FD osfd)
 {
@@ -803,12 +768,10 @@ int RtmpOSFileClose(RTMP_OS_FD osfd)
 	return 0;
 }
 
-
 void RtmpOSFileSeek(RTMP_OS_FD osfd, int offset)
 {
 	osfd->f_pos = offset;
 }
-
 
 int RtmpOSFileRead(RTMP_OS_FD osfd, char *pDataPtr, int readLen)
 {
@@ -822,25 +785,23 @@ int RtmpOSFileRead(RTMP_OS_FD osfd, char *pDataPtr, int readLen)
 		return kernel_read(osfd, pDataPtr, readLen, &osfd->f_pos);
 #endif
 	} else {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("no file read method\n"));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("no file read method\n"));
 		return -1;
 	}
 }
 
-
 int RtmpOSFileWrite(RTMP_OS_FD osfd, char *pDataPtr, int writeLen)
 {
 #if (KERNEL_VERSION(4, 1, 0) > LINUX_VERSION_CODE)
-	return osfd->f_op->write(osfd, pDataPtr, (size_t) writeLen, &osfd->f_pos);
+	return osfd->f_op->write(osfd, pDataPtr, (size_t)writeLen,
+				 &osfd->f_pos);
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
+	return __kernel_write(osfd, pDataPtr, (size_t)writeLen, &osfd->f_pos);
 #else
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
-	return kernel_write(osfd, pDataPtr, (size_t) writeLen, &osfd->f_pos);
-#else
-	return kernel_write(osfd, pDataPtr, (size_t) writeLen, &osfd->f_pos);
-#endif
+	return __vfs_write(osfd, pDataPtr, (size_t)writeLen, &osfd->f_pos);
 #endif
 }
-
 
 static inline void __RtmpOSFSInfoChange(OS_FS_INFO *pOSFSInfo, BOOLEAN bSet)
 {
@@ -876,7 +837,6 @@ static inline void __RtmpOSFSInfoChange(OS_FS_INFO *pOSFSInfo, BOOLEAN bSet)
 	}
 }
 
-
 /*******************************************************************************
  *	Task create/management/kill related functions.
  *******************************************************************************/
@@ -896,25 +856,26 @@ static inline NDIS_STATUS __RtmpOSTaskKill(OS_TASK *pTask)
 		}
 	} else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-				 ("%s null kthread_task %s\n", __func__,
-				  pTask->taskName));
+			 ("%s null kthread_task %s\n", __func__,
+			  pTask->taskName));
 
 #else
 	if (CHECK_PID_LEGALITY(pTask->taskPID)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("Terminate the task(%s) with pid(%d)!\n",
-				  pTask->taskName, GET_PID_NUMBER(pTask->taskPID)));
+			 ("Terminate the task(%s) with pid(%d)!\n",
+			  pTask->taskName, GET_PID_NUMBER(pTask->taskPID)));
 		mb();
 		pTask->task_killed = 1;
 		mb();
 		ret = KILL_THREAD_PID(pTask->taskPID, SIGTERM, 1);
 
 		if (ret) {
-			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 (KERN_WARNING
-					  "kill task(%s) with pid(%d) failed(retVal=%d)!\n",
-					  pTask->taskName, GET_PID_NUMBER(pTask->taskPID),
-					  ret));
+			MTWF_LOG(
+				DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				(KERN_WARNING
+				 "kill task(%s) with pid(%d) failed(retVal=%d)!\n",
+				 pTask->taskName,
+				 GET_PID_NUMBER(pTask->taskPID), ret));
 		} else {
 			wait_for_completion(&pTask->taskComplete);
 			pTask->taskPID = THREAD_PID_INIT_VALUE;
@@ -926,7 +887,6 @@ static inline NDIS_STATUS __RtmpOSTaskKill(OS_TASK *pTask)
 #endif
 	return ret;
 }
-
 
 static inline INT __RtmpOSTaskNotifyToExit(OS_TASK *pTask)
 {
@@ -940,12 +900,12 @@ static inline INT __RtmpOSTaskNotifyToExit(OS_TASK *pTask)
 	return 0;
 }
 
-
 static inline void __RtmpOSTaskCustomize(OS_TASK *pTask)
 {
 #ifndef KTHREAD_SUPPORT
 #if (KERNEL_VERSION(2, 5, 0) <= LINUX_VERSION_CODE)
-	daemonize((RTMP_STRING *) &pTask->taskName[0] /*"%s",pAd->net_dev->name */);
+	daemonize(
+		(RTMP_STRING *)&pTask->taskName[0] /*"%s",pAd->net_dev->name */);
 	allow_signal(SIGTERM);
 	allow_signal(SIGKILL);
 	current->flags |= PF_NOFREEZE;
@@ -975,11 +935,8 @@ static inline void __RtmpOSTaskCustomize(OS_TASK *pTask)
 #endif
 }
 
-
-static inline NDIS_STATUS __RtmpOSTaskAttach(
-	IN OS_TASK *pTask,
-	IN RTMP_OS_TASK_CALLBACK fn,
-	IN ULONG arg)
+static inline NDIS_STATUS
+__RtmpOSTaskAttach(IN OS_TASK *pTask, IN RTMP_OS_TASK_CALLBACK fn, IN ULONG arg)
 {
 	NDIS_STATUS status = NDIS_STATUS_SUCCESS;
 #ifndef KTHREAD_SUPPORT
@@ -990,31 +947,31 @@ static inline NDIS_STATUS __RtmpOSTaskAttach(
 
 	if (pTask->kthread_task) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s non-null kthread_task %s\n", __func__,
-				  pTask->taskName));
+			 ("%s non-null kthread_task %s\n", __func__,
+			  pTask->taskName));
 		status = NDIS_STATUS_FAILURE;
 		goto done;
 	}
 
-	pTask->kthread_task = kthread_run((cast_fn)fn, (void *)arg,
-									  pTask->taskName);
+	pTask->kthread_task =
+		kthread_run((cast_fn)fn, (void *)arg, pTask->taskName);
 
 	if (IS_ERR(pTask->kthread_task)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s kthread_run %s err %ld\n", __func__,
-				  pTask->taskName, PTR_ERR(pTask->kthread_task)));
+			 ("%s kthread_run %s err %ld\n", __func__,
+			  pTask->taskName, PTR_ERR(pTask->kthread_task)));
 		pTask->kthread_task = NULL;
 		status = NDIS_STATUS_FAILURE;
 		goto done;
 	}
 
 #else
-	pid_number =
-		kernel_thread((cast_fn) fn, (void *)arg, RTMP_OS_MGMT_TASK_FLAGS);
+	pid_number = kernel_thread((cast_fn)fn, (void *)arg,
+				   RTMP_OS_MGMT_TASK_FLAGS);
 
 	if (pid_number < 0) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Attach task(%s) failed!\n", pTask->taskName));
+			 ("Attach task(%s) failed!\n", pTask->taskName));
 		status = NDIS_STATUS_FAILURE;
 	} else {
 		/* Wait for the thread to start */
@@ -1025,25 +982,24 @@ static inline NDIS_STATUS __RtmpOSTaskAttach(
 #endif
 done:
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s %s end %d\n", __func__, pTask->taskName, status));
+		 ("%s %s end %d\n", __func__, pTask->taskName, status));
 	return status;
 }
 
-
-static inline NDIS_STATUS __RtmpOSTaskInit(
-	IN OS_TASK *pTask,
-	IN RTMP_STRING *pTaskName,
-	IN VOID *pPriv,
-	IN LIST_HEADER *pSemList)
+static inline NDIS_STATUS __RtmpOSTaskInit(IN OS_TASK *pTask,
+					   IN RTMP_STRING *pTaskName,
+					   IN VOID *pPriv,
+					   IN LIST_HEADER *pSemList)
 {
 	int len;
 
 	ASSERT(pTask);
 #ifndef KTHREAD_SUPPORT
-	os_zero_mem((PUCHAR) (pTask), sizeof(OS_TASK));
+	os_zero_mem((PUCHAR)(pTask), sizeof(OS_TASK));
 #endif
 	len = strlen(pTaskName);
-	len = len > (RTMP_OS_TASK_NAME_LEN - 1) ? (RTMP_OS_TASK_NAME_LEN - 1) : len;
+	len = len > (RTMP_OS_TASK_NAME_LEN - 1) ? (RTMP_OS_TASK_NAME_LEN - 1) :
+							len;
 	os_move_mem(&pTask->taskName[0], pTaskName, len);
 	pTask->priv = pPriv;
 #ifndef KTHREAD_SUPPORT
@@ -1057,11 +1013,8 @@ static inline NDIS_STATUS __RtmpOSTaskInit(
 	return NDIS_STATUS_SUCCESS;
 }
 
-
-BOOLEAN __RtmpOSTaskWait(
-	IN VOID *pReserved,
-	IN OS_TASK *pTask,
-	IN INT32 * pStatus)
+BOOLEAN __RtmpOSTaskWait(IN VOID *pReserved, IN OS_TASK *pTask,
+			 IN INT32 *pStatus)
 {
 #ifdef KTHREAD_SUPPORT
 	RTMP_WAIT_EVENT_INTERRUPTIBLE((*pStatus), pTask);
@@ -1082,13 +1035,9 @@ BOOLEAN __RtmpOSTaskWait(
 	return TRUE;
 }
 
-
-
-#if LINUX_VERSION_CODE <= 0x20402	/* Red Hat 7.1 */
-struct net_device *alloc_netdev(
-	int sizeof_priv,
-	const char *mask,
-	void (*setup)(struct net_device *))
+#if LINUX_VERSION_CODE <= 0x20402 /* Red Hat 7.1 */
+struct net_device *alloc_netdev(int sizeof_priv, const char *mask,
+				void (*setup)(struct net_device *))
 {
 	struct net_device *dev;
 	INT alloc_size;
@@ -1098,7 +1047,7 @@ struct net_device *alloc_netdev(
 
 	if (dev == NULL) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("alloc_netdev: Unable to allocate device memory.\n"));
+			 ("alloc_netdev: Unable to allocate device memory.\n"));
 		return NULL;
 	}
 
@@ -1112,7 +1061,6 @@ struct net_device *alloc_netdev(
 	return dev;
 }
 #endif /* LINUX_VERSION_CODE */
-
 
 static UINT32 RtmpOSWirelessEventTranslate(IN UINT32 eventType)
 {
@@ -1143,21 +1091,16 @@ static UINT32 RtmpOSWirelessEventTranslate(IN UINT32 eventType)
 
 	default:
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Unknown event: 0x%x\n", eventType));
+			 ("Unknown event: 0x%x\n", eventType));
 		break;
 	}
 
 	return eventType;
 }
 
-
-int RtmpOSWrielessEventSend(
-	IN PNET_DEV pNetDev,
-	IN UINT32 eventType,
-	IN INT flags,
-	IN PUCHAR pSrcMac,
-	IN PUCHAR pData,
-	IN UINT32 dataLen)
+int RtmpOSWrielessEventSend(IN PNET_DEV pNetDev, IN UINT32 eventType,
+			    IN INT flags, IN PUCHAR pSrcMac, IN PUCHAR pData,
+			    IN UINT32 dataLen)
 {
 	union iwreq_data wrqu;
 	/* translate event type */
@@ -1179,15 +1122,9 @@ int RtmpOSWrielessEventSend(
 	return 0;
 }
 
-
-int RtmpOSWrielessEventSendExt(
-	IN PNET_DEV pNetDev,
-	IN UINT32 eventType,
-	IN INT flags,
-	IN PUCHAR pSrcMac,
-	IN PUCHAR pData,
-	IN UINT32 dataLen,
-	IN UINT32 family)
+int RtmpOSWrielessEventSendExt(IN PNET_DEV pNetDev, IN UINT32 eventType,
+			       IN INT flags, IN PUCHAR pSrcMac, IN PUCHAR pData,
+			       IN UINT32 dataLen, IN UINT32 family)
 {
 	union iwreq_data wrqu;
 	/* translate event type */
@@ -1208,7 +1145,6 @@ int RtmpOSWrielessEventSendExt(
 	wireless_send_event(pNetDev, eventType, &wrqu, (char *)pData);
 	return 0;
 }
-
 
 /*
  * ========================================================================
@@ -1234,7 +1170,6 @@ BOOLEAN RtmpOSNetDevIsUp(VOID *pDev)
 	return TRUE;
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -1255,11 +1190,11 @@ VOID RtmpOsSetNetDevPriv(VOID *pDev, VOID *pPriv)
 {
 	struct mt_dev_priv *priv_info = NULL;
 
-	priv_info = (struct mt_dev_priv *)netdev_priv((struct net_device *)pDev);
+	priv_info =
+		(struct mt_dev_priv *)netdev_priv((struct net_device *)pDev);
 	priv_info->sys_handle = (VOID *)pPriv;
 	priv_info->priv_flags = 0;
 }
-
 
 /*
  * ========================================================================
@@ -1277,24 +1212,24 @@ VOID RtmpOsSetNetDevPriv(VOID *pDev, VOID *pPriv)
  */
 VOID *RtmpOsGetNetDevPriv(VOID *pDev)
 {
-	return ((struct mt_dev_priv *)netdev_priv((struct net_device *)pDev))->sys_handle;
+	return ((struct mt_dev_priv *)netdev_priv((struct net_device *)pDev))
+		->sys_handle;
 }
-
 
 VOID RtmpOsSetNetDevWdev(VOID *net_dev, VOID *wdev)
 {
 	struct mt_dev_priv *priv_info;
 
-	priv_info = (struct mt_dev_priv *)netdev_priv((struct net_device *)net_dev);
+	priv_info =
+		(struct mt_dev_priv *)netdev_priv((struct net_device *)net_dev);
 	priv_info->wifi_dev = wdev;
 }
 
-
 VOID *RtmpOsGetNetDevWdev(VOID *pDev)
 {
-	return ((struct mt_dev_priv *)netdev_priv((struct net_device *)pDev))->wifi_dev;
+	return ((struct mt_dev_priv *)netdev_priv((struct net_device *)pDev))
+		->wifi_dev;
 }
-
 
 /*
  * ========================================================================
@@ -1312,9 +1247,9 @@ VOID *RtmpOsGetNetDevWdev(VOID *pDev)
  */
 USHORT RtmpDevPrivFlagsGet(VOID *pDev)
 {
-	return ((struct mt_dev_priv *)netdev_priv((struct net_device *)pDev))->priv_flags;
+	return ((struct mt_dev_priv *)netdev_priv((struct net_device *)pDev))
+		->priv_flags;
 }
-
 
 /*
  * ========================================================================
@@ -1334,7 +1269,8 @@ VOID RtmpDevPrivFlagsSet(VOID *pDev, USHORT PrivFlags)
 {
 	struct mt_dev_priv *priv_info;
 
-	priv_info = (struct mt_dev_priv *)netdev_priv((struct net_device *)pDev);
+	priv_info =
+		(struct mt_dev_priv *)netdev_priv((struct net_device *)pDev);
 	priv_info->priv_flags = PrivFlags;
 }
 
@@ -1342,7 +1278,8 @@ UCHAR get_sniffer_mode(VOID *pDev)
 {
 	struct mt_dev_priv *priv_info;
 
-	priv_info = (struct mt_dev_priv *)netdev_priv((struct net_device *)pDev);
+	priv_info =
+		(struct mt_dev_priv *)netdev_priv((struct net_device *)pDev);
 	return priv_info->sniffer_mode;
 }
 
@@ -1350,7 +1287,8 @@ VOID set_sniffer_mode(VOID *net_dev, UCHAR sniffer_mode)
 {
 	struct mt_dev_priv *priv_info;
 
-	priv_info = (struct mt_dev_priv *)netdev_priv((struct net_device *)net_dev);
+	priv_info =
+		(struct mt_dev_priv *)netdev_priv((struct net_device *)net_dev);
 	priv_info->sniffer_mode = sniffer_mode;
 }
 
@@ -1368,16 +1306,13 @@ VOID set_sniffer_mode(VOID *net_dev, UCHAR sniffer_mode)
  */
 unsigned long RtmpOSGetNetDevState(VOID *pDev)
 {
-	return ((PNET_DEV) pDev)->state;
+	return ((PNET_DEV)pDev)->state;
 }
-
-
 
 unsigned int RtmpOSGetNetDevFlag(VOID *pDev)
 {
 	return ((PNET_DEV)pDev)->flags;
 }
-
 
 unsigned int RtmpOSGetNetDevQNum(VOID *pDev)
 {
@@ -1387,7 +1322,6 @@ unsigned int RtmpOSGetNetDevQNum(VOID *pDev)
 	return 0;
 #endif
 }
-
 
 unsigned long RtmpOSGetNetDevQState(VOID *pDev, unsigned int q_idx)
 {
@@ -1404,46 +1338,33 @@ unsigned long RtmpOSGetNetDevQState(VOID *pDev, unsigned int q_idx)
 #endif
 }
 
-
 char *RtmpOsGetNetDevName(VOID *pDev)
 {
-	return ((PNET_DEV) pDev)->name;
+	return ((PNET_DEV)pDev)->name;
 }
-
 
 UINT32 RtmpOsGetNetIfIndex(IN VOID *pDev)
 {
-	return ((PNET_DEV) pDev)->ifindex;
+	return ((PNET_DEV)pDev)->ifindex;
 }
 
-
-int RtmpOSNetDevAddrSet(
-	IN UCHAR OpMode,
-	IN PNET_DEV pNetDev,
-	IN PUCHAR pMacAddr,
-	IN PUCHAR dev_name)
+int RtmpOSNetDevAddrSet(IN UCHAR OpMode, IN PNET_DEV pNetDev,
+			IN PUCHAR pMacAddr, IN PUCHAR dev_name)
 {
 	struct net_device *net_dev = (struct net_device *)pNetDev;
 	os_move_mem(net_dev->dev_addr, pMacAddr, 6);
 	return 0;
 }
 
-
 /* Assign the network dev name for created Ralink WiFi interface.*/
-static int RtmpOSNetDevRequestName(
-	IN INT32 MC_RowID,
-	IN UINT32 *pIoctlIF,
-	IN PNET_DEV dev,
-	IN RTMP_STRING *pPrefixStr,
-	IN INT devIdx,
-	IN BOOLEAN autoSuffix)
+static int RtmpOSNetDevRequestName(IN INT32 MC_RowID, IN UINT32 *pIoctlIF,
+				   IN PNET_DEV dev, IN RTMP_STRING *pPrefixStr,
+				   IN INT devIdx, IN BOOLEAN autoSuffix)
 {
 	PNET_DEV existNetDev;
 	RTMP_STRING suffixName[IFNAMSIZ];
 	RTMP_STRING desiredName[IFNAMSIZ];
-	int ifNameIdx,
-		prefixLen,
-		slotNameLen;
+	int ifNameIdx, prefixLen, slotNameLen;
 	int Status;
 
 	prefixLen = strlen(pPrefixStr);
@@ -1478,9 +1399,12 @@ static int RtmpOSNetDevRequestName(
 		if (existNetDev == NULL)
 			break;
 		else if (autoSuffix == FALSE && existNetDev) {
-			ifNameIdx = 32;	/* Tend to leave loop then return failure */
-			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					("Cannot request DevName with string(%s) from OS!\n", pPrefixStr));
+			ifNameIdx =
+				32; /* Tend to leave loop then return failure */
+			MTWF_LOG(
+				DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("Cannot request DevName with string(%s) from OS!\n",
+				 pPrefixStr));
 		}
 
 		RtmpOSNetDeviceRefPut(existNetDev);
@@ -1493,9 +1417,10 @@ static int RtmpOSNetDevRequestName(
 		strncpy(&dev->name[0], &desiredName[0], sizeof(dev->name));
 		Status = NDIS_STATUS_SUCCESS;
 	} else {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Cannot request DevName with preifx(%s) and in range(0~32) as suffix from OS!\n",
-				  pPrefixStr));
+		MTWF_LOG(
+			DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("Cannot request DevName with preifx(%s) and in range(0~32) as suffix from OS!\n",
+			 pPrefixStr));
 		Status = NDIS_STATUS_FAILURE;
 	}
 
@@ -1517,25 +1442,23 @@ void RtmpOSNetDevFree(PNET_DEV pNetDev)
 #endif
 #ifdef VENDOR_FEATURE4_SUPPORT
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("OS_NumOfMemAlloc = %ld, OS_NumOfMemFree = %ld\n",
-			  OS_NumOfMemAlloc, OS_NumOfMemFree));
+		 ("OS_NumOfMemAlloc = %ld, OS_NumOfMemFree = %ld\n",
+		  OS_NumOfMemAlloc, OS_NumOfMemFree));
 #endif /* VENDOR_FEATURE4_SUPPORT */
 #ifdef VENDOR_FEATURE2_SUPPORT
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("OS_NumOfPktAlloc = %ld, OS_NumOfPktFree = %ld\n",
-			  OS_NumOfPktAlloc, OS_NumOfPktFree));
+		 ("OS_NumOfPktAlloc = %ld, OS_NumOfPktFree = %ld\n",
+		  OS_NumOfPktAlloc, OS_NumOfPktFree));
 #endif /* VENDOR_FEATURE2_SUPPORT */
 }
 
-INT RtmpOSNetDevAlloc(
-	IN PNET_DEV *new_dev_p,
-	IN UINT32 privDataSize)
+INT RtmpOSNetDevAlloc(IN PNET_DEV *new_dev_p, IN UINT32 privDataSize)
 {
 	*new_dev_p = NULL;
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("Allocate a net device with private data size=%d!\n",
-			  privDataSize));
-#if LINUX_VERSION_CODE <= 0x20402	/* Red Hat 7.1 */
+		 ("Allocate a net device with private data size=%d!\n",
+		  privDataSize));
+#if LINUX_VERSION_CODE <= 0x20402 /* Red Hat 7.1 */
 	*new_dev_p = alloc_netdev(privDataSize, "eth%d", ether_setup);
 #else
 	*new_dev_p = alloc_etherdev(privDataSize);
@@ -1547,11 +1470,10 @@ INT RtmpOSNetDevAlloc(
 		return NDIS_STATUS_FAILURE;
 }
 
-
 #if (KERNEL_VERSION(2, 6, 31) <= LINUX_VERSION_CODE)
 INT RtmpOSNetDevOpsAlloc(PVOID *pNetDevOps)
 {
-	*pNetDevOps = (PVOID) vmalloc(sizeof(struct net_device_ops));
+	*pNetDevOps = (PVOID)vmalloc(sizeof(struct net_device_ops));
 
 	if (*pNetDevOps) {
 		os_zero_mem(*pNetDevOps, sizeof(struct net_device_ops));
@@ -1560,7 +1482,6 @@ INT RtmpOSNetDevOpsAlloc(PVOID *pNetDevOps)
 		return NDIS_STATUS_FAILURE;
 }
 #endif
-
 
 PNET_DEV RtmpOSNetDevGetByName(PNET_DEV pNetDev, RTMP_STRING *pDevName)
 {
@@ -1583,7 +1504,7 @@ PNET_DEV RtmpOSNetDevGetByName(PNET_DEV pNetDev, RTMP_STRING *pDevName)
 	ASSERT((devNameLen <= IFNAMSIZ));
 
 	for (pTargetNetDev = dev_base; pTargetNetDev != NULL;
-		 pTargetNetDev = pTargetNetDev->next) {
+	     pTargetNetDev = pTargetNetDev->next) {
 		if (strncmp(pTargetNetDev->name, pDevName, devNameLen) == 0)
 			break;
 	}
@@ -1591,7 +1512,6 @@ PNET_DEV RtmpOSNetDevGetByName(PNET_DEV pNetDev, RTMP_STRING *pDevName)
 #endif /* KERNEL_VERSION(2,5,0) */
 	return pTargetNetDev;
 }
-
 
 void RtmpOSNetDeviceRefPut(PNET_DEV pNetDev)
 {
@@ -1608,21 +1528,20 @@ void RtmpOSNetDeviceRefPut(PNET_DEV pNetDev)
 #endif /* LINUX_VERSION_CODE */
 }
 
-
 INT RtmpOSNetDevDestory(VOID *pReserved, PNET_DEV pNetDev)
 {
 	/* TODO: Need to fix this */
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("WARNING: This function(%s) not implement yet!!!\n",
-			  __func__));
+		 ("WARNING: This function(%s) not implement yet!!!\n",
+		  __func__));
 	return 0;
 }
-
 
 void RtmpOSNetDevDetach(PNET_DEV pNetDev)
 {
 #if (KERNEL_VERSION(2, 6, 31) <= LINUX_VERSION_CODE)
-	struct net_device_ops *pNetDevOps = (struct net_device_ops *)pNetDev->netdev_ops;
+	struct net_device_ops *pNetDevOps =
+		(struct net_device_ops *)pNetDev->netdev_ops;
 #endif
 	unregister_netdevice(pNetDev);
 #if (KERNEL_VERSION(2, 6, 31) <= LINUX_VERSION_CODE)
@@ -1630,7 +1549,6 @@ void RtmpOSNetDevDetach(PNET_DEV pNetDev)
 	pNetDev->netdev_ops = NULL;
 #endif
 }
-
 
 void RtmpOSNetDevProtect(BOOLEAN lock_it)
 {
@@ -1641,9 +1559,8 @@ void RtmpOSNetDevProtect(BOOLEAN lock_it)
 }
 
 #if (KERNEL_VERSION(2, 6, 18) <= LINUX_VERSION_CODE)
-static void RALINK_ET_DrvInfoGet(
-	struct net_device *pDev,
-	struct ethtool_drvinfo *pInfo)
+static void RALINK_ET_DrvInfoGet(struct net_device *pDev,
+				 struct ethtool_drvinfo *pInfo)
 {
 	strncpy(pInfo->driver, "RALINK WLAN", sizeof("RALINK WLAN"));
 	sprintf(pInfo->bus_info, "CSR 0x%lx", pDev->base_addr);
@@ -1654,18 +1571,16 @@ static struct ethtool_ops RALINK_Ethtool_Ops = {
 };
 #endif
 
-
-int RtmpOSNetDevAttach(
-	IN UCHAR OpMode,
-	IN PNET_DEV pNetDev,
-	IN RTMP_OS_NETDEV_OP_HOOK * pDevOpHook)
+int RtmpOSNetDevAttach(IN UCHAR OpMode, IN PNET_DEV pNetDev,
+		       IN RTMP_OS_NETDEV_OP_HOOK *pDevOpHook)
 {
-	int ret,
-		rtnl_locked = FALSE;
+	int ret, rtnl_locked = FALSE;
 #if (KERNEL_VERSION(2, 6, 31) <= LINUX_VERSION_CODE)
-	struct net_device_ops *pNetDevOps = (struct net_device_ops *)pNetDev->netdev_ops;
+	struct net_device_ops *pNetDevOps =
+		(struct net_device_ops *)pNetDev->netdev_ops;
 #endif
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("RtmpOSNetDevAttach()--->\n"));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("RtmpOSNetDevAttach()--->\n"));
 
 	/* If we need hook some callback function to the net device structrue, now do it. */
 	if (pDevOpHook) {
@@ -1676,13 +1591,13 @@ int RtmpOSNetDevAttach(
 		pNetDevOps->ndo_open = pDevOpHook->open;
 		pNetDevOps->ndo_stop = pDevOpHook->stop;
 		pNetDevOps->ndo_start_xmit =
-			(HARD_START_XMIT_FUNC) (pDevOpHook->xmit);
+			(HARD_START_XMIT_FUNC)(pDevOpHook->xmit);
 		pNetDevOps->ndo_do_ioctl = pDevOpHook->ioctl;
 #else
 		pNetDev->open = pDevOpHook->open;
 		pNetDev->stop = pDevOpHook->stop;
 		pNetDev->hard_start_xmit =
-			(HARD_START_XMIT_FUNC) (pDevOpHook->xmit);
+			(HARD_START_XMIT_FUNC)(pDevOpHook->xmit);
 		pNetDev->do_ioctl = pDevOpHook->ioctl;
 #endif
 #if (KERNEL_VERSION(2, 6, 18) <= LINUX_VERSION_CODE)
@@ -1710,19 +1625,21 @@ int RtmpOSNetDevAttach(
 #if WIRELESS_EXT >= 12
 
 		if (OpMode == OPMODE_AP)
-			pDevOpHook->iw_handler = &rt28xx_ap_iw_handler_def;
+			pDevOpHook->iw_handler =
+				(void *)&rt28xx_ap_iw_handler_def;
 
 #endif /*WIRELESS_EXT >= 12 */
 #endif /* CONFIG_APSTA_MIXED_SUPPORT */
 #ifdef CONFIG_WIRELESS_EXT
 
 		if (pDevOpHook->iw_handler)
-			pNetDev->wireless_handlers = pDevOpHook->iw_handler;
+			pNetDev->wireless_handlers =
+				(void *)pDevOpHook->iw_handler;
 
 #endif /* CONFIG_WIRELESS_EXT */
 		/* copy the net device mac address to the net_device structure. */
 		os_move_mem(pNetDev->dev_addr, &pDevOpHook->devAddr[0],
-					MAC_ADDR_LEN);
+			    MAC_ADDR_LEN);
 		rtnl_locked = pDevOpHook->needProtcted;
 	}
 
@@ -1741,7 +1658,8 @@ int RtmpOSNetDevAttach(
 		ret = register_netdev(pNetDev);
 
 	netif_stop_queue(pNetDev);
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("<---RtmpOSNetDevAttach(), ret=%d\n", ret));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("<---RtmpOSNetDevAttach(), ret=%d\n", ret));
 
 	if (ret == 0)
 		return NDIS_STATUS_SUCCESS;
@@ -1749,15 +1667,9 @@ int RtmpOSNetDevAttach(
 		return NDIS_STATUS_FAILURE;
 }
 
-
-PNET_DEV RtmpOSNetDevCreate(
-	IN INT32 MC_RowID,
-	IN UINT32 *pIoctlIF,
-	IN INT devType,
-	IN INT devNum,
-	IN INT privMemSize,
-	IN char *pNamePrefix,
-	IN BOOLEAN autoSuffix)
+PNET_DEV RtmpOSNetDevCreate(IN INT32 MC_RowID, IN UINT32 *pIoctlIF,
+			    IN INT devType, IN INT devNum, IN INT privMemSize,
+			    IN char *pNamePrefix, IN BOOLEAN autoSuffix)
 {
 	struct net_device *pNetDev = NULL;
 #if (KERNEL_VERSION(2, 6, 31) <= LINUX_VERSION_CODE)
@@ -1768,47 +1680,49 @@ PNET_DEV RtmpOSNetDevCreate(
 	status = RtmpOSNetDevAlloc(&pNetDev, privMemSize);
 
 	if (status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Allocate network device fail (%s)...\n", pNamePrefix));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Allocate network device fail (%s)...\n",
+			  pNamePrefix));
 		return NULL;
 	}
 
 #if (KERNEL_VERSION(2, 6, 31) <= LINUX_VERSION_CODE)
-	status = RtmpOSNetDevOpsAlloc((PVOID) &pNetDevOps);
+	status = RtmpOSNetDevOpsAlloc((PVOID)&pNetDevOps);
 
 	if (status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Allocate net device ops fail!\n"));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("Allocate net device ops fail!\n"));
 		RtmpOSNetDevFree(pNetDev);
 		return NULL;
 	}
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Allocate net device ops success!\n"));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("Allocate net device ops success!\n"));
 	pNetDev->netdev_ops = pNetDevOps;
 
 #endif
 	/* find a available interface name, max 32 interfaces */
-	status = RtmpOSNetDevRequestName(MC_RowID, pIoctlIF, pNetDev, pNamePrefix, devNum, autoSuffix);
+	status = RtmpOSNetDevRequestName(MC_RowID, pIoctlIF, pNetDev,
+					 pNamePrefix, devNum, autoSuffix);
 
 	if (status != NDIS_STATUS_SUCCESS) {
 		/* error! no any available ra name can be used! */
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Assign inf name (%s with suffix 0~32) failed\n", pNamePrefix));
+			 ("Assign inf name (%s with suffix 0~32) failed\n",
+			  pNamePrefix));
 		RtmpOSNetDevFree(pNetDev);
 		return NULL;
 	}
 
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("The name of the new %s interface is %s\n",
-			 pNamePrefix, pNetDev->name));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("The name of the new %s interface is %s\n", pNamePrefix,
+		  pNetDev->name));
 
 	return pNetDev;
 }
 
-
-UCHAR VLAN_8023_Header_Copy(
-	IN USHORT VLAN_VID,
-	IN USHORT VLAN_Priority,
-	IN PUCHAR pHeader802_3,
-	IN UINT HdrLen,
-	OUT PUCHAR pData,
-	IN UCHAR *TPID)
+UCHAR VLAN_8023_Header_Copy(IN USHORT VLAN_VID, IN USHORT VLAN_Priority,
+			    IN PUCHAR pHeader802_3, IN UINT HdrLen,
+			    OUT PUCHAR pData, IN UCHAR *TPID)
 {
 	UINT16 TCI;
 	UCHAR VLAN_Size = 0;
@@ -1825,16 +1739,17 @@ UCHAR VLAN_8023_Header_Copy(
 		memcpy(pData, pHeader802_3, LENGTH_802_3_NO_TYPE);
 		/* copy VLAN tag (4B) */
 		/* do NOT use memcpy to speed up */
-		*(UINT16 *) (pData + LENGTH_802_3_NO_TYPE) = *(UINT16 *) TPID;
-		*(UINT16 *) (pData + LENGTH_802_3_NO_TYPE + 2) = TCI;
+		*(UINT16 *)(pData + LENGTH_802_3_NO_TYPE) = *(UINT16 *)TPID;
+		*(UINT16 *)(pData + LENGTH_802_3_NO_TYPE + 2) = TCI;
 		/* copy type/len (2B) */
-		*(UINT16 *) (pData + LENGTH_802_3_NO_TYPE + LENGTH_802_1Q) =
-			*(UINT16 *) &pHeader802_3[LENGTH_802_3 -
-									  LENGTH_802_3_TYPE];
+		*(UINT16 *)(pData + LENGTH_802_3_NO_TYPE + LENGTH_802_1Q) = *(
+			UINT16 *)&pHeader802_3[LENGTH_802_3 - LENGTH_802_3_TYPE];
 
 		/* copy tail if exist */
 		if (HdrLen > LENGTH_802_3)
-			memcpy(pData + LENGTH_802_3 + LENGTH_802_1Q, pHeader802_3 + LENGTH_802_3, HdrLen - LENGTH_802_3);
+			memcpy(pData + LENGTH_802_3 + LENGTH_802_1Q,
+			       pHeader802_3 + LENGTH_802_3,
+			       HdrLen - LENGTH_802_3);
 	} else {
 		/* no VLAN tag is needed to insert */
 		memcpy(pData, pHeader802_3, HdrLen);
@@ -1842,7 +1757,6 @@ UCHAR VLAN_8023_Header_Copy(
 
 	return VLAN_Size;
 }
-
 
 /*
  * ========================================================================
@@ -1858,7 +1772,8 @@ UCHAR VLAN_8023_Header_Copy(
  *	NDIS_STATUS_RESOURCES
  * ========================================================================
  */
-NDIS_STATUS AdapterBlockAllocateMemory(VOID *handle, VOID **ppAd, UINT32 SizeOfpAd)
+NDIS_STATUS AdapterBlockAllocateMemory(VOID *handle, VOID **ppAd,
+				       UINT32 SizeOfpAd)
 {
 #ifdef OS_ABL_FUNC_SUPPORT
 	/* get offset for sk_buff */
@@ -1872,17 +1787,20 @@ NDIS_STATUS AdapterBlockAllocateMemory(VOID *handle, VOID **ppAd, UINT32 SizeOfp
 			return NDIS_STATUS_FAILURE;
 		}
 
-		RTPktOffsetData = (ULONG) (&(pPkt->data)) - (ULONG) pPkt;
-		RTPktOffsetLen = (ULONG) (&(pPkt->len)) - (ULONG) pPkt;
-		RTPktOffsetCB = (ULONG) (pPkt->cb) - (ULONG) pPkt;
+		RTPktOffsetData = (ULONG)(&(pPkt->data)) - (ULONG)pPkt;
+		RTPktOffsetLen = (ULONG)(&(pPkt->len)) - (ULONG)pPkt;
+		RTPktOffsetCB = (ULONG)(pPkt->cb) - (ULONG)pPkt;
 		kfree(pPkt);
 
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("packet> data offset = %lu\n", RTPktOffsetData));
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("packet> len offset = %lu\n", RTPktOffsetLen));
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("packet> cb offset = %lu\n", RTPktOffsetCB));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("packet> data offset = %lu\n", RTPktOffsetData));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("packet> len offset = %lu\n", RTPktOffsetLen));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("packet> cb offset = %lu\n", RTPktOffsetCB));
 	}
 #endif /* OS_ABL_FUNC_SUPPORT */
-	*ppAd = (PVOID) vmalloc(SizeOfpAd);
+	*ppAd = (PVOID)vmalloc(SizeOfpAd);
 
 	if (*ppAd) {
 		os_zero_mem(*ppAd, SizeOfpAd);
@@ -1891,28 +1809,23 @@ NDIS_STATUS AdapterBlockAllocateMemory(VOID *handle, VOID **ppAd, UINT32 SizeOfp
 		return NDIS_STATUS_FAILURE;
 }
 
-
 /* ========================================================================== */
 #ifdef VLAN_SUPPORT
-VOID* RtmpOsVLANInsertTag(PNDIS_PACKET pPacket, UINT16 tci)
+VOID *RtmpOsVLANInsertTag(PNDIS_PACKET pPacket, UINT16 tci)
 {
-	return (VOID*)vlan_insert_tag(RTPKT_TO_OSPKT(pPacket), cpu2be16(ETH_TYPE_VLAN), tci);
+	return (VOID *)vlan_insert_tag(RTPKT_TO_OSPKT(pPacket),
+				       cpu2be16(ETH_TYPE_VLAN), tci);
 }
 #endif /*VLAN_SUPPORT*/
-
 
 UINT RtmpOsWirelessExtVerGet(VOID)
 {
 	return WIRELESS_EXT;
 }
 
-
-VOID RtmpDrvAllMacPrint(
-	IN VOID *pReserved,
-	IN UINT32 *pBufMac,
-	IN UINT32 AddrStart,
-	IN UINT32 AddrEnd,
-	IN UINT32 AddrStep)
+VOID RtmpDrvAllMacPrint(IN VOID *pReserved, IN UINT32 *pBufMac,
+			IN UINT32 AddrStart, IN UINT32 AddrEnd,
+			IN UINT32 AddrStep)
 {
 	struct file *file_w;
 	RTMP_STRING *fileName = "MacDump.txt";
@@ -1932,8 +1845,8 @@ VOID RtmpDrvAllMacPrint(
 
 	if (IS_ERR(file_w)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("-->2) %s: Error %ld opening %s\n", __func__,
-				  -PTR_ERR(file_w), fileName));
+			 ("-->2) %s: Error %ld opening %s\n", __func__,
+			  -PTR_ERR(file_w), fileName));
 	} else {
 		if (file_w->f_op) {
 			file_w->f_pos = 0;
@@ -1942,27 +1855,34 @@ VOID RtmpDrvAllMacPrint(
 			while (macAddr <= AddrEnd) {
 				/*				RTMP_IO_READ32(pAd, macAddr, &macValue); // sample */
 				macValue = *pBufMac++;
-				sprintf(msg, "%04x = %08x\n", macAddr, macValue);
+				sprintf(msg, "%04x = %08x\n", macAddr,
+					macValue);
 				/* write data to file */
 #if (KERNEL_VERSION(4, 1, 0) > LINUX_VERSION_CODE)
-			if (file_w->f_op->write) {
-				file_w->f_op->write(file_w, msg, strlen(msg), &file_w->f_pos);
-			} else{
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("no file write method\n"));
-			}
-#else
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
-			kernel_write(file_w, msg, strlen(msg), &file_w->f_pos);
+				if (file_w->f_op->write) {
+					file_w->f_op->write(file_w, msg,
+							    strlen(msg),
+							    &file_w->f_pos);
+				} else {
+					MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+						 DBG_LVL_ERROR,
+						 ("no file write method\n"));
+				}
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
+				__kernel_write(file_w, msg, strlen(msg),
+					       &file_w->f_pos);
 
 #else
-			__vfs_write(file_w, msg, strlen(msg), &file_w->f_pos);
+				__vfs_write(file_w, msg, strlen(msg),
+					    &file_w->f_pos);
 #endif
-#endif
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s", msg));
+				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR, ("%s", msg));
 				macAddr += AddrStep;
 			}
 
-			snprintf(msg, 1024, "\nDump all MAC values to %s\n", fileName);
+			snprintf(msg, 1024, "\nDump all MAC values to %s\n",
+				 fileName);
 		}
 
 		filp_close(file_w, NULL);
@@ -1972,12 +1892,8 @@ VOID RtmpDrvAllMacPrint(
 	os_free_mem(msg);
 }
 
-
-VOID RtmpDrvAllE2PPrint(
-	IN VOID *pReserved,
-	IN USHORT *pMacContent,
-	IN UINT32 AddrEnd,
-	IN UINT32 AddrStep)
+VOID RtmpDrvAllE2PPrint(IN VOID *pReserved, IN USHORT *pMacContent,
+			IN UINT32 AddrEnd, IN UINT32 AddrStep)
 {
 	struct file *file_w;
 	RTMP_STRING *fileName = "EEPROMDump.txt";
@@ -1998,8 +1914,8 @@ VOID RtmpDrvAllE2PPrint(
 
 	if (IS_ERR(file_w)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("-->2) %s: Error %ld opening %s\n", __func__,
-				  -PTR_ERR(file_w), fileName));
+			 ("-->2) %s: Error %ld opening %s\n", __func__,
+			  -PTR_ERR(file_w), fileName));
 	} else {
 		if (file_w->f_op) {
 			file_w->f_pos = 0;
@@ -2007,29 +1923,35 @@ VOID RtmpDrvAllE2PPrint(
 
 			while (eepAddr <= AddrEnd) {
 				eepValue = *pMacContent;
-				sprintf(msg, "%08x = %04x\n", eepAddr, eepValue);
+				sprintf(msg, "%08x = %04x\n", eepAddr,
+					eepValue);
 				/* write data to file */
 #if (KERNEL_VERSION(4, 1, 0) > LINUX_VERSION_CODE)
 				if (file_w->f_op->write) {
-					file_w->f_op->write(file_w, msg, strlen(msg), &file_w->f_pos);
-				} else{
-					MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("no file write method\n"));
+					file_w->f_op->write(file_w, msg,
+							    strlen(msg),
+							    &file_w->f_pos);
+				} else {
+					MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+						 DBG_LVL_ERROR,
+						 ("no file write method\n"));
 				}
-#else
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
-				kernel_write(file_w, msg, strlen(msg), &file_w->f_pos);
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
+				__kernel_write(file_w, msg, strlen(msg),
+					       &file_w->f_pos);
 
 #else
-				__vfs_write(file_w, msg, strlen(msg), &file_w->f_pos);
+				__vfs_write(file_w, msg, strlen(msg),
+					    &file_w->f_pos);
 #endif
-#endif
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s", msg));
+				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR, ("%s", msg));
 				eepAddr += AddrStep;
 				pMacContent += (AddrStep >> 1);
 			}
 
-			snprintf(msg, 1024 ,"\nDump all EEPROM values to %s\n",
-					fileName);
+			snprintf(msg, 1024, "\nDump all EEPROM values to %s\n",
+				 fileName);
 		}
 
 		filp_close(file_w, NULL);
@@ -2039,11 +1961,7 @@ VOID RtmpDrvAllE2PPrint(
 	os_free_mem(msg);
 }
 
-
-VOID RtmpDrvAllRFPrint(
-	IN VOID *pReserved,
-	IN UCHAR *pBuf,
-	IN UINT32 BufLen)
+VOID RtmpDrvAllRFPrint(IN VOID *pReserved, IN UCHAR *pBuf, IN UINT32 BufLen)
 {
 	struct file *file_w;
 	RTMP_STRING *fileName = "RFDump.txt";
@@ -2056,25 +1974,26 @@ VOID RtmpDrvAllRFPrint(
 
 	if (IS_ERR(file_w)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("-->2) %s: Error %ld opening %s\n", __func__,
-				  -PTR_ERR(file_w), fileName));
+			 ("-->2) %s: Error %ld opening %s\n", __func__,
+			  -PTR_ERR(file_w), fileName));
 	} else {
 		if (file_w->f_op) {
 			file_w->f_pos = 0;
 			/* write data to file */
 #if (KERNEL_VERSION(4, 1, 0) > LINUX_VERSION_CODE)
 			if (file_w->f_op->write) {
-				file_w->f_op->write(file_w, pBuf, BufLen, &file_w->f_pos);
-			} else{
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("no file write method\n"));
+				file_w->f_op->write(file_w, pBuf, BufLen,
+						    &file_w->f_pos);
+			} else {
+				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("no file write method\n"));
 			}
-#else
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
-			kernel_write(file_w, pBuf, BufLen, &file_w->f_pos);
+#elif (KERNEL_VERSION(4, 19, 0) <= LINUX_VERSION_CODE)
+			__kernel_write(file_w, pBuf, BufLen, &file_w->f_pos);
 
 #else
 			__vfs_write(file_w, pBuf, BufLen, &file_w->f_pos);
-#endif
 #endif
 		}
 
@@ -2083,7 +2002,6 @@ VOID RtmpDrvAllRFPrint(
 
 	set_fs(orig_fs);
 }
-
 
 /*
  * ========================================================================
@@ -2145,9 +2063,9 @@ VOID RtmpOsMlmeUp(IN RTMP_OS_TASK *pMlmeQTask)
 		wake_up(&pTask->kthread_q);
 	} else {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s invalid pTask 0x%p or kthread_task 0x%p\n",
-				  __func__, pTask,
-				  (pTask) ? pTask->kthread_task : NULL));
+			 ("%s invalid pTask 0x%p or kthread_task 0x%p\n",
+			  __func__, pTask,
+			  (pTask) ? pTask->kthread_task : NULL));
 	}
 
 #else
@@ -2159,7 +2077,6 @@ VOID RtmpOsMlmeUp(IN RTMP_OS_TASK *pMlmeQTask)
 
 #endif /* KTHREAD_SUPPORT */
 }
-
 
 /*
  * ========================================================================
@@ -2181,11 +2098,8 @@ INT32 RtmpOsFileIsErr(IN VOID *pFile)
 	return IS_FILE_OPEN_ERR(pFile);
 }
 
-int RtmpOSIRQRelease(
-	IN PNET_DEV pNetDev,
-	IN UINT32 infType,
-	IN PPCI_DEV pci_dev,
-	IN BOOLEAN *pHaveMsi)
+int RtmpOSIRQRelease(IN PNET_DEV pNetDev, IN UINT32 infType,
+		     IN PPCI_DEV pci_dev, IN BOOLEAN *pHaveMsi)
 {
 #ifdef RTMP_PCI_SUPPORT
 
@@ -2211,7 +2125,6 @@ int RtmpOSIRQRelease(
 	return 0;
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -2227,16 +2140,14 @@ int RtmpOSIRQRelease(
  * Note:
  * ========================================================================
  */
-VOID RtmpOsWlanEventSet(
-	IN VOID *pReserved,
-	IN BOOLEAN *pCfgWEnt,
-	IN BOOLEAN FlgIsWEntSup)
+VOID RtmpOsWlanEventSet(IN VOID *pReserved, IN BOOLEAN *pCfgWEnt,
+			IN BOOLEAN FlgIsWEntSup)
 {
 #if WIRELESS_EXT >= 15
 	/*	pAd->CommonCfg.bWirelessEvent = FlgIsWEntSup; */
 	*pCfgWEnt = FlgIsWEntSup;
 #else
-	*pCfgWEnt = 0;		/* disable */
+	*pCfgWEnt = 0; /* disable */
 #endif
 }
 
@@ -2279,7 +2190,6 @@ VOID RtmpOsVfree(VOID *pMem)
 		vfree(pMem);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -2301,19 +2211,16 @@ VOID RtmpOsPktProtocolAssign(PNDIS_PACKET pNetPkt)
 	pRxPkt->protocol = eth_type_trans(pRxPkt, pRxPkt->dev);
 }
 
-
-BOOLEAN RtmpOsStatsAlloc(
-	IN VOID **ppStats,
-	IN VOID **ppIwStats)
+BOOLEAN RtmpOsStatsAlloc(IN VOID **ppStats, IN VOID **ppIwStats)
 {
-	os_alloc_mem(NULL, (UCHAR **) ppStats, sizeof(struct net_device_stats));
+	os_alloc_mem(NULL, (UCHAR **)ppStats, sizeof(struct net_device_stats));
 
 	if ((*ppStats) == NULL)
 		return FALSE;
 
-	os_zero_mem((UCHAR *) *ppStats, sizeof(struct net_device_stats));
+	os_zero_mem((UCHAR *)*ppStats, sizeof(struct net_device_stats));
 #if WIRELESS_EXT >= 12
-	os_alloc_mem(NULL, (UCHAR **) ppIwStats, sizeof(struct iw_statistics));
+	os_alloc_mem(NULL, (UCHAR **)ppIwStats, sizeof(struct iw_statistics));
 
 	if ((*ppIwStats) == NULL) {
 		os_free_mem(*ppStats);
@@ -2324,7 +2231,6 @@ BOOLEAN RtmpOsStatsAlloc(
 #endif
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -2344,7 +2250,7 @@ VOID RtmpOsPktRcvHandle(PNDIS_PACKET pNetPkt)
 {
 	struct sk_buff *pRxPkt = RTPKT_TO_OSPKT(pNetPkt);
 #ifdef CONFIG_CSO_SUPPORT
-	struct net_device *pNetDev =  GET_OS_PKT_NETDEV(pNetPkt);
+	struct net_device *pNetDev = GET_OS_PKT_NETDEV(pNetPkt);
 #endif /* CONFIG_CSO_SUPPORT */
 #ifdef CONFIG_CSO_SUPPORT
 
@@ -2359,10 +2265,50 @@ VOID RtmpOsPktRcvHandle(PNDIS_PACKET pNetPkt)
 	netif_rx(pRxPkt);
 }
 
-
 VOID RtmpOsTaskPidInit(RTMP_OS_PID *pPid)
 {
 	*pPid = THREAD_PID_INIT_VALUE;
+}
+
+UINT32 RtmpOsCsumAdd(UINT32 csum, UINT32 addend)
+{
+	UINT32 res = csum;
+	res += addend;
+	return res + (res < addend);
+}
+
+VOID RtmpOsSkbPullRcsum(struct sk_buff *skb, unsigned int len)
+{
+	if (len > skb->len)
+		return;
+
+	skb_pull(skb, len);
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->csum = RtmpOsCsumAdd(skb->csum,
+					  ~csum_partial(skb->data, len, 0));
+	else if (skb->ip_summed == CHECKSUM_PARTIAL &&
+		 (skb->csum_start - (skb->data - skb->head)) < 0)
+		skb->ip_summed = CHECKSUM_NONE;
+}
+
+VOID RtmpOsSkbResetMacHeader(struct sk_buff *skb)
+{
+	skb_reset_mac_header(skb);
+}
+
+VOID RtmpOsSkbResetNetworkHeader(struct sk_buff *skb)
+{
+	skb_reset_network_header(skb);
+}
+
+VOID RtmpOsSkbResetTransportHeader(struct sk_buff *skb)
+{
+	skb_reset_transport_header(skb);
+}
+
+VOID RtmpOsSkbResetMacLen(struct sk_buff *skb)
+{
+	skb_reset_mac_len(skb);
 }
 
 /*
@@ -2384,7 +2330,6 @@ PNET_DEV RtmpOsPktNetDevGet(VOID *pPkt)
 	return GET_OS_PKT_NETDEV(pPkt);
 }
 
-
 #ifdef IAPP_SUPPORT
 /* Layer 2 Update frame to switch/bridge */
 /* For any Layer2 devices, e.g., bridges, switches and other APs, the frame
@@ -2392,20 +2337,16 @@ PNET_DEV RtmpOsPktNetDevGet(VOID *pPkt)
   * location of the STA
   */
 typedef struct GNU_PACKED _RT_IAPP_L2_UPDATE_FRAME {
-
-	UCHAR DA[ETH_ALEN];	/* broadcast MAC address */
-	UCHAR SA[ETH_ALEN];	/* the MAC address of the STA that has just associated or reassociated */
-	USHORT Len;		/* 8 octets */
-	UCHAR DSAP;		/* null */
-	UCHAR SSAP;		/* null */
-	UCHAR Control;		/* reference to IEEE Std 802.2 */
-	UCHAR XIDInfo[3];	/* reference to IEEE Std 802.2 */
+	UCHAR DA[ETH_ALEN]; /* broadcast MAC address */
+	UCHAR SA[ETH_ALEN]; /* the MAC address of the STA that has just associated or reassociated */
+	USHORT Len; /* 8 octets */
+	UCHAR DSAP; /* null */
+	UCHAR SSAP; /* null */
+	UCHAR Control; /* reference to IEEE Std 802.2 */
+	UCHAR XIDInfo[3]; /* reference to IEEE Std 802.2 */
 } RT_IAPP_L2_UPDATE_FRAME, *PRT_IAPP_L2_UPDATE_FRAME;
 
-
-PNDIS_PACKET RtmpOsPktIappMakeUp(
-	IN PNET_DEV pNetDev,
-	IN UINT8 * pMac)
+PNDIS_PACKET RtmpOsPktIappMakeUp(IN PNET_DEV pNetDev, IN UINT8 *pMac)
 {
 	RT_IAPP_L2_UPDATE_FRAME frame_body;
 	INT size = sizeof(RT_IAPP_L2_UPDATE_FRAME);
@@ -2417,7 +2358,8 @@ PNDIS_PACKET RtmpOsPktIappMakeUp(
 	pNetBuf = RtmpOSNetPktAlloc(NULL, size);
 
 	if (!pNetBuf) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Error! Can't allocate a skb.\n"));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Error! Can't allocate a skb.\n"));
 		return NULL;
 	}
 
@@ -2438,7 +2380,6 @@ PNDIS_PACKET RtmpOsPktIappMakeUp(
 	return pNetBuf;
 }
 #endif /* IAPP_SUPPORT */
-
 
 #ifdef CONFIG_FAST_NAT_SUPPORT
 VOID RtmpOsPktNatMagicTag(IN PNDIS_PACKET pNetPkt)
@@ -2464,15 +2405,10 @@ VOID RtmpOsPktNatMagicTag(IN PNDIS_PACKET pNetPkt)
  * Note:
  * ========================================================================
  */
-VOID RtmpOsDCacheFlush(
-	IN ULONG AddrStart,
-	IN ULONG Size)
+VOID RtmpOsDCacheFlush(IN ULONG AddrStart, IN ULONG Size)
 {
 	RTMP_UTIL_DCACHE_FLUSH(AddrStart, Size);
 }
-
-
-
 
 void OS_SPIN_LOCK_IRQSAVE(NDIS_SPIN_LOCK *lock, unsigned long *flags)
 {
@@ -2519,7 +2455,8 @@ void OS_CLEAR_BIT(int bit, ULONG *flags)
 	clear_bit(bit, flags);
 }
 
-void OS_LOAD_CODE_FROM_BIN(unsigned char **image, char *bin_name, void *inf_dev, UINT32 *code_len)
+void OS_LOAD_CODE_FROM_BIN(unsigned char **image, char *bin_name, void *inf_dev,
+			   UINT32 *code_len)
 {
 	struct device *dev = NULL;
 	const struct firmware *fw_entry;
@@ -2527,23 +2464,25 @@ void OS_LOAD_CODE_FROM_BIN(unsigned char **image, char *bin_name, void *inf_dev,
 	dev = (struct device *)(&(((struct pci_dev *)(inf_dev))->dev));
 #endif
 #ifdef RTMP_RBUS_SUPPORT
-	dev = (struct device *) (&(((PPCI_DEV)(inf_dev))->dev));
+	dev = (struct device *)(&(((PPCI_DEV)(inf_dev))->dev));
 #endif /*RTMP_RBUS_SUPPORT*/
 
 	if (request_firmware(&fw_entry, bin_name, dev) != 0) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:fw not available(/lib/firmware/%s)\n", __func__, bin_name));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:fw not available(/lib/firmware/%s)\n", __func__,
+			  bin_name));
 		*image = NULL;
 		return;
 	}
 
-	*image = kmalloc(fw_entry->size, GFP_KERNEL);
+	os_alloc_mem_suspend(NULL, image, fw_entry->size);
 	memcpy(*image, fw_entry->data, fw_entry->size);
 	*code_len = fw_entry->size;
 	release_firmware(fw_entry);
 }
 
-
-void os_load_code_from_bin(void *pAd, unsigned char **image, char *bin_name, UINT32 *code_len)
+void os_load_code_from_bin(void *pAd, unsigned char **image, char *bin_name,
+			   UINT32 *code_len)
 {
 	struct device *dev;
 	const struct firmware *fw_entry;
@@ -2552,7 +2491,8 @@ void os_load_code_from_bin(void *pAd, unsigned char **image, char *bin_name, UIN
 
 	if (request_firmware(&fw_entry, bin_name, dev) != 0) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s:fw not available(/lib/firmware/%s)\n", __func__, bin_name));
+			 ("%s:fw not available(/lib/firmware/%s)\n", __func__,
+			  bin_name));
 		*image = NULL;
 		return;
 	}
@@ -2562,8 +2502,6 @@ void os_load_code_from_bin(void *pAd, unsigned char **image, char *bin_name, UIN
 	*code_len = fw_entry->size;
 	release_firmware(fw_entry);
 }
-
-
 
 #ifdef OS_ABL_FUNC_SUPPORT
 /*
@@ -2587,21 +2525,23 @@ void RtmpOSFSInfoChange(RTMP_OS_FS_INFO *pOSFSInfoOrg, BOOLEAN bSet)
 	OS_FS_INFO *pOSFSInfo;
 
 	if (bSet == TRUE) {
-		os_alloc_mem(NULL, (UCHAR **) &(pOSFSInfoOrg->pContent),
-					 sizeof(OS_FS_INFO));
+		os_alloc_mem(NULL, (UCHAR **)&(pOSFSInfoOrg->pContent),
+			     sizeof(OS_FS_INFO));
 
 		if (pOSFSInfoOrg->pContent == NULL) {
-			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: alloc file info fail!\n", __func__));
+			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s: alloc file info fail!\n", __func__));
 			return;
 		}
 
 		memset(pOSFSInfoOrg->pContent, 0, sizeof(OS_FS_INFO));
 	}
 
-	pOSFSInfo = (OS_FS_INFO *) (pOSFSInfoOrg->pContent);
+	pOSFSInfo = (OS_FS_INFO *)(pOSFSInfoOrg->pContent);
 
 	if (pOSFSInfo == NULL) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: pOSFSInfo == NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: pOSFSInfo == NULL!\n", __func__));
 		return;
 	}
 
@@ -2639,11 +2579,12 @@ VOID RtmpOsComplete(RTMP_OS_COMPLETION *pCompletion)
 	return TRUE;
 }
 
-ULONG RtmpOsWaitForCompletionTimeout(RTMP_OS_COMPLETION *pCompletion, ULONG Timeout)
+ULONG RtmpOsWaitForCompletionTimeout(RTMP_OS_COMPLETION *pCompletion,
+				     ULONG Timeout)
 {
-	return wait_for_completion_timeout((struct completion *)(pCompletion->pContent), Timeout);
+	return wait_for_completion_timeout(
+		(struct completion *)(pCompletion->pContent), Timeout);
 }
-
 
 /*
  * ========================================================================
@@ -2667,11 +2608,10 @@ BOOLEAN RtmpOsTaskletSche(RTMP_NET_TASK_STRUCT *pTasklet)
 #ifdef WORKQUEUE_BH
 	schedule_work((struct work_struct *)(pTasklet->pContent));
 #else
-	tasklet_hi_schedule((OS_NET_TASK_STRUCT *) (pTasklet->pContent));
+	tasklet_hi_schedule((OS_NET_TASK_STRUCT *)(pTasklet->pContent));
 #endif /* WORKQUEUE_BH */
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -2687,28 +2627,27 @@ BOOLEAN RtmpOsTaskletSche(RTMP_NET_TASK_STRUCT *pTasklet)
  * Note:
  * ========================================================================
  */
-BOOLEAN RtmpOsTaskletInit(
-	RTMP_NET_TASK_STRUCT *pTasklet,
-	VOID (*pFunc)(unsigned long data),
-	ULONG Data,
-	LIST_HEADER *pTaskletList)
+BOOLEAN RtmpOsTaskletInit(RTMP_NET_TASK_STRUCT *pTasklet,
+			  VOID (*pFunc)(unsigned long data), ULONG Data,
+			  LIST_HEADER *pTaskletList)
 {
 #ifdef WORKQUEUE_BH
 
-	if (RTMP_OS_Alloc_RscOnly(pTasklet, sizeof(struct work_struct)) == FALSE)
+	if (RTMP_OS_Alloc_RscOnly(pTasklet, sizeof(struct work_struct)) ==
+	    FALSE)
 		return FALSE;
 
 	INIT_WORK((struct work_struct *)(pTasklet->pContent), pFunc);
 #else
 
-	if (RTMP_OS_Alloc_RscOnly(pTasklet, sizeof(OS_NET_TASK_STRUCT)) == FALSE)
+	if (RTMP_OS_Alloc_RscOnly(pTasklet, sizeof(OS_NET_TASK_STRUCT)) ==
+	    FALSE)
 		return FALSE;
 
-	tasklet_init((OS_NET_TASK_STRUCT *) (pTasklet->pContent), pFunc, Data);
+	tasklet_init((OS_NET_TASK_STRUCT *)(pTasklet->pContent), pFunc, Data);
 #endif /* WORKQUEUE_BH */
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -2728,9 +2667,9 @@ BOOLEAN RtmpOsTaskletKill(RTMP_NET_TASK_STRUCT *pTasklet)
 {
 	if (pTasklet->pContent != NULL) {
 #ifdef WORKQUEUE_BH
-		cancel_work_sync((OS_NET_TASK_STRUCT *) (pTasklet->pContent));
+		cancel_work_sync((OS_NET_TASK_STRUCT *)(pTasklet->pContent));
 #else
-		tasklet_kill((OS_NET_TASK_STRUCT *) (pTasklet->pContent));
+		tasklet_kill((OS_NET_TASK_STRUCT *)(pTasklet->pContent));
 #endif /* WORKQUEUE_BH */
 		os_free_mem(pTasklet->pContent);
 		pTasklet->pContent = NULL;
@@ -2739,23 +2678,21 @@ BOOLEAN RtmpOsTaskletKill(RTMP_NET_TASK_STRUCT *pTasklet)
 	return TRUE;
 }
 
-
 VOID RtmpOsTaskletDataAssign(RTMP_NET_TASK_STRUCT *pTasklet, ULONG Data)
 {
 #ifndef WORKQUEUE_BH
 
 	if (pTasklet->pContent != NULL)
-		((OS_NET_TASK_STRUCT *) (pTasklet->pContent))->data = Data;
+		((OS_NET_TASK_STRUCT *)(pTasklet->pContent))->data = Data;
 
 #endif /* WORKQUEUE_BH */
 }
-
 
 INT32 RtmpOsTaskIsKilled(RTMP_OS_TASK *pTaskOrg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask == NULL)
 		return 1;
@@ -2763,12 +2700,11 @@ INT32 RtmpOsTaskIsKilled(RTMP_OS_TASK *pTaskOrg)
 	return pTask->task_killed;
 }
 
-
 VOID RtmpOsTaskWakeUp(RTMP_OS_TASK *pTaskOrg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask == NULL)
 		return;
@@ -2779,7 +2715,6 @@ VOID RtmpOsTaskWakeUp(RTMP_OS_TASK *pTaskOrg)
 	RTMP_SEM_EVENT_UP(&pTask->taskSema);
 #endif
 }
-
 
 /*
  * ========================================================================
@@ -2800,7 +2735,7 @@ BOOLEAN RtmpOsCheckTaskLegality(RTMP_OS_TASK *pTaskOrg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (!pTask)
 		return FALSE;
@@ -2810,20 +2745,19 @@ BOOLEAN RtmpOsCheckTaskLegality(RTMP_OS_TASK *pTaskOrg)
 	if (pTask->kthread_task == NULL)
 #else
 	if (CHECK_PID_LEGALITY(pTask->taskPID))
-	else
+		else
 #endif
 		return FALSE;
 
 	return TRUE;
 }
 
-
 /* timeout -- ms */
 VOID RTMP_SetPeriodicTimer(NDIS_MINIPORT_TIMER *pTimerOrg, ULONG timeout)
 {
 	OS_NDIS_MINIPORT_TIMER *pTimer;
 
-	pTimer = (OS_NDIS_MINIPORT_TIMER *) (pTimerOrg->pContent);
+	pTimer = (OS_NDIS_MINIPORT_TIMER *)(pTimerOrg->pContent);
 
 	if (pTimer) {
 		if (timer_pending(pTimer))
@@ -2833,32 +2767,28 @@ VOID RTMP_SetPeriodicTimer(NDIS_MINIPORT_TIMER *pTimerOrg, ULONG timeout)
 	}
 }
 
-
 /* convert NdisMInitializeTimer --> RTMP_OS_Init_Timer */
-VOID RTMP_OS_Init_Timer(
-	VOID *pReserved,
-	NDIS_MINIPORT_TIMER *pTimerOrg,
-	TIMER_FUNCTION function,
-	PVOID data,
-	LIST_HEADER *pTimerList)
+VOID RTMP_OS_Init_Timer(VOID *pReserved, NDIS_MINIPORT_TIMER *pTimerOrg,
+			TIMER_FUNCTION function, PVOID data,
+			LIST_HEADER *pTimerList)
 {
 	OS_NDIS_MINIPORT_TIMER *pTimer;
 
-	if (RTMP_OS_Alloc_RscOnly(pTimerOrg, sizeof(OS_NDIS_MINIPORT_TIMER)) == FALSE)
+	if (RTMP_OS_Alloc_RscOnly(pTimerOrg, sizeof(OS_NDIS_MINIPORT_TIMER)) ==
+	    FALSE)
 		return;
 
-	pTimer = (OS_NDIS_MINIPORT_TIMER *) (pTimerOrg->pContent);
+	pTimer = (OS_NDIS_MINIPORT_TIMER *)(pTimerOrg->pContent);
 
 	if (pTimer)
 		__RTMP_OS_Init_Timer(pReserved, pTimer, function, data);
 }
 
-
 VOID RTMP_OS_Add_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, ULONG timeout)
 {
 	OS_NDIS_MINIPORT_TIMER *pTimer;
 
-	pTimer = (OS_NDIS_MINIPORT_TIMER *) (pTimerOrg->pContent);
+	pTimer = (OS_NDIS_MINIPORT_TIMER *)(pTimerOrg->pContent);
 
 	if (pTimer) {
 		if (timer_pending(pTimer))
@@ -2868,34 +2798,31 @@ VOID RTMP_OS_Add_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, ULONG timeout)
 	}
 }
 
-
 VOID RTMP_OS_Mod_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, ULONG timeout)
 {
 	OS_NDIS_MINIPORT_TIMER *pTimer;
 
-	pTimer = (OS_NDIS_MINIPORT_TIMER *) (pTimerOrg->pContent);
+	pTimer = (OS_NDIS_MINIPORT_TIMER *)(pTimerOrg->pContent);
 
 	if (pTimer)
 		__RTMP_OS_Mod_Timer(pTimer, timeout);
 }
 
-
 VOID RTMP_OS_Del_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, BOOLEAN *pCancelled)
 {
 	OS_NDIS_MINIPORT_TIMER *pTimer;
 
-	pTimer = (OS_NDIS_MINIPORT_TIMER *) (pTimerOrg->pContent);
+	pTimer = (OS_NDIS_MINIPORT_TIMER *)(pTimerOrg->pContent);
 
 	if (pTimer)
 		__RTMP_OS_Del_Timer(pTimer, pCancelled);
 }
 
-
 VOID RTMP_OS_Release_Timer(NDIS_MINIPORT_TIMER *pTimerOrg)
 {
 	OS_NDIS_MINIPORT_TIMER *pTimer;
 
-	pTimer = (OS_NDIS_MINIPORT_TIMER *) (pTimerOrg->pContent);
+	pTimer = (OS_NDIS_MINIPORT_TIMER *)(pTimerOrg->pContent);
 
 	if (pTimer) {
 		__RTMP_OS_Release_Timer(pTimer);
@@ -2903,7 +2830,6 @@ VOID RTMP_OS_Release_Timer(NDIS_MINIPORT_TIMER *pTimerOrg)
 		pTimerOrg->pContent = NULL;
 	}
 }
-
 
 /*
  * ========================================================================
@@ -2921,49 +2847,46 @@ VOID RTMP_OS_Release_Timer(NDIS_MINIPORT_TIMER *pTimerOrg)
  * Note:
  * ========================================================================
  */
-BOOLEAN RTMP_OS_Alloc_Rsc(
-	LIST_HEADER *pRscList,
-	VOID *pRscSrc,
-	UINT32 RscLen)
+BOOLEAN RTMP_OS_Alloc_Rsc(LIST_HEADER *pRscList, VOID *pRscSrc, UINT32 RscLen)
 {
-	OS_RSTRUC *pRsc = (OS_RSTRUC *) pRscSrc;
+	OS_RSTRUC *pRsc = (OS_RSTRUC *)pRscSrc;
 
 	if (pRsc->pContent == NULL) {
 		/* new entry */
-		os_alloc_mem(NULL, (UCHAR **) &(pRsc->pContent), RscLen);
+		os_alloc_mem(NULL, (UCHAR **)&(pRsc->pContent), RscLen);
 
 		if (pRsc->pContent == NULL) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: alloc timer fail!\n", __func__));
+				 ("%s: alloc timer fail!\n", __func__));
 			return FALSE;
 		}
 
 		{
 			LIST_RESOURCE_OBJ_ENTRY *pObj;
 			/* allocate resource record entry */
-			os_alloc_mem(NULL, (UCHAR **) &(pObj),
-						 sizeof(LIST_RESOURCE_OBJ_ENTRY));
+			os_alloc_mem(NULL, (UCHAR **)&(pObj),
+				     sizeof(LIST_RESOURCE_OBJ_ENTRY));
 
 			if (pObj == NULL) {
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: alloc timer obj fail!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s: alloc timer obj fail!\n",
+					  __func__));
 				os_free_mem(pRsc->pContent);
 				pRsc->pContent = NULL;
 				return FALSE;
 			}
 
 			memset(pRsc->pContent, 0, RscLen);
-			pObj->pRscObj = (VOID *) pRsc;
+			pObj->pRscObj = (VOID *)pRsc;
 			OS_SEM_LOCK(&UtilSemLock);
-			insertTailList(pRscList, (RT_LIST_ENTRY *) pObj);
+			insertTailList(pRscList, (RT_LIST_ENTRY *)pObj);
 			OS_SEM_UNLOCK(&UtilSemLock);
 		}
 	}
 
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -2983,15 +2906,15 @@ BOOLEAN RTMP_OS_Alloc_Rsc(
  */
 BOOLEAN RTMP_OS_Alloc_RscOnly(VOID *pRscSrc, UINT32 RscLen)
 {
-	OS_RSTRUC *pRsc = (OS_RSTRUC *) pRscSrc;
+	OS_RSTRUC *pRsc = (OS_RSTRUC *)pRscSrc;
 
 	if (pRsc->pContent == NULL) {
 		/* new entry */
-		os_alloc_mem(NULL, (UCHAR **) &(pRsc->pContent), RscLen);
+		os_alloc_mem(NULL, (UCHAR **)&(pRsc->pContent), RscLen);
 
 		if (pRsc->pContent == NULL) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: alloc timer fail!\n", __func__));
+				 ("%s: alloc timer fail!\n", __func__));
 			return FALSE;
 		}
 
@@ -3000,7 +2923,6 @@ BOOLEAN RTMP_OS_Alloc_RscOnly(VOID *pRscSrc, UINT32 RscLen)
 
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -3017,37 +2939,34 @@ BOOLEAN RTMP_OS_Alloc_RscOnly(VOID *pRscSrc, UINT32 RscLen)
  * Note:
  * ========================================================================
  */
-BOOLEAN RTMP_OS_Remove_Rsc(
-	LIST_HEADER *pRscList,
-	VOID *pRscSrc)
+BOOLEAN RTMP_OS_Remove_Rsc(LIST_HEADER *pRscList, VOID *pRscSrc)
 {
 	LIST_RESOURCE_OBJ_ENTRY *pObj;
-	OS_RSTRUC *pRscHead, *pRsc, *pRscRev = (OS_RSTRUC *) pRscSrc;
+	OS_RSTRUC *pRscHead, *pRsc, *pRscRev = (OS_RSTRUC *)pRscSrc;
 
 	pRscHead = NULL;
 	OS_SEM_LOCK(&UtilSemLock);
 
 	while (TRUE) {
-		pObj = (LIST_RESOURCE_OBJ_ENTRY *) removeHeadList(pRscList);
+		pObj = (LIST_RESOURCE_OBJ_ENTRY *)removeHeadList(pRscList);
 
 		if (pRscHead == NULL)
 			pRscHead = pObj->pRscObj; /* backup first entry */
 		else if (((ULONG)pRscHead) == ((ULONG)(pObj->pRscObj)))
 			break; /* has searched all entries */
 
-		pRsc = (OS_RSTRUC *) (pObj->pRscObj);
+		pRsc = (OS_RSTRUC *)(pObj->pRscObj);
 
 		if ((ULONG)pRsc == (ULONG)pRscRev)
 			break; /* find it */
 
 		/* re-insert it */
-		insertTailList(pRscList, (RT_LIST_ENTRY *) pObj);
+		insertTailList(pRscList, (RT_LIST_ENTRY *)pObj);
 	}
 
 	OS_SEM_UNLOCK(&UtilSemLock);
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -3071,12 +2990,12 @@ VOID RTMP_OS_Free_Rscs(LIST_HEADER *pRscList)
 	OS_SEM_LOCK(&UtilSemLock);
 
 	while (TRUE) {
-		pObj = (LIST_RESOURCE_OBJ_ENTRY *) removeHeadList(pRscList);
+		pObj = (LIST_RESOURCE_OBJ_ENTRY *)removeHeadList(pRscList);
 
 		if (pObj == NULL)
 			break;
 
-		pRsc = (OS_RSTRUC *) (pObj->pRscObj);
+		pRsc = (OS_RSTRUC *)(pObj->pRscObj);
 
 		if (pRsc->pContent != NULL) {
 			/* free the timer memory */
@@ -3093,12 +3012,11 @@ VOID RTMP_OS_Free_Rscs(LIST_HEADER *pRscList)
 			 */
 		}
 
-		os_free_mem(pObj);	/* free the timer record entry */
+		os_free_mem(pObj); /* free the timer record entry */
 	}
 
 	OS_SEM_UNLOCK(&UtilSemLock);
 }
-
 
 /*
  * ========================================================================
@@ -3118,13 +3036,12 @@ BOOLEAN RtmpOSTaskAlloc(RTMP_OS_TASK *pTask, LIST_HEADER *pTaskList)
 {
 	if (RTMP_OS_Alloc_RscOnly(pTask, sizeof(OS_TASK)) == FALSE) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: alloc task fail!\n", __func__));
-		return FALSE;	/* allocate fail */
+			 ("%s: alloc task fail!\n", __func__));
+		return FALSE; /* allocate fail */
 	}
 
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -3144,14 +3061,13 @@ VOID RtmpOSTaskFree(RTMP_OS_TASK *pTaskOrg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask != NULL) {
 		os_free_mem(pTask);
 		pTaskOrg->pContent = NULL;
 	}
 }
-
 
 /*
  * ========================================================================
@@ -3172,7 +3088,7 @@ NDIS_STATUS RtmpOSTaskKill(RTMP_OS_TASK *pTaskOrg)
 	OS_TASK *pTask;
 	NDIS_STATUS Status;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask != NULL) {
 		Status = __RtmpOSTaskKill(pTask);
@@ -3182,7 +3098,6 @@ NDIS_STATUS RtmpOSTaskKill(RTMP_OS_TASK *pTaskOrg)
 
 	return NDIS_STATUS_FAILURE;
 }
-
 
 /*
  * ========================================================================
@@ -3202,14 +3117,13 @@ INT RtmpOSTaskNotifyToExit(RTMP_OS_TASK *pTaskOrg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask == NULL)
 		return 0;
 
 	return __RtmpOSTaskNotifyToExit(pTask);
 }
-
 
 /*
  * ========================================================================
@@ -3229,12 +3143,11 @@ VOID RtmpOSTaskCustomize(RTMP_OS_TASK *pTaskOrg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask)
 		__RtmpOSTaskCustomize(pTask);
 }
-
 
 /*
  * ========================================================================
@@ -3252,21 +3165,18 @@ VOID RtmpOSTaskCustomize(RTMP_OS_TASK *pTaskOrg)
  * Note:
  * ========================================================================
  */
-NDIS_STATUS RtmpOSTaskAttach(
-	RTMP_OS_TASK *pTaskOrg,
-	RTMP_OS_TASK_CALLBACK fn,
-	ULONG arg)
+NDIS_STATUS RtmpOSTaskAttach(RTMP_OS_TASK *pTaskOrg, RTMP_OS_TASK_CALLBACK fn,
+			     ULONG arg)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask == NULL)
 		return NDIS_STATUS_FAILURE;
 
 	return __RtmpOSTaskAttach(pTask, fn, arg);
 }
-
 
 /*
  * ========================================================================
@@ -3284,26 +3194,22 @@ NDIS_STATUS RtmpOSTaskAttach(
  * Note:
  * ========================================================================
  */
-NDIS_STATUS RtmpOSTaskInit(
-	RTMP_OS_TASK *pTaskOrg,
-	RTMP_STRING *pTaskName,
-	VOID *pPriv,
-	LIST_HEADER *pTaskList,
-	LIST_HEADER *pSemList)
+NDIS_STATUS RtmpOSTaskInit(RTMP_OS_TASK *pTaskOrg, RTMP_STRING *pTaskName,
+			   VOID *pPriv, LIST_HEADER *pTaskList,
+			   LIST_HEADER *pSemList)
 {
 	OS_TASK *pTask;
 
 	if (RtmpOSTaskAlloc(pTaskOrg, pTaskList) == FALSE)
 		return NDIS_STATUS_FAILURE;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask == NULL)
 		return NDIS_STATUS_FAILURE;
 
 	return __RtmpOSTaskInit(pTask, pTaskName, pPriv, pSemList);
 }
-
 
 /*
  * ========================================================================
@@ -3325,14 +3231,13 @@ BOOLEAN RtmpOSTaskWait(VOID *pReserved, RTMP_OS_TASK *pTaskOrg, INT32 *pStatus)
 {
 	OS_TASK *pTask;
 
-	pTask = (OS_TASK *) (pTaskOrg->pContent);
+	pTask = (OS_TASK *)(pTaskOrg->pContent);
 
 	if (pTask == NULL)
 		return FALSE;
 
 	return __RtmpOSTaskWait(pReserved, pTask, pStatus);
 }
-
 
 /*
  * ========================================================================
@@ -3353,9 +3258,8 @@ VOID *RtmpOsTaskDataGet(RTMP_OS_TASK *pTaskOrg)
 	if (pTaskOrg->pContent == NULL)
 		return NULL;
 
-	return ((OS_TASK *) (pTaskOrg->pContent))->priv;
+	return ((OS_TASK *)(pTaskOrg->pContent))->priv;
 }
-
 
 /*
  * ========================================================================
@@ -3375,14 +3279,13 @@ BOOLEAN RtmpOsAllocateLock(NDIS_SPIN_LOCK *pLock, LIST_HEADER *pLockList)
 {
 	if (RTMP_OS_Alloc_RscOnly(pLock, sizeof(OS_NDIS_SPIN_LOCK)) == FALSE) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: alloc lock fail!\n", __func__));
-		return FALSE;	/* allocate fail */
+			 ("%s: alloc lock fail!\n", __func__));
+		return FALSE; /* allocate fail */
 	}
 
 	OS_NdisAllocateSpinLock(pLock->pContent);
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -3403,7 +3306,7 @@ VOID RtmpOsFreeSpinLock(NDIS_SPIN_LOCK *pLockOrg)
 	/* we will free all locks memory in RTMP_OS_FREE_LOCK() */
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_MINIPORT_TIMER *) (pLockOrg->pContent);
+	pLock = (OS_NDIS_MINIPORT_TIMER *)(pLockOrg->pContent);
 
 	if (pLock != NULL) {
 		OS_NdisFreeSpinLock(pLock);
@@ -3411,7 +3314,6 @@ VOID RtmpOsFreeSpinLock(NDIS_SPIN_LOCK *pLockOrg)
 		pLockOrg->pContent = NULL;
 	}
 }
-
 
 /*
  * ========================================================================
@@ -3431,15 +3333,14 @@ VOID RtmpOsSpinLockBh(NDIS_SPIN_LOCK *pLockOrg)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (pLockOrg->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(pLockOrg->pContent);
 
 	if (pLock != NULL)
 		OS_SEM_LOCK(pLock);
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
-
 
 /*
  * ========================================================================
@@ -3459,15 +3360,14 @@ VOID RtmpOsSpinUnLockBh(NDIS_SPIN_LOCK *pLockOrg)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (pLockOrg->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(pLockOrg->pContent);
 
 	if (pLock != NULL)
 		OS_SEM_UNLOCK(pLock);
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
-
 
 /*
  * ========================================================================
@@ -3488,15 +3388,14 @@ VOID RtmpOsIntLock(NDIS_SPIN_LOCK *pLockOrg, ULONG *pIrqFlags)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (pLockOrg->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(pLockOrg->pContent);
 
 	if (pLock != NULL)
 		OS_INT_LOCK(pLock, *pIrqFlags);
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
-
 
 /*
  * ========================================================================
@@ -3517,65 +3416,65 @@ VOID RtmpOsIntUnLock(NDIS_SPIN_LOCK *pLockOrg, ULONG IrqFlags)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (pLockOrg->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(pLockOrg->pContent);
 
 	if (pLock != NULL)
 		OS_INT_UNLOCK(pLock, IrqFlags);
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
 
 void RtmpOsSpinLockIrqSave(NDIS_SPIN_LOCK *lock, unsigned long *flags)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (lock->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(lock->pContent);
 
 	if (pLock != NULL)
 		spin_lock_irqsave((spinlock_t *)(pLock), *flags);
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
 
 void RtmpOsSpinUnlockIrqRestore(NDIS_SPIN_LOCK *lock, unsigned long *flags)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (lock->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(lock->pContent);
 
 	if (pLock != NULL)
 		spin_unlock_irqrestore((spinlock_t *)(pLock), *flags);
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
 
 void RtmpOsSpinLockIrq(NDIS_SPIN_LOCK *lock)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (lock->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(lock->pContent);
 
 	if (pLock != NULL)
 		spin_lock_irq((spinlock_t *)(pLock));
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
 
 void RtmpOsSpinUnlockIrq(NDIS_SPIN_LOCK *lock)
 {
 	OS_NDIS_SPIN_LOCK *pLock;
 
-	pLock = (OS_NDIS_SPIN_LOCK *) (lock->pContent);
+	pLock = (OS_NDIS_SPIN_LOCK *)(lock->pContent);
 
 	if (pLock != NULL)
 		spin_unlock_irq((spinlock_t *)(pLock));
 	else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("lock> warning! the lock was freed!\n"));
+			 ("lock> warning! the lock was freed!\n"));
 }
 
 /*
@@ -3594,9 +3493,8 @@ void RtmpOsSpinUnlockIrq(NDIS_SPIN_LOCK *lock)
  */
 unsigned char *RtmpOsNetDevGetPhyAddr(VOID *pDev)
 {
-	return RTMP_OS_NETDEV_GET_PHYADDR((PNET_DEV) pDev);
+	return RTMP_OS_NETDEV_GET_PHYADDR((PNET_DEV)pDev);
 }
-
 
 /*
  * ========================================================================
@@ -3617,7 +3515,6 @@ VOID RtmpOsNetQueueStart(PNET_DEV pDev)
 	RTMP_OS_NETDEV_START_QUEUE(pDev);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3636,7 +3533,6 @@ VOID RtmpOsNetQueueStop(PNET_DEV pDev)
 {
 	RTMP_OS_NETDEV_STOP_QUEUE(pDev);
 }
-
 
 /*
  * ========================================================================
@@ -3657,7 +3553,6 @@ VOID RtmpOsNetQueueWake(PNET_DEV pDev)
 	RTMP_OS_NETDEV_WAKE_QUEUE(pDev);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3675,9 +3570,8 @@ VOID RtmpOsNetQueueWake(PNET_DEV pDev)
  */
 VOID RtmpOsSetPktNetDev(VOID *pPkt, VOID *pDev)
 {
-	SET_OS_PKT_NETDEV(pPkt, (PNET_DEV) pDev);
+	SET_OS_PKT_NETDEV(pPkt, (PNET_DEV)pDev);
 }
-
 
 /*
  * ========================================================================
@@ -3696,9 +3590,8 @@ VOID RtmpOsSetPktNetDev(VOID *pPkt, VOID *pDev)
  */
 VOID RtmpOsSetNetDevType(VOID *pDev, USHORT Type)
 {
-	RTMP_OS_NETDEV_SET_TYPE((PNET_DEV) pDev, Type);
+	RTMP_OS_NETDEV_SET_TYPE((PNET_DEV)pDev, Type);
 }
-
 
 /*
  * ========================================================================
@@ -3717,9 +3610,8 @@ VOID RtmpOsSetNetDevType(VOID *pDev, USHORT Type)
  */
 VOID RtmpOsSetNetDevTypeMonitor(VOID *pDev)
 {
-	RTMP_OS_NETDEV_SET_TYPE((PNET_DEV) pDev, ARPHRD_IEEE80211_PRISM);
+	RTMP_OS_NETDEV_SET_TYPE((PNET_DEV)pDev, ARPHRD_IEEE80211_PRISM);
 }
-
 
 /*
  * ========================================================================
@@ -3736,12 +3628,10 @@ VOID RtmpOsSetNetDevTypeMonitor(VOID *pDev)
  * Note:
  * ========================================================================
  */
-VOID RtmpOsGetPid(IN ULONG *pDst,
-				  IN ULONG PID)
+VOID RtmpOsGetPid(IN ULONG *pDst, IN ULONG PID)
 {
 	RT_GET_OS_PID(*pDst, PID);
 }
-
 
 /*
  * ========================================================================
@@ -3762,7 +3652,6 @@ VOID RtmpOsWait(UINT32 Time)
 	OS_WAIT(Time);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3782,7 +3671,6 @@ UINT32 RtmpOsTimerAfter(ULONG a, ULONG b)
 	return RTMP_TIME_AFTER(a, b);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3801,7 +3689,6 @@ UINT32 RtmpOsTimerBefore(ULONG a, ULONG b)
 {
 	return RTMP_TIME_BEFORE(a, b);
 }
-
 
 /*
  * ========================================================================
@@ -3841,7 +3728,6 @@ UINT32 RtmpOsTickUnitGet(VOID)
 	return HZ;
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3861,7 +3747,6 @@ UINT16 RtmpOsNtohs(UINT16 Value)
 	return OS_NTOHS(Value);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3880,7 +3765,6 @@ UINT16 RtmpOsHtons(UINT16 Value)
 {
 	return OS_HTONS(Value);
 }
-
 
 /*
  * ========================================================================
@@ -3919,7 +3803,6 @@ UINT32 RtmpOsHtonl(UINT32 Value)
 {
 	return OS_HTONL(Value);
 }
-
 
 /*
  * ========================================================================
@@ -3978,7 +3861,6 @@ ULONG RtmpOsGetUnalignedlong(ULONG *pWord)
 	return get_unaligned(pWord);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -3998,7 +3880,6 @@ ULONG RtmpOsMaxScanDataGet(VOID)
 {
 	return IW_SCAN_MAX_DATA;
 }
-
 
 /*
  * ========================================================================
@@ -4021,7 +3902,6 @@ ULONG RtmpOsCopyFromUser(VOID *to, const void *from, ULONG n)
 	return copy_from_user(to, from, n);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4043,7 +3923,6 @@ ULONG RtmpOsCopyToUser(VOID *to, const void *from, ULONG n)
 	return copy_to_user(to, from, n);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4062,15 +3941,14 @@ ULONG RtmpOsCopyToUser(VOID *to, const void *from, ULONG n)
 BOOLEAN RtmpOsSemaInitLocked(RTMP_OS_SEM *pSem, LIST_HEADER *pSemList)
 {
 	if (RTMP_OS_Alloc_RscOnly(pSem, sizeof(OS_SEM)) == FALSE) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: alloc semaphore fail!\n", __func__));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: alloc semaphore fail!\n", __func__));
 		return FALSE;
 	}
 
-	OS_SEM_EVENT_INIT_LOCKED((OS_SEM *) (pSem->pContent));
+	OS_SEM_EVENT_INIT_LOCKED((OS_SEM *)(pSem->pContent));
 	return TRUE;
 }
-
-
 
 /*
  * ========================================================================
@@ -4091,14 +3969,13 @@ BOOLEAN RtmpOsSemaInit(RTMP_OS_SEM *pSem, LIST_HEADER *pSemList)
 {
 	if (RTMP_OS_Alloc_RscOnly(pSem, sizeof(OS_SEM)) == FALSE) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: alloc semaphore fail!\n", __func__));
+			 ("%s: alloc semaphore fail!\n", __func__));
 		return FALSE;
 	}
 
-	OS_SEM_EVENT_INIT((OS_SEM *) (pSem->pContent));
+	OS_SEM_EVENT_INIT((OS_SEM *)(pSem->pContent));
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -4119,7 +3996,7 @@ BOOLEAN RtmpOsSemaDestory(RTMP_OS_SEM *pSemOrg)
 {
 	OS_SEM *pSem;
 
-	pSem = (OS_SEM *) (pSemOrg->pContent);
+	pSem = (OS_SEM *)(pSemOrg->pContent);
 
 	if (pSem != NULL) {
 		OS_SEM_EVENT_DESTORY(pSem);
@@ -4127,11 +4004,10 @@ BOOLEAN RtmpOsSemaDestory(RTMP_OS_SEM *pSemOrg)
 		pSemOrg->pContent = NULL;
 	} else
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("sem> warning! double-free sem!\n"));
+			 ("sem> warning! double-free sem!\n"));
 
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -4153,14 +4029,13 @@ INT32 RtmpOsSemaWaitInterruptible(RTMP_OS_SEM *pSemOrg)
 	OS_SEM *pSem;
 	INT Status = -1;
 
-	pSem = (OS_SEM *) (pSemOrg->pContent);
+	pSem = (OS_SEM *)(pSemOrg->pContent);
 
 	if (pSem != NULL)
 		OS_SEM_EVENT_WAIT(pSem, Status);
 
 	return Status;
 }
-
 
 /*
  * ========================================================================
@@ -4180,12 +4055,11 @@ VOID RtmpOsSemaWakeUp(RTMP_OS_SEM *pSemOrg)
 {
 	OS_SEM *pSem;
 
-	pSem = (OS_SEM *) (pSemOrg->pContent);
+	pSem = (OS_SEM *)(pSemOrg->pContent);
 
 	if (pSem != NULL)
 		OS_SEM_EVENT_UP(pSem);
 }
-
 
 /*
  * ========================================================================
@@ -4207,7 +4081,6 @@ INT32 RtmpOsIsInInterrupt(VOID)
 	return in_interrupt();
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4225,16 +4098,12 @@ INT32 RtmpOsIsInInterrupt(VOID)
  * Note:
  * ========================================================================
  */
-VOID RtmpOsPktBodyCopy(
-	PNET_DEV pNetDev,
-	PNDIS_PACKET pNetPkt,
-	ULONG ThisFrameLen,
-	PUCHAR pData)
+VOID RtmpOsPktBodyCopy(PNET_DEV pNetDev, PNDIS_PACKET pNetPkt,
+		       ULONG ThisFrameLen, PUCHAR pData)
 {
 	memcpy(skb_put(pNetPkt, ThisFrameLen), pData, ThisFrameLen);
 	SET_OS_PKT_NETDEV(pNetPkt, pNetDev);
 }
-
 
 /*
  * ========================================================================
@@ -4256,7 +4125,6 @@ INT RtmpOsIsPktCloned(PNDIS_PACKET pNetPkt)
 	return OS_PKT_CLONED(pNetPkt);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4275,7 +4143,6 @@ PNDIS_PACKET RtmpOsPktCopy(PNDIS_PACKET pNetPkt)
 {
 	return skb_copy(RTPKT_TO_OSPKT(pNetPkt), GFP_ATOMIC);
 }
-
 
 /*
  * ========================================================================
@@ -4316,7 +4183,6 @@ VOID RtmpOsPktDataPtrAssign(PNDIS_PACKET pNetPkt, UCHAR *pData)
 	SET_OS_PKT_DATAPTR(pNetPkt, pData);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4336,7 +4202,6 @@ VOID RtmpOsPktLenAssign(PNDIS_PACKET pNetPkt, LONG Len)
 {
 	SET_OS_PKT_LEN(pNetPkt, Len);
 }
-
 
 /*
  * ========================================================================
@@ -4358,7 +4223,6 @@ VOID RtmpOsPktTailAdjust(PNDIS_PACKET pNetPkt, UINT removedTagLen)
 	OS_PKT_TAIL_ADJUST(pNetPkt, removedTagLen);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4378,7 +4242,6 @@ PUCHAR RtmpOsPktTailBufExtend(PNDIS_PACKET pNetPkt, UINT Len)
 {
 	return OS_PKT_TAIL_BUF_EXTEND(pNetPkt, Len);
 }
-
 
 /*
  * ========================================================================
@@ -4400,7 +4263,6 @@ VOID RtmpOsPktReserve(PNDIS_PACKET pNetPkt, UINT Len)
 	OS_PKT_RESERVE(pNetPkt, Len);
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -4421,45 +4283,41 @@ PUCHAR RtmpOsPktHeadBufExtend(PNDIS_PACKET pNetPkt, UINT Len)
 	return OS_PKT_HEAD_BUF_EXTEND(pNetPkt, Len);
 }
 
-
 INT32 RtmpThreadPidKill(RTMP_OS_PID PID)
 {
 	return KILL_THREAD_PID(PID, SIGTERM, 1);
 }
-
 
 long RtmpOsSimpleStrtol(const char *cp, char **endp, unsigned int base)
 {
 	return simple_strtol(cp, endp, base);
 }
 
-
 BOOLEAN RtmpOsPktOffsetInit(VOID)
 {
 	struct sk_buff *pPkt = NULL;
 
-	if ((RTPktOffsetData == 0) && (RTPktOffsetLen == 0)
-		&& (RTPktOffsetCB == 0)) {
-		pPkt = kmalloc(sizeof(struct sk_buff), GFP_ATOMIC);
+	if ((RTPktOffsetData == 0) && (RTPktOffsetLen == 0) &&
+	    (RTPktOffsetCB == 0)) {
+		os_alloc_mem(NULL, (UCHAR **)&pPkt, sizeof(struct sk_buff));
 
 		if (pPkt == NULL)
 			return FALSE;
 
-		RTPktOffsetData = (ULONG) (&(pPkt->data)) - (ULONG) pPkt;
-		RTPktOffsetLen = (ULONG) (&(pPkt->len)) - (ULONG) pPkt;
-		RTPktOffsetCB = (ULONG) (pPkt->cb) - (ULONG) pPkt;
-		kfree(pPkt);
+		RTPktOffsetData = (ULONG)(&(pPkt->data)) - (ULONG)pPkt;
+		RTPktOffsetLen = (ULONG)(&(pPkt->len)) - (ULONG)pPkt;
+		RTPktOffsetCB = (ULONG)(pPkt->cb) - (ULONG)pPkt;
+		os_free_mem(pPkt);
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("packet> data offset = %lu\n", RTPktOffsetData));
+			 ("packet> data offset = %lu\n", RTPktOffsetData));
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("packet> len offset = %lu\n", RTPktOffsetLen));
+			 ("packet> len offset = %lu\n", RTPktOffsetLen));
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("packet> cb offset = %lu\n", RTPktOffsetCB));
+			 ("packet> cb offset = %lu\n", RTPktOffsetCB));
 	}
 
 	return TRUE;
 }
-
 
 /*
  * ========================================================================
@@ -4479,8 +4337,9 @@ BOOLEAN RtmpOsPktOffsetInit(VOID)
 BOOLEAN RtmpOsAtomicInit(RTMP_OS_ATOMIC *pAtomic, LIST_HEADER *pAtomicList)
 {
 	if (RTMP_OS_Alloc_RscOnly(pAtomic, sizeof(atomic_t)) == FALSE) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: alloc atomic fail!\n", __func__));
-		return FALSE;	/* allocate fail */
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: alloc atomic fail!\n", __func__));
+		return FALSE; /* allocate fail */
 	}
 
 	return TRUE;
@@ -4526,11 +4385,10 @@ VOID RtmpOsAtomicDestroy(RTMP_OS_ATOMIC *pAtomic)
 LONG RtmpOsAtomicRead(RTMP_OS_ATOMIC *pAtomicSrc)
 {
 	if (pAtomicSrc->pContent)
-		return atomic_read((atomic_t *) (pAtomicSrc->pContent));
+		return atomic_read((atomic_t *)(pAtomicSrc->pContent));
 	else
 		return 0;
 }
-
 
 /*
  * ========================================================================
@@ -4549,9 +4407,8 @@ LONG RtmpOsAtomicRead(RTMP_OS_ATOMIC *pAtomicSrc)
 VOID RtmpOsAtomicDec(RTMP_OS_ATOMIC *pAtomicSrc)
 {
 	if (pAtomicSrc->pContent)
-		atomic_dec((atomic_t *) (pAtomicSrc->pContent));
+		atomic_dec((atomic_t *)(pAtomicSrc->pContent));
 }
-
 
 /*
  * ========================================================================
@@ -4568,14 +4425,11 @@ VOID RtmpOsAtomicDec(RTMP_OS_ATOMIC *pAtomicSrc)
  * Note:
  * ========================================================================
  */
-VOID RtmpOsAtomicInterlockedExchange(
-	RTMP_OS_ATOMIC *pAtomicSrc,
-	LONG Value)
+VOID RtmpOsAtomicInterlockedExchange(RTMP_OS_ATOMIC *pAtomicSrc, LONG Value)
 {
 	if (pAtomicSrc->pContent)
-		InterlockedExchange((atomic_t *) (pAtomicSrc->pContent), Value);
+		InterlockedExchange((atomic_t *)(pAtomicSrc->pContent), Value);
 }
-
 
 /*
  * ========================================================================
@@ -4599,99 +4453,83 @@ VOID RtmpOsOpsInit(RTMP_OS_ABL_OPS *pOps)
 
 #else /* OS_ABL_FUNC_SUPPORT */
 
-
 void RtmpOSFSInfoChange(RTMP_OS_FS_INFO *pOSFSInfoOrg, BOOLEAN bSet)
 {
 	__RtmpOSFSInfoChange(pOSFSInfoOrg, bSet);
 }
 
-
 /* timeout -- ms */
-VOID RTMP_SetPeriodicTimer(NDIS_MINIPORT_TIMER *pTimerOrg, unsigned long timeout)
+VOID RTMP_SetPeriodicTimer(NDIS_MINIPORT_TIMER *pTimerOrg,
+			   unsigned long timeout)
 {
 	__RTMP_SetPeriodicTimer(pTimerOrg, timeout);
 }
 
-
 /* convert NdisMInitializeTimer --> RTMP_OS_Init_Timer */
-VOID RTMP_OS_Init_Timer(
-	VOID *pReserved,
-	NDIS_MINIPORT_TIMER *pTimerOrg,
-	TIMER_FUNCTION function,
-	PVOID data,
-	LIST_HEADER *pTimerList)
+VOID RTMP_OS_Init_Timer(VOID *pReserved, NDIS_MINIPORT_TIMER *pTimerOrg,
+			TIMER_FUNCTION function, PVOID data,
+			LIST_HEADER *pTimerList)
 {
 	__RTMP_OS_Init_Timer(pReserved, pTimerOrg, function, data);
 }
-
 
 VOID RTMP_OS_Add_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, unsigned long timeout)
 {
 	__RTMP_OS_Add_Timer(pTimerOrg, timeout);
 }
 
-
 VOID RTMP_OS_Mod_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, unsigned long timeout)
 {
 	__RTMP_OS_Mod_Timer(pTimerOrg, timeout);
 }
-
 
 VOID RTMP_OS_Del_Timer(NDIS_MINIPORT_TIMER *pTimerOrg, BOOLEAN *pCancelled)
 {
 	__RTMP_OS_Del_Timer(pTimerOrg, pCancelled);
 }
 
-
 VOID RTMP_OS_Release_Timer(NDIS_MINIPORT_TIMER *pTimerOrg)
 {
 	__RTMP_OS_Release_Timer(pTimerOrg);
 }
 
-
 NDIS_STATUS RtmpOSTaskKill(RTMP_OS_TASK *pTask)
 {
-	return __RtmpOSTaskKill(pTask);
+	NDIS_STATUS Status;
+	if (pTask != NULL) {
+		Status = __RtmpOSTaskKill(pTask);
+		return Status;
+	}
+	return NDIS_STATUS_FAILURE;
 }
-
 
 INT RtmpOSTaskNotifyToExit(RTMP_OS_TASK *pTask)
 {
 	return __RtmpOSTaskNotifyToExit(pTask);
 }
 
-
 void RtmpOSTaskCustomize(RTMP_OS_TASK *pTask)
 {
 	__RtmpOSTaskCustomize(pTask);
 }
 
-
-NDIS_STATUS RtmpOSTaskAttach(
-	RTMP_OS_TASK *pTask,
-	RTMP_OS_TASK_CALLBACK fn,
-	ULONG arg)
+NDIS_STATUS RtmpOSTaskAttach(RTMP_OS_TASK *pTask, RTMP_OS_TASK_CALLBACK fn,
+			     ULONG arg)
 {
 	return __RtmpOSTaskAttach(pTask, fn, arg);
 }
 
-
-NDIS_STATUS RtmpOSTaskInit(
-	RTMP_OS_TASK *pTask,
-	RTMP_STRING *pTaskName,
-	VOID *pPriv,
-	LIST_HEADER *pTaskList,
-	LIST_HEADER *pSemList)
+NDIS_STATUS RtmpOSTaskInit(RTMP_OS_TASK *pTask, RTMP_STRING *pTaskName,
+			   VOID *pPriv, LIST_HEADER *pTaskList,
+			   LIST_HEADER *pSemList)
 {
 	return __RtmpOSTaskInit(pTask, pTaskName, pPriv, pSemList);
 }
-
 
 BOOLEAN RtmpOSTaskWait(VOID *pReserved, RTMP_OS_TASK *pTask, INT32 *pStatus)
 {
 	return __RtmpOSTaskWait(pReserved, pTask, pStatus);
 }
-
 
 VOID RtmpOsTaskWakeUp(RTMP_OS_TASK *pTask)
 {
@@ -4703,7 +4541,6 @@ VOID RtmpOsTaskWakeUp(RTMP_OS_TASK *pTask)
 }
 
 #endif /* OS_ABL_FUNC_SUPPORT */
-
 
 /* pAd MUST allow to be NULL */
 
@@ -4717,46 +4554,45 @@ VOID MemInfoListInital(VOID)
 UINT32 ShowMemAllocInfo(VOID)
 {
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("Show General Allocated Memory Info:\n"));
+		 ("Show General Allocated Memory Info:\n"));
 	ShowMIList(&MemInfoList);
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("Maximum Allocated Memory Size: %u\n", MemInfoList.MaxAlcSize));
+		 ("Maximum Allocated Memory Size: %u\n",
+		  MemInfoList.MaxAlcSize));
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("Current Allocated Memory Size: %u\n", MemInfoList.CurAlcSize));
+		 ("Current Allocated Memory Size: %u\n",
+		  MemInfoList.CurAlcSize));
 	return MemInfoList.EntryNumber;
 }
 
 UINT32 ShowPktAllocInfo(VOID)
 {
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("Show Packet Allocated Memory Info:\n"));
+		 ("Show Packet Allocated Memory Info:\n"));
 	ShowMIList(&PktInfoList);
 	return PktInfoList.EntryNumber;
 }
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 
 /*Unify Utility APIs*/
-INT os_alloc_mem(
-	VOID *pAd,
-	UCHAR **mem,
-	ULONG size)
+INT os_alloc_mem(VOID *pAd, UCHAR **mem, ULONG size)
 {
-	*mem = (PUCHAR) kmalloc(size, GFP_ATOMIC);
+	*mem = (PUCHAR)kmalloc(size, GFP_ATOMIC);
 
 	if (*mem) {
 #ifdef VENDOR_FEATURE4_SUPPORT
 		OS_NumOfMemAlloc++;
 #endif /* VENDOR_FEATURE4_SUPPORT */
 #ifdef MEM_ALLOC_INFO_SUPPORT
-		MIListAddHead(&MemInfoList, size, *mem, __builtin_return_address(0));
+		MIListAddHead(&MemInfoList, size, *mem,
+			      __builtin_return_address(0));
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 		return NDIS_STATUS_SUCCESS;
 	} else
 		return NDIS_STATUS_FAILURE;
 }
 
-VOID os_free_mem(
-	PVOID mem)
+VOID os_free_mem(PVOID mem)
 {
 #ifdef MEM_ALLOC_INFO_SUPPORT
 	MEM_INFO_LIST_ENTRY *delEntry;
@@ -4765,9 +4601,10 @@ VOID os_free_mem(
 
 	if (delEntry == NULL) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("the memory has not been allocated\n"));
+			 ("the memory has not been allocated\n"));
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("mem addr = %p, caller is %pS\n", mem, __builtin_return_address(0)));
+			 ("mem addr = %p, caller is %pS\n", mem,
+			  __builtin_return_address(0)));
 		dump_stack();
 	} else
 #endif /* MEM_ALLOC_INFO_SUPPORT */
@@ -4781,52 +4618,37 @@ VOID os_free_mem(
 #endif /* VENDOR_FEATURE4_SUPPORT */
 }
 
-VOID os_zero_mem(
-	PVOID ptr,
-	ULONG length)
+VOID os_zero_mem(PVOID ptr, ULONG length)
 {
 	memset(ptr, 0, length);
 }
 
-VOID os_move_mem(
-	PVOID pDest,
-	PVOID pSrc,
-	ULONG length)
+VOID os_move_mem(PVOID pDest, PVOID pSrc, ULONG length)
 {
 	memmove(pDest, pSrc, length);
 }
 
-VOID os_fill_mem(
-	PVOID pBuf,
-	ULONG Length,
-	UCHAR Fill)
+VOID os_fill_mem(PVOID pBuf, ULONG Length, UCHAR Fill)
 {
 	memset(pBuf, Fill, Length);
 }
 
-INT os_cmp_mem(
-	PVOID Destination,
-	PVOID Source,
-	ULONG Length)
+INT os_cmp_mem(PVOID Destination, PVOID Source, ULONG Length)
 {
 	return memcmp(Destination, Source, Length);
 }
 
-INT os_equal_mem(
-	PVOID pBuf1,
-	PVOID pBuf2,
-	ULONG length)
+INT os_equal_mem(PVOID pBuf1, PVOID pBuf2, ULONG length)
 {
-	return  !memcmp(pBuf1, pBuf2, length);
+	return !memcmp(pBuf1, pBuf2, length);
 }
-
 
 CHAR *os_str_chr(CHAR *str, INT character)
 {
 	return strchr(str, character);
 }
 
-CHAR *os_str_pbrk(CHAR *str1, CHAR  *str2)
+CHAR *os_str_pbrk(CHAR *str1, CHAR *str2)
 {
 	return strpbrk(str1, str2);
 }
@@ -4884,7 +4706,9 @@ static inline void block_init(struct starv_dbg_block *block)
 {
 	struct starv_log_entry *entry, *tmp;
 
-	DlListForEachSafe(entry, tmp, &block->log_head, struct starv_log_entry, list) {
+	DlListForEachSafe(entry, tmp, &block->log_head, struct starv_log_entry,
+			  list)
+	{
 		block_entry_free(entry);
 	}
 
@@ -4953,11 +4777,15 @@ VOID starv_dbg_put(struct starv_dbg *starv)
 	struct starv_dbg_block *block = starv->block;
 
 	starv->end_jiffies = jiffies;
-	starv->msec = jiffies_to_msecs(abs(starv->end_jiffies - starv->start_jiffies));
+	starv->msec = jiffies_to_msecs(
+		abs(starv->end_jiffies - starv->start_jiffies));
 	/*update block*/
-	block->max_dur = (starv->msec > block->max_dur) ? starv->msec : block->max_dur;
-	block->min_dur = (starv->msec < block->min_dur) ? starv->msec : block->min_dur;
-	block->avg_dur = (starv->msec + block->avg_dur * block->count) / (block->count + 1);
+	block->max_dur =
+		(starv->msec > block->max_dur) ? starv->msec : block->max_dur;
+	block->min_dur =
+		(starv->msec < block->min_dur) ? starv->msec : block->min_dur;
+	block->avg_dur = (starv->msec + block->avg_dur * block->count) /
+			 (block->count + 1);
 	block->count++;
 	/*check timeout*/
 	if (starv->msec > block->timeout)
@@ -4972,27 +4800,31 @@ VOID starv_log_dump(struct starv_log *ctrl)
 	struct starv_log_entry *entry, *tmp;
 	struct starv_dbg_block *block, *btmp;
 
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+	MTWF_LOG(
+		DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 		("===========================================================================\n"));
 
 	NdisAcquireSpinLock(&ctrl->lock);
-	DlListForEachSafe(block, btmp, &ctrl->block_head, struct starv_dbg_block, list) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+	DlListForEachSafe(block, btmp, &ctrl->block_head,
+			  struct starv_dbg_block, list)
+	{
+		MTWF_LOG(
+			DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 			("[block %s]\t min: %d, max: %d, avg: %d, timeout cnt: %d, total cnt: %d\n",
-			block->name,
-			block->min_dur,
-			block->max_dur,
-			block->avg_dur,
-			block->timeout_cnt,
-			block->count));
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 block->name, block->min_dur, block->max_dur,
+			 block->avg_dur, block->timeout_cnt, block->count));
+		MTWF_LOG(
+			DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 			("===========================================================================\n"));
 
-		DlListForEachSafe(entry, tmp, &block->log_head, struct starv_log_entry, list) {
+		DlListForEachSafe(entry, tmp, &block->log_head,
+				  struct starv_log_entry, list)
+		{
 			if (block->log_fn)
 				block->log_fn(entry);
 		}
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		MTWF_LOG(
+			DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 			("===========================================================================\n"));
 		block_init(block);
 	}
@@ -5005,8 +4837,8 @@ void starv_timeout_log_basic(struct starv_log_entry *entry)
 	struct starv_log_basic *log = entry->log;
 
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				("[%s] id: %d, qsize: %d, duration: %d ms\n",
-				entry->block->name, log->id, log->qsize, entry->duration));
+		 ("[%s] id: %d, qsize: %d, duration: %d ms\n",
+		  entry->block->name, log->id, log->qsize, entry->duration));
 }
 
 INT register_starv_block(struct starv_dbg_block *block)
@@ -5059,7 +4891,6 @@ VOID starv_log_exit(struct starv_log *ctrl)
 
 #endif /*DBG_STARVATION*/
 
-
 #ifdef CONFIG_DBG_QDISC
 /*
 *
@@ -5069,7 +4900,7 @@ void os_system_tx_queue_dump(PNET_DEV dev)
 	struct netdev_queue *txq;
 	struct Qdisc *q;
 	struct sk_buff *skb;
-	int i=0,j=0,k=0;
+	int i = 0, j = 0, k = 0;
 	struct page *p;
 	size_t page_size;
 	int len;
@@ -5078,23 +4909,30 @@ void os_system_tx_queue_dump(PNET_DEV dev)
 		txq = netdev_get_tx_queue(dev, i);
 		q = rcu_dereference(txq->qdisc);
 		len = qdisc_qlen(q);
-		printk("%s(): devname:%s, q=%p, qlen=%d, page size:%lu\n", __func__,dev->name, q, len, PAGE_SIZE);
+		printk("%s(): devname:%s, q=%p, qlen=%d, page size:%lu\n",
+		       __func__, dev->name, q, len, PAGE_SIZE);
 		skb = q->ops->peek(q);
 		/* If we run with a TX queue, check if the queue is too long*/
-		for (j=0; j < len; j++) {
+		for (j = 0; j < len; j++) {
 			printk("%s(): skb=%p,len:%d, skb->head: %p,%p , dev:%s, \n",
-				__func__, skb, skb->len, skb->data, skb->data, skb->dev->name);
+			       __func__, skb, skb->len, skb->data, skb->data,
+			       skb->dev->name);
 			if (skb->head) {
 				p = virt_to_head_page(skb->head);
 				page_size = PAGE_SIZE << compound_order(p);
-				printk("%s(): index:%d, page:%p ,rfcnt:%d, page size:%zu, order:%u, dtor:%d\n", __func__, k++, p,
-					atomic_read(&p->_count), page_size , compound_order(p), p->compound_dtor);
+				printk("%s(): index:%d, page:%p ,rfcnt:%d, page size:%zu, order:%u, dtor:%d\n",
+				       __func__, k++, p,
+				       atomic_read(&p->_count), page_size,
+				       compound_order(p), p->compound_dtor);
 			}
 			skb = skb->next;
 		}
 		printk("%s(): qdisc stats!\n", __func__);
-		printk("%s(): qlen: %d, backlog: %d\n", __func__, q->qstats.qlen, q->qstats.backlog);
-		printk("%s(): drops: %d, requeues: %d, overlimits:% d\n", __func__, q->qstats.drops, q->qstats.requeues, q->qstats.overlimits);
+		printk("%s(): qlen: %d, backlog: %d\n", __func__,
+		       q->qstats.qlen, q->qstats.backlog);
+		printk("%s(): drops: %d, requeues: %d, overlimits:% d\n",
+		       __func__, q->qstats.drops, q->qstats.requeues,
+		       q->qstats.overlimits);
 	}
 }
 #endif /*CONFIG_DBG_QDISC*/

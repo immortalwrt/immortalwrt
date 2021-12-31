@@ -30,84 +30,81 @@
 
 struct freq_cfg;
 
-#define DEFAULT_CAL_BUF_TIME	60
-#define DEFAULT_CAL_BUF_TIME_MAX	0x10000
+#define DEFAULT_CAL_BUF_TIME 60
+#define DEFAULT_CAL_BUF_TIME_MAX 0x10000
 #define RDD_CHECK_NOP_BY_WDEV 0
 /* RESTRICTION_BAND_1: 5600MHz ~ 5650MHz */
-#define RESTRICTION_BAND_1(_pAd, __Channel, _BW)												\
-	(_BW >= BW_40 ?						\
-	 ((__Channel >= 116) && (__Channel <= 128)) :	\
-	 ((__Channel >= 120) && (__Channel <= 128)))
+#define RESTRICTION_BAND_1(_pAd, __Channel, _BW)                               \
+	(_BW >= BW_40 ? ((__Channel >= 116) && (__Channel <= 128)) :           \
+			      ((__Channel >= 120) && (__Channel <= 128)))
 
-#define RESTRICTION_BAND_KOREA(_pAd, __Channel, _BW)												\
-	(_BW >= BW_80 ? 				\
-	((__Channel >= 116) && (__Channel <= 128)) :	\
-	(_BW >= BW_40 ?						\
-	((__Channel >= 124) && (__Channel <= 128)) :	\
-	(__Channel == 128)))
+#define RESTRICTION_BAND_KOREA(_pAd, __Channel, _BW)                           \
+	(_BW >= BW_80 ?                                                        \
+		 ((__Channel >= 116) && (__Channel <= 128)) :                  \
+		       (_BW >= BW_40 ? ((__Channel >= 124) && (__Channel <= 128)) :  \
+				       (__Channel == 128)))
 
-#define IS_DOT11_H_RADAR_STATE(_pAd, _RadarState, __Channel, _pDot11h)		\
-	((__Channel > 14)	\
-	 && (_pAd->CommonCfg.bIEEE80211H == 1)	\
-	 && RadarChannelCheck(_pAd, __Channel)	\
-	 && _pDot11h->RDMode == _RadarState)
+#define IS_DOT11_H_RADAR_STATE(_pAd, _RadarState, __Channel, _pDot11h)         \
+	((__Channel > 14) && (_pAd->CommonCfg.bIEEE80211H == 1) &&             \
+	 RadarChannelCheck(_pAd, __Channel) &&                                 \
+	 _pDot11h->RDMode == _RadarState)
 
 #ifdef MT_DFS_SUPPORT
-#define IS_SUPPORT_MT_DFS(_pAd) \
+#define IS_SUPPORT_MT_DFS(_pAd)                                                \
 	(_pAd->CommonCfg.DfsParameter.bDfsEnable == TRUE)
 
-#define UPDATE_MT_ZEROWAIT_DFS_STATE(_pAd, _State) \
-	{                                         \
-		_pAd->CommonCfg.DfsParameter.ZeroWaitDfsState = _State; \
+#define UPDATE_MT_ZEROWAIT_DFS_STATE(_pAd, _State)                             \
+	{                                                                      \
+		_pAd->CommonCfg.DfsParameter.ZeroWaitDfsState = _State;        \
 	}
 
-#define UPDATE_MT_ZEROWAIT_DFS_Support(_pAd, _Enable) \
-	{                                         \
-		_pAd->CommonCfg.DfsParameter.bZeroWaitSupport = _Enable; \
+#define UPDATE_MT_ZEROWAIT_DFS_Support(_pAd, _Enable)                          \
+	{                                                                      \
+		_pAd->CommonCfg.DfsParameter.bZeroWaitSupport = _Enable;       \
 	}
 
-#define IS_SUPPORT_MT_ZEROWAIT_DFS(_pAd) \
+#define IS_SUPPORT_MT_ZEROWAIT_DFS(_pAd)                                       \
 	(_pAd->CommonCfg.DfsParameter.bZeroWaitSupport == TRUE)
 
-#define IS_SUPPORT_DEDICATED_ZEROWAIT_DFS(_pAd) \
+#define IS_SUPPORT_DEDICATED_ZEROWAIT_DFS(_pAd)                                \
 	(_pAd->CommonCfg.DfsParameter.bDedicatedZeroWaitSupport == TRUE)
 
 #ifdef ONDEMAND_DFS
-#define IS_SUPPORT_ONDEMAND_ZEROWAIT_DFS(_pAd) \
-	((_pAd->CommonCfg.DfsParameter.bOnDemandZeroWaitSupport == TRUE) \
-	 && (_pAd->CommonCfg.DfsParameter.bDfsEnable == TRUE) \
-	 && (_pAd->CommonCfg.bIEEE80211H == TRUE))
+#define IS_SUPPORT_ONDEMAND_ZEROWAIT_DFS(_pAd)                                 \
+	((_pAd->CommonCfg.DfsParameter.bOnDemandZeroWaitSupport == TRUE) &&    \
+	 (_pAd->CommonCfg.DfsParameter.bDfsEnable == TRUE) &&                  \
+	 (_pAd->CommonCfg.bIEEE80211H == TRUE))
 
-#define IS_ONDEMAND_ACS_LIST_VALID(_pAd) \
+#define IS_ONDEMAND_ACS_LIST_VALID(_pAd)                                       \
 	(_pAd->CommonCfg.DfsParameter.bOnDemandChannelListValid == TRUE)
-#define SET_ONDEMAND_ACS_LIST_INVALID(_pAd) \
-		(_pAd->CommonCfg.DfsParameter.bOnDemandChannelListValid = FALSE)
+#define SET_ONDEMAND_ACS_LIST_INVALID(_pAd)                                    \
+	(_pAd->CommonCfg.DfsParameter.bOnDemandChannelListValid = FALSE)
 #endif
 
 #ifdef DFS_VENDOR10_CUSTOM_FEATURE
-#define IS_SUPPORT_V10_DFS(_pAd) \
-	((_pAd->CommonCfg.DfsParameter.bDFSV10Support == TRUE) \
-	 && (_pAd->CommonCfg.DfsParameter.bDfsEnable == TRUE) \
-	 && (_pAd->CommonCfg.bIEEE80211H == TRUE))
+#define IS_SUPPORT_V10_DFS(_pAd)                                               \
+	((_pAd->CommonCfg.DfsParameter.bDFSV10Support == TRUE) &&              \
+	 (_pAd->CommonCfg.DfsParameter.bDfsEnable == TRUE) &&                  \
+	 (_pAd->CommonCfg.bIEEE80211H == TRUE))
 
-#define IS_DFS_V10_ACS_VALID(_pAd) \
+#define IS_DFS_V10_ACS_VALID(_pAd)                                             \
 	(_pAd->CommonCfg.DfsParameter.bV10ChannelListValid == TRUE)
-#define SET_DFS_V10_ACS_VALID(_pAd, valid) \
-		(_pAd->CommonCfg.DfsParameter.bV10ChannelListValid = valid)
+#define SET_DFS_V10_ACS_VALID(_pAd, valid)                                     \
+	(_pAd->CommonCfg.DfsParameter.bV10ChannelListValid = valid)
 #endif
 
-#define CHK_MT_ZEROWAIT_DFS_STATE(_pAd, __STATE) \
+#define CHK_MT_ZEROWAIT_DFS_STATE(_pAd, __STATE)                               \
 	((_pAd->CommonCfg.DfsParameter.ZeroWaitDfsState == __STATE))
 
-#define GET_MT_ZEROWAIT_DFS_STATE(_pAd) \
+#define GET_MT_ZEROWAIT_DFS_STATE(_pAd)                                        \
 	((_pAd->CommonCfg.DfsParameter.ZeroWaitDfsState))
 
-#define UPDATE_MT_INIT_ZEROWAIT_MBSS(_pAd, _Enable) \
-	{                                         \
-		_pAd->CommonCfg.DfsParameter.bInitMbssZeroWait = _Enable; \
+#define UPDATE_MT_INIT_ZEROWAIT_MBSS(_pAd, _Enable)                            \
+	{                                                                      \
+		_pAd->CommonCfg.DfsParameter.bInitMbssZeroWait = _Enable;      \
 	}
 
-#define GET_MT_MT_INIT_ZEROWAIT_MBSS(_pAd) \
+#define GET_MT_MT_INIT_ZEROWAIT_MBSS(_pAd)                                     \
 	((_pAd->CommonCfg.DfsParameter.bInitMbssZeroWait))
 
 #endif /* MT_DFS_SUPPORT */
@@ -115,62 +112,48 @@ struct freq_cfg;
 /* 802.11H */
 struct DOT11_H {
 	/* 802.11H and DFS related params */
-	UCHAR CSCount;		/*Channel switch counter */
-	UCHAR CSPeriod;	/*Channel switch period (beacon count) */
-	USHORT RDCount;	/*Radar detection counter, if RDCount >  ChMovingTime, start to send beacons*/
-	UCHAR RDMode;		/*Radar Detection mode */
+	UCHAR CSCount; /*Channel switch counter */
+	UCHAR CSPeriod; /*Channel switch period (beacon count) */
+	USHORT RDCount; /*Radar detection counter, if RDCount >  ChMovingTime, start to send beacons*/
+	UCHAR RDMode; /*Radar Detection mode */
 	UCHAR org_ch;
 	UCHAR new_channel;
 	USHORT ChMovingTime;
 	USHORT DfsZeroWaitChMovingTime;
 	BOOLEAN bDFSIndoor;
-	ULONG InServiceMonitorCount;	/* unit: sec */
-	ULONG CalBufTime;	/* A Timing buffer for befroe calibrations which generates Tx signals */
+	ULONG InServiceMonitorCount; /* unit: sec */
+	ULONG CalBufTime; /* A Timing buffer for befroe calibrations which generates Tx signals */
 	UINT16 wdev_count;
 #ifdef CONFIG_MAP_SUPPORT
 	BOOLEAN cac_not_required;
 #endif
 };
 
-BOOLEAN RadarChannelCheck(
-	IN PRTMP_ADAPTER	pAd,
-	IN UCHAR			Ch);
+BOOLEAN RadarChannelCheck(IN PRTMP_ADAPTER pAd, IN UCHAR Ch);
 
-VOID RadarStateCheck(
-	struct _RTMP_ADAPTER *pAd,
-	struct wifi_dev *wdev);
+VOID RadarStateCheck(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 
-BOOLEAN CheckNonOccupancyChannel(
-	IN PRTMP_ADAPTER pAd,
-	IN struct wifi_dev *wdev,
-	IN UCHAR ch);
+BOOLEAN CheckNonOccupancyChannel(IN PRTMP_ADAPTER pAd, IN struct wifi_dev *wdev,
+				 IN UCHAR ch);
 
-ULONG JapRadarType(
-	IN PRTMP_ADAPTER pAd);
+ULONG JapRadarType(IN PRTMP_ADAPTER pAd);
 
-UCHAR get_channel_by_reference(
-	IN PRTMP_ADAPTER pAd,
-	IN UINT8 mode,
-	IN struct wifi_dev *wdev);
+UCHAR get_channel_by_reference(IN PRTMP_ADAPTER pAd, IN UINT8 mode,
+			       IN struct wifi_dev *wdev);
 
 #ifdef CONFIG_AP_SUPPORT
-VOID ChannelSwitchingCountDownProc(
-	IN PRTMP_ADAPTER	pAd,
-	struct wifi_dev *wdev);
+VOID ChannelSwitchingCountDownProc(IN PRTMP_ADAPTER pAd, struct wifi_dev *wdev);
 
 NTSTATUS Dot11HCntDownTimeoutAction(RTMP_ADAPTER *pAd, PCmdQElmt CMDQelmt);
 
 #ifdef CUSTOMER_DCC_FEATURE
-VOID ChannelSwitchingCountDownProcNew(
-	IN PRTMP_ADAPTER	pAd,
-	struct wifi_dev *wdev);
+VOID ChannelSwitchingCountDownProcNew(IN PRTMP_ADAPTER pAd,
+				      struct wifi_dev *wdev);
 #endif
 
 #endif /* CONFIG_AP_SUPPORT */
 
-VOID RadarDetectPeriodic(
-	IN PRTMP_ADAPTER	pAd,
-	IN UCHAR Channel);
+VOID RadarDetectPeriodic(IN PRTMP_ADAPTER pAd, IN UCHAR Channel);
 
 INT Set_CSPeriod_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
@@ -179,7 +162,8 @@ INT Set_ChMovingTime_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 INT Set_BlockChReset_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
 /* wdev->pDot11H Initailization */
-VOID UpdateDot11hForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, BOOLEAN attach);
+VOID UpdateDot11hForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 BOOLEAN attach);
 
 #ifdef CUSTOMISE_RDD_THRESHOLD_SUPPORT
 INT Set_RadarMinLPN_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
@@ -192,7 +176,7 @@ INT Set_RadarDbgLogConfig_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 #endif /* CUSTOMISE_RDD_THRESHOLD_SUPPORT */
 
 #ifdef RDM_FALSE_ALARM_DEBUG_SUPPORT
-INT	Set_RadarTestPulsePattern_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
+INT Set_RadarTestPulsePattern_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 #endif /* RDM_FALSE_ALARM_DEBUG_SUPPORT */
 
 #endif /* __RADAR_H__ */

@@ -23,21 +23,20 @@
 
 typedef struct _SCAN_INFO_ {
 	UCHAR SyncCurrState;
-	ULONG LastScanTime;	/* Record last scan time for issue BSSID_SCAN_LIST */
-	/* ULONG LastBeaconRxTime;*/	 /*OS's timestamp of the last BEACON RX time */
+	ULONG LastScanTime; /* Record last scan time for issue BSSID_SCAN_LIST */
+	/* ULONG LastBeaconRxTime;*/ /*OS's timestamp of the last BEACON RX time */
 
 	BOOLEAN bImprovedScan;
-	UCHAR ScanChannelCnt;	/* 0 at the beginning of scan, stop at 7 */
+	UCHAR ScanChannelCnt; /* 0 at the beginning of scan, stop at 7 */
 	UCHAR LastScanChannel;
 
-    UINT32 *ChanList;    /* the channel list from from wpa_supplicant */
-    UCHAR ChanListLen;   /* channel list length */
-	UCHAR ChanListIdx;   /* current index in channel list when driver in scanning */
+	UINT32 *ChanList; /* the channel list from from wpa_supplicant */
+	UCHAR ChanListLen; /* channel list length */
+	UCHAR ChanListIdx; /* current index in channel list when driver in scanning */
 
-	UCHAR *ExtraIe;  /* Carry on Scan action from supplicant */
-	UINT   ExtraIeLen;
+	UCHAR *ExtraIe; /* Carry on Scan action from supplicant */
+	UINT ExtraIeLen;
 
 	BOOLEAN bFastConnect;
-	BOOLEAN bNotFirstScan;	/* Sam add for ADHOC flag to do first scan when do initialization */
+	BOOLEAN bNotFirstScan; /* Sam add for ADHOC flag to do first scan when do initialization */
 } SCAN_INFO;
-

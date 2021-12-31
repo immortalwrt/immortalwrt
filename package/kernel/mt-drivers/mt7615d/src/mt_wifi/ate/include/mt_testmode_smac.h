@@ -17,9 +17,7 @@
 #ifndef __MT_TESTMODE_SMAC_H__
 #define __MT_TESTMODE_SMAC_H__
 
-
 INT mt_ate_mac_cr_restore(struct _RTMP_ADAPTER *pAd);
 INT mt_ate_mac_cr_backup_and_set(struct _RTMP_ADAPTER *pAd);
-
 
 #endif /*  __MT_TESTMODE_SMAC_H__ */

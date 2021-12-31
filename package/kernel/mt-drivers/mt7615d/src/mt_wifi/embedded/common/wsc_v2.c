@@ -19,26 +19,19 @@
 	wsc_v2.c
 */
 
-#include    "rt_config.h"
+#include "rt_config.h"
 
 #ifdef WSC_V2_SUPPORT
-#include    "wsc_tlv.h"
+#include "wsc_tlv.h"
 
-BOOLEAN	WscAppendV2SubItem(
-	IN  UCHAR SubID,
-	IN  PUCHAR pData,
-	IN  UCHAR DataLen,
-	OUT PUCHAR pOutBuf,
-	OUT PUCHAR pOutBufLen);
+BOOLEAN WscAppendV2SubItem(IN UCHAR SubID, IN PUCHAR pData, IN UCHAR DataLen,
+			   OUT PUCHAR pOutBuf, OUT PUCHAR pOutBufLen);
 
 #ifdef CONFIG_AP_SUPPORT
-VOID WscOnOff(
-	IN  PRTMP_ADAPTER pAd,
-	IN  INT ApIdx,
-	IN  BOOLEAN bOff)
+VOID WscOnOff(IN PRTMP_ADAPTER pAd, IN INT ApIdx, IN BOOLEAN bOff)
 {
 	struct wifi_dev *wdev;
-	PWSC_V2_INFO	pWpsV2Info;
+	PWSC_V2_INFO pWpsV2Info;
 
 	wdev = &pAd->ApCfg.MBSSID[ApIdx & 0x0F].wdev;
 	pWpsV2Info = &wdev->WscControl.WscV2Info;
@@ -49,7 +42,7 @@ VOID WscOnOff(
 		wdev->WscIEBeacon.ValueLen = 0;
 		wdev->WscIEProbeResp.ValueLen = 0;
 		MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_TRACE,
-				 ("WscOnOff - OFF.\n"));
+			 ("WscOnOff - OFF.\n"));
 	} else {
 		pWpsV2Info->bWpsEnable = TRUE;
 
@@ -57,47 +50,41 @@ VOID WscOnOff(
 			INT IsAPConfigured;
 
 			IsAPConfigured = wdev->WscControl.WscConfStatus;
-			WscBuildBeaconIE(pAd,
-							 IsAPConfigured,
-							 FALSE,
-							 0,
-							 0,
-							 (ApIdx & 0x0F), NULL, 0, AP_MODE);
-			WscBuildProbeRespIE(pAd,
-								WSC_MSGTYPE_AP_WLAN_MGR,
-								IsAPConfigured, FALSE,
-								0, 0, ApIdx, NULL, 0, AP_MODE);
+			WscBuildBeaconIE(pAd, IsAPConfigured, FALSE, 0, 0,
+					 (ApIdx & 0x0F), NULL, 0, AP_MODE);
+			WscBuildProbeRespIE(pAd, WSC_MSGTYPE_AP_WLAN_MGR,
+					    IsAPConfigured, FALSE, 0, 0, ApIdx,
+					    NULL, 0, AP_MODE);
 			MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_TRACE,
-					 ("WscOnOff - ON.\n"));
+				 ("WscOnOff - ON.\n"));
 		}
 	}
 
 	MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_TRACE,
-			 ("WscOnOff - bWpsEnable = %d\n", pWpsV2Info->bWpsEnable));
+		 ("WscOnOff - bWpsEnable = %d\n", pWpsV2Info->bWpsEnable));
 }
 
-VOID WscAddEntryToAclList(
-	IN  PRTMP_ADAPTER pAd,
-	IN  INT	ApIdx,
-	IN  PUCHAR pMacAddr)
+VOID WscAddEntryToAclList(IN PRTMP_ADAPTER pAd, IN INT ApIdx,
+			  IN PUCHAR pMacAddr)
 {
-	PRT_802_11_ACL	pACL = NULL;
+	PRT_802_11_ACL pACL = NULL;
 	INT i;
 	BOOLEAN bFound = FALSE;
 
 	pACL = &pAd->ApCfg.MBSSID[ApIdx].AccessControlList;
-	if ((pACL->Policy == 0) ||
-		(pACL->Policy == 2))
+	if ((pACL->Policy == 0) || (pACL->Policy == 2))
 		return;
 
 	if (pACL->Num >= (MAX_NUM_OF_ACL_LIST - 1)) {
-		MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_WARN,
+		MTWF_LOG(
+			DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_WARN,
 			("The AccessControlList is full, and no more entry can join the list!\n"));
 		return;
 	}
 
 	for (i = 0; i < pACL->Num; i++) {
-		if (NdisEqualMemory(pACL->Entry[i].Addr, pMacAddr, MAC_ADDR_LEN))
+		if (NdisEqualMemory(pACL->Entry[i].Addr, pMacAddr,
+				    MAC_ADDR_LEN))
 			bFound = TRUE;
 	}
 
@@ -107,11 +94,43 @@ VOID WscAddEntryToAclList(
 	}
 }
 
-VOID WscSetupLockTimeout(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3)
+VOID WscDeleteEntryFromAclList(IN PRTMP_ADAPTER pAd, IN INT ApIdx,
+			       IN PUCHAR pMacAddr)
+{
+	PRT_802_11_ACL pACL = NULL;
+	INT i;
+
+	pACL = &pAd->ApCfg.MBSSID[ApIdx].AccessControlList;
+	if ((pACL->Policy == 0) || (pACL->Policy == 1))
+		return;
+
+	if (pACL->Num == 0) {
+		MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_WARN,
+			 ("The AccessControlList is empty!\n"));
+		return;
+	}
+
+	for (i = 0; i < pACL->Num; i++) {
+		if (NdisEqualMemory(pACL->Entry[i].Addr, pMacAddr,
+				    MAC_ADDR_LEN)) {
+			break;
+		}
+	}
+
+	if (i >= pACL->Num) {
+		MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_TRACE,
+			 ("No matching entry!\n"));
+		return;
+	}
+
+	NdisMoveMemory(pACL->Entry[i].Addr, pACL->Entry[pACL->Num - 1].Addr,
+		       MAC_ADDR_LEN);
+	NdisZeroMemory(pACL->Entry[pACL->Num - 1].Addr, MAC_ADDR_LEN);
+	pACL->Num--;
+}
+
+VOID WscSetupLockTimeout(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
+			 IN PVOID SystemSpecific2, IN PVOID SystemSpecific3)
 {
 	PWSC_CTRL pWscControl = (PWSC_CTRL)FunctionContext;
 	PRTMP_ADAPTER pAd = NULL;
@@ -130,43 +149,23 @@ VOID WscSetupLockTimeout(
 	wdev = &pAd->ApCfg.MBSSID[apidx].wdev;
 	pWscControl->bSetupLock = FALSE;
 	pWscControl->WscSetupLockTimerRunning = FALSE;
-	WscBuildBeaconIE(pAd,
-			 pWscControl->WscConfStatus,
-			 FALSE,
-			 0,
-			 0,
-			 (pWscControl->EntryIfIdx & 0xF),
-			 NULL,
-			 0,
-			 AP_MODE);
-	WscBuildProbeRespIE(pAd,
-			WSC_MSGTYPE_AP_WLAN_MGR,
-			pWscControl->WscConfStatus,
-			FALSE,
-			0,
-			0,
-			pWscControl->EntryIfIdx,
-			NULL,
-			0,
-			AP_MODE);
-	UpdateBeaconHandler(
-		pAd,
-		wdev,
-		BCN_UPDATE_IE_CHG);
+	WscBuildBeaconIE(pAd, pWscControl->WscConfStatus, FALSE, 0, 0,
+			 (pWscControl->EntryIfIdx & 0xF), NULL, 0, AP_MODE);
+	WscBuildProbeRespIE(pAd, WSC_MSGTYPE_AP_WLAN_MGR,
+			    pWscControl->WscConfStatus, FALSE, 0, 0,
+			    pWscControl->EntryIfIdx, NULL, 0, AP_MODE);
+	UpdateBeaconHandler(pAd, wdev, BCN_UPDATE_IE_CHG);
 	MTWF_LOG(DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_TRACE,
-		("WscSetupLockTimeout!\n"));
+		 ("WscSetupLockTimeout!\n"));
 }
 
-VOID WscCheckPinAttackCount(
-	IN  PRTMP_ADAPTER pAd,
-	IN  PWSC_CTRL pWscControl)
+VOID WscCheckPinAttackCount(IN PRTMP_ADAPTER pAd, IN PWSC_CTRL pWscControl)
 {
-	BOOLEAN	bCancelled;
+	BOOLEAN bCancelled;
 	UCHAR apidx = pWscControl->EntryIfIdx & 0x0F;
 	struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[apidx].wdev;
 
-	if ((pWscControl->EntryIfIdx & MIN_NET_DEVICE_FOR_APCLI)
-	   ) {
+	if ((pWscControl->EntryIfIdx & MIN_NET_DEVICE_FOR_APCLI)) {
 		/* APCLI and P2P CLI don't need to do PIN attack checking. */
 		return;
 	}
@@ -185,38 +184,24 @@ VOID WscCheckPinAttackCount(
 		pWscControl->bSetupLock = TRUE;
 
 		if (pWscControl->WscSetupLockTimerRunning) {
-			RTMPCancelTimer(&pWscControl->WscSetupLockTimer, &bCancelled);
+			RTMPCancelTimer(&pWscControl->WscSetupLockTimer,
+					&bCancelled);
 			pWscControl->WscSetupLockTimerRunning = FALSE;
 		}
 
 		if (pWscControl->PinAttackCount < WSC_LOCK_FOREVER_PIN_ATTACK) {
 			pWscControl->WscSetupLockTimerRunning = TRUE;
-			RTMPSetTimer(&pWscControl->WscSetupLockTimer, pWscControl->SetupLockTime * 60 * 1000);
+			RTMPSetTimer(&pWscControl->WscSetupLockTimer,
+				     pWscControl->SetupLockTime * 60 * 1000);
 		}
 
-		WscBuildBeaconIE(pAd,
-						 pWscControl->WscConfStatus,
-						 FALSE,
-						 0,
-						 0,
-						 (pWscControl->EntryIfIdx & 0xF),
-						 NULL,
-						 0,
-						 AP_MODE);
-		WscBuildProbeRespIE(pAd,
-							WSC_MSGTYPE_AP_WLAN_MGR,
-							pWscControl->WscConfStatus,
-							FALSE,
-							0,
-							0,
-							pWscControl->EntryIfIdx,
-							NULL,
-							0,
-							AP_MODE);
-		UpdateBeaconHandler(
-			pAd,
-			wdev,
-			BCN_UPDATE_IE_CHG);
+		WscBuildBeaconIE(pAd, pWscControl->WscConfStatus, FALSE, 0, 0,
+				 (pWscControl->EntryIfIdx & 0xF), NULL, 0,
+				 AP_MODE);
+		WscBuildProbeRespIE(pAd, WSC_MSGTYPE_AP_WLAN_MGR,
+				    pWscControl->WscConfStatus, FALSE, 0, 0,
+				    pWscControl->EntryIfIdx, NULL, 0, AP_MODE);
+		UpdateBeaconHandler(pAd, wdev, BCN_UPDATE_IE_CHG);
 	}
 }
 
@@ -238,18 +223,14 @@ VOID WscCheckPinAttackCount(
 *		Request to Enroll		Bool
 *		Settings Delay Time		1B
 */
-BOOLEAN	WscGenV2Msg(
-	IN  PWSC_CTRL pWpsCtrl,
-	IN  BOOLEAN bSelRegistrar,
-	IN  PUCHAR pAuthorizedMACs,
-	IN  INT AuthorizedMACsLen,
-	OUT UCHAR **pOutBuf,
-	OUT INT *pOutBufLen)
+BOOLEAN WscGenV2Msg(IN PWSC_CTRL pWpsCtrl, IN BOOLEAN bSelRegistrar,
+		    IN PUCHAR pAuthorizedMACs, IN INT AuthorizedMACsLen,
+		    OUT UCHAR **pOutBuf, OUT INT *pOutBufLen)
 {
-	PUCHAR			pWscV2Msg = NULL;
-	USHORT			WscV2MsgLen = 0;
-	PWSC_REG_DATA	pReg = &pWpsCtrl->RegData;
-	INT				templen = 0;
+	PUCHAR pWscV2Msg = NULL;
+	USHORT WscV2MsgLen = 0;
+	PWSC_REG_DATA pReg = &pWpsCtrl->RegData;
+	INT templen = 0;
 
 	os_alloc_mem(NULL, (UCHAR **)&pWscV2Msg, 128);
 	if (pWscV2Msg) {
@@ -259,7 +240,9 @@ BOOLEAN	WscGenV2Msg(
 		pWscV2Msg[1] = 0x37;
 		pWscV2Msg[2] = 0x2A;
 		/* Version2 */
-		WscAppendV2SubItem(WFA_EXT_ID_VERSION2, &pReg->SelfInfo.Version2, 1, pWscV2Msg + 3, &TmpLen);
+		WscAppendV2SubItem(WFA_EXT_ID_VERSION2,
+				   &pReg->SelfInfo.Version2, 1, pWscV2Msg + 3,
+				   &TmpLen);
 		WscV2MsgLen += (3 + (USHORT)TmpLen);
 
 		if (bSelRegistrar) {
@@ -270,25 +253,24 @@ BOOLEAN	WscGenV2Msg(
 			*/
 			if (pAuthorizedMACs) {
 				WscAppendV2SubItem(WFA_EXT_ID_AUTHORIZEDMACS,
-							pAuthorizedMACs,
-							AuthorizedMACsLen,
-							pWscV2Msg + WscV2MsgLen,
-							&TmpLen);
+						   pAuthorizedMACs,
+						   AuthorizedMACsLen,
+						   pWscV2Msg + WscV2MsgLen,
+						   &TmpLen);
 				WscV2MsgLen += (USHORT)TmpLen;
 			} else {
 				WscAppendV2SubItem(WFA_EXT_ID_AUTHORIZEDMACS,
-							BROADCAST_ADDR,
-							MAC_ADDR_LEN,
-							pWscV2Msg + WscV2MsgLen,
-							&TmpLen);
+						   BROADCAST_ADDR, MAC_ADDR_LEN,
+						   pWscV2Msg + WscV2MsgLen,
+						   &TmpLen);
 				WscV2MsgLen += (USHORT)TmpLen;
 			}
 		}
 
-		templen = AppendWSCTLV(WSC_ID_VENDOR_EXT,
-			(*pOutBuf), (UINT8 *)pWscV2Msg, WscV2MsgLen);
+		templen = AppendWSCTLV(WSC_ID_VENDOR_EXT, (*pOutBuf),
+				       (UINT8 *)pWscV2Msg, WscV2MsgLen);
 		(*pOutBuf) += templen;
-		(*pOutBufLen)   += templen;
+		(*pOutBufLen) += templen;
 		os_free_mem(pWscV2Msg);
 		return TRUE;
 	}
@@ -296,14 +278,10 @@ BOOLEAN	WscGenV2Msg(
 	return FALSE;
 }
 
-BOOLEAN	WscAppendV2SubItem(
-	IN  UCHAR SubID,
-	IN  PUCHAR pData,
-	IN  UCHAR DataLen,
-	OUT PUCHAR pOutBuf,
-	OUT PUCHAR pOutBufLen)
+BOOLEAN WscAppendV2SubItem(IN UCHAR SubID, IN PUCHAR pData, IN UCHAR DataLen,
+			   OUT PUCHAR pOutBuf, OUT PUCHAR pOutBufLen)
 {
-	PUCHAR	pBuf = NULL;
+	PUCHAR pBuf = NULL;
 
 	os_alloc_mem(NULL, &pBuf, DataLen + 10);
 	if (pBuf) {
@@ -319,17 +297,13 @@ BOOLEAN	WscAppendV2SubItem(
 	return FALSE;
 }
 
-BOOLEAN	WscParseV2SubItem(
-	IN  UCHAR SubID,
-	IN  PUCHAR pData,
-	IN  USHORT DataLen,
-	OUT PUCHAR pOutBuf,
-	OUT PUCHAR pOutBufLen)
+BOOLEAN WscParseV2SubItem(IN UCHAR SubID, IN PUCHAR pData, IN USHORT DataLen,
+			  OUT PUCHAR pOutBuf, OUT PUCHAR pOutBufLen)
 {
-	PEID_STRUCT   pEid;
-	USHORT		  Length = 0;
+	PEID_STRUCT pEid;
+	USHORT Length = 0;
 
-	pEid = (PEID_STRUCT) (pData + 3);
+	pEid = (PEID_STRUCT)(pData + 3);
 	hex_dump("WscParseV2SubItem - pData", (pData + 3), DataLen - 3);
 	while ((Length + 2 + pEid->Len) <= (DataLen - 3)) {
 		if (pEid->Eid == SubID) {
@@ -345,10 +319,8 @@ BOOLEAN	WscParseV2SubItem(
 	return FALSE;
 }
 
-VOID	WscSendEapFragAck(
-	IN  PRTMP_ADAPTER pAdapter,
-	IN  PWSC_CTRL pWscControl,
-	IN  PMAC_TABLE_ENTRY pEntry)
+VOID WscSendEapFragAck(IN PRTMP_ADAPTER pAdapter, IN PWSC_CTRL pWscControl,
+		       IN PMAC_TABLE_ENTRY pEntry)
 {
 	if (pEntry == NULL) {
 		ASSERT(pEntry != NULL);
@@ -359,30 +331,27 @@ VOID	WscSendEapFragAck(
 		pWscControl->bWscLastOne = TRUE;
 
 		if (pAdapter->OpMode == OPMODE_AP) {
-			WscSendMessage(pAdapter,
-			WSC_OPCODE_FRAG_ACK, NULL,
-			0, pWscControl, AP_MODE, EAP_CODE_REQ);
+			WscSendMessage(pAdapter, WSC_OPCODE_FRAG_ACK, NULL, 0,
+				       pWscControl, AP_MODE, EAP_CODE_REQ);
 		} else {
-			if (ADHOC_ON(pAdapter)
-				&& (pWscControl->WscConfMode == WSC_REGISTRAR))
-				WscSendMessage(pAdapter,
-				WSC_OPCODE_FRAG_ACK, NULL, 0,
-				pWscControl, STA_MODE, EAP_CODE_REQ);
+			if (ADHOC_ON(pAdapter) &&
+			    (pWscControl->WscConfMode == WSC_REGISTRAR))
+				WscSendMessage(pAdapter, WSC_OPCODE_FRAG_ACK,
+					       NULL, 0, pWscControl, STA_MODE,
+					       EAP_CODE_REQ);
 			else
 				WscSendMessage(pAdapter, WSC_OPCODE_FRAG_ACK,
-				NULL, 0, pWscControl, STA_MODE, EAP_CODE_RSP);
+					       NULL, 0, pWscControl, STA_MODE,
+					       EAP_CODE_RSP);
 		}
 	} else if (IS_ENTRY_APCLI(pEntry)) {
-		WscSendMessage(pAdapter,
-		WSC_OPCODE_FRAG_ACK, NULL, 0,
-		pWscControl, AP_CLIENT_MODE, EAP_CODE_RSP);
+		WscSendMessage(pAdapter, WSC_OPCODE_FRAG_ACK, NULL, 0,
+			       pWscControl, AP_CLIENT_MODE, EAP_CODE_RSP);
 	}
 }
 
-VOID	WscSendEapFragData(
-	IN  PRTMP_ADAPTER pAdapter,
-	IN  PWSC_CTRL pWscControl,
-	IN  PMAC_TABLE_ENTRY pEntry)
+VOID WscSendEapFragData(IN PRTMP_ADAPTER pAdapter, IN PWSC_CTRL pWscControl,
+			IN PMAC_TABLE_ENTRY pEntry)
 {
 	INT DataLen = 0;
 	PUCHAR pData = NULL;
@@ -408,17 +377,17 @@ VOID	WscSendEapFragData(
 	}
 
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAdapter) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAdapter)
+	{
 		if (IS_ENTRY_APCLI(pEntry))
-			WscSendMessage(pAdapter,
-			WSC_OPCODE_MSG, pData, DataLen,
-			pWscControl, AP_CLIENT_MODE, EAP_CODE_RSP);
+			WscSendMessage(pAdapter, WSC_OPCODE_MSG, pData, DataLen,
+				       pWscControl, AP_CLIENT_MODE,
+				       EAP_CODE_RSP);
 		else
-			WscSendMessage(pAdapter, WSC_OPCODE_MSG,
-			pData, DataLen, pWscControl, AP_MODE, EAP_CODE_REQ);
+			WscSendMessage(pAdapter, WSC_OPCODE_MSG, pData, DataLen,
+				       pWscControl, AP_MODE, EAP_CODE_REQ);
 	}
 #endif /* CONFIG_AP_SUPPORT */
 }
 
 #endif /* WSC_V2_SUPPORT */
-

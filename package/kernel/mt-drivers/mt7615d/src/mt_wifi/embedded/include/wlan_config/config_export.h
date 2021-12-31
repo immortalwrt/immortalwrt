@@ -39,34 +39,33 @@ struct phy_cfg {
 };
 
 struct ht_cfg {
-	UCHAR	ext_cha;
-	UCHAR	ht_bw;
-	UCHAR	ht_stbc;
-	UCHAR	ht_ldpc;
-	UCHAR	ht_gi;
-	UCHAR	ht_protect_en;
-	UCHAR	ht_mode; /* mix_mode or gf_mode */
-	UCHAR	gf_support;
-	UCHAR	ht40_intolerant;
-	UINT32	frag_thld;
-	UCHAR	pkt_thld;
-	UINT32	len_thld;
-	UCHAR   retry_limit;
-	UCHAR	min_mpdu_start_space;
-	UCHAR	amsdu_en;
-	UCHAR	mmps;
+	UCHAR ext_cha;
+	UCHAR ht_bw;
+	UCHAR ht_stbc;
+	UCHAR ht_ldpc;
+	UCHAR ht_gi;
+	UCHAR ht_protect_en;
+	UCHAR ht_mode; /* mix_mode or gf_mode */
+	UCHAR gf_support;
+	UCHAR ht40_intolerant;
+	UINT32 frag_thld;
+	UCHAR pkt_thld;
+	UINT32 len_thld;
+	UCHAR retry_limit;
+	UCHAR min_mpdu_start_space;
+	UCHAR amsdu_en;
+	UCHAR mmps;
 	/* EDCA parameters to be announced to its local BSS */
 	struct _EDCA_PARM EdcaParm;
 };
 
 struct vht_cfg {
-	UCHAR 	vht_bw;
-	UCHAR	vht_stbc;
-	UCHAR	vht_ldpc;
-	UCHAR	vht_sgi; /* including both bw80 & bw160 */
-	UCHAR	vht_bw_sig; /* 0:n/a, 1:static, 2:dynamic */
+	UCHAR vht_bw;
+	UCHAR vht_stbc;
+	UCHAR vht_ldpc;
+	UCHAR vht_sgi; /* including both bw80 & bw160 */
+	UCHAR vht_bw_sig; /* 0:n/a, 1:static, 2:dynamic */
 };
-
 
 /*for profile usage*/
 VOID wpf_init(struct _RTMP_ADAPTER *ad);
@@ -147,6 +146,7 @@ VOID wlan_config_set_rts_pkt_thld(struct wifi_dev *wdev, UCHAR pkt_thld);
 VOID wlan_config_set_ht_gi(struct wifi_dev *wdev, UCHAR ht_git);
 VOID wlan_config_set_ht_protect_en(struct wifi_dev *wdev, UCHAR ht_protect);
 VOID wlan_config_set_amsdu_en(struct wifi_dev *wdev, UCHAR enable);
-VOID wlan_config_set_min_mpdu_start_space(struct wifi_dev *wdev, UCHAR mpdu_density);
+VOID wlan_config_set_min_mpdu_start_space(struct wifi_dev *wdev,
+					  UCHAR mpdu_density);
 VOID wlan_config_set_mmps(struct wifi_dev *wdev, UCHAR mmps);
 #endif

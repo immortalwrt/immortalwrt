@@ -18,15 +18,16 @@
 */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define PATH_OF_SKU_TABLE_IN   "/txpwr/sku_tables/"
-#define PATH_OF_SKU_TABEL_OUT  "/include/txpwr/"
+#define PATH_OF_SKU_TABLE_IN "/txpwr/sku_tables/"
+#define PATH_OF_SKU_TABEL_OUT "/include/txpwr/"
 
-#define MAX_SKUTABLE_NUM            20
+#define MAX_SKUTABLE_NUM 20
 
-int dat2h(char *infname, char *outfname, char *varname, char *deffname, const char *mode)
+int dat2h(char *infname, char *outfname, char *varname, char *deffname,
+	  const char *mode)
 {
 	int ret = 0;
 	FILE *infile, *outfile, *definfile;
@@ -37,7 +38,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 	infile = fopen(infname, "r");
 
 	/* Check open file status for input file */
-	if (infile == (FILE *) NULL) {
+	if (infile == (FILE *)NULL) {
 		printf("Can't read file %s\n", infname);
 		printf("System would automatically apply default table !!\n");
 		/* Flag for use Default SKU table */
@@ -46,7 +47,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 		definfile = fopen(deffname, "r");
 
 		/* Check open file status for default file */
-		if (definfile == (FILE *) NULL) {
+		if (definfile == (FILE *)NULL) {
 			printf("Can't read def file %s\n", deffname);
 			return -1;
 		}
@@ -55,7 +56,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 	outfile = fopen(outfname, mode);
 
 	/* Check open file status for output file */
-	if (outfile == (FILE *) NULL) {
+	if (outfile == (FILE *)NULL) {
 		printf("Can't open write file %s\n", outfname);
 
 		/* Close input file or default input file */
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
 	char deffname[512];
 	char varname[128];
 	char *rt28xxdir;
-	int  SKUTableIdx;
+	int SKUTableIdx;
 	char cc[20];
 
 	rt28xxdir = (char *)getenv("RT28xx_DIR");
@@ -213,4 +214,3 @@ int main(int argc, char *argv[])
 		dat2h(infname, outfname, varname, deffname, "w");
 	}
 }
-

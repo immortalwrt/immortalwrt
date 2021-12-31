@@ -2,21 +2,11 @@
 #ifndef _LOOPBACK_H_
 #define _LOOPBACK_H_
 
-#define LOOPBACK_SIZE (10240*6)
+#define LOOPBACK_SIZE (10240 * 6)
 
+enum _LOOPBACK_STATUS { RUNNING = 0, PASS, FAIL };
 
-enum _LOOPBACK_STATUS {
-	RUNNING = 0,
-	PASS,
-	FAIL
-};
-
-enum _LOOPBACK_FAIL {
-	NO_ERROR = 0,
-	TX_TIMEOUT,
-	RX_TIMEOUT,
-	BIT_TRUE_FAIL
-};
+enum _LOOPBACK_FAIL { NO_ERROR = 0, TX_TIMEOUT, RX_TIMEOUT, BIT_TRUE_FAIL };
 
 struct _LOOPBACK_SETTING {
 	UINT32 StartLen;
@@ -27,9 +17,9 @@ struct _LOOPBACK_SETTING {
 	UINT32 BulkOutNumber;
 	UINT32 BulkInNumber;
 	UINT32 TxAggNumber;
-	UINT32 RxAggPktLmt;/* pkt numbers */
-	UINT32 RxAggLmt;/* pkt size */
-	UINT32 RxAggTO;/* timeout (us) */
+	UINT32 RxAggPktLmt; /* pkt numbers */
+	UINT32 RxAggLmt; /* pkt size */
+	UINT32 RxAggTO; /* timeout (us) */
 	UINT32 RxAggEnable;
 	/* #endif */
 };
@@ -50,25 +40,25 @@ struct _LOOPBACK_RESULT {
 	/* #endif */
 };
 struct _LOOPBACK_CTRL {
-	BOOLEAN				DebugMode;
-	BOOLEAN				LoopBackRunning;
-	BOOLEAN				LoopBackWaitRx;
-	struct _LOOPBACK_RESULT		LoopBackResult;
-	struct _LOOPBACK_SETTING	LoopBackSetting;
-	UINT8				LoopBackBulkoutNumber;
-	UCHAR				LoopBackTxRaw[LOOPBACK_SIZE];
-	UCHAR				LoopBackRxRaw[LOOPBACK_SIZE];
-	UINT32				LoopBackTxRawLen;
-	UINT32				LoopBackRxRawLen;
-	UINT32				LoopBackExpectTxLen;
-	UINT32				LoopBackExpectRxLen;
-	UCHAR				LoopBackExpectTx[LOOPBACK_SIZE];
-	UCHAR				LoopBackExpectRx[LOOPBACK_SIZE];
-	NDIS_SPIN_LOCK		LoopBackLock;
-	BOOLEAN				LoopBackDefaultPattern;
-	RTMP_OS_TASK		LoopBackTxTask;
-	RTMP_OS_COMPLETION	LoopBackEvent;
-	BOOLEAN				LoopBackUDMA;
+	BOOLEAN DebugMode;
+	BOOLEAN LoopBackRunning;
+	BOOLEAN LoopBackWaitRx;
+	struct _LOOPBACK_RESULT LoopBackResult;
+	struct _LOOPBACK_SETTING LoopBackSetting;
+	UINT8 LoopBackBulkoutNumber;
+	UCHAR LoopBackTxRaw[LOOPBACK_SIZE];
+	UCHAR LoopBackRxRaw[LOOPBACK_SIZE];
+	UINT32 LoopBackTxRawLen;
+	UINT32 LoopBackRxRawLen;
+	UINT32 LoopBackExpectTxLen;
+	UINT32 LoopBackExpectRxLen;
+	UCHAR LoopBackExpectTx[LOOPBACK_SIZE];
+	UCHAR LoopBackExpectRx[LOOPBACK_SIZE];
+	NDIS_SPIN_LOCK LoopBackLock;
+	BOOLEAN LoopBackDefaultPattern;
+	RTMP_OS_TASK LoopBackTxTask;
+	RTMP_OS_COMPLETION LoopBackEvent;
+	BOOLEAN LoopBackUDMA;
 #ifdef RTMP_PCI_SUPPORT
 	RTMP_OS_COMPLETION LoopBackPCITxEvent;
 #endif
@@ -76,23 +66,30 @@ struct _LOOPBACK_CTRL {
 
 INT32 CheckFWROMWiFiSysOn(struct _RTMP_ADAPTER *pAd);
 
-void LoopBack_Start(struct _RTMP_ADAPTER *pAd, struct _LOOPBACK_SETTING *pSetting);
+void LoopBack_Start(struct _RTMP_ADAPTER *pAd,
+		    struct _LOOPBACK_SETTING *pSetting);
 void LoopBack_Stop(struct _RTMP_ADAPTER *pAd);
-void LoopBack_Status(struct _RTMP_ADAPTER *pAd, struct _LOOPBACK_RESULT *pResult);
-void LoopBack_RawData(struct _RTMP_ADAPTER *pAd, UINT32 *pLength, BOOLEAN IsTx, UINT8 *pRawData);
-void LoopBack_ExpectRx(struct _RTMP_ADAPTER *pAd, UINT32 Length, UINT8 *pRawData);
-void LoopBack_ExpectTx(struct _RTMP_ADAPTER *pAd, UINT32 Length, UINT8 *pRawData);
-void LoopBack_Run(struct _RTMP_ADAPTER *pAd, struct _LOOPBACK_SETTING *pSetting, UINT32 length);
+void LoopBack_Status(struct _RTMP_ADAPTER *pAd,
+		     struct _LOOPBACK_RESULT *pResult);
+void LoopBack_RawData(struct _RTMP_ADAPTER *pAd, UINT32 *pLength, BOOLEAN IsTx,
+		      UINT8 *pRawData);
+void LoopBack_ExpectRx(struct _RTMP_ADAPTER *pAd, UINT32 Length,
+		       UINT8 *pRawData);
+void LoopBack_ExpectTx(struct _RTMP_ADAPTER *pAd, UINT32 Length,
+		       UINT8 *pRawData);
+void LoopBack_Run(struct _RTMP_ADAPTER *pAd, struct _LOOPBACK_SETTING *pSetting,
+		  UINT32 length);
 void LoopBack_BitTrueCheck(struct _RTMP_ADAPTER *pAd);
-void LoopBack_Fail(struct _RTMP_ADAPTER *pAd,  enum _LOOPBACK_FAIL FailNum);
-#ifdef COMPOS_TESTMODE_WIN	/* TODO::Unify thread parameter */
+void LoopBack_Fail(struct _RTMP_ADAPTER *pAd, enum _LOOPBACK_FAIL FailNum);
+#ifdef COMPOS_TESTMODE_WIN /* TODO::Unify thread parameter */
 INT LoopBack_TxThread(IN OUT PVOID Context);
 #else
 INT LoopBack_TxThread(ULONG Context);
 #endif
 void LoopBack_Rx(struct _RTMP_ADAPTER *pAd, UINT32 pktlen, UINT8 *pData);
 #ifdef RTMP_PCI_SUPPORT
-void PCILoopBack_Run(struct _RTMP_ADAPTER *pAd, struct _LOOPBACK_SETTING *pSetting, UINT32 length);
+void PCILoopBack_Run(struct _RTMP_ADAPTER *pAd,
+		     struct _LOOPBACK_SETTING *pSetting, UINT32 length);
 INT32 ATECheckFWROMWiFiSysOn(struct _RTMP_ADAPTER *pAd);
 #endif
 

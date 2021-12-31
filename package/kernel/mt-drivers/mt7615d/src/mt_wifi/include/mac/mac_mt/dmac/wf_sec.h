@@ -26,12 +26,10 @@
 	--------	----------	  ----------------------------------------------
 */
 
-
 #ifndef __WF_SEC_H__
 #define __WF_SEC_H__
 
-#define WF_SEC_BASE		0x21600
-#define SEC_SCR			(WF_SEC_BASE + 0x004)
+#define WF_SEC_BASE 0x21600
+#define SEC_SCR (WF_SEC_BASE + 0x004)
 
 #endif /* __WF_SEC_H__ */
-

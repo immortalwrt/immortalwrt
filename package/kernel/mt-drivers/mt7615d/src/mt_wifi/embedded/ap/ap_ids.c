@@ -27,11 +27,9 @@
 
 #include "rt_config.h"
 
-#define IDS_EXEC_INTV          1000				/* 1 sec */
+#define IDS_EXEC_INTV 1000 /* 1 sec */
 
-
-VOID RTMPIdsStart(
-	IN PRTMP_ADAPTER	pAd)
+VOID RTMPIdsStart(IN PRTMP_ADAPTER pAd)
 {
 	if (pAd->ApCfg.IDSTimerRunning == FALSE) {
 		RTMPSetTimer(&pAd->ApCfg.IDSTimer, IDS_EXEC_INTV);
@@ -39,10 +37,9 @@ VOID RTMPIdsStart(
 	}
 }
 
-VOID RTMPIdsStop(
-	IN PRTMP_ADAPTER	pAd)
+VOID RTMPIdsStop(IN PRTMP_ADAPTER pAd)
 {
-	BOOLEAN     Cancelled;
+	BOOLEAN Cancelled;
 
 	if (pAd->ApCfg.IDSTimerRunning == TRUE) {
 		RTMPCancelTimer(&pAd->ApCfg.IDSTimer, &Cancelled);
@@ -51,12 +48,11 @@ VOID RTMPIdsStop(
 }
 
 #ifdef SYSTEM_LOG_SUPPORT
-VOID RTMPHandleIdsEvent(
-	IN PRTMP_ADAPTER	pAd)
+VOID RTMPHandleIdsEvent(IN PRTMP_ADAPTER pAd)
 {
 	INT i, j;
-	UINT32	FloodFrameCount[IW_FLOOD_EVENT_TYPE_NUM];
-	UINT32	FloodFrameThreshold[IW_FLOOD_EVENT_TYPE_NUM];
+	UINT32 FloodFrameCount[IW_FLOOD_EVENT_TYPE_NUM];
+	UINT32 FloodFrameThreshold[IW_FLOOD_EVENT_TYPE_NUM];
 
 	FloodFrameCount[0] = pAd->ApCfg.RcvdAuthCount;
 	FloodFrameCount[1] = pAd->ApCfg.RcvdAssocReqCount;
@@ -75,42 +71,66 @@ VOID RTMPHandleIdsEvent(
 
 	/* trigger flooding traffic event */
 	for (j = 0; j < IW_FLOOD_EVENT_TYPE_NUM; j++) {
-		if ((FloodFrameThreshold[j] > 0) && (FloodFrameCount[j] > FloodFrameThreshold[j])) {
-			RTMPSendWirelessEvent(pAd, IW_FLOOD_AUTH_EVENT_FLAG + j, NULL, MAIN_MBSSID, 0);
+		if ((FloodFrameThreshold[j] > 0) &&
+		    (FloodFrameCount[j] > FloodFrameThreshold[j])) {
+			RTMPSendWirelessEvent(pAd, IW_FLOOD_AUTH_EVENT_FLAG + j,
+					      NULL, MAIN_MBSSID, 0);
 			/*MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("flooding traffic event(%d) - %d\n", IW_FLOOD_AUTH_EVENT_FLAG + j, FloodFrameCount[j])); */
 		}
 	}
 
 	for (i = 0; i < pAd->ApCfg.BssidNum; i++) {
-		UINT32	SpoofedFrameCount[IW_SPOOF_EVENT_TYPE_NUM];
-		CHAR	RssiOfSpoofedFrame[IW_SPOOF_EVENT_TYPE_NUM];
-		INT		k;
+		UINT32 SpoofedFrameCount[IW_SPOOF_EVENT_TYPE_NUM];
+		CHAR RssiOfSpoofedFrame[IW_SPOOF_EVENT_TYPE_NUM];
+		INT k;
 
-		SpoofedFrameCount[0] = pAd->ApCfg.MBSSID[i].RcvdConflictSsidCount;
-		SpoofedFrameCount[1] = pAd->ApCfg.MBSSID[i].RcvdSpoofedAssocRespCount;
-		SpoofedFrameCount[2] = pAd->ApCfg.MBSSID[i].RcvdSpoofedReassocRespCount;
-		SpoofedFrameCount[3] = pAd->ApCfg.MBSSID[i].RcvdSpoofedProbeRespCount;
-		SpoofedFrameCount[4] = pAd->ApCfg.MBSSID[i].RcvdSpoofedBeaconCount;
-		SpoofedFrameCount[5] = pAd->ApCfg.MBSSID[i].RcvdSpoofedDisassocCount;
-		SpoofedFrameCount[6] = pAd->ApCfg.MBSSID[i].RcvdSpoofedAuthCount;
-		SpoofedFrameCount[7] = pAd->ApCfg.MBSSID[i].RcvdSpoofedDeauthCount;
-		SpoofedFrameCount[8] = pAd->ApCfg.MBSSID[i].RcvdSpoofedUnknownMgmtCount;
-		SpoofedFrameCount[9] = pAd->ApCfg.MBSSID[i].RcvdReplayAttackCount;
-		RssiOfSpoofedFrame[0] = pAd->ApCfg.MBSSID[i].RssiOfRcvdConflictSsid;
-		RssiOfSpoofedFrame[1] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAssocResp;
-		RssiOfSpoofedFrame[2] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedReassocResp;
-		RssiOfSpoofedFrame[3] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedProbeResp;
-		RssiOfSpoofedFrame[4] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedBeacon;
-		RssiOfSpoofedFrame[5] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDisassoc;
-		RssiOfSpoofedFrame[6] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAuth;
-		RssiOfSpoofedFrame[7] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDeauth;
-		RssiOfSpoofedFrame[8] = pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedUnknownMgmt;
-		RssiOfSpoofedFrame[9] = pAd->ApCfg.MBSSID[i].RssiOfRcvdReplayAttack;
+		SpoofedFrameCount[0] =
+			pAd->ApCfg.MBSSID[i].RcvdConflictSsidCount;
+		SpoofedFrameCount[1] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedAssocRespCount;
+		SpoofedFrameCount[2] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedReassocRespCount;
+		SpoofedFrameCount[3] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedProbeRespCount;
+		SpoofedFrameCount[4] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedBeaconCount;
+		SpoofedFrameCount[5] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedDisassocCount;
+		SpoofedFrameCount[6] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedAuthCount;
+		SpoofedFrameCount[7] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedDeauthCount;
+		SpoofedFrameCount[8] =
+			pAd->ApCfg.MBSSID[i].RcvdSpoofedUnknownMgmtCount;
+		SpoofedFrameCount[9] =
+			pAd->ApCfg.MBSSID[i].RcvdReplayAttackCount;
+		RssiOfSpoofedFrame[0] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdConflictSsid;
+		RssiOfSpoofedFrame[1] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAssocResp;
+		RssiOfSpoofedFrame[2] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedReassocResp;
+		RssiOfSpoofedFrame[3] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedProbeResp;
+		RssiOfSpoofedFrame[4] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedBeacon;
+		RssiOfSpoofedFrame[5] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDisassoc;
+		RssiOfSpoofedFrame[6] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAuth;
+		RssiOfSpoofedFrame[7] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDeauth;
+		RssiOfSpoofedFrame[8] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedUnknownMgmt;
+		RssiOfSpoofedFrame[9] =
+			pAd->ApCfg.MBSSID[i].RssiOfRcvdReplayAttack;
 
 		/* trigger spoofed attack event */
 		for (k = 0; k < IW_SPOOF_EVENT_TYPE_NUM; k++) {
 			if (SpoofedFrameCount[k] > 0) {
-				RTMPSendWirelessEvent(pAd, IW_CONFLICT_SSID_EVENT_FLAG + k, NULL, i, RssiOfSpoofedFrame[k]);
+				RTMPSendWirelessEvent(
+					pAd, IW_CONFLICT_SSID_EVENT_FLAG + k,
+					NULL, i, RssiOfSpoofedFrame[k]);
 				/*MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("spoofed attack event(%d) - %d\n", IW_CONFLICT_SSID_EVENT_FLAG + k, SpoofedFrameCount[k])); */
 			}
 		}
@@ -118,10 +138,9 @@ VOID RTMPHandleIdsEvent(
 }
 #endif /* SYSTEM_LOG_SUPPORT */
 
-VOID RTMPClearAllIdsCounter(
-	IN PRTMP_ADAPTER	pAd)
+VOID RTMPClearAllIdsCounter(IN PRTMP_ADAPTER pAd)
 {
-	INT	i;
+	INT i;
 
 	pAd->ApCfg.RcvdAuthCount = 0;
 	pAd->ApCfg.RcvdAssocReqCount = 0;
@@ -156,13 +175,10 @@ VOID RTMPClearAllIdsCounter(
 	}
 }
 
-VOID RTMPIdsPeriodicExec(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3)
+VOID RTMPIdsPeriodicExec(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
+			 IN PVOID SystemSpecific2, IN PVOID SystemSpecific3)
 {
-	PRTMP_ADAPTER	pAd = (RTMP_ADAPTER *)FunctionContext;
+	PRTMP_ADAPTER pAd = (RTMP_ADAPTER *)FunctionContext;
 
 	pAd->ApCfg.IDSTimerRunning = FALSE;
 #ifdef SYSTEM_LOG_SUPPORT
@@ -182,7 +198,6 @@ VOID RTMPIdsPeriodicExec(
 	}
 }
 
-
 /*
 	========================================================================
 	Routine Description:
@@ -199,16 +214,16 @@ VOID RTMPIdsPeriodicExec(
 
 	========================================================================
 */
-BOOLEAN RTMPSpoofedMgmtDetection(
-	IN RTMP_ADAPTER *pAd,
-	IN RX_BLK * rxblk)
+BOOLEAN RTMPSpoofedMgmtDetection(IN RTMP_ADAPTER *pAd, IN RX_BLK *rxblk)
 {
-	INT	i;
+	INT i;
 	FRAME_CONTROL *FC = (FRAME_CONTROL *)rxblk->FC;
 
 	for (i = 0; i < pAd->ApCfg.BssidNum; i++) {
 		/* Spoofed BSSID detection */
-		if (NdisEqualMemory(rxblk->Addr2, pAd->ApCfg.MBSSID[i].wdev.bssid, MAC_ADDR_LEN)) {
+		if (NdisEqualMemory(rxblk->Addr2,
+				    pAd->ApCfg.MBSSID[i].wdev.bssid,
+				    MAC_ADDR_LEN)) {
 			CHAR RcvdRssi;
 			struct raw_rssi_info rssi_info;
 
@@ -218,55 +233,68 @@ BOOLEAN RTMPSpoofedMgmtDetection(
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
 			rssi_info.raw_rssi[3] = rxblk->rx_signal.raw_rssi[3];
 #endif
-			RcvdRssi = RTMPMaxRssi(pAd,
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_0),
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_1),
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_2)
+			RcvdRssi = RTMPMaxRssi(
+				pAd, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_0),
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_1),
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_2)
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
-									, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_3)
+					,
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_3)
 #endif
 
-								   );
+			);
 
 			switch (FC->SubType) {
 			case SUBTYPE_ASSOC_RSP:
 				pAd->ApCfg.MBSSID[i].RcvdSpoofedAssocRespCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAssocResp = RcvdRssi;
+				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAssocResp =
+					RcvdRssi;
 				break;
 
 			case SUBTYPE_REASSOC_RSP:
-				pAd->ApCfg.MBSSID[i].RcvdSpoofedReassocRespCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedReassocResp = RcvdRssi;
+				pAd->ApCfg.MBSSID[i]
+					.RcvdSpoofedReassocRespCount++;
+				pAd->ApCfg.MBSSID[i]
+					.RssiOfRcvdSpoofedReassocResp =
+					RcvdRssi;
 				break;
 
 			case SUBTYPE_PROBE_RSP:
 				pAd->ApCfg.MBSSID[i].RcvdSpoofedProbeRespCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedProbeResp = RcvdRssi;
+				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedProbeResp =
+					RcvdRssi;
 				break;
 
 			case SUBTYPE_BEACON:
 				pAd->ApCfg.MBSSID[i].RcvdSpoofedBeaconCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedBeacon = RcvdRssi;
+				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedBeacon =
+					RcvdRssi;
 				break;
 
 			case SUBTYPE_DISASSOC:
 				pAd->ApCfg.MBSSID[i].RcvdSpoofedDisassocCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDisassoc = RcvdRssi;
+				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDisassoc =
+					RcvdRssi;
 				break;
 
 			case SUBTYPE_AUTH:
 				pAd->ApCfg.MBSSID[i].RcvdSpoofedAuthCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAuth = RcvdRssi;
+				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedAuth =
+					RcvdRssi;
 				break;
 
 			case SUBTYPE_DEAUTH:
 				pAd->ApCfg.MBSSID[i].RcvdSpoofedDeauthCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDeauth = RcvdRssi;
+				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedDeauth =
+					RcvdRssi;
 				break;
 
 			default:
-				pAd->ApCfg.MBSSID[i].RcvdSpoofedUnknownMgmtCount++;
-				pAd->ApCfg.MBSSID[i].RssiOfRcvdSpoofedUnknownMgmt = RcvdRssi;
+				pAd->ApCfg.MBSSID[i]
+					.RcvdSpoofedUnknownMgmtCount++;
+				pAd->ApCfg.MBSSID[i]
+					.RssiOfRcvdSpoofedUnknownMgmt =
+					RcvdRssi;
 				break;
 			}
 
@@ -277,24 +305,21 @@ BOOLEAN RTMPSpoofedMgmtDetection(
 	return FALSE;
 }
 
-
-VOID RTMPConflictSsidDetection(
-	IN PRTMP_ADAPTER	pAd,
-	IN PUCHAR			pSsid,
-	IN UCHAR			SsidLen,
-	IN CHAR				Rssi0,
-	IN CHAR				Rssi1,
-	IN CHAR				Rssi2
+VOID RTMPConflictSsidDetection(IN PRTMP_ADAPTER pAd, IN PUCHAR pSsid,
+			       IN UCHAR SsidLen, IN CHAR Rssi0, IN CHAR Rssi1,
+			       IN CHAR Rssi2
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
-	, IN CHAR				Rssi3
+			       ,
+			       IN CHAR Rssi3
 #endif
 )
 {
-	INT	i;
+	INT i;
 
 	for (i = 0; i < pAd->ApCfg.BssidNum; i++) {
 		/* Conflict SSID detection */
-		if (SSID_EQUAL(pSsid, SsidLen, pAd->ApCfg.MBSSID[i].Ssid, pAd->ApCfg.MBSSID[i].SsidLen)) {
+		if (SSID_EQUAL(pSsid, SsidLen, pAd->ApCfg.MBSSID[i].Ssid,
+			       pAd->ApCfg.MBSSID[i].SsidLen)) {
 			CHAR RcvdRssi;
 			struct raw_rssi_info rssi_info;
 
@@ -305,13 +330,15 @@ VOID RTMPConflictSsidDetection(
 			rssi_info.raw_rssi[3] = Rssi3;
 #endif
 
-			RcvdRssi = RTMPMaxRssi(pAd, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_0),
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_1),
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_2)
+			RcvdRssi = RTMPMaxRssi(
+				pAd, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_0),
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_1),
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_2)
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
-									, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_3)
+					,
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_3)
 #endif
-								   );
+			);
 			pAd->ApCfg.MBSSID[i].RcvdConflictSsidCount++;
 			pAd->ApCfg.MBSSID[i].RssiOfRcvdConflictSsid = RcvdRssi;
 			return;
@@ -319,17 +346,15 @@ VOID RTMPConflictSsidDetection(
 	}
 }
 
-
-BOOLEAN RTMPReplayAttackDetection(
-	IN RTMP_ADAPTER *pAd,
-	IN UCHAR * pAddr2,
-	IN RX_BLK * rxblk)
+BOOLEAN RTMPReplayAttackDetection(IN RTMP_ADAPTER *pAd, IN UCHAR *pAddr2,
+				  IN RX_BLK *rxblk)
 {
-	INT	i;
+	INT i;
 
 	for (i = 0; i < pAd->ApCfg.BssidNum; i++) {
 		/* Conflict SSID detection */
-		if (NdisEqualMemory(pAddr2, pAd->ApCfg.MBSSID[i].wdev.bssid, MAC_ADDR_LEN)) {
+		if (NdisEqualMemory(pAddr2, pAd->ApCfg.MBSSID[i].wdev.bssid,
+				    MAC_ADDR_LEN)) {
 			CHAR RcvdRssi;
 			struct raw_rssi_info rssi_info;
 
@@ -339,14 +364,16 @@ BOOLEAN RTMPReplayAttackDetection(
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
 			rssi_info.raw_rssi[3] = rxblk->rx_signal.raw_rssi[3];
 #endif
-			RcvdRssi = RTMPMaxRssi(pAd, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_0),
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_1),
-								   ConvertToRssi(pAd, &rssi_info, RSSI_IDX_2)
+			RcvdRssi = RTMPMaxRssi(
+				pAd, ConvertToRssi(pAd, &rssi_info, RSSI_IDX_0),
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_1),
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_2)
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
-								   , ConvertToRssi(pAd, &rssi_info, RSSI_IDX_3)
+					,
+				ConvertToRssi(pAd, &rssi_info, RSSI_IDX_3)
 #endif
 
-								   );
+			);
 			pAd->ApCfg.MBSSID[i].RcvdReplayAttackCount++;
 			pAd->ApCfg.MBSSID[i].RssiOfRcvdReplayAttack = RcvdRssi;
 			return TRUE;
@@ -394,10 +421,8 @@ VOID RTMPUpdateStaMgmtCounter(RTMP_ADAPTER *pAd, USHORT type)
 	*/
 }
 
-VOID rtmp_read_ids_from_file(
-	IN  PRTMP_ADAPTER pAd,
-	RTMP_STRING *tmpbuf,
-	RTMP_STRING *buffer)
+VOID rtmp_read_ids_from_file(IN PRTMP_ADAPTER pAd, RTMP_STRING *tmpbuf,
+			     RTMP_STRING *buffer)
 {
 	/*IdsEnable */
 	if (RTMPGetKeyParameter("IdsEnable", tmpbuf, 10, buffer, TRUE)) {
@@ -406,55 +431,81 @@ VOID rtmp_read_ids_from_file(
 		else
 			pAd->ApCfg.IdsEnable = FALSE;
 
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("IDS is %s\n", pAd->ApCfg.IdsEnable ? "enabled" : "disabled"));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("IDS is %s\n",
+			  pAd->ApCfg.IdsEnable ? "enabled" : "disabled"));
 	}
 
 	/*AuthFloodThreshold */
-	if (RTMPGetKeyParameter("AuthFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("AuthFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.AuthFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("AuthFloodThreshold = %d\n", pAd->ApCfg.AuthFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("AuthFloodThreshold = %d\n",
+			  pAd->ApCfg.AuthFloodThreshold));
 	}
 
 	/*AssocReqFloodThreshold */
-	if (RTMPGetKeyParameter("AssocReqFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("AssocReqFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.AssocReqFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("AssocReqFloodThreshold = %d\n", pAd->ApCfg.AssocReqFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("AssocReqFloodThreshold = %d\n",
+			  pAd->ApCfg.AssocReqFloodThreshold));
 	}
 
 	/*ReassocReqFloodThreshold */
-	if (RTMPGetKeyParameter("ReassocReqFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("ReassocReqFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.ReassocReqFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("ReassocReqFloodThreshold = %d\n", pAd->ApCfg.ReassocReqFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("ReassocReqFloodThreshold = %d\n",
+			  pAd->ApCfg.ReassocReqFloodThreshold));
 	}
 
 	/*ProbeReqFloodThreshold */
-	if (RTMPGetKeyParameter("ProbeReqFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("ProbeReqFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.ProbeReqFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("ProbeReqFloodThreshold = %d\n", pAd->ApCfg.ProbeReqFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("ProbeReqFloodThreshold = %d\n",
+			  pAd->ApCfg.ProbeReqFloodThreshold));
 	}
 
 	/*DisassocFloodThreshold */
-	if (RTMPGetKeyParameter("DisassocFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("DisassocFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.DisassocFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("DisassocFloodThreshold = %d\n", pAd->ApCfg.DisassocFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("DisassocFloodThreshold = %d\n",
+			  pAd->ApCfg.DisassocFloodThreshold));
 	}
 
 	/*DeauthFloodThreshold */
-	if (RTMPGetKeyParameter("DeauthFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("DeauthFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.DeauthFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("DeauthFloodThreshold = %d\n", pAd->ApCfg.DeauthFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("DeauthFloodThreshold = %d\n",
+			  pAd->ApCfg.DeauthFloodThreshold));
 	}
 
 	/*EapReqFloodThreshold */
-	if (RTMPGetKeyParameter("EapReqFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("EapReqFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.EapReqFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("EapReqFloodThreshold = %d\n", pAd->ApCfg.EapReqFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("EapReqFloodThreshold = %d\n",
+			  pAd->ApCfg.EapReqFloodThreshold));
 	}
 
 	/* DataFloodThreshold  */
-	if (RTMPGetKeyParameter("DataFloodThreshold", tmpbuf, 10, buffer, TRUE)) {
+	if (RTMPGetKeyParameter("DataFloodThreshold", tmpbuf, 10, buffer,
+				TRUE)) {
 		pAd->ApCfg.DataFloodThreshold = os_str_tol(tmpbuf, 0, 10);
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("DataFloodThreshold = %d\n", pAd->ApCfg.DataFloodThreshold));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("DataFloodThreshold = %d\n",
+			  pAd->ApCfg.DataFloodThreshold));
 	}
 }
 

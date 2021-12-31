@@ -22,12 +22,15 @@ struct _RTMP_ADAPTER;
 INT32 SetTxStop(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetRxStop(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 #ifdef DBG
-VOID ATE_QA_Statistics(struct _RTMP_ADAPTER *pAd, RXWI_STRUC *pRxWI, RXINFO_STRUC *pRxInfo, PHEADER_802_11 pHeader);
+VOID ATE_QA_Statistics(struct _RTMP_ADAPTER *pAd, RXWI_STRUC *pRxWI,
+		       RXINFO_STRUC *pRxInfo, PHEADER_802_11 pHeader);
 #ifdef CONFIG_QA
-INT32 RtmpDoAte(struct _RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq, RTMP_STRING *wrq_name);
+INT32 RtmpDoAte(struct _RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq,
+		RTMP_STRING *wrq_name);
 #endif
 #ifdef WCX_SUPPORT
-INT32 do_meta_cmd(int ioctl_cmd, PRTMP_ADAPTER	pAd, RTMP_IOCTL_INPUT_STRUCT *WRQ, RTMP_STRING *wrq_name);
+INT32 do_meta_cmd(int ioctl_cmd, PRTMP_ADAPTER pAd,
+		  RTMP_IOCTL_INPUT_STRUCT *WRQ, RTMP_STRING *wrq_name);
 #endif
 INT32 SetEERead(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetEEWrite(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
@@ -37,7 +40,8 @@ INT32 SetRFWrite(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 #endif /* DBG */
 VOID rt_ee_read_all(struct _RTMP_ADAPTER *pAd, UINT16 *Data);
 VOID rt_ee_write_all(struct _RTMP_ADAPTER pAd, UINT16 *Data);
-VOID rt_ee_write_bulk(struct _RTMP_ADAPTER pAd, UINT16 *Data, UINT16 offset, UINT16 length);
+VOID rt_ee_write_bulk(struct _RTMP_ADAPTER pAd, UINT16 *Data, UINT16 offset,
+		      UINT16 length);
 INT32 SetATEQid(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEDeqCnt(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEMPSDump(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
@@ -75,7 +79,8 @@ INT32 SetATERFPower(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEDigitalPower(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEDCOffset_I(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEDCOffset_Q(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
-INT32 Default_Set_ATE_TX_FREQ_OFFSET_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
+INT32 Default_Set_ATE_TX_FREQ_OFFSET_Proc(struct _RTMP_ADAPTER *pAd,
+					  RTMP_STRING *Arg);
 INT32 SetATETxFreqOffset(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 Default_Set_ATE_TX_BW_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATETxLength(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
@@ -129,7 +134,8 @@ INT32 SetATETtr(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEShow(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEHelp(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 ATESampleRssi(struct _RTMP_ADAPTER *pAd, RXWI_STRUC *pRxWI);
-VOID  ATEPeriodicExec(PVOID SystemSpecific1, PVOID FunctionContext, PVOID SystemSpecific2, PVOID SystemSpecific3);
+VOID ATEPeriodicExec(PVOID SystemSpecific1, PVOID FunctionContext,
+		     PVOID SystemSpecific2, PVOID SystemSpecific3);
 INT32 SetATE(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 SetATEChannel(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);
 INT32 set_ate_duty_cycle(struct _RTMP_ADAPTER *pAd, RTMP_STRING *Arg);

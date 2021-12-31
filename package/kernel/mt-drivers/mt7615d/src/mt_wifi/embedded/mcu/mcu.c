@@ -25,14 +25,12 @@
 	--------    ----------    ----------------------------------------------
 */
 
-
-#include	"rt_config.h"
+#include "rt_config.h"
 
 INT MCUBurstWrite(PRTMP_ADAPTER pAd, UINT32 Offset, UINT32 *Data, UINT32 Cnt)
 {
 	return 0;
 }
-
 
 INT MCURandomWrite(PRTMP_ADAPTER pAd, RTMP_REG_PAIR *RegPair, UINT32 Num)
 {
@@ -43,7 +41,6 @@ INT MCURandomWrite(PRTMP_ADAPTER pAd, RTMP_REG_PAIR *RegPair, UINT32 Num)
 
 	return 0;
 }
-
 
 INT32 MCUSysPrepare(RTMP_ADAPTER *pAd)
 {
@@ -67,7 +64,8 @@ INT32 MCUSysInit(RTMP_ADAPTER *pAd)
 #ifdef WIFI_SPECTRUM_SUPPORT
 		/* Refer to profile setting to decide the sysram partition format */
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: Before NICLoadFirmware, check ICapMode = %d\n", __func__, pAd->ICapMode));
+			 ("%s: Before NICLoadFirmware, check ICapMode = %d\n",
+			  __func__, pAd->ICapMode));
 
 		if (pAd->ICapMode == 2) { /* Wifi-spectrum */
 			if (IS_MT7615(pAd)) {
@@ -96,13 +94,14 @@ INT32 MCUSysInit(RTMP_ADAPTER *pAd)
 	Ret = NICLoadFirmware(pAd);
 
 	if (Ret != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: NICLoadFirmware failed, Status[=0x%08x]\n", __func__, Ret));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: NICLoadFirmware failed, Status[=0x%08x]\n",
+			  __func__, Ret));
 		return -1;
 	}
 
 	return Ret;
 }
-
 
 INT32 MCUSysExit(RTMP_ADAPTER *pAd)
 {
@@ -115,7 +114,6 @@ INT32 MCUSysExit(RTMP_ADAPTER *pAd)
 	MCU_CTRL_EXIT(pAd);
 	return Ret;
 }
-
 
 VOID ChipOpsMCUHook(PRTMP_ADAPTER pAd, enum MCU_TYPE MCUType)
 {
@@ -131,10 +129,12 @@ VOID ChipOpsMCUHook(PRTMP_ADAPTER pAd, enum MCU_TYPE MCUType)
 			if (IS_PCIE_INF(pAd) || IS_RBUS_INF(pAd)) {
 				pChipOps->FwInit = AndesMTPciFwInit;
 				pChipOps->FwExit = AndesMTPciFwExit;
-				pChipOps->pci_kick_out_cmd_msg = AndesMTPciKickOutCmdMsg;
+				pChipOps->pci_kick_out_cmd_msg =
+					AndesMTPciKickOutCmdMsg;
 			}
 #endif /* defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT) */
-			pChipOps->andes_fill_cmd_header = AndesMTFillCmdHeaderWithTXD;
+			pChipOps->andes_fill_cmd_header =
+				AndesMTFillCmdHeaderWithTXD;
 			pChipOps->rx_event_handler = AndesMTRxEventHandler;
 		}
 #endif /* MT_MAC */
@@ -148,4 +148,3 @@ VOID ChipOpsMCUHook(PRTMP_ADAPTER pAd, enum MCU_TYPE MCUType)
 
 #endif /* CONFIG_ANDES_SUPPORT */
 }
-

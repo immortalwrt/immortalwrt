@@ -51,7 +51,6 @@ typedef struct _MEM_INFO_LIST {
 	FREE_LIST_POOL *pFreeEntrylist;
 } MEM_INFO_LIST;
 
-
 static FREE_LIST_POOL FreeEntrylist;
 
 static inline MEM_INFO_LIST_ENTRY *GetEntryFromFreeList(MEM_INFO_LIST *MIList)
@@ -68,7 +67,8 @@ static inline MEM_INFO_LIST_ENTRY *GetEntryFromFreeList(MEM_INFO_LIST *MIList)
 		MEM_INFO_LIST_POOL *Pool = NULL;
 		MEM_INFO_LIST_POOL *pFreepool = NULL;
 
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: allocated new pool\n", __func__));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: allocated new pool\n", __func__));
 		Pool = kmalloc(sizeof(MEM_INFO_LIST_POOL), GFP_ATOMIC);
 		pFreepool = &pFreeEntrylist->Poolhead;
 		DlListAdd(&pFreepool->List, &Pool->List);
@@ -105,7 +105,8 @@ static inline UINT32 HashF(VOID *pMemAddr)
 	UINT32 g = (addr & 0xF000000) >> 24;
 	UINT32 h = (addr & 0xF0000000) >> 28;
 
-	return (a + b * 3 + c * 5 + d * 7 + e * 11 + f * 13 + g * 17 + h * 19) % HASH_SIZE;
+	return (a + b * 3 + c * 5 + d * 7 + e * 11 + f * 13 + g * 17 + h * 19) %
+	       HASH_SIZE;
 }
 static inline VOID PoolInit(VOID)
 {
@@ -126,13 +127,13 @@ static inline VOID PoolUnInit(VOID)
 		MEM_INFO_LIST_POOL *pEntry = NULL;
 
 		while (!DlListEmpty(&FreeEntrylist.Poolhead.List)) {
-			pEntry = DlListFirst(&FreeEntrylist.Poolhead.List, MEM_INFO_LIST_POOL, List);
+			pEntry = DlListFirst(&FreeEntrylist.Poolhead.List,
+					     MEM_INFO_LIST_POOL, List);
 			DlListDel(&pEntry->List);
 			kfree(pEntry);
 		}
 	}
 }
-
 
 static inline VOID MIListInit(MEM_INFO_LIST *MIList)
 {
@@ -184,7 +185,8 @@ static inline VOID MIListExit(MEM_INFO_LIST *MIList)
 	PoolUnInit();
 }
 
-static inline MEM_INFO_LIST_ENTRY *MIListRemove(MEM_INFO_LIST *MIList, VOID *pMemAddr)
+static inline MEM_INFO_LIST_ENTRY *MIListRemove(MEM_INFO_LIST *MIList,
+						VOID *pMemAddr)
 {
 	UINT32 Index = HashF(pMemAddr);
 	ULONG IrqFlags = 0;
@@ -194,7 +196,9 @@ static inline MEM_INFO_LIST_ENTRY *MIListRemove(MEM_INFO_LIST *MIList, VOID *pMe
 	FREE_LIST_POOL *pFreeEntrylist = MIList->pFreeEntrylist;
 
 	OS_INT_LOCK(&MIList->Lock, IrqFlags);
-	DlListForEach(pEntry, &MIList->pHead[Index].mList, MEM_INFO_LIST_ENTRY, mList) {
+	DlListForEach(pEntry, &MIList->pHead[Index].mList, MEM_INFO_LIST_ENTRY,
+		      mList)
+	{
 		if (pEntry->pMemAddr == pMemAddr) {
 			DlListDel(&pEntry->mList);
 			MIList->EntryNumber--;
@@ -211,8 +215,8 @@ static inline MEM_INFO_LIST_ENTRY *MIListRemove(MEM_INFO_LIST *MIList, VOID *pMe
 	return pEntry;
 }
 
-
-static inline VOID MIListAddHead(MEM_INFO_LIST *MIList, UINT32 Size, VOID *pMemAddr, VOID *pCaller)
+static inline VOID MIListAddHead(MEM_INFO_LIST *MIList, UINT32 Size,
+				 VOID *pMemAddr, VOID *pCaller)
 {
 	UINT32 Index = HashF(pMemAddr);
 	ULONG IrqFlags = 0;
@@ -224,7 +228,8 @@ static inline VOID MIListAddHead(MEM_INFO_LIST *MIList, UINT32 Size, VOID *pMemA
 
 	if (!pEntry) {
 		OS_INT_UNLOCK(&MIList->Lock, IrqFlags);
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: pEntry is null!!!\n", __func__));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: pEntry is null!!!\n", __func__));
 		return;
 	}
 
@@ -248,20 +253,32 @@ static inline VOID ShowMIList(MEM_INFO_LIST *MIList)
 	MEM_INFO_LIST_ENTRY *pEntry = NULL;
 
 	for (i = 0; i < HASH_SIZE; i++) {
-		DlListForEach(pEntry, &MIList->pHead[i].mList, MEM_INFO_LIST_ENTRY, mList) {
+		DlListForEach(pEntry, &MIList->pHead[i].mList,
+			      MEM_INFO_LIST_ENTRY, mList)
+		{
 			if (pEntry->MemSize == 0)
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%u: addr = %p, caller is %pS\n", ++total, pEntry->pMemAddr, pEntry->pCaller));
+				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF,
+					 ("%u: addr = %p, caller is %pS\n",
+					  ++total, pEntry->pMemAddr,
+					  pEntry->pCaller));
 			else
-				MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%u: addr = %p, size = %u, caller is %pS\n", ++total, pEntry->pMemAddr, pEntry->MemSize, pEntry->pCaller));
+				MTWF_LOG(
+					DBG_CAT_INIT, DBG_SUBCAT_ALL,
+					DBG_LVL_OFF,
+					("%u: addr = %p, size = %u, caller is %pS\n",
+					 ++total, pEntry->pMemAddr,
+					 pEntry->MemSize, pEntry->pCaller));
 		}
 	}
 
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("the number of allocated memory = %u\n", MIList->EntryNumber));
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("the number of free pool entry = %u\n", MIList->pFreeEntrylist->EntryNumber));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("the number of allocated memory = %u\n",
+		  MIList->EntryNumber));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("the number of free pool entry = %u\n",
+		  MIList->pFreeEntrylist->EntryNumber));
 }
 
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 #endif
-

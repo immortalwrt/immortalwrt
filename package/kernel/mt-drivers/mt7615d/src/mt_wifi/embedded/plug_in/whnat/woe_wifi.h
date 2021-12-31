@@ -27,8 +27,6 @@ struct wlan_tx_info {
 	UINT32 ringidx;
 };
 
-
-
 struct wifi_entry {
 	void *cookie;
 	unsigned char slot_id;
@@ -42,15 +40,16 @@ struct wifi_entry {
 /*default SER status*/
 #define WIFI_ERR_RECOV_NONE 0x10
 
-
 void dump_wifi_value(struct wifi_entry *wifi, char *name, unsigned int addr);
 /*wifi related hal*/
-void wifi_fbuf_init(unsigned char *fbuf, unsigned int pkt_pa, unsigned int tkid);
+void wifi_fbuf_init(unsigned char *fbuf, unsigned int pkt_pa,
+		    unsigned int tkid);
 void wifi_tx_tuple_add(void *woe, unsigned char *tx_info);
 void wifi_tx_tuple_reset(void);
 char wifi_hw_tx_allow(void *cookie, unsigned char *tx_info);
 void wifi_dma_cfg_wrapper(int wifi_cfg, unsigned char *dma_cfg);
-void wifi_dump_tx_ring_info(struct wifi_entry *wifi, unsigned char ring_id, unsigned int idx);
+void wifi_dump_tx_ring_info(struct wifi_entry *wifi, unsigned char ring_id,
+			    unsigned int idx);
 void wifi_chip_cr_mirror_set(struct wifi_entry *wifi, unsigned char enable);
 void wifi_chip_probe(struct wifi_entry *wifi, unsigned int irq);
 void wifi_chip_remove(struct wifi_entry *wifi);
@@ -61,6 +60,5 @@ unsigned int wifi_ser_status(void *ser_ctrl);
 int wifi_slot_get(void *cookie);
 void wifi_cap_get(struct wifi_entry *wifi);
 unsigned int wifi_wpdma_base_get(void *cookie);
-
 
 #endif /*_WOE_WIFI_H_*/

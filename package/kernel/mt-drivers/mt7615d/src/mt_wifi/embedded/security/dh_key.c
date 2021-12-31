@@ -6,73 +6,74 @@
 #ifdef WSC_INCLUDED
 
 #ifndef DHPRINT
-#define DHPRINT(fmt, args...) MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_OFF, (fmt, ## args))
+#define DHPRINT(fmt, args...)                                                  \
+	MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_OFF, (fmt, ##args))
 #endif
 
 #define BN_MUL_COMBA
 #define BN_SQR_COMBA
 
-#define BN_ULLONG	unsigned long
-#define BN_ULONG	unsigned int
-#define BN_BITS		64
-#define BN_BYTES	4
-#define BN_BITS2	32
-#define BN_BITS4	16
-#define BN_MASK		(0xffffffffffffffffLL)
-#define BN_MASK2	(0xffffffffL)
-#define BN_MASK2l	(0xffff)
-#define BN_MASK2h1	(0xffff8000L)
-#define BN_MASK2h	(0xffff0000L)
-#define BN_TBIT		(0x80000000L)
-#define BN_FLG_MALLOCED			0x01
-#define BN_FLG_STATIC_DATA		0x02
-#define BN_FLG_EXP_CONSTTIME	0x04 /* avoid leaking exponent information through timings
+#define BN_ULLONG unsigned long
+#define BN_ULONG unsigned int
+#define BN_BITS 64
+#define BN_BYTES 4
+#define BN_BITS2 32
+#define BN_BITS4 16
+#define BN_MASK (0xffffffffffffffffLL)
+#define BN_MASK2 (0xffffffffL)
+#define BN_MASK2l (0xffff)
+#define BN_MASK2h1 (0xffff8000L)
+#define BN_MASK2h (0xffff0000L)
+#define BN_TBIT (0x80000000L)
+#define BN_FLG_MALLOCED 0x01
+#define BN_FLG_STATIC_DATA 0x02
+#define BN_FLG_EXP_CONSTTIME                                                   \
+	0x04 /* avoid leaking exponent information through timings
 				      * (BN_mod_exp_mont() will call BN_mod_exp_mont_consttime) */
-#define BN_set_flags(b, n)	((b)->flags |= (n))
-#define BN_get_flags(b, n)	((b)->flags&(n))
+#define BN_set_flags(b, n) ((b)->flags |= (n))
+#define BN_get_flags(b, n) ((b)->flags & (n))
 /* get a clone of a struct bignum_st with changed flags, for *temporary* use only
  * (the two BIGNUMs cannot not be used in parallel!) */
-#define BN_with_flags(dest, b, n)  ((dest)->d = (b)->d, \
-									(dest)->top = (b)->top, \
-									(dest)->dmax = (b)->dmax, \
-									(dest)->flags = (((dest)->flags & BN_FLG_MALLOCED) \
-											|  ((b)->flags & ~BN_FLG_MALLOCED) \
-											|  BN_FLG_STATIC_DATA \
-											|  (n)))
+#define BN_with_flags(dest, b, n)                                              \
+	((dest)->d = (b)->d, (dest)->top = (b)->top, (dest)->dmax = (b)->dmax, \
+	 (dest)->flags =                                                       \
+		 (((dest)->flags & BN_FLG_MALLOCED) |                          \
+		  ((b)->flags & ~BN_FLG_MALLOCED) | BN_FLG_STATIC_DATA | (n)))
 
 struct bignum_st {
-	BN_ULONG *d;	/* Pointer to an array of 'BN_BITS2' bit chunks. */
-	int top;	/* Index of last used d +1. */
+	BN_ULONG *d; /* Pointer to an array of 'BN_BITS2' bit chunks. */
+	int top; /* Index of last used d +1. */
 	/* The next are internal book keeping for bn_expand. */
-	int dmax;	/* Size of the d array. */
+	int dmax; /* Size of the d array. */
 	int flags;
 };
 
 /* Used for montgomery multiplication */
 struct bn_mont_ctx_st {
-	int ri;        /* number of bits in R */
-	struct bignum_st RR;     /* used to convert to montgomery form */
-	struct bignum_st N;      /* The modulus */
-	BN_ULONG n0;   /* least significant word of Ni */
+	int ri; /* number of bits in R */
+	struct bignum_st RR; /* used to convert to montgomery form */
+	struct bignum_st N; /* The modulus */
+	BN_ULONG n0; /* least significant word of Ni */
 	int flags;
 };
 
-#define BN_num_bytes(a)	((BN_num_bits(a)+7)/8)
-#define BN_is_zero(a)       ((a)->top == 0)
-#define BN_is_one(a)        (((a)->top == 1) && ((a)->d[0] == (BN_ULONG)(1)))
-#define BN_is_odd(a)	    (((a)->top > 0) && ((a)->d[0] & 1))
-#define BN_one(a)	(BN_set_word((a), 1))
-#define BN_zero(a)	(BN_set_word((a), 0))
-#define bn_wexpand(a, words) (((words) <= (a)->dmax)?(a):bn_expand2((a), (words)))
-#define bn_correct_top(a) \
-	{ \
-		BN_ULONG *ftl; \
-		if ((a)->top > 0) { \
-			for (ftl = &((a)->d[(a)->top-1]); (a)->top > 0; (a)->top--) \
+#define BN_num_bytes(a) ((BN_num_bits(a) + 7) / 8)
+#define BN_is_zero(a) ((a)->top == 0)
+#define BN_is_one(a) (((a)->top == 1) && ((a)->d[0] == (BN_ULONG)(1)))
+#define BN_is_odd(a) (((a)->top > 0) && ((a)->d[0] & 1))
+#define BN_one(a) (BN_set_word((a), 1))
+#define BN_zero(a) (BN_set_word((a), 0))
+#define bn_wexpand(a, words)                                                   \
+	(((words) <= (a)->dmax) ? (a) : bn_expand2((a), (words)))
+#define bn_correct_top(a)                                                      \
+	{                                                                      \
+		BN_ULONG *ftl;                                                 \
+		if ((a)->top > 0) {                                            \
+			for (ftl = &((a)->d[(a)->top - 1]); (a)->top > 0;      \
+			     (a)->top--)                                       \
 				if (*(ftl--))
 break;
-\
-} \
+}
 }
 
 /*
@@ -100,17 +101,15 @@ break;
  * (with draws in between).  Very small exponents are often selected
  * with low Hamming weight, so we use  w = 1  for b <= 23.
  */
-#define BN_window_bits_for_exponent_size(b) \
-	((b) > 671 ? 6 : \
-	 (b) > 239 ? 5 : \
-	 (b) >  79 ? 4 : \
-	 (b) >  23 ? 3 : 1)
+#define BN_window_bits_for_exponent_size(b)                                    \
+	((b) > 671 ? 6 : (b) > 239 ? 5 : (b) > 79 ? 4 : (b) > 23 ? 3 : 1)
 /* BN_mod_exp_mont_conttime is based on the assumption that the
  * L1 data cache line width of the target processor is at least
  * the following value.
  */
-#define MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH	(64)
-#define MOD_EXP_CTIME_MIN_CACHE_LINE_MASK	(MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH - 1)
+#define MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH (64)
+#define MOD_EXP_CTIME_MIN_CACHE_LINE_MASK                                      \
+	(MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH - 1)
 /* Window sizes optimized for fixed window size modular exponentiation
  * algorithm (BN_mod_exp_mont_consttime).
  *
@@ -124,145 +123,145 @@ break;
  * byte or greater cache line size.
  */
 #if MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH == 64
-#  define BN_window_bits_for_ctime_exponent_size(b) \
-	((b) > 937 ? 6 : \
-	 (b) > 306 ? 5 : \
-	 (b) >  89 ? 4 : \
-	 (b) >  22 ? 3 : 1)
-#  define BN_MAX_WINDOW_BITS_FOR_CTIME_EXPONENT_SIZE	(6)
+#define BN_window_bits_for_ctime_exponent_size(b)                              \
+	((b) > 937 ? 6 : (b) > 306 ? 5 : (b) > 89 ? 4 : (b) > 22 ? 3 : 1)
+#define BN_MAX_WINDOW_BITS_FOR_CTIME_EXPONENT_SIZE (6)
 #elif MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH == 32
-#  define BN_window_bits_for_ctime_exponent_size(b) \
-	((b) > 306 ? 5 : \
-	 (b) >  89 ? 4 : \
-	 (b) >  22 ? 3 : 1)
-#  define BN_MAX_WINDOW_BITS_FOR_CTIME_EXPONENT_SIZE	(5)
+#define BN_window_bits_for_ctime_exponent_size(b)                              \
+	((b) > 306 ? 5 : (b) > 89 ? 4 : (b) > 22 ? 3 : 1)
+#define BN_MAX_WINDOW_BITS_FOR_CTIME_EXPONENT_SIZE (5)
 #endif
-#define BN_MULL_SIZE_NORMAL			(16) /* 32 */
-#define BN_MUL_RECURSIVE_SIZE_NORMAL		(16) /* 32 less than */
-#define BN_SQR_RECURSIVE_SIZE_NORMAL		(16) /* 32 */
+#define BN_MULL_SIZE_NORMAL (16) /* 32 */
+#define BN_MUL_RECURSIVE_SIZE_NORMAL (16) /* 32 less than */
+#define BN_SQR_RECURSIVE_SIZE_NORMAL (16) /* 32 */
 
 /*************************************************************
  * Using the long long type
  */
-#define Lw(t)    (((BN_ULONG)(t))&BN_MASK2)
-#define Hw(t)    (((BN_ULONG)((t)>>BN_BITS2))&BN_MASK2)
+#define Lw(t) (((BN_ULONG)(t)) & BN_MASK2)
+#define Hw(t) (((BN_ULONG)((t) >> BN_BITS2)) & BN_MASK2)
 
 /*************************************************************
  * No long long type
  */
 
-#define LBITS(a)	((a)&BN_MASK2l)
-#define HBITS(a)	(((a)>>BN_BITS4)&BN_MASK2l)
-#define	L2HBITS(a)	(((a)<<BN_BITS4)&BN_MASK2)
+#define LBITS(a) ((a)&BN_MASK2l)
+#define HBITS(a) (((a) >> BN_BITS4) & BN_MASK2l)
+#define L2HBITS(a) (((a) << BN_BITS4) & BN_MASK2)
 
-#define LLBITS(a)	((a)&BN_MASKl)
-#define LHBITS(a)	(((a)>>BN_BITS2)&BN_MASKl)
-#define	LL2HBITS(a)	((BN_ULLONG)((a)&BN_MASKl)<<BN_BITS2)
+#define LLBITS(a) ((a)&BN_MASKl)
+#define LHBITS(a) (((a) >> BN_BITS2) & BN_MASKl)
+#define LL2HBITS(a) ((BN_ULLONG)((a)&BN_MASKl) << BN_BITS2)
 
-#define mul64(l, h, bl, bh) \
-	{ \
-		BN_ULONG m, m1, lt, ht; \
-		\
-		lt = l; \
-		ht = h; \
-		m = (bh)*(lt); \
-		lt = (bl)*(lt); \
-		m1 = (bl)*(ht); \
-		ht = (bh)*(ht); \
-		m = (m+m1)&BN_MASK2; \
-		if (m < m1)	\
-			ht += L2HBITS((BN_ULONG)1); \
-		ht += HBITS(m); \
-		m1 = L2HBITS(m); \
-		lt = (lt+m1)&BN_MASK2; \
-		if (lt < m1)	\
-			ht++; \
-		(l) = lt; \
-		(h) = ht; \
+#define mul64(l, h, bl, bh)                                                    \
+	{                                                                      \
+		BN_ULONG m, m1, lt, ht;                                        \
+                                                                               \
+		lt = l;                                                        \
+		ht = h;                                                        \
+		m = (bh) * (lt);                                               \
+		lt = (bl) * (lt);                                              \
+		m1 = (bl) * (ht);                                              \
+		ht = (bh) * (ht);                                              \
+		m = (m + m1) & BN_MASK2;                                       \
+		if (m < m1)                                                    \
+			ht += L2HBITS((BN_ULONG)1);                            \
+		ht += HBITS(m);                                                \
+		m1 = L2HBITS(m);                                               \
+		lt = (lt + m1) & BN_MASK2;                                     \
+		if (lt < m1)                                                   \
+			ht++;                                                  \
+		(l) = lt;                                                      \
+		(h) = ht;                                                      \
 	}
 
-#define sqr64(lo, ho, in) \
-	{ \
-		BN_ULONG l, h, m; \
-		\
-		h = (in); \
-		l = LBITS(h); \
-		h = HBITS(h); \
-		m = (l)*(h); \
-		l *= l; \
-		h *= h; \
-		h += (m&BN_MASK2h1)>>(BN_BITS4-1); \
-		m = (m&BN_MASK2l)<<(BN_BITS4+1); \
-		l = (l+m)&BN_MASK2; \
-		if (l < m)	\
-			h++; \
-		(lo) = l; \
-		(ho) = h; \
+#define sqr64(lo, ho, in)                                                      \
+	{                                                                      \
+		BN_ULONG l, h, m;                                              \
+                                                                               \
+		h = (in);                                                      \
+		l = LBITS(h);                                                  \
+		h = HBITS(h);                                                  \
+		m = (l) * (h);                                                 \
+		l *= l;                                                        \
+		h *= h;                                                        \
+		h += (m & BN_MASK2h1) >> (BN_BITS4 - 1);                       \
+		m = (m & BN_MASK2l) << (BN_BITS4 + 1);                         \
+		l = (l + m) & BN_MASK2;                                        \
+		if (l < m)                                                     \
+			h++;                                                   \
+		(lo) = l;                                                      \
+		(ho) = h;                                                      \
 	}
 
-#define mul_add(r, a, bl, bh, c) { \
-		BN_ULONG l, h; \
-		\
-		h = (a); \
-		l = LBITS(h); \
-		h = HBITS(h); \
-		mul64(l, h, (bl), (bh)); \
-		\
-		/* non-multiply part */ \
-		l = (l+(c))&BN_MASK2;	\
-		if (l < (c))		\
-			h++; \
-		(c) = (r); \
-		l = (l+(c))&BN_MASK2; \
-		if (l < (c))		\
-			h++; \
-		(c) = h&BN_MASK2; \
-		(r) = l; \
+#define mul_add(r, a, bl, bh, c)                                               \
+	{                                                                      \
+		BN_ULONG l, h;                                                 \
+                                                                               \
+		h = (a);                                                       \
+		l = LBITS(h);                                                  \
+		h = HBITS(h);                                                  \
+		mul64(l, h, (bl), (bh));                                       \
+                                                                               \
+		/* non-multiply part */                                        \
+		l = (l + (c)) & BN_MASK2;                                      \
+		if (l < (c))                                                   \
+			h++;                                                   \
+		(c) = (r);                                                     \
+		l = (l + (c)) & BN_MASK2;                                      \
+		if (l < (c))                                                   \
+			h++;                                                   \
+		(c) = h & BN_MASK2;                                            \
+		(r) = l;                                                       \
 	}
 
-#define mul(r, a, bl, bh, c) { \
-		BN_ULONG l, h; \
-		\
-		h = (a); \
-		l = LBITS(h); \
-		h = HBITS(h); \
-		mul64(l, h, (bl), (bh)); \
-		\
-		/* non-multiply part */ \
-		l += (c);		\
-		if ((l&BN_MASK2) < (c))	\
-			h++; \
-		(c) = h&BN_MASK2; \
-		(r) = l&BN_MASK2; \
+#define mul(r, a, bl, bh, c)                                                   \
+	{                                                                      \
+		BN_ULONG l, h;                                                 \
+                                                                               \
+		h = (a);                                                       \
+		l = LBITS(h);                                                  \
+		h = HBITS(h);                                                  \
+		mul64(l, h, (bl), (bh));                                       \
+                                                                               \
+		/* non-multiply part */                                        \
+		l += (c);                                                      \
+		if ((l & BN_MASK2) < (c))                                      \
+			h++;                                                   \
+		(c) = h & BN_MASK2;                                            \
+		(r) = l & BN_MASK2;                                            \
 	}
-
 
 #define INIT_DATA_h0 0x67452301UL
 #define INIT_DATA_h1 0xefcdab89UL
 #define INIT_DATA_h2 0x98badcfeUL
 #define INIT_DATA_h3 0x10325476UL
 #define INIT_DATA_h4 0xc3d2e1f0UL
-#define STATE_SIZE	1023
-#define EXP_TABLE_SIZE			32
+#define STATE_SIZE 1023
+#define EXP_TABLE_SIZE 32
 #define BN_mod(rem, m, d, ctx) BN_div(NULL, (rem), (m), (d), (ctx))
-#define BN_CTX_POOL_SIZE	16
-#define MOD_EXP_CTIME_ALIGN(x_) ((unsigned char *)(x_) + (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH - (((BN_ULONG)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
-#define ENTROPY_NEEDED 32  /* require 256 bits = 32 bytes of randomness */
-#define DH_FLAG_CACHE_MONT_P     0x01
-#define DH_FLAG_NO_EXP_CONSTTIME 0x02 /* new with 0.9.7h; the built-in struct dh_st
+#define BN_CTX_POOL_SIZE 16
+#define MOD_EXP_CTIME_ALIGN(x_)                                                \
+	((unsigned char *)(x_) +                                               \
+	 (MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH -                                 \
+	  (((BN_ULONG)(x_)) & (MOD_EXP_CTIME_MIN_CACHE_LINE_MASK))))
+#define ENTROPY_NEEDED 32 /* require 256 bits = 32 bytes of randomness */
+#define DH_FLAG_CACHE_MONT_P 0x01
+#define DH_FLAG_NO_EXP_CONSTTIME                                               \
+	0x02 /* new with 0.9.7h; the built-in struct dh_st
 				       * implementation now uses constant time
 				       * modular exponentiation for secret exponents
 				       * by default. This flag causes the
 				       * faster variable sliding window method to
 				       * be used for all exponents.
 				       */
-#define OPENSSL_DH_MAX_MODULUS_BITS	10000
+#define OPENSSL_DH_MAX_MODULUS_BITS 10000
 
 struct dh_st {
 	struct bignum_st *p;
 	struct bignum_st *g;
-	struct bignum_st *pub_key;	/* g^x */
-	struct bignum_st *priv_key;	/* x */
+	struct bignum_st *pub_key; /* g^x */
+	struct bignum_st *priv_key; /* x */
 	int flags;
 };
 
@@ -271,7 +270,8 @@ struct env_md_st {
 	int md_size;
 	unsigned long flags;
 	int (*init)(struct env_md_ctx_st *ctx);
-	int (*update)(struct env_md_ctx_st *ctx, const void *data, size_t count);
+	int (*update)(struct env_md_ctx_st *ctx, const void *data,
+		      size_t count);
 	int (*final)(struct env_md_ctx_st *ctx, unsigned char *md);
 	int ctx_size; /* how big does the ctx->md_data need to be */
 } /* struct env_md_st */;
@@ -300,8 +300,10 @@ struct bignum_pool {
 
 /*sha_locl.h START*/
 #define SHA_LONG unsigned int
-#define SHA_LBLOCK	16
-#define SHA_CBLOCK	(SHA_LBLOCK*4)	/* SHA treats input data as a contiguous array of 32 bit wide big-endian values. */
+#define SHA_LBLOCK 16
+#define SHA_CBLOCK                                                             \
+	(SHA_LBLOCK *                                                          \
+	 4) /* SHA treats input data as a contiguous array of 32 bit wide big-endian values. */
 #define SHA_DIGEST_LENGTH 20
 struct SHAstate_st {
 	SHA_LONG h0, h1, h2, h3, h4;
@@ -309,73 +311,87 @@ struct SHAstate_st {
 	SHA_LONG data[SHA_LBLOCK];
 	unsigned int num;
 };
-#define Xupdate(a, ix, ia, ib, ic, id)	((a) = (ia^ib^ic^id), ix = (a) = ROTATE((a), 1))
+#define Xupdate(a, ix, ia, ib, ic, id)                                         \
+	((a) = (ia ^ ib ^ ic ^ id), ix = (a) = ROTATE((a), 1))
 
 #ifndef ROTATE
-#define ROTATE(a, n)     (((a)<<(n))|(((a)&0xffffffff)>>(32-(n))))
+#define ROTATE(a, n) (((a) << (n)) | (((a)&0xffffffff) >> (32 - (n))))
 #endif
 
-#define HASH_MAKE_STRING(c, s)   do {	\
-		unsigned long ll;		\
-		ll = (c)->h0; HOST_l2c(ll, (s));	\
-		ll = (c)->h1; HOST_l2c(ll, (s));	\
-		ll = (c)->h2; HOST_l2c(ll, (s));	\
-		ll = (c)->h3; HOST_l2c(ll, (s));	\
-		ll = (c)->h4; HOST_l2c(ll, (s));	\
+#define HASH_MAKE_STRING(c, s)                                                 \
+	do {                                                                   \
+		unsigned long ll;                                              \
+		ll = (c)->h0;                                                  \
+		HOST_l2c(ll, (s));                                             \
+		ll = (c)->h1;                                                  \
+		HOST_l2c(ll, (s));                                             \
+		ll = (c)->h2;                                                  \
+		HOST_l2c(ll, (s));                                             \
+		ll = (c)->h3;                                                  \
+		HOST_l2c(ll, (s));                                             \
+		ll = (c)->h4;                                                  \
+		HOST_l2c(ll, (s));                                             \
 	} while (0)
 
 #ifndef HOST_c2l
-#define HOST_c2l(c, l)	(l = (((unsigned long)(*((c)++)))<<24),		\
-						 l |= (((unsigned long)(*((c)++)))<<16),		\
-						 l |= (((unsigned long)(*((c)++))) << 8),		\
-						 l |= (((unsigned long)(*((c)++)))),		\
-						 l)
+#define HOST_c2l(c, l)                                                         \
+	(l = (((unsigned long)(*((c)++))) << 24),                              \
+	 l |= (((unsigned long)(*((c)++))) << 16),                             \
+	 l |= (((unsigned long)(*((c)++))) << 8),                              \
+	 l |= (((unsigned long)(*((c)++)))), l)
 #endif
 
-#define HOST_p_c2l(c, l, n)	{					\
-		switch (n) {					\
-		case 0:						\
-			l = ((unsigned long)(*((c)++)))<<24;	\
-		case 1:						\
-			l |= ((unsigned long)(*((c)++)))<<16;	\
-		case 2:						\
-			l |= ((unsigned long)(*((c)++))) << 8;	\
-		case 3:						\
-			l |= ((unsigned long)(*((c)++)));	\
-		} }
-#define HOST_p_c2l_p(c, l, sc, len) {					\
-		switch (sc) {					\
-		case 0:						\
-			l = ((unsigned long)(*((c)++)))<<24;	\
-			if (--len == 0)				\
-				break;				\
-		case 1:						\
-			l |= ((unsigned long)(*((c)++)))<<16;	\
-			if (--len == 0)				\
-				break;				\
-		case 2:						\
-			l |= ((unsigned long)(*((c)++))) << 8;	\
-		} }
+#define HOST_p_c2l(c, l, n)                                                    \
+	{                                                                      \
+		switch (n) {                                                   \
+		case 0:                                                        \
+			l = ((unsigned long)(*((c)++))) << 24;                 \
+		case 1:                                                        \
+			l |= ((unsigned long)(*((c)++))) << 16;                \
+		case 2:                                                        \
+			l |= ((unsigned long)(*((c)++))) << 8;                 \
+		case 3:                                                        \
+			l |= ((unsigned long)(*((c)++)));                      \
+		}                                                              \
+	}
+#define HOST_p_c2l_p(c, l, sc, len)                                            \
+	{                                                                      \
+		switch (sc) {                                                  \
+		case 0:                                                        \
+			l = ((unsigned long)(*((c)++))) << 24;                 \
+			if (--len == 0)                                        \
+				break;                                         \
+		case 1:                                                        \
+			l |= ((unsigned long)(*((c)++))) << 16;                \
+			if (--len == 0)                                        \
+				break;                                         \
+		case 2:                                                        \
+			l |= ((unsigned long)(*((c)++))) << 8;                 \
+		}                                                              \
+	}
 /* NOTE the pointer is not incremented at the end of this */
-#define HOST_c2l_p(c, l, n)	{					\
-		l = 0; (c) += n;					\
-		switch (n) {					\
-		case 3:						\
-			l = ((unsigned long)(*(--(c)))) << 8;	\
-		case 2:						\
-			l |= ((unsigned long)(*(--(c))))<<16;	\
-		case 1:						\
-			l |= ((unsigned long)(*(--(c))))<<24;	\
-		} }
+#define HOST_c2l_p(c, l, n)                                                    \
+	{                                                                      \
+		l = 0;                                                         \
+		(c) += n;                                                      \
+		switch (n) {                                                   \
+		case 3:                                                        \
+			l = ((unsigned long)(*(--(c)))) << 8;                  \
+		case 2:                                                        \
+			l |= ((unsigned long)(*(--(c)))) << 16;                \
+		case 1:                                                        \
+			l |= ((unsigned long)(*(--(c)))) << 24;                \
+		}                                                              \
+	}
 #ifndef HOST_l2c
-#define HOST_l2c(l, c)	(*((c)++) = (unsigned char)(((l)>>24)&0xff),	\
-						 *((c)++) = (unsigned char)(((l)>>16)&0xff),	\
-						 *((c)++) = (unsigned char)(((l) >> 8)&0xff),	\
-						 *((c)++) = (unsigned char)(((l))&0xff),	\
-						 l)
+#define HOST_l2c(l, c)                                                         \
+	(*((c)++) = (unsigned char)(((l) >> 24) & 0xff),                       \
+	 *((c)++) = (unsigned char)(((l) >> 16) & 0xff),                       \
+	 *((c)++) = (unsigned char)(((l) >> 8) & 0xff),                        \
+	 *((c)++) = (unsigned char)(((l)) & 0xff), l)
 #endif
 
-#define K_00_19	0x5a827999UL
+#define K_00_19 0x5a827999UL
 #define K_20_39 0x6ed9eba1UL
 #define K_40_59 0x8f1bbcdcUL
 #define K_60_79 0xca62c1d6UL
@@ -387,47 +403,53 @@ struct SHAstate_st {
  * I've just become aware of another tweak to be made, again from Wei Dai,
  * in F_40_59, (x&a)|(y&a) -> (x|y)&a
  */
-#define	F_00_19(b, c, d)	((((c) ^ (d)) & (b)) ^ (d))
-#define	F_20_39(b, c, d)	((b) ^ (c) ^ (d))
-#define F_40_59(b, c, d)	(((b) & (c)) | (((b)|(c)) & (d)))
-#define	F_60_79(b, c, d)	F_20_39(b, c, d)
+#define F_00_19(b, c, d) ((((c) ^ (d)) & (b)) ^ (d))
+#define F_20_39(b, c, d) ((b) ^ (c) ^ (d))
+#define F_40_59(b, c, d) (((b) & (c)) | (((b) | (c)) & (d)))
+#define F_60_79(b, c, d) F_20_39(b, c, d)
 
-#define BODY_00_15(xi)		 do {	\
-		T = E+K_00_19+F_00_19(B, C, D);	\
-		E = D, D = C, C = ROTATE(B, 30), B = A;	\
-		A = ROTATE(A, 5)+T+xi;			\
+#define BODY_00_15(xi)                                                         \
+	do {                                                                   \
+		T = E + K_00_19 + F_00_19(B, C, D);                            \
+		E = D, D = C, C = ROTATE(B, 30), B = A;                        \
+		A = ROTATE(A, 5) + T + xi;                                     \
 	} while (0)
-#define BODY_16_19(xa, xb, xc, xd)	 do {	\
-		Xupdate(T, xa, xa, xb, xc, xd);	\
-		T += E+K_00_19+F_00_19(B, C, D);	\
-		E = D, D = C, C = ROTATE(B, 30), B = A;	\
-		A = ROTATE(A, 5)+T;			\
+#define BODY_16_19(xa, xb, xc, xd)                                             \
+	do {                                                                   \
+		Xupdate(T, xa, xa, xb, xc, xd);                                \
+		T += E + K_00_19 + F_00_19(B, C, D);                           \
+		E = D, D = C, C = ROTATE(B, 30), B = A;                        \
+		A = ROTATE(A, 5) + T;                                          \
 	} while (0)
-#define BODY_20_39(xa, xb, xc, xd)	 do {	\
-		Xupdate(T, xa, xa, xb, xc, xd);	\
-		T += E+K_20_39+F_20_39(B, C, D);	\
-		E = D, D = C, C = ROTATE(B, 30), B = A;	\
-		A = ROTATE(A, 5)+T;			\
+#define BODY_20_39(xa, xb, xc, xd)                                             \
+	do {                                                                   \
+		Xupdate(T, xa, xa, xb, xc, xd);                                \
+		T += E + K_20_39 + F_20_39(B, C, D);                           \
+		E = D, D = C, C = ROTATE(B, 30), B = A;                        \
+		A = ROTATE(A, 5) + T;                                          \
 	} while (0)
-#define BODY_40_59(xa, xb, xc, xd)	 do {	\
-		Xupdate(T, xa, xa, xb, xc, xd);	\
-		T += E+K_40_59+F_40_59(B, C, D);	\
-		E = D, D = C, C = ROTATE(B, 30), B = A;	\
-		A = ROTATE(A, 5)+T;			\
+#define BODY_40_59(xa, xb, xc, xd)                                             \
+	do {                                                                   \
+		Xupdate(T, xa, xa, xb, xc, xd);                                \
+		T += E + K_40_59 + F_40_59(B, C, D);                           \
+		E = D, D = C, C = ROTATE(B, 30), B = A;                        \
+		A = ROTATE(A, 5) + T;                                          \
 	} while (0)
-#define BODY_60_79(xa, xb, xc, xd)	 do {	\
-		Xupdate(T, xa, xa, xb, xc, xd);	\
-		T = E+K_60_79+F_60_79(B, C, D);	\
-		E = D, D = C, C = ROTATE(B, 30), B = A;	\
-		A = ROTATE(A, 5)+T+xa;		\
+#define BODY_60_79(xa, xb, xc, xd)                                             \
+	do {                                                                   \
+		Xupdate(T, xa, xa, xb, xc, xd);                                \
+		T = E + K_60_79 + F_60_79(B, C, D);                            \
+		E = D, D = C, C = ROTATE(B, 30), B = A;                        \
+		A = ROTATE(A, 5) + T + xa;                                     \
 	} while (0)
-static void sha1_block_host_order(struct SHAstate_st *c, const void *d, size_t num)
+static void sha1_block_host_order(struct SHAstate_st *c, const void *d,
+				  size_t num)
 {
 	const SHA_LONG *W = d;
 
 	register unsigned long A, B, C, D, E, T;
 	int i;
-	SHA_LONG	X[16];
+	SHA_LONG X[16];
 
 	A = c->h0;
 	B = c->h1;
@@ -442,16 +464,19 @@ static void sha1_block_host_order(struct SHAstate_st *c, const void *d, size_t n
 		}
 
 		for (i = 0; i < 4; i++)
-			BODY_16_19(X[i],       X[i + 2],      X[i + 8],     X[(i + 13) & 15]);
+			BODY_16_19(X[i], X[i + 2], X[i + 8], X[(i + 13) & 15]);
 
 		for (; i < 24; i++)
-			BODY_20_39(X[i & 15],    X[(i + 2) & 15], X[(i + 8) & 15], X[(i + 13) & 15]);
+			BODY_20_39(X[i & 15], X[(i + 2) & 15], X[(i + 8) & 15],
+				   X[(i + 13) & 15]);
 
 		for (i = 0; i < 20; i++)
-			BODY_40_59(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],    X[(i + 5) & 15]);
+			BODY_40_59(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],
+				   X[(i + 5) & 15]);
 
 		for (i = 4; i < 24; i++)
-			BODY_60_79(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],    X[(i + 5) & 15]);
+			BODY_60_79(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],
+				   X[(i + 5) & 15]);
 
 		c->h0 = (c->h0 + A) & 0xffffffffL;
 		c->h1 = (c->h1 + B) & 0xffffffffL;
@@ -471,12 +496,13 @@ static void sha1_block_host_order(struct SHAstate_st *c, const void *d, size_t n
 	}
 }
 
-static void sha1_block_data_order(struct SHAstate_st *c, const void *p, size_t num)
+static void sha1_block_data_order(struct SHAstate_st *c, const void *p,
+				  size_t num)
 {
 	const unsigned char *data = p;
 	register unsigned long A, B, C, D, E, T, l;
 	int i;
-	SHA_LONG	X[16];
+	SHA_LONG X[16];
 
 	A = c->h0;
 	B = c->h1;
@@ -492,16 +518,19 @@ static void sha1_block_data_order(struct SHAstate_st *c, const void *p, size_t n
 		}
 
 		for (i = 0; i < 4; i++)
-			BODY_16_19(X[i],       X[i + 2],      X[i + 8],     X[(i + 13) & 15]);
+			BODY_16_19(X[i], X[i + 2], X[i + 8], X[(i + 13) & 15]);
 
 		for (; i < 24; i++)
-			BODY_20_39(X[i & 15],    X[(i + 2) & 15], X[(i + 8) & 15], X[(i + 13) & 15]);
+			BODY_20_39(X[i & 15], X[(i + 2) & 15], X[(i + 8) & 15],
+				   X[(i + 13) & 15]);
 
 		for (i = 0; i < 20; i++)
-			BODY_40_59(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],    X[(i + 5) & 15]);
+			BODY_40_59(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],
+				   X[(i + 5) & 15]);
 
 		for (i = 4; i < 24; i++)
-			BODY_60_79(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],    X[(i + 5) & 15]);
+			BODY_60_79(X[(i + 8) & 15], X[(i + 10) & 15], X[i & 15],
+				   X[(i + 5) & 15]);
 
 		c->h0 = (c->h0 + A) & 0xffffffffL;
 		c->h1 = (c->h1 + B) & 0xffffffffL;
@@ -521,12 +550,12 @@ static void sha1_block_data_order(struct SHAstate_st *c, const void *p, size_t n
 }
 /*sha_locl.h END*/
 
-#define NID_sha1			64
+#define NID_sha1 64
 
 static int g_state_num = 0, g_state_index;
 static unsigned char g_md[SHA_DIGEST_LENGTH];
 static unsigned char g_state[STATE_SIZE + SHA_DIGEST_LENGTH];
-static long g_md_count[2] = {0, 0};
+static long g_md_count[2] = { 0, 0 };
 static long g_entropy;
 static int RAND_initialized;
 
@@ -539,7 +568,8 @@ static int RAND_init(struct env_md_ctx_st *ctx)
 {
 	return HASH_INIT(ctx->md_data);
 }
-static int RAND_update(struct env_md_ctx_st *ctx, const void *data, size_t count)
+static int RAND_update(struct env_md_ctx_st *ctx, const void *data,
+		       size_t count)
 {
 	return HASH_UPDATE(ctx->md_data, data, count);
 }
@@ -547,34 +577,38 @@ static int RAND_final(struct env_md_ctx_st *ctx, unsigned char *md)
 {
 	return HASH_FINAL(md, ctx->md_data);
 }
-static void bn_mul_normal(BN_ULONG *r, BN_ULONG *a, int na, BN_ULONG *b, int nb);
+static void bn_mul_normal(BN_ULONG *r, BN_ULONG *a, int na, BN_ULONG *b,
+			  int nb);
 #ifdef BN_RECURSION
 static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
-							 int dna, int dnb, BN_ULONG *t);
+			     int dna, int dnb, BN_ULONG *t);
 static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
-								  int tna, int tnb, BN_ULONG *t);
+				  int tna, int tnb, BN_ULONG *t);
 static void bn_mul_comba4(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b);
 #endif /* BN_RECURSION */
-static int BN_mod_exp_mont(struct bignum_st *rr, const struct bignum_st *a, const struct bignum_st *p,
-						   const struct bignum_st *m, struct bignum_pool *ctx, struct bn_mont_ctx_st *in_mont);
+static int BN_mod_exp_mont(struct bignum_st *rr, const struct bignum_st *a,
+			   const struct bignum_st *p, const struct bignum_st *m,
+			   struct bignum_pool *ctx,
+			   struct bn_mont_ctx_st *in_mont);
 static int BN_rshift1(struct bignum_st *r, const struct bignum_st *a);
-static BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w);
-static BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w);
-static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n);
-static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n);
+static BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
+				 BN_ULONG w);
+static BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
+			     BN_ULONG w);
+static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
+			     int n);
+static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
+			     int n);
 static void bn_mul_comba8(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b);
 static void bn_sqr_comba8(BN_ULONG *r, const BN_ULONG *a);
 static void bn_sqr_comba4(BN_ULONG *r, const BN_ULONG *a);
-
-
-
 
 static int HASH_FINAL(unsigned char *md, struct SHAstate_st *c)
 {
 	register SHA_LONG *p;
 	register unsigned long l;
 	register int i, j;
-	static const unsigned char end[4] = {0x80, 0x00, 0x00, 0x00};
+	static const unsigned char end[4] = { 0x80, 0x00, 0x00, 0x00 };
 	const unsigned char *cp = end;
 	/* c->num should definitly have room for at least one more byte. */
 	p = c->data;
@@ -624,7 +658,7 @@ static int HASH_UPDATE(struct SHAstate_st *c, const void *data_, size_t len)
 	if (l < c->Nl) /* overflow */
 		c->Nh++;
 
-	c->Nh += (len >> 29);	/* might cause compiler warning on 16-bit */
+	c->Nh += (len >> 29); /* might cause compiler warning on 16-bit */
 	c->Nl = l;
 
 	if (c->num != 0) {
@@ -692,7 +726,7 @@ static int HASH_UPDATE(struct SHAstate_st *c, const void *data_, size_t len)
 	if (len != 0) {
 		p = c->data;
 		c->num = len;
-		ew = len >> 2;	/* words to copy */
+		ew = len >> 2; /* words to copy */
 		ec = len & 0x03;
 
 		for (; ew; ew--, p++) {
@@ -738,7 +772,8 @@ static struct bignum_pool *BN_CTX_new(void)
 static const struct bignum_st *BN_value_one(void)
 {
 	static BN_ULONG data_one = 1L;
-	static struct bignum_st const_one = {&data_one, 1, 1, BN_FLG_STATIC_DATA};
+	static struct bignum_st const_one = { &data_one, 1, 1,
+					      BN_FLG_STATIC_DATA };
 
 	return &const_one;
 }
@@ -746,21 +781,18 @@ static const struct bignum_st *BN_value_one(void)
 static int BN_num_bits_word(BN_ULONG l)
 {
 	static const char bits[256] = {
-		0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
-		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
+		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,
+		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+		6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+		7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 	};
 	{
@@ -855,7 +887,7 @@ static BN_ULONG *bn_expand_internal(const struct bignum_st *b, int words)
 	if (BN_get_flags(b, BN_FLG_STATIC_DATA))
 		return NULL;
 
-	os_alloc_mem(NULL, (UCHAR **)&A, sizeof(BN_ULONG)*words);
+	os_alloc_mem(NULL, (UCHAR **)&A, sizeof(BN_ULONG) * words);
 	a = A;
 
 	if (A == NULL)
@@ -941,7 +973,7 @@ static void BN_clear(struct bignum_st *a)
 
 static int BN_set_word(struct bignum_st *a, BN_ULONG w)
 {
-	if (NULL == ((1	<= (a)->dmax) ? (a) : bn_expand2((a), 1))) {
+	if (NULL == ((1 <= (a)->dmax) ? (a) : bn_expand2((a), 1))) {
 		DHPRINT("BN_set_word NULL\n");
 		return 0;
 	}
@@ -951,12 +983,13 @@ static int BN_set_word(struct bignum_st *a, BN_ULONG w)
 	return 1;
 }
 
-static struct bignum_st *BN_bin2bn(const unsigned char *s, int len, struct bignum_st *ret)
+static struct bignum_st *BN_bin2bn(const unsigned char *s, int len,
+				   struct bignum_st *ret)
 {
 	unsigned int i, m;
 	unsigned int n;
 	BN_ULONG l;
-	struct bignum_st  *bn = NULL;
+	struct bignum_st *bn = NULL;
 
 	if (ret == NULL)
 		ret = bn = BN_new();
@@ -1147,8 +1180,8 @@ static int bn_cmp_words(const BN_ULONG *a, const BN_ULONG *b, int n)
    common length ( basicall, min(len(a),len(b)) ), and dl, which is the
    delta between the two lengths, calculated as len(a)-len(b).
    All lengths are the number of BN_ULONGs...  */
-static int bn_cmp_part_words(const BN_ULONG *a, const BN_ULONG *b,
-							 int cl, int dl)
+static int bn_cmp_part_words(const BN_ULONG *a, const BN_ULONG *b, int cl,
+			     int dl)
 {
 	int n, i;
 
@@ -1194,7 +1227,7 @@ static int BN_rshift1(struct bignum_st *r, const struct bignum_st *a)
 
 	for (i = a->top - 1; i >= 0; i--) {
 		t = ap[i];
-		rp[i] = ((t >> 1)&BN_MASK2) | c;
+		rp[i] = ((t >> 1) & BN_MASK2) | c;
 		c = (t & 1) ? BN_TBIT : 0;
 	}
 
@@ -1225,8 +1258,8 @@ static int BN_lshift(struct bignum_st *r, const struct bignum_st *a, int n)
 	else
 		for (i = a->top - 1; i >= 0; i--) {
 			l = f[i];
-			t[nw + i + 1] |= (l >> rb)&BN_MASK2;
-			t[nw + i] = (l << lb)&BN_MASK2;
+			t[nw + i + 1] |= (l >> rb) & BN_MASK2;
+			t[nw + i] = (l << lb) & BN_MASK2;
 		}
 
 	memset(t, 0, nw * sizeof(t[0]));
@@ -1272,12 +1305,12 @@ static int BN_rshift(struct bignum_st *r, const struct bignum_st *a, int n)
 		l = *(f++);
 
 		for (i = j - 1; i != 0; i--) {
-			tmp = (l >> rb)&BN_MASK2;
+			tmp = (l >> rb) & BN_MASK2;
 			l = *(f++);
-			*(t++) = (tmp | (l << lb))&BN_MASK2;
+			*(t++) = (tmp | (l << lb)) & BN_MASK2;
 		}
 
-		*(t++) = (l >> rb)&BN_MASK2;
+		*(t++) = (l >> rb) & BN_MASK2;
 	}
 
 	bn_correct_top(r);
@@ -1318,7 +1351,6 @@ static void BN_POOL_finish(struct bignum_pool *p)
 	}
 }
 
-
 static struct bignum_st *BN_POOL_get(struct bignum_pool *p)
 {
 	struct bignum_st *ret = NULL;
@@ -1328,7 +1360,8 @@ static struct bignum_st *BN_POOL_get(struct bignum_pool *p)
 		unsigned int loop = 0;
 		struct bignum_pool_item *item;
 
-		os_alloc_mem(NULL, (UCHAR **)&item, sizeof(struct bignum_pool_item));
+		os_alloc_mem(NULL, (UCHAR **)&item,
+			     sizeof(struct bignum_pool_item));
 
 		if (!item)
 			goto end;
@@ -1414,8 +1447,7 @@ static struct bignum_st *BN_copy(struct bignum_st *a, const struct bignum_st *b)
 	case 1:
 		A[0] = B[0];
 
-	case 0:
-		; /* ultrix cc workaround, see comments in bn_expand_internal */
+	case 0:; /* ultrix cc workaround, see comments in bn_expand_internal */
 	}
 
 	a->top = b->top;
@@ -1460,9 +1492,8 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 			t = h - th;
 
 			if ((t & BN_MASK2h) ||
-				((tl) <= (
-					 (t << BN_BITS4) |
-					 ((l & BN_MASK2h) >> BN_BITS4))))
+			    ((tl) <=
+			     ((t << BN_BITS4) | ((l & BN_MASK2h) >> BN_BITS4))))
 				break;
 
 			q--;
@@ -1471,7 +1502,7 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 		}
 
 		t = (tl >> BN_BITS4);
-		tl = (tl << BN_BITS4)&BN_MASK2h;
+		tl = (tl << BN_BITS4) & BN_MASK2h;
 		th += t;
 
 		if (l < tl)
@@ -1490,7 +1521,7 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
 			break;
 
 		ret = q << BN_BITS4;
-		h = ((h << BN_BITS4) | (l >> BN_BITS4))&BN_MASK2;
+		h = ((h << BN_BITS4) | (l >> BN_BITS4)) & BN_MASK2;
 		l = (l & BN_MASK2l) << BN_BITS4;
 	}
 
@@ -1502,8 +1533,9 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
  * rm  such that  dv*divisor + rm = num  holds.
  * If 'dv' or 'rm' is NULL, the respective value is not returned.
  */
-static int BN_div(struct bignum_st *dv, struct bignum_st *rm, const struct bignum_st *num, const struct bignum_st *divisor,
-				  struct bignum_pool *ctx)
+static int BN_div(struct bignum_st *dv, struct bignum_st *rm,
+		  const struct bignum_st *num, const struct bignum_st *divisor,
+		  struct bignum_pool *ctx)
 {
 	int release = 0;
 	int norm_shift, i, loop;
@@ -1558,10 +1590,10 @@ static int BN_div(struct bignum_st *dv, struct bignum_st *rm, const struct bignu
 	/* Lets setup a 'window' into snum
 	 * This is the part that corresponds to the current
 	 * 'area' being divided */
-	wnum.d     = &(snum->d[loop]);
-	wnum.top   = div_n;
+	wnum.d = &(snum->d[loop]);
+	wnum.top = div_n;
 	/* only needed when BN_ucmp messes up the values between top and max */
-	wnum.dmax  = snum->dmax - loop; /* so we don't step out of bounds */
+	wnum.dmax = snum->dmax - loop; /* so we don't step out of bounds */
 	/* Get the top 2 words of sdiv */
 	/* div_n=sdiv->top; */
 	d0 = sdiv->d[div_n - 1];
@@ -1603,11 +1635,11 @@ static int BN_div(struct bignum_st *dv, struct bignum_st *rm, const struct bignu
 
 		if (n0 == d0)
 			q = BN_MASK2;
-		else {		/* n0 < d0 */
+		else { /* n0 < d0 */
 			BN_ULONG t2l, t2h, ql, qh;
 
 			q = bn_div_words(n0, n1, d0);
-			rem = (n1 - q * d0)&BN_MASK2;
+			rem = (n1 - q * d0) & BN_MASK2;
 			t2l = LBITS(d1);
 			t2h = HBITS(d1);
 			ql = LBITS(q);
@@ -1616,7 +1648,7 @@ static int BN_div(struct bignum_st *dv, struct bignum_st *rm, const struct bignu
 
 			for (;;) {
 				if ((t2h < rem) ||
-					((t2h == rem) && (t2l <= wnump[-2])))
+				    ((t2h == rem) && (t2l <= wnump[-2])))
 					break;
 
 				q--;
@@ -1675,7 +1707,8 @@ err:
 /*bn_div END*/
 
 /*bn_asm START*/
-static BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
+static BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
+				 BN_ULONG w)
 {
 	BN_ULONG c = 0;
 	BN_ULONG bl, bh;
@@ -1714,7 +1747,8 @@ static BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_U
 	return c;
 }
 
-static BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
+static BN_ULONG bn_mul_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
+			     BN_ULONG w)
 {
 	BN_ULONG carry = 0;
 	BN_ULONG bl, bh;
@@ -1784,7 +1818,8 @@ static void bn_sqr_words(BN_ULONG *r, const BN_ULONG *a, int n)
 	}
 }
 
-static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
+static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
+			     int n)
 {
 	BN_ULONG c, l, t;
 
@@ -1795,9 +1830,9 @@ static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 
 	for (;;) {
 		t = a[0];
-		t = (t + c)&BN_MASK2;
+		t = (t + c) & BN_MASK2;
 		c = (t < c);
-		l = (t + b[0])&BN_MASK2;
+		l = (t + b[0]) & BN_MASK2;
 		c += (l < t);
 		r[0] = l;
 
@@ -1805,9 +1840,9 @@ static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 			break;
 
 		t = a[1];
-		t = (t + c)&BN_MASK2;
+		t = (t + c) & BN_MASK2;
 		c = (t < c);
-		l = (t + b[1])&BN_MASK2;
+		l = (t + b[1]) & BN_MASK2;
 		c += (l < t);
 		r[1] = l;
 
@@ -1815,9 +1850,9 @@ static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 			break;
 
 		t = a[2];
-		t = (t + c)&BN_MASK2;
+		t = (t + c) & BN_MASK2;
 		c = (t < c);
-		l = (t + b[2])&BN_MASK2;
+		l = (t + b[2]) & BN_MASK2;
 		c += (l < t);
 		r[2] = l;
 
@@ -1825,9 +1860,9 @@ static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 			break;
 
 		t = a[3];
-		t = (t + c)&BN_MASK2;
+		t = (t + c) & BN_MASK2;
 		c = (t < c);
-		l = (t + b[3])&BN_MASK2;
+		l = (t + b[3]) & BN_MASK2;
 		c += (l < t);
 		r[3] = l;
 
@@ -1842,7 +1877,8 @@ static BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 	return ((BN_ULONG)c);
 }
 
-static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
+static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
+			     int n)
 {
 	BN_ULONG t1, t2;
 	int c = 0;
@@ -1853,7 +1889,7 @@ static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 	for (;;) {
 		t1 = a[0];
 		t2 = b[0];
-		r[0] = (t1 - t2 - c)&BN_MASK2;
+		r[0] = (t1 - t2 - c) & BN_MASK2;
 
 		if (t1 != t2)
 			c = (t1 < t2);
@@ -1863,7 +1899,7 @@ static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 
 		t1 = a[1];
 		t2 = b[1];
-		r[1] = (t1 - t2 - c)&BN_MASK2;
+		r[1] = (t1 - t2 - c) & BN_MASK2;
 
 		if (t1 != t2)
 			c = (t1 < t2);
@@ -1873,7 +1909,7 @@ static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 
 		t1 = a[2];
 		t2 = b[2];
-		r[2] = (t1 - t2 - c)&BN_MASK2;
+		r[2] = (t1 - t2 - c) & BN_MASK2;
 
 		if (t1 != t2)
 			c = (t1 < t2);
@@ -1883,7 +1919,7 @@ static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 
 		t1 = a[3];
 		t2 = b[3];
-		r[3] = (t1 - t2 - c)&BN_MASK2;
+		r[3] = (t1 - t2 - c) & BN_MASK2;
 
 		if (t1 != t2)
 			c = (t1 < t2);
@@ -1911,51 +1947,54 @@ static BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, 
 /* sqr_add_c(a,i,c0,c1,c2)  -- c+=a[i]^2 for three word number c=(c2,c1,c0) */
 /* sqr_add_c2(a,i,c0,c1,c2) -- c+=2*a[i]*a[j] for three word number c=(c2,c1,c0) */
 
-#define mul_add_c(a, b, c0, c1, c2) \
-	do {			    \
-		t1 = LBITS(a); t2 = HBITS(a); \
-		bl = LBITS(b); bh = HBITS(b); \
-		mul64(t1, t2, bl, bh); \
-		c0 = (c0+t1) & BN_MASK2; \
-		if ((c0) < t1)		\
-			t2++;		\
-		c1 = (c1+t2) & BN_MASK2;\
-		if ((c1) < t2)		\
-			c2++;		\
+#define mul_add_c(a, b, c0, c1, c2)                                            \
+	do {                                                                   \
+		t1 = LBITS(a);                                                 \
+		t2 = HBITS(a);                                                 \
+		bl = LBITS(b);                                                 \
+		bh = HBITS(b);                                                 \
+		mul64(t1, t2, bl, bh);                                         \
+		c0 = (c0 + t1) & BN_MASK2;                                     \
+		if ((c0) < t1)                                                 \
+			t2++;                                                  \
+		c1 = (c1 + t2) & BN_MASK2;                                     \
+		if ((c1) < t2)                                                 \
+			c2++;                                                  \
 	} while (0)
 
-#define mul_add_c2(a, b, c0, c1, c2) \
-	do {			    \
-		t1 = LBITS(a); t2 = HBITS(a); \
-		bl = LBITS(b); bh = HBITS(b); \
-		mul64(t1, t2, bl, bh); \
-		if (t2 & BN_TBIT)	\
-			c2++;		\
-		t2 = (t2+t2)&BN_MASK2; \
-		if (t1 & BN_TBIT)	\
-			t2++;		\
-		t1 = (t1+t1)&BN_MASK2; \
-		c0 = (c0+t1)&BN_MASK2;  \
-		if ((c0 < t1) && (((++t2)&BN_MASK2) == 0)) \
-			c2++;					\
-		c1 = (c1+t2)&BN_MASK2;		\
-		if ((c1) < t2)			\
-			c2++;		\
+#define mul_add_c2(a, b, c0, c1, c2)                                           \
+	do {                                                                   \
+		t1 = LBITS(a);                                                 \
+		t2 = HBITS(a);                                                 \
+		bl = LBITS(b);                                                 \
+		bh = HBITS(b);                                                 \
+		mul64(t1, t2, bl, bh);                                         \
+		if (t2 & BN_TBIT)                                              \
+			c2++;                                                  \
+		t2 = (t2 + t2) & BN_MASK2;                                     \
+		if (t1 & BN_TBIT)                                              \
+			t2++;                                                  \
+		t1 = (t1 + t1) & BN_MASK2;                                     \
+		c0 = (c0 + t1) & BN_MASK2;                                     \
+		if ((c0 < t1) && (((++t2) & BN_MASK2) == 0))                   \
+			c2++;                                                  \
+		c1 = (c1 + t2) & BN_MASK2;                                     \
+		if ((c1) < t2)                                                 \
+			c2++;                                                  \
 	} while (0)
 
-#define sqr_add_c(a, i, c0, c1, c2) \
-	do {			    \
-		sqr64(t1, t2, (a)[i]); \
-		c0 = (c0+t1)&BN_MASK2; \
-		if ((c0) < t1)		\
-			t2++;		\
-		c1 = (c1+t2)&BN_MASK2;  \
-		if ((c1) < t2)		\
-			c2++;		\
+#define sqr_add_c(a, i, c0, c1, c2)                                            \
+	do {                                                                   \
+		sqr64(t1, t2, (a)[i]);                                         \
+		c0 = (c0 + t1) & BN_MASK2;                                     \
+		if ((c0) < t1)                                                 \
+			t2++;                                                  \
+		c1 = (c1 + t2) & BN_MASK2;                                     \
+		if ((c1) < t2)                                                 \
+			c2++;                                                  \
 	} while (0)
 
-#define sqr_add_c2(a, i, j, c0, c1, c2) \
-	mul_add_c2((a)[i], (a)[j], c0, c1, c2)
+#define sqr_add_c2(a, i, j, c0, c1, c2) mul_add_c2((a)[i], (a)[j], c0, c1, c2)
 
 static void bn_mul_comba8(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b)
 {
@@ -2228,9 +2267,8 @@ static void bn_sqr_comba4(BN_ULONG *r, const BN_ULONG *a)
    These functions should probably end up in bn_asm.c as soon as there are
    assembler counterparts for the systems that use assembler files.  */
 #ifdef BN_RECURSION
-static BN_ULONG bn_sub_part_words(BN_ULONG *r,
-								  const BN_ULONG *a, const BN_ULONG *b,
-								  int cl, int dl)
+static BN_ULONG bn_sub_part_words(BN_ULONG *r, const BN_ULONG *a,
+				  const BN_ULONG *b, int cl, int dl)
 {
 	BN_ULONG c, t;
 
@@ -2246,7 +2284,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 	if (dl < 0) {
 		for (;;) {
 			t = b[0];
-			r[0] = (0 - t - c)&BN_MASK2;
+			r[0] = (0 - t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 1;
@@ -2255,7 +2293,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 				break;
 
 			t = b[1];
-			r[1] = (0 - t - c)&BN_MASK2;
+			r[1] = (0 - t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 1;
@@ -2264,7 +2302,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 				break;
 
 			t = b[2];
-			r[2] = (0 - t - c)&BN_MASK2;
+			r[2] = (0 - t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 1;
@@ -2273,7 +2311,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 				break;
 
 			t = b[3];
-			r[3] = (0 - t - c)&BN_MASK2;
+			r[3] = (0 - t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 1;
@@ -2289,7 +2327,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 
 		while (c) {
 			t = a[0];
-			r[0] = (t - c)&BN_MASK2;
+			r[0] = (t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 0;
@@ -2298,7 +2336,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 				break;
 
 			t = a[1];
-			r[1] = (t - c)&BN_MASK2;
+			r[1] = (t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 0;
@@ -2307,7 +2345,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 				break;
 
 			t = a[2];
-			r[2] = (t - c)&BN_MASK2;
+			r[2] = (t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 0;
@@ -2316,7 +2354,7 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
 				break;
 
 			t = a[3];
-			r[3] = (t - c)&BN_MASK2;
+			r[3] = (t - c) & BN_MASK2;
 
 			if (t != 0)
 				c = 0;
@@ -2401,13 +2439,13 @@ static BN_ULONG bn_sub_part_words(BN_ULONG *r,
  * a[1]*b[1]
  */
 static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
-							 int dna, int dnb, BN_ULONG *t)
+			     int dna, int dnb, BN_ULONG *t)
 {
 	int n = n2 / 2, c1, c2;
 	int tna = n + dna, tnb = n + dnb;
 	unsigned int neg, zero;
 	BN_ULONG ln, lo, *p;
-# ifdef BN_MUL_COMBA
+#ifdef BN_MUL_COMBA
 
 	/* Only call bn_mul_comba 8 if n2 == 8 and the
 	 * two arrays are complete [steve]
@@ -2417,7 +2455,7 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 		return;
 	}
 
-# endif /* BN_MUL_COMBA */
+#endif /* BN_MUL_COMBA */
 
 	/* Else do normal multiply */
 	if (n2 < BN_MUL_RECURSIVE_SIZE_NORMAL) {
@@ -2425,7 +2463,7 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 
 		if ((dna + dnb) < 0)
 			memset(&r[2 * n2 + dna + dnb], 0,
-				   sizeof(BN_ULONG) * -(dna + dnb));
+			       sizeof(BN_ULONG) * -(dna + dnb));
 
 		return;
 	}
@@ -2437,8 +2475,8 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 
 	switch (c1 * 3 + c2) {
 	case -4:
-		bn_sub_part_words(t,      &(a[n]), a,      tna, tna - n); /* - */
-		bn_sub_part_words(&(t[n]), b,      &(b[n]), tnb, n - tnb); /* - */
+		bn_sub_part_words(t, &(a[n]), a, tna, tna - n); /* - */
+		bn_sub_part_words(&(t[n]), b, &(b[n]), tnb, n - tnb); /* - */
 		break;
 
 	case -3:
@@ -2446,8 +2484,8 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 		break;
 
 	case -2:
-		bn_sub_part_words(t,      &(a[n]), a,      tna, tna - n); /* - */
-		bn_sub_part_words(&(t[n]), &(b[n]), b,      tnb, tnb - n); /* + */
+		bn_sub_part_words(t, &(a[n]), a, tna, tna - n); /* - */
+		bn_sub_part_words(&(t[n]), &(b[n]), b, tnb, tnb - n); /* + */
 		neg = 1;
 		break;
 
@@ -2458,8 +2496,8 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 		break;
 
 	case 2:
-		bn_sub_part_words(t,      a,      &(a[n]), tna, n - tna); /* + */
-		bn_sub_part_words(&(t[n]), b,      &(b[n]), tnb, n - tnb); /* - */
+		bn_sub_part_words(t, a, &(a[n]), tna, n - tna); /* + */
+		bn_sub_part_words(&(t[n]), b, &(b[n]), tnb, n - tnb); /* - */
 		neg = 1;
 		break;
 
@@ -2468,12 +2506,12 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 		break;
 
 	case 4:
-		bn_sub_part_words(t,      a,      &(a[n]), tna, n - tna);
-		bn_sub_part_words(&(t[n]), &(b[n]), b,      tnb, tnb - n);
+		bn_sub_part_words(t, a, &(a[n]), tna, n - tna);
+		bn_sub_part_words(&(t[n]), &(b[n]), b, tnb, tnb - n);
 		break;
 	}
 
-# ifdef BN_MUL_COMBA
+#ifdef BN_MUL_COMBA
 
 	if (n == 4 && dna == 0 && dnb == 0) /* XXX: bn_mul_comba4 could take
 					       extra args to do this well */
@@ -2497,7 +2535,7 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 		bn_mul_comba8(r, a, b);
 		bn_mul_comba8(&(r[n2]), &(a[n]), &(b[n]));
 	} else
-# endif /* BN_MUL_COMBA */
+#endif /* BN_MUL_COMBA */
 	{
 		p = &(t[n2 * 2]);
 
@@ -2533,16 +2571,16 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 	if (c1) {
 		p = &(r[n + n2]);
 		lo = *p;
-		ln = (lo + c1)&BN_MASK2;
+		ln = (lo + c1) & BN_MASK2;
 		*p = ln;
 
 		/* The overflow will stop before we over write
 		 * words we should not overwrite */
 		if (ln < (BN_ULONG)c1) {
-			do	{
+			do {
 				p++;
 				lo = *p;
-				ln = (lo + 1)&BN_MASK2;
+				ln = (lo + 1) & BN_MASK2;
 				*p = ln;
 			} while (ln == 0);
 		}
@@ -2552,7 +2590,7 @@ static void bn_mul_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n2,
 /* n+tn is the word length
  * t needs to be n*4 is size, as does r */
 static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
-								  int tna, int tnb, BN_ULONG *t)
+				  int tna, int tnb, BN_ULONG *t)
 {
 	int i, j, n2 = n * 2;
 	int c1, c2, neg, zero;
@@ -2570,8 +2608,8 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 
 	switch (c1 * 3 + c2) {
 	case -4:
-		bn_sub_part_words(t,      &(a[n]), a,      tna, tna - n); /* - */
-		bn_sub_part_words(&(t[n]), b,      &(b[n]), tnb, n - tnb); /* - */
+		bn_sub_part_words(t, &(a[n]), a, tna, tna - n); /* - */
+		bn_sub_part_words(&(t[n]), b, &(b[n]), tnb, n - tnb); /* - */
 		break;
 
 	case -3:
@@ -2579,8 +2617,8 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 
 	/* break; */
 	case -2:
-		bn_sub_part_words(t,      &(a[n]), a,      tna, tna - n); /* - */
-		bn_sub_part_words(&(t[n]), &(b[n]), b,      tnb, tnb - n); /* + */
+		bn_sub_part_words(t, &(a[n]), a, tna, tna - n); /* - */
+		bn_sub_part_words(&(t[n]), &(b[n]), b, tnb, tnb - n); /* + */
 		neg = 1;
 		break;
 
@@ -2591,8 +2629,8 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 
 	/* break; */
 	case 2:
-		bn_sub_part_words(t,      a,      &(a[n]), tna, n - tna); /* + */
-		bn_sub_part_words(&(t[n]), b,      &(b[n]), tnb, n - tnb); /* - */
+		bn_sub_part_words(t, a, &(a[n]), tna, n - tna); /* + */
+		bn_sub_part_words(&(t[n]), b, &(b[n]), tnb, n - tnb); /* - */
 		neg = 1;
 		break;
 
@@ -2601,8 +2639,8 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 
 	/* break; */
 	case 4:
-		bn_sub_part_words(t,      a,      &(a[n]), tna, n - tna);
-		bn_sub_part_words(&(t[n]), &(b[n]), b,      tnb, tnb - n);
+		bn_sub_part_words(t, a, &(a[n]), tna, n - tna);
+		bn_sub_part_words(&(t[n]), &(b[n]), b, tnb, tnb - n);
 		break;
 	}
 
@@ -2610,7 +2648,8 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 		bn_mul_comba8(&(t[n2]), t, &(t[n]));
 		bn_mul_comba8(r, a, b);
 		bn_mul_normal(&(r[n2]), &(a[n]), tna, &(b[n]), tnb);
-		memset(&(r[n2 + tna + tnb]), 0, sizeof(BN_ULONG) * (n2 - tna - tnb));
+		memset(&(r[n2 + tna + tnb]), 0,
+		       sizeof(BN_ULONG) * (n2 - tna - tnb));
 	} else {
 		p = &(t[n2 * 2]);
 		bn_mul_recursive(&(t[n2]), t, &(t[n]), n, 0, 0, p);
@@ -2625,33 +2664,38 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 			j = tnb - i;
 
 		if (j == 0) {
-			bn_mul_recursive(&(r[n2]), &(a[n]), &(b[n]),
-							 i, tna - i, tnb - i, p);
-			memset(&(r[n2 + i * 2]), 0, sizeof(BN_ULONG) * (n2 - i * 2));
+			bn_mul_recursive(&(r[n2]), &(a[n]), &(b[n]), i, tna - i,
+					 tnb - i, p);
+			memset(&(r[n2 + i * 2]), 0,
+			       sizeof(BN_ULONG) * (n2 - i * 2));
 		} else if (j > 0) { /* eg, n == 16, i == 8 and tn == 11 */
-			bn_mul_part_recursive(&(r[n2]), &(a[n]), &(b[n]),
-								  i, tna - i, tnb - i, p);
+			bn_mul_part_recursive(&(r[n2]), &(a[n]), &(b[n]), i,
+					      tna - i, tnb - i, p);
 			memset(&(r[n2 + tna + tnb]), 0,
-				   sizeof(BN_ULONG) * (n2 - tna - tnb));
+			       sizeof(BN_ULONG) * (n2 - tna - tnb));
 		} else { /* (j < 0) eg, n == 16, i == 8 and tn == 5 */
-			memset(&(r[n2]), 0, sizeof(BN_ULONG)*n2);
+			memset(&(r[n2]), 0, sizeof(BN_ULONG) * n2);
 
-			if (tna < BN_MUL_RECURSIVE_SIZE_NORMAL
-				&& tnb < BN_MUL_RECURSIVE_SIZE_NORMAL)
-				bn_mul_normal(&(r[n2]), &(a[n]), tna, &(b[n]), tnb);
+			if (tna < BN_MUL_RECURSIVE_SIZE_NORMAL &&
+			    tnb < BN_MUL_RECURSIVE_SIZE_NORMAL)
+				bn_mul_normal(&(r[n2]), &(a[n]), tna, &(b[n]),
+					      tnb);
 			else {
 				for (;;) {
 					i /= 2;
 
 					if (i < tna && i < tnb) {
-						bn_mul_part_recursive(&(r[n2]),
-											  &(a[n]), &(b[n]),
-											  i, tna - i, tnb - i, p);
+						bn_mul_part_recursive(
+							&(r[n2]), &(a[n]),
+							&(b[n]), i, tna - i,
+							tnb - i, p);
 						break;
 					} else if (i <= tna && i <= tnb) {
 						bn_mul_recursive(&(r[n2]),
-										 &(a[n]), &(b[n]),
-										 i, tna - i, tnb - i, p);
+								 &(a[n]),
+								 &(b[n]), i,
+								 tna - i,
+								 tnb - i, p);
 						break;
 					}
 				}
@@ -2682,16 +2726,16 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 	if (c1) {
 		p = &(r[n + n2]);
 		lo = *p;
-		ln = (lo + c1)&BN_MASK2;
+		ln = (lo + c1) & BN_MASK2;
 		*p = ln;
 
 		/* The overflow will stop before we over write
 		 * words we should not overwrite */
 		if (ln < (BN_ULONG)c1) {
-			do	{
+			do {
 				p++;
 				lo = *p;
-				ln = (lo + 1)&BN_MASK2;
+				ln = (lo + 1) & BN_MASK2;
 				*p = ln;
 			} while (ln == 0);
 		}
@@ -2699,7 +2743,8 @@ static void bn_mul_part_recursive(BN_ULONG *r, BN_ULONG *a, BN_ULONG *b, int n,
 }
 #endif /* BN_RECURSION */
 
-static int BN_mul(struct bignum_st *r, const struct bignum_st *a, const struct bignum_st *b, struct bignum_pool *ctx)
+static int BN_mul(struct bignum_st *r, const struct bignum_st *a,
+		  const struct bignum_st *b, struct bignum_pool *ctx)
 {
 	int release = 0;
 	int ret = 0;
@@ -2772,13 +2817,13 @@ static int BN_mul(struct bignum_st *r, const struct bignum_st *a, const struct b
 			if (al > j || bl > j) {
 				bn_wexpand(t, k * 4);
 				bn_wexpand(rr, k * 4);
-				bn_mul_part_recursive(rr->d, a->d, b->d,
-									  j, al - j, bl - j, t->d);
-			} else {	/* al <= j || bl <= j */
+				bn_mul_part_recursive(rr->d, a->d, b->d, j,
+						      al - j, bl - j, t->d);
+			} else { /* al <= j || bl <= j */
 				bn_wexpand(t, k * 2);
 				bn_wexpand(rr, k * 2);
-				bn_mul_recursive(rr->d, a->d, b->d,
-								 j, al - j, bl - j, t->d);
+				bn_mul_recursive(rr->d, a->d, b->d, j, al - j,
+						 bl - j, t->d);
 			}
 
 			rr->top = top;
@@ -2902,7 +2947,8 @@ static void bn_sqr_normal(BN_ULONG *r, const BN_ULONG *a, int n, BN_ULONG *tmp)
  * a[0]*b[0]+a[1]*b[1]+(a[0]-a[1])*(b[1]-b[0])
  * a[1]*b[1]
  */
-static void bn_sqr_recursive(BN_ULONG *r, const BN_ULONG *a, int n2, BN_ULONG *t)
+static void bn_sqr_recursive(BN_ULONG *r, const BN_ULONG *a, int n2,
+			     BN_ULONG *t)
 {
 	int n = n2 / 2;
 	int zero, c1;
@@ -2967,16 +3013,16 @@ static void bn_sqr_recursive(BN_ULONG *r, const BN_ULONG *a, int n2, BN_ULONG *t
 	if (c1) {
 		p = &(r[n + n2]);
 		lo = *p;
-		ln = (lo + c1)&BN_MASK2;
+		ln = (lo + c1) & BN_MASK2;
 		*p = ln;
 
 		/* The overflow will stop before we over write
 		 * words we should not overwrite */
 		if (ln < (BN_ULONG)c1) {
-			do	{
+			do {
 				p++;
 				lo = *p;
-				ln = (lo + 1)&BN_MASK2;
+				ln = (lo + 1) & BN_MASK2;
 				*p = ln;
 			} while (ln == 0);
 		}
@@ -2985,7 +3031,8 @@ static void bn_sqr_recursive(BN_ULONG *r, const BN_ULONG *a, int n2, BN_ULONG *t
 #endif /*BN_RECURSION */
 
 /* unsigned subtraction of b from a, a must be larger than b. */
-static int BN_usub(struct bignum_st *r, const struct bignum_st *a, const struct bignum_st *b)
+static int BN_usub(struct bignum_st *r, const struct bignum_st *a,
+		   const struct bignum_st *b)
 {
 	int max, min, dif;
 	register BN_ULONG t1, t2, *ap, *bp, *rp;
@@ -2995,7 +3042,7 @@ static int BN_usub(struct bignum_st *r, const struct bignum_st *a, const struct 
 	min = b->top;
 	dif = max - min;
 
-	if (dif < 0)	/* hmm... should not be happening */
+	if (dif < 0) /* hmm... should not be happening */
 		return 0;
 
 	if (bn_wexpand(r, max) == NULL)
@@ -3012,10 +3059,10 @@ static int BN_usub(struct bignum_st *r, const struct bignum_st *a, const struct 
 
 		if (carry) {
 			carry = (t1 <= t2);
-			t1 = (t1 - t2 - 1)&BN_MASK2;
+			t1 = (t1 - t2 - 1) & BN_MASK2;
 		} else {
 			carry = (t1 < t2);
-			t1 = (t1 - t2)&BN_MASK2;
+			t1 = (t1 - t2) & BN_MASK2;
 		}
 
 		*(rp++) = t1 & BN_MASK2;
@@ -3029,7 +3076,7 @@ static int BN_usub(struct bignum_st *r, const struct bignum_st *a, const struct 
 		while (dif) {
 			dif--;
 			t1 = *(ap++);
-			t2 = (t1 - 1)&BN_MASK2;
+			t2 = (t1 - 1) & BN_MASK2;
 			*(rp++) = t2;
 
 			if (t1)
@@ -3068,7 +3115,9 @@ static int BN_usub(struct bignum_st *r, const struct bignum_st *a, const struct 
 	return 1;
 }
 
-static int BN_from_montgomery(struct bignum_st *ret, const struct bignum_st *a, struct bn_mont_ctx_st *mont, struct bignum_pool *ctx)
+static int BN_from_montgomery(struct bignum_st *ret, const struct bignum_st *a,
+			      struct bn_mont_ctx_st *mont,
+			      struct bignum_pool *ctx)
 {
 	int retn = 0;
 	struct bignum_st *n, *r;
@@ -3115,7 +3164,7 @@ static int BN_from_montgomery(struct bignum_st *ret, const struct bignum_st *a, 
 	n0 = mont->n0;
 
 	for (i = 0; i < nl; i++) {
-		v = bn_mul_add_words(rp, np, nl, (rp[0] * n0)&BN_MASK2);
+		v = bn_mul_add_words(rp, np, nl, (rp[0] * n0) & BN_MASK2);
 		nrp++;
 		rp++;
 		nrp[-1] += v;
@@ -3129,7 +3178,7 @@ static int BN_from_montgomery(struct bignum_st *ret, const struct bignum_st *a, 
 			if (((++nrp[1]) & BN_MASK2) != 0)
 				continue;
 
-			for (x = 2; (((++nrp[x])&BN_MASK2) == 0); x++)
+			for (x = 2; (((++nrp[x]) & BN_MASK2) == 0); x++)
 				;
 		}
 	}
@@ -3180,7 +3229,8 @@ err:
 /*SQR*/
 /* r must not be a */
 /* I've just gone over this and it is now %20 faster on x86 - eay - 27 Jun 96 */
-static int BN_sqr(struct bignum_st *r, const struct bignum_st *a, struct bignum_pool *ctx)
+static int BN_sqr(struct bignum_st *r, const struct bignum_st *a,
+		  struct bignum_pool *ctx)
 {
 	int release = 0;
 	int max, al;
@@ -3280,7 +3330,10 @@ err:
 	return ret;
 }
 
-static int BN_mod_mul_montgomery(struct bignum_st *r, const struct bignum_st *a, const struct bignum_st *b, struct bn_mont_ctx_st *mont, struct bignum_pool *ctx)
+static int BN_mod_mul_montgomery(struct bignum_st *r, const struct bignum_st *a,
+				 const struct bignum_st *b,
+				 struct bn_mont_ctx_st *mont,
+				 struct bignum_pool *ctx)
 {
 	struct bignum_st *tmp;
 	int ret = 0;
@@ -3309,7 +3362,8 @@ err:
 }
 
 /* unsigned add of b to a */
-static int BN_uadd(struct bignum_st *r, const struct bignum_st *a, const struct bignum_st *b)
+static int BN_uadd(struct bignum_st *r, const struct bignum_st *a,
+		   const struct bignum_st *b)
 {
 	int max, min, dif;
 	BN_ULONG *ap, *bp, *rp, carry, t1, t2;
@@ -3365,7 +3419,8 @@ static int BN_uadd(struct bignum_st *r, const struct bignum_st *a, const struct 
 	return 1;
 }
 
-static int BN_sub(struct bignum_st *r, const struct bignum_st *a, const struct bignum_st *b)
+static int BN_sub(struct bignum_st *r, const struct bignum_st *a,
+		  const struct bignum_st *b)
 {
 	int max;
 	/* We are actually doing a - b :-) */
@@ -3413,7 +3468,9 @@ static int BN_mul_word(struct bignum_st *a, BN_ULONG w)
 
 /* solves ax == 1 (mod n) */
 static struct bignum_st *BN_mod_inverse(struct bignum_st *in,
-										const struct bignum_st *a, const struct bignum_st *n, struct bignum_pool *ctx)
+					const struct bignum_st *a,
+					const struct bignum_st *n,
+					struct bignum_pool *ctx)
 {
 	struct bignum_st *A, *B, *X, *Y, *M, *D, *T, *R = NULL;
 	struct bignum_st *ret = NULL;
@@ -3623,7 +3680,7 @@ static int BN_sub_word(struct bignum_st *a, BN_ULONG w)
 			a->d[i] -= w;
 			break;
 		} else {
-			a->d[i] = (a->d[i] - w)&BN_MASK2;
+			a->d[i] = (a->d[i] - w) & BN_MASK2;
 			i++;
 			w = 1;
 		}
@@ -3635,7 +3692,8 @@ static int BN_sub_word(struct bignum_st *a, BN_ULONG w)
 	return 1;
 }
 
-static int BN_MONT_CTX_set(struct bn_mont_ctx_st *mont, const struct bignum_st *mod, struct bignum_pool *ctx)
+static int BN_MONT_CTX_set(struct bn_mont_ctx_st *mont,
+			   const struct bignum_st *mod, struct bignum_pool *ctx)
 {
 	int ret = 0;
 	struct bignum_st *Ri, *R;
@@ -3647,17 +3705,17 @@ static int BN_MONT_CTX_set(struct bn_mont_ctx_st *mont, const struct bignum_st *
 	if (Ri == NULL)
 		goto err;
 
-	R = &(mont->RR);					/* grab RR as a temp */
+	R = &(mont->RR); /* grab RR as a temp */
 
 	if (!BN_copy(&(mont->N), mod))
-		goto err;		/* Set N */
+		goto err; /* Set N */
 
 	/*start*/
 	mont->ri = (BN_num_bits(mod) + (BN_BITS2 - 1)) / BN_BITS2 * BN_BITS2;
 	BN_zero(R);
 
 	if (!(BN_set_bit(R, BN_BITS2)))
-		goto err;	/* R */
+		goto err; /* R */
 
 	buf[0] = mod->d[0]; /* tmod = N mod word size */
 	buf[1] = 0;
@@ -3725,7 +3783,8 @@ static int EVP_MD_CTX_cleanup(struct env_md_ctx_st *ctx)
 }
 
 /* The caller can assume that this removes any secret data from the context */
-static int EVP_DigestFinal_ex(struct env_md_ctx_st *ctx, unsigned char *md, unsigned int *size)
+static int EVP_DigestFinal_ex(struct env_md_ctx_st *ctx, unsigned char *md,
+			      unsigned int *size)
 {
 	int ret;
 
@@ -3743,7 +3802,8 @@ static void EVP_MD_CTX_init(struct env_md_ctx_st *ctx)
 	memset(ctx, '\0', sizeof(*ctx));
 }
 
-static int EVP_DigestInit_ex(struct env_md_ctx_st *ctx, const struct env_md_st *type)
+static int EVP_DigestInit_ex(struct env_md_ctx_st *ctx,
+			     const struct env_md_st *type)
 {
 	if (ctx->digest != type) {
 		if (ctx->digest && ctx->digest->ctx_size)
@@ -3752,14 +3812,15 @@ static int EVP_DigestInit_ex(struct env_md_ctx_st *ctx, const struct env_md_st *
 		ctx->digest = type;
 
 		if (type->ctx_size)
-			os_alloc_mem(NULL, (UCHAR **) &(ctx->md_data), type->ctx_size);
+			os_alloc_mem(NULL, (UCHAR **)&(ctx->md_data),
+				     type->ctx_size);
 	}
 
 	return ctx->digest->init(ctx);
 }
 
 static int EVP_DigestUpdate(struct env_md_ctx_st *ctx, const void *data,
-							size_t count)
+			    size_t count)
 {
 	return ctx->digest->update(ctx, data, count);
 }
@@ -3807,7 +3868,8 @@ static void ssleay_rand_add(const void *buf, int num, long add)
 	/* g_state[st_idx], ..., g_state[(st_idx + num - 1) % STATE_SIZE]
 	 * are what we will use now, but other threads may use them
 	 * as well */
-	g_md_count[1] += (num / SHA_DIGEST_LENGTH) + (num % SHA_DIGEST_LENGTH > 0);
+	g_md_count[1] +=
+		(num / SHA_DIGEST_LENGTH) + (num % SHA_DIGEST_LENGTH > 0);
 	EVP_MD_CTX_init(&m);
 
 	for (i = 0; i < num; i += SHA_DIGEST_LENGTH) {
@@ -3824,7 +3886,7 @@ static void ssleay_rand_add(const void *buf, int num, long add)
 			EVP_DigestUpdate(&m, &(g_state[st_idx]), j);
 
 		EVP_DigestUpdate(&m, buf, j);
-		EVP_DigestUpdate(&m, (unsigned char *) &(md_c[0]), sizeof(md_c));
+		EVP_DigestUpdate(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
 		EVP_DigestFinal_ex(&m, local_md, NULL);
 		md_c[1]++;
 		buf = (const char *)buf + j;
@@ -3877,7 +3939,8 @@ static int ssleay_rand_bytes(unsigned char *buf, int num)
 
 	EVP_MD_CTX_init(&m);
 	/* round upwards to multiple of SHA_DIGEST_LENGTH/2 */
-	num_ceil = (1 + (num - 1) / (SHA_DIGEST_LENGTH / 2)) * (SHA_DIGEST_LENGTH / 2);
+	num_ceil = (1 + (num - 1) / (SHA_DIGEST_LENGTH / 2)) *
+		   (SHA_DIGEST_LENGTH / 2);
 
 	/*
 	 * (Based on the rand(3) manpage:)
@@ -3939,7 +4002,8 @@ static int ssleay_rand_bytes(unsigned char *buf, int num)
 			/* Note that the seed does not matter, it's just that
 			 * ssleay_rand_add expects to have something to hash. */
 			/* at least SHA_DIGEST_LENGTH "...................." */
-			ssleay_rand_add("....................", SHA_DIGEST_LENGTH, 0);
+			ssleay_rand_add("....................",
+					SHA_DIGEST_LENGTH, 0);
 			n -= SHA_DIGEST_LENGTH;
 		}
 
@@ -3963,34 +4027,39 @@ static int ssleay_rand_bytes(unsigned char *buf, int num)
 
 	while (num > 0) {
 		/* num_ceil -= SHA_DIGEST_LENGTH/2 */
-		j = (num >= SHA_DIGEST_LENGTH / 2) ? SHA_DIGEST_LENGTH / 2 : num;
+		j = (num >= SHA_DIGEST_LENGTH / 2) ? SHA_DIGEST_LENGTH / 2 :
+							   num;
 		num -= j;
 		EVP_DigestInit_ex(&m, &sha1_md);
 #ifndef GETPID_IS_MEANINGLESS
 
 		if (curr_pid) { /* just in the first iteration to save time */
-			EVP_DigestUpdate(&m, (unsigned char *)&curr_pid, sizeof(curr_pid));
+			EVP_DigestUpdate(&m, (unsigned char *)&curr_pid,
+					 sizeof(curr_pid));
 			curr_pid = 0;
 		}
 
 #endif
 		EVP_DigestUpdate(&m, local_md, SHA_DIGEST_LENGTH);
-		EVP_DigestUpdate(&m, (unsigned char *) &(md_c[0]), sizeof(md_c));
+		EVP_DigestUpdate(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
 #ifndef PURIFY
 		EVP_DigestUpdate(&m, buf, j); /* purify complains */
 #endif
 		k = (st_idx + SHA_DIGEST_LENGTH / 2) - st_num;
 
 		if (k > 0) {
-			EVP_DigestUpdate(&m, &(g_state[st_idx]), SHA_DIGEST_LENGTH / 2 - k);
+			EVP_DigestUpdate(&m, &(g_state[st_idx]),
+					 SHA_DIGEST_LENGTH / 2 - k);
 			EVP_DigestUpdate(&m, &(g_state[0]), k);
 		} else
-			EVP_DigestUpdate(&m, &(g_state[st_idx]), SHA_DIGEST_LENGTH / 2);
+			EVP_DigestUpdate(&m, &(g_state[st_idx]),
+					 SHA_DIGEST_LENGTH / 2);
 
 		EVP_DigestFinal_ex(&m, local_md, NULL);
 
 		for (i = 0; i < SHA_DIGEST_LENGTH / 2; i++) {
-			g_state[st_idx++] ^= local_md[i]; /* may compete with other threads */
+			g_state[st_idx++] ^=
+				local_md[i]; /* may compete with other threads */
 
 			if (st_idx >= st_num)
 				st_idx = 0;
@@ -4001,7 +4070,7 @@ static int ssleay_rand_bytes(unsigned char *buf, int num)
 	}
 
 	EVP_DigestInit_ex(&m, &sha1_md);
-	EVP_DigestUpdate(&m, (unsigned char *) &(md_c[0]), sizeof(md_c));
+	EVP_DigestUpdate(&m, (unsigned char *)&(md_c[0]), sizeof(md_c));
 	EVP_DigestUpdate(&m, local_md, SHA_DIGEST_LENGTH);
 	EVP_DigestUpdate(&m, g_md, SHA_DIGEST_LENGTH);
 	EVP_DigestFinal_ex(&m, g_md, NULL);
@@ -4038,7 +4107,8 @@ static int RAND_poll(void)
 	return 0;
 }
 
-static int bnrand(int pseudorand, struct bignum_st *rnd, int bits, int top, int bottom)
+static int bnrand(int pseudorand, struct bignum_st *rnd, int bits, int top,
+		  int bottom)
 {
 	unsigned char *buf = NULL;
 	int ret = 0, bit, bytes, mask;
@@ -4057,7 +4127,7 @@ static int bnrand(int pseudorand, struct bignum_st *rnd, int bits, int top, int 
 	if (buf == NULL)
 		goto err;
 
-	/* make a random number and set the top and bottom bits */
+		/* make a random number and set the top and bottom bits */
 #ifdef USERSPACE
 	time(&tim);
 #else
@@ -4156,9 +4226,14 @@ static void BN_MONT_CTX_free(struct bn_mont_ctx_st *mont)
 		os_free_mem(mont);
 }
 
-#define BN_MOD_MUL_WORD(r, w, m) (BN_mul_word(r, (w)) && ((BN_mod(t, r, m, ctx) && (swap_tmp = r, r = t, t = swap_tmp, 1))))
-static int BN_mod_exp_mont_word(struct bignum_st *rr, BN_ULONG a, const struct bignum_st *p,
-								const struct bignum_st *m, struct bignum_pool *ctx, struct bn_mont_ctx_st *in_mont)
+#define BN_MOD_MUL_WORD(r, w, m)                                               \
+	(BN_mul_word(r, (w)) &&                                                \
+	 ((BN_mod(t, r, m, ctx) && (swap_tmp = r, r = t, t = swap_tmp, 1))))
+static int BN_mod_exp_mont_word(struct bignum_st *rr, BN_ULONG a,
+				const struct bignum_st *p,
+				const struct bignum_st *m,
+				struct bignum_pool *ctx,
+				struct bn_mont_ctx_st *in_mont)
 {
 	struct bn_mont_ctx_st *mont = NULL;
 	int b, bits, ret = 0;
@@ -4221,7 +4296,10 @@ static int BN_mod_exp_mont_word(struct bignum_st *rr, BN_ULONG a, const struct b
 
 		if ((next_w / w) != w) { /* overflow */
 			if (r_is_one) {
-				if (!(BN_set_word(r, (w)) && BN_mod_mul_montgomery((r), (r), &((mont)->RR), (mont), (ctx))))
+				if (!(BN_set_word(r, (w)) &&
+				      BN_mod_mul_montgomery((r), (r),
+							    &((mont)->RR),
+							    (mont), (ctx))))
 					goto err;
 
 				r_is_one = 0;
@@ -4246,7 +4324,10 @@ static int BN_mod_exp_mont_word(struct bignum_st *rr, BN_ULONG a, const struct b
 
 			if ((next_w / a) != w) { /* overflow */
 				if (r_is_one) {
-					if (!(BN_set_word(r, (w)) && BN_mod_mul_montgomery((r), (r), &((mont)->RR), (mont), (ctx))))
+					if (!(BN_set_word(r, (w)) &&
+					      BN_mod_mul_montgomery(
+						      (r), (r), &((mont)->RR),
+						      (mont), (ctx))))
 						goto err;
 
 					r_is_one = 0;
@@ -4265,7 +4346,9 @@ static int BN_mod_exp_mont_word(struct bignum_st *rr, BN_ULONG a, const struct b
 	/* Finally, set r:=r*w. */
 	if (w != 1) {
 		if (r_is_one) {
-			if (!(BN_set_word(r, (w)) && BN_mod_mul_montgomery((r), (r), &((mont)->RR), (mont), (ctx))))
+			if (!(BN_set_word(r, (w)) &&
+			      BN_mod_mul_montgomery((r), (r), &((mont)->RR),
+						    (mont), (ctx))))
 				goto err;
 
 			r_is_one = 0;
@@ -4297,7 +4380,8 @@ err:
  * so that accessing any of these table values shows the same access pattern as far
  * as cache lines are concerned.  The following functions are used to transfer a struct bignum_st
  * from/to that table. */
-static int MOD_EXP_CTIME_COPY_TO_PREBUF(struct bignum_st *b, int top, unsigned char *buf, int idx, int width)
+static int MOD_EXP_CTIME_COPY_TO_PREBUF(struct bignum_st *b, int top,
+					unsigned char *buf, int idx, int width)
 {
 	size_t i, j;
 
@@ -4314,7 +4398,9 @@ static int MOD_EXP_CTIME_COPY_TO_PREBUF(struct bignum_st *b, int top, unsigned c
 	return 1;
 }
 
-static int MOD_EXP_CTIME_COPY_FROM_PREBUF(struct bignum_st *b, int top, unsigned char *buf, int idx, int width)
+static int MOD_EXP_CTIME_COPY_FROM_PREBUF(struct bignum_st *b, int top,
+					  unsigned char *buf, int idx,
+					  int width)
 {
 	size_t i, j;
 
@@ -4334,9 +4420,12 @@ static int MOD_EXP_CTIME_COPY_FROM_PREBUF(struct bignum_st *b, int top, unsigned
  * to protect secret exponents (cf. the hyper-threading timing attacks
  * pointed out by Colin Percival,
  * http:/*www.daemonology.net/hyperthreading-considered-harmful/) */
-*/
-static int BN_mod_exp_mont_consttime(struct bignum_st *rr, const struct bignum_st *a, const struct bignum_st *p,
-									 const struct bignum_st *m, struct bignum_pool *ctx, struct bn_mont_ctx_st *in_mont)
+* / static int BN_mod_exp_mont_consttime(struct bignum_st *rr,
+					 const struct bignum_st *a,
+					 const struct bignum_st *p,
+					 const struct bignum_st *m,
+					 struct bignum_pool *ctx,
+					 struct bn_mont_ctx_st *in_mont)
 {
 	int i, bits, ret = 0, idx, window, wvalue;
 	int top;
@@ -4381,14 +4470,15 @@ static int BN_mod_exp_mont_consttime(struct bignum_st *rr, const struct bignum_s
 			goto err;
 	}
 
-/* Get the window size to use with size of p. */
-window = BN_window_bits_for_ctime_exponent_size(bits);
+	/* Get the window size to use with size of p. */
+	window = BN_window_bits_for_ctime_exponent_size(bits);
 	/* Allocate a buffer large enough to hold all of the pre-computed
 	 * powers of a.
 	 */
 	numPowers = 1 << window;
 	powerbufLen = sizeof(m->d[0]) * top * numPowers;
-	os_alloc_mem(NULL, (UCHAR **)&powerbufFree, powerbufLen + MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH);
+	os_alloc_mem(NULL, (UCHAR **)&powerbufFree,
+		     powerbufLen + MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH);
 
 	if (powerbufFree == NULL)
 		goto err;
@@ -4399,7 +4489,8 @@ window = BN_window_bits_for_ctime_exponent_size(bits);
 	/* Initialize the intermediate result. Do this early to save double conversion,
 	 * once each for a^0 and intermediate result.
 	 */
-	if (!BN_mod_mul_montgomery((r), (BN_value_one()), &((mont)->RR), (mont), (ctx)))
+	if (!BN_mod_mul_montgomery((r), (BN_value_one()), &((mont)->RR), (mont),
+				   (ctx)))
 		goto err;
 
 	if (!MOD_EXP_CTIME_COPY_TO_PREBUF(r, top, powerbuf, 0, numPowers))
@@ -4437,10 +4528,12 @@ window = BN_window_bits_for_ctime_exponent_size(bits);
 	if (window > 1) {
 		for (i = 2; i < numPowers; i++) {
 			/* Calculate a^i = a^(i-1) * a */
-			if (!BN_mod_mul_montgomery(computeTemp, am, computeTemp, mont, ctx))
+			if (!BN_mod_mul_montgomery(computeTemp, am, computeTemp,
+						   mont, ctx))
 				goto err;
 
-			if (!MOD_EXP_CTIME_COPY_TO_PREBUF(computeTemp, top, powerbuf, i, numPowers))
+			if (!MOD_EXP_CTIME_COPY_TO_PREBUF(
+				    computeTemp, top, powerbuf, i, numPowers))
 				goto err;
 		}
 	}
@@ -4456,8 +4549,8 @@ window = BN_window_bits_for_ctime_exponent_size(bits);
 	 * * still produce the correct result, but causes a different branch
 	 * * to be taken in the BN_is_bit_set function.
 	 */
-	bits = ((bits + window - 1) / window) *window;
-	idx = bits - 1;	/* The top bit of the window */
+	bits = ((bits + window - 1) / window) * window;
+	idx = bits - 1; /* The top bit of the window */
 
 	/* Scan the exponent one window at a time starting from the most
 	 * significant bits.
@@ -4474,7 +4567,8 @@ window = BN_window_bits_for_ctime_exponent_size(bits);
 		}
 
 		/* Fetch the appropriate pre-computed value from the pre-buf */
-		if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(computeTemp, top, powerbuf, wvalue, numPowers))
+		if (!MOD_EXP_CTIME_COPY_FROM_PREBUF(computeTemp, top, powerbuf,
+						    wvalue, numPowers))
 			goto err;
 
 		/* Multiply the result into the intermediate result */
@@ -4505,8 +4599,10 @@ err:
 	return ret;
 }
 
-static int BN_mod_exp_mont(struct bignum_st *rr, const struct bignum_st *a, const struct bignum_st *p,
-						   const struct bignum_st *m, struct bignum_pool *ctx, struct bn_mont_ctx_st *in_mont)
+static int BN_mod_exp_mont(struct bignum_st *rr, const struct bignum_st *a,
+			   const struct bignum_st *p, const struct bignum_st *m,
+			   struct bignum_pool *ctx,
+			   struct bn_mont_ctx_st *in_mont)
 {
 	int release = 0;
 	int i, j, bits, ret = 0, wstart, wend, window, wvalue;
@@ -4567,7 +4663,8 @@ static int BN_mod_exp_mont(struct bignum_st *rr, const struct bignum_st *a, cons
 		goto err;
 	}
 
-	if (!BN_mod_mul_montgomery((val[0]), (aa), &((mont)->RR), (mont), (ctx)))
+	if (!BN_mod_mul_montgomery((val[0]), (aa), &((mont)->RR), (mont),
+				   (ctx)))
 		goto err; /* 1 */
 
 	window = BN_window_bits_for_exponent_size(bits);
@@ -4582,22 +4679,23 @@ static int BN_mod_exp_mont(struct bignum_st *rr, const struct bignum_st *a, cons
 			val[i] = BN_POOL_get(ctx);
 
 			if ((val[i] == NULL) ||
-				!BN_mod_mul_montgomery(val[i], val[i - 1],
-									   d, mont, ctx))
+			    !BN_mod_mul_montgomery(val[i], val[i - 1], d, mont,
+						   ctx))
 				goto err;
 
 			release++;
 		}
 	}
 
-	start = 1;	/* This is used to avoid multiplication etc
+	start = 1; /* This is used to avoid multiplication etc
 			 * when there is only the value '1' in the
 			 * buffer. */
-	wvalue = 0;	/* The 'value' of the window */
-	wstart = bits - 1;	/* The top bit of the window */
-	wend = 0;		/* The bottom bit of the window */
+	wvalue = 0; /* The 'value' of the window */
+	wstart = bits - 1; /* The top bit of the window */
+	wend = 0; /* The bottom bit of the window */
 
-	if (!BN_mod_mul_montgomery((r), (BN_value_one()), &((mont)->RR), (mont), (ctx)))
+	if (!BN_mod_mul_montgomery((r), (BN_value_one()), &((mont)->RR), (mont),
+				   (ctx)))
 		goto err;
 
 	for (;;) {
@@ -4671,30 +4769,22 @@ err:
 
 /*KERNEL MODULE TRACE*/
 static unsigned char DH_P_VALUE[DH_KEY_LEN] = {
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xC9, 0x0F, 0xDA, 0xA2, 0x21, 0x68, 0xC2, 0x34,
-	0xC4, 0xC6, 0x62, 0x8B, 0x80, 0xDC, 0x1C, 0xD1,
-	0x29, 0x02, 0x4E, 0x08, 0x8A, 0x67, 0xCC, 0x74,
-	0x02, 0x0B, 0xBE, 0xA6, 0x3B, 0x13, 0x9B, 0x22,
-	0x51, 0x4A, 0x08, 0x79, 0x8E, 0x34, 0x04, 0xDD,
-	0xEF, 0x95, 0x19, 0xB3, 0xCD, 0x3A, 0x43, 0x1B,
-	0x30, 0x2B, 0x0A, 0x6D, 0xF2, 0x5F, 0x14, 0x37,
-	0x4F, 0xE1, 0x35, 0x6D, 0x6D, 0x51, 0xC2, 0x45,
-	0xE4, 0x85, 0xB5, 0x76, 0x62, 0x5E, 0x7E, 0xC6,
-	0xF4, 0x4C, 0x42, 0xE9, 0xA6, 0x37, 0xED, 0x6B,
-	0x0B, 0xFF, 0x5C, 0xB6, 0xF4, 0x06, 0xB7, 0xED,
-	0xEE, 0x38, 0x6B, 0xFB, 0x5A, 0x89, 0x9F, 0xA5,
-	0xAE, 0x9F, 0x24, 0x11, 0x7C, 0x4B, 0x1F, 0xE6,
-	0x49, 0x28, 0x66, 0x51, 0xEC, 0xE4, 0x5B, 0x3D,
-	0xC2, 0x00, 0x7C, 0xB8, 0xA1, 0x63, 0xBF, 0x05,
-	0x98, 0xDA, 0x48, 0x36, 0x1C, 0x55, 0xD3, 0x9A,
-	0x69, 0x16, 0x3F, 0xA8, 0xFD, 0x24, 0xCF, 0x5F,
-	0x83, 0x65, 0x5D, 0x23, 0xDC, 0xA3, 0xAD, 0x96,
-	0x1C, 0x62, 0xF3, 0x56, 0x20, 0x85, 0x52, 0xBB,
-	0x9E, 0xD5, 0x29, 0x07, 0x70, 0x96, 0x96, 0x6D,
-	0x67, 0x0C, 0x35, 0x4E, 0x4A, 0xBC, 0x98, 0x04,
-	0xF1, 0x74, 0x6C, 0x08, 0xCA, 0x23, 0x73, 0x27,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xC9, 0x0F, 0xDA, 0xA2,
+	0x21, 0x68, 0xC2, 0x34, 0xC4, 0xC6, 0x62, 0x8B, 0x80, 0xDC, 0x1C, 0xD1,
+	0x29, 0x02, 0x4E, 0x08, 0x8A, 0x67, 0xCC, 0x74, 0x02, 0x0B, 0xBE, 0xA6,
+	0x3B, 0x13, 0x9B, 0x22, 0x51, 0x4A, 0x08, 0x79, 0x8E, 0x34, 0x04, 0xDD,
+	0xEF, 0x95, 0x19, 0xB3, 0xCD, 0x3A, 0x43, 0x1B, 0x30, 0x2B, 0x0A, 0x6D,
+	0xF2, 0x5F, 0x14, 0x37, 0x4F, 0xE1, 0x35, 0x6D, 0x6D, 0x51, 0xC2, 0x45,
+	0xE4, 0x85, 0xB5, 0x76, 0x62, 0x5E, 0x7E, 0xC6, 0xF4, 0x4C, 0x42, 0xE9,
+	0xA6, 0x37, 0xED, 0x6B, 0x0B, 0xFF, 0x5C, 0xB6, 0xF4, 0x06, 0xB7, 0xED,
+	0xEE, 0x38, 0x6B, 0xFB, 0x5A, 0x89, 0x9F, 0xA5, 0xAE, 0x9F, 0x24, 0x11,
+	0x7C, 0x4B, 0x1F, 0xE6, 0x49, 0x28, 0x66, 0x51, 0xEC, 0xE4, 0x5B, 0x3D,
+	0xC2, 0x00, 0x7C, 0xB8, 0xA1, 0x63, 0xBF, 0x05, 0x98, 0xDA, 0x48, 0x36,
+	0x1C, 0x55, 0xD3, 0x9A, 0x69, 0x16, 0x3F, 0xA8, 0xFD, 0x24, 0xCF, 0x5F,
+	0x83, 0x65, 0x5D, 0x23, 0xDC, 0xA3, 0xAD, 0x96, 0x1C, 0x62, 0xF3, 0x56,
+	0x20, 0x85, 0x52, 0xBB, 0x9E, 0xD5, 0x29, 0x07, 0x70, 0x96, 0x96, 0x6D,
+	0x67, 0x0C, 0x35, 0x4E, 0x4A, 0xBC, 0x98, 0x04, 0xF1, 0x74, 0x6C, 0x08,
+	0xCA, 0x23, 0x73, 0x27, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 static struct dh_st *DH_new_method(void)
@@ -4715,9 +4805,9 @@ static struct dh_st *DH_new_method(void)
 }
 
 static int dh_bn_mod_exp(const struct dh_st *dh, struct bignum_st *r,
-						 const struct bignum_st *a, const struct bignum_st *p,
-						 const struct bignum_st *m, struct bignum_pool *ctx,
-						 struct bn_mont_ctx_st *m_ctx)
+			 const struct bignum_st *a, const struct bignum_st *p,
+			 const struct bignum_st *m, struct bignum_pool *ctx,
+			 struct bn_mont_ctx_st *m_ctx)
 {
 	/* If a is only one word long and constant time is false, use the faster
 	 * exponenentiation function.
@@ -4789,7 +4879,7 @@ static int generate_key(struct dh_st *dh)
 	ok = 1;
 err:
 
-	if ((pub_key != NULL)  && (dh->pub_key == NULL))
+	if ((pub_key != NULL) && (dh->pub_key == NULL))
 		BN_free(pub_key);
 
 	if ((priv_key != NULL) && (dh->priv_key == NULL))
@@ -4819,7 +4909,8 @@ static void DH_free(struct dh_st *r)
 	os_free_mem(r);
 }
 
-static int compute_key(unsigned char *key, const struct bignum_st *pub_key, struct dh_st *dh)
+static int compute_key(unsigned char *key, const struct bignum_st *pub_key,
+		       struct dh_st *dh)
 {
 	struct bignum_pool *ctx = NULL;
 	struct bn_mont_ctx_st *mont = NULL;
@@ -4851,8 +4942,8 @@ err:
 static struct dh_st *DHSecret;
 static struct dh_st *DHSecretR;
 
-void GenerateDHPublicKey(unsigned char *memPtr, unsigned char *ran_buf, int ran_len,
-						 unsigned char *dhkey, int *dhkey_len)
+void GenerateDHPublicKey(unsigned char *memPtr, unsigned char *ran_buf,
+			 int ran_len, unsigned char *dhkey, int *dhkey_len)
 {
 	unsigned int DH_G_VALUE = 2;
 	unsigned int g = htonl(DH_G_VALUE);
@@ -4913,9 +5004,10 @@ err:
 
 /******* KDK generation ****** */
 /*generate the struct dh_st shared secret */
-void GenerateDHSecreteKey(unsigned char *memPtr, unsigned char *ran_buf, int ran_len,
-						  unsigned char *peer_dhkey, int peer_dhkey_len,
-						  unsigned char *secrete_dhkey, int *secrete_dhkey_len)
+void GenerateDHSecreteKey(unsigned char *memPtr, unsigned char *ran_buf,
+			  int ran_len, unsigned char *peer_dhkey,
+			  int peer_dhkey_len, unsigned char *secrete_dhkey,
+			  int *secrete_dhkey_len)
 {
 	struct bignum_st DH_PubKey_Peer;
 	*secrete_dhkey_len = 0;
@@ -4931,7 +5023,8 @@ void GenerateDHSecreteKey(unsigned char *memPtr, unsigned char *ran_buf, int ran
 	DH_PubKey_Peer.dmax = 0;
 	DH_PubKey_Peer.d = NULL;
 	BN_bin2bn(peer_dhkey, peer_dhkey_len, &DH_PubKey_Peer);
-	*secrete_dhkey_len = compute_key(secrete_dhkey, &DH_PubKey_Peer, DHSecret);
+	*secrete_dhkey_len =
+		compute_key(secrete_dhkey, &DH_PubKey_Peer, DHSecret);
 
 	if (DH_PubKey_Peer.d != NULL)
 		os_free_mem(DH_PubKey_Peer.d);

@@ -33,21 +33,20 @@
 
 #define BTM_MACHINE_BASE 0
 #ifdef CONFIG_11KV_API_SUPPORT
-#define WaitPeerBTMRspTimeoutVale (15*1000)
-#define WaitPeerBTMReqTimeoutVale (30*1000)
+#define WaitPeerBTMRspTimeoutVale (15 * 1000)
+#define WaitPeerBTMReqTimeoutVale (30 * 1000)
 #else
 #define WaitPeerBTMRspTimeoutVale 4000
 #define WaitPeerBTMReqTimeoutVale (1024)
 #endif /* CONFIG_11KV_API_SUPPORT */
 
-
-#define BTM_ENABLE_OFFSET   (1<<0)
+#define BTM_ENABLE_OFFSET (1 << 0)
 #ifdef CONFIG_11KV_API_SUPPORT
-#define	BTM_CANDIDATE_OFFSET (1<<0)
-#define	BTM_ABRIDGED_OFFSET (1<<1)
-#define	BTM_DISASSOC_OFFSET (1<<2)
-#define	BTM_TERMINATION_OFFSET (1<<3)
-#define	BTM_URL_OFFSET (1<<4)
+#define BTM_CANDIDATE_OFFSET (1 << 0)
+#define BTM_ABRIDGED_OFFSET (1 << 1)
+#define BTM_DISASSOC_OFFSET (1 << 2)
+#define BTM_TERMINATION_OFFSET (1 << 3)
+#define BTM_URL_OFFSET (1 << 4)
 #endif /* CONFIG_11KV_API_SUPPORT */
 
 /* BTM states */
@@ -61,7 +60,6 @@ enum BTM_STATE {
 	BTM_UNKNOWN,
 	MAX_BTM_STATE,
 };
-
 
 /* BTM events */
 enum BTM_EVENT {
@@ -91,7 +89,6 @@ typedef struct GNU_PACKED _BTM_EVENT_DATA {
 	UCHAR PeerMACAddr[MAC_ADDR_LEN];
 	UINT16 EventType;
 	union {
-
 #ifdef CONFIG_AP_SUPPORT
 		struct {
 			UCHAR DialogToken;
@@ -174,98 +171,68 @@ typedef struct _WNM_CTRL {
 #ifdef BB_SOC
 #ifdef IPV6
 #undef IPV6
-enum IPTYPE {
-	IPV4,
-	IPV6
-};
+enum IPTYPE { IPV4, IPV6 };
 #endif
 #else
-enum IPTYPE {
-	IPV4,
-	IPV6
-};
+enum IPTYPE { IPV4, IPV6 };
 #endif /* BB_SOC */
 
 struct _BSS_STRUCT;
 
-typedef struct GNU_PACKED _BTM_REQUEST_PARAM{
+typedef struct GNU_PACKED _BTM_REQUEST_PARAM {
 	UINT8 request_mode;
 	UINT16 disassociation_timer;
 	UINT8 validity_interval;
 } BTM_REQUEST_PARAM, *PBTM_REQUEST_PARAM;
 
-BOOLEAN IsGratuitousARP(IN PRTMP_ADAPTER pAd,
-						IN PUCHAR pData,
-						IN UCHAR *DAMacAddr,
-						IN struct _BSS_STRUCT *pMbss);
+BOOLEAN IsGratuitousARP(IN PRTMP_ADAPTER pAd, IN PUCHAR pData,
+			IN UCHAR *DAMacAddr, IN struct _BSS_STRUCT *pMbss);
 
-BOOLEAN IsUnsolicitedNeighborAdver(PRTMP_ADAPTER pAd,
-								   PUCHAR pData);
+BOOLEAN IsUnsolicitedNeighborAdver(PRTMP_ADAPTER pAd, PUCHAR pData);
 
-BOOLEAN IsIPv4ProxyARPCandidate(IN PRTMP_ADAPTER pAd,
-								IN PUCHAR pData);
+BOOLEAN IsIPv4ProxyARPCandidate(IN PRTMP_ADAPTER pAd, IN PUCHAR pData);
 
-BOOLEAN IsIPv6ProxyARPCandidate(IN PRTMP_ADAPTER pAd,
-								IN PUCHAR pData);
+BOOLEAN IsIPv6ProxyARPCandidate(IN PRTMP_ADAPTER pAd, IN PUCHAR pData);
 
-BOOLEAN IsIPv6DHCPv6Solicitation(IN PRTMP_ADAPTER pAd,
-								 IN PUCHAR pData);
+BOOLEAN IsIPv6DHCPv6Solicitation(IN PRTMP_ADAPTER pAd, IN PUCHAR pData);
 
-BOOLEAN IsIPv6RouterSolicitation(IN PRTMP_ADAPTER pAd,
-								 IN PUCHAR pData);
+BOOLEAN IsIPv6RouterSolicitation(IN PRTMP_ADAPTER pAd, IN PUCHAR pData);
 
-BOOLEAN IsIPv6RouterAdvertisement(IN PRTMP_ADAPTER pAd,
-								  IN PUCHAR pData,
-								  IN PUCHAR pOffset);
+BOOLEAN IsIPv6RouterAdvertisement(IN PRTMP_ADAPTER pAd, IN PUCHAR pData,
+				  IN PUCHAR pOffset);
 
-BOOLEAN IsTDLSPacket(IN PRTMP_ADAPTER pAd,
-					 IN PUCHAR pData);
+BOOLEAN IsTDLSPacket(IN PRTMP_ADAPTER pAd, IN PUCHAR pData);
 
-BOOLEAN IPv4ProxyARP(IN PRTMP_ADAPTER pAd,
-					 IN struct _BSS_STRUCT *pMbss,
-					 IN PUCHAR pData,
-					 IN BOOLEAN FromDS);
+BOOLEAN IPv4ProxyARP(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+		     IN PUCHAR pData, IN BOOLEAN FromDS);
 
-BOOLEAN IsIpv6DuplicateAddrDetect(PRTMP_ADAPTER pAd,
-								  PUCHAR pData,
-								  PUCHAR pOffset);
+BOOLEAN IsIpv6DuplicateAddrDetect(PRTMP_ADAPTER pAd, PUCHAR pData,
+				  PUCHAR pOffset);
 
-BOOLEAN IPv6ProxyARP(IN PRTMP_ADAPTER pAd,
-					 IN struct _BSS_STRUCT *pMbss,
-					 IN PUCHAR pData,
-					 IN BOOLEAN FromDS);
+BOOLEAN IPv6ProxyARP(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+		     IN PUCHAR pData, IN BOOLEAN FromDS);
 
-UINT32 AddIPv4ProxyARPEntry(IN PRTMP_ADAPTER pAd,
-							IN struct _BSS_STRUCT *pMbss,
-							IN PUCHAR pTargetMACAddr,
-							IN PUCHAR pTargetIPAddr);
+UINT32 AddIPv4ProxyARPEntry(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+			    IN PUCHAR pTargetMACAddr, IN PUCHAR pTargetIPAddr);
 
-UINT32 AddIPv6ProxyARPEntry(IN PRTMP_ADAPTER pAd,
-							IN struct _BSS_STRUCT *pMbss,
-							IN PUCHAR pTargetMACAddr,
-							IN PUCHAR pTargetIPAddr);
+UINT32 AddIPv6ProxyARPEntry(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+			    IN PUCHAR pTargetMACAddr, IN PUCHAR pTargetIPAddr);
 
-UINT32 IPv4ProxyARPTableLen(IN PRTMP_ADAPTER pAd,
-							IN struct _BSS_STRUCT *pMbss);
+UINT32 IPv4ProxyARPTableLen(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss);
 
-UINT32 IPv6ProxyARPTableLen(IN PRTMP_ADAPTER pAd,
-							IN struct _BSS_STRUCT *pMbss);
+UINT32 IPv6ProxyARPTableLen(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss);
 
-BOOLEAN GetIPv4ProxyARPTable(IN PRTMP_ADAPTER pAd,
-							 IN struct _BSS_STRUCT *pMbss,
-							 OUT	PUCHAR *ProxyARPTable);
+BOOLEAN GetIPv4ProxyARPTable(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+			     OUT PUCHAR *ProxyARPTable);
 
-BOOLEAN GetIPv6ProxyARPTable(IN PRTMP_ADAPTER pAd,
-							 IN struct _BSS_STRUCT *pMbss,
-							 OUT	PUCHAR *ProxyARPTable);
+BOOLEAN GetIPv6ProxyARPTable(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+			     OUT PUCHAR *ProxyARPTable);
 
-VOID RemoveIPv4ProxyARPEntry(IN PRTMP_ADAPTER pAd,
-							 IN struct _BSS_STRUCT *pMbss,
-							 PUCHAR pTargetMACAddr);
+VOID RemoveIPv4ProxyARPEntry(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+			     PUCHAR pTargetMACAddr);
 
-VOID RemoveIPv6ProxyARPEntry(IN PRTMP_ADAPTER pAd,
-							 IN struct _BSS_STRUCT *pMbss,
-							 PUCHAR pTargetMACAddr);
+VOID RemoveIPv6ProxyARPEntry(IN PRTMP_ADAPTER pAd, IN struct _BSS_STRUCT *pMbss,
+			     PUCHAR pTargetMACAddr);
 
 VOID WNMCtrlInit(IN PRTMP_ADAPTER pAd);
 VOID WNMCtrlExit(IN PRTMP_ADAPTER pAd);
@@ -288,68 +255,47 @@ enum WNM_NOTIFY_EVENT {
 #define WNM_NOTIFY_FUNC_SIZE (MAX_WNM_NOTIFY_STATE * MAX_WNM_NOTIFY_MSG)
 
 #ifdef CONFIG_AP_SUPPORT
-VOID WNMIPv4ProxyARPCheck(
-	IN PRTMP_ADAPTER pAd,
-	PNDIS_PACKET pPacket,
-	USHORT srcPort,
-	USHORT dstPort,
-	PUCHAR pSrcBuf);
+VOID WNMIPv4ProxyARPCheck(IN PRTMP_ADAPTER pAd, PNDIS_PACKET pPacket,
+			  USHORT srcPort, USHORT dstPort, PUCHAR pSrcBuf);
 
-VOID WNMIPv6ProxyARPCheck(
-	IN PRTMP_ADAPTER pAd,
-	PNDIS_PACKET pPacket,
-	PUCHAR pSrcBuf);
+VOID WNMIPv6ProxyARPCheck(IN PRTMP_ADAPTER pAd, PNDIS_PACKET pPacket,
+			  PUCHAR pSrcBuf);
 
 DECLARE_TIMER_FUNCTION(WaitPeerBTMRspTimeout);
 DECLARE_TIMER_FUNCTION(WaitPeerWNMNotifyRspTimeout);
 DECLARE_TIMER_FUNCTION(WaitPeerBTMReqTimeout);
 
-VOID BTMStateMachineInit(
-	IN	PRTMP_ADAPTER pAd,
-	IN	STATE_MACHINE * S,
-	OUT STATE_MACHINE_FUNC	Trans[]);
+VOID BTMStateMachineInit(IN PRTMP_ADAPTER pAd, IN STATE_MACHINE *S,
+			 OUT STATE_MACHINE_FUNC Trans[]);
 
-enum BTM_STATE BTMPeerCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+enum BTM_STATE BTMPeerCurrentState(IN PRTMP_ADAPTER pAd,
+				   IN MLME_QUEUE_ELEM *Elem);
 
-VOID ReceiveWNMNotifyReq(IN PRTMP_ADAPTER pAd,
-			  IN MLME_QUEUE_ELEM *Elem);
+VOID ReceiveWNMNotifyReq(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-#ifndef CONFIG_HOTSPOT_R2/* #ifdef WNM_NEW_API */
 NDIS_STATUS wnm_handle_command(IN PRTMP_ADAPTER pAd,
-										IN struct wnm_command *pCmd_data);
-#endif
-void WNM_ReadParametersFromFile(
-	IN PRTMP_ADAPTER pAd,
-	RTMP_STRING *tmpbuf,
-	RTMP_STRING *buffer);
+			       IN struct wnm_command *pCmd_data);
 
-INT Set_WNMCertEnable_Proc(
-	IN RTMP_ADAPTER * pAd,
-	IN RTMP_STRING *arg);
+void WNM_ReadParametersFromFile(IN PRTMP_ADAPTER pAd, RTMP_STRING *tmpbuf,
+				RTMP_STRING *buffer);
 
-VOID ReceiveWNMNotifyRsp(IN PRTMP_ADAPTER pAd,
-						 IN MLME_QUEUE_ELEM * Elem);
+INT Set_WNMCertEnable_Proc(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *arg);
 
-VOID SendWNMNotifyConfirm(IN PRTMP_ADAPTER    pAd,
-						  IN MLME_QUEUE_ELEM * Elem);
+VOID ReceiveWNMNotifyRsp(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-VOID WNMNotifyStateMachineInit(
-	IN	PRTMP_ADAPTER pAd,
-	IN	STATE_MACHINE * S,
-	OUT STATE_MACHINE_FUNC	Trans[]);
+VOID SendWNMNotifyConfirm(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
+
+VOID WNMNotifyStateMachineInit(IN PRTMP_ADAPTER pAd, IN STATE_MACHINE *S,
+			       OUT STATE_MACHINE_FUNC Trans[]);
 
 #define WNM_NOTIFY_MACHINE_BASE 0
 #define WaitPeerWNMNotifyRspTimeoutVale 1024
-
 
 typedef struct GNU_PACKED _WNM_NOTIFY_EVENT_DATA {
 	UCHAR ControlIndex;
 	UCHAR PeerMACAddr[MAC_ADDR_LEN];
 	UINT16 EventType;
 	union {
-
 #ifdef CONFIG_AP_SUPPORT
 		struct {
 			UCHAR DialogToken;
@@ -378,88 +324,62 @@ typedef struct _WNM_NOTIFY_PEER_ENTRY {
 #endif /* CONFIG_AP_SUPPORT */
 } WNM_NOTIFY_PEER_ENTRY, *PWNM_NOTIFY_PEER_ENTRY;
 
-INT Send_BTM_Req(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * PeerMACAddr,
-	IN RTMP_STRING * BTMReq,
-	IN UINT32 BTMReqLen);
+INT Send_BTM_Req(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *PeerMACAddr,
+		 IN RTMP_STRING *BTMReq, IN UINT32 BTMReqLen);
 
-INT Send_WNM_Notify_Req(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * PeerMACAddr,
-	IN RTMP_STRING * WNMNotifyReq,
-	IN UINT32 WNMNotifyReqLen,
-	IN UINT32 type);
+INT Send_WNM_Notify_Req(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *PeerMACAddr,
+			IN RTMP_STRING *WNMNotifyReq, IN UINT32 WNMNotifyReqLen,
+			IN UINT32 type);
 
-INT Send_QOSMAP_Configure(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * PeerMACAddr,
-	IN RTMP_STRING * QosMapBuf,
-	IN UINT32	QosMapLen,
-	IN UINT8	Apidx);
+INT Send_QOSMAP_Configure(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *PeerMACAddr,
+			  IN RTMP_STRING *QosMapBuf, IN UINT32 QosMapLen,
+			  IN UINT8 Apidx);
 
 #ifdef CONFIG_HOTSPOT_R2
-VOID WNMSetPeerCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem,
-	IN enum WNM_NOTIFY_STATE State);
+VOID WNMSetPeerCurrentState(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem,
+			    IN enum WNM_NOTIFY_STATE State);
 
-enum WNM_NOTIFY_STATE WNMNotifyPeerCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+enum WNM_NOTIFY_STATE WNMNotifyPeerCurrentState(IN PRTMP_ADAPTER pAd,
+						IN MLME_QUEUE_ELEM *Elem);
 
-VOID WNMNotifyStateMachineInit(
-	IN	PRTMP_ADAPTER pAd,
-	IN	STATE_MACHINE * S,
-	OUT STATE_MACHINE_FUNC	Trans[]);
+VOID WNMNotifyStateMachineInit(IN PRTMP_ADAPTER pAd, IN STATE_MACHINE *S,
+			       OUT STATE_MACHINE_FUNC Trans[]);
 #endif /* CONFIG_HOTSPOT_R2 */
 #endif /* CONFIG_AP_SUPPORT */
 
-
 #ifdef CONFIG_11KV_API_SUPPORT
-int send_btm_req_param(
-	IN PRTMP_ADAPTER pAd,
-	IN p_btm_reqinfo_t p_btm_req_data,
-	IN UINT32 btm_req_data_len);
+int send_btm_req_param(IN PRTMP_ADAPTER pAd, IN p_btm_reqinfo_t p_btm_req_data,
+		       IN UINT32 btm_req_data_len);
 
-int send_btm_req_ie(
-	IN PRTMP_ADAPTER pAd,
-	IN p_btm_req_ie_data_t p_btm_req_data,
-	IN UINT32 btm_req_data_len);
+int send_btm_req_ie(IN PRTMP_ADAPTER pAd, IN p_btm_req_ie_data_t p_btm_req_data,
+		    IN UINT32 btm_req_data_len);
 
+int check_btm_custom_params(IN PRTMP_ADAPTER pAd,
+			    IN p_btm_reqinfo_t p_btm_req_data,
+			    IN UINT32 btm_req_data_len);
 
-int check_btm_custom_params(
-	IN PRTMP_ADAPTER pAd,
-	IN p_btm_reqinfo_t p_btm_req_data,
-	IN UINT32 btm_req_data_len);
+int compose_btm_req_ie(IN PRTMP_ADAPTER pAd, OUT PUCHAR p_btm_req_ie,
+		       OUT PUINT32 p_btm_req_ie_len,
+		       IN p_btm_reqinfo_t p_btm_req_data,
+		       IN UINT32 btm_req_data_len);
 
-int compose_btm_req_ie(
-	IN PRTMP_ADAPTER pAd,
-	OUT PUCHAR p_btm_req_ie,
-	OUT PUINT32 p_btm_req_ie_len,
-	IN p_btm_reqinfo_t p_btm_req_data,
-	IN UINT32 btm_req_data_len);
+VOID WNM_InsertBSSTerminationSubIE(IN PRTMP_ADAPTER pAd, OUT PUCHAR pFrameBuf,
+				   OUT PUINT32 pFrameLen, IN UINT64 TSF,
+				   IN UINT16 Duration);
 
-VOID WNM_InsertBSSTerminationSubIE(
-	IN PRTMP_ADAPTER pAd,
-	OUT PUCHAR pFrameBuf,
-	OUT PUINT32 pFrameLen,
-	IN UINT64 TSF,
-	IN UINT16 Duration);
-
-VOID RRM_InsertPreferenceSubIE(
-	IN PRTMP_ADAPTER pAd,
-	OUT PUCHAR pFrameBuf,
-	OUT PUINT32 pFrameLen,
-	IN UINT8 preference);
+VOID RRM_InsertPreferenceSubIE(IN PRTMP_ADAPTER pAd, OUT PUCHAR pFrameBuf,
+			       OUT PUINT32 pFrameLen, IN UINT8 preference);
 #endif /* CONFIG_11KV_API_SUPPORT */
 
-
-
 #ifdef CONFIG_DOT11V_WNM
-INT Set_SendBTMReq_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING	*arg);
+INT Set_SendBTMReq_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg);
+#endif
+#ifdef MAP_R2
+void SendBTMQueryEvent(PNET_DEV net_dev, const char *peer_mac_addr,
+		       const char *btm_query, UINT16 btm_query_len,
+		       UINT8 ipc_type);
+
+void SendWNMNotifyEvent(PNET_DEV net_dev, const char *peer_mac_addr,
+			const char *wnm_req, UINT16 wnm_req_len);
 #endif
 #endif /* __WNM_H__ */
-

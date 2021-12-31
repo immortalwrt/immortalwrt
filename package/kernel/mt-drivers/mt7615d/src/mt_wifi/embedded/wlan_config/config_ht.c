@@ -54,12 +54,9 @@ VOID ht_cfg_exit(struct ht_cfg *obj)
 VOID wlan_config_set_ht_bw(struct wifi_dev *wdev, UCHAR ht_bw)
 {
 	struct wlan_config *cfg = (struct wlan_config *)wdev->wpf_cfg;
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
 
 	if (cfg)
 		cfg->ht_conf.ht_bw = ht_bw;
-	if (op)
-		op->ht_oper.ht_bw = ht_bw;
 
 	wlan_operate_set_support_ch_width_set(wdev, ht_bw);
 }
@@ -143,7 +140,7 @@ VOID wlan_config_set_edca_valid_all(struct wpf_ctrl *ctrl, BOOLEAN bValid)
 	struct wlan_config *cfg;
 	unsigned int i;
 	for (i = 0; i < WDEV_NUM_MAX; i++) {
-		cfg = (struct wlan_config*)ctrl->pf[i].conf;
+		cfg = (struct wlan_config *)ctrl->pf[i].conf;
 		if (cfg)
 			cfg->ht_conf.EdcaParm.bValid = bValid;
 	}
@@ -203,7 +200,8 @@ VOID wlan_config_set_rts_pkt_thld(struct wifi_dev *wdev, UCHAR pkt_num)
 		cfg->ht_conf.pkt_thld = pkt_num;
 }
 
-VOID wlan_config_set_min_mpdu_start_space(struct wifi_dev *wdev, UCHAR mpdu_density)
+VOID wlan_config_set_min_mpdu_start_space(struct wifi_dev *wdev,
+					  UCHAR mpdu_density)
 {
 	struct wlan_config *cfg = NULL;
 
@@ -252,7 +250,7 @@ BOOLEAN wlan_config_get_edca_valid(struct wifi_dev *wdev)
 		return FALSE;
 }
 
-struct _EDCA_PARM* wlan_config_get_ht_edca(struct wifi_dev *wdev)
+struct _EDCA_PARM *wlan_config_get_ht_edca(struct wifi_dev *wdev)
 {
 	struct wlan_config *cfg = (struct wlan_config *)wdev->wpf_cfg;
 	if (cfg)
@@ -326,7 +324,9 @@ UINT32 wlan_config_get_frag_thld(struct wifi_dev *wdev)
 	else
 		return DEFAULT_FRAG_THLD;
 }
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(wlan_config_get_frag_thld);
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */
 
 UINT32 wlan_config_get_rts_len_thld(struct wifi_dev *wdev)
 {

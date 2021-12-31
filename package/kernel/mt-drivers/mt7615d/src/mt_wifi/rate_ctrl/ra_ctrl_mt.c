@@ -40,7 +40,6 @@
 ********************************************************************************
 */
 
-
 /*******************************************************************************
 *                    E X T E R N A L   R E F E R E N C E S
 ********************************************************************************
@@ -92,14 +91,9 @@ UCHAR tmi_rate_map_cck_sp[] = {
 };
 
 UCHAR tmi_rate_map_ofdm[] = {
-	TMI_TX_RATE_OFDM_6M,
-	TMI_TX_RATE_OFDM_9M,
-	TMI_TX_RATE_OFDM_12M,
-	TMI_TX_RATE_OFDM_18M,
-	TMI_TX_RATE_OFDM_24M,
-	TMI_TX_RATE_OFDM_36M,
-	TMI_TX_RATE_OFDM_48M,
-	TMI_TX_RATE_OFDM_54M,
+	TMI_TX_RATE_OFDM_6M,  TMI_TX_RATE_OFDM_9M,  TMI_TX_RATE_OFDM_12M,
+	TMI_TX_RATE_OFDM_18M, TMI_TX_RATE_OFDM_24M, TMI_TX_RATE_OFDM_36M,
+	TMI_TX_RATE_OFDM_48M, TMI_TX_RATE_OFDM_54M,
 };
 #endif /* WIFI_BUILD_RAM */
 /*******************************************************************************
@@ -129,13 +123,8 @@ UCHAR tmi_rate_map_ofdm[] = {
  * \return    MaxRssi
  */
 /*----------------------------------------------------------------------------*/
-CHAR
-raMaxRssi(
-	IN P_RA_COMMON_INFO_T prRaCfg,
-	IN CHAR cRssi0,
-	IN CHAR cRssi1,
-	IN CHAR cRssi2
-)
+CHAR raMaxRssi(IN P_RA_COMMON_INFO_T prRaCfg, IN CHAR cRssi0, IN CHAR cRssi1,
+	       IN CHAR cRssi2)
 {
 	CHAR cLarger = -100;
 
@@ -157,7 +146,6 @@ raMaxRssi(
 	return cLarger;
 }
 
-
 /*----------------------------------------------------------------------------*/
 /*!
  * \brief     Get min Rssi by RxStream
@@ -171,13 +159,8 @@ raMaxRssi(
  */
 /*----------------------------------------------------------------------------*/
 
-CHAR
-raMinRssi(
-	IN P_RA_COMMON_INFO_T prRaCfg,
-	IN CHAR cRssi0,
-	IN CHAR cRssi1,
-	IN CHAR cRssi2
-)
+CHAR raMinRssi(IN P_RA_COMMON_INFO_T prRaCfg, IN CHAR cRssi0, IN CHAR cRssi1,
+	       IN CHAR cRssi2)
 {
 	CHAR cMin = -100;
 
@@ -193,9 +176,7 @@ raMinRssi(
 	return cMin;
 }
 
-
 #ifdef NEW_RATE_ADAPT_SUPPORT
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -209,14 +190,10 @@ raMinRssi(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-SetTxRateMtCore(
-	IN PRTMP_ADAPTER pAd,
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_COMMON_INFO_T pRaCfg,
-	IN P_RA_INTERNAL_INFO_T pRaInternal,
-	IN RTMP_RA_GRP_TB *pTxRate
-)
+VOID SetTxRateMtCore(IN PRTMP_ADAPTER pAd, IN P_RA_ENTRY_INFO_T pRaEntry,
+		     IN P_RA_COMMON_INFO_T pRaCfg,
+		     IN P_RA_INTERNAL_INFO_T pRaInternal,
+		     IN RTMP_RA_GRP_TB *pTxRate)
 {
 	UCHAR tx_mode = pTxRate->Mode;
 	UCHAR *pTable;
@@ -227,11 +204,11 @@ SetTxRateMtCore(
 #ifdef DOT11_VHT_AC
 
 	if ((pRaCfg->PhyCaps & fPHY_CAP_VHT) &&
-		((pTable == RateTableVht2S) || (pTable == RateTableVht1S) ||
-		 (pTable == RateTableVht1S_MCS9) ||
-		 (pTable == RateTableVht2S_BW20) ||
-		 (pTable == RateTableVht2S_BW40) ||
-		 (pTable == RateTableVht2S_MCS7))) {
+	    ((pTable == RateTableVht2S) || (pTable == RateTableVht1S) ||
+	     (pTable == RateTableVht1S_MCS9) ||
+	     (pTable == RateTableVht2S_BW20) ||
+	     (pTable == RateTableVht2S_BW40) ||
+	     (pTable == RateTableVht2S_MCS7))) {
 		RTMP_RA_GRP_TB *pAdaptTbEntry = (RTMP_RA_GRP_TB *)pTxRate;
 		UCHAR bw_cap = BW_20;
 
@@ -255,7 +232,8 @@ SetTxRateMtCore(
 
 			case BW_20:
 			default:
-				if (pAdaptTbEntry->BW == BW_80 || pAdaptTbEntry->BW == BW_40)
+				if (pAdaptTbEntry->BW == BW_80 ||
+				    pAdaptTbEntry->BW == BW_40)
 					bw_cap = BW_20;
 				else
 					bw_cap = pAdaptTbEntry->BW;
@@ -287,7 +265,9 @@ SetTxRateMtCore(
 				tx_bw = bw_cap;
 		}
 
-		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): txbw=%d, txmode=%d\n", __func__, tx_bw, tx_mode));
+		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(): txbw=%d, txmode=%d\n", __func__, tx_bw,
+			  tx_mode));
 	}
 
 #endif /* DOT11_VHT_AC */
@@ -299,7 +279,8 @@ SetTxRateMtCore(
 		else
 			pRaEntry->TxPhyCfg.STBC = STBC_NONE;
 
-		if ((pTxRate->ShortGI || pRaCfg->TestbedForceShortGI) && (pRaEntry->MaxPhyCfg.ShortGI))
+		if ((pTxRate->ShortGI || pRaCfg->TestbedForceShortGI) &&
+		    (pRaEntry->MaxPhyCfg.ShortGI))
 			pRaEntry->TxPhyCfg.ShortGI = GI_400;
 		else
 			pRaEntry->TxPhyCfg.ShortGI = GI_800;
@@ -310,23 +291,28 @@ SetTxRateMtCore(
 	/* TODO: Lens, fix it! */
 	pRaEntry->TxPhyCfg.ldpc = 0;
 
-	if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_VHT_RX_LDPC_CAPABLE))
+	if (CLIENT_STATUS_TEST_FLAG(pRaEntry,
+				    fCLIENT_STATUS_VHT_RX_LDPC_CAPABLE))
 		pRaEntry->TxPhyCfg.ldpc |= VHT_LDPC;
 
-	if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_HT_RX_LDPC_CAPABLE))
+	if (CLIENT_STATUS_TEST_FLAG(pRaEntry,
+				    fCLIENT_STATUS_HT_RX_LDPC_CAPABLE))
 		pRaEntry->TxPhyCfg.ldpc |= HT_LDPC;
 
 #endif
 #ifdef DOT11_VHT_AC
 
 	if (tx_mode == MODE_VHT) {
-		if ((CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI80_CAPABLE)) &&
-			(pTxRate->ShortGI))
+		if ((CLIENT_STATUS_TEST_FLAG(pRaEntry,
+					     fCLIENT_STATUS_SGI80_CAPABLE)) &&
+		    (pTxRate->ShortGI))
 			pRaEntry->TxPhyCfg.ShortGI = GI_400;
 		else
 			pRaEntry->TxPhyCfg.ShortGI = GI_800;
 
-		if (pTxRate->STBC && (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_VHT_RXSTBC_CAPABLE)))
+		if (pTxRate->STBC &&
+		    (CLIENT_STATUS_TEST_FLAG(
+			    pRaEntry, fCLIENT_STATUS_VHT_RXSTBC_CAPABLE)))
 			pRaEntry->TxPhyCfg.STBC = STBC_USE;
 		else
 			pRaEntry->TxPhyCfg.STBC = STBC_NONE;
@@ -341,21 +327,21 @@ SetTxRateMtCore(
 #ifdef DOT11_N_SUPPORT
 
 	if ((pRaCfg->HtMode == HTMODE_GF) &&
-		(pRaEntry->fgHtCapInfoGF == HTMODE_GF))
+	    (pRaEntry->fgHtCapInfoGF == HTMODE_GF))
 		pRaEntry->TxPhyCfg.MODE = MODE_HTGREENFIELD;
 	else
 		pRaEntry->TxPhyCfg.MODE = tx_mode;
 
 	if ((pRaCfg->TestbedForceGreenField & pRaEntry->fgHtCapInfoGF) &&
-		(pRaEntry->TxPhyCfg.MODE == MODE_HTMIX)) {
+	    (pRaEntry->TxPhyCfg.MODE == MODE_HTMIX)) {
 		/* force Tx GreenField */
 		pRaEntry->TxPhyCfg.MODE = MODE_HTGREENFIELD;
 	}
 
 	/* BW depends on BSSWidthTrigger and Negotiated BW */
 	if (pRaCfg->bRcvBSSWidthTriggerEvents ||
-		(pRaEntry->MaxPhyCfg.BW == BW_20) ||
-		(pRaEntry->ucBBPCurrentBW == BW_20))
+	    (pRaEntry->MaxPhyCfg.BW == BW_20) ||
+	    (pRaEntry->ucBBPCurrentBW == BW_20))
 		pRaEntry->TxPhyCfg.BW = BW_20;
 	else
 		pRaEntry->TxPhyCfg.BW = BW_40;
@@ -363,18 +349,16 @@ SetTxRateMtCore(
 #ifdef DOT11_VHT_AC
 
 	if ((pRaEntry->ucBBPCurrentBW == BW_80) &&
-		(pRaEntry->MaxPhyCfg.BW == BW_80) &&
-		pRaEntry->MaxPhyCfg.MODE == MODE_VHT)
+	    (pRaEntry->MaxPhyCfg.BW == BW_80) &&
+	    pRaEntry->MaxPhyCfg.MODE == MODE_VHT)
 		pRaEntry->TxPhyCfg.BW = BW_80;
 
 #ifdef NEW_RATE_ADAPT_SUPPORT
 
-	if ((pTable == RateTableVht2S) ||
-		(pTable == RateTableVht2S_BW20) ||
-		(pTable == RateTableVht2S_BW40) ||
-		(pTable == RateTableVht1S) ||
-		(pTable == RateTableVht1S_MCS9) ||
-		(pTable == RateTableVht2S_MCS7)) {
+	if ((pTable == RateTableVht2S) || (pTable == RateTableVht2S_BW20) ||
+	    (pTable == RateTableVht2S_BW40) || (pTable == RateTableVht1S) ||
+	    (pTable == RateTableVht1S_MCS9) ||
+	    (pTable == RateTableVht2S_MCS7)) {
 		RTMP_RA_GRP_TB *pAdaptTbEntry = (RTMP_RA_GRP_TB *)pTxRate;
 
 		pRaEntry->TxPhyCfg.MCS = pAdaptTbEntry->CurrMCS;
@@ -397,8 +381,7 @@ SetTxRateMtCore(
 			}
 		}
 
-		if ((bw_max != BW_10) &&
-			(bw_max > pRaEntry->ucBBPCurrentBW))
+		if ((bw_max != BW_10) && (bw_max > pRaEntry->ucBBPCurrentBW))
 			bw_max = pRaEntry->ucBBPCurrentBW;
 
 		pRaEntry->TxPhyCfg.BW = bw_max;
@@ -408,8 +391,11 @@ SetTxRateMtCore(
 #endif /* DOT11_VHT_AC */
 
 	/* Reexam each bandwidth's SGI support. */
-	if (((pRaEntry->TxPhyCfg.BW == BW_20) && !CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI20_CAPABLE)) ||
-		((pRaEntry->TxPhyCfg.BW == BW_40) && !CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI40_CAPABLE)))
+	if (((pRaEntry->TxPhyCfg.BW == BW_20) &&
+	     !CLIENT_STATUS_TEST_FLAG(pRaEntry,
+				      fCLIENT_STATUS_SGI20_CAPABLE)) ||
+	    ((pRaEntry->TxPhyCfg.BW == BW_40) &&
+	     !CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI40_CAPABLE)))
 		pRaEntry->TxPhyCfg.ShortGI = GI_800;
 
 #endif /* DOT11_N_SUPPORT */
@@ -417,7 +403,8 @@ SetTxRateMtCore(
 
 	/*  Disable invalid HT Duplicate modes to prevent PHY error */
 	if (pRaEntry->TxPhyCfg.MCS == MCS_32) {
-		if ((pRaEntry->TxPhyCfg.BW != BW_40) && (pRaEntry->TxPhyCfg.BW != BW_80))
+		if ((pRaEntry->TxPhyCfg.BW != BW_40) &&
+		    (pRaEntry->TxPhyCfg.BW != BW_80))
 			pRaEntry->TxPhyCfg.MCS = 0;
 	}
 
@@ -426,7 +413,6 @@ SetTxRateMtCore(
 	MtAsicMcsLutUpdateCore(pAd, pRaEntry, pRaCfg, pRaInternal);
 #endif /* MCS_LUT_SUPPORT */
 }
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -440,13 +426,9 @@ SetTxRateMtCore(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-NewTxRateMtCore(
-	IN PRTMP_ADAPTER pAd,
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_COMMON_INFO_T pRaCfg,
-	IN P_RA_INTERNAL_INFO_T pRaInternal
-)
+VOID NewTxRateMtCore(IN PRTMP_ADAPTER pAd, IN P_RA_ENTRY_INFO_T pRaEntry,
+		     IN P_RA_COMMON_INFO_T pRaCfg,
+		     IN P_RA_INTERNAL_INFO_T pRaInternal)
 {
 	RTMP_RA_GRP_TB *pNextTxRate;
 	UCHAR *pTable;
@@ -459,11 +441,13 @@ NewTxRateMtCore(
 #ifdef NEW_RATE_ADAPT_SUPPORT
 
 	if (ADAPT_RATE_TABLE(pTable))
-		pNextTxRate = PTX_RA_GRP_ENTRY(pTable, pRaInternal->ucCurrTxRateIndex);
+		pNextTxRate = PTX_RA_GRP_ENTRY(pTable,
+					       pRaInternal->ucCurrTxRateIndex);
 	else
 #endif /* NEW_RATE_ADAPT_SUPPORT */
 	{
-		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Not GRP table!\n", __func__));
+		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:Not GRP table!\n", __func__));
 		return;
 	}
 
@@ -471,7 +455,8 @@ NewTxRateMtCore(
 
 	if (pRaEntry->fgAuthWapiMode) {
 		if (pTable == RateSwitchTableAdapt11N2S) {
-			if ((pRaInternal->ucCurrTxRateIndex >= 14) && (pRaInternal->ucCurrTxRateIndex <= 16))
+			if ((pRaInternal->ucCurrTxRateIndex >= 14) &&
+			    (pRaInternal->ucCurrTxRateIndex <= 16))
 				pNextTxRate = PTX_RA_GRP_ENTRY(pTable, 13);
 		}
 	}
@@ -483,7 +468,8 @@ NewTxRateMtCore(
 
 	/*  Disable invalid HT Duplicate modes to prevent PHY error */
 	if (pRaEntry->TxPhyCfg.MCS == MCS_32) {
-		if ((pRaEntry->TxPhyCfg.BW != BW_40) && (pRaEntry->TxPhyCfg.BW != BW_80))
+		if ((pRaEntry->TxPhyCfg.BW != BW_40) &&
+		    (pRaEntry->TxPhyCfg.BW != BW_80))
 			pRaEntry->TxPhyCfg.MCS = 0;
 		else
 			pRaEntry->TxPhyCfg.STBC = 0;
@@ -496,8 +482,8 @@ NewTxRateMtCore(
 }
 #endif /* NEW_RATE_ADAPT_SUPPORT */
 
-
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 /*----------------------------------------------------------------------------*/
 /*!
  * \brief     Set TxPhy according to MaxPhy, rate table and config
@@ -510,13 +496,9 @@ NewTxRateMtCore(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-SetTxRateMtCoreAGBS(
-	IN PRTMP_ADAPTER pAd,
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_COMMON_INFO_T pRaCfg,
-	IN P_RA_INTERNAL_INFO_T pRaInternal
-)
+VOID SetTxRateMtCoreAGBS(IN PRTMP_ADAPTER pAd, IN P_RA_ENTRY_INFO_T pRaEntry,
+			 IN P_RA_COMMON_INFO_T pRaCfg,
+			 IN P_RA_INTERNAL_INFO_T pRaInternal)
 {
 	UINT_8 ucTxMode;
 	RA_AGBS_TABLE_ENTRY *pTxRate;
@@ -532,7 +514,8 @@ SetTxRateMtCoreAGBS(
 	if (RATE_TABLE_AGBS(pTable))
 		pTxRate = RA_AGBS_ENTRY(pTable, pRaInternal->ucCurrTxRateIndex);
 	else {
-		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Not AGBS table!\n", __func__));
+		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:Not AGBS table!\n", __func__));
 		return;
 	}
 
@@ -547,12 +530,17 @@ SetTxRateMtCoreAGBS(
 			pRaEntry->TxPhyCfg.STBC = STBC_USE;
 
 		/* if (pTxRate->ShortGI || pRaCfg->TestbedForceShortGI) */
-		if (((pRaEntry->ucCERMSD > RA_RMDS_THRD) || (pTxRate->ShortGI) || (pRaInternal->ucDynamicSGIState == RA_DYNAMIC_SGI_TRY_SUCCESS_STATE)) ||
-			pRaCfg->TestbedForceShortGI) {
-			if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI20_CAPABLE))
+		if (((pRaEntry->ucCERMSD > RA_RMDS_THRD) ||
+		     (pTxRate->ShortGI) ||
+		     (pRaInternal->ucDynamicSGIState ==
+		      RA_DYNAMIC_SGI_TRY_SUCCESS_STATE)) ||
+		    pRaCfg->TestbedForceShortGI) {
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pRaEntry, fCLIENT_STATUS_SGI20_CAPABLE))
 				pRaEntry->TxPhyCfg.ShortGI |= SGI_20;
 
-			if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI40_CAPABLE))
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pRaEntry, fCLIENT_STATUS_SGI40_CAPABLE))
 				pRaEntry->TxPhyCfg.ShortGI |= SGI_40;
 		}
 	}
@@ -561,21 +549,30 @@ SetTxRateMtCoreAGBS(
 #ifdef DOT11_VHT_AC
 
 	if (ucTxMode == MODE_VHT) {
-		if (pTxRate->STBC && (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_VHT_RXSTBC_CAPABLE)))
+		if (pTxRate->STBC &&
+		    (CLIENT_STATUS_TEST_FLAG(
+			    pRaEntry, fCLIENT_STATUS_VHT_RXSTBC_CAPABLE)))
 			pRaEntry->TxPhyCfg.STBC = STBC_USE;
 
 		/* if (pTxRate->ShortGI */
-		if (((pRaEntry->ucCERMSD > RA_RMDS_THRD) || (pTxRate->ShortGI) || (pRaInternal->ucDynamicSGIState == RA_DYNAMIC_SGI_TRY_SUCCESS_STATE))) {
-			if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI20_CAPABLE))
+		if (((pRaEntry->ucCERMSD > RA_RMDS_THRD) ||
+		     (pTxRate->ShortGI) ||
+		     (pRaInternal->ucDynamicSGIState ==
+		      RA_DYNAMIC_SGI_TRY_SUCCESS_STATE))) {
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pRaEntry, fCLIENT_STATUS_SGI20_CAPABLE))
 				pRaEntry->TxPhyCfg.ShortGI |= SGI_20;
 
-			if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI40_CAPABLE))
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pRaEntry, fCLIENT_STATUS_SGI40_CAPABLE))
 				pRaEntry->TxPhyCfg.ShortGI |= SGI_40;
 
-			if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI80_CAPABLE))
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pRaEntry, fCLIENT_STATUS_SGI80_CAPABLE))
 				pRaEntry->TxPhyCfg.ShortGI |= SGI_80;
 
-			if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_SGI160_CAPABLE))
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pRaEntry, fCLIENT_STATUS_SGI160_CAPABLE))
 				pRaEntry->TxPhyCfg.ShortGI |= SGI_160;
 		}
 	}
@@ -586,12 +583,14 @@ SetTxRateMtCoreAGBS(
 	/* TODO: Lens, fix it! */
 	pRaEntry->TxPhyCfg.ldpc = 0;
 
-	if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_HT_RX_LDPC_CAPABLE))
+	if (CLIENT_STATUS_TEST_FLAG(pRaEntry,
+				    fCLIENT_STATUS_HT_RX_LDPC_CAPABLE))
 		pRaEntry->TxPhyCfg.ldpc |= HT_LDPC;
 
 #ifdef DOT11_VHT_AC
 
-	if (CLIENT_STATUS_TEST_FLAG(pRaEntry, fCLIENT_STATUS_VHT_RX_LDPC_CAPABLE))
+	if (CLIENT_STATUS_TEST_FLAG(pRaEntry,
+				    fCLIENT_STATUS_VHT_RX_LDPC_CAPABLE))
 		pRaEntry->TxPhyCfg.ldpc |= VHT_LDPC;
 
 #endif /* DOT11_VHT_AC */
@@ -606,11 +605,11 @@ SetTxRateMtCoreAGBS(
 	pRaEntry->TxPhyCfg.MODE = ucTxMode;
 
 	if ((pRaCfg->HtMode == HTMODE_GF) &&
-		(pRaEntry->fgHtCapInfoGF == HTMODE_GF))
+	    (pRaEntry->fgHtCapInfoGF == HTMODE_GF))
 		pRaEntry->TxPhyCfg.MODE = MODE_HTGREENFIELD;
 
 	if ((pRaCfg->TestbedForceGreenField & pRaEntry->fgHtCapInfoGF) &&
-		(pRaEntry->TxPhyCfg.MODE == MODE_HTMIX)) {
+	    (pRaEntry->TxPhyCfg.MODE == MODE_HTMIX)) {
 		/* force Tx GreenField */
 		pRaEntry->TxPhyCfg.MODE = MODE_HTGREENFIELD;
 	}
@@ -619,20 +618,23 @@ SetTxRateMtCoreAGBS(
 	/* TODO: fix it at auto BW */
 	/* BW depends on BSSWidthTrigger and Negotiated BW */
 	if (pRaCfg->bRcvBSSWidthTriggerEvents ||
-		(pRaEntry->MaxPhyCfg.BW == BW_20) ||
-		(pRaEntry->ucBBPCurrentBW == BW_20))
+	    (pRaEntry->MaxPhyCfg.BW == BW_20) ||
+	    (pRaEntry->ucBBPCurrentBW == BW_20))
 		pRaEntry->TxPhyCfg.BW = BW_20;
 	else
 		pRaEntry->TxPhyCfg.BW = BW_40;
 
-	if (((pRaEntry->ucBBPCurrentBW == BW_80) || (pRaEntry->ucBBPCurrentBW == BW_160) || (pRaEntry->ucBBPCurrentBW == BW_8080)) &&
-		(pRaEntry->MaxPhyCfg.BW == BW_80) &&
-		(pRaEntry->MaxPhyCfg.MODE == MODE_VHT))
+	if (((pRaEntry->ucBBPCurrentBW == BW_80) ||
+	     (pRaEntry->ucBBPCurrentBW == BW_160) ||
+	     (pRaEntry->ucBBPCurrentBW == BW_8080)) &&
+	    (pRaEntry->MaxPhyCfg.BW == BW_80) &&
+	    (pRaEntry->MaxPhyCfg.MODE == MODE_VHT))
 		pRaEntry->TxPhyCfg.BW = BW_80;
 
-	if (((pRaEntry->ucBBPCurrentBW == BW_160) || (pRaEntry->ucBBPCurrentBW == BW_8080)) &&
-		(pRaEntry->MaxPhyCfg.BW == BW_160) &&
-		(pRaEntry->MaxPhyCfg.MODE == MODE_VHT))
+	if (((pRaEntry->ucBBPCurrentBW == BW_160) ||
+	     (pRaEntry->ucBBPCurrentBW == BW_8080)) &&
+	    (pRaEntry->MaxPhyCfg.BW == BW_160) &&
+	    (pRaEntry->MaxPhyCfg.MODE == MODE_VHT))
 		pRaEntry->TxPhyCfg.BW = BW_160;
 
 	if (pRaInternal->ucDynamicBWState != RA_DYNAMIC_BW_UNCHANGED_STATE)
@@ -641,8 +643,8 @@ SetTxRateMtCoreAGBS(
 #ifdef DOT11_VHT_AC
 
 	if (WMODE_CAP_AC(pRaEntry->ucPhyMode) &&
-		(pRaEntry->ucSupportRateMode & SUPPORT_VHT_MODE) &&
-		AGBS_VHT_TABLE(pRaInternal->pucTable)) {
+	    (pRaEntry->ucSupportRateMode & SUPPORT_VHT_MODE) &&
+	    AGBS_VHT_TABLE(pRaInternal->pucTable)) {
 		UINT_8 ucBwCap = BW_20;
 
 		pRaEntry->TxPhyCfg.VhtNss = pRaInternal->ucMcsGroup;
@@ -670,7 +672,9 @@ SetTxRateMtCoreAGBS(
 			if (ucBwCap <= pRaEntry->MaxPhyCfg.BW)
 				pRaEntry->TxPhyCfg.BW = ucBwCap;
 
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): TxPhyCfg.BW=%d, ucBwCap=%d\n", __func__, pRaEntry->TxPhyCfg.BW, ucBwCap));
+			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("%s(): TxPhyCfg.BW=%d, ucBwCap=%d\n",
+				  __func__, pRaEntry->TxPhyCfg.BW, ucBwCap));
 		}
 	}
 
@@ -683,48 +687,63 @@ SetTxRateMtCoreAGBS(
 
 	/*  Disable invalid HT Duplicate modes to prevent PHY error */
 	if (pRaEntry->TxPhyCfg.MCS == MCS_32) {
-		if ((pRaEntry->TxPhyCfg.BW != BW_40) && (pRaEntry->TxPhyCfg.BW != BW_80) &&
-			(pRaEntry->TxPhyCfg.BW != BW_160) && (pRaEntry->TxPhyCfg.BW != BW_8080))
+		if ((pRaEntry->TxPhyCfg.BW != BW_40) &&
+		    (pRaEntry->TxPhyCfg.BW != BW_80) &&
+		    (pRaEntry->TxPhyCfg.BW != BW_160) &&
+		    (pRaEntry->TxPhyCfg.BW != BW_8080))
 			pRaEntry->TxPhyCfg.MCS = 0;
 	}
 
 	if (pRaCfg->u2MaxPhyRate != 0) {
-		u2PhyRate = raGetPhyRate(pRaEntry->TxPhyCfg.MODE, pRaEntry->TxPhyCfg.MCS,
-								 pRaEntry->TxPhyCfg.VhtNss, pRaEntry->TxPhyCfg.BW, pRaEntry->TxPhyCfg.ShortGI);
+		u2PhyRate = raGetPhyRate(pRaEntry->TxPhyCfg.MODE,
+					 pRaEntry->TxPhyCfg.MCS,
+					 pRaEntry->TxPhyCfg.VhtNss,
+					 pRaEntry->TxPhyCfg.BW,
+					 pRaEntry->TxPhyCfg.ShortGI);
 
-		if ((pRaCfg->u2MaxPhyRate != 0) && (u2PhyRate > pRaCfg->u2MaxPhyRate)
-			&& (pRaCfg->TestbedForceShortGI == FALSE))
+		if ((pRaCfg->u2MaxPhyRate != 0) &&
+		    (u2PhyRate > pRaCfg->u2MaxPhyRate) &&
+		    (pRaCfg->TestbedForceShortGI == FALSE))
 			pRaEntry->TxPhyCfg.ShortGI = GI_800;
 	}
 
 #endif /*  DOT11_N_SUPPORT */
 
 	if (pRaCfg->ucForceTxStream != 0) {
-		if ((pRaEntry->TxPhyCfg.MODE == MODE_HTMIX) || (pRaEntry->TxPhyCfg.MODE == MODE_HTMIX)) {
+		if ((pRaEntry->TxPhyCfg.MODE == MODE_HTMIX) ||
+		    (pRaEntry->TxPhyCfg.MODE == MODE_HTMIX)) {
 			if (pRaEntry->TxPhyCfg.MCS != MCS_32) {
 				nsts += (pRaEntry->TxPhyCfg.MCS >> 3);
 
-				if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) && (nsts == 1))
+				if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) &&
+				    (nsts == 1))
 					nsts++;
 			}
 
 			if (nsts > pRaCfg->ucForceTxStream) {
-				if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) && (pRaCfg->ucForceTxStream == 1))
+				if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) &&
+				    (pRaCfg->ucForceTxStream == 1))
 					pRaEntry->TxPhyCfg.STBC = STBC_NONE;
 				else
-					pRaEntry->TxPhyCfg.MCS = (pRaEntry->TxPhyCfg.MCS & 0x7) + ((pRaCfg->ucForceTxStream - 1) << 3);
+					pRaEntry->TxPhyCfg.MCS =
+						(pRaEntry->TxPhyCfg.MCS & 0x7) +
+						((pRaCfg->ucForceTxStream - 1)
+						 << 3);
 			}
 		} else if (pRaEntry->TxPhyCfg.MODE == MODE_VHT) {
-			if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) && (pRaEntry->TxPhyCfg.VhtNss == 1))
+			if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) &&
+			    (pRaEntry->TxPhyCfg.VhtNss == 1))
 				nsts++;
 			else
 				nsts = pRaEntry->TxPhyCfg.VhtNss;
 
 			if (nsts > pRaCfg->ucForceTxStream) {
-				if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) && (pRaCfg->ucForceTxStream == 1))
+				if ((pRaEntry->TxPhyCfg.STBC == STBC_USE) &&
+				    (pRaCfg->ucForceTxStream == 1))
 					pRaEntry->TxPhyCfg.STBC = STBC_NONE;
 				else
-					pRaEntry->TxPhyCfg.VhtNss = pRaCfg->ucForceTxStream;
+					pRaEntry->TxPhyCfg.VhtNss =
+						pRaCfg->ucForceTxStream;
 			}
 		}
 	}
@@ -733,7 +752,6 @@ SetTxRateMtCoreAGBS(
 	MtAsicMcsLutUpdateCoreAGBS(pAd, pRaEntry, pRaCfg, pRaInternal);
 #endif /* MCS_LUT_SUPPORT */
 }
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -746,11 +764,8 @@ SetTxRateMtCoreAGBS(
  * \return    none
  */
 /*----------------------------------------------------------------------------*/
-VOID
-raMaxAmsduLenNotifyAGBS(
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_INTERNAL_INFO_T pRaInternal
-)
+VOID raMaxAmsduLenNotifyAGBS(IN P_RA_ENTRY_INFO_T pRaEntry,
+			     IN P_RA_INTERNAL_INFO_T pRaInternal)
 {
 #ifdef WIFI_BUILD_RAM
 #if (PRODUCT_VERSION == 7615)
@@ -767,7 +782,8 @@ raMaxAmsduLenNotifyAGBS(
 	if (RATE_TABLE_AGBS(pTable))
 		pTxRate = RA_AGBS_ENTRY(pTable, pRaInternal->ucCurrTxRateIndex);
 	else {
-		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Not AGBS table!\n", __func__));
+		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:Not AGBS table!\n", __func__));
 		return;
 	}
 
@@ -794,12 +810,12 @@ raMaxAmsduLenNotifyAGBS(
 	}
 
 	hemExtEventMaxAMSDULengthUpdate(pRaEntry->ucWcid, ucMaxAmsduLength);
-	MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("ucMaxAmsduLength=%d\n", ucMaxAmsduLength));
+	MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("ucMaxAmsduLength=%d\n", ucMaxAmsduLength));
 #endif
 #endif /* WIFI_BUILD_RAM */
 }
 #endif /* RATE_ADAPT_AGBS_SUPPORT */
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -815,14 +831,11 @@ raMaxAmsduLenNotifyAGBS(
  * \return    none
  */
 /*----------------------------------------------------------------------------*/
-VOID
-raSelectTxRateTable(
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_COMMON_INFO_T pRaCfg,
-	IN P_RA_INTERNAL_INFO_T pRaInternal,
-	OUT UCHAR **ppTable,
-	OUT UCHAR *pTableSize,
-	OUT UCHAR *pInitTxRateIdx)
+VOID raSelectTxRateTable(IN P_RA_ENTRY_INFO_T pRaEntry,
+			 IN P_RA_COMMON_INFO_T pRaCfg,
+			 IN P_RA_INTERNAL_INFO_T pRaInternal,
+			 OUT UCHAR **ppTable, OUT UCHAR *pTableSize,
+			 OUT UCHAR *pInitTxRateIdx)
 {
 	*ppTable = NULL;
 
@@ -831,13 +844,16 @@ raSelectTxRateTable(
 #ifdef NEW_RATE_ADAPT_SUPPORT
 
 		if (pRaCfg->ucRateAlg == RATE_ALG_GRP)
-			*ppTable = raSelectVHTTxRateTableGRP(pRaEntry, pRaCfg, pRaInternal);
+			*ppTable = raSelectVHTTxRateTableGRP(pRaEntry, pRaCfg,
+							     pRaInternal);
 
 #endif /* NEW_RATE_ADAPT_SUPPORT */
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 
 		if (pRaCfg->ucRateAlg == RATE_ALG_AGBS)
-			*ppTable = raSelectVHTTxRateTableAGBS(pRaEntry, pRaCfg, pRaInternal);
+			*ppTable = raSelectVHTTxRateTableAGBS(pRaEntry, pRaCfg,
+							      pRaInternal);
 
 #endif /* RATE_ADAPT_AGBS_SUPPORT */
 
@@ -848,13 +864,16 @@ raSelectTxRateTable(
 #ifdef NEW_RATE_ADAPT_SUPPORT
 
 		if (pRaCfg->ucRateAlg == RATE_ALG_GRP)
-			*ppTable = raSelectTxRateTableGRP(pRaEntry, pRaCfg, pRaInternal);
+			*ppTable = raSelectTxRateTableGRP(pRaEntry, pRaCfg,
+							  pRaInternal);
 
 #endif /* NEW_RATE_ADAPT_SUPPORT */
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 
 		if (pRaCfg->ucRateAlg == RATE_ALG_AGBS)
-			*ppTable = raSelectTxRateTableAGBS(pRaEntry, pRaCfg, pRaInternal);
+			*ppTable = raSelectTxRateTableAGBS(pRaEntry, pRaCfg,
+							   pRaInternal);
 
 #endif /* RATE_ADAPT_AGBS_SUPPORT */
 	} while (FALSE);
@@ -864,17 +883,24 @@ raSelectTxRateTable(
 	if (pRaCfg->ucRateAlg == RATE_ALG_GRP) {
 		if (ADAPT_RATE_TABLE(*ppTable) == FALSE) {
 			*ppTable = RateSwitchTableAdapt11B;
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Invalid Rate Table, Set to RateSwitchTableAdapt11B.\n", __func__));
+			MTWF_LOG(
+				DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s: Invalid Rate Table, Set to RateSwitchTableAdapt11B.\n",
+				 __func__));
 		}
 	}
 
 #endif /* NEW_RATE_ADAPT_SUPPORT */
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 
 	if (pRaCfg->ucRateAlg == RATE_ALG_AGBS) {
 		if (RATE_TABLE_AGBS(*ppTable) == FALSE) {
 			*ppTable = RateSwitchTableAGBS11B;
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Invalid Rate Table, Set to RateSwitchTableAGBS11B\n", __func__));
+			MTWF_LOG(
+				DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s: Invalid Rate Table, Set to RateSwitchTableAGBS11B\n",
+				 __func__));
 		}
 	}
 
@@ -884,9 +910,9 @@ raSelectTxRateTable(
 		*pTableSize = RATE_TABLE_SIZE(*ppTable);
 		*pInitTxRateIdx = RATE_TABLE_INIT_INDEX(*ppTable);
 	} else
-		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:TX rate table is Null!\n", __func__));
+		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:TX rate table is Null!\n", __func__));
 }
-
 
 #ifdef MCS_LUT_SUPPORT
 #ifdef WIFI_BUILD_RAM
@@ -904,13 +930,8 @@ raSelectTxRateTable(
  */
 /*----------------------------------------------------------------------------*/
 UINT_16
-tx_rate_to_tmi_rate(
-	IN UINT_8 mode,
-	IN UINT_8 mcs,
-	IN UINT_8 nss,
-	IN BOOL stbc,
-	IN UINT_8 preamble
-)
+tx_rate_to_tmi_rate(IN UINT_8 mode, IN UINT_8 mcs, IN UINT_8 nss, IN BOOL stbc,
+		    IN UINT_8 preamble)
 {
 	UINT_16 tmi_rate = 0, mcs_id = 0;
 
@@ -923,20 +944,23 @@ tx_rate_to_tmi_rate(
 		else
 			mcs_id = tmi_rate_map_cck_sp[mcs];
 
-		tmi_rate = (TMI_TX_RATE_MODE_CCK << TMI_TX_RATE_BIT_MODE) | (mcs_id);
+		tmi_rate = (TMI_TX_RATE_MODE_CCK << TMI_TX_RATE_BIT_MODE) |
+			   (mcs_id);
 		break;
 
 	case MODE_OFDM:
 		mcs_id = tmi_rate_map_ofdm[mcs];
-		tmi_rate = (TMI_TX_RATE_MODE_OFDM << TMI_TX_RATE_BIT_MODE) | (mcs_id);
+		tmi_rate = (TMI_TX_RATE_MODE_OFDM << TMI_TX_RATE_BIT_MODE) |
+			   (mcs_id);
 		break;
 
 	case MODE_HTMIX:
 	case MODE_HTGREENFIELD:
 		tmi_rate = ((USHORT)(stbc << TMI_TX_RATE_BIT_STBC)) |
-				   (((nss - 1) & TMI_TX_RATE_MASK_NSS) << TMI_TX_RATE_BIT_NSS) |
-				   ((USHORT)(mode << TMI_TX_RATE_BIT_MODE)) |
-				   ((USHORT)(mcs));
+			   (((nss - 1) & TMI_TX_RATE_MASK_NSS)
+			    << TMI_TX_RATE_BIT_NSS) |
+			   ((USHORT)(mode << TMI_TX_RATE_BIT_MODE)) |
+			   ((USHORT)(mcs));
 		/* MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s(): mode=%d, mcs=%d, stbc=%d converted tmi_rate=0x%x\n", */
 		/* __FUNCTION__, mode, mcs, stbc, tmi_rate)); */
 		break;
@@ -946,14 +970,13 @@ tx_rate_to_tmi_rate(
 		break;
 
 	default:
-		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s():Invalid mode(mode=%d)\n",
-				 __func__, mode));
+		MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s():Invalid mode(mode=%d)\n", __func__, mode));
 		break;
 	}
 
 	return tmi_rate;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -967,12 +990,7 @@ tx_rate_to_tmi_rate(
  */
 /*----------------------------------------------------------------------------*/
 UINT_8
-get_nsts_by_mcs(
-	UINT_8 phy_mode,
-	UINT_8 mcs,
-	BOOL stbc,
-	UINT_8 vht_nss
-)
+get_nsts_by_mcs(UINT_8 phy_mode, UINT_8 mcs, BOOL stbc, UINT_8 vht_nss)
 {
 	UINT_8 nsts = 1;
 
@@ -1006,7 +1024,6 @@ get_nsts_by_mcs(
 }
 #endif /* WIFI_BUILD_RAM */
 
-
 /*----------------------------------------------------------------------------*/
 /*!
  * \brief     check if STBC setting violate 802.11 spec and HW limit
@@ -1021,14 +1038,8 @@ get_nsts_by_mcs(
  */
 /*----------------------------------------------------------------------------*/
 UINT_8
-raStbcSettingCheck(
-	UINT_8 ucOrigStbc,
-	UINT_8 ucMode,
-	UINT_8 ucMcs,
-	UINT_8 ucVhtNss,
-	BOOL fgBFOn,
-	BOOL fgForceOneTx
-)
+raStbcSettingCheck(UINT_8 ucOrigStbc, UINT_8 ucMode, UINT_8 ucMcs,
+		   UINT_8 ucVhtNss, BOOL fgBFOn, BOOL fgForceOneTx)
 {
 	UINT_8 ucStbc = 0;
 
@@ -1066,7 +1077,6 @@ raStbcSettingCheck(
 	return ucStbc;
 }
 
-
 #ifdef NEW_RATE_ADAPT_SUPPORT
 /*----------------------------------------------------------------------------*/
 /*!
@@ -1079,13 +1089,9 @@ raStbcSettingCheck(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-MtAsicMcsLutUpdateCore(
-	IN PRTMP_ADAPTER pAd,
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_COMMON_INFO_T pRaCfg,
-	IN P_RA_INTERNAL_INFO_T pRaInternal
-)
+VOID MtAsicMcsLutUpdateCore(IN PRTMP_ADAPTER pAd, IN P_RA_ENTRY_INFO_T pRaEntry,
+			    IN P_RA_COMMON_INFO_T pRaCfg,
+			    IN P_RA_INTERNAL_INFO_T pRaInternal)
 {
 	UINT_32 rate[8];
 	UINT_8 stbc, nsts, preamble, ucVhtNss;
@@ -1100,16 +1106,16 @@ MtAsicMcsLutUpdateCore(
 		preamble = LONG_PREAMBLE;
 
 	stbc = raStbcSettingCheck(pRaEntry->TxPhyCfg.STBC,
-							  pRaEntry->TxPhyCfg.MODE,
-							  pRaEntry->TxPhyCfg.MCS,
-							  pRaEntry->TxPhyCfg.VhtNss,
-							  fgBFOn,
-							  pRaCfg->force_one_tx_stream);
-	nsts = get_nsts_by_mcs(pRaEntry->TxPhyCfg.MODE, pRaEntry->TxPhyCfg.MCS, stbc, pRaEntry->TxPhyCfg.VhtNss);
+				  pRaEntry->TxPhyCfg.MODE,
+				  pRaEntry->TxPhyCfg.MCS,
+				  pRaEntry->TxPhyCfg.VhtNss, fgBFOn,
+				  pRaCfg->force_one_tx_stream);
+	nsts = get_nsts_by_mcs(pRaEntry->TxPhyCfg.MODE, pRaEntry->TxPhyCfg.MCS,
+			       stbc, pRaEntry->TxPhyCfg.VhtNss);
 
-	if (((pRaEntry->ucMmpsMode != MMPS_STATIC) || (pRaEntry->TxPhyCfg.MODE < MODE_HTMIX))
-		&& (pRaCfg->force_one_tx_stream == FALSE)
-	   ) {
+	if (((pRaEntry->ucMmpsMode != MMPS_STATIC) ||
+	     (pRaEntry->TxPhyCfg.MODE < MODE_HTMIX)) &&
+	    (pRaCfg->force_one_tx_stream == FALSE)) {
 		/* rssi = raMaxRssi(pRaCfg, pRaEntry->AvgRssiSample[0], pRaEntry->AvgRssiSample[1], pRaEntry->AvgRssiSample[2]); */
 		/* if (rssi < -50 ) */
 		{
@@ -1118,10 +1124,8 @@ MtAsicMcsLutUpdateCore(
 	}
 
 	rate[0] = tx_rate_to_tmi_rate(pRaEntry->TxPhyCfg.MODE,
-								  pRaEntry->TxPhyCfg.MCS,
-								  nsts,
-								  stbc,
-								  preamble);
+				      pRaEntry->TxPhyCfg.MCS, nsts, stbc,
+				      preamble);
 	rate[0] &= 0xfff;
 
 	if (pRaEntry->fgAutoTxRateSwitch == TRUE) {
@@ -1132,55 +1136,71 @@ MtAsicMcsLutUpdateCore(
 		CurrRateIdx = pRaInternal->ucCurrTxRateIndex;
 		DownRateIdx = CurrRateIdx;
 
-		for (ucIndex = 1; ucIndex < 8 ; ucIndex++) {
+		for (ucIndex = 1; ucIndex < 8; ucIndex++) {
 			if (ADAPT_RATE_TABLE(pRaInternal->pucTable)) {
 				RTMP_RA_GRP_TB *pCurrTxRate;
 
 				if (ucIndex == 7) {
 					if (fgLowestRate == FALSE) {
 						do {
-							CurrRateIdx = DownRateIdx;
-							DownRateIdx = raSelectDownRate(pRaEntry, pRaCfg, pRaInternal, CurrRateIdx);
-						} while (CurrRateIdx != DownRateIdx);
+							CurrRateIdx =
+								DownRateIdx;
+							DownRateIdx = raSelectDownRate(
+								pRaEntry,
+								pRaCfg,
+								pRaInternal,
+								CurrRateIdx);
+						} while (CurrRateIdx !=
+							 DownRateIdx);
 					}
 				} else {
 					if (fgLowestRate == FALSE)
-						DownRateIdx = raSelectDownRate(pRaEntry, pRaCfg, pRaInternal, CurrRateIdx);
+						DownRateIdx = raSelectDownRate(
+							pRaEntry, pRaCfg,
+							pRaInternal,
+							CurrRateIdx);
 				}
 
 				if (pRaEntry->TxPhyCfg.ShortGI) {
-					pCurrTxRate = PTX_RA_GRP_ENTRY(pRaInternal->pucTable, DownRateIdx);
+					pCurrTxRate = PTX_RA_GRP_ENTRY(
+						pRaInternal->pucTable,
+						DownRateIdx);
 
-					if (pCurrTxRate->CurrMCS == pRaEntry->TxPhyCfg.MCS) {
+					if (pCurrTxRate->CurrMCS ==
+					    pRaEntry->TxPhyCfg.MCS) {
 						CurrRateIdx = DownRateIdx;
-						DownRateIdx = raSelectDownRate(pRaEntry, pRaCfg, pRaInternal, CurrRateIdx);
+						DownRateIdx = raSelectDownRate(
+							pRaEntry, pRaCfg,
+							pRaInternal,
+							CurrRateIdx);
 					}
 				}
 
-				pCurrTxRate = PTX_RA_GRP_ENTRY(pRaInternal->pucTable, DownRateIdx);
+				pCurrTxRate = PTX_RA_GRP_ENTRY(
+					pRaInternal->pucTable, DownRateIdx);
 				mode = pCurrTxRate->Mode;
 				mcs = pCurrTxRate->CurrMCS;
-				ucVhtNss = (pRaEntry->TxPhyCfg.MODE == MODE_VHT) ? pCurrTxRate->dataRate : 0;
+				ucVhtNss =
+					(pRaEntry->TxPhyCfg.MODE == MODE_VHT) ?
+						pCurrTxRate->dataRate :
+						      0;
 			} else {
 				mode = MODE_CCK;
 				mcs = 0;
 				DownRateIdx = 0;
 				ucVhtNss = 0;
-				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Not support legacy table.\n", __func__));
+				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s: Not support legacy table.\n",
+					  __func__));
 			}
 
-			stbc = raStbcSettingCheck(pRaEntry->TxPhyCfg.STBC,
-									  mode,
-									  mcs,
-									  ucVhtNss,
-									  fgBFOn,
-									  pRaCfg->force_one_tx_stream);
+			stbc = raStbcSettingCheck(pRaEntry->TxPhyCfg.STBC, mode,
+						  mcs, ucVhtNss, fgBFOn,
+						  pRaCfg->force_one_tx_stream);
 			nsts = get_nsts_by_mcs(mode, mcs, stbc, ucVhtNss);
-			rate[ucIndex] = tx_rate_to_tmi_rate(mode,
-												mcs,
-												nsts,
-												stbc,
-												preamble);
+			rate[ucIndex] = tx_rate_to_tmi_rate(mode, mcs, nsts,
+							    stbc, preamble);
 			rate[ucIndex] &= 0xfff;
 
 			if (CurrRateIdx == DownRateIdx)
@@ -1189,25 +1209,25 @@ MtAsicMcsLutUpdateCore(
 				CurrRateIdx = DownRateIdx;
 		}
 	} else
-		rate[1] = rate[2] = rate[3] = rate[4] = rate[5] = rate[6] = rate[7] = rate[0];
+		rate[1] = rate[2] = rate[3] = rate[4] = rate[5] = rate[6] =
+			rate[7] = rate[0];
 
-	MtAsicTxCapAndRateTableUpdate(pAd, pRaEntry->ucWcid, &pRaEntry->TxPhyCfg, rate, fgSpeEn);
-	MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s():WCID=%d\n",
-			 __func__, pRaEntry->ucWcid));
+	MtAsicTxCapAndRateTableUpdate(pAd, pRaEntry->ucWcid,
+				      &pRaEntry->TxPhyCfg, rate, fgSpeEn);
 	MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("\tCurTxRateIdx=%d, Mode/BW/MCS/STBC/LDPC/SGI=%d/%d/%d/%d/%d/%d\n\n",
-			  pRaInternal->ucCurrTxRateIndex,
-			  pRaEntry->TxPhyCfg.MODE,
-			  pRaEntry->TxPhyCfg.BW,
-			  pRaEntry->TxPhyCfg.MCS,
-			  pRaEntry->TxPhyCfg.STBC,
-			  pRaEntry->TxPhyCfg.ldpc,
-			  pRaEntry->TxPhyCfg.ShortGI));
+		 ("%s():WCID=%d\n", __func__, pRaEntry->ucWcid));
+	MTWF_LOG(
+		DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("\tCurTxRateIdx=%d, Mode/BW/MCS/STBC/LDPC/SGI=%d/%d/%d/%d/%d/%d\n\n",
+		 pRaInternal->ucCurrTxRateIndex, pRaEntry->TxPhyCfg.MODE,
+		 pRaEntry->TxPhyCfg.BW, pRaEntry->TxPhyCfg.MCS,
+		 pRaEntry->TxPhyCfg.STBC, pRaEntry->TxPhyCfg.ldpc,
+		 pRaEntry->TxPhyCfg.ShortGI));
 }
 #endif /* NEW_RATE_ADAPT_SUPPORT */
 
-
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 /*----------------------------------------------------------------------------*/
 /*!
  * \brief     set tx rate table in wtbl2 by TxPhyCfg
@@ -1219,13 +1239,10 @@ MtAsicMcsLutUpdateCore(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-MtAsicMcsLutUpdateCoreAGBS(
-	IN PRTMP_ADAPTER pAd,
-	IN P_RA_ENTRY_INFO_T pRaEntry,
-	IN P_RA_COMMON_INFO_T pRaCfg,
-	IN P_RA_INTERNAL_INFO_T pRaInternal
-)
+VOID MtAsicMcsLutUpdateCoreAGBS(IN PRTMP_ADAPTER pAd,
+				IN P_RA_ENTRY_INFO_T pRaEntry,
+				IN P_RA_COMMON_INFO_T pRaCfg,
+				IN P_RA_INTERNAL_INFO_T pRaInternal)
 {
 	RA_AGBS_TABLE_ENTRY *pTxRate;
 	UINT_32 rate[8];
@@ -1240,17 +1257,17 @@ MtAsicMcsLutUpdateCoreAGBS(
 		preamble = LONG_PREAMBLE;
 
 	stbc = raStbcSettingCheck(pRaEntry->TxPhyCfg.STBC,
-							  pRaEntry->TxPhyCfg.MODE,
-							  pRaEntry->TxPhyCfg.MCS,
-							  pRaEntry->TxPhyCfg.VhtNss,
-							  fgBFOn,
-							  pRaCfg->force_one_tx_stream);
-	nsts = get_nsts_by_mcs(pRaEntry->TxPhyCfg.MODE, pRaEntry->TxPhyCfg.MCS, stbc, pRaEntry->TxPhyCfg.VhtNss);
+				  pRaEntry->TxPhyCfg.MODE,
+				  pRaEntry->TxPhyCfg.MCS,
+				  pRaEntry->TxPhyCfg.VhtNss, fgBFOn,
+				  pRaCfg->force_one_tx_stream);
+	nsts = get_nsts_by_mcs(pRaEntry->TxPhyCfg.MODE, pRaEntry->TxPhyCfg.MCS,
+			       stbc, pRaEntry->TxPhyCfg.VhtNss);
 
-	if (((pRaEntry->ucMmpsMode != MMPS_STATIC) || (pRaEntry->TxPhyCfg.MODE < MODE_HTMIX))
-		&& (pRaCfg->force_one_tx_stream == FALSE)
-		&& (pRaCfg->ucForceTxStream == 0)
-	   ) {
+	if (((pRaEntry->ucMmpsMode != MMPS_STATIC) ||
+	     (pRaEntry->TxPhyCfg.MODE < MODE_HTMIX)) &&
+	    (pRaCfg->force_one_tx_stream == FALSE) &&
+	    (pRaCfg->ucForceTxStream == 0)) {
 		if (fgBFOn) {
 		} else {
 			UINT_8 ucMcs = MCS_7;
@@ -1258,12 +1275,15 @@ MtAsicMcsLutUpdateCoreAGBS(
 			if (pRaEntry->TxPhyCfg.MODE < MODE_HTMIX)
 				fgSpeEn = TRUE;
 			else {
-				if ((pRaEntry->TxPhyCfg.MODE == MODE_HTMIX) || (pRaEntry->TxPhyCfg.MODE == MODE_HTGREENFIELD))
+				if ((pRaEntry->TxPhyCfg.MODE == MODE_HTMIX) ||
+				    (pRaEntry->TxPhyCfg.MODE ==
+				     MODE_HTGREENFIELD))
 					ucMcs = pRaEntry->TxPhyCfg.MCS & 0x7;
 				else if (pRaEntry->TxPhyCfg.MODE == MODE_VHT)
 					ucMcs = pRaEntry->TxPhyCfg.MCS;
 
-				if ((pRaEntry->TxPhyCfg.BW == BW_160) && (pRaEntry->TxPhyCfg.MODE == MODE_VHT)) {
+				if ((pRaEntry->TxPhyCfg.BW == BW_160) &&
+				    (pRaEntry->TxPhyCfg.MODE == MODE_VHT)) {
 					if ((nsts == 1) && (ucMcs <= MCS_6))
 						fgSpeEn = TRUE;
 				} else {
@@ -1280,10 +1300,8 @@ MtAsicMcsLutUpdateCoreAGBS(
 	}
 
 	rate[0] = tx_rate_to_tmi_rate(pRaEntry->TxPhyCfg.MODE,
-								  pRaEntry->TxPhyCfg.MCS,
-								  nsts,
-								  stbc,
-								  preamble);
+				      pRaEntry->TxPhyCfg.MCS, nsts, stbc,
+				      preamble);
 	rate[0] &= 0xfff;
 
 	if (pRaEntry->fgAutoTxRateSwitch == TRUE) {
@@ -1295,17 +1313,19 @@ MtAsicMcsLutUpdateCoreAGBS(
 		if (pRaEntry->TxPhyCfg.MODE == MODE_CCK) {
 			pu2FallbackTable = HwFallbackTable11B;
 			u4TableSize = sizeof(HwFallbackTable11B) / 2;
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11B\n"));
+			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("HwFallbackTable11B\n"));
 		} else if (pRaInternal->pucTable == RateSwitchTableAGBS11BG) {
 			pu2FallbackTable = HwFallbackTable11BG;
 			u4TableSize = sizeof(HwFallbackTable11BG) / 2;
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11BG\n"));
+			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("HwFallbackTable11BG\n"));
 		} else if (pRaEntry->TxPhyCfg.MODE == MODE_OFDM) {
 			pu2FallbackTable = HwFallbackTable11G;
 			u4TableSize = sizeof(HwFallbackTable11G) / 2;
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11G\n"));
+			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("HwFallbackTable11G\n"));
 		}
-
 #ifdef DOT11_N_SUPPORT
 		else if (AGBS_HT_TABLE(pRaInternal->pucTable)) {
 			UINT_8 ucHtNss = 1;
@@ -1315,101 +1335,156 @@ MtAsicMcsLutUpdateCoreAGBS(
 			else
 				ucHtNss += (pRaEntry->TxPhyCfg.MCS >> 3);
 
-			if ((pRaEntry->ucChannel <= 14) && (pRaEntry->ucSupportRateMode & (SUPPORT_CCK_MODE))) {
+			if ((pRaEntry->ucChannel <= 14) &&
+			    (pRaEntry->ucSupportRateMode &
+			     (SUPPORT_CCK_MODE))) {
 				switch (ucHtNss) {
 				case 1:
-					pu2FallbackTable = HwFallbackTableBGN1SS;
-					u4TableSize = sizeof(HwFallbackTableBGN1SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableBGN1SS\n"));
+					pu2FallbackTable =
+						HwFallbackTableBGN1SS;
+					u4TableSize =
+						sizeof(HwFallbackTableBGN1SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTableBGN1SS\n"));
 					break;
 
 				case 2:
-					pu2FallbackTable = HwFallbackTableBGN2SS;
-					u4TableSize = sizeof(HwFallbackTableBGN2SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableBGN2SS\n"));
+					pu2FallbackTable =
+						HwFallbackTableBGN2SS;
+					u4TableSize =
+						sizeof(HwFallbackTableBGN2SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTableBGN2SS\n"));
 					break;
 
 				case 3:
-					pu2FallbackTable = HwFallbackTableBGN3SS;
-					u4TableSize = sizeof(HwFallbackTableBGN3SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableBGN3SS\n"));
+					pu2FallbackTable =
+						HwFallbackTableBGN3SS;
+					u4TableSize =
+						sizeof(HwFallbackTableBGN3SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTableBGN3SS\n"));
 					break;
 
 				case 4:
-					pu2FallbackTable = HwFallbackTableBGN4SS;
-					u4TableSize = sizeof(HwFallbackTableBGN4SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableBGN4SS\n"));
+					pu2FallbackTable =
+						HwFallbackTableBGN4SS;
+					u4TableSize =
+						sizeof(HwFallbackTableBGN4SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTableBGN4SS\n"));
 					break;
 
 				default:
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Unknow Nss%d!\n", ucHtNss));
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_ERROR,
+						 ("Unknow Nss%d!\n", ucHtNss));
 					break;
 				}
 			} else {
 				switch (ucHtNss) {
 				case 1:
-					pu2FallbackTable = HwFallbackTable11N1SS;
-					u4TableSize = sizeof(HwFallbackTable11N1SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11N1SS\n"));
+					pu2FallbackTable =
+						HwFallbackTable11N1SS;
+					u4TableSize =
+						sizeof(HwFallbackTable11N1SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTable11N1SS\n"));
 					break;
 
 				case 2:
-					pu2FallbackTable = HwFallbackTable11N2SS;
-					u4TableSize = sizeof(HwFallbackTable11N2SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11N2SS\n"));
+					pu2FallbackTable =
+						HwFallbackTable11N2SS;
+					u4TableSize =
+						sizeof(HwFallbackTable11N2SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTable11N2SS\n"));
 					break;
 
 				case 3:
-					pu2FallbackTable = HwFallbackTable11N3SS;
-					u4TableSize = sizeof(HwFallbackTable11N3SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11N3SS\n"));
+					pu2FallbackTable =
+						HwFallbackTable11N3SS;
+					u4TableSize =
+						sizeof(HwFallbackTable11N3SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTable11N3SS\n"));
 					break;
 
 				case 4:
-					pu2FallbackTable = HwFallbackTable11N4SS;
-					u4TableSize = sizeof(HwFallbackTable11N4SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTable11N4SS\n"));
+					pu2FallbackTable =
+						HwFallbackTable11N4SS;
+					u4TableSize =
+						sizeof(HwFallbackTable11N4SS) /
+						2;
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("HwFallbackTable11N4SS\n"));
 					break;
 
 				default:
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Unknow Nss%d!\n", ucHtNss));
+					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+						 DBG_LVL_ERROR,
+						 ("Unknow Nss%d!\n", ucHtNss));
 					break;
 				}
 			}
 		}
-
 #ifdef DOT11_VHT_AC
 		else if (AGBS_VHT_TABLE(pRaInternal->pucTable)) {
 			switch (pRaEntry->TxPhyCfg.VhtNss) {
 			case 1:
 				pu2FallbackTable = HwFallbackTableVht1SS;
 				u4TableSize = sizeof(HwFallbackTableVht1SS) / 2;
-				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableVht1SS\n"));
+				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE,
+					 ("HwFallbackTableVht1SS\n"));
 				break;
 
 			case 2:
 				pu2FallbackTable = HwFallbackTableVht2SS;
 				u4TableSize = sizeof(HwFallbackTableVht2SS) / 2;
-				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableVht2SS\n"));
+				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE,
+					 ("HwFallbackTableVht2SS\n"));
 				break;
 
-			case 3:
-				{
-					pu2FallbackTable = HwFallbackTableVht3SS;
-					u4TableSize = sizeof(HwFallbackTableVht3SS) / 2;
-					MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableVht3SS\n"));
-				}
+			case 3: {
+				pu2FallbackTable = HwFallbackTableVht3SS;
+				u4TableSize = sizeof(HwFallbackTableVht3SS) / 2;
+				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE,
+					 ("HwFallbackTableVht3SS\n"));
+			}
 
-				break;
+			break;
 
 			case 4:
 				pu2FallbackTable = HwFallbackTableVht4SS;
 				u4TableSize = sizeof(HwFallbackTableVht4SS) / 2;
-				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("HwFallbackTableVht4SS\n"));
+				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE,
+					 ("HwFallbackTableVht4SS\n"));
 				break;
 
 			default:
-				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Unknow Nss%d!\n", pRaEntry->TxPhyCfg.VhtNss));
+				MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("Unknow Nss%d!\n",
+					  pRaEntry->TxPhyCfg.VhtNss));
 				break;
 			}
 		}
@@ -1421,10 +1496,14 @@ MtAsicMcsLutUpdateCoreAGBS(
 			for (ucIndex = 0; ucIndex < u4TableSize; ucIndex += 8) {
 				union RA_RATE_CODE rInitialRate;
 
-				rInitialRate.word = *(pu2FallbackTable + ucIndex);
+				rInitialRate.word =
+					*(pu2FallbackTable + ucIndex);
 
-				if ((rInitialRate.field.mcs == (rate[0] & TMI_TX_RATE_MASK_MCS)) &&
-					(rInitialRate.field.mode == ((rate[0] >> TMI_TX_RATE_BIT_MODE) & TMI_TX_RATE_MASK_MODE))) {
+				if ((rInitialRate.field.mcs ==
+				     (rate[0] & TMI_TX_RATE_MASK_MCS)) &&
+				    (rInitialRate.field.mode ==
+				     ((rate[0] >> TMI_TX_RATE_BIT_MODE) &
+				      TMI_TX_RATE_MASK_MODE))) {
 					fgFound = TRUE;
 					break;
 				}
@@ -1435,10 +1514,15 @@ MtAsicMcsLutUpdateCoreAGBS(
 				union RA_RATE_CODE rRateCode;
 
 				for (ucIdx = 1; ucIdx < 8; ucIdx++) {
-					rRateCode.word = *(pu2FallbackTable + ucIndex + ucIdx);
+					rRateCode.word = *(pu2FallbackTable +
+							   ucIndex + ucIdx);
 
-					if (((pRaEntry->TxPhyCfg.MODE == MODE_HTMIX) || (pRaEntry->TxPhyCfg.MODE == MODE_VHT))
-						&& stbc && (rRateCode.field.nsts == 0)) {
+					if (((pRaEntry->TxPhyCfg.MODE ==
+					      MODE_HTMIX) ||
+					     (pRaEntry->TxPhyCfg.MODE ==
+					      MODE_VHT)) &&
+					    stbc &&
+					    (rRateCode.field.nsts == 0)) {
 						rRateCode.field.nsts = 1;
 						rRateCode.field.stbc = 1;
 					}
@@ -1449,27 +1533,30 @@ MtAsicMcsLutUpdateCoreAGBS(
 		}
 
 		if (!fgFound) {
-			rate[1] = rate[2] = rate[3] = rate[4] = rate[5] = rate[6] = rate[7] = rate[0];
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Cannot find fallback table!\n"));
+			rate[1] = rate[2] = rate[3] = rate[4] = rate[5] =
+				rate[6] = rate[7] = rate[0];
+			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("Cannot find fallback table!\n"));
 		}
 
 		/* Set CBRN */
-		pTxRate = RA_AGBS_ENTRY(pRaInternal->pucTable, pRaInternal->ucCurrTxRateIndex);
+		pTxRate = RA_AGBS_ENTRY(pRaInternal->pucTable,
+					pRaInternal->ucCurrTxRateIndex);
 		uc_cbrn = pTxRate->CBRN;
 	} else
-		rate[1] = rate[2] = rate[3] = rate[4] = rate[5] = rate[6] = rate[7] = rate[0];
+		rate[1] = rate[2] = rate[3] = rate[4] = rate[5] = rate[6] =
+			rate[7] = rate[0];
 
-	MtAsicTxCapAndRateTableUpdate(pAd, pRaEntry->ucWcid, &pRaEntry->TxPhyCfg, rate, fgSpeEn);
-	MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("DRS: WCID=%d, %s - CurTxRateIdx=%d, Mode/BW/MCS/VHT_NSS/STBC/LDPC/SGI=%d/%d/%d/%d/%d/%d/%d\n",
-			 pRaEntry->ucWcid, __func__,
-			 pRaInternal->ucCurrTxRateIndex,
-			 pRaEntry->TxPhyCfg.MODE,
-			 pRaEntry->TxPhyCfg.BW,
-			 pRaEntry->TxPhyCfg.MCS,
-			 pRaEntry->TxPhyCfg.VhtNss,
-			 pRaEntry->TxPhyCfg.STBC,
-			 pRaEntry->TxPhyCfg.ldpc,
-			 pRaEntry->TxPhyCfg.ShortGI));
+	MtAsicTxCapAndRateTableUpdate(pAd, pRaEntry->ucWcid,
+				      &pRaEntry->TxPhyCfg, rate, fgSpeEn);
+	MTWF_LOG(
+		DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("DRS: WCID=%d, %s - CurTxRateIdx=%d, Mode/BW/MCS/VHT_NSS/STBC/LDPC/SGI=%d/%d/%d/%d/%d/%d/%d\n",
+		 pRaEntry->ucWcid, __func__, pRaInternal->ucCurrTxRateIndex,
+		 pRaEntry->TxPhyCfg.MODE, pRaEntry->TxPhyCfg.BW,
+		 pRaEntry->TxPhyCfg.MCS, pRaEntry->TxPhyCfg.VhtNss,
+		 pRaEntry->TxPhyCfg.STBC, pRaEntry->TxPhyCfg.ldpc,
+		 pRaEntry->TxPhyCfg.ShortGI));
 }
 #endif /* RATE_ADAPT_AGBS_SUPPORT */
 #endif /* MCS_LUT_SUPPORT */

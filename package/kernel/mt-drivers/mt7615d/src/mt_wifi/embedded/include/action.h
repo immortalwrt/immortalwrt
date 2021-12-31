@@ -26,69 +26,41 @@
 	Name		Date			Modification logs
 */
 
-#ifndef	__ACTION_H__
-#define	__ACTION_H__
-
+#ifndef __ACTION_H__
+#define __ACTION_H__
 
 struct _RTMP_ADAPTER;
 
+VOID MlmeQOSAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
+VOID MlmeDLSAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-VOID MlmeQOSAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+VOID MlmeInvalidAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-VOID MlmeDLSAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+VOID PeerRMAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-VOID MlmeInvalidAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+VOID PeerQOSAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-VOID PeerRMAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+VOID peer_addba_req_action(PRTMP_ADAPTER pAd, MLME_QUEUE_ELEM *Elem);
 
-VOID PeerQOSAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+VOID peer_addba_rsp_action(PRTMP_ADAPTER pAd, MLME_QUEUE_ELEM *Elem);
 
-VOID peer_addba_req_action(
-	PRTMP_ADAPTER pAd,
-	MLME_QUEUE_ELEM *Elem);
+VOID peer_delba_action(PRTMP_ADAPTER pAd, MLME_QUEUE_ELEM *Elem);
 
-VOID peer_addba_rsp_action(
-	PRTMP_ADAPTER pAd,
-	MLME_QUEUE_ELEM *Elem);
+VOID PeerBAAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
-VOID peer_delba_action(
-	PRTMP_ADAPTER pAd,
-	MLME_QUEUE_ELEM *Elem);
-
-VOID PeerBAAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM *Elem);
-
-VOID PeerHTAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM *Elem);
+VOID PeerHTAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
 #ifdef DOT11_VHT_AC
-VOID PeerVHTAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM *Elem);
+VOID PeerVHTAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 #endif /* DOT11_VHT_AC */
 
-VOID PeerPublicAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM *Elem);
+VOID PeerPublicAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
+VOID PeerProtectedDualAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 
 #ifdef CONFIG_AP_SUPPORT
-VOID ApPublicAction(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM *Elem);
+VOID ApPublicAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 #endif /* CONFIG_AP_SUPPORT */
 
 #endif /* __ACTION_H__ */

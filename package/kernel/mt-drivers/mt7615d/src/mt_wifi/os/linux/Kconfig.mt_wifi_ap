@@ -15,6 +15,60 @@ config WIFI_EAP_FEATURE
     depends on WIFI_DRIVER
 	default y
 
+config VLAN_SUPPORT
+	bool "VLAN Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MLME_MULTI_QUEUE_SUPPORT
+	bool "Mlme Multi Queue Support"
+	default n
+
+config TXRX_STAT_SUPPORT
+	bool "TxRx Stats Support"
+	depends on WIFI_DRIVER && WIFI_EAP_FEATURE
+	default y
+
+config SNIFFER_SUPPORT
+	bool "SNIFFER"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config ANTENNA_CONTROL_SUPPORT
+	bool "Antenna Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MGMT_TXPWR_CTRL
+	bool "Mgmt TxPower Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config CHUTIL_SUPPORT
+	bool "Channel Utilization Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config NF_SUPPORT
+	bool "Noise Floor Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config RA_PHY_RATE_SUPPORT
+	bool "RA PHY RATE Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config AMPDU_CONF_SUPPORT
+	bool "AMPDU Config retry & agglimit Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config ACK_CTS_TIMEOUT_SUPPORT
+	bool "ACK CTS Timeout cck & ofdm Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
 config MBSS_SUPPORT
 	bool "MBSSID"
 	depends on MT_AP_SUPPORT
@@ -85,25 +139,33 @@ config MAP_SUPPORT
 	depends on MT_AP_SUPPORT
 	select MBO_SUPPORT
 	default n
+
+config MAP_R2_VER_SUPPORT
+	bool "Multi-AP R2 version support"
+	depends on MAP_SUPPORT
+	default n
+
 config OFFCHANNEL_SCAN_FEATURE
         bool "Channel Quality Monitor"
         depends on MT_AP_SUPPORT
-        default n
+        default y
 
-config SNIFFER_SUPPORT
-	bool "SNIFFER"
-	depends on MT_AP_SUPPORT
-	default n
+config OCE_SUPPORT
+        bool "Optimized Connectivity Experience Support"
+        depends on MT_AP_SUPPORT
+        depends on CHIP_MT7615E
+        select WAPP_SUPPORT
+        default y
+
+config DPP_FEATURE
+        bool "DPP Support"
+        depends on MT_AP_SUPPORT
+	depends on WIFI_DRIVER
+        default n
 
 config ENTERPRISE_AP_SUPPORT
 	bool "Enterprise AP Support"
 	depends on MT_AP_SUPPORT
-	default n
-
-config VLAN_SUPPORT
-	bool "VLAN Support"
-	depends on MT_AP_SUPPORT
-	depends on ENTERPRISE_AP_SUPPORT
 	default n
 
 config DYNAMIC_VLAN_SUPPORT
@@ -243,11 +305,6 @@ config GREENAP_SUPPORT
 	bool "GreenAP Support"
 	depends on MT_AP_SUPPORT
 	default y
-
-config TXRX_STAT_SUPPORT
-	bool "TxRx Stats Support"
-	depends on WIFI_DRIVER
-	default n
 
 config PCIE_ASPM_DYM_CTRL_SUPPORT
 	bool "Pcie Aspm Dynamic Control Support"

@@ -48,7 +48,7 @@ static void free_meminfo(void)
 
 	if ((memalctotal != 0) || (pktalctotal != 0)) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Error: Memory leak!!\n"));
+			 ("Error: Memory leak!!\n"));
 		ASSERT(0);
 	}
 
@@ -75,13 +75,15 @@ static int wbsys_probe(struct platform_device *pdev)
 	/*resource allocate*/
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	dev_irq = platform_get_irq(pdev, 0);
-	base_addr = (unsigned long)devm_ioremap(&pdev->dev, res->start, resource_size(res));
+	base_addr = (unsigned long)devm_ioremap(&pdev->dev, res->start,
+						resource_size(res));
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s(): irq=%d,base_addr=%lx\n", __func__, dev_irq, base_addr));
+		 ("%s(): irq=%d,base_addr=%lx\n", __func__, dev_irq,
+		  base_addr));
 
 	if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))) {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("set DMA mask failed!errno=%d\n", rv));
+			 ("set DMA mask failed!errno=%d\n", rv));
 		goto err_out;
 	}
 
@@ -94,7 +96,8 @@ static int wbsys_probe(struct platform_device *pdev)
 	os_alloc_mem(NULL, (UCHAR **)&handle, sizeof(struct os_cookie));
 
 	if (!handle) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Allocate memory for os_cookie failed!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("Allocate memory for os_cookie failed!\n"));
 		goto err_out;
 	}
 
@@ -106,7 +109,8 @@ static int wbsys_probe(struct platform_device *pdev)
 	rv = RTMPAllocAdapterBlock(handle, (VOID **)&pAd);
 
 	if (rv != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, (" RTMPAllocAdapterBlock !=  NDIS_STATUS_SUCCESS\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 (" RTMPAllocAdapterBlock !=  NDIS_STATUS_SUCCESS\n"));
 		os_free_mem(handle);
 		goto err_out;
 	}
@@ -138,13 +142,15 @@ static int wbsys_probe(struct platform_device *pdev)
 	rv = RtmpOSNetDevAttach(pAd->OpMode, net_dev, &netDevHook);
 
 	if (rv) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("failed to call RtmpOSNetDevAttach(), rv=%d!\n", rv));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("failed to call RtmpOSNetDevAttach(), rv=%d!\n", rv));
 		goto err_out_free_netdev;
 	}
 
 	wl_proc_init();
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("%s: at CSR addr 0x%lx, IRQ %ld.\n",
-			 net_dev->name, (ULONG)base_addr, (long int)net_dev->irq));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("%s: at CSR addr 0x%lx, IRQ %ld.\n", net_dev->name,
+		  (ULONG)base_addr, (long int)net_dev->irq));
 	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<=== wifi probe\n"));
 #if defined(CONFIG_RA_CLASSIFIER) && (!defined(CONFIG_RA_CLASSIFIER_MODULE))
 	proc_ptr = proc_ralink_wl_video;
@@ -208,10 +214,12 @@ static int wbsys_suspend(struct platform_device *pdev, pm_message_t state)
 	struct net_device *net_dev = platform_get_drvdata(pdev);
 	VOID *pAd = NULL;
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("===>%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("===>%s()\n", __func__));
 
 	if (net_dev == NULL)
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("net_dev == NULL!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("net_dev == NULL!\n"));
 	else {
 		UINT32 IfNum;
 
@@ -221,7 +229,8 @@ static int wbsys_suspend(struct platform_device *pdev, pm_message_t state)
 		/* so Linux will call suspend/resume function once */
 		RTMP_DRIVER_VIRTUAL_INF_NUM_GET(pAd, &IfNum);
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s::IfNum=%d\n", __func__, IfNum));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s::IfNum=%d\n", __func__, IfNum));
 
 		if (IfNum > 0) {
 			/* avoid users do suspend after interface is down */
@@ -236,7 +245,8 @@ static int wbsys_suspend(struct platform_device *pdev, pm_message_t state)
 		}
 	}
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("<===%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("<===%s()\n", __func__));
 	return retval;
 }
 
@@ -245,10 +255,12 @@ static int wbsys_resume(struct platform_device *pdev)
 	struct net_device *net_dev = platform_get_drvdata(pdev);
 	VOID *pAd = NULL;
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("===>%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("===>%s()\n", __func__));
 
 	if (net_dev == NULL)
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("net_dev == NULL!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("net_dev == NULL!\n"));
 	else
 		GET_PAD_FROM_NET_DEV(pAd, net_dev);
 
@@ -274,7 +286,8 @@ static int wbsys_resume(struct platform_device *pdev)
 		}
 	}
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("<=== %s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("<=== %s()\n", __func__));
 	return 0;
 }
 
@@ -309,7 +322,6 @@ int __init wbsys_module_init(void)
 	return ret;
 }
 
-
 VOID __exit wbsys_module_exit(void)
 {
 	wbsys_dev_release(&wbsys_dev);
@@ -325,4 +337,3 @@ MODULE_SUPPORTED_DEVICE("mtk wbsys platform driver");
 #endif
 
 #endif /* RTMP_RBUS_SUPPORT */
-
