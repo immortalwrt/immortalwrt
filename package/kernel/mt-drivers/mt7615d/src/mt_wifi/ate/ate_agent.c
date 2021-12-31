@@ -305,10 +305,7 @@ INT32 SetATEMACTRx(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	struct _ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	INT32 Ret = 0;
 	UCHAR control_band_idx = ATECtrl->control_band_idx;
-	enum
-	{
-		param_num = 3u
-	};
+	enum { param_num = 3u };
 	UINT32 input[param_num];
 	CHAR *value;
 	INT i;
@@ -3295,9 +3292,8 @@ err_dump_usage:
 	MTWF_LOG(
 		DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
 		("\t\tbw: Peer's bandwidth capability, in range to 20/40/80/160\n"));
-	MTWF_LOG(
-		DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("\t\t\tExample=> bw:40	indicate peer can support BW_40\n"));
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("\t\t\tExample=> bw:40	indicate peer can support BW_40\n"));
 	MTWF_LOG(
 		DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
 		("\t\tnss: Peer's capability for Spatial stream which can tx/rx, in range of 1~4 with restriction of Software/Hardware cap.\n"));
