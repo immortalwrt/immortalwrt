@@ -2226,7 +2226,7 @@ static VOID ext_event_get_igmp_multicast_table(RTMP_ADAPTER *pAd, UINT8 *data,
 	if (len < sizeof(EXT_EVENT_ID_IGMP_MULTICAST_SET_GET)) {
 		MTWF_LOG(
 			DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s: Cmd Event ength %u is less than required size %lu\n",
+			("%s: Cmd Event ength %u is less than required size %u\n",
 			 __func__, len,
 			 sizeof(EXT_EVENT_ID_IGMP_MULTICAST_SET_GET)));
 		return;

@@ -112,9 +112,9 @@ int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf);
 int mt_mtd_read_nm_wifi(char *name, loff_t from, size_t len, u_char *buf);
 
 #define flash_read(_ctrl, _ptr, _offset, _len)                                 \
-	mt_mtd_read_nm_wifi("Factory", _offset, (size_t)_len, _ptr)
+	mt_mtd_read_nm_wifi("factory", _offset, (size_t)_len, _ptr)
 #define flash_write(_ctrl, _ptr, _offset, _len)                                \
-	mt_mtd_write_nm_wifi("Factory", _offset, (size_t)_len, _ptr)
+	mt_mtd_write_nm_wifi("factory", _offset, (size_t)_len, _ptr)
 
 #else
 /*
@@ -126,9 +126,9 @@ extern int ra_mtd_write_nm(char *name, loff_t to, size_t len,
 extern int ra_mtd_read_nm(char *name, loff_t from, size_t len, u_char *buf);
 
 #define flash_read(_ctrl, _ptr, _offset, _len)                                 \
-	ra_mtd_read_nm("Factory", _offset, (size_t)_len, _ptr)
+	ra_mtd_read_nm("factory", _offset&0xFFFF, (size_t)_len, _ptr)
 #define flash_write(_ctrl, _ptr, _offset, _len)                                \
-	ra_mtd_write_nm("Factory", _offset, (size_t)_len, _ptr)
+	ra_mtd_write_nm("factory", _offset&0xFFFF, (size_t)_len, _ptr)
 
 #endif /*CONFIG_WIFI_MTD*/
 #endif /*RA_MTD_RW_BY_NUM*/

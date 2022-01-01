@@ -1203,7 +1203,11 @@ VOID APPeerBeaconAction(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 #ifdef VENDOR10_CUSTOM_RSSI_FEATURE
 	POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
 	INT32 ifIndex = pObj->ioctl_if;
+#ifdef OCE_SUPPORT
+	wdev = NULL;
+#else
 	struct wifi_dev *wdev = NULL;
+#endif
 
 	if ((pObj->ioctl_if_type == INT_APCLI) && (ifIndex <= MAX_APCLI_NUM))
 		wdev = &pAd->ApCfg.MBSSID[ifIndex].wdev;

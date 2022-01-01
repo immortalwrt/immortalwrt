@@ -209,6 +209,7 @@ static VOID FT_ReqActionParse(IN PRTMP_ADAPTER pAd, IN UINT16 Len,
 				pFtInfo->RicInfo.Len = ((UCHAR *)Ptr + Len) -
 						       (UCHAR *)eid_ptr + 1;
 			}
+			/* FALLTHRU */
 
 		case IE_FT_RIC_DESCRIPTOR:
 			if ((pFtInfo->RicInfo.RicIEsLen + eid_ptr->Len + 2) <

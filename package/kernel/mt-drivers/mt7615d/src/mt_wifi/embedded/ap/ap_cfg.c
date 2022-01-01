@@ -8485,10 +8485,13 @@ INT RTMPAPQueryInformation(IN RTMP_ADAPTER *pAd,
 		switch (wlan_operate_get_rx_stream(wdev)) {
 		case 4:
 			drv_vht_op.basic_mcs_set.mcs_ss4 = cap->max_vht_mcs;
+			/* FALLTHRU */
 		case 3:
 			drv_vht_op.basic_mcs_set.mcs_ss3 = cap->max_vht_mcs;
+			/* FALLTHRU */
 		case 2:
 			drv_vht_op.basic_mcs_set.mcs_ss2 = cap->max_vht_mcs;
+			/* FALLTHRU */
 		case 1:
 			drv_vht_op.basic_mcs_set.mcs_ss1 = cap->max_vht_mcs;
 			break;

@@ -773,36 +773,12 @@ ifeq ($(PLATFORM),INTELP6)
 	mkdir -p $(BUILD_DEST)/etc/
 	mkdir -p $(BUILD_DEST)/etc/Wireless/
 	mkdir -p $(BUILD_DEST)/etc/Wireless/7615AP/
-	#cp $(RT28xx_EMBEDDED_DIR)/conf/mt76xx_5.dat $(BUILD_DEST)/etc/Wireless/7615AP/ # ARRIS REMOVE
-	#cp $(RT28xx_EMBEDDED_DIR)/conf/mt76xx_24.dat $(BUILD_DEST)/etc/Wireless/7615AP/ #ARRIS REMOVE
-	#cp $(RT28xx_EMBEDDED_DIR)/RT30xxEEPROM.bin $(BUILD_DEST)/etc/Wireless/7615AP/
-	cp $(RT28xx_DIR)/eeprom/MT7615E1_EEPROM.bin $(BUILD_DEST)/etc/Wireless/7615AP/MT7615_EEPROM.bin # ARRIS MOD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC.dat $(BUILD_DEST)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_ETSI.dat $(BUILD_DEST)/etc/Wireless/7615AP/ #ARRIS ADD
-	chmod 777 $(BUILD_DEST)/etc/Wireless/7615AP/ -Rf
+	chmod 755 $(BUILD_DEST)/etc/Wireless/7615AP/ -Rf
 	rm -rf $(FSROOT)/etc/Wireless/7615AP/
 	mkdir -p $(FSROOT)/etc/
 	mkdir -p $(FSROOT)/etc/Wireless/
 	mkdir -p $(FSROOT)/etc/Wireless/7615AP/
-	#cp $(RT28xx_EMBEDDED_DIR)/conf/mt76xx_5.dat $(FSROOT)/etc/Wireless/7615AP/ #ARRIS REMOVE
-	#cp $(RT28xx_EMBEDDED_DIR)/conf/mt76xx_24.dat $(FSROOT)/etc/Wireless/7615AP/ #ARRIS REMOVE
-	#cp $(RT28xx_EMBEDDED_DIR)/RT30xxEEPROM.bin $(FSROOT)/etc/Wireless/7615AP/
-	cp $(RT28xx_DIR)/eeprom/MT7615E1_EEPROM.bin $(FSROOT)/etc/Wireless/7615AP/MT7615_EEPROM.bin # ARRIS MOD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_ETSI.dat $(FSROOT)/etc/Wireless/7615AP/ #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_BF_FCC_DF.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_BF_FCC_US.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_BF_FCC_DO.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_BF_FCC_MX.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_3_TxStream_DF.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_3_TxStream_US.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_3_TxStream_DO.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_3_TxStream_MX.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_DF.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_US.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_DO.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	cp $(RT28xx_DIR)/arris_patch/new/SingleSKU_FCC_MX.dat $(FSROOT)/etc/Wireless/7615AP/  #ARRIS ADD
-	chmod 777 $(BUILD_DEST)/etc/Wireless/7615AP -Rf
+	chmod 755 $(BUILD_DEST)/etc/Wireless/7615AP -Rf
 ifeq ($(RT28xx_MODE),AP)
 ifeq ($(PLATFORM),INTELP6)
 	install -d $(BUILD_DEST)/lib/modules/wifi/

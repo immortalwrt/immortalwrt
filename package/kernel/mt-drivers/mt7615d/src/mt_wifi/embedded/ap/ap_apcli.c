@@ -513,7 +513,9 @@ void ApCliCertEDCAAdjust(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 void V10ConverterModeStartStop(RTMP_ADAPTER *pAd, BOOLEAN BeaconStart)
 {
 	UCHAR idx = 0;
+#ifdef MULTI_INF_SUPPORT
 	UCHAR adIdx = 0;
+#endif /* MULTI_INF_SUPPORT */
 	RTMP_ADAPTER *pAdapter = pAd;
 
 #ifdef MULTI_INF_SUPPORT

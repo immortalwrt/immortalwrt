@@ -2178,11 +2178,12 @@ VOID ReceiveFTM(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 					&pMappingNode->tmr
 						 .tod, /* T3: TOD of FTM Initiator */
 					&pCurNode->PeerTOA); /* T4: TOA of FTM Reaponder */
-				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_FTM,
-					 DBG_LVL_WARN,
-					 ("   RTT: %d ns	(0x%02X 0x%04X)\n",
-					  RTT, pFtm->FollowUpDialogToken,
-					  pMappingNode->sn));
+				MTWF_LOG(
+					DBG_CAT_PROTO, CATPROTO_FTM,
+					DBG_LVL_WARN,
+					("   RTT: %d ns	(0x%02X 0x%04X)\n",
+					 RTT, pFtm->FollowUpDialogToken,
+					 pMappingNode->sn));
 				/* Dequeue pMappingNode */
 				{
 					PFTM_MAPPING pNode, pPrev;

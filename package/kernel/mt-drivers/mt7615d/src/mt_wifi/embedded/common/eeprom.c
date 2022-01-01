@@ -813,7 +813,8 @@ INT RtmpChipOpsEepromHook(RTMP_ADAPTER *pAd, INT infType, INT forceMode)
 	efuse_probe(pAd);
 #endif /* RTMP_EFUSE_SUPPORT */
 
-	/* rtmp_eeprom_of_platform(pAd);  //for MT7615, only use E2pAccessMode parameter to get eeprom type */
+	rtmp_eeprom_of_platform(
+		pAd); //for MT7615, only use E2pAccessMode parameter to get eeprom type
 
 	if (forceMode != E2P_NONE && forceMode < NUM_OF_E2P_MODE) {
 		e2p_type = forceMode;

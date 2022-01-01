@@ -3071,7 +3071,8 @@ static INT32 HQA_WriteBufferDone(PRTMP_ADAPTER pAd,
 		 ("%s\n", __func__));
 	memcpy((PUCHAR)&Value, (PUCHAR)&HqaCmdFrame->Data, 4);
 	Value = PKTL_TRAN_TO_HOST(Value);
-#if !defined(COMPOS_TESTMODE_WIN) /* 1Todo	Set_EepromBufferWriteBack_Proc */
+#if !defined(                                                                  \
+	COMPOS_TESTMODE_WIN) /* 1Todo	Set_EepromBufferWriteBack_Proc */
 
 	switch (Value) {
 	case E2P_EFUSE_MODE:

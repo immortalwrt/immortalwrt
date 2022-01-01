@@ -30,7 +30,6 @@
 
 int bin2h(char *infname, char *outfname, char *fw_name, const char *mode)
 {
-	int ret = 0;
 	FILE *infile, *outfile;
 	unsigned char c;
 	int i = 0;
@@ -86,6 +85,8 @@ int bin2h(char *infname, char *outfname, char *fw_name, const char *mode)
 	fputs("\n};\n", outfile);
 	fclose(infile);
 	fclose(outfile);
+
+	return 1;
 }
 
 int main(int argc, char *argv[])
@@ -105,8 +106,8 @@ int main(int argc, char *argv[])
 	char fw_name_e2[128], fw_name_e3[128];
 	char fw_name1[128];
 	char *rt28xxdir, *rt28xxbin_dir;
-	char *chipset, *token;
-	char *wow, *rt28xx_mode;
+	char *chipset;
+	char *rt28xx_mode;
 	char *fpga, *rx_cut_through;
 	int is_bin2h_fw = 0, is_bin2h_rom_patch = 0, is_bin2h_e2p = 0,
 	    is_bin2h_rom_patch_e2 = 0, is_bin2h_rom_patch_e3 = 0;
@@ -115,7 +116,6 @@ int main(int argc, char *argv[])
 	rt28xxdir = (char *)getenv("RT28xx_DIR");
 	rt28xxbin_dir = (char *)getenv("RT28xx_BIN_DIR");
 	chipset = (char *)getenv("CHIPSET");
-	wow = (char *)getenv("HAS_WOW_SUPPORT");
 	fpga = (char *)getenv("HAS_FPGA_MODE");
 	rx_cut_through = (char *)getenv("HAS_RX_CUT_THROUGH");
 	rt28xx_mode = (char *)getenv("RT28xx_MODE");
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_iPAiLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_iPAiLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_iPAiLNA");
-			strcat(ine2pname, "iPAiLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "iPAiLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "iPAiLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "iPAiLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, "mt7615_e2p_iPAiLNA.h");
@@ -328,7 +328,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_iPAeLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_iPAeLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_iPAeLNA");
-			strcat(ine2pname, "iPAeLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "iPAeLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "iPAeLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "iPAeLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, rt28xxdir);
@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_ePAeLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_ePAeLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_ePAeLNA");
-			strcat(ine2pname, "ePAeLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "ePAeLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "ePAeLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "ePAeLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, rt28xxdir);
@@ -380,7 +380,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_ePAiLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_ePAiLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_ePAiLNA");
-			strcat(ine2pname, "ePAiLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "ePAiLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "ePAiLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "ePAiLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, rt28xxdir);

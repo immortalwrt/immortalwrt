@@ -393,6 +393,7 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 		else
 #endif /* CONFIG_RA_PHY_RATE_SUPPORT */
 			ht_cap->MCSSet[3] = 0xff;
+		/* FALLTHRU */
 
 	case 3:
 #ifdef CONFIG_RA_PHY_RATE_SUPPORT
@@ -401,6 +402,7 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 		else
 #endif /* CONFIG_RA_PHY_RATE_SUPPORT */
 			ht_cap->MCSSet[2] = 0xff;
+		/* FALLTHRU */
 
 	case 2:
 #ifdef CONFIG_RA_PHY_RATE_SUPPORT
@@ -409,6 +411,7 @@ VOID RTMPSetHT(IN RTMP_ADAPTER *pAd, IN OID_SET_HT_PHYMODE *pHTPhyMode,
 		else
 #endif /* CONFIG_RA_PHY_RATE_SUPPORT */
 			ht_cap->MCSSet[1] = 0xff;
+		/* FALLTHRU */
 
 	case 1:
 	default:

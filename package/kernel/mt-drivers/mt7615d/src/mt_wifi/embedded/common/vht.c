@@ -716,10 +716,13 @@ INT build_vht_op_ie(RTMP_ADAPTER *pAd, UCHAR bw, UCHAR Channel,
 	switch (wlan_operate_get_rx_stream(wdev)) {
 	case 4:
 		vht_op.basic_mcs_set.mcs_ss4 = max_vht_mcs;
+		/* FALLTHRU */
 	case 3:
 		vht_op.basic_mcs_set.mcs_ss3 = max_vht_mcs;
+		/* FALLTHRU */
 	case 2:
 		vht_op.basic_mcs_set.mcs_ss2 = max_vht_mcs;
+		/* FALLTHRU */
 	case 1:
 		vht_op.basic_mcs_set.mcs_ss1 = max_vht_mcs;
 		break;
@@ -732,10 +735,13 @@ INT build_vht_op_ie(RTMP_ADAPTER *pAd, UCHAR bw, UCHAR Channel,
 		switch (wlan_operate_get_rx_stream(wdev)) {
 		case 4:
 			vht_op.basic_mcs_set.mcs_ss4 = VHT_MCS_CAP_8;
+			/* FALLTHRU */
 		case 3:
 			vht_op.basic_mcs_set.mcs_ss3 = VHT_MCS_CAP_9;
+			/* FALLTHRU */
 		case 2:
 			vht_op.basic_mcs_set.mcs_ss2 = VHT_MCS_CAP_8;
+			/* FALLTHRU */
 		case 1:
 			vht_op.basic_mcs_set.mcs_ss1 = VHT_MCS_CAP_8;
 			break;
@@ -749,10 +755,13 @@ INT build_vht_op_ie(RTMP_ADAPTER *pAd, UCHAR bw, UCHAR Channel,
 		switch (wlan_operate_get_rx_stream(wdev)) {
 		case 4:
 			vht_op.basic_mcs_set.mcs_ss4 = VHT_MCS_CAP_9;
+			/* FALLTHRU */
 		case 3:
 			vht_op.basic_mcs_set.mcs_ss3 = VHT_MCS_CAP_8;
+			/* FALLTHRU */
 		case 2:
 			vht_op.basic_mcs_set.mcs_ss2 = VHT_MCS_CAP_9;
+			/* FALLTHRU */
 		case 1:
 			vht_op.basic_mcs_set.mcs_ss1 = VHT_MCS_CAP_9;
 			break;

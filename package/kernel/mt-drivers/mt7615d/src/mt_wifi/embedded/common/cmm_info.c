@@ -14902,7 +14902,7 @@ VOID dscp_add_qos_map_pool_to_cr4(RTMP_ADAPTER *pAd, UINT8 PoolID)
 	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 		 ("%s  ===> Update Pool %d \n", __FUNCTION__, PoolID));
 	NdisCopyMemory(&HotspotInfoUpdateT.ucTableValid, pQosMapPool,
-		       sizeof(DSCP_QOS_MAP_TABLE_T));
+		       sizeof(P_DSCP_QOS_MAP_TABLE_T));
 	MtCmdHotspotInfoUpdate(pAd, HotspotInfoUpdateT);
 	RtmpusecDelay(100);
 }

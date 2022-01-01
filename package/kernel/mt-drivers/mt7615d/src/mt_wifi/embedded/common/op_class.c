@@ -59,7 +59,7 @@ typedef struct {
 #endif
 
 /*
-	Table E-1—Operating classes in the United States  (11N)
+	Table E-1ï¿½Operating classes in the United States  (11N)
 */
 REG_CLASS reg_class_fcc[] = {
 	{ 0, 0, 0, 0, { 0 }, 0 }, /* Invlid entry */
@@ -188,7 +188,7 @@ REG_CLASS reg_class_fcc[] = {
 };
 
 /*
-	Table E-2—Operating classes in Europe (11N)
+	Table E-2ï¿½Operating classes in Europe (11N)
 */
 REG_CLASS reg_class_ce[] = {
 	{ 0, 0, 0, 0, { 0 }, 0 }, /* Invlid entry */
@@ -270,7 +270,7 @@ REG_CLASS reg_class_ce[] = {
 };
 
 /*
-	Table E-3—Operating classes in Japan (11N)
+	Table E-3ï¿½Operating classes in Japan (11N)
 */
 REG_CLASS reg_class_jp[] = {
 	{ 0, 0, 0, 0, { 0 }, 0 }, /* Invlid entry */
@@ -552,7 +552,7 @@ REG_CLASS reg_class_cn[] = {
 
 #ifdef DOT11_VHT_AC
 /*
-	Table E-1—Operating classes in the United States  (11AC)
+	Table E-1ï¿½Operating classes in the United States  (11AC)
 */
 REG_CLASS_VHT reg_class_vht_fcc[] = {
 	{ 0, 0, 0, 0, { 0 }, { 0 }, 0 }, /* Invlid entry */
@@ -759,7 +759,7 @@ REG_CLASS_VHT reg_class_vht_fcc[] = {
 };
 
 /*
-	Table E-2—Operating classes in Europe (11AC)
+	Table E-2ï¿½Operating classes in Europe (11AC)
 */
 REG_CLASS_VHT reg_class_vht_ce[] = {
 	{ 0, 0, 0, 0, { 0 }, { 0 }, 0 }, /* Invlid entry */
@@ -903,7 +903,7 @@ REG_CLASS_VHT reg_class_vht_ce[] = {
 };
 
 /*
-	Table E-3—Operating classes in Japan (11N)
+	Table E-3ï¿½Operating classes in Japan (11N)
 */
 REG_CLASS_VHT reg_class_vht_jp[] = {
 	{ 0, 0, 0, 0, { 0 }, { 0 }, 0 }, /* Invlid entry */
@@ -1457,8 +1457,7 @@ int get_cac_mode(IN PRTMP_ADAPTER pAd, IN PDFS_PARAM pDfsParam,
 void wapp_get_cac_cap(IN RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 		      struct cac_capability_lib *cac_cap)
 {
-	UCHAR i = 0, j = 0, k = 0, l = 0, m = 0, dfs_ch = 0, channel = 0,
-	      band_idx = 0;
+	UCHAR i = 0, j = 0, k = 0, l = 0, m = 0, dfs_ch = 0, channel = 0;
 	PDFS_PARAM pDfsParam = &pAd->CommonCfg.DfsParameter;
 	BOOLEAN ret = FALSE;
 

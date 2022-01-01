@@ -620,7 +620,7 @@ INT rrm_send_beacon_req_param(IN PRTMP_ADAPTER pAd, IN p_bcn_req_info pBcnReq,
 
 	if (BcnReqLen != sizeof(*pBcnReq)) {
 		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_RRM, DBG_LVL_ERROR,
-			 ("%s, bcn req len check failed len1=%d, len2=%ld\n",
+			 ("%s, bcn req len check failed len1=%d, len2=%d\n",
 			  __func__, BcnReqLen, sizeof(*pBcnReq)));
 		return NDIS_STATUS_FAILURE;
 	}

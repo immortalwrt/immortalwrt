@@ -26,13 +26,11 @@
 
 #define MAX_SKUTABLE_NUM 20
 
-int dat2h(char *infname, char *outfname, char *varname, char *deffname,
-	  const char *mode)
+int data2h(char *infname, char *outfname, char *varname, char *deffname,
+	   const char *mode)
 {
-	int ret = 0;
 	FILE *infile, *outfile, *definfile;
 	unsigned char c;
-	/* int i=0; */
 	unsigned int fgDefTable = 0;
 	/* Open input file */
 	infile = fopen(infname, "r");
@@ -77,7 +75,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname,
 	fprintf(outfile, "UCHAR %s[] = \"", varname);
 
 	while (1) {
-		char cc[1];
+		char cc[2];
 
 		if (fgDefTable == 0)
 			c = getc(infile);
@@ -87,7 +85,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname,
 		/* backward compatibility for old Excel SKU table */
 		if (c == '#') {
 			c = '!';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 		}
 
@@ -103,19 +101,19 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname,
 			continue;
 		else if (c == '\n') {
 			c = '\t';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 			c = '\"';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 			c = '\n';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 			c = '\"';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 		} else {
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 		}
 	}
@@ -130,6 +128,8 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname,
 
 	/* close output file */
 	fclose(outfile);
+
+	return 1;
 }
 
 int main(int argc, char *argv[])
@@ -143,6 +143,10 @@ int main(int argc, char *argv[])
 	char cc[20];
 
 	rt28xxdir = (char *)getenv("RT28xx_DIR");
+	if (!rt28xxdir) {
+		printf("Environment value \"RT28xx_DIR\" not export\n");
+		return -1;
+	}
 
 	/* Trasform SKU table data file to header file */
 	for (SKUTableIdx = 1; SKUTableIdx <= MAX_SKUTABLE_NUM; SKUTableIdx++) {
@@ -176,7 +180,7 @@ int main(int argc, char *argv[])
 		sprintf(cc, "%d", SKUTableIdx);
 		strcat(varname, cc);
 		/* Transform data file to header file */
-		dat2h(infname, outfname, varname, deffname, "w");
+		data2h(infname, outfname, varname, deffname, "w");
 	}
 
 	/* Trasform BF Backoff table data file to header file */
@@ -211,6 +215,6 @@ int main(int argc, char *argv[])
 		sprintf(cc, "%d", SKUTableIdx);
 		strcat(varname, cc);
 		/* Transform data file to header file */
-		dat2h(infname, outfname, varname, deffname, "w");
+		data2h(infname, outfname, varname, deffname, "w");
 	}
 }

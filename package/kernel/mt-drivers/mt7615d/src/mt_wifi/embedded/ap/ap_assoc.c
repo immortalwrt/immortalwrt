@@ -1048,6 +1048,7 @@ BOOLEAN PeerAssocReqCmmSanity(RTMP_ADAPTER *pAd, BOOLEAN isReassoc, VOID *Msg,
 #endif
 			}
 #endif /* CONFIG_MAP_SUPPORT */
+			/* FALLTHRU */
 
 		case IE_WPA2:
 #ifdef DOT11R_FT_SUPPORT
