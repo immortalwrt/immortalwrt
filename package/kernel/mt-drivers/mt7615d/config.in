@@ -745,23 +745,12 @@ config MTK_MAP_R2_VER_SUPPORT
 	depends on MTK_MAP_SUPPORT
 	default n
 
-config MTK_OFFCHANNEL_SCAN_FEATURE
-        bool "Channel Quality Monitor"
-        depends on MTK_MT_AP_SUPPORT
-        default y
-
 config MTK_OCE_SUPPORT
         bool "Optimized Connectivity Experience Support"
         depends on MTK_MT_AP_SUPPORT
         depends on MTK_CHIP_MT7615E
         select MTK_WAPP_SUPPORT
         default y
-
-config MTK_DPP_FEATURE
-        bool "DPP Support"
-        depends on MTK_MT_AP_SUPPORT
-	depends on MTK_WIFI_DRIVER
-        default n
 
 config MTK_ENTERPRISE_AP_SUPPORT
 	bool "Enterprise AP Support"
@@ -938,7 +927,6 @@ config MTK_WNM_SUPPORT
 
 config MTK_WIFI_MSI_SUPPORT
         bool "MSI support"
-        depends on MTK_PCI_MSI
         depends on MTK_CHIP_MT7615E
         default n
 

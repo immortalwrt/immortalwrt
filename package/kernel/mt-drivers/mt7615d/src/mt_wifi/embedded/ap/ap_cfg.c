@@ -2795,7 +2795,7 @@ VOID RTMPAPGetAssoMacTable(IN PRTMP_ADAPTER pAd,
 			sprintf(msg + strlen(msg), "%-10d, %d, %d%%\n",
 				pEntry->DebugFIFOCount, pEntry->DebugTxCount,
 				(pEntry->DebugTxCount) ?
-					((pEntry->DebugTxCount -
+					      ((pEntry->DebugTxCount -
 					  pEntry->DebugFIFOCount) *
 					 100 / pEntry->DebugTxCount) :
 					      0);
@@ -4905,7 +4905,7 @@ INT RTMPAPSetInformation(IN PRTMP_ADAPTER pAd,
 					  v,
 					  (pAd->ApCfg.MBSSID[v].Hostapd ==
 							   Hostapd_EXT ?
-						   "TRUE" :
+							 "TRUE" :
 							 "FALSE")));
 				pMBSSStruct = &pAd->ApCfg.MBSSID[v];
 				pMBSSStruct->WPAREKEY.ReKeyInterval = 0;
@@ -8798,12 +8798,12 @@ INT Set_ChGeography_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 
 	pAd->CommonCfg.CountryCode[2] =
 		(pAd->CommonCfg.Geography == BOTH) ?
-			' ' :
+			      ' ' :
 			      ((pAd->CommonCfg.Geography == IDOR) ? 'I' : 'O');
 	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 		 ("Set_ChannelGeography_Proc:: Geography = %s\n",
 		  pAd->CommonCfg.Geography == ODOR ?
-			  "out-door" :
+				"out-door" :
 				(pAd->CommonCfg.Geography == IDOR ? "in-door" :
 								    "both")));
 	/* After Set ChGeography need invoke SSID change procedural again for Beacon update. */
@@ -11119,7 +11119,7 @@ static INT show_apcfg_info(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		 ("%-24s%-16d%d\n", "HT_TxStream",
 		  apcfg_para_setting.ht_tx_streams,
 		  (pAd->CommonCfg.dbdc_mode ?
-			   (apcfg_for_peak.ht_tx_streams - 2) :
+				 (apcfg_for_peak.ht_tx_streams - 2) :
 				 apcfg_for_peak.ht_tx_streams)));
 
 	/*HT_RxStream */
@@ -11128,7 +11128,7 @@ static INT show_apcfg_info(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		 ("%-24s%-16d%d\n", "HT_RxStream",
 		  apcfg_para_setting.ht_rx_streams,
 		  (pAd->CommonCfg.dbdc_mode ?
-			   (apcfg_for_peak.ht_rx_streams - 2) :
+				 (apcfg_for_peak.ht_rx_streams - 2) :
 				 apcfg_for_peak.ht_rx_streams)));
 
 	/*HT_BADecline*/
@@ -12353,7 +12353,7 @@ INT Show_Diag_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 				 ("%d(%d%%)  ",
 				  pDiag->diag_info[i].TxAMPDUCnt[McsIdx],
 				  pDiag->diag_info[i].TxAMPDUCnt[McsIdx] ?
-					  (pDiag->diag_info[i]
+						(pDiag->diag_info[i]
 						   .TxAMPDUCnt[McsIdx] *
 					   100 / pDiag->diag_info[i].TxAggCnt) :
 						0));
@@ -12548,7 +12548,7 @@ INT Show_Sat_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 					  "\tWscStatus=0x%x\n",
 					  pWscCtrl->WscConfMode,
 					  ((pWscCtrl->WscMode == WSC_PIN_MODE) ?
-						   "PIN" :
+							 "PIN" :
 							 "PBC"),
 					  pWscCtrl->WscConfStatus,
 					  pWscCtrl->WscEnrolleePinCode,
@@ -12591,7 +12591,7 @@ INT Show_Sat_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 							 pEntry->TXMCSSuccessful
 								 [j],
 							 pEntry->TXMCSExpected[j] ?
-								 (100 *
+								       (100 *
 								  pEntry->TXMCSSuccessful
 									  [j]) /
 									 pEntry->TXMCSExpected
@@ -12814,7 +12814,7 @@ INT Show_Sat_Reset_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 							 pEntry->TXMCSSuccessful
 								 [j],
 							 pEntry->TXMCSExpected[j] ?
-								 (100 *
+								       (100 *
 								  pEntry->TXMCSSuccessful
 									  [j]) /
 									 pEntry->TXMCSExpected
@@ -13475,7 +13475,7 @@ VOID RTMPAPIoctlE2PROM(IN PRTMP_ADAPTER pAdapter,
 #ifdef LINUX
 		if (copy_from_user(arg, wrq->u.data.pointer,
 				   (wrq->u.data.length > 255) ?
-					   255 :
+						 255 :
 						 wrq->u.data.length))
 			goto done;
 #else
@@ -13706,7 +13706,7 @@ static VOID ShowAmpduCounter(RTMP_ADAPTER *pAd, UCHAR BandIdx, RTMP_STRING *msg)
 		sprintf(msg + strlen(msg),
 			"AMPDU Tx success                = %ld\n", mpduTXCount);
 		per = mpduTXCount == 0 ?
-			      0 :
+				    0 :
 				    1000 * (WlanCounter->AmpduFailCount.u.LowPart) /
 				      (WlanCounter->AmpduFailCount.u.LowPart +
 				       mpduTXCount);
@@ -13841,7 +13841,7 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 #ifdef CONFIG_QA
 	if (ATE_ON(pAd)) {
 		per = (rxCount == 0) ?
-			      0 :
+				    0 :
 				    1000 *
 				      (pAd->WlanCounters[ucBand]
 					       .FCSErrorCount.u.LowPart) /
@@ -13852,7 +13852,7 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 #endif /* CONFIG_QA */
 		per = pAd->WlanCounters[0].ReceivedFragmentCount.u.LowPart ==
 				      0 ?
-			      0 :
+				    0 :
 				    1000 *
 				      (pAd->WlanCounters[0]
 					       .FCSErrorCount.u.LowPart) /
@@ -14004,13 +14004,13 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 							LastTxRate.field.ldpc =
 								rTxStatResult.rEntryTxRate
 										.ldpc ?
-									1 :
+									      1 :
 									      0;
 							LastTxRate.field
 								.ShortGI =
 								rTxStatResult.rEntryTxRate
 										.ShortGI ?
-									1 :
+									      1 :
 									      0;
 							LastTxRate.field.STBC =
 								rTxStatResult
@@ -14069,7 +14069,7 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 										   TotalTxCount) <
 										  (TotalTxCount /
 										   2)) ?
-											 0 :
+											       0 :
 											       1);
 								}
 
@@ -14083,7 +14083,7 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 										   TotalTxCount) <
 										  (TotalTxCount /
 										   2)) ?
-											 0 :
+											       0 :
 											       1);
 								}
 
@@ -14115,18 +14115,18 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 							lastTxRate & 0x7F,
 							((lastTxRate >> 7) &
 							 0x1) ?
-								40 :
+								      40 :
 								      20,
 							((lastTxRate >> 8) &
 							 0x1) ?
-								'S' :
+								      'S' :
 								      'L',
 							phyMode[(lastTxRate >>
 								 14) &
 								0x3],
 							((lastTxRate >> 9) &
 							 0x3) ?
-								", STBC" :
+								      ", STBC" :
 								      " ");
 						snprintf(
 							msg + strlen(msg), 200,
@@ -14134,18 +14134,18 @@ VOID RTMPIoctlStatistics(RTMP_ADAPTER *pAd, RTMP_IOCTL_INPUT_STRUCT *wrq)
 							lastRxRate & 0x7F,
 							((lastRxRate >> 7) &
 							 0x1) ?
-								40 :
+								      40 :
 								      20,
 							((lastRxRate >> 8) &
 							 0x1) ?
-								'S' :
+								      'S' :
 								      'L',
 							phyMode[(lastRxRate >>
 								 14) &
 								0x3],
 							((lastRxRate >> 9) &
 							 0x3) ?
-								", STBC" :
+								      ", STBC" :
 								      " ");
 					}
 
@@ -18484,7 +18484,7 @@ INT Show_McastRate(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 						 (&wdev->rate.MCastPhyMode);
 #ifdef MCAST_BCAST_RATE_SET_SUPPORT
 	pOriginalTransmit = (wdev->channel > 14) ?
-				    (&wdev->rate.BCastPhyMode_5G) :
+					  (&wdev->rate.BCastPhyMode_5G) :
 					  (&wdev->rate.BCastPhyMode);
 	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 		 ("Bcast PhyMode = %d\n", pOriginalTransmit->field.MODE));
@@ -20400,33 +20400,33 @@ INT Set_SendBTMReq_Proc(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 				BssidInfo.field.KeyScope = 0;
 				BssidInfo.field.SpectrumMng =
 					(pBssEntry->CapabilityInfo & (1 << 8)) ?
-						1 :
+						      1 :
 						      0;
 				BssidInfo.field.Qos =
 					(pBssEntry->CapabilityInfo & (1 << 9)) ?
-						1 :
+						      1 :
 						      0;
 				BssidInfo.field.APSD =
 					(pBssEntry->CapabilityInfo &
 					 (1 << 11)) ?
-						1 :
+						      1 :
 						      0;
 #ifdef DOT11K_RRM_SUPPORT
 				BssidInfo.field.RRM =
 					(pBssEntry->CapabilityInfo &
 					 RRM_CAP_BIT) ?
-						1 :
+						      1 :
 						      0;
 #endif
 				BssidInfo.field.DelayBlockAck =
 					(pBssEntry->CapabilityInfo &
 					 (1 << 14)) ?
-						1 :
+						      1 :
 						      0;
 				BssidInfo.field.ImmediateBA =
 					(pBssEntry->CapabilityInfo &
 					 (1 << 15)) ?
-						1 :
+						      1 :
 						      0;
 				BssidInfo.field.MobilityDomain =
 					(pBssEntry->bHasMDIE) ? 1 : 0;
@@ -21923,16 +21923,15 @@ VOID Air_Monitor_Pkt_Report_Action(IN RTMP_ADAPTER *pAd, IN UCHAR wcid,
 	} else
 #endif /* DOT11_VHT_AC */
 		if (AirRaw.wlan_radio_tap.PHYMODE == MODE_OFDM) {
-			AirRaw.wlan_radio_tap.MCS = getLegacyOFDMMCSIndex(
-				pRxBlk->rx_rate.field.MCS);
-			AirRaw.wlan_radio_tap.STREAM =
-				(pRxBlk->rx_rate.field.MCS >> 4) + 1;
-		} else {
-			AirRaw.wlan_radio_tap.MCS =
-				(pRxBlk->rx_rate.field.MCS % 8);
-			AirRaw.wlan_radio_tap.STREAM =
-				(pRxBlk->rx_rate.field.MCS >> 3) + 1;
-		}
+		AirRaw.wlan_radio_tap.MCS =
+			getLegacyOFDMMCSIndex(pRxBlk->rx_rate.field.MCS);
+		AirRaw.wlan_radio_tap.STREAM =
+			(pRxBlk->rx_rate.field.MCS >> 4) + 1;
+	} else {
+		AirRaw.wlan_radio_tap.MCS = (pRxBlk->rx_rate.field.MCS % 8);
+		AirRaw.wlan_radio_tap.STREAM =
+			(pRxBlk->rx_rate.field.MCS >> 3) + 1;
+	}
 
 	/* For RSSI */
 	for (i = 0; i < pAd->Antenna.field.RxPath; i++)
@@ -22293,11 +22292,11 @@ INT Show_MapR2_Policy_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 			 ("%6s %24s %5d %7d %11d %11d\n", wdev->if_dev->name,
 			  pAd->ApCfg.MBSSID[wdev->func_idx].Ssid,
 			  IS_VALID_VID(wdev->MAPCfg.fh_vid) ?
-				  wdev->MAPCfg.fh_vid :
+					wdev->MAPCfg.fh_vid :
 					0,
 			  wdev->MAPCfg.vid_num,
 			  IS_VALID_VID(wdev->MAPCfg.primary_vid) ?
-				  wdev->MAPCfg.primary_vid :
+					wdev->MAPCfg.primary_vid :
 					0,
 			  wdev->MAPCfg.primary_pcp));
 #endif
@@ -23451,8 +23450,11 @@ INT Set_Sta_Fast_Idle_Check_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 {
 	INT value = 0;
 
-	if (arg == NULL || strlen(arg) == 0)
-		goto Error;
+	if (arg == NULL || strlen(arg) == 0) {
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("@@@ Failed to Set/Reset StaFastIdleCheckEnable\n"));
+		return FALSE;
+	}
 
 	value = os_str_tol(arg, 0, 10);
 	if (value == 1)
@@ -23464,9 +23466,4 @@ INT Set_Sta_Fast_Idle_Check_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		 ("@@@ StaFastIdleCheckEnable=%d\n",
 		  pAd->StaFastIdleCheckEnable));
 	return TRUE;
-
-Error:
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-		 ("@@@ Failed to Set/Reset StaFastIdleCheckEnable\n"));
-	return FALSE;
 }

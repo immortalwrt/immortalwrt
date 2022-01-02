@@ -186,9 +186,10 @@ define KernelPackage/mt7615d
   CATEGORY:=Kernel modules
   TITLE:=MTK wifi AP driver
   DEPENDS:=@TARGET_ramips
-ifneq ($(CONFIG_MTK_WHNAT_SUPPORT), )
+  KCONFIG:=CONFIG_PCI_MSI=y
+ifneq ($(CONFIG_MTK_WHNAT_SUPPORT),)
   FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
-	$(PKG_BUILD_DIR)/mt_wifi/embedded/tools/plug_in/whnat/mt_whnat.ko
+	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
 else
   FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
 endif
@@ -201,7 +202,7 @@ define KernelPackage/mt7615d/config
 endef
 
 define Build/Compile
-	$(MAKE) -j12 -C "$(LINUX_DIR)" \
+	$(MAKE) -C "$(LINUX_DIR)" \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)/mt_wifi_ap" \

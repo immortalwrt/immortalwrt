@@ -17,7 +17,7 @@
 #ifdef MT7615
 #include "woe_mt7615.h"
 #include "woe.h"
-#include <net/ra_nat.h>
+#include "hwnat/ra_nat.h"
 #include <linux/pci.h>
 #include <net/ip.h>
 #include <linux/tcp.h>

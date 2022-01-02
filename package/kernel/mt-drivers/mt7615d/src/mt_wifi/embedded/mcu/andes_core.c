@@ -774,7 +774,7 @@ INT32 AndesSendCmdMsg(PRTMP_ADAPTER ad, struct cmd_msg *msg)
 		if (!RTMP_TEST_FLAG(ad, fRTMP_ADAPTER_MCU_SEND_IN_BAND_CMD)) {
 			MTWF_LOG(
 				DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				("%s: Could not send in band command due to diablefRTMP_ADAPTER_MCU_SEND_IN_BAND_CMD\n",
+				("%s: Could not send in band command due to disabled fRTMP_ADAPTER_MCU_SEND_IN_BAND_CMD\n",
 				 __func__));
 		} else if (RTMP_TEST_FLAG(ad, fRTMP_ADAPTER_NIC_NOT_EXIST)) {
 			MTWF_LOG(
