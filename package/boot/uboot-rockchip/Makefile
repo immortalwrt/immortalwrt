@@ -111,7 +111,8 @@ UBOOT_TARGETS := \
   rockpro64-rk3399 \
   nanopi-r2c-rk3328 \
   nanopi-r2s-rk3328 \
-  orangepi-r1-plus-rk3328
+  orangepi-r1-plus-rk3328 \
+  orangepi-r1-plus-lts-rk3328
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
