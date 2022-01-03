@@ -3968,10 +3968,12 @@ INT RTMPAPSetInformation(IN PRTMP_ADAPTER pAd,
 #endif /* WSC_AP_SUPPORT */
 	case OID_SET_SSID:
 		if (wrq->u.data.length <= MAX_LEN_OF_SSID) {
+#ifdef APCLI_SUPPORT
 			UCHAR apcli_idx = pObj->ioctl_if;
-			struct wifi_dev *wdev;
 			BOOLEAN apcliEn;
 			APCLI_STRUCT *apcli_entry;
+#endif /* APCLI_SUPPORT */
+			struct wifi_dev *wdev;
 			struct DOT11_H *pDot11h = NULL;
 			BSS_STRUCT *pMbss = NULL;
 #ifdef APCLI_SUPPORT
@@ -4003,7 +4005,7 @@ INT RTMPAPSetInformation(IN PRTMP_ADAPTER pAd,
 					 apcli_entry->CfgSsid));
 				apcli_entry->Enable = apcliEn;
 			} else {
-#endif
+#endif /* APCLI_SUPPORT */
 				if (pObj->ioctl_if < HW_BEACON_MAX_NUM) {
 					pMbss = &pAd->ApCfg
 							 .MBSSID[pObj->ioctl_if];
@@ -4064,7 +4066,9 @@ INT RTMPAPSetInformation(IN PRTMP_ADAPTER pAd,
 				} else
 					Status = -EINVAL;
 				break;
+#ifdef APCLI_SUPPORT
 			}
+#endif /* APCLI_SUPPORT */
 		} else
 			Status = -EINVAL;
 		break;

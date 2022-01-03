@@ -1716,7 +1716,9 @@ VOID APStopByBss(RTMP_ADAPTER *pAd, BSS_STRUCT *pMbss)
 	struct wifi_dev *wdev_bss;
 #if defined(MESH_SUPPORT) || defined(APCLI_SUPPORT) || defined(BAND_STEERING)
 	INT idx = 0;
+#ifdef APCLI_SUPPORT
 	struct wifi_dev *wdev;
+#endif /* APCLI_SUPPORT */
 #ifdef WSC_INCLUDED
 	PWSC_CTRL pWscControl;
 #endif /* WSC_INCLUDED */
