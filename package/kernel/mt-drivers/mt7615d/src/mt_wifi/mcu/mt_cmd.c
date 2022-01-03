@@ -2254,6 +2254,7 @@ INT MtCmdSetTxRxPath(struct _RTMP_ADAPTER *pAd, MT_SWITCH_CHANNEL_CFG SwChCfg)
 	CmdChanSwitch.ucCentralCh = pSwChCfg->CentralChannel;
 	CmdChanSwitch.ucCentralCh2 = pSwChCfg->ControlChannel2;
 	CmdChanSwitch.ucTxStreamNum = pSwChCfg->TxStream;
+#ifdef CONFIG_ATE
 	/* For normal mode, use rx path which means rx stream capability.
 	    For test mode, use rx path with bit wise.
 	    Need to modiy tx/rx path and set channel flow here.
@@ -2261,6 +2262,7 @@ INT MtCmdSetTxRxPath(struct _RTMP_ADAPTER *pAd, MT_SWITCH_CHANNEL_CFG SwChCfg)
 	if (ATE_ON(pAd))
 		CmdChanSwitch.ucRxStreamNum = pSwChCfg->RxStream;
 	else
+#endif /* CONFIG_ATE */
 		CmdChanSwitch.ucRxStreamNum = RxPath;
 
 	CmdChanSwitch.ucDbdcIdx = pSwChCfg->BandIdx;

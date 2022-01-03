@@ -866,6 +866,13 @@ config MTK_VOW_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	default y
 
+config MTK_FQ_SCH_SUPPORT
+    bool "Fair Queueing support"
+    depends on MTK_WIFI_DRIVER
+    depends on MTK_MT_AP_SUPPORT && MTK_VOW_SUPPORT
+    depends on MTK_CHIP_MT7615E || MTK_CHIP_MT7622
+    default y
+
 #config MTK_AIRPLAY_SUPPORT
 #	bool "AIRPLAY Support"
 #	depends on MTK_MT_AP_SUPPORT
@@ -928,7 +935,7 @@ config MTK_WNM_SUPPORT
 config MTK_WIFI_MSI_SUPPORT
         bool "MSI support"
         depends on MTK_CHIP_MT7615E
-        default n
+        default y
 
 #config MTK_ROAMING_ENHANCE_SUPPORT
 #	bool "Roaming Enhance Support"
@@ -970,7 +977,6 @@ config MTK_RCSA_SUPPORT
 	depends on MTK_APCLI_SUPPORT
 	default n
 
-
 config MTK_ETH_CONVERT_SUPPORT
 	bool "Ethernet Convert Mode Support"
 	depends on MTK_MT_STA_SUPPORT
@@ -997,10 +1003,6 @@ if MTK_WIFI_RTMP_MAC
 endif
 
 if MTK_WIFI_MT_MAC
-	config MTK_MT_MAC
-		bool
-		default y
-
 	config MTK_CHIP_MT7603E
 		bool
 		default n

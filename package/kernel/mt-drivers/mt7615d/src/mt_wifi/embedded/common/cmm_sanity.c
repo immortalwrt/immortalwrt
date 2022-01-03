@@ -1669,7 +1669,7 @@ BOOLEAN PeerProbeReqSanity(IN PRTMP_ADAPTER pAd, IN VOID *Msg, IN ULONG MsgLen,
 	UCHAR *Ptr;
 	UCHAR eid = 0, eid_len = 0, *eid_data;
 #ifdef CONFIG_AP_SUPPORT
-#if defined(WSC_INCLUDED) || defined(EASY_CONFIG_SETUP) || defined(WAPP_SUPPORT)
+#if defined(WSC_INCLUDED) || defined(EASY_CONFIG_SETUP)
 	UCHAR apidx = MAIN_MBSSID;
 #endif /* defined(WSC_INCLUDED) || defined(EASY_CONFIG_SETUP) */
 	UCHAR Addr1[MAC_ADDR_LEN];

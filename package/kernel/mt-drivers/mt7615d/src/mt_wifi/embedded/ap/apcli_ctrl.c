@@ -1006,7 +1006,9 @@ static VOID ApCliCtrlProbeRspAction(IN PRTMP_ADAPTER pAd,
 	UCHAR CliIdx = 0xFF;
 	REPEATER_CLIENT_ENTRY *pReptCliEntry = NULL;
 #endif /* MAC_REPEATER_SUPPORT */
+#ifdef WSC_INCLUDED
 	PWSC_CTRL pWscControl;
+#endif /* WSC_INCLUDED */
 #ifdef APCLI_AUTO_CONNECT_SUPPORT
 	USHORT apcli_ifIndex = (USHORT)(Elem->Priv);
 #endif /* APCLI_AUTO_CONNECT_SUPPORT */
@@ -1046,7 +1048,9 @@ static VOID ApCliCtrlProbeRspAction(IN PRTMP_ADAPTER pAd,
 	pApCliEntry = &pAd->ApCfg.ApCliTab[ifIndex];
 	wdev = &pApCliEntry->wdev;
 	pProfile_SecConfig = &wdev->SecConfig;
+#ifdef WSC_INCLUDED
 	pWscControl = &wdev->WscControl;
+#endif /* WSC_INCLUDED */
 
 #ifdef MAC_REPEATER_SUPPORT
 
@@ -1365,8 +1369,11 @@ per mactable entry */
 #endif
 
 #ifdef APCLI_SAE_SUPPORT
-		if (IS_AKM_SAE_SHA256(pApCliEntry->MlmeAux.AKMMap) &&
-		    (pWscControl->bWscTrigger == FALSE)) {
+		if (IS_AKM_SAE_SHA256(pApCliEntry->MlmeAux.AKMMap)
+#ifdef WSC_INCLUDED
+		&&(pWscControl->bWscTrigger == FALSE)
+#endif /* WSC_INCLUDED */
+		) {
 			UCHAR if_addr[MAC_ADDR_LEN];
 			UCHAR pmkid[LEN_PMKID];
 			UCHAR pmk[LEN_PMK];

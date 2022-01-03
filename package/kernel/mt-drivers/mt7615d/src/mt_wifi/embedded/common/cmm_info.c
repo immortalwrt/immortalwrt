@@ -14507,11 +14507,13 @@ INT32 Get_RBIST_IQ_Data(IN RTMP_ADAPTER *pAd, IN PINT32 pData,
 
 	/* Query current capture node */
 	CapNode = Get_System_CapNode_Info(pAd);
+#ifdef INTERNAL_CAPTURE_SUPPORT
 	/* Update total count of IQ sample */
 	if (CapNode == pChipCap->ICapFourWayADC)
 		TotalCnt = pChipCap->ICapADCIQCnt;
 	else
 		TotalCnt = pChipCap->ICapIQCIQCnt;
+#endif /* INTERNAL_CAPTURE_SUPPORT */
 
 	/* Update initial value of ICapDataCnt */
 	if ((TotalCnt > pAd->ICapCapLen) && (pAd->ICapDataCnt == 0))

@@ -22,6 +22,7 @@
 #include "rt_config.h"
 #endif
 
+#ifdef CONFIG_ATE
 static VOID EventExtCmdResult(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
 	struct _EVENT_EXT_CMD_RESULT_T *EventExtCmdResult =
@@ -36,6 +37,7 @@ static VOID EventExtCmdResult(struct cmd_msg *msg, char *Data, UINT16 Len)
 		 ("%s: EventExtCmdResult.u4Status = 0x%x\n", __func__,
 		  EventExtCmdResult->u4Status));
 }
+#endif /* CONFIG_ATE */
 
 INT32 CmdInitAccessRegWrite(RTMP_ADAPTER *ad, UINT32 address, UINT32 data)
 {

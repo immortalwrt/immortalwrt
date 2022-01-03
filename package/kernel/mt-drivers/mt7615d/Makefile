@@ -147,6 +147,7 @@ PKG_KCONFIG:= \
 	CON_WPS_SUPPORT \
 	MCAST_RATE_SPECIFIC \
 	VOW_SUPPORT \
+	FQ_SCH_SUPPORT \
 	BAND_STEERING \
 	LED_CONTROL_SUPPORT \
 	WLAN_HOOK \
@@ -173,8 +174,7 @@ PKG_KCONFIG:= \
 	CHIP_MT7615E \
 	CHIP_MT7622 \
 	CHIP_MT7663E \
-	CHIP_MT7626 \
-	MT_MAC
+	CHIP_MT7626
 
 PKG_CONFIG_DEPENDS:=$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_MTK_$c),CONFIG_$(c)))
 
@@ -183,18 +183,20 @@ include $(INCLUDE_DIR)/package.mk
 TAR_CMD=$(HOST_TAR) -C $(1)/ $(TAR_OPTIONS)
 
 define KernelPackage/mt7615d
-  CATEGORY:=Kernel modules
-  TITLE:=MTK wifi AP driver
-  DEPENDS:=@TARGET_ramips
-  KCONFIG:=CONFIG_PCI_MSI=y
+    CATEGORY:=Kernel modules
+    TITLE:=MTK wifi AP driver
+    DEPENDS:=@TARGET_ramips
+    KCONFIG:= \
+        CONFIG_PCI_MSI=y \
+		CONFIG_NET_SCH_FQ=y
 ifneq ($(CONFIG_MTK_WHNAT_SUPPORT),)
-  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
-	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
+    FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
+    	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
 else
-  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
+    FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
 endif
-  SUBMENU:=Wireless Drivers
-  MENU:=1
+    SUBMENU:=Wireless Drivers
+    MENU:=1
 endef
 
 define KernelPackage/mt7615d/config
@@ -202,7 +204,7 @@ define KernelPackage/mt7615d/config
 endef
 
 define Build/Compile
-	$(MAKE) -C "$(LINUX_DIR)" \
+	$(MAKE) -j12 -C "$(LINUX_DIR)" \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)/mt_wifi_ap" \

@@ -2046,6 +2046,7 @@ INT wapp_send_sta_rssi_query_rsp(PRTMP_ADAPTER pAd, struct wapp_req *req)
 	return 0;
 }
 
+#ifdef WSC_INCLUDED
 INT wapp_send_wsc_scan_complete_notification(PRTMP_ADAPTER pAd,
 					     struct wifi_dev *wdev)
 {
@@ -2094,6 +2095,8 @@ INT wapp_send_wsc_eapol_complete_notif(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 	}
 	return 0;
 }
+#endif /* WSC_INCLUDED */
+
 #ifdef CONFIG_MAP_SUPPORT
 INT wapp_send_scan_complete_notification(PRTMP_ADAPTER pAd,
 					 struct wifi_dev *wdev)
@@ -2458,6 +2461,7 @@ INT wapp_event_handle(PRTMP_ADAPTER pAd, struct wapp_req *req)
 	case WAPP_GET_SCAN_RESULTS:
 		RTMPIoctlGetScanResults(pAd, req);
 		break;
+#ifdef WSC_INCLUDED
 	case WAPP_WSC_PBC_EXEC: {
 		POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
 		UCHAR ifIndex = pObj->ioctl_if;
@@ -2472,9 +2476,11 @@ INT wapp_event_handle(PRTMP_ADAPTER pAd, struct wapp_req *req)
 		WscPBCExec(pAd, FALSE, pWscControl);
 		break;
 	}
+#endif /* WSC_INCLUDED */
 	case WAPP_SEND_NULL_FRAMES:
 		RTMPIoctlSendNullDataFrame(pAd, req);
 		break;
+#ifdef WSC_INCLUDED
 	case WAPP_WSC_SET_BH_PROFILE: {
 		POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
 		UCHAR ifIndex = pObj->ioctl_if;
@@ -2501,6 +2507,7 @@ INT wapp_event_handle(PRTMP_ADAPTER pAd, struct wapp_req *req)
 		}
 		break;
 	}
+#endif /* WSC_INCLUDED */
 #ifdef CONFIG_MAP_SUPPORT
 	case WAPP_SET_SCAN_BH_SSIDS: {
 		struct wifi_dev *wdev;

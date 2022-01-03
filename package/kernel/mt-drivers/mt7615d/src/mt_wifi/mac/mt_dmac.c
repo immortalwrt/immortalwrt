@@ -1182,7 +1182,11 @@ VOID NICUpdateRawCounters(RTMP_ADAPTER *pAd)
 		pAd->WlanCounters[0].FCSErrorCount.u.HighPart++;
 
 #ifdef DBDC_MODE
+#ifdef CONFIG_ATE
 	if (IS_ATE_DBDC(pAd)) {
+#else
+	if (pAd->CommonCfg.dbdc_mode) {
+#endif /* CONFIG_ATE */
 		/* Update FCS counters of band1 */
 		OldValue = pAd->WlanCounters[1].FCSErrorCount.u.LowPart;
 		pAd->WlanCounters[1].FCSErrorCount.u.LowPart +=

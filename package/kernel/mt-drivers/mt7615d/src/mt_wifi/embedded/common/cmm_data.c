@@ -8086,10 +8086,14 @@ NDIS_STATUS header_packet_process(RTMP_ADAPTER *pAd, PNDIS_PACKET pRxPacket,
 		return NDIS_STATUS_SUCCESS;
 	}
 
-#endif
+#endif /* CONFIG_ATE */
 #ifdef STATS_COUNT_SUPPORT
-#if defined(DBDC_MODE)
+#ifdef DBDC_MODE
+#ifdef CONFIG_ATE
 	if (IS_ATE_DBDC(pAd)) {
+#else
+	if (pAd->CommonCfg.dbdc_mode) {
+#endif /* CONFIG_ATE */
 		RXD_BASE_STRUCT *rxd_base =
 			(RXD_BASE_STRUCT *)pRxBlk->rmac_info;
 		UCHAR BandIdx = 0, Channel = 0;
@@ -8108,7 +8112,7 @@ NDIS_STATUS header_packet_process(RTMP_ADAPTER *pAd, PNDIS_PACKET pRxPacket,
 		INC_COUNTER64(pAd->WlanCounters[0].ReceivedFragmentCount);
 #else
 	INC_COUNTER64(pAd->WlanCounters[0].ReceivedFragmentCount);
-#endif /* defined(DBDC_MODE) */
+#endif /* DBDC_MODE */
 #endif /* STATS_COUNT_SUPPORT */
 
 	/* Check for all RxD errors */

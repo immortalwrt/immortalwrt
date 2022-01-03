@@ -4712,10 +4712,14 @@ VOID ExtEventMpduTimeHandler_avg(RTMP_ADAPTER *pAd, UINT8 *Data, UINT32 Length)
 	UINT8 ucInUseSta = 0;
 	UINT8 ucPhyMode = 0;
 	UINT8 ucBW = 0;
+#ifdef VOW_SUPPORT
 	UINT8 fgATCEnable = pAd->vow_cfg.en_bw_ctrl;
 	UINT8 fgATFEnable = pAd->vow_cfg.en_airtime_fairness;
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
+#else
+	enum {fgATCorWATFEnable = false};
+#endif /* VOW_SUPPORT */
 #ifdef FQ_SCH_SUPPORT
 	UINT8 j;
 	UINT8 active = 0, bcmc_active = 0, pow_save = 0;
@@ -4903,10 +4907,14 @@ VOID ExtEventMpduTimeHandler(RTMP_ADAPTER *pAd, UINT8 *Data, UINT32 Length)
 	UINT8 ucInUseSta = 0;
 	UINT8 ucPhyMode = 0;
 	UINT8 ucBW = 0;
+#ifdef VOW_SUPPORT
 	UINT8 fgATCEnable = pAd->vow_cfg.en_bw_ctrl;
 	UINT8 fgATFEnable = pAd->vow_cfg.en_airtime_fairness;
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
+#else
+	enum {fgATCorWATFEnable = false};
+#endif /* VOW_SUPPORT */
 #ifdef FQ_SCH_SUPPORT
 	UINT8 j;
 	UINT8 active = 0, bcmc_active = 0, pow_save = 0;

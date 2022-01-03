@@ -1019,6 +1019,7 @@ BOOLEAN BndStrg_CheckConnectionReq(PRTMP_ADAPTER pAd, struct wifi_dev *wdev,
 		}
 	}
 
+#ifdef WSC_INCLUDED
 	/* WPS_BandSteering Support */
 	{
 		PWSC_CTRL pWscControl;
@@ -1065,6 +1066,7 @@ BOOLEAN BndStrg_CheckConnectionReq(PRTMP_ADAPTER pAd, struct wifi_dev *wdev,
 			}
 		}
 	}
+#endif /* WSC_INCLUDED */
 
 	if (table->BndStrgMode == POST_CONNECTION_STEERING) {
 		return TRUE;
@@ -1312,8 +1314,10 @@ void BndStrg_UpdateEntry(PRTMP_ADAPTER pAd, MAC_TABLE_ENTRY *pEntry,
 		if (ie_list->vht_cap_len > 0)
 			cli_assoc->bVHTCapable = TRUE;
 		cli_assoc->Nss = Nss;
+#ifdef WSC_INCLUDED
 		/* WPS_BandSteering Support */
 		cli_assoc->bWpsAssoc = ie_list->bWscCapable;
+#endif /* WSC_INCLUDED */
 #ifdef CONFIG_DOT11V_WNM
 		cli_assoc->BTMSupport = pEntry->BssTransitionManmtSupport;
 #endif

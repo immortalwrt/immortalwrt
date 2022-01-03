@@ -32,10 +32,14 @@ VOID red_badnode_timeout(PVOID SystemSpecific1, PVOID FunctionContext,
 	PMAC_TABLE_ENTRY pEntry;
 	STA_TR_ENTRY *tr_entry;
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)FunctionContext;
+#ifdef VOW_SUPPORT
 	UINT8 fgATCEnable = pAd->vow_cfg.en_bw_ctrl;
 	UINT8 fgATFEnable = pAd->vow_cfg.en_airtime_fairness;
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
+#else
+	enum {fgATCorWATFEnable = false};
+#endif /* VOW_SUPPORT */
 	UINT8 ucWlanIdx;
 
 	for (ucWlanIdx = 0; ucWlanIdx < RED_STA_REC_NUM; ucWlanIdx++) {
@@ -430,6 +434,7 @@ VOID appShowRedDebugMessage(RTMP_ADAPTER *pAd)
 
 VOID RedSetTargetDelay(INT16 i2TarDelay, PRTMP_ADAPTER pAd)
 {
+#ifdef VOW_SUPPORT
 	UINT8 fgATCEnable = pAd->vow_cfg.en_bw_ctrl;
 	UINT8 fgATFEnable = pAd->vow_cfg.en_airtime_fairness;
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
@@ -438,6 +443,7 @@ VOID RedSetTargetDelay(INT16 i2TarDelay, PRTMP_ADAPTER pAd)
 	if (fgATCorWATFEnable)
 		pAd->red_atm_on_targetdelay = i2TarDelay;
 	else
+#endif /* VOW_SUPPORT */
 		pAd->red_atm_off_targetdelay = i2TarDelay;
 }
 
