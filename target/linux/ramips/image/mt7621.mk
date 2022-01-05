@@ -9,6 +9,18 @@ DEFAULT_SOC := mt7621
 KERNEL_DTB += -d21
 DEVICE_VARS += ELECOM_HWNAME LINKSYS_HWNAME
 
+define Build/beeline-trx
+	echo -ne "hsqs" > $@.hsqs
+	$(STAGING_DIR_HOST)/bin/otrx create $@.trx -M 0x746f435d -f $@ \
+		-a 0x20000 -b 0x420000 -f $@.hsqs -a 1000
+	mv $@.trx $@
+	dd if=/dev/zero bs=1024 count=1 >> $@.tail
+	echo -ne "HDR0" | dd of=$@.tail bs=1 seek=$$((0x10c)) count=4 \
+		conv=notrunc 2>/dev/null
+	dd if=$@.tail >> $@ 2>/dev/null
+	rm $@.hsqs $@.tail
+endef
+
 define Build/elecom-wrc-gs-factory
 	$(eval product=$(word 1,$(1)))
 	$(eval version=$(word 2,$(1)))
@@ -211,6 +223,27 @@ define Device/asus_rt-n56u-b1
 endef
 TARGET_DEVICES += asus_rt-n56u-b1
 
+define Device/beeline_smartbox-flash
+  $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := Beeline
+  DEVICE_MODEL := SmartBox Flash
+  IMAGE_SIZE := 32768k
+  KERNEL_SIZE := 4352k
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | \
+	uImage none | beeline-trx | pad-to $$(KERNEL_SIZE)
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | loader-kernel | \
+	uImage none
+  IMAGES += factory.trx
+  IMAGE/factory.trx := append-kernel | append-ubi | check-size
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615e kmod-mt7615-firmware \
+	uboot-envtools
+endef
+TARGET_DEVICES += beeline_smartbox-flash
+
 define Device/buffalo_wsr-1166dhp
   $(Device/uimage-lzma-loader)
   IMAGE/sysupgrade.bin := trx | pad-rootfs | append-metadata
@@ -378,7 +411,6 @@ endef
 TARGET_DEVICES += dlink_dir-882-r1
 
 define Device/dual-q_h721
-  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Dual-Q
