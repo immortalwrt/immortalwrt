@@ -1371,7 +1371,7 @@ per mactable entry */
 #ifdef APCLI_SAE_SUPPORT
 		if (IS_AKM_SAE_SHA256(pApCliEntry->MlmeAux.AKMMap)
 #ifdef WSC_INCLUDED
-		&&(pWscControl->bWscTrigger == FALSE)
+		    && (pWscControl->bWscTrigger == FALSE)
 #endif /* WSC_INCLUDED */
 		) {
 			UCHAR if_addr[MAC_ADDR_LEN];

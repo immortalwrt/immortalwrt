@@ -38,7 +38,7 @@ VOID red_badnode_timeout(PVOID SystemSpecific1, PVOID FunctionContext,
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
 #else
-	enum {fgATCorWATFEnable = false};
+	enum { fgATCorWATFEnable = false };
 #endif /* VOW_SUPPORT */
 	UINT8 ucWlanIdx;
 

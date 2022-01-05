@@ -4718,7 +4718,7 @@ VOID ExtEventMpduTimeHandler_avg(RTMP_ADAPTER *pAd, UINT8 *Data, UINT32 Length)
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
 #else
-	enum {fgATCorWATFEnable = false};
+	enum { fgATCorWATFEnable = false };
 #endif /* VOW_SUPPORT */
 #ifdef FQ_SCH_SUPPORT
 	UINT8 j;
@@ -4913,7 +4913,7 @@ VOID ExtEventMpduTimeHandler(RTMP_ADAPTER *pAd, UINT8 *Data, UINT32 Length)
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
 #else
-	enum {fgATCorWATFEnable = false};
+	enum { fgATCorWATFEnable = false };
 #endif /* VOW_SUPPORT */
 #ifdef FQ_SCH_SUPPORT
 	UINT8 j;
