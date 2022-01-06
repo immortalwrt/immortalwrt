@@ -368,6 +368,7 @@ define Device/ravpower_rp-wd009
 	kmod-sdhci-mt7620 kmod-i2c-mt7628 ravpower-mcu
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(sysupgrade_bin) | ravpower-wd009-factory
+  DEFAULT := n
 endef
 TARGET_DEVICES += ravpower_rp-wd009
 
