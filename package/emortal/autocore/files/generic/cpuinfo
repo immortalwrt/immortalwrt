@@ -3,7 +3,7 @@
 cpu_arch="$(grep "model name" "/proc/cpuinfo" | head -n1 | awk -F ': ' '{print $2}' | xargs)"
 [ -z "${cpu_arch}" ] && cpu_arch="?"
 if grep -q "x86" "/etc/openwrt_release"; then
-	cpu_cores="$(grep "core id" "/proc/cpuinfo" | uniq | wc -l)C $(grep -c "processor" "/proc/cpuinfo")T"
+	cpu_cores="$(grep "core id" "/proc/cpuinfo" | sort -u | wc -l)C $(grep -c "processor" "/proc/cpuinfo")T"
 else
 	cpu_cores="$(grep -c "processor" "/proc/cpuinfo")"
 fi
