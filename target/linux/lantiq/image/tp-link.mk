@@ -28,6 +28,7 @@ define Device/tplink_tdw8970
   IMAGE_SIZE := 7680k
   DEVICE_PACKAGES:= kmod-ath9k wpad-basic kmod-usb-dwc2 kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += TDW8970
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_tdw8970
 
@@ -42,6 +43,7 @@ define Device/tplink_tdw8980
   IMAGE_SIZE := 7680k
   DEVICE_PACKAGES:= kmod-ath9k kmod-owl-loader wpad-basic kmod-usb-dwc2 kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += TDW8980
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_tdw8980
 
