@@ -1904,7 +1904,6 @@ VOID mt7622_init(RTMP_ADAPTER *pAd)
 	mt_chip_bcn_parameter_init(pAd);
 	/* sync with Cater, wilsonl */
 	pChipCap->OmacNums = 5;
-	pChipCap->BssNums = 4;
 	pChipCap->ExtMbssOmacStartIdx = 0x10;
 	pChipCap->RepeaterStartIdx = 0x20;
 #ifdef AIR_MONITOR

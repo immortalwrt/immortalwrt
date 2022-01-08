@@ -1193,8 +1193,7 @@ BOOLEAN CFG80211DRV_ApKeyDel(VOID *pAdOrg, VOID *pData)
 
 	pKeyInfo = (CMD_RTPRIV_IOCTL_80211_KEY *)pData;
 
-	if (pKeyInfo->bPairwise == FALSE)
-	{
+	if (pKeyInfo->bPairwise == FALSE) {
 		UINT Wcid = 0;
 		UINT apidx = CFG80211_FindMbssApIdxByNetDevice(
 			pAd, pKeyInfo->pNetDev);
@@ -1414,8 +1413,7 @@ BOOLEAN CFG80211DRV_ApKeyAdd(VOID *pAdOrg, VOID *pData)
 #endif
 		}
 	} else if (pKeyInfo->KeyType == RT_CMD_80211_KEY_WPA) {
-		if (pKeyInfo->bPairwise == FALSE)
-		{
+		if (pKeyInfo->bPairwise == FALSE) {
 			USHORT Wcid;
 
 			/* Get a specific WCID to record this MBSS key attribute */
@@ -1702,8 +1700,7 @@ BOOLEAN CFG80211DRV_ApKeyAdd(VOID *pAdOrg, VOID *pData)
 #ifdef DOT11W_PMF_SUPPORT
 	else if (pKeyInfo->KeyType == RT_CMD_80211_KEY_AES_CMAC) {
 		if ((pKeyInfo->bPairwise == FALSE) &&
-		    (pKeyInfo->KeyId == 4 || pKeyInfo->KeyId == 5))
-		{
+		    (pKeyInfo->KeyId == 4 || pKeyInfo->KeyId == 5)) {
 			hex_dump("PMF IGTK pKeyInfo->KeyBuf=",
 				 (UINT8 *)pKeyInfo->KeyBuf, pKeyInfo->KeyLen);
 			MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,

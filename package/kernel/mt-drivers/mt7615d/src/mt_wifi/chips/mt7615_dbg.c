@@ -299,7 +299,9 @@ static INT32 chip_dump_mib_info(struct hdev_ctrl *ctrl, RTMP_STRING *arg)
 {
 	RTMP_ADAPTER *pAd = ctrl->priv;
 	RTMP_CHIP_CAP *pChipCap = hc_get_chip_cap(pAd->hdev_ctrl);
-	const UINT8 bss_nums = pChipCap->BssNums;
+#if defined(MT7615) || defined(MT7622)
+	enum { bss_nums = 4 };
+#endif /* defined(MT7615) || defined(MT7622) */
 	UINT32 mac_val, mac_val1, idx, band_idx = 0, band_offset = 0,
 				       ampdu_cnt[7];
 	UINT32 msdr6, msdr7, msdr8, msdr9, msdr10, msdr16, msdr17, msdr18,

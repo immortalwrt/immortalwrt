@@ -26,7 +26,7 @@
 #include <linux/mtd/map.h>
 #include <linux/mtd/concat.h>
 #include <linux/mtd/partitions.h>
-#if defined (CONFIG_MIPS)
+#if defined(CONFIG_MIPS)
 #include <asm/addrspace.h>
 #endif
 
@@ -66,11 +66,8 @@ int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf)
 
 	memcpy(bak + to, buf, len);
 
-	ei.mtd = mtd;
-	ei.callback = NULL;
 	ei.addr = 0;
 	ei.len = mtd->erasesize;
-	ei.priv = 0;
 
 	ret = mtd_erase(mtd, &ei);
 
@@ -82,14 +79,11 @@ int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf)
 
 	ret = mtd_write(mtd, 0, mtd->erasesize, &wrlen, bak);
 
-
-
 	put_mtd_device(mtd);
 	kfree(bak);
 	return ret;
 }
 EXPORT_SYMBOL(mt_mtd_write_nm_wifi);
-
 
 int mt_mtd_read_nm_wifi(char *name, loff_t from, size_t len, u_char *buf)
 {
@@ -104,7 +98,7 @@ int mt_mtd_read_nm_wifi(char *name, loff_t from, size_t len, u_char *buf)
 	ret = mtd_read(mtd, from, len, &rdlen, buf);
 
 	if (rdlen != len)
-			printk("warning: ra_mtd_read_nm: rdlen is not equal to len\n");
+		printk("warning: ra_mtd_read_nm: rdlen is not equal to len\n");
 
 	put_mtd_device(mtd);
 

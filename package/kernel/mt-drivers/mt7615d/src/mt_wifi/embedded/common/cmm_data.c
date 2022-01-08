@@ -9448,13 +9448,12 @@ INT32 tx_flow_set_state_block(RTMP_ADAPTER *pAd, PNET_DEV NetDev, UINT8 State,
 		pAd->tr_ctl.net_if_stop_cnt++;
 	} else {
 		struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-		UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
 
 		RTMP_SEM_LOCK(&tr_flow_ctl->TxBlockLock[RingIdx]);
 		tr_flow_ctl->TxFlowBlockState[RingIdx] &= ~State;
 		RTMP_SEM_UNLOCK(&tr_flow_ctl->TxBlockLock[RingIdx]);
 		/* Wake up device if all queue are available */
-		if (!tx_flow_check_state(pAd, State, num_of_tx_ring)) {
+		if (!tx_flow_check_state(pAd, State, GET_NUM_OF_TX_RING(cap))) {
 			/* Wake up all bss if no Netdev input */
 			if (NetDev)
 				RTMP_OS_NETDEV_WAKE_QUEUE(NetDev);

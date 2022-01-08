@@ -142,7 +142,6 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 	BOOLEAN need_schedule = (pAd->tx_dequeue_scheduable ? TRUE : FALSE);
 	UCHAR user_prio;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-	UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
 
 #ifdef CONFIG_TP_DBG
 	struct tp_debug *tp_dbg = &pAd->tr_ctl.tp_dbg;
@@ -222,7 +221,7 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 			KickRingBitMap |= (1 << pTxBlk->resource_idx);
 	}
 
-	while (KickRingBitMap != 0 && idx < num_of_tx_ring) {
+	while (KickRingBitMap != 0 && idx < GET_NUM_OF_TX_RING(cap)) {
 		if (KickRingBitMap & 0x1) {
 			arch_ops->kickout_data_tx(pAd, pTxBlk, idx);
 #ifdef CONFIG_TP_DBG

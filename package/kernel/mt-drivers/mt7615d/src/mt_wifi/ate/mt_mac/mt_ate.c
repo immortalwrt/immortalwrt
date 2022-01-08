@@ -648,11 +648,7 @@ static INT32 MT_ATEStopTx(RTMP_ADAPTER *pAd, UINT32 Mode)
 	struct _ATE_CTRL *ATECtrl = &pAd->ATECtrl;
 	struct _ATE_IF_OPERATION *if_ops = ATECtrl->ATEIfOps;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-	UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
-	INT32 Ret = 0;
-	INT32 acidx;
 
-	acidx = 0;
 	MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
 		 ("%s\n", __func__));
 
@@ -1339,9 +1335,8 @@ static INT32 pci_clean_test_rx_frame(RTMP_ADAPTER *pAd)
 	UCHAR RxHwInfo[RXD_SIZE];
 #endif
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-	UINT8 num_of_rx_ring = GET_NUM_OF_RX_RING(cap);
 
-	for (RingNum = 0; RingNum < num_of_rx_ring; RingNum++) {
+	for (RingNum = 0; RingNum < GET_NUM_OF_RX_RING(cap); RingNum++) {
 		for (Index = 0; Index < RX_RING_SIZE; Index++) {
 #ifdef RT_BIG_ENDIAN
 			pDestRxD = (RXD_STRUC *)pAd->PciHif.RxRing[0]

@@ -2235,7 +2235,7 @@ INT Set_TpcReqByAddr_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 #ifdef TPC_SUPPORT
 INT Set_TpcCtrl_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 {
-	enum { CMD_NUM = 3u };
+	enum { CMD_NUM = 3 };
 	UINT arg_len, i, j, cmd_pos[CMD_NUM];
 	UINT BandIdx, Power, CentCh;
 

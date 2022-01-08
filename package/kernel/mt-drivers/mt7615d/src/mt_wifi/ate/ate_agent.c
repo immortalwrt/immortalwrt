@@ -225,7 +225,7 @@ INT32 SetATERxFilter(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	struct _ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	INT32 Ret = 0;
 	UCHAR control_band_idx = ATECtrl->control_band_idx;
-	enum { param_num = 3u };
+	enum { param_num = 3 };
 	MT_RX_FILTER_CTRL_T rx_filter;
 	UINT32 input[param_num];
 	CHAR *value;
@@ -305,7 +305,7 @@ INT32 SetATEMACTRx(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	struct _ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	INT32 Ret = 0;
 	UCHAR control_band_idx = ATECtrl->control_band_idx;
-	enum { param_num = 3u };
+	enum { param_num = 3 };
 	UINT32 input[param_num];
 	CHAR *value;
 	INT i;
@@ -961,7 +961,7 @@ INT32 SetATETxAntenna(RTMP_ADAPTER *pAd, RTMP_STRING *Arg)
 	INT32 Ret = 0;
 	UCHAR control_band_idx = ATECtrl->control_band_idx;
 	UINT32 Ant = 1;
-	enum { idx_num = 2u };
+	enum { idx_num = 2 };
 	UINT32 param[idx_num];
 	UINT8 loop_index = 0;
 	CHAR *value;
@@ -3870,7 +3870,6 @@ INT32 SetATETXBFProc(RTMP_ADAPTER *pAd, RTMP_STRING *Arg)
 #endif
 	TxBfEn = simple_strtol(Arg, 0, 10);
 #if defined(MT7615) || defined(MT7622)
-
 	switch (TxBfEn) {
 	case 0:
 		/* no BF */
@@ -6071,7 +6070,7 @@ err1:
 INT32 SetATEChannel(PRTMP_ADAPTER pAd, RTMP_STRING *Arg)
 {
 	INT32 Ret = 0;
-	enum { idx_num = 4u };
+	enum { idx_num = 4 };
 	struct _ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	struct _ATE_OPERATION *ATEOp = ATECtrl->ATEOp;
 	UCHAR control_band_idx = ATECtrl->control_band_idx;
@@ -6367,7 +6366,7 @@ INT32 SetATETxBw(PRTMP_ADAPTER pAd, RTMP_STRING *Arg)
 	struct _ATE_OPERATION *ATEOp = ATECtrl->ATEOp;
 	INT32 Ret = 0;
 	UINT16 system_bw, per_pkt_bw;
-	enum { idx_num = 2u };
+	enum { idx_num = 2 };
 	UINT32 param[idx_num];
 	INT i = 0;
 	CHAR *value;

@@ -691,7 +691,6 @@ typedef struct _RTMP_CHIP_CAP {
 	struct MT_TX_PWR_CAP MTTxPwrCap;
 	UCHAR TmrEnable;
 	UINT8 OmacNums;
-	UINT8 BssNums;
 	UINT8 MBSSStartIdx;
 	UINT8 MaxRepeaterNum;
 	UINT8 ExtMbssOmacStartIdx;

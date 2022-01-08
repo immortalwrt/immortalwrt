@@ -20,7 +20,7 @@
 #include "rt_config.h"
 #include "hdev/hdev.h"
 
-/*Omac controller*/
+/* Omac controller */
 
 static INT32 GetFirstAvailableOmacIdx(struct hdev_ctrl *ctrl, BOOLEAN NeedBss,
 				      UINT32 OmacType)
@@ -28,9 +28,12 @@ static INT32 GetFirstAvailableOmacIdx(struct hdev_ctrl *ctrl, BOOLEAN NeedBss,
 	UINT32 Index;
 	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
 	struct _RTMP_CHIP_CAP *cap = &ctrl->chip_cap;
+#if defined(MT7615) || defined(MT7622)
+	enum { bss_nums = 4 };
+#endif /* defined(MT7615) || defined(MT7622) */
 
 	if (NeedBss) {
-		for (Index = 0; Index < cap->BssNums; Index++) {
+		for (Index = 0; Index < bss_nums; Index++) {
 			if ((pHwResource->OmacBssCtl.OmacBitMap &
 			     (1 << Index)) == 0) {
 				if ((OmacType == WDEV_TYPE_APCLI) && !Index)
@@ -41,7 +44,7 @@ static INT32 GetFirstAvailableOmacIdx(struct hdev_ctrl *ctrl, BOOLEAN NeedBss,
 			}
 		}
 	} else {
-		for (Index = cap->BssNums; Index < cap->OmacNums; Index++) {
+		for (Index = bss_nums; Index < cap->OmacNums; Index++) {
 			if ((pHwResource->OmacBssCtl.OmacBitMap &
 			     (1 << Index)) == 0) {
 				pHwResource->OmacBssCtl.OmacBitMap |=

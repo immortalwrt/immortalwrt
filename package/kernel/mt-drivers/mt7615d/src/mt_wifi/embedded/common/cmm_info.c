@@ -10268,9 +10268,12 @@ INT show_trinfo_proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	NDIS_SPIN_LOCK *lock;
 #if defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT)
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-	const UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
-	const UINT8 num_of_rx_ring = GET_NUM_OF_RX_RING(cap);
 	PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
+#ifdef MT7622
+	enum { num_of_tx_ring = 6, num_of_rx_ring = 2 };
+#elif defined(MT7615)
+	enum { num_of_tx_ring = 2, num_of_rx_ring = 2 };
+#endif
 
 	if (IS_RBUS_INF(pAd) || IS_PCI_INF(pAd)) {
 		UINT32 tbase[num_of_tx_ring], tcnt[num_of_tx_ring];

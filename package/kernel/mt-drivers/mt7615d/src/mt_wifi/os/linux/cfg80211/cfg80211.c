@@ -576,9 +576,8 @@ static int CFG80211_OpsScan(IN struct wiphy *pWiphy,
 #else
 	if ((pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_STATION) &&
 	    (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_AP) &&
-	    (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_ADHOC)
-	    && (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_P2P_CLIENT)
-	)
+	    (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_ADHOC) &&
+	    (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_P2P_CLIENT))
 #endif /* APCLI_CFG80211_SUPPORT */
 	{
 		CFG80211DBG(DBG_LVL_ERROR,

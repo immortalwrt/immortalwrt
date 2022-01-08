@@ -963,8 +963,7 @@ void DiagDelPid(OS_TASK *pTask)
 
 	for (index = 0; index < DIAG_PROCESS_NUM_MAX; index++) {
 		if (pCtrl->process_info.entry[index].pid ==
-		    pTask->kthread_task->pid)
-		{
+		    pTask->kthread_task->pid) {
 			DIAG_PRINT(DBG_LVL_ERROR,
 				   ("%s, delete PID=%d, total_num=%d\n",
 				    __func__,
