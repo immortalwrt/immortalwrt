@@ -6507,11 +6507,6 @@ VOID WscProfileRetryTimeout(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
 #endif /* APCLI_SUPPORT */
 			pAdapter->WriteWscCfgToDatFile =
 				(pWscControl->EntryIfIdx & 0x0F);
-			/*#ifdef KTHREAD_SUPPORT */
-			/*			WAKE_UP(&(pAdapter->wscTask)); */
-			/*#else */
-			/*			RTMP_SEM_EVENT_UP(&(pAdapter->wscTask.taskSema)); */
-			/*#endif */
 			RtmpOsTaskWakeUp(&(pAdapter->wscTask));
 			MTWF_LOG(
 				DBG_CAT_SEC, CATSEC_WPS, DBG_LVL_TRACE,

@@ -72,19 +72,12 @@ ARRISMOD_EXTERN(void, arris_event_send_hook, int, int, int, char *, int);
 #include <asm/types.h>
 #include <asm/unaligned.h> /* for get_unaligned() */
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
 #include <linux/pid.h>
-#endif
 
 #include "common/link_list.h"
 
 #ifdef RT_CFG80211_SUPPORT
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28))
 #include <net/mac80211.h>
-/* #define EXT_BUILD_CHANNEL_LIST */ /* must define with CRDA */
-#else /* LINUX_VERSION_CODE */
-#undef RT_CFG80211_SUPPORT
-#endif /* LINUX_VERSION_CODE */
 #endif /* RT_CFG80211_SUPPORT */
 
 #ifdef MAT_SUPPORT
@@ -93,15 +86,8 @@ ARRISMOD_EXTERN(void, arris_event_send_hook, int, int, int, char *, int);
 #include <linux/ip.h>
 #endif /* MAT_SUPPORT */
 
-/* must put the definition before include "os/rt_linux_cmm.h" */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29)
-#define KTHREAD_SUPPORT 1
-#endif /* LINUX_VERSION_CODE */
-
-#ifdef KTHREAD_SUPPORT
 #include <linux/err.h>
 #include <linux/kthread.h>
-#endif /* KTHREAD_SUPPORT */
 
 #include "os/rt_linux_cmm.h"
 
@@ -124,12 +110,6 @@ ARRISMOD_EXTERN(void, arris_event_send_hook, int, int, int, char *, int);
 #if defined(WSC_AP_SUPPORT) || defined(WSC_STA_SUPPORT)
 #define WSC_INCLUDED
 #endif
-
-#ifdef KTHREAD_SUPPORT
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 4)
-#error "This kerne version doesn't support kthread!!"
-#endif
-#endif /* KTHREAD_SUPPORT */
 
 /*#ifdef RTMP_USB_SUPPORT // os abl move */
 typedef struct usb_device *PUSB_DEV;
@@ -504,7 +484,6 @@ typedef spinlock_t OS_NDIS_SPIN_LOCK;
 #define RTCMDUp OS_RTCMDUp
 #define RTCMDRunning OS_RTCMDRunning
 
-#ifdef KTHREAD_SUPPORT
 #define RTMP_WAIT_EVENT_INTERRUPTIBLE(_Status, _pTask)                         \
 	do {                                                                   \
 		wait_event_interruptible(_pTask->kthread_q,                    \
@@ -517,9 +496,7 @@ typedef spinlock_t OS_NDIS_SPIN_LOCK;
 		} else                                                         \
 			(_Status) = 0;                                         \
 	} while (0)
-#endif
 
-#ifdef KTHREAD_SUPPORT
 #define RTMP_WAIT_EVENT_INTERRUPTIBLE_COND(_Status, _pTask, _Cond)             \
 	do {                                                                   \
 		wait_event_interruptible(_pTask->kthread_q,                    \
@@ -533,9 +510,7 @@ typedef spinlock_t OS_NDIS_SPIN_LOCK;
 		} else                                                         \
 			(_Status) = 0;                                         \
 	} while (0)
-#endif
 
-#ifdef KTHREAD_SUPPORT
 #define WAKE_UP(_pTask)                                                        \
 	do {                                                                   \
 		if ((_pTask)->kthread_task) {                                  \
@@ -543,7 +518,6 @@ typedef spinlock_t OS_NDIS_SPIN_LOCK;
 			wake_up_interruptible(&(_pTask)->kthread_q);           \
 		}                                                              \
 	} while (0)
-#endif
 
 #ifdef LINUX
 #define OS_SCHEDULE()                                                          \
@@ -1532,9 +1506,7 @@ extern int ra_mtd_read(int num, loff_t from, size_t len, u_char *buf);
 
 typedef struct usb_device_id USB_DEVICE_ID;
 
-#define BULKAGGRE_SIZE 100 /* 100 */
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 0)
+#define BULKAGGRE_SIZE 100
 
 #ifndef OS_ABL_SUPPORT
 #define RTUSB_ALLOC_URB(iso) usb_alloc_urb(iso, GFP_ATOMIC)
@@ -1542,17 +1514,10 @@ typedef struct usb_device_id USB_DEVICE_ID;
 void usb_iot_add_padding(struct urb *urb, UINT8 *buf, ra_dma_addr_t dma);
 #endif
 #define RTUSB_SUBMIT_URB(pUrb) usb_submit_urb(pUrb, GFP_ATOMIC)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35)
 #define RTUSB_URB_ALLOC_BUFFER(_dev, _size, _dma)                              \
 	usb_alloc_coherent(_dev, _size, GFP_ATOMIC, _dma)
 #define RTUSB_URB_FREE_BUFFER(_dev, _size, _addr, _dma)                        \
 	usb_free_coherent(_dev, _size, _addr, _dma)
-#else
-#define RTUSB_URB_ALLOC_BUFFER(_dev, _size, _dma)                              \
-	usb_buffer_alloc(_dev, _size, GFP_ATOMIC, _dma)
-#define RTUSB_URB_FREE_BUFFER(_dev, _size, _addr, _dma)                        \
-	usb_buffer_free(_dev, _size, _addr, _dma)
-#endif
 
 #define RTUSB_FILL_BULK_URB(_urb, _dev, _pipe, _buffer, _buffer_len,           \
 			    _complete_fn, _context)                            \
@@ -1566,24 +1531,6 @@ void usb_iot_add_padding(struct urb *urb, UINT8 *buf, ra_dma_addr_t dma);
 #define RTUSB_URB_FREE_BUFFER rausb_buffer_free
 #endif /* OS_ABL_SUPPORT */
 
-#else
-
-#define RT28XX_PUT_DEVICE(dev_p)
-
-#ifndef OS_ABL_SUPPORT
-#define RTUSB_ALLOC_URB(iso) usb_alloc_urb(iso)
-#define RTUSB_SUBMIT_URB(pUrb) usb_submit_urb(pUrb)
-#else
-#define RTUSB_ALLOC_URB(iso) rausb_alloc_urb(iso)
-#define RTUSB_SUBMIT_URB(pUrb) rausb_submit_urb(pUrb)
-#endif /* OS_ABL_SUPPORT */
-
-#define RTUSB_URB_ALLOC_BUFFER(pUsb_Dev, BufSize, pDma_addr)                   \
-	kmalloc(BufSize, GFP_ATOMIC)
-#define RTUSB_URB_FREE_BUFFER(pUsb_Dev, BufSize, pTransferBuf, Dma_addr)       \
-	kfree(pTransferBuf)
-#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,5,0) */
-
 #ifndef OS_ABL_SUPPORT
 #define RTUSB_FREE_URB(pUrb) usb_free_urb(pUrb)
 #else
@@ -1591,17 +1538,11 @@ void usb_iot_add_padding(struct urb *urb, UINT8 *buf, ra_dma_addr_t dma);
 #endif /* OS_ABL_SUPPORT */
 
 /* unlink urb */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 7)
-
 #ifndef OS_ABL_SUPPORT
 #define RTUSB_UNLINK_URB(pUrb) usb_kill_urb(pUrb)
 #else
 #define RTUSB_UNLINK_URB(pUrb) rausb_kill_urb(pUrb)
 #endif /* OS_ABL_SUPPORT */
-
-#else
-#define RTUSB_UNLINK_URB(pUrb) usb_unlink_urb(pUrb)
-#endif /* LINUX_VERSION_CODE */
 
 /* Prototypes of completion funuc. */
 #define RtmpUsbBulkOutDataPacketComplete RTUSBBulkOutDataPacketComplete
@@ -1615,8 +1556,6 @@ void usb_iot_add_padding(struct urb *urb, UINT8 *buf, ra_dma_addr_t dma);
 #define RtmpUsbBulkOutBCNPacketComplete RTUSBBulkOutBCNPacketComplete
 #endif
 
-#if ((LINUX_VERSION_CODE < KERNEL_VERSION(2, 5, 51)) ||                        \
-     (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 18)))
 #define RTUSBBulkOutDataPacketComplete(Status, pURB, pt_regs)                  \
 	RTUSBBulkOutDataPacketComplete(pURB)
 #define RTUSBBulkOutMLMEPacketComplete(Status, pURB, pt_regs)                  \
@@ -1633,26 +1572,6 @@ void usb_iot_add_padding(struct urb *urb, UINT8 *buf, ra_dma_addr_t dma);
 #ifdef MT_MAC
 #define RTUSBBulkOutBCNPacketComplete(Status, pURB, pt_regs)                   \
 	RTUSBBulkOutBCNPacketComplete(pURB)
-#endif
-#else
-#define RTUSBBulkOutDataPacketComplete(Status, pURB, pt_regs)                  \
-	RTUSBBulkOutDataPacketComplete(pURB, pt_regs)
-#define RTUSBBulkOutMLMEPacketComplete(Status, pURB, pt_regs)                  \
-	RTUSBBulkOutMLMEPacketComplete(pURB, pt_regs)
-#define RTUSBBulkOutNullFrameComplete(Status, pURB, pt_regs)                   \
-	RTUSBBulkOutNullFrameComplete(pURB, pt_regs)
-#define RTUSBBulkOutRTSFrameComplete(Status, pURB, pt_regs)                    \
-	RTUSBBulkOutRTSFrameComplete(pURB, pt_regs)
-#define RTUSBBulkOutPsPollComplete(Status, pURB, pt_regs)                      \
-	RTUSBBulkOutPsPollComplete(pURB, pt_regs)
-#define RTUSBBulkRxComplete(Status, pURB, pt_regs)                             \
-	RTUSBBulkRxComplete(pURB, pt_regs)
-#define RTUSBBulkCmdRspEventComplete(Status, pURB, pt_regs)                    \
-	RTUSBBulkCmdRspEventComplete(pURB, pt_regs)
-#ifdef MT_MAC
-#define RTUSBBulkOutBCNPacketComplete(Status, pURB, pt_regs)                   \
-	RTUSBBulkOutBCNPacketComplete(pURB, pt_regs)
-#endif
 #endif
 
 /*extern void dump_urb(struct urb *purb); */

@@ -901,7 +901,8 @@ endif
 os_objs := $(SRC_DIR)/os/linux/rt_proc.o\
             $(SRC_DIR)/os/linux/rt_linux.o\
             $(SRC_DIR)/os/linux/rt_profile.o\
-            $(SRC_DIR)/os/linux/rt_main_dev.o
+            $(SRC_DIR)/os/linux/rt_main_dev.o\
+            $(SRC_DIR)/os/linux/mt_wifi_mtd.o
 
 ifeq ($(CONFIG_WLAN_HOOK),y)
 	EXTRA_CFLAGS +=-DRTMP_WLAN_HOOK_SUPPORT

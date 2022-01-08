@@ -843,8 +843,6 @@ static inline void __RtmpOSFSInfoChange(OS_FS_INFO *pOSFSInfo, BOOLEAN bSet)
 static inline NDIS_STATUS __RtmpOSTaskKill(OS_TASK *pTask)
 {
 	int ret = NDIS_STATUS_FAILURE;
-#ifdef KTHREAD_SUPPORT
-
 	if (pTask->kthread_task) {
 		if (kthread_stop(pTask->kthread_task) == 0) {
 			pTask->kthread_task = NULL;
@@ -859,41 +857,11 @@ static inline NDIS_STATUS __RtmpOSTaskKill(OS_TASK *pTask)
 			 ("%s null kthread_task %s\n", __func__,
 			  pTask->taskName));
 
-#else
-	if (CHECK_PID_LEGALITY(pTask->taskPID)) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("Terminate the task(%s) with pid(%d)!\n",
-			  pTask->taskName, GET_PID_NUMBER(pTask->taskPID)));
-		mb();
-		pTask->task_killed = 1;
-		mb();
-		ret = KILL_THREAD_PID(pTask->taskPID, SIGTERM, 1);
-
-		if (ret) {
-			MTWF_LOG(
-				DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				(KERN_WARNING
-				 "kill task(%s) with pid(%d) failed(retVal=%d)!\n",
-				 pTask->taskName,
-				 GET_PID_NUMBER(pTask->taskPID), ret));
-		} else {
-			wait_for_completion(&pTask->taskComplete);
-			pTask->taskPID = THREAD_PID_INIT_VALUE;
-			pTask->task_killed = 0;
-			RTMP_SEM_EVENT_DESTORY(&pTask->taskSema);
-			ret = NDIS_STATUS_SUCCESS;
-		}
-	}
-#endif
 	return ret;
 }
 
 static inline INT __RtmpOSTaskNotifyToExit(OS_TASK *pTask)
 {
-#ifndef KTHREAD_SUPPORT
-	pTask->taskPID = THREAD_PID_INIT_VALUE;
-	complete_and_exit(&pTask->taskComplete, 0);
-#endif
 #ifdef WIFI_DIAG
 	DiagDelPid(pTask);
 #endif
@@ -902,34 +870,6 @@ static inline INT __RtmpOSTaskNotifyToExit(OS_TASK *pTask)
 
 static inline void __RtmpOSTaskCustomize(OS_TASK *pTask)
 {
-#ifndef KTHREAD_SUPPORT
-#if (KERNEL_VERSION(2, 5, 0) <= LINUX_VERSION_CODE)
-	daemonize(
-		(RTMP_STRING *)&pTask->taskName[0] /*"%s",pAd->net_dev->name */);
-	allow_signal(SIGTERM);
-	allow_signal(SIGKILL);
-	current->flags |= PF_NOFREEZE;
-#else
-	unsigned long flags;
-
-	daemonize();
-	reparent_to_init();
-	strcpy(current->comm, &pTask->taskName[0]);
-	siginitsetinv(&current->blocked, sigmask(SIGTERM) | sigmask(SIGKILL));
-	/* Allow interception of SIGKILL only
-	  * Don't allow other signals to interrupt the transmission
-	 */
-#if (KERNEL_VERSION(2, 4, 22) < LINUX_VERSION_CODE)
-	spin_lock_irqsave(&current->sigmask_lock, flags);
-	flush_signals(current);
-	recalc_sigpending(current);
-	spin_unlock_irqrestore(&current->sigmask_lock, flags);
-#endif
-#endif
-	RTMP_GET_OS_PID(pTask->taskPID, current->pid);
-	/* signal that we've started the thread */
-	complete(&pTask->taskComplete);
-#endif
 #ifdef WIFI_DIAG
 	DiagAddPid(pTask);
 #endif
@@ -939,10 +879,6 @@ static inline NDIS_STATUS
 __RtmpOSTaskAttach(IN OS_TASK *pTask, IN RTMP_OS_TASK_CALLBACK fn, IN ULONG arg)
 {
 	NDIS_STATUS status = NDIS_STATUS_SUCCESS;
-#ifndef KTHREAD_SUPPORT
-	pid_t pid_number = -1;
-#endif /* KTHREAD_SUPPORT */
-#ifdef KTHREAD_SUPPORT
 	pTask->task_killed = 0;
 
 	if (pTask->kthread_task) {
@@ -964,22 +900,6 @@ __RtmpOSTaskAttach(IN OS_TASK *pTask, IN RTMP_OS_TASK_CALLBACK fn, IN ULONG arg)
 		status = NDIS_STATUS_FAILURE;
 		goto done;
 	}
-
-#else
-	pid_number = kernel_thread((cast_fn)fn, (void *)arg,
-				   RTMP_OS_MGMT_TASK_FLAGS);
-
-	if (pid_number < 0) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("Attach task(%s) failed!\n", pTask->taskName));
-		status = NDIS_STATUS_FAILURE;
-	} else {
-		/* Wait for the thread to start */
-		wait_for_completion(&pTask->taskComplete);
-		status = NDIS_STATUS_SUCCESS;
-	}
-
-#endif
 done:
 	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
 		 ("%s %s end %d\n", __func__, pTask->taskName, status));
@@ -994,73 +914,25 @@ static inline NDIS_STATUS __RtmpOSTaskInit(IN OS_TASK *pTask,
 	int len;
 
 	ASSERT(pTask);
-#ifndef KTHREAD_SUPPORT
-	os_zero_mem((PUCHAR)(pTask), sizeof(OS_TASK));
-#endif
 	len = strlen(pTaskName);
 	len = len > (RTMP_OS_TASK_NAME_LEN - 1) ? (RTMP_OS_TASK_NAME_LEN - 1) :
 							len;
 	os_move_mem(&pTask->taskName[0], pTaskName, len);
 	pTask->priv = pPriv;
-#ifndef KTHREAD_SUPPORT
-	RTMP_SEM_EVENT_INIT_LOCKED(&(pTask->taskSema), pSemList);
-	pTask->taskPID = THREAD_PID_INIT_VALUE;
-	init_completion(&pTask->taskComplete);
-#endif
-#ifdef KTHREAD_SUPPORT
 	init_waitqueue_head(&(pTask->kthread_q));
-#endif /* KTHREAD_SUPPORT */
 	return NDIS_STATUS_SUCCESS;
 }
 
 BOOLEAN __RtmpOSTaskWait(IN VOID *pReserved, IN OS_TASK *pTask,
 			 IN INT32 *pStatus)
 {
-#ifdef KTHREAD_SUPPORT
 	RTMP_WAIT_EVENT_INTERRUPTIBLE((*pStatus), pTask);
 
 	if ((pTask->task_killed == 1) || ((*pStatus) != 0))
 		return FALSE;
 
-#else
-	RTMP_SEM_EVENT_WAIT(&(pTask->taskSema), (*pStatus));
-
-	/* unlock the device pointers */
-	if ((*pStatus) != 0) {
-		/*		RTMP_SET_FLAG_(*pFlags, fRTMP_ADAPTER_HALT_IN_PROGRESS); */
-		return FALSE;
-	}
-
-#endif /* KTHREAD_SUPPORT */
 	return TRUE;
 }
-
-#if LINUX_VERSION_CODE <= 0x20402 /* Red Hat 7.1 */
-struct net_device *alloc_netdev(int sizeof_priv, const char *mask,
-				void (*setup)(struct net_device *))
-{
-	struct net_device *dev;
-	INT alloc_size;
-	/* ensure 32-byte alignment of the private area */
-	alloc_size = sizeof(*dev) + sizeof_priv + 31;
-	dev = kmalloc(alloc_size, GFP_KERNEL);
-
-	if (dev == NULL) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("alloc_netdev: Unable to allocate device memory.\n"));
-		return NULL;
-	}
-
-	memset(dev, 0, alloc_size);
-
-	if (sizeof_priv)
-		dev->priv = (void *)(((long)(dev + 1) + 31) & ~31);
-
-	setup(dev);
-	strcpy(dev->name, mask);
-	return dev;
-}
-#endif /* LINUX_VERSION_CODE */
 
 static UINT32 RtmpOSWirelessEventTranslate(IN UINT32 eventType)
 {
@@ -2020,23 +1892,14 @@ VOID RtmpDrvAllRFPrint(IN VOID *pReserved, IN UCHAR *pBuf, IN UINT32 BufLen)
 VOID RtmpOsCmdUp(RTMP_OS_TASK *pCmdQTask)
 {
 	OS_TASK *pTask = RTMP_OS_TASK_GET(pCmdQTask);
-#ifdef KTHREAD_SUPPORT
 	pTask->kthread_running = TRUE;
 	wake_up(&pTask->kthread_q);
-#else
-	if (CHECK_PID_LEGALITY(pTask->taskPID))
-		RTMP_SEM_EVENT_UP(&(pTask->taskSema));
-#endif /* KTHREAD_SUPPORT */
 }
 
 BOOLEAN RtmpOsIsCmdThreadRunning(RTMP_OS_TASK *pCmdQTask)
 {
 	OS_TASK *pTask = RTMP_OS_TASK_GET(pCmdQTask);
-#ifdef KTHREAD_SUPPORT
 	return pTask->kthread_running;
-#else
-	return FALSE;
-#endif /* KTHREAD_SUPPORT */
 }
 
 /*
@@ -2056,7 +1919,6 @@ BOOLEAN RtmpOsIsCmdThreadRunning(RTMP_OS_TASK *pCmdQTask)
 VOID RtmpOsMlmeUp(IN RTMP_OS_TASK *pMlmeQTask)
 {
 	OS_TASK *pTask = RTMP_OS_TASK_GET(pMlmeQTask);
-#ifdef KTHREAD_SUPPORT
 
 	if ((pTask != NULL) && (pTask->kthread_task)) {
 		pTask->kthread_running = TRUE;
@@ -2067,15 +1929,6 @@ VOID RtmpOsMlmeUp(IN RTMP_OS_TASK *pMlmeQTask)
 			  __func__, pTask,
 			  (pTask) ? pTask->kthread_task : NULL));
 	}
-
-#else
-
-	if (pTask != NULL) {
-		if (CHECK_PID_LEGALITY(pTask->taskPID))
-			RTMP_SEM_EVENT_UP(&(pTask->taskSema));
-	}
-
-#endif /* KTHREAD_SUPPORT */
 }
 
 /*
@@ -2709,11 +2562,7 @@ VOID RtmpOsTaskWakeUp(RTMP_OS_TASK *pTaskOrg)
 	if (pTask == NULL)
 		return;
 
-#ifdef KTHREAD_SUPPORT
 	WAKE_UP(pTask);
-#else
-	RTMP_SEM_EVENT_UP(&pTask->taskSema);
-#endif
 }
 
 /*
@@ -2740,13 +2589,7 @@ BOOLEAN RtmpOsCheckTaskLegality(RTMP_OS_TASK *pTaskOrg)
 	if (!pTask)
 		return FALSE;
 
-#ifdef KTHREAD_SUPPORT
-
 	if (pTask->kthread_task == NULL)
-#else
-	if (CHECK_PID_LEGALITY(pTask->taskPID))
-		else
-#endif
 		return FALSE;
 
 	return TRUE;
@@ -4533,11 +4376,7 @@ BOOLEAN RtmpOSTaskWait(VOID *pReserved, RTMP_OS_TASK *pTask, INT32 *pStatus)
 
 VOID RtmpOsTaskWakeUp(RTMP_OS_TASK *pTask)
 {
-#ifdef KTHREAD_SUPPORT
 	WAKE_UP(pTask);
-#else
-	RTMP_SEM_EVENT_UP(&pTask->taskSema);
-#endif
 }
 
 #endif /* OS_ABL_FUNC_SUPPORT */

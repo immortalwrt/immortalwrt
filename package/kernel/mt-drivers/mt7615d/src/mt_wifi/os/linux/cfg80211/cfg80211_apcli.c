@@ -118,11 +118,7 @@ VOID CFG80211DRV_ApClientKeyAdd(VOID *pAdOrg, VOID *pData)
 	    pKeyInfo->KeyType == RT_CMD_80211_KEY_WEP104) {
 #if defined(MT7615) || defined(MT7622)
 		if (IS_MT7615(pAd) || IS_MT7622(pAd)) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 			if (pKeyInfo->bPairwise == FALSE)
-#else
-			if (pKeyInfo->KeyId > 0)
-#endif /* LINUX_VERSION_CODE (2, 6, 37) */
 			{
 				ASIC_SEC_INFO Info = { 0 };
 				if (pKeyInfo->KeyType == RT_CMD_80211_KEY_WEP40)
@@ -200,11 +196,7 @@ VOID CFG80211DRV_ApClientKeyAdd(VOID *pAdOrg, VOID *pData)
 #endif /* MT7615 || MT7622*/
 	} else if (pKeyInfo->KeyType == RT_CMD_80211_KEY_WPA) {
 		if (pKeyInfo->cipher == Ndis802_11AESEnable) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 			if (pKeyInfo->bPairwise == FALSE)
-#else
-			if (pKeyInfo->KeyId > 0)
-#endif /* LINUX_VERSION_CODE (2, 6, 37) */
 			{
 				if (IS_MT7615(pAd) || IS_MT7622(pAd)) {
 					struct _ASIC_SEC_INFO *info = NULL;
@@ -372,11 +364,7 @@ VOID CFG80211DRV_ApClientKeyAdd(VOID *pAdOrg, VOID *pData)
 			}
 		} else if (pKeyInfo->cipher == Ndis802_11TKIPEnable) {
 			/* TKIP */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 			if (pKeyInfo->bPairwise == FALSE)
-#else
-			if (pKeyInfo->KeyId > 0)
-#endif /* LINUX_VERSION_CODE 2.6.37 */
 			{
 #if defined(MT7615) || defined(MT7622)
 				if (IS_MT7615(pAd) || IS_MT7622(pAd)) {

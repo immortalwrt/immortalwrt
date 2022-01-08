@@ -51,11 +51,7 @@ static INT tm_wq_qm_init(RTMP_ADAPTER *pAd)
 
 	pAd->tx_dequeue_scheduable = TRUE;
 
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	pAd->qm_wq = alloc_workqueue("qm_wq", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
-#else
-	pAd->qm_wq = create_singlethread_workqueue("qm_wq");
-#endif
 
 	if (cap->qm == FAST_PATH_QM) {
 		INIT_WORK(&pAd->tx_deq_work, fp_tx_pkt_deq_work);
@@ -128,11 +124,7 @@ static INT tm_wq_hif_pci_init(RTMP_ADAPTER *pAd)
 {
 	INT ret = NDIS_STATUS_SUCCESS;
 	POS_COOKIE obj = (POS_COOKIE)pAd->OS_Cookie;
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	obj->hif_wq = alloc_workqueue("hif_wq", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
-#else
-	obj->hif_wq = create_singlethread_workqueue("hif_wq");
-#endif
 
 	INIT_WORK(&obj->tx_dma_done_work, tx_dma_done_work);
 	INIT_WORK(&obj->rx_done_work[HIF_RX_IDX0], rx_done_work);

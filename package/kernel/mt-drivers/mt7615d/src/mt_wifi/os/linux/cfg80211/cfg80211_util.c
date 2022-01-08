@@ -1165,15 +1165,7 @@ BOOLEAN CFG80211OS_RxMgmt(IN PNET_DEV pNetDev, IN INT32 freq, IN PUCHAR frame,
 	return cfg80211_rx_mgmt(pNetDev, freq, 0, /* CFG_TODO return 0 in dbm */
 				frame, len, GFP_ATOMIC);
 #else
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	return cfg80211_rx_mgmt(pNetDev, freq, frame, len, GFP_ATOMIC);
-#else
-#if (KERNEL_VERSION(2, 6, 34) <= LINUX_VERSION_CODE)
-	return cfg80211_rx_action(pNetDev, freq, frame, len, GFP_ATOMIC);
-#else
-	return FALSE;
-#endif /* LINUX_VERSION_CODE: 2.6.34*/
-#endif /* LINUX_VERSION_CODE: 2.6.37*/
 #endif /* LINUX_VERSION_CODE: 3.4.0*/
 #endif /* LINUX_VERSION_CODE: 3.6.0 */
 }
@@ -1181,22 +1173,8 @@ BOOLEAN CFG80211OS_RxMgmt(IN PNET_DEV pNetDev, IN INT32 freq, IN PUCHAR frame,
 VOID CFG80211OS_TxStatus(IN PNET_DEV pNetDev, IN INT32 cookie, IN PUCHAR frame,
 			 IN UINT32 len, IN BOOLEAN ack)
 {
-#if (KERNEL_VERSION(3, 6, 0) <= LINUX_VERSION_CODE)
 	return cfg80211_mgmt_tx_status(pNetDev->ieee80211_ptr, cookie, frame,
 				       len, ack, GFP_ATOMIC);
-#else
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
-	return cfg80211_mgmt_tx_status(pNetDev, cookie, frame, len, ack,
-				       GFP_ATOMIC);
-#else
-#if (KERNEL_VERSION(2, 6, 34) <= LINUX_VERSION_CODE)
-	return cfg80211_action_tx_status(pNetDev, cookie, frame, len, ack,
-					 GFP_ATOMIC);
-#else
-	return FALSE;
-#endif /* LINUX_VERSION_CODE: 2.6.34*/
-#endif /* LINUX_VERSION_CODE: 2.6.37*/
-#endif /* LINUX_VERSION_CODE: 3.6.0 */
 }
 
 VOID CFG80211OS_NewSta(IN PNET_DEV pNetDev, IN const PUCHAR mac_addr,

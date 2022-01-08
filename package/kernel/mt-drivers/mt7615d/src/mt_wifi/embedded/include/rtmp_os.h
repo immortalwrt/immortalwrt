@@ -100,19 +100,10 @@ typedef struct _RTMP_OS_TASK_ {
 	void *priv;
 	/*unsigned long                 taskFlags; */
 	RTMP_TASK_STATUS taskStatus;
-#ifndef KTHREAD_SUPPORT
-	RTMP_OS_SEM taskSema;
-	RTMP_OS_PID taskPID;
-#ifdef LINUX
-	struct completion taskComplete;
-#endif /* LINUX */
-#endif
 	unsigned char task_killed;
-#ifdef KTHREAD_SUPPORT
 	struct task_struct *kthread_task;
 	wait_queue_head_t kthread_q;
 	BOOLEAN kthread_running;
-#endif
 } OS_TASK;
 #endif /* RTMP_MODULE_OS || ! OS_ABL_FUNC_SUPPORT */
 

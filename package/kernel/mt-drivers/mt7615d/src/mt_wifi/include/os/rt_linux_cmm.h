@@ -96,17 +96,9 @@ RTMP_DECLARE_DRV_OPS_FUNCTION(pci);
 
 #define RTMP_OS_TASK_IS_KILLED(__pTask) ((__pTask)->task_killed)
 
-#ifdef KTHREAD_SUPPORT
 #define RTMP_OS_TASK_WAKE_UP(__pTask) WAKE_UP(pTask);
-#else
-#define RTMP_OS_TASK_WAKE_UP(__pTask) RTMP_SEM_EVENT_UP(&(pTask)->taskSema);
-#endif /* KTHREAD_SUPPORT */
 
-#ifdef KTHREAD_SUPPORT
 #define RTMP_OS_TASK_LEGALITY(__pTask) ((__pTask)->kthread_task != NULL)
-#else
-#define RTMP_OS_TASK_LEGALITY(__pTask) CHECK_PID_LEGALITY((__pTask)->taskPID)
-#endif /* KTHREAD_SUPPORT */
 
 #else
 

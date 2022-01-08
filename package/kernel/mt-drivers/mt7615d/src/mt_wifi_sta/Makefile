@@ -440,10 +440,6 @@ ifeq ($(CONFIG_WIFI_WORK_QUEUE_BH),y)
     EXTRA_CFLAGS += -DWORKQUEUE_BH
 endif
 
-ifeq ($(CONFIG_KTHREAD),y)
-    EXTRA_CFLAGS += -DKTHREAD_SUPPORT
-endif
-
 
 ########################################################
 # chip related files

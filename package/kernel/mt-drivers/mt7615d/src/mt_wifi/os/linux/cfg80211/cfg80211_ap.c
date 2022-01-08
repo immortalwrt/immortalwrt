@@ -1192,12 +1192,8 @@ BOOLEAN CFG80211DRV_ApKeyDel(VOID *pAdOrg, VOID *pData)
 	ASIC_SEC_INFO Info = { 0 };
 
 	pKeyInfo = (CMD_RTPRIV_IOCTL_80211_KEY *)pData;
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 
 	if (pKeyInfo->bPairwise == FALSE)
-#else
-	if (pKeyInfo->KeyId > 0)
-#endif
 	{
 		UINT Wcid = 0;
 		UINT apidx = CFG80211_FindMbssApIdxByNetDevice(
@@ -1418,11 +1414,7 @@ BOOLEAN CFG80211DRV_ApKeyAdd(VOID *pAdOrg, VOID *pData)
 #endif
 		}
 	} else if (pKeyInfo->KeyType == RT_CMD_80211_KEY_WPA) {
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 		if (pKeyInfo->bPairwise == FALSE)
-#else
-		if (pKeyInfo->KeyId > 0)
-#endif /* LINUX_VERSION_CODE 2.6.37 */
 		{
 			USHORT Wcid;
 
@@ -1709,12 +1701,8 @@ BOOLEAN CFG80211DRV_ApKeyAdd(VOID *pAdOrg, VOID *pData)
 	}
 #ifdef DOT11W_PMF_SUPPORT
 	else if (pKeyInfo->KeyType == RT_CMD_80211_KEY_AES_CMAC) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 		if ((pKeyInfo->bPairwise == FALSE) &&
 		    (pKeyInfo->KeyId == 4 || pKeyInfo->KeyId == 5))
-#else
-		if (pKeyInfo->KeyId == 4 || pKeyInfo->KeyId == 5)
-#endif /* LINUX_VERSION_CODE 2.6.37 */
 		{
 			hex_dump("PMF IGTK pKeyInfo->KeyBuf=",
 				 (UINT8 *)pKeyInfo->KeyBuf, pKeyInfo->KeyLen);
@@ -1786,16 +1774,10 @@ BOOLEAN CFG80211DRV_ApKeyAdd(VOID *pAdOrg, VOID *pData)
 #endif /* MT_MAC */
 #endif /* MT7615 */
 		} else {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 			MTWF_LOG(
 				DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 				("ERROR !! pKeyInfo->bPairwise = %d pKeyInfo->KeyId=%d \n",
 				 pKeyInfo->bPairwise, pKeyInfo->KeyId));
-#else
-			MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("ERROR !! pKeyInfo->KeyId=%d \n",
-				  pKeyInfo->KeyId));
-#endif /* LINUX_VERSION_CODE 2.6.37 */
 		}
 	}
 

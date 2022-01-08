@@ -31,43 +31,6 @@
 #include "rt_config.h"
 #include "hdev/hdev.h"
 
-/*decision flash api by compiler flag*/
-#ifdef CONFIG_PROPRIETARY_DRIVER
-/*
-* @ used for proprietary driver support, can't read/write mtd on driver
-* @ read: mtd flash patrition use request firmware to load
-* @ write: write not support, use ated to write to flash
-*/
-static void flash_bin_read(void *ctrl, UCHAR *p, ULONG a, ULONG b)
-{
-	struct _RTMP_ADAPTER *ad = ((struct hdev_ctrl *)ctrl)->priv;
-	UCHAR *buffer = NULL;
-	UINT32 len;
-	UCHAR *name = get_dev_eeprom_binary(ad);
-
-	/*load from request firmware*/
-	os_load_code_from_bin(ad, &buffer, name, &len);
-
-	if (len > 0 && buffer != NULL) {
-		os_move_mem(p, buffer + a, b);
-		os_free_mem(buffer);
-	}
-}
-
-static void flash_bin_write(void *ctrl, UCHAR *p, ULONG a, ULONG b)
-{
-	MTWF_LOG(
-		DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("proprietary driver not support flash write, will write on ated.\n"));
-}
-
-#define flash_read(_ctrl, _ptr, _offset, _len)                                 \
-	flash_bin_read(_ctrl, _ptr, _offset, _len)
-#define flash_write(_ctrl, _ptr, _offset, _len)                                \
-	flash_bin_write(_ctrl, _ptr, _offset, _len)
-
-#else
-
 #ifdef CONFIG_RALINK_FLASH_API
 /*
 * @ The flag "CONFIG_RALINK_FLASH_API" is used for APSoC Linux SDK
@@ -130,10 +93,9 @@ extern int ra_mtd_read_nm(char *name, loff_t from, size_t len, u_char *buf);
 #define flash_write(_ctrl, _ptr, _offset, _len)                                \
 	ra_mtd_write_nm("factory", _offset & 0xFFFF, (size_t)_len, _ptr)
 
-#endif /*CONFIG_WIFI_MTD*/
-#endif /*RA_MTD_RW_BY_NUM*/
+#endif /* CONFIG_WIFI_MTD */
+#endif /* RA_MTD_RW_BY_NUM */
 #endif /* CONFIG_RALINK_FLASH_API */
-#endif /*CONFIG_PROPRIETERY_DRIVER*/
 
 void RtmpFlashRead(void *hdev_ctrl, UCHAR *p, ULONG a, ULONG b)
 {

@@ -666,21 +666,20 @@ INT NICReadEEPROMParameters(RTMP_ADAPTER *pAd, RTMP_STRING *mac_addr)
 
 void rtmp_eeprom_of_platform(RTMP_ADAPTER *pAd)
 {
-	UCHAR e2p_dafault;
-	e2p_dafault = E2P_NONE;
+	UCHAR e2p_default = E2P_NONE;
 #ifdef CONFIG_RT_FIRST_CARD_EEPROM
 
 	if (pAd->dev_idx == 0) {
 		if (RTMPEqualMemory("efuse", CONFIG_RT_FIRST_CARD_EEPROM, 5))
-			e2p_dafault = E2P_EFUSE_MODE;
+			e2p_default = E2P_EFUSE_MODE;
 
 		if (RTMPEqualMemory("prom", CONFIG_RT_FIRST_CARD_EEPROM, 4))
-			e2p_dafault = E2P_EEPROM_MODE;
+			e2p_default = E2P_EEPROM_MODE;
 
 		if (RTMPEqualMemory("flash", CONFIG_RT_FIRST_CARD_EEPROM, 5))
-			e2p_dafault = E2P_FLASH_MODE;
+			e2p_default = E2P_FLASH_MODE;
 
-		pAd->E2pAccessMode = e2p_dafault;
+		pAd->E2pAccessMode = e2p_default;
 	}
 
 #endif /* CONFIG_RT_FIRST_CARD_EEPROM */
@@ -688,15 +687,15 @@ void rtmp_eeprom_of_platform(RTMP_ADAPTER *pAd)
 
 	if (pAd->dev_idx == 1) {
 		if (RTMPEqualMemory("efuse", CONFIG_RT_SECOND_CARD_EEPROM, 5))
-			e2p_dafault = E2P_EFUSE_MODE;
+			e2p_default = E2P_EFUSE_MODE;
 
 		if (RTMPEqualMemory("prom", CONFIG_RT_SECOND_CARD_EEPROM, 4))
-			e2p_dafault = E2P_EEPROM_MODE;
+			e2p_default = E2P_EEPROM_MODE;
 
 		if (RTMPEqualMemory("flash", CONFIG_RT_SECOND_CARD_EEPROM, 5))
-			e2p_dafault = E2P_FLASH_MODE;
+			e2p_default = E2P_FLASH_MODE;
 
-		pAd->E2pAccessMode = e2p_dafault;
+		pAd->E2pAccessMode = e2p_default;
 	}
 
 #endif /* CONFIG_RT_SECOND_CARD_EEPROM */
@@ -704,15 +703,15 @@ void rtmp_eeprom_of_platform(RTMP_ADAPTER *pAd)
 
 	if (pAd->dev_idx == 2) {
 		if (RTMPEqualMemory("efuse", CONFIG_RT_THIRD_CARD_EEPROM, 5))
-			e2p_dafault = E2P_EFUSE_MODE;
+			e2p_default = E2P_EFUSE_MODE;
 
 		if (RTMPEqualMemory("prom", CONFIG_RT_THIRD_CARD_EEPROM, 4))
-			e2p_dafault = E2P_EEPROM_MODE;
+			e2p_default = E2P_EEPROM_MODE;
 
 		if (RTMPEqualMemory("flash", CONFIG_RT_THIRD_CARD_EEPROM, 5))
-			e2p_dafault = E2P_FLASH_MODE;
+			e2p_default = E2P_FLASH_MODE;
 
-		pAd->E2pAccessMode = e2p_dafault;
+		pAd->E2pAccessMode = e2p_default;
 	}
 
 #endif /* CONFIG_RT_THIRD_CARD_EEPROM */
@@ -720,30 +719,30 @@ void rtmp_eeprom_of_platform(RTMP_ADAPTER *pAd)
 
 UCHAR RtmpEepromGetDefault(RTMP_ADAPTER *pAd)
 {
-	UCHAR e2p_dafault = 0;
+	UCHAR e2p_default = E2P_NONE;
 #ifdef RTMP_FLASH_SUPPORT
 
 	if (pAd->infType == RTMP_DEV_INF_RBUS)
-		e2p_dafault = E2P_FLASH_MODE;
+		e2p_default = E2P_FLASH_MODE;
 	else
 #endif /* RTMP_FLASH_SUPPORT */
 	{
 #ifdef RTMP_EFUSE_SUPPORT
 
 		if (pAd->bUseEfuse)
-			e2p_dafault = E2P_EFUSE_MODE;
+			e2p_default = E2P_EFUSE_MODE;
 		else
 #endif /* RTMP_EFUSE_SUPPORT */
-			e2p_dafault = E2P_EEPROM_MODE;
+			e2p_default = E2P_EEPROM_MODE;
 	}
 
 	/* SDIO load from NVRAM(BIN FILE) */
 	if (pAd->infType == RTMP_DEV_INF_SDIO)
-		e2p_dafault = E2P_BIN_MODE;
+		e2p_default = E2P_BIN_MODE;
 
 	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-		 ("%s::e2p_dafault=%d\n", __func__, e2p_dafault));
-	return e2p_dafault;
+		 ("%s::e2p_default=%d\n", __func__, e2p_default));
+	return e2p_default;
 }
 
 static NDIS_STATUS rtmp_ee_bin_init(PRTMP_ADAPTER pAd)
@@ -803,7 +802,7 @@ INT RtmpChipOpsEepromHook(RTMP_ADAPTER *pAd, INT infType, INT forceMode)
 #ifdef RTMP_PCI_SUPPORT
 	UINT32 val;
 #endif /* RTMP_PCI_SUPPORT */
-	UCHAR e2p_default = 0;
+	UCHAR e2p_default = E2P_NONE;
 	EEPROM_CONTROL *pE2pCtrl = &pAd->E2pCtrl;
 
 	if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST))

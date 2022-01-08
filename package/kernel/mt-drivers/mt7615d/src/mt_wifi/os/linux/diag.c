@@ -932,12 +932,8 @@ void DiagAddPid(OS_TASK *pTask)
 	for (index = 0; index < DIAG_PROCESS_NUM_MAX; index++) {
 		if (pCtrl->process_info.entry[index].pid == -1) {
 			pCtrl->process_info.entry[index].is_process = 0;
-#ifdef KTHREAD_SUPPORT
 			pCtrl->process_info.entry[index].pid =
 				pTask->kthread_task->pid;
-#else
-			pCtrl->process_info.entry[index].pid = pTask->taskPID;
-#endif
 			memcpy(pCtrl->process_info.entry[index].name,
 			       pTask->taskName,
 			       (strlen(pTask->taskName) >
@@ -966,12 +962,8 @@ void DiagDelPid(OS_TASK *pTask)
 		return;
 
 	for (index = 0; index < DIAG_PROCESS_NUM_MAX; index++) {
-#ifdef KTHREAD_SUPPORT
 		if (pCtrl->process_info.entry[index].pid ==
 		    pTask->kthread_task->pid)
-#else
-		if (pCtrl->process_info.entry[index].pid == pTask->taskPID)
-#endif
 		{
 			DIAG_PRINT(DBG_LVL_ERROR,
 				   ("%s, delete PID=%d, total_num=%d\n",

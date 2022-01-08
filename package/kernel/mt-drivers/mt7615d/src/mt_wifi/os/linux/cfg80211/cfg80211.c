@@ -463,13 +463,11 @@ static int CFG80211_OpsVirtualInfChg(IN struct wiphy *pWiphy, IN int IfIndex,
 		Type = RT_CMD_80211_IFTYPE_MONITOR;
 
 #ifdef CONFIG_AP_SUPPORT
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	else if (Type == NL80211_IFTYPE_P2P_CLIENT)
 		Type = RT_CMD_80211_IFTYPE_P2P_CLIENT;
 	else if (Type == NL80211_IFTYPE_P2P_GO)
 		Type = RT_CMD_80211_IFTYPE_P2P_GO;
 
-#endif /* LINUX_VERSION_CODE 2.6.37 */
 #endif /* CONFIG_AP_SUPPORT */
 	RTMP_DRIVER_80211_VIF_CHG(pAd, &VifInfo);
 	/*CFG_TODO*/
@@ -579,9 +577,7 @@ static int CFG80211_OpsScan(IN struct wiphy *pWiphy,
 	if ((pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_STATION) &&
 	    (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_AP) &&
 	    (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_ADHOC)
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	    && (pNdev->ieee80211_ptr->iftype != NL80211_IFTYPE_P2P_CLIENT)
-#endif /* LINUX_VERSION_CODE: 2.6.37 */
 	)
 #endif /* APCLI_CFG80211_SUPPORT */
 	{
@@ -1005,18 +1001,11 @@ static int CFG80211_OpsWiphyParamsSet(IN struct wiphy *pWiphy,
  *	pMacAddr will be NULL when adding a group key.
  * ========================================================================
  */
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 static int CFG80211_OpsKeyAdd(IN struct wiphy *pWiphy,
 			      IN struct net_device *pNdev, IN UINT8 KeyIdx,
 			      IN bool Pairwise, IN const UINT8 *pMacAddr,
 			      IN struct key_params *pParams)
-#else
 
-static int CFG80211_OpsKeyAdd(IN struct wiphy *pWiphy,
-			      IN struct net_device *pNdev, IN UINT8 KeyIdx,
-			      IN const UINT8 *pMacAddr,
-			      IN struct key_params *pParams)
-#endif /* LINUX_VERSION_CODE */
 {
 	VOID *pAd;
 	CMD_RTPRIV_IOCTL_80211_KEY KeyInfo;
@@ -1039,9 +1028,7 @@ static int CFG80211_OpsKeyAdd(IN struct wiphy *pWiphy,
 	memcpy(KeyInfo.KeyBuf, pParams->key, pParams->key_len);
 	KeyInfo.KeyBuf[pParams->key_len] = 0x00;
 	KeyInfo.KeyId = KeyIdx;
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	KeyInfo.bPairwise = Pairwise;
-#endif /* LINUX_VERSION_CODE: 2,6,37 */
 	KeyInfo.KeyLen = pParams->key_len;
 #ifdef DOT11W_PMF_SUPPORT
 #endif /* DOT11W_PMF_SUPPORT */
@@ -1156,19 +1143,11 @@ static int CFG80211_OpsKeyAdd(IN struct wiphy *pWiphy,
  *	retrieve the key, -ENOENT if it doesn't exist.
  * ========================================================================
  */
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 static int
 CFG80211_OpsKeyGet(IN struct wiphy *pWiphy, IN struct net_device *pNdev,
 		   IN UINT8 KeyIdx, IN bool Pairwise, IN const UINT8 *pMacAddr,
 		   IN void *pCookie,
 		   IN void (*pCallback)(void *cookie, struct key_params *))
-#else
-
-static int
-CFG80211_OpsKeyGet(IN struct wiphy *pWiphy, IN struct net_device *pNdev,
-		   IN UINT8 KeyIdx, IN const UINT8 *pMacAddr, IN void *pCookie,
-		   IN void (*pCallback)(void *cookie, struct key_params *))
-#endif /* LINUX_VERSION_CODE */
 {
 	CFG80211DBG(DBG_LVL_TRACE, ("80211> %s ==>\n", __func__));
 	return -ENOTSUPP;
@@ -1193,16 +1172,9 @@ CFG80211_OpsKeyGet(IN struct wiphy *pWiphy, IN struct net_device *pNdev,
  *	return -ENOENT if the key doesn't exist.
  * ========================================================================
  */
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 static int CFG80211_OpsKeyDel(IN struct wiphy *pWiphy,
 			      IN struct net_device *pNdev, IN UINT8 KeyIdx,
 			      IN bool Pairwise, IN const UINT8 *pMacAddr)
-#else
-
-static int CFG80211_OpsKeyDel(IN struct wiphy *pWiphy,
-			      IN struct net_device *pNdev, IN UINT8 KeyIdx,
-			      IN const UINT8 *pMacAddr)
-#endif /* LINUX_VERSION_CODE */
 {
 	VOID *pAd;
 	CMD_RTPRIV_IOCTL_80211_KEY KeyInfo;
@@ -1224,10 +1196,8 @@ static int CFG80211_OpsKeyDel(IN struct wiphy *pWiphy,
 	memset(&KeyInfo, 0, sizeof(KeyInfo));
 	KeyInfo.KeyId = KeyIdx;
 	KeyInfo.pNetDev = pNdev;
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	CFG80211DBG(DBG_LVL_TRACE, ("80211> KeyDel isPairwise %d\n", Pairwise));
 	KeyInfo.bPairwise = Pairwise;
-#endif /* LINUX_VERSION_CODE 2.6.37 */
 #ifdef CONFIG_AP_SUPPORT
 
 	if ((pNdev->ieee80211_ptr->iftype == RT_CMD_80211_IFTYPE_AP) ||
@@ -2485,7 +2455,6 @@ static int CFG80211_OpsStaChg(struct wiphy *pWiphy, struct net_device *dev,
 	return 0;
 }
 
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 static const struct ieee80211_txrx_stypes
 	ralink_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	[NL80211_IFTYPE_STATION] = {
@@ -2522,7 +2491,6 @@ static const struct ieee80211_txrx_stypes
 	},
 
 };
-#endif
 
 #if (KERNEL_VERSION(3, 0, 0) <= LINUX_VERSION_CODE)
 static const struct ieee80211_iface_limit ra_p2p_sta_go_limits[] = {
@@ -2631,7 +2599,6 @@ struct cfg80211_ops CFG80211_Ops = {
 	.rfkill_poll = CFG80211_OpsRFKill,
 #endif /* RFKILL_HW_SUPPORT */
 
-#if (KERNEL_VERSION(2, 6, 33) <= LINUX_VERSION_CODE)
 	/* get site survey information */
 	/* .dump_survey				= CFG80211_OpsSurveyGet, */
 	/* cache a PMKID for a BSSID */
@@ -2640,9 +2607,7 @@ struct cfg80211_ops CFG80211_Ops = {
 	.del_pmksa = CFG80211_OpsPmksaDel,
 	/* flush all cached PMKIDs */
 	.flush_pmksa = CFG80211_OpsPmksaFlush,
-#endif /* LINUX_VERSION_CODE */
 
-#if (KERNEL_VERSION(2, 6, 34) <= LINUX_VERSION_CODE)
 	/*
 	 *	Request the driver to remain awake on the specified
 	 *	channel for the specified duration to complete an off-channel
@@ -2651,34 +2616,20 @@ struct cfg80211_ops CFG80211_Ops = {
 	.remain_on_channel = CFG80211_OpsRemainOnChannel,
 	/* cancel an on-going remain-on-channel operation */
 	.cancel_remain_on_channel = CFG80211_OpsCancelRemainOnChannel,
-#if (KERNEL_VERSION(2, 6, 37) > LINUX_VERSION_CODE)
-	/* transmit an action frame */
-	.action = NULL,
-#else
 	.mgmt_tx = CFG80211_OpsMgmtTx,
-#endif /* LINUX_VERSION_CODE */
-#endif /* LINUX_VERSION_CODE */
 
-#if (KERNEL_VERSION(2, 6, 38) <= LINUX_VERSION_CODE)
 	.mgmt_tx_cancel_wait = CFG80211_OpsTxCancelWait,
-#endif /* LINUX_VERSION_CODE */
 
-#if (KERNEL_VERSION(2, 6, 35) <= LINUX_VERSION_CODE)
 	/* configure connection quality monitor RSSI threshold */
 	.set_cqm_rssi_config = NULL,
-#endif /* LINUX_VERSION_CODE */
 
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	/* notify driver that a management frame type was registered */
 	.mgmt_frame_register = CFG80211_OpsMgmtFrameRegister,
-#endif /* LINUX_VERSION_CODE : 2.6.37 */
 
-#if (KERNEL_VERSION(2, 6, 38) <= LINUX_VERSION_CODE)
 	/* set antenna configuration (tx_ant, rx_ant) on the device */
 	.set_antenna = NULL,
 	/* get current antenna configuration from device (tx_ant, rx_ant) */
 	.get_antenna = NULL,
-#endif /* LINUX_VERSION_CODE */
 	.change_bss = CFG80211_OpsChangeBss,
 	.del_station = CFG80211_OpsStaDel,
 	.add_station = CFG80211_OpsStaAdd,
@@ -2777,13 +2728,11 @@ static struct wireless_dev *CFG80211_WdevAlloc(IN CFG80211_CB *pCfg80211_CB,
 	pPriv = (ULONG *)(wiphy_priv(pWdev->wiphy));
 	*pPriv = (ULONG)pAd;
 	set_wiphy_dev(pWdev->wiphy, pDev);
-#if (KERNEL_VERSION(2, 6, 30) <= LINUX_VERSION_CODE)
 	/* max_scan_ssids means in each scan request, how many ssids can driver handle to send probe-req.
 	 *  In current design, we only support 1 ssid at a time. So we should set to 1.
 	*/
 	/* pWdev->wiphy->max_scan_ssids = pBandInfo->MaxBssTable; */
 	pWdev->wiphy->max_scan_ssids = 1;
-#endif /* KERNEL_VERSION */
 #if (KERNEL_VERSION(3, 4, 0) <= LINUX_VERSION_CODE)
 	/* @NL80211_FEATURE_INACTIVITY_TIMER:
 	 * This driver takes care of freeingup
@@ -2798,28 +2747,15 @@ static struct wireless_dev *CFG80211_WdevAlloc(IN CFG80211_CB *pCfg80211_CB,
 	/* pWdev->wiphy->reg_notifier = CFG80211_RegNotifier; */
 	/* init channel information */
 	CFG80211_SupBandInit(pCfg80211_CB, pBandInfo, pWdev->wiphy, NULL, NULL);
-#if (KERNEL_VERSION(2, 6, 30) <= LINUX_VERSION_CODE)
 	/* CFG80211_SIGNAL_TYPE_MBM: signal strength in mBm (100*dBm) */
 	pWdev->wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
 	pWdev->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
-#endif
-#if (KERNEL_VERSION(2, 6, 33) <= LINUX_VERSION_CODE)
 	pWdev->wiphy->max_num_pmkids = 4;
-#endif
-#if (KERNEL_VERSION(2, 6, 38) <= LINUX_VERSION_CODE)
 	pWdev->wiphy->max_remain_on_channel_duration = 5000;
-#endif /* KERNEL_VERSION */
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	pWdev->wiphy->mgmt_stypes = ralink_mgmt_stypes;
-#endif
-#if (KERNEL_VERSION(2, 6, 32) <= LINUX_VERSION_CODE)
 	pWdev->wiphy->cipher_suites = CipherSuites;
 	pWdev->wiphy->n_cipher_suites = ARRAY_SIZE(CipherSuites);
-#endif /* LINUX_VERSION_CODE */
-#if (KERNEL_VERSION(3, 2, 0) <= LINUX_VERSION_CODE)
 	pWdev->wiphy->flags |= WIPHY_FLAG_AP_UAPSD;
-#endif /* LINUX_VERSION_CODE: 3.2.0 */
-#if (KERNEL_VERSION(3, 3, 0) <= LINUX_VERSION_CODE)
 	/*what if you get compile error for below flag, please add the patch into your kernel*/
 	/* 018-cfg80211-internal-ap-mlme.patch */
 	pWdev->wiphy->flags |= WIPHY_FLAG_HAVE_AP_SME;
@@ -2828,12 +2764,9 @@ static struct wireless_dev *CFG80211_WdevAlloc(IN CFG80211_CB *pCfg80211_CB,
 	pWdev->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
 	/* CFG_TODO */
 	/* pWdev->wiphy->flags |= WIPHY_FLAG_STRICT_REGULATORY; */
-#endif /* LINUX_VERSION_CODE: 3.3.0 */
 
 #if defined(PLATFORM_M_STB)
-#if (KERNEL_VERSION(3, 0, 0) <= LINUX_VERSION_CODE)
 	pWdev->wiphy->flags |= WIPHY_FLAG_4ADDR_STATION;
-#endif /* LINUX_VERSION_CODE 3.0.0 */
 #endif
 
 	/* Driver Report Support TDLS to supplicant */
