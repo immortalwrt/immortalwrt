@@ -10267,12 +10267,15 @@ INT show_trinfo_proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	ULONG flags;
 	NDIS_SPIN_LOCK *lock;
 #if defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT)
-	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 	PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
-#ifdef MT7622
+#if defined(MT7622) && !defined(MT7615)
 	enum { num_of_tx_ring = 6, num_of_rx_ring = 2 };
-#elif defined(MT7615)
+#elif defined(MT7615) && !defined(MT7622)
 	enum { num_of_tx_ring = 2, num_of_rx_ring = 2 };
+#else
+	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
+	UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
+	UINT8 num_of_rx_ring = GET_NUM_OF_RX_RING(cap);
 #endif
 
 	if (IS_RBUS_INF(pAd) || IS_PCI_INF(pAd)) {

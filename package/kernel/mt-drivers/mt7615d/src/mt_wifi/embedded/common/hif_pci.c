@@ -68,11 +68,7 @@ VOID dumpTxRing(RTMP_ADAPTER *pAd, INT ring_idx)
 	TXD_STRUC *pTxD;
 	int index;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-#ifdef MT7622
-	enum { num_of_tx_ring = 6 };
-#elif defined(MT7615)
-	enum { num_of_tx_ring = 2 };
-#endif
+	UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
 	UINT16 tx_ring_size = GET_TX_RING_SIZE(cap);
 	struct _PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
 
