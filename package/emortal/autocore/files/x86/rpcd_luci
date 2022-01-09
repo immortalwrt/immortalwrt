@@ -207,6 +207,7 @@ local methods = {
 			local ok, fd
 
 			rv.firewall      = fs.access("/sbin/fw3")
+			rv.firewall4     = fs.access("/sbin/fw4")
 			rv.opkg          = fs.access("/bin/opkg")
 			rv.offloading    = fs.access("/sys/module/xt_FLOWOFFLOAD/refcnt")
 			rv.br2684ctl     = fs.access("/usr/sbin/br2684ctl")
