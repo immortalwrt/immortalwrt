@@ -22,7 +22,6 @@
 
 #include "rt_config.h"
 
-
 /*
 	========================================================================
 	Routine Description:
@@ -39,11 +38,8 @@
 		NDIS_STATUS_FAILURE: If failed to do en-queue.
 ========================================================================
 */
-NDIS_STATUS RtmpInsertPsQueue(
-	RTMP_ADAPTER * pAd,
-	PNDIS_PACKET pPacket,
-	MAC_TABLE_ENTRY *pMacEntry,
-	UCHAR QueIdx)
+NDIS_STATUS RtmpInsertPsQueue(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket,
+			      MAC_TABLE_ENTRY *pMacEntry, UCHAR QueIdx)
 {
 	STA_TR_ENTRY *tr_entry;
 	ULONG IrqFlags;
@@ -66,10 +62,16 @@ NDIS_STATUS RtmpInsertPsQueue(
 			RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
 			return NDIS_STATUS_FAILURE;
 		} else {
-			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("legacy ps> queue a packet!\n"));
-			RTMP_IRQ_LOCK(&pAd->irq_lock /*&tr_entry->ps_queue_lock*/, IrqFlags);
-			InsertTailQueue(&tr_entry->ps_queue, PACKET_TO_QUEUE_ENTRY(pPacket));
-			RTMP_IRQ_UNLOCK(&pAd->irq_lock /*&tr_entry->ps_queue_lock*/, IrqFlags);
+			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("legacy ps> queue a packet!\n"));
+			RTMP_IRQ_LOCK(
+				&pAd->irq_lock /*&tr_entry->ps_queue_lock*/,
+				IrqFlags);
+			InsertTailQueue(&tr_entry->ps_queue,
+					PACKET_TO_QUEUE_ENTRY(pPacket));
+			RTMP_IRQ_UNLOCK(
+				&pAd->irq_lock /*&tr_entry->ps_queue_lock*/,
+				IrqFlags);
 		}
 	}
 
@@ -85,13 +87,13 @@ NDIS_STATUS RtmpInsertPsQueue(
 	} else
 #endif /* UAPSD_SUPPORT */
 	{
-		WLAN_MR_TIM_BIT_SET(pAd, pMacEntry->func_tb_idx, pMacEntry->Aid);
+		WLAN_MR_TIM_BIT_SET(pAd, pMacEntry->func_tb_idx,
+				    pMacEntry->Aid);
 	}
 
 #endif /* CONFIG_AP_SUPPORT */
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 /*
 	==========================================================================
@@ -104,19 +106,20 @@ VOID RtmpCleanupPsQueue(RTMP_ADAPTER *pAd, QUEUE_HEADER *pQueue)
 {
 	QUEUE_ENTRY *pQEntry;
 	PNDIS_PACKET pPacket;
-	MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("RtmpCleanupPsQueue (0x%08lx)...\n", (ULONG)pQueue));
+	MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("RtmpCleanupPsQueue (0x%08lx)...\n", (ULONG)pQueue));
 
 	while (pQueue->Head) {
 		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("RtmpCleanupPsQueue %d...\n", pQueue->Number));
+			 ("RtmpCleanupPsQueue %d...\n", pQueue->Number));
 		pQEntry = RemoveHeadQueue(pQueue);
 		/*pPacket = CONTAINING_RECORD(pEntry, NDIS_PACKET, MiniportReservedEx); */
 		pPacket = QUEUE_ENTRY_TO_PACKET(pQEntry);
 		RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("RtmpCleanupPsQueue pkt = %lx...\n", (ULONG)pPacket));
+		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("RtmpCleanupPsQueue pkt = %lx...\n", (ULONG)pPacket));
 	}
 }
-
 
 /*
   ========================================================================
@@ -126,7 +129,8 @@ VOID RtmpCleanupPsQueue(RTMP_ADAPTER *pAd, QUEUE_HEADER *pQueue)
 	is received from a WSTA which has MAC address FF:FF:FF:FF:FF:FF
   ========================================================================
 */
-VOID RtmpHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isActive)
+VOID RtmpHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid,
+			BOOLEAN isActive)
 {
 	MAC_TABLE_ENTRY *pMacEntry;
 	STA_TR_ENTRY *tr_entry = NULL;
@@ -141,8 +145,10 @@ VOID RtmpHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN is
 	tr_entry = &pAd->MacTab.tr_entry[wcid];
 
 	if (!RTMPEqualMemory(pMacEntry->Addr, pAddr, MAC_ADDR_LEN)) {
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("%s(%d) PS-POLL (MAC addr not match) from %02x:%02x:%02x:%02x:%02x:%02x. Why???\n",
-				 __func__, __LINE__, PRINT_MAC(pAddr)));
+		MTWF_LOG(
+			DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+			("%s(%d) PS-POLL (MAC addr not match) from %02x:%02x:%02x:%02x:%02x:%02x. Why???\n",
+			 __func__, __LINE__, PRINT_MAC(pAddr)));
 		return;
 	}
 
@@ -170,7 +176,8 @@ VOID RtmpHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN is
 			Different definitions in IEEE802.11e and WMM spec.
 			But we follow the WiFi WMM Spec.
 		*/
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("All AC are UAPSD, can not use PS-Poll\n"));
+		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("All AC are UAPSD, can not use PS-Poll\n"));
 		return; /* all AC are U-APSD, can not use PS-Poll */
 	}
 
@@ -183,9 +190,10 @@ VOID RtmpHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN is
 		if (tr_entry->PsDeQWaitCnt == 0)
 			tr_entry->PsDeQWaitCnt = 1;
 		else {
-			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-					 ("%s(): : packet not send by HW then ignore other PS-Poll Aid[%d]!\n",
-					  __func__, pMacEntry->Aid));
+			MTWF_LOG(
+				DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				("%s(): : packet not send by HW then ignore other PS-Poll Aid[%d]!\n",
+				 __func__, pMacEntry->Aid));
 			return;
 		}
 	} else
@@ -200,7 +208,6 @@ VOID RtmpHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN is
 #endif /* MT_MAC */
 #endif /* CONFIG_AP_SUPPORT */
 }
-
 
 /*
 	==========================================================================
@@ -226,6 +233,3 @@ BOOLEAN RtmpPsIndicate(RTMP_ADAPTER *pAd, UCHAR *pAddr, UCHAR wcid, UCHAR Psm)
 #endif /* MT_MAC */
 		return PWR_ACTIVE;
 }
-
-
-

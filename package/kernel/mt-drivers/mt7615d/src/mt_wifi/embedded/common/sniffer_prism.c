@@ -21,24 +21,14 @@
 #include "rtmp_osabl.h"
 #include "rt_os_util.h"
 
-void send_prism_monitor_packets(IN PNET_DEV pNetDev,
-								IN PNDIS_PACKET pRxPacket,
-								IN VOID * fc_field,
-								IN UCHAR * pData,
-								IN USHORT DataSize,
-								IN UCHAR L2PAD,
-								IN UCHAR PHYMODE,
-								IN UCHAR BW,
-								IN UCHAR ShortGI,
-								IN UCHAR MCS,
-								IN UCHAR AMPDU,
-								IN UCHAR STBC,
-								IN UCHAR RSSI1,
-								IN UCHAR BssMonitorFlag11n,
-								IN UCHAR * pDevName,
-								IN UCHAR Channel,
-								IN UCHAR CentralChannel,
-								IN UINT32 MaxRssi)
+void send_prism_monitor_packets(IN PNET_DEV pNetDev, IN PNDIS_PACKET pRxPacket,
+				IN VOID *fc_field, IN UCHAR *pData,
+				IN USHORT DataSize, IN UCHAR L2PAD,
+				IN UCHAR PHYMODE, IN UCHAR BW, IN UCHAR ShortGI,
+				IN UCHAR MCS, IN UCHAR AMPDU, IN UCHAR STBC,
+				IN UCHAR RSSI1, IN UCHAR BssMonitorFlag11n,
+				IN UCHAR *pDevName, IN UCHAR Channel,
+				IN UCHAR CentralChannel, IN UINT32 MaxRssi)
 {
 	struct sk_buff *pOSPkt;
 	wlan_ng_prism2_header *ph;
@@ -47,7 +37,7 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 #endif /* MONITOR_FLAG_11N_SNIFFER_SUPPORT */
 	int rate_index = 0;
 	USHORT header_len = 0;
-	UCHAR temp_header[40] = {0};
+	UCHAR temp_header[40] = { 0 };
 	FC_FIELD fc = *((FC_FIELD *)fc_field);
 	MEM_DBG_PKT_FREE_INC(pRxPacket);
 	pOSPkt = RTPKT_TO_OSPKT(pRxPacket);
@@ -99,30 +89,35 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 		skb_pull(pOSPkt, (pData - pOSPkt->data));
 	}
 
-	if (skb_headroom(pOSPkt) < (sizeof(wlan_ng_prism2_header) + header_len)) {
-		if (pskb_expand_head(pOSPkt, (sizeof(wlan_ng_prism2_header) + header_len), 0, GFP_ATOMIC)) {
-			MTWF_LOG(DBG_CAT_RX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s : Reallocate header size of sk_buff fail!\n",
-					  __func__));
+	if (skb_headroom(pOSPkt) <
+	    (sizeof(wlan_ng_prism2_header) + header_len)) {
+		if (pskb_expand_head(
+			    pOSPkt,
+			    (sizeof(wlan_ng_prism2_header) + header_len), 0,
+			    GFP_ATOMIC)) {
+			MTWF_LOG(
+				DBG_CAT_RX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s : Reallocate header size of sk_buff fail!\n",
+				 __func__));
 			goto err_free_sk_buff;
 		}
 	}
 
 	if (header_len > 0)
 		NdisMoveMemory(skb_push(pOSPkt, header_len), temp_header,
-					   header_len);
+			       header_len);
 
 #ifdef MONITOR_FLAG_11N_SNIFFER_SUPPORT
 
 	if (BssMonitorFlag11n == 0)
 #endif /* MONITOR_FLAG_11N_SNIFFER_SUPPORT */
 	{
-		ph = (wlan_ng_prism2_header *) skb_push(pOSPkt,
-												sizeof(wlan_ng_prism2_header));
+		ph = (wlan_ng_prism2_header *)skb_push(
+			pOSPkt, sizeof(wlan_ng_prism2_header));
 		NdisZeroMemory(ph, sizeof(wlan_ng_prism2_header));
 		ph->msgcode = DIDmsg_lnxind_wlansniffrm;
 		ph->msglen = sizeof(wlan_ng_prism2_header);
-		strcpy((RTMP_STRING *) ph->devname, (RTMP_STRING *) pDevName);
+		strcpy((RTMP_STRING *)ph->devname, (RTMP_STRING *)pDevName);
 		ph->hosttime.did = DIDmsg_lnxind_wlansniffrm_hosttime;
 		ph->hosttime.status = 0;
 		ph->hosttime.len = 4;
@@ -146,7 +141,7 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 		ph->signal.did = DIDmsg_lnxind_wlansniffrm_signal;
 		ph->signal.status = 0;
 		ph->signal.len = 4;
-		ph->signal.data = 0;	/*rssi + noise; */
+		ph->signal.data = 0; /*rssi + noise; */
 		ph->noise.did = DIDmsg_lnxind_wlansniffrm_noise;
 		ph->noise.status = 0;
 		ph->noise.len = 4;
@@ -154,13 +149,14 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 #ifdef DOT11_N_SUPPORT
 
 		if (PHYMODE >= MODE_HTMIX)
-			rate_index = 12 + ((UCHAR)BW * 24) + ((UCHAR)ShortGI * 48) + ((UCHAR)MCS);
+			rate_index = 12 + ((UCHAR)BW * 24) +
+				     ((UCHAR)ShortGI * 48) + ((UCHAR)MCS);
 		else
 #endif /* DOT11_N_SUPPORT */
 			if (PHYMODE == MODE_OFDM)
-				rate_index = (UCHAR) (MCS) + 4;
+				rate_index = (UCHAR)(MCS) + 4;
 			else
-				rate_index = (UCHAR) (MCS);
+				rate_index = (UCHAR)(MCS);
 
 		if (rate_index < 0)
 			rate_index = 0;
@@ -172,14 +168,13 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 		ph->frmlen.did = DIDmsg_lnxind_wlansniffrm_frmlen;
 		ph->frmlen.status = 0;
 		ph->frmlen.len = 4;
-		ph->frmlen.data = (u_int32_t) DataSize;
+		ph->frmlen.data = (u_int32_t)DataSize;
 	}
-
 #ifdef MONITOR_FLAG_11N_SNIFFER_SUPPORT
 	else {
 		ph_11n33 = &h;
 		NdisZeroMemory((unsigned char *)ph_11n33,
-					   sizeof(ETHEREAL_RADIO));
+			       sizeof(ETHEREAL_RADIO));
 
 		/*802.11n fields */
 		if (MCS > 15)
@@ -195,9 +190,8 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 		else if (Channel > CentralChannel)
 			ph_11n33->Flag_80211n |= WIRESHARK_11N_FLAG_BW20D;
 		else {
-			ph_11n33->Flag_80211n |=
-				(WIRESHARK_11N_FLAG_BW20U |
-				 WIRESHARK_11N_FLAG_BW20D);
+			ph_11n33->Flag_80211n |= (WIRESHARK_11N_FLAG_BW20U |
+						  WIRESHARK_11N_FLAG_BW20D);
 		}
 
 		if (ShortGI == 1)
@@ -209,7 +203,7 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 		if (STBC)
 			ph_11n33->Flag_80211n |= WIRESHARK_11N_FLAG_STBC;
 
-		ph_11n33->signal_level = (UCHAR) RSSI1;
+		ph_11n33->signal_level = (UCHAR)RSSI1;
 
 		/* data_rate is the rate index in the wireshark rate table */
 		if (PHYMODE >= MODE_HTMIX) {
@@ -220,21 +214,21 @@ void send_prism_monitor_packets(IN PNET_DEV pNetDev,
 					ph_11n33->data_rate = 4;
 			} else if (MCS > 15)
 				ph_11n33->data_rate =
-					(16 * 4 + ((UCHAR) BW * 16) +
-					 ((UCHAR) ShortGI * 32) + ((UCHAR) MCS));
+					(16 * 4 + ((UCHAR)BW * 16) +
+					 ((UCHAR)ShortGI * 32) + ((UCHAR)MCS));
 			else
-				ph_11n33->data_rate =
-					16 + ((UCHAR) BW * 16) +
-					((UCHAR) ShortGI * 32) + ((UCHAR) MCS);
+				ph_11n33->data_rate = 16 + ((UCHAR)BW * 16) +
+						      ((UCHAR)ShortGI * 32) +
+						      ((UCHAR)MCS);
 		} else if (PHYMODE == MODE_OFDM)
-			ph_11n33->data_rate = (UCHAR) (MCS) + 4;
+			ph_11n33->data_rate = (UCHAR)(MCS) + 4;
 		else
-			ph_11n33->data_rate = (UCHAR) (MCS);
+			ph_11n33->data_rate = (UCHAR)(MCS);
 
 		/*channel field */
-		ph_11n33->channel = (UCHAR) Channel;
+		ph_11n33->channel = (UCHAR)Channel;
 		NdisMoveMemory(skb_put(pOSPkt, sizeof(ETHEREAL_RADIO)),
-					   (UCHAR *) ph_11n33, sizeof(ETHEREAL_RADIO));
+			       (UCHAR *)ph_11n33, sizeof(ETHEREAL_RADIO));
 	}
 
 #endif /* MONITOR_FLAG_11N_SNIFFER_SUPPORT */
@@ -247,4 +241,3 @@ err_free_sk_buff:
 	RELEASE_NDIS_PACKET(NULL, pRxPacket, NDIS_STATUS_FAILURE);
 	return;
 }
-

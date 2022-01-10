@@ -45,7 +45,6 @@ struct whnat_entry {
 	void *proc_ctrl;
 };
 
-
 struct whnat_ctrl {
 	unsigned char whnat_num;
 	struct whnat_entry *entry;
@@ -66,22 +65,18 @@ void whnat_dump_cfg(struct whnat_entry *whnat);
 void whnat_dump_txinfo(struct whnat_entry *whnat);
 void whnat_dump_rxinfo(struct whnat_entry *whnat);
 
-
 struct whnat_ctrl *whnat_ctrl_get(void);
 struct whnat_entry *whnat_entry_search(void *cookie);
 
-
-int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whnat);
-void whnat_entry_proc_exit(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whnat);
+int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl,
+			  struct whnat_entry *whnat);
+void whnat_entry_proc_exit(struct whnat_ctrl *whnat_ctrl,
+			   struct whnat_entry *whnat);
 int whnat_ctrl_proc_init(struct whnat_ctrl *whnat_ctrl);
 void whnat_ctrl_proc_exit(struct whnat_ctrl *whnat_ctrl);
 int wed_entry_proc_init(struct whnat_entry *whnat, struct wed_entry *wed);
 void wed_entry_proc_exit(struct whnat_entry *whnat, struct wed_entry *wed);
 int wdma_entry_proc_init(struct whnat_entry *whnat, struct wdma_entry *wdma);
 void wdma_entry_proc_exit(struct whnat_entry *whnat, struct wdma_entry *wdma);
-
-
-
-
 
 #endif /*_WHNAT_H*/

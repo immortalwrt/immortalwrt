@@ -26,12 +26,9 @@
 	--------	----------	  ----------------------------------------------
 */
 
-
 #ifndef __WF_PF_H__
 #define __WF_PF_H__
 
-#define WF_PF_BASE		0x22000
-
+#define WF_PF_BASE 0x22000
 
 #endif /* __WF_PF_H__ */
-

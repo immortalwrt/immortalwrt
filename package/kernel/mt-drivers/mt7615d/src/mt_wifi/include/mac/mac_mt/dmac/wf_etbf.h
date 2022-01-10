@@ -22,15 +22,13 @@
 	--------	----------	  ----------------------------------------------
 */
 
-
 #ifndef __WF_ETBF_H__
 #define __WF_ETBF_H__
 
 #if defined(MT7615) || defined(MT7622) || defined(P18) || defined(MT7663)
-#define WF_ETBF_BASE		0x24000
+#define WF_ETBF_BASE 0x24000
 #else
-#define WF_ETBF_BASE		0x24000
+#define WF_ETBF_BASE 0x24000
 #endif /* defined(MT7615) || defined(MT7622) */
-
 
 #endif /* __WF_ETBF_H__ */

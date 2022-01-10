@@ -14,7 +14,7 @@
 	hw_ctrl.c
 */
 #include "rt_config.h"
-#include  "hw_ctrl.h"
+#include "hw_ctrl.h"
 #include "hw_ctrl_basic.h"
 #ifdef VENDOR_FEATURE7_SUPPORT
 #ifdef WSC_LED_SUPPORT
@@ -22,24 +22,24 @@
 #endif /* WSC_LED_SUPPORT */
 #endif
 
-
-static NTSTATUS HwCtrlUpdateRtsThreshold(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlUpdateRtsThreshold(RTMP_ADAPTER *pAd,
+					 HwCmdQElmt *CMDQelmt)
 {
 	struct rts_thld *rts = (struct rts_thld *)CMDQelmt->buffer;
 
-	AsicUpdateRtsThld(pAd, rts->wdev, rts->pkt_thld, rts->len_thld, rts->retry_limit);
+	AsicUpdateRtsThld(pAd, rts->wdev, rts->pkt_thld, rts->len_thld,
+			  rts->retry_limit);
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 static NTSTATUS HwCtrlUpdateProtect(RTMP_ADAPTER *pAd)
 {
 	RTMP_ARCH_OP *arch_ops = &pAd->archOps;
 	UINT32 mode = 0, wdev_idx = 0;
 	struct wifi_dev *wdev = NULL;
-	MT_PROTECT_CTRL_T  protect;
+	MT_PROTECT_CTRL_T protect;
 #ifdef DBDC_MODE
-	MT_PROTECT_CTRL_T  protect_5g;
+	MT_PROTECT_CTRL_T protect_5g;
 #endif /* DBDC_MODE */
 	os_zero_mem(&protect, sizeof(MT_PROTECT_CTRL_T));
 #ifdef DBDC_MODE
@@ -60,13 +60,16 @@ static NTSTATUS HwCtrlUpdateProtect(RTMP_ADAPTER *pAd)
 		mode = wdev->protection;
 #ifdef DBDC_MODE
 
-		if ((pAd->CommonCfg.dbdc_mode == TRUE) && (HcGetBandByWdev(wdev) == DBDC_BAND1)) {
+		if ((pAd->CommonCfg.dbdc_mode == TRUE) &&
+		    (HcGetBandByWdev(wdev) == DBDC_BAND1)) {
 #ifdef CONFIG_AP_SUPPORT
 #ifdef APCLI_SUPPORT
 #ifdef APCLI_CERT_SUPPORT
 
-			if ((pAd->bApCliCertTest == TRUE) && (wdev->wdev_type == WDEV_TYPE_APCLI))
-				os_zero_mem(&protect_5g, sizeof(MT_PROTECT_CTRL_T));
+			if ((pAd->bApCliCertTest == TRUE) &&
+			    (wdev->wdev_type == WDEV_TYPE_APCLI))
+				os_zero_mem(&protect_5g,
+					    sizeof(MT_PROTECT_CTRL_T));
 
 #endif /* APCLI_CERT_SUPPORT */
 #endif /* APCLI_SUPPORT */
@@ -105,7 +108,9 @@ static NTSTATUS HwCtrlUpdateProtect(RTMP_ADAPTER *pAd)
 			}
 
 			if (mode & SET_PROTECT(FORCE_RTS_PROTECT)) {
-				arch_ops->archUpdateRtsThld(pAd, wdev, 0, 1, wlan_operate_get_rts_retry_limit(wdev));
+				arch_ops->archUpdateRtsThld(
+					pAd, wdev, 0, 1,
+					wlan_operate_get_rts_retry_limit(wdev));
 				goto end;
 			}
 
@@ -117,8 +122,10 @@ static NTSTATUS HwCtrlUpdateProtect(RTMP_ADAPTER *pAd)
 #ifdef APCLI_SUPPORT
 #ifdef APCLI_CERT_SUPPORT
 
-			if ((pAd->bApCliCertTest == TRUE) && (wdev->wdev_type == WDEV_TYPE_APCLI))
-				os_zero_mem(&protect, sizeof(MT_PROTECT_CTRL_T));
+			if ((pAd->bApCliCertTest == TRUE) &&
+			    (wdev->wdev_type == WDEV_TYPE_APCLI))
+				os_zero_mem(&protect,
+					    sizeof(MT_PROTECT_CTRL_T));
 
 #endif /* APCLI_CERT_SUPPORT */
 #endif /* APCLI_SUPPORT */
@@ -158,14 +165,16 @@ static NTSTATUS HwCtrlUpdateProtect(RTMP_ADAPTER *pAd)
 			}
 
 			if (mode & SET_PROTECT(FORCE_RTS_PROTECT)) {
-				arch_ops->archUpdateRtsThld(pAd, wdev, 0, 1, wlan_operate_get_rts_retry_limit(wdev));
+				arch_ops->archUpdateRtsThld(
+					pAd, wdev, 0, 1,
+					wlan_operate_get_rts_retry_limit(wdev));
 				goto end;
 			}
 		}
 
 		if (mode & SET_PROTECT(_NOT_DEFINE_HT_PROTECT)) {
 			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("[ERROR] NOT Defined HT Protection!\n"));
+				 ("[ERROR] NOT Defined HT Protection!\n"));
 		}
 
 		wdev_idx++;
@@ -182,16 +191,15 @@ end:
 	return NDIS_STATUS_SUCCESS;
 }
 
-
 static NTSTATUS HwCtrlSetClientMACEntry(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	PRT_SET_ASIC_WCID pInfo;
 
 	pInfo = (PRT_SET_ASIC_WCID)CMDQelmt->buffer;
-	AsicUpdateRxWCIDTable(pAd, pInfo->WCID, pInfo->Addr, pInfo->IsBMC, pInfo->IsReset);
+	AsicUpdateRxWCIDTable(pAd, pInfo->WCID, pInfo->Addr, pInfo->IsBMC,
+			      pInfo->IsReset);
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 #ifdef TXBF_SUPPORT
 static NTSTATUS HwCtrlSetClientBfCap(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
@@ -210,7 +218,8 @@ static NTSTATUS HwCtrlSetBfRepeater(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	pMacEntry = (PMAC_TABLE_ENTRY)CMDQelmt->buffer;
 #ifdef MAC_REPEATER_SUPPORT
 #ifdef CONFIG_AP_SUPPORT
-	AsicTxBfReptClonedStaToNormalSta(pAd, pMacEntry->wcid, pMacEntry->MatchReptCliIdx);
+	AsicTxBfReptClonedStaToNormalSta(pAd, pMacEntry->wcid,
+					 pMacEntry->MatchReptCliIdx);
 #endif /* CONFIG_AP_SUPPORT */
 #endif /* MAC_REPEATER_SUPPORT */
 	return NDIS_STATUS_SUCCESS;
@@ -245,7 +254,6 @@ static NTSTATUS HwCtrlTxBfTxApply(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 
 #endif /* TXBF_SUPPORT */
 
-
 static NTSTATUS HwCtrlDelAsicWcid(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	RT_SET_ASIC_WCID SetAsicWcid;
@@ -259,7 +267,6 @@ static NTSTATUS HwCtrlDelAsicWcid(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	return NDIS_STATUS_SUCCESS;
 }
 
-
 #ifdef HTC_DECRYPT_IOT
 static NTSTATUS HwCtrlSetAsicWcidAAD_OM(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
@@ -272,18 +279,21 @@ static NTSTATUS HwCtrlSetAsicWcidAAD_OM(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 #endif /* HTC_DECRYPT_IOT */
 
 #ifdef MBSS_AS_WDS_AP_SUPPORT
-static NTSTATUS HwCtrlUpdate4Addr_HdrTrans(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlUpdate4Addr_HdrTrans(RTMP_ADAPTER *pAd,
+					   HwCmdQElmt *CMDQelmt)
 {
 	RT_ASIC_4ADDR_HDR_TRANS Update_4Addr_Hdr_Trans;
-	Update_4Addr_Hdr_Trans = *((PRT_ASIC_4ADDR_HDR_TRANS)(CMDQelmt->buffer));
+	Update_4Addr_Hdr_Trans =
+		*((PRT_ASIC_4ADDR_HDR_TRANS)(CMDQelmt->buffer));
 
-	AsicSetWcid4Addr_HdrTrans(pAd, Update_4Addr_Hdr_Trans.Wcid, Update_4Addr_Hdr_Trans.Enable);
+	AsicSetWcid4Addr_HdrTrans(pAd, Update_4Addr_Hdr_Trans.Wcid,
+				  Update_4Addr_Hdr_Trans.Enable);
 
 	return NDIS_STATUS_SUCCESS;
 }
 #endif
-static void update_txop_level(UINT16 *dst, UINT16 *src,
-							  UINT32 bitmap, UINT32 len)
+static void update_txop_level(UINT16 *dst, UINT16 *src, UINT32 bitmap,
+			      UINT32 len)
 {
 	UINT32 prio;
 
@@ -295,16 +305,14 @@ static void update_txop_level(UINT16 *dst, UINT16 *src,
 	}
 }
 
-
 static void tx_burst_arbiter(struct _RTMP_ADAPTER *pAd,
-							 struct wifi_dev *curr_wdev,
-							 UCHAR bss_idx)
+			     struct wifi_dev *curr_wdev, UCHAR bss_idx)
 {
 	struct wifi_dev **wdev = pAd->wdev_list;
 	UINT32 idx = 0;
 	UINT32 _prio_bitmap = 0;
 	UINT16 txop_level = TXOP_0;
-	UINT16 _txop_level[MAX_PRIO_NUM] = {0};
+	UINT16 _txop_level[MAX_PRIO_NUM] = { 0 };
 	UINT8 prio;
 	UINT8 curr_prio = PRIO_DEFAULT;
 	EDCA_PARM *edca_param = NULL;
@@ -325,7 +333,7 @@ static void tx_burst_arbiter(struct _RTMP_ADAPTER *pAd,
 		if (wdev[idx]->bss_info_argument.ucBssIndex == bss_idx) {
 			_prio_bitmap |= wdev[idx]->prio_bitmap;
 			update_txop_level(_txop_level, wdev[idx]->txop_level,
-							  _prio_bitmap, MAX_PRIO_NUM);
+					  _prio_bitmap, MAX_PRIO_NUM);
 		}
 
 		idx++;
@@ -334,7 +342,7 @@ static void tx_burst_arbiter(struct _RTMP_ADAPTER *pAd,
 	/* update specific BSS's prio bitmap & txop_level array */
 	curr_wdev->bss_info_argument.prio_bitmap = _prio_bitmap;
 	memcpy(curr_wdev->bss_info_argument.txop_level, _txop_level,
-		   (sizeof(UINT16) * MAX_PRIO_NUM));
+	       (sizeof(UINT16) * MAX_PRIO_NUM));
 
 	/* find the highest prio module */
 	for (prio = 0; prio < MAX_PRIO_NUM; prio++) {
@@ -346,14 +354,16 @@ static void tx_burst_arbiter(struct _RTMP_ADAPTER *pAd,
 	AsicSetWmmParam(pAd, wmm_idx, WMM_AC_BE, WMM_PARAM_TXOP, txop_level);
 }
 
-static void set_tx_burst(struct _RTMP_ADAPTER *pAd, struct _tx_burst_cfg *txop_cfg)
+static void set_tx_burst(struct _RTMP_ADAPTER *pAd,
+			 struct _tx_burst_cfg *txop_cfg)
 {
 	struct _BSS_INFO_ARGUMENT_T *bss_info = NULL;
 	UCHAR bss_idx = 0;
 
 	if (txop_cfg->enable) {
 		txop_cfg->wdev->prio_bitmap |= (1 << txop_cfg->prio);
-		txop_cfg->wdev->txop_level[txop_cfg->prio] = txop_cfg->txop_level;
+		txop_cfg->wdev->txop_level[txop_cfg->prio] =
+			txop_cfg->txop_level;
 	} else
 		txop_cfg->wdev->prio_bitmap &= ~(1 << txop_cfg->prio);
 
@@ -363,7 +373,7 @@ static void set_tx_burst(struct _RTMP_ADAPTER *pAd, struct _tx_burst_cfg *txop_c
 }
 
 void hw_set_tx_burst(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
-					 UINT8 ac_type, UINT8 prio, UINT16 level, UINT8 enable)
+		     UINT8 ac_type, UINT8 prio, UINT16 level, UINT8 enable)
 {
 	struct _tx_burst_cfg txop_cfg;
 
@@ -376,16 +386,16 @@ void hw_set_tx_burst(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
 	txop_cfg.txop_level = level;
 	txop_cfg.enable = enable;
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("<caller: %pS>\n -%s: prio=%x, level=%x, enable=%x\n",
-			  __builtin_return_address(0), __func__,
-			  prio, level, enable));
+		 ("<caller: %pS>\n -%s: prio=%x, level=%x, enable=%x\n",
+		  __builtin_return_address(0), __func__, prio, level, enable));
 	set_tx_burst(pAd, &txop_cfg);
 }
 
-
-static NTSTATUS HwCtrlSetTxBurst(struct _RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlSetTxBurst(struct _RTMP_ADAPTER *pAd,
+				 HwCmdQElmt *CMDQelmt)
 {
-	struct _tx_burst_cfg *txop_cfg = (struct _tx_burst_cfg *)CMDQelmt->buffer;
+	struct _tx_burst_cfg *txop_cfg =
+		(struct _tx_burst_cfg *)CMDQelmt->buffer;
 
 	if (txop_cfg == NULL)
 		return NDIS_STATUS_FAILURE;
@@ -394,32 +404,36 @@ static NTSTATUS HwCtrlSetTxBurst(struct _RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt
 	return NDIS_STATUS_SUCCESS;
 }
 
-
 #ifdef CONFIG_AP_SUPPORT
-static NTSTATUS HwCtrlAPAdjustEXPAckTime(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlAPAdjustEXPAckTime(RTMP_ADAPTER *pAd,
+					 HwCmdQElmt *CMDQelmt)
 {
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("CmdThread::CMDTHREAD_AP_ADJUST_EXP_ACK_TIME\n"));
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("CmdThread::CMDTHREAD_AP_ADJUST_EXP_ACK_TIME\n"));
 		RTMP_IO_WRITE32(pAd, EXP_ACK_TIME, 0x005400ca);
 	}
 	return NDIS_STATUS_SUCCESS;
 }
 
-
-static NTSTATUS HwCtrlAPRecoverEXPAckTime(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlAPRecoverEXPAckTime(RTMP_ADAPTER *pAd,
+					  HwCmdQElmt *CMDQelmt)
 {
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("CmdThread::CMDTHREAD_AP_RECOVER_EXP_ACK_TIME\n"));
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("CmdThread::CMDTHREAD_AP_RECOVER_EXP_ACK_TIME\n"));
 		RTMP_IO_WRITE32(pAd, EXP_ACK_TIME, 0x002400ca);
 	}
 	return NDIS_STATUS_SUCCESS;
 }
 #endif /* CONFIG_AP_SUPPORT */
 
-
 static NTSTATUS HwCtrlUpdateRawCounters(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(line:%d)\n", __func__, __LINE__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s(line:%d)\n", __func__, __LINE__));
 	NICUpdateRawCounters(pAd);
 	return NDIS_STATUS_SUCCESS;
 }
@@ -428,7 +442,7 @@ static NTSTATUS HwCtrlAddRemoveKeyTab(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	ASIC_SEC_INFO *pInfo;
 
-	pInfo = (PASIC_SEC_INFO) CMDQelmt->buffer;
+	pInfo = (PASIC_SEC_INFO)CMDQelmt->buffer;
 	AsicAddRemoveKeyTab(pAd, pInfo);
 	return NDIS_STATUS_SUCCESS;
 }
@@ -462,16 +476,61 @@ static NTSTATUS HwCtrlRemoveReptEntry(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 #endif /*MAC_REPEATER_SUPPORT*/
 
 #ifdef MT_MAC
+#ifdef OCE_SUPPORT
+static NTSTATUS HwCtrlSetFdFrameOffload(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+{
+	PMT_SET_FD_FRAME_OFFLOAD pSetFdFrameOffload =
+		(PMT_SET_FD_FRAME_OFFLOAD)CMDQelmt->buffer;
+	P_CMD_FD_FRAME_OFFLOAD_T pFd_frame_offload = NULL;
+	struct wifi_dev *wdev = pAd->wdev_list[pSetFdFrameOffload->WdevIdx];
+
+	os_alloc_mem(NULL, (PUCHAR *)&pFd_frame_offload,
+		     sizeof(CMD_FD_FRAME_OFFLOAD_T));
+
+	if (!pFd_frame_offload) {
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("can not allocate fd_frame_offload\n"));
+		return NDIS_STATUS_FAILURE;
+	}
+
+	os_zero_mem(pFd_frame_offload, sizeof(CMD_FD_FRAME_OFFLOAD_T));
+
+	pFd_frame_offload->ucEnable = pSetFdFrameOffload->ucEnable;
+	pFd_frame_offload->ucWlanIdx = 0;
+	pFd_frame_offload->ucOwnMacIdx = wdev->OmacIdx;
+	pFd_frame_offload->ucBandIdx = HcGetBandByWdev(wdev);
+
+	if (pFd_frame_offload->ucEnable) {
+		pFd_frame_offload->u2TimestampFieldPos =
+			pSetFdFrameOffload->u2TimestampFieldPos;
+		pFd_frame_offload->u2PktLength =
+			pSetFdFrameOffload->u2PktLength;
+		os_move_mem(pFd_frame_offload->acPktContent,
+			    pSetFdFrameOffload->acPktContent,
+			    pFd_frame_offload->u2PktLength);
+	}
+
+	hex_dump_with_lvl("FD_FRAME HwCtrlSetFdFrameOffload",
+			  pFd_frame_offload->acPktContent,
+			  pFd_frame_offload->u2PktLength, DBG_LVL_TRACE);
+
+	MtCmdFdFrameOffloadSet(pAd, pFd_frame_offload);
+
+	os_free_mem(pFd_frame_offload);
+
+	return NDIS_STATUS_SUCCESS;
+}
+#endif /* OCE_SUPPORT */
+
 #ifdef BCN_OFFLOAD_SUPPORT
 static NTSTATUS HwCtrlSetBcnOffload(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
-	PMT_SET_BCN_OFFLOAD pSetBcnOffload = (PMT_SET_BCN_OFFLOAD)CMDQelmt->buffer;
+	PMT_SET_BCN_OFFLOAD pSetBcnOffload =
+		(PMT_SET_BCN_OFFLOAD)CMDQelmt->buffer;
 	struct wifi_dev *wdev = pAd->wdev_list[pSetBcnOffload->WdevIdx];
-#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+
 	CMD_BCN_OFFLOAD_T *bcn_offload = NULL;
-#else
-	CMD_BCN_OFFLOAD_T bcn_offload;
-#endif
+
 	BCN_BUF_STRUC *bcn_buf = NULL;
 #ifdef CONFIG_AP_SUPPORT
 	TIM_BUF_STRUC *tim_buf = NULL;
@@ -479,31 +538,25 @@ static NTSTATUS HwCtrlSetBcnOffload(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	UCHAR *buf;
 	PNDIS_PACKET *pkt = NULL;
 
-#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
 	os_alloc_mem(NULL, (PUCHAR *)&bcn_offload, sizeof(*bcn_offload));
 	if (!bcn_offload) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 			 ("can not allocate bcn_offload\n"));
-			return NDIS_STATUS_FAILURE;
+		return NDIS_STATUS_FAILURE;
 	}
 	os_zero_mem(bcn_offload, sizeof(*bcn_offload));
-#else
-	NdisZeroMemory(&bcn_offload, sizeof(CMD_BCN_OFFLOAD_T));
-#endif
 
 	if ((pSetBcnOffload->OffloadPktType == PKT_BCN)
 #ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
-	|| (pSetBcnOffload->OffloadPktType == PKT_V2_BCN)
+	    || (pSetBcnOffload->OffloadPktType == PKT_V2_BCN)
 #endif
 	) {
 		bcn_buf = &wdev->bcn_buf;
 
 		if (!bcn_buf) {
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s(): bcn_buf is NULL!\n", __func__));
-#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+				 ("%s(): bcn_buf is NULL!\n", __func__));
 			os_free_mem(bcn_offload);
-#endif
 			return NDIS_STATUS_FAILURE;
 		}
 
@@ -517,10 +570,8 @@ static NTSTATUS HwCtrlSetBcnOffload(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 
 		if (!tim_buf) {
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s(): tim_buf is NULL!\n", __func__));
-#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+				 ("%s(): tim_buf is NULL!\n", __func__));
 			os_free_mem(bcn_offload);
-#endif
 			return NDIS_STATUS_FAILURE;
 		}
 
@@ -528,9 +579,8 @@ static NTSTATUS HwCtrlSetBcnOffload(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	}
 
 #endif /* CONFIG_AP_SUPPORT */
-#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
 	bcn_offload->ucEnable = pSetBcnOffload->Enable;
-	bcn_offload->ucWlanIdx = 0;/* hardcode at present */
+	bcn_offload->ucWlanIdx = 0; /* hardcode at present */
 	bcn_offload->ucOwnMacIdx = wdev->OmacIdx;
 	bcn_offload->ucBandIdx = HcGetBandByWdev(wdev);
 	bcn_offload->u2PktLength = pSetBcnOffload->WholeLength;
@@ -541,27 +591,12 @@ static NTSTATUS HwCtrlSetBcnOffload(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	bcn_offload->ucCsaCount = wdev->csa_count;
 #endif
 	buf = (UCHAR *)GET_OS_PKT_DATAPTR(pkt);
-	NdisCopyMemory(bcn_offload->acPktContent, buf, pSetBcnOffload->WholeLength);
-#else
-	bcn_offload.ucEnable = pSetBcnOffload->Enable;
-	bcn_offload.ucWlanIdx = 0;/* hardcode at present */
-	bcn_offload.ucOwnMacIdx = wdev->OmacIdx;
-	bcn_offload.ucBandIdx = HcGetBandByWdev(wdev);
-	bcn_offload.u2PktLength = pSetBcnOffload->WholeLength;
-	bcn_offload.ucPktType = pSetBcnOffload->OffloadPktType;
-#ifdef CONFIG_AP_SUPPORT
-	bcn_offload.u2TimIePos = pSetBcnOffload->TimIePos;
-	bcn_offload.u2CsaIePos = pSetBcnOffload->CsaIePos;
-	bcn_offload.ucCsaCount = wdev->csa_count;
-#endif
-	buf = (UCHAR *)GET_OS_PKT_DATAPTR(pkt);
-	NdisCopyMemory(bcn_offload.acPktContent, buf, pSetBcnOffload->WholeLength);
-#endif
+	NdisCopyMemory(bcn_offload->acPktContent, buf,
+		       pSetBcnOffload->WholeLength);
+
 	MtCmdBcnOffloadSet(pAd, bcn_offload);
 
-#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
 	os_free_mem(bcn_offload);
-#endif
 
 	return NDIS_STATUS_SUCCESS;
 }
@@ -580,28 +615,33 @@ static NTSTATUS HwCtrlSetTREntry(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 
 static NTSTATUS HwCtrlUpdateBssInfo(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
-	BSS_INFO_ARGUMENT_T *pBssInfoArgs = (BSS_INFO_ARGUMENT_T *)CMDQelmt->buffer;
+	BSS_INFO_ARGUMENT_T *pBssInfoArgs =
+		(BSS_INFO_ARGUMENT_T *)CMDQelmt->buffer;
 	UINT32 ret;
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s::CmdThread\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s::CmdThread\n", __func__));
 	ret = AsicBssInfoUpdate(pAd, *pBssInfoArgs);
 	return ret;
 }
-
 
 static NTSTATUS HwCtrlSetBaRec(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	MT_BA_CTRL_T *pSetBaRec = (MT_BA_CTRL_T *)CMDQelmt->buffer;
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s::CmdThread\n", __func__));
-	AsicUpdateBASession(pAd, pSetBaRec->Wcid, pSetBaRec->Tid, pSetBaRec->Sn, pSetBaRec->BaWinSize, pSetBaRec->isAdd,
-						pSetBaRec->BaSessionType);
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s::CmdThread\n", __func__));
+	AsicUpdateBASession(pAd, pSetBaRec->Wcid, pSetBaRec->Tid, pSetBaRec->Sn,
+			    pSetBaRec->BaWinSize, pSetBaRec->isAdd,
+			    pSetBaRec->BaSessionType);
 	return NDIS_STATUS_SUCCESS;
 }
 
-static NTSTATUS HwCtrlHandleUpdateBeacon(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlHandleUpdateBeacon(RTMP_ADAPTER *pAd,
+					 HwCmdQElmt *CMDQelmt)
 {
-	MT_UPDATE_BEACON *prMtUpdateBeacon = (MT_UPDATE_BEACON *)CMDQelmt->buffer;
+	MT_UPDATE_BEACON *prMtUpdateBeacon =
+		(MT_UPDATE_BEACON *)CMDQelmt->buffer;
 	struct wifi_dev *wdev = prMtUpdateBeacon->wdev;
 	UCHAR UpdateReason = prMtUpdateBeacon->UpdateReason;
 	UCHAR i;
@@ -609,7 +649,7 @@ static NTSTATUS HwCtrlHandleUpdateBeacon(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt
 	BCN_BUF_STRUC *pbcn_buf = NULL;
 
 	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s(): Update reason: %d\n", __func__, UpdateReason));
+		 ("%s(): Update reason: %d\n", __func__, UpdateReason));
 
 	switch (UpdateReason) {
 	case BCN_UPDATE_INIT:
@@ -618,65 +658,81 @@ static NTSTATUS HwCtrlHandleUpdateBeacon(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt
 	case BCN_UPDATE_AP_RENEW: {
 		if (IS_HIF_TYPE(pAd, HIF_MT)) {
 			if (wdev != NULL) {
-#ifdef BCN_V2_SUPPORT	/* add bcn v2 support , 1.5k beacon support */
-				UpdateBeaconProc(pAd, wdev, UpdateAfterTim, PKT_V2_BCN, TRUE);
+#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+				UpdateBeaconProc(pAd, wdev, UpdateAfterTim,
+						 PKT_V2_BCN, TRUE);
 #else
-				UpdateBeaconProc(pAd, wdev, UpdateAfterTim, PKT_BCN, TRUE);
+				UpdateBeaconProc(pAd, wdev, UpdateAfterTim,
+						 PKT_BCN, TRUE);
 #endif
 			} else {
 				/* Update/Renew all BSS if wdev = NULL */
 				for (i = 0; i < WDEV_NUM_MAX; i++) {
 					if (pAd->wdev_list[i] != NULL) {
-#ifdef BCN_V2_SUPPORT	/* add bcn v2 support , 1.5k beacon support */
-					UpdateBeaconProc(pAd, pAd->wdev_list[i], UpdateAfterTim, PKT_V2_BCN, TRUE);
+#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+						UpdateBeaconProc(
+							pAd, pAd->wdev_list[i],
+							UpdateAfterTim,
+							PKT_V2_BCN, TRUE);
 #else
-					UpdateBeaconProc(pAd, pAd->wdev_list[i], UpdateAfterTim, PKT_BCN, TRUE);
+						UpdateBeaconProc(
+							pAd, pAd->wdev_list[i],
+							UpdateAfterTim, PKT_BCN,
+							TRUE);
 #endif
 					}
 				}
 			}
 		}
-	}
-	break;
+	} break;
 
 	case BCN_UPDATE_ENABLE_TX: {
 		if (wdev != NULL) {
 			pbcn_buf = &wdev->bcn_buf;
 
-			if (WDEV_WITH_BCN_ABILITY(wdev) && wdev->bAllowBeaconing) {
-				if (pbcn_buf->BcnUpdateMethod == BCN_GEN_BY_FW) {
+			if (WDEV_WITH_BCN_ABILITY(wdev) &&
+			    wdev->bAllowBeaconing) {
+				if (pbcn_buf->BcnUpdateMethod ==
+				    BCN_GEN_BY_FW) {
 					wdev->bcn_buf.bBcnSntReq = TRUE;
-#ifdef BCN_V2_SUPPORT	/* add bcn v2 support , 1.5k beacon support */
-					UpdateBeaconProc(pAd, wdev, UpdateAfterTim, PKT_V2_BCN, TRUE);
+#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+					UpdateBeaconProc(pAd, wdev,
+							 UpdateAfterTim,
+							 PKT_V2_BCN, TRUE);
 #else
-					UpdateBeaconProc(pAd, wdev, UpdateAfterTim, PKT_BCN, TRUE);
+					UpdateBeaconProc(pAd, wdev,
+							 UpdateAfterTim,
+							 PKT_BCN, TRUE);
 #endif
 				} else
 					AsicEnableBeacon(pAd, wdev);
 			}
 		}
-	}
-	break;
+	} break;
 
 	case BCN_UPDATE_DISABLE_TX: {
 		if (wdev != NULL) {
 			pbcn_buf = &wdev->bcn_buf;
 
 			if (WDEV_WITH_BCN_ABILITY(wdev)) {
-				if (pbcn_buf->BcnUpdateMethod == BCN_GEN_BY_FW) {
+				if (pbcn_buf->BcnUpdateMethod ==
+				    BCN_GEN_BY_FW) {
 					wdev->bcn_buf.bBcnSntReq = FALSE;
 					/* No need to make beacon */
-#ifdef BCN_V2_SUPPORT	/* add bcn v2 support , 1.5k beacon support */
-					UpdateBeaconProc(pAd, wdev, UpdateAfterTim, PKT_V2_BCN, FALSE);
+#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
+					UpdateBeaconProc(pAd, wdev,
+							 UpdateAfterTim,
+							 PKT_V2_BCN, FALSE);
 #else
-					UpdateBeaconProc(pAd, wdev, UpdateAfterTim, PKT_BCN, FALSE);
+					UpdateBeaconProc(pAd, wdev,
+							 UpdateAfterTim,
+							 PKT_BCN, FALSE);
 #endif
 				} else
 					AsicDisableBeacon(pAd, wdev);
 			}
 		}
-	}
-	break;
+	} break;
 
 	case BCN_UPDATE_PRETBTT: {
 #ifdef CONFIG_AP_SUPPORT
@@ -696,28 +752,23 @@ static NTSTATUS HwCtrlHandleUpdateBeacon(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt
 		}
 
 #endif /* CONFIG_AP_SUPPORT */
-	}
-	break;
+	} break;
 
 	case BCN_UPDATE_TIM: {
 #ifdef CONFIG_AP_SUPPORT
 		APMakeAllTimFrame(pAd);
 #endif
-	}
-	break;
+	} break;
 
 	default:
-		MTWF_LOG(DBG_CAT_ALL,
-				 DBG_SUBCAT_ALL,
-				 DBG_LVL_ERROR,
-				 ("%s(): Wrong Update reason: %d\n",
-				  __func__, UpdateReason));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): Wrong Update reason: %d\n", __func__,
+			  UpdateReason));
 		break;
 	}
 
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 #ifdef ERR_RECOVERY
 
@@ -727,7 +778,6 @@ static INT ErrRecoveryMcuIntEvent(RTMP_ADAPTER *pAd, UINT32 status)
 	UINT32 IntStatus = 0;
 
 	IntStatus |= status;
-
 
 	RTMP_IO_WRITE32(pAd, u4McuInitEvent, IntStatus); /* write 1 to clear */
 
@@ -819,23 +869,23 @@ void SerTimeLogDump(RTMP_ADAPTER *pAd)
 
 	for (idx = SER_TIME_ID_T0; idx < SER_TIME_ID_END; idx++) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%s,::E  R  , Time[%d](us)=%u\n", __func__, idx,
-				  pSerTimes[idx]));
+			 ("%s,::E  R  , Time[%d](us)=%u\n", __func__, idx,
+			  pSerTimes[idx]));
 	}
 
 	for (idx = SER_TIME_ID_T0; idx < (SER_TIME_ID_END - 1); idx++) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%s,::E  R  , T%d - T%d(us)=%u\n", __func__,
-				  idx + 1, idx, ErrRecoveryTimeDiff(pSerTimes[idx],
-						  pSerTimes[idx + 1])));
+			 ("%s,::E  R  , T%d - T%d(us)=%u\n", __func__, idx + 1,
+			  idx,
+			  ErrRecoveryTimeDiff(pSerTimes[idx],
+					      pSerTimes[idx + 1])));
 	}
 
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s,::E  R  , Total Time(us)=%u\n", __func__,
-			  ErrRecoveryTimeDiff(pSerTimes[SER_TIME_ID_T0],
-								  pSerTimes[SER_TIME_ID_T7])));
+		 ("%s,::E  R  , Total Time(us)=%u\n", __func__,
+		  ErrRecoveryTimeDiff(pSerTimes[SER_TIME_ID_T0],
+				      pSerTimes[SER_TIME_ID_T7])));
 }
-
 
 VOID ser_sys_reset(RTMP_STRING *arg)
 {
@@ -845,13 +895,14 @@ VOID ser_sys_reset(RTMP_STRING *arg)
 #endif /* SDK_TIMER_WDG */
 }
 
-
 static void ErrRecoveryEndDriverRestore(RTMP_ADAPTER *pAd)
 {
 	POS_COOKIE pObj;
 	struct tm_ops *tm_ops = pAd->tm_hif_ops;
+	PCI_HIF_T *pci_hif = &pAd->PciHif;
 
-	pObj = (POS_COOKIE) pAd->OS_Cookie;
+	pci_hif->IntPending |= (MT_INT_RX | MT_INT_RX_DLY);
+	pObj = (POS_COOKIE)pAd->OS_Cookie;
 #if defined(RTMP_MAC_PCI) || defined(RTMP_MAC_USB)
 	tm_ops->schedule_task(pAd, TR_DONE_TASK);
 #endif /* defined(RTMP_MAC_PCI) || defined(RTMP_MAC_USB) */
@@ -872,26 +923,32 @@ NTSTATUS HwRecoveryFromError(RTMP_ADAPTER *pAd)
 
 	if (ATE_ON(pAd)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Ser():The driver is in ATE mode now\n"));
-		return NDIS_STATUS_SUCCESS;
+			 ("Ser():The driver is in ATE mode now\n"));
+		//return NDIS_STATUS_SUCCESS;
 	}
 
 #endif /* CONFIG_ATE */
 	pErrRecoveryCtrl = &pAd->ErrRecoveryCtl;
+
+Label:
 	Status = pAd->HwCtrl.ser_status;
 	Stat = ErrRecoveryCurStat(pErrRecoveryCtrl);
 	pSerTimes = &pAd->HwCtrl.ser_times[0];
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Ser                       ,::E  R  , stat=0x%08X\n", Stat));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Ser                       ,::E  R  , stat=0x%08X\n", Stat));
 	/*wlan hook for ser*/
 	WLAN_HOOK_CALL(WLAN_HOOK_SER, pAd, pErrRecoveryCtrl);
 
 	switch (Stat) {
 	case ERR_RECOV_STOP_IDLE:
 	case ERR_RECOV_EVENT_REENTRY:
-		if ((Status & ERROR_DETECT_STOP_PDMA) == ERROR_DETECT_STOP_PDMA) {
+		if ((Status & ERROR_DETECT_STOP_PDMA) ==
+		    ERROR_DETECT_STOP_PDMA) {
 			os_zero_mem(pSerTimes,
-						(sizeof(pSerTimes[SER_TIME_ID_T0]) * SER_TIME_ID_END));
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+				    (sizeof(pSerTimes[SER_TIME_ID_T0]) *
+				     SER_TIME_ID_END));
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T0] = Lowpart;
 			/* Stop access PDMA. */
 			ErrRecoveryStopPdmaAccessDone(pErrRecoveryCtrl);
@@ -899,22 +956,29 @@ NTSTATUS HwRecoveryFromError(RTMP_ADAPTER *pAd)
 			ErrRecoveryMcuIntEvent(pAd, MCU_INT_PDMA0_STOP_DONE);
 			/* all mmio need to be stop till hw reset done. */
 			pAd->bPCIclkOff = TRUE;
-			RtmpusecDelay(100 * 1000); /* delay for 100 ms to wait reset done. */
+			RtmpusecDelay(
+				100 *
+				1000); /* delay for 100 ms to wait reset done. */
 			pAd->bPCIclkOff = FALSE;
 			/*re-call for change status to stop dma0*/
 			HwRecoveryFromError(pAd);
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T1] = Lowpart;
 		} else {
 			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("!!! SER CurStat=%u Event=%x!!!\n", ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
+				 ("!!! SER CurStat=%u Event=%x!!!\n",
+				  ErrRecoveryCurStat(pErrRecoveryCtrl),
+				  Status));
 		}
 
 		break;
 
 	case ERR_RECOV_STOP_PDMA0:
-		if ((Status & ERROR_DETECT_RESET_DONE) == ERROR_DETECT_RESET_DONE) {
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+		if ((Status & ERROR_DETECT_RESET_DONE) ==
+		    ERROR_DETECT_RESET_DONE) {
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T2] = Lowpart;
 			tm_exit(pAd);
 			qm_exit(pAd);
@@ -931,55 +995,63 @@ NTSTATUS HwRecoveryFromError(RTMP_ADAPTER *pAd)
 			ErrRecoveryReinitPdma(pErrRecoveryCtrl);
 			/* send PDMA0 reinit done to N9 through interrupt. */
 			ErrRecoveryMcuIntEvent(pAd, MCU_INT_PDMA0_INIT_DONE);
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T3] = Lowpart;
 		} else {
 			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("!!! SER CurStat=%u Event=%x!!!\n", ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
+				 ("!!! SER CurStat=%u Event=%x!!!\n",
+				  ErrRecoveryCurStat(pErrRecoveryCtrl),
+				  Status));
 		}
 
 		break;
 
 	case ERR_RECOV_RESET_PDMA0:
-		if ((Status & ERROR_DETECT_RECOVERY_DONE)
-			== ERROR_DETECT_RECOVERY_DONE) {
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+		if ((Status & ERROR_DETECT_RECOVERY_DONE) ==
+		    ERROR_DETECT_RECOVERY_DONE) {
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T4] = Lowpart;
 			ErrRecoveryWaitN9Normal(pErrRecoveryCtrl);
-			ErrRecoveryMcuIntEvent(pAd, MCU_INT_PDMA0_RECOVERY_DONE);
+			ErrRecoveryMcuIntEvent(pAd,
+					       MCU_INT_PDMA0_RECOVERY_DONE);
 			pSerTimes[SER_TIME_ID_T5] = Lowpart;
 		} else {
 			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("!!! SER CurStat=%u Event=%x!!!\n",
-					  ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
+				 ("!!! SER CurStat=%u Event=%x!!!\n",
+				  ErrRecoveryCurStat(pErrRecoveryCtrl),
+				  Status));
 		}
 
 		break;
 
 	case ERR_RECOV_WAIT_N9_NORMAL:
-		if ((Status & ERROR_DETECT_N9_NORMAL_STATE)
-			== ERROR_DETECT_N9_NORMAL_STATE) {
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+		if ((Status & ERROR_DETECT_N9_NORMAL_STATE) ==
+		    ERROR_DETECT_N9_NORMAL_STATE) {
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T6] = Lowpart;
 			ErrRecoveryDone(pErrRecoveryCtrl);
 			/* update Beacon frame if operating in AP mode. */
-			UpdateBeaconHandler(
-				pAd,
-				NULL,
-				BCN_UPDATE_AP_RENEW);
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+			UpdateBeaconHandler(pAd, NULL, BCN_UPDATE_AP_RENEW);
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T7] = Lowpart;
 			/*print out ser log timing*/
 			SerTimeLogDump(pAd);
 			ErrRecoveryEndDriverRestore(pAd);
-		} else if ((Status & ERROR_DETECT_STOP_PDMA)
-				   == ERROR_DETECT_STOP_PDMA) {
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+		} else if ((Status & ERROR_DETECT_STOP_PDMA) ==
+			   ERROR_DETECT_STOP_PDMA) {
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T6] = Lowpart;
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("!!! ERROR SER re-entry  CurStat=%u Event=%x!!!\n",
-					  ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
-			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart, HW_BSSID_0);
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("!!! ERROR SER re-entry  CurStat=%u Event=%x!!!\n",
+				 ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
+			MtAsicGetTsfTimeByDriver(pAd, &Highpart, &Lowpart,
+						 HW_BSSID_0);
 			pSerTimes[SER_TIME_ID_T7] = Lowpart;
 			/*print out ser log timing*/
 			SerTimeLogDump(pAd);
@@ -987,7 +1059,9 @@ NTSTATUS HwRecoveryFromError(RTMP_ADAPTER *pAd)
 			HwRecoveryFromError(pAd);
 		} else {
 			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("!!! SER CurStat=%u Event=%x!!!\n", ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
+				 ("!!! SER CurStat=%u Event=%x!!!\n",
+				  ErrRecoveryCurStat(pErrRecoveryCtrl),
+				  Status));
 		}
 
 		break;
@@ -998,8 +1072,13 @@ NTSTATUS HwRecoveryFromError(RTMP_ADAPTER *pAd)
 
 	default:
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("!!! SER CurStat=%u Event=%x!!!\n", ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
+			 ("!!! SER CurStat=%u Event=%x!!!\n",
+			  ErrRecoveryCurStat(pErrRecoveryCtrl), Status));
 		break;
+	}
+
+	if (Status != pAd->HwCtrl.ser_status) {
+		goto Label;
 	}
 
 	return NDIS_STATUS_SUCCESS;
@@ -1011,7 +1090,8 @@ NTSTATUS HwRecoveryFromError(RTMP_ADAPTER *pAd)
 /*STA part*/
 
 #ifdef HOST_RESUME_DONE_ACK_SUPPORT
-static NTSTATUS hw_ctrl_host_resume_done_ack(struct _RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS hw_ctrl_host_resume_done_ack(struct _RTMP_ADAPTER *pAd,
+					     HwCmdQElmt *CMDQelmt)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
 
@@ -1022,9 +1102,8 @@ static NTSTATUS hw_ctrl_host_resume_done_ack(struct _RTMP_ADAPTER *pAd, HwCmdQEl
 }
 #endif /* HOST_RESUME_DONE_ACK_SUPPORT */
 
-
-
-static NTSTATUS HwCtrlNICUpdateRawCounters(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlNICUpdateRawCounters(RTMP_ADAPTER *pAd,
+					   HwCmdQElmt *CMDQelmt)
 {
 	NICUpdateRawCounters(pAd);
 	return NDIS_STATUS_SUCCESS;
@@ -1042,8 +1121,9 @@ static NTSTATUS HwCtrlSetLEDStatus(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	UCHAR LEDStatus = *((PUCHAR)(CMDQelmt->buffer));
 
 	RTMPSetLEDStatus(pAd, LEDStatus);
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: CMDTHREAD_SET_LED_STATUS (LEDStatus = %d)\n",
-			 __func__, LEDStatus));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s: CMDTHREAD_SET_LED_STATUS (LEDStatus = %d)\n", __func__,
+		  LEDStatus));
 	return NDIS_STATUS_SUCCESS;
 }
 #endif /* LED_CONTROL_SUPPORT */
@@ -1055,7 +1135,8 @@ static NTSTATUS HwCtrlLEDWPSMode10(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	UINT WPSLedMode10 = *((PUINT)(CMDQelmt->buffer));
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("WPS LED mode 10::ON or Flash or OFF : %x\n", WPSLedMode10));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("WPS LED mode 10::ON or Flash or OFF : %x\n", WPSLedMode10));
 
 	switch (WPSLedMode10) {
 	case LINK_STATUS_WPS_MODE10_TURN_ON:
@@ -1071,7 +1152,9 @@ static NTSTATUS HwCtrlLEDWPSMode10(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 		break;
 
 	default:
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("WPS LED mode 10:: No this status %d!!!\n", WPSLedMode10));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("WPS LED mode 10:: No this status %d!!!\n",
+			  WPSLedMode10));
 		break;
 	}
 
@@ -1084,10 +1167,11 @@ static NTSTATUS HwCtrlLEDWPSMode10(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 #ifdef CONFIG_AP_SUPPORT
 static NTSTATUS HwCtrlSetStaDWRR(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
-	MT_VOW_STA_GROUP *pVoW  =  (MT_VOW_STA_GROUP *)(CMDQelmt->buffer);
+	MT_VOW_STA_GROUP *pVoW = (MT_VOW_STA_GROUP *)(CMDQelmt->buffer);
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s: group %d, staid %d\n", __func__, pVoW->GroupIdx,
-			 pVoW->StaIdx));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s: group %d, staid %d\n", __func__, pVoW->GroupIdx,
+		  pVoW->StaIdx));
 	vow_set_client(pAd, pVoW->GroupIdx, pVoW->StaIdx);
 	return NDIS_STATUS_SUCCESS;
 }
@@ -1095,22 +1179,31 @@ static NTSTATUS HwCtrlSetStaDWRR(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 static NTSTATUS HwCtrlSetStaDWRRQuantum(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	INT32 ret;
-	MT_VOW_STA_QUANTUM *pVoW  =  (MT_VOW_STA_QUANTUM *)(CMDQelmt->buffer);
+	MT_VOW_STA_QUANTUM *pVoW = (MT_VOW_STA_QUANTUM *)(CMDQelmt->buffer);
 
 	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("\x1b[31m%s: restore %d, quantum %d\x1b[m\n", __func__, pVoW->restore, pVoW->quantum));
+		 ("\x1b[31m%s: restore %d, quantum %d\x1b[m\n", __func__,
+		  pVoW->restore, pVoW->quantum));
 
 	if (pVoW->restore) {
 		if (vow_watf_is_enabled(pAd)) {
-			pAd->vow_cfg.vow_sta_dwrr_quantum[0] = pAd->vow_watf_q_lv0;
-			pAd->vow_cfg.vow_sta_dwrr_quantum[1] = pAd->vow_watf_q_lv1;
-			pAd->vow_cfg.vow_sta_dwrr_quantum[2] = pAd->vow_watf_q_lv2;
-			pAd->vow_cfg.vow_sta_dwrr_quantum[3] = pAd->vow_watf_q_lv3;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[0] =
+				pAd->vow_watf_q_lv0;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[1] =
+				pAd->vow_watf_q_lv1;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[2] =
+				pAd->vow_watf_q_lv2;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[3] =
+				pAd->vow_watf_q_lv3;
 		} else {
-			pAd->vow_cfg.vow_sta_dwrr_quantum[0] = VOW_STA_DWRR_QUANTUM0;
-			pAd->vow_cfg.vow_sta_dwrr_quantum[1] = VOW_STA_DWRR_QUANTUM1;
-			pAd->vow_cfg.vow_sta_dwrr_quantum[2] = VOW_STA_DWRR_QUANTUM2;
-			pAd->vow_cfg.vow_sta_dwrr_quantum[3] = VOW_STA_DWRR_QUANTUM3;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[0] =
+				VOW_STA_DWRR_QUANTUM0;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[1] =
+				VOW_STA_DWRR_QUANTUM1;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[2] =
+				VOW_STA_DWRR_QUANTUM2;
+			pAd->vow_cfg.vow_sta_dwrr_quantum[3] =
+				VOW_STA_DWRR_QUANTUM3;
 		}
 	} else {
 		UINT8 ac;
@@ -1119,10 +1212,11 @@ static NTSTATUS HwCtrlSetStaDWRRQuantum(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 			pAd->vow_cfg.vow_sta_dwrr_quantum[ac] = pVoW->quantum;
 	}
 
-	ret = vow_set_sta(pAd, 0x0, ENUM_VOW_DRR_CTRL_FIELD_AIRTIME_QUANTUM_ALL);
+	ret = vow_set_sta(pAd, 0x0,
+			  ENUM_VOW_DRR_CTRL_FIELD_AIRTIME_QUANTUM_ALL);
 
 	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("\x1b[31m%s: ret %d\x1b[m\n", __func__, ret));
+		 ("\x1b[31m%s: ret %d\x1b[m\n", __func__, ret));
 
 	return NDIS_STATUS_SUCCESS;
 }
@@ -1131,9 +1225,11 @@ static NTSTATUS HwCtrlSetStaDWRRQuantum(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 #endif /* VOW_SUPPORT */
 
 #ifdef THERMAL_PROTECT_SUPPORT
-static NTSTATUS HwCtrlThermalProtRadioOff(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlThermalProtRadioOff(RTMP_ADAPTER *pAd,
+					  HwCmdQElmt *CMDQelmt)
 {
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("%s:\n", __func__));
 	/* Set Radio off Process*/
 	Set_RadioOn_Proc(pAd, "0");
 	return NDIS_STATUS_SUCCESS;
@@ -1145,7 +1241,6 @@ static NTSTATUS HwCtrlUpdateRssi(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	RssiUpdate(pAd);
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 #ifdef ETSI_RX_BLOCKER_SUPPORT
 static NTSTATUS HwCtrlCheckRssi(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
@@ -1194,7 +1289,8 @@ static NTSTATUS HwCtrlGetTxStatistic(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	if (tr_entry->StaRec.ConnectionState != STATE_PORT_SECURE)
 		return NDIS_STATUS_SUCCESS;
 
-	mt_cmd_get_sta_tx_statistic(pAd, pTxStat->Wcid, dbdc_idx, pTxStat->Field);
+	mt_cmd_get_sta_tx_statistic(pAd, pTxStat->Wcid, dbdc_idx,
+				    pTxStat->Field);
 #endif
 	return NDIS_STATUS_SUCCESS;
 }
@@ -1207,7 +1303,6 @@ static NTSTATUS HwCtrlRadioOnOff(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	return NDIS_STATUS_SUCCESS;
 }
 
-
 #ifdef GREENAP_SUPPORT
 static NTSTATUS HwCtrlGreenAPOnOff(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
@@ -1219,15 +1314,15 @@ static NTSTATUS HwCtrlGreenAPOnOff(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 #endif /* GREENAP_SUPPORT */
 
 #ifdef PCIE_ASPM_DYM_CTRL_SUPPORT
-static NTSTATUS hw_ctrl_pcie_aspm_dym_ctrl(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS hw_ctrl_pcie_aspm_dym_ctrl(RTMP_ADAPTER *pAd,
+					   HwCmdQElmt *CMDQelmt)
 {
-	P_PCIE_ASPM_DYM_CTRL_T ppcie_aspm_dym_ctrl = (P_PCIE_ASPM_DYM_CTRL_T)CMDQelmt->buffer;
+	P_PCIE_ASPM_DYM_CTRL_T ppcie_aspm_dym_ctrl =
+		(P_PCIE_ASPM_DYM_CTRL_T)CMDQelmt->buffer;
 
-	asic_pcie_aspm_dym_ctrl(
-		pAd,
-		ppcie_aspm_dym_ctrl->ucDbdcIdx,
-		ppcie_aspm_dym_ctrl->fgL1Enable,
-		ppcie_aspm_dym_ctrl->fgL0sEnable);
+	asic_pcie_aspm_dym_ctrl(pAd, ppcie_aspm_dym_ctrl->ucDbdcIdx,
+				ppcie_aspm_dym_ctrl->fgL1Enable,
+				ppcie_aspm_dym_ctrl->fgL0sEnable);
 
 	return NDIS_STATUS_SUCCESS;
 }
@@ -1237,7 +1332,8 @@ static NTSTATUS HwCtrlSetSlotTime(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	SLOT_CFG *pSlotCfg = (SLOT_CFG *)CMDQelmt->buffer;
 
-	AsicSetSlotTime(pAd, pSlotCfg->bUseShortSlotTime, pSlotCfg->Channel, pSlotCfg->wdev);
+	AsicSetSlotTime(pAd, pSlotCfg->bUseShortSlotTime, pSlotCfg->Channel,
+			pSlotCfg->wdev);
 	return NDIS_STATUS_SUCCESS;
 }
 
@@ -1249,7 +1345,8 @@ static NTSTATUS HwCtrlSetPbc(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 {
 	struct pbc_ctrl *pbc = (struct pbc_ctrl *)CMDQelmt->buffer;
 	INT32 ret = 0;
-	UINT8 bssid = (pbc->wdev) ?  (pbc->wdev->bss_info_argument.ucBssIndex) : PBC_BSS_IDX_FOR_ALL;
+	UINT8 bssid = (pbc->wdev) ? (pbc->wdev->bss_info_argument.ucBssIndex) :
+					  PBC_BSS_IDX_FOR_ALL;
 	UINT16 wcid = (pbc->entry) ? (pbc->entry->wcid) : PBC_WLAN_IDX_FOR_ALL;
 
 	ret = MtCmdPktBudgetCtrl(pAd, bssid, wcid, pbc->type);
@@ -1282,7 +1379,6 @@ static NTSTATUS HwCtrlWifiSysOpen(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	}
 }
 
-
 /*
 *
 */
@@ -1297,7 +1393,6 @@ static NTSTATUS HwCtrlWifiSysClose(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 		return FALSE;
 	}
 }
-
 
 /*
 *
@@ -1314,7 +1409,6 @@ static NTSTATUS HwCtrlWifiSysLinkUp(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	}
 }
 
-
 /*
 *
 */
@@ -1330,11 +1424,11 @@ static NTSTATUS HwCtrlWifiSysLinkDown(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 	}
 }
 
-
 /*
 *
 */
-static NTSTATUS HwCtrlWifiSysPeerLinkDown(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
+static NTSTATUS HwCtrlWifiSysPeerLinkDown(RTMP_ADAPTER *pAd,
+					  HwCmdQElmt *CMDQelmt)
 {
 	struct WIFI_SYS_CTRL *wsys = (struct WIFI_SYS_CTRL *)CMDQelmt->buffer;
 
@@ -1345,7 +1439,6 @@ static NTSTATUS HwCtrlWifiSysPeerLinkDown(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelm
 		return FALSE;
 	}
 }
-
 
 /*
 *
@@ -1361,7 +1454,6 @@ static NTSTATUS HwCtrlWifiSysPeerLinkUp(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 		return FALSE;
 	}
 }
-
 
 /*
 *
@@ -1386,20 +1478,25 @@ static NTSTATUS HwCtrlBssTermination(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 
 	RfIC = wmode_2_rfic(wdev->PhyMode);
 
-		if (!wdev->if_up_down_state) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("==>HwCtrlBssTermination (%s) but IF is done, ignore!!! (wdev_idx %d)\n",
-				"OFF", wdev->wdev_idx));
-			return TRUE;
-		}
+	if (!wdev->if_up_down_state) {
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("==>HwCtrlBssTermination (%s) but IF is done, ignore!!! (wdev_idx %d)\n",
+			 "OFF", wdev->wdev_idx));
+		return TRUE;
+	}
 
-		if (IsHcRadioCurStatOffByChannel(pAd, wdev->channel)) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("==>HwCtrlBssTermination (%s) equal to current state, ignore!!! (wdev_idx %d)\n",
-				"OFF", wdev->wdev_idx));
-			return TRUE;
-		}
+	if (IsHcRadioCurStatOffByChannel(pAd, wdev->channel)) {
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("==>HwCtrlBssTermination (%s) equal to current state, ignore!!! (wdev_idx %d)\n",
+			 "OFF", wdev->wdev_idx));
+		return TRUE;
+	}
 
-		MlmeRadioOff(pAd, wdev);
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("==>HwCtrlBssTermination (OFF)\n"));
+	MlmeRadioOff(pAd, wdev);
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("==>HwCtrlBssTermination (OFF)\n"));
 
 	return NDIS_STATUS_SUCCESS;
 }
@@ -1407,149 +1504,141 @@ static NTSTATUS HwCtrlBssTermination(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 
 /*HWCMD_TYPE_RADIO*/
 static HW_CMD_TABLE_T HwCmdRadioTable[] = {
-	{HWCMD_ID_UPDATE_DAW_COUNTER, HwCtrlUpdateRawCounters, 0},
+	{ HWCMD_ID_UPDATE_DAW_COUNTER, HwCtrlUpdateRawCounters, 0 },
 #ifdef MT_MAC
-	{HWCMD_ID_SET_CLIENT_MAC_ENTRY, HwCtrlSetClientMACEntry, 0},
+	{ HWCMD_ID_SET_CLIENT_MAC_ENTRY, HwCtrlSetClientMACEntry, 0 },
 #ifdef TXBF_SUPPORT
-	{HWCMD_ID_SET_APCLI_BF_CAP, HwCtrlSetClientBfCap, 0},
-	{HWCMD_ID_SET_APCLI_BF_REPEATER, HwCtrlSetBfRepeater, 0},
-	{HWCMD_ID_ADJUST_STA_BF_SOUNDING, HwCtrlAdjBfSounding, 0},
-	{HWCMD_ID_TXBF_TX_APPLY_CTRL, HwCtrlTxBfTxApply, 0},
+	{ HWCMD_ID_SET_APCLI_BF_CAP, HwCtrlSetClientBfCap, 0 },
+	{ HWCMD_ID_SET_APCLI_BF_REPEATER, HwCtrlSetBfRepeater, 0 },
+	{ HWCMD_ID_ADJUST_STA_BF_SOUNDING, HwCtrlAdjBfSounding, 0 },
+	{ HWCMD_ID_TXBF_TX_APPLY_CTRL, HwCtrlTxBfTxApply, 0 },
 #endif
-	{HWCMD_ID_SET_TR_ENTRY, HwCtrlSetTREntry, 0},
-	{HWCMD_ID_SET_BA_REC, HwCtrlSetBaRec, 0},
-	{HWCMD_ID_UPDATE_BSSINFO, HwCtrlUpdateBssInfo, 0},
-	{HWCMD_ID_UPDATE_BEACON, HwCtrlHandleUpdateBeacon, 0},
-	{HWCMD_ID_SET_TX_BURST, HwCtrlSetTxBurst, 0},
+	{ HWCMD_ID_SET_TR_ENTRY, HwCtrlSetTREntry, 0 },
+	{ HWCMD_ID_SET_BA_REC, HwCtrlSetBaRec, 0 },
+	{ HWCMD_ID_UPDATE_BSSINFO, HwCtrlUpdateBssInfo, 0 },
+	{ HWCMD_ID_UPDATE_BEACON, HwCtrlHandleUpdateBeacon, 0 },
+	{ HWCMD_ID_SET_TX_BURST, HwCtrlSetTxBurst, 0 },
 #endif /*MT_MAC*/
 #ifdef CONFIG_AP_SUPPORT
-	{HWCMD_ID_AP_ADJUST_EXP_ACK_TIME, HwCtrlAPAdjustEXPAckTime, 0},
-	{HWCMD_ID_AP_RECOVER_EXP_ACK_TIME,	HwCtrlAPRecoverEXPAckTime, 0},
+	{ HWCMD_ID_AP_ADJUST_EXP_ACK_TIME, HwCtrlAPAdjustEXPAckTime, 0 },
+	{ HWCMD_ID_AP_RECOVER_EXP_ACK_TIME, HwCtrlAPRecoverEXPAckTime, 0 },
 #endif
 #ifdef VOW_SUPPORT
 #ifdef CONFIG_AP_SUPPORT
-	{HWCMD_ID_SET_STA_DWRR, HwCtrlSetStaDWRR, 0},
-	{HWCMD_ID_SET_STA_DWRR_QUANTUM, HwCtrlSetStaDWRRQuantum, 0},
+	{ HWCMD_ID_SET_STA_DWRR, HwCtrlSetStaDWRR, 0 },
+	{ HWCMD_ID_SET_STA_DWRR_QUANTUM, HwCtrlSetStaDWRRQuantum, 0 },
 #endif /* CONFIG_AP_SUPPORT */
 #endif /* VOW_SUPPORT */
-	{HWCMD_ID_UPDATE_RSSI, HwCtrlUpdateRssi, 0},
-	{HWCMD_ID_GET_TEMPERATURE, HwCtrlGetTemperature, 0},
-	{HWCMD_ID_SET_SLOTTIME, HwCtrlSetSlotTime, 0},
+	{ HWCMD_ID_UPDATE_RSSI, HwCtrlUpdateRssi, 0 },
+	{ HWCMD_ID_GET_TEMPERATURE, HwCtrlGetTemperature, 0 },
+	{ HWCMD_ID_SET_SLOTTIME, HwCtrlSetSlotTime, 0 },
 #ifdef ETSI_RX_BLOCKER_SUPPORT
-	{HWCMD_RX_CHECK_RSSI, HwCtrlCheckRssi, 0},
+	{ HWCMD_RX_CHECK_RSSI, HwCtrlCheckRssi, 0 },
 #endif /* end of ETSI_RX_BLOCKER_SUPPORT */
 #ifdef BCN_OFFLOAD_SUPPORT
-	{HWCMD_ID_SET_BCN_OFFLOAD, HwCtrlSetBcnOffload, 0},
+	{ HWCMD_ID_SET_BCN_OFFLOAD, HwCtrlSetBcnOffload, 0 },
 #endif
+#ifdef OCE_SUPPORT
+	{ HWCMD_ID_SET_FD_FRAME_OFFLOAD, HwCtrlSetFdFrameOffload, 0 },
+#endif /* OCE_SUPPORT */
+
 #ifdef MAC_REPEATER_SUPPORT
-	{HWCMD_ID_ADD_REPT_ENTRY, HwCtrlAddReptEntry, 0},
-	{HWCMD_ID_REMOVE_REPT_ENTRY, HwCtrlRemoveReptEntry, 0},
+	{ HWCMD_ID_ADD_REPT_ENTRY, HwCtrlAddReptEntry, 0 },
+	{ HWCMD_ID_REMOVE_REPT_ENTRY, HwCtrlRemoveReptEntry, 0 },
 #endif
 #ifdef THERMAL_PROTECT_SUPPORT
-	{HWCMD_ID_THERMAL_PROTECTION_RADIOOFF, HwCtrlThermalProtRadioOff, 0},
+	{ HWCMD_ID_THERMAL_PROTECTION_RADIOOFF, HwCtrlThermalProtRadioOff, 0 },
 #endif /* THERMAL_PROTECT_SUPPORT */
-	{HWCMD_ID_RADIO_ON_OFF, HwCtrlRadioOnOff, 0},
+	{ HWCMD_ID_RADIO_ON_OFF, HwCtrlRadioOnOff, 0 },
 #ifdef GREENAP_SUPPORT
-	{HWCMD_ID_GREENAP_ON_OFF, HwCtrlGreenAPOnOff, 0},
+	{ HWCMD_ID_GREENAP_ON_OFF, HwCtrlGreenAPOnOff, 0 },
 #endif /* GREENAP_SUPPORT */
 #ifdef MBO_SUPPORT
-	{HWCMD_ID_BSS_TERMINATION, HwCtrlBssTermination, 0},
+	{ HWCMD_ID_BSS_TERMINATION, HwCtrlBssTermination, 0 },
 #endif /* MBO_SUPPORT */
 #ifdef MBSS_AS_WDS_AP_SUPPORT
-	{HWCMD_ID_UPDATE_4ADDR_HDR_TRANS, HwCtrlUpdate4Addr_HdrTrans, 0},
+	{ HWCMD_ID_UPDATE_4ADDR_HDR_TRANS, HwCtrlUpdate4Addr_HdrTrans, 0 },
 #endif
-    {HWCMD_ID_END, NULL, 0}
+	{ HWCMD_ID_END, NULL, 0 }
 };
 
 /*HWCMD_TYPE_SECURITY*/
-static HW_CMD_TABLE_T HwCmdSecurityTable[] = {
-	{HWCMD_ID_ADDREMOVE_ASIC_KEY, HwCtrlAddRemoveKeyTab, 0},
-	{HWCMD_ID_END, NULL, 0}
-};
+static HW_CMD_TABLE_T HwCmdSecurityTable[] = { { HWCMD_ID_ADDREMOVE_ASIC_KEY,
+						 HwCtrlAddRemoveKeyTab, 0 },
+					       { HWCMD_ID_END, NULL, 0 } };
 
 /*HWCMD_TYPE_PERIPHERAL*/
 static HW_CMD_TABLE_T HwCmdPeripheralTable[] = {
-	{HWCMD_ID_GPIO_CHECK, HwCtrlCheckGPIO, 0},
+	{ HWCMD_ID_GPIO_CHECK, HwCtrlCheckGPIO, 0 },
 #ifdef WSC_INCLUDED
 #ifdef WSC_LED_SUPPORT
-	{HWCMD_ID_LED_WPS_MODE10, HwCtrlLEDWPSMode10, 0},
+	{ HWCMD_ID_LED_WPS_MODE10, HwCtrlLEDWPSMode10, 0 },
 #endif
 #endif
 #ifdef LED_CONTROL_SUPPORT
-	{HWCMD_ID_SET_LED_STATUS, HwCtrlSetLEDStatus, 0},
+	{ HWCMD_ID_SET_LED_STATUS, HwCtrlSetLEDStatus, 0 },
 #endif
-	{HWCMD_ID_END, NULL, 0}
+	{ HWCMD_ID_END, NULL, 0 }
 };
 
 /*HWCMD_TYPE_HT_CAP*/
 static HW_CMD_TABLE_T HwCmdHtCapTable[] = {
-	{HWCMD_ID_DEL_ASIC_WCID, HwCtrlDelAsicWcid, 0},
+	{ HWCMD_ID_DEL_ASIC_WCID, HwCtrlDelAsicWcid, 0 },
 #ifdef HTC_DECRYPT_IOT
-	{HWCMD_ID_SET_ASIC_AAD_OM, HwCtrlSetAsicWcidAAD_OM, 0},
+	{ HWCMD_ID_SET_ASIC_AAD_OM, HwCtrlSetAsicWcidAAD_OM, 0 },
 #endif /* HTC_DECRYPT_IOT */
-	{HWCMD_ID_END, NULL, 0}
+	{ HWCMD_ID_END, NULL, 0 }
 };
 
 /*HWCMD_TYPE_PS*/
 static HW_CMD_TABLE_T HwCmdPsTable[] = {
 #ifdef MT_MAC
 #endif
-	{HWCMD_ID_PERODIC_CR_ACCESS_NIC_UPDATE_RAW_COUNTERS, HwCtrlNICUpdateRawCounters, 0},
+	{ HWCMD_ID_PERODIC_CR_ACCESS_NIC_UPDATE_RAW_COUNTERS,
+	  HwCtrlNICUpdateRawCounters, 0 },
 #ifdef HOST_RESUME_DONE_ACK_SUPPORT
-	{HWCMD_ID_HOST_RESUME_DONE_ACK, hw_ctrl_host_resume_done_ack, 0},
+	{ HWCMD_ID_HOST_RESUME_DONE_ACK, hw_ctrl_host_resume_done_ack, 0 },
 #endif /* HOST_RESUME_DONE_ACK_SUPPORT */
 #ifdef PCIE_ASPM_DYM_CTRL_SUPPORT
-	{HWCMD_ID_PCIE_ASPM_DYM_CTRL, hw_ctrl_pcie_aspm_dym_ctrl, 0},
+	{ HWCMD_ID_PCIE_ASPM_DYM_CTRL, hw_ctrl_pcie_aspm_dym_ctrl, 0 },
 #endif /* PCIE_ASPM_DYM_CTRL_SUPPORT */
-	{HWCMD_ID_END, NULL, 0}
+	{ HWCMD_ID_END, NULL, 0 }
 };
-
 
 /*HWCMD_TYPE_WIFISYS*/
 static HW_CMD_TABLE_T HwCmdWifiSysTable[] = {
-	{HWCMD_ID_WIFISYS_LINKDOWN, HwCtrlWifiSysLinkDown, 0},
-	{HWCMD_ID_WIFISYS_LINKUP, HwCtrlWifiSysLinkUp, 0},
-	{HWCMD_ID_WIFISYS_OPEN, HwCtrlWifiSysOpen, 0},
-	{HWCMD_ID_WIFISYS_CLOSE, HwCtrlWifiSysClose, 0},
-	{HWCMD_ID_WIFISYS_PEER_LINKDOWN, HwCtrlWifiSysPeerLinkDown, 0},
-	{HWCMD_ID_WIFISYS_PEER_LINKUP, HwCtrlWifiSysPeerLinkUp, 0},
-	{HWCMD_ID_WIFISYS_PEER_UPDATE, HwCtrlWifiSysPeerUpdate, 0},
-	{HWCMD_ID_GET_TX_STATISTIC, HwCtrlGetTxStatistic, 0},
-	{HWCMD_ID_END, NULL, 0}
+	{ HWCMD_ID_WIFISYS_LINKDOWN, HwCtrlWifiSysLinkDown, 0 },
+	{ HWCMD_ID_WIFISYS_LINKUP, HwCtrlWifiSysLinkUp, 0 },
+	{ HWCMD_ID_WIFISYS_OPEN, HwCtrlWifiSysOpen, 0 },
+	{ HWCMD_ID_WIFISYS_CLOSE, HwCtrlWifiSysClose, 0 },
+	{ HWCMD_ID_WIFISYS_PEER_LINKDOWN, HwCtrlWifiSysPeerLinkDown, 0 },
+	{ HWCMD_ID_WIFISYS_PEER_LINKUP, HwCtrlWifiSysPeerLinkUp, 0 },
+	{ HWCMD_ID_WIFISYS_PEER_UPDATE, HwCtrlWifiSysPeerUpdate, 0 },
+	{ HWCMD_ID_GET_TX_STATISTIC, HwCtrlGetTxStatistic, 0 },
+	{ HWCMD_ID_END, NULL, 0 }
 };
 
 /*HWCMD_TYPE_WMM*/
 static HW_CMD_TABLE_T HwCmdWmmTable[] = {
 #ifdef PKT_BUDGET_CTRL_SUPPORT
-	{HWCMD_ID_PBC_CTRL, HwCtrlSetPbc, 0},
+	{ HWCMD_ID_PBC_CTRL, HwCtrlSetPbc, 0 },
 #endif /*PKT_BUDGET_CTRL_SUPPORT*/
-	{HWCMD_ID_SET_EDCA, HwCtrlSetEdca, 0},
-	{HWCMD_ID_END, NULL, 0}
+	{ HWCMD_ID_SET_EDCA, HwCtrlSetEdca, 0 },
+	{ HWCMD_ID_END, NULL, 0 }
 };
 
 /*HWCMD_TYPE_PROTECT*/
-static HW_CMD_TABLE_T HwCmdProtectTable[] = {
-	{HWCMD_ID_RTS_THLD, HwCtrlUpdateRtsThreshold, 0},
-	{HWCMD_ID_END, NULL, 0}
-};
+static HW_CMD_TABLE_T HwCmdProtectTable[] = { { HWCMD_ID_RTS_THLD,
+						HwCtrlUpdateRtsThreshold, 0 },
+					      { HWCMD_ID_END, NULL, 0 } };
 
 /*Order can't be changed, follow HW_CMD_TYPE order definition*/
 HW_CMD_TABLE_T *HwCmdTable[] = {
-	HwCmdRadioTable,
-	HwCmdSecurityTable,
-	HwCmdPeripheralTable,
-	HwCmdHtCapTable,
-	HwCmdPsTable,
-	HwCmdWifiSysTable,
-	HwCmdWmmTable,
-	HwCmdProtectTable,
-	NULL
+	HwCmdRadioTable, HwCmdSecurityTable, HwCmdPeripheralTable,
+	HwCmdHtCapTable, HwCmdPsTable,	     HwCmdWifiSysTable,
+	HwCmdWmmTable,	 HwCmdProtectTable,  NULL
 };
 
-
-
-HW_FLAG_TABLE_T HwFlagTable[] = {
-	{HWFLAG_ID_UPDATE_PROTECT, HwCtrlUpdateProtect, 0},
-	{HWFLAG_ID_END, NULL, 0}
-};
-
+HW_FLAG_TABLE_T HwFlagTable[] = { { HWFLAG_ID_UPDATE_PROTECT,
+				    HwCtrlUpdateProtect, 0 },
+				  { HWFLAG_ID_END, NULL, 0 } };

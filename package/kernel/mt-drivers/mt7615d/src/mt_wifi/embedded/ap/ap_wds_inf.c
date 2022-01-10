@@ -36,9 +36,7 @@
 #include "rt_os_util.h"
 #include "rt_os_net.h"
 
-
 NET_DEV_STATS *RT28xx_get_wds_ether_stats(PNET_DEV net_dev);
-
 
 /* Register WDS interface */
 VOID RT28xx_WDS_Init(VOID *pAd, PNET_DEV net_dev)
@@ -51,20 +49,21 @@ VOID RT28xx_WDS_Init(VOID *pAd, PNET_DEV net_dev)
 	netDevOpHook.xmit = rt28xx_send_packets;
 	netDevOpHook.ioctl = rt28xx_ioctl;
 	netDevOpHook.get_stats = RT28xx_get_wds_ether_stats;
-	NdisMoveMemory(&netDevOpHook.devAddr[0], RTMP_OS_NETDEV_GET_PHYADDR(net_dev), MAC_ADDR_LEN);
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("The new WDS interface MAC = %02X:%02X:%02X:%02X:%02X:%02X\n",
-			 PRINT_MAC(netDevOpHook.devAddr)));
-	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_WDS_INIT,
-						0, &netDevOpHook, 0);
+	NdisMoveMemory(&netDevOpHook.devAddr[0],
+		       RTMP_OS_NETDEV_GET_PHYADDR(net_dev), MAC_ADDR_LEN);
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("The new WDS interface MAC = %02X:%02X:%02X:%02X:%02X:%02X\n",
+		  PRINT_MAC(netDevOpHook.devAddr)));
+	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_WDS_INIT, 0,
+			    &netDevOpHook, 0);
 }
-
 
 INT wds_virtual_if_open(PNET_DEV pDev)
 {
 	VOID *pAd;
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: ===> %s\n",
-		RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: ===> %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 
@@ -81,13 +80,12 @@ INT wds_virtual_if_open(PNET_DEV pDev)
 	return 0;
 }
 
-
 INT wds_virtual_if_close(PNET_DEV pDev)
 {
 	VOID *pAd;
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: ===> %s\n",
-		RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: ===> %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 	/* RTMP_OS_NETDEV_CARRIER_OFF(pDev); */
@@ -101,7 +99,6 @@ INT wds_virtual_if_close(PNET_DEV pDev)
 	RT_MOD_DEC_USE_COUNT();
 	return 0;
 }
-
 
 VOID RT28xx_WDS_Remove(VOID *pAd)
 {

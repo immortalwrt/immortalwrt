@@ -1,4 +1,4 @@
- /***************************************************************************
+/***************************************************************************
  * MediaTek Inc.
  * 4F, No. 2 Technology 5th Rd.
  * Science-based Industrial Park
@@ -31,11 +31,13 @@
 
 UINT16 nonerp_sta_num(struct _MAC_TABLE_ENTRY *peer, UCHAR peer_state)
 {
-	if ((peer->MaxHTPhyMode.field.MODE == MODE_CCK) && (peer->Sst == SST_ASSOC)) {
+	if ((peer->MaxHTPhyMode.field.MODE == MODE_CCK) &&
+	    (peer->Sst == SST_ASSOC)) {
 		if (peer_state == PEER_JOIN) {
 			peer->pMbss->conn_sta.nonerp_sta_cnt++;
 		}
-		if ((peer_state == PEER_LEAVE) && (peer->pMbss->conn_sta.nonerp_sta_cnt > 0)) {
+		if ((peer_state == PEER_LEAVE) &&
+		    (peer->pMbss->conn_sta.nonerp_sta_cnt > 0)) {
 			peer->pMbss->conn_sta.nonerp_sta_cnt--;
 		}
 	}

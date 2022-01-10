@@ -126,7 +126,6 @@ struct tx_rx_ctl {
 #endif
 };
 
-
 struct _RTMP_ADAPTER;
 
 enum {
@@ -135,7 +134,10 @@ enum {
 
 INT32 tr_ctl_init(struct _RTMP_ADAPTER *pAd);
 INT32 tr_ctl_exit(struct _RTMP_ADAPTER *pAd);
-BOOLEAN tx_flow_check_state(struct _RTMP_ADAPTER *pAd, UINT8 State, UINT8 RingIdx);
-INT32 tx_flow_block(struct _RTMP_ADAPTER *pAd, PNET_DEV NetDev, UINT8 State, BOOLEAN Block, UINT8 RingIdx);
-INT32 tx_flow_set_state_block(struct _RTMP_ADAPTER *pAd, PNET_DEV NetDev, UINT8 State, BOOLEAN Block, UINT8 RingIdx);
+BOOLEAN tx_flow_check_state(struct _RTMP_ADAPTER *pAd, UINT8 State,
+			    UINT8 RingIdx);
+INT32 tx_flow_block(struct _RTMP_ADAPTER *pAd, PNET_DEV NetDev, UINT8 State,
+		    BOOLEAN Block, UINT8 RingIdx);
+INT32 tx_flow_set_state_block(struct _RTMP_ADAPTER *pAd, PNET_DEV NetDev,
+			      UINT8 State, BOOLEAN Block, UINT8 RingIdx);
 #endif

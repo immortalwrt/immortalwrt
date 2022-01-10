@@ -33,24 +33,24 @@
 #define CFG_INTER_AGENT_SUPPORT 1
 
 /*Label 1*/
-#define CFG_TX_SUPPORT			1
-#define CFG_RX_SUPPORT			1
+#define CFG_TX_SUPPORT 1
+#define CFG_RX_SUPPORT 1
 
 /*Label 2*/
-#define CFG_CR_MIRROR_SUPPORT	1
-#define CFG_DELAY_INT_SUPPORT	1
+#define CFG_CR_MIRROR_SUPPORT 1
+#define CFG_DELAY_INT_SUPPORT 1
 
 /*Label 3*/
-#define CFG_HW_TX_SUPPORT		1
+#define CFG_HW_TX_SUPPORT 1
 
 /*Label 4*/
-#define CFG_DYNAMIC_BM_SUPPORT	0
-#define CFG_WDMA_RECYCLE		0
+#define CFG_DYNAMIC_BM_SUPPORT 0
+#define CFG_WDMA_RECYCLE 0
 
 /*should remove when feature is ready or fix*/
-#define CFG_WORK_AROUND_128_ALIGN	1
+#define CFG_WORK_AROUND_128_ALIGN 1
 /*should not enable since hw fixed*/
-#define CFG_WORK_AROUND_INT_POLL	0
+#define CFG_WORK_AROUND_INT_POLL 0
 /*should not enable since hw fixed*/
 #define CFG_WORK_AROUND_WDMA_RETURN_IDLE 0
 
@@ -80,23 +80,28 @@
 #define WED_RX_SUPPORT
 #endif
 
-#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT && CFG_CR_MIRROR_SUPPORT)
+#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT &&            \
+     CFG_CR_MIRROR_SUPPORT)
 #define WED_CR_MIRROR_SUPPORT
 #endif
 
-#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT && CFG_DELAY_INT_SUPPORT)
+#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT &&            \
+     CFG_DELAY_INT_SUPPORT)
 #define WED_DELAY_INT_SUPPORT
 #endif
 
-#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT && CFG_HW_TX_SUPPORT)
+#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT &&            \
+     CFG_HW_TX_SUPPORT)
 #define WED_HW_TX_SUPPORT
 #endif
 
-#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT && CFG_HW_TX_SUPPORT && CFG_DYNAMIC_BM_SUPPORT)
+#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT &&            \
+     CFG_HW_TX_SUPPORT && CFG_DYNAMIC_BM_SUPPORT)
 #define WED_DYNAMIC_BM_SUPPORT
 #endif
 
-#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT && CFG_HW_TX_SUPPORT && CFG_WDMA_RECYCLE)
+#if (CFG_INTER_AGENT_SUPPORT && CFG_TX_SUPPORT && CFG_RX_SUPPORT &&            \
+     CFG_HW_TX_SUPPORT && CFG_WDMA_RECYCLE)
 #define WED_WDMA_RECYCLE
 #endif
 
@@ -111,7 +116,6 @@ enum {
 	WHNAT_DBG_END
 };
 
-
 enum {
 	WHNAT_CR_START = 0,
 	WHNAT_CR_WED = WHNAT_CR_START,
@@ -120,29 +124,24 @@ enum {
 	WHNAT_CR_END
 };
 
-
-
-
 /*platform register Read/Write*/
-#define WHNAT_IO_WRITE32(_A, _R, _V)								\
+#define WHNAT_IO_WRITE32(_A, _R, _V)                                           \
 	writel(_V, (void *)((_A)->base_addr + (_R)))
 
-#define WHNAT_IO_READ32(_A, _R, _pV)								\
+#define WHNAT_IO_READ32(_A, _R, _pV)                                           \
 	(*(_pV) = readl((void *)((_A)->base_addr + (_R))))
-
-
 
 #define WHNAT_DBG_EN 1
 /*debug macro*/
 #if WHNAT_DBG_EN
-#define WHNAT_DBG(lev, fmt, args...) \
-	{if (lev <= whnat_log_get())	pr_info(fmt, ## args); }
+#define WHNAT_DBG(lev, fmt, args...)                                           \
+	{                                                                      \
+		if (lev <= whnat_log_get())                                    \
+			pr_info(fmt, ##args);                                  \
+	}
 #else
 #define WHNAT_DBG(lev, fmt, args...)
 #endif
-
-
-
 
 struct whnat_dma_buf {
 	unsigned long alloc_size;
@@ -160,7 +159,6 @@ struct whnat_dma_cb {
 	unsigned short token_id;
 };
 
-
 struct whnat_ring {
 	struct whnat_dma_cb cell[WIFI_TX_RING_SIZE];
 	struct whnat_dma_buf desc;
@@ -176,8 +174,10 @@ void whnat_log_set(char log);
 void whnat_dump_dmabuf(struct whnat_dma_buf *buf);
 void whnat_dump_dmacb(struct whnat_dma_cb *cb);
 
-int whnat_dma_buf_alloc(struct platform_device *dev, struct whnat_dma_buf *dma_buf, UINT size);
-void whnat_dma_buf_free(struct platform_device *dev, struct whnat_dma_buf *dma_buf);
+int whnat_dma_buf_alloc(struct platform_device *dev,
+			struct whnat_dma_buf *dma_buf, UINT size);
+void whnat_dma_buf_free(struct platform_device *dev,
+			struct whnat_dma_buf *dma_buf);
 
 void whnat_dump_raw(char *str, unsigned char *va, unsigned int size);
 long whnat_str_tol(const char *str, char **endptr, int base);

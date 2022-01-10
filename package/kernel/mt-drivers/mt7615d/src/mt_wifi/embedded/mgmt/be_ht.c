@@ -32,8 +32,8 @@ VOID ht_oper_init(struct wifi_dev *wdev, struct ht_op *obj)
 		obj->ext_cha = wlan_operate_get_ext_cha(wdev);
 	} else {
 #endif
-	obj->ht_bw = HT_BW_20;
-	obj->ext_cha = EXTCHA_NONE;
+		obj->ht_bw = HT_BW_20;
+		obj->ext_cha = EXTCHA_NONE;
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 	}
 #endif
@@ -69,7 +69,6 @@ VOID ht_op_status_exit(struct ht_op_status *obj)
 	os_zero_mem(obj, sizeof(struct ht_op_status));
 }
 
-
 /*
 * Configure loader
 */
@@ -96,7 +95,8 @@ static VOID ht_oper_set_ext_cha(struct wifi_dev *wdev, UCHAR ext_cha)
 
 		op = (struct wlan_operate *)twdev->wpf_op;
 
-		if ((op->ht_oper.ext_cha != EXTCHA_NONE) && (op->ht_oper.ext_cha != ext_cha)) {
+		if ((op->ht_oper.ext_cha != EXTCHA_NONE) &&
+		    (op->ht_oper.ext_cha != ext_cha)) {
 			phy_freq_get_cfg(twdev, &cfg);
 			cfg.ext_cha = ext_cha;
 			operate_loader_phy(twdev, &cfg);
@@ -118,7 +118,8 @@ VOID operate_loader_ext_cha(struct wlan_operate *op)
 	op->ht_status.addht.AddHtInfo.ExtChanOffset = op->ht_oper.ext_cha;
 }
 
-VOID operate_loader_ht_stbc(struct wlan_operate *op, UCHAR tx_nsts, UCHAR rx_nsts, UCHAR ht_stbc)
+VOID operate_loader_ht_stbc(struct wlan_operate *op, UCHAR tx_nsts,
+			    UCHAR rx_nsts, UCHAR ht_stbc)
 {
 	UCHAR tx_stbc = STBC_NONE, rx_stbc = STBC_NONE;
 
@@ -126,9 +127,9 @@ VOID operate_loader_ht_stbc(struct wlan_operate *op, UCHAR tx_nsts, UCHAR rx_nst
 		if (tx_nsts > 1)
 			tx_stbc = STBC_USE;
 		if (rx_nsts >= 1)
-			rx_stbc = RXSTBC_ONE; /*current hw only support rx 1ss STBC */
-		if ((tx_stbc == STBC_NONE)
-				&& (rx_stbc == STBC_NONE))
+			rx_stbc =
+				RXSTBC_ONE; /*current hw only support rx 1ss STBC */
+		if ((tx_stbc == STBC_NONE) && (rx_stbc == STBC_NONE))
 			ht_stbc = STBC_NONE;
 	}
 	op->ht_oper.ht_stbc = ht_stbc;
@@ -169,18 +170,21 @@ VOID operate_loader_max_amsdu_len(struct wlan_operate *op, UCHAR len)
 	op->ht_status.ht_cap_ie.HtCapInfo.AMsduSize = len;
 }
 
-VOID operate_loader_min_mpdu_start_space(struct wlan_operate *op, UCHAR min_start_space)
+VOID operate_loader_min_mpdu_start_space(struct wlan_operate *op,
+					 UCHAR min_start_space)
 {
 	op->ht_status.ht_cap_ie.HtCapParm.MpduDensity = min_start_space;
 }
 
-VOID operate_loader_ht_max_ampdu_len_exp(struct wlan_operate *op, UCHAR exp_factor)
+VOID operate_loader_ht_max_ampdu_len_exp(struct wlan_operate *op,
+					 UCHAR exp_factor)
 {
 	/* recv. cap. max_ampdu_len = 2^(13+exp) - 1, from 0 to 3 */
 	op->ht_status.ht_cap_ie.HtCapParm.MaxRAmpduFactor = exp_factor;
 }
 
-VOID operate_loader_support_ch_width_set(struct wlan_operate *op, UCHAR ch_width_set)
+VOID operate_loader_support_ch_width_set(struct wlan_operate *op,
+					 UCHAR ch_width_set)
 {
 	op->ht_status.ht_cap_ie.HtCapInfo.ChannelWidth = ch_width_set;
 }
@@ -220,18 +224,19 @@ VOID operate_loader_rts_pkt_thld(struct wlan_operate *op, UCHAR pkt_num)
 /*
 * Set
 */
-INT32 wlan_operate_set_support_ch_width_set(struct wifi_dev *wdev, UCHAR ch_width_set)
+INT32 wlan_operate_set_support_ch_width_set(struct wifi_dev *wdev,
+					    UCHAR ch_width_set)
 {
 	struct wlan_operate *op;
 	INT32 ret = WLAN_OPER_OK;
 
 	if (!wdev) {
 		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): can't find wlan opeate!\n", __func__));
+			 ("%s(): can't find wlan opeate!\n", __func__));
 		return ret;
 	}
 
-	op = (struct wlan_operate *) wdev->wpf_op;
+	op = (struct wlan_operate *)wdev->wpf_op;
 	if (wdev && wdev->wpf_op) {
 		op = (struct wlan_operate *)wdev->wpf_op;
 		operate_loader_support_ch_width_set(op, ch_width_set);
@@ -241,7 +246,7 @@ INT32 wlan_operate_set_support_ch_width_set(struct wifi_dev *wdev, UCHAR ch_widt
 
 INT32 wlan_operate_set_ht_bw(struct wifi_dev *wdev, UCHAR ht_bw, UCHAR ext_cha)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 	UCHAR cap_ht_bw = wlan_config_get_ht_bw(wdev);
 	INT32 ret = WLAN_OPER_OK;
 	struct freq_cfg cfg;
@@ -250,12 +255,10 @@ INT32 wlan_operate_set_ht_bw(struct wifi_dev *wdev, UCHAR ht_bw, UCHAR ext_cha)
 		return ret;
 
 	if (ht_bw > cap_ht_bw) {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): new ht_bw:%d > cap_ht_bw: %d, correct to cap_ht_bw\n",
-				  __func__,
-				  ht_bw,
-				  cap_ht_bw
-				 ));
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s(): new ht_bw:%d > cap_ht_bw: %d, correct to cap_ht_bw\n",
+			 __func__, ht_bw, cap_ht_bw));
 		ht_bw = cap_ht_bw;
 		ret = WLAN_OPER_FAIL;
 	}
@@ -317,7 +320,8 @@ INT32 wlan_operate_set_max_amsdu_len(struct wifi_dev *wdev, UCHAR len)
 	return ret;
 }
 
-INT32 wlan_operate_set_min_start_space(struct wifi_dev *wdev, UCHAR mpdu_density)
+INT32 wlan_operate_set_min_start_space(struct wifi_dev *wdev,
+				       UCHAR mpdu_density)
 {
 	struct wlan_operate *op;
 	INT32 ret = WLAN_OPER_OK;
@@ -341,7 +345,8 @@ INT32 wlan_operate_set_mmps(struct wifi_dev *wdev, UCHAR mmps)
 	return ret;
 }
 
-INT32 wlan_operate_set_ht_max_ampdu_len_exp(struct wifi_dev *wdev, UCHAR exp_factor)
+INT32 wlan_operate_set_ht_max_ampdu_len_exp(struct wifi_dev *wdev,
+					    UCHAR exp_factor)
 {
 	struct wlan_operate *op;
 	INT32 ret = WLAN_OPER_OK;
@@ -412,8 +417,8 @@ INT32 wlan_operate_set_rts_pkt_thld(struct wifi_dev *wdev, UCHAR pkt_num)
 		op = (struct wlan_operate *)wdev->wpf_op;
 		ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
 		operate_loader_rts_pkt_thld(op, pkt_num);
-		HW_SET_RTS_THLD(ad, wdev, op->ht_oper.pkt_thld, op->ht_oper.len_thld,
-				 op->ht_oper.retry_limit);
+		HW_SET_RTS_THLD(ad, wdev, op->ht_oper.pkt_thld,
+				op->ht_oper.len_thld, op->ht_oper.retry_limit);
 	}
 	return ret;
 }
@@ -428,8 +433,8 @@ INT32 wlan_operate_set_rts_len_thld(struct wifi_dev *wdev, UINT32 pkt_len)
 		op = (struct wlan_operate *)wdev->wpf_op;
 		ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
 		operate_loader_rts_len_thld(op, pkt_len);
-		HW_SET_RTS_THLD(ad, wdev, op->ht_oper.pkt_thld, op->ht_oper.len_thld,
-				op->ht_oper.retry_limit);
+		HW_SET_RTS_THLD(ad, wdev, op->ht_oper.pkt_thld,
+				op->ht_oper.len_thld, op->ht_oper.retry_limit);
 	}
 	return ret;
 }
@@ -439,35 +444,35 @@ INT32 wlan_operate_set_rts_len_thld(struct wifi_dev *wdev, UINT32 pkt_len)
 */
 UCHAR wlan_operate_get_ht_bw(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.ht_bw;
 }
 
 UCHAR wlan_operate_get_ht_stbc(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.ht_stbc;
 }
 
 UCHAR wlan_operate_get_ht_ldpc(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.ht_ldpc;
 }
 
 UCHAR wlan_operate_get_ext_cha(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.ext_cha;
 }
 
 struct _ADD_HT_INFO_IE *wlan_operate_get_addht(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return &op->ht_status.addht;
 }
@@ -486,29 +491,32 @@ UINT16 wlan_operate_get_non_gf_sta(struct wifi_dev *wdev)
 
 UINT32 wlan_operate_get_frag_thld(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.frag_thld;
 }
+
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(wlan_operate_get_frag_thld);
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */
 
 UCHAR wlan_operate_get_rts_pkt_thld(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.pkt_thld;
 }
 
 UINT32 wlan_operate_get_rts_len_thld(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 
 	return op->ht_oper.len_thld;
 }
 
 UCHAR wlan_operate_get_rts_retry_limit(struct wifi_dev *wdev)
 {
-	struct wlan_operate *op = (struct wlan_operate *) wdev->wpf_op;
+	struct wlan_operate *op = (struct wlan_operate *)wdev->wpf_op;
 	return op->ht_oper.retry_limit;
 }
 
@@ -547,14 +555,17 @@ VOID wlan_operate_update_ht_cap(struct wifi_dev *wdev)
 		/* set from .dat */
 		operate_loader_ht_ldpc(op, cfg->ht_conf.ht_ldpc);
 		operate_loader_support_ch_width_set(op, cfg->ht_conf.ht_bw);
-		operate_loader_ht_gi(op, cfg->ht_conf.ht_bw, cfg->ht_conf.ht_gi);
+		operate_loader_ht_gi(op, cfg->ht_conf.ht_bw,
+				     cfg->ht_conf.ht_gi);
 		operate_loader_greenfield(op, cfg->ht_conf.gf_support);
-		operate_loader_min_mpdu_start_space(op, cfg->ht_conf.min_mpdu_start_space);
+		operate_loader_min_mpdu_start_space(
+			op, cfg->ht_conf.min_mpdu_start_space);
 		operate_loader_smps(op, cfg->ht_conf.mmps);
 		wlan_operate_update_ht_stbc(wdev, cfg->ht_conf.ht_stbc);
 		/* set from chip cap */
 		operate_loader_max_amsdu_len(op, cap->max_amsdu_len);
-		operate_loader_ht_max_ampdu_len_exp(op, cap->ht_max_ampdu_len_exp);
+		operate_loader_ht_max_ampdu_len_exp(op,
+						    cap->ht_max_ampdu_len_exp);
 		/* set from fix */
 		wlan_operate_set_ht_delayed_ba(wdev, 0);
 		wlan_operate_set_lsig_txop_protect(wdev, 0);

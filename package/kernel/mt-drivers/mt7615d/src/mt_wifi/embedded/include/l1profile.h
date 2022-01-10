@@ -1,6 +1,5 @@
 #ifdef DEFAULT_5G_PROFILE
-UCHAR l1profile_default[] = {
-"Default\n\
+UCHAR l1profile_default[] = { "Default\n\
 INDEX0=MT7615\n\
 INDEX0_profile_path=/etc/Wireless/RT2860/RT2860_2G.dat;/etc/Wireless/RT2860/RT2860_5G.dat\n\
 INDEX0_EEPROM_offset=0x0\n\
@@ -26,12 +25,10 @@ INDEX1_apcli_ifname=apclii\n\
 INDEX1_mesh_ifname=meshi\n\
 INDEX1_nvram_zone=RTDEV\n\
 INDEX1_single_sku_path=/etc_ro/Wireless/RT2860AP/SingleSKU.dat\n\
-INDEX1_bf_sku_path=/etc_ro/Wireless/RT2860AP/SingleSKU_BF.dat\n"
-};
+INDEX1_bf_sku_path=/etc_ro/Wireless/RT2860AP/SingleSKU_BF.dat\n" };
 
 #else
-UCHAR l1profile_default[] = {
-"Default\n\
+UCHAR l1profile_default[] = { "Default\n\
 INDEX0=MT7615\n\
 INDEX0_profile_path=/etc/Wireless/RT2860/RT2860.dat\n\
 INDEX0_EEPROM_offset=0x0\n\
@@ -83,6 +80,5 @@ INDEX3_apcli_ifname=apcli;apclix\n\
 INDEX3_mesh_ifname=mesh;meshx\n\
 INDEX3_nvram_zone=RT2860\n\
 INDEX3_single_sku_path=/etc_ro/Wireless/RT2860AP/SingleSKU.dat\n\
-INDEX3_bf_sku_path=/etc_ro/Wireless/RT2860AP/SingleSKU_BF.dat\n"
-};
+INDEX3_bf_sku_path=/etc_ro/Wireless/RT2860AP/SingleSKU_BF.dat\n" };
 #endif

@@ -17,7 +17,7 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
-#define CLIENT_BASE		0x800C0000
+#define CLIENT_BASE 0x800C0000
 #define RXINF (CLIENT_BASE + 0x0068)
 #define RXSH_GROUP1_EN (1 << 0)
 #define RXSH_GROUP2_EN (1 << 1)
@@ -30,4 +30,3 @@
 #define TX_R_E_2_S (1 << 21)
 
 #endif
-

@@ -12,26 +12,20 @@
  * written consent of Ralink Technology, Inc. is obtained.
  ***************************************************************************/
 
-
-
 #ifdef RTMP_MAC_PCI
-#include	"rt_config.h"
-
+#include "rt_config.h"
 
 static INT desc_ring_alloc(RTMP_ADAPTER *pAd, RTMP_DMABUF *pDescRing, INT size)
 {
 	VOID *pdev = ((POS_COOKIE)(pAd->OS_Cookie))->pDev;
 
 	pDescRing->AllocSize = size;
-	RtmpAllocDescBuf(pdev,
-					 0,
-					 pDescRing->AllocSize,
-					 FALSE,
-					 &pDescRing->AllocVa,
-					 &pDescRing->AllocPa);
+	RtmpAllocDescBuf(pdev, 0, pDescRing->AllocSize, FALSE,
+			 &pDescRing->AllocVa, &pDescRing->AllocPa);
 
 	if (pDescRing->AllocVa == NULL) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Failed to allocate a big buffer\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("Failed to allocate a big buffer\n"));
 		return ERRLOG_OUT_OF_SHARED_MEMORY;
 	}
 
@@ -54,62 +48,69 @@ NDIS_STATUS alloc_chip_cap_dep_data_pci(void *hdev_ctrl)
 	RTMP_RX_RING *pRxRing = NULL;
 	NDIS_SPIN_LOCK *pTxRingLock = NULL;
 	NDIS_SPIN_LOCK *pRxRingLock = NULL;
-	
+
 	/* allocate pci hif data structure which depends on ChipCap */
-	os_alloc_mem(NULL, (UCHAR **)&pTxBufSpace, (num_of_tx_ring)*sizeof(RTMP_DMABUF));
+	os_alloc_mem(NULL, (UCHAR **)&pTxBufSpace,
+		     (num_of_tx_ring) * sizeof(RTMP_DMABUF));
 
 	if (pTxBufSpace == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pTxBufSpace, (num_of_tx_ring)*sizeof(RTMP_DMABUF));
+	NdisZeroMemory(pTxBufSpace, (num_of_tx_ring) * sizeof(RTMP_DMABUF));
 	hif->TxBufSpace = pTxBufSpace;
-	
-	os_alloc_mem(NULL, (UCHAR **)&pTxDescRing, (num_of_tx_ring)*sizeof(RTMP_DMABUF));
+
+	os_alloc_mem(NULL, (UCHAR **)&pTxDescRing,
+		     (num_of_tx_ring) * sizeof(RTMP_DMABUF));
 
 	if (pTxDescRing == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pTxDescRing, (num_of_tx_ring)*sizeof(RTMP_DMABUF));
+	NdisZeroMemory(pTxDescRing, (num_of_tx_ring) * sizeof(RTMP_DMABUF));
 	hif->TxDescRing = pTxDescRing;
-	
-	os_alloc_mem(NULL, (UCHAR **)&pTxRing, (num_of_tx_ring)*sizeof(RTMP_TX_RING));
+
+	os_alloc_mem(NULL, (UCHAR **)&pTxRing,
+		     (num_of_tx_ring) * sizeof(RTMP_TX_RING));
 
 	if (pTxRing == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pTxRing, (num_of_tx_ring)*sizeof(RTMP_TX_RING));
+	NdisZeroMemory(pTxRing, (num_of_tx_ring) * sizeof(RTMP_TX_RING));
 	hif->TxRing = pTxRing;
-	
-	os_alloc_mem(NULL, (UCHAR **)&pRxDescRing, (num_of_rx_ring)*sizeof(RTMP_DMABUF));
+
+	os_alloc_mem(NULL, (UCHAR **)&pRxDescRing,
+		     (num_of_rx_ring) * sizeof(RTMP_DMABUF));
 
 	if (pRxDescRing == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pRxDescRing, (num_of_rx_ring)*sizeof(RTMP_DMABUF));
+	NdisZeroMemory(pRxDescRing, (num_of_rx_ring) * sizeof(RTMP_DMABUF));
 	hif->RxDescRing = pRxDescRing;
-	
-	os_alloc_mem(NULL, (UCHAR **)&pRxRing, (num_of_rx_ring)*sizeof(RTMP_RX_RING));
+
+	os_alloc_mem(NULL, (UCHAR **)&pRxRing,
+		     (num_of_rx_ring) * sizeof(RTMP_RX_RING));
 
 	if (pRxRing == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pRxRing, (num_of_rx_ring)*sizeof(RTMP_RX_RING));
+	NdisZeroMemory(pRxRing, (num_of_rx_ring) * sizeof(RTMP_RX_RING));
 	hif->RxRing = pRxRing;
-	
-	os_alloc_mem(NULL, (UCHAR **)&pTxRingLock, (num_of_tx_ring)*sizeof(NDIS_SPIN_LOCK));
+
+	os_alloc_mem(NULL, (UCHAR **)&pTxRingLock,
+		     (num_of_tx_ring) * sizeof(NDIS_SPIN_LOCK));
 
 	if (pTxRingLock == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pTxRingLock, (num_of_tx_ring)*sizeof(NDIS_SPIN_LOCK));
+	NdisZeroMemory(pTxRingLock, (num_of_tx_ring) * sizeof(NDIS_SPIN_LOCK));
 	hif->TxRingLock = pTxRingLock;
-	
-	os_alloc_mem(NULL, (UCHAR **)&pRxRingLock, (num_of_rx_ring)*sizeof(NDIS_SPIN_LOCK));
+
+	os_alloc_mem(NULL, (UCHAR **)&pRxRingLock,
+		     (num_of_rx_ring) * sizeof(NDIS_SPIN_LOCK));
 
 	if (pRxRingLock == NULL)
 		return NDIS_STATUS_FAILURE;
 
-	NdisZeroMemory(pRxRingLock, (num_of_rx_ring)*sizeof(NDIS_SPIN_LOCK));
+	NdisZeroMemory(pRxRingLock, (num_of_rx_ring) * sizeof(NDIS_SPIN_LOCK));
 	hif->RxRingLock = pRxRingLock;
 
 	/* spinlock is allocated after data structure is ready */
@@ -168,7 +169,8 @@ inline VOID free_rx_buf_1k(void *hif_resource)
 inline VOID *alloc_rx_buf_64k(void *hif_resource)
 {
 	RTMP_RX_RING *rx_ring = (RTMP_RX_RING *)hif_resource;
-	RTMP_DMABUF *dma_buf = &rx_ring->free_buf_64k[rx_ring->free_buf_64k_head];
+	RTMP_DMABUF *dma_buf =
+		&rx_ring->free_buf_64k[rx_ring->free_buf_64k_head];
 
 	INC_INDEX(rx_ring->free_buf_64k_head, rx_ring->free_buf_64k_size);
 
@@ -193,7 +195,8 @@ VOID free_rx_buf(void *hdev_ctrl, UCHAR hif_idx)
 		free_rx_buf_64k(rx_ring);
 	} else {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-			("%s: fail, rx_ring->cur_free_buf_len = %d\n", __func__, rx_ring->cur_free_buf_len));
+			 ("%s: fail, rx_ring->cur_free_buf_len = %d\n",
+			  __func__, rx_ring->cur_free_buf_len));
 	}
 }
 
@@ -208,13 +211,16 @@ static UINT32 alloc_rx_free_buffer(RTMP_ADAPTER *pAd, UCHAR hif_idx, UINT32 num)
 	rx_ring->free_buf_tail = 0;
 	rx_ring->free_buf_size = (num + 1);
 
-	os_alloc_mem(pAd, (UCHAR **)&rx_ring->free_buf, rx_ring->free_buf_size * sizeof(struct _RTMP_DMABUF));
-	NdisZeroMemory(rx_ring->free_buf, rx_ring->free_buf_size * sizeof(struct _RTMP_DMABUF));
+	os_alloc_mem(pAd, (UCHAR **)&rx_ring->free_buf,
+		     rx_ring->free_buf_size * sizeof(struct _RTMP_DMABUF));
+	NdisZeroMemory(rx_ring->free_buf,
+		       rx_ring->free_buf_size * sizeof(struct _RTMP_DMABUF));
 
 	for (i = 0; i < rx_ring->free_buf_size; i++) {
 		dma_buf = &rx_ring->free_buf[i];
 		dma_buf->AllocSize = RX1_BUFFER_SIZE;
-		os_alloc_mem(pAd, (UCHAR **)&dma_buf->AllocVa, dma_buf->AllocSize);
+		os_alloc_mem(pAd, (UCHAR **)&dma_buf->AllocVa,
+			     dma_buf->AllocSize);
 		NdisZeroMemory(dma_buf->AllocVa, dma_buf->AllocSize);
 	}
 
@@ -222,13 +228,17 @@ static UINT32 alloc_rx_free_buffer(RTMP_ADAPTER *pAd, UCHAR hif_idx, UINT32 num)
 	rx_ring->free_buf_64k_tail = 0;
 	rx_ring->free_buf_64k_size = 1;
 
-	os_alloc_mem(pAd, (UCHAR **)&rx_ring->free_buf_64k, rx_ring->free_buf_64k_size * sizeof(struct _RTMP_DMABUF));
-	NdisZeroMemory(rx_ring->free_buf_64k, rx_ring->free_buf_64k_size * sizeof(struct _RTMP_DMABUF));
+	os_alloc_mem(pAd, (UCHAR **)&rx_ring->free_buf_64k,
+		     rx_ring->free_buf_64k_size * sizeof(struct _RTMP_DMABUF));
+	NdisZeroMemory(rx_ring->free_buf_64k,
+		       rx_ring->free_buf_64k_size *
+			       sizeof(struct _RTMP_DMABUF));
 
 	for (i = 0; i < rx_ring->free_buf_64k_size; i++) {
 		dma_buf = &rx_ring->free_buf_64k[i];
 		dma_buf->AllocSize = 65536;
-		os_alloc_mem(pAd, (UCHAR **)&dma_buf->AllocVa, dma_buf->AllocSize);
+		os_alloc_mem(pAd, (UCHAR **)&dma_buf->AllocVa,
+			     dma_buf->AllocSize);
 		NdisZeroMemory(dma_buf->AllocVa, dma_buf->AllocSize);
 	}
 
@@ -290,23 +300,19 @@ static UINT32 release_rx_free_buffer(void *hdev_ctrl, UINT8 hif_idx)
 	return 0;
 }
 
-
 #ifdef RESOURCE_PRE_ALLOC
 static INT desc_ring_free(void *hdev_ctrl, RTMP_DMABUF *pDescRing)
 {
 	struct os_cookie *cookie = hc_get_os_cookie(hdev_ctrl);
 
 	if (pDescRing->AllocVa) {
-		RtmpFreeDescBuf(cookie->pDev,
-						pDescRing->AllocSize,
-						pDescRing->AllocVa,
-						pDescRing->AllocPa);
+		RtmpFreeDescBuf(cookie->pDev, pDescRing->AllocSize,
+				pDescRing->AllocVa, pDescRing->AllocPa);
 	}
 
 	NdisZeroMemory(pDescRing, sizeof(RTMP_DMABUF));
 	return TRUE;
 }
-
 
 VOID RTMPResetTxRxRingMemory(RTMP_ADAPTER *pAd)
 {
@@ -335,21 +341,27 @@ VOID RTMPResetTxRxRingMemory(RTMP_ADAPTER *pAd)
 			dma_cb = &pTxRing->Cell[j];
 #ifdef RT_BIG_ENDIAN
 			pDestTxD = (TXD_STRUC *)(dma_cb->AllocVa);
-			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD, TXD_SIZE);
+			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD,
+				       TXD_SIZE);
 			pTxD = (TXD_STRUC *)&tx_hw_info[0];
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD = (TXD_STRUC *) (dma_cb->AllocVa);
+			pTxD = (TXD_STRUC *)(dma_cb->AllocVa);
 #endif /* RT_BIG_ENDIAN */
 
 			if (dma_cb->DmaBuf.AllocSize > 0)
-				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa, dma_cb->DmaBuf.AllocSize, RTMP_PCI_DMA_TODEVICE);
+				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa,
+						 dma_cb->DmaBuf.AllocSize,
+						 RTMP_PCI_DMA_TODEVICE);
 
 			pPacket = dma_cb->pNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, dma_cb->PacketPa, GET_OS_PKT_LEN(pPacket), RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, dma_cb->PacketPa,
+						 GET_OS_PKT_LEN(pPacket),
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
 			/*Always assign pNdisPacket as NULL after clear*/
@@ -357,67 +369,96 @@ VOID RTMPResetTxRxRingMemory(RTMP_ADAPTER *pAd)
 			pPacket = dma_cb->pNextNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
 			/*Always assign pNextNdisPacket as NULL after clear*/
 			dma_cb->pNextNdisPacket = NULL;
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, FALSE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      FALSE, TYPE_TXD);
 #endif /* RT_BIG_ENDIAN */
 		}
 
-		NdisZeroMemory(pTxRing->Cell, tx_ring_size * sizeof(RTMP_DMACB));
+		NdisZeroMemory(pTxRing->Cell,
+			       tx_ring_size * sizeof(RTMP_DMACB));
 	}
 
 	{
 		RTMP_CTRL_RING *pCtrlRing = &hif->CtrlRing;
 
-		HIF_IO_READ32(pAd, pCtrlRing->hw_didx_addr, &pCtrlRing->TxDmaIdx);
+		HIF_IO_READ32(pAd, pCtrlRing->hw_didx_addr,
+			      &pCtrlRing->TxDmaIdx);
 
 		while (pCtrlRing->TxSwFreeIdx != pCtrlRing->TxCpuIdx) {
 			if (pCtrlRing->TxSwFreeIdx >= CTL_RING_SIZE) {
 				/*should not happen*/
-				MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("--> TxSwFreeIdx is out of range! %d\n", pCtrlRing->TxSwFreeIdx));
+				MTWF_LOG(
+					DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+					("--> TxSwFreeIdx is out of range! %d\n",
+					 pCtrlRing->TxSwFreeIdx));
 				break;
 			}
 
 #ifdef RT_BIG_ENDIAN
-			pDestTxD = (TXD_STRUC *) (pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].AllocVa);
-			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD, TXD_SIZE);
+			pDestTxD =
+				(TXD_STRUC
+					 *)(pCtrlRing
+						    ->Cell[pCtrlRing->TxSwFreeIdx]
+						    .AllocVa);
+			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD,
+				       TXD_SIZE);
 			pTxD = (TXD_STRUC *)&tx_hw_info[0];
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD = (TXD_STRUC *) (pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].AllocVa);
+			pTxD = (TXD_STRUC
+					*)(pCtrlRing
+						   ->Cell[pCtrlRing->TxSwFreeIdx]
+						   .AllocVa);
 #endif
 			pTxD->DMADONE = 0;
-			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNdisPacket;
+			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx]
+					  .pNdisPacket;
 
 			if (pPacket == NULL) {
-				INC_RING_INDEX(pCtrlRing->TxSwFreeIdx, CTL_RING_SIZE);
+				INC_RING_INDEX(pCtrlRing->TxSwFreeIdx,
+					       CTL_RING_SIZE);
 				continue;
 			}
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0, pTxD->SDLen0, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0,
+						 pTxD->SDLen0,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
-			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNdisPacket = NULL;
-			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNextNdisPacket;
+			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNdisPacket =
+				NULL;
+			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx]
+					  .pNextNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
-			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNextNdisPacket = NULL;
+			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNextNdisPacket =
+				NULL;
 			INC_RING_INDEX(pCtrlRing->TxSwFreeIdx, CTL_RING_SIZE);
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, TRUE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      TRUE, TYPE_TXD);
 #endif
 		}
 	}
@@ -437,22 +478,31 @@ VOID RTMPResetTxRxRingMemory(RTMP_ADAPTER *pAd)
 			dma_cb = &hif->RxRing[index].Cell[j];
 
 			if ((dma_cb->DmaBuf.AllocVa) && (dma_cb->pNdisPacket)) {
-				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa, dma_cb->DmaBuf.AllocSize, RTMP_PCI_DMA_FROMDEVICE);
+				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa,
+						 dma_cb->DmaBuf.AllocSize,
+						 RTMP_PCI_DMA_FROMDEVICE);
 
 				if (index == HIF_RX_IDX0) {
 #ifdef CONFIG_WIFI_BUILD_SKB
-					skb_data_size = SKB_DATA_ALIGN(SKB_BUF_HEADROOM_RSV + dma_cb->DmaBuf.AllocSize) +
-							SKB_DATA_ALIGN(SKB_BUF_TAILROOM_RSV);
+					skb_data_size =
+						SKB_DATA_ALIGN(
+							SKB_BUF_HEADROOM_RSV +
+							dma_cb->DmaBuf
+								.AllocSize) +
+						SKB_DATA_ALIGN(
+							SKB_BUF_TAILROOM_RSV);
 
 					if (skb_data_size <= PAGE_SIZE) {
-						DEV_FREE_FRAG_BUF(dma_cb->pNdisPacket);
+						DEV_FREE_FRAG_BUF(
+							dma_cb->pNdisPacket);
 					} else {
-						os_free_mem(dma_cb->pNdisPacket);
+						os_free_mem(
+							dma_cb->pNdisPacket);
 					}
 #else /* CONFIG_WIFI_BUILD_SKB */
-					RELEASE_NDIS_PACKET(pAd,
-							dma_cb->pNdisPacket,
-							NDIS_STATUS_SUCCESS);
+					RELEASE_NDIS_PACKET(
+						pAd, dma_cb->pNdisPacket,
+						NDIS_STATUS_SUCCESS);
 #endif /* CONFIG_WIFI_BUILD_SKB */
 				}
 			}
@@ -461,11 +511,13 @@ VOID RTMPResetTxRxRingMemory(RTMP_ADAPTER *pAd)
 		if (index == HIF_RX_IDX1)
 			reset_rx_free_buffer(pAd->hdev_ctrl, HIF_RX_IDX1);
 
-		NdisZeroMemory(hif->RxRing[index].Cell, RxRingSize * sizeof(RTMP_DMACB));
+		NdisZeroMemory(hif->RxRing[index].Cell,
+			       RxRingSize * sizeof(RTMP_DMACB));
 	}
 
 	if (pAd->FragFrame.pFragPacket) {
-		RELEASE_NDIS_PACKET(pAd, pAd->FragFrame.pFragPacket, NDIS_STATUS_SUCCESS);
+		RELEASE_NDIS_PACKET(pAd, pAd->FragFrame.pFragPacket,
+				    NDIS_STATUS_SUCCESS);
 		pAd->FragFrame.pFragPacket = NULL;
 	}
 
@@ -482,8 +534,8 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 	UINT8 num_of_rx_ring = GET_NUM_OF_RX_RING(cap);
 	struct _PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
 
-
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("--> RTMPFreeTxRxRingMemory\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("--> RTMPFreeTxRxRingMemory\n"));
 
 	for (num = 0; num < num_of_rx_ring; num++) {
 		desc_ring_free(pAd->hdev_ctrl, &hif->RxDescRing[num]);
@@ -501,18 +553,19 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 	for (num = 0; num < num_of_tx_ring; num++) {
 		if (hif->TxBufSpace[num].AllocVa) {
 			RTMP_FreeFirstTxBuffer(pdev,
-						hif->TxBufSpace[num].AllocSize,
-						FALSE, hif->TxBufSpace[num].AllocVa,
-						hif->TxBufSpace[num].AllocPa);
+					       hif->TxBufSpace[num].AllocSize,
+					       FALSE,
+					       hif->TxBufSpace[num].AllocVa,
+					       hif->TxBufSpace[num].AllocPa);
 		}
 
 		NdisZeroMemory(&hif->TxBufSpace[num], sizeof(RTMP_DMABUF));
 		desc_ring_free(pAd->hdev_ctrl, &hif->TxDescRing[num]);
 		os_free_mem(hif->TxRing[num].Cell);
-
 	}
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<-- RTMPFreeTxRxRingMemory\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<-- RTMPFreeTxRxRingMemory\n"));
 }
 
 NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
@@ -544,15 +597,17 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		pDescRing = &hif->TxDescRing[num];
 		NdisZeroMemory(pDescRing->AllocVa, pDescRing->AllocSize);
 		/* Save PA & VA for further operation*/
-		RingBasePaHigh = RTMP_GetPhysicalAddressHigh(pDescRing->AllocPa);
+		RingBasePaHigh =
+			RTMP_GetPhysicalAddressHigh(pDescRing->AllocPa);
 		RingBasePaLow = RTMP_GetPhysicalAddressLow(pDescRing->AllocPa);
 		RingBaseVa = pDescRing->AllocVa;
 		/* Zero init all 1st TXBuf's memory for this TxRing*/
-		NdisZeroMemory(hif->TxBufSpace[num].AllocVa, hif->TxBufSpace[num].AllocSize);
-		
+		NdisZeroMemory(hif->TxBufSpace[num].AllocVa,
+			       hif->TxBufSpace[num].AllocSize);
+
 		/* Save PA & VA for further operation */
 		BufBaseVa = hif->TxBufSpace[num].AllocVa;
-		
+
 		/* linking Tx Ring Descriptor and associated buffer memory */
 		pTxRing = &hif->TxRing[num];
 
@@ -563,8 +618,10 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* Init Tx Ring Size, Va, Pa variables*/
 			dma_cb->AllocSize = TXD_SIZE;
 			dma_cb->AllocVa = RingBaseVa;
-			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+						    RingBasePaHigh);
+			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+						   RingBasePaLow);
 			/* Setup Tx Buffer size & address. only 802.11 header will store in this space */
 			pDmaBuf = &dma_cb->DmaBuf;
 			pDmaBuf->AllocSize = TX_DMA_1ST_BUFFER_SIZE;
@@ -585,9 +642,12 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 
 		pTxRing->tx_ring_state = TX_RING_HIGH;
 		pTxRing->tx_ring_low_water_mark = 5;
-		pTxRing->tx_ring_high_water_mark = pTxRing->tx_ring_low_water_mark + 10;
+		pTxRing->tx_ring_high_water_mark =
+			pTxRing->tx_ring_low_water_mark + 10;
 		pTxRing->tx_ring_full_cnt = 0;
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("TxRing[%d]: total %d entry initialized\n", num, index));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("TxRing[%d]: total %d entry initialized\n", num,
+			  index));
 	}
 
 	/* Initialize CTRL Ring and associated buffer memory */
@@ -608,7 +668,7 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
 		/* Offset to next ring descriptor address */
 		RingBasePaLow += TXD_SIZE;
-		RingBaseVa = (PUCHAR) RingBaseVa + TXD_SIZE;
+		RingBaseVa = (PUCHAR)RingBaseVa + TXD_SIZE;
 		/* link the pre-allocated TxBuf to TXD */
 		pTxD = (TXD_STRUC *)dma_cb->AllocVa;
 		pTxD->DMADONE = 1;
@@ -620,8 +680,9 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		/* no pre-allocated buffer required in CtrlRing for scatter-gather case */
 	}
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("CtrlRing: total %d entry initialized\n", index));
-		
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("CtrlRing: total %d entry initialized\n", index));
+
 	/* Initialize firmware download Ring */
 	pDescRing = &hif->FwDwloRing.DescRing;
 	RingBasePaHigh = RTMP_GetPhysicalAddressHigh(pDescRing->AllocPa);
@@ -633,7 +694,7 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		dma_cb = &hif->FwDwloRing.Cell[index];
 		dma_cb->pNdisPacket = NULL;
 		dma_cb->pNextNdisPacket = NULL;
-		
+
 		/* Init firmware download ring Size, Va, Pa variables */
 		dma_cb->AllocSize = TXD_SIZE;
 		dma_cb->AllocVa = RingBaseVa;
@@ -653,7 +714,8 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		/* no pre-allocated buffer required in FwDwloRing for scatter-gather case */
 	}
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("FwDwloRing: total %d entry initialized\n", index));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("FwDwloRing: total %d entry initialized\n", index));
 
 	/* Initialize Rx Ring and associated buffer memory */
 	for (num = 0; num < num_of_rx_ring; num++) {
@@ -663,10 +725,12 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		pDescRing = &hif->RxDescRing[num];
 		pRxRing = &hif->RxRing[num];
 		NdisZeroMemory(pDescRing->AllocVa, pDescRing->AllocSize);
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,  ("RX[%d] DESC %p size = %lu\n",
-				 num, pDescRing->AllocVa, pDescRing->AllocSize));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("RX[%d] DESC %p size = %lu\n", num,
+			  pDescRing->AllocVa, pDescRing->AllocSize));
 		/* Save PA & VA for further operation */
-		RingBasePaHigh = RTMP_GetPhysicalAddressHigh(pDescRing->AllocPa);
+		RingBasePaHigh =
+			RTMP_GetPhysicalAddressHigh(pDescRing->AllocPa);
 		RingBasePaLow = RTMP_GetPhysicalAddressLow(pDescRing->AllocPa);
 		RingBaseVa = pDescRing->AllocVa;
 
@@ -684,8 +748,10 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* Init RX Ring Size, Va, Pa variables*/
 			dma_cb->AllocSize = RXD_SIZE;
 			dma_cb->AllocVa = RingBaseVa;
-			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+						    RingBasePaHigh);
+			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+						   RingBasePaLow);
 			/* Offset to next ring descriptor address */
 			RingBasePaLow += RXD_SIZE;
 			RingBaseVa = (PUCHAR)RingBaseVa + RXD_SIZE;
@@ -693,23 +759,18 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 			pDmaBuf = &dma_cb->DmaBuf;
 			pDmaBuf->AllocSize = RxBufferSize;
 
-
 			if (num == HIF_RX_IDX0) {
 				pPacket = RTMP_AllocateRxPacketBuffer(
-						pRxRing,
-						((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-						DYNAMIC_PAGE_ALLOC,
-						pDmaBuf->AllocSize,
-						&pDmaBuf->AllocVa,
-						&pDmaBuf->AllocPa);
+					pRxRing,
+					((POS_COOKIE)(pAd->OS_Cookie))->pDev,
+					DYNAMIC_PAGE_ALLOC, pDmaBuf->AllocSize,
+					&pDmaBuf->AllocVa, &pDmaBuf->AllocPa);
 			} else if (num == HIF_RX_IDX1) {
 				pPacket = RTMP_AllocateRxPacketBuffer(
-						pRxRing,
-						((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-						PRE_SLAB_ALLOC,
-						pDmaBuf->AllocSize,
-						&pDmaBuf->AllocVa,
-						&pDmaBuf->AllocPa);
+					pRxRing,
+					((POS_COOKIE)(pAd->OS_Cookie))->pDev,
+					PRE_SLAB_ALLOC, pDmaBuf->AllocSize,
+					&pDmaBuf->AllocVa, &pDmaBuf->AllocPa);
 			}
 
 			/* keep allocated rx packet */
@@ -718,14 +779,17 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* Error handling*/
 			if (pDmaBuf->AllocVa == NULL) {
 				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Failed to allocate RxRing's 1st buffer\n"));
+				MTWF_LOG(
+					DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+					("Failed to allocate RxRing's 1st buffer\n"));
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
 
 			/* Write RxD buffer address & allocated buffer length */
 			pRxD = (RXD_STRUC *)dma_cb->AllocVa;
-			pRxD->SDP0 = RTMP_GetPhysicalAddressLow(pDmaBuf->AllocPa);
+			pRxD->SDP0 =
+				RTMP_GetPhysicalAddressLow(pDmaBuf->AllocPa);
 			pRxD->DDONE = 0;
 			pRxD->SDL0 = RxBufferSize;
 
@@ -738,7 +802,8 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 	}
 
 	NdisZeroMemory(&pAd->FragFrame, sizeof(FRAGMENT_FRAME));
-	pAd->FragFrame.pFragPacket = RTMP_AllocateFragPacketBuffer(pAd, RX_BUFFER_NORMSIZE);
+	pAd->FragFrame.pFragPacket =
+		RTMP_AllocateFragPacketBuffer(pAd, RX_BUFFER_NORMSIZE);
 
 	if (pAd->FragFrame.pFragPacket == NULL)
 		Status = NDIS_STATUS_RESOURCES;
@@ -795,49 +860,55 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 	UINT16 rx1_ring_size = GET_RX1_RING_SIZE(cap);
 	struct _PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("-->RTMPAllocTxRxRingMemory\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("-->RTMPAllocTxRxRingMemory\n"));
 
 	do {
 		for (num = 0; num < num_of_tx_ring; num++) {
 			RTMP_TX_RING *pTxRing = &hif->TxRing[num];
 
 			/* Allocate Tx ring descriptor's memory (5 TX rings = 4 ACs + 1 HCCA)*/
-			desc_ring_alloc(pAd, &hif->TxDescRing[num], tx_ring_size * TXD_SIZE);
+			desc_ring_alloc(pAd, &hif->TxDescRing[num],
+					tx_ring_size * TXD_SIZE);
 
 			if (hif->TxDescRing[num].AllocVa == NULL) {
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
 
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("TxRing[%d]: total %d bytes allocated\n",
-					 num, (INT)hif->TxDescRing[num].AllocSize));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+				 ("TxRing[%d]: total %d bytes allocated\n", num,
+				  (INT)hif->TxDescRing[num].AllocSize));
 			/* Allocate all 1st TXBuf's memory for this TxRing */
-			hif->TxBufSpace[num].AllocSize = tx_ring_size * TX_DMA_1ST_BUFFER_SIZE;
+			hif->TxBufSpace[num].AllocSize =
+				tx_ring_size * TX_DMA_1ST_BUFFER_SIZE;
 
 			RTMP_AllocateFirstTxBuffer(
-				pdev,
-				num,
-				hif->TxBufSpace[num].AllocSize,
-				FALSE,
-				&hif->TxBufSpace[num].AllocVa,
+				pdev, num, hif->TxBufSpace[num].AllocSize,
+				FALSE, &hif->TxBufSpace[num].AllocVa,
 				&hif->TxBufSpace[num].AllocPa);
 
 			if (hif->TxBufSpace[num].AllocVa == NULL) {
 				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Failed to allocate a big buffer\n"));
+				MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+					 ("Failed to allocate a big buffer\n"));
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
 
-			os_alloc_mem(pAd, (UCHAR **)&pTxRing->Cell, tx_ring_size * sizeof(struct _RTMP_DMACB));
-			NdisZeroMemory(pTxRing->Cell, tx_ring_size * sizeof(struct _RTMP_DMACB));
+			os_alloc_mem(pAd, (UCHAR **)&pTxRing->Cell,
+				     tx_ring_size * sizeof(struct _RTMP_DMACB));
+			NdisZeroMemory(pTxRing->Cell,
+				       tx_ring_size *
+					       sizeof(struct _RTMP_DMACB));
 		}
 
 		if (Status == NDIS_STATUS_RESOURCES)
 			break;
 
 		/* Alloc CTRL ring desc buffer except Tx ring allocated eariler */
-		desc_ring_alloc(pAd, &hif->CtrlDescRing, CTL_RING_SIZE * TXD_SIZE);
+		desc_ring_alloc(pAd, &hif->CtrlDescRing,
+				CTL_RING_SIZE * TXD_SIZE);
 
 		if (hif->CtrlDescRing.AllocVa == NULL) {
 			Status = NDIS_STATUS_RESOURCES;
@@ -845,10 +916,11 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 		}
 
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-				 ("CTRL Ring: total %d bytes allocated\n",
-				  (INT)hif->CtrlDescRing.AllocSize));
-			
-		desc_ring_alloc(pAd, &hif->FwDwloRing.DescRing, hif->FwDwloRing.ring_size * TXD_SIZE);
+			 ("CTRL Ring: total %d bytes allocated\n",
+			  (INT)hif->CtrlDescRing.AllocSize));
+
+		desc_ring_alloc(pAd, &hif->FwDwloRing.DescRing,
+				hif->FwDwloRing.ring_size * TXD_SIZE);
 
 		if (hif->FwDwloRing.DescRing.AllocVa == NULL) {
 			Status = NDIS_STATUS_RESOURCES;
@@ -856,8 +928,8 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 		}
 
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-				("FwDwlo Ring: total %d bytes allocated\n",
-				(INT)hif->FwDwloRing.DescRing.AllocSize));
+			 ("FwDwlo Ring: total %d bytes allocated\n",
+			  (INT)hif->FwDwloRing.DescRing.AllocSize));
 
 		/* Alloc RX ring desc memory */
 		for (num = 0; num < num_of_rx_ring; num++) {
@@ -870,7 +942,7 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				RxRingSize = rx1_ring_size;
 
 			desc_ring_alloc(pAd, &hif->RxDescRing[num],
-							RxRingSize * RXD_SIZE);
+					RxRingSize * RXD_SIZE);
 
 			if (hif->RxDescRing[num].AllocVa == NULL) {
 				Status = NDIS_STATUS_RESOURCES;
@@ -882,26 +954,26 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				alloc_rx_free_buffer(pAd, num, RxRingSize);
 			}
 
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("Rx[%d] Ring: total %d bytes allocated\n",
-				num, (INT)hif->RxDescRing[num].AllocSize));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+				 ("Rx[%d] Ring: total %d bytes allocated\n",
+				  num, (INT)hif->RxDescRing[num].AllocSize));
 
-
-			os_alloc_mem(pAd, (UCHAR **)&pRxRing->Cell, RxRingSize * sizeof(struct _RTMP_DMACB));
-			NdisZeroMemory(pRxRing->Cell, RxRingSize * sizeof(struct _RTMP_DMACB));
+			os_alloc_mem(pAd, (UCHAR **)&pRxRing->Cell,
+				     RxRingSize * sizeof(struct _RTMP_DMACB));
+			NdisZeroMemory(pRxRing->Cell,
+				       RxRingSize * sizeof(struct _RTMP_DMACB));
 		}
 	} while (FALSE);
 
 	if (Status != NDIS_STATUS_SUCCESS) {
 		/* Log error inforamtion*/
-		NdisWriteErrorLogEntry(
-			pAd->AdapterHandle,
-			NDIS_ERROR_CODE_OUT_OF_RESOURCES,
-			1,
-			ErrorValue);
+		NdisWriteErrorLogEntry(pAd->AdapterHandle,
+				       NDIS_ERROR_CODE_OUT_OF_RESOURCES, 1,
+				       ErrorValue);
 	}
 
 	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
-			 ("<-- RTMPAllocTxRxRingMemory, Status=%x\n", Status));
+		 ("<-- RTMPAllocTxRxRingMemory, Status=%x\n", Status));
 	return Status;
 }
 #else
@@ -947,7 +1019,8 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 	UINT16 rx1_ring_size = GET_RX1_RING_SIZE(cap);
 	struct _PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("--> RTMPAllocTxRxRingMemory\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("--> RTMPAllocTxRxRingMemory\n"));
 	/* Init the CmdQ and CmdQLock*/
 	NdisAllocateSpinLock(pAd, &pAd->CmdQLock);
 
@@ -958,13 +1031,14 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			issue, I intentional set them all to 64 bytes
 		*/
 		for (num = 0; num < num_of_tx_ring; num++) {
-			ULONG  BufBasePaHigh;
-			ULONG  BufBasePaLow;
-			PVOID  BufBaseVa;
+			ULONG BufBasePaHigh;
+			ULONG BufBasePaLow;
+			PVOID BufBaseVa;
 			/*
 				Allocate Tx ring descriptor's memory (5 TX rings = 4 ACs + 1 HCCA)
 			*/
-			desc_ring_alloc(pAd, &hif->TxDescRing[num], tx_ring_size * TXD_SIZE);
+			desc_ring_alloc(pAd, &hif->TxDescRing[num],
+					tx_ring_size * TXD_SIZE);
 
 			if (hif->TxDescRing[num].AllocVa == NULL) {
 				Status = NDIS_STATUS_RESOURCES;
@@ -972,45 +1046,54 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			}
 
 			pDmaBuf = &hif->TxDescRing[num];
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("TxDescRing[%p]: total %d bytes allocated\n",
-					 pDmaBuf->AllocVa, (INT)pDmaBuf->AllocSize));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+				 ("TxDescRing[%p]: total %d bytes allocated\n",
+				  pDmaBuf->AllocVa, (INT)pDmaBuf->AllocSize));
 			/* Save PA & VA for further operation*/
-			RingBasePaHigh = RTMP_GetPhysicalAddressHigh(pDmaBuf->AllocPa);
-			RingBasePaLow = RTMP_GetPhysicalAddressLow(pDmaBuf->AllocPa);
+			RingBasePaHigh =
+				RTMP_GetPhysicalAddressHigh(pDmaBuf->AllocPa);
+			RingBasePaLow =
+				RTMP_GetPhysicalAddressLow(pDmaBuf->AllocPa);
 			RingBaseVa = pDmaBuf->AllocVa;
 			/*
 				Allocate all 1st TXBuf's memory for this TxRing
 			*/
-			hif->TxBufSpace[num].AllocSize = tx_ring_size * TX_DMA_1ST_BUFFER_SIZE;
+			hif->TxBufSpace[num].AllocSize =
+				tx_ring_size * TX_DMA_1ST_BUFFER_SIZE;
 
 			RTMP_AllocateFirstTxBuffer(
-				((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-				num,
-				hif->TxBufSpace[num].AllocSize,
-				FALSE,
+				((POS_COOKIE)(pAd->OS_Cookie))->pDev, num,
+				hif->TxBufSpace[num].AllocSize, FALSE,
 				&hif->TxBufSpace[num].AllocVa,
 				&hif->TxBufSpace[num].AllocPa);
 
 			if (hif->TxBufSpace[num].AllocVa == NULL) {
 				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Failed to allocate a big buffer\n"));
+				MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+					 ("Failed to allocate a big buffer\n"));
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
 
 			/* Zero init this memory block*/
-			NdisZeroMemory(hif->TxBufSpace[num].AllocVa, hif->TxBufSpace[num].AllocSize);
+			NdisZeroMemory(hif->TxBufSpace[num].AllocVa,
+				       hif->TxBufSpace[num].AllocSize);
 			/* Save PA & VA for further operation*/
-			BufBasePaHigh = RTMP_GetPhysicalAddressHigh(hif->TxBufSpace[num].AllocPa);
-			BufBasePaLow = RTMP_GetPhysicalAddressLow(hif->TxBufSpace[num].AllocPa);
+			BufBasePaHigh = RTMP_GetPhysicalAddressHigh(
+				hif->TxBufSpace[num].AllocPa);
+			BufBasePaLow = RTMP_GetPhysicalAddressLow(
+				hif->TxBufSpace[num].AllocPa);
 			BufBaseVa = hif->TxBufSpace[num].AllocVa;
 			/*
 				Initialize Tx Ring Descriptor and associated buffer memory
 			*/
 			pTxRing = &hif->TxRing[num];
 
-			os_alloc_mem(pAd, (UCHAR **)&pTxRing->Cell, tx_ring_size * sizeof(struct _RTMP_DMACB));
-			NdisZeroMemory(pTxRing->Cell, tx_ring_size * sizeof(struct _RTMP_DMACB));
+			os_alloc_mem(pAd, (UCHAR **)&pTxRing->Cell,
+				     tx_ring_size * sizeof(struct _RTMP_DMACB));
+			NdisZeroMemory(pTxRing->Cell,
+				       tx_ring_size *
+					       sizeof(struct _RTMP_DMACB));
 
 			for (index = 0; index < tx_ring_size; index++) {
 				dma_cb = &pTxRing->Cell[index];
@@ -1019,36 +1102,45 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				/* Init Tx Ring Size, Va, Pa variables */
 				dma_cb->AllocSize = TXD_SIZE;
 				dma_cb->AllocVa = RingBaseVa;
-				RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-				RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+				RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+							    RingBasePaHigh);
+				RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+							   RingBasePaLow);
 				/* Setup Tx Buffer size & address. only 802.11 header will store in this space*/
 				pDmaBuf = &dma_cb->DmaBuf;
 				pDmaBuf->AllocSize = TX_DMA_1ST_BUFFER_SIZE;
 				pDmaBuf->AllocVa = BufBaseVa;
-				RTMP_SetPhysicalAddressHigh(pDmaBuf->AllocPa, BufBasePaHigh);
-				RTMP_SetPhysicalAddressLow(pDmaBuf->AllocPa, BufBasePaLow);
+				RTMP_SetPhysicalAddressHigh(pDmaBuf->AllocPa,
+							    BufBasePaHigh);
+				RTMP_SetPhysicalAddressLow(pDmaBuf->AllocPa,
+							   BufBasePaLow);
 				/* link the pre-allocated TxBuf to TXD */
 				pTxD = (TXD_STRUC *)dma_cb->AllocVa;
 				pTxD->SDPtr0 = BufBasePaLow;
 				pTxD->DMADONE = 0;
 #ifdef RT_BIG_ENDIAN
-				RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
+				RTMPDescriptorEndianChange((PUCHAR)pTxD,
+							   TYPE_TXD);
 #endif
 				/* flush dcache if no consistent memory is supported */
 				RTMP_DCACHE_FLUSH(pTxD, dma_cb->AllocSize);
 				RingBasePaLow += TXD_SIZE;
-				RingBaseVa = (PUCHAR) RingBaseVa + TXD_SIZE;
+				RingBaseVa = (PUCHAR)RingBaseVa + TXD_SIZE;
 				/* advance to next TxBuf address */
 				BufBasePaLow += TX_DMA_1ST_BUFFER_SIZE;
-				BufBaseVa = (PUCHAR) BufBaseVa + TX_DMA_1ST_BUFFER_SIZE;
+				BufBaseVa = (PUCHAR)BufBaseVa +
+					    TX_DMA_1ST_BUFFER_SIZE;
 			}
 
 			pTxRing->tx_ring_state = TX_RING_HIGH;
 			pTxRing->tx_ring_low_water_mark = 5;
-			pTxRing->tx_ring_high_water_mark = pTxRing->tx_ring_low_water_mark + 10;
+			pTxRing->tx_ring_high_water_mark =
+				pTxRing->tx_ring_low_water_mark + 10;
 			pTxRing->tx_ring_full_cnt = 0;
 
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("TxRing[%d]: total %d entry allocated\n", num, index));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+				 ("TxRing[%d]: total %d entry allocated\n", num,
+				  index));
 		}
 
 		if (Status == NDIS_STATUS_RESOURCES)
@@ -1057,18 +1149,23 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 		/*
 			Allocate MGMT ring descriptor's memory except Tx ring which allocated eariler
 		*/
-		desc_ring_alloc(pAd, &hif->MgmtDescRing, MGMT_RING_SIZE * TXD_SIZE);
+		desc_ring_alloc(pAd, &hif->MgmtDescRing,
+				MGMT_RING_SIZE * TXD_SIZE);
 
 		if (hif->MgmtDescRing.AllocVa == NULL) {
 			Status = NDIS_STATUS_RESOURCES;
 			break;
 		}
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("MgmtDescRing[%p]: total %d bytes allocated\n",
-				 hif->MgmtDescRing.AllocVa, (INT)hif->MgmtDescRing.AllocSize));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("MgmtDescRing[%p]: total %d bytes allocated\n",
+			  hif->MgmtDescRing.AllocVa,
+			  (INT)hif->MgmtDescRing.AllocSize));
 		/* Save PA & VA for further operation*/
-		RingBasePaHigh = RTMP_GetPhysicalAddressHigh(hif->MgmtDescRing.AllocPa);
-		RingBasePaLow = RTMP_GetPhysicalAddressLow(hif->MgmtDescRing.AllocPa);
+		RingBasePaHigh =
+			RTMP_GetPhysicalAddressHigh(hif->MgmtDescRing.AllocPa);
+		RingBasePaLow =
+			RTMP_GetPhysicalAddressLow(hif->MgmtDescRing.AllocPa);
 		RingBaseVa = hif->MgmtDescRing.AllocVa;
 
 		/*
@@ -1081,8 +1178,10 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* Init MGMT Ring Size, Va, Pa variables*/
 			dma_cb->AllocSize = TXD_SIZE;
 			dma_cb->AllocVa = RingBaseVa;
-			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+						    RingBasePaHigh);
+			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+						   RingBasePaLow);
 			/* Offset to next ring descriptor address*/
 			RingBasePaLow += TXD_SIZE;
 			RingBaseVa = (PUCHAR)RingBaseVa + TXD_SIZE;
@@ -1097,23 +1196,29 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* no pre-allocated buffer required in MgmtRing for scatter-gather case*/
 		}
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("MGMT Ring: total %d entry allocated\n", index));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("MGMT Ring: total %d entry allocated\n", index));
 
 		/*
 			Allocate CTRL ring descriptor's memory except Tx ring which allocated eariler
 		*/
-		desc_ring_alloc(pAd, &hif->CtrlDescRing, CTL_RING_SIZE * TXD_SIZE);
+		desc_ring_alloc(pAd, &hif->CtrlDescRing,
+				CTL_RING_SIZE * TXD_SIZE);
 
 		if (hif->CtrlDescRing.AllocVa == NULL) {
 			Status = NDIS_STATUS_RESOURCES;
 			break;
 		}
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("CtrlDescRing[%p]: total %d bytes allocated\n",
-				 hif->CtrlDescRing.AllocVa, (INT)hif->CtrlDescRing.AllocSize));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("CtrlDescRing[%p]: total %d bytes allocated\n",
+			  hif->CtrlDescRing.AllocVa,
+			  (INT)hif->CtrlDescRing.AllocSize));
 		/* Save PA & VA for further operation*/
-		RingBasePaHigh = RTMP_GetPhysicalAddressHigh(hif->CtrlDescRing.AllocPa);
-		RingBasePaLow = RTMP_GetPhysicalAddressLow(hif->CtrlDescRing.AllocPa);
+		RingBasePaHigh =
+			RTMP_GetPhysicalAddressHigh(hif->CtrlDescRing.AllocPa);
+		RingBasePaLow =
+			RTMP_GetPhysicalAddressLow(hif->CtrlDescRing.AllocPa);
 		RingBaseVa = hif->CtrlDescRing.AllocVa;
 
 		/*
@@ -1126,11 +1231,13 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* Init CTRL Ring Size, Va, Pa variables*/
 			dma_cb->AllocSize = TXD_SIZE;
 			dma_cb->AllocVa = RingBaseVa;
-			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+						    RingBasePaHigh);
+			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+						   RingBasePaLow);
 			/* Offset to next ring descriptor address*/
 			RingBasePaLow += TXD_SIZE;
-			RingBaseVa = (PUCHAR) RingBaseVa + TXD_SIZE;
+			RingBaseVa = (PUCHAR)RingBaseVa + TXD_SIZE;
 			/* link the pre-allocated TxBuf to TXD*/
 			pTxD = (TXD_STRUC *)dma_cb->AllocVa;
 			pTxD->DMADONE = 1;
@@ -1142,24 +1249,30 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* no pre-allocated buffer required in CtrlRing for scatter-gather case*/
 		}
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("CTRL Ring: total %d entry allocated\n", index));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("CTRL Ring: total %d entry allocated\n", index));
 
 		/*
 		 * Allocate firmware download ring descriptor's memory except Tx ring which allocated eariler
 		 */
-		desc_ring_alloc(pAd, &hif->FwDwloRing.DescRing, hif->FwDwloRing.ring_size * TXD_SIZE);
+		desc_ring_alloc(pAd, &hif->FwDwloRing.DescRing,
+				hif->FwDwloRing.ring_size * TXD_SIZE);
 
 		if (hif->FwDwloRing.DescRing.AllocVa == NULL) {
 			Status = NDIS_STATUS_RESOURCES;
 			break;
 		}
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("FwDwloRing.DescRing[%p]: total %d bytes allocated\n",
-				 hif->FwDwloRing.DescRing.AllocVa, (INT)hif->FwDwloRing.DescRing.AllocSize));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("FwDwloRing.DescRing[%p]: total %d bytes allocated\n",
+			  hif->FwDwloRing.DescRing.AllocVa,
+			  (INT)hif->FwDwloRing.DescRing.AllocSize));
 
 		/* Save PA & VA for further operation*/
-		RingBasePaHigh = RTMP_GetPhysicalAddressHigh(hif->FwDwloRing.DescRing.AllocPa);
-		RingBasePaLow = RTMP_GetPhysicalAddressLow(hif->FwDwloRing.DescRing.AllocPa);
+		RingBasePaHigh = RTMP_GetPhysicalAddressHigh(
+			hif->FwDwloRing.DescRing.AllocPa);
+		RingBasePaLow = RTMP_GetPhysicalAddressLow(
+			hif->FwDwloRing.DescRing.AllocPa);
 		RingBaseVa = hif->FwDwloRing.DescRing.AllocVa;
 
 		/*
@@ -1172,11 +1285,13 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* Init firmware download Ring Size, Va, Pa variables*/
 			dma_cb->AllocSize = TXD_SIZE;
 			dma_cb->AllocVa = RingBaseVa;
-			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+			RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+						    RingBasePaHigh);
+			RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+						   RingBasePaLow);
 			/* Offset to next ring descriptor address*/
 			RingBasePaLow += TXD_SIZE;
-			RingBaseVa = (PUCHAR) RingBaseVa + TXD_SIZE;
+			RingBaseVa = (PUCHAR)RingBaseVa + TXD_SIZE;
 			/* link the pre-allocated TxBuf to TXD*/
 			pTxD = (TXD_STRUC *)dma_cb->AllocVa;
 			pTxD->DMADONE = 1;
@@ -1189,7 +1304,8 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			/* no pre-allocated buffer required in CtrlRing for scatter-gather case*/
 		}
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("FwDwlo Ring: total %d entry allocated\n", index));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("FwDwlo Ring: total %d entry allocated\n", index));
 
 		for (num = 0; num < num_of_rx_ring; num++) {
 			UINT16 RxRingSize;
@@ -1205,18 +1321,23 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			}
 
 			/* Alloc RxRingDesc memory except Tx ring allocated eariler */
-			desc_ring_alloc(pAd, &hif->RxDescRing[num], RxRingSize * RXD_SIZE);
+			desc_ring_alloc(pAd, &hif->RxDescRing[num],
+					RxRingSize * RXD_SIZE);
 
 			if (hif->RxDescRing[num].AllocVa == NULL) {
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
 
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("RxDescRing[%p]: total %d bytes allocated\n",
-					 hif->RxDescRing[num].AllocVa, (INT)hif->RxDescRing[num].AllocSize));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+				 ("RxDescRing[%p]: total %d bytes allocated\n",
+				  hif->RxDescRing[num].AllocVa,
+				  (INT)hif->RxDescRing[num].AllocSize));
 			/* Initialize Rx Ring and associated buffer memory */
-			RingBasePaHigh = RTMP_GetPhysicalAddressHigh(hif->RxDescRing[num].AllocPa);
-			RingBasePaLow = RTMP_GetPhysicalAddressLow(hif->RxDescRing[num].AllocPa);
+			RingBasePaHigh = RTMP_GetPhysicalAddressHigh(
+				hif->RxDescRing[num].AllocPa);
+			RingBasePaLow = RTMP_GetPhysicalAddressLow(
+				hif->RxDescRing[num].AllocPa);
 			RingBaseVa = hif->RxDescRing[num].AllocVa;
 
 			/* Allocate RX Free Buf */
@@ -1224,19 +1345,23 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				alloc_rx_free_buffer(pAd, num, RxRingSize);
 			}
 
-			os_alloc_mem(pAd, (UCHAR **)&rx_ring->Cell, RxRingSize * sizeof(struct _RTMP_DMACB));
-			NdisZeroMemory(rx_ring->Cell, RxRingSize * sizeof(struct _RTMP_DMACB));
+			os_alloc_mem(pAd, (UCHAR **)&rx_ring->Cell,
+				     RxRingSize * sizeof(struct _RTMP_DMACB));
+			NdisZeroMemory(rx_ring->Cell,
+				       RxRingSize * sizeof(struct _RTMP_DMACB));
 
 			for (index = 0; index < RxRingSize; index++) {
 				dma_cb = &rx_ring->Cell[index];
 				/* Init RX Ring Size, Va, Pa variables*/
 				dma_cb->AllocSize = RXD_SIZE;
 				dma_cb->AllocVa = RingBaseVa;
-				RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa, RingBasePaHigh);
-				RTMP_SetPhysicalAddressLow(dma_cb->AllocPa, RingBasePaLow);
+				RTMP_SetPhysicalAddressHigh(dma_cb->AllocPa,
+							    RingBasePaHigh);
+				RTMP_SetPhysicalAddressLow(dma_cb->AllocPa,
+							   RingBasePaLow);
 				/* Offset to next ring descriptor address */
 				RingBasePaLow += RXD_SIZE;
-				RingBaseVa = (PUCHAR) RingBaseVa + RXD_SIZE;
+				RingBaseVa = (PUCHAR)RingBaseVa + RXD_SIZE;
 				/* Setup Rx associated Buffer size & allocate share memory*/
 				pDmaBuf = &dma_cb->DmaBuf;
 				pDmaBuf->AllocSize = RxBufferSize;
@@ -1244,7 +1369,8 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				if (num == HIF_RX_IDX0) {
 					pPacket = RTMP_AllocateRxPacketBuffer(
 						rx_ring,
-						((POS_COOKIE)(pAd->OS_Cookie))->pDev,
+						((POS_COOKIE)(pAd->OS_Cookie))
+							->pDev,
 						DYNAMIC_PAGE_ALLOC,
 						pDmaBuf->AllocSize,
 						&pDmaBuf->AllocVa,
@@ -1252,7 +1378,8 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				} else if (num == HIF_RX_IDX1) {
 					pPacket = RTMP_AllocateRxPacketBuffer(
 						rx_ring,
-						((POS_COOKIE)(pAd->OS_Cookie))->pDev,
+						((POS_COOKIE)(pAd->OS_Cookie))
+							->pDev,
 						PRE_SLAB_ALLOC,
 						pDmaBuf->AllocSize,
 						&pDmaBuf->AllocVa,
@@ -1263,44 +1390,52 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 				dma_cb->pNdisPacket = pPacket;
 
 				if (pDmaBuf->AllocVa == NULL) {
-					ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-					MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Failed to allocate RxRing's 1st buffer\n"));
+					ErrorValue =
+						ERRLOG_OUT_OF_SHARED_MEMORY;
+					MTWF_LOG(
+						DBG_CAT_HIF, CATHIF_PCI,
+						DBG_LVL_ERROR,
+						("Failed to allocate RxRing's 1st buffer\n"));
 					Status = NDIS_STATUS_RESOURCES;
 					break;
 				}
 
 				/* Zero init this memory block*/
-				NdisZeroMemory(pDmaBuf->AllocVa, pDmaBuf->AllocSize);
+				NdisZeroMemory(pDmaBuf->AllocVa,
+					       pDmaBuf->AllocSize);
 
 				/* Write RxD buffer address & allocated buffer length*/
 				pRxD = (RXD_STRUC *)dma_cb->AllocVa;
-				pRxD->SDP0 = RTMP_GetPhysicalAddressLow(pDmaBuf->AllocPa);
+				pRxD->SDP0 = RTMP_GetPhysicalAddressLow(
+					pDmaBuf->AllocPa);
 				pRxD->SDL0 = RxBufferSize;
 				pRxD->DDONE = 0;
 #ifdef RT_BIG_ENDIAN
-				RTMPDescriptorEndianChange((PUCHAR)pRxD, TYPE_RXD);
+				RTMPDescriptorEndianChange((PUCHAR)pRxD,
+							   TYPE_RXD);
 #endif
 				/* flush dcache if no consistent memory is supported */
 				RTMP_DCACHE_FLUSH(pRxD, dma_cb->AllocSize);
 			}
 
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("Rx[%d] Ring: total %d entry allocated\n", num, index));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+				 ("Rx[%d] Ring: total %d entry allocated\n",
+				  num, index));
 		}
-	}	while (FALSE);
+	} while (FALSE);
 
 	NdisZeroMemory(&pAd->FragFrame, sizeof(FRAGMENT_FRAME));
-	pAd->FragFrame.pFragPacket = RTMP_AllocateFragPacketBuffer(pAd, RX_BUFFER_NORMSIZE);
+	pAd->FragFrame.pFragPacket =
+		RTMP_AllocateFragPacketBuffer(pAd, RX_BUFFER_NORMSIZE);
 
 	if (pAd->FragFrame.pFragPacket == NULL)
 		Status = NDIS_STATUS_RESOURCES;
 
 	if (Status != NDIS_STATUS_SUCCESS) {
 		/* Log error inforamtion*/
-		NdisWriteErrorLogEntry(
-			pAd->AdapterHandle,
-			NDIS_ERROR_CODE_OUT_OF_RESOURCES,
-			1,
-			ErrorValue);
+		NdisWriteErrorLogEntry(pAd->AdapterHandle,
+				       NDIS_ERROR_CODE_OUT_OF_RESOURCES, 1,
+				       ErrorValue);
 	}
 
 	/*
@@ -1345,10 +1480,10 @@ NDIS_STATUS RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 	}
 
 	pAd->PrivateInfo.TxRingFullCnt = 0;
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("<-- RTMPAllocTxRxRingMemory, Status=%x\n", Status));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+		 ("<-- RTMPAllocTxRxRingMemory, Status=%x\n", Status));
 	return Status;
 }
-
 
 VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 {
@@ -1369,7 +1504,8 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 	UINT16 rx1_ring_size = GET_RX1_RING_SIZE(cap);
 	struct _PCI_HIF_T *hif = hc_get_hif_ctrl(pAd->hdev_ctrl);
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("--> RTMPFreeTxRxRingMemory\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("--> RTMPFreeTxRxRingMemory\n"));
 
 	/* Free Tx Ring Packet*/
 	for (index = 0; index < num_of_tx_ring; index++) {
@@ -1378,18 +1514,20 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 		for (j = 0; j < tx_ring_size; j++) {
 			dma_cb = &pTxRing->Cell[j];
 #ifdef RT_BIG_ENDIAN
-			pDestTxD  = (TXD_STRUC *)(dma_cb->AllocVa);
-			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD, TXD_SIZE);
+			pDestTxD = (TXD_STRUC *)(dma_cb->AllocVa);
+			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD,
+				       TXD_SIZE);
 			pTxD = (TXD_STRUC *)&tx_hw_info[0];
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
 			pTxD = (TXD_STRUC *)(dma_cb->AllocVa);
 #endif /* RT_BIG_ENDIAN */
-			
-			
+
 			if (dma_cb->DmaBuf.AllocSize > 0)
-				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa, dma_cb->DmaBuf.AllocSize, RTMP_PCI_DMA_TODEVICE);
-			
+				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa,
+						 dma_cb->DmaBuf.AllocSize,
+						 RTMP_PCI_DMA_TODEVICE);
+
 			pPacket = dma_cb->pNdisPacket;
 
 			if (pPacket) {
@@ -1397,10 +1535,13 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 				UINT8 Type;
 
 				if (CUT_THROUGH_TX_ENABL(pAd->PktTokenCb))
-					cut_through_tx_deq(pAd->PktTokenCb, dma_cb->token_id, &Type);
+					cut_through_tx_deq(pAd->PktTokenCb,
+							   dma_cb->token_id,
+							   &Type);
 
 #endif /* CUT_THROUGH */
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
 			/*Always assign pNdisPacket as NULL after clear*/
@@ -1408,15 +1549,19 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 			pPacket = dma_cb->pNextNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
 			/*Always assign pNextNdisPacket as NULL after clear*/
 			dma_cb->pNextNdisPacket = NULL;
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, FALSE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      FALSE, TYPE_TXD);
 #endif /* RT_BIG_ENDIAN */
 		}
 		os_free_mem(pTxRing->Cell);
@@ -1426,43 +1571,64 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 		RTMP_CTRL_RING *pCtrlRing = &hif->CtrlRing;
 
 		NdisAcquireSpinLock(&hif->CtrlRingLock);
-		HIF_IO_READ32(pAd, pCtrlRing->hw_didx_addr, &pCtrlRing->TxDmaIdx);
+		HIF_IO_READ32(pAd, pCtrlRing->hw_didx_addr,
+			      &pCtrlRing->TxDmaIdx);
 
 		while (pCtrlRing->TxSwFreeIdx != pCtrlRing->TxDmaIdx) {
 #ifdef RT_BIG_ENDIAN
-			pDestTxD = (TXD_STRUC *) (pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].AllocVa);
-			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD, TXD_SIZE);
+			pDestTxD =
+				(TXD_STRUC
+					 *)(pCtrlRing
+						    ->Cell[pCtrlRing->TxSwFreeIdx]
+						    .AllocVa);
+			NdisMoveMemory(&tx_hw_info[0], (UCHAR *)pDestTxD,
+				       TXD_SIZE);
 			pTxD = (TXD_STRUC *)&tx_hw_info[0];
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD = (TXD_STRUC *) (pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].AllocVa);
+			pTxD = (TXD_STRUC
+					*)(pCtrlRing
+						   ->Cell[pCtrlRing->TxSwFreeIdx]
+						   .AllocVa);
 #endif
 			pTxD->DMADONE = 0;
-			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNdisPacket;
+			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx]
+					  .pNdisPacket;
 
 			if (pPacket == NULL) {
-				INC_RING_INDEX(pCtrlRing->TxSwFreeIdx, CTL_RING_SIZE);
+				INC_RING_INDEX(pCtrlRing->TxSwFreeIdx,
+					       CTL_RING_SIZE);
 				continue;
 			}
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0, pTxD->SDLen0, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0,
+						 pTxD->SDLen0,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
-			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNdisPacket = NULL;
-			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNextNdisPacket;
+			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNdisPacket =
+				NULL;
+			pPacket = pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx]
+					  .pNextNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_SUCCESS);
 			}
 
-			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNextNdisPacket = NULL;
+			pCtrlRing->Cell[pCtrlRing->TxSwFreeIdx].pNextNdisPacket =
+				NULL;
 			INC_RING_INDEX(pCtrlRing->TxSwFreeIdx, CTL_RING_SIZE);
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, TRUE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      TRUE, TYPE_TXD);
 #endif
 		}
 
@@ -1482,22 +1648,30 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 
 			if ((dma_cb->DmaBuf.AllocVa) && (dma_cb->pNdisPacket)) {
 				PCI_UNMAP_SINGLE(pAd, dma_cb->DmaBuf.AllocPa,
-								 dma_cb->DmaBuf.AllocSize,
-								 RTMP_PCI_DMA_FROMDEVICE);
+						 dma_cb->DmaBuf.AllocSize,
+						 RTMP_PCI_DMA_FROMDEVICE);
 
 				if (j == HIF_RX_IDX0) {
 #ifdef CONFIG_WIFI_BUILD_SKB
-					skb_data_size = SKB_DATA_ALIGN(SKB_BUF_HEADROOM_RSV + dma_cb->DmaBuf.AllocSize) +
-							SKB_DATA_ALIGN(SKB_BUF_TAILROOM_RSV);
+					skb_data_size =
+						SKB_DATA_ALIGN(
+							SKB_BUF_HEADROOM_RSV +
+							dma_cb->DmaBuf
+								.AllocSize) +
+						SKB_DATA_ALIGN(
+							SKB_BUF_TAILROOM_RSV);
 
 					if (skb_data_size <= PAGE_SIZE) {
-						DEV_FREE_FRAG_BUF(dma_cb->pNdisPacket);
+						DEV_FREE_FRAG_BUF(
+							dma_cb->pNdisPacket);
 					} else {
-						os_free_mem(dma_cb->pNdisPacket);
+						os_free_mem(
+							dma_cb->pNdisPacket);
 					}
-#else  /* CONFIG_WIFI_BUILD_SKB */
-					RELEASE_NDIS_PACKET(pAd, dma_cb->pNdisPacket,
-							NDIS_STATUS_SUCCESS);
+#else /* CONFIG_WIFI_BUILD_SKB */
+					RELEASE_NDIS_PACKET(
+						pAd, dma_cb->pNdisPacket,
+						NDIS_STATUS_SUCCESS);
 #endif /* CONFIG_WIFI_BUILD_SKB */
 				}
 			}
@@ -1510,64 +1684,71 @@ VOID RTMPFreeTxRxRingMemory(struct _RTMP_ADAPTER *pAd)
 
 		if (hif->RxDescRing[j].AllocVa)
 			RtmpFreeDescBuf(((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-							hif->RxDescRing[j].AllocSize,
-							hif->RxDescRing[j].AllocVa,
-							hif->RxDescRing[j].AllocPa);
+					hif->RxDescRing[j].AllocSize,
+					hif->RxDescRing[j].AllocVa,
+					hif->RxDescRing[j].AllocPa);
 
 		NdisZeroMemory(&hif->RxDescRing[j], sizeof(RTMP_DMABUF));
 	}
 
 	if (hif->MgmtDescRing.AllocVa) {
 		RtmpFreeDescBuf(((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-			hif->MgmtDescRing.AllocSize,
-			hif->MgmtDescRing.AllocVa,
-			hif->MgmtDescRing.AllocPa);
+				hif->MgmtDescRing.AllocSize,
+				hif->MgmtDescRing.AllocVa,
+				hif->MgmtDescRing.AllocPa);
 	}
 
 	NdisZeroMemory(&hif->MgmtDescRing, sizeof(RTMP_DMABUF));
 
 	if (hif->CtrlDescRing.AllocVa) {
 		RtmpFreeDescBuf(((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-						hif->CtrlDescRing.AllocSize, hif->CtrlDescRing.AllocVa,
-						hif->CtrlDescRing.AllocPa);
+				hif->CtrlDescRing.AllocSize,
+				hif->CtrlDescRing.AllocVa,
+				hif->CtrlDescRing.AllocPa);
 	}
 
 	NdisZeroMemory(&hif->CtrlDescRing, sizeof(RTMP_DMABUF));
 
 	if (hif->FwDwloRing.DescRing.AllocVa) {
-		RtmpFreeDescBuf(((POS_COOKIE)(pAd->OS_Cookie))->pDev, hif->FwDwloRing.DescRing.AllocSize,
-						hif->FwDwloRing.DescRing.AllocVa, hif->FwDwloRing.DescRing.AllocPa);
+		RtmpFreeDescBuf(((POS_COOKIE)(pAd->OS_Cookie))->pDev,
+				hif->FwDwloRing.DescRing.AllocSize,
+				hif->FwDwloRing.DescRing.AllocVa,
+				hif->FwDwloRing.DescRing.AllocPa);
 	}
 
 	NdisZeroMemory(&hif->FwDwloRing.DescRing, sizeof(RTMP_DMABUF));
 
 	for (num = 0; num < num_of_tx_ring; num++) {
 		if (hif->TxBufSpace[num].AllocVa)
-			RTMP_FreeFirstTxBuffer(((POS_COOKIE)(pAd->OS_Cookie))->pDev,
+			RTMP_FreeFirstTxBuffer(
+				((POS_COOKIE)(pAd->OS_Cookie))->pDev,
 				hif->TxBufSpace[num].AllocSize, FALSE,
-				hif->TxBufSpace[num].AllocVa, hif->TxBufSpace[num].AllocPa);
+				hif->TxBufSpace[num].AllocVa,
+				hif->TxBufSpace[num].AllocPa);
 
 		NdisZeroMemory(&hif->TxBufSpace[num], sizeof(RTMP_DMABUF));
 
 		if (hif->TxDescRing[num].AllocVa)
 			RtmpFreeDescBuf(((POS_COOKIE)(pAd->OS_Cookie))->pDev,
-				hif->TxDescRing[num].AllocSize,
-				hif->TxDescRing[num].AllocVa, hif->TxDescRing[num].AllocPa);
+					hif->TxDescRing[num].AllocSize,
+					hif->TxDescRing[num].AllocVa,
+					hif->TxDescRing[num].AllocPa);
 
 		NdisZeroMemory(&hif->TxDescRing[num], sizeof(RTMP_DMABUF));
 	}
 
 	if (pAd->FragFrame.pFragPacket) {
-		RELEASE_NDIS_PACKET(pAd, pAd->FragFrame.pFragPacket, NDIS_STATUS_SUCCESS);
+		RELEASE_NDIS_PACKET(pAd, pAd->FragFrame.pFragPacket,
+				    NDIS_STATUS_SUCCESS);
 		pAd->FragFrame.pFragPacket = NULL;
 	}
 
 	NdisFreeSpinLock(&pAd->CmdQLock);
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<-- RTMPFreeTxRxRingMemory\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<-- RTMPFreeTxRxRingMemory\n"));
 }
 
 #endif /* RESOURCE_PRE_ALLOC */
-
 
 VOID AsicInitTxRxRing(RTMP_ADAPTER *pAd)
 {
@@ -1578,7 +1759,6 @@ VOID AsicInitTxRxRing(RTMP_ADAPTER *pAd)
 
 #endif /* MT_MAC */
 }
-
 
 /*
 	========================================================================
@@ -1624,7 +1804,9 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 	/*
 		We have to clean all descriptors in case some error happened with reset
 	*/
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("RTMPRingCleanUp(RingIdx=%d, Pending-NDIS=%ld)\n", RingType, pAd->RalinkCounters.PendingNdisPacketCount));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+		 ("RTMPRingCleanUp(RingIdx=%d, Pending-NDIS=%ld)\n", RingType,
+		  pAd->RalinkCounters.PendingNdisPacketCount));
 
 	switch (RingType) {
 	case QID_AC_BK:
@@ -1639,21 +1821,25 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 		lock = &hif->TxRingLock[RingType];
 		RTMP_IRQ_LOCK(lock, IrqFlags);
 
-		for (i = 0; i < tx_ring_size; i++) { /* We have to scan all TX ring*/
-			pTxD  = (TXD_STRUC *)pTxRing->Cell[i].AllocVa;
-			pPacket = (PNDIS_PACKET) pTxRing->Cell[i].pNdisPacket;
+		for (i = 0; i < tx_ring_size;
+		     i++) { /* We have to scan all TX ring*/
+			pTxD = (TXD_STRUC *)pTxRing->Cell[i].AllocVa;
+			pPacket = (PNDIS_PACKET)pTxRing->Cell[i].pNdisPacket;
 
 			/* release scatter-and-gather NDIS_PACKET*/
 			if (pPacket) {
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 				pTxRing->Cell[i].pNdisPacket = NULL;
 			}
 
-			pPacket = (PNDIS_PACKET) pTxRing->Cell[i].pNextNdisPacket;
+			pPacket =
+				(PNDIS_PACKET)pTxRing->Cell[i].pNextNdisPacket;
 
 			/* release scatter-and-gather NDIS_PACKET*/
 			if (pPacket) {
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 				pTxRing->Cell[i].pNextNdisPacket = NULL;
 			}
 		}
@@ -1672,41 +1858,52 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 
 		for (i = 0; i < MGMT_RING_SIZE; i++) {
 #ifdef RT_BIG_ENDIAN
-			pDestTxD  = (TXD_STRUC *) hif->MgmtRing.Cell[i].AllocVa;
+			pDestTxD = (TXD_STRUC *)hif->MgmtRing.Cell[i].AllocVa;
 			TxD = *pDestTxD;
 			pTxD = &TxD;
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD  = (TXD_STRUC *) hif->MgmtRing.Cell[i].AllocVa;
+			pTxD = (TXD_STRUC *)hif->MgmtRing.Cell[i].AllocVa;
 #endif /* RT_BIG_ENDIAN */
-			pPacket = (PNDIS_PACKET) hif->MgmtRing.Cell[i].pNdisPacket;
+			pPacket =
+				(PNDIS_PACKET)hif->MgmtRing.Cell[i].pNdisPacket;
 
 			/* rlease scatter-and-gather NDIS_PACKET*/
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0, pTxD->SDLen0, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0,
+						 pTxD->SDLen0,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			}
 
 			hif->MgmtRing.Cell[i].pNdisPacket = NULL;
-			pPacket = (PNDIS_PACKET)hif->MgmtRing.Cell[i].pNextNdisPacket;
+			pPacket = (PNDIS_PACKET)hif->MgmtRing.Cell[i]
+					  .pNextNdisPacket;
 
 			/* release scatter-and-gather NDIS_PACKET*/
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			}
 
 			hif->MgmtRing.Cell[i].pNextNdisPacket = NULL;
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, FALSE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      FALSE, TYPE_TXD);
 #endif /* RT_BIG_ENDIAN */
 		}
 
-		HIF_IO_READ32(pAd, hif->MgmtRing.hw_didx_addr, &hif->MgmtRing.TxDmaIdx);
+		HIF_IO_READ32(pAd, hif->MgmtRing.hw_didx_addr,
+			      &hif->MgmtRing.TxDmaIdx);
 		hif->MgmtRing.TxSwFreeIdx = hif->MgmtRing.TxDmaIdx;
 		hif->MgmtRing.TxCpuIdx = hif->MgmtRing.TxDmaIdx;
-		HIF_IO_WRITE32(pAd, hif->MgmtRing.hw_cidx_addr, hif->MgmtRing.TxCpuIdx);
+		HIF_IO_WRITE32(pAd, hif->MgmtRing.hw_cidx_addr,
+			       hif->MgmtRing.TxCpuIdx);
 		RTMP_IRQ_UNLOCK(&hif->MgmtRingLock, IrqFlags);
 		pAd->RalinkCounters.MgmtRingFullCount = 0;
 		break;
@@ -1732,26 +1929,35 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 
 			for (i = 0; i < RxRingSize; i++) {
 #ifdef RT_BIG_ENDIAN
-				pDestRxD = (RXD_STRUC *)pRxRing->Cell[i].AllocVa;
+				pDestRxD =
+					(RXD_STRUC *)pRxRing->Cell[i].AllocVa;
 				RxD = *pDestRxD;
 				pRxD = &RxD;
-				RTMPDescriptorEndianChange((PUCHAR)pRxD, TYPE_RXD);
+				RTMPDescriptorEndianChange((PUCHAR)pRxD,
+							   TYPE_RXD);
 #else
 				/* Point to Rx indexed rx ring descriptor*/
-				pRxD  = (RXD_STRUC *)pRxRing->Cell[i].AllocVa;
+				pRxD = (RXD_STRUC *)pRxRing->Cell[i].AllocVa;
 #endif /* RT_BIG_ENDIAN */
 				pRxD->DDONE = 0;
 				pRxD->SDL0 = RxBufferSize;
 #ifdef RT_BIG_ENDIAN
-				RTMPDescriptorEndianChange((PUCHAR)pRxD, TYPE_RXD);
-				WriteBackToDescriptor((PUCHAR)pDestRxD, (PUCHAR)pRxD, FALSE, TYPE_RXD);
+				RTMPDescriptorEndianChange((PUCHAR)pRxD,
+							   TYPE_RXD);
+				WriteBackToDescriptor((PUCHAR)pDestRxD,
+						      (PUCHAR)pRxD, FALSE,
+						      TYPE_RXD);
 #endif /* RT_BIG_ENDIAN */
 			}
 
-			HIF_IO_READ32(pAd, pRxRing->hw_didx_addr, &pRxRing->RxDmaIdx);
+			HIF_IO_READ32(pAd, pRxRing->hw_didx_addr,
+				      &pRxRing->RxDmaIdx);
 			pRxRing->RxSwReadIdx = pRxRing->RxDmaIdx;
-			pRxRing->RxCpuIdx = ((pRxRing->RxDmaIdx == 0) ? (RxRingSize - 1) : (pRxRing->RxDmaIdx - 1));
-			HIF_IO_WRITE32(pAd, pRxRing->hw_cidx_addr, pRxRing->RxCpuIdx);
+			pRxRing->RxCpuIdx = ((pRxRing->RxDmaIdx == 0) ?
+						     (RxRingSize - 1) :
+							   (pRxRing->RxDmaIdx - 1));
+			HIF_IO_WRITE32(pAd, pRxRing->hw_cidx_addr,
+				       pRxRing->RxCpuIdx);
 			RTMP_IRQ_UNLOCK(lock, IrqFlags);
 		}
 
@@ -1763,41 +1969,52 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 
 		for (i = 0; i < CTL_RING_SIZE; i++) {
 #ifdef RT_BIG_ENDIAN
-			pDestTxD  = (TXD_STRUC *) hif->CtrlRing.Cell[i].AllocVa;
+			pDestTxD = (TXD_STRUC *)hif->CtrlRing.Cell[i].AllocVa;
 			TxD = *pDestTxD;
 			pTxD = &TxD;
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD  = (TXD_STRUC *) hif->CtrlRing.Cell[i].AllocVa;
+			pTxD = (TXD_STRUC *)hif->CtrlRing.Cell[i].AllocVa;
 #endif /* RT_BIG_ENDIAN */
-			pPacket = (PNDIS_PACKET) hif->CtrlRing.Cell[i].pNdisPacket;
+			pPacket =
+				(PNDIS_PACKET)hif->CtrlRing.Cell[i].pNdisPacket;
 
 			/* rlease scatter-and-gather NDIS_PACKET*/
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0, pTxD->SDLen0, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0,
+						 pTxD->SDLen0,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			}
 
 			hif->CtrlRing.Cell[i].pNdisPacket = NULL;
-			pPacket = (PNDIS_PACKET) hif->CtrlRing.Cell[i].pNextNdisPacket;
+			pPacket = (PNDIS_PACKET)hif->CtrlRing.Cell[i]
+					  .pNextNdisPacket;
 
 			/* release scatter-and-gather NDIS_PACKET*/
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			}
 
 			hif->CtrlRing.Cell[i].pNextNdisPacket = NULL;
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, FALSE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      FALSE, TYPE_TXD);
 #endif /* RT_BIG_ENDIAN */
 		}
 
-		HIF_IO_READ32(pAd, hif->CtrlRing.hw_didx_addr, &hif->CtrlRing.TxDmaIdx);
+		HIF_IO_READ32(pAd, hif->CtrlRing.hw_didx_addr,
+			      &hif->CtrlRing.TxDmaIdx);
 		hif->CtrlRing.TxSwFreeIdx = hif->CtrlRing.TxDmaIdx;
 		hif->CtrlRing.TxCpuIdx = hif->CtrlRing.TxDmaIdx;
-		HIF_IO_WRITE32(pAd, hif->CtrlRing.hw_cidx_addr, hif->CtrlRing.TxCpuIdx);
+		HIF_IO_WRITE32(pAd, hif->CtrlRing.hw_cidx_addr,
+			       hif->CtrlRing.TxCpuIdx);
 		RTMP_IRQ_UNLOCK(&hif->CtrlRingLock, IrqFlags);
 		break;
 #endif /* CONFIG_ANDES_SUPPORT */
@@ -1811,39 +2028,48 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 
 		for (i = 0; i < BCN_RING_SIZE; i++) {
 #ifdef RT_BIG_ENDIAN
-			pDestTxD  = (TXD_STRUC *)hif->BcnRing.Cell[i].AllocVa;
+			pDestTxD = (TXD_STRUC *)hif->BcnRing.Cell[i].AllocVa;
 			TxD = *pDestTxD;
 			pTxD = &TxD;
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD  = (TXD_STRUC *) hif->BcnRing.Cell[i].AllocVa;
+			pTxD = (TXD_STRUC *)hif->BcnRing.Cell[i].AllocVa;
 #endif /* RT_BIG_ENDIAN */
-			pPacket = (PNDIS_PACKET) hif->BcnRing.Cell[i].pNdisPacket;
+			pPacket =
+				(PNDIS_PACKET)hif->BcnRing.Cell[i].pNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0, pTxD->SDLen0, RTMP_PCI_DMA_TODEVICE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0,
+						 pTxD->SDLen0,
+						 RTMP_PCI_DMA_TODEVICE);
 				/* RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE); */
 			}
 
 			hif->BcnRing.Cell[i].pNdisPacket = NULL;
-			pPacket = (PNDIS_PACKET)hif->BcnRing.Cell[i].pNextNdisPacket;
+			pPacket = (PNDIS_PACKET)hif->BcnRing.Cell[i]
+					  .pNextNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
 				/* RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE); */
 			}
 
 			hif->BcnRing.Cell[i].pNextNdisPacket = NULL;
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, FALSE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      FALSE, TYPE_TXD);
 #endif /* RT_BIG_ENDIAN */
 		}
 
-		HIF_IO_READ32(pAd, hif->BcnRing.hw_didx_addr, &hif->BcnRing.TxDmaIdx);
+		HIF_IO_READ32(pAd, hif->BcnRing.hw_didx_addr,
+			      &hif->BcnRing.TxDmaIdx);
 		hif->BcnRing.TxSwFreeIdx = hif->BcnRing.TxDmaIdx;
 		hif->BcnRing.TxCpuIdx = hif->BcnRing.TxDmaIdx;
-		HIF_IO_WRITE32(pAd, hif->BcnRing.hw_cidx_addr, hif->BcnRing.TxCpuIdx);
+		HIF_IO_WRITE32(pAd, hif->BcnRing.hw_cidx_addr,
+			       hif->BcnRing.TxCpuIdx);
 		RTMP_IRQ_UNLOCK(&hif->BcnRingLock, IrqFlags);
 		break;
 
@@ -1852,39 +2078,50 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 
 		for (i = 0; i < tx_ring_size; i++) {
 #ifdef RT_BIG_ENDIAN
-			pDestTxD  = (TXD_STRUC *)hif->TxBmcRing.Cell[i].AllocVa;
+			pDestTxD = (TXD_STRUC *)hif->TxBmcRing.Cell[i].AllocVa;
 			TxD = *pDestTxD;
 			pTxD = &TxD;
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
 #else
-			pTxD  = (TXD_STRUC *) hif->TxBmcRing.Cell[i].AllocVa;
+			pTxD = (TXD_STRUC *)hif->TxBmcRing.Cell[i].AllocVa;
 #endif /* RT_BIG_ENDIAN */
-			pPacket = (PNDIS_PACKET)hif->TxBmcRing.Cell[i].pNdisPacket;
+			pPacket =
+				(PNDIS_PACKET)hif->TxBmcRing.Cell[i].pNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0, pTxD->SDLen0, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr0,
+						 pTxD->SDLen0,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			}
 
 			hif->TxBmcRing.Cell[i].pNdisPacket = NULL;
-			pPacket = (PNDIS_PACKET) hif->TxBmcRing.Cell[i].pNextNdisPacket;
+			pPacket = (PNDIS_PACKET)hif->TxBmcRing.Cell[i]
+					  .pNextNdisPacket;
 
 			if (pPacket) {
-				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1, pTxD->SDLen1, RTMP_PCI_DMA_TODEVICE);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				PCI_UNMAP_SINGLE(pAd, pTxD->SDPtr1,
+						 pTxD->SDLen1,
+						 RTMP_PCI_DMA_TODEVICE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			}
 
 			hif->TxBmcRing.Cell[i].pNextNdisPacket = NULL;
 #ifdef RT_BIG_ENDIAN
 			RTMPDescriptorEndianChange((PUCHAR)pTxD, TYPE_TXD);
-			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD, FALSE, TYPE_TXD);
+			WriteBackToDescriptor((PUCHAR)pDestTxD, (PUCHAR)pTxD,
+					      FALSE, TYPE_TXD);
 #endif /* RT_BIG_ENDIAN */
 		}
 
-		HIF_IO_READ32(pAd, hif->TxBmcRing.hw_didx_addr, &hif->TxBmcRing.TxDmaIdx);
+		HIF_IO_READ32(pAd, hif->TxBmcRing.hw_didx_addr,
+			      &hif->TxBmcRing.TxDmaIdx);
 		hif->TxBmcRing.TxSwFreeIdx = hif->TxBmcRing.TxDmaIdx;
 		hif->TxBmcRing.TxCpuIdx = hif->TxBmcRing.TxDmaIdx;
-		HIF_IO_WRITE32(pAd, hif->TxBmcRing.hw_cidx_addr, hif->TxBmcRing.TxCpuIdx);
+		HIF_IO_WRITE32(pAd, hif->TxBmcRing.hw_cidx_addr,
+			       hif->TxBmcRing.TxCpuIdx);
 		RTMP_IRQ_UNLOCK(&hif->TxBmcRingLock, IrqFlags);
 		break;
 #endif /* MT_MAC */
@@ -1893,7 +2130,6 @@ VOID RTMPRingCleanUp(RTMP_ADAPTER *pAd, UCHAR RingType)
 		break;
 	}
 }
-
 
 VOID DumpPseInfo(RTMP_ADAPTER *pAd)
 {
@@ -1910,11 +2146,13 @@ VOID DumpPseInfo(RTMP_ADAPTER *pAd)
 		RemapOffset = GET_REMAP_2_OFFSET(0xa5000000 + Index * 4);
 		RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RemapBase);
 		RTMP_IO_READ32(pAd, 0x80000 + RemapOffset, &Value);
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("Offset[0x%x] = 0x%x\n", 0xa5000000 + Index * 4, Value));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("Offset[0x%x] = 0x%x\n", 0xa5000000 + Index * 4,
+			  Value));
 	}
 
 	/* Frame linker */
-	for (Index  = 0; Index < 1280; Index++) {
+	for (Index = 0; Index < 1280; Index++) {
 		RemapBase = GET_REMAP_2_BASE(0xa00001b0) << 19;
 		RemapOffset = GET_REMAP_2_OFFSET(0xa00001b0);
 		RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RemapBase);
@@ -1926,7 +2164,8 @@ VOID DumpPseInfo(RTMP_ADAPTER *pAd)
 		RemapOffset = GET_REMAP_2_OFFSET(0xa00001b4);
 		RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RemapBase);
 		RTMP_IO_READ32(pAd, 0x80000 + RemapOffset, &Value);
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("Frame Linker(0x%x) = 0x%x\n", Index, Value));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("Frame Linker(0x%x) = 0x%x\n", Index, Value));
 	}
 
 	/* Page linker */
@@ -1942,13 +2181,13 @@ VOID DumpPseInfo(RTMP_ADAPTER *pAd)
 		RemapOffset = GET_REMAP_2_OFFSET(0xa00001b8);
 		RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RemapBase);
 		RTMP_IO_READ32(pAd, 0x80000 + RemapOffset, &Value);
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("Page Linker(0x%x) = 0x%x\n", Index, (Value & 0xfff)));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("Page Linker(0x%x) = 0x%x\n", Index,
+			  (Value & 0xfff)));
 	}
 
 	RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RestoreValue);
 }
-
-
 
 /***************************************************************************
   *
@@ -1974,7 +2213,6 @@ VOID RT28XXDMADisable(RTMP_ADAPTER *pAd)
 	AsicSetWPDMA(pAd, PDMA_TX_RX, FALSE);
 }
 
-
 /*
 ========================================================================
 Routine Description:
@@ -1996,7 +2234,9 @@ VOID RT28XXDMAEnable(RTMP_ADAPTER *pAd)
 	AsicWaitPDMAIdle(pAd, 200, 1000);
 	RtmpusecDelay(50);
 	AsicSetWPDMA(pAd, PDMA_TX_RX, TRUE);
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<== %s(): WPDMABurstSIZE = %d\n", __func__, cap->WPDMABurstSIZE));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<== %s(): WPDMABurstSIZE = %d\n", __func__,
+		  cap->WPDMABurstSIZE));
 }
 
 VOID RT28XXDMAReset(RTMP_ADAPTER *pAd)
@@ -2008,16 +2248,14 @@ VOID RT28XXDMAReset(RTMP_ADAPTER *pAd)
 	if (AsicWaitPDMAIdle(pAd, 200, 1000)) {
 		AsicResetWPDMA(pAd);
 	} else {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<== %s(): WPDMA reset fail! \n", __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("<== %s(): WPDMA reset fail! \n", __func__));
 	}
 }
 
 #ifdef MT_MAC
-VOID MtUpdateBeaconToAsic(
-	IN RTMP_ADAPTER     *pAd,
-	IN VOID             *wdev_void,
-	IN UINT16           FrameLen,
-	IN UCHAR            UpdatePktType)
+VOID MtUpdateBeaconToAsic(IN RTMP_ADAPTER *pAd, IN VOID *wdev_void,
+			  IN UINT16 FrameLen, IN UCHAR UpdatePktType)
 {
 	struct wifi_dev *wdev = (struct wifi_dev *)wdev_void;
 	BCN_BUF_STRUC *bcn_buf = NULL;
@@ -2034,7 +2272,8 @@ VOID MtUpdateBeaconToAsic(
 	ASSERT(wdev != NULL);
 
 	if (!wdev) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s(): wdev is NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s(): wdev is NULL!\n", __func__));
 		return;
 	}
 
@@ -2042,20 +2281,24 @@ VOID MtUpdateBeaconToAsic(
 	WdevIdx = wdev->wdev_idx;
 
 	if (!bcn_buf) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s(): bcn_buf is NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s(): bcn_buf is NULL!\n", __func__));
 		return;
 	}
 
 	if (bcn_buf->BeaconPkt) {
 #if defined(MT7615) || defined(MT7622) || defined(P18) || defined(MT7663)
 
-		if (IS_MT7615(pAd) || IS_MT7622(pAd) || IS_P18(pAd) || IS_MT7663(pAd)) {
-			Status = RTMPAllocateNdisPacket(pAd, &bcn_pkt, NULL, 0,
-											GET_OS_PKT_DATAPTR(bcn_buf->BeaconPkt),
-											(UINT)(FrameLen + cap->tx_hw_hdr_len));
+		if (IS_MT7615(pAd) || IS_MT7622(pAd) || IS_P18(pAd) ||
+		    IS_MT7663(pAd)) {
+			Status = RTMPAllocateNdisPacket(
+				pAd, &bcn_pkt, NULL, 0,
+				GET_OS_PKT_DATAPTR(bcn_buf->BeaconPkt),
+				(UINT)(FrameLen + cap->tx_hw_hdr_len));
 
 			if (Status != NDIS_STATUS_SUCCESS) {
-				printk("%s():Cannot alloc bcn pkt buf!\n", __func__);
+				printk("%s():Cannot alloc bcn pkt buf!\n",
+				       __func__);
 				return;
 			}
 
@@ -2070,12 +2313,14 @@ VOID MtUpdateBeaconToAsic(
 		len = FrameLen + cap->tx_hw_hdr_len;
 		SET_OS_PKT_LEN(pkt, len);
 #ifdef RT_BIG_ENDIAN
-		MTMacInfoEndianChange(pAd, buf, TYPE_TMACINFO, sizeof(TMAC_TXD_L));
+		MTMacInfoEndianChange(pAd, buf, TYPE_TMACINFO,
+				      sizeof(TMAC_TXD_L));
 #endif /* RT_BIG_ENDIAN */
 		RTMP_SET_PACKET_WDEV(pkt, WdevIdx);
 #if defined(MT7615) || defined(MT7622) || defined(P18) || defined(MT7663)
 
-		if (IS_MT7615(pAd) || IS_MT7622(pAd) || IS_P18(pAd) || IS_MT7663(pAd)) {
+		if (IS_MT7615(pAd) || IS_MT7622(pAd) || IS_P18(pAd) ||
+		    IS_MT7663(pAd)) {
 			qIdx = HcGetBcnQueueIdx(pAd, wdev);
 			RTMP_SET_PACKET_TYPE(pkt, TX_MGMT);
 			send_mlme_pkt(pAd, pkt, wdev, qIdx, FALSE);
@@ -2088,11 +2333,10 @@ VOID MtUpdateBeaconToAsic(
 		}
 #endif /* defined(MT7615) || defined(MT7622) || defined(P18) || defined(MT7663) */
 	} else
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s(): BeaconPkt is NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s(): BeaconPkt is NULL!\n", __func__));
 }
 #endif /* MT_MAC */
-
-
 
 /*
 	==========================================================================
@@ -2119,7 +2363,8 @@ BOOLEAN RT28xxPciAsicRadioOn(RTMP_ADAPTER *pAd, UCHAR Level)
 	if (Level == GUI_IDLE_POWER_SAVE) {
 		/*2009/06/09: AP and stations need call the following function*/
 		/* this if defined is equivalent to ifndef RTMP_RBUS_SUPPORT */
-#if defined(RTMP_PCI_SUPPORT) || defined(RTMP_USB_SUPPORT) || defined(RTMP_SDIO_SUPPORT)
+#if defined(RTMP_PCI_SUPPORT) || defined(RTMP_USB_SUPPORT) ||                  \
+	defined(RTMP_SDIO_SUPPORT)
 		/* add by johnli, RF power sequence setup, load RF normal operation-mode setup*/
 		RTMP_CHIP_OP *pChipOps = hc_get_chip_ops(pAd->hdev_ctrl);
 
@@ -2136,7 +2381,6 @@ BOOLEAN RT28xxPciAsicRadioOn(RTMP_ADAPTER *pAd, UCHAR Level)
 	return TRUE;
 }
 
-
 /*
 	==========================================================================
 	Description:
@@ -2149,22 +2393,18 @@ BOOLEAN RT28xxPciAsicRadioOn(RTMP_ADAPTER *pAd, UCHAR Level)
 
 	==========================================================================
  */
-BOOLEAN RT28xxPciAsicRadioOff(
-	IN RTMP_ADAPTER *pAd,
-	IN UCHAR Level,
-	IN USHORT TbttNumToNextWakeUp)
+BOOLEAN RT28xxPciAsicRadioOff(IN RTMP_ADAPTER *pAd, IN UCHAR Level,
+			      IN USHORT TbttNumToNextWakeUp)
 {
-
 	/* TODO: shiang-7603 */
 	if (IS_HIF_TYPE(pAd, HIF_MT)) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("%s(): Not support for HIF_MT yet!\n",
-				 __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("%s(): Not support for HIF_MT yet!\n", __func__));
 		return FALSE;
 	}
 
 	return TRUE;
 }
-
 
 /*
 ========================================================================
@@ -2184,24 +2424,23 @@ Return Value:
 Note:
 ========================================================================
 */
-ra_dma_addr_t RtmpDrvPciMapSingle(
-	IN RTMP_ADAPTER *pAd,
-	IN VOID *ptr,
-	IN size_t size,
-	IN INT sd_idx,
-	IN INT direction)
+ra_dma_addr_t RtmpDrvPciMapSingle(IN RTMP_ADAPTER *pAd, IN VOID *ptr,
+				  IN size_t size, IN INT sd_idx,
+				  IN INT direction)
 {
 	ra_dma_addr_t SrcBufPA = 0;
-	struct device *pdev  = ((POS_COOKIE)(pAd->OS_Cookie))->pDev;
+	struct device *pdev = ((POS_COOKIE)(pAd->OS_Cookie))->pDev;
 	UCHAR ret = 0;
 
 	if (sd_idx == 1) {
 		TX_BLK *pTxBlk = (TX_BLK *)(ptr);
 
 		if (pTxBlk->SrcBufLen) {
-			SrcBufPA = PCI_MAP_SINGLE_DEV(pAd, pTxBlk->pSrcBufData, pTxBlk->SrcBufLen, 0, direction);
+			SrcBufPA = PCI_MAP_SINGLE_DEV(pAd, pTxBlk->pSrcBufData,
+						      pTxBlk->SrcBufLen, 0,
+						      direction);
 			pTxBlk->SrcBufPA = SrcBufPA;
-		 } else {
+		} else {
 			return (ra_dma_addr_t)0x0;
 		}
 	} else
@@ -2210,19 +2449,19 @@ ra_dma_addr_t RtmpDrvPciMapSingle(
 	ret = dma_mapping_error(pdev, SrcBufPA);
 
 	if (ret) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("%s: dma mapping error,ret=%d\n", __func__, ret));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("%s: dma mapping error,ret=%d\n", __func__, ret));
 		return (ra_dma_addr_t)0x0;
 	} else
 		return SrcBufPA;
 }
 
-
 int write_reg(RTMP_ADAPTER *ad, UINT32 base, UINT16 offset, UINT32 value)
 {
 	/* TODO: shiang-7603 */
 	if (IS_HIF_TYPE(ad, HIF_MT)) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("%s(): Not support for HIF_MT yet!\n",
-				 __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("%s(): Not support for HIF_MT yet!\n", __func__));
 		return FALSE;
 	}
 
@@ -2231,18 +2470,18 @@ int write_reg(RTMP_ADAPTER *ad, UINT32 base, UINT16 offset, UINT32 value)
 	else if (base == 0x41)
 		RTMP_IO_WRITE32(ad, offset, value);
 	else
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("illegal base = %x\n", base));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("illegal base = %x\n", base));
 
 	return 0;
 }
-
 
 int read_reg(RTMP_ADAPTER *ad, UINT32 base, UINT16 offset, UINT32 *value)
 {
 	/* TODO: shiang-7603 */
 	if (IS_HIF_TYPE(ad, HIF_MT)) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("%s(): Not support for HIF_MT yet!\n",
-				 __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("%s(): Not support for HIF_MT yet!\n", __func__));
 		return FALSE;
 	}
 
@@ -2251,11 +2490,11 @@ int read_reg(RTMP_ADAPTER *ad, UINT32 base, UINT16 offset, UINT32 *value)
 	else if (base == 0x41)
 		RTMP_IO_READ32(ad, offset, value);
 	else
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("illegal base = %x\n", base));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("illegal base = %x\n", base));
 
 	return 0;
 }
-
 
 INT irq_init(RTMP_ADAPTER *pAd)
 {
@@ -2268,7 +2507,9 @@ INT irq_init(RTMP_ADAPTER *pAd)
 	reg_mask = cap->int_enable_mask;
 
 	if (!reg_mask) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("%s(): interrupt enable mask is not assigned\n", __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("%s(): interrupt enable mask is not assigned\n",
+			  __func__));
 		ASSERT(FALSE);
 		return TRUE;
 	}
@@ -2295,7 +2536,8 @@ INT32 MtAcquirePowerControl(RTMP_ADAPTER *pAd, UINT32 Offset)
 
 	if (Offset == HIF_FUN_CAP) {
 		/* These registers are accessible when Low Power */
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s()::Access HIF_FUN_CAP, return\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s()::Access HIF_FUN_CAP, return\n", __func__));
 		return 1;
 	}
 
@@ -2304,14 +2546,17 @@ INT32 MtAcquirePowerControl(RTMP_ADAPTER *pAd, UINT32 Offset)
 
 	if (pAd->bDrvOwn) {
 		/* all registers are accessible */
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Current is DrverOnw, return\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): Current is DrverOnw, return\n", __func__));
 		RTMP_SPIN_UNLOCK_IRQRESTORE(&pAd->DriverOwnLock, &Flags);
 		return 1;
 	}
 
 	RTMP_SPIN_UNLOCK_IRQRESTORE(&pAd->DriverOwnLock, &Flags);
 	/* Write any value to HIF_SYS_REV clear FW own */
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Wirte any value to HIF_SYS_REV to clear FW own\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("%s(): Wirte any value to HIF_SYS_REV to clear FW own\n",
+		  __func__));
 	HIF_IO_WRITE32(pAd, HIF_SYS_REV, 1);
 
 	/* Poll driver own status */
@@ -2325,19 +2570,20 @@ INT32 MtAcquirePowerControl(RTMP_ADAPTER *pAd, UINT32 Offset)
 	};
 
 	if (pAd->bDrvOwn) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Successed to clear FW own\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): Successed to clear FW own\n", __func__));
 		Ret = 1;
 	} else {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Faile to clear FW own\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): Faile to clear FW own\n", __func__));
 		Ret = 0;
 		RTMP_SPIN_LOCK_IRQSAVE(&pAd->DriverOwnLock, &Flags);
-		pAd->bCRAccessing--;	/* will not continue accessing HW */
+		pAd->bCRAccessing--; /* will not continue accessing HW */
 		RTMP_SPIN_UNLOCK_IRQRESTORE(&pAd->DriverOwnLock, &Flags);
 	}
 
 	return Ret;
 }
-
 
 /* Drv give up own */
 void MtReleasePowerControl(RTMP_ADAPTER *pAd, UINT32 Offset)
@@ -2346,7 +2592,8 @@ void MtReleasePowerControl(RTMP_ADAPTER *pAd, UINT32 Offset)
 
 	if (Offset == HIF_FUN_CAP) {
 		/* These registers are accessible when Low Power */
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s()::Access HIF_FUN_CAP, return\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s()::Access HIF_FUN_CAP, return\n", __func__));
 		return;
 	}
 
@@ -2386,7 +2633,8 @@ INT32 MakeFWOwn(RTMP_ADAPTER *pAd)
 
 	if (!pAd->bDrvOwn) {
 		/* It is already FW own, do nothing */
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s()::Current is FwOwn, return\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s()::Current is FwOwn, return\n", __func__));
 		RTMP_SPIN_UNLOCK_IRQRESTORE(&pAd->DriverOwnLock, &Flags);
 		return 1;
 	}
@@ -2401,24 +2649,30 @@ INT32 MakeFWOwn(RTMP_ADAPTER *pAd)
 	/* Make sure no CR access and enter FwOwn with Sleep Notify */
 	while (pAd->bCRAccessing & retry) {
 		RtmpusecDelay(100);
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("wait CRAccessing %d\n", pAd->bCRAccessing));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("wait CRAccessing %d\n", pAd->bCRAccessing));
 		retry--;
 	}
 
 	if (retry == 0) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("**************WARNING******************\n"));
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Can not set FW own! gbDrvOwn=%d\n", pAd->bDrvOwn));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("**************WARNING******************\n"));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Can not set FW own! gbDrvOwn=%d\n", pAd->bDrvOwn));
 		pAd->bSetFWOwnRunning = 0;
 		RTMP_SPIN_UNLOCK_IRQRESTORE(&pAd->DriverOwnLock, &Flags);
 		return 1;
 	}
 
 	/* Wirte any value to HIF_FUN_CAP to set FW own */
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Wirte any value to HIF_FUN_CAP to set FW own\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("%s(): Wirte any value to HIF_FUN_CAP to set FW own\n",
+		  __func__));
 	HIF_IO_WRITE32(pAd, HIF_FUN_CAP, 1);
 	pAd->bDrvOwn = FALSE;
 	HIF_IO_READ32(pAd, 0x4014, &Value);
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Get 0x4014=0x%x\n", __func__, Value));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("%s(): Get 0x4014=0x%x\n", __func__, Value));
 	pAd->bSetFWOwnRunning = 0;
 	RTMP_SPIN_UNLOCK_IRQRESTORE(&pAd->DriverOwnLock, &Flags);
 	return Ret;

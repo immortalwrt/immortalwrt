@@ -39,11 +39,7 @@ struct _REPEATER_CLIENT_ENTRY;
 struct radio_res;
 struct freq_oper;
 
-
-enum {
-	HC_STATUS_OK,
-	HC_STATUS_FAIL
-};
+enum { HC_STATUS_OK, HC_STATUS_FAIL };
 
 #define INVAILD_WCID 0xff
 
@@ -57,14 +53,16 @@ UCHAR HcGetExtCha(struct _RTMP_ADAPTER *pAd, UCHAR Channel);
 INT32 HcUpdateCsaCntByChannel(struct _RTMP_ADAPTER *pAd, UCHAR Channel);
 UCHAR HcGetBandByWdev(struct wifi_dev *wdev);
 VOID HcSetRadioCurStatByWdev(struct wifi_dev *wdev, PHY_STATUS CurStat);
-VOID HcSetRadioCurStatByChannel(RTMP_ADAPTER *pAd, UCHAR Channel, PHY_STATUS CurStat);
+VOID HcSetRadioCurStatByChannel(RTMP_ADAPTER *pAd, UCHAR Channel,
+				PHY_STATUS CurStat);
 VOID HcSetAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd);
 VOID HcSetAllSupportedBandsRadioOn(RTMP_ADAPTER *pAd);
 BOOLEAN IsHcRadioCurStatOffByWdev(struct wifi_dev *wdev);
 BOOLEAN IsHcRadioCurStatOffByChannel(RTMP_ADAPTER *pAd, UCHAR Channel);
 BOOLEAN IsHcAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd);
 #ifdef GREENAP_SUPPORT
-VOID HcSetGreenAPActiveByBand(struct _RTMP_ADAPTER *pAd, UCHAR BandIdx, BOOLEAN bGreenAPActive);
+VOID HcSetGreenAPActiveByBand(struct _RTMP_ADAPTER *pAd, UCHAR BandIdx,
+			      BOOLEAN bGreenAPActive);
 BOOLEAN IsHcGreenAPActiveByBand(struct _RTMP_ADAPTER *pAd, UCHAR BandIdx);
 BOOLEAN IsHcGreenAPActiveByWdev(struct wifi_dev *wdev);
 #endif /* GREENAP_SUPPORT */
@@ -74,13 +72,15 @@ BOOLEAN HcIsBfCapSupport(struct wifi_dev *wdev);
 
 /*Wtable Ctrl*/
 UCHAR HcAcquireGroupKeyWcid(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
-VOID HcReleaseGroupKeyWcid(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR idx);
+VOID HcReleaseGroupKeyWcid(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			   UCHAR idx);
 UCHAR HcGetMaxStaNum(struct _RTMP_ADAPTER *pAd);
 UCHAR HcSetMaxStaNum(struct _RTMP_ADAPTER *pAd);
 
 UCHAR HcGetWcidLinkType(struct _RTMP_ADAPTER *pAd, UCHAR Wcid);
 UCHAR HcAcquireUcastWcid(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
-UCHAR HcReleaseUcastWcid(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR idx);
+UCHAR HcReleaseUcastWcid(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 UCHAR idx);
 VOID HcWtblRecDump(struct _RTMP_ADAPTER *pAd);
 
 #ifdef DBDC_MODE
@@ -96,27 +96,25 @@ INT32 hdev_ctrl_init(struct _RTMP_ADAPTER *pAd);
 VOID hdev_ctrl_exit(struct _RTMP_ADAPTER *pAd);
 VOID hdev_resource_init(void *hdev_ctrl);
 
-
 /*
 WMM
 */
-VOID HcAcquiredEdca(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, struct _EDCA_PARM *pEdca);
+VOID HcAcquiredEdca(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		    struct _EDCA_PARM *pEdca);
 VOID HcReleaseEdca(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
-
 
 /*
 * OmacCtrl
 */
 UCHAR HcGetOmacIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 
-
 /*Should remove it*/
 UCHAR HcGetChannelByRf(struct _RTMP_ADAPTER *pAd, UCHAR RfIC);
 UCHAR HcGetRadioPhyMode(struct _RTMP_ADAPTER *pAd);
 UCHAR HcGetRadioPhyModeByBandIdx(RTMP_ADAPTER *pAd, UCHAR BandIdx);
 UCHAR HcGetRadioChannel(struct _RTMP_ADAPTER *pAd);
-BOOLEAN  HcIsRfSupport(struct _RTMP_ADAPTER *pAd, UCHAR RfIC);
-BOOLEAN  HcIsRfRun(struct _RTMP_ADAPTER *pAd, UCHAR RfIC);
+BOOLEAN HcIsRfSupport(struct _RTMP_ADAPTER *pAd, UCHAR RfIC);
+BOOLEAN HcIsRfRun(struct _RTMP_ADAPTER *pAd, UCHAR RfIC);
 
 UCHAR HcGetBw(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 
@@ -126,20 +124,27 @@ struct _QLOAD_CTRL *HcGetQloadCtrlByRf(struct _RTMP_ADAPTER *pAd, UINT32 RfIC);
 struct _QLOAD_CTRL *HcGetQloadCtrl(struct _RTMP_ADAPTER *pAd);
 struct _AUTO_CH_CTRL *HcGetAutoChCtrl(struct _RTMP_ADAPTER *pAd);
 
-struct _AUTO_CH_CTRL *HcGetAutoChCtrlbyBandIdx(RTMP_ADAPTER *pAd, UCHAR BandIdx);
-UINT32 HcGetMgmtQueueIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, enum PACKET_TYPE pkt_type);
+struct ch_switch_cfg *HcGetChanSwitchMonbyBandIdx(RTMP_ADAPTER *pAd,
+						  UCHAR BandIdx);
+struct _AUTO_CH_CTRL *HcGetAutoChCtrlbyBandIdx(RTMP_ADAPTER *pAd,
+					       UCHAR BandIdx);
+UINT32 HcGetMgmtQueueIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 enum PACKET_TYPE pkt_type);
 UINT32 HcGetBcnQueueIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
-UINT32 HcGetTxRingIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, enum PACKET_TYPE, UCHAR q_idx);
+UINT32 HcGetTxRingIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		      enum PACKET_TYPE, UCHAR q_idx);
 UINT32 HcGetWmmIdx(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 UCHAR HcGetBandByChannel(struct _RTMP_ADAPTER *pAd, UCHAR Channel);
 EDCA_PARM *HcGetEdca(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 VOID HcSetEdca(struct wifi_dev *wdev);
-VOID HcCrossChannelCheck(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR Channel);
+VOID HcCrossChannelCheck(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 UCHAR Channel);
 
 #ifdef MAC_REPEATER_SUPPORT
 INT32 HcAddRepeaterEntry(struct wifi_dev *wdev, UINT32 ReptIdx);
 INT32 HcDelRepeaterEntry(struct wifi_dev *wdev, UINT32 ReptIdx);
-UCHAR HcGetRepeaterOmac(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
+UCHAR HcGetRepeaterOmac(struct _RTMP_ADAPTER *pAd,
+			struct _MAC_TABLE_ENTRY *pEntry);
 #endif /*#MAC_REPEATER_SUPPORT*/
 UCHAR HcGetAmountOfBand(struct _RTMP_ADAPTER *pAd);
 INT32 HcUpdateMSDUTxAllowByChannel(RTMP_ADAPTER *pAd, UCHAR Channel);
@@ -150,10 +155,13 @@ BOOLEAN hc_radio_res_request(struct wifi_dev *wdev, struct radio_res *res);
 UCHAR hc_reset_radio(struct _RTMP_ADAPTER *ad);
 VOID hc_set_rrm_init(struct wifi_dev *wdev);
 INT hc_radio_query_by_wdev(struct wifi_dev *wdev, struct freq_oper *oper);
-INT hc_radio_query_by_channel(struct _RTMP_ADAPTER *ad, UCHAR channel,struct freq_oper *oper);
-INT hc_radio_query_by_index(struct _RTMP_ADAPTER *ad, UCHAR index, struct freq_oper *oper);
+INT hc_radio_query_by_channel(struct _RTMP_ADAPTER *ad, UCHAR channel,
+			      struct freq_oper *oper);
+INT hc_radio_query_by_index(struct _RTMP_ADAPTER *ad, UCHAR index,
+			    struct freq_oper *oper);
 /*temporally use*/
-INT hc_radio_query_by_rf(struct _RTMP_ADAPTER *ad, UCHAR rfic, struct freq_oper *oper);
+INT hc_radio_query_by_rf(struct _RTMP_ADAPTER *ad, UCHAR rfic,
+			 struct freq_oper *oper);
 
 INT hc_obj_init(struct wifi_dev *wdev, INT idx);
 VOID hc_obj_exit(struct wifi_dev *wdev);
@@ -162,8 +170,10 @@ CHANNEL_CTRL *hc_get_channel_ctrl(void *hdev_ctrl, UCHAR BandIdx);
 UCHAR hc_init_ChCtrl(RTMP_ADAPTER *pAd);
 UCHAR hc_init_ACSChCtrl(RTMP_ADAPTER *pAd);
 UCHAR hc_init_ACSChCtrlByBandIdx(RTMP_ADAPTER *pAd, UCHAR BandIdx);
-UCHAR hc_set_ChCtrl(CHANNEL_CTRL *ChCtrl, RTMP_ADAPTER *pAd, UCHAR ChIdx, UCHAR ChIdx2);
-UCHAR hc_set_ChCtrlFlags_CAP(CHANNEL_CTRL *ChCtrl, UINT ChannelListFlag, UCHAR ChIdx);
+UCHAR hc_set_ChCtrl(CHANNEL_CTRL *ChCtrl, RTMP_ADAPTER *pAd, UCHAR ChIdx,
+		    UCHAR ChIdx2);
+UCHAR hc_set_ChCtrlFlags_CAP(CHANNEL_CTRL *ChCtrl, UINT ChannelListFlag,
+			     UCHAR ChIdx);
 UCHAR hc_set_ChCtrlChListStat(CHANNEL_CTRL *ChCtrl, CH_LIST_STATE ChListStat);
 UCHAR hc_check_ChCtrlChListStat(CHANNEL_CTRL *ChCtrl, CH_LIST_STATE ChListStat);
 /*chipcap & chipop related*/

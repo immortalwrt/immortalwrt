@@ -59,14 +59,11 @@ extern MEM_INFO_LIST PktInfoList;
 
 static struct pci_device_id rt_pci_tbl[] DEVINITDATA = {
 
-
-
-
 #ifdef MT7615
-	{PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC7615_PCIe_DEVICE_ID)},
-	{PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC7616_PCIe_DEVICE_ID)},
-	{PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC761A_PCIe_DEVICE_ID)},
-	{PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC7611_PCIe_DEVICE_ID)},
+	{ PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC7615_PCIe_DEVICE_ID) },
+	{ PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC7616_PCIe_DEVICE_ID) },
+	{ PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC761A_PCIe_DEVICE_ID) },
+	{ PCI_DEVICE(MTK_PCI_VENDOR_ID, NIC7611_PCIe_DEVICE_ID) },
 #endif /* MT7615 */
 	{} /* terminate list */
 };
@@ -101,10 +98,12 @@ static int rt_pci_suspend(struct pci_dev *pci_dev, pm_message_t state)
 	VOID *pAd = NULL;
 	INT32 retval = 0;
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("===>%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("===>%s()\n", __func__));
 
 	if (net_dev == NULL)
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("net_dev == NULL!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("net_dev == NULL!\n"));
 	else {
 		ULONG IfNum;
 
@@ -140,10 +139,10 @@ static int rt_pci_suspend(struct pci_dev *pci_dev, pm_message_t state)
 	pci_disable_device(pci_dev);
 	retval = pci_set_power_state(pci_dev, pci_choose_state(pci_dev, state));
 #endif
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<===%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<===%s()\n", __func__));
 	return retval;
 }
-
 
 static int rt_pci_resume(struct pci_dev *pci_dev)
 {
@@ -169,15 +168,18 @@ static int rt_pci_resume(struct pci_dev *pci_dev)
 
 	/* initialize device before it's used by a driver */
 	if (pci_enable_device(pci_dev)) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("pci enable fail!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("pci enable fail!\n"));
 		return 0;
 	}
 
 #endif
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("===>%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("===>%s()\n", __func__));
 
 	if (net_dev == NULL)
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("net_dev == NULL!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("net_dev == NULL!\n"));
 	else
 		GET_PAD_FROM_NET_DEV(pAd, net_dev);
 
@@ -191,7 +193,7 @@ static int rt_pci_resume(struct pci_dev *pci_dev)
 		RTMP_DRIVER_VIRTUAL_INF_NUM_GET(pAd, &IfNum);
 
 		if (IfNum > 0)
-			/*		if (VIRTUAL_IF_NUM(pAd) > 0) */
+		/*		if (VIRTUAL_IF_NUM(pAd) > 0) */
 		{
 			/* mark device as attached from system and restart if needed */
 			netif_device_attach(net_dev);
@@ -207,7 +209,8 @@ static int rt_pci_resume(struct pci_dev *pci_dev)
 		}
 	}
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<=== %s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<=== %s()\n", __func__));
 	return 0;
 }
 #endif /* CONFIG_PM */
@@ -221,7 +224,8 @@ static int rt_pci_resume(struct pci_dev *pci_dev)
 int g_AdapCount;
 #endif
 #endif
-static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id *pci_id)
+static int DEVINIT rt_pci_probe(struct pci_dev *pdev,
+				const struct pci_device_id *pci_id)
 {
 	void *pAd = NULL, *handle;
 	struct net_device *net_dev;
@@ -232,14 +236,15 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 	unsigned long OpMode;
 	RT_CMD_PCIE_INIT pci_config;
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("===> %s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("===> %s()\n", __func__));
 	/*PCIDevInit============================================== */
 	/* wake up and enable device */
 	rv = pci_enable_device(pdev);
 
 	if (rv != 0) {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("Enable PCI device failed, errno=%d!\n", rv));
+			 ("Enable PCI device failed, errno=%d!\n", rv));
 		return rv;
 	}
 
@@ -253,19 +258,20 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 	if (IS_ENABLED(CONFIG_ARM64) && (!IS_ENABLED(CONFIG_ZONE_DMA))) {
 		if ((rv = pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) != 0) {
 			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-					 ("set DMA mask failed!errno=%d\n", rv));
+				 ("set DMA mask failed!errno=%d\n", rv));
 			return rv;
 		}
 
-		if ((rv = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64))) != 0) {
+		if ((rv = pci_set_consistent_dma_mask(pdev,
+						      DMA_BIT_MASK(64))) != 0) {
 			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-					 ("set DMA consistent mask failed!errno=%d\n", rv));
+				 ("set DMA consistent mask failed!errno=%d\n",
+				  rv));
 			return rv;
 		}
-	}
-	else
+	} else
 #endif
-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
+		if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
 		/*
 		 * pci_set_consistent_dma_mask() will always be able to set the same
 		 * or a smaller mask as pci_set_dma_mask()
@@ -273,7 +279,7 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 		pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
 	} else {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("set DMA mask failed!errno=%d\n", rv));
+			 ("set DMA mask failed!errno=%d\n", rv));
 		goto err_out;
 	}
 
@@ -281,30 +287,33 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 #ifdef CONFIG_WIFI_MSI_SUPPORT
 	if (RtmpOsPciMsiEnable(pdev) != 0) {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-		 ("Request MSI resource failed, use INTx!\n"));
+			 ("Request MSI resource failed, use INTx!\n"));
 	}
 #endif /*CONFIG_WIFI_MSI_SUPPORT*/
 	rv = pci_request_regions(pdev, print_name);
 
 	if (rv != 0) {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("Request PCI resource failed, errno=%d!\n", rv));
+			 ("Request PCI resource failed, errno=%d!\n", rv));
 		goto err_out;
 	}
 
 	/* map physical address to virtual address for accessing register */
-	csr_addr = (unsigned long) ioremap(pci_resource_start(pdev, 0), pci_resource_len(pdev, 0));
+	csr_addr = (unsigned long)ioremap(pci_resource_start(pdev, 0),
+					  pci_resource_len(pdev, 0));
 
 	if (!csr_addr) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("ioremap failed for device %s, region 0x%lX @ 0x%lX\n",
-				  print_name, (ULONG)pci_resource_len(pdev, 0),
-				  (ULONG)pci_resource_start(pdev, 0)));
+		MTWF_LOG(
+			DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			("ioremap failed for device %s, region 0x%lX @ 0x%lX\n",
+			 print_name, (ULONG)pci_resource_len(pdev, 0),
+			 (ULONG)pci_resource_start(pdev, 0)));
 		goto err_out_free_res;
 	} else {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-				 ("%s: at 0x%lx, VA 0x%lx, IRQ %d.\n",  print_name,
-				  (ULONG)pci_resource_start(pdev, 0), (ULONG)csr_addr, pdev->irq));
+			 ("%s: at 0x%lx, VA 0x%lx, IRQ %d.\n", print_name,
+			  (ULONG)pci_resource_start(pdev, 0), (ULONG)csr_addr,
+			  pdev->irq));
 	}
 
 	/* Set DMA master */
@@ -315,8 +324,8 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 
 	if (handle == NULL) {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("%s(): Allocate memory for os handle failed!\n",
-				  __func__));
+			 ("%s(): Allocate memory for os handle failed!\n",
+			  __func__));
 		goto err_out_iounmap;
 	}
 
@@ -374,10 +383,9 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 
 		RTMP_DRIVER_MAC_ADDR_GET(pAd, &mac_addr[0]);
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
-				 ("@%s MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
-				  __func__, mac_addr[0], mac_addr[1],
-				  mac_addr[2], mac_addr[3],
-				  mac_addr[4], mac_addr[5]));
+			 ("@%s MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+			  __func__, mac_addr[0], mac_addr[1], mac_addr[2],
+			  mac_addr[3], mac_addr[4], mac_addr[5]));
 		/* Set up the Mac address */
 		RtmpOSNetDevAddrSet(OpMode, net_dev, &mac_addr[0], NULL);
 	}
@@ -385,17 +393,20 @@ static int DEVINIT rt_pci_probe(struct pci_dev *pdev, const struct pci_device_id
 #ifdef INTELP6_SUPPORT
 #ifdef MULTI_INF_SUPPORT
 	g_AdapCount++;
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("pci probe count=%d\n", g_AdapCount));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+		 ("pci probe count=%d\n", g_AdapCount));
 #endif
 #endif
 #ifdef WIFI_DIAG
 	DiagCtrlAlloc(pAd);
 #endif
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<=%s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<=%s()\n", __func__));
 #ifdef CREATE_ALL_INTERFACE_AT_INIT
 #ifdef MBSS_SUPPORT
-		RT28xx_MBSS_Init(pAd, (PNET_DEV)net_dev);
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("[ARRIS MOD] MT7615E MBSS Initialized\n"));
+	RT28xx_MBSS_Init(pAd, (PNET_DEV)net_dev);
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+		 ("[ARRIS MOD] MT7615E MBSS Initialized\n"));
 #endif /* MBSS_SUPPORT */
 #endif
 	return 0; /* probe ok */
@@ -411,7 +422,7 @@ err_out_free_netdev:
 
 		if ((memalctotal != 0) || (pktalctotal != 0)) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("Error: Memory leak!!\n"));
+				 ("Error: Memory leak!!\n"));
 			ASSERT(0);
 		}
 
@@ -429,11 +440,10 @@ err_out_free_res:
 	pci_release_regions(pdev);
 err_out:
 	pci_disable_device(pdev);
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("<=== %s() failed with rv = %d!\n",
-			 __func__, rv));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("<=== %s() failed with rv = %d!\n", __func__, rv));
 	return -ENODEV; /* probe fail */
 }
-
 
 static VOID DEVEXIT rt_pci_remove(struct pci_dev *pci_dev)
 {
@@ -463,7 +473,8 @@ static VOID DEVEXIT rt_pci_remove(struct pci_dev *pci_dev)
 		GET_PAD_FROM_NET_DEV(pAd, net_dev);
 #endif
 
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("===> %s()\n", __func__));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+			 ("===> %s()\n", __func__));
 
 		if (pAd != NULL) {
 #ifdef WIFI_DIAG
@@ -495,7 +506,8 @@ static VOID DEVEXIT rt_pci_remove(struct pci_dev *pci_dev)
 #ifdef INTELP6_SUPPORT
 #ifdef MULTI_INF_SUPPORT
 		g_AdapCount--;
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("In remove, pci probe count=%d\n", g_AdapCount));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("In remove, pci probe count=%d\n", g_AdapCount));
 	}
 #endif
 #endif
@@ -513,7 +525,7 @@ static VOID DEVEXIT rt_pci_remove(struct pci_dev *pci_dev)
 
 		if ((memalctotal != 0) || (pktalctotal != 0)) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("Error: Memory leak!!\n"));
+				 ("Error: Memory leak!!\n"));
 			ASSERT(0);
 		}
 
@@ -523,42 +535,34 @@ static VOID DEVEXIT rt_pci_remove(struct pci_dev *pci_dev)
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 }
 
-
 /*
  *	Our PCI driver structure
  */
 static struct pci_driver rt_pci_driver = {
-name:
-	RTMP_DRV_NAME,
-id_table :
-	rt_pci_tbl,
-probe :
-	rt_pci_probe,
+	name: RTMP_DRV_NAME,
+	id_table: rt_pci_tbl,
+	probe: rt_pci_probe,
 #if LINUX_VERSION_CODE >= 0x20412
-remove :
-	DEVEXIT_P(rt_pci_remove),
+	remove: DEVEXIT_P(rt_pci_remove),
 #else
-remove :
-	__devexit(rt_pci_remove),
+	remove: __devexit(rt_pci_remove),
 #endif
 
 #if (KERNEL_VERSION(2, 5, 0) <= LINUX_VERSION_CODE)
 #ifdef CONFIG_PM
-suspend :
-	rt_pci_suspend,
-resume :
-	rt_pci_resume,
+	suspend: rt_pci_suspend,
+	resume: rt_pci_resume,
 #endif
 #endif
 };
-
 
 /*
  *	Driver module load/unload function
  */
 int __init rt_pci_init_module(void)
 {
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("register %s\n", RTMP_DRV_NAME));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("register %s\n", RTMP_DRV_NAME));
 #ifdef MEM_ALLOC_INFO_SUPPORT
 	MemInfoListInital();
 #endif /* MEM_ALLOC_INFO_SUPPORT */
@@ -573,7 +577,6 @@ int __init rt_pci_init_module(void)
 	return pci_module_init(&rt_pci_driver);
 #endif
 }
-
 
 void __exit rt_pci_cleanup_module(void)
 {

@@ -2,7 +2,6 @@
 
 */
 
-
 VOID fpga_tr_stop(RTMP_ADAPTER *pAd, UCHAR stop)
 {
 	UINT32 mac_val;
@@ -10,7 +9,7 @@ VOID fpga_tr_stop(RTMP_ADAPTER *pAd, UCHAR stop)
 	RTMP_IO_READ32(pAd, MAC_SYS_CTRL, &mac_val);
 
 	switch (stop) {
-	case 3:  /* stop tx + rx */
+	case 3: /* stop tx + rx */
 		mac_val &= (~0xc);
 		break;
 
@@ -30,5 +29,3 @@ VOID fpga_tr_stop(RTMP_ADAPTER *pAd, UCHAR stop)
 
 	RTMP_IO_WRITE32(pAd, MAC_SYS_CTRL, mac_val);
 }
-
-

@@ -27,28 +27,28 @@ VOID RcRadioInit(struct hdev_ctrl *ctrl, UCHAR RfIC, UCHAR DbdcMode);
 struct radio_dev *RcInit(struct hdev_ctrl *ctrl);
 VOID RcRadioShow(HD_RESOURCE_CFG *pHwResourceCfg);
 
-struct radio_dev *RcAcquiredBandForObj(
-	struct hdev_ctrl *ctrl,
-	struct hdev_obj *obj,
-	UCHAR ObjIdx,
-	UCHAR PhyMode,
-	UCHAR Channel,
-	UCHAR ObjType);
+struct radio_dev *RcAcquiredBandForObj(struct hdev_ctrl *ctrl,
+				       struct hdev_obj *obj, UCHAR ObjIdx,
+				       UCHAR PhyMode, UCHAR Channel,
+				       UCHAR ObjType);
 
 VOID RcReleaseBandForObj(struct hdev_ctrl *ctrl, struct hdev_obj *obj);
 
-INT32 RcUpdateChannel(struct radio_dev *rdev, UCHAR Channel, BOOLEAN scan_state);
+INT32 RcUpdateChannel(struct radio_dev *rdev, UCHAR Channel,
+		      BOOLEAN scan_state);
 INT32 RcUpdatePhyMode(struct radio_dev *rdev, UCHAR Wmode);
 struct radio_dev *RcGetHdevByChannel(struct hdev_ctrl *ctrl, UCHAR Channel);
-struct radio_dev *RcGetHdevByPhyMode(struct hdev_ctrl *ctrl, UCHAR PhyMode, UCHAR channel);
+struct radio_dev *RcGetHdevByPhyMode(struct hdev_ctrl *ctrl, UCHAR PhyMode,
+				     UCHAR channel);
 UCHAR RcGetBandIdxByRf(struct hdev_ctrl *ctrl, UCHAR RfIC);
 
-
 INT32 RcUpdateBandCtrl(struct hdev_ctrl *ctrl);
-INT32 RcUpdateWmmEntry(struct radio_dev *rdev, struct hdev_obj *obj, UINT32 WmmIdx);
+INT32 RcUpdateWmmEntry(struct radio_dev *rdev, struct hdev_obj *obj,
+		       UINT32 WmmIdx);
 INT32 RcUpdateRepeaterEntry(struct radio_dev *rdev, UINT32 ReptIdx);
 UCHAR RcUpdateBw(struct radio_dev *rdev, UCHAR Bw);
-INT32 RcUpdateRadio(struct radio_dev *rdev, UCHAR bw, UCHAR central_ch1, UCHAR control_ch2, UCHAR ext_cha);
+INT32 RcUpdateRadio(struct radio_dev *rdev, UCHAR bw, UCHAR central_ch1,
+		    UCHAR control_ch2, UCHAR ext_cha);
 INT32 RcUpdateExtCha(struct radio_dev *rdev, UCHAR ExtCha);
 UCHAR RcGetExtCha(struct radio_dev *rdev);
 UINT32 RcGetMgmtQueueIdx(struct hdev_obj *obj, enum PACKET_TYPE pkt_type);
@@ -69,17 +69,15 @@ BOOLEAN rc_radio_equal(struct radio_dev *rdev, struct freq_oper *oper);
 BOOLEAN rc_radio_res_acquire(struct radio_dev *rdev, struct radio_res *res);
 UINT32 MAPRcGetBandIdxByChannelCheck(struct hdev_ctrl *ctrl, UCHAR Channel);
 
-
 /*WMM Control*/
 VOID WcReleaseEdca(struct hdev_obj *obj);
-VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm);
+VOID WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm);
 INT32 WcInit(struct hdev_ctrl *ctrl, WMM_CTRL_T *pWmmCtrl);
 INT32 WcExit(WMM_CTRL_T *pWmmCtrl);
 VOID WcShowEdca(struct hdev_ctrl *ctrl);
 UINT32 WcGetWmmNum(struct hdev_ctrl *ctrl);
 EDCA_PARM *WcGetWmmByIdx(struct hdev_ctrl *ctrl, UINT32 Idx);
 VOID WcSetEdca(struct hdev_obj *obj);
-
 
 /*Omac Control*/
 INT32 GetOmacIdx(struct hdev_ctrl *ctrl, UINT32 OmacType, INT8 Idx);
@@ -88,17 +86,18 @@ VOID OcDelRepeaterEntry(struct hdev_obj *obj, UCHAR ReptIdx);
 INT32 OcAddRepeaterEntry(struct hdev_obj *obj, UCHAR ReptIdx);
 HD_REPT_ENRTY *OcGetRepeaterEntry(struct hdev_obj *obj, UCHAR ReptIdx);
 
-
 /*Wctl Control*/
 VOID WtcInit(struct hdev_ctrl *ctrl);
 VOID WtcExit(struct hdev_ctrl *ctrl);
 UCHAR WtcSetMaxStaNum(struct hdev_ctrl *ctrl, UCHAR BssidNum, UCHAR MSTANum);
 UCHAR WtcGetMaxStaNum(struct hdev_ctrl *ctrl);
 UCHAR WtcAcquireGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj);
-UCHAR WtcReleaseGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR idx);
+UCHAR WtcReleaseGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj,
+			     UCHAR idx);
 UCHAR WtcGetWcidLinkType(struct hdev_ctrl *ctrl, UCHAR idx);
 UCHAR WtcAcquireUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj);
-UCHAR WtcReleaseUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR idx);
+UCHAR WtcReleaseUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj,
+			  UCHAR idx);
 VOID WtcRecDump(struct hdev_ctrl *ctrl);
 UCHAR WtcHwAcquireWcid(struct hdev_ctrl *ctrl, UCHAR idx);
 UCHAR WtcHwReleaseWcid(struct hdev_ctrl *ctrl, UCHAR idx);

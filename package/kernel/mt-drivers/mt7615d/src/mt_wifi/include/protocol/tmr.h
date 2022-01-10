@@ -37,24 +37,14 @@
 #include "rtmp.h"
 #endif
 
-enum TMR_TYPE {
-	TMR_DISABLE = 0,
-	TMR_INITIATOR,
-	TMR_RESPONDER
-};
+enum TMR_TYPE { TMR_DISABLE = 0, TMR_INITIATOR, TMR_RESPONDER };
 
-enum TMR_IDENRIRY {
-	TMR_IR0_TX = 0,
-	TMR_IR1_RX = 1
-};
+enum TMR_IDENRIRY { TMR_IR0_TX = 0, TMR_IR1_RX = 1 };
 
-enum TMR_INITIATOR_SEND_PKT_STATE {
-	SEND_IDLE = 0,
-	SEND_OUT
-};
+enum TMR_INITIATOR_SEND_PKT_STATE { SEND_IDLE = 0, SEND_OUT };
 
 VOID TmrReportParser(struct _RTMP_ADAPTER *pAd, TMR_FRM_STRUC *tmr,
-	BOOLEAN fgFinalResult, UINT32 TOAECalibrationResult);
+		     BOOLEAN fgFinalResult, UINT32 TOAECalibrationResult);
 
 VOID MtSetTmrEnable(struct _RTMP_ADAPTER *pAd, UCHAR enable);
 INT TmrCtrlInit(struct _RTMP_ADAPTER *pAd, UCHAR TmrType, UCHAR Ver);

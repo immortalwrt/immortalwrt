@@ -8,10 +8,11 @@ WIFI_DRV_PATH = drivers/net/wireless/mtk/mt7615e
 endif
 endif
 
+GLOBAL_DEFINES = include/uapi/linux/wapp
 EXTRA_CFLAGS = -I$(WIFI_DRV_PATH)/mt_wifi/include \
 				-I$(WIFI_DRV_PATH)/mt_wifi/embedded/include \
 				-I$(WIFI_DRV_PATH)/mt_wifi/ate/include \
-				-I$(WIFI_DRV_PATH)/mt_wifi/include/mcu
+				-I$(WIFI_DRV_PATH)/mt_wifi/include/mcu -I$(GLOBAL_DEFINES)
 
 DRV_NAME = mt_wifi
 SRC_DIR = ../mt_wifi
@@ -452,7 +453,7 @@ endif
 
 #SNIFFER
 ifeq ($(CONFIG_SNIFFER_SUPPORT),y)
-    EXTRA_CFLAGS += -DCONFIG_SNIFFER_SUPPORT
+    EXTRA_CFLAGS += -DSNIFFER_SUPPORT
 
     spec_objs += $(SRC_EMBEDDED_DIR)/common/sniffer_radiotap.o\
                  $(SRC_EMBEDDED_DIR)/common/sniffer_prism.o
@@ -461,6 +462,36 @@ endif
 #EAP-TXRX Statsitics
 ifeq ($(CONFIG_TXRX_STAT_SUPPORT),y)
 EXTRA_CFLAGS += -DTXRX_STAT_SUPPORT
+endif
+
+#EAP-Antenna Control
+ifeq ($(CONFIG_ANTENNA_CONTROL_SUPPORT),y)
+EXTRA_CFLAGS += -DANTENNA_CONTROL_SUPPORT
+endif
+
+#EAP-Mgmt TxPower Control
+ifeq ($(CONFIG_MGMT_TXPWR_CTRL),y)
+EXTRA_CFLAGS += -DMGMT_TXPWR_CTRL
+endif
+
+#EAP-WMM EDCA Control
+ifeq ($(CONFIG_WMM_EDCA_CTRL),y)
+EXTRA_CFLAGS += -DWMM_EDCA_CTRL
+endif
+
+#EAP-Channel Utilization Support
+ifeq ($(CONFIG_CHUTIL_SUPPORT),y)
+EXTRA_CFLAGS += -DCHUTIL_SUPPORT
+endif
+
+#EAP-Noise Floor Support
+ifeq ($(CONFIG_NF_SUPPORT),y)
+EXTRA_CFLAGS += -DNF_SUPPORT
+endif
+
+#EAP-Beacon Interval Control
+ifeq ($(CONFIG_BEACON_INTERVAL_CTRL),y)
+EXTRA_CFLAGS += -DBEACON_INTERVAL_CTRL
 endif
 
 #VENDOR_FEATURE11
@@ -509,6 +540,7 @@ endif
 
 ifeq ($(CONFIG_MAP_SUPPORT),y)
 	EXTRA_CFLAGS += -DA4_CONN -DROUTING_TAB_SUPPORT -DWAPP_SUPPORT -DOFFCHANNEL_SCAN_FEATURE
+	#EXTRA_CFLAGS += -DMAP_R2
 	spec_objs += $(SRC_EMBEDDED_DIR)/common/map.o
 	spec_objs += $(SRC_EMBEDDED_DIR)/common/a4_conn.o
 	spec_objs += $(SRC_EMBEDDED_DIR)/common/routing_tab.o
@@ -791,10 +823,6 @@ ifeq ($(CONFIG_WIFI_WORK_QUEUE_BH),y)
     EXTRA_CFLAGS += -DWORKQUEUE_BH
 endif
 
-ifeq ($(CONFIG_KTHREAD),y)
-    EXTRA_CFLAGS += -DKTHREAD_SUPPORT
-endif
-
 ifeq ($(CONFIG_LINUX_NET_TXQ_SUPPORT),y)
 EXTRA_CFLAGS += -DLINUX_NET_TXQ_SUPPORT
 endif
@@ -886,6 +914,7 @@ endif
 
 ifeq ($(CONFIG_CHIP_MT7615E),y)
 EXTRA_CFLAGS += -DMT7615 -DMT_BBP -DMT_RF -DRTMP_RF_RW_SUPPORT -DMT_MAC -DRTMP_MAC_PCI -DRTMP_PCI_SUPPORT
+#EXTRA_CFLAGS += -DNEIGHBORING_AP_STAT
 EXTRA_CFLAGS += -DMCS_LUT_SUPPORT -DA_BAND_SUPPORT
 EXTRA_CFLAGS += -DRTMP_EFUSE_SUPPORT
 EXTRA_CFLAGS += -DCAL_FREE_IC_SUPPORT

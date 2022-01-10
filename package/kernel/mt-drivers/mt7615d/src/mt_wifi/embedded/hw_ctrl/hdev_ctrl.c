@@ -13,7 +13,7 @@
 	Module Name:
 	hdev_ctrl.c
 */
-#include	"rt_config.h"
+#include "rt_config.h"
 #include "hdev/hdev.h"
 
 /*
@@ -64,19 +64,20 @@ static VOID hcGetBandTypeName(UCHAR Type, UCHAR *Str, UINT32 max_len)
 /*Only this function can use pAd*/
 INT32 hdev_ctrl_init(RTMP_ADAPTER *pAd)
 {
-	struct hdev_ctrl  *ctrl = NULL;
-	UINT32  ret;
+	struct hdev_ctrl *ctrl = NULL;
+	UINT32 ret;
 
-	ret  =  os_alloc_mem(NULL, (UCHAR **)&ctrl, sizeof(struct hdev_ctrl));
+	ret = os_alloc_mem(NULL, (UCHAR **)&ctrl, sizeof(struct hdev_ctrl));
 
 	if (ctrl == NULL) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s(): Allocate Hardware device Configure  fail!!\n", __func__));
+			 ("%s(): Allocate Hardware device Configure  fail!!\n",
+			  __func__));
 		return -1;
 	}
 
 	os_zero_mem(ctrl, sizeof(struct hdev_ctrl));
-	ctrl->priv  = (VOID *)pAd;
+	ctrl->priv = (VOID *)pAd;
 	pAd->hdev_ctrl = (VOID *)ctrl;
 	return 0;
 }
@@ -138,7 +139,8 @@ INT32 HcAcquireRadioForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 	struct radio_dev *rdev = NULL;
 	struct hdev_obj *obj = wdev->pHObj;
 
-	rdev = RcAcquiredBandForObj(ctrl, obj, wdev->wdev_idx, wdev->PhyMode, wdev->channel, wdev->wdev_type);
+	rdev = RcAcquiredBandForObj(ctrl, obj, wdev->wdev_idx, wdev->PhyMode,
+				    wdev->channel, wdev->wdev_type);
 
 	/*correct wdev configure, if configure is not sync with hdev */
 	if (!wmode_band_equal(wdev->PhyMode, RcGetPhyMode(rdev))) {
@@ -146,7 +148,11 @@ INT32 HcAcquireRadioForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 		wdev->channel = RcGetChannel(rdev);
 	}
 
+#ifdef EXT_BUILD_CHANNEL_LIST
+	BuildChannelListEx(pAd);
+#else
 	BuildChannelList(pAd, wdev);
+#endif
 	/*temporal set, will be repaced by HcGetOmacIdx*/
 	wdev->OmacIdx = obj->OmacIdx;
 	/* Initialize the pDot11H of wdev */
@@ -169,7 +175,8 @@ INT32 HcReleaseRadioForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (obj->RefCnt > 0) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%s(): there are other link reference the Obj\n", __func__));
+			 ("%s(): there are other link reference the Obj\n",
+			  __func__));
 		OS_SPIN_UNLOCK(&obj->RefCntLock);
 		return ret;
 	}
@@ -220,13 +227,14 @@ VOID HcSetRadioCurStatByWdev(struct wifi_dev *wdev, PHY_STATUS CurStat)
 		RcSetRadioCurStat(obj->rdev, CurStat);
 	else
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): obj is not ready!!\n", __func__));
+			 ("%s(): obj is not ready!!\n", __func__));
 }
 
 /*
 *
 */
-VOID HcSetRadioCurStatByChannel(RTMP_ADAPTER *pAd, UCHAR Channel, PHY_STATUS CurStat)
+VOID HcSetRadioCurStatByChannel(RTMP_ADAPTER *pAd, UCHAR Channel,
+				PHY_STATUS CurStat)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
 	struct radio_dev *rdev = NULL;
@@ -234,8 +242,9 @@ VOID HcSetRadioCurStatByChannel(RTMP_ADAPTER *pAd, UCHAR Channel, PHY_STATUS Cur
 	rdev = RcGetHdevByChannel(ctrl, Channel);
 
 	if (!rdev) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): no hdev parking on channel:%d !!!\n",
-				 __func__, Channel));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(): no hdev parking on channel:%d !!!\n", __func__,
+			  Channel));
 		return;
 	}
 
@@ -248,7 +257,7 @@ VOID HcSetRadioCurStatByChannel(RTMP_ADAPTER *pAd, UCHAR Channel, PHY_STATUS Cur
 VOID HcSetAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd)
 {
 	struct hdev_ctrl *ctrl = (struct hdev_ctrl *)pAd->hdev_ctrl;
-	HD_RESOURCE_CFG *pHwResourceCfg =  &ctrl->HwResourceCfg;
+	HD_RESOURCE_CFG *pHwResourceCfg = &ctrl->HwResourceCfg;
 	struct radio_dev *rdev = NULL;
 	UCHAR i;
 
@@ -264,7 +273,7 @@ VOID HcSetAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd)
 VOID HcSetAllSupportedBandsRadioOn(RTMP_ADAPTER *pAd)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
-	HD_RESOURCE_CFG *pHwResourceCfg =  &ctrl->HwResourceCfg;
+	HD_RESOURCE_CFG *pHwResourceCfg = &ctrl->HwResourceCfg;
 	struct radio_dev *rdev = NULL;
 	UCHAR i;
 
@@ -282,9 +291,17 @@ BOOLEAN IsHcRadioCurStatOffByWdev(struct wifi_dev *wdev)
 	struct hdev_obj *obj = wdev->pHObj;
 
 	if (!hdev_obj_state_ready(obj)) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		MTWF_LOG(
+			DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 			("%s(): wdev_idx %d obj is not ready, return TRUE !!!\n",
-			__func__, wdev->wdev_idx));
+			 __func__, wdev->wdev_idx));
+		return TRUE;
+	}
+
+	if (!obj->rdev) {
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): no hdev parking on wdev_idx:%d!!!\n", __func__,
+			  wdev->wdev_idx));
 		return TRUE;
 	}
 
@@ -305,8 +322,9 @@ BOOLEAN IsHcRadioCurStatOffByChannel(RTMP_ADAPTER *pAd, UCHAR Channel)
 	rdev = RcGetHdevByChannel(ctrl, Channel);
 
 	if (!rdev) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): no hdev parking on channel:%d!!!\n",
-				 __func__, Channel));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(): no hdev parking on channel:%d!!!\n", __func__,
+			  Channel));
 		return TRUE;
 	}
 
@@ -322,7 +340,7 @@ BOOLEAN IsHcRadioCurStatOffByChannel(RTMP_ADAPTER *pAd, UCHAR Channel)
 BOOLEAN IsHcAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
-	HD_RESOURCE_CFG *pHwResourceCfg =  &ctrl->HwResourceCfg;
+	HD_RESOURCE_CFG *pHwResourceCfg = &ctrl->HwResourceCfg;
 	struct radio_dev *rdev = NULL;
 	UCHAR i;
 	BOOLEAN AllSupportedBandsRadioOff = TRUE;
@@ -330,7 +348,8 @@ BOOLEAN IsHcAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd)
 	for (i = 0; i < pHwResourceCfg->concurrent_bands; i++) {
 		rdev = &ctrl->rdev[i];
 
-		if ((rdev->pRadioCtrl->CurStat == PHY_INUSE) && (rdev->pRadioCtrl->CurStat != PHY_RADIOOFF)) {
+		if ((rdev->pRadioCtrl->CurStat == PHY_INUSE) &&
+		    (rdev->pRadioCtrl->CurStat != PHY_RADIOOFF)) {
 			AllSupportedBandsRadioOff = FALSE;
 			break;
 		}
@@ -343,7 +362,8 @@ BOOLEAN IsHcAllSupportedBandsRadioOff(RTMP_ADAPTER *pAd)
 /*
 *
 */
-VOID HcSetGreenAPActiveByBand(RTMP_ADAPTER *pAd, UCHAR BandIdx, BOOLEAN bGreenAPActive)
+VOID HcSetGreenAPActiveByBand(RTMP_ADAPTER *pAd, UCHAR BandIdx,
+			      BOOLEAN bGreenAPActive)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
 	struct radio_dev *rdev = NULL;
@@ -404,7 +424,7 @@ UCHAR HcGetChannelByBf(RTMP_ADAPTER *pAd)
 
 	if (rdev == NULL) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): no hdev can support beamform!\n", __func__));
+			 ("%s(): no hdev can support beamform!\n", __func__));
 		return 0;
 	}
 
@@ -433,7 +453,8 @@ INT32 HcAddRepeaterEntry(struct wifi_dev *wdev, UINT32 ReptIdx)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return HC_STATUS_FAIL;
 	}
 
@@ -453,7 +474,8 @@ INT32 HcDelRepeaterEntry(struct wifi_dev *wdev, UINT32 ReptIdx)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return HC_STATUS_FAIL;
 	}
 
@@ -471,21 +493,19 @@ UCHAR HcGetRepeaterOmac(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	HD_REPT_ENRTY *pHReptEntry = NULL;
 	UCHAR ReptOmacIdx = 0xff;
 
-	pReptEntry = RTMPLookupRepeaterCliEntry(
-					 pAd,
-					 FALSE,
-					 pEntry->ReptCliAddr,
-					 TRUE);
+	pReptEntry = RTMPLookupRepeaterCliEntry(pAd, FALSE, pEntry->ReptCliAddr,
+						TRUE);
 
 	if (pReptEntry) {
-		pHReptEntry = OcGetRepeaterEntry(pReptEntry->wdev->pHObj, pReptEntry->MatchLinkIdx);
+		pHReptEntry = OcGetRepeaterEntry(pReptEntry->wdev->pHObj,
+						 pReptEntry->MatchLinkIdx);
 
 		if (pHReptEntry)
 			ReptOmacIdx = pHReptEntry->ReptOmacIdx;
 	}
 
 	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s(): Get ReptOmacIdx: %d!\n", __func__, ReptOmacIdx));
+		 ("%s(): Get ReptOmacIdx: %d!\n", __func__, ReptOmacIdx));
 	return ReptOmacIdx;
 }
 #endif /*#MAC_REPEATER_SUPPORT*/
@@ -516,13 +536,15 @@ INT32 HcUpdateCsaCntByChannel(RTMP_ADAPTER *pAd, UCHAR Channel)
 
 	rdev = RcGetHdevByChannel(ctrl, Channel);
 	if (!rdev) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): Update Channel %d faild, not support this RF\n",
-				  __func__, Channel));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s(): Update Channel %d faild, not support this RF\n",
+			 __func__, Channel));
 		return -1;
 	}
 
-	DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list) {
+	DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list)
+	{
 		wdev = pAd->wdev_list[obj->Idx];
 
 		if (wdev == NULL)
@@ -533,16 +555,19 @@ INT32 HcUpdateCsaCntByChannel(RTMP_ADAPTER *pAd, UCHAR Channel)
 		if (pDot11h == NULL)
 			return -1;
 #ifdef CUSTOMER_DCC_FEATURE
-		if (pAd->CommonCfg.channelSwitch.CHSWMode == CHANNEL_SWITCHING_MODE) {
-			wdev->csa_count = pAd->CommonCfg.channelSwitch.CHSWPeriod;
+		if (pAd->CommonCfg.channelSwitch.CHSWMode ==
+		    CHANNEL_SWITCHING_MODE) {
+			wdev->csa_count =
+				pAd->CommonCfg.channelSwitch.CHSWPeriod;
 			UpdateBeaconHandler(pAd, wdev, BCN_UPDATE_IE_CHG);
 		} else
 #endif
 			if (pDot11h->RDMode != RD_SILENCE_MODE) {
-				pDot11h->wdev_count++;
-				wdev->csa_count = pDot11h->CSPeriod;
-				UpdateBeaconHandler(pAd, wdev, BCN_UPDATE_IE_CHG);
-			}
+			pAd->CommonCfg.set_ch_async_flag = TRUE;
+			pDot11h->wdev_count++;
+			wdev->csa_count = pDot11h->CSPeriod;
+			UpdateBeaconHandler(pAd, wdev, BCN_UPDATE_IE_CHG);
+		}
 	}
 	return ret;
 }
@@ -560,16 +585,21 @@ VOID HcShowBandInfo(RTMP_ADAPTER *pAd)
 
 	os_zero_mem(&BctrlInfo, sizeof(BCTRL_INFO_T));
 	AsicGetDbdcCtrl(pAd, &BctrlInfo);
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tDbdcEnable: %d\n", BctrlInfo.DBDCEnable));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\tDbdcEnable: %d\n", BctrlInfo.DBDCEnable));
 
 	for (i = 0; i < BctrlInfo.TotalNum; i++) {
 		pEntry = &BctrlInfo.BctrlEntries[i];
 		hcGetBandTypeName(pEntry->Type, TempStr, sizeof(TempStr));
 
 		if (pEntry->Type != DBDC_TYPE_MBSS)
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\t(%s,%d): Band %d\n", TempStr, pEntry->Index, pEntry->BandIdx));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\t(%s,%d): Band %d\n", TempStr,
+				  pEntry->Index, pEntry->BandIdx));
 		else
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\t(%s,0-%d): Band %d\n", TempStr, pEntry->Index+1, pEntry->BandIdx));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\t(%s,0-%d): Band %d\n", TempStr,
+				  pEntry->Index + 1, pEntry->BandIdx));
 	}
 }
 #endif
@@ -579,31 +609,47 @@ VOID HcShowChCtrlInfo(struct _RTMP_ADAPTER *pAd)
 	UCHAR BandIdx, ChIdx;
 	CHANNEL_CTRL *pChCtrl;
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("=====================START====================\n "));
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("---------------------------------------------\n "));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("=====================START====================\n "));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("---------------------------------------------\n "));
 
 	for (BandIdx = 0; BandIdx < DBDC_BAND_NUM; BandIdx++) {
 		pChCtrl = hc_get_channel_ctrl(pAd->hdev_ctrl, BandIdx);
 
 		if (pChCtrl->ChListNum == 0) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\t\x1b[1;33mBandIdx = %d\x1b[m, ChannelListNum = %d (it is not available)\n ", BandIdx, pChCtrl->ChListNum));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				("\t\x1b[1;33mBandIdx = %d\x1b[m, ChannelListNum = %d (it is not available)\n ",
+				 BandIdx, pChCtrl->ChListNum));
 			break;
 		} else {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\t\x1b[1;33mBandIdx = %d\x1b[m, ChannelListNum = %d\n ", BandIdx, pChCtrl->ChListNum));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tChGrpABandEn = %d\n ", pChCtrl->ChGrpABandEn));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tChannel list information:\n "));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tChannel \tPwr0/1 \t\tFlags\n "));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("\t\x1b[1;33mBandIdx = %d\x1b[m, ChannelListNum = %d\n ",
+				 BandIdx, pChCtrl->ChListNum));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tChGrpABandEn = %d\n ",
+				  pChCtrl->ChGrpABandEn));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tChannel list information:\n "));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tChannel \tPwr0/1 \t\tFlags\n "));
 			for (ChIdx = 0; ChIdx < pChCtrl->ChListNum; ChIdx++) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\t#%d \t\t%d/%d \t\t%x\n ",
-					pChCtrl->ChList[ChIdx].Channel,
-					pChCtrl->ChList[ChIdx].Power,
-					pChCtrl->ChList[ChIdx].Power2,
-					pChCtrl->ChList[ChIdx].Flags));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF,
+					 ("\t#%d \t\t%d/%d \t\t%x\n ",
+					  pChCtrl->ChList[ChIdx].Channel,
+					  pChCtrl->ChList[ChIdx].Power,
+					  pChCtrl->ChList[ChIdx].Power2,
+					  pChCtrl->ChList[ChIdx].Flags));
 			}
 		}
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("---------------------------------------------\n "));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("---------------------------------------------\n "));
 	}
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("=====================END=====================\n "));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("=====================END=====================\n "));
 }
 #ifdef GREENAP_SUPPORT
 /*
@@ -657,7 +703,8 @@ VOID HcAcquiredEdca(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, EDCA_PARM *pEdca)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return;
 	}
 	WcAcquiredEdca(obj, pEdca);
@@ -672,7 +719,8 @@ VOID HcReleaseEdca(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return;
 	}
 	WcReleaseEdca(obj);
@@ -687,7 +735,8 @@ VOID HcSetEdca(struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return;
 	}
 	WcSetEdca(obj);
@@ -702,7 +751,8 @@ UCHAR HcGetOmacIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return 0xff;
 	}
 	return obj->OmacIdx;
@@ -712,12 +762,11 @@ UCHAR HcGetOmacIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 *  Need refine
 */
 
-
 /*
 * Only temporal usage, should remove when cmm_asic_xxx.c is not apply pAd
 */
 
-UCHAR  HcGetChannelByRf(RTMP_ADAPTER *pAd, UCHAR RfIC)
+UCHAR HcGetChannelByRf(RTMP_ADAPTER *pAd, UCHAR RfIC)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
 	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
@@ -734,7 +783,7 @@ UCHAR  HcGetChannelByRf(RTMP_ADAPTER *pAd, UCHAR RfIC)
 /*
 * for Single Band Usage
 */
-UCHAR  HcGetRadioChannel(RTMP_ADAPTER *pAd)
+UCHAR HcGetRadioChannel(RTMP_ADAPTER *pAd)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
 	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
@@ -773,7 +822,7 @@ UCHAR HcGetRadioRfIC(RTMP_ADAPTER *pAd)
 /*
 *
 */
-BOOLEAN  HcIsRfSupport(RTMP_ADAPTER *pAd, UCHAR RfIC)
+BOOLEAN HcIsRfSupport(RTMP_ADAPTER *pAd, UCHAR RfIC)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
 	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
@@ -790,7 +839,7 @@ BOOLEAN  HcIsRfSupport(RTMP_ADAPTER *pAd, UCHAR RfIC)
 /*
 *
 */
-BOOLEAN  HcIsRfRun(RTMP_ADAPTER *pAd, UCHAR RfIC)
+BOOLEAN HcIsRfRun(RTMP_ADAPTER *pAd, UCHAR RfIC)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
 	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
@@ -800,9 +849,11 @@ BOOLEAN  HcIsRfRun(RTMP_ADAPTER *pAd, UCHAR RfIC)
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
 		rdev = &ctrl->rdev[i];
 
-		if (WMODE_CAP_2G(rdev->pRadioCtrl->PhyMode) && (RfIC & RFIC_24GHZ))
+		if (WMODE_CAP_2G(rdev->pRadioCtrl->PhyMode) &&
+		    (RfIC & RFIC_24GHZ))
 			return TRUE;
-		else if (WMODE_CAP_5G(rdev->pRadioCtrl->PhyMode) && (RfIC & RFIC_5GHZ))
+		else if (WMODE_CAP_5G(rdev->pRadioCtrl->PhyMode) &&
+			 (RfIC & RFIC_5GHZ))
 			return TRUE;
 	}
 
@@ -846,7 +897,7 @@ QLOAD_CTRL *HcGetQloadCtrl(RTMP_ADAPTER *pAd)
 AUTO_CH_CTRL *HcGetAutoChCtrl(RTMP_ADAPTER *pAd)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
-	HD_RESOURCE_CFG *pHwResource =  &ctrl->HwResourceCfg;
+	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
 
 	return &pHwResource->PhyCtrl[0].AutoChCtrl;
 }
@@ -855,9 +906,20 @@ AUTO_CH_CTRL *HcGetAutoChCtrl(RTMP_ADAPTER *pAd)
 AUTO_CH_CTRL *HcGetAutoChCtrlbyBandIdx(RTMP_ADAPTER *pAd, UCHAR BandIdx)
 {
 	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
-	HD_RESOURCE_CFG *pHwResource =  &ctrl->HwResourceCfg;
+	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
 
 	return &pHwResource->PhyCtrl[BandIdx].AutoChCtrl;
+}
+#endif
+
+#ifdef CHANNEL_SWITCH_MONITOR_CONFIG
+struct ch_switch_cfg *HcGetChanSwitchMonbyBandIdx(RTMP_ADAPTER *pAd,
+						  UCHAR BandIdx)
+{
+	struct hdev_ctrl *ctrl = pAd->hdev_ctrl;
+	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
+
+	return &pHwResource->PhyCtrl[BandIdx].ch_sw_cfg;
 }
 #endif
 
@@ -870,7 +932,8 @@ UCHAR HcGetBw(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return 0xff;
 	}
 
@@ -880,13 +943,15 @@ UCHAR HcGetBw(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 /*
 *
 */
-UINT32 HcGetMgmtQueueIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, enum PACKET_TYPE pkt_type)
+UINT32 HcGetMgmtQueueIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 enum PACKET_TYPE pkt_type)
 {
 	struct hdev_obj *obj = wdev->pHObj;
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return TxQ_IDX_ALTX0;
 	}
 
@@ -902,7 +967,8 @@ UINT32 HcGetBcnQueueIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return TxQ_IDX_BCN0;
 	}
 
@@ -912,13 +978,15 @@ UINT32 HcGetBcnQueueIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 /*
 *
 */
-UINT32 HcGetTxRingIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, enum PACKET_TYPE pkt_type, UCHAR q_idx)
+UINT32 HcGetTxRingIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		      enum PACKET_TYPE pkt_type, UCHAR q_idx)
 {
 	struct hdev_obj *obj = wdev->pHObj;
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return 0;
 	}
 
@@ -934,7 +1002,8 @@ UINT32 HcGetWmmIdx(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return 0;
 	}
 
@@ -950,13 +1019,15 @@ INT32 HcUpdateExtCha(RTMP_ADAPTER *pAd, UCHAR Channel, UCHAR ExtCha)
 
 	pHdev = RcGetHdevByChannel(pHdCfg, Channel);
 	if (!pHdev) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Get Hdev by Channel %d faild, not support this RF\n",
-		__FUNCTION__, Channel));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s(): Get Hdev by Channel %d faild, not support this RF\n",
+			 __FUNCTION__, Channel));
 		return -1;
 	}
 
 	/*Update ExtCha to radio*/
-	ret  = RcUpdateExtCha(pHdev, ExtCha);
+	ret = RcUpdateExtCha(pHdev, ExtCha);
 
 	return ret;
 }
@@ -969,8 +1040,10 @@ UCHAR HcGetExtCha(RTMP_ADAPTER *pAd, UCHAR Channel)
 	rdev = RcGetHdevByChannel(pHdCfg, Channel);
 
 	if (!rdev) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Get Hdev by Channel %d faild, not support this RF\n",
-		__FUNCTION__, Channel));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s(): Get Hdev by Channel %d faild, not support this RF\n",
+			 __FUNCTION__, Channel));
 		return 0;
 	}
 	return RcGetExtCha(rdev);
@@ -990,7 +1063,8 @@ UCHAR HcGetBandByChannel(RTMP_ADAPTER *pAd, UCHAR Channel)
 
 	if (!rdev) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			("%s(): no hdev parking on channel:%d!\n", __func__, Channel));
+			 ("%s(): no hdev parking on channel:%d!\n", __func__,
+			  Channel));
 		return 0;
 	}
 
@@ -1009,7 +1083,8 @@ EDCA_PARM *HcGetEdca(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return NULL;
 	}
 
@@ -1020,7 +1095,8 @@ EDCA_PARM *HcGetEdca(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 /*
 *
 */
-VOID HcCrossChannelCheck(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR Channel)
+VOID HcCrossChannelCheck(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 UCHAR Channel)
 {
 	UCHAR PhyMode = wdev->PhyMode;
 	UCHAR WChannel = wdev->channel;
@@ -1033,7 +1109,7 @@ VOID HcCrossChannelCheck(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR Channel
 		return;
 
 	/*is mixed mode, change default channel and */
-	if (!WMODE_5G_ONLY(PhyMode)	|| !WMODE_2G_ONLY(PhyMode)) {
+	if (!WMODE_5G_ONLY(PhyMode) || !WMODE_2G_ONLY(PhyMode)) {
 		/*update wdev channel to new band*/
 		wdev->channel = Channel;
 		/*need change to other band*/
@@ -1081,7 +1157,8 @@ UCHAR HcAcquireGroupKeyWcid(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return INVAILD_WCID;
 	}
 
@@ -1098,7 +1175,8 @@ VOID HcReleaseGroupKeyWcid(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR idx)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return;
 	}
 
@@ -1113,7 +1191,6 @@ UCHAR HcGetWcidLinkType(RTMP_ADAPTER *pAd, UCHAR Wcid)
 	return WtcGetWcidLinkType(pAd->hdev_ctrl, Wcid);
 }
 
-
 /*
 *
 */
@@ -1123,13 +1200,13 @@ UCHAR HcAcquireUcastWcid(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return INVAILD_WCID;
 	}
 
 	return WtcAcquireUcastWcid(pAd->hdev_ctrl, obj);
 }
-
 
 /*
 *
@@ -1140,8 +1217,15 @@ UCHAR HcReleaseUcastWcid(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR idx)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
-		return INVAILD_WCID;
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
+		if (idx > 0) {
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s(): releasing wcid %d, hobj is not ready!\n",
+				 __func__, idx));
+		} else
+			return INVAILD_WCID;
 	}
 
 	return WtcReleaseUcastWcid(pAd->hdev_ctrl, obj, idx);
@@ -1154,7 +1238,6 @@ VOID HcWtblRecDump(RTMP_ADAPTER *pAd)
 {
 	WtcRecDump(pAd->hdev_ctrl);
 }
-
 
 /*
 *
@@ -1180,7 +1263,8 @@ static INT32 HcSuspendMSDUTx(struct radio_dev *rdev)
 	struct wifi_dev *wdev;
 
 	/*update all of wdev*/
-	DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list) {
+	DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list)
+	{
 		wdev = ad->wdev_list[obj->Idx];
 		RTMPSuspendMsduTransmission(wdev->sys_handle, wdev);
 	}
@@ -1196,7 +1280,8 @@ static INT32 HcUpdateMSDUTxAllow(struct radio_dev *rdev)
 	struct wifi_dev *wdev;
 
 	/*update all of wdev*/
-	DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list) {
+	DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list)
+	{
 		wdev = ad->wdev_list[obj->Idx];
 
 		if (wdev->channel == rdev->pRadioCtrl->Channel)
@@ -1213,16 +1298,17 @@ static INT32 HcUpdateMSDUTxAllow(struct radio_dev *rdev)
 static VOID hc_radio_update(struct wifi_dev *wdev, struct radio_res *res)
 {
 	struct hdev_obj *obj = wdev->pHObj;
-	struct radio_dev  *rdev;
+	struct radio_dev *rdev;
 	struct freq_oper *oper = res->oper;
 #if defined(MT_DFS_SUPPORT) && defined(BACKGROUND_SCAN_SUPPORT)
 	struct _RTMP_ADAPTER *ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
 #endif
-	BOOLEAN scan = (res->reason == REASON_NORMAL_SCAN) ? TRUE:FALSE;
+	BOOLEAN scan = (res->reason == REASON_NORMAL_SCAN) ? TRUE : FALSE;
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return;
 	}
 	rdev = obj->rdev;
@@ -1235,7 +1321,8 @@ static VOID hc_radio_update(struct wifi_dev *wdev, struct radio_res *res)
 	HcSuspendMSDUTx(rdev);
 	AsicSwitchChannel(wdev->sys_handle, rdev->Idx, oper, scan);
 	AsicSetBW(wdev->sys_handle, oper->bw, rdev->Idx);
-	RcUpdateRadio(rdev, oper->bw, oper->cen_ch_1, oper->cen_ch_2, oper->ext_cha);
+	RcUpdateRadio(rdev, oper->bw, oper->cen_ch_1, oper->cen_ch_2,
+		      oper->ext_cha);
 	RcUpdateChannel(rdev, oper->prim_ch, scan);
 	/*after update channel resum tx*/
 	HcUpdateMSDUTxAllow(rdev);
@@ -1251,41 +1338,57 @@ BOOLEAN hc_radio_res_request(struct wifi_dev *wdev, struct radio_res *res)
 {
 	struct hdev_obj *obj = wdev->pHObj;
 	struct radio_dev *rdev;
+#ifdef ANTENNA_CONTROL_SUPPORT
+	UINT8 BandIdx = 0;
+	struct _RTMP_ADAPTER *pAd = (struct _RTMP_ADAPTER *)wdev->sys_handle;
+
+	BandIdx = HcGetBandByWdev(wdev);
+#endif /* ANTENNA_CONTROL_SUPPORT */
 #ifdef MT_WOW_SUPPORT
 	struct _RTMP_ADAPTER *ad = (struct _RTMP_ADAPTER *)wdev->sys_handle;
 #endif /*MT_WOW_SUPPORT*/
 
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 	/* Sync SoftAp BW for Down Case */
-	if (wdev->wdev_type == WDEV_TYPE_AP && wlan_operate_get_state(wdev) == WLAN_OPER_STATE_INVALID) {
+	if (wdev->wdev_type == WDEV_TYPE_AP &&
+	    wlan_operate_get_state(wdev) == WLAN_OPER_STATE_INVALID) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			("%s(): AP wdev=%d, Interface Down!\n", __func__, wdev->wdev_idx));
+			 ("%s(): AP wdev=%d, Interface Down!\n", __func__,
+			  wdev->wdev_idx));
 		return FALSE;
 	}
 #endif
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return FALSE;
 	}
 
 	rdev = obj->rdev;
-
-	if (rc_radio_equal(rdev, res->oper)) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): radio is equal, prim_ch=%d!\n", __func__, res->oper->prim_ch));
+	if (
+#ifdef ANTENNA_CONTROL_SUPPORT
+		(!pAd->bAntennaSetAPEnable[BandIdx]) &&
+#endif /* ANTENNA_CONTROL_SUPPORT */
+		(rc_radio_equal(rdev, res->oper))) {
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): radio is equal, prim_ch=%d!\n", __func__,
+			  res->oper->prim_ch));
 		return TRUE;
 	}
 
 	if (rc_radio_res_acquire(rdev, res) != TRUE) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): can't acquire radio resource!\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): can't acquire radio resource!\n", __func__));
 		return FALSE;
 	}
 
 #ifdef MT_WOW_SUPPORT
 
 	if (ad->WOW_Cfg.bWoWRunning) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[%s] WoW is running, skip!\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("[%s] WoW is running, skip!\n", __func__));
 		return FALSE;
 	}
 
@@ -1306,7 +1409,7 @@ UCHAR hc_reset_radio(struct _RTMP_ADAPTER *ad)
 	struct _RADIO_CTRL *radio_ctrl;
 	UCHAR i;
 
-	for (i = 0 ; i < ctrl->HwResourceCfg.concurrent_bands; i++) {
+	for (i = 0; i < ctrl->HwResourceCfg.concurrent_bands; i++) {
 		os_zero_mem(&freq, sizeof(freq));
 		rdev = &ctrl->rdev[i];
 		radio_ctrl = rdev->pRadioCtrl;
@@ -1327,14 +1430,15 @@ VOID hc_set_rrm_init(struct wifi_dev *wdev)
 	struct _RTMP_ADAPTER *ad = wdev->sys_handle;
 	UCHAR band_idx = HcGetBandByWdev(wdev);
 
-	AsicSetTxStream(wdev->sys_handle, ad->Antenna.field.TxPath, OPMODE_AP, TRUE, band_idx);
+	AsicSetTxStream(wdev->sys_handle, ad->Antenna.field.TxPath, OPMODE_AP,
+			TRUE, band_idx);
 	AsicSetRxStream(wdev->sys_handle, ad->Antenna.field.RxPath, band_idx);
 }
 
 /*
 *
 */
-INT  hc_radio_query_by_wdev(struct wifi_dev *wdev, struct freq_oper *oper)
+INT hc_radio_query_by_wdev(struct wifi_dev *wdev, struct freq_oper *oper)
 {
 	struct hdev_obj *obj = wdev->pHObj;
 	struct radio_dev *rdev;
@@ -1342,7 +1446,8 @@ INT  hc_radio_query_by_wdev(struct wifi_dev *wdev, struct freq_oper *oper)
 
 	if (!hdev_obj_state_ready(obj)) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s(): wdev=%d, hobj is not ready!\n", __func__, wdev->wdev_idx));
+			 ("%s(): wdev=%d, hobj is not ready!\n", __func__,
+			  wdev->wdev_idx));
 		return HC_STATUS_FAIL;
 	}
 
@@ -1361,7 +1466,8 @@ INT  hc_radio_query_by_wdev(struct wifi_dev *wdev, struct freq_oper *oper)
 /*
 *
 */
-INT  hc_radio_query_by_channel(struct _RTMP_ADAPTER *ad, UCHAR channel, struct freq_oper *oper)
+INT hc_radio_query_by_channel(struct _RTMP_ADAPTER *ad, UCHAR channel,
+			      struct freq_oper *oper)
 {
 	INT ret = HC_STATUS_FAIL;
 	struct hdev_ctrl *ctrl = ad->hdev_ctrl;
@@ -1369,7 +1475,7 @@ INT  hc_radio_query_by_channel(struct _RTMP_ADAPTER *ad, UCHAR channel, struct f
 	struct _RADIO_CTRL *radio = NULL;
 	UCHAR i;
 
-	for (i = 0 ; i < res->concurrent_bands; i++) {
+	for (i = 0; i < res->concurrent_bands; i++) {
 		radio = &res->PhyCtrl[i].RadioCtrl;
 		if (radio->Channel == channel) {
 			oper->bw = radio->Bw;
@@ -1389,7 +1495,8 @@ INT  hc_radio_query_by_channel(struct _RTMP_ADAPTER *ad, UCHAR channel, struct f
 /*
 * suggest only used by phy related features, others should use hc_radio_query_by_wdev
 */
-INT  hc_radio_query_by_index(struct _RTMP_ADAPTER *ad, UCHAR index, struct freq_oper *oper)
+INT hc_radio_query_by_index(struct _RTMP_ADAPTER *ad, UCHAR index,
+			    struct freq_oper *oper)
 {
 	INT ret = HC_STATUS_OK;
 	struct hdev_ctrl *ctrl = ad->hdev_ctrl;
@@ -1410,7 +1517,8 @@ INT  hc_radio_query_by_index(struct _RTMP_ADAPTER *ad, UCHAR index, struct freq_
 /*
 * temporally use, only query first freq_oper by rfic, not support in 5G+5G or 2G+2G case
 */
-INT hc_radio_query_by_rf(struct _RTMP_ADAPTER *ad, UCHAR rfic, struct freq_oper *oper)
+INT hc_radio_query_by_rf(struct _RTMP_ADAPTER *ad, UCHAR rfic,
+			 struct freq_oper *oper)
 {
 	INT ret = HC_STATUS_FAIL;
 	struct hdev_ctrl *ctrl = ad->hdev_ctrl;
@@ -1418,7 +1526,7 @@ INT hc_radio_query_by_rf(struct _RTMP_ADAPTER *ad, UCHAR rfic, struct freq_oper 
 	struct _RADIO_CTRL *radio = NULL;
 	UCHAR i;
 
-	for (i = 0 ; i < res->concurrent_bands; i++) {
+	for (i = 0; i < res->concurrent_bands; i++) {
 		radio = &res->PhyCtrl[i].RadioCtrl;
 		if (wmode_2_rfic(radio->PhyMode) & rfic) {
 			oper->bw = radio->Bw;
@@ -1463,7 +1571,9 @@ inline struct _RTMP_CHIP_CAP *hc_get_chip_cap(void *hdev_ctrl)
 	struct hdev_ctrl *ctrl = hdev_ctrl;
 	return &ctrl->chip_cap;
 }
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(hc_get_chip_cap);
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */
 
 /*
 *
@@ -1474,8 +1584,9 @@ struct _RTMP_CHIP_OP *hc_get_chip_ops(void *hdev_ctrl)
 
 	return &ctrl->chip_ops;
 }
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(hc_get_chip_ops);
-
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */
 /*
 *
 */
@@ -1489,13 +1600,16 @@ void hc_register_chip_ops(void *hdev_ctrl, struct _RTMP_CHIP_OP *ops)
 /*
 *
 */
-UCHAR hc_set_ChCtrl(CHANNEL_CTRL *ChCtrl, RTMP_ADAPTER *pAd, UCHAR ChIdx, UCHAR ChIdx2)
+UCHAR hc_set_ChCtrl(CHANNEL_CTRL *ChCtrl, RTMP_ADAPTER *pAd, UCHAR ChIdx,
+		    UCHAR ChIdx2)
 {
-	os_move_mem(&ChCtrl->ChList[ChIdx], &pAd->TxPower[ChIdx2], sizeof(CHANNEL_TX_POWER));
+	os_move_mem(&ChCtrl->ChList[ChIdx], &pAd->TxPower[ChIdx2],
+		    sizeof(CHANNEL_TX_POWER));
 	return HC_STATUS_OK;
 }
 
-UCHAR hc_set_ChCtrlFlags_CAP(CHANNEL_CTRL *ChCtrl, UINT ChannelListFlag, UCHAR ChIdx)
+UCHAR hc_set_ChCtrlFlags_CAP(CHANNEL_CTRL *ChCtrl, UINT ChannelListFlag,
+			     UCHAR ChIdx)
 {
 	ChCtrl->ChList[ChIdx].Flags |= ChannelListFlag;
 	return HC_STATUS_OK;
@@ -1534,7 +1648,9 @@ UCHAR hc_init_ACSChCtrl(RTMP_ADAPTER *pAd)
 		pAutoChCtrl->AutoChSelCtrl.ScanChIdx = 0;
 		pAutoChCtrl->AutoChSelCtrl.ChListNum = 0;
 		pAutoChCtrl->AutoChSelCtrl.ACSChStat = ACS_CH_STATE_NONE;
-		os_zero_mem(pAutoChCtrl->AutoChSelCtrl.AutoChSelChList, (MAX_NUM_OF_CHANNELS+1)*sizeof(AUTOCH_SEL_CH_LIST));
+		os_zero_mem(pAutoChCtrl->AutoChSelCtrl.AutoChSelChList,
+			    (MAX_NUM_OF_CHANNELS + 1) *
+				    sizeof(AUTOCH_SEL_CH_LIST));
 	}
 	return HC_STATUS_OK;
 }
@@ -1545,7 +1661,8 @@ UCHAR hc_init_ACSChCtrlByBandIdx(RTMP_ADAPTER *pAd, UCHAR BandIdx)
 	pAutoChCtrl->AutoChSelCtrl.ScanChIdx = 0;
 	pAutoChCtrl->AutoChSelCtrl.ChListNum = 0;
 	pAutoChCtrl->AutoChSelCtrl.ACSChStat = ACS_CH_STATE_NONE;
-	os_zero_mem(pAutoChCtrl->AutoChSelCtrl.AutoChSelChList, (MAX_NUM_OF_CHANNELS+1)*sizeof(AUTOCH_SEL_CH_LIST));
+	os_zero_mem(pAutoChCtrl->AutoChSelCtrl.AutoChSelChList,
+		    (MAX_NUM_OF_CHANNELS + 1) * sizeof(AUTOCH_SEL_CH_LIST));
 	return HC_STATUS_OK;
 }
 #endif
@@ -1670,4 +1787,3 @@ struct _RTMP_ARCH_OP *hc_get_asic_ops(void *hdev_ctrl)
 
 	return ctrl->arch_ops;
 }
-

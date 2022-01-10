@@ -18,16 +18,17 @@
 #include "misc_app.h"
 
 #ifndef _LINUX_BITOPS_H
-#define BIT(n)                          ((UINT32) 1 << (n))
+#define BIT(n) ((UINT32)1 << (n))
 #endif /* BIT */
 
-static enum wifi_cap_operation_status wifi_chip_cap_list_register(struct _RTMP_ADAPTER *ad)
+static enum wifi_cap_operation_status
+wifi_chip_cap_list_register(struct _RTMP_ADAPTER *ad)
 {
 	int dbdc_cap = WIFI_CAP_DBDC_SUP_MODE_NONE;
 	int channel_cap = WIFI_CAP_CH_SUP_MODE_2G;
 	struct wifi_feature_support_list_query *wifi_cap = &ad->wifi_cap_list;
-	UINT32	*chip_cap_list = &wifi_cap->chip_cap_list;
-	UINT32	local_cap = 0;
+	UINT32 *chip_cap_list = &wifi_cap->chip_cap_list;
+	UINT32 local_cap = 0;
 	struct _RTMP_CHIP_CAP *chip_cap = hc_get_chip_cap(ad->hdev_ctrl);
 
 	if (chip_cap->phy_caps & fPHY_CAP_HT)
@@ -74,23 +75,24 @@ static enum wifi_cap_operation_status wifi_chip_cap_list_register(struct _RTMP_A
 	return WIFI_CAP_STATUS_OK;
 }
 
-static enum wifi_cap_operation_status wifi_sec_list_register(struct _RTMP_ADAPTER *ad)
+static enum wifi_cap_operation_status
+wifi_sec_list_register(struct _RTMP_ADAPTER *ad)
 {
 	struct wifi_feature_support_list_query *wifi_cap = &ad->wifi_cap_list;
-	UINT32	*sec_cap_list = &wifi_cap->sec_cap_list;
-	UINT32	local_cap = 0;
+	UINT32 *sec_cap_list = &wifi_cap->sec_cap_list;
+	UINT32 local_cap = 0;
 
-	local_cap |= (BIT(WIFI_SEC_WEP_SUP_BITS) |
-		      BIT(WIFI_SEC_WPA1PSK_SUP_BITS) |
-		      BIT(WIFI_SEC_WPA2PSK_SUP_BITS));
-
+	local_cap |=
+		(BIT(WIFI_SEC_WEP_SUP_BITS) | BIT(WIFI_SEC_WPA1PSK_SUP_BITS) |
+		 BIT(WIFI_SEC_WPA2PSK_SUP_BITS));
 
 #ifdef DOT11W_PMF_SUPPORT
 	local_cap |= BIT(WIFI_SEC_PMF_SUP_BITS);
 #endif
 
 #ifdef DOT1X_SUPPORT
-	local_cap |= (BIT(WIFI_SEC_WPA1_SUP_BITS) | BIT(WIFI_SEC_WPA2_SUP_BITS));
+	local_cap |=
+		(BIT(WIFI_SEC_WPA1_SUP_BITS) | BIT(WIFI_SEC_WPA2_SUP_BITS));
 #endif
 
 #if defined(DOT11_SAE_SUPPORT) && defined(DOT11W_PMF_SUPPORT)
@@ -112,13 +114,14 @@ static enum wifi_cap_operation_status wifi_sec_list_register(struct _RTMP_ADAPTE
 	return WIFI_CAP_STATUS_OK;
 }
 
-static enum wifi_cap_operation_status wifi_feature_list_register(struct _RTMP_ADAPTER *ad)
+static enum wifi_cap_operation_status
+wifi_feature_list_register(struct _RTMP_ADAPTER *ad)
 {
 	return WIFI_CAP_STATUS_OK;
 }
 
-enum wifi_cap_operation_status wifi_sup_list_register(struct _RTMP_ADAPTER *ad,
-						      enum wifi_cap_type cap_type)
+enum wifi_cap_operation_status
+wifi_sup_list_register(struct _RTMP_ADAPTER *ad, enum wifi_cap_type cap_type)
 {
 	enum wifi_cap_operation_status ret = WIFI_CAP_STATUS_OK;
 
@@ -142,24 +145,23 @@ enum wifi_cap_operation_status wifi_sup_list_register(struct _RTMP_ADAPTER *ad,
 static void print_wifi_chip_cap(struct _RTMP_ADAPTER *ad)
 {
 	struct wifi_feature_support_list_query *wifi_cap = &ad->wifi_cap_list;
-	UINT32	*chip_cap_list = &wifi_cap->chip_cap_list;
+	UINT32 *chip_cap_list = &wifi_cap->chip_cap_list;
 
 	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		("%s, chip_cap:0x%08x\n", __func__, *chip_cap_list));
+		 ("%s, chip_cap:0x%08x\n", __func__, *chip_cap_list));
 }
 
 static void print_wifi_sec_cap(struct _RTMP_ADAPTER *ad)
 {
 	struct wifi_feature_support_list_query *wifi_cap = &ad->wifi_cap_list;
-	UINT32	*sec_cap_list = &wifi_cap->sec_cap_list;
+	UINT32 *sec_cap_list = &wifi_cap->sec_cap_list;
 
 	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		("%s, sec_cap:0x%08x\n", __func__, *sec_cap_list));
+		 ("%s, sec_cap:0x%08x\n", __func__, *sec_cap_list));
 }
 
 static void print_wifi_feature_cap(struct _RTMP_ADAPTER *ad)
 {
-
 }
 
 INT show_wifi_cap_list(struct _RTMP_ADAPTER *ad, char *arg)
@@ -170,4 +172,3 @@ INT show_wifi_cap_list(struct _RTMP_ADAPTER *ad, char *arg)
 
 	return TRUE;
 }
-

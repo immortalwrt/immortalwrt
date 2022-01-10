@@ -100,11 +100,6 @@ config TPC_SUPPORT
 	depends on WIFI_DRIVER
 	default y
 
-config TXRX_STAT_SUPPORT
-	bool "TxRx Stats Support"
-	depends on WIFI_DRIVER
-	default n
-
 config ICAP_SUPPORT
 	bool "ICAP Support"
 	depends on WIFI_DRIVER
@@ -135,6 +130,13 @@ config MTK_OFFCHANNEL_SCAN_FEATURE
 	bool "Channel Quality Monitor"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_MT_AP_SUPPORT
+	default n
+
+config MTK_DPP_SUPPORT
+	bool "DPP Support"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	select DOT11W_PMF_SUPPORT
 	default n
 #config WFA_VHT_R2_PF
 #    bool "WFA VHT R2 Plugfest"
@@ -326,11 +328,6 @@ config RF_LOCKDOWN_SUPPORT
 
 config LINK_TEST_SUPPORT
 	bool "Link Test Support"
-	depends on WIFI_DRIVER
-	default y
-	
-config WIFI_EAP_FEATURE
-	bool "EAP Feature Support"
 	depends on WIFI_DRIVER
 	default y
 

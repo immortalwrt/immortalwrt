@@ -34,24 +34,21 @@
 #include "iface/rtmp_rbs.h"
 #endif /* RTMP_RBUS_SUPPORT */
 
-
-
-
 typedef struct _INF_PCI_CONFIG_ {
-	unsigned long CSRBaseAddress;	/* PCI MMIO Base Address, all access will use */
+	unsigned long
+		CSRBaseAddress; /* PCI MMIO Base Address, all access will use */
 	unsigned int irq_num;
 } INF_PCI_CONFIG;
 
 typedef struct _INF_USB_CONFIG_ {
-	unsigned char BulkInEpAddr;	/* bulk-in endpoint address */
-	unsigned char BulkOutEpAddr[6];	/* bulk-out endpoint address */
+	unsigned char BulkInEpAddr; /* bulk-in endpoint address */
+	unsigned char BulkOutEpAddr[6]; /* bulk-out endpoint address */
 } INF_USB_CONFIG;
 
 typedef struct _INF_RBUS_CONFIG_ {
 	unsigned long csr_addr;
 	unsigned int irq;
 } INF_RBUS_CONFIG;
-
 
 typedef union _RTMP_INF_CONFIG_ {
 	struct _INF_PCI_CONFIG_ pciConfig;

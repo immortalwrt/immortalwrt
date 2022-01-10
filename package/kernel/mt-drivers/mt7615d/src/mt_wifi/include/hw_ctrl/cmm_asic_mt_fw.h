@@ -17,10 +17,8 @@
 
 */
 
-
 #ifndef __CMM_ASIC_MT_FW_H__
 #define __CMM_ASIC_MT_FW_H__
-
 
 struct _RTMP_ADAPTER;
 struct _MAC_TABLE_ENTRY;
@@ -31,127 +29,96 @@ struct _EXT_CMD_CHAN_SWITCH_T;
 struct _BCTRL_INFO_T;
 struct _BSS_INFO_ARGUMENT_T;
 
-
 /* Function by FW */
-INT32 MtAsicSetDevMacByFw(
-	struct _RTMP_ADAPTER *pAd,
-	UINT8 OwnMacIdx,
-	UINT8 *OwnMacAddr,
-	UINT8 BandIdx,
-	UINT8 Active,
-	UINT32 EnableFeature);
+INT32 MtAsicSetDevMacByFw(struct _RTMP_ADAPTER *pAd, UINT8 OwnMacIdx,
+			  UINT8 *OwnMacAddr, UINT8 BandIdx, UINT8 Active,
+			  UINT32 EnableFeature);
 
-INT32 MtAsicSetBssidByFw(
-	struct _RTMP_ADAPTER *pAd,
-	struct _BSS_INFO_ARGUMENT_T bss_info_argument);
+INT32 MtAsicSetBssidByFw(struct _RTMP_ADAPTER *pAd,
+			 struct _BSS_INFO_ARGUMENT_T bss_info_argument);
 
-INT32 MtAsicSetStaRecByFw(
-	struct _RTMP_ADAPTER *pAd,
-	STA_REC_CFG_T StaRecCfg);
+INT32 MtAsicSetStaRecByFw(struct _RTMP_ADAPTER *pAd, STA_REC_CFG_T StaRecCfg);
 
-INT32 MtAsicUpdateStaRecBaByFw(
-	struct _RTMP_ADAPTER *pAd,
-	STA_REC_BA_CFG_T StaRecBaCfg);
+INT32 MtAsicUpdateStaRecBaByFw(struct _RTMP_ADAPTER *pAd,
+			       STA_REC_BA_CFG_T StaRecBaCfg);
 
-VOID MtAsicDelWcidTabByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UCHAR wcid_idx);
+VOID MtAsicDelWcidTabByFw(IN struct _RTMP_ADAPTER *pAd, IN UCHAR wcid_idx);
 
 #ifdef HTC_DECRYPT_IOT
-VOID MtAsicSetWcidAAD_OMByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UCHAR wcid_idx,
-	IN UCHAR value);
+VOID MtAsicSetWcidAAD_OMByFw(IN struct _RTMP_ADAPTER *pAd, IN UCHAR wcid_idx,
+			     IN UCHAR value);
 #endif /* HTC_DECRYPT_IOT */
 #ifdef MBSS_AS_WDS_AP_SUPPORT
-VOID MtAsicSetWcid4Addr_HdrTransByFw(
-	IN struct _RTMP_ADAPTER * pAd,
-	IN UCHAR wcid_idx,
-	IN UCHAR IsEnable,
-	IN UCHAR IsApcliEntry);
+VOID MtAsicSetWcid4Addr_HdrTransByFw(IN struct _RTMP_ADAPTER *pAd,
+				     IN UCHAR wcid_idx, IN UCHAR IsEnable,
+				     IN UCHAR IsApcliEntry);
 #endif
 
-VOID MtAsicUpdateRxWCIDTableByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN MT_WCID_TABLE_INFO_T WtblInfo);
+VOID MtAsicUpdateRxWCIDTableByFw(IN struct _RTMP_ADAPTER *pAd,
+				 IN MT_WCID_TABLE_INFO_T WtblInfo);
 
-INT32 MtAsicUpdateBASessionByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN MT_BA_CTRL_T BaCtrl);
+INT32 MtAsicUpdateBASessionByFw(IN struct _RTMP_ADAPTER *pAd,
+				IN MT_BA_CTRL_T BaCtrl);
 
-UINT16 MtAsicGetTidSnByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	UCHAR wcid,
-	UCHAR tid);
+UINT16 MtAsicGetTidSnByFw(IN struct _RTMP_ADAPTER *pAd, UCHAR wcid, UCHAR tid);
 
-VOID MtAsicAddRemoveKeyTabByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN struct _ASIC_SEC_INFO *pInfo);
+VOID MtAsicAddRemoveKeyTabByFw(IN struct _RTMP_ADAPTER *pAd,
+			       IN struct _ASIC_SEC_INFO *pInfo);
 
-VOID MtAsicSetSMPSByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UCHAR Wcid,
-	IN UCHAR Smps);
+VOID MtAsicSetSMPSByFw(IN struct _RTMP_ADAPTER *pAd, IN UCHAR Wcid,
+		       IN UCHAR Smps);
 
+VOID mt_wtbltlv_debug(struct _RTMP_ADAPTER *pAd, UCHAR ucWcid, UCHAR ucCmdId,
+		      UCHAR ucAtion);
 
-VOID mt_wtbltlv_debug(struct _RTMP_ADAPTER *pAd, UCHAR ucWcid, UCHAR ucCmdId, UCHAR ucAtion);
+VOID MtAsicUpdateProtectByFw(struct _RTMP_ADAPTER *pAd,
+			     MT_PROTECT_CTRL_T *ProtectCtrl);
 
-
-VOID MtAsicUpdateProtectByFw(
-	struct _RTMP_ADAPTER *pAd, MT_PROTECT_CTRL_T *ProtectCtrl);
-
-
-VOID MtAsicUpdateRtsThldByFw(
-	struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR pkt_num, UINT32 length,
-	UCHAR retry_limit);
+VOID MtAsicUpdateRtsThldByFw(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			     UCHAR pkt_num, UINT32 length, UCHAR retry_limit);
 
 VOID MtSetTmrCRByFw(struct _RTMP_ADAPTER *pAd, UCHAR enable, UCHAR BandIdx);
 #define BA_TRIGGER_OFFLOAD_TIMEOUT 1000
-VOID MtAsicAutoBATrigger(struct _RTMP_ADAPTER *pAd, BOOLEAN Enable, UINT32 Timeout);
+VOID MtAsicAutoBATrigger(struct _RTMP_ADAPTER *pAd, BOOLEAN Enable,
+			 UINT32 Timeout);
 
 INT MtAsicSetRDGByFw(struct _RTMP_ADAPTER *pAd, MT_RDG_CTRL_T *Rdg);
 
-INT MtAsicGetTsfTimeByFirmware(
-	struct _RTMP_ADAPTER *pAd,
-	UINT32 *high_part,
-	UINT32 *low_part,
-	UCHAR HwBssidIdx);
+INT MtAsicGetTsfTimeByFirmware(struct _RTMP_ADAPTER *pAd, UINT32 *high_part,
+			       UINT32 *low_part, UCHAR HwBssidIdx);
 
-INT32 MtAsicSetAid(
-	struct _RTMP_ADAPTER *pAd,
-	UINT16 Aid);
+INT32 MtAsicSetAid(struct _RTMP_ADAPTER *pAd, UINT16 Aid);
 
 #ifdef APCLI_SUPPORT
 #ifdef MAC_REPEATER_SUPPORT
 INT MtAsicSetReptFuncEnableByFw(struct _RTMP_ADAPTER *pAd, BOOLEAN bEnable);
-VOID MtAsicInsertRepeaterEntryByFw(struct _RTMP_ADAPTER *pAd, UCHAR CliIdx, UCHAR *pAddr);
+VOID MtAsicInsertRepeaterEntryByFw(struct _RTMP_ADAPTER *pAd, UCHAR CliIdx,
+				   UCHAR *pAddr);
 VOID MtAsicRemoveRepeaterEntryByFw(struct _RTMP_ADAPTER *pAd, UCHAR CliIdx);
 
-VOID MtAsicInsertRepeaterRootEntryByFw(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UCHAR Wcid,
-	IN UCHAR *pAddr,
-	IN UCHAR ReptCliIdx);
+VOID MtAsicInsertRepeaterRootEntryByFw(IN struct _RTMP_ADAPTER *pAd,
+				       IN UCHAR Wcid, IN UCHAR *pAddr,
+				       IN UCHAR ReptCliIdx);
 #endif /* MAC_REPEATER_SUPPORT */
 #endif /* APCLI_SUPPORT */
 
 #ifdef DBDC_MODE
-INT32 MtAsicGetDbdcCtrlByFw(struct _RTMP_ADAPTER *pAd, struct _BCTRL_INFO_T *pbInfo);
-INT32 MtAsicSetDbdcCtrlByFw(struct _RTMP_ADAPTER *pAd, struct _BCTRL_INFO_T *pbInfo);
+INT32 MtAsicGetDbdcCtrlByFw(struct _RTMP_ADAPTER *pAd,
+			    struct _BCTRL_INFO_T *pbInfo);
+INT32 MtAsicSetDbdcCtrlByFw(struct _RTMP_ADAPTER *pAd,
+			    struct _BCTRL_INFO_T *pbInfo);
 #endif /*DBDC_MODE*/
 
-
 UINT32 MtAsicGetChBusyCntByFw(struct _RTMP_ADAPTER *pAd, UCHAR ch_idx);
-UINT32 MtAsicGetWmmParamByFw(struct _RTMP_ADAPTER *pAd, UINT32 AcNum, UINT32 EdcaType);
+UINT32 MtAsicGetWmmParamByFw(struct _RTMP_ADAPTER *pAd, UINT32 AcNum,
+			     UINT32 EdcaType);
 
-INT32 MtAsicSetMacTxRxByFw(struct _RTMP_ADAPTER *pAd, INT32 TxRx, BOOLEAN Enable, UCHAR BandIdx);
+INT32 MtAsicSetMacTxRxByFw(struct _RTMP_ADAPTER *pAd, INT32 TxRx,
+			   BOOLEAN Enable, UCHAR BandIdx);
 INT32 MtAsicSetRxvFilter(RTMP_ADAPTER *pAd, BOOLEAN Enable, UCHAR BandIdx);
 
 VOID MtAsicDisableSyncByFw(struct _RTMP_ADAPTER *pAd, UCHAR HWBssidIdx);
-VOID MtAsicEnableBssSyncByFw(
-	struct _RTMP_ADAPTER *pAd,
-	USHORT BeaconPeriod,
-	UCHAR HWBssidIdx,
-	UCHAR OPMode);
+VOID MtAsicEnableBssSyncByFw(struct _RTMP_ADAPTER *pAd, USHORT BeaconPeriod,
+			     UCHAR HWBssidIdx, UCHAR OPMode);
 
 #endif

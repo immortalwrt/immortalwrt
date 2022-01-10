@@ -30,7 +30,8 @@
 	is received from a WSTA which has MAC address FF:FF:FF:FF:FF:FF
   ========================================================================
 */
-VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isActive)
+VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid,
+		       BOOLEAN isActive)
 {
 	QUEUE_ENTRY *pQEntry;
 	MAC_TABLE_ENTRY *pMacEntry;
@@ -51,24 +52,35 @@ VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isA
 			if (tr_entry->ps_queue.Head) {
 #ifdef UAPSD_SUPPORT
 				UINT32 NumOfOldPsPkt;
-				NumOfOldPsPkt = pAd->TxSwQueue[QID_AC_BE].Number;
+				NumOfOldPsPkt =
+					pAd->TxSwQueue[QID_AC_BE].Number;
 #endif /* UAPSD_SUPPORT */
 				pQEntry = RemoveHeadQueue(&tr_entry->ps_queue);
 
 				if (tr_entry->ps_queue.Number >= 1) {
-					RTMP_SET_PACKET_MOREDATA(RTPKT_TO_OSPKT(pQEntry), TRUE);
-					RTMP_SET_PACKET_TXTYPE(RTPKT_TO_OSPKT(pQEntry), TX_LEGACY_FRAME);
+					RTMP_SET_PACKET_MOREDATA(
+						RTPKT_TO_OSPKT(pQEntry), TRUE);
+					RTMP_SET_PACKET_TXTYPE(
+						RTPKT_TO_OSPKT(pQEntry),
+						TX_LEGACY_FRAME);
 				}
 
-				InsertTailQueueAc(pAd, pMacEntry, &pAd->TxSwQueue[QID_AC_BE], pQEntry);
+				InsertTailQueueAc(pAd, pMacEntry,
+						  &pAd->TxSwQueue[QID_AC_BE],
+						  pQEntry);
 #ifdef UAPSD_SUPPORT
 
 				/* we need to call RTMPDeQueuePacket() immediately as below */
-				if (NumOfOldPsPkt != pAd->TxSwQueue[QID_AC_BE].Number) {
-					if (RTMP_GET_PACKET_DHCP(RTPKT_TO_OSPKT(pQEntry)) ||
-						RTMP_GET_PACKET_ARP(RTPKT_TO_OSPKT(pQEntry)) ||
-						RTMP_GET_PACKET_EAPOL(RTPKT_TO_OSPKT(pQEntry)) ||
-						RTMP_GET_PACKET_WAI(RTPKT_TO_OSPKT(pQEntry))) {
+				if (NumOfOldPsPkt !=
+				    pAd->TxSwQueue[QID_AC_BE].Number) {
+					if (RTMP_GET_PACKET_DHCP(
+						    RTPKT_TO_OSPKT(pQEntry)) ||
+					    RTMP_GET_PACKET_ARP(
+						    RTPKT_TO_OSPKT(pQEntry)) ||
+					    RTMP_GET_PACKET_EAPOL(
+						    RTPKT_TO_OSPKT(pQEntry)) ||
+					    RTMP_GET_PACKET_WAI(
+						    RTPKT_TO_OSPKT(pQEntry))) {
 						/*
 							These packets will use 1M/6M rate to send.
 							If you use 1M(2.4G)/6M(5G) to send, no statistics
@@ -78,7 +90,8 @@ VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isA
 							not closed until timeout.
 						*/
 					} else
-						UAPSD_MR_MIX_PS_POLL_RCV(pAd, pMacEntry);
+						UAPSD_MR_MIX_PS_POLL_RCV(
+							pAd, pMacEntry);
 				}
 
 #endif /* UAPSD_SUPPORT */
@@ -91,12 +104,16 @@ VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isA
 				*/
 				BOOLEAN bQosNull = FALSE;
 
-				if (CLIENT_STATUS_TEST_FLAG(pMacEntry, fCLIENT_STATUS_WMM_CAPABLE))
+				if (CLIENT_STATUS_TEST_FLAG(
+					    pMacEntry,
+					    fCLIENT_STATUS_WMM_CAPABLE))
 					bQosNull = TRUE;
 
-				RtmpEnqueueNullFrame(pAd, pMacEntry->Addr, tr_entry->CurrTxRate,
-									 pMacEntry->Aid, pMacEntry->func_tb_idx,
-									 bQosNull, TRUE, 0);
+				RtmpEnqueueNullFrame(pAd, pMacEntry->Addr,
+						     tr_entry->CurrTxRate,
+						     pMacEntry->Aid,
+						     pMacEntry->func_tb_idx,
+						     bQosNull, TRUE, 0);
 			}
 		} else {
 #ifdef UAPSD_SUPPORT
@@ -108,7 +125,9 @@ VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isA
 
 			while (tr_entry->ps_queue.Head) {
 				pQEntry = RemoveHeadQueue(&tr_entry->ps_queue);
-				InsertTailQueueAc(pAd, pMacEntry, &pAd->TxSwQueue[QID_AC_BE], pQEntry);
+				InsertTailQueueAc(pAd, pMacEntry,
+						  &pAd->TxSwQueue[QID_AC_BE],
+						  pQEntry);
 			}
 		}
 
@@ -116,12 +135,16 @@ VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isA
 		/*NdisReleaseSpinLock(&pAd->MacTabLock); */
 
 		/*FIXME: Reviewer: Carter. take Aid as wcid is not a good choice.*/
-		if ((pMacEntry->Aid > 0) && (VALID_UCAST_ENTRY_WCID(pAd, pMacEntry->Aid)) &&
-			(tr_entry->ps_queue.Number == 0)) {
+		if ((pMacEntry->Aid > 0) &&
+		    (VALID_UCAST_ENTRY_WCID(pAd, pMacEntry->Aid)) &&
+		    (tr_entry->ps_queue.Number == 0)) {
 			/* clear corresponding TIM bit because no any PS packet */
 #ifdef CONFIG_AP_SUPPORT
-			IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
-				WLAN_MR_TIM_BIT_CLEAR(pAd, pMacEntry->func_tb_idx, pMacEntry->Aid);
+			IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+			{
+				WLAN_MR_TIM_BIT_CLEAR(pAd,
+						      pMacEntry->func_tb_idx,
+						      pMacEntry->Aid);
 			}
 #endif /* CONFIG_AP_SUPPORT */
 			tr_entry->PsQIdleCount = 0;
@@ -136,10 +159,10 @@ VOID RalHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isA
 				in-used. We should consider "HardTransmt" this MPDU using MGMT
 				queue or things like that.
 		*/
-		RTMPDeQueuePacket(pAd, FALSE, WMM_NUM_OF_AC, wcid, MAX_TX_PROCESS);
+		RTMPDeQueuePacket(pAd, FALSE, WMM_NUM_OF_AC, wcid,
+				  MAX_TX_PROCESS);
 	}
 }
-
 
 /*
 	==========================================================================
@@ -176,9 +199,12 @@ BOOLEAN RalPsIndicate(RTMP_ADAPTER *pAd, UCHAR *pAddr, UCHAR wcid, UCHAR Psm)
 		pAd->MacTab.tr_entry[wcid].PsMode = Psm;
 
 		if (old_psmode != Psm) {
-			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s():%02x:%02x:%02x:%02x:%02x:%02x %s!\n",
-					 __func__, PRINT_MAC(pAddr),
-					 (Psm == PWR_SAVE ? "Sleep" : "wakes up, act like rx PS-POLL")));
+			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				 ("%s():%02x:%02x:%02x:%02x:%02x:%02x %s!\n",
+				  __func__, PRINT_MAC(pAddr),
+				  (Psm == PWR_SAVE ?
+					   "Sleep" :
+						 "wakes up, act like rx PS-POLL")));
 		}
 
 		if ((old_psmode == PWR_SAVE) && (Psm == PWR_ACTIVE)) {
@@ -198,4 +224,3 @@ BOOLEAN RalPsIndicate(RTMP_ADAPTER *pAd, UCHAR *pAddr, UCHAR wcid, UCHAR Psm)
 	}
 	return old_psmode;
 }
-

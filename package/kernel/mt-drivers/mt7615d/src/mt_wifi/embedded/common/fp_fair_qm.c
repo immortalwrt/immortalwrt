@@ -20,17 +20,20 @@
 
 #ifdef FQ_SCH_SUPPORT
 
-extern INT32 fq_deq_data_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, INT32 max_cnt, struct dequeue_info *info);
+extern INT32 fq_deq_data_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, INT32 max_cnt,
+			     struct dequeue_info *info);
 extern INT fq_del_report(RTMP_ADAPTER *pAd, struct dequeue_info *info);
 
 extern INT fq_enq_req(RTMP_ADAPTER *pAd, NDIS_PACKET *pkt, UCHAR qidx,
-			STA_TR_ENTRY *tr_entry, QUEUE_HEADER *pPktQueue);
+		      STA_TR_ENTRY *tr_entry, QUEUE_HEADER *pPktQueue);
 
 extern UCHAR WMM_UP2AC_MAP[8];
 
-static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info);
+static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt,
+			   struct dequeue_info *info);
 
-INT32 fp_fair_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET pkt, UCHAR q_idx)
+INT32 fp_fair_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			    PNDIS_PACKET pkt, UCHAR q_idx)
 {
 	struct qm_ops *qm_ops = pAd->qm_ops;
 	UCHAR wcid, the_q_idx;
@@ -54,7 +57,8 @@ error:
 	return NDIS_STATUS_FAILURE;
 }
 
-static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info)
+static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt,
+			   struct dequeue_info *info)
 {
 	CHAR deq_qid = 0, start_q = 0, end_q = 0;
 	UCHAR deq_wcid = 0;
@@ -117,7 +121,8 @@ static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info
 			tr_entry = &pAd->MacTab.tr_entry[deq_wcid];
 
 			for (deq_qid = start_q; deq_qid >= end_q; deq_qid--) {
-				if (info->full_qid[deq_qid] == FALSE && tr_entry->tx_queue[deq_qid].Number)
+				if (info->full_qid[deq_qid] == FALSE &&
+				    tr_entry->tx_queue[deq_qid].Number)
 					break;
 			}
 		} else if (info->full_qid[info->target_que] == FALSE)
@@ -152,7 +157,8 @@ static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info
 
 		if (deq_wcid == 0) {
 			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_LOUD,
-					 ("%s():tx_swq[%d] emtpy!\n", __func__, deq_qid));
+				 ("%s():tx_swq[%d] emtpy!\n", __func__,
+				  deq_qid));
 			info->q_max_cnt[deq_qid] = 0;
 			continue;
 		}
@@ -173,8 +179,9 @@ static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info
 done:
 	return TRUE;
 }
-static NDIS_PACKET *fp_fair_get_data_tx_element(RTMP_ADAPTER *pAd, struct dequeue_info
-						*deq_info, STA_TR_ENTRY *tr_entry)
+static NDIS_PACKET *fp_fair_get_data_tx_element(RTMP_ADAPTER *pAd,
+						struct dequeue_info *deq_info,
+						STA_TR_ENTRY *tr_entry)
 {
 	PQUEUE_ENTRY q_entry;
 	UCHAR q_idx = deq_info->cur_q;
@@ -187,8 +194,9 @@ static NDIS_PACKET *fp_fair_get_data_tx_element(RTMP_ADAPTER *pAd, struct dequeu
 	return NULL;
 }
 
-static NDIS_PACKET *fp_fair_first_data_tx_element(RTMP_ADAPTER *pAd, struct dequeue_info
-						*deq_info, STA_TR_ENTRY *tr_entry)
+static NDIS_PACKET *fp_fair_first_data_tx_element(RTMP_ADAPTER *pAd,
+						  struct dequeue_info *deq_info,
+						  STA_TR_ENTRY *tr_entry)
 {
 	PQUEUE_ENTRY q_entry;
 	UCHAR q_idx = deq_info->cur_q;
@@ -245,7 +253,7 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 	BOOLEAN need_schedule = (pAd->tx_dequeue_scheduable ? TRUE : FALSE);
 	UCHAR user_prio = 0;
 	BOOLEAN data_turn = FALSE;
-	struct dequeue_info deq_info = {0};
+	struct dequeue_info deq_info = { 0 };
 #ifdef CONFIG_TP_DBG
 	struct tp_debug *tp_dbg = &pAd->tr_ctl.tp_dbg;
 #endif
@@ -258,10 +266,11 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 	while (need_schedule) {
 		if (!pktTokenCb->tx_id_list.token_inited)
 			break;
-		if (data_turn == FALSE)	{
+		if (data_turn == FALSE) {
 			pkt = fp_fair_first_mgmt_tx_element(pAd);
 			if (!pkt) {
-				os_zero_mem(&deq_info, sizeof(struct dequeue_info));
+				os_zero_mem(&deq_info,
+					    sizeof(struct dequeue_info));
 				deq_info.status = NDIS_STATUS_SUCCESS;
 				deq_info.target_wcid = WCID_ALL;
 				deq_info.target_que = WMM_NUM_OF_AC;
@@ -277,12 +286,14 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 				deq_info.deq_pkt_cnt = 0;
 				tr_entry = &pAd->MacTab.tr_entry[Wcid];
 				RTMP_SEM_LOCK(&tr_entry->txq_lock[q_idx]);
-				pkt = fp_fair_first_data_tx_element(pAd, &deq_info, tr_entry);
+				pkt = fp_fair_first_data_tx_element(
+					pAd, &deq_info, tr_entry);
 				if (!pkt)
 					goto DATA_EXIT;
 			}
 		} else {
-			pkt = fp_fair_first_data_tx_element(pAd, &deq_info, tr_entry);
+			pkt = fp_fair_first_data_tx_element(pAd, &deq_info,
+							    tr_entry);
 			if (!pkt)
 				goto DATA_EXIT;
 		}
@@ -295,8 +306,10 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 			continue;
 
 		wdev_ops = wdev->wdev_ops;
-		pTxBlk->resource_idx = arch_ops->get_resource_idx(pAd, wdev, 0, 0);
-		if (arch_ops->check_hw_resource(pAd, wdev, pTxBlk->resource_idx)) {
+		pTxBlk->resource_idx =
+			arch_ops->get_resource_idx(pAd, wdev, 0, 0);
+		if (arch_ops->check_hw_resource(pAd, wdev,
+						pTxBlk->resource_idx)) {
 			if (data_turn == FALSE)
 				break;
 			if (deq_info.target_wcid < MAX_LEN_OF_TR_TABLE)
@@ -306,22 +319,25 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 			goto DATA_EXIT;
 		}
 
-		if (data_turn == FALSE)	{
+		if (data_turn == FALSE) {
 			pkt = fp_fair_get_mgmt_tx_element(pAd);
 			if (!pkt)
 				continue;
 			Wcid = RTMP_GET_PACKET_WCID(pkt);
 		} else {
-			pkt = fp_fair_get_data_tx_element(pAd, &deq_info, tr_entry);
+			pkt = fp_fair_get_data_tx_element(pAd, &deq_info,
+							  tr_entry);
 			deq_info.deq_pkt_cnt++;
 		}
 
 		if (data_turn == FALSE) {
 			/*if wcid is out of MAC table size, free it*/
 			if (Wcid >= MAX_LEN_OF_MAC_TABLE) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(): WCID is invalid\n", __func__));
-				RELEASE_NDIS_PACKET(pAd, pkt, NDIS_STATUS_FAILURE);
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_INFO,
+					 ("%s(): WCID is invalid\n", __func__));
+				RELEASE_NDIS_PACKET(pAd, pkt,
+						    NDIS_STATUS_FAILURE);
 				continue;
 			}
 			tr_entry = &pAd->MacTab.tr_entry[Wcid];
@@ -339,16 +355,19 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 		pTxBlk->QueIdx = RTMP_GET_PACKET_QUEIDX(pkt);
 		pTxBlk->TotalFrameLen = GET_OS_PKT_LEN(pkt);
 		pTxBlk->pPacket = pkt;
-		pTxBlk->TxFrameType = tx_pkt_classification(pAd, pTxBlk->pPacket, pTxBlk);
-		pTxBlk->HeaderBuf = arch_ops->get_hif_buf(pAd, pTxBlk, pTxBlk->resource_idx, pTxBlk->TxFrameType);
-		InsertTailQueue(&pTxBlk->TxPacketList, PACKET_TO_QUEUE_ENTRY(pkt));
+		pTxBlk->TxFrameType =
+			tx_pkt_classification(pAd, pTxBlk->pPacket, pTxBlk);
+		pTxBlk->HeaderBuf = arch_ops->get_hif_buf(
+			pAd, pTxBlk, pTxBlk->resource_idx, pTxBlk->TxFrameType);
+		InsertTailQueue(&pTxBlk->TxPacketList,
+				PACKET_TO_QUEUE_ENTRY(pkt));
 
 		ret = wdev_ops->tx_pkt_handle(pAd, wdev, pTxBlk);
 
 		if (!ret)
 			KickRingBitMap |= (1 << pTxBlk->resource_idx);
 
-		if (data_turn == TRUE)	{
+		if (data_turn == TRUE) {
 			if (deq_info.q_max_cnt[q_idx] > 0)
 				deq_info.q_max_cnt[q_idx]--;
 			if (deq_info.target_wcid < MAX_LEN_OF_TR_TABLE)
@@ -357,7 +376,7 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 			if (max_cnt <= 0)
 				goto DATA_EXIT;
 			if ((deq_info.q_max_cnt[q_idx] <= 0) ||
-				(deq_info.pkt_cnt <= deq_info.deq_pkt_cnt)) {
+			    (deq_info.pkt_cnt <= deq_info.deq_pkt_cnt)) {
 				data_turn = FALSE;
 				RTMP_SEM_UNLOCK(&tr_entry->txq_lock[q_idx]);
 				fq_del_report(pAd, &deq_info);
@@ -383,8 +402,7 @@ DATA_EXIT:
 	}
 }
 
-
-struct qm_ops fp_fair_qm_ops = {0};
+struct qm_ops fp_fair_qm_ops = { 0 };
 #else
 struct qm_ops fp_fair_qm_ops = {
 	.init = NULL,
@@ -395,5 +413,3 @@ VOID fp_fair_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 	return;
 }
 #endif /* FQ_SCH_SUPPORT */
-
-

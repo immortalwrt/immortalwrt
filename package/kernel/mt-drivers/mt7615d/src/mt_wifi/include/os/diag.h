@@ -40,7 +40,7 @@
 #include "rtmp_os.h"
 #include "rtmp.h"
 
-typedef enum _ENUM_DIAG_CONN_ERROR_CODE{
+typedef enum _ENUM_DIAG_CONN_ERROR_CODE {
 	DIAG_CONN_FRAME_LOST = 0,
 	DIAG_CONN_CAP_ERROR,
 	DIAG_CONN_AUTH_FAIL,
@@ -50,17 +50,17 @@ typedef enum _ENUM_DIAG_CONN_ERROR_CODE{
 	DIAG_CONN_BAND_STE,
 	DIAG_CONN_ERROR_MAX,
 	DIAG_CONN_DEAUTH_COM
-}ENUM_DIAG_CONN_ERROR_CODE;
+} ENUM_DIAG_CONN_ERROR_CODE;
 
-
-void DiagConnError(PRTMP_ADAPTER pAd, UCHAR apidx, UCHAR* addr, 
-	ENUM_DIAG_CONN_ERROR_CODE Code, UINT32 Reason);
+void DiagConnError(PRTMP_ADAPTER pAd, UCHAR apidx, UCHAR *addr,
+		   ENUM_DIAG_CONN_ERROR_CODE Code, UINT32 Reason);
 void DiagConnErrorWrite(PRTMP_ADAPTER pAd);
 void DiagAddPid(OS_TASK *pTask);
 void DiagDelPid(OS_TASK *pTask);
-void DiagGetProcessInfo(PRTMP_ADAPTER	pAdapter, RTMP_IOCTL_INPUT_STRUCT	*wrq);
+void DiagGetProcessInfo(PRTMP_ADAPTER pAdapter, RTMP_IOCTL_INPUT_STRUCT *wrq);
 void DiagMiniportMMRequest(PRTMP_ADAPTER pAd, UCHAR *pData, UINT Length);
-void DiagBcnTx(RTMP_ADAPTER *pAd, BSS_STRUCT *pMbss, UCHAR *pBeaconFrame,ULONG FrameLen );
+void DiagBcnTx(RTMP_ADAPTER *pAd, BSS_STRUCT *pMbss, UCHAR *pBeaconFrame,
+	       ULONG FrameLen);
 void DiagLogFileWrite(PRTMP_ADAPTER pAd);
 void DiagDevRxMgmtFrm(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk);
 void DiagApMlmeOneSecProc(PRTMP_ADAPTER pAd);
@@ -71,4 +71,3 @@ BOOLEAN DiagProcExit(PRTMP_ADAPTER pAd);
 
 #endif
 #endif /* #ifndef _DIAG_H_ */
-

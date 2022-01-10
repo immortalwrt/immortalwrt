@@ -8,8 +8,8 @@
 
 #ifdef RT_CFG80211_ANDROID_PRIV_LIB_SUPPORT
 
-#define ANDROID_CMD_P2P_DEV_ADDR		"P2P_DEV_ADDR"
-#define ANDROID_CMD_SET_AP_WPS_P2P_IE	"SET_AP_WPS_P2P_IE"
+#define ANDROID_CMD_P2P_DEV_ADDR "P2P_DEV_ADDR"
+#define ANDROID_CMD_SET_AP_WPS_P2P_IE "SET_AP_WPS_P2P_IE"
 
 typedef struct android_priv_cmd {
 	char *buf;
@@ -17,7 +17,8 @@ typedef struct android_priv_cmd {
 	int total_len;
 } android_priv_cmd;
 
-static INT priv_cmd_get_p2p_dev_addr(PNET_DEV net_dev, PCHAR command, INT total_len)
+static INT priv_cmd_get_p2p_dev_addr(PNET_DEV net_dev, PCHAR command,
+				     INT total_len)
 {
 	VOID *pAdSrc;
 
@@ -26,12 +27,14 @@ static INT priv_cmd_get_p2p_dev_addr(PNET_DEV net_dev, PCHAR command, INT total_
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pAdSrc;
 	INT bytes_written = 0;
 
-	COPY_MAC_ADDR(command, pAd->cfg80211_ctrl.P2PCurrentAddress, MAC_ADDR_LEN);
+	COPY_MAC_ADDR(command, pAd->cfg80211_ctrl.P2PCurrentAddress,
+		      MAC_ADDR_LEN);
 	bytes_written = MAC_ADDR_LEN;
 	return bytes_written;
 }
 
-static INT priv_cmd_set_ap_wps_p2p_ie(PNET_DEV net_dev, PCHAR buf, INT len, INT type)
+static INT priv_cmd_set_ap_wps_p2p_ie(PNET_DEV net_dev, PCHAR buf, INT len,
+				      INT type)
 {
 	/* 0x1: BEACON */
 	/* 0x2: PROBE_RESP */
@@ -40,8 +43,8 @@ static INT priv_cmd_set_ap_wps_p2p_ie(PNET_DEV net_dev, PCHAR buf, INT len, INT 
 	return ret;
 }
 
-int rt_android_private_command_entry(
-	VOID *pAdSrc, PNET_DEV net_dev, struct ifreq *ifr, INT cmd)
+int rt_android_private_command_entry(VOID *pAdSrc, PNET_DEV net_dev,
+				     struct ifreq *ifr, INT cmd)
 {
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pAdSrc;
 	android_priv_cmd priv_cmd;
@@ -51,13 +54,15 @@ int rt_android_private_command_entry(
 	if (!ifr->ifr_data)
 		return -EINVAL;
 
-	if (copy_from_user(&priv_cmd, ifr->ifr_data, sizeof(android_wifi_priv_cmd)))
+	if (copy_from_user(&priv_cmd, ifr->ifr_data,
+			   sizeof(android_wifi_priv_cmd)))
 		return -EFAULT;
 
 	os_alloc_mem(NULL, (UCHAR **)&command, priv_cmd.total_len);
 
 	if (!command) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: MEM ALLOC ERROR\n", __func__));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: MEM ALLOC ERROR\n", __func__));
 		return -ENOMEM;
 	}
 
@@ -66,15 +71,21 @@ int rt_android_private_command_entry(
 		goto FREE;
 	}
 
-	if (strnicmp(command, ANDROID_CMD_SET_AP_WPS_P2P_IE, strlen(ANDROID_CMD_SET_AP_WPS_P2P_IE)) == 0) {
+	if (strnicmp(command, ANDROID_CMD_SET_AP_WPS_P2P_IE,
+		     strlen(ANDROID_CMD_SET_AP_WPS_P2P_IE)) == 0) {
 		int skip = strlen(ANDROID_CMD_SET_AP_WPS_P2P_IE) + 3;
 
-		bytes_written = priv_cmd_set_ap_wps_p2p_ie(net_dev, command + skip,
-						priv_cmd.total_len - skip, *(command + skip - 2) - '0');
-	} else if (strnicmp(command, ANDROID_CMD_P2P_DEV_ADDR, strlen(ANDROID_CMD_P2P_DEV_ADDR)) == 0)
-		bytes_written = priv_cmd_get_p2p_dev_addr(net_dev, command, priv_cmd.total_len);
+		bytes_written =
+			priv_cmd_set_ap_wps_p2p_ie(net_dev, command + skip,
+						   priv_cmd.total_len - skip,
+						   *(command + skip - 2) - '0');
+	} else if (strnicmp(command, ANDROID_CMD_P2P_DEV_ADDR,
+			    strlen(ANDROID_CMD_P2P_DEV_ADDR)) == 0)
+		bytes_written = priv_cmd_get_p2p_dev_addr(net_dev, command,
+							  priv_cmd.total_len);
 	else {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: unsupport priv_cmd !!!\n", command));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: unsupport priv_cmd !!!\n", command));
 		snprintf(command, 3, "OK");
 		bytes_written = strlen("OK");
 	}

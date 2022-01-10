@@ -12,7 +12,7 @@
  */
 #define FW_FEATURE_SET_ENCRY (1 << 0)
 #define FW_FEATURE_SET_KEY_MASK (0x3 << 1)
-#define GET_FW_FEATURE_SET_KEY(p) (((p) & FW_FEATURE_SET_KEY_MASK) >> 1)
+#define GET_FW_FEATURE_SET_KEY(p) (((p)&FW_FEATURE_SET_KEY_MASK) >> 1)
 #define FW_FEATURE_COMPRESS_IMG (1 << 3)
 #define FW_FEATURE_OVERRIDE_RAM_ADDR (1 << 5)
 #define FW_FEATURE_DL_TO_EMI (1 << 7)
@@ -25,24 +25,26 @@
 #define FW_V3_COMMON_TAILER_SIZE 36
 #define FW_V3_REGION_TAILER_SIZE 40
 
-#define FWDL_PRINT_CHAR(src, cnt, info)	\
-	do {	\
-		UINT32 loop;	\
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, info);	\
-		for (loop = 0; loop < cnt; loop++)	\
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%c", *(src + loop)));	\
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));	\
+#define FWDL_PRINT_CHAR(src, cnt, info)                                        \
+	do {                                                                   \
+		UINT32 loop;                                                   \
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, info);       \
+		for (loop = 0; loop < cnt; loop++)                             \
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,      \
+				 ("%c", *(src + loop)));                       \
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));     \
 	} while (0)
 
-#define FWDL_PRINT_HEX(src, cnt, info)	\
-			do {	\
-				UINT32 loop;	\
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, info);	\
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("0x"));	\
-				for (loop = 0; loop < cnt; loop++)	\
-					MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%02x", *(src + loop)));	\
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));	\
-			} while (0)
+#define FWDL_PRINT_HEX(src, cnt, info)                                         \
+	do {                                                                   \
+		UINT32 loop;                                                   \
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, info);       \
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("0x"));     \
+		for (loop = 0; loop < cnt; loop++)                             \
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,      \
+				 ("%02x", *(src + loop)));                     \
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));     \
+	} while (0)
 
 enum fwdl_stage {
 	FWDL_STAGE_FW_NOT_DL,
@@ -53,42 +55,30 @@ enum fwdl_stage {
 
 /* define FW SYNC CR, same as FW's definition */
 enum wifi_task_state {
-	WIFI_TASK_STATE_INITIAL          = 0,
-	WIFI_TASK_STATE_FW_DOWNLOAD      = 1,
+	WIFI_TASK_STATE_INITIAL = 0,
+	WIFI_TASK_STATE_FW_DOWNLOAD = 1,
 	WIFI_TASK_STATE_NORMAL_OPERATION = 2,
-	WIFI_TASK_STATE_NORMAL_TRX       = 3,
-	WIFI_TASK_STATE_WACPU_RDY        = 7
+	WIFI_TASK_STATE_NORMAL_TRX = 3,
+	WIFI_TASK_STATE_WACPU_RDY = 7
 };
 
 /* use BIT(n) macro to convert to bitmap */
-enum target_cpu {
-	WM_CPU,
-	WA_CPU,
-	MAX_CPU
-};
+enum target_cpu { WM_CPU, WA_CPU, MAX_CPU };
 
 /* use BIT(n) macro to convert to bitmap */
-enum load_code_method {
-	HEADER_METHOD,
-	BIN_METHOD
-};
+enum load_code_method { HEADER_METHOD, BIN_METHOD };
 
 /*
  * fw download cmd/event:
  * FW_FLOW_V1 support 7603, 7628, 7636, 7637, 7615, 7622, CONNAC (p18, 7663)
  */
-enum load_fw_flow {
-	FW_FLOW_V1,
-	FW_FLOW_V2_COMPRESS_IMG
-};
+enum load_fw_flow { FW_FLOW_V1, FW_FLOW_V2_COMPRESS_IMG };
 
 /*
  * patch download cmd/event:
  * PATCH_FLOW_V1 support 7636, 7637, 7615, 7622, CONNAC (p18, 7663)
  */
-enum load_patch_flow {
-	PATCH_FLOW_V1
-};
+enum load_patch_flow { PATCH_FLOW_V1 };
 
 /*
  * fw format:
@@ -96,25 +86,19 @@ enum load_patch_flow {
  * FW_FORMAT_V2 support 7636, 7637, 7615, 7622 (all harvard architecture)
  * FW_FORMAT_V3 support CONNAC architecture (p18, mt7663 and so on.)
  */
-enum fw_format {
-	FW_FORMAT_V1,
-	FW_FORMAT_V2,
-	FW_FORMAT_V3
-};
+enum fw_format { FW_FORMAT_V1, FW_FORMAT_V2, FW_FORMAT_V3 };
 
 /*
  * patch format:
  * PATCH_FORMAT_V1 support 7636, 7637, 7615, 7622, CONNAC (p18, 7663)
  */
-enum patch_format {
-	PATCH_FORMAT_V1
-};
+enum patch_format { PATCH_FORMAT_V1 };
 
 enum sem_status {
-	PATCH_NOT_DL_SEM_FAIL    = 0,
-	PATCH_IS_DL              = 1,
+	PATCH_NOT_DL_SEM_FAIL = 0,
+	PATCH_IS_DL = 1,
 	PATCH_NOT_DL_SEM_SUCCESS = 2,
-	SEM_RELEASE              = 3
+	SEM_RELEASE = 3
 };
 
 struct img_source {
@@ -183,11 +167,20 @@ struct patch_dl_target {
 };
 
 struct fwdl_op {
-	NDIS_STATUS (*load_fw)(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target);
-	NDIS_STATUS (*load_patch)(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct patch_dl_target *target);
-	NDIS_STATUS (*parse_fw)(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target);
-	NDIS_STATUS (*parse_patch)(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct patch_dl_target *target);
-	NDIS_STATUS (*ctrl_fw_state)(struct _RTMP_ADAPTER *pAd, enum fwdl_stage target_stage);
+	NDIS_STATUS(*load_fw)
+	(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+	 struct fw_dl_target *target);
+	NDIS_STATUS(*load_patch)
+	(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+	 struct patch_dl_target *target);
+	NDIS_STATUS(*parse_fw)
+	(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+	 struct fw_dl_target *target);
+	NDIS_STATUS(*parse_patch)
+	(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+	 struct patch_dl_target *target);
+	NDIS_STATUS(*ctrl_fw_state)
+	(struct _RTMP_ADAPTER *pAd, enum fwdl_stage target_stage);
 };
 
 struct fwdl_ctrl {

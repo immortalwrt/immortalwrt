@@ -60,13 +60,11 @@ static NDIS_PACKET *fp_first_tx_element(RTMP_ADAPTER *pAd)
 }
 
 #ifdef DSCP_PRI_SUPPORT
-INT8	GetDscpMappedPriority(
-		IN  PRTMP_ADAPTER pAd,
-		IN  PNDIS_PACKET  pPkt)
+INT8 GetDscpMappedPriority(IN PRTMP_ADAPTER pAd, IN PNDIS_PACKET pPkt)
 {
 	INT8 pri = -1;
 	UINT8 dscpVal = 0;
-	PUCHAR	pPktHdr = NULL;
+	PUCHAR pPktHdr = NULL;
 	UINT16 protoType;
 	struct wifi_dev *wdev;
 
@@ -84,8 +82,10 @@ INT8	GetDscpMappedPriority(
 		/*	=> + SNAP (5, OriginationID(3) + etherType(2)) */
 		/* else */
 		/*	=> It just has 3-byte LLC header, maybe a legacy ether type frame. we didn't handle it */
-		if (pPktHdr[0] == 0xAA && pPktHdr[1] == 0xAA && pPktHdr[2] == 0x03) {
-			pPktHdr += 6; /* Advance to type LLC 3byte + SNAP OriginationID 3 Byte*/
+		if (pPktHdr[0] == 0xAA && pPktHdr[1] == 0xAA &&
+		    pPktHdr[2] == 0x03) {
+			pPktHdr +=
+				6; /* Advance to type LLC 3byte + SNAP OriginationID 3 Byte*/
 			protoType = OS_NTOHS(get_unaligned((PUINT16)(pPktHdr)));
 		} else {
 			return pri;
@@ -103,7 +103,8 @@ INT8	GetDscpMappedPriority(
 		dscpVal = ((pPktHdr[1] & 0xfc) >> 2);
 		break;
 	case 0x86DD:
-			dscpVal = (((pPktHdr[0] & 0x0f) << 2) | ((pPktHdr[1] & 0xc0) >> 6));
+		dscpVal = (((pPktHdr[0] & 0x0f) << 2) |
+			   ((pPktHdr[1] & 0xc0) >> 6));
 		break;
 	default:
 		return pri;
@@ -116,8 +117,9 @@ INT8	GetDscpMappedPriority(
 		if (!wdev)
 			return pri;
 		pri = pAd->ApCfg.MBSSID[wdev->func_idx].dscp_pri_map[dscpVal];
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,  ("[%s] ApIdx:%d dscp value:%d local PRI:%d\n",
-			__func__, wdev->func_idx, dscpVal, pri));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("[%s] ApIdx:%d dscp value:%d local PRI:%d\n",
+			  __func__, wdev->func_idx, dscpVal, pri));
 	}
 
 	return pri;
@@ -140,7 +142,6 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 	BOOLEAN need_schedule = (pAd->tx_dequeue_scheduable ? TRUE : FALSE);
 	UCHAR user_prio;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
-	UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
 
 #ifdef CONFIG_TP_DBG
 	struct tp_debug *tp_dbg = &pAd->tr_ctl.tp_dbg;
@@ -163,13 +164,16 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 
 		wdev = wdev_search_by_pkt(pAd, pkt);
 		wdev_ops = wdev->wdev_ops;
-		pTxBlk->resource_idx = arch_ops->get_resource_idx(pAd, wdev, 0, 0);
-		ret = arch_ops->check_hw_resource(pAd, wdev, pTxBlk->resource_idx);
+		pTxBlk->resource_idx =
+			arch_ops->get_resource_idx(pAd, wdev, 0, 0);
+		ret = arch_ops->check_hw_resource(pAd, wdev,
+						  pTxBlk->resource_idx);
 
 		if (ret) {
 			if (ret & NDIS_STATUS_RESOURCES) {
 				mtd_free_txd(pAd, pTxBlk->resource_idx);
-				ret = arch_ops->check_hw_resource(pAd, wdev, pTxBlk->resource_idx);
+				ret = arch_ops->check_hw_resource(
+					pAd, wdev, pTxBlk->resource_idx);
 				if (ret)
 					break;
 			} else
@@ -182,7 +186,7 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 		/*if wcid is out of MAC table size, free it*/
 		if (Wcid >= MAX_LEN_OF_MAC_TABLE) {
 			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-					 ("%s(): WCID is invalid\n", __func__));
+				 ("%s(): WCID is invalid\n", __func__));
 			pAd->tr_ctl.tx_sw_q_drop++;
 			RELEASE_NDIS_PACKET(pAd, pkt, NDIS_STATUS_FAILURE);
 			continue;
@@ -199,14 +203,17 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 		pTxBlk->QueIdx = RTMP_GET_PACKET_QUEIDX(pkt);
 		pTxBlk->TotalFrameLen = GET_OS_PKT_LEN(pkt);
 		pTxBlk->pPacket = pkt;
-		pTxBlk->TxFrameType = tx_pkt_classification(pAd, pTxBlk->pPacket, pTxBlk);
-		pTxBlk->HeaderBuf = arch_ops->get_hif_buf(pAd, pTxBlk, pTxBlk->resource_idx, pTxBlk->TxFrameType);
+		pTxBlk->TxFrameType =
+			tx_pkt_classification(pAd, pTxBlk->pPacket, pTxBlk);
+		pTxBlk->HeaderBuf = arch_ops->get_hif_buf(
+			pAd, pTxBlk, pTxBlk->resource_idx, pTxBlk->TxFrameType);
 #ifdef DSCP_PRI_SUPPORT
 		/*Get the Dscp value of the packet and if there is any mapping defined set the DscpMappedPri value */
 		if (!TX_BLK_TEST_FLAG(pTxBlk, fTX_bApCliPacket))
-			pTxBlk->DscpMappedPri =  GetDscpMappedPriority(pAd, pkt);
+			pTxBlk->DscpMappedPri = GetDscpMappedPriority(pAd, pkt);
 #endif
-		InsertTailQueue(&pTxBlk->TxPacketList, PACKET_TO_QUEUE_ENTRY(pkt));
+		InsertTailQueue(&pTxBlk->TxPacketList,
+				PACKET_TO_QUEUE_ENTRY(pkt));
 
 		ret = wdev_ops->tx_pkt_handle(pAd, wdev, pTxBlk);
 
@@ -214,7 +221,7 @@ VOID fp_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 			KickRingBitMap |= (1 << pTxBlk->resource_idx);
 	}
 
-	while (KickRingBitMap != 0 && idx < num_of_tx_ring) {
+	while (KickRingBitMap != 0 && idx < GET_NUM_OF_TX_RING(cap)) {
 		if (KickRingBitMap & 0x1) {
 			arch_ops->kickout_data_tx(pAd, pTxBlk, idx);
 #ifdef CONFIG_TP_DBG
@@ -239,7 +246,6 @@ static INT fp_qm_init(RTMP_ADAPTER *pAd)
 	return NDIS_STATUS_SUCCESS;
 }
 
-
 static INT fp_qm_exit(RTMP_ADAPTER *pAd)
 {
 	PQUEUE_ENTRY q_entry;
@@ -253,7 +259,8 @@ static INT fp_qm_exit(RTMP_ADAPTER *pAd)
 			break;
 		}
 
-		RELEASE_NDIS_PACKET(pAd, QUEUE_ENTRY_TO_PACKET(q_entry), NDIS_STATUS_SUCCESS);
+		RELEASE_NDIS_PACKET(pAd, QUEUE_ENTRY_TO_PACKET(q_entry),
+				    NDIS_STATUS_SUCCESS);
 		RTMP_SEM_UNLOCK(&pAd->mgmt_que_lock);
 	} while (1);
 
@@ -268,7 +275,8 @@ static INT fp_qm_exit(RTMP_ADAPTER *pAd)
 			break;
 		}
 
-		RELEASE_NDIS_PACKET(pAd, QUEUE_ENTRY_TO_PACKET(q_entry), NDIS_STATUS_SUCCESS);
+		RELEASE_NDIS_PACKET(pAd, QUEUE_ENTRY_TO_PACKET(q_entry),
+				    NDIS_STATUS_SUCCESS);
 		RTMP_SEM_UNLOCK(&pAd->fp_que_lock);
 	} while (1);
 
@@ -279,7 +287,8 @@ static INT fp_qm_exit(RTMP_ADAPTER *pAd)
 	return NDIS_STATUS_SUCCESS;
 }
 
-static INT fp_enq_mgmtq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET pkt)
+static INT fp_enq_mgmtq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			    PNDIS_PACKET pkt)
 {
 	struct tm_ops *tm_ops = pAd->tm_qm_ops;
 
@@ -301,7 +310,8 @@ error:
 	return NDIS_STATUS_FAILURE;
 }
 
-INT32 fp_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET pkt, UCHAR q_idx)
+INT32 fp_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		       PNDIS_PACKET pkt, UCHAR q_idx)
 {
 	struct tm_ops *tm_ops = pAd->tm_qm_ops;
 

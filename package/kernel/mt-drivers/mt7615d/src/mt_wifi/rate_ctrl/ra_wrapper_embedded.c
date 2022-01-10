@@ -40,7 +40,6 @@
 ********************************************************************************
 */
 
-
 /*******************************************************************************
 *                    E X T E R N A L   R E F E R E N C E S
 ********************************************************************************
@@ -93,12 +92,8 @@
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-raWrapperEntrySet(
-	IN PRTMP_ADAPTER pAd,
-	IN PMAC_TABLE_ENTRY	pEntry,
-	OUT P_RA_ENTRY_INFO_T pRaEntry
-)
+VOID raWrapperEntrySet(IN PRTMP_ADAPTER pAd, IN PMAC_TABLE_ENTRY pEntry,
+		       OUT P_RA_ENTRY_INFO_T pRaEntry)
 {
 	pRaEntry->ucWcid = pEntry->wcid;
 	pRaEntry->fgAutoTxRateSwitch = pEntry->bAutoTxRateSwitch;
@@ -111,12 +106,26 @@ raWrapperEntrySet(
 		pRaEntry->fgDisableCCK = FALSE;
 	}
 
-	pRaEntry->fgHtCapMcs32 = (pEntry->HTCapability.MCSSet[4] & 0x1) ? TRUE : FALSE;
+	pRaEntry->fgHtCapMcs32 =
+		(pEntry->HTCapability.MCSSet[4] & 0x1) ? TRUE : FALSE;
 	pRaEntry->fgHtCapInfoGF = pEntry->HTCapability.HtCapInfo.GF;
 	pRaEntry->aucHtCapMCSSet[0] = pEntry->HTCapability.MCSSet[0];
 	pRaEntry->aucHtCapMCSSet[1] = pEntry->HTCapability.MCSSet[1];
 	pRaEntry->aucHtCapMCSSet[2] = pEntry->HTCapability.MCSSet[2];
 	pRaEntry->aucHtCapMCSSet[3] = pEntry->HTCapability.MCSSet[3];
+#ifdef CONFIG_RA_PHY_RATE_SUPPORT
+	if (pEntry->wdev->rate.Eap_HtSupRate_En == TRUE) {
+		pRaEntry->aucHtCapMCSSet[0] = pEntry->HTCapability.MCSSet[0] &
+					      pEntry->wdev->rate.EapMCSSet[0];
+		pRaEntry->aucHtCapMCSSet[1] = pEntry->HTCapability.MCSSet[1] &
+					      pEntry->wdev->rate.EapMCSSet[1];
+		pRaEntry->aucHtCapMCSSet[2] = pEntry->HTCapability.MCSSet[2] &
+					      pEntry->wdev->rate.EapMCSSet[2];
+		pRaEntry->aucHtCapMCSSet[3] = pEntry->HTCapability.MCSSet[3] &
+					      pEntry->wdev->rate.EapMCSSet[3];
+	}
+#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
+
 	pRaEntry->ucMmpsMode = pEntry->MmpsMode;
 
 	if (pEntry->fgGband256QAMSupport == TRUE)
@@ -135,6 +144,7 @@ raWrapperEntrySet(
 	pRaEntry->ucSupportRateMode = pEntry->SupportRateMode;
 	pRaEntry->ucSupportCCKMCS = pEntry->SupportCCKMCS;
 	pRaEntry->ucSupportOFDMMCS = pEntry->SupportOFDMMCS;
+
 #ifdef DOT11_N_SUPPORT
 	pRaEntry->u4SupportHTMCS = pEntry->SupportHTMCS;
 #ifdef DOT11_VHT_AC
@@ -150,6 +160,74 @@ raWrapperEntrySet(
 	pRaEntry->vhtOpModeRxNssType = pEntry->operating_mode.rx_nss_type;
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
+
+#ifdef CONFIG_RA_PHY_RATE_SUPPORT
+	if (pEntry->wdev->rate.Eap_SupRate_En == TRUE) {
+		pRaEntry->ucSupportCCKMCS = pEntry->SupportCCKMCS &
+					    pEntry->wdev->rate.EapSupportCCKMCS;
+		pRaEntry->ucSupportOFDMMCS =
+			pEntry->SupportOFDMMCS &
+			pEntry->wdev->rate.EapSupportOFDMMCS;
+	}
+#ifdef DOT11_N_SUPPORT
+	if (pEntry->wdev->rate.Eap_HtSupRate_En == TRUE)
+		pRaEntry->u4SupportHTMCS = pEntry->SupportHTMCS &
+					   pEntry->wdev->rate.EapSupportHTMCS;
+#ifdef DOT11_VHT_AC
+	if (pEntry->wdev->rate.Eap_VhtSupRate_En == TRUE) {
+		if (pEntry->wdev->rate.rx_mcs_map.mcs_ss1 == 0)
+			pRaEntry->u2SupportVHTMCS1SS =
+				pEntry->SupportVHTMCS1SS & 255;
+
+		if (pEntry->wdev->rate.rx_mcs_map.mcs_ss1 == 1)
+			pRaEntry->u2SupportVHTMCS1SS =
+				pEntry->SupportVHTMCS1SS & 511;
+
+		if (pEntry->wdev->rate.rx_mcs_map.mcs_ss1 == 2)
+			pRaEntry->u2SupportVHTMCS1SS =
+				pEntry->SupportVHTMCS1SS & 1023;
+
+		if (pEntry->wdev->rate.rx_mcs_map.mcs_ss2 == 0)
+			pRaEntry->u2SupportVHTMCS2SS =
+				pEntry->SupportVHTMCS2SS & 255;
+
+		if (pEntry->wdev->rate.rx_mcs_map.mcs_ss2 == 1)
+			pRaEntry->u2SupportVHTMCS2SS =
+				pEntry->SupportVHTMCS2SS & 511;
+
+		if (pEntry->wdev->rate.rx_mcs_map.mcs_ss2 == 2)
+			pRaEntry->u2SupportVHTMCS2SS =
+				pEntry->SupportVHTMCS2SS & 1023;
+
+		if (pEntry->MaxHTPhyMode.field.BW < BW_160) {
+			if (pEntry->wdev->rate.rx_mcs_map.mcs_ss3 == 0)
+				pRaEntry->u2SupportVHTMCS3SS =
+					pEntry->SupportVHTMCS3SS & 255;
+
+			if (pEntry->wdev->rate.rx_mcs_map.mcs_ss3 == 1)
+				pRaEntry->u2SupportVHTMCS3SS =
+					pEntry->SupportVHTMCS3SS & 511;
+
+			if (pEntry->wdev->rate.rx_mcs_map.mcs_ss3 == 2)
+				pRaEntry->u2SupportVHTMCS3SS =
+					pEntry->SupportVHTMCS3SS & 1023;
+
+			if (pEntry->wdev->rate.rx_mcs_map.mcs_ss4 == 0)
+				pRaEntry->u2SupportVHTMCS4SS =
+					pEntry->SupportVHTMCS4SS & 255;
+
+			if (pEntry->wdev->rate.rx_mcs_map.mcs_ss4 == 1)
+				pRaEntry->u2SupportVHTMCS4SS =
+					pEntry->SupportVHTMCS4SS & 511;
+
+			if (pEntry->wdev->rate.rx_mcs_map.mcs_ss4 == 2)
+				pRaEntry->u2SupportVHTMCS4SS =
+					pEntry->SupportVHTMCS4SS & 1023;
+		}
+	}
+#endif /* DOT11_VHT_AC */
+#endif /* DOT11_N_SUPPORT */
+#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
 	pRaEntry->AvgRssiSample[0] = pEntry->RssiSample.AvgRssi[0];
 	pRaEntry->AvgRssiSample[1] = pEntry->RssiSample.AvgRssi[1];
 	pRaEntry->AvgRssiSample[2] = pEntry->RssiSample.AvgRssi[2];
@@ -168,7 +246,9 @@ raWrapperEntrySet(
 
 	if (pRaEntry->MaxPhyCfg.MODE == MODE_VHT) {
 		pRaEntry->MaxPhyCfg.MCS = pEntry->MaxHTPhyMode.field.MCS & 0xf;
-		pRaEntry->MaxPhyCfg.VhtNss = ((pEntry->MaxHTPhyMode.field.MCS & (0x3 << 4)) >> 4) + 1;
+		pRaEntry->MaxPhyCfg.VhtNss =
+			((pEntry->MaxHTPhyMode.field.MCS & (0x3 << 4)) >> 4) +
+			1;
 	} else
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
@@ -187,7 +267,8 @@ raWrapperEntrySet(
 
 	if (pRaEntry->TxPhyCfg.MODE == MODE_VHT) {
 		pRaEntry->TxPhyCfg.MCS = pEntry->HTPhyMode.field.MCS & 0xf;
-		pRaEntry->TxPhyCfg.VhtNss = ((pEntry->HTPhyMode.field.MCS & (0x3 << 4)) >> 4) + 1;
+		pRaEntry->TxPhyCfg.VhtNss =
+			((pEntry->HTPhyMode.field.MCS & (0x3 << 4)) >> 4) + 1;
 	} else
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
@@ -196,7 +277,6 @@ raWrapperEntrySet(
 		pRaEntry->TxPhyCfg.VhtNss = 0;
 	}
 }
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -209,23 +289,22 @@ raWrapperEntrySet(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-raWrapperEntryRestore(
-	IN PRTMP_ADAPTER pAd,
-	IN PMAC_TABLE_ENTRY	pEntry,
-	IN P_RA_ENTRY_INFO_T pRaEntry
-)
+VOID raWrapperEntryRestore(IN PRTMP_ADAPTER pAd, IN PMAC_TABLE_ENTRY pEntry,
+			   IN P_RA_ENTRY_INFO_T pRaEntry)
 {
 	pEntry->MaxHTPhyMode.field.MODE = pRaEntry->MaxPhyCfg.MODE;
 	pEntry->MaxHTPhyMode.field.STBC = pRaEntry->MaxPhyCfg.STBC;
-	pEntry->MaxHTPhyMode.field.ShortGI = pRaEntry->MaxPhyCfg.ShortGI ? 1 : 0;
+	pEntry->MaxHTPhyMode.field.ShortGI =
+		pRaEntry->MaxPhyCfg.ShortGI ? 1 : 0;
 	pEntry->MaxHTPhyMode.field.BW = pRaEntry->MaxPhyCfg.BW;
 	pEntry->MaxHTPhyMode.field.ldpc = pRaEntry->MaxPhyCfg.ldpc ? 1 : 0;
 #ifdef DOT11_N_SUPPORT
 #ifdef DOT11_VHT_AC
 
 	if (pEntry->MaxHTPhyMode.field.MODE == MODE_VHT)
-		pEntry->MaxHTPhyMode.field.MCS = (((pRaEntry->MaxPhyCfg.VhtNss - 1) & 0x3) << 4) + pRaEntry->MaxPhyCfg.MCS;
+		pEntry->MaxHTPhyMode.field.MCS =
+			(((pRaEntry->MaxPhyCfg.VhtNss - 1) & 0x3) << 4) +
+			pRaEntry->MaxPhyCfg.MCS;
 	else
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
@@ -243,7 +322,9 @@ raWrapperEntryRestore(
 #ifdef DOT11_VHT_AC
 
 	if (pRaEntry->TxPhyCfg.MODE == MODE_VHT)
-		pEntry->HTPhyMode.field.MCS = (((pRaEntry->TxPhyCfg.VhtNss - 1) & 0x3) << 4) + pRaEntry->TxPhyCfg.MCS;
+		pEntry->HTPhyMode.field.MCS =
+			(((pRaEntry->TxPhyCfg.VhtNss - 1) & 0x3) << 4) +
+			pRaEntry->TxPhyCfg.MCS;
 	else
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
@@ -253,7 +334,6 @@ raWrapperEntryRestore(
 
 	pEntry->LastTxRate = pEntry->HTPhyMode.word;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -265,17 +345,17 @@ raWrapperEntryRestore(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-raWrapperConfigSet(
-	IN PRTMP_ADAPTER pAd,
-	IN struct wifi_dev *wdev,
-	OUT P_RA_COMMON_INFO_T pRaCfg)
+VOID raWrapperConfigSet(IN PRTMP_ADAPTER pAd, IN struct wifi_dev *wdev,
+			OUT P_RA_COMMON_INFO_T pRaCfg)
 {
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 
 	pRaCfg->OpMode = pAd->OpMode;
 	pRaCfg->fgAdHocOn = ADHOC_ON(pAd);
-	pRaCfg->fgShortPreamble = OPSTATUS_TEST_FLAG(pAd, fOP_STATUS_SHORT_PREAMBLE_INUSED) ? TRUE : FALSE;
+	pRaCfg->fgShortPreamble =
+		OPSTATUS_TEST_FLAG(pAd, fOP_STATUS_SHORT_PREAMBLE_INUSED) ?
+			TRUE :
+			      FALSE;
 	pRaCfg->TxStream = wlan_operate_get_tx_stream(wdev);
 	pRaCfg->RxStream = wlan_operate_get_rx_stream(wdev);
 	pRaCfg->ucRateAlg = pAd->rateAlg;
@@ -284,7 +364,8 @@ raWrapperConfigSet(
 #ifdef DOT11_N_SUPPORT
 	pRaCfg->HtMode = pAd->CommonCfg.RegTransmitSetting.field.HTMODE;
 	pRaCfg->fAnyStation20Only = pAd->MacTab.fAnyStation20Only;
-	pRaCfg->bRcvBSSWidthTriggerEvents = pAd->CommonCfg.bRcvBSSWidthTriggerEvents;
+	pRaCfg->bRcvBSSWidthTriggerEvents =
+		pAd->CommonCfg.bRcvBSSWidthTriggerEvents;
 #ifdef DOT11_VHT_AC
 	pRaCfg->vht_nss_cap = pAd->CommonCfg.vht_nss_cap;
 #ifdef WFA_VHT_PF
@@ -294,7 +375,8 @@ raWrapperConfigSet(
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
 	pRaCfg->fgSeOff = pAd->CommonCfg.bSeOff;
-	if ((pAd->CommonCfg.dbdc_mode == FALSE) && (pAd->Antenna.field.TxPath == 4))
+	if ((pAd->CommonCfg.dbdc_mode == FALSE) &&
+	    (pAd->Antenna.field.TxPath == 4))
 		pRaCfg->ucAntennaIndex = pAd->CommonCfg.ucAntennaIndex;
 #ifdef THERMAL_PROTECT_SUPPORT
 	pRaCfg->fgThermalProtectToggle = pAd->fgThermalProtectToggle;
@@ -324,7 +406,6 @@ raWrapperConfigSet(
 	pRaCfg->u4RaFastInterval = pAd->ra_fast_interval;
 }
 
-
 #if defined(NEW_RATE_ADAPT_SUPPORT) || defined(RATE_ADAPT_AGBS_SUPPORT)
 /*----------------------------------------------------------------------------*/
 /*!
@@ -336,10 +417,8 @@ raWrapperConfigSet(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-QuickResponeForRateAdaptMT(/* actually for both up and down */
-	IN PRTMP_ADAPTER pAd,
-	IN UINT_8 idx)
+VOID QuickResponeForRateAdaptMT(/* actually for both up and down */
+				IN PRTMP_ADAPTER pAd, IN UINT_8 idx)
 {
 	P_RA_ENTRY_INFO_T pRaEntry;
 	P_RA_INTERNAL_INFO_T pRaInternal;
@@ -348,7 +427,9 @@ QuickResponeForRateAdaptMT(/* actually for both up and down */
 	UCHAR TableSize = 0;
 	UCHAR InitTxRateIdx;
 
-	pEntry = &pAd->MacTab.Content[idx]; /* point to information of the individual station */
+	pEntry =
+		&pAd->MacTab.Content
+			 [idx]; /* point to information of the individual station */
 	pRaEntry = &pEntry->RaEntry;
 	pRaInternal = &pEntry->RaInternal;
 
@@ -360,22 +441,25 @@ QuickResponeForRateAdaptMT(/* actually for both up and down */
 	raWrapperEntrySet(pAd, pEntry, pRaEntry);
 	raWrapperConfigSet(pAd, pEntry->wdev, &RaCfg);
 
-	raSelectTxRateTable(pRaEntry, &RaCfg, pRaInternal, &pRaInternal->pucTable, &TableSize, &InitTxRateIdx);
+	raSelectTxRateTable(pRaEntry, &RaCfg, pRaInternal,
+			    &pRaInternal->pucTable, &TableSize, &InitTxRateIdx);
 #ifdef NEW_RATE_ADAPT_SUPPORT
 
 	if (RaCfg.ucRateAlg == RATE_ALG_GRP)
-		QuickResponeForRateAdaptMTCore(pAd, pRaEntry, &RaCfg, pRaInternal);
+		QuickResponeForRateAdaptMTCore(pAd, pRaEntry, &RaCfg,
+					       pRaInternal);
 
 #endif /* NEW_RATE_ADAPT_SUPPORT */
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 
 	if (RaCfg.ucRateAlg == RATE_ALG_AGBS)
-		QuickResponeForRateAdaptAGBSMTCore(pAd, pRaEntry, &RaCfg, pRaInternal);
+		QuickResponeForRateAdaptAGBSMTCore(pAd, pRaEntry, &RaCfg,
+						   pRaInternal);
 
 #endif /* RATE_ADAPT_AGBS_SUPPORT */
 	raWrapperEntryRestore(pAd, pEntry, pRaEntry);
 }
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -387,11 +471,7 @@ QuickResponeForRateAdaptMT(/* actually for both up and down */
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-DynamicTxRateSwitchingAdaptMT(
-	PRTMP_ADAPTER pAd,
-	UINT_8 idx
-)
+VOID DynamicTxRateSwitchingAdaptMT(PRTMP_ADAPTER pAd, UINT_8 idx)
 {
 	P_RA_ENTRY_INFO_T pRaEntry;
 	P_RA_INTERNAL_INFO_T pRaInternal;
@@ -400,7 +480,9 @@ DynamicTxRateSwitchingAdaptMT(
 	UCHAR TableSize = 0;
 	UCHAR InitTxRateIdx;
 
-	pEntry = &pAd->MacTab.Content[idx]; /* point to information of the individual station */
+	pEntry =
+		&pAd->MacTab.Content
+			 [idx]; /* point to information of the individual station */
 	pRaEntry = &pEntry->RaEntry;
 	pRaInternal = &pEntry->RaInternal;
 	/* os_zero_mem(pRaEntry, sizeof(RA_ENTRY_INFO_T)); */
@@ -408,24 +490,27 @@ DynamicTxRateSwitchingAdaptMT(
 	raWrapperEntrySet(pAd, pEntry, pRaEntry);
 	raWrapperConfigSet(pAd, pEntry->wdev, &RaCfg);
 
-	raSelectTxRateTable(pRaEntry, &RaCfg, pRaInternal, &pRaInternal->pucTable, &TableSize, &InitTxRateIdx);
+	raSelectTxRateTable(pRaEntry, &RaCfg, pRaInternal,
+			    &pRaInternal->pucTable, &TableSize, &InitTxRateIdx);
 #ifdef NEW_RATE_ADAPT_SUPPORT
 
 	if (RaCfg.ucRateAlg == RATE_ALG_GRP)
-		DynamicTxRateSwitchingAdaptMtCore(pAd, pRaEntry, &RaCfg, pRaInternal);
+		DynamicTxRateSwitchingAdaptMtCore(pAd, pRaEntry, &RaCfg,
+						  pRaInternal);
 
 #endif /* NEW_RATE_ADAPT_SUPPORT */
-#if defined(RATE_ADAPT_AGBS_SUPPORT) && (!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
+#if defined(RATE_ADAPT_AGBS_SUPPORT) &&                                        \
+	(!defined(RACTRL_FW_OFFLOAD_SUPPORT) || defined(WIFI_BUILD_RAM))
 
 	if (RaCfg.ucRateAlg == RATE_ALG_AGBS)
-		DynamicTxRateSwitchingAGBSMtCore(pAd, pRaEntry, &RaCfg, pRaInternal);
+		DynamicTxRateSwitchingAGBSMtCore(pAd, pRaEntry, &RaCfg,
+						 pRaInternal);
 
 #endif /* RATE_ADAPT_AGBS_SUPPORT */
 	raWrapperEntryRestore(pAd, pEntry, pRaEntry);
 }
 #endif /* defined(NEW_RATE_ADAPT_SUPPORT) || defined(RATE_ADAPT_AGBS_SUPPORT) */
 #endif /* MT_MAC */
-
 
 #ifdef CONFIG_AP_SUPPORT
 /*----------------------------------------------------------------------------*/
@@ -438,10 +523,7 @@ DynamicTxRateSwitchingAdaptMT(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-APMlmeDynamicTxRateSwitching(
-	PRTMP_ADAPTER pAd
-)
+VOID APMlmeDynamicTxRateSwitching(PRTMP_ADAPTER pAd)
 {
 	UINT i;
 	MAC_TABLE_ENTRY *pEntry;
@@ -479,7 +561,8 @@ APMlmeDynamicTxRateSwitching(
 #endif /* APCLI_SUPPORT */
 #ifdef WDS_SUPPORT
 
-		if (IS_ENTRY_WDS(pEntry) && !WDS_IF_UP_CHECK(pAd, pEntry->func_tb_idx))
+		if (IS_ENTRY_WDS(pEntry) &&
+		    !WDS_IF_UP_CHECK(pAd, pEntry->func_tb_idx))
 			continue;
 
 #endif /* WDS_SUPPORT */
@@ -495,20 +578,34 @@ APMlmeDynamicTxRateSwitching(
 			DynamicTxRateSwitchingAdaptMT(pAd, (UINT_8)i);
 #ifdef NEW_RATE_ADAPT_SUPPORT
 			if (pAd->rateAlg == RATE_ALG_GRP) {
-				UCHAR pkt_num = wlan_operate_get_rts_pkt_thld(pEntry->wdev);
-				UINT32 length = wlan_operate_get_rts_len_thld(pEntry->wdev);
+				UCHAR pkt_num = wlan_operate_get_rts_pkt_thld(
+					pEntry->wdev);
+				UINT32 length = wlan_operate_get_rts_len_thld(
+					pEntry->wdev);
 
 				if (pAd->MacTab.Size == 1) {
-					if (((pEntry->RaInternal.pucTable == RateSwitchTableAdapt11N2S) && pEntry->HTPhyMode.field.MCS >= 14) ||
-						((pEntry->RaInternal.pucTable == RateSwitchTableAdapt11N1S) && pEntry->HTPhyMode.field.MCS >= 6)) {
-						if (pAd->bDisableRtsProtect != TRUE) {
-							pkt_num = MAX_RTS_PKT_THRESHOLD;
-							length = MAX_RTS_THRESHOLD;
-							pAd->bDisableRtsProtect = TRUE;
+					if (((pEntry->RaInternal.pucTable ==
+					      RateSwitchTableAdapt11N2S) &&
+					     pEntry->HTPhyMode.field.MCS >=
+						     14) ||
+					    ((pEntry->RaInternal.pucTable ==
+					      RateSwitchTableAdapt11N1S) &&
+					     pEntry->HTPhyMode.field.MCS >=
+						     6)) {
+						if (pAd->bDisableRtsProtect !=
+						    TRUE) {
+							pkt_num =
+								MAX_RTS_PKT_THRESHOLD;
+							length =
+								MAX_RTS_THRESHOLD;
+							pAd->bDisableRtsProtect =
+								TRUE;
 						}
 					} else {
-						if (pAd->bDisableRtsProtect != FALSE) {
-							pAd->bDisableRtsProtect = FALSE;
+						if (pAd->bDisableRtsProtect !=
+						    FALSE) {
+							pAd->bDisableRtsProtect =
+								FALSE;
 						}
 					}
 				} else {
@@ -516,7 +613,8 @@ APMlmeDynamicTxRateSwitching(
 						pAd->bDisableRtsProtect = FALSE;
 					}
 				}
-				HW_SET_RTS_THLD(pAd, pEntry->wdev, pkt_num, length);
+				HW_SET_RTS_THLD(pAd, pEntry->wdev, pkt_num,
+						length);
 			}
 #endif /* NEW_RATE_ADAPT_SUPPORT */
 			continue;
@@ -532,7 +630,6 @@ APMlmeDynamicTxRateSwitching(
 	RTMP_SEM_EVENT_UP(&pAd->AutoRateLock);
 }
 
-
 /*----------------------------------------------------------------------------*/
 /*!
  * \brief     AP side, Auto TxRate faster train up timer call back function.
@@ -545,13 +642,10 @@ APMlmeDynamicTxRateSwitching(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID
-APQuickResponeForRateUpExec(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3
-)
+VOID APQuickResponeForRateUpExec(IN PVOID SystemSpecific1,
+				 IN PVOID FunctionContext,
+				 IN PVOID SystemSpecific2,
+				 IN PVOID SystemSpecific3)
 {
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)FunctionContext;
 	UINT i;
@@ -583,7 +677,8 @@ APQuickResponeForRateUpExec(
 #endif /* APCLI_SUPPORT */
 #ifdef WDS_SUPPORT
 
-		if (IS_ENTRY_WDS(pEntry) && !WDS_IF_UP_CHECK(pAd, pEntry->func_tb_idx))
+		if (IS_ENTRY_WDS(pEntry) &&
+		    !WDS_IF_UP_CHECK(pAd, pEntry->func_tb_idx))
 			continue;
 
 #endif /* WDS_SUPPORT */
@@ -599,15 +694,11 @@ APQuickResponeForRateUpExec(
 #endif /* MT_MAC */
 
 		/* Do nothing if this entry didn't change */
-		if (pEntry->LastSecTxRateChangeAction == RATE_NO_CHANGE
-		   )
+		if (pEntry->LastSecTxRateChangeAction == RATE_NO_CHANGE)
 			continue;
 	}
 }
 #endif /* CONFIG_AP_SUPPORT */
-
-
-
 
 /*----------------------------------------------------------------------------*/
 /*!
@@ -618,21 +709,15 @@ APQuickResponeForRateUpExec(
  * \return    None
  */
 /*----------------------------------------------------------------------------*/
-VOID RTMPSetSupportMCS(
-	IN PRTMP_ADAPTER pAd,
-	IN UCHAR OpMode,
-	IN PMAC_TABLE_ENTRY	pEntry,
-	IN UCHAR SupRate[],
-	IN UCHAR SupRateLen,
-	IN UCHAR ExtRate[],
-	IN UCHAR ExtRateLen,
+VOID RTMPSetSupportMCS(IN PRTMP_ADAPTER pAd, IN UCHAR OpMode,
+		       IN PMAC_TABLE_ENTRY pEntry, IN UCHAR SupRate[],
+		       IN UCHAR SupRateLen, IN UCHAR ExtRate[],
+		       IN UCHAR ExtRateLen,
 #ifdef DOT11_VHT_AC
-	IN UCHAR vht_cap_len,
-	IN VHT_CAP_IE * vht_cap,
+		       IN UCHAR vht_cap_len, IN VHT_CAP_IE *vht_cap,
 #endif /* DOT11_VHT_AC */
-	IN HT_CAPABILITY_IE * pHtCapability,
-	IN UCHAR HtCapabilityLen
-)
+		       IN HT_CAPABILITY_IE *pHtCapability,
+		       IN UCHAR HtCapabilityLen)
 {
 	UCHAR idx, SupportedRatesLen = 0;
 	UCHAR SupportedRates[MAX_LEN_OF_SUPPORTED_RATES];
@@ -642,21 +727,25 @@ VOID RTMPSetSupportMCS(
 			os_move_mem(SupportedRates, SupRate, SupRateLen);
 			SupportedRatesLen = SupRateLen;
 		} else {
-			UCHAR RateDefault[8] = {0x82, 0x84, 0x8b, 0x96, 0x12, 0x24, 0x48, 0x6c};
+			UCHAR RateDefault[8] = { 0x82, 0x84, 0x8b, 0x96,
+						 0x12, 0x24, 0x48, 0x6c };
 
 			os_move_mem(SupportedRates, RateDefault, 8);
 			SupportedRatesLen = 8;
-			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s():wrong SUPP RATES., Len=%d\n",
-					 __func__, SupRateLen));
+			MTWF_LOG(DBG_CAT_RA, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("%s():wrong SUPP RATES., Len=%d\n", __func__,
+				  SupRateLen));
 		}
 	}
 
 	if (ExtRateLen > 0) {
 		if ((SupRateLen + ExtRateLen) <= MAX_LEN_OF_SUPPORTED_RATES) {
-			os_move_mem(&SupportedRates[SupRateLen], ExtRate, ExtRateLen);
+			os_move_mem(&SupportedRates[SupRateLen], ExtRate,
+				    ExtRateLen);
 			SupportedRatesLen += ExtRateLen;
 		} else {
-			os_move_mem(&SupportedRates[SupRateLen], ExtRate, MAX_LEN_OF_SUPPORTED_RATES - ExtRateLen);
+			os_move_mem(&SupportedRates[SupRateLen], ExtRate,
+				    MAX_LEN_OF_SUPPORTED_RATES - ExtRateLen);
 			SupportedRatesLen = MAX_LEN_OF_SUPPORTED_RATES;
 		}
 	}
@@ -747,17 +836,26 @@ VOID RTMPSetSupportMCS(
 #ifdef WDS_SUPPORT
 
 			if (IS_ENTRY_WDS(pEntry))
-				pDesired_ht_phy = &pAd->WdsTab.WdsEntry[pEntry->func_tb_idx].wdev.DesiredHtPhyInfo;
+				pDesired_ht_phy =
+					&pAd->WdsTab
+						 .WdsEntry[pEntry->func_tb_idx]
+						 .wdev.DesiredHtPhyInfo;
 			else
 #endif /* WDS_SUPPORT */
 #ifdef APCLI_SUPPORT
-				if (IS_ENTRY_APCLI(pEntry) || IS_ENTRY_REPEATER(pEntry))
-					pDesired_ht_phy = &pAd->ApCfg.ApCliTab[pEntry->func_tb_idx].wdev.DesiredHtPhyInfo;
-				else
+				if (IS_ENTRY_APCLI(pEntry) ||
+				    IS_ENTRY_REPEATER(pEntry))
+				pDesired_ht_phy =
+					&pAd->ApCfg
+						 .ApCliTab[pEntry->func_tb_idx]
+						 .wdev.DesiredHtPhyInfo;
+			else
 #endif /* APCLI_SUPPORT */
-					{
-						pDesired_ht_phy = &pAd->ApCfg.MBSSID[pEntry->func_tb_idx].wdev.DesiredHtPhyInfo;
-					}
+			{
+				pDesired_ht_phy =
+					&pAd->ApCfg.MBSSID[pEntry->func_tb_idx]
+						 .wdev.DesiredHtPhyInfo;
+			}
 		}
 
 #endif /* CONFIG_AP_SUPPORT */
@@ -769,8 +867,8 @@ VOID RTMPSetSupportMCS(
 			j = i / 8;
 			bitmask = (1 << (i - (j * 8)));
 
-			if ((pDesired_ht_phy->MCSSet[j] & bitmask)
-				&& (pHtCapability->MCSSet[j] & bitmask)) {
+			if ((pDesired_ht_phy->MCSSet[j] & bitmask) &&
+			    (pHtCapability->MCSSet[j] & bitmask)) {
 				pEntry->SupportHTMCS |= 1 << i;
 				pEntry->SupportRateMode |= SUPPORT_HT_MODE;
 			}
@@ -778,79 +876,125 @@ VOID RTMPSetSupportMCS(
 
 #ifdef DOT11_VHT_AC
 
-		if ((vht_cap_len > 0) && (vht_cap != NULL) && pDesired_ht_phy->bVhtEnable) {
+		if ((vht_cap_len > 0) && (vht_cap != NULL) &&
+		    pDesired_ht_phy->bVhtEnable) {
 			/* Currently we only support for MCS0~MCS7, so don't check mcs_map */
 			pEntry->SupportVHTMCS1SS = 0;
 			pEntry->SupportVHTMCS2SS = 0;
 			pEntry->SupportVHTMCS3SS = 0;
 			pEntry->SupportVHTMCS4SS = 0;
 
-			for (j = wlan_operate_get_tx_stream(pEntry->wdev); j > 0; j--) {
+			for (j = wlan_operate_get_tx_stream(pEntry->wdev);
+			     j > 0; j--) {
 				switch (j) {
 				case 1:
-					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss1 < VHT_MCS_CAP_NA) {
+					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss1 <
+					    VHT_MCS_CAP_NA) {
 						for (i = 0; i <= 7; i++)
-							pEntry->SupportVHTMCS1SS |= 1 << i;
+							pEntry->SupportVHTMCS1SS |=
+								1 << i;
 
-						if (vht_cap->mcs_set.rx_mcs_map.mcs_ss1 == VHT_MCS_CAP_8)
-							pEntry->SupportVHTMCS1SS |= 1 << 8;
-						else if (vht_cap->mcs_set.rx_mcs_map.mcs_ss1 == VHT_MCS_CAP_9) {
-							pEntry->SupportVHTMCS1SS |= 1 << 8;
-							pEntry->SupportVHTMCS1SS |= 1 << 9;
+						if (vht_cap->mcs_set.rx_mcs_map
+							    .mcs_ss1 ==
+						    VHT_MCS_CAP_8)
+							pEntry->SupportVHTMCS1SS |=
+								1 << 8;
+						else if (vht_cap->mcs_set
+								 .rx_mcs_map
+								 .mcs_ss1 ==
+							 VHT_MCS_CAP_9) {
+							pEntry->SupportVHTMCS1SS |=
+								1 << 8;
+							pEntry->SupportVHTMCS1SS |=
+								1 << 9;
 						}
 
-						pEntry->SupportRateMode |= SUPPORT_VHT_MODE;
+						pEntry->SupportRateMode |=
+							SUPPORT_VHT_MODE;
 					}
 
 					break;
 
 				case 2:
-					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss2 < VHT_MCS_CAP_NA) {
+					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss2 <
+					    VHT_MCS_CAP_NA) {
 						for (i = 0; i <= 7; i++)
-							pEntry->SupportVHTMCS2SS |= 1 << i;
+							pEntry->SupportVHTMCS2SS |=
+								1 << i;
 
-						if (vht_cap->mcs_set.rx_mcs_map.mcs_ss2 == VHT_MCS_CAP_8)
-							pEntry->SupportVHTMCS2SS |= 1 << 8;
-						else if (vht_cap->mcs_set.rx_mcs_map.mcs_ss2 == VHT_MCS_CAP_9) {
-							pEntry->SupportVHTMCS2SS |= 1 << 8;
-							pEntry->SupportVHTMCS2SS |= 1 << 9;
+						if (vht_cap->mcs_set.rx_mcs_map
+							    .mcs_ss2 ==
+						    VHT_MCS_CAP_8)
+							pEntry->SupportVHTMCS2SS |=
+								1 << 8;
+						else if (vht_cap->mcs_set
+								 .rx_mcs_map
+								 .mcs_ss2 ==
+							 VHT_MCS_CAP_9) {
+							pEntry->SupportVHTMCS2SS |=
+								1 << 8;
+							pEntry->SupportVHTMCS2SS |=
+								1 << 9;
 						}
 
-						pEntry->SupportRateMode |= SUPPORT_VHT_MODE;
+						pEntry->SupportRateMode |=
+							SUPPORT_VHT_MODE;
 					}
 
 					break;
 
 				case 3:
-					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss3 < VHT_MCS_CAP_NA) {
+					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss3 <
+					    VHT_MCS_CAP_NA) {
 						for (i = 0; i <= 7; i++)
-							pEntry->SupportVHTMCS3SS |= 1 << i;
+							pEntry->SupportVHTMCS3SS |=
+								1 << i;
 
-						if (vht_cap->mcs_set.rx_mcs_map.mcs_ss3 == VHT_MCS_CAP_8)
-							pEntry->SupportVHTMCS3SS |= 1 << 8;
-						else if (vht_cap->mcs_set.rx_mcs_map.mcs_ss3 == VHT_MCS_CAP_9) {
-							pEntry->SupportVHTMCS3SS |= 1 << 8;
-							pEntry->SupportVHTMCS3SS |= 1 << 9;
+						if (vht_cap->mcs_set.rx_mcs_map
+							    .mcs_ss3 ==
+						    VHT_MCS_CAP_8)
+							pEntry->SupportVHTMCS3SS |=
+								1 << 8;
+						else if (vht_cap->mcs_set
+								 .rx_mcs_map
+								 .mcs_ss3 ==
+							 VHT_MCS_CAP_9) {
+							pEntry->SupportVHTMCS3SS |=
+								1 << 8;
+							pEntry->SupportVHTMCS3SS |=
+								1 << 9;
 						}
 
-						pEntry->SupportRateMode |= SUPPORT_VHT_MODE;
+						pEntry->SupportRateMode |=
+							SUPPORT_VHT_MODE;
 					}
 
 					break;
 
 				case 4:
-					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss4 < VHT_MCS_CAP_NA) {
+					if (vht_cap->mcs_set.rx_mcs_map.mcs_ss4 <
+					    VHT_MCS_CAP_NA) {
 						for (i = 0; i <= 7; i++)
-							pEntry->SupportVHTMCS4SS |= 1 << i;
+							pEntry->SupportVHTMCS4SS |=
+								1 << i;
 
-						if (vht_cap->mcs_set.rx_mcs_map.mcs_ss4 == VHT_MCS_CAP_8)
-							pEntry->SupportVHTMCS4SS |= 1 << 8;
-						else if (vht_cap->mcs_set.rx_mcs_map.mcs_ss4 == VHT_MCS_CAP_9) {
-							pEntry->SupportVHTMCS4SS |= 1 << 8;
-							pEntry->SupportVHTMCS4SS |= 1 << 9;
+						if (vht_cap->mcs_set.rx_mcs_map
+							    .mcs_ss4 ==
+						    VHT_MCS_CAP_8)
+							pEntry->SupportVHTMCS4SS |=
+								1 << 8;
+						else if (vht_cap->mcs_set
+								 .rx_mcs_map
+								 .mcs_ss4 ==
+							 VHT_MCS_CAP_9) {
+							pEntry->SupportVHTMCS4SS |=
+								1 << 8;
+							pEntry->SupportVHTMCS4SS |=
+								1 << 9;
 						}
 
-						pEntry->SupportRateMode |= SUPPORT_VHT_MODE;
+						pEntry->SupportRateMode |=
+							SUPPORT_VHT_MODE;
 					}
 
 					break;

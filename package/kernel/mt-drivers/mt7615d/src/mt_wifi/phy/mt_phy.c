@@ -30,7 +30,8 @@ static INT32 MTBbpInit(RTMP_ADAPTER *pAd)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): Init BBP Registers\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s(): Init BBP Registers\n", __func__));
 
 	if (ops->AsicBbpInit != NULL)
 		ops->AsicBbpInit(pAd);
@@ -38,19 +39,18 @@ static INT32 MTBbpInit(RTMP_ADAPTER *pAd)
 	return NDIS_STATUS_SUCCESS;
 }
 
-
 INT32 MTShowPartialBBP(RTMP_ADAPTER *pAd, UINT32 Start, UINT32 End)
 {
 	UINT32 Offset, Value;
 
 	for (Offset = Start; Offset <= End; Offset += 4) {
 		PHY_IO_READ32(pAd, Offset, &Value);
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():0x%04x 0x%08x\n", __func__, Offset, Value));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s():0x%04x 0x%08x\n", __func__, Offset, Value));
 	}
 
 	return TRUE;
 }
-
 
 INT32 MTShowAllBBP(RTMP_ADAPTER *pAd)
 {
@@ -58,12 +58,12 @@ INT32 MTShowAllBBP(RTMP_ADAPTER *pAd)
 
 	for (Offset = 0x10000; Offset <= 0x20000; Offset += 4) {
 		PHY_IO_READ32(pAd, Offset, &Value);
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():0x%04x 0x%08x\n", __func__, Offset, Value));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s():0x%04x 0x%08x\n", __func__, Offset, Value));
 	}
 
 	return TRUE;
 }
-
 
 #ifdef SMART_CARRIER_SENSE_SUPPORT
 INT MTSmartCarrierSense(RTMP_ADAPTER *pAd)
@@ -88,7 +88,7 @@ static VOID mt_phy_ops(VOID)
 	MtPhyOp.ShowAllRF = MTShowAllRF;
 #ifdef CONFIG_AP_SUPPORT
 	MtPhyOp.AutoCh = MTAPAutoSelectChannel;
-#endif/*CONFIG_AP_SUPPORT*/
+#endif /*CONFIG_AP_SUPPORT*/
 #ifdef SMART_CARRIER_SENSE_SUPPORT
 	MtPhyOp.Smart_Carrier_Sense = MTSmartCarrierSense;
 #endif /* SMART_CARRIER_SENSE_SUPPORT */
