@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mt7615d
-P4REV:=9
 PKG_VERSION:=5.1.0.0
+P4REV:=8
 
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \
@@ -183,20 +183,20 @@ include $(INCLUDE_DIR)/package.mk
 TAR_CMD=$(HOST_TAR) -C $(1)/ $(TAR_OPTIONS)
 
 define KernelPackage/mt7615d
-    CATEGORY:=Kernel modules
-    TITLE:=MTK wifi AP driver
-    DEPENDS:=@TARGET_ramips
-    KCONFIG:= \
-        CONFIG_PCI_MSI=y \
-		CONFIG_NET_SCH_FQ=y
+  CATEGORY:=Kernel modules
+  TITLE:=MTK wifi AP driver
+  DEPENDS:=@TARGET_ramips
+  KCONFIG:= \
+	CONFIG_PCI_MSI=y \
+	CONFIG_NET_SCH_FQ=y
 ifneq ($(CONFIG_MTK_WHNAT_SUPPORT),)
-    FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
-    	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
+	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
 else
-    FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
 endif
-    SUBMENU:=Wireless Drivers
-    MENU:=1
+  SUBMENU:=Wireless Drivers
+  MENU:=1
 endef
 
 define KernelPackage/mt7615d/config
@@ -204,7 +204,7 @@ define KernelPackage/mt7615d/config
 endef
 
 define Build/Compile
-	$(MAKE) -j12 -C "$(LINUX_DIR)" \
+	$(MAKE) -C "$(LINUX_DIR)" V=1 \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)/mt_wifi_ap" \
