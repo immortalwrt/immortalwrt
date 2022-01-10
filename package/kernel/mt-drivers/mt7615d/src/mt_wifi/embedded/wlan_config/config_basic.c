@@ -97,14 +97,16 @@ VOID wpf_config_init(struct _RTMP_ADAPTER *ad)
 	for (i = 0; i < WDEV_NUM_MAX; i++) {
 		pf = &ctrl->pf[i];
 		pf->idx = i;
-		os_alloc_mem(NULL, (UCHAR **)&pf->conf, sizeof(struct wlan_config));
+		os_alloc_mem(NULL, (UCHAR **)&pf->conf,
+			     sizeof(struct wlan_config));
 
 		if (pf->conf) {
 			os_zero_mem(pf->conf, sizeof(struct wlan_config));
 			wlan_config_init(pf->conf);
 		}
 
-		os_alloc_mem(NULL, (UCHAR **)&pf->oper, sizeof(struct wlan_operate));
+		os_alloc_mem(NULL, (UCHAR **)&pf->oper,
+			     sizeof(struct wlan_operate));
 
 		if (pf->oper)
 			os_zero_mem(pf->oper, sizeof(struct wlan_operate));
@@ -146,14 +148,16 @@ VOID wpf_init(struct _RTMP_ADAPTER *ad)
 	int i;
 	/*do not change order*/
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(ad) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(ad)
+	{
 		for (i = 0; i < MAX_MBSSID_NUM(ad); i++) {
 			wdev = &ad->ApCfg.MBSSID[i].wdev;
 
 			if (wpf_config_acquire(ad, wdev) < 0) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s:[ERROR] wdev_cfg is full!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
 				return;
 			}
 		}
@@ -164,9 +168,10 @@ VOID wpf_init(struct _RTMP_ADAPTER *ad)
 			wdev = &ad->WdsTab.WdsEntry[i].wdev;
 
 			if (wpf_config_acquire(ad, wdev) < 0) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s:[ERROR] wdev_cfg is full!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
 				return;
 			}
 		}
@@ -178,14 +183,27 @@ VOID wpf_init(struct _RTMP_ADAPTER *ad)
 			wdev = &ad->ApCfg.ApCliTab[i].wdev;
 
 			if (wpf_config_acquire(ad, wdev) < 0) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s:[ERROR] wdev_cfg is full!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
 				return;
 			}
 		}
 
 #endif /*APCLI_SUPPORT*/
+#ifdef SNIFFER_SUPPORT
+		for (i = 0; i < MONITOR_MAX_DEV_NUM; i++) {
+			wdev = &ad->monitor_ctrl[i].wdev;
+			if (wpf_config_acquire(ad, wdev) < 0) {
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
+				return;
+			}
+		}
+#endif
 	}
 #endif /*CONFIG_AP_SUPPORT*/
 }
@@ -195,14 +213,16 @@ VOID wpf_exit(struct _RTMP_ADAPTER *ad)
 	struct wifi_dev *wdev;
 	int i;
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(ad) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(ad)
+	{
 		for (i = 0; i < MAX_MBSSID_NUM(ad); i++) {
 			wdev = &ad->ApCfg.MBSSID[i].wdev;
 
 			if (wpf_config_release(ad, wdev) < 0) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s:[ERROR] wdev_cfg is full!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
 				return;
 			}
 		}
@@ -213,9 +233,10 @@ VOID wpf_exit(struct _RTMP_ADAPTER *ad)
 			wdev = &ad->WdsTab.WdsEntry[i].wdev;
 
 			if (wpf_config_release(ad, wdev) < 0) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s:[ERROR] wdev_cfg is full!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
 				return;
 			}
 		}
@@ -227,14 +248,27 @@ VOID wpf_exit(struct _RTMP_ADAPTER *ad)
 			wdev = &ad->ApCfg.ApCliTab[i].wdev;
 
 			if (wpf_config_release(ad, wdev) < 0) {
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s:[ERROR] wdev_cfg is full!\n",
-						  __func__));
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
 				return;
 			}
 		}
 
 #endif /*APCLI_SUPPORT*/
+#ifdef SNIFFER_SUPPORT
+		for (i = 0; i < MONITOR_MAX_DEV_NUM; i++) {
+			wdev = &ad->monitor_ctrl[i].wdev;
+			if (wpf_config_release(ad, wdev) < 0) {
+				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s:[ERROR] wdev_cfg is full!\n",
+					  __func__));
+				return;
+			}
+		}
+#endif
 	}
 #endif /*CONFIG_AP_SUPPORT*/
 }

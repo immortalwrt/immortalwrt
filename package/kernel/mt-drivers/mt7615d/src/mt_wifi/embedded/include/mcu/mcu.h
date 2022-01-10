@@ -29,12 +29,11 @@
 #ifndef __MCU_H__
 #define __MCU_H__
 
-#define CONFG_BASE_ADDR                  0x2000
-#define CONFG_COM1_REG3                  (CONFG_BASE_ADDR + 0x0000020C)
-#define CONFG_COM1_REG3_FWOPMODE          BIT(4)
-#define CONFG_COM2_REG3                  (CONFG_BASE_ADDR + 0x0000060C)
-#define CONFG_COM2_REG3_FWOPMODE          BIT(4)
-
+#define CONFG_BASE_ADDR 0x2000
+#define CONFG_COM1_REG3 (CONFG_BASE_ADDR + 0x0000020C)
+#define CONFG_COM1_REG3_FWOPMODE BIT(4)
+#define CONFG_COM2_REG3 (CONFG_BASE_ADDR + 0x0000060C)
+#define CONFG_COM2_REG3_FWOPMODE BIT(4)
 
 #define ENABLE_RXD_LOG 0
 
@@ -63,7 +62,6 @@ VOID MCUCtrlInit(struct _RTMP_ADAPTER *pAd);
 VOID MCUCtrlExit(struct _RTMP_ADAPTER *pAd);
 
 INT32 MCUSysPrepare(struct _RTMP_ADAPTER *pAd);
-
 
 INT32 MCUSysInit(struct _RTMP_ADAPTER *pAd);
 INT32 MCUSysExit(struct _RTMP_ADAPTER *pAd);

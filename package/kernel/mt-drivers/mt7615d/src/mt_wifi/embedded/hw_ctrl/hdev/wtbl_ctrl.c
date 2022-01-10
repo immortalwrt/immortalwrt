@@ -27,7 +27,8 @@
 /*
 *
 */
-static UCHAR wtc_acquire_groupkey_wcid(struct hdev_ctrl *ctrl, WTBL_CFG *pWtblCfg, struct hdev_obj *obj)
+static UCHAR wtc_acquire_groupkey_wcid(struct hdev_ctrl *ctrl,
+				       WTBL_CFG *pWtblCfg, struct hdev_obj *obj)
 {
 	UCHAR AvailableWcid = INVAILD_WCID;
 	UCHAR OmacIdx, WdevType;
@@ -53,10 +54,11 @@ static UCHAR wtc_acquire_groupkey_wcid(struct hdev_ctrl *ctrl, WTBL_CFG *pWtblCf
 			pWtblIdxRec->LinkToWdevType = WdevType;
 			pWtblIdxRec->type = WTBL_TYPE_MCAST;
 			AvailableWcid = (UCHAR)i;
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: Found a non-occupied wtbl_idx:%d for WDEV_TYPE:%d\n"
-					  " LinkToOmacIdx = %x, LinkToWdevType = %d\n",
-					  __func__, i, WdevType, OmacIdx, WdevType));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s: Found a non-occupied wtbl_idx:%d for WDEV_TYPE:%d\n"
+				 " LinkToOmacIdx = %x, LinkToWdevType = %d\n",
+				 __func__, i, WdevType, OmacIdx, WdevType));
 			NdisReleaseSpinLock(&pWtblCfg->WtblIdxRecLock);
 			return AvailableWcid;
 		}
@@ -66,13 +68,12 @@ static UCHAR wtc_acquire_groupkey_wcid(struct hdev_ctrl *ctrl, WTBL_CFG *pWtblCf
 
 	if (i < min_wcid) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: no available wtbl_idx for WDEV_TYPE:%d\n",
-				  __func__, WdevType));
+			 ("%s: no available wtbl_idx for WDEV_TYPE:%d\n",
+			  __func__, WdevType));
 	}
 
 	return AvailableWcid;
 }
-
 
 /*Wtable control*/
 /*
@@ -95,7 +96,6 @@ VOID WtcInit(struct hdev_ctrl *ctrl)
 	}
 }
 
-
 /*
 *
 */
@@ -107,7 +107,6 @@ VOID WtcExit(struct hdev_ctrl *ctrl)
 	NdisFreeSpinLock(&pWtblCfg->WtblIdxRecLock);
 	os_zero_mem(pWtblCfg, sizeof(WTBL_CFG));
 }
-
 
 /*
 *
@@ -129,21 +128,19 @@ UCHAR WtcSetMaxStaNum(struct hdev_ctrl *ctrl, UCHAR BssidNum, UCHAR MSTANum)
 #endif /*CONFIG_AP_SUPPORT*/
 	wtbl_num_resv_for_mcast = BssidNum + ApcliNum + MSTANum;
 	wtbl_num_use_for_ucast = WdsNum + MaxNumChipRept + ApcliNum + MSTANum;
-	wtbl_num_use_for_sta = cap->WtblHwNum -
-						   wtbl_num_resv_for_mcast -
-						   wtbl_num_use_for_ucast;
+	wtbl_num_use_for_sta = cap->WtblHwNum - wtbl_num_resv_for_mcast -
+			       wtbl_num_use_for_ucast;
 	MaxUcastEntryNum = wtbl_num_use_for_sta + wtbl_num_use_for_ucast;
 	ctrl->HwResourceCfg.WtblCfg.MaxUcastEntryNum = MaxUcastEntryNum;
-	ctrl->HwResourceCfg.WtblCfg.MinMcastWcid = cap->WtblHwNum - wtbl_num_resv_for_mcast;
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s: BssidNum:%d, MaxStaNum:%d (WdsNum:%d, ApcliNum:%d, MaxNumChipRept:%d), MinMcastWcid:%d\n",
-			  __func__,
-			  BssidNum,
-			  (MaxUcastEntryNum - 1), /* WTBL 0 for management use*/
-			  WdsNum,
-			  ApcliNum,
-			  MaxNumChipRept,
-			  ctrl->HwResourceCfg.WtblCfg.MinMcastWcid));
+	ctrl->HwResourceCfg.WtblCfg.MinMcastWcid =
+		cap->WtblHwNum - wtbl_num_resv_for_mcast;
+	MTWF_LOG(
+		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		("%s: BssidNum:%d, MaxStaNum:%d (WdsNum:%d, ApcliNum:%d, MaxNumChipRept:%d), MinMcastWcid:%d\n",
+		 __func__, BssidNum,
+		 (MaxUcastEntryNum - 1), /* WTBL 0 for management use*/
+		 WdsNum, ApcliNum, MaxNumChipRept,
+		 ctrl->HwResourceCfg.WtblCfg.MinMcastWcid));
 	return MaxUcastEntryNum;
 }
 
@@ -154,7 +151,7 @@ UCHAR WtcAcquireGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 {
 	UCHAR wcid;
 	HD_RESOURCE_CFG *pResource = &ctrl->HwResourceCfg;
-	WTBL_CFG *pWtblCfg =  &pResource->WtblCfg;
+	WTBL_CFG *pWtblCfg = &pResource->WtblCfg;
 
 	wcid = wtc_acquire_groupkey_wcid(ctrl, pWtblCfg, obj);
 	return wcid;
@@ -163,16 +160,18 @@ UCHAR WtcAcquireGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 /*
 *
 */
-UCHAR WtcReleaseGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR idx)
+UCHAR WtcReleaseGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj,
+			     UCHAR idx)
 {
 	HD_RESOURCE_CFG *pResource = &ctrl->HwResourceCfg;
-	WTBL_CFG *pWtblCfg =  &pResource->WtblCfg;
+	WTBL_CFG *pWtblCfg = &pResource->WtblCfg;
 	WTBL_IDX_PARAMETER *pWtblIdxRec = NULL;
 	UCHAR ReleaseWcid = INVAILD_WCID;
 
 	if (idx >= MAX_LEN_OF_MAC_TABLE) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: idx:%d > MAX_LEN_OF_MAC_TABLE\n", __func__, idx));
+			 ("%s: idx:%d > MAX_LEN_OF_MAC_TABLE\n", __func__,
+			  idx));
 		return idx;
 	}
 
@@ -185,9 +184,10 @@ UCHAR WtcReleaseGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR
 	}
 
 	if (pWtblIdxRec->State == WTBL_STATE_NONE_OCCUPIED) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: try to release non-occupied idx:%d, something wrong?\n",
-				  __func__, idx));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s: try to release non-occupied idx:%d, something wrong?\n",
+			 __func__, idx));
 		ReleaseWcid = idx;
 	} else {
 		os_zero_mem(pWtblIdxRec, sizeof(WTBL_IDX_PARAMETER));
@@ -200,20 +200,17 @@ UCHAR WtcReleaseGroupKeyWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR
 	return ReleaseWcid;
 }
 
-
 /*
 *
 */
 UCHAR WtcGetWcidLinkType(struct hdev_ctrl *ctrl, UCHAR idx)
 {
 	HD_RESOURCE_CFG *pResource = &ctrl->HwResourceCfg;
-	WTBL_CFG *pWtblCfg =  &pResource->WtblCfg;
+	WTBL_CFG *pWtblCfg = &pResource->WtblCfg;
 	WTBL_IDX_PARAMETER *pWtblIdxRec = &pWtblCfg->WtblIdxRec[idx];
 
 	return pWtblIdxRec->LinkToWdevType;
 }
-
-
 
 /*
 *
@@ -221,18 +218,18 @@ UCHAR WtcGetWcidLinkType(struct hdev_ctrl *ctrl, UCHAR idx)
 UCHAR WtcGetMaxStaNum(struct hdev_ctrl *ctrl)
 {
 	HD_RESOURCE_CFG *pResource = &ctrl->HwResourceCfg;
-	WTBL_CFG *pWtblCfg =  &pResource->WtblCfg;
+	WTBL_CFG *pWtblCfg = &pResource->WtblCfg;
 
 	if (pWtblCfg->MaxUcastEntryNum > MAX_LEN_OF_MAC_TABLE) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: MaxUcastEntryNum=%d >= MAX_LEN_OF_MAC_TABLE(%d)\n",
-				  __func__, pWtblCfg->MaxUcastEntryNum, MAX_LEN_OF_MAC_TABLE));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s: MaxUcastEntryNum=%d >= MAX_LEN_OF_MAC_TABLE(%d)\n",
+			 __func__, pWtblCfg->MaxUcastEntryNum,
+			 MAX_LEN_OF_MAC_TABLE));
 		return MAX_LEN_OF_MAC_TABLE;
 	} else
 		return pWtblCfg->MaxUcastEntryNum;
 }
-
-
 
 /*
 *
@@ -247,7 +244,7 @@ UCHAR WtcAcquireUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 
 	if (obj == NULL || pResource == NULL || pWtblCfg == NULL) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: unexpected NULL please check!!\n", __func__));
+			 ("%s: unexpected NULL please check!!\n", __func__));
 		return INVAILD_WCID;
 	}
 
@@ -263,7 +260,8 @@ UCHAR WtcAcquireUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 
 		if (pWtblIdxRec == NULL) {
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: unexpected NULL please check!!\n", __func__));
+				 ("%s: unexpected NULL please check!!\n",
+				  __func__));
 			return INVAILD_WCID;
 		}
 
@@ -284,11 +282,11 @@ UCHAR WtcAcquireUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 	return INVAILD_WCID;
 }
 
-
 /*
 *
 */
-UCHAR WtcReleaseUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR idx)
+UCHAR WtcReleaseUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj,
+			  UCHAR idx)
 {
 	HD_RESOURCE_CFG *pResource = &ctrl->HwResourceCfg;
 	WTBL_CFG *pWtblCfg = &pResource->WtblCfg;
@@ -297,7 +295,8 @@ UCHAR WtcReleaseUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR id
 
 	if (idx >= MAX_LEN_OF_MAC_TABLE) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: idx:%d > MAX_LEN_OF_MAC_TABLE\n", __func__, idx));
+			 ("%s: idx:%d > MAX_LEN_OF_MAC_TABLE\n", __func__,
+			  idx));
 		return idx;
 	}
 
@@ -310,9 +309,10 @@ UCHAR WtcReleaseUcastWcid(struct hdev_ctrl *ctrl, struct hdev_obj *obj, UCHAR id
 	}
 
 	if (pWtblIdxRec->State == WTBL_STATE_NONE_OCCUPIED) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: try to release non-occupied idx:%d, something wrong?\n",
-				  __func__, idx));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s: try to release non-occupied idx:%d, something wrong?\n",
+			 __func__, idx));
 		ReleaseWcid = idx;
 	} else {
 		os_zero_mem(pWtblIdxRec, sizeof(WTBL_IDX_PARAMETER));
@@ -336,17 +336,20 @@ VOID WtcRecDump(struct hdev_ctrl *ctrl)
 	UCHAR i;
 
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("\tWtblRecDump, Max Ucast is %d\n", pWtblCfg->MaxUcastEntryNum));
+		 ("\tWtblRecDump, Max Ucast is %d\n",
+		  pWtblCfg->MaxUcastEntryNum));
 
 	for (i = 0; i < MAX_LEN_OF_MAC_TABLE; i++) {
 		pWtblIdxRec = &pWtblCfg->WtblIdxRec[i];
 
 		if (pWtblIdxRec->State) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 				("\tIdx:%d,State:%d,Omac:%d,Type:%d,Wcid:%d, WcidType:%d\n",
-				i, pWtblIdxRec->State, pWtblIdxRec->LinkToOmacIdx,
-				pWtblIdxRec->LinkToWdevType, pWtblIdxRec->WtblIdx, pWtblIdxRec->type));
+				 i, pWtblIdxRec->State,
+				 pWtblIdxRec->LinkToOmacIdx,
+				 pWtblIdxRec->LinkToWdevType,
+				 pWtblIdxRec->WtblIdx, pWtblIdxRec->type));
 		}
 	}
 }
-

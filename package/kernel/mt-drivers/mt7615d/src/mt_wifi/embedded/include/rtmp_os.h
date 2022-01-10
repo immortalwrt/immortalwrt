@@ -57,10 +57,6 @@ extern RTMP_OS_ABL_OPS *pRaOsOps;
 #endif /* OS_ABL_FUNC_SUPPORT */
 #endif /* LINUX */
 
-
-
-
-
 /* TODO: shiang, temporary put it here! */
 #include "os/pkt_meta.h"
 
@@ -87,16 +83,15 @@ typedef struct _RTMP_OS_NETDEV_OP_HOOK_ {
 	unsigned char needProtcted;
 } RTMP_OS_NETDEV_OP_HOOK, *PRTMP_OS_NETDEV_OP_HOOK;
 
-
 typedef enum _RTMP_TASK_STATUS_ {
 	RTMP_TASK_STAT_UNKNOWN = 0,
 	RTMP_TASK_STAT_INITED = 1,
 	RTMP_TASK_STAT_RUNNING = 2,
 	RTMP_TASK_STAT_STOPED = 4,
 } RTMP_TASK_STATUS;
-#define RTMP_TASK_CAN_DO_INSERT		(RTMP_TASK_STAT_INITED | RTMP_TASK_STAT_RUNNING)
+#define RTMP_TASK_CAN_DO_INSERT (RTMP_TASK_STAT_INITED | RTMP_TASK_STAT_RUNNING)
 
-#define RTMP_OS_TASK_NAME_LEN	16
+#define RTMP_OS_TASK_NAME_LEN 16
 
 #if defined(RTMP_MODULE_OS) || !defined(OS_ABL_FUNC_SUPPORT)
 /* used in UTIL/NETIF module */
@@ -105,50 +100,39 @@ typedef struct _RTMP_OS_TASK_ {
 	void *priv;
 	/*unsigned long                 taskFlags; */
 	RTMP_TASK_STATUS taskStatus;
-#ifndef KTHREAD_SUPPORT
-	RTMP_OS_SEM taskSema;
-	RTMP_OS_PID taskPID;
-#ifdef LINUX
-	struct completion taskComplete;
-#endif /* LINUX */
-#endif
 	unsigned char task_killed;
-#ifdef KTHREAD_SUPPORT
 	struct task_struct *kthread_task;
 	wait_queue_head_t kthread_q;
 	BOOLEAN kthread_running;
-#endif
 } OS_TASK;
 #endif /* RTMP_MODULE_OS || ! OS_ABL_FUNC_SUPPORT */
 
-
 int RtmpOSIRQRequest(PNET_DEV pNetDev);
-
 
 #ifndef OS_ABL_SUPPORT
 #define RTMP_MATOpsInit(__pAd)
-#define RTMP_MATPktRxNeedConvert(__pAd, __pDev)				\
+#define RTMP_MATPktRxNeedConvert(__pAd, __pDev)                                \
 	MATPktRxNeedConvert(__pAd, __pDev)
-#define RTMP_MATEngineRxHandle(__pAd, __pPkt, __InfIdx)		\
+#define RTMP_MATEngineRxHandle(__pAd, __pPkt, __InfIdx)                        \
 	MATEngineRxHandle(__pAd, __pPkt, __InfIdx)
 #else
 
-#define RTMP_MATOpsInit(__pAd)					\
-	do {								\
-		(__pAd)->MATPktRxNeedConvert = MATPktRxNeedConvert;	\
-		(__pAd)->MATEngineRxHandle = MATEngineRxHandle;		\
+#define RTMP_MATOpsInit(__pAd)                                                 \
+	do {                                                                   \
+		(__pAd)->MATPktRxNeedConvert = MATPktRxNeedConvert;            \
+		(__pAd)->MATEngineRxHandle = MATEngineRxHandle;                \
 	} while (0)
 
-#define RTMP_MATPktRxNeedConvert(__pAd, __pDev)				\
+#define RTMP_MATPktRxNeedConvert(__pAd, __pDev)                                \
 	((__pAd)->MATPktRxNeedConvert(__pAd, __pDev))
-#define RTMP_MATEngineRxHandle(__pAd, __pPkt, __InfIdx)		\
+#define RTMP_MATEngineRxHandle(__pAd, __pPkt, __InfIdx)                        \
 	((__pAd)->MATEngineRxHandle(__pAd, __pPkt, __InfIdx))
 #endif /* OS_ABL_SUPPORT */
 
 #ifndef LINUX
 typedef struct _os_kref {
 	NDIS_SPIN_LOCK lock;
-    UCHAR refcount;
+	UCHAR refcount;
 } os_kref;
 #endif
 

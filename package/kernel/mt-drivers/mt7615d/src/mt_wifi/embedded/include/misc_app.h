@@ -94,15 +94,13 @@ enum wifi_cap_operation_status {
 	WIFI_CAP_STATUS_INVALID_PARAMETER,
 };
 
-enum wifi_cap_operation_status wifi_sup_list_register(struct _RTMP_ADAPTER *ad,
-						      enum wifi_cap_type cap_type);
+enum wifi_cap_operation_status
+wifi_sup_list_register(struct _RTMP_ADAPTER *ad, enum wifi_cap_type cap_type);
 
-enum wifi_cap_operation_status wifi_sup_list_unregister(struct _RTMP_ADAPTER *ad,
-							enum wifi_cap_type cap_type,
-							int sub_type);
+enum wifi_cap_operation_status
+wifi_sup_list_unregister(struct _RTMP_ADAPTER *ad, enum wifi_cap_type cap_type,
+			 int sub_type);
 
 INT show_wifi_cap_list(struct _RTMP_ADAPTER *ad, char *arg);
 
 #endif /* _MISC_APP_H_ */
-
-

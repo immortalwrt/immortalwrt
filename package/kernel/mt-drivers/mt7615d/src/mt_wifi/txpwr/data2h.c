@@ -18,26 +18,25 @@
 */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define PATH_OF_SKU_TABLE_IN   "/txpwr/sku_tables/"
-#define PATH_OF_SKU_TABEL_OUT  "/include/txpwr/"
+#define PATH_OF_SKU_TABLE_IN "/txpwr/sku_tables/"
+#define PATH_OF_SKU_TABEL_OUT "/include/txpwr/"
 
-#define MAX_SKUTABLE_NUM            20
+#define MAX_SKUTABLE_NUM 20
 
-int dat2h(char *infname, char *outfname, char *varname, char *deffname, const char *mode)
+int data2h(char *infname, char *outfname, char *varname, char *deffname,
+	   const char *mode)
 {
-	int ret = 0;
 	FILE *infile, *outfile, *definfile;
 	unsigned char c;
-	/* int i=0; */
 	unsigned int fgDefTable = 0;
 	/* Open input file */
 	infile = fopen(infname, "r");
 
 	/* Check open file status for input file */
-	if (infile == (FILE *) NULL) {
+	if (infile == (FILE *)NULL) {
 		printf("Can't read file %s\n", infname);
 		printf("System would automatically apply default table !!\n");
 		/* Flag for use Default SKU table */
@@ -46,7 +45,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 		definfile = fopen(deffname, "r");
 
 		/* Check open file status for default file */
-		if (definfile == (FILE *) NULL) {
+		if (definfile == (FILE *)NULL) {
 			printf("Can't read def file %s\n", deffname);
 			return -1;
 		}
@@ -55,7 +54,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 	outfile = fopen(outfname, mode);
 
 	/* Check open file status for output file */
-	if (outfile == (FILE *) NULL) {
+	if (outfile == (FILE *)NULL) {
 		printf("Can't open write file %s\n", outfname);
 
 		/* Close input file or default input file */
@@ -76,7 +75,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 	fprintf(outfile, "UCHAR %s[] = \"", varname);
 
 	while (1) {
-		char cc[1];
+		char cc[2];
 
 		if (fgDefTable == 0)
 			c = getc(infile);
@@ -86,7 +85,7 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 		/* backward compatibility for old Excel SKU table */
 		if (c == '#') {
 			c = '!';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 		}
 
@@ -102,19 +101,19 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 			continue;
 		else if (c == '\n') {
 			c = '\t';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 			c = '\"';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 			c = '\n';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 			c = '\"';
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 		} else {
-			sprintf(cc, "%c", c);
+			snprintf(cc, sizeof(cc), "%c", c);
 			fputs(cc, outfile);
 		}
 	}
@@ -129,6 +128,8 @@ int dat2h(char *infname, char *outfname, char *varname, char *deffname, const ch
 
 	/* close output file */
 	fclose(outfile);
+
+	return 1;
 }
 
 int main(int argc, char *argv[])
@@ -138,10 +139,14 @@ int main(int argc, char *argv[])
 	char deffname[512];
 	char varname[128];
 	char *rt28xxdir;
-	int  SKUTableIdx;
+	int SKUTableIdx;
 	char cc[20];
 
 	rt28xxdir = (char *)getenv("RT28xx_DIR");
+	if (!rt28xxdir) {
+		printf("Environment value \"RT28xx_DIR\" not export\n");
+		return -1;
+	}
 
 	/* Trasform SKU table data file to header file */
 	for (SKUTableIdx = 1; SKUTableIdx <= MAX_SKUTABLE_NUM; SKUTableIdx++) {
@@ -175,7 +180,7 @@ int main(int argc, char *argv[])
 		sprintf(cc, "%d", SKUTableIdx);
 		strcat(varname, cc);
 		/* Transform data file to header file */
-		dat2h(infname, outfname, varname, deffname, "w");
+		data2h(infname, outfname, varname, deffname, "w");
 	}
 
 	/* Trasform BF Backoff table data file to header file */
@@ -210,7 +215,6 @@ int main(int argc, char *argv[])
 		sprintf(cc, "%d", SKUTableIdx);
 		strcat(varname, cc);
 		/* Transform data file to header file */
-		dat2h(infname, outfname, varname, deffname, "w");
+		data2h(infname, outfname, varname, deffname, "w");
 	}
 }
-

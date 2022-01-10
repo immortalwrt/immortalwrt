@@ -20,39 +20,37 @@
 #define HQA_CMD_MAGIC_NO 0x18142880
 
 /* RX STAT */
-#define HQA_RX_STAT_MACFCSERRCNT                    0x1
-#define HQA_RX_STAT_MAC_MDRDYCNT                    0x2
-#define HQA_RX_STAT_PHY_MDRDYCNT                    0x3
-#define HQA_RX_STAT_PHY_FCSERRCNT                   0x4
-#define HQA_RX_STAT_PD					            0x5
-#define HQA_RX_STAT_CCK_SIG_SFD                     0x6
-#define HQA_RX_STAT_OFDM_SIG_TAG					0x7
-#define HQA_RX_STAT_RSSI                            0x8
-#define HQA_RX_RESET_PHY_COUNT                      0x9
-#define HQA_RX_RESET_MAC_COUNT						0xa
+#define HQA_RX_STAT_MACFCSERRCNT 0x1
+#define HQA_RX_STAT_MAC_MDRDYCNT 0x2
+#define HQA_RX_STAT_PHY_MDRDYCNT 0x3
+#define HQA_RX_STAT_PHY_FCSERRCNT 0x4
+#define HQA_RX_STAT_PD 0x5
+#define HQA_RX_STAT_CCK_SIG_SFD 0x6
+#define HQA_RX_STAT_OFDM_SIG_TAG 0x7
+#define HQA_RX_STAT_RSSI 0x8
+#define HQA_RX_RESET_PHY_COUNT 0x9
+#define HQA_RX_RESET_MAC_COUNT 0xa
 
 /* FW Event Callback */
 VOID HQA_GetThermalValue_CB(struct cmd_msg *msg, char *Data, UINT16 Len);
 
-
 struct GNU_PACKED _HQA_CMD_FRAME {
-	UINT32		MagicNo;
-	UINT16		Type;
-	UINT16		Id;
-	UINT16		Length;
-	UINT16		Sequence;
-	UCHAR		Data[2048];
+	UINT32 MagicNo;
+	UINT16 Type;
+	UINT16 Id;
+	UINT16 Length;
+	UINT16 Sequence;
+	UCHAR Data[2048];
 };
 
-typedef INT32(*HQA_CMD_HANDLER)(
-	struct _RTMP_ADAPTER *pAd,
-	RTMP_IOCTL_INPUT_STRUCT * wrq,
-	struct GNU_PACKED _HQA_CMD_FRAME * HqaCmdFrame);
+typedef INT32 (*HQA_CMD_HANDLER)(struct _RTMP_ADAPTER *pAd,
+				 RTMP_IOCTL_INPUT_STRUCT *wrq,
+				 struct GNU_PACKED _HQA_CMD_FRAME *HqaCmdFrame);
 
 struct _HQA_CMD_TABLE {
 	HQA_CMD_HANDLER *CmdSet;
-	UINT32	CmdSetSize;
-	UINT32	CmdOffset;
+	UINT32 CmdSetSize;
+	UINT32 CmdOffset;
 };
 
 struct GNU_PACKED _HQA_RX_STAT {

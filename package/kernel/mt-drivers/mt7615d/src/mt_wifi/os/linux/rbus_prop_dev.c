@@ -44,13 +44,12 @@ extern MEM_INFO_LIST PktInfoList;
 static struct pci_device_id mt_rbus_tbl[] DEVINITDATA = {
 
 #ifdef MT7622
-	{PCI_DEVICE(0x14c3, 0x7622)},
+	{ PCI_DEVICE(0x14c3, 0x7622) },
 #endif /* MT7622 */
 	{} /* terminate list */
 };
 
 MODULE_DEVICE_TABLE(pci, mt_rbus_tbl);
-
 
 #define RBUS_TSSI_CTRL_OFFSET 0x34
 #define RBUS_PA_LNA_CTRL_OFFSET 0x38
@@ -71,7 +70,8 @@ int rbus_pa_lna_set(struct _RTMP_ADAPTER *ad, UINT32 mode)
 	return 0;
 }
 
-static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_id *pci_id)
+static int DEVINIT mt_rbus_probe(struct pci_dev *pdev,
+				 const struct pci_device_id *pci_id)
 {
 	struct net_device *net_dev;
 	ULONG csr_addr;
@@ -81,7 +81,8 @@ static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_i
 	RTMP_OS_NETDEV_OP_HOOK netDevHook;
 	UINT32 Value;
 
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("===> rt2880_probe\n"));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("===> rt2880_probe\n"));
 
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
 		/*
@@ -91,7 +92,7 @@ static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_i
 		pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
 	} else {
 		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
-				 ("set DMA mask failed\n"));
+			 ("set DMA mask failed\n"));
 		goto err_out;
 	}
 
@@ -99,12 +100,14 @@ static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_i
 	MemInfoListInital();
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 	/* map physical address to virtual address for accessing register */
-	csr_addr = (unsigned long)ioremap(pci_resource_start(pdev, 0), pci_resource_len(pdev, 0));
+	csr_addr = (unsigned long)ioremap(pci_resource_start(pdev, 0),
+					  pci_resource_len(pdev, 0));
 	/* Allocate RTMP_ADAPTER adapter structure */
 	os_alloc_mem(NULL, (UCHAR **)&handle, sizeof(struct os_cookie));
 
 	if (!handle) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("Allocate memory for os_cookie failed!\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("Allocate memory for os_cookie failed!\n"));
 		goto err_out;
 	}
 
@@ -116,7 +119,8 @@ static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_i
 	rv = RTMPAllocAdapterBlock(handle, (VOID **)&pAd);
 
 	if (rv != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, (" RTMPAllocAdapterBlock !=  NDIS_STATUS_SUCCESS\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 (" RTMPAllocAdapterBlock !=  NDIS_STATUS_SUCCESS\n"));
 		os_free_mem(handle);
 		goto err_out;
 	}
@@ -137,8 +141,9 @@ static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_i
 	/*assign net_dev as pdev's privdate*/
 	pci_set_drvdata(pdev, net_dev);
 	/* Here are the net_device structure with pci-bus specific parameters. */
-	net_dev->irq = pdev->irq;			/* Interrupt IRQ number */
-	net_dev->base_addr = csr_addr;		/* Save CSR virtual address and irq to device structure */
+	net_dev->irq = pdev->irq; /* Interrupt IRQ number */
+	net_dev->base_addr =
+		csr_addr; /* Save CSR virtual address and irq to device structure */
 
 	RTMP_DRIVER_CHIP_PREPARE(pAd);
 	/*All done, it's time to register the net device to kernel. */
@@ -146,11 +151,15 @@ static int DEVINIT mt_rbus_probe(struct pci_dev *pdev, const struct pci_device_i
 	rv = RtmpOSNetDevAttach(pAd->OpMode, net_dev, &netDevHook);
 
 	if (rv) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("failed to call RtmpOSNetDevAttach(), rv=%d!\n", rv));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("failed to call RtmpOSNetDevAttach(), rv=%d!\n", rv));
 		goto err_out_free_netdev;
 	}
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("%s: at CSR addr 0x%lx, IRQ %ld.\n", net_dev->name, (ULONG)csr_addr, (long int)net_dev->irq));
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE, ("<=== %s()\n", __func__));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("%s: at CSR addr 0x%lx, IRQ %ld.\n", net_dev->name,
+		  (ULONG)csr_addr, (long int)net_dev->irq));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_TRACE,
+		 ("<=== %s()\n", __func__));
 #if defined(CONFIG_RA_CLASSIFIER) && (!defined(CONFIG_RA_CLASSIFIER_MODULE))
 	proc_ptr = proc_ralink_wl_video;
 
@@ -170,7 +179,7 @@ err_out_free_netdev:
 
 		if ((memalctotal != 0) || (pktalctotal != 0)) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("Error: Memory leak!!\n"));
+				 ("Error: Memory leak!!\n"));
 			ASSERT(0);
 		}
 
@@ -189,6 +198,7 @@ static VOID DEVEXIT mt_rbus_remove(struct pci_dev *pci_dev)
 {
 	struct net_device *net_dev = pci_get_drvdata(pci_dev);
 	RTMP_ADAPTER *pAd;
+	PUINT8 csr_addr = NULL;
 
 	if (net_dev == NULL)
 		return;
@@ -197,8 +207,10 @@ static VOID DEVEXIT mt_rbus_remove(struct pci_dev *pci_dev)
 	GET_PAD_FROM_NET_DEV(pAd, net_dev);
 
 	if (pAd != NULL) {
+		csr_addr = pAd->PciHif.CSRBaseAddress;
 		RtmpPhyNetDevExit(pAd, net_dev);
 		RtmpRaDevCtrlExit(pAd);
+		iounmap(csr_addr);
 	} else
 		RtmpOSNetDevDetach(net_dev);
 
@@ -220,7 +232,7 @@ static VOID DEVEXIT mt_rbus_remove(struct pci_dev *pci_dev)
 
 		if ((memalctotal != 0) || (pktalctotal != 0)) {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("Error: Memory leak!!\n"));
+				 ("Error: Memory leak!!\n"));
 			ASSERT(0);
 		}
 
@@ -234,30 +246,24 @@ static VOID DEVEXIT mt_rbus_remove(struct pci_dev *pci_dev)
  *	Our PCI driver structure
  */
 static struct pci_driver mt_rbus_driver = {
-name:
-	"mt_rbus",
-id_table :
-	mt_rbus_tbl,
-probe :
-	mt_rbus_probe,
-remove :
-	DEVEXIT_P(mt_rbus_remove),
+	name: "mt_rbus",
+	id_table: mt_rbus_tbl,
+	probe: mt_rbus_probe,
+	remove: DEVEXIT_P(mt_rbus_remove),
 };
-
 
 /*
  *	Driver module load/unload function
  */
 int __init wbsys_module_init(void)
 {
-	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("register %s\n", RTMP_DRV_NAME));
+	MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+		 ("register %s\n", RTMP_DRV_NAME));
 #ifdef MEM_ALLOC_INFO_SUPPORT
 	MemInfoListInital();
 #endif /* MEM_ALLOC_INFO_SUPPORT */
 	return pci_register_driver(&mt_rbus_driver);
-
 }
-
 
 void __exit wbsys_module_exit(void)
 {
@@ -273,4 +279,3 @@ module_exit(wbsys_module_exit);
 #endif /* MULTI_INF_SUPPORT */
 
 #endif /* RTMP_RBUS_SUPPORT */
-

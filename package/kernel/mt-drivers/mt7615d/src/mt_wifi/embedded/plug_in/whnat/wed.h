@@ -19,31 +19,30 @@
 
 #include "woe_basic.h"
 
-
 /*WED Token setting*/
-#define WED_TOKEN_STATUS_INIT	1
-#define WED_TOKEN_UNIT			128
-#define WED_TOKEN_STATUS_UNIT	32
-#define WED_TOKEN_RSV			0
+#define WED_TOKEN_STATUS_INIT 1
+#define WED_TOKEN_UNIT 128
+#define WED_TOKEN_STATUS_UNIT 32
+#define WED_TOKEN_RSV 0
 /*buffer mgmet initial token cnt*/
 /*max cr4 support token id, mt7622 can support up to 8192*/
-#define WED_TOKEN_ID_MAX		4096
+#define WED_TOKEN_ID_MAX 4096
 
 #ifdef WED_DYNAMIC_BM_SUPPORT
-#define WED_TOKEN_EXPEND_SIZE	128
-#define WED_TOKEN_LOW			2
-#define WED_TOKEN_HIGH			(2*WED_TOKEN_LOW-1)
+#define WED_TOKEN_EXPEND_SIZE 128
+#define WED_TOKEN_LOW 2
+#define WED_TOKEN_HIGH (2 * WED_TOKEN_LOW - 1)
 #endif /*WED_DYNAMIC_BM_SUPPORT*/
 /*buffer manager token id range, start -> end*/
-#define WED_TOKEN_START			WIFI_TX_TOKEN_CNT
-#define WED_TOKEN_END			(WED_TOKEN_ID_MAX-1)
+#define WED_TOKEN_START WIFI_TX_TOKEN_CNT
+#define WED_TOKEN_END (WED_TOKEN_ID_MAX - 1)
 
 /*buffer mgmet can allocate max token number*/
-#define WED_TOKEN_CNT_MAX		(WED_TOKEN_ID_MAX-WED_TOKEN_START)
+#define WED_TOKEN_CNT_MAX (WED_TOKEN_ID_MAX - WED_TOKEN_START)
 #ifdef WED_DYNAMIC_BM_SUPPORT
-#define WED_TOKEN_CNT			1152
+#define WED_TOKEN_CNT 1152
 #else
-#define WED_TOKEN_CNT			WED_TOKEN_CNT_MAX
+#define WED_TOKEN_CNT WED_TOKEN_CNT_MAX
 #endif
 
 #define WED_PKT_NUM_GET(_wed) (_wed->res_ctrl.tx_ctrl.res.pkt_num)
@@ -56,37 +55,36 @@ struct whnat_txdmad {
 	unsigned int sdp0;
 
 	/* Word 1 */
-	unsigned int ddone:1;
-	unsigned int last0:1;
-	unsigned int sdl0:14;
-	unsigned int burst:1;
-	unsigned int last1:1;
-	unsigned int sdlen1:14;
+	unsigned int ddone : 1;
+	unsigned int last0 : 1;
+	unsigned int sdl0 : 14;
+	unsigned int burst : 1;
+	unsigned int last1 : 1;
+	unsigned int sdlen1 : 14;
 	/* Word 2 */
 	unsigned int sdp1;
 	/* Word 3*/
-	unsigned int rsv:16;
-	unsigned int winfo:16;
-}  __packed;
+	unsigned int rsv : 16;
+	unsigned int winfo : 16;
+} __packed;
 #else
 struct whnat_txdmad {
 	/* Word	0 */
 	unsigned int sdp0;
 	/* Word	1 */
-	unsigned int sdlen1:14;
-	unsigned int last1:1;
-	unsigned int burst:1;
-	unsigned int sdl0:14;
-	unsigned int last0:1;
-	unsigned int ddone:1;
+	unsigned int sdlen1 : 14;
+	unsigned int last1 : 1;
+	unsigned int burst : 1;
+	unsigned int sdl0 : 14;
+	unsigned int last0 : 1;
+	unsigned int ddone : 1;
 	/*Word2 */
 	unsigned int sdp1;
 	/* Word 3*/
-	unsigned int winfo:16;
-	unsigned int rsv:16;
-}  __packed;
+	unsigned int winfo : 16;
+	unsigned int rsv : 16;
+} __packed;
 #endif /* RT_BIG_ENDIAN */
-
 
 struct wed_token_info {
 	unsigned int token_id;
@@ -191,8 +189,6 @@ struct wed_entry {
 	void *whnat;
 };
 
-
-
 enum {
 	WED_PROC_TX_RING_BASIC = 0,
 	WED_PROC_TX_BUF_BASIC = 1,
@@ -208,8 +204,8 @@ enum {
 	WED_PROC_END
 };
 
-
-int wed_init(struct platform_device *pdev, unsigned char idx, struct wed_entry *wed);
+int wed_init(struct platform_device *pdev, unsigned char idx,
+	     struct wed_entry *wed);
 void wed_exit(struct platform_device *pdev, struct wed_entry *wed);
 int wed_ring_init(struct wed_entry *entry);
 void wed_ring_exit(struct wed_entry *entry);
@@ -227,7 +223,8 @@ unsigned char wed_slot_map_get(unsigned int idx);
 
 void wed_eint_handle(struct wed_entry *wed, unsigned int status);
 
-#define WED_TX_RING_GET(_wed, _idx) (&(_wed)->res_ctrl.tx_ctrl.ring_ctrl.ring[_idx])
+#define WED_TX_RING_GET(_wed, _idx)                                            \
+	(&(_wed)->res_ctrl.tx_ctrl.ring_ctrl.ring[_idx])
 
 void dump_wed_value(struct wed_entry *wed, char *name, unsigned int addr);
 
@@ -236,6 +233,5 @@ int wed_ser_init(struct wed_entry *wed);
 void wed_ser_exit(struct wed_entry *wed);
 void wed_ser_dump(struct wed_entry *wed);
 #endif /*ERR_RECOVERY*/
-
 
 #endif /*_WED_H*/

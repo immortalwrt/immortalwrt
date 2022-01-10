@@ -11,7 +11,6 @@ void mt_wlan_hook_init(void)
 	DlListInit(&wlan_hook.hook_head);
 }
 
-
 /*
 *
 */
@@ -19,17 +18,17 @@ int mt_wlan_hook_call(unsigned short hook, void *ad, void *priv)
 {
 	struct mt_wlan_hook_ops *cur;
 
-	cur = DlListEntry((&wlan_hook.hook_head)->Next, struct mt_wlan_hook_ops, list);
+	cur = DlListEntry((&wlan_hook.hook_head)->Next, struct mt_wlan_hook_ops,
+			  list);
 	if (cur) {
-		DlListForEach(cur, &wlan_hook.hook_head, struct mt_wlan_hook_ops, list)
+		DlListForEach(cur, &wlan_hook.hook_head,
+			      struct mt_wlan_hook_ops, list)
 
-		if (cur->hooks & 1 << hook)
-			cur->fun(hook, ad, priv);
+			if (cur->hooks & 1 << hook) cur->fun(hook, ad, priv);
 	}
 
 	return 0;
 }
-
 
 /*
 *
@@ -42,12 +41,14 @@ int mt_wlan_hook_register(struct mt_wlan_hook_ops *ops)
 	if (!ops)
 		return -1;
 
-	cur = DlListEntry((&wlan_hook.hook_head)->Next, struct mt_wlan_hook_ops, list);
+	cur = DlListEntry((&wlan_hook.hook_head)->Next, struct mt_wlan_hook_ops,
+			  list);
 	if (cur) {
 		DlListForEachSafe(cur, next, &wlan_hook.hook_head,
-						  struct mt_wlan_hook_ops, list)
+				  struct mt_wlan_hook_ops, list)
 
-		if (cur && ops->priority > cur->priority) {
+			if (cur && ops->priority > cur->priority)
+		{
 			(ops->list).Next = &next->list;
 			cur->list.Next = &ops->list;
 			return 0;
@@ -58,8 +59,9 @@ int mt_wlan_hook_register(struct mt_wlan_hook_ops *ops)
 	}
 	return 0;
 }
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(mt_wlan_hook_register);
-
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */
 
 /*
 *
@@ -72,13 +74,16 @@ int mt_wlan_hook_unregister(struct mt_wlan_hook_ops *ops)
 		return -1;
 
 	DlListForEachSafe(cur, next, &wlan_hook.hook_head,
-					  struct mt_wlan_hook_ops, list)
+			  struct mt_wlan_hook_ops, list)
 
-	if (ops == cur) {
+		if (ops == cur)
+	{
 		DlListDel(&ops->list);
 		return 0;
 	}
 
 	return -1;
 }
+#ifndef MT76XX_COMBO_DUAL_DRIVER_SUPPORT
 EXPORT_SYMBOL(mt_wlan_hook_unregister);
+#endif /* MT76XX_COMBO_DUAL_DRIVER_SUPPORT */

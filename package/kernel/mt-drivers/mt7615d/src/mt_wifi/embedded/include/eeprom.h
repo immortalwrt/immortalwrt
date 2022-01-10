@@ -31,119 +31,118 @@
 #include "eeprom/mt_dmac_e2p_def.h"
 
 /* For ioctl check usage */
-#define EEPROM_IS_PROGRAMMED		0x80
+#define EEPROM_IS_PROGRAMMED 0x80
 
-#define E2P_NONE					0x00
-#define E2P_EFUSE_MODE				0x01
-#define E2P_FLASH_MODE				0x02
-#define E2P_EEPROM_MODE			0x03
-#define E2P_BIN_MODE				0x04
-#define NUM_OF_E2P_MODE			0x05
+#define E2P_NONE 0x00
+#define E2P_EFUSE_MODE 0x01
+#define E2P_FLASH_MODE 0x02
+#define E2P_EEPROM_MODE 0x03
+#define E2P_BIN_MODE 0x04
+#define NUM_OF_E2P_MODE 0x05
 
-#define E2P_SRC_FROM_EFUSE		BIT(0)
-#define E2P_SRC_FROM_FLASH		BIT(1)
-#define E2P_SRC_FROM_EEPROM		BIT(2)
-#define E2P_SRC_FROM_BIN		BIT(3)
-#define E2P_SRC_FROM_FLASH_AND_EFUSE    (BIT(1) | BIT(3)) /* merge mode */
-#define E2P_SRC_FROM_BIN_AND_EFUSE      (BIT(0) | BIT(3)) /* merge mode */
+#define E2P_SRC_FROM_EFUSE BIT(0)
+#define E2P_SRC_FROM_FLASH BIT(1)
+#define E2P_SRC_FROM_EEPROM BIT(2)
+#define E2P_SRC_FROM_BIN BIT(3)
+#define E2P_SRC_FROM_FLASH_AND_EFUSE (BIT(1) | BIT(3)) /* merge mode */
+#define E2P_SRC_FROM_BIN_AND_EFUSE (BIT(0) | BIT(3)) /* merge mode */
 
 #ifdef RTMP_MAC_PCI
 #ifdef MT7615
-#define PA_TRIM_START_ADDR1   0x338
-#define PA_TRIM_START_ADDR2   0x3B3
-#define PA_TRIM_BLOCK_SIZE        4
+#define PA_TRIM_START_ADDR1 0x338
+#define PA_TRIM_START_ADDR2 0x3B3
+#define PA_TRIM_BLOCK_SIZE 4
 
-#define MAX_EEPROM_BIN_FILE_SIZE	1024
+#define MAX_EEPROM_BIN_FILE_SIZE 1024
 #else
-#define MAX_EEPROM_BIN_FILE_SIZE	512
+#define MAX_EEPROM_BIN_FILE_SIZE 512
 #endif
 #else
-#define MAX_EEPROM_BIN_FILE_SIZE	1024
+#define MAX_EEPROM_BIN_FILE_SIZE 1024
 #endif /* !RTMP_MAC_PCI */
 
 #if defined(RTMP_MAC_USB) || defined(RT3883)
-#define EEPROM_SIZE					0x400
+#define EEPROM_SIZE 0x400
 #else
 /* #define EEPROM_SIZE					0x200 */
-#define EEPROM_SIZE					0x400
+#define EEPROM_SIZE 0x400
 #endif /* defined(RTMP_MAC_USB) || defined(RT3883) */
 
-#define EEPROM_DEFULT_BIN_FILE	"RT30xxEEPROM.bin"
+#define EEPROM_DEFULT_BIN_FILE "RT30xxEEPROM.bin"
 #ifdef BB_SOC
-#define BIN_FILE_PATH				"/etc/RT30xxEEPROM.bin"
-#if defined(PRE_CAL_TRX_SET1_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) || defined(RLM_CAL_CACHE_SUPPORT)
-#define CAL_FILE_PATH				"/etc/CALDATA_default.bin"
+#define BIN_FILE_PATH "/etc/RT30xxEEPROM.bin"
+#if defined(PRE_CAL_TRX_SET1_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) ||  \
+	defined(RLM_CAL_CACHE_SUPPORT)
+#define CAL_FILE_PATH "/etc/CALDATA_default.bin"
 #endif /* PRE_CAL_TRX_SET1_SUPPORT */
 #if defined(CAL_BIN_FILE_SUPPORT) && defined(MT7615)
-#define CAL_BIN_FILE_PATH           "/etc/CALIBRATION_DATA.bin"
+#define CAL_BIN_FILE_PATH "/etc/CALIBRATION_DATA.bin"
 #endif /* CAL_BIN_FILE_SUPPORT */
 #else
 /* #define BIN_FILE_PATH				"/tmp/RT30xxEEPROM.bin" */
 #ifdef WCX_SUPPORT
-#define BIN_FILE_PATH				"/data/nvram/APCFG/APRDEB/WIFI"
+#define BIN_FILE_PATH "/data/nvram/APCFG/APRDEB/WIFI"
 #else
-#define BIN_FILE_PATH				"/etc/RT30xxEEPROM.bin"
-#if defined(PRE_CAL_TRX_SET1_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) || defined(RLM_CAL_CACHE_SUPPORT)
-#define CAL_FILE_PATH				"/etc/CALDATA_default.bin"
+#define BIN_FILE_PATH "/etc/RT30xxEEPROM.bin"
+#if defined(PRE_CAL_TRX_SET1_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) ||  \
+	defined(RLM_CAL_CACHE_SUPPORT)
+#define CAL_FILE_PATH "/etc/CALDATA_default.bin"
 #endif /* PRE_CAL_TRX_SET1_SUPPORT */
 #if defined(CAL_BIN_FILE_SUPPORT) && defined(MT7615)
-#define CAL_BIN_FILE_PATH           "/etc/CALIBRATION_DATA.bin"
+#define CAL_BIN_FILE_PATH "/etc/CALIBRATION_DATA.bin"
 #endif /* CAL_BIN_FILE_SUPPORT */
 #endif /* WCX_SUPPORT */
 #endif /* BB_SOC */
 
-#define EEPROM_DFT_FILE_DIR		"/etc_ro/wlan/"
-#define EEPROM_1ST_FILE_DIR		"/etc_ro/Wireless/RT2860/"
-#define EEPROM_2ND_FILE_DIR		"/etc_ro/Wireless/iNIC/"
+#define EEPROM_DFT_FILE_DIR "/etc_ro/wlan/"
+#define EEPROM_1ST_FILE_DIR "/etc_ro/Wireless/RT2860/"
+#define EEPROM_2ND_FILE_DIR "/etc_ro/Wireless/iNIC/"
 
 #ifndef EEPROM_DEFAULT_FILE_PATH
 /* RFIC 2820 */
-#define EEPROM_DEFAULT_FILE_PATH                     "/etc_ro/wlan/RT2880_RT2820_AP_2T3R_V1_6.bin"
+#define EEPROM_DEFAULT_FILE_PATH "/etc_ro/wlan/RT2880_RT2820_AP_2T3R_V1_6.bin"
 
 #ifdef MT7615
 #undef EEPROM_DEFAULT_FILE_PATH
-#define EEPROM_DEFAULT_FILE_PATH                     "/etc_ro/wlan/MT7615_EEPROM.bin"
+// #define EEPROM_DEFAULT_FILE_PATH "/etc_ro/wlan/MT7615_EEPROM.bin"
+#define EEPROM_DEFAULT_FILE_PATH "/dev/mtdblock2"
 #endif /* MT7615 */
-
-
 
 #endif /* EEPROM_DEFAULT_FILE_PATH */
 
 typedef struct eeprom_flash_info_t {
-	UINT	offset;
-	UINT	size;
-	RTMP_STRING	bin_name[L1PROFILE_ATTRNAME_LEN];
+	UINT offset;
+	UINT size;
+	RTMP_STRING bin_name[L1PROFILE_ATTRNAME_LEN];
 } eeprom_flash_info;
 
-
-#define NVRAM_OFFSET				0x30000
+#define NVRAM_OFFSET 0x30000
 
 #if defined(CONFIG_RT2880_FLASH_32M)
-#define DEFAULT_RF_OFFSET					0x1FE0000
+#define DEFAULT_RF_OFFSET 0x1FE0000
 #else
-#define DEFAULT_RF_OFFSET					0x40000
+#define DEFAULT_RF_OFFSET 0x40000
 #endif
 
-#define SECOND_RF_OFFSET					0x48000
+#define SECOND_RF_OFFSET 0x48000
 
 #ifdef RT_BIG_ENDIAN
-typedef	union _EEPROM_WORD_STRUC {
+typedef union _EEPROM_WORD_STRUC {
 	struct {
-		UCHAR	Byte1;				/* High Byte */
-		UCHAR	Byte0;				/* Low Byte */
+		UCHAR Byte1; /* High Byte */
+		UCHAR Byte0; /* Low Byte */
 	} field;
-	USHORT	word;
+	USHORT word;
 } EEPROM_WORD_STRUC;
 #else
-typedef	union _EEPROM_WORD_STRUC {
+typedef union _EEPROM_WORD_STRUC {
 	struct {
-		UCHAR	Byte0;
-		UCHAR	Byte1;
+		UCHAR Byte0;
+		UCHAR Byte1;
 	} field;
-	USHORT	word;
+	USHORT word;
 } EEPROM_WORD_STRUC;
 #endif
-
 
 /* ------------------------------------------------------------------- */
 /*  E2PROM data layout */
@@ -151,8 +150,8 @@ typedef	union _EEPROM_WORD_STRUC {
 
 /* Board type */
 
-#define BOARD_TYPE_MINI_CARD		0	/* Mini card */
-#define BOARD_TYPE_USB_PEN		1	/* USB pen */
+#define BOARD_TYPE_MINI_CARD 0 /* Mini card */
+#define BOARD_TYPE_USB_PEN 1 /* USB pen */
 
 /*
 	EEPROM antenna select format
@@ -161,44 +160,44 @@ typedef	union _EEPROM_WORD_STRUC {
 #ifdef RT_BIG_ENDIAN
 typedef union _EEPROM_NIC_CINFIG2_STRUC {
 	struct {
-		USHORT DACTestBit:1;	/* control if driver should patch the DAC issue */
-		USHORT CoexBit:1;
-		USHORT bInternalTxALC:1;	/* Internal Tx ALC */
-		USHORT AntOpt:1;	/* Fix Antenna Option: 0:Main; 1: Aux */
-		USHORT AntDiversity:1;	/* Antenna diversity */
-		USHORT Rsv1:1;	/* must be 0 */
-		USHORT BW40MAvailForA:1;	/* 0:enable, 1:disable */
-		USHORT BW40MAvailForG:1;	/* 0:enable, 1:disable */
-		USHORT EnableWPSPBC:1;	/* WPS PBC Control bit */
-		USHORT BW40MSidebandForA:1;
-		USHORT BW40MSidebandForG:1;
-		USHORT CardbusAcceleration:1;	/* !!! NOTE: 0 - enable, 1 - disable */
-		USHORT ExternalLNAForA:1;	/* external LNA enable for 5G */
-		USHORT ExternalLNAForG:1;	/* external LNA enable for 2.4G */
-		USHORT DynamicTxAgcControl:1;	/* */
-		USHORT HardwareRadioControl:1;	/* Whether RF is controlled by driver or HW. 1:enable hw control, 0:disable */
+		USHORT DACTestBit : 1; /* control if driver should patch the DAC issue */
+		USHORT CoexBit : 1;
+		USHORT bInternalTxALC : 1; /* Internal Tx ALC */
+		USHORT AntOpt : 1; /* Fix Antenna Option: 0:Main; 1: Aux */
+		USHORT AntDiversity : 1; /* Antenna diversity */
+		USHORT Rsv1 : 1; /* must be 0 */
+		USHORT BW40MAvailForA : 1; /* 0:enable, 1:disable */
+		USHORT BW40MAvailForG : 1; /* 0:enable, 1:disable */
+		USHORT EnableWPSPBC : 1; /* WPS PBC Control bit */
+		USHORT BW40MSidebandForA : 1;
+		USHORT BW40MSidebandForG : 1;
+		USHORT CardbusAcceleration : 1; /* !!! NOTE: 0 - enable, 1 - disable */
+		USHORT ExternalLNAForA : 1; /* external LNA enable for 5G */
+		USHORT ExternalLNAForG : 1; /* external LNA enable for 2.4G */
+		USHORT DynamicTxAgcControl : 1; /* */
+		USHORT HardwareRadioControl : 1; /* Whether RF is controlled by driver or HW. 1:enable hw control, 0:disable */
 	} field;
 	USHORT word;
 } EEPROM_NIC_CONFIG2_STRUC, *PEEPROM_NIC_CONFIG2_STRUC;
 #else
 typedef union _EEPROM_NIC_CINFIG2_STRUC {
 	struct {
-		USHORT HardwareRadioControl:1;	/* 1:enable, 0:disable */
-		USHORT DynamicTxAgcControl:1;	/* */
-		USHORT ExternalLNAForG:1;	/* external LNA enable for 2.4G */
-		USHORT ExternalLNAForA:1;	/* external LNA enable for 5G */
-		USHORT CardbusAcceleration:1;	/* !!! NOTE: 0 - enable, 1 - disable */
-		USHORT BW40MSidebandForG:1;
-		USHORT BW40MSidebandForA:1;
-		USHORT EnableWPSPBC:1;	/* WPS PBC Control bit */
-		USHORT BW40MAvailForG:1;	/* 0:enable, 1:disable */
-		USHORT BW40MAvailForA:1;	/* 0:enable, 1:disable */
-		USHORT Rsv1:1;	/* must be 0 */
-		USHORT AntDiversity:1;	/* Antenna diversity */
-		USHORT AntOpt:1;	/* Fix Antenna Option: 0:Main; 1: Aux */
-		USHORT bInternalTxALC:1;	/* Internal Tx ALC */
-		USHORT CoexBit:1;
-		USHORT DACTestBit:1;	/* control if driver should patch the DAC issue */
+		USHORT HardwareRadioControl : 1; /* 1:enable, 0:disable */
+		USHORT DynamicTxAgcControl : 1; /* */
+		USHORT ExternalLNAForG : 1; /* external LNA enable for 2.4G */
+		USHORT ExternalLNAForA : 1; /* external LNA enable for 5G */
+		USHORT CardbusAcceleration : 1; /* !!! NOTE: 0 - enable, 1 - disable */
+		USHORT BW40MSidebandForG : 1;
+		USHORT BW40MSidebandForA : 1;
+		USHORT EnableWPSPBC : 1; /* WPS PBC Control bit */
+		USHORT BW40MAvailForG : 1; /* 0:enable, 1:disable */
+		USHORT BW40MAvailForA : 1; /* 0:enable, 1:disable */
+		USHORT Rsv1 : 1; /* must be 0 */
+		USHORT AntDiversity : 1; /* Antenna diversity */
+		USHORT AntOpt : 1; /* Fix Antenna Option: 0:Main; 1: Aux */
+		USHORT bInternalTxALC : 1; /* Internal Tx ALC */
+		USHORT CoexBit : 1;
+		USHORT DACTestBit : 1; /* control if driver should patch the DAC issue */
 	} field;
 	USHORT word;
 } EEPROM_NIC_CONFIG2_STRUC, *PEEPROM_NIC_CONFIG2_STRUC;
@@ -210,16 +209,16 @@ typedef union _EEPROM_NIC_CINFIG2_STRUC {
 #ifdef RT_BIG_ENDIAN
 typedef union _EEPROM_TX_PWR_STRUC {
 	struct {
-		signed char Byte1;	/* High Byte */
-		signed char Byte0;	/* Low Byte */
+		signed char Byte1; /* High Byte */
+		signed char Byte0; /* Low Byte */
 	} field;
 	USHORT word;
 } EEPROM_TX_PWR_STRUC, *PEEPROM_TX_PWR_STRUC;
 #else
 typedef union _EEPROM_TX_PWR_STRUC {
 	struct {
-		signed char Byte0;	/* Low Byte */
-		signed char Byte1;	/* High Byte */
+		signed char Byte0; /* Low Byte */
+		signed char Byte1; /* High Byte */
 	} field;
 	USHORT word;
 } EEPROM_TX_PWR_STRUC, *PEEPROM_TX_PWR_STRUC;
@@ -228,16 +227,16 @@ typedef union _EEPROM_TX_PWR_STRUC {
 #ifdef RT_BIG_ENDIAN
 typedef union _EEPROM_VERSION_STRUC {
 	struct {
-		UCHAR Version;	/* High Byte */
-		UCHAR FaeReleaseNumber;	/* Low Byte */
+		UCHAR Version; /* High Byte */
+		UCHAR FaeReleaseNumber; /* Low Byte */
 	} field;
 	USHORT word;
 } EEPROM_VERSION_STRUC, *PEEPROM_VERSION_STRUC;
 #else
 typedef union _EEPROM_VERSION_STRUC {
 	struct {
-		UCHAR FaeReleaseNumber;	/* Low Byte */
-		UCHAR Version;	/* High Byte */
+		UCHAR FaeReleaseNumber; /* Low Byte */
+		UCHAR Version; /* High Byte */
 	} field;
 	USHORT word;
 } EEPROM_VERSION_STRUC, *PEEPROM_VERSION_STRUC;
@@ -246,32 +245,32 @@ typedef union _EEPROM_VERSION_STRUC {
 #ifdef RT_BIG_ENDIAN
 typedef union _EEPROM_LED_STRUC {
 	struct {
-		USHORT Rsvd:3;	/* Reserved */
-		USHORT LedMode:5;	/* Led mode. */
-		USHORT PolarityGPIO_4:1;	/* Polarity GPIO#4 setting. */
-		USHORT PolarityGPIO_3:1;	/* Polarity GPIO#3 setting. */
-		USHORT PolarityGPIO_2:1;	/* Polarity GPIO#2 setting. */
-		USHORT PolarityGPIO_1:1;	/* Polarity GPIO#1 setting. */
-		USHORT PolarityGPIO_0:1;	/* Polarity GPIO#0 setting. */
-		USHORT PolarityACT:1;	/* Polarity ACT setting. */
-		USHORT PolarityRDY_A:1;	/* Polarity RDY_A setting. */
-		USHORT PolarityRDY_G:1;	/* Polarity RDY_G setting. */
+		USHORT Rsvd : 3; /* Reserved */
+		USHORT LedMode : 5; /* Led mode. */
+		USHORT PolarityGPIO_4 : 1; /* Polarity GPIO#4 setting. */
+		USHORT PolarityGPIO_3 : 1; /* Polarity GPIO#3 setting. */
+		USHORT PolarityGPIO_2 : 1; /* Polarity GPIO#2 setting. */
+		USHORT PolarityGPIO_1 : 1; /* Polarity GPIO#1 setting. */
+		USHORT PolarityGPIO_0 : 1; /* Polarity GPIO#0 setting. */
+		USHORT PolarityACT : 1; /* Polarity ACT setting. */
+		USHORT PolarityRDY_A : 1; /* Polarity RDY_A setting. */
+		USHORT PolarityRDY_G : 1; /* Polarity RDY_G setting. */
 	} field;
 	USHORT word;
 } EEPROM_LED_STRUC, *PEEPROM_LED_STRUC;
 #else
 typedef union _EEPROM_LED_STRUC {
 	struct {
-		USHORT PolarityRDY_G:1;	/* Polarity RDY_G setting. */
-		USHORT PolarityRDY_A:1;	/* Polarity RDY_A setting. */
-		USHORT PolarityACT:1;	/* Polarity ACT setting. */
-		USHORT PolarityGPIO_0:1;	/* Polarity GPIO#0 setting. */
-		USHORT PolarityGPIO_1:1;	/* Polarity GPIO#1 setting. */
-		USHORT PolarityGPIO_2:1;	/* Polarity GPIO#2 setting. */
-		USHORT PolarityGPIO_3:1;	/* Polarity GPIO#3 setting. */
-		USHORT PolarityGPIO_4:1;	/* Polarity GPIO#4 setting. */
-		USHORT LedMode:5;	/* Led mode. */
-		USHORT Rsvd:3;	/* Reserved */
+		USHORT PolarityRDY_G : 1; /* Polarity RDY_G setting. */
+		USHORT PolarityRDY_A : 1; /* Polarity RDY_A setting. */
+		USHORT PolarityACT : 1; /* Polarity ACT setting. */
+		USHORT PolarityGPIO_0 : 1; /* Polarity GPIO#0 setting. */
+		USHORT PolarityGPIO_1 : 1; /* Polarity GPIO#1 setting. */
+		USHORT PolarityGPIO_2 : 1; /* Polarity GPIO#2 setting. */
+		USHORT PolarityGPIO_3 : 1; /* Polarity GPIO#3 setting. */
+		USHORT PolarityGPIO_4 : 1; /* Polarity GPIO#4 setting. */
+		USHORT LedMode : 5; /* Led mode. */
+		USHORT Rsvd : 3; /* Reserved */
 	} field;
 	USHORT word;
 } EEPROM_LED_STRUC, *PEEPROM_LED_STRUC;
@@ -280,41 +279,40 @@ typedef union _EEPROM_LED_STRUC {
 #ifdef RT_BIG_ENDIAN
 typedef union _EEPROM_TXPOWER_DELTA_STRUC {
 	struct {
-		UCHAR TxPowerEnable:1;	/* Enable */
-		UCHAR Type:1;	/* 1: plus the delta value, 0: minus the delta value */
-		UCHAR DeltaValue:6;	/* Tx Power dalta value (MAX=4) */
+		UCHAR TxPowerEnable : 1; /* Enable */
+		UCHAR Type : 1; /* 1: plus the delta value, 0: minus the delta value */
+		UCHAR DeltaValue : 6; /* Tx Power dalta value (MAX=4) */
 	} field;
 	UCHAR value;
 } EEPROM_TXPOWER_DELTA_STRUC, *PEEPROM_TXPOWER_DELTA_STRUC;
 #else
 typedef union _EEPROM_TXPOWER_DELTA_STRUC {
 	struct {
-		UCHAR DeltaValue:6;	/* Tx Power dalta value (MAX=4) */
-		UCHAR Type:1;	/* 1: plus the delta value, 0: minus the delta value */
-		UCHAR TxPowerEnable:1;	/* Enable */
+		UCHAR DeltaValue : 6; /* Tx Power dalta value (MAX=4) */
+		UCHAR Type : 1; /* 1: plus the delta value, 0: minus the delta value */
+		UCHAR TxPowerEnable : 1; /* Enable */
 	} field;
 	UCHAR value;
 } EEPROM_TXPOWER_DELTA_STRUC, *PEEPROM_TXPOWER_DELTA_STRUC;
 #endif
 
-
 #ifdef RT_BIG_ENDIAN
 typedef union _EEPROM_TX_PWR_OFFSET_STRUC {
 	struct {
-		UCHAR	Byte1;	/* High Byte */
-		UCHAR	Byte0;	/* Low Byte */
+		UCHAR Byte1; /* High Byte */
+		UCHAR Byte0; /* Low Byte */
 	} field;
 
-	USHORT		word;
+	USHORT word;
 } EEPROM_TX_PWR_OFFSET_STRUC, *PEEPROM_TX_PWR_OFFSET_STRUC;
 #else
 typedef union _EEPROM_TX_PWR_OFFSET_STRUC {
 	struct {
-		UCHAR	Byte0;	/* Low Byte */
-		UCHAR	Byte1;	/* High Byte */
+		UCHAR Byte0; /* Low Byte */
+		UCHAR Byte1; /* High Byte */
 	} field;
 
-	USHORT		word;
+	USHORT word;
 } EEPROM_TX_PWR_OFFSET_STRUC, *PEEPROM_TX_PWR_OFFSET_STRUC;
 #endif /* RT_BIG_ENDIAN */
 
@@ -326,7 +324,7 @@ typedef struct _EEPROM_CONTROL {
 
 #ifdef RF_LOCKDOWN
 typedef struct _EPPROM_PROPERTY_TYPE {
-	USHORT  Offset;
+	USHORT Offset;
 	BOOLEAN RFlcok;
 	BOOLEAN CalFree;
 } EPPROM_PROPERTY_TYPE, *P_EPPROM_PROPERTY_TYPE;
@@ -334,7 +332,7 @@ typedef struct _EPPROM_PROPERTY_TYPE {
 
 #define NIC_CONFIGURE_0 0x34
 #define EXTERNAL_PA_MASK (0x3 << 8)
-#define GET_PA_TYPE(p) (((p) & EXTERNAL_PA_MASK) >> 8)
+#define GET_PA_TYPE(p) (((p)&EXTERNAL_PA_MASK) >> 8)
 
 #define NIC_CONFIGURE_1 0x36
 #define INTERNAL_TX_ALC_EN (1 << 13)
@@ -350,8 +348,6 @@ typedef struct _EPPROM_PROPERTY_TYPE {
 #define A_BAND_20_40_BW_PWR_DELTA_MASK (0x3f << 8)
 #define A_BAND_20_40_BW_PWR_DELTA_SIGN (1 << 14)
 #define A_BAND_20_40_BW_PWR_DELTA_EN (1 << 15)
-
-
 
 #define A_BAND_20_80_BW_PWR_DELTA 0x52
 #define A_BAND_20_80_BW_PWR_DELTA_MASK (0x3f)
@@ -735,12 +731,10 @@ struct _RTMP_ADAPTER;
 /*************************************************************************
   *	Public function declarations for prom-based chipset
   ************************************************************************/
-BOOLEAN rtmp_ee_prom_read16(struct _RTMP_ADAPTER *pAd, UINT16 Offset, UINT16 *pVal);
+BOOLEAN rtmp_ee_prom_read16(struct _RTMP_ADAPTER *pAd, UINT16 Offset,
+			    UINT16 *pVal);
 int rtmp_ee_prom_write16(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT val);
 #endif /* RTMP_PCI_SUPPORT */
-
-
-
 
 #if defined(RTMP_RBUS_SUPPORT) || defined(RTMP_FLASH_SUPPORT)
 /*************************************************************************
@@ -750,25 +744,31 @@ NDIS_STATUS rtmp_nv_init(struct _RTMP_ADAPTER *pAd);
 RTMP_STRING *get_dev_eeprom_binary(VOID *pvAd);
 UINT get_dev_eeprom_offset(VOID *pvAd);
 UINT get_dev_eeprom_size(VOID *pvAd);
-BOOLEAN rtmp_ee_flash_read(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT *pVal);
+BOOLEAN rtmp_ee_flash_read(struct _RTMP_ADAPTER *pAd, USHORT Offset,
+			   USHORT *pVal);
 int rtmp_ee_flash_write(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT data);
-BOOLEAN rtmp_ee_flash_read_with_range(struct _RTMP_ADAPTER *pAd, UINT16 start, UINT16 Length, UCHAR *pbuf);
-int rtmp_ee_flash_write_with_range(struct _RTMP_ADAPTER *pAd, USHORT start, USHORT Length, UCHAR *pbuf);
+BOOLEAN rtmp_ee_flash_read_with_range(struct _RTMP_ADAPTER *pAd, UINT16 start,
+				      UINT16 Length, UCHAR *pbuf);
+int rtmp_ee_flash_write_with_range(struct _RTMP_ADAPTER *pAd, USHORT start,
+				   USHORT Length, UCHAR *pbuf);
 VOID rtmp_ee_flash_read_all(struct _RTMP_ADAPTER *pAd, USHORT *Data);
 VOID rtmp_ee_flash_write_all(struct _RTMP_ADAPTER *pAd);
 #endif /* defined(RTMP_RBUS_SUPPORT) || defined(RTMP_FLASH_SUPPORT) */
-
 
 #ifdef RTMP_EFUSE_SUPPORT
 /*************************************************************************
   *	Public function declarations for efuse-based chipset
   ************************************************************************/
-BOOLEAN rtmp_ee_efuse_read16(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT *pVal);
-int rtmp_ee_efuse_write16(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT data);
+BOOLEAN rtmp_ee_efuse_read16(struct _RTMP_ADAPTER *pAd, USHORT Offset,
+			     USHORT *pVal);
+int rtmp_ee_efuse_write16(struct _RTMP_ADAPTER *pAd, USHORT Offset,
+			  USHORT data);
 INT rtmp_ee_write_to_efuse(struct _RTMP_ADAPTER *pAd);
 
-NTSTATUS eFuseRead(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT *pData, USHORT len);
-NTSTATUS eFuseWrite(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT *pData, USHORT len);
+NTSTATUS eFuseRead(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT *pData,
+		   USHORT len);
+NTSTATUS eFuseWrite(struct _RTMP_ADAPTER *pAd, USHORT Offset, USHORT *pData,
+		    USHORT len);
 
 VOID eFuseGetFreeBlockCount(struct _RTMP_ADAPTER *pAd, UINT *EfuseFreeBlock);
 
@@ -779,27 +779,27 @@ INT efuse_probe(struct _RTMP_ADAPTER *pAd);
 /*************************************************************************
   *	Public function declarations for using BIN buffer mode to access eeprom contents
   ************************************************************************/
-BOOLEAN rtmp_ee_bin_read16(struct _RTMP_ADAPTER *pAd, UINT16 Offset, UINT16 *pValue);
+BOOLEAN rtmp_ee_bin_read16(struct _RTMP_ADAPTER *pAd, UINT16 Offset,
+			   UINT16 *pValue);
 
-INT rtmp_ee_bin_write16(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN USHORT			Offset,
-	IN USHORT			data);
+INT rtmp_ee_bin_write16(IN struct _RTMP_ADAPTER *pAd, IN USHORT Offset,
+			IN USHORT data);
 
-INT rtmp_ee_load_from_bin(
-	IN struct _RTMP_ADAPTER *pAd);
+INT rtmp_ee_load_from_bin(IN struct _RTMP_ADAPTER *pAd);
 
-INT rtmp_ee_write_to_bin(
-	IN struct _RTMP_ADAPTER *pAd);
+INT rtmp_ee_write_to_bin(IN struct _RTMP_ADAPTER *pAd);
 
 #ifdef BB_SOC
-BOOLEAN rtmp_ee_bin_read_with_range(struct _RTMP_ADAPTER *pAd, UINT16 start, UINT16 Length, UCHAR *pbuf);
-int rtmp_ee_bin_write_with_range(struct _RTMP_ADAPTER *pAd, USHORT start, USHORT Length, UCHAR *pbuf);
+BOOLEAN rtmp_ee_bin_read_with_range(struct _RTMP_ADAPTER *pAd, UINT16 start,
+				    UINT16 Length, UCHAR *pbuf);
+int rtmp_ee_bin_write_with_range(struct _RTMP_ADAPTER *pAd, USHORT start,
+				 USHORT Length, UCHAR *pbuf);
 #endif
 
 INT rtmp_ee_write_to_prom(struct _RTMP_ADAPTER *pAd);
 
-INT Set_LoadEepromBufferFromBin_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
+INT Set_LoadEepromBufferFromBin_Proc(struct _RTMP_ADAPTER *pAd,
+				     RTMP_STRING *arg);
 
 INT Set_EepromBufferWriteBack_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
@@ -807,32 +807,21 @@ INT Set_bufferMode_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
 INT show_e2pinfo_proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
-#if defined(PRE_CAL_TRX_SET1_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) || defined(RLM_CAL_CACHE_SUPPORT)
-NDIS_STATUS rtmp_cal_load_from_bin(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UCHAR *buf,
-	IN ULONG offset,
-	IN ULONG len);
+#if defined(PRE_CAL_TRX_SET1_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) ||  \
+	defined(RLM_CAL_CACHE_SUPPORT)
+NDIS_STATUS rtmp_cal_load_from_bin(IN struct _RTMP_ADAPTER *pAd, IN UCHAR *buf,
+				   IN ULONG offset, IN ULONG len);
 
-NDIS_STATUS rtmp_cal_write_to_bin(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UCHAR *buf,
-	IN ULONG offset,
-	IN ULONG len);
+NDIS_STATUS rtmp_cal_write_to_bin(IN struct _RTMP_ADAPTER *pAd, IN UCHAR *buf,
+				  IN ULONG offset, IN ULONG len);
 #endif /* PRE_CAL_TRX_SET1_SUPPORT */
 
 #if defined(CAL_BIN_FILE_SUPPORT) && defined(MT7615)
-INT Cal_Data_Write_To_Bin(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UINT8 *Buf,
-	IN UINT32 Offset,
-	IN UINT32 Len);
+INT Cal_Data_Write_To_Bin(IN struct _RTMP_ADAPTER *pAd, IN UINT8 *Buf,
+			  IN UINT32 Offset, IN UINT32 Len);
 
-INT Cal_Data_Load_From_Bin(
-	IN struct _RTMP_ADAPTER *pAd,
-	IN UINT8 *Buf,
-	IN UINT32 Offset,
-	IN UINT32 Len);
+INT Cal_Data_Load_From_Bin(IN struct _RTMP_ADAPTER *pAd, IN UINT8 *Buf,
+			   IN UINT32 Offset, IN UINT32 Len);
 #endif /* CAL_BIN_FILE_SUPPORT */
 
 #ifdef CAL_FREE_IC_SUPPORT
@@ -840,11 +829,11 @@ INT Set_LoadCalFreeData_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 INT Set_CheckCalFree_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 #endif
 
-
 /*************************************************************************
   *	Public function declarations for prom operation callback functions setting
   ************************************************************************/
-INT RtmpChipOpsEepromHook(struct _RTMP_ADAPTER *pAd, INT infType, INT forceMode);
+INT RtmpChipOpsEepromHook(struct _RTMP_ADAPTER *pAd, INT infType,
+			  INT forceMode);
 
 INT NICReadEEPROMParameters(struct _RTMP_ADAPTER *pAd, RTMP_STRING *mac_addr);
 

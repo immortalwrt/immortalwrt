@@ -33,7 +33,6 @@
 #include "rt_os_net.h"
 #include <linux/pci.h>
 
-
 IRQ_HANDLE_TYPE
 #if (KERNEL_VERSION(2, 6, 19) <= LINUX_VERSION_CODE)
 rt2860_interrupt(int irq, void *dev_instance);
@@ -48,13 +47,12 @@ rt2860_interrupt(int irq, void *dev_instance)
 rt2860_interrupt(int irq, void *dev_instance, struct pt_regs *regs)
 #endif
 {
-	struct net_device *net_dev = (struct net_device *) dev_instance;
+	struct net_device *net_dev = (struct net_device *)dev_instance;
 	VOID *pAd = NULL;
 
 	GET_PAD_FROM_NET_DEV(pAd, net_dev);
 	isr_handle(pAd);
 #if (KERNEL_VERSION(2, 5, 0) <= LINUX_VERSION_CODE)
-	return  IRQ_HANDLED;
+	return IRQ_HANDLED;
 #endif
 }
-

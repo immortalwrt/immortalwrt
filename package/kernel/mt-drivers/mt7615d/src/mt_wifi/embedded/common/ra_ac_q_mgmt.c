@@ -23,23 +23,26 @@
 #include "mcu/mt_cmd.h"
 
 #ifdef RED_SUPPORT
-#define BADNODE_TIMER_PERIOD	100
-
+#define BADNODE_TIMER_PERIOD 100
 
 DECLARE_TIMER_FUNCTION(red_badnode_timeout);
 VOID red_badnode_timeout(PVOID SystemSpecific1, PVOID FunctionContext,
-			PVOID SystemSpecific2, PVOID SystemSpecific3)
+			 PVOID SystemSpecific2, PVOID SystemSpecific3)
 {
 	PMAC_TABLE_ENTRY pEntry;
 	STA_TR_ENTRY *tr_entry;
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)FunctionContext;
+#ifdef VOW_SUPPORT
 	UINT8 fgATCEnable = pAd->vow_cfg.en_bw_ctrl;
 	UINT8 fgATFEnable = pAd->vow_cfg.en_airtime_fairness;
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
 	UINT8 fgATCorWATFEnable = fgATCEnable || (fgATFEnable && fgWATFEnable);
+#else
+	enum { fgATCorWATFEnable = false };
+#endif /* VOW_SUPPORT */
 	UINT8 ucWlanIdx;
 
-	for (ucWlanIdx = 0 ; ucWlanIdx < RED_STA_REC_NUM; ucWlanIdx++) {
+	for (ucWlanIdx = 0; ucWlanIdx < RED_STA_REC_NUM; ucWlanIdx++) {
 		pEntry = &pAd->MacTab.Content[ucWlanIdx];
 		if (IS_ENTRY_NONE(pEntry))
 			continue;
@@ -69,13 +72,18 @@ VOID RedInit(PRTMP_ADAPTER pAd)
 		if (pAd->red_have_cr4) {
 			MtCmdSetRedEnable(pAd, HOST2CR4, pAd->red_en);
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: set CR4/N9 RED Enable to %d.\n", __func__, pAd->red_en));
+				 ("%s: set CR4/N9 RED Enable to %d.\n",
+				  __func__, pAd->red_en));
 		} else {
 			/*For 7622 (No CR4), need to initial the parameter on driver */
 			for (i = 0; i < RED_STA_REC_NUM; i++) {
-				prRedSta->i4MpduTime = RED_MPDU_TIME_INIT;	/*us */
-				prRedSta->u4Dropth = RED_HT_BW40_DEFAULT_THRESHOLD * QLEN_SCALED;
-				prRedSta->ucMultiplyNum = RED_MULTIPLE_NUM_DEFAULT;
+				prRedSta->i4MpduTime =
+					RED_MPDU_TIME_INIT; /*us */
+				prRedSta->u4Dropth =
+					RED_HT_BW40_DEFAULT_THRESHOLD *
+					QLEN_SCALED;
+				prRedSta->ucMultiplyNum =
+					RED_MULTIPLE_NUM_DEFAULT;
 				prRedSta->u2DriverFRCnt = 0;
 				prRedSta->tx_msdu_avg_cnt = 0;
 				prRedSta->tx_msdu_cnt = 0;
@@ -96,12 +104,17 @@ VOID RedInit(PRTMP_ADAPTER pAd)
 			}
 
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: set Driver/N9 RED Enable to %d.\n", __func__, pAd->red_en));
+				 ("%s: set Driver/N9 RED Enable to %d.\n",
+				  __func__, pAd->red_en));
 
-			RTMPInitTimer(pAd, &pAd->red_badnode_timer, GET_TIMER_FUNCTION(red_badnode_timeout), pAd, TRUE);
-			RTMPSetTimer(&pAd->red_badnode_timer, BADNODE_TIMER_PERIOD);
+			RTMPInitTimer(pAd, &pAd->red_badnode_timer,
+				      GET_TIMER_FUNCTION(red_badnode_timeout),
+				      pAd, TRUE);
+			RTMPSetTimer(&pAd->red_badnode_timer,
+				     BADNODE_TIMER_PERIOD);
 		}
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: RED Initiailize Done.\n", __func__));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: RED Initiailize Done.\n", __func__));
 	}
 }
 
@@ -117,22 +130,32 @@ VOID RedResetSta(UINT8 ucWlanIdx, UINT_8 ucMode, UINT_8 ucBW, RTMP_ADAPTER *pAd)
 		/*HT*/
 		if (ucMode == MODE_HTMIX) {
 			if (ucBW == BW_20)
-				prRedSta->u4Dropth = RED_HT_BW20_DEFAULT_THRESHOLD * QLEN_SCALED;
+				prRedSta->u4Dropth =
+					RED_HT_BW20_DEFAULT_THRESHOLD *
+					QLEN_SCALED;
 
 			if (ucBW == BW_40)
-				prRedSta->u4Dropth = RED_HT_BW40_DEFAULT_THRESHOLD * QLEN_SCALED;
+				prRedSta->u4Dropth =
+					RED_HT_BW40_DEFAULT_THRESHOLD *
+					QLEN_SCALED;
 		}
 
 		/*VHT*/
 		if (ucMode == MODE_VHT) {
 			if (ucBW == BW_20)
-				prRedSta->u4Dropth = RED_VHT_BW20_DEFAULT_THRESHOLD * QLEN_SCALED;
+				prRedSta->u4Dropth =
+					RED_VHT_BW20_DEFAULT_THRESHOLD *
+					QLEN_SCALED;
 
 			if (ucBW == BW_40)
-				prRedSta->u4Dropth = RED_VHT_BW40_DEFAULT_THRESHOLD * QLEN_SCALED;
+				prRedSta->u4Dropth =
+					RED_VHT_BW40_DEFAULT_THRESHOLD *
+					QLEN_SCALED;
 
 			if (ucBW >= BW_80)
-				prRedSta->u4Dropth = RED_VHT_BW80_DEFAULT_THRESHOLD * QLEN_SCALED;
+				prRedSta->u4Dropth =
+					RED_VHT_BW80_DEFAULT_THRESHOLD *
+					QLEN_SCALED;
 		}
 	} else {
 		/*Legacy */
@@ -162,13 +185,15 @@ VOID RedBadNode(UINT8 ucWlanIdx, UINT8 ATC_WATF_Enable, RTMP_ADAPTER *pAd)
 
 	for (i = WMM_AC_BK; i < WMM_NUM_OF_AC; i++) {
 		ucBadNodeCnt = (prAcElm->ucGBCnt & RED_BAD_NODE_CNT_MASK);
-		ucGoodNodeCnt = (prAcElm->ucGBCnt & RED_GOOD_NODE_CNT_MASK) >> RED_GOOD_NODE_CNT_SHIFT_BIT;
-		ucIsBadNode = (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >> RED_IS_BAD_NODE_SHIFT_BIT;
+		ucGoodNodeCnt = (prAcElm->ucGBCnt & RED_GOOD_NODE_CNT_MASK) >>
+				RED_GOOD_NODE_CNT_SHIFT_BIT;
+		ucIsBadNode = (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >>
+			      RED_IS_BAD_NODE_SHIFT_BIT;
 
 		/* Check Is Bad Node or not */
-		if (pkt_buf_cnt >= (prRedSta->u4Dropth >> prAcElm->ucShiftBit)) {
-
-		/* Drop packet immediately if ATC for WATF enable to prevent slow client occupy much PLE buffer.*/
+		if (pkt_buf_cnt >=
+		    (prRedSta->u4Dropth >> prAcElm->ucShiftBit)) {
+			/* Drop packet immediately if ATC for WATF enable to prevent slow client occupy much PLE buffer.*/
 			if (ATC_WATF_Enable)
 				ucBadNodeCnt = RED_MAX_BAD_NODE_CNT;
 			else
@@ -182,13 +207,20 @@ VOID RedBadNode(UINT8 ucWlanIdx, UINT8 ATC_WATF_Enable, RTMP_ADAPTER *pAd)
 		}
 
 		if ((prAcElm->ucShiftBit > 0) &&
-			(prRedSta->u4Dropth >> prAcElm->ucShiftBit) <= (RED_BAD_NODE_DROP_THRESHOLD * QLEN_SCALED)) {
+		    (prRedSta->u4Dropth >> prAcElm->ucShiftBit) <=
+			    (RED_BAD_NODE_DROP_THRESHOLD * QLEN_SCALED)) {
 			if (pEntry->TXBAbitmap != 0)
 				/*HT and VHT */
-				prRedSta->u4Dropth = (RED_BAD_NODE_DROP_THRESHOLD * QLEN_SCALED) << prAcElm->ucShiftBit;
+				prRedSta->u4Dropth =
+					(RED_BAD_NODE_DROP_THRESHOLD *
+					 QLEN_SCALED)
+					<< prAcElm->ucShiftBit;
 			else
 				/*Legacy */
-				prRedSta->u4Dropth = (RED_BAD_NODE_LEGACY_DEFAULT_THRESHOLD * QLEN_SCALED) << prAcElm->ucShiftBit;
+				prRedSta->u4Dropth =
+					(RED_BAD_NODE_LEGACY_DEFAULT_THRESHOLD *
+					 QLEN_SCALED)
+					<< prAcElm->ucShiftBit;
 
 			ucIsSetDefault = TRUE;
 		}
@@ -205,20 +237,21 @@ VOID RedBadNode(UINT8 ucWlanIdx, UINT8 ATC_WATF_Enable, RTMP_ADAPTER *pAd)
 
 			if (prAcElm->ucShiftBit > 0)
 				prAcElm->ucShiftBit--;
-			else	/*ucShiftBit == 0 */
+			else /*ucShiftBit == 0 */
 				ucIsBadNode = FALSE;
 		}
 
-/*
+		/*
 ucGBCnt
  ----------------------------------------------------
 Bits |       7          |       6|      5|      4       |       3|      2|      1|      0       |
       |IsBadNode   |GoodNodeCnt                |       BadNodeCnt                    |
 ----------------------------------------------------
 */
-		prAcElm->ucGBCnt = ((ucIsBadNode << RED_IS_BAD_NODE_SHIFT_BIT) |
-							(ucGoodNodeCnt << RED_GOOD_NODE_CNT_SHIFT_BIT) |
-							(ucBadNodeCnt));
+		prAcElm->ucGBCnt =
+			((ucIsBadNode << RED_IS_BAD_NODE_SHIFT_BIT) |
+			 (ucGoodNodeCnt << RED_GOOD_NODE_CNT_SHIFT_BIT) |
+			 (ucBadNodeCnt));
 		prAcElm++;
 	}
 }
@@ -241,9 +274,9 @@ bool RedMarkPktDrop(UINT8 ucWlanIdx, UINT8 ucQidx, PRTMP_ADAPTER pAd)
 	   2. For WMM detection and number of InUseSta is less than 2.
 	   3. Only one station is connect.
 	 */
-	if ((pAd->red_en == FALSE)
-		|| ((pAd->is_on) && (pAd->red_in_use_sta <= 2))
-		|| (pAd->red_in_use_sta <= 1)) {
+	if ((pAd->red_en == FALSE) ||
+	    ((pAd->is_on) && (pAd->red_in_use_sta <= 2)) ||
+	    (pAd->red_in_use_sta <= 1)) {
 		/*Set IsBadNode(bit 7) to FALSE */
 		prRedSta->arRedElm[0].ucGBCnt &= 0x7F;
 		prRedSta->arRedElm[1].ucGBCnt &= 0x7F;
@@ -251,14 +284,16 @@ bool RedMarkPktDrop(UINT8 ucWlanIdx, UINT8 ucQidx, PRTMP_ADAPTER pAd)
 		prRedSta->arRedElm[3].ucGBCnt &= 0x7F;
 	}
 
-	IsBadNode = (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >> RED_IS_BAD_NODE_SHIFT_BIT;
+	IsBadNode = (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >>
+		    RED_IS_BAD_NODE_SHIFT_BIT;
 
 	if (pkt_buf_cnt == 0)
 		prAcElm->u2qEmptyCnt++;
 
 	if (IsBadNode) {
 		/* Drop packet if qlen over Drop_threshold */
-		if (pkt_buf_cnt >= (prRedSta->u4Dropth >> prAcElm->ucShiftBit)) {
+		if (pkt_buf_cnt >=
+		    (prRedSta->u4Dropth >> prAcElm->ucShiftBit)) {
 			prAcElm->u2DropCnt++;
 			prAcElm->u2TotalDropCnt++;
 			return TRUE;
@@ -270,12 +305,11 @@ bool RedMarkPktDrop(UINT8 ucWlanIdx, UINT8 ucQidx, PRTMP_ADAPTER pAd)
 	return FALSE;
 }
 
-
-bool red_mark_pktdrop_cr4(UINT8 ucWlanIdx, UINT8 ucQidx, struct _RTMP_ADAPTER *pAd)
+bool red_mark_pktdrop_cr4(UINT8 ucWlanIdx, UINT8 ucQidx,
+			  struct _RTMP_ADAPTER *pAd)
 {
 	return FALSE;
 }
-
 
 VOID RedRecordCP(UINT8 ucWlanIdx, PRTMP_ADAPTER pAd)
 {
@@ -291,7 +325,6 @@ VOID red_recordcp_cr4(UINT8 ucWlanIdx, struct _RTMP_ADAPTER *pAd)
 	return;
 }
 
-
 VOID RedEnqueueFail(UINT8 ucWlanIdx, UINT8 ucQidx, PRTMP_ADAPTER pAd)
 {
 	UINT8 ucAC = (ucQidx % WMM_NUM_OF_AC);
@@ -301,12 +334,11 @@ VOID RedEnqueueFail(UINT8 ucWlanIdx, UINT8 ucQidx, PRTMP_ADAPTER pAd)
 		prAcElm->u2EnqueueCnt--;
 }
 
-
-VOID red_enqueue_fail_cr4(UINT8 ucWlanIdx, UINT8 ucQidx, struct _RTMP_ADAPTER *pAd)
+VOID red_enqueue_fail_cr4(UINT8 ucWlanIdx, UINT8 ucQidx,
+			  struct _RTMP_ADAPTER *pAd)
 {
 	return;
 }
-
 
 VOID UpdateThreshold(UINT8 ucWlanIdx, RTMP_ADAPTER *pAd)
 {
@@ -323,17 +355,19 @@ VOID UpdateThreshold(UINT8 ucWlanIdx, RTMP_ADAPTER *pAd)
 	else if (u2Dropth >= RED_DROP_TH_UPPER_BOUND)
 		u2Dropth = RED_DROP_TH_UPPER_BOUND;
 
-	prRedSta->u4Dropth = (u2Dropth * prRedSta->ucMultiplyNum * QLEN_SCALED / 10);
+	prRedSta->u4Dropth =
+		(u2Dropth * prRedSta->ucMultiplyNum * QLEN_SCALED / 10);
 }
 
-VOID UpdateAirtimeRatio(UINT8 ucWlanIdx, UINT8 ucAirtimeRatio, UINT8 ATC_WATF_Enable, RTMP_ADAPTER *pAd)
+VOID UpdateAirtimeRatio(UINT8 ucWlanIdx, UINT8 ucAirtimeRatio,
+			UINT8 ATC_WATF_Enable, RTMP_ADAPTER *pAd)
 {
 	P_RED_STA_T prRedSta = &pAd->red_sta[ucWlanIdx];
 	UINT8 ucNum;
 	UINT8 ucIndex;
 
-	if (ATC_WATF_Enable
-		&& (prRedSta->u4Dropth >= RED_BAD_NODE_DROP_THRESHOLD * QLEN_SCALED)) {
+	if (ATC_WATF_Enable &&
+	    (prRedSta->u4Dropth >= RED_BAD_NODE_DROP_THRESHOLD * QLEN_SCALED)) {
 		ucIndex = ucAirtimeRatio / 10;
 		ucNum = ucIndex * 15 / 10;
 	} else
@@ -364,25 +398,30 @@ VOID appShowRedDebugMessage(RTMP_ADAPTER *pAd)
 
 		for (j = WMM_AC_BK; j <= WMM_AC_VO; j++) {
 			/*Only if EnqueueCnt >0 or DropCnt >0, show this AC's message */
-			pkt_buf_cnt = prAcElm->u2EnqueueCnt - prAcElm->u2DequeueCnt;
+			pkt_buf_cnt =
+				prAcElm->u2EnqueueCnt - prAcElm->u2DequeueCnt;
 			if ((pkt_buf_cnt > 0) || (prAcElm->u2DropCnt > 0)) {
-				MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-					 ("STA %d, AC %d, Len %d, Thres %d, Drop %d, ShiftBit %d, qEmpty %d, ATRatio %d, G/Bcnt %d/%d, IsBad %d, msdu %d msducnt (%d %d)\n",
-					  (i),
-					  (j),
-					  (pkt_buf_cnt),
-					  (prRedSta->u4Dropth / QLEN_SCALED) >> prAcElm->ucShiftBit,
-					  (prAcElm->u2DropCnt),
-					  (prAcElm->ucShiftBit),
-					  (prAcElm->u2qEmptyCnt),
-					  (prRedSta->ucMultiplyNum),
-					  (prAcElm->ucGBCnt & RED_GOOD_NODE_CNT_MASK) >> 4,
-					  (prAcElm->ucGBCnt & RED_BAD_NODE_CNT_MASK),
-					  (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >> 7,
-					  (prRedSta->i4MpduTime),
-					  (prRedSta->tx_msdu_avg_cnt),
-					  (prRedSta->tx_msdu_cnt)
-					 ));
+				MTWF_LOG(
+					DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+					("STA %d, AC %d, Len %d, Thres %d, Drop %d, ShiftBit %d, qEmpty %d, ATRatio %d, G/Bcnt %d/%d, IsBad %d, msdu %d msducnt (%d %d)\n",
+					 (i), (j), (pkt_buf_cnt),
+					 (prRedSta->u4Dropth / QLEN_SCALED) >>
+						 prAcElm->ucShiftBit,
+					 (prAcElm->u2DropCnt),
+					 (prAcElm->ucShiftBit),
+					 (prAcElm->u2qEmptyCnt),
+					 (prRedSta->ucMultiplyNum),
+					 (prAcElm->ucGBCnt &
+					  RED_GOOD_NODE_CNT_MASK) >>
+						 4,
+					 (prAcElm->ucGBCnt &
+					  RED_BAD_NODE_CNT_MASK),
+					 (prAcElm->ucGBCnt &
+					  RED_IS_BAD_NODE_MASK) >>
+						 7,
+					 (prRedSta->i4MpduTime),
+					 (prRedSta->tx_msdu_avg_cnt),
+					 (prRedSta->tx_msdu_cnt)));
 				prAcElm->u2DropCnt = 0;
 				prAcElm->u2qEmptyCnt = 0;
 			}
@@ -395,6 +434,7 @@ VOID appShowRedDebugMessage(RTMP_ADAPTER *pAd)
 
 VOID RedSetTargetDelay(INT16 i2TarDelay, PRTMP_ADAPTER pAd)
 {
+#ifdef VOW_SUPPORT
 	UINT8 fgATCEnable = pAd->vow_cfg.en_bw_ctrl;
 	UINT8 fgATFEnable = pAd->vow_cfg.en_airtime_fairness;
 	UINT8 fgWATFEnable = pAd->vow_watf_en;
@@ -403,10 +443,12 @@ VOID RedSetTargetDelay(INT16 i2TarDelay, PRTMP_ADAPTER pAd)
 	if (fgATCorWATFEnable)
 		pAd->red_atm_on_targetdelay = i2TarDelay;
 	else
+#endif /* VOW_SUPPORT */
 		pAd->red_atm_off_targetdelay = i2TarDelay;
 }
 
-VOID RedCalForceRateRatio(UINT8 ucWcid, UINT16 u2N9ARCnt, UINT16 u2N9FRCnt, RTMP_ADAPTER *pAd)
+VOID RedCalForceRateRatio(UINT8 ucWcid, UINT16 u2N9ARCnt, UINT16 u2N9FRCnt,
+			  RTMP_ADAPTER *pAd)
 {
 	P_RED_STA_T prRedSta = &pAd->red_sta[ucWcid];
 	P_RED_AC_ElEMENT_T prAcElm = &prRedSta->arRedElm[0];
@@ -416,7 +458,8 @@ VOID RedCalForceRateRatio(UINT8 ucWcid, UINT16 u2N9ARCnt, UINT16 u2N9FRCnt, RTMP
 	UINT8 i;
 
 	for (i = WMM_AC_BK; i < WMM_NUM_OF_AC; i++) {
-		ucIsBadNode |= (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >> RED_IS_BAD_NODE_SHIFT_BIT;
+		ucIsBadNode |= (prAcElm->ucGBCnt & RED_IS_BAD_NODE_MASK) >>
+			       RED_IS_BAD_NODE_SHIFT_BIT;
 		prAcElm++;
 	}
 
@@ -425,7 +468,8 @@ VOID RedCalForceRateRatio(UINT8 ucWcid, UINT16 u2N9ARCnt, UINT16 u2N9FRCnt, RTMP
 		u2TxTotalCnt = u2N9ARCnt + u2N9FRCnt + prRedSta->u2DriverFRCnt;
 		/* Ratio = [ForceRateCnt(N9) +  ForceRateCnt(Driver)]/TotalCnt */
 		if (u2TxTotalCnt > 0)
-			ucRatio = (u2N9FRCnt + prRedSta->u2DriverFRCnt) * 100 / u2TxTotalCnt;
+			ucRatio = (u2N9FRCnt + prRedSta->u2DriverFRCnt) * 100 /
+				  u2TxTotalCnt;
 
 		if (ucRatio >= FORCE_RATIO_THRESHOLD)
 			prRedSta->i4MpduTime = -1;
@@ -434,13 +478,14 @@ VOID RedCalForceRateRatio(UINT8 ucWcid, UINT16 u2N9ARCnt, UINT16 u2N9FRCnt, RTMP
 	prRedSta->u2DriverFRCnt = 0;
 }
 
-VOID RedTxFreeEventNotifyHandler(RTMP_ADAPTER *pAd, UINT8 ucQidx, PNDIS_PACKET pkt)
+VOID RedTxFreeEventNotifyHandler(RTMP_ADAPTER *pAd, UINT8 ucQidx,
+				 PNDIS_PACKET pkt)
 {
 	UINT8 ucAC, ucWlanIdx;
 	P_RED_AC_ElEMENT_T prAcElm;
 
 	if ((ucQidx >= TX_Q_AC0) && (ucQidx <= TX_Q_AC33)) {
-			ucAC = (ucQidx % WMM_NUM_OF_AC);
+		ucAC = (ucQidx % WMM_NUM_OF_AC);
 		ucWlanIdx = RTMP_GET_PACKET_WCID(pkt);
 	} else {
 		return;
@@ -474,28 +519,40 @@ INT set_red_enable(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 			pAd->red_en = en;
 			/* to CR4 & N9 */
 #ifdef FQ_SCH_SUPPORT
-			if (!(pAd->fq_ctrl.enable & FQ_READY) || (pAd->red_en == 1))
+			if (!(pAd->fq_ctrl.enable & FQ_READY) ||
+			    (pAd->red_en == 1))
 #endif
-			MtCmdSetRedEnable(pAd, HOST2N9, pAd->red_en);
+				MtCmdSetRedEnable(pAd, HOST2N9, pAd->red_en);
 
 			if (en == 0) {
 				if (pAd->red_badnode_timer.Valid)
-					RTMPReleaseTimer(&pAd->red_badnode_timer, &Cancelled);
+					RTMPReleaseTimer(
+						&pAd->red_badnode_timer,
+						&Cancelled);
 			} else {
 				if (!pAd->red_badnode_timer.Valid) {
-					RTMPInitTimer(pAd, &pAd->red_badnode_timer,
-						GET_TIMER_FUNCTION(red_badnode_timeout), pAd, TRUE);
-					RTMPSetTimer(&pAd->red_badnode_timer, BADNODE_TIMER_PERIOD);
+					RTMPInitTimer(
+						pAd, &pAd->red_badnode_timer,
+						GET_TIMER_FUNCTION(
+							red_badnode_timeout),
+						pAd, TRUE);
+					RTMPSetTimer(&pAd->red_badnode_timer,
+						     BADNODE_TIMER_PERIOD);
 				}
 			}
 
 			if (pAd->red_have_cr4) {
 				MtCmdSetRedEnable(pAd, HOST2CR4, pAd->red_en);
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: set CR4/N9 RED Enable to %d.\n", __func__, pAd->red_en));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s: set CR4/N9 RED Enable to %d.\n",
+					  __func__, pAd->red_en));
 			} else {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: set Driver/N9 RED Enable to %d.\n", __func__, pAd->red_en));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("%s: set Driver/N9 RED Enable to %d.\n",
+					 __func__, pAd->red_en));
 			}
 		} else
 			return FALSE;
@@ -515,12 +572,18 @@ INT set_red_target_delay(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 		if ((rv > 0) && (tarDelay >= 1) && (tarDelay <= 32767)) {
 			if (pAd->red_have_cr4) {
 				MtCmdSetRedTargetDelay(pAd, HOST2CR4, tarDelay);
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: set CR4 RED TARGET_DELAY to %d.\n", __func__, tarDelay));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("%s: set CR4 RED TARGET_DELAY to %d.\n",
+					 __func__, tarDelay));
 			} else {
 				RedSetTargetDelay(tarDelay, pAd);
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: set Driver RED TARGET_DELAY to %d.\n", __func__, tarDelay));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("%s: set Driver RED TARGET_DELAY to %d.\n",
+					 __func__, tarDelay));
 			}
 		} else
 			return FALSE;
@@ -530,7 +593,7 @@ INT set_red_target_delay(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 	return TRUE;
 }
 
-INT set_red_show_sta(PRTMP_ADAPTER pAd,	RTMP_STRING *arg)
+INT set_red_show_sta(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 {
 	UINT32 sta, rv;
 
@@ -540,12 +603,17 @@ INT set_red_show_sta(PRTMP_ADAPTER pAd,	RTMP_STRING *arg)
 		if ((rv > 0) && (sta <= 127)) {
 			if (pAd->red_have_cr4) {
 				MtCmdSetRedShowSta(pAd, HOST2CR4, sta);
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: set CR4 RED show sta to %d.\n", __func__, sta));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_ERROR,
+					 ("%s: set CR4 RED show sta to %d.\n",
+					  __func__, sta));
 			} else {
 				pAd->red_sta_num = sta;
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s: set Driver RED show sta to %d.\n", __func__, sta));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("%s: set Driver RED show sta to %d.\n",
+					 __func__, sta));
 			}
 		} else
 			return FALSE;
@@ -565,7 +633,8 @@ INT set_red_debug_enable(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 		if ((pAd->red_have_cr4 == FALSE) && (rv > 0) && (en <= 1)) {
 			pAd->red_debug_en = en;
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: set RED Debug Message Enable to %d.\n", __func__, pAd->red_debug_en));
+				 ("%s: set RED Debug Message Enable to %d.\n",
+				  __func__, pAd->red_debug_en));
 		} else
 			return FALSE;
 	} else
@@ -573,7 +642,6 @@ INT set_red_debug_enable(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 
 	return TRUE;
 }
-
 
 INT show_red_info(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 {
@@ -584,25 +652,28 @@ INT show_red_info(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 	uRedStaNum = pAd->red_sta_num;
 
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("======== RED(per-STA Tail Drop) Information ========\n"));
+		 ("======== RED(per-STA Tail Drop) Information ========\n"));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("RED Enbale: %d\n", pAd->red_en));
+		 ("RED Enbale: %d\n", pAd->red_en));
 
 	if (pAd->red_have_cr4 == FALSE) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("RED Target Delay: %d(us)\n", pAd->red_targetdelay));
+			 ("RED Target Delay: %d(us)\n", pAd->red_targetdelay));
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("RED Monitor STA: %d\n", pAd->red_sta_num));
+			 ("RED Monitor STA: %d\n", pAd->red_sta_num));
 	}
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Dump RED Total Drop Count:\n"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("Dump RED Total Drop Count:\n"));
 	for (i = 1; i <= (MAX_LEN_OF_MAC_TABLE - HW_BEACON_MAX_NUM); i++) {
 		tr_entry = &pAd->MacTab.tr_entry[i];
 		if (tr_entry->StaRec.ConnectionState != STATE_PORT_SECURE)
 			continue;
-		prAcElm = &(((P_RED_STA_T)&(pAd->red_sta[i]))->arRedElm[WMM_AC_BK]);
+		prAcElm = &(((P_RED_STA_T) & (pAd->red_sta[i]))
+				    ->arRedElm[WMM_AC_BK]);
 		for (j = WMM_AC_BK; j <= WMM_AC_VO; j++, prAcElm++)
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("STA%d[AC%d]:%u \n",
-				i, j, prAcElm->u2TotalDropCnt));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("STA%d[AC%d]:%u \n", i, j,
+				  prAcElm->u2TotalDropCnt));
 	}
 
 	return TRUE;
@@ -622,10 +693,9 @@ INT set_red_dump_reset(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 		prRedSta++;
 	}
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: RED dump reset\n", __func__));
-
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("%s: RED dump reset\n", __func__));
 
 	return TRUE;
 }
 #endif /* RED_SUPPORT */
-

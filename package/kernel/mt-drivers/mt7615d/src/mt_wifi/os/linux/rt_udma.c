@@ -25,7 +25,6 @@
 
 #include <linux/udma_api.h>
 
-
 /*******************************************************************************************
 Routine Description:
     Handle received frames from UDMA layer.
@@ -52,7 +51,6 @@ static void udma_net_rx_callback(struct sk_buff *skb, struct net_device *netdev)
 	MAC_TABLE_ENTRY *pEntry = NULL;
 	struct sk_buff *clone_skb;
 	struct net_device *netdev1;
-
 
 	/* MTWF_LOG(DBG_CAT_RX, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Udma Net Rx Callback--->\n")); */
 	NdisCopyMemory(&mac_addr[0], &skb->data[0], 6);
@@ -97,9 +95,9 @@ static void udma_net_rx_callback(struct sk_buff *skb, struct net_device *netdev)
 				rt28xx_send_packets(skb, netdev);
 				return;
 			} /* else { */
-				/* printk("%s(): %d: Drop VAN tagged (id = %d) but non-matching destined Ucast packets for\n",
+			/* printk("%s(): %d: Drop VAN tagged (id = %d) but non-matching destined Ucast packets for\n",
 				__func__, __LINE__, skb_vlanid); */
-				/* printk("%02x:%02x:%02x:%02x:%02x:%02x\n",
+			/* printk("%02x:%02x:%02x:%02x:%02x:%02x\n",
 				mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]); */
 			/* } */
 		}
@@ -107,18 +105,21 @@ static void udma_net_rx_callback(struct sk_buff *skb, struct net_device *netdev)
 		if (ethtype == ETH_TYPE_VLAN) {
 			memmove(skb->data + 4, skb->data, 12);
 			skb_pull(skb, 4);
-			for (ap_idx = 0 ; ap_idx < pAd->ApCfg.BssidNum ; ap_idx++) {
-				bss_vlanid = pAd->ApCfg.MBSSID[ap_idx].wdev.VLAN_VID;
+			for (ap_idx = 0; ap_idx < pAd->ApCfg.BssidNum;
+			     ap_idx++) {
+				bss_vlanid =
+					pAd->ApCfg.MBSSID[ap_idx].wdev.VLAN_VID;
 				netdev1 = pAd->ApCfg.MBSSID[ap_idx].wdev.if_dev;
 
 				if (RTMP_OS_NETDEV_STATE_RUNNING(netdev1) &&
-					(bss_vlanid == 0 || skb_vlanid == bss_vlanid)) {
-					clone_skb = skb_clone(skb, MEM_ALLOC_FLAG);
+				    (bss_vlanid == 0 ||
+				     skb_vlanid == bss_vlanid)) {
+					clone_skb =
+						skb_clone(skb, MEM_ALLOC_FLAG);
 					clone_skb->dev = netdev1;
 
 					if (bss_vlanid == 0) {
 						/* vlan not configured. Strip 4 bytes vlan-tag before send */
-
 					}
 
 					rt28xx_send_packets(clone_skb, netdev1);
@@ -126,12 +127,16 @@ static void udma_net_rx_callback(struct sk_buff *skb, struct net_device *netdev)
 				}
 			}
 		} else {
-			for (ap_idx = 0 ; ap_idx < pAd->ApCfg.BssidNum ; ap_idx++) {
-				bss_vlanid = pAd->ApCfg.MBSSID[ap_idx].wdev.VLAN_VID;
+			for (ap_idx = 0; ap_idx < pAd->ApCfg.BssidNum;
+			     ap_idx++) {
+				bss_vlanid =
+					pAd->ApCfg.MBSSID[ap_idx].wdev.VLAN_VID;
 				netdev1 = pAd->ApCfg.MBSSID[ap_idx].wdev.if_dev;
 
-				if (RTMP_OS_NETDEV_STATE_RUNNING(netdev1) && bss_vlanid == 0) {
-					clone_skb = skb_clone(skb, MEM_ALLOC_FLAG);
+				if (RTMP_OS_NETDEV_STATE_RUNNING(netdev1) &&
+				    bss_vlanid == 0) {
+					clone_skb =
+						skb_clone(skb, MEM_ALLOC_FLAG);
 					clone_skb->dev = netdev1;
 					/* printk("%s(): %d\n", __func__, __LINE__); */
 					rt28xx_send_packets(clone_skb, netdev1);
@@ -150,9 +155,6 @@ static void udma_net_rx_callback(struct sk_buff *skb, struct net_device *netdev)
 	/* MTWF_LOG(DBG_CAT_RX, DBG_SUBCAT_ALL, DBG_LVL_TRACE,("Udma Net Rx Callback\n")); */
 }
 
-
-
-
 int mt_udma_pkt_send(VOID *ctx, PNDIS_PACKET pRxPkt)
 {
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)ctx;
@@ -168,10 +170,13 @@ int mt_udma_pkt_send(VOID *ctx, PNDIS_PACKET pRxPkt)
 
 #ifdef CONFIG_AP_SUPPORT
 	/* check VLAN tagged packet */
-	if (((GET_OS_PKT_DATAPTR(pRxPkt))[12] == 0x81) && ((GET_OS_PKT_DATAPTR(pRxPkt))[13] == 0x00)) {
-		if (((GET_OS_PKT_DATAPTR(pRxPkt))[16] == 0x88) && ((GET_OS_PKT_DATAPTR(pRxPkt))[17] == 0x8e)) {
+	if (((GET_OS_PKT_DATAPTR(pRxPkt))[12] == 0x81) &&
+	    ((GET_OS_PKT_DATAPTR(pRxPkt))[13] == 0x00)) {
+		if (((GET_OS_PKT_DATAPTR(pRxPkt))[16] == 0x88) &&
+		    ((GET_OS_PKT_DATAPTR(pRxPkt))[17] == 0x8e)) {
 			/* bypass UDMA path for EAPOL type frames */
-			memmove((GET_OS_PKT_DATAPTR(pRxPkt)) + 4, (GET_OS_PKT_DATAPTR(pRxPkt)), 12);
+			memmove((GET_OS_PKT_DATAPTR(pRxPkt)) + 4,
+				(GET_OS_PKT_DATAPTR(pRxPkt)), 12);
 			skb_pull(pRxPkt, 4);
 			/* hex_dump("VLAN EAPOL_DATA" ,GET_OS_PKT_DATAPTR(pRxPkt),GET_OS_PKT_LEN(pRxPkt));		// debug */
 			bUdmaSend = FALSE;
@@ -181,7 +186,6 @@ int mt_udma_pkt_send(VOID *ctx, PNDIS_PACKET pRxPkt)
 	}
 #endif /* CONFIG_AP_SUPPORT */
 
-
 	if (bUdmaSend == TRUE) {
 		udma_xmit_skb(port, RTPKT_TO_OSPKT(pRxPkt));
 		return 0;
@@ -190,7 +194,6 @@ int mt_udma_pkt_send(VOID *ctx, PNDIS_PACKET pRxPkt)
 	/* pkts reaching here will NOT take udma path */
 	return -1;
 }
-
 
 int mt_udma_register(VOID *ctx, PNET_DEV netdev)
 {

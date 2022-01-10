@@ -21,7 +21,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-
 #define PATH_OF_MCU_BIN_IN "/bin/"
 #define PATH_OF_MCU_BIN_OUT "/embedded/include/mcu/"
 #define PATH_OF_EEPROM_IN "/bin/"
@@ -29,24 +28,22 @@
 #define PATH_OF_ROM_PATCH_IN "/bin/"
 #define PATH_OF_ROM_PATCH_OUT "/embedded/include/mcu/"
 
-
 int bin2h(char *infname, char *outfname, char *fw_name, const char *mode)
 {
-	int ret = 0;
 	FILE *infile, *outfile;
 	unsigned char c;
 	int i = 0;
 
 	infile = fopen(infname, "r");
 
-	if (infile == (FILE *) NULL) {
+	if (infile == (FILE *)NULL) {
 		printf("Can't read file %s\n", infname);
 		return -1;
 	}
 
 	outfile = fopen(outfname, mode);
 
-	if (outfile == (FILE *) NULL) {
+	if (outfile == (FILE *)NULL) {
 		printf("Can't open write file %s\n", outfname);
 		fclose(infile);
 		return -1;
@@ -88,32 +85,37 @@ int bin2h(char *infname, char *outfname, char *fw_name, const char *mode)
 	fputs("\n};\n", outfile);
 	fclose(infile);
 	fclose(outfile);
+
+	return 1;
 }
 
 int main(int argc, char *argv[])
 {
-	char infname[512], ine2pname[512], in_rom_patch[512], in_rom_patch_e2[512], in_rom_patch_e3[512];
+	char infname[512], ine2pname[512], in_rom_patch[512],
+		in_rom_patch_e2[512], in_rom_patch_e3[512];
 	char infname1[512];
 	char infname_e2[512], infname_e3[512];
-	char outfname[512], oute2pname[512], out_rom_patch[512], out_rom_patch_e2[512], out_rom_patch_e3[512];
+	char outfname[512], oute2pname[512], out_rom_patch[512],
+		out_rom_patch_e2[512], out_rom_patch_e3[512];
 	char outfname1[512];
 	char outfname_e2[512], outfname_e3[512];
 	char chipsets[1024];
 	char fpga_mode[20], rx_cut_through_mode[20];
-	char fw_name[128], e2p_name[128], rom_patch_name[128], rom_patch_name_e2[128], rom_patch_name_e3[128];
+	char fw_name[128], e2p_name[128], rom_patch_name[128],
+		rom_patch_name_e2[128], rom_patch_name_e3[128];
 	char fw_name_e2[128], fw_name_e3[128];
 	char fw_name1[128];
 	char *rt28xxdir, *rt28xxbin_dir;
-	char *chipset, *token;
-	char *wow, *rt28xx_mode;
+	char *chipset;
+	char *rt28xx_mode;
 	char *fpga, *rx_cut_through;
-	int is_bin2h_fw = 0, is_bin2h_rom_patch = 0, is_bin2h_e2p = 0, is_bin2h_rom_patch_e2 = 0, is_bin2h_rom_patch_e3 = 0;
+	int is_bin2h_fw = 0, is_bin2h_rom_patch = 0, is_bin2h_e2p = 0,
+	    is_bin2h_rom_patch_e2 = 0, is_bin2h_rom_patch_e3 = 0;
 	char ine2pname2[512], ine2pname3[512], e2p_name2[128], e2p_name3[128];
 
 	rt28xxdir = (char *)getenv("RT28xx_DIR");
 	rt28xxbin_dir = (char *)getenv("RT28xx_BIN_DIR");
 	chipset = (char *)getenv("CHIPSET");
-	wow = (char *)getenv("HAS_WOW_SUPPORT");
 	fpga = (char *)getenv("HAS_FPGA_MODE");
 	rx_cut_through = (char *)getenv("HAS_RX_CUT_THROUGH");
 	rt28xx_mode = (char *)getenv("RT28xx_MODE");
@@ -268,12 +270,14 @@ int main(int argc, char *argv[])
 			strcat(in_rom_patch, "mt7615_patch_e1_hdr.bin");
 			strcat(out_rom_patch, "mt7615_rom_patch_e1.h");
 			strcat(rom_patch_name, "mt7615_rom_patch_e1");
-			strcat(in_rom_patch_e3, "mt7615_patch_e3_hdr.bin"); /* mt7615_patch_e3_hdr.bin */
+			strcat(in_rom_patch_e3,
+			       "mt7615_patch_e3_hdr.bin"); /* mt7615_patch_e3_hdr.bin */
 			strcat(out_rom_patch_e3, "mt7615_rom_patch.h");
 			strcat(rom_patch_name_e3, "mt7615_rom_patch");
 
 			if ((strncmp(fpga, "y", 1) == 0))
-				strcat(infname, "WIFI_RAM_CODE_MT7615_FPGA.bin");
+				strcat(infname,
+				       "WIFI_RAM_CODE_MT7615_FPGA.bin");
 			else {
 				strcat(infname, "WIFI_RAM_CODE_MT7615_E1.bin");
 				strcat(infname_e3, "WIFI_RAM_CODE_MT7615.bin");
@@ -300,7 +304,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_iPAiLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_iPAiLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_iPAiLNA");
-			strcat(ine2pname, "iPAiLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "iPAiLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "iPAiLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "iPAiLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, "mt7615_e2p_iPAiLNA.h");
@@ -324,7 +328,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_iPAeLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_iPAeLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_iPAeLNA");
-			strcat(ine2pname, "iPAeLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "iPAeLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "iPAeLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "iPAeLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, rt28xxdir);
@@ -350,7 +354,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_ePAeLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_ePAeLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_ePAeLNA");
-			strcat(ine2pname, "ePAeLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "ePAeLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "ePAeLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "ePAeLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, rt28xxdir);
@@ -376,7 +380,7 @@ int main(int argc, char *argv[])
 			strcat(e2p_name, "MT7615_E2PImage1_ePAiLNA");
 			strcat(e2p_name2, "MT7615_E2PImage2_ePAiLNA");
 			strcat(e2p_name3, "MT7615_E2PImage3_ePAiLNA");
-			strcat(ine2pname, "ePAiLNA/MT7615_EEPROM1.bin");
+			strcat(ine2pname, "ePAiLNA/MT7615_EEPROM.bin");
 			strcat(ine2pname2, "ePAiLNA/MT7615_EEPROM2.bin");
 			strcat(ine2pname3, "ePAiLNA/MT7615_EEPROM3.bin");
 			strcat(oute2pname, rt28xxdir);
@@ -395,7 +399,8 @@ int main(int argc, char *argv[])
 			strcat(rom_patch_name_e2, "mt7622_rom_patch_e2");
 
 			if ((strncmp(fpga, "y", 1) == 0))
-				strcat(infname, "WIFI_RAM_CODE_MT7622_FPGA.bin");
+				strcat(infname,
+				       "WIFI_RAM_CODE_MT7622_FPGA.bin");
 			else {
 				strcat(infname, "WIFI_RAM_CODE_MT7622.bin");
 			}
@@ -447,23 +452,29 @@ int main(int argc, char *argv[])
 
 		if (is_bin2h_fw) {
 			if (strlen(fw_name) != 0)
-				bin2h(infname, outfname, fw_name, "w");              /* N9 E1 */
+				bin2h(infname, outfname, fw_name,
+				      "w"); /* N9 E1 */
 			if (strlen(fw_name_e2) != 0)
-				bin2h(infname_e2, outfname_e2, fw_name_e2, "w");     /* N9 E2 */
+				bin2h(infname_e2, outfname_e2, fw_name_e2,
+				      "w"); /* N9 E2 */
 			if (strlen(fw_name_e3) != 0)
-				bin2h(infname_e3, outfname_e3, fw_name_e3, "w");     /* N9 E3 */
+				bin2h(infname_e3, outfname_e3, fw_name_e3,
+				      "w"); /* N9 E3 */
 			if (strlen(fw_name1) != 0)
-				bin2h(infname1, outfname1, fw_name1, "w");           /* CR4 */
+				bin2h(infname1, outfname1, fw_name1,
+				      "w"); /* CR4 */
 		}
 
 		if (is_bin2h_rom_patch)
 			bin2h(in_rom_patch, out_rom_patch, rom_patch_name, "w");
 
 		if (is_bin2h_rom_patch_e2)
-			bin2h(in_rom_patch_e2, out_rom_patch_e2, rom_patch_name_e2, "w");
+			bin2h(in_rom_patch_e2, out_rom_patch_e2,
+			      rom_patch_name_e2, "w");
 
 		if (is_bin2h_rom_patch_e3)
-			bin2h(in_rom_patch_e3, out_rom_patch_e3, rom_patch_name_e3, "w");
+			bin2h(in_rom_patch_e3, out_rom_patch_e3,
+			      rom_patch_name_e3, "w");
 
 		if (is_bin2h_e2p) {
 			bin2h(ine2pname, oute2pname, e2p_name, "w");

@@ -27,32 +27,33 @@
 
 #include "rt_config.h"
 
-
 #ifdef VIDEO_TURBINE_SUPPORT
-
-
 
 BOOLEAN UpdateFromGlobal = FALSE;
 
-void VideoTurbineUpdate(
-	IN PRTMP_ADAPTER pAd)
+void VideoTurbineUpdate(IN PRTMP_ADAPTER pAd)
 {
 	if (UpdateFromGlobal == TRUE) {
 		pAd->VideoTurbine.Enable = GLOBAL_AP_VIDEO_CONFIG.Enable;
-		pAd->VideoTurbine.ClassifierEnable = GLOBAL_AP_VIDEO_CONFIG.ClassifierEnable;
-		pAd->VideoTurbine.HighTxMode = GLOBAL_AP_VIDEO_CONFIG.HighTxMode;
+		pAd->VideoTurbine.ClassifierEnable =
+			GLOBAL_AP_VIDEO_CONFIG.ClassifierEnable;
+		pAd->VideoTurbine.HighTxMode =
+			GLOBAL_AP_VIDEO_CONFIG.HighTxMode;
 		pAd->VideoTurbine.TxPwr = GLOBAL_AP_VIDEO_CONFIG.TxPwr;
-		pAd->VideoTurbine.VideoMCSEnable = GLOBAL_AP_VIDEO_CONFIG.VideoMCSEnable;
+		pAd->VideoTurbine.VideoMCSEnable =
+			GLOBAL_AP_VIDEO_CONFIG.VideoMCSEnable;
 		pAd->VideoTurbine.VideoMCS = GLOBAL_AP_VIDEO_CONFIG.VideoMCS;
 		pAd->VideoTurbine.TxBASize = GLOBAL_AP_VIDEO_CONFIG.TxBASize;
-		pAd->VideoTurbine.TxLifeTimeMode = GLOBAL_AP_VIDEO_CONFIG.TxLifeTimeMode;
-		pAd->VideoTurbine.TxLifeTime = GLOBAL_AP_VIDEO_CONFIG.TxLifeTime;
-		pAd->VideoTurbine.TxRetryLimit = GLOBAL_AP_VIDEO_CONFIG.TxRetryLimit;
+		pAd->VideoTurbine.TxLifeTimeMode =
+			GLOBAL_AP_VIDEO_CONFIG.TxLifeTimeMode;
+		pAd->VideoTurbine.TxLifeTime =
+			GLOBAL_AP_VIDEO_CONFIG.TxLifeTime;
+		pAd->VideoTurbine.TxRetryLimit =
+			GLOBAL_AP_VIDEO_CONFIG.TxRetryLimit;
 	}
 }
 
-
-VOID TxSwQDepthAdjust(IN RTMP_ADAPTER * pAd, IN UINT32 qLen)
+VOID TxSwQDepthAdjust(IN RTMP_ADAPTER *pAd, IN UINT32 qLen)
 {
 	ULONG IrqFlags;
 	INT qIdx;
@@ -72,20 +73,19 @@ VOID TxSwQDepthAdjust(IN RTMP_ADAPTER * pAd, IN UINT32 qLen)
 
 			if (pEntry) {
 				pPacket = QUEUE_ENTRY_TO_PACKET(pEntry);
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 			} else
 				break;
 		}
 	}
 
 	RTMP_IRQ_UNLOCK(&pAd->irq_lock, IrqFlags);
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():Set TxSwQMaxLen as %d\n",
-			 __func__, pAd->TxSwQMaxLen));
+	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s():Set TxSwQMaxLen as %d\n", __func__, pAd->TxSwQMaxLen));
 }
 
-
-VOID VideoTurbineDynamicTune(
-	IN PRTMP_ADAPTER pAd)
+VOID VideoTurbineDynamicTune(IN PRTMP_ADAPTER pAd)
 {
 	if (pAd->VideoTurbine.Enable == TRUE) {
 		UINT32 MacReg = 0;
@@ -108,41 +108,36 @@ VOID VideoTurbineDynamicTune(
 
 		/* reset to default rate adaptation simping interval */
 		if ((pAd->ra_interval != DEF_RA_TIME_INTRVAL) ||
-			(pAd->ra_fast_interval != DEF_QUICK_RA_TIME_INTERVAL))
+		    (pAd->ra_fast_interval != DEF_QUICK_RA_TIME_INTERVAL))
 			Set_RateAdaptInterval(pAd, "500:100");
 
 		TxSwQDepthAdjust(pAd, MAX_PACKETS_IN_QUEUE);
 	}
 }
 
-UINT32 GetAsicDefaultRetry(
-	IN PRTMP_ADAPTER pAd)
+UINT32 GetAsicDefaultRetry(IN PRTMP_ADAPTER pAd)
 {
 	UINT32 RetryLimit;
 	RetryLimit = 0x1F0F;
 	return RetryLimit;
 }
 
-UCHAR GetAsicDefaultTxBA(
-	IN PRTMP_ADAPTER pAd)
+UCHAR GetAsicDefaultTxBA(IN PRTMP_ADAPTER pAd)
 {
 	return pAd->CommonCfg.TxBASize;
 }
 
-UINT32 GetAsicVideoRetry(
-	IN PRTMP_ADAPTER pAd)
+UINT32 GetAsicVideoRetry(IN PRTMP_ADAPTER pAd)
 {
 	return pAd->VideoTurbine.TxRetryLimit;
 }
 
-UCHAR GetAsicVideoTxBA(
-	IN PRTMP_ADAPTER pAd)
+UCHAR GetAsicVideoTxBA(IN PRTMP_ADAPTER pAd)
 {
 	return pAd->VideoTurbine.TxBASize;
 }
 
-VOID VideoConfigInit(
-	IN PRTMP_ADAPTER pAd)
+VOID VideoConfigInit(IN PRTMP_ADAPTER pAd)
 {
 	pAd->VideoTurbine.Enable = FALSE;
 	pAd->VideoTurbine.TxRetryLimit = 0x2F1F;
@@ -150,5 +145,3 @@ VOID VideoConfigInit(
 }
 
 #endif /* VIDEO_TURBINE_SUPPORT */
-
-

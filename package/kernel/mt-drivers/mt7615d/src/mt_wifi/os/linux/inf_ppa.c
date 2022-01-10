@@ -34,9 +34,11 @@
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 
-extern INT rt28xx_send_packets(struct sk_buff *skb_p, struct net_device *net_dev);
+extern INT rt28xx_send_packets(struct sk_buff *skb_p,
+			       struct net_device *net_dev);
 
-int ifx_ra_start_xmit(struct net_device *rx_dev, struct net_device *tx_dev, struct sk_buff *skb, int len)
+int ifx_ra_start_xmit(struct net_device *rx_dev, struct net_device *tx_dev,
+		      struct sk_buff *skb, int len)
 {
 	if (tx_dev != NULL) {
 		SET_OS_PKT_NETDEV(skb, tx_dev);

@@ -367,7 +367,7 @@ config FQ_SCH_SUPPORT
 	bool "Fair Queueing support"
 	depends on WIFI_DRIVER
 	depends on MT_AP_SUPPORT && VOW_SUPPORT
-	depends on CHIP_MT7622
+	depends on CHIP_MT7615E || CHIP_MT7622
 	default y
 
 choice

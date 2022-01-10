@@ -29,26 +29,23 @@
 #ifndef __MT_MAC_H__
 #define __MT_MAC_H__
 
-
 #include "mac/mac_mt/top.h"
 
 #ifndef COMPOS_WIN
 #endif /* COMPOS_WIN */
 
-
-
 struct _RTMP_ADAPTER;
 
 typedef struct _TX_RADIO_SET {
-	BOOLEAN ItxBFEnable;/* IBF */
-	BOOLEAN EtxBFEnable;/* EBF */
-	BOOLEAN  ShortGI;
-	BOOLEAN  Ldpc;
-	BOOLEAN  Stbc;
-	UINT8	   CurrentPerPktBW;/* BW_20, BW_40 for Fixed Rate */
-	UINT8	    Premable;
-	UINT8	    RateCode;
-	UINT8	    PhyMode;
+	BOOLEAN ItxBFEnable; /* IBF */
+	BOOLEAN EtxBFEnable; /* EBF */
+	BOOLEAN ShortGI;
+	BOOLEAN Ldpc;
+	BOOLEAN Stbc;
+	UINT8 CurrentPerPktBW; /* BW_20, BW_40 for Fixed Rate */
+	UINT8 Premable;
+	UINT8 RateCode;
+	UINT8 PhyMode;
 } TX_RADIO_SET_T;
 
 typedef struct _TMAC_INFO {
@@ -69,8 +66,8 @@ typedef struct _TMAC_INFO {
 	UINT8 Pid; /*W: PacketID*/
 	UINT8 AntPri;
 	UINT8 SpeEn;
-	CHAR  PowerOffset;
-	BOOLEAN	TimingMeasure;
+	CHAR PowerOffset;
+	BOOLEAN TimingMeasure;
 	TX_RADIO_SET_T TxRadioSet;
 	BOOLEAN LongFmt;
 	BOOLEAN NeedTrans;
@@ -94,9 +91,9 @@ typedef struct _TMAC_INFO {
 	UCHAR band_idx;
 } TMAC_INFO;
 
-VOID MtWriteTMacInfo(struct _RTMP_ADAPTER *pAd, UCHAR *buf, struct _TMAC_INFO *TxInfo);
+VOID MtWriteTMacInfo(struct _RTMP_ADAPTER *pAd, UCHAR *buf,
+		     struct _TMAC_INFO *TxInfo);
 
 #include "mac/mac_mt/dmac/mt_dmac.h"
 
 #endif /* __MT_MAC_H__ */
-

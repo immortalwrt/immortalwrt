@@ -25,93 +25,91 @@
 
 #ifdef DOT11R_FT_SUPPORT
 
-
 #ifndef __FT_CMM_H__
 #define __FT_CMM_H__
 
 #include "dot11r_ft.h"
 #include "security/dot11i_wpa.h"
 
-
 /* ========================================================================== */
 /* Definition */
-#define IS_FT_RSN_STA(_pEntry)		\
-	((_pEntry) && IS_ENTRY_CLIENT(_pEntry) && (_pEntry->MdIeInfo.Len != 0) && (_pEntry->RSNIE_Len > 0))
+#define IS_FT_RSN_STA(_pEntry)                                                 \
+	((_pEntry) && IS_ENTRY_CLIENT(_pEntry) &&                              \
+	 (_pEntry->MdIeInfo.Len != 0) && (_pEntry->RSNIE_Len > 0) &&           \
+	 (IS_AKM_FT_WPA2(_pEntry->SecConfig.AKMMap) ||                         \
+	  IS_AKM_FT_WPA2PSK(_pEntry->SecConfig.AKMMap) ||                      \
+	  IS_AKM_FT_SAE_SHA256(_pEntry->SecConfig.AKMMap) ||                   \
+	  IS_AKM_FT_WPA2_SHA384(_pEntry->SecConfig.AKMMap)))
 
-#define FT_SET_MDID(__D, __S) \
+#define FT_SET_MDID(__D, __S)                                                  \
 	NdisMoveMemory((PUCHAR)(__D), (PUCHAR)(__S), FT_MDID_LEN)
 
 #define FT_MDID_EQU(__D, __S) (memcmp((__D), (__S), FT_MDID_LEN) == 0)
 
-
 /* ----- General ----- */
-#define FT_KDP_FUNC_SOCK_COMM			/* used socket to communicate with driver */
-#define FT_KDP_FUNC_R0KH_IP_RECORD		/* used to keep IP of any R0KH */
+#define FT_KDP_FUNC_SOCK_COMM /* used socket to communicate with driver */
+#define FT_KDP_FUNC_R0KH_IP_RECORD /* used to keep IP of any R0KH */
 /*#define FT_KDP_FUNC_INFO_BROADCAST	broadcast my AP information periodically */
 #define FT_KDP_TEST
 
-#define FT_KDP_RALINK_PASSPHRASE		"Ralink"
-#define FT_KDP_KEY_DEFAULT				"12345678"
-#define FT_KDP_KEY_ENCRYPTION_EXTEND	8 /* 8B for AES encryption extend size */
-#define FT_DEFAULT_MDID					"RT"
+#define FT_KDP_RALINK_PASSPHRASE "Ralink"
+#define FT_KDP_KEY_DEFAULT "12345678"
+#define FT_KDP_KEY_ENCRYPTION_EXTEND 8 /* 8B for AES encryption extend size */
+#define FT_DEFAULT_MDID "RT"
 
-#define FT_REASSOC_DEADLINE				20
+#define FT_REASSOC_DEADLINE 20
 
-#define FT_KDP_INFO_BC_PERIOD_TIME		1000 /* 1s */
+#define FT_KDP_INFO_BC_PERIOD_TIME 1000 /* 1s */
 
-#define IAPP_ETH_PRO					0xEEEE
+#define IAPP_ETH_PRO 0xEEEE
 
 /* key information */
-#define FT_IP_ADDRESS_SIZE				4
-#define FT_NONCE_SIZE					8
+#define FT_IP_ADDRESS_SIZE 4
+#define FT_NONCE_SIZE 8
 
-#define FT_KDP_WPA_NAME_MAX_SIZE		16
-#define FT_KDP_R0KHID_MAX_SIZE			48
-#define FT_KDP_R1KHID_MAX_SIZE			6
-#define FT_KDP_S1KHID_MAX_SIZE			6
-#define FT_KDP_PMKR1_MAX_SIZE			32 /* 256-bit key */
+#define FT_KDP_WPA_NAME_MAX_SIZE 16
+#define FT_KDP_R0KHID_MAX_SIZE 48
+#define FT_KDP_R1KHID_MAX_SIZE 6
+#define FT_KDP_S1KHID_MAX_SIZE 6
+#define FT_KDP_PMKR1_MAX_SIZE 32 /* 256-bit key */
 
-#define FT_R1KH_ENTRY_TABLE_SIZE		64
-#define FT_R1KH_ENTRY_HASH_TABLE_SIZE	FT_R1KH_ENTRY_TABLE_SIZE
+#define FT_R1KH_ENTRY_TABLE_SIZE 64
+#define FT_R1KH_ENTRY_HASH_TABLE_SIZE FT_R1KH_ENTRY_TABLE_SIZE
 
 /* ----- FT KDP ----- */
-#define FT_KDP_EVENT_MAX				10 /* queue max 10 events */
+#define FT_KDP_EVENT_MAX 10 /* queue max 10 events */
 
 /* ----- FT RIC ----- */
-#define MAX_RICIES_LEN					255
-
+#define MAX_RICIES_LEN 255
 
 /* ========================================================================== */
 /* FT user configuration. */
 
 /* ethernet header */
 typedef struct _FT_DRV_ETH_HEADER {
-
-	UCHAR	DA[ETH_ALEN];
-	UCHAR	SA[ETH_ALEN];
-	UINT16	Len;
+	UCHAR DA[ETH_ALEN];
+	UCHAR SA[ETH_ALEN];
+	UINT16 Len;
 
 } GNU_PACKED FT_DRV_ETH_HEADER;
 
 /* R0KH information record */
 typedef struct _FT_KDP_R0KH_INFO {
-
 	struct _FT_KDP_R0KH_INFO *pNext;
 
-	UCHAR	R0KHID[FT_KDP_R0KHID_MAX_SIZE];
-	UCHAR	MAC[ETH_ALEN];
-	UINT32	IP;
+	UCHAR R0KHID[FT_KDP_R0KHID_MAX_SIZE];
+	UCHAR MAC[ETH_ALEN];
+	UINT32 IP;
 
-	ULONG	TimeUpdate;
+	ULONG TimeUpdate;
 
 } FT_KDP_R0KH_INFO;
 
 /* FT KDP Control Block */
 typedef struct _FT_KDP_CTRL_BLOCK {
-
 	/* used to record all known R0KH information in the DS */
 #ifdef FT_KDP_FUNC_R0KH_IP_RECORD
-#define FT_KDP_R0KH_INFO_MAX_SIZE	256
+#define FT_KDP_R0KH_INFO_MAX_SIZE 256
 	FT_KDP_R0KH_INFO *R0KH_InfoHead;
 	FT_KDP_R0KH_INFO *R0KH_InfoTail;
 	UINT32 R0KH_Size;
@@ -133,16 +131,17 @@ typedef struct _FT_KDP_CTRL_BLOCK {
 /* FT RIC Control Block */
 
 typedef struct _FT_CAP_CFG {
-	UINT8 FtOverDs:1; /* 1: Enable FT over the DS. */
-	UINT8 RsrReqCap:1; /* 1: Enable FT resource request. */
-	UINT8 Dot11rFtEnable:1; /* 1: FT enable , 0: FT disable. */
-	UINT8 Reserved:5;	/* reserve. */
+	UINT8 FtOverDs : 1; /* 1: Enable FT over the DS. */
+	UINT8 RsrReqCap : 1; /* 1: Enable FT resource request. */
+	UINT8 Dot11rFtEnable : 1; /* 1: FT enable , 0: FT disable. */
+	UINT8 Reserved : 5; /* reserve. */
 } FT_CAP_CFG, *PFT_CAP_CFG;
 
 typedef struct GNU_PACKED _FT_CFG {
 	UINT8 FtMdId[FT_MDID_LEN]; /* Mobility domain ID of Fast Bss. */
 	UINT32 AssocDeadLine; /* 100ms */
-	UINT8 FtR0khId[FT_ROKH_ID_LEN + 1]; /* Lenght of ROKHID can be 1 to 48 chars. */
+	UINT8 FtR0khId[FT_ROKH_ID_LEN +
+		       1]; /* Lenght of ROKHID can be 1 to 48 chars. */
 	UINT8 FtR0khIdLen;
 #ifdef HOSTAPD_11R_SUPPORT
 	UINT8 FtR1khId[ETH_ALEN];
@@ -229,17 +228,15 @@ typedef struct __FT_INFO {
 } FT_INFO, *PFT_INFO;
 
 typedef struct __FT_MIC_CONTENT {
-	PUINT8		rsnie_ptr;
-	UINT		rsnie_len;
-	PUINT8		mdie_ptr;
-	UINT		mdie_len;
-	PUINT8		ftie_ptr;
-	UINT		ftie_len;
-	PUINT8		ric_ptr;
-	UINT		ric_len;
+	PUINT8 rsnie_ptr;
+	UINT rsnie_len;
+	PUINT8 mdie_ptr;
+	UINT mdie_len;
+	PUINT8 ftie_ptr;
+	UINT ftie_len;
+	PUINT8 ric_ptr;
+	UINT ric_len;
 } FT_MIC_CONTENT, *PFT_MIC_CONTENT;
-
-
 
 #endif /* __FT_CMM_H__ */
 #endif /* DOT11R_FT_SUPPORT */

@@ -20,24 +20,22 @@
 
 ***************************************************************************/
 
-
 #ifndef __RRM_CMM_H
 #define __RRM_CMM_H
 
-#if defined (HOSTAPD_11K_SUPPORT) || defined (DOT11K_RRM_SUPPORT)
+#if defined(HOSTAPD_11K_SUPPORT) || defined(DOT11K_RRM_SUPPORT)
 
 #include "rtmp_type.h"
 #include "dot11k_rrm.h"
 
+#define RRM_DEFAULT_QUIET_PERIOD 200
+#define RRM_DEFAULT_QUIET_DURATION 30
+#define RRM_DEFAULT_QUIET_OFFSET 20
 
-#define RRM_DEFAULT_QUIET_PERIOD	200
-#define RRM_DEFAULT_QUIET_DURATION	30
-#define RRM_DEFAULT_QUIET_OFFSET	20
+#define RRM_QUIET_IDLE 0
+#define RRM_QUIET_SILENT 1
 
-#define RRM_QUIET_IDLE		0
-#define RRM_QUIET_SILENT	1
-
-#define MAX_NUM_OF_REQ_IE  13
+#define MAX_NUM_OF_REQ_IE 13
 
 typedef struct _RRM_QUIET_CB {
 	BOOLEAN QuietState;
@@ -45,7 +43,6 @@ typedef struct _RRM_QUIET_CB {
 	UINT8 MeasureCh;
 	RALINK_TIMER_STRUCT QuietOffsetTimer;
 	RALINK_TIMER_STRUCT QuietTimer;
-
 
 	UINT8 QuietCnt;
 	UINT8 QuietPeriod;
@@ -60,28 +57,28 @@ typedef struct _RRM_CONFIG {
 	RRM_QUIET_CB QuietCB;
 
 	/* FOR AP Measurement Report */
-	UINT8	PeerMeasurementToken;
+	UINT8 PeerMeasurementToken;
 	/* UINT8	PeerMeasurementType; */
 	BOOLEAN bPeerReqLCI;
 	BOOLEAN bPeerReqCIVIC;
 	RRM_EN_CAP_IE rrm_capabilities;
 	RRM_EN_CAP_IE max_rrm_capabilities;
 #ifdef HOSTAPD_11K_SUPPORT
-    bool hstapd_nei_rep;
-    bool hstapd_lci;
+	bool hstapd_nei_rep;
+	bool hstapd_lci;
 #endif
 } RRM_CONFIG, *PRRM_CONFIG;
 
 typedef union _RRM_BCN_REQ_CAP {
 	struct {
 #ifdef RT_BIG_ENDIAN
-		UINT8 Reserved:6;
-		UINT8 ChannelRep:1;
-		UINT8 ReportCondition:1;
+		UINT8 Reserved : 6;
+		UINT8 ChannelRep : 1;
+		UINT8 ReportCondition : 1;
 #else
-		UINT8 ReportCondition:1;
-		UINT8 ChannelRep:1;
-		UINT8 Reserved:6;
+		UINT8 ReportCondition : 1;
+		UINT8 ChannelRep : 1;
+		UINT8 Reserved : 6;
 #endif
 	} field;
 	UINT8 word;
@@ -121,7 +118,6 @@ typedef struct _RRM_MLME_TRANSMIT_REQ_INFO {
 	UINT8 bDurationMandatory;
 } RRM_MLME_TRANSMIT_REQ_INFO, *PRRM_MLME_TRANSMIT_REQ_INFO;
 
-
 #ifdef CONFIG_11KV_API_SUPPORT
 #define BCN_MACHINE_BASE 0
 
@@ -133,7 +129,6 @@ enum BCN_STATE {
 	MAX_BCN_STATE,
 };
 
-
 /* BCN events */
 enum BCN_EVENT {
 	BCN_REQ,
@@ -143,8 +138,7 @@ enum BCN_EVENT {
 };
 
 #define BCN_FUNC_SIZE (MAX_BCN_STATE * MAX_BCN_MSG)
-#define BCN_REP_TIMEOUT_VALUE (60*1000)
-
+#define BCN_REP_TIMEOUT_VALUE (60 * 1000)
 
 #define NR_MACHINE_BASE 0
 
@@ -155,7 +149,6 @@ enum NR_STATE {
 	MAX_NR_STATE,
 };
 
-
 /* NR events */
 enum NR_EVENT {
 	NR_RSP,
@@ -165,7 +158,7 @@ enum NR_EVENT {
 };
 
 #define NR_FUNC_SIZE (MAX_NR_STATE * MAX_NR_MSG)
-#define NR_RSP_TIMEOUT_VALUE (2*60*1000)
+#define NR_RSP_TIMEOUT_VALUE (2 * 60 * 1000)
 
 typedef struct GNU_PACKED _BCN_EVENT_DATA {
 	UINT8 ControlIndex;
@@ -203,4 +196,3 @@ DECLARE_TIMER_FUNCTION(WaitNRRspTimeout);
 #endif /* DOT11K_RRM_SUPPORT */
 
 #endif /* __RRM_CMM_H */
-

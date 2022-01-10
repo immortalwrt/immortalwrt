@@ -1,24 +1,19 @@
 #ifdef WIFI_SYS_FW_V2
 
 #include "rt_config.h"
-#include  "hw_ctrl.h"
+#include "hw_ctrl.h"
 #include "hw_ctrl_basic.h"
 
 static NTSTATUS hw_ctrl_flow_v2_open(struct WIFI_SYS_CTRL *wsys)
 {
 	struct wifi_dev *wdev = wsys->wdev;
 	struct _RTMP_ADAPTER *ad = (PRTMP_ADAPTER)wdev->sys_handle;
-	struct _DEV_INFO_CTRL_T *devinfo =  &wsys->DevInfoCtrl;
+	struct _DEV_INFO_CTRL_T *devinfo = &wsys->DevInfoCtrl;
 
 	if (devinfo->EnableFeature) {
-		AsicDevInfoUpdate(
-			ad,
-			devinfo->OwnMacIdx,
-			devinfo->OwnMacAddr,
-			devinfo->BandIdx,
-			devinfo->Active,
-			devinfo->EnableFeature
-		);
+		AsicDevInfoUpdate(ad, devinfo->OwnMacIdx, devinfo->OwnMacAddr,
+				  devinfo->BandIdx, devinfo->Active,
+				  devinfo->EnableFeature);
 		/*update devinfo to wdev*/
 		wifi_sys_update_devinfo(ad, wdev, devinfo);
 	}
@@ -33,17 +28,12 @@ static NTSTATUS hw_ctrl_flow_v2_close(struct WIFI_SYS_CTRL *wsys)
 {
 	struct wifi_dev *wdev = wsys->wdev;
 	struct _RTMP_ADAPTER *ad = (PRTMP_ADAPTER)wdev->sys_handle;
-	struct _DEV_INFO_CTRL_T *devinfo =  &wsys->DevInfoCtrl;
+	struct _DEV_INFO_CTRL_T *devinfo = &wsys->DevInfoCtrl;
 
 	if (devinfo->EnableFeature) {
-		AsicDevInfoUpdate(
-			ad,
-			devinfo->OwnMacIdx,
-			devinfo->OwnMacAddr,
-			devinfo->BandIdx,
-			devinfo->Active,
-			devinfo->EnableFeature
-		);
+		AsicDevInfoUpdate(ad, devinfo->OwnMacIdx, devinfo->OwnMacAddr,
+				  devinfo->BandIdx, devinfo->Active,
+				  devinfo->EnableFeature);
 		/*update devinfo to wdev*/
 		wifi_sys_update_devinfo(ad, wdev, devinfo);
 	}
@@ -87,10 +77,7 @@ static NTSTATUS hw_ctrl_flow_v2_link_up(struct WIFI_SYS_CTRL *wsys)
 #ifdef CONFIG_AP_SUPPORT
 
 	if (WDEV_WITH_BCN_ABILITY(wdev)) {
-		UpdateBeaconHandler(
-			ad,
-			wdev,
-			BCN_UPDATE_INIT);
+		UpdateBeaconHandler(ad, wdev, BCN_UPDATE_INIT);
 	}
 
 #endif /*CONFIG_AP_SUPPORT*/
@@ -154,14 +141,12 @@ static NTSTATUS hw_ctrl_flow_v2_disconnt_act(struct WIFI_SYS_CTRL *wsys)
 		addht->AddHtInfo2.OperaionMode = 0;
 		UpdateBeaconHandler(ad, wdev, BCN_UPDATE_IE_CHG);
 		AsicUpdateProtect(ad);
-	}
-	break;
+	} break;
 #endif /*CONFIG_AP_SUPPORT*/
 	}
 
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 /*
 *
@@ -222,11 +207,12 @@ static NTSTATUS hw_ctrl_flow_v2_peer_update(struct WIFI_SYS_CTRL *wsys)
 	UINT32 featues = 0;
 
 	/*update ra rate*/
-	if ((sta_rec->EnableFeature & STA_REC_RA_UPDATE_FEATURE) && wsys->priv) {
-		AsicRaParamStaRecUpdate(ad,
-								sta_rec->WlanIdx,
-								(CMD_STAREC_AUTO_RATE_UPDATE_T *)wsys->priv,
-								STA_REC_RA_UPDATE_FEATURE);
+	if ((sta_rec->EnableFeature & STA_REC_RA_UPDATE_FEATURE) &&
+	    wsys->priv) {
+		AsicRaParamStaRecUpdate(
+			ad, sta_rec->WlanIdx,
+			(CMD_STAREC_AUTO_RATE_UPDATE_T *)wsys->priv,
+			STA_REC_RA_UPDATE_FEATURE);
 
 		if (wsys->priv)
 			os_free_mem(wsys->priv);
@@ -239,7 +225,8 @@ static NTSTATUS hw_ctrl_flow_v2_peer_update(struct WIFI_SYS_CTRL *wsys)
 		featues = sta_rec->EnableFeature;
 		sta_rec->EnableFeature = STA_REC_RA_COMMON_INFO_FEATURE;
 		AsicStaRecUpdate(ad, sta_rec);
-		sta_rec->EnableFeature = featues & (~STA_REC_RA_COMMON_INFO_FEATURE);
+		sta_rec->EnableFeature =
+			featues & (~STA_REC_RA_COMMON_INFO_FEATURE);
 	}
 
 	if (sta_rec->EnableFeature & STA_REC_RA_FEATURE) {
@@ -276,4 +263,3 @@ VOID hw_ctrl_ops_v2_register(struct _HWCTRL_OP *hwctrl_ops)
 }
 
 #endif /*WIFI_SYS_FW_V2*/
-

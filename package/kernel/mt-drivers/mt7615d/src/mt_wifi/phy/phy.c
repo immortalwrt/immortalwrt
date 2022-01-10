@@ -34,10 +34,8 @@
 
 INT phy_probe(RTMP_ADAPTER *pAd)
 {
-
 	return TRUE;
 }
-
 
 NDIS_STATUS NICInitBBP(RTMP_ADAPTER *pAd)
 {
@@ -55,7 +53,6 @@ NDIS_STATUS NICInitBBP(RTMP_ADAPTER *pAd)
 		return NDIS_STATUS_FAILURE;
 }
 
-
 VOID AsicBBPAdjust(RTMP_ADAPTER *pAd, UCHAR Channel)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
@@ -65,7 +62,6 @@ VOID AsicBBPAdjust(RTMP_ADAPTER *pAd, UCHAR Channel)
 		ops->ChipBBPAdjust(pAd, Channel);
 }
 
-
 INT bbp_get_temp(struct _RTMP_ADAPTER *pAd, CHAR *temp_val)
 {
 	if (pAd->phy_op && pAd->phy_op->bbp_get_temp)
@@ -73,7 +69,6 @@ INT bbp_get_temp(struct _RTMP_ADAPTER *pAd, CHAR *temp_val)
 	else
 		return FALSE;
 }
-
 
 INT bbp_tx_comp_init(RTMP_ADAPTER *pAd, INT adc_insel, INT tssi_mode)
 {
@@ -83,7 +78,6 @@ INT bbp_tx_comp_init(RTMP_ADAPTER *pAd, INT adc_insel, INT tssi_mode)
 		return FALSE;
 }
 
-
 INT bbp_set_txdac(struct _RTMP_ADAPTER *pAd, INT tx_dac)
 {
 	if (pAd->phy_op && pAd->phy_op->bbp_set_txdac)
@@ -92,16 +86,13 @@ INT bbp_set_txdac(struct _RTMP_ADAPTER *pAd, INT tx_dac)
 		return FALSE;
 }
 
-
 INT bbp_set_rxpath(struct _RTMP_ADAPTER *pAd, INT rxpath)
 {
-
 	if (pAd->phy_op && pAd->phy_op->bbp_set_rxpath)
 		return pAd->phy_op->bbp_set_rxpath(pAd, rxpath);
 	else
 		return FALSE;
 }
-
 
 INT bbp_set_ctrlch(struct _RTMP_ADAPTER *pAd, UINT8 ext_ch)
 {
@@ -111,7 +102,6 @@ INT bbp_set_ctrlch(struct _RTMP_ADAPTER *pAd, UINT8 ext_ch)
 		return FALSE;
 }
 
-
 INT bbp_set_bw(struct _RTMP_ADAPTER *pAd, UINT8 bw, UCHAR BandIdx)
 {
 	INT result = FALSE;
@@ -120,13 +110,13 @@ INT bbp_set_bw(struct _RTMP_ADAPTER *pAd, UINT8 bw, UCHAR BandIdx)
 		result = pAd->phy_op->bbp_set_bw(pAd, bw);
 
 	if (result == TRUE) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): Set PhyBW as %sHz.l\n",
-				__func__, get_bw_str(bw)));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s(): Set PhyBW as %sHz.l\n", __func__,
+			  get_bw_str(bw)));
 	}
 
 	return result;
 }
-
 
 INT bbp_set_mmps(struct _RTMP_ADAPTER *pAd, BOOLEAN ReduceCorePower)
 {
@@ -136,7 +126,6 @@ INT bbp_set_mmps(struct _RTMP_ADAPTER *pAd, BOOLEAN ReduceCorePower)
 		return FALSE;
 }
 
-
 INT bbp_get_agc(struct _RTMP_ADAPTER *pAd, CHAR *agc, RX_CHAIN_IDX chain)
 {
 	if (pAd->phy_op && pAd->phy_op->bbp_get_agc)
@@ -144,7 +133,6 @@ INT bbp_get_agc(struct _RTMP_ADAPTER *pAd, CHAR *agc, RX_CHAIN_IDX chain)
 	else
 		return FALSE;
 }
-
 
 INT bbp_set_agc(struct _RTMP_ADAPTER *pAd, UCHAR agc, RX_CHAIN_IDX chain)
 {
@@ -154,7 +142,6 @@ INT bbp_set_agc(struct _RTMP_ADAPTER *pAd, UCHAR agc, RX_CHAIN_IDX chain)
 		return FALSE;
 }
 
-
 INT filter_coefficient_ctrl(RTMP_ADAPTER *pAd, UCHAR Channel)
 {
 	if (pAd->phy_op && pAd->phy_op->filter_coefficient_ctrl)
@@ -162,7 +149,6 @@ INT filter_coefficient_ctrl(RTMP_ADAPTER *pAd, UCHAR Channel)
 	else
 		return FALSE;
 }
-
 
 UCHAR get_random_seed_by_phy(RTMP_ADAPTER *pAd)
 {
@@ -172,7 +158,6 @@ UCHAR get_random_seed_by_phy(RTMP_ADAPTER *pAd)
 		return 0;
 }
 
-
 INT bbp_is_ready(struct _RTMP_ADAPTER *pAd)
 {
 	if (pAd->phy_op && pAd->phy_op->bbp_is_ready)
@@ -181,27 +166,20 @@ INT bbp_is_ready(struct _RTMP_ADAPTER *pAd)
 		return FALSE;
 }
 
-
 INT phy_rrm_adjust(struct _RTMP_ADAPTER *pAd)
 {
-
 	return TRUE;
 }
-
 
 INT phy_rrm_request(struct _RTMP_ADAPTER *pAd)
 {
-
 	return TRUE;
 }
-
 
 INT phy_rrm_init(struct _RTMP_ADAPTER *pAd)
 {
-
 	return TRUE;
 }
-
 
 #ifdef DYNAMIC_VGA_SUPPORT
 INT dynamic_vga_enable(RTMP_ADAPTER *pAd)
@@ -212,7 +190,6 @@ INT dynamic_vga_enable(RTMP_ADAPTER *pAd)
 		return FALSE;
 }
 
-
 INT dynamic_vga_disable(RTMP_ADAPTER *pAd)
 {
 	if (pAd->phy_op && pAd->phy_op->dynamic_vga_disable)
@@ -220,7 +197,6 @@ INT dynamic_vga_disable(RTMP_ADAPTER *pAd)
 	else
 		return FALSE;
 }
-
 
 INT dynamic_vga_adjust(RTMP_ADAPTER *pAd)
 {
@@ -230,7 +206,6 @@ INT dynamic_vga_adjust(RTMP_ADAPTER *pAd)
 		return FALSE;
 }
 #endif /* DYNAMIC_VGA_SUPPORT */
-
 
 INT32 ShowPartailBBP(RTMP_ADAPTER *pAd, UINT32 Start, UINT32 End)
 {
@@ -256,7 +231,6 @@ INT32 ShowAllRF(RTMP_ADAPTER *pAd)
 		return FALSE;
 }
 
-
 INT32 ShowPartialRF(RTMP_ADAPTER *pAd, UINT32 Start, UINT32 End)
 {
 	if (pAd->phy_op && pAd->phy_op->ShowPartialRF)
@@ -274,4 +248,3 @@ INT Smart_Carrier_Sense(RTMP_ADAPTER *pAd)
 		return FALSE;
 }
 #endif /* SMART_CARRIER_SENSE_SUPPORT */
-

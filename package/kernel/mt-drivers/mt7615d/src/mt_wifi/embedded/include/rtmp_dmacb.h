@@ -20,9 +20,9 @@ typedef struct _RTMP_DMABUF {
 	which driver should ACK upper layer when the tx is physically done or failed.
 */
 typedef struct _RTMP_DMACB {
-	ULONG AllocSize;	/* Control block size */
-	PVOID AllocVa;		/* Control block virtual address */
-	NDIS_PHYSICAL_ADDRESS AllocPa;	/* Control block physical address */
+	ULONG AllocSize; /* Control block size */
+	PVOID AllocVa; /* Control block virtual address */
+	NDIS_PHYSICAL_ADDRESS AllocPa; /* Control block physical address */
 	PNDIS_PACKET pNdisPacket;
 	PNDIS_PACKET pNextNdisPacket;
 	NDIS_PHYSICAL_ADDRESS PacketPa;

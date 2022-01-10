@@ -23,7 +23,8 @@
 
 #include "rt_config.h"
 
-static INT build_wsc_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+static INT build_wsc_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+				  UCHAR *buf)
 {
 	INT len = 0;
 #ifdef WSC_INCLUDED
@@ -31,17 +32,17 @@ static INT build_wsc_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 
 	if (wdev->wdev_type == WDEV_TYPE_APCLI) {
 #ifdef APCLI_SUPPORT
-			/*
+		/*
 				Append WSC information in probe request if WSC state is running
 			*/
-			if ((wdev->WscControl.WscConfMode != WSC_DISABLE) &&
-				(wdev->WscControl.bWscTrigger))
-				bHasWscIe = TRUE;
+		if ((wdev->WscControl.WscConfMode != WSC_DISABLE) &&
+		    (wdev->WscControl.bWscTrigger))
+			bHasWscIe = TRUE;
 
 #if defined(WSC_V2_SUPPORT) && !defined(CONFIG_MAP_SUPPORT) && !defined(CON_WPS)
-			/* need to check if !defined(CONFIG_MAP_SUPPORT) is necessary */
-			else if (wdev->WscControl.WscV2Info.bEnableWpsV2)
-				bHasWscIe = TRUE;
+		/* need to check if !defined(CONFIG_MAP_SUPPORT) is necessary */
+		else if (wdev->WscControl.WscV2Info.bEnableWpsV2)
+			bHasWscIe = TRUE;
 #endif /* WSC_V2_SUPPORT */
 #endif /* APCLI_SUPPORT */
 #ifdef CON_WPS
@@ -51,15 +52,17 @@ static INT build_wsc_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 			bHasWscIe = FALSE;
 			pWscControl = &wdev->WscControl;
 
-			if ((pWscControl->conWscStatus == CON_WPS_STATUS_DISABLED) ||
-			    (pAd->ApCfg.ConWpsApCliMode != CON_WPS_APCLI_BAND_AUTO))
+			if ((pWscControl->conWscStatus ==
+			     CON_WPS_STATUS_DISABLED) ||
+			    (pAd->ApCfg.ConWpsApCliMode !=
+			     CON_WPS_APCLI_BAND_AUTO))
 				bHasWscIe = TRUE;
 
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-				 ("[scan_active: %d] ConWpsApCliMode=%d conWscStatus=%d bHasWscIe=%d\n",
-				  __LINE__, pAd->ApCfg.ConWpsApCliMode,
-				  pWscControl->conWscStatus, bHasWscIe));
-
+			MTWF_LOG(
+				DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+				("[scan_active: %d] ConWpsApCliMode=%d conWscStatus=%d bHasWscIe=%d\n",
+				 __LINE__, pAd->ApCfg.ConWpsApCliMode,
+				 pWscControl->conWscStatus, bHasWscIe));
 		}
 #endif /*CON_WPS*/
 	} else if (wdev->wdev_type == WDEV_TYPE_STA) {
@@ -76,14 +79,16 @@ static INT build_wsc_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 			MAKE_IE_TO_BUF(buf, pWscBuf, WscIeLen, len);
 			os_free_mem(pWscBuf);
 		} else
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("%s:: WscBuf Allocate failed!\n", __func__));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+				 ("%s:: WscBuf Allocate failed!\n", __func__));
 	}
 
 #endif /* WSC_INCLUDED */
 	return len;
 }
 
-static INT build_wsc_probe_rsp_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+static INT build_wsc_probe_rsp_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+				  UCHAR *buf)
 {
 	INT len = 0;
 
@@ -94,9 +99,9 @@ static INT build_wsc_probe_rsp_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 		/* for windows 7 logo test */
 		if ((wdev->WscControl.WscConfMode != WSC_DISABLE) &&
 #ifdef DOT1X_SUPPORT
-			(!IS_IEEE8021X_Entry(wdev)) &&
+		    (!IS_IEEE8021X_Entry(wdev)) &&
 #endif /* DOT1X_SUPPORT */
-			(IS_CIPHER_WEP(wdev->SecConfig.PairwiseCipher))) {
+		    (IS_CIPHER_WEP(wdev->SecConfig.PairwiseCipher))) {
 			/*
 				Non-WPS Windows XP and Vista PCs are unable to determine if a WEP enalbed network is static key based
 				or 802.1X based. If the legacy station gets an EAP-Rquest/Identity from the AP, it assume the WEP
@@ -107,14 +112,18 @@ static INT build_wsc_probe_rsp_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 				The IE would be 7 bytes long with the Extended Capability field set to 0 (all bits zero)
 				http://msdn.microsoft.com/library/default.asp?url=/library/en-us/randz/protocol/securing_public_wi-fi_hotspots.asp
 			*/
-			const UCHAR PROVISION_SERVICE_IE[7] = {0xDD, 0x05, 0x00, 0x50, 0xF2, 0x05, 0x00};
+			const UCHAR PROVISION_SERVICE_IE[7] = {
+				0xDD, 0x05, 0x00, 0x50, 0xF2, 0x05, 0x00
+			};
 
 			MAKE_IE_TO_BUF(buf, PROVISION_SERVICE_IE, 7, len);
 		}
 
 		/* add Simple Config Information Element */
-		if ((wdev->WscControl.WscConfMode > WSC_DISABLE) && (wdev->WscIEProbeResp.ValueLen))
-			MAKE_IE_TO_BUF(buf, wdev->WscIEProbeResp.Value, wdev->WscIEProbeResp.ValueLen, len);
+		if ((wdev->WscControl.WscConfMode > WSC_DISABLE) &&
+		    (wdev->WscIEProbeResp.ValueLen))
+			MAKE_IE_TO_BUF(buf, wdev->WscIEProbeResp.Value,
+				       wdev->WscIEProbeResp.ValueLen, len);
 
 		break;
 	}
@@ -126,7 +135,8 @@ static INT build_wsc_probe_rsp_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 		/* PSTA_ADMIN_CONFIG pStaCfg = GetStaCfgByWdev(pAd,wdev); */
 		/* add Simple Config Information Element */
 		if (wdev->WscIEProbeResp.ValueLen != 0)
-			MAKE_IE_TO_BUF(buf, wdev->WscIEProbeResp.Value, wdev->WscIEProbeResp.ValueLen, len);
+			MAKE_IE_TO_BUF(buf, wdev->WscIEProbeResp.Value,
+				       wdev->WscIEProbeResp.ValueLen, len);
 
 		break;
 	}
@@ -137,28 +147,29 @@ static INT build_wsc_probe_rsp_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHA
 	return len;
 }
 
-static INT build_wsc_assoc_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+static INT build_wsc_assoc_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+				  UCHAR *buf)
 {
 	INT len = 0;
 #ifdef WSC_STA_SUPPORT
 
 	/* Add WSC IE if we are connecting to WSC AP */
 	if ((wdev->WscControl.WscEnAssociateIE) &&
-		(wdev->WscControl.WscConfMode != WSC_DISABLE) &&
-		(wdev->WscControl.bWscTrigger)) {
+	    (wdev->WscControl.WscConfMode != WSC_DISABLE) &&
+	    (wdev->WscControl.bWscTrigger)) {
 		UCHAR *pWscBuf = NULL, WscIeLen = 0;
 
-		os_alloc_mem(pAd, (UCHAR **) &pWscBuf, 512);
+		os_alloc_mem(pAd, (UCHAR **)&pWscBuf, 512);
 
 		if (pWscBuf != NULL) {
 			NdisZeroMemory(pWscBuf, 512);
-			WscBuildAssocReqIE(&wdev->WscControl, pWscBuf, &WscIeLen);
+			WscBuildAssocReqIE(&wdev->WscControl, pWscBuf,
+					   &WscIeLen);
 			MAKE_IE_TO_BUF(buf, pWscBuf, WscIeLen, len);
 			os_free_mem(pWscBuf);
 		} else
 			MTWF_LOG(DBG_CAT_CLIENT, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-					 ("%s:: WscBuf Allocate failed!\n",
-					  __func__));
+				 ("%s:: WscBuf Allocate failed!\n", __func__));
 	}
 
 #endif /* WSC_STA_SUPPORT */
@@ -170,38 +181,45 @@ INT build_wsc_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 	INT len = 0;
 
 	if (info->frame_subtype == SUBTYPE_PROBE_REQ)
-		len += build_wsc_probe_req_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_wsc_probe_req_ie(pAd, info->wdev,
+					      (UCHAR *)(info->frame_buf + len));
 	else if (info->frame_subtype == SUBTYPE_PROBE_RSP)
-		len += build_wsc_probe_rsp_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_wsc_probe_rsp_ie(pAd, info->wdev,
+					      (UCHAR *)(info->frame_buf + len));
 	else if (info->frame_subtype == SUBTYPE_ASSOC_REQ)
-		len += build_wsc_assoc_req_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_wsc_assoc_req_ie(pAd, info->wdev,
+					      (UCHAR *)(info->frame_buf + len));
 
 	return len;
 }
 
-INT build_extra_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+INT build_extra_probe_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			     UCHAR *buf)
 {
 	INT len = 0;
 	SCAN_INFO *ScanInfo = &wdev->ScanInfo;
 #ifdef RT_CFG80211_SUPPORT
 #ifdef APCLI_CFG80211_SUPPORT
-	if ((pAd->ApCfg.ApCliTab[wdev->func_idx].wpa_supplicant_info.WpaSupplicantUP != WPA_SUPPLICANT_DISABLE) &&
-							  (pAd->cfg80211_ctrl.ExtraIeLen > 0)) {
+	if ((pAd->ApCfg.ApCliTab[wdev->func_idx]
+		     .wpa_supplicant_info.WpaSupplicantUP !=
+	     WPA_SUPPLICANT_DISABLE) &&
+	    (pAd->cfg80211_ctrl.ExtraIeLen > 0)) {
 		MAKE_IE_TO_BUF(buf, pAd->cfg80211_ctrl.pExtraIe,
-					   pAd->cfg80211_ctrl.ExtraIeLen, len);
+			       pAd->cfg80211_ctrl.ExtraIeLen, len);
 	}
 #endif /* APCLI_CFG80211_SUPPORT */
 #endif /* RT_CFG80211_SUPPORT */
 
 	if (ScanInfo->ExtraIeLen && ScanInfo->ExtraIe) {
-		MAKE_IE_TO_BUF(buf, ScanInfo->ExtraIe,
-					   ScanInfo->ExtraIeLen, len);
+		MAKE_IE_TO_BUF(buf, ScanInfo->ExtraIe, ScanInfo->ExtraIeLen,
+			       len);
 	}
 
 	return len;
 }
 
-INT build_extra_assoc_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+INT build_extra_assoc_req_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			     UCHAR *buf)
 {
 	INT len = 0;
 	return len;
@@ -212,16 +230,19 @@ INT build_extra_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 	INT len = 0;
 
 	if (info->frame_subtype == SUBTYPE_PROBE_REQ)
-		len += build_extra_probe_req_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_extra_probe_req_ie(
+			pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 	else if (info->frame_subtype == SUBTYPE_ASSOC_REQ)
-		len += build_extra_assoc_req_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_extra_assoc_req_ie(
+			pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 
 	return len;
 }
 
 #ifdef CONFIG_AP_SUPPORT
 /* Extended Capabilities IE */
-INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			     UCHAR *buf)
 {
 	INT len = 0;
 	ULONG infoPos;
@@ -238,8 +259,8 @@ INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *bu
 
 	/* P802.11n_D1.10, HT Information Exchange Support */
 	if ((pAd->CommonCfg.bBssCoexEnable == TRUE) &&
-		WMODE_CAP_N(wdev->PhyMode) && (wdev->channel <= 14) &&
-		(wdev->DesiredHtPhyInfo.bHtEnable))
+	    WMODE_CAP_N(wdev->PhyMode) && (wdev->channel <= 14) &&
+	    (wdev->DesiredHtPhyInfo.bHtEnable))
 		extCapInfo.BssCoexistMgmtSupport = 1;
 
 #endif /* DOT11N_DRAFT3 */
@@ -268,12 +289,20 @@ INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *bu
 		extCapInfo.interworking = 1;
 #endif
 
-#if defined(CONFIG_HOTSPOT) || defined(FTM_SUPPORT)
+#if defined(CONFIG_HOTSPOT) || defined(FTM_SUPPORT) ||                         \
+	defined(CONFIG_DOT11U_INTERWORKING)
 
 	if (mbss->GASCtrl.b11U_enable)
 		extCapInfo.interworking = 1;
 
 #endif
+
+#ifdef DOT11_VHT_AC
+
+	if (WMODE_CAP_AC(wdev->PhyMode) && (wdev->channel > 14))
+		extCapInfo.operating_mode_notification = 1;
+
+#endif /* DOT11_VHT_AC */
 #ifdef FTM_SUPPORT
 
 	/* add IE_EXT_CAPABILITY IE here */
@@ -292,6 +321,28 @@ INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *bu
 	*/
 	extCapInfo.ftm_resp = 1;
 #endif /* FTM_SUPPORT */
+
+#ifdef OCE_FILS_SUPPORT
+	if (IS_AKM_FILS(wdev->SecConfig.AKMMap))
+		extCapInfo.FILSCap = 1;
+#endif /* OCE_FILS_SUPPORT */
+
+#ifdef DOT11_SAE_PWD_ID_SUPPORT
+	{
+		struct _SECURITY_CONFIG *sec_cfg = &wdev->SecConfig;
+
+		if (IS_AKM_SAE(sec_cfg->AKMMap) && sec_cfg->pwd_id_cnt != 0)
+			extCapInfo.sae_pwd_id_in_use = 1;
+		else
+			extCapInfo.sae_pwd_id_in_use = 0;
+
+		if (IS_AKM_SAE(sec_cfg->AKMMap) && sec_cfg->sae_cap.pwd_id_only)
+			extCapInfo.sae_pwd_id_used_exclusively = 1;
+		else
+			extCapInfo.sae_pwd_id_used_exclusively = 0;
+	}
+#endif
+
 	pInfo = (PUCHAR)(&extCapInfo);
 
 	for (infoPos = 0; infoPos < extInfoLen; infoPos++) {
@@ -302,7 +353,8 @@ INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *bu
 	}
 
 	if (bNeedAppendExtIE == TRUE) {
-		for (infoPos = (extInfoLen - 1); infoPos >= EXT_CAP_MIN_SAFE_LENGTH; infoPos--) {
+		for (infoPos = (extInfoLen - 1);
+		     infoPos >= EXT_CAP_MIN_SAFE_LENGTH; infoPos--) {
 			if (pInfo[infoPos] == 0)
 				extInfoLen--;
 			else
@@ -312,7 +364,7 @@ INT build_ap_extended_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *bu
 		RTMPEndianChange((UCHAR *)&extCapInfo, 8);
 #endif
 
-		MAKE_IE_TO_BUF(buf, &ExtCapIe,   1, len);
+		MAKE_IE_TO_BUF(buf, &ExtCapIe, 1, len);
 		MAKE_IE_TO_BUF(buf, &extInfoLen, 1, len);
 		MAKE_IE_TO_BUF(buf, &extCapInfo, extInfoLen, len);
 	}
@@ -329,7 +381,8 @@ INT build_extended_cap_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 	switch (wdev->wdev_type) {
 	default:
 #ifdef CONFIG_AP_SUPPORT
-		len += build_ap_extended_cap_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_ap_extended_cap_ie(
+			pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
 #endif /* CONFIG_AP_SUPPORT */
 		break;
 	}
@@ -338,11 +391,14 @@ INT build_extended_cap_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 }
 
 #ifdef CONFIG_AP_SUPPORT
-static INT build_ap_wmm_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *buf)
+static INT build_ap_wmm_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			       UCHAR *buf)
 {
 	INT len = 0;
 	UCHAR i;
-	UCHAR WmeParmIe[26] = {IE_VENDOR_SPECIFIC, 24, 0x00, 0x50, 0xf2, 0x02, 0x01, 0x01, 0, 0};
+	UCHAR WmeParmIe[26] = {
+		IE_VENDOR_SPECIFIC, 24, 0x00, 0x50, 0xf2, 0x02, 0x01, 0x01, 0, 0
+	};
 	UINT8 AIFSN[4];
 #ifdef UAPSD_SUPPORT
 	BSS_STRUCT *pMbss = wdev->func_dev;
@@ -357,13 +413,20 @@ static INT build_ap_wmm_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *
 		NdisMoveMemory(AIFSN, pBssEdca->Aifsn, sizeof(AIFSN));
 
 		for (i = QID_AC_BK; i <= QID_AC_VO; i++) {
-			WmeParmIe[10 + (i * 4)] = (i << 5)							  +	/* b5-6 is ACI */
-									  ((UCHAR)pBssEdca->bACM[i] << 4)	  +	/* b4 is ACM */
-									  (AIFSN[i] & 0x0f);						/* b0-3 is AIFSN */
-			WmeParmIe[11 + (i * 4)] = (pBssEdca->Cwmax[i] << 4)		  +	/* b5-8 is CWMAX */
-									  (pBssEdca->Cwmin[i] & 0x0f);				/* b0-3 is CWMIN */
-			WmeParmIe[12 + (i * 4)] = (UCHAR)(pBssEdca->Txop[i] & 0xff);		/* low byte of TXOP */
-			WmeParmIe[13 + (i * 4)] = (UCHAR)(pBssEdca->Txop[i] >> 8);			/* high byte of TXOP */
+			WmeParmIe[10 + (i * 4)] =
+				(i << 5) + /* b5-6 is ACI */
+				((UCHAR)pBssEdca->bACM[i]
+				 << 4) + /* b4 is ACM */
+				(AIFSN[i] & 0x0f); /* b0-3 is AIFSN */
+			WmeParmIe[11 + (i * 4)] =
+				(pBssEdca->Cwmax[i] << 4) + /* b5-8 is CWMAX */
+				(pBssEdca->Cwmin[i] & 0x0f); /* b0-3 is CWMIN */
+			WmeParmIe[12 + (i * 4)] =
+				(UCHAR)(pBssEdca->Txop[i] &
+					0xff); /* low byte of TXOP */
+			WmeParmIe[13 + (i * 4)] =
+				(UCHAR)(pBssEdca->Txop[i] >>
+					8); /* high byte of TXOP */
 		}
 
 		MAKE_IE_TO_BUF(buf, WmeParmIe, 26, len);
@@ -372,7 +435,6 @@ static INT build_ap_wmm_cap_ie(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR *
 	return len;
 }
 #endif /* CONFIG_AP_SUPPORT */
-
 
 INT build_wmm_cap_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 {
@@ -383,10 +445,10 @@ INT build_wmm_cap_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 		return len;
 
 	switch (wdev->wdev_type) {
-
 	default:
 #ifdef CONFIG_AP_SUPPORT
-		len += build_ap_wmm_cap_ie(pAd, info->wdev, (UCHAR *)(info->frame_buf + len));
+		len += build_ap_wmm_cap_ie(pAd, info->wdev,
+					   (UCHAR *)(info->frame_buf + len));
 #endif /* CONFIG_AP_SUPPORT */
 		break;
 	}
@@ -394,3 +456,130 @@ INT build_wmm_cap_ie(RTMP_ADAPTER *pAd, struct _build_ie_info *info)
 	return len;
 }
 
+ULONG build_support_rate_ie(struct wifi_dev *wdev, UCHAR *sup_rate,
+			    UCHAR sup_rate_len, UCHAR *buf)
+{
+	ULONG frame_len;
+	ULONG bss_mem_selector_len = 0;
+	UCHAR bss_mem_selector_code = BSS_MEMBERSHIP_SELECTOR_VALID |
+				      BSS_MEMBERSHIP_SELECTOR_SAE_H2E_ONLY;
+	USHORT PhyMode = wdev->PhyMode;
+	UCHAR real_sup_rate_len = sup_rate_len;
+	UCHAR total_len;
+
+	if (PhyMode == WMODE_B)
+		real_sup_rate_len = 4;
+
+#ifdef DOT11_SAE_SUPPORT
+	if (wdev->SecConfig.sae_cap.gen_pwe_method == PWE_HASH_ONLY &&
+	    real_sup_rate_len < 8)
+		bss_mem_selector_len++;
+#endif
+	total_len = real_sup_rate_len + bss_mem_selector_len;
+
+	MakeOutgoingFrame(buf, &frame_len, 1, &SupRateIe, 1, &total_len,
+			  real_sup_rate_len, sup_rate, bss_mem_selector_len,
+			  &bss_mem_selector_code, END_OF_ARGS);
+
+	return frame_len;
+}
+
+ULONG build_support_ext_rate_ie(struct wifi_dev *wdev, UCHAR sup_rate_len,
+				UCHAR *ext_sup_rate, UCHAR ext_sup_rate_len,
+				UCHAR *buf)
+{
+	ULONG frame_len = 0;
+	ULONG bss_mem_selector_len = 0;
+	UCHAR bss_mem_selector_code = BSS_MEMBERSHIP_SELECTOR_VALID |
+				      BSS_MEMBERSHIP_SELECTOR_SAE_H2E_ONLY;
+	USHORT PhyMode = wdev->PhyMode;
+	UCHAR total_len;
+
+	if (PhyMode == WMODE_B)
+		return frame_len;
+
+#ifdef DOT11_SAE_SUPPORT
+	if (sup_rate_len >= 8 &&
+	    wdev->SecConfig.sae_cap.gen_pwe_method == PWE_HASH_ONLY)
+		bss_mem_selector_len++;
+#endif
+	if (ext_sup_rate_len == 0 && bss_mem_selector_len == 0)
+		return frame_len;
+
+	total_len = ext_sup_rate_len + bss_mem_selector_len;
+
+	MakeOutgoingFrame(buf, &frame_len, 1, &ExtRateIe, 1, &total_len,
+			  ext_sup_rate_len, ext_sup_rate, bss_mem_selector_len,
+			  &bss_mem_selector_code, END_OF_ARGS);
+
+	return frame_len;
+}
+
+VOID parse_support_rate_ie(struct dev_rate_info *rate, EID_STRUCT *eid_ptr)
+{
+	UCHAR i = 0;
+
+	if ((eid_ptr->Len <= MAX_LEN_OF_SUPPORTED_RATES) &&
+	    (eid_ptr->Len > 0)) {
+		rate->SupRateLen = 0;
+		for (i = 0; i < eid_ptr->Len; i++)
+			if (eid_ptr->Octet[i] !=
+				    (BSS_MEMBERSHIP_SELECTOR_VALID |
+				     BSS_MEMBERSHIP_SELECTOR_HT_PHY) &&
+			    eid_ptr->Octet[i] !=
+				    (BSS_MEMBERSHIP_SELECTOR_VALID |
+				     BSS_MEMBERSHIP_SELECTOR_VHT_PHY) &&
+			    eid_ptr->Octet[i] !=
+				    (BSS_MEMBERSHIP_SELECTOR_VALID |
+				     BSS_MEMBERSHIP_SELECTOR_SAE_H2E_ONLY) &&
+			    eid_ptr->Octet[i] !=
+				    (BSS_MEMBERSHIP_SELECTOR_VALID |
+				     BSS_MEMBERSHIP_SELECTOR_HE_PHY))
+				rate->SupRate[rate->SupRateLen++] =
+					eid_ptr->Octet[i];
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s - IE_SUPP_RATES., Len=%d. Rates[0]=%x\n",
+			  __func__, eid_ptr->Len, rate->SupRate[0]));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("Rates[1]=%x %x %x %x %x %x %x\n", rate->SupRate[1],
+			  rate->SupRate[2], rate->SupRate[3], rate->SupRate[4],
+			  rate->SupRate[5], rate->SupRate[6],
+			  rate->SupRate[7]));
+	} else {
+		UCHAR RateDefault[8] = { 0x82, 0x84, 0x8b, 0x96,
+					 0x12, 0x24, 0x48, 0x6c };
+		/* HT rate not ready yet. return true temporarily. rt2860c */
+		/*MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("PeerAssocReqSanity - wrong IE_SUPP_RATES\n")); */
+		NdisMoveMemory(rate->SupRate, RateDefault, 8);
+		rate->SupRateLen = 8;
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s - wrong IE_SUPP_RATES., Len=%d\n", __func__,
+			  eid_ptr->Len));
+	}
+}
+
+VOID parse_support_ext_rate_ie(struct dev_rate_info *rate, EID_STRUCT *eid_ptr)
+{
+	UINT16 i = 0;
+
+	if (eid_ptr->Len > MAX_LEN_OF_SUPPORTED_RATES) {
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s:ext support rate ie size(%d) is large than MAX_LEN_OF_SUPPORTED_RATE(%d))\n",
+			 __func__, eid_ptr->Len, MAX_LEN_OF_SUPPORTED_RATES));
+		return;
+	}
+
+	rate->ExtRateLen = 0;
+	for (i = 0; i < eid_ptr->Len; i++)
+		if (eid_ptr->Octet[i] != (BSS_MEMBERSHIP_SELECTOR_VALID |
+					  BSS_MEMBERSHIP_SELECTOR_HT_PHY) &&
+		    eid_ptr->Octet[i] != (BSS_MEMBERSHIP_SELECTOR_VALID |
+					  BSS_MEMBERSHIP_SELECTOR_VHT_PHY) &&
+		    eid_ptr->Octet[i] !=
+			    (BSS_MEMBERSHIP_SELECTOR_VALID |
+			     BSS_MEMBERSHIP_SELECTOR_SAE_H2E_ONLY) &&
+		    eid_ptr->Octet[i] != (BSS_MEMBERSHIP_SELECTOR_VALID |
+					  BSS_MEMBERSHIP_SELECTOR_HE_PHY))
+			rate->ExtRate[rate->ExtRateLen++] = eid_ptr->Octet[i];
+}

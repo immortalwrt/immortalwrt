@@ -39,33 +39,33 @@ typedef struct _FREQUENCY_CALIBRATION_CONTROL {
 
 } FREQUENCY_CALIBRATION_CONTROL, *PFREQUENCY_CALIBRATION_CONTROL;
 
-#define RTMP_FREQ_CAL_DISABLE(__pAd)									\
+#define RTMP_FREQ_CAL_DISABLE(__pAd)                                           \
 	__pAd->FreqCalibrationCtrl.bEnableFrequencyCalibration = FALSE;
 
 /* Invalid frequency offset */
-#define INVALID_FREQUENCY_OFFSET			-128
+#define INVALID_FREQUENCY_OFFSET -128
 
 /* The upperbound/lowerbound of the frequency offset */
-#define UPPERBOUND_OF_FREQUENCY_OFFSET		127
-#define LOWERBOUND_OF_FREQUENCY_OFFSET	-127
+#define UPPERBOUND_OF_FREQUENCY_OFFSET 127
+#define LOWERBOUND_OF_FREQUENCY_OFFSET -127
 
 /* The trigger point of the high/low frequency */
-#define HIGH_FREQUENCY_TRIGGER_POINT_OFDM		20
-#define LOW_FREQUENCY_TRIGGER_POINT_OFDM		-20
-#define HIGH_FREQUENCY_TRIGGER_POINT_CCK		4
-#define LOW_FREQUENCY_TRIGGER_POINT_CCK		-4
+#define HIGH_FREQUENCY_TRIGGER_POINT_OFDM 20
+#define LOW_FREQUENCY_TRIGGER_POINT_OFDM -20
+#define HIGH_FREQUENCY_TRIGGER_POINT_CCK 4
+#define LOW_FREQUENCY_TRIGGER_POINT_CCK -4
 
 /* The trigger point of decreasng/increasing the frequency offset */
-#define DECREASE_FREQUENCY_OFFSET_OFDM			10
-#define INCREASE_FREQUENCY_OFFSET_OFDM			-10
-#define DECREASE_FREQUENCY_OFFSET_CCK			2
-#define INCREASE_FREQUENCY_OFFSET_CCK			-2
+#define DECREASE_FREQUENCY_OFFSET_OFDM 10
+#define INCREASE_FREQUENCY_OFFSET_OFDM -10
+#define DECREASE_FREQUENCY_OFFSET_CCK 2
+#define INCREASE_FREQUENCY_OFFSET_CCK -2
 
 /* The trigger point of decreasng/increasing the frequency offset */
-#define DECREASE_FREQUENCY_OFFSET			3
-#define INCREASE_FREQUENCY_OFFSET			-3
+#define DECREASE_FREQUENCY_OFFSET 3
+#define INCREASE_FREQUENCY_OFFSET -3
 
 /* Frequency calibration period */
-#define FREQUENCY_CALIBRATION_PERIOD		100
+#define FREQUENCY_CALIBRATION_PERIOD 100
 
 #endif /* __FRQCAL_H__ */

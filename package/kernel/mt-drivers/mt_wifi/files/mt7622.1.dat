@@ -1,4 +1,3 @@
-#The word of "Default" must not be removed
 Default
 AccessControlList0=
 AccessControlList1=
@@ -405,8 +404,3 @@ WPAPSK8=
 WPAPSK9=
 WscConfMode=0
 WscConfStatus=2
-WEP1Type1=0
-WEP2Type1=0
-WEP3Type1=0
-WEP4Type1=0
-WPSRadio=0

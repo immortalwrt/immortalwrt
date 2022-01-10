@@ -28,7 +28,9 @@
 
 #include "rt_config.h"
 
-extern VOID write_tmac_info_tim(RTMP_ADAPTER *pAd, INT apidx, UCHAR *tmac_buf, HTTRANSMIT_SETTING *BeaconTransmit, ULONG frmLen);
+extern VOID write_tmac_info_tim(RTMP_ADAPTER *pAd, INT apidx, UCHAR *tmac_buf,
+				HTTRANSMIT_SETTING *BeaconTransmit,
+				ULONG frmLen);
 
 BOOLEAN TimTransmitRequired(RTMP_ADAPTER *pAd, INT apidx, BSS_STRUCT *pMbss)
 {
@@ -47,10 +49,7 @@ BOOLEAN TimTransmitRequired(RTMP_ADAPTER *pAd, INT apidx, BSS_STRUCT *pMbss)
 }
 
 #ifdef MT_MAC
-VOID MtUpdateTimToAsic(
-	IN RTMP_ADAPTER *pAd,
-	IN INT apidx,
-	IN ULONG FrameLen)
+VOID MtUpdateTimToAsic(IN RTMP_ADAPTER *pAd, IN INT apidx, IN ULONG FrameLen)
 {
 	TIM_BUF_STRUC *tim_buf = NULL;
 	UCHAR *buf;
@@ -60,12 +59,14 @@ VOID MtUpdateTimToAsic(
 	struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[apidx].wdev;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 		tim_buf = &wdev->bcn_buf.tim_buf;
 	}
 
 	if (!tim_buf) {
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): bcn_buf is NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): bcn_buf is NULL!\n", __func__));
 		return;
 	}
 
@@ -83,11 +84,13 @@ VOID MtUpdateTimToAsic(
 		send_mlme_pkt(pAd, pkt, wdev, qIdx, FALSE);
 		return;
 	} else
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): TimPkt is NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): TimPkt is NULL!\n", __func__));
 }
 #endif /* MT_MAC */
 
-VOID write_tmac_info_tim(RTMP_ADAPTER *pAd, INT apidx, UCHAR *tmac_buf, HTTRANSMIT_SETTING *BeaconTransmit, ULONG frmLen)
+VOID write_tmac_info_tim(RTMP_ADAPTER *pAd, INT apidx, UCHAR *tmac_buf,
+			 HTTRANSMIT_SETTING *BeaconTransmit, ULONG frmLen)
 {
 	MAC_TX_INFO mac_info;
 	struct wifi_dev *wdev;
@@ -134,7 +137,8 @@ VOID write_tmac_info_tim(RTMP_ADAPTER *pAd, INT apidx, UCHAR *tmac_buf, HTTRANSM
 	mac_info.Preamble = LONG_PREAMBLE;
 	NdisZeroMemory(tmac_buf, sizeof(TMAC_TXD_L));
 #endif
-	pAd->archOps.write_tmac_info_fixed_rate(pAd, tmac_buf, &mac_info, BeaconTransmit);
+	pAd->archOps.write_tmac_info_fixed_rate(pAd, tmac_buf, &mac_info,
+						BeaconTransmit);
 }
 
 VOID APMakeBssTimFrame(RTMP_ADAPTER *pAd, INT apidx)
@@ -144,12 +148,14 @@ VOID APMakeBssTimFrame(RTMP_ADAPTER *pAd, INT apidx)
 	LARGE_INTEGER FakeTimestamp;
 	ULONG FrameLen = 0;
 	UCHAR *pTimFrame, *ptr, *tmac_info;
-	HTTRANSMIT_SETTING TimTransmit = {.word = 0};   /* MGMT frame PHY rate setting when operatin at HT rate. */
+	HTTRANSMIT_SETTING TimTransmit = {
+		.word = 0
+	}; /* MGMT frame PHY rate setting when operatin at HT rate. */
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 	UINT8 tx_hw_hdr_len = cap->tx_hw_hdr_len;
-	UCHAR Cat = 11;/* Tim Category field */
-	UCHAR Act = 0;/* Tim Action field */
-	UCHAR ChkBcn = 0;/* Check Beacon field init from 0. */
+	UCHAR Cat = 11; /* Tim Category field */
+	UCHAR Act = 0; /* Tim Action field */
+	UCHAR ChkBcn = 0; /* Check Beacon field init from 0. */
 	ULONG UpdatePos = 0;
 	struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[apidx].wdev;
 
@@ -157,25 +163,18 @@ VOID APMakeBssTimFrame(RTMP_ADAPTER *pAd, INT apidx)
 		return;
 
 	if (wdev->bcn_buf.tim_buf.TimPkt == NULL) {
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s():Invalid TimPkt for MBSS[%d]\n",
-				 __func__, apidx));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s():Invalid TimPkt for MBSS[%d]\n", __func__,
+			  apidx));
 		return;
 	}
 
 	tmac_info = (UCHAR *)GET_OS_PKT_DATAPTR(wdev->bcn_buf.tim_buf.TimPkt);
 	pTimFrame = (UCHAR *)(tmac_info + tx_hw_hdr_len);
-	ActHeaderInit(pAd,
-				  &TimHdr,
-				  BROADCAST_ADDR,
-				  wdev->if_addr,
-				  wdev->bssid);
-	MakeOutgoingFrame(pTimFrame,			&FrameLen,
-					  sizeof(HEADER_802_11),		&TimHdr,
-					  1,				&Cat,
-					  1,				&Act,
-					  1,				&ChkBcn,
-					  TIMESTAMP_LEN,			&FakeTimestamp,
-					  END_OF_ARGS);
+	ActHeaderInit(pAd, &TimHdr, BROADCAST_ADDR, wdev->if_addr, wdev->bssid);
+	MakeOutgoingFrame(pTimFrame, &FrameLen, sizeof(HEADER_802_11), &TimHdr,
+			  1, &Cat, 1, &Act, 1, &ChkBcn, TIMESTAMP_LEN,
+			  &FakeTimestamp, END_OF_ARGS);
 	TimTransmit.word = 0;
 	wdev->bcn_buf.TimIELocationInTim = (UCHAR)FrameLen;
 	UpdatePos = wdev->bcn_buf.TimIELocationInTim;
@@ -186,7 +185,7 @@ VOID APMakeBssTimFrame(RTMP_ADAPTER *pAd, INT apidx)
 	*/
 	ptr = pTimFrame + (UCHAR)FrameLen;
 	*ptr = IE_TIM;
-	*(ptr+1) = 0x0e;
+	*(ptr + 1) = 0x0e;
 	*(ptr + 2) = pAd->ApCfg.DtimCount;
 	*(ptr + 3) = pAd->ApCfg.DtimPeriod;
 	*(ptr + 4) = 0xa0;
@@ -202,7 +201,7 @@ VOID APMakeBssTimFrame(RTMP_ADAPTER *pAd, INT apidx)
 	*(ptr + 14) = 0xa0;
 	*(ptr + 15) = 0xa0;
 	/* adjust TIM length according to the new TIM */
-	FrameLen += 16;/* (2 + *(ptr+1)); */
+	FrameLen += 16; /* (2 + *(ptr+1)); */
 
 	/* When Beacon is use CCK to send, high rate TIM shall use OFDM to send. and it's mandatory. */
 	if (wdev->channel <= 14) {
@@ -214,16 +213,17 @@ VOID APMakeBssTimFrame(RTMP_ADAPTER *pAd, INT apidx)
 	}
 
 	write_tmac_info_tim(pAd, apidx, tmac_info, &TimTransmit, FrameLen);
-#ifdef BCN_V2_SUPPORT	/* add bcn v2 support , 1.5k beacon support */
+#ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
 	AsicUpdateBeacon(pAd, wdev, FrameLen, PKT_V2_TIM);
 #else
 	AsicUpdateBeacon(pAd, wdev, FrameLen, PKT_TIM);
 #endif
 	if (0) {
 		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%s(): Dump the TimFrame of BSS%d!\n",
-				  __func__, apidx));
-		hex_dump("Initial TimFrameBuf", tmac_info, FrameLen + tx_hw_hdr_len);
+			 ("%s(): Dump the TimFrame of BSS%d!\n", __func__,
+			  apidx));
+		hex_dump("Initial TimFrameBuf", tmac_info,
+			 FrameLen + tx_hw_hdr_len);
 	}
 }
 
@@ -261,16 +261,17 @@ INT wdev_tim_buf_init(RTMP_ADAPTER *pAd, TIM_BUF_STRUC *tim_info)
 
 	/* tim_info->TimBufIdx = HW_BEACON_MAX_NUM; */
 	if (!tim_info->TimPkt) {
-		ret = RTMPAllocateNdisPacket(pAd, &tim_info->TimPkt, NULL, 0, NULL, MAX_TIM_SIZE);
+		ret = RTMPAllocateNdisPacket(pAd, &tim_info->TimPkt, NULL, 0,
+					     NULL, MAX_TIM_SIZE);
 		if (ret != NDIS_STATUS_SUCCESS)
 			return FALSE;
 	} else {
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():TimPkt is allocated!\n", __func__));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s():TimPkt is allocated!\n", __func__));
 	}
 
 	tim_info->bTimSntReq = TRUE;
 	return TRUE;
 }
-
 
 #endif /* MT_MAC */

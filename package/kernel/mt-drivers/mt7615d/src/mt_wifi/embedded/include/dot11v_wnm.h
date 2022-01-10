@@ -29,7 +29,6 @@
 #define WNM_BSS_PERFERENCE_SUBIE 3
 #define WNM_BSS_TERMINATION_SUBIE 4
 
-
 enum WNM_ACTION_FIELD {
 	EVENT_REQUEST,
 	EVENT_REPORT,
@@ -99,7 +98,6 @@ typedef struct GNU_PACKED _WNM_FRAME {
 	} u;
 } WNM_FRAME, *PWNM_FRAME;
 
-void PeerWNMAction(IN struct _RTMP_ADAPTER *pAd,
-				   IN MLME_QUEUE_ELEM * Elem);
+void PeerWNMAction(IN struct _RTMP_ADAPTER *pAd, IN MLME_QUEUE_ELEM *Elem);
 
 #endif /* __DOT11V_WNM_H__ */

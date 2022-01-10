@@ -1,6 +1,5 @@
 all:
-	gcc -g dat2h.c -o dat2h
+	gcc data2h.c -o data2h
 clean:
-	rm -f *.o dat2h
+	rm -f *.o data2h
 
-	

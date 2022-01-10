@@ -33,114 +33,68 @@
 #include "rtmp_def.h"
 
 struct iw_priv_args ap_privtab[] = {
-	{
-		RTPRIV_IOCTL_SET,
-		/* 1024 --> 1024 + 512 */
-		/* larger size specific to allow 64 ACL MAC addresses to be set up all at once. */
-		IW_PRIV_TYPE_CHAR | 1536, 0,
-		"set"
-	},
-	{
-		RTPRIV_IOCTL_SHOW,
-		IW_PRIV_TYPE_CHAR | 1024, 0,
-		"show"
-	},
-	{
-		RTPRIV_IOCTL_GSITESURVEY,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"get_site_survey"
-	},
-	{
-		RTPRIV_IOCTL_SET_WSCOOB,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"set_wsc_oob"
-	},
-	{
-		RTPRIV_IOCTL_GET_MAC_TABLE,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"get_mac_table"
-	},
-	{
-		RTPRIV_IOCTL_GET_DRIVER_INFO,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"get_driverinfo"
-	},
-	{
-		RTPRIV_IOCTL_E2P,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"e2p"
-	},
+	{ RTPRIV_IOCTL_SET,
+	  /* 1024 --> 1024 + 512 */
+	  /* larger size specific to allow 64 ACL MAC addresses to be set up all at once. */
+	  IW_PRIV_TYPE_CHAR | 1536, 0, "set" },
+	{ RTPRIV_IOCTL_SHOW, IW_PRIV_TYPE_CHAR | 1024, 0, "show" },
+	{ RTPRIV_IOCTL_GSITESURVEY, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "get_site_survey" },
+	{ RTPRIV_IOCTL_SET_WSCOOB, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "set_wsc_oob" },
+	{ RTPRIV_IOCTL_GET_MAC_TABLE, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "get_mac_table" },
+	{ RTPRIV_IOCTL_GET_DRIVER_INFO, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "get_driverinfo" },
+	{ RTPRIV_IOCTL_E2P, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
+	  "e2p" },
 #if defined(DBG) || (defined(BB_SOC) && defined(CONFIG_ATE))
-	{
-		RTPRIV_IOCTL_BBP,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"bbp"
-	},
-	{
-		RTPRIV_IOCTL_MAC,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"mac"
-	},
+	{ RTPRIV_IOCTL_BBP, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
+	  "bbp" },
+	{ RTPRIV_IOCTL_MAC, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
+	  "mac" },
 #ifdef RTMP_RF_RW_SUPPORT
-	{
-		RTPRIV_IOCTL_RF,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"rf"
-	},
+	{ RTPRIV_IOCTL_RF, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
+	  "rf" },
 #endif /* RTMP_RF_RW_SUPPORT */
 #endif /* defined(DBG) ||(defined(BB_SOC) && defined(CONFIG_ATE)) */
 
 #ifdef WSC_AP_SUPPORT
-	{
-		RTPRIV_IOCTL_WSC_PROFILE,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"get_wsc_profile"
-	},
+	{ RTPRIV_IOCTL_WSC_PROFILE, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "get_wsc_profile" },
 #endif /* WSC_AP_SUPPORT */
-	{
-		RTPRIV_IOCTL_QUERY_BATABLE,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"get_ba_table"
-	},
-	{
-		RTPRIV_IOCTL_STATISTICS,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"stat"
-	},
-	{
-		MTPRIV_IOCTL_RD,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"rd"
-	},
-	{
-		RTPRIV_IOCTL_RX_STATISTICS,
-		IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
-		"rx"
-	}
+	{ RTPRIV_IOCTL_QUERY_BATABLE, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "get_ba_table" },
+	{ RTPRIV_IOCTL_STATISTICS, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "stat" },
+	{ MTPRIV_IOCTL_RD, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | 1024,
+	  "rd" },
+	{ RTPRIV_IOCTL_RX_STATISTICS, IW_PRIV_TYPE_CHAR | 1024,
+	  IW_PRIV_TYPE_CHAR | 1024, "rx" }
 };
-
 
 #ifdef CONFIG_APSTA_MIXED_SUPPORT
 const struct iw_handler_def rt28xx_ap_iw_handler_def = {
-#define	N(a)	(sizeof(a) / sizeof(a[0]))
-	.private_args	= (struct iw_priv_args *) ap_privtab,
-	.num_private_args	= N(ap_privtab),
+#define N(a) (sizeof(a) / sizeof(a[0]))
+#ifdef CONFIG_WEXT_PRIV
+	.private_args = (struct iw_priv_args *)ap_privtab,
+	.num_private_args = N(ap_privtab),
+#endif /* CONFIG_WEXT_PRIV */
 #if IW_HANDLER_VERSION >= 7
 	.get_wireless_stats = rt28xx_get_wireless_stats,
 #endif
 };
 #endif /* CONFIG_APSTA_MIXED_SUPPORT */
 
-
 INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 {
-	VOID			*pAd = NULL;
-	struct iwreq	*wrqin = (struct iwreq *) rq;
+	VOID *pAd = NULL;
+	struct iwreq *wrqin = (struct iwreq *)rq;
 	RTMP_IOCTL_INPUT_STRUCT rt_wrq, *wrq = &rt_wrq;
-	INT				Status = NDIS_STATUS_SUCCESS;
-	USHORT			subcmd;
-	INT			apidx = 0;
-	UINT32		org_len;
+	INT Status = NDIS_STATUS_SUCCESS;
+	USHORT subcmd;
+	INT apidx = 0;
+	UINT32 org_len;
 	RT_CMD_AP_IOCTL_CONFIG IoctlConfig, *pIoctlConfig = &IoctlConfig;
 
 	GET_PAD_FROM_NET_DEV(pAd, net_dev);
@@ -166,8 +120,8 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 	pIoctlConfig->apidx = 0;
 
 	if ((cmd != SIOCGIWPRIV) &&
-		RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_PREPARE, 0,
-							pIoctlConfig, 0) != NDIS_STATUS_SUCCESS) {
+	    RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_PREPARE, 0,
+				pIoctlConfig, 0) != NDIS_STATUS_SUCCESS) {
 		/* prepare error */
 		Status = pIoctlConfig->Status;
 		goto LabelExit;
@@ -177,75 +131,93 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 
 	/*+ patch for SnapGear Request even the interface is down */
 	if (cmd == SIOCGIWNAME) {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("IOCTL::SIOCGIWNAME\n"));
-		RTMP_COM_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_SIOCGIWNAME, 0, wrqin->u.name, 0);
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("IOCTL::SIOCGIWNAME\n"));
+		RTMP_COM_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_SIOCGIWNAME, 0,
+				     wrqin->u.name, 0);
 		return Status;
 	} /*- patch for SnapGear */
-
 
 	switch (cmd) {
 #ifdef WCX_SUPPORT
 #else
 
 	case RTPRIV_IOCTL_ATE: {
-		RTMP_COM_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ATE, 0, wrqin->ifr_name, 0);
-	}
-	break;
+		RTMP_COM_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ATE, 0,
+				     wrqin->ifr_name, 0);
+	} break;
 #endif
 
 #ifdef DYNAMIC_VLAN_SUPPORT
-            case RTPRIV_IOCTL_STA_VLAN:
-                {
-                    RT_CMD_AP_STA_VLAN  sta_vlan_param;
-                    struct iw_point *erq = &wrqin->u.data;
-                    if(erq->pointer) {
-                        if (copy_from_user(&sta_vlan_param, erq->pointer, erq->length)) {
-                            Status = -EFAULT;
-                        }
-                        else {
-                            printk("STA Addr %02x %02x %02x %02x %02x %02x Vlan ID %d \n",
-                                sta_vlan_param.sta_addr[0],sta_vlan_param.sta_addr[1],sta_vlan_param.sta_addr[2],
-                                sta_vlan_param.sta_addr[3],sta_vlan_param.sta_addr[4],sta_vlan_param.sta_addr[5],
-                                sta_vlan_param.vlan_id);
-                            RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_SET_STA_VLAN, 0, &sta_vlan_param, sizeof(RT_CMD_AP_STA_VLAN));
-                        }
-                    }
- 
-                }
+	case RTPRIV_IOCTL_STA_VLAN: {
+		RT_CMD_AP_STA_VLAN sta_vlan_param;
+		struct iw_point *erq = &wrqin->u.data;
+		if (erq->pointer) {
+			if (copy_from_user(&sta_vlan_param, erq->pointer,
+					   erq->length)) {
+				Status = -EFAULT;
+			} else {
+				printk("STA Addr %02x %02x %02x %02x %02x %02x Vlan ID %d \n",
+				       sta_vlan_param.sta_addr[0],
+				       sta_vlan_param.sta_addr[1],
+				       sta_vlan_param.sta_addr[2],
+				       sta_vlan_param.sta_addr[3],
+				       sta_vlan_param.sta_addr[4],
+				       sta_vlan_param.sta_addr[5],
+				       sta_vlan_param.vlan_id);
+				RTMP_AP_IoctlHandle(
+					pAd, wrq, CMD_RTPRIV_IOCTL_SET_STA_VLAN,
+					0, &sta_vlan_param,
+					sizeof(RT_CMD_AP_STA_VLAN));
+			}
+		}
+	}
 #endif
 
 #ifdef HOSTAPD_11R_SUPPORT
-	case RTPRIV_IOCTL_SET_FT_PARAM:
-		{
-			RT_CMD_AP_11R_PARAM ap_11r_params;
-			struct iw_point *erq = &wrqin->u.data;
+	case RTPRIV_IOCTL_SET_FT_PARAM: {
+		RT_CMD_AP_11R_PARAM ap_11r_params;
+		struct iw_point *erq = &wrqin->u.data;
 
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("set ft param ioctl call: length:%d\n", erq->length));
-			if (erq->length <= 12) {
-				Status = 0;
-				MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("set ft param ioctl call failed due to length:%d\n", erq->length));
-			} else {
-				if (erq->pointer) {
-					if (copy_from_user(&ap_11r_params, erq->pointer, erq->length))
-						Status = -EFAULT;
-					else {
-						MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("call CMD_RTPRIV_IOCTL_SET_FT_PARAM\n"));
-						RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_SET_FT_PARAM, 0, &ap_11r_params, sizeof(RT_CMD_AP_11R_PARAM));
-					}
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("set ft param ioctl call: length:%d\n", erq->length));
+		if (erq->length <= 12) {
+			Status = 0;
+			MTWF_LOG(
+				DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("set ft param ioctl call failed due to length:%d\n",
+				 erq->length));
+		} else {
+			if (erq->pointer) {
+				if (copy_from_user(&ap_11r_params, erq->pointer,
+						   erq->length))
+					Status = -EFAULT;
+				else {
+					MTWF_LOG(
+						DBG_CAT_CFG, DBG_SUBCAT_ALL,
+						DBG_LVL_TRACE,
+						("call CMD_RTPRIV_IOCTL_SET_FT_PARAM\n"));
+					RTMP_AP_IoctlHandle(
+						pAd, wrq,
+						CMD_RTPRIV_IOCTL_SET_FT_PARAM,
+						0, &ap_11r_params,
+						sizeof(RT_CMD_AP_11R_PARAM));
 				}
 			}
 		}
-		break;
+	} break;
 #endif /* HOSTAPD_11R_SUPPORT */
 
 	case SIOCGIFHWADDR:
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("IOCTLIOCTLIOCTL::SIOCGIFHWADDR\n"));
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_AP_SIOCGIFHWADDR, 0, NULL, 0);
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("IOCTLIOCTLIOCTL::SIOCGIFHWADDR\n"));
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_AP_SIOCGIFHWADDR,
+				    0, NULL, 0);
 		/*  if (pObj->ioctl_if < MAX_MBSSID_NUM(pAd)) */
 		/* strcpy((RTMP_STRING *) wrq->u.name, (RTMP_STRING *) pAd->ApCfg.MBSSID[pObj->ioctl_if].Bssid); */
 		break;
 
-	case SIOCSIWESSID:  /*Set ESSID */
+	case SIOCSIWESSID: /*Set ESSID */
 		break;
 
 	case SIOCGIWESSID: { /*Get ESSID */
@@ -257,7 +229,8 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		/*erq->length = pAd->ApCfg.MBSSID[pObj->ioctl_if].SsidLen; */
 		pIoctlSSID->priv_flags = RT_DEV_PRIV_FLAGS_GET(net_dev);
 		pIoctlSSID->apidx = apidx;
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_AP_SIOCGIWESSID, 0, pIoctlSSID, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_AP_SIOCGIWESSID,
+				    0, pIoctlSSID, 0);
 		pSsidStr = (PCHAR)pIoctlSSID->pSsidStr;
 		erq->length = pIoctlSSID->length;
 
@@ -272,9 +245,7 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		/* The below code tries to access user space buffer directly,
 		 * hence remove it .
 		 */
-
-	}
-	break;
+	} break;
 
 	case SIOCGIWNWID: /* get network id */
 	case SIOCSIWNWID: /* set network id (the cell) */
@@ -288,8 +259,7 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		wrqin->u.freq.m = Channel; /*wdev->channel; */
 		wrqin->u.freq.e = 0;
 		wrqin->u.freq.i = 0;
-	}
-	break;
+	} break;
 
 	case SIOCSIWFREQ: /*set channel/frequency (Hz) */
 		Status = RTMP_IO_EOPNOTSUPP;
@@ -307,16 +277,15 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		RTMP_DRIVER_BITRATE_GET(pAd, pIoctlRate);
 		wrqin->u.bitrate.value = pIoctlRate->BitRate;
 		wrqin->u.bitrate.disabled = 0;
-	}
-	break;
+	} break;
 
-	case SIOCSIWRATE:  /*set default bit rate (bps) */
-	case SIOCGIWRTS:  /* get RTS/CTS threshold (bytes) */
-	case SIOCSIWRTS:  /*set RTS/CTS threshold (bytes) */
-	case SIOCGIWFRAG:  /*get fragmentation thr (bytes) */
-	case SIOCSIWFRAG:  /*set fragmentation thr (bytes) */
-	case SIOCGIWENCODE:  /*get encoding token & mode */
-	case SIOCSIWENCODE:  /*set encoding token & mode */
+	case SIOCSIWRATE: /*set default bit rate (bps) */
+	case SIOCGIWRTS: /* get RTS/CTS threshold (bytes) */
+	case SIOCSIWRTS: /*set RTS/CTS threshold (bytes) */
+	case SIOCGIWFRAG: /*get fragmentation thr (bytes) */
+	case SIOCSIWFRAG: /*set fragmentation thr (bytes) */
+	case SIOCGIWENCODE: /*get encoding token & mode */
+	case SIOCSIWENCODE: /*set encoding token & mode */
 		Status = RTMP_IO_EOPNOTSUPP;
 		break;
 
@@ -325,33 +294,33 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		wrqin->u.ap_addr.sa_family = ARPHRD_ETHER;
 		/*memcpy(wrqin->u.ap_addr.sa_data, &pAd->ApCfg.MBSSID[pObj->ioctl_if].Bssid, ETH_ALEN); */
 		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_AP_SIOCGIWAP, 0,
-							wrqin->u.ap_addr.sa_data, RT_DEV_PRIV_FLAGS_GET(net_dev));
-	}
-	break;
+				    wrqin->u.ap_addr.sa_data,
+				    RT_DEV_PRIV_FLAGS_GET(net_dev));
+	} break;
 
-	case SIOCGIWMODE:  /*get operation mode */
+	case SIOCGIWMODE: /*get operation mode */
 		if (RT_DEV_PRIV_FLAGS_GET(net_dev) == INT_APCLI)
-			wrqin->u.mode = IW_MODE_INFRA;		/* ApCli Mode. */
+			wrqin->u.mode = IW_MODE_INFRA; /* ApCli Mode. */
 		else
-			wrqin->u.mode = IW_MODE_MASTER;		/* AP Mode. */
+			wrqin->u.mode = IW_MODE_MASTER; /* AP Mode. */
 		break;
 
-	case SIOCSIWAP:  /*set access point MAC addresses */
-	case SIOCSIWMODE:  /*set operation mode */
-	case SIOCGIWSENS:   /*get sensitivity (dBm) */
-	case SIOCSIWSENS:	/*set sensitivity (dBm) */
-	case SIOCGIWPOWER:  /*get Power Management settings */
-	case SIOCSIWPOWER:  /*set Power Management settings */
-	case SIOCGIWTXPOW:  /*get transmit power (dBm) */
-	case SIOCSIWTXPOW:  /*set transmit power (dBm) */
+	case SIOCSIWAP: /*set access point MAC addresses */
+	case SIOCSIWMODE: /*set operation mode */
+	case SIOCGIWSENS: /*get sensitivity (dBm) */
+	case SIOCSIWSENS: /*set sensitivity (dBm) */
+	case SIOCGIWPOWER: /*get Power Management settings */
+	case SIOCSIWPOWER: /*set Power Management settings */
+	case SIOCGIWTXPOW: /*get transmit power (dBm) */
+	case SIOCSIWTXPOW: /*set transmit power (dBm) */
 
 	/*case SIOCGIWRANGE:	//Get range of parameters */
-	case SIOCGIWRETRY:	/*get retry limits and lifetime */
-	case SIOCSIWRETRY:	/*set retry limits and lifetime */
+	case SIOCGIWRETRY: /*get retry limits and lifetime */
+	case SIOCSIWRETRY: /*set retry limits and lifetime */
 		Status = RTMP_IO_EOPNOTSUPP;
 		break;
 
-	case SIOCGIWRANGE: {	/*Get range of parameters */
+	case SIOCGIWRANGE: { /*Get range of parameters */
 		/*				struct iw_range range; */
 		struct iw_range *prange = NULL;
 		UINT32 len;
@@ -359,7 +328,8 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		os_alloc_mem(NULL, (UCHAR **)&prange, sizeof(struct iw_range));
 
 		if (prange == NULL) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Allocate memory fail!!!\n", __func__));
+			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s: Allocate memory fail!!!\n", __func__));
 			break;
 		}
 
@@ -374,37 +344,45 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		prange->max_qual.qual = 100;
 		prange->max_qual.level = 0; /* dB */
 		prange->max_qual.noise = 0; /* dB */
-		len = copy_to_user(wrq->u.data.pointer, prange, sizeof(struct iw_range));
+		len = copy_to_user(wrq->u.data.pointer, prange,
+				   sizeof(struct iw_range));
 		os_free_mem(prange);
-	}
-	break;
+	} break;
 
 	case RT_PRIV_IOCTL:
 	case RT_PRIV_IOCTL_EXT: {
 		subcmd = wrqin->u.data.flags;
-		Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RT_PRIV_IOCTL, subcmd, wrqin->u.data.pointer, 0);
-	}
-	break;
+		Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RT_PRIV_IOCTL,
+					     subcmd, wrqin->u.data.pointer, 0);
+	} break;
 #ifdef HOSTAPD_SUPPORT
 
 	case SIOCSIWGENIE:
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("ioctl SIOCSIWGENIE apidx=%d\n", apidx));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("ioctl SIOCSIWGENIE apidx=%d\n", apidx));
 
 		/* The below code tries to access user space buffer directly,
 		 * hence remove it . */
-		RTMP_AP_IoctlHandle(pAd, wrqin, CMD_RTPRIV_IOCTL_AP_SIOCSIWGENIE, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrqin,
+				    CMD_RTPRIV_IOCTL_AP_SIOCSIWGENIE, 0, NULL,
+				    0);
 		break;
 #endif /* HOSTAPD_SUPPORT */
 
 	case SIOCGIWPRIV:
 		if (wrqin->u.data.pointer) {
-			if (access_ok(wrqin->u.data.pointer, sizeof(ap_privtab)) != TRUE)
+			if (access_ok(wrqin->u.data.pointer,
+				      sizeof(ap_privtab)) != TRUE)
 				break;
 
-			if ((sizeof(ap_privtab) / sizeof(ap_privtab[0])) <= wrq->u.data.length) {
-				wrqin->u.data.length = sizeof(ap_privtab) / sizeof(ap_privtab[0]);
+			if ((sizeof(ap_privtab) / sizeof(ap_privtab[0])) <=
+			    wrq->u.data.length) {
+				wrqin->u.data.length = sizeof(ap_privtab) /
+						       sizeof(ap_privtab[0]);
 
-				if (copy_to_user(wrqin->u.data.pointer, ap_privtab, sizeof(ap_privtab)))
+				if (copy_to_user(wrqin->u.data.pointer,
+						 ap_privtab,
+						 sizeof(ap_privtab)))
 					Status = RTMP_IO_EFAULT;
 			} else
 				Status = RTMP_IO_E2BIG;
@@ -413,47 +391,55 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		break;
 
 	case RTPRIV_IOCTL_SET: {
-		if(access_ok(wrqin->u.data.pointer, wrqin->u.data.length) == TRUE)
-			Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_SET, 0, NULL, 0);
-	}
-	break;
+		if (access_ok(wrqin->u.data.pointer, wrqin->u.data.length) ==
+		    TRUE)
+			Status = RTMP_AP_IoctlHandle(
+				pAd, wrq, CMD_RTPRIV_IOCTL_SET, 0, NULL, 0);
+	} break;
 
 	case RTPRIV_IOCTL_SHOW: {
-		if(access_ok(wrqin->u.data.pointer, wrqin->u.data.length) == TRUE)
-			Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_SHOW, 0, NULL, 0);
-	}
-	break;
+		if (access_ok(wrqin->u.data.pointer, wrqin->u.data.length) ==
+		    TRUE)
+			Status = RTMP_AP_IoctlHandle(
+				pAd, wrq, CMD_RTPRIV_IOCTL_SHOW, 0, NULL, 0);
+	} break;
 #ifdef WSC_AP_SUPPORT
 
 	case RTPRIV_IOCTL_SET_WSCOOB:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_SET_WSCOOB, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_SET_WSCOOB, 0,
+				    NULL, 0);
 		break;
-#endif/*WSC_AP_SUPPORT*/
+#endif /*WSC_AP_SUPPORT*/
 
 	/* modified by Red@Ralink, 2009/09/30 */
 	case RTPRIV_IOCTL_GET_MAC_TABLE:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_MAC_TABLE, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_MAC_TABLE, 0,
+				    NULL, 0);
 		break;
 
 	case RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq,
+				    CMD_RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT, 0,
+				    NULL, 0);
 		break;
 		/* end of modification */
 
 	case RTPRIV_IOCTL_GET_DRIVER_INFO:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_DRIVER_INFO, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_DRIVER_INFO,
+				    0, NULL, 0);
 		break;
 
 #ifdef AP_SCAN_SUPPORT
 
 	case RTPRIV_IOCTL_GSITESURVEY:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GSITESURVEY, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GSITESURVEY, 0,
+				    NULL, 0);
 		break;
 #endif /* AP_SCAN_SUPPORT */
 
-
 	case RTPRIV_IOCTL_STATISTICS:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_STATISTICS, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_STATISTICS, 0,
+				    NULL, 0);
 		break;
 
 	case MTPRIV_IOCTL_RD:
@@ -461,18 +447,21 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		break;
 
 	case RTPRIV_IOCTL_RX_STATISTICS:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_RX_STATISTICS, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_RX_STATISTICS, 0,
+				    NULL, 0);
 		break;
 #ifdef WSC_AP_SUPPORT
 
 	case RTPRIV_IOCTL_WSC_PROFILE:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_WSC_PROFILE, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_WSC_PROFILE, 0,
+				    NULL, 0);
 		break;
 #endif /* WSC_AP_SUPPORT */
 #ifdef DOT11_N_SUPPORT
 
 	case RTPRIV_IOCTL_QUERY_BATABLE:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_QUERY_BATABLE, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_QUERY_BATABLE, 0,
+				    NULL, 0);
 		break;
 #endif /* DOT11_N_SUPPORT */
 
@@ -497,7 +486,8 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 
 #ifdef WIFI_DIAG
 	case RTPRIV_IOCTL_GET_PROCESS_INFO:
-		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO, 0, NULL, 0);
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO,
+				    0, NULL, 0);
 		break;
 #endif
 

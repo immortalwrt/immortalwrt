@@ -12,19 +12,12 @@ typedef struct _NETIF_ENTRY {
 	PNET_DEV pNetDev;
 } NETIF_ENTRY, *PNETIF_ENTRY;
 
-void initblockQueueTab(
-	IN PRTMP_ADAPTER pAd);
+void initblockQueueTab(IN PRTMP_ADAPTER pAd);
 
-BOOLEAN blockNetIf(
-	IN PBLOCK_QUEUE_ENTRY pBlockQueueEntry,
-	IN PNET_DEV pNetDev);
+BOOLEAN blockNetIf(IN PBLOCK_QUEUE_ENTRY pBlockQueueEntry, IN PNET_DEV pNetDev);
 
-VOID releaseNetIf(
-	IN PBLOCK_QUEUE_ENTRY pBlockQueueEntry);
+VOID releaseNetIf(IN PBLOCK_QUEUE_ENTRY pBlockQueueEntry);
 
-VOID StopNetIfQueue(
-	IN PRTMP_ADAPTER pAd,
-	IN UCHAR QueIdx,
-	IN PNDIS_PACKET pPacket);
+VOID StopNetIfQueue(IN PRTMP_ADAPTER pAd, IN UCHAR QueIdx,
+		    IN PNDIS_PACKET pPacket);
 #endif /* __NET_IF_BLOCK_H__ */
-

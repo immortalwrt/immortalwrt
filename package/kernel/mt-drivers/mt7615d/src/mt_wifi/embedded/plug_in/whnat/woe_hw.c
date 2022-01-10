@@ -14,48 +14,48 @@
 	whnat_hw.c
 */
 
-
 #include "woe.h"
 #include "woe_hw.h"
 #include "wed_def.h"
 
-
 /*whnat cr interesting list*/
 static struct whnat_wifi_cr_map cr_map_list[] = {
-	{WIFI_INT_STA, WED_INT_STA, WHNAT_CR_WED},
-	{WIFI_INT_MSK, WED_INT_MSK, WHNAT_CR_WED},
-	/* {WIFI_WPDMA_GLO_CFG,WED_GLO_CFG,WHNAT_CR_WED}, */
+	{ WIFI_INT_STA, WED_INT_STA, WHNAT_CR_WED },
+	{ WIFI_INT_MSK, WED_INT_MSK, WHNAT_CR_WED },
+/* {WIFI_WPDMA_GLO_CFG,WED_GLO_CFG,WHNAT_CR_WED}, */
 #ifdef WED_RX_SUPPORT
-	{WIFI_RX_RING1_BASE, WED_RX1_CTRL0, WHNAT_CR_WED},
-	{WIFI_RX_RING1_CNT, WED_RX1_CTRL1, WHNAT_CR_WED},
-	{WIFI_RX_RING1_CIDX, WED_RX1_CTRL2, WHNAT_CR_WED},
-	{WIFI_RX_RING1_DIDX, WED_RX1_CTRL3, WHNAT_CR_WED},
+	{ WIFI_RX_RING1_BASE, WED_RX1_CTRL0, WHNAT_CR_WED },
+	{ WIFI_RX_RING1_CNT, WED_RX1_CTRL1, WHNAT_CR_WED },
+	{ WIFI_RX_RING1_CIDX, WED_RX1_CTRL2, WHNAT_CR_WED },
+	{ WIFI_RX_RING1_DIDX, WED_RX1_CTRL3, WHNAT_CR_WED },
 #endif /*RX*/
 #ifdef WED_TX_SUPPORT
-	{WIFI_TX_RING0_BASE, WED_TX0_CTRL0, WHNAT_CR_WED},
-	{WIFI_TX_RING0_CNT, WED_TX0_CTRL1, WHNAT_CR_WED},
-	{WIFI_TX_RING0_CIDX, WED_TX0_CTRL2, WHNAT_CR_WED},
-	{WIFI_TX_RING0_DIDX, WED_TX0_CTRL3, WHNAT_CR_WED},
-	{WIFI_TX_RING1_BASE, WED_TX1_CTRL0, WHNAT_CR_WED},
-	{WIFI_TX_RING1_CNT, WED_TX1_CTRL1, WHNAT_CR_WED},
-	{WIFI_TX_RING1_CIDX, WED_TX1_CTRL2, WHNAT_CR_WED},
-	{WIFI_TX_RING1_DIDX, WED_TX1_CTRL3, WHNAT_CR_WED},
+	{ WIFI_TX_RING0_BASE, WED_TX0_CTRL0, WHNAT_CR_WED },
+	{ WIFI_TX_RING0_CNT, WED_TX0_CTRL1, WHNAT_CR_WED },
+	{ WIFI_TX_RING0_CIDX, WED_TX0_CTRL2, WHNAT_CR_WED },
+	{ WIFI_TX_RING0_DIDX, WED_TX0_CTRL3, WHNAT_CR_WED },
+	{ WIFI_TX_RING1_BASE, WED_TX1_CTRL0, WHNAT_CR_WED },
+	{ WIFI_TX_RING1_CNT, WED_TX1_CTRL1, WHNAT_CR_WED },
+	{ WIFI_TX_RING1_CIDX, WED_TX1_CTRL2, WHNAT_CR_WED },
+	{ WIFI_TX_RING1_DIDX, WED_TX1_CTRL3, WHNAT_CR_WED },
 #endif
-	{0, 0}
+	{ 0, 0 }
 };
 
-
-#define WHNAT_RESET(_entry, _addr, _value) {\
-		unsigned int cnt = 0;\
-		WHNAT_IO_WRITE32(_entry, _addr, _value);\
-		while (_value != 0 && cnt < WED_POLL_MAX) {\
-			WHNAT_IO_READ32(_entry, _addr, &_value);\
-			cnt++;\
-		} \
-		if (cnt >= WED_POLL_MAX) {\
-			WHNAT_DBG(WHNAT_DBG_ERR, "%s(): Reset addr=%x,value=%x,cnt=%d fail!\n",\
-					__func__, _addr, _value, cnt);\
-		} \
+#define WHNAT_RESET(_entry, _addr, _value)                                     \
+	{                                                                      \
+		unsigned int cnt = 0;                                          \
+		WHNAT_IO_WRITE32(_entry, _addr, _value);                       \
+		while (_value != 0 && cnt < WED_POLL_MAX) {                    \
+			WHNAT_IO_READ32(_entry, _addr, &_value);               \
+			cnt++;                                                 \
+		}                                                              \
+		if (cnt >= WED_POLL_MAX) {                                     \
+			WHNAT_DBG(                                             \
+				WHNAT_DBG_ERR,                                 \
+				"%s(): Reset addr=%x,value=%x,cnt=%d fail!\n", \
+				__func__, _addr, _value, cnt);                 \
+		}                                                              \
 	}
 
 /*Local function*/
@@ -63,22 +63,23 @@ static struct whnat_wifi_cr_map cr_map_list[] = {
 /*
 *
 */
-static inline int wed_agt_dis_ck(struct wed_entry *wed, unsigned int addr, unsigned int busy_bit)
+static inline int wed_agt_dis_ck(struct wed_entry *wed, unsigned int addr,
+				 unsigned int busy_bit)
 {
 	unsigned int cnt = 0;
 	unsigned int value;
 
 	WHNAT_IO_READ32(wed, addr, &value);
 
-	while ((value & (1 << busy_bit)) &&
-		   cnt < WED_POLL_MAX) {
+	while ((value & (1 << busy_bit)) && cnt < WED_POLL_MAX) {
 		usleep_range(10000, 15000);
 		WHNAT_IO_READ32(wed, addr, &value);
 		cnt++;
 	}
 
 	if (cnt >= WED_POLL_MAX) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): %x disable bit %d fail!!\n", __func__, addr, busy_bit);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): %x disable bit %d fail!!\n",
+			  __func__, addr, busy_bit);
 		return -1;
 	}
 
@@ -88,22 +89,23 @@ static inline int wed_agt_dis_ck(struct wed_entry *wed, unsigned int addr, unsig
 /*
 *
 */
-static inline int wdma_agt_dis_ck(struct wdma_entry *wdma, unsigned int addr, unsigned busy_bit)
+static inline int wdma_agt_dis_ck(struct wdma_entry *wdma, unsigned int addr,
+				  unsigned busy_bit)
 {
 	unsigned int cnt = 0;
 	unsigned int value;
 
 	WHNAT_IO_READ32(wdma, addr, &value);
 
-	while ((value & (1 << busy_bit)) &&
-		   cnt < WED_POLL_MAX) {
+	while ((value & (1 << busy_bit)) && cnt < WED_POLL_MAX) {
 		usleep_range(10000, 15000);
 		WHNAT_IO_READ32(wdma, addr, &value);
 		cnt++;
 	}
 
 	if (cnt >= WED_POLL_MAX) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): %x disable bit %d fail!!\n", __func__, addr, busy_bit);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): %x disable bit %d fail!!\n",
+			  __func__, addr, busy_bit);
 		return -1;
 	}
 
@@ -113,22 +115,23 @@ static inline int wdma_agt_dis_ck(struct wdma_entry *wdma, unsigned int addr, un
 /*
 *
 */
-static inline int wifi_agt_dis_ck(struct wifi_entry *wifi, unsigned int addr, unsigned int busy_bit)
+static inline int wifi_agt_dis_ck(struct wifi_entry *wifi, unsigned int addr,
+				  unsigned int busy_bit)
 {
 	unsigned int cnt = 0;
 	unsigned int value;
 
 	WHNAT_IO_READ32(wifi, addr, &value);
 
-	while ((value & (1 << busy_bit)) &&
-		   cnt < WED_POLL_MAX) {
+	while ((value & (1 << busy_bit)) && cnt < WED_POLL_MAX) {
 		usleep_range(10000, 15000);
 		WHNAT_IO_READ32(wifi, addr, &value);
 		cnt++;
 	}
 
 	if (cnt >= WED_POLL_MAX) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): %x disable bit %d fail!!\n", __func__, addr, busy_bit);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): %x disable bit %d fail!!\n",
+			  __func__, addr, busy_bit);
 		return -1;
 	}
 
@@ -145,35 +148,40 @@ static void wed_dma_ctrl(struct wed_entry *wed, unsigned char txrx)
 	unsigned int wed_wpdma_cfg;
 	/*reset wed*/
 	WHNAT_IO_READ32(wed, WED_GLO_CFG, &wed_cfg);
-	wed_cfg &= ~((1 << WED_GLO_CFG_FLD_TX_DMA_EN) | (1 << WED_GLO_CFG_FLD_RX_DMA_EN));
+	wed_cfg &= ~((1 << WED_GLO_CFG_FLD_TX_DMA_EN) |
+		     (1 << WED_GLO_CFG_FLD_RX_DMA_EN));
 	WHNAT_IO_READ32(wed, WED_WPDMA_GLO_CFG, &wed_wpdma_cfg);
-	wed_wpdma_cfg &= ~((1 << WED_WPDMA_GLO_CFG_FLD_TX_DRV_EN) | (1 << WED_WPDMA_GLO_CFG_FLD_RX_DRV_EN));
+	wed_wpdma_cfg &= ~((1 << WED_WPDMA_GLO_CFG_FLD_TX_DRV_EN) |
+			   (1 << WED_WPDMA_GLO_CFG_FLD_RX_DRV_EN));
 	WHNAT_IO_READ32(wed, WED_WDMA_GLO_CFG, &wed_wdma_cfg);
-	wed_wdma_cfg &= ~((1 << WED_WDMA_GLO_CFG_FLD_TX_DRV_EN) | (1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_EN));
+	wed_wdma_cfg &= ~((1 << WED_WDMA_GLO_CFG_FLD_TX_DRV_EN) |
+			  (1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_EN));
 
 	switch (txrx) {
 	case WHNAT_DMA_TX: {
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): %s DMA TX.\n", __func__, (txrx ? "ENABLE":"DISABLE"));
+		WHNAT_DBG(WHNAT_DBG_INF, "%s(): %s DMA TX.\n", __func__,
+			  (txrx ? "ENABLE" : "DISABLE"));
 		wed_cfg |= (1 << WED_GLO_CFG_FLD_TX_DMA_EN);
 		wed_wpdma_cfg |= (1 << WED_WPDMA_GLO_CFG_FLD_TX_DRV_EN);
-		wed_wdma_cfg |=  (1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_EN);
-	}
-	break;
+		wed_wdma_cfg |= (1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_EN);
+	} break;
 
 	case WHNAT_DMA_RX: {
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): %s DMA RX.\n", __func__, (txrx ? "ENABLE":"DISABLE"));
+		WHNAT_DBG(WHNAT_DBG_INF, "%s(): %s DMA RX.\n", __func__,
+			  (txrx ? "ENABLE" : "DISABLE"));
 		wed_cfg |= (1 << WED_GLO_CFG_FLD_RX_DMA_EN);
 		wed_wpdma_cfg |= (1 << WED_WPDMA_GLO_CFG_FLD_RX_DRV_EN);
-	}
-	break;
+	} break;
 
 	case WHNAT_DMA_TXRX: {
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): %s DMA TXRX.\n", __func__, (txrx ? "ENABLE":"DISABLE"));
-		wed_cfg |= ((1 << WED_GLO_CFG_FLD_TX_DMA_EN) | (1 << WED_GLO_CFG_FLD_RX_DMA_EN));
-		wed_wpdma_cfg |= ((1 << WED_WPDMA_GLO_CFG_FLD_TX_DRV_EN) | (1 << WED_WPDMA_GLO_CFG_FLD_RX_DRV_EN));
+		WHNAT_DBG(WHNAT_DBG_INF, "%s(): %s DMA TXRX.\n", __func__,
+			  (txrx ? "ENABLE" : "DISABLE"));
+		wed_cfg |= ((1 << WED_GLO_CFG_FLD_TX_DMA_EN) |
+			    (1 << WED_GLO_CFG_FLD_RX_DMA_EN));
+		wed_wpdma_cfg |= ((1 << WED_WPDMA_GLO_CFG_FLD_TX_DRV_EN) |
+				  (1 << WED_WPDMA_GLO_CFG_FLD_RX_DRV_EN));
 		wed_wdma_cfg |= (1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_EN);
-	}
-	break;
+	} break;
 	}
 
 	WHNAT_IO_WRITE32(wed, WED_GLO_CFG, wed_cfg);
@@ -191,7 +199,7 @@ static void wdma_dma_ctrl(struct wdma_entry *wdma, unsigned char txrx)
 	unsigned int wdma_cfg = 0;
 
 	WHNAT_IO_READ32(wdma, WDMA_GLO_CFG, &wdma_cfg);
-	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): WDMA_GLO_CFG=%x\n",  __func__, wdma_cfg);
+	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): WDMA_GLO_CFG=%x\n", __func__, wdma_cfg);
 
 	if (txrx) {
 		/*reset wdma*/
@@ -219,8 +227,10 @@ static void whnat_hal_bfm_init(struct whnat_entry *whnat)
 	/*PAUSE BUF MGMT*/
 	value = (1 << WED_TX_BM_CTRL_FLD_PAUSE);
 	/*should be set before WED_MOD_RST is invoked*/
-	value |= ((res->pkt_num/WED_TOKEN_UNIT) << WED_TX_BM_CTRL_FLD_VLD_GRP_NUM);
-	value |= ((ring_ctrl->ring_len/256) << WED_TX_BM_CTRL_FLD_RSV_GRP_NUM);
+	value |= ((res->pkt_num / WED_TOKEN_UNIT)
+		  << WED_TX_BM_CTRL_FLD_VLD_GRP_NUM);
+	value |=
+		((ring_ctrl->ring_len / 256) << WED_TX_BM_CTRL_FLD_RSV_GRP_NUM);
 	WHNAT_IO_WRITE32(wed, WED_TX_BM_CTRL, value);
 	/*TX BM_BASE*/
 	value = res->des_buf.alloc_pa;
@@ -238,7 +248,8 @@ static void whnat_hal_bfm_init(struct whnat_entry *whnat)
 	value |= (WED_TOKEN_HIGH << WED_TX_BM_DYN_TH_FLD_HI_GRP_NUM);
 #else
 	value = (1 << WED_TX_BM_DYN_TH_FLD_LOW_GRP_NUM);
-	value |= (WED_TX_BM_DYN_TH_FLD_HI_GRP_MASK << WED_TX_BM_DYN_TH_FLD_HI_GRP_NUM);
+	value |= (WED_TX_BM_DYN_TH_FLD_HI_GRP_MASK
+		  << WED_TX_BM_DYN_TH_FLD_HI_GRP_NUM);
 #endif /*WED_DYNAMIC_BW_SUPPORT*/
 	WHNAT_IO_WRITE32(wed, WED_TX_BM_DYN_TH, value);
 	/*Reset Buf mgmt for ready to start*/
@@ -270,13 +281,14 @@ void whnat_hal_bfm_freecnt(struct wed_entry *wed, unsigned int *cnt)
 	char str[256] = "";
 	struct wed_buf_res *buf_res = &wed->res_ctrl.tx_ctrl.res;
 
-	grp = buf_res->pkt_num/WED_TOKEN_STATUS_UNIT;
-	tcnt = buf_res->pkt_num%WED_TOKEN_STATUS_UNIT;
+	grp = buf_res->pkt_num / WED_TOKEN_STATUS_UNIT;
+	tcnt = buf_res->pkt_num % WED_TOKEN_STATUS_UNIT;
 	value = 1 << WED_DBG_CTRL_FLD_TX_BM_MEM_DBG;
 	WHNAT_IO_WRITE32(wed, WED_DBG_CTRL, value);
 
-	for (cr = WED_BMF_VALID_TABLE_START; cr <= WED_BMF_VALID_TABLE_END; cr += 4) {
-		if (j%4 == 0)
+	for (cr = WED_BMF_VALID_TABLE_START; cr <= WED_BMF_VALID_TABLE_END;
+	     cr += 4) {
+		if (j % 4 == 0)
 			sprintf(str, "%08x:\t", cr);
 
 		WHNAT_IO_READ32(wed, cr, &value);
@@ -294,9 +306,9 @@ void whnat_hal_bfm_freecnt(struct wed_entry *wed, unsigned int *cnt)
 		}
 
 		k++;
-		sprintf(str+strlen(str), "%08x\t", value);
+		sprintf(str + strlen(str), "%08x\t", value);
 
-		if (j%4 == 3) {
+		if (j % 4 == 3) {
 			WHNAT_DBG(WHNAT_DBG_OFF, "%s\n", str);
 			memset(str, 0, sizeof(str));
 		}
@@ -307,11 +319,11 @@ void whnat_hal_bfm_freecnt(struct wed_entry *wed, unsigned int *cnt)
 	value = 0x14;
 	WHNAT_IO_WRITE32(wed, WED_DBG_CTRL, value);
 	WHNAT_IO_READ32(wed, WED_DBG_PRB1, &value);
-	WHNAT_DBG(WHNAT_DBG_OFF, "Total Free Cnt(%d), CR: Free Cnt(%d), Usage Cnt(%d),Pkt Cnt(%d)\n",
-			fcnt,
-			((value >> 16) & 0xffff),
-			(value & 0xffff),
-			buf_res->pkt_num);
+	WHNAT_DBG(
+		WHNAT_DBG_OFF,
+		"Total Free Cnt(%d), CR: Free Cnt(%d), Usage Cnt(%d),Pkt Cnt(%d)\n",
+		fcnt, ((value >> 16) & 0xffff), (value & 0xffff),
+		buf_res->pkt_num);
 	*cnt = ((value >> 16) & 0xffff);
 	/*Disable debug*/
 	WHNAT_IO_WRITE32(wed, WED_DBG_CTRL, 0);
@@ -343,11 +355,11 @@ void whnat_hal_bfm_free(struct wed_entry *wed)
 	/*Set SRAM enable*/
 	value = 1 << WED_DBG_CTRL_FLD_TX_BM_MEM_DBG;
 	WHNAT_IO_WRITE32(wed, WED_DBG_CTRL, value);
-	grp = buf_res->pkt_num/WED_TOKEN_STATUS_UNIT;
-	cnt = buf_res->pkt_num%WED_TOKEN_STATUS_UNIT;
+	grp = buf_res->pkt_num / WED_TOKEN_STATUS_UNIT;
+	cnt = buf_res->pkt_num % WED_TOKEN_STATUS_UNIT;
 
 	for (i = 0; i < grp; i++) {
-		cr = WED_BMF_VALID_TABLE_START+4*i;
+		cr = WED_BMF_VALID_TABLE_START + 4 * i;
 		WHNAT_IO_WRITE32(wed, cr, 0xffffffff);
 	}
 
@@ -393,13 +405,15 @@ void whnat_hal_bfm_update(struct wed_entry *wed, unsigned char reduce)
 	}
 
 	if (cnt == WED_POLL_MAX) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): can't poll tx buf status to clear!\n", __func__);
+		WHNAT_DBG(WHNAT_DBG_ERR,
+			  "%s(): can't poll tx buf status to clear!\n",
+			  __func__);
 		goto end;
 	}
 
 	/*check token can reduce or not*/
 	if (reduce) {
-		reduce_grp = (res->pkt_num/WED_TOKEN_UNIT) - vld_num;
+		reduce_grp = (res->pkt_num / WED_TOKEN_UNIT) - vld_num;
 		vld_num -= reduce_grp;
 
 		if (vld_num > FREE_CR_SIZE)
@@ -407,20 +421,26 @@ void whnat_hal_bfm_update(struct wed_entry *wed, unsigned char reduce)
 		else
 			WHNAT_IO_READ32(wed, WED_TX_BM_VB_FREE_0_31, &value);
 
-		vld_num = (vld_num-1)%FREE_CR_SIZE;
+		vld_num = (vld_num - 1) % FREE_CR_SIZE;
 
 		if ((value & (1 << vld_num)) == 0) {
-			WHNAT_DBG(WHNAT_DBG_ERR, "%s(): reduce too much packet buffer, buffer still inused!\n", __func__);
+			WHNAT_DBG(
+				WHNAT_DBG_ERR,
+				"%s(): reduce too much packet buffer, buffer still inused!\n",
+				__func__);
 			goto end;
 		}
 	}
 
 	/*update token*/
 	value = (1 << WED_TX_BM_CTRL_FLD_PAUSE);
-	value |= ((res->pkt_num/WED_TOKEN_UNIT) << WED_TX_BM_CTRL_FLD_VLD_GRP_NUM);
-	value |= ((ring_ctrl->ring_len/256) << WED_TX_BM_CTRL_FLD_RSV_GRP_NUM);
+	value |= ((res->pkt_num / WED_TOKEN_UNIT)
+		  << WED_TX_BM_CTRL_FLD_VLD_GRP_NUM);
+	value |=
+		((ring_ctrl->ring_len / 256) << WED_TX_BM_CTRL_FLD_RSV_GRP_NUM);
 	WHNAT_IO_WRITE32(wed, WED_TX_BM_CTRL, value);
-	WHNAT_DBG(WHNAT_DBG_INF, "%s(): update packet buffer done!\n", __func__);
+	WHNAT_DBG(WHNAT_DBG_INF, "%s(): update packet buffer done!\n",
+		  __func__);
 end:
 	/*Disable PAUSE BUF MGMT*/
 	WHNAT_IO_READ32(wed, WED_TX_BM_CTRL, &value);
@@ -508,8 +528,10 @@ static int reset_wed_rx_drv(struct wed_entry *wed, unsigned int reset_type)
 #endif /*WED_WORK_AROUND_WDMA_RETURN_IDLE*/
 	WHNAT_IO_WRITE32(wed, WED_WDMA_GLO_CFG, value);
 
-	if (wed_agt_dis_ck(wed, WED_WDMA_GLO_CFG, WED_WDMA_GLO_CFG_FLD_RX_DRV_BUSY) < 0) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): rx drv can't return idle state!\n", __func__);
+	if (wed_agt_dis_ck(wed, WED_WDMA_GLO_CFG,
+			   WED_WDMA_GLO_CFG_FLD_RX_DRV_BUSY) < 0) {
+		WHNAT_DBG(WHNAT_DBG_ERR,
+			  "%s(): rx drv can't return idle state!\n", __func__);
 #ifdef WED_WORK_AROUND_WDMA_RETURN_IDLE
 		value &= ~(1 << WED_WDMA_GLO_CFG_FLD_FSM_RETURN_IDLE);
 		WHNAT_IO_WRITE32(wed, WED_WDMA_GLO_CFG, value);
@@ -538,7 +560,7 @@ static int reset_wed_rx_drv(struct wed_entry *wed, unsigned int reset_type)
 		WHNAT_IO_WRITE32(wed, WED_WDMA_RST_IDX, value);
 		WHNAT_IO_WRITE32(wed, WED_WDMA_RST_IDX, 0);
 		WHNAT_IO_READ32(wed, WED_WDMA_GLO_CFG, &value);
-		value |= (1  << WED_WDMA_GLO_CFG_FLD_RST_INIT_COMPLETE_FLAG);
+		value |= (1 << WED_WDMA_GLO_CFG_FLD_RST_INIT_COMPLETE_FLAG);
 		WHNAT_IO_WRITE32(wed, WED_WDMA_GLO_CFG, value);
 		value &= ~(1 << WED_WDMA_GLO_CFG_FLD_RST_INIT_COMPLETE_FLAG);
 		WHNAT_IO_WRITE32(wed, WED_WDMA_GLO_CFG, value);
@@ -547,7 +569,8 @@ static int reset_wed_rx_drv(struct wed_entry *wed, unsigned int reset_type)
 		value &= ~(1 << WED_CTRL_FLD_WDMA_INT_AGT_EN);
 		WHNAT_IO_WRITE32(wed, WED_CTRL, value);
 
-		if (wed_agt_dis_ck(wed, WED_CTRL, WED_CTRL_FLD_WDMA_INT_AGT_BUSY) < 0)
+		if (wed_agt_dis_ck(wed, WED_CTRL,
+				   WED_CTRL_FLD_WDMA_INT_AGT_BUSY) < 0)
 			return -1;
 
 		value = 1 << WED_MOD_RST_FLD_WDMA_INT_AGT;
@@ -574,8 +597,10 @@ static int reset_wed_tx_bm(struct wed_entry *wed)
 	value &= ~(1 << WED_CTRL_FLD_WED_TX_FREE_AGT_EN);
 	WHNAT_IO_WRITE32(wed, WED_CTRL, value);
 
-	if (wed_agt_dis_ck(wed, WED_CTRL, WED_CTRL_FLD_WED_TX_FREE_AGT_BUSY) < 0) {
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): tx free agent reset faild!\n", __func__);
+	if (wed_agt_dis_ck(wed, WED_CTRL, WED_CTRL_FLD_WED_TX_FREE_AGT_BUSY) <
+	    0) {
+		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): tx free agent reset faild!\n",
+			  __func__);
 		return -1;
 	}
 
@@ -587,7 +612,8 @@ static int reset_wed_tx_bm(struct wed_entry *wed)
 	}
 
 	if (cnt >= WED_POLL_MAX) {
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): tx free agent fifo reset faild!\n", __func__);
+		WHNAT_DBG(WHNAT_DBG_OFF,
+			  "%s(): tx free agent fifo reset faild!\n", __func__);
 		return -1;
 	}
 
@@ -599,7 +625,8 @@ static int reset_wed_tx_bm(struct wed_entry *wed)
 	WHNAT_IO_WRITE32(wed, WED_CTRL, value);
 
 	if (wed_agt_dis_ck(wed, WED_CTRL, WED_CTRL_FLD_WED_TX_BM_BUSY) < 0) {
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): tx bm reset faild!\n", __func__);
+		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): tx bm reset faild!\n",
+			  __func__);
 		return -1;
 	}
 
@@ -621,7 +648,8 @@ static int reset_wed_tx_drv(struct wed_entry *wed, unsigned int reset_type)
 	value &= ~(1 << WED_WPDMA_GLO_CFG_FLD_TX_DRV_EN);
 	WHNAT_IO_WRITE32(wed, WED_WPDMA_GLO_CFG, value);
 
-	if (wed_agt_dis_ck(wed, WED_WPDMA_GLO_CFG, WED_WPDMA_GLO_CFG_FLD_TX_DRV_BUSY) < 0)
+	if (wed_agt_dis_ck(wed, WED_WPDMA_GLO_CFG,
+			   WED_WPDMA_GLO_CFG_FLD_TX_DRV_BUSY) < 0)
 		return -1;
 
 	if (reset_type == WHNAT_RESET_IDX_ONLY) {
@@ -636,7 +664,8 @@ static int reset_wed_tx_drv(struct wed_entry *wed, unsigned int reset_type)
 		value &= ~(1 << WED_CTRL_FLD_WPDMA_INT_AGT_EN);
 		WHNAT_IO_WRITE32(wed, WED_CTRL, value);
 
-		if (wed_agt_dis_ck(wed, WED_CTRL, WED_CTRL_FLD_WPDMA_INT_AGT_BUSY) < 0)
+		if (wed_agt_dis_ck(wed, WED_CTRL,
+				   WED_CTRL_FLD_WPDMA_INT_AGT_BUSY) < 0)
 			return -1;
 
 		value = 1 << WED_MOD_RST_FLD_WPDMA_INT_AGT;
@@ -660,28 +689,32 @@ static int reset_tx_traffic(struct wed_entry *wed, unsigned int reset_type)
 	ret = reset_wed_tx_dma(wed, reset_type);
 
 	if (ret < 0) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_dma reset fail,ret=%d\n", __func__, ret);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_dma reset fail,ret=%d\n",
+			  __func__, ret);
 		return ret;
 	}
 
 	ret = reset_wed_rx_drv(wed, reset_type);
 
 	if (ret < 0) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_drv reset fail,ret=%d\n", __func__, ret);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_drv reset fail,ret=%d\n",
+			  __func__, ret);
 		return ret;
 	}
 
 	ret = reset_wed_tx_bm(wed);
 
 	if (ret < 0) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_bm reset fail,ret=%d\n", __func__, ret);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_bm reset fail,ret=%d\n",
+			  __func__, ret);
 		return ret;
 	}
 
 	ret = reset_wed_tx_drv(wed, reset_type);
 
 	if (ret < 0) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_drv reset fail,ret=%d\n", __func__, ret);
+		WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx_drv reset fail,ret=%d\n",
+			  __func__, ret);
 		return ret;
 	}
 
@@ -700,7 +733,8 @@ static int reset_rx_traffic(struct wed_entry *wed, unsigned int reset_type)
 	value &= ~(1 << WED_WPDMA_GLO_CFG_FLD_RX_DRV_EN);
 	WHNAT_IO_WRITE32(wed, WED_WPDMA_GLO_CFG, value);
 
-	if (wed_agt_dis_ck(wed, WED_WPDMA_GLO_CFG, WED_WPDMA_GLO_CFG_FLD_RX_DRV_BUSY) < 0)
+	if (wed_agt_dis_ck(wed, WED_WPDMA_GLO_CFG,
+			   WED_WPDMA_GLO_CFG_FLD_RX_DRV_BUSY) < 0)
 		return -1;
 
 	WHNAT_IO_READ32(wed, WED_GLO_CFG, &value);
@@ -724,7 +758,8 @@ static int reset_rx_traffic(struct wed_entry *wed, unsigned int reset_type)
 		value &= ~(1 << WED_CTRL_FLD_WPDMA_INT_AGT_EN);
 		WHNAT_IO_WRITE32(wed, WED_CTRL, value);
 
-		if (wed_agt_dis_ck(wed, WED_CTRL, WED_CTRL_FLD_WPDMA_INT_AGT_BUSY) < 0)
+		if (wed_agt_dis_ck(wed, WED_CTRL,
+				   WED_CTRL_FLD_WPDMA_INT_AGT_BUSY) < 0)
 			return -1;
 
 		value = (1 << WED_MOD_RST_FLD_WPDMA_INT_AGT);
@@ -867,13 +902,16 @@ unsigned int whnat_wifi_cr_get(char type, unsigned int cr)
 	unsigned int i = 0;
 
 	while (cr_map_list[i].wifi_cr != 0) {
-		if ((cr_map_list[i].whnat_cr == cr) && (cr_map_list[i].whnat_type == type))
+		if ((cr_map_list[i].whnat_cr == cr) &&
+		    (cr_map_list[i].whnat_type == type))
 			return cr_map_list[i].wifi_cr;
 
 		i++;
 	}
 
-	WHNAT_DBG(WHNAT_DBG_ERR, "%s(): can't get wifi cr from whnat cr %x, type=%d\n", __func__, cr, type);
+	WHNAT_DBG(WHNAT_DBG_ERR,
+		  "%s(): can't get wifi cr from whnat cr %x, type=%d\n",
+		  __func__, cr, type);
 	return 0;
 }
 
@@ -891,19 +929,16 @@ unsigned int whnat_cr_search(unsigned int cr)
 		i++;
 	}
 
-	WHNAT_DBG(WHNAT_DBG_LOU, "%s(): can't get wifi cr from whnat cr %x\n", __func__, cr);
+	WHNAT_DBG(WHNAT_DBG_LOU, "%s(): can't get wifi cr from whnat cr %x\n",
+		  __func__, cr);
 	return 0;
 }
 
 /*
 * assign tx descripton to hw cr
 */
-void whnat_hal_cr_handle(
-	struct whnat_entry *entry,
-	char type,
-	char is_write,
-	unsigned long addr,
-	unsigned int *cr_value)
+void whnat_hal_cr_handle(struct whnat_entry *entry, char type, char is_write,
+			 unsigned long addr, unsigned int *cr_value)
 {
 	struct wed_entry *wed = &entry->wed;
 	struct wdma_entry *wdma = &entry->wdma;
@@ -1010,7 +1045,8 @@ void whnat_hal_int_ctrl(struct whnat_entry *entry, unsigned char enable)
 		/*WED_WDMA_SRC SEL */
 		WHNAT_IO_READ32(wed, WED_WDMA_INT_CTRL, &value);
 		/*setting for wdma_int0->wdma0, wdma_int1->wdma1*/
-		value &= ~(WED_WDMA_INT_CTRL_FLD_POLL_SRC_SEL_MASK << WED_WDMA_INT_CTRL_FLD_POLL_SRC_SEL);
+		value &= ~(WED_WDMA_INT_CTRL_FLD_POLL_SRC_SEL_MASK
+			   << WED_WDMA_INT_CTRL_FLD_POLL_SRC_SEL);
 		WHNAT_IO_WRITE32(wed, WED_WDMA_INT_CTRL, value);
 		/*WDMA interrupt enable*/
 		value = 0;
@@ -1109,28 +1145,33 @@ void whnat_hal_wed_init(struct whnat_entry *entry)
 	struct wdma_entry *wdma = &entry->wdma;
 	unsigned int value;
 	/*set wdma recycle threshold*/
-	value = (WED_WDMA_RECYCLE_TIME & 0xffff) << WED_WDMA_RX_THRES_CFG_FLD_WAIT_BM_CNT_MAX;
-	value |= (((wdma->res_ctrl.rx_ctrl.rx_ring_ctrl.ring_len-3) & 0xfff) << WED_WDMA_RX_THRES_CFG_FLD_DRX_CRX_DISTANCE_THRES);
+	value = (WED_WDMA_RECYCLE_TIME & 0xffff)
+		<< WED_WDMA_RX_THRES_CFG_FLD_WAIT_BM_CNT_MAX;
+	value |= (((wdma->res_ctrl.rx_ctrl.rx_ring_ctrl.ring_len - 3) & 0xfff)
+		  << WED_WDMA_RX_THRES_CFG_FLD_DRX_CRX_DISTANCE_THRES);
 	WHNAT_IO_WRITE32(wed, WED_WDMA_RX0_THRES_CFG, value);
 	WHNAT_IO_WRITE32(wed, WED_WDMA_RX1_THRES_CFG, value);
 #endif /*WED_WDMA_RECYCLE*/
 	/*cfg wdma recycle*/
 	WHNAT_IO_READ32(wed, WED_WDMA_GLO_CFG, &wed_wdma_cfg);
-	wed_wdma_cfg &= ~(WED_WDMA_GLO_CFG_FLD_WDMA_BT_SIZE_MASK << WED_WDMA_GLO_CFG_FLD_WDMA_BT_SIZE);
-	wed_wdma_cfg &= ~((1 << WED_WDMA_GLO_CFG_FLD_IDLE_STATE_DMAD_SUPPLY_EN) |
-					  (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_SKIP_DMAD_PREPARE) |
-					  (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_DMAD_RECYCLE));
+	wed_wdma_cfg &= ~(WED_WDMA_GLO_CFG_FLD_WDMA_BT_SIZE_MASK
+			  << WED_WDMA_GLO_CFG_FLD_WDMA_BT_SIZE);
+	wed_wdma_cfg &=
+		~((1 << WED_WDMA_GLO_CFG_FLD_IDLE_STATE_DMAD_SUPPLY_EN) |
+		  (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_SKIP_DMAD_PREPARE) |
+		  (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_DMAD_RECYCLE));
 	/*disable auto idle*/
-	wed_wdma_cfg &= ~(1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_DISABLE_FSM_AUTO_IDLE);
+	wed_wdma_cfg &=
+		~(1 << WED_WDMA_GLO_CFG_FLD_RX_DRV_DISABLE_FSM_AUTO_IDLE);
 	/*Set to 16 DWORD for 64bytes*/
 	wed_wdma_cfg |= (0x2 << WED_WDMA_GLO_CFG_FLD_WDMA_BT_SIZE);
 	/*enable skip state for fix dma busy issue*/
 	wed_wdma_cfg |= ((1 << WED_WDMA_GLO_CFG_FLD_IDLE_STATE_DMAD_SUPPLY_EN) |
-					 (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_SKIP_DMAD_PREPARE));
+			 (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_SKIP_DMAD_PREPARE));
 #ifdef WED_WDMA_RECYCLE
 	wed_wdma_cfg |= (1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_DMAD_RECYCLE) |
-					(1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_SKIP_DMAD_PREPARE) |
-					(1 << WED_WDMA_GLO_CFG_FLD_IDLE_STATE_DMAD_SUPPLY_EN);
+			(1 << WED_WDMA_GLO_CFG_FLD_DYNAMIC_SKIP_DMAD_PREPARE) |
+			(1 << WED_WDMA_GLO_CFG_FLD_IDLE_STATE_DMAD_SUPPLY_EN);
 #endif /*WED_WDMA_RECYCLE*/
 #ifdef WED_HW_TX_SUPPORT
 	WHNAT_IO_WRITE32(wed, WED_WDMA_GLO_CFG, wed_wdma_cfg);
@@ -1140,10 +1181,7 @@ void whnat_hal_wed_init(struct whnat_entry *entry)
 /*
 *
 */
-int whnat_hal_io_read(
-	void *cookie,
-	unsigned int addr,
-	unsigned int *value)
+int whnat_hal_io_read(void *cookie, unsigned int addr, unsigned int *value)
 {
 	struct whnat_entry *entry = whnat_entry_search(cookie);
 	struct wed_entry *wed;
@@ -1159,20 +1197,15 @@ int whnat_hal_io_read(
 		return -1;
 
 	WHNAT_IO_READ32(wed, whnat_cr, value);
-	WHNAT_DBG(WHNAT_DBG_LOU, "%s(): Read addr (%x)=%x\n",
-			__func__,
-			addr,
-			*value);
+	WHNAT_DBG(WHNAT_DBG_LOU, "%s(): Read addr (%x)=%x\n", __func__, addr,
+		  *value);
 	return 0;
 }
 
 /*
 *
 */
-int whnat_hal_io_write(
-	void *cookie,
-	unsigned int addr,
-	unsigned int value)
+int whnat_hal_io_write(void *cookie, unsigned int addr, unsigned int value)
 {
 	struct whnat_entry *entry = whnat_entry_search(cookie);
 	struct wed_entry *wed;
@@ -1190,7 +1223,8 @@ int whnat_hal_io_write(
 #ifdef WED_DELAY_INT_SUPPORT
 
 	if (whnat_cr == WED_INT_MSK) {
-		value &= ~((1 << WED_INT_MSK_FLD_TX_DONE_INT0) | (1 << WED_INT_MSK_FLD_TX_DONE_INT1));
+		value &= ~((1 << WED_INT_MSK_FLD_TX_DONE_INT0) |
+			   (1 << WED_INT_MSK_FLD_TX_DONE_INT1));
 		value &= ~(1 << WED_INT_MSK_FLD_RX_DONE_INT1);
 		value |= (1 << WED_INT_MSK_FLD_TX_DLY_INT);
 		value |= (1 << WED_INT_MSK_FLD_RX_DLY_INT);
@@ -1198,10 +1232,8 @@ int whnat_hal_io_write(
 
 #endif /*WED_DELAY_INT_SUPPORT*/
 	WHNAT_IO_WRITE32(wed, whnat_cr, value);
-	WHNAT_DBG(WHNAT_DBG_LOU, "%s(): Write addr (%x)=%x\n",
-			__func__,
-			addr,
-			value);
+	WHNAT_DBG(WHNAT_DBG_LOU, "%s(): Write addr (%x)=%x\n", __func__, addr,
+		  value);
 	return 0;
 }
 
@@ -1230,7 +1262,8 @@ void whnat_hal_wdma_ring_init(struct whnat_entry *entry)
 #ifdef WED_HW_TX_SUPPORT
 	struct wdma_entry *wdma = &entry->wdma;
 	struct wed_entry *wed = &entry->wed;
-	struct wdma_rx_ring_ctrl *ring_ctrl = &wdma->res_ctrl.rx_ctrl.rx_ring_ctrl;
+	struct wdma_rx_ring_ctrl *ring_ctrl =
+		&wdma->res_ctrl.rx_ctrl.rx_ring_ctrl;
 	struct whnat_ring *ring;
 	unsigned int offset;
 	int i;
@@ -1238,21 +1271,26 @@ void whnat_hal_wdma_ring_init(struct whnat_entry *entry)
 	/*set PDMA & WED_WPDMA Ring, wifi driver will configure WDMA ring by whnat_hal_tx_ring_ctrl */
 	/*tx ring*/
 	for (i = 0; i < ring_ctrl->ring_num; i++) {
-		offset = i*WIFI_RING_OFFSET;
+		offset = i * WIFI_RING_OFFSET;
 		ring = &ring_ctrl->ring[i];
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): configure ring %d setting\n", __func__, i);
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): wed:%p,wdma:%p: %x=%lx,%x=%d,%x=%d\n", __func__,
-				wed, wdma,
-				ring->hw_desc_base, (unsigned long)ring->cell[0].pkt_pa,
-				ring->hw_cnt_addr, ring_ctrl->ring_len,
-				ring->hw_cidx_addr, 0);
+		WHNAT_DBG(WHNAT_DBG_INF, "%s(): configure ring %d setting\n",
+			  __func__, i);
+		WHNAT_DBG(WHNAT_DBG_INF,
+			  "%s(): wed:%p,wdma:%p: %x=%lx,%x=%d,%x=%d\n",
+			  __func__, wed, wdma, ring->hw_desc_base,
+			  (unsigned long)ring->cell[0].pkt_pa,
+			  ring->hw_cnt_addr, ring_ctrl->ring_len,
+			  ring->hw_cidx_addr, 0);
 		/*PDMA*/
-		WHNAT_IO_WRITE32(wdma, ring->hw_desc_base, ring->cell[0].alloc_pa);
+		WHNAT_IO_WRITE32(wdma, ring->hw_desc_base,
+				 ring->cell[0].alloc_pa);
 		WHNAT_IO_WRITE32(wdma, ring->hw_cnt_addr, ring_ctrl->ring_len);
 		WHNAT_IO_WRITE32(wdma, ring->hw_cidx_addr, 0);
 		/*WED_WPDMA*/
-		WHNAT_IO_WRITE32(wed, WED_WDMA_RX0_BASE+offset, ring->cell[0].alloc_pa);
-		WHNAT_IO_WRITE32(wed, WED_WDMA_RX0_CNT+offset, ring_ctrl->ring_len);
+		WHNAT_IO_WRITE32(wed, WED_WDMA_RX0_BASE + offset,
+				 ring->cell[0].alloc_pa);
+		WHNAT_IO_WRITE32(wed, WED_WDMA_RX0_CNT + offset,
+				 ring_ctrl->ring_len);
 	}
 
 #endif /*WED_HW_TX_SUPPORT*/
@@ -1268,26 +1306,31 @@ void whnat_hal_wpdma_ring_init(struct whnat_entry *entry)
 	struct wed_entry *wed = &entry->wed;
 	struct wed_tx_ring_ctrl *ring_ctrl = &wed->res_ctrl.tx_ctrl.ring_ctrl;
 	struct whnat_ring *ring;
-	unsigned int offset = (WIFI_TX_RING0_BASE-WED_WPDMA_TX0_CTRL0);
+	unsigned int offset = (WIFI_TX_RING0_BASE - WED_WPDMA_TX0_CTRL0);
 	int i;
 
 	/*set PDMA & WED_WPDMA Ring, wifi driver will configure WDMA ring by whnat_hal_tx_ring_ctrl */
 	for (i = 0; i < ring_ctrl->ring_num; i++) {
 		ring = &ring_ctrl->ring[i];
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): configure ring %d setting\n", __func__, i);
-		WHNAT_DBG(WHNAT_DBG_INF, "%s(): wed:%p wifi:%p: %x=%lx,%x=%d,%x=%d\n", __func__,
-				wed, wifi,
-				ring->hw_desc_base, (unsigned long)ring->cell[0].alloc_pa,
-				ring->hw_cnt_addr, ring_ctrl->ring_len,
-				ring->hw_cidx_addr, 0);
+		WHNAT_DBG(WHNAT_DBG_INF, "%s(): configure ring %d setting\n",
+			  __func__, i);
+		WHNAT_DBG(WHNAT_DBG_INF,
+			  "%s(): wed:%p wifi:%p: %x=%lx,%x=%d,%x=%d\n",
+			  __func__, wed, wifi, ring->hw_desc_base,
+			  (unsigned long)ring->cell[0].alloc_pa,
+			  ring->hw_cnt_addr, ring_ctrl->ring_len,
+			  ring->hw_cidx_addr, 0);
 		/*WPDMA*/
-		WHNAT_IO_WRITE32(wifi, ring->hw_desc_base, ring->cell[0].alloc_pa);
+		WHNAT_IO_WRITE32(wifi, ring->hw_desc_base,
+				 ring->cell[0].alloc_pa);
 		WHNAT_IO_WRITE32(wifi, ring->hw_cnt_addr, ring_ctrl->ring_len);
 		WHNAT_IO_WRITE32(wifi, ring->hw_cidx_addr, 0);
 		/*WED_WPDMA*/
-		WHNAT_IO_WRITE32(wed, (ring->hw_desc_base-offset), ring->cell[0].alloc_pa);
-		WHNAT_IO_WRITE32(wed, (ring->hw_cnt_addr-offset), ring_ctrl->ring_len);
-		WHNAT_IO_WRITE32(wed, (ring->hw_cidx_addr-offset), 0);
+		WHNAT_IO_WRITE32(wed, (ring->hw_desc_base - offset),
+				 ring->cell[0].alloc_pa);
+		WHNAT_IO_WRITE32(wed, (ring->hw_cnt_addr - offset),
+				 ring_ctrl->ring_len);
+		WHNAT_IO_WRITE32(wed, (ring->hw_cidx_addr - offset), 0);
 	}
 
 #endif /*WED_TX_SUPPORT*/
@@ -1326,16 +1369,18 @@ void whnat_hal_hif_init(struct whnat_hif_cfg *hif)
 	/*debug only*/
 	WHNAT_IO_READ32(hif, WED0_MAP, &v1);
 	WHNAT_IO_READ32(hif, WED1_MAP, &v2);
-	WHNAT_DBG(WHNAT_DBG_INF, "%s(): WED0_MAP: %x,WED1_MAP:%x\n", __func__, v1, v2);
+	WHNAT_DBG(WHNAT_DBG_INF, "%s(): WED0_MAP: %x,WED1_MAP:%x\n", __func__,
+		  v1, v2);
 	/*default remap pcie0 to wed0*/
 	v1 = hif->wpdma_base[0] & 0xfffff000;
-	v1 &=  ~(1 << PCIE_MAP_FLD_PCIE_REMAP_EN);
-	v1 &=  ~(1 << PCIE_MAP_FLD_PCIE_REMAP);
+	v1 &= ~(1 << PCIE_MAP_FLD_PCIE_REMAP_EN);
+	v1 &= ~(1 << PCIE_MAP_FLD_PCIE_REMAP);
 	/*default remap pcie1 to wed1*/
 	v2 = hif->wpdma_base[1] & 0xfffff000;
-	v2 &=  ~(1 << PCIE_MAP_FLD_PCIE_REMAP_EN);
+	v2 &= ~(1 << PCIE_MAP_FLD_PCIE_REMAP_EN);
 	v2 |= (1 << PCIE_MAP_FLD_PCIE_REMAP);
-	WHNAT_DBG(WHNAT_DBG_INF, "%s(): PCIE0_MAP: %x,PCIE1_MAP:%x\n", __func__, v1, v2);
+	WHNAT_DBG(WHNAT_DBG_INF, "%s(): PCIE0_MAP: %x,PCIE1_MAP:%x\n", __func__,
+		  v1, v2);
 	WHNAT_IO_WRITE32(hif, PCIE0_MAP, v1);
 	WHNAT_IO_WRITE32(hif, PCIE1_MAP, v2);
 }
@@ -1352,8 +1397,8 @@ void whnat_hal_trace_set(struct whnat_cputracer *tracer)
 
 	if (tracer->trace_en) {
 		value = (1 << CPU_TRACER_CON_BUS_DBG_EN) |
-				(1 << CPU_TRACER_CON_WP_EN)		 |
-				(1 << CPU_TRACER_CON_IRQ_WP_EN);
+			(1 << CPU_TRACER_CON_WP_EN) |
+			(1 << CPU_TRACER_CON_IRQ_WP_EN);
 	}
 
 	WHNAT_IO_WRITE32(tracer, CPU_TRACER_CFG, value);
@@ -1373,14 +1418,18 @@ int whnat_hal_hw_reset(struct whnat_entry *whnat, unsigned int reset_type)
 		ret = reset_tx_traffic(wed, reset_type);
 
 		if (ret < 0) {
-			WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_tx reset fail,ret=%d\n", __func__, ret);
+			WHNAT_DBG(WHNAT_DBG_ERR,
+				  "%s(): wed_tx reset fail,ret=%d\n", __func__,
+				  ret);
 			return ret;
 		}
 
 		ret = reset_rx_traffic(wed, reset_type);
 
 		if (ret < 0) {
-			WHNAT_DBG(WHNAT_DBG_ERR, "%s(): wed_rx reset fail,ret=%d\n", __func__, ret);
+			WHNAT_DBG(WHNAT_DBG_ERR,
+				  "%s(): wed_rx reset fail,ret=%d\n", __func__,
+				  ret);
 			return ret;
 		}
 
@@ -1464,18 +1513,23 @@ void whnat_hal_ser_update(struct wed_entry *wed, struct wed_ser_state *state)
 	state->wdma_stat = state->wdma_stat & 0xff;
 	WHNAT_IO_READ32(wed, WED_WDMA_RX0_MIB, &state->wdma_rx0_mib);
 	WHNAT_IO_READ32(wed, WED_WDMA_RX1_MIB, &state->wdma_rx1_mib);
-	WHNAT_IO_READ32(wed, WED_WDMA_RX0_RECYCLE_MIB, &state->wdma_rx0_recycle_mib);
-	WHNAT_IO_READ32(wed, WED_WDMA_RX1_RECYCLE_MIB, &state->wdma_rx1_recycle_mib);
+	WHNAT_IO_READ32(wed, WED_WDMA_RX0_RECYCLE_MIB,
+			&state->wdma_rx0_recycle_mib);
+	WHNAT_IO_READ32(wed, WED_WDMA_RX1_RECYCLE_MIB,
+			&state->wdma_rx1_recycle_mib);
 	/*WED_WPDMA*/
 	WHNAT_IO_READ32(wed, WED_WPDMA_ST, &state->wpdma_stat);
-	state->wpdma_stat = (state->wpdma_stat >> WED_WPDMA_ST_FLD_TX_DRV_ST) & 0xff;
+	state->wpdma_stat =
+		(state->wpdma_stat >> WED_WPDMA_ST_FLD_TX_DRV_ST) & 0xff;
 	WHNAT_IO_READ32(wed, WED_WPDMA_TX0_MIB, &state->wpdma_tx0_mib);
 	WHNAT_IO_READ32(wed, WED_WPDMA_TX1_MIB, &state->wpdma_tx1_mib);
 	/*WED_BM*/
 	WHNAT_IO_READ32(wed, WED_TX_BM_STS, &state->bm_tx_stat);
 	state->bm_tx_stat = state->bm_tx_stat & 0xffff;
-	WHNAT_IO_READ32(wed, WED_TX_FREE_TO_TX_BM_TKID_MIB, &state->txfree_to_bm_mib);
-	WHNAT_IO_READ32(wed, WED_TX_BM_TO_WDMA_RX_DRV_TKID_MIB, &state->txbm_to_wdma_mib);
+	WHNAT_IO_READ32(wed, WED_TX_FREE_TO_TX_BM_TKID_MIB,
+			&state->txfree_to_bm_mib);
+	WHNAT_IO_READ32(wed, WED_TX_BM_TO_WDMA_RX_DRV_TKID_MIB,
+			&state->txbm_to_wdma_mib);
 	return;
 }
 #endif /*ERR_RECOVERY*/

@@ -39,65 +39,37 @@
 #define INOUT
 #endif
 
-
 #ifdef SHA1_SUPPORT
-VOID RT_HMAC_SHA1(
-	IN const UINT8 Key[],
-	IN UINT KeyLen,
-	IN const UINT8 Message[],
-	IN UINT MessageLen,
-	OUT UINT8 MAC[],
-	IN UINT MACLen);
+VOID RT_HMAC_SHA1(IN const UINT8 Key[], IN UINT KeyLen,
+		  IN const UINT8 Message[], IN UINT MessageLen, OUT UINT8 MAC[],
+		  IN UINT MACLen);
 #endif /* SHA1_SUPPORT */
 
 #ifdef SHA256_SUPPORT
-VOID RT_HMAC_SHA256(
-	IN const UINT8 Key[],
-	IN UINT KeyLen,
-	IN const UINT8 Message[],
-	IN UINT MessageLen,
-	OUT UINT8 MAC[],
-	IN UINT MACLen);
+VOID RT_HMAC_SHA256(IN const UINT8 Key[], IN UINT KeyLen,
+		    IN const UINT8 Message[], IN UINT MessageLen,
+		    OUT UINT8 MAC[], IN UINT MACLen);
 
-VOID RT_HMAC_SHA256_VECTOR(
-	IN const UINT8 key[],
-	IN UINT key_len,
-	IN UCHAR element_num,
-	IN const UINT8 *message[],
-	IN UINT *message_len,
-	OUT UINT8 mac[],
-	IN UINT mac_len);
+VOID RT_HMAC_SHA256_VECTOR(IN const UINT8 key[], IN UINT key_len,
+			   IN UCHAR element_num, IN const UINT8 *message[],
+			   IN UINT *message_len, OUT UINT8 mac[],
+			   IN UINT mac_len);
 #endif /* SHA256_SUPPORT */
 
 #ifdef SHA384_SUPPORT
-VOID RT_HMAC_SHA384(
-	IN const UINT8 Key[],
-	IN UINT KeyLen,
-	IN const UINT8 Message[],
-	IN UINT MessageLen,
-	OUT UINT8 MAC[],
-	IN UINT MACLen);
+VOID RT_HMAC_SHA384(IN const UINT8 Key[], IN UINT KeyLen,
+		    IN const UINT8 Message[], IN UINT MessageLen,
+		    OUT UINT8 MAC[], IN UINT MACLen);
 
-VOID RT_HMAC_SHA384_VECTOR(
-	IN const UINT8 key[],
-	IN UINT key_len,
-	IN UCHAR element_num,
-	IN const UINT8 *message[],
-	IN UINT *message_len,
-	OUT UINT8 mac[],
-	IN UINT mac_len);
+VOID RT_HMAC_SHA384_VECTOR(IN const UINT8 key[], IN UINT key_len,
+			   IN UCHAR element_num, IN const UINT8 *message[],
+			   IN UINT *message_len, OUT UINT8 mac[],
+			   IN UINT mac_len);
 #endif /* SHA384_SUPPORT */
 
-
 #ifdef MD5_SUPPORT
-VOID RT_HMAC_MD5(
-	IN const UINT8 Key[],
-	IN UINT KeyLen,
-	IN const UINT8 Message[],
-	IN UINT MessageLen,
-	OUT UINT8 MAC[],
-	IN UINT MACLen);
+VOID RT_HMAC_MD5(IN const UINT8 Key[], IN UINT KeyLen, IN const UINT8 Message[],
+		 IN UINT MessageLen, OUT UINT8 MAC[], IN UINT MACLen);
 #endif /* MD5_SUPPORT */
-
 
 #endif /* __CRYPT_HMAC_H__ */

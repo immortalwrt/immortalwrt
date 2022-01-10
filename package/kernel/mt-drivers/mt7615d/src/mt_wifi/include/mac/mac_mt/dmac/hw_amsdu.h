@@ -24,18 +24,17 @@
 	--------        ----------        ----------------------------------------------
 */
 
-
 #ifndef __HW_AMSDU_H__
 #define __HW_AMSDU_H__
 
-#define AMSDU_BASE      0x9000
+#define AMSDU_BASE 0x9000
 
-#define AMSDU_GC	      (AMSDU_BASE + 0x00)
-#define AMSDU_TXD_COMP_MAP_0  (AMSDU_BASE + 0x04)
-#define AMSDU_TXD_COMP_MAP_1  (AMSDU_BASE + 0x08)
-#define AMSDU_CFG_CTRL	      (AMSDU_BASE + 0x0C)
-#define AMSDU_PEEK_CR_00      (AMSDU_BASE + 0xD0)
-#define AMSDU_PEEK_CR_01      (AMSDU_BASE + 0xD4)
+#define AMSDU_GC (AMSDU_BASE + 0x00)
+#define AMSDU_TXD_COMP_MAP_0 (AMSDU_BASE + 0x04)
+#define AMSDU_TXD_COMP_MAP_1 (AMSDU_BASE + 0x08)
+#define AMSDU_CFG_CTRL (AMSDU_BASE + 0x0C)
+#define AMSDU_PEEK_CR_00 (AMSDU_BASE + 0xD0)
+#define AMSDU_PEEK_CR_01 (AMSDU_BASE + 0xD4)
 #define AMSDU_PACK_1_MSDU_CNT (AMSDU_BASE + 0xE0)
 #define AMSDU_PACK_2_MSDU_CNT (AMSDU_BASE + 0xE4)
 #define AMSDU_PACK_3_MSDU_CNT (AMSDU_BASE + 0xE8)
@@ -71,5 +70,3 @@
 #define AMSDU_AC3_QUEUE_EMPTY4 (AMSDU_BASE + 0x170)
 
 #endif /*__HW_AMSDU_H__ */
-
-

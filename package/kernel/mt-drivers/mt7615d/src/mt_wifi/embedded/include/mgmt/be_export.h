@@ -133,16 +133,16 @@ struct phy_op {
 };
 
 struct ht_op {
-	UCHAR	ext_cha;
-	UCHAR	ht_bw;
-	UCHAR	ht_stbc;
-	UCHAR	ht_ldpc;
-	UCHAR	ht_gi;
-	UINT32	frag_thld;
-	UCHAR	pkt_thld;
-	UINT32	len_thld;
-	UCHAR	retry_limit;
-	UCHAR	l_sig_txop;
+	UCHAR ext_cha;
+	UCHAR ht_bw;
+	UCHAR ht_stbc;
+	UCHAR ht_ldpc;
+	UCHAR ht_gi;
+	UINT32 frag_thld;
+	UCHAR pkt_thld;
+	UINT32 len_thld;
+	UCHAR retry_limit;
+	UCHAR l_sig_txop;
 };
 
 struct ht_op_status {
@@ -150,7 +150,7 @@ struct ht_op_status {
 	ADD_HT_INFO_IE addht;
 	HT_CAPABILITY_IE ht_cap_ie;
 	/* counters */
-	UINT16	non_gf_sta;
+	UINT16 non_gf_sta;
 };
 
 struct vht_op {
@@ -162,7 +162,6 @@ struct vht_op {
 	UCHAR max_mpdu_len;
 	UCHAR max_ampdu_exp;
 };
-
 
 struct vht_op_status {
 	VHT_CAP_INFO vht_cap;
@@ -189,8 +188,8 @@ struct dev_rate_info {
 	UCHAR MinPhyBeaconRate;
 	UCHAR MinPhyMgmtRate;
 	UCHAR MinPhyBcMcRate;
-	BOOL  LimitClientSupportRate;
-	BOOL  DisableCCKRate;
+	BOOL LimitClientSupportRate;
+	BOOL DisableCCKRate;
 	HTTRANSMIT_SETTING MinPhyDataRateTransmit;
 	HTTRANSMIT_SETTING MinPhyBeaconRateTransmit;
 	HTTRANSMIT_SETTING MinPhyMgmtRateTransmit;
@@ -199,10 +198,37 @@ struct dev_rate_info {
 
 	/* MGMT frame PHY rate setting when operatin at Ht rate. */
 	HTTRANSMIT_SETTING MlmeTransmit;
+#ifdef CONFIG_RA_PHY_RATE_SUPPORT
+	BOOLEAN Eap_SupRate_En;
+	UCHAR EapSupRate[MAX_LEN_OF_SUPPORTED_RATES];
+	UCHAR EapExtSupRate[MAX_LEN_OF_SUPPORTED_RATES];
+	UCHAR EapSupRateLen;
+	UCHAR EapExtSupRateLen;
+	UCHAR EapSupportRateMode;
+	UINT8 EapSupportCCKMCS;
+	UINT8 EapSupportOFDMMCS;
+	BOOLEAN Eap_HtSupRate_En;
+	UCHAR EapMCSSet[16];
+	BOOLEAN Eap_VhtSupRate_En;
+	struct _VHT_MCS_MAP rx_mcs_map;
+	struct _VHT_MCS_MAP tx_mcs_map;
+	UINT32 EapSupportHTMCS;
+	HTTRANSMIT_SETTING BcnPhyMode;
+	HTTRANSMIT_SETTING BcnPhyMode_5G;
+#endif /* CONFIG_RA_PHY_RATE_SUPPORT */
+#ifdef MCAST_RATE_SPECIFIC
+#ifdef MCAST_BCAST_RATE_SET_SUPPORT
+	MCAST_TYPE McastType;
+	HTTRANSMIT_SETTING BCastPhyMode;
+	HTTRANSMIT_SETTING BCastPhyMode_5G;
+#endif /* MCAST_BCAST_RATE_SET_SUPPORT */
+	HTTRANSMIT_SETTING MCastPhyMode;
+	HTTRANSMIT_SETTING MCastPhyMode_5G;
+#endif /* MCAST_RATE_SPECIFIC */
 };
 
-#define WLAN_OPER_OK	(0)
-#define WLAN_OPER_FAIL	(-1)
+#define WLAN_OPER_OK (0)
+#define WLAN_OPER_FAIL (-1)
 
 /*
 * Operate GET
@@ -215,6 +241,7 @@ UCHAR wlan_operate_get_ht_ldpc(struct wifi_dev *wdev);
 UCHAR wlan_operate_get_ext_cha(struct wifi_dev *wdev);
 #ifdef DOT11_VHT_AC
 UCHAR wlan_operate_get_vht_bw(struct wifi_dev *wdev);
+UCHAR wlan_operate_get_vht_ldpc(struct wifi_dev *wdev);
 #endif /*DOT11_VHT_AC*/
 UINT16 wlan_operate_get_non_gf_sta(struct wifi_dev *wdev);
 UCHAR wlan_operate_get_prim_ch(struct wifi_dev *wdev);
@@ -235,8 +262,10 @@ VOID dump_ht_cap(struct wifi_dev *wdev);
 
 #ifdef DOT11_VHT_AC
 INT32 wlan_operate_set_vht_bw(struct wifi_dev *wdev, UCHAR vht_bw);
+INT32 wlan_operate_set_vht_ldpc(struct wifi_dev *wdev, UCHAR vht_ldpc);
 #endif /*DOT11_VHT_AC*/
-INT32 wlan_operate_set_support_ch_width_set(struct wifi_dev *wdev, UCHAR ch_width_set);
+INT32 wlan_operate_set_support_ch_width_set(struct wifi_dev *wdev,
+					    UCHAR ch_width_set);
 INT32 wlan_operate_set_ht_bw(struct wifi_dev *wdev, UCHAR ht_bw, UCHAR ext_cha);
 INT32 wlan_operate_set_ht_stbc(struct wifi_dev *wdev, UCHAR ht_stbc);
 INT32 wlan_operate_set_ht_ldpc(struct wifi_dev *wdev, UCHAR ht_ldpc);
@@ -250,9 +279,11 @@ INT32 wlan_operate_set_rts_pkt_thld(struct wifi_dev *wdev, UCHAR pkt_num);
 INT32 wlan_operate_set_rts_len_thld(struct wifi_dev *wdev, UINT32 pkt_len);
 INT32 wlan_operate_set_tx_stream(struct wifi_dev *wdev, UINT8 tx_stream);
 INT32 wlan_operate_set_rx_stream(struct wifi_dev *wdev, UINT8 rx_stream);
-INT32 wlan_operate_set_min_start_space(struct wifi_dev *wdev, UCHAR mpdu_density);
+INT32 wlan_operate_set_min_start_space(struct wifi_dev *wdev,
+				       UCHAR mpdu_density);
 INT32 wlan_operate_set_mmps(struct wifi_dev *wdev, UCHAR mmps);
-INT32 wlan_operate_set_ht_max_ampdu_len_exp(struct wifi_dev *wdev, UCHAR exp_factor);
+INT32 wlan_operate_set_ht_max_ampdu_len_exp(struct wifi_dev *wdev,
+					    UCHAR exp_factor);
 INT32 wlan_operate_set_ht_delayed_ba(struct wifi_dev *wdev, UCHAR support);
 INT32 wlan_operate_set_lsig_txop_protect(struct wifi_dev *wdev, UCHAR support);
 INT32 wlan_operate_set_psmp(struct wifi_dev *wdev, UCHAR psmp);

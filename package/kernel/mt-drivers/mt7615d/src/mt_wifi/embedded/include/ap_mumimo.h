@@ -28,14 +28,14 @@
 #ifndef __AP_MUMIMO_H__
 #define __AP_MUMIMO_H__
 
-#define NUM_OF_USER                                4
-#define NUM_OF_MODUL                               5
+#define NUM_OF_USER 4
+#define NUM_OF_MODUL 5
 
-#define NUM_MUT_FEC             2
-#define NUM_MUT_NR              3
-#define NUM_MUT_MCS             10
-#define NUM_MUT_INDEX           8
-#define NUM_SUT_INDEX           3
+#define NUM_MUT_FEC 2
+#define NUM_MUT_NR 3
+#define NUM_MUT_MCS 10
+#define NUM_MUT_INDEX 8
+#define NUM_SUT_INDEX 3
 
 enum {
 	/* debug commands */
@@ -128,64 +128,64 @@ typedef struct _CMD_MU_SET_MUPROFILE_ENTRY {
 	UINT8 index;
 	BOOLEAN valid;
 #ifdef RT_BIG_ENDIAN
-	UINT8 reserved:4;
-	UINT8 baMask:4;
+	UINT8 reserved : 4;
+	UINT8 baMask : 4;
 #else
-    UINT8 baMask:4;
-	UINT8 reserved:4;
+	UINT8 baMask : 4;
+	UINT8 reserved : 4;
 #endif
 	UINT8 wlanIdx;
 } CMD_MU_SET_MUPROFILE_ENTRY, *P_CMD_MU_SET_MUPROFILE_ENTRY;
 
 typedef struct _CMD_MU_SET_GROUP_TBL_ENTRY {
-	UINT32      index;
+	UINT32 index;
 #ifdef RT_BIG_ENDIAN
-	UINT8		NS3:1;
-	UINT8		NS2:1;
-	UINT8		NS1:1;
-	UINT8		NS0:1;
-	UINT8		BW:2;
-	UINT8       numUser:2;
+	UINT8 NS3 : 1;
+	UINT8 NS2 : 1;
+	UINT8 NS1 : 1;
+	UINT8 NS0 : 1;
+	UINT8 BW : 2;
+	UINT8 numUser : 2;
 #else
-    UINT8       numUser:2;
-	UINT8       BW:2;
-	UINT8       NS0:1;
-	UINT8       NS1:1;
-	UINT8       NS2:1;
-	UINT8       NS3:1;
+	UINT8 numUser : 2;
+	UINT8 BW : 2;
+	UINT8 NS0 : 1;
+	UINT8 NS1 : 1;
+	UINT8 NS2 : 1;
+	UINT8 NS3 : 1;
 #endif
-	UINT8       PFIDUser0;
-	UINT8       PFIDUser1;
-	UINT8       PFIDUser2;
-	UINT8       PFIDUser3;
-	BOOLEAN     fgIsShortGI;
-	BOOLEAN     fgIsUsed;
-	BOOLEAN     fgIsDisable;
+	UINT8 PFIDUser0;
+	UINT8 PFIDUser1;
+	UINT8 PFIDUser2;
+	UINT8 PFIDUser3;
+	BOOLEAN fgIsShortGI;
+	BOOLEAN fgIsUsed;
+	BOOLEAN fgIsDisable;
 #ifdef RT_BIG_ENDIAN
-	UINT8		dMcsUser3:4;
-	UINT8		dMcsUser2:4;
-	UINT8		dMcsUser1:4;
-	UINT8		dMcsUser0:4;
-	UINT8		initMcsUser3:4;
-	UINT8		initMcsUser2:4;
-	UINT8		initMcsUser1:4;
-	UINT8		initMcsUser0:4;
+	UINT8 dMcsUser3 : 4;
+	UINT8 dMcsUser2 : 4;
+	UINT8 dMcsUser1 : 4;
+	UINT8 dMcsUser0 : 4;
+	UINT8 initMcsUser3 : 4;
+	UINT8 initMcsUser2 : 4;
+	UINT8 initMcsUser1 : 4;
+	UINT8 initMcsUser0 : 4;
 #else
-	UINT8       initMcsUser0:4;
-	UINT8       initMcsUser1:4;
-	UINT8       initMcsUser2:4;
-	UINT8       initMcsUser3:4;
-	UINT8       dMcsUser0:4;
-	UINT8       dMcsUser1:4;
-	UINT8       dMcsUser2:4;
-	UINT8       dMcsUser3:4;
+	UINT8 initMcsUser0 : 4;
+	UINT8 initMcsUser1 : 4;
+	UINT8 initMcsUser2 : 4;
+	UINT8 initMcsUser3 : 4;
+	UINT8 dMcsUser0 : 4;
+	UINT8 dMcsUser1 : 4;
+	UINT8 dMcsUser2 : 4;
+	UINT8 dMcsUser3 : 4;
 #endif
 } CMD_MU_SET_GROUP_TBL_ENTRY, *P_CMD_MU_SET_GROUP_TBL_ENTRY;
 
 typedef struct _CMD_MU_SET_CLUSTER_TBL_ENTRY {
-	UINT8   index;
-	UINT32  gidUserMemberStatus[2];
-	UINT32  gidUserPosition[4];
+	UINT8 index;
+	UINT32 gidUserMemberStatus[2];
+	UINT32 gidUserPosition[4];
 } CMD_MU_SET_CLUSTER_TBL_ENTRY, *P_CMD_MU_SET_CLUSTER_TBL_ENTRY;
 
 typedef struct _CMD_SET_TXREQ_MIN_TIME {
@@ -255,11 +255,11 @@ typedef struct _EVENT_SHOW_MUPROFILE_ENTRY {
 	UINT8 index;
 	BOOLEAN valid;
 #ifdef RT_BIG_ENDIAN
-    UINT8 reserved:4;
-	UINT8 baMask:4;
+	UINT8 reserved : 4;
+	UINT8 baMask : 4;
 #else
-    UINT8 baMask:4;
-	UINT8 reserved:4;
+	UINT8 baMask : 4;
+	UINT8 reserved : 4;
 #endif
 	UINT8 wlanIdx;
 } EVENT_SHOW_MUPROFILE_ENTRY, *P_EVENT_SHOW_MUPROFILE_ENTRY;
@@ -271,69 +271,69 @@ typedef struct _EVENT_GET_TXOP_DEFAULT {
 
 typedef struct _EVENT_SHOW_GROUP_TBL_ENTRY {
 	UINT32 u4EventId;
-	UINT32      index;
+	UINT32 index;
 #ifdef RT_BIG_ENDIAN
-	UINT8		NS3:1;
-	UINT8		NS2:1;
-	UINT8		NS1:1;
-	UINT8		NS0:1;
-	UINT8		BW:2;
-	UINT8       numUser:2;
+	UINT8 NS3 : 1;
+	UINT8 NS2 : 1;
+	UINT8 NS1 : 1;
+	UINT8 NS0 : 1;
+	UINT8 BW : 2;
+	UINT8 numUser : 2;
 #else
-    UINT8       numUser:2;
-	UINT8       BW:2;
-	UINT8       NS0:1;
-	UINT8       NS1:1;
-	UINT8       NS2:1;
-	UINT8       NS3:1;
+	UINT8 numUser : 2;
+	UINT8 BW : 2;
+	UINT8 NS0 : 1;
+	UINT8 NS1 : 1;
+	UINT8 NS2 : 1;
+	UINT8 NS3 : 1;
 #endif
-	UINT8       PFIDUser0;
-	UINT8       PFIDUser1;
-	UINT8       PFIDUser2;
-	UINT8       PFIDUser3;
-	BOOLEAN     fgIsShortGI;
-	BOOLEAN     fgIsUsed;
-	BOOLEAN     fgIsDisable;
+	UINT8 PFIDUser0;
+	UINT8 PFIDUser1;
+	UINT8 PFIDUser2;
+	UINT8 PFIDUser3;
+	BOOLEAN fgIsShortGI;
+	BOOLEAN fgIsUsed;
+	BOOLEAN fgIsDisable;
 #ifdef RT_BIG_ENDIAN
-	UINT8		initMcsUser1:4;
-	UINT8       initMcsUser0:4;
+	UINT8 initMcsUser1 : 4;
+	UINT8 initMcsUser0 : 4;
 #else
-    UINT8       initMcsUser0:4;
-	UINT8       initMcsUser1:4;
-#endif
-#ifdef RT_BIG_ENDIAN
-	UINT8		initMcsUser3:4;
-	UINT8       initMcsUser2:4;
-#else
-    UINT8       initMcsUser2:4;
-	UINT8       initMcsUser3:4;
+	UINT8 initMcsUser0 : 4;
+	UINT8 initMcsUser1 : 4;
 #endif
 #ifdef RT_BIG_ENDIAN
-	UINT8		dMcsUser1:4;
-	UINT8       dMcsUser0:4;
+	UINT8 initMcsUser3 : 4;
+	UINT8 initMcsUser2 : 4;
 #else
-    UINT8       dMcsUser0:4;
-	UINT8       dMcsUser1:4;
+	UINT8 initMcsUser2 : 4;
+	UINT8 initMcsUser3 : 4;
 #endif
 #ifdef RT_BIG_ENDIAN
-	UINT8		dMcsUser3:4;
-	UINT8       dMcsUser2:4;
+	UINT8 dMcsUser1 : 4;
+	UINT8 dMcsUser0 : 4;
 #else
-    UINT8       dMcsUser2:4;
-	UINT8       dMcsUser3:4;
+	UINT8 dMcsUser0 : 4;
+	UINT8 dMcsUser1 : 4;
+#endif
+#ifdef RT_BIG_ENDIAN
+	UINT8 dMcsUser3 : 4;
+	UINT8 dMcsUser2 : 4;
+#else
+	UINT8 dMcsUser2 : 4;
+	UINT8 dMcsUser3 : 4;
 #endif
 } EVENT_SHOW_GROUP_TBL_ENTRY, *P_EVENT_SHOW_GROUP_TBL_ENTRY;
 
 typedef struct _EVENT_MU_GET_ENABLE {
 	UINT32 u4EventId;
-	UINT8   fgIsEnable;
+	UINT8 fgIsEnable;
 } EVENT_MU_GET_ENABLE, *P_EVENT_MU_GET_ENABLE;
 
 typedef struct _EVENT_MU_GET_CLUSTER_TBL_ENTRY {
 	UINT32 u4EventId;
-	UINT8   index;
-	UINT32  gidUserMemberStatus[2];
-	UINT32  gidUserPosition[4];
+	UINT8 index;
+	UINT32 gidUserMemberStatus[2];
+	UINT32 gidUserPosition[4];
 } EVENT_MU_GET_CLUSTER_TBL_ENTRY, *P_EVENT_MU_GET_CLUSTER_TBL_ENTRY;
 
 typedef struct _EVENT_MU_GET_GROUP_USER_THRESHOLD {
@@ -383,7 +383,6 @@ typedef struct _EVENT_MU_GET_MAX_GROUP_SEARCH_CNT {
 	UINT32 value;
 } EVENT_MU_GET_MAX_GROUP_SEARCH_CNT, *P_EVENT_MU_GET_MAX_GROUP_SEARCH_CNT;
 
-
 typedef struct _CMD_SET_TRIGGER_GID_MGMT_FRAME {
 	UINT16 wlanIndex;
 	UINT8 gid;
@@ -411,8 +410,8 @@ typedef struct _CMD_SET_TRIGGER_MU_TX_FRAME {
 	BOOLEAN fgIsRandomPattern;
 	UINT32 u4NumOfSTAs;
 	UINT32 u4Round;
-	UINT32  au4PayloadLength[4];
-	UINT8   aucWlanIndexArray[4]; /* TODO: jeffrey, replaced by marco */
+	UINT32 au4PayloadLength[4];
+	UINT8 aucWlanIndexArray[4]; /* TODO: jeffrey, replaced by marco */
 } CMD_SET_TRIGGER_MU_TX_FRAME, *P_CMD_SET_TRIGGER_MU_TX_FRAME;
 
 typedef struct _CMD_GET_MU_PFID_TXS_CNT {
@@ -448,13 +447,13 @@ typedef struct _SU_STRUCT_LQ_REPORT {
 } SU_STRUCT_LQ_REPORT, *P_SU_STRUCT_LQ_REPORT;
 
 typedef struct _MU_STRUCT_MU_TABLE {
-	UINT16 type;   /* 0: SU, 1:MU */
+	UINT16 type; /* 0: SU, 1:MU */
 	UINT32 length;
 	char *prTable; /* point to array of data */
 } MU_STRUCT_MU_TABLE, *P_MU_STRUCT_MU_TABLE;
 
 typedef struct _MU_STRUCT_MU_GROUP {
-	UINT32 groupIndex;/* Group Table Idx */
+	UINT32 groupIndex; /* Group Table Idx */
 	UINT32 numOfUser;
 	UINT32 user0Ldpc;
 	UINT32 user1Ldpc;
@@ -485,30 +484,26 @@ typedef struct _MU_STRUCT_MU_GROUP {
 	uint8_t aucUser3MacAddr[6];
 } MU_STRUCT_MU_GROUP, *P_MU_STRUCT_MU_GROUP;
 
-
 typedef struct _MU_STRUCT_MU_QD {
 	UINT_32 qd_report[14];
 } MU_STRUCT_MU_QD, *P_MU_STRUCT_MU_QD;
 
-
 typedef struct _MU_STRUCT_SET_SU_CALC_LQ {
-	UINT8  num_of_user;
-	UINT8  bandwidth;
+	UINT8 num_of_user;
+	UINT8 bandwidth;
 
-	UINT8  nss_of_user0;
+	UINT8 nss_of_user0;
 
-	UINT8  pf_mu_id_of_user0;
+	UINT8 pf_mu_id_of_user0;
 
-	UINT8  num_of_txer; /* number of antenna */
+	UINT8 num_of_txer; /* number of antenna */
 
-	UINT8  spe_index;
+	UINT8 spe_index;
 
-	UINT8  reserved[2];
+	UINT8 reserved[2];
 
 	UINT32 group_index;
 } MU_STRUCT_SET_SU_CALC_LQ, *P_MU_STRUCT_SET_SU_CALC_LQ;
-
-
 
 typedef struct _MU_STRUCT_SET_CALC_INIT_MCS {
 	UINT8 num_of_user;
@@ -526,14 +521,12 @@ typedef struct _MU_STRUCT_SET_CALC_INIT_MCS {
 	UINT8 pf_mu_id_of_user2;
 	UINT8 pf_mu_id_of_user3;
 
-	UINT8  num_of_txer; /* number of antenna */
-	UINT8  spe_index;
+	UINT8 num_of_txer; /* number of antenna */
+	UINT8 spe_index;
 
 	UINT32 group_index;
 
 } MU_STRUCT_SET_CALC_INIT_MCS, *P_MU_STRUCT_SET_CALC_INIT_MCS;
-
-
 
 typedef struct _MU_STRUCT_SET_CALC_LQ {
 	UINT8 num_of_user;
@@ -551,32 +544,28 @@ typedef struct _MU_STRUCT_SET_CALC_LQ {
 	UINT8 pf_mu_id_of_user2;
 	UINT8 pf_mu_id_of_user3;
 
-	UINT8  num_of_txer; /* number of antenna */
-	UINT8  spe_index;
+	UINT8 num_of_txer; /* number of antenna */
+	UINT8 spe_index;
 
 	UINT32 group_index;
 } MU_STRUCT_SET_CALC_LQ, *P_MU_STRUCT_SET_CALC_LQ;
 
 typedef struct _CMD_HQA_SET_SU_CALC_LQ {
-	UINT8  num_of_user;
-	UINT8  bandwidth;
+	UINT8 num_of_user;
+	UINT8 bandwidth;
 
-	UINT8  nss_of_user0;
+	UINT8 nss_of_user0;
 
-	UINT8  pf_mu_id_of_user0;
+	UINT8 pf_mu_id_of_user0;
 
-	UINT8  num_of_txer; /* number of antenna */
+	UINT8 num_of_txer; /* number of antenna */
 
-	UINT8  spe_index;
+	UINT8 spe_index;
 
-	UINT8  reserved[2];
+	UINT8 reserved[2];
 
 	UINT32 group_index;
 } CMD_HQA_SET_SU_CALC_LQ, *P_CMD_HQA_SET_SU_CALC_LQ;
-
-
-
-
 
 typedef struct _CMD_HQA_SET_MU_CALC_LQ {
 	UINT8 num_of_user;
@@ -594,15 +583,14 @@ typedef struct _CMD_HQA_SET_MU_CALC_LQ {
 	UINT8 pf_mu_id_of_user2;
 	UINT8 pf_mu_id_of_user3;
 
-	UINT8  num_of_txer; /* number of antenna */
-	UINT8  spe_index;
+	UINT8 num_of_txer; /* number of antenna */
+	UINT8 spe_index;
 
 	UINT32 group_index;
 } CMD_HQA_SET_MU_CALC_LQ, *P_CMD_HQA_SET_MU_CALC_LQ;
 
-
 typedef struct _CMD_HQA_SET_MU_GROUP {
-	UINT32 groupIndex;/* Group Table Idx */
+	UINT32 groupIndex; /* Group Table Idx */
 	BOOLEAN fgUser0Ldpc;
 	BOOLEAN fgUser1Ldpc;
 	BOOLEAN fgUser2Ldpc;
@@ -629,56 +617,53 @@ typedef struct _CMD_HQA_CALC_GET_INIT_MCS_ENTRY {
 	UINT32 groupIndex;
 } CMD_HQA_CALC_GET_INIT_MCS_ENTRY, *P_CMD_HQA_CALC_GET_INIT_MCS_ENTRY;
 
-
 typedef struct _CMD_HQA_SET_INIT_MCS {
-	UINT8 num_of_user;     /* number of users */
+	UINT8 num_of_user; /* number of users */
 	UINT8 bandwidth;
 
-	UINT8 nss_of_user0;    /* the number of spatil streams which user0 used */
-	UINT8 nss_of_user1;    /* the number of spatil streams which user1 used */
-	UINT8 nss_of_user2;    /* the number of spatil streams which user2 used */
-	UINT8 nss_of_user3;    /* the number of spatil streams which user3 used */
+	UINT8 nss_of_user0; /* the number of spatil streams which user0 used */
+	UINT8 nss_of_user1; /* the number of spatil streams which user1 used */
+	UINT8 nss_of_user2; /* the number of spatil streams which user2 used */
+	UINT8 nss_of_user3; /* the number of spatil streams which user3 used */
 
-	UINT8 pf_mu_id_of_user0;   /* the PF MU ID of user0 */
-	UINT8 pf_mu_id_of_user1;   /* the PF MU ID of user1 */
-	UINT8 pf_mu_id_of_user2;   /* the PF MU ID of user2 */
-	UINT8 pf_mu_id_of_user3;   /* the PF MU ID of user3 */
+	UINT8 pf_mu_id_of_user0; /* the PF MU ID of user0 */
+	UINT8 pf_mu_id_of_user1; /* the PF MU ID of user1 */
+	UINT8 pf_mu_id_of_user2; /* the PF MU ID of user2 */
+	UINT8 pf_mu_id_of_user3; /* the PF MU ID of user3 */
 
-	UINT8  num_of_txer; /* number of antenna */
-	UINT8  spe_index;
+	UINT8 num_of_txer; /* number of antenna */
+	UINT8 spe_index;
 
 	UINT32 group_index;
 } CMD_HQA_SET_INIT_MCS, *P_CMD_HQA_SET_INIT_MCS;
 
-
 typedef struct _CMD_SHOW_CALC_INIT_MCS_ENTRY {
-	UINT8 num_of_user;     /* number of users */
+	UINT8 num_of_user; /* number of users */
 	UINT8 bandwidth;
 
-	UINT8 nss_of_user0;    /* the number of spatil streams which user0 used */
-	UINT8 nss_of_user1;    /* the number of spatil streams which user1 used */
-	UINT8 nss_of_user2;    /* the number of spatil streams which user2 used */
-	UINT8 nss_of_user3;    /* the number of spatil streams which user3 used */
+	UINT8 nss_of_user0; /* the number of spatil streams which user0 used */
+	UINT8 nss_of_user1; /* the number of spatil streams which user1 used */
+	UINT8 nss_of_user2; /* the number of spatil streams which user2 used */
+	UINT8 nss_of_user3; /* the number of spatil streams which user3 used */
 
-	UINT8 pf_mu_id_of_user0;   /* the PF MU ID of user0 */
-	UINT8 pf_mu_id_of_user1;   /* the PF MU ID of user1 */
-	UINT8 pf_mu_id_of_user2;   /* the PF MU ID of user2 */
-	UINT8 pf_mu_id_of_user3;   /* the PF MU ID of user3 */
+	UINT8 pf_mu_id_of_user0; /* the PF MU ID of user0 */
+	UINT8 pf_mu_id_of_user1; /* the PF MU ID of user1 */
+	UINT8 pf_mu_id_of_user2; /* the PF MU ID of user2 */
+	UINT8 pf_mu_id_of_user3; /* the PF MU ID of user3 */
 
-	UINT8  num_of_txer; /* number of antenna */
-	UINT8  reserved;
+	UINT8 num_of_txer; /* number of antenna */
+	UINT8 reserved;
 
 	UINT32 group_index;
 } CMD_SHOW_CALC_INIT_MCS_ENTRY, *P_CMD_SHOW_CALC_INIT_MCS_ENTRY;
-
-
 
 typedef struct _CMD_HQA_SET_MU_NSS_ZERO {
 	UINT8 ucValue;
 } CMD_HQA_SET_MU_NSS_ZERO, *P_CMD_HQA_SET_MU_NSS_ZERO;
 
 typedef struct _CMD_HQA_SET_MU_METRIC_TABLE {
-	UINT8 metric_table[NUM_MUT_NR * NUM_MUT_FEC * NUM_MUT_MCS * NUM_MUT_INDEX];
+	UINT8 metric_table[NUM_MUT_NR * NUM_MUT_FEC * NUM_MUT_MCS *
+			   NUM_MUT_INDEX];
 } CMD_HQA_SET_MU_METRIC_TABLE, *P_CMD_HQA_SET_MU_METRIC_TABLE;
 
 typedef struct _CMD_HQA_SET_SU_METRIC_TABLE {
@@ -694,17 +679,12 @@ typedef struct _CMD_HQA_SET_MU_ENABLE {
 } CMD_HQA_SET_MU_ENABLE, *P_CMD_HQA_SET_MU_ENABLE;
 
 typedef struct _CMD_HQA_GET_QD {
-	INT8  scIdx;
+	INT8 scIdx;
 } CMD_HQA_GET_QD, *P_CMD_HQA_GET_QD;
 
 typedef struct _CMD_HQA_SET_MU_SNR_OFFSET {
 	INT8 offset;
 } CMD_HQA_SET_MU_SNR_OFFSET, *P_CMD_HQA_SET_MU_SNR_OFFSET;
-
-
-
-
-
 
 typedef struct _EVENT_HQA_GET_MU_CALC_LQ {
 	UINT32 u4EventId;
@@ -717,7 +697,6 @@ typedef struct _EVENT_HQA_GET_SU_CALC_LQ {
 	/* P_SU_STRUCT_LQ_REPORT pOutput; */
 	SU_STRUCT_LQ_REPORT rEntry;
 } EVENT_HQA_GET_SU_CALC_LQ, *P_EVENT_HQA_GET_SU_CALC_LQ;
-
 
 typedef struct _EVENT_HQA_MU_QD {
 	UINT32 u4EventId;
@@ -737,7 +716,6 @@ typedef struct _EVENT_HQA_STATUS_CALCLQ {
 	UINT32 u4EventId;
 	UINT16 status;
 } EVENT_HQA_STATUS_CALCLQ, *P_EVENT_HQA_STATUS_CALCLQ;
-
 
 /*
 typedef struct _MU_STRUCT_MU_GROUP_INIT_MCS {
@@ -760,16 +738,15 @@ typedef struct _EVENT_HQA_INIT_MCS {
 } EVENT_HQA_INIT_MCS, *P_EVENT_HQA_INIT_MCS;
 
 typedef struct _MU_STRUCT_TRIGGER_MU_TX_FRAME_PARAM {
-	UINT8  fgIsRandomPattern;   /* is random pattern or not */
-	UINT32 msduPayloadLength0;  /* payload length of the MSDU for user 0 */
-	UINT32 msduPayloadLength1;  /* payload length of the MSDU for user 1 */
-	UINT32 msduPayloadLength2;  /* payload length of the MSDU for user 2 */
-	UINT32 msduPayloadLength3;  /* payload length of the MSDU for user 3 */
-	UINT32 u4MuPacketCount;     /* MU TX count */
-	UINT32 u4NumOfSTAs;         /* number of user in the MU TX */
-	UINT8 macAddrs[4][6];       /* MAC address of users */
+	UINT8 fgIsRandomPattern; /* is random pattern or not */
+	UINT32 msduPayloadLength0; /* payload length of the MSDU for user 0 */
+	UINT32 msduPayloadLength1; /* payload length of the MSDU for user 1 */
+	UINT32 msduPayloadLength2; /* payload length of the MSDU for user 2 */
+	UINT32 msduPayloadLength3; /* payload length of the MSDU for user 3 */
+	UINT32 u4MuPacketCount; /* MU TX count */
+	UINT32 u4NumOfSTAs; /* number of user in the MU TX */
+	UINT8 macAddrs[4][6]; /* MAC address of users */
 } MU_STRUCT_TRIGGER_MU_TX_FRAME_PARAM, *P_MU_STRUCT_TRIGGER_MU_TX_FRAME_PARAM;
-
 
 /* these struct  here for temply, will be removed in feature */
 typedef struct _MU_STRUCT_MU_GET_STA_PARAM {
@@ -782,113 +759,51 @@ typedef struct _MU_STRUCT_MU_STA_PARAM {
 	UINT32 up[4];
 } MU_STRUCT_MU_STA_PARAM, *P_MU_STRUCT_MU_STA_PARAM;
 
-
 /* Prototype for HQA */
-bool
-hqa_wifi_test_mu_cal_init_mcs(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_SET_CALC_INIT_MCS pParams
-);
+bool hqa_wifi_test_mu_cal_init_mcs(PRTMP_ADAPTER pAd,
+				   P_MU_STRUCT_SET_CALC_INIT_MCS pParams);
 
-bool
-hqa_wifi_test_mu_get_init_mcs(
-	PRTMP_ADAPTER pAd,
-	UINT32 groupIndex,
-	P_MU_STRUCT_MU_GROUP_INIT_MCS poutput
+bool hqa_wifi_test_mu_get_init_mcs(PRTMP_ADAPTER pAd, UINT32 groupIndex,
+				   P_MU_STRUCT_MU_GROUP_INIT_MCS poutput
 
 );
 
-bool
-hqa_wifi_test_mu_cal_lq(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_SET_CALC_LQ pParams
-);
+bool hqa_wifi_test_mu_cal_lq(PRTMP_ADAPTER pAd,
+			     P_MU_STRUCT_SET_CALC_LQ pParams);
 
-bool
-hqa_wifi_test_su_cal_lq(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_SET_SU_CALC_LQ pParams
-);
+bool hqa_wifi_test_su_cal_lq(PRTMP_ADAPTER pAd,
+			     P_MU_STRUCT_SET_SU_CALC_LQ pParams);
 
-bool
-hqa_wifi_test_mu_get_lq(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_LQ_REPORT pOutput
-);
+bool hqa_wifi_test_mu_get_lq(PRTMP_ADAPTER pAd, P_MU_STRUCT_LQ_REPORT pOutput);
 
-bool
-hqa_wifi_test_su_get_lq(
-	PRTMP_ADAPTER pAd,
-	P_SU_STRUCT_LQ_REPORT pOutput
-);
+bool hqa_wifi_test_su_get_lq(PRTMP_ADAPTER pAd, P_SU_STRUCT_LQ_REPORT pOutput);
 
-bool
-hqa_wifi_test_snr_offset_set(
-	PRTMP_ADAPTER pAd,
-	char val
-);
+bool hqa_wifi_test_snr_offset_set(PRTMP_ADAPTER pAd, char val);
 
-bool
-hqa_wifi_test_mu_set_zero_nss(
-	PRTMP_ADAPTER pAd,
-	unsigned char val
-);
+bool hqa_wifi_test_mu_set_zero_nss(PRTMP_ADAPTER pAd, unsigned char val);
 
-bool
-hqa_wifi_test_mu_speed_up_lq(
-	PRTMP_ADAPTER pAd,
-	int val
-);
+bool hqa_wifi_test_mu_speed_up_lq(PRTMP_ADAPTER pAd, int val);
 
-bool
-hqa_wifi_test_mu_table_set(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_MU_TABLE ptr
-);
+bool hqa_wifi_test_mu_table_set(PRTMP_ADAPTER pAd, P_MU_STRUCT_MU_TABLE ptr);
 
-bool
-hqa_wifi_test_mu_group_set(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_MU_GROUP ptr
-);
+bool hqa_wifi_test_mu_group_set(PRTMP_ADAPTER pAd, P_MU_STRUCT_MU_GROUP ptr);
 
-bool
-hqa_wifi_test_mu_get_qd(
-	PRTMP_ADAPTER pAd,
-	INT8 subcarrierIndex,
-	P_MU_STRUCT_MU_QD pOutput
-);
+bool hqa_wifi_test_mu_get_qd(PRTMP_ADAPTER pAd, INT8 subcarrierIndex,
+			     P_MU_STRUCT_MU_QD pOutput);
 
-bool
-hqa_wifi_test_mu_set_enable(
-	PRTMP_ADAPTER pAd,
-	unsigned char val
-);
+bool hqa_wifi_test_mu_set_enable(PRTMP_ADAPTER pAd, unsigned char val);
 
 /* new API for Mu TX */
-bool
-hqa_wifi_test_mu_trigger_mu_tx(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_TRIGGER_MU_TX_FRAME_PARAM pParam
-);
-
+bool hqa_wifi_test_mu_trigger_mu_tx(
+	PRTMP_ADAPTER pAd, P_MU_STRUCT_TRIGGER_MU_TX_FRAME_PARAM pParam);
 
 /* STA API in here temply and will remove in feature */
-bool
-hqa_wifi_test_mu_get_sta_gid_and_up(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_MU_GET_STA_PARAM pOutput
-);
+bool hqa_wifi_test_mu_get_sta_gid_and_up(PRTMP_ADAPTER pAd,
+					 P_MU_STRUCT_MU_GET_STA_PARAM pOutput);
 
-bool
-hqa_wifi_test_mu_set_sta_gid_and_up(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_MU_STA_PARAM ptr
-);
+bool hqa_wifi_test_mu_set_sta_gid_and_up(PRTMP_ADAPTER pAd,
+					 P_MU_STRUCT_MU_STA_PARAM ptr);
 
-INT SetMuEnableProc(
-	RTMP_ADAPTER * pAd,
-	RTMP_STRING * arg
-);
+INT SetMuEnableProc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
-#endif  /* __AP_MUMIMO_H__ */
+#endif /* __AP_MUMIMO_H__ */

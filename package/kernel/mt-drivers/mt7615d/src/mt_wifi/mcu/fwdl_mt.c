@@ -45,9 +45,9 @@ static VOID img_get_32bit(UINT32 *dest, UINT8 **src, UINT32 cnt)
 
 	for (i = 0; i < cnt; i++) {
 		dest[i] = (UINT32)((*(*src + (i * 4) + 3) << 24) |
-						   (*(*src + (i * 4) + 2) << 16) |
-						   (*(*src + (i * 4) + 1) <<  8) |
-						   (*(*src + (i * 4))     <<  0));
+				   (*(*src + (i * 4) + 2) << 16) |
+				   (*(*src + (i * 4) + 1) << 8) |
+				   (*(*src + (i * 4)) << 0));
 	}
 
 	*src += cnt * 4;
@@ -63,11 +63,13 @@ static INT32 MtCmdFwScatters(RTMP_ADAPTER *ad, UINT8 *image, UINT32 image_len)
 	while (1) {
 		UINT32 sent_len_max = MT_UPLOAD_FW_UNIT - cap->cmd_header_len;
 
-		sent_len = (image_len - cur_len) >=  sent_len_max ?
-				   sent_len_max : (image_len - cur_len);
+		sent_len = (image_len - cur_len) >= sent_len_max ?
+				   sent_len_max :
+					 (image_len - cur_len);
 
 		if (sent_len > 0) {
-			ret = MtCmdFwScatter(ad, image + cur_len, sent_len, count);
+			ret = MtCmdFwScatter(ad, image + cur_len, sent_len,
+					     count);
 			count++;
 
 			if (ret)
@@ -80,21 +82,23 @@ static INT32 MtCmdFwScatters(RTMP_ADAPTER *ad, UINT8 *image, UINT32 image_len)
 
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 
-static NDIS_STATUS load_code(struct _RTMP_ADAPTER *pAd, UINT32 method, struct img_source *src)
+static NDIS_STATUS load_code(struct _RTMP_ADAPTER *pAd, UINT32 method,
+			     struct img_source *src)
 {
 	NDIS_STATUS ret = NDIS_STATUS_FAILURE;
 
 	if ((ret != NDIS_STATUS_SUCCESS) && (method & BIT(BIN_METHOD))) {
 		if (src->bin_name)
-			os_load_code_from_bin(pAd, &src->img_ptr, src->bin_name, &src->img_len);
+			os_load_code_from_bin(pAd, &src->img_ptr, src->bin_name,
+					      &src->img_len);
 
 		if (src->img_ptr) {
 			src->applied_method = BIN_METHOD;
-			ret =  NDIS_STATUS_SUCCESS;
+			ret = NDIS_STATUS_SUCCESS;
 		}
 	}
 
@@ -108,37 +112,45 @@ static NDIS_STATUS load_code(struct _RTMP_ADAPTER *pAd, UINT32 method, struct im
 	}
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("load code method: cap (bitmap) = 0x%x, applied = %d\n", method, src->applied_method));
+		 ("load code method: cap (bitmap) = 0x%x, applied = %d\n",
+		  method, src->applied_method));
 
 	return ret;
 }
 
-static NDIS_STATUS alloc_patch_target(struct _RTMP_ADAPTER *pAd, struct patch_dl_target *target, UINT32 count)
+static NDIS_STATUS alloc_patch_target(struct _RTMP_ADAPTER *pAd,
+				      struct patch_dl_target *target,
+				      UINT32 count)
 {
 	if (count < 0)
 		return NDIS_STATUS_FAILURE;
 
 	target->num_of_region = count;
-	return os_alloc_mem(pAd, (UCHAR **)&target->patch_region, count * sizeof(struct patch_dl_buf));
+	return os_alloc_mem(pAd, (UCHAR **)&target->patch_region,
+			    count * sizeof(struct patch_dl_buf));
 }
 
-static VOID free_patch_target(struct _RTMP_ADAPTER *pAd, struct patch_dl_target *target)
+static VOID free_patch_target(struct _RTMP_ADAPTER *pAd,
+			      struct patch_dl_target *target)
 {
 	os_free_mem(target->patch_region);
 	target->patch_region = NULL;
 	target->num_of_region = 0;
 }
 
-static NDIS_STATUS alloc_fw_target(struct _RTMP_ADAPTER *pAd, struct fw_dl_target *target, UINT32 count)
+static NDIS_STATUS alloc_fw_target(struct _RTMP_ADAPTER *pAd,
+				   struct fw_dl_target *target, UINT32 count)
 {
 	if (count < 0)
 		return NDIS_STATUS_FAILURE;
 
 	target->num_of_region = count;
-	return os_alloc_mem(pAd, (UCHAR **)&target->fw_region, count * sizeof(struct fw_dl_buf));
+	return os_alloc_mem(pAd, (UCHAR **)&target->fw_region,
+			    count * sizeof(struct fw_dl_buf));
 }
 
-static VOID free_fw_target(struct _RTMP_ADAPTER *pAd, struct fw_dl_target *target)
+static VOID free_fw_target(struct _RTMP_ADAPTER *pAd,
+			   struct fw_dl_target *target)
 {
 	os_free_mem(target->fw_region);
 	target->fw_region = NULL;
@@ -163,9 +175,11 @@ VOID show_patch_info(struct _RTMP_ADAPTER *pAd)
 
 	for (i = 0; i < MAX_CPU; i++) {
 		if (need_load & BIT(i)) {
-			patch_info = &pAd->MCUCtrl.fwdl_ctrl.patch_profile[i].patch_info;
+			patch_info = &pAd->MCUCtrl.fwdl_ctrl.patch_profile[i]
+					      .patch_info;
 
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("CPU %d patch info\n", i));
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("CPU %d patch info\n", i));
 
 			show_patch_info_cpu(patch_info);
 		}
@@ -180,7 +194,8 @@ static VOID show_fw_info_cpu(struct fw_info *fw_info)
 	FWDL_PRINT_HEX(&fw_info->format_ver, 1, ("\tFormat version: "));
 	FWDL_PRINT_CHAR(fw_info->ram_ver, 10, ("\tRam version: "));
 	FWDL_PRINT_CHAR(fw_info->ram_built_date, 15, ("\tBuilt date: "));
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tCommon crc: 0x%x\n", fw_info->crc));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\tCommon crc: 0x%x\n", fw_info->crc));
 }
 
 VOID show_fw_info(struct _RTMP_ADAPTER *pAd)
@@ -195,14 +210,17 @@ VOID show_fw_info(struct _RTMP_ADAPTER *pAd)
 		if (need_load & BIT(i)) {
 			fw_info = &pAd->MCUCtrl.fwdl_ctrl.fw_profile[i].fw_info;
 
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("CPU %d fw info\n", i));
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("CPU %d fw info\n", i));
 
 			show_fw_info_cpu(fw_info);
 		}
 	}
 }
 
-static NDIS_STATUS parse_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct patch_dl_target *target)
+static NDIS_STATUS parse_patch_v1(struct _RTMP_ADAPTER *pAd,
+				  enum target_cpu cpu,
+				  struct patch_dl_target *target)
 {
 	NDIS_STATUS ret;
 	RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -219,7 +237,8 @@ static NDIS_STATUS parse_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu
 		goto out;
 
 	/* parse patch info */
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Parsing patch header\n"));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Parsing patch header\n"));
 
 	img_ptr = src->img_ptr;
 
@@ -247,18 +266,21 @@ static NDIS_STATUS parse_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu
 		region->img_ptr = src->img_ptr + PATCH_V1_INFO_SIZE;
 
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			("\tTarget address: 0x%x, length: %d\n", region->img_dest_addr, region->img_size));
+			 ("\tTarget address: 0x%x, length: %d\n",
+			  region->img_dest_addr, region->img_size));
 	}
 
 	return NDIS_STATUS_SUCCESS;
 
 out:
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: parse patch fail\n", __func__));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: parse patch fail\n", __func__));
 
 	return ret;
 }
 
-static NDIS_STATUS load_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct patch_dl_target *target)
+static NDIS_STATUS load_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+				 struct patch_dl_target *target)
 {
 	NDIS_STATUS ret;
 	UINT32 num_of_region, i;
@@ -287,27 +309,36 @@ static NDIS_STATUS load_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
 
 		switch (fwdl_ctrl->sem_status) {
 		case PATCH_NOT_DL_SEM_FAIL:
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("patch is not ready && get semaphore fail\n"));
+			MTWF_LOG(
+				DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("patch is not ready && get semaphore fail\n"));
 			ret = NDIS_STATUS_FAILURE;
 			goto out;
 			break;
 		case PATCH_IS_DL:
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("patch is ready, continue to ILM/DLM DL\n"));
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("patch is ready, continue to ILM/DLM DL\n"));
 			ret = NDIS_STATUS_SUCCESS;
 			goto out;
 			break;
 		case PATCH_NOT_DL_SEM_SUCCESS:
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("patch is not ready && get semaphore success\n"));
+			MTWF_LOG(
+				DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("patch is not ready && get semaphore success\n"));
 			break;
 		default:
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("get semaphore invalid status(%d)\n", fwdl_ctrl->sem_status));
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("get semaphore invalid status(%d)\n",
+				  fwdl_ctrl->sem_status));
 			ret = NDIS_STATUS_FAILURE;
 			goto out;
 			break;
 		}
 
 		/* 2. config PDA */
-		ret = MtCmdAddressLenReq(pAd, region->img_dest_addr, region->img_size, MODE_TARGET_ADDR_LEN_NEED_RSP);
+		ret = MtCmdAddressLenReq(pAd, region->img_dest_addr,
+					 region->img_size,
+					 MODE_TARGET_ADDR_LEN_NEED_RSP);
 		if (ret)
 			goto out;
 
@@ -331,9 +362,13 @@ static NDIS_STATUS load_patch_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
 			goto out;
 
 		if (fwdl_ctrl->sem_status == SEM_RELEASE) {
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("release patch semaphore\n"));
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("release patch semaphore\n"));
 		} else {
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("release patch semaphore invalid status(%d)\n", fwdl_ctrl->sem_status));
+			MTWF_LOG(
+				DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("release patch semaphore invalid status(%d)\n",
+				 fwdl_ctrl->sem_status));
 			ret = NDIS_STATUS_FAILURE;
 			goto out;
 		}
@@ -344,13 +379,15 @@ out:
 
 	if (ret) {
 		fwdl_ctrl->stage = FWDL_STAGE_FW_NOT_DL;
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: load patch fail\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: load patch fail\n", __func__));
 	}
 
 	return ret;
 }
 
-static NDIS_STATUS parse_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target)
+static NDIS_STATUS parse_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+			       struct fw_dl_target *target)
 {
 	NDIS_STATUS ret;
 	RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -367,7 +404,8 @@ static NDIS_STATUS parse_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 		goto out;
 
 	/* parse fw info */
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Parsing CPU %d fw tailer\n", cpu));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Parsing CPU %d fw tailer\n", cpu));
 
 	img_ptr = src->img_ptr + src->img_len - 29;
 
@@ -394,22 +432,27 @@ static NDIS_STATUS parse_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 
 		region = &target->fw_region[i];
 #define FW_CODE_START_ADDRESS1 0x100000
-		region->img_dest_addr = FW_CODE_START_ADDRESS1; /* hard code because header don't have it */
+		region->img_dest_addr =
+			FW_CODE_START_ADDRESS1; /* hard code because header don't have it */
 		region->img_size = dl_len;
 		region->img_ptr = src->img_ptr;
-		region->feature_set = 0; /* no feature set field for this fw format */
-		region->feature_set |= FW_FEATURE_OVERRIDE_RAM_ADDR; /* hard code this field to override ram starting address */
+		region->feature_set =
+			0; /* no feature set field for this fw format */
+		region->feature_set |=
+			FW_FEATURE_OVERRIDE_RAM_ADDR; /* hard code this field to override ram starting address */
 	}
 
 	return NDIS_STATUS_SUCCESS;
 
 out:
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: parse fw fail\n", __func__));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: parse fw fail\n", __func__));
 
 	return ret;
 }
 
-static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target)
+static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+			       struct fw_dl_target *target)
 {
 	NDIS_STATUS ret;
 	RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -427,7 +470,8 @@ static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 		goto out;
 
 	/* parse fw info */
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Parsing CPU %d fw tailer\n", cpu));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Parsing CPU %d fw tailer\n", cpu));
 
 	img_ptr = src->img_ptr + src->img_len - FW_V2_INFO_SIZE;
 
@@ -441,9 +485,11 @@ static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 	show_fw_info_cpu(fw_info);
 
 	if (cpu == WA_CPU)
-		num_of_region = 1; /* for 7615 CR4, which is von-neumann architecture */
+		num_of_region =
+			1; /* for 7615 CR4, which is von-neumann architecture */
 	else
-		num_of_region = 2; /* fix to 2 because they're all harvard architecture */
+		num_of_region =
+			2; /* fix to 2 because they're all harvard architecture */
 
 	ret = alloc_fw_target(pAd, target, num_of_region);
 	if (ret)
@@ -455,9 +501,11 @@ static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 		UINT8 dl_feature_set;
 		struct fw_dl_buf *region;
 
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Parsing tailer region %d\n", i));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("Parsing tailer region %d\n", i));
 
-		img_ptr = src->img_ptr + src->img_len - (num_of_region - i) * FW_V2_INFO_SIZE;
+		img_ptr = src->img_ptr + src->img_len -
+			  (num_of_region - i) * FW_V2_INFO_SIZE;
 
 		img_get_32bit(&dl_addr, &img_ptr, 1);
 
@@ -470,7 +518,9 @@ static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 
 		img_get_32bit(&dl_len, &img_ptr, 1);
 		dl_len += 4; /* including 4 byte inverse-crc */
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tTarget address: 0x%x, Download size: %d\n", dl_addr, dl_len));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tTarget address: 0x%x, Download size: %d\n",
+			  dl_addr, dl_len));
 
 		region = &target->fw_region[i];
 		region->img_dest_addr = dl_addr;
@@ -478,20 +528,24 @@ static NDIS_STATUS parse_fw_v2(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 		region->img_ptr = src->img_ptr + offset;
 		offset += dl_len;
 		region->feature_set = dl_feature_set;
-		if (IS_MT7615(pAd) && (cpu == WM_CPU) && (i == 0)) { /* for 7615 N9 ILM */
-			region->feature_set |= FW_FEATURE_OVERRIDE_RAM_ADDR; /* hard code this field to override ram starting address */
+		if (IS_MT7615(pAd) && (cpu == WM_CPU) &&
+		    (i == 0)) { /* for 7615 N9 ILM */
+			region->feature_set |=
+				FW_FEATURE_OVERRIDE_RAM_ADDR; /* hard code this field to override ram starting address */
 		}
 	}
 
 	return NDIS_STATUS_SUCCESS;
 
 out:
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: parse fw fail\n", __func__));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: parse fw fail\n", __func__));
 
 	return ret;
 }
 
-static NDIS_STATUS parse_fw_v3(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target)
+static NDIS_STATUS parse_fw_v3(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+			       struct fw_dl_target *target)
 {
 	NDIS_STATUS ret;
 	RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -509,7 +563,8 @@ static NDIS_STATUS parse_fw_v3(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 		goto out;
 
 	/* parse fw info */
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Parsing CPU %d fw tailer\n", cpu));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Parsing CPU %d fw tailer\n", cpu));
 
 	img_ptr = src->img_ptr + src->img_len - FW_V3_COMMON_TAILER_SIZE;
 
@@ -533,29 +588,38 @@ static NDIS_STATUS parse_fw_v3(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 	/* first region first parsing */
 	for (i = 0; i < num_of_region; i++) {
 		struct fw_dl_buf *region;
-		UINT32 dl_addr, dl_len, decomp_crc, decomp_len, decomp_block_size;
+		UINT32 dl_addr, dl_len, decomp_crc, decomp_len,
+			decomp_block_size;
 		UINT8 dl_feature_set;
 
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Parsing tailer region %d\n", i));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("Parsing tailer region %d\n", i));
 
-		img_ptr = src->img_ptr + src->img_len - FW_V3_COMMON_TAILER_SIZE - (num_of_region - i) * FW_V3_REGION_TAILER_SIZE;
+		img_ptr = src->img_ptr + src->img_len -
+			  FW_V3_COMMON_TAILER_SIZE -
+			  (num_of_region - i) * FW_V3_REGION_TAILER_SIZE;
 
 		img_get_32bit(&decomp_crc, &img_ptr, 1);
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tDecomp crc: 0x%x\n", decomp_crc));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tDecomp crc: 0x%x\n", decomp_crc));
 
 		img_get_32bit(&decomp_len, &img_ptr, 1);
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tDecomp size: 0x%x\n", decomp_len));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tDecomp size: 0x%x\n", decomp_len));
 
 		img_get_32bit(&decomp_block_size, &img_ptr, 1);
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tDecomp block size: 0x%x\n", decomp_block_size));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tDecomp block size: 0x%x\n", decomp_block_size));
 
 		img_ptr += 4; /* bypass reserved field */
 
 		img_get_32bit(&dl_addr, &img_ptr, 1);
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tTarget address: 0x%x\n", dl_addr));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tTarget address: 0x%x\n", dl_addr));
 
 		img_get_32bit(&dl_len, &img_ptr, 1);
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tDownload size: %d\n", dl_len));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tDownload size: %d\n", dl_len));
 
 		img_get_8bit(&dl_feature_set, &img_ptr, 1);
 		FWDL_PRINT_HEX(&dl_feature_set, 1, ("\tFeature set: "));
@@ -574,12 +638,14 @@ static NDIS_STATUS parse_fw_v3(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, s
 	return NDIS_STATUS_SUCCESS;
 
 out:
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: parse fw fail\n", __func__));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: parse fw fail\n", __func__));
 
 	return ret;
 }
 
-static NDIS_STATUS load_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target)
+static NDIS_STATUS load_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu,
+			      struct fw_dl_target *target)
 {
 	NDIS_STATUS ret;
 	UINT32 num_of_region, i, override, override_addr;
@@ -612,12 +678,19 @@ static NDIS_STATUS load_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, st
 		fwdl_ctrl->stage = FWDL_STAGE_CMD_EVENT;
 
 		/* 1. config PDA */
-		ret = MtCmdAddressLenReq(pAd, region->img_dest_addr, region->img_size,
-								((region->feature_set & FW_FEATURE_SET_ENCRY) ? MODE_ENABLE_ENCRY : 0) |
-								(MODE_SET_KEY(GET_FW_FEATURE_SET_KEY(region->feature_set))) |
-								((region->feature_set & FW_FEATURE_SET_ENCRY) ? MODE_RESET_SEC_IV : 0) |
-								((cpu == WA_CPU) ? MODE_WORKING_PDA_OPTION : 0) |
-								MODE_TARGET_ADDR_LEN_NEED_RSP);
+		ret = MtCmdAddressLenReq(
+			pAd, region->img_dest_addr, region->img_size,
+			((region->feature_set & FW_FEATURE_SET_ENCRY) ?
+				 MODE_ENABLE_ENCRY :
+				       0) |
+				(MODE_SET_KEY(GET_FW_FEATURE_SET_KEY(
+					region->feature_set))) |
+				((region->feature_set & FW_FEATURE_SET_ENCRY) ?
+					 MODE_RESET_SEC_IV :
+					       0) |
+				((cpu == WA_CPU) ? MODE_WORKING_PDA_OPTION :
+							 0) |
+				MODE_TARGET_ADDR_LEN_NEED_RSP);
 		if (ret)
 			goto out;
 
@@ -632,20 +705,26 @@ static NDIS_STATUS load_fw_v1(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, st
 	/* 3. fw start negotiation */
 	fwdl_ctrl->stage = FWDL_STAGE_CMD_EVENT;
 
-	ret = MtCmdFwStartReq(pAd, override | ((cpu == WA_CPU) ? FW_START_WORKING_PDA_OPTION : 0), override_addr);
+	ret = MtCmdFwStartReq(
+		pAd,
+		override | ((cpu == WA_CPU) ? FW_START_WORKING_PDA_OPTION : 0),
+		override_addr);
 
 out:
 	free_fw_target(pAd, target);
 
 	if (ret) {
 		fwdl_ctrl->stage = FWDL_STAGE_FW_NOT_DL;
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: load fw fail\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: load fw fail\n", __func__));
 	}
 
 	return ret;
 }
 
-static NDIS_STATUS load_fw_v2_compressimg(struct _RTMP_ADAPTER *pAd, enum target_cpu cpu, struct fw_dl_target *target)
+static NDIS_STATUS load_fw_v2_compressimg(struct _RTMP_ADAPTER *pAd,
+					  enum target_cpu cpu,
+					  struct fw_dl_target *target)
 {
 	NDIS_STATUS ret;
 	UINT32 num_of_region, i, override, override_addr;
@@ -683,55 +762,85 @@ static NDIS_STATUS load_fw_v2_compressimg(struct _RTMP_ADAPTER *pAd, enum target
 			override |= FW_START_OVERRIDE_START_ADDRESS;
 			override_addr = region->img_dest_addr;
 		}
-		if (region->feature_set & FW_FEATURE_COMPRESS_IMG) { /* Compressed image Process */
+		if (region->feature_set &
+		    FW_FEATURE_COMPRESS_IMG) { /* Compressed image Process */
 			do_compressed_dl = 1;
 			block_idx = 0;
 			compress_region_num += 1;
-			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("REGION[%d] COMPRESSED IMAGE DOWNLOAD\n", i));
+			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("REGION[%d] COMPRESSED IMAGE DOWNLOAD\n", i));
 			while (remain_chunk_size > 0) {
 				UINT32 payload_size_per_chunk = 0;
 
 				fwdl_ctrl->stage = FWDL_STAGE_CMD_EVENT;
-				img_get_32bit(&payload_size_per_chunk, &img_ptr_pos, 1);
+				img_get_32bit(&payload_size_per_chunk,
+					      &img_ptr_pos, 1);
 				remain_chunk_size -= 4;
 				/* 1. config PDA */
-				block_dest_addr = region->img_dest_addr + block_idx * region->decomp_block_size;
-				ret = MtCmdAddressLenReq(pAd, block_dest_addr, payload_size_per_chunk,
-					((region->feature_set & FW_FEATURE_SET_ENCRY) ? MODE_ENABLE_ENCRY : 0) |
-					(MODE_SET_KEY(GET_FW_FEATURE_SET_KEY(region->feature_set))) |
-					((region->feature_set & FW_FEATURE_SET_ENCRY) ? MODE_RESET_SEC_IV : 0) |
-					((cpu == WA_CPU) ? MODE_WORKING_PDA_OPTION : 0) |
-					MODE_TARGET_ADDR_LEN_NEED_RSP);
+				block_dest_addr =
+					region->img_dest_addr +
+					block_idx * region->decomp_block_size;
+				ret = MtCmdAddressLenReq(
+					pAd, block_dest_addr,
+					payload_size_per_chunk,
+					((region->feature_set &
+					  FW_FEATURE_SET_ENCRY) ?
+						 MODE_ENABLE_ENCRY :
+						       0) |
+						(MODE_SET_KEY(GET_FW_FEATURE_SET_KEY(
+							region->feature_set))) |
+						((region->feature_set &
+						  FW_FEATURE_SET_ENCRY) ?
+							 MODE_RESET_SEC_IV :
+							       0) |
+						((cpu == WA_CPU) ?
+							 MODE_WORKING_PDA_OPTION :
+							       0) |
+						MODE_TARGET_ADDR_LEN_NEED_RSP);
 				if (ret)
 					goto out;
 				/* 2. image scatter */
 				fwdl_ctrl->stage = FWDL_STAGE_SCATTER;
-				ret = MtCmdFwScatters(pAd, img_ptr_pos, payload_size_per_chunk);
+				ret = MtCmdFwScatters(pAd, img_ptr_pos,
+						      payload_size_per_chunk);
 				if (ret)
 					goto out;
 				remain_chunk_size -= payload_size_per_chunk;
 				img_ptr_pos += payload_size_per_chunk;
 				block_idx++;
 			}
-			decompress_info.aucDecompRegion[i].u4RegionAddress = region->img_dest_addr;
-			decompress_info.aucDecompRegion[i].u4Regionlength = region->decomp_img_size;
-			decompress_info.aucDecompRegion[i].u4RegionCRC = region->decomp_crc;
+			decompress_info.aucDecompRegion[i].u4RegionAddress =
+				region->img_dest_addr;
+			decompress_info.aucDecompRegion[i].u4Regionlength =
+				region->decomp_img_size;
+			decompress_info.aucDecompRegion[i].u4RegionCRC =
+				region->decomp_crc;
 			decompress_info.u4BlockSize = region->decomp_block_size;
 		} else { /* Uncompressed Image Process*/
 			fwdl_ctrl->stage = FWDL_STAGE_CMD_EVENT;
 			/* 1. config PDA */
-			ret = MtCmdAddressLenReq(pAd, region->img_dest_addr, region->img_size,
-						((region->feature_set & FW_FEATURE_SET_ENCRY) ? MODE_ENABLE_ENCRY : 0) |
-						(MODE_SET_KEY(GET_FW_FEATURE_SET_KEY(region->feature_set))) |
-						((region->feature_set & FW_FEATURE_SET_ENCRY) ? MODE_RESET_SEC_IV : 0) |
-						((cpu == WA_CPU) ? MODE_WORKING_PDA_OPTION : 0) |
-						MODE_TARGET_ADDR_LEN_NEED_RSP);
+			ret = MtCmdAddressLenReq(
+				pAd, region->img_dest_addr, region->img_size,
+				((region->feature_set & FW_FEATURE_SET_ENCRY) ?
+					 MODE_ENABLE_ENCRY :
+					       0) |
+					(MODE_SET_KEY(GET_FW_FEATURE_SET_KEY(
+						region->feature_set))) |
+					((region->feature_set &
+					  FW_FEATURE_SET_ENCRY) ?
+						 MODE_RESET_SEC_IV :
+						       0) |
+					((cpu == WA_CPU) ?
+						 MODE_WORKING_PDA_OPTION :
+						       0) |
+					MODE_TARGET_ADDR_LEN_NEED_RSP);
 			if (ret)
 				goto out;
 			/* 2. image scatter */
 			fwdl_ctrl->stage = FWDL_STAGE_SCATTER;
 
-			ret = MtCmdFwScatters(pAd, region->img_ptr, region->img_size);
+			ret = MtCmdFwScatters(pAd, region->img_ptr,
+					      region->img_size);
 			if (ret)
 				goto out;
 		}
@@ -740,8 +849,11 @@ static NDIS_STATUS load_fw_v2_compressimg(struct _RTMP_ADAPTER *pAd, enum target
 	if (do_compressed_dl) {
 		/*if the override[5] is not set, the ROM CODE will use default WIFI ILM as start address */
 		decompress_info.u4Address = override_addr;
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Start CMD Jump Address 0x%x\n", decompress_info.u4Address));
-		decompress_info.u4DecompressTmpAddress = cap->decompress_tmp_addr;
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("Start CMD Jump Address 0x%x\n",
+			  decompress_info.u4Address));
+		decompress_info.u4DecompressTmpAddress =
+			cap->decompress_tmp_addr;
 		override |= ((cpu == WA_CPU) ? FW_START_WORKING_PDA_OPTION : 0);
 		override |= FW_CHANGE_DECOMPRESSION_TMP_ADDRESS;
 		decompress_info.u4Override = override;
@@ -750,14 +862,20 @@ static NDIS_STATUS load_fw_v2_compressimg(struct _RTMP_ADAPTER *pAd, enum target
 		ret = MtCmdFwDecompressStart(pAd, &decompress_info);
 	} else {
 		/* 3. fw start negotiation */
-		ret = MtCmdFwStartReq(pAd, override | ((cpu == WA_CPU) ? FW_START_WORKING_PDA_OPTION : 0), override_addr);
+		ret = MtCmdFwStartReq(
+			pAd,
+			override |
+				((cpu == WA_CPU) ? FW_START_WORKING_PDA_OPTION :
+							 0),
+			override_addr);
 	}
 out:
 	free_fw_target(pAd, target);
 
 	if (ret) {
 		fwdl_ctrl->stage = FWDL_STAGE_FW_NOT_DL;
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: load fw fail\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: load fw fail\n", __func__));
 	}
 
 	return ret;
@@ -775,7 +893,8 @@ static VOID free_patch_buf(RTMP_ADAPTER *pAd)
 			struct img_source *src;
 
 			src = &pAd->MCUCtrl.fwdl_ctrl.patch_profile[i].source;
-			if ((src->applied_method == BIN_METHOD) && (src->img_ptr)) {
+			if ((src->applied_method == BIN_METHOD) &&
+			    (src->img_ptr)) {
 				os_free_mem(src->img_ptr);
 				src->img_ptr = NULL;
 			}
@@ -795,7 +914,8 @@ static VOID free_fw_buf(RTMP_ADAPTER *pAd)
 			struct img_source *src;
 
 			src = &pAd->MCUCtrl.fwdl_ctrl.fw_profile[i].source;
-			if ((src->applied_method == BIN_METHOD) && (src->img_ptr)) {
+			if ((src->applied_method == BIN_METHOD) &&
+			    (src->img_ptr)) {
 				os_free_mem(src->img_ptr);
 				src->img_ptr = NULL;
 			}
@@ -803,11 +923,11 @@ static VOID free_fw_buf(RTMP_ADAPTER *pAd)
 	}
 }
 
-
 /*
  * setup fw wifi task to be in the right state for a specific fwdl stage
  */
-static NDIS_STATUS ctrl_fw_state_v2(struct _RTMP_ADAPTER *pAd, enum fwdl_stage target_stage)
+static NDIS_STATUS ctrl_fw_state_v2(struct _RTMP_ADAPTER *pAd,
+				    enum fwdl_stage target_stage)
 {
 	NDIS_STATUS ret;
 	UINT32 fw_sync, loop;
@@ -819,7 +939,8 @@ static NDIS_STATUS ctrl_fw_state_v2(struct _RTMP_ADAPTER *pAd, enum fwdl_stage t
 	switch (target_stage) {
 	case FWDL_STAGE_FW_NOT_DL:
 		/* could be in both state because of wifi default on/off */
-		if (fw_sync == WIFI_TASK_STATE_INITIAL || fw_sync == WIFI_TASK_STATE_FW_DOWNLOAD) {
+		if (fw_sync == WIFI_TASK_STATE_INITIAL ||
+		    fw_sync == WIFI_TASK_STATE_FW_DOWNLOAD) {
 			ret = NDIS_STATUS_SUCCESS;
 			break;
 		}
@@ -835,7 +956,8 @@ static NDIS_STATUS ctrl_fw_state_v2(struct _RTMP_ADAPTER *pAd, enum fwdl_stage t
 		do {
 			fw_sync = MtAsicGetFwSyncValue(pAd);
 
-			if (fw_sync == WIFI_TASK_STATE_INITIAL || fw_sync == WIFI_TASK_STATE_FW_DOWNLOAD) {
+			if (fw_sync == WIFI_TASK_STATE_INITIAL ||
+			    fw_sync == WIFI_TASK_STATE_FW_DOWNLOAD) {
 				ret = NDIS_STATUS_SUCCESS;
 				break;
 			}
@@ -883,47 +1005,50 @@ static NDIS_STATUS ctrl_fw_state_v2(struct _RTMP_ADAPTER *pAd, enum fwdl_stage t
 		} while (loop <= WAIT_LOOP);
 
 		break;
-	case FWDL_STAGE_FW_RUNNING:
-		{
-			UINT32 target_fw_sync;
+	case FWDL_STAGE_FW_RUNNING: {
+		UINT32 target_fw_sync;
 
-			target_fw_sync = (cap->need_load_fw & BIT(WA_CPU)) ? WIFI_TASK_STATE_WACPU_RDY : WIFI_TASK_STATE_NORMAL_TRX;
+		target_fw_sync = (cap->need_load_fw & BIT(WA_CPU)) ?
+					 WIFI_TASK_STATE_WACPU_RDY :
+					       WIFI_TASK_STATE_NORMAL_TRX;
+
+		if (fw_sync == target_fw_sync) {
+			ret = NDIS_STATUS_SUCCESS;
+			break;
+		}
+
+		/* polling */
+		loop = 0;
+		ret = NDIS_STATUS_FAILURE;
+		do {
+			fw_sync = MtAsicGetFwSyncValue(pAd);
 
 			if (fw_sync == target_fw_sync) {
 				ret = NDIS_STATUS_SUCCESS;
 				break;
 			}
 
-			/* polling */
-			loop = 0;
-			ret = NDIS_STATUS_FAILURE;
-			do {
-				fw_sync = MtAsicGetFwSyncValue(pAd);
+			RtmpOsMsDelay(1);
+			loop++;
+		} while (loop <= WAIT_LOOP);
+	}
 
-				if (fw_sync == target_fw_sync) {
-					ret = NDIS_STATUS_SUCCESS;
-					break;
-				}
-
-				RtmpOsMsDelay(1);
-				loop++;
-			} while (loop <= WAIT_LOOP);
-		}
-
-		break;
+	break;
 	default:
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: invalid target stage\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: invalid target stage\n", __func__));
 		ret = NDIS_STATUS_FAILURE;
 		break;
 	}
 
 	if (ret)
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			("%s: fail, target stage = %d, current sync CR = %d \n", __func__, target_stage, fw_sync));
+		MTWF_LOG(
+			DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			("%s: fail, target stage = %d, current sync CR = %d \n",
+			 __func__, target_stage, fw_sync));
 
 	return ret;
 }
-
 
 NDIS_STATUS mt_fwdl_hook_init(struct _RTMP_ADAPTER *pAd)
 {
@@ -949,7 +1074,8 @@ NDIS_STATUS mt_fwdl_hook_init(struct _RTMP_ADAPTER *pAd)
 		if (pChipCap->load_fw_flow == FW_FLOW_V1)
 			op->load_fw = load_fw_v1;
 		else if (pChipCap->load_fw_flow == FW_FLOW_V2_COMPRESS_IMG)
-			op->load_fw = load_fw_v2_compressimg; /* compress img must use v3 format*/
+			op->load_fw =
+				load_fw_v2_compressimg; /* compress img must use v3 format*/
 		else
 			ret = NDIS_STATUS_FAILURE;
 
@@ -963,20 +1089,21 @@ NDIS_STATUS mt_fwdl_hook_init(struct _RTMP_ADAPTER *pAd)
 			ret = NDIS_STATUS_FAILURE;
 	}
 
-		op->ctrl_fw_state = ctrl_fw_state_v2;
+	op->ctrl_fw_state = ctrl_fw_state_v2;
 #ifdef CONFIG_RECOVERY_ON_INTERRUPT_MISS
 #ifdef INTELP6_SUPPORT
-		if (ret == NDIS_STATUS_FAILURE) {
-			struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
+	if (ret == NDIS_STATUS_FAILURE) {
+		struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
 
-			pAd->ErrRecoveryCheck++;
-			if (ops->heart_beat_check)
-				ops->heart_beat_check(pAd);
-		}
+		pAd->ErrRecoveryCheck++;
+		if (ops->heart_beat_check)
+			ops->heart_beat_check(pAd);
+	}
 #endif
 #endif
 	if (ret)
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: FWDL hook fail\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: FWDL hook fail\n", __func__));
 
 	return ret;
 }
@@ -1003,7 +1130,8 @@ NDIS_STATUS mt_load_patch(struct _RTMP_ADAPTER *pAd)
 
 	need_load = chip_cap->need_load_patch;
 	if (need_load && (!fwdl_op->parse_patch || !fwdl_op->load_patch)) {
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: no hook function available\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: no hook function available\n", __func__));
 		ret = NDIS_STATUS_FAILURE;
 		goto done;
 	}
@@ -1027,7 +1155,8 @@ done:
 	free_patch_buf(pAd);
 
 	if (ret)
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: patch download fail\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: patch download fail\n", __func__));
 
 	return ret;
 }
@@ -1054,7 +1183,8 @@ NDIS_STATUS mt_load_fw(struct _RTMP_ADAPTER *pAd)
 
 	need_load = chip_cap->need_load_fw;
 	if (need_load && (!fwdl_op->parse_fw || !fwdl_op->load_fw)) {
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: no hook function available\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: no hook function available\n", __func__));
 		ret = NDIS_STATUS_FAILURE;
 		goto done;
 	}
@@ -1082,7 +1212,8 @@ done:
 	free_fw_buf(pAd);
 
 	if (ret) {
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: fw download fail\n", __func__));
+		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: fw download fail\n", __func__));
 		pAd->MCUCtrl.fwdl_ctrl.stage = FWDL_STAGE_FW_NOT_DL;
 	} else {
 		pAd->MCUCtrl.fwdl_ctrl.stage = FWDL_STAGE_FW_RUNNING;
@@ -1103,4 +1234,3 @@ NDIS_STATUS mt_restart_fw(struct _RTMP_ADAPTER *pAd)
 
 	return ret;
 }
-
