@@ -729,6 +729,16 @@ define Device/iptime_a3004ns-dual
 endef
 TARGET_DEVICES += iptime_a3004ns-dual
 
+define Device/iptime_a6004ns-m
+  IMAGE_SIZE := 16128k
+  UIMAGE_NAME := a6004nm
+  DEVICE_VENDOR := ipTIME
+  DEVICE_MODEL := A6004NS-M
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3 \
+        kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += iptime_a6004ns-m
+
 define Device/iptime_a6ns-m
   IMAGE_SIZE := 16128k
   UIMAGE_NAME := a6nm
