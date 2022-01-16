@@ -203,7 +203,6 @@ define Device/asus_rt-ac58u
 	SOC := qcom-ipq4018
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DTB_SIZE := 65536
 	IMAGE_SIZE := 20439364
 	FILESYSTEMS := squashfs
 #	Someone - in their infinite wisdom - decided to put the firmware
@@ -224,7 +223,6 @@ define Device/asus_rt-acrh17
 	SOC := qcom-ipq4019
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DTB_SIZE := 65536
 	IMAGE_SIZE := 20439364
 	FILESYSTEMS := squashfs
 	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC82U')
