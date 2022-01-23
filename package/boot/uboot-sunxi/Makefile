@@ -260,7 +260,7 @@ define U-Boot/nanopi_r1s_h5
   BUILD_SUBTARGET:=cortexa53
   NAME:=NanoPi R1S (H5)
   BUILD_DEVICES:=friendlyarm_nanopi-r1s-h5
-  DEPENDS:=+PACKAGE_u-boot-nanopi_r1s_h5:arm-trusted-firmware-sunxi-a64
+  DEPENDS:=+PACKAGE_u-boot-nanopi_r1s_h5:arm-trusted-firmware-sunxi
   UENV:=a64
   ATF:=a64
 endef
