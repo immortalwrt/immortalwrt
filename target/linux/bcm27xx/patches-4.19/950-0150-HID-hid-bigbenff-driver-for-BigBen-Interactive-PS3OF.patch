@@ -23,7 +23,7 @@ Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 
 --- a/drivers/hid/Kconfig
 +++ b/drivers/hid/Kconfig
-@@ -182,6 +182,19 @@ config HID_BETOP_FF
+@@ -183,6 +183,19 @@ config HID_BETOP_FF
  	Currently the following devices are known to be supported:
  	 - BETOP 2185 PC & BFM MODE
  
