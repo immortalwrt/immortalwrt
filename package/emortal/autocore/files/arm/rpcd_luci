@@ -223,8 +223,9 @@ local methods = {
 			rv.dropbear      = fs.access("/usr/sbin/dropbear")
 			rv.cabundle      = fs.access("/etc/ssl/certs/ca-certificates.crt")
 			rv.relayd        = fs.access("/usr/sbin/relayd")
+			rv.dsl           = fs.access("/sbin/vdsl_cpe_control")
 
-			local wifi_features = { "eap", "11n", "11ac", "11r", "acs", "sae", "owe", "suiteb192", "wep" }
+			local wifi_features = { "eap", "11n", "11ac", "11r", "acs", "sae", "owe", "suiteb192", "wep", "wps" }
 
 			if fs.access("/usr/sbin/hostapd") then
 				rv.hostapd = { cli = fs.access("/usr/sbin/hostapd_cli") }
@@ -446,7 +447,7 @@ local methods = {
 		call = function(args)
 			local util = require "luci.util"
 			return {
-				result = (os.execute("(echo %s; sleep 1; echo %s) | busybox passwd %s >/dev/null 2>&1" %{
+				result = (os.execute("(echo %s; sleep 1; echo %s) | /bin/busybox passwd %s >/dev/null 2>&1" %{
 					luci.util.shellquote(args.password),
 					luci.util.shellquote(args.password),
 					luci.util.shellquote(args.username)
