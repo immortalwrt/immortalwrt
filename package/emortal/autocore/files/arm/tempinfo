@@ -5,10 +5,10 @@ if [ -e "${mt76_path}" ]; then
 	mt76_temp=" $(awk -F ': ' '{print $2}' "${mt76_path}")°C"
 fi
 
-if grep -q "mt7622" "/etc/openwrt_release"; then
-	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/hwmon*/temp1_input | awk '$1=$1')"
-else
+if grep -Eq "ipq40xx|ipq806x" "/etc/openwrt_release"; then
 	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
+else
+	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/hwmon*/temp1_input | awk '$1=$1')"
 fi
 
 if grep -q "ipq40xx" "/etc/openwrt_release"; then
