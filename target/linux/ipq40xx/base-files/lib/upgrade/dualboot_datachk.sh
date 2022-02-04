@@ -1,11 +1,11 @@
-# The U-Boot loader of the OpenMesh devices requires image sizes and
-# checksums to be provided in the U-Boot environment.
-# The OpenMesh devices come with 2 main partitions - while one is active
+# The U-Boot loader with the datachk patchset for dualbooting requires image
+# sizes and checksums to be provided in the U-Boot environment.
+# The devices come with 2 main partitions - while one is active
 # sysupgrade will flash the other. The boot order is changed to boot the
 # newly flashed partition. If the new partition can't be booted due to
 # upgrade failures the previously used partition is loaded.
 
-platform_do_upgrade_openmesh() {
+platform_do_upgrade_dualboot_datachk() {
 	local tar_file="$1"
 	local restore_backup
 	local primary_kernel_mtd
@@ -44,9 +44,11 @@ platform_do_upgrade_openmesh() {
 	# boot anymore to Linux until it was reflashed with ap51-flash.
 	local next_boot_part="1"
 	case "$(board_name)" in
+	plasmacloud,pa1200|\
 	openmesh,a42)
 		primary_kernel_mtd=8
 		;;
+	plasmacloud,pa2200|\
 	openmesh,a62)
 		primary_kernel_mtd=10
 		;;
@@ -74,7 +76,7 @@ platform_do_upgrade_openmesh() {
 	#
 
 	# take care of restoring a saved config
-	[ "$SAVE_CONFIG" -eq 1 ] && restore_backup="${MTD_CONFIG_ARGS} -j ${CONF_TAR}"
+	[ -n "$UPGRADE_BACKUP" ] && restore_backup="${MTD_CONFIG_ARGS} -j ${UPGRADE_BACKUP}"
 
 	mtd -q erase inactive
 	tar xf $tar_file ${board_dir}/root -O | mtd -n -p $kernel_length $restore_backup write - $PART_NAME

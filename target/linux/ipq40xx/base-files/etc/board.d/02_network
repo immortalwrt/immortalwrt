@@ -16,12 +16,18 @@ ipq40xx_setup_interfaces()
 	8dev,jalapeno|\
 	alfa-network,ap120c-ac|\
 	engenius,emr3500|\
-	engenius,ens620ext)
+	engenius,ens620ext|\
+	luma,wrtq-329acn|\
+	netgear,wac510|\
+	plasmacloud,pa1200|\
+	plasmacloud,pa2200)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "4:lan" "5:wan"
 		;;
 	asus,map-ac2200|\
 	cilab,meshpoint-one|\
+	edgecore,ecw5211|\
+	edgecore,oap100|\
 	openmesh,a42|\
 	openmesh,a62)
 		ucidef_add_switch "switch0" \
@@ -36,6 +42,8 @@ ipq40xx_setup_interfaces()
 	ezviz,cs-w3-wd1200g-eup|\
 	linksys,ea6350v3|\
 	linksys,ea8300|\
+	linksys,mr8300|\
+	mikrotik,hap-ac2|\
 	unielec,u4019-32m)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan"
@@ -50,7 +58,7 @@ ipq40xx_setup_interfaces()
 		;;
 	avm,fritzbox-7530)
 		ucidef_add_switch "switch0" \
-			"0t@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1"
+			"0u@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1"
 		;;
 	aruba,ap-303|\
 	aruba,ap-365|\
@@ -58,17 +66,22 @@ ipq40xx_setup_interfaces()
 	dlink,dap-2610 |\
 	engenius,emd1|\
 	meraki,mr33|\
-	zyxel,wre6606)
+	mikrotik,sxtsq-5-ac)
 		ucidef_set_interface_lan "eth0"
 		;;
 	buffalo,wtr-m2133hp)
 		ucidef_add_switch "switch0" \
-			"0u@eth0" "2:lan:3" "3:lan:2" "4:lan:1" "5:wan"
+			"0t@eth0" "2:lan:3" "3:lan:2" "4:lan:1" "5:wan"
 		;;
 	cellc,rtl30vw)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "3:lan" "4:lan"
 		;;
+	devolo,magic-2-wifi-next)
+		ucidef_add_switch "switch0" \
+			"0t@eth0" "3:lan" "4:lan" "5:lan"
+		;;
+	glinet,gl-ap1300 |\
 	glinet,gl-b1300|\
 	glinet,gl-s1300|\
 	qxwlan,e2600ac-c1|\
@@ -81,10 +94,6 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "2:lan" "3:lan" "4:lan" "5:wan"
 		;;
-	leguang,ca100)
-		ucidef_add_switch "switch0" \
-			"0t@eth0" "5:wan" "3:lan"
-		;;
 	mobipromo,cm520-79f)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "3:lan:2" "4:lan:1" "5:wan"
@@ -94,7 +103,8 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0u@eth0" "4:lan"
 		;;
-	netgear,ex6200v2)
+	netgear,ex6200v2|\
+	zyxel,wre6606)
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan"
 		;;
@@ -118,7 +128,7 @@ ipq40xx_setup_macs()
 
 	case "$board" in
 	8dev,habanero-dvk)
-		label_mac=$(mtd_get_mac_binary "ART" 4102)
+		label_mac=$(mtd_get_mac_binary "ART" 0x1006)
 		;;
 	asus,rt-acrh17|\
 	asus,rt-ac58u)
@@ -132,7 +142,11 @@ ipq40xx_setup_macs()
 		wan_mac=$(macaddr_add "$lan_mac" -1)
 		;;
 	cilab,meshpoint-one)
-		label_mac=$(mtd_get_mac_binary "ART" 4102)
+		label_mac=$(mtd_get_mac_binary "ART" 0x1006)
+		;;
+	devolo,magic-2-wifi-next)
+		lan_mac=$(mtd_get_mac_ascii APPSBLENV MacAddress0)
+		label_mac=$lan_mac
 		;;
 	dlink,dap-2610)
 		lan_mac=$(mtd_get_mac_ascii bdcfg lanmac)
@@ -153,7 +167,7 @@ ipq40xx_setup_macs()
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
 	ezviz,cs-w3-wd1200g-eup)
-		label_mac=$(mtd_get_mac_binary "ART" 6)
+		label_mac=$(mtd_get_mac_binary "ART" 0x6)
 		;;
 	hiwifi,c526a|\
 	hiwifi,c526a-128m)
@@ -167,6 +181,15 @@ ipq40xx_setup_macs()
 	p2w,r619ac)
 		wan_mac=$(cat /sys/class/net/eth0/address)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
+		;;
+	mikrotik,hap-ac2)
+		wan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
+		lan_mac=$(macaddr_add $wan_mac 1)
+		label_mac="$wan_mac"
+		;;
+	mikrotik,sxtsq-5-ac)
+		lan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
+		label_mac="$lan_mac"
 		;;
 	esac
 
