@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+	local mask=4
+	for irq in $(grep -F ath10k_ahb /proc/interrupts | cut -d: -f1 | sed 's, *,,')
+	do
+		echo "$mask" > "/proc/irq/$irq/smp_affinity"
+		[ $mask = 4 ] && mask=8
+	done
+
+	mask=1
+	for irq in $(grep -F c080000.ethernet /proc/interrupts | cut -d: -f1 | sed 's, *,,')
+	do
+		echo "$mask" > "/proc/irq/$irq/smp_affinity"
+		mask=$((mask << 1))
+		[ $mask = 16 ] && mask=1
+	done
+}
