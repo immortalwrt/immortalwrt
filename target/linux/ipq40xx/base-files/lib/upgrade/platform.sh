@@ -6,8 +6,8 @@ RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
 platform_check_image() {
 	case "$(board_name)" in
+	asus,rt-ac42u |\
 	asus,rt-ac58u)
-		CI_UBIPART="UBI_DEV"
 		local ubidev=$(nand_find_ubi $CI_UBIPART)
 		local asus_root=$(nand_find_volume $ubidev jffs2)
 
@@ -96,6 +96,12 @@ platform_do_upgrade() {
 	qxwlan,e2600ac-c2)
 		nand_do_upgrade "$1"
 		;;
+	glinet,gl-b2200)
+		CI_KERNPART="0:HLOS"
+		CI_ROOTPART="rootfs"
+		CI_DATAPART="rootfs_data"
+		emmc_do_upgrade "$1"
+		;;
 	alfa-network,ap120c-ac)
 		part="$(awk -F 'ubi.mtd=' '{printf $2}' /proc/cmdline | sed -e 's/ .*$//')"
 		if [ "$part" = "rootfs1" ]; then
@@ -111,8 +117,8 @@ platform_do_upgrade() {
 		CI_KERNPART="linux"
 		nand_do_upgrade "$1"
 		;;
+	asus,rt-ac42u |\
 	asus,rt-ac58u)
-		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
 		nand_do_upgrade "$1"
 		;;
@@ -135,6 +141,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	mikrotik,hap-ac2|\
+	mikrotik,lhgg-60ad|\
 	mikrotik,sxtsq-5-ac)
 		[ "$(rootfs_type)" = "tmpfs" ] && mtd erase firmware
 		default_do_upgrade "$1"
@@ -166,4 +173,13 @@ platform_do_upgrade() {
 		default_do_upgrade "$1"
 		;;
 	esac
+}
+
+platform_copy_config() {
+	case "$(board_name)" in
+	glinet,gl-b2200)
+		emmc_copy_config
+		;;
+	esac
+	return 0;
 }

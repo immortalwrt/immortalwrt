@@ -79,6 +79,32 @@ define Device/buffalo_wcr-1166ds
 endef
 TARGET_DEVICES += buffalo_wcr-1166ds
 
+define Device/comfast_cf-wr758ac
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := COMFAST
+  DEVICE_MODEL := CF-WR758AC
+  DEVICE_ALT0_VENDOR := Joowin
+  DEVICE_ALT0_MODEL := JW-WR758AC
+endef
+
+define Device/comfast_cf-wr758ac-v1
+  $(Device/comfast_cf-wr758ac)
+  DEVICE_PACKAGES := kmod-mt76x2
+  DEVICE_VARIANT := V1
+  DEVICE_ALT0_VARIANT := V1
+  SUPPORTED_DEVICES += joowin,jw-wr758ac-v1
+endef
+TARGET_DEVICES += comfast_cf-wr758ac-v1
+
+define Device/comfast_cf-wr758ac-v2
+  $(Device/comfast_cf-wr758ac)
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7663-firmware-ap
+  DEVICE_VARIANT := V2
+  DEVICE_ALT0_VARIANT := V2
+  SUPPORTED_DEVICES += joowin,jw-wr758ac-v2
+endef
+TARGET_DEVICES += comfast_cf-wr758ac-v2
+
 define Device/cudy_wr1000
   IMAGE_SIZE := 7872k
   IMAGES += factory.bin
@@ -429,6 +455,7 @@ define Device/tplink_archer-c20-v5
   TPLINK_HWREVADD := 0x5
   DEVICE_PACKAGES := kmod-mt76x0e
   IMAGES := sysupgrade.bin
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c20-v5
 
@@ -460,6 +487,7 @@ define Device/tplink_archer-c50-v4
   DEVICE_PACKAGES := kmod-mt76x2
   IMAGES := sysupgrade.bin
   SUPPORTED_DEVICES += tplink,c50-v4
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c50-v4
 

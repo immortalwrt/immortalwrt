@@ -29,6 +29,7 @@ ipq40xx_setup_interfaces()
 	engenius,eap1300|\
 	engenius,emd1|\
 	meraki,mr33|\
+	mikrotik,lhgg-60ad|\
 	mikrotik,sxtsq-5-ac|\
 	netgear,ex6100v2|\
 	netgear,ex6150v2|\
@@ -49,6 +50,7 @@ ipq40xx_setup_interfaces()
 	openmesh,a62)
 		ucidef_set_interfaces_lan_wan "eth1" "eth0"
 		;;
+	asus,rt-ac42u|\
 	asus,rt-ac58u|\
 	mikrotik,hap-ac2|\
 	mikrotik,hap-ac3|\
@@ -105,6 +107,11 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0u@eth0" "3:lan" "4:lan"
 		;;
+	glinet,gl-b2200)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0u@eth0" "1:lan" "2:lan" "3:lan" "5:lan" "0u@eth1" "4:wan"
+		;;
 	mobipromo,cm520-79f)
 		ucidef_add_switch "switch0" \
 			"0u@eth0" "3:lan:2" "4:lan:1"
@@ -147,7 +154,6 @@ ipq40xx_setup_macs()
 		label_mac=$(mtd_get_mac_binary "ART" 0x1006)
 		;;
 	asus,rt-ac58u)
-		CI_UBIPART=UBI_DEV
 		wan_mac=$(mtd_get_mac_binary_ubi Factory 0x1006)
 		lan_mac=$(mtd_get_mac_binary_ubi Factory 0x5006)
 		label_mac=$wan_mac
@@ -190,6 +196,7 @@ ipq40xx_setup_macs()
 		lan_mac=$(macaddr_add $wan_mac 1)
 		label_mac="$wan_mac"
 		;;
+	mikrotik,lhgg-60ad|\
 	mikrotik,sxtsq-5-ac)
 		lan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		label_mac="$lan_mac"

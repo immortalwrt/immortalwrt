@@ -57,6 +57,10 @@ define Build/append-rutx-metadata
 		}' | fwtool -I - $@
 endef
 
+define Build/copy-file
+	cat "$(1)" > "$@"
+endef
+
 define Build/mkmylofw_32m
 	$(eval device_id=$(word 1,$(1)))
 	$(eval revision=$(word 2,$(1)))
@@ -90,6 +94,16 @@ define Build/qsdk-ipq-factory-nand-askey
 		ubifs $@
 	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
 	@mv $@.new $@
+endef
+
+define Build/qsdk-ipq-app-gpt
+	cp $@ $@.tmp 2>/dev/null || true
+	ptgen -g -o $@.tmp -a 1 -l 1024 \
+			-t 0x2e -N 0:HLOS -r -p 32M \
+			-t 0x83 -N rootfs -r -p 128M \
+				-N rootfs_data -p 512M
+	cat $@.tmp >> $@
+	rm $@.tmp
 endef
 
 define Build/SenaoFW
@@ -186,14 +200,42 @@ define Device/asus_map-ac2200
 endef
 TARGET_DEVICES += asus_map-ac2200
 
+# WARNING: this is an initramfs image that gets you half of the way there
+#          you need to delete the jffs2 ubi volume and sysupgrade to the final image
+# to get a "trx" you can flash via web UI for ac42u/ac58u:
+# - change call Device/FitImageLzma to Device/FitImage
+# - add the following below UIMAGE_NAME
+#   UIMAGE_MAGIC := 0x27051956
+#   IMAGES += factory.trx
+#   IMAGE/factory.trx := copy-file $(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE) | uImage none
+define Device/asus_rt-ac42u
+	$(call Device/FitImageLzma)
+	DEVICE_VENDOR := ASUS
+	DEVICE_MODEL := RT-AC42U
+	DEVICE_ALT0_VENDOR := ASUS
+	DEVICE_ALT0_MODEL := RT-ACRH17
+	SOC := qcom-ipq4019
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	IMAGE_SIZE := 20439364
+	FILESYSTEMS := squashfs
+#	RT-AC82U is nowhere to be found online
+#	Rather, this device is a/k/a RT-AC42U
+#	But we'll go with what the vendor firmware has...
+	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC82U')
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct ipq-wifi-asus_rt-ac42u kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += asus_rt-ac42u
+
 define Device/asus_rt-ac58u
 	$(call Device/FitImageLzma)
 	DEVICE_VENDOR := ASUS
 	DEVICE_MODEL := RT-AC58U
+	DEVICE_ALT0_VENDOR := ASUS
+	DEVICE_ALT0_MODEL := RT-ACRH13
 	SOC := qcom-ipq4018
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DTB_SIZE := 65536
 	IMAGE_SIZE := 20439364
 	FILESYSTEMS := squashfs
 #	Someone - in their infinite wisdom - decided to put the firmware
@@ -483,13 +525,16 @@ define Device/ezviz_cs-w3-wd1200g-eup
 	DEVICE_VENDOR := EZVIZ
 	DEVICE_MODEL := CS-W3-WD1200G
 	DEVICE_VARIANT := EUP
-	DEVICE_DTS_CONFIG := config@4
 	IMAGE_SIZE := 14848k
+	KERNEL_SIZE = 6m
 	SOC := qcom-ipq4018
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
 		append-metadata
 	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers \
 		ipq-wifi-ezviz_cs-w3-wd1200g-eup
+	DEVICE_COMPAT_VERSION := 2.0
+	DEVICE_COMPAT_MESSAGE := uboot's bootcmd has to be updated (see wiki). \
+		Upgrade via sysupgrade mechanism is not possible.
 endef
 TARGET_DEVICES += ezviz_cs-w3-wd1200g-eup
 
@@ -519,6 +564,24 @@ define Device/glinet_gl-b1300
 	IMAGE/sysupgrade.bin := append-kernel |append-rootfs | pad-rootfs | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-b1300
+
+define Device/glinet_gl-b2200
+	$(call Device/FitzImage)
+	DEVICE_VENDOR := GL.iNet
+	DEVICE_MODEL := GL-B2200
+	SOC := qcom-ipq4019
+	DEVICE_DTS_CONFIG := config@ap.dk04.1-c3
+	KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+	IMAGES := emmc.img.gz sysupgrade.bin
+	IMAGE/emmc.img.gz := qsdk-ipq-app-gpt |\
+		pad-to 1024k | append-kernel |\
+		pad-to 33792k | append-rootfs |\
+		append-metadata | gzip
+	IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct ipq-wifi-glinet_gl-b2200 \
+		kmod-fs-ext4 kmod-mmc kmod-spi-dev mkf2fs e2fsprogs kmod-fs-f2fs
+endef
+TARGET_DEVICES += glinet_gl-b2200
 
 define Device/glinet_gl-s1300
 	$(call Device/FitzImage)
