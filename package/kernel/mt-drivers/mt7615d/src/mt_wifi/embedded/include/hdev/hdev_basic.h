@@ -61,11 +61,11 @@ enum {
 };
 
 typedef struct _WTBL_IDX_PARAMETER {
-	UCHAR	State;
-	UCHAR   LinkToOmacIdx;
-	UCHAR   LinkToWdevType;
-	UCHAR   WtblIdx;
-	UCHAR	type;
+	UCHAR State;
+	UCHAR LinkToOmacIdx;
+	UCHAR LinkToWdevType;
+	UCHAR WtblIdx;
+	UCHAR type;
 	DL_LIST list;
 } WTBL_IDX_PARAMETER, *PWTBL_IDX_PARAMETER;
 
@@ -90,11 +90,11 @@ typedef struct _WMM_CTRL {
 } MT_WMMCTRL_T, WMM_CTRL_T;
 
 typedef struct _HD_RESOURCE_CFG {
-	struct rtmp_phy_ctrl	PhyCtrl[DBDC_BAND_NUM];
-	struct _WMM_CTRL		WmmCtrl;
-	struct _OMAC_BSS_CTRL	OmacBssCtl;
+	struct rtmp_phy_ctrl PhyCtrl[DBDC_BAND_NUM];
+	struct _WMM_CTRL WmmCtrl;
+	struct _OMAC_BSS_CTRL OmacBssCtl;
 	/* struct _REPEATER_CFG	RepeaterCfg; */
-	struct _WTBL_CFG		WtblCfg;
+	struct _WTBL_CFG WtblCfg;
 	UCHAR concurrent_bands;
 } HD_RESOURCE_CFG;
 
@@ -104,7 +104,7 @@ struct radio_dev {
 	DL_LIST DevObjList;
 	UCHAR DevNum;
 	/*implicit point to hdev_ctrl for sharing resource*/
-	VOID     *priv;
+	VOID *priv;
 };
 
 enum {
@@ -135,7 +135,7 @@ struct hdev_ctrl {
 	struct _RTMP_CHIP_OP chip_ops;
 	struct _RTMP_ARCH_OP *arch_ops;
 	struct _RTMP_CHIP_DBG chip_dbg;
-	HD_RESOURCE_CFG	HwResourceCfg;
+	HD_RESOURCE_CFG HwResourceCfg;
 	struct hdev_obj HObjList[WDEV_NUM_MAX];
 	VOID *mcu_ctrl;
 	VOID *hif;
@@ -157,7 +157,8 @@ VOID HdevObjAdd(struct radio_dev *rdev, struct hdev_obj *obj);
 VOID HdevObjDel(struct radio_dev *rdev, struct hdev_obj *obj);
 BOOLEAN hdev_obj_state_ready(struct hdev_obj *obj);
 
-INT32 HdevInit(struct hdev_ctrl *hdev_ctrl, UCHAR HdevIdx, RADIO_CTRL *pRadioCtrl);
+INT32 HdevInit(struct hdev_ctrl *hdev_ctrl, UCHAR HdevIdx,
+	       RADIO_CTRL *pRadioCtrl);
 INT32 HdevExit(struct hdev_ctrl *hdev_ctrl, UCHAR HdevIdx);
 VOID HdevCfgShow(struct hdev_ctrl *hdev_ctrl);
 VOID HdevObjShow(struct hdev_obj *obj);

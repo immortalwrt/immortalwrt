@@ -32,7 +32,7 @@
 struct _RTMP_ADAPTER;
 
 typedef struct {
-	USHORT Dummy;/* empty struct will cause build error in testmode win */
+	USHORT Dummy; /* empty struct will cause build error in testmode win */
 } HIF_INFO_T;
 
 /*HW related init*/

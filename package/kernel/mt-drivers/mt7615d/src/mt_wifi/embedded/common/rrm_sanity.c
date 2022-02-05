@@ -25,7 +25,6 @@
 
 #include "rt_config.h"
 
-
 /*
 	==========================================================================
 	Description:
@@ -35,13 +34,9 @@
 	Return	: None.
 	==========================================================================
  */
-BOOLEAN RRM_PeerNeighborReqSanity(
-	IN PRTMP_ADAPTER pAd,
-	IN VOID * pMsg,
-	IN ULONG MsgLen,
-	OUT PUINT8 pDialogToken,
-	OUT PCHAR * pSsid,
-	OUT PUINT8 pSsidLen)
+BOOLEAN RRM_PeerNeighborReqSanity(IN PRTMP_ADAPTER pAd, IN VOID *pMsg,
+				  IN ULONG MsgLen, OUT PUINT8 pDialogToken,
+				  OUT PCHAR *pSsid, OUT PUINT8 pSsidLen)
 {
 	PFRAME_802_11 Fr = (PFRAME_802_11)pMsg;
 	PUCHAR pFramePtr;
@@ -73,7 +68,8 @@ BOOLEAN RRM_PeerNeighborReqSanity(
 	MsgLen -= 1;
 	eid_ptr = (PEID_STRUCT)pFramePtr;
 
-	while (((UCHAR *)eid_ptr + eid_ptr->Len + 1) < ((PUCHAR)pFramePtr + MsgLen)) {
+	while (((UCHAR *)eid_ptr + eid_ptr->Len + 1) <
+	       ((PUCHAR)pFramePtr + MsgLen)) {
 		switch (eid_ptr->Eid) {
 		case RRM_NEIGHBOR_REQ_SSID_SUB_ID:
 			*pSsid = (PCHAR)eid_ptr->Octet;
@@ -81,23 +77,32 @@ BOOLEAN RRM_PeerNeighborReqSanity(
 			break;
 		case RRM_NEIGHBOR_REQ_MEASUREMENT_REQUEST_SUB_ID:
 			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-						("%s - Got STA Measurement Request\n", __func__));
+				 ("%s - Got STA Measurement Request\n",
+				  __func__));
 			pRrmCfg->PeerMeasurementToken = eid_ptr->Octet[0];
 			PeerMeasurementType = eid_ptr->Octet[2];
 			switch (PeerMeasurementType) {
 			case RRM_MEASURE_SUBTYPE_LCI:
-					pRrmCfg->bPeerReqLCI = TRUE;
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-					("%s - STA Request LCI Measurement Report\n", __func__));
+				pRrmCfg->bPeerReqLCI = TRUE;
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("%s - STA Request LCI Measurement Report\n",
+					 __func__));
 				break;
 			case RRM_MEASURE_SUBTYPE_LOCATION_CIVIC:
-					pRrmCfg->bPeerReqCIVIC = TRUE;
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-					("%s - STA Request CIVIC Measurement Report\n", __func__));
+				pRrmCfg->bPeerReqCIVIC = TRUE;
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("%s - STA Request CIVIC Measurement Report\n",
+					 __func__));
 				break;
 			default:
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-					("unknown PeerMeasurementType: %d\n", PeerMeasurementType));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE,
+					 ("unknown PeerMeasurementType: %d\n",
+					  PeerMeasurementType));
 			}
 			break;
 
@@ -105,8 +110,8 @@ BOOLEAN RRM_PeerNeighborReqSanity(
 			break;
 
 		default:
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						("unknown Eid: %d\n", eid_ptr->Eid));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("unknown Eid: %d\n", eid_ptr->Eid));
 			break;
 		}
 
@@ -116,14 +121,10 @@ BOOLEAN RRM_PeerNeighborReqSanity(
 	return result;
 }
 
-
-BOOLEAN RRM_PeerMeasureReportSanity(
-	IN PRTMP_ADAPTER pAd,
-	IN VOID * pMsg,
-	IN ULONG MsgLen,
-	OUT PUINT8 pDialogToken,
-	OUT PMEASURE_REPORT_INFO pMeasureReportInfo,
-	OUT PVOID * pMeasureRep)
+BOOLEAN RRM_PeerMeasureReportSanity(IN PRTMP_ADAPTER pAd, IN VOID *pMsg,
+				    IN ULONG MsgLen, OUT PUINT8 pDialogToken,
+				    OUT PMEASURE_REPORT_INFO pMeasureReportInfo,
+				    OUT PVOID *pMeasureRep)
 {
 	PFRAME_802_11 Fr = (PFRAME_802_11)pMsg;
 	PUCHAR pFramePtr = Fr->Octet;
@@ -143,12 +144,16 @@ BOOLEAN RRM_PeerMeasureReportSanity(
 	MsgLen -= 1;
 	eid_ptr = (PEID_STRUCT)pFramePtr;
 
-	while (((UCHAR *)eid_ptr + eid_ptr->Len + 1) < ((PUCHAR)pFramePtr + MsgLen)) {
+	while (((UCHAR *)eid_ptr + eid_ptr->Len + 1) <
+	       ((PUCHAR)pFramePtr + MsgLen)) {
 		switch (eid_ptr->Eid) {
 		case IE_MEASUREMENT_REPORT:
-			NdisMoveMemory(&pMeasureReportInfo->Token, eid_ptr->Octet, 1);
-			NdisMoveMemory(&pMeasureReportInfo->ReportMode, eid_ptr->Octet + 1, 1);
-			NdisMoveMemory(&pMeasureReportInfo->ReportType, eid_ptr->Octet + 2, 1);
+			NdisMoveMemory(&pMeasureReportInfo->Token,
+				       eid_ptr->Octet, 1);
+			NdisMoveMemory(&pMeasureReportInfo->ReportMode,
+				       eid_ptr->Octet + 1, 1);
+			NdisMoveMemory(&pMeasureReportInfo->ReportType,
+				       eid_ptr->Octet + 2, 1);
 			*pMeasureRep = (PVOID)(eid_ptr->Octet + 3);
 			result = TRUE;
 			break;
@@ -164,4 +169,3 @@ BOOLEAN RRM_PeerMeasureReportSanity(
 }
 
 #endif /* DOT11K_RRM_SUPPORT */
-

@@ -26,18 +26,16 @@
 #include <linux/netdevice.h>
 #include <netpro/apprehdr.h>
 
-
 #ifdef IKANOS_VX_1X0
 
-#define IKANOS_PERAP_ID		7 /* IKANOS Fix Peripheral ID */
-#define K0_TO_K1(x)			((unsigned)(x)|0xA0000000) /* kseg0 to kseg1 */
+#define IKANOS_PERAP_ID 7 /* IKANOS Fix Peripheral ID */
+#define K0_TO_K1(x) ((unsigned)(x) | 0xA0000000) /* kseg0 to kseg1 */
 /*#define IKANOS_DEBUG */
 
-
-extern INT rt28xx_send_packets(struct sk_buff *skb_p, struct net_device *net_dev);
+extern INT rt28xx_send_packets(struct sk_buff *skb_p,
+			       struct net_device *net_dev);
 static INT32 IKANOS_WlanDataFramesTx(void *_pAdBuf, struct net_device *pNetDev);
 static void IKANOS_WlanPktFromAp(apPreHeader_t *pFrame);
-
 
 /* --------------------------------- Public -------------------------------- */
 
@@ -70,7 +68,6 @@ void VR_IKANOS_FP_Init(UINT8 BssNum, UINT8 *pApMac)
 	}
 }
 
-
 /*
  * ========================================================================
  * Routine Description:
@@ -95,11 +92,11 @@ INT32 IKANOS_DataFramesTx(struct sk_buff *pSkb, struct net_device *pNetDev)
 	pSkb->apFlowData.txHandle = &(pAd->IkanosTxInfo);
 	ap2apFlowProcess(pSkb, pNetDev);
 #ifdef IKANOS_DEBUG
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("ikanos> tx no fp\n")); /* debug use */
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("ikanos> tx no fp\n")); /* debug use */
 #endif /* IKANOS_DEBUG */
 	return rt28xx_send_packets(pSkb, pNetDev);
 }
-
 
 /*
  * ========================================================================
@@ -121,7 +118,7 @@ INT32 IKANOS_DataFramesTx(struct sk_buff *pSkb, struct net_device *pNetDev)
  *	So we can not use multiple card function in Ikanos platform.
  * ========================================================================
  */
-PRTMP_ADAPTER	pIkanosAd;
+PRTMP_ADAPTER pIkanosAd;
 void IKANOS_DataFrameRx(RTMP_ADAPTER *pAd, struct sk_buff *pSkb)
 {
 	apPreHeader_t *apBuf;
@@ -139,8 +136,6 @@ void IKANOS_DataFrameRx(RTMP_ADAPTER *pAd, struct sk_buff *pSkb)
 	apClassify(IKANOS_PERAP_ID, apBuf, (void *)IKANOS_WlanPktFromAp);
 	dev_kfree_skb(pSkb);
 }
-
-
 
 /* --------------------------------- Private -------------------------------- */
 
@@ -165,7 +160,7 @@ static INT32 IKANOS_WlanDataFramesTx(void *_pAdBuf, struct net_device *pNetDev)
 
 	if (sk == NULL) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("ikanos> translateApbuf2Mbuf returned NULL!\n"));
+			 ("ikanos> translateApbuf2Mbuf returned NULL!\n"));
 		return 1;
 	}
 
@@ -176,7 +171,6 @@ static INT32 IKANOS_WlanDataFramesTx(void *_pAdBuf, struct net_device *pNetDev)
 	sk->priority = 0;
 	return rt28xx_send_packets(sk, pNetDev);
 }
-
 
 /*
  * ========================================================================
@@ -195,7 +189,8 @@ static INT32 GetSpecInfoIdxFromBssid(PRTMP_ADAPTER pAd, INT32 FromWhichBSSID)
 {
 	INT32 IfIdx = MAIN_MBSSID;
 #ifdef CONFIG_AP_SUPPORT
-		IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 #ifdef APCLI_SUPPORT
 
 		if (FromWhichBSSID >= MIN_NET_DEVICE_FOR_APCLI)
@@ -204,20 +199,19 @@ static INT32 GetSpecInfoIdxFromBssid(PRTMP_ADAPTER pAd, INT32 FromWhichBSSID)
 #endif /* APCLI_SUPPORT */
 #ifdef WDS_SUPPORT
 			if (FromWhichBSSID >= MIN_NET_DEVICE_FOR_WDS) {
-				INT WdsIndex = FromWhichBSSID - MIN_NET_DEVICE_FOR_WDS;
+			INT WdsIndex = FromWhichBSSID - MIN_NET_DEVICE_FOR_WDS;
 
-				IfIdx = MAX_MBSSID_NUM(pAd) + WdsIndex;
-			} else
+			IfIdx = MAX_MBSSID_NUM(pAd) + WdsIndex;
+		} else
 #endif /* WDS_SUPPORT */
-			{
-				IfIdx = FromWhichBSSID;
-			}
+		{
+			IfIdx = FromWhichBSSID;
+		}
 	}
 
 #endif /* CONFIG_AP_SUPPORT */
 	return IfIdx; /* return one of MBSS */
 }
-
 
 /*
  * ========================================================================
@@ -250,7 +244,8 @@ static void IKANOS_WlanPktFromAp(apPreHeader_t *pFrame)
 
 	if (dev == NULL) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("ikanos> %s: ERROR null device ***************\n", __func__));
+			 ("ikanos> %s: ERROR null device ***************\n",
+			  __func__));
 		return;
 	}
 
@@ -258,7 +253,8 @@ static void IKANOS_WlanPktFromAp(apPreHeader_t *pFrame)
 
 	if (skb == NULL) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("ikanos> %s: skb is null *********************\n", __func__))
+			 ("ikanos> %s: skb is null *********************\n",
+			  __func__))
 		return;
 	}
 
@@ -270,10 +266,10 @@ static void IKANOS_WlanPktFromAp(apPreHeader_t *pFrame)
 	skb->apFlowData.rxHandle = &(pAd->IkanosRxInfo[index]);
 	skb->protocol = eth_type_trans(skb, skb->dev);
 #ifdef IKANOS_DEBUG
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("ikanos> rx no fp!\n")); /* debug use */
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("ikanos> rx no fp!\n")); /* debug use */
 #endif /* IKANOS_DEBUG */
 	netif_rx(skb);
 }
 
 #endif /* IKANOS_VX_1X0 */
-

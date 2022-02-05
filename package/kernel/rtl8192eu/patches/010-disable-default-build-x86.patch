@@ -1,0 +1,11 @@
+--- a/Makefile
++++ b/Makefile
+@@ -124,7 +124,7 @@ CONFIG_MP_VHT_HW_TX_MODE = n
+ ###################### Platform Related #######################
+ CONFIG_PLATFORM_ARM_RPI = n
+ CONFIG_PLATFORM_ARM_AARCH64 = n
+-CONFIG_PLATFORM_I386_PC = y
++CONFIG_PLATFORM_I386_PC = n
+ CONFIG_PLATFORM_ANDROID_X86 = n
+ CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
+ CONFIG_PLATFORM_JB_X86 = n

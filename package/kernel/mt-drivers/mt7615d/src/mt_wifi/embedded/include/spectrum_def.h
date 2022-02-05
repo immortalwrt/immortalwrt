@@ -28,34 +28,33 @@
 #ifndef __SPECTRUM_DEF_H__
 #define __SPECTRUM_DEF_H__
 
-
-#define MAX_MEASURE_REQ_TAB_SIZE		32
+#define MAX_MEASURE_REQ_TAB_SIZE 32
 /* Size of hash tab must be power of 2. */
-#define MAX_HASH_MEASURE_REQ_TAB_SIZE	MAX_MEASURE_REQ_TAB_SIZE
+#define MAX_HASH_MEASURE_REQ_TAB_SIZE MAX_MEASURE_REQ_TAB_SIZE
 
-#define MAX_TPC_REQ_TAB_SIZE			32
+#define MAX_TPC_REQ_TAB_SIZE 32
 /* Size of hash tab must be power of 2. */
-#define MAX_HASH_TPC_REQ_TAB_SIZE		MAX_TPC_REQ_TAB_SIZE
+#define MAX_HASH_TPC_REQ_TAB_SIZE MAX_TPC_REQ_TAB_SIZE
 
-#define MIN_RCV_PWR				100		/* Negative value ((dBm) */
+#define MIN_RCV_PWR 100 /* Negative value ((dBm) */
 
-#define TPC_REQ_AGE_OUT			500		/* ms */
-#define MQ_REQ_AGE_OUT			500		/* ms */
+#define TPC_REQ_AGE_OUT 500 /* ms */
+#define MQ_REQ_AGE_OUT 500 /* ms */
 
-#define TPC_DIALOGTOKEN_HASH_INDEX(_DialogToken)	((_DialogToken) & (MAX_HASH_TPC_REQ_TAB_SIZE - 1))
-#define MQ_DIALOGTOKEN_HASH_INDEX(_DialogToken)		((_DialogToken) & (MAX_MEASURE_REQ_TAB_SIZE - 1))
+#define TPC_DIALOGTOKEN_HASH_INDEX(_DialogToken)                               \
+	((_DialogToken) & (MAX_HASH_TPC_REQ_TAB_SIZE - 1))
+#define MQ_DIALOGTOKEN_HASH_INDEX(_DialogToken)                                \
+	((_DialogToken) & (MAX_MEASURE_REQ_TAB_SIZE - 1))
 
-typedef enum {
-	REG_LOCAL,
-	REG_GLOBAL
-} REG_DOMAIN;
+typedef enum { REG_LOCAL, REG_GLOBAL } REG_DOMAIN;
 
 typedef struct _MEASURE_REQ_ENTRY {
 	struct _MEASURE_REQ_ENTRY *pNext;
 	ULONG lastTime;
-	BOOLEAN	Valid;
+	BOOLEAN Valid;
 	UINT8 DialogToken;
-	UINT8 MeasureDialogToken[3];	/* 0:basic measure, 1: CCA measure, 2: RPI_Histogram measure. */
+	UINT8 MeasureDialogToken
+		[3]; /* 0:basic measure, 1: CCA measure, 2: RPI_Histogram measure. */
 #ifdef CONFIG_11KV_API_SUPPORT
 	BOOLEAN skip_time_check;
 	UINT8 CurrentState;
@@ -86,7 +85,6 @@ typedef struct _TPC_REQ_TAB {
 	TPC_REQ_ENTRY Content[MAX_TPC_REQ_TAB_SIZE];
 } TPC_REQ_TAB, *PTPC_REQ_TAB;
 
-
 /* The regulatory information */
 typedef struct _DOT11_CHANNEL_SET {
 	UCHAR NumberOfChannels;
@@ -94,23 +92,19 @@ typedef struct _DOT11_CHANNEL_SET {
 	UCHAR ChannelList[16];
 } DOT11_CHANNEL_SET;
 
-
 typedef struct _DOT11_REGULATORY_INFO {
 	UCHAR RegulatoryClass;
 	DOT11_CHANNEL_SET ChannelSet;
 } DOT11_REGULATORY_INFO;
 
+#define RM_TPC_REQ 0
+#define RM_MEASURE_REQ 1
 
-
-#define RM_TPC_REQ				0
-#define RM_MEASURE_REQ			1
-
-#define RM_BASIC				0
-#define RM_CCA					1
-#define RM_RPI_HISTOGRAM		2
-#define RM_CH_LOAD				3
-#define RM_NOISE_HISTOGRAM		4
-
+#define RM_BASIC 0
+#define RM_CCA 1
+#define RM_RPI_HISTOGRAM 2
+#define RM_CH_LOAD 3
+#define RM_NOISE_HISTOGRAM 4
 
 typedef struct GNU_PACKED _TPC_REPORT_INFO {
 	INT8 TxPwr;
@@ -135,22 +129,21 @@ typedef struct GNU_PACKED _EXT_CH_SW_ANN_INFO {
 typedef union GNU_PACKED _MEASURE_REQ_MODE {
 #ifdef RT_BIG_ENDIAN
 	struct GNU_PACKED {
-
-		UINT8 Reserved:3;
-		UINT8 DurationMandatory:1;
-		UINT8 Report:1;
-		UINT8 Request:1;
-		UINT8 Enable:1;
-		UINT8 Parallel:1;
+		UINT8 Reserved : 3;
+		UINT8 DurationMandatory : 1;
+		UINT8 Report : 1;
+		UINT8 Request : 1;
+		UINT8 Enable : 1;
+		UINT8 Parallel : 1;
 	} field;
 #else
 	struct GNU_PACKED {
-		UINT8 Parallel:1;
-		UINT8 Enable:1;
-		UINT8 Request:1;
-		UINT8 Report:1;
-		UINT8 DurationMandatory:1;
-		UINT8 Reserved:3;
+		UINT8 Parallel : 1;
+		UINT8 Enable : 1;
+		UINT8 Request : 1;
+		UINT8 Report : 1;
+		UINT8 DurationMandatory : 1;
+		UINT8 Reserved : 3;
 	} field;
 #endif /* RT_BIG_ENDIAN */
 	UINT8 word;
@@ -172,23 +165,23 @@ typedef struct GNU_PACKED _MEASURE_REQ_INFO {
 typedef union GNU_PACKED _MEASURE_BASIC_REPORT_MAP {
 #ifdef RT_BIG_ENDIAN
 	struct GNU_PACKED {
-		UINT8 Rev:3;
+		UINT8 Rev : 3;
 
-		UINT8 Unmeasure:1;
-		UINT8 Radar:1;
-		UINT8 UnidentifiedSignal:1;
-		UINT8 OfdmPreamble:1;
-		UINT8 BSS:1;
+		UINT8 Unmeasure : 1;
+		UINT8 Radar : 1;
+		UINT8 UnidentifiedSignal : 1;
+		UINT8 OfdmPreamble : 1;
+		UINT8 BSS : 1;
 	} field;
 #else
 	struct GNU_PACKED {
-		UINT8 BSS:1;
+		UINT8 BSS : 1;
 
-		UINT8 OfdmPreamble:1;
-		UINT8 UnidentifiedSignal:1;
-		UINT8 Radar:1;
-		UINT8 Unmeasure:1;
-		UINT8 Rev:3;
+		UINT8 OfdmPreamble : 1;
+		UINT8 UnidentifiedSignal : 1;
+		UINT8 Radar : 1;
+		UINT8 Unmeasure : 1;
+		UINT8 Rev : 3;
 	} field;
 #endif /* RT_BIG_ENDIAN */
 	UINT8 word;
@@ -218,15 +211,15 @@ typedef struct GNU_PACKED _MEASURE_RPI_REPORT {
 typedef union GNU_PACKED _MEASURE_REPORT_MODE {
 	struct GNU_PACKED {
 #ifdef RT_BIG_ENDIAN
-		UINT8 Rev:5;
-		UINT8 Refused:1;
-		UINT8 Incapable:1;
-		UINT8 Late:1;
+		UINT8 Rev : 5;
+		UINT8 Refused : 1;
+		UINT8 Incapable : 1;
+		UINT8 Late : 1;
 #else
-		UINT8 Late:1;
-		UINT8 Incapable:1;
-		UINT8 Refused:1;
-		UINT8 Rev:5;
+		UINT8 Late : 1;
+		UINT8 Incapable : 1;
+		UINT8 Refused : 1;
+		UINT8 Rev : 5;
 #endif /* RT_BIG_ENDIAN */
 	} field;
 	UINT8 word;
@@ -247,4 +240,3 @@ typedef struct GNU_PACKED _QUIET_INFO {
 } QUIET_INFO, *PQUIET_INFO;
 
 #endif /* __SPECTRUM_DEF_H__ */
-

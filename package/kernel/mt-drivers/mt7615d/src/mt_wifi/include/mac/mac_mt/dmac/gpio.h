@@ -36,55 +36,55 @@
 #define PINMUX_SEL3 (GPIO_BASE + 0X88)
 
 #define GPIO0_SEL_MASK (0x7)
-#define GPIO0_SEL(p) (((p) & 0x7))
+#define GPIO0_SEL(p) (((p)&0x7))
 #define GPIO0_SEL_VALUE 0x0
 #define GPIO1_SEL_MASK (0x7 << 4)
-#define GPIO1_SEL(p) (((p) & 0x7) << 4)
+#define GPIO1_SEL(p) (((p)&0x7) << 4)
 #define GPIO1_SEL_VALUE 0x2
 #define GPIO2_SEL_MASK (0x7 << 8)
-#define GPIO2_SEL(p) (((p) & 0x7) << 8)
+#define GPIO2_SEL(p) (((p)&0x7) << 8)
 #define GPIO2_SEL_VALUE 0x2
 #define GPIO3_SEL_MASK (0x7 << 12)
-#define GPIO3_SEL(p) (((p) & 0x7) << 12)
+#define GPIO3_SEL(p) (((p)&0x7) << 12)
 #define GPIO3_SEL_VALUE 0x2
 #define GPIO4_SEL_MASK (0x7 << 16)
-#define GPIO4_SEL(p) (((p) & 0x7) << 16)
+#define GPIO4_SEL(p) (((p)&0x7) << 16)
 #define GPIO4_SEL_VALUE 0x2
 #define GPIO5_SEL_MASK (0x7 << 20)
-#define GPIO5_SEL(p) (((p) & 0x7) << 20)
+#define GPIO5_SEL(p) (((p)&0x7) << 20)
 #define GPIO5_SEL_VALUE 0x2
 #define GPIO6_SEL_MASK (0x7 << 24)
-#define GPIO6_SEL(p) (((p) & 0x7) << 24)
+#define GPIO6_SEL(p) (((p)&0x7) << 24)
 #define GPIO6_SEL_VALUE 0x0
 #define GPIO7_SEL_MASK (0x7 << 28)
-#define GPIO7_SEL(p) (((p) & 0x7) << 28)
+#define GPIO7_SEL(p) (((p)&0x7) << 28)
 #define GPIO7_SEL_VALUE 0x0
 #define GPIO8_SEL_MASK (0x7)
-#define GPIO8_SEL(p) (((p) & 0x7))
+#define GPIO8_SEL(p) (((p)&0x7))
 #define GPIO8_SEL_VALUE 0x0
 #define GPIO9_SEL_MASK (0x7 << 4)
-#define GPIO9_SEL(p) (((p) & 0x7) << 4)
+#define GPIO9_SEL(p) (((p)&0x7) << 4)
 #define GPIO9_SEL_VALUE 0x0
 #define GPIO10_SEL_MASK (0x7 << 8)
-#define GPIO10_SEL(p) (((p) & 0x7) << 8)
+#define GPIO10_SEL(p) (((p)&0x7) << 8)
 #define GPIO10_SEL_VALUE 0x0
 #define GPIO11_SEL_MASK (0x7 << 12)
-#define GPIO11_SEL(p) (((p) & 0x7) << 12)
+#define GPIO11_SEL(p) (((p)&0x7) << 12)
 #define GPIO11_SEL_VALUE 0x2
 #define GPIO12_SEL_MASK (0x7 << 16)
-#define GPIO12_SEL(p) (((p) & 0x7) << 16)
+#define GPIO12_SEL(p) (((p)&0x7) << 16)
 #define GPIO12_SEL_VALUE 0x2
 #define GPIO13_SEL_MASK (0x7 << 20)
-#define GPIO13_SEL(p) (((p) & 0x7) << 20)
+#define GPIO13_SEL(p) (((p)&0x7) << 20)
 #define GPIO13_SEL_VALUE 0x2
 #define GPIO14_SEL_MASK (0x7 << 24)
-#define GPIO14_SEL(p) (((p) & 0x7) << 24)
+#define GPIO14_SEL(p) (((p)&0x7) << 24)
 #define GPIO14_SEL_VALUE 0x2
 #define GPIO15_SEL_MASK (0x7 << 28)
-#define GPIO15_SEL(p) (((p) & 0x7) << 28)
+#define GPIO15_SEL(p) (((p)&0x7) << 28)
 #define GPIO15_SEL_VALUE 0x2
 #define GPIO16_SEL_MASK (0x7)
-#define GPIO16_SEL(p) (((p) & 0x7))
+#define GPIO16_SEL(p) (((p)&0x7))
 #define GPIO16_SEL_VALUE 0x2
 
 #define OUTPUT_HIGH 1

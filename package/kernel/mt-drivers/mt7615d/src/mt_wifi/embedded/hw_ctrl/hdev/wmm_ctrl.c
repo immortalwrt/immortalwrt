@@ -22,9 +22,8 @@
 
 /*WMM control*/
 
-
 /*Local functions*/
-static  BOOLEAN wcCompareEdca(EDCA_PARM *pEdcaParm, EDCA_PARM *pEdca)
+static BOOLEAN wcCompareEdca(EDCA_PARM *pEdcaParm, EDCA_PARM *pEdca)
 {
 	if ((!pEdcaParm->bValid) || (!pEdca->bValid))
 		return FALSE;
@@ -35,7 +34,7 @@ static  BOOLEAN wcCompareEdca(EDCA_PARM *pEdcaParm, EDCA_PARM *pEdca)
 	if (os_cmp_mem(pEdca->Aifsn, pEdcaParm->Aifsn, 4))
 		return FALSE;
 
-	if (os_cmp_mem(pEdca->Txop, pEdcaParm->Txop, sizeof(USHORT)*4))
+	if (os_cmp_mem(pEdca->Txop, pEdcaParm->Txop, sizeof(USHORT) * 4))
 		return FALSE;
 
 	if (os_cmp_mem(pEdca->Cwmax, pEdcaParm->Cwmax, 4))
@@ -47,10 +46,7 @@ static  BOOLEAN wcCompareEdca(EDCA_PARM *pEdcaParm, EDCA_PARM *pEdca)
 	return TRUE;
 }
 
-
-
 /*Export Functions*/
-
 
 /*
   *
@@ -62,7 +58,6 @@ UINT32 WcGetWmmNum(struct hdev_ctrl *ctrl)
 	return cap->WmmHwNum;
 }
 
-
 /*
  *
 */
@@ -70,7 +65,6 @@ EDCA_PARM *WcGetWmmByIdx(struct hdev_ctrl *ctrl, UINT32 Idx)
 {
 	return &ctrl->HwResourceCfg.WmmCtrl.pWmmSet[Idx];
 }
-
 
 /*
  *
@@ -85,23 +79,27 @@ VOID WcReleaseEdca(struct hdev_obj *obj)
 	RTMP_ADAPTER *pAd;
 
 	if (!obj || !obj->bWmmAcquired) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): Can't find HdevObj or Edca not required\n", __func__));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(): Can't find HdevObj or Edca not required\n",
+			  __func__));
 		return;
 	}
 
 	rdev = obj->rdev;
 	ctrl = rdev->priv;
-	pAd = (RTMP_ADAPTER *) ctrl->priv;
+	pAd = (RTMP_ADAPTER *)ctrl->priv;
 	pEdca = WcGetWmmByIdx(ctrl, obj->WmmIdx);
 
 	if (!pEdca || !pEdca->bValid) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): Can't find Edca for rdev: %d, Obj: %d\n",
-				 __func__, rdev->Idx, obj->Idx));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(): Can't find Edca for rdev: %d, Obj: %d\n",
+			  __func__, rdev->Idx, obj->Idx));
 		return;
 	}
 
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		("%s(): ObjIdx=%d,WmmIdx=%d\n", __func__, obj->Idx, obj->WmmIdx));
+		 ("%s(): ObjIdx=%d,WmmIdx=%d\n", __func__, obj->Idx,
+		  obj->WmmIdx));
 	WmmIdx = pEdca->WmmSet;
 	pEdca->RefCnt--;
 
@@ -115,14 +113,14 @@ VOID WcReleaseEdca(struct hdev_obj *obj)
 
 	obj->WmmIdx = 0;
 	obj->bWmmAcquired = FALSE;
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("Release a WMM for ObjIdx: %d\n", obj->Idx));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("Release a WMM for ObjIdx: %d\n", obj->Idx));
 }
-
 
 /*
  *
 */
-VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
+VOID WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 {
 	struct radio_dev *rdev;
 	struct hdev_ctrl *ctrl;
@@ -132,7 +130,8 @@ VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 	/* TODO: Star, should remove it. */
 
 	if (!obj) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): Can't find HdevObj\n", __func__));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(): Can't find HdevObj\n", __func__));
 		return;
 	}
 
@@ -142,7 +141,8 @@ VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 	os_zero_mem(&ReleaseEdca, sizeof(EDCA_PARM));
 
 	/*if input edca is all zero, assign default APEdca parameter*/
-	if (!os_cmp_mem(&ReleaseEdca, pEdcaParm, sizeof(EDCA_PARM)) || pEdcaParm->bValid != TRUE)
+	if (!os_cmp_mem(&ReleaseEdca, pEdcaParm, sizeof(EDCA_PARM)) ||
+	    pEdcaParm->bValid != TRUE)
 		set_default_sta_edca_param(pEdcaParm);
 
 	pEdcaParm->BandIdx = RcGetBandIdx(rdev);
@@ -167,8 +167,10 @@ VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 			pEdca->RefCnt++;
 			obj->WmmIdx = i;
 			obj->bWmmAcquired = TRUE;
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				("WMM already created, assign  WmmIdx:%d to  ObjIdx: %d\n", i, obj->Idx));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				("WMM already created, assign  WmmIdx:%d to  ObjIdx: %d\n",
+				 i, obj->Idx));
 			return;
 		}
 	}
@@ -183,13 +185,16 @@ VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 			os_move_mem(pEdca->Aifsn, pEdcaParm->Aifsn, 4);
 			os_move_mem(pEdca->Cwmax, pEdcaParm->Cwmax, 4);
 			os_move_mem(pEdca->Cwmin, pEdcaParm->Cwmin, 4);
-			os_move_mem(pEdca->Txop, pEdcaParm->Txop, sizeof(USHORT)*4);
+			os_move_mem(pEdca->Txop, pEdcaParm->Txop,
+				    sizeof(USHORT) * 4);
+			os_move_mem(pEdca->bACM, pEdcaParm->bACM, 4);
 			pEdca->RefCnt = 1;
 			pEdca->bValid = TRUE;
 			pEdca->BandIdx = RcGetBandIdx(rdev);
 			pEdcaParm->WmmSet = i;
 			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				("Create a new WmmIdx:%d to ObjIdx: %d\n", i, obj->Idx));
+				 ("Create a new WmmIdx:%d to ObjIdx: %d\n", i,
+				  obj->Idx));
 			return;
 		}
 	}
@@ -203,16 +208,19 @@ VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 			obj->bWmmAcquired = TRUE;
 			pEdca->RefCnt++;
 			pEdcaParm->WmmSet = i;
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				("assign a old WmmIdx:%d to ObjIdx: %d, but not apply new parameter\n", i, obj->Idx));
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				("assign a old WmmIdx:%d to ObjIdx: %d, but not apply new parameter\n",
+				 i, obj->Idx));
 			return;
 		}
 	}
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-		("Allocate WmmSet to ObjIdx:%d  fail since Wmm is full and no WmmSet can match band\n", obj->Idx));
+	MTWF_LOG(
+		DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("Allocate WmmSet to ObjIdx:%d  fail since Wmm is full and no WmmSet can match band\n",
+		 obj->Idx));
 }
-
 
 /*
 *
@@ -220,13 +228,13 @@ VOID  WcAcquiredEdca(struct hdev_obj *obj, EDCA_PARM *pEdcaParm)
 VOID WcSetEdca(struct hdev_obj *obj)
 {
 	struct radio_dev *rdev;
-	struct hdev_ctrl	*ctrl;
+	struct hdev_ctrl *ctrl;
 	EDCA_PARM *pEdca;
 	RTMP_ADAPTER *pAd;
 
 	rdev = obj->rdev;
 	ctrl = (struct hdev_ctrl *)rdev->priv;
-	pAd = (RTMP_ADAPTER *) ctrl->priv;
+	pAd = (RTMP_ADAPTER *)ctrl->priv;
 
 	if (obj->bWmmAcquired) {
 		pEdca = WcGetWmmByIdx(ctrl, obj->WmmIdx);
@@ -237,7 +245,6 @@ VOID WcSetEdca(struct hdev_obj *obj)
 	}
 }
 
-
 /*
  *
 */
@@ -247,12 +254,12 @@ INT32 WcInit(struct hdev_ctrl *ctrl, WMM_CTRL_T *pWmmCtrl)
 	EDCA_PARM *pEdcaArray = NULL;
 	INT32 i = 0;
 
-	os_alloc_mem(NULL, (UCHAR **)&pEdcaArray, sizeof(EDCA_PARM)*NumOfWmm);
+	os_alloc_mem(NULL, (UCHAR **)&pEdcaArray, sizeof(EDCA_PARM) * NumOfWmm);
 
 	if (pEdcaArray == NULL)
 		return -1;
 
-	os_zero_mem(pEdcaArray, sizeof(EDCA_PARM)*NumOfWmm);
+	os_zero_mem(pEdcaArray, sizeof(EDCA_PARM) * NumOfWmm);
 	pWmmCtrl->pWmmSet = pEdcaArray;
 
 	for (i = 0; i < NumOfWmm; i++) {
@@ -263,7 +270,6 @@ INT32 WcInit(struct hdev_ctrl *ctrl, WMM_CTRL_T *pWmmCtrl)
 
 	return 0;
 }
-
 
 /*
  *
@@ -278,8 +284,6 @@ INT32 WcExit(WMM_CTRL_T *pWmmCtrl)
 	return 0;
 }
 
-
-
 /*
  *
 */
@@ -293,16 +297,26 @@ VOID WcShowEdca(struct hdev_ctrl *ctrl)
 		pEdca = WcGetWmmByIdx(ctrl, i);
 
 		if (pEdca->bValid) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tEdcaIdx: %d,BandIdx: %d, RfCnt: %d\n", pEdca->WmmSet, pEdca->BandIdx, pEdca->RefCnt));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tAifs: %d/%d/%d/%d\n",
-					 pEdca->Aifsn[0], pEdca->Aifsn[1], pEdca->Aifsn[2], pEdca->Aifsn[3]));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tTxop: %d/%d/%d/%d\n",
-					 pEdca->Txop[0], pEdca->Txop[1], pEdca->Txop[2], pEdca->Txop[3]));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tCwmin: %d/%d/%d/%d\n",
-					 pEdca->Cwmin[0], pEdca->Cwmin[1], pEdca->Cwmin[2], pEdca->Cwmin[3]));
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tCwmax: %d/%d/%d/%d\n",
-					 pEdca->Cwmax[0], pEdca->Cwmax[1], pEdca->Cwmax[2], pEdca->Cwmax[3]));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tEdcaIdx: %d,BandIdx: %d, RfCnt: %d\n",
+				  pEdca->WmmSet, pEdca->BandIdx,
+				  pEdca->RefCnt));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tAifs: %d/%d/%d/%d\n", pEdca->Aifsn[0],
+				  pEdca->Aifsn[1], pEdca->Aifsn[2],
+				  pEdca->Aifsn[3]));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tTxop: %d/%d/%d/%d\n", pEdca->Txop[0],
+				  pEdca->Txop[1], pEdca->Txop[2],
+				  pEdca->Txop[3]));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tCwmin: %d/%d/%d/%d\n", pEdca->Cwmin[0],
+				  pEdca->Cwmin[1], pEdca->Cwmin[2],
+				  pEdca->Cwmin[3]));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tCwmax: %d/%d/%d/%d\n", pEdca->Cwmax[0],
+				  pEdca->Cwmax[1], pEdca->Cwmax[2],
+				  pEdca->Cwmax[3]));
 		}
 	}
 }
-

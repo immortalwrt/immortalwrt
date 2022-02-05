@@ -23,14 +23,15 @@
 #ifndef __BGND_SCAN_H__
 #define __BGND_SCAN_H__
 
-#define GET_BGND_STATE(_pAd, _state) \
+#define GET_BGND_STATE(_pAd, _state)                                           \
 	((_pAd->BgndScanCtrl.BgndScanStatMachine.CurrState == _state))
 
 VOID BackgroundScanCancelAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 VOID BackgroundScanStartAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 VOID BackgroundScanTimeoutAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 VOID BackgroundSwitchChannelAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
-VOID BackgroundChannelSwitchAnnouncementAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
+VOID BackgroundChannelSwitchAnnouncementAction(RTMP_ADAPTER *pAd,
+					       MLME_QUEUE_ELEM *Elem);
 VOID BackgroundScanPartialAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 VOID BackgroundScanWaitAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 VOID BackgroundScanNextChannel(IN PRTMP_ADAPTER pAd, IN UINT8 ScanType);
@@ -38,31 +39,23 @@ VOID BackgroundScanInit(IN PRTMP_ADAPTER pAd);
 VOID BackgroundScanDeInit(IN PRTMP_ADAPTER pAd);
 VOID BackgroundScanStart(IN PRTMP_ADAPTER pAd, IN UINT8 BgndscanType);
 
-void BackgroundScanTimeout(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3);
-void DfsZeroWaitTimeout(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3);
-VOID BackgroundScanTest(IN PRTMP_ADAPTER pAd,	IN MT_BGND_SCAN_CFG BgndScanCfg);
+void BackgroundScanTimeout(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
+			   IN PVOID SystemSpecific2, IN PVOID SystemSpecific3);
+void DfsZeroWaitTimeout(IN PVOID SystemSpecific1, IN PVOID FunctionContext,
+			IN PVOID SystemSpecific2, IN PVOID SystemSpecific3);
+VOID BackgroundScanTest(IN PRTMP_ADAPTER pAd, IN MT_BGND_SCAN_CFG BgndScanCfg);
 VOID ChannelQualityDetection(IN PRTMP_ADAPTER pAd);
 
 VOID DfsZeroWaitStartAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
 VOID DfsZeroWaitStopAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem);
-VOID DfsZeroWaitStart(IN PRTMP_ADAPTER pAd, IN BOOLEAN DfsZeroWaitEnable, struct wifi_dev *wdev);
+VOID DfsZeroWaitStart(IN PRTMP_ADAPTER pAd, IN BOOLEAN DfsZeroWaitEnable,
+		      struct wifi_dev *wdev);
 #ifdef MT_DFS_SUPPORT
-VOID DedicatedZeroWaitStartAction(
-		IN RTMP_ADAPTER *pAd,
-		IN MLME_QUEUE_ELEM *Elem);
-VOID DedicatedZeroWaitRunningAction(
-		IN RTMP_ADAPTER *pAd,
-		IN MLME_QUEUE_ELEM *Elem);
-VOID DedicatedZeroWaitStop(
-		IN RTMP_ADAPTER *pAd, BOOLEAN bApplyCurrentCh);
+VOID DedicatedZeroWaitStartAction(IN RTMP_ADAPTER *pAd,
+				  IN MLME_QUEUE_ELEM *Elem);
+VOID DedicatedZeroWaitRunningAction(IN RTMP_ADAPTER *pAd,
+				    IN MLME_QUEUE_ELEM *Elem);
+VOID DedicatedZeroWaitStop(IN RTMP_ADAPTER *pAd, BOOLEAN bApplyCurrentCh);
 #endif
 VOID BfSwitch(IN PRTMP_ADAPTER pAd, IN UCHAR enabled);
 VOID MuSwitch(IN PRTMP_ADAPTER pAd, IN UCHAR enabled);

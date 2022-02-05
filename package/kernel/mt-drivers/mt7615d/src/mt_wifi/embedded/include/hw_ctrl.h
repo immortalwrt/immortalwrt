@@ -42,126 +42,127 @@ struct _MAC_TABLE_ENTRY;
 struct WIFI_SYS_CTRL;
 struct _STA_ADMIN_CONFIG;
 
-
-typedef NTSTATUS(*HwCmdCb)(struct _RTMP_ADAPTER *pAd, VOID * Args);
-
+typedef NTSTATUS (*HwCmdCb)(struct _RTMP_ADAPTER *pAd, VOID *Args);
 
 #define HWCTRL_CMD_TIMEOUT 100
 #define HWCTRL_CMD_WAITTIME 2000
 #define ETSI_RXBLOCKER4R 4
 #define ETSI_RXBLOCKER1R 1
 
-
+#define MAX_LEN_OF_HWCTRL_QUEUE (MAX_LEN_OF_MAC_TABLE << 1)
 
 /*for command classify*/
 enum {
 	HWCMD_TYPE_FIRST = 0,
-	HWCMD_TYPE_RADIO = HWCMD_TYPE_FIRST, /*Need Radio Resource Mgmt Related*/
-	HWCMD_TYPE_SECURITY,					 /*Security related*/
-	HWCMD_TYPE_PERIPHERAL,				/*Peripheral related*/
-	HWCMD_TYPE_HT_CAP,						/*HT related*/
-	HWCMD_TYPE_PS,							/*Power Saving related*/
+	HWCMD_TYPE_RADIO =
+		HWCMD_TYPE_FIRST, /*Need Radio Resource Mgmt Related*/
+	HWCMD_TYPE_SECURITY, /*Security related*/
+	HWCMD_TYPE_PERIPHERAL, /*Peripheral related*/
+	HWCMD_TYPE_HT_CAP, /*HT related*/
+	HWCMD_TYPE_PS, /*Power Saving related*/
 	HWCMD_TYPE_WIFISYS,
 	HWCMD_TYPE_WMM,
 	HWCMD_TYPE_PROTECT,
 	HWCMD_TYPE_END
 };
 
-
 /*for command ID*/
 enum {
 	HWCMD_ID_FIRST = 0,
 	/*Peripheral*/
-	HWCMD_ID_GPIO_CHECK			= HWCMD_ID_FIRST,
+	HWCMD_ID_GPIO_CHECK = HWCMD_ID_FIRST,
 	/*USB related*/
-	HWCMD_ID_RESET_BULK_OUT			= 1,
-	HWCMD_ID_RESET_BULK_IN			= 2,
+	HWCMD_ID_RESET_BULK_OUT = 1,
+	HWCMD_ID_RESET_BULK_IN = 2,
 	/*WSC & LED related*/
-	HWCMD_ID_SET_LED_STATUS			= 3,
-	HWCMD_ID_LED_WPS_MODE10			= 4,
+	HWCMD_ID_SET_LED_STATUS = 3,
+	HWCMD_ID_LED_WPS_MODE10 = 4,
 	/*Security related*/
-	HWCMD_ID_DEL_ASIC_WCID			= 7,
+	HWCMD_ID_DEL_ASIC_WCID = 7,
 #ifdef HTC_DECRYPT_IOT
-	HWCMD_ID_SET_ASIC_AAD_OM		= 8,
+	HWCMD_ID_SET_ASIC_AAD_OM = 8,
 #endif /* HTC_DECRYPT_IOT */
-	HWCMD_ID_ADDREMOVE_ASIC_KEY		= 9,
+	HWCMD_ID_ADDREMOVE_ASIC_KEY = 9,
 	/*MT_MAC */
-	HWCMD_ID_SET_CLIENT_MAC_ENTRY	= 10,
-	HWCMD_ID_PS_CLEAR				= 11,
-	HWCMD_ID_PS_RETRIEVE_START		= 12,
-	HWCMD_ID_SET_TR_ENTRY			= 13,
-	HWCMD_ID_UPDATE_DAW_COUNTER		= 14,
-	HWCMD_ID_UPDATE_BEACON			= 15,
-	HWCMD_ID_GET_TEMPERATURE		= 16,
-	HWCMD_ID_SET_SLOTTIME			= 17,
-	HWCMD_ID_SET_TX_BURST			= 18,
+	HWCMD_ID_SET_CLIENT_MAC_ENTRY = 10,
+	HWCMD_ID_PS_CLEAR = 11,
+	HWCMD_ID_PS_RETRIEVE_START = 12,
+	HWCMD_ID_SET_TR_ENTRY = 13,
+	HWCMD_ID_UPDATE_DAW_COUNTER = 14,
+	HWCMD_ID_UPDATE_BEACON = 15,
+	HWCMD_ID_GET_TEMPERATURE = 16,
+	HWCMD_ID_SET_SLOTTIME = 17,
+	HWCMD_ID_SET_TX_BURST = 18,
 #ifdef TXBF_SUPPORT
-	HWCMD_ID_SET_APCLI_BF_CAP		= 19,
-	HWCMD_ID_SET_APCLI_BF_REPEATER	= 20,
-	HWCMD_ID_ADJUST_STA_BF_SOUNDING	= 21,
-	HWCMD_ID_TXBF_TX_APPLY_CTRL		= 22,
+	HWCMD_ID_SET_APCLI_BF_CAP = 19,
+	HWCMD_ID_SET_APCLI_BF_REPEATER = 20,
+	HWCMD_ID_ADJUST_STA_BF_SOUNDING = 21,
+	HWCMD_ID_TXBF_TX_APPLY_CTRL = 22,
 #endif /* TXBF_SUPPORT */
 #ifdef ERR_RECOVERY
-	HWCMD_ID_MAC_ERROR_DETECT		= 23,
+	HWCMD_ID_MAC_ERROR_DETECT = 23,
 #endif /* ERR_RECOVERY */
 	/*AP realted*/
-	HWCMD_ID_AP_ADJUST_EXP_ACK_TIME	= 24,
+	HWCMD_ID_AP_ADJUST_EXP_ACK_TIME = 24,
 	HWCMD_ID_AP_RECOVER_EXP_ACK_TIME = 25,
-	HWCMD_ID_UPDATE_BSSINFO			= 26,
-	HWCMD_ID_SET_BA_REC				= 27,
+	HWCMD_ID_UPDATE_BSSINFO = 26,
+	HWCMD_ID_SET_BA_REC = 27,
 	/*STA related*/
-	HWCMD_ID_PWR_MGT_BIT_WIFI		= 28,
-	HWCMD_ID_FORCE_WAKE_UP			= 29,
+	HWCMD_ID_PWR_MGT_BIT_WIFI = 28,
+	HWCMD_ID_FORCE_WAKE_UP = 29,
 	HWCMD_ID_FORCE_SLEEP_AUTO_WAKEUP = 30,
-	HWCMD_ID_MAKE_FW_OWN			= 31,
-	HWCMD_ID_ENTER_PS_NULL			= 32,
+	HWCMD_ID_MAKE_FW_OWN = 31,
+	HWCMD_ID_ENTER_PS_NULL = 32,
 #ifdef VOW_SUPPORT
-	HWCMD_ID_SET_STA_DWRR			= 33,
+	HWCMD_ID_SET_STA_DWRR = 33,
 #endif /* VOW_SUPPORT */
-	HWCMD_ID_UPDATE_RSSI			= 34,
-	HWCMD_ID_SET_STA_DWRR_QUANTUM	= 35,
-	HWCMD_ID_PERODIC_CR_ACCESS_NIC_UPDATE_RAW_COUNTERS			= 37,
-	HWCMD_ID_SET_BCN_OFFLOAD		= 38,
-	HWCMD_ID_ADD_REPT_ENTRY			= 39,
-	HWCMD_ID_REMOVE_REPT_ENTRY		= 40,
-	HWCMD_ID_WIFISYS_LINKDOWN		= 41,
-	HWCMD_ID_WIFISYS_LINKUP			= 42,
-	HWCMD_ID_WIFISYS_OPEN			= 43,
-	HWCMD_ID_WIFISYS_CLOSE			= 44,
-	HWCMD_ID_WIFISYS_PEER_LINKUP	= 45,
-	HWCMD_ID_WIFISYS_PEER_LINKDOWN	= 46,
-	HWCMD_ID_WIFISYS_PEER_UPDATE	= 47,
+	HWCMD_ID_UPDATE_RSSI = 34,
+	HWCMD_ID_SET_STA_DWRR_QUANTUM = 35,
+	HWCMD_ID_PERODIC_CR_ACCESS_NIC_UPDATE_RAW_COUNTERS = 37,
+	HWCMD_ID_SET_BCN_OFFLOAD = 38,
+	HWCMD_ID_ADD_REPT_ENTRY = 39,
+	HWCMD_ID_REMOVE_REPT_ENTRY = 40,
+	HWCMD_ID_WIFISYS_LINKDOWN = 41,
+	HWCMD_ID_WIFISYS_LINKUP = 42,
+	HWCMD_ID_WIFISYS_OPEN = 43,
+	HWCMD_ID_WIFISYS_CLOSE = 44,
+	HWCMD_ID_WIFISYS_PEER_LINKUP = 45,
+	HWCMD_ID_WIFISYS_PEER_LINKDOWN = 46,
+	HWCMD_ID_WIFISYS_PEER_UPDATE = 47,
 #ifdef THERMAL_PROTECT_SUPPORT
 	HWCMD_ID_THERMAL_PROTECTION_RADIOOFF = 48,
 #endif /* THERMAL_PROTECT_SUPPORT */
-	HWCMD_ID_GET_TX_STATISTIC		= 49,
-	HWCMD_ID_RADIO_ON_OFF			= 50,
-	HWCMD_ID_PBC_CTRL				= 51,
+	HWCMD_ID_GET_TX_STATISTIC = 49,
+	HWCMD_ID_RADIO_ON_OFF = 50,
+	HWCMD_ID_PBC_CTRL = 51,
 #ifdef GREENAP_SUPPORT
-	HWCMD_ID_GREENAP_ON_OFF			= 52,
+	HWCMD_ID_GREENAP_ON_OFF = 52,
 #endif /* GREENAP_SUPPORT */
-	HWCMD_ID_HT_PROTECT				= 54,
-	HWCMD_ID_RTS_THLD				= 55,
+	HWCMD_ID_HT_PROTECT = 54,
+	HWCMD_ID_RTS_THLD = 55,
 #ifdef HOST_RESUME_DONE_ACK_SUPPORT
-	HWCMD_ID_HOST_RESUME_DONE_ACK	= 56,
+	HWCMD_ID_HOST_RESUME_DONE_ACK = 56,
 #endif /* HOST_RESUME_DONE_ACK_SUPPORT */
 #ifdef ETSI_RX_BLOCKER_SUPPORT
-	HWCMD_RX_CHECK_RSSI        = 57,
+	HWCMD_RX_CHECK_RSSI = 57,
 #endif /* end of ETSI_RX_BLOCKER_SUPPORT */
 #ifdef PCIE_ASPM_DYM_CTRL_SUPPORT
-	HWCMD_ID_PCIE_ASPM_DYM_CTRL		= 58,
+	HWCMD_ID_PCIE_ASPM_DYM_CTRL = 58,
 #endif /* PCIE_ASPM_DYM_CTRL_SUPPORT */
 #ifdef MBO_SUPPORT
-	HWCMD_ID_BSS_TERMINATION        = 59,
+	HWCMD_ID_BSS_TERMINATION = 59,
 #endif /* MBO_SUPPORT */
 	HWCMD_ID_SET_EDCA = 60,
+#ifdef OCE_SUPPORT
+	HWCMD_ID_SET_FD_FRAME_OFFLOAD = 62,
+#endif /* OCE_SUPPORT */
+
 #ifdef MBSS_AS_WDS_AP_SUPPORT
-    HWCMD_ID_UPDATE_4ADDR_HDR_TRANS,
+	HWCMD_ID_UPDATE_4ADDR_HDR_TRANS,
 #endif
 
 	HWCMD_ID_END,
 };
-
 
 /*for flag ID, is bit mask, 1/2/4/8*/
 enum {
@@ -190,7 +191,6 @@ typedef struct _HwCmdQElmt {
 	struct _HwCmdQElmt *next;
 } HwCmdQElmt, *PHwCmdQElmt;
 
-
 typedef struct _HwCmdQ {
 	UINT32 size;
 	HwCmdQElmt *head;
@@ -199,24 +199,22 @@ typedef struct _HwCmdQ {
 } HwCmdQ, *PHwCmdQ;
 
 typedef struct _HwFlagCtrl {
-	BOOLEAN	IsFlagSet;
-	UINT32		FlagId;
+	BOOLEAN IsFlagSet;
+	UINT32 FlagId;
 } HwFlagCtrl, *PHwFlagCtrl;
 
-
 typedef struct _HW_CTRL_TXD {
-	UINT32			CmdType;
-	UINT32			CmdId;
-	BOOLEAN			NeedWait;
-	UINT32			wait_time;
-	VOID			*pInformationBuffer;
-	UINT32			InformationBufferLength;
-	VOID			*pRespBuffer;
-	UINT32			RespBufferLength;
-	HwCmdCb		CallbackFun;
-	VOID			*CallbackArgs;
+	UINT32 CmdType;
+	UINT32 CmdId;
+	BOOLEAN NeedWait;
+	UINT32 wait_time;
+	VOID *pInformationBuffer;
+	UINT32 InformationBufferLength;
+	VOID *pRespBuffer;
+	UINT32 RespBufferLength;
+	HwCmdCb CallbackFun;
+	VOID *CallbackArgs;
 } HW_CTRL_TXD;
-
 
 enum {
 	SER_TIME_ID_T0 = 0,
@@ -242,8 +240,8 @@ typedef struct _HWCTRL_OP {
 
 typedef struct _HW_CTRL_T {
 	HwCmdQ HwCtrlQ;
-	HwFlagCtrl	HwCtrlFlag;
-	NDIS_SPIN_LOCK HwCtrlQLock;	/* CmdQLock spinlock */
+	HwFlagCtrl HwCtrlFlag;
+	NDIS_SPIN_LOCK HwCtrlQLock; /* CmdQLock spinlock */
 	RTMP_OS_TASK HwCtrlTask;
 	UINT32 TotalCnt;
 	HWCTRL_OP hwctrl_ops;
@@ -259,14 +257,11 @@ typedef struct _HW_CTRL_T {
 #endif /*DBG_STARVATION*/
 } HW_CTRL_T;
 
-
-
 /*CMD structure */
 typedef struct _RT_ASIC_RTS_INFO {
 	UINT32 PktNumThrd;
 	UINT32 PpduLengthThrd;
 } RT_ASIC_RTS_INFO, *PRT_ASIC_RTS_INFO;
-
 
 typedef struct _RT_ASIC_PROTECT_INFO {
 	USHORT OperationMode;
@@ -275,21 +270,19 @@ typedef struct _RT_ASIC_PROTECT_INFO {
 	BOOLEAN bNonGFExist;
 } RT_ASIC_PROTECT_INFO, *PRT_ASIC_PROTECT_INFO;
 
-
 typedef struct _RT_SET_ASIC_WCID {
-	ULONG WCID;		/* mechanism for rekeying: 0:disable, 1: time-based, 2: packet-based */
-	ULONG SetTid;		/* time-based: seconds, packet-based: kilo-packets */
-	ULONG DeleteTid;	/* time-based: seconds, packet-based: kilo-packets */
-	UCHAR Addr[MAC_ADDR_LEN];	/* avoid in interrupt when write key */
+	ULONG WCID; /* mechanism for rekeying: 0:disable, 1: time-based, 2: packet-based */
+	ULONG SetTid; /* time-based: seconds, packet-based: kilo-packets */
+	ULONG DeleteTid; /* time-based: seconds, packet-based: kilo-packets */
+	UCHAR Addr[MAC_ADDR_LEN]; /* avoid in interrupt when write key */
 	UCHAR Tid;
 	UINT16 SN;
 	UCHAR Basize;
-	INT   Ses_type;
+	INT Ses_type;
 	BOOLEAN IsAdd;
 	BOOLEAN IsBMC;
 	BOOLEAN IsReset;
 } RT_SET_ASIC_WCID, *PRT_SET_ASIC_WCID;
-
 
 #ifdef HTC_DECRYPT_IOT
 typedef struct _RT_SET_ASIC_AAD_OM {
@@ -300,8 +293,8 @@ typedef struct _RT_SET_ASIC_AAD_OM {
 
 #ifdef MBSS_AS_WDS_AP_SUPPORT
 typedef struct _RT_ASIC_4ADDR_HDR_TRANS {
-	ULONG  Wcid;
-	UCHAR  Enable;
+	ULONG Wcid;
+	UCHAR Enable;
 } RT_ASIC_4ADDR_HDR_TRANS, *PRT_ASIC_4ADDR_HDR_TRANS;
 #endif
 
@@ -319,12 +312,10 @@ typedef struct _RT_ASIC_SHARED_KEY {
 	CIPHER_KEY CipherKey;
 } RT_ASIC_SHARED_KEY, *PRT_ASIC_SHARED_KEY;
 
-
 typedef struct _RT_ASIC_PAIRWISE_KEY {
 	UINT8 WCID;
 	CIPHER_KEY CipherKey;
 } RT_ASIC_PAIRWISE_KEY, *PRT_ASIC_PAIRWISE_KEY;
-
 
 typedef struct _RT_ASIC_WCID_IVEIV_ENTRY {
 	UINT8 Wcid;
@@ -334,13 +325,13 @@ typedef struct _RT_ASIC_WCID_IVEIV_ENTRY {
 
 /*MT MAC Specific*/
 typedef struct _MT_ASIC_SEC_INFO {
-	UCHAR			AddRemove;
-	UCHAR			BssIdx;
-	UCHAR			KeyIdx;
-	UCHAR			Wcid;
-	UCHAR			KeyTabFlag;
-	CIPHER_KEY		CipherKey;
-	UCHAR			Addr[MAC_ADDR_LEN];
+	UCHAR AddRemove;
+	UCHAR BssIdx;
+	UCHAR KeyIdx;
+	UCHAR Wcid;
+	UCHAR KeyTabFlag;
+	CIPHER_KEY CipherKey;
+	UCHAR Addr[MAC_ADDR_LEN];
 } MT_ASIC_SEC_INFO, *PMT_ASIC_SEC_INFO;
 
 /*MT MAC Specific*/
@@ -380,11 +371,18 @@ typedef struct _ASIC_SEC_INFO {
 	UCHAR PeerAddr[MAC_ADDR_LEN];
 } ASIC_SEC_INFO, *PASIC_SEC_INFO;
 
-#define IS_ADDKEY_OPERATION(_pSecInfo)    ((_pSecInfo->Operation == SEC_ASIC_ADD_PAIRWISE_KEY) || (_pSecInfo->Operation == SEC_ASIC_ADD_GROUP_KEY))
-#define IS_REMOVEKEY_OPERATION(_pSecInfo)    ((_pSecInfo->Operation == SEC_ASIC_REMOVE_PAIRWISE_KEY) || (_pSecInfo->Operation == SEC_ASIC_REMOVE_GROUP_KEY))
-#define IS_PAIRWISEKEY_OPERATION(_pSecInfo)    ((_pSecInfo->Operation == SEC_ASIC_ADD_PAIRWISE_KEY) || (_pSecInfo->Operation == SEC_ASIC_REMOVE_PAIRWISE_KEY))
-#define IS_GROUPKEY_OPERATION(_pSecInfo)    ((_pSecInfo->Operation == SEC_ASIC_ADD_GROUP_KEY) || (_pSecInfo->Operation == SEC_ASIC_REMOVE_GROUP_KEY))
-
+#define IS_ADDKEY_OPERATION(_pSecInfo)                                         \
+	((_pSecInfo->Operation == SEC_ASIC_ADD_PAIRWISE_KEY) ||                \
+	 (_pSecInfo->Operation == SEC_ASIC_ADD_GROUP_KEY))
+#define IS_REMOVEKEY_OPERATION(_pSecInfo)                                      \
+	((_pSecInfo->Operation == SEC_ASIC_REMOVE_PAIRWISE_KEY) ||             \
+	 (_pSecInfo->Operation == SEC_ASIC_REMOVE_GROUP_KEY))
+#define IS_PAIRWISEKEY_OPERATION(_pSecInfo)                                    \
+	((_pSecInfo->Operation == SEC_ASIC_ADD_PAIRWISE_KEY) ||                \
+	 (_pSecInfo->Operation == SEC_ASIC_REMOVE_PAIRWISE_KEY))
+#define IS_GROUPKEY_OPERATION(_pSecInfo)                                       \
+	((_pSecInfo->Operation == SEC_ASIC_ADD_GROUP_KEY) ||                   \
+	 (_pSecInfo->Operation == SEC_ASIC_REMOVE_GROUP_KEY))
 
 typedef struct _RT_ASIC_WCID_ATTR_ENTRY {
 	UCHAR BssIdx;
@@ -415,6 +413,17 @@ typedef struct _MT_SET_BCN_OFFLOAD {
 	ULONG CsaIePos;
 } MT_SET_BCN_OFFLOAD, *PMT_SET_BCN_OFFLOAD;
 #endif
+
+#ifdef OCE_SUPPORT
+typedef struct _MT_SET_FD_FRAME_OFFLOAD {
+	UINT8 WdevIdx;
+	UINT8 ucEnable;
+	UINT16 u2PktLength;
+	UINT16 u2TimestampFieldPos;
+
+	UINT8 acPktContent[1520];
+} MT_SET_FD_FRAME_OFFLOAD, *PMT_SET_FD_FRAME_OFFLOAD;
+#endif /* OCE_SUPPORT */
 
 typedef struct _MT_UPDATE_BEACON {
 	struct wifi_dev *wdev;
@@ -464,7 +473,7 @@ typedef struct _ADD_REPT_ENTRY_STRUC {
 } ADD_REPT_ENTRY_STRUC, *PADD_REPT_ENTRY_STRUC;
 
 typedef struct _TX_STAT_STRUC {
-	UINT32 Field;	/* Tx Statistic update method from N9 (GET_TX_STAT_XXX) */
+	UINT32 Field; /* Tx Statistic update method from N9 (GET_TX_STAT_XXX) */
 	UINT8 Wcid;
 	UINT8 Band;
 } TX_STAT_STRUC, *PTX_STAT_STRUC;
@@ -481,46 +490,41 @@ UINT32 HwCtrlInit(struct _RTMP_ADAPTER *pAd);
 VOID HwCtrlExit(struct _RTMP_ADAPTER *pAd);
 UINT32 HWCtrlOpsReg(struct _RTMP_ADAPTER *pAd);
 
-NDIS_STATUS HwCtrlEnqueueCmd(
-	struct _RTMP_ADAPTER *pAd,
-	HW_CTRL_TXD HwCtrlTxd);
+NDIS_STATUS HwCtrlEnqueueCmd(struct _RTMP_ADAPTER *pAd, HW_CTRL_TXD HwCtrlTxd);
 
-NDIS_STATUS HwCtrlSetFlag(
-	struct _RTMP_ADAPTER *pAd,
-	INT32 FlagId);
+NDIS_STATUS HwCtrlSetFlag(struct _RTMP_ADAPTER *pAd, INT32 FlagId);
 
 INT Show_HwCtrlStatistic_Proc(struct _RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
-
 /*Security*/
-VOID HW_ADDREMOVE_KEYTABLE(struct _RTMP_ADAPTER *pAd, struct _ASIC_SEC_INFO *pInfo);
+VOID HW_ADDREMOVE_KEYTABLE(struct _RTMP_ADAPTER *pAd,
+			   struct _ASIC_SEC_INFO *pInfo);
 
 #if defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT)
 
-#define RTMP_UPDATE_PROTECT(_pAd)	\
-	AsicUpdateProtect(_pAd);
+#define RTMP_UPDATE_PROTECT(_pAd) AsicUpdateProtect(_pAd);
 
-
-#define RTMP_SET_TR_ENTRY(pAd, pEntry)   \
+#define RTMP_SET_TR_ENTRY(pAd, pEntry)                                         \
 	TRTableInsertEntry(pAd, pEntry->wcid, pEntry);
 
 #define RTMP_MLME_PRE_SANITY_CHECK(_pAd)
 
-#define RTMP_AP_ADJUST_EXP_ACK_TIME(_pAd) \
-	RTMP_IO_WRITE32(_pAd,  EXP_ACK_TIME, 0x005400ca)
+#define RTMP_AP_ADJUST_EXP_ACK_TIME(_pAd)                                      \
+	RTMP_IO_WRITE32(_pAd, EXP_ACK_TIME, 0x005400ca)
 
-#define RTMP_AP_RECOVER_EXP_ACK_TIME(_pAd) \
-	RTMP_IO_WRITE32(_pAd,  EXP_ACK_TIME, 0x002400ca)
+#define RTMP_AP_RECOVER_EXP_ACK_TIME(_pAd)                                     \
+	RTMP_IO_WRITE32(_pAd, EXP_ACK_TIME, 0x002400ca)
 
-#define RTMP_SET_LED_STATUS(_pAd, _Status) \
-	RTMPSetLEDStatus(_pAd, _Status)
+#define RTMP_SET_LED_STATUS(_pAd, _Status) RTMPSetLEDStatus(_pAd, _Status)
 
-#define RTMP_SET_LED(_pAd, _Mode) \
-	RTMPSetLED(_pAd, _Mode)
+#define RTMP_SET_LED(_pAd, _Mode) RTMPSetLED(_pAd, _Mode)
 
-VOID RTMP_PWR_MGT_BIT_WIFI(struct _RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucPwrMgtBit);
-VOID RTMP_FORCE_WAKEUP(struct _RTMP_ADAPTER *pAd, struct _STA_ADMIN_CONFIG *pStaCfg);
-VOID RTMP_SLEEP_FORCE_AUTO_WAKEUP(struct _RTMP_ADAPTER *pAd, struct _STA_ADMIN_CONFIG *pStaCfg);
+VOID RTMP_PWR_MGT_BIT_WIFI(struct _RTMP_ADAPTER *pAd, UINT8 ucWlanIdx,
+			   UINT8 ucPwrMgtBit);
+VOID RTMP_FORCE_WAKEUP(struct _RTMP_ADAPTER *pAd,
+		       struct _STA_ADMIN_CONFIG *pStaCfg);
+VOID RTMP_SLEEP_FORCE_AUTO_WAKEUP(struct _RTMP_ADAPTER *pAd,
+				  struct _STA_ADMIN_CONFIG *pStaCfg);
 
 #else
 VOID RTMP_UPDATE_PROTECT(struct _RTMP_ADAPTER *pAd);
@@ -528,14 +532,14 @@ VOID RTMP_MLME_PRE_SANITY_CHECK(struct _RTMP_ADAPTER *pAd);
 
 /*Security*/
 
-VOID RTMP_SET_TR_ENTRY(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
+VOID RTMP_SET_TR_ENTRY(struct _RTMP_ADAPTER *pAd,
+		       struct _MAC_TABLE_ENTRY *pEntry);
 VOID RTMP_AP_ADJUST_EXP_ACK_TIME(struct _RTMP_ADAPTER *pAd);
 VOID RTMP_AP_RECOVER_EXP_ACK_TIME(struct _RTMP_ADAPTER *pAd);
 VOID RTMP_SET_LED_STATUS(struct _RTMP_ADAPTER *pAd, UCHAR Status);
 VOID RTMP_SET_LED(struct _RTMP_ADAPTER *pAd, UINT32 WPSLedMode10);
 
 /*STA*/
-
 
 #endif /*defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT)*/
 
@@ -545,86 +549,103 @@ VOID RTMP_PS_RETRIVE_START(struct _RTMP_ADAPTER *pAd, UCHAR Wcid);
 VOID RTMP_PS_RETRIVE_CLEAR(struct _RTMP_ADAPTER *pAd, UCHAR Wcid);
 VOID RTMP_HANDLE_PRETBTT_INT_EVENT(struct _RTMP_ADAPTER *pAd);
 
-VOID RTMP_SET_TX_BURST(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, BOOLEAN enable);
+VOID RTMP_SET_TX_BURST(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		       BOOLEAN enable);
 
-VOID HW_SET_TX_BURST(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UINT8 ac_type,
-					 UINT8 prio, UINT16 level, UINT8 enable);
+VOID HW_SET_TX_BURST(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		     UINT8 ac_type, UINT8 prio, UINT16 level, UINT8 enable);
 
-VOID HW_ADD_REPT_ENTRY(
-	struct _RTMP_ADAPTER *pAd,
-	struct wifi_dev *wdev,
-	PUCHAR pAddr);
+VOID HW_ADD_REPT_ENTRY(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		       PUCHAR pAddr);
 
-VOID HW_REMOVE_REPT_ENTRY(
-	struct _RTMP_ADAPTER *pAd,
-	UCHAR func_tb_idx,
-	UCHAR CliIdx);
+VOID HW_REMOVE_REPT_ENTRY(struct _RTMP_ADAPTER *pAd, UCHAR func_tb_idx,
+			  UCHAR CliIdx);
 
-VOID HW_UPDATE_BSSINFO(struct _RTMP_ADAPTER *pAd, struct _BSS_INFO_ARGUMENT_T *BssInfoArgs);
+VOID HW_UPDATE_BSSINFO(struct _RTMP_ADAPTER *pAd,
+		       struct _BSS_INFO_ARGUMENT_T *BssInfoArgs);
 
 VOID RTMP_SET_BA_REC(struct _RTMP_ADAPTER *pAd, VOID *Buffer, UINT32 Len);
-VOID HW_SET_BA_REC(struct _RTMP_ADAPTER *pAd, UCHAR wcid, UCHAR tid, UINT16 sn, UCHAR basize, BOOLEAN isAdd, INT ses_type);
+VOID HW_SET_BA_REC(struct _RTMP_ADAPTER *pAd, UCHAR wcid, UCHAR tid, UINT16 sn,
+		   UCHAR basize, BOOLEAN isAdd, INT ses_type);
 VOID HW_SET_DEL_ASIC_WCID(struct _RTMP_ADAPTER *pAd, ULONG Wcid);
 
 #ifdef HTC_DECRYPT_IOT
-VOID HW_SET_ASIC_WCID_AAD_OM(struct _RTMP_ADAPTER *pAd, ULONG Wcid, UCHAR value);
+VOID HW_SET_ASIC_WCID_AAD_OM(struct _RTMP_ADAPTER *pAd, ULONG Wcid,
+			     UCHAR value);
 #endif /* HTC_DECRYPT_IOT */
 #ifdef MBSS_AS_WDS_AP_SUPPORT
-VOID HW_SET_ASIC_WCID_4ADDR_HDR_TRANS(struct _RTMP_ADAPTER *pAd, ULONG Wcid, UCHAR IsEnable);
+VOID HW_SET_ASIC_WCID_4ADDR_HDR_TRANS(struct _RTMP_ADAPTER *pAd, ULONG Wcid,
+				      UCHAR IsEnable);
 #endif
 
+#ifdef OCE_SUPPORT
+VOID HW_SET_FD_FRAME_OFFLOAD(struct _RTMP_ADAPTER *pAd, UINT8 WdevIdx,
+			     ULONG WholeLength, BOOLEAN Enable,
+			     UINT16 TimestampPos, UCHAR *Buf);
+#endif /* OCE_SUPPORT */
 VOID RTMP_GET_TEMPERATURE(struct _RTMP_ADAPTER *pAd, UINT32 *pTemperature);
-VOID RTMP_RADIO_ON_OFF_CTRL(struct _RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx, UINT8 ucRadio);
+VOID RTMP_RADIO_ON_OFF_CTRL(struct _RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx,
+			    UINT8 ucRadio);
 
 #ifdef MBO_SUPPORT
 VOID RTMP_BSS_TERMINATION(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 #endif /* MBO_SUPPORT */
 
 #ifdef GREENAP_SUPPORT
-VOID RTMP_GREENAP_ON_OFF_CTRL(struct _RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx, BOOLEAN ucGreenAP);
+VOID RTMP_GREENAP_ON_OFF_CTRL(struct _RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx,
+			      BOOLEAN ucGreenAP);
 #endif /* GREENAP_SUPPORT */
 #ifdef PCIE_ASPM_DYM_CTRL_SUPPORT
-VOID rtmp_pcie_aspm_dym_ctrl(struct _RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx, BOOLEAN fgL1Enable, BOOLEAN fgL0sEnable);
+VOID rtmp_pcie_aspm_dym_ctrl(struct _RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx,
+			     BOOLEAN fgL1Enable, BOOLEAN fgL0sEnable);
 #endif /* PCIE_ASPM_DYM_CTRL_SUPPORT */
-VOID HW_SET_SLOTTIME(struct _RTMP_ADAPTER *pAd, BOOLEAN bUseShortSlotTime, UCHAR Channel, struct wifi_dev *wdev);
-VOID HW_ENTER_PS_NULL(struct _RTMP_ADAPTER *pAd, struct _STA_ADMIN_CONFIG *pStaCfg);
-VOID HW_BEACON_UPDATE(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR UpdateBeacon);
-
+VOID HW_SET_SLOTTIME(struct _RTMP_ADAPTER *pAd, BOOLEAN bUseShortSlotTime,
+		     UCHAR Channel, struct wifi_dev *wdev);
+VOID HW_ENTER_PS_NULL(struct _RTMP_ADAPTER *pAd,
+		      struct _STA_ADMIN_CONFIG *pStaCfg);
+VOID HW_BEACON_UPDATE(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		      UCHAR UpdateBeacon);
 
 #ifdef PKT_BUDGET_CTRL_SUPPORT
-VOID HW_SET_PBC_CTRL(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, struct _MAC_TABLE_ENTRY *entry, UCHAR type);
+VOID HW_SET_PBC_CTRL(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		     struct _MAC_TABLE_ENTRY *entry, UCHAR type);
 #endif /*PKT_BUDGET_CTRL_SUPPORT*/
 
-VOID HW_SET_EDCA(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, struct _EDCA_PARM *pedca_param);
+VOID HW_SET_EDCA(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		 struct _EDCA_PARM *pedca_param);
 
-VOID HW_SET_RTS_THLD(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev, UCHAR pkt_num, UINT32 length, UCHAR retry_limit);
+VOID HW_SET_RTS_THLD(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		     UCHAR pkt_num, UINT32 length, UCHAR retry_limit);
 
 /* Insert the BA bitmap to ASIC for the Wcid entry */
-#define RTMP_ADD_BA_SESSION_TO_ASIC(_pAd, _wcid, _TID, _SN, _basize, _type)	\
+#define RTMP_ADD_BA_SESSION_TO_ASIC(_pAd, _wcid, _TID, _SN, _basize, _type)    \
 	HW_SET_BA_REC(_pAd, _wcid, _TID, _SN, _basize, 1, _type);
-
 
 /* Remove the BA bitmap from ASIC for the Wcid entry */
 /*		bitmap field starts at 0x10000 in ASIC WCID table */
-#define RTMP_DEL_BA_SESSION_FROM_ASIC(_pAd, _wcid, _TID, _type) \
+#define RTMP_DEL_BA_SESSION_FROM_ASIC(_pAd, _wcid, _TID, _type)                \
 	HW_SET_BA_REC(_pAd, _wcid, _TID, 0, 0, 0, _type);
 
 #ifdef TXBF_SUPPORT
-VOID HW_APCLI_BF_CAP_CONFIG(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
-VOID HW_APCLI_BF_REPEATER_CONFIG(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
-VOID HW_STA_BF_SOUNDING_ADJUST(struct _RTMP_ADAPTER *pAd, UCHAR connState, struct wifi_dev *wdev);
+VOID HW_APCLI_BF_CAP_CONFIG(struct _RTMP_ADAPTER *pAd,
+			    struct _MAC_TABLE_ENTRY *pEntry);
+VOID HW_APCLI_BF_REPEATER_CONFIG(struct _RTMP_ADAPTER *pAd,
+				 struct _MAC_TABLE_ENTRY *pEntry);
+VOID HW_STA_BF_SOUNDING_ADJUST(struct _RTMP_ADAPTER *pAd, UCHAR connState,
+			       struct wifi_dev *wdev);
 VOID HW_AP_TXBF_TX_APPLY(struct _RTMP_ADAPTER *pAd, UCHAR enable);
 #endif /* TXBF_SUPPORT */
 
-
 #ifdef VOW_SUPPORT
-VOID RTMP_SET_STA_DWRR(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
-VOID RTMP_SET_STA_DWRR_QUANTUM(struct _RTMP_ADAPTER *pAd, BOOLEAN restore, UCHAR quantum);
+VOID RTMP_SET_STA_DWRR(struct _RTMP_ADAPTER *pAd,
+		       struct _MAC_TABLE_ENTRY *pEntry);
+VOID RTMP_SET_STA_DWRR_QUANTUM(struct _RTMP_ADAPTER *pAd, BOOLEAN restore,
+			       UCHAR quantum);
 #endif /* VOW_SUPPORT */
 
 VOID RTMP_SET_UPDATE_RSSI(struct _RTMP_ADAPTER *pAd);
 
-#ifdef	ETSI_RX_BLOCKER_SUPPORT /* RX Blocker Solution */
+#ifdef ETSI_RX_BLOCKER_SUPPORT /* RX Blocker Solution */
 VOID RTMP_CHECK_RSSI(struct _RTMP_ADAPTER *pAd);
 #endif /* end ETSI_RX_BLOCKER_SUPPORT */
 
@@ -632,8 +653,7 @@ VOID RTMP_CHECK_RSSI(struct _RTMP_ADAPTER *pAd);
 VOID RTMP_SET_THERMAL_RADIO_OFF(struct _RTMP_ADAPTER *pAd);
 #endif /* THERMAL_PROTECT_SUPPORT */
 
-VOID NICUpdateRawCountersNew(
-	struct _RTMP_ADAPTER *pAd);
+VOID NICUpdateRawCountersNew(struct _RTMP_ADAPTER *pAd);
 
 #ifdef ERR_RECOVERY
 typedef enum _ERR_RECOVERY_STATE {
@@ -644,7 +664,8 @@ typedef enum _ERR_RECOVERY_STATE {
 	ERR_RECOV_WAIT_N9_NORMAL,
 	ERR_RECOV_EVENT_REENTRY,
 	ERR_RECOV_STATE_NUM
-} ERR_RECOVERY_STATE, *P_ERR_RECOVERY_STATE;
+} ERR_RECOVERY_STATE,
+	*P_ERR_RECOVERY_STATE;
 
 typedef struct _ERR_RECOVERY_CTRL_T {
 	ERR_RECOVERY_STATE errRecovState;
@@ -660,18 +681,19 @@ NTSTATUS HwRecoveryFromError(struct _RTMP_ADAPTER *pAd);
 void SerTimeLogDump(struct _RTMP_ADAPTER *pAd);
 #endif /* ERR_RECOVERY */
 
-
 VOID HW_WIFISYS_OPEN(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
 VOID HW_WIFISYS_CLOSE(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
 VOID HW_WIFISYS_LINKUP(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
 VOID HW_WIFISYS_LINKDOWN(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
-VOID HW_WIFISYS_PEER_LINKUP(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
-VOID HW_WIFISYS_PEER_LINKDOWN(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
-VOID HW_WIFISYS_PEER_UPDATE(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
+VOID HW_WIFISYS_PEER_LINKUP(struct _RTMP_ADAPTER *ad,
+			    struct WIFI_SYS_CTRL *wsys);
+VOID HW_WIFISYS_PEER_LINKDOWN(struct _RTMP_ADAPTER *ad,
+			      struct WIFI_SYS_CTRL *wsys);
+VOID HW_WIFISYS_PEER_UPDATE(struct _RTMP_ADAPTER *ad,
+			    struct WIFI_SYS_CTRL *wsys);
 VOID HW_WIFISYS_RA_UPDATE(struct _RTMP_ADAPTER *ad, struct WIFI_SYS_CTRL *wsys);
 
 VOID HW_GET_TX_STATISTIC(struct _RTMP_ADAPTER *ad, UINT32 Field, UINT8 Wcid);
-
 
 enum {
 	HWCTRL_OP_TYPE_V1,
@@ -679,7 +701,7 @@ enum {
 };
 
 void hw_set_tx_burst(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
-					 UINT8 ac_type, UINT8 prio, UINT16 level, UINT8 enable);
+		     UINT8 ac_type, UINT8 prio, UINT16 level, UINT8 enable);
 
 #ifdef WIFI_SYS_FW_V1
 VOID hw_ctrl_ops_v1_register(struct _HWCTRL_OP *hwctrl_ops);
@@ -688,7 +710,6 @@ VOID hw_ctrl_ops_v1_register(struct _HWCTRL_OP *hwctrl_ops);
 #ifdef WIFI_SYS_FW_V2
 VOID hw_ctrl_ops_v2_register(struct _HWCTRL_OP *hwctrl_ops);
 #endif /*WIFI_SYS_FW_V2*/
-
 
 #ifdef HOST_RESUME_DONE_ACK_SUPPORT
 VOID rtmp_host_resume_done_ack(struct _RTMP_ADAPTER *pAd);

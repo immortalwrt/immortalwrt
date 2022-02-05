@@ -26,14 +26,12 @@
 	--------	----------	  ----------------------------------------------
 */
 
-
 #ifndef __WF_TRB_H__
 #define __WF_TRB_H__
 
-#define WF_TRB_BASE		0x21000
-#define TRB_GCR			(WF_TRB_BASE + 0x000)
-#define TRB_TXBSR		(WF_TRB_BASE + 0x020)
-#define TRB_RXBSR		(WF_TRB_BASE + 0x040)
+#define WF_TRB_BASE 0x21000
+#define TRB_GCR (WF_TRB_BASE + 0x000)
+#define TRB_TXBSR (WF_TRB_BASE + 0x020)
+#define TRB_RXBSR (WF_TRB_BASE + 0x040)
 
 #endif /* __WF_TRB_H__ */
-

@@ -30,12 +30,11 @@
 #ifndef __STA_CFG_H__
 #define __STA_CFG_H__
 
-INT RTMPSTAPrivIoctlSet(
-	IN RTMP_ADAPTER * pAd,
-	IN RTMP_STRING * SetProcName,
-	IN RTMP_STRING * ProcArg);
+INT RTMPSTAPrivIoctlSet(IN RTMP_ADAPTER *pAd, IN RTMP_STRING *SetProcName,
+			IN RTMP_STRING *ProcArg);
 
-#if (defined(WOW_SUPPORT) && defined(RTMP_MAC_USB)) || defined(NEW_WOW_SUPPORT) || defined(MT_WOW_SUPPORT)
+#if (defined(WOW_SUPPORT) && defined(RTMP_MAC_USB)) ||                         \
+	defined(NEW_WOW_SUPPORT) || defined(MT_WOW_SUPPORT)
 /* set WOW enable */
 INT Set_WOW_Enable(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 /* set GPIO pin for wake-up signal */
@@ -56,6 +55,4 @@ INT Set_WOW_IPAddress(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 INT Set_WOW_GPIOHighLow(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 #endif /* (defined(WOW_SUPPORT) && defined(RTMP_MAC_USB)) || defined(NEW_WOW_SUPPORT) || defined(MT_WOW_SUPPORT) */
 
-
 #endif /* __STA_CFG_H__ */
-

@@ -26,7 +26,6 @@
 	--------	----------		----------------------------------------------
 */
 
-
 #include "rt_config.h"
 
 #define BSSID_WCID_TO_REMOVE 1 /* Pat:TODO */
@@ -53,39 +52,46 @@ VOID MTHifPolling(RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx)
 	PNDIS_PACKET pRxPacket = NULL;
 	RX_BLK RxBlk, *pRxBlk;
 	BOOLEAN bReschedule = FALSE;
-	EVENT_EXT_CMD_RESULT_T	rResult = {0};
+	EVENT_EXT_CMD_RESULT_T rResult = { 0 };
 
 	for (Loop = 0; Loop < 10; Loop++) {
 		while (1) {
 			pRxBlk = &RxBlk;
-			pRxPacket = pAd->archOps.get_pkt_from_rx_resource(pAd, &bReschedule, &RxPending, 0);
+			pRxPacket = pAd->archOps.get_pkt_from_rx_resource(
+				pAd, &bReschedule, &RxPending, 0);
 
 			if ((RxPending == 0) && (bReschedule == FALSE))
 				break;
-			RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_SUCCESS);
+			RELEASE_NDIS_PACKET(pAd, pRxPacket,
+					    NDIS_STATUS_SUCCESS);
 
 			msleep(20);
 		}
 	}
 
 	for (Loop = 0; Loop < 10; Loop++) {
-		AsicExtWifiHifCtrl(pAd, ucDbdcIdx, HIF_CTRL_ID_HIF_USB_TX_RX_IDLE, &rResult);
+		AsicExtWifiHifCtrl(pAd, ucDbdcIdx,
+				   HIF_CTRL_ID_HIF_USB_TX_RX_IDLE, &rResult);
 
 		if (rResult.u4Status == 0)
 			break;
 
 		while (1) {
 			pRxBlk = &RxBlk;
-			pRxPacket = pAd->archOps.get_pkt_from_rx_resource(pAd, &bReschedule, &RxPending, 0);
+			pRxPacket = pAd->archOps.get_pkt_from_rx_resource(
+				pAd, &bReschedule, &RxPending, 0);
 
 			if ((RxPending == 0) && (bReschedule == FALSE))
 				break;
-			RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_SUCCESS);
+			RELEASE_NDIS_PACKET(pAd, pRxPacket,
+					    NDIS_STATUS_SUCCESS);
 		}
 
 		if (Loop == 1) {
 			/* Above scenario should pass at 1st time or assert */
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Failed to poll RX path empry.\n", __func__));
+			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s(): Failed to poll RX path empry.\n",
+				  __func__));
 			ASSERT(0);
 		}
 	}
@@ -103,7 +109,9 @@ VOID MTRadioOn(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 	if (IS_MT7603(pAd))
 		MtCmdRadioOnOffCtrl(pAd, WIFI_RADIO_ON);
 	else
-		RTMP_RADIO_ON_OFF_CTRL(pAd, HcGetBandByChannel(pAd, wdev->channel), WIFI_RADIO_ON);
+		RTMP_RADIO_ON_OFF_CTRL(pAd,
+				       HcGetBandByChannel(pAd, wdev->channel),
+				       WIFI_RADIO_ON);
 
 	/* Send Led on command */
 
@@ -134,7 +142,11 @@ VOID MTRadioOff(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 	if (IS_MT7603(pAd))
 		MtCmdRadioOnOffCtrl(pAd, WIFI_RADIO_OFF);
 	else
-		RTMP_RADIO_ON_OFF_CTRL(pAd, HcGetBandByChannel(pAd, wdev->channel), WIFI_RADIO_OFF);
+		RTMP_RADIO_ON_OFF_CTRL(pAd,
+				       HcGetBandByChannel(pAd, wdev->channel),
+				       WIFI_RADIO_OFF);
+
+	msleep(1000);
 
 	if (IS_MT7622(pAd)) {
 		/* Polling RX path until packets empty when all bands are in radio off */
@@ -158,13 +170,15 @@ VOID MTMlmeLpExit(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 #endif /* CONFIG_FWOWN_SUPPORT */
 #ifdef RTMP_MAC_PCI
 	/*  Enable PDMA */
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(%d)::PDMA\n", __func__, __LINE__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s(%d)::PDMA\n", __func__, __LINE__));
 	AsicSetWPDMA(pAd, PDMA_TX_RX, 1);
 	/* Make sure get clear FW own interrupt */
 	RtmpOsMsDelay(100);
 #endif /* RTMP_MAC_PCI */
 #ifdef CONFIG_FWOWN_SUPPORT
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(%d)::bDrvOwn(%d)\n", __func__, __LINE__, pAd->bDrvOwn));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s(%d)::bDrvOwn(%d)\n", __func__, __LINE__, pAd->bDrvOwn));
 #endif /* CONFIG_FWOWN_SUPPORT */
 	MCU_CTRL_INIT(pAd);
 	RTMP_SET_FLAG(pAd, fRTMP_ADAPTER_MCU_SEND_IN_BAND_CMD);
@@ -178,14 +192,17 @@ VOID MTMlmeLpExit(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 	/*  Resume sending TX packet */
 	RTMP_OS_NETDEV_START_QUEUE(pAd->net_dev);
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 		if (MaxNumBss > MAX_MBSSID_NUM(pAd))
 			MaxNumBss = MAX_MBSSID_NUM(pAd);
 
 		/*  first IdBss must not be 0 (BSS0), must be 1 (BSS1) */
-		for (IdBss = FIRST_MBSSID; IdBss < MAX_MBSSID_NUM(pAd); IdBss++) {
+		for (IdBss = FIRST_MBSSID; IdBss < MAX_MBSSID_NUM(pAd);
+		     IdBss++) {
 			if (pAd->ApCfg.MBSSID[IdBss].wdev.if_dev)
-				RTMP_OS_NETDEV_START_QUEUE(pAd->ApCfg.MBSSID[IdBss].wdev.if_dev);
+				RTMP_OS_NETDEV_START_QUEUE(
+					pAd->ApCfg.MBSSID[IdBss].wdev.if_dev);
 		}
 	}
 #endif
@@ -200,12 +217,14 @@ VOID MTMlmeLpEnter(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 	/*  Stop send TX packets */
 	RTMP_OS_NETDEV_STOP_QUEUE(pAd->net_dev);
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 		if (MaxNumBss > MAX_MBSSID_NUM(pAd))
 			MaxNumBss = MAX_MBSSID_NUM(pAd);
 
 		/* first IdBss must not be 0 (BSS0), must be 1 (BSS1) */
-		for (IdBss = FIRST_MBSSID; IdBss < MAX_MBSSID_NUM(pAd); IdBss++) {
+		for (IdBss = FIRST_MBSSID; IdBss < MAX_MBSSID_NUM(pAd);
+		     IdBss++) {
 			pMbss = &pAd->ApCfg.MBSSID[IdBss];
 			if (pMbss->wdev.if_dev)
 				RTMP_OS_NETDEV_STOP_QUEUE(pMbss->wdev.if_dev);
@@ -234,7 +253,6 @@ VOID MTMlmeLpEnter(PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 #endif /* CONFIG_FWOWN_SUPPORT */
 }
 
-
 VOID MTPciPollTxRxEmpty(RTMP_ADAPTER *pAd)
 {
 	UINT32 Loop, Value;
@@ -262,8 +280,9 @@ VOID MTPciPollTxRxEmpty(RTMP_ADAPTER *pAd)
 	}
 
 	if (Loop >= 20000) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: TX DMA Busy!! WPDMA_GLO_CFG_STRUC = %d\n",
-				 __func__, Value));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: TX DMA Busy!! WPDMA_GLO_CFG_STRUC = %d\n",
+			  __func__, Value));
 	}
 
 	IdleTimes = 0;
@@ -285,19 +304,15 @@ VOID MTPciPollTxRxEmpty(RTMP_ADAPTER *pAd)
 	}
 
 	if (Loop >= 20000) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: RX DMA Busy!! WPDMA_GLO_CFG_STRUC = %d\n",
-				 __func__, Value));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: RX DMA Busy!! WPDMA_GLO_CFG_STRUC = %d\n",
+			  __func__, Value));
 	}
 
 	/* Fix Rx Ring FULL lead DMA Busy, when DUT is in reset stage */
 	RTMP_CLEAR_FLAG(pAd, fRTMP_ADAPTER_POLL_IDLE);
 }
 #endif /* RTMP_MAC_PCI */
-
-
-
-
-
 
 #if defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT)
 VOID PDMAResetAndRecovery(RTMP_ADAPTER *pAd)
@@ -340,7 +355,9 @@ VOID PDMAResetAndRecovery(RTMP_ADAPTER *pAd)
 	} while (Loop <= 500);
 
 	if (Loop > 500) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s: Tx state is not idle(CLIET RST = %x)\n", __func__, Value));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s: Tx state is not idle(CLIET RST = %x)\n",
+			  __func__, Value));
 		pAd->PDMAResetFailCount++;
 	}
 
@@ -365,7 +382,9 @@ VOID PDMAResetAndRecovery(RTMP_ADAPTER *pAd)
 	} while (Loop <= 500);
 
 	if (Loop > 500) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s: Tx FIFO is not empty(CLIET RST = %x)\n", __func__, Value));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s: Tx FIFO is not empty(CLIET RST = %x)\n",
+			  __func__, Value));
 		pAd->PDMAResetFailCount++;
 	}
 
@@ -389,7 +408,8 @@ VOID PDMAResetAndRecovery(RTMP_ADAPTER *pAd)
 		if (pMbss)
 			pMbss->wdev.bcn_buf.bcn_state = BCN_TX_IDLE;
 		else {
-			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s():func_dev is NULL!\n", __func__));
+			MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+				 ("%s():func_dev is NULL!\n", __func__));
 			RTMP_IRQ_UNLOCK(&hif->BcnRingLock, IrqFlags);
 			return;
 		}
@@ -407,16 +427,18 @@ VOID PDMAResetAndRecovery(RTMP_ADAPTER *pAd)
 	RTMPRingCleanUp(pAd, QID_BMC);
 	RTMPRingCleanUp(pAd, QID_RX);
 #ifdef VENDOR_FEATURE7_SUPPORT
-/* Start - Triggered from PDMAWatchDog. Log and try to recover. */
+	/* Start - Triggered from PDMAWatchDog. Log and try to recover. */
 	if (pAd->TxDMAResetCount >= 3) {
-		UCHAR event_msg[100] = {0};
+		UCHAR event_msg[100] = { 0 };
 
-		ARRISMOD_CALL(arris_event_send_hook, ATOM_HOST, WLAN_EVENT, ASIC_RELOAD_EVENT,
-			"MT7615", strlen("MT7615"));
-		snprintf(event_msg, sizeof(event_msg),
+		ARRISMOD_CALL(arris_event_send_hook, ATOM_HOST, WLAN_EVENT,
+			      ASIC_RELOAD_EVENT, "MT7615", strlen("MT7615"));
+		snprintf(
+			event_msg, sizeof(event_msg),
 			"MT7615 - Hardware error detected - recovery was attempted.\n");
-		ARRISMOD_CALL(arris_event_send_hook, ATOM_HOST, WLAN_LOG_SAVE_CONSOLE,
-			0, event_msg, strlen(event_msg));
+		ARRISMOD_CALL(arris_event_send_hook, ATOM_HOST,
+			      WLAN_LOG_SAVE_CONSOLE, 0, event_msg,
+			      strlen(event_msg));
 		return;
 	}
 #endif
@@ -435,7 +457,8 @@ VOID PDMAWatchDog(RTMP_ADAPTER *pAd)
 	NoDataOut = MonitorTxRing(pAd);
 
 	if (NoDataOut) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("TXDMA Reset\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("TXDMA Reset\n"));
 		pAd->TxDMAResetCount++;
 		goto reset;
 	}
@@ -444,7 +467,8 @@ VOID PDMAWatchDog(RTMP_ADAPTER *pAd)
 	NoDataIn = MonitorRxRing(pAd);
 
 	if (NoDataIn) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF, ("RXDMA Reset\n"));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_OFF,
+			 ("RXDMA Reset\n"));
 		pAd->RxDMAResetCount++;
 		goto reset;
 	}
@@ -483,7 +507,8 @@ VOID PSEResetAndRecovery(RTMP_ADAPTER *pAd)
 	} while (Loop <= 500);
 
 	if (Loop > 500) {
-		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR, ("%s: PSE Reset Fail(%x)\n", __func__, Value));
+		MTWF_LOG(DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+			 ("%s: PSE Reset Fail(%x)\n", __func__, Value));
 		pAd->PSEResetFailCount++;
 	}
 
@@ -500,7 +525,6 @@ VOID PSEResetAndRecovery(RTMP_ADAPTER *pAd)
 
 #endif
 }
-
 
 #ifdef RTMP_PCI_SUPPORT
 BOOLEAN PciMonitorRxPse(RTMP_ADAPTER *pAd)
@@ -527,19 +551,19 @@ BOOLEAN PciMonitorRxPse(RTMP_ADAPTER *pAd)
 		MAC_IO_READ32(pAd, 0x80000 + RemapOffset, &Value);
 
 		if (((Value & (0x8001 << 16)) == (0x8001 << 16)) ||
-			((Value & (0xe001 << 16)) == (0xe001 << 16)) ||
-			((Value & (0x4001 << 16)) == (0x4001 << 16)) ||
-			((Value & (0x8002 << 16)) == (0x8002 << 16)) ||
-			((Value & (0xe002 << 16)) == (0xe002 << 16)) ||
-			((Value & (0x4002 << 16)) == (0x4002 << 16))) {
+		    ((Value & (0xe001 << 16)) == (0xe001 << 16)) ||
+		    ((Value & (0x4001 << 16)) == (0x4001 << 16)) ||
+		    ((Value & (0x8002 << 16)) == (0x8002 << 16)) ||
+		    ((Value & (0xe002 << 16)) == (0xe002 << 16)) ||
+		    ((Value & (0x4002 << 16)) == (0x4002 << 16))) {
 			if (((Value & (0x8001 << 16)) == (0x8001 << 16)) ||
-				((Value & (0xe001 << 16)) == (0xe001 << 16)) ||
-				((Value & (0x8002 << 16)) == (0x8002 << 16)) ||
-				((Value & (0xe002 << 16)) == (0xe002 << 16)))
+			    ((Value & (0xe001 << 16)) == (0xe001 << 16)) ||
+			    ((Value & (0x8002 << 16)) == (0x8002 << 16)) ||
+			    ((Value & (0xe002 << 16)) == (0xe002 << 16)))
 				pAd->PSETriggerType1Count++;
 
 			if (((Value & (0x4001 << 16)) == (0x4001 << 16)) ||
-				((Value & (0x4002 << 16)) == (0x4002 << 16)))
+			    ((Value & (0x4002 << 16)) == (0x4002 << 16)))
 				pAd->PSETriggerType2Count++;
 
 			pAd->RxPseCheckTimes++;
@@ -557,12 +581,8 @@ BOOLEAN PciMonitorRxPse(RTMP_ADAPTER *pAd)
 }
 #endif
 
-
-
-
 #ifdef RTMP_PCI_SUPPORT
 #endif /* RTMP_PCI_SUPPORT */
-
 
 VOID PSEWatchDog(RTMP_ADAPTER *pAd)
 {
@@ -575,7 +595,8 @@ VOID PSEWatchDog(RTMP_ADAPTER *pAd)
 #endif
 
 	if (NoDataIn) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("PSE Reset:MonitorRxPse\n"));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("PSE Reset:MonitorRxPse\n"));
 		pAd->PSEResetCount++;
 		goto reset;
 	}
@@ -583,8 +604,7 @@ VOID PSEWatchDog(RTMP_ADAPTER *pAd)
 #ifdef RTMP_PCI_SUPPORT
 #endif /* RTMP_PCI_SUPPORT */
 	return;
-reset:
-	;
+reset:;
 	PSEResetAndRecovery(pAd);
 }
 
@@ -596,12 +616,13 @@ VOID mt_bcn_buf_init(RTMP_ADAPTER *pAd)
 	pChipCap->FlgIsSupSpecBcnBuf = FALSE;
 	pChipCap->BcnMaxHwNum = 16;
 	pChipCap->BcnMaxNum = 16;
-#if defined(MT7603_FPGA) || defined(MT7628_FPGA) || defined(MT7636_FPGA) || defined(MT7637_FPGA)
+#if defined(MT7603_FPGA) || defined(MT7628_FPGA) || defined(MT7636_FPGA) ||    \
+	defined(MT7637_FPGA)
 	pChipCap->WcidHwRsvNum = 20;
 #else
 	pChipCap->WcidHwRsvNum = 127;
 #endif /* MT7603_FPGA */
-	pChipCap->BcnMaxHwSize = 0x2000;  /* useless!! */
+	pChipCap->BcnMaxHwSize = 0x2000; /* useless!! */
 	pChipCap->BcnBase[0] = 0;
 	pChipCap->BcnBase[1] = 0;
 	pChipCap->BcnBase[2] = 0;
@@ -622,11 +643,11 @@ VOID mt_bcn_buf_init(RTMP_ADAPTER *pAd)
 
 	/* TODO: shiang-7603 */
 	if (pChipCap->hif_type == HIF_MT) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s(%d): Not support for HIF_MT yet!\n",
-				 __func__, __LINE__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s(%d): Not support for HIF_MT yet!\n", __func__,
+			  __LINE__));
 	}
 }
-
 
 VOID mt_chip_bcn_parameter_init(RTMP_ADAPTER *pAd)
 {
@@ -652,13 +673,14 @@ VOID mt_chip_bcn_parameter_init(RTMP_ADAPTER *pAd)
  * MT7636 has no MBSS function.
  * but below to MT MBSS gen1 mac address assignment rule
  */
-VOID MtAsicSetMbssWdevIfAddrGen1(struct _RTMP_ADAPTER *pAd, INT idx, UCHAR *if_addr, INT opmode)
+VOID MtAsicSetMbssWdevIfAddrGen1(struct _RTMP_ADAPTER *pAd, INT idx,
+				 UCHAR *if_addr, INT opmode)
 {
 	UINT32 Value = 0;
 	UCHAR MacByte = 0, MacMask = 0;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s-%s\n", __FILE__, __func__));
+		 ("%s-%s\n", __FILE__, __func__));
 
 	if (opmode == OPMODE_AP) {
 		COPY_MAC_ADDR(if_addr, pAd->CurrentAddress);
@@ -696,27 +718,32 @@ VOID MtAsicSetMbssWdevIfAddrGen1(struct _RTMP_ADAPTER *pAd, INT idx, UCHAR *if_a
 
 			switch (MacByte) {
 			case 0x1: /* choose bit[23:20]*/
-				if_addr[2] = if_addr[2] & MacMask;/* clear high 4 bits, */
+				if_addr[2] = if_addr[2] &
+					     MacMask; /* clear high 4 bits, */
 				if_addr[2] = (if_addr[2] | (idx << 4));
 				break;
 
 			case 0x2: /* choose bit[31:28]*/
-				if_addr[3] = if_addr[3] & MacMask;/* clear high 4 bits, */
+				if_addr[3] = if_addr[3] &
+					     MacMask; /* clear high 4 bits, */
 				if_addr[3] = (if_addr[3] | (idx << 4));
 				break;
 
 			case 0x3: /* choose bit[39:36]*/
-				if_addr[4] = if_addr[4] & MacMask;/* clear high 4 bits, */
+				if_addr[4] = if_addr[4] &
+					     MacMask; /* clear high 4 bits, */
 				if_addr[4] = (if_addr[4] | (idx << 4));
 				break;
 
 			case 0x4: /* choose bit [47:44]*/
-				if_addr[5] = if_addr[5] & MacMask;/* clear high 4 bits, */
+				if_addr[5] = if_addr[5] &
+					     MacMask; /* clear high 4 bits, */
 				if_addr[5] = (if_addr[5] | (idx << 4));
 				break;
 
 			default: /* choose bit[15:12]*/
-				if_addr[1] = if_addr[1] & MacMask;/* clear high 4 bits, */
+				if_addr[1] = if_addr[1] &
+					     MacMask; /* clear high 4 bits, */
 				if_addr[1] = (if_addr[1] | (idx << 4));
 				break;
 			}
@@ -728,9 +755,10 @@ VOID MtAsicSetMbssWdevIfAddrGen1(struct _RTMP_ADAPTER *pAd, INT idx, UCHAR *if_a
  * NOTE: 2015-April-2.
  * this function is for MT7637/MT7615 and afterward chips
  */
-VOID MtAsicSetMbssWdevIfAddrGen2(struct _RTMP_ADAPTER *pAd, INT idx, UCHAR *if_addr, INT opmode)
+VOID MtAsicSetMbssWdevIfAddrGen2(struct _RTMP_ADAPTER *pAd, INT idx,
+				 UCHAR *if_addr, INT opmode)
 {
-	UCHAR zeroMac[6] = {0};
+	UCHAR zeroMac[6] = { 0 };
 	UCHAR MacMask = 0;
 
 	if (pAd->ApCfg.BssidNum <= 2)
@@ -745,11 +773,13 @@ VOID MtAsicSetMbssWdevIfAddrGen2(struct _RTMP_ADAPTER *pAd, INT idx, UCHAR *if_a
 		MacMask = 0x0f;
 
 	if (idx > 0) {
-		if (NdisEqualMemory(zeroMac, pAd->ExtendMBssAddr[idx - 1], MAC_ADDR_LEN)) {
+		if (NdisEqualMemory(zeroMac, pAd->ExtendMBssAddr[idx - 1],
+				    MAC_ADDR_LEN)) {
 			COPY_MAC_ADDR(if_addr, pAd->CurrentAddress);
 			if_addr[0] |= 0x2;
 			/* default choose bit[31:28], if there is no assigned mac from profile. */
-			if_addr[3] = if_addr[3] & MacMask;/* clear high 4 bits, */
+			if_addr[3] =
+				if_addr[3] & MacMask; /* clear high 4 bits, */
 			if_addr[3] = (if_addr[3] | (idx << 4));
 			COPY_MAC_ADDR(pAd->ExtendMBssAddr[idx - 1], if_addr);
 		} else
@@ -764,26 +794,30 @@ VOID MtAsicSetMbssWdevIfAddrGen2(struct _RTMP_ADAPTER *pAd, INT idx, UCHAR *if_a
 		COPY_MAC_ADDR(if_addr, pAd->CurrentAddress);
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s-%s mbss_idx = %d, if_addr = %x %x %x %x %x %x\n",
-			  __FILE__, __func__, idx,
-			  if_addr[0], if_addr[1], if_addr[2],
-			  if_addr[3], if_addr[4], if_addr[5]));
+		 ("%s-%s mbss_idx = %d, if_addr = %x %x %x %x %x %x\n",
+		  __FILE__, __func__, idx, if_addr[0], if_addr[1], if_addr[2],
+		  if_addr[3], if_addr[4], if_addr[5]));
 }
 #endif /*CONFIG_AP_SUPPORT*/
 
 #ifdef PCIE_ASPM_DYM_CTRL_SUPPORT
-VOID mt_asic_pcie_aspm_dym_ctrl(RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx, BOOLEAN fgL1Enable, BOOLEAN fgL0sEnable)
+VOID mt_asic_pcie_aspm_dym_ctrl(RTMP_ADAPTER *pAd, UINT8 ucDbdcIdx,
+				BOOLEAN fgL1Enable, BOOLEAN fgL0sEnable)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
 
 	if (!get_pcie_aspm_dym_ctrl_cap(pAd)) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s::retun since cap=0\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s::retun since cap=0\n", __func__));
 		return;
 	}
 
 	if (ops->pcie_aspm_dym_ctrl)
-		ops->pcie_aspm_dym_ctrl(pAd, ucDbdcIdx, fgL1Enable, fgL0sEnable);
+		ops->pcie_aspm_dym_ctrl(pAd, ucDbdcIdx, fgL1Enable,
+					fgL0sEnable);
 	else
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("For this chip, no specified dynamic aspm ctrl function!\n"));
+		MTWF_LOG(
+			DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("For this chip, no specified dynamic aspm ctrl function!\n"));
 }
 #endif /* #ifdef PCIE_ASPM_DYM_CTRL_SUPPORT */

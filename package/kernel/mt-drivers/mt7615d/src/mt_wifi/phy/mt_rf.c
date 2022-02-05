@@ -32,14 +32,15 @@ INT32 MTShowPartialRF(RTMP_ADAPTER *pAd, UINT32 Start, UINT32 End)
 	for (RFIdx = 0; RFIdx < pAd->Antenna.field.TxPath; RFIdx++) {
 		for (Offset = Start; Offset <= End; Offset = Offset + 4) {
 			MtCmdRFRegAccessRead(pAd, RFIdx, Offset, &Value);
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():%d 0x%04x 0x%08x\n", __func__, RFIdx, Offset, Value));
+			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("%s():%d 0x%04x 0x%08x\n", __func__, RFIdx,
+				  Offset, Value));
 		}
 	}
 #endif /* MT_MAC */
 #endif
 	return TRUE;
 }
-
 
 INT32 MTShowAllRF(RTMP_ADAPTER *pAd)
 {
@@ -51,13 +52,15 @@ INT32 MTShowAllRF(RTMP_ADAPTER *pAd)
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 
 	for (RFIdx = 0; RFIdx < pAd->Antenna.field.TxPath; RFIdx++) {
-		for (Offset = 0; Offset <= (cap->MaxNumOfRfId * 4); Offset = Offset + 4) {
+		for (Offset = 0; Offset <= (cap->MaxNumOfRfId * 4);
+		     Offset = Offset + 4) {
 			MtCmdRFRegAccessRead(pAd, RFIdx, Offset, &Value);
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():%d 0x%04x 0x%08x\n", __func__, RFIdx, Offset, Value));
+			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("%s():%d 0x%04x 0x%08x\n", __func__, RFIdx,
+				  Offset, Value));
 		}
 	}
 #endif /* MT_MAC */
 #endif
 	return TRUE;
 }
-

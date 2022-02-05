@@ -42,9 +42,9 @@ static UCHAR rcGetRfByIdx(struct hdev_ctrl *ctrl, UCHAR DbdcMode, UCHAR BandIdx)
 	return RFIC_DUAL_BAND;
 }
 
-
 /*Get RfIC Band from EEPORM content*/
-static UINT8 rcGetBandSupport(struct hdev_ctrl *ctrl, UCHAR DbdcMode, UCHAR BandIdx)
+static UINT8 rcGetBandSupport(struct hdev_ctrl *ctrl, UCHAR DbdcMode,
+			      UCHAR BandIdx)
 {
 	/* TODO: Should remove when antenna move to rdev */
 	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *)ctrl->priv;
@@ -70,7 +70,6 @@ static UCHAR rcGetDefaultChannel(UCHAR PhyMode)
 	return 0;
 }
 
-
 static UCHAR rcGetDefaultPhyMode(UCHAR Channel)
 {
 	/*priority must the same as Default Channel*/
@@ -79,8 +78,6 @@ static UCHAR rcGetDefaultPhyMode(UCHAR Channel)
 	else
 		return WMODE_A;
 }
-
-
 
 static struct radio_dev *rcGetHdevByRf(struct hdev_ctrl *ctrl, UCHAR RfType)
 {
@@ -95,7 +92,7 @@ static struct radio_dev *rcGetHdevByRf(struct hdev_ctrl *ctrl, UCHAR RfType)
 	}
 	/*get hdev by cap*/
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
-		if(pHwResource->PhyCtrl[i].rf_band_cap & RfType)
+		if (pHwResource->PhyCtrl[i].rf_band_cap & RfType)
 			return &ctrl->rdev[i];
 	}
 	return NULL;
@@ -105,16 +102,13 @@ static BOOLEAN rcCheckIsTheSameBand(UCHAR PhyMode, UCHAR Channel)
 {
 	if (WMODE_CAP_5G(PhyMode) && WMODE_CAP_2G(PhyMode))
 		return TRUE;
-	else if (WMODE_CAP_5G(PhyMode) && Channel  > 14)
+	else if (WMODE_CAP_5G(PhyMode) && Channel > 14)
 		return TRUE;
 	else if (WMODE_CAP_2G(PhyMode) && Channel <= 14)
 		return TRUE;
 
 	return FALSE;
 }
-
-
-
 
 #ifdef DBDC_MODE
 static RADIO_CTRL *rcGetRadioCtrlByRf(struct hdev_ctrl *ctrl, UCHAR RfType)
@@ -123,22 +117,20 @@ static RADIO_CTRL *rcGetRadioCtrlByRf(struct hdev_ctrl *ctrl, UCHAR RfType)
 	HD_RESOURCE_CFG *pHwResource = &ctrl->HwResourceCfg;
 
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
-		if (RfType &  pHwResource->PhyCtrl[i].rf_band_cap)
+		if (RfType & pHwResource->PhyCtrl[i].rf_band_cap)
 			return &pHwResource->PhyCtrl[i].RadioCtrl;
 	}
 
 	return NULL;
 }
 
-
-static VOID rcFillEntry(BCTRL_ENTRY_T *pEntry, UINT8 Type, UINT8 BandIdx, UINT8 Index)
+static VOID rcFillEntry(BCTRL_ENTRY_T *pEntry, UINT8 Type, UINT8 BandIdx,
+			UINT8 Index)
 {
 	pEntry->Type = Type;
 	pEntry->BandIdx = BandIdx;
 	pEntry->Index = Index;
 }
-
-
 
 static INT32 rcUpdateBandForMBSS(struct hdev_obj *obj, BCTRL_ENTRY_T *pEntry)
 {
@@ -151,13 +143,14 @@ static INT32 rcUpdateBandForMBSS(struct hdev_obj *obj, BCTRL_ENTRY_T *pEntry)
 		rcFillEntry(pEntry, DBDC_TYPE_BSS, pRadioCtrl->BandIdx, 0);
 	else {
 		/*ctrl->chipCap.ExtMbssOmacStartIdx+1 since 0x10 will control by 0x10*/
-		MbssIdx = obj->OmacIdx - (ctrl->chip_cap.ExtMbssOmacStartIdx+1);
-		rcFillEntry(pEntry, DBDC_TYPE_MBSS, pRadioCtrl->BandIdx, MbssIdx);
+		MbssIdx =
+			obj->OmacIdx - (ctrl->chip_cap.ExtMbssOmacStartIdx + 1);
+		rcFillEntry(pEntry, DBDC_TYPE_MBSS, pRadioCtrl->BandIdx,
+			    MbssIdx);
 	}
 
 	return 0;
 }
-
 
 static INT32 rcUpdateBandForBSS(struct hdev_obj *obj, BCTRL_ENTRY_T *pEntry)
 {
@@ -168,14 +161,12 @@ static INT32 rcUpdateBandForBSS(struct hdev_obj *obj, BCTRL_ENTRY_T *pEntry)
 	return 0;
 }
 
-
 static INT32 rcUpdateBandByType(struct hdev_obj *obj, BCTRL_ENTRY_T *pEntry)
 {
 	switch (obj->Type) {
 	case WDEV_TYPE_AP: {
 		rcUpdateBandForMBSS(obj, pEntry);
-	}
-	break;
+	} break;
 
 	case WDEV_TYPE_STA:
 	case WDEV_TYPE_ADHOC:
@@ -183,24 +174,22 @@ static INT32 rcUpdateBandByType(struct hdev_obj *obj, BCTRL_ENTRY_T *pEntry)
 	case WDEV_TYPE_GC:
 	case WDEV_TYPE_APCLI: {
 		rcUpdateBandForBSS(obj, pEntry);
-	}
-	break;
+	} break;
 
 	case WDEV_TYPE_WDS:
 	case WDEV_TYPE_MESH:
 	default: {
 		/* TODO: STAR for DBDC */
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			("%s(): Current not support this type of WdevType=%d\n", __func__, obj->Type));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("%s(): Current not support this type of WdevType=%d\n",
+			 __func__, obj->Type));
 		return -1;
-	}
-	break;
+	} break;
 	}
 
 	return 0;
 }
-
-
 
 /*Must call after update ownmac*/
 static INT32 rcUpdateBandForBFMU(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
@@ -246,12 +235,16 @@ static INT32 rcUpdateBandForBFMU(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
 		if (pHwResource->PhyCtrl[i].RadioCtrl.IsBfBand &&
-			(pHwResource->PhyCtrl[i].RadioCtrl.BandIdx != pRadioCtrl->BandIdx))
+		    (pHwResource->PhyCtrl[i].RadioCtrl.BandIdx !=
+		     pRadioCtrl->BandIdx))
 			pHwResource->PhyCtrl[i].RadioCtrl.IsBfBand = FALSE;
 	}
 
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
-	   MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s	PhyCtrl[%d].RadioCtrl.IsBfBand = %d\n", __func__, i, pHwResource->PhyCtrl[i].RadioCtrl.IsBfBand));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s	PhyCtrl[%d].RadioCtrl.IsBfBand = %d\n",
+			  __func__, i,
+			  pHwResource->PhyCtrl[i].RadioCtrl.IsBfBand));
 	}
 #ifdef TXBF_SUPPORT
 	TxBfModuleEnCtrl(pAd);
@@ -259,12 +252,12 @@ static INT32 rcUpdateBandForBFMU(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 	return 0;
 }
 
-
-static INT32 rcUpdateBandForRepeater(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
+static INT32 rcUpdateBandForRepeater(struct hdev_ctrl *ctrl,
+				     BCTRL_INFO_T *pBInfo)
 {
 	INT32 i;
 	BCTRL_ENTRY_T *pEntry;
-	struct radio_dev  *rdev;
+	struct radio_dev *rdev;
 	struct hdev_obj *obj;
 	HD_REPT_ENRTY *pReptEntry = NULL, *tmp = NULL;
 
@@ -272,11 +265,18 @@ static INT32 rcUpdateBandForRepeater(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInf
 		for (i = 0; i < ctrl->HwResourceCfg.concurrent_bands; i++) {
 			/* search repeater entry from all obj */
 			rdev = &ctrl->rdev[i];
-			DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list) {
-				DlListForEachSafe(pReptEntry, tmp, &obj->RepeaterList, struct _HD_REPT_ENRTY, list) {
-					pEntry = &pBInfo->BctrlEntries[pBInfo->TotalNum];
+			DlListForEach(obj, &rdev->DevObjList, struct hdev_obj,
+				      list)
+			{
+				DlListForEachSafe(pReptEntry, tmp,
+						  &obj->RepeaterList,
+						  struct _HD_REPT_ENRTY, list)
+				{
+					pEntry = &pBInfo->BctrlEntries
+							  [pBInfo->TotalNum];
 					rcFillEntry(pEntry, DBDC_TYPE_REPEATER,
-						rdev->pRadioCtrl->BandIdx, pReptEntry->CliIdx);
+						    rdev->pRadioCtrl->BandIdx,
+						    pReptEntry->CliIdx);
 					pBInfo->TotalNum++;
 				}
 			}
@@ -292,8 +292,6 @@ static INT32 rcUpdateBandForRepeater(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInf
 
 	return 0;
 }
-
-
 
 static INT32 rcUpdateBandForWMM(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 {
@@ -315,7 +313,6 @@ static INT32 rcUpdateBandForWMM(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 	return 0;
 }
 
-
 static INT32 rcUpdateBandForMGMT(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 {
 	INT32 i;
@@ -329,7 +326,6 @@ static INT32 rcUpdateBandForMGMT(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 
 	return 0;
 }
-
 
 static INT32 rcUpdateBandForPTA(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 {
@@ -359,7 +355,8 @@ static INT32 rcUpdateBandForOwnMac(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
 		rdev = &ctrl->rdev[i];
-		DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list) {
+		DlListForEach(obj, &rdev->DevObjList, struct hdev_obj, list)
+		{
 			pEntry = &pBInfo->BctrlEntries[pBInfo->TotalNum];
 			rcUpdateBandByType(obj, pEntry);
 			pBInfo->TotalNum++;
@@ -369,7 +366,6 @@ static INT32 rcUpdateBandForOwnMac(struct hdev_ctrl *ctrl, BCTRL_INFO_T *pBInfo)
 	return ret;
 }
 #endif /*DBDC_MODE*/
-
 
 /*Export functions*/
 /*
@@ -395,7 +391,7 @@ INT32 RcUpdateBandCtrl(struct hdev_ctrl *ctrl)
 		rcUpdateBandForPTA(ctrl, &BctrlInfo);
 		rcUpdateBandForRepeater(ctrl, &BctrlInfo);
 		/*Since will add one more time, must minus 1*/
-		BctrlInfo.TotalNum = (BctrlInfo.TotalNum-1);
+		BctrlInfo.TotalNum = (BctrlInfo.TotalNum - 1);
 
 		if (BctrlInfo.TotalNum > MAX_BCTRL_ENTRY)
 			BctrlInfo.TotalNum = MAX_BCTRL_ENTRY;
@@ -404,12 +400,13 @@ INT32 RcUpdateBandCtrl(struct hdev_ctrl *ctrl)
 	ret = AsicSetDbdcCtrl(pAd, &BctrlInfo);
 
 	if (ret != NDIS_STATUS_SUCCESS)
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Error for conifgure dbdc, ret = %d !\n", __func__, ret));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): Error for conifgure dbdc, ret = %d !\n",
+			  __func__, ret));
 
 #endif /*DBDC_MODE*/
 	return 0;
 }
-
 
 /*
 *
@@ -428,23 +425,27 @@ INT32 RcUpdateRepeaterEntry(struct radio_dev *rdev, UINT32 ReptIdx)
 		BandInfoValue.DBDCEnable = pAd->CommonCfg.dbdc_mode;
 		pEntry = &BandInfoValue.BctrlEntries[0];
 		/*fix to bind band 0 currently*/
-		rcFillEntry(pEntry, DBDC_TYPE_REPEATER, rdev->pRadioCtrl->BandIdx, ReptIdx);
+		rcFillEntry(pEntry, DBDC_TYPE_REPEATER,
+			    rdev->pRadioCtrl->BandIdx, ReptIdx);
 		BandInfoValue.TotalNum++;
 		ret = AsicSetDbdcCtrl(pAd, &BandInfoValue);
 
 		if (ret != NDIS_STATUS_SUCCESS)
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Error for conifgure dbdc, ret = %d !\n", __func__, ret));
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s(): Error for conifgure dbdc, ret = %d !\n",
+				 __func__, ret));
 	}
 
 #endif /*DBDC_MODE*/
 	return ret;
 }
 
-
 /*
 *
 */
-INT32 RcUpdateWmmEntry(struct radio_dev *rdev, struct hdev_obj *obj, UINT32 WmmIdx)
+INT32 RcUpdateWmmEntry(struct radio_dev *rdev, struct hdev_obj *obj,
+		       UINT32 WmmIdx)
 {
 	INT32 ret = 0;
 #ifdef DBDC_MODE
@@ -459,18 +460,21 @@ INT32 RcUpdateWmmEntry(struct radio_dev *rdev, struct hdev_obj *obj, UINT32 WmmI
 		pEntry = &BandInfoValue.BctrlEntries[0];
 		/*fix to bind band 0 currently*/
 		obj->WmmIdx = WmmIdx;
-		rcFillEntry(pEntry, DBDC_TYPE_WMM, rdev->pRadioCtrl->BandIdx, WmmIdx);
+		rcFillEntry(pEntry, DBDC_TYPE_WMM, rdev->pRadioCtrl->BandIdx,
+			    WmmIdx);
 		BandInfoValue.TotalNum++;
 		ret = AsicSetDbdcCtrl(pAd, &BandInfoValue);
 
 		if (ret != NDIS_STATUS_SUCCESS)
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): Error for conifgure dbdc, ret = %d !\n", __func__, ret));
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s(): Error for conifgure dbdc, ret = %d !\n",
+				 __func__, ret));
 	}
 
 #endif /*DBDC_MODE*/
 	return ret;
 }
-
 
 /*
 * Used for DATA path can get
@@ -492,8 +496,6 @@ UINT32 RcGetMgmtQueueIdx(struct hdev_obj *obj, enum PACKET_TYPE pkt_type)
 	}
 }
 
-
-
 /*
 *
 */
@@ -511,7 +513,6 @@ UINT32 RcGetBcnQueueIdx(struct hdev_obj *obj)
 #endif
 }
 
-
 /*
 *
 */
@@ -520,12 +521,10 @@ UINT32 RcGetTxRingIdx(struct hdev_obj *obj)
 	struct radio_dev *rdev = obj->rdev;
 
 	if (rdev->pRadioCtrl && rdev->pRadioCtrl->BandIdx)
-		return  1;
+		return 1;
 
 	return 0;
 }
-
-
 
 /*
 *
@@ -542,7 +541,7 @@ UINT32 RcGetWmmIdx(struct hdev_obj *obj)
 UINT32 MAPRcGetBandIdxByChannelCheck(struct hdev_ctrl *ctrl, UCHAR Channel)
 {
 #ifdef DBDC_MODE
-	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *) ctrl->priv;
+	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *)ctrl->priv;
 
 	/*not enable dbdc mode band should always in band0*/
 	if (!pAd->CommonCfg.dbdc_mode)
@@ -563,7 +562,7 @@ UINT32 MAPRcGetBandIdxByChannelCheck(struct hdev_ctrl *ctrl, UCHAR Channel)
 UINT32 RcGetBandIdxByChannel(struct hdev_ctrl *ctrl, UCHAR Channel)
 {
 #ifdef DBDC_MODE
-	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *) ctrl->priv;
+	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *)ctrl->priv;
 	RADIO_CTRL *pRadioCtrl = NULL;
 
 	/*not enable dbdc mode band should always in band0*/
@@ -583,7 +582,6 @@ UINT32 RcGetBandIdxByChannel(struct hdev_ctrl *ctrl, UCHAR Channel)
 	return 0;
 }
 
-
 /*
 *
 */
@@ -599,13 +597,14 @@ VOID RcRadioInit(struct hdev_ctrl *ctrl, UCHAR RfIC, UCHAR DbdcMode)
 	else
 		pHwResource->concurrent_bands = 1;
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): DbdcMode=%d, ConcurrentBand=%d\n",
-			 __func__, DbdcMode, pHwResource->concurrent_bands));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("%s(): DbdcMode=%d, ConcurrentBand=%d\n", __func__, DbdcMode,
+		  pHwResource->concurrent_bands));
 
 	/*Allocate PhyCtrl for HwResource*/
 	for (i = 0; i < pHwResource->concurrent_bands; i++) {
-		pPhyCtrl =  &pHwResource->PhyCtrl[i];
-		pRadioCtrl =  &pPhyCtrl->RadioCtrl;
+		pPhyCtrl = &pHwResource->PhyCtrl[i];
+		pRadioCtrl = &pPhyCtrl->RadioCtrl;
 		os_zero_mem(pRadioCtrl, sizeof(*pRadioCtrl));
 		pPhyCtrl->rf_band_cap = rcGetBandSupport(ctrl, DbdcMode, i);
 		pRadioCtrl->BandIdx = i;
@@ -628,14 +627,17 @@ VOID RcRadioInit(struct hdev_ctrl *ctrl, UCHAR RfIC, UCHAR DbdcMode)
 #ifdef GREENAP_SUPPORT
 		pRadioCtrl->bGreenAPActive = FALSE;
 #endif /* GREENAP_SUPPORT */
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): pRadioCtrl=%p,Band=%d,rfcap=%d,channel=%d,PhyMode=%d extCha=0x%x\n",
-				 __func__, pRadioCtrl, i, pPhyCtrl->rf_band_cap, pRadioCtrl->Channel, pRadioCtrl->PhyMode,pRadioCtrl->ExtCha));
+		MTWF_LOG(
+			DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s(): pRadioCtrl=%p,Band=%d,rfcap=%d,channel=%d,PhyMode=%d extCha=0x%x\n",
+			 __func__, pRadioCtrl, i, pPhyCtrl->rf_band_cap,
+			 pRadioCtrl->Channel, pRadioCtrl->PhyMode,
+			 pRadioCtrl->ExtCha));
 		HdevInit(ctrl, i, pRadioCtrl);
 	}
 
 	RcUpdateBandCtrl(ctrl);
 }
-
 
 /*
 *
@@ -645,7 +647,8 @@ VOID RcReleaseBandForObj(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 	struct radio_dev *rdev = NULL;
 
 	if (!obj) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s():can't find obj\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s():can't find obj\n", __func__));
 		return;
 	}
 
@@ -663,17 +666,13 @@ VOID RcReleaseBandForObj(struct hdev_ctrl *ctrl, struct hdev_obj *obj)
 	return;
 }
 
-
 /*
 * Refine when OmacIdx is ready
 */
-struct radio_dev *RcAcquiredBandForObj(
-	struct hdev_ctrl *ctrl,
-	struct hdev_obj *obj,
-	UCHAR obj_idx,
-	UCHAR PhyMode,
-	UCHAR Channel,
-	UCHAR ObjType)
+struct radio_dev *RcAcquiredBandForObj(struct hdev_ctrl *ctrl,
+				       struct hdev_obj *obj, UCHAR obj_idx,
+				       UCHAR PhyMode, UCHAR Channel,
+				       UCHAR ObjType)
 {
 	struct radio_dev *rdev = NULL;
 	UCHAR is_default = 0;
@@ -689,7 +688,8 @@ struct radio_dev *RcAcquiredBandForObj(
 	if (!rdev) {
 		rdev = &ctrl->rdev[0];
 		if (WMODE_CAP_5G(PhyMode)) {
-			printk("[%s] rdev received NULL in 5G mode\n", __func__);
+			printk("[%s] rdev received NULL in 5G mode\n",
+			       __func__);
 		}
 		is_default = 1;
 	}
@@ -697,15 +697,16 @@ struct radio_dev *RcAcquiredBandForObj(
 	/*update phy mode for radio control*/
 	pRadioCtrl = rdev->pRadioCtrl;
 	/*Can get rdev. change phyCtrl to INUSED state*/
-	if(pRadioCtrl->CurStat == PHY_IDLE)
+	if (pRadioCtrl->CurStat == PHY_IDLE)
 		pRadioCtrl->CurStat = PHY_INUSE;
 	/*if mixed mode*/
-	if ((ObjType == WDEV_TYPE_STA) && (!WMODE_5G_ONLY(PhyMode) || !WMODE_2G_ONLY(PhyMode))) {
+	if ((ObjType == WDEV_TYPE_STA) &&
+	    (!WMODE_5G_ONLY(PhyMode) || !WMODE_2G_ONLY(PhyMode))) {
 		pRadioCtrl->PhyMode = PhyMode;
 	} else if (!is_default) {
 		/*Make phymode of band should be the maxize*/
 		if (wmode_band_equal(pRadioCtrl->PhyMode, PhyMode))
-			pRadioCtrl->PhyMode |=  PhyMode;
+			pRadioCtrl->PhyMode |= PhyMode;
 		else
 			pRadioCtrl->PhyMode = PhyMode;
 	}
@@ -714,15 +715,15 @@ struct radio_dev *RcAcquiredBandForObj(
 	obj->Type = ObjType;
 	obj->OmacIdx = GetOmacIdx(ctrl, ObjType, obj_idx);
 	HdevObjAdd(rdev, obj);
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+	MTWF_LOG(
+		DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
 		("%s(): BandIdx:%d, PhyMode=%d,Channel=%d,rdev=%p,pHdevObj=%p\n",
-		__func__, pRadioCtrl->BandIdx, pRadioCtrl->PhyMode, pRadioCtrl->Channel, rdev, obj));
+		 __func__, pRadioCtrl->BandIdx, pRadioCtrl->PhyMode,
+		 pRadioCtrl->Channel, rdev, obj));
 	RcUpdateBandCtrl(ctrl);
 	NdisAllocateSpinLock(NULL, &obj->RefCntLock);
 	return rdev;
 }
-
-
 
 /*
 *
@@ -732,24 +733,25 @@ struct radio_dev *RcGetHdevByChannel(struct hdev_ctrl *ctrl, UCHAR Channel)
 	struct radio_dev *rdev = NULL;
 	UCHAR i = 0;
 
-	for (i = 0 ; i < ctrl->HwResourceCfg.concurrent_bands ; i++) {
+	for (i = 0; i < ctrl->HwResourceCfg.concurrent_bands; i++) {
 		rdev = &ctrl->rdev[i];
 		if (rdev != NULL && rdev->pRadioCtrl->Channel == Channel) {
 			return rdev;
 		}
 	}
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+	MTWF_LOG(
+		DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
 		("%s():Err! Update PhyMode failed, no phyctrl support this channel=%d!\n",
-		__func__, Channel));
+		 __func__, Channel));
 	return NULL;
 }
-
 
 /*
 * Get rdev by PhyMode & Channel, can't find pHdev may rdev is full
 */
-struct radio_dev *RcGetHdevByPhyMode(struct hdev_ctrl *ctrl, UCHAR PhyMode, UCHAR channel)
+struct radio_dev *RcGetHdevByPhyMode(struct hdev_ctrl *ctrl, UCHAR PhyMode,
+				     UCHAR channel)
 {
 	UCHAR i;
 	struct radio_dev *rdev = NULL;
@@ -762,20 +764,25 @@ struct radio_dev *RcGetHdevByPhyMode(struct hdev_ctrl *ctrl, UCHAR PhyMode, UCHA
 	for (i = 0; i < pHwResourceCfg->concurrent_bands; i++) {
 		pPhyCtrl = &pHwResourceCfg->PhyCtrl[i];
 
-		if (WMODE_CAP_2G(PhyMode) &&  (pPhyCtrl->rf_band_cap == RFIC_24GHZ))
+		if (WMODE_CAP_2G(PhyMode) &&
+		    (pPhyCtrl->rf_band_cap == RFIC_24GHZ))
 			rdev = &ctrl->rdev[i];
-		else if (WMODE_CAP_5G(PhyMode) && (pPhyCtrl->rf_band_cap == RFIC_5GHZ))
+		else if (WMODE_CAP_5G(PhyMode) &&
+			 (pPhyCtrl->rf_band_cap == RFIC_5GHZ))
 			rdev = &ctrl->rdev[i];
 
 		if (rdev) {
-			pChCtrl = hc_get_channel_ctrl(ctrl, rdev->pRadioCtrl->BandIdx);
+			pChCtrl = hc_get_channel_ctrl(
+				ctrl, rdev->pRadioCtrl->BandIdx);
 			/* if ACS Enabled channel is 0 initially */
 			if (channel) {
-				if ((rdev->DevNum == 0) || (rdev->pRadioCtrl->Channel == channel) ||
-						MTChGrpChannelChk(pChCtrl, channel))
+				if ((rdev->DevNum == 0) ||
+				    (rdev->pRadioCtrl->Channel == channel) ||
+				    MTChGrpChannelChk(pChCtrl, channel))
 					break;
 			} else {
-				printk("[%s] channel 0 fix for rdev fetching\n", __func__);
+				printk("[%s] channel 0 fix for rdev fetching\n",
+				       __func__);
 				break;
 			}
 		}
@@ -789,38 +796,37 @@ struct radio_dev *RcGetHdevByPhyMode(struct hdev_ctrl *ctrl, UCHAR PhyMode, UCHA
 	for (i = 0; i < pHwResourceCfg->concurrent_bands; i++) {
 		pPhyCtrl = &pHwResourceCfg->PhyCtrl[i];
 
-		if (WMODE_CAP_2G(PhyMode) &&  (pPhyCtrl->rf_band_cap & RFIC_24GHZ))
+		if (WMODE_CAP_2G(PhyMode) &&
+		    (pPhyCtrl->rf_band_cap & RFIC_24GHZ))
 			rdev = &ctrl->rdev[i];
-		else if (WMODE_CAP_5G(PhyMode) && (pPhyCtrl->rf_band_cap & RFIC_5GHZ))
+		else if (WMODE_CAP_5G(PhyMode) &&
+			 (pPhyCtrl->rf_band_cap & RFIC_5GHZ))
 			rdev = &ctrl->rdev[i];
 		if (channel) {
-			if (rdev &&
-				((rdev->DevNum == 0) || (rdev->pRadioCtrl->Channel == channel))) {
+			if (rdev && ((rdev->DevNum == 0) ||
+				     (rdev->pRadioCtrl->Channel == channel))) {
 				break;
 			}
 		} else {
 			if (rdev) {
-				printk("[%s]-- channel 0 fix for rdev fetching\n",  __func__);
+				printk("[%s]-- channel 0 fix for rdev fetching\n",
+				       __func__);
 				break;
 			}
-
 		}
-
 	}
 
 	if (!rdev) {
 		str = wmode_2_str(PhyMode);
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s():Err! chip not support this PhyMode:%s !\n", __func__, str));
+			 ("%s():Err! chip not support this PhyMode:%s !\n",
+			  __func__, str));
 		if (str)
 			os_free_mem(str);
 	}
 
 	return rdev;
 }
-
-
-
 
 /*
 *
@@ -835,8 +841,10 @@ INT32 RcUpdateChannel(struct radio_dev *rdev, UCHAR Channel, BOOLEAN scan)
 
 		NdisGetSystemUpTime(&CurJiffies);
 		pRadioCtrl->CurChannelUpTime = jiffies_to_usecs(CurJiffies);
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:orig_chan=%d, new_chan=%d, CurChanUpTime=%u\n",
-						__func__, pRadioCtrl->Channel, Channel, pRadioCtrl->CurChannelUpTime));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:orig_chan=%d, new_chan=%d, CurChanUpTime=%u\n",
+			  __func__, pRadioCtrl->Channel, Channel,
+			  pRadioCtrl->CurChannelUpTime));
 	}
 #endif
 	pRadioCtrl->Channel = Channel;
@@ -844,12 +852,11 @@ INT32 RcUpdateChannel(struct radio_dev *rdev, UCHAR Channel, BOOLEAN scan)
 	return ret;
 }
 
-
-
 /*
 *
 */
-INT32 RcUpdateRadio(struct radio_dev *rdev, UCHAR bw, UCHAR central_ch1, UCHAR control_ch2, UCHAR ext_cha)
+INT32 RcUpdateRadio(struct radio_dev *rdev, UCHAR bw, UCHAR central_ch1,
+		    UCHAR control_ch2, UCHAR ext_cha)
 {
 	INT32 ret = 0;
 	RADIO_CTRL *pRadioCtrl = rdev->pRadioCtrl;
@@ -860,7 +867,6 @@ INT32 RcUpdateRadio(struct radio_dev *rdev, UCHAR bw, UCHAR central_ch1, UCHAR c
 	pRadioCtrl->ExtCha = ext_cha;
 	return ret;
 }
-
 
 /*
 *
@@ -881,7 +887,6 @@ INT32 RcUpdatePhyMode(struct radio_dev *rdev, UCHAR PhyMode)
 	RcUpdateBandCtrl(rdev->priv);
 	return -1;
 }
-
 
 /*
 *
@@ -930,7 +935,6 @@ UCHAR RcGetPhyMode(struct radio_dev *rdev)
 	return rdev->pRadioCtrl->PhyMode;
 }
 
-
 /*
 *
 */
@@ -938,7 +942,6 @@ UCHAR RcGetChannel(struct radio_dev *rdev)
 {
 	return rdev->pRadioCtrl->Channel;
 }
-
 
 /*
 *
@@ -948,13 +951,15 @@ UCHAR RcGetCentralCh(struct radio_dev *rdev)
 	return rdev->pRadioCtrl->CentralCh;
 }
 
-
 /*
 *
 */
 UCHAR RcGetBandIdx(struct radio_dev *rdev)
 {
-	return rdev->pRadioCtrl->BandIdx;
+	if (rdev && rdev->pRadioCtrl)
+		return rdev->pRadioCtrl->BandIdx;
+	else
+		return 0;
 }
 
 /*
@@ -973,7 +978,6 @@ VOID RcSetRadioCurStat(struct radio_dev *rdev, PHY_STATUS CurStat)
 	rdev->pRadioCtrl->CurStat = CurStat;
 }
 
-
 /*
 *
 */
@@ -981,7 +985,6 @@ UCHAR RcGetBw(struct radio_dev *rdev)
 {
 	return rdev->pRadioCtrl->Bw;
 }
-
 
 /*
 *
@@ -995,7 +998,6 @@ UCHAR RcGetBandIdxByRf(struct hdev_ctrl *ctrl, UCHAR RfIC)
 
 	return 0;
 }
-
 
 /*
 *
@@ -1016,7 +1018,6 @@ struct radio_dev *RcGetBandIdxByBf(struct hdev_ctrl *ctrl)
 	return NULL;
 }
 
-
 /*
 *
 */
@@ -1034,7 +1035,6 @@ struct radio_dev *RcInit(struct hdev_ctrl *ctrl)
 	return NULL;
 }
 
-
 /*
 *
 */
@@ -1043,8 +1043,12 @@ VOID RcRadioShow(HD_RESOURCE_CFG *pHwResourceCfg)
 	UCHAR i;
 
 	for (i = 0; i < pHwResourceCfg->concurrent_bands; i++) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("band\t: %d,rfic: %d, bf_cap: %d\n",
-				 i, pHwResourceCfg->PhyCtrl[i].rf_band_cap, pHwResourceCfg->PhyCtrl[i].RadioCtrl.IsBfBand ? TRUE:FALSE));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("band\t: %d,rfic: %d, bf_cap: %d\n", i,
+			  pHwResourceCfg->PhyCtrl[i].rf_band_cap,
+			  pHwResourceCfg->PhyCtrl[i].RadioCtrl.IsBfBand ?
+				  TRUE :
+					FALSE));
 	}
 }
 

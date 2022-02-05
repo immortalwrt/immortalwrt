@@ -20,8 +20,8 @@ VOID InitRFRegisters(RTMP_ADAPTER *pAd)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): Init RF Registers\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s(): Init RF Registers\n", __func__));
 	if (ops->AsicRfInit)
 		ops->AsicRfInit(pAd);
 }
-

@@ -27,7 +27,7 @@
 #include "rt_config.h"
 
 /*BaSizeArray follows the 802.11n definition as MaxRxFactor.  2^(13+factor) bytes. When factor =0, it's about Ba buffer size =8.*/
-UCHAR BaSizeArray[4] = {8, 16, 32, 64};
+UCHAR BaSizeArray[4] = { 8, 16, 32, 64 };
 
 extern COUNTRY_REGION_CH_DESC Country_Region_ChDesc_2GHZ[];
 extern UINT16 const Country_Region_GroupNum_2GHZ;
@@ -46,18 +46,20 @@ extern UINT16 const Country_Region_GroupNum_5GHZ;
 
 	==========================================================================
  */
-static UCHAR BuildChannelListFor2G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCHAR PhyMode)
+static UCHAR BuildChannelListFor2G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl,
+				   UCHAR PhyMode)
 {
 	UCHAR ChIdx, ChIdx_TxPwr, num = 0;
 	PCH_DESC pChDesc = NULL;
 	BOOLEAN bRegionFound = FALSE;
 	PUCHAR pChannelList;
 	PUCHAR pChannelListFlag;
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[BuildChannelListFor2G]\n"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("[BuildChannelListFor2G]\n"));
 
 	for (ChIdx = 0; ChIdx < Country_Region_GroupNum_2GHZ; ChIdx++) {
 		if ((pAd->CommonCfg.CountryRegion & 0x7f) ==
-			Country_Region_ChDesc_2GHZ[ChIdx].RegionIndex) {
+		    Country_Region_ChDesc_2GHZ[ChIdx].RegionIndex) {
 			pChDesc = Country_Region_ChDesc_2GHZ[ChIdx].pChDesc;
 			num = TotalChNum(pChDesc);
 			pAd->CommonCfg.pChDesc2G = (PUCHAR)pChDesc;
@@ -67,39 +69,54 @@ static UCHAR BuildChannelListFor2G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 	}
 
 	if (!bRegionFound) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("CountryRegion=%d not support", pAd->CommonCfg.CountryRegion));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("CountryRegion=%d not support",
+			  pAd->CommonCfg.CountryRegion));
 		goto done;
 	}
 
 	if (num > 0) {
-		os_alloc_mem(NULL, (UCHAR **)&pChannelList, num * sizeof(UCHAR));
+		os_alloc_mem(NULL, (UCHAR **)&pChannelList,
+			     num * sizeof(UCHAR));
 
 		if (!pChannelList) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Allocate memory for ChannelList failed\n", __func__));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s:Allocate memory for ChannelList failed\n",
+				  __func__));
 			goto done;
 		}
 
-		os_alloc_mem(NULL, (UCHAR **)&pChannelListFlag, num * sizeof(UCHAR));
+		os_alloc_mem(NULL, (UCHAR **)&pChannelListFlag,
+			     num * sizeof(UCHAR));
 
 		if (!pChannelListFlag) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Allocate memory for ChannelListFlag failed\n", __func__));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s:Allocate memory for ChannelListFlag failed\n",
+				 __func__));
 			os_free_mem(pChannelList);
 			goto done;
 		}
 
 		for (ChIdx = 0; ChIdx < num; ChIdx++) {
 			pChannelList[ChIdx] = GetChannel_2GHZ(pChDesc, ChIdx);
-			pChannelListFlag[ChIdx] = GetChannelFlag(pChDesc, ChIdx);
+			pChannelListFlag[ChIdx] =
+				GetChannelFlag(pChDesc, ChIdx);
 		}
 
 		for (ChIdx = 0; ChIdx < num; ChIdx++) {
-			for (ChIdx_TxPwr = 0; ChIdx_TxPwr < MAX_NUM_OF_CHANNELS; ChIdx_TxPwr++) {
-				if (pChannelList[ChIdx] == pAd->TxPower[ChIdx_TxPwr].Channel)
-					hc_set_ChCtrl(pChCtrl, pAd, ChIdx, ChIdx_TxPwr);
+			for (ChIdx_TxPwr = 0; ChIdx_TxPwr < MAX_NUM_OF_CHANNELS;
+			     ChIdx_TxPwr++) {
+				if (pChannelList[ChIdx] ==
+				    pAd->TxPower[ChIdx_TxPwr].Channel)
+					hc_set_ChCtrl(pChCtrl, pAd, ChIdx,
+						      ChIdx_TxPwr);
 			}
 #ifdef CONFIG_AP_SUPPORT
 			if (pChannelList[ChIdx] == 14) {
-				if (!strncmp((RTMP_STRING *) pAd->CommonCfg.CountryCode, "JP", 2)) {
+				if (!strncmp((RTMP_STRING *)
+						     pAd->CommonCfg.CountryCode,
+					     "JP", 2)) {
 					/* for JP, ch14 can only be used when PhyMode is "B only" */
 					if (!WMODE_EQUAL(PhyMode, WMODE_B)) {
 						num--;
@@ -113,20 +130,19 @@ static UCHAR BuildChannelListFor2G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 			}
 #endif
 			pChCtrl->ChList[ChIdx].Channel = pChannelList[ChIdx];
-			if (!strncmp((RTMP_STRING *) pAd->CommonCfg.CountryCode, "CN", 2))
-				pChCtrl->ChList[ChIdx].MaxTxPwr = pAd->MaxTxPwr;/*for CN CountryCode*/
+			if (!strncmp((RTMP_STRING *)pAd->CommonCfg.CountryCode,
+				     "CN", 2))
+				pChCtrl->ChList[ChIdx].MaxTxPwr =
+					pAd->MaxTxPwr; /*for CN CountryCode*/
 			else
 				pChCtrl->ChList[ChIdx].MaxTxPwr = 20;
 			pChCtrl->ChList[ChIdx].Flags = pChannelListFlag[ChIdx];
 
 #ifdef RT_CFG80211_SUPPORT
-			CFG80211OS_ChanInfoInit(
-				pAd->pCfg80211_CB,
-				ChIdx,
-				pChCtrl->ChList[ChIdx].Channel,
-				pChCtrl->ChList[ChIdx].MaxTxPwr,
-				TRUE,
-				TRUE);
+			CFG80211OS_ChanInfoInit(pAd->pCfg80211_CB, ChIdx,
+						pChCtrl->ChList[ChIdx].Channel,
+						pChCtrl->ChList[ChIdx].MaxTxPwr,
+						TRUE, TRUE);
 #endif /* RT_CFG80211_SUPPORT */
 		}
 
@@ -138,16 +154,18 @@ static UCHAR BuildChannelListFor2G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 
 #ifdef RT_CFG80211_SUPPORT
 
-	if (CFG80211OS_UpdateRegRuleByRegionIdx(pAd->pCfg80211_CB, pChDesc, NULL) != 0)
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Update RegRule failed!\n"));
+	if (CFG80211OS_UpdateRegRuleByRegionIdx(pAd->pCfg80211_CB, pChDesc,
+						NULL) != 0)
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Update RegRule failed!\n"));
 
 #endif /* RT_CFG80211_SUPPORT */
 done:
 	return num;
 }
 
-
-static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCHAR PhyMode)
+static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl,
+				   UCHAR PhyMode)
 {
 	UCHAR ChIdx, ChIdx2, num = 0;
 	PCH_DESC pChDesc = NULL;
@@ -168,11 +186,12 @@ static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 	PhyMode = HcGetRadioPhyMode(pAd);
 #endif
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[BuildChannelListFor5G] \n"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("[BuildChannelListFor5G] \n"));
 
 	for (ChIdx = 0; ChIdx < Country_Region_GroupNum_5GHZ; ChIdx++) {
 		if ((pAd->CommonCfg.CountryRegionForABand & 0x7f) ==
-			Country_Region_ChDesc_5GHZ[ChIdx].RegionIndex) {
+		    Country_Region_ChDesc_5GHZ[ChIdx].RegionIndex) {
 			pChDesc = Country_Region_ChDesc_5GHZ[ChIdx].pChDesc;
 			num = TotalChNum(pChDesc);
 			pAd->CommonCfg.pChDesc5G = (PUCHAR)pChDesc;
@@ -182,90 +201,150 @@ static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 	}
 
 	if (!bRegionFound) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("CountryRegionABand=%d not support",
-				 pAd->CommonCfg.CountryRegionForABand));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("CountryRegionABand=%d not support",
+			  pAd->CommonCfg.CountryRegionForABand));
 		goto done;
 	}
 
 	if (num > 0) {
-		UCHAR RadarCh[16] = {52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144};
+		UCHAR RadarCh[16] = { 52,  56,	60,  64,  100, 104, 108, 112,
+				      116, 120, 124, 128, 132, 136, 140, 144 };
 #ifdef CONFIG_AP_SUPPORT
 		UCHAR q = 0;
 #endif
-		os_alloc_mem(NULL, (UCHAR **)&pChannelList, num * sizeof(UCHAR));
+		os_alloc_mem(NULL, (UCHAR **)&pChannelList,
+			     num * sizeof(UCHAR));
 
 		if (!pChannelList) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Allocate memory for ChannelList failed\n", __func__));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s:Allocate memory for ChannelList failed\n",
+				  __func__));
 			goto done;
 		}
 
-		os_alloc_mem(NULL, (UCHAR **)&pChannelListFlag, num * sizeof(UCHAR));
+		os_alloc_mem(NULL, (UCHAR **)&pChannelListFlag,
+			     num * sizeof(UCHAR));
 
 		if (!pChannelListFlag) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:Allocate memory for ChannelListFlag failed\n", __func__));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s:Allocate memory for ChannelListFlag failed\n",
+				 __func__));
 			os_free_mem(pChannelList);
 			goto done;
 		}
 
 		for (ChIdx = 0; ChIdx < num; ChIdx++) {
 			pChannelList[ChIdx] = GetChannel_5GHZ(pChDesc, ChIdx);
-			pChannelListFlag[ChIdx] = GetChannelFlag(pChDesc, ChIdx);
+			pChannelListFlag[ChIdx] =
+				GetChannelFlag(pChDesc, ChIdx);
 		}
 #ifdef CONFIG_AP_SUPPORT
 
 		for (ChIdx = 0; ChIdx < num; ChIdx++) {
-			if ((pAd->CommonCfg.bIEEE80211H == 0) || ((pAd->CommonCfg.bIEEE80211H == 1) && (pAd->CommonCfg.RDDurRegion != FCC))) {
+			if ((pAd->CommonCfg.bIEEE80211H == 0) ||
+			    ((pAd->CommonCfg.bIEEE80211H == 1) &&
+			     (pAd->CommonCfg.RDDurRegion != FCC))) {
 				/* Profile parameter - ChannelGrp is enabled */
 				if (MTChGrpValid(pChCtrl)) {
 					/* Get channels according to ChannelGrp */
-					if (MTChGrpChannelChk(pChCtrl, GetChannel_5GHZ(pChDesc, ChIdx))) {
-						pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-						pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+					if (MTChGrpChannelChk(
+						    pChCtrl,
+						    GetChannel_5GHZ(pChDesc,
+								    ChIdx))) {
+						pChannelList[q] =
+							GetChannel_5GHZ(pChDesc,
+									ChIdx);
+						pChannelListFlag[q] =
+							GetChannelFlag(pChDesc,
+								       ChIdx);
 						q++;
 					}
 				} else {
-					pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-					pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+					pChannelList[q] =
+						GetChannel_5GHZ(pChDesc, ChIdx);
+					pChannelListFlag[q] =
+						GetChannelFlag(pChDesc, ChIdx);
 					q++;
 				}
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[BuildChannelListFor5G] - RDDurRegion != FCC - q=%d!\n", q));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("[BuildChannelListFor5G] - RDDurRegion != FCC - q=%d!\n",
+					 q));
 			}
 			/*Based on the requiremnt of FCC, some channles could not be used anymore when test DFS function.*/
 			else if ((pAd->CommonCfg.bIEEE80211H == 1) &&
-					 (pAd->CommonCfg.RDDurRegion == FCC) &&
-					 (pAd->Dot11_H[0].bDFSIndoor == 1)) {
-				if ((GetChannel_5GHZ(pChDesc, ChIdx) < 116) || (GetChannel_5GHZ(pChDesc, ChIdx) > 128)) {
+				 (pAd->CommonCfg.RDDurRegion == FCC) &&
+				 (pAd->Dot11_H[0].bDFSIndoor == 1)) {
+				if ((GetChannel_5GHZ(pChDesc, ChIdx) < 116) ||
+				    (GetChannel_5GHZ(pChDesc, ChIdx) > 128)) {
 					if (MTChGrpValid(pChCtrl)) {
-						if (MTChGrpChannelChk(pChCtrl, GetChannel_5GHZ(pChDesc, ChIdx))) {
-							pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-							pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+						if (MTChGrpChannelChk(
+							    pChCtrl,
+							    GetChannel_5GHZ(
+								    pChDesc,
+								    ChIdx))) {
+							pChannelList[q] =
+								GetChannel_5GHZ(
+									pChDesc,
+									ChIdx);
+							pChannelListFlag[q] =
+								GetChannelFlag(
+									pChDesc,
+									ChIdx);
 							q++;
 						}
 					} else {
-						pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-						pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+						pChannelList[q] =
+							GetChannel_5GHZ(pChDesc,
+									ChIdx);
+						pChannelListFlag[q] =
+							GetChannelFlag(pChDesc,
+								       ChIdx);
 						q++;
 					}
 				}
 			} else if ((pAd->CommonCfg.bIEEE80211H == 1) &&
-					   (pAd->CommonCfg.RDDurRegion == FCC) &&
-					   (pAd->Dot11_H[0].bDFSIndoor == 0)) {
-				if ((GetChannel_5GHZ(pChDesc, ChIdx) < 100) || (GetChannel_5GHZ(pChDesc, ChIdx) > 140)) {
+				   (pAd->CommonCfg.RDDurRegion == FCC) &&
+				   (pAd->Dot11_H[0].bDFSIndoor == 0)) {
+				if ((GetChannel_5GHZ(pChDesc, ChIdx) < 100) ||
+				    (GetChannel_5GHZ(pChDesc, ChIdx) > 140)) {
 					if (MTChGrpValid(pChCtrl)) {
-						if (MTChGrpChannelChk(pChCtrl, GetChannel_5GHZ(pChDesc, ChIdx))) {
-							pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-							pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+						if (MTChGrpChannelChk(
+							    pChCtrl,
+							    GetChannel_5GHZ(
+								    pChDesc,
+								    ChIdx))) {
+							pChannelList[q] =
+								GetChannel_5GHZ(
+									pChDesc,
+									ChIdx);
+							pChannelListFlag[q] =
+								GetChannelFlag(
+									pChDesc,
+									ChIdx);
 							q++;
 						}
 					} else {
-						pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-						pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+						pChannelList[q] =
+							GetChannel_5GHZ(pChDesc,
+									ChIdx);
+						pChannelListFlag[q] =
+							GetChannelFlag(pChDesc,
+								       ChIdx);
 						q++;
 					}
 				}
-			} else if (MTChGrpValid(pChCtrl) && MTChGrpChannelChk(pChCtrl, GetChannel_5GHZ(pChDesc, ChIdx))) {
-				pChannelList[q] = GetChannel_5GHZ(pChDesc, ChIdx);
-				pChannelListFlag[q] = GetChannelFlag(pChDesc, ChIdx);
+			} else if (MTChGrpValid(pChCtrl) &&
+				   MTChGrpChannelChk(pChCtrl,
+						     GetChannel_5GHZ(pChDesc,
+								     ChIdx))) {
+				pChannelList[q] =
+					GetChannel_5GHZ(pChDesc, ChIdx);
+				pChannelListFlag[q] =
+					GetChannelFlag(pChDesc, ChIdx);
 				q++;
 			}
 		}
@@ -275,11 +354,14 @@ static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 		/* If Channel group is exclusive of supported channels of CountryRegionForABand */
 		/* Build channel list based on channel group to avoid NULL channel list */
 		if (num == 0 && MTChGrpValid(pChCtrl)) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 				("[%s] Build channel list based on channel group to avoid NULL channel list!\n",
-				__func__));
-			for (ChIdx = 0; ChIdx < pChCtrl->ChGrpABandChNum; ChIdx++) {
-				pChannelList[ChIdx] = pChCtrl->ChGrpABandChList[ChIdx];
+				 __func__));
+			for (ChIdx = 0; ChIdx < pChCtrl->ChGrpABandChNum;
+			     ChIdx++) {
+				pChannelList[ChIdx] =
+					pChCtrl->ChGrpABandChList[ChIdx];
 				pChannelListFlag[ChIdx] = CHANNEL_DEFAULT_PROP;
 			}
 
@@ -289,31 +371,35 @@ static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 #endif /* CONFIG_AP_SUPPORT */
 
 		for (ChIdx = 0; ChIdx < num; ChIdx++) {
-			for (ChIdx2 = 0; ChIdx2 < MAX_NUM_OF_CHANNELS; ChIdx2++) {
-				if (pChannelList[ChIdx] == pAd->TxPower[ChIdx2].Channel)
-					hc_set_ChCtrl(pChCtrl, pAd, ChIdx, ChIdx2);
+			for (ChIdx2 = 0; ChIdx2 < MAX_NUM_OF_CHANNELS;
+			     ChIdx2++) {
+				if (pChannelList[ChIdx] ==
+				    pAd->TxPower[ChIdx2].Channel)
+					hc_set_ChCtrl(pChCtrl, pAd, ChIdx,
+						      ChIdx2);
 
-				pChCtrl->ChList[ChIdx].Channel = pChannelList[ChIdx];
-				pChCtrl->ChList[ChIdx].Flags = pChannelListFlag[ChIdx];
+				pChCtrl->ChList[ChIdx].Channel =
+					pChannelList[ChIdx];
+				pChCtrl->ChList[ChIdx].Flags =
+					pChannelListFlag[ChIdx];
 			}
 
 			for (ChIdx2 = 0; ChIdx2 < 16; ChIdx2++) {
 				if (pChannelList[ChIdx] == RadarCh[ChIdx2]) {
-				pChCtrl->ChList[ChIdx].DfsReq = TRUE;
+					pChCtrl->ChList[ChIdx].DfsReq = TRUE;
 				}
 			}
-			if (!strncmp((RTMP_STRING *) pAd->CommonCfg.CountryCode, "CN", 2))
-				pChCtrl->ChList[ChIdx].MaxTxPwr = pAd->MaxTxPwr;/*for CN CountryCode*/
+			if (!strncmp((RTMP_STRING *)pAd->CommonCfg.CountryCode,
+				     "CN", 2))
+				pChCtrl->ChList[ChIdx].MaxTxPwr =
+					pAd->MaxTxPwr; /*for CN CountryCode*/
 			else
 				pChCtrl->ChList[ChIdx].MaxTxPwr = 20;
 #ifdef RT_CFG80211_SUPPORT
-			CFG80211OS_ChanInfoInit(
-				pAd->pCfg80211_CB,
-				ChIdx,
-				pChCtrl->ChList[ChIdx].Channel,
-				pChCtrl->ChList[ChIdx].MaxTxPwr,
-				TRUE,
-				TRUE);
+			CFG80211OS_ChanInfoInit(pAd->pCfg80211_CB, ChIdx,
+						pChCtrl->ChList[ChIdx].Channel,
+						pChCtrl->ChList[ChIdx].MaxTxPwr,
+						TRUE, TRUE);
 #endif /*RT_CFG80211_SUPPORT*/
 		}
 
@@ -324,14 +410,15 @@ static UCHAR BuildChannelListFor5G(RTMP_ADAPTER *pAd, CHANNEL_CTRL *pChCtrl, UCH
 
 #ifdef RT_CFG80211_SUPPORT
 
-	if (CFG80211OS_UpdateRegRuleByRegionIdx(pAd->pCfg80211_CB, NULL, pChDesc) != 0)
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Update RegRule failed!\n"));
+	if (CFG80211OS_UpdateRegRuleByRegionIdx(pAd->pCfg80211_CB, NULL,
+						pChDesc) != 0)
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Update RegRule failed!\n"));
 
 #endif /*RT_CFG80211_SUPPORT*/
 done:
 	return num;
 }
-
 
 static bool Set_Diff_Bw(RTMP_ADAPTER *pAd, UCHAR wcid, UCHAR bw, UCHAR ext_ch)
 {
@@ -356,7 +443,8 @@ static bool Set_Diff_Bw(RTMP_ADAPTER *pAd, UCHAR wcid, UCHAR bw, UCHAR ext_ch)
 
 		if (cap->fgRateAdaptFWOffload == TRUE) {
 			CMD_STAREC_AUTO_RATE_UPDATE_T rRaParam;
-			NdisZeroMemory(&rRaParam, sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T));
+			NdisZeroMemory(&rRaParam,
+				       sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T));
 
 			if (bw == HT_BW_40)
 				rRaParam.u4Field = RA_PARAM_HT_2040_BACK;
@@ -364,8 +452,11 @@ static bool Set_Diff_Bw(RTMP_ADAPTER *pAd, UCHAR wcid, UCHAR bw, UCHAR ext_ch)
 				rRaParam.u4Field = RA_PARAM_HT_2040_COEX;
 
 			RAParamUpdate(pAd, pEntry, &rRaParam);
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("FallBack APClient BW to %s\n",
-					 rRaParam.u4Field == (RA_PARAM_HT_2040_BACK) ? "BW_40" : "BW_20"));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("FallBack APClient BW to %s\n",
+				  rRaParam.u4Field == (RA_PARAM_HT_2040_BACK) ?
+					  "BW_40" :
+						"BW_20"));
 		}
 
 #endif /* RACTRL_FW_OFFLOAD_SUPPORT */
@@ -385,12 +476,16 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	/* Check state of channel list */
 	if (hc_check_ChCtrlChListStat(pChCtrl, CH_LIST_STATE_DONE)) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[BuildChannelList][BandIdx=%d] Channel list is already DONE\n", BandIdx));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("[BuildChannelList][BandIdx=%d] Channel list is already DONE\n",
+			 BandIdx));
 		return;
 	}
 
 	/* Initialize channel list*/
-	os_zero_mem(pChCtrl->ChList, MAX_NUM_OF_CHANNELS * sizeof(CHANNEL_TX_POWER));
+	os_zero_mem(pChCtrl->ChList,
+		    MAX_NUM_OF_CHANNELS * sizeof(CHANNEL_TX_POWER));
 	pChCtrl->ChListNum = 0;
 
 	/* Build channel list based on PhyMode */
@@ -399,13 +494,17 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 	else if (WMODE_CAP_5G(PhyMode))
 		BuildChannelListFor5G(pAd, pChCtrl, PhyMode);
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[BuildChannelList] BandIdx = %d, PhyMode = %d, ChListNum = %d:\n", BandIdx, PhyMode, pChCtrl->ChListNum));
+	MTWF_LOG(
+		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("[BuildChannelList] BandIdx = %d, PhyMode = %d, ChListNum = %d:\n",
+		 BandIdx, PhyMode, pChCtrl->ChListNum));
 
 	/* Build Channel CAP, should after get ChListNum */
 #ifdef DOT11_N_SUPPORT
 
-    for (ChIdx = 0; ChIdx < pChCtrl->ChListNum; ChIdx++) {
-		if (N_ChannelGroupCheck(pAd, pChCtrl->ChList[ChIdx].Channel, wdev))
+	for (ChIdx = 0; ChIdx < pChCtrl->ChListNum; ChIdx++) {
+		if (N_ChannelGroupCheck(pAd, pChCtrl->ChList[ChIdx].Channel,
+					wdev))
 			hc_set_ChCtrlFlags_CAP(pChCtrl, CHANNEL_40M_CAP, ChIdx);
 
 #ifdef DOT11_VHT_AC
@@ -414,7 +513,8 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 			hc_set_ChCtrlFlags_CAP(pChCtrl, CHANNEL_80M_CAP, ChIdx);
 
 		if (vht160_channel_group(pAd, pChCtrl->ChList[ChIdx].Channel))
-			hc_set_ChCtrlFlags_CAP(pChCtrl, CHANNEL_160M_CAP, ChIdx);
+			hc_set_ChCtrlFlags_CAP(pChCtrl, CHANNEL_160M_CAP,
+					       ChIdx);
 
 #endif /* DOT11_VHT_AC */
 	}
@@ -422,11 +522,16 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 #endif /* DOT11_N_SUPPORT */
 
 	if (WMODE_CAP_2G(PhyMode)) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("CountryCode(2.4G)=%d, RFIC=%d, support %d channels\n", pAd->CommonCfg.CountryRegion, pAd->RfIcType, pChCtrl->ChListNum));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("CountryCode(2.4G)=%d, RFIC=%d, support %d channels\n",
+			 pAd->CommonCfg.CountryRegion, pAd->RfIcType,
+			 pChCtrl->ChListNum));
 	} else if (WMODE_CAP_5G(PhyMode)) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("CountryCode(5G)=%d, RFIC=%d, support %d channels\n", pAd->CommonCfg.CountryRegionForABand, pAd->RfIcType, pChCtrl->ChListNum));
+			 ("CountryCode(5G)=%d, RFIC=%d, support %d channels\n",
+			  pAd->CommonCfg.CountryRegionForABand, pAd->RfIcType,
+			  pChCtrl->ChListNum));
 	}
 
 #ifdef MT_DFS_SUPPORT
@@ -434,18 +539,19 @@ VOID BuildChannelList(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 #endif
 	/* Set state of channel list*/
 	hc_set_ChCtrlChListStat(pChCtrl, CH_LIST_STATE_DONE);
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("[BuildChannelList] SupportedChannelList (ChCtrlStat = DONE):\n"));
+	MTWF_LOG(
+		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("[BuildChannelList] SupportedChannelList (ChCtrlStat = DONE):\n"));
 
 	for (ChIdx = 0; ChIdx < pChCtrl->ChListNum; ChIdx++) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\tChannel # %d: Pwr0/1 = %d/%d, Flags = %x\n ",
-				 pChCtrl->ChList[ChIdx].Channel,
-				 pChCtrl->ChList[ChIdx].Power,
-				 pChCtrl->ChList[ChIdx].Power2,
-				 pChCtrl->ChList[ChIdx].Flags));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("\tChannel # %d: Pwr0/1 = %d/%d, Flags = %x\n ",
+			  pChCtrl->ChList[ChIdx].Channel,
+			  pChCtrl->ChList[ChIdx].Power,
+			  pChCtrl->ChList[ChIdx].Power2,
+			  pChCtrl->ChList[ChIdx].Flags));
 	}
-
 }
-
 
 /*
 	==========================================================================
@@ -472,23 +578,27 @@ UCHAR FirstChannel(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 
 	for (ChnIdx = 0; ChnIdx < (pChCtrl->ChListNum - 1); ChnIdx++) {
 		/* For each channel from pChCtrl->ChList[i], check if the channel is present in DFS channel list with NOP == 0 */
-		for (DfsChnIdx = 0; DfsChnIdx  < pDfsParam->ChannelListNum; DfsChnIdx++) {
-			if (pChCtrl->ChList[ChnIdx].Channel == pDfsParam->DfsChannelList[DfsChnIdx].Channel) {
-
-				if (pDfsParam->DfsChannelList[DfsChnIdx].NonOccupancy == 0)
+		for (DfsChnIdx = 0; DfsChnIdx < pDfsParam->ChannelListNum;
+		     DfsChnIdx++) {
+			if (pChCtrl->ChList[ChnIdx].Channel ==
+			    pDfsParam->DfsChannelList[DfsChnIdx].Channel) {
+				if (pDfsParam->DfsChannelList[DfsChnIdx]
+					    .NonOccupancy == 0)
 					ChannelFound = TRUE;
 				break;
 			}
 		}
 
 		/* If channel is found to be DFS with NOP = 0 or it is non DFS channel, then get the current channel */
-		if (ChannelFound ||
-			(DfsChnIdx == pDfsParam->ChannelListNum)) {
+		if (ChannelFound || (DfsChnIdx == pDfsParam->ChannelListNum)) {
 			first_channel = pChCtrl->ChList[ChnIdx].Channel;
 			break;
 		}
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Skip scanning channel %u due to remaining %u sec NOP\n",
-			pChCtrl->ChList[ChnIdx].Channel, pDfsParam->DfsChannelList[DfsChnIdx].NonOccupancy));
+		MTWF_LOG(
+			DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			("Skip scanning channel %u due to remaining %u sec NOP\n",
+			 pChCtrl->ChList[ChnIdx].Channel,
+			 pDfsParam->DfsChannelList[DfsChnIdx].NonOccupancy));
 	}
 
 	return first_channel;
@@ -496,7 +606,6 @@ UCHAR FirstChannel(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 	return pChCtrl->ChList[0].Channel;
 #endif /* MT_DFS_SUPPORT */
 }
-
 
 /*
 	==========================================================================
@@ -509,10 +618,7 @@ UCHAR FirstChannel(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 		return 0 if no more next channel
 	==========================================================================
  */
-UCHAR NextChannel(
-	RTMP_ADAPTER *pAd,
-	UCHAR channel,
-	struct wifi_dev *wdev)
+UCHAR NextChannel(RTMP_ADAPTER *pAd, UCHAR channel, struct wifi_dev *wdev)
 {
 	int i;
 #ifdef MT_DFS_SUPPORT
@@ -533,7 +639,8 @@ UCHAR NextChannel(
 
 			/* Only scan effected channel if this is a SCAN_2040_BSS_COEXIST*/
 			/* 2009 PF#2: Nee to handle the second channel of AP fall into affected channel range.*/
-			if ((pAd->ScanCtrl.ScanType == SCAN_2040_BSS_COEXIST) && (pChCtrl->ChList[i + 1].Channel > 14)) {
+			if ((pAd->ScanCtrl.ScanType == SCAN_2040_BSS_COEXIST) &&
+			    (pChCtrl->ChList[i + 1].Channel > 14)) {
 				channel = pChCtrl->ChList[i + 1].Channel;
 				continue;
 			} else
@@ -542,10 +649,16 @@ UCHAR NextChannel(
 			{
 #ifdef MT_DFS_SUPPORT
 				/* For each channel from pChCtrl->ChList[i], check if the channel is present in DFS channel list with NOP == 0 */
-				for (DfsChnIdx = 0; DfsChnIdx  < pDfsParam->ChannelListNum; DfsChnIdx++) {
-					if (pChCtrl->ChList[i + 1].Channel == pDfsParam->DfsChannelList[DfsChnIdx].Channel) {
-
-						if (pDfsParam->DfsChannelList[DfsChnIdx].NonOccupancy == 0)
+				for (DfsChnIdx = 0;
+				     DfsChnIdx < pDfsParam->ChannelListNum;
+				     DfsChnIdx++) {
+					if (pChCtrl->ChList[i + 1].Channel ==
+					    pDfsParam->DfsChannelList[DfsChnIdx]
+						    .Channel) {
+						if (pDfsParam
+							    ->DfsChannelList
+								    [DfsChnIdx]
+							    .NonOccupancy == 0)
 							ChannelFound = TRUE;
 						break;
 					}
@@ -553,13 +666,19 @@ UCHAR NextChannel(
 
 				/* If channel is found to be DFS with NOP = 0 or it is non DFS channel, then get the current channel */
 				if (ChannelFound ||
-					(DfsChnIdx == pDfsParam->ChannelListNum)) {
-					next_channel = pChCtrl->ChList[i + 1].Channel;
+				    (DfsChnIdx == pDfsParam->ChannelListNum)) {
+					next_channel =
+						pChCtrl->ChList[i + 1].Channel;
 					break;
 				}
 
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Skip scanning channel %u due to remaining %u sec NOP\n",
-					pChCtrl->ChList[i + 1].Channel, pDfsParam->DfsChannelList[DfsChnIdx].NonOccupancy));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_OFF,
+					("Skip scanning channel %u due to remaining %u sec NOP\n",
+					 pChCtrl->ChList[i + 1].Channel,
+					 pDfsParam->DfsChannelList[DfsChnIdx]
+						 .NonOccupancy));
 				channel = pChCtrl->ChList[i + 1].Channel;
 #else
 				/* Record this channel's idx in ChannelList array.*/
@@ -572,7 +691,6 @@ UCHAR NextChannel(
 
 	return next_channel;
 }
-
 
 /*
 	==========================================================================
@@ -629,24 +747,30 @@ VOID ChangeToCellPowerLimit(RTMP_ADAPTER *pAd, UCHAR AironetCellPowerLimit)
 		pAd->CommonCfg.ucTxPowerPercentage[BAND1] = 75;
 #endif /* DBDC_MODE */
 	} else {
-		pAd->CommonCfg.ucTxPowerPercentage[BAND0] = 100; /*else used maximum*/
+		pAd->CommonCfg.ucTxPowerPercentage[BAND0] =
+			100; /*else used maximum*/
 #ifdef DBDC_MODE
 		pAd->CommonCfg.ucTxPowerPercentage[BAND1] = 100;
 #endif /* DBDC_MODE */
 	}
 
-	if (pAd->CommonCfg.ucTxPowerPercentage[BAND0] > pAd->CommonCfg.ucTxPowerDefault[BAND0])
-		pAd->CommonCfg.ucTxPowerPercentage[BAND0] = pAd->CommonCfg.ucTxPowerDefault[BAND0];
+	if (pAd->CommonCfg.ucTxPowerPercentage[BAND0] >
+	    pAd->CommonCfg.ucTxPowerDefault[BAND0])
+		pAd->CommonCfg.ucTxPowerPercentage[BAND0] =
+			pAd->CommonCfg.ucTxPowerDefault[BAND0];
 
 #ifdef DBDC_MODE
 
-	if (pAd->CommonCfg.ucTxPowerPercentage[BAND1] > pAd->CommonCfg.ucTxPowerDefault[BAND1])
-		pAd->CommonCfg.ucTxPowerPercentage[BAND1] = pAd->CommonCfg.ucTxPowerDefault[BAND1];
+	if (pAd->CommonCfg.ucTxPowerPercentage[BAND1] >
+	    pAd->CommonCfg.ucTxPowerDefault[BAND1])
+		pAd->CommonCfg.ucTxPowerPercentage[BAND1] =
+			pAd->CommonCfg.ucTxPowerDefault[BAND1];
 
 #endif /* DBDC_MODE */
 }
 
-CHAR ConvertToRssi(RTMP_ADAPTER *pAd, struct raw_rssi_info *rssi_info, UCHAR rssi_idx)
+CHAR ConvertToRssi(RTMP_ADAPTER *pAd, struct raw_rssi_info *rssi_info,
+		   UCHAR rssi_idx)
 {
 	UCHAR RssiOffset, LNAGain;
 	CHAR BaseVal;
@@ -674,7 +798,6 @@ CHAR ConvertToRssi(RTMP_ADAPTER *pAd, struct raw_rssi_info *rssi_info, UCHAR rss
 	return ret;
 }
 
-
 CHAR ConvertToSnr(RTMP_ADAPTER *pAd, UCHAR Snr)
 {
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
@@ -690,7 +813,7 @@ CHAR ConvertToSnr(RTMP_ADAPTER *pAd, UCHAR Snr)
 		ret = (Snr * 3 / 16);
 		return ret; /* * 0.1881 */
 	} else {
-		ret = ((0xeb	- Snr) * 3) /	16;
+		ret = ((0xeb - Snr) * 3) / 16;
 		return ret;
 	}
 #endif
@@ -698,7 +821,6 @@ CHAR ConvertToSnr(RTMP_ADAPTER *pAd, UCHAR Snr)
 
 static UINT8 ch_offset_abs(UINT8 x, UINT8 y)
 {
-
 	if (x > y)
 		return x - y;
 	else
@@ -707,28 +829,36 @@ static UINT8 ch_offset_abs(UINT8 x, UINT8 y)
 
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 /* BW Sync when Soft AP is Down */
-BOOLEAN CheckSoftAPSyncRequired(RTMP_ADAPTER *pAd, struct wifi_dev *wdev_ap, BCN_IE_LIST *ie_list)
+BOOLEAN CheckSoftAPSyncRequired(RTMP_ADAPTER *pAd, struct wifi_dev *wdev_ap,
+				BCN_IE_LIST *ie_list)
 {
 	/* Soft AP must be disabled */
 	if (wlan_operate_get_state(wdev_ap) != WLAN_OPER_STATE_INVALID)
 		return FALSE;
 
-	if (WMODE_CAP_N(wdev_ap->PhyMode) && ie_list->AddHtInfoLen != 0 && wdev_ap->channel < 14) {
-		if (wlan_operate_get_ht_bw(wdev_ap) != ie_list->AddHtInfo.AddHtInfo.RecomWidth)
-			wdev_sync_ht_bw(pAd, wdev_ap, &ie_list->AddHtInfo.AddHtInfo);
+	if (WMODE_CAP_N(wdev_ap->PhyMode) && ie_list->AddHtInfoLen != 0 &&
+	    wdev_ap->channel < 14) {
+		if (wlan_operate_get_ht_bw(wdev_ap) !=
+		    ie_list->AddHtInfo.AddHtInfo.RecomWidth)
+			wdev_sync_ht_bw(pAd, wdev_ap,
+					&ie_list->AddHtInfo.AddHtInfo);
 	}
 
 	if (WMODE_CAP_AC(wdev_ap->PhyMode)) {
-		if (wlan_operate_get_vht_bw(wdev_ap) != ie_list->vht_op_ie.vht_op_info.ch_width)
-			wdev_sync_vht_bw(pAd, wdev_ap, ie_list->vht_op_ie.vht_op_info.ch_width, ie_list->vht_op_ie.vht_op_info.center_freq_1);
+		if (wlan_operate_get_vht_bw(wdev_ap) !=
+		    ie_list->vht_op_ie.vht_op_info.ch_width)
+			wdev_sync_vht_bw(
+				pAd, wdev_ap,
+				ie_list->vht_op_ie.vht_op_info.ch_width,
+				ie_list->vht_op_ie.vht_op_info.center_freq_1);
 	}
 
 	return TRUE;
 }
 #endif
 
-
-BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, UCHAR fun_tb_idx)
+BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR Wcid,
+			 UCHAR fun_tb_idx)
 {
 	BOOLEAN bAdjust = FALSE;
 #ifdef DOT11_N_SUPPORT
@@ -748,7 +878,8 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 	for (i = 0; i < pAd->ApCfg.BssidNum; i++) {
 		pMbss = &pAd->ApCfg.MBSSID[i];
 		pwdev = &pAd->ApCfg.MBSSID[i].wdev;
-		if ((pMbss) && (pwdev) && (pMbss->wdev.wdev_type == WDEV_TYPE_AP))
+		if ((pMbss) && (pwdev) &&
+		    (pMbss->wdev.wdev_type == WDEV_TYPE_AP))
 			break;
 	}
 #endif
@@ -761,7 +892,8 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 
 	cfg_ht_bw = wlan_config_get_ht_bw(wdev);
 
-	if (WMODE_CAP_N(wdev->PhyMode) && ie_list->AddHtInfoLen != 0 && wdev->channel < 14) {
+	if (WMODE_CAP_N(wdev->PhyMode) && ie_list->AddHtInfoLen != 0 &&
+	    wdev->channel < 14) {
 		op_ht_bw = wlan_operate_get_ht_bw(wdev);
 		ExtCha = wlan_operate_get_ext_cha(wdev);
 
@@ -769,59 +901,88 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 		if (pwdev) {
 			softap_op_ht_bw = wlan_operate_get_ht_bw(pwdev);
-			MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
+			MTWF_LOG(
+				DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
 				("[%s] op_ht_bw %d softap_op_bw %d op_ht %d cfg_ht_bw %d\n",
-				__func__, op_ht_bw, wlan_operate_get_bw(pwdev), wlan_operate_get_ht_bw (pwdev), cfg_ht_bw));
+				 __func__, op_ht_bw, wlan_operate_get_bw(pwdev),
+				 wlan_operate_get_ht_bw(pwdev), cfg_ht_bw));
 		}
 
-		if (op_ht_bw == HT_BW_40 || (pwdev && softap_op_ht_bw == HT_BW_40)) {
+		if (op_ht_bw == HT_BW_40 ||
+		    (pwdev && softap_op_ht_bw == HT_BW_40)) {
 #else
 		if (op_ht_bw == HT_BW_40) {
 #endif
 			/* Check if root-ap change BW to 20 */
-			if ((ie_list->AddHtInfo.AddHtInfo.ExtChanOffset == EXTCHA_NONE &&
-				 ie_list->AddHtInfo.AddHtInfo.RecomWidth == 0)
-				|| (ie_list->NewExtChannelOffset == 0x0)) {
+			if ((ie_list->AddHtInfo.AddHtInfo.ExtChanOffset ==
+				     EXTCHA_NONE &&
+			     ie_list->AddHtInfo.AddHtInfo.RecomWidth == 0) ||
+			    (ie_list->NewExtChannelOffset == 0x0)) {
 				bAdjust = TRUE;
 				Set_Diff_Bw(pAd, Wcid, BW_20, EXTCHA_NONE);
-				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("FallBack APClient BW to 20MHz\n"));
+				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI,
+					 DBG_LVL_TRACE,
+					 ("FallBack APClient BW to 20MHz\n"));
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 				/* Sync new BW & Ext Channel for Soft AP */
-				if (pwdev && IS_SYNC_BW_POLICY_VALID(pAd, TRUE, HT_4020_DOWN_ENBL)) {
-					MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-						("[%s] Enter 4020 HT Sync\n", __func__));
-					wdev_sync_ht_bw(pAd, pwdev, &ie_list->AddHtInfo.AddHtInfo);
+				if (pwdev &&
+				    IS_SYNC_BW_POLICY_VALID(
+					    pAd, TRUE, HT_4020_DOWN_ENBL)) {
+					MTWF_LOG(DBG_CAT_CLIENT,
+						 CATCLIENT_APCLI, DBG_LVL_TRACE,
+						 ("[%s] Enter 4020 HT Sync\n",
+						  __func__));
+					wdev_sync_ht_bw(
+						pAd, pwdev,
+						&ie_list->AddHtInfo.AddHtInfo);
 					bAdjustHTBW = TRUE;
 				}
 #endif
 			}
 			/* BW 20 -> 40 */
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
-		} else if ((op_ht_bw == HT_BW_20 || (pwdev && softap_op_ht_bw == HT_BW_20)) && cfg_ht_bw != HT_BW_20) {
+		} else if ((op_ht_bw == HT_BW_20 ||
+			    (pwdev && softap_op_ht_bw == HT_BW_20)) &&
+			   cfg_ht_bw != HT_BW_20) {
 #else
 		} else if (op_ht_bw == HT_BW_20 && cfg_ht_bw != HT_BW_20) {
 #endif
 			/* Check if root-ap change BW to 40 */
-			if (ie_list->AddHtInfo.AddHtInfo.ExtChanOffset != EXTCHA_NONE &&
-				ie_list->AddHtInfo.AddHtInfo.RecomWidth == 1 &&
-				ie_list->HtCapabilityLen > 0 &&
-				ie_list->HtCapability.HtCapInfo.ChannelWidth == 1) {
+			if (ie_list->AddHtInfo.AddHtInfo.ExtChanOffset !=
+				    EXTCHA_NONE &&
+			    ie_list->AddHtInfo.AddHtInfo.RecomWidth == 1 &&
+			    ie_list->HtCapabilityLen > 0 &&
+			    ie_list->HtCapability.HtCapInfo.ChannelWidth == 1) {
 				/* if extension channel is same with root ap else keep 20MHz */
-				if (ExtCha == EXTCHA_NONE || ie_list->AddHtInfo.AddHtInfo.ExtChanOffset == ExtCha) {
+				if (ExtCha == EXTCHA_NONE ||
+				    ie_list->AddHtInfo.AddHtInfo.ExtChanOffset ==
+					    ExtCha) {
 					/* UCHAR RFChannel; */
 					bAdjust = TRUE;
-					Set_Diff_Bw(pAd, Wcid, BW_40, ie_list->AddHtInfo.AddHtInfo.ExtChanOffset);
+					Set_Diff_Bw(pAd, Wcid, BW_40,
+						    ie_list->AddHtInfo.AddHtInfo
+							    .ExtChanOffset);
 					/*update channel for all of wdev belong this band*/
-					wlan_operate_set_prim_ch(wdev, wdev->channel);
-					MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("FallBack Client/APClient BW to 40MHz\n"));
+					wlan_operate_set_prim_ch(wdev,
+								 wdev->channel);
+					MTWF_LOG(
+						DBG_CAT_CLIENT, CATCLIENT_APCLI,
+						DBG_LVL_TRACE,
+						("FallBack Client/APClient BW to 40MHz\n"));
 				}
 
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 				/* Sync new BW & Ext Channel for Soft AP */
-				if (pwdev && IS_SYNC_BW_POLICY_VALID(pAd, TRUE, HT_2040_UP_ENBL)) {
-					MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-						("[%s] Enter 2040 HT Sync\n", __func__));
-					wdev_sync_ht_bw(pAd, pwdev, &ie_list->AddHtInfo.AddHtInfo);
+				if (pwdev &&
+				    IS_SYNC_BW_POLICY_VALID(pAd, TRUE,
+							    HT_2040_UP_ENBL)) {
+					MTWF_LOG(DBG_CAT_CLIENT,
+						 CATCLIENT_APCLI, DBG_LVL_TRACE,
+						 ("[%s] Enter 2040 HT Sync\n",
+						  __func__));
+					wdev_sync_ht_bw(
+						pAd, pwdev,
+						&ie_list->AddHtInfo.AddHtInfo);
 					bAdjustHTBW = TRUE;
 				}
 #endif
@@ -835,24 +996,42 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 				UINT ifIndex;
 				UCHAR CliIdx, update_bw, update_ext_ch;
 				REPEATER_CLIENT_ENTRY *pReptEntry = NULL;
-				RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
+				RTMP_CHIP_CAP *cap =
+					hc_get_chip_cap(pAd->hdev_ctrl);
 				ifIndex = pEntry->func_tb_idx;
 				update_bw = wlan_operate_get_ht_bw(wdev);
 				update_ext_ch = wlan_operate_get_ext_cha(wdev);
 
-				for (CliIdx = 0; CliIdx < GET_MAX_REPEATER_ENTRY_NUM(cap); CliIdx++) {
-					pReptEntry = &pAd->ApCfg.pRepeaterCliPool[CliIdx];
+				for (CliIdx = 0;
+				     CliIdx < GET_MAX_REPEATER_ENTRY_NUM(cap);
+				     CliIdx++) {
+					pReptEntry =
+						&pAd->ApCfg.pRepeaterCliPool
+							 [CliIdx];
 
-					if ((pReptEntry->CliEnable) && (pReptEntry->CliValid) &&
-						(pReptEntry->MatchApCliIdx == ifIndex)) {
-						pEntry = &pAd->MacTab.Content[pReptEntry->MacTabWCID];
+					if ((pReptEntry->CliEnable) &&
+					    (pReptEntry->CliValid) &&
+					    (pReptEntry->MatchApCliIdx ==
+					     ifIndex)) {
+						pEntry =
+							&pAd->MacTab.Content
+								 [pReptEntry
+									  ->MacTabWCID];
 
 						if (pEntry)
-							Set_Diff_Bw(pAd, pReptEntry->MacTabWCID, update_bw, update_ext_ch);
+							Set_Diff_Bw(
+								pAd,
+								pReptEntry
+									->MacTabWCID,
+								update_bw,
+								update_ext_ch);
 					}
 				}
 
-				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("FallBack APClient BW to (%d)\n", update_bw));
+				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI,
+					 DBG_LVL_TRACE,
+					 ("FallBack APClient BW to (%d)\n",
+					  update_bw));
 			}
 
 #endif /* MAC_REPEATER_SUPPORT */
@@ -883,36 +1062,52 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 				softap_prev_op_mode = 1; /*40Mhz*/
 			else if (wlan_operate_get_vht_bw(pwdev) == VHT_BW_80)
 				softap_prev_op_mode = 2; /*80Mhz*/
-			else if ((wlan_operate_get_vht_bw(pwdev) == VHT_BW_160) ||
-					(wlan_operate_get_vht_bw(pwdev) == VHT_BW_8080))
+			else if ((wlan_operate_get_vht_bw(pwdev) ==
+				  VHT_BW_160) ||
+				 (wlan_operate_get_vht_bw(pwdev) ==
+				  VHT_BW_8080))
 				softap_prev_op_mode = 3; /*80_80,160Mhz*/
 
 			MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-				("[%s] ApCli Wdev %d AP Wdev %d AP BW %d\n",
-				__func__, wdev->wdev_idx, pwdev->wdev_idx, softap_prev_op_mode));
+				 ("[%s] ApCli Wdev %d AP Wdev %d AP BW %d\n",
+				  __func__, wdev->wdev_idx, pwdev->wdev_idx,
+				  softap_prev_op_mode));
 		}
 #endif
 
-		if ((ie_list->AddHtInfo.AddHtInfo.ExtChanOffset == EXTCHA_NONE &&
-					ie_list->AddHtInfo.AddHtInfo.RecomWidth == 0))
+		if ((ie_list->AddHtInfo.AddHtInfo.ExtChanOffset ==
+			     EXTCHA_NONE &&
+		     ie_list->AddHtInfo.AddHtInfo.RecomWidth == 0))
 			current_operating_mode = 0; /*20Mhz*/
-		else{
-			if (ie_list->vht_op_ie.vht_op_info.ch_width == VHT_BW_2040) {
+		else {
+			if (ie_list->vht_op_ie.vht_op_info.ch_width ==
+			    VHT_BW_2040) {
 				current_operating_mode = 1; /*40Mhz*/
-			} else if (ie_list->vht_op_ie.vht_op_info.ch_width == VHT_BW_80) {
+			} else if (ie_list->vht_op_ie.vht_op_info.ch_width ==
+				   VHT_BW_80) {
 				if (Operting_BW == VHT_BW_80)
 					current_operating_mode = 2; /*80Mhz*/
 				else if (Operting_BW > VHT_BW_80) {
 					if (s80160ccf == 0)
-						current_operating_mode = 2; /*80Mhz*/
-					else if (ch_offset_abs(s80160ccf, p80ccf) == 8) {
+						current_operating_mode =
+							2; /*80Mhz*/
+					else if (ch_offset_abs(s80160ccf,
+							       p80ccf) == 8) {
 						AP_Operting_BW = VHT_BW_160;
-						current_operating_mode = 3; /*160Mhz*/
-					} else if (ch_offset_abs(s80160ccf, p80ccf) >= 16) {
+						current_operating_mode =
+							3; /*160Mhz*/
+					} else if (ch_offset_abs(s80160ccf,
+								 p80ccf) >=
+						   16) {
 						AP_Operting_BW = VHT_BW_8080;
-						current_operating_mode = 3; /*80_80*/
-						if (wlan_operate_get_cen_ch_2(wdev) != s80160ccf) {
-							wlan_operate_set_cen_ch_2(wdev, s80160ccf);
+						current_operating_mode =
+							3; /*80_80*/
+						if (wlan_operate_get_cen_ch_2(
+							    wdev) !=
+						    s80160ccf) {
+							wlan_operate_set_cen_ch_2(
+								wdev,
+								s80160ccf);
 							force_ra_update = TRUE;
 						}
 					}
@@ -922,8 +1117,10 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 				else if (Operting_BW == VHT_BW_2040)
 					current_operating_mode = 2;
 #endif
-			} else if ((ie_list->vht_op_ie.vht_op_info.ch_width == VHT_BW_160) ||
-					(ie_list->vht_op_ie.vht_op_info.ch_width == VHT_BW_8080)) {
+			} else if ((ie_list->vht_op_ie.vht_op_info.ch_width ==
+				    VHT_BW_160) ||
+				   (ie_list->vht_op_ie.vht_op_info.ch_width ==
+				    VHT_BW_8080)) {
 				current_operating_mode = 3; /*80_80,160Mhz*/
 			}
 		}
@@ -935,7 +1132,7 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 		else if (wlan_operate_get_vht_bw(wdev) == VHT_BW_80)
 			prev_operating_mode = 2; /*80Mhz*/
 		else if ((wlan_operate_get_vht_bw(wdev) == VHT_BW_160) ||
-				(wlan_operate_get_vht_bw(wdev) == VHT_BW_8080))
+			 (wlan_operate_get_vht_bw(wdev) == VHT_BW_8080))
 			prev_operating_mode = 3; /*80_80,160Mhz*/
 
 		if (ie_list->AddHtInfo.MCSSet[3] != 0)
@@ -948,43 +1145,82 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 			current_nss = 1;
 
 		/*If Operating Mode notification IE is present in beacon then only this case becomes true*/
-		if (((pRaEntry->vhtOpModeChWidth != pEntry->operating_mode.ch_width) ||
-					(pRaEntry->vhtOpModeRxNss != pEntry->operating_mode.rx_nss) ||
-					(pRaEntry->vhtOpModeRxNssType != pEntry->operating_mode.rx_nss_type))) {
+		if (((pRaEntry->vhtOpModeChWidth !=
+		      pEntry->operating_mode.ch_width) ||
+		     (pRaEntry->vhtOpModeRxNss !=
+		      pEntry->operating_mode.rx_nss) ||
+		     (pRaEntry->vhtOpModeRxNssType !=
+		      pEntry->operating_mode.rx_nss_type))) {
 			force_ra_update = TRUE;
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
-		} else if ((prev_operating_mode != current_operating_mode) || (pwdev && (softap_prev_op_mode != current_operating_mode))) {
-			MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-					("BW Diff (apcli previous= %d softap previous= %d current=%d)\n",
-					 prev_operating_mode, softap_prev_op_mode, current_operating_mode));
+		} else if ((prev_operating_mode != current_operating_mode) ||
+			   (pwdev &&
+			    (softap_prev_op_mode != current_operating_mode))) {
+			MTWF_LOG(
+				DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
+				("BW Diff (apcli previous= %d softap previous= %d current=%d)\n",
+				 prev_operating_mode, softap_prev_op_mode,
+				 current_operating_mode));
 #else
 		} else if (prev_operating_mode != current_operating_mode) {
 #endif
-			pEntry->operating_mode.ch_width = current_operating_mode;
+			pEntry->operating_mode.ch_width =
+				current_operating_mode;
 			pEntry->operating_mode.rx_nss = current_nss;
 			pEntry->force_op_mode = TRUE;
 			force_ra_update = TRUE;
 
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 			/* Sync new HT BW & Ext Channel for Soft AP */
-			if (pwdev && (current_operating_mode == 0 && (prev_operating_mode >= 1 || softap_prev_op_mode >= 1) && ie_list->AddHtInfo.AddHtInfo.RecomWidth == 0)
-				&& IS_SYNC_BW_POLICY_VALID(pAd, TRUE, HT_4020_DOWN_ENBL)) {
-				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("[%s] Enter 4020 HT Sync\n", __func__));
+			if (pwdev &&
+			    (current_operating_mode == 0 &&
+			     (prev_operating_mode >= 1 ||
+			      softap_prev_op_mode >= 1) &&
+			     ie_list->AddHtInfo.AddHtInfo.RecomWidth == 0) &&
+			    IS_SYNC_BW_POLICY_VALID(pAd, TRUE,
+						    HT_4020_DOWN_ENBL)) {
+				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI,
+					 DBG_LVL_TRACE,
+					 ("[%s] Enter 4020 HT Sync\n",
+					  __func__));
 				bAdjustHTBW = TRUE;
-			} else if (pwdev && (current_operating_mode >= 1 && (prev_operating_mode == 0 || softap_prev_op_mode == 0) && ie_list->AddHtInfo.AddHtInfo.RecomWidth == 1)
-				&& IS_SYNC_BW_POLICY_VALID(pAd, TRUE, HT_2040_UP_ENBL)) {
-				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("[%s] Enter 2040 HT Sync\n", __func__));
+			} else if (pwdev &&
+				   (current_operating_mode >= 1 &&
+				    (prev_operating_mode == 0 ||
+				     softap_prev_op_mode == 0) &&
+				    ie_list->AddHtInfo.AddHtInfo.RecomWidth ==
+					    1) &&
+				   IS_SYNC_BW_POLICY_VALID(pAd, TRUE,
+							   HT_2040_UP_ENBL)) {
+				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI,
+					 DBG_LVL_TRACE,
+					 ("[%s] Enter 2040 HT Sync\n",
+					  __func__));
 				bAdjustHTBW = TRUE;
 			}
 
 			/* Sync new VHT BW & Ext Channel for Soft AP */
-			if (pwdev && ((prev_operating_mode == 2 || softap_prev_op_mode == 2) && current_operating_mode <= 1)
-				&& IS_SYNC_BW_POLICY_VALID(pAd, FALSE, VHT_80_2040_DOWN_CHK)) {
-				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("[%s] Enter 80-2040 VHT Sync\n", __func__));
+			if (pwdev &&
+			    ((prev_operating_mode == 2 ||
+			      softap_prev_op_mode == 2) &&
+			     current_operating_mode <= 1) &&
+			    IS_SYNC_BW_POLICY_VALID(pAd, FALSE,
+						    VHT_80_2040_DOWN_CHK)) {
+				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI,
+					 DBG_LVL_TRACE,
+					 ("[%s] Enter 80-2040 VHT Sync\n",
+					  __func__));
 				bAdjustVHTBW = TRUE;
-			} else if (pwdev && ((prev_operating_mode <= 1 || softap_prev_op_mode <= 1) && current_operating_mode == 2)
-				&& IS_SYNC_BW_POLICY_VALID(pAd, FALSE, VHT_2040_80_UP_CHK)) {
-				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE, ("[%s] Enter 2040-80 VHT Sync\n", __func__));
+			} else if (pwdev &&
+				   ((prev_operating_mode <= 1 ||
+				     softap_prev_op_mode <= 1) &&
+				    current_operating_mode == 2) &&
+				   IS_SYNC_BW_POLICY_VALID(
+					   pAd, FALSE, VHT_2040_80_UP_CHK)) {
+				MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI,
+					 DBG_LVL_TRACE,
+					 ("[%s] Enter 2040-80 VHT Sync\n",
+					  __func__));
 				bAdjustVHTBW = TRUE;
 			}
 #endif
@@ -993,20 +1229,25 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 			CMD_STAREC_AUTO_RATE_UPDATE_T rRaParam;
 
 			if (current_operating_mode == 0)
-				wlan_operate_set_ht_bw(wdev, HT_BW_20, EXTCHA_NONE);
+				wlan_operate_set_ht_bw(wdev, HT_BW_20,
+						       EXTCHA_NONE);
 			wlan_operate_set_vht_bw(wdev, AP_Operting_BW);
 
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 			if (bAdjustHTBW)
-				wdev_sync_ht_bw(pAd, pwdev, &ie_list->AddHtInfo.AddHtInfo);
+				wdev_sync_ht_bw(pAd, pwdev,
+						&ie_list->AddHtInfo.AddHtInfo);
 
 			if (bAdjustVHTBW)
-				wdev_sync_vht_bw(pAd, pwdev, AP_Operting_BW, p80ccf);
+				wdev_sync_vht_bw(pAd, pwdev, AP_Operting_BW,
+						 p80ccf);
 #endif
 			MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-					("RA Param Update:ChWidth %d,Rxnss %d\n",
-					 pEntry->operating_mode.ch_width, pEntry->operating_mode.rx_nss));
-			NdisZeroMemory(&rRaParam, sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T));
+				 ("RA Param Update:ChWidth %d,Rxnss %d\n",
+				  pEntry->operating_mode.ch_width,
+				  pEntry->operating_mode.rx_nss));
+			NdisZeroMemory(&rRaParam,
+				       sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T));
 			rRaParam.u4Field = RA_PARAM_VHT_OPERATING_MODE;
 			RAParamUpdate(pAd, pEntry, &rRaParam);
 		}
@@ -1014,19 +1255,23 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 #endif
 #ifdef BW_VENDOR10_CUSTOM_FEATURE
 	/* Add check to skip sync, if already done */
-	if (!(bAdjustHTBW || bAdjustVHTBW) && IS_APCLI_BW_SYNC_FEATURE_ENBL(pAd) && pwdev)
+	if (!(bAdjustHTBW || bAdjustVHTBW) &&
+	    IS_APCLI_BW_SYNC_FEATURE_ENBL(pAd) && pwdev)
 		/* Soft AP Interface Down Handling */
 		CheckSoftAPSyncRequired(pAd, pwdev, ie_list);
 
-	if ((bAdjustHTBW || bAdjustVHTBW) && (IS_APCLI_SYNC_PEER_DEAUTH_ENBL(pAd) == FALSE)) {
-		if (IS_APCLI_SYNC_PEER_DEAUTH_VALID(pAd) && IsClientConnected(pAd)) {
+	if ((bAdjustHTBW || bAdjustVHTBW) &&
+	    (IS_APCLI_SYNC_PEER_DEAUTH_ENBL(pAd) == FALSE)) {
+		if (IS_APCLI_SYNC_PEER_DEAUTH_VALID(pAd) &&
+		    IsClientConnected(pAd)) {
 			SET_APCLI_SYNC_PEER_DEAUTH_ENBL(pAd, TRUE);
 
 			if (IS_APCLI_SYNC_BAND_VALID(pAd, DIFF_BAND_SYNC)) {
 				/* Both 2G/5G Bands Soft AP Clients Disconnect */
 				APStop(pAd, pMbss, AP_BSS_OPER_ALL);
 				APStartUp(pAd, pMbss, AP_BSS_OPER_ALL);
-			} else if (IS_APCLI_SYNC_BAND_VALID(pAd, SAME_BAND_SYNC)) {
+			} else if (IS_APCLI_SYNC_BAND_VALID(pAd,
+							    SAME_BAND_SYNC)) {
 				/* Same Band SoftAP Clients Disconnect */
 				APStop(pAd, pMbss, AP_BSS_OPER_BY_RF);
 				APStartUp(pAd, pMbss, AP_BSS_OPER_BY_RF);
@@ -1044,8 +1289,6 @@ BOOLEAN AdjustBwToSyncAp(RTMP_ADAPTER *pAd, BCN_IE_LIST *ie_list, UCHAR  Wcid, U
 #endif /* DOT11_N_SUPPORT */
 	return bAdjust;
 }
-
-
 
 #ifdef CONFIG_AP_SUPPORT
 #ifdef DOT11_N_SUPPORT
@@ -1068,7 +1311,8 @@ VOID Handle_BSS_Width_Trigger_Events(RTMP_ADAPTER *pAd, UCHAR Channel)
 			UCHAR ht_bw;
 			wdev = pAd->wdev_list[i];
 
-			if (!wdev || (wdev->channel != Channel) || (wdev->wdev_type != WDEV_TYPE_AP))
+			if (!wdev || (wdev->channel != Channel) ||
+			    (wdev->wdev_type != WDEV_TYPE_AP))
 				continue;
 
 			ht_bw = wlan_operate_get_ht_bw(wdev);
@@ -1076,7 +1320,9 @@ VOID Handle_BSS_Width_Trigger_Events(RTMP_ADAPTER *pAd, UCHAR Channel)
 			if (ht_bw < HT_BW_40)
 				continue;
 
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Rcv BSS Width Trigger Event: 40Mhz --> 20Mhz\n"));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				("Rcv BSS Width Trigger Event: 40Mhz --> 20Mhz\n"));
 			NdisGetSystemUpTime(&Now32);
 			pAd->CommonCfg.LastRcvBSSWidthTriggerEventsTime = Now32;
 			pAd->CommonCfg.bRcvBSSWidthTriggerEvents = TRUE;
@@ -1091,13 +1337,10 @@ VOID Handle_BSS_Width_Trigger_Events(RTMP_ADAPTER *pAd, UCHAR Channel)
 
 #ifdef DOT11_N_SUPPORT
 #ifdef DOT11N_DRAFT3
-VOID BuildEffectedChannelList(
-	IN PRTMP_ADAPTER pAd,
-	IN struct wifi_dev *wdev
-)
+VOID BuildEffectedChannelList(IN PRTMP_ADAPTER pAd, IN struct wifi_dev *wdev)
 {
-	UCHAR		EChannel[11];
-	UCHAR		k;
+	UCHAR EChannel[11];
+	UCHAR k;
 	UCHAR BandIdx = HcGetBandByWdev(wdev);
 	CHANNEL_CTRL *pChCtrl = hc_get_channel_ctrl(pAd->hdev_ctrl, BandIdx);
 	RTMPZeroMemory(EChannel, 11);
@@ -1110,9 +1353,7 @@ VOID BuildEffectedChannelList(
 
 		return;
 	}
-
 }
-
 
 #endif /* DOT11N_DRAFT3 */
 #endif /* DOT11_N_SUPPORT */
@@ -1127,7 +1368,8 @@ UCHAR get_channel_bw_cap(struct wifi_dev *wdev, UCHAR channel)
 	UCHAR BandIdx = HcGetBandByWdev(wdev);
 	CHANNEL_CTRL *pChCtrl = hc_get_channel_ctrl(ad->hdev_ctrl, BandIdx);
 
-	for (i = 0; (i < pChCtrl->ChListNum) && (i < MAX_NUM_OF_CHANNELS); i++) {
+	for (i = 0; (i < pChCtrl->ChListNum) && (i < MAX_NUM_OF_CHANNELS);
+	     i++) {
 		if (channel == pChCtrl->ChList[i].Channel) {
 			find = TRUE;
 			flag = pChCtrl->ChList[i].Flags;

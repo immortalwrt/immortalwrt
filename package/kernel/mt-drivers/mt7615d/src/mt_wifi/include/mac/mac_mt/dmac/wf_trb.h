@@ -26,25 +26,23 @@
 	--------	----------	  ----------------------------------------------
 */
 
-
 #ifndef __WF_TRB_H__
 #define __WF_TRB_H__
 
-#define WF_TRB_BASE		0x20800
+#define WF_TRB_BASE 0x20800
 
-#define TRB_GCR			(WF_TRB_BASE + 0x000)
+#define TRB_GCR (WF_TRB_BASE + 0x000)
 
-#define TRB_TRBTHR		(WF_TRB_BASE + 0x014)
-#define TRB_RXBTHR		(WF_TRB_BASE + 0x01C)
+#define TRB_TRBTHR (WF_TRB_BASE + 0x014)
+#define TRB_RXBTHR (WF_TRB_BASE + 0x01C)
 
 #ifdef DBG
-#define TRB_TXBSR		(WF_TRB_BASE + 0x020)
-#define TRB_TXPSR		(WF_TRB_BASE + 0x024)
+#define TRB_TXBSR (WF_TRB_BASE + 0x020)
+#define TRB_TXPSR (WF_TRB_BASE + 0x024)
 
-#define TRB_RXBSR		(WF_TRB_BASE + 0x040)
-#define TRB_RXPSR0		(WF_TRB_BASE + 0x044)
-#define TRB_RXPSR1		(WF_TRB_BASE + 0x048)
-#define TRB_RXPSR2		(WF_TRB_BASE + 0x04c)
+#define TRB_RXBSR (WF_TRB_BASE + 0x040)
+#define TRB_RXPSR0 (WF_TRB_BASE + 0x044)
+#define TRB_RXPSR1 (WF_TRB_BASE + 0x048)
+#define TRB_RXPSR2 (WF_TRB_BASE + 0x04c)
 #endif /* DBG */
 #endif /* __WF_TRB_H__ */
-

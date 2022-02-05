@@ -24,23 +24,23 @@ extern HW_FLAG_TABLE_T HwFlagTable[];
 /==========================================================*/
 static inline HwCmdHdlr HwCtrlValidCmd(HwCmdQElmt *CmdQelmt)
 {
-	UINT32 CmdType =  CmdQelmt->type;
+	UINT32 CmdType = CmdQelmt->type;
 	UINT32 CmdIndex = CmdQelmt->command;
 	SHORT CurIndex = 0;
 	HwCmdHdlr Handler = NULL;
-	HW_CMD_TABLE_T  *pHwTargetTable = NULL;
+	HW_CMD_TABLE_T *pHwTargetTable = NULL;
 
 	if (CmdType >= HWCMD_TYPE_END) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("CMD TPYE(%u) OOB error! HWCMD_TYPE_END %u\n",
-				  CmdType, HWCMD_TYPE_END));
+			 ("CMD TPYE(%u) OOB error! HWCMD_TYPE_END %u\n",
+			  CmdType, HWCMD_TYPE_END));
 		return NULL;
 	}
 
 	if (CmdIndex >= HWCMD_ID_END) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("CMD ID(%u) OOB error! HWCMD_ID_END %u\n",
-				  CmdIndex, HWCMD_ID_END));
+			 ("CMD ID(%u) OOB error! HWCMD_ID_END %u\n", CmdIndex,
+			  HWCMD_ID_END));
 		return NULL;
 	}
 
@@ -48,8 +48,8 @@ static inline HwCmdHdlr HwCtrlValidCmd(HwCmdQElmt *CmdQelmt)
 
 	if (!pHwTargetTable) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("No HwCmdTable entry for this CMD %u Type %u\n",
-				  CmdIndex, CmdType));
+			 ("No HwCmdTable entry for this CMD %u Type %u\n",
+			  CmdIndex, CmdType));
 		return NULL;
 	}
 
@@ -67,13 +67,12 @@ static inline HwCmdHdlr HwCtrlValidCmd(HwCmdQElmt *CmdQelmt)
 
 	if (Handler == NULL) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("No corresponding CMDHdlr for this CMD %u Type %u\n",
-				  CmdIndex, CmdType));
+			 ("No corresponding CMDHdlr for this CMD %u Type %u\n",
+			  CmdIndex, CmdType));
 	}
 
 	return Handler;
 }
-
 
 static inline HwFlagHdlr HwCtrlValidFlag(PHwFlagCtrl pHwCtrlFlag)
 {
@@ -81,7 +80,9 @@ static inline HwFlagHdlr HwCtrlValidFlag(PHwFlagCtrl pHwCtrlFlag)
 	HwFlagHdlr Handler = NULL;
 
 	if (pHwCtrlFlag->FlagId > (1 << HWFLAG_ID_END)) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("FLAG ID(%x) is out of boundary\n", pHwCtrlFlag->FlagId));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("FLAG ID(%x) is out of boundary\n",
+			  pHwCtrlFlag->FlagId));
 		pHwCtrlFlag->FlagId = 0;
 		return NULL;
 	}
@@ -92,7 +93,7 @@ static inline HwFlagHdlr HwCtrlValidFlag(PHwFlagCtrl pHwCtrlFlag)
 		if (HwFlagTable[CurIndex].FlagId & pHwCtrlFlag->FlagId) {
 			Handler = HwFlagTable[CurIndex].FlagHdlr;
 			/*Unmask flag*/
-			pHwCtrlFlag->FlagId &=  ~(HwFlagTable[CurIndex].FlagId);
+			pHwCtrlFlag->FlagId &= ~(HwFlagTable[CurIndex].FlagId);
 			HwFlagTable[CurIndex].RfCnt++;
 			break;
 		}
@@ -101,7 +102,9 @@ static inline HwFlagHdlr HwCtrlValidFlag(PHwFlagCtrl pHwCtrlFlag)
 	} while (HwFlagTable[CurIndex].FlagHdlr != NULL);
 
 	if (Handler == NULL) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("No corresponding FlagHdlr for this FlagID(%x)\n",  pHwCtrlFlag->FlagId));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("No corresponding FlagHdlr for this FlagID(%x)\n",
+			  pHwCtrlFlag->FlagId));
 		pHwCtrlFlag->FlagId = 0;
 	}
 
@@ -137,14 +140,25 @@ static VOID free_hwcmd(os_kref *ref)
 
 static VOID HwCtrlCmdHandler(RTMP_ADAPTER *pAd)
 {
-	PHwCmdQElmt	cmdqelmt;
-	NDIS_STATUS	NdisStatus = NDIS_STATUS_SUCCESS;
-	NTSTATUS		ntStatus;
-	HwCmdHdlr		Handler = NULL;
+	PHwCmdQElmt cmdqelmt;
+	NDIS_STATUS NdisStatus = NDIS_STATUS_SUCCESS;
+	NTSTATUS ntStatus;
+	HwCmdHdlr Handler = NULL;
 	HW_CTRL_T *pHwCtrl = &pAd->HwCtrl;
+	UINT32 process_cnt = 0;
 
 	while (pAd && pHwCtrl->HwCtrlQ.size > 0) {
 		NdisStatus = NDIS_STATUS_SUCCESS;
+
+		/* For worst case, avoid process HwCtrlQ too long which cause RCU_sched stall */
+		process_cnt++;
+		/* process_cnt-16 */
+		if ((!in_interrupt()) &&
+		    (process_cnt >= (MAX_LEN_OF_HWCTRL_QUEUE >> 4))) {
+			process_cnt = 0;
+			OS_SCHEDULE();
+		}
+
 		NdisAcquireSpinLock(&pHwCtrl->HwCtrlQLock);
 		HwCtrlDequeueCmd(&pHwCtrl->HwCtrlQ, &cmdqelmt);
 		NdisReleaseSpinLock(&pHwCtrl->HwCtrlQLock);
@@ -152,15 +166,16 @@ static VOID HwCtrlCmdHandler(RTMP_ADAPTER *pAd)
 		if (cmdqelmt == NULL)
 			break;
 
-
-		if (!RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST) && RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_START_UP)) {
+		if (!RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST) &&
+		    RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_START_UP)) {
 			Handler = HwCtrlValidCmd(cmdqelmt);
 
 			if (Handler) {
 				ntStatus = Handler(pAd, cmdqelmt);
 
 				if (cmdqelmt->CallbackFun)
-					cmdqelmt->CallbackFun(pAd, cmdqelmt->CallbackArgs);
+					cmdqelmt->CallbackFun(
+						pAd, cmdqelmt->CallbackArgs);
 			}
 		}
 #ifdef DBG_STARVATION
@@ -172,17 +187,16 @@ static VOID HwCtrlCmdHandler(RTMP_ADAPTER *pAd)
 			RTMP_OS_COMPLETE(&cmdqelmt->ack_done);
 
 		os_kref_put(&cmdqelmt->refcnt, free_hwcmd);
-	}	/* end of while */
+	} /* end of while */
 }
-
 
 static VOID HwCtrlFlagHandler(RTMP_ADAPTER *pAd)
 {
-	HW_CTRL_T		*pHwCtrl = &pAd->HwCtrl;
-	PHwFlagCtrl		pHwCtrlFlag = &pHwCtrl->HwCtrlFlag;
-	NTSTATUS		ntStatus;
-	HwFlagHdlr		Handler = NULL;
-	HwFlagCtrl      HwCtrlFlag;
+	HW_CTRL_T *pHwCtrl = &pAd->HwCtrl;
+	PHwFlagCtrl pHwCtrlFlag = &pHwCtrl->HwCtrlFlag;
+	NTSTATUS ntStatus;
+	HwFlagHdlr Handler = NULL;
+	HwFlagCtrl HwCtrlFlag;
 
 	NdisAcquireSpinLock(&pHwCtrl->HwCtrlQLock);
 	HwCtrlFlag.FlagId = pHwCtrlFlag->FlagId;
@@ -201,12 +215,11 @@ static VOID HwCtrlFlagHandler(RTMP_ADAPTER *pAd)
 	}
 }
 
-
 static INT HwCtrlThread(ULONG Context)
 {
 	RTMP_ADAPTER *pAd;
 	RTMP_OS_TASK *pTask;
-	HwCmdQElmt	*pCmdQElmt = NULL;
+	HwCmdQElmt *pCmdQElmt = NULL;
 	HW_CTRL_T *pHwCtrl;
 	int status;
 
@@ -262,11 +275,11 @@ static INT HwCtrlThread(ULONG Context)
 	}
 
 	NdisReleaseSpinLock(&pHwCtrl->HwCtrlQLock);
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("<---%s\n", __func__));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("<---%s\n", __func__));
 	RtmpOSTaskNotifyToExit(pTask);
 	return 0;
 }
-
 
 #ifdef ERR_RECOVERY
 static INT ser_ctrl_task(ULONG context)
@@ -302,7 +315,6 @@ static INT ser_ctrl_task(ULONG context)
 	return status;
 }
 
-
 INT ser_init(RTMP_ADAPTER *pAd)
 {
 	INT Status = 0;
@@ -316,13 +328,13 @@ INT ser_init(RTMP_ADAPTER *pAd)
 
 	if (Status == NDIS_STATUS_FAILURE) {
 		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: unable to start %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pAd->net_dev), __func__));
+			 ("%s: unable to start %s\n",
+			  RTMP_OS_NETDEV_GET_DEVNAME(pAd->net_dev), __func__));
 		return NDIS_STATUS_FAILURE;
 	}
 
 	return TRUE;
 }
-
 
 INT ser_exit(RTMP_ADAPTER *pAd)
 {
@@ -335,15 +347,16 @@ INT ser_exit(RTMP_ADAPTER *pAd)
 }
 #endif /* ERR_RECOVERY */
 
-
 #ifdef DBG_STARVATION
-static void hwctrl_starv_timeout_handle(struct starv_dbg *starv, struct starv_log_entry *entry)
+static void hwctrl_starv_timeout_handle(struct starv_dbg *starv,
+					struct starv_log_entry *entry)
 {
-	struct _HwCmdQElmt *cmd = container_of(starv, struct _HwCmdQElmt, starv);
+	struct _HwCmdQElmt *cmd =
+		container_of(starv, struct _HwCmdQElmt, starv);
 	struct _HW_CTRL_T *hw_ctrl = starv->block->priv;
 	struct starv_log_basic *log = NULL;
 
-	os_alloc_mem(NULL, (UCHAR **) &log, sizeof(struct starv_log_basic));
+	os_alloc_mem(NULL, (UCHAR **)&log, sizeof(struct starv_log_basic));
 	if (log) {
 		log->qsize = hw_ctrl->HwCtrlQ.size;
 		log->id = cmd->command;
@@ -351,7 +364,8 @@ static void hwctrl_starv_timeout_handle(struct starv_dbg *starv, struct starv_lo
 	}
 }
 
-static void hwctrl_starv_block_init(struct starv_log *ctrl, struct _HW_CTRL_T *hw_ctrl)
+static void hwctrl_starv_block_init(struct starv_log *ctrl,
+				    struct _HW_CTRL_T *hw_ctrl)
 {
 	struct starv_dbg_block *block = &hw_ctrl->block;
 
@@ -404,7 +418,9 @@ UINT32 HwCtrlInit(RTMP_ADAPTER *pAd)
 	Status = RtmpOSTaskAttach(pTask, HwCtrlThread, (ULONG)pTask);
 
 	if (Status == NDIS_STATUS_FAILURE) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: unable to start %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pAd->net_dev), __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: unable to start %s\n",
+			  RTMP_OS_NETDEV_GET_DEVNAME(pAd->net_dev), __func__));
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -413,7 +429,6 @@ UINT32 HwCtrlInit(RTMP_ADAPTER *pAd)
 #endif /* ERR_RECOVERY */
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 VOID HwCtrlExit(RTMP_ADAPTER *pAd)
 {
@@ -440,18 +455,17 @@ VOID HwCtrlExit(RTMP_ADAPTER *pAd)
 #endif /*DBG_STARVATION*/
 }
 
-NDIS_STATUS HwCtrlEnqueueCmd(
-	RTMP_ADAPTER *pAd,
-	HW_CTRL_TXD HwCtrlTxd)
+NDIS_STATUS HwCtrlEnqueueCmd(RTMP_ADAPTER *pAd, HW_CTRL_TXD HwCtrlTxd)
 {
-	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
-	PHwCmdQElmt	cmdqelmt = NULL;
-	PHwCmdQ	cmdq = NULL;
+	NDIS_STATUS status = NDIS_STATUS_SUCCESS;
+	PHwCmdQElmt cmdqelmt = NULL;
+	PHwCmdQ cmdq = NULL;
 	UINT32 wait_time = 0;
 	HW_CTRL_T *pHwCtrl = &pAd->HwCtrl;
 
 	if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST)) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("--->%s - NIC is not exist!!\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("--->%s - NIC is not exist!!\n", __func__));
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -474,13 +488,15 @@ NDIS_STATUS HwCtrlEnqueueCmd(
 		RTMP_OS_INIT_COMPLETION(&cmdqelmt->ack_done);
 
 	if (HwCtrlTxd.InformationBufferLength > 0) {
-		status = os_alloc_mem(pAd, (PUCHAR *)&cmdqelmt->buffer, HwCtrlTxd.InformationBufferLength);
+		status = os_alloc_mem(pAd, (PUCHAR *)&cmdqelmt->buffer,
+				      HwCtrlTxd.InformationBufferLength);
 		if (cmdqelmt->buffer == NULL) {
-			status =  NDIS_STATUS_RESOURCES;
+			status = NDIS_STATUS_RESOURCES;
 			goto end;
 		}
 		/*initial buffer*/
-		os_move_mem(cmdqelmt->buffer, HwCtrlTxd.pInformationBuffer, HwCtrlTxd.InformationBufferLength);
+		os_move_mem(cmdqelmt->buffer, HwCtrlTxd.pInformationBuffer,
+			    HwCtrlTxd.InformationBufferLength);
 		cmdqelmt->bufferlength = HwCtrlTxd.InformationBufferLength;
 	}
 	/*initial cmd element*/
@@ -528,26 +544,28 @@ NDIS_STATUS HwCtrlEnqueueCmd(
 		goto end;
 
 	/*wait handle*/
-	wait_time = HwCtrlTxd.wait_time ? HwCtrlTxd.wait_time : HWCTRL_CMD_TIMEOUT;
-	if (!RTMP_OS_WAIT_FOR_COMPLETION_TIMEOUT(&cmdqelmt->ack_done, RTMPMsecsToJiffies(wait_time))) {
+	wait_time =
+		HwCtrlTxd.wait_time ? HwCtrlTxd.wait_time : HWCTRL_CMD_TIMEOUT;
+	if (!RTMP_OS_WAIT_FOR_COMPLETION_TIMEOUT(
+		    &cmdqelmt->ack_done, RTMPMsecsToJiffies(wait_time))) {
 		status = NDIS_STATUS_FAILURE;
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s(): HwCtrl CmdTimeout, TYPE:%d,ID:%d!!\n",
-			__func__, cmdqelmt->type, cmdqelmt->command));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(): HwCtrl CmdTimeout, TYPE:%d,ID:%d!!\n",
+			  __func__, cmdqelmt->type, cmdqelmt->command));
 	}
 end:
 	os_kref_put(&cmdqelmt->refcnt, free_hwcmd);
 	return status;
 }
 
-NDIS_STATUS HwCtrlSetFlag(
-	RTMP_ADAPTER	*pAd,
-	INT32			FlagId)
+NDIS_STATUS HwCtrlSetFlag(RTMP_ADAPTER *pAd, INT32 FlagId)
 {
-	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
+	NDIS_STATUS status = NDIS_STATUS_SUCCESS;
 	HW_CTRL_T *pHwCtrl = &pAd->HwCtrl;
 
 	if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST)) {
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("--->%s - NIC is not exist!!\n", __func__));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("--->%s - NIC is not exist!!\n", __func__));
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -560,8 +578,6 @@ NDIS_STATUS HwCtrlSetFlag(
 	return status;
 }
 
-
-
 /*
 *
 */
@@ -570,40 +586,48 @@ INT Show_HwCtrlStatistic_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	HW_CTRL_T *pHwCtrl = &pAd->HwCtrl;
 	HW_CMD_TABLE_T *pHwCmdTable = NULL;
 	UCHAR i = 0, j = 0;
-	PHwCmdQElmt	cmdqelmt = NULL;
+	PHwCmdQElmt cmdqelmt = NULL;
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tHwCtrlTask Totaol Ref. Cnt: %d\n", pHwCtrl->TotalCnt));
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tHwCtrlTask CMD Statistic:\n"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\tHwCtrlTask Totaol Ref. Cnt: %d\n", pHwCtrl->TotalCnt));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\tHwCtrlTask CMD Statistic:\n"));
 	pHwCmdTable = HwCmdTable[i];
 
 	while (pHwCmdTable != NULL) {
 		j = 0;
 
 		while (pHwCmdTable[j].CmdID != HWCMD_ID_END) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tCMDID: %d, Handler: %p, RfCnt: %d\n",
-					 pHwCmdTable[j].CmdID, pHwCmdTable[j].CmdHdlr, pHwCmdTable[j].RfCnt));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\tCMDID: %d, Handler: %p, RfCnt: %d\n",
+				  pHwCmdTable[j].CmdID, pHwCmdTable[j].CmdHdlr,
+				  pHwCmdTable[j].RfCnt));
 			j++;
 		}
 
 		pHwCmdTable = HwCmdTable[++i];
 	}
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tHwCtrlTask Flag Statistic:\n"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\tHwCtrlTask Flag Statistic:\n"));
 	i = 0;
 
 	while (HwFlagTable[i].FlagId != HWFLAG_ID_END) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tFLAGID: %d, Handler: %p, RfCnt: %d\n",
-				 HwFlagTable[i].FlagId, HwFlagTable[i].FlagHdlr, HwFlagTable[i].RfCnt));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tFLAGID: %d, Handler: %p, RfCnt: %d\n",
+			  HwFlagTable[i].FlagId, HwFlagTable[i].FlagHdlr,
+			  HwFlagTable[i].RfCnt));
 		i++;
 	}
 
 	NdisAcquireSpinLock(&pHwCtrl->HwCtrlQLock);
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tQueSize: %d\n",
-		pHwCtrl->HwCtrlQ.size));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\tQueSize: %d\n", pHwCtrl->HwCtrlQ.size));
 	cmdqelmt = pHwCtrl->HwCtrlQ.head;
 	while (cmdqelmt) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\tTYPE:%d, CID:%d\n",
-			cmdqelmt->type, cmdqelmt->command));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\tTYPE:%d, CID:%d\n", cmdqelmt->type,
+			  cmdqelmt->command));
 		cmdqelmt = cmdqelmt->next;
 	}
 	NdisReleaseSpinLock(&pHwCtrl->HwCtrlQLock);
@@ -635,5 +659,3 @@ UINT32 HWCtrlOpsReg(RTMP_ADAPTER *pAd)
 
 	return NDIS_STATUS_SUCCESS;
 }
-
-

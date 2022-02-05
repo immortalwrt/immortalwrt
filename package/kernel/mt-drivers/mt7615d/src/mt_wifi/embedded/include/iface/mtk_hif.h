@@ -46,18 +46,26 @@ struct mtk_hif {
  *
  */
 struct mtk_hif_ops {
-	u16 (*write_tx_resource)(struct mtk_hif_dev *hif_dev, struct _TX_BLK *tx_blk,
-							 bool is_last, u16 *free_num);
-	u16 (*write_multi_tx_resource)(struct mtk_hif_dev *hif_dev, struct _TX_BLK *tx_blk,
-								   u8 frame_num, u16 *free_num);
-	void (*write_final_tx_resource)(struct mtk_hif_dev *hif_dev, struct _TX_BLK *tx_blk,
-									u16 total_mpdu_size, u16 first_tx_idx);
-	u16 (*write_frag_tx_resource)(struct mtk_hif_dev *hif_dev, struct _TX_BLK *tx_blk,
-								  u8 frag_num, u16 *free_num);
-	void (*kickout_data_tx)(struct mtk_hif_dev *hif_dev, struct _TX_BLK *tx_blk, UCHAR que_idx);
+	u16 (*write_tx_resource)(struct mtk_hif_dev *hif_dev,
+				 struct _TX_BLK *tx_blk, bool is_last,
+				 u16 *free_num);
+	u16 (*write_multi_tx_resource)(struct mtk_hif_dev *hif_dev,
+				       struct _TX_BLK *tx_blk, u8 frame_num,
+				       u16 *free_num);
+	void (*write_final_tx_resource)(struct mtk_hif_dev *hif_dev,
+					struct _TX_BLK *tx_blk,
+					u16 total_mpdu_size, u16 first_tx_idx);
+	u16 (*write_frag_tx_resource)(struct mtk_hif_dev *hif_dev,
+				      struct _TX_BLK *tx_blk, u8 frag_num,
+				      u16 *free_num);
+	void (*kickout_data_tx)(struct mtk_hif_dev *hif_dev,
+				struct _TX_BLK *tx_blk, UCHAR que_idx);
 
-	PNDIS_PACKET(*get_pkt_from_rx_resource)(struct mtk_hif_dev *hif_dev, bool *re_schedule, unsigned int *rx_pending, u8 ring_no);
-	UINT32(*get_tx_resource_free_num)(struct mtk_hif_dev *hif_dev, UINT8 que_idx);
+	PNDIS_PACKET(*get_pkt_from_rx_resource)
+	(struct mtk_hif_dev *hif_dev, bool *re_schedule,
+	 unsigned int *rx_pending, u8 ring_no);
+	UINT32(*get_tx_resource_free_num)
+	(struct mtk_hif_dev *hif_dev, UINT8 que_idx);
 	u8 *src_va, unsigned int src_buf_len);
 };
 

@@ -26,12 +26,9 @@
 	--------	----------	  ----------------------------------------------
 */
 
-
 #ifndef __WF_AON_H__
 #define __WF_AON_H__
 
-#define WF_AON_BASE		0x2D000
-
+#define WF_AON_BASE 0x2D000
 
 #endif /* __WF_AON_H__ */
-

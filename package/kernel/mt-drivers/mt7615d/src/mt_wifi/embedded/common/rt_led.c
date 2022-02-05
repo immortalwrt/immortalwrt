@@ -23,7 +23,7 @@
     ---------    ----------    ----------------------------------------------
  */
 
-#include	"rt_config.h"
+#include "rt_config.h"
 
 #ifdef VENDOR_FEATURE7_SUPPORT
 #ifdef WSC_INCLUDED
@@ -33,24 +33,25 @@
 #ifdef LED_CONTROL_SUPPORT
 
 #ifdef CONFIG_ANDES_SUPPORT
-INT LED_Array[16][12] = {
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ LED_SOLID_ON,   LED_TX_BLINKING,    LED_SOLID_OFF,    LED_SOLID_ON,   LED_SOLID_OFF,  -1,  LED_SOLID_ON, -1,   LED_BLINKING_170MS_ON_170MS_OFF, -1, -1, LED_WPS_5S_ON_3S_OFF_THEN_BLINKING},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{  3,  2,   -1,   -1,   -1, -1, 16,   1,  5,  -1, -1, 17},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ -1, -1,   -1,   -1,   -1, -1, -1, -1, -1, -1, -1, -1},
-	{ 1,   2,     1,   -1,   -1, -1,  3, -1,   6, -1, -1,   0},
-	{ 1,   2,     1,   -1,   -1, -1, -1,  1,   4, -1, -1, 18}
-};
+INT LED_Array[16][12] = { { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { LED_SOLID_ON, LED_TX_BLINKING, LED_SOLID_OFF,
+			    LED_SOLID_ON, LED_SOLID_OFF, -1, LED_SOLID_ON, -1,
+			    LED_BLINKING_170MS_ON_170MS_OFF, -1, -1,
+			    LED_WPS_5S_ON_3S_OFF_THEN_BLINKING },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { 3, 2, -1, -1, -1, -1, 16, 1, 5, -1, -1, 17 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			  { 1, 2, 1, -1, -1, -1, 3, -1, 6, -1, -1, 0 },
+			  { 1, 2, 1, -1, -1, -1, -1, 1, 4, -1, -1, 18 } };
 #endif /* CONFIG_ANDES_SUPPORT */
 
 /*
@@ -76,17 +77,17 @@ INT LED_Array[16][12] = {
 VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 {
 	/*ULONG			data; */
-	UCHAR			LinkStatus = 0;
-	UCHAR			LedMode;
-	UCHAR			MCUCmd = 0;
-	BOOLEAN		bIgnored = FALSE;
-	UCHAR			Channel = 0;
+	UCHAR LinkStatus = 0;
+	UCHAR LedMode;
+	UCHAR MCUCmd = 0;
+	BOOLEAN bIgnored = FALSE;
+	UCHAR Channel = 0;
 	/* #ifdef MT76x0 */
-	INT				LED_CMD = -1;
+	INT LED_CMD = -1;
 	/* #endif */
 #ifdef WSC_INCLUDED
 #ifdef WSC_LED_SUPPORT
-	PWSC_CTRL		pWscControl = NULL;
+	PWSC_CTRL pWscControl = NULL;
 #ifdef CONFIG_AP_SUPPORT
 	pWscControl = &pAd->ApCfg.MBSSID[MAIN_MBSSID].WscControl;
 #endif /* CONFIG_AP_SUPPORT */
@@ -105,7 +106,8 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 	LedMode = LED_MODE(pAd);
 
 	/* #ifdef MT76x0 */
-	if (IS_MT7603(pAd) || IS_MT7628(pAd) || IS_MT7615(pAd) || IS_MT7622(pAd)) {
+	if (IS_MT7603(pAd) || IS_MT7628(pAd) || IS_MT7615(pAd) ||
+	    IS_MT7622(pAd)) {
 		LedMode = 1;
 #if defined(WSC_INCLUDED) && defined(WSC_LED_SUPPORT)
 
@@ -144,6 +146,7 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 
 	case LED_HALT:
 		LedMode = 0; /* Driver sets MAC register and MAC controls LED */
+		break;
 
 	case LED_RADIO_OFF:
 		LinkStatus = LINK_STATUS_RADIO_OFF;
@@ -172,7 +175,8 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 			LinkStatus = LINK_STATUS_WPS_IN_PROCESS;
 			MCUCmd = MCU_SET_WPS_LED_MODE;
 			pWscControl->WscLEDMode = LED_WPS_IN_PROCESS;
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: LED_WPS_IN_PROCESS\n", __func__));
+			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("%s: LED_WPS_IN_PROCESS\n", __func__));
 		} else
 			bIgnored = TRUE;
 
@@ -182,7 +186,7 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 		if (WscSupportWPSLEDMode(pAd)) {
 			/* In the case of LED mode 9, the error LED should be turned on only after WPS walk time expiration. */
 			if ((pWscControl->bWPSWalkTimeExpiration == FALSE) &&
-				(LED_MODE(pAd) == WPS_LED_MODE_9)) {
+			    (LED_MODE(pAd) == WPS_LED_MODE_9)) {
 				/* do nothing. */
 			} else {
 				LinkStatus = LINK_STATUS_WPS_ERROR;
@@ -200,8 +204,10 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 		if (WscSupportWPSLEDMode(pAd)) {
 			LinkStatus = LINK_STATUS_WPS_SESSION_OVERLAP_DETECTED;
 			MCUCmd = MCU_SET_WPS_LED_MODE;
-			pWscControl->WscLEDMode = LED_WPS_SESSION_OVERLAP_DETECTED;
-			pWscControl->WscLastWarningLEDMode = LED_WPS_SESSION_OVERLAP_DETECTED;
+			pWscControl->WscLEDMode =
+				LED_WPS_SESSION_OVERLAP_DETECTED;
+			pWscControl->WscLastWarningLEDMode =
+				LED_WPS_SESSION_OVERLAP_DETECTED;
 		} else
 			bIgnored = TRUE;
 
@@ -210,39 +216,58 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 	case LED_WPS_SUCCESS:
 		if (WscSupportWPSLEDMode(pAd)) {
 			if ((LED_MODE(pAd) == WPS_LED_MODE_7) ||
-				(LED_MODE(pAd) == WPS_LED_MODE_11) ||
-				(LED_MODE(pAd) == WPS_LED_MODE_12)
-			   ) {
+			    (LED_MODE(pAd) == WPS_LED_MODE_11) ||
+			    (LED_MODE(pAd) == WPS_LED_MODE_12)) {
 				/* In the WPS LED mode 7, 11 and 12, the blue LED would last 300 seconds regardless of the AP's security settings. */
-				LinkStatus = LINK_STATUS_WPS_SUCCESS_WITH_SECURITY;
+				LinkStatus =
+					LINK_STATUS_WPS_SUCCESS_WITH_SECURITY;
 				MCUCmd = MCU_SET_WPS_LED_MODE;
 				pWscControl->WscLEDMode = LED_WPS_SUCCESS;
 				/* Turn off the WPS successful LED pattern after 300 seconds. */
-				RTMPSetTimer(&pWscControl->WscLEDTimer, WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
-			} else if (LED_MODE(pAd) == WPS_LED_MODE_8) { /* The WPS LED mode 8 */
-				if (WscAPHasSecuritySetting(pAd, pWscControl)) { /* The WPS AP has the security setting. */
-					LinkStatus = LINK_STATUS_WPS_SUCCESS_WITH_SECURITY;
+				RTMPSetTimer(
+					&pWscControl->WscLEDTimer,
+					WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
+			} else if (LED_MODE(pAd) ==
+				   WPS_LED_MODE_8) { /* The WPS LED mode 8 */
+				if (WscAPHasSecuritySetting(
+					    pAd,
+					    pWscControl)) { /* The WPS AP has the security setting. */
+					LinkStatus =
+						LINK_STATUS_WPS_SUCCESS_WITH_SECURITY;
 					MCUCmd = MCU_SET_WPS_LED_MODE;
-					pWscControl->WscLEDMode = LED_WPS_SUCCESS;
+					pWscControl->WscLEDMode =
+						LED_WPS_SUCCESS;
 					/* Turn off the WPS successful LED pattern after 300 seconds. */
-					RTMPSetTimer(&pWscControl->WscLEDTimer, WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
+					RTMPSetTimer(
+						&pWscControl->WscLEDTimer,
+						WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
 				} else { /* The WPS AP does not have the secuirty setting. */
-					LinkStatus = LINK_STATUS_WPS_SUCCESS_WITHOUT_SECURITY;
+					LinkStatus =
+						LINK_STATUS_WPS_SUCCESS_WITHOUT_SECURITY;
 					MCUCmd = MCU_SET_WPS_LED_MODE;
-					pWscControl->WscLEDMode = LED_WPS_SUCCESS;
+					pWscControl->WscLEDMode =
+						LED_WPS_SUCCESS;
 					/* Turn off the WPS successful LED pattern after 300 seconds. */
-					RTMPSetTimer(&pWscControl->WscLEDTimer, WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
+					RTMPSetTimer(
+						&pWscControl->WscLEDTimer,
+						WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
 				}
-			} else if (LED_MODE(pAd) == WPS_LED_MODE_9) { /* The WPS LED mode 9. */
+			} else if (LED_MODE(pAd) ==
+				   WPS_LED_MODE_9) { /* The WPS LED mode 9. */
 				/* Always turn on the WPS blue LED for 300 seconds. */
 				LinkStatus = LINK_STATUS_WPS_BLUE_LED;
 				MCUCmd = MCU_SET_WPS_LED_MODE;
 				pWscControl->WscLEDMode = LED_WPS_SUCCESS;
 				/* Turn off the WPS successful LED pattern after 300 seconds. */
-				RTMPSetTimer(&pWscControl->WscLEDTimer, WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
+				RTMPSetTimer(
+					&pWscControl->WscLEDTimer,
+					WSC_SUCCESSFUL_LED_PATTERN_TIMEOUT);
 			} else {
-				MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: LED_WPS_SUCCESS (Incorrect LED mode = %d)\n",
-						 __func__, LED_MODE(pAd)));
+				MTWF_LOG(
+					DBG_CAT_HW, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("%s: LED_WPS_SUCCESS (Incorrect LED mode = %d)\n",
+					 __func__, LED_MODE(pAd)));
 				ASSERT(FALSE);
 			}
 		} else
@@ -272,7 +297,8 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 
 	case LED_NORMAL_CONNECTION_WITHOUT_SECURITY:
 		if (WscSupportWPSLEDMode(pAd)) {
-			LinkStatus = LINK_STATUS_NORMAL_CONNECTION_WITHOUT_SECURITY;
+			LinkStatus =
+				LINK_STATUS_NORMAL_CONNECTION_WITHOUT_SECURITY;
 			MCUCmd = MCU_SET_WPS_LED_MODE;
 			pWscControl->WscLEDMode = LED_WPS_SUCCESS;
 		} else
@@ -282,7 +308,8 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 
 	case LED_NORMAL_CONNECTION_WITH_SECURITY:
 		if (WscSupportWPSLEDMode(pAd)) {
-			LinkStatus = LINK_STATUS_NORMAL_CONNECTION_WITH_SECURITY;
+			LinkStatus =
+				LINK_STATUS_NORMAL_CONNECTION_WITH_SECURITY;
 			MCUCmd = MCU_SET_WPS_LED_MODE;
 			pWscControl->WscLEDMode = LED_WPS_SUCCESS;
 		} else
@@ -321,30 +348,43 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 #endif /* WSC_INCLUDED */
 
 	default:
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("RTMPSetLED::Unknown Status 0x%x\n", Status));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+			 ("RTMPSetLED::Unknown Status 0x%x\n", Status));
 		break;
 	}
 
-	if (IS_MT7603(pAd) || IS_MT7628(pAd) || IS_MT7615(pAd) || IS_MT7622(pAd)) {
+	if (IS_MT7603(pAd) || IS_MT7628(pAd) || IS_MT7615(pAd) ||
+	    IS_MT7622(pAd)) {
 #if defined(MT7615) || defined(MT7622)
-		AndesLedEnhanceOP(pAd, LED_ID_WLAN_OD, LED_TX_OVER_BLINK_DISABLE, LED_REVERSE_POLARITY_DISABLE, LED_BAND_0, LED_TX_DATA_ONLY, 0, 0, LED_CMD);
+		AndesLedEnhanceOP(pAd, LED_ID_WLAN_OD,
+				  LED_TX_OVER_BLINK_DISABLE,
+				  LED_REVERSE_POLARITY_DISABLE, LED_BAND_0,
+				  LED_TX_DATA_ONLY, 0, 0, LED_CMD);
 #else
-		AndesLedEnhanceOP(pAd, LED_ID_WLAN_OD, LED_TX_OVER_BLINK_DISABLE, LED_REVERSE_POLARITY_DISABLE, LED_ALL_TX_FRAMES, 0, 0, LED_CMD);
+		AndesLedEnhanceOP(pAd, LED_ID_WLAN_OD,
+				  LED_TX_OVER_BLINK_DISABLE,
+				  LED_REVERSE_POLARITY_DISABLE,
+				  LED_ALL_TX_FRAMES, 0, 0, LED_CMD);
 #endif
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: LED_CMD:0x%x, LED Mode:0x%x, LinkStatus:0x%x\n", __func__, LED_CMD, LedMode, LinkStatus));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s: LED_CMD:0x%x, LED Mode:0x%x, LinkStatus:0x%x\n",
+			  __func__, LED_CMD, LedMode, LinkStatus));
 	} else if (MCUCmd) {
-		AsicSendCommandToMcu(pAd, MCUCmd, 0xff, LedMode, LinkStatus, FALSE);
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: MCUCmd:0x%x, LED Mode:0x%x, LinkStatus:0x%x\n", __func__, MCUCmd, LedMode, LinkStatus));
+		AsicSendCommandToMcu(pAd, MCUCmd, 0xff, LedMode, LinkStatus,
+				     FALSE);
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("%s: MCUCmd:0x%x, LED Mode:0x%x, LinkStatus:0x%x\n",
+			  __func__, MCUCmd, LedMode, LinkStatus));
 	}
 
 	/*
 		Keep LED status for LED SiteSurvey mode.
 		After SiteSurvey, we will set the LED mode to previous status.
 	*/
-	if ((Status != LED_ON_SITE_SURVEY) && (Status != LED_POWER_UP) && (bIgnored == FALSE))
+	if ((Status != LED_ON_SITE_SURVEY) && (Status != LED_POWER_UP) &&
+	    (bIgnored == FALSE))
 		pAd->LedCntl.LedStatus = Status;
 }
-
 
 /*
 	========================================================================
@@ -375,7 +415,7 @@ VOID RTMPSetLEDStatus(RTMP_ADAPTER *pAd, UCHAR Status)
 */
 VOID RTMPSetSignalLED(RTMP_ADAPTER *pAd, NDIS_802_11_RSSI Dbm)
 {
-	UCHAR		nLed = 0;
+	UCHAR nLed = 0;
 
 	if (pAd->LedCntl.MCULedCntl.field.LedMode == LED_MODE_SIGNAL_STREGTH) {
 		if (Dbm <= -90)
@@ -395,12 +435,13 @@ VOID RTMPSetSignalLED(RTMP_ADAPTER *pAd, NDIS_802_11_RSSI Dbm)
 		/* Update Signal Stregth to firmware if changed. */
 		/* */
 		if (pAd->LedCntl.LedIndicatorStrength != nLed) {
-			AsicSendCommandToMcu(pAd, MCU_SET_LED_GPIO_SIGNAL_CFG, 0xff, nLed, pAd->LedCntl.MCULedCntl.field.Polarity, FALSE);
+			AsicSendCommandToMcu(
+				pAd, MCU_SET_LED_GPIO_SIGNAL_CFG, 0xff, nLed,
+				pAd->LedCntl.MCULedCntl.field.Polarity, FALSE);
 			pAd->LedCntl.LedIndicatorStrength = nLed;
 		}
 	}
 }
-
 
 #ifdef WSC_STA_SUPPORT
 #ifdef WSC_LED_SUPPORT
@@ -417,18 +458,19 @@ VOID LEDConnectionStart(RTMP_ADAPTER *pAd)
 			UCHAR WPSLEDStatus = 0;
 
 			/* The AP uses OPEN-NONE. */
-			if ((pAd->StaCfg[0].AuthMode == Ndis802_11AuthModeOpen)
-				&& (pAd->StaCfg[0].WepStatus == Ndis802_11WEPDisabled))
+			if ((pAd->StaCfg[0].AuthMode ==
+			     Ndis802_11AuthModeOpen) &&
+			    (pAd->StaCfg[0].WepStatus == Ndis802_11WEPDisabled))
 				WPSLEDStatus = LED_WPS_TURN_LED_OFF;
 			else /* The AP uses an encryption algorithm. */
 				WPSLEDStatus = LED_WPS_IN_PROCESS;
 
 			RTMPSetLED(pAd, WPSLEDStatus);
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: %d\n", __func__, WPSLEDStatus));
+			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("%s: %d\n", __func__, WPSLEDStatus));
 		}
 	}
 }
-
 
 /*
 	LED indication for normal connection completion.
@@ -443,21 +485,26 @@ VOID LEDConnectionCompletion(RTMP_ADAPTER *pAd, BOOLEAN bSuccess)
 
 			if (bSuccess == TRUE) { /* Successful connenction. */
 				/* The AP uses OPEN-NONE. */
-				if ((pAd->StaCfg[0].AuthMode == Ndis802_11AuthModeOpen) && (pAd->StaCfg[0].WepStatus == Ndis802_11WEPDisabled))
-					WPSLEDStatus = LED_NORMAL_CONNECTION_WITHOUT_SECURITY;
+				if ((pAd->StaCfg[0].AuthMode ==
+				     Ndis802_11AuthModeOpen) &&
+				    (pAd->StaCfg[0].WepStatus ==
+				     Ndis802_11WEPDisabled))
+					WPSLEDStatus =
+						LED_NORMAL_CONNECTION_WITHOUT_SECURITY;
 				else /* The AP uses an encryption algorithm. */
-					WPSLEDStatus = LED_NORMAL_CONNECTION_WITH_SECURITY;
+					WPSLEDStatus =
+						LED_NORMAL_CONNECTION_WITH_SECURITY;
 			} else /* Connection failure. */
 				WPSLEDStatus = LED_WPS_TURN_LED_OFF;
 
 			RTMPSetLED(pAd, WPSLEDStatus);
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s: %d\n", __func__, WPSLEDStatus));
+			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("%s: %d\n", __func__, WPSLEDStatus));
 		}
 	}
 }
 #endif /* WSC_LED_SUPPORT */
 #endif /* WSC_STA_SUPPORT */
-
 
 void rtmp_read_led_setting_from_eeprom(RTMP_ADAPTER *pAd)
 {
@@ -475,11 +522,9 @@ void rtmp_read_led_setting_from_eeprom(RTMP_ADAPTER *pAd)
 	}
 }
 
-
 void RTMPStartLEDMode(IN RTMP_ADAPTER *pAd)
 {
 }
-
 
 void RTMPInitLEDMode(IN RTMP_ADAPTER *pAd)
 {
@@ -494,15 +539,23 @@ void RTMPInitLEDMode(IN RTMP_ADAPTER *pAd)
 #endif /* RTMP_MAC_PCI */
 	}
 
-	AsicSendCommandToMcu(pAd, MCU_SET_LED_AG_CFG, 0xff, (UCHAR)pLedCntl->LedAGCfg, (UCHAR)(pLedCntl->LedAGCfg >> 8), FALSE);
-	AsicSendCommandToMcu(pAd, MCU_SET_LED_ACT_CFG, 0xff, (UCHAR)pLedCntl->LedACTCfg, (UCHAR)(pLedCntl->LedACTCfg >> 8), FALSE);
-	AsicSendCommandToMcu(pAd, MCU_SET_LED_POLARITY, 0xff, (UCHAR)pLedCntl->LedPolarity, (UCHAR)(pLedCntl->LedPolarity >> 8), FALSE);
-	AsicSendCommandToMcu(pAd, MCU_SET_LED_GPIO_SIGNAL_CFG, 0xff, 0, pLedCntl->MCULedCntl.field.Polarity, FALSE);
+	AsicSendCommandToMcu(pAd, MCU_SET_LED_AG_CFG, 0xff,
+			     (UCHAR)pLedCntl->LedAGCfg,
+			     (UCHAR)(pLedCntl->LedAGCfg >> 8), FALSE);
+	AsicSendCommandToMcu(pAd, MCU_SET_LED_ACT_CFG, 0xff,
+			     (UCHAR)pLedCntl->LedACTCfg,
+			     (UCHAR)(pLedCntl->LedACTCfg >> 8), FALSE);
+	AsicSendCommandToMcu(pAd, MCU_SET_LED_POLARITY, 0xff,
+			     (UCHAR)pLedCntl->LedPolarity,
+			     (UCHAR)(pLedCntl->LedPolarity >> 8), FALSE);
+	AsicSendCommandToMcu(pAd, MCU_SET_LED_GPIO_SIGNAL_CFG, 0xff, 0,
+			     pLedCntl->MCULedCntl.field.Polarity, FALSE);
 	pAd->LedCntl.LedIndicatorStrength = 0xFF;
-	RTMPSetSignalLED(pAd, -100);	/* Force signal strength Led to be turned off, before link up */
+	RTMPSetSignalLED(
+		pAd,
+		-100); /* Force signal strength Led to be turned off, before link up */
 	RTMPStartLEDMode(pAd);
 }
-
 
 inline void RTMPExitLEDMode(IN RTMP_ADAPTER *pAd)
 {
@@ -512,23 +565,21 @@ inline void RTMPExitLEDMode(IN RTMP_ADAPTER *pAd)
 
 #endif /* LED_CONTROL_SUPPORT */
 
-
 INT RTMPSetLED(RTMP_ADAPTER *pAd, UCHAR Status)
 {
 #ifdef RTMP_MAC_PCI
 
 	if (IS_PCI_INF(pAd) || IS_RBUS_INF(pAd)) {
 #ifdef LED_CONTROL_SUPPORT
-#ifdef CONFIG_INIT_RADIO_ONOFF	//avoid setting LED status in case radio is off
-	// PEGATRON MODIFY START
-	if((pAd->ApCfg.bRadioOn) || ((Status == LED_FORCE_ON) || (Status == LED_FORCE_OFF)))
+#ifdef CONFIG_INIT_RADIO_ONOFF //avoid setting LED status in case radio is off
+		// PEGATRON MODIFY START
+		if ((pAd->ApCfg.bRadioOn) ||
+		    ((Status == LED_FORCE_ON) || (Status == LED_FORCE_OFF)))
 #endif
-		RTMPSetLEDStatus(pAd, Status);
+			RTMPSetLEDStatus(pAd, Status);
 #endif /* LED_CONTROL_SUPPORT */
 	}
 
 #endif /* RTMP_MAC_PCI */
 	return TRUE;
 }
-
-

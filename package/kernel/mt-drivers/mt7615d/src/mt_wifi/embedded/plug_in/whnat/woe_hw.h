@@ -28,26 +28,18 @@ struct wed_ser_state;
 #define DMADONE_DONE 1
 #define WED_POLL_MAX 100
 
-
 #define PCIE_INT_STA_OFFSET (1 << 16)
 #define PCIE_POLL_MODE_ASSERT 1
 #define PCIE_POLL_MODE_ALWAYS 2
 #define FREE_CR_SIZE (sizeof(unsigned int))
 
-
-enum {
-	WHNAT_DMA_DISABLE,
-	WHNAT_DMA_TX,
-	WHNAT_DMA_RX,
-	WHNAT_DMA_TXRX
-};
+enum { WHNAT_DMA_DISABLE, WHNAT_DMA_TX, WHNAT_DMA_RX, WHNAT_DMA_TXRX };
 
 enum {
 	WHNAT_RESET_IDX_ONLY,
 	WHNAT_RESET_IDX_MODULE,
 	WHNAT_RESET_ALL,
 };
-
 
 void whnat_hal_int_ctrl(struct whnat_entry *whnat, unsigned char enable);
 void whnat_hal_eint_ctrl(struct whnat_entry *whnat, unsigned char enable);
@@ -75,23 +67,11 @@ void whnat_hal_ser_trigger(struct whnat_entry *whnat);
 void whnat_hal_ser_update(struct wed_entry *wed, struct wed_ser_state *state);
 #endif /*ERR_RECOVERY*/
 
+int whnat_hal_io_read(void *cookie, unsigned int addr, unsigned int *value);
 
-int whnat_hal_io_read(
-	void *cookie,
-	unsigned int addr,
-	unsigned int *value);
+int whnat_hal_io_write(void *cookie, unsigned int addr, unsigned int value);
 
-int whnat_hal_io_write(
-	void *cookie,
-	unsigned int addr,
-	unsigned int value);
-
-
-void whnat_hal_cr_handle(
-	struct whnat_entry *entry,
-	char type,
-	char is_write,
-	unsigned long addr,
-	unsigned int *cr_value);
+void whnat_hal_cr_handle(struct whnat_entry *entry, char type, char is_write,
+			 unsigned long addr, unsigned int *cr_value);
 
 #endif

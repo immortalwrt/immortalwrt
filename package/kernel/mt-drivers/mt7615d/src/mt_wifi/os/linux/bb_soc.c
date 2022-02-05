@@ -23,11 +23,10 @@ extern unsigned short wsc_done;
  *  ========================================================================
  */
 static UCHAR dslStateChg;
-VOID PeriodicPollingModeDetect(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3)
+VOID PeriodicPollingModeDetect(IN PVOID SystemSpecific1,
+			       IN PVOID FunctionContext,
+			       IN PVOID SystemSpecific2,
+			       IN PVOID SystemSpecific3)
 {
 	unsigned long irqFlags;
 	UCHAR modem_status = 0;
@@ -60,17 +59,20 @@ VOID PeriodicPollingModeDetect(
 		RTMP_INT_UNLOCK(&pAd->irq_lock, irqFlags);
 	}
 
-	RTMPModTimer(&pAd->Pollingmode.PollingModeDetect, POLLING_MODE_DETECT_INTV);
+	RTMPModTimer(&pAd->Pollingmode.PollingModeDetect,
+		     POLLING_MODE_DETECT_INTV);
 	pAd->Pollingmode.PollingModeDetectRunning = TRUE;
 #ifdef WSC_AP_SUPPORT
 	{
 		static int lastWscStatus;
-		PWSC_CTRL  pWscControl = &pAd->ApCfg.MBSSID[MAIN_MBSSID].WscControl;
+		PWSC_CTRL pWscControl =
+			&pAd->ApCfg.MBSSID[MAIN_MBSSID].WscControl;
 
 		wscTimerRunning = pWscControl->Wsc2MinsTimerRunning;
 		wscStatus = pWscControl->WscStatus;
 
-		if ((wscStatus == STATUS_WSC_CONFIGURED) && (lastWscStatus != STATUS_WSC_CONFIGURED)) {
+		if ((wscStatus == STATUS_WSC_CONFIGURED) &&
+		    (lastWscStatus != STATUS_WSC_CONFIGURED)) {
 #ifndef LED_WPSSPEC_COMPLY
 			wsc_done = 10;
 #else
@@ -86,20 +88,19 @@ VOID PeriodicPollingModeDetect(
 #endif
 }
 
-
 VOID PollingModeIsr(struct work_struct *work)
 {
-	PBBUPollingMode pPollingmode = container_of(work, BBUPollingMode, PollingDataBH);
+	PBBUPollingMode pPollingmode =
+		container_of(work, BBUPollingMode, PollingDataBH);
 	PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pPollingmode->pAd_va;
 	struct net_device *net_dev = pAd->net_dev;
 
 	rt2860_interrupt(0, net_dev);
 }
 
-
 VOID BBUPollingModeClose(IN RTMP_ADAPTER *pAd)
 {
-	BOOLEAN		Cancelled;
+	BOOLEAN Cancelled;
 
 	pAd->Pollingmode.PollingModeDetectRunning = FALSE;
 	RTMPCancelTimer(&pAd->Pollingmode.PollingModeDetect, &Cancelled);
@@ -107,11 +108,13 @@ VOID BBUPollingModeClose(IN RTMP_ADAPTER *pAd)
 
 BUILD_TIMER_FUNCTION(PeriodicPollingModeDetect);
 
-
 VOID BBUPollingModeInit(IN RTMP_ADAPTER *pAd)
 {
-	NdisAllocateSpinLock(&pAd->Pollingmode.PollingModeLock);/* for polling mode */
-	RTMPInitTimer(pAd, &pAd->Pollingmode.PollingModeDetect, GET_TIMER_FUNCTION(PeriodicPollingModeDetect), pAd, FALSE);
+	NdisAllocateSpinLock(
+		&pAd->Pollingmode.PollingModeLock); /* for polling mode */
+	RTMPInitTimer(pAd, &pAd->Pollingmode.PollingModeDetect,
+		      GET_TIMER_FUNCTION(PeriodicPollingModeDetect), pAd,
+		      FALSE);
 	pAd->Pollingmode.PollingModeDetectRunning = FALSE;
 }
 
@@ -119,8 +122,10 @@ VOID BBUPollingModeStart(IN RTMP_ADAPTER *pAd)
 {
 	if (pAd->Pollingmode.PollingModeDetectRunning == FALSE) {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-				 ("jiffies=%08lx, POLLING_MODE_DETECT_INTV=%d\r\n", jiffies, POLLING_MODE_DETECT_INTV));
-		RTMPSetTimer(&pAd->Pollingmode.PollingModeDetect, POLLING_MODE_DETECT_INTV);
+			 ("jiffies=%08lx, POLLING_MODE_DETECT_INTV=%d\r\n",
+			  jiffies, POLLING_MODE_DETECT_INTV));
+		RTMPSetTimer(&pAd->Pollingmode.PollingModeDetect,
+			     POLLING_MODE_DETECT_INTV);
 	}
 
 	/* init a BH task here */
@@ -139,9 +144,11 @@ VOID BBUPrepareMAC(IN RTMP_ADAPTER *pAd, PUCHAR macaddr)
 	UCHAR NWlanExt = 0;
 
 	FourByteOffset = macaddr[5] % 4;
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("\r\nFourByteOffset is %d", FourByteOffset));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+		 ("\r\nFourByteOffset is %d", FourByteOffset));
 	NWlanExt = pAd->ApCfg.BssidNum;
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("\r\nNWlanExt is %d", NWlanExt));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+		 ("\r\nNWlanExt is %d", NWlanExt));
 
 	switch (NWlanExt) {
 	case 1:
@@ -186,9 +193,8 @@ VOID BBUPrepareMAC(IN RTMP_ADAPTER *pAd, PUCHAR macaddr)
 		break;
 	}
 
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("current MAC=%02x:%02x:%02x:%02x:%02x:%02x\n",
-			 macaddr[0], macaddr[1],
-			 macaddr[2], macaddr[3],
-			 macaddr[4], macaddr[5]));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+		 ("current MAC=%02x:%02x:%02x:%02x:%02x:%02x\n", macaddr[0],
+		  macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]));
 	/*generate bssid from cpe mac address end, merge from linos, 20100208*/
 }

@@ -30,7 +30,6 @@ struct wlan_config {
 	struct vht_cfg vht_conf;
 };
 
-
 struct wlan_operate {
 	struct phy_op phy_oper;
 	struct ht_op ht_oper;
@@ -45,7 +44,6 @@ struct wlan_operate {
 */
 VOID phy_freq_get_cfg(struct wifi_dev *wdev, struct freq_cfg *cfg);
 
-
 /*
 * internal export configure loader
 */
@@ -57,7 +55,6 @@ VOID phy_oper_exit(struct phy_op *obj);
 */
 VOID ht_oper_init(struct wifi_dev *wdev, struct ht_op *obj);
 VOID ht_oper_exit(struct ht_op *obj);
-
 
 /*
 *vht info related
@@ -96,7 +93,6 @@ VOID operate_loader_rts_pkt_thld(struct wlan_operate *op, UCHAR pkt_num);
 * be_vht module
 */
 VOID operate_loader_vht_bw(struct wlan_operate *op);
-
-
+VOID operate_loader_vht_ldpc(struct wlan_operate *op, UCHAR vht_ldpc);
 
 #endif /*__BE_INTERNAL_H__*/

@@ -26,116 +26,93 @@
 	Paul Wu		02-25-02		Initial
 */
 
-#include	"rt_config.h"
+#include "rt_config.h"
 
 #define MCAST_WCID_TO_REMOVE 0 /* Pat: TODO */
 
 /* Rotation functions on 32 bit values */
-#define ROL32(A, n) \
-	(((A) << (n)) | (((A)>>(32-(n))) & ((1UL << (n)) - 1)))
-#define ROR32(A, n) ROL32((A), 32-(n))
+#define ROL32(A, n) (((A) << (n)) | (((A) >> (32 - (n))) & ((1UL << (n)) - 1)))
+#define ROR32(A, n) ROL32((A), 32 - (n))
 
 UINT Tkip_Sbox_Lower[256] = {
-	0xA5, 0x84, 0x99, 0x8D, 0x0D, 0xBD, 0xB1, 0x54,
-	0x50, 0x03, 0xA9, 0x7D, 0x19, 0x62, 0xE6, 0x9A,
-	0x45, 0x9D, 0x40, 0x87, 0x15, 0xEB, 0xC9, 0x0B,
-	0xEC, 0x67, 0xFD, 0xEA, 0xBF, 0xF7, 0x96, 0x5B,
-	0xC2, 0x1C, 0xAE, 0x6A, 0x5A, 0x41, 0x02, 0x4F,
-	0x5C, 0xF4, 0x34, 0x08, 0x93, 0x73, 0x53, 0x3F,
-	0x0C, 0x52, 0x65, 0x5E, 0x28, 0xA1, 0x0F, 0xB5,
-	0x09, 0x36, 0x9B, 0x3D, 0x26, 0x69, 0xCD, 0x9F,
-	0x1B, 0x9E, 0x74, 0x2E, 0x2D, 0xB2, 0xEE, 0xFB,
-	0xF6, 0x4D, 0x61, 0xCE, 0x7B, 0x3E, 0x71, 0x97,
-	0xF5, 0x68, 0x00, 0x2C, 0x60, 0x1F, 0xC8, 0xED,
-	0xBE, 0x46, 0xD9, 0x4B, 0xDE, 0xD4, 0xE8, 0x4A,
-	0x6B, 0x2A, 0xE5, 0x16, 0xC5, 0xD7, 0x55, 0x94,
-	0xCF, 0x10, 0x06, 0x81, 0xF0, 0x44, 0xBA, 0xE3,
-	0xF3, 0xFE, 0xC0, 0x8A, 0xAD, 0xBC, 0x48, 0x04,
-	0xDF, 0xC1, 0x75, 0x63, 0x30, 0x1A, 0x0E, 0x6D,
-	0x4C, 0x14, 0x35, 0x2F, 0xE1, 0xA2, 0xCC, 0x39,
-	0x57, 0xF2, 0x82, 0x47, 0xAC, 0xE7, 0x2B, 0x95,
-	0xA0, 0x98, 0xD1, 0x7F, 0x66, 0x7E, 0xAB, 0x83,
-	0xCA, 0x29, 0xD3, 0x3C, 0x79, 0xE2, 0x1D, 0x76,
-	0x3B, 0x56, 0x4E, 0x1E, 0xDB, 0x0A, 0x6C, 0xE4,
-	0x5D, 0x6E, 0xEF, 0xA6, 0xA8, 0xA4, 0x37, 0x8B,
-	0x32, 0x43, 0x59, 0xB7, 0x8C, 0x64, 0xD2, 0xE0,
-	0xB4, 0xFA, 0x07, 0x25, 0xAF, 0x8E, 0xE9, 0x18,
-	0xD5, 0x88, 0x6F, 0x72, 0x24, 0xF1, 0xC7, 0x51,
-	0x23, 0x7C, 0x9C, 0x21, 0xDD, 0xDC, 0x86, 0x85,
-	0x90, 0x42, 0xC4, 0xAA, 0xD8, 0x05, 0x01, 0x12,
-	0xA3, 0x5F, 0xF9, 0xD0, 0x91, 0x58, 0x27, 0xB9,
-	0x38, 0x13, 0xB3, 0x33, 0xBB, 0x70, 0x89, 0xA7,
-	0xB6, 0x22, 0x92, 0x20, 0x49, 0xFF, 0x78, 0x7A,
-	0x8F, 0xF8, 0x80, 0x17, 0xDA, 0x31, 0xC6, 0xB8,
-	0xC3, 0xB0, 0x77, 0x11, 0xCB, 0xFC, 0xD6, 0x3A
+	0xA5, 0x84, 0x99, 0x8D, 0x0D, 0xBD, 0xB1, 0x54, 0x50, 0x03, 0xA9, 0x7D,
+	0x19, 0x62, 0xE6, 0x9A, 0x45, 0x9D, 0x40, 0x87, 0x15, 0xEB, 0xC9, 0x0B,
+	0xEC, 0x67, 0xFD, 0xEA, 0xBF, 0xF7, 0x96, 0x5B, 0xC2, 0x1C, 0xAE, 0x6A,
+	0x5A, 0x41, 0x02, 0x4F, 0x5C, 0xF4, 0x34, 0x08, 0x93, 0x73, 0x53, 0x3F,
+	0x0C, 0x52, 0x65, 0x5E, 0x28, 0xA1, 0x0F, 0xB5, 0x09, 0x36, 0x9B, 0x3D,
+	0x26, 0x69, 0xCD, 0x9F, 0x1B, 0x9E, 0x74, 0x2E, 0x2D, 0xB2, 0xEE, 0xFB,
+	0xF6, 0x4D, 0x61, 0xCE, 0x7B, 0x3E, 0x71, 0x97, 0xF5, 0x68, 0x00, 0x2C,
+	0x60, 0x1F, 0xC8, 0xED, 0xBE, 0x46, 0xD9, 0x4B, 0xDE, 0xD4, 0xE8, 0x4A,
+	0x6B, 0x2A, 0xE5, 0x16, 0xC5, 0xD7, 0x55, 0x94, 0xCF, 0x10, 0x06, 0x81,
+	0xF0, 0x44, 0xBA, 0xE3, 0xF3, 0xFE, 0xC0, 0x8A, 0xAD, 0xBC, 0x48, 0x04,
+	0xDF, 0xC1, 0x75, 0x63, 0x30, 0x1A, 0x0E, 0x6D, 0x4C, 0x14, 0x35, 0x2F,
+	0xE1, 0xA2, 0xCC, 0x39, 0x57, 0xF2, 0x82, 0x47, 0xAC, 0xE7, 0x2B, 0x95,
+	0xA0, 0x98, 0xD1, 0x7F, 0x66, 0x7E, 0xAB, 0x83, 0xCA, 0x29, 0xD3, 0x3C,
+	0x79, 0xE2, 0x1D, 0x76, 0x3B, 0x56, 0x4E, 0x1E, 0xDB, 0x0A, 0x6C, 0xE4,
+	0x5D, 0x6E, 0xEF, 0xA6, 0xA8, 0xA4, 0x37, 0x8B, 0x32, 0x43, 0x59, 0xB7,
+	0x8C, 0x64, 0xD2, 0xE0, 0xB4, 0xFA, 0x07, 0x25, 0xAF, 0x8E, 0xE9, 0x18,
+	0xD5, 0x88, 0x6F, 0x72, 0x24, 0xF1, 0xC7, 0x51, 0x23, 0x7C, 0x9C, 0x21,
+	0xDD, 0xDC, 0x86, 0x85, 0x90, 0x42, 0xC4, 0xAA, 0xD8, 0x05, 0x01, 0x12,
+	0xA3, 0x5F, 0xF9, 0xD0, 0x91, 0x58, 0x27, 0xB9, 0x38, 0x13, 0xB3, 0x33,
+	0xBB, 0x70, 0x89, 0xA7, 0xB6, 0x22, 0x92, 0x20, 0x49, 0xFF, 0x78, 0x7A,
+	0x8F, 0xF8, 0x80, 0x17, 0xDA, 0x31, 0xC6, 0xB8, 0xC3, 0xB0, 0x77, 0x11,
+	0xCB, 0xFC, 0xD6, 0x3A
 };
 
 UINT Tkip_Sbox_Upper[256] = {
-	0xC6, 0xF8, 0xEE, 0xF6, 0xFF, 0xD6, 0xDE, 0x91,
-	0x60, 0x02, 0xCE, 0x56, 0xE7, 0xB5, 0x4D, 0xEC,
-	0x8F, 0x1F, 0x89, 0xFA, 0xEF, 0xB2, 0x8E, 0xFB,
-	0x41, 0xB3, 0x5F, 0x45, 0x23, 0x53, 0xE4, 0x9B,
-	0x75, 0xE1, 0x3D, 0x4C, 0x6C, 0x7E, 0xF5, 0x83,
-	0x68, 0x51, 0xD1, 0xF9, 0xE2, 0xAB, 0x62, 0x2A,
-	0x08, 0x95, 0x46, 0x9D, 0x30, 0x37, 0x0A, 0x2F,
-	0x0E, 0x24, 0x1B, 0xDF, 0xCD, 0x4E, 0x7F, 0xEA,
-	0x12, 0x1D, 0x58, 0x34, 0x36, 0xDC, 0xB4, 0x5B,
-	0xA4, 0x76, 0xB7, 0x7D, 0x52, 0xDD, 0x5E, 0x13,
-	0xA6, 0xB9, 0x00, 0xC1, 0x40, 0xE3, 0x79, 0xB6,
-	0xD4, 0x8D, 0x67, 0x72, 0x94, 0x98, 0xB0, 0x85,
-	0xBB, 0xC5, 0x4F, 0xED, 0x86, 0x9A, 0x66, 0x11,
-	0x8A, 0xE9, 0x04, 0xFE, 0xA0, 0x78, 0x25, 0x4B,
-	0xA2, 0x5D, 0x80, 0x05, 0x3F, 0x21, 0x70, 0xF1,
-	0x63, 0x77, 0xAF, 0x42, 0x20, 0xE5, 0xFD, 0xBF,
-	0x81, 0x18, 0x26, 0xC3, 0xBE, 0x35, 0x88, 0x2E,
-	0x93, 0x55, 0xFC, 0x7A, 0xC8, 0xBA, 0x32, 0xE6,
-	0xC0, 0x19, 0x9E, 0xA3, 0x44, 0x54, 0x3B, 0x0B,
-	0x8C, 0xC7, 0x6B, 0x28, 0xA7, 0xBC, 0x16, 0xAD,
-	0xDB, 0x64, 0x74, 0x14, 0x92, 0x0C, 0x48, 0xB8,
-	0x9F, 0xBD, 0x43, 0xC4, 0x39, 0x31, 0xD3, 0xF2,
-	0xD5, 0x8B, 0x6E, 0xDA, 0x01, 0xB1, 0x9C, 0x49,
-	0xD8, 0xAC, 0xF3, 0xCF, 0xCA, 0xF4, 0x47, 0x10,
-	0x6F, 0xF0, 0x4A, 0x5C, 0x38, 0x57, 0x73, 0x97,
-	0xCB, 0xA1, 0xE8, 0x3E, 0x96, 0x61, 0x0D, 0x0F,
-	0xE0, 0x7C, 0x71, 0xCC, 0x90, 0x06, 0xF7, 0x1C,
-	0xC2, 0x6A, 0xAE, 0x69, 0x17, 0x99, 0x3A, 0x27,
-	0xD9, 0xEB, 0x2B, 0x22, 0xD2, 0xA9, 0x07, 0x33,
-	0x2D, 0x3C, 0x15, 0xC9, 0x87, 0xAA, 0x50, 0xA5,
-	0x03, 0x59, 0x09, 0x1A, 0x65, 0xD7, 0x84, 0xD0,
-	0x82, 0x29, 0x5A, 0x1E, 0x7B, 0xA8, 0x6D, 0x2C
+	0xC6, 0xF8, 0xEE, 0xF6, 0xFF, 0xD6, 0xDE, 0x91, 0x60, 0x02, 0xCE, 0x56,
+	0xE7, 0xB5, 0x4D, 0xEC, 0x8F, 0x1F, 0x89, 0xFA, 0xEF, 0xB2, 0x8E, 0xFB,
+	0x41, 0xB3, 0x5F, 0x45, 0x23, 0x53, 0xE4, 0x9B, 0x75, 0xE1, 0x3D, 0x4C,
+	0x6C, 0x7E, 0xF5, 0x83, 0x68, 0x51, 0xD1, 0xF9, 0xE2, 0xAB, 0x62, 0x2A,
+	0x08, 0x95, 0x46, 0x9D, 0x30, 0x37, 0x0A, 0x2F, 0x0E, 0x24, 0x1B, 0xDF,
+	0xCD, 0x4E, 0x7F, 0xEA, 0x12, 0x1D, 0x58, 0x34, 0x36, 0xDC, 0xB4, 0x5B,
+	0xA4, 0x76, 0xB7, 0x7D, 0x52, 0xDD, 0x5E, 0x13, 0xA6, 0xB9, 0x00, 0xC1,
+	0x40, 0xE3, 0x79, 0xB6, 0xD4, 0x8D, 0x67, 0x72, 0x94, 0x98, 0xB0, 0x85,
+	0xBB, 0xC5, 0x4F, 0xED, 0x86, 0x9A, 0x66, 0x11, 0x8A, 0xE9, 0x04, 0xFE,
+	0xA0, 0x78, 0x25, 0x4B, 0xA2, 0x5D, 0x80, 0x05, 0x3F, 0x21, 0x70, 0xF1,
+	0x63, 0x77, 0xAF, 0x42, 0x20, 0xE5, 0xFD, 0xBF, 0x81, 0x18, 0x26, 0xC3,
+	0xBE, 0x35, 0x88, 0x2E, 0x93, 0x55, 0xFC, 0x7A, 0xC8, 0xBA, 0x32, 0xE6,
+	0xC0, 0x19, 0x9E, 0xA3, 0x44, 0x54, 0x3B, 0x0B, 0x8C, 0xC7, 0x6B, 0x28,
+	0xA7, 0xBC, 0x16, 0xAD, 0xDB, 0x64, 0x74, 0x14, 0x92, 0x0C, 0x48, 0xB8,
+	0x9F, 0xBD, 0x43, 0xC4, 0x39, 0x31, 0xD3, 0xF2, 0xD5, 0x8B, 0x6E, 0xDA,
+	0x01, 0xB1, 0x9C, 0x49, 0xD8, 0xAC, 0xF3, 0xCF, 0xCA, 0xF4, 0x47, 0x10,
+	0x6F, 0xF0, 0x4A, 0x5C, 0x38, 0x57, 0x73, 0x97, 0xCB, 0xA1, 0xE8, 0x3E,
+	0x96, 0x61, 0x0D, 0x0F, 0xE0, 0x7C, 0x71, 0xCC, 0x90, 0x06, 0xF7, 0x1C,
+	0xC2, 0x6A, 0xAE, 0x69, 0x17, 0x99, 0x3A, 0x27, 0xD9, 0xEB, 0x2B, 0x22,
+	0xD2, 0xA9, 0x07, 0x33, 0x2D, 0x3C, 0x15, 0xC9, 0x87, 0xAA, 0x50, 0xA5,
+	0x03, 0x59, 0x09, 0x1A, 0x65, 0xD7, 0x84, 0xD0, 0x82, 0x29, 0x5A, 0x1E,
+	0x7B, 0xA8, 0x6D, 0x2C
 };
-
 
 /* Expanded IV for TKIP function.*/
 struct GNU_PACKED _IV_CONTROL_ {
 	union GNU_PACKED {
 		struct GNU_PACKED {
-			UCHAR		rc0;
-			UCHAR		rc1;
-			UCHAR		rc2;
+			UCHAR rc0;
+			UCHAR rc1;
+			UCHAR rc2;
 
 			union GNU_PACKED {
 				struct GNU_PACKED {
 #ifdef RT_BIG_ENDIAN
-					UCHAR	KeyID:2;
-					UCHAR	ExtIV:1;
-					UCHAR	Rsvd:5;
+					UCHAR KeyID : 2;
+					UCHAR ExtIV : 1;
+					UCHAR Rsvd : 5;
 #else
-					UCHAR	Rsvd:5;
-					UCHAR	ExtIV:1;
-					UCHAR	KeyID:2;
+					UCHAR Rsvd : 5;
+					UCHAR ExtIV : 1;
+					UCHAR KeyID : 2;
 #endif
-				}	field;
-				UCHAR		Byte;
-			}	CONTROL;
-		}	field;
+				} field;
+				UCHAR Byte;
+			} CONTROL;
+		} field;
 
-		UINT32	word;
-	}	IV16;
+		UINT32 word;
+	} IV16;
 
-	UINT32	IV32;
+	UINT32 IV32;
 };
-
 
 /*
 	========================================================================
@@ -153,11 +130,10 @@ struct GNU_PACKED _IV_CONTROL_ {
 
 	========================================================================
 */
-UINT32	RTMPTkipGetUInt32(
-	IN	PUCHAR	pMICKey)
+UINT32 RTMPTkipGetUInt32(IN PUCHAR pMICKey)
 {
-	UINT32	res = 0;
-	INT		i;
+	UINT32 res = 0;
+	INT i;
 
 	for (i = 0; i < 4; i++)
 		res |= (*pMICKey++) << (8 * i);
@@ -184,14 +160,12 @@ UINT32	RTMPTkipGetUInt32(
 
 	========================================================================
 */
-VOID	RTMPTkipPutUInt32(
-	IN OUT	PUCHAR		pDst,
-	IN		UINT32		val)
+VOID RTMPTkipPutUInt32(IN OUT PUCHAR pDst, IN UINT32 val)
 {
 	INT i;
 
 	for (i = 0; i < 4; i++) {
-		*pDst++ = (UCHAR) (val & 0xff);
+		*pDst++ = (UCHAR)(val & 0xff);
 		val >>= 8;
 	}
 }
@@ -215,9 +189,7 @@ VOID	RTMPTkipPutUInt32(
 
 	========================================================================
 */
-VOID RTMPTkipSetMICKey(
-	IN	PTKIP_KEY_INFO	pTkip,
-	IN	PUCHAR			pMICKey)
+VOID RTMPTkipSetMICKey(IN PTKIP_KEY_INFO pTkip, IN PUCHAR pMICKey)
 {
 	/* Set the key */
 	pTkip->K0 = RTMPTkipGetUInt32(pMICKey);
@@ -248,9 +220,7 @@ VOID RTMPTkipSetMICKey(
 
 	========================================================================
 */
-VOID	RTMPTkipAppendByte(
-	IN	PTKIP_KEY_INFO	pTkip,
-	IN	UCHAR			uChar)
+VOID RTMPTkipAppendByte(IN PTKIP_KEY_INFO pTkip, IN UCHAR uChar)
 {
 	/* Append the byte to our word-sized buffer */
 	pTkip->M |= (uChar << (8 * pTkip->nBytesInM));
@@ -261,7 +231,8 @@ VOID	RTMPTkipAppendByte(
 		pTkip->L ^= pTkip->M;
 		pTkip->R ^= ROL32(pTkip->L, 17);
 		pTkip->L += pTkip->R;
-		pTkip->R ^= ((pTkip->L & 0xff00ff00) >> 8) | ((pTkip->L & 0x00ff00ff) << 8);
+		pTkip->R ^= ((pTkip->L & 0xff00ff00) >> 8) |
+			    ((pTkip->L & 0x00ff00ff) << 8);
 		pTkip->L += pTkip->R;
 		pTkip->R ^= ROL32(pTkip->L, 3);
 		pTkip->L += pTkip->R;
@@ -293,10 +264,7 @@ VOID	RTMPTkipAppendByte(
 
 	========================================================================
 */
-VOID	RTMPTkipAppend(
-	IN	PTKIP_KEY_INFO	pTkip,
-	IN	PUCHAR			pSrc,
-	IN	UINT			nBytes)
+VOID RTMPTkipAppend(IN PTKIP_KEY_INFO pTkip, IN PUCHAR pSrc, IN UINT nBytes)
 {
 	/* This is simple */
 	while (nBytes > 0) {
@@ -323,8 +291,7 @@ VOID	RTMPTkipAppend(
 		the MIC Value is store in pAd->PrivateInfo.MIC
 	========================================================================
 */
-VOID	RTMPTkipGetMIC(
-	IN	PTKIP_KEY_INFO	pTkip)
+VOID RTMPTkipGetMIC(IN PTKIP_KEY_INFO pTkip)
 {
 	/* Append the minimum padding*/
 	RTMPTkipAppendByte(pTkip, 0x5a);
@@ -341,7 +308,6 @@ VOID	RTMPTkipGetMIC(
 	RTMPTkipPutUInt32(pTkip->MIC, pTkip->L);
 	RTMPTkipPutUInt32(pTkip->MIC + 4, pTkip->R);
 }
-
 
 /*
 	========================================================================
@@ -364,15 +330,10 @@ VOID	RTMPTkipGetMIC(
 
 	========================================================================
 */
-VOID	RTMPInitMICEngine(
-	IN	PRTMP_ADAPTER	pAd,
-	IN	PUCHAR			pKey,
-	IN	PUCHAR			pDA,
-	IN	PUCHAR			pSA,
-	IN  UCHAR           UserPriority,
-	IN	PUCHAR			pMICKey)
+VOID RTMPInitMICEngine(IN PRTMP_ADAPTER pAd, IN PUCHAR pKey, IN PUCHAR pDA,
+		       IN PUCHAR pSA, IN UCHAR UserPriority, IN PUCHAR pMICKey)
 {
-	UCHAR Priority[4] = {0};
+	UCHAR Priority[4] = { 0 };
 	Priority[0] = UserPriority;
 	/* Init MIC value calculation*/
 	RTMPTkipSetMICKey(&pAd->PrivateInfo.Tx, pMICKey);
@@ -408,17 +369,12 @@ VOID	RTMPInitMICEngine(
 
 	========================================================================
 */
-BOOLEAN	RTMPTkipCompareMICValue(
-	IN	PRTMP_ADAPTER	pAd,
-	IN	PUCHAR			pSrc,
-	IN	PUCHAR			pDA,
-	IN	PUCHAR			pSA,
-	IN	PUCHAR			pMICKey,
-	IN	UCHAR			UserPriority,
-	IN	UINT			Len)
+BOOLEAN RTMPTkipCompareMICValue(IN PRTMP_ADAPTER pAd, IN PUCHAR pSrc,
+				IN PUCHAR pDA, IN PUCHAR pSA, IN PUCHAR pMICKey,
+				IN UCHAR UserPriority, IN UINT Len)
 {
-	UCHAR	OldMic[8];
-	UCHAR	Priority[4] = {0};
+	UCHAR OldMic[8];
+	UCHAR Priority[4] = { 0 };
 
 	Priority[0] = UserPriority;
 	/* Init MIC value calculation*/
@@ -439,7 +395,9 @@ BOOLEAN	RTMPTkipCompareMICValue(
 	/* Move MIC value from MSDU, this steps should move to data path.*/
 	/* Since the MIC value might cross MPDUs.*/
 	if (!NdisEqualMemory(pAd->PrivateInfo.Rx.MIC, OldMic, 8)) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("RTMPTkipCompareMICValue(): TKIP MIC Error !\n"));  /*MIC error.*/
+		MTWF_LOG(
+			DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("RTMPTkipCompareMICValue(): TKIP MIC Error !\n")); /*MIC error.*/
 		return FALSE;
 	}
 
@@ -468,20 +426,16 @@ BOOLEAN	RTMPTkipCompareMICValue(
 
 	========================================================================
 */
-VOID	RTMPCalculateMICValue(
-	IN	PRTMP_ADAPTER	pAd,
-	IN	PNDIS_PACKET	pPacket,
-	IN	PUCHAR			pEncap,
-	IN	PUCHAR			pKey,
-	IN	PUCHAR			pMIC,
-	IN	UCHAR			apidx)
+VOID RTMPCalculateMICValue(IN PRTMP_ADAPTER pAd, IN PNDIS_PACKET pPacket,
+			   IN PUCHAR pEncap, IN PUCHAR pKey, IN PUCHAR pMIC,
+			   IN UCHAR apidx)
 {
-	PACKET_INFO		PacketInfo;
-	PUCHAR			pSrcBufVA;
-	UINT			SrcBufLen;
-	PUCHAR			pSrc;
-	UCHAR           UserPriority;
-	UCHAR			vlan_offset = 0;
+	PACKET_INFO PacketInfo;
+	PUCHAR pSrcBufVA;
+	UINT SrcBufLen;
+	PUCHAR pSrc;
+	UCHAR UserPriority;
+	UCHAR vlan_offset = 0;
 
 	RTMP_QueryPacketInfo(pPacket, &PacketInfo, &pSrcBufVA, &SrcBufLen);
 	UserPriority = RTMP_GET_PACKET_UP(pPacket);
@@ -495,46 +449,38 @@ VOID	RTMPCalculateMICValue(
 #ifdef APCLI_SUPPORT
 
 	/* Start Calculate MIC Value*/
-	if (apidx >= MIN_NET_DEVICE_FOR_APCLI && ((apidx - MIN_NET_DEVICE_FOR_APCLI) < MAX_APCLI_NUM) && (pAd->OpMode == OPMODE_AP)) {
+	if (apidx >= MIN_NET_DEVICE_FOR_APCLI &&
+	    ((apidx - MIN_NET_DEVICE_FOR_APCLI) < MAX_APCLI_NUM) &&
+	    (pAd->OpMode == OPMODE_AP)) {
 		/* For packet which need to do MATConvert, we need to use the CurrentAddress of specific ApCli interface.*/
 		RTMPInitMICEngine(
-			pAd,
-			pKey,
-			pSrc,
-			pAd->ApCfg.ApCliTab[apidx - MIN_NET_DEVICE_FOR_APCLI].wdev.if_addr,
-			UserPriority,
-			pMIC);
+			pAd, pKey, pSrc,
+			pAd->ApCfg.ApCliTab[apidx - MIN_NET_DEVICE_FOR_APCLI]
+				.wdev.if_addr,
+			UserPriority, pMIC);
 	} else
 #endif /* APCLI_SUPPORT */
 #ifdef IGMP_SNOOP_SUPPORT
-		if ((RTMP_GET_PACKET_WCID(pPacket) != MCAST_WCID_TO_REMOVE) && (*pSrc & 0x01) && (pAd->OpMode == OPMODE_AP)) {
-			UCHAR wcid = RTMP_GET_PACKET_WCID(pPacket);
+		if ((RTMP_GET_PACKET_WCID(pPacket) != MCAST_WCID_TO_REMOVE) &&
+		    (*pSrc & 0x01) && (pAd->OpMode == OPMODE_AP)) {
+		UCHAR wcid = RTMP_GET_PACKET_WCID(pPacket);
 
-			RTMPInitMICEngine(
-				pAd,
-				pKey,
-				pAd->MacTab.Content[wcid].Addr,
-				pSrc + 6,
-				UserPriority,
-				pMIC);
-		} else
+		RTMPInitMICEngine(pAd, pKey, pAd->MacTab.Content[wcid].Addr,
+				  pSrc + 6, UserPriority, pMIC);
+	} else
 #endif /* IGMP_SNOOP_SUPPORT */
 #endif /* CONFIG_AP_SUPPORT */
-			{
-				RTMPInitMICEngine(
-					pAd,
-					pKey,
-					pSrc,
-					pSrc + 6,
-					UserPriority,
-					pMIC);
-			}
+	{
+		RTMPInitMICEngine(pAd, pKey, pSrc, pSrc + 6, UserPriority,
+				  pMIC);
+	}
 
 	if (pEncap != NULL) {
 		/* LLC encapsulation*/
 		RTMPTkipAppend(&pAd->PrivateInfo.Tx, pEncap, 6);
 		/* Protocol Type*/
-		RTMPTkipAppend(&pAd->PrivateInfo.Tx, pSrc + 12 + vlan_offset, 2);
+		RTMPTkipAppend(&pAd->PrivateInfo.Tx, pSrc + 12 + vlan_offset,
+			       2);
 	}
 
 	SrcBufLen -= (14 + vlan_offset);
@@ -551,7 +497,6 @@ VOID	RTMPCalculateMICValue(
 	RTMPTkipGetMIC(&pAd->PrivateInfo.Tx);
 }
 
-
 /************************************************************/
 /* tkip_sbox()																*/
 /* Returns a 16 bit value from a 64K entry table. The Table */
@@ -567,7 +512,8 @@ UINT tkip_sbox(UINT index)
 	index_low = (index % 256);
 	index_high = ((index >> 8) % 256);
 	left = Tkip_Sbox_Lower[index_low] + (Tkip_Sbox_Upper[index_low] * 256);
-	right = Tkip_Sbox_Upper[index_high] + (Tkip_Sbox_Lower[index_high] * 256);
+	right = Tkip_Sbox_Upper[index_high] +
+		(Tkip_Sbox_Lower[index_high] * 256);
 	return left ^ right;
 }
 
@@ -584,13 +530,10 @@ UINT rotr1(UINT a)
 	return b;
 }
 
-VOID RTMPTkipMixKey(
-	UCHAR *key,
-	UCHAR *ta,
-	UINT32 pnl, /* Least significant 16 bits of PN */
-	UINT32 pnh, /* Most significant 32 bits of PN */
-	UCHAR *rc4key,
-	UINT *p1k)
+VOID RTMPTkipMixKey(UCHAR *key, UCHAR *ta,
+		    UINT32 pnl, /* Least significant 16 bits of PN */
+		    UINT32 pnh, /* Most significant 32 bits of PN */
+		    UCHAR *rc4key, UINT *p1k)
 {
 	UINT tsc0;
 	UINT tsc1;
@@ -617,11 +560,26 @@ VOID RTMPTkipMixKey(
 	/* Phase 1, step 2 */
 	for (i = 0; i < 8; i++) {
 		j = 2 * (i & 1);
-		p1k[0] = (p1k[0] + tkip_sbox((p1k[4] ^ ((256 * key[1 + j]) + key[j])) % 65536)) % 65536;
-		p1k[1] = (p1k[1] + tkip_sbox((p1k[0] ^ ((256 * key[5 + j]) + key[4 + j])) % 65536)) % 65536;
-		p1k[2] = (p1k[2] + tkip_sbox((p1k[1] ^ ((256 * key[9 + j]) + key[8 + j])) % 65536)) % 65536;
-		p1k[3] = (p1k[3] + tkip_sbox((p1k[2] ^ ((256 * key[13 + j]) + key[12 + j])) % 65536)) % 65536;
-		p1k[4] = (p1k[4] + tkip_sbox((p1k[3] ^ (((256 * key[1 + j]) + key[j]))) % 65536)) % 65536;
+		p1k[0] = (p1k[0] +
+			  tkip_sbox((p1k[4] ^ ((256 * key[1 + j]) + key[j])) %
+				    65536)) %
+			 65536;
+		p1k[1] = (p1k[1] + tkip_sbox((p1k[0] ^ ((256 * key[5 + j]) +
+							key[4 + j])) %
+					     65536)) %
+			 65536;
+		p1k[2] = (p1k[2] + tkip_sbox((p1k[1] ^ ((256 * key[9 + j]) +
+							key[8 + j])) %
+					     65536)) %
+			 65536;
+		p1k[3] = (p1k[3] + tkip_sbox((p1k[2] ^ ((256 * key[13 + j]) +
+							key[12 + j])) %
+					     65536)) %
+			 65536;
+		p1k[4] = (p1k[4] +
+			  tkip_sbox((p1k[3] ^ (((256 * key[1 + j]) + key[j]))) %
+				    65536)) %
+			 65536;
 		p1k[4] = (p1k[4] + i) % 65536;
 	}
 
@@ -668,48 +626,44 @@ VOID RTMPTkipMixKey(
 	rc4key[15] = (ppk5 >> 8) % 256;
 }
 
-
 /*
 	TRUE: Success!
 	FALSE: Decrypt Error!
 */
-BOOLEAN RTMPSoftDecryptTKIP(
-	IN		PRTMP_ADAPTER	pAd,
-	IN		PUCHAR			pHdr,
-	IN		UCHAR		UserPriority,
-	IN		PCIPHER_KEY		pKey,
-	INOUT	PUCHAR			pData,
-	IN		UINT16 * DataByteCnt)
+BOOLEAN RTMPSoftDecryptTKIP(IN PRTMP_ADAPTER pAd, IN PUCHAR pHdr,
+			    IN UCHAR UserPriority, IN PCIPHER_KEY pKey,
+			    INOUT PUCHAR pData, IN UINT16 *DataByteCnt)
 {
-	PHEADER_802_11	pFrame;
-	UINT8			frame_type;
-	UINT8			frame_subtype;
-	UINT8			from_ds;
-	UINT8			to_ds;
-	UINT8			a4_exists;
-	UINT8			qc_exists;
-	UCHAR			TA[MAC_ADDR_LEN];
-	UCHAR			DA[MAC_ADDR_LEN];
-	UCHAR			SA[MAC_ADDR_LEN];
-	UCHAR			RC4Key[16];
-	UINT			p1k[5]; /*for mix_key;*/
-	UINT32			pnl;/* Least significant 16 bits of PN */
-	UINT32			pnh;/* Most significant 32 bits of PN */
-	ARC4_CTX_STRUC	ARC4_CTX;
-	PUCHAR			plaintext_ptr;
-	UINT32			plaintext_len;
-	PUCHAR			ciphertext_ptr;
-	UINT32			ciphertext_len;
-	UINT			crc32 = 0;
-	UINT			trailfcs = 0;
-	UCHAR			MIC[8];
-	UCHAR			TrailMIC[8];
+	PHEADER_802_11 pFrame;
+	UINT8 frame_type;
+	UINT8 frame_subtype;
+	UINT8 from_ds;
+	UINT8 to_ds;
+	UINT8 a4_exists;
+	UINT8 qc_exists;
+	UCHAR TA[MAC_ADDR_LEN];
+	UCHAR DA[MAC_ADDR_LEN];
+	UCHAR SA[MAC_ADDR_LEN];
+	UCHAR RC4Key[16];
+	UINT p1k[5]; /*for mix_key;*/
+	UINT32 pnl; /* Least significant 16 bits of PN */
+	UINT32 pnh; /* Most significant 32 bits of PN */
+	ARC4_CTX_STRUC ARC4_CTX;
+	PUCHAR plaintext_ptr;
+	UINT32 plaintext_len;
+	PUCHAR ciphertext_ptr;
+	UINT32 ciphertext_len;
+	UINT crc32 = 0;
+	UINT trailfcs = 0;
+	UCHAR MIC[8];
+	UCHAR TrailMIC[8];
 #ifdef RT_BIG_ENDIAN
 	RTMPFrameEndianChange(pAd, pHdr, DIR_READ, FALSE);
 #endif
 
 	if (pKey->KeyLen == 0) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s : the key is empty)\n", __func__));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s : the key is empty)\n", __func__));
 		return FALSE;
 	}
 
@@ -722,16 +676,17 @@ BOOLEAN RTMPSoftDecryptTKIP(
 	/* decide if the Address 4 exist or QoS exist */
 	a4_exists = (from_ds & to_ds);
 	qc_exists = ((frame_subtype == SUBTYPE_QDATA) ||
-				 (frame_subtype == SUBTYPE_QDATA_CFACK) ||
-				 (frame_subtype == SUBTYPE_QDATA_CFPOLL) ||
-				 (frame_subtype == SUBTYPE_QDATA_CFACK_CFPOLL));
+		     (frame_subtype == SUBTYPE_QDATA_CFACK) ||
+		     (frame_subtype == SUBTYPE_QDATA_CFPOLL) ||
+		     (frame_subtype == SUBTYPE_QDATA_CFACK_CFPOLL));
 	/* pointer to 802.11 header */
 	pFrame = (PHEADER_802_11)pHdr;
 
 	/* Assign DA, SA and TA for TKIP calculation */
 	if (to_ds == 0 && from_ds == 1) {
 		NdisMoveMemory(DA, pFrame->Addr1, MAC_ADDR_LEN);
-		NdisMoveMemory(TA, pFrame->Addr2, MAC_ADDR_LEN); /*BSSID		*/
+		NdisMoveMemory(TA, pFrame->Addr2,
+			       MAC_ADDR_LEN); /*BSSID		*/
 		NdisMoveMemory(SA, pFrame->Addr3, MAC_ADDR_LEN);
 	} else if (to_ds == 0 && from_ds == 0) {
 		NdisMoveMemory(DA, pFrame->Addr1, MAC_ADDR_LEN);
@@ -741,7 +696,7 @@ BOOLEAN RTMPSoftDecryptTKIP(
 		NdisMoveMemory(SA, pFrame->Addr2, MAC_ADDR_LEN);
 		NdisMoveMemory(TA, pFrame->Addr2, MAC_ADDR_LEN);
 		NdisMoveMemory(DA, pFrame->Addr3, MAC_ADDR_LEN);
-	} else if (to_ds == 1 && from_ds == 1) {
+	} else { /* (to_ds == 1 && from_ds == 1) - To Fix Coverity issue */
 		NdisMoveMemory(TA, pFrame->Addr2, MAC_ADDR_LEN);
 		NdisMoveMemory(DA, pFrame->Addr3, MAC_ADDR_LEN);
 		NdisMoveMemory(SA, pFrame->Octet, MAC_ADDR_LEN);
@@ -774,10 +729,11 @@ BOOLEAN RTMPSoftDecryptTKIP(
 	/* Re-computes the ICV and
 	   bit-wise compares with the peer's ICV. */
 	crc32 = RTMP_CALC_FCS32(PPPINITFCS32, plaintext_ptr, plaintext_len);
-	crc32 ^= 0xffffffff;             /* complement */
+	crc32 ^= 0xffffffff; /* complement */
 
 	if (crc32 != cpu2le32(trailfcs)) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("! WEP Data CRC Error !\n"));	 /*CRC error.*/
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("! WEP Data CRC Error !\n")); /*CRC error.*/
 		return FALSE;
 	}
 
@@ -790,7 +746,8 @@ BOOLEAN RTMPSoftDecryptTKIP(
 	NdisMoveMemory(MIC, pAd->PrivateInfo.Tx.MIC, LEN_TKIP_MIC);
 
 	if (!NdisEqualMemory(MIC, TrailMIC, LEN_TKIP_MIC)) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("! TKIP MIC Error !\n"));	 /*MIC error.*/
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("! TKIP MIC Error !\n")); /*MIC error.*/
 		return FALSE;
 	}
 
@@ -818,21 +775,18 @@ BOOLEAN RTMPSoftDecryptTKIP(
 
 	========================================================================
 */
-VOID TKIP_GTK_KEY_WRAP(
-	IN UCHAR    *key,
-	IN UCHAR	*iv,
-	IN UCHAR    *input_text,
-	IN UINT32    input_len,
-	OUT UCHAR   *output_text)
+VOID TKIP_GTK_KEY_WRAP(IN UCHAR *key, IN UCHAR *iv, IN UCHAR *input_text,
+		       IN UINT32 input_len, OUT UCHAR *output_text)
 {
-	UCHAR	ekey[LEN_KEY_DESC_IV + LEN_PTK_KEK];
+	UCHAR ekey[LEN_KEY_DESC_IV + LEN_PTK_KEK];
 	/*	ARC4_CTX_STRUC ARC4_CTX;*/
 	ARC4_CTX_STRUC *pARC4_CTX = NULL;
 	/* allocate memory */
 	os_alloc_mem(NULL, (UCHAR **)&pARC4_CTX, sizeof(ARC4_CTX_STRUC));
 
 	if (pARC4_CTX == NULL) {
-		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Allocate memory fail!!!\n", __func__));
+		MTWF_LOG(DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: Allocate memory fail!!!\n", __func__));
 		return;
 	}
 
@@ -851,13 +805,8 @@ VOID TKIP_GTK_KEY_WRAP(
 		os_free_mem(pARC4_CTX);
 }
 
-VOID TKIP_GTK_KEY_UNWRAP(
-	IN UCHAR    *key,
-	IN UCHAR	*iv,
-	IN UCHAR    *input_text,
-	IN UINT32    input_len,
-	OUT UCHAR   *output_text)
+VOID TKIP_GTK_KEY_UNWRAP(IN UCHAR *key, IN UCHAR *iv, IN UCHAR *input_text,
+			 IN UINT32 input_len, OUT UCHAR *output_text)
 {
 	TKIP_GTK_KEY_WRAP(key, iv, input_text, input_len, output_text);
 }
-

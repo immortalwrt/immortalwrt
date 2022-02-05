@@ -32,6 +32,7 @@
 #include "rtmp_type.h"
 #include "security/wpa_cmm.h"
 
+#define MAX_LEN_OF_CMD_QUEUE 256
 
 typedef struct _CmdQElmt {
 	UINT command;
@@ -55,19 +56,18 @@ typedef struct _CmdQ {
 #endif /*DBG_STARVATION*/
 } CmdQ, *PCmdQ;
 
-#define EnqueueCmd(cmdq, cmdqelmt)		\
-	{										\
-		if (cmdq->size == 0)				\
-			cmdq->head = cmdqelmt;			\
-		else								\
-			cmdq->tail->next = cmdqelmt;	\
-		cmdq->tail = cmdqelmt;				\
-		cmdqelmt->next = NULL;				\
-		cmdq->size++;						\
+#define EnqueueCmd(cmdq, cmdqelmt)                                             \
+	{                                                                      \
+		if (cmdq->size == 0)                                           \
+			cmdq->head = cmdqelmt;                                 \
+		else                                                           \
+			cmdq->tail->next = cmdqelmt;                           \
+		cmdq->tail = cmdqelmt;                                         \
+		cmdqelmt->next = NULL;                                         \
+		cmdq->size++;                                                  \
 	}
 
-#define NDIS_OID	UINT
-
+#define NDIS_OID UINT
 
 enum {
 	CMDTHREAD_FIRST_CMD_ID = 0,
@@ -109,25 +109,25 @@ enum {
 #endif /* INTERNAL_CAPTURE_SUPPORT */
 
 #if defined(RLM_CAL_CACHE_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT)
-    CMDTHRED_PRECAL_TXLPF,
-    CMDTHRED_PRECAL_TXIQ,
-    CMDTHRED_PRECAL_TXDC,
-    CMDTHRED_PRECAL_RXFI,
-    CMDTHRED_PRECAL_RXFD,
+	CMDTHRED_PRECAL_TXLPF,
+	CMDTHRED_PRECAL_TXIQ,
+	CMDTHRED_PRECAL_TXDC,
+	CMDTHRED_PRECAL_RXFI,
+	CMDTHRED_PRECAL_RXFD,
 #endif /* defined(RLM_CAL_CACHE_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) */
 
 	CMDTHRED_DOT11H_SWITCH_CHANNEL,
+	CMDTREAD_AP_SWITCH_CHANNEL,
 	CMDTHRED_MAC_TABLE_DEL,
 #ifdef MT_DFS_SUPPORT
 	CMDTHRED_DFS_CAC_TIMEOUT,
 	CMDTHRED_DFS_AP_RESTART,
+	CMDTHRED_DFS_RADAR_DETECTED_SW_CH,
 #endif
 	CMDTHRED_STA_DEAUTH_ACT,
 	CMDTHRED_RXV_WRITE_IN_FILE,
 	CMDTHREAD_END_CMD_ID,
 };
-
-
 
 typedef struct _CMDHandler_TLV {
 	USHORT Offset;
@@ -135,44 +135,39 @@ typedef struct _CMDHandler_TLV {
 	UCHAR DataFirst;
 } CMDHandler_TLV, *PCMDHandler_TLV;
 
-
-
 /*Tempral define before hwctrl ready*/
 #if defined(RTMP_PCI_SUPPORT) || defined(RTMP_RBUS_SUPPORT)
 
 /* ----------------- MLME Related MACRO ----------------- */
 /* #define RTMP_MLME_PRE_SANITY_CHECK(pAd) */
 
-#define RTMP_MLME_RESET_STATE_MACHINE(pAd, _wdev)	\
+#define RTMP_MLME_RESET_STATE_MACHINE(pAd, _wdev)                              \
 	MlmeRestartStateMachine(pAd, _wdev)
 
-#define RTMP_HANDLE_COUNTER_MEASURE(_pAd, _pEntry)\
+#define RTMP_HANDLE_COUNTER_MEASURE(_pAd, _pEntry)                             \
 	HandleCounterMeasure(_pAd, _pEntry)
 
 /* ----------------- Power Save Related MACRO ----------------- */
-#define RTMP_PS_POLL_ENQUEUE(pAd, pStaCfg)	EnqueuePsPoll(pAd, pStaCfg)
-
+#define RTMP_PS_POLL_ENQUEUE(pAd, pStaCfg) EnqueuePsPoll(pAd, pStaCfg)
 
 #else
 
-
-
-#define RTMP_MLME_RESET_STATE_MACHINE(pAd, _wdev)	\
-	do {	\
-		MlmeEnqueueWithWdev(pAd, MLME_CNTL_STATE_MACHINE, MT2_RESET_CONF, 0, NULL, 0, _wdev);	\
-		RTMP_MLME_HANDLER(pAd);	\
+#define RTMP_MLME_RESET_STATE_MACHINE(pAd, _wdev)                              \
+	do {                                                                   \
+		MlmeEnqueueWithWdev(pAd, MLME_CNTL_STATE_MACHINE,              \
+				    MT2_RESET_CONF, 0, NULL, 0, _wdev);        \
+		RTMP_MLME_HANDLER(pAd);                                        \
 	} while (0)
 
-#define RTMP_HANDLE_COUNTER_MEASURE(_pAd, _pEntry)		\
-	{	\
-		RTEnqueueInternalCmd(_pAd, CMDTHREAD_802_11_COUNTER_MEASURE, _pEntry, sizeof(MAC_TABLE_ENTRY));	\
-		RTMP_MLME_HANDLER(_pAd);									\
+#define RTMP_HANDLE_COUNTER_MEASURE(_pAd, _pEntry)                             \
+	{                                                                      \
+		RTEnqueueInternalCmd(_pAd, CMDTHREAD_802_11_COUNTER_MEASURE,   \
+				     _pEntry, sizeof(MAC_TABLE_ENTRY));        \
+		RTMP_MLME_HANDLER(_pAd);                                       \
 	}
 
 #endif
 
-
 /*HIF related*/
-
 
 #endif

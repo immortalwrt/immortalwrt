@@ -20,26 +20,26 @@ enum _EPQID {
 /* 1. DW : double word */
 /*  */
 union _SCHEDULER_REGISTER4 {
-	struct	{
+	struct {
 		/* DW0 */
-		ULONG   ForceQid : 4;
-		ULONG   ForceMode : 1;
-		ULONG   BypassMode : 1;
-		ULONG   HybridMode : 1;
-		ULONG   RgPredictNoMask : 1;
-		ULONG   RgResetScheduler : 1;
-		ULONG   RgDoneClearHeader : 1;
-		ULONG   SwMode : 1;
-		ULONG   Reserves0 : 5;
-		ULONG   RgRateMap : 14;
-		ULONG   Reserves1 : 2;
-	}	Default;
-	ULONG			word;
+		ULONG ForceQid : 4;
+		ULONG ForceMode : 1;
+		ULONG BypassMode : 1;
+		ULONG HybridMode : 1;
+		ULONG RgPredictNoMask : 1;
+		ULONG RgResetScheduler : 1;
+		ULONG RgDoneClearHeader : 1;
+		ULONG SwMode : 1;
+		ULONG Reserves0 : 5;
+		ULONG RgRateMap : 14;
+		ULONG Reserves1 : 2;
+	} Default;
+	ULONG word;
 };
 
 /* MT7637 for Band display */
-#define MT7367_RO_AGC_DEBUG_2	(WF_PHY_BASE + 0x0584)
-#define CR_ACI_HIT		(WF_PHY_BASE + 0x0594)
+#define MT7367_RO_AGC_DEBUG_2 (WF_PHY_BASE + 0x0584)
+#define CR_ACI_HIT (WF_PHY_BASE + 0x0594)
 /* MT7637 for Band display end */
 
 /*~test mode common*/

@@ -31,7 +31,6 @@
 
 #include "rt_config.h"
 
-
 BUILD_TIMER_FUNCTION(MlmePeriodicExecTimer);
 /*BUILD_TIMER_FUNCTION(MlmeRssiReportExec);*/
 BUILD_TIMER_FUNCTION(AsicRxAntEvalTimeout);
@@ -42,13 +41,11 @@ BUILD_TIMER_FUNCTION(PMF_SAQueryTimeOut);
 BUILD_TIMER_FUNCTION(PMF_SAQueryConfirmTimeOut);
 #endif /* DOT11W_PMF_SUPPORT */
 
-
 #ifdef CONFIG_AP_SUPPORT
-extern VOID APDetectOverlappingExec(
-	IN PVOID SystemSpecific1,
-	IN PVOID FunctionContext,
-	IN PVOID SystemSpecific2,
-	IN PVOID SystemSpecific3);
+extern VOID APDetectOverlappingExec(IN PVOID SystemSpecific1,
+				    IN PVOID FunctionContext,
+				    IN PVOID SystemSpecific2,
+				    IN PVOID SystemSpecific3);
 
 BUILD_TIMER_FUNCTION(APDetectOverlappingExec);
 
@@ -70,7 +67,6 @@ BUILD_TIMER_FUNCTION(FT_KDP_InfoBroadcast);
 #endif /* DOT11R_FT_SUPPORT */
 
 #endif /* CONFIG_AP_SUPPORT */
-
 
 #ifdef WSC_INCLUDED
 BUILD_TIMER_FUNCTION(WscEAPOLTimeOutAction);
@@ -99,17 +95,13 @@ BUILD_TIMER_FUNCTION(WscSetupLockTimeout);
 #endif /* WSC_V2_SUPPORT */
 #endif /* CONFIG_AP_SUPPORT */
 
-
 #endif /* WSC_INCLUDED */
-
-
 
 #ifdef TXBF_SUPPORT
 #ifndef MT_MAC
 BUILD_TIMER_FUNCTION(eTxBfProbeTimerExec);
 #endif /* MT_MAC */
 #endif /* TXBF_SUPPORT */
-
 
 #ifdef CONFIG_ATE
 BUILD_TIMER_FUNCTION(ATEPeriodicExec);
@@ -128,12 +120,13 @@ BUILD_TIMER_FUNCTION(DfsZeroWaitTimeout);
 
 #ifdef CONFIG_AP_SUPPORT
 BUILD_TIMER_FUNCTION(AutoChSelScanTimeout);
-#endif/* CONFIG_AP_SUPPORT */
-
+#endif /* CONFIG_AP_SUPPORT */
 
 #ifdef CHANNEL_SWITCH_MONITOR_CONFIG
-extern VOID ch_switch_monitor_timeout(IN PVOID system_specific1, IN PVOID function_context,
-			IN PVOID system_specific2, IN PVOID system_specific3);
+extern VOID ch_switch_monitor_timeout(IN PVOID system_specific1,
+				      IN PVOID function_context,
+				      IN PVOID system_specific2,
+				      IN PVOID system_specific3);
 BUILD_TIMER_FUNCTION(ch_switch_monitor_timeout);
 #endif
 
@@ -143,7 +136,7 @@ static void RtmpTimerQHandle(RTMP_ADAPTER *pAd)
 	int status;
 	RALINK_TIMER_STRUCT *pTimer;
 	RTMP_TIMER_TASK_ENTRY *pEntry;
-	unsigned long	irqFlag;
+	unsigned long irqFlag;
 	RTMP_OS_TASK *pTask;
 	pTask = &pAd->timerTask;
 
@@ -179,11 +172,16 @@ static void RtmpTimerQHandle(RTMP_ADAPTER *pAd)
 			RTMP_INT_UNLOCK(&pAd->TimerQLock, irqFlag);
 
 			if (pTimer) {
-				if ((pTimer->handle != NULL) && (!pAd->PM_FlgSuspend))
-					pTimer->handle(NULL, (PVOID) pTimer->cookie, NULL, pTimer);
+				if ((pTimer->handle != NULL) &&
+				    (!pAd->PM_FlgSuspend))
+					pTimer->handle(NULL,
+						       (PVOID)pTimer->cookie,
+						       NULL, pTimer);
 
-				if ((pTimer->Repeat) && (pTimer->State == FALSE))
-					RTMP_OS_Add_Timer(&pTimer->TimerObj, pTimer->TimerValue);
+				if ((pTimer->Repeat) &&
+				    (pTimer->State == FALSE))
+					RTMP_OS_Add_Timer(&pTimer->TimerObj,
+							  pTimer->TimerValue);
 			}
 		}
 
@@ -195,23 +193,23 @@ static void RtmpTimerQHandle(RTMP_ADAPTER *pAd)
 	}
 }
 
-
-INT RtmpTimerQThread(
-	IN ULONG Context)
+INT RtmpTimerQThread(IN ULONG Context)
 {
-	RTMP_OS_TASK	*pTask;
-	PRTMP_ADAPTER	pAd = NULL;
+	RTMP_OS_TASK *pTask;
+	PRTMP_ADAPTER pAd = NULL;
 	pTask = (RTMP_OS_TASK *)Context;
 	pAd = (PRTMP_ADAPTER)RTMP_OS_TASK_DATA_GET(pTask);
 
 	if (pAd == NULL) {
-		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s:: pAd is NULL!\n", __func__));
+		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s:: pAd is NULL!\n", __func__));
 		return 0;
 	}
 
 	RtmpOSTaskCustomize(pTask);
 	RtmpTimerQHandle(pAd);
-	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("<---%s\n", __func__));
+	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("<---%s\n", __func__));
 	/* notify the exit routine that we're actually exiting now
 	 *
 	 * complete()/wait_for_completion() is similar to up()/down(),
@@ -230,14 +228,12 @@ INT RtmpTimerQThread(
 	return 0;
 }
 
-
-RTMP_TIMER_TASK_ENTRY *RtmpTimerQInsert(
-	IN RTMP_ADAPTER *pAd,
-	IN RALINK_TIMER_STRUCT *pTimer)
+RTMP_TIMER_TASK_ENTRY *RtmpTimerQInsert(IN RTMP_ADAPTER *pAd,
+					IN RALINK_TIMER_STRUCT *pTimer)
 {
 	RTMP_TIMER_TASK_ENTRY *pQNode = NULL, *pQTail;
 	unsigned long irqFlags;
-	RTMP_OS_TASK	*pTask = &pAd->timerTask;
+	RTMP_OS_TASK *pTask = &pAd->timerTask;
 	RTMP_INT_LOCK(&pAd->TimerQLock, irqFlags);
 
 	if (pAd->TimerQ.status & RTMP_TASK_CAN_DO_INSERT) {
@@ -266,10 +262,7 @@ RTMP_TIMER_TASK_ENTRY *RtmpTimerQInsert(
 	return pQNode;
 }
 
-
-BOOLEAN RtmpTimerQRemove(
-	IN RTMP_ADAPTER *pAd,
-	IN RALINK_TIMER_STRUCT *pTimer)
+BOOLEAN RtmpTimerQRemove(IN RTMP_ADAPTER *pAd, IN RALINK_TIMER_STRUCT *pTimer)
 {
 	RTMP_TIMER_TASK_ENTRY *pNode, *pPrev = NULL;
 	unsigned long irqFlags;
@@ -307,7 +300,6 @@ BOOLEAN RtmpTimerQRemove(
 	return TRUE;
 }
 
-
 void RtmpTimerQExit(RTMP_ADAPTER *pAd)
 {
 	RTMP_TIMER_TASK_ENTRY *pTimerQ;
@@ -327,31 +319,31 @@ void RtmpTimerQExit(RTMP_ADAPTER *pAd)
 		pAd->TimerQ.pTimerQPoll = NULL;
 	} else
 		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s null pTimerQPoll\n", __func__));
+			 ("%s null pTimerQPoll\n", __func__));
 
 	pAd->TimerQ.pQTail = NULL;
 	pAd->TimerQ.pQHead = NULL;
-	/*#ifndef KTHREAD_SUPPORT*/
 	pAd->TimerQ.status = RTMP_TASK_STAT_STOPED;
-	/*#endif*/
 	RTMP_INT_UNLOCK(&pAd->TimerQLock, irqFlags);
-	/*	NdisFreeSpinLock(&pAd->TimerQLock); */
+	/* NdisFreeSpinLock(&pAd->TimerQLock); */
 }
-
 
 void RtmpTimerQInit(RTMP_ADAPTER *pAd)
 {
-	int	i;
+	int i;
 	RTMP_TIMER_TASK_ENTRY *pQNode, *pEntry;
 	unsigned long irqFlags;
 	NdisAllocateSpinLock(pAd, &pAd->TimerQLock);
 	NdisZeroMemory(&pAd->TimerQ, sizeof(pAd->TimerQ));
-	os_alloc_mem(pAd, &pAd->TimerQ.pTimerQPoll, sizeof(RTMP_TIMER_TASK_ENTRY) * TIMER_QUEUE_SIZE_MAX);
+	os_alloc_mem(pAd, &pAd->TimerQ.pTimerQPoll,
+		     sizeof(RTMP_TIMER_TASK_ENTRY) * TIMER_QUEUE_SIZE_MAX);
 
 	if (pAd->TimerQ.pTimerQPoll) {
 		pEntry = NULL;
 		pQNode = (RTMP_TIMER_TASK_ENTRY *)pAd->TimerQ.pTimerQPoll;
-		NdisZeroMemory(pAd->TimerQ.pTimerQPoll, sizeof(RTMP_TIMER_TASK_ENTRY) * TIMER_QUEUE_SIZE_MAX);
+		NdisZeroMemory(pAd->TimerQ.pTimerQPoll,
+			       sizeof(RTMP_TIMER_TASK_ENTRY) *
+				       TIMER_QUEUE_SIZE_MAX);
 		RTMP_INT_LOCK(&pAd->TimerQLock, irqFlags);
 
 		for (i = 0; i < TIMER_QUEUE_SIZE_MAX; i++) {
@@ -368,4 +360,3 @@ void RtmpTimerQInit(RTMP_ADAPTER *pAd)
 	}
 }
 #endif /* RTMP_TIMER_TASK_SUPPORT */
-

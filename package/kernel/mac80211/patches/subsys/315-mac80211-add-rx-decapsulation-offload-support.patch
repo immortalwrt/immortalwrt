@@ -132,7 +132,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  #endif /* __MAC80211_DRIVER_OPS */
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -835,7 +835,7 @@ static const struct net_device_ops ieee8
+@@ -856,7 +856,7 @@ static const struct net_device_ops ieee8
  
  };
  
@@ -141,7 +141,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  {
  	switch (iftype) {
  	/* P2P GO and client are mapped to AP/STATION types */
-@@ -855,7 +855,7 @@ static bool ieee80211_set_sdata_offload_
+@@ -876,7 +876,7 @@ static bool ieee80211_set_sdata_offload_
  	flags = sdata->vif.offload_flags;
  
  	if (ieee80211_hw_check(&local->hw, SUPPORTS_TX_ENCAP_OFFLOAD) &&
@@ -150,7 +150,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		flags |= IEEE80211_OFFLOAD_ENCAP_ENABLED;
  
  		if (!ieee80211_hw_check(&local->hw, SUPPORTS_TX_FRAG) &&
-@@ -868,10 +868,21 @@ static bool ieee80211_set_sdata_offload_
+@@ -889,10 +889,21 @@ static bool ieee80211_set_sdata_offload_
  		flags &= ~IEEE80211_OFFLOAD_ENCAP_ENABLED;
  	}
  
@@ -172,7 +172,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	return true;
  }
  
-@@ -889,7 +900,7 @@ static void ieee80211_set_vif_encap_ops(
+@@ -910,7 +921,7 @@ static void ieee80211_set_vif_encap_ops(
  	}
  
  	if (!ieee80211_hw_check(&local->hw, SUPPORTS_TX_ENCAP_OFFLOAD) ||

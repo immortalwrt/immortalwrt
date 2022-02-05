@@ -18,7 +18,8 @@
 #include "hdev/hdev.h"
 
 #ifdef TXBF_SUPPORT
-VOID chip_tx_bf_init(struct _RTMP_ADAPTER *ad, struct _MAC_TABLE_ENTRY *pEntry, struct _IE_lists *ie_list, BOOLEAN supportsETxBF)
+VOID chip_tx_bf_init(struct _RTMP_ADAPTER *ad, struct _MAC_TABLE_ENTRY *pEntry,
+		     struct _IE_lists *ie_list, BOOLEAN supportsETxBF)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
@@ -56,12 +57,13 @@ VOID chip_spectrum_start(struct _RTMP_ADAPTER *ad, UINT8 *info)
 		ops->SpectrumStart(ad, info);
 	else {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s : The function is not hooked !!\n", __func__));
+			 ("%s : The function is not hooked !!\n", __func__));
 	}
 }
 #endif /*WIFI_SPECTRUM_SUPPORT*/
 
-BOOLEAN chip_eeprom_read16(struct _RTMP_ADAPTER *ad, USHORT offset, USHORT *value)
+BOOLEAN chip_eeprom_read16(struct _RTMP_ADAPTER *ad, USHORT offset,
+			   USHORT *value)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
@@ -71,7 +73,8 @@ BOOLEAN chip_eeprom_read16(struct _RTMP_ADAPTER *ad, USHORT offset, USHORT *valu
 		return FALSE;
 }
 
-BOOLEAN chip_eeprom_read_with_range(struct _RTMP_ADAPTER *ad, USHORT start, USHORT length, UCHAR *pbuf)
+BOOLEAN chip_eeprom_read_with_range(struct _RTMP_ADAPTER *ad, USHORT start,
+				    USHORT length, UCHAR *pbuf)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
@@ -89,7 +92,8 @@ VOID chip_fw_init(struct _RTMP_ADAPTER *ad)
 		ops->FwInit(ad);
 }
 
-VOID chip_parse_rxv_packet(struct _RTMP_ADAPTER *ad, UINT32 Type, struct _RX_BLK *RxBlk, UCHAR *Data)
+VOID chip_parse_rxv_packet(struct _RTMP_ADAPTER *ad, UINT32 Type,
+			   struct _RX_BLK *RxBlk, UCHAR *Data)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
@@ -133,9 +137,9 @@ INT chip_show_pwr_info(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 VOID chip_arch_set_aid(struct _RTMP_ADAPTER *ad, USHORT aid)
 {
 #if defined(MT_MAC) && defined(TXBF_SUPPORT)
-		struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
-		if (ops->archSetAid)
-			ops->archSetAid(ad, aid);
+	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
+	if (ops->archSetAid)
+		ops->archSetAid(ad, aid);
 #endif
 }
 
@@ -165,7 +169,6 @@ VOID AsicMitigateMicrowave(RTMP_ADAPTER *ad)
 }
 #endif /* MICROWAVE_OVEN_SUPPORT */
 
-
 VOID AsicBbpInitFromEEPROM(RTMP_ADAPTER *ad)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
@@ -174,188 +177,130 @@ VOID AsicBbpInitFromEEPROM(RTMP_ADAPTER *ad)
 		ops->BbpInitFromEEPROM(ad);
 }
 
-
 #if defined(MT_MAC) && defined(TXBF_SUPPORT)
-INT32 AsicBfStaRecUpdate(
-	RTMP_ADAPTER *ad,
-	UCHAR        ucPhyMode,
-	UCHAR        ucBssIdx,
-	UCHAR        ucWlanIdx)
+INT32 AsicBfStaRecUpdate(RTMP_ADAPTER *ad, UCHAR ucPhyMode, UCHAR ucBssIdx,
+			 UCHAR ucWlanIdx)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfStaRecUpdate) {
-		return ops->BfStaRecUpdate(
-				   ad,
-				   ucPhyMode,
-				   ucBssIdx,
-				   ucWlanIdx);
+		return ops->BfStaRecUpdate(ad, ucPhyMode, ucBssIdx, ucWlanIdx);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicBfStaRecRelease(
-	RTMP_ADAPTER *ad,
-	UCHAR        ucBssIdx,
-	UCHAR        ucWlanIdx)
+INT32 AsicBfStaRecRelease(RTMP_ADAPTER *ad, UCHAR ucBssIdx, UCHAR ucWlanIdx)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfStaRecRelease) {
-		return ops->BfStaRecRelease(
-				   ad,
-				   ucBssIdx,
-				   ucWlanIdx);
+		return ops->BfStaRecRelease(ad, ucBssIdx, ucWlanIdx);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicBfPfmuMemAlloc(
-	RTMP_ADAPTER *ad,
-	UCHAR ucSu_Mu,
-	UCHAR ucWlanId)
+INT32 AsicBfPfmuMemAlloc(RTMP_ADAPTER *ad, UCHAR ucSu_Mu, UCHAR ucWlanId)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfPfmuMemAlloc) {
-		return ops->BfPfmuMemAlloc(
-				   ad,
-				   ucSu_Mu,
-				   ucWlanId);
+		return ops->BfPfmuMemAlloc(ad, ucSu_Mu, ucWlanId);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicBfPfmuMemRelease(
-	RTMP_ADAPTER *ad,
-	UCHAR ucWlanId)
+INT32 AsicBfPfmuMemRelease(RTMP_ADAPTER *ad, UCHAR ucWlanId)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfPfmuMemRelease) {
-		return ops->BfPfmuMemRelease(
-				   ad,
-				   ucWlanId);
+		return ops->BfPfmuMemRelease(ad, ucWlanId);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicTxBfTxApplyCtrl(
-	RTMP_ADAPTER *ad,
-	UCHAR   ucWlanId,
-	BOOLEAN fgETxBf,
-	BOOLEAN fgITxBf,
-	BOOLEAN fgMuTxBf,
-	BOOLEAN fgPhaseCali)
+INT32 AsicTxBfTxApplyCtrl(RTMP_ADAPTER *ad, UCHAR ucWlanId, BOOLEAN fgETxBf,
+			  BOOLEAN fgITxBf, BOOLEAN fgMuTxBf,
+			  BOOLEAN fgPhaseCali)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->TxBfTxApplyCtrl) {
-		return ops->TxBfTxApplyCtrl(
-				   ad,
-				   ucWlanId,
-				   fgETxBf,
-				   fgITxBf,
-				   fgMuTxBf,
-				   fgPhaseCali);
+		return ops->TxBfTxApplyCtrl(ad, ucWlanId, fgETxBf, fgITxBf,
+					    fgMuTxBf, fgPhaseCali);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicTxBfeeHwCtrl(
-	RTMP_ADAPTER *ad,
-	BOOLEAN   fgBfeeHwCtrl)
+INT32 AsicTxBfeeHwCtrl(RTMP_ADAPTER *ad, BOOLEAN fgBfeeHwCtrl)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfeeHwCtrl) {
-		return ops->BfeeHwCtrl(
-				   ad,
-				   fgBfeeHwCtrl);
+		return ops->BfeeHwCtrl(ad, fgBfeeHwCtrl);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicTxBfApClientCluster(
-	RTMP_ADAPTER *ad,
-	UCHAR   ucWlanId,
-	UCHAR   ucCmmWlanId)
+INT32 AsicTxBfApClientCluster(RTMP_ADAPTER *ad, UCHAR ucWlanId,
+			      UCHAR ucCmmWlanId)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfApClientCluster) {
-		return ops->BfApClientCluster(
-				   ad,
-				   ucWlanId,
-				   ucCmmWlanId);
+		return ops->BfApClientCluster(ad, ucWlanId, ucCmmWlanId);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicTxBfReptClonedStaToNormalSta(
-	RTMP_ADAPTER *ad,
-	UCHAR   ucWlanId,
-	UCHAR   ucCliIdx)
+INT32 AsicTxBfReptClonedStaToNormalSta(RTMP_ADAPTER *ad, UCHAR ucWlanId,
+				       UCHAR ucCliIdx)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfReptClonedStaToNormalSta) {
-		return ops->BfReptClonedStaToNormalSta(
-				   ad,
-				   ucWlanId,
-				   ucCliIdx);
+		return ops->BfReptClonedStaToNormalSta(ad, ucWlanId, ucCliIdx);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicTxBfHwEnStatusUpdate(
-	RTMP_ADAPTER *ad,
-	BOOLEAN   fgETxBf,
-	BOOLEAN   fgITxBf)
+INT32 AsicTxBfHwEnStatusUpdate(RTMP_ADAPTER *ad, BOOLEAN fgETxBf,
+			       BOOLEAN fgITxBf)
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
 	if (ops->BfHwEnStatusUpdate) {
-		return ops->BfHwEnStatusUpdate(
-				   ad,
-				   fgETxBf,
-				   fgITxBf);
+		return ops->BfHwEnStatusUpdate(ad, fgETxBf, fgITxBf);
 	} else {
 		AsicNotSupportFunc(ad, __func__);
 		return FALSE;
 	}
 }
 
-INT32 AsicTxBfModuleEnCtrl(
-	struct _RTMP_ADAPTER *pAd,
-	UINT8 u1BfNum,
-	UINT8 u1BfBitmap,
-	UINT8 u1BfSelBand[])
+INT32 AsicTxBfModuleEnCtrl(struct _RTMP_ADAPTER *pAd, UINT8 u1BfNum,
+			   UINT8 u1BfBitmap, UINT8 u1BfSelBand[])
 {
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(pAd->hdev_ctrl);
 
 	if (ops->BfModuleEnCtrl) {
-		return ops->BfModuleEnCtrl(
-					pAd,
-					u1BfNum,
-					u1BfBitmap,
-					u1BfSelBand);
+		return ops->BfModuleEnCtrl(pAd, u1BfNum, u1BfBitmap,
+					   u1BfSelBand);
 	} else {
 		AsicNotSupportFunc(pAd, __func__);
 		return FALSE;
@@ -363,7 +308,6 @@ INT32 AsicTxBfModuleEnCtrl(
 }
 
 #endif /* MT_MAC && TXBF_SUPPORT */
-
 
 INT32 chip_tssi_set(struct _RTMP_ADAPTER *ad, char *efuse)
 {
@@ -383,4 +327,3 @@ INT32 chip_pa_lna_set(struct _RTMP_ADAPTER *ad, char *efuse)
 
 	return 0;
 }
-

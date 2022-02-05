@@ -21,5 +21,4 @@ int mt_udma_pkt_send(VOID *ctx, PNDIS_PACKET pRxPkt);
 int mt_udma_register(VOID *pAd, PNET_DEV main_dev_p);
 int mt_udma_unregister(VOID *pAd);
 
-
 #endif /* __RT_UDMA_H__ */

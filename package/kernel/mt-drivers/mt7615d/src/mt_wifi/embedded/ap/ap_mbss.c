@@ -40,16 +40,16 @@
 ***************************************************************************/
 #ifdef MBSS_SUPPORT
 
-
 #include "rt_config.h"
 
 #ifdef VENDOR_FEATURE7_SUPPORT
 #ifndef ARRIS_MODULE_PRESENT
-void (*f)(int, int, int, char*, int) = arris_event_send_hook_fn;
+void (*f)(int, int, int, char *, int) = arris_event_send_hook_fn;
 #endif /* !ARRIS_MODULE_PRESENT */
 #endif
 #ifdef MULTI_PROFILE
-INT	multi_profile_devname_req(struct _RTMP_ADAPTER *ad, UCHAR *final_name, UCHAR *ifidx);
+INT multi_profile_devname_req(struct _RTMP_ADAPTER *ad, UCHAR *final_name,
+			      UCHAR *ifidx);
 #endif /*MULTI_PROFILE*/
 
 extern struct wifi_dev_ops ap_wdev_ops;
@@ -76,7 +76,7 @@ Note:
 */
 VOID MBSS_Init(RTMP_ADAPTER *pAd, RTMP_OS_NETDEV_OP_HOOK *pNetDevOps)
 {
-#define MBSS_MAX_DEV_NUM	32
+#define MBSS_MAX_DEV_NUM 32
 	PNET_DEV pDevNew;
 	INT32 IdBss, MaxNumBss;
 	INT status;
@@ -114,7 +114,7 @@ VOID MBSS_Init(RTMP_ADAPTER *pAd, RTMP_OS_NETDEV_OP_HOOK *pNetDevOps)
 		INT32 Ret;
 		BSS_STRUCT *pMbss = NULL;
 		UCHAR ifidx = IdBss;
-		UCHAR final_name[32]="";
+		UCHAR final_name[32] = "";
 		BOOLEAN autoSuffix = TRUE;
 #ifdef MULTIPLE_CARD_SUPPORT
 		MC_RowID = pAd->MC_RowID;
@@ -125,56 +125,67 @@ VOID MBSS_Init(RTMP_ADAPTER *pAd, RTMP_OS_NETDEV_OP_HOOK *pNetDevOps)
 
 		dev_name = get_dev_name_prefix(pAd, INT_MBSSID);
 
-		if(dev_name == NULL){
+		if (dev_name == NULL) {
 			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				("get_dev_name_prefix error!\n"));
+				 ("get_dev_name_prefix error!\n"));
 			break;
 		}
-		snprintf(final_name,sizeof(final_name),"%s",dev_name);
+		snprintf(final_name, sizeof(final_name), "%s", dev_name);
 #ifdef MULTI_PROFILE
-		multi_profile_devname_req(pAd,final_name,&ifidx);
+		multi_profile_devname_req(pAd, final_name, &ifidx);
 		if (ifidx == 0)
 			autoSuffix = FALSE;
 #endif /*MULTI_PROFILE*/
 #ifdef INTELP6_SUPPORT
 #ifdef CONFIG_RT_SECOND_CARD
 		if (pAd->dev_idx == 1)
-			pDevNew = RtmpOSNetDevCreate(MC_RowID, &IoctlIF, INT_MBSSID, IdBss + MAX_MBSS_NUM,
-						 sizeof(struct mt_dev_priv), dev_name, autoSuffix);
+			pDevNew = RtmpOSNetDevCreate(MC_RowID, &IoctlIF,
+						     INT_MBSSID,
+						     IdBss + MAX_MBSS_NUM,
+						     sizeof(struct mt_dev_priv),
+						     dev_name, autoSuffix);
 		else
 #endif
 #endif
-		pDevNew = RtmpOSNetDevCreate(MC_RowID, &IoctlIF, INT_MBSSID, ifidx,
-						 sizeof(struct mt_dev_priv), final_name, autoSuffix);
+			pDevNew = RtmpOSNetDevCreate(MC_RowID, &IoctlIF,
+						     INT_MBSSID, ifidx,
+						     sizeof(struct mt_dev_priv),
+						     final_name, autoSuffix);
 #ifdef HOSTAPD_SUPPORT
 		pAd->IoctlIF = IoctlIF;
 #endif /* HOSTAPD_SUPPORT */
 
 		if (pDevNew == NULL) {
-			pAd->ApCfg.BssidNum = IdBss; /* re-assign new MBSS number */
+			pAd->ApCfg.BssidNum =
+				IdBss; /* re-assign new MBSS number */
 			break;
 		}
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Register MBSSID IF (%s)\n", RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("Register MBSSID IF (%s)\n",
+			  RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
 
 		pMbss = &pAd->ApCfg.MBSSID[IdBss];
 		wdev = &pAd->ApCfg.MBSSID[IdBss].wdev;
 		Ret = wdev_init(pAd, wdev, WDEV_TYPE_AP, pDevNew, IdBss,
-						(VOID *)&pAd->ApCfg.MBSSID[IdBss], (void *)pAd);
+				(VOID *)&pAd->ApCfg.MBSSID[IdBss], (void *)pAd);
 
 		if (!Ret) {
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Assign wdev idx for %s failed, free net device!\n",
-					 RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
+			MTWF_LOG(
+				DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("Assign wdev idx for %s failed, free net device!\n",
+				 RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
 			RtmpOSNetDevFree(pDevNew);
 			break;
 		}
 
 		Ret = wdev_ops_register(wdev, WDEV_TYPE_AP, &ap_wdev_ops,
-								cap->wmm_detect_method);
+					cap->wmm_detect_method);
 
 		if (!Ret) {
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("register wdev_ops %s failed, free net device!\n",
-					  RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
+			MTWF_LOG(
+				DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("register wdev_ops %s failed, free net device!\n",
+				 RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
 			RtmpOSNetDevFree(pDevNew);
 			break;
 		}
@@ -191,29 +202,51 @@ VOID MBSS_Init(RTMP_ADAPTER *pAd, RTMP_OS_NETDEV_OP_HOOK *pNetDevOps)
 #endif
 		netDevHook.wdev = wdev;
 		/* Init MAC address of virtual network interface */
-		NdisMoveMemory(&netDevHook.devAddr[0], &wdev->bssid[0], MAC_ADDR_LEN);
+		NdisMoveMemory(&netDevHook.devAddr[0], &wdev->bssid[0],
+			       MAC_ADDR_LEN);
 
 #ifdef RT_CFG80211_SUPPORT
-	{
-		struct wireless_dev *pWdev;
-		CFG80211_CB *p80211CB = pAd->pCfg80211_CB;
-		UINT32 DevType = RT_CMD_80211_IFTYPE_AP;
-		pWdev = kzalloc(sizeof(*pWdev), GFP_KERNEL);
-		pDevNew->ieee80211_ptr = pWdev;
-		pWdev->wiphy = p80211CB->pCfg80211_Wdev->wiphy;
-		SET_NETDEV_DEV(pDevNew, wiphy_dev(pWdev->wiphy));
-		pWdev->netdev = pDevNew;
-		pWdev->iftype = DevType;
-	}
+		{
+			struct wireless_dev *pWdev;
+			CFG80211_CB *p80211CB = pAd->pCfg80211_CB;
+			UINT32 DevType = RT_CMD_80211_IFTYPE_AP;
+			os_alloc_mem_suspend(NULL, (UCHAR **)&pWdev,
+					     sizeof(*pWdev));
+			if (!pWdev) {
+				MTWF_LOG(
+					DBG_CAT_AP, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("mem alloc failed for %s, free net device!\n",
+					 RTMP_OS_NETDEV_GET_DEVNAME(pDevNew)));
+				RtmpOSNetDevFree(pDevNew);
+				break;
+			}
+			os_zero_mem((PUCHAR)pWdev, sizeof(*pWdev));
+			pDevNew->ieee80211_ptr = pWdev;
+			pWdev->wiphy = p80211CB->pCfg80211_Wdev->wiphy;
+			SET_NETDEV_DEV(pDevNew, wiphy_dev(pWdev->wiphy));
+			pWdev->netdev = pDevNew;
+			pWdev->iftype = DevType;
+		}
 #endif /* RT_CFG80211_SUPPORT */
 
 		/* register this device to OS */
 		status = RtmpOSNetDevAttach(pAd->OpMode, pDevNew, &netDevHook);
+#ifdef CONFIG_MAP_SUPPORT
+		if (IS_MAP_TURNKEY_ENABLE(pAd)) {
+			if (wdev && wdev->wdev_type == WDEV_TYPE_AP)
+				map_make_vend_ie(pAd, IdBss);
+		}
+#endif /* CONFIG_MAP_SUPPORT */
 	}
 
 	pAd->FlgMbssInit = TRUE;
+#ifdef MAP_R2
+	if (IS_MAP_ENABLE(pAd))
+		MtCmdSetRxTxAirtimeEn(
+			pAd, ENUM_RX_AT_FEATURE_SUB_TYPE_AIRTIME_EN, TRUE);
+#endif
 }
-
 
 /*
 ========================================================================
@@ -246,7 +279,6 @@ VOID MBSS_Remove(RTMP_ADAPTER *pAd)
 	if (MaxNumBss > HW_BEACON_MAX_NUM)
 		MaxNumBss = HW_BEACON_MAX_NUM;
 
-
 	for (IdBss = FIRST_MBSSID; IdBss < MaxNumBss; IdBss++) {
 		wdev = &pAd->ApCfg.MBSSID[IdBss].wdev;
 		pMbss = &pAd->ApCfg.MBSSID[IdBss];
@@ -259,12 +291,15 @@ VOID MBSS_Remove(RTMP_ADAPTER *pAd)
 			RtmpOSNetDevDetach(wdev->if_dev);
 			RtmpOSNetDevProtect(0);
 			wdev_deinit(pAd, wdev);
+#ifdef RT_CFG80211_SUPPORT
+			os_free_mem(wdev->if_dev->ieee80211_ptr);
+			wdev->if_dev->ieee80211_ptr = NULL;
+#endif /* RT_CFG80211_SUPPORT */
 			RtmpOSNetDevFree(wdev->if_dev);
 			wdev->if_dev = NULL;
 		}
 	}
 }
-
 
 /*
 ========================================================================
@@ -308,7 +343,8 @@ INT32 ext_mbss_hw_cr_enable(PNET_DEV pDev)
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 	BssId = RT28xx_MBSS_IdxGet(pAd, pDev);
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("##### %s, BssId = %d\n", __func__, BssId));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("##### %s, BssId = %d\n", __func__, BssId));
 
 	if (BssId < 0)
 		return -1;
@@ -316,11 +352,11 @@ INT32 ext_mbss_hw_cr_enable(PNET_DEV pDev)
 	if (!IS_HIF_TYPE(pAd, HIF_MT))
 		return 0;
 
-	AsicSetExtMbssEnableCR(pAd, BssId, TRUE);/* enable rmac 0_1~0_15 bit */
-	AsicSetMbssHwCRSetting(pAd, BssId, TRUE);/* enable lp timing setting for 0_1~0_15 */
+	AsicSetExtMbssEnableCR(pAd, BssId, TRUE); /* enable rmac 0_1~0_15 bit */
+	AsicSetMbssHwCRSetting(
+		pAd, BssId, TRUE); /* enable lp timing setting for 0_1~0_15 */
 	return 0;
 }
-
 
 INT ext_mbss_hw_cr_disable(PNET_DEV pDev)
 {
@@ -343,6 +379,3 @@ INT ext_mbss_hw_cr_disable(PNET_DEV pDev)
 #endif /* MT_MAC */
 
 #endif /* MBSS_SUPPORT */
-
-
-

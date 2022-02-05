@@ -72,7 +72,6 @@ typedef struct _DEV_INFO_CTRL_T {
 	DL_LIST list;
 } DEV_INFO_CTRL_T;
 
-
 typedef struct _STA_REC_CTRL_T {
 	UINT8 BssIndex;
 	UINT8 WlanIdx;
@@ -84,7 +83,6 @@ typedef struct _STA_REC_CTRL_T {
 	VOID *priv;
 	DL_LIST list;
 } STA_REC_CTRL_T;
-
 
 struct _tx_burst_cfg {
 	struct wifi_dev *wdev;
@@ -105,16 +103,15 @@ extern UINT16 txop60;
 extern UINT16 txop80;
 extern UINT16 txopfe;
 
-
-#define TXOP_0          (txop0)
-#define TXOP_30         (0x30)
-#define TXOP_60         (txop60)
-#define TXOP_80         (txop80)
-#define TXOP_A0         (0xA0)
-#define TXOP_C0         (0xC0)
-#define TXOP_FE         (txopfe)
-#define TXOP_138        (0x138)
-#define TXOP_177        (0x177)
+#define TXOP_0 (txop0)
+#define TXOP_30 (0x30)
+#define TXOP_60 (txop60)
+#define TXOP_80 (txop80)
+#define TXOP_A0 (0xA0)
+#define TXOP_C0 (0xC0)
+#define TXOP_FE (txopfe)
+#define TXOP_138 (0x138)
+#define TXOP_177 (0x177)
 
 enum _tx_burst_prio {
 	PRIO_DEFAULT = 0,
@@ -129,8 +126,7 @@ enum _tx_burst_prio {
 	MAX_PRIO_NUM
 };
 
-#define WDEV_BSS_STATE(__wdev) \
-	(__wdev->bss_info_argument.bss_state)
+#define WDEV_BSS_STATE(__wdev) (__wdev->bss_info_argument.bss_state)
 
 typedef enum _BSSINFO_LINK_TO_OMAC_T {
 	HW_BSSID = 0,
@@ -140,10 +136,10 @@ typedef enum _BSSINFO_LINK_TO_OMAC_T {
 } BSSINFO_TYPE_T;
 
 typedef enum _BSSINFO_STATE_T {
-	BSS_INIT	= 0,	/* INIT state */
-	BSS_INITED	= 1,	/* BSS Argument Link done */
-	BSS_ACTIVE	= 2,	/* The original flag - Active */
-	BSS_READY	= 3		/* BssInfo updated to FW done and ready for beaconing */
+	BSS_INIT = 0, /* INIT state */
+	BSS_INITED = 1, /* BSS Argument Link done */
+	BSS_ACTIVE = 2, /* The original flag - Active */
+	BSS_READY = 3 /* BssInfo updated to FW done and ready for beaconing */
 } BSSINFO_STATE_T;
 
 typedef struct _BSS_INFO_ARGUMENT_T {
@@ -165,8 +161,8 @@ typedef struct _BSS_INFO_ARGUMENT_T {
 	CMD_BSSINFO_PM_T rBssInfoPm;
 	HTTRANSMIT_SETTING BcTransmit;
 	HTTRANSMIT_SETTING McTransmit;
-	UINT16	bcn_period;
-	UINT8	dtim_period;
+	UINT16 bcn_period;
+	UINT8 dtim_period;
 	struct freq_oper chan_oper;
 #ifdef RACTRL_FW_OFFLOAD_SUPPORT
 	RA_COMMON_INFO_T ra_cfg;
@@ -228,12 +224,18 @@ typedef struct _LINKUP_HWCTRL {
 VOID wifi_sys_reset(struct _WIFI_SYS_INFO *wsys);
 VOID wifi_sys_init(struct _RTMP_ADAPTER *ad);
 VOID wifi_sys_dump(struct _RTMP_ADAPTER *ad);
-INT wifi_sys_update_devinfo(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev, struct _DEV_INFO_CTRL_T *devinfo);
-INT wifi_sys_update_bssinfo(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev, BSS_INFO_ARGUMENT_T *bss);
-INT wifi_sys_update_starec(struct _RTMP_ADAPTER *ad, struct _STA_REC_CTRL_T *new);
-INT wifi_sys_update_starec_info(struct _RTMP_ADAPTER *ad, struct _STA_REC_CTRL_T *new);
-INT register_wsys_notifier(struct _WIFI_SYS_INFO *wsys, struct notify_entry *ne);
-INT unregister_wsys_notifier(struct _WIFI_SYS_INFO *wsys, struct notify_entry *ne);
+INT wifi_sys_update_devinfo(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev,
+			    struct _DEV_INFO_CTRL_T *devinfo);
+INT wifi_sys_update_bssinfo(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev,
+			    BSS_INFO_ARGUMENT_T *bss);
+INT wifi_sys_update_starec(struct _RTMP_ADAPTER *ad,
+			   struct _STA_REC_CTRL_T *new);
+INT wifi_sys_update_starec_info(struct _RTMP_ADAPTER *ad,
+				struct _STA_REC_CTRL_T *new);
+INT register_wsys_notifier(struct _WIFI_SYS_INFO *wsys,
+			   struct notify_entry *ne);
+INT unregister_wsys_notifier(struct _WIFI_SYS_INFO *wsys,
+			     struct notify_entry *ne);
 struct _STA_REC_CTRL_T *get_starec_by_wcid(struct _RTMP_ADAPTER *ad, INT wcid);
 
 #ifdef CONFIG_AP_SUPPORT
@@ -244,10 +246,13 @@ struct _STA_REC_CTRL_T *get_starec_by_wcid(struct _RTMP_ADAPTER *ad, INT wcid);
 
 #ifdef RACTRL_FW_OFFLOAD_SUPPORT
 VOID WifiSysRaInit(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
-VOID WifiSysUpdateRa(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry, struct _STAREC_AUTO_RATE_UPDATE_T *prParam);
+VOID WifiSysUpdateRa(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry,
+		     struct _STAREC_AUTO_RATE_UPDATE_T *prParam);
 #endif /*RACTRL_FW_OFFLOAD_SUPPORT*/
 
-VOID WifiSysUpdatePortSecur(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry, ASIC_SEC_INFO *asic_sec_info);
+VOID WifiSysUpdatePortSecur(struct _RTMP_ADAPTER *pAd,
+			    struct _MAC_TABLE_ENTRY *pEntry,
+			    ASIC_SEC_INFO *asic_sec_info);
 /*wifi system architecture layer api*/
 INT wifi_sys_open(struct wifi_dev *wdev);
 INT wifi_sys_close(struct wifi_dev *wdev);
@@ -256,5 +261,6 @@ INT wifi_sys_disconn_act(struct wifi_dev *wdev, struct _MAC_TABLE_ENTRY *entry);
 INT wifi_sys_linkup(struct wifi_dev *wdev, struct _MAC_TABLE_ENTRY *entry);
 INT wifi_sys_linkdown(struct wifi_dev *wdev);
 VOID wifi_sys_ops_register(struct wifi_dev *wdev);
-VOID wifi_sys_update_wds(struct _RTMP_ADAPTER *pAd, struct _MAC_TABLE_ENTRY *pEntry);
+VOID wifi_sys_update_wds(struct _RTMP_ADAPTER *pAd,
+			 struct _MAC_TABLE_ENTRY *pEntry);
 #endif

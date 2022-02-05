@@ -45,11 +45,9 @@
 
 	========================================================================
 */
-BOOLEAN RadarChannelCheck(
-	IN PRTMP_ADAPTER	pAd,
-	IN UCHAR			Ch)
+BOOLEAN RadarChannelCheck(IN PRTMP_ADAPTER pAd, IN UCHAR Ch)
 {
-	INT	i;
+	INT i;
 	BOOLEAN result = FALSE;
 	UCHAR BandIdx;
 	CHANNEL_CTRL *pChCtrl;
@@ -69,7 +67,6 @@ BOOLEAN RadarChannelCheck(
 	return result;
 }
 
-
 /*
 	========================================================================
 
@@ -83,9 +80,7 @@ BOOLEAN RadarChannelCheck(
 
 	========================================================================
 */
-VOID RadarStateCheck(
-	struct _RTMP_ADAPTER *pAd,
-	struct wifi_dev *wdev)
+VOID RadarStateCheck(struct _RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 {
 	struct DOT11_H *pDot11h = NULL;
 	struct wlan_config *cfg = NULL;
@@ -125,21 +120,49 @@ VOID RadarStateCheck(
 
 #ifdef MT_DFS_SUPPORT
 	if ((pAd->CommonCfg.bIEEE80211H == 1) &&
-		DfsRadarChannelCheck(pAd, wdev, vht_cent2, phy_bw)
+	    DfsRadarChannelCheck(pAd, wdev, vht_cent2, phy_bw)
 #ifdef BACKGROUND_SCAN_SUPPORT
-		&& ((IS_SUPPORT_MT_ZEROWAIT_DFS(pAd) == FALSE)	|| (CHK_MT_ZEROWAIT_DFS_STATE(pAd, DFS_OFF_CHNL_CAC_TIMEOUT)))
+	    && ((IS_SUPPORT_MT_ZEROWAIT_DFS(pAd) == FALSE) ||
+		(CHK_MT_ZEROWAIT_DFS_STATE(pAd, DFS_OFF_CHNL_CAC_TIMEOUT)))
 #endif /* BACKGROUND_SCAN_SUPPORT */
 	) {
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\x1b[1;33m [%s] RD_SILENCE_MODE \x1b[m \n", __func__));
-
+#ifdef MAP_R2
+		if (IS_MAP_TURNKEY_ENABLE(pAd)) {
+			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\x1b[1;33m [%s]cac_not_req %d \x1b[m \n",
+				  __func__, wdev->cac_not_required));
+			if (wdev->cac_not_required == TRUE) {
+				MTWF_LOG(
+					DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+					("\x1b[1;33m [%s] switch back to RD_NORMAL_MODE \x1b[m \n",
+					 __func__));
+				/* DFS Zero wait case, OP CH always is normal mode */
+				pDot11h->RDMode = RD_NORMAL_MODE;
+				return;
+			}
+		} else
+			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\x1b[1;33m [%s] RD_SILENCE_MODE \x1b[m \n",
+				  __func__));
+#else
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\x1b[1;33m [%s] RD_SILENCE_MODE \x1b[m \n",
+			  __func__));
+#endif
 		pDot11h->RDMode = RD_SILENCE_MODE;
 		pDot11h->RDCount = 0;
 		pDot11h->InServiceMonitorCount = 0;
 		if (DfsIsOutBandAvailable(pAd)) {
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\x1b[1;33m [%s] OutBand Available. Set into RD_NORMAL_MODE \x1b[m \n", __func__));
+			MTWF_LOG(
+				DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("\x1b[1;33m [%s] OutBand Available. Set into RD_NORMAL_MODE \x1b[m \n",
+				 __func__));
 			pDot11h->RDMode = RD_NORMAL_MODE;
 		} else if (DfsIsTargetChAvailable(pAd)) {
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\x1b[1;33m [%s] Target Channel Bypass CAC. Set into RD_NORMAL_MODE \x1b[m \n", __FUNCTION__));
+			MTWF_LOG(
+				DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("\x1b[1;33m [%s] Target Channel Bypass CAC. Set into RD_NORMAL_MODE \x1b[m \n",
+				 __FUNCTION__));
 			pDot11h->RDMode = RD_NORMAL_MODE;
 
 		} else
@@ -147,16 +170,16 @@ VOID RadarStateCheck(
 	} else
 #endif
 	{
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\x1b[1;33m [%s] RD_NORMAL_MODE \x1b[m \n", __func__));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\x1b[1;33m [%s] RD_NORMAL_MODE \x1b[m \n",
+			  __func__));
 		/* DFS Zero wait case, OP CH always is normal mode */
 		pDot11h->RDMode = RD_NORMAL_MODE;
 	}
 }
 
-BOOLEAN CheckNonOccupancyChannel(
-	IN PRTMP_ADAPTER pAd,
-	IN struct wifi_dev *wdev,
-	IN UCHAR ch)
+BOOLEAN CheckNonOccupancyChannel(IN PRTMP_ADAPTER pAd, IN struct wifi_dev *wdev,
+				 IN UCHAR ch)
 {
 	INT i;
 	BOOLEAN InNOP = FALSE;
@@ -176,9 +199,11 @@ BOOLEAN CheckNonOccupancyChannel(
 	for (i = 0; i < pChCtrl->ChListNum; i++) {
 		if (pChCtrl->ChList[i].Channel == channel) {
 			if (pChCtrl->ChList[i].RemainingTimeForUse > 0) {
-				MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("ERROR: previous detection of a radar on this channel(Channel=%d).\n",
-						  pChCtrl->ChList[i].Channel));
+				MTWF_LOG(
+					DBG_CAT_AP, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("ERROR: previous detection of a radar on this channel(Channel=%d).\n",
+					 pChCtrl->ChList[i].Channel));
 				InNOP = TRUE;
 				break;
 			}
@@ -187,7 +212,7 @@ BOOLEAN CheckNonOccupancyChannel(
 
 	if ((InNOP == FALSE)
 #ifdef MT_DFS_SUPPORT
-		|| DfsStopWifiCheck(pAd)
+	    || DfsStopWifiCheck(pAd)
 #endif
 	)
 		return TRUE;
@@ -195,11 +220,11 @@ BOOLEAN CheckNonOccupancyChannel(
 		return FALSE;
 }
 
-ULONG JapRadarType(
-	IN PRTMP_ADAPTER pAd)
+ULONG JapRadarType(IN PRTMP_ADAPTER pAd)
 {
-	ULONG		i;
-	const UCHAR	Channel[15] = {52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140};
+	ULONG i;
+	const UCHAR Channel[15] = { 52,	 56,  60,  64,	100, 104, 108, 112,
+				    116, 120, 124, 128, 132, 136, 140 };
 	BOOLEAN IsSupport5G = HcIsRfSupport(pAd, RFIC_5GHZ);
 	UCHAR Channel5G = HcGetChannelByRf(pAd, RFIC_5GHZ);
 
@@ -207,7 +232,7 @@ ULONG JapRadarType(
 		return pAd->CommonCfg.RDDurRegion;
 
 	for (i = 0; i < 15; i++) {
-		if (IsSupport5G && Channel5G ==  Channel[i])
+		if (IsSupport5G && Channel5G == Channel[i])
 			break;
 	}
 
@@ -219,11 +244,8 @@ ULONG JapRadarType(
 		return JAP; /* W52*/
 }
 
-
-UCHAR get_channel_by_reference(
-	IN PRTMP_ADAPTER pAd,
-	IN UINT8 mode,
-	IN struct wifi_dev *wdev)
+UCHAR get_channel_by_reference(IN PRTMP_ADAPTER pAd, IN UINT8 mode,
+			       IN struct wifi_dev *wdev)
 {
 	UCHAR ch = 0;
 	INT ch_idx;
@@ -239,9 +261,11 @@ UCHAR get_channel_by_reference(
 		USHORT min_time = 0xFFFF;
 
 		/* select channel with least RemainingTimeForUse */
-		for (ch_idx = 0; ch_idx <  pChCtrl->ChListNum; ch_idx++) {
-			if (pChCtrl->ChList[ch_idx].RemainingTimeForUse < min_time) {
-				min_time = pChCtrl->ChList[ch_idx].RemainingTimeForUse;
+		for (ch_idx = 0; ch_idx < pChCtrl->ChListNum; ch_idx++) {
+			if (pChCtrl->ChList[ch_idx].RemainingTimeForUse <
+			    min_time) {
+				min_time = pChCtrl->ChList[ch_idx]
+						   .RemainingTimeForUse;
 				ch = pChCtrl->ChList[ch_idx].Channel;
 			}
 		}
@@ -255,11 +279,10 @@ UCHAR get_channel_by_reference(
 	}
 	}
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE, ("%s(): mode = %u, ch = %u\n",
-			 __func__, mode, ch));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE,
+		 ("%s(): mode = %u, ch = %u\n", __func__, mode, ch));
 	return ch;
 }
-
 
 #ifdef CONFIG_AP_SUPPORT
 /*
@@ -273,9 +296,7 @@ UCHAR get_channel_by_reference(
 
 	========================================================================
 */
-VOID ChannelSwitchingCountDownProc(
-	IN PRTMP_ADAPTER	pAd,
-	struct wifi_dev *wdev)
+VOID ChannelSwitchingCountDownProc(IN PRTMP_ADAPTER pAd, struct wifi_dev *wdev)
 {
 	UCHAR apIdx = 0xff;
 	struct DOT11_H *pDot11h = NULL;
@@ -286,47 +307,51 @@ VOID ChannelSwitchingCountDownProc(
 	pDot11h = wdev->pDot11_H;
 	if (pDot11h == NULL)
 		return;
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE, ("%s(): Wdev(%d) Channel Switching...(%d/%d)\n",
-			 __func__, wdev->wdev_idx, pDot11h->CSCount, pDot11h->CSPeriod));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE,
+		 ("%s(): Wdev(%d) Channel Switching...(%d/%d)\n", __func__,
+		  wdev->wdev_idx, pDot11h->CSCount, pDot11h->CSPeriod));
 	pDot11h->CSCount++;
 
 	if (pDot11h->CSCount >= pDot11h->CSPeriod) {
 		if (wdev && (wdev->wdev_type == WDEV_TYPE_AP))
 			apIdx = wdev->func_idx;
 
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE, ("  Type = %d, func_idx = %d\n",
-				 wdev->wdev_type, wdev->func_idx));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE,
+			 ("  Type = %d, func_idx = %d\n", wdev->wdev_type,
+			  wdev->func_idx));
 
-		RTEnqueueInternalCmd(pAd, CMDTHRED_DOT11H_SWITCH_CHANNEL, &apIdx, sizeof(UCHAR));
+		RTEnqueueInternalCmd(pAd, CMDTHRED_DOT11H_SWITCH_CHANNEL,
+				     &apIdx, sizeof(UCHAR));
 	}
 }
 
 #ifdef CUSTOMER_DCC_FEATURE
-VOID ChannelSwitchingCountDownProcNew(
-	IN PRTMP_ADAPTER	pAd,
-	struct wifi_dev *wdev)
+VOID ChannelSwitchingCountDownProcNew(IN PRTMP_ADAPTER pAd,
+				      struct wifi_dev *wdev)
 {
 	UCHAR apIdx = 0xff;
 
 	if (wdev == NULL)
 		return;
 
-	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s::Channel Switching...(%d/%d)\n", __func__,
-			pAd->CommonCfg.channelSwitch.CHSWCount, pAd->CommonCfg.channelSwitch.CHSWPeriod));
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s::Channel Switching...(%d/%d)\n", __func__,
+		  pAd->CommonCfg.channelSwitch.CHSWCount,
+		  pAd->CommonCfg.channelSwitch.CHSWPeriod));
 
 	pAd->CommonCfg.channelSwitch.CHSWCount++;
-	if (pAd->CommonCfg.channelSwitch.CHSWCount >= pAd->CommonCfg.channelSwitch.CHSWPeriod) {
-
+	if (pAd->CommonCfg.channelSwitch.CHSWCount >=
+	    pAd->CommonCfg.channelSwitch.CHSWPeriod) {
 		if (wdev && (wdev->wdev_type == WDEV_TYPE_AP))
 			apIdx = wdev->func_idx;
 
 		pAd->CommonCfg.channelSwitch.CHSWMode = NORMAL_MODE;
-		MlmeEnqueue(pAd, AP_SYNC_STATE_MACHINE, APMT2_CHANNEL_SWITCH, sizeof(apIdx), &apIdx, 0);
-		RTMP_MLME_HANDLER(pAd);
+		pAd->CommonCfg.bChannelSwitchOn = FALSE;
+		RTEnqueueInternalCmd(pAd, CMDTREAD_AP_SWITCH_CHANNEL, &apIdx,
+				     sizeof(UCHAR));
 	}
 }
 #endif
-void update_ch_by_wdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev);
 
 /*
 *
@@ -337,10 +362,19 @@ NTSTATUS Dot11HCntDownTimeoutAction(PRTMP_ADAPTER pAd, PCmdQElmt CMDQelmt)
 	BSS_STRUCT *pMbss = &pAd->ApCfg.MBSSID[MAIN_MBSSID];
 	UCHAR apOper = AP_BSS_OPER_ALL;
 	struct DOT11_H *pDot11h = NULL;
+	UCHAR BandIdx = DBDC_BAND0;
+	struct wifi_dev *wdev;
+	AUTO_CH_CTRL *pAutoChCtrl = NULL;
+	BOOLEAN isRadarCh = FALSE;
 #ifdef OFFCHANNEL_SCAN_FEATURE
 	OFFCHANNEL_SCAN_MSG Rsp;
 	UCHAR RfIC = 0;
-
+#endif
+#ifdef CONFIG_MAP_SUPPORT
+	int u = 0;
+#endif
+	wdev = &pMbss->wdev;
+#ifdef OFFCHANNEL_SCAN_FEATURE
 	Rsp.Action = DRIVER_CHANNEL_SWITCH_SUCCESSFUL;
 	memcpy(Rsp.ifrn_name, pAd->ScanCtrl.if_name, IFNAMSIZ);
 #endif
@@ -354,61 +388,96 @@ NTSTATUS Dot11HCntDownTimeoutAction(PRTMP_ADAPTER pAd, PCmdQElmt CMDQelmt)
 	}
 
 	if (pMbss == NULL)
-		return 0;
+		goto end;
+
 	pDot11h = pMbss->wdev.pDot11_H;
 	if (pDot11h == NULL)
-		return 0;
+		goto end;
+
 		/* Normal DFS */
 #if defined(MT_DFS_SUPPORT) && defined(BACKGROUND_SCAN_SUPPORT)
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\x1b[1;33m [%s] 2 \x1b[m \n", __func__));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\x1b[1;33m [%s] 2 \x1b[m \n", __func__));
 #ifdef ONDEMAND_DFS
 #ifdef OFFCHANNEL_SCAN_FEATURE
-		if (pAd->radar_hit == TRUE) {
-			printk("[%s] Radar detected  \n", __func__);
-			Rsp.Action = DFS_DRIVER_CHANNEL_SWITCH;
-			pAd->radar_hit = FALSE;
+	if (pAd->radar_hit == TRUE) {
+		printk("[%s] Radar detected  \n", __func__);
+		Rsp.Action = DFS_DRIVER_CHANNEL_SWITCH;
+		pAd->radar_hit = FALSE;
+	}
+#endif
+	if (IS_SUPPORT_ONDEMAND_ZEROWAIT_DFS(pAd))
+		DedicatedZeroWaitStop(pAd, TRUE);
+	else
+#endif
+		DedicatedZeroWaitStop(pAd, FALSE);
+#endif
+	pDot11h->RDMode = RD_SILENCE_MODE;
+
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("[%s] wdev name(%s), quick %d ,ch %d\n", __func__,
+		  (char *)pMbss->wdev.if_dev->name, pMbss->wdev.quick_ch_change,
+		  pMbss->wdev.channel));
+
+#ifdef CONFIG_MAP_SUPPORT
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("cacreq %d\n", pMbss->wdev.cac_not_required));
+#endif
+	isRadarCh = RadarChannelCheck(pAd, pMbss->wdev.channel);
+	if (pMbss->wdev.quick_ch_change != QUICK_CH_SWICH_DISABLE &&
+	    (!isRadarCh
+#ifdef CONFIG_MAP_SUPPORT
+	     || (isRadarCh && pMbss->wdev.cac_not_required)
+#endif
+		     )) {
+		ap_phy_rrm_init_byRf(pAd, &pMbss->wdev);
+#ifdef CONFIG_MAP_SUPPORT
+		pMbss->wdev.cac_not_required = FALSE;
+		for (u = 0; u < pAd->ApCfg.BssidNum; u++) {
+			struct wifi_dev *wdev_temp = NULL;
+			wdev_temp = &pAd->ApCfg.MBSSID[u].wdev;
+			if (wdev_temp->cac_not_required == TRUE) {
+				wdev_temp->cac_not_required = FALSE;
+			}
+			/*need to make all the MBSS cac not required false*/
+			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("if: %s cac_not_required: %d\n",
+				  (char *)wdev_temp->if_dev->name,
+				  wdev_temp->cac_not_required));
 		}
 #endif
-		if (IS_SUPPORT_ONDEMAND_ZEROWAIT_DFS(pAd))
-			DedicatedZeroWaitStop(pAd, TRUE);
-		else
-#endif
-			DedicatedZeroWaitStop(pAd, FALSE);
-#endif
-		pDot11h->RDMode = RD_SILENCE_MODE;
-#ifdef CONFIG_MAP_SUPPORT
-		if (pMbss->wdev.quick_ch_change == TRUE && !RadarChannelCheck(pAd, pMbss->wdev.channel)) {
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s %d\n",
-							(char *)pMbss->wdev.if_dev->name,
-							pMbss->wdev.quick_ch_change));
-			update_ch_by_wdev(pAd, &pMbss->wdev);
-		} else {
-#endif
+	} else {
 		APStop(pAd, pMbss, apOper);
 #ifdef MT_DFS_SUPPORT
 		if (DfsStopWifiCheck(pAd)) {
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("[%s] Stop AP Startup\n", __func__));
-			return 0;
+			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("[%s] Stop AP Startup\n", __func__));
+			goto end;
 		}
 #endif
 		APStartUp(pAd, pMbss, apOper);
 #ifdef CONFIG_MAP_SUPPORT
-		}
+		if (pAd->MAPMode == MAP_BS_2_0)
+			wapp_send_ch_change_rsp(pAd, &pMbss->wdev,
+						pMbss->wdev.channel);
 #endif
+	}
 #ifdef MT_DFS_SUPPORT
-		if (pAd->CommonCfg.dbdc_mode)
-			MtCmdSetDfsTxStart(pAd, HcGetBandByWdev(&pMbss->wdev));
-		else
-			MtCmdSetDfsTxStart(pAd, DBDC_BAND0);
-		DfsSetCacRemainingTime(pAd, &pMbss->wdev);
-		DfsReportCollision(pAd);
+	if (pAd->CommonCfg.dbdc_mode)
+		MtCmdSetDfsTxStart(pAd, HcGetBandByWdev(&pMbss->wdev));
+	else
+		MtCmdSetDfsTxStart(pAd, DBDC_BAND0);
+	DfsSetCacRemainingTime(pAd, &pMbss->wdev);
+	DfsReportCollision(pAd);
 #ifdef BACKGROUND_SCAN_SUPPORT
-		DfsDedicatedScanStart(pAd);
+	DfsDedicatedScanStart(pAd);
 #endif
 #endif
 #ifdef CONFIG_MAP_SUPPORT
+	if (IS_MAP_TURNKEY_ENABLE(pAd)) {
 		if (pMbss->wdev.cac_not_required) {
 			pMbss->wdev.cac_not_required = FALSE;
+			pDot11h->RDCount = pDot11h->ChMovingTime;
 			pDot11h->cac_not_required = TRUE;
 		}
 		if (pDot11h->cac_not_required) {
@@ -419,7 +488,7 @@ NTSTATUS Dot11HCntDownTimeoutAction(PRTMP_ADAPTER pAd, PCmdQElmt CMDQelmt)
 			for (i = 0; i < pAd->ApCfg.BssidNum; i++) {
 				wdev_temp = &pAd->ApCfg.MBSSID[i].wdev;
 				if ((wdev_temp->pDot11_H == pDot11h) &&
-					wdev_temp->cac_not_required) {
+				    wdev_temp->cac_not_required) {
 					can_reset_cac = FALSE;
 					break;
 				}
@@ -430,43 +499,59 @@ NTSTATUS Dot11HCntDownTimeoutAction(PRTMP_ADAPTER pAd, PCmdQElmt CMDQelmt)
 				if (IS_MAP_TURNKEY_ENABLE(pAd)) {
 					int j;
 					for (j = 0; j < MAX_APCLI_NUM; j++) {
-						wdev_temp = &pAd->ApCfg.ApCliTab[j].wdev;
-						if (wdev_temp->pDot11_H == pDot11h) {
-							pAd->ApCfg.ApCliTab[j].Enable = TRUE;
+						wdev_temp =
+							&pAd->ApCfg.ApCliTab[j]
+								 .wdev;
+						if ((wdev_temp->pDot11_H ==
+						     pDot11h) &&
+						    (wdev_temp->WscControl
+							     .WscConfMode !=
+						     WSC_DISABLE) &&
+						    (wdev_temp->WscControl
+							     .bWscTrigger)) {
+							pAd->ApCfg.ApCliTab[j]
+								.Enable = TRUE;
 							break;
 						}
 					}
 				}
 			}
 		}
+	}
 #endif
 #ifdef OFFCHANNEL_SCAN_FEATURE
-		RfIC = (WMODE_CAP_5G(pMbss->wdev.PhyMode)) ? RFIC_5GHZ : RFIC_24GHZ;
-		Rsp.data.operating_ch_info.channel = HcGetChannelByRf(pAd, RfIC);
-		Rsp.data.operating_ch_info.cfg_ht_bw = wlan_config_get_ht_bw(&pAd->ApCfg.MBSSID[MAIN_MBSSID].wdev);
-		Rsp.data.operating_ch_info.cfg_vht_bw = wlan_config_get_vht_bw(&pAd->ApCfg.MBSSID[MAIN_MBSSID].wdev);
-		Rsp.data.operating_ch_info.RDDurRegion = pAd->CommonCfg.RDDurRegion;
-		Rsp.data.operating_ch_info.region = GetCountryRegionFromCountryCode(pAd->CommonCfg.CountryCode);
+	RfIC = (WMODE_CAP_5G(pMbss->wdev.PhyMode)) ? RFIC_5GHZ : RFIC_24GHZ;
+	Rsp.data.operating_ch_info.channel = HcGetChannelByRf(pAd, RfIC);
+	Rsp.data.operating_ch_info.cfg_ht_bw =
+		wlan_config_get_ht_bw(&pAd->ApCfg.MBSSID[MAIN_MBSSID].wdev);
+	Rsp.data.operating_ch_info.cfg_vht_bw =
+		wlan_config_get_vht_bw(&pAd->ApCfg.MBSSID[MAIN_MBSSID].wdev);
+	Rsp.data.operating_ch_info.RDDurRegion = pAd->CommonCfg.RDDurRegion;
+	Rsp.data.operating_ch_info.region =
+		GetCountryRegionFromCountryCode(pAd->CommonCfg.CountryCode);
 #ifdef ONDEMAND_DFS
-		Rsp.data.operating_ch_info.is4x4Mode = IS_ONDEMAND_DFS_MODE_4x4(pAd);
+	Rsp.data.operating_ch_info.is4x4Mode = IS_ONDEMAND_DFS_MODE_4x4(pAd);
 #else
-		Rsp.data.operating_ch_info.is4x4Mode = 1;
+	Rsp.data.operating_ch_info.is4x4Mode = 1;
 #endif
-		RtmpOSWrielessEventSend(
-				pAd->net_dev,
-				RT_WLAN_EVENT_CUSTOM,
-				OID_OFFCHANNEL_INFO,
-				NULL,
-				(UCHAR *) &Rsp,
+	RtmpOSWrielessEventSend(pAd->net_dev, RT_WLAN_EVENT_CUSTOM,
+				OID_OFFCHANNEL_INFO, NULL, (UCHAR *)&Rsp,
 				sizeof(OFFCHANNEL_SCAN_MSG));
 #endif
+end:
+	pAd->CommonCfg.set_ch_async_flag = FALSE;
+	if (pAd->CommonCfg.iwpriv_event_flag) {
+		RTMP_OS_COMPLETE(&pAd->CommonCfg.set_ch_aync_done);
+		BandIdx = HcGetBandByWdev(wdev);
+		pAutoChCtrl = HcGetAutoChCtrlbyBandIdx(pAd, BandIdx);
+		if (pAutoChCtrl)
+			pAutoChCtrl->AutoChSelCtrl.AutoChScanStatMachine
+				.CurrState = AUTO_CH_SEL_SCAN_IDLE;
+	}
 	return 0;
 }
 
 #endif /* CONFIG_AP_SUPPORT */
-
-
-
 
 /*
     ==========================================================================
@@ -476,12 +561,12 @@ NTSTATUS Dot11HCntDownTimeoutAction(PRTMP_ADAPTER pAd, PCmdQElmt CMDQelmt)
 	TRUE if all parameters are OK, FALSE otherwise
     ==========================================================================
 */
-INT	Set_CSPeriod_Proc(
-	IN	PRTMP_ADAPTER	pAd,
-	IN	RTMP_STRING * arg)
+INT Set_CSPeriod_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 {
-	pAd->Dot11_H[0].CSPeriod = (USHORT) os_str_tol(arg, 0, 10);
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE, ("Set_CSPeriod_Proc::(CSPeriod=%d)\n", pAd->Dot11_H[0].CSPeriod));
+	pAd->Dot11_H[0].CSPeriod = (USHORT)os_str_tol(arg, 0, 10);
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE,
+		 ("Set_CSPeriod_Proc::(CSPeriod=%d)\n",
+		  pAd->Dot11_H[0].CSPeriod));
 	return TRUE;
 }
 
@@ -502,18 +587,15 @@ INT	Set_CSPeriod_Proc(
 	       1.) iwpriv ra0 set ChMovTime=[value]
     ==========================================================================
 */
-INT Set_ChMovingTime_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * arg)
+INT Set_ChMovingTime_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 {
 	USHORT Value;
-	Value = (USHORT) os_str_tol(arg, 0, 10);
+	Value = (USHORT)os_str_tol(arg, 0, 10);
 	pAd->Dot11_H[0].ChMovingTime = Value;
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE, ("%s: %d\n", __func__,
-			 pAd->Dot11_H[0].ChMovingTime));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE,
+		 ("%s: %d\n", __func__, pAd->Dot11_H[0].ChMovingTime));
 	return TRUE;
 }
-
 
 /*
     ==========================================================================
@@ -531,14 +613,13 @@ INT Set_ChMovingTime_Proc(
 	       1.) iwpriv ra0 set ChMovTime=[value]
     ==========================================================================
 */
-INT Set_BlockChReset_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * arg)
+INT Set_BlockChReset_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 {
 	INT i;
 	UCHAR BandIdx;
 	CHANNEL_CTRL *pChCtrl;
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE, ("%s: Reset channel block status.\n", __func__));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_TRACE,
+		 ("%s: Reset channel block status.\n", __func__));
 
 	for (BandIdx = 0; BandIdx < DBDC_BAND_NUM; BandIdx++) {
 		pChCtrl = hc_get_channel_ctrl(pAd->hdev_ctrl, BandIdx);
@@ -559,7 +640,8 @@ INT Set_BlockChReset_Proc(
     return:
     ==========================================================================
  */
-VOID UpdateDot11hForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, BOOLEAN attach)
+VOID UpdateDot11hForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			 BOOLEAN attach)
 {
 	UCHAR bandIdx = 0;
 
@@ -569,12 +651,14 @@ VOID UpdateDot11hForWdev(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, BOOLEAN attac
 			wdev->pDot11_H = &pAd->Dot11_H[bandIdx];
 		} else {
 			MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s(): no wdev!\n", __func__));
+				 ("%s(): no wdev!\n", __func__));
 		}
 	} else {
 		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s(): Detach wdev=%d_Dot11_H!\n", __func__, wdev->wdev_idx));
+			 ("%s(): Detach wdev=%d_Dot11_H!\n", __func__,
+			  wdev->wdev_idx));
 		wdev->pDot11_H = NULL;
+		wdev->csa_count = 0;
 	}
 }
 
@@ -586,18 +670,21 @@ INT Set_RadarMinLPN_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	if (u2MinLpnUpdate <= PB_SIZE) {
 		pAd->CommonCfg.DfsParameter.u2FCC_LPN_MIN = u2MinLpnUpdate;
 		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					("%s():LPN Update %d \n", __func__, pAd->CommonCfg.DfsParameter.u2FCC_LPN_MIN));
+			 ("%s():LPN Update %d \n", __func__,
+			  pAd->CommonCfg.DfsParameter.u2FCC_LPN_MIN));
 		MtCmdSetFcc5MinLPN(pAd, u2MinLpnUpdate);
 	} else {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					("%s():Invalid LPN value %d, please set in range 0 to %d\n", __func__, u2MinLpnUpdate, PB_SIZE));
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s():Invalid LPN value %d, please set in range 0 to %d\n",
+			 __func__, u2MinLpnUpdate, PB_SIZE));
 	}
 	return TRUE;
 }
 
 INT Set_RadarThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 {
-	CMD_RDM_RADAR_THRESHOLD_UPDATE_T RadarThreshold = {0};
+	CMD_RDM_RADAR_THRESHOLD_UPDATE_T RadarThreshold = { 0 };
 	PSW_RADAR_TYPE_T prRadarType = NULL;
 	INT32 i4Recv = 0;
 	UINT32 u2RadarType = 0;
@@ -609,33 +696,41 @@ INT Set_RadarThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	UINT32 u4RT_PRI_MIN = 0, u4RT_PRI_MAX = 0;
 	PDFS_RADAR_THRESHOLD_PARAM prRadarThresholdParam = NULL;
 
-	prRadarThresholdParam = &pAd->CommonCfg.DfsParameter.rRadarThresholdParam;
+	prRadarThresholdParam =
+		&pAd->CommonCfg.DfsParameter.rRadarThresholdParam;
 
 	if (arg) {
-		i4Recv = sscanf(arg, "%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d",
-						&u2RadarType, &ucRT_ENB, &ucRT_STGR, &ucRT_CRPN_MIN,
-						&ucRT_CRPN_MAX, &ucRT_CRPR_MIN, &ucRT_PW_MIN, &ucRT_PW_MAX,
-						&u4RT_PRI_MIN, &u4RT_PRI_MAX, &ucRT_CRBN_MIN, &ucRT_CRBN_MAX,
-						&ucRT_STGPN_MIN, &ucRT_STGPN_MAX, &ucRT_STGPR_MIN);
+		i4Recv = sscanf(arg,
+				"%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d",
+				&u2RadarType, &ucRT_ENB, &ucRT_STGR,
+				&ucRT_CRPN_MIN, &ucRT_CRPN_MAX, &ucRT_CRPR_MIN,
+				&ucRT_PW_MIN, &ucRT_PW_MAX, &u4RT_PRI_MIN,
+				&u4RT_PRI_MAX, &ucRT_CRBN_MIN, &ucRT_CRBN_MAX,
+				&ucRT_STGPN_MIN, &ucRT_STGPN_MAX,
+				&ucRT_STGPR_MIN);
 
 		if (i4Recv != 15) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						("Format Error! Please enter in the following format\n"
-						"RadarType-RT_ENB-RT_STGR-RT_CRPN_MIN-RT_CRPN_MAX-RT_CRPR_MIN-RT_PW_MIN-RT_PW_MAX-"
-						"RT_PRI_MIN-RT_PRI_MAX-RT_CRBN_MIN-RT_CRBN_MAX-RT_STGPN_MIN-RT_STGPN_MAX-RT_STGPR_MIN\n"));
+			MTWF_LOG(
+				DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("Format Error! Please enter in the following format\n"
+				 "RadarType-RT_ENB-RT_STGR-RT_CRPN_MIN-RT_CRPN_MAX-RT_CRPR_MIN-RT_PW_MIN-RT_PW_MAX-"
+				 "RT_PRI_MIN-RT_PRI_MAX-RT_CRBN_MIN-RT_CRBN_MAX-RT_STGPN_MIN-RT_STGPN_MAX-RT_STGPR_MIN\n"));
 			return TRUE;
 		}
 		if (u2RadarType > RT_NUM) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						("Radar Type invalid!! Only 0 to %d supported\n", RT_NUM));
+			MTWF_LOG(
+				DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("Radar Type invalid!! Only 0 to %d supported\n",
+				 RT_NUM));
 			return TRUE;
 		}
 
-		memset(&RadarThreshold, 0, sizeof(CMD_RDM_RADAR_THRESHOLD_UPDATE_T));
+		memset(&RadarThreshold, 0,
+		       sizeof(CMD_RDM_RADAR_THRESHOLD_UPDATE_T));
 		RadarThreshold.u2RadarType = u2RadarType;
-		RadarThreshold.ucRT_ENB  = ucRT_ENB;
+		RadarThreshold.ucRT_ENB = ucRT_ENB;
 		RadarThreshold.ucRT_STGR = ucRT_STGR;
-		RadarThreshold.ucRT_CRPN_MIN =  ucRT_CRPN_MIN;
+		RadarThreshold.ucRT_CRPN_MIN = ucRT_CRPN_MIN;
 		RadarThreshold.ucRT_CRPN_MAX = ucRT_CRPN_MAX;
 		RadarThreshold.ucRT_CRPR_MIN = ucRT_CRPR_MIN;
 		RadarThreshold.ucRT_PW_MIN = ucRT_PW_MIN;
@@ -648,17 +743,26 @@ INT Set_RadarThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		RadarThreshold.ucRT_STGPN_MAX = ucRT_STGPN_MAX;
 		RadarThreshold.ucRT_STGPR_MIN = ucRT_STGPR_MIN;
 
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 			("%s():RadarType = %d\n RT_ENB = %d\n RT_STGR = %d\n "
-			"RT_CRPN_MIN = %d\n RT_CRPN_MAX = %d\n RT_CRPR_MIN = %d\n "
-			"RT_PW_MIN = %d\n RT_PW_MAX =%d\n RT_PRI_MIN = %d\n "
-			"RT_PRI_MAX = %d\n RT_CRBN_MIN = %d\n RT_CRBN_MAX = %d\n"
-			"RT_STGPN_MIN = %d\n RT_STGPN_MAX = %d\n RT_STGPR_MIN = %d\n ",
-			__func__, RadarThreshold.u2RadarType, RadarThreshold.ucRT_ENB, RadarThreshold.ucRT_STGR,
-			RadarThreshold.ucRT_CRPN_MIN, RadarThreshold.ucRT_CRPN_MAX, RadarThreshold.ucRT_CRPR_MIN,
-			RadarThreshold.ucRT_PW_MIN, RadarThreshold.ucRT_PW_MAX, RadarThreshold.u4RT_PRI_MIN,
-			RadarThreshold.u4RT_PRI_MAX, RadarThreshold.ucRT_CRBN_MIN, RadarThreshold.ucRT_CRBN_MAX,
-			RadarThreshold.ucRT_STGPN_MIN, RadarThreshold.ucRT_STGPN_MAX, RadarThreshold.ucRT_STGPR_MIN));
+			 "RT_CRPN_MIN = %d\n RT_CRPN_MAX = %d\n RT_CRPR_MIN = %d\n "
+			 "RT_PW_MIN = %d\n RT_PW_MAX =%d\n RT_PRI_MIN = %d\n "
+			 "RT_PRI_MAX = %d\n RT_CRBN_MIN = %d\n RT_CRBN_MAX = %d\n"
+			 "RT_STGPN_MIN = %d\n RT_STGPN_MAX = %d\n RT_STGPR_MIN = %d\n ",
+			 __func__, RadarThreshold.u2RadarType,
+			 RadarThreshold.ucRT_ENB, RadarThreshold.ucRT_STGR,
+			 RadarThreshold.ucRT_CRPN_MIN,
+			 RadarThreshold.ucRT_CRPN_MAX,
+			 RadarThreshold.ucRT_CRPR_MIN,
+			 RadarThreshold.ucRT_PW_MIN, RadarThreshold.ucRT_PW_MAX,
+			 RadarThreshold.u4RT_PRI_MIN,
+			 RadarThreshold.u4RT_PRI_MAX,
+			 RadarThreshold.ucRT_CRBN_MIN,
+			 RadarThreshold.ucRT_CRBN_MAX,
+			 RadarThreshold.ucRT_STGPN_MIN,
+			 RadarThreshold.ucRT_STGPN_MAX,
+			 RadarThreshold.ucRT_STGPR_MIN));
 
 		prRadarType = &prRadarThresholdParam->arRadarType[u2RadarType];
 		prRadarType->ucRT_ENB = RadarThreshold.ucRT_ENB;
@@ -680,7 +784,6 @@ INT Set_RadarThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	}
 
 	return TRUE;
-
 }
 INT Set_RadarPulseThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 {
@@ -688,18 +791,19 @@ INT Set_RadarPulseThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	UINT32 u4PulseWidthMax = 0, u4PRIMinSTGR = 0, u4PRIMaxSTGR = 0;
 	UINT32 u4PRIMinCR = 0, u4PRIMaxCR = 0;
 	PDFS_PULSE_THRESHOLD_PARAM prPulseThresholdParam = NULL;
-	CMD_RDM_PULSE_THRESHOLD_UPDATE_T PulseThresholdUpdate = {0};
+	CMD_RDM_PULSE_THRESHOLD_UPDATE_T PulseThresholdUpdate = { 0 };
 
 	if (arg) {
-		i4Recv = sscanf(arg, "%d-%d-%d-%d-%d-%d-%d",
-							&u4PulseWidthMax, &i4PulsePwrMax, &i4PulsePwrMin,
-							&u4PRIMinSTGR, &u4PRIMaxSTGR, &u4PRIMinCR, &u4PRIMaxCR);
+		i4Recv = sscanf(arg, "%d-%d-%d-%d-%d-%d-%d", &u4PulseWidthMax,
+				&i4PulsePwrMax, &i4PulsePwrMin, &u4PRIMinSTGR,
+				&u4PRIMaxSTGR, &u4PRIMinCR, &u4PRIMaxCR);
 
 		if (i4Recv != 7) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			MTWF_LOG(
+				DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 				("Format Error! Please enter in the following format\n"
-					"MaxPulseWidth-MaxPulsePower-MinPulsePower-"
-					"MinPRISTGR-MaxPRISTGR-MinPRICR-MaxPRICR\n"));
+				 "MaxPulseWidth-MaxPulsePower-MinPulsePower-"
+				 "MinPRISTGR-MaxPRISTGR-MinPRICR-MaxPRICR\n"));
 			return TRUE;
 		}
 
@@ -711,15 +815,21 @@ INT Set_RadarPulseThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		PulseThresholdUpdate.u4PRI_MIN_CR = u4PRIMinCR;
 		PulseThresholdUpdate.u4PRI_MAX_CR = u4PRIMaxCR;
 
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					("%s():MaxPulseWidth = %d\nMaxPulsePower = %d\nMinPulsePower = %d\n"
-					"MinPRISTGR = %d\nMaxPRISTGR = %d\nMinPRICR = %d\nMaxPRICR = %d\n",
-					__func__, PulseThresholdUpdate.u4PP_PulseWidthMAX, PulseThresholdUpdate.i4PulsePowerMAX,
-					PulseThresholdUpdate.i4PulsePowerMIN, PulseThresholdUpdate.u4PRI_MIN_STGR,
-					PulseThresholdUpdate.u4PRI_MAX_STGR, PulseThresholdUpdate.u4PRI_MAX_STGR,
-					PulseThresholdUpdate.u4PRI_MAX_CR));
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s():MaxPulseWidth = %d\nMaxPulsePower = %d\nMinPulsePower = %d\n"
+			 "MinPRISTGR = %d\nMaxPRISTGR = %d\nMinPRICR = %d\nMaxPRICR = %d\n",
+			 __func__, PulseThresholdUpdate.u4PP_PulseWidthMAX,
+			 PulseThresholdUpdate.i4PulsePowerMAX,
+			 PulseThresholdUpdate.i4PulsePowerMIN,
+			 PulseThresholdUpdate.u4PRI_MIN_STGR,
+			 PulseThresholdUpdate.u4PRI_MAX_STGR,
+			 PulseThresholdUpdate.u4PRI_MAX_STGR,
+			 PulseThresholdUpdate.u4PRI_MAX_CR));
 
-		prPulseThresholdParam = &pAd->CommonCfg.DfsParameter.rRadarThresholdParam.rPulseThresholdParam;
+		prPulseThresholdParam =
+			&pAd->CommonCfg.DfsParameter.rRadarThresholdParam
+				 .rPulseThresholdParam;
 
 		prPulseThresholdParam->u4PulseWidthMax = u4PulseWidthMax;
 		prPulseThresholdParam->i4PulsePwrMax = i4PulsePwrMax;
@@ -733,7 +843,6 @@ INT Set_RadarPulseThresholdParam_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	}
 
 	return TRUE;
-
 }
 
 INT Set_RadarDbgLogConfig_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
@@ -745,12 +854,14 @@ INT Set_RadarDbgLogConfig_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	PDFS_PARAM pDfsParam = &pAd->CommonCfg.DfsParameter;
 
 	if (arg) {
-		i4Recv = sscanf(arg, "%d-%d-%d", &ucHwRDDLogEnable, &ucSwRDDLogEnable, &ucSwRDDLogCond);
+		i4Recv = sscanf(arg, "%d-%d-%d", &ucHwRDDLogEnable,
+				&ucSwRDDLogEnable, &ucSwRDDLogCond);
 
 		if (i4Recv != 3) {
-			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			MTWF_LOG(
+				DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 				("Format Error! Please enter in the following format\n"
-					"HWRDD_LOG_ENB-SWRDD_LOG_ENB-SWRDD_LOG_COND\n"));
+				 "HWRDD_LOG_ENB-SWRDD_LOG_ENB-SWRDD_LOG_COND\n"));
 			return TRUE;
 		}
 
@@ -767,81 +878,91 @@ INT Set_RadarDbgLogConfig_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		else
 			pDfsParam->fgSwRDDLogCond = TRUE;
 
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 			("%s():HWRDD_LOG_ENB = %d, SWRDD_LOG_ENB = %d SWRDD_LOG_COND = %d \n",
-				__func__, pDfsParam->fgHwRDDLogEnable, pDfsParam->fgSwRDDLogEnable, pDfsParam->fgSwRDDLogCond));
+			 __func__, pDfsParam->fgHwRDDLogEnable,
+			 pDfsParam->fgSwRDDLogEnable,
+			 pDfsParam->fgSwRDDLogCond));
 
-		MtCmdSetRddLogConfigUpdate(pAd, ucHwRDDLogEnable, ucSwRDDLogEnable, ucSwRDDLogCond);
+		MtCmdSetRddLogConfigUpdate(pAd, ucHwRDDLogEnable,
+					   ucSwRDDLogEnable, ucSwRDDLogCond);
 	}
 
 	return TRUE;
-
 }
 
-INT Show_Radar_Threshold_Param_Proc(
-	PRTMP_ADAPTER pAd,
-	RTMP_STRING *arg)
+INT Show_Radar_Threshold_Param_Proc(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 {
 	UINT8 ucRadarTypeIdx = 0;
 	PDFS_RADAR_THRESHOLD_PARAM prRadarThresholdParam = NULL;
 	PSW_RADAR_TYPE_T prRadarType = NULL;
 
-	prRadarThresholdParam = &pAd->CommonCfg.DfsParameter.rRadarThresholdParam;
+	prRadarThresholdParam =
+		&pAd->CommonCfg.DfsParameter.rRadarThresholdParam;
 
+	MTWF_LOG(
+		DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		("---------------------------------Debug Log Conditions---------------------------------------\n"));
+	MTWF_LOG(
+		DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		("HWRDD_LOG_ENB = %d\nSWRDD_LOG_ENB = %d\nSWRDD_LOG_COND = %d\n",
+		 pAd->CommonCfg.DfsParameter.fgHwRDDLogEnable,
+		 pAd->CommonCfg.DfsParameter.fgSwRDDLogEnable,
+		 pAd->CommonCfg.DfsParameter.fgSwRDDLogCond));
+	MTWF_LOG(
+		DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		("-------------------------------Pulse Threshold Parameters-----------------------------------\n"));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
-				("---------------------------------Debug Log Conditions---------------------------------------\n"));
+		 ("FCC5_LPN = %d\n",
+		  pAd->CommonCfg.DfsParameter.u2FCC_LPN_MIN));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
-				("HWRDD_LOG_ENB = %d\nSWRDD_LOG_ENB = %d\nSWRDD_LOG_COND = %d\n",
-					pAd->CommonCfg.DfsParameter.fgHwRDDLogEnable,
-					pAd->CommonCfg.DfsParameter.fgSwRDDLogEnable,
-					pAd->CommonCfg.DfsParameter.fgSwRDDLogCond));
+		 ("PLS_POWER_MIN = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.i4PulsePwrMin));
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
-				("-------------------------------Pulse Threshold Parameters-----------------------------------\n"));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("FCC5_LPN = %d\n",
-					pAd->CommonCfg.DfsParameter.u2FCC_LPN_MIN));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("PLS_POWER_MIN = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.i4PulsePwrMin));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("PLS_POWER_MAX = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.i4PulsePwrMax));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("SP_PW_MAX = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.u4PulseWidthMax));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("PRI_MIN_STGR = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.u4PRI_MIN_STGR));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("PRI_MAX_STGR = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.u4PRI_MAX_STGR));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("PRI_MIN_CR = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.u4PRI_MIN_CR));
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF, ("PRI_MAX_CR = %d\n",
-														prRadarThresholdParam->rPulseThresholdParam.u4PRI_MAX_CR));
+		 ("PLS_POWER_MAX = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.i4PulsePwrMax));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		 ("SP_PW_MAX = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.u4PulseWidthMax));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		 ("PRI_MIN_STGR = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.u4PRI_MIN_STGR));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		 ("PRI_MAX_STGR = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.u4PRI_MAX_STGR));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		 ("PRI_MIN_CR = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.u4PRI_MIN_CR));
+	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		 ("PRI_MAX_CR = %d\n",
+		  prRadarThresholdParam->rPulseThresholdParam.u4PRI_MAX_CR));
 
-	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
-				("---------------------------------RADAR Threshold Info---------------------------------------\n"));
+	MTWF_LOG(
+		DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+		("---------------------------------RADAR Threshold Info---------------------------------------\n"));
 
 	for (ucRadarTypeIdx = 0; ucRadarTypeIdx < RT_NUM; ucRadarTypeIdx++) {
-		prRadarType = &prRadarThresholdParam->arRadarType[ucRadarTypeIdx];
+		prRadarType =
+			&prRadarThresholdParam->arRadarType[ucRadarTypeIdx];
 
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
-				("RT - %d: ENB = %d, STGR = %d, CRPN_MIN = %d, CRPN_MAX = %d, CRPR_MIN = %d, PW_MIN = %d, PW_MAX = %d,"
-					"PRI_MIN = %d, PRI_MAX = %d, CRBN_MIN = %d, CRBN_MAX = %d\n\t"
-					"STGPN_MIN = %d, STGPN_MAX = %d, STGPR_MIN = %d\n",
-							ucRadarTypeIdx,
-							prRadarType->ucRT_ENB,
-							prRadarType->ucRT_STGR,
-							prRadarType->ucRT_CRPN_MIN,
-							prRadarType->ucRT_CRPN_MAX,
-							prRadarType->ucRT_CRPR_MIN,
-							prRadarType->ucRT_PW_MIN,
-							prRadarType->ucRT_PW_MAX,
-							prRadarType->u4RT_PRI_MIN,
-							prRadarType->u4RT_PRI_MAX,
-							prRadarType->ucRT_CRBN_MIN,
-							prRadarType->ucRT_CRBN_MAX,
-							prRadarType->ucRT_STGPN_MIN,
-							prRadarType->ucRT_STGPN_MAX,
-							prRadarType->ucRT_STGPR_MIN
-							));
+		MTWF_LOG(
+			DBG_CAT_PROTO, CATPROTO_DFS, DBG_LVL_OFF,
+			("RT - %d: ENB = %d, STGR = %d, CRPN_MIN = %d, CRPN_MAX = %d, CRPR_MIN = %d, PW_MIN = %d, PW_MAX = %d,"
+			 "PRI_MIN = %d, PRI_MAX = %d, CRBN_MIN = %d, CRBN_MAX = %d\n\t"
+			 "STGPN_MIN = %d, STGPN_MAX = %d, STGPR_MIN = %d\n",
+			 ucRadarTypeIdx, prRadarType->ucRT_ENB,
+			 prRadarType->ucRT_STGR, prRadarType->ucRT_CRPN_MIN,
+			 prRadarType->ucRT_CRPN_MAX, prRadarType->ucRT_CRPR_MIN,
+			 prRadarType->ucRT_PW_MIN, prRadarType->ucRT_PW_MAX,
+			 prRadarType->u4RT_PRI_MIN, prRadarType->u4RT_PRI_MAX,
+			 prRadarType->ucRT_CRBN_MIN, prRadarType->ucRT_CRBN_MAX,
+			 prRadarType->ucRT_STGPN_MIN,
+			 prRadarType->ucRT_STGPN_MAX,
+			 prRadarType->ucRT_STGPR_MIN));
 	}
-	MTWF_LOG(DBG_CAT_AP, CATPROTO_DFS, DBG_LVL_OFF,
+	MTWF_LOG(
+		DBG_CAT_AP, CATPROTO_DFS, DBG_LVL_OFF,
 		("---------------------------------------------------------------------------------------------\n"));
 
 	return TRUE;
@@ -853,30 +974,39 @@ INT Show_Radar_Threshold_Param_Proc(
 INT Set_RadarTestPulsePattern_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 {
 	INT32 i4Recv = 0;
-	CHAR    *pcPulseParams = 0;
+	CHAR *pcPulseParams = 0;
 	UINT32 u4PulseNum = 0;
 
-	CMD_RDM_TEST_RADAR_PATTERN_T PulsePattern = {0};
+	CMD_RDM_TEST_RADAR_PATTERN_T PulsePattern = { 0 };
 	PPERIODIC_PULSE_BUFFER_T prPulseBuffer = NULL;
 	/*
 	 Ex: 29151901-28-748;29153127-29-760;29154352-29-748;29155577-28-760;29156652-29-751
 	*/
 	if (arg) {
-		for (u4PulseNum = 0, pcPulseParams = rstrtok(arg, ";"); (pcPulseParams != NULL) && (u4PulseNum < PB_SIZE); pcPulseParams = rstrtok(NULL, ";"), u4PulseNum++) {
+		for (u4PulseNum = 0, pcPulseParams = rstrtok(arg, ";");
+		     (pcPulseParams != NULL) && (u4PulseNum < PB_SIZE);
+		     pcPulseParams = rstrtok(NULL, ";"), u4PulseNum++) {
 			prPulseBuffer = &PulsePattern.arPulseBuffer[u4PulseNum];
 
-			i4Recv = sscanf(pcPulseParams, "%d-%hu-%hi", &(prPulseBuffer->u4PeriodicStartTime), &(prPulseBuffer->u2PeriodicPulseWidth), &(prPulseBuffer->i2PeriodicPulsePower));
+			i4Recv = sscanf(pcPulseParams, "%d-%hu-%hi",
+					&(prPulseBuffer->u4PeriodicStartTime),
+					&(prPulseBuffer->u2PeriodicPulseWidth),
+					&(prPulseBuffer->i2PeriodicPulsePower));
 
 			if (i4Recv != 3) {
-				MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						("Format Error! Please enter in the following format\n"
-							"StartTime0-PulseWidth0-PulsePower0;StartTime1-PulseWidth1-PulsePower1;...\n"));
+				MTWF_LOG(
+					DBG_CAT_CFG, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("Format Error! Please enter in the following format\n"
+					 "StartTime0-PulseWidth0-PulsePower0;StartTime1-PulseWidth1-PulsePower1;...\n"));
 				return TRUE;
 			}
 		}
 
 		PulsePattern.ucPulseNum = u4PulseNum;
-		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s:No of pulses = %d\n", __func__, PulsePattern.ucPulseNum));
+		MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s:No of pulses = %d\n", __func__,
+			  PulsePattern.ucPulseNum));
 		MtCmdSetTestRadarPattern(pAd, &PulsePattern);
 	}
 

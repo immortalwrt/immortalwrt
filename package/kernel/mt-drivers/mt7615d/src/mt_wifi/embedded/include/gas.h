@@ -31,6 +31,13 @@
 
 #define GAS_MACHINE_BASE 0
 
+#ifdef DPP_SUPPORT
+#define GAS_OUI_Index 5
+#define GAS_WFA_DPP_Subtype_Index 8
+#define GAS_WFA_DPP_Length_Index 1
+#define GAS_WFA_DPP_Min_Length 5
+#endif /* DPP_SUPPORT */
+
 /* gas states */
 enum GAS_STATE {
 	WAIT_GAS_REQ,
@@ -77,7 +84,6 @@ enum {
 	EMERGENCY_NAI = 271,
 	ACCESS_NETWORK_QUERY_PROTO_VENDOR_SPECIFIC_LIST = 56797,
 };
-
 
 #define GAS_FUNC_SIZE (MAX_GAS_STATE * MAX_GAS_MSG)
 
@@ -133,7 +139,6 @@ typedef struct GNU_PACKED _GAS_EVENT_DATA {
 	UCHAR PeerMACAddr[MAC_ADDR_LEN];
 	UINT16 EventType;
 	union {
-
 #ifdef CONFIG_AP_SUPPORT
 		struct {
 			UCHAR DialogToken;
@@ -169,55 +174,40 @@ typedef struct GNU_PACKED _GAS_EVENT_DATA {
 	} u;
 } GAS_EVENT_DATA, *PGAS_EVENT_DATA;
 
-VOID GASStateMachineInit(
-	IN	PRTMP_ADAPTER		pAd,
-	IN	STATE_MACHINE * S,
-	OUT	STATE_MACHINE_FUNC	Trans[]);
+VOID GASStateMachineInit(IN PRTMP_ADAPTER pAd, IN STATE_MACHINE *S,
+			 OUT STATE_MACHINE_FUNC Trans[]);
 
-enum GAS_STATE GASPeerCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+enum GAS_STATE GASPeerCurrentState(IN PRTMP_ADAPTER pAd,
+				   IN MLME_QUEUE_ELEM *Elem);
 
-VOID GASSetPeerCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	/* IN MLME_QUEUE_ELEM *Elem, */
-	PGAS_EVENT_DATA Event,
-	IN enum GAS_STATE State);
+VOID GASSetPeerCurrentState(IN PRTMP_ADAPTER pAd,
+			    /* IN MLME_QUEUE_ELEM *Elem, */
+			    PGAS_EVENT_DATA Event, IN enum GAS_STATE State);
 
-VOID SendGASRsp(
-	IN PRTMP_ADAPTER    pAd,
-	GAS_EVENT_DATA *Event);
+VOID SendGASRsp(IN PRTMP_ADAPTER pAd, GAS_EVENT_DATA *Event);
 
 VOID GASCtrlExit(IN PRTMP_ADAPTER pAd);
-
 
 #ifdef CONFIG_AP_SUPPORT
 DECLARE_TIMER_FUNCTION(PostReplyTimeout);
 DECLARE_TIMER_FUNCTION(GASRspBufferingTimeout);
 
 void SendAnqpReqEvent(PNET_DEV net_dev, const char *peer_mac_addr,
-					  const char *anqp_req, UINT16 anqp_req_len);
+		      const char *anqp_req, UINT16 anqp_req_len);
 
 void SendLocationElementEvent(PNET_DEV net_dev, const char *location_buf,
-							  UINT16 location_buf_len, UINT16 info_id);
+			      UINT16 location_buf_len, UINT16 info_id);
 
-VOID ReceiveGASInitReq(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
-
-VOID ReceiveGASCBReq(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+VOID ReceiveGASInitReq(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
+#ifdef DPP_SUPPORT
+VOID DPP_ReceiveGASInitRsp(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
+#endif /* DPP_SUPPORT */
+VOID ReceiveGASCBReq(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 #endif /* CONFIG_AP_SUPPORT */
 
-INT Send_ANQP_Rsp(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING * PeerMACAddr,
-	IN RTMP_STRING * ANQPRsp,
-	IN UINT32 ANQPRspLen);
+INT Send_ANQP_Rsp(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *PeerMACAddr,
+		  IN RTMP_STRING *ANQPRsp, IN UINT32 ANQPRspLen);
 
-BOOLEAN GasEnable(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem);
+BOOLEAN GasEnable(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem);
 
 #endif /* __GAS_H__ */

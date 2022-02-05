@@ -20,7 +20,7 @@
 *
 */
 static INT raw_notify_chain_register(struct notify_entry **nl,
-			struct notify_entry *n)
+				     struct notify_entry *n)
 {
 	while ((*nl) != NULL) {
 		/*re-register*/
@@ -40,7 +40,7 @@ static INT raw_notify_chain_register(struct notify_entry **nl,
 *
 */
 static INT raw_notify_chain_unregister(struct notify_entry **nl,
-			struct notify_entry *n)
+				       struct notify_entry *n)
 {
 	while ((*nl) != NULL) {
 		if ((*nl) == n) {
@@ -55,8 +55,7 @@ static INT raw_notify_chain_unregister(struct notify_entry **nl,
 /*
 *
 */
-static INT raw_notify_call_chain(struct notify_entry **nl,
-			INT val, VOID *v)
+static INT raw_notify_call_chain(struct notify_entry **nl, INT val, VOID *v)
 {
 	INT ret = NOTIFY_STAT_DONE;
 	struct notify_entry *entry;
@@ -91,7 +90,8 @@ INT mt_notify_chain_register(struct notify_head *nh, struct notify_entry *entry)
 /*
 *
 */
-INT mt_notify_chain_unregister(struct notify_head *nh, struct notify_entry *entry)
+INT mt_notify_chain_unregister(struct notify_head *nh,
+			       struct notify_entry *entry)
 {
 	INT ret;
 
@@ -111,4 +111,3 @@ INT mt_notify_call_chain(struct notify_head *nh, INT val, VOID *v)
 	ret = raw_notify_call_chain(&nh->head, val, v);
 	return ret;
 }
-

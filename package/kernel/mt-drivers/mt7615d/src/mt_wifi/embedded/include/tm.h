@@ -40,10 +40,11 @@ enum task_type {
  * @schedule_task_on: schedule task to coressponding tm and specific cpu according to task type
  */
 struct tm_ops {
-	INT(*init)(struct _RTMP_ADAPTER *pAd);
-	INT(*exit)(struct _RTMP_ADAPTER *pAd);
-	INT(*schedule_task)(struct _RTMP_ADAPTER *pAd, enum task_type type);
-	INT(*schedule_task_on)(struct _RTMP_ADAPTER *pAd, INT cpu, enum task_type type);
+	INT (*init)(struct _RTMP_ADAPTER *pAd);
+	INT (*exit)(struct _RTMP_ADAPTER *pAd);
+	INT (*schedule_task)(struct _RTMP_ADAPTER *pAd, enum task_type type);
+	INT(*schedule_task_on)
+	(struct _RTMP_ADAPTER *pAd, INT cpu, enum task_type type);
 } ____cacheline_aligned;
 
 INT tm_init(struct _RTMP_ADAPTER *pAd);

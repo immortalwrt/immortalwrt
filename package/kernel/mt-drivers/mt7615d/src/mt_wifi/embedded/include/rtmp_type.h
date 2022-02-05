@@ -30,12 +30,9 @@
 #ifndef __RTMP_TYPE_H__
 #define __RTMP_TYPE_H__
 
-
-
 #ifndef GNU_PACKED
-#define GNU_PACKED  __attribute__ ((packed))
+#define GNU_PACKED __attribute__((packed))
 #endif /* GNU_PACKED */
-
 
 #ifdef LINUX
 /* Put platform dependent declaration here */
@@ -82,13 +79,13 @@ typedef unsigned char BOOLEAN;
 typedef void VOID;
 #endif /* LINUX */
 
-typedef VOID * PVOID;
-typedef CHAR * PCHAR;
-typedef UCHAR * PUCHAR;
-typedef USHORT * PUSHORT;
-typedef LONG * PLONG;
-typedef ULONG * PULONG;
-typedef UINT * PUINT;
+typedef VOID *PVOID;
+typedef CHAR *PCHAR;
+typedef UCHAR *PUCHAR;
+typedef USHORT *PUSHORT;
+typedef LONG *PLONG;
+typedef ULONG *PULONG;
+typedef UINT *PUINT;
 
 typedef unsigned int NDIS_MEDIA_STATE;
 
@@ -104,7 +101,6 @@ typedef union _LARGE_INTEGER {
 	} u;
 	INT64 QuadPart;
 } LARGE_INTEGER;
-
 
 /* Register set pair for initialzation register set definition */
 typedef struct _RTMP_REG_PAIR {
@@ -136,16 +132,14 @@ typedef struct _REG_PAIR_BW {
 	UCHAR Value;
 } REG_PAIR_BW, *PREG_PAIR_BW;
 
-
 typedef struct _REG_PAIR_PHY {
 	UCHAR reg;
 	UCHAR s_ch;
 	UCHAR e_ch;
-	UCHAR phy;	/* RF_MODE_XXX */
-	UCHAR bw;	/* RF_BW_XX */
+	UCHAR phy; /* RF_MODE_XXX */
+	UCHAR bw; /* RF_BW_XX */
 	UCHAR val;
 } REG_PAIR_PHY;
-
 
 /* Register set pair for initialzation register set definition */
 typedef struct _RTMP_RF_REGS {
@@ -165,8 +159,8 @@ typedef struct _FREQUENCY_ITEM {
 
 typedef int NTSTATUS;
 
-#define STATUS_SUCCESS			0x00
-#define STATUS_UNSUCCESSFUL	0x01
+#define STATUS_SUCCESS 0x00
+#define STATUS_UNSUCCESSFUL 0x01
 
 typedef struct _QUEUE_ENTRY {
 	struct _QUEUE_ENTRY *Next;
@@ -191,7 +185,6 @@ typedef struct _BANK_RF_CR_REG {
 	UCHAR offset;
 	UCHAR value;
 } BANK_RF_CR_REG, *PBANK_RF_CR_REG;
-
 
 typedef struct _BANK_RF_REG_PAIR {
 	UCHAR Bank;
@@ -219,4 +212,3 @@ struct mt_dev_priv {
 	UCHAR sniffer_mode;
 };
 #endif /* __RTMP_TYPE_H__ */
-

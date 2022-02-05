@@ -20,7 +20,6 @@
 #include "rt_config.h"
 #endif
 
-
 INT mt_ate_mac_cr_restore(RTMP_ADAPTER *pAd)
 {
 	/* Data frame protection CR recover */
@@ -31,13 +30,13 @@ INT mt_ate_mac_cr_restore(RTMP_ADAPTER *pAd)
 	return 0;
 }
 
-
 INT mt_ate_mac_cr_backup_and_set(RTMP_ADAPTER *pAd)
 {
 	struct _ATE_CTRL *ATECtrl = &pAd->ATECtrl;
 	UINT32 val = 0;
 
-	NdisZeroMemory(&ATECtrl->bk_cr, sizeof(struct _TESTMODE_BK_CR)*MAX_TEST_BKCR_NUM);
+	NdisZeroMemory(&ATECtrl->bk_cr,
+		       sizeof(struct _TESTMODE_BK_CR) * MAX_TEST_BKCR_NUM);
 	/* Enable data frame protection for test mode */
 	MtTestModeBkCr(pAd, AGG_PCR, TEST_MAC_BKCR);
 	MAC_IO_READ32(pAd, AGG_PCR, &val);

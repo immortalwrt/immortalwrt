@@ -47,7 +47,6 @@
 #include "rt_os_util.h"
 #include "rt_os_net.h"
 
-
 /* --------------------------------- Public -------------------------------- */
 NET_DEV_STATS *RT28xx_get_ether_stats(PNET_DEV net_dev);
 
@@ -75,15 +74,14 @@ VOID RT28xx_MBSS_Init(VOID *pAd, PNET_DEV pDevMain)
 	RTMP_OS_NETDEV_OP_HOOK netDevHook;
 
 	NdisZeroMemory(&netDevHook, sizeof(netDevHook));
-	netDevHook.open = mbss_virtual_if_open;		/* device opem hook point */
-	netDevHook.stop = mbss_virtual_if_close;	/* device close hook point */
-	netDevHook.xmit = rt28xx_send_packets;	/* hard transmit hook point */
-	netDevHook.ioctl = rt28xx_ioctl;	/* ioctl hook point */
+	netDevHook.open = mbss_virtual_if_open; /* device opem hook point */
+	netDevHook.stop = mbss_virtual_if_close; /* device close hook point */
+	netDevHook.xmit = rt28xx_send_packets; /* hard transmit hook point */
+	netDevHook.ioctl = rt28xx_ioctl; /* ioctl hook point */
 	netDevHook.get_stats = RT28xx_get_ether_stats;
-	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_MBSS_INIT,
-						0, &netDevHook, 0);
+	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_MBSS_INIT, 0,
+			    &netDevHook, 0);
 }
-
 
 /*
 ========================================================================
@@ -103,10 +101,9 @@ Note:
 */
 VOID RT28xx_MBSS_Remove(VOID *pAd)
 {
-	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_MBSS_REMOVE, 0, NULL, 0);
+	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_MBSS_REMOVE, 0, NULL,
+			    0);
 }
-
-
 
 /* --------------------------------- Private -------------------------------- */
 /*
@@ -128,8 +125,8 @@ INT mbss_virtual_if_open(PNET_DEV pDev)
 {
 	VOID *pAd;
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: ===> %s\n",
-		RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: ===> %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 
@@ -145,7 +142,6 @@ INT mbss_virtual_if_open(PNET_DEV pDev)
 	RTMP_OS_NETDEV_START_QUEUE(pDev);
 	return 0;
 }
-
 
 /*
 ========================================================================
@@ -166,8 +162,8 @@ INT mbss_virtual_if_close(PNET_DEV pDev)
 {
 	VOID *pAd;
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: ===> %s\n",
-		RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("%s: ===> %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 
@@ -183,4 +179,3 @@ INT mbss_virtual_if_close(PNET_DEV pDev)
 }
 
 #endif /* MBSS_SUPPORT */
-

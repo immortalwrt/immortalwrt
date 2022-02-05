@@ -1,4 +1,4 @@
- /***************************************************************************
+/***************************************************************************
  * MediaTek Inc.
  * 4F, No. 2 Technology 5th Rd.
  * Science-based Industrial Park
@@ -41,10 +41,7 @@ enum ht_protection {
 	NONHT_MM_PROTECT = 3
 };
 
-enum peer_state {
-	PEER_JOIN = 0,
-	PEER_LEAVE
-};
+enum peer_state { PEER_JOIN = 0, PEER_LEAVE };
 
 enum protection {
 	/* 11n */
@@ -66,7 +63,7 @@ enum protection {
 	_END_PROTECT
 };
 
-#define SET_PROTECT(x)  (1 << (x))
+#define SET_PROTECT(x) (1 << (x))
 
 #ifdef CONFIG_AP_SUPPORT
 
