@@ -34,7 +34,6 @@ INT NICLoadRomPatch(RTMP_ADAPTER *ad)
 	return ret;
 }
 
-
 INT NICLoadFirmware(RTMP_ADAPTER *ad)
 {
 	int ret = NDIS_STATUS_SUCCESS;
@@ -51,7 +50,6 @@ VOID NICRestartFirmware(RTMP_ADAPTER *ad)
 	ret = mt_restart_fw(ad);
 }
 
-
 INT FwdlHookInit(RTMP_ADAPTER *pAd)
 {
 	int ret = NDIS_STATUS_SUCCESS;
@@ -59,5 +57,4 @@ INT FwdlHookInit(RTMP_ADAPTER *pAd)
 	ret = mt_fwdl_hook_init(pAd);
 
 	return ret;
-
 }

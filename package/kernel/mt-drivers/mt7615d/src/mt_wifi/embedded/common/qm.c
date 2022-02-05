@@ -30,20 +30,22 @@ VOID amsdu_history_exec(PVOID SystemSpecific1, PVOID FunctionContext,
 		tr_entry = &pAd->MacTab.tr_entry[i];
 
 		if (!IS_ENTRY_NONE(tr_entry)) {
-			tr_entry->amsdu_1_rec[pAd->dbg_time_slot] = tr_entry->amsdu_1;
+			tr_entry->amsdu_1_rec[pAd->dbg_time_slot] =
+				tr_entry->amsdu_1;
 			tr_entry->amsdu_1 = 0;
-			tr_entry->amsdu_2_rec[pAd->dbg_time_slot] = tr_entry->amsdu_2;
+			tr_entry->amsdu_2_rec[pAd->dbg_time_slot] =
+				tr_entry->amsdu_2;
 			tr_entry->amsdu_2 = 0;
-			tr_entry->amsdu_3_rec[pAd->dbg_time_slot] = tr_entry->amsdu_3;
+			tr_entry->amsdu_3_rec[pAd->dbg_time_slot] =
+				tr_entry->amsdu_3;
 			tr_entry->amsdu_3 = 0;
-			tr_entry->amsdu_4_rec[pAd->dbg_time_slot] = tr_entry->amsdu_4;
+			tr_entry->amsdu_4_rec[pAd->dbg_time_slot] =
+				tr_entry->amsdu_4;
 			tr_entry->amsdu_4 = 0;
-
 		}
 	}
 	pAd->dbg_time_slot++;
 	pAd->dbg_time_slot = pAd->dbg_time_slot % TIME_SLOT_NUMS;
-
 }
 BUILD_TIMER_FUNCTION(amsdu_history_exec);
 #endif
@@ -69,8 +71,8 @@ static INT ge_sta_clean_queue(RTMP_ADAPTER *pAd, UCHAR wcid)
 		if (wcid < MAX_LEN_OF_TR_TABLE)
 			wcid_start = wcid_end = wcid;
 		else {
-			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s():Invalid WCID[%d]\n",
-					 __func__, wcid));
+			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("%s():Invalid WCID[%d]\n", __func__, wcid));
 			return FALSE;
 		}
 	}
@@ -93,14 +95,17 @@ static INT ge_sta_clean_queue(RTMP_ADAPTER *pAd, UCHAR wcid)
 				frame_count++;
 #endif
 				if (pPacket)
-					RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+					RELEASE_NDIS_PACKET(
+						pAd, pPacket,
+						NDIS_STATUS_FAILURE);
 			}
 #ifdef FQ_SCH_SUPPORT
-			if ((frame_count > 0) && (pAd->fq_ctrl.enable & FQ_READY)) {
+			if ((frame_count > 0) &&
+			    (pAd->fq_ctrl.enable & FQ_READY)) {
 				pfq_sta = &tr_entry->fq_sta_rec;
 				RTMP_SEM_LOCK(&pfq_sta->lock[idx]);
 				if ((tr_entry->tx_queue[idx].Number == 0) &&
-					(pfq_sta->status[idx] == FQ_IN_LIST_STA)) {
+				    (pfq_sta->status[idx] == FQ_IN_LIST_STA)) {
 					pfq_sta->status[idx] = FQ_UN_CLEAN_STA;
 					need_clean = 1;
 				}
@@ -122,7 +127,8 @@ static INT ge_sta_clean_queue(RTMP_ADAPTER *pAd, UCHAR wcid)
 			pPacket = QUEUE_ENTRY_TO_PACKET(pEntry);
 
 			if (pPacket)
-				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
+				RELEASE_NDIS_PACKET(pAd, pPacket,
+						    NDIS_STATUS_FAILURE);
 		}
 
 		RTMP_IRQ_UNLOCK(&tr_entry->ps_queue_lock, IrqFlags);
@@ -154,7 +160,8 @@ static INT ge_qm_exit(RTMP_ADAPTER *pAd)
 #endif
 
 #ifdef CONFIG_TX_DELAY
-	RTMPReleaseTimer(&pAd->tr_ctl.tx_delay_ctl.que_agg_timer, &que_agg_timer_cancelled);
+	RTMPReleaseTimer(&pAd->tr_ctl.tx_delay_ctl.que_agg_timer,
+			 &que_agg_timer_cancelled);
 #endif
 
 	RTMP_SEM_LOCK(&pAd->mgmt_que_lock);
@@ -196,7 +203,8 @@ static INT ge_qm_exit(RTMP_ADAPTER *pAd)
 	return ret;
 }
 
-static INT ge_enq_mgmtq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET pkt)
+static INT ge_enq_mgmtq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			    PNDIS_PACKET pkt)
 {
 	struct qm_ops *qm_ops = pAd->qm_ops;
 
@@ -221,7 +229,8 @@ error:
 	return NDIS_STATUS_FAILURE;
 }
 
-static INT ge_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET pkt, UCHAR q_idx)
+static INT ge_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			    PNDIS_PACKET pkt, UCHAR q_idx)
 {
 	UCHAR wcid = RTMP_GET_PACKET_WCID(pkt);
 	STA_TR_ENTRY *tr_entry = &pAd->MacTab.tr_entry[wcid];
@@ -236,26 +245,34 @@ static INT ge_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACK
 
 	if (!RTMP_GET_PACKET_HIGH_PRIO(pkt)) {
 		if ((arch_ops->archRedMarkPktDrop) && (pAd->red_en))
-			drop_packet = arch_ops->archRedMarkPktDrop(wcid, q_idx, pAd);
+			drop_packet =
+				arch_ops->archRedMarkPktDrop(wcid, q_idx, pAd);
 		if (drop_packet == FALSE) {
 			if (pAd->TxSwQueue[q_idx].Number >= pAd->TxSwQMaxLen) {
-				RELEASE_NDIS_PACKET(pAd, pkt, NDIS_STATUS_FAILURE);
-				if ((arch_ops->archRedEnqueueFail) && (pAd->red_en))
-					arch_ops->archRedEnqueueFail(wcid, q_idx, pAd);
+				RELEASE_NDIS_PACKET(pAd, pkt,
+						    NDIS_STATUS_FAILURE);
+				if ((arch_ops->archRedEnqueueFail) &&
+				    (pAd->red_en))
+					arch_ops->archRedEnqueueFail(
+						wcid, q_idx, pAd);
 				qm_ops->schedule_tx_que(pAd);
 
 				return NDIS_STATUS_FAILURE;
 			} else {
 #ifdef FQ_SCH_SUPPORT
 				if (pAd->fq_ctrl.enable & FQ_READY)
-					ret = fq_enq_req(pAd, pkt, q_idx, tr_entry, NULL);
+					ret = fq_enq_req(pAd, pkt, q_idx,
+							 tr_entry, NULL);
 				else
 #endif
-					ret = ge_enq_req(pAd, pkt, q_idx, tr_entry, NULL);
+					ret = ge_enq_req(pAd, pkt, q_idx,
+							 tr_entry, NULL);
 				if (ret != TRUE) {
-					RELEASE_NDIS_PACKET(pAd, pkt, NDIS_STATUS_FAILURE);
+					RELEASE_NDIS_PACKET(
+						pAd, pkt, NDIS_STATUS_FAILURE);
 					if (arch_ops->archRedEnqueueFail)
-						arch_ops->archRedEnqueueFail(wcid, q_idx, pAd);
+						arch_ops->archRedEnqueueFail(
+							wcid, q_idx, pAd);
 					qm_ops->schedule_tx_que(pAd);
 
 					return NDIS_STATUS_FAILURE;
@@ -272,10 +289,10 @@ static INT ge_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACK
 			RELEASE_NDIS_PACKET(pAd, pkt, NDIS_STATUS_FAILURE);
 			RTMP_SEM_UNLOCK(&pAd->high_prio_que_lock);
 			return NDIS_STATUS_FAILURE;
-
 		}
 
-		InsertTailQueue(&pAd->high_prio_que, PACKET_TO_QUEUE_ENTRY(pkt));
+		InsertTailQueue(&pAd->high_prio_que,
+				PACKET_TO_QUEUE_ENTRY(pkt));
 		RTMP_SEM_UNLOCK(&pAd->high_prio_que_lock);
 		if ((arch_ops->archRedRecordCP) && (pAd->red_en))
 			arch_ops->archRedRecordCP(wcid, pAd);
@@ -286,7 +303,8 @@ static INT ge_enq_dataq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACK
 	return NDIS_STATUS_SUCCESS;
 }
 
-static INT ge_enq_psq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, STA_TR_ENTRY *tr_entry, PNDIS_PACKET pkt)
+static INT ge_enq_psq_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+			  STA_TR_ENTRY *tr_entry, PNDIS_PACKET pkt)
 {
 	QUEUE_HEADER *pkt_que = &tr_entry->ps_queue;
 
@@ -313,14 +331,15 @@ static INT ge_schedule_tx_que(RTMP_ADAPTER *pAd)
 	}
 
 	if ((deq_wcid != 0) || (pAd->mgmt_que.Number > 0) ||
-		(pAd->high_prio_que.Number > 0)) {
+	    (pAd->high_prio_que.Number > 0)) {
 		tm_ops->schedule_task(pAd, TX_DEQ_TASK);
 	}
 
 	return NDIS_STATUS_SUCCESS;
 }
 
-static BOOLEAN is_amsdu_frame(RTMP_ADAPTER *pAd, NDIS_PACKET *pkt, TX_BLK *pTxBlk)
+static BOOLEAN is_amsdu_frame(RTMP_ADAPTER *pAd, NDIS_PACKET *pkt,
+			      TX_BLK *pTxBlk)
 {
 	int minLen = LENGTH_802_3;
 	int wcid = RTMP_GET_PACKET_WCID(pkt);
@@ -328,13 +347,9 @@ static BOOLEAN is_amsdu_frame(RTMP_ADAPTER *pAd, NDIS_PACKET *pkt, TX_BLK *pTxBl
 	if (IS_ENTRY_MCAST(&pAd->MacTab.Content[wcid]))
 		return FALSE;
 
-	if (RTMP_GET_PACKET_DHCP(pkt) ||
-		RTMP_GET_PACKET_ARP(pkt) ||
-		RTMP_GET_PACKET_EAPOL(pkt) ||
-		RTMP_GET_PACKET_PING(pkt) ||
-		RTMP_GET_PACKET_WAI(pkt) ||
-		RTMP_GET_PACKET_TDLS_MMPDU(pkt)
-	   )
+	if (RTMP_GET_PACKET_DHCP(pkt) || RTMP_GET_PACKET_ARP(pkt) ||
+	    RTMP_GET_PACKET_EAPOL(pkt) || RTMP_GET_PACKET_PING(pkt) ||
+	    RTMP_GET_PACKET_WAI(pkt) || RTMP_GET_PACKET_TDLS_MMPDU(pkt))
 		return FALSE;
 
 	/* Make sure the first packet has non-zero-length data payload */
@@ -349,7 +364,8 @@ static BOOLEAN is_amsdu_frame(RTMP_ADAPTER *pAd, NDIS_PACKET *pkt, TX_BLK *pTxBl
 	return TRUE;
 }
 
-static VOID ge_sta_dump_queue(RTMP_ADAPTER *pAd, UCHAR wcid, enum PACKET_TYPE pkt_type, UCHAR qidx)
+static VOID ge_sta_dump_queue(RTMP_ADAPTER *pAd, UCHAR wcid,
+			      enum PACKET_TYPE pkt_type, UCHAR qidx)
 {
 	unsigned long IrqFlags;
 	QUEUE_ENTRY *entry;
@@ -358,17 +374,19 @@ static VOID ge_sta_dump_queue(RTMP_ADAPTER *pAd, UCHAR wcid, enum PACKET_TYPE pk
 
 	if (tr_entry == NULL) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%s():Invalid entry(%p) or qidx(%d)\n",
-				  __func__, tr_entry, qidx));
+			 ("%s():Invalid entry(%p) or qidx(%d)\n", __func__,
+			  tr_entry, qidx));
 		return;
 	}
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump TxQ[%d] of TR_ENTRY(ID:%d,\
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\nDump TxQ[%d] of TR_ENTRY(ID:%d,\
 				MAC:%02x:%02x:%02x:%02x:%02x:%02x),\
 				enq_cap = %d, ps_state = %s\n",
-				qidx, tr_entry->wcid, PRINT_MAC(tr_entry->Addr),
-				tr_entry->enq_cap,
-				tr_entry->ps_state == PWR_ACTIVE ? "PWR_ACTIVE" : "PWR_SAVE"));
+		  qidx, tr_entry->wcid, PRINT_MAC(tr_entry->Addr),
+		  tr_entry->enq_cap,
+		  tr_entry->ps_state == PWR_ACTIVE ? "PWR_ACTIVE" :
+							   "PWR_SAVE"));
 
 	if (pkt_type == TX_DATA) {
 		switch (qidx) {
@@ -379,28 +397,36 @@ static VOID ge_sta_dump_queue(RTMP_ADAPTER *pAd, UCHAR wcid, enum PACKET_TYPE pk
 			RTMP_IRQ_LOCK(&tr_entry->txq_lock[qidx], IrqFlags);
 			entry = tr_entry->tx_queue[qidx].Head;
 
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump Entry %s\n",
-					entry == NULL ? "Empty" : "HasEntry"));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("\nDump Entry %s\n",
+				  entry == NULL ? "Empty" : "HasEntry"));
 
 			while (entry != NULL) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, (" 0x%p ", entry));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF, (" 0x%p ", entry));
 				cnt++;
 				entry = entry->Next;
 
 				if (entry == NULL)
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));
+					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+						 DBG_LVL_OFF, ("\n"));
 
 				if (cnt > tr_entry->tx_queue[qidx].Number) {
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
-						  __func__, qidx, tr_entry->tx_queue[qidx].Number));
+					MTWF_LOG(
+						DBG_CAT_ALL, DBG_SUBCAT_ALL,
+						DBG_LVL_OFF,
+						("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
+						 __func__, qidx,
+						 tr_entry->tx_queue[qidx]
+							 .Number));
 				}
 			};
 
 			RTMP_IRQ_UNLOCK(&tr_entry->txq_lock[qidx], IrqFlags);
 			break;
 		default:
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("unknown q_idx = %d\n", qidx));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("unknown q_idx = %d\n", qidx));
 			break;
 		}
 	} else if (pkt_type == TX_DATA_PS) {
@@ -408,71 +434,86 @@ static VOID ge_sta_dump_queue(RTMP_ADAPTER *pAd, UCHAR wcid, enum PACKET_TYPE pk
 
 		entry = tr_entry->ps_queue.Head;
 
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump Entry %s\n",
-				entry == NULL ? "Empty" : "HasEntry"));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\nDump Entry %s\n",
+			  entry == NULL ? "Empty" : "HasEntry"));
 
 		while (entry != NULL) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, (" 0x%p ", entry));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 (" 0x%p ", entry));
 			cnt++;
 			entry = entry->Next;
 
 			if (entry == NULL)
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF, ("\n"));
 
 			if (cnt > tr_entry->ps_queue.Number) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
-						  __func__, qidx, tr_entry->ps_queue.Number));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_OFF,
+					("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
+					 __func__, qidx,
+					 tr_entry->ps_queue.Number));
 			}
 		};
 
 		RTMP_SEM_UNLOCK(&tr_entry->ps_queue_lock);
 	} else if (pkt_type == TX_DATA_HIGH_PRIO) {
-
 		RTMP_SEM_LOCK(&pAd->high_prio_que_lock);
 
 		entry = pAd->high_prio_que.Head;
 
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump Entry %s\n",
-				entry == NULL ? "Empty" : "HasEntry"));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\nDump Entry %s\n",
+			  entry == NULL ? "Empty" : "HasEntry"));
 
 		while (entry != NULL) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, (" 0x%p ", entry));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 (" 0x%p ", entry));
 			cnt++;
 			entry = entry->Next;
 
 			if (entry == NULL)
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF, ("\n"));
 
 			if (cnt > pAd->high_prio_que.Number) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
-						  __func__, qidx, pAd->high_prio_que.Number));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_OFF,
+					("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
+					 __func__, qidx,
+					 pAd->high_prio_que.Number));
 			}
 		};
 
 		RTMP_SEM_UNLOCK(&pAd->high_prio_que_lock);
 
 	} else if (pkt_type == TX_MGMT) {
-
 		RTMP_SEM_LOCK(&pAd->mgmt_que_lock);
 		entry = pAd->mgmt_que.Head;
 
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump Entry %s\n",
-				entry == NULL ? "Empty" : "HasEntry"));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\nDump Entry %s\n",
+			  entry == NULL ? "Empty" : "HasEntry"));
 
 		while (entry != NULL) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, (" 0x%p ", entry));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 (" 0x%p ", entry));
 			cnt++;
 			entry = entry->Next;
 
 			if (entry == NULL)
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\n"));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF, ("\n"));
 
 			if (cnt > pAd->mgmt_que.Number) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
-						  __func__, qidx, pAd->mgmt_que.Number));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_OFF,
+					("%s():Buggy here? Queue[%d] entry number(%d) not equal!\n",
+					 __func__, qidx, pAd->mgmt_que.Number));
 			}
 		};
 
@@ -488,7 +529,6 @@ static VOID ge_sta_dump_queue(RTMP_ADAPTER *pAd, UCHAR wcid, enum PACKET_TYPE pk
  */
 static INT32 ge_dump_all_sw_queue(RTMP_ADAPTER *pAd)
 {
-
 	QUEUE_ENTRY *entry;
 	INT cnt = 0;
 	INT i, j;
@@ -498,26 +538,31 @@ static INT32 ge_dump_all_sw_queue(RTMP_ADAPTER *pAd)
 	RTMP_SEM_LOCK(&pAd->mgmt_que_lock);
 	entry = pAd->mgmt_que.Head;
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump management queue Entry %s\n",
-			entry == NULL ? "Empty" : "HasEntry"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\nDump management queue Entry %s\n",
+		  entry == NULL ? "Empty" : "HasEntry"));
 
 	while (entry != NULL) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, (" 0x%p ", entry));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 (" 0x%p ", entry));
 		cnt++;
 		entry = entry->Next;
 
 		if (entry == NULL)
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\n"));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("\n"));
 
 		if (cnt > pAd->mgmt_que.Number) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s():Buggy here? entry number(%d) not equal!\n",
-					  __func__, pAd->mgmt_que.Number));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s():Buggy here? entry number(%d) not equal!\n",
+				 __func__, pAd->mgmt_que.Number));
 		}
 	};
 
 	RTMP_SEM_UNLOCK(&pAd->mgmt_que_lock);
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Count of management Entry = %d\n", cnt));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Count of management Entry = %d\n", cnt));
 
 	/* high prority queue */
 	cnt = 0;
@@ -525,26 +570,31 @@ static INT32 ge_dump_all_sw_queue(RTMP_ADAPTER *pAd)
 
 	entry = pAd->high_prio_que.Head;
 
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump high prority queue Entry %s\n",
-			entry == NULL ? "Empty" : "HasEntry"));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("\nDump high prority queue Entry %s\n",
+		  entry == NULL ? "Empty" : "HasEntry"));
 
 	while (entry != NULL) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, (" 0x%p ", entry));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 (" 0x%p ", entry));
 		cnt++;
 		entry = entry->Next;
 
 		if (entry == NULL)
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\n"));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("\n"));
 
 		if (cnt > pAd->high_prio_que.Number) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s():Buggy here? entry number(%d) not equal!\n",
-					  __func__, pAd->high_prio_que.Number));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s():Buggy here? entry number(%d) not equal!\n",
+				 __func__, pAd->high_prio_que.Number));
 		}
 	};
 
 	RTMP_SEM_UNLOCK(&pAd->high_prio_que_lock);
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Count of high prority queue Entry = %d\n", cnt));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("Count of high prority queue Entry = %d\n", cnt));
 
 	/* per sta queue */
 	for (i = 0; VALID_WCID(i); i++) {
@@ -556,68 +606,84 @@ static INT32 ge_dump_all_sw_queue(RTMP_ADAPTER *pAd)
 
 		tr_entry = &pAd->MacTab.tr_entry[i];
 
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump TR_ENTRY(ID:%d,\
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\nDump TR_ENTRY(ID:%d,\
 				MAC:%02x:%02x:%02x:%02x:%02x:%02x),\
 				enq_cap = %d, ps_state = %s\n",
-				tr_entry->wcid, PRINT_MAC(tr_entry->Addr),
-				tr_entry->enq_cap,
-				tr_entry->ps_state == PWR_ACTIVE ? "PWR_ACTIVE" : "PWR_SAVE"));
+			  tr_entry->wcid, PRINT_MAC(tr_entry->Addr),
+			  tr_entry->enq_cap,
+			  tr_entry->ps_state == PWR_ACTIVE ? "PWR_ACTIVE" :
+								   "PWR_SAVE"));
 
 		cnt = 0;
 		RTMP_SEM_LOCK(&tr_entry->ps_queue_lock);
 
 		entry = tr_entry->ps_queue.Head;
 
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump wcid(%d) power saving queue Entry %s\n",
-				i, entry == NULL ? "Empty" : "HasEntry"));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("\nDump wcid(%d) power saving queue Entry %s\n", i,
+			  entry == NULL ? "Empty" : "HasEntry"));
 
 		while (entry != NULL) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, (" 0x%p ", entry));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 (" 0x%p ", entry));
 			cnt++;
 			entry = entry->Next;
 
 			if (entry == NULL)
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\n"));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE, ("\n"));
 
 			if (cnt > tr_entry->ps_queue.Number) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s():Buggy here? entry number(%d) not equal!\n",
-						  __func__, tr_entry->ps_queue.Number));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("%s():Buggy here? entry number(%d) not equal!\n",
+					 __func__, tr_entry->ps_queue.Number));
 			}
 		};
 
 		RTMP_SEM_UNLOCK(&tr_entry->ps_queue_lock);
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Count of wcid(%d) power saving Entry = %d\n", i, cnt));
-
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("Count of wcid(%d) power saving Entry = %d\n", i,
+			  cnt));
 
 		for (j = 0; j < WMM_QUE_NUM; j++) {
 			cnt = 0;
 			RTMP_SEM_LOCK(&tr_entry->txq_lock[j]);
 			entry = tr_entry->tx_queue[j].Head;
 
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("\nDump wcid(%d), qidx(%d) data queue Entry %s\n",
-					i, j, entry == NULL ? "Empty" : "HasEntry"));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("\nDump wcid(%d), qidx(%d) data queue Entry %s\n",
+				 i, j, entry == NULL ? "Empty" : "HasEntry"));
 
 			while (entry != NULL) {
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, (" 0x%p ", entry));
+				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					 DBG_LVL_TRACE, (" 0x%p ", entry));
 				cnt++;
 				entry = entry->Next;
 
 				if (entry == NULL)
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\n"));
+					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE, ("\n"));
 
 				if (cnt > tr_entry->tx_queue[j].Number) {
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						 ("%s():Buggy here? entry number(%d) not equal!\n",
-						  __func__, tr_entry->tx_queue[j].Number));
+					MTWF_LOG(
+						DBG_CAT_ALL, DBG_SUBCAT_ALL,
+						DBG_LVL_ERROR,
+						("%s():Buggy here? entry number(%d) not equal!\n",
+						 __func__,
+						 tr_entry->tx_queue[j].Number));
 				}
 			};
 
 			RTMP_SEM_UNLOCK(&tr_entry->txq_lock[j]);
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Count of wcid(%d), qidx(%d) data Entry = %d\n", i, j, cnt));
-
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("Count of wcid(%d), qidx(%d) data Entry = %d\n",
+				 i, j, cnt));
 		}
-
 	}
 
 	return NDIS_STATUS_SUCCESS;
@@ -632,20 +698,22 @@ VOID ge_tx_swq_dump(RTMP_ADAPTER *pAd, INT qidx)
 	deq_id = pAd->tx_swq[qidx].deqIdx;
 	enq_id = pAd->tx_swq[qidx].enqIdx;
 	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("\nDump TxSwQ[%d]: DeqIdx=%d, EnqIdx=%d, %s\n",
-			  qidx, deq_id, enq_id,
-			  (pAd->tx_swq[qidx].swq[deq_id] == 0 ? "Empty" : "HasEntry")));
+		 ("\nDump TxSwQ[%d]: DeqIdx=%d, EnqIdx=%d, %s\n", qidx, deq_id,
+		  enq_id,
+		  (pAd->tx_swq[qidx].swq[deq_id] == 0 ? "Empty" : "HasEntry")));
 
-	for (; deq_id != enq_id; (deq_id =  (deq_id == (TX_SWQ_FIFO_LEN - 1) ? 0 : deq_id + 1))) {
-		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF, (" %d ", pAd->tx_swq[qidx].swq[deq_id]));
+	for (; deq_id != enq_id;
+	     (deq_id = (deq_id == (TX_SWQ_FIFO_LEN - 1) ? 0 : deq_id + 1))) {
+		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 (" %d ", pAd->tx_swq[qidx].swq[deq_id]));
 		cnt++;
 
 		if (cnt > TX_SWQ_FIFO_LEN) {
-			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-					 ("%s(): Buggy here? force break! deq_id=%d, enq_id=%d\n",
-					  __func__, deq_id, enq_id));
+			MTWF_LOG(
+				DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("%s(): Buggy here? force break! deq_id=%d, enq_id=%d\n",
+				 __func__, deq_id, enq_id));
 		}
-
 	}
 
 	RTMP_IRQ_UNLOCK(&pAd->tx_swq_lock[qidx], IrqFlags);
@@ -672,8 +740,8 @@ inline UINT32 ge_get_swq_free_num(RTMP_ADAPTER *pAd, UINT8 q_idx)
 	enq_idx = fifo_swq->enqIdx;
 	deq_idx = fifo_swq->deqIdx;
 
-	cap_cnt = (enq_idx >= deq_idx) ? (TX_SWQ_FIFO_LEN - enq_idx + deq_idx)
-			: (deq_idx - enq_idx);
+	cap_cnt = (enq_idx >= deq_idx) ? (TX_SWQ_FIFO_LEN - enq_idx + deq_idx) :
+					       (deq_idx - enq_idx);
 
 	return cap_cnt;
 }
@@ -684,26 +752,27 @@ UINT32 ge_check_swq_state(RTMP_ADAPTER *pAd, UINT8 q_idx)
 	UINT swq_free_num = ge_get_swq_free_num(pAd, q_idx);
 
 	if ((swq_state == TX_QUE_HIGH) &&
-		(swq_free_num >= pAd->tx_swq[q_idx].low_water_mark)) {
+	    (swq_free_num >= pAd->tx_swq[q_idx].low_water_mark)) {
 		return TX_QUE_HIGH_TO_HIGH;
 	} else if ((swq_state == TX_QUE_HIGH) &&
-		(swq_free_num < pAd->tx_swq[q_idx].low_water_mark)) {
+		   (swq_free_num < pAd->tx_swq[q_idx].low_water_mark)) {
 		return TX_QUE_HIGH_TO_LOW;
 	} else if ((swq_state == TX_QUE_LOW) &&
-		(swq_free_num > pAd->tx_swq[q_idx].high_water_mark)) {
+		   (swq_free_num > pAd->tx_swq[q_idx].high_water_mark)) {
 		return TX_QUE_LOW_TO_HIGH;
 	} else if ((swq_state == TX_QUE_LOW) &&
-		(swq_free_num <= pAd->tx_swq[q_idx].high_water_mark)) {
+		   (swq_free_num <= pAd->tx_swq[q_idx].high_water_mark)) {
 		return TX_QUE_LOW_TO_LOW;
 	} else {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: unknow state %d, q number = %d",
-		__func__, swq_state, swq_free_num));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: unknow state %d, q number = %d", __func__,
+			  swq_state, swq_free_num));
 		return TX_RING_UNKNOW_CHANGE;
 	}
 }
 
 INT ge_enq_req(RTMP_ADAPTER *pAd, PNDIS_PACKET pkt, UCHAR qidx,
-				 STA_TR_ENTRY *tr_entry, QUEUE_HEADER *pPktQueue)
+	       STA_TR_ENTRY *tr_entry, QUEUE_HEADER *pPktQueue)
 {
 	unsigned long IrqFlags = 0;
 	BOOLEAN enq_done = FALSE;
@@ -715,8 +784,8 @@ INT ge_enq_req(RTMP_ADAPTER *pAd, PNDIS_PACKET pkt, UCHAR qidx,
 	ASSERT((tr_entry->wcid != 0));
 	fifo_swq = &pAd->tx_swq[qidx];
 	RTMP_IRQ_LOCK(&pAd->tx_swq_lock[qidx], IrqFlags);
-	if ((tr_entry->enqCount > SQ_ENQ_NORMAL_MAX)
-		&& (tr_entry->tx_queue[qidx].Number > SQ_ENQ_RESERVE_PERAC)) {
+	if ((tr_entry->enqCount > SQ_ENQ_NORMAL_MAX) &&
+	    (tr_entry->tx_queue[qidx].Number > SQ_ENQ_RESERVE_PERAC)) {
 		occupied_wcid = fifo_swq->swq[enq_idx];
 		enq_done = FALSE;
 		pAd->tr_ctl.tx_sw_q_drop++;
@@ -728,17 +797,19 @@ INT ge_enq_req(RTMP_ADAPTER *pAd, PNDIS_PACKET pkt, UCHAR qidx,
 	if ((fifo_swq->swq[enq_idx] == 0) && (tr_entry->enq_cap)) {
 		RTMP_IRQ_LOCK(&tr_entry->txq_lock[qidx], IrqFlags);
 		InsertTailQueueAc(pAd, tr_entry, &tr_entry->tx_queue[qidx],
-						  PACKET_TO_QUEUE_ENTRY(pkt));
+				  PACKET_TO_QUEUE_ENTRY(pkt));
 
 		RTMP_IRQ_UNLOCK(&tr_entry->txq_lock[qidx], IrqFlags);
 #ifdef MT_SDIO_ADAPTIVE_TC_RESOURCE_CTRL
 #if TC_PAGE_BASED_DEMAND
-		tr_entry->TotalPageCount[qidx] += (INT16)(MTSDIOTxGetPageCount(GET_OS_PKT_LEN(pkt), FALSE));
+		tr_entry->TotalPageCount[qidx] += (INT16)(MTSDIOTxGetPageCount(
+			GET_OS_PKT_LEN(pkt), FALSE));
 #endif /* TC_PAGE_BASED_DEMAND */
 #if DEBUG_ADAPTIVE_QUOTA
-		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: wcid %d q %d pkt len %d TotalPageCount %d\n",
-				 __func__, tr_entry->wcid, qidx, GET_OS_PKT_LEN(pkt),
-				 tr_entry->TotalPageCount[qidx]));
+		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s: wcid %d q %d pkt len %d TotalPageCount %d\n",
+			  __func__, tr_entry->wcid, qidx, GET_OS_PKT_LEN(pkt),
+			  tr_entry->TotalPageCount[qidx]));
 #endif /* DEBUG_ADAPTIVE_QUOTA */
 #endif /* MT_SDIO_ADAPTIVE_TC_RESOURCE_CTRL */
 
@@ -753,8 +824,9 @@ INT ge_enq_req(RTMP_ADAPTER *pAd, PNDIS_PACKET pkt, UCHAR qidx,
 
 		/* Stop device first to avoid drop lots of packets, not execute on WMM case */
 		if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_DYNAMIC_BE_TXOP_ACTIVE) &&
-			!tx_flow_check_state(pAd, NO_ENOUGH_SWQ_SPACE, qidx))
-			tx_flow_set_state_block(pAd, NULL, NO_ENOUGH_SWQ_SPACE, true, qidx);
+		    !tx_flow_check_state(pAd, NO_ENOUGH_SWQ_SPACE, qidx))
+			tx_flow_set_state_block(pAd, NULL, NO_ENOUGH_SWQ_SPACE,
+						true, qidx);
 
 		goto enq_end;
 	}
@@ -762,25 +834,26 @@ INT ge_enq_req(RTMP_ADAPTER *pAd, PNDIS_PACKET pkt, UCHAR qidx,
 enq_end:
 	RTMP_IRQ_UNLOCK(&pAd->tx_swq_lock[qidx], IrqFlags);
 	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s():EnqPkt(%p) for WCID(%d) to tx_swq[%d].swq[%d] %s\n",
-			  __func__, pkt, tr_entry->wcid, qidx, enq_idx,
-			  (enq_done ? "success" : "fail")));
+		 ("%s():EnqPkt(%p) for WCID(%d) to tx_swq[%d].swq[%d] %s\n",
+		  __func__, pkt, tr_entry->wcid, qidx, enq_idx,
+		  (enq_done ? "success" : "fail")));
 
 	if (enq_done == FALSE) {
 #ifdef DBG_DIAGNOSE
 #ifdef DBG_TXQ_DEPTH
-		if ((pAd->DiagStruct.inited) && (pAd->DiagStruct.wcid == tr_entry->wcid))
-			pAd->DiagStruct.diag_info[pAd->DiagStruct.ArrayCurIdx].enq_fall_cnt[qidx]++;
+		if ((pAd->DiagStruct.inited) &&
+		    (pAd->DiagStruct.wcid == tr_entry->wcid))
+			pAd->DiagStruct.diag_info[pAd->DiagStruct.ArrayCurIdx]
+				.enq_fall_cnt[qidx]++;
 #endif
 
 #endif /* DBG_DIAGNOSE */
 		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("\t FailedCause =>OccupiedWCID:%d,EnqCap:%d\n",
-				  occupied_wcid, tr_entry->enq_cap));
+			 ("\t FailedCause =>OccupiedWCID:%d,EnqCap:%d\n",
+			  occupied_wcid, tr_entry->enq_cap));
 	}
 	return enq_done;
 }
-
 
 static INT ge_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info)
 {
@@ -846,7 +919,8 @@ static INT ge_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info)
 			tr_entry = &pAd->MacTab.tr_entry[deq_wcid];
 
 			for (deq_qid = start_q; deq_qid >= end_q; deq_qid--) {
-				if (info->full_qid[deq_qid] == FALSE && tr_entry->tx_queue[deq_qid].Number)
+				if (info->full_qid[deq_qid] == FALSE &&
+				    tr_entry->tx_queue[deq_qid].Number)
 					break;
 			}
 		} else if (info->full_qid[info->target_que] == FALSE)
@@ -880,8 +954,8 @@ static INT ge_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info)
 		else
 #endif
 		{
-		fifo_swq = &pAd->tx_swq[deq_qid];
-		deq_wcid = fifo_swq->swq[fifo_swq->deqIdx];
+			fifo_swq = &pAd->tx_swq[deq_qid];
+			deq_wcid = fifo_swq->swq[fifo_swq->deqIdx];
 			quota = info->q_max_cnt[deq_qid];
 		}
 
@@ -889,7 +963,8 @@ static INT ge_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info)
 
 		if (deq_wcid == 0) {
 			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_LOUD,
-					 ("%s():tx_swq[%d] emtpy!\n", __func__, deq_qid));
+				 ("%s():tx_swq[%d] emtpy!\n", __func__,
+				  deq_qid));
 			info->q_max_cnt[deq_qid] = 0;
 			continue;
 		}
@@ -909,27 +984,27 @@ static INT ge_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info)
 
 done:
 	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s(): DeqReq %s, Start/End/Cur Queue=%d/%d/%d\n",
-			  __func__,
-			  (info->status == NDIS_STATUS_SUCCESS ? "success" : "fail"),
-			  info->start_q, info->end_q, info->cur_q));
+		 ("%s(): DeqReq %s, Start/End/Cur Queue=%d/%d/%d\n", __func__,
+		  (info->status == NDIS_STATUS_SUCCESS ? "success" : "fail"),
+		  info->start_q, info->end_q, info->cur_q));
 
 	if (info->status == NDIS_STATUS_SUCCESS) {
 		tr_entry = &pAd->MacTab.tr_entry[info->cur_wcid];
-		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("\tdeq_info=>wcid:%d, qidx:%d, pkt_cnt:%d, q_max_cnt=%d, QueuedNum=%d\n",
-				  info->cur_wcid, info->cur_q, info->pkt_cnt, info->q_max_cnt[deq_qid],
-				  tr_entry->tx_queue[info->cur_q].Number));
+		MTWF_LOG(
+			DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("\tdeq_info=>wcid:%d, qidx:%d, pkt_cnt:%d, q_max_cnt=%d, QueuedNum=%d\n",
+			 info->cur_wcid, info->cur_q, info->pkt_cnt,
+			 info->q_max_cnt[deq_qid],
+			 tr_entry->tx_queue[info->cur_q].Number));
 	} else {
 		info->status = NDIS_STATUS_FAILURE;
 		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("\tdeq_info=>wcid:%d, qidx:%d, pkt_cnt:%d\n",
-				  info->cur_wcid, info->cur_q, info->pkt_cnt));
+			 ("\tdeq_info=>wcid:%d, qidx:%d, pkt_cnt:%d\n",
+			  info->cur_wcid, info->cur_q, info->pkt_cnt));
 	}
 
 	return TRUE;
 }
-
 
 static INT ge_deq_report(RTMP_ADAPTER *pAd, struct dequeue_info *info)
 {
@@ -937,27 +1012,31 @@ static INT ge_deq_report(RTMP_ADAPTER *pAd, struct dequeue_info *info)
 	struct tx_swq_fifo *fifo_swq;
 	unsigned long IrqFlags = 0;
 
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s():Success DeQ(QId=%d) for WCID(%d), PktCnt=%d, TxSWQDeQ/EnQ ID=%d/%d\n",
-			  __func__, info->cur_q, info->cur_wcid, info->deq_pkt_cnt,
-			  pAd->tx_swq[qidx].deqIdx, pAd->tx_swq[qidx].enqIdx));
+	MTWF_LOG(
+		DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s():Success DeQ(QId=%d) for WCID(%d), PktCnt=%d, TxSWQDeQ/EnQ ID=%d/%d\n",
+		 __func__, info->cur_q, info->cur_wcid, info->deq_pkt_cnt,
+		 pAd->tx_swq[qidx].deqIdx, pAd->tx_swq[qidx].enqIdx));
 
 	if ((qidx < 4) && (tx_cnt > 0)) {
 		RTMP_IRQ_LOCK(&pAd->tx_swq_lock[qidx], IrqFlags);
 		fifo_swq = &pAd->tx_swq[qidx];
 
 		do {
-			if (fifo_swq->swq[fifo_swq->deqIdx]  == info->cur_wcid) {
+			if (fifo_swq->swq[fifo_swq->deqIdx] == info->cur_wcid) {
 				fifo_swq->swq[fifo_swq->deqIdx] = 0;
-				INC_RING_INDEX(fifo_swq->deqIdx, TX_SWQ_FIFO_LEN);
+				INC_RING_INDEX(fifo_swq->deqIdx,
+					       TX_SWQ_FIFO_LEN);
 				tx_cnt--;
 			} else
 				break;
 		} while (tx_cnt != 0);
 
 		if (tx_flow_check_state(pAd, NO_ENOUGH_SWQ_SPACE, qidx) &&
-			ge_get_swq_free_num(pAd, qidx) > pAd->tx_swq[qidx].high_water_mark)
-			tx_flow_set_state_block(pAd, NULL, NO_ENOUGH_SWQ_SPACE, FALSE, qidx);
+		    ge_get_swq_free_num(pAd, qidx) >
+			    pAd->tx_swq[qidx].high_water_mark)
+			tx_flow_set_state_block(pAd, NULL, NO_ENOUGH_SWQ_SPACE,
+						FALSE, qidx);
 
 		RTMP_IRQ_UNLOCK(&pAd->tx_swq_lock[qidx], IrqFlags);
 
@@ -972,15 +1051,17 @@ static INT ge_deq_report(RTMP_ADAPTER *pAd, struct dequeue_info *info)
 	}
 
 	if (qidx < WMM_NUM_OF_AC)
-		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("After DeqReport, tx_swq D/EQIdx=%d/%d, deq_info.q_max_cnt/pkt_cnt=%d/%d\n",
-				  pAd->tx_swq[qidx].deqIdx, pAd->tx_swq[qidx].enqIdx,
-				  info->q_max_cnt[qidx], info->pkt_cnt));
+		MTWF_LOG(
+			DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("After DeqReport, tx_swq D/EQIdx=%d/%d, deq_info.q_max_cnt/pkt_cnt=%d/%d\n",
+			 pAd->tx_swq[qidx].deqIdx, pAd->tx_swq[qidx].enqIdx,
+			 info->q_max_cnt[qidx], info->pkt_cnt));
 	return TRUE;
 }
 
 #define NUM_OF_MSDU_ID_IN_TXD 4
-static BOOLEAN check_amsdu_limit(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, PNDIS_PACKET pkt)
+static BOOLEAN check_amsdu_limit(RTMP_ADAPTER *pAd, TX_BLK *tx_blk,
+				 PNDIS_PACKET pkt)
 {
 	MAC_TABLE_ENTRY *pEntry = tx_blk->pMacEntry;
 
@@ -990,18 +1071,19 @@ static BOOLEAN check_amsdu_limit(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, PNDIS_PACKET
 	 * b. limit by A-MSDU number if amsdu_fix turn on
 	 */
 	if (tx_blk->TotalFrameNum < pAd->amsdu_max_num) {
-
 		if (pAd->amsdu_fix) {
 			if (tx_blk->TotalFrameNum < pAd->amsdu_fix_num)
 				return TRUE;
 		} else {
-
-			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			MTWF_LOG(
+				DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
 				("%s: current total frame len = %d, pkt_len = %d, amsdu_limit_len_adjust = %d\n",
-				 __func__, tx_blk->TotalFrameLen, GET_OS_PKT_LEN(pkt), pEntry->amsdu_limit_len_adjust));
+				 __func__, tx_blk->TotalFrameLen,
+				 GET_OS_PKT_LEN(pkt),
+				 pEntry->amsdu_limit_len_adjust));
 
-			if ((tx_blk->TotalFrameLen + GET_OS_PKT_LEN(pkt))
-				<= pEntry->amsdu_limit_len_adjust)
+			if ((tx_blk->TotalFrameLen + GET_OS_PKT_LEN(pkt)) <=
+			    pEntry->amsdu_limit_len_adjust)
 				return TRUE;
 		}
 	}
@@ -1027,7 +1109,8 @@ static VOID random_write_resource_idx(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 #ifdef CONFIG_TX_DELAY
 DECLARE_TIMER_FUNCTION(que_agg_timeout);
 
-VOID que_agg_timeout(PVOID SystemSpecific1, PVOID FunctionContext, PVOID SystemSpecific2, PVOID SystemSpecific3)
+VOID que_agg_timeout(PVOID SystemSpecific1, PVOID FunctionContext,
+		     PVOID SystemSpecific2, PVOID SystemSpecific3)
 {
 	struct _RTMP_ADAPTER *pAd = (struct _RTMP_ADAPTER *)FunctionContext;
 	struct tx_delay_control *tx_delay_ctl = &pAd->tr_ctl.tx_delay_ctl;
@@ -1041,7 +1124,8 @@ VOID que_agg_timeout(PVOID SystemSpecific1, PVOID FunctionContext, PVOID SystemS
 }
 BUILD_TIMER_FUNCTION(que_agg_timeout);
 
-static BOOLEAN ge_tx_deq_delay(RTMP_ADAPTER *pAd, STA_TR_ENTRY *tr_entry, UCHAR q_idx)
+static BOOLEAN ge_tx_deq_delay(RTMP_ADAPTER *pAd, STA_TR_ENTRY *tr_entry,
+			       UCHAR q_idx)
 {
 	NDIS_PACKET *pkt = NULL;
 	unsigned long flags = 0;
@@ -1056,17 +1140,17 @@ static BOOLEAN ge_tx_deq_delay(RTMP_ADAPTER *pAd, STA_TR_ENTRY *tr_entry, UCHAR 
 
 	RTMP_IRQ_UNLOCK(&tr_entry->txq_lock[q_idx], flags);
 
-	if ((tx_delay_ctl->que_agg_en) &&
-		(que->Number > 0) &&
-		(que->Number < tx_delay_ctl->tx_process_batch_cnt) &&
-		(pkt) &&
-		(GET_OS_PKT_LEN(pkt) >= tx_delay_ctl->min_pkt_len) &&
-		(GET_OS_PKT_LEN(pkt) <= tx_delay_ctl->max_pkt_len) &&
-		(!tx_delay_ctl->force_deq)) {
-
+	if ((tx_delay_ctl->que_agg_en) && (que->Number > 0) &&
+	    (que->Number < tx_delay_ctl->tx_process_batch_cnt) && (pkt) &&
+	    (GET_OS_PKT_LEN(pkt) >= tx_delay_ctl->min_pkt_len) &&
+	    (GET_OS_PKT_LEN(pkt) <= tx_delay_ctl->max_pkt_len) &&
+	    (!tx_delay_ctl->force_deq)) {
 		if (!is_udp_packet(pAd, pkt)) {
 			if (!tx_delay_ctl->que_agg_timer_running) {
-				RTMPSetTimer(&tx_delay_ctl->que_agg_timer, tx_delay_ctl->que_agg_timeout_value / 1000);
+				RTMPSetTimer(
+					&tx_delay_ctl->que_agg_timer,
+					tx_delay_ctl->que_agg_timeout_value /
+						1000);
 				tx_delay_ctl->que_agg_timer_running = TRUE;
 			}
 
@@ -1078,7 +1162,8 @@ static BOOLEAN ge_tx_deq_delay(RTMP_ADAPTER *pAd, STA_TR_ENTRY *tr_entry, UCHAR 
 }
 #endif
 
-INT deq_packet_gatter(RTMP_ADAPTER *pAd, struct dequeue_info *deq_info, TX_BLK *pTxBlk)
+INT deq_packet_gatter(RTMP_ADAPTER *pAd, struct dequeue_info *deq_info,
+		      TX_BLK *pTxBlk)
 {
 	STA_TR_ENTRY *tr_entry;
 	PQUEUE_ENTRY qEntry = NULL;
@@ -1093,8 +1178,9 @@ INT deq_packet_gatter(RTMP_ADAPTER *pAd, struct dequeue_info *deq_info, TX_BLK *
 
 	tr_entry = &pAd->MacTab.tr_entry[wcid];
 
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("-->%s(): deq_info->wcid=%d, qidx=%d!\n",
-			 __func__, wcid, q_idx));
+	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("-->%s(): deq_info->wcid=%d, qidx=%d!\n", __func__, wcid,
+		  q_idx));
 
 #ifdef CONFIG_TX_DELAY
 	if (ge_tx_deq_delay(pAd, tr_entry, q_idx))
@@ -1107,7 +1193,7 @@ INT deq_packet_gatter(RTMP_ADAPTER *pAd, struct dequeue_info *deq_info, TX_BLK *
 
 	do {
 		pQueue = &tr_entry->tx_queue[q_idx];
-dequeue:
+	dequeue:
 		qEntry = pQueue->Head;
 
 		if (qEntry != NULL) {
@@ -1118,17 +1204,27 @@ dequeue:
 
 			if (pTxBlk->TotalFrameNum == 0) {
 				wdev = wdev_search_by_pkt(pAd, pPacket);
-				pTxBlk->resource_idx = arch_ops->get_resource_idx(pAd, wdev, TX_DATA, q_idx);
+				pTxBlk->resource_idx =
+					arch_ops->get_resource_idx(
+						pAd, wdev, TX_DATA, q_idx);
 
 #if defined(VOW_SUPPORT) && defined(VOW_DVT)
-				if (wcid <= (MAX_LEN_OF_MAC_TABLE - HW_BEACON_MAX_NUM)) {
+				if (wcid <= (MAX_LEN_OF_MAC_TABLE -
+					     HW_BEACON_MAX_NUM)) {
 					if (pAd->vow_sta_ac[wcid] != QID_AC_VO)
-						pTxBlk->resource_idx = pAd->vow_sta_ac[wcid]; /* BK/BE/VI */
+						pTxBlk->resource_idx =
+							pAd->vow_sta_ac
+								[wcid]; /* BK/BE/VI */
 					else
-						pTxBlk->resource_idx = HIF_TX_IDX4; /* VO */
+						pTxBlk->resource_idx =
+							HIF_TX_IDX4; /* VO */
 				}
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\x1b[31m%s: wcid %d, ac %d, resource_idx %d\x1b[m\n",
-							__func__, wcid, q_idx, pTxBlk->resource_idx));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("\x1b[31m%s: wcid %d, ac %d, resource_idx %d\x1b[m\n",
+					 __func__, wcid, q_idx,
+					 pTxBlk->resource_idx));
 #endif /* defined(VOW_SUPPORT) && defined(VOW_DVT) */
 
 #ifdef RANDOM_PKT_GEN
@@ -1136,18 +1232,25 @@ dequeue:
 #endif
 			}
 
+			MTWF_LOG(
+				DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				("-->%s(): GetPacket, wcid=%d, deq_pkt_cnt=%d, TotalFrameNum=%d, TotalFrameLen = %d\n",
+				 __func__, wcid, deq_info->deq_pkt_cnt,
+				 pTxBlk->TotalFrameNum, pTxBlk->TotalFrameLen));
 
-			MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-					 ("-->%s(): GetPacket, wcid=%d, deq_pkt_cnt=%d, TotalFrameNum=%d, TotalFrameLen = %d\n",
-					  __func__, wcid, deq_info->deq_pkt_cnt, pTxBlk->TotalFrameNum, pTxBlk->TotalFrameLen));
-
-			pTxBlk->TxFrameType = tx_pkt_classification(pAd, pPacket, pTxBlk);
+			pTxBlk->TxFrameType =
+				tx_pkt_classification(pAd, pPacket, pTxBlk);
 
 			if (pTxBlk->TxFrameType & TX_AMSDU_FRAME) {
 				if (pTxBlk->TotalFrameNum > 0) {
-					if ((!is_amsdu_frame(pAd, pPacket, pTxBlk))
-						|| !check_amsdu_limit(pAd, pTxBlk, pPacket)) {
-						InsertHeadQueue(pQueue, PACKET_TO_QUEUE_ENTRY(pPacket));
+					if ((!is_amsdu_frame(pAd, pPacket,
+							     pTxBlk)) ||
+					    !check_amsdu_limit(pAd, pTxBlk,
+							       pPacket)) {
+						InsertHeadQueue(
+							pQueue,
+							PACKET_TO_QUEUE_ENTRY(
+								pPacket));
 						TR_ENQ_COUNT_INC(tr_entry);
 						goto start_kick;
 					}
@@ -1165,19 +1268,25 @@ dequeue:
 
 			pTxBlk->QueIdx = q_idx;
 
-			ret = arch_ops->check_hw_resource(pAd, wdev, pTxBlk->resource_idx);
+			ret = arch_ops->check_hw_resource(pAd, wdev,
+							  pTxBlk->resource_idx);
 			if (ret == NDIS_STATUS_RESOURCES) {
 				/* if tx ring is full, re-check pdma status */
 				mtd_free_txd(pAd, pTxBlk->resource_idx);
-				ret = arch_ops->check_hw_resource(pAd, wdev, pTxBlk->resource_idx);
+				ret = arch_ops->check_hw_resource(
+					pAd, wdev, pTxBlk->resource_idx);
 				if (!ret)
-					arch_ops->set_resource_state(pAd, pTxBlk->resource_idx, TX_RING_HIGH);
+					arch_ops->set_resource_state(
+						pAd, pTxBlk->resource_idx,
+						TX_RING_HIGH);
 
-				pci_dec_resource_full_cnt(pAd, pTxBlk->resource_idx);
+				pci_dec_resource_full_cnt(pAd,
+							  pTxBlk->resource_idx);
 			}
 
 			if (ret) {
-				InsertHeadQueue(pQueue, PACKET_TO_QUEUE_ENTRY(pPacket));
+				InsertHeadQueue(pQueue,
+						PACKET_TO_QUEUE_ENTRY(pPacket));
 				TR_ENQ_COUNT_INC(tr_entry);
 
 				/*
@@ -1192,12 +1301,17 @@ dequeue:
 
 #ifdef DBG_DIAGNOSE
 
-				if (pAd->DiagStruct.inited && pAd->DiagStruct.wcid == pTxBlk->Wcid) {
+				if (pAd->DiagStruct.inited &&
+				    pAd->DiagStruct.wcid == pTxBlk->Wcid) {
 					struct dbg_diag_info *diag_info;
 
-					diag_info = &pAd->DiagStruct.diag_info[pAd->DiagStruct.ArrayCurIdx];
+					diag_info =
+						&pAd->DiagStruct.diag_info
+							 [pAd->DiagStruct
+								  .ArrayCurIdx];
 #ifdef DBG_TXQ_DEPTH
-					diag_info->deq_fail_no_resource_cnt[QueIdx]++;
+					diag_info->deq_fail_no_resource_cnt
+						[QueIdx]++;
 #endif
 				}
 
@@ -1208,23 +1322,27 @@ dequeue:
 
 			pTxBlk->TotalFrameNum++;
 			/* The real fragment number maybe vary */
-			pTxBlk->TotalFragNum += RTMP_GET_PACKET_FRAGMENTS(pPacket);
+			pTxBlk->TotalFragNum +=
+				RTMP_GET_PACKET_FRAGMENTS(pPacket);
 			pTxBlk->TotalFrameLen += GET_OS_PKT_LEN(pPacket);
 
 			if (pTxBlk->TotalFrameNum == 1) {
 				pTxBlk->pPacket = pPacket;
 				pTxBlk->wdev = wdev;
 				pTxBlk->tr_entry = tr_entry;
-				pTxBlk->HeaderBuf = arch_ops->get_hif_buf(pAd, pTxBlk,
-						pTxBlk->resource_idx, pTxBlk->TxFrameType);
-#if defined(P2P_SUPPORT) || defined(RT_CFG80211_P2P_SUPPORT) || defined(CFG80211_MULTI_STA)
-				pTxBlk->OpMode = RTMP_GET_PACKET_OPMODE(pPacket);
+				pTxBlk->HeaderBuf = arch_ops->get_hif_buf(
+					pAd, pTxBlk, pTxBlk->resource_idx,
+					pTxBlk->TxFrameType);
+#if defined(P2P_SUPPORT) || defined(RT_CFG80211_P2P_SUPPORT) ||                \
+	defined(CFG80211_MULTI_STA)
+				pTxBlk->OpMode =
+					RTMP_GET_PACKET_OPMODE(pPacket);
 #endif /* P2P_SUPPORT || RT_CFG80211_P2P_SUPPORT */
 			}
 
-			InsertTailQueue(&pTxBlk->TxPacketList, PACKET_TO_QUEUE_ENTRY(pPacket));
+			InsertTailQueue(&pTxBlk->TxPacketList,
+					PACKET_TO_QUEUE_ENTRY(pPacket));
 		} else {
-
 			/*
 			 * use to clear wcid of fifo_swq->swq[fifo_swq->deqIdx] to 0,
 			 * that may happen when previos de-queue more than one packet
@@ -1233,20 +1351,22 @@ dequeue:
 #ifdef FQ_SCH_SUPPORT
 				if (!(pAd->fq_ctrl.enable & FQ_READY))
 #endif
-				deq_info->deq_pkt_cnt++;
-				MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						("<--%s():Try deQ a empty Q. pTxBlk.TxPktList.Num=%d, deq_info.pkt_cnt=%d\n",
-						 __func__, pTxBlk->TxPacketList.Number, deq_info->pkt_cnt));
+					deq_info->deq_pkt_cnt++;
+				MTWF_LOG(
+					DBG_CAT_TX, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("<--%s():Try deQ a empty Q. pTxBlk.TxPktList.Num=%d, deq_info.pkt_cnt=%d\n",
+					 __func__, pTxBlk->TxPacketList.Number,
+					 deq_info->pkt_cnt));
 				break;
 			}
 		}
 
-		if ((pTxBlk->TxFrameType & TX_AMSDU_FRAME) &&
-			pQueue->Head) {
+		if ((pTxBlk->TxFrameType & TX_AMSDU_FRAME) && pQueue->Head) {
 			goto dequeue;
 		}
 
-start_kick:
+	start_kick:
 
 		if (pTxBlk->TxFrameType & TX_AMSDU_FRAME) {
 			if (pTxBlk->TxPacketList.Number == 1)
@@ -1263,8 +1383,11 @@ start_kick:
 #endif
 		}
 
-		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("<--%s():pTxBlk.TxPktList.Num=%d, deq_info.pkt_cnt=%d\n",
-				 __func__, pTxBlk->TxPacketList.Number, deq_info->pkt_cnt));
+		MTWF_LOG(
+			DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("<--%s():pTxBlk.TxPktList.Num=%d, deq_info.pkt_cnt=%d\n",
+			 __func__, pTxBlk->TxPacketList.Number,
+			 deq_info->pkt_cnt));
 		break;
 	} while (pTxBlk->TxPacketList.Number < deq_info->pkt_cnt);
 
@@ -1274,7 +1397,6 @@ start_kick:
 		deq_info->deq_pkt_cnt += pTxBlk->TxPacketList.Number;
 
 	return NDIS_STATUS_SUCCESS;
-
 }
 
 static NDIS_PACKET *get_high_prio_pkt(RTMP_ADAPTER *pAd)
@@ -1330,21 +1452,26 @@ static INT32 ge_deq_high_prio_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk)
 
 		if (wcid <= (MAX_LEN_OF_MAC_TABLE - HW_BEACON_MAX_NUM)) {
 			if (pAd->vow_sta_ac[wcid] != QID_AC_VO)
-				tx_blk->resource_idx = pAd->vow_sta_ac[wcid]; /* BK/BE/VI */
+				tx_blk->resource_idx =
+					pAd->vow_sta_ac[wcid]; /* BK/BE/VI */
 			else
 				tx_blk->resource_idx = HIF_TX_IDX4; /* VO */
 		} else
-			tx_blk->resource_idx = arch_ops->get_resource_idx(pAd, wdev, TX_DATA_HIGH_PRIO, tx_blk->QueIdx);
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\x1b[31m%s: QueIdx %d, resource_idx %d\x1b[m\n",
-			__func__, tx_blk->QueIdx, tx_blk->resource_idx));
+			tx_blk->resource_idx = arch_ops->get_resource_idx(
+				pAd, wdev, TX_DATA_HIGH_PRIO, tx_blk->QueIdx);
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("\x1b[31m%s: QueIdx %d, resource_idx %d\x1b[m\n",
+			  __func__, tx_blk->QueIdx, tx_blk->resource_idx));
 #else
 		tx_blk->QueIdx = RTMP_GET_PACKET_QUEIDX(pkt);
-		tx_blk->resource_idx = arch_ops->get_resource_idx(pAd, wdev, TX_DATA_HIGH_PRIO, tx_blk->QueIdx);
+		tx_blk->resource_idx = arch_ops->get_resource_idx(
+			pAd, wdev, TX_DATA_HIGH_PRIO, tx_blk->QueIdx);
 #endif /* defined(VOW_SUPPORT) && defined(VOW_DVT) */
 #ifdef RANDOM_PKT_GEN
 		random_write_resource_idx(pAd, tx_blk);
 #endif
-		ret = arch_ops->check_hw_resource(pAd, wdev, tx_blk->resource_idx);
+		ret = arch_ops->check_hw_resource(pAd, wdev,
+						  tx_blk->resource_idx);
 
 		if (ret) {
 			return NDIS_STATUS_FAILURE;
@@ -1378,15 +1505,18 @@ static INT32 ge_deq_high_prio_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk)
 #endif /*#if defined(VOW_SUPPORT) && defined(VOW_DVT) */
 		tx_blk->TotalFrameLen = GET_OS_PKT_LEN(pkt);
 		tx_blk->pPacket = pkt;
-		tx_blk->TxFrameType = tx_pkt_classification(pAd, tx_blk->pPacket, tx_blk);
-		tx_blk->HeaderBuf = arch_ops->get_hif_buf(pAd, tx_blk, tx_blk->resource_idx, tx_blk->TxFrameType);
+		tx_blk->TxFrameType =
+			tx_pkt_classification(pAd, tx_blk->pPacket, tx_blk);
+		tx_blk->HeaderBuf = arch_ops->get_hif_buf(
+			pAd, tx_blk, tx_blk->resource_idx, tx_blk->TxFrameType);
 #ifdef HW_TX_AMSDU_SUPPORT
 		if (TX_BLK_TEST_FLAG(tx_blk, fTX_HW_AMSDU)) {
-				if (!is_amsdu_frame(pAd, tx_blk->pPacket, tx_blk))
-					TX_BLK_CLEAR_FLAG(tx_blk, fTX_HW_AMSDU);
+			if (!is_amsdu_frame(pAd, tx_blk->pPacket, tx_blk))
+				TX_BLK_CLEAR_FLAG(tx_blk, fTX_HW_AMSDU);
 		}
 #endif /* HW_TX_AMSDU_SUPPORT */
-		InsertTailQueue(&tx_blk->TxPacketList, PACKET_TO_QUEUE_ENTRY(pkt));
+		InsertTailQueue(&tx_blk->TxPacketList,
+				PACKET_TO_QUEUE_ENTRY(pkt));
 
 		break;
 	} while (1);
@@ -1399,7 +1529,8 @@ static INT32 ge_deq_high_prio_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk)
 	return NDIS_STATUS_SUCCESS;
 }
 
-static NDIS_PACKET *ge_get_psq_pkt(RTMP_ADAPTER *pAd, struct _STA_TR_ENTRY *tr_entry)
+static NDIS_PACKET *ge_get_psq_pkt(RTMP_ADAPTER *pAd,
+				   struct _STA_TR_ENTRY *tr_entry)
 {
 	PQUEUE_ENTRY q_entry;
 
@@ -1460,8 +1591,12 @@ static INT32 ge_deq_mgmt_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk)
 
 		wdev = wdev_search_by_pkt(pAd, pkt);
 		wdev_ops = wdev->wdev_ops;
-		tx_blk->resource_idx = arch_ops->get_resource_idx(pAd, wdev, RTMP_GET_PACKET_TYPE(pkt), RTMP_GET_PACKET_QUEIDX(pkt));
-		ret = arch_ops->check_hw_resource(pAd, wdev, tx_blk->resource_idx);
+		tx_blk->resource_idx =
+			arch_ops->get_resource_idx(pAd, wdev,
+						   RTMP_GET_PACKET_TYPE(pkt),
+						   RTMP_GET_PACKET_QUEIDX(pkt));
+		ret = arch_ops->check_hw_resource(pAd, wdev,
+						  tx_blk->resource_idx);
 
 		if (ret) {
 			return NDIS_STATUS_FAILURE;
@@ -1487,15 +1622,18 @@ static INT32 ge_deq_mgmt_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk)
 		tx_blk->QueIdx = RTMP_GET_PACKET_QUEIDX(pkt);
 		tx_blk->TotalFrameLen = GET_OS_PKT_LEN(pkt);
 		tx_blk->pPacket = pkt;
-		tx_blk->TxFrameType = tx_pkt_classification(pAd, tx_blk->pPacket, tx_blk);
-		tx_blk->HeaderBuf = arch_ops->get_hif_buf(pAd, tx_blk, tx_blk->resource_idx, tx_blk->TxFrameType);
+		tx_blk->TxFrameType =
+			tx_pkt_classification(pAd, tx_blk->pPacket, tx_blk);
+		tx_blk->HeaderBuf = arch_ops->get_hif_buf(
+			pAd, tx_blk, tx_blk->resource_idx, tx_blk->TxFrameType);
 #ifdef HW_TX_AMSDU_SUPPORT
 		if (TX_BLK_TEST_FLAG(tx_blk, fTX_HW_AMSDU)) {
-				if (!is_amsdu_frame(pAd, tx_blk->pPacket, tx_blk))
-					TX_BLK_CLEAR_FLAG(tx_blk, fTX_HW_AMSDU);
+			if (!is_amsdu_frame(pAd, tx_blk->pPacket, tx_blk))
+				TX_BLK_CLEAR_FLAG(tx_blk, fTX_HW_AMSDU);
 		}
 #endif /* HW_TX_AMSDU_SUPPORT */
-		InsertTailQueue(&tx_blk->TxPacketList, PACKET_TO_QUEUE_ENTRY(pkt));
+		InsertTailQueue(&tx_blk->TxPacketList,
+				PACKET_TO_QUEUE_ENTRY(pkt));
 
 		break;
 	} while (1);
@@ -1503,7 +1641,8 @@ static INT32 ge_deq_mgmt_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk)
 	return NDIS_STATUS_SUCCESS;
 }
 
-static INT32 ge_deq_data_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, INT32 max_cnt, struct dequeue_info *info)
+static INT32 ge_deq_data_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, INT32 max_cnt,
+			     struct dequeue_info *info)
 {
 	INT ret = NDIS_STATUS_SUCCESS;
 
@@ -1513,7 +1652,11 @@ static INT32 ge_deq_data_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, INT32 max_cnt, s
 	if (info->status == NDIS_STATUS_FAILURE)
 		return NDIS_STATUS_FAILURE;
 
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(): deq_info:cur_wcid=%d, cur_qidx=%d, pkt_cnt=%d, pkt_bytes=%d\n", __func__, info->cur_wcid, info->cur_q, info->pkt_cnt, info->pkt_bytes));
+	MTWF_LOG(
+		DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s(): deq_info:cur_wcid=%d, cur_qidx=%d, pkt_cnt=%d, pkt_bytes=%d\n",
+		 __func__, info->cur_wcid, info->cur_q, info->pkt_cnt,
+		 info->pkt_bytes));
 
 	ret = deq_packet_gatter(pAd, info, tx_blk);
 
@@ -1523,7 +1666,7 @@ static INT32 ge_deq_data_pkt(RTMP_ADAPTER *pAd, TX_BLK *tx_blk, INT32 max_cnt, s
 			fq_del_report(pAd, info);
 		else
 #endif
-		ge_deq_report(pAd, info);
+			ge_deq_report(pAd, info);
 	}
 	return ret;
 }
@@ -1538,7 +1681,7 @@ VOID ge_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 	struct wifi_dev *wdev;
 	struct wifi_dev_ops *wdev_ops;
 	RTMP_ARCH_OP *arch_ops = &pAd->archOps;
-	struct dequeue_info deq_info = {0};
+	struct dequeue_info deq_info = { 0 };
 	INT32 max_cnt = MAX_TX_PROCESS;
 	PKT_TOKEN_CB *pktTokenCb = (PKT_TOKEN_CB *)pAd->PktTokenCb;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -1581,7 +1724,7 @@ VOID ge_tx_pkt_deq_func(RTMP_ADAPTER *pAd)
 			break;
 		}
 
-pkt_handle:
+	pkt_handle:
 		if (pTxBlk->TotalFrameNum) {
 			ASSERT(pTxBlk->wdev);
 			wdev = pTxBlk->wdev;
@@ -1589,7 +1732,8 @@ pkt_handle:
 			wdev_ops->tx_pkt_handle(pAd, wdev, pTxBlk);
 #if defined(VOW_SUPPORT) && defined(VOW_DVT)
 			if (pTxBlk->TxFrameType == TX_LEGACY_FRAME)
-				KickRingBitMap |= vow_clone_legacy_frame(pAd, pTxBlk);
+				KickRingBitMap |=
+					vow_clone_legacy_frame(pAd, pTxBlk);
 #endif /* defined(VOW_SUPPORT) && defined(VOW_DVT) */
 			Count += pTxBlk->TotalFrameNum;
 			KickRingBitMap |= (1 << pTxBlk->resource_idx);
@@ -1598,13 +1742,14 @@ pkt_handle:
 
 #ifdef DBG_DEQUE
 	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("--->%s():DeQueueRule:WCID[%d], Que[%d]\n",
-			  __func__, deq_info.target_wcid, deq_info.target_que));
+		 ("--->%s():DeQueueRule:WCID[%d], Que[%d]\n", __func__,
+		  deq_info.target_wcid, deq_info.target_que));
 
 	if (pAd->DiagStruct.inited) {
 		struct dbg_diag_info *diag_info;
 
-		diag_info = &pAd->DiagStruct.diag_info[pAd->DiagStruct.ArrayCurIdx];
+		diag_info =
+			&pAd->DiagStruct.diag_info[pAd->DiagStruct.ArrayCurIdx];
 		diag_info->deq_called++;
 		diag_info->deq_round += round;
 
@@ -1644,27 +1789,29 @@ static INT ge_bss_clean_queue(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev)
 	/*TODO: add check de-queue task idle*/
 	qm_leave_queue_pkt(wdev, &ad->mgmt_que, &ad->mgmt_que_lock);
 	/*leave per sta/ac queue*/
-	for (sta_idx = 0 ; sta_idx < MAX_LEN_OF_TR_TABLE ; sta_idx++) {
-
+	for (sta_idx = 0; sta_idx < MAX_LEN_OF_TR_TABLE; sta_idx++) {
 		tr_entry = &ad->MacTab.tr_entry[sta_idx];
 
 		if (tr_entry->wdev != wdev)
 			continue;
 
-		for (qidx = 0; qidx < WMM_QUE_NUM ; qidx++) {
+		for (qidx = 0; qidx < WMM_QUE_NUM; qidx++) {
 #ifdef FQ_SCH_SUPPORT
 			frame_count = tr_entry->tx_queue[qidx].Number;
-			qm_leave_queue_pkt(wdev, &tr_entry->tx_queue[qidx], &tr_entry->txq_lock[qidx]);
+			qm_leave_queue_pkt(wdev, &tr_entry->tx_queue[qidx],
+					   &tr_entry->txq_lock[qidx]);
 			pfq_sta = &tr_entry->fq_sta_rec;
-			frame_count = frame_count - tr_entry->tx_queue[qidx].Number;
+			frame_count =
+				frame_count - tr_entry->tx_queue[qidx].Number;
 			if (pfq_sta->status[qidx] == FQ_IN_LIST_STA)
 				if (tr_entry->tx_queue[qidx].Number == 0)
 					pfq_sta->status[qidx] = FQ_UN_CLEAN_STA;
-				ad->fq_ctrl.frm_cnt[qidx] -= frame_count;
+			ad->fq_ctrl.frm_cnt[qidx] -= frame_count;
 #else
-			qm_leave_queue_pkt(wdev, &tr_entry->tx_queue[qidx], &tr_entry->txq_lock[qidx]);
+			qm_leave_queue_pkt(wdev, &tr_entry->tx_queue[qidx],
+					   &tr_entry->txq_lock[qidx]);
 #endif
-	}
+		}
 	}
 #ifdef FQ_SCH_SUPPORT
 	fq_clean_list(ad, WMM_NUM_OF_AC);
@@ -1691,12 +1838,13 @@ static INT ge_qm_init(RTMP_ADAPTER *pAd)
 
 	for (i = 0; i < WMM_NUM_OF_AC; i++) {
 		pAd->tx_swq[i].low_water_mark = 5;
-		pAd->tx_swq[i].high_water_mark = TX_SWQ_FIFO_LEN>>1;
+		pAd->tx_swq[i].high_water_mark = TX_SWQ_FIFO_LEN >> 1;
 	}
 
 #ifdef DBG_AMSDU
 	pAd->dbg_time_slot = 0;
-	RTMPInitTimer(pAd, &pAd->amsdu_history_timer, GET_TIMER_FUNCTION(amsdu_history_exec), pAd, TRUE);
+	RTMPInitTimer(pAd, &pAd->amsdu_history_timer,
+		      GET_TIMER_FUNCTION(amsdu_history_exec), pAd, TRUE);
 	RTMPSetTimer(&pAd->amsdu_history_timer, 1000);
 #endif
 	pAd->amsdu_fix_num = NUM_OF_MSDU_ID_IN_TXD;
@@ -1709,12 +1857,8 @@ static INT ge_qm_init(RTMP_ADAPTER *pAd)
 	return NDIS_STATUS_SUCCESS;
 }
 
-VOID RTMPDeQueuePacket(
-	IN RTMP_ADAPTER *pAd,
-	IN BOOLEAN in_hwIRQ,
-	IN UCHAR QIdx,
-	IN INT wcid,
-	IN INT max_cnt)
+VOID RTMPDeQueuePacket(IN RTMP_ADAPTER *pAd, IN BOOLEAN in_hwIRQ, IN UCHAR QIdx,
+		       IN INT wcid, IN INT max_cnt)
 {
 }
 
@@ -1737,7 +1881,8 @@ extern struct qm_ops fp_qm_ops;
 extern struct qm_ops ge_fair_qm_ops;
 extern struct qm_ops fp_fair_qm_ops;
 
-VOID qm_leave_queue_pkt(struct wifi_dev *wdev, struct _QUEUE_HEADER *queue, NDIS_SPIN_LOCK *lock)
+VOID qm_leave_queue_pkt(struct wifi_dev *wdev, struct _QUEUE_HEADER *queue,
+			NDIS_SPIN_LOCK *lock)
 {
 	struct _RTMP_ADAPTER *ad = wdev->sys_handle;
 	struct _QUEUE_HEADER local_q;
@@ -1775,7 +1920,8 @@ VOID qm_leave_queue_pkt(struct wifi_dev *wdev, struct _QUEUE_HEADER *queue, NDIS
 	RTMP_SEM_UNLOCK(lock);
 }
 
-static INT qm_for_wsys_notify_handle(struct notify_entry *ne, INT event_id, VOID *data)
+static INT qm_for_wsys_notify_handle(struct notify_entry *ne, INT event_id,
+				     VOID *data)
 {
 	INT ret = NOTIFY_STAT_OK;
 	struct wsys_notify_info *info = data;
@@ -1784,7 +1930,8 @@ static INT qm_for_wsys_notify_handle(struct notify_entry *ne, INT event_id, VOID
 	struct qm_ops *qm = ad->qm_ops;
 
 	MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("%s(): event_id: %d, wdev=%d\n", __func__, event_id, info->wdev->wdev_idx));
+		 ("%s(): event_id: %d, wdev=%d\n", __func__, event_id,
+		  info->wdev->wdev_idx));
 
 	switch (event_id) {
 	case WSYS_NOTIFY_CLOSE:
@@ -1827,7 +1974,6 @@ static INT qm_notify_unregister(struct _RTMP_ADAPTER *ad)
 	return ret;
 }
 
-
 INT qm_init(RTMP_ADAPTER *pAd)
 {
 	RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
@@ -1863,16 +2009,21 @@ INT qm_init(RTMP_ADAPTER *pAd)
 			tx_delay_ctl->tx_process_batch_cnt = TX_BATCH_CNT;
 
 			MtCmdCr4Set(pAd, CR4_SET_ID_CONFIG_TX_DELAY_MODE,
-					TX_DELAY_MODE_ARG1_TX_BATCH_CNT, tx_delay_ctl->tx_process_batch_cnt);
+				    TX_DELAY_MODE_ARG1_TX_BATCH_CNT,
+				    tx_delay_ctl->tx_process_batch_cnt);
 
 			MtCmdCr4Set(pAd, CR4_SET_ID_CONFIG_TX_DELAY_MODE,
-					TX_DELAY_MODE_ARG1_TX_DELAY_TIMEOUT_US, tx_delay_ctl->que_agg_timeout_value);
+				    TX_DELAY_MODE_ARG1_TX_DELAY_TIMEOUT_US,
+				    tx_delay_ctl->que_agg_timeout_value);
 
 			MtCmdCr4Set(pAd, CR4_SET_ID_CONFIG_TX_DELAY_MODE,
-					TX_DELAY_MODE_ARG1_PKT_LENGTHS, tx_delay_ctl->min_pkt_len);
+				    TX_DELAY_MODE_ARG1_PKT_LENGTHS,
+				    tx_delay_ctl->min_pkt_len);
 		} else {
 			tx_delay_ctl->tx_process_batch_cnt = TX_BATCH_CNT;
-			RTMPInitTimer(pAd, &tx_delay_ctl->que_agg_timer, GET_TIMER_FUNCTION(que_agg_timeout), pAd, FALSE);
+			RTMPInitTimer(pAd, &tx_delay_ctl->que_agg_timer,
+				      GET_TIMER_FUNCTION(que_agg_timeout), pAd,
+				      FALSE);
 		}
 	} else {
 		tx_delay_ctl->que_agg_en = FALSE;

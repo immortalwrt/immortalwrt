@@ -86,7 +86,7 @@ define Device/bananapi_bpi-r64
   ARTIFACT/sdcard.img.gz	:= mt7622-gpt sdmmc |\
 				   pad-to 512k | bl2 sdmmc-2ddr |\
 				   pad-to 2048k | bl31-uboot bananapi_bpi-r64-sdmmc |\
-				   pad-to 6144k | append-image initramfs-recovery.itb |\
+				   pad-to 6144k | append-image-stage initramfs-recovery.itb |\
 				   pad-to 38912k | mt7622-gpt emmc |\
 				   pad-to 39424k | bl2 emmc-2ddr |\
 				   pad-to 40960k | bl31-uboot bananapi_bpi-r64-emmc |\
@@ -190,6 +190,7 @@ define Device/mediatek_mt7622-rfb1-ubi
   DEVICE_DTS := mt7622-rfb1-ubi
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-ata-ahci-mtk kmod-btmtkuart kmod-usb3
+  BOARD_NAME := mediatek,mt7622-rfb1-ubi
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048

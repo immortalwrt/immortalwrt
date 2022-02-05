@@ -43,16 +43,14 @@ void wext_hotspot_onoff_event(PNET_DEV net_dev, int onoff)
 	hotspot_onoff->ifindex = RtmpOsGetNetIfIndex(net_dev);
 	hotspot_onoff->hs_onoff = onoff;
 	RtmpOSWrielessEventSend(net_dev, RT_WLAN_EVENT_CUSTOM,
-							OID_802_11_HS_ONOFF, NULL, (PUCHAR)buf, buflen);
+				OID_802_11_HS_ONOFF, NULL, (PUCHAR)buf, buflen);
 	os_free_mem(buf);
 }
-
 
 void HotspotOnOffEvent(PNET_DEV net_dev, int onoff)
 {
 	wext_hotspot_onoff_event(net_dev, onoff);
 }
-
 
 static void wext_hotspot_ap_reload_event(PNET_DEV net_dev)
 {
@@ -66,10 +64,10 @@ static void wext_hotspot_ap_reload_event(PNET_DEV net_dev)
 	hotspot_onoff = (struct hs_onoff *)buf;
 	hotspot_onoff->ifindex = RtmpOsGetNetIfIndex(net_dev);
 	RtmpOSWrielessEventSend(net_dev, RT_WLAN_EVENT_CUSTOM,
-							OID_802_11_HS_AP_RELOAD, NULL, (PUCHAR)buf, buflen);
+				OID_802_11_HS_AP_RELOAD, NULL, (PUCHAR)buf,
+				buflen);
 	os_free_mem(buf);
 }
-
 
 void HotspotAPReload(PNET_DEV net_dev)
 {
@@ -112,22 +110,17 @@ VOID GASCtrlRemoveAllIE(PGAS_CTRL pGasCtrl)
 		pGasCtrl->InterWorkingIELen = 0;
 	}
 
-	if (pGasCtrl->AdvertisementProtoIELen && pGasCtrl->AdvertisementProtoIE) {
+	if (pGasCtrl->AdvertisementProtoIELen &&
+	    pGasCtrl->AdvertisementProtoIE) {
 		os_free_mem(pGasCtrl->AdvertisementProtoIE);
 		pGasCtrl->AdvertisementProtoIE = NULL;
 		pGasCtrl->AdvertisementProtoIELen = 0;
 	}
 }
 
-
 #ifdef CONFIG_AP_SUPPORT
-BOOLEAN HSIPv4Check(
-	IN PRTMP_ADAPTER pAd,
-	PUSHORT pWcid,
-	PNDIS_PACKET pPacket,
-	PUCHAR pSrcBuf,
-	UINT16 srcPort,
-	UINT16 dstPort)
+BOOLEAN HSIPv4Check(IN PRTMP_ADAPTER pAd, PUSHORT pWcid, PNDIS_PACKET pPacket,
+		    PUCHAR pSrcBuf, UINT16 srcPort, UINT16 dstPort)
 {
 	struct wifi_dev *wdev;
 	BSS_STRUCT *pMbss;
@@ -141,39 +134,69 @@ BOOLEAN HSIPv4Check(
 
 	wdev = pAd->wdev_list[wdev_idx];
 	ops = wdev->wdev_ops;
+
+	if (wdev->wdev_type == WDEV_TYPE_WDS) {
+		/* Return if WDEV Type is WDS */
+		return TRUE;
+	}
+
 	ASSERT(wdev->func_idx < pAd->ApCfg.BssidNum);
-	pMbss =  &pAd->ApCfg.MBSSID[wdev->func_idx];
+	pMbss = &pAd->ApCfg.MBSSID[wdev->func_idx];
 
 	if ((pMbss->HotSpotCtrl.HotSpotEnable)
 #ifdef CONFIG_HOTSPOT_R2
-		|| (pMbss->HotSpotCtrl.bASANEnable)
+	    || (pMbss->HotSpotCtrl.bASANEnable)
 #endif
-	   ) {
-		if (srcPort  == 0x43 && dstPort == 0x44) {
+	) {
+		if (srcPort == 0x43 && dstPort == 0x44) {
 			/* UCHAR *pTargetIPAddr = pSrcBuf + 24; */
 			/* Client hardware address */
 			UCHAR *pTargetMACAddr = pSrcBuf + 36;
 
 			/* Convert group-address DHCP packets to individually-addressed 802.11 frames */
-			if (*pWcid == wdev->bss_info_argument.ucBcMcWlanIdx && pMbss->HotSpotCtrl.DGAFDisable) {
+			if (*pWcid == wdev->bss_info_argument.ucBcMcWlanIdx &&
+			    pMbss->HotSpotCtrl.DGAFDisable) {
 				UCHAR Index;
-				PUCHAR pSrcBufOriginal = GET_OS_PKT_DATAPTR(pPacket);
+				PUCHAR pSrcBufOriginal =
+					GET_OS_PKT_DATAPTR(pPacket);
 
 				for (Index = 0; Index < MAC_ADDR_LEN; Index++) {
-					MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Original source address(%d) = %02x\n", Index, pSrcBufOriginal[Index]));
-					pSrcBufOriginal[Index] = pTargetMACAddr[Index];
-					MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Replaced Source address(%d) = %02x\n", Index, pSrcBuf[Index]));
+					MTWF_LOG(
+						DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+						DBG_LVL_TRACE,
+						("Original source address(%d) = %02x\n",
+						 Index,
+						 pSrcBufOriginal[Index]));
+					pSrcBufOriginal[Index] =
+						pTargetMACAddr[Index];
+					MTWF_LOG(
+						DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+						DBG_LVL_TRACE,
+						("Replaced Source address(%d) = %02x\n",
+						 Index, pSrcBuf[Index]));
 				}
 
-				MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-						 ("\033[1;32m %s, %u wcid before convert %d \033[0m\n", __func__, __LINE__, *pWcid));
-				MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Convert broadcast dhcp to unicat frame when dgaf disable\n"));
+				MTWF_LOG(
+					DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("\033[1;32m %s, %u wcid before convert %d \033[0m\n",
+					 __func__, __LINE__, *pWcid));
+				MTWF_LOG(
+					DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+					DBG_LVL_OFF,
+					("Convert broadcast dhcp to unicat frame when dgaf disable\n"));
 
-				if (!ops->tx_pkt_allowed(pAd, &pAd->ApCfg.MBSSID[wdev_idx].wdev, pPacket))
+				if (!ops->tx_pkt_allowed(
+					    pAd,
+					    &pAd->ApCfg.MBSSID[wdev_idx].wdev,
+					    pPacket))
 					return FALSE;
 
-				MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-						 ("\033[1;32m %s, %u wcid after convert %d \033[0m\n", __func__, __LINE__, *pWcid));
+				MTWF_LOG(
+					DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+					DBG_LVL_TRACE,
+					("\033[1;32m %s, %u wcid after convert %d \033[0m\n",
+					 __func__, __LINE__, *pWcid));
 			}
 		}
 	}
@@ -181,10 +204,7 @@ BOOLEAN HSIPv4Check(
 	return TRUE;
 }
 
-
-static BOOLEAN IsICMPv4EchoPacket(
-	IN PRTMP_ADAPTER pAd,
-	IN PUCHAR pData)
+static BOOLEAN IsICMPv4EchoPacket(IN PRTMP_ADAPTER pAd, IN PUCHAR pData)
 {
 	UINT16 ProtoType;
 	UCHAR *Pos = pData;
@@ -203,7 +223,9 @@ static BOOLEAN IsICMPv4EchoPacket(
 				Pos++;
 
 				if (*Pos == 0x00) {
-					MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("ICMPv4Echp Packet\n"));
+					MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+						 DBG_LVL_OFF,
+						 ("ICMPv4Echp Packet\n"));
 					return TRUE;
 				}
 			}
@@ -213,10 +235,8 @@ static BOOLEAN IsICMPv4EchoPacket(
 	return FALSE;
 }
 
-BOOLEAN L2FilterInspection(
-	IN PRTMP_ADAPTER pAd,
-	IN PHOTSPOT_CTRL pHSCtrl,
-	IN PUCHAR pData)
+BOOLEAN L2FilterInspection(IN PRTMP_ADAPTER pAd, IN PHOTSPOT_CTRL pHSCtrl,
+			   IN PUCHAR pData)
 {
 	if (IsICMPv4EchoPacket(pAd, pData)) {
 		if (pHSCtrl->ICMPv4Deny)
@@ -228,10 +248,8 @@ BOOLEAN L2FilterInspection(
 	return FALSE;
 }
 
-BOOLEAN ProbeReqforHSAP(
-	IN PRTMP_ADAPTER pAd,
-	IN UCHAR APIndex,
-	IN struct _PEER_PROBE_REQ_PARAM *ProbeReqParam)
+BOOLEAN ProbeReqforHSAP(IN PRTMP_ADAPTER pAd, IN UCHAR APIndex,
+			IN struct _PEER_PROBE_REQ_PARAM *ProbeReqParam)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 
@@ -239,15 +257,18 @@ BOOLEAN ProbeReqforHSAP(
 
 	if (pHSCtrl->HotSpotEnable && ProbeReqParam->IsIWIE) {
 		if (ProbeReqParam->IsHessid && pHSCtrl->IsHessid) {
-			if (NdisEqualMemory(ProbeReqParam->Hessid, pHSCtrl->Hessid, MAC_ADDR_LEN) ||
-				NdisEqualMemory(ProbeReqParam->Hessid, BROADCAST_ADDR, MAC_ADDR_LEN))
+			if (NdisEqualMemory(ProbeReqParam->Hessid,
+					    pHSCtrl->Hessid, MAC_ADDR_LEN) ||
+			    NdisEqualMemory(ProbeReqParam->Hessid,
+					    BROADCAST_ADDR, MAC_ADDR_LEN))
 				;
 			else
 				return FALSE;
 		}
 
-		if ((ProbeReqParam->AccessNetWorkType == pHSCtrl->AccessNetWorkType) ||
-			(ProbeReqParam->AccessNetWorkType == 0x0f))
+		if ((ProbeReqParam->AccessNetWorkType ==
+		     pHSCtrl->AccessNetWorkType) ||
+		    (ProbeReqParam->AccessNetWorkType == 0x0f))
 			return TRUE;
 		else
 			return FALSE;
@@ -255,9 +276,7 @@ BOOLEAN ProbeReqforHSAP(
 		return TRUE;
 }
 
-inline INT Set_HotSpot_DGAF(
-	IN PRTMP_ADAPTER pAd,
-	UCHAR Disable)
+inline INT Set_HotSpot_DGAF(IN PRTMP_ADAPTER pAd, UCHAR Disable)
 {
 	POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
 	UCHAR APIndex = pObj->ioctl_if;
@@ -271,8 +290,7 @@ inline INT Set_HotSpot_DGAF(
 	return 0;
 }
 
-VOID Clear_Hotspot_All_IE(
-	IN PRTMP_ADAPTER pAd)
+VOID Clear_Hotspot_All_IE(IN PRTMP_ADAPTER pAd)
 {
 	POS_COOKIE pObj = (POS_COOKIE)pAd->OS_Cookie;
 	UCHAR APIndex = pObj->ioctl_if;
@@ -288,28 +306,29 @@ VOID Clear_Hotspot_All_IE(
 VOID hotspot_bssflag_dump(UINT8 ucHotspotBSSFlags)
 {
 	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("pHSCtrl->HotspotEnable = %d\n"
-			  "pHSCtrl->ProxyARPEnable = %d\n"
-			  "pHSCtrl->ASANEnable = %d\n"
-			  "pHSCtrl->DGAFDisable = %d\n"
-			  "pHSCtrl->QosMapEnable = %d\n"
-			  , IS_HOTSPOT_ENABLE(ucHotspotBSSFlags)
-			  , IS_PROXYARP_ENABLE(ucHotspotBSSFlags)
-			  , IS_ASAN_ENABLE(ucHotspotBSSFlags)
-			  , IS_DGAF_DISABLE(ucHotspotBSSFlags)
-			  , IS_QOSMAP_ENABLE(ucHotspotBSSFlags)
-			 ));
+		 ("pHSCtrl->HotspotEnable = %d\n"
+		  "pHSCtrl->ProxyARPEnable = %d\n"
+		  "pHSCtrl->ASANEnable = %d\n"
+		  "pHSCtrl->DGAFDisable = %d\n"
+		  "pHSCtrl->QosMapEnable = %d\n",
+		  IS_HOTSPOT_ENABLE(ucHotspotBSSFlags),
+		  IS_PROXYARP_ENABLE(ucHotspotBSSFlags),
+		  IS_ASAN_ENABLE(ucHotspotBSSFlags),
+		  IS_DGAF_DISABLE(ucHotspotBSSFlags),
+		  IS_QOSMAP_ENABLE(ucHotspotBSSFlags)));
 }
 
-VOID hotspot_update_bssflag(RTMP_ADAPTER *pAd, UINT8 flag, UINT8 value, PHOTSPOT_CTRL pHSCtrl)
+VOID hotspot_update_bssflag(RTMP_ADAPTER *pAd, UINT8 flag, UINT8 value,
+			    PHOTSPOT_CTRL pHSCtrl)
 {
 	if (value == 1)
 		pHSCtrl->HotspotBSSFlags |= flag;
 	else
 		pHSCtrl->HotspotBSSFlags &= ~flag;
 
-	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s ===> flag 0x%x value %d pHSCtrl->HotspotBSSFlags 0x%x\n"
-			 , __func__, flag, value, pHSCtrl->HotspotBSSFlags));
+	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s ===> flag 0x%x value %d pHSCtrl->HotspotBSSFlags 0x%x\n",
+		  __func__, flag, value, pHSCtrl->HotspotBSSFlags));
 	/* hotspot_bssflag_dump(pHSCtrl->HotspotBSSFlags); */
 }
 
@@ -325,8 +344,10 @@ VOID hotspot_update_bss_info_to_cr4(RTMP_ADAPTER *pAd, UCHAR APIndex)
 	HotspotInfoUpdateT.ucHotspotBssFlags = pHSCtrl->HotspotBSSFlags;
 	HotspotInfoUpdateT.ucHotspotBssId = APIndex;
 	MtCmdHotspotInfoUpdate(pAd, HotspotInfoUpdateT);
-	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s ===> Update BSS:%d  HotspotFlag:0x%x\n"
-			 , __func__, HotspotInfoUpdateT.ucHotspotBssId, HotspotInfoUpdateT.ucHotspotBssFlags));
+	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s ===> Update BSS:%d  HotspotFlag:0x%x\n", __func__,
+		  HotspotInfoUpdateT.ucHotspotBssId,
+		  HotspotInfoUpdateT.ucHotspotBssFlags));
 	/* hotspot_bssflag_dump(pHSCtrl->HotspotBSSFlags); */
 }
 
@@ -336,9 +357,10 @@ VOID hotspot_add_qos_map_pool_to_cr4(RTMP_ADAPTER *pAd, UINT8 PoolID)
 	P_QOS_MAP_TABLE_T pQosMapPool = NULL;
 
 	if (PoolID >= MAX_QOS_MAP_TABLE_SIZE) {
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s  PoolID %d excceed max table size %d..................................!!!!!!!!!!!!!!!!!!!!!!!!\n",
-				  __func__, PoolID, MAX_QOS_MAP_TABLE_SIZE));
+		MTWF_LOG(
+			DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s  PoolID %d excceed max table size %d..................................!!!!!!!!!!!!!!!!!!!!!!!!\n",
+			 __func__, PoolID, MAX_QOS_MAP_TABLE_SIZE));
 		return;
 	}
 
@@ -346,19 +368,22 @@ VOID hotspot_add_qos_map_pool_to_cr4(RTMP_ADAPTER *pAd, UINT8 PoolID)
 	HotspotInfoUpdateT.ucUpdateType |= fgUpdateDSCPPool;
 	pQosMapPool = &pAd->ApCfg.HsQosMapTable[PoolID];
 	HotspotInfoUpdateT.ucPoolID = PoolID;
-	NdisCopyMemory(&HotspotInfoUpdateT.ucTableValid, pQosMapPool, sizeof(QOS_MAP_TABLE_T));
+	NdisCopyMemory(&HotspotInfoUpdateT.ucTableValid, pQosMapPool,
+		       sizeof(QOS_MAP_TABLE_T));
 	MtCmdHotspotInfoUpdate(pAd, HotspotInfoUpdateT);
 	RtmpusecDelay(100);
 }
 
-VOID hotspot_qosmap_update_sta_mapping_to_cr4(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UINT8 PoolID)
+VOID hotspot_qosmap_update_sta_mapping_to_cr4(RTMP_ADAPTER *pAd,
+					      MAC_TABLE_ENTRY *pEntry,
+					      UINT8 PoolID)
 {
 	EXT_CMD_ID_HOTSPOT_INFO_UPDATE_T HotspotInfoUpdateT;
 
 	if (PoolID >= MAX_QOS_MAP_TABLE_SIZE) {
 		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s  PoolID %d excceed max table size...........\n",
-				  __func__, PoolID));
+			 ("%s  PoolID %d excceed max table size...........\n",
+			  __func__, PoolID));
 		return;
 	}
 
@@ -372,12 +397,13 @@ VOID hotspot_qosmap_update_sta_mapping_to_cr4(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY
 	else
 		HotspotInfoUpdateT.ucStaQosMapFlagAndIdx &= 0x7f;
 
-	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s  wcid %d  HotspotInfoUpdateT.ucStaQosMapFlagAndIdx 0x%x...........\n",
-			  __func__, HotspotInfoUpdateT.ucStaWcid, HotspotInfoUpdateT.ucStaQosMapFlagAndIdx));
+	MTWF_LOG(
+		DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		("%s  wcid %d  HotspotInfoUpdateT.ucStaQosMapFlagAndIdx 0x%x...........\n",
+		 __func__, HotspotInfoUpdateT.ucStaWcid,
+		 HotspotInfoUpdateT.ucStaQosMapFlagAndIdx));
 	MtCmdHotspotInfoUpdate(pAd, HotspotInfoUpdateT);
 }
-
 
 UINT8 hotspot_qosmap_add_pool(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 {
@@ -389,10 +415,13 @@ UINT8 hotspot_qosmap_add_pool(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 		pQosMapPool = &pAd->ApCfg.HsQosMapTable[i];
 
 		if (pQosMapPool->ucPoolValid) {
-			if ((pEntry->DscpExceptionCount == pQosMapPool->ucDscpExceptionCount) &&
-				NdisEqualMemory(pEntry->DscpRange, pQosMapPool->au2DscpRange, 16) &&
-				NdisEqualMemory(pEntry->DscpException, pQosMapPool->au2DscpException, 42)
-			   ) {
+			if ((pEntry->DscpExceptionCount ==
+			     pQosMapPool->ucDscpExceptionCount) &&
+			    NdisEqualMemory(pEntry->DscpRange,
+					    pQosMapPool->au2DscpRange, 16) &&
+			    NdisEqualMemory(pEntry->DscpException,
+					    pQosMapPool->au2DscpException,
+					    42)) {
 				found = TRUE;
 				break;
 			}
@@ -401,41 +430,38 @@ UINT8 hotspot_qosmap_add_pool(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	}
 
 	if (found) {
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s => Found existing QosMap Pool %d for sta wcid [%d]\n"
-				  , __func__, i, pEntry->wcid));
+		MTWF_LOG(
+			DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s => Found existing QosMap Pool %d for sta wcid [%d]\n",
+			 __func__, i, pEntry->wcid));
 		return i;
 	} else if (i == MAX_QOS_MAP_TABLE_SIZE) {
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s => QosMap Pool Excceed %d, Using Default 0 for sta wcid [%d]\n"
-				  , __func__, MAX_QOS_MAP_TABLE_SIZE, pEntry->wcid));
+		MTWF_LOG(
+			DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s => QosMap Pool Excceed %d, Using Default 0 for sta wcid [%d]\n",
+			 __func__, MAX_QOS_MAP_TABLE_SIZE, pEntry->wcid));
 		return 0;
 	} else {
 		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s => Insert new QosMap Pool %d for sta wcid [%d]\n"
-				  , __func__, i, pEntry->wcid));
+			 ("%s => Insert new QosMap Pool %d for sta wcid [%d]\n",
+			  __func__, i, pEntry->wcid));
 		pQosMapPool = &pAd->ApCfg.HsQosMapTable[i];
 		pQosMapPool->ucPoolValid = TRUE;
 		pQosMapPool->ucDscpExceptionCount = pEntry->DscpExceptionCount;
-		NdisCopyMemory(pQosMapPool->au2DscpRange, pEntry->DscpRange, 16);
-		NdisCopyMemory(pQosMapPool->au2DscpException, pEntry->DscpException, 42);
+		NdisCopyMemory(pQosMapPool->au2DscpRange, pEntry->DscpRange,
+			       16);
+		NdisCopyMemory(pQosMapPool->au2DscpException,
+			       pEntry->DscpException, 42);
 		/* send add pool event to CR4 */
 		hotspot_add_qos_map_pool_to_cr4(pAd, i);
 		return i;
 	}
 }
 
-
-
 #endif /* CONFIG_AP_SUPPORT */
 
-
-
-INT Set_HotSpot_OnOff(
-	IN PRTMP_ADAPTER pAd,
-	IN UINT8 OnOff,
-	IN UINT8 EventTrigger,
-	IN UINT8 EventType)
+INT Set_HotSpot_OnOff(IN PRTMP_ADAPTER pAd, IN UINT8 OnOff,
+		      IN UINT8 EventTrigger, IN UINT8 EventType)
 {
 	UCHAR *Buf;
 	HSCTRL_EVENT_DATA *Event;
@@ -448,8 +474,8 @@ INT Set_HotSpot_OnOff(
 	/* to prevent HSCtrlON/OFF gets insanely called from UI */
 	if (pHSCtrl->bHSOnOff == OnOff) {
 		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s ==> wdev[%d] is already in [%s] STATE , skip.\n"
-				  , __func__, APIndex, (OnOff == TRUE) ? "ON" : "OFF"));
+			 ("%s ==> wdev[%d] is already in [%s] STATE , skip.\n",
+			  __func__, APIndex, (OnOff == TRUE) ? "ON" : "OFF"));
 		return TRUE;
 	} else
 		pHSCtrl->bHSOnOff = OnOff;
@@ -458,7 +484,8 @@ INT Set_HotSpot_OnOff(
 	os_alloc_mem(NULL, (UCHAR **)&Buf, sizeof(*Event));
 
 	if (!Buf) {
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s Not available memory\n", __func__));
+		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s Not available memory\n", __func__));
 		return FALSE;
 	}
 
@@ -482,10 +509,8 @@ INT Set_HotSpot_OnOff(
 	return TRUE;
 }
 
-
-enum HSCTRL_STATE HSCtrlCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem)
+enum HSCTRL_STATE HSCtrlCurrentState(IN PRTMP_ADAPTER pAd,
+				     IN MLME_QUEUE_ELEM *Elem)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 #ifdef CONFIG_AP_SUPPORT
@@ -497,11 +522,8 @@ enum HSCTRL_STATE HSCtrlCurrentState(
 	return pHSCtrl->HSCtrlState;
 }
 
-
-VOID HSCtrlSetCurrentState(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem,
-	IN enum HSCTRL_STATE State)
+VOID HSCtrlSetCurrentState(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem,
+			   IN enum HSCTRL_STATE State)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 #ifdef CONFIG_AP_SUPPORT
@@ -513,17 +535,14 @@ VOID HSCtrlSetCurrentState(
 	pHSCtrl->HSCtrlState = State;
 }
 
-
-static VOID HSCtrlOn(
-	IN PRTMP_ADAPTER    pAd,
-	IN MLME_QUEUE_ELEM * Elem)
+static VOID HSCtrlOn(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 	PGAS_CTRL pGASCtrl;
 	PNET_DEV NetDev;
 	HSCTRL_EVENT_DATA *Event = (HSCTRL_EVENT_DATA *)Elem->Msg;
 	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s  BSSID: %d\n", __func__, Event->ControlIndex));
+		 ("%s  BSSID: %d\n", __func__, Event->ControlIndex));
 #ifdef CONFIG_AP_SUPPORT
 	NetDev = pAd->ApCfg.MBSSID[Event->ControlIndex].wdev.if_dev;
 	pHSCtrl = &pAd->ApCfg.MBSSID[Event->ControlIndex].HotSpotCtrl;
@@ -540,7 +559,8 @@ static VOID HSCtrlOn(
 	pGASCtrl->b11U_enable = 1;
 	pHSCtrl->HSDaemonReady = 1;
 #ifdef CONFIG_AP_SUPPORT
-	UpdateBeaconHandler(pAd, &pAd->ApCfg.MBSSID[Event->ControlIndex].wdev, BCN_UPDATE_IE_CHG);
+	UpdateBeaconHandler(pAd, &pAd->ApCfg.MBSSID[Event->ControlIndex].wdev,
+			    BCN_UPDATE_IE_CHG);
 #endif /* CONFIG_AP_SUPPORT */
 	HSCtrlSetCurrentState(pAd, Elem, HSCTRL_IDLE);
 
@@ -556,15 +576,15 @@ static VOID HSCtrlOn(
 			break;
 
 		default:
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Unknow event type(%d)\n", __func__, Event->EventType));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s: Unknow event type(%d)\n", __func__,
+				  Event->EventType));
 			break;
 		}
 	}
 }
 
-
-static VOID HSCtrlInit(
-	IN PRTMP_ADAPTER pAd)
+static VOID HSCtrlInit(IN PRTMP_ADAPTER pAd)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 #ifdef CONFIG_AP_SUPPORT
@@ -591,9 +611,7 @@ static VOID HSCtrlInit(
 #endif /* CONFIG_AP_SUPPORT */
 }
 
-
-VOID HSCtrlExit(
-	IN PRTMP_ADAPTER pAd)
+VOID HSCtrlExit(IN PRTMP_ADAPTER pAd)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 #ifdef CONFIG_AP_SUPPORT
@@ -611,9 +629,7 @@ VOID HSCtrlExit(
 #endif /* CONFIG_AP_SUPPORT */
 }
 
-
-VOID HSCtrlHalt(
-	IN PRTMP_ADAPTER pAd)
+VOID HSCtrlHalt(IN PRTMP_ADAPTER pAd)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 #ifdef CONFIG_AP_SUPPORT
@@ -629,9 +645,7 @@ VOID HSCtrlHalt(
 #endif /* CONFIG_AP_SUPPORT */
 }
 
-static VOID HSCtrlOff(
-	IN PRTMP_ADAPTER    pAd,
-	IN MLME_QUEUE_ELEM * Elem)
+static VOID HSCtrlOff(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem)
 {
 	PHOTSPOT_CTRL pHSCtrl;
 	PGAS_CTRL pGASCtrl;
@@ -643,7 +657,7 @@ static VOID HSCtrlOff(
 	UCHAR tmp;
 
 	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s  BSSID %d\n", __func__, Event->ControlIndex));
+		 ("%s  BSSID %d\n", __func__, Event->ControlIndex));
 #ifdef CONFIG_AP_SUPPORT
 	NetDev = pAd->ApCfg.MBSSID[Event->ControlIndex].wdev.if_dev;
 	pHSCtrl = &pAd->ApCfg.MBSSID[Event->ControlIndex].HotSpotCtrl;
@@ -677,7 +691,8 @@ static VOID HSCtrlOff(
 #endif
 #endif
 #ifdef CONFIG_AP_SUPPORT
-	UpdateBeaconHandler(pAd, &pAd->ApCfg.MBSSID[Event->ControlIndex].wdev, BCN_UPDATE_IE_CHG);
+	UpdateBeaconHandler(pAd, &pAd->ApCfg.MBSSID[Event->ControlIndex].wdev,
+			    BCN_UPDATE_IE_CHG);
 #endif /* CONFIG_AP_SUPPORT */
 	/* for 7615 offload to CR4 */
 	pHSCtrl->HotspotBSSFlags = 0;
@@ -695,16 +710,16 @@ static VOID HSCtrlOff(
 			break;
 
 		default:
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: Unknow event type(%d)\n", __func__, Event->EventType));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s: Unknow event type(%d)\n", __func__,
+				  Event->EventType));
 			break;
 		}
 	}
 }
 
-BOOLEAN HotSpotEnable(
-	IN PRTMP_ADAPTER pAd,
-	IN MLME_QUEUE_ELEM * Elem,
-	IN INT Type)
+BOOLEAN HotSpotEnable(IN PRTMP_ADAPTER pAd, IN MLME_QUEUE_ELEM *Elem,
+		      IN INT Type)
 {
 	PHOTSPOT_CTRL pHSCtrl = NULL;
 #ifdef CONFIG_AP_SUPPORT
@@ -715,7 +730,7 @@ BOOLEAN HotSpotEnable(
 #ifdef CONFIG_AP_SUPPORT
 
 	if (Type == GAS_STATE_MESSAGES) {
-		Event =  (PGAS_EVENT_DATA)Elem->Msg;
+		Event = (PGAS_EVENT_DATA)Elem->Msg;
 		pHSCtrl = &pAd->ApCfg.MBSSID[Event->ControlIndex].HotSpotCtrl;
 	} else if (Type == ACTION_STATE_MESSAGES) {
 		GASFrame = (GAS_FRAME *)Elem->Msg;
@@ -725,13 +740,20 @@ BOOLEAN HotSpotEnable(
 			according to 802.11-2012, public action frame may have Wildcard BSSID in addr3,
 			use addr1(DA) for searching instead.
 			*/
-			if (MAC_ADDR_EQUAL(GASFrame->Hdr.Addr1, pAd->ApCfg.MBSSID[APIndex].wdev.bssid)) {
-				pHSCtrl = &pAd->ApCfg.MBSSID[APIndex].HotSpotCtrl;
+			if (MAC_ADDR_EQUAL(
+				    GASFrame->Hdr.Addr1,
+				    pAd->ApCfg.MBSSID[APIndex].wdev.bssid)) {
+				pHSCtrl =
+					&pAd->ApCfg.MBSSID[APIndex].HotSpotCtrl;
 
 				if (pHSCtrl->HotSpotEnable != TRUE) {
-					MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-							 ("%s, %u [Disable] %02X:%02X:%02X:%02X:%02X:%02X\n"
-							  , __func__, __LINE__, PRINT_MAC(GASFrame->Hdr.Addr1)));
+					MTWF_LOG(
+						DBG_CAT_ALL, DBG_SUBCAT_ALL,
+						DBG_LVL_TRACE,
+						("%s, %u [Disable] %02X:%02X:%02X:%02X:%02X:%02X\n",
+						 __func__, __LINE__,
+						 PRINT_MAC(
+							 GASFrame->Hdr.Addr1)));
 				}
 
 				break;
@@ -739,13 +761,15 @@ BOOLEAN HotSpotEnable(
 		}
 
 		if (!pHSCtrl) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-					 ("%s Can not find Peer Control DA=%02X:%02X:%02X:%02X:%02X:%02X\n"
-					  , __func__, PRINT_MAC(GASFrame->Hdr.Addr1)));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				("%s Can not find Peer Control DA=%02X:%02X:%02X:%02X:%02X:%02X\n",
+				 __func__, PRINT_MAC(GASFrame->Hdr.Addr1)));
 			return FALSE;
 		}
 	} else {
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s - can't recognize Type %d\n", __func__, Type));
+		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s - can't recognize Type %d\n", __func__, Type));
 		return FALSE;
 	}
 
@@ -753,21 +777,23 @@ BOOLEAN HotSpotEnable(
 	return pHSCtrl->HotSpotEnable;
 }
 
-
-VOID HSCtrlStateMachineInit(
-	IN	PRTMP_ADAPTER		pAd,
-	IN	STATE_MACHINE * S,
-	OUT	STATE_MACHINE_FUNC	Trans[])
+VOID HSCtrlStateMachineInit(IN PRTMP_ADAPTER pAd, IN STATE_MACHINE *S,
+			    OUT STATE_MACHINE_FUNC Trans[])
 {
-	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s\n", __func__));
+	MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s\n", __func__));
 	HSCtrlInit(pAd);
-	StateMachineInit(S,	(STATE_MACHINE_FUNC *)Trans, MAX_HSCTRL_STATE, MAX_HSCTRL_MSG, (STATE_MACHINE_FUNC)Drop, HSCTRL_IDLE, HSCTRL_MACHINE_BASE);
-	StateMachineSetAction(S, HSCTRL_IDLE, HSCTRL_ON, (STATE_MACHINE_FUNC)HSCtrlOn);
-	StateMachineSetAction(S, HSCTRL_IDLE, HSCTRL_OFF, (STATE_MACHINE_FUNC)HSCtrlOff);
+	StateMachineInit(S, (STATE_MACHINE_FUNC *)Trans, MAX_HSCTRL_STATE,
+			 MAX_HSCTRL_MSG, (STATE_MACHINE_FUNC)Drop, HSCTRL_IDLE,
+			 HSCTRL_MACHINE_BASE);
+	StateMachineSetAction(S, HSCTRL_IDLE, HSCTRL_ON,
+			      (STATE_MACHINE_FUNC)HSCtrlOn);
+	StateMachineSetAction(S, HSCTRL_IDLE, HSCTRL_OFF,
+			      (STATE_MACHINE_FUNC)HSCtrlOff);
 }
 
-
-BOOLEAN hotspot_rx_snoop(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRxBlk)
+BOOLEAN hotspot_rx_snoop(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry,
+			 RX_BLK *pRxBlk)
 {
 	BOOLEAN drop = FALSE;
 	BOOLEAN FoundProxyARPEntry;
@@ -781,7 +807,8 @@ BOOLEAN hotspot_rx_snoop(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRx
 		FoundProxyARPEntry = IPv4ProxyARP(pAd, pMbss, pData, FALSE);
 
 		if (FoundProxyARPEntry) {
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Find proxy entry for IPv4\n"));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("Find proxy entry for IPv4\n"));
 			drop = TRUE;
 			goto done;
 		}
@@ -791,9 +818,12 @@ BOOLEAN hotspot_rx_snoop(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRx
 	if (IsIpv6DuplicateAddrDetect(pAd, pData, &Offset)) {
 		/* Proxy MAC address/IPv6 mapping */
 		/* AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr, (pData + 50)); */
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("AddIPv6ProxyARPEntry:offset=%d\n", Offset));
-		AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr, (pData + Offset));
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Drop IPv6 DAD\n"));
+		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("AddIPv6ProxyARPEntry:offset=%d\n", Offset));
+		AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr,
+				     (pData + Offset));
+		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Drop IPv6 DAD\n"));
 		drop = TRUE;
 		goto done;
 	}
@@ -801,36 +831,41 @@ BOOLEAN hotspot_rx_snoop(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRx
 	/* Check if Router solicitation */
 	if (IsIPv6RouterSolicitation(pAd, pData)) {
 		/* Proxy MAC address/IPv6 mapping for link local address */
-		AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr,  (pData + 10));
+		AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr, (pData + 10));
 	}
 
 	/* JERRY: add to parse DHCPv6 solicit to check proxy arp entry */
 	if (IsIPv6DHCPv6Solicitation(pAd, pData))
-		AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr,  (pData + 10));
+		AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr, (pData + 10));
 
 	/* Check if Proxy ARP Candidate for IPv6 */
 	if (IsIPv6ProxyARPCandidate(pAd, pData)) {
 		FoundProxyARPEntry = IPv6ProxyARP(pAd, pMbss, pData, FALSE);
 
 		if (FoundProxyARPEntry) {
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Find proxy entry for IPv6\n"));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("Find proxy entry for IPv6\n"));
 			drop = TRUE;
 			goto done;
 		} else {
 			/* Proxy MAC address/IPv6 mapping */
-			AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr, (pData + 10));
+			AddIPv6ProxyARPEntry(pAd, pMbss, pEntry->Addr,
+					     (pData + 10));
 		}
 	}
 
 	if (!pEntry->pMbss->HotSpotCtrl.DGAFDisable) {
 		if (IsGratuitousARP(pAd, pData, pRxBlk->Addr3, pMbss)) {
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Drop Gratutious ARP\n"));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("Drop Gratutious ARP\n"));
 			drop = TRUE;
 			goto done;
 		}
 
 		if (IsUnsolicitedNeighborAdver(pAd, pData)) {
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Drop unsoclicited neighbor advertisement packet\n"));
+			MTWF_LOG(
+				DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				("Drop unsoclicited neighbor advertisement packet\n"));
 			drop = TRUE;
 			goto done;
 		}
@@ -840,11 +875,14 @@ done:
 	return drop;
 }
 
-BOOLEAN hotspot_rx_l2_filter(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRxBlk)
+BOOLEAN hotspot_rx_l2_filter(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry,
+			     RX_BLK *pRxBlk)
 {
 	BSS_STRUCT *pMbss = pEntry->pMbss;
 	BOOLEAN drop = FALSE;
-	PUCHAR pData_tdls = NdisEqualMemory(SNAP_802_1H, pRxBlk->pData, 6) ? (pRxBlk->pData + 6) : pRxBlk->pData;
+	PUCHAR pData_tdls = NdisEqualMemory(SNAP_802_1H, pRxBlk->pData, 6) ?
+				    (pRxBlk->pData + 6) :
+					  pRxBlk->pData;
 	PUCHAR pData = pRxBlk->pData + 12;
 
 	if (pEntry->pMbss->HotSpotCtrl.L2Filter == L2FilterBuiltIn) {
@@ -853,7 +891,8 @@ BOOLEAN hotspot_rx_l2_filter(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK 
 		NeedDrop = L2FilterInspection(pAd, &pMbss->HotSpotCtrl, pData);
 
 		if (NeedDrop) {
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Drop Filter BuiltIn packet\n"));
+			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				 ("Drop Filter BuiltIn packet\n"));
 			drop = TRUE;
 			goto done;
 		}
@@ -861,16 +900,24 @@ BOOLEAN hotspot_rx_l2_filter(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK 
 		UINT16 Index;
 		BOOLEAN NeedSendToExternal;
 		BSS_STRUCT *pMbss = pEntry->pMbss;
-		PUCHAR pData = NdisEqualMemory(SNAP_802_1H, pRxBlk->pData, 6) ? (pRxBlk->pData + 6) : pRxBlk->pData;
+		PUCHAR pData = NdisEqualMemory(SNAP_802_1H, pRxBlk->pData, 6) ?
+				       (pRxBlk->pData + 6) :
+					     pRxBlk->pData;
 
-		NeedSendToExternal = L2FilterInspection(pAd, &pMbss->HotSpotCtrl, pData);
+		NeedSendToExternal =
+			L2FilterInspection(pAd, &pMbss->HotSpotCtrl, pData);
 
 		if (NeedSendToExternal) {
 			/* Change to broadcast DS */
-			MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Change to broadcast under L2FilterExternal\n"));
+			MTWF_LOG(
+				DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+				("Change to broadcast under L2FilterExternal\n"));
 
 			for (Index = 0; Index < MAC_ADDR_LEN; Index++)
-				MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("DA[%d] = %x\n", Index, pRxBlk->Addr3[Index]));
+				MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL,
+					 DBG_LVL_OFF,
+					 ("DA[%d] = %x\n", Index,
+					  pRxBlk->Addr3[Index]));
 
 			pRxBlk->Addr3[0] = 0xf0;
 			pRxBlk->Addr3[1] = 0xde;
@@ -883,7 +930,8 @@ BOOLEAN hotspot_rx_l2_filter(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK 
 
 	/* Check if TDLS/DLS frame */
 	if (IsTDLSPacket(pAd, pData_tdls)) {
-		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Drop TDLS Packet\n"));
+		MTWF_LOG(DBG_CAT_PROTO, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("Drop TDLS Packet\n"));
 		drop = TRUE;
 	}
 
@@ -891,19 +939,21 @@ done:
 	return drop;
 }
 
-
-BOOLEAN hotspot_rx_handler(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRxBlk)
+BOOLEAN hotspot_rx_handler(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry,
+			   RX_BLK *pRxBlk)
 {
 	BOOLEAN drop = FALSE;
 
 	if (pEntry->pMbss->WNMCtrl.ProxyARPEnable)
 		drop = hotspot_rx_snoop(pAd, pEntry, pRxBlk);
 
-	if ((drop == FALSE) && (pEntry->pMbss->HotSpotCtrl.L2Filter != L2FilterDisable))
+	if ((drop == FALSE) &&
+	    (pEntry->pMbss->HotSpotCtrl.L2Filter != L2FilterDisable))
 		drop = hotspot_rx_l2_filter(pAd, pEntry, pRxBlk);
 
 	if (drop == TRUE)
-		RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket, NDIS_STATUS_FAILURE);
+		RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket,
+				    NDIS_STATUS_FAILURE);
 
 	return drop;
 }
@@ -922,19 +972,15 @@ VOID hotspot_update_ap_qload_to_bcn(RTMP_ADAPTER *pAd)
 			wdev = &pAd->ApCfg.MBSSID[BssIdx].wdev;
 
 			if (wdev->bAllowBeaconing)
-				UpdateBeaconHandler(pAd, wdev, BCN_UPDATE_IE_CHG);
+				UpdateBeaconHandler(pAd, wdev,
+						    BCN_UPDATE_IE_CHG);
 		}
 	}
 
 	return;
 }
 
-
-
-BOOLEAN hotspot_check_dhcp_arp(
-	IN RTMP_ADAPTER *pAd,
-	IN PNDIS_PACKET	pPacket
-)
+BOOLEAN hotspot_check_dhcp_arp(IN RTMP_ADAPTER *pAd, IN PNDIS_PACKET pPacket)
 {
 	UINT16 TypeLen;
 	UCHAR *pSrcBuf = NULL;
@@ -955,16 +1001,18 @@ BOOLEAN hotspot_check_dhcp_arp(
 
 			pSrcBuf += IP_HDR_LEN;
 			srcPort = OS_NTOHS(get_unaligned((PUINT16)(pSrcBuf)));
-			dstPort = OS_NTOHS(get_unaligned((PUINT16)(pSrcBuf + 2)));
-			WNMIPv4ProxyARPCheck(pAd, pPacket, srcPort, dstPort, pSrcBuf);
+			dstPort =
+				OS_NTOHS(get_unaligned((PUINT16)(pSrcBuf + 2)));
+			WNMIPv4ProxyARPCheck(pAd, pPacket, srcPort, dstPort,
+					     pSrcBuf);
 
-			if (!HSIPv4Check(pAd, &Wcid, pPacket, pSrcBuf, srcPort, dstPort))
+			if (!HSIPv4Check(pAd, &Wcid, pPacket, pSrcBuf, srcPort,
+					 dstPort))
 				return FALSE;
 
 			return TRUE;
 		}
-	}
-	break;
+	} break;
 
 	case ETH_TYPE_ARP: {
 		BSS_STRUCT *pMbss = (BSS_STRUCT *)wdev->func_dev;
@@ -974,10 +1022,14 @@ BOOLEAN hotspot_check_dhcp_arp(
 			if (IsIPv4ProxyARPCandidate(pAd, pSrcBuf - 2)) {
 				BOOLEAN FoundProxyARPEntry;
 
-				FoundProxyARPEntry = IPv4ProxyARP(pAd, pMbss, pSrcBuf - 2, TRUE);
+				FoundProxyARPEntry = IPv4ProxyARP(
+					pAd, pMbss, pSrcBuf - 2, TRUE);
 
 				if (!FoundProxyARPEntry)
-					MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Can not find proxy entry\n"));
+					MTWF_LOG(
+						DBG_CAT_TX, DBG_SUBCAT_ALL,
+						DBG_LVL_TRACE,
+						("Can not find proxy entry\n"));
 
 				return FALSE;
 			}
@@ -985,14 +1037,16 @@ BOOLEAN hotspot_check_dhcp_arp(
 
 		if (pMbss->HotSpotCtrl.HotSpotEnable) {
 			if (!pMbss->HotSpotCtrl.DGAFDisable) {
-				if (IsGratuitousARP(pAd, pSrcBuf - 2, pSrcBuf - 14, pMbss)) {
-					MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("DROP %d\n", __LINE__));
+				if (IsGratuitousARP(pAd, pSrcBuf - 2,
+						    pSrcBuf - 14, pMbss)) {
+					MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL,
+						 DBG_LVL_TRACE,
+						 ("DROP %d\n", __LINE__));
 					return FALSE;
 				}
 			}
 		}
-	}
-	break;
+	} break;
 
 	case ETH_P_IPV6: {
 		BSS_STRUCT *pMbss = (BSS_STRUCT *)wdev->func_dev;
@@ -1004,10 +1058,14 @@ BOOLEAN hotspot_check_dhcp_arp(
 			if (IsIPv6ProxyARPCandidate(pAd, pSrcBuf - 2)) {
 				BOOLEAN FoundProxyARPEntry;
 
-				FoundProxyARPEntry = IPv6ProxyARP(pAd, pMbss, pSrcBuf - 2, TRUE);
+				FoundProxyARPEntry = IPv6ProxyARP(
+					pAd, pMbss, pSrcBuf - 2, TRUE);
 
 				if (!FoundProxyARPEntry)
-					MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("Can not find IPv6 proxy entry\n"));
+					MTWF_LOG(
+						DBG_CAT_TX, DBG_SUBCAT_ALL,
+						DBG_LVL_OFF,
+						("Can not find IPv6 proxy entry\n"));
 
 				return FALSE;
 			}
@@ -1015,12 +1073,12 @@ BOOLEAN hotspot_check_dhcp_arp(
 
 		if (pMbss->HotSpotCtrl.HotSpotEnable) {
 			if (!pMbss->HotSpotCtrl.DGAFDisable) {
-				if (IsUnsolicitedNeighborAdver(pAd, pSrcBuf - 2))
+				if (IsUnsolicitedNeighborAdver(pAd,
+							       pSrcBuf - 2))
 					return FALSE;
 			}
 		}
-	}
-	break;
+	} break;
 
 	default:
 		break;
@@ -1028,4 +1086,3 @@ BOOLEAN hotspot_check_dhcp_arp(
 
 	return TRUE;
 }
-

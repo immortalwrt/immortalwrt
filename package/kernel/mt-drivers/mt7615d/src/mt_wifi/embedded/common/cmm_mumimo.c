@@ -44,7 +44,6 @@
 
 #ifdef CFG_SUPPORT_MU_MIMO
 
-
 enum {
 	/* debug commands */
 	MU_SET_STA_PARAM = 50,
@@ -79,8 +78,8 @@ INT SetMuStaParamProc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	PCHAR pHighGidUserPosition0 = NULL;
 	PCHAR pHighGidUserPosition1 = NULL;
 	PUINT8 pch = NULL;
-	struct _CMD_ATTRIBUTE attr = {0};
-	CMD_MU_SET_STA_PARAM param = { {0}, {0} };
+	struct _CMD_ATTRIBUTE attr = { 0 };
+	CMD_MU_SET_STA_PARAM param = { { 0 }, { 0 } };
 	UINT32 cmd = MU_SET_STA_PARAM;
 	pch = strsep(&arg, "_");
 
@@ -174,21 +173,18 @@ INT SetMuStaParamProc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s:(Ret = %d_\n", __func__, Ret));
+		 ("%s:(Ret = %d_\n", __func__, Ret));
 	return Ret;
 }
 
-bool
-hqa_wifi_test_mu_set_sta_gid_and_up(
-	PRTMP_ADAPTER pAd,
-	P_MU_STRUCT_MU_STA_PARAM ptr
-)
+bool hqa_wifi_test_mu_set_sta_gid_and_up(PRTMP_ADAPTER pAd,
+					 P_MU_STRUCT_MU_STA_PARAM ptr)
 {
 	INT Ret = 0;
 	struct cmd_msg *msg = NULL;
 	UINT32 cmd = MU_HQA_SET_STA_PARAM;
 	CMD_HQA_SET_MU_STA_PARAM param;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	msg = AndesAllocCmdMsg(pAd, sizeof(cmd) + sizeof(param));
 
 	if (!msg) {
@@ -198,19 +194,19 @@ hqa_wifi_test_mu_set_sta_gid_and_up(
 
 	NdisCopyMemory(&param.param, ptr, sizeof(MU_STRUCT_MU_STA_PARAM));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s: MU_STRUCT_MU_STA_PARAM\n", __func__));
+		 ("%s: MU_STRUCT_MU_STA_PARAM\n", __func__));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("gid[0] = %u\n", param.param.gid[0]));
+		 ("gid[0] = %u\n", param.param.gid[0]));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("gid[1] = %u\n", param.param.gid[1]));
+		 ("gid[1] = %u\n", param.param.gid[1]));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("up[0] = %u\n", param.param.up[0]));
+		 ("up[0] = %u\n", param.param.up[0]));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("up[1] = %u\n", param.param.up[1]));
+		 ("up[1] = %u\n", param.param.up[1]));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("up[2] = %u\n", param.param.up[2]));
+		 ("up[2] = %u\n", param.param.up[2]));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("up[3] = %u\n", param.param.up[3]));
+		 ("up[3] = %u\n", param.param.up[3]));
 	SET_CMD_ATTR_MCU_DEST(attr, HOST2N9);
 	SET_CMD_ATTR_TYPE(attr, EXT_CID);
 	SET_CMD_ATTR_EXT_TYPE(attr, EXT_CMD_ID_MU_MIMO);
@@ -229,9 +225,8 @@ hqa_wifi_test_mu_set_sta_gid_and_up(
 	AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s:(Ret = %d_\n", __func__, Ret));
+		 ("%s:(Ret = %d_\n", __func__, Ret));
 	return Ret;
 }
 
 #endif
-

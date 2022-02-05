@@ -21,21 +21,24 @@
 
 static VOID ge_tx_pkt_deq_work(struct work_struct *work)
 {
-	RTMP_ADAPTER *pAd = container_of(work, struct _RTMP_ADAPTER, tx_deq_work);
+	RTMP_ADAPTER *pAd =
+		container_of(work, struct _RTMP_ADAPTER, tx_deq_work);
 
 	ge_tx_pkt_deq_func(pAd);
 }
 
 static VOID fp_tx_pkt_deq_work(struct work_struct *work)
 {
-	RTMP_ADAPTER *pAd = container_of(work, struct _RTMP_ADAPTER, tx_deq_work);
+	RTMP_ADAPTER *pAd =
+		container_of(work, struct _RTMP_ADAPTER, tx_deq_work);
 
 	fp_tx_pkt_deq_func(pAd);
 }
 
 static VOID fp_fair_tx_pkt_deq_work(struct work_struct *work)
 {
-	RTMP_ADAPTER *pAd = container_of(work, struct _RTMP_ADAPTER, tx_deq_work);
+	RTMP_ADAPTER *pAd =
+		container_of(work, struct _RTMP_ADAPTER, tx_deq_work);
 
 	fp_fair_tx_pkt_deq_func(pAd);
 }
@@ -48,11 +51,7 @@ static INT tm_wq_qm_init(RTMP_ADAPTER *pAd)
 
 	pAd->tx_dequeue_scheduable = TRUE;
 
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	pAd->qm_wq = alloc_workqueue("qm_wq", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
-#else
-	pAd->qm_wq = create_singlethread_workqueue("qm_wq");
-#endif
 
 	if (cap->qm == FAST_PATH_QM) {
 		INIT_WORK(&pAd->tx_deq_work, fp_tx_pkt_deq_work);
@@ -74,7 +73,8 @@ static VOID tx_dma_done_work(struct work_struct *work)
 
 static VOID rx_done_work(struct work_struct *work)
 {
-	POS_COOKIE obj = container_of(work, struct os_cookie, rx_done_work[HIF_RX_IDX0]);
+	POS_COOKIE obj =
+		container_of(work, struct os_cookie, rx_done_work[HIF_RX_IDX0]);
 	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *)((ULONG)(obj->pAd_va));
 
 	rx_done_func(pAd);
@@ -82,7 +82,8 @@ static VOID rx_done_work(struct work_struct *work)
 
 static VOID rx1_done_work(struct work_struct *work)
 {
-	POS_COOKIE obj = container_of(work, struct os_cookie, rx_done_work[HIF_RX_IDX1]);
+	POS_COOKIE obj =
+		container_of(work, struct os_cookie, rx_done_work[HIF_RX_IDX1]);
 	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *)((ULONG)(obj->pAd_va));
 
 	rx1_done_func(pAd);
@@ -91,7 +92,8 @@ static VOID rx1_done_work(struct work_struct *work)
 #ifdef ERR_RECOVERY
 static VOID mt_mac_recovery_work(struct work_struct *work)
 {
-	POS_COOKIE obj = container_of(work, struct os_cookie, mac_recovery_work);
+	POS_COOKIE obj =
+		container_of(work, struct os_cookie, mac_recovery_work);
 	RTMP_ADAPTER *pAd = (RTMP_ADAPTER *)((ULONG)(obj->pAd_va));
 
 	mt_mac_recovery_func(pAd);
@@ -122,11 +124,7 @@ static INT tm_wq_hif_pci_init(RTMP_ADAPTER *pAd)
 {
 	INT ret = NDIS_STATUS_SUCCESS;
 	POS_COOKIE obj = (POS_COOKIE)pAd->OS_Cookie;
-#if (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	obj->hif_wq = alloc_workqueue("hif_wq", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
-#else
-	obj->hif_wq = create_singlethread_workqueue("hif_wq");
-#endif
 
 	INIT_WORK(&obj->tx_dma_done_work, tx_dma_done_work);
 	INIT_WORK(&obj->rx_done_work[HIF_RX_IDX0], rx_done_work);
@@ -198,16 +196,15 @@ static INT tm_wq_qm_schedule_task(RTMP_ADAPTER *pAd, enum task_type type)
 	case TX_DEQ_TASK:
 		if (pAd->tx_dequeue_scheduable
 #ifdef INTELP6_UDMA_CPU_LOAD_OPTIMIZATION
-			&& !pAd->is_blocked
+		    && !pAd->is_blocked
 #endif
-			) {
+		) {
 			queue_work(pAd->qm_wq, &pAd->tx_deq_work);
 		}
 		break;
 
 	default:
 		break;
-
 	}
 
 	return ret;
@@ -261,8 +258,8 @@ static INT tm_wq_hif_schedule_task(RTMP_ADAPTER *pAd, enum task_type type)
 	return ret;
 }
 
-
-static INT tm_wq_qm_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu, enum task_type type)
+static INT tm_wq_qm_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu,
+				     enum task_type type)
 {
 	INT ret = NDIS_STATUS_SUCCESS;
 
@@ -270,7 +267,7 @@ static INT tm_wq_qm_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu, enum task_type 
 	case TX_DEQ_TASK:
 		if (pAd->tx_dequeue_scheduable
 #ifdef INTELP6_UDMA_CPU_LOAD_OPTIMIZATION
-			&& !pAd->is_blocked
+		    && !pAd->is_blocked
 #endif
 		) {
 			queue_work_on(cpu, pAd->qm_wq, &pAd->tx_deq_work);
@@ -284,7 +281,8 @@ static INT tm_wq_qm_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu, enum task_type 
 	return ret;
 }
 
-static INT tm_wq_hif_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu, enum task_type type)
+static INT tm_wq_hif_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu,
+				      enum task_type type)
 {
 	INT ret = NDIS_STATUS_SUCCESS;
 	POS_COOKIE obj = (POS_COOKIE)pAd->OS_Cookie;
@@ -299,11 +297,13 @@ static INT tm_wq_hif_schedule_task_on(RTMP_ADAPTER *pAd, INT cpu, enum task_type
 		break;
 
 	case RX_DONE_TASK:
-		queue_work_on(cpu, obj->hif_wq, &obj->rx_done_work[HIF_RX_IDX0]);
+		queue_work_on(cpu, obj->hif_wq,
+			      &obj->rx_done_work[HIF_RX_IDX0]);
 		break;
 
 	case RX1_DONE_TASK:
-		queue_work_on(cpu, obj->hif_wq, &obj->rx_done_work[HIF_RX_IDX1]);
+		queue_work_on(cpu, obj->hif_wq,
+			      &obj->rx_done_work[HIF_RX_IDX1]);
 		break;
 
 #ifdef ERR_RECOVERY
@@ -374,11 +374,15 @@ static INT tm_tasklet_qm_init(RTMP_ADAPTER *pAd)
 	RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 
 	if (cap->qm == FAST_PATH_QM) {
-		RTMP_OS_TASKLET_INIT(pAd, &pAd->tx_deque_tasklet, fp_tx_pkt_deq_tasklet, (unsigned long)pAd);
+		RTMP_OS_TASKLET_INIT(pAd, &pAd->tx_deque_tasklet,
+				     fp_tx_pkt_deq_tasklet, (unsigned long)pAd);
 	} else if (cap->qm == FAST_PATH_FAIR_QM) {
-		RTMP_OS_TASKLET_INIT(pAd, &pAd->tx_deque_tasklet, fp_fair_tx_pkt_deq_tasklet, (unsigned long)pAd);
+		RTMP_OS_TASKLET_INIT(pAd, &pAd->tx_deque_tasklet,
+				     fp_fair_tx_pkt_deq_tasklet,
+				     (unsigned long)pAd);
 	} else if ((cap->qm == GENERIC_QM) || (cap->qm == GENERIC_FAIR_QM)) {
-		RTMP_OS_TASKLET_INIT(pAd, &pAd->tx_deque_tasklet, ge_tx_pkt_deq_tasklet, (unsigned long)pAd);
+		RTMP_OS_TASKLET_INIT(pAd, &pAd->tx_deque_tasklet,
+				     ge_tx_pkt_deq_tasklet, (unsigned long)pAd);
 	}
 	pAd->tx_dequeue_scheduable = TRUE;
 
@@ -444,24 +448,31 @@ static INT tm_tasklet_hif_pci_init(RTMP_ADAPTER *pAd)
 {
 	POS_COOKIE obj = (POS_COOKIE)pAd->OS_Cookie;
 
-	RTMP_OS_TASKLET_INIT(pAd, &obj->rx_done_task[HIF_RX_IDX0], rx_done_tasklet, (unsigned long)pAd);
-	RTMP_OS_TASKLET_INIT(pAd, &obj->rx_done_task[HIF_RX_IDX1], rx1_done_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->rx_done_task[HIF_RX_IDX0],
+			     rx_done_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->rx_done_task[HIF_RX_IDX1],
+			     rx1_done_tasklet, (unsigned long)pAd);
 
 #ifdef ERR_RECOVERY
-	RTMP_OS_TASKLET_INIT(pAd, &obj->mac_error_recovey_task, mt_mac_recovery_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->mac_error_recovey_task,
+			     mt_mac_recovery_tasklet, (unsigned long)pAd);
 #endif /* ERR_RECOVERY */
 
 #ifdef CONFIG_FWOWN_SUPPORT
-	RTMP_OS_TASKLET_INIT(pAd, &obj->mt_mac_fw_own_task, mt_mac_fw_own_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->mt_mac_fw_own_task,
+			     mt_mac_fw_own_tasklet, (unsigned long)pAd);
 #endif /* CONFIG_FWOWN_SUPPORT */
 
 #ifdef MULTI_LAYER_INTERRUPT
-	RTMP_OS_TASKLET_INIT(pAd, &obj->subsys_int_task, subsys_int_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->subsys_int_task, subsys_int_tasklet,
+			     (unsigned long)pAd);
 #endif
 
-	RTMP_OS_TASKLET_INIT(pAd, &obj->tx_dma_done_task, tx_dma_done_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->tx_dma_done_task, tx_dma_done_tasklet,
+			     (unsigned long)pAd);
 
-	RTMP_OS_TASKLET_INIT(pAd, &obj->tr_done_task, tr_done_tasklet, (unsigned long)pAd);
+	RTMP_OS_TASKLET_INIT(pAd, &obj->tr_done_task, tr_done_tasklet,
+			     (unsigned long)pAd);
 
 #ifdef CONFIG_AP_SUPPORT
 	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
@@ -514,7 +525,8 @@ static INT tm_tasklet_hif_pci_exit(RTMP_ADAPTER *pAd)
 	RTMP_OS_TASKLET_KILL(&obj->tr_done_task);
 
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 	}
 #endif /* CONFIG_AP_SUPPORT */
 
@@ -540,7 +552,7 @@ static INT tm_tasklet_qm_schedule_task(RTMP_ADAPTER *pAd, enum task_type type)
 	case TX_DEQ_TASK:
 		if (pAd->tx_dequeue_scheduable
 #ifdef INTELP6_UDMA_CPU_LOAD_OPTIMIZATION
-			&& !pAd->is_blocked
+		    && !pAd->is_blocked
 #endif
 		) {
 			RTMP_OS_TASKLET_SCHE(&pAd->tx_deque_tasklet);
@@ -619,7 +631,6 @@ struct tm_ops tm_tasklet_hif_ops = {
 	.exit = tm_tasklet_hif_exit,
 	.schedule_task = tm_tasklet_hif_schedule_task,
 };
-
 
 INT tm_init(RTMP_ADAPTER *pAd)
 {

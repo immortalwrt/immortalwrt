@@ -136,86 +136,72 @@
 	Ellis       2018.3.1      Initial version
 */
 
-
 #ifdef DOT11_SAE_OPENSSL_BN
 #include "security/crypt_bignum.h"
 #include "rt_config.h"
 #include <linux/time.h>
 
-
-
 #ifdef __KERNEL__
-#define DEBUGPRINT(fmt, args...) printk(fmt, ## args)
+#define DEBUGPRINT(fmt, args...) printk(fmt, ##args)
 #else
-#define DEBUGPRINT(fmt, args...) printf(fmt, ## args)
+#define DEBUGPRINT(fmt, args...) printf(fmt, ##args)
 #endif /* __KERNEL__ */
 
-VOID Bignum_Print (
-	IN BIGNUM *pBI)
+VOID Bignum_Print(IN BIGNUM *pBI)
 {
 	UINT32 i, j = 0;
 
 	DEBUGPRINT("dmax = %d, top = %d\n", pBI->dmax, pBI->top);
 
 	for (i = pBI->dmax - 1; j < pBI->dmax; i--, j++) {
-		if (j/4 > 0 && j % 4 == 0)
+		if (j / 4 > 0 && j % 4 == 0)
 			DEBUGPRINT("\n");
-		DEBUGPRINT("%02x %02x %02x %02x ", (pBI->d[i] & 0xff000000) >> 24,
-			(pBI->d[i] & 0xff0000) >> 16, (pBI->d[i] & 0xff00) >> 8, (pBI->d[i] & 0xff)) ;
+		DEBUGPRINT("%02x %02x %02x %02x ",
+			   (pBI->d[i] & 0xff000000) >> 24,
+			   (pBI->d[i] & 0xff0000) >> 16,
+			   (pBI->d[i] & 0xff00) >> 8, (pBI->d[i] & 0xff));
 	}
 
 	DEBUGPRINT("\n");
 	return;
 }
 
-
-
-VOID Bignum_Init(
-	INOUT BIGNUM **pBI)
+VOID Bignum_Init(INOUT BIGNUM **pBI)
 {
 	if (*pBI == NULL) {
 		*pBI = BN_new();
 	}
 }
 
-VOID Bignum_Free(
-	IN BIGNUM **pBI)
+VOID Bignum_Free(IN BIGNUM **pBI)
 {
 	if (*pBI != NULL)
 		BN_free(*pBI);
 	*pBI = NULL;
 }
 
-UINT32 Bignum_getlen(
-	IN BIGNUM *pBI)
+UINT32 Bignum_getlen(IN BIGNUM *pBI)
 {
 	return pBI->top * 4;
 }
 
-INT Bignum_Get_rand_range(IN BIGNUM * range, INOUT BIGNUM * r)
+INT Bignum_Get_rand_range(IN BIGNUM *range, INOUT BIGNUM *r)
 {
 	return BN_rand_range(r, (const BIGNUM *)range);
 }
 
-VOID Bignum_BI2Bin(
-	IN BIGNUM *pBI,
-	OUT UINT8 *pValue,
-	OUT UINT *Length)
+VOID Bignum_BI2Bin(IN BIGNUM *pBI, OUT UINT8 *pValue, OUT UINT *Length)
 {
 	*Length = BN_num_bytes(pBI);
 	BN_bn2bin(pBI, pValue);
 } /* End of Bignum_BI2Bin */
 
-
-VOID Bignum_BI2Bin_with_pad(
-	IN BIGNUM *pBI,
-	OUT UINT8 *pValue,
-	IN UINT *Length,
-	IN UINT32 PadLen)
+VOID Bignum_BI2Bin_with_pad(IN BIGNUM *pBI, OUT UINT8 *pValue, IN UINT *Length,
+			    IN UINT32 PadLen)
 {
 	UINT32 num_bytes, offset;
 
-	num_bytes = BN_num_bytes((const BIGNUM *) pBI);
+	num_bytes = BN_num_bytes((const BIGNUM *)pBI);
 
 	if (PadLen > num_bytes)
 		offset = PadLen - num_bytes;
@@ -227,61 +213,43 @@ VOID Bignum_BI2Bin_with_pad(
 	*Length += offset;
 }
 
-
-VOID Bignum_Bin2BI(
-	IN UINT8 *pValue,
-	IN UINT Length,
-	OUT BIGNUM **pBI)
+VOID Bignum_Bin2BI(IN UINT8 *pValue, IN UINT Length, OUT BIGNUM **pBI)
 {
 	if (*pBI)
 		BN_free(*pBI);
 	*pBI = BN_bin2bn(pValue, Length, NULL);
 } /* End of Bignum_Bin2BI */
 
-
-VOID Bignum_Copy(
-	IN  BIGNUM *pBI_Copied,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Copy(IN BIGNUM *pBI_Copied, OUT BIGNUM **pBI_Result)
 {
 	if (*pBI_Result)
 		BN_free(*pBI_Result);
 	*pBI_Result = BN_dup(pBI_Copied);
 } /* End of Bignum_Copy */
 
-
-INT Bignum_UnsignedCompare(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand)
+INT Bignum_UnsignedCompare(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand)
 {
 	return BN_ucmp(pFirstOperand, pSecondOperand);
 } /* End of Bignum_Compare */
 
-
-VOID Bignum_Add(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Add(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		OUT BIGNUM **pBI_Result)
 {
 	if (*pBI_Result == NULL)
 		*pBI_Result = BN_new();
 	BN_add(*pBI_Result, pFirstOperand, pSecondOperand);
 } /* End of Bignum_Add */
 
-
-VOID Bignum_Sub(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Sub(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		OUT BIGNUM **pBI_Result)
 {
 	if (*pBI_Result == NULL)
 		*pBI_Result = BN_new();
 	BN_sub(*pBI_Result, pFirstOperand, pSecondOperand);
 } /* End of Bignum_Sub */
 
-VOID Bignum_Mod(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	OUT BIGNUM **pBI_Remainder)
+VOID Bignum_Mod(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		OUT BIGNUM **pBI_Remainder)
 {
 	BN_CTX *bnctx;
 
@@ -294,11 +262,8 @@ VOID Bignum_Mod(
 	BN_CTX_free(bnctx);
 }
 
-VOID Bignum_Mod_Mul(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Mul(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		    IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -311,30 +276,23 @@ VOID Bignum_Mod_Mul(
 	BN_CTX_free(bnctx);
 }
 
-
-UCHAR Bignum_is_zero(
-	IN BIGNUM *pBI)
+UCHAR Bignum_is_zero(IN BIGNUM *pBI)
 {
 	return (UCHAR)BN_is_zero(pBI);
 }
 
-UCHAR Bignum_is_one(
-	IN BIGNUM *pBI)
+UCHAR Bignum_is_one(IN BIGNUM *pBI)
 {
 	return (UCHAR)BN_is_one(pBI);
 }
 
-UCHAR Bignum_is_odd(
-	IN BIGNUM *pBI)
+UCHAR Bignum_is_odd(IN BIGNUM *pBI)
 {
 	return (UCHAR)BN_is_odd(pBI);
 }
 
-
-VOID Bignum_Mod_Square(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Square(IN BIGNUM *pFirstOperand, IN BIGNUM *pBI_P,
+		       OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -346,11 +304,8 @@ VOID Bignum_Mod_Square(
 	BN_CTX_free(bnctx);
 }
 
-VOID Bignum_Mod_Add(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Add(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		    IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -362,12 +317,8 @@ VOID Bignum_Mod_Add(
 	BN_CTX_free(bnctx);
 }
 
-
-VOID Bignum_Mod_Sub(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Sub(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		    IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -379,11 +330,8 @@ VOID Bignum_Mod_Sub(
 	BN_CTX_free(bnctx);
 }
 
-VOID Bignum_Mod_Add_quick(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Add_quick(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+			  IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	if (*pBI_Result == NULL)
 		*pBI_Result = BN_new();
@@ -391,12 +339,8 @@ VOID Bignum_Mod_Add_quick(
 	BN_mod_add_quick(*pBI_Result, pFirstOperand, pSecondOperand, pBI_P);
 }
 
-
-VOID Bignum_Mod_Sub_quick(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Sub_quick(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+			  IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	if (*pBI_Result == NULL)
 		*pBI_Result = BN_new();
@@ -404,12 +348,8 @@ VOID Bignum_Mod_Sub_quick(
 	BN_mod_sub_quick(*pBI_Result, pFirstOperand, pSecondOperand, pBI_P);
 }
 
-
-VOID Bignum_Mod_Div(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pSecondOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Div(IN BIGNUM *pFirstOperand, IN BIGNUM *pSecondOperand,
+		    IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	BIGNUM *tmp = NULL;
 	BN_CTX *bnctx;
@@ -425,15 +365,11 @@ VOID Bignum_Mod_Div(
 	BN_CTX_free(bnctx);
 }
 
-
-
 /* Tonelli¡VShanks algorithm*/
 /* reference: https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm */
 /* pBI_P must be prime */
-VOID Bignum_Mod_Sqrt(
-	IN BIGNUM *pFirstOperand,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Sqrt(IN BIGNUM *pFirstOperand, IN BIGNUM *pBI_P,
+		     OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -445,36 +381,26 @@ VOID Bignum_Mod_Sqrt(
 	BN_CTX_free(bnctx);
 }
 
-VOID Bignum_Shift_Right1(
-	IN BIGNUM *pBI,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Shift_Right1(IN BIGNUM *pBI, OUT BIGNUM **pBI_Result)
 {
 	BN_copy(*pBI_Result, pBI);
 	BN_div_word(*pBI_Result, 2);
 }
 
-VOID Bignum_Mod_Shift_Left1(
-	IN BIGNUM *pBI,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Shift_Left1(IN BIGNUM *pBI, IN BIGNUM *pBI_P,
+			    OUT BIGNUM **pBI_Result)
 {
 	BN_mod_lshift1_quick(*pBI_Result, pBI, pBI_P);
 }
 
-VOID Bignum_Mod_Shift_Left(
-	IN BIGNUM *pBI,
-	IN UCHAR bit,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Shift_Left(IN BIGNUM *pBI, IN UCHAR bit, IN BIGNUM *pBI_P,
+			   OUT BIGNUM **pBI_Result)
 {
 	BN_mod_lshift_quick(*pBI_Result, pBI, bit, pBI_P);
 }
 
-
 /* an integer q is called a quadratic residue modulo n if it is congruent to a perfect square modulo n */
-UCHAR Bignum_is_quadratic_residue(
-	IN BIGNUM *q,
-	IN BIGNUM *prime)
+UCHAR Bignum_is_quadratic_residue(IN BIGNUM *q, IN BIGNUM *prime)
 {
 	BIGNUM *p = NULL;
 	BIGNUM *res = NULL;
@@ -495,27 +421,19 @@ UCHAR Bignum_is_quadratic_residue(
 	return ret;
 }
 
-VOID Bignum_Add_DW(
-	INOUT BIGNUM *pBI,
-	IN UINT32 value)
+VOID Bignum_Add_DW(INOUT BIGNUM *pBI, IN UINT32 value)
 {
 	return;
 }
 
-VOID Bignum_Mod_DW(
-	INOUT BIGNUM *pBI,
-	IN UINT32 value,
-	OUT UINT32 *rem)
+VOID Bignum_Mod_DW(INOUT BIGNUM *pBI, IN UINT32 value, OUT UINT32 *rem)
 {
 	*rem = pBI->d[0] & (value - 1);
 	pBI->d[0] &= ~(value - 1);
 }
 
-VOID Bignum_Montgomery_ExpMod(
-	IN BIGNUM *pBI_G,
-	IN BIGNUM *pBI_E,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Montgomery_ExpMod(IN BIGNUM *pBI_G, IN BIGNUM *pBI_E,
+			      IN BIGNUM *pBI_P, OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -529,10 +447,8 @@ VOID Bignum_Montgomery_ExpMod(
 	BN_CTX_free(bnctx);
 }
 
-VOID Bignum_Mod_Mul_Inverse(
-	IN BIGNUM *pBI,
-	IN BIGNUM *pBI_P,
-	OUT BIGNUM **pBI_Result)
+VOID Bignum_Mod_Mul_Inverse(IN BIGNUM *pBI, IN BIGNUM *pBI_P,
+			    OUT BIGNUM **pBI_Result)
 {
 	BN_CTX *bnctx;
 
@@ -545,8 +461,6 @@ VOID Bignum_Mod_Mul_Inverse(
 
 	BN_CTX_free(bnctx);
 }
-
-
 
 /* End of crypt_Bignum.c */
 

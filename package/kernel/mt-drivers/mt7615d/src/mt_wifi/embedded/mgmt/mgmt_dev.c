@@ -35,7 +35,8 @@
  *
  * @return wifi_dev
  */
-struct wifi_dev *get_wdev_by_ioctl_idx_and_iftype(RTMP_ADAPTER *pAd, INT idx, INT if_type)
+struct wifi_dev *get_wdev_by_ioctl_idx_and_iftype(RTMP_ADAPTER *pAd, INT idx,
+						  INT if_type)
 {
 	INT net_device_offset = 0;
 
@@ -61,8 +62,9 @@ struct wifi_dev *get_wdev_by_ioctl_idx_and_iftype(RTMP_ADAPTER *pAd, INT idx, IN
 #endif /* CONFIG_AP_SUPPORT */
 
 	default:
-		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s: can not find ioctl_if_type(%d), if_idx(%d)\n",
-				 __func__, if_type, idx));
+		MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s: can not find ioctl_if_type(%d), if_idx(%d)\n",
+			  __func__, if_type, idx));
 		break;
 	}
 
@@ -87,7 +89,8 @@ struct wifi_dev *get_wdev_by_idx(RTMP_ADAPTER *pAd, INT idx)
 		}
 
 #endif /* APCLI_SUPPORT */
-		IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+		IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+		{
 #ifdef WDS_SUPPORT
 
 			if (idx >= MIN_NET_DEVICE_FOR_WDS) {
@@ -101,7 +104,9 @@ struct wifi_dev *get_wdev_by_idx(RTMP_ADAPTER *pAd, INT idx)
 
 #endif /* WDS_SUPPORT */
 
-			if ((idx < pAd->ApCfg.BssidNum) && (idx < MAX_MBSSID_NUM(pAd)) && (idx < HW_BEACON_MAX_NUM))
+			if ((idx < pAd->ApCfg.BssidNum) &&
+			    (idx < MAX_MBSSID_NUM(pAd)) &&
+			    (idx < HW_BEACON_MAX_NUM))
 				wdev = &pAd->ApCfg.MBSSID[idx].wdev;
 
 			break;
@@ -110,8 +115,8 @@ struct wifi_dev *get_wdev_by_idx(RTMP_ADAPTER *pAd, INT idx)
 	} while (FALSE);
 
 	if (wdev == NULL)
-		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("get_wdev_by_idx: invalid idx(%d)\n", idx));
+		MTWF_LOG(DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("get_wdev_by_idx: invalid idx(%d)\n", idx));
 
 	return wdev;
 }
-

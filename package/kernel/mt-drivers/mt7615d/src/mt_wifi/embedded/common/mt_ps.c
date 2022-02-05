@@ -22,9 +22,6 @@
 
 #include "rt_config.h"
 
-
-
-
 /*
   ========================================================================
   Description:
@@ -33,14 +30,15 @@
 	is received from a WSTA which has MAC address FF:FF:FF:FF:FF:FF
   ========================================================================
 */
-VOID MtHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isActive)
+VOID MtHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid,
+		      BOOLEAN isActive)
 {
 #ifdef CONFIG_AP_SUPPORT
 	MAC_TABLE_ENTRY *pMacEntry;
 	STA_TR_ENTRY *tr_entry;
-	BOOLEAN       IsDequeu = FALSE;
-	INT           DequeuAC = QID_AC_BK;
-	INT           DequeuCOUNT;
+	BOOLEAN IsDequeu = FALSE;
+	INT DequeuAC = QID_AC_BK;
+	INT DequeuCOUNT;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 	UINT8 num_of_tx_ring = GET_NUM_OF_TX_RING(cap);
 
@@ -59,24 +57,28 @@ VOID MtHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isAc
 		DequeuCOUNT = 1;
 		tr_entry->PsQIdleCount = 0;
 	} else { /* Receive Power bit 0 frame */
-		WLAN_MR_TIM_BIT_CLEAR(pAd, tr_entry->func_tb_idx, tr_entry->wcid);
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("RtmpHandleRxPsPoll null0/1 wcid = %x mt_ps_queue.Number = %d\n",
-				 tr_entry->wcid,
-				 tr_entry->ps_queue.Number));
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(%d) tx_queue.Number = BE:%d, BK:%d, VI:%d, VO:%d, ps_state:%x,  tx_queue.TokenCount = BE:%d, BK:%d, VI:%d, VO:%d\n",
-				 __func__, __LINE__,
-				 tr_entry->tx_queue[QID_AC_BE].Number,
-				 tr_entry->tx_queue[QID_AC_BK].Number,
-				 tr_entry->tx_queue[QID_AC_VI].Number,
-				 tr_entry->tx_queue[QID_AC_VO].Number,
-				 tr_entry->ps_state,
-				 tr_entry->TokenCount[QID_AC_BE],
-				 tr_entry->TokenCount[QID_AC_BK],
-				 tr_entry->TokenCount[QID_AC_VI],
-				 tr_entry->TokenCount[QID_AC_VO]));
+		WLAN_MR_TIM_BIT_CLEAR(pAd, tr_entry->func_tb_idx,
+				      tr_entry->wcid);
+		MTWF_LOG(
+			DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("RtmpHandleRxPsPoll null0/1 wcid = %x mt_ps_queue.Number = %d\n",
+			 tr_entry->wcid, tr_entry->ps_queue.Number));
+		MTWF_LOG(
+			DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("%s(%d) tx_queue.Number = BE:%d, BK:%d, VI:%d, VO:%d, ps_state:%x,  tx_queue.TokenCount = BE:%d, BK:%d, VI:%d, VO:%d\n",
+			 __func__, __LINE__,
+			 tr_entry->tx_queue[QID_AC_BE].Number,
+			 tr_entry->tx_queue[QID_AC_BK].Number,
+			 tr_entry->tx_queue[QID_AC_VI].Number,
+			 tr_entry->tx_queue[QID_AC_VO].Number,
+			 tr_entry->ps_state, tr_entry->TokenCount[QID_AC_BE],
+			 tr_entry->TokenCount[QID_AC_BK],
+			 tr_entry->TokenCount[QID_AC_VI],
+			 tr_entry->TokenCount[QID_AC_VO]));
 #ifdef UAPSD_SUPPORT
 
-		if (CLIENT_STATUS_TEST_FLAG(pMacEntry, fCLIENT_STATUS_APSD_CAPABLE)) {
+		if (CLIENT_STATUS_TEST_FLAG(pMacEntry,
+					    fCLIENT_STATUS_APSD_CAPABLE)) {
 			/* deliver all queued UAPSD packets */
 			UAPSD_AllPacketDeliver(pAd, pMacEntry);
 			/* end the SP if exists */
@@ -90,21 +92,24 @@ VOID MtHandleRxPsPoll(RTMP_ADAPTER *pAd, UCHAR *pAddr, USHORT wcid, BOOLEAN isAc
 			DequeuAC = num_of_tx_ring;
 
 			if (tr_entry->enqCount > 8 /* MAX_TX_PROCESS */)
-				DequeuCOUNT =  8 /* MAX_TX_PROCESS */;
+				DequeuCOUNT = 8 /* MAX_TX_PROCESS */;
 			else
 				DequeuCOUNT = tr_entry->enqCount;
 		}
 	}
 
 	if (IsDequeu == TRUE) {
-		RTMPDeQueuePacket(pAd, FALSE, DequeuAC, tr_entry->wcid, DequeuCOUNT);
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("RtmpHandleRxPsPoll IsDequeu == TRUE tr_entry->wcid=%x DequeuCOUNT=%d, ps_state=%d\n", tr_entry->wcid, DequeuCOUNT, tr_entry->ps_state));
+		RTMPDeQueuePacket(pAd, FALSE, DequeuAC, tr_entry->wcid,
+				  DequeuCOUNT);
+		MTWF_LOG(
+			DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("RtmpHandleRxPsPoll IsDequeu == TRUE tr_entry->wcid=%x DequeuCOUNT=%d, ps_state=%d\n",
+			 tr_entry->wcid, DequeuCOUNT, tr_entry->ps_state));
 	}
 
 	return;
 #endif /* CONFIG_AP_SUPPORT */
 }
-
 
 /*
 	==========================================================================
@@ -143,11 +148,16 @@ BOOLEAN MtPsIndicate(RTMP_ADAPTER *pAd, UCHAR *pAddr, UCHAR wcid, UCHAR Psm)
 		*/
 		if (tr_entry->ps_state == APPS_RETRIEVE_DONE) {
 			tr_entry->ps_state = APPS_RETRIEVE_IDLE;
-			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(%d): STA wakes up!\n", __func__, __LINE__));
+			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				 ("%s(%d): STA wakes up!\n", __func__,
+				  __LINE__));
 			MtHandleRxPsPoll(pAd, pAddr, wcid, TRUE);
 		} else
-			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(%d):wcid=%d, old_psmode=%d, now_psmode=%d, wrong ps_state=%d ???\n",
-					 __func__, __LINE__, wcid, old_psmode, Psm, tr_entry->ps_state));
+			MTWF_LOG(
+				DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				("%s(%d):wcid=%d, old_psmode=%d, now_psmode=%d, wrong ps_state=%d ???\n",
+				 __func__, __LINE__, wcid, old_psmode, Psm,
+				 tr_entry->ps_state));
 	} else if ((old_psmode == PWR_ACTIVE) && (Psm == PWR_SAVE)) {
 		/*
 			STA goes to sleep.
@@ -155,14 +165,16 @@ BOOLEAN MtPsIndicate(RTMP_ADAPTER *pAd, UCHAR *pAddr, UCHAR wcid, UCHAR Psm)
 		if (tr_entry->ps_state == APPS_RETRIEVE_IDLE) {
 			tr_entry->ps_state = APPS_RETRIEVE_DONE;
 		} else
-			MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(%d):wcid=%d, old_psmode=%d, now_psmode=%d, wrong ps_state=%d ???\n",
-					 __func__, __LINE__, wcid, old_psmode, Psm, tr_entry->ps_state));
+			MTWF_LOG(
+				DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				("%s(%d):wcid=%d, old_psmode=%d, now_psmode=%d, wrong ps_state=%d ???\n",
+				 __func__, __LINE__, wcid, old_psmode, Psm,
+				 tr_entry->ps_state));
 	} else {
-		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(%d): ps state is not changed, do nothing here.\n",
-				 __func__, __LINE__));
+		MTWF_LOG(DBG_CAT_PS, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("%s(%d): ps state is not changed, do nothing here.\n",
+			  __func__, __LINE__));
 	}
 
 	return old_psmode;
 }
-
-

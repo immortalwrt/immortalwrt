@@ -32,8 +32,7 @@
 extern VOID *p5G_pAd;
 extern VOID *p2G_pAd;
 
-INT ApcliLinkMonitorThread(
-	IN ULONG Context)
+INT ApcliLinkMonitorThread(IN ULONG Context)
 {
 	RTMP_ADAPTER *pAd;
 	RTMP_ADAPTER *pAd_other_band;
@@ -46,27 +45,28 @@ INT ApcliLinkMonitorThread(
 
 	if (p2G_pAd == NULL) {
 		MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-				("##### no 2G pAd!!!\n"));
+			 ("##### no 2G pAd!!!\n"));
 		/* RtmpOSTaskNotifyToExit(pTask); */
 		/* return 0; */
 	} else if (p5G_pAd == NULL) {
 		MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-				("##### no 5G pAd!!!\n"));
+			 ("##### no 5G pAd!!!\n"));
 		/* RtmpOSTaskNotifyToExit(pTask); */
 		/* return 0; */
 	}
 
 	if (p5G_pAd == pAd) {
 		MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-				("we are 5G interface, wait 2G link update\n"));
+			 ("we are 5G interface, wait 2G link update\n"));
 		pAd_other_band = p2G_pAd;
 	} else {
 		MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-				("we are 2G interface, wait 5G link update\n"));
+			 ("we are 2G interface, wait 5G link update\n"));
 		pAd_other_band = p5G_pAd;
 	}
 
-	while (pTask && !RTMP_OS_TASK_IS_KILLED(pTask) && (pAd_other_band != NULL)) {
+	while (pTask && !RTMP_OS_TASK_IS_KILLED(pTask) &&
+	       (pAd_other_band != NULL)) {
 		if (RtmpOSTaskWait(pAd, pTask, &status) == FALSE) {
 			RTMP_SET_FLAG(pAd, fRTMP_ADAPTER_HALT_IN_PROGRESS);
 			break;
@@ -93,7 +93,7 @@ INT ApcliLinkMonitorThread(
 	 * of execution immediately upon a complete().
 	 */
 	MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-			("<---ApcliLinkMonitorThread\n"));
+		 ("<---ApcliLinkMonitorThread\n"));
 	/* if (pTask) */
 	/* RtmpOSTaskNotifyToExit(pTask); */
 	return 0;
@@ -111,15 +111,15 @@ NDIS_STATUS RtmpApcliLinkTaskInit(IN PRTMP_ADAPTER pAd)
 
 	if (status == NDIS_STATUS_FAILURE) {
 		MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_TRACE,
-				("%s: Unable to start ApcliLinkMonitorThread!\n", get_dev_name_prefix(pAd, INT_APCLI)));
+			 ("%s: Unable to start ApcliLinkMonitorThread!\n",
+			  get_dev_name_prefix(pAd, INT_APCLI)));
 		return NDIS_STATUS_FAILURE;
 	}
 
 	return NDIS_STATUS_SUCCESS;
 }
 
-VOID RtmpApcliLinkTaskExit(
-	IN RTMP_ADAPTER *pAd)
+VOID RtmpApcliLinkTaskExit(IN RTMP_ADAPTER *pAd)
 {
 	INT ret;
 	/* Terminate cmdQ thread */
@@ -128,9 +128,9 @@ VOID RtmpApcliLinkTaskExit(
 		ret = RtmpOSTaskKill(&pAd->apcliLinkTask);
 
 		if (ret == NDIS_STATUS_FAILURE)
-			MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_ERROR, ("Kill command task fail!\n"));
+			MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_ERROR,
+				 ("Kill command task fail!\n"));
 	}
 }
 #endif /* APCLI_LINK_COVER_SUPPORT */
 #endif /* APCLI_SUPPORT */
-

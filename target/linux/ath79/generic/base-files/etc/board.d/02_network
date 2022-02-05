@@ -16,6 +16,7 @@ ath79_setup_interfaces()
 	alfa-network,pi-wifi4|\
 	arduino,yun|\
 	aruba,ap-105|\
+	asus,rp-ac66|\
 	avm,fritz1750e|\
 	avm,fritz300e|\
 	avm,fritzdvbc|\
@@ -130,7 +131,8 @@ ath79_setup_interfaces()
 	pcs,cr3000|\
 	tplink,archer-c58-v1|\
 	tplink,archer-c59-v1|\
-	tplink,archer-c59-v2)
+	tplink,archer-c59-v2|\
+	wd,mynet-n600)
 		ucidef_set_interface_wan "eth1"
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan:1" "2:lan:4" "3:lan:3" "4:lan:2"
@@ -186,6 +188,7 @@ ath79_setup_interfaces()
 	compex,wpj531-16m|\
 	openmesh,a40|\
 	openmesh,a60|\
+	openmesh,om2p-v1|\
 	openmesh,om2p-v4|\
 	openmesh,om2p-hs-v4|\
 	plasmacloud,pa300|\
@@ -302,6 +305,10 @@ ath79_setup_interfaces()
 	xwrt,csac)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "5:wan"
+		;;
+	jjplus,jwap230)
+		ucidef_add_switch "switch0" \
+			"0@eth0" "5:wan:1" "1:lan:2" "6@eth1"
 		;;
 	joyit,jt-or750i)
 		ucidef_set_interface_wan "eth1"
@@ -588,6 +595,7 @@ ath79_setup_macs()
 		;;
 	dlink,dir-859-a1|\
 	qihoo,c301|\
+	wd,mynet-n600|\
 	wd,mynet-n750)
 		lan_mac=$(mtd_get_mac_ascii devdata "lanmac")
 		wan_mac=$(mtd_get_mac_ascii devdata "wanmac")

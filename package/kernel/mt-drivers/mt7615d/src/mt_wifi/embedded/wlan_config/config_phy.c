@@ -19,7 +19,6 @@
 #include "rt_config.h"
 #include "wlan_config/config_internal.h"
 
-
 /*
 * define  constructor & deconstructor & method
 */
@@ -29,8 +28,8 @@
 VOID phy_cfg_init(struct phy_cfg *obj)
 {
 #ifdef TXBF_SUPPORT
-    obj->ETxBfEnCond = SUBF_OFF;
-    obj->ITxBfEn = SUBF_OFF;
+	obj->ETxBfEnCond = SUBF_OFF;
+	obj->ITxBfEn = SUBF_OFF;
 #endif /* TXBF_SUPPORT */
 }
 
@@ -42,7 +41,6 @@ VOID phy_cfg_exit(struct phy_cfg *obj)
 /*
 * Operater loader
 */
-
 
 /*
 * export function
@@ -71,23 +69,23 @@ VOID wlan_config_set_cen_ch_2_all(struct wpf_ctrl *ctrl, UCHAR cen_ch_2)
 /*
 *Set
 */
-VOID wlan_config_set_ack_policy(struct wifi_dev *wdev,UCHAR *policy)
+VOID wlan_config_set_ack_policy(struct wifi_dev *wdev, UCHAR *policy)
 {
-	struct wlan_config *cfg = (struct wlan_config*)wdev->wpf_cfg;
-	UCHAR i=0;
-	for(i = 0; i < WMM_NUM_OF_AC ; i++){
+	struct wlan_config *cfg = (struct wlan_config *)wdev->wpf_cfg;
+	UCHAR i = 0;
+	for (i = 0; i < WMM_NUM_OF_AC; i++) {
 		cfg->phy_conf.ack_policy[i] = policy[i];
 	}
 }
 
-VOID wlan_config_set_ack_policy_all(struct wpf_ctrl *ctrl,UCHAR *policy)
+VOID wlan_config_set_ack_policy_all(struct wpf_ctrl *ctrl, UCHAR *policy)
 {
 	struct wlan_config *cfg;
 	UCHAR i;
 	UCHAR j;
-	for(i=0;i<WDEV_NUM_MAX;i++){
-		cfg = (struct wlan_config*)ctrl->pf[i].conf;
-		for(j = 0; j < WMM_NUM_OF_AC ; j++){
+	for (i = 0; i < WDEV_NUM_MAX; i++) {
+		cfg = (struct wlan_config *)ctrl->pf[i].conf;
+		for (j = 0; j < WMM_NUM_OF_AC; j++) {
 			cfg->phy_conf.ack_policy[j] = policy[j];
 		}
 	}
@@ -113,7 +111,6 @@ VOID wlan_config_set_etxbf(struct wifi_dev *wdev, UCHAR ETxBfEnCond)
 	struct wlan_config *cfg = (struct wlan_config *)wdev->wpf_cfg;
 
 	cfg->phy_conf.ETxBfEnCond = ETxBfEnCond;
-
 }
 
 VOID wlan_config_set_itxbf(struct wifi_dev *wdev, UCHAR ITxBfEn)
@@ -121,7 +118,6 @@ VOID wlan_config_set_itxbf(struct wifi_dev *wdev, UCHAR ITxBfEn)
 	struct wlan_config *cfg = (struct wlan_config *)wdev->wpf_cfg;
 
 	cfg->phy_conf.ITxBfEn = ITxBfEn;
-
 }
 #endif /* TXBF_SUPPORT */
 
@@ -136,7 +132,7 @@ UCHAR wlan_config_get_cen_ch_2(struct wifi_dev *wdev)
 
 UCHAR wlan_config_get_ack_policy(struct wifi_dev *wdev, UCHAR ac_id)
 {
-	struct wlan_config *cfg = (struct wlan_config*)wdev->wpf_cfg;
+	struct wlan_config *cfg = (struct wlan_config *)wdev->wpf_cfg;
 	return cfg->phy_conf.ack_policy[ac_id];
 }
 

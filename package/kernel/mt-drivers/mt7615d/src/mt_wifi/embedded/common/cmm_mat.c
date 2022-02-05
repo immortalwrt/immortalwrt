@@ -35,7 +35,6 @@
 
 #include "rt_config.h"
 
-
 extern MATProtoOps MATProtoIPHandle;
 extern MATProtoOps MATProtoARPHandle;
 extern MATProtoOps MATProtoPPPoEDisHandle;
@@ -45,34 +44,34 @@ extern MATProtoOps MATProtoIPv6Handle;
 extern UCHAR SNAP_802_1H[];
 extern UCHAR SNAP_BRIDGE_TUNNEL[];
 
-#define MAX_MAT_NODE_ENTRY_NUM	128	/* We support maximum 128 node entry for our system */
-#define MAT_NODE_ENTRY_SIZE	40 /*28	// bytes   //change to 40 for IPv6Mac Table */
+#define MAX_MAT_NODE_ENTRY_NUM                                                 \
+	128 /* We support maximum 128 node entry for our system */
+#define MAT_NODE_ENTRY_SIZE                                                    \
+	40 /*28	// bytes   //change to 40 for IPv6Mac Table */
 
 typedef struct _MATNodeEntry {
 	UCHAR data[MAT_NODE_ENTRY_SIZE];
 	struct _MATNodeEntry *next;
 } MATNodeEntry, *PMATNodeEntry;
 
-
 #ifdef KMALLOC_BATCH
 /*static MATNodeEntry *MATNodeEntryPoll = NULL; */
 #endif
 
 static MATProtoTable MATProtoTb[] = {
-	{ETH_P_IP,			&MATProtoIPHandle},			/* IP handler */
-	{ETH_P_ARP,		&MATProtoARPHandle},		/* ARP handler */
-	{ETH_P_PPP_DISC,	&MATProtoPPPoEDisHandle},	/* PPPoE discovery stage handler */
-	{ETH_P_PPP_SES,		&MATProtoPPPoESesHandle},	/* PPPoE session stage handler */
-	{ETH_P_IPV6,		&MATProtoIPv6Handle},		/* IPv6 handler */
+	{ ETH_P_IP, &MATProtoIPHandle }, /* IP handler */
+	{ ETH_P_ARP, &MATProtoARPHandle }, /* ARP handler */
+	{ ETH_P_PPP_DISC,
+	  &MATProtoPPPoEDisHandle }, /* PPPoE discovery stage handler */
+	{ ETH_P_PPP_SES,
+	  &MATProtoPPPoESesHandle }, /* PPPoE session stage handler */
+	{ ETH_P_IPV6, &MATProtoIPv6Handle }, /* IPv6 handler */
 };
 
-#define MAX_MAT_SUPPORT_PROTO_NUM (sizeof(MATProtoTb)/sizeof(MATProtoTable))
-
+#define MAX_MAT_SUPPORT_PROTO_NUM (sizeof(MATProtoTb) / sizeof(MATProtoTable))
 
 /* --------------------------------- Public Function-------------------------------- */
-NDIS_STATUS MATDBEntryFree(
-	IN MAT_STRUCT * pMatStruct,
-	IN PUCHAR		NodeEntry)
+NDIS_STATUS MATDBEntryFree(IN MAT_STRUCT *pMatStruct, IN PUCHAR NodeEntry)
 {
 #ifdef KMALLOC_BATCH
 	MATNodeEntry *pPtr, *pMATNodeEntryPoll;
@@ -92,7 +91,7 @@ NDIS_STATUS MATDBEntryFree(
 	return TRUE;
 }
 
-PUCHAR MATDBEntryAlloc(IN MAT_STRUCT * pMatStruct, IN UINT32 size)
+PUCHAR MATDBEntryAlloc(IN MAT_STRUCT *pMatStruct, IN UINT32 size)
 {
 #ifdef KMALLOC_BATCH
 	MATNodeEntry *pPtr = NULL, *pMATNodeEntryPoll;
@@ -110,7 +109,6 @@ PUCHAR MATDBEntryAlloc(IN MAT_STRUCT * pMatStruct, IN UINT32 size)
 	return (PUCHAR)pPtr;
 }
 
-
 VOID dumpPkt(PUCHAR pHeader, int len)
 {
 	int i;
@@ -120,15 +118,16 @@ VOID dumpPkt(PUCHAR pHeader, int len)
 
 	for (i = 0; i < len; i++) {
 		if ((i % 16 == 0) && (i != 0))
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_OFF, ("\n"));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_OFF,
+				 ("\n"));
 
-		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_OFF, ("%02x ", tmp[i] & 0xff));
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_OFF,
+			 ("%02x ", tmp[i] & 0xff));
 	}
 
 	MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_OFF, ("\n--EndDump\n"));
 	return;
 }
-
 
 /*
 	========================================================================
@@ -157,17 +156,14 @@ VOID dumpPkt(PUCHAR pHeader, int len)
 		  handle DHCP packet.
 	========================================================================
  */
-PUCHAR MATEngineTxHandle(
-	IN PRTMP_ADAPTER	pAd,
-	IN PNDIS_PACKET	    pPkt,
-	IN UINT				ifIdx,
-	IN UCHAR    OpMode)
+PUCHAR MATEngineTxHandle(IN PRTMP_ADAPTER pAd, IN PNDIS_PACKET pPkt,
+			 IN UINT ifIdx, IN UCHAR OpMode)
 {
-	PUCHAR		pLayerHdr = NULL, pPktHdr = NULL,  pMacAddr = NULL;
-	UINT16		protoType, protoType_ori;
-	INT			i;
-	struct _MATProtoOps	*pHandle = NULL;
-	PUCHAR  retSkb = NULL;
+	PUCHAR pLayerHdr = NULL, pPktHdr = NULL, pMacAddr = NULL;
+	UINT16 protoType, protoType_ori;
+	INT i;
+	struct _MATProtoOps *pHandle = NULL;
+	PUCHAR retSkb = NULL;
 	BOOLEAN bVLANPkt = FALSE;
 
 	if (pAd->MatCfg.status != MAT_ENGINE_STAT_INITED)
@@ -189,31 +185,41 @@ PUCHAR MATEngineTxHandle(
 		bVLANPkt = TRUE;
 	}
 
-
 	/* For differnet protocol, dispatch to specific handler */
 	for (i = 0; i < MAX_MAT_SUPPORT_PROTO_NUM; i++) {
 		if (protoType == MATProtoTb[i].protocol) {
-			pHandle = MATProtoTb[i].pHandle;	/* the pHandle must not be null! */
-			pLayerHdr = bVLANPkt ? (pPktHdr + MAT_VLAN_ETH_HDR_LEN) : (pPktHdr + MAT_ETHER_HDR_LEN);
+			pHandle =
+				MATProtoTb[i]
+					.pHandle; /* the pHandle must not be null! */
+			pLayerHdr = bVLANPkt ?
+					    (pPktHdr + MAT_VLAN_ETH_HDR_LEN) :
+						  (pPktHdr + MAT_ETHER_HDR_LEN);
 #ifdef CONFIG_AP_SUPPORT
 #ifdef APCLI_SUPPORT
-			IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+			IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+			{
 #ifdef MAC_REPEATER_SUPPORT
 				UCHAR tempIdx = ifIdx;
 				UCHAR CliIdx = 0xFF;
 
 				if (tempIdx >= REPT_MLME_START_IDX) {
 					CliIdx = tempIdx - REPT_MLME_START_IDX;
-					pMacAddr = &pAd->ApCfg.pRepeaterCliPool[CliIdx].CurrentAddress[0];
+					pMacAddr =
+						&pAd->ApCfg
+							 .pRepeaterCliPool[CliIdx]
+							 .CurrentAddress[0];
 				} else
 #endif /* MAC_REPEATER_SUPPORT */
-					pMacAddr = &pAd->ApCfg.ApCliTab[ifIdx].wdev.if_addr[0];
+					pMacAddr = &pAd->ApCfg.ApCliTab[ifIdx]
+							    .wdev.if_addr[0];
 			}
 #endif /* APCLI_SUPPORT */
 #endif /* CONFIG_AP_SUPPORT */
 
 			if (pHandle->tx != NULL)
-				retSkb = pHandle->tx((PVOID)&pAd->MatCfg, RTPKT_TO_OSPKT(pPkt), pLayerHdr, pMacAddr);
+				retSkb = pHandle->tx((PVOID)&pAd->MatCfg,
+						     RTPKT_TO_OSPKT(pPkt),
+						     pLayerHdr, pMacAddr);
 
 			return retSkb;
 		}
@@ -221,7 +227,6 @@ PUCHAR MATEngineTxHandle(
 
 	return retSkb;
 }
-
 
 /*
 	========================================================================
@@ -245,16 +250,14 @@ PUCHAR MATEngineTxHandle(
 	Note:
 	========================================================================
  */
-PUCHAR MATEngineRxHandle(
-	IN PRTMP_ADAPTER	pAd,
-	IN PNDIS_PACKET		pPkt,
-	IN UINT				infIdx)
+PUCHAR MATEngineRxHandle(IN PRTMP_ADAPTER pAd, IN PNDIS_PACKET pPkt,
+			 IN UINT infIdx)
 {
-	PUCHAR				pMacAddr = NULL;
-	PUCHAR		pLayerHdr = NULL, pPktHdr = NULL;
-	UINT16		protoType;
-	INT			i = 0;
-	struct _MATProtoOps	*pHandle = NULL;
+	PUCHAR pMacAddr = NULL;
+	PUCHAR pLayerHdr = NULL, pPktHdr = NULL;
+	UINT16 protoType;
+	INT i = 0;
+	struct _MATProtoOps *pHandle = NULL;
 
 	if (pAd->MatCfg.status != MAT_ENGINE_STAT_INITED)
 		return NULL;
@@ -273,18 +276,23 @@ PUCHAR MATEngineRxHandle(
 	pLayerHdr = (pPktHdr + MAT_ETHER_HDR_LEN);
 
 	if (protoType == ETH_P_VLAN) {
-		protoType = OS_NTOHS(get_unaligned((PUINT16)(pPktHdr + 12 + LENGTH_802_1Q))); /* Shift VLAN Tag Length (4 byte) */
+		protoType = OS_NTOHS(get_unaligned((
+			PUINT16)(pPktHdr + 12 +
+				 LENGTH_802_1Q))); /* Shift VLAN Tag Length (4 byte) */
 		pLayerHdr = (pPktHdr + MAT_VLAN_ETH_HDR_LEN);
 	}
 
-
 	for (i = 0; i < MAX_MAT_SUPPORT_PROTO_NUM; i++) {
 		if (protoType == MATProtoTb[i].protocol) {
-			pHandle = MATProtoTb[i].pHandle;	/* the pHandle must not be null! */
+			pHandle =
+				MATProtoTb[i]
+					.pHandle; /* the pHandle must not be null! */
 
 			/*			RTMP_SEM_LOCK(&MATDBLock); */
 			if (pHandle->rx != NULL)
-				pMacAddr = pHandle->rx((PVOID)&pAd->MatCfg, RTPKT_TO_OSPKT(pPkt), pLayerHdr, NULL);
+				pMacAddr = pHandle->rx((PVOID)&pAd->MatCfg,
+						       RTPKT_TO_OSPKT(pPkt),
+						       pLayerHdr, NULL);
 
 			/*			RTMP_SEM_UNLOCK(&MATDBLock); */
 			break;
@@ -297,25 +305,23 @@ PUCHAR MATEngineRxHandle(
 	return NULL;
 }
 
-
-BOOLEAN MATPktRxNeedConvert(
-	IN PRTMP_ADAPTER	pAd,
-	IN PNET_DEV			net_dev)
+BOOLEAN MATPktRxNeedConvert(IN PRTMP_ADAPTER pAd, IN PNET_DEV net_dev)
 {
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 #ifdef APCLI_SUPPORT
 		int i = 0;
 
 		/* Check if the packet will be send to apcli interface. */
 		while (i < MAX_APCLI_NUM) {
 			/*BSSID match the ApCliBssid ?(from a valid AP) */
-			if ((pAd->ApCfg.ApCliTab[i].Valid == TRUE)
-				&& (net_dev == pAd->ApCfg.ApCliTab[i].wdev.if_dev)
+			if ((pAd->ApCfg.ApCliTab[i].Valid == TRUE) &&
+			    (net_dev == pAd->ApCfg.ApCliTab[i].wdev.if_dev)
 #ifdef A4_CONN
-				&& (IS_APCLI_A4(&pAd->ApCfg.ApCliTab[i]) == FALSE)
+			    && (IS_APCLI_A4(&pAd->ApCfg.ApCliTab[i]) == FALSE)
 #endif /* A4_CONN */
-			){
+			) {
 				//MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_WARN,("MATPktRxNeedConvert TRUE for ApCliTab[%d]\n",i));
 				return TRUE;
 			}
@@ -329,9 +335,7 @@ BOOLEAN MATPktRxNeedConvert(
 	return FALSE;
 }
 
-
-NDIS_STATUS MATEngineExit(
-	IN RTMP_ADAPTER * pAd)
+NDIS_STATUS MATEngineExit(IN RTMP_ADAPTER *pAd)
 {
 	struct _MATProtoOps *pHandle = NULL;
 	int i;
@@ -360,11 +364,9 @@ NDIS_STATUS MATEngineExit(
 	return TRUE;
 }
 
-
-NDIS_STATUS MATEngineInit(
-	IN RTMP_ADAPTER * pAd)
+NDIS_STATUS MATEngineInit(IN RTMP_ADAPTER *pAd)
 {
-	MATProtoOps	*pHandle = NULL;
+	MATProtoOps *pHandle = NULL;
 	int i, status;
 
 	if (pAd->MatCfg.status == MAT_ENGINE_STAT_INITED)
@@ -372,11 +374,13 @@ NDIS_STATUS MATEngineInit(
 
 #ifdef KMALLOC_BATCH
 	/* Allocate memory for node entry, we totally allocate 128 entries and link them together. */
-	os_alloc_mem_suspend(NULL, (UCHAR **)&(pAd->MatCfg.pMATNodeEntryPoll), sizeof(MATNodeEntry) * MAX_MAT_NODE_ENTRY_NUM);
+	os_alloc_mem_suspend(NULL, (UCHAR **)&(pAd->MatCfg.pMATNodeEntryPoll),
+			     sizeof(MATNodeEntry) * MAX_MAT_NODE_ENTRY_NUM);
 
 	if (pAd->MatCfg.pMATNodeEntryPoll != NULL) {
 		MATNodeEntry *pPtr = NULL;
-		NdisZeroMemory(pAd->MatCfg.pMATNodeEntryPoll, sizeof(MATNodeEntry) * MAX_MAT_NODE_ENTRY_NUM);
+		NdisZeroMemory(pAd->MatCfg.pMATNodeEntryPoll,
+			       sizeof(MATNodeEntry) * MAX_MAT_NODE_ENTRY_NUM);
 		pPtr = pAd->MatCfg.pMATNodeEntryPoll;
 
 		for (i = 0; i < (MAX_MAT_NODE_ENTRY_NUM - 1); i++) {
@@ -399,11 +403,17 @@ NDIS_STATUS MATEngineInit(
 			status = pHandle->init(&pAd->MatCfg);
 
 			if (status == FALSE) {
-				MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_ERROR, ("MATEngine Init Protocol (0x%x) failed, Stop the MAT Funciton initialization failed!\n", MATProtoTb[i].protocol));
+				MTWF_LOG(
+					DBG_CAT_PROTO, CATPROTO_MAT,
+					DBG_LVL_ERROR,
+					("MATEngine Init Protocol (0x%x) failed, Stop the MAT Funciton initialization failed!\n",
+					 MATProtoTb[i].protocol));
 				goto init_failed;
 			}
 
-			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_TRACE, ("MATEngine Init Protocol (0x%04x) success!\n", MATProtoTb[i].protocol));
+			MTWF_LOG(DBG_CAT_PROTO, CATPROTO_MAT, DBG_LVL_TRACE,
+				 ("MATEngine Init Protocol (0x%04x) success!\n",
+				  MATProtoTb[i].protocol));
 		}
 	}
 
@@ -440,4 +450,3 @@ init_failed:
 }
 
 #endif /* MAT_SUPPORT */
-

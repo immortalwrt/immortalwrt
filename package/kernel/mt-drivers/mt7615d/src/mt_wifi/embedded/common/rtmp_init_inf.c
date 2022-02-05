@@ -1,4 +1,4 @@
-	/*
+/*
  ***************************************************************************
  * Ralink Tech Inc.
  * 4F, No. 2 Technology 5th Rd.
@@ -25,15 +25,14 @@
 	Who         When          What
 	--------    ----------    ----------------------------------------------
 */
-#include	"rt_config.h"
+#include "rt_config.h"
 #ifdef DOT11R_FT_SUPPORT
-#include	"ft.h"
+#include "ft.h"
 #endif /* DOT11R_FT_SUPPORT */
 /*enable_nf_support() uses macro from bgnd_scan_cmm.h*/
 #include "bgnd_scan_cmm.h"
 
 #define PROBE2LOAD_L1PROFILE /* Capable to be turned off if not required */
-
 
 #ifdef MULTI_PROFILE
 VOID multi_profile_exit(struct _RTMP_ADAPTER *ad);
@@ -46,11 +45,9 @@ RTMP_NET_ABL_OPS RtmpDrvNetOps, *pRtmpDrvNetOps = &RtmpDrvNetOps;
 RTMP_PCI_CONFIG RtmpPciConfig, *pRtmpPciConfig = &RtmpPciConfig;
 RTMP_USB_CONFIG RtmpUsbConfig, *pRtmpUsbConfig = &RtmpUsbConfig;
 
-VOID RtmpDrvOpsInit(
-	OUT VOID *pDrvOpsOrg,
-	INOUT VOID *pDrvNetOpsOrg,
-	IN RTMP_PCI_CONFIG *pPciConfig,
-	IN RTMP_USB_CONFIG *pUsbConfig)
+VOID RtmpDrvOpsInit(OUT VOID *pDrvOpsOrg, INOUT VOID *pDrvNetOpsOrg,
+		    IN RTMP_PCI_CONFIG *pPciConfig,
+		    IN RTMP_USB_CONFIG *pUsbConfig)
 {
 	RTMP_DRV_ABL_OPS *pDrvOps = (RTMP_DRV_ABL_OPS *)pDrvOpsOrg;
 
@@ -85,13 +82,11 @@ RTMP_BUILD_DRV_OPS_FUNCTION_BODY
 #endif /* OS_ABL_FUNC_SUPPORT */
 #endif /* LINUX */
 
-
 INT rtmp_cfg_exit(RTMP_ADAPTER *pAd)
 {
 	UserCfgExit(pAd);
 	return TRUE;
 }
-
 
 INT rtmp_cfg_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 {
@@ -103,8 +98,13 @@ INT rtmp_cfg_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 #ifdef MBO_SUPPORT
 	MboInit(pAd);
 #endif /* MBO_SUPPORT */
+#ifdef OCE_SUPPORT
+	OceInit(pAd);
+#endif /* OCE_SUPPORT */
 	CfgInitHook(pAd);
-
+#ifdef DPP_SUPPORT
+	pAd->dpp_rx_frm_counter = 0;
+#endif /* DPP_SUPPORT */
 	/*
 		WiFi system operation mode setting base on following partitions:
 		1. Parameters from config file
@@ -114,8 +114,9 @@ INT rtmp_cfg_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 	if (pAd->RfIcType == 0) {
 		/* RfIcType not assigned, should not happened! */
 		pAd->RfIcType = RFIC_UNKNOWN;
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s(): Invalid RfIcType, reset it first\n",
-				 __func__));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("%s(): Invalid RfIcType, reset it first\n",
+			  __func__));
 	}
 
 #ifdef MIN_PHY_RATE_SUPPORT
@@ -132,7 +133,9 @@ INT rtmp_cfg_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 	status = RTMPReadParametersHook(pAd);
 
 	if (status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("RTMPReadParametersHook failed, Status[=0x%08x]\n", status));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("RTMPReadParametersHook failed, Status[=0x%08x]\n",
+			  status));
 		return FALSE;
 	}
 
@@ -142,12 +145,10 @@ INT rtmp_cfg_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 	return TRUE;
 }
 
-
 INT rtmp_mgmt_init(RTMP_ADAPTER *pAd)
 {
 	return TRUE;
 }
-
 
 static INT rtmp_sys_exit(RTMP_ADAPTER *pAd)
 {
@@ -173,7 +174,6 @@ static INT rtmp_sys_exit(RTMP_ADAPTER *pAd)
 #endif
 	return TRUE;
 }
-
 
 static INT rtmp_sys_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 {
@@ -211,14 +211,17 @@ static INT rtmp_sys_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 	status = MeasureReqTabInit(pAd);
 
 	if (status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("MeasureReqTabInit failed, Status[=0x%08x]\n", status));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("MeasureReqTabInit failed, Status[=0x%08x]\n",
+			  status));
 		goto err2;
 	}
 
 	status = TpcReqTabInit(pAd);
 
 	if (status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("TpcReqTabInit failed, Status[=0x%08x]\n", status));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("TpcReqTabInit failed, Status[=0x%08x]\n", status));
 		goto err2;
 	}
 
@@ -238,7 +241,8 @@ static INT rtmp_sys_init(RTMP_ADAPTER *pAd, RTMP_STRING *pHostName)
 
 #ifdef FQ_SCH_SUPPORT
 	if (pAd->fq_ctrl.enable & FQ_NEED_ON)
-		pAd->fq_ctrl.enable = FQ_ARRAY_SCH|FQ_NO_PKT_STA_KEEP_IN_LIST|FQ_EN;
+		pAd->fq_ctrl.enable =
+			FQ_ARRAY_SCH | FQ_NO_PKT_STA_KEEP_IN_LIST | FQ_EN;
 #endif
 
 	/* QM init */
@@ -286,7 +290,6 @@ VOID enable_nf_support(VOID *pAdSrc)
 	int Value, i;
 
 	for (i = 0; i < DBDC_BAND_NUM; i++) {
-
 		pAd->Avg_NF[i] = 0;
 		pAd->Avg_NFx16[i] = 0;
 		/*band0*/
@@ -301,10 +304,10 @@ VOID enable_nf_support(VOID *pAdSrc)
 
 			/* Enable badn0 IPI control */
 			HW_IO_READ32(pAd, PHY_BAND0_PHYMUX_5, &Value);
-			Value |= (B0IpiEnableCtrlValue << B0IpiEnableCtrlOffset);
+			Value |=
+				(B0IpiEnableCtrlValue << B0IpiEnableCtrlOffset);
 			HW_IO_WRITE32(pAd, PHY_BAND0_PHYMUX_5, Value);
 		} else {
-
 			HW_IO_READ32(pAd, PHY_RXTD2_10, &Value);
 			Value |= (1 << B1IrpiSwCtrlResetOffset);
 			Value |= (1 << B1IrpiSwCtrlOnlyOffset);
@@ -312,12 +315,12 @@ VOID enable_nf_support(VOID *pAdSrc)
 			HW_IO_WRITE32(pAd, PHY_RXTD2_10, Value);
 
 			HW_IO_READ32(pAd, PHY_BAND1_PHYMUX_5, &Value);
-			Value |= (B1IpiEnableCtrlValue << B1IpiEnableCtrlOffset);
+			Value |=
+				(B1IpiEnableCtrlValue << B1IpiEnableCtrlOffset);
 			HW_IO_WRITE32(pAd, PHY_BAND1_PHYMUX_5, Value);
 		}
 	}
 }
-
 
 /*rename from rt28xx_init*/
 int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
@@ -333,14 +336,19 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 	CHANNEL_CTRL *pChCtrl;
 	CHANNEL_CTRL *pChCtrl_hwband1;
 
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\x1b[1;33m [mt_wifi_init] Test - pObj->ioctl_if = %d, pObj->ioctl_if_type = %d \x1b[m \n", pObj->ioctl_if, pObj->ioctl_if_type));
+	MTWF_LOG(
+		DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("\x1b[1;33m [mt_wifi_init] Test - pObj->ioctl_if = %d, pObj->ioctl_if_type = %d \x1b[m \n",
+		 pObj->ioctl_if, pObj->ioctl_if_type));
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 		wdev = &pAd->ApCfg.MBSSID[MAIN_MBSSID].wdev;
 	}
 #endif
 	if (!wdev) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("[mt_wifi_init] wdev == NULL\n"));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("[mt_wifi_init] wdev == NULL\n"));
 		return FALSE;
 	}
 #ifdef CONFIG_RECOVERY_ON_INTERRUPT_MISS
@@ -356,7 +364,6 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 		pdev = obj->pci_dev;
 		pci_reset_function(pdev);
 		pAd->ErrRecoveryCheck = 0;
-
 	}
 #endif
 #endif
@@ -388,7 +395,8 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 	Status = WfInit(pAd);
 
 	if (Status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("WfInit faild!!, ret=%d, cap=%p\n", Status, cap));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("WfInit faild!!, ret=%d, cap=%p\n", Status, cap));
 		goto err2;
 	}
 
@@ -396,7 +404,8 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 	Status = MlmeInit(pAd);
 
 	if (Status != NDIS_STATUS_SUCCESS) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("MlmeInit failed, Status[=0x%08x]\n", Status));
+		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("MlmeInit failed, Status[=0x%08x]\n", Status));
 		goto err3;
 	}
 
@@ -409,18 +418,21 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 	}
 #endif
 
-#if defined(OFFCHANNEL_SCAN_FEATURE) || defined(NF_SUPPORT)
-		MAC_IO_WRITE32(pAd, 0x12234, 0x07000000);
-		MAC_IO_WRITE32(pAd, PHY_BAND0_PHYMUX_5, 0x50DC10); /* Enabling IPI for Band 0 */
+#if defined(OFFCHANNEL_SCAN_FEATURE) || defined(NF_SUPPORT) ||                 \
+	defined(NEIGHBORING_AP_STAT)
+	MAC_IO_WRITE32(pAd, 0x12234, 0x07000000);
+	MAC_IO_WRITE32(pAd, PHY_BAND0_PHYMUX_5,
+		       0x50DC10); /* Enabling IPI for Band 0 */
 #ifdef DBDC_MODE
-		if (pAd->CommonCfg.dbdc_mode) {
-			MAC_IO_WRITE32(pAd, 0x12a2c, 0x00000020);
-			MAC_IO_WRITE32(pAd, PHY_BAND1_PHYMUX_5, 0x50DC10); /* Enabling IPI for Band 1 */
-		}
+	if (pAd->CommonCfg.dbdc_mode) {
+		MAC_IO_WRITE32(pAd, 0x12a2c, 0x00000020);
+		MAC_IO_WRITE32(pAd, PHY_BAND1_PHYMUX_5,
+			       0x50DC10); /* Enabling IPI for Band 1 */
+	}
 #endif
 #endif
 #ifdef OFFCHANNEL_SCAN_FEATURE
-		NdisAllocateSpinLock(pAd, &pAd->ScanCtrl.NF_Lock);
+	NdisAllocateSpinLock(pAd, &pAd->ScanCtrl.NF_Lock);
 #endif
 
 	NICInitializeAsic(pAd);
@@ -445,7 +457,8 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 	/* Microsoft HCT require driver send a disconnect event after driver initialization.*/
 	/* STA_STATUS_CLEAR_FLAG(pStaCfg, fSTA_STATUS_MEDIA_STATE_CONNECTED); */
 	OPSTATUS_CLEAR_FLAG(pAd, fOP_AP_STATUS_MEDIA_STATE_CONNECTED);
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("NDIS_STATUS_MEDIA_DISCONNECT Event B!\n"));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("NDIS_STATUS_MEDIA_DISCONNECT Event B!\n"));
 #ifdef SMART_CARRIER_SENSE_SUPPORT
 	SCS_init(pAd);
 #endif /* SMART_CARRIER_SENSE_SUPPORT */
@@ -454,7 +467,8 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 	AsicSetMacTxRx(pAd, ASIC_MAC_TXRX, TRUE);
 #endif /*MAC_INIT_OFFLOAD*/
 #ifdef CONFIG_AP_SUPPORT
-	RT_CONFIG_IF_OPMODE_ON_AP(pAd->OpMode) {
+	RT_CONFIG_IF_OPMODE_ON_AP(pAd->OpMode)
+	{
 		rtmp_ap_init(pAd);
 	}
 #endif
@@ -469,12 +483,16 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 
 	/* Set PHY to appropriate mode and will update the ChannelListNum in this function */
 
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("\x1b[1;33m [mt_wifi_init] Test - BandIdx = %d, pChCtrl->ChListNum = %d, pChCtrl_hwband1->ChListNum = %d \x1b[m \n", BandIdx, pChCtrl->ChListNum, pChCtrl_hwband1->ChListNum));
+	MTWF_LOG(
+		DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("\x1b[1;33m [mt_wifi_init] Test - BandIdx = %d, pChCtrl->ChListNum = %d, pChCtrl_hwband1->ChListNum = %d \x1b[m \n",
+		 BandIdx, pChCtrl->ChListNum, pChCtrl_hwband1->ChListNum));
 
 	/* TBD: if (pChCtrl->ChListNum == 0) { */
 	if (0) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("Wrong configuration. No valid channel found. Check \"ContryCode\" and \"ChannelGeography\" setting.\n"));
+		MTWF_LOG(
+			DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("Wrong configuration. No valid channel found. Check \"ContryCode\" and \"ChannelGeography\" setting.\n"));
 		goto err3;
 	}
 
@@ -507,21 +525,18 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 		pAd->OneSecMibBucket.Enabled[ucBandIdx] = TRUE;
 
 	pAd->MsMibBucket.Enabled = TRUE;
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("<==== mt_wifi_init, Status=%x\n", Status));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("<==== mt_wifi_init, Status=%x\n", Status));
 #if defined(TXBF_SUPPORT) && defined(MT_MAC) && (!defined(MT7636))
 	TxBfModuleEnCtrl(pAd);
 
-	mt_Trigger_Sounding_Packet(pAd,
-							   TRUE,
-							   0,
-							   BF_PROCESSING,
-							   0,
-							   NULL);
-	AsicTxBfHwEnStatusUpdate(pAd,
-							 pAd->CommonCfg.ETxBfEnCond,
-							 pAd->CommonCfg.RegTransmitSetting.field.ITxBfEn);
+	mt_Trigger_Sounding_Packet(pAd, TRUE, 0, BF_PROCESSING, 0, NULL);
+	AsicTxBfHwEnStatusUpdate(
+		pAd, pAd->CommonCfg.ETxBfEnCond,
+		pAd->CommonCfg.RegTransmitSetting.field.ITxBfEn);
 #ifdef TXBF_DYNAMIC_DISABLE
-	pAd->CommonCfg.ucAutoSoundingCtrl = 0;/* After interface down up, BF disable will be cancelled */
+	pAd->CommonCfg.ucAutoSoundingCtrl =
+		0; /* After interface down up, BF disable will be cancelled */
 #endif /* TXBF_DYNAMIC_DISABLE */
 #endif /* TXBF_SUPPORT */
 
@@ -530,7 +545,8 @@ int mt_wifi_init(VOID *pAdSrc, RTMP_STRING *pDefaultMac, RTMP_STRING *pHostName)
 
 	for (ucBandIdx = 0; ucBandIdx < DBDC_BAND_NUM; ucBandIdx++) {
 		/* pAd->CommonCfg.ucEDCCACtrl[BandIdx] = EDCCACtrl; */
-		EDCCACtrlCmd(pAd, ucBandIdx, pAd->CommonCfg.ucEDCCACtrl[ucBandIdx]);
+		EDCCACtrlCmd(pAd, ucBandIdx,
+			     pAd->CommonCfg.ucEDCCACtrl[ucBandIdx]);
 	}
 
 #ifdef FTM_SUPPORT
@@ -542,10 +558,10 @@ err3:
 	RTMP_AllTimerListRelease(pAd);
 err2:
 	rtmp_sys_exit(pAd);
-	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("!!! mt_wifi_init  fail !!!\n"));
+	MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("!!! mt_wifi_init  fail !!!\n"));
 	return FALSE;
 }
-
 
 VOID RTMPDrvOpen(VOID *pAdSrc)
 {
@@ -597,9 +613,11 @@ VOID RTMPDrvOpen(VOID *pAdSrc)
 #if defined(MT_DFS_SUPPORT) && defined(BACKGROUND_SCAN_SUPPORT)
 
 	if (IS_MT7615(pAd)) {
-		MTWF_LOG(DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("Trigger DFS Zero wait procedure Support=%d, DfsZeroWaitChannel=%d", pAd->BgndScanCtrl.DfsZeroWaitSupport,
-				  pAd->BgndScanCtrl.DfsZeroWaitChannel));
+		MTWF_LOG(
+			DBG_CAT_INIT, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("Trigger DFS Zero wait procedure Support=%d, DfsZeroWaitChannel=%d",
+			 pAd->BgndScanCtrl.DfsZeroWaitSupport,
+			 pAd->BgndScanCtrl.DfsZeroWaitChannel));
 
 #ifdef BACKGROUND_SCAN_SUPPORT
 		/*DfsDedicatedScanStart(pAd);*/
@@ -611,21 +629,20 @@ VOID RTMPDrvOpen(VOID *pAdSrc)
 #endif /* defined(MT_DFS_SUPPORT) && defined(BACKGROUND_SCAN_SUPPORT) */
 #ifdef BAND_STEERING
 #ifdef CONFIG_AP_SUPPORT
-    if (pAd->ApCfg.BandSteering) {
-	PBND_STRG_CLI_TABLE table;
+	if (pAd->ApCfg.BandSteering) {
+		PBND_STRG_CLI_TABLE table;
 
-	table = Get_BndStrgTable(pAd, BSS0);
-	if (table) {
-	    /* Inform daemon interface ready */
-	    struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[BSS0].wdev;
+		table = Get_BndStrgTable(pAd, BSS0);
+		if (table) {
+			/* Inform daemon interface ready */
+			struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[BSS0].wdev;
 
-	    BndStrg_SetInfFlags(pAd, wdev, table, TRUE);
+			BndStrg_SetInfFlags(pAd, wdev, table, TRUE);
+		}
 	}
-    }
 #endif /* CONFIG_AP_SUPPORT */
 #endif /* BAND_STEERING */
 }
-
 
 VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 {
@@ -664,26 +681,32 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 
 	for (i = 0; i < num_of_tx_ring; i++) {
 		while (pAd->DeQueueRunning[i] == TRUE) {
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("Waiting for TxQueue[%d] done..........\n", i));
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+				 ("Waiting for TxQueue[%d] done..........\n",
+				  i));
 			RtmpusecDelay(1000);
 		}
 	}
 
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 		BOOLEAN Cancelled = FALSE;
 #ifdef DOT11N_DRAFT3
 
-		if (pAd->CommonCfg.Bss2040CoexistFlag & BSS_2040_COEXIST_TIMER_FIRED) {
-			RTMPCancelTimer(&pAd->CommonCfg.Bss2040CoexistTimer, &Cancelled);
-			pAd->CommonCfg.Bss2040CoexistFlag  = 0;
+		if (pAd->CommonCfg.Bss2040CoexistFlag &
+		    BSS_2040_COEXIST_TIMER_FIRED) {
+			RTMPCancelTimer(&pAd->CommonCfg.Bss2040CoexistTimer,
+					&Cancelled);
+			pAd->CommonCfg.Bss2040CoexistFlag = 0;
 		}
 
 #endif /* DOT11N_DRAFT3 */
 	}
 #endif /* CONFIG_AP_SUPPORT */
 #ifdef CONFIG_AP_SUPPORT
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 #ifdef MAT_SUPPORT
 		MATEngineExit(pAd);
 #endif /* MAT_SUPPORT */
@@ -705,8 +728,7 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 	/* Stop Mlme state machine*/
 	MlmeHalt(pAd);
 	/* Close net tasklets*/
-		NICRestartFirmware(pAd);
-
+	NICRestartFirmware(pAd);
 
 	/*  Disable Interrupt */
 	if (IS_MT7637(pAd)) { /* workaround for MtCmdRestartDLReq */
@@ -744,12 +766,17 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 		/* register access before Radio off.*/
 #ifdef RTMP_PCI_SUPPORT
 
-		if (pAd->infType == RTMP_DEV_INF_PCI || pAd->infType == RTMP_DEV_INF_PCIE) {
+		if (pAd->infType == RTMP_DEV_INF_PCI ||
+		    pAd->infType == RTMP_DEV_INF_PCIE) {
 			BOOLEAN brc = TRUE;
 			brc = RT28xxPciAsicRadioOff(pAd, RTMP_HALT, 0);
 
 			if (brc == FALSE)
-				MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s call RT28xxPciAsicRadioOff fail !!\n", __func__));
+				MTWF_LOG(
+					DBG_CAT_ALL, DBG_SUBCAT_ALL,
+					DBG_LVL_ERROR,
+					("%s call RT28xxPciAsicRadioOff fail !!\n",
+					 __func__));
 		}
 
 #endif /* RTMP_PCI_SUPPORT */
@@ -766,8 +793,8 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 	}
 
 #ifdef SINGLE_SKU_V2
-    RTMPResetSkuParam(pAd);
-    RTMPResetBackOffParam(pAd);
+	RTMPResetSkuParam(pAd);
+	RTMPResetBackOffParam(pAd);
 #endif
 	tr_ctl_exit(pAd);
 
@@ -806,7 +833,7 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 #endif /* BACKGROUND_SCAN_SUPPORT */
 #ifdef CONFIG_AP_SUPPORT
 	AutoChSelRelease(pAd);
-#endif/* CONFIG_AP_SUPPORT */
+#endif /* CONFIG_AP_SUPPORT */
 	RTMP_CLEAR_FLAG(pAd, fRTMP_ADAPTER_START_UP);
 	/*+++Modify by woody to solve the bulk fail+++*/
 	/* clear MAC table */
@@ -844,7 +871,8 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 #endif /* PRE_CAL_TRX_SET1_SUPPORT */
 #ifdef PRE_CAL_TRX_SET2_SUPPORT
 
-	if (pAd->E2pAccessMode != E2P_FLASH_MODE && pAd->PreCalStoreBuffer != NULL) {
+	if (pAd->E2pAccessMode != E2P_FLASH_MODE &&
+	    pAd->PreCalStoreBuffer != NULL) {
 		os_free_mem(pAd->PreCalStoreBuffer);
 		pAd->PreCalStoreBuffer = NULL;
 	}
@@ -854,7 +882,7 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 		pAd->PreCalReStoreBuffer = NULL;
 	}
 
-#endif/* PRE_CAL_TRX_SET2_SUPPORT */
+#endif /* PRE_CAL_TRX_SET2_SUPPORT */
 	os_free_mem(pAd->EEPROMImage);
 	pAd->EEPROMImage = NULL;
 
@@ -871,10 +899,13 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 	if (pAd->pH32Bit != NULL)
 		os_free_mem(pAd->pH32Bit);
 #endif /* defined(INTERNAL_CAPTURE_SUPPORT) || defined(WIFI_SPECTRUM_SUPPORT) */
-	/*multi profile release*/
+		/*multi profile release*/
 #ifdef MULTI_PROFILE
 	multi_profile_exit(pAd);
 #endif /*MULTI_PROFILE*/
+#ifdef OCE_SUPPORT
+	OceRelease(pAd);
+#endif /* OCE_SUPPORT */
 #ifdef CCK_LQ_SUPPORT
 	pAd->Avg_LQ = 0;
 	pAd->Avg_LQx16 = 0;
@@ -894,12 +925,12 @@ VOID RTMPDrvClose(VOID *pAdSrc, VOID *net_dev)
 
 #ifdef OFFCHANNEL_SCAN_FEATURE
 	pAd->Avg_NF[DBDC_BAND0] = pAd->Avg_NFx16[DBDC_BAND0] = 0;
+#ifdef DBDC_MODE
 	if (pAd->CommonCfg.dbdc_mode)
 		pAd->Avg_NF[DBDC_BAND1] = pAd->Avg_NFx16[DBDC_BAND1] = 0;
-	 NdisFreeSpinLock(&pAd->ScanCtrl.NF_Lock);
+#endif /* DBDC_MODE */
+	NdisFreeSpinLock(&pAd->ScanCtrl.NF_Lock);
 #endif
-
-
 }
 
 PNET_DEV RtmpPhyNetDevMainCreate(VOID *pAdSrc)
@@ -916,33 +947,36 @@ PNET_DEV RtmpPhyNetDevMainCreate(VOID *pAdSrc)
 #endif /* HOSTAPD_SUPPORT */
 #if defined(MT_WIFI_MODULE) && defined(PROBE2LOAD_L1PROFILE)
 	if (load_dev_l1profile(pAd) == NDIS_STATUS_SUCCESS)
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("load l1profile succeed!\n"));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			 ("load l1profile succeed!\n"));
 	else
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_WARN, ("load l1profile failed!\n"));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_WARN,
+			 ("load l1profile failed!\n"));
 #endif
 	dev_name = get_dev_name_prefix(pAd, INT_MAIN);
 #ifdef INTELP6_SUPPORT
 #ifdef CONFIG_RT_SECOND_CARD
 	if (pAd->dev_idx == 1)
-		pDevNew = RtmpOSNetDevCreate((INT32)MC_RowID, (UINT32 *)&IoctlIF,
-		 INT_MAIN, MAX_MBSS_NUM, sizeof(struct mt_dev_priv), dev_name, FALSE);
+		pDevNew =
+			RtmpOSNetDevCreate((INT32)MC_RowID, (UINT32 *)&IoctlIF,
+					   INT_MAIN, MAX_MBSS_NUM,
+					   sizeof(struct mt_dev_priv), dev_name,
+					   FALSE);
 	else
 #endif
 #endif
-	pDevNew = RtmpOSNetDevCreate((INT32)MC_RowID, (UINT32 *)&IoctlIF,
-					 INT_MAIN, 0, sizeof(struct mt_dev_priv), dev_name, FALSE);
+		pDevNew = RtmpOSNetDevCreate((INT32)MC_RowID,
+					     (UINT32 *)&IoctlIF, INT_MAIN, 0,
+					     sizeof(struct mt_dev_priv),
+					     dev_name, FALSE);
 #ifdef HOSTAPD_SUPPORT
 	pAd->IoctlIF = IoctlIF;
 #endif /* HOSTAPD_SUPPORT */
 	return pDevNew;
 }
 
-
-
 #ifdef ERR_RECOVERY
-INT	Set_ErrDetectOn_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING *arg)
+INT Set_ErrDetectOn_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 {
 	UINT32 Enable;
 	Enable = os_str_tol(arg, 0, 10);
@@ -950,9 +984,7 @@ INT	Set_ErrDetectOn_Proc(
 	return TRUE;
 }
 
-INT	Set_ErrDetectMode_Proc(
-	IN PRTMP_ADAPTER pAd,
-	IN RTMP_STRING *arg)
+INT Set_ErrDetectMode_Proc(IN PRTMP_ADAPTER pAd, IN RTMP_STRING *arg)
 {
 	UINT8 mode = 0;
 	UINT8 sub_mode = 0;
@@ -960,15 +992,14 @@ INT	Set_ErrDetectMode_Proc(
 	seg_str = strsep((char **)&arg, "_");
 
 	if (seg_str != NULL)
-		mode = (BOOLEAN) os_str_tol(seg_str, 0, 10);
+		mode = (BOOLEAN)os_str_tol(seg_str, 0, 10);
 
 	seg_str = strsep((char **)&arg, "_");
 
 	if (seg_str != NULL)
-		sub_mode = (BOOLEAN) os_str_tol(seg_str, 0, 10);
+		sub_mode = (BOOLEAN)os_str_tol(seg_str, 0, 10);
 
 	CmdExtGeneralTestMode(pAd, mode, sub_mode);
 	return TRUE;
 }
 #endif /* ERR_RECOVERY */
-

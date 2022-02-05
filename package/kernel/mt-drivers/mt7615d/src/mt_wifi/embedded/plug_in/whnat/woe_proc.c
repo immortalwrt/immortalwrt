@@ -21,17 +21,17 @@
 #include "woe.h"
 
 /*define proc*/
-#define PROC_ROOT_DIR	"whnat_ctrl"	/*global dir for whnat*/
-#define PROC_TRACE_DIR	"tracer"		/*tracer */
-#define PROC_WHNAT_DIR	"whnat"			/*specific for each whnat*/
-#define PROC_CFG_DIR	"cfg"			/*all of related configure*/
-#define PROC_CR_DIR		"cr"			/*get specific domain cr*/
-#define PROC_CTRL_DIR	"ctrl"			/*get/set control whnat*/
-#define PROC_STAT_DIR	"stat"			/*all of status for debug*/
-#define PROC_TX_DIR		"tx"			/*tx top information*/
-#define PROC_RX_DIR		"rx"			/*rx top information*/
-#define PROC_WED_DIR	"wed"			/*wed specific information*/
-#define PROC_WDMA_DIR	"wdma"			/*wdma specic information*/
+#define PROC_ROOT_DIR "whnat_ctrl" /*global dir for whnat*/
+#define PROC_TRACE_DIR "tracer" /*tracer */
+#define PROC_WHNAT_DIR "whnat" /*specific for each whnat*/
+#define PROC_CFG_DIR "cfg" /*all of related configure*/
+#define PROC_CR_DIR "cr" /*get specific domain cr*/
+#define PROC_CTRL_DIR "ctrl" /*get/set control whnat*/
+#define PROC_STAT_DIR "stat" /*all of status for debug*/
+#define PROC_TX_DIR "tx" /*tx top information*/
+#define PROC_RX_DIR "rx" /*rx top information*/
+#define PROC_WED_DIR "wed" /*wed specific information*/
+#define PROC_WDMA_DIR "wdma" /*wdma specic information*/
 
 /*
 * WDMA
@@ -42,7 +42,8 @@ static int wdma_proc_show(struct seq_file *seq, void *v)
 
 	WHNAT_DBG(WHNAT_DBG_LOU, "wdma: %p\n", wdma);
 	WHNAT_DBG(WHNAT_DBG_OFF, "WDMA_PROC_BASIC\t: echo 0 > wdma\n");
-	WHNAT_DBG(WHNAT_DBG_OFF, "WDMA_PROC_RX_CELL\t: echo 1 [ringid] [idx] > wdma\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "WDMA_PROC_RX_CELL\t: echo 1 [ringid] [idx] > wdma\n");
 	return 0;
 }
 
@@ -58,13 +59,14 @@ static int wdma_proc_open(struct inode *inode, struct file *file)
 *
 */
 static ssize_t wdma_proc_write(struct file *file, const char __user *buff,
-							   size_t len1, loff_t *ppos)
+			       size_t len1, loff_t *ppos)
 
 {
 	char value[64];
 	char *end;
 	char choice;
-	struct wdma_entry *wdma = (struct wdma_entry *)PDE_DATA(file_inode(file));
+	struct wdma_entry *wdma =
+		(struct wdma_entry *)PDE_DATA(file_inode(file));
 
 	if (buff && !copy_from_user(value, buff, len1)) {
 		choice = whnat_str_tol(value, &end, 10);
@@ -74,7 +76,6 @@ static ssize_t wdma_proc_write(struct file *file, const char __user *buff,
 
 	return len1;
 }
-
 
 /*
  * WED proc operation
@@ -89,9 +90,12 @@ static int wed_proc_show(struct seq_file *seq, void *v)
 	WHNAT_DBG(WHNAT_DBG_LOU, "wed: %p\n", wed);
 	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_RING_BASIC\t: echo 0 > wed\n");
 	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_BUF_BASIC\t: echo 1 > wed\n");
-	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_BUF_INFO\t: echo 2 [tkid] > wed\n");
-	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_RING_CELL\t: echo 3 [ringid] [idx] > wed\n");
-	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_RING_RAW\t: echo 4 [ringid] [idx] > wed\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "WED_PROC_TX_BUF_INFO\t: echo 2 [tkid] > wed\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "WED_PROC_TX_RING_CELL\t: echo 3 [ringid] [idx] > wed\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "WED_PROC_TX_RING_RAW\t: echo 4 [ringid] [idx] > wed\n");
 	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_DBG_INFO\t: echo 5 > wed\n");
 	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_DYNAMIC_FREE\t: echo 6 > wed\n");
 	WHNAT_DBG(WHNAT_DBG_OFF, "WED_PROC_TX_DYNAMIC_ALLOC\t: echo 7 > wed\n");
@@ -111,7 +115,7 @@ static int wed_proc_open(struct inode *inode, struct file *file)
 *
 */
 static ssize_t wed_proc_write(struct file *file, const char __user *buff,
-							  size_t len1, loff_t *ppos)
+			      size_t len1, loff_t *ppos)
 {
 	char value[64];
 	char *end;
@@ -137,10 +141,15 @@ static int whnat_proc_cr_show(struct seq_file *seq, void *v)
 {
 	struct whnat_entry *whnat = (struct whnat_entry *)seq->private;
 	/*usage*/
-	WHNAT_DBG(WHNAT_DBG_OFF, "WED\t: base addr=%lx\n", whnat->wed.base_addr);
-	WHNAT_DBG(WHNAT_DBG_OFF, "WDMA\t: base addr=%lx\n", whnat->wdma.base_addr);
-	WHNAT_DBG(WHNAT_DBG_OFF, "WIFI\t: base addr=%lx\n", whnat->wifi.base_addr);
-	WHNAT_DBG(WHNAT_DBG_OFF, "echo [0:WED|1:WDMA|2:WIFI] [0:READ|1:WRITE] [ADDR] {VALUE} > cr\n");
+	WHNAT_DBG(WHNAT_DBG_OFF, "WED\t: base addr=%lx\n",
+		  whnat->wed.base_addr);
+	WHNAT_DBG(WHNAT_DBG_OFF, "WDMA\t: base addr=%lx\n",
+		  whnat->wdma.base_addr);
+	WHNAT_DBG(WHNAT_DBG_OFF, "WIFI\t: base addr=%lx\n",
+		  whnat->wifi.base_addr);
+	WHNAT_DBG(
+		WHNAT_DBG_OFF,
+		"echo [0:WED|1:WDMA|2:WIFI] [0:READ|1:WRITE] [ADDR] {VALUE} > cr\n");
 	return 0;
 }
 
@@ -149,14 +158,15 @@ static int whnat_proc_cr_show(struct seq_file *seq, void *v)
 */
 static int whnat_proc_cr_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_cr_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_cr_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
 *
 */
 static ssize_t whnat_proc_cr_write(struct file *file, const char __user *buff,
-								 size_t len1, loff_t *ppos)
+				   size_t len1, loff_t *ppos)
 
 {
 	char value[64];
@@ -167,7 +177,8 @@ static ssize_t whnat_proc_cr_write(struct file *file, const char __user *buff,
 	char *s = value;
 	unsigned long addr;
 	unsigned int cr_value = 0;
-	struct whnat_entry *whnat = (struct whnat_entry *)PDE_DATA(file_inode(file));
+	struct whnat_entry *whnat =
+		(struct whnat_entry *)PDE_DATA(file_inode(file));
 
 	if (buff && !copy_from_user(value, buff, len1)) {
 		token = strsep(&s, " ");
@@ -183,8 +194,9 @@ static ssize_t whnat_proc_cr_write(struct file *file, const char __user *buff,
 		}
 
 		whnat_hal_cr_handle(whnat, type, is_write, addr, &cr_value);
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s():Type=%d,IsWrite=%d,Addr=%lx, Value=%x\n",
-				__func__, type, is_write, addr, cr_value);
+		WHNAT_DBG(WHNAT_DBG_OFF,
+			  "%s():Type=%d,IsWrite=%d,Addr=%lx, Value=%x\n",
+			  __func__, type, is_write, addr, cr_value);
 	}
 
 	return len1;
@@ -194,20 +206,18 @@ static ssize_t whnat_proc_cr_write(struct file *file, const char __user *buff,
 * CTRL operate
 */
 enum {
-	TYPE_HW_TX_EN=0,
-	TYPE_CR_MIRROR_EN=1,
+	TYPE_HW_TX_EN = 0,
+	TYPE_CR_MIRROR_EN = 1,
 };
 
 /*
 *
 */
-static void whnat_proc_ctrl_handle(
-	struct whnat_entry *entry,
-	char type,
-	char is_true)
+static void whnat_proc_ctrl_handle(struct whnat_entry *entry, char type,
+				   char is_true)
 {
 	struct whnat_cfg *cfg = &entry->cfg;
-	switch(type) {
+	switch (type) {
 	case TYPE_HW_TX_EN:
 		if (cfg->hw_tx_en != is_true) {
 			cfg->hw_tx_en = is_true;
@@ -220,7 +230,8 @@ static void whnat_proc_ctrl_handle(
 		}
 		break;
 	default:
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): set wrong type: %d!\n", __func__, type);
+		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): set wrong type: %d!\n",
+			  __func__, type);
 		break;
 	}
 }
@@ -233,10 +244,12 @@ static int whnat_proc_ctrl_show(struct seq_file *seq, void *v)
 	struct whnat_entry *whnat = (struct whnat_entry *)seq->private;
 	/*usage*/
 	WHNAT_DBG(WHNAT_DBG_OFF, "HW_TX_EN\t: %s\n",
-	whnat->cfg.hw_tx_en ? "TRUE" : "FALSE");
+		  whnat->cfg.hw_tx_en ? "TRUE" : "FALSE");
 	WHNAT_DBG(WHNAT_DBG_OFF, "CR_MIRROR_EN\t: %s\n",
-	whnat->cfg.cr_mirror_en ? "TRUE" : "FALSE");
-	WHNAT_DBG(WHNAT_DBG_OFF, "echo [0:HW_TX_EN |1:CR_MIRROR_EN] [0:FALSE|1:TRUE] > ctrl\n");
+		  whnat->cfg.cr_mirror_en ? "TRUE" : "FALSE");
+	WHNAT_DBG(
+		WHNAT_DBG_OFF,
+		"echo [0:HW_TX_EN |1:CR_MIRROR_EN] [0:FALSE|1:TRUE] > ctrl\n");
 	return 0;
 }
 
@@ -245,14 +258,15 @@ static int whnat_proc_ctrl_show(struct seq_file *seq, void *v)
 */
 static int whnat_proc_ctrl_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_ctrl_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_ctrl_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
 *
 */
 static ssize_t whnat_proc_ctrl_write(struct file *file, const char __user *buff,
-								 size_t len1, loff_t *ppos)
+				     size_t len1, loff_t *ppos)
 
 {
 	char value[64];
@@ -261,7 +275,8 @@ static ssize_t whnat_proc_ctrl_write(struct file *file, const char __user *buff,
 	char is_true;
 	char type;
 	char *s = value;
-	struct whnat_entry *whnat = (struct whnat_entry *)PDE_DATA(file_inode(file));
+	struct whnat_entry *whnat =
+		(struct whnat_entry *)PDE_DATA(file_inode(file));
 
 	if (buff && !copy_from_user(value, buff, len1)) {
 		token = strsep(&s, " ");
@@ -270,8 +285,8 @@ static ssize_t whnat_proc_ctrl_write(struct file *file, const char __user *buff,
 		is_true = whnat_str_tol(token, &end, 10);
 
 		whnat_proc_ctrl_handle(whnat, type, is_true);
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s():Type=%d,IsTrue=%d\n",
-				__func__, type, is_true);
+		WHNAT_DBG(WHNAT_DBG_OFF, "%s():Type=%d,IsTrue=%d\n", __func__,
+			  type, is_true);
 	}
 
 	return len1;
@@ -294,26 +309,30 @@ static int whnat_proc_trace_show(struct seq_file *seq, void *v)
 	WHNAT_DBG(WHNAT_DBG_OFF, "BaseAddr: %lx\n", tracer->base_addr);
 	WHNAT_DBG(WHNAT_DBG_OFF, "Address: 0x%x\n", tracer->trace_addr);
 	WHNAT_DBG(WHNAT_DBG_OFF, "Mask: 0x%x\n", tracer->trace_mask);
-	WHNAT_DBG(WHNAT_DBG_OFF, "echo 0 [ 0 | 1 ] > trace, for enable or disable trace\n");
-	WHNAT_DBG(WHNAT_DBG_OFF, "echo 1 [ phy_addr] > trace, for set watch address\n");
-	WHNAT_DBG(WHNAT_DBG_OFF, "echo 2 [ mask ] > trace, for set watch mask\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "echo 0 [ 0 | 1 ] > trace, for enable or disable trace\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "echo 1 [ phy_addr] > trace, for set watch address\n");
+	WHNAT_DBG(WHNAT_DBG_OFF,
+		  "echo 2 [ mask ] > trace, for set watch mask\n");
 	return 0;
 }
-
 
 /*
 *
 */
 static int whnat_proc_trace_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_trace_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_trace_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
 *
 */
-static ssize_t whnat_proc_trace_write(struct file *file, const char __user *buff,
-									size_t len1, loff_t *ppos)
+static ssize_t whnat_proc_trace_write(struct file *file,
+				      const char __user *buff, size_t len1,
+				      loff_t *ppos)
 
 {
 	char value[64];
@@ -322,7 +341,8 @@ static ssize_t whnat_proc_trace_write(struct file *file, const char __user *buff
 	char *token;
 	char *s = value;
 	unsigned int tmp;
-	struct whnat_ctrl *ctrl = (struct whnat_ctrl *)PDE_DATA(file_inode(file));
+	struct whnat_ctrl *ctrl =
+		(struct whnat_ctrl *)PDE_DATA(file_inode(file));
 	struct whnat_cputracer *tracer = &ctrl->hif_cfg.tracer;
 
 	if (buff && !copy_from_user(value, buff, len1)) {
@@ -379,20 +399,23 @@ static int whnat_proc_state_show(struct seq_file *seq, void *v)
 */
 static int whnat_proc_state_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_state_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_state_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
 *
 */
-static ssize_t whnat_proc_state_write(struct file *file, const char __user *buff,
-									size_t len1, loff_t *ppos)
+static ssize_t whnat_proc_state_write(struct file *file,
+				      const char __user *buff, size_t len1,
+				      loff_t *ppos)
 
 {
 	char value[64];
 	char *end;
 	char log;
-	struct whnat_entry *whnat = (struct whnat_entry *)PDE_DATA(file_inode(file));
+	struct whnat_entry *whnat =
+		(struct whnat_entry *)PDE_DATA(file_inode(file));
 
 	if (buff && !copy_from_user(value, buff, len1)) {
 		log = whnat_str_tol(value, &end, 10);
@@ -430,7 +453,8 @@ static int whnat_proc_cfg_show(struct seq_file *seq, void *v)
 */
 static int whnat_proc_cfg_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_cfg_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_cfg_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
@@ -449,7 +473,8 @@ static int whnat_proc_tx_show(struct seq_file *seq, void *v)
 */
 static int whnat_proc_tx_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_tx_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_tx_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
@@ -468,7 +493,8 @@ static int whnat_proc_rx_show(struct seq_file *seq, void *v)
 */
 static int whnat_proc_rx_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, whnat_proc_rx_show, PDE_DATA(file_inode(file)));
+	return single_open(file, whnat_proc_rx_show,
+			   PDE_DATA(file_inode(file)));
 }
 
 /*
@@ -477,8 +503,8 @@ static int whnat_proc_rx_open(struct inode *inode, struct file *file)
 static const struct file_operations proc_whnat_trace_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_trace_open,
-	.write  = whnat_proc_trace_write,
-	.read	= seq_read,
+	.write = whnat_proc_trace_write,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -486,8 +512,8 @@ static const struct file_operations proc_whnat_trace_fops = {
 static const struct file_operations proc_whnat_cr_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_cr_open,
-	.write  = whnat_proc_cr_write,
-	.read  = seq_read,
+	.write = whnat_proc_cr_write,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -495,8 +521,8 @@ static const struct file_operations proc_whnat_cr_fops = {
 static const struct file_operations proc_whnat_stat_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_state_open,
-	.write  = whnat_proc_state_write,
-	.read  = seq_read,
+	.write = whnat_proc_state_write,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -504,7 +530,7 @@ static const struct file_operations proc_whnat_stat_fops = {
 static const struct file_operations proc_whnat_cfg_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_cfg_open,
-	.read  = seq_read,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -512,7 +538,7 @@ static const struct file_operations proc_whnat_cfg_fops = {
 static const struct file_operations proc_whnat_tx_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_tx_open,
-	.read  = seq_read,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -520,7 +546,7 @@ static const struct file_operations proc_whnat_tx_fops = {
 static const struct file_operations proc_whnat_rx_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_rx_open,
-	.read  = seq_read,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -528,8 +554,8 @@ static const struct file_operations proc_whnat_rx_fops = {
 static const struct file_operations proc_wed_fops = {
 	.owner = THIS_MODULE,
 	.open = wed_proc_open,
-	.write  = wed_proc_write,
-	.read  = seq_read,
+	.write = wed_proc_write,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -537,8 +563,8 @@ static const struct file_operations proc_wed_fops = {
 static const struct file_operations proc_wdma_fops = {
 	.owner = THIS_MODULE,
 	.open = wdma_proc_open,
-	.write  = wdma_proc_write,
-	.read  = seq_read,
+	.write = wdma_proc_write,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -546,8 +572,8 @@ static const struct file_operations proc_wdma_fops = {
 static const struct file_operations proc_ctrl_fops = {
 	.owner = THIS_MODULE,
 	.open = whnat_proc_ctrl_open,
-	.write  = whnat_proc_ctrl_write,
-	.read  = seq_read,
+	.write = whnat_proc_ctrl_write,
+	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -619,7 +645,8 @@ void wed_entry_proc_exit(struct whnat_entry *whnat, struct wed_entry *wed)
 /*
 *
 */
-int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whnat)
+int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl,
+			  struct whnat_entry *whnat)
 {
 	struct proc_dir_entry *root = (struct proc_dir_entry *)whnat_ctrl->proc;
 	struct proc_dir_entry *proc;
@@ -628,15 +655,18 @@ int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whn
 	snprintf(name, sizeof(name), "%s%d", PROC_WHNAT_DIR, whnat->idx);
 	proc = proc_mkdir(name, root);
 	whnat->proc = (void *)proc;
-	proc = proc_create_data(PROC_STAT_DIR, 0, whnat->proc, &proc_whnat_stat_fops, whnat);
+	proc = proc_create_data(PROC_STAT_DIR, 0, whnat->proc,
+				&proc_whnat_stat_fops, whnat);
 
 	if (!proc) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_STAT_DIR);
+		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n",
+			  PROC_STAT_DIR);
 		goto err1;
 	}
 
 	whnat->proc_stat = (void *)proc;
-	proc = proc_create_data(PROC_CR_DIR, 0, whnat->proc, &proc_whnat_cr_fops, whnat);
+	proc = proc_create_data(PROC_CR_DIR, 0, whnat->proc,
+				&proc_whnat_cr_fops, whnat);
 
 	if (!proc) {
 		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_CR_DIR);
@@ -644,7 +674,8 @@ int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whn
 	}
 
 	whnat->proc_cr = (void *)proc;
-	proc = proc_create_data(PROC_CFG_DIR, 0, whnat->proc, &proc_whnat_cfg_fops, whnat);
+	proc = proc_create_data(PROC_CFG_DIR, 0, whnat->proc,
+				&proc_whnat_cfg_fops, whnat);
 
 	if (!proc) {
 		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_CFG_DIR);
@@ -652,7 +683,8 @@ int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whn
 	}
 
 	whnat->proc_cfg = (void *)proc;
-	proc = proc_create_data(PROC_TX_DIR, 0, whnat->proc, &proc_whnat_tx_fops, whnat);
+	proc = proc_create_data(PROC_TX_DIR, 0, whnat->proc,
+				&proc_whnat_tx_fops, whnat);
 
 	if (!proc) {
 		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_TX_DIR);
@@ -660,7 +692,8 @@ int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whn
 	}
 
 	whnat->proc_tx = (void *)proc;
-	proc = proc_create_data(PROC_RX_DIR, 0, whnat->proc, &proc_whnat_rx_fops, whnat);
+	proc = proc_create_data(PROC_RX_DIR, 0, whnat->proc,
+				&proc_whnat_rx_fops, whnat);
 
 	if (!proc) {
 		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_RX_DIR);
@@ -668,10 +701,12 @@ int whnat_entry_proc_init(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whn
 	}
 
 	whnat->proc_rx = (void *)proc;
-	proc = proc_create_data(PROC_CTRL_DIR, 0, whnat->proc, &proc_ctrl_fops, whnat);
+	proc = proc_create_data(PROC_CTRL_DIR, 0, whnat->proc, &proc_ctrl_fops,
+				whnat);
 
 	if (!proc) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_CTRL_DIR);
+		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n",
+			  PROC_CTRL_DIR);
 		goto err5;
 	}
 
@@ -694,7 +729,8 @@ err1:
 /*
 *
 */
-void whnat_entry_proc_exit(struct whnat_ctrl *whnat_ctrl, struct whnat_entry *whnat)
+void whnat_entry_proc_exit(struct whnat_ctrl *whnat_ctrl,
+			   struct whnat_entry *whnat)
 {
 	struct proc_dir_entry *root = (struct proc_dir_entry *)whnat_ctrl->proc;
 	struct proc_dir_entry *proc = (struct proc_dir_entry *)whnat->proc;
@@ -748,12 +784,14 @@ int whnat_ctrl_proc_init(struct whnat_ctrl *whnat_ctrl)
 	proc = proc_mkdir(PROC_ROOT_DIR, NULL);
 
 	if (!proc) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n", PROC_ROOT_DIR);
+		WHNAT_DBG(WHNAT_DBG_ERR, "create %s failed!!!\n",
+			  PROC_ROOT_DIR);
 		return -1;
 	}
 
 	whnat_ctrl->proc = (void *)proc;
-	proc = proc_create_data(PROC_TRACE_DIR, 0, whnat_ctrl->proc, &proc_whnat_trace_fops, whnat_ctrl);
+	proc = proc_create_data(PROC_TRACE_DIR, 0, whnat_ctrl->proc,
+				&proc_whnat_trace_fops, whnat_ctrl);
 
 	if (!proc)
 		goto err1;

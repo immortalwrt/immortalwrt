@@ -11,6 +11,22 @@ define rootfs_align
 $(patsubst %-256k,0x40000,$(patsubst %-128k,0x20000,$(patsubst %-64k,0x10000,$(patsubst squashfs%,0x4,$(patsubst root.%,%,$(1))))))
 endef
 
+define Build/append-image
+	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
+endef
+
+ifdef IB
+define Build/append-image-stage
+	dd if=$(STAGING_DIR_IMAGE)/$(BOARD)$(if $(SUBTARGET),-$(SUBTARGET))-$(DEVICE_NAME)-$(1) >> $@
+endef
+else
+define Build/append-image-stage
+	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) of=$(STAGING_DIR_IMAGE)/$(BOARD)$(if $(SUBTARGET),-$(SUBTARGET))-$(DEVICE_NAME)-$(1)
+	dd if=$(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1) >> $@
+endef
+endif
+
+
 define Build/buffalo-enc
 	$(eval product=$(word 1,$(1)))
 	$(eval version=$(word 2,$(1)))
@@ -220,12 +236,14 @@ define Build/gzip
 endef
 
 define Build/zip
+	rm -rf $@.tmp
 	mkdir $@.tmp
-	mv $@ $@.tmp/$(1)
+	mv $@ $@.tmp/$(word 1,$(1))
 
-	zip -j -X \
+	$(STAGING_DIR_HOST)/bin/zip -j -X \
 		$(if $(SOURCE_DATE_EPOCH),--mtime="$(SOURCE_DATE_EPOCH)") \
-		$@ $@.tmp/$(if $(1),$(1),$@)
+		$(wordlist 2,$(words $(1)),$(1)) \
+		$@ $@.tmp/$(if $(word 1,$(1)),$(word 1,$(1)),$$(basename $@))
 	rm -rf $@.tmp
 endef
 
@@ -324,6 +342,18 @@ define Build/check-size
 		echo "WARNING: Image file $@ is too big: $$imagesize > $$limitsize" >&2; \
 		rm -f $@; \
 	}
+endef
+
+define Build/elecom-product-header
+	$(eval product=$(word 1,$(1)))
+	$(eval fw=$(if $(word 2,$(1)),$(word 2,$(1)),$@))
+
+	( \
+		echo -n -e "ELECOM\x00\x00$(product)" | dd bs=40 count=1 conv=sync; \
+		echo -n "0.00" | dd bs=16 count=1 conv=sync; \
+		dd if=$(fw); \
+	) > $(fw).new
+	mv $(fw).new $(fw)
 endef
 
 define Build/linksys-image
@@ -469,7 +499,7 @@ define Build/append-metadata
 endef
 
 # Convert a raw image into a $1 type image.
-# E.g. | qemu-image vdi
+# E.g. | qemu-image vdi <optional extra arguments to qemu-img binary>
 define Build/qemu-image
 	qemu-img convert -f raw -O $1 $@ $@.new
 	@mv $@.new $@

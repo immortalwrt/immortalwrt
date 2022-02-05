@@ -57,7 +57,8 @@ static inline int getListSize(LIST_HEADER *pList)
 	return pList->size;
 }
 
-static inline RT_LIST_ENTRY *delEntryList(LIST_HEADER *pList, RT_LIST_ENTRY *pEntry)
+static inline RT_LIST_ENTRY *delEntryList(LIST_HEADER *pList,
+					  RT_LIST_ENTRY *pEntry)
 {
 	RT_LIST_ENTRY *pCurEntry;
 	RT_LIST_ENTRY *pPrvEntry;
@@ -145,35 +146,32 @@ static inline unsigned int DlListLen(struct _DL_LIST *List)
 	return Count;
 }
 
-
 #ifdef COMPOS_WIN
 
-#define DlListEntry(item, type, member) \
-	((type *) ((char *) item - FIELD_OFFSET(type, member)))
+#define DlListEntry(item, type, member)                                        \
+	((type *)((char *)item - FIELD_OFFSET(type, member)))
 
 #else
 #ifndef Offsetof
-#define Offsetof(type, member) ((long) &((type *) 0)->member)
+#define Offsetof(type, member) ((long)&((type *)0)->member)
 #endif
 
-#define DlListEntry(item, type, member) \
-	((type *) ((char *) item - offsetof(type, member)))
+#define DlListEntry(item, type, member)                                        \
+	((type *)((char *)item - offsetof(type, member)))
 #endif
 
+#define DlListFirst(list, type, member)                                        \
+	(DlListEmpty((list)) ? NULL : DlListEntry((list)->Next, type, member))
 
-#define DlListFirst(list, type, member) \
-	(DlListEmpty((list)) ? NULL : \
-	 DlListEntry((list)->Next, type, member))
+#define DlListForEach(item, list, type, member)                                \
+	for (item = DlListEntry((list)->Next, type, member);                   \
+	     &item->member != (list);                                          \
+	     item = DlListEntry(item->member.Next, type, member))
 
-#define DlListForEach(item, list, type, member) \
-	for (item = DlListEntry((list)->Next, type, member); \
-		 &item->member != (list); \
-		 item = DlListEntry(item->member.Next, type, member))
-
-#define DlListForEachSafe(item, n, list, type, member) \
-	for (item = DlListEntry((list)->Next, type, member), \
-		 n = DlListEntry(item->member.Next, type, member); \
-		 &item->member != (list); \
-		 item = n, n = DlListEntry(n->member.Next, type, member))
+#define DlListForEachSafe(item, n, list, type, member)                         \
+	for (item = DlListEntry((list)->Next, type, member),                   \
+	    n = DlListEntry(item->member.Next, type, member);                  \
+	     &item->member != (list);                                          \
+	     item = n, n = DlListEntry(n->member.Next, type, member))
 
 #endif /* ___LINK_LIST_H__ */

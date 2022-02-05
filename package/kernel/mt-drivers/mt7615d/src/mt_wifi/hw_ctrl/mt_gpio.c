@@ -196,13 +196,13 @@ static VOID GPIOMuxSelect(RTMP_ADAPTER *pAd, UINT32 GPIO)
 		break;
 
 	default:
-		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("GPIO (%d) not support\n", GPIO));
+		MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+			 ("GPIO (%d) not support\n", GPIO));
 		break;
 	}
 
 	RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RestoreValue);
 }
-
 
 INT32 GPIODirectionInput(RTMP_ADAPTER *pAd, UINT32 GPIO)
 {
@@ -218,7 +218,6 @@ INT32 GPIODirectionInput(RTMP_ADAPTER *pAd, UINT32 GPIO)
 	RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RestoreValue);
 	return 0;
 }
-
 
 INT32 GPIODirectionOuput(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 {
@@ -248,7 +247,6 @@ INT32 GPIODirectionOuput(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 	return 0;
 }
 
-
 UINT32 GPIOGetValue(RTMP_ADAPTER *pAd, UINT32 GPIO)
 {
 	UINT32 RemapBase, RemapOffset;
@@ -267,7 +265,6 @@ UINT32 GPIOGetValue(RTMP_ADAPTER *pAd, UINT32 GPIO)
 	else
 		return INPUT_LOW;
 }
-
 
 VOID GPIOSetValue(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 {
@@ -291,7 +288,6 @@ VOID GPIOSetValue(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 	RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RestoreValue);
 }
 
-
 UINT32 GPIOGetMode(RTMP_ADAPTER *pAd, UINT32 GPIO)
 {
 	UINT32 RemapBase, RemapOffset;
@@ -310,7 +306,6 @@ UINT32 GPIOGetMode(RTMP_ADAPTER *pAd, UINT32 GPIO)
 	else
 		return GPIO_INPUT;
 }
-
 
 INT32 GPIOPullUp(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 {
@@ -334,7 +329,6 @@ INT32 GPIOPullUp(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 	RTMP_IO_WRITE32(pAd, MCU_PCIE_REMAP_2, RestoreValue);
 	return 0;
 }
-
 
 INT32 GPIOPullDown(RTMP_ADAPTER *pAd, UINT32 GPIO, UINT8 Value)
 {

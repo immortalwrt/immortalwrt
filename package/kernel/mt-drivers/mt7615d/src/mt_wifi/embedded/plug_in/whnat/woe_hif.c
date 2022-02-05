@@ -33,7 +33,9 @@ static irqreturn_t cputracer_isr(int irq, void *data)
 	value = sta | (1 << CPU_TRACER_CON_IRQ_CLR);
 
 	if (sta & (1 << CPU_TRACER_CON_IRQ_WP_STA))
-		WHNAT_DBG(WHNAT_DBG_OFF, "[TRACKER] Watch address: 0x%x was touched\n", tracer->trace_addr);
+		WHNAT_DBG(WHNAT_DBG_OFF,
+			  "[TRACKER] Watch address: 0x%x was touched\n",
+			  tracer->trace_addr);
 
 	if (sta & (1 << CPU_TRACER_CON_IRQ_AR_STA))
 		WHNAT_DBG(WHNAT_DBG_OFF, "[TRAKER] Read time out trigger\n");
@@ -60,10 +62,15 @@ static void whnat_hif_cputracer_probe(struct whnat_hif_cfg *hif)
 	tracer->trace_en = WHNAT_CPU_TRACER_DEFAULT_EN;
 	tracer->trace_mask = WHNAT_CPU_TRACER_DEFAULT_MASK;
 
-	if (request_irq(tracer->irq, (irq_handler_t)cputracer_isr, IRQF_TRIGGER_LOW, "cpu_tracer", (tracer)))
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): register irq: %d for cpu tracer fail!\n", __func__, tracer->irq);
+	if (request_irq(tracer->irq, (irq_handler_t)cputracer_isr,
+			IRQF_TRIGGER_LOW, "cpu_tracer", (tracer)))
+		WHNAT_DBG(WHNAT_DBG_OFF,
+			  "%s(): register irq: %d for cpu tracer fail!\n",
+			  __func__, tracer->irq);
 	else
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): register irq: %d for cpu tracer ok!\n", __func__, tracer->irq);
+		WHNAT_DBG(WHNAT_DBG_OFF,
+			  "%s(): register irq: %d for cpu tracer ok!\n",
+			  __func__, tracer->irq);
 
 	whnat_hal_trace_set(tracer);
 }
@@ -81,7 +88,8 @@ static void whnat_hif_pcie_mirror_probe(struct whnat_hif_cfg *hif)
 	WHNAT_DBG(WHNAT_DBG_INF, "%s(): get node=%p\n", __func__, &node);
 	/* iomap registers */
 	hif->base_addr = (unsigned long)of_iomap(node, 0);
-	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): hif_cfg base addr=%lx\n", __func__, hif->base_addr);
+	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): hif_cfg base addr=%lx\n", __func__,
+		  hif->base_addr);
 	whnat_hal_hif_init(hif);
 }
 #endif /*WED_CR_MIRROR_SUPPORT*/
@@ -134,4 +142,3 @@ int whnat_hif_exit(struct whnat_hif_cfg *hif)
 
 	return 0;
 }
-

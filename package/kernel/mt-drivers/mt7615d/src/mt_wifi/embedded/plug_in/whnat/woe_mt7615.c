@@ -17,7 +17,7 @@
 #ifdef MT7615
 #include "woe_mt7615.h"
 #include "woe.h"
-#include <net/ra_nat.h>
+#include "hwnat/ra_nat.h"
 #include <linux/pci.h>
 #include <net/ip.h>
 #include <linux/tcp.h>
@@ -35,8 +35,6 @@ static void wifi_pcie_match(struct wifi_entry *wifi)
 	wifi->wpdma_base = wifi_wpdma_base_get(wifi->cookie);
 }
 
-
-
 /*Gloable function*/
 /*
 *
@@ -49,7 +47,7 @@ void wifi_fbuf_init(unsigned char *fbuf, unsigned int pkt_pa, unsigned int tkid)
 	CR4_TXP_MSDU_INFO *txp;
 
 	txd = (TMAC_TXD_L *)fbuf;
-	txp = (CR4_TXP_MSDU_INFO *)(fbuf+sizeof(TMAC_TXD_L));
+	txp = (CR4_TXP_MSDU_INFO *)(fbuf + sizeof(TMAC_TXD_L));
 	memset(txd, 0, sizeof(*txd));
 	memset(txp, 0, sizeof(*txp));
 	/*initial txd*/
@@ -62,7 +60,8 @@ void wifi_fbuf_init(unsigned char *fbuf, unsigned int pkt_pa, unsigned int tkid)
 	txd1->txd_len = 0;
 	txd1->pkt_ft = TMI_PKT_FT_HIF_CT;
 	txd1->hdr_format = TMI_HDR_FT_NON_80211;
-	TMI_HDR_INFO_VAL(TMI_HDR_FT_NON_80211, 0, 0, 0, 0, 0, 0, 0, txd1->hdr_info);
+	TMI_HDR_INFO_VAL(TMI_HDR_FT_NON_80211, 0, 0, 0, 0, 0, 0, 0,
+			 txd1->hdr_info);
 	txd1->hdr_pad = (TMI_HDR_PAD_MODE_HEAD << TMI_HDR_PAD_BIT_MODE) | 0x1;
 	/*init txp*/
 	txp->msdu_token = tkid;
@@ -76,7 +75,8 @@ void wifi_fbuf_init(unsigned char *fbuf, unsigned int pkt_pa, unsigned int tkid)
 /*
 *
 */
-static inline void wifi_tx_info_wrapper(unsigned char *tx_info, struct wlan_tx_info *info)
+static inline void wifi_tx_info_wrapper(unsigned char *tx_info,
+					struct wlan_tx_info *info)
 {
 	struct _TX_BLK *txblk = (struct _TX_BLK *)tx_info;
 
@@ -90,7 +90,7 @@ static inline void wifi_tx_info_wrapper(unsigned char *tx_info, struct wlan_tx_i
 	else
 #endif
 #ifdef A4_CONN
-	if (txblk->pMacEntry && IS_ENTRY_A4(txblk->pMacEntry))
+		if (txblk->pMacEntry && IS_ENTRY_A4(txblk->pMacEntry))
 		info->wcid = txblk->pMacEntry->wcid;
 	else
 #endif /* A4_CONN */
@@ -103,56 +103,41 @@ static inline void wifi_tx_info_wrapper(unsigned char *tx_info, struct wlan_tx_i
 /*
 *
 */
-static void wifi_dump_skb(
-	struct whnat_entry *entry,
-	struct wlan_tx_info *info,
-	struct sk_buff *skb)
+static void wifi_dump_skb(struct whnat_entry *entry, struct wlan_tx_info *info,
+			  struct sk_buff *skb)
 {
 	struct iphdr *hdr = ip_hdr(skb);
 
 	WHNAT_DBG(WHNAT_DBG_INF,
-		"%s(): add entry: wdma=%d,ringId=%d,wcid=%d,bssid=%d\n",
-		__func__,
-		entry->idx,
-		info->ringidx,
-		info->wcid,
-		info->bssidx);
+		  "%s(): add entry: wdma=%d,ringId=%d,wcid=%d,bssid=%d\n",
+		  __func__, entry->idx, info->ringidx, info->wcid,
+		  info->bssidx);
 
-	if( hdr->version != 4)
+	if (hdr->version != 4)
 		return;
 
-	WHNAT_DBG(WHNAT_DBG_INF,
-		"%s():src=%d.%d.%d.%d\n",
-		__func__,
-		(0xff & hdr->saddr),
-		(0xff00 & hdr->saddr) >> 8,
-		(0xff0000 & hdr->saddr) >> 16,
-		(0xff000000 & hdr->saddr) >>24);
+	WHNAT_DBG(WHNAT_DBG_INF, "%s():src=%d.%d.%d.%d\n", __func__,
+		  (0xff & hdr->saddr), (0xff00 & hdr->saddr) >> 8,
+		  (0xff0000 & hdr->saddr) >> 16,
+		  (0xff000000 & hdr->saddr) >> 24);
 
-	WHNAT_DBG(WHNAT_DBG_INF,
-		"%s(): dst=%d.%d.%d.%d\n",
-		__func__,
-		(0xff & hdr->daddr),
-		(0xff00 & hdr->daddr) >> 8,
-		(0xff0000 & hdr->daddr) >> 16,
-		(0xff000000 & hdr->daddr) >>24);
+	WHNAT_DBG(WHNAT_DBG_INF, "%s(): dst=%d.%d.%d.%d\n", __func__,
+		  (0xff & hdr->daddr), (0xff00 & hdr->daddr) >> 8,
+		  (0xff0000 & hdr->daddr) >> 16,
+		  (0xff000000 & hdr->daddr) >> 24);
 
-	if( hdr->protocol == IPPROTO_TCP) {
+	if (hdr->protocol == IPPROTO_TCP) {
 		struct tcphdr *tcph = tcp_hdr(skb);
 		WHNAT_DBG(WHNAT_DBG_INF,
-			"%s(): protocol=TCP,sport=%d,dstport=%d\n",
-			__func__,
-			tcph->source,
-			tcph->dest);
+			  "%s(): protocol=TCP,sport=%d,dstport=%d\n", __func__,
+			  tcph->source, tcph->dest);
 	}
 
-	if( hdr->protocol == IPPROTO_UDP) {
+	if (hdr->protocol == IPPROTO_UDP) {
 		struct udphdr *udph = udp_hdr(skb);
 		WHNAT_DBG(WHNAT_DBG_INF,
-			"%s(): protocol=UDP,sport=%d,dstport=%d\n",
-			__func__,
-			udph->source,
-			udph->dest);
+			  "%s(): protocol=UDP,sport=%d,dstport=%d\n", __func__,
+			  udph->source, udph->dest);
 	}
 }
 #endif /*WHNAT_DBG_EN*/
@@ -163,18 +148,19 @@ static void wifi_dump_skb(
 void wifi_tx_tuple_add(void *entry, unsigned char *tx_info)
 {
 	struct whnat_entry *whnat = (struct whnat_entry *)entry;
-	struct wlan_tx_info t, *info =  &t;
+	struct wlan_tx_info t, *info = &t;
 	struct _TX_BLK *txblk = (struct _TX_BLK *)tx_info;
 
 	memset(info, 0, sizeof(*info));
 	wifi_tx_info_wrapper(tx_info, info);
 	WHNAT_DBG(WHNAT_DBG_INF, "WDMAID: %d,RingID: %d, Wcid: %d, Bssid: %d\n",
-			whnat->idx, info->ringidx, info->wcid, info->bssidx);
+		  whnat->idx, info->ringidx, info->wcid, info->bssidx);
 
 	if (whnat && ra_sw_nat_hook_tx && whnat->cfg.hw_tx_en) {
 		struct sk_buff *skb = (struct sk_buff *)info->pkt;
 
-		if ((FOE_AI_HEAD(skb) == HIT_UNBIND_RATE_REACH) || (FOE_AI_TAIL(skb) == HIT_UNBIND_RATE_REACH)) {
+		if ((FOE_AI_HEAD(skb) == HIT_UNBIND_RATE_REACH) ||
+		    (FOE_AI_TAIL(skb) == HIT_UNBIND_RATE_REACH)) {
 			if (IS_SPACE_AVAILABLE_HEAD(skb)) {
 				/*WDMA idx*/
 				FOE_WDMA_ID_HEAD(skb) = whnat->idx;
@@ -292,7 +278,8 @@ void dump_wifi_value(struct wifi_entry *wifi, char *name, unsigned int addr)
 /*
 *
 */
-void wifi_dump_tx_ring_info(struct wifi_entry *wifi, unsigned char ring_id, unsigned int idx)
+void wifi_dump_tx_ring_info(struct wifi_entry *wifi, unsigned char ring_id,
+			    unsigned int idx)
 {
 	struct _RTMP_ADAPTER *ad = (struct _RTMP_ADAPTER *)wifi->cookie;
 	struct _PCI_HIF_T *pci_cfg = &ad->PciHif;
@@ -362,7 +349,8 @@ void wifi_chip_probe(struct wifi_entry *wifi, unsigned int irq)
 	struct pci_dev *pci_dev = os_cookie->pci_dev;
 	struct net_device *dev = ad->net_dev;
 
-	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): Chang CHIP IRQ: %d to WHNAT IRQ: %d\n", __func__, pci_dev->irq, irq);
+	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): Chang CHIP IRQ: %d to WHNAT IRQ: %d\n",
+		  __func__, pci_dev->irq, irq);
 	wifi->irq = pci_dev->irq;
 	pci_dev->irq = irq;
 	dev->irq = irq;
@@ -383,7 +371,8 @@ void wifi_chip_remove(struct wifi_entry *wifi)
 	struct pci_dev *pci_dev = os_cookie->pci_dev;
 	struct _RTMP_CHIP_OP *ops = hc_get_chip_ops(ad->hdev_ctrl);
 
-	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): Chang WED IRQ: %d to CHIP IRQ: %d\n", __func__, pci_dev->irq, wifi->irq);
+	WHNAT_DBG(WHNAT_DBG_OFF, "%s(): Chang WED IRQ: %d to CHIP IRQ: %d\n",
+		  __func__, pci_dev->irq, wifi->irq);
 	/*revert pci irq as original irq*/
 	pci_dev->irq = wifi->irq;
 	wifi->irq = 0;
@@ -398,40 +387,36 @@ void wifi_chip_remove(struct wifi_entry *wifi)
 */
 int wifi_slot_get(void *cookie)
 {
-	struct _RTMP_ADAPTER *ad = (RTMP_ADAPTER *) cookie;
+	struct _RTMP_ADAPTER *ad = (RTMP_ADAPTER *)cookie;
 	struct os_cookie *os_cookie = (struct os_cookie *)ad->OS_Cookie;
 	struct pci_dev *pci_dev = os_cookie->pci_dev;
 	unsigned int id = 1;
-	if(pci_dev->bus) {
+	if (pci_dev->bus) {
 		id = (pci_dev->bus->self->devfn >> 3) & 0x1f;
-		WHNAT_DBG(WHNAT_DBG_OFF, "%s(): bus name=%s, funid=%d, get slot id=%d\n",
-			__func__,
-			pci_dev->bus->name,
-			pci_dev->bus->self->devfn,
-			id);
+		WHNAT_DBG(WHNAT_DBG_OFF,
+			  "%s(): bus name=%s, funid=%d, get slot id=%d\n",
+			  __func__, pci_dev->bus->name,
+			  pci_dev->bus->self->devfn, id);
 	}
 	return id;
 }
-
-
 
 /*
 *
 */
 unsigned int wifi_wpdma_base_get(void *cookie)
 {
-	struct _RTMP_ADAPTER *ad = (RTMP_ADAPTER *) cookie;
+	struct _RTMP_ADAPTER *ad = (RTMP_ADAPTER *)cookie;
 	struct os_cookie *os_cookie = (struct os_cookie *)ad->OS_Cookie;
 	struct pci_dev *pci_dev = os_cookie->pci_dev;
 	unsigned int wpdma_base = 0;
 
-	if(pci_dev->bus) {
-		wpdma_base = (unsigned int) pci_resource_start(pci_dev, 0);
+	if (pci_dev->bus) {
+		wpdma_base = (unsigned int)pci_resource_start(pci_dev, 0);
 		wpdma_base |= WPDMA_OFFSET;
 	}
 	return wpdma_base;
 }
-
 
 /*
 *

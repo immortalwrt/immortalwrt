@@ -241,10 +241,12 @@ endif
 
 ifeq ($(PLATFORM),PC)
 # Linux 2.6
-LINUX_SRC = /lib/modules/$(shell uname -r)/build
+#LINUX_SRC = /lib/modules/$(shell uname -r)/build
 # Linux 2.4 Change to your local setting
 #LINUX_SRC = /usr/src/linux-2.4
-LINUX_SRC_MODULE = /lib/modules/$(shell uname -r)/kernel/drivers/net/wireless/
+#LINUX_SRC_MODULE = /lib/modules/$(shell uname -r)/kernel/drivers/net/wireless/
+LINUX_SRC = /lib/modules/3.16.0-30-generic/build
+LINUX_SRC_MODULE = /lib/modules/3.16.0-30-generic/kernel/drivers/net/wireless/
 CROSS_COMPILE = 
 endif
 
@@ -406,7 +408,11 @@ endif
 
 build_sku_tables:
 	$(MAKE) -C $(RT28xx_DIR)/txpwr
-	$(RT28xx_DIR)/txpwr/dat2h
+	$(RT28xx_DIR)/txpwr/data2h
+
+build_power_limit_tables:
+	$(MAKE) -C $(RT28xx_DIR)/txpwr
+	$(RT28xx_DIR)/txpwr/data2h
 
 build_tools:
 	$(MAKE) -C tools

@@ -30,7 +30,6 @@
     --------    ----------      ----------------------------------------------
 */
 
-
 #include "rt_config.h"
 #include <linux/jhash.h>
 #include <net/tcp.h>
@@ -41,72 +40,73 @@
 #define REMOVE_REDUCE_PROB
 
 #ifdef REDUCE_ACK_DEBUG
-#define CNX_DPRINT(pAd, cnx, string)                           \
-	do {                                                    \
-		if ((pAd) == NULL || (pAd)->CommonCfg.ReduceAckEnable != REDUCE_ACK_ENABLE_WITOUT_DEL_CNX) {\
-			break;                                         \
-		}                                                  \
-		if ((cnx) == NULL) {                               \
-			printk("[rack] cnx is NULL (%s)\n", string);   \
-			break;                                         \
-		}                                                  \
-		printk("[cnx] %u.%u.%u.%u:%u --> %u.%u.%u.%u:%u, seq=%u, rel_seq=%u, ack=%u, rel_ack=%u, win=%u, bif=%u (%s)\n",\
-			   ((cnx)->tuple.sip >> 24) & 0xFF,           \
-			   ((cnx)->tuple.sip >> 16) & 0xFF,           \
-			   ((cnx)->tuple.sip >> 8) & 0xFF,            \
-			   ((cnx)->tuple.sip >> 0) & 0xFF,            \
-			   (cnx)->tuple.sport,                        \
-			   ((cnx)->tuple.dip >> 24) & 0xFF,           \
-			   ((cnx)->tuple.dip >> 16) & 0xFF,           \
-			   ((cnx)->tuple.dip >> 8) & 0xFF,            \
-			   ((cnx)->tuple.dip >> 0) & 0xFF,            \
-			   (cnx)->tuple.dport,                        \
-			   (cnx)->seq,                                \
-			   (cnx)->rel_seq,                            \
-			   (cnx)->sent_ack,                           \
-			   (cnx)->rel_ack,                            \
-			   (cnx)->wsize,                              \
-			   (cnx)->bif,                                \
-			   string);                                   \
+#define CNX_DPRINT(pAd, cnx, string)                                                                                             \
+	do {                                                                                                                     \
+		if ((pAd) == NULL ||                                                                                             \
+		    (pAd)->CommonCfg.ReduceAckEnable !=                                                                          \
+			    REDUCE_ACK_ENABLE_WITOUT_DEL_CNX) {                                                                  \
+			break;                                                                                                   \
+		}                                                                                                                \
+		if ((cnx) == NULL) {                                                                                             \
+			printk("[rack] cnx is NULL (%s)\n", string);                                                             \
+			break;                                                                                                   \
+		}                                                                                                                \
+		printk("[cnx] %u.%u.%u.%u:%u --> %u.%u.%u.%u:%u, seq=%u, rel_seq=%u, ack=%u, rel_ack=%u, win=%u, bif=%u (%s)\n", \
+		       ((cnx)->tuple.sip >> 24) & 0xFF,                                                                          \
+		       ((cnx)->tuple.sip >> 16) & 0xFF,                                                                          \
+		       ((cnx)->tuple.sip >> 8) & 0xFF,                                                                           \
+		       ((cnx)->tuple.sip >> 0) & 0xFF, (cnx)->tuple.sport,                                                       \
+		       ((cnx)->tuple.dip >> 24) & 0xFF,                                                                          \
+		       ((cnx)->tuple.dip >> 16) & 0xFF,                                                                          \
+		       ((cnx)->tuple.dip >> 8) & 0xFF,                                                                           \
+		       ((cnx)->tuple.dip >> 0) & 0xFF, (cnx)->tuple.dport,                                                       \
+		       (cnx)->seq, (cnx)->rel_seq, (cnx)->sent_ack,                                                              \
+		       (cnx)->rel_ack, (cnx)->wsize, (cnx)->bif, string);                                                        \
 	} while (0)
 
-#define PKT_DPRINT(pAd, pkt, string)                           \
-	do {                                                    \
-		if ((pAd) == NULL || (pAd)->CommonCfg.ReduceAckEnable != REDUCE_ACK_ENABLE_WITOUT_DEL_CNX) {\
-			break;                                         \
-		}                                                  \
-		if ((pkt) == NULL) {                               \
-			printk("[pkt] pkt is NULL (%s)\n", string);   \
-		}                                                  \
-		printk("[pkt] %u.%u.%u.%u:%u --> %u.%u.%u.%u:%u, len=%u, opt_len=%u, flags=%x (%s)\n",\
-			   ((pkt)->sip >> 24) & 0xFF,                 \
-			   ((pkt)->sip >> 16) & 0xFF,                 \
-			   ((pkt)->sip >> 8) & 0xFF,                  \
-			   ((pkt)->sip >> 0) & 0xFF,                  \
-			   (pkt)->sport,                              \
-			   ((pkt)->dip >> 24) & 0xFF,                 \
-			   ((pkt)->dip >> 16) & 0xFF,                 \
-			   ((pkt)->dip >> 8) & 0xFF,                  \
-			   ((pkt)->dip >> 0) & 0xFF,                  \
-			   (pkt)->dport,                              \
-			   (pkt)->data_len,                           \
-			   (pkt)->opt_len,                            \
-			   (pkt)->flags,                              \
-			   string);                                   \
+#define PKT_DPRINT(pAd, pkt, string)                                                                   \
+	do {                                                                                           \
+		if ((pAd) == NULL ||                                                                   \
+		    (pAd)->CommonCfg.ReduceAckEnable !=                                                \
+			    REDUCE_ACK_ENABLE_WITOUT_DEL_CNX) {                                        \
+			break;                                                                         \
+		}                                                                                      \
+		if ((pkt) == NULL) {                                                                   \
+			printk("[pkt] pkt is NULL (%s)\n", string);                                    \
+		}                                                                                      \
+		printk("[pkt] %u.%u.%u.%u:%u --> %u.%u.%u.%u:%u, len=%u, opt_len=%u, flags=%x (%s)\n", \
+		       ((pkt)->sip >> 24) & 0xFF, ((pkt)->sip >> 16) & 0xFF,                           \
+		       ((pkt)->sip >> 8) & 0xFF, ((pkt)->sip >> 0) & 0xFF,                             \
+		       (pkt)->sport, ((pkt)->dip >> 24) & 0xFF,                                        \
+		       ((pkt)->dip >> 16) & 0xFF, ((pkt)->dip >> 8) & 0xFF,                            \
+		       ((pkt)->dip >> 0) & 0xFF, (pkt)->dport,                                         \
+		       (pkt)->data_len, (pkt)->opt_len, (pkt)->flags, string);                         \
 	} while (0)
 
-#define MY_DPRINT(format, ...)                               \
-	do {                                                 \
-		printk("[rack] "format, ##__VA_ARGS__);          \
+#define MY_DPRINT(format, ...)                                                 \
+	do {                                                                   \
+		printk("[rack] " format, ##__VA_ARGS__);                       \
 	} while (0)
 #else
-#define CNX_DPRINT(pAd, cnx, string) do {} while (0)
-#define PKT_DPRINT(pAd, pkt, string) do {} while (0)
-#define MY_DPRINT(format, ...) do {} while (0)
+#define CNX_DPRINT(pAd, cnx, string)                                           \
+	do {                                                                   \
+	} while (0)
+#define PKT_DPRINT(pAd, pkt, string)                                           \
+	do {                                                                   \
+	} while (0)
+#define MY_DPRINT(format, ...)                                                 \
+	do {                                                                   \
+	} while (0)
 #endif
 
-#define MY_LOCK(pAd) do {RTMP_SEM_LOCK(&pAd->ReduceAckLock); } while (0)
-#define MY_UNLOCK(pAd) do {RTMP_SEM_UNLOCK(&pAd->ReduceAckLock); } while (0)
+#define MY_LOCK(pAd)                                                           \
+	do {                                                                   \
+		RTMP_SEM_LOCK(&pAd->ReduceAckLock);                            \
+	} while (0)
+#define MY_UNLOCK(pAd)                                                         \
+	do {                                                                   \
+		RTMP_SEM_UNLOCK(&pAd->ReduceAckLock);                          \
+	} while (0)
 
 /*
 ========================================================================
@@ -155,7 +155,8 @@ Note:
 
 ========================================================================
 */
-static BOOLEAN decide_to_drop(RTMP_ADAPTER *pAd, rack_packet *pkt, rack_cnx *cnx)
+static BOOLEAN decide_to_drop(RTMP_ADAPTER *pAd, rack_packet *pkt,
+			      rack_cnx *cnx)
 {
 	UINT32 reduceProbability = pAd->CommonCfg.ReduceAckProbability;
 
@@ -205,7 +206,8 @@ static BOOLEAN decide_to_drop(RTMP_ADAPTER *pAd, rack_packet *pkt, rack_cnx *cnx
 	}
 
 	/* Decision Check #8 */
-	if (after(pkt->ack, cnx->pushack) && before(cnx->sent_ack, cnx->pushack)) {
+	if (after(pkt->ack, cnx->pushack) &&
+	    before(cnx->sent_ack, cnx->pushack)) {
 		cnx->stats.pass_push_data3++;
 		return FALSE;
 	}
@@ -219,7 +221,9 @@ static BOOLEAN decide_to_drop(RTMP_ADAPTER *pAd, rack_packet *pkt, rack_cnx *cnx
 #else
 
 	if (cnx->consecutive_ack > REDUCE_PROB_INC_TH) {
-		reduceProbability += REDUCE_ACK_ONE_PERCENT * REDUCE_PROB_INC_STEP * cnx->consecutive_ack;
+		reduceProbability += REDUCE_ACK_ONE_PERCENT *
+				     REDUCE_PROB_INC_STEP *
+				     cnx->consecutive_ack;
 
 		if (reduceProbability > 0x7FFFFFFF)
 			cnx->stats.drop_prob++;
@@ -254,14 +258,14 @@ static UINT32 hash_cnx(rack_packet *pkt)
 
 	if (pkt->type == TCP_ACK) {
 		n = jhash((void *)&(pkt->dip), sizeof(pkt->dip),
-				  (pkt->dport << 16));
+			  (pkt->dport << 16));
 		h = jhash((void *)&(pkt->sip), sizeof(pkt->sip),
-				  (pkt->sport | n));
+			  (pkt->sport | n));
 	} else {
 		n = jhash((void *)&(pkt->sip), sizeof(pkt->sip),
-				  (pkt->sport << 16));
+			  (pkt->sport << 16));
 		h = jhash((void *)&(pkt->dip), sizeof(pkt->dip),
-				  (pkt->dport | n));
+			  (pkt->dport | n));
 	}
 
 	index = ((u64)h * MAX_REDUCE_ACK_CNX_ENTRY) >> 32;
@@ -287,30 +291,31 @@ Note:
 */
 static rack_cnx *find_cnx(RTMP_ADAPTER *pAd, rack_packet *pkt)
 {
-#if LINUX_VERSION_CODE  < KERNEL_VERSION(3, 9, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)
 	struct hlist_node *tmp;
 #endif
 	rack_cnx *cnx = NULL;
 	BOOLEAN bFound = FALSE;
 	UINT32 hashIndex = hash_cnx(pkt);
-#if LINUX_VERSION_CODE  < KERNEL_VERSION(3, 9, 0)
-	hlist_for_each_entry(cnx, tmp, &(pAd->ackCnxHashTbl[hashIndex]), hnode) {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)
+	hlist_for_each_entry (cnx, tmp, &(pAd->ackCnxHashTbl[hashIndex]),
+			      hnode) {
 #else
-	hlist_for_each_entry(cnx, &(pAd->ackCnxHashTbl[hashIndex]), hnode) {
+	hlist_for_each_entry (cnx, &(pAd->ackCnxHashTbl[hashIndex]), hnode) {
 #endif
 
 		if (pkt->type == TCP_ACK && cnx->tuple.sip == pkt->sip &&
-			cnx->tuple.dip == pkt->dip &&
-			cnx->tuple.sport == pkt->sport &&
-			cnx->tuple.dport == pkt->dport) {
+		    cnx->tuple.dip == pkt->dip &&
+		    cnx->tuple.sport == pkt->sport &&
+		    cnx->tuple.dport == pkt->dport) {
 			bFound = TRUE;
 			break;
 		}
 
 		if (pkt->type == TCP_DATA && cnx->tuple.dip == pkt->sip &&
-			cnx->tuple.sip == pkt->dip &&
-			cnx->tuple.dport == pkt->sport &&
-			cnx->tuple.sport == pkt->dport) {
+		    cnx->tuple.sip == pkt->dip &&
+		    cnx->tuple.dport == pkt->sport &&
+		    cnx->tuple.sport == pkt->dport) {
 			bFound = TRUE;
 			break;
 		}
@@ -341,7 +346,8 @@ Note:
 */
 static VOID calculate_bif(rack_cnx *cnx)
 {
-	if (cnx->next_seq != 0 && cnx->sent_ack != 0 && after(cnx->next_seq, cnx->sent_ack)) {
+	if (cnx->next_seq != 0 && cnx->sent_ack != 0 &&
+	    after(cnx->next_seq, cnx->sent_ack)) {
 		if (cnx->consecutive_ack == 1 && cnx->consecutive_drop == 0) {
 			if (cnx->avg_bif == 0)
 				cnx->avg_bif = cnx->bif;
@@ -353,7 +359,8 @@ static VOID calculate_bif(rack_cnx *cnx)
 			cnx->bif = cnx->next_seq - cnx->sent_ack;
 		else {
 			/* handle wrap around case */
-			cnx->bif = REDUCE_ACK_UINT32_MAX - cnx->sent_ack + cnx->next_seq;
+			cnx->bif = REDUCE_ACK_UINT32_MAX - cnx->sent_ack +
+				   cnx->next_seq;
 		}
 
 		if (cnx->bif > cnx->max_bif)
@@ -397,7 +404,7 @@ static VOID parse_tcp_options(UCHAR *ptr, UINT32 length, rack_packet *pkt)
 		case TCPOPT_EOL:
 			return;
 
-		case TCPOPT_NOP:    /* Ref: RFC 793 section 3.1 */
+		case TCPOPT_NOP: /* Ref: RFC 793 section 3.1 */
 			length--;
 			continue;
 
@@ -448,8 +455,10 @@ static VOID parse_tcp_options(UCHAR *ptr, UINT32 length, rack_packet *pkt)
 			    break;
 			*/
 			case TCPOPT_SACK:
-				if ((opsize >= (TCPOLEN_SACK_BASE + TCPOLEN_SACK_PERBLOCK)) &&
-					!((opsize - TCPOLEN_SACK_BASE) % TCPOLEN_SACK_PERBLOCK))
+				if ((opsize >= (TCPOLEN_SACK_BASE +
+						TCPOLEN_SACK_PERBLOCK)) &&
+				    !((opsize - TCPOLEN_SACK_BASE) %
+				      TCPOLEN_SACK_PERBLOCK))
 					pkt->opt_have_sack = 1;
 
 				break;
@@ -491,7 +500,7 @@ static BOOLEAN parse_tcp_packet(PNDIS_PACKET pPacket, rack_packet *pkt)
 	pSrcBuf = GET_OS_PKT_DATAPTR(pPacket);
 	pktLen = GET_OS_PKT_LEN(pPacket);
 	tcpdata_len = pktLen;
-	tcpdata_len -= 14;/* minus Ethernet header */
+	tcpdata_len -= 14; /* minus Ethernet header */
 	/* get Ethernet protocol field*/
 	TypeLen = OS_NTOHS(*((UINT16 *)(pSrcBuf + 12)));
 
@@ -499,13 +508,14 @@ static BOOLEAN parse_tcp_packet(PNDIS_PACKET pPacket, rack_packet *pkt)
 	if (TypeLen == 0x8100) {
 		pSrcBuf += 4;
 		tcpdata_len -= 4; /* minus VLAN header */
-	} else if ((TypeLen == 0x9100) || (TypeLen == 0x9200) || (TypeLen == 0x9300)) {
+	} else if ((TypeLen == 0x9100) || (TypeLen == 0x9200) ||
+		   (TypeLen == 0x9300)) {
 		pSrcBuf += 8;
 		tcpdata_len -= 8; /* minus VLAN header */
 	}
 
 	if ((TypeLen == 0x0800) /* Type: IP (0x0800) */
-		&& (pSrcBuf[23] == 0x06)) { /* Protocol: TCP (0x06) */
+	    && (pSrcBuf[23] == 0x06)) { /* Protocol: TCP (0x06) */
 		UINT16 headerLen = (*((UINT8 *)(pSrcBuf + 46))) / 4;
 		UINT16 opt_len = headerLen - 20;
 		tcpdata_len -= 20; /* minus IP header */
@@ -522,9 +532,11 @@ static BOOLEAN parse_tcp_packet(PNDIS_PACKET pPacket, rack_packet *pkt)
 		pkt->opt_have_sack = 0;
 
 		if (opt_len > 0 /*&& (pkt->flags & TCPHDR_SYN)*/)
-			parse_tcp_options((UCHAR *)(pSrcBuf + 54), opt_len, pkt);
+			parse_tcp_options((UCHAR *)(pSrcBuf + 54), opt_len,
+					  pkt);
 
-		pkt->mss = 1460;/* / Use 1460 here to avoid tracking TCP handshake process. */
+		pkt->mss =
+			1460; /* / Use 1460 here to avoid tracking TCP handshake process. */
 		pkt->data_len = tcpdata_len;
 		RTMP_GetCurrentSystemTick(&(pkt->timestamp));
 
@@ -562,8 +574,11 @@ Note:
 */
 static rack_cnx *add_cnx(RTMP_ADAPTER *pAd, rack_packet *incoming_pkt)
 {
-	rack_cnx *cnx = kmalloc(sizeof(rack_cnx), GFP_KERNEL);
-	UINT32 hashIndex = hash_cnx(incoming_pkt);
+	rack_cnx *cnx;
+	UINT32 hashIndex;
+
+	os_alloc_mem_suspend(NULL, (UCHAR **)&cnx, sizeof(rack_cnx));
+	hashIndex = hash_cnx(incoming_pkt);
 
 	if (cnx == NULL)
 		return NULL;
@@ -619,13 +634,14 @@ static VOID delete_cnx(RTMP_ADAPTER *pAd, rack_cnx *cnx)
 #if REDUCE_ACK_PKT_CACHE
 
 		if (cnx->cache.raw_pkt != NULL) {
-			RELEASE_NDIS_PACKET(pAd, cnx->cache.raw_pkt, NDIS_STATUS_FAILURE);
+			RELEASE_NDIS_PACKET(pAd, cnx->cache.raw_pkt,
+					    NDIS_STATUS_FAILURE);
 			cnx->cache.raw_pkt = NULL;
 			memset(&(cnx->cache.rack), 0, sizeof(cnx->cache.rack));
 		}
 
 #endif
-		kfree(cnx);
+		os_free_mem(cnx);
 	}
 
 	if (pAd->ReduceAckConnections > 0)
@@ -713,7 +729,8 @@ static VOID update_cnx(rack_cnx *cnx, rack_packet *incoming_pkt)
 				cnx->wsize <<= cnx->wscale;
 
 			/* Update connection state here */
-			if (cnx->state != STATE_REDUCTION && cnx->ss_countdown <= 0) {
+			if (cnx->state != STATE_REDUCTION &&
+			    cnx->ss_countdown <= 0) {
 				cnx->state = STATE_REDUCTION;
 				update_ack_ratio(cnx);
 			}
@@ -725,18 +742,21 @@ static VOID update_cnx(rack_cnx *cnx, rack_packet *incoming_pkt)
 			cnx->ref_seq = incoming_pkt->seq - 1;
 
 		/* update this connection */
-		if (cnx->seq != 0 && (before(incoming_pkt->seq, cnx->seq) || incoming_pkt->seq == cnx->seq)) {
+		if (cnx->seq != 0 && (before(incoming_pkt->seq, cnx->seq) ||
+				      incoming_pkt->seq == cnx->seq)) {
 			cnx->stats.retrans++;
 			cnx->state = STATE_CONGESTION;
 			/* reset ss_countdown because of congestion */
 			cnx->ss_countdown = REDUCE_ACK_IGNORE_CNT;
-		} else if (cnx->seq != 0 && (incoming_pkt->seq != cnx->next_seq)) {
+		} else if (cnx->seq != 0 &&
+			   (incoming_pkt->seq != cnx->next_seq)) {
 			cnx->stats.data_jump++;
 		} else
 			cnx->seq = incoming_pkt->seq;
 
 		if (incoming_pkt->data_len > 0)
-			cnx->next_seq = incoming_pkt->seq + incoming_pkt->data_len;
+			cnx->next_seq =
+				incoming_pkt->seq + incoming_pkt->data_len;
 		else
 			cnx->next_seq = incoming_pkt->seq;
 
@@ -787,17 +807,29 @@ BOOLEAN ReduceTcpAck(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 				cnx = find_cnx(pAd, &incomingPkt);
 
 				if (cnx != NULL) {
-					if (incomingPkt.flags & TCPHDR_FIN) {/* FIN is set */
+					if (incomingPkt.flags &
+					    TCPHDR_FIN) { /* FIN is set */
 						/* the "ack reducing" connection is going to close. */
-						cnx->fin_tstamp = incomingPkt.timestamp;
+						cnx->fin_tstamp =
+							incomingPkt.timestamp;
 						cnx->state = STATE_TERMINATION;
 						/* clear previous cached ACK */
 #if REDUCE_ACK_PKT_CACHE
 
-						if (cnx->cache.raw_pkt != NULL) {
-							RELEASE_NDIS_PACKET(pAd, cnx->cache.raw_pkt, NDIS_STATUS_FAILURE);
-							cnx->cache.raw_pkt = NULL;
-							memset(&(cnx->cache.rack), 0, sizeof(cnx->cache.rack));
+						if (cnx->cache.raw_pkt !=
+						    NULL) {
+							RELEASE_NDIS_PACKET(
+								pAd,
+								cnx->cache
+									.raw_pkt,
+								NDIS_STATUS_FAILURE);
+							cnx->cache.raw_pkt =
+								NULL;
+							memset(&(cnx->cache
+									 .rack),
+							       0,
+							       sizeof(cnx->cache
+									      .rack));
 						}
 
 #endif /* REDUCE_ACK_PKT_CACHE */
@@ -805,30 +837,49 @@ BOOLEAN ReduceTcpAck(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 						update_ack_ratio(cnx);
 					} else {
 						update_cnx(cnx, &incomingPkt);
-						CNX_DPRINT(pAd, cnx, "ack update");
+						CNX_DPRINT(pAd, cnx,
+							   "ack update");
 
 						/* Declare this incoming ACK as a candidate. */
 						/* Note that ACK with options will not be a candidate */
-						if ((incomingPkt.flags & TCPHDR_ACK) == TCPHDR_ACK && incomingPkt.data_len <= 6) {
-							if (incomingPkt.opt_have_sack == 0)
-								bReduceCandidate = TRUE;
+						if ((incomingPkt.flags &
+						     TCPHDR_ACK) ==
+							    TCPHDR_ACK &&
+						    incomingPkt.data_len <= 6) {
+							if (incomingPkt
+								    .opt_have_sack ==
+							    0)
+								bReduceCandidate =
+									TRUE;
 							else
-								cnx->stats.pass_sack++;
+								cnx->stats
+									.pass_sack++;
 						} else
-							PKT_DPRINT(pAd, &incomingPkt, "not a candidate");
+							PKT_DPRINT(
+								pAd,
+								&incomingPkt,
+								"not a candidate");
 					}
 				} else {
-					if (pAd->ReduceAckConnections < MAX_REDUCE_ACK_CNX_ENTRY) {
-						new_cnx = add_cnx(pAd, &incomingPkt);
-						CNX_DPRINT(pAd, cnx, "ack initial");
+					if (pAd->ReduceAckConnections <
+					    MAX_REDUCE_ACK_CNX_ENTRY) {
+						new_cnx = add_cnx(pAd,
+								  &incomingPkt);
+						CNX_DPRINT(pAd, cnx,
+							   "ack initial");
 					} else
-						PKT_DPRINT(pAd, &incomingPkt, "exceed max connections");
+						PKT_DPRINT(
+							pAd, &incomingPkt,
+							"exceed max connections");
 				}
 
 				if (cnx != NULL) {
 					/* Calculate if we need to reduce this incoming ACK */
-					if (bReduceCandidate && decide_to_drop(pAd, &incomingPkt, cnx)) {
-						CNX_DPRINT(pAd, cnx, "ack dropped");
+					if (bReduceCandidate &&
+					    decide_to_drop(pAd, &incomingPkt,
+							   cnx)) {
+						CNX_DPRINT(pAd, cnx,
+							   "ack dropped");
 						dropped = TRUE;
 						cnx->stats.dropped++;
 						cnx->consecutive_drop++;
@@ -838,19 +889,35 @@ BOOLEAN ReduceTcpAck(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 #if REDUCE_ACK_PKT_CACHE
 
 						/* clear previous cached ACK */
-						if (cnx->cache.raw_pkt != NULL) {
-							RELEASE_NDIS_PACKET(pAd, cnx->cache.raw_pkt, NDIS_STATUS_FAILURE);
-							cnx->cache.raw_pkt = NULL;
-							memset(&(cnx->cache.rack), 0, sizeof(cnx->cache.rack));
+						if (cnx->cache.raw_pkt !=
+						    NULL) {
+							RELEASE_NDIS_PACKET(
+								pAd,
+								cnx->cache
+									.raw_pkt,
+								NDIS_STATUS_FAILURE);
+							cnx->cache.raw_pkt =
+								NULL;
+							memset(&(cnx->cache
+									 .rack),
+							       0,
+							       sizeof(cnx->cache
+									      .rack));
 						}
 
 						/* cached incoming ACK */
 						cnx->cache.raw_pkt = pPacket;
-						memcpy(&(cnx->cache.rack), &incomingPkt, sizeof(cnx->cache.rack));
+						memcpy(&(cnx->cache.rack),
+						       &incomingPkt,
+						       sizeof(cnx->cache.rack));
 #endif /* REDUCE_ACK_PKT_CACHE */
 
-						if (pAd->CommonCfg.ReduceAckEnable != REDUCE_ACK_ENABLE_NO_DROP_MODE)
-							RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_SUCCESS);
+						if (pAd->CommonCfg
+							    .ReduceAckEnable !=
+						    REDUCE_ACK_ENABLE_NO_DROP_MODE)
+							RELEASE_NDIS_PACKET(
+								pAd, pPacket,
+								NDIS_STATUS_SUCCESS);
 					} else {
 						/* Update the ack# we ever sent to air such that we could calculate correct BIF. */
 						/* Note that ack of CnxInfo is updated in the update_cnx() invoked above. */
@@ -861,18 +928,23 @@ BOOLEAN ReduceTcpAck(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 						cnx->consecutive_ack++;
 						/* calculate BIF./ */
 						calculate_bif(cnx);
-						CNX_DPRINT(pAd, cnx, "ack update(bif)");
+						CNX_DPRINT(pAd, cnx,
+							   "ack update(bif)");
 					}
 
 					/* update timestamp after checking ACK reduction */
 					cnx->stats.total++;
-					cnx->last_tstamp = incomingPkt.timestamp;
+					cnx->last_tstamp =
+						incomingPkt.timestamp;
 
-					if (cnx->consecutive_ack > cnx->stats.max_consecutive_ack)
-						cnx->stats.max_consecutive_ack = cnx->consecutive_ack;
+					if (cnx->consecutive_ack >
+					    cnx->stats.max_consecutive_ack)
+						cnx->stats.max_consecutive_ack =
+							cnx->consecutive_ack;
 				} else if (new_cnx != NULL) {
 					new_cnx->stats.total++;
-					new_cnx->last_tstamp = incomingPkt.timestamp;
+					new_cnx->last_tstamp =
+						incomingPkt.timestamp;
 					new_cnx->consecutive_data = 0;
 					new_cnx->consecutive_ack++;
 					new_cnx->sent_ack = new_cnx->ack;
@@ -923,7 +995,8 @@ BOOLEAN ReduceAckUpdateDataCnx(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 				cnx = find_cnx(pAd, &incomingPkt);
 
 				if (cnx != NULL) {
-					PKT_DPRINT(pAd, &incomingPkt, "incoming data");
+					PKT_DPRINT(pAd, &incomingPkt,
+						   "incoming data");
 					update_cnx(cnx, &incomingPkt);
 					calculate_bif(cnx);
 					cnx->stats.total_data++;
@@ -963,23 +1036,34 @@ static VOID cnx_flush_task(struct work_struct *work)
 	if (pComCfg->ReduceAckEnable && pAd->ReduceAckConnections > 0) {
 		rack_cnx *cnx = NULL, *cnxTmp = NULL;
 		MY_LOCK(pAd);
-		list_for_each_entry_safe(cnx, cnxTmp, &(pAd->ackCnxList), list) {
-			if (RTMP_TIME_AFTER(curTimestamp, (cnx->last_tstamp + pAd->CommonCfg.ReduceAckCnxTimeout))) {
+		list_for_each_entry_safe (cnx, cnxTmp, &(pAd->ackCnxList),
+					  list) {
+			if (RTMP_TIME_AFTER(
+				    curTimestamp,
+				    (cnx->last_tstamp +
+				     pAd->CommonCfg.ReduceAckCnxTimeout))) {
 				/* The CNX has no activity for pAd->CommonCfg.ReduceAckCnxTimeout milli-seconds */
 				delete_cnx(pAd, cnx);
-				CNX_DPRINT(pAd, cnx, "free CnxInfo by cnx_flush_task()");
+				CNX_DPRINT(pAd, cnx,
+					   "free CnxInfo by cnx_flush_task()");
 			} else if (cnx->state == STATE_TERMINATION &&
-					   RTMP_TIME_AFTER(curTimestamp, (cnx->fin_tstamp + REDUCE_ACK_FIN_CNX_TIMEOUT))) {
-				if (pAd->CommonCfg.ReduceAckEnable != REDUCE_ACK_ENABLE_WITOUT_DEL_CNX) {
+				   RTMP_TIME_AFTER(
+					   curTimestamp,
+					   (cnx->fin_tstamp +
+					    REDUCE_ACK_FIN_CNX_TIMEOUT))) {
+				if (pAd->CommonCfg.ReduceAckEnable !=
+				    REDUCE_ACK_ENABLE_WITOUT_DEL_CNX) {
 					delete_cnx(pAd, cnx);
-					CNX_DPRINT(pAd, cnx, "Delete CnxInfo by FIN");
+					CNX_DPRINT(pAd, cnx,
+						   "Delete CnxInfo by FIN");
 				}
 			}
 		}
 		MY_UNLOCK(pAd);
 	}
 
-	schedule_delayed_work(&(pAd->cnxFlushWork), REDUCE_ACK_CNX_POLLING_INTERVAL);
+	schedule_delayed_work(&(pAd->cnxFlushWork),
+			      REDUCE_ACK_CNX_POLLING_INTERVAL);
 }
 
 /*
@@ -1007,19 +1091,25 @@ static VOID ack_flush_task(struct work_struct *work)
 	if (pComCfg->ReduceAckEnable && pAd->ReduceAckConnections > 0) {
 		rack_cnx *cnx = NULL;
 		MY_LOCK(pAd);
-		list_for_each_entry(cnx, &(pAd->ackCnxList), list) {
+		list_for_each_entry (cnx, &(pAd->ackCnxList), list) {
 			if (cnx->state != STATE_TERMINATION &&
-				RTMP_TIME_AFTER(curTimestamp, (cnx->last_tstamp + pAd->CommonCfg.ReduceAckTimeout))) {
+			    RTMP_TIME_AFTER(curTimestamp,
+					    (cnx->last_tstamp +
+					     pAd->CommonCfg.ReduceAckTimeout))) {
 #if REDUCE_ACK_PKT_CACHE
 
 				if (cnx != NULL && cnx->cache.raw_pkt != NULL) {
-					ap_data_pkt_enq(pAd, cnx->cache.raw_pkt);
+					ap_data_pkt_enq(pAd,
+							cnx->cache.raw_pkt);
 					cnx->cache.raw_pkt = NULL;
 
 					if (cnx->stats.timeout < 10)
-						cnx->stats.timeout_acks[cnx->stats.timeout++] = cnx->cache.rack.ack;
+						cnx->stats.timeout_acks
+							[cnx->stats.timeout++] =
+							cnx->cache.rack.ack;
 
-					memset(&(cnx->cache.rack), 0, sizeof(cnx->cache.rack));
+					memset(&(cnx->cache.rack), 0,
+					       sizeof(cnx->cache.rack));
 				}
 
 #endif /* REDUCE_ACK_PKT_CACHE */
@@ -1028,7 +1118,8 @@ static VOID ack_flush_task(struct work_struct *work)
 		MY_UNLOCK(pAd);
 	}
 
-	schedule_delayed_work(&(pAd->ackFlushWork), REDUCE_ACK_POLLING_INTERVAL);
+	schedule_delayed_work(&(pAd->ackFlushWork),
+			      REDUCE_ACK_POLLING_INTERVAL);
 }
 
 /*
@@ -1046,72 +1137,97 @@ Note:
 
 ========================================================================
 */
-static VOID rack_show_ex(PRTMP_ADAPTER   pAdapter)
+static VOID rack_show_ex(PRTMP_ADAPTER pAdapter)
 {
 	UINT32 j = 0;
 #if REDUCE_ACK_PKT_CACHE
 	k = 0;
 #endif /* REDUCE_ACK_PKT_CACHE */
 	{
-		UINT32 total_data_received = 0, total_ack_dropped = 0, total_ack_received = 0;
+		UINT32 total_data_received = 0, total_ack_dropped = 0,
+		       total_ack_received = 0;
 		UINT32 total_ack_timeout = 0;
 		rack_cnx *cnx = NULL;
 		j = 0;
-		list_for_each_entry(cnx, &(pAdapter->ackCnxList), list) {
+		list_for_each_entry (cnx, &(pAdapter->ackCnxList), list) {
 			total_data_received += cnx->stats.total_data;
 			total_ack_dropped += cnx->stats.dropped;
 			total_ack_received += cnx->stats.total;
 			total_ack_timeout += cnx->stats.timeout;
 			printk("(conn#%02d) %u.%u.%u.%u:%u --> %u.%u.%u.%u:%u (%u)\n",
-				   j, (cnx->tuple.sip >> 24) & 0xFF,
-				   (cnx->tuple.sip >> 16) & 0xFF,
-				   (cnx->tuple.sip >> 8) & 0xFF,
-				   (cnx->tuple.sip >> 0) & 0xFF,
-				   cnx->tuple.sport,
-				   (cnx->tuple.dip >> 24) & 0xFF,
-				   (cnx->tuple.dip >> 16) & 0xFF,
-				   (cnx->tuple.dip >> 8) & 0xFF,
-				   (cnx->tuple.dip >> 0) & 0xFF,
-				   cnx->tuple.dport,
-				   cnx->state);
-			printk("    dropped/total/sent ack count = %u/%u/%u\n", cnx->stats.dropped, cnx->stats.total, cnx->stats.total - cnx->stats.dropped);
-			printk("    total data count = %u\n", cnx->stats.total_data);
+			       j, (cnx->tuple.sip >> 24) & 0xFF,
+			       (cnx->tuple.sip >> 16) & 0xFF,
+			       (cnx->tuple.sip >> 8) & 0xFF,
+			       (cnx->tuple.sip >> 0) & 0xFF, cnx->tuple.sport,
+			       (cnx->tuple.dip >> 24) & 0xFF,
+			       (cnx->tuple.dip >> 16) & 0xFF,
+			       (cnx->tuple.dip >> 8) & 0xFF,
+			       (cnx->tuple.dip >> 0) & 0xFF, cnx->tuple.dport,
+			       cnx->state);
+			printk("    dropped/total/sent ack count = %u/%u/%u\n",
+			       cnx->stats.dropped, cnx->stats.total,
+			       cnx->stats.total - cnx->stats.dropped);
+			printk("    total data count = %u\n",
+			       cnx->stats.total_data);
 			printk("    window size = %u\n", cnx->wsize);
-			printk("    BIF = %u (max: %u, avg: %u)\n", cnx->bif, cnx->max_bif, cnx->avg_bif);
+			printk("    BIF = %u (max: %u, avg: %u)\n", cnx->bif,
+			       cnx->max_bif, cnx->avg_bif);
 			printk("    MSS = %u\n", cnx->mss);
-			printk("    last received ack timestamp = %lu\n", cnx->last_tstamp);
-			printk("    last received FIN timestamp = %lu\n", cnx->fin_tstamp);
+			printk("    last received ack timestamp = %lu\n",
+			       cnx->last_tstamp);
+			printk("    last received FIN timestamp = %lu\n",
+			       cnx->fin_tstamp);
 			printk("    ACK ratio = ~%u:1\n", cnx->ack_ratio);
-			printk("    retransmission count = %u\n", cnx->stats.retrans);
-			printk("    duplicate ack count = %u\n", cnx->stats.dupack);
-			printk("    ack flush timeout count = %u\n", cnx->stats.timeout);
+			printk("    retransmission count = %u\n",
+			       cnx->stats.retrans);
+			printk("    duplicate ack count = %u\n",
+			       cnx->stats.dupack);
+			printk("    ack flush timeout count = %u\n",
+			       cnx->stats.timeout);
 #if REDUCE_ACK_PKT_CACHE
 
-			for (k = 0; k < 10 && cnx->stats.timeout_acks[k] != 0; k++)
-				printk("    timeout_acks[%u] = %u\n", k, cnx->stats.timeout_acks[k]);
+			for (k = 0; k < 10 && cnx->stats.timeout_acks[k] != 0;
+			     k++)
+				printk("    timeout_acks[%u] = %u\n", k,
+				       cnx->stats.timeout_acks[k]);
 
 #endif /* REDUCE_ACK_PKT_CACHE */
-			printk("    RWND full count = %u\n", cnx->stats.rwnd_full);
-			printk("    max consecutive data count = %u\n", cnx->stats.max_consecutive_data);
-			printk("    max consecutive ack count = %u\n", cnx->stats.max_consecutive_ack);
+			printk("    RWND full count = %u\n",
+			       cnx->stats.rwnd_full);
+			printk("    max consecutive data count = %u\n",
+			       cnx->stats.max_consecutive_data);
+			printk("    max consecutive ack count = %u\n",
+			       cnx->stats.max_consecutive_ack);
 			printk("    old ack count = %u\n", cnx->stats.oldack);
-			printk("    data jump count = %u\n", cnx->stats.data_jump);
-			printk("    passed by state (not in reduction state) = %u\n", cnx->stats.pass_state);
-			printk("    passed by consecutive data = %u\n", cnx->stats.pass_con_data);
-			printk("    passed by consecutive dropped ack = %u\n", cnx->stats.pass_con_drop);
-			printk("    passed by pushed data = %u\n", cnx->stats.pass_push_data);
-			printk("    passed by pushed data3 = %u\n", cnx->stats.pass_push_data3);
-			printk("    passed by selective ack = %u\n", cnx->stats.pass_sack);
-			printk("    passed by BIF warning = %u\n", cnx->stats.pass_bif_warning);
-			printk("    passed by RWND warning = %u\n", cnx->stats.pass_win_warning);
-			printk("    passed by wsize changed = %u\n", cnx->stats.pass_wsize_change);
-			printk("    passed by ack ratio = %u\n", cnx->stats.pass_ack_ratio);
+			printk("    data jump count = %u\n",
+			       cnx->stats.data_jump);
+			printk("    passed by state (not in reduction state) = %u\n",
+			       cnx->stats.pass_state);
+			printk("    passed by consecutive data = %u\n",
+			       cnx->stats.pass_con_data);
+			printk("    passed by consecutive dropped ack = %u\n",
+			       cnx->stats.pass_con_drop);
+			printk("    passed by pushed data = %u\n",
+			       cnx->stats.pass_push_data);
+			printk("    passed by pushed data3 = %u\n",
+			       cnx->stats.pass_push_data3);
+			printk("    passed by selective ack = %u\n",
+			       cnx->stats.pass_sack);
+			printk("    passed by BIF warning = %u\n",
+			       cnx->stats.pass_bif_warning);
+			printk("    passed by RWND warning = %u\n",
+			       cnx->stats.pass_win_warning);
+			printk("    passed by wsize changed = %u\n",
+			       cnx->stats.pass_wsize_change);
+			printk("    passed by ack ratio = %u\n",
+			       cnx->stats.pass_ack_ratio);
 			j++;
 		}
 		printk("Total DATA received = %u\n", total_data_received);
 		printk("Total ACK dropped = %u\n", total_ack_dropped);
 		printk("Total ACK received = %u\n", total_ack_received);
-		printk("Total ACK sent = %u\n", total_ack_received - total_ack_dropped);
+		printk("Total ACK sent = %u\n",
+		       total_ack_received - total_ack_dropped);
 		printk("Total timeout count = %u\n", total_ack_timeout);
 	}
 	return;
@@ -1150,9 +1266,12 @@ VOID ReduceAckInit(RTMP_ADAPTER *pAd)
 	/* init works for CNX refresh and ACK flush */
 	INIT_DELAYED_WORK(&(pAd->cnxFlushWork), cnx_flush_task);
 	INIT_DELAYED_WORK(&(pAd->ackFlushWork), ack_flush_task);
-	schedule_delayed_work(&(pAd->cnxFlushWork), REDUCE_ACK_CNX_POLLING_INTERVAL);
-	schedule_delayed_work(&(pAd->ackFlushWork), REDUCE_ACK_POLLING_INTERVAL);
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s, ReduceAckInit, inf=%s\n", __func__, pAd->net_dev->name));
+	schedule_delayed_work(&(pAd->cnxFlushWork),
+			      REDUCE_ACK_CNX_POLLING_INTERVAL);
+	schedule_delayed_work(&(pAd->ackFlushWork),
+			      REDUCE_ACK_POLLING_INTERVAL);
+	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s, ReduceAckInit, inf=%s\n", __func__, pAd->net_dev->name));
 	printk("INIT REDUCE TCP ACK, %s\n", pAd->net_dev->name);
 }
 
@@ -1178,13 +1297,15 @@ VOID ReduceAckExit(RTMP_ADAPTER *pAd)
 	cancel_delayed_work_sync(&(pAd->cnxFlushWork));
 	cancel_delayed_work_sync(&(pAd->ackFlushWork));
 	/* free CnxInfos */
-	list_for_each_entry_safe(cnx, cnxTmp, &(pAd->ackCnxList), list) {
+	list_for_each_entry_safe (cnx, cnxTmp, &(pAd->ackCnxList), list) {
 		delete_cnx(pAd, cnx);
 		CNX_DPRINT(pAd, cnx, "free CnxInfo by ReduceAckExit()");
 	}
 	/* free the lock resource for SMP environment */
 	NdisFreeSpinLock(&pAd->ReduceAckLock);
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s, ReduceAckExit, inf=%s)\n", __func__, pAd->net_dev->name));
+	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s, ReduceAckExit, inf=%s)\n", __func__,
+		  pAd->net_dev->name));
 	printk("EXIT REDUCE TCP ACK, %s\n", pAd->net_dev->name);
 }
 
@@ -1210,23 +1331,29 @@ VOID ReduceAckSetEnable(PRTMP_ADAPTER pAdapter, UINT32 enable)
 	BOOLEAN prvEnable = pComCfg->ReduceAckEnable;
 
 	if (enable < REDUCE_ACK_DISABLE || enable > REDUCE_ACK_ENABLE_LAST) {
-		printk("ERROR!! - Valid range is 0 ~ %d", REDUCE_ACK_ENABLE_LAST);
+		printk("ERROR!! - Valid range is 0 ~ %d",
+		       REDUCE_ACK_ENABLE_LAST);
 		return;
 	}
 
 	pComCfg->ReduceAckEnable = enable;
 
-	if (prvEnable > REDUCE_ACK_DISABLE && pComCfg->ReduceAckEnable == REDUCE_ACK_DISABLE) {
+	if (prvEnable > REDUCE_ACK_DISABLE &&
+	    pComCfg->ReduceAckEnable == REDUCE_ACK_DISABLE) {
 		rack_cnx *cnx = NULL, *cnxTmp = NULL;
 		MY_LOCK(pAdapter);
-		list_for_each_entry_safe(cnx, cnxTmp, &(pAdapter->ackCnxList), list) {
+		list_for_each_entry_safe (cnx, cnxTmp, &(pAdapter->ackCnxList),
+					  list) {
 			delete_cnx(pAdapter, cnx);
-			CNX_DPRINT(pAdapter, cnx, "free CnxInfo by ReduceAckSetEnable()");
+			CNX_DPRINT(pAdapter, cnx,
+				   "free CnxInfo by ReduceAckSetEnable()");
 		}
 		MY_UNLOCK(pAdapter);
 	}
 
-	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s, ReduceAckEnable=%d\n",  __func__, pComCfg->ReduceAckEnable));
+	MTWF_LOG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s, ReduceAckEnable=%d\n", __func__,
+		  pComCfg->ReduceAckEnable));
 }
 
 /*
@@ -1284,17 +1411,22 @@ Note:
     Used on "iwpriv raiX set ReduceAckShow=1"
 ========================================================================
 */
-VOID ReduceAckShow(PRTMP_ADAPTER   pAdapter)
+VOID ReduceAckShow(PRTMP_ADAPTER pAdapter)
 {
 	COMMON_CONFIG *pComCfg = &pAdapter->CommonCfg;
 	ULONG curTimestamp;
 	RTMP_GetCurrentSystemTick(&curTimestamp);
-	printk("Reduced TCP ACK Info (current: %d, max:%d entries)\n", pAdapter->ReduceAckConnections, MAX_REDUCE_ACK_CNX_ENTRY);
+	printk("Reduced TCP ACK Info (current: %d, max:%d entries)\n",
+	       pAdapter->ReduceAckConnections, MAX_REDUCE_ACK_CNX_ENTRY);
 	printk("Current Timestamp = %lu\n", curTimestamp);
 	printk("Enable = %d\n", pComCfg->ReduceAckEnable);
-	printk("Probability = %u%% (%u)\n", REDUCE_ACK_PERCENTAGE(pComCfg->ReduceAckProbability), pComCfg->ReduceAckProbability);
-	printk("ACK Timeout = %u (ms)\n", pComCfg->ReduceAckTimeout * 1000 / HZ);
-	printk("CNX Timeout = %u (ms)\n", pComCfg->ReduceAckCnxTimeout * 1000 / HZ);
+	printk("Probability = %u%% (%u)\n",
+	       REDUCE_ACK_PERCENTAGE(pComCfg->ReduceAckProbability),
+	       pComCfg->ReduceAckProbability);
+	printk("ACK Timeout = %u (ms)\n",
+	       pComCfg->ReduceAckTimeout * 1000 / HZ);
+	printk("CNX Timeout = %u (ms)\n",
+	       pComCfg->ReduceAckCnxTimeout * 1000 / HZ);
 	/* printk("sizeof(CnxInfo) = %u bytes\n", (sizeof(rack_cnx))); */
 	printk("sizeof(CnxInfo) = %u bytes\n", (UINT)sizeof(rack_cnx));
 	printk("SS Ignore Pkts = %u packets\n", REDUCE_ACK_IGNORE_CNT);

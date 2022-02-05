@@ -23,15 +23,14 @@
 
 */
 
-#ifndef	__DOT11U_HOTSPOT_H__
-#define	__DOT11U_HOTSPOT_H__
+#ifndef __DOT11U_HOTSPOT_H__
+#define __DOT11U_HOTSPOT_H__
 
 #include "rtmp_type.h"
 
 /* unit ms */
-#define dot11GASResponseTimeout	5120
+#define dot11GASResponseTimeout 5120
 #define dotGASResponseBufferingTime 5120
-
 
 enum GAS_ACTION_FIELD {
 	ACTION_GAS_INIT_REQ = 10,
@@ -83,7 +82,6 @@ typedef struct GNU_PACKED _GAS_FRAME {
 	} u;
 } GAS_FRAME, *PGAS_FRAME;
 
-
 /* Status Code */
 enum DOT11U_STATUS_CODE {
 	ADVERTISEMENT_PROTOCOL_NOT_SUPPORTED = 59,
@@ -111,7 +109,6 @@ struct anqp_frame {
 	UINT16 info_id;
 	UINT16 length;
 	char variable[0];
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 #endif /* __DOT11U_HOTSPOT_H__ */
-

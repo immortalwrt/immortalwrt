@@ -32,7 +32,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
 
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -3212,6 +3212,15 @@ S:	Maintained
+@@ -3213,6 +3213,15 @@ S:	Maintained
  F:	drivers/media/platform/bcm2835/
  F:	Documentation/devicetree/bindings/media/bcm2835-unicam.txt
  

@@ -29,35 +29,33 @@
 #ifndef __WF_WTBL_ON_H__
 #define __WF_WTBL_ON_H__
 
-#define WF_WTBL_ON_BASE		0x23000
+#define WF_WTBL_ON_BASE 0x23000
 
-#define WTBL_ON_WTBLOR		(WF_WTBL_ON_BASE + 0x0)
-#define WTBL_OR_PSM_W_FLAG	(1<<31)
+#define WTBL_ON_WTBLOR (WF_WTBL_ON_BASE + 0x0)
+#define WTBL_OR_PSM_W_FLAG (1 << 31)
 
-#define WTBL_ON_RICR0		(WF_WTBL_ON_BASE + 0x10)	/* DW0 */
-#define WTBL_ON_RICR1		(WF_WTBL_ON_BASE + 0x14)	/* DW1 */
-#define WTBL_ON_RIUCR0		(WF_WTBL_ON_BASE + 0x20)	/* DW5 */
-#define WTBL_ON_RIUCR1		(WF_WTBL_ON_BASE + 0x24)	/* DW6 */
-#define WTBL_ON_RIUCR2		(WF_WTBL_ON_BASE + 0x28)	/* DW7 */
-#define WTBL_ON_RIUCR3		(WF_WTBL_ON_BASE + 0x2C)	/* DW8 */
+#define WTBL_ON_RICR0 (WF_WTBL_ON_BASE + 0x10) /* DW0 */
+#define WTBL_ON_RICR1 (WF_WTBL_ON_BASE + 0x14) /* DW1 */
+#define WTBL_ON_RIUCR0 (WF_WTBL_ON_BASE + 0x20) /* DW5 */
+#define WTBL_ON_RIUCR1 (WF_WTBL_ON_BASE + 0x24) /* DW6 */
+#define WTBL_ON_RIUCR2 (WF_WTBL_ON_BASE + 0x28) /* DW7 */
+#define WTBL_ON_RIUCR3 (WF_WTBL_ON_BASE + 0x2C) /* DW8 */
 
-#define WTBL_ON_TCGSBR		(WF_WTBL_ON_BASE + 0x40)
-#define WTBL_ON_ACGSBR		(WF_WTBL_ON_BASE + 0x44)
-#define WTBL_ON_RVCDARx		(WF_WTBL_ON_BASE + 0x80)	/* RV bit for wtbl */
+#define WTBL_ON_TCGSBR (WF_WTBL_ON_BASE + 0x40)
+#define WTBL_ON_ACGSBR (WF_WTBL_ON_BASE + 0x44)
+#define WTBL_ON_RVCDARx (WF_WTBL_ON_BASE + 0x80) /* RV bit for wtbl */
 
-#define WTBL_BTCRn		(WF_WTBL_ON_BASE + 0x100)
-#define WTBL_BTBCRn		(WF_WTBL_ON_BASE + 0x110)
-#define WTBL_BRCRn		(WF_WTBL_ON_BASE + 0x120)
-#define WTBL_BRBCRn		(WF_WTBL_ON_BASE + 0x130)
-#define WTBL_BTDCRn		(WF_WTBL_ON_BASE + 0x140)
-#define WTBL_BRDCRn		(WF_WTBL_ON_BASE + 0x150)
+#define WTBL_BTCRn (WF_WTBL_ON_BASE + 0x100)
+#define WTBL_BTBCRn (WF_WTBL_ON_BASE + 0x110)
+#define WTBL_BRCRn (WF_WTBL_ON_BASE + 0x120)
+#define WTBL_BRBCRn (WF_WTBL_ON_BASE + 0x130)
+#define WTBL_BTDCRn (WF_WTBL_ON_BASE + 0x140)
+#define WTBL_BRDCRn (WF_WTBL_ON_BASE + 0x150)
 
-#define WTBL_MBTCRn		(WF_WTBL_ON_BASE + 0x200)
-#define WTBL_MBTBCRn		(WF_WTBL_ON_BASE + 0x240)
-#define WTBL_MBRCRn		(WF_WTBL_ON_BASE + 0x280)
-#define WTBL_MBRBCRn		(WF_WTBL_ON_BASE + 0x2C0)
+#define WTBL_MBTCRn (WF_WTBL_ON_BASE + 0x200)
+#define WTBL_MBTBCRn (WF_WTBL_ON_BASE + 0x240)
+#define WTBL_MBRCRn (WF_WTBL_ON_BASE + 0x280)
+#define WTBL_MBRBCRn (WF_WTBL_ON_BASE + 0x2C0)
 
-
-#define PSM_W_FLAG			(1 << 31)
+#define PSM_W_FLAG (1 << 31)
 #endif /* __WF_WTBL_ON_H__ */
-

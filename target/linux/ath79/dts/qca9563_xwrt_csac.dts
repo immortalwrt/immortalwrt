@@ -3,6 +3,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/mtd/partitions/uimage.h>
 
 #include "qca956x.dtsi"
 
@@ -102,22 +103,30 @@
 			};
 
 			partition@50000 {
+				label = "loader1";
+				reg = <0x050000 0x010000>;
+			};
+
+			partition@60000 {
+				compatible = "openwrt,uimage", "denx,uimage";
+				openwrt,ih-magic = <IH_MAGIC_OKLI>;
 				label = "firmware";
+				reg = <0x060000 0xe20000>;
+			};
+
+			partition@e80000 {
+				label = "loader2";
+				reg = <0xe80000 0x010000>;
+			};
+
+			partition@e90000 {
+				label = "unused";
+				reg = <0xe90000 0x160000>;
+			};
+
+			partition@1 {
+				label = "oem_firmware";
 				reg = <0x050000 0xfa0000>;
-
-				compatible = "fixed-partitions";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				partition@0 {
-					label = "rootfs";
-					reg = <0x000000 0xe30000>;
-				};
-
-				partition@e30000 {
-					label = "kernel";
-					reg = <0xe30000 0x170000>;
-				};
 			};
 
 			art: partition@ff0000 {

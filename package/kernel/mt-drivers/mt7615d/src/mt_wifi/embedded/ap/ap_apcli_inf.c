@@ -81,8 +81,8 @@ VOID RT28xx_ApCli_Init(VOID *pAd, PNET_DEV main_dev_p)
 	netDevOpHook.xmit = rt28xx_send_packets;
 	netDevOpHook.ioctl = rt28xx_ioctl;
 	netDevOpHook.get_stats = RT28xx_get_ether_stats;
-	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_APC_INIT,
-						0, &netDevOpHook, 0);
+	RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_APC_INIT, 0,
+			    &netDevOpHook, 0);
 }
 
 /*
@@ -106,8 +106,8 @@ INT apcli_virtual_if_open(PNET_DEV pDev)
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 	ASSERT(pAd);
-	MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_OFF, ("%s: ===> %s\n",
-		RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
+	MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_OFF,
+		 ("%s: ===> %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
 
 	if (VIRTUAL_IF_INIT(pAd, pDev) != 0)
 		return -1;
@@ -119,9 +119,12 @@ INT apcli_virtual_if_open(PNET_DEV pDev)
 	RT_MOD_INC_USE_COUNT();
 	RT_MOD_HNAT_REG(pDev);
 	RTMP_OS_NETDEV_START_QUEUE(pDev);
+
+#ifdef MTFWD
+	RTMP_OS_NETDEV_CARRIER_OFF(pDev);
+#endif
 	return 0;
 }
-
 
 /*
 ========================================================================
@@ -144,8 +147,8 @@ INT apcli_virtual_if_close(PNET_DEV pDev)
 
 	pAd = RTMP_OS_NETDEV_GET_PRIV(pDev);
 	ASSERT(pAd);
-	MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_OFF, ("%s: ===> %s\n",
-		RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
+	MTWF_LOG(DBG_CAT_CLIENT, CATCLIENT_APCLI, DBG_LVL_OFF,
+		 ("%s: ===> %s\n", RTMP_OS_NETDEV_GET_DEVNAME(pDev), __func__));
 
 	VIRTUAL_IF_DOWN(pAd, pDev);
 
@@ -155,7 +158,6 @@ INT apcli_virtual_if_close(PNET_DEV pDev)
 	RT_MOD_DEC_USE_COUNT();
 	return 0;
 }
-
 
 /*
 ========================================================================
@@ -177,4 +179,3 @@ VOID RT28xx_ApCli_Remove(VOID *pAd)
 }
 
 #endif /* APCLI_SUPPORT */
-

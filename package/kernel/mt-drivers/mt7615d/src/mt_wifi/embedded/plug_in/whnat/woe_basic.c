@@ -14,12 +14,9 @@
 	whnat_basic.c
 */
 
-
 #include "woe_basic.h"
 
-
 static char whnat_log_level = WHNAT_DBG_ERR;
-
 
 /*
 *
@@ -40,20 +37,23 @@ void whnat_log_set(char log)
 /*
 *
 */
-void whnat_dma_buf_free(struct platform_device *dev, struct whnat_dma_buf *dma_buf)
+void whnat_dma_buf_free(struct platform_device *dev,
+			struct whnat_dma_buf *dma_buf)
 {
 	if (!dev || !dma_buf->alloc_va)
 		return;
 
 	memset(dma_buf->alloc_va, 0, dma_buf->alloc_size);
-	dma_free_coherent(&dev->dev, dma_buf->alloc_size, dma_buf->alloc_va, dma_buf->alloc_pa);
+	dma_free_coherent(&dev->dev, dma_buf->alloc_size, dma_buf->alloc_va,
+			  dma_buf->alloc_pa);
 	memset(dma_buf, 0, sizeof(struct whnat_dma_buf));
 }
 
 /*
 *
 */
-int whnat_dma_buf_alloc(struct platform_device *dev, struct whnat_dma_buf *dma_buf, UINT size)
+int whnat_dma_buf_alloc(struct platform_device *dev,
+			struct whnat_dma_buf *dma_buf, UINT size)
 {
 	dma_addr_t paddr;
 	void *vaddr;
@@ -62,7 +62,8 @@ int whnat_dma_buf_alloc(struct platform_device *dev, struct whnat_dma_buf *dma_b
 	vaddr = dma_alloc_coherent(&dev->dev, size, &paddr, GFP_KERNEL);
 
 	if (vaddr == NULL) {
-		WHNAT_DBG(WHNAT_DBG_ERR, "Failed to allocate a big buffer,size=%d\n", size);
+		WHNAT_DBG(WHNAT_DBG_ERR,
+			  "Failed to allocate a big buffer,size=%d\n", size);
 		return -1;
 	}
 
@@ -83,13 +84,11 @@ void whnat_dump_dmabuf(struct whnat_dma_buf *buf)
 	WHNAT_DBG(WHNAT_DBG_OFF, "Size\t:%lu\n", buf->alloc_size);
 }
 
-
 /*
 *
 */
 void whnat_dump_dmacb(struct whnat_dma_cb *cb)
 {
-
 	WHNAT_DBG(WHNAT_DBG_OFF, "AllocPA\t: %pad\n", &cb->alloc_pa);
 	WHNAT_DBG(WHNAT_DBG_OFF, "AllocVa\t: %p\n", cb->alloc_va);
 	WHNAT_DBG(WHNAT_DBG_OFF, "Size\t: %lu\n", cb->alloc_size);
@@ -112,11 +111,11 @@ void whnat_dump_raw(char *str, unsigned char *va, unsigned int size)
 
 	for (x = 0; x < size; x++) {
 		if (x % 16 == 0) {
-			sprintf(buf+len, "\n0x%04x : ", x);
+			sprintf(buf + len, "\n0x%04x : ", x);
 			len = strlen(buf);
 		}
 
-		sprintf(buf+len, "%02x ", ((unsigned char)pt[x]));
+		sprintf(buf + len, "%02x ", ((unsigned char)pt[x]));
 		len = strlen(buf);
 	}
 

@@ -17,11 +17,10 @@
 #ifndef __MT_TESTMODE_DMAC_H__
 #define __MT_TESTMODE_DMAC_H__
 
-
 INT mt_ate_mac_cr_restore(struct _RTMP_ADAPTER *pAd);
 INT mt_ate_mac_cr_backup_and_set(struct _RTMP_ADAPTER *pAd);
-INT mt_ate_ampdu_ba_limit(struct _RTMP_ADAPTER *pAd, UINT32 band_idx, UINT8 agg_limit);
+INT mt_ate_ampdu_ba_limit(struct _RTMP_ADAPTER *pAd, UINT32 band_idx,
+			  UINT8 agg_limit);
 INT mt_ate_set_sta_pause_cr(struct _RTMP_ADAPTER *pAd, UINT32 band_idx);
-
 
 #endif /*  __MT_TESTMODE_DMAC_H__ */

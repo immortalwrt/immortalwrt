@@ -14,8 +14,6 @@
 	mt_rf.h
 */
 
-
-
 #ifndef __MT_RF_H__
 #define __MT_RF_H__
 
@@ -23,4 +21,3 @@ INT32 MTShowAllRF(struct _RTMP_ADAPTER *pAd);
 INT32 MTShowPartialRF(struct _RTMP_ADAPTER *pAd, UINT32 Start, UINT32 End);
 
 #endif /* __MT_RF_H__ */
-

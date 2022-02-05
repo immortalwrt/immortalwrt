@@ -27,8 +27,10 @@ static char wbsys_string[] = "wb_sys";
 #include <linux/of_address.h>
 
 static const struct of_device_id wbsys_of_ids[] = {
-	{   .compatible = OF_WBSYS_NAME, },
-	{ },
+	{
+		.compatible = OF_WBSYS_NAME,
+	},
+	{},
 };
 
 #define wbsys_dev_alloc(res)
@@ -53,23 +55,21 @@ static void platform_wbsys_release(struct device *dev)
 	return;
 }
 
-struct platform_device wbsys_dev = {
-	.name = wbsys_string,
-	.id = -1,
-	.num_resources	= ARRAY_SIZE(wbsys_res),
-	.resource		= wbsys_res,
-	.dev = {
-		.release = platform_wbsys_release,
-	}
-};
-#define wbsys_dev_alloc(dev)\
-	{\
-		platform_device_register(dev);\
+struct platform_device wbsys_dev = { .name = wbsys_string,
+				     .id = -1,
+				     .num_resources = ARRAY_SIZE(wbsys_res),
+				     .resource = wbsys_res,
+				     .dev = {
+					     .release = platform_wbsys_release,
+				     } };
+#define wbsys_dev_alloc(dev)                                                   \
+	{                                                                      \
+		platform_device_register(dev);                                 \
 	}
 
-#define wbsys_dev_release(dev)\
-	{\
-		platform_device_unregister(dev);\
+#define wbsys_dev_release(dev)                                                 \
+	{                                                                      \
+		platform_device_unregister(dev);                               \
 	}
 #endif /*CONFIG_OF*/
 

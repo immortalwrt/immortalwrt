@@ -90,7 +90,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 +...
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -3198,6 +3198,13 @@ N:	bcm2711
+@@ -3199,6 +3199,13 @@ N:	bcm2711
  N:	bcm2835
  F:	drivers/staging/vc04_services
  

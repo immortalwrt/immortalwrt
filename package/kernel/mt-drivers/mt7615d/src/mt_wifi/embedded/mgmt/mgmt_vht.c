@@ -26,15 +26,10 @@
 
 #include "rt_config.h"
 
-
 #ifdef DOT11_VHT_AC
 
 static char *vht_bw_str[] = {
-	"20/40",
-	"80",
-	"160",
-	"80+80",
-	"invalid",
+	"20/40", "80", "160", "80+80", "invalid",
 };
 
 char *VhtBw2Str(INT VhtBw)
@@ -56,9 +51,7 @@ char *VhtBw2Str(INT VhtBw)
 
 	========================================================================
 */
-VOID RTMPSetVHT(
-	IN RTMP_ADAPTER *pAd,
-	IN struct wifi_dev *wdev)
+VOID RTMPSetVHT(IN RTMP_ADAPTER *pAd, IN struct wifi_dev *wdev)
 {
 #ifdef VHT_TXBF_SUPPORT
 	VHT_CAP_INFO *vht_cap = &pAd->CommonCfg.vht_cap_ie.vht_cap;
@@ -76,8 +69,8 @@ VOID RTMPSetVHT(
 #endif /* TXBF_SUPPORT */
 }
 
-
-VOID rtmp_set_vht(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, RT_PHY_INFO *phy_info)
+VOID rtmp_set_vht(RTMP_ADAPTER *pAd, struct wifi_dev *wdev,
+		  RT_PHY_INFO *phy_info)
 {
 	UCHAR vht_bw;
 
@@ -93,7 +86,6 @@ VOID rtmp_set_vht(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, RT_PHY_INFO *phy_inf
 			phy_info->vht_bw = VHT_BW_2040;
 	}
 }
-
 
 INT SetCommonVHT(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 {

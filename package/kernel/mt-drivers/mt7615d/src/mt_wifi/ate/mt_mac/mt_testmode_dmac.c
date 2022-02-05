@@ -20,7 +20,6 @@
 #include "rt_config.h"
 #endif
 
-
 INT mt_ate_mac_cr_restore(RTMP_ADAPTER *pAd)
 {
 #if defined(MT7615) || defined(MT7622)
@@ -71,12 +70,12 @@ INT mt_ate_mac_cr_restore(RTMP_ADAPTER *pAd)
 	return 0;
 }
 
-
 INT mt_ate_mac_cr_backup_and_set(RTMP_ADAPTER *pAd)
 {
 	struct _ATE_CTRL *ATECtrl = &pAd->ATECtrl;
 
-	NdisZeroMemory(&ATECtrl->bk_cr, sizeof(struct _TESTMODE_BK_CR)*MAX_TEST_BKCR_NUM);
+	NdisZeroMemory(&ATECtrl->bk_cr,
+		       sizeof(struct _TESTMODE_BK_CR) * MAX_TEST_BKCR_NUM);
 #if defined(MT7615) || defined(MT7622)
 	/* TODO: check if following operation also need to do for other chips */
 	if (IS_MT7615(pAd) || IS_MT7622(pAd)) {
@@ -123,8 +122,12 @@ INT mt_ate_mac_cr_backup_and_set(RTMP_ADAPTER *pAd)
 		MAC_IO_WRITE32(pAd, AGG_MRCR, val);
 		/* IPG related CR back up */
 		MtTestModeBkCr(pAd, TMAC_TRCR0, TEST_MAC_BKCR);
-		MtTestModeBkCr(pAd, TMAC_ICR_BAND_0, TEST_MAC_BKCR);    /* IFS CR, for SIFS/SLOT time control */
-		MtTestModeBkCr(pAd, ARB_DRNGR0, TEST_MAC_BKCR);         /* For fixing backoff random number */
+		MtTestModeBkCr(
+			pAd, TMAC_ICR_BAND_0,
+			TEST_MAC_BKCR); /* IFS CR, for SIFS/SLOT time control */
+		MtTestModeBkCr(
+			pAd, ARB_DRNGR0,
+			TEST_MAC_BKCR); /* For fixing backoff random number */
 		MtTestModeBkCr(pAd, ARB_DRNGR1, TEST_MAC_BKCR);
 		MtTestModeBkCr(pAd, ARB_WMMAC01, TEST_MAC_BKCR);
 		MtTestModeBkCr(pAd, ARB_WMMAC11, TEST_MAC_BKCR);
@@ -143,8 +146,7 @@ INT mt_ate_mac_cr_backup_and_set(RTMP_ADAPTER *pAd)
 	return 0;
 }
 
-
-UINT32 agg_cnt_array[] = {AGG_AALCR0, AGG_AALCR1, AGG_AALCR2, AGG_AALCR3};
+UINT32 agg_cnt_array[] = { AGG_AALCR0, AGG_AALCR1, AGG_AALCR2, AGG_AALCR3 };
 INT mt_ate_ampdu_ba_limit(RTMP_ADAPTER *pAd, UINT32 band_idx, UINT8 agg_limit)
 {
 	struct _ATE_CTRL *ATECtrl = &pAd->ATECtrl;
@@ -161,25 +163,23 @@ INT mt_ate_ampdu_ba_limit(RTMP_ADAPTER *pAd, UINT32 band_idx, UINT8 agg_limit)
 		WmmIdx = TESTMODE_GET_PARAM(ATECtrl, band_idx, wmm_idx);
 
 		if (WmmIdx > 3) {
-			MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			MTWF_LOG(
+				DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 				("%s: wdev_idx=%d, invalid WmmIdx=%d, reset to 0!\n",
-				__func__, wdev_idx, WmmIdx));
+				 __func__, wdev_idx, WmmIdx));
 			WmmIdx = 0xFF;
 		}
 	} else {
 		MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			("%s: invalid WDEV, reset WmmIdx to 0!\n", __func__));
+			 ("%s: invalid WDEV, reset WmmIdx to 0!\n", __func__));
 		WmmIdx = 0xFF;
 	}
 
 #endif
 	MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("%s: wdev_idx=%d, WmmIdx=%d\n",
-			  __func__, wdev_idx, WmmIdx));
-	value = ((agg_limit & 0x3F) << 24)
-		| ((agg_limit & 0x3F) << 16)
-		| ((agg_limit & 0x3F) << 8)
-		| ((agg_limit & 0x3F) << 0);
+		 ("%s: wdev_idx=%d, WmmIdx=%d\n", __func__, wdev_idx, WmmIdx));
+	value = ((agg_limit & 0x3F) << 24) | ((agg_limit & 0x3F) << 16) |
+		((agg_limit & 0x3F) << 8) | ((agg_limit & 0x3F) << 0);
 
 	if (WmmIdx <= 3)
 		MAC_IO_WRITE32(pAd, agg_cnt_array[WmmIdx], value);
@@ -195,7 +195,6 @@ INT mt_ate_ampdu_ba_limit(RTMP_ADAPTER *pAd, UINT32 band_idx, UINT8 agg_limit)
 
 	return 0;
 }
-
 
 INT mt_ate_set_sta_pause_cr(RTMP_ADAPTER *pAd, UINT32 band_idx)
 {

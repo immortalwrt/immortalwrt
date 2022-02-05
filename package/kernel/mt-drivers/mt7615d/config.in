@@ -213,17 +213,6 @@ config MTK_G_BAND_256QAM_SUPPORT
 	depends on MTK_DOT11_VHT_AC
         default y
 
-config MTK_BRCM_256QAM_SUPPORT
-	bool "BRCM 2.4G 256QAM support"
-	depends on MTK_WIFI_DRIVER
-	depends on MTK_G_BAND_256QAM_SUPPORT
-	default y
-
-config MTK_VHT_TXBF_2G_EPIGRAM_IE_SUPPORT
-    bool "BRCM 2.4G VHT Sounding support"
-	depends on MTK_WIFI_DRIVER
-	default y
-
 config MTK_TPC_SUPPORT
 	bool "802.11h TPC Support"
 	depends on MTK_WIFI_DRIVER
@@ -256,10 +245,23 @@ config MTK_MT_DFS_SUPPORT
 	depends on MTK_WIFI_DRIVER
 	default y
 
-#config WFA_VHT_R2_PF
-#	bool "WFA VHT R2 Plugfest"
-#	depends on DOT11_VHT_AC
-#	default n
+config MTK_OFFCHANNEL_SCAN_FEATURE
+	bool "Channel Quality Monitor"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	default n
+
+config MTK_DPP_SUPPORT
+	bool "DPP Support"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	select DOT11W_PMF_SUPPORT
+	default n
+
+#config MTK_WFA_VHT_R2_PF
+#    bool "WFA VHT R2 Plugfest"
+#    depends on MTK_DOT11_VHT_AC
+#    default n
 
 config MTK_HDR_TRANS_TX_SUPPORT
 	bool "Tx Header Translation"
@@ -322,33 +324,33 @@ config MTK_TXBF_SUPPORT
 	default y
 
 config MTK_FAST_NAT_SUPPORT
-       bool "Fast-NAT support"
-#       depends on RA_HW_NAT_WIFI
-       default n
+    bool "Fast-NAT support"
+#	depends on MTK_RA_HW_NAT_WIFI
+    default n
 
 config MTK_WHNAT_SUPPORT
 	tristate "Wifi Hardware NAT support"
 	depends on MTK_CHIP_MT7615E
 	depends on MTK_WLAN_HOOK
 	depends on MTK_FAST_NAT_SUPPORT
-	select  PACKAGE_kmod-hw_nat
+	select PACKAGE_kmod-hw_nat
 	default n
 
-#config LLTD_SUPPORT
+#config MTK_LLTD_SUPPORT
 #	bool "LLTD (Link Layer Topology Discovery Protocol)"
-#	depends on WIFI_DRIVER
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_WIFI_DRIVER
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
 
-#config QOS_DLS_SUPPORT
+#config MTK_QOS_DLS_SUPPORT
 #	bool "802.11e DLS ((Direct-Link Setup) Support"
-#	depends on WIFI_DRIVER
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_WIFI_DRIVER
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
 
-#config WAPI_SUPPORT
+#config MTK_WAPI_SUPPORT
 #	bool "WAPI Support"
-#	depends on WIFI_DRIVER
+#	depends on MTK_WIFI_DRIVER
 #	default n
 
 config MTK_FTM_SUPPORT
@@ -357,9 +359,19 @@ config MTK_FTM_SUPPORT
 	select MTK_PASSPOINT_R2
 	default n
 
-#config CARRIER_DETECTION_SUPPORT
+config MTK_MBO_SUPPORT
+	bool "MBO Support"
+	depends on MTK_WIFI_DRIVER
+	select MTK_INTERWORKING
+	select MTK_WNM_SUPPORT
+	select MTK_DOT11K_RRM_SUPPORT
+	select MTK_DOT11R_FT_SUPPORT
+	select MTK_DOT11W_PMF_SUPPORT
+	default n
+
+#config MTK_CARRIER_DETECTION_SUPPORT
 #	bool "Carrier Detect"
-#	depends on WIFI_DRIVER
+#	depends on MTK_WIFI_DRIVER
 #	default n
 
 config MTK_IGMP_SNOOP_SUPPORT
@@ -368,51 +380,51 @@ config MTK_IGMP_SNOOP_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	default y
 
-#config BLOCK_NET_IF
+#config MTK_BLOCK_NET_IF
 #	bool "NETIF Block"
-#	depends on WIFI_DRIVER
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_WIFI_DRIVER
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
 #	help
 #	Support Net interface block while Tx-Sw queue full
 
-#config RATE_ADAPTION
+#config MTK_RATE_ADAPTION
 #	bool "New Rate Adaptation support"
-#	depends on WIFI_DRIVER
+#	depends on MTK_WIFI_DRIVER
 #	default y
 
-#config NEW_RATE_ADAPT_SUPPORT
+#config MTK_NEW_RATE_ADAPT_SUPPORT
 #	bool "Intelligent Rate Adaption"
-#	depends on WIFI_DRIVER && RATE_ADAPTION
+#	depends on MTK_WIFI_DRIVER && MTK_RATE_ADAPTION
 #	default y
 
-#config AGS_SUPPORT
+#config MTK_AGS_SUPPORT
 #	bool "Adaptive Group Switching"
-#	depends on WIFI_DRIVER && RATE_ADAPTION
-#	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+#	depends on MTK_WIFI_DRIVER && MTK_RATE_ADAPTION
+#	depends on MTK_MT_AP_SUPPORT || MTK_MT_STA_SUPPORT
 #	default n
 
-#config RATE_ADAPT_AGBS_SUPPORT
+#config MTK_RATE_ADAPT_AGBS_SUPPORT
 #	bool "Adaptive AGBS Mode"
-#	depends on WIFI_DRIVER && RATE_ADAPTION
-#	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+#	depends on MTK_WIFI_DRIVER && MTK_RATE_ADAPTION
+#	depends on MTK_MT_AP_SUPPORT || MTK_MT_STA_SUPPORT
 #	default y
 
-#config IDS_SUPPORT
+#config MTK_IDS_SUPPORT
 #	bool "IDS (Intrusion Detection System) Support"
-#	depends on WIFI_DRIVER
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_WIFI_DRIVER
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
 
-#config WIFI_WORK_QUEUE
+#config MTK_WIFI_WORK_QUEUE
 #	bool "Work Queue"
-#	depends on WIFI_DRIVER
+#	depends on MTK_WIFI_DRIVER
 #	default n
 
-#config WIFI_SKB_RECYCLE
+#config MTK_WIFI_SKB_RECYCLE
 #	bool "SKB Recycle(Linux)"
-#	depends on WIFI_DRIVER
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_WIFI_DRIVER
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
 
 config MTK_RTMP_FLASH_SUPPORT
@@ -468,19 +480,9 @@ config MTK_PASSPOINT_R2
 	depends on MTK_MT_AP_SUPPORT
 	default n
 
-config MTK_MBO_SUPPORT
-        bool "MBO Support"
-        depends on MTK_WIFI_DRIVER
-        select MTK_INTERWORKING
-        select MTK_WNM_SUPPORT
-        select MTK_DOT11K_RRM_SUPPORT
-        select MTK_DOT11R_FT_SUPPORT
-        select MTK_DOT11W_PMF_SUPPORT
-        default n
-
-#config TRACE_TCP_PKT
+#config MTK_TRACE_TCP_PKT
 #	   bool "TCP DATA/ACK packets trace log"
-#	   depends on WIFI_DRIVER
+#	   depends on MTK_WIFI_DRIVER
 #	   default n
 
 config MTK_UAPSD
@@ -498,15 +500,8 @@ config MTK_TCP_RACK_SUPPORT
 
 config MTK_RED_SUPPORT
         bool "RED(Random Early Drop) support"
-	depends on MTK_WIFI_DRIVER
-	depends on MTK_MT_AP_SUPPORT || MTK_MT_STA_SUPPORT
-        default y
-
-config MTK_FQ_SCH_SUPPORT
-        bool "Fair Queueing support"
         depends on MTK_WIFI_DRIVER
-        depends on MTK_MT_AP_SUPPORT && MTK_VOW_SUPPORT
-        depends on MTK_CHIP_MT7622
+        depends on MTK_MT_AP_SUPPORT || MTK_MT_STA_SUPPORT
         default y
 
 config MTK_FDB_SUPPORT
@@ -626,20 +621,79 @@ config MTK_WDS_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	default y
 
+config MTK_WIFI_EAP_FEATURE
+	bool "EAP Feature"
+    depends on MTK_WIFI_DRIVER
+	default y
+
+config MTK_VLAN_SUPPORT
+	bool "VLAN Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_MLME_MULTI_QUEUE_SUPPORT
+	bool "Mlme Multi Queue Support"
+	default n
+
+config MTK_TXRX_STAT_SUPPORT
+	bool "TxRx Stats Support"
+	depends on WIFI_DRIVER && WIFI_EAP_FEATURE
+	default y
+
+config MTK_SNIFFER_SUPPORT
+	bool "SNIFFER"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_ANTENNA_CONTROL_SUPPORT
+	bool "Antenna Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_MGMT_TXPWR_CTRL
+	bool "Mgmt TxPower Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_CHUTIL_SUPPORT
+	bool "Channel Utilization Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_NF_SUPPORT
+	bool "Noise Floor Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_RA_PHY_RATE_SUPPORT
+	bool "RA PHY RATE Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_AMPDU_CONF_SUPPORT
+	bool "AMPDU Config retry & agglimit Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
+config MTK_ACK_CTS_TIMEOUT_SUPPORT
+	bool "ACK CTS Timeout cck & ofdm Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default y
+
 config MTK_MBSS_SUPPORT
 	bool "MBSSID"
 	depends on MTK_MT_AP_SUPPORT
 	default y
 
-#config NEW_MBSSID_MODE
+#config MTK_NEW_MBSSID_MODE
 #	bool "New MBSSID MODE"
-#	depends on MT_AP_SUPPORT && MBSS_SUPPORT
-#	depends on RALINK_RT3883 || RALINK_RT3352 || RALINK_RT5350 || RALINK_RT6352 || RALINK_MT7620
+#	depends on MTK_MT_AP_SUPPORT && MTK_MBSS_SUPPORT
+#	depends on MTK_RALINK_RT3883 || MTK_RALINK_RT3352 || MTK_RALINK_RT5350 || MTK_RALINK_RT6352 || MTK_RALINK_MT7620
 #	default y
 
-#config ENHANCE_NEW_MBSSID_MODE
+#config MTK_ENHANCE_NEW_MBSSID_MODE
 #	bool "Enhanced MBSSID mode"
-#	depends on NEW_MBSSID_MODE
+#	depends on MTK_NEW_MBSSID_MODE
 #	default y
 
 config MTK_APCLI_SUPPORT
@@ -686,13 +740,75 @@ config MTK_DOT11K_RRM_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	default n
 
-#config SNIFFER_SUPPORT
-#	bool "SNIFFER"
-#	depends on MT_AP_SUPPORT
-#	default n
+config MTK_INTERWORKING
+        bool "802.11u Interworking"
+        depends on MTK_MT_AP_SUPPORT
+        default n
+
+config MTK_MAP_SUPPORT
+	bool "Multi-AP Support"
+	depends on MTK_MT_AP_SUPPORT
+	select MTK_MBO_SUPPORT
+	default n
+
+config MTK_MAP_R2_VER_SUPPORT
+	bool "Multi-AP R2 version support"
+	depends on MTK_MAP_SUPPORT
+	default n
+
+config MTK_OCE_SUPPORT
+        bool "Optimized Connectivity Experience Support"
+        depends on MTK_MT_AP_SUPPORT
+        depends on MTK_CHIP_MT7615E
+        select MTK_WAPP_SUPPORT
+        default y
+
+config MTK_ENTERPRISE_AP_SUPPORT
+	bool "Enterprise AP Support"
+	depends on MTK_MT_AP_SUPPORT
+	default n
+
+config MTK_DYNAMIC_VLAN_SUPPORT
+	bool "Dynamic VLAN Support"
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_ENTERPRISE_AP_SUPPORT
+	default n
 
 config MTK_CFG80211_SUPPORT
 	bool "CFG80211"
+	depends on MTK_MT_AP_SUPPORT
+	default n
+
+#CUSTOMISED HOSTAPD
+config MTK_CUSTOMISED_HOSTAPD_SUPPORT
+	bool "Customised Hostapd Support"
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_CFG80211_SUPPORT
+	default n
+
+#APCLI STA
+config MTK_APCLI_STA_SUPPORT
+	bool "APCLI STA Support"
+	depends on MTK_APCLI_SUPPORT
+	depends on MTK_CFG80211_SUPPORT
+	default n
+
+#WDS STA
+config MTK_WDS_STA_SUPPORT
+	bool "WDS STA Support"
+	depends on MTK_APCLI_SUPPORT
+	depends on MTK_CFG80211_SUPPORT
+	default n
+
+#WDS AP
+config MTK_MBSS_AS_WDS_AP_SUPPORT
+	bool "MBSS AS WDS AP Support"
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_MBSS_SUPPORT
+	default n
+
+config MTK_DSCP_QOS_MAP_SUPPORT
+	bool "Dscp Qos Mapping Support"
 	depends on MTK_MT_AP_SUPPORT
 	default n
 
@@ -700,6 +816,30 @@ config MTK_DSCP_PRI_SUPPORT
 	bool "Dscp Priority Mapping Support"
 	depends on MTK_MT_AP_SUPPORT
 	default n
+
+#HOSTAPD_MAP_SUPPORT
+config MTK_HOSTAPD_MAP_SUPPORT
+	bool "MAP with Hostapd Support"
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_CFG80211_SUPPORT
+	depends on MTK_MAP_SUPPORT
+	default n
+
+config MTK_MIN_PHY_RATE_SUPPORT
+        bool "Minimum PHY rate support"
+        depends on MTK_MT_AP_SUPPORT
+        default n
+
+config MTK_FAST_UP_RATE_SUPPORT
+        bool "Fast UP rate support"
+        depends on MTK_MT_AP_SUPPORT
+        default n
+
+config MTK_RADIUS_MAC_AUTH_SUPPORT
+        bool "RADIUS MAC Auth Support"
+        depends on MTK_ENTERPRISE_AP_SUPPORT
+        depends on MTK_CFG80211_SUPPORT
+        default n
 
 config MTK_CON_WPS_SUPPORT
 	bool "Concurrent WPS Support"
@@ -710,40 +850,43 @@ config MTK_CON_WPS_SUPPORT
 #	depends on MTK_MULTI_INF_SUPPORT
 	default n
 
-#config LLTD_SUPPORT
+#config MTK_LLTD_SUPPORT
 #	bool "LLTD (Link Layer Topology Discovery Protocol)"
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_MT_AP_SUPPORT
 
-#config COC_SUPPORT
+#config MTK_COC_SUPPORT
 #	bool "CoC Support"
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
-
-#config  RT2860V2_SNMP
-#	bool "Net-SNMP Support"
-#	depends on MT_AP_SUPPORT
 
 config MTK_MCAST_RATE_SPECIFIC
 	bool "User specific tx rate of mcast pkt"
 	depends on MTK_MT_AP_SUPPORT
 	default y
 
-#config EXT_BUILD_CHANNEL_LIST
+#config MTK_EXT_BUILD_CHANNEL_LIST
 #	bool "Extension Channel List"
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_MT_AP_SUPPORT
 
-#config AUTO_CH_SELECT_ENHANCE
+#config MTK_AUTO_CH_SELECT_ENHANCE
 #	bool "Auto Channel Selection Enhancement"
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_MT_AP_SUPPORT
 
 config MTK_VOW_SUPPORT
 	bool "MediaAir(VOW) support"
 	depends on MTK_MT_AP_SUPPORT
 	default y
 
-#config AIRPLAY_SUPPORT
+config MTK_FQ_SCH_SUPPORT
+    bool "Fair Queueing support"
+    depends on MTK_WIFI_DRIVER
+    depends on MTK_MT_AP_SUPPORT && MTK_VOW_SUPPORT
+    depends on MTK_CHIP_MT7615E || MTK_CHIP_MT7622
+    default y
+
+#config MTK_AIRPLAY_SUPPORT
 #	bool "AIRPLAY Support"
-#	depends on MT_AP_SUPPORT
+#	depends on MTK_MT_AP_SUPPORT
 #	default n
 
 config MTK_BAND_STEERING
@@ -752,8 +895,8 @@ config MTK_BAND_STEERING
 	default y
 
 config MTK_LED_CONTROL_SUPPORT
-	bool "LED Control Support"
-	default y
+        bool "LED Control Support"
+        default n
 
 config MTK_WLAN_HOOK
        bool "WLAN hook Support"
@@ -768,7 +911,7 @@ config MTK_RADIUS_ACCOUNTING_SUPPORT
 config MTK_GREENAP_SUPPORT
 	bool "GreenAP Support"
 	depends on MTK_MT_AP_SUPPORT
-	default n
+	default y
 
 config MTK_PCIE_ASPM_DYM_CTRL_SUPPORT
 	bool "Pcie Aspm Dynamic Control Support"
@@ -800,25 +943,55 @@ config MTK_WNM_SUPPORT
         depends on MTK_MT_AP_SUPPORT
         default n
 
-config MTK_INTERWORKING
-        bool "802.11u Interworking"
-        depends on MTK_MT_AP_SUPPORT
-        default n
+config MTK_WIFI_MSI_SUPPORT
+        bool "MSI support"
+        depends on MTK_CHIP_MT7615E
+        default y
 
-#config ROAMING_ENHANCE_SUPPORT
+#config MTK_ROAMING_ENHANCE_SUPPORT
 #	bool "Roaming Enhance Support"
-#	depends on MT_AP_SUPPORT
-#	depends on APCLI_SUPPORT
+#	depends on MTK_MT_AP_SUPPORT
+#	depends on MTK_APCLI_SUPPORT
 #	default n
 
-config MTK_LINUX_NET_TXQ_SUPPORT
-	bool "NET TX Queue Support"
-	default y
-
-#config WIFI_FWD_SUPPORT
+#config MTK_WIFI_FWD_SUPPORT
 #        bool "WiFi Forwarding Support"
 #        default n
 
+config MTK_WPA3_SUPPORT
+	bool "WPA3 support"
+	depends on MTK_MT_AP_SUPPORT
+	default y
+
+config MTK_OWE_SUPPORT
+	bool "Enhance OPEN(OWE) support"
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_WPA3_SUPPORT
+	default y
+
+config MTK_VENDOR_FEATURE10_SUPPORT
+        bool "Vendor10 Feature Enable"
+        depends on MTK_WIFI_DRIVER
+        depends on MTK_MT_AP_SUPPORT
+        default n
+
+config MTK_VENDOR_FEATURE11_SUPPORT
+        bool "Vendor11 Feature Enable"
+        depends on MTK_WIFI_DRIVER
+        depends on MTK_MT_AP_SUPPORT
+        default n
+
+config MTK_RCSA_SUPPORT
+	bool "Reverse-CSA"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_DFS_SUPPORT
+	depends on MTK_APCLI_SUPPORT
+	default n
+
+config MTK_ETH_CONVERT_SUPPORT
+	bool "Ethernet Convert Mode Support"
+	depends on MTK_MT_STA_SUPPORT
+	default y
 endmenu
 
 endif
@@ -841,10 +1014,6 @@ if MTK_WIFI_RTMP_MAC
 endif
 
 if MTK_WIFI_MT_MAC
-	config MTK_MT_MAC
-		bool
-		default y
-
 	config MTK_CHIP_MT7603E
 		bool
 		default n

@@ -115,7 +115,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 -
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -3349,7 +3349,7 @@ L:	linux-i2c@vger.kernel.org
+@@ -3350,7 +3350,7 @@ L:	linux-i2c@vger.kernel.org
  L:	bcm-kernel-feedback-list@broadcom.com
  S:	Supported
  F:	drivers/i2c/busses/i2c-brcmstb.c

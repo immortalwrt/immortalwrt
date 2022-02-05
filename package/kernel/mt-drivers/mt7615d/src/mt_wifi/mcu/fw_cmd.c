@@ -22,31 +22,32 @@
 #include "rt_config.h"
 #endif
 
-
+#ifdef CONFIG_ATE
 static VOID EventExtCmdResult(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
 	struct _EVENT_EXT_CMD_RESULT_T *EventExtCmdResult =
 		(struct _EVENT_EXT_CMD_RESULT_T *)Data;
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExTenCID));
+		 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExTenCID));
 #ifdef RT_BIG_ENDIAN
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
 #endif
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: EventExtCmdResult.u4Status = 0x%x\n",
-			  __func__, EventExtCmdResult->u4Status));
+		 ("%s: EventExtCmdResult.u4Status = 0x%x\n", __func__,
+		  EventExtCmdResult->u4Status));
 }
+#endif /* CONFIG_ATE */
 
 INT32 CmdInitAccessRegWrite(RTMP_ADAPTER *ad, UINT32 address, UINT32 data)
 {
 	struct cmd_msg *msg;
-	struct _INIT_CMD_ACCESS_REG access_reg = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _INIT_CMD_ACCESS_REG access_reg = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	INT32 ret = 0;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: address = %x, data = %x\n", __func__, address, data));
+		 ("%s: address = %x, data = %x\n", __func__, address, data));
 	msg = AndesAllocCmdMsg(ad, sizeof(struct _INIT_CMD_ACCESS_REG));
 
 	if (!msg) {
@@ -71,30 +72,29 @@ INT32 CmdInitAccessRegWrite(RTMP_ADAPTER *ad, UINT32 address, UINT32 data)
 	ret = AndesSendCmdMsg(ad, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
-
 
 static VOID CmdInitAccessRegReadCb(struct cmd_msg *msg, char *data, UINT16 len)
 {
 	struct _INIT_EVENT_ACCESS_REG *access_reg =
 		(struct _INIT_EVENT_ACCESS_REG *)data;
-	os_move_mem(msg->attr.rsp.wb_buf_in_calbk, &access_reg->u4Data, len - 4);
+	os_move_mem(msg->attr.rsp.wb_buf_in_calbk, &access_reg->u4Data,
+		    len - 4);
 	*((UINT32 *)(msg->attr.rsp.wb_buf_in_calbk)) =
 		le2cpu32(*((UINT32 *)msg->attr.rsp.wb_buf_in_calbk));
 }
 
-
 INT32 CmdInitAccessRegRead(RTMP_ADAPTER *pAd, UINT32 address, UINT32 *data)
 {
 	struct cmd_msg *msg;
-	struct _INIT_CMD_ACCESS_REG access_reg = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _INIT_CMD_ACCESS_REG access_reg = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	INT32 ret = 0;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: address = %x\n", __func__, address));
+		 ("%s: address = %x\n", __func__, address));
 	msg = AndesAllocCmdMsg(pAd, sizeof(struct _INIT_CMD_ACCESS_REG));
 
 	if (!msg) {
@@ -118,46 +118,38 @@ INT32 CmdInitAccessRegRead(RTMP_ADAPTER *pAd, UINT32 address, UINT32 *data)
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
-
-
-
-
-
-
-
-
 
 static VOID CmdHIFLoopbackRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
 	UINT8 Status;
 
 	Status = *Data;
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("HIF Loopback status=%d\n", Status));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("HIF Loopback status=%d\n", Status));
 
 	switch (Status) {
 	case TARGET_ADDRESS_LEN_SUCCESS:
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s: Request target address and length success\n",
-				  __func__));
+			 ("%s: Request target address and length success\n",
+			  __func__));
 		break;
 
 	default:
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: Unknow Status(%d)\n", __func__, Status));
+			 ("%s: Unknow Status(%d)\n", __func__, Status));
 		break;
 	}
 }
-
 
 INT32 CmdHIFLoopbackReq(RTMP_ADAPTER *ad, UINT32 enable, UINT32 qidx)
 {
 	struct cmd_msg *msg;
 	UINT32 value;
 	int ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(ad, 4);
 
@@ -178,38 +170,36 @@ INT32 CmdHIFLoopbackReq(RTMP_ADAPTER *ad, UINT32 enable, UINT32 qidx)
 	/* start enable */
 	enable = (qidx << 16) | (enable & 0xffff);
 	value = cpu2le32(enable);
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("loopback value=0x%x\n", value));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		 ("loopback value=0x%x\n", value));
 	AndesAppendCmdMsg(msg, (char *)&value, 4);
 	ret = AndesSendCmdMsg(ad, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 
-
-
-
-
 INT32 CmdChPrivilege(RTMP_ADAPTER *ad, UINT8 Action, UINT8 control_chl,
-					 UINT8 central_chl, UINT8 BW, UINT8 TXStream, UINT8 RXStream)
+		     UINT8 central_chl, UINT8 BW, UINT8 TXStream,
+		     UINT8 RXStream)
 {
 	struct cmd_msg *msg;
-	struct _CMD_CH_PRIVILEGE_T ch_privilege = {0};
+	struct _CMD_CH_PRIVILEGE_T ch_privilege = { 0 };
 	INT32 ret = 0;
 	struct MCU_CTRL *Ctl = &ad->MCUCtrl;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	if (central_chl == 0) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: central channel = 0 is invalid\n", __func__));
+			 ("%s: central channel = 0 is invalid\n", __func__));
 		return -1;
 	}
 
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: control_chl = %d, central_chl = %d, BW = %d, TXStream = %d, RXStream = %d\n",
-			  __func__, control_chl, central_chl,
-			  BW, TXStream, RXStream));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s: control_chl = %d, central_chl = %d, BW = %d, TXStream = %d, RXStream = %d\n",
+		 __func__, control_chl, central_chl, BW, TXStream, RXStream));
 	msg = AndesAllocCmdMsg(ad, sizeof(struct _CMD_CH_PRIVILEGE_T));
 
 	if (!msg) {
@@ -239,11 +229,11 @@ INT32 CmdChPrivilege(RTMP_ADAPTER *ad, UINT8 Action, UINT8 control_chl,
 			ch_privilege.ucRfSco = CMD_CH_PRIV_SCO_SCB;
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("unknown bandwidth = %d\n", BW));
+			 ("unknown bandwidth = %d\n", BW));
 	}
 
 	if (central_chl > 14)
-		ch_privilege.ucRfBand =  CMD_CH_PRIV_BAND_A;
+		ch_privilege.ucRfBand = CMD_CH_PRIV_BAND_A;
 	else
 		ch_privilege.ucRfBand = CMD_CH_PRIV_BAND_G;
 
@@ -270,20 +260,19 @@ INT32 CmdChPrivilege(RTMP_ADAPTER *ad, UINT8 Action, UINT8 control_chl,
 	ret = AndesSendCmdMsg(ad, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
-
 
 INT32 CmdAccessRegWrite(RTMP_ADAPTER *ad, UINT32 address, UINT32 data)
 {
 	struct cmd_msg *msg;
-	struct _CMD_ACCESS_REG_T access_reg = {0};
+	struct _CMD_ACCESS_REG_T access_reg = { 0 };
 	INT32 ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: address = %x, data = %x\n", __func__, address, data));
+		 ("%s: address = %x, data = %x\n", __func__, address, data));
 	msg = AndesAllocCmdMsg(ad, sizeof(struct _CMD_ACCESS_REG_T));
 
 	if (!msg) {
@@ -307,28 +296,27 @@ INT32 CmdAccessRegWrite(RTMP_ADAPTER *ad, UINT32 address, UINT32 data)
 	ret = AndesSendCmdMsg(ad, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
-
 
 static VOID CmdAccessRegReadCb(struct cmd_msg *msg, char *data, UINT16 len)
 {
 	struct _CMD_ACCESS_REG_T *access_reg = (struct _CMD_ACCESS_REG_T *)data;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s\n", __func__));
-	os_move_mem(msg->attr.rsp.wb_buf_in_calbk, &access_reg->u4Data, len - 4);
+	os_move_mem(msg->attr.rsp.wb_buf_in_calbk, &access_reg->u4Data,
+		    len - 4);
 	*((UINT32 *)(msg->attr.rsp.wb_buf_in_calbk)) =
 		le2cpu32(*((UINT32 *)msg->attr.rsp.wb_buf_in_calbk));
 }
 
-
 INT32 CmdAccessRegRead(RTMP_ADAPTER *pAd, UINT32 address, UINT32 *data)
 {
 	struct cmd_msg *msg;
-	struct _CMD_ACCESS_REG_T access_reg = {0};
+	struct _CMD_ACCESS_REG_T access_reg = { 0 };
 	INT32 ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, sizeof(struct _CMD_ACCESS_REG_T));
 
@@ -351,14 +339,12 @@ INT32 CmdAccessRegRead(RTMP_ADAPTER *pAd, UINT32 address, UINT32 *data)
 	AndesAppendCmdMsg(msg, (char *)&access_reg, sizeof(access_reg));
 	ret = AndesSendCmdMsg(pAd, msg);
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: address = %x, value = %x\n",
-			  __func__, address, *data));
+		 ("%s: address = %x, value = %x\n", __func__, address, *data));
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
-
 
 VOID CmdIOWrite32(RTMP_ADAPTER *pAd, UINT32 Offset, UINT32 Value)
 {
@@ -373,7 +359,6 @@ VOID CmdIOWrite32(RTMP_ADAPTER *pAd, UINT32 Offset, UINT32 Value)
 		CmdInitAccessRegWrite(pAd, Offset, Value);
 }
 
-
 VOID CmdIORead32(struct _RTMP_ADAPTER *pAd, UINT32 Offset, UINT32 *Value)
 {
 	struct MCU_CTRL *Ctl = &pAd->MCUCtrl;
@@ -387,7 +372,6 @@ VOID CmdIORead32(struct _RTMP_ADAPTER *pAd, UINT32 Offset, UINT32 *Value)
 		CmdInitAccessRegRead(pAd, Offset, Value);
 }
 
-
 static VOID EventExtNicCapability(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
 	EXT_EVENT_NIC_CAPABILITY *ExtEventNicCapability =
@@ -395,28 +379,27 @@ static VOID EventExtNicCapability(struct cmd_msg *msg, char *Data, UINT16 Len)
 	UINT32 Loop;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("The data code of firmware:"));
+		 ("The data code of firmware:"));
 
 	for (Loop = 0; Loop < 16; Loop++) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%c", ExtEventNicCapability->aucDateCode[Loop]));
+			 ("%c", ExtEventNicCapability->aucDateCode[Loop]));
 	}
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("\nThe version code of firmware:"));
+		 ("\nThe version code of firmware:"));
 
 	for (Loop = 0; Loop < 12; Loop++) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-				 ("%c", ExtEventNicCapability->aucVersionCode[Loop]));
+			 ("%c", ExtEventNicCapability->aucVersionCode[Loop]));
 	}
 }
-
 
 INT32 CmdNicCapability(RTMP_ADAPTER *pAd)
 {
 	struct cmd_msg *msg;
 	INT32 ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, 0);
 
@@ -437,23 +420,24 @@ INT32 CmdNicCapability(RTMP_ADAPTER *pAd)
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 
 #ifdef CONFIG_ATE
-INT32 CmdTxContinous(RTMP_ADAPTER *pAd, UINT32 PhyMode, UINT32 BW,
-					 UINT32 PriCh, UINT32 Mcs, UINT32 WFSel, UCHAR onoff)
+INT32 CmdTxContinous(RTMP_ADAPTER *pAd, UINT32 PhyMode, UINT32 BW, UINT32 PriCh,
+		     UINT32 Mcs, UINT32 WFSel, UCHAR onoff)
 {
 	struct cmd_msg *msg;
-	struct _CMD_TEST_CTRL_T ContiTXParam = {0};
+	struct _CMD_TEST_CTRL_T ContiTXParam = { 0 };
 	INT32 ret = 0;
 	UCHAR TXDRate = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s, mode:0x%x, bw:0x%x, prich(Control CH):0x%x, mcs:0x%x, wfsel:0x%x, on/off:0x%x\n",
-			  __func__, PhyMode, BW, PriCh, Mcs, WFSel, onoff));
+	MTWF_LOG(
+		DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s, mode:0x%x, bw:0x%x, prich(Control CH):0x%x, mcs:0x%x, wfsel:0x%x, on/off:0x%x\n",
+		 __func__, PhyMode, BW, PriCh, Mcs, WFSel, onoff));
 	msg = AndesAllocCmdMsg(pAd, sizeof(ContiTXParam));
 
 	if (!msg) {
@@ -482,7 +466,8 @@ INT32 CmdTxContinous(RTMP_ADAPTER *pAd, UINT32 PhyMode, UINT32 BW,
 	ContiTXParam.u.rRfATInfo.Data.rConTxParam.ucCentralCh = PriCh;
 
 	if (BW_40 == BW || BW_80 == BW)
-		ContiTXParam.u.rRfATInfo.Data.rConTxParam.ucCtrlCh = (PriCh + 2);
+		ContiTXParam.u.rRfATInfo.Data.rConTxParam.ucCtrlCh =
+			(PriCh + 2);
 	else
 		ContiTXParam.u.rRfATInfo.Data.rConTxParam.ucCtrlCh = PriCh;
 
@@ -559,9 +544,11 @@ INT32 CmdTxContinous(RTMP_ADAPTER *pAd, UINT32 PhyMode, UINT32 BW,
 		TXDRate = Mcs;
 	}
 
-	ContiTXParam.u.rRfATInfo.Data.rConTxParam.u2RateCode = Mcs << 6 | TXDRate;
+	ContiTXParam.u.rRfATInfo.Data.rConTxParam.u2RateCode =
+		Mcs << 6 | TXDRate;
 #ifdef RT_BIG_ENDIAN
-	ContiTXParam.u.rRfATInfo.u4FuncIndex = cpu2le32(ContiTXParam.u.rRfATInfo.u4FuncIndex);
+	ContiTXParam.u.rRfATInfo.u4FuncIndex =
+		cpu2le32(ContiTXParam.u.rRfATInfo.u4FuncIndex);
 	ContiTXParam.u.rRfATInfo.Data.rConTxParam.u2RateCode =
 		cpu2le32(ContiTXParam.u.rRfATInfo.Data.rConTxParam.u2RateCode);
 #endif
@@ -569,7 +556,7 @@ INT32 CmdTxContinous(RTMP_ADAPTER *pAd, UINT32 PhyMode, UINT32 BW,
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 
@@ -579,7 +566,7 @@ INT32 CmdTxTonePower(RTMP_ADAPTER *pAd, INT32 type, INT32 dec)
 	struct _CMD_TEST_CTRL_T TestCtrl;
 	struct _ATE_CTRL *ATECtrl = &(pAd->ATECtrl);
 	INT32 ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, sizeof(TestCtrl));
 
@@ -589,7 +576,7 @@ INT32 CmdTxTonePower(RTMP_ADAPTER *pAd, INT32 type, INT32 dec)
 	}
 
 	MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s, type:%d, dec:%d\n", __func__, type, dec));
+		 ("%s, type:%d, dec:%d\n", __func__, type, dec));
 	SET_CMD_ATTR_MCU_DEST(attr, HOST2N9);
 	SET_CMD_ATTR_TYPE(attr, EXT_CID);
 	SET_CMD_ATTR_EXT_TYPE(attr, EXT_CMD_RF_TEST);
@@ -629,19 +616,16 @@ INT32 CmdTxTonePower(RTMP_ADAPTER *pAd, INT32 type, INT32 dec)
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 #endif /* CONFIG_ATE */
 
-
 #ifdef COEX_SUPPORT
-INT AndesCoexOP(
-	IN PRTMP_ADAPTER pAd,
-	IN UCHAR Status)
+INT AndesCoexOP(IN PRTMP_ADAPTER pAd, IN UCHAR Status)
 {
 	struct cmd_msg *msg;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	INT32 ret;
 	EXT_CMD_COEXISTENCE_T coext_t;
 	COEX_WIFI_STATUS_UPDATE_T coex_status;
@@ -722,25 +706,22 @@ INT AndesCoexOP(
 	coex_status.u4WIFIStatus = cpu2le32(coex_status.u4WIFIStatus);
 #endif
 	os_move_mem(coext_t.aucData, &coex_status,
-				sizeof(COEX_WIFI_STATUS_UPDATE_T));
+		    sizeof(COEX_WIFI_STATUS_UPDATE_T));
 	hex_dump("AndesBtCoex: ", (UCHAR *)&coext_t,
-			 sizeof(EXT_CMD_COEXISTENCE_T));
-	AndesAppendCmdMsg(msg, (char *)&coext_t,
-					  sizeof(EXT_CMD_COEXISTENCE_T));
+		 sizeof(EXT_CMD_COEXISTENCE_T));
+	AndesAppendCmdMsg(msg, (char *)&coext_t, sizeof(EXT_CMD_COEXISTENCE_T));
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 
-INT AndesCoexProtectionFrameOP(
-	IN PRTMP_ADAPTER pAd,
-	IN UCHAR Mode,
-	IN UCHAR Rate)
+INT AndesCoexProtectionFrameOP(IN PRTMP_ADAPTER pAd, IN UCHAR Mode,
+			       IN UCHAR Rate)
 {
 	struct cmd_msg *msg;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	INT32 ret;
 	EXT_CMD_COEXISTENCE_T coext_t;
 	COEX_SET_PROTECTION_FRAME_T coex_proction;
@@ -768,25 +749,21 @@ INT AndesCoexProtectionFrameOP(
 	coex_proction.ucProFrameMode = Mode;
 	coex_proction.ucProFrameRate = Rate;
 	os_move_mem(coext_t.aucData, &coex_proction,
-				sizeof(COEX_SET_PROTECTION_FRAME_T));
-	hex_dump("AndesBtCoexProtection: ",
-			 (UCHAR *)&coext_t, sizeof(EXT_CMD_COEXISTENCE_T));
+		    sizeof(COEX_SET_PROTECTION_FRAME_T));
+	hex_dump("AndesBtCoexProtection: ", (UCHAR *)&coext_t,
+		 sizeof(EXT_CMD_COEXISTENCE_T));
 	AndesAppendCmdMsg(msg, (char *)&coext_t, sizeof(EXT_CMD_COEXISTENCE_T));
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 
-
-INT AndesCoexBSSInfo(
-	IN PRTMP_ADAPTER pAd,
-	IN BOOLEAN Enable,
-	IN UCHAR bQoS)
+INT AndesCoexBSSInfo(IN PRTMP_ADAPTER pAd, IN BOOLEAN Enable, IN UCHAR bQoS)
 {
 	struct cmd_msg *msg;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	INT32 ret;
 	EXT_CMD_COEXISTENCE_T coext_t;
 	COEX_UPDATE_BSS_INFO_T coex_bss_info;
@@ -820,21 +797,21 @@ INT AndesCoexBSSInfo(
 		coex_bss_info.u4IsQBSS[0] = 0;
 	}
 
-	os_move_mem(coext_t.aucData, &coex_bss_info, sizeof(COEX_UPDATE_BSS_INFO_T));
+	os_move_mem(coext_t.aucData, &coex_bss_info,
+		    sizeof(COEX_UPDATE_BSS_INFO_T));
 	hex_dump("AndesBtCoexProtection: ", (UCHAR *)&coext_t,
-			 sizeof(EXT_CMD_COEXISTENCE_T));
+		 sizeof(EXT_CMD_COEXISTENCE_T));
 	AndesAppendCmdMsg(msg, (char *)&coext_t, sizeof(EXT_CMD_COEXISTENCE_T));
 	ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 #endif
 
-
 /* WTBL manipulation function*/
-PNDIS_PACKET WtblTlvBufferAlloc(RTMP_ADAPTER *pAd,  UINT32 u4AllocateSize)
+PNDIS_PACKET WtblTlvBufferAlloc(RTMP_ADAPTER *pAd, UINT32 u4AllocateSize)
 {
 	PNDIS_PACKET net_pkt = NULL;
 
@@ -842,17 +819,17 @@ PNDIS_PACKET WtblTlvBufferAlloc(RTMP_ADAPTER *pAd,  UINT32 u4AllocateSize)
 
 	if (net_pkt == NULL) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::Can not allocate net_pkt\n", __func__));
+			 ("%s::Can not allocate net_pkt\n", __func__));
 		return NULL;
 	}
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s::Allocate(%p)\n", __func__, net_pkt));
+		 ("%s::Allocate(%p)\n", __func__, net_pkt));
 	return net_pkt;
 }
 
 VOID WtblTlvBufferAppend(PNDIS_PACKET pWtblTlvBuffer, UINT16 u2Type,
-						 UINT16 u2Length, PUCHAR pNextWtblTlvBuffer)
+			 UINT16 u2Length, PUCHAR pNextWtblTlvBuffer)
 {
 	if ((pNextWtblTlvBuffer != NULL) && (u2Length != 0)) {
 		P_CMD_WTBL_GENERIC_TLV_T pWtblGenericTlv =
@@ -860,14 +837,14 @@ VOID WtblTlvBufferAppend(PNDIS_PACKET pWtblTlvBuffer, UINT16 u2Type,
 		pWtblGenericTlv->u2Tag = u2Type;
 		pWtblGenericTlv->u2Length = u2Length;
 		os_move_mem(OS_PKT_TAIL_BUF_EXTEND(pWtblTlvBuffer, u2Length),
-					pNextWtblTlvBuffer, u2Length);
+			    pNextWtblTlvBuffer, u2Length);
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::T(%d), L(%d), V(%p)\n", __func__,
-				  pWtblGenericTlv->u2Tag, pWtblGenericTlv->u2Length,
-				  pNextWtblTlvBuffer));
+			 ("%s::T(%d), L(%d), V(%p)\n", __func__,
+			  pWtblGenericTlv->u2Tag, pWtblGenericTlv->u2Length,
+			  pNextWtblTlvBuffer));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::Can not append WTBL TLV\n", __func__));
+			 ("%s::Can not append WTBL TLV\n", __func__));
 	}
 }
 
@@ -877,15 +854,17 @@ VOID WtblTlvBufferFree(RTMP_ADAPTER *pAd, PNDIS_PACKET pWtblTlvBuffer)
 	if (pWtblTlvBuffer != NULL) {
 		RTMPFreeNdisPacket(pAd, pWtblTlvBuffer);
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::Free buffer(%p)\n", __func__, pWtblTlvBuffer));
+			 ("%s::Free buffer(%p)\n", __func__, pWtblTlvBuffer));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::Fail to free buffer(%p)\n", __func__, pWtblTlvBuffer));
+			 ("%s::Fail to free buffer(%p)\n", __func__,
+			  pWtblTlvBuffer));
 	}
 }
 
 VOID *pTlvAppend(VOID *pTlvBuffer, UINT16 u2Type, UINT16 u2Length,
-				 VOID *pNextTlvBuffer, UINT32 *pu4TotalTlvLen, UCHAR *pucTotalTlvNumber)
+		 VOID *pNextTlvBuffer, UINT32 *pu4TotalTlvLen,
+		 UCHAR *pucTotalTlvNumber)
 {
 	if ((pNextTlvBuffer != NULL) && (u2Length != 0)) {
 		P_CMD_WTBL_GENERIC_TLV_T pWtblGenericTlv =
@@ -894,16 +873,17 @@ VOID *pTlvAppend(VOID *pTlvBuffer, UINT16 u2Type, UINT16 u2Length,
 		pWtblGenericTlv->u2Length = u2Length;
 		*pu4TotalTlvLen += u2Length;
 		*pucTotalTlvNumber += 1;
-		os_move_mem((PUCHAR)pTlvBuffer, (PUCHAR)pWtblGenericTlv, u2Length);
+		os_move_mem((PUCHAR)pTlvBuffer, (PUCHAR)pWtblGenericTlv,
+			    u2Length);
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s::T(%d), L(%d), V(%p)\n", __func__,
-				  pWtblGenericTlv->u2Tag, pWtblGenericTlv->u2Length,
-				  pNextTlvBuffer));
+			 ("%s::T(%d), L(%d), V(%p)\n", __func__,
+			  pWtblGenericTlv->u2Tag, pWtblGenericTlv->u2Length,
+			  pNextTlvBuffer));
 		return (pTlvBuffer + u2Length);
 	}
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s::Can not append WTBL TLV\n", __func__));
+		 ("%s::Can not append WTBL TLV\n", __func__));
 	return NULL;
 }
 
@@ -912,24 +892,20 @@ static VOID CmdExtTlvUpdateRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 	struct _EVENT_EXT_CMD_RESULT_T *EventExtCmdResult =
 		(struct _EVENT_EXT_CMD_RESULT_T *)Data;
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExTenCID));
+		 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExTenCID));
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: EventExtCmdResult.u4Status = 0x%x\n",
-			  __func__, EventExtCmdResult->u4Status));
+		 ("%s: EventExtCmdResult.u4Status = 0x%x\n", __func__,
+		  EventExtCmdResult->u4Status));
 }
 
-
-INT32 CmdExtTlvBufferSend(
-	RTMP_ADAPTER *pAd,
-	UINT8 ExtCmdType,
-	VOID *pTlvBuffer,
-	UINT32 u4TlvLength)
+INT32 CmdExtTlvBufferSend(RTMP_ADAPTER *pAd, UINT8 ExtCmdType, VOID *pTlvBuffer,
+			  UINT32 u4TlvLength)
 {
-	struct cmd_msg	*msg = NULL;
-	INT32			Ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	INT32 Ret = 0;
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	/* Allocte CMD msg */
 	msg = AndesAllocCmdMsg(pAd, sizeof(CMD_STAREC_COMMON_T));
 
@@ -953,49 +929,49 @@ INT32 CmdExtTlvBufferSend(
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
-
 
 static VOID CmdExtWtblUpdateCb(struct cmd_msg *msg, char *data, UINT16 len)
 {
 	struct _EVENT_EXT_CMD_RESULT_T *EventExtCmdResult =
 		(struct _EVENT_EXT_CMD_RESULT_T *)data;
-	UINT32	u4Len = len - 20 - sizeof(CMD_WTBL_UPDATE_T);
-	PUCHAR	pData = (PCHAR)(data + 20 + sizeof(CMD_WTBL_UPDATE_T));
-	PUCHAR	pRspPayload = (PUCHAR)msg->attr.rsp.wb_buf_in_calbk;
+	UINT32 u4Len = len - 20 - sizeof(CMD_WTBL_UPDATE_T);
+	PUCHAR pData = (PCHAR)(data + 20 + sizeof(CMD_WTBL_UPDATE_T));
+	PUCHAR pRspPayload = (PUCHAR)msg->attr.rsp.wb_buf_in_calbk;
 
 	if (pRspPayload == NULL) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-				  __func__, EventExtCmdResult->ucExTenCID));
-		EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
+			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+			  EventExtCmdResult->ucExTenCID));
+		EventExtCmdResult->u4Status =
+			le2cpu32(EventExtCmdResult->u4Status);
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s: EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s: EventExtCmdResult.u4Status = 0x%x\n", __func__,
+			  EventExtCmdResult->u4Status));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s: Copy query result to buffer\n", __func__));
+			 ("%s: Copy query result to buffer\n", __func__));
 		os_move_mem(pRspPayload, pData, u4Len);
 	}
 }
 
 INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
-					   VOID *pBuffer, UINT32 u4BufferLen)
+		       VOID *pBuffer, UINT32 u4BufferLen)
 {
-	struct cmd_msg			*msg = NULL;
-	CMD_WTBL_UPDATE_T	CmdWtblUpdate = {0};
-	INT32					Ret = 0;
-	UINT32					u4EnableFeature = 0;
-	UINT16					ucTLVNumber = 0;
-	UINT16					u2Len = 0;
-	UINT32					*pRspPayload = NULL;
-	P_CMD_WTBL_GENERIC_TLV_T	pWtblGenericTlv = NULL;
-	UINT8					ucRemainingTLVNumber = 0;
-	UINT32					u4RemainingTLVBufLen = 0;
-	PUCHAR					TempBuffer = (PUCHAR)pBuffer;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	CMD_WTBL_UPDATE_T CmdWtblUpdate = { 0 };
+	INT32 Ret = 0;
+	UINT32 u4EnableFeature = 0;
+	UINT16 ucTLVNumber = 0;
+	UINT16 u2Len = 0;
+	UINT32 *pRspPayload = NULL;
+	P_CMD_WTBL_GENERIC_TLV_T pWtblGenericTlv = NULL;
+	UINT8 ucRemainingTLVNumber = 0;
+	UINT32 u4RemainingTLVBufLen = 0;
+	PUCHAR TempBuffer = (PUCHAR)pBuffer;
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, MAX_BUF_SIZE_OF_WTBL_INFO + 100);
 
@@ -1012,13 +988,14 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		if (pWtblGenericTlv == NULL) {
 			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s, pWtblGenericTlv is NULL\n", __func__));
+				 ("%s, pWtblGenericTlv is NULL\n", __func__));
 			Ret = NDIS_STATUS_INVALID_DATA;
 			break;
 		} else if (pWtblGenericTlv->u2Length == 0) {
 			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s, fail to handle T(%d), L(%d)\n", __func__,
-					  pWtblGenericTlv->u2Tag, pWtblGenericTlv->u2Length));
+				 ("%s, fail to handle T(%d), L(%d)\n", __func__,
+				  pWtblGenericTlv->u2Tag,
+				  pWtblGenericTlv->u2Length));
 			Ret = NDIS_STATUS_INVALID_DATA;
 			break;
 		}
@@ -1033,7 +1010,7 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 		goto Error1;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s, ucTLVNumber = %d\n", __func__, ucTLVNumber));
+		 ("%s, ucTLVNumber = %d\n", __func__, ucTLVNumber));
 	/* Assign vlaue to related parameters */
 	TempBuffer = (PUCHAR)pBuffer;
 	ucRemainingTLVNumber = ucTLVNumber;
@@ -1085,21 +1062,23 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 	CmdWtblUpdate.ucWlanIdx = ucWlanIdx;
 	CmdWtblUpdate.ucOperation = ucOperation;
 	CmdWtblUpdate.u2TotalElementNum = cpu2le16(ucTLVNumber);
-	AndesAppendCmdMsg(msg, (char *)&CmdWtblUpdate, sizeof(CMD_WTBL_UPDATE_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdWtblUpdate,
+			  sizeof(CMD_WTBL_UPDATE_T));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s, ucWlanIdx = %d, ucOperation = %d, u4EnableFeature = 0x%x\n",
+		 __func__, ucWlanIdx, ucOperation, u4EnableFeature));
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s, ucWlanIdx = %d, ucOperation = %d, u4EnableFeature = 0x%x\n",
-			  __func__, ucWlanIdx, ucOperation, u4EnableFeature));
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s, ucRemainingTLVNumber = %d, u2RemainingTLVBufLen = %d\n",
-			  __func__, ucRemainingTLVNumber, u4RemainingTLVBufLen));
+		 ("%s, ucRemainingTLVNumber = %d, u2RemainingTLVBufLen = %d\n",
+		  __func__, ucRemainingTLVNumber, u4RemainingTLVBufLen));
 
 	/* Handle TVL request here */
 	while ((ucRemainingTLVNumber > 0) && (u4RemainingTLVBufLen > 0)) {
 		/* Get current TLV */
 		pWtblGenericTlv = (P_CMD_WTBL_GENERIC_TLV_T)TempBuffer;
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s, TLV(%d, %d)\n", __func__,
-				  pWtblGenericTlv->u2Tag, pWtblGenericTlv->u2Length));
+			 ("%s, TLV(%d, %d)\n", __func__, pWtblGenericTlv->u2Tag,
+			  pWtblGenericTlv->u2Length));
 
 		/* Handle this TLV */
 		switch (pWtblGenericTlv->u2Tag) {
@@ -1108,21 +1087,25 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 			P_CMD_WTBL_GENERIC_T pCmdWtblGeneric =
 				(P_CMD_WTBL_GENERIC_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_GENERIC), ucMUARIndex = %d, ucSkipTx = %d,ucCfAck = %d, ucQos = %d, ucQos = %d, ucAdm = %d, PartialAID = %d, aucPeerAddress(%02x:%02x:%02x:%02x:%02x:%02x)\n",
-						  __func__,
-						  pCmdWtblGeneric->ucMUARIndex,
-						  pCmdWtblGeneric->ucSkipTx,
-						  pCmdWtblGeneric->ucCfAck,
-						  pCmdWtblGeneric->ucQos,
-						  pCmdWtblGeneric->ucMesh,
-						  pCmdWtblGeneric->ucAdm,
-						  pCmdWtblGeneric->u2PartialAID,
-						  PRINT_MAC(pCmdWtblGeneric->aucPeerAddress)));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_GENERIC), ucMUARIndex = %d, ucSkipTx = %d,ucCfAck = %d, ucQos = %d, ucQos = %d, ucAdm = %d, PartialAID = %d, aucPeerAddress(%02x:%02x:%02x:%02x:%02x:%02x)\n",
+					 __func__, pCmdWtblGeneric->ucMUARIndex,
+					 pCmdWtblGeneric->ucSkipTx,
+					 pCmdWtblGeneric->ucCfAck,
+					 pCmdWtblGeneric->ucQos,
+					 pCmdWtblGeneric->ucMesh,
+					 pCmdWtblGeneric->ucAdm,
+					 pCmdWtblGeneric->u2PartialAID,
+					 PRINT_MAC(pCmdWtblGeneric
+							   ->aucPeerAddress)));
 #ifdef RT_BIG_ENDIAN
-				pCmdWtblGeneric->u2PartialAID = cpu2le16(pCmdWtblGeneric->u2PartialAID);
+				pCmdWtblGeneric->u2PartialAID =
+					cpu2le16(pCmdWtblGeneric->u2PartialAID);
 #endif
 			} else if (ucOperation == QUERY_WTBL) {
 				/* No need to fill real parameters when query and
@@ -1135,17 +1118,19 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 1 */
 		case WTBL_RX: {
-			P_CMD_WTBL_RX_T	pCmdWtblRx = (P_CMD_WTBL_RX_T)TempBuffer;
+			P_CMD_WTBL_RX_T pCmdWtblRx =
+				(P_CMD_WTBL_RX_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_RX), ucRcid = %d, ucRca1 = %d, ucRca2 = %d, ucRv = %d\n",
-						  __func__,
-						  pCmdWtblRx->ucRcid,
-						  pCmdWtblRx->ucRca1,
-						  pCmdWtblRx->ucRca2,
-						  pCmdWtblRx->ucRv));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_RX), ucRcid = %d, ucRca1 = %d, ucRca2 = %d, ucRv = %d\n",
+					 __func__, pCmdWtblRx->ucRcid,
+					 pCmdWtblRx->ucRca1, pCmdWtblRx->ucRca2,
+					 pCmdWtblRx->ucRv));
 			}
 
 			break;
@@ -1153,17 +1138,19 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 2 */
 		case WTBL_HT: {
-			P_CMD_WTBL_HT_T pCmdWtblHt = (P_CMD_WTBL_HT_T)TempBuffer;
+			P_CMD_WTBL_HT_T pCmdWtblHt =
+				(P_CMD_WTBL_HT_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_HT), ucHt = %d, ucLdpc = %d, ucAf = %d, ucMm = %d\n",
-						  __func__,
-						  pCmdWtblHt->ucHt,
-						  pCmdWtblHt->ucLdpc,
-						  pCmdWtblHt->ucAf,
-						  pCmdWtblHt->ucMm));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_HT), ucHt = %d, ucLdpc = %d, ucAf = %d, ucMm = %d\n",
+					 __func__, pCmdWtblHt->ucHt,
+					 pCmdWtblHt->ucLdpc, pCmdWtblHt->ucAf,
+					 pCmdWtblHt->ucMm));
 			}
 
 			break;
@@ -1171,17 +1158,20 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 3 */
 		case WTBL_VHT: {
-			P_CMD_WTBL_VHT_T pCmdWtblVht = (P_CMD_WTBL_VHT_T)TempBuffer;
+			P_CMD_WTBL_VHT_T pCmdWtblVht =
+				(P_CMD_WTBL_VHT_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_VHT), ucLdpcVht = %d, ucDynBw= %d, ucVht = %d, ucTxopPsCap = %d\n",
-						  __func__,
-						  pCmdWtblVht->ucLdpcVht,
-						  pCmdWtblVht->ucDynBw,
-						  pCmdWtblVht->ucVht,
-						  pCmdWtblVht->ucTxopPsCap));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_VHT), ucLdpcVht = %d, ucDynBw= %d, ucVht = %d, ucTxopPsCap = %d\n",
+					 __func__, pCmdWtblVht->ucLdpcVht,
+					 pCmdWtblVht->ucDynBw,
+					 pCmdWtblVht->ucVht,
+					 pCmdWtblVht->ucTxopPsCap));
 			}
 
 			break;
@@ -1192,13 +1182,15 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 			P_CMD_WTBL_PEER_PS_T pCmdWtblPerPs =
 				(P_CMD_WTBL_PEER_PS_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_PEER_PS), ucDuIPsm = %d, ucIPsm = %d\n",
-						  __func__,
-						  pCmdWtblPerPs->ucDuIPsm,
-						  pCmdWtblPerPs->ucIPsm));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_PEER_PS), ucDuIPsm = %d, ucIPsm = %d\n",
+					 __func__, pCmdWtblPerPs->ucDuIPsm,
+					 pCmdWtblPerPs->ucIPsm));
 			}
 
 			break;
@@ -1206,14 +1198,16 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 5 */
 		case WTBL_TX_PS: {
-			P_CMD_WTBL_TX_PS_T	pCmdWtbTxPs = (P_CMD_WTBL_TX_PS_T)TempBuffer;
+			P_CMD_WTBL_TX_PS_T pCmdWtbTxPs =
+				(P_CMD_WTBL_TX_PS_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_TX_PS), ucTxPs = %d\n",
-						  __func__,
-						  pCmdWtbTxPs->ucTxPs));
+				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL,
+					 DBG_LVL_INFO,
+					 ("%s(WTBL_TX_PS), ucTxPs = %d\n",
+					  __func__, pCmdWtbTxPs->ucTxPs));
 			}
 
 			break;
@@ -1221,17 +1215,19 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 6 */
 		case WTBL_HDR_TRANS: {
-			P_CMD_WTBL_HDR_TRANS_T	pCmdWtblHdrTrans =
+			P_CMD_WTBL_HDR_TRANS_T pCmdWtblHdrTrans =
 				(P_CMD_WTBL_HDR_TRANS_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_HDR_TRANS), ucTd = %d, ucFd = %d, ucDisRhtr =%d\n",
-						  __func__,
-						  pCmdWtblHdrTrans->ucTd,
-						  pCmdWtblHdrTrans->ucFd,
-						  pCmdWtblHdrTrans->ucDisRhtr));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_HDR_TRANS), ucTd = %d, ucFd = %d, ucDisRhtr =%d\n",
+					 __func__, pCmdWtblHdrTrans->ucTd,
+					 pCmdWtblHdrTrans->ucFd,
+					 pCmdWtblHdrTrans->ucDisRhtr));
 			}
 
 			break;
@@ -1242,17 +1238,20 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 			P_CMD_WTBL_SECURITY_KEY_T pCmdWtblSecurityKey =
 				(P_CMD_WTBL_SECURITY_KEY_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_SECURITY_KEY), ucAddRemove = %d, ucRkv = %d, ucIkv =%d, ucAlgorithmId = %d, ucKeyId = %d, ucKeyLen = %d\n",
-						  __func__,
-						  pCmdWtblSecurityKey->ucAddRemove,
-						  pCmdWtblSecurityKey->ucRkv,
-						  pCmdWtblSecurityKey->ucIkv,
-						  pCmdWtblSecurityKey->ucAlgorithmId,
-						  pCmdWtblSecurityKey->ucKeyId,
-						  pCmdWtblSecurityKey->ucKeyLen));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_SECURITY_KEY), ucAddRemove = %d, ucRkv = %d, ucIkv =%d, ucAlgorithmId = %d, ucKeyId = %d, ucKeyLen = %d\n",
+					 __func__,
+					 pCmdWtblSecurityKey->ucAddRemove,
+					 pCmdWtblSecurityKey->ucRkv,
+					 pCmdWtblSecurityKey->ucIkv,
+					 pCmdWtblSecurityKey->ucAlgorithmId,
+					 pCmdWtblSecurityKey->ucKeyId,
+					 pCmdWtblSecurityKey->ucKeyLen));
 			}
 
 			break;
@@ -1260,30 +1259,37 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 8 */
 		case WTBL_BA: {
-			P_CMD_WTBL_BA_T pCmdWtblBa = (P_CMD_WTBL_BA_T)TempBuffer;
+			P_CMD_WTBL_BA_T pCmdWtblBa =
+				(P_CMD_WTBL_BA_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				if (pCmdWtblBa->ucBaSessionType == BA_SESSION_RECP) {
+				if (pCmdWtblBa->ucBaSessionType ==
+				    BA_SESSION_RECP) {
 					/* Recipient */
-					MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-							 ("%s(WTBL_BA, Recipient), ucTid(%d), ucBaSessionType(%d), ucRstBaTid(%d), ucRstBaSel(%d), ucStartRstBaSb(%d), aucPeerAddress(%02x:%02x:%02x:%02x:%02x:%02x)\n",
-							  __func__,
-							  pCmdWtblBa->ucTid,
-							  pCmdWtblBa->ucBaSessionType,
-							  pCmdWtblBa->ucRstBaTid,
-							  pCmdWtblBa->ucRstBaSel,
-							  pCmdWtblBa->ucStartRstBaSb,
-							  PRINT_MAC(pCmdWtblBa->aucPeerAddress)));
+					MTWF_LOG(
+						DBG_CAT_FW, DBG_SUBCAT_ALL,
+						DBG_LVL_INFO,
+						("%s(WTBL_BA, Recipient), ucTid(%d), ucBaSessionType(%d), ucRstBaTid(%d), ucRstBaSel(%d), ucStartRstBaSb(%d), aucPeerAddress(%02x:%02x:%02x:%02x:%02x:%02x)\n",
+						 __func__, pCmdWtblBa->ucTid,
+						 pCmdWtblBa->ucBaSessionType,
+						 pCmdWtblBa->ucRstBaTid,
+						 pCmdWtblBa->ucRstBaSel,
+						 pCmdWtblBa->ucStartRstBaSb,
+						 PRINT_MAC(
+							 pCmdWtblBa
+								 ->aucPeerAddress)));
 				} else {
 					/* Originator */
-					MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-							 ("%s(WTBL_BA, Originator), ucTid(%d), u2Sn(%d), ucBaEn(%d), ucBaSize(%d)\n",
-							  __func__,
-							  pCmdWtblBa->ucTid,
-							  pCmdWtblBa->u2Sn,
-							  pCmdWtblBa->ucBaEn,
-							  pCmdWtblBa->ucBaSize));
+					MTWF_LOG(
+						DBG_CAT_FW, DBG_SUBCAT_ALL,
+						DBG_LVL_INFO,
+						("%s(WTBL_BA, Originator), ucTid(%d), u2Sn(%d), ucBaEn(%d), ucBaSize(%d)\n",
+						 __func__, pCmdWtblBa->ucTid,
+						 pCmdWtblBa->u2Sn,
+						 pCmdWtblBa->ucBaEn,
+						 pCmdWtblBa->ucBaSize));
 				}
 			}
 #ifdef RT_BIG_ENDIAN
@@ -1295,15 +1301,18 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 9 */
 		case WTBL_RDG: {
-			P_CMD_WTBL_RDG_T	pCmdWtblRdg = (P_CMD_WTBL_RDG_T)TempBuffer;
+			P_CMD_WTBL_RDG_T pCmdWtblRdg =
+				(P_CMD_WTBL_RDG_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_RDG), ucRdgBa = %d, ucR = %d\n",
-						  __func__,
-						  pCmdWtblRdg->ucRdgBa,
-						  pCmdWtblRdg->ucR));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_RDG), ucRdgBa = %d, ucR = %d\n",
+					 __func__, pCmdWtblRdg->ucRdgBa,
+					 pCmdWtblRdg->ucR));
 			}
 
 			break;
@@ -1311,15 +1320,16 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 10 */
 		case WTBL_PROTECTION: {
-			P_CMD_WTBL_PROTECTION_T	pCmdWtblProtection =
+			P_CMD_WTBL_PROTECTION_T pCmdWtblProtection =
 				(P_CMD_WTBL_PROTECTION_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_PROTECTION), ucRts = %d\n",
-						  __func__,
-						  pCmdWtblProtection->ucRts));
+				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL,
+					 DBG_LVL_INFO,
+					 ("%s(WTBL_PROTECTION), ucRts = %d\n",
+					  __func__, pCmdWtblProtection->ucRts));
 			}
 
 			break;
@@ -1333,14 +1343,16 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 			/* bit 3: Clear Tx Counter (6019_0000, bit 15) */
 			/* bit 4: Clear ADM Counter (6019_0000, bit 12) */
 			/* bit 5: Clear Cipher key (WTBL3)*/
-			P_CMD_WTBL_CLEAR_T	pCmdWtblClear = (P_CMD_WTBL_CLEAR_T)TempBuffer;
+			P_CMD_WTBL_CLEAR_T pCmdWtblClear =
+				(P_CMD_WTBL_CLEAR_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_CLEAR), ucClear = %x\n",
-						  __func__,
-						  pCmdWtblClear->ucClear));
+				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL,
+					 DBG_LVL_INFO,
+					 ("%s(WTBL_CLEAR), ucClear = %x\n",
+					  __func__, pCmdWtblClear->ucClear));
 			}
 
 			break;
@@ -1348,18 +1360,22 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 12 */
 		case WTBL_BF: {
-			P_CMD_WTBL_BF_T		pCmdWtblBf = (P_CMD_WTBL_BF_T)TempBuffer;
+			P_CMD_WTBL_BF_T pCmdWtblBf =
+				(P_CMD_WTBL_BF_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(WTBL_BF), ucTiBf = %d, ucTeBf = %d, ucTibfVh = %d, ucTebfVht = %d, ucGid = %d, ucPfmuIdx = %d\n",
-						 __func__,
-						 pCmdWtblBf->ucTiBf,
-						 pCmdWtblBf->ucTeBf,
-						 pCmdWtblBf->ucTibfVht,
-						 pCmdWtblBf->ucTebfVht,
-						 pCmdWtblBf->ucGid,
-						 pCmdWtblBf->ucPFMUIdx));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_BF), ucTiBf = %d, ucTeBf = %d, ucTibfVh = %d, ucTebfVht = %d, ucGid = %d, ucPfmuIdx = %d\n",
+					 __func__, pCmdWtblBf->ucTiBf,
+					 pCmdWtblBf->ucTeBf,
+					 pCmdWtblBf->ucTibfVht,
+					 pCmdWtblBf->ucTebfVht,
+					 pCmdWtblBf->ucGid,
+					 pCmdWtblBf->ucPFMUIdx));
 			}
 
 			break;
@@ -1367,14 +1383,16 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 13 */
 		case WTBL_SMPS: {
-			P_CMD_WTBL_SMPS_T pCmdWtblSmPs = (P_CMD_WTBL_SMPS_T)TempBuffer;
+			P_CMD_WTBL_SMPS_T pCmdWtblSmPs =
+				(P_CMD_WTBL_SMPS_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_SMPS), ucSmPs = %d\n",
-						  __func__,
-						  pCmdWtblSmPs->ucSmPs));
+				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL,
+					 DBG_LVL_INFO,
+					 ("%s(WTBL_SMPS), ucSmPs = %d\n",
+					  __func__, pCmdWtblSmPs->ucSmPs));
 			}
 
 			break;
@@ -1385,28 +1403,32 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 			P_CMD_WTBL_RAW_DATA_RW_T pCmdWtblRawDataRw =
 				(P_CMD_WTBL_RAW_DATA_RW_T)TempBuffer;
 			/* Print argumrnts */
-			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-					 ("%s(WTBL_RAW_DATA_RW), ucWtblIdx = %d, ucWhichDW = %d, u4DwMask = 0x%x, u4DwValue = 0x%x\n",
-					  __func__,
-					  pCmdWtblRawDataRw->ucWtblIdx,
-					  pCmdWtblRawDataRw->ucWhichDW,
-					  pCmdWtblRawDataRw->u4DwMask,
-					  pCmdWtblRawDataRw->u4DwValue));
+			MTWF_LOG(
+				DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+				("%s(WTBL_RAW_DATA_RW), ucWtblIdx = %d, ucWhichDW = %d, u4DwMask = 0x%x, u4DwValue = 0x%x\n",
+				 __func__, pCmdWtblRawDataRw->ucWtblIdx,
+				 pCmdWtblRawDataRw->ucWhichDW,
+				 pCmdWtblRawDataRw->u4DwMask,
+				 pCmdWtblRawDataRw->u4DwValue));
 #ifdef RT_BIG_ENDIAN
-			pCmdWtblRawDataRw->u4DwMask = cpu2le32(pCmdWtblRawDataRw->u4DwMask);
-			pCmdWtblRawDataRw->u4DwValue = cpu2le32(pCmdWtblRawDataRw->u4DwValue);
+			pCmdWtblRawDataRw->u4DwMask =
+				cpu2le32(pCmdWtblRawDataRw->u4DwMask);
+			pCmdWtblRawDataRw->u4DwValue =
+				cpu2le32(pCmdWtblRawDataRw->u4DwValue);
 #endif
 			break;
 		}
 
 		/* Tag = 15 */
 		case WTBL_DUMP: {
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s(WTBL_DUMP), WTBL_BUFFER_SIZE = %d\n",
-						  __func__,
-						  WTBL_BUFFER_SIZE));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s(WTBL_DUMP), WTBL_BUFFER_SIZE = %d\n",
+					 __func__, WTBL_BUFFER_SIZE));
 				/* Fill value  format */
 				/* No need to fill this argument */
 			}
@@ -1416,13 +1438,16 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		/* Tag = 16 */
 		case WTBL_SPE: {
-			P_CMD_WTBL_SPE_T		pCmdWtblSpe = (P_CMD_WTBL_SPE_T)TempBuffer;
+			P_CMD_WTBL_SPE_T pCmdWtblSpe =
+				(P_CMD_WTBL_SPE_T)TempBuffer;
 
-			if ((ucOperation == RESET_WTBL_AND_SET) || (ucOperation == SET_WTBL)) {
+			if ((ucOperation == RESET_WTBL_AND_SET) ||
+			    (ucOperation == SET_WTBL)) {
 				/* Print argumrnts */
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s(WTBL_BF), ucSpeIdx = %d\n",
-						 __func__,
-						 pCmdWtblSpe->ucSpeIdx));
+				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL,
+					 DBG_LVL_INFO,
+					 ("%s(WTBL_BF), ucSpeIdx = %d\n",
+					  __func__, pCmdWtblSpe->ucSpeIdx));
 			}
 
 			break;
@@ -1430,8 +1455,8 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 
 		default: {
 			MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-					 ("%s, Unknown WTBL TLV Tag(%d)\n",
-					  __func__, pWtblGenericTlv->u2Tag));
+				 ("%s, Unknown WTBL TLV Tag(%d)\n", __func__,
+				  pWtblGenericTlv->u2Tag));
 			break;
 		}
 		}
@@ -1444,10 +1469,10 @@ INT32 CmdExtWtblUpdate(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucOperation,
 		pWtblGenericTlv->u2Length = cpu2le16(pWtblGenericTlv->u2Length);
 		pWtblGenericTlv->u2Tag = cpu2le16(pWtblGenericTlv->u2Tag);
 #endif
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s in while loop, ucRemainingTLVNumber = %d, u2RemainingTLVBufLen = %d\n",
-				  __func__,
-				  ucRemainingTLVNumber, u4RemainingTLVBufLen));
+		MTWF_LOG(
+			DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("%s in while loop, ucRemainingTLVNumber = %d, u2RemainingTLVBufLen = %d\n",
+			 __func__, ucRemainingTLVNumber, u4RemainingTLVBufLen));
 	}
 
 	AndesAppendCmdMsg(msg, (PUCHAR)pBuffer, u4BufferLen);
@@ -1460,34 +1485,34 @@ Error1:
 		AndesFreeCmdMsg(msg);
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 Success:
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-UINT32 WtblDwQuery(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx,
-				   UINT8 ucWtbl1234, UINT8 ucWhichDW)
+UINT32 WtblDwQuery(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucWtbl1234,
+		   UINT8 ucWhichDW)
 {
-	CMD_WTBL_RAW_DATA_RW_T	rWtblRawDataRwWtblDw = {0};
+	CMD_WTBL_RAW_DATA_RW_T rWtblRawDataRwWtblDw = { 0 };
 
 	rWtblRawDataRwWtblDw.u2Tag = WTBL_RAW_DATA_RW;
 	rWtblRawDataRwWtblDw.u2Length = sizeof(CMD_WTBL_RAW_DATA_RW_T);
 	rWtblRawDataRwWtblDw.ucWtblIdx = ucWtbl1234;
 	rWtblRawDataRwWtblDw.ucWhichDW = ucWhichDW;
 	CmdExtWtblUpdate(pAd, ucWlanIdx, QUERY_WTBL, &rWtblRawDataRwWtblDw,
-					 rWtblRawDataRwWtblDw.u2Length);
+			 rWtblRawDataRwWtblDw.u2Length);
 	return rWtblRawDataRwWtblDw.u4DwValue;
 }
 
 INT32 WtblDwSet(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucWtbl1234,
-				UINT8 ucWhichDW, UINT32 u4DwMask, UINT32 u4DwValue)
+		UINT8 ucWhichDW, UINT32 u4DwMask, UINT32 u4DwValue)
 {
 	INT32 ret;
-	CMD_WTBL_RAW_DATA_RW_T	rWtblRawDataRwWtblDw = {0};
+	CMD_WTBL_RAW_DATA_RW_T rWtblRawDataRwWtblDw = { 0 };
 
 	rWtblRawDataRwWtblDw.u2Tag = WTBL_RAW_DATA_RW;
 	rWtblRawDataRwWtblDw.u2Length = sizeof(CMD_WTBL_RAW_DATA_RW_T);
@@ -1496,23 +1521,24 @@ INT32 WtblDwSet(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucWtbl1234,
 	rWtblRawDataRwWtblDw.u4DwMask = u4DwMask;
 	rWtblRawDataRwWtblDw.u4DwValue = u4DwValue;
 	ret = CmdExtWtblUpdate(pAd, ucWlanIdx, SET_WTBL, &rWtblRawDataRwWtblDw,
-						   rWtblRawDataRwWtblDw.u2Length);
+			       rWtblRawDataRwWtblDw.u2Length);
 	return ret;
 }
 
-
 INT32 WtblResetAndDWsSet(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucWtbl1234,
-						 INT dw_cnt, struct cmd_wtbl_dw_mask_set *dw_set)
+			 INT dw_cnt, struct cmd_wtbl_dw_mask_set *dw_set)
 {
 	INT32 ret = 0;
-	CMD_WTBL_RAW_DATA_RW_T  rWtblRawDataRwWtblDw;
+	CMD_WTBL_RAW_DATA_RW_T rWtblRawDataRwWtblDw;
 	INT cmd_cnt;
 	UINT8 cmd_op;
 
-	MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s\n", __func__));
+	MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s\n", __func__));
 
 	for (cmd_cnt = 0; cmd_cnt < dw_cnt; cmd_cnt++) {
-		NdisZeroMemory((UCHAR *)&rWtblRawDataRwWtblDw, sizeof(CMD_WTBL_RAW_DATA_RW_T));
+		NdisZeroMemory((UCHAR *)&rWtblRawDataRwWtblDw,
+			       sizeof(CMD_WTBL_RAW_DATA_RW_T));
 
 		if (cmd_cnt == 0)
 			cmd_op = RESET_WTBL_AND_SET;
@@ -1525,18 +1551,23 @@ INT32 WtblResetAndDWsSet(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucWtbl1234,
 		rWtblRawDataRwWtblDw.ucWhichDW = dw_set[cmd_cnt].ucWhichDW;
 		rWtblRawDataRwWtblDw.u4DwMask = dw_set[cmd_cnt].u4DwMask;
 		rWtblRawDataRwWtblDw.u4DwValue = dw_set[cmd_cnt].u4DwValue;
-		ret = CmdExtWtblUpdate(pAd, ucWlanIdx, cmd_op, &rWtblRawDataRwWtblDw,
-							   rWtblRawDataRwWtblDw.u2Length);
-		MTWF_LOG(DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s: cmd_cnt/WlanIdx/Tag/Length/WtblIdx/WhichDW/DwMask/DwValue/ret=%d/%d/%d/%d/%d/%d/0x%x/0x%x/%d\n",
-				  __func__, cmd_cnt, ucWlanIdx, rWtblRawDataRwWtblDw.u2Tag, rWtblRawDataRwWtblDw.u2Length,
-				  rWtblRawDataRwWtblDw.ucWtblIdx, rWtblRawDataRwWtblDw.ucWhichDW,
-				  rWtblRawDataRwWtblDw.u4DwMask, rWtblRawDataRwWtblDw.u4DwValue, ret));
+		ret = CmdExtWtblUpdate(pAd, ucWlanIdx, cmd_op,
+				       &rWtblRawDataRwWtblDw,
+				       rWtblRawDataRwWtblDw.u2Length);
+		MTWF_LOG(
+			DBG_CAT_TEST, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("%s: cmd_cnt/WlanIdx/Tag/Length/WtblIdx/WhichDW/DwMask/DwValue/ret=%d/%d/%d/%d/%d/%d/0x%x/0x%x/%d\n",
+			 __func__, cmd_cnt, ucWlanIdx,
+			 rWtblRawDataRwWtblDw.u2Tag,
+			 rWtblRawDataRwWtblDw.u2Length,
+			 rWtblRawDataRwWtblDw.ucWtblIdx,
+			 rWtblRawDataRwWtblDw.ucWhichDW,
+			 rWtblRawDataRwWtblDw.u4DwMask,
+			 rWtblRawDataRwWtblDw.u4DwValue, ret));
 	}
 
 	return ret;
 }
-
 
 /**
  * @addtogroup bss_dev_sta_info
@@ -1546,100 +1577,99 @@ INT32 WtblResetAndDWsSet(RTMP_ADAPTER *pAd, UINT8 ucWlanIdx, UINT8 ucWtbl1234,
  */
 static VOID CmdExtDevInfoUpdateRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
-	P_EVENT_DEVINFO_UPDATE_T EventExtCmdResult = (P_EVENT_DEVINFO_UPDATE_T)Data;
+	P_EVENT_DEVINFO_UPDATE_T EventExtCmdResult =
+		(P_EVENT_DEVINFO_UPDATE_T)Data;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExtenCID));
+		 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExtenCID));
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
-	EventExtCmdResult->u2TotalElementNum = le2cpu16(EventExtCmdResult->u2TotalElementNum);
+	EventExtCmdResult->u2TotalElementNum =
+		le2cpu16(EventExtCmdResult->u2TotalElementNum);
 
 	if (EventExtCmdResult->u4Status != 0) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
+			  __func__, EventExtCmdResult->u4Status));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::EventExtCmdResult.u4Status = 0x%x\n", __func__,
+			  EventExtCmdResult->u4Status));
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::ucOwnMacIdx(%d), u2TotalElementNum(%d)\n",
-				  __func__,
-				  EventExtCmdResult->ucOwnMacIdx,
-				  EventExtCmdResult->u2TotalElementNum));
+			 ("%s::ucOwnMacIdx(%d), u2TotalElementNum(%d)\n",
+			  __func__, EventExtCmdResult->ucOwnMacIdx,
+			  EventExtCmdResult->u2TotalElementNum));
 	}
 }
 
 static VOID CmdExtStaRecUpdateRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
-	P_EVENT_STAREC_UPDATE_T EventExtCmdResult = (P_EVENT_STAREC_UPDATE_T)(Data);
+	P_EVENT_STAREC_UPDATE_T EventExtCmdResult =
+		(P_EVENT_STAREC_UPDATE_T)(Data);
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s::EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExtenCID));
+		 ("%s::EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExtenCID));
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
-	EventExtCmdResult->u2TotalElementNum = le2cpu16(EventExtCmdResult->u2TotalElementNum);
+	EventExtCmdResult->u2TotalElementNum =
+		le2cpu16(EventExtCmdResult->u2TotalElementNum);
 	/* We can consider move this to caller */
 	msg->cmd_return_status = EventExtCmdResult->u4Status;
 
 	if (EventExtCmdResult->u4Status != 0) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::ERROR::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::ERROR::EventExtCmdResult.u4Status = 0x%x\n",
+			  __func__, EventExtCmdResult->u4Status));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s::ucBssInfoIdx(%d), ucWlanIdx(%d), u2TotalElementNum(%d)\n",
-				  __func__,
-				  EventExtCmdResult->ucBssInfoIdx,
-				  EventExtCmdResult->ucWlanIdx,
-				  le2cpu16(EventExtCmdResult->u2TotalElementNum)));
+			 ("%s::EventExtCmdResult.u4Status = 0x%x\n", __func__,
+			  EventExtCmdResult->u4Status));
+		MTWF_LOG(
+			DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+			("%s::ucBssInfoIdx(%d), ucWlanIdx(%d), u2TotalElementNum(%d)\n",
+			 __func__, EventExtCmdResult->ucBssInfoIdx,
+			 EventExtCmdResult->ucWlanIdx,
+			 le2cpu16(EventExtCmdResult->u2TotalElementNum)));
 	}
 }
 
 static VOID CmdExtBssInfoUpdateRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
-	P_EVENT_BSSINFO_UPDATE_T EventExtCmdResult = (P_EVENT_BSSINFO_UPDATE_T)Data;
+	P_EVENT_BSSINFO_UPDATE_T EventExtCmdResult =
+		(P_EVENT_BSSINFO_UPDATE_T)Data;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExtenCID));
+		 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExtenCID));
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
-	EventExtCmdResult->u2TotalElementNum = le2cpu16(EventExtCmdResult->u2TotalElementNum);
+	EventExtCmdResult->u2TotalElementNum =
+		le2cpu16(EventExtCmdResult->u2TotalElementNum);
 
 	if (EventExtCmdResult->u4Status != 0) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
+			  __func__, EventExtCmdResult->u4Status));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::EventExtCmdResult.u4Status = 0x%x\n", __func__,
+			  EventExtCmdResult->u4Status));
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::ucBssInfoIdx(%d), u2TotalElementNum(%d)\n",
-				  __func__,
-				  EventExtCmdResult->ucBssInfoIdx,
-				  EventExtCmdResult->u2TotalElementNum));
+			 ("%s::ucBssInfoIdx(%d), u2TotalElementNum(%d)\n",
+			  __func__, EventExtCmdResult->ucBssInfoIdx,
+			  EventExtCmdResult->u2TotalElementNum));
 	}
 }
 
 /* WTBL TLV update */
-INT32 CmdExtDevInfoUpdate(
-	RTMP_ADAPTER *pAd,
-	UINT8 OwnMacIdx,
-	UINT8 *OwnMacAddr,
-	UINT8 BandIdx,
-	UINT8 Active,
-	UINT32 u4EnableFeature)
+INT32 CmdExtDevInfoUpdate(RTMP_ADAPTER *pAd, UINT8 OwnMacIdx, UINT8 *OwnMacAddr,
+			  UINT8 BandIdx, UINT8 Active, UINT32 u4EnableFeature)
 {
-	struct cmd_msg			*msg = NULL;
-	CMD_DEVINFO_UPDATE_T	CmdDeviceInfoUpdate = {0};
-	INT32					Ret = 0;
-	UINT8					i = 0;
-	UINT16					ucTLVNumber = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	CMD_DEVINFO_UPDATE_T CmdDeviceInfoUpdate = { 0 };
+	INT32 Ret = 0;
+	UINT8 i = 0;
+	UINT16 ucTLVNumber = 0;
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	/* Allocate buffer */
 	msg = AndesAllocCmdMsg(pAd, MAX_BUF_SIZE_OF_DEVICEINFO);
 
@@ -1668,10 +1698,10 @@ INT32 CmdExtDevInfoUpdate(
 	CmdDeviceInfoUpdate.u2TotalElementNum = cpu2le16(ucTLVNumber);
 	CmdDeviceInfoUpdate.ucAppendCmdTLV = TRUE;
 	AndesAppendCmdMsg(msg, (char *)&CmdDeviceInfoUpdate,
-					  sizeof(CMD_DEVINFO_UPDATE_T));
+			  sizeof(CMD_DEVINFO_UPDATE_T));
 
 	if (u4EnableFeature & DEVINFO_ACTIVE_FEATURE) {
-		CMD_DEVINFO_ACTIVE_T DevInfoBasic = {0};
+		CMD_DEVINFO_ACTIVE_T DevInfoBasic = { 0 };
 		/* Fill TLV format */
 		DevInfoBasic.u2Tag = DEVINFO_ACTIVE;
 		DevInfoBasic.u2Length = sizeof(CMD_DEVINFO_ACTIVE_T);
@@ -1682,33 +1712,33 @@ INT32 CmdExtDevInfoUpdate(
 		DevInfoBasic.u2Length = cpu2le16(DevInfoBasic.u2Length);
 #endif
 		os_move_mem(DevInfoBasic.aucOwnMAC, OwnMacAddr, MAC_ADDR_LEN);
-		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s(CMD_DEVINFO_BASIC_T), OwnMacIdx = %d, ucActive = %d, aucOwnMAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
-				  __func__,
-				  OwnMacIdx,
-				  DevInfoBasic.ucActive,
-				  PRINT_MAC(DevInfoBasic.aucOwnMAC)));
+		MTWF_LOG(
+			DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("%s(CMD_DEVINFO_BASIC_T), OwnMacIdx = %d, ucActive = %d, aucOwnMAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+			 __func__, OwnMacIdx, DevInfoBasic.ucActive,
+			 PRINT_MAC(DevInfoBasic.aucOwnMAC)));
 		/* Append this feature */
 		AndesAppendCmdMsg(msg, (char *)&DevInfoBasic,
-						  sizeof(CMD_DEVINFO_ACTIVE_T));
+				  sizeof(CMD_DEVINFO_ACTIVE_T));
 	}
 
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
 /*Start STARec Handler*/
 
-static INT32 StaRecUpdateBasic(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateBasic(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+			       VOID *args)
 {
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
 	/* Fill STA Rec Common */
-	CMD_STAREC_COMMON_T StaRecCommon = {0};
+	CMD_STAREC_COMMON_T StaRecCommon = { 0 };
 	/* Fill TLV format */
 	StaRecCommon.u2Tag = STA_REC_BASIC_STA_RECORD;
 	StaRecCommon.u2Length = sizeof(CMD_STAREC_COMMON_T);
@@ -1724,36 +1754,38 @@ static INT32 StaRecUpdateBasic(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *arg
 
 	if (pEntry) {
 		StaRecCommon.ucIsQBSS =
-			CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_WMM_CAPABLE) ?
-			TRUE : FALSE;
+			CLIENT_STATUS_TEST_FLAG(pEntry,
+						fCLIENT_STATUS_WMM_CAPABLE) ?
+				TRUE :
+				      FALSE;
 		StaRecCommon.u2AID = cpu2le16(pEntry->Aid);
 	}
 
 #endif /* CONFIG_AP_SUPPORT */
 
 	if (pEntry) {
-		os_move_mem(StaRecCommon.aucPeerMacAddr,
-					pEntry->Addr, MAC_ADDR_LEN);
+		os_move_mem(StaRecCommon.aucPeerMacAddr, pEntry->Addr,
+			    MAC_ADDR_LEN);
 	} else {
-		os_move_mem(StaRecCommon.aucPeerMacAddr,
-					BROADCAST_ADDR, MAC_ADDR_LEN);
+		os_move_mem(StaRecCommon.aucPeerMacAddr, BROADCAST_ADDR,
+			    MAC_ADDR_LEN);
 	}
 
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s(CMD_STAREC_COMMON_T), u4ConnectionType = %d, ucConnectionState = %d, ucIsQBSS = %d, u2AID = %d, aucPeerMacAddr = %02x:%02x:%02x:%02x:%02x:%02x\n",
-			  __func__,
-			  le2cpu32(StaRecCommon.u4ConnectionType),
-			  StaRecCommon.ucConnectionState,
-			  StaRecCommon.ucIsQBSS,
-			  le2cpu16(StaRecCommon.u2AID),
-			  PRINT_MAC(StaRecCommon.aucPeerMacAddr)));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s(CMD_STAREC_COMMON_T), u4ConnectionType = %d, ucConnectionState = %d, ucIsQBSS = %d, u2AID = %d, aucPeerMacAddr = %02x:%02x:%02x:%02x:%02x:%02x\n",
+		 __func__, le2cpu32(StaRecCommon.u4ConnectionType),
+		 StaRecCommon.ucConnectionState, StaRecCommon.ucIsQBSS,
+		 le2cpu16(StaRecCommon.u2AID),
+		 PRINT_MAC(StaRecCommon.aucPeerMacAddr)));
 	/* Append this feature */
 #ifdef RT_BIG_ENDIAN
 	StaRecCommon.u2Tag = cpu2le16(StaRecCommon.u2Tag);
 	StaRecCommon.u2Length = cpu2le16(StaRecCommon.u2Length);
 	StaRecCommon.u2ExtraInfo = cpu2le16(StaRecCommon.u2ExtraInfo);
 #endif
-	AndesAppendCmdMsg(msg, (char *)&StaRecCommon, sizeof(CMD_STAREC_COMMON_T));
+	AndesAppendCmdMsg(msg, (char *)&StaRecCommon,
+			  sizeof(CMD_STAREC_COMMON_T));
 	return 0;
 }
 
@@ -1762,14 +1794,14 @@ static INT32 StaRecUpdateRa(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
 #ifdef RACTRL_FW_OFFLOAD_SUPPORT
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
-	CMD_STAREC_AUTO_RATE_T CmdStaRecAutoRate = {0};
+	CMD_STAREC_AUTO_RATE_T CmdStaRecAutoRate = { 0 };
 
 	if (pEntry) {
 		os_zero_mem(&CmdStaRecAutoRate, sizeof(CmdStaRecAutoRate));
 		StaRecAutoRateParamSet(&pEntry->RaEntry, &CmdStaRecAutoRate);
 		/* Append this feature */
 		AndesAppendCmdMsg(msg, (char *)&CmdStaRecAutoRate,
-						  sizeof(CMD_STAREC_AUTO_RATE_T));
+				  sizeof(CMD_STAREC_AUTO_RATE_T));
 		return 0;
 	}
 #endif /* RACTRL_FW_OFFLOAD_SUPPORT */
@@ -1777,27 +1809,31 @@ static INT32 StaRecUpdateRa(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
 }
 
 /* Only for mt7636 and mt7637 */
-static INT32 StaRecUpdateRaInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateRaInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				VOID *args)
 {
 #ifdef RACTRL_FW_OFFLOAD_SUPPORT
 #endif /* RACTRL_FW_OFFLOAD_SUPPORT */
 	return -1;
 }
 
-static INT32 StaRecUpdateRaUpdate(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateRaUpdate(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				  VOID *args)
 {
 #ifdef RACTRL_FW_OFFLOAD_SUPPORT
-	CMD_STAREC_AUTO_RATE_UPDATE_T CmdStaRecAutoRateUpdate = {0};
+	CMD_STAREC_AUTO_RATE_UPDATE_T CmdStaRecAutoRateUpdate = { 0 };
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
 
 	if (pEntry) {
-		os_zero_mem(&CmdStaRecAutoRateUpdate, sizeof(CmdStaRecAutoRateUpdate));
+		os_zero_mem(&CmdStaRecAutoRateUpdate,
+			    sizeof(CmdStaRecAutoRateUpdate));
 		StaRecAutoRateUpdate(&pEntry->RaEntry, &pEntry->RaInternal,
-							 pStaRecCfg->pRaParam, &CmdStaRecAutoRateUpdate);
+				     pStaRecCfg->pRaParam,
+				     &CmdStaRecAutoRateUpdate);
 		/* Append this feature */
 		AndesAppendCmdMsg(msg, (char *)&CmdStaRecAutoRateUpdate,
-						  sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T));
+				  sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T));
 		return 0;
 	}
 #endif /* RACTRL_FW_OFFLOAD_SUPPORT */
@@ -1814,7 +1850,8 @@ static INT32 StaRecUpdateBf(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
 	if (pEntry) {
 		os_zero_mem(&CmdStaRecBf, sizeof(CMD_STAREC_BF));
 		StaRecBfUpdate(pEntry, &CmdStaRecBf);
-		AndesAppendCmdMsg(msg, (char *)&CmdStaRecBf, sizeof(CMD_STAREC_BF));
+		AndesAppendCmdMsg(msg, (char *)&CmdStaRecBf,
+				  sizeof(CMD_STAREC_BF));
 		return 0;
 	}
 
@@ -1822,9 +1859,10 @@ static INT32 StaRecUpdateBf(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
 }
 #endif /*TXBF_SUPPORT*/
 
-static INT32 StaRecUpdateAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+			       VOID *args)
 {
-	CMD_STAREC_AMSDU_T CmdStaRecAmsdu = {0};
+	CMD_STAREC_AMSDU_T CmdStaRecAmsdu = { 0 };
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
 
@@ -1846,7 +1884,7 @@ static INT32 StaRecUpdateAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *arg
 #endif
 		/* Append this feature */
 		AndesAppendCmdMsg(msg, (char *)&CmdStaRecAmsdu,
-						  sizeof(CMD_STAREC_AMSDU_T));
+				  sizeof(CMD_STAREC_AMSDU_T));
 		return 0;
 	}
 
@@ -1854,9 +1892,10 @@ static INT32 StaRecUpdateAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *arg
 }
 
 #ifdef HW_TX_AMSDU_SUPPORT
-static INT32 StaRecUpdateHwAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateHwAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				 VOID *args)
 {
-	CMD_STAREC_AMSDU_T CmdStaRecAmsdu = {0};
+	CMD_STAREC_AMSDU_T CmdStaRecAmsdu = { 0 };
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
 
@@ -1874,7 +1913,7 @@ static INT32 StaRecUpdateHwAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *a
 #endif
 		/* Append this feature */
 		AndesAppendCmdMsg(msg, (char *)&CmdStaRecAmsdu,
-						  sizeof(CMD_STAREC_AMSDU_T));
+				  sizeof(CMD_STAREC_AMSDU_T));
 		return 0;
 	}
 
@@ -1882,9 +1921,10 @@ static INT32 StaRecUpdateHwAmsdu(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *a
 }
 #endif /*HW_TX_AMSDU_SUPPORT*/
 
-static INT32 StaRecUpdateTxProc(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateTxProc(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				VOID *args)
 {
-	CMD_STAREC_TX_PROC_T CmdStaRecTxProc = {0};
+	CMD_STAREC_TX_PROC_T CmdStaRecTxProc = { 0 };
 #ifdef CONFIG_CSO_SUPPORT
 	RTMP_CHIP_CAP *pChipCap = hc_get_chip_cap(pAd->hdev_ctrl);
 #endif
@@ -1901,11 +1941,25 @@ static INT32 StaRecUpdateTxProc(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *ar
 	CmdStaRecTxProc.u2Tag = STA_REC_TX_PROC; /* Tag = 0x08 */
 	CmdStaRecTxProc.u2Length = sizeof(CMD_STAREC_TX_PROC_T);
 #ifdef VLAN_SUPPORT
-	if ((pEntry && pEntry->wdev && pEntry->wdev->bVLAN_Tag) || (bss_wdev && bss_wdev->bVLAN_Tag))
+	if ((pEntry && pEntry->wdev && pEntry->wdev->bVLAN_Tag) ||
+	    (bss_wdev && bss_wdev->bVLAN_Tag))
 		CmdStaRecTxProc.u4TxProcFlag = 0;
 	else
 #endif /*VLAN_SUPPORT*/
-	CmdStaRecTxProc.u4TxProcFlag = RVLAN;
+#ifdef MAP_R2
+		if (IS_MAP_R2_ENABLE(pAd)) {
+		AsicRxHeaderTransCtl(pAd, TRUE, FALSE, FALSE, FALSE, FALSE);
+
+		CmdStaRecTxProc.u4TxProcFlag = 0;
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("%s(), set u4TxProcFlag = 0 to keep vlan tag\n",
+			  __func__));
+		if (pEntry && pEntry->wdev)
+			MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("%s\n", pEntry->wdev->if_dev->name));
+	} else
+#endif
+		CmdStaRecTxProc.u4TxProcFlag = RVLAN;
 #ifdef CONFIG_CSO_SUPPORT
 
 	if (pChipCap->asic_caps & fASIC_CAP_CSO) {
@@ -1918,9 +1972,9 @@ static INT32 StaRecUpdateTxProc(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *ar
 
 	if (pEntry && (IS_ENTRY_APCLI(pEntry)
 #ifdef MAC_REPEATER_SUPPORT
-				   || IS_ENTRY_REPEATER(pEntry)
+		       || IS_ENTRY_REPEATER(pEntry)
 #endif /* MAC_REPEATER_SUPPORT */
-				  )) {
+			       )) {
 		CmdStaRecTxProc.u4TxProcFlag |= TX_PROC_ACM_CFG_EN;
 
 		if (pEntry->bACMBit[0] == TRUE)
@@ -1944,12 +1998,13 @@ static INT32 StaRecUpdateTxProc(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *ar
 #endif
 	/* Append this feature */
 	AndesAppendCmdMsg(msg, (char *)&CmdStaRecTxProc,
-					  sizeof(CMD_STAREC_TX_PROC_T));
+			  sizeof(CMD_STAREC_TX_PROC_T));
 	return 0;
 }
 
 #ifdef DOT11_N_SUPPORT
-static INT32 StaRecUpdateHtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateHtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				VOID *args)
 {
 	CMD_STAREC_HT_INFO_T CmdStaRecHtInfo;
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
@@ -1960,15 +2015,16 @@ static INT32 StaRecUpdateHtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *ar
 		CmdStaRecHtInfo.u2Tag = STA_REC_BASIC_HT_INFO;
 		CmdStaRecHtInfo.u2Length = sizeof(CMD_STAREC_HT_INFO_T);
 		/* FIXME: may need separate function to compose the payload */
-		os_move_mem(&CmdStaRecHtInfo.u2HtCap, &(pEntry->HTCapability.HtCapInfo),
-					sizeof(CmdStaRecHtInfo.u2HtCap));
+		os_move_mem(&CmdStaRecHtInfo.u2HtCap,
+			    &(pEntry->HTCapability.HtCapInfo),
+			    sizeof(CmdStaRecHtInfo.u2HtCap));
 #ifdef RT_BIG_ENDIAN
 		CmdStaRecHtInfo.u2HtCap = cpu2le16(CmdStaRecHtInfo.u2HtCap);
 		CmdStaRecHtInfo.u2Tag = cpu2le16(CmdStaRecHtInfo.u2Tag);
 		CmdStaRecHtInfo.u2Length = cpu2le16(CmdStaRecHtInfo.u2Length);
 #endif
 		AndesAppendCmdMsg(msg, (char *)&CmdStaRecHtInfo,
-						  sizeof(CMD_STAREC_HT_INFO_T));
+				  sizeof(CMD_STAREC_HT_INFO_T));
 		return 0;
 	}
 
@@ -1976,7 +2032,8 @@ static INT32 StaRecUpdateHtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *ar
 }
 
 #ifdef DOT11_VHT_AC
-static INT32 StaRecUpdateVhtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateVhtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				 VOID *args)
 {
 	CMD_STAREC_VHT_INFO_T CmdStaRecVHtInfo;
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
@@ -1988,23 +2045,25 @@ static INT32 StaRecUpdateVhtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *a
 		CmdStaRecVHtInfo.u2Length = sizeof(CMD_STAREC_VHT_INFO_T);
 		/* FIXME: may need separate function to compose the payload */
 		os_move_mem(&CmdStaRecVHtInfo.u4VhtCap,
-					&(pEntry->vht_cap_ie.vht_cap),
-					sizeof(CmdStaRecVHtInfo.u4VhtCap));
+			    &(pEntry->vht_cap_ie.vht_cap),
+			    sizeof(CmdStaRecVHtInfo.u4VhtCap));
 		os_move_mem(&CmdStaRecVHtInfo.u2VhtRxMcsMap,
-					&(pEntry->vht_cap_ie.mcs_set.rx_mcs_map),
-					sizeof(CmdStaRecVHtInfo.u2VhtRxMcsMap));
+			    &(pEntry->vht_cap_ie.mcs_set.rx_mcs_map),
+			    sizeof(CmdStaRecVHtInfo.u2VhtRxMcsMap));
 		os_move_mem(&CmdStaRecVHtInfo.u2VhtTxMcsMap,
-					&(pEntry->vht_cap_ie.mcs_set.tx_mcs_map),
-					sizeof(CmdStaRecVHtInfo.u2VhtTxMcsMap));
+			    &(pEntry->vht_cap_ie.mcs_set.tx_mcs_map),
+			    sizeof(CmdStaRecVHtInfo.u2VhtTxMcsMap));
 #ifdef RT_BIG_ENDIAN
 		CmdStaRecVHtInfo.u2Tag = cpu2le16(CmdStaRecVHtInfo.u2Tag);
 		CmdStaRecVHtInfo.u2Length = cpu2le16(CmdStaRecVHtInfo.u2Length);
 		CmdStaRecVHtInfo.u4VhtCap = cpu2le32(CmdStaRecVHtInfo.u4VhtCap);
-		CmdStaRecVHtInfo.u2VhtRxMcsMap = cpu2le16(CmdStaRecVHtInfo.u2VhtRxMcsMap);
-		CmdStaRecVHtInfo.u2VhtTxMcsMap = cpu2le16(CmdStaRecVHtInfo.u2VhtTxMcsMap);
+		CmdStaRecVHtInfo.u2VhtRxMcsMap =
+			cpu2le16(CmdStaRecVHtInfo.u2VhtRxMcsMap);
+		CmdStaRecVHtInfo.u2VhtTxMcsMap =
+			cpu2le16(CmdStaRecVHtInfo.u2VhtTxMcsMap);
 #endif
 		AndesAppendCmdMsg(msg, (char *)&CmdStaRecVHtInfo,
-						  sizeof(CMD_STAREC_VHT_INFO_T));
+				  sizeof(CMD_STAREC_VHT_INFO_T));
 		return 0;
 	}
 
@@ -2013,11 +2072,12 @@ static INT32 StaRecUpdateVhtInfo(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *a
 #endif /*DOT11_VHT_AC*/
 #endif /*DOT11_N_SUPPORT*/
 
-static INT32 StaRecUpdateApPs(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateApPs(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+			      VOID *args)
 {
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
-	CMD_STAREC_PS_T CmdPsInfo = {0};
+	CMD_STAREC_PS_T CmdPsInfo = { 0 };
 	UINT8 IdApsd;
 	UINT8 ACTriSet = 0;
 	UINT8 ACDelSet = 0;
@@ -2044,73 +2104,80 @@ static INT32 StaRecUpdateApPs(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 		CmdPsInfo.ucStaMaxSPLength = pStaRecCfg->pEntry->MaxSPLength;
 		CmdPsInfo.u2StaListenInterval = 0; /* TODO: */
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s(STA_REC_AP_PS), Delv=%x Trig=%x SP=%d LInt=%d",
-				  __func__,
-				  CmdPsInfo.ucStaBmpDeliveryAC,
-				  CmdPsInfo.ucStaBmpTriggerAC,
-				  CmdPsInfo.ucStaMaxSPLength,
-				  CmdPsInfo.u2StaListenInterval));
+			 ("%s(STA_REC_AP_PS), Delv=%x Trig=%x SP=%d LInt=%d",
+			  __func__, CmdPsInfo.ucStaBmpDeliveryAC,
+			  CmdPsInfo.ucStaBmpTriggerAC,
+			  CmdPsInfo.ucStaMaxSPLength,
+			  CmdPsInfo.u2StaListenInterval));
 #ifdef RT_BIG_ENDIAN
 		CmdPsInfo.u2Tag = cpu2le16(CmdPsInfo.u2Tag);
 		CmdPsInfo.u2Length = cpu2le16(CmdPsInfo.u2Length);
-		CmdPsInfo.u2StaListenInterval = cpu2le16(CmdPsInfo.u2StaListenInterval);
+		CmdPsInfo.u2StaListenInterval =
+			cpu2le16(CmdPsInfo.u2StaListenInterval);
 #endif
 		/* Append this feature */
-		AndesAppendCmdMsg(msg, (char *)&CmdPsInfo, sizeof(CMD_STAREC_PS_T));
+		AndesAppendCmdMsg(msg, (char *)&CmdPsInfo,
+				  sizeof(CMD_STAREC_PS_T));
 		return 0;
 	}
 
 	return -1;
 }
 
-static INT32 StaRecUpdateSecKey(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateSecKey(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+				VOID *args)
 {
 	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
 	ASIC_SEC_INFO *asic_sec_info = &pStaRecCfg->asic_sec_info;
-	CMD_WTBL_SECURITY_KEY_T rWtblSecurityKey = {0};
+	CMD_WTBL_SECURITY_KEY_T rWtblSecurityKey = { 0 };
 
-	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s:, wcid=%d, Operation=%d, Direction=%d\n",
-			 __func__, asic_sec_info->Wcid, asic_sec_info->Operation, asic_sec_info->Direction));
+	MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s:, wcid=%d, Operation=%d, Direction=%d\n", __func__,
+		  asic_sec_info->Wcid, asic_sec_info->Operation,
+		  asic_sec_info->Direction));
 	rWtblSecurityKey.u2Tag = cpu2le16(STA_REC_INSTALL_KEY);
 	rWtblSecurityKey.u2Length = cpu2le16(sizeof(CMD_WTBL_SECURITY_KEY_T));
 	fill_wtbl_key_info_struc(asic_sec_info, &rWtblSecurityKey);
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&rWtblSecurityKey, sizeof(CMD_WTBL_SECURITY_KEY_T));
+	AndesAppendCmdMsg(msg, (char *)&rWtblSecurityKey,
+			  sizeof(CMD_WTBL_SECURITY_KEY_T));
 	return 0;
 }
 
-static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args)
+static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg,
+			      VOID *args)
 {
-	STA_REC_CFG_T		*pStaRecCfg = (STA_REC_CFG_T *)args;
-	MAC_TABLE_ENTRY	*pEntry = pStaRecCfg->pEntry;
-	P_CMD_STAREC_WTBL_T	pStarec_wtbl = NULL;
-	BOOLEAN		IsBCMCWCID = FALSE;
-	CMD_WTBL_GENERIC_T	rWtblGeneric = {0};	/* Tag = 0, Generic */
-	CMD_WTBL_RX_T		rWtblRx = {0};		/* Tage = 1, Rx */
+	STA_REC_CFG_T *pStaRecCfg = (STA_REC_CFG_T *)args;
+	MAC_TABLE_ENTRY *pEntry = pStaRecCfg->pEntry;
+	P_CMD_STAREC_WTBL_T pStarec_wtbl = NULL;
+	BOOLEAN IsBCMCWCID = FALSE;
+	CMD_WTBL_GENERIC_T rWtblGeneric = { 0 }; /* Tag = 0, Generic */
+	CMD_WTBL_RX_T rWtblRx = { 0 }; /* Tage = 1, Rx */
 #ifdef DOT11_N_SUPPORT
-	CMD_WTBL_HT_T		rWtblHt = {0};		/* Tag = 2, HT */
+	CMD_WTBL_HT_T rWtblHt = { 0 }; /* Tag = 2, HT */
 #ifdef DOT11_VHT_AC
-	CMD_WTBL_VHT_T		rWtblVht = {0};		/* Tag = 3, VHT */
+	CMD_WTBL_VHT_T rWtblVht = { 0 }; /* Tag = 3, VHT */
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
-	CMD_WTBL_TX_PS_T	rWtblTxPs = {0};	/* Tag = 5, TxPs */
+	CMD_WTBL_TX_PS_T rWtblTxPs = { 0 }; /* Tag = 5, TxPs */
 #if defined(HDR_TRANS_TX_SUPPORT) || defined(HDR_TRANS_RX_SUPPORT)
-	CMD_WTBL_HDR_TRANS_T	rWtblHdrTrans = {0};	/* Tag = 6, Hdr Trans */
+	CMD_WTBL_HDR_TRANS_T rWtblHdrTrans = { 0 }; /* Tag = 6, Hdr Trans */
 #endif /* HDR_TRANS_TX_SUPPORT */
-	CMD_WTBL_RDG_T		rWtblRdg = {0};		/* Tag = 9, Rdg */
+	CMD_WTBL_RDG_T rWtblRdg = { 0 }; /* Tag = 9, Rdg */
 #ifdef TXBF_SUPPORT
-	CMD_WTBL_BF_T           rWtblBf = {0};		/* Tag = 12, BF */
+	CMD_WTBL_BF_T rWtblBf = { 0 }; /* Tag = 12, BF */
 #endif /* TXBF_SUPPORT */
-	CMD_WTBL_SMPS_T		rWtblSmPs = {0};	/* Tag = 13, SMPS */
-	CMD_WTBL_SPE_T          rWtblSpe = {0};		/* Tag = 16, SPE */
-	UCHAR		*pTlvBuffer = NULL;
-	UCHAR		*pTempBuffer = NULL;
-	UINT32		u4TotalTlvLen = 0;
-	UCHAR		ucTotalTlvNumber = 0;
-	NDIS_STATUS	Status = NDIS_STATUS_SUCCESS;
-	P_CMD_WTBL_UPDATE_T	pCmdWtblUpdate = NULL;
+	CMD_WTBL_SMPS_T rWtblSmPs = { 0 }; /* Tag = 13, SMPS */
+	CMD_WTBL_SPE_T rWtblSpe = { 0 }; /* Tag = 16, SPE */
+	UCHAR *pTlvBuffer = NULL;
+	UCHAR *pTempBuffer = NULL;
+	UINT32 u4TotalTlvLen = 0;
+	UCHAR ucTotalTlvNumber = 0;
+	NDIS_STATUS Status = NDIS_STATUS_SUCCESS;
+	P_CMD_WTBL_UPDATE_T pCmdWtblUpdate = NULL;
 	/* Allocate TLV msg */
-	Status = os_alloc_mem(pAd, (UCHAR **)&pStarec_wtbl, sizeof(CMD_STAREC_WTBL_T));
+	Status = os_alloc_mem(pAd, (UCHAR **)&pStarec_wtbl,
+			      sizeof(CMD_STAREC_WTBL_T));
 	os_zero_mem(pStarec_wtbl, sizeof(CMD_STAREC_WTBL_T));
 	if (pStarec_wtbl == NULL)
 		return -1;
@@ -2129,22 +2196,27 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 		/* Tag = 0 */
 		rWtblGeneric.ucMUARIndex = 0x0e;
 
-		os_move_mem(rWtblGeneric.aucPeerAddress, BROADCAST_ADDR, MAC_ADDR_LEN);
+		os_move_mem(rWtblGeneric.aucPeerAddress, BROADCAST_ADDR,
+			    MAC_ADDR_LEN);
 
 		//tmp solution to update STA mode AP address
-		IF_DEV_CONFIG_OPMODE_ON_STA(pAd) {
-
+		IF_DEV_CONFIG_OPMODE_ON_STA(pAd)
+		{
 			WIFI_SYS_INFO_T *pWifiSysInfo = &pAd->WifiSysInfo;
 			WIFI_INFO_CLASS_T *pWifiClass = &pWifiSysInfo->BssInfo;
 			BSS_INFO_ARGUMENT_T *pBssInfo = NULL;
 
 			OS_SEM_LOCK(&pWifiSysInfo->lock);
-			
-			DlListForEach(pBssInfo, &pWifiClass->Head, BSS_INFO_ARGUMENT_T, list) {
 
-				if (pBssInfo->ucBssIndex == pStaRecCfg->ucBssIndex){
+			DlListForEach(pBssInfo, &pWifiClass->Head,
+				      BSS_INFO_ARGUMENT_T, list)
+			{
+				if (pBssInfo->ucBssIndex ==
+				    pStaRecCfg->ucBssIndex) {
 					//Update to AP MAC when in STA mode
-					os_move_mem(rWtblGeneric.aucPeerAddress, pBssInfo->Bssid, MAC_ADDR_LEN);
+					os_move_mem(rWtblGeneric.aucPeerAddress,
+						    pBssInfo->Bssid,
+						    MAC_ADDR_LEN);
 				}
 			}
 
@@ -2163,14 +2235,15 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 
 #endif
 	} else {
-
 		struct wifi_dev *wdev = NULL;
 
-		if (pEntry == NULL){
-
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("\n\nERROR%s: No MacEntry. widx=%d ConnTyp=0x%x feat=0x%x\n\n\n",
-					  __func__, pStaRecCfg->ucWlanIdx, pStaRecCfg->ConnectionType, pStaRecCfg->u4EnableFeature));
+		if (pEntry == NULL) {
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("\n\nERROR%s: No MacEntry. widx=%d ConnTyp=0x%x feat=0x%x\n\n\n",
+				 __func__, pStaRecCfg->ucWlanIdx,
+				 pStaRecCfg->ConnectionType,
+				 pStaRecCfg->u4EnableFeature));
 
 			os_free_mem(pStarec_wtbl);
 
@@ -2178,23 +2251,30 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 		}
 
 		wdev = pEntry->wdev;
-    
+
 		/* Tag = 0 */
 		//rWtblGeneric.ucMUARIndex = pEntry->wdev->OmacIdx;
-		rWtblGeneric.ucQos = CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_WMM_CAPABLE) ? 1 : 0;
+		rWtblGeneric.ucQos =
+			CLIENT_STATUS_TEST_FLAG(pEntry,
+						fCLIENT_STATUS_WMM_CAPABLE) ?
+				1 :
+				      0;
 		rWtblGeneric.u2PartialAID = cpu2le16(pEntry->Aid);
 		rWtblGeneric.ucMUARIndex = pStaRecCfg->MuarIdx;
 
 		/* Tag = 0 */
-		os_move_mem(rWtblGeneric.aucPeerAddress, pEntry->Addr, MAC_ADDR_LEN);
+		os_move_mem(rWtblGeneric.aucPeerAddress, pEntry->Addr,
+			    MAC_ADDR_LEN);
 
-		if (CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_RDG_CAPABLE)
-			&& CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_RALINK_CHIPSET))
+		if (CLIENT_STATUS_TEST_FLAG(pEntry,
+					    fCLIENT_STATUS_RDG_CAPABLE) &&
+		    CLIENT_STATUS_TEST_FLAG(pEntry,
+					    fCLIENT_STATUS_RALINK_CHIPSET))
 			rWtblGeneric.ucAadOm = 1;
 
 		/* Tag = 1 */
 		if ((wdev->wdev_type == WDEV_TYPE_APCLI) ||
-			(wdev->wdev_type == WDEV_TYPE_STA))
+		    (wdev->wdev_type == WDEV_TYPE_STA))
 			rWtblRx.ucRca1 = 1;
 
 #ifdef HDR_TRANS_TX_SUPPORT
@@ -2213,9 +2293,18 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 			rWtblHdrTrans.ucFd = 1;
 			rWtblHdrTrans.ucTd = 1;
 		} else
-			MTWF_LOG(DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-					 ("%s: Unknown wdev type(%d) do not support header translation\n",
-					  __func__, pEntry->wdev->wdev_type));
+			MTWF_LOG(
+				DBG_CAT_HW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				("%s: Unknown wdev type(%d) do not support header translation\n",
+				 __func__, pEntry->wdev->wdev_type));
+
+#ifdef APCLI_AS_WDS_STA_SUPPORT
+		if ((wdev->wdev_type == WDEV_TYPE_APCLI) &&
+		    (wdev->wds_enable) && pEntry->bEnable4Addr) {
+			rWtblHdrTrans.ucFd = 1;
+			rWtblHdrTrans.ucTd = 1;
+		}
+#endif
 
 #endif /* HDR_TRANS_TX_SUPPORT */
 #ifdef HDR_TRANS_RX_SUPPORT
@@ -2238,11 +2327,13 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 			rWtblHt.ucMm = pEntry->MpduDensity;
 			rWtblHt.ucAf = pEntry->MaxRAmpduFactor;
 
-			if (CLIENT_STATUS_TEST_FLAG(pEntry, fCLIENT_STATUS_RDG_CAPABLE)) {
+			if (CLIENT_STATUS_TEST_FLAG(
+				    pEntry, fCLIENT_STATUS_RDG_CAPABLE)) {
 				/* Tga = 9 */
 				rWtblRdg.ucR = 1;
 
-				if (IS_MT7615(pAd) || IS_MT7622(pAd) || IS_P18(pAd) || IS_MT7663(pAd))
+				if (IS_MT7615(pAd) || IS_MT7622(pAd) ||
+				    IS_P18(pAd) || IS_MT7663(pAd))
 					rWtblRdg.ucRdgBa = 0;
 				else
 					rWtblRdg.ucRdgBa = 1;
@@ -2272,29 +2363,36 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 
 	if (!IsBCMCWCID) {
 		/* Tag = 0xc */
-		rWtblBf.ucGid     = 0;
+		rWtblBf.ucGid = 0;
 		rWtblBf.ucPFMUIdx = pAd->rStaRecBf.u2PfmuId;
 
 		if (IS_HT_STA(pEntry)) {
 			if (pAd->CommonCfg.RegTransmitSetting.field.ITxBfEn)
-				rWtblBf.ucTiBf	  = (pEntry->rStaRecBf.fgETxBfCap > 0) ? FALSE : TRUE;
+				rWtblBf.ucTiBf =
+					(pEntry->rStaRecBf.fgETxBfCap > 0) ?
+						FALSE :
+						      TRUE;
 			else
-				rWtblBf.ucTiBf	  = FALSE;
+				rWtblBf.ucTiBf = FALSE;
 
 			if (pAd->CommonCfg.ETxBfEnCond)
-				rWtblBf.ucTeBf	  = pEntry->rStaRecBf.fgETxBfCap;
+				rWtblBf.ucTeBf = pEntry->rStaRecBf.fgETxBfCap;
 			else
-				rWtblBf.ucTeBf	  = FALSE;
+				rWtblBf.ucTeBf = FALSE;
 		}
 
 		if (IS_VHT_STA(pEntry)) {
 			if (pAd->CommonCfg.RegTransmitSetting.field.ITxBfEn)
-				rWtblBf.ucTibfVht = (pEntry->rStaRecBf.fgETxBfCap > 0) ? FALSE : TRUE;
+				rWtblBf.ucTibfVht =
+					(pEntry->rStaRecBf.fgETxBfCap > 0) ?
+						FALSE :
+						      TRUE;
 			else
 				rWtblBf.ucTibfVht = FALSE;
 
 			if (pAd->CommonCfg.ETxBfEnCond)
-				rWtblBf.ucTebfVht = pEntry->rStaRecBf.fgETxBfCap;
+				rWtblBf.ucTebfVht =
+					pEntry->rStaRecBf.fgETxBfCap;
 			else
 				rWtblBf.ucTebfVht = FALSE;
 		}
@@ -2307,91 +2405,52 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 	pCmdWtblUpdate = (P_CMD_WTBL_UPDATE_T)&pStarec_wtbl->aucBuffer[0];
 	pTlvBuffer = &pCmdWtblUpdate->aucBuffer[0];
 	/* Append TLV msg */
-	pTempBuffer = pTlvAppend(
-					  pTlvBuffer,
-					  (WTBL_GENERIC),
-					  (sizeof(CMD_WTBL_GENERIC_T)),
-					  &rWtblGeneric,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_RX),
-					  (sizeof(CMD_WTBL_RX_T)),
-					  &rWtblRx,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
+	pTempBuffer = pTlvAppend(pTlvBuffer, (WTBL_GENERIC),
+				 (sizeof(CMD_WTBL_GENERIC_T)), &rWtblGeneric,
+				 &u4TotalTlvLen, &ucTotalTlvNumber);
+	pTempBuffer =
+		pTlvAppend(pTempBuffer, (WTBL_RX), (sizeof(CMD_WTBL_RX_T)),
+			   &rWtblRx, &u4TotalTlvLen, &ucTotalTlvNumber);
 #ifdef DOT11_N_SUPPORT
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_HT),
-					  (sizeof(CMD_WTBL_HT_T)),
-					  &rWtblHt,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_RDG),
-					  (sizeof(CMD_WTBL_RDG_T)),
-					  &rWtblRdg,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_SMPS),
-					  (sizeof(CMD_WTBL_SMPS_T)),
-					  &rWtblSmPs,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
+	pTempBuffer =
+		pTlvAppend(pTempBuffer, (WTBL_HT), (sizeof(CMD_WTBL_HT_T)),
+			   &rWtblHt, &u4TotalTlvLen, &ucTotalTlvNumber);
+	pTempBuffer =
+		pTlvAppend(pTempBuffer, (WTBL_RDG), (sizeof(CMD_WTBL_RDG_T)),
+			   &rWtblRdg, &u4TotalTlvLen, &ucTotalTlvNumber);
+	pTempBuffer =
+		pTlvAppend(pTempBuffer, (WTBL_SMPS), (sizeof(CMD_WTBL_SMPS_T)),
+			   &rWtblSmPs, &u4TotalTlvLen, &ucTotalTlvNumber);
 #ifdef DOT11_VHT_AC
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_VHT),
-					  (sizeof(CMD_WTBL_VHT_T)),
-					  &rWtblVht,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
+	pTempBuffer =
+		pTlvAppend(pTempBuffer, (WTBL_VHT), (sizeof(CMD_WTBL_VHT_T)),
+			   &rWtblVht, &u4TotalTlvLen, &ucTotalTlvNumber);
 #endif /* DOT11_VHT_AC */
 #endif /* DOT11_N_SUPPORT */
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_TX_PS),
-					  (sizeof(CMD_WTBL_TX_PS_T)),
-					  &rWtblTxPs,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
+	pTempBuffer = pTlvAppend(pTempBuffer, (WTBL_TX_PS),
+				 (sizeof(CMD_WTBL_TX_PS_T)), &rWtblTxPs,
+				 &u4TotalTlvLen, &ucTotalTlvNumber);
 #if defined(HDR_TRANS_RX_SUPPORT) || defined(HDR_TRANS_TX_SUPPORT)
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_HDR_TRANS),
-					  (sizeof(CMD_WTBL_HDR_TRANS_T)),
-					  &rWtblHdrTrans,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
+	pTempBuffer = pTlvAppend(pTempBuffer, (WTBL_HDR_TRANS),
+				 (sizeof(CMD_WTBL_HDR_TRANS_T)), &rWtblHdrTrans,
+				 &u4TotalTlvLen, &ucTotalTlvNumber);
 #endif /* HDR_TRANS_RX_SUPPORT || HDR_TRANS_TX_SUPPORT */
 #ifdef TXBF_SUPPORT
 
 	if (pAd->rStaRecBf.u2PfmuId != 0xFFFF) {
-		pTempBuffer = pTlvAppend(
-						  pTempBuffer,
-						  (WTBL_BF),
-						  (sizeof(CMD_WTBL_BF_T)),
-						  &rWtblBf,
-						  &u4TotalTlvLen,
-						  &ucTotalTlvNumber);
+		pTempBuffer = pTlvAppend(pTempBuffer, (WTBL_BF),
+					 (sizeof(CMD_WTBL_BF_T)), &rWtblBf,
+					 &u4TotalTlvLen, &ucTotalTlvNumber);
 	}
 
 #endif /* TXBF_SUPPORT */
-	pTempBuffer = pTlvAppend(
-					  pTempBuffer,
-					  (WTBL_SPE),
-					  (sizeof(CMD_WTBL_SPE_T)),
-					  &rWtblSpe,
-					  &u4TotalTlvLen,
-					  &ucTotalTlvNumber);
+	pTempBuffer =
+		pTlvAppend(pTempBuffer, (WTBL_SPE), (sizeof(CMD_WTBL_SPE_T)),
+			   &rWtblSpe, &u4TotalTlvLen, &ucTotalTlvNumber);
 	pCmdWtblUpdate->u2TotalElementNum = cpu2le16(ucTotalTlvNumber);
 	pCmdWtblUpdate->ucWlanIdx = pStaRecCfg->ucWlanIdx;
-	pCmdWtblUpdate->ucOperation = RESET_WTBL_AND_SET; /* In STAREC, currently reset and set only. */
+	pCmdWtblUpdate->ucOperation =
+		RESET_WTBL_AND_SET; /* In STAREC, currently reset and set only. */
 	/* Append this feature */
 	AndesAppendCmdMsg(msg, (char *)pStarec_wtbl, sizeof(CMD_STAREC_WTBL_T));
 	os_free_mem(pStarec_wtbl);
@@ -2399,55 +2458,63 @@ static INT32 StaRecUpdateWtbl(RTMP_ADAPTER *pAd, struct cmd_msg *msg, VOID *args
 }
 
 static STAREC_HANDLE_T StaRecHandle[] = {
-	{STA_REC_BASIC_STA_RECORD, (UINT32)sizeof(CMD_STAREC_COMMON_T), StaRecUpdateBasic},
-	{STA_REC_RA, (UINT32)sizeof(CMD_STAREC_AUTO_RATE_T), StaRecUpdateRa},
-	{STA_REC_RA_COMMON_INFO, (UINT32)sizeof(CMD_STAREC_AUTO_RATE_CFG_T), StaRecUpdateRaInfo},
-	{STA_REC_RA_UPDATE, (UINT32)sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T), StaRecUpdateRaUpdate},
+	{ STA_REC_BASIC_STA_RECORD, (UINT32)sizeof(CMD_STAREC_COMMON_T),
+	  StaRecUpdateBasic },
+	{ STA_REC_RA, (UINT32)sizeof(CMD_STAREC_AUTO_RATE_T), StaRecUpdateRa },
+	{ STA_REC_RA_COMMON_INFO, (UINT32)sizeof(CMD_STAREC_AUTO_RATE_CFG_T),
+	  StaRecUpdateRaInfo },
+	{ STA_REC_RA_UPDATE, (UINT32)sizeof(CMD_STAREC_AUTO_RATE_UPDATE_T),
+	  StaRecUpdateRaUpdate },
 #ifdef TXBF_SUPPORT
-	{STA_REC_BF, (UINT32)sizeof(CMD_STAREC_BF), StaRecUpdateBf},
+	{ STA_REC_BF, (UINT32)sizeof(CMD_STAREC_BF), StaRecUpdateBf },
 #endif
-	{STA_REC_AMSDU, (UINT32)sizeof(CMD_STAREC_AMSDU_T), StaRecUpdateAmsdu},
+	{ STA_REC_AMSDU, (UINT32)sizeof(CMD_STAREC_AMSDU_T),
+	  StaRecUpdateAmsdu },
 #ifdef CONFIG_AP_SUPPORT
 #ifdef DOT11_N_SUPPORT
 	/* This tag is used in CmdExtStaRecBaUpdate alone, not in CmdExtStaRecUpdate like most tag used. */
-	{STA_REC_BA, (UINT32)sizeof(CMD_STAREC_BA_T), NULL},
+	{ STA_REC_BA, (UINT32)sizeof(CMD_STAREC_BA_T), NULL },
 #endif /*DOT11_N_SUPPORT*/
 #endif /*CONFIG_AP_SUPPORT*/
-	{STA_REC_RED, (UINT32)sizeof(CMD_STAREC_RED_T), NULL},
-	{STA_REC_TX_PROC, (UINT32)sizeof(CMD_STAREC_TX_PROC_T), StaRecUpdateTxProc},
+	{ STA_REC_RED, (UINT32)sizeof(CMD_STAREC_RED_T), NULL },
+	{ STA_REC_TX_PROC, (UINT32)sizeof(CMD_STAREC_TX_PROC_T),
+	  StaRecUpdateTxProc },
 #ifdef DOT11_N_SUPPORT
-	{STA_REC_BASIC_HT_INFO, (UINT32)sizeof(CMD_STAREC_HT_INFO_T), StaRecUpdateHtInfo},
+	{ STA_REC_BASIC_HT_INFO, (UINT32)sizeof(CMD_STAREC_HT_INFO_T),
+	  StaRecUpdateHtInfo },
 #ifdef DOT11_VHT_AC
-	{STA_REC_BASIC_VHT_INFO, (UINT32)sizeof(CMD_STAREC_VHT_INFO_T), StaRecUpdateVhtInfo},
+	{ STA_REC_BASIC_VHT_INFO, (UINT32)sizeof(CMD_STAREC_VHT_INFO_T),
+	  StaRecUpdateVhtInfo },
 #endif /*DOT11_VHT_AC*/
 #endif /*DOT11_N_SUPPORT*/
-	{STA_REC_AP_PS, (UINT32)sizeof(CMD_STAREC_PS_T), StaRecUpdateApPs},
-	{STA_REC_INSTALL_KEY, sizeof(CMD_WTBL_SECURITY_KEY_T), StaRecUpdateSecKey},
-	{STA_REC_WTBL, (UINT32)sizeof(CMD_STAREC_WTBL_T), StaRecUpdateWtbl},
+	{ STA_REC_AP_PS, (UINT32)sizeof(CMD_STAREC_PS_T), StaRecUpdateApPs },
+	{ STA_REC_INSTALL_KEY, sizeof(CMD_WTBL_SECURITY_KEY_T),
+	  StaRecUpdateSecKey },
+	{ STA_REC_WTBL, (UINT32)sizeof(CMD_STAREC_WTBL_T), StaRecUpdateWtbl },
 #ifdef HW_TX_AMSDU_SUPPORT
-	{STA_REC_HW_AMSDU, (UINT32)sizeof(CMD_STAREC_AMSDU_T), StaRecUpdateHwAmsdu},
+	{ STA_REC_HW_AMSDU, (UINT32)sizeof(CMD_STAREC_AMSDU_T),
+	  StaRecUpdateHwAmsdu },
 #endif /*HW_TX_AMSDU_SUPPORT*/
 };
 
 typedef UINT32 WLAN_STATUS, *P_WLAN_STATUS;
 
-#define WLAN_STATUS_SUCCESS                     ((WLAN_STATUS)0x00000000L)
-#define WLAN_STATUS_PENDING                     ((WLAN_STATUS)0x00000103L)
-#define WLAN_STATUS_NOT_ACCEPTED                ((WLAN_STATUS)0x00010003L)
+#define WLAN_STATUS_SUCCESS ((WLAN_STATUS)0x00000000L)
+#define WLAN_STATUS_PENDING ((WLAN_STATUS)0x00000103L)
+#define WLAN_STATUS_NOT_ACCEPTED ((WLAN_STATUS)0x00010003L)
 
 #define STAREC_RETRY 3
 
-static INT32 CmdExtStaRecUpdate_ReSyncDelete(
-	RTMP_ADAPTER *pAd,
-	STA_REC_CFG_T *pStaRecCfg)
+static INT32 CmdExtStaRecUpdate_ReSyncDelete(RTMP_ADAPTER *pAd,
+					     STA_REC_CFG_T *pStaRecCfg)
 {
-	struct cmd_msg		*msg = NULL;
-	CMD_STAREC_UPDATE_T	CmdStaRecUpdate = {0};
-	INT32			Ret = 0;
-	UINT16			u2TLVNumber = 0;
-	UINT32			size;
-	struct _CMD_ATTRIBUTE	attr = {0};
-	STA_REC_CFG_T		StaRecCfgForDel = {0};
+	struct cmd_msg *msg = NULL;
+	CMD_STAREC_UPDATE_T CmdStaRecUpdate = { 0 };
+	INT32 Ret = 0;
+	UINT16 u2TLVNumber = 0;
+	UINT32 size;
+	struct _CMD_ATTRIBUTE attr = { 0 };
+	STA_REC_CFG_T StaRecCfgForDel = { 0 };
 
 	StaRecCfgForDel.ucBssIndex = pStaRecCfg->ucBssIndex;
 	StaRecCfgForDel.ucWlanIdx = pStaRecCfg->ucWlanIdx;
@@ -2478,7 +2545,8 @@ static INT32 CmdExtStaRecUpdate_ReSyncDelete(
 	CmdStaRecUpdate.ucBssIndex = StaRecCfgForDel.ucBssIndex;
 	CmdStaRecUpdate.ucWlanIdx = StaRecCfgForDel.ucWlanIdx;
 	CmdStaRecUpdate.ucMuarIdx = StaRecCfgForDel.MuarIdx;
-	Ret = StaRecHandle[STA_REC_BASIC_STA_RECORD].StaRecTagHandler(pAd, msg, &StaRecCfgForDel);
+	Ret = StaRecHandle[STA_REC_BASIC_STA_RECORD].StaRecTagHandler(
+		pAd, msg, &StaRecCfgForDel);
 
 	if (Ret == NDIS_STATUS_SUCCESS)
 		u2TLVNumber++;
@@ -2487,28 +2555,27 @@ static INT32 CmdExtStaRecUpdate_ReSyncDelete(
 	CmdStaRecUpdate.u2TotalElementNum = cpu2le16(u2TLVNumber);
 	CmdStaRecUpdate.ucAppendCmdTLV = TRUE;
 #ifdef RT_BIG_ENDIAN
-	StaRecCfgForDel.u4EnableFeature = cpu2le32(StaRecCfgForDel.u4EnableFeature);
+	StaRecCfgForDel.u4EnableFeature =
+		cpu2le32(StaRecCfgForDel.u4EnableFeature);
 #endif
 	AndesAppendHeadCmdMsg(msg, (char *)&CmdStaRecUpdate,
-						  sizeof(CMD_STAREC_UPDATE_T));
+			      sizeof(CMD_STAREC_UPDATE_T));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
 	return Ret;
 }
 
-INT32 CmdExtStaRecUpdate(
-	RTMP_ADAPTER *pAd,
-	STA_REC_CFG_T StaRecCfg)
+INT32 CmdExtStaRecUpdate(RTMP_ADAPTER *pAd, STA_REC_CFG_T StaRecCfg)
 {
-	struct cmd_msg			*msg = NULL;
-	CMD_STAREC_UPDATE_T	    CmdStaRecUpdate = {0};
-	INT32					Ret = 0;
-	UINT8					i = 0;
-	UINT16					u2TLVNumber;
-	UINT32					size;
+	struct cmd_msg *msg = NULL;
+	CMD_STAREC_UPDATE_T CmdStaRecUpdate = { 0 };
+	INT32 Ret = 0;
+	UINT8 i = 0;
+	UINT16 u2TLVNumber;
+	UINT32 size;
 	UCHAR StaRecSupprotNum = sizeof(StaRecHandle) / sizeof(STAREC_HANDLE_T);
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	UINT8 retry = STAREC_RETRY;
 CmdExtStaRecUpdate_restart:
 	u2TLVNumber = 0;
@@ -2516,7 +2583,8 @@ CmdExtStaRecUpdate_restart:
 
 	/* Get number of TLV*/
 	for (i = 0; i < StaRecSupprotNum; i++) {
-		if (StaRecCfg.u4EnableFeature & (1 << StaRecHandle[i].StaRecTag))
+		if (StaRecCfg.u4EnableFeature &
+		    (1 << StaRecHandle[i].StaRecTag))
 			size += StaRecHandle[i].StaRecTagLen;
 	}
 
@@ -2544,33 +2612,38 @@ CmdExtStaRecUpdate_restart:
 	/* Fill RA related parameters */
 
 	for (i = 0; i < StaRecSupprotNum; i++) {
-		if ((StaRecCfg.u4EnableFeature & (1 << StaRecHandle[i].StaRecTag))) {
+		if ((StaRecCfg.u4EnableFeature &
+		     (1 << StaRecHandle[i].StaRecTag))) {
 			if (StaRecHandle[i].StaRecTagHandler != NULL) {
-				Ret = StaRecHandle[i].StaRecTagHandler(pAd, msg, &StaRecCfg);
+				Ret = StaRecHandle[i].StaRecTagHandler(
+					pAd, msg, &StaRecCfg);
 
 				if (Ret == 0)
 					u2TLVNumber++;
 			} else {
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-						 ("%s: StaRecTag = %d no corresponding function handler.\n",
-						  __func__, StaRecHandle[i].StaRecTag));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL,
+					DBG_LVL_INFO,
+					("%s: StaRecTag = %d no corresponding function handler.\n",
+					 __func__, StaRecHandle[i].StaRecTag));
 			}
 		}
 	}
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: u2TLVNumber(%d)\n", __func__, u2TLVNumber));
+		 ("%s: u2TLVNumber(%d)\n", __func__, u2TLVNumber));
 	/*insert to head*/
 	CmdStaRecUpdate.u2TotalElementNum = cpu2le16(u2TLVNumber);
 	CmdStaRecUpdate.ucAppendCmdTLV = TRUE;
 	AndesAppendHeadCmdMsg(msg, (char *)&CmdStaRecUpdate,
-						  sizeof(CMD_STAREC_UPDATE_T));
+			      sizeof(CMD_STAREC_UPDATE_T));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 
 	while ((Ret != WLAN_STATUS_SUCCESS) && (retry)) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_WARN,
-				 ("%s:(FW Ret = 0x%x retry=%d)\n", __func__, Ret, retry));
+			 ("%s:(FW Ret = 0x%x retry=%d)\n", __func__, Ret,
+			  retry));
 		retry--;
 		/* something wrong with STAREC update */
 		Ret = CmdExtStaRecUpdate_ReSyncDelete(pAd, &StaRecCfg);
@@ -2583,19 +2656,16 @@ CmdExtStaRecUpdate_restart:
 
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-
-
-INT32 CmdExtStaRecBaUpdate(
-	struct _RTMP_ADAPTER *pAd,
-	STA_REC_BA_CFG_T StaRecBaCfg)
+INT32 CmdExtStaRecBaUpdate(struct _RTMP_ADAPTER *pAd,
+			   STA_REC_BA_CFG_T StaRecBaCfg)
 {
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 	struct cmd_msg *msg = NULL;
-	CMD_STAREC_UPDATE_T CmdStaRecUpdate = {0};
+	CMD_STAREC_UPDATE_T CmdStaRecUpdate = { 0 };
 	CMD_STAREC_BA_T CmdStaRecBa;
 	UINT32 MsgLen;
 	INT32 Ret = 0;
@@ -2612,7 +2682,7 @@ INT32 CmdExtStaRecBaUpdate(
 	/* Get number of TLV*/
 	ucTLVNumber = 1;
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: ucTLVNumber(%d)\n", __func__, ucTLVNumber));
+		 ("%s: ucTLVNumber(%d)\n", __func__, ucTLVNumber));
 	SET_CMD_ATTR_MCU_DEST(attr, HOST2N9);
 	SET_CMD_ATTR_TYPE(attr, EXT_CID);
 	SET_CMD_ATTR_EXT_TYPE(attr, EXT_CMD_STAREC_UPDATE);
@@ -2628,12 +2698,16 @@ INT32 CmdExtStaRecBaUpdate(
 	CmdStaRecUpdate.ucMuarIdx = StaRecBaCfg.MuarIdx;
 	CmdStaRecUpdate.u2TotalElementNum = cpu2le16(ucTLVNumber);
 	CmdStaRecUpdate.ucAppendCmdTLV = TRUE;
-	AndesAppendCmdMsg(msg, (char *)&CmdStaRecUpdate, sizeof(CMD_STAREC_UPDATE_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdStaRecUpdate,
+			  sizeof(CMD_STAREC_UPDATE_T));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: StaRecUpdate:\n", __func__));
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: ucBssIndex=%d, ucWlanIdx=%d, ucMuarIdx=%d, u2TotalElementNum=%d\n",
-			  __func__, CmdStaRecUpdate.ucBssIndex, CmdStaRecUpdate.ucWlanIdx, CmdStaRecUpdate.ucMuarIdx, CmdStaRecUpdate.u2TotalElementNum));
+		 ("%s: StaRecUpdate:\n", __func__));
+	MTWF_LOG(
+		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s: ucBssIndex=%d, ucWlanIdx=%d, ucMuarIdx=%d, u2TotalElementNum=%d\n",
+		 __func__, CmdStaRecUpdate.ucBssIndex,
+		 CmdStaRecUpdate.ucWlanIdx, CmdStaRecUpdate.ucMuarIdx,
+		 CmdStaRecUpdate.u2TotalElementNum));
 	/* Fill BA related parameters */
 	NdisZeroMemory(&CmdStaRecBa, sizeof(CMD_STAREC_BA_T));
 
@@ -2650,7 +2724,8 @@ INT32 CmdExtStaRecBaUpdate(
 		CmdStaRecBa.u2BaWinSize = cpu2le16(pBAEntry->BAWinSize);
 	} else {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s:Invalid BaDirection (baDirection = %d)\n", __func__, StaRecBaCfg.baDirection));
+			 ("%s:Invalid BaDirection (baDirection = %d)\n",
+			  __func__, StaRecBaCfg.baDirection));
 		return Ret;
 	}
 
@@ -2660,11 +2735,14 @@ INT32 CmdExtStaRecBaUpdate(
 	CmdStaRecBa.ucTid = StaRecBaCfg.tid;
 	CmdStaRecBa.ucBaDirection = StaRecBaCfg.baDirection;
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: BaInfo:\n", __func__));
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s: u2Tag=%d, u2Length=%d, ucTid=%d, u2BaDirectin=%d, BaEnable=%d, u2BaStartSeq=%d, u2BaWinSize=%d, ucAmsduCap=%d\n",
-			  __func__,	CmdStaRecBa.u2Tag, CmdStaRecBa.u2Length, CmdStaRecBa.ucTid, CmdStaRecBa.ucBaDirection,
-			  CmdStaRecBa.ucBaEenable, le2cpu16(CmdStaRecBa.u2BaStartSeq), le2cpu16(CmdStaRecBa.u2BaWinSize), CmdStaRecBa.ucAmsduCap));
+		 ("%s: BaInfo:\n", __func__));
+	MTWF_LOG(
+		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		("%s: u2Tag=%d, u2Length=%d, ucTid=%d, u2BaDirectin=%d, BaEnable=%d, u2BaStartSeq=%d, u2BaWinSize=%d, ucAmsduCap=%d\n",
+		 __func__, CmdStaRecBa.u2Tag, CmdStaRecBa.u2Length,
+		 CmdStaRecBa.ucTid, CmdStaRecBa.ucBaDirection,
+		 CmdStaRecBa.ucBaEenable, le2cpu16(CmdStaRecBa.u2BaStartSeq),
+		 le2cpu16(CmdStaRecBa.u2BaWinSize), CmdStaRecBa.ucAmsduCap));
 #ifdef RT_BIG_ENDIAN
 	CmdStaRecBa.u2Tag = cpu2le16(CmdStaRecBa.u2Tag);
 	CmdStaRecBa.u2Length = cpu2le16(CmdStaRecBa.u2Length);
@@ -2674,49 +2752,48 @@ INT32 CmdExtStaRecBaUpdate(
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s:(Ret = %d)\n", __func__, Ret));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-
-static VOID bssConnectOwnDev(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssConnectOwnDev(struct _RTMP_ADAPTER *pAd,
+			     BSS_INFO_ARGUMENT_T bss_info, struct cmd_msg *msg)
 {
-	CMD_BSSINFO_CONNECT_OWN_DEV_T CmdBssiinfoConnectOwnDev = {0};
+	CMD_BSSINFO_CONNECT_OWN_DEV_T CmdBssiinfoConnectOwnDev = { 0 };
 
 	CmdBssiinfoConnectOwnDev.u2Tag = BSS_INFO_OWN_MAC;
 	CmdBssiinfoConnectOwnDev.u2Length =
 		sizeof(CMD_BSSINFO_CONNECT_OWN_DEV_T);
 	CmdBssiinfoConnectOwnDev.ucHwBSSIndex =
-		(bss_info.OwnMacIdx > HW_BSSID_MAX) ?
-		HW_BSSID_0 : bss_info.OwnMacIdx;
+		(bss_info.OwnMacIdx > HW_BSSID_MAX) ? HW_BSSID_0 :
+							    bss_info.OwnMacIdx;
 	CmdBssiinfoConnectOwnDev.ucOwnMacIdx = bss_info.OwnMacIdx;
 	CmdBssiinfoConnectOwnDev.u4ConnectionType =
 		cpu2le32(bss_info.u4ConnectionType);
 	/* Fill TLV format */
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s, ucHwBSSIndex = %d, ucOwnMacIdx = %d, u4ConnectionType = %x\n",
-			  __func__,
-			  CmdBssiinfoConnectOwnDev.ucHwBSSIndex,
-			  CmdBssiinfoConnectOwnDev.ucOwnMacIdx,
-			  bss_info.u4ConnectionType));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s, ucHwBSSIndex = %d, ucOwnMacIdx = %d, u4ConnectionType = %x\n",
+		 __func__, CmdBssiinfoConnectOwnDev.ucHwBSSIndex,
+		 CmdBssiinfoConnectOwnDev.ucOwnMacIdx,
+		 bss_info.u4ConnectionType));
 #ifdef RT_BIG_ENDIAN
-	CmdBssiinfoConnectOwnDev.u2Tag = cpu2le16(CmdBssiinfoConnectOwnDev.u2Tag);
-	CmdBssiinfoConnectOwnDev.u2Length = cpu2le16(CmdBssiinfoConnectOwnDev.u2Length);
+	CmdBssiinfoConnectOwnDev.u2Tag =
+		cpu2le16(CmdBssiinfoConnectOwnDev.u2Tag);
+	CmdBssiinfoConnectOwnDev.u2Length =
+		cpu2le16(CmdBssiinfoConnectOwnDev.u2Length);
 #endif
 	/* Append this feature */
 	AndesAppendCmdMsg(msg, (char *)&CmdBssiinfoConnectOwnDev,
-					  sizeof(CMD_BSSINFO_CONNECT_OWN_DEV_T));
+			  sizeof(CMD_BSSINFO_CONNECT_OWN_DEV_T));
 }
 
-static VOID bssUpdateBssInfoBasic(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateBssInfoBasic(struct _RTMP_ADAPTER *pAd,
+				  BSS_INFO_ARGUMENT_T bss_info,
+				  struct cmd_msg *msg)
 {
-	CMD_BSSINFO_BASIC_T CmdBssInfoBasic = {0};
+	CMD_BSSINFO_BASIC_T CmdBssInfoBasic = { 0 };
 
 	/* Fill TLV format */
 	CmdBssInfoBasic.u2Tag = BSS_INFO_BASIC;
@@ -2733,38 +2810,36 @@ static VOID bssUpdateBssInfoBasic(
 
 	os_move_mem(CmdBssInfoBasic.aucBSSID, bss_info.Bssid, MAC_ADDR_LEN);
 	CmdBssInfoBasic.ucWmmIdx = bss_info.WmmIdx;
-	CmdBssInfoBasic.ucBcMcWlanidx = (bss_info.u4ConnectionType == CONNECTION_INFRA_STA) ?
-									bss_info.ucPeerWlanIdx : bss_info.ucBcMcWlanIdx;
+	CmdBssInfoBasic.ucBcMcWlanidx =
+		(bss_info.u4ConnectionType == CONNECTION_INFRA_STA) ?
+			bss_info.ucPeerWlanIdx :
+			      bss_info.ucBcMcWlanIdx;
 	CmdBssInfoBasic.ucCipherSuit = bss_info.CipherSuit;
 	CmdBssInfoBasic.ucPhyMode = bss_info.ucPhyMode;
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s, u4NetworkType = %d, ucActive = %d, u2BcnInterval = %d, ucWmmIdx = %d,"
-			  "ucDtimPeriod = %d, ucBcMcWlanidx = %d, ucCipherSuit=%d, ucPhyMode=%x,"
-			  "BSSID = %02x:%02x:%02x:%02x:%02x:%02x\n",
-			  __func__,
-			  bss_info.NetworkType,
-			  CmdBssInfoBasic.ucActive,
-			  le2cpu16(CmdBssInfoBasic.u2BcnInterval),
-			  CmdBssInfoBasic.ucWmmIdx,
-			  CmdBssInfoBasic.ucDtimPeriod,
-			  CmdBssInfoBasic.ucBcMcWlanidx,
-			  CmdBssInfoBasic.ucCipherSuit,
-			  CmdBssInfoBasic.ucPhyMode,
-			  PRINT_MAC(CmdBssInfoBasic.aucBSSID)));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s, u4NetworkType = %d, ucActive = %d, u2BcnInterval = %d, ucWmmIdx = %d,"
+		 "ucDtimPeriod = %d, ucBcMcWlanidx = %d, ucCipherSuit=%d, ucPhyMode=%x,"
+		 "BSSID = %02x:%02x:%02x:%02x:%02x:%02x\n",
+		 __func__, bss_info.NetworkType, CmdBssInfoBasic.ucActive,
+		 le2cpu16(CmdBssInfoBasic.u2BcnInterval),
+		 CmdBssInfoBasic.ucWmmIdx, CmdBssInfoBasic.ucDtimPeriod,
+		 CmdBssInfoBasic.ucBcMcWlanidx, CmdBssInfoBasic.ucCipherSuit,
+		 CmdBssInfoBasic.ucPhyMode,
+		 PRINT_MAC(CmdBssInfoBasic.aucBSSID)));
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoBasic.u2Tag = cpu2le16(CmdBssInfoBasic.u2Tag);
 	CmdBssInfoBasic.u2Length = cpu2le16(CmdBssInfoBasic.u2Length);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoBasic, sizeof(CMD_BSSINFO_BASIC_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoBasic,
+			  sizeof(CMD_BSSINFO_BASIC_T));
 }
 
-static VOID bssUpdateChannel(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateChannel(struct _RTMP_ADAPTER *pAd,
+			     BSS_INFO_ARGUMENT_T bss_info, struct cmd_msg *msg)
 {
-	CMD_BSSINFO_RF_CH_T CmdBssInfoRfCh = {0};
+	CMD_BSSINFO_RF_CH_T CmdBssInfoRfCh = { 0 };
 	struct freq_oper *chan_oper = &bss_info.chan_oper;
 
 	/* Fill TLV format */
@@ -2774,34 +2849,31 @@ static VOID bssUpdateChannel(
 	CmdBssInfoRfCh.ucCenterChannelSeg0 = chan_oper->cen_ch_1;
 	CmdBssInfoRfCh.ucCenterChannelSeg1 = chan_oper->cen_ch_2;
 	CmdBssInfoRfCh.ucBandwidth = chan_oper->bw;
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s(BSS_INFO_RF_CH), ucPrimCh = %d, ucCentChSeg0 = %d, ucCentChSeg1 = %d, BW=%d\n",
-			  __func__,
-			  CmdBssInfoRfCh.ucPrimaryChannel,
-			  CmdBssInfoRfCh.ucCenterChannelSeg0,
-			  CmdBssInfoRfCh.ucCenterChannelSeg1,
-			  CmdBssInfoRfCh.ucBandwidth));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s(BSS_INFO_RF_CH), ucPrimCh = %d, ucCentChSeg0 = %d, ucCentChSeg1 = %d, BW=%d\n",
+		 __func__, CmdBssInfoRfCh.ucPrimaryChannel,
+		 CmdBssInfoRfCh.ucCenterChannelSeg0,
+		 CmdBssInfoRfCh.ucCenterChannelSeg1,
+		 CmdBssInfoRfCh.ucBandwidth));
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoRfCh.u2Tag = cpu2le16(CmdBssInfoRfCh.u2Tag);
 	CmdBssInfoRfCh.u2Length = cpu2le16(CmdBssInfoRfCh.u2Length);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoRfCh, sizeof(CMD_BSSINFO_RF_CH_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoRfCh,
+			  sizeof(CMD_BSSINFO_RF_CH_T));
 }
 
-static VOID pmUpdateBssInfoPM(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID pmUpdateBssInfoPM(struct _RTMP_ADAPTER *pAd,
+			      BSS_INFO_ARGUMENT_T bss_info, struct cmd_msg *msg)
 {
 }
 
-static VOID pmUpdateBssUapsd(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID pmUpdateBssUapsd(struct _RTMP_ADAPTER *pAd,
+			     BSS_INFO_ARGUMENT_T bss_info, struct cmd_msg *msg)
 {
-	CMD_BSSINFO_UAPSD_T CmdBssInfoUapsd = {0};
+	CMD_BSSINFO_UAPSD_T CmdBssInfoUapsd = { 0 };
 
 	/* Fill TLV format */
 	CmdBssInfoUapsd.u2Tag = BSS_INFO_UAPSD;
@@ -2810,114 +2882,137 @@ static VOID pmUpdateBssUapsd(
 	CmdBssInfoUapsd.ucIsUapsdSupported = FALSE;
 	/*update uapsd if necessary*/
 
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s, ucIsUapsdSupported = %d, ucUapsdTriggerAC = 0x%x,ucUapsdTriggerAC = 0x%x, u2UapsdServicePeriodTO = 0x%x\n",
-			  __func__,
-			  CmdBssInfoUapsd.ucIsUapsdSupported,
-			  CmdBssInfoUapsd.ucUapsdTriggerAC,
-			  CmdBssInfoUapsd.ucUapsdDeliveryAC,
-			  CmdBssInfoUapsd.u2UapsdServicePeriodTO));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s, ucIsUapsdSupported = %d, ucUapsdTriggerAC = 0x%x,ucUapsdTriggerAC = 0x%x, u2UapsdServicePeriodTO = 0x%x\n",
+		 __func__, CmdBssInfoUapsd.ucIsUapsdSupported,
+		 CmdBssInfoUapsd.ucUapsdTriggerAC,
+		 CmdBssInfoUapsd.ucUapsdDeliveryAC,
+		 CmdBssInfoUapsd.u2UapsdServicePeriodTO));
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoUapsd.u2Tag = cpu2le16(CmdBssInfoUapsd.u2Tag);
 	CmdBssInfoUapsd.u2Length = cpu2le16(CmdBssInfoUapsd.u2Length);
-	CmdBssInfoUapsd.u2UapsdServicePeriodTO = cpu2le16(CmdBssInfoUapsd.u2UapsdServicePeriodTO);
+	CmdBssInfoUapsd.u2UapsdServicePeriodTO =
+		cpu2le16(CmdBssInfoUapsd.u2UapsdServicePeriodTO);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoUapsd, sizeof(CMD_BSSINFO_UAPSD_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoUapsd,
+			  sizeof(CMD_BSSINFO_UAPSD_T));
 }
 
-static VOID bssUpdateRssiRmDetParams(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateRssiRmDetParams(struct _RTMP_ADAPTER *pAd,
+				     BSS_INFO_ARGUMENT_T bss_info,
+				     struct cmd_msg *msg)
 {
-	CMD_BSSINFO_RSSI_RM_DET_T CmdBssInfoRoamDetection = {0};
+	CMD_BSSINFO_RSSI_RM_DET_T CmdBssInfoRoamDetection = { 0 };
 
 	/* Fill TLV format */
 	CmdBssInfoRoamDetection.u2Tag = BSS_INFO_ROAM_DETECTION;
 	CmdBssInfoRoamDetection.u2Length = sizeof(CMD_BSSINFO_RSSI_RM_DET_T);
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoRoamDetection.u2Tag = cpu2le16(CmdBssInfoRoamDetection.u2Tag);
-	CmdBssInfoRoamDetection.u2Length = cpu2le16(CmdBssInfoRoamDetection.u2Length);
+	CmdBssInfoRoamDetection.u2Length =
+		cpu2le16(CmdBssInfoRoamDetection.u2Length);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoRoamDetection, sizeof(CMD_BSSINFO_RSSI_RM_DET_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoRoamDetection,
+			  sizeof(CMD_BSSINFO_RSSI_RM_DET_T));
 }
 
-static VOID bssUpdateExtBssInfo(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateExtBssInfo(struct _RTMP_ADAPTER *pAd,
+				BSS_INFO_ARGUMENT_T bss_info,
+				struct cmd_msg *msg)
 {
 	UCHAR ExtBssidIdx = 1;
-	CMD_BSSINFO_EXT_BSS_INFO_T CmdBssInfoExtBssInfo = {0};
+	CMD_BSSINFO_EXT_BSS_INFO_T CmdBssInfoExtBssInfo = { 0 };
+#ifdef CONFIG_AP_SUPPORT
+	struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[bss_info.ucBssIndex].wdev;
+	static UCHAR GBand_FirstBssidIdx;
+#endif
 	/* this feature is only for Omac 0x11~0x1f */
 	ASSERT(bss_info.OwnMacIdx > HW_BSSID_MAX);
 	ExtBssidIdx = (bss_info.OwnMacIdx & 0xf);
 	CmdBssInfoExtBssInfo.u2Tag = BSS_INFO_EXT_BSS;
 	CmdBssInfoExtBssInfo.u2Length = sizeof(CMD_BSSINFO_EXT_BSS_INFO_T);
-	CmdBssInfoExtBssInfo.ucMbssTsfOffset = ExtBssidIdx * BCN_TRANSMIT_ESTIMATE_TIME;
+#ifdef CONFIG_AP_SUPPORT
+	if (pAd->CommonCfg.dbdc_mode &&
+	    (HcGetBandByWdev(wdev) == rtmp_band_index_get_by_order(pAd, 1))) {
+		/* Order1(default BAND0,2G) */
+		if (GBand_FirstBssidIdx == 0)
+			GBand_FirstBssidIdx = ExtBssidIdx;
+		CmdBssInfoExtBssInfo.ucMbssTsfOffset =
+			(ExtBssidIdx - GBand_FirstBssidIdx) *
+			BCN_TRANSMIT_ESTIMATE_TIME;
+	} else
+#endif
+		/* nonDBDC or Order0(default BAND1,5G) */
+		CmdBssInfoExtBssInfo.ucMbssTsfOffset =
+			ExtBssidIdx * BCN_TRANSMIT_ESTIMATE_TIME;
 	/* Fill TLV format */
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s (BSSINFO_EXT_BSS_INFO), ExtBssidIdx = %d, ucMbssTsfOffset = %d\n",
-			  __func__,
-			  ExtBssidIdx,
-			  CmdBssInfoExtBssInfo.ucMbssTsfOffset));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s (BSSINFO_EXT_BSS_INFO), ExtBssidIdx = %d, ucMbssTsfOffset = %d\n",
+		 __func__, ExtBssidIdx, CmdBssInfoExtBssInfo.ucMbssTsfOffset));
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoExtBssInfo.u2Tag = cpu2le16(CmdBssInfoExtBssInfo.u2Tag);
 	CmdBssInfoExtBssInfo.u2Length = cpu2le16(CmdBssInfoExtBssInfo.u2Length);
-	CmdBssInfoExtBssInfo.ucMbssTsfOffset = cpu2le32(CmdBssInfoExtBssInfo.ucMbssTsfOffset);
+	CmdBssInfoExtBssInfo.ucMbssTsfOffset =
+		cpu2le32(CmdBssInfoExtBssInfo.ucMbssTsfOffset);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoExtBssInfo, sizeof(CMD_BSSINFO_EXT_BSS_INFO_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoExtBssInfo,
+			  sizeof(CMD_BSSINFO_EXT_BSS_INFO_T));
 }
 
-
-static VOID bssUpdateBmcMngRate(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateBmcMngRate(struct _RTMP_ADAPTER *pAd,
+				BSS_INFO_ARGUMENT_T bss_info,
+				struct cmd_msg *msg)
 {
-	CMD_BSSINFO_BMC_RATE_T CmdBssInfoBmcRate = {0};
+	CMD_BSSINFO_BMC_RATE_T CmdBssInfoBmcRate = { 0 };
 
 	if (bss_info.bss_state >= BSS_ACTIVE) {
-		CmdBssInfoBmcRate.u2BcTransmit = cpu2le16((UINT16)(bss_info.BcTransmit.word));
-		CmdBssInfoBmcRate.u2McTransmit = cpu2le16((UINT16)(bss_info.McTransmit.word));
-		CmdBssInfoBmcRate.ucPreambleMode =
-			OPSTATUS_TEST_FLAG(pAd, fOP_STATUS_SHORT_PREAMBLE_INUSED);
+		CmdBssInfoBmcRate.u2BcTransmit =
+			cpu2le16((UINT16)(bss_info.BcTransmit.word));
+		CmdBssInfoBmcRate.u2McTransmit =
+			cpu2le16((UINT16)(bss_info.McTransmit.word));
+		CmdBssInfoBmcRate.ucPreambleMode = OPSTATUS_TEST_FLAG(
+			pAd, fOP_STATUS_SHORT_PREAMBLE_INUSED);
 	}
 #ifdef TXRX_STAT_SUPPORT
 	{
 		ULONG Multicast_Tx_Rate;
-		pAd->ApCfg.MBSSID[bss_info.ucBssIndex].stat_bss.LastMulticastTxRate.word = bss_info.McTransmit.word;
+		pAd->ApCfg.MBSSID[bss_info.ucBssIndex]
+			.stat_bss.LastMulticastTxRate.word =
+			bss_info.McTransmit.word;
 		getRate(bss_info.McTransmit, &Multicast_Tx_Rate);
 	}
 #endif
 	CmdBssInfoBmcRate.u2Tag = BSS_INFO_BROADCAST_INFO;
 	CmdBssInfoBmcRate.u2Length = sizeof(CMD_BSSINFO_BMC_RATE_T);
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s (BSS_INFO_BROADCAST_INFO), CmdBssInfoBmcRate.u2BcTransmit= %d, CmdBssInfoBmcRate.u2McTransmit = %d\n",
-			  __func__,
-			  le2cpu16(CmdBssInfoBmcRate.u2BcTransmit),
-			  le2cpu16(CmdBssInfoBmcRate.u2McTransmit)));
+	MTWF_LOG(
+		DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+		("%s (BSS_INFO_BROADCAST_INFO), CmdBssInfoBmcRate.u2BcTransmit= %d, CmdBssInfoBmcRate.u2McTransmit = %d\n",
+		 __func__, le2cpu16(CmdBssInfoBmcRate.u2BcTransmit),
+		 le2cpu16(CmdBssInfoBmcRate.u2McTransmit)));
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoBmcRate.u2Tag = cpu2le16(CmdBssInfoBmcRate.u2Tag);
 	CmdBssInfoBmcRate.u2Length = cpu2le16(CmdBssInfoBmcRate.u2Length);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoBmcRate, sizeof(CMD_BSSINFO_BMC_RATE_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoBmcRate,
+			  sizeof(CMD_BSSINFO_BMC_RATE_T));
 }
 
-static VOID bssUpdateSyncModeCtrl(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateSyncModeCtrl(struct _RTMP_ADAPTER *pAd,
+				  BSS_INFO_ARGUMENT_T bss_info,
+				  struct cmd_msg *msg)
 {
-	CMD_BSSINFO_SYNC_MODE_CTRL_T CmdBssInfoSyncModeCtrl = {0};
+	CMD_BSSINFO_SYNC_MODE_CTRL_T CmdBssInfoSyncModeCtrl = { 0 };
 
 	if (bss_info.bss_state >= BSS_ACTIVE) {
 		CmdBssInfoSyncModeCtrl.fgIsEnableSync = TRUE;
-		CmdBssInfoSyncModeCtrl.u2BcnInterval = cpu2le16(bss_info.bcn_period);
+		CmdBssInfoSyncModeCtrl.u2BcnInterval =
+			cpu2le16(bss_info.bcn_period);
 		CmdBssInfoSyncModeCtrl.ucDtimPeriod = bss_info.dtim_period;
 	} else
 		CmdBssInfoSyncModeCtrl.fgIsEnableSync = FALSE;
@@ -2926,36 +3021,33 @@ static VOID bssUpdateSyncModeCtrl(
 	CmdBssInfoSyncModeCtrl.u2Length = sizeof(CMD_BSSINFO_SYNC_MODE_CTRL_T);
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoSyncModeCtrl.u2Tag = cpu2le16(CmdBssInfoSyncModeCtrl.u2Tag);
-	CmdBssInfoSyncModeCtrl.u2Length = cpu2le16(CmdBssInfoSyncModeCtrl.u2Length);
+	CmdBssInfoSyncModeCtrl.u2Length =
+		cpu2le16(CmdBssInfoSyncModeCtrl.u2Length);
 #endif
 	/* Append this feature */
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoSyncModeCtrl, sizeof(CMD_BSSINFO_SYNC_MODE_CTRL_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoSyncModeCtrl,
+			  sizeof(CMD_BSSINFO_SYNC_MODE_CTRL_T));
 }
 
-
-static VOID bssUpdateRA(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateRA(struct _RTMP_ADAPTER *pAd, BSS_INFO_ARGUMENT_T bss_info,
+			struct cmd_msg *msg)
 {
 #ifdef RACTRL_FW_OFFLOAD_SUPPORT
-	CMD_BSSINFO_AUTO_RATE_CFG_T CmdBssInfoAutoRateCfg = {0};
+	CMD_BSSINFO_AUTO_RATE_CFG_T CmdBssInfoAutoRateCfg = { 0 };
 
 	os_zero_mem(&CmdBssInfoAutoRateCfg, sizeof(CmdBssInfoAutoRateCfg));
 	BssInfoRACommCfgSet(&bss_info.ra_cfg, &CmdBssInfoAutoRateCfg);
 	/* Append this feature */
 	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoAutoRateCfg,
-					sizeof(CMD_BSSINFO_AUTO_RATE_CFG_T));
+			  sizeof(CMD_BSSINFO_AUTO_RATE_CFG_T));
 #endif /* RACTRL_FW_OFFLOAD_SUPPORT */
 }
 
 #ifdef HW_TX_AMSDU_SUPPORT
-static VOID bssUpdateHwAmsdu(
-	struct _RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info,
-	struct cmd_msg *msg)
+static VOID bssUpdateHwAmsdu(struct _RTMP_ADAPTER *pAd,
+			     BSS_INFO_ARGUMENT_T bss_info, struct cmd_msg *msg)
 {
-	CMD_BSSINFO_HW_AMSDU_INFO_T CmdBssInfoHwAmsduInfo = {0};
+	CMD_BSSINFO_HW_AMSDU_INFO_T CmdBssInfoHwAmsduInfo = { 0 };
 
 	os_zero_mem(&CmdBssInfoHwAmsduInfo, sizeof(CmdBssInfoHwAmsduInfo));
 	/* Fill TLV format */
@@ -2968,46 +3060,49 @@ static VOID bssUpdateHwAmsdu(
 
 #ifdef RT_BIG_ENDIAN
 	CmdBssInfoHwAmsduInfo.u2Tag = cpu2le16(CmdBssInfoHwAmsduInfo.u2Tag);
-	CmdBssInfoHwAmsduInfo.u2Length = cpu2le16(CmdBssInfoHwAmsduInfo.u2Length);
-	CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_0 = cpu2le32(CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_0);
-	CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_1 = cpu2le32(CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_1);
-	CmdBssInfoHwAmsduInfo.u2TxdTriggerThres = cpu2le16(CmdBssInfoHwAmsduInfo.u2TxdTriggerThres);
+	CmdBssInfoHwAmsduInfo.u2Length =
+		cpu2le16(CmdBssInfoHwAmsduInfo.u2Length);
+	CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_0 =
+		cpu2le32(CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_0);
+	CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_1 =
+		cpu2le32(CmdBssInfoHwAmsduInfo.u4TxdCmpBitmap_1);
+	CmdBssInfoHwAmsduInfo.u2TxdTriggerThres =
+		cpu2le16(CmdBssInfoHwAmsduInfo.u2TxdTriggerThres);
 #endif
 
 	/* Append this feature */
 	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoHwAmsduInfo,
-					  sizeof(CMD_BSSINFO_HW_AMSDU_INFO_T));
+			  sizeof(CMD_BSSINFO_HW_AMSDU_INFO_T));
 }
 #endif
 
 /* BSSinfo tag handle */
 static BSS_INFO_HANDLE_T apfBssInfoTagHandle[] = {
-	{BSS_INFO_OWN_MAC_FEATURE,          bssConnectOwnDev},
-	{BSS_INFO_BASIC_FEATURE,            bssUpdateBssInfoBasic},
-	{BSS_INFO_RF_CH_FEATURE,            bssUpdateChannel},
-	{BSS_INFO_PM_FEATURE,               pmUpdateBssInfoPM},
-	{BSS_INFO_UAPSD_FEATURE,            pmUpdateBssUapsd},
-	{BSS_INFO_ROAM_DETECTION_FEATURE,   bssUpdateRssiRmDetParams},
-	{BSS_INFO_LQ_RM_FEATURE,            NULL},
-	{BSS_INFO_EXT_BSS_FEATURE,          bssUpdateExtBssInfo},
-	{BSS_INFO_BROADCAST_INFO_FEATURE,   bssUpdateBmcMngRate},
-	{BSS_INFO_SYNC_MODE_FEATURE,        bssUpdateSyncModeCtrl},
-	{BSS_INFO_RA_FEATURE,               bssUpdateRA},
+	{ BSS_INFO_OWN_MAC_FEATURE, bssConnectOwnDev },
+	{ BSS_INFO_BASIC_FEATURE, bssUpdateBssInfoBasic },
+	{ BSS_INFO_RF_CH_FEATURE, bssUpdateChannel },
+	{ BSS_INFO_PM_FEATURE, pmUpdateBssInfoPM },
+	{ BSS_INFO_UAPSD_FEATURE, pmUpdateBssUapsd },
+	{ BSS_INFO_ROAM_DETECTION_FEATURE, bssUpdateRssiRmDetParams },
+	{ BSS_INFO_LQ_RM_FEATURE, NULL },
+	{ BSS_INFO_EXT_BSS_FEATURE, bssUpdateExtBssInfo },
+	{ BSS_INFO_BROADCAST_INFO_FEATURE, bssUpdateBmcMngRate },
+	{ BSS_INFO_SYNC_MODE_FEATURE, bssUpdateSyncModeCtrl },
+	{ BSS_INFO_RA_FEATURE, bssUpdateRA },
 #ifdef HW_TX_AMSDU_SUPPORT
-	{BSS_INFO_HW_AMSDU_FEATURE,         bssUpdateHwAmsdu},
+	{ BSS_INFO_HW_AMSDU_FEATURE, bssUpdateHwAmsdu },
 #endif
-	{BSS_INFO_MAX_NUM_FEATURE,          NULL},
+	{ BSS_INFO_MAX_NUM_FEATURE, NULL },
 };
 
-INT32 CmdSetSyncModeByBssInfoUpdate(
-	RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info)
+INT32 CmdSetSyncModeByBssInfoUpdate(RTMP_ADAPTER *pAd,
+				    BSS_INFO_ARGUMENT_T bss_info)
 {
-	struct cmd_msg          *msg = NULL;
-	CMD_BSSINFO_UPDATE_T    CmdBssInfoUpdate = {0};
-	INT32                   Ret = 0;
-	UINT16                   ucTLVNumber = 1;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	CMD_BSSINFO_UPDATE_T CmdBssInfoUpdate = { 0 };
+	INT32 Ret = 0;
+	UINT16 ucTLVNumber = 1;
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, MAX_BUF_SIZE_OF_BSS_INFO + 100);
 
@@ -3030,26 +3125,24 @@ INT32 CmdSetSyncModeByBssInfoUpdate(
 	CmdBssInfoUpdate.u2TotalElementNum = cpu2le16(ucTLVNumber);
 	CmdBssInfoUpdate.ucAppendCmdTLV = TRUE;
 	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoUpdate,
-					  sizeof(CMD_BSSINFO_UPDATE_T));
+			  sizeof(CMD_BSSINFO_UPDATE_T));
 	bssUpdateSyncModeCtrl(pAd, bss_info, msg);
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-INT32 CmdExtBssInfoUpdate(
-	RTMP_ADAPTER *pAd,
-	BSS_INFO_ARGUMENT_T bss_info)
+INT32 CmdExtBssInfoUpdate(RTMP_ADAPTER *pAd, BSS_INFO_ARGUMENT_T bss_info)
 {
-	struct cmd_msg          *msg = NULL;
-	CMD_BSSINFO_UPDATE_T    CmdBssInfoUpdate = {0};
-	INT32                   Ret = 0;
-	UINT8                   i = 0;
-	UINT16                  ucTLVNumber = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	CMD_BSSINFO_UPDATE_T CmdBssInfoUpdate = { 0 };
+	INT32 Ret = 0;
+	UINT8 i = 0;
+	UINT16 ucTLVNumber = 0;
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, MAX_BUF_SIZE_OF_BSS_INFO);
 
@@ -3078,19 +3171,21 @@ INT32 CmdExtBssInfoUpdate(
 	CmdBssInfoUpdate.ucBssIndex = bss_info.ucBssIndex;
 	CmdBssInfoUpdate.u2TotalElementNum = cpu2le16(ucTLVNumber);
 	CmdBssInfoUpdate.ucAppendCmdTLV = TRUE;
-	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoUpdate, sizeof(CMD_BSSINFO_UPDATE_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdBssInfoUpdate,
+			  sizeof(CMD_BSSINFO_UPDATE_T));
 
 	for (i = 0; i < BSS_INFO_MAX_NUM; i++) {
-		if (bss_info.u4BssInfoFeature & apfBssInfoTagHandle[i].BssInfoTag) {
+		if (bss_info.u4BssInfoFeature &
+		    apfBssInfoTagHandle[i].BssInfoTag) {
 			if (apfBssInfoTagHandle[i].BssInfoTagHandler != NULL) {
 				apfBssInfoTagHandle[i].BssInfoTagHandler(
-					pAd,
-					bss_info,
-					msg);
+					pAd, bss_info, msg);
 			} else {
-				MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-						 ("%s: BssInfoTag = %d no corresponding function handler.\n",
-						  __func__, apfBssInfoTagHandle[i].BssInfoTag));
+				MTWF_LOG(
+					DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_OFF,
+					("%s: BssInfoTag = %d no corresponding function handler.\n",
+					 __func__,
+					 apfBssInfoTagHandle[i].BssInfoTag));
 			}
 		}
 	}
@@ -3100,20 +3195,17 @@ INT32 CmdExtBssInfoUpdate(
 
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-INT32 CmdExtSetTmrCR(
-	struct _RTMP_ADAPTER *pAd,
-	UCHAR enable,
-	UCHAR BandIdx)
+INT32 CmdExtSetTmrCR(struct _RTMP_ADAPTER *pAd, UCHAR enable, UCHAR BandIdx)
 {
-	struct cmd_msg          *msg = NULL;
-	CMD_TMR_CTRL_T    CmdTmrCtrl = {0};
-	TMR_CTRL_SET_TMR_EN_T TmrCtrlSetTmr = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
-	INT32                   Ret = 0;
+	struct cmd_msg *msg = NULL;
+	CMD_TMR_CTRL_T CmdTmrCtrl = { 0 };
+	TMR_CTRL_SET_TMR_EN_T TmrCtrlSetTmr = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
+	INT32 Ret = 0;
 	struct _RTMP_CHIP_CAP *cap = hc_get_chip_cap(pAd->hdev_ctrl);
 
 	msg = AndesAllocCmdMsg(pAd, sizeof(CMD_TMR_CTRL_T));
@@ -3143,7 +3235,9 @@ INT32 CmdExtSetTmrCR(
 			TmrCtrlSetTmr.ucRole = 0;
 		else if (enable == TMR_RESPONDER) {
 			TmrCtrlSetTmr.ucRole = 1;
-			TmrCtrlSetTmr.aucType_Subtype[0] = FC_TYPE_MGMT | (SUBTYPE_ACTION << TMR_PA_SUBTYPE_OFST);
+			TmrCtrlSetTmr.aucType_Subtype[0] =
+				FC_TYPE_MGMT |
+				(SUBTYPE_ACTION << TMR_PA_SUBTYPE_OFST);
 			TmrCtrlSetTmr.aucType_Subtype[1] = FC_TYPE_RSVED;
 			TmrCtrlSetTmr.aucType_Subtype[2] = FC_TYPE_RSVED;
 			TmrCtrlSetTmr.aucType_Subtype[3] = FC_TYPE_RSVED;
@@ -3153,12 +3247,12 @@ INT32 CmdExtSetTmrCR(
 
 	TmrCtrlSetTmr.ucDbdcIdx = BandIdx;
 	AndesAppendCmdMsg(msg, (char *)&TmrCtrlSetTmr,
-					  sizeof(TMR_CTRL_SET_TMR_EN_T));
+			  sizeof(TMR_CTRL_SET_TMR_EN_T));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
@@ -3168,7 +3262,7 @@ INT32 CmdP2pNoaOffloadCtrl(RTMP_ADAPTER *ad, UINT8 enable)
 	struct cmd_msg *msg;
 	struct _EXT_CMD_NOA_CTRL_T extCmdNoaCtrl;
 	int ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(ad, sizeof(struct _EXT_CMD_NOA_CTRL_T));
 
@@ -3193,44 +3287,42 @@ INT32 CmdP2pNoaOffloadCtrl(RTMP_ADAPTER *ad, UINT8 enable)
 	ret = AndesSendCmdMsg(ad, msg);
 error:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s:(ret = %d)\n", __func__, ret));
+		 ("%s:(ret = %d)\n", __func__, ret));
 	return ret;
 }
 #endif /* defined(RT_CFG80211_P2P_CONCURRENT_DEVICE) || defined(CFG80211_MULTI_STA) */
-
 
 static VOID CmdRxHdrTransUpdateRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
 	struct _EVENT_EXT_CMD_RESULT_T *EventExtCmdResult =
 		(struct _EVENT_EXT_CMD_RESULT_T *)Data;
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExTenCID));
+		 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExTenCID));
 #ifdef RT_BIG_ENDIAN
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
 #endif
 
 	if (EventExtCmdResult->u4Status != 0) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
+			  __func__, EventExtCmdResult->u4Status));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-				 ("%s::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::EventExtCmdResult.u4Status = 0x%x\n", __func__,
+			  EventExtCmdResult->u4Status));
 	}
 }
 
-
 INT32 CmdRxHdrTransUpdate(RTMP_ADAPTER *pAd, BOOLEAN En, BOOLEAN ChkBssid,
-						  BOOLEAN InSVlan, BOOLEAN RmVlan, BOOLEAN SwPcP)
+			  BOOLEAN InSVlan, BOOLEAN RmVlan, BOOLEAN SwPcP)
 {
-	struct cmd_msg			*msg = NULL;
-	INT32					Ret = 0;
-	EXT_RX_HEADER_TRANSLATE_T	ExtRxHdrTrans = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	INT32 Ret = 0;
+	EXT_RX_HEADER_TRANSLATE_T ExtRxHdrTrans = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	msg = AndesAllocCmdMsg(pAd,  sizeof(EXT_RX_HEADER_TRANSLATE_T));
+	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_RX_HEADER_TRANSLATE_T));
 
 	if (!msg) {
 		Ret = NDIS_STATUS_RESOURCES;
@@ -3254,45 +3346,44 @@ INT32 CmdRxHdrTransUpdate(RTMP_ADAPTER *pAd, BOOLEAN En, BOOLEAN ChkBssid,
 	ExtRxHdrTrans.ucUserQosTid = !SwPcP;
 	ExtRxHdrTrans.ucTranslationMode = 0;
 	AndesAppendCmdMsg(msg, (char *)&ExtRxHdrTrans,
-					  sizeof(EXT_RX_HEADER_TRANSLATE_T));
+			  sizeof(EXT_RX_HEADER_TRANSLATE_T));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-
-static VOID CmdRxHdrTransBLUpdateRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
+static VOID CmdRxHdrTransBLUpdateRsp(struct cmd_msg *msg, char *Data,
+				     UINT16 Len)
 {
 	struct _EVENT_EXT_CMD_RESULT_T *EventExtCmdResult =
 		(struct _EVENT_EXT_CMD_RESULT_T *)Data;
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n",
-			  __func__, EventExtCmdResult->ucExTenCID));
+		 ("%s: EventExtCmdResult.ucExTenCID = 0x%x\n", __func__,
+		  EventExtCmdResult->ucExTenCID));
 #ifdef RT_BIG_ENDIAN
 	EventExtCmdResult->u4Status = le2cpu32(EventExtCmdResult->u4Status);
 #endif
 
 	if (EventExtCmdResult->u4Status != 0) {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::BUG::EventExtCmdResult.u4Status = 0x%x\n",
+			  __func__, EventExtCmdResult->u4Status));
 	} else {
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s::EventExtCmdResult.u4Status = 0x%x\n",
-				  __func__, EventExtCmdResult->u4Status));
+			 ("%s::EventExtCmdResult.u4Status = 0x%x\n", __func__,
+			  EventExtCmdResult->u4Status));
 	}
 }
-
 
 INT32 CmdAutoBATrigger(RTMP_ADAPTER *pAd, BOOLEAN Enable, UINT32 Timeout)
 {
 	struct cmd_msg *msg = NULL;
 	INT32 Ret = 0;
-	EXT_CMD_ID_AUTO_BA_T ExtAutoBa = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
+	EXT_CMD_ID_AUTO_BA_T ExtAutoBa = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_CMD_ID_AUTO_BA_T));
 
@@ -3314,11 +3405,11 @@ INT32 CmdAutoBATrigger(RTMP_ADAPTER *pAd, BOOLEAN Enable, UINT32 Timeout)
 	ExtAutoBa.ucTarget = 0;
 	ExtAutoBa.u4Timeout = cpu2le32(Timeout);
 	AndesAppendCmdMsg(msg, (char *)&ExtAutoBa,
-					  sizeof(EXT_CMD_ID_AUTO_BA_T));
+			  sizeof(EXT_CMD_ID_AUTO_BA_T));
 	Ret = AndesSendCmdMsg(pAd, msg);
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
@@ -3327,8 +3418,8 @@ INT32 CmdMcastCloneEnable(RTMP_ADAPTER *pAd, UINT Enable, UINT8 omac_idx)
 {
 	struct cmd_msg *msg = NULL;
 	INT32 Ret = 0;
-	EXT_CMD_ID_MCAST_CLONE_T ExtMcastClone = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
+	EXT_CMD_ID_MCAST_CLONE_T ExtMcastClone = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_CMD_ID_MCAST_CLONE_T));
 
@@ -3351,29 +3442,31 @@ INT32 CmdMcastCloneEnable(RTMP_ADAPTER *pAd, UINT Enable, UINT8 omac_idx)
 	ExtMcastClone.ucMcastCloneEnable = Enable;
 
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		("%s: omac_idx=%d, en=%d\n",
-		__func__, omac_idx, Enable));
+		 ("%s: omac_idx=%d, en=%d\n", __func__, omac_idx, Enable));
 
 	AndesAppendCmdMsg(msg, (char *)&ExtMcastClone,
-					  sizeof(EXT_CMD_ID_MCAST_CLONE_T));
+			  sizeof(EXT_CMD_ID_MCAST_CLONE_T));
 	Ret = AndesSendCmdMsg(pAd, msg);
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-
-BOOLEAN CmdMcastEntryInsert(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx, UINT8 Type, PUCHAR MemberAddr, PNET_DEV dev, UINT8 WlanIndex)
+BOOLEAN CmdMcastEntryInsert(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx,
+			    UINT8 Type, PUCHAR MemberAddr, PNET_DEV dev,
+			    UINT8 WlanIndex)
 {
 	struct cmd_msg *msg = NULL;
 	INT32 Ret = 0;
 	EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T ExtMcastEntryInsert;
-    struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	os_zero_mem(&ExtMcastEntryInsert, sizeof(EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T));
-	
-	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T));
+	os_zero_mem(&ExtMcastEntryInsert,
+		    sizeof(EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T));
+
+	msg = AndesAllocCmdMsg(pAd,
+			       sizeof(EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T));
 
 	if (!msg) {
 		Ret = NDIS_STATUS_RESOURCES;
@@ -3392,7 +3485,8 @@ BOOLEAN CmdMcastEntryInsert(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx, UIN
 	AndesInitCmdMsg(msg, attr);
 
 	if (GrpAddr) {
-		NdisMoveMemory(&ExtMcastEntryInsert.aucGroupId[0], (UCHAR *)GrpAddr, 6);
+		NdisMoveMemory(&ExtMcastEntryInsert.aucGroupId[0],
+			       (UCHAR *)GrpAddr, 6);
 		ExtMcastEntryInsert.ucBssInfoIdx = BssIdx;
 		ExtMcastEntryInsert.ucMcastEntryType = Type;
 	} else {
@@ -3401,34 +3495,37 @@ BOOLEAN CmdMcastEntryInsert(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx, UIN
 	}
 
 	if (MemberAddr) {
-		NdisMoveMemory(&ExtMcastEntryInsert.aucMemberAddr[0], (UCHAR *)MemberAddr, 6);
+		NdisMoveMemory(&ExtMcastEntryInsert.aucMemberAddr[0],
+			       (UCHAR *)MemberAddr, 6);
 		ExtMcastEntryInsert.ucMemberNum = 1;
 		ExtMcastEntryInsert.ucIndex = WlanIndex;
 	}
 
 	AndesAppendCmdMsg(msg, (char *)&ExtMcastEntryInsert,
-            sizeof(EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T));
+			  sizeof(EXT_CMD_ID_MULTICAST_ENTRY_INSERT_T));
 
 	Ret = AndesSendCmdMsg(pAd, msg);
 
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-
-BOOLEAN CmdMcastEntryDelete(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx, PUCHAR MemberAddr, PNET_DEV dev, UINT8 WlanIndex)
+BOOLEAN CmdMcastEntryDelete(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx,
+			    PUCHAR MemberAddr, PNET_DEV dev, UINT8 WlanIndex)
 {
 	struct cmd_msg *msg = NULL;
 	INT32 Ret = 0;
 	EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T ExtMcastEntryDelete;
 
-    struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	os_zero_mem(&ExtMcastEntryDelete, sizeof(EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T));
-	
-	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T));
+	os_zero_mem(&ExtMcastEntryDelete,
+		    sizeof(EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T));
+
+	msg = AndesAllocCmdMsg(pAd,
+			       sizeof(EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T));
 
 	if (!msg) {
 		Ret = NDIS_STATUS_RESOURCES;
@@ -3445,9 +3542,10 @@ BOOLEAN CmdMcastEntryDelete(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx, PUC
 	SET_CMD_ATTR_RSP_HANDLER(attr, NULL);
 
 	AndesInitCmdMsg(msg, attr);
-	
+
 	if (GrpAddr) {
-		NdisMoveMemory(&ExtMcastEntryDelete.aucGroupId[0], (UCHAR *)GrpAddr, 6);
+		NdisMoveMemory(&ExtMcastEntryDelete.aucGroupId[0],
+			       (UCHAR *)GrpAddr, 6);
 		ExtMcastEntryDelete.ucBssInfoIdx = BssIdx;
 	} else {
 		Ret = NDIS_STATUS_FAILURE;
@@ -3456,33 +3554,37 @@ BOOLEAN CmdMcastEntryDelete(RTMP_ADAPTER *pAd, PUCHAR GrpAddr, UINT8 BssIdx, PUC
 
 	if (MemberAddr) {
 		ExtMcastEntryDelete.ucMemberNum = 1;
-		NdisMoveMemory(&ExtMcastEntryDelete.aucMemberAddr[0], (UCHAR *)MemberAddr, 6);
+		NdisMoveMemory(&ExtMcastEntryDelete.aucMemberAddr[0],
+			       (UCHAR *)MemberAddr, 6);
 		ExtMcastEntryDelete.ucIndex = WlanIndex;
 	}
 
 	AndesAppendCmdMsg(msg, (char *)&ExtMcastEntryDelete,
-            sizeof(EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T));
+			  sizeof(EXT_CMD_ID_MULTICAST_ENTRY_DELETE_T));
 
 	Ret = AndesSendCmdMsg(pAd, msg);
 
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
 #ifdef IGMP_TVM_SUPPORT
-BOOLEAN CmdSetMcastEntryAgeOut(RTMP_ADAPTER *pAd, UINT8 AgeOutTime, UINT8 ucOwnMacIdx)
+BOOLEAN CmdSetMcastEntryAgeOut(RTMP_ADAPTER *pAd, UINT8 AgeOutTime,
+			       UINT8 ucOwnMacIdx)
 {
 	struct cmd_msg *msg = NULL;
 	INT32 Ret = 0;
-	EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T ExtMcastSetAgeOut = {0};
+	EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T ExtMcastSetAgeOut = { 0 };
 
-    struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	os_zero_mem(&ExtMcastSetAgeOut, sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
+	os_zero_mem(&ExtMcastSetAgeOut,
+		    sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
 
-	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
+	msg = AndesAllocCmdMsg(pAd,
+			       sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
 
 	if (!msg) {
 		Ret = NDIS_STATUS_RESOURCES;
@@ -3504,27 +3606,30 @@ BOOLEAN CmdSetMcastEntryAgeOut(RTMP_ADAPTER *pAd, UINT8 AgeOutTime, UINT8 ucOwnM
 	ExtMcastSetAgeOut.ucOwnMacIdx = ucOwnMacIdx;
 	ExtMcastSetAgeOut.SetData.u4AgeOutTime = AgeOutTime;
 	AndesAppendCmdMsg(msg, (char *)&ExtMcastSetAgeOut,
-		sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
+			  sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
 
 	Ret = AndesSendCmdMsg(pAd, msg);
 
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-BOOLEAN CmdGetMcastEntryTable(RTMP_ADAPTER *pAd, UINT8 ucOwnMacIdx, struct wifi_dev *wdev)
+BOOLEAN CmdGetMcastEntryTable(RTMP_ADAPTER *pAd, UINT8 ucOwnMacIdx,
+			      struct wifi_dev *wdev)
 {
 	struct cmd_msg *msg = NULL;
 	INT32 Ret = 0;
-	EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T ExtMcastGetEntryTable = {0};
+	EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T ExtMcastGetEntryTable = { 0 };
 
-    struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	os_zero_mem(&ExtMcastGetEntryTable, sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
+	os_zero_mem(&ExtMcastGetEntryTable,
+		    sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
 
-	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
+	msg = AndesAllocCmdMsg(pAd,
+			       sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
 
 	if (!msg) {
 		Ret = NDIS_STATUS_RESOURCES;
@@ -3545,13 +3650,13 @@ BOOLEAN CmdGetMcastEntryTable(RTMP_ADAPTER *pAd, UINT8 ucOwnMacIdx, struct wifi_
 	ExtMcastGetEntryTable.ucCmdType = IGMP_MCAST_GET_ENTRY_TABLE;
 	ExtMcastGetEntryTable.ucOwnMacIdx = ucOwnMacIdx;
 	AndesAppendCmdMsg(msg, (char *)&ExtMcastGetEntryTable,
-		sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
+			  sizeof(EXT_CMD_ID_IGMP_MULTICAST_SET_GET_T));
 
 	Ret = AndesSendCmdMsg(pAd, msg);
 
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
@@ -3573,14 +3678,15 @@ VOID CmdExtEventIgmpMcastTableRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 #endif /* IGMP_TVM_SUPPORT */
 #endif
 
-INT32 CmdRxHdrTransBLUpdate(RTMP_ADAPTER *pAd, UINT8 Index, UINT8 En, UINT16 EthType)
+INT32 CmdRxHdrTransBLUpdate(RTMP_ADAPTER *pAd, UINT8 Index, UINT8 En,
+			    UINT16 EthType)
 {
-	struct cmd_msg			*msg = NULL;
-	INT32					Ret = 0;
-	EXT_RX_HEADER_TRANSLATE_BL_T	ExtRxHdrTransBL = {0};
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct cmd_msg *msg = NULL;
+	INT32 Ret = 0;
+	EXT_RX_HEADER_TRANSLATE_BL_T ExtRxHdrTransBL = { 0 };
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
-	msg = AndesAllocCmdMsg(pAd,  sizeof(EXT_RX_HEADER_TRANSLATE_BL_T));
+	msg = AndesAllocCmdMsg(pAd, sizeof(EXT_RX_HEADER_TRANSLATE_BL_T));
 
 	if (!msg) {
 		Ret = NDIS_STATUS_RESOURCES;
@@ -3602,48 +3708,46 @@ INT32 CmdRxHdrTransBLUpdate(RTMP_ADAPTER *pAd, UINT8 Index, UINT8 En, UINT16 Eth
 	ExtRxHdrTransBL.ucEnable = En;
 	ExtRxHdrTransBL.usEtherType = cpu2le16(EthType);
 	AndesAppendCmdMsg(msg, (char *)&ExtRxHdrTransBL,
-					  sizeof(EXT_RX_HEADER_TRANSLATE_BL_T));
+			  sizeof(EXT_RX_HEADER_TRANSLATE_BL_T));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 Error0:
 	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			 ("%s:(Ret = %d)\n", __func__, Ret));
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
-
 
 static VOID CmdExtGeneralTestRsp(struct cmd_msg *msg, char *Data, UINT16 Len)
 {
 	UINT8 Status;
 
 	Status = *Data;
-	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("General Test status=%d\n", Status));
+	MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		 ("General Test status=%d\n", Status));
 
 	switch (Status) {
 	case TARGET_ADDRESS_LEN_SUCCESS:
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-				 ("%s: General Test success\n", __func__));
+			 ("%s: General Test success\n", __func__));
 		break;
 
 	default:
 		MTWF_LOG(DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				 ("%s: General Test success Unknow Status(%d)\n",
-				  __func__, Status));
+			 ("%s: General Test success Unknow Status(%d)\n",
+			  __func__, Status));
 		break;
 	}
 }
 
 #ifdef ERR_RECOVERY
 
-INT32 CmdExtGeneralTestOn(
-	struct _RTMP_ADAPTER *pAd,
-	BOOLEAN enable)
+INT32 CmdExtGeneralTestOn(struct _RTMP_ADAPTER *pAd, BOOLEAN enable)
 {
 	struct cmd_msg *msg = NULL;
-	EXT_CMD_GENERAL_TEST_T CmdGeneralTest = {0};
+	EXT_CMD_GENERAL_TEST_T CmdGeneralTest = { 0 };
 	UINT32 MsgLen;
 	INT32 Ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	MsgLen = sizeof(CMD_STAREC_UPDATE_T);
 	msg = AndesAllocCmdMsg(pAd, MsgLen);
@@ -3665,31 +3769,33 @@ INT32 CmdExtGeneralTestOn(
 	/* Fill command related header here*/
 	CmdGeneralTest.ucCategory = GENERAL_TEST_CATEGORY_SIM_ERROR_DETECTION;
 	CmdGeneralTest.ucAction = GENERAL_TEST_ACTION_SWITCH_ON_OFF;
-	CmdGeneralTest.Data.rGeneralTestSimErrorSwitchOnOff.ucSwitchMode = enable;
-	AndesAppendCmdMsg(msg, (char *)&CmdGeneralTest, sizeof(EXT_CMD_GENERAL_TEST_T));
+	CmdGeneralTest.Data.rGeneralTestSimErrorSwitchOnOff.ucSwitchMode =
+		enable;
+	AndesAppendCmdMsg(msg, (char *)&CmdGeneralTest,
+			  sizeof(EXT_CMD_GENERAL_TEST_T));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: CmdExtGeneralTest:\n", __func__));
+		 ("%s: CmdExtGeneralTest:\n", __func__));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: ucCategory=%d, ucAction=%d, ucSwitchMode=%d\n",
-			  __func__, CmdGeneralTest.ucCategory, CmdGeneralTest.ucAction,
-			  CmdGeneralTest.Data.rGeneralTestSimErrorSwitchOnOff.ucSwitchMode));
+		 ("%s: ucCategory=%d, ucAction=%d, ucSwitchMode=%d\n", __func__,
+		  CmdGeneralTest.ucCategory, CmdGeneralTest.ucAction,
+		  CmdGeneralTest.Data.rGeneralTestSimErrorSwitchOnOff
+			  .ucSwitchMode));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s:(Ret = %d)\n", __func__, Ret));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-INT32 CmdExtGeneralTestMode(
-	struct _RTMP_ADAPTER *pAd,
-	UINT8 mode,
-	UINT8 submode)
+INT32 CmdExtGeneralTestMode(struct _RTMP_ADAPTER *pAd, UINT8 mode,
+			    UINT8 submode)
 {
 	struct cmd_msg *msg = NULL;
-	EXT_CMD_GENERAL_TEST_T CmdGeneralTest = {0};
+	EXT_CMD_GENERAL_TEST_T CmdGeneralTest = { 0 };
 	UINT32 MsgLen;
 	INT32 Ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	MsgLen = sizeof(CMD_STAREC_UPDATE_T);
 	msg = AndesAllocCmdMsg(pAd, MsgLen);
@@ -3713,31 +3819,32 @@ INT32 CmdExtGeneralTestMode(
 	CmdGeneralTest.ucAction = GENERAL_TEST_ACTION_RECOVERY;
 	CmdGeneralTest.Data.rGeneralTestSimErrDetRecovery.ucModule = mode;
 	CmdGeneralTest.Data.rGeneralTestSimErrDetRecovery.ucSubModule = submode;
-	AndesAppendCmdMsg(msg, (char *)&CmdGeneralTest, sizeof(EXT_CMD_GENERAL_TEST_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdGeneralTest,
+			  sizeof(EXT_CMD_GENERAL_TEST_T));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: CmdExtGeneralTest:\n", __func__));
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("%s: ucCategory=%d, ucAction=%d, ucModule=%d ucSubModule=%d\n",
-			  __func__, CmdGeneralTest.ucCategory, CmdGeneralTest.ucAction,
-			  CmdGeneralTest.Data.rGeneralTestSimErrDetRecovery.ucModule,
-			  CmdGeneralTest.Data.rGeneralTestSimErrDetRecovery.ucSubModule));
+		 ("%s: CmdExtGeneralTest:\n", __func__));
+	MTWF_LOG(
+		DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		("%s: ucCategory=%d, ucAction=%d, ucModule=%d ucSubModule=%d\n",
+		 __func__, CmdGeneralTest.ucCategory, CmdGeneralTest.ucAction,
+		 CmdGeneralTest.Data.rGeneralTestSimErrDetRecovery.ucModule,
+		 CmdGeneralTest.Data.rGeneralTestSimErrDetRecovery.ucSubModule));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s:(Ret = %d)\n", __func__, Ret));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 #endif /* ERR_RECOVERY */
 
-INT32 CmdExtGeneralTestAPPWS(
-	struct _RTMP_ADAPTER *pAd,
-	UINT action)
+INT32 CmdExtGeneralTestAPPWS(struct _RTMP_ADAPTER *pAd, UINT action)
 {
 	struct cmd_msg *msg = NULL;
-	EXT_CMD_GENERAL_TEST_T CmdGeneralTest = {0};
+	EXT_CMD_GENERAL_TEST_T CmdGeneralTest = { 0 };
 	UINT32 MsgLen;
 	INT32 Ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	MsgLen = sizeof(EXT_CMD_GENERAL_TEST_T);
 	msg = AndesAllocCmdMsg(pAd, MsgLen);
@@ -3759,28 +3866,26 @@ INT32 CmdExtGeneralTestAPPWS(
 	/* Fill command related header here*/
 	CmdGeneralTest.ucCategory = GENERAL_TEST_CATEGORY_APPWS;
 	CmdGeneralTest.ucAction = action;
-	AndesAppendCmdMsg(msg, (char *)&CmdGeneralTest, sizeof(EXT_CMD_GENERAL_TEST_T));
+	AndesAppendCmdMsg(msg, (char *)&CmdGeneralTest,
+			  sizeof(EXT_CMD_GENERAL_TEST_T));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s: ucCategory=%d, ucAction=%d\n",
-			  __func__, CmdGeneralTest.ucCategory, CmdGeneralTest.ucAction));
+		 ("%s: ucCategory=%d, ucAction=%d\n", __func__,
+		  CmdGeneralTest.ucCategory, CmdGeneralTest.ucAction));
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s:(Ret = %d)\n", __func__, Ret));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
 
-INT32 CmdExtSER(
-	struct _RTMP_ADAPTER *pAd,
-	UINT_8  action,
-	UINT8	ser_set
-	)
+INT32 CmdExtSER(struct _RTMP_ADAPTER *pAd, UINT_8 action, UINT8 ser_set)
 {
 	struct cmd_msg *msg = NULL;
-	EXT_CMD_SER_T cmdSER = {0};
+	EXT_CMD_SER_T cmdSER = { 0 };
 	UINT32 MsgLen;
 	INT32 Ret = 0;
-	struct _CMD_ATTRIBUTE attr = {0};
+	struct _CMD_ATTRIBUTE attr = { 0 };
 
 	MsgLen = sizeof(EXT_CMD_SER_T);
 	msg = AndesAllocCmdMsg(pAd, MsgLen);
@@ -3806,14 +3911,13 @@ INT32 CmdExtSER(
 	AndesAppendCmdMsg(msg, (char *)&cmdSER, sizeof(EXT_CMD_SER_T));
 
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF,
-			 ("%s: action=%d ser_set=%d\n",
-			  __func__, cmdSER.action, cmdSER.ser_set));
+		 ("%s: action=%d ser_set=%d\n", __func__, cmdSER.action,
+		  cmdSER.ser_set));
 
 	/* Send out CMD */
 	Ret = AndesSendCmdMsg(pAd, msg);
 error:
-	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO, ("%s:(Ret = %d)\n", __func__, Ret));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+		 ("%s:(Ret = %d)\n", __func__, Ret));
 	return Ret;
 }
-
-

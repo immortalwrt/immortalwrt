@@ -30,15 +30,15 @@
 
 #include "rt_config.h"
 
-
 #ifdef DBG_STARVATION
-static void cmdq_starv_timeout_handle(struct starv_dbg *starv, struct starv_log_entry *entry)
+static void cmdq_starv_timeout_handle(struct starv_dbg *starv,
+				      struct starv_log_entry *entry)
 {
 	struct _CmdQElmt *cmd = container_of(starv, struct _CmdQElmt, starv);
 	struct _CmdQ *cmdq = starv->block->priv;
 	struct starv_log_basic *log = NULL;
 
-	os_alloc_mem(NULL, (UCHAR **) &log, sizeof(struct starv_log_basic));
+	os_alloc_mem(NULL, (UCHAR **)&log, sizeof(struct starv_log_basic));
 	if (!log)
 		return;
 
@@ -61,7 +61,6 @@ static void cmdq_starv_block_init(struct starv_log *ctrl, struct _CmdQ *cmdq)
 }
 #endif /*DBG_STARVATION*/
 
-
 /*
 	========================================================================
 
@@ -77,8 +76,7 @@ static void cmdq_starv_block_init(struct starv_log *ctrl, struct _CmdQ *cmdq)
 
 	========================================================================
 */
-VOID	RTInitializeCmdQ(
-	IN	PCmdQ	cmdq)
+VOID RTInitializeCmdQ(IN PCmdQ cmdq)
 {
 	cmdq->head = NULL;
 	cmdq->tail = NULL;
@@ -86,7 +84,6 @@ VOID	RTInitializeCmdQ(
 	cmdq->CmdQState = RTMP_TASK_STAT_INITED;
 }
 
-
 /*
 	========================================================================
 
@@ -102,9 +99,7 @@ VOID	RTInitializeCmdQ(
 
 	========================================================================
 */
-VOID	RTThreadDequeueCmd(
-	IN	PCmdQ		cmdq,
-	OUT	PCmdQElmt * pcmdqelmt)
+VOID RTThreadDequeueCmd(IN PCmdQ cmdq, OUT PCmdQElmt *pcmdqelmt)
 {
 	*pcmdqelmt = cmdq->head;
 
@@ -117,7 +112,6 @@ VOID	RTThreadDequeueCmd(
 	}
 }
 
-
 /*
 	========================================================================
 
@@ -133,18 +127,17 @@ VOID	RTThreadDequeueCmd(
 
 	========================================================================
 */
-NDIS_STATUS RTEnqueueInternalCmd(
-	IN PRTMP_ADAPTER	pAd,
-	IN NDIS_OID			Oid,
-	IN PVOID			pInformationBuffer,
-	IN UINT32			InformationBufferLength)
+NDIS_STATUS RTEnqueueInternalCmd(IN PRTMP_ADAPTER pAd, IN NDIS_OID Oid,
+				 IN PVOID pInformationBuffer,
+				 IN UINT32 InformationBufferLength)
 {
-	NDIS_STATUS	status;
-	ULONG	flag = 0;
-	PCmdQElmt	cmdqelmt = NULL;
+	NDIS_STATUS status;
+	ULONG flag = 0;
+	PCmdQElmt cmdqelmt = NULL;
 
 	if (RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST)) {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("--->RTEnqueueInternalCmd - NIC is not exist!!\n"));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("--->RTEnqueueInternalCmd - NIC is not exist!!\n"));
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -156,13 +149,16 @@ NDIS_STATUS RTEnqueueInternalCmd(
 	NdisZeroMemory(cmdqelmt, sizeof(CmdQElmt));
 
 	if (InformationBufferLength > 0) {
-		status = os_alloc_mem(pAd, (PUCHAR *)&cmdqelmt->buffer, InformationBufferLength);
+		status = os_alloc_mem(pAd, (PUCHAR *)&cmdqelmt->buffer,
+				      InformationBufferLength);
 
-		if ((status != NDIS_STATUS_SUCCESS) || (cmdqelmt->buffer == NULL)) {
+		if ((status != NDIS_STATUS_SUCCESS) ||
+		    (cmdqelmt->buffer == NULL)) {
 			os_free_mem(cmdqelmt);
 			return NDIS_STATUS_RESOURCES;
 		} else {
-			NdisMoveMemory(cmdqelmt->buffer, pInformationBuffer, InformationBufferLength);
+			NdisMoveMemory(cmdqelmt->buffer, pInformationBuffer,
+				       InformationBufferLength);
 			cmdqelmt->bufferlength = InformationBufferLength;
 		}
 	} else {
@@ -200,21 +196,14 @@ NDIS_STATUS RTEnqueueInternalCmd(
 	return NDIS_STATUS_SUCCESS;
 }
 
-
-
-
 /*Define common Cmd Thread*/
 
-
-
-
-
-
-
 #ifdef CONFIG_AP_SUPPORT
-static NTSTATUS _802_11_CounterMeasureHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
+static NTSTATUS _802_11_CounterMeasureHdlr(IN PRTMP_ADAPTER pAd,
+					   IN PCmdQElmt CMDQelmt)
 {
-	IF_DEV_CONFIG_OPMODE_ON_AP(pAd) {
+	IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
+	{
 		MAC_TABLE_ENTRY *pEntry;
 
 		pEntry = (MAC_TABLE_ENTRY *)CMDQelmt->buffer;
@@ -232,7 +221,7 @@ static NTSTATUS ApSoftReStart(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 	pMbss = &pAd->ApCfg.MBSSID[apidx];
 
 	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-			 ("cmd> ApSoftReStart: apidx = %d\n", apidx));
+		 ("cmd> ApSoftReStart: apidx = %d\n", apidx));
 	APStop(pAd, pMbss, AP_BSS_OPER_SINGLE);
 	APStartUp(pAd, pMbss, AP_BSS_OPER_SINGLE);
 
@@ -246,7 +235,8 @@ static NTSTATUS ApCliSetChannel(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 	UCHAR channel = 0;
 
 	channel = pApCliTab->MlmeAux.Channel;
-	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("cmd> channel=%d CMDTHREAD_APCLI_PBC_TIMEOUT!\n", channel));
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("cmd> channel=%d CMDTHREAD_APCLI_PBC_TIMEOUT!\n", channel));
 	rtmp_set_channel(pAd, &pApCliTab->wdev, channel);
 
 	return NDIS_STATUS_SUCCESS;
@@ -259,15 +249,29 @@ static NTSTATUS CmdApCliIfDown(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 
 	NdisMoveMemory(&apidx, CMDQelmt->buffer, sizeof(UCHAR));
 	apcliEn = pAd->ApCfg.ApCliTab[apidx].Enable;
-	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("cmd>  CMDTHREAD_APCLI_IF_DOWN! apidx=%u, apcliEn=%d\n", apidx, apcliEn));
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("cmd>  CMDTHREAD_APCLI_IF_DOWN! apidx=%u, apcliEn=%d\n",
+		  apidx, apcliEn));
 
 	/* bring apcli interface down first */
 	if (apcliEn == TRUE) {
 		pAd->ApCfg.ApCliTab[apidx].Enable = FALSE;
 		ApCliIfDown(pAd);
+		pAd->ApCfg.ApCliTab[apidx].Enable = apcliEn;
 	}
-
-	pAd->ApCfg.ApCliTab[apidx].Enable = apcliEn;
+#ifdef CONFIG_MAP_SUPPORT
+	else if ((pAd->ApCfg.ApCliTab[apidx].wdev.WscControl.WscConfMode !=
+		  WSC_DISABLE) &&
+		 (pAd->ApCfg.ApCliTab[apidx].wdev.WscControl.bWscTrigger) &&
+		 IS_MAP_ENABLE(pAd)) {
+		MTWF_LOG(
+			DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("MAP WPS CASE FIRST LINKDOWN THEN CONNECTION apidx=%u, apcliEn=%d\n",
+			 apidx, apcliEn));
+		ApCliIfDown(pAd);
+		pAd->ApCfg.ApCliTab[apidx].Enable = TRUE;
+	}
+#endif
 	return NDIS_STATUS_SUCCESS;
 }
 
@@ -277,7 +281,8 @@ static NTSTATUS CmdWscApCliLinkDown(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 	UCHAR apidx = 0;
 
 	NdisMoveMemory(&apidx, CMDQelmt->buffer, sizeof(UCHAR));
-	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("cmd>  CMDTHREAD_WSC_APCLI_LINK_DOWN! apidx=%u\n", apidx));
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("cmd>  CMDTHREAD_WSC_APCLI_LINK_DOWN! apidx=%u\n", apidx));
 	WscApCliLinkDownById(pAd, apidx);
 	return NDIS_STATUS_SUCCESS;
 }
@@ -286,9 +291,6 @@ static NTSTATUS CmdWscApCliLinkDown(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 #endif /* APCLI_SUPPORT */
 
 #endif /* CONFIG_AP_SUPPORT */
-
-
-
 
 #ifdef CONFIG_AP_SUPPORT
 static NTSTATUS ChannelRescanHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
@@ -303,16 +305,19 @@ static NTSTATUS ChannelRescanHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 	NdisMoveMemory(&apidx, CMDQelmt->buffer, sizeof(UCHAR));
 	pMbss = &pAd->ApCfg.MBSSID[apidx];
 
-	Channel = APAutoSelectChannel(pAd, wdev, TRUE, pAutoChCtrl->pChannelInfo->IsABand);
-	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("cmd> Re-scan channel!\n"));
+	Channel = APAutoSelectChannel(pAd, wdev, TRUE,
+				      pAutoChCtrl->pChannelInfo->IsABand);
+	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("cmd> Re-scan channel!\n"));
 #ifdef ACS_CTCC_SUPPORT
 	if (!pAd->ApCfg.auto_ch_score_flag)
 #endif
 	{
-	wdev->channel = Channel;
-	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("cmd> Switch to %d!\n", Channel));
-	APStop(pAd, pMbss, AP_BSS_OPER_BY_RF);
-	APStartUp(pAd, pMbss, AP_BSS_OPER_BY_RF);
+		wdev->channel = Channel;
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			 ("cmd> Switch to %d!\n", Channel));
+		APStop(pAd, pMbss, AP_BSS_OPER_BY_RF);
+		APStartUp(pAd, pMbss, AP_BSS_OPER_BY_RF);
 	}
 #ifdef AP_QLOAD_SUPPORT
 	QBSS_LoadAlarmResume(pAd);
@@ -321,18 +326,19 @@ static NTSTATUS ChannelRescanHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 }
 #endif /* CONFIG_AP_SUPPORT*/
 
-
 #ifdef LINUX
 #ifdef RT_CFG80211_SUPPORT
 static NTSTATUS RegHintHdlr(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt)
 {
-	RT_CFG80211_CRDA_REG_HINT(pAd, CMDQelmt->buffer, CMDQelmt->bufferlength);
+	RT_CFG80211_CRDA_REG_HINT(pAd, CMDQelmt->buffer,
+				  CMDQelmt->bufferlength);
 	return NDIS_STATUS_SUCCESS;
 }
 
 static NTSTATUS RegHint11DHdlr(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt)
 {
-	RT_CFG80211_CRDA_REG_HINT11D(pAd, CMDQelmt->buffer, CMDQelmt->bufferlength);
+	RT_CFG80211_CRDA_REG_HINT11D(pAd, CMDQelmt->buffer,
+				     CMDQelmt->bufferlength);
 	return NDIS_STATUS_SUCCESS;
 }
 
@@ -342,14 +348,13 @@ static NTSTATUS RT_Mac80211_ScanEnd(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt)
 	return NDIS_STATUS_SUCCESS;
 }
 
-static NTSTATUS RT_Mac80211_ConnResultInfom(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt)
+static NTSTATUS RT_Mac80211_ConnResultInfom(RTMP_ADAPTER *pAd,
+					    IN PCmdQElmt CMDQelmt)
 {
 	return NDIS_STATUS_SUCCESS;
 }
 #endif /* RT_CFG80211_SUPPORT */
 #endif /* LINUX */
-
-
 
 #ifdef STREAM_MODE_SUPPORT
 static NTSTATUS UpdateTXChainAddress(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt)
@@ -359,15 +364,16 @@ static NTSTATUS UpdateTXChainAddress(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt)
 }
 #endif /* STREAM_MODE_SUPPORT */
 
-
 #ifdef CFG_TDLS_SUPPORT
 
-static NTSTATUS CFGTdlsSendCHSWSetupHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
+static NTSTATUS CFGTdlsSendCHSWSetupHdlr(IN PRTMP_ADAPTER pAd,
+					 IN PCmdQElmt CMDQelmt)
 {
 	return NDIS_STATUS_SUCCESS;
 }
 
-static NTSTATUS CFGTdlsAutoTeardownHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
+static NTSTATUS CFGTdlsAutoTeardownHdlr(IN PRTMP_ADAPTER pAd,
+					IN PCmdQElmt CMDQelmt)
 {
 	MAC_TABLE_ENTRY *pEntry = (MAC_TABLE_ENTRY *)(CMDQelmt->buffer);
 
@@ -377,14 +383,15 @@ static NTSTATUS CFGTdlsAutoTeardownHdlr(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQe
 
 #endif /* CFG_TDLS_SUPPORT */
 
-static NTSTATUS mac_table_delete_handle(struct _RTMP_ADAPTER *ad, struct _CmdQElmt *elem)
+static NTSTATUS mac_table_delete_handle(struct _RTMP_ADAPTER *ad,
+					struct _CmdQElmt *elem)
 {
-	struct _MAC_TABLE_ENTRY *entry = (struct _MAC_TABLE_ENTRY *)(elem->buffer);
+	struct _MAC_TABLE_ENTRY *entry =
+		(struct _MAC_TABLE_ENTRY *)(elem->buffer);
 
 	MacTableDeleteEntry(ad, entry->wcid, entry->Addr);
 	return NDIS_STATUS_SUCCESS;
 }
-
 
 static NTSTATUS RXVWriteInFile(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 {
@@ -394,9 +401,10 @@ static NTSTATUS RXVWriteInFile(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 	RTMP_STRING tmpSrc[256], chipname[100];
 	PRxVBQElmt prxvbqelmt = (PRxVBQElmt)CMDQelmt->buffer;
 
-	srcf = os_file_open(pAd->RxvFilePath, O_WRONLY|O_CREAT|O_APPEND, 0);
+	srcf = os_file_open(pAd->RxvFilePath, O_WRONLY | O_CREAT | O_APPEND, 0);
 	if (srcf.Status) {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Open file \"%s\" failed!\n", pAd->RxvFilePath));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("Open file \"%s\" failed!\n", pAd->RxvFilePath));
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -413,11 +421,14 @@ static NTSTATUS RXVWriteInFile(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 		sprintf(tmpSrc, "======================================\n");
 		os_file_write(srcf, tmpSrc, strlen(tmpSrc));
 		os_file_write(srcf, chipname, strlen(chipname));
-		sprintf(tmpSrc, "WCID(STA Index) = %d, We will record all WCID if WCID = 0.\n", pAd->ucRxvWcid);
+		sprintf(tmpSrc,
+			"WCID(STA Index) = %d, We will record all WCID if WCID = 0.\n",
+			pAd->ucRxvWcid);
 		os_file_write(srcf, tmpSrc, strlen(tmpSrc));
 		sprintf(tmpSrc, "Band Index = %d\n", pAd->ucRxvBandIdx);
 		os_file_write(srcf, tmpSrc, strlen(tmpSrc));
-		sprintf(tmpSrc, "CSD-Debug Group1/Group2 = 0x%x/0x%x\n", pAd->ucRxvG1, pAd->ucRxvG2);
+		sprintf(tmpSrc, "CSD-Debug Group1/Group2 = 0x%x/0x%x\n",
+			pAd->ucRxvG1, pAd->ucRxvG2);
 		os_file_write(srcf, tmpSrc, strlen(tmpSrc));
 		sprintf(tmpSrc, "======================================\n");
 		os_file_write(srcf, tmpSrc, strlen(tmpSrc));
@@ -425,15 +436,13 @@ static NTSTATUS RXVWriteInFile(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 	}
 
 	sprintf(tmpSrc, "[TimeStamp %u][STA %d][Rxv_SN %u][AggCnt %u]\n",
-		prxvbqelmt->timestamp,
-		prxvbqelmt->wcid,
-		prxvbqelmt->rxv_sn,
-		prxvbqelmt->aggcnt
-		);
+		prxvbqelmt->timestamp, prxvbqelmt->wcid, prxvbqelmt->rxv_sn,
+		prxvbqelmt->aggcnt);
 
 	os_file_write(srcf, tmpSrc, strlen(tmpSrc));
 
-	sprintf(tmpSrc, "[FcsErrorBitmap[255-0] 0x%08x,0x%08x,0x%08x,0x%08x,0x%08x,0x%08x,0x%08x,0x%08x]\n",
+	sprintf(tmpSrc,
+		"[FcsErrorBitmap[255-0] 0x%08x,0x%08x,0x%08x,0x%08x,0x%08x,0x%08x,0x%08x,0x%08x]\n",
 		prxvbqelmt->arFCScheckBitmap[7],
 		prxvbqelmt->arFCScheckBitmap[6],
 		prxvbqelmt->arFCScheckBitmap[5],
@@ -441,28 +450,27 @@ static NTSTATUS RXVWriteInFile(IN PRTMP_ADAPTER pAd, IN PCmdQElmt CMDQelmt)
 		prxvbqelmt->arFCScheckBitmap[3],
 		prxvbqelmt->arFCScheckBitmap[2],
 		prxvbqelmt->arFCScheckBitmap[1],
-		prxvbqelmt->arFCScheckBitmap[0]
-		);
-
+		prxvbqelmt->arFCScheckBitmap[0]);
 
 	os_file_write(srcf, tmpSrc, strlen(tmpSrc));
 
 	os_file_write(srcf, "[RXV DUMP START]\n", strlen("[RXV DUMP START]\n"));
 	for (i = 0; i < 9; i++) {
-		sprintf(tmpSrc, "[RXVD%d] %08x\n", (i+1), prxvbqelmt->RXV_CYCLE[i]);
+		sprintf(tmpSrc, "[RXVD%d] %08x\n", (i + 1),
+			prxvbqelmt->RXV_CYCLE[i]);
 		os_file_write(srcf, tmpSrc, strlen(tmpSrc));
 	}
 	os_file_write(srcf, "[RXV DUMP END]\n", strlen("[RXV DUMP END]\n"));
 	Ret = os_file_close(srcf);
 
 	if (Ret)
-		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("File Close Error ! Ret = %d\n", Ret));
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("File Close Error ! Ret = %d\n", Ret));
 
 	return NDIS_STATUS_SUCCESS;
 }
 
 typedef NTSTATUS (*CMDHdlr)(RTMP_ADAPTER *pAd, IN PCmdQElmt CMDQelmt);
-
 
 typedef struct {
 	UINT32 CmdID;
@@ -471,71 +479,77 @@ typedef struct {
 
 static MT_CMD_TABL_T CMDHdlrTable[] = {
 
-	/*STA related*/
-	/*AP related*/
+/*STA related*/
+/*AP related*/
 #ifdef CONFIG_AP_SUPPORT
-	{CMDTHREAD_CHAN_RESCAN, ChannelRescanHdlr},
-	{CMDTHREAD_802_11_COUNTER_MEASURE, _802_11_CounterMeasureHdlr},
-	{CMDTHREAD_AP_RESTART, ApSoftReStart},
+	{ CMDTHREAD_CHAN_RESCAN, ChannelRescanHdlr },
+	{ CMDTHREAD_802_11_COUNTER_MEASURE, _802_11_CounterMeasureHdlr },
+	{ CMDTHREAD_AP_RESTART, ApSoftReStart },
 #ifdef APCLI_SUPPORT
-	{CMDTHREAD_APCLI_PBC_TIMEOUT, ApCliSetChannel},
-	{CMDTHREAD_APCLI_IF_DOWN, CmdApCliIfDown},
+	{ CMDTHREAD_APCLI_PBC_TIMEOUT, ApCliSetChannel },
+	{ CMDTHREAD_APCLI_IF_DOWN, CmdApCliIfDown },
 #ifdef WSC_AP_SUPPORT
-	{CMDTHREAD_WSC_APCLI_LINK_DOWN, CmdWscApCliLinkDown},
+	{ CMDTHREAD_WSC_APCLI_LINK_DOWN, CmdWscApCliLinkDown },
 #endif /* WSC_AP_SUPPORT */
 #endif /* APCLI_SUPPORT */
 #endif
-	/*CFG 802.11*/
-#if  defined(LINUX) && defined(RT_CFG80211_SUPPORT)
-	{CMDTHREAD_REG_HINT, RegHintHdlr},
-	{CMDTHREAD_REG_HINT_11D, RegHint11DHdlr},
-	{CMDTHREAD_SCAN_END, RT_Mac80211_ScanEnd},
-	{CMDTHREAD_CONNECT_RESULT_INFORM, RT_Mac80211_ConnResultInfom},
+/*CFG 802.11*/
+#if defined(LINUX) && defined(RT_CFG80211_SUPPORT)
+	{ CMDTHREAD_REG_HINT, RegHintHdlr },
+	{ CMDTHREAD_REG_HINT_11D, RegHint11DHdlr },
+	{ CMDTHREAD_SCAN_END, RT_Mac80211_ScanEnd },
+	{ CMDTHREAD_CONNECT_RESULT_INFORM, RT_Mac80211_ConnResultInfom },
 #endif
-	/*P2P*/
-	/*RT3593*/
+/*P2P*/
+/*RT3593*/
 #ifdef STREAM_MODE_SUPPORT
-	{CMDTHREAD_UPDATE_TX_CHAIN_ADDRESS, UpdateTXChainAddress},
+	{ CMDTHREAD_UPDATE_TX_CHAIN_ADDRESS, UpdateTXChainAddress },
 #endif
-	/*TDLS*/
+/*TDLS*/
 #ifdef CFG_TDLS_SUPPORT
-	{CMDTHREAD_TDLS_SEND_CH_SW_SETUP, CFGTdlsSendCHSWSetupHdlr},
-	{CMDTHREAD_TDLS_AUTO_TEARDOWN, CFGTdlsAutoTeardownHdlr},
+	{ CMDTHREAD_TDLS_SEND_CH_SW_SETUP, CFGTdlsSendCHSWSetupHdlr },
+	{ CMDTHREAD_TDLS_AUTO_TEARDOWN, CFGTdlsAutoTeardownHdlr },
 #endif
 #ifdef WIFI_SPECTRUM_SUPPORT
-	{CMDTHRED_WIFISPECTRUM_DUMP_RAW_DATA, WifiSpectrumRawDataHandler},
+	{ CMDTHRED_WIFISPECTRUM_DUMP_RAW_DATA, WifiSpectrumRawDataHandler },
 #endif /* WIFI_SPECTRUM_SUPPORT */
 #ifdef INTERNAL_CAPTURE_SUPPORT
-	{CMDTHRED_ICAP_DUMP_RAW_DATA, ICapRawDataHandler},
-#endif/* INTERNAL_CAPTURE_SUPPORT */
+	{ CMDTHRED_ICAP_DUMP_RAW_DATA, ICapRawDataHandler },
+#endif /* INTERNAL_CAPTURE_SUPPORT */
 #if defined(RLM_CAL_CACHE_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT)
-	{CMDTHRED_PRECAL_TXLPF, PreCalTxLPFStoreProcHandler},
-	{CMDTHRED_PRECAL_TXIQ, PreCalTxIQStoreProcHandler},
-	{CMDTHRED_PRECAL_TXDC, PreCalTxDCStoreProcHandler},
-	{CMDTHRED_PRECAL_RXFI, PreCalRxFIStoreProcHandler},
-	{CMDTHRED_PRECAL_RXFD, PreCalRxFDStoreProcHandler},
-#endif /* defined(RLM_CAL_CACHE_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) */ 	
+	{ CMDTHRED_PRECAL_TXLPF, PreCalTxLPFStoreProcHandler },
+	{ CMDTHRED_PRECAL_TXIQ, PreCalTxIQStoreProcHandler },
+	{ CMDTHRED_PRECAL_TXDC, PreCalTxDCStoreProcHandler },
+	{ CMDTHRED_PRECAL_RXFI, PreCalRxFIStoreProcHandler },
+	{ CMDTHRED_PRECAL_RXFD, PreCalRxFDStoreProcHandler },
+#endif /* defined(RLM_CAL_CACHE_SUPPORT) || defined(PRE_CAL_TRX_SET2_SUPPORT) */
 #ifdef CONFIG_AP_SUPPORT
-	{CMDTHRED_DOT11H_SWITCH_CHANNEL, Dot11HCntDownTimeoutAction},
+	{ CMDTHRED_DOT11H_SWITCH_CHANNEL, Dot11HCntDownTimeoutAction },
+#ifdef CUSTOMER_DCC_FEATURE
+	{ CMDTREAD_AP_SWITCH_CHANNEL, APChannelSwitch },
+#endif
 #endif /* CONFIG_AP_SUPPORT */
 #ifdef MT_DFS_SUPPORT
-	{CMDTHRED_DFS_CAC_TIMEOUT, DfsChannelSwitchTimeoutAction},
-	{CMDTHRED_DFS_AP_RESTART, DfsAPRestart},
+	{ CMDTHRED_DFS_CAC_TIMEOUT, DfsChannelSwitchTimeoutAction },
+	{ CMDTHRED_DFS_AP_RESTART, DfsAPRestart },
+	{ CMDTHRED_DFS_RADAR_DETECTED_SW_CH, DfsSwitchChAfterRadarDetected },
 #endif
-	{CMDTHRED_MAC_TABLE_DEL, mac_table_delete_handle},
-	{CMDTHRED_RXV_WRITE_IN_FILE, RXVWriteInFile},
-	{CMDTHREAD_END_CMD_ID, NULL}
+	{ CMDTHRED_MAC_TABLE_DEL, mac_table_delete_handle },
+	{ CMDTHRED_RXV_WRITE_IN_FILE, RXVWriteInFile },
+	{ CMDTHREAD_END_CMD_ID, NULL }
 };
 
 static inline CMDHdlr ValidCMD(IN PCmdQElmt CMDQelmt)
 {
 	SHORT CMDIndex = CMDQelmt->command;
 	SHORT CurIndex = 0;
-	USHORT CMDHdlrTableLength = sizeof(CMDHdlrTable) / sizeof(MT_CMD_TABL_T);
+	USHORT CMDHdlrTableLength =
+		sizeof(CMDHdlrTable) / sizeof(MT_CMD_TABL_T);
 	CMDHdlr Handler = NULL;
 
 	if (CMDIndex > CMDTHREAD_END_CMD_ID) {
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("CMD(%x) is out of boundary\n", CMDQelmt->command));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("CMD(%x) is out of boundary\n", CMDQelmt->command));
 		return NULL;
 	}
 
@@ -547,21 +561,33 @@ static inline CMDHdlr ValidCMD(IN PCmdQElmt CMDQelmt)
 	}
 
 	if (Handler == NULL)
-		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("No corresponding CMDHdlr for this CMD(%x)\n",  CMDQelmt->command));
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			 ("No corresponding CMDHdlr for this CMD(%x)\n",
+			  CMDQelmt->command));
 
 	return Handler;
 }
 
-
 VOID CMDHandler(RTMP_ADAPTER *pAd)
 {
-	PCmdQElmt		cmdqelmt;
-	NDIS_STATUS	NdisStatus = NDIS_STATUS_SUCCESS;
-	NTSTATUS		ntStatus;
-	CMDHdlr		Handler = NULL;
+	PCmdQElmt cmdqelmt;
+	NDIS_STATUS NdisStatus = NDIS_STATUS_SUCCESS;
+	NTSTATUS ntStatus;
+	CMDHdlr Handler = NULL;
+	UINT32 process_cnt = 0;
 
 	while (pAd && pAd->CmdQ.size > 0) {
 		NdisStatus = NDIS_STATUS_SUCCESS;
+
+		/* For worst case, avoid process CmdQ too long which cause RCU_sched stall */
+		process_cnt++;
+		/* process_cnt-16 */
+		if ((!in_interrupt()) &&
+		    (process_cnt >= (MAX_LEN_OF_CMD_QUEUE >> 4))) {
+			process_cnt = 0;
+			OS_SCHEDULE();
+		}
+
 		NdisAcquireSpinLock(&pAd->CmdQLock);
 		RTThreadDequeueCmd(&pAd->CmdQ, &cmdqelmt);
 		NdisReleaseSpinLock(&pAd->CmdQLock);
@@ -569,8 +595,8 @@ VOID CMDHandler(RTMP_ADAPTER *pAd)
 		if (cmdqelmt == NULL)
 			break;
 
-
-		if (!(RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST) || RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_HALT_IN_PROGRESS))) {
+		if (!(RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_NIC_NOT_EXIST) ||
+		      RTMP_TEST_FLAG(pAd, fRTMP_ADAPTER_HALT_IN_PROGRESS))) {
 			Handler = ValidCMD(cmdqelmt);
 
 			if (Handler)
@@ -587,12 +613,13 @@ VOID CMDHandler(RTMP_ADAPTER *pAd)
 
 			os_free_mem(cmdqelmt);
 		} else {
-			if ((cmdqelmt->buffer != NULL) && (cmdqelmt->bufferlength != 0))
+			if ((cmdqelmt->buffer != NULL) &&
+			    (cmdqelmt->bufferlength != 0))
 				os_free_mem(cmdqelmt->buffer);
 
 			os_free_mem(cmdqelmt);
 		}
-	}	/* end of while */
+	} /* end of while */
 }
 
 void RtmpCmdQExit(RTMP_ADAPTER *pAd)
@@ -618,4 +645,3 @@ void RtmpCmdQInit(RTMP_ADAPTER *pAd)
 	cmdq_starv_block_init(&pAd->starv_log_ctrl, &pAd->CmdQ);
 #endif /*DBG_STARVATION*/
 }
-

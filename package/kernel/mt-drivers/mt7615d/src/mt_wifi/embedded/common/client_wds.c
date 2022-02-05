@@ -21,27 +21,33 @@
 	Abstract:
 */
 
-
 #ifdef CLIENT_WDS
 
 #include "rt_config.h"
 
-VOID CliWds_ProxyTabInit(
-	IN PRTMP_ADAPTER pAd)
+VOID CliWds_ProxyTabInit(IN PRTMP_ADAPTER pAd)
 {
 	INT idx;
 	ULONG i;
 	NdisAllocateSpinLock(pAd, &pAd->ApCfg.CliWdsTabLock);
-	os_alloc_mem(pAd, (UCHAR **)&(pAd->ApCfg.pCliWdsEntryPool), sizeof(CLIWDS_PROXY_ENTRY) * CLIWDS_POOL_SIZE);
+	os_alloc_mem(pAd, (UCHAR **)&(pAd->ApCfg.pCliWdsEntryPool),
+		     sizeof(CLIWDS_PROXY_ENTRY) * CLIWDS_POOL_SIZE);
 
 	if (pAd->ApCfg.pCliWdsEntryPool) {
-		NdisZeroMemory(pAd->ApCfg.pCliWdsEntryPool, sizeof(CLIWDS_PROXY_ENTRY) * CLIWDS_POOL_SIZE);
+		NdisZeroMemory(pAd->ApCfg.pCliWdsEntryPool,
+			       sizeof(CLIWDS_PROXY_ENTRY) * CLIWDS_POOL_SIZE);
 		initList(&pAd->ApCfg.CliWdsEntryFreeList);
 
 		for (i = 0; i < CLIWDS_POOL_SIZE; i++)
-			insertTailList(&pAd->ApCfg.CliWdsEntryFreeList, (RT_LIST_ENTRY *)(pAd->ApCfg.pCliWdsEntryPool + (ULONG)i));
+			insertTailList(
+				&pAd->ApCfg.CliWdsEntryFreeList,
+				(RT_LIST_ENTRY *)(pAd->ApCfg.pCliWdsEntryPool +
+						  (ULONG)i));
 	} else
-		MTWF_LOG(DBG_CAT_CLIENT, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s Fail to alloc memory for pAd->CommonCfg.pCliWdsEntryPool", __func__));
+		MTWF_LOG(
+			DBG_CAT_CLIENT, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+			("%s Fail to alloc memory for pAd->CommonCfg.pCliWdsEntryPool",
+			 __func__));
 
 	for (idx = 0; idx < CLIWDS_HASH_TAB_SIZE; idx++)
 		initList(&pAd->ApCfg.CliWdsProxyTb[idx]);
@@ -49,9 +55,7 @@ VOID CliWds_ProxyTabInit(
 	return;
 }
 
-
-VOID CliWds_ProxyTabDestory(
-	IN PRTMP_ADAPTER pAd)
+VOID CliWds_ProxyTabDestory(IN PRTMP_ADAPTER pAd)
 {
 	INT idx;
 	PCLIWDS_PROXY_ENTRY pCliWdsEntry;
@@ -62,7 +66,8 @@ VOID CliWds_ProxyTabDestory(
 			(PCLIWDS_PROXY_ENTRY)pAd->ApCfg.CliWdsProxyTb[idx].pHead;
 
 		while (pCliWdsEntry) {
-			PCLIWDS_PROXY_ENTRY pCliWdsEntryNext = pCliWdsEntry->pNext;
+			PCLIWDS_PROXY_ENTRY pCliWdsEntryNext =
+				pCliWdsEntry->pNext;
 			CliWdsEntyFree(pAd, pCliWdsEntry);
 			pCliWdsEntry = pCliWdsEntryNext;
 		}
@@ -75,33 +80,27 @@ VOID CliWds_ProxyTabDestory(
 	return;
 }
 
-
-PCLIWDS_PROXY_ENTRY CliWdsEntyAlloc(
-	IN PRTMP_ADAPTER pAd)
+PCLIWDS_PROXY_ENTRY CliWdsEntyAlloc(IN PRTMP_ADAPTER pAd)
 {
 	PCLIWDS_PROXY_ENTRY pCliWdsEntry;
 	RTMP_SEM_LOCK(&pAd->ApCfg.CliWdsTabLock);
-	pCliWdsEntry = (PCLIWDS_PROXY_ENTRY)removeHeadList(&pAd->ApCfg.CliWdsEntryFreeList);
+	pCliWdsEntry = (PCLIWDS_PROXY_ENTRY)removeHeadList(
+		&pAd->ApCfg.CliWdsEntryFreeList);
 	RTMP_SEM_UNLOCK(&pAd->ApCfg.CliWdsTabLock);
 	return pCliWdsEntry;
 }
 
-
-VOID CliWdsEntyFree(
-	IN PRTMP_ADAPTER pAd,
-	IN PCLIWDS_PROXY_ENTRY pCliWdsEntry)
+VOID CliWdsEntyFree(IN PRTMP_ADAPTER pAd, IN PCLIWDS_PROXY_ENTRY pCliWdsEntry)
 {
 	RTMP_SEM_LOCK(&pAd->ApCfg.CliWdsTabLock);
-	insertTailList(&pAd->ApCfg.CliWdsEntryFreeList, (RT_LIST_ENTRY *)pCliWdsEntry);
+	insertTailList(&pAd->ApCfg.CliWdsEntryFreeList,
+		       (RT_LIST_ENTRY *)pCliWdsEntry);
 	RTMP_SEM_UNLOCK(&pAd->ApCfg.CliWdsTabLock);
 	return;
 }
 
-VOID CliWdsEnryFreeAid(
-	 IN PRTMP_ADAPTER pAd,
-	 IN SHORT Aid)
+VOID CliWdsEnryFreeAid(IN PRTMP_ADAPTER pAd, IN SHORT Aid)
 {
-
 	INT idx;
 	PCLIWDS_PROXY_ENTRY pCliWdsEntry;
 
@@ -110,22 +109,22 @@ VOID CliWdsEnryFreeAid(
 			(PCLIWDS_PROXY_ENTRY)pAd->ApCfg.CliWdsProxyTb[idx].pHead;
 		while (pCliWdsEntry) {
 			if (pCliWdsEntry->Aid == Aid) {
-				delEntryList(&pAd->ApCfg.CliWdsProxyTb[idx], (RT_LIST_ENTRY *)pCliWdsEntry);
+				delEntryList(&pAd->ApCfg.CliWdsProxyTb[idx],
+					     (RT_LIST_ENTRY *)pCliWdsEntry);
 				CliWdsEntyFree(pAd, pCliWdsEntry);
 			}
 			pCliWdsEntry = pCliWdsEntry->pNext;
 		}
-
 	}
 	return;
 }
-
 
 UCHAR *CliWds_ProxyLookup(RTMP_ADAPTER *pAd, UCHAR *pMac)
 {
 	UINT8 HashId = (*(pMac + 5) & (CLIWDS_HASH_TAB_SIZE - 1));
 	PCLIWDS_PROXY_ENTRY pCliWdsEntry;
-	pCliWdsEntry = (PCLIWDS_PROXY_ENTRY)pAd->ApCfg.CliWdsProxyTb[HashId].pHead;
+	pCliWdsEntry =
+		(PCLIWDS_PROXY_ENTRY)pAd->ApCfg.CliWdsProxyTb[HashId].pHead;
 
 	while (pCliWdsEntry) {
 		if (MAC_ADDR_EQUAL(pMac, pCliWdsEntry->Addr)) {
@@ -135,7 +134,8 @@ UCHAR *CliWds_ProxyLookup(RTMP_ADAPTER *pAd, UCHAR *pMac)
 
 			/*FIXME: take aid as wcid shall be refined, let aid is aid, wcid is wcid.*/
 			if (VALID_UCAST_ENTRY_WCID(pAd, pCliWdsEntry->Aid))
-				return pAd->MacTab.Content[pCliWdsEntry->Aid].Addr;
+				return pAd->MacTab.Content[pCliWdsEntry->Aid]
+					.Addr;
 			else
 				return NULL;
 		}
@@ -146,11 +146,7 @@ UCHAR *CliWds_ProxyLookup(RTMP_ADAPTER *pAd, UCHAR *pMac)
 	return NULL;
 }
 
-
-VOID CliWds_ProxyTabUpdate(
-	IN PRTMP_ADAPTER pAd,
-	IN SHORT Aid,
-	IN PUCHAR pMac)
+VOID CliWds_ProxyTabUpdate(IN PRTMP_ADAPTER pAd, IN SHORT Aid, IN PUCHAR pMac)
 {
 	UINT8 HashId = (*(pMac + 5) & (CLIWDS_HASH_TAB_SIZE - 1));
 	PCLIWDS_PROXY_ENTRY pCliWdsEntry;
@@ -167,15 +163,14 @@ VOID CliWds_ProxyTabUpdate(
 		COPY_MAC_ADDR(&pCliWdsEntry->Addr, pMac);
 		pCliWdsEntry->LastRefTime = Now;
 		pCliWdsEntry->pNext = NULL;
-		insertTailList(&pAd->ApCfg.CliWdsProxyTb[HashId], (RT_LIST_ENTRY *)pCliWdsEntry);
+		insertTailList(&pAd->ApCfg.CliWdsProxyTb[HashId],
+			       (RT_LIST_ENTRY *)pCliWdsEntry);
 	}
 
 	return;
 }
 
-
-VOID CliWds_ProxyTabMaintain(
-	IN PRTMP_ADAPTER pAd)
+VOID CliWds_ProxyTabMaintain(IN PRTMP_ADAPTER pAd)
 {
 	ULONG idx;
 	PCLIWDS_PROXY_ENTRY pCliWdsEntry;
@@ -183,13 +178,20 @@ VOID CliWds_ProxyTabMaintain(
 	NdisGetSystemUpTime(&Now);
 
 	for (idx = 0; idx < CLIWDS_HASH_TAB_SIZE; idx++) {
-		pCliWdsEntry = (PCLIWDS_PROXY_ENTRY)(pAd->ApCfg.CliWdsProxyTb[idx].pHead);
+		pCliWdsEntry =
+			(PCLIWDS_PROXY_ENTRY)(pAd->ApCfg.CliWdsProxyTb[idx]
+						      .pHead);
 
 		while (pCliWdsEntry) {
-			PCLIWDS_PROXY_ENTRY pCliWdsEntryNext = pCliWdsEntry->pNext;
-		if (RTMP_TIME_AFTER(Now, pCliWdsEntry->LastRefTime + (ULONG)((ULONG)(CLI_WDS_ENTRY_AGEOUT) * OS_HZ / 1000))) {
-
-				delEntryList(&pAd->ApCfg.CliWdsProxyTb[idx], (RT_LIST_ENTRY *)pCliWdsEntry);
+			PCLIWDS_PROXY_ENTRY pCliWdsEntryNext =
+				pCliWdsEntry->pNext;
+			if (RTMP_TIME_AFTER(
+				    Now,
+				    pCliWdsEntry->LastRefTime +
+					    (ULONG)((ULONG)(CLI_WDS_ENTRY_AGEOUT)*OS_HZ /
+						    1000))) {
+				delEntryList(&pAd->ApCfg.CliWdsProxyTb[idx],
+					     (RT_LIST_ENTRY *)pCliWdsEntry);
 				CliWdsEntyFree(pAd, pCliWdsEntry);
 			}
 
@@ -201,14 +203,13 @@ VOID CliWds_ProxyTabMaintain(
 }
 
 #ifndef WDS_SUPPORT
-MAC_TABLE_ENTRY *FindWdsEntry(
-	IN PRTMP_ADAPTER pAd,
-	IN RX_BLK * pRxBlk)
+MAC_TABLE_ENTRY *FindWdsEntry(IN PRTMP_ADAPTER pAd, IN RX_BLK *pRxBlk)
 {
 	MAC_TABLE_ENTRY *pEntry;
 
-	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE, ("%s(): Wcid = %d, PhyMode = 0x%x\n", __func__,
-	 pRxBlk->wcid, pRxBlk->rx_rate.field.MODE));
+	MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+		 ("%s(): Wcid = %d, PhyMode = 0x%x\n", __func__, pRxBlk->wcid,
+		  pRxBlk->rx_rate.field.MODE));
 	/* lookup the match wds entry for the incoming packet. */
 	pEntry = WdsTableLookupByWcid(pAd, pRxBlk->wcid, pRxBlk->Addr2, TRUE);
 	if (pEntry == NULL)
@@ -218,41 +219,38 @@ MAC_TABLE_ENTRY *FindWdsEntry(
 	if ((pEntry == NULL) && (pAd->WdsTab.Mode >= WDS_LAZY_MODE)) {
 		UCHAR *pTmpBuf = pRxBlk->pData - LENGTH_802_11;
 
-		RXD_BASE_STRUCT *rxd_base = (RXD_BASE_STRUCT *)pRxBlk->rmac_info;
+		RXD_BASE_STRUCT *rxd_base =
+			(RXD_BASE_STRUCT *)pRxBlk->rmac_info;
 
 		NdisMoveMemory(pTmpBuf, pRxBlk->FC, LENGTH_802_11);
-		REPORT_MGMT_FRAME_TO_MLME(pAd, pRxBlk->wcid,
-					  pTmpBuf,
-					  pRxBlk->DataSize + LENGTH_802_11,
-					  pRxBlk->rx_signal.raw_rssi[0],
-					  pRxBlk->rx_signal.raw_rssi[1],
-					  pRxBlk->rx_signal.raw_rssi[2],
-					  pRxBlk->rx_signal.raw_rssi[3],
+		REPORT_MGMT_FRAME_TO_MLME(
+			pAd, pRxBlk->wcid, pTmpBuf,
+			pRxBlk->DataSize + LENGTH_802_11,
+			pRxBlk->rx_signal.raw_rssi[0],
+			pRxBlk->rx_signal.raw_rssi[1],
+			pRxBlk->rx_signal.raw_rssi[2],
+			pRxBlk->rx_signal.raw_rssi[3],
 #if defined(CUSTOMER_DCC_FEATURE) || defined(CONFIG_MAP_SUPPORT)
-					  pRxBlk->rx_signal.raw_snr[0],
-					  pRxBlk->rx_signal.raw_snr[1],
-					  pRxBlk->rx_signal.raw_snr[2],
-					  pRxBlk->rx_signal.raw_snr[3],
+			pRxBlk->rx_signal.raw_snr[0],
+			pRxBlk->rx_signal.raw_snr[1],
+			pRxBlk->rx_signal.raw_snr[2],
+			pRxBlk->rx_signal.raw_snr[3],
 #endif
-					  (rxd_base != NULL) ? rxd_base->RxD1.ChFreq : 0,
-					  0,
-					  OPMODE_AP,
-					  &pAd->ApCfg.MBSSID[pRxBlk->bss_idx].wdev,
-					  pRxBlk->rx_rate.field.MODE);
+			(rxd_base != NULL) ? rxd_base->RxD1.ChFreq : 0, 0,
+			OPMODE_AP, &pAd->ApCfg.MBSSID[pRxBlk->bss_idx].wdev,
+			pRxBlk->rx_rate.field.MODE);
 
-		MTWF_LOG(DBG_CAT_RX, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
-		 ("!!! report WDS UC DATA (from %02x-%02x-%02x-%02x-%02x-%02x) to MLME (len=%d) !!!\n",
-		  PRINT_MAC(pRxBlk->Addr2), pRxBlk->DataSize));
-
+		MTWF_LOG(
+			DBG_CAT_RX, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			("!!! report WDS UC DATA (from %02x-%02x-%02x-%02x-%02x-%02x) to MLME (len=%d) !!!\n",
+			 PRINT_MAC(pRxBlk->Addr2), pRxBlk->DataSize));
 	}
 	return pEntry;
 }
 
-MAC_TABLE_ENTRY *WdsTableLookupByWcid(
-	IN PRTMP_ADAPTER pAd,
-	IN UCHAR wcid,
-	IN PUCHAR pAddr,
-	IN BOOLEAN bResetIdelCount)
+MAC_TABLE_ENTRY *WdsTableLookupByWcid(IN PRTMP_ADAPTER pAd, IN UCHAR wcid,
+				      IN PUCHAR pAddr,
+				      IN BOOLEAN bResetIdelCount)
 {
 	ULONG WdsIndex;
 	MAC_TABLE_ENTRY *pCurEntry = NULL, *pEntry = NULL;
@@ -280,7 +278,8 @@ MAC_TABLE_ENTRY *WdsTableLookupByWcid(
 			if (bResetIdelCount) {
 				pCurEntry->NoDataIdleCount = 0;
 				/* TODO: shiang-usw,  remove upper setting because we need to migrate to tr_entry! */
-				pAd->MacTab.tr_entry[pCurEntry->tr_tb_idx].NoDataIdleCount = 0;
+				pAd->MacTab.tr_entry[pCurEntry->tr_tb_idx]
+					.NoDataIdleCount = 0;
 			}
 			pEntry = pCurEntry;
 			break;
@@ -291,10 +290,9 @@ MAC_TABLE_ENTRY *WdsTableLookupByWcid(
 	return pEntry;
 }
 
-
-MAC_TABLE_ENTRY *WdsTableLookup(RTMP_ADAPTER *pAd, UCHAR *addr, BOOLEAN bResetIdelCount)
+MAC_TABLE_ENTRY *WdsTableLookup(RTMP_ADAPTER *pAd, UCHAR *addr,
+				BOOLEAN bResetIdelCount)
 {
-
 	USHORT HashIdx;
 	PMAC_TABLE_ENTRY pEntry = NULL;
 
@@ -303,11 +301,13 @@ MAC_TABLE_ENTRY *WdsTableLookup(RTMP_ADAPTER *pAd, UCHAR *addr, BOOLEAN bResetId
 	HashIdx = MAC_ADDR_HASH_INDEX(addr);
 	pEntry = pAd->MacTab.Hash[HashIdx];
 	while (pEntry) {
-		if (IS_ENTRY_WDS(pEntry) && MAC_ADDR_EQUAL(pEntry->Addr, addr)) {
+		if (IS_ENTRY_WDS(pEntry) &&
+		    MAC_ADDR_EQUAL(pEntry->Addr, addr)) {
 			if (bResetIdelCount) {
 				pEntry->NoDataIdleCount = 0;
 				/* TODO: shiang-usw,  remove upper setting because we need to migrate to tr_entry! */
-				pAd->MacTab.tr_entry[pEntry->wcid].NoDataIdleCount = 0;
+				pAd->MacTab.tr_entry[pEntry->wcid]
+					.NoDataIdleCount = 0;
 			}
 			break;
 		}
@@ -320,4 +320,3 @@ MAC_TABLE_ENTRY *WdsTableLookup(RTMP_ADAPTER *pAd, UCHAR *addr, BOOLEAN bResetId
 #endif
 
 #endif /* CLIENT_WDS */
-

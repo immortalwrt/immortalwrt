@@ -105,7 +105,8 @@ struct MCU_CTRL {
 };
 
 struct cmd_msg;
-typedef VOID(*MSG_EVENT_HANDLER)(struct _RTMP_ADAPTER *ad, char *payload, UINT16 payload_len);
+typedef VOID (*MSG_EVENT_HANDLER)(struct _RTMP_ADAPTER *ad, char *payload,
+				  UINT16 payload_len);
 
 struct cmd_msg_cb {
 	struct cmd_msg *msg;
@@ -134,7 +135,6 @@ enum mcu_skb_state {
 	UNLINK_START,
 };
 
-
 #define USB_END_PADDING 4
 #define SDIO_END_PADDING 4
 
@@ -146,36 +146,36 @@ struct mcu_skb_data {
 #ifdef RT_BIG_ENDIAN
 typedef union _LED_ENHANCE {
 	struct {
-		UINT32 tx_over_blink:1;
-		UINT32 reverse_polarity:1;
+		UINT32 tx_over_blink : 1;
+		UINT32 reverse_polarity : 1;
 #if defined(MT7615) || defined(MT7622)
-		UINT32 band_select:1;
-		UINT32 rsv:3;
+		UINT32 band_select : 1;
+		UINT32 rsv : 3;
 #else
-		UINT32 rsv:4;
+		UINT32 rsv : 4;
 #endif
-		UINT32 tx_blink:2;
-		UINT32 on_time:8;
-		UINT32 off_time:8;
-		UINT32 idx:8;
+		UINT32 tx_blink : 2;
+		UINT32 on_time : 8;
+		UINT32 off_time : 8;
+		UINT32 idx : 8;
 	} field;
 	UINT32 word;
 } LED_ENHANCE;
 #else
 typedef union _LED_ENHANCE {
 	struct {
-		UINT32 idx:8;
-		UINT32 off_time:8;
-		UINT32 on_time:8;
-		UINT32 tx_blink:2;
+		UINT32 idx : 8;
+		UINT32 off_time : 8;
+		UINT32 on_time : 8;
+		UINT32 tx_blink : 2;
 #if defined(MT7615) || defined(MT7622)
-		UINT32 rsv:3;
-		UINT32 band_select:1;
+		UINT32 rsv : 3;
+		UINT32 band_select : 1;
 #else
-		UINT32 rsv:4;
+		UINT32 rsv : 4;
 #endif
-		UINT32 reverse_polarity:1;
-		UINT32 tx_over_blink:1;
+		UINT32 reverse_polarity : 1;
+		UINT32 tx_over_blink : 1;
 	} field;
 	UINT32 word;
 } LED_ENHANCE;
@@ -191,7 +191,8 @@ INT32 UsbRxCmdMsgSubmit(struct _RTMP_ADAPTER *pAd);
 INT32 UsbRxCmdMsgsReceive(struct _RTMP_ADAPTER *pAd);
 VOID AndesBhSchedule(struct _RTMP_ADAPTER *pAd);
 
-struct cmd_msg *AndesAllocCmdMsg(struct _RTMP_ADAPTER *pAd, unsigned int length);
+struct cmd_msg *AndesAllocCmdMsg(struct _RTMP_ADAPTER *pAd,
+				 unsigned int length);
 
 VOID AndesInitCmdMsg(struct cmd_msg *msg, CMD_ATTRIBUTE attr);
 
@@ -199,23 +200,21 @@ VOID AndesAppendCmdMsg(struct cmd_msg *msg, char *data, unsigned int len);
 VOID AndesAppendHeadCmdMsg(struct cmd_msg *msg, char *data, unsigned int len);
 VOID AndesFreeCmdMsg(struct cmd_msg *msg);
 VOID AndesQueueTailCmdMsg(DL_LIST *list, struct cmd_msg *msg,
-						  enum cmd_msg_state state);
+			  enum cmd_msg_state state);
 VOID AndesIncErrorCount(struct MCU_CTRL *ctl, enum cmd_msg_error_type type);
 VOID _AndesUnlinkCmdMsg(struct cmd_msg *msg, DL_LIST *list);
 VOID AndesUnlinkCmdMsg(struct cmd_msg *msg, DL_LIST *list);
 struct cmd_msg *AndesDequeueCmdMsg(struct MCU_CTRL *ctl, DL_LIST *list);
 VOID AndesQueueHeadCmdMsg(DL_LIST *list, struct cmd_msg *msg,
-						  enum cmd_msg_state state);
+			  enum cmd_msg_state state);
 VOID AndesQueueHeadCmdMsg(DL_LIST *list, struct cmd_msg *msg,
-						  enum cmd_msg_state state);
+			  enum cmd_msg_state state);
 UINT32 AndesQueueLen(struct MCU_CTRL *ctl, DL_LIST *list);
 
 #ifdef RTMP_PCI_SUPPORT
 VOID PciKickOutCmdMsgComplete(PNDIS_PACKET net_pkt);
 #endif
 
-
 VOID AndesRxProcessCmdMsg(struct _RTMP_ADAPTER *pAd, struct cmd_msg *rx_msg);
 
 #endif /* __ANDES_CORE_H__ */
-
