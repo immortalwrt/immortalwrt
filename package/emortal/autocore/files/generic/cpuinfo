@@ -17,10 +17,10 @@ elif grep -q "mvebu" "/etc/openwrt_release"; then
 elif grep -q "x86" "/etc/openwrt_release"; then
 	cpu_freq="$(grep "MHz" "/proc/cpuinfo" | head -n1 | awk -F ': ' '{print $2}')MHz"
 elif [ -e "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq" ]; then
-	cpu_freq="$(expr $(cat "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq") / 1000)MHz"
+	cpu_freq="$(awk '{printf("%.fMHz", $0 / 1000)}' "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq")"
 fi
 if ! grep -q "x86" "/etc/openwrt_release" && [ -e "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq" ]; then
-	big_cpu_freq="$(expr $(cat "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq") / 1000)MHz "
+	big_cpu_freq="$(awk '{printf("%.fMHz ", $0 / 1000)}' "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq")"
 fi
 
 if grep -q "bcm27xx" "/etc/openwrt_release"; then

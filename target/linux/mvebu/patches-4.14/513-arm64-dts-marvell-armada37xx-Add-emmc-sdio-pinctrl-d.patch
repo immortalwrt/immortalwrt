@@ -35,6 +35,6 @@ Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 +					function = "sdio";
 +				};
 +
- 			};
- 
- 			eth0: ethernet@30000 {
+ 				pcie_reset_pins: pcie-reset-pins {
+ 					groups = "pcie1";
+ 					function = "gpio";

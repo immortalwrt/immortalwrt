@@ -90,7 +90,7 @@ Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
  	}
  
  	if (q->tins) {
-@@ -2818,8 +2820,7 @@ static int cake_dump(struct Qdisc *sch,
+@@ -2814,8 +2816,7 @@ static int cake_dump(struct Qdisc *sch,
  			!!(q->rate_flags & CAKE_FLAG_SPLIT_GSO)))
  		goto nla_put_failure;
  
