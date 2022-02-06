@@ -12909,8 +12909,8 @@ VOID RTMPIoctlNfcStatus(
 	memset(msg, 0 ,128 );
 
 	/*
-		Action: b��<7:6>: 0x0 �V To NFC, 0x1 �V From NFC
-        		b��<5:0>: 0x0 �V Get, 0x01 - Set
+		Action: b<7:6>: 0x0 V To NFC, 0x1 V From NFC
+        		b<5:0>: 0x0 V Get, 0x01 - Set
 	*/
 	UCHAR action = 0, type = TYPE_NFC_STATUS; /* 5 - NFC Status */
 	

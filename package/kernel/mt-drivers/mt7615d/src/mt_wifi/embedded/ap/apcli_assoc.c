@@ -677,7 +677,7 @@ static VOID ApCliMlmeAssocReqAction(IN PRTMP_ADAPTER pAd,
 					pAd->CommonCfg.MaxSPLength;
 				WmeIe[8] |= *(PUCHAR)&QosInfo;
 			} else {
-				/* The Parameter Set Count is set to ��0�� in the association request frames */
+				/* The Parameter Set Count is set to 0 in the association request frames */
 				/* WmeIe[8] |= (pAd->MlmeAux.APEdcaParm.EdcaUpdateCount & 0x0f); */
 			}
 
