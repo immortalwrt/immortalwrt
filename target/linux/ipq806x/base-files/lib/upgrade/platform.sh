@@ -51,7 +51,6 @@ platform_do_upgrade() {
 		default_do_upgrade "$ARGV"
 		;;
 	tplink,vr2600v)
-		PART_NAME="kernel:rootfs"
 		MTD_CONFIG_ARGS="-s 0x200000"
 		default_do_upgrade "$ARGV"
 		;;
