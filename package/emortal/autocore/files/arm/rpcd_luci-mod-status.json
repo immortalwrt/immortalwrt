@@ -71,6 +71,7 @@
 		"read": {
 			"cgi-io": [ "exec" ],
 			"file": {
+				"/usr/sbin/nft --json list ruleset": [ "exec" ],
 				"/usr/sbin/iptables --line-numbers -w -nvxL -t *": [ "exec" ],
 				"/usr/sbin/ip6tables --line-numbers -w -nvxL -t *": [ "exec" ],
 				"/usr/sbin/ip6tables": [ "list" ]
