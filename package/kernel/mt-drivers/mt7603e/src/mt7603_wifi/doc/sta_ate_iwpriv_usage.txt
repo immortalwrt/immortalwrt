@@ -190,7 +190,8 @@ where
 		iwpriv ra0 set ATETXPOW0=18
 		iwpriv ra0 set ATETXPOW1=18
 		iwpriv ra0 set ATETXCNT=100000
-		iwpriv ra0 set ATE=TXFRAMEpriv ra0 set ATETXPOW0=19
+		iwpriv ra0 set ATE=TXFRAME
+		iwpriv ra0 set ATETXPOW0=19
 		iwpriv ra0 set ATETXPOW0=20
 		
 		iwpriv ra0 set ATE=ATESTART

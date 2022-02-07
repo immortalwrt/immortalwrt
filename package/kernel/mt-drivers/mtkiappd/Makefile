@@ -10,7 +10,8 @@ PKG_VERSION:=1
 PKG_RELEASE:=1
 
 PKG_CONFIG_DEPENDS := \
-	CONFIG_MTK_CHIP_MT7615E_DBDC
+	CONFIG_MTK_CHIP_MT7615E_DBDC \
+	CONFIG_PACKAGE_mtkiappd_DUAL_BAND
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,7 +27,15 @@ define Package/mtkiappd/description
 	Mtkiappd is an optional user space component for MT76xx SoftAP driver.
 endef
 
-ifeq ($(CONFIG_MTK_CHIP_MT7615E_DBDC),y)
+define Package/mtkiappd/config
+config PACKAGE_mtkiappd_DUAL_BAND
+        bool "dual band"
+		depends on MTK_CHIP_MT7615E
+		default y if TARGET_ramips_mt7621_DEVICE_phicomm_k2p
+		default n
+endef
+
+ifeq ($(CONFIG_PACKAGE_mtkiappd_DUAL_BAND),y)
 	WIRELESS_IOCTL_PARAM:=-wi ra0 -wi rax0
 else
 	WIRELESS_IOCTL_PARAM:=-wi ra0
