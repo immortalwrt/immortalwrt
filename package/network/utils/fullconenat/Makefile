@@ -20,6 +20,8 @@ PKG_MIRROR_HASH:=e7bb77d9916d190b3c02975faf62d1794557d4a4a774cd0cf1f3a6ddb7403e3
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_MAINTAINER:=Chion Tang <tech@chionlab.moe>
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/iptables-mod-fullconenat
@@ -28,7 +30,6 @@ define Package/iptables-mod-fullconenat
   CATEGORY:=Network
   TITLE:=FULLCONENAT iptables extension
   DEPENDS:=+iptables +kmod-ipt-fullconenat
-  MAINTAINER:=Chion Tang <tech@chionlab.moe>
 endef
 
 define Package/iptables-mod-fullconenat/install
@@ -40,8 +41,9 @@ define KernelPackage/ipt-fullconenat
   SUBMENU:=Netfilter Extensions
   TITLE:=FULLCONENAT netfilter module
   DEPENDS:=+kmod-nf-ipt +kmod-nf-nat
-  MAINTAINER:=Chion Tang <tech@chionlab.moe>
-  KCONFIG:=CONFIG_NF_CONNTRACK_EVENTS=y CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y
+  KCONFIG:= \
+	CONFIG_NF_CONNTRACK_EVENTS=y \
+	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y
   FILES:=$(PKG_BUILD_DIR)/xt_FULLCONENAT.ko
 endef
 
