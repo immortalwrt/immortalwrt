@@ -349,6 +349,7 @@
 			compatible = "qcom,ath10k";
 			reg = <0x00010000 0 0 0 0>;
 			qcom,ath10k-calibration-variant = "GL-B2200";
+			ieee80211-freq-limit = <5450000 5900000>;
 		};
 	};
 };
@@ -361,4 +362,5 @@
 &wifi1 {
 	status = "okay";
 	qcom,ath10k-calibration-variant = "GL-B2200";
+	ieee80211-freq-limit = <5100000 5400000>;
 };
