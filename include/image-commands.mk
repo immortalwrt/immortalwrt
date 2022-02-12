@@ -184,7 +184,6 @@ define Build/zip
 	mv $@ $@.tmp/$(1)
 
 	zip -j -X \
-		$(if $(SOURCE_DATE_EPOCH),--mtime="$(SOURCE_DATE_EPOCH)") \
 		$@ $@.tmp/$(if $(1),$(1),$@)
 	rm -rf $@.tmp
 endef
