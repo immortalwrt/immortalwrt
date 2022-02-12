@@ -183,7 +183,7 @@ define Build/zip
 	mkdir $@.tmp
 	mv $@ $@.tmp/$(1)
 
-	zip -j -X \
+	TZ=UTC zip -j -X \
 		$@ $@.tmp/$(if $(1),$(1),$@)
 	rm -rf $@.tmp
 endef
