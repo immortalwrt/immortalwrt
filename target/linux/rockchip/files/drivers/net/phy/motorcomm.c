@@ -59,6 +59,52 @@ static int yt8010_config_aneg(struct phy_device *phydev)
 	return 0;
 }
 
+static int yt8511_config_init(struct phy_device *phydev)
+{
+	int ret;
+	int val;
+
+	/* disable auto sleep */
+	val = ytphy_read_ext(phydev, YT8521_EXTREG_SLEEP_CONTROL1);
+	if (val < 0)
+		return val;
+
+	val &= (~BIT(YT8511_EN_SLEEP_SW_BIT));
+	ret = ytphy_write_ext(phydev, YT8511_EXTREG_SLEEP_CONTROL1, val);
+	if (ret < 0)
+		return ret;
+
+	/* output SyncE clock (125mhz) even link is down */
+	ret = ytphy_write_ext(phydev, 0xa012, 0xd0);
+	if (ret < 0)
+		return ret;
+
+	/* enable RXC clock when no wire plug */
+	val = ytphy_read_ext(phydev, 0xc);
+	if (val < 0)
+		return val;
+
+	/* ext reg 0xc.b[2:1]
+	00-----25M from pll;
+	01---- 25M from xtl;(default)
+	10-----62.5M from pll;
+	11----125M from pll(here set to this value)
+	*/
+	val |= (3 << 1);
+	ret = ytphy_write_ext(phydev, 0xc, val);
+	if (ret < 0)
+		return ret;
+
+	/* LED0: Unused/Off, LED1: Link, LED2: Activity, 8Hz */
+	ytphy_write_ext(phydev, 0xa00b, 0xe004);
+	ytphy_write_ext(phydev, 0xa00c, 0);
+	ytphy_write_ext(phydev, 0xa00d, 0x2600);
+	ytphy_write_ext(phydev, 0xa00e, 0x0070);
+	ytphy_write_ext(phydev, 0xa00f, 0x000a);
+
+	return 0;
+}
+
 static int yt8512_clk_init(struct phy_device *phydev)
 {
 	int ret;
@@ -323,6 +369,27 @@ static struct phy_driver ytphy_drvs[] = {
 		.config_intr	= yt8521_config_intr,
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
+	}, {
+		/* same as 8521 */
+		.phy_id		= PHY_ID_YT8531S,
+		.name		= "YT8531S Ethernet",
+		.phy_id_mask	= MOTORCOMM_PHY_ID_MASK,
+		/* PHY_GBIT_FEATURES */
+		.config_init	= yt8521_config_init,
+		.ack_interrupt	= yt8521_ack_interrupt,
+		.config_intr	= yt8521_config_intr,
+		.suspend	= genphy_suspend,
+		.resume		= genphy_resume,
+	}, {
+		/* same as 8511 */
+		.phy_id		= PHY_ID_YT8531,
+		.name		= "YT8531 Gigabit Ethernet",
+		.phy_id_mask	= MOTORCOMM_PHY_ID_MASK,
+		.features	= PHY_GBIT_FEATURES,
+		.config_init	= yt8511_config_init,
+		.read_status	= genphy_read_status,
+		.suspend	= genphy_suspend,
+		.resume		= genphy_resume,
 	},
 };
 
@@ -339,6 +406,8 @@ static struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
 	{ PHY_ID_YT8512, MOTORCOMM_PHY_ID_MASK },
 	{ PHY_ID_YT8512B, MOTORCOMM_PHY_ID_MASK },
 	{ PHY_ID_YT8521, MOTORCOMM_PHY_ID_MASK },
+	{ PHY_ID_YT8531S, MOTORCOMM_PHY_ID_8531_MASK },
+	{ PHY_ID_YT8531, MOTORCOMM_PHY_ID_8531_MASK },
 	{ }
 };
 
