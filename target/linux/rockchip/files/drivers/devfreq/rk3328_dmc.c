@@ -10,7 +10,6 @@
 #include <linux/devfreq.h>
 #include <linux/devfreq-event.h>
 #include <linux/interrupt.h>
-#include <linux/iversion.h>
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -20,7 +19,6 @@
 #include <linux/regulator/consumer.h>
 #include <linux/rwsem.h>
 #include <linux/suspend.h>
-#include <linux/version.h>
 
 #include <soc/rockchip/rockchip_sip.h>
 
@@ -750,11 +748,7 @@ static int rk3328_dmcfreq_probe(struct platform_device *pdev)
 		return PTR_ERR(data->dmc_clk);
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
-	data->edev = devfreq_event_get_edev_by_phandle(dev, 0);
-#else
 	data->edev = devfreq_event_get_edev_by_phandle(dev, "devfreq-events", 0);
-#endif
 	if (IS_ERR(data->edev))
 		return -EPROBE_DEFER;
 
