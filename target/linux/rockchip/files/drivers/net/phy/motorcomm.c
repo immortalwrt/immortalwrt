@@ -65,7 +65,7 @@ static int yt8511_config_init(struct phy_device *phydev)
 	int val;
 
 	/* disable auto sleep */
-	val = ytphy_read_ext(phydev, YT8521_EXTREG_SLEEP_CONTROL1);
+	val = ytphy_read_ext(phydev, YT8511_EXTREG_SLEEP_CONTROL1);
 	if (val < 0)
 		return val;
 
