@@ -72,6 +72,10 @@ tplink,ad7200)
 ubnt,unifi-ac-hd)
 	ucidef_set_interface_lan "eth0 eth1"
 	;;
+xiaomi,r3d)
+	ucidef_add_switch "switch0" \
+		"1:lan:3" "2:lan:2" "3:lan:1" "6@eth1" "5:wan" "0@eth0"
+	;;
 zyxel,nbg6817)
 	hw_mac_addr=$(mtd_get_mac_ascii 0:APPSBLENV ethaddr)
 	ucidef_add_switch "switch0" \

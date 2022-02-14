@@ -393,6 +393,23 @@ define Device/ubnt_unifi-ac-hd
 endef
 TARGET_DEVICES += ubnt_unifi-ac-hd
 
+define Device/xiaomi_r3d
+	$(call Device/LegacyImage)
+	DEVICE_VENDOR := Xiaomi
+	DEVICE_MODEL := R3D
+	SOC := qcom-ipq8064
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	KERNEL_SIZE := 4096k
+	IMAGE_SIZE := 86016k
+	UBINIZE_OPTS := -E 5
+	IMAGES := factory.bin sysupgrade.bin
+	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | pad-to $$$$(BLOCKSIZE) | check-size
+	DEVICE_PACKAGES := kmod-i2c-gpio kmod-hwmon-lm75 hwmon-drivetemp \
+		kmod-usb-storage-uas ath10k-firmware-qca9984-ct ath10k-firmware-qca99x0-ct
+endef
+TARGET_DEVICES += xiaomi_r3d
+
 define Device/zyxel_nbg6817
 	DEVICE_VENDOR := ZyXEL
 	DEVICE_MODEL := NBG6817

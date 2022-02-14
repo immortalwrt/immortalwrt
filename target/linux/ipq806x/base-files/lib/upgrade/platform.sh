@@ -54,6 +54,9 @@ platform_do_upgrade() {
 		MTD_CONFIG_ARGS="-s 0x200000"
 		default_do_upgrade "$1"
 		;;
+	xiaomi,r3d)
+		platform_do_upgrade_xiaomi "$1" 0x2800000
+		;;
 	zyxel,nbg6817)
 		zyxel_do_upgrade "$1"
 		;;
