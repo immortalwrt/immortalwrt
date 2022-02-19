@@ -104,6 +104,9 @@
 				"file": [ "list", "read" ],
 				"system": [ "board", "info" ]
 			}
+		},
+		"write": {
+			"uci": [ "dhcp" ]
 		}
 	},
 
