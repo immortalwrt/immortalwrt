@@ -1,0 +1,58 @@
+<%#
+ Maintained by eSirPlayground <https://www.youtube.com/c/esirplayground>
+ Licensed to the public under the Apache License 2.0.
+-%>
+
+<%+header%>
+
+<h2 name="content"><%:PowerOff%></h2>
+<br />
+
+<p><%:Shut down your router%></p>
+
+<%- local c = require("luci.model.uci").cursor():changes(); if c and next(c) then -%>
+	<p class="alert-message warning"><%:Warning: There are unsaved changes that will get lost on shutting down!%></p>
+<%- end -%>
+
+<hr />
+
+<script type="text/javascript">//<![CDATA[
+	var tries = 0;
+
+	function ok() {
+		window.location = '<%=controller%>/admin';
+	}
+
+	function check() {
+		if (tries++ < 12)
+			window.setTimeout(ping, 5000);
+		else
+			alert('<%:Device unreachable%>');
+	}
+
+	function ping() {
+		var img = document.createElement('img');
+
+		img.onload = ok;
+		img.onerror = check;
+		img.src = '<%=resource%>/icons/loading.gif?' + Math.random();
+
+		document.getElementById('poweroff-message').innerHTML = '<%:Waiting for device...%>';
+	}
+
+	function poweroff(button) {
+		button.style.display = 'none';
+		document.getElementById('poweroff-message').parentNode.style.display = '';
+
+		(new XHR()).post('<%=controller%>/admin/system/poweroff/call', { token: '<%=token%>' }, check);
+	}
+//]]></script>
+
+<input class="cbi-button cbi-button-apply" type="button" value="<%:Perform PowerOff%>" onclick="poweroff(this)" />
+
+<p class="alert-message" style="display:none">
+	<img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="vertical-align:middle" />
+	<span id="poweroff-message"><%:Router is shutting down...%></span>
+</p>
+
+<%+footer%>
