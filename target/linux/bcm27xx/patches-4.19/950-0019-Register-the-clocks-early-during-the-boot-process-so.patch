@@ -13,7 +13,7 @@ Signed-off-by: Martin Sperl <kernel@martin.sperl.org>
 
 --- a/drivers/clk/bcm/clk-bcm2835.c
 +++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -2186,8 +2186,15 @@ static int bcm2835_clk_probe(struct plat
+@@ -2181,8 +2181,15 @@ static int bcm2835_clk_probe(struct plat
  	if (ret)
  		return ret;
  
@@ -30,7 +30,7 @@ Signed-off-by: Martin Sperl <kernel@martin.sperl.org>
  }
  
  static const struct of_device_id bcm2835_clk_of_match[] = {
-@@ -2204,7 +2211,11 @@ static struct platform_driver bcm2835_cl
+@@ -2199,7 +2206,11 @@ static struct platform_driver bcm2835_cl
  	.probe          = bcm2835_clk_probe,
  };
  

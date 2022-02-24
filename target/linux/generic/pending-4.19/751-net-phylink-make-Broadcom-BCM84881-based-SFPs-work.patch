@@ -18,7 +18,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -1787,12 +1787,22 @@ static void phylink_sfp_link_up(void *up
+@@ -1792,12 +1792,22 @@ static void phylink_sfp_link_up(void *up
  	phylink_run_resolve(pl);
  }
  
@@ -41,7 +41,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  	int ret;
  
  	/*
-@@ -1807,8 +1817,13 @@ static int phylink_sfp_connect_phy(void
+@@ -1812,8 +1822,13 @@ static int phylink_sfp_connect_phy(void
  	ethtool_convert_legacy_u32_to_link_mode(supported, phy->supported);
  	ethtool_convert_legacy_u32_to_link_mode(advertising, phy->advertising);
  

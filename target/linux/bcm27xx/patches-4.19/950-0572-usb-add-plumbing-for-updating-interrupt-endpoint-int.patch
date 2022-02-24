@@ -27,7 +27,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
 
 --- a/drivers/usb/core/hcd.c
 +++ b/drivers/usb/core/hcd.c
-@@ -2071,6 +2071,16 @@ reset:
+@@ -2092,6 +2092,16 @@ reset:
  	return ret;
  }
  

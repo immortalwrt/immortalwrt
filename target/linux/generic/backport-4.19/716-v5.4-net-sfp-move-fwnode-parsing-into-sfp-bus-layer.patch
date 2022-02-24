@@ -16,7 +16,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -538,26 +538,17 @@ static const struct sfp_upstream_ops sfp
+@@ -538,20 +538,13 @@ static const struct sfp_upstream_ops sfp
  static int phylink_register_sfp(struct phylink *pl,
  				struct fwnode_handle *fwnode)
  {
@@ -40,6 +40,10 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 +		ret = PTR_ERR(bus);
 +		netdev_err(pl->netdev, "unable to attach SFP bus: %d\n", ret);
  		return ret;
+ 	}
+ 
+@@ -560,9 +553,7 @@ static int phylink_register_sfp(struct p
+ 		return 0;
  	}
  
 -	pl->sfp_bus = sfp_register_upstream(ref.fwnode, pl, &sfp_phylink_ops);

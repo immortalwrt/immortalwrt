@@ -12,7 +12,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -678,12 +678,6 @@ static int phylink_bringup_phy(struct ph
+@@ -683,12 +683,6 @@ static int phylink_bringup_phy(struct ph
  	u32 advertising;
  	int ret;
  
@@ -25,7 +25,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  	/*
  	 * This is the new way of dealing with flow control for PHYs,
  	 * as described by Timur Tabi in commit 529ed1275263 ("net: phy:
-@@ -691,10 +685,13 @@ static int phylink_bringup_phy(struct ph
+@@ -696,10 +690,13 @@ static int phylink_bringup_phy(struct ph
  	 * using our validate call to the MAC, we rely upon the MAC
  	 * clearing the bits from both supported and advertising fields.
  	 */
