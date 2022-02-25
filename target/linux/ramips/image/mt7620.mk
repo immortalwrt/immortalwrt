@@ -200,6 +200,7 @@ define Device/dlink_dir-510l
   DLINK_FAMILY_MEMBER := 0x6E38
   DLINK_FIRMWARE_SIZE := 0xDE0000
   DLINK_IMAGE_OFFSET := 0x210000
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dir-510l
 
@@ -223,6 +224,7 @@ define Device/dlink_dwr-116-a1
   DLINK_ROM_ID := DLK6E3803001
   DLINK_FAMILY_MEMBER := 0x6E38
   DLINK_FIRMWARE_SIZE := 0x7E0000
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-116-a1
 
@@ -237,6 +239,7 @@ define Device/dlink_dwr-118-a1
   DLINK_ROM_ID := DLK6E3811001
   DLINK_FAMILY_MEMBER := 0x6E38
   DLINK_FIRMWARE_SIZE := 0xFE0000
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-118-a1
 
@@ -251,6 +254,7 @@ define Device/dlink_dwr-118-a2
   DLINK_ROM_ID := DLK6E3814001
   DLINK_FAMILY_MEMBER := 0x6E38
   DLINK_FIRMWARE_SIZE := 0xFE0000
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-118-a2
 
@@ -265,6 +269,7 @@ define Device/dlink_dwr-921-c1
   DLINK_FAMILY_MEMBER := 0x6E24
   DLINK_FIRMWARE_SIZE := 0xFE0000
   DEVICE_PACKAGES += kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-921-c1
 
@@ -276,6 +281,7 @@ define Device/dlink_dwr-921-c3
   DEVICE_VARIANT := C3
   DLINK_ROM_ID := DLK6E2414009
   SUPPORTED_DEVICES := dlink,dwr-921-c1
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-921-c3
 
@@ -290,6 +296,7 @@ define Device/dlink_dwr-922-e2
   DLINK_FAMILY_MEMBER := 0x6E24
   DLINK_FIRMWARE_SIZE := 0xFE0000
   DEVICE_PACKAGES += kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-922-e2
 
@@ -304,6 +311,7 @@ define Device/dlink_dwr-960
   DLINK_FIRMWARE_SIZE := 0xFE0000
   DEVICE_PACKAGES += kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi \
 	kmod-mt76x0e
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dwr-960
 
@@ -314,6 +322,7 @@ define Device/dovado_tiny-ac
   DEVICE_MODEL := Tiny AC
   DEVICE_PACKAGES := kmod-mt76x0e kmod-usb2 kmod-usb-ohci
   SUPPORTED_DEVICES += tiny-ac
+DEFAULT := n
 endef
 TARGET_DEVICES += dovado_tiny-ac
 
@@ -536,6 +545,7 @@ define Device/iodata_wn-ac733gr3
   IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
 	elx-header 01040006 8844A2D168B45A2D
   DEVICE_PACKAGES := kmod-mt76x0e kmod-switch-rtl8367b
+  DEFAULT := n
 endef
 TARGET_DEVICES += iodata_wn-ac733gr3
 
@@ -613,6 +623,7 @@ define Device/lava_lr-25g001
   DLINK_FAMILY_MEMBER := 0x6E38
   DLINK_FIRMWARE_SIZE := 0xFE0000
   DEVICE_PACKAGES += kmod-mt76x0e
+  DEFAULT := n
 endef
 TARGET_DEVICES += lava_lr-25g001
 
