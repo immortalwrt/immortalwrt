@@ -465,7 +465,7 @@
 		mediatek,ethsys = <&sysc>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&rgmii1_pins &mdio_pins>;
+		pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>, <&rgmii2_pins>;
 
 		gmac0: mac@0 {
 			compatible = "mediatek,eth-mac";
@@ -492,8 +492,6 @@
 
 			switch0: switch@1f {
 				compatible = "mediatek,mt7621";
-				#address-cells = <1>;
-				#size-cells = <0>;
 				reg = <0x1f>;
 				mediatek,mcm;
 				resets = <&rstctrl 2>;
@@ -505,7 +503,6 @@
 				ports {
 					#address-cells = <1>;
 					#size-cells = <0>;
-					reg = <0>;
 
 					port@0 {
 						status = "disabled";
@@ -546,6 +543,7 @@
 						fixed-link {
 							speed = <1000>;
 							full-duplex;
+							pause;
 						};
 					};
 				};
