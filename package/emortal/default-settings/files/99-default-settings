@@ -15,7 +15,7 @@ ln -sf /sbin/ip /usr/bin/ip
 
 sed -i "s/# //g" /etc/opkg/distfeeds.conf
 
-sed -i 's/root::0:0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::/g' /etc/shadow
+sed -i 's/root:::0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.::0:99999:7:::/g' /etc/shadow
 [ -f '/bin/bash' ] && sed -i 's|root:x:0:0:root:/root:/bin/ash|root:x:0:0:root:/root:/bin/bash|g' /etc/passwd
 
 sed -i '/option disabled/d' /etc/config/wireless
