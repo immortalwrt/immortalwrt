@@ -5,6 +5,9 @@
  * Richard van Schagen <vschagen@icloud.com>
  */
 
+#include <linux/version.h>
+#include <linux/iversion.h>
+
 #include <crypto/aead.h>
 #include <crypto/aes.h>
 #include <crypto/authenc.h>
@@ -13,8 +16,12 @@
 #include <crypto/internal/aead.h>
 #include <crypto/md5.h>
 #include <crypto/null.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
 #include <crypto/sha1.h>
 #include <crypto/sha2.h>
+#else
+#include <crypto/sha.h>
+#endif
 
 #if IS_ENABLED(CONFIG_CRYPTO_DEV_EIP93_DES)
 #include <crypto/internal/des.h>
