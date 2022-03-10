@@ -1415,6 +1415,16 @@ define Device/tplink_re650-v1
 endef
 TARGET_DEVICES += tplink_re650-v1
 
+define Device/tplink_tl-wpa8631p-v3
+  $(Device/tplink-safeloader)
+  DEVICE_MODEL := TL-WPA8631P
+  DEVICE_VARIANT := v3
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  TPLINK_BOARD_ID := TL-WPA8631P-V3
+  IMAGE_SIZE := 7232k
+endef
+TARGET_DEVICES += tplink_tl-wpa8631p-v3
+
 define Device/ubnt_edgerouter_common
   $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := Ubiquiti
@@ -1628,7 +1638,6 @@ endef
 TARGET_DEVICES += xiaomi_mi-router-ac2100
 
 define Device/xiaomi_mi-router-cr660x
-  $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := Xiaomi
   BLOCKSIZE := 128k
@@ -1744,6 +1753,17 @@ define Device/zbtlink_zbt-wg1602-16m
 	kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += zbtlink_zbt-wg1602-16m
+
+define Device/zbtlink_zbt-wg1608-16m
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Zbtlink
+  DEVICE_MODEL := ZBT-WG1608
+  DEVICE_VARIANT := 16M
+  DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt7603 kmod-mt7615e \
+	kmod-mt7663-firmware-ap kmod-usb3 kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += zbtlink_zbt-wg1608-16m
 
 define Device/zbtlink_zbt-wg2626
   $(Device/uimage-lzma-loader)
