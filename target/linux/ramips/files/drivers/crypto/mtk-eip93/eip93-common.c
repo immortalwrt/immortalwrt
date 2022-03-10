@@ -5,11 +5,18 @@
  * Richard van Schagen <vschagen@icloud.com>
  */
 
+#include <linux/version.h>
+#include <linux/iversion.h>
+
 #include <crypto/aes.h>
 #include <crypto/ctr.h>
 #include <crypto/hmac.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
 #include <crypto/sha1.h>
 #include <crypto/sha2.h>
+#else
+#include <crypto/sha.h>
+#endif
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
