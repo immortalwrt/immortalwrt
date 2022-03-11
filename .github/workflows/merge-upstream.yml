@@ -51,5 +51,5 @@ jobs:
         fi
     - name: Push Commits
       env:
-        DOWNSTREAM_BRANCH: master
+        DOWNSTREAM_BRANCH: openwrt-18.06
       run: git push origin $DOWNSTREAM_BRANCH
