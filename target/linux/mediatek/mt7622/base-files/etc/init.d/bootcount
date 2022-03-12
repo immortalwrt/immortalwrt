@@ -3,13 +3,6 @@
 START=99
 
 boot() {
-	ifconfig apclii0 up
-	ifconfig rai0 up
-	/etc/init.d/apcli.sh start
-	mtkwifi reload
-	echo "2" > "/sys/class/net/wan/queues/rx-0/rps_cpus"
-	echo "2" > "/sys/class/net/apcli0/queues/rx-0/rps_cpus"
-	echo "2" > "/sys/class/net/apclii0/queues/rx-0/rps_cpus"
 	case $(board_name) in
 	linksys,e8450)
 		mtd erase senv || true

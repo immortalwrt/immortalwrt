@@ -222,26 +222,6 @@ define Device/totolink_a8000ru
 endef
 TARGET_DEVICES += totolink_a8000ru
 
- define Device/xiaomi_redmi-router-ax6s
-   DEVICE_VENDOR := Xiaomi
-   DEVICE_MODEL := Redmi Router AX6S
-   DEVICE_ALT0_VENDOR := Xiaomi
-   DEVICE_ALT0_MODEL := Router AX3200
-   DEVICE_DTS := mt7622-xiaomi-redmi-router-ax6s
-   DEVICE_DTS_DIR := ../dts
-   BOARD_NAME := xiaomi,redmi-router-ax6s
-   DEVICE_PACKAGES :=l1profile luci-app-turboacc kmod-mt7622 kmod-mt_wifi ipv6helper
-   UBINIZE_OPTS := -E 5
-   IMAGES += factory.bin
-   BLOCKSIZE := 128k
-   PAGESIZE := 2048
-   KERNEL_SIZE :=10240k
-   KERNEL_INITRAMFS_SUFFIX := -recovery.itb
-   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi
-   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
- endef
- TARGET_DEVICES += xiaomi_redmi-router-ax6s
-
 define Device/ubnt_unifi-6-lr
   DEVICE_VENDOR := Ubiquiti
   DEVICE_MODEL := UniFi 6 LR
