@@ -1,0 +1,349 @@
+################################################################
+# AP Common Feature Selection
+################################################################
+# Support Multiple Interface within single driver
+HAS_MULTI_INF=y
+
+#ifdef WDS_SUPPORT
+# Support WDS function
+HAS_WDS=y
+#endif /* WDS_SUPPORT */
+
+#ifdef DOT11_SAE_SUPPORT
+HAS_WPA3_SUPPORT=y
+#ifdef CONFIG_OWE_SUPPORT
+# Support Enhanced Open (OWE)
+HAS_OWE_SUPPORT=y
+#endif /* CONFIG_OWE_SUPPORT */
+#endif /* DOT11_SAE_SUPPORT */
+
+#ifdef APCLI_SUPPORT
+# Support AP-Client function
+HAS_APCLI=y
+#ifdef MAC_REPEATER_SUPPORT
+HAS_MAC_REPEATER_SUPPORT=y
+#endif /* MAC_REPEATER_SUPPORT */
+HAS_APCLI_WPA_SUPPLICANT=n
+#ifdef MWDS
+# Support Mixed WDS
+HAS_MWDS=n
+#endif /* MWDS */
+#ifdef ROAMING_ENHANCE_SUPPORT
+# Roaming Enhance Support
+HAS_ROAMING_ENHANCE_SUPPORT=n
+#endif /* ROAMING_ENHANCE_SUPPORT */
+#endif /* APCLI_SUPPORT */
+
+#ifdef VOW_SUPPORT
+HAS_VOW_SUPPORT=y
+HAS_KERNEL_RPS_ADJUST=n
+HAS_PKTLOSS_CHK=y
+HAS_DABS_QOS=y
+#endif /* VOW_SUPPORT */
+
+#ifdef MT_DFS_SUPPORT
+#Support DFS function
+HAS_MT_DFS_SUPPORT=y
+#endif /* MT_DFS_SUPPORT */
+
+#Support IGMP-Snooping function.
+HAS_IGMP_SNOOP_SUPPORT=y
+
+#Support Background Scan function
+HAS_BGND_SCAN_SUPPORT=y
+
+#ifdef WEPAUTO_OPEN_FIRST
+#Support WEPAUTO mode try Open first then shared
+HAS_WEPAUTO_OPEN_FIRST_SUPPORT=y
+#endif
+
+#ifdef AIR_MONITOR
+# Support Air Monitor
+HAS_AIR_MONITOR=n
+#endif /* AIR_MONITOR */
+
+
+#Support GreenAP function
+HAS_GREENAP_SUPPORT=y
+
+#ifdef RSSI_FEEDBACK
+HAS_RSSI_FEEDBACK=n
+#endif /* RSSI_FEEDBACK */
+
+
+#Support PCIE ASPM dynamic control
+HAS_PCIE_ASPM_DYM_CTRL_SUPPORT=n
+
+#Support for Auto channel select enhance
+HAS_AUTO_CH_SELECT_ENHANCE=n
+
+#Support USB_BULK_BUF_ALIGMENT
+HAS_USB_BULK_BUF_ALIGMENT=n
+
+#Support for EXT_CHANNEL
+HAS_EXT_BUILD_CHANNEL_LIST=n
+
+#Support for IDS
+HAS_IDS_SUPPORT=y
+
+#ifdef STREAM_MODE_SUPPORT
+HAS_STREAM_MODE_SUPPORT=n
+#endif /* STREAM_MODE_SUPPORT */
+
+#ifdef CONFIG_MULTI_CHANNEL
+HAS_MULTI_CHANNEL=n
+#endif /* CONFIG_MULTI_CHANNEL */
+
+#ifdef CONFIG_HOTSPOT
+HAS_HOTSPOT_SUPPORT=n
+#endif /* CONFIG_HOTSPOT */
+
+#ifdef WNM_SUPPORT
+HAS_WNM_SUPPORT=n
+#endif /* WNM_SUPPORT */
+
+#ifdef MICROWAVE_OVEN_SUPPORT
+HAS_MICROWAVE_OVEN_SUPPORT=n
+#endif /* MICROWAVE_OVEN_SUPPORT */
+
+
+################################################################
+# AP Customized Feature Selection
+################################################################
+# Support HOSTAPD function
+HAS_HOSTAPD_SUPPORT=n
+
+#DSCP PRI SUPPORT
+HAS_DSCP_PRI_SUPPORT=y
+
+
+#ifdef WH_EVENT_NOTIFIER
+# Support whole home customized event notify
+HAS_WH_EVENT_NOTIFIER=n
+#endif /* WH_EVENT_NOTIFIER */
+
+#Support Smart Carrier Sense function
+HAS_SMART_CARRIER_SENSE_SUPPORT=y
+
+#Support features of Link Test support.
+HAS_LINK_TEST_SUPPORT=n
+
+#Client support WDS function
+HAS_CLIENT_WDS_SUPPORT=n
+
+#ifdef CONFIG_SNIFFER_SUPPORT
+HAS_SNIFFER_SUPPORT=n
+#endif
+
+
+################################################################
+# AP IOT Feature Selection
+################################################################
+
+#ifdef VHT_TXBF_2G_EPIGRAM_IE
+# Support VHT TXBF 2G with BRCM STA
+HAS_VHT_TXBF_2G_EPIGRAM_IE=n
+#endif /* VHT_TXBF_2G_EPIGRAM_IE */
+
+
+################################################################
+# AP Feature Compiler Flag
+################################################################
+WFLAGS += -DCONFIG_AP_SUPPORT -DMBSS_SUPPORT -DIAPP_SUPPORT -DDOT1X_SUPPORT -DAP_SCAN_SUPPORT -DSCAN_SUPPORT
+WFLAGS += -DMCAST_RATE_SPECIFIC
+
+ifeq ($(HAS_MULTI_INF),y)
+WFLAGS += -DMULTI_INF_SUPPORT
+endif
+
+#ifdef WSC_INCLUDED
+ifeq ($(HAS_WSC),y)
+WFLAGS += -DWSC_AP_SUPPORT -DWSC_V2_SUPPORT
+ifeq ($(HAS_WSC_LED),y)
+WFLAGS += -DWSC_LED_SUPPORT
+endif
+ifeq ($(HAS_WSC_NFC),y)
+WFLAGS += -DWSC_NFC_SUPPORT
+endif
+endif
+#endif /* WSC_INCLUDED */
+
+#ifdef WDS_SUPPORT
+ifeq ($(HAS_WDS),y)
+WFLAGS += -DWDS_SUPPORT
+endif
+#endif /* WDS_SUPPORT */
+
+#ifdef DOT11_SAE_SUPPORT
+ifeq ($(HAS_WPA3_SUPPORT),y)
+WFLAGS += -DDOT11_SAE_SUPPORT -DDOT11_SUITEB_SUPPORT -DDOT11W_PMF_SUPPORT -DOT11_SAE_PWD_ID_SUPPORT
+WFLAGS += -DDOT11_SAE_OPENSSL_BN
+#ifdef CONFIG_OWE_SUPPORT
+ifeq ($(HAS_OWE_SUPPORT),y)
+WFLAGS += -DCONFIG_OWE_SUPPORT
+endif
+#endif /* CONFIG_OWE_SUPPORT */
+endif
+#endif /* DOT11_SAE_SUPPORT */
+
+#ifdef APCLI_SUPPORT
+ifeq ($(HAS_APCLI),y)
+WFLAGS += -DAPCLI_SUPPORT -DMAT_SUPPORT -DAP_SCAN_SUPPORT -DSCAN_SUPPORT -DAPCLI_AUTO_CONNECT_SUPPORT -DAPCLI_AUTO_BW_TMP
+WFLAGS += -DCONFIG_APSTA_MIXED_SUPPORT -DETH_CONVERT_SUPPORT -DCONFIG_STA_SUPPORT
+#ifdef MAC_REPEATER_SUPPORT
+ifeq ($(HAS_MAC_REPEATER_SUPPORT),y)
+WFLAGS += -DMAC_REPEATER_SUPPORT
+endif
+#endif /* MAC_REPEATER_SUPPORT */
+#WFLAGS += -DACCOUNTING_SUPPORT
+ifeq ($(HAS_APCLI_WPA_SUPPLICANT),y)
+WFLAGS += -DApCli_WPA_SUPPLICANT_SUPPORT
+endif
+#ifdef DOT11_SAE_SUPPORT
+ifeq ($(HAS_WPA3_SUPPORT),y)
+WFLAGS += -DAPCLI_SAE_SUPPORT
+endif
+#endif /* DOT11_SAE_SUPPORT */
+endif
+#ifdef MWDS
+ifeq ($(HAS_MWDS),y)
+WFLAGS += -DMWDS -DROUTING_TAB_SUPPORT
+endif
+#endif /* MWDS*/
+#ifdef ROAMING_ENHANCE_SUPPORT
+ifeq ($(HAS_ROAMING_ENHANCE_SUPPORT),y)
+WFLAGS += -DROAMING_ENHANCE_SUPPORT
+endif
+#endif /* ROAMING_ENHANCE_SUPPORT */
+#endif /* APCLI_SUPPORT */
+
+#ifdef VOW_SUPPORT
+ifeq ($(HAS_VOW_SUPPORT),y)
+WFLAGS += -DVOW_SUPPORT
+endif
+#endif /* VOW_SUPPORT */
+ifeq ($(HAS_KERNEL_RPS_ADJUST),y)
+WFLAGS += -DKERNEL_RPS_ADJUST -DRX_RPS_SUPPORT -DRX_COUNT_DETECT
+endif
+ifeq ($(HAS_PKTLOSS_CHK), y)
+WFLAGS += -DPKTLOSS_CHK
+endif
+ifeq ($(HAS_DABS_QOS), y)
+WFLAGS += -DDABS_QOS
+endif
+
+#ifdef MT_DFS_SUPPORT
+ifeq ($(HAS_MT_DFS_SUPPORT),y)
+WFLAGS += -DMT_DFS_SUPPORT
+endif
+#endif /* MT_DFS_SUPPORT */
+
+ifeq ($(HAS_IGMP_SNOOP_SUPPORT),y)
+WFLAGS += -DIGMP_SNOOP_SUPPORT
+endif
+
+ifeq ($(HAS_WEPAUTO_OPEN_FIRST_SUPPORT),y)
+WFLAGS += -DWEPAUTO_OPEN_FIRST
+endif
+
+#ifdef AIR_MONITOR
+ifeq ($(HAS_AIR_MONITOR),y)
+WFLAGS += -DAIR_MONITOR
+endif
+#endif /* AIR_MONITOR */
+
+ifeq ($(HAS_GREENAP_SUPPORT),y)
+WFLAGS += -DGREENAP_SUPPORT
+endif
+
+
+ifeq ($(HAS_DSCP_PRI_SUPPORT),y)
+WFLAGS += -DDSCP_PRI_SUPPORT
+endif
+
+
+ifeq ($(HAS_HOSTAPD_SUPPORT),y)
+WFLAGS += -DHOSTAPD_SUPPORT
+endif
+
+#ifdef RSSI_FEEDBACK
+ifeq ($(HAS_RSSI_FEEDBACK),y)
+WFLAGS += -DRSSI_FEEDBACK
+endif
+#endif /* RSSI_FEEDBACK */
+
+
+#ifdef WH_EVENT_NOTIFIER
+ifeq ($(HAS_WH_EVENT_NOTIFIER),y)
+WFLAGS += -DWH_EVENT_NOTIFIER
+endif
+#endif /* WH_EVENT_NOTIFIER */
+
+ifeq ($(HAS_PCIE_ASPM_DYM_CTRL_SUPPORT),y)
+WFLAGS += -DPCIE_ASPM_DYM_CTRL_SUPPORT
+endif
+
+ifeq ($(HAS_AUTO_CH_SELECT_ENHANCE),y)
+WFLAGS += -DAUTO_CH_SELECT_ENHANCE
+endif
+
+ifeq ($(HAS_USB_BULK_BUF_ALIGMENT),y)
+WFLAGS += -DUSB_BULK_BUF_ALIGMENT
+endif
+
+ifeq ($(HAS_EXT_BUILD_CHANNEL_LIST),y)
+WFLAGS += -DEXT_BUILD_CHANNEL_LIST
+endif
+
+ifeq ($(HAS_IDS_SUPPORT),y)
+WFLAGS += -DIDS_SUPPORT
+endif
+
+ifeq ($(HAS_STREAM_MODE_SUPPORT),y)
+WFLAGS += -DSTREAM_MODE_SUPPORT
+endif
+
+#ifdef CONFIG_MULTI_CHANNEL
+ifeq ($(HAS_MULTI_CHANNEL),y)
+WFLAGS += -DCONFIG_MULTI_CHANNEL
+endif
+#endif /* CONFIG_MULTI_CHANNEL */
+
+#ifdef CONFIG_HOTSPOT
+ifeq ($(HAS_HOTSPOT_SUPPORT),y)
+WFLAGS += -DCONFIG_DOT11U_INTERWORKING -DCONFIG_DOT11V_WNM -DCONFIG_HOTSPOT -DCONFIG_HOTSPOT_R2 -DCONFIG_HOTSPOT_R3
+endif
+#endif /* CONFIG_HOTSPOT */
+
+#ifdef WNM_SUPPORT
+ifeq ($(HAS_WNM_SUPPORT),y)
+WFLAGS += -DCONFIG_DOT11V_WNM
+endif
+#endif /* WNM_SUPPORT */
+
+#ifdef MICROWAVE_OVEN_SUPPORT
+ifeq ($(HAS_MICROWAVE_OVEN_SUPPORT),y)
+WFLAGS += -DMICROWAVE_OVEN_SUPPORT
+endif
+#endif /* MICROWAVE_OVEN_SUPPORT */
+
+ifeq ($(HAS_SMART_CARRIER_SENSE_SUPPORT),y)
+WFLAGS += -DSMART_CARRIER_SENSE_SUPPORT
+endif
+
+ifeq ($(HAS_LINK_TEST_SUPPORT),y)
+WFLAGS += -DLINK_TEST_SUPPORT
+endif
+
+ifeq ($(HAS_CLIENT_WDS_SUPPORT),y)
+WFLAGS += -DCLIENT_WDS
+endif
+
+
+#ifdef VHT_TXBF_2G_EPIGRAM_IE
+ifeq ($(HAS_TXBF_SUPPORT),y)
+ifeq ($(HAS_VHT_TXBF_2G_EPIGRAM_IE),y)
+WFLAGS += -DVHT_TXBF_2G_EPIGRAM_IE
+endif
+endif
+#endif /* VHT_TXBF_2G_EPIGRAM_IE */

@@ -1,0 +1,1213 @@
+config SUPPORT_OPENWRT
+	bool
+	default y
+	
+
+config WIFI_DRIVER
+	bool
+	default y
+	select WIFI_MT_MAC
+	select MT_MAC
+	#select FIRST_IF_MT7615E
+	#select CHIP_MT7622
+	#select CHIP_MT7626
+	#select SECOND_IF_MT7615E
+	#select THIRD_IF_MT7615E
+	#select CHIP_MT7615E
+
+if WIFI_DRIVER
+
+choice
+	prompt "Choose First WiFi Interface"
+	config FIRST_IF_NONE
+	bool "None"
+
+	config FIRST_IF_MT7615E
+	bool "MT7615E"
+	select WIFI_MT_MAC
+	select MT_MAC
+	select CHIP_MT7615E
+
+	config FIRST_IF_MT7622
+	bool "MT7622"
+	select WIFI_MT_MAC
+	select MT_MAC
+	select CHIP_MT7622
+
+	config FIRST_IF_MT7626
+	bool "MT7626"
+	select WIFI_MT_MAC
+	select MT_MAC
+	select CHIP_MT7626
+
+	config FIRST_IF_AXE
+        bool "MT6867"
+        select WIFI_MT_MAC
+        select MT_MAC
+        select CHIP_AXE
+
+	config FIRST_IF_MT7915
+        bool "MT7915"
+        select WIFI_MT_MAC
+        select MT_MAC
+        select CHIP_MT7915
+
+endchoice
+
+choice
+	prompt "Choose Second WiFi Interface"
+	config SECOND_IF_NONE
+	bool "None"
+
+	config SECOND_IF_MT7615E
+	bool "MT7615E"
+	select WIFI_MT_MAC
+	select CHIP_MT7615E
+	select MULTI_INF_SUPPORT
+
+	config SECOND_IF_AXE
+	bool "MT6867"
+	select WIFI_MT_MAC
+	select MT_MAC
+	select CHIP_AXE
+
+	config SECOND_IF_MT7915
+        bool "MT7915"
+        select WIFI_MT_MAC
+        select MT_MAC
+        select CHIP_MT7915
+
+endchoice
+
+choice
+	prompt "Choose Third WiFi Interface"
+	config THIRD_IF_NONE
+	bool "None"
+
+	config THIRD_IF_MT7615E
+	bool "MT7615E"
+	select WIFI_MT_MAC
+	select CHIP_MT7615E
+	select MULTI_INF_SUPPORT
+
+	config THIRD_IF_MT7915
+        bool "MT7915"
+        select WIFI_MT_MAC
+        select MT_MAC
+        select CHIP_MT7915
+	select MULTI_INF_SUPPORT
+
+endchoice
+
+config  RT_FIRST_CARD
+        int
+        depends on ! FIRST_IF_NONE
+	default 7615 if FIRST_IF_MT7615E
+        default 7622 if FIRST_IF_MT7622
+        default 7626 if FIRST_IF_MT7626
+        default 6867 if FIRST_IF_AXE
+
+config  RT_SECOND_CARD
+        int
+        depends on ! SECOND_IF_NONE
+        default 7615 if SECOND_IF_MT7615E
+        default 6867 if SECOND_IF_AXE
+
+config  RT_THIRD_CARD
+        int
+        depends on ! THIRD_IF_NONE
+        default 7615 if THIRD_IF_MT7615E
+
+config  RT_FIRST_IF_RF_OFFSET
+        hex
+        depends on ! FIRST_IF_NONE
+        default 0xc0000
+
+config  RT_SECOND_IF_RF_OFFSET
+        hex
+        depends on ! SECOND_IF_NONE
+        default 0xc8000
+
+config  RT_THIRD_IF_RF_OFFSET
+        hex
+        depends on ! THIRD_IF_NONE
+        default 0xd0000
+
+config MT_WIFI
+	tristate "MT WIFI Driver"
+	select WIFI_BASIC_FUNC if MT_WIFI
+
+config MT_WIFI_PATH
+	string
+	depends on MT_WIFI
+	default "mt_wifi"
+
+if MT_WIFI
+menu "WiFi Generic Feature Options"
+choice
+	prompt "EEPROM Type of 1st Card"
+	depends on ! FIRST_IF_NONE
+
+	config FIRST_IF_EEPROM_FLASH
+	bool "FLASH"
+	
+	config FIRST_IF_EEPROM_PROM
+	bool "EEPROM"
+
+	config FIRST_IF_EEPROM_EFUSE
+	bool "EFUSE"
+
+endchoice
+
+config RT_FIRST_CARD_EEPROM
+	string
+	depends on ! FIRST_IF_NONE
+	default "prom" if FIRST_IF_EEPROM_PROM
+	default "efuse" if FIRST_IF_EEPROM_EFUSE
+	default "flash" if FIRST_IF_EEPROM_FLASH
+
+choice
+	prompt "EEPROM Type of 2nd Card"
+	depends on ! SECOND_IF_NONE
+
+	config SECOND_IF_EEPROM_FLASH
+	bool "FLASH"
+
+	config SECOND_IF_EEPROM_PROM
+	bool "EEPROM"
+
+	config SECOND_IF_EEPROM_EFUSE
+	bool "EFUSE"
+
+endchoice
+
+config RT_SECOND_CARD_EEPROM
+	string
+	depends on ! SECOND_IF_NONE
+	default "prom" if SECOND_IF_EEPROM_PROM
+	default "efuse" if SECOND_IF_EEPROM_EFUSE
+	default "flash" if SECOND_IF_EEPROM_FLASH
+
+choice
+		prompt "EEPROM Type of 3th Card"
+		depends on ! THIRD_IF_NONE
+
+		config THIRD_IF_EEPROM_FLASH
+		bool "FLASH"
+
+		config THIRD_IF_EEPROM_PROM
+		bool "EEPROM"
+
+		config THIRD_IF_EEPROM_EFUSE
+		bool "EFUSE"
+
+endchoice
+
+config RT_THIRD_CARD_EEPROM
+		string
+		depends on ! THIRD_IF_NONE
+		default "prom" if THIRD_IF_EEPROM_PROM
+		default "efuse" if THIRD_IF_EEPROM_EFUSE
+		default "flash" if THIRD_IF_EEPROM_FLASH
+	
+config MULTI_INF_SUPPORT
+	bool
+	default y if !FIRST_IF_NONE && !SECOND_IF_NONE
+
+config WIFI_BASIC_FUNC
+	bool "Basic Functions"
+	select WIRELESS_EXT
+	select WEXT_SPY
+	select WEXT_PRIV
+
+config DOT11_N_SUPPORT
+	bool "802.11n support"
+	default y
+
+config DOT11_VHT_AC
+	bool "802.11AC support"
+	depends on WIFI_DRIVER
+	depends on DOT11_N_SUPPORT
+	default y
+
+config DOT11_HE_AX
+	bool "802.11AX support"
+	depends on WIFI_DRIVER
+	depends on DOT11_VHT_AC
+	depends on CHIP_AXE || CHIP_MT7915
+	default y
+
+config CFG_SUPPORT_FALCON_MURU
+	bool "MURU support"
+	depends on WIFI_DRIVER
+	depends on DOT11_VHT_AC
+	depends on CHIP_AXE || CHIP_MT7915
+	default y
+
+config CFG_SUPPORT_FALCON_TXCMD_DBG
+	bool "TXCMD DBG support"
+	depends on WIFI_DRIVER
+	depends on DOT11_VHT_AC
+	depends on CHIP_AXE || CHIP_MT7915
+	default y
+
+config CFG_SUPPORT_FALCON_SR
+	bool "SR(Spatial Reuse) support"
+	depends on WIFI_DRIVER
+	depends on CHIP_MT7915
+	default y
+
+config CFG_SUPPORT_FALCON_PP
+	bool "PP(Preamble Puncture) support"
+	depends on WIFI_DRIVER
+	depends on CHIP_MT7915
+	default y
+
+config WIFI_TWT_SUPPORT
+	bool "TWT(Target Wake Time) support"
+	depends on WIFI_DRIVER
+	depends on DOT11_HE_AX
+	depends on CHIP_AXE || CHIP_MT7915
+	default y
+
+config G_BAND_256QAM_SUPPORT
+	bool "2.4G 256QAM support"
+	depends on WIFI_DRIVER
+	depends on DOT11_VHT_AC
+        default y
+
+config BRCM_256QAM_SUPPORT
+	bool "BRCM 2.4G 256QAM support"
+	depends on WIFI_DRIVER
+	depends on G_BAND_256QAM_SUPPORT
+	default n
+
+config VHT_TXBF_2G_EPIGRAM_IE_SUPPORT
+    bool "BRCM 2.4G VHT Sounding support"
+	depends on WIFI_DRIVER
+	default n
+		
+config TPC_SUPPORT
+	bool "802.11h TPC Support"
+	depends on WIFI_DRIVER
+	default y
+
+config ICAP_SUPPORT
+	bool "ICAP Support"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT
+	default y
+
+config SPECTRUM_SUPPORT
+	bool "Wifi Spectrum Support"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT
+	default y
+
+config BACKGROUND_SCAN_SUPPORT
+	bool "Background Scan Support"
+	depends on WIFI_DRIVER
+	default y
+
+config SMART_CARRIER_SENSE_SUPPORT
+	bool "Smart Carrier Sense Support"
+	depends on WIFI_DRIVER
+	default y
+
+config THERMAL_PROTECT_SUPPORT
+        bool "THERMAL PROTECT SUPPORT"
+        depends on WIFI_DRIVER && SMART_CARRIER_SENSE_SUPPORT
+        default n
+
+config SCS_FW_OFFLOAD
+        bool "SCS FW OFFLOAD Support"
+        depends on WIFI_DRIVER && SMART_CARRIER_SENSE_SUPPORT
+        default n
+
+config MT_DFS_SUPPORT
+	bool "Dynamic Frequency Selection Support"
+	depends on WIFI_DRIVER
+	default y
+	
+config OFFCHANNEL_SCAN_FEATURE
+	bool "Channel Quality Monitor"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT
+	default n
+
+#config WFA_VHT_R2_PF
+#	bool "WFA VHT R2 Plugfest"
+#	depends on DOT11_VHT_AC
+#	default n
+
+config HDR_TRANS_TX_SUPPORT
+	bool "Tx Header Translation"
+	depends on CHIP_MT7615E || CHIP_MT7622 || CHIP_MT7626 || CHIP_AXE || CHIP_MT7915
+	default y
+
+config HDR_TRANS_RX_SUPPORT
+	bool "Rx Header Translation"
+	depends on CHIP_MT7615E || CHIP_MT7622 || CHIP_MT7626 || CHIP_AXE || CHIP_MT7915
+	default y
+
+config DBDC_MODE
+	bool "dbdc mode support"
+	depends on CHIP_MT7615E || CHIP_MT7626 || CHIP_MT7915
+	default y
+
+config MULTI_PROFILE_SUPPORT
+        bool "Multi Profile Support"
+        depends on DBDC_MODE
+        default y
+
+config DEFAULT_5G_PROFILE
+	bool "5G default profile for DBDC"
+	depends on DBDC_MODE
+#	depends on MULTI_PROFILE_SUPPORT
+	default y
+
+config WSC_INCLUDED
+	bool "WSC (WiFi Simple Config)"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+	default y
+
+config WSC_V2_SUPPORT
+	bool "WSC V2(WiFi Simple Config Version 2.0)"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+	default y
+
+config DOT11W_PMF_SUPPORT
+	bool "PMF"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+	default y
+
+config TXBF_SUPPORT
+	bool "Tx Bean Forming Support"
+	depends on WIFI_DRIVER
+	default y
+
+config FAST_NAT_SUPPORT
+       bool "Fast-NAT support"
+#       depends on RA_HW_NAT_WIFI
+       default n
+
+config WHNAT_SUPPORT
+	tristate "Wifi Hardware NAT support"
+	depends on CHIP_MT7615E || CHIP_MT7915
+	depends on WLAN_HOOK
+	depends on FAST_NAT_SUPPORT
+	depends on PACKAGE_kmod-hw_nat || PACKAGE_kmod-mediatek_hnat
+	default n
+
+config WARP_V2
+	bool "Warp driver version 2 support"
+	depends on PACKAGE_kmod-warp && WHNAT_SUPPORT
+	default n
+
+#config LLTD_SUPPORT
+#	bool "LLTD (Link Layer Topology Discovery Protocol)"
+#	depends on WIFI_DRIVER
+#	depends on MT_AP_SUPPORT
+#	default n
+
+#config QOS_DLS_SUPPORT
+#	bool "802.11e DLS ((Direct-Link Setup) Support"
+#	depends on WIFI_DRIVER
+#	depends on MT_AP_SUPPORT
+#	default n
+
+#config WAPI_SUPPORT
+#	bool "WAPI Support"
+#	depends on WIFI_DRIVER
+#	default n
+
+config FTM_SUPPORT
+	bool "FTM Support"
+	depends on WIFI_DRIVER
+	select PASSPOINT_R2
+	default n
+
+#config CARRIER_DETECTION_SUPPORT
+#	bool "Carrier Detect"
+#	depends on WIFI_DRIVER
+#	default n
+
+config IGMP_SNOOP_SUPPORT
+	bool "IGMP snooping"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT
+	default y
+
+config MEMORY_SHRINK
+	bool "Memory Shrink"
+	depends on WIFI_DRIVER && CHIP_MT7626
+	default n
+	
+config RPS_EFFICIENCY
+	bool "RPS Efficiency"
+	depends on WIFI_DRIVER && CHIP_MT7626
+	default n
+
+#config BLOCK_NET_IF
+#	bool "NETIF Block"
+#	depends on WIFI_DRIVER
+#	depends on MT_AP_SUPPORT
+#	default n
+#	help
+#	Support Net interface block while Tx-Sw queue full
+
+#config RATE_ADAPTION
+#	bool "New Rate Adaptation support"
+#	depends on WIFI_DRIVER
+#	default y
+
+#config NEW_RATE_ADAPT_SUPPORT
+#	bool "Intelligent Rate Adaption"
+#	depends on WIFI_DRIVER && RATE_ADAPTION
+#	default y
+
+#config AGS_SUPPORT
+#	bool "Adaptive Group Switching"
+#	depends on WIFI_DRIVER && RATE_ADAPTION
+#	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+#	default n
+
+#config RATE_ADAPT_AGBS_SUPPORT
+#	bool "Adaptive AGBS Mode"
+#	depends on WIFI_DRIVER && RATE_ADAPTION
+#	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+#	default y
+
+#config IDS_SUPPORT
+#	bool "IDS (Intrusion Detection System) Support"
+#	depends on WIFI_DRIVER
+#	depends on MT_AP_SUPPORT
+#	default n
+
+#config WIFI_WORK_QUEUE
+#	bool "Work Queue"
+#	depends on WIFI_DRIVER
+#	default n
+
+#config WIFI_SKB_RECYCLE
+#	bool "SKB Recycle(Linux)"
+#	depends on WIFI_DRIVER
+#	depends on MT_AP_SUPPORT
+#	default n
+
+config RTMP_FLASH_SUPPORT
+	bool "Flash Support"
+	depends on WIFI_DRIVER
+	default y
+
+config PRE_CAL_TRX_SET1_SUPPORT
+	bool "Calibration To Flash/BinFile Support"
+	depends on WIFI_DRIVER
+	default y
+
+config RLM_CAL_CACHE_SUPPORT
+	bool "RlmCalibrationCache Support"
+	depends on WIFI_DRIVER
+	default y
+
+config PRE_CAL_TRX_SET2_SUPPORT
+	bool "Pre-calibration to Flash Support"
+	depends on WIFI_DRIVER
+	default y
+
+config CAL_BIN_FILE_SUPPORT
+	bool "Calibration to BinFile Support"
+	depends on WIFI_DRIVER
+	default y
+
+config RF_LOCKDOWN_SUPPORT
+	bool "RF Lockdown Support"
+	depends on WIFI_DRIVER
+	default n	
+
+config LINK_TEST_SUPPORT
+	bool "Link Test Support"
+	depends on WIFI_DRIVER
+	default n
+
+#config LED_CONTROL_SUPPORT
+#	bool "LED Support"
+#	depends on WIFI_DRIVER
+#	depends on MT_AP_SUPPORT
+#	default n
+
+config ATE_SUPPORT
+	bool "ATE/QA Support"
+	depends on WIFI_DRIVER
+	default y
+
+config WLAN_SERVICE
+        bool "Wlan Service Library Support"
+        depends on WIFI_DRIVER
+        default n
+
+#config MEMORY_OPTIMIZATION
+#	bool "Memory Optimization"
+#	depends on WIFI_DRIVER
+#	default n
+
+config PASSPOINT_R2
+	bool "Passpoint Release-2 Support"
+	depends on WIFI_DRIVER
+	select DOT11W_PMF_SUPPORT
+	depends on MT_AP_SUPPORT
+	default n
+
+config MBO_SUPPORT
+        bool "MBO Support"
+        depends on WIFI_DRIVER
+        select INTERWORKING
+        select WNM_SUPPORT
+        select DOT11K_RRM_SUPPORT
+        select DOT11R_FT_SUPPORT
+        select DOT11W_PMF_SUPPORT
+        default n
+
+config OCE_SUPPORT
+	bool "Optimized Connectivity Experience Support"
+	depends on MT_AP_SUPPORT
+	depends on MBO_SUPPORT
+	depends on CHIP_MT7915
+	default y
+
+config MAP_SUPPORT
+        bool "MAP Support"
+        depends on WIFI_DRIVER
+        select INTERWORKING
+        select WNM_SUPPORT
+        select DOT11K_RRM_SUPPORT
+        select DOT11R_FT_SUPPORT
+        select DOT11W_PMF_SUPPORT
+        default n
+
+config MAP_R2_VER_SUPPORT
+        bool "Multi-AP R2 version support"
+        depends on MAP_SUPPORT
+        default n
+
+
+#config TRACE_TCP_PKT
+#	   bool "TCP DATA/ACK packets trace log"
+#	   depends on WIFI_DRIVER
+#	   default n
+
+config UAPSD
+	bool "UAPSD support"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+	default y
+
+config DPP_SUPPORT
+        bool "DPP Support"
+        depends on WIFI_DRIVER
+        depends on MT_AP_SUPPORT
+        select DOT11W_PMF_SUPPORT
+        default n
+
+config TCP_RACK_SUPPORT
+	bool "TCP Reduced ACK  support"
+	depends on WIFI_DRIVER
+	default n
+
+#### PA_LNA_Type choice
+
+config RED_SUPPORT
+        bool "RED(Random Early Drop) support"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT || MT_STA_SUPPORT
+        default y
+
+config FQ_SCH_SUPPORT
+        bool "Fair Queueing support"
+        depends on WIFI_DRIVER
+        depends on MT_AP_SUPPORT && VOW_SUPPORT
+        depends on CHIP_MT7622
+        default y
+
+config CTXD_MEM_CPY_SUPPORT
+	bool "CTXD(sw mode) support"
+	depends on WIFI_DRIVER
+	default n
+
+config CTXD_SCATTER_AND_GATHER_SUPPORT
+        bool "CTXD(hw mode) support"
+        depends on WIFI_DRIVER
+        default n
+
+config FDB_SUPPORT
+       bool "FW Debug Port"
+       depends on WIFI_DRIVER
+       default n
+
+choice
+        prompt "PA LNA Type of 1st Card"
+		depends on ! FIRST_IF_NONE
+		
+		config FIRST_IF_EPAELNA
+		bool "ePAeLNA"
+		config FIRST_IF_IPAILNA
+		bool "iPAiLNA"		
+		config FIRST_IF_IPAELNA
+		bool "iPAeLNA"
+#		config FIRST_IF_EPAILNA
+#		bool "ePAiLNA"
+endchoice
+choice
+        prompt "PA LNA Type of 2nd Card"
+		depends on ! SECOND_IF_NONE
+		
+		config SECOND_IF_EPAELNA
+		bool "ePAeLNA"
+		config SECOND_IF_IPAILNA
+		bool "iPAiLNA"		
+		config SECOND_IF_IPAELNA
+		bool "iPAeLNA"
+#		config SECOND_IF_EPAILNA
+#		bool "ePAiLNA"
+endchoice
+choice
+        prompt "PA LNA Type of 3rd Card"
+		depends on ! THIRD_IF_NONE
+		
+		config THIRD_IF_EPAELNA
+		bool "ePAeLNA"
+		config THIRD_IF_IPAILNA
+		bool "iPAiLNA"		
+		config THIRD_IF_IPAELNA
+		bool "iPAeLNA"
+#		config THIRD_IF_EPAILNA
+#		bool "ePAiLNA"
+endchoice
+#### PA_LNA_Type choice END 
+
+#
+# Section for chip architectures
+#
+# "RLT MAC Support"
+config RLT_MAC
+	bool
+	depends on WIFI_DRIVER
+	default n
+
+config RLT_BBP
+	bool
+
+config RLT_RF
+	bool
+
+# "RTMP MAC Support"
+config RTMP_MAC
+	bool
+	depends on WIFI_DRIVER
+	default n
+
+config RTMP_BBP
+	bool
+
+config RTMP_RF
+	bool
+
+#
+# Section for interfaces
+#
+config RTMP_PCI_SUPPORT
+	bool
+
+config RTMP_USB_SUPPORT
+	bool
+
+config RTMP_RBUS_SUPPORT
+	bool
+
+endmenu
+
+menu "WiFi Operation Modes"
+choice
+	prompt "Main Mode"
+	default WIFI_MODE_AP
+
+	config WIFI_MODE_AP
+		tristate "AP"
+		select MT_AP_SUPPORT
+
+	config WIFI_MODE_STA
+		tristate "STA"
+		select MT_STA_SUPPORT
+
+	config WIFI_MODE_BOTH
+		tristate "APSTA"
+		select MT_AP_SUPPORT
+		select MT_STA_SUPPORT
+endchoice
+
+
+config MT_AP_SUPPORT
+	tristate "Ralink RT2860 802.11n AP support"
+#	depends on NET_RADIO
+	select WIRELESS_EXT
+	select WEXT_SPY
+	select WEXT_PRIV
+
+config WDS_SUPPORT
+	bool "WDS"
+	depends on MT_AP_SUPPORT
+	default y
+
+config MBSS_SUPPORT
+	bool "MBSSID"
+	depends on MT_AP_SUPPORT
+	default y
+
+#config NEW_MBSSID_MODE
+#	bool "New MBSSID MODE"
+#	depends on MT_AP_SUPPORT && MBSS_SUPPORT
+#	depends on RALINK_RT3883 || RALINK_RT3352 || RALINK_RT5350 || RALINK_RT6352 || RALINK_MT7620
+#	default y
+
+#config ENHANCE_NEW_MBSSID_MODE
+#	bool "Enhanced MBSSID mode"
+#	depends on NEW_MBSSID_MODE
+#	default y
+
+config APCLI_SUPPORT
+	bool "AP-Client Support"
+	depends on MT_AP_SUPPORT
+	default y
+
+config APCLI_CERT_SUPPORT
+	bool "AP-Client TGn Cert Support"
+	depends on MT_AP_SUPPORT
+	depends on APCLI_SUPPORT
+        default n
+
+config MAC_REPEATER_SUPPORT
+	bool "MAC Repeater Support"
+	depends on MT_AP_SUPPORT
+	depends on APCLI_SUPPORT
+	depends on RALINK_RT6352 || RALINK_MT7620 || RALINK_MT7603E || MT_AP_SUPPORT
+	default y
+
+config APCLI_CONNECTION_TRIAL
+        bool "Trial Connection"
+        depends on MT_AP_SUPPORT
+        depends on APCLI_SUPPORT
+        default n
+
+config MWDS
+    bool "Mixed WDS(MWDS)"
+    depends on MT_AP_SUPPORT
+    select APCLI_SUPPORT
+    default n
+
+config WIFI_SYSDVT
+    bool "Wifi System DVT tool Support"
+    depends on MT_AP_SUPPORT
+    default n
+
+config WIFI_DBG_TXCMD
+        bool "Wifi dbg_txcmd framework"
+        depends on WIFI_DRIVER
+        depends on MT_MAC
+        default y
+
+config MUMIMO_SUPPORT
+        bool "MU-MIMO Support"
+        depends on WIFI_DRIVER
+        select MU_RA_SUPPORT
+        default y
+
+config  MUMIMO_PLATFORM_PERFORMANCE_LEVEL
+        int "MU-MIMO Platform Performance Level. Suggest 1 for MT7621 and 2 for MT7622"
+        depends on MUMIMO_SUPPORT
+        default 1 if TARGET_ramips_mt7621
+        default 2 if TARGET_mediatek_mt7622
+        default 1
+
+config MU_RA_SUPPORT
+  	bool "MU-RGA Support"
+  	depends on MUMIMO_SUPPORT
+
+config DOT11R_FT_SUPPORT
+	bool "802.11r Fast BSS Transition"
+	depends on MT_AP_SUPPORT
+	default n
+
+config DOT11K_RRM_SUPPORT
+	bool "802.11k Radio Resource Management"
+	depends on MT_AP_SUPPORT
+	default n
+
+config ENTERPRISE_AP_SUPPORT
+	bool "Enterprise AP Support"
+	depends on MT_AP_SUPPORT
+	default n
+
+config WIFI_EAP_FEATURE
+	bool "EAP Feature"
+	depends on WIFI_DRIVER
+	default y
+
+#VLAN
+config VLAN_SUPPORT
+	bool "VLAN Support"
+	depends on MT_AP_SUPPORT
+	depends on WIFI_EAP_FEATURE
+	default n
+
+#Sniffer
+config SNIFFER_SUPPORT
+	bool "SNIFFER"
+	depends on MT_AP_SUPPORT
+	depends on WIFI_EAP_FEATURE
+	default n
+
+#TxRx Statistic
+config TXRX_STAT_SUPPORT
+	bool "TxRx Stats Support"
+	depends on WIFI_DRIVER && WIFI_EAP_FEATURE
+	default n
+
+#Antenna control
+config ANTENNA_CONTROL_SUPPORT
+	bool "Antenna Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#Mgmt Tx Power
+config MGMT_TXPWR_CTRL
+	bool "Mgmt TxPower Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#TxD based Mgmt Tx Power
+config TXD_MGMT_TXPWR_CTRL
+	bool "TxD based Mgmt TxPower Control"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#Channel Utilization
+config CHUTIL_SUPPORT
+	bool "Channel Utilization Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#Noise Floor
+config NF_SUPPORT
+	bool "Noise Floor Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#RA_PHY_RATE
+config RA_PHY_RATE_SUPPORT
+	bool "RA PHY RATE Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#AMPDU Config
+config AMPDU_CONF_SUPPORT
+	bool "AMPDU Config retry & agglimitSupport"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+#ACK CTS Timeout
+config ACK_CTS_TIMEOUT_SUPPORT
+	bool "ACK CTS Timeout cck & ofdm Support"
+	depends on MT_AP_SUPPORT && WIFI_EAP_FEATURE
+	default n
+
+config RADIUS_MAC_AUTH_SUPPORT
+    bool "RADIUS MAC Auth Support"
+    depends on ENTERPRISE_AP_SUPPORT
+    depends on CFG80211_SUPPORT
+    default n
+
+config DYNAMIC_VLAN_SUPPORT
+	bool "Dynamic VLAN Support"
+	depends on MT_AP_SUPPORT
+	depends on ENTERPRISE_AP_SUPPORT
+	default n
+
+config CFG80211_SUPPORT
+	bool "CFG80211"
+	depends on MT_AP_SUPPORT
+	default n
+
+#CUSTOMISED HOSTAPD
+config CUSTOMISED_HOSTAPD_SUPPORT
+	bool "Customised Hostapd Support"
+	depends on MT_AP_SUPPORT
+	depends on CFG80211_SUPPORT
+	default n
+
+# HOSTAPD WPA3
+config HOSTAPD_WPA3_SUPPORT
+        bool "Hostapd WPA3 Support"
+        depends on MT_AP_SUPPORT
+        depends on CFG80211_SUPPORT
+        default n
+
+#APCLI STA
+config APCLI_STA_SUPPORT
+	bool "APCLI STA Support"
+	depends on APCLI_SUPPORT
+	depends on CFG80211_SUPPORT
+	default n
+
+#WDS STA
+config WDS_STA_SUPPORT
+	bool "WDS STA Support"
+	depends on APCLI_SUPPORT
+	depends on CFG80211_SUPPORT
+	default n
+
+#WDS AP
+config MBSS_AS_WDS_AP_SUPPORT
+	bool "MBSS AS WDS AP Support"
+	depends on MT_AP_SUPPORT
+	depends on MBSS_SUPPORT
+	default n
+
+config DSCP_QOS_MAP_SUPPORT
+	bool "Dscp Qos Mapping Support"
+	depends on MT_AP_SUPPORT
+	default n
+
+config DSCP_PRI_SUPPORT
+	bool "Dscp Priority Mapping Support"
+	depends on MT_AP_SUPPORT
+	default n
+
+config MIN_PHY_RATE_SUPPORT
+        bool "Minimum PHY rate support"
+        depends on MT_AP_SUPPORT
+        default n
+
+config FAST_UP_RATE_SUPPORT
+        bool "Fast UP rate support"
+        depends on MT_AP_SUPPORT
+        default n
+
+config CON_WPS_SUPPORT
+	bool "Concurrent WPS Support"
+	depends on MT_AP_SUPPORT
+	depends on APCLI_SUPPORT
+	depends on WSC_INCLUDED
+	depends on WSC_V2_SUPPORT
+#	depends on MULTI_INF_SUPPORT
+	default n
+
+#config LLTD_SUPPORT
+#	bool "LLTD (Link Layer Topology Discovery Protocol)"
+#	depends on MT_AP_SUPPORT
+
+#config COC_SUPPORT
+#	bool "CoC Support"
+#	depends on MT_AP_SUPPORT
+#	default n
+
+#config  RT2860V2_SNMP
+#	bool "Net-SNMP Support"
+#	depends on MT_AP_SUPPORT
+
+config MCAST_RATE_SPECIFIC
+	bool "User specific tx rate of mcast pkt"
+	depends on MT_AP_SUPPORT
+	default y
+
+#config EXT_BUILD_CHANNEL_LIST
+#	bool "Extension Channel List"
+#	depends on MT_AP_SUPPORT
+
+#config AUTO_CH_SELECT_ENHANCE
+#	bool "Auto Channel Selection Enhancement"
+#	depends on MT_AP_SUPPORT
+
+config VOW_SUPPORT
+	bool "MediaAir(VOW) support"
+	depends on MT_AP_SUPPORT
+	default y
+
+#config AIRPLAY_SUPPORT
+#	bool "AIRPLAY Support"
+#	depends on MT_AP_SUPPORT
+#	default n
+
+config BAND_STEERING
+	bool "Band Steering"
+	depends on MT_AP_SUPPORT
+	default y
+
+config LED_CONTROL_SUPPORT
+	bool "LED Control Support"
+	default n
+
+config WLAN_HOOK
+       bool "WLAN hook Support"
+       depends on WIFI_DRIVER
+       default n
+
+config RADIUS_ACCOUNTING_SUPPORT
+	bool "Radius Accounting Support"
+	depends on MT_AP_SUPPORT
+	default n
+
+config GREENAP_SUPPORT
+	bool "GreenAP Support"
+	depends on MT_AP_SUPPORT
+	default y
+
+config VENDOR_FEATURE11_SUPPORT
+        bool "Vendor11 Feature Enable"
+        depends on WIFI_DRIVER
+        depends on MT_AP_SUPPORT
+        default n
+
+config PCIE_ASPM_DYM_CTRL_SUPPORT
+	bool "Pcie Aspm Dynamic Control Support"
+	depends on MT_AP_SUPPORT
+	default y
+
+config COEX_SUPPORT
+	bool "Coex Support"
+	depends on MT_AP_SUPPORT
+	default n
+
+config EASY_SETUP_SUPPORT
+	bool "Whole Home Coverage - Easy Setup"
+	depends on MT_AP_SUPPORT
+	default n   
+
+config EVENT_NOTIFIER_SUPPORT
+	bool "Whole Home Coverage - Event Notifier"
+	depends on MT_AP_SUPPORT
+	default n
+
+config AIR_MONITOR
+        bool "Air Monitor"
+        depends on MT_AP_SUPPORT
+        default n
+
+config WNM_SUPPORT
+        bool "802.11v WNM Support"
+        depends on MT_AP_SUPPORT
+        default n
+
+config INTERWORKING
+        bool "802.11u Interworking"
+        depends on MT_AP_SUPPORT
+        default n
+
+#config ROAMING_ENHANCE_SUPPORT
+#	bool "Roaming Enhance Support"
+#	depends on MT_AP_SUPPORT
+#	depends on APCLI_SUPPORT
+#	default n
+
+config LINUX_NET_TXQ_SUPPORT
+	bool "NET TX Queue Support"
+	default n
+
+#config WIFI_FWD_SUPPORT
+#        bool "WiFi Forwarding Support"
+#        default n
+
+config  WPA3_SUPPORT
+        bool "WPA3 Support"
+        depends on MT_AP_SUPPORT
+        default n
+
+config  OWE_SUPPORT
+        bool "Enhanced Open Support"
+        depends on MT_AP_SUPPORT
+        default n
+
+config VLAN_SUPPORT
+        bool "VLAN support"
+        depends on MT_AP_SUPPORT
+        default n
+
+config  SINGLE_SKU
+        bool "Single SKU Support"
+        depends on MT_AP_SUPPORT
+        default y
+
+config PROFILING_SUPPORT
+        bool "WIFI Profiling Support"
+        default n
+
+
+endmenu
+
+endif
+
+config WIFI_MT_MAC
+	bool
+	default y
+	depends on MT_WIFI
+
+if WIFI_RLT_MAC
+	config RLT_MAC
+	bool
+	default y
+endif
+
+if WIFI_RTMP_MAC
+	config RTMP_MAC
+		bool
+		default y
+endif
+
+if WIFI_MT_MAC
+	config MT_MAC
+		bool
+		default y
+
+	config CHIP_MT7603E
+		bool
+		default n
+
+	config CHIP_MT7615E
+		bool
+		default n
+
+	config CHIP_MT7622
+		bool
+		default n
+
+	config CHIP_MT7663E
+		bool
+		default n
+
+	config CHIP_MT7626
+		bool
+		default n
+	config CHIP_AXE
+		bool
+		default n
+	config CHIP_MT7915
+		bool
+		default n
+endif
+
+if CHIP_MT7615E || CHIP_MT7622 || CHIP_MT7626 || CHIP_AXE || CHIP_MT7915
+	config MT_MAC
+		bool
+		default y
+		select RATE_ADAPTION
+		select RATE_ADAPT_AGBS_SUPPORT
+		select DOT11_N_SUPPORT
+		select DOT11_VHT_AC
+		select HDR_TRANS_TX_SUPPORT
+		select HDR_TRANS_RX_SUPPORT
+endif
+
+endif #WIFI_DRIVER#
+
