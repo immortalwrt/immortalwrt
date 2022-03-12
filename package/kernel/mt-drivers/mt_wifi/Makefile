@@ -22,7 +22,7 @@ define Package/mt_wifi
   SECTION:=net
   CATEGORY:=Network
   TITLE:=MTK wifi AP config
-  DEPENDS:=@TARGET_ramips +wireless-tools
+  DEPENDS:=@TARGET_ramips +wireless-tools +luci-app-mtwifi
   SUBMENU:=Wireless
 endef
 
