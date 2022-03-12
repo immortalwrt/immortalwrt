@@ -41,6 +41,7 @@ ramips_setup_interfaces()
 	jdcloud,re-sp-01b|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
+	oraybox,x3a|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3g-v2|\
 	xiaomi,mi-router-4|\
