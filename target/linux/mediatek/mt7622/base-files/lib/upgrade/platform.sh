@@ -1,6 +1,4 @@
 REQUIRE_IMAGE_METADATA=1
-RAMFS_COPY_BIN='fw_printenv fw_setenv fwtool'
-RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
 platform_do_upgrade() {
 	local board=$(board_name)
@@ -47,7 +45,8 @@ platform_do_upgrade() {
 		default_do_upgrade "$1"
 		;;
 	mediatek,mt7622-rfb1-ubi|\
-	totolink,a8000ru)
+	totolink,a8000ru|\
+ 	xiaomi,redmi-router-ax6s)
 		nand_do_upgrade "$1"
 		;;
 	*)
@@ -69,7 +68,8 @@ platform_check_image() {
 		buffalo_check_image "$board" "$magic" "$1" || return 1
 		;;
 	mediatek,mt7622-rfb1-ubi|\
-	totolink,a8000ru)
+	totolink,a8000ru|\
+ 	xiaomi,redmi-router-ax6s)
 		nand_do_platform_check "$board" "$1"
 		;;
 	*)
