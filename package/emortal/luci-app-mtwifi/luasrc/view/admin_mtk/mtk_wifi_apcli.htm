@@ -3,7 +3,7 @@
 <!--
     This module is a demo to configure MTK' proprietary WiFi driver.
     Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
-    LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to
+    LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to 
     translate uci into MTK's WiFi profile (like we did in "uci2dat").
 
     Hua Shao <nossiac@163.com>
@@ -63,7 +63,7 @@ local debug = 0
             <tbody>
             <tr><th class="th1"></th><th></th><th></th></tr>
             <tr>
-                <td>上级无线 SSID</td>
+                <td>上级无线SSID</td>
                 <td>
                     <input type="text" name="ApCliSsid" id="ApCliSsid" value="<%=cfgs.ApCliSsid%>"/>
                 </td>
@@ -74,7 +74,7 @@ local debug = 0
                 <td>
                     <input type="text" name="Channel" id="Channel" value="<%=dev.Channel%>"/>
                 </td>
-                <td> <span style="color:red;">将会重置当前信道.</span></td>
+                <td> <span style="color:red;">设置完成后，请回到上级页面点击“连接中继”.</span></td>
             </tr>
             <tr>
                 <td>上级无线加密模式</td>
@@ -122,7 +122,7 @@ local debug = 0
             </tbody>
             <tbody id="apcli_wep"<% if cfgs.ApCliAuthMode ~= "WEP" then %> style="display: none;"<% end %>>
             <tr>
-                <td>上级无线加密算法</td>
+                <td>Root AP Encryption</td>
                 <td>
                     <select name="wep_ApCliEncrypType" id="wep_ApCliEncrypType" >
                     <% for _, v in ipairs(dev.WEP_Enc_List) do %>
@@ -134,7 +134,7 @@ local debug = 0
                 <td></td>
             </tr>
             <tr>
-                <td>上级无线密码</td>
+                <td>Root AP WEP Key</td>
                 <td>
                     <input type="text" name="ApCliKey1Str" id="ApCliKey1Str" value="<%=cfgs.ApCliKey1Str%>"/>
                     <input type="hidden" name="ApCliDefaultKeyID" value="1"/>

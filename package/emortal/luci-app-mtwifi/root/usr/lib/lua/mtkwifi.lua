@@ -51,7 +51,7 @@ function mtkwifi.__handleSpecialChars(s)
 end
 
 -- if order function given, sort by it by passing the table and keys a, b,
--- otherwise just sort the keys
+-- otherwise just sort the keys 
 function mtkwifi.__spairs(t, order)
     -- collect the keys
     local keys = {}
@@ -243,7 +243,7 @@ local WirelessModeList = {
     [14] = "A/AC/AN mixed",
     [15] = "AC/AN mixed", --but no A mode
     [16] = "AX/B/G/GN mode",
-    [17] = "AX/AC/AN mixed",
+    [17] = "AX/AC/AN mixed", 
 }
 
 local DevicePropertyMap = {
@@ -431,7 +431,7 @@ function mtkwifi.band(mode)
     or i == 4
     or i == 6
     or i == 7
-    or i == 9
+    or i == 9 
     or i == 16 then
         return "2.4G"
     else
@@ -485,41 +485,11 @@ function mtkwifi.search_dev_and_profile_orig()
     local dir = io.popen("ls /etc/wireless/")
     if not dir then return end
     local result = {}
+    result["mt7615.1.dat"] = "/etc/wireless/mt7615/mt7615.1.dat"
+    result["mt7615.2.dat"] = "/etc/wireless/mt7615/mt7615.2.dat"
     -- case 1: mt76xx.dat (best)
     -- case 2: mt76xx.n.dat (multiple card of same dev)
     -- case 3: mt76xx.n.nG.dat (case 2 plus dbdc and multi-profile, bloody hell....)
-    for line in dir:lines() do
-        -- mtkwifi.debug("debug", "scan "..line)
-        local tmp = io.popen("find /etc/wireless/"..line.." -type f -name \"*.dat\"")
-        for datfile in tmp:lines() do
-            -- mtkwifi.debug("debug", "test "..datfile)
-
-            repeat do
-            -- for case 1
-            local devname = string.match(datfile, "("..line..").dat")
-            if devname then
-                result[devname] = datfile
-                -- mtkwifi.debug("debug", "yes "..devname.."="..datfile)
-                break
-            end
-            -- for case 2
-            local devname = string.match(datfile, "("..line.."%.%d)%.dat")
-            if devname then
-                result[devname] = datfile
-                -- mtkwifi.debug("debug", "yes "..devname.."="..datfile)
-                break
-            end
-            -- for case 3
-            local devname = string.match(datfile, "("..line.."%.%d%.%dG)%.dat")
-            if devname then
-                result[devname] = datfile
-                -- mtkwifi.debug("debug", "yes "..devname.."="..datfile)
-                break
-            end
-            end until true
-        end
-    end
-
     for k,v in pairs(result) do
         mtkwifi.debug("debug", "search_dev_and_profile_orig: "..k.."="..v)
     end

@@ -1,9 +1,9 @@
 -- This module is a demo to configure MTK' proprietary WiFi driver.
 -- Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
--- LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to
+-- LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to 
 -- translate uci into MTK's WiFi profile (like we did in "uci2dat").
 -- And you will get your hands dirty.
---
+-- 
 -- Hua Shao <nossiac@163.com>
 
 module("luci.controller.mtkwifi", package.seeall)
@@ -110,30 +110,31 @@ function dev_cfg(devname)
         cfgs.VHT_Sec80_Channel = http.formvalue("VHT_Sec80_Channel") or ""
     end
 
+
     local mimo = http.formvalue("__mimo")
     if mimo == "0" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+        cfgs.MUTxRxEnable=1
         cfgs.ITxBfEn=1
     elseif mimo == "1" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+        cfgs.MUTxRxEnable=1
         cfgs.ITxBfEn=1
     elseif mimo == "2" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+        cfgs.MUTxRxEnable=1
         cfgs.ITxBfEn=1
     elseif mimo == "3" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+        cfgs.MUTxRxEnable=1
         cfgs.ITxBfEn=1
     elseif mimo == "4" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+        cfgs.MUTxRxEnable=1
         cfgs.ITxBfEn=1
     else
        cfgs.ETxBfEnCond=1
-       cfgs.MUTxRxEnable=0
+       cfgs.MUTxRxEnable=1
        cfgs.ITxBfEn=1
     end
 
@@ -217,7 +218,7 @@ function vif_del(dev, vif)
     local devs = mtkwifi.get_all_devs()
     local idx = devs[devname]["vifs"][vifname].vifidx -- or tonumber(string.match(vifname, "%d+")) + 1
     mtkwifi.debug("idx="..idx, devname, vifname)
-    local profile = devs[devname].profile
+    local profile = devs[devname].profile 
     assert(profile)
     if idx and tonumber(idx) >= 0 then
         local cfgs = mtkwifi.load_profile(profile)
@@ -493,13 +494,13 @@ function initialize_multiBssParameters(cfgs,vif_idx)
     return cfgs
 end
 
-function vif_cfg(dev, vif)
+function vif_cfg(dev, vif) 
     local devname, vifname = dev, vif
     if not devname then devname = vif end
     mtkwifi.debug("devname="..devname)
     mtkwifi.debug("vifname="..(vifname or ""))
     local devs = mtkwifi.get_all_devs()
-    local profile = devs[devname].profile
+    local profile = devs[devname].profile 
     assert(profile)
 
     local cfgs = mtkwifi.load_profile(profile)
@@ -775,7 +776,19 @@ function apcli_connect(dev, vif)
         os.execute("iwpriv "..vifname.." set ApCliWPAPSK="..cfgs.ApCliWPAPSK)
     end
     os.execute("iwpriv "..vifname.." set ApCliSsid=\""..cfgs.ApCliSsid.."\"")
+    os.execute("iwpriv "..vifname.." set ApCliAutoConnect=3")
     os.execute("iwpriv "..vifname.." set ApCliEnable=1")
+    os.execute("uci set network.wan.ifname=\""..vifname.."\"")
+    os.execute("uci commit")
+    wifi1name="ra0"
+    wifi2name="rai0"
+    os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..wifi1name.."\\\"}\"")
+    os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..wifi2name.."\\\"}\"")
+    wanname="wan"
+    os.execute("ubus call network.interface.wan remove_device \"{\\\"name\\\":\\\""..wanname.."\\\"}\"")
+    os.execute("ubus call network.interface.wan add_device \"{\\\"name\\\":\\\""..vifname.."\\\"}\"")
+    os.execute("ifdown wan")
+    os.execute("ifup wan")
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
@@ -796,6 +809,17 @@ function apcli_disconnect(dev, vif)
     mtkwifi.save_profile(cfgs, profiles[devname])
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("ifconfig "..vifname.." down")
+    os.execute("uci set network.wan.ifname=wan")
+    os.execute("uci commit")
+    wifi1name="ra0"
+    wifi2name="rai0"
+    os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..wifi1name.."\\\"}\"")
+    os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..wifi2name.."\\\"}\"")
+    os.execute("ubus call network.interface.wan remove_device \"{\\\"name\\\":\\\""..vifname.."\\\"}\"")
+    wanname="wan"
+    os.execute("ubus call network.interface.wan add_device \"{\\\"name\\\":\\\""..wanname.."\\\"}\"") 
+    os.execute("ifdown wan")
+    os.execute("ifup wan") 
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
