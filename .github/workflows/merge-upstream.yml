@@ -11,7 +11,7 @@ name: Merge-upstream
 on:
   push:
     branches:
-      - master
+      - openwrt-18.06
   schedule:
     - cron: 30 19 * * *
 
@@ -26,7 +26,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: master
+        ref: openwrt-18.06
         fetch-depth: 0
         lfs: true
 
@@ -49,7 +49,7 @@ jobs:
         else
         echo "There is no merge commits."
         fi
-    - name: master
+    - name: openwrt-18.06
       env:
         DOWNSTREAM_BRANCH: openwrt-18.06
       run: git push origin $DOWNSTREAM_BRANCH
