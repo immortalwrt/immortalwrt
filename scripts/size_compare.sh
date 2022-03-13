@@ -32,7 +32,7 @@ SUBTARGET=${SUBTARGET:-$CONFIG_SUBTARGET}
 ARCH=${ARCH:-$CONFIG_ARCH}
 PACKAGES=${PACKAGES:-$CONFIG_PACKAGES}
 BIN_DIR=${CONFIG_BIN_DIR:-./bin}
-BASE_URL="${BASE_URL:-https://downloads.openwrt.org/snapshots}"
+BASE_URL="${BASE_URL:-https://downloads.immortalwrt.org/snapshots}"
 CHECK_INSTALLED="${CHECK_INSTALLED:-y}"
 
 TARGET_URL="$BASE_URL/targets/$TARGET/$SUBTARGET/packages/Packages.gz"
