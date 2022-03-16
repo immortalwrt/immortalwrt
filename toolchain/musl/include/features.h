@@ -1,12 +1,8 @@
 #ifndef _FEATURES_H
 #define _FEATURES_H
 
-#if defined(_ALL_SOURCE) && !defined(_GNU_SOURCE)
+#ifdef _ALL_SOURCE
 #define _GNU_SOURCE 1
-#endif
-
-#if defined(_DEFAULT_SOURCE) && !defined(_BSD_SOURCE)
-#define _BSD_SOURCE 1
 #endif
 
 #if !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) \
@@ -24,8 +20,6 @@
 
 #if __STDC_VERSION__ >= 199901L || defined(__cplusplus)
 #define __inline inline
-#elif !defined(__GNUC__)
-#define __inline
 #endif
 
 #if __STDC_VERSION__ >= 201112L
@@ -34,8 +28,6 @@
 #else
 #define _Noreturn
 #endif
-
-#define __REDIR(x,y) __typeof__(x) x __asm__(#y)
 
 /* Convenience macros to test the versions of glibc and gcc.
    Use them like this:
