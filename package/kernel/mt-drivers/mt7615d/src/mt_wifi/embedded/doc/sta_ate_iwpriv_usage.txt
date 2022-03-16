@@ -191,11 +191,8 @@ where
 		iwpriv ra0 set ATETXPOW1=18
 		iwpriv ra0 set ATETXCNT=100000
 		iwpriv ra0 set ATE=TXFRAME
-		¡K
 		iwpriv ra0 set ATETXPOW0=19
-		¡K
 		iwpriv ra0 set ATETXPOW0=20
-		¡K
 		iwpriv ra0 set ATE=ATESTART
 
 2.2 Check Carrier
@@ -242,7 +239,7 @@ where
 		iwpriv ra0 set ATE=ATESTART
 		iwpriv ra0 set ATECHANNEL=1			; set Channel
 		iwpriv ra0 set ResetCounter=1		        ; Reset statistic counter
-		iwpriv ra0 set ATETXFREQOFFSET=value            ;To use the ¡§value¡¨(decimal) you got in tx calibration
+		iwpriv ra0 set ATETXFREQOFFSET=value            ;To use the value(decimal) you got in tx calibration
 		iwpriv ra0 set ATETXMODE=1			; set TX-Mode.
 		iwpriv ra0 set ATETXMCS=7			; set MCS type.
 		iwpriv ra0 set ATETXBW=0			; set Bandwidth
@@ -315,8 +312,7 @@ where
 			MlmePeriodicExec: Rx packet cnt = 2/4
 			MlmePeriodicExec: Rx AvgRssi0=-88, AvgRssi1=-80, AvgRssi2=-91
 			MlmePeriodicExec: Rx packet cnt = 2/6
-			MlmePeriodicExec: Rx AvgRssi0=-86, AvgRssi1=-77, AvgRssi2=-89¡K
-			¡K
+			MlmePeriodicExec: Rx AvgRssi0=-86, AvgRssi1=-77, AvgRssi2=-89
 
 		iwpriv ra0 set ATERXANT=1		==> Enable Three Rx Antenna-1
 		iwpriv ra0 set ATERXFER=1		==> Enable Rx Frame Error Rate: RxCnt/RxTotal
@@ -325,8 +321,6 @@ where
 			MlmePeriodicExec: Rx AvgRssi=-87
 			MlmePeriodicExec: Rx packet cnt = 7/14
 			MlmePeriodicExec: Rx AvgRssi=-90
-			¡K
-			¡K
 
 
 ===================================================================================================
@@ -338,7 +332,7 @@ where
 		Read/Write BBP registers by ID number.
 	BBPID
 
-3.1.1 Read BBP register, BBPID only, no ¡§=¡¨ symbol.
+3.1.1 Read BBP register, BBPID only, no = symbol.
 	BBPID:
 		0 ~ xx			; decimal, 8-bit
 	BBPID=Value
@@ -354,7 +348,7 @@ where
 		Read/Write MAC registers by offset.
 	MAC_OFFSET
 
-3.2.1 Read MAC register, MAC_OFFSET only, no ¡§=¡¨ symbol.
+3.2.1 Read MAC register, MAC_OFFSET only, no = symbol.
 	MAC_OFFSET:
 		0000 ~ FFFF		; hexdecimal, 16-bit
 	MAC_OFFSET=Value
@@ -370,14 +364,14 @@ where
 		Read/Write EEPROM content by address.
 	EEP_ADDR
 
-3.3.1 Read EEPROM content, EEP_ADDR only, no ¡§=¡¨ symbol.
+3.3.1 Read EEPROM content, EEP_ADDR only, no = symbol.
 	EEP_ADDR:
-		00 ~ FF			; hexdecimal, 16-bit alignment (0, 2, 4, 6, 8, A, C, ¡K)
+		00 ~ FF			; hexdecimal, 16-bit alignment (0, 2, 4, 6, 8, A, C, )
 	EEP_ADDR=Value
 
 3.3.2 Write EEPROM content.
 	EEP_ADDR:
-		00 ~ FF			; hexdecimal, 16-bit alignment (0, 2, 4, 6, 8, A, C, ¡K)
+		00 ~ FF			; hexdecimal, 16-bit alignment (0, 2, 4, 6, 8, A, C, )
 	Value:
 		0000 ~FFFF		; hexdecimal, 16-bit
 
@@ -429,7 +423,7 @@ RT28xx linux driver will leave ATE mode either ated is killed or Windows GUI is 
 5. If you have no bridge interface, please give an IP address to the ethernet interface.
    (for example : '$ated -beth0')
 6. After the interfaces have entered forwarding states, manually start ated, type '$ated -bbrX -iraX'.
-7. If your WLAN interface and Bridge interface is "ra0" and "br0" respectively, just type $ated.
+7. If your WLAN interface and Bridge interface is "ra0" and "br-lan" respectively, just type $ated.
    (For further usage of options, type $ated -h)
 8. In the Windows host, run RT28xxQA_ATE.exe or ./RT2880_ATE/RaUI.exe.
 9. Select the wired network adapter, then press OK and wait for a moment.
@@ -438,7 +432,7 @@ RT28xx linux driver will leave ATE mode either ated is killed or Windows GUI is 
 11.If your target platform concerns its network security, please run RT28xxQA_unicast.exe instead of RT28xxQA_ATE.exe.
 
 Note : 
-a. The names of WLAN interface(default is "ra0") and Bridge interface(default is "br0") must be specified manually(for example : '$ated -bbr1 -ira2') if your WLAN interface or Bridge interface is not "ra0" or "br0" respectively !
+a. The names of WLAN interface(default is "ra0") and Bridge interface(default is "br-lan") must be specified manually(for example : '$ated -bbr1 -ira2') if your WLAN interface or Bridge interface is not "ra0" or "br-lan" respectively !
 b. Please make sure no other RaUI is running before you excute ./RT2880_ATE/RaUI.exe.
 
 

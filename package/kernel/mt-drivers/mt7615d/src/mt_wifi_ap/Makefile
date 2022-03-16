@@ -200,8 +200,10 @@ cmm_objs := $(SRC_EMBEDDED_DIR)/common/action.o\
 		$(SRC_DIR)/protocol/protection.o\
 		$(SRC_EMBEDDED_DIR)/common/misc_app.o
 
+ifeq ($(CONFIG_MULTI_PROFILE_SUPPORT),y)
 EXTRA_CFLAGS += -DMULTI_PROFILE
 cmm_objs += $(SRC_EMBEDDED_DIR)/common/multi_profile.o
+endif
 
 ifeq ($(CONFIG_DEFAULT_5G_PROFILE),y)
 EXTRA_CFLAGS += -DDEFAULT_5G_PROFILE
@@ -1007,9 +1009,9 @@ chip_objs += $(SRC_DIR)/chips/mt7637.o\
                 $(SRC_DIR)/os/linux/pci_main_dev.o
 endif
 
-#ifeq ($(CONFIG_DBDC_MODE),y)
+ifeq ($(CONFIG_DBDC_MODE),y)
 EXTRA_CFLAGS += -DDBDC_MODE
-#endif
+endif
 
 ifeq ($(CONFIG_G_BAND_256QAM_SUPPORT),y)
 EXTRA_CFLAGS += -DG_BAND_256QAM
