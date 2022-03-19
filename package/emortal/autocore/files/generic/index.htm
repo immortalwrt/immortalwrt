@@ -62,7 +62,7 @@
 
 		local eth_info = ""
 		if not has_switch then
-			eth_info = luci.sys.exec("ethinfo")
+			eth_info = luci.sys.exec("/sbin/ethinfo")
 		end
 
 		local rv = {
