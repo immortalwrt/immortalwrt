@@ -67,7 +67,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  # but it is being used too early to link to meaningful stack_chk logic.
 --- a/arch/arm/kernel/vmlinux.lds.S
 +++ b/arch/arm/kernel/vmlinux.lds.S
-@@ -17,7 +17,7 @@
+@@ -30,7 +30,7 @@
  #define PROC_INFO							\
  	. = ALIGN(4);							\
  	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
@@ -76,7 +76,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  	VMLINUX_SYMBOL(__proc_info_end) = .;
  
  #define HYPERVISOR_TEXT							\
-@@ -28,11 +28,11 @@
+@@ -41,11 +41,11 @@
  #define IDMAP_TEXT							\
  	ALIGN_FUNCTION();						\
  	VMLINUX_SYMBOL(__idmap_text_start) = .;				\
@@ -90,7 +90,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  	VMLINUX_SYMBOL(__hyp_idmap_text_end) = .;
  
  #ifdef CONFIG_HOTPLUG_CPU
-@@ -105,7 +105,7 @@ SECTIONS
+@@ -118,7 +118,7 @@ SECTIONS
  		_stext = .;		/* Text and read-only data	*/
  			IDMAP_TEXT
  			__exception_text_start = .;
@@ -99,7 +99,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  			__exception_text_end = .;
  			IRQENTRY_TEXT
  			SOFTIRQENTRY_TEXT
-@@ -134,7 +134,7 @@ SECTIONS
+@@ -147,7 +147,7 @@ SECTIONS
  	__ex_table : AT(ADDR(__ex_table) - LOAD_OFFSET) {
  		__start___ex_table = .;
  #ifdef CONFIG_MMU
@@ -108,7 +108,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  #endif
  		__stop___ex_table = .;
  	}
-@@ -146,12 +146,12 @@ SECTIONS
+@@ -159,12 +159,12 @@ SECTIONS
  	. = ALIGN(8);
  	.ARM.unwind_idx : {
  		__start_unwind_idx = .;
@@ -123,24 +123,33 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
  		__stop_unwind_tab = .;
  	}
  #endif
-@@ -171,14 +171,14 @@ SECTIONS
- 	 */
- 	__vectors_start = .;
- 	.vectors 0xffff0000 : AT(__vectors_start) {
--		*(.vectors)
-+		KEEP(*(.vectors))
+@@ -185,13 +185,13 @@ SECTIONS
+ 	__vectors_lma = .;
+ 	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
+ 		.vectors {
+-			*(.vectors)
++			KEEP(*(.vectors))
+ 		}
+ 		.vectors.bhb.loop8 {
+-			*(.vectors.bhb.loop8)
++			KEEP(*(.vectors.bhb.loop8))
+ 		}
+ 		.vectors.bhb.bpiall {
+-			*(.vectors.bhb.bpiall)
++			KEEP(*(.vectors.bhb.bpiall))
+ 		}
  	}
- 	. = __vectors_start + SIZEOF(.vectors);
- 	__vectors_end = .;
+ 	ARM_LMA(__vectors, .vectors);
+@@ -203,7 +203,7 @@ SECTIONS
  
- 	__stubs_start = .;
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {
+ 	__stubs_lma = .;
+ 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
 -		*(.stubs)
 +		KEEP(*(.stubs))
  	}
- 	. = __stubs_start + SIZEOF(.stubs);
- 	__stubs_end = .;
-@@ -194,24 +194,24 @@ SECTIONS
+ 	ARM_LMA(__stubs, .stubs);
+ 	. = __stubs_lma + SIZEOF(.stubs);
+@@ -219,24 +219,24 @@ SECTIONS
  	}
  	.init.arch.info : {
  		__arch_info_begin = .;

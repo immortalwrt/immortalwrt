@@ -171,7 +171,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  static void add_retpoline(struct buffer *b)
  {
 +#ifndef CONFIG_MODULE_STRIPPED
- 	buf_printf(b, "\n#ifdef RETPOLINE\n");
+ 	buf_printf(b, "\n#ifdef CONFIG_RETPOLINE\n");
  	buf_printf(b, "MODULE_INFO(retpoline, \"Y\");\n");
  	buf_printf(b, "#endif\n");
 +#endif

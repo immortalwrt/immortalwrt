@@ -1856,7 +1856,7 @@
  
  static const struct usb_device_id	products[] = {
  /* BLACKLIST !!
-@@ -849,6 +851,30 @@ static const struct usb_device_id	produc
+@@ -861,6 +863,30 @@ static const struct usb_device_id	produc
  	.driver_info = 0,
  },
  

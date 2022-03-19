@@ -22,7 +22,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
 
 --- a/drivers/i2c/busses/i2c-bcm2835.c
 +++ b/drivers/i2c/busses/i2c-bcm2835.c
-@@ -521,20 +521,6 @@ static int bcm2835_i2c_probe(struct plat
+@@ -526,20 +526,6 @@ static int bcm2835_i2c_probe(struct plat
  	if (IS_ERR(i2c_dev->regs))
  		return PTR_ERR(i2c_dev->regs);
  
@@ -43,7 +43,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	mclk_name = of_clk_get_parent_name(pdev->dev.of_node, 0);
  
  	bus_clk = bcm2835_i2c_register_div(&pdev->dev, mclk_name, i2c_dev);
-@@ -564,6 +550,20 @@ static int bcm2835_i2c_probe(struct plat
+@@ -569,6 +555,20 @@ static int bcm2835_i2c_probe(struct plat
  		return ret;
  	}
  

@@ -45,7 +45,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  #include <linux/completion.h>
  #include <linux/err.h>
  #include <linux/i2c.h>
-@@ -71,9 +73,7 @@ struct bcm2835_debug {
+@@ -76,9 +78,7 @@ struct bcm2835_debug {
  struct bcm2835_i2c_dev {
  	struct device *dev;
  	void __iomem *regs;
@@ -55,7 +55,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	struct i2c_adapter adapter;
  	struct completion completion;
  	struct i2c_msg *curr_msg;
-@@ -164,12 +164,17 @@ static inline u32 bcm2835_i2c_readl(stru
+@@ -169,12 +169,17 @@ static inline u32 bcm2835_i2c_readl(stru
  	return readl(i2c_dev->regs + reg);
  }
  
@@ -77,7 +77,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	/*
  	 * Per the datasheet, the register is always interpreted as an even
  	 * number, by rounding down. In other words, the LSB is ignored. So,
-@@ -178,12 +183,23 @@ static int bcm2835_i2c_set_divider(struc
+@@ -183,12 +188,23 @@ static int bcm2835_i2c_set_divider(struc
  	if (divider & 1)
  		divider++;
  	if ((divider < BCM2835_I2C_CDIV_MIN) ||
@@ -105,7 +105,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  
  	/*
  	 * Number of core clocks to wait after falling edge before
-@@ -198,12 +214,62 @@ static int bcm2835_i2c_set_divider(struc
+@@ -203,12 +219,62 @@ static int bcm2835_i2c_set_divider(struc
  	 */
  	redl = max(divider / 4, 1u);
  
@@ -169,7 +169,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  static void bcm2835_fill_txfifo(struct bcm2835_i2c_dev *i2c_dev)
  {
  	u32 val;
-@@ -363,7 +429,7 @@ static int bcm2835_i2c_xfer(struct i2c_a
+@@ -368,7 +434,7 @@ static int bcm2835_i2c_xfer(struct i2c_a
  {
  	struct bcm2835_i2c_dev *i2c_dev = i2c_get_adapdata(adap);
  	unsigned long time_left;
@@ -178,7 +178,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  
  	if (debug)
  		i2c_dev->debug_num_msgs = num;
-@@ -379,10 +445,6 @@ static int bcm2835_i2c_xfer(struct i2c_a
+@@ -384,10 +450,6 @@ static int bcm2835_i2c_xfer(struct i2c_a
  			return -EOPNOTSUPP;
  		}
  
@@ -189,7 +189,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	i2c_dev->curr_msg = msgs;
  	i2c_dev->num_msgs = num;
  	reinit_completion(&i2c_dev->completion);
-@@ -443,6 +505,9 @@ static int bcm2835_i2c_probe(struct plat
+@@ -448,6 +510,9 @@ static int bcm2835_i2c_probe(struct plat
  	struct resource *mem, *irq;
  	int ret;
  	struct i2c_adapter *adap;
@@ -199,7 +199,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  
  	i2c_dev = devm_kzalloc(&pdev->dev, sizeof(*i2c_dev), GFP_KERNEL);
  	if (!i2c_dev)
-@@ -456,21 +521,6 @@ static int bcm2835_i2c_probe(struct plat
+@@ -461,21 +526,6 @@ static int bcm2835_i2c_probe(struct plat
  	if (IS_ERR(i2c_dev->regs))
  		return PTR_ERR(i2c_dev->regs);
  
@@ -221,7 +221,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
  	if (!irq) {
  		dev_err(&pdev->dev, "No IRQ resource\n");
-@@ -485,6 +535,35 @@ static int bcm2835_i2c_probe(struct plat
+@@ -490,6 +540,35 @@ static int bcm2835_i2c_probe(struct plat
  		return -ENODEV;
  	}
  
@@ -257,7 +257,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	adap = &i2c_dev->adapter;
  	i2c_set_adapdata(adap, i2c_dev);
  	adap->owner = THIS_MODULE;
-@@ -507,6 +586,10 @@ static int bcm2835_i2c_probe(struct plat
+@@ -518,6 +597,10 @@ static int bcm2835_i2c_probe(struct plat
  static int bcm2835_i2c_remove(struct platform_device *pdev)
  {
  	struct bcm2835_i2c_dev *i2c_dev = platform_get_drvdata(pdev);

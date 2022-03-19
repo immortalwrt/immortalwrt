@@ -10,7 +10,7 @@
  	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0195, 4)},	/* Quectel EG95 */
 --- a/drivers/usb/serial/option.c
 +++ b/drivers/usb/serial/option.c
-@@ -389,6 +389,7 @@ static void option_instat_callback(struc
+@@ -391,6 +391,7 @@ static void option_instat_callback(struc
   * Mobidata, etc sell under their own brand names.
   */
  #define LONGCHEER_VENDOR_ID			0x1c9e
@@ -18,7 +18,7 @@
  
  /* 4G Systems products */
  /* This is the 4G XS Stick W14 a.k.a. Mobilcom Debitel Surf-Stick *
-@@ -586,6 +587,16 @@ static void option_instat_callback(struc
+@@ -588,6 +589,16 @@ static void option_instat_callback(struc
  /* Device needs ZLP */
  #define ZLP		BIT(17)
  
@@ -35,7 +35,7 @@
  
  static const struct usb_device_id option_ids[] = {
  	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
-@@ -620,6 +631,8 @@ static const struct usb_device_id option
+@@ -622,6 +633,8 @@ static const struct usb_device_id option
  	{ USB_DEVICE(QUANTA_VENDOR_ID, QUANTA_PRODUCT_GLE) },
  	{ USB_DEVICE(QUANTA_VENDOR_ID, 0xea42),
  	  .driver_info = RSVD(4) },
