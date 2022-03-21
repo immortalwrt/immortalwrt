@@ -4,11 +4,10 @@
 local util = require "luci.util"
 local jsonc = require "luci.jsonc"
 
-
 local eth_info = {}
 local ifname, stat
 for ifname, stat in pairs(util.ubus("network.device", "status")) do
-	if ifname:match("^(eth[0-9]+)$") == ifname then
+	if ifname:match("^(eth%d+)$") == ifname then
 		local status, speed, duplex
 
 		status = stat.carrier and 1 or 0
@@ -32,8 +31,7 @@ end
 
 table.sort(eth_info,
 	function(a, b)
-		return tonumber(a.name:match("eth([0-9]+)$")) <
-			tonumber(b.name:match("eth([0-9]+)$"))
+		return a.name < b.name
 	end)
 
 print(jsonc.stringify(eth_info))
