@@ -247,7 +247,6 @@ INT wapp_send_wdev_vht_cap_rsp(PRTMP_ADAPTER pAd, struct wapp_req *req)
 				case 1:
 					drv_vht_op.basic_mcs_set.mcs_ss1 =
 						cap->max_vht_mcs;
-					/* FALLTHRU */
 					break;
 				}
 
@@ -277,7 +276,6 @@ INT wapp_send_wdev_vht_cap_rsp(PRTMP_ADAPTER pAd, struct wapp_req *req)
 						drv_vht_op.basic_mcs_set
 							.mcs_ss1 =
 							VHT_MCS_CAP_8;
-						/* FALLTHRU */
 						break;
 					}
 				}

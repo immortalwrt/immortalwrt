@@ -2587,7 +2587,7 @@ VOID MacTableMaintenance(RTMP_ADAPTER *pAd)
 				    (pEntry->ReptCliIdleCount >=
 				     MAC_TABLE_AGEOUT_TIME) &&
 				    (pEntry->bReptEthBridgeCli ==
-				     FALSE)) { /* Do NOT ageout br0 link. @2016/1/27 */
+				     FALSE)) { /* Do NOT ageout br-lan link. @2016/1/27 */
 					REPEATER_CLIENT_ENTRY *pReptCliEntry =
 						NULL;
 

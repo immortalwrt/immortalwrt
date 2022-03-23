@@ -131,6 +131,7 @@ For a list of supported devices see the [OpenWrt Hardware Database](https://open
 
   ### Support Community
   - Support Chat: group [@ctcgfw_openwrt_discuss](https://t.me/ctcgfw_openwrt_discuss) on [Telegram](https://telegram.org/).
+  - Support Chat: group [#immortalwrt](https://matrix.to/#/#immortalwrt:matrix.org) on [Matrix](https://matrix.org/).
 
 ## License
 ImmortalWrt is licensed under [GPL-3.0-only](https://spdx.org/licenses/GPL-3.0-only.html).

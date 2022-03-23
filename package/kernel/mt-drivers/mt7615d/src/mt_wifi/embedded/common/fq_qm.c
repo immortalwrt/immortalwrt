@@ -1327,7 +1327,7 @@ INT show_fq_info(PRTMP_ADAPTER pAd, RTMP_STRING *arg)
 
 	if ((pAd->fq_ctrl.enable & FQ_EN) == 0) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-			 ("FQ was is Disabled (qm=%d)\n", cap->qm));
+			 ("FQ was Disabled (qm=%d)\n", cap->qm));
 		return TRUE;
 	}
 	MTWF_LOG(
