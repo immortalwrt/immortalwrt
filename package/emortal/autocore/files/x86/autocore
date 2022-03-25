@@ -36,12 +36,4 @@ start() {
 			ethtool -K "$i" ufo on
 		}
 	done
-
-	[ ! -f '/etc/rpcd_10_system.js' ] || \
-		mv -f '/etc/rpcd_10_system.js' '/www/luci-static/resources/view/status/include/10_system.js'
-	[ ! -f '/etc/rpcd_luci' ] || \
-		{ mv -f '/etc/rpcd_luci' '/usr/libexec/rpcd/luci'; rpcd_restart=1; }
-	[ ! -f '/etc/rpcd_luci-mod-status.json' ] || \
-		{ mv -f '/etc/rpcd_luci-mod-status.json' '/usr/share/rpcd/acl.d/luci-mod-status.json'; rpcd_restart=1; }
-	[ -z "$rpcd_restart" ] || /etc/init.d/rpcd restart
 } >"/dev/null" 2>&1
