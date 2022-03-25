@@ -662,9 +662,8 @@ local methods = {
 	getOnlineUsers = {
 		call = function()
 			local sys = require "luci.sys"
-			local onlineusers = {}
+			local onlineusers = sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
 
-			onlineusers.onlineusers = sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
 			return onlineusers
 
 		end
