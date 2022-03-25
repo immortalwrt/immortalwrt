@@ -35,15 +35,18 @@ define Build/Compile
 endef
 
 define Package/autocore/install/Default
-	$(INSTALL_DIR) $$(1)/etc
-	$(CP) ./files/generic/index.htm $$(1)/etc/
+	$(INSTALL_DIR) $(1)/etc
+	$(CP) ./files/generic/rpcd_10_system.js $(1)/etc/
+	$(CP) ./files/generic/rpcd_21_ethinfo.js $(1)/etc/
+	$(CP) ./files/generic/rpcd_luci $(1)/etc/
+	$(CP) ./files/generic/rpcd_luci-mod-status.json $(1)/etc/
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/generic/090-cover-index_htm $$(1)/etc/uci-defaults/
+	$(INSTALL_BIN) ./files/generic/090-cover-index_files $(1)/etc/uci-defaults/
 
 	$(INSTALL_DIR) $(1)/sbin
-	$(INSTALL_BIN) ./files/generic/cpuinfo $$(1)/sbin/
-	$(INSTALL_BIN) ./files/generic/ethinfo $$(1)/sbin/
+	$(INSTALL_BIN) ./files/generic/cpuinfo $(1)/sbin/
+	$(INSTALL_BIN) ./files/generic/ethinfo $(1)/sbin/
 endef
 
 define Package/autocore-arm/install
