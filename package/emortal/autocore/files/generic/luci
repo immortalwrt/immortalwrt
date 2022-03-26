@@ -618,9 +618,8 @@ local methods = {
 	getCPUBench = {
 		call = function()
 			local sys = require "luci.sys"
-			local cpubench = {}
+			local cpubench = sys.exec("cat /etc/bench.log 2>/dev/null") or ""
 
-			cpubench.cpubench = sys.exec("cat /etc/bench.log 2>/dev/null")
 			return cpubench
 		end
 	},
@@ -628,12 +627,10 @@ local methods = {
 	getCPUInfo = {
 		call = function()
 			local sys = require "luci.sys"
-			local cpuinfo = {}
+			local cpuinfo = sys.exec("/sbin/cpuinfo")
 
-			cpuinfo.cpuinfo = sys.exec("/sbin/cpuinfo")
-
-			if (cpuinfo.cpuinfo == nil) or (cpuinfo.cpuinfo == "") then
-				cpuinfo.cpuinfo = "2.33 MHz +2.33 C"
+			if (cpuinfo == nil) or (cpuinfo == "") then
+				cpuinfo.cpuinfo = "? x ? (2.33MHz, 2.33°C)"
 			end
 
 			return cpuinfo
@@ -643,9 +640,8 @@ local methods = {
 	getCPUUsage = {
 		call = function()
 			local sys = require "luci.sys"
-			local cpuusage = {}
+			local cpuusage = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%%\", 100 - $8)}'") or "6%"
 
-			cpuusage.cpuusage = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\", 100 - $8)}'") or "6%"
 			return cpuusage
 		end
 	},
