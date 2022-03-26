@@ -57,7 +57,7 @@
 	},
 
 	"luci-mod-status-channel_analysis": {
-		"description": "Grant access to the system route status",
+		"description": "Grant access to wireless channel status",
 		"read": {
 			"ubus": {
 				"iwinfo": [ "info", "freqlist" ]
