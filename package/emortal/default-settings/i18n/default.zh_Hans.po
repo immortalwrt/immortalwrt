@@ -98,3 +98,6 @@ msgstr "半双工"
 
 msgid "Allow AP mode to disconnect STAs based on low ACK condition"
 msgstr "允许 AP 模式基于低 ACK 条件判断剔除弱信号的客户端"
+
+msgid "Temperature"
+msgstr "温度"

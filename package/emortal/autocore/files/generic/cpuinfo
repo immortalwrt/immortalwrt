@@ -51,7 +51,8 @@ esac
 
 if [ -z "$big_cpu_freq$cpu_freq" ] && [ -n "$cpu_temp" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($cpu_temp)"
-elif [ -z "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ]; then
+elif [ -z "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ] || \
+		grep -Eq "ipq|mt7622" "/etc/openwrt_release"; then
 	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq)"
 elif [ -n "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq, ${cpu_temp})"

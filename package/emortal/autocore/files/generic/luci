@@ -667,6 +667,16 @@ local methods = {
 			return onlineusers
 
 		end
+	},
+
+	getTempInfo = {
+		call = function()
+			local sys = require "luci.sys"
+			local tempinfo = {}
+
+			tempinfo.tempinfo = sys.exec("/sbin/tempinfo 2>/dev/null")
+			return tempinfo
+		end
 	}
 }
 
