@@ -1,25 +1,37 @@
-#!/bin/sh
+#!/usr/bin/lua
+-- Copyright (C) 2022 Tianling Shen <cnsztl@immortalwrt.org>
 
-for i in $(ip address | grep -E 'eth[0-9]+' | awk -F ': ' '{print $2}' | xargs)
-do
-	device_info="$(ethtool "$i" 2>"/dev/null")" || continue
+local util = require "luci.util"
+local jsonc = require "luci.jsonc"
 
-	if echo -e "$device_info" | grep -Eq 'Link detected.*yes'; then
-		link_stat=1
-	else
-		link_stat=0
-	fi
+local eth_info = {}
+local ifname, stat
+for ifname, stat in pairs(util.ubus("network.device", "status")) do
+	if ifname:match("^(eth%d+)$") == ifname then
+		local status, speed, duplex
 
-	link_speed="$(echo -e "$device_info" | grep 'Speed' | awk -F ': ' '{print $2}' | tr -d 'Unknown!')"
-	[ -n "$link_speed" ] || link_speed=" - "
+		status = stat.carrier and 1 or 0
 
-	if echo -e "$device_info" | grep -Eq 'Duplex.*Full'; then
-		link_mode=1
-	else
-		link_mode=0
-	fi
+		if stat.speed:sub(1, 1) == "-" then
+			speed = " - "
+		else
+			speed = stat.speed:sub(1, -2) .. "Mb/s"
+		end
 
-	json_body="${json_body:+$json_body,}{\"name\": \"$i\", \"status\": $link_stat, \"speed\": \"$link_speed\", \"duplex\": $link_mode}"
-done
+		if stat.carrier and stat.speed:sub(-1) == "F" then
+			duplex = 1
+		else
+			duplex = 0
+		end
 
-echo "[$json_body]"
+		eth_info[#eth_info+1] = { name = ifname, status = status,
+					speed = speed, duplex = duplex }
+	end
+end
+
+table.sort(eth_info,
+	function(a, b)
+		return a.name < b.name
+	end)
+
+print(jsonc.stringify(eth_info))

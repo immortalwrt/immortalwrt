@@ -1279,8 +1279,8 @@ define KernelPackage/inet-diag
 endef
 
 define KernelPackage/inet-diag/description
-Support for INET (TCP, DCCP, etc) socket monitoring interface used by
-native Linux tools such as ss.
+  Support for INET (TCP, DCCP, etc) socket monitoring interface used by
+  native Linux tools such as ss.
 endef
 
 $(eval $(call KernelPackage,inet-diag))
