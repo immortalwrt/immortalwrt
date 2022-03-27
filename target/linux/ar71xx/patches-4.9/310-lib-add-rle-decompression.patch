@@ -1,6 +1,6 @@
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
-@@ -247,6 +247,9 @@ config LZMA_COMPRESS
+@@ -246,6 +246,9 @@ config LZMA_COMPRESS
  config LZMA_DECOMPRESS
      tristate
  
