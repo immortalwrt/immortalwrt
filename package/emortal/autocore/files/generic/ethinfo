@@ -19,15 +19,15 @@ for ifname, stat in pairs(util.ubus("network.device", "status")) do
                 end
 
                 if not stat.carrier then
-						duplex = "-"
-				elseif stat.speed:sub(-1) == "F" then
+			duplex = "-"
+		elseif stat.speed:sub(-1) == "F" then
                         duplex = "Full"
                 else
                         duplex = "Half"
                 end
 
-				eth_info[#eth_info+1] = { name = ifname, status = status,
-                                        speed = speed, duplex = duplex }
+		eth_info[#eth_info+1] = { name = ifname, status = status,
+					speed = speed, duplex = duplex }
         end
 end
 
