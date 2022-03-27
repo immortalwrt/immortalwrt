@@ -2,3 +2,8 @@ src-git packages https://github.com/immortalwrt/packages.git;openwrt-21.02
 src-git luci https://github.com/immortalwrt/luci.git;openwrt-21.02
 src-git routing https://github.com/openwrt/routing.git;openwrt-21.02
 src-git telephony https://github.com/openwrt/telephony.git;openwrt-21.02
+src-git kenzo https://github.com/kenzok8/openwrt-packages
+src-git passwall https://github.com/xiaorouji/openwrt-passwall
+src-git nas https://github.com/linkease/nas-packages.git;master
+src-git small https://github.com/kenzok8/small
+#src-git opentopd  https://github.com/sirpdboy/sirpdboy-package
