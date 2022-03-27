@@ -19,12 +19,11 @@ PKG_MIRROR_HASH:=b212d369a5286ebbf6a5616486efa05fa54d4294fd6e9ba2e54fdfae9eda918
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=license.md
 
-PKG_CONFIG_DEPENDS:=ARM_TRUSTED_FIRMWARE_SUNXI_WRAPPED_PCIE
-
 PKG_MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
 
 include $(INCLUDE_DIR)/trusted-firmware-a.mk
 include $(INCLUDE_DIR)/package.mk
+
 
 define Package/arm-trusted-firmware-sunxi/Default
     SECTION:=boot
@@ -43,21 +42,10 @@ define Package/arm-trusted-firmware-sunxi-h6
     VARIANT:=sun50i_h6
 endef
 
-define Package/arm-trusted-firmware-sunxi-h6/config
-config ARM_TRUSTED_FIRMAWRE_SUNXI_WRAPPED_PCIE
-    depends on PACKAGE_arm-trusted-firmware-sunxi-h6
-    bool "Enable sunxi wrapped PCIe driver support"
-endef
-
 export GCC_HONOUR_COPTS=s
 
 MAKE_VARS = \
 	CROSS_COMPILE="$(TARGET_CROSS)"
-
-ifneq ($(CONFIG_ARM_TRUSTED_FIRMAWRE_SUNXI_WRAPPED_PCIE),)
-MAKE_FLAGS += \
-	PRELOADED_BL33_BASE=0x40010000
-endif
 
 MAKE_FLAGS += \
 	PLAT=$(BUILD_VARIANT) \
