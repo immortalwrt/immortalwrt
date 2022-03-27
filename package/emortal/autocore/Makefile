@@ -58,7 +58,7 @@ define Package/autocore-arm/install
 	$(call Package/autocore/install/Default,$(1))
 
 ifneq ($(filter ipq% %mt7622, $(TARGETID)),)
-        $(INSTALL_BIN) ./files/arm/tempinfo $(1)/sbin/
+	$(INSTALL_BIN) ./files/arm/tempinfo $(1)/sbin/
 endif
 endef
 
