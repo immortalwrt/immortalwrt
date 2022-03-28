@@ -528,7 +528,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  		reg &= ~DWC3_DCTL_INITU2ENA;
 --- a/drivers/usb/dwc3/gadget.c
 +++ b/drivers/usb/dwc3/gadget.c
-@@ -3244,6 +3244,7 @@ int dwc3_gadget_init(struct dwc3 *dwc)
+@@ -3259,6 +3259,7 @@ int dwc3_gadget_init(struct dwc3 *dwc)
  {
  	int ret;
  	int irq;
@@ -536,7 +536,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  
  	irq = dwc3_gadget_get_irq(dwc);
  	if (irq < 0) {
-@@ -3322,6 +3323,12 @@ int dwc3_gadget_init(struct dwc3 *dwc)
+@@ -3337,6 +3338,12 @@ int dwc3_gadget_init(struct dwc3 *dwc)
  
  	dwc3_gadget_set_speed(&dwc->gadget, dwc->maximum_speed);
  
@@ -1226,7 +1226,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  	 * by reading property in device tree
 --- a/drivers/usb/host/xhci-hub.c
 +++ b/drivers/usb/host/xhci-hub.c
-@@ -689,12 +689,34 @@ void xhci_set_link_state(struct xhci_hcd
+@@ -690,12 +690,34 @@ void xhci_set_link_state(struct xhci_hcd
  				int port_id, u32 link_state)
  {
  	u32 temp;
@@ -1289,7 +1289,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  		xhci->quirks |= XHCI_BROKEN_PORT_PED;
 --- a/drivers/usb/host/xhci-ring.c
 +++ b/drivers/usb/host/xhci-ring.c
-@@ -2016,10 +2016,12 @@ static int finish_td(struct xhci_hcd *xh
+@@ -2029,10 +2029,12 @@ static int finish_td(struct xhci_hcd *xh
  	union xhci_trb *ep_trb, struct xhci_transfer_event *event,
  	struct xhci_virt_ep *ep, int *status)
  {
@@ -1302,7 +1302,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  	u32 trb_comp_code;
  	int ep_index;
  
-@@ -2042,14 +2044,30 @@ static int finish_td(struct xhci_hcd *xh
+@@ -2055,14 +2057,30 @@ static int finish_td(struct xhci_hcd *xh
  	if (trb_comp_code == COMP_STALL_ERROR ||
  		xhci_requires_manual_halt_cleanup(xhci, ep_ctx,
  						trb_comp_code)) {
@@ -1340,7 +1340,7 @@ Signed-off-by: Zhao Chenhui <chenhui.zhao@freescale.com>
  		while (ep_ring->dequeue != td->last_trb)
 --- a/drivers/usb/host/xhci.c
 +++ b/drivers/usb/host/xhci.c
-@@ -1615,13 +1615,38 @@ static int xhci_urb_dequeue(struct usb_h
+@@ -1625,13 +1625,38 @@ static int xhci_urb_dequeue(struct usb_h
  			ret = -ENOMEM;
  			goto done;
  		}

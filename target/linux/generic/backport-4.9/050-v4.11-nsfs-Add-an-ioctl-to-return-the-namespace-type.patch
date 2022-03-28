@@ -1,0 +1,64 @@
+From e5ff5ce6e20ee22511398bb31fb912466cf82a36 Mon Sep 17 00:00:00 2001
+From: "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
+Date: Wed, 25 Jan 2017 14:03:36 +1300
+Subject: [PATCH] nsfs: Add an ioctl() to return the namespace type
+
+Linux 4.9 added two ioctl() operations that can be used to discover:
+
+* the parental relationships for hierarchical namespaces (user and PID)
+  [NS_GET_PARENT]
+* the user namespaces that owns a specified non-user-namespace
+  [NS_GET_USERNS]
+
+For no good reason that I can glean, NS_GET_USERNS was made synonymous
+with NS_GET_PARENT for user namespaces. It might have been better if
+NS_GET_USERNS had returned an error if the supplied file descriptor
+referred to a user namespace, since it suggests that the caller may be
+confused. More particularly, if it had generated an error, then I wouldn't
+need the new ioctl() operation proposed here. (On the other hand, what
+I propose here may be more generally useful.)
+
+I would like to write code that discovers namespace relationships for
+the purpose of understanding the namespace setup on a running system.
+In particular, given a file descriptor (or pathname) for a namespace,
+N, I'd like to obtain the corresponding user namespace.  Namespace N
+might be a user namespace (in which case my code would just use N) or
+a non-user namespace (in which case my code will use NS_GET_USERNS to
+get the user namespace associated with N). The problem is that there
+is no way to tell the difference by looking at the file descriptor
+(and if I try to use NS_GET_USERNS on an N that is a user namespace, I
+get the parent user namespace of N, which is not what I want).
+
+This patch therefore adds a new ioctl(), NS_GET_NSTYPE, which, given
+a file descriptor that refers to a user namespace, returns the
+namespace type (one of the CLONE_NEW* constants).
+
+Signed-off-by: Michael Kerrisk <mtk-manpages@gmail.com>
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+---
+ fs/nsfs.c                 | 2 ++
+ include/uapi/linux/nsfs.h | 3 +++
+ 2 files changed, 5 insertions(+)
+
+--- a/fs/nsfs.c
++++ b/fs/nsfs.c
+@@ -173,6 +173,8 @@ static long ns_ioctl(struct file *filp,
+ 		if (!ns->ops->get_parent)
+ 			return -EINVAL;
+ 		return open_related_ns(ns, ns->ops->get_parent);
++	case NS_GET_NSTYPE:
++		return ns->ops->type;
+ 	default:
+ 		return -ENOTTY;
+ 	}
+--- a/include/uapi/linux/nsfs.h
++++ b/include/uapi/linux/nsfs.h
+@@ -9,5 +9,8 @@
+ #define NS_GET_USERNS	_IO(NSIO, 0x1)
+ /* Returns a file descriptor that refers to a parent namespace */
+ #define NS_GET_PARENT	_IO(NSIO, 0x2)
++/* Returns the type of namespace (CLONE_NEW* value) referred to by
++   file descriptor */
++#define NS_GET_NSTYPE	_IO(NSIO, 0x3)
+ 
+ #endif /* __LINUX_NSFS_H */

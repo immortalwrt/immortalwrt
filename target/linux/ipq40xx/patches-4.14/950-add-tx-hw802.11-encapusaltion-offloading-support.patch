@@ -59,7 +59,7 @@
  	u8 drv_priv[0] __aligned(sizeof(void *));
 --- a/drivers/net/wireless/ath/ath10k/htt_tx.c
 +++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -812,6 +812,10 @@ static u8 ath10k_htt_tx_get_tid(struct s
+@@ -815,6 +815,10 @@ static u8 ath10k_htt_tx_get_tid(struct s
  	struct ieee80211_hdr *hdr = (void *)skb->data;
  	struct ath10k_skb_cb *cb = ATH10K_SKB_CB(skb);
  
@@ -70,7 +70,7 @@
  	if (!is_eth && ieee80211_is_mgmt(hdr->frame_control))
  		return HTT_DATA_TX_EXT_TID_MGMT;
  	else if (cb->flags & ATH10K_SKB_F_QOS)
-@@ -933,15 +937,17 @@ int ath10k_htt_tx(struct ath10k_htt *htt
+@@ -936,15 +940,17 @@ int ath10k_htt_tx(struct ath10k_htt *htt
  	txbuf_paddr = htt->txbuf.paddr +
  		      (sizeof(struct ath10k_htt_txbuf) * msdu_id);
  
@@ -287,8 +287,8 @@
 +
  	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
  	ath10k_htt_tx_dec_pending(htt);
- 	if (htt->num_pending_tx == 0)
-@@ -119,7 +124,11 @@ int ath10k_txrx_tx_unref(struct ath10k_h
+ 	spin_unlock_bh(&htt->tx_lock);
+@@ -117,7 +122,11 @@ int ath10k_txrx_tx_unref(struct ath10k_h
  	    (info->flags & IEEE80211_TX_CTL_NO_ACK))
  		info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
  

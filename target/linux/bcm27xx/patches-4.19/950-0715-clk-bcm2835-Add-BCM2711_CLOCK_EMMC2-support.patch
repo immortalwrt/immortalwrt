@@ -50,7 +50,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  
  /*
   * Names of clocks used within the driver that need to be replaced
-@@ -2104,6 +2107,16 @@ static const struct bcm2835_clk_desc clk
+@@ -2099,6 +2102,16 @@ static const struct bcm2835_clk_desc clk
  		.frac_bits = 8,
  		.tcnt_mux = 39),
  
@@ -67,7 +67,7 @@ Reviewed-by: Eric Anholt <eric@anholt.net>
  	/* General purpose (GPIO) clocks */
  	[BCM2835_CLOCK_GP0]	= REGISTER_PER_CLK(
  		SOC_ALL,
-@@ -2378,8 +2391,13 @@ static const struct cprman_plat_data cpr
+@@ -2373,8 +2386,13 @@ static const struct cprman_plat_data cpr
  	.soc = SOC_BCM2835,
  };
  

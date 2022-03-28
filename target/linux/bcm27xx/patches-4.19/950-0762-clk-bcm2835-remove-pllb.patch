@@ -17,7 +17,7 @@ Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 
 --- a/drivers/clk/bcm/clk-bcm2835.c
 +++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -1757,32 +1757,10 @@ static const struct bcm2835_clk_desc clk
+@@ -1752,32 +1752,10 @@ static const struct bcm2835_clk_desc clk
  		.fixed_divider = 1,
  		.flags = CLK_SET_RATE_PARENT),
  

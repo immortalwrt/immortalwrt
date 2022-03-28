@@ -1159,7 +1159,7 @@ endef
 
 define KernelPackage/usb-net-aqc111
   TITLE:=Kernel module for Aquantia AQtion USB to 5/2.5GbE Controllers
-  DEPENDS:=+kmod-libphy
+  DEPENDS:=@!LINUX_4_9 +kmod-libphy
   KCONFIG:=CONFIG_USB_NET_AQC111
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/aqc111.ko
   AUTOLOAD:=$(call AutoProbe,aqc111)
@@ -1237,6 +1237,23 @@ define KernelPackage/usb-net-kaweth/description
 endef
 
 $(eval $(call KernelPackage,usb-net-kaweth))
+
+
+define KernelPackage/usb-net-lan78xx
+  TITLE:=USB-To-Ethernet Microchip LAN78XX convertors
+  DEPENDS:=+kmod-fixed-phy +kmod-phy-microchip
+  KCONFIG:=CONFIG_USB_LAN78XX
+  FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/lan78xx.ko
+  AUTOLOAD:=$(call AutoProbe,lan78xx)
+  $(call AddDepends/usb-net)
+endef
+
+define KernelPackage/usb-net-lan78xx/description
+ Kernel module for Microchip LAN78XX based USB 2 & USB 3
+ 10/100/1000 Ethernet adapters.
+endef
+
+$(eval $(call KernelPackage,usb-net-lan78xx))
 
 
 define KernelPackage/usb-net-pegasus

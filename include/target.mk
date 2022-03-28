@@ -51,7 +51,7 @@ DEFAULT_PACKAGES.router:=\
 # For easy usage
 DEFAULT_PACKAGES.tweak:=\
 	block-mount \
-	default-settings \
+	default-settings-chn \
 	kmod-ipt-raw \
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
@@ -59,7 +59,8 @@ DEFAULT_PACKAGES.tweak:=\
 	luci-app-cpufreq \
 	luci-app-filetransfer \
 	luci-app-turboacc \
-	luci-lib-fs
+	luci-lib-fs \
+	luci-lib-ipkg
 
 ifneq ($(DUMP),)
   all: dumpinfo

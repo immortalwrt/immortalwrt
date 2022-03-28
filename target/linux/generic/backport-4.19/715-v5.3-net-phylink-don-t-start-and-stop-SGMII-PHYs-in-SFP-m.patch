@@ -113,7 +113,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -973,10 +973,10 @@ void phylink_start(struct phylink *pl)
+@@ -978,10 +978,10 @@ void phylink_start(struct phylink *pl)
  	}
  	if (pl->link_an_mode == MLO_AN_FIXED && pl->get_fixed_state)
  		mod_timer(&pl->link_poll, jiffies + HZ);
@@ -126,7 +126,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  }
  EXPORT_SYMBOL_GPL(phylink_start);
  
-@@ -993,10 +993,10 @@ void phylink_stop(struct phylink *pl)
+@@ -998,10 +998,10 @@ void phylink_stop(struct phylink *pl)
  {
  	ASSERT_RTNL();
  

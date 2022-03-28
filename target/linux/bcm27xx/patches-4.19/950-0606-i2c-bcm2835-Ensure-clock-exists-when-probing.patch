@@ -23,7 +23,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
 
 --- a/drivers/i2c/busses/i2c-bcm2835.c
 +++ b/drivers/i2c/busses/i2c-bcm2835.c
-@@ -244,15 +244,18 @@ static const struct clk_ops clk_bcm2835_
+@@ -249,15 +249,18 @@ static const struct clk_ops clk_bcm2835_
  };
  
  static struct clk *bcm2835_i2c_register_div(struct device *dev,
@@ -43,7 +43,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	init.ops = &clk_bcm2835_i2c_ops;
  	init.name = name;
  	init.parent_names = (const char* []) { mclk_name };
-@@ -505,8 +508,8 @@ static int bcm2835_i2c_probe(struct plat
+@@ -510,8 +513,8 @@ static int bcm2835_i2c_probe(struct plat
  	struct resource *mem, *irq;
  	int ret;
  	struct i2c_adapter *adap;
@@ -53,7 +53,7 @@ Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
  	u32 bus_clk_rate;
  
  	i2c_dev = devm_kzalloc(&pdev->dev, sizeof(*i2c_dev), GFP_KERNEL);
-@@ -521,9 +524,14 @@ static int bcm2835_i2c_probe(struct plat
+@@ -526,9 +529,14 @@ static int bcm2835_i2c_probe(struct plat
  	if (IS_ERR(i2c_dev->regs))
  		return PTR_ERR(i2c_dev->regs);
  

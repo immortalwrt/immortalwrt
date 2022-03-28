@@ -26,9 +26,6 @@ Link: https://lore.kernel.org/r/20200717160053.31191-7-wens@kernel.org
  1 file changed, 79 insertions(+)
  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
-new file mode 100644
-index 0000000000000..b2657201957eb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
 @@ -0,0 +1,97 @@

@@ -258,7 +258,6 @@ foreach my $mirror (@ARGV) {
 			push @extra, "$extra[0]/longterm/v$1";
 		}
 		foreach my $dir (@extra) {
-			# push @mirrors, "https://mirrors.cqu.edu.cn/kernel/$dir";
 			# push @mirrors, "https://mirrors.ustc.edu.cn/kernel.org/$dir";
 			push @mirrors, "https://cdn.kernel.org/pub/$dir";
 			push @mirrors, "https://download.xs4all.nl/ftp.kernel.org/pub/$dir";
@@ -284,9 +283,12 @@ foreach my $mirror (@ARGV) {
 	}
 }
 
-push @mirrors, "https://mirror01.download.immortalwrt.eu.org";
-push @mirrors, "https://mirror02.download.immortalwrt.eu.org";
-push @mirrors, "https://openwrt.cc/dl/immortalwrt/immortalwrt";
+# push @mirrors, 'https://mirror01.download.immortalwrt.eu.org';
+# push @mirrors, 'https://mirror02.download.immortalwrt.eu.org';
+push @mirrors, 'https://mirror2.immortalwrt.org/sources';
+push @mirrors, 'https://mirror.immortalwrt.org/sources';
+push @mirrors, 'https://sources.immortalwrt.org';
+push @mirrors, 'https://sources.cdn.immortalwrt.org';
 push @mirrors, 'https://sources.cdn.openwrt.org';
 push @mirrors, 'https://sources.openwrt.org';
 push @mirrors, 'https://mirror2.openwrt.org/sources';

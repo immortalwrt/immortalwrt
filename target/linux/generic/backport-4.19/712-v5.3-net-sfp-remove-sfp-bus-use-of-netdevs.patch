@@ -18,8 +18,8 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -555,8 +555,7 @@ static int phylink_register_sfp(struct p
- 		return ret;
+@@ -560,8 +560,7 @@ static int phylink_register_sfp(struct p
+ 		return 0;
  	}
  
 -	pl->sfp_bus = sfp_register_upstream(ref.fwnode, pl->netdev, pl,

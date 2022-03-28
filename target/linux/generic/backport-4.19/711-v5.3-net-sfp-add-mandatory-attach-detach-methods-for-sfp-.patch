@@ -19,7 +19,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -1615,6 +1615,20 @@ int phylink_mii_ioctl(struct phylink *pl
+@@ -1620,6 +1620,20 @@ int phylink_mii_ioctl(struct phylink *pl
  }
  EXPORT_SYMBOL_GPL(phylink_mii_ioctl);
  
@@ -40,7 +40,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  static int phylink_sfp_module_insert(void *upstream,
  				     const struct sfp_eeprom_id *id)
  {
-@@ -1733,6 +1747,8 @@ static void phylink_sfp_disconnect_phy(v
+@@ -1738,6 +1752,8 @@ static void phylink_sfp_disconnect_phy(v
  }
  
  static const struct sfp_upstream_ops sfp_phylink_ops = {

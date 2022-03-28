@@ -1132,7 +1132,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -3973,6 +3978,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3981,6 +3986,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1291,11 +1291,11 @@
 +void nf_unregister_queue_imq_handler(void);
 +#endif
  
- void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
  void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
 --- a/include/net/pkt_sched.h
 +++ b/include/net/pkt_sched.h
-@@ -115,6 +115,8 @@ bool sch_direct_xmit(struct sk_buff *skb
+@@ -116,6 +116,8 @@ bool sch_direct_xmit(struct sk_buff *skb
  
  void __qdisc_run(struct Qdisc *q);
  
@@ -1306,7 +1306,7 @@
  	if (qdisc_run_begin(q)) {
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -705,6 +705,13 @@ static inline int qdisc_enqueue(struct s
+@@ -724,6 +724,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1344,7 +1344,7 @@
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3248,7 +3251,12 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3256,7 +3259,12 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1357,7 +1357,7 @@
  		dev_queue_xmit_nit(skb, dev);
  
  	len = skb->len;
-@@ -3287,6 +3295,8 @@ out:
+@@ -3295,6 +3303,8 @@ out:
  	return skb;
  }
  
@@ -1513,7 +1513,7 @@
  obj-$(CONFIG_NETFILTER_XT_TARGET_NETMAP) += xt_NETMAP.o
 --- a/net/netfilter/core.c
 +++ b/net/netfilter/core.c
-@@ -518,6 +518,11 @@ int nf_hook_slow(struct sk_buff *skb, st
+@@ -519,6 +519,11 @@ int nf_hook_slow(struct sk_buff *skb, st
  			if (ret == 0)
  				ret = -EPERM;
  			return ret;
@@ -1551,7 +1551,7 @@
  /* return EBUSY when somebody else is registered, return EEXIST if the
   * same handler is registered, return 0 in case of success. */
  void nf_register_queue_handler(struct net *net, const struct nf_queue_handler *qh)
-@@ -141,16 +158,28 @@ static void nf_ip6_saveroute(const struc
+@@ -154,16 +171,28 @@ static void nf_ip6_saveroute(const struc
  
  static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
  		      const struct nf_hook_entries *entries,
@@ -1582,7 +1582,7 @@
  	if (!qh) {
  		status = -ESRCH;
  		goto err;
-@@ -218,8 +247,16 @@ int nf_queue(struct sk_buff *skb, struct
+@@ -234,8 +263,16 @@ int nf_queue(struct sk_buff *skb, struct
  {
  	int ret;
  
@@ -1600,7 +1600,7 @@
  		if (ret == -ESRCH &&
  		    (verdict & NF_VERDICT_FLAG_QUEUE_BYPASS))
  			return 1;
-@@ -323,6 +360,7 @@ next_hook:
+@@ -339,6 +376,7 @@ next_hook:
  		local_bh_enable();
  		break;
  	case NF_QUEUE:

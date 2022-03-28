@@ -1,6 +1,5 @@
 VERSION=1
 
-
 ifeq ($(CC),)
   CC=gcc
 endif
@@ -16,8 +15,6 @@ endif
 ifeq ($(RANLIB),)
   RANLIB=ranlib
 endif
-
-
 
 OS=$(shell uname)
 ifeq ($(OS),Darwin)
@@ -35,22 +32,18 @@ endif
 CFLAGS:=$(CFLAGS) -Os
 WARNING_FLAGS=-Wall -Wstrict-prototypes
 
-
-
 all: libiptbwctl
 
 libiptbwctl: libiptbwctl.$(SHLIB_EXT) libiptbwctl.a
-
 
 libiptbwctl.a: ipt_bwctl_static.o ipt_bwctl_safe_malloc_static.o
 	if [ -e $@ ] ; then rm $@ ; fi
 	$(AR) rc $@ $^
 	$(RANLIB) $@
-	
 
 libiptbwctl.$(SHLIB_EXT) : ipt_bwctl_dyn.o ipt_bwctl_safe_malloc_dyn.o
 	if [ -e libiptbwctl.$(SHLIB_EXT) ] ; then rm libiptbwctl.$(SHLIB_EXT)* ; fi
-	$(LINK) $(LDFLAGS) $(SHLIB_FLAGS) -o $(SHLIB_FILE) $^ -lc 
+	$(LINK) $(LDFLAGS) $(SHLIB_FLAGS) -o $(SHLIB_FILE) $^ -lc
 	ln -s $(SHLIB_FILE) libiptbwctl.$(SHLIB_EXT)
 
 %_dyn.o: %.c
@@ -58,9 +51,6 @@ libiptbwctl.$(SHLIB_EXT) : ipt_bwctl_dyn.o ipt_bwctl_safe_malloc_dyn.o
 
 %_static.o: %.c
 	$(CC) $(CFLAGS) $(WARNING_FLAGS) -o $@ -c $^
-
-
-
 
 clean:
 	cd utils

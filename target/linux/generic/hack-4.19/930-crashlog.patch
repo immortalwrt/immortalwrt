@@ -41,7 +41,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 +#endif
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1049,6 +1049,10 @@ config RELAY
+@@ -1052,6 +1052,10 @@ config RELAY
  
  	  If unsure, say N.
  
@@ -318,7 +318,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  #include <asm/sections.h>
  #include <linux/io.h>
-@@ -510,6 +511,8 @@ static void __init_memblock memblock_ins
+@@ -516,6 +517,8 @@ static void __init_memblock memblock_ins
  	memblock_set_region_node(rgn, nid);
  	type->cnt++;
  	type->total_size += size;
@@ -327,7 +327,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  }
  
  /**
-@@ -549,6 +552,8 @@ int __init_memblock memblock_add_range(s
+@@ -555,6 +558,8 @@ int __init_memblock memblock_add_range(s
  		type->regions[0].flags = flags;
  		memblock_set_region_node(&type->regions[0], nid);
  		type->total_size = size;

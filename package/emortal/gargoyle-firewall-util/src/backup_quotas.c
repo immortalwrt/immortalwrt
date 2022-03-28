@@ -18,7 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,13 +34,13 @@ void  backup_quota(char* quota_id, char* quota_backup_dir);
 char* get_uci_option(struct uci_context* ctx,char* package_name, char* section_name, char* option_name);
 char* get_option_value_string(struct uci_option* uopt);
 
-
 int main(void)
 {
 	struct uci_context *ctx = uci_alloc_context();
 	list* quota_sections = get_all_sections_of_type(ctx, "firewall", "quota");
 	system("mkdir -p /usr/data/quotas");
 	unlock_bandwidth_semaphore_on_exit();
+
 	while(quota_sections->length > 0)
 	{
 		char* next_quota = shift_list(quota_sections);
@@ -59,10 +58,10 @@ int main(void)
 		if(do_backup)
 		{
 			//do backup
-			
+
 			/* base id for quota is the ip associated with it*/
 			char* backup_id = get_uci_option(ctx, "firewall", next_quota, "id");
-			char* ip = get_uci_option(ctx, "firewall", next_quota, "ip");	
+			char* ip = get_uci_option(ctx, "firewall", next_quota, "ip");
 			if(ip == NULL)
 			{
 				ip = strdup("ALL");
@@ -82,7 +81,6 @@ int main(void)
 				backup_id = strdup(ip);
 			}
 
-			
 			char* types[] = { "ingress_limit", "egress_limit", "combined_limit" };
 			char* postfixes[] = { "_ingress", "_egress", "_combined" };
 			int type_index;
@@ -92,7 +90,7 @@ int main(void)
 				if(defined != NULL)
 				{
 					char* type_id = dynamic_strcat(2, backup_id, postfixes[type_index]);
-					
+
 					backup_quota(type_id, "/usr/data/quotas" );
 
 					free(type_id);
@@ -105,7 +103,7 @@ int main(void)
 		}
 		free(next_quota);
 	}
-	
+
 	unsigned long num;
 	destroy_list(quota_sections, DESTROY_MODE_FREE_VALUES, &num);
 	uci_free_context(ctx);
@@ -136,8 +134,8 @@ list* get_all_sections_of_type(struct uci_context *ctx, char* package, char* sec
 
 void backup_quota(char* id, char* quota_backup_dir)
 {
-	/* if we ever bother to allow quotas to apply to subnets 
-	 * specified with '/', this may be necessary 
+	/* if we ever bother to allow quotas to apply to subnets
+	 * specified with '/', this may be necessary
 	 */
 	char* quota_file_name;
 	if(strstr(id, "/") != NULL)
@@ -150,7 +148,7 @@ void backup_quota(char* id, char* quota_backup_dir)
 	}
 
 	char* quota_file_path = dynamic_strcat(3, quota_backup_dir, "/quota_", quota_file_name);
-	
+
 	unsigned long num_ips;
 	ip_bw *ip_buf = NULL;
 	int query_succeeded = get_all_bandwidth_usage_for_rule_id(id, &num_ips, &ip_buf, 5000);
@@ -160,7 +158,7 @@ void backup_quota(char* id, char* quota_backup_dir)
 		free(ip_buf);
 	}
 	free(quota_file_path);
-	free(quota_file_name);	
+	free(quota_file_name);
 }
 
 char* get_uci_option(struct uci_context* ctx, char* package_name, char* section_name, char* option_name)
@@ -185,9 +183,6 @@ char* get_uci_option(struct uci_context* ctx, char* package_name, char* section_
 
 	return option_value;
 }
-
-
-
 
 // this function dynamically allocates memory for
 // the option string, but since this program exits
@@ -224,5 +219,3 @@ char* get_option_value_string(struct uci_option* uopt)
 
 	return opt_str;
 }
-
-

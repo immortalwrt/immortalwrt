@@ -14,8 +14,8 @@ Signed-off-by: John Crispin <john@phrozen.org>
 
 --- a/arch/mips/Kconfig
 +++ b/arch/mips/Kconfig
-@@ -288,6 +288,7 @@ config BCM63XX
- 	select SYS_HAS_EARLY_PRINTK
+@@ -291,6 +291,7 @@ config BCM63XX
+ 	select SYS_HAS_CPU_BMIPS4380
  	select SWAP_IO_SPACE
  	select GPIOLIB
 +	select PINCTRL

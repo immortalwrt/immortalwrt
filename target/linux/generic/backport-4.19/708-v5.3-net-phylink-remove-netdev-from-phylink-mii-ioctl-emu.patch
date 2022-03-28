@@ -17,7 +17,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -1360,8 +1360,8 @@ EXPORT_SYMBOL_GPL(phylink_ethtool_set_ee
+@@ -1365,8 +1365,8 @@ EXPORT_SYMBOL_GPL(phylink_ethtool_set_ee
   *
   * FIXME: should deal with negotiation state too.
   */
@@ -28,7 +28,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  {
  	struct fixed_phy_status fs;
  	int val;
-@@ -1376,8 +1376,6 @@ static int phylink_mii_emul_read(struct
+@@ -1381,8 +1381,6 @@ static int phylink_mii_emul_read(struct
  	if (reg == MII_BMSR) {
  		if (!state->an_complete)
  			val &= ~BMSR_ANEGCOMPLETE;
@@ -37,7 +37,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  	}
  	return val;
  }
-@@ -1473,8 +1471,7 @@ static int phylink_mii_read(struct phyli
+@@ -1478,8 +1476,7 @@ static int phylink_mii_read(struct phyli
  	case MLO_AN_FIXED:
  		if (phy_id == 0) {
  			phylink_get_fixed_state(pl, &state);
@@ -47,7 +47,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  		}
  		break;
  
-@@ -1487,8 +1484,7 @@ static int phylink_mii_read(struct phyli
+@@ -1492,8 +1489,7 @@ static int phylink_mii_read(struct phyli
  			if (val < 0)
  				return val;
  

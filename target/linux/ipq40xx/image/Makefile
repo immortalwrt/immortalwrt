@@ -134,7 +134,7 @@ define Device/alfa-network_ap120c-ac
 	DEVICE_VENDOR := ALFA Network
 	DEVICE_MODEL := AP120C-AC
 	DEVICE_DTS := qcom-ipq4018-ap120c-ac
-	DEVICE_PACKAGES := kmod-usb-acm kmod-tpm-i2c-atmel 
+	DEVICE_PACKAGES := kmod-usb-acm kmod-tpm-i2c-atmel
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	IMAGE_SIZE := 65536k
@@ -198,8 +198,8 @@ define Device/asus_rt-ac58u
 	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC58U')
 	KERNEL_INITRAMFS := $$(KERNEL) | uImage none
 	KERNEL_INITRAMFS_SUFFIX := -factory.trx
-	DEVICE_PACKAGES := -kmod-ath10k -ath10k-firmware-qca4019 \
-	kmod-ath10k-ct-smallbuffers ath10k-firmware-qca4019-ct kmod-usb-ledtrig-usbport
+	DEVICE_PACKAGES := -ath10k-firmware-qca4019 ath10k-firmware-qca4019-ct \
+		-kmod-ath10k kmod-ath10k-ct-smallbuffers kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += asus_rt-ac58u
 
@@ -412,7 +412,8 @@ define Device/engenius_eap2200
 	DEVICE_DTS := qcom-ipq4019-eap2200
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_PACKAGES := ath10k-firmware-qca9888 ipq-wifi-engenius_eap2200 -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
+	DEVICE_PACKAGES := -ath10k-firmware-qca4019 ath10k-firmware-qca4019-ct -kmod-ath10k \
+		ath10k-firmware-qca9888 ipq-wifi-engenius_eap2200 kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += engenius_eap2200
 
@@ -481,8 +482,8 @@ define Device/ezviz_cs-w3-wd1200g-eup
 	DEVICE_DTS := qcom-ipq4018-cs-w3-wd1200g-eup
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
 		append-metadata
-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers \
-		ipq-wifi-ezviz_cs-w3-wd1200g-eup
+	DEVICE_PACKAGES := -ath10k-firmware-qca4019 ath10k-firmware-qca4019-ct \
+	-kmod-ath10k kmod-ath10k-ct-smallbuffers ipq-wifi-ezviz_cs-w3-wd1200g-eup
 endef
 TARGET_DEVICES += ezviz_cs-w3-wd1200g-eup
 
@@ -492,7 +493,6 @@ define Device/glinet_gl-b1300
 	DEVICE_MODEL := GL-B1300
 	BOARD_NAME := gl-b1300
 	DEVICE_DTS := qcom-ipq4029-gl-b1300
-	BOARD_NAME := gl-b1300
 	KERNEL_SIZE := 4096k
 	IMAGE_SIZE := 26624k
 	IMAGE/sysupgrade.bin := append-kernel |append-rootfs | pad-rootfs | append-metadata
@@ -530,18 +530,17 @@ define Device/hiwifi_c526a-128m
 endef
 TARGET_DEVICES += hiwifi_c526a-128m
 
-define Device/hugo_ac1200
+define Device/leguang_ca100
 	$(call Device/FitImage)
-	DEVICE_VENDOR := Hugo
-	DEVICE_MODEL := AC1200
-	BOARD_NAME := hugo_ac1200
-	DEVICE_DTS := qcom-ipq4019-hugo-ac1200
+	DEVICE_VENDOR := LEGUANG
+	DEVICE_MODEL := CA100
+	DEVICE_DTS := qcom-ipq4019-ca100
 	KERNEL_SIZE := 4096k
 	IMAGE_SIZE := 31232k
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
-	DEVICE_PACKAGES := ipq-wifi-hugo_ac1200
+	DEVICE_PACKAGES := ipq-wifi-leguang_ca100
 endef
-TARGET_DEVICES += hugo_ac1200
+TARGET_DEVICES += leguang_ca100
 
 define Device/linksys_ea6350v3
 	# The Linksys EA6350v3 has a uboot bootloader that does not
@@ -800,8 +799,8 @@ define Device/zyxel_wre6606
 	DEVICE_DTS_CONFIG := config@4
 	IMAGE_SIZE := 13184k
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
-	DEVICE_PACKAGES := -kmod-ath10k -ath10k-firmware-qca4019 \
-	kmod-ath10k-ct-smallbuffers ath10k-firmware-qca4019-ct
+	DEVICE_PACKAGES := -ath10k-firmware-qca4019 ath10k-firmware-qca4019-ct \
+		-kmod-ath10k kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += zyxel_wre6606
 

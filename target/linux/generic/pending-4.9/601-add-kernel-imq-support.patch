@@ -1411,7 +1411,7 @@
 +
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -3694,6 +3694,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3695,6 +3695,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1549,7 +1549,7 @@
 +void nf_unregister_queue_imq_handler(void);
 +#endif
  
- void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
  void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
 --- a/include/net/pkt_sched.h
 +++ b/include/net/pkt_sched.h
@@ -1866,7 +1866,7 @@
  /* return EBUSY when somebody else is registered, return EEXIST if the
   * same handler is registered, return 0 in case of success. */
  void nf_register_queue_handler(struct net *net, const struct nf_queue_handler *qh)
-@@ -108,16 +125,28 @@ void nf_queue_nf_hook_drop(struct net *n
+@@ -121,16 +138,28 @@ void nf_queue_nf_hook_drop(struct net *n
  }
  
  static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
@@ -1897,7 +1897,7 @@
  	if (!qh) {
  		status = -ESRCH;
  		goto err;
-@@ -164,8 +193,14 @@ int nf_queue(struct sk_buff *skb, struct
+@@ -181,8 +210,14 @@ int nf_queue(struct sk_buff *skb, struct
  	int ret;
  
  	RCU_INIT_POINTER(state->hook_entries, entry);
@@ -1913,7 +1913,7 @@
  		if (ret == -ESRCH &&
  		    (verdict & NF_VERDICT_FLAG_QUEUE_BYPASS)) {
  			*entryp = rcu_dereference(entry->next);
-@@ -218,6 +253,7 @@ okfn:
+@@ -235,6 +270,7 @@ okfn:
  		local_bh_enable();
  		break;
  	case NF_QUEUE:
