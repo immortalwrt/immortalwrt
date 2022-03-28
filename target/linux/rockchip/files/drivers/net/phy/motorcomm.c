@@ -19,6 +19,9 @@
  *		Automotive 100/10 hyper range Phys: yt8510
  */
 
+#include <linux/iversion.h>
+#include <linux/version.h>
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/phy.h>
@@ -309,14 +312,28 @@ static int yt8521_config_intr(struct phy_device *phydev)
 	return phy_write(phydev, REG_INT_MASK, val);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
 static int yt8521_ack_interrupt(struct phy_device *phydev)
+#else
+static irqreturn_t yt8521_ack_interrupt(struct phy_device *phydev)
+#endif
 {
 	int val;
 
 	val = phy_read(phydev, REG_INT_STATUS);
 	phydev_dbg(phydev, "intr status 0x04%x\n", val);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
 	return (val < 0) ? val : 0;
+#else
+	if (val < 0) {
+		phy_error(phydev);
+		return IRQ_NONE;
+	}
+
+	phy_trigger_machine(phydev);
+	return IRQ_HANDLED;
+#endif
 }
 
 static struct phy_driver ytphy_drvs[] = {
@@ -365,7 +382,11 @@ static struct phy_driver ytphy_drvs[] = {
 		.phy_id_mask	= MOTORCOMM_PHY_ID_MASK,
 		/* PHY_GBIT_FEATURES */
 		.config_init	= yt8521_config_init,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
 		.ack_interrupt	= yt8521_ack_interrupt,
+#else
+		.handle_interrupt = yt8521_ack_interrupt,
+#endif
 		.config_intr	= yt8521_config_intr,
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
@@ -376,7 +397,11 @@ static struct phy_driver ytphy_drvs[] = {
 		.phy_id_mask	= MOTORCOMM_PHY_ID_MASK,
 		/* PHY_GBIT_FEATURES */
 		.config_init	= yt8521_config_init,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
 		.ack_interrupt	= yt8521_ack_interrupt,
+#else
+		.handle_interrupt = yt8521_ack_interrupt,
+#endif
 		.config_intr	= yt8521_config_intr,
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
