@@ -1316,7 +1316,7 @@ define KernelPackage/inet-diag
 	$(LINUX_DIR)/net/ipv4/tcp_diag.ko \
 	$(LINUX_DIR)/net/ipv4/udp_diag.ko \
 	$(LINUX_DIR)/net/ipv4/raw_diag.ko@ge4.10
-  AUTOLOAD:=$(call AutoLoad,31,inet_diag tcp_diag udp_diag raw_diag)
+  AUTOLOAD:=$(call AutoLoad,31,inet_diag tcp_diag udp_diag raw_diag@ge4.10)
 endef
 
 define KernelPackage/inet-diag/description
