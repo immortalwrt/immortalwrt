@@ -45,7 +45,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  				regulator-name = "vdd-gpu";
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-@@ -108,6 +108,11 @@
+@@ -102,6 +102,11 @@
  	status = "okay";
  };
  
@@ -57,14 +57,14 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  &hdmi {
  	status = "okay";
  };
-@@ -253,6 +258,7 @@
+@@ -237,6 +242,7 @@
  			};
  
  			reg_dcdcc: dcdcc {
 +				regulator-enable-ramp-delay = <32000>;
  				regulator-min-microvolt = <810000>;
  				regulator-max-microvolt = <1080000>;
- 				regulator-ramp-delay = <2500>;
+ 				regulator-name = "vdd-gpu";
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
 @@ -55,6 +55,11 @@

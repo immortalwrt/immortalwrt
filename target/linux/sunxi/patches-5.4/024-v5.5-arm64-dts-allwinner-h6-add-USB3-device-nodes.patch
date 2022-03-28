@@ -18,7 +18,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -596,6 +596,38 @@
+@@ -586,6 +586,38 @@
  			status = "disabled";
  		};
  

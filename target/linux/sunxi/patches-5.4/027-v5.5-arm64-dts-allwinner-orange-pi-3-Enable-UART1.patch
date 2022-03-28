@@ -35,7 +35,7 @@ Signed-off-by: Maxime Ripard <mripard@kernel.org>
  	};
  
  	chosen {
-@@ -269,6 +270,24 @@
+@@ -275,6 +276,24 @@
  	status = "okay";
  };
  

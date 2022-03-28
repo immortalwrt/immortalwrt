@@ -1,7 +1,7 @@
 From 3a3014ac153888453128cd4441dc99be2427454a Mon Sep 17 00:00:00 2001
-From: Ondrej Jirman
+From: Ondrej Jirman <megous@megous.com>
 Date: Wed, 27 Mar 2019 13:21:06 +0100
-Subject: net: stmmac: sun8i: Use devm_regulator_get for PHY regulator
+Subject: [PATCH] net: stmmac: sun8i: Use devm_regulator_get for PHY regulator
 
 Use devm_regulator_get instead of devm_regulator_get_optional and rely
 on dummy supply. This avoids NULL checks before regulator_enable/disable
@@ -17,7 +17,7 @@ code will be simpler.
 
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 23 ++++++++++-------------
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 23 ++++++++-----------
  1 file changed, 10 insertions(+), 13 deletions(-)
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c

@@ -1,18 +1,22 @@
-From 938519cadbdf2544c85b3a88ae73631b6b5cb7f9 Mon Sep 17 00:00:00 2001
-From: Clément Péron
-Date: Tue, 21 May 2019 18:11:01 +0200
-Subject: arm64: dts: allwinner: Add ARM Mali GPU node for H6
+From 4acc24bca17f5f05692656d865d844985abad18a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+Date: Wed, 30 Oct 2019 16:07:41 +0100
+Subject: [PATCH] arm64: dts: allwinner: Add ARM Mali GPU node for H6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Add the mali gpu node to the H6 device-tree.
 
 Signed-off-by: Clément Péron <peron.clem@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 ---
  arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 14 ++++++++++++++
  1 file changed, 14 insertions(+)
 
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -188,6 +188,20 @@
+@@ -171,6 +171,20 @@
  			allwinner,sram = <&ve_sram 1>;
  		};
  

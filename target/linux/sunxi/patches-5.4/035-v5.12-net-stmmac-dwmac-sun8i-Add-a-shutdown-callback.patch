@@ -1,7 +1,7 @@
 From 96be41d74f2ee94203f2a61e55927b028a10fea6 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Tue, 16 Feb 2021 22:20:06 -0600
-Subject: net: stmmac: dwmac-sun8i: Add a shutdown callback
+Subject: [PATCH] net: stmmac: dwmac-sun8i: Add a shutdown callback
 
 The Ethernet MAC and PHY are usually major consumers of power on boards
 which may not be able to fully power off (those with no PMIC). Powering

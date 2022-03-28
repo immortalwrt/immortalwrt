@@ -1,8 +1,8 @@
 From 7cd35735f61c80cb8e2eaae493cb7a76d6c5c68b Mon Sep 17 00:00:00 2001
-From: Ondrej Jirman
+From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 20 Aug 2019 14:31:38 +0200
-Subject: net: stmmac: sun8i: Add support for enabling a regulator for PHY I/O
- pins
+Subject: [PATCH] net: stmmac: sun8i: Add support for enabling a regulator for
+ PHY I/O pins
 
 Orange Pi 3 has two regulators that power the Realtek RTL8211E. According
 to the phy datasheet, both regulators need to be enabled at the same time.
@@ -12,7 +12,7 @@ driver.
 
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 22 +++++++++++++++++++++-
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 22 ++++++++++++++++---
  1 file changed, 21 insertions(+), 1 deletion(-)
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c

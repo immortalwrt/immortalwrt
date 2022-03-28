@@ -1,7 +1,7 @@
 From 7eeecc4b1f480c7ba1932cb9a7693f8c452640f2 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 3 Jan 2021 05:17:41 -0600
-Subject: net: stmmac: dwmac-sun8i: Fix probe error handling
+Subject: [PATCH] net: stmmac: dwmac-sun8i: Fix probe error handling
 
 stmmac_pltfr_remove does three things in one function, making it
 inapproprate for unwinding the steps in the probe function. Currently,

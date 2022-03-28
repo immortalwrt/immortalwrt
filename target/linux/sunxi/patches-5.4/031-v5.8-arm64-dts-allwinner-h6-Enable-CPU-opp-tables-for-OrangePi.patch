@@ -35,7 +35,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  
  #include <dt-bindings/gpio/gpio.h>
  
-@@ -247,12 +248,14 @@
+@@ -252,6 +253,7 @@
  				regulator-always-on;
  				regulator-min-microvolt = <800000>;
  				regulator-max-microvolt = <1160000>;
@@ -43,10 +43,10 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  				regulator-name = "vdd-cpu";
  			};
  
- 			reg_dcdcc: dcdcc {
+@@ -259,6 +261,7 @@
+ 				regulator-enable-ramp-delay = <32000>;
  				regulator-min-microvolt = <810000>;
  				regulator-max-microvolt = <1080000>;
 +				regulator-ramp-delay = <2500>;
  				regulator-name = "vdd-gpu";
  			};
- 

@@ -16,7 +16,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-@@ -141,6 +141,15 @@
+@@ -146,6 +146,15 @@
  	};
  };
  

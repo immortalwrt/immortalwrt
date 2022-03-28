@@ -1,7 +1,7 @@
 From 9b1e39cf5dd81f33186cdb950fcf75a121f1a9a7 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 3 Jan 2021 05:17:44 -0600
-Subject: net: stmmac: dwmac-sun8i: Balance syscon (de)initialization
+Subject: [PATCH] net: stmmac: dwmac-sun8i: Balance syscon (de)initialization
 
 Previously, sun8i_dwmac_set_syscon was called from a chain of functions
 in several different files:

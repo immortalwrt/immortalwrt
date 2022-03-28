@@ -1,7 +1,7 @@
 From e3c7934c59e412822cdf805c8107fe3a131ef498 Mon Sep 17 00:00:00 2001
-From: Ondrej Jirman
+From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 20 Aug 2019 14:54:48 +0200
-Subject: arm64: dts: allwinner: orange-pi-3: Enable ethernet
+Subject: [PATCH] arm64: dts: allwinner: orange-pi-3: Enable ethernet
 
 Orange Pi 3 has two regulators that power the Realtek RTL8211E
 PHY. According to the datasheet, both regulators need to be enabled
@@ -25,7 +25,7 @@ of the range of working values was chosen.
 
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
- .../boot/dts/allwinner/sun50i-h6-orangepi-3.dts    | 40 ++++++++++++++++++++++
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 40 +++++++++++++++++++
  1 file changed, 40 insertions(+)
 
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts

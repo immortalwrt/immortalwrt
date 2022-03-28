@@ -1,14 +1,15 @@
 From 2958cb818095ddaaf8b4c77db121638da30e09d2 Mon Sep 17 00:00:00 2001
-From: Ondrej Jirman
+From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 20 Aug 2019 14:29:29 +0200
-Subject: net: stmmac: sun8i: Rename PHY regulator variable to regulator_phy
+Subject: [PATCH] net: stmmac: sun8i: Rename PHY regulator variable to
+ regulator_phy
 
 We'll be adding further optional regulators, and this makes it clearer
 what the regulator is for.
 
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 40 +++++++++++------------
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 40 ++++++++++---------
  1 file changed, 20 insertions(+), 20 deletions(-)
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c

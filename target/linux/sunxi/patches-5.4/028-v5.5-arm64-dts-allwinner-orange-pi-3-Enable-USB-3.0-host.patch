@@ -29,7 +29,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
  &ehci0 {
  	status = "okay";
  };
-@@ -304,3 +308,7 @@
+@@ -310,3 +314,7 @@
  	usb3_vbus-supply = <&reg_vcc5v>;
  	status = "okay";
  };

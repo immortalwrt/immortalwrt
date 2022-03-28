@@ -14,7 +14,7 @@ Signed-off-by: Maxime Ripard <mripard@kernel.org>
 
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -341,6 +341,16 @@
+@@ -331,6 +331,16 @@
  				pins = "PH0", "PH1";
  				function = "uart0";
  			};
