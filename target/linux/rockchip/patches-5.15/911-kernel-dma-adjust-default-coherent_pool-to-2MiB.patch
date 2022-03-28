@@ -9,7 +9,7 @@ Subject: [PATCH] kernel: dma: adjust default coherent_pool to 2MiB
 
 --- a/kernel/dma/pool.c
 +++ b/kernel/dma/pool.c
-@@ -192,13 +192,11 @@ static int __init dma_atomic_pool_init(v
+@@ -189,13 +189,11 @@ static int __init dma_atomic_pool_init(v
  	int ret = 0;
  
  	/*

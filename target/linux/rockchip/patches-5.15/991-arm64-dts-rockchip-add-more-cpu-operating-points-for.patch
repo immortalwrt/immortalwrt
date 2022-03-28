@@ -41,4 +41,4 @@ Signed-off-by: Leonidas P. Papadakos <papadakospan@gmail.com>
 +		};
  	};
  
- 	amba: bus {
+ 	analog_sound: analog-sound {

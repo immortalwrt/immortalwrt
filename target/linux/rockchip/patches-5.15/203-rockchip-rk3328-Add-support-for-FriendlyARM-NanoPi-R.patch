@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -6,6 +6,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3318-a9
+@@ -9,6 +9,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3318-a9
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-odroid-go2.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-a1.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-evb.dtb
@@ -51,12 +51,12 @@
 +	label = "nanopi-r2c:green:lan";
 +};
 +
-+&sys_led {
-+	label = "nanopi-r2c:red:sys";
++&rtl8153 {
++	realtek,led-data = <0x78>;
 +};
 +
-+&usb_eth {
-+      realtek,led-data = <0x78>;
++&sys_led {
++	label = "nanopi-r2c:red:sys";
 +};
 +
 +&wan_led {

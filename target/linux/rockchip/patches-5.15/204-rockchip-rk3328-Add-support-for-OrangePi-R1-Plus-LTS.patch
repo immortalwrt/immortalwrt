@@ -1,13 +1,13 @@
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -9,6 +9,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-ev
+@@ -12,6 +12,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-ev
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-nanopi-r2c.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-nanopi-r2s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-orangepi-r1-plus.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-orangepi-r1-plus-lts.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-rock64.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-rock-pi-e.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-roc-cc.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-evb-act8846.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
 @@ -0,0 +1,66 @@
@@ -66,12 +66,12 @@
 +	label = "orangepi-r1-plus-lts:green:lan";
 +};
 +
-+&sys_led {
-+	label = "orangepi-r1-plus-lts:red:sys";
++&rtl8153 {
++	realtek,led-data = <0x78>;
 +};
 +
-+&usb_eth {
-+	realtek,led-data = <0x78>;
++&sys_led {
++	label = "orangepi-r1-plus-lts:red:sys";
 +};
 +
 +&wan_led {
