@@ -62,10 +62,6 @@ EXTRA_CFLAGS:= \
 	-DCONFIG_CONCURRENT_MODE \
 	-DBUILD_OPENWRT
 
-ifeq ($(ARCH),arm)
-	EXTRA_CFLAGS += -mfloat-abi=softfp
-endif
-
 ifeq ($(BOARD),x86)
 	EXTRA_CFLAGS += -mhard-float
 endif
