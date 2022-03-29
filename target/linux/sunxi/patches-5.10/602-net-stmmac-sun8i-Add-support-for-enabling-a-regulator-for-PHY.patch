@@ -1,0 +1,92 @@
+From 1b79ce32918502c9d9508e152bfa06bcbfcc7717 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Tue, 20 Aug 2019 14:31:38 +0200
+Subject: [PATCH] net: stmmac: sun8i: Add support for enabling a regulator for
+ PHY I/O pins
+
+Orange Pi 3 has two regulators that power the Realtek RTL8211E. According
+to the phy datasheet, both regulators need to be enabled at the same time.
+
+Add support for the second optional regulator, "phy-io", to the glue
+driver.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 30 ++++++++++++++++---
+ 1 file changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 3815ccb76b1ddc..1ab91c9bd10650 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -61,6 +61,8 @@ struct emac_variant {
+  * @ephy_clk:			reference to the optional EPHY clock for
+  *				the internal PHY
+  * @regulator_phy:		reference to the optional regulator
++ * @regulator_phy_io:		reference to the optional regulator for
++ *				PHY I/O pins
+  * @rst_ephy:			reference to the optional EPHY reset for
+  *				the internal PHY
+  * @variant:			reference to the current board variant
+@@ -73,6 +75,7 @@ struct sunxi_priv_data {
+ 	struct clk *tx_clk;
+ 	struct clk *ephy_clk;
+ 	struct regulator *regulator_phy;
++	struct regulator *regulator_phy_io;
+ 	struct reset_control *rst_ephy;
+ 	const struct emac_variant *variant;
+ 	struct regmap_field *regmap_field;
+@@ -551,10 +553,16 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+ 	struct sunxi_priv_data *gmac = priv;
+ 	int ret;
+ 
++	ret = regulator_enable(gmac->regulator_phy_io);
++	if (ret) {
++		dev_err(&pdev->dev, "Fail to enable PHY I/O regulator\n");
++		return ret;
++	}
++
+ 	ret = regulator_enable(gmac->regulator_phy);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Fail to enable PHY regulator\n");
+-		return ret;
++		goto err_disable_regulator_phy_io;
+ 	}
+ 
+ 	ret = clk_prepare_enable(gmac->tx_clk);
+@@ -574,8 +582,9 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+ err_disable_clk:
+ 	clk_disable_unprepare(gmac->tx_clk);
+ err_disable_regulator:
+-	if (gmac->regulator)
+-		regulator_disable(gmac->regulator);
++	regulator_disable(gmac->regulator_phy);
++err_disable_regulator_phy_io:
++	regulator_disable(gmac->regulator_phy_io);
+ 
+ 	return ret;
+ }
+@@ -1027,6 +1036,7 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+ 	clk_disable_unprepare(gmac->tx_clk);
+ 
+ 	regulator_disable(gmac->regulator_phy);
++	regulator_disable(gmac->regulator_phy_io);
+ }
+ 
+ static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
+@@ -1162,6 +1172,15 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	/* Optional regulator for PHY I/O pins */
++	gmac->regulator_phy_io = devm_regulator_get(dev, "phy-io");
++	if (IS_ERR(gmac->regulator_phy_io)) {
++		ret = PTR_ERR(gmac->regulator_phy_io);
++		if (ret != -EPROBE_DEFER)
++			dev_err(dev, "Failed to get PHY I/O regulator (%d)\n", ret);
++		return ret;
++	}
++
+ 	/* The "GMAC clock control" register might be located in the
+ 	 * CCU address range (on the R40), or the system control address
+ 	 * range (on most other sun8i and later SoCs).

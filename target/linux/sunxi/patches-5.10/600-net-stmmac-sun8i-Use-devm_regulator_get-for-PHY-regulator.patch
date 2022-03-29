@@ -1,0 +1,69 @@
+From 137c141c8bcd349db04fe58a5c174dbe9f679de4 Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megous@megous.com>
+Date: Wed, 27 Mar 2019 13:21:06 +0100
+Subject: [PATCH] net: stmmac: sun8i: Use devm_regulator_get for PHY regulator
+
+Use devm_regulator_get instead of devm_regulator_get_optional and rely
+on dummy supply. This avoids NULL checks before regulator_enable/disable
+calls.
+
+This path also improves error reporting, because we now report both
+use of dummy supply and error during registration with more detail,
+instead of generic info level message "No regulator found" that
+was reported previously on errors and lack of regulator property in DT.
+
+Finally, we'll be adding further optional regulators, and the overall
+code will be simpler.
+
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 23 ++++++++-----------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
+
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -549,12 +549,10 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+ 	struct sunxi_priv_data *gmac = priv;
+ 	int ret;
+ 
+-	if (gmac->regulator) {
+-		ret = regulator_enable(gmac->regulator);
+-		if (ret) {
+-			dev_err(&pdev->dev, "Fail to enable regulator\n");
+-			return ret;
+-		}
++	ret = regulator_enable(gmac->regulator);
++	if (ret) {
++		dev_err(&pdev->dev, "Fail to enable regulator\n");
++		return ret;
+ 	}
+ 
+ 	ret = clk_prepare_enable(gmac->tx_clk);
+@@ -1026,8 +1024,7 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+ 
+ 	clk_disable_unprepare(gmac->tx_clk);
+ 
+-	if (gmac->regulator)
+-		regulator_disable(gmac->regulator);
++	regulator_disable(gmac->regulator);
+ }
+ 
+ static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
+@@ -1155,12 +1152,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Optional regulator for PHY */
+-	gmac->regulator = devm_regulator_get_optional(dev, "phy");
++	gmac->regulator = devm_regulator_get(dev, "phy");
+ 	if (IS_ERR(gmac->regulator)) {
+-		if (PTR_ERR(gmac->regulator) == -EPROBE_DEFER)
+-			return -EPROBE_DEFER;
+-		dev_info(dev, "No regulator found\n");
+-		gmac->regulator = NULL;
++		ret = PTR_ERR(gmac->regulator);
++		if (ret != -EPROBE_DEFER)
++			dev_err(dev, "Failed to get PHY regulator (%d)\n", ret);
++		return ret;
+ 	}
+ 
+ 	/* The "GMAC clock control" register might be located in the

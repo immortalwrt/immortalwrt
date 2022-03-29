@@ -1,0 +1,46 @@
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -16,6 +16,11 @@
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 		ethernet0 = &emac;
++
++		led-boot = &led_status;
++		led-failsafe = &led_status;
++		led-running = &led_status;
++		led-upgrade = &led_status;
+ 	};
+ 
+ 	chosen {
+@@ -50,7 +55,7 @@
+ 			default-state = "on";
+ 		};
+ 
+-		status {
++		led_status: status {
+ 			label = "orangepi:green:status";
+ 			gpios = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
+ 		};
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
+@@ -15,6 +15,11 @@
+ 
+ 	aliases {
+ 		serial0 = &uart0;
++
++		led-boot = &led_status;
++		led-failsafe = &led_status;
++		led-running = &led_status;
++		led-upgrade = &led_status;
+ 	};
+ 
+ 	chosen {
+@@ -49,7 +54,7 @@
+ 			default-state = "on";
+ 		};
+ 
+-		status {
++		led_status: status {
+ 			label = "orangepi:green:status";
+ 			gpios = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
+ 		};
