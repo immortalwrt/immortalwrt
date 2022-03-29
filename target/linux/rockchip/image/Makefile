@@ -22,7 +22,7 @@ endef
 
 define Build/boot-script
 	# Make an U-boot image and copy it to the boot partition
-	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d $(if $(1),$(1),mmc).bootscript $@.boot/boot.scr
+	mkimage -A arm -O linux -T script -C lzma -a 0 -e 0 -d $(if $(1),$(1),mmc).bootscript $@.boot/boot.scr
 endef
 
 define Build/pine64-img
@@ -68,7 +68,7 @@ endef
 ### Devices ###
 define Device/Default
   PROFILES := Default
-  KERNEL := kernel-bin
+  KERNEL := kernel-bin | lzma
   IMAGES := sysupgrade.img.gz
   DEVICE_DTS = rockchip/$$(SOC)-$(lastword $(subst _, ,$(1)))
 endef
