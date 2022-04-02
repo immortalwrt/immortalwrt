@@ -5,6 +5,7 @@
 . /usr/share/libubox/jshn.sh
 
 # initialize defaults
+export MTD_ARGS=""
 export MTD_CONFIG_ARGS=""
 export INTERACTIVE=0
 export VERBOSE=1
@@ -369,7 +370,7 @@ fi
 install_bin /sbin/upgraded
 v "Commencing upgrade. Closing all shell sessions."
 
-COMMAND='. /lib/functions.sh; include /lib/upgrade; do_upgrade_stage2'
+COMMAND='/lib/upgrade/do_stage2'
 
 if [ -n "$FAILSAFE" ]; then
 	printf '%s\x00%s\x00%s' "$RAM_ROOT" "$IMAGE" "$COMMAND" >/tmp/sysupgrade

@@ -55,6 +55,7 @@ define Package/libpcre32
 endef
 
 HOST_CONFIGURE_ARGS += \
+	--disable-shared \
 	--enable-utf8 \
 	--enable-unicode-properties \
 	--enable-pcre16 \
