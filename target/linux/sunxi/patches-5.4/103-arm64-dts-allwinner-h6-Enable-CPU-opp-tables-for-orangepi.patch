@@ -1,0 +1,60 @@
+From fe79ea577be81e1e71642826ab00e676dc59c194 Mon Sep 17 00:00:00 2001
+From: AmadeusGhost <amadeus@jmu.edu.cn>
+Date: Mon, 21 Mar 2022 15:00:21 +0800
+Subject: [PATCH] arm64: dts: allwinner: h6: Enable CPU opp tables for OrangePi
+
+Enable CPU opp tables for OrangePi One Plus.
+
+This needs to change the CPU regulator max voltage to fit
+the OPP table.
+
+Also add the ramp-delay information to avoid any out of spec
+running as the regulator is slower at reaching the voltage
+requested compare to the PLL reaching the frequency.
+
+There is no such information for AXP805 but similar PMIC (AXP813)
+has a DVM (Dynamic Voltage scaling Management) ramp rate equal
+to 2500uV/us.
+
+Signed-off-by: AmadeusGhost <amadeus@jmu.edu.cn>
+---
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi.dtsi
+@@ -7,6 +7,7 @@
+ /dts-v1/;
+ 
+ #include "sun50i-h6.dtsi"
++#include "sun50i-h6-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ 
+@@ -47,6 +48,10 @@
+ 	};
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdca>;
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -163,7 +168,8 @@
+ 			reg_dcdca: dcdca {
+ 				regulator-always-on;
+ 				regulator-min-microvolt = <810000>;
+-				regulator-max-microvolt = <1080000>;
++				regulator-max-microvolt = <1160000>;
++				regulator-ramp-delay = <2500>;
+ 				regulator-name = "vdd-cpu";
+ 			};
+ 
+@@ -171,6 +177,7 @@
+ 				regulator-enable-ramp-delay = <32000>;
+ 				regulator-min-microvolt = <810000>;
+ 				regulator-max-microvolt = <1080000>;
++				regulator-ramp-delay = <2500>;
+ 				regulator-name = "vdd-gpu";
+ 			};
+ 
