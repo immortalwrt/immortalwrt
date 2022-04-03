@@ -633,7 +633,7 @@ local methods = {
 			cpuinfo.cpuinfo = sys.exec("/sbin/cpuinfo")
 
 			if (cpuinfo.cpuinfo == nil) or (cpuinfo.cpuinfo == "") then
-				cpuinfo.cpuinfo = "2.33 MHz +2.33 C"
+				cpuinfo.cpuinfo = "? x ? (2.33MHz, 2.33°C)"
 			end
 
 			return cpuinfo
@@ -653,22 +653,8 @@ local methods = {
 	getETHInfo = {
 		call = function()
 			local sys = require "luci.sys"
-			local rv = {}
+			local rv = json.parse(sys.exec("/sbin/ethinfo")) or {}
 
-			sys.call("/sbin/ethinfo")
-			local ok, fd = pcall(io.open, "/tmp/state/ethinfo", "r")
-			local line
-			for line in fd:lines() do
-				local line1
-				line1 = string.split(line , " ")
-				rv[#rv+1] = {
-					name   = line1[1],
-					status = line1[2],
-					speed  = line1[3],
-					duplex = line1[4]
-				}
-			end
-			fd:close()
 			return { ethinfo = rv }
 		end
 	},
@@ -681,6 +667,16 @@ local methods = {
 			onlineusers.onlineusers = sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
 			return onlineusers
 
+		end
+	},
+
+	getTempInfo = {
+		call = function()
+			local sys = require "luci.sys"
+			local tempinfo = {}
+
+			tempinfo.tempinfo = sys.exec("/sbin/tempinfo 2>/dev/null")
+			return tempinfo
 		end
 	}
 }

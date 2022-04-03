@@ -1,0 +1,9 @@
+#!/bin/sh
+
+[ ! -f '/etc/rpcd_10_system.js' ] || \
+	mv -f '/etc/rpcd_10_system.js' '/www/luci-static/resources/view/status/include/10_system.js'
+[ ! -f '/etc/rpcd_luci' ] || \
+	mv -f '/etc/rpcd_luci' '/usr/libexec/rpcd/luci'
+/etc/init.d/rpcd restart
+
+exit 0

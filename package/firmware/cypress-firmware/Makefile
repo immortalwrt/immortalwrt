@@ -7,25 +7,24 @@
 
 include $(TOPDIR)/rules.mk
 
-UNPACK_CMD=unzip -q -p $(DL_DIR)/$(PKG_SOURCE) $(PKG_SOURCE_UNZIP) | gzip -dc | $(HOST_TAR) -C $(1) $(TAR_OPTIONS)
-
 PKG_NAME:=cypress-firmware
-PKG_VERSION:=v5.4.18-2021_0527
+PKG_VERSION:=5.4.18-2021_0812
 PKG_RELEASE:=1
 
-PKG_SOURCE_UNZIP:=cypress-firmware-$(PKG_VERSION).tar.gz
-PKG_SOURCE:=cypress-fmac-$(PKG_VERSION).zip
-PKG_SOURCE_URL:=https://community.cypress.com/gfawx74859/attachments/gfawx74859/WiFiBluetoothLinux/1911/2/
-PKG_HASH:=6dd1fe42791cb56fa4162d0a384cdca4052a428a259200afdc1eb2caa53543aa
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/Infineon/ifx-linux-firmware/
+PKG_MIRROR_HASH:=ac882b482dd401b53cdecc6004cd2bd3d65e888c19206dcf10931a28033ada4d
+PKG_SOURCE_VERSION:=release-v$(PKG_VERSION)
 
 PKG_MAINTAINER:=Álvaro Fernández Rojas <noltari@gmail.com>
+PKG_LICENSE_FILES:=LICENCE
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/cypress-firmware-default
   SECTION:=firmware
   CATEGORY:=Firmware
-  URL:=https://community.cypress.com/community/linux
+  URL:=https://community.infineon.com/
 endef
 
 define Build/Compile
@@ -262,4 +261,3 @@ define Package/cypress-firmware-54591-pcie/install
 endef
 
 $(eval $(call BuildPackage,cypress-firmware-54591-pcie))
-
