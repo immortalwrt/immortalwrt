@@ -1,0 +1,38 @@
+From 28978713c51b0a70acf748f76f9d6d2d20dcf980 Mon Sep 17 00:00:00 2001
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Date: Tue, 10 Oct 2017 23:45:18 -0700
+Subject: [PATCH] net: qrtr: Move constants to header file
+
+The constants are used by both the name server and clients, so clarify
+their value and move them to the uapi header.
+
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/uapi/linux/qrtr.h | 3 +++
+ net/qrtr/qrtr.c           | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+--- a/include/uapi/linux/qrtr.h
++++ b/include/uapi/linux/qrtr.h
+@@ -5,6 +5,9 @@
+ #include <linux/socket.h>
+ #include <linux/types.h>
+ 
++#define QRTR_NODE_BCAST	0xffffffffu
++#define QRTR_PORT_CTRL	0xfffffffeu
++
+ struct sockaddr_qrtr {
+ 	__kernel_sa_family_t sq_family;
+ 	__u32 sq_node;
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -61,8 +61,6 @@ struct qrtr_hdr {
+ } __packed;
+ 
+ #define QRTR_HDR_SIZE sizeof(struct qrtr_hdr)
+-#define QRTR_NODE_BCAST ((unsigned int)-1)
+-#define QRTR_PORT_CTRL ((unsigned int)-2)
+ 
+ struct qrtr_sock {
+ 	/* WARNING: sk must be the first member */
