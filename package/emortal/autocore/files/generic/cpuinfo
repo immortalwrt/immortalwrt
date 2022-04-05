@@ -6,7 +6,7 @@ CPUINFO_PATH="/proc/cpuinfo"
 CPUFREQ_PATH="/sys/devices/system/cpu/cpufreq"
 THERMAL_PATH="/sys/class/thermal"
 
-cpu_arch="$(grep "model name" "$CPUINFO_PATH" | head -n1 | awk -F ': ' '{print $2}' | xargs)"
+cpu_arch="$(awk -F ': ' '/model name/ {print $2}' "$CPUINFO_PATH" | head -n1)"
 [ -n "${cpu_arch}" ] || cpu_arch="?"
 
 case "$DISTRIB_TARGET" in
@@ -22,9 +22,9 @@ case "$DISTRIB_TARGET" in
 "bcm53xx"/*)
 	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz" ;;
 "mvebu"/*)
-	cpu_freq="$(grep "BogoMIPS" "$CPUINFO_PATH" | sed -n "1p" | awk -F ': ' '{print $2}')MHz" ;;
+	cpu_freq="$(awk -F ': ' '/BogoMIPS/ {print $2}' "$CPUINFO_PATH" | head -n1)MHz" ;;
 "x86"/*)
-	cpu_freq="$(grep "MHz" "$CPUINFO_PATH" | head -n1 | awk -F ': ' '{print $2}')MHz"
+	cpu_freq="$(awk -F ': ' '/MHz/ {print $2}' "$CPUINFO_PATH" | head -n1)MHz"
 	;;
 *)
 	[ ! -e "$CPUFREQ_PATH/policy0/cpuinfo_cur_freq" ] || \
@@ -41,7 +41,7 @@ case "$DISTRIB_TARGET" in
 	# Intel
 	cpu_temp="$(sensors "coretemp-*" 2>"/dev/null" | grep -E "(Package id |Core )" | grep -Eo "\+[0-9.]*°C" | head -n1 | tr -d "+")"
 	# AMD
-	[ -n "${cpu_temp}" ] || cpu_temp="$(sensors "k*temp-*" 2>"/dev/null" | grep "Tdie" | head -n1 | awk '{print $2}' | tr -d "+")"
+	[ -n "${cpu_temp}" ] || cpu_temp="$(sensors "k*temp-*" 2>"/dev/null" | awk '/Tdie/ {print $2}' | head -n1 | tr -d "+")"
 	;;
 *)
 	[ ! -e "$THERMAL_PATH/thermal_zone0/temp" ] || \

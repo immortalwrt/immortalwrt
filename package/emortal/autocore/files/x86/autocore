@@ -22,7 +22,7 @@ start() {
 	uci set network.@globals[0].packet_steering="1"
 	uci commit network
 
-	for i in $(ip address | grep -E 'eth[0-9]+' | awk -F ': ' '{print $2}' | xargs)
+	for i in $(ip address | awk -F ': ' '/eth[0-9]+/ {print $2}' | xargs)
 	do
 		{
 			ethtool -K "$i" rx-checksum on
