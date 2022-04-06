@@ -1,0 +1,18 @@
+--- a/backport-include/linux/build_bug.h
++++ b/backport-include/linux/build_bug.h
+@@ -1,10 +1,12 @@
+ #ifndef __BP_BUILD_BUG_H
+ #define __BP_BUILD_BUG_H
++#include <linux/version.h>
+ 
+-#if LINUX_VERSION_IS_GEQ(4,13,0)
++#if LINUX_VERSION_IS_GEQ(4,13,0) || \
++    LINUX_VERSION_IN_RANGE(4,9,255, 4,10,0)
+ #include_next <linux/build_bug.h>
+-#else /* LINUX_VERSION_IS_GEQ(4,13,0) */
++#else
+ #include <linux/bug.h>
+-#endif /* LINUX_VERSION_IS_GEQ(4,13,0) */
++#endif /* >= 4.13 */
+ 
+ #endif /* __BP_BUILD_BUG_H */
