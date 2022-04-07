@@ -21,6 +21,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef GRND_INSECURE
+#define GRND_INSECURE	0x0004
+#endif
+
 #define SEED_DIR "/etc/seedrng"
 #define CREDITABLE_SEED SEED_DIR "/seed.credit"
 #define NON_CREDITABLE_SEED SEED_DIR "/seed.no-credit"
