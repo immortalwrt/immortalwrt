@@ -13,7 +13,6 @@ KERNEL_PATCHVER:=5.10
 
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES += uboot-envtools kmod-gpio-button-hotplug \
-	autocore-arm
+DEFAULT_PACKAGES += uboot-envtools kmod-gpio-button-hotplug
 
 $(eval $(call BuildTarget))

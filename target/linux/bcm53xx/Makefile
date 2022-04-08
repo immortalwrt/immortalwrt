@@ -25,6 +25,6 @@ KERNELNAME:=zImage dtbs
 DEFAULT_PACKAGES += nvram \
 	osafeloader oseama otrx \
 	kmod-gpio-button-hotplug \
-	kmod-leds-gpio autocore-arm
+	kmod-leds-gpio
 
 $(eval $(call BuildTarget))

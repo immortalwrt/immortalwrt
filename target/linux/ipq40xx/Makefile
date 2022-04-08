@@ -19,6 +19,6 @@ DEFAULT_PACKAGES += \
 	kmod-leds-gpio kmod-gpio-button-hotplug swconfig \
 	kmod-ath10k-ct wpad-openssl uboot-envtools \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019-ct \
-	ath10k-board-qca4019 autocore-arm e2fsprogs
+	ath10k-board-qca4019 e2fsprogs
 
 $(eval $(call BuildTarget))
