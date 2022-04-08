@@ -1338,3 +1338,34 @@ define KernelPackage/f71808e-wdt/description
 endef
 
 $(eval $(call KernelPackage,f71808e-wdt))
+
+define KernelPackage/mhi-bus
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=MHI bus
+  DEPENDS:=@LINUX_5_15
+  KCONFIG:=CONFIG_MHI_BUS \
+           CONFIG_MHI_BUS_DEBUG=y
+  FILES:=$(LINUX_DIR)/drivers/bus/mhi/core/mhi.ko
+  AUTOLOAD:=$(call AutoProbe,mhi)
+endef
+
+define KernelPackage/mhi-bus/description
+  Kernel module for the Qualcomm MHI bus.
+endef
+
+$(eval $(call KernelPackage,mhi-bus))
+
+define KernelPackage/mhi-pci-generic
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=MHI PCI controller driver
+  DEPENDS:=@LINUX_5_15 +kmod-mhi-bus
+  KCONFIG:=CONFIG_MHI_BUS_PCI_GENERIC
+  FILES:=$(LINUX_DIR)/drivers/bus/mhi/mhi_pci_generic.ko
+  AUTOLOAD:=$(call AutoProbe,mhi_pci_generic)
+endef
+
+define KernelPackage/mhi-pci-generic/description
+  Kernel module for the MHI PCI controller driver.
+endef
+
+$(eval $(call KernelPackage,mhi-pci-generic))
