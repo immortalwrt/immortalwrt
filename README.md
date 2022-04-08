@@ -46,7 +46,6 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
   - You must __not__ have spaces in PATH or in the work folders on the drive.
   - If you're using Windows Subsystem for Linux (or WSL), removing Windows folders from PATH is required, please see [Build system setup WSL](https://openwrt.org/docs/guide-developer/build-system/wsl) documentation.
   - Using macOS as the host build OS is __not__ recommended. No warranty at all. You can get tips from [Build system setup macOS](https://openwrt.org/docs/guide-developer/build-system/buildroot.exigence.macosx) documentation.
-    - As you're building ImmortalWrt, patching or disabling UPX tools is also required.
   - For more details, please see [Build system setup](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem) documentation.
 
   ### Quickstart
