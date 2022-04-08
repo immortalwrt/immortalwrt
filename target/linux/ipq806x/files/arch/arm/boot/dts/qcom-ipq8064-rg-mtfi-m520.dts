@@ -47,6 +47,16 @@
 			linux,code = <KEY_RESTART>;
 		};
 	};
+
+	watchdog {
+		compatible = "linux,wdt-gpio";
+		pinctrl-0 = <&wdt0_pins>;
+		pinctrl-names = "default";
+		gpios = <&qcom_pinmux 17 GPIO_ACTIVE_LOW>;
+		hw_algo = "toggle";
+		hw_margin_ms = <500>;
+		always-running;
+	};
 };
 
 &qcom_pinmux {
@@ -104,6 +114,15 @@
 		cs {
 			pins = "gpio20";
 			drive-strength = <12>;
+		};
+	};
+
+	wdt0_pins: wdt0_pins {
+		mux {
+			pins = "gpio17";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
 		};
 	};
 };
