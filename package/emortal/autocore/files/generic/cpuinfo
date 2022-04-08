@@ -1,46 +1,61 @@
 #!/bin/sh
 
-cpu_arch="$(grep "model name" "/proc/cpuinfo" | head -n1 | awk -F ': ' '{print $2}' | xargs)"
-[ -z "${cpu_arch}" ] && cpu_arch="?"
-if grep -q "x86" "/etc/openwrt_release"; then
-	cpu_cores="$(grep "core id" "/proc/cpuinfo" | sort -u | wc -l)C $(grep -c "processor" "/proc/cpuinfo")T"
-else
-	cpu_cores="$(grep -c "processor" "/proc/cpuinfo")"
-fi
+. /etc/openwrt_release
 
-if grep -q "bcm27xx" "/etc/openwrt_release"; then
-	cpu_freq="$(expr $(vcgencmd measure_clock arm | awk -F '=' '{print $2}') / 1000000)Mhz"
-elif grep -q "bcm53xx" "/etc/openwrt_release"; then
-	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz"
-elif grep -q "mvebu" "/etc/openwrt_release"; then
-	cpu_freq="$(grep "BogoMIPS" "/proc/cpuinfo" | sed -n "1p" | awk -F ': ' '{print $2}')MHz"
-elif grep -q "x86" "/etc/openwrt_release"; then
-	cpu_freq="$(grep "MHz" "/proc/cpuinfo" | head -n1 | awk -F ': ' '{print $2}')MHz"
-elif [ -e "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq" ]; then
-	cpu_freq="$(awk '{printf("%.fMHz", $0 / 1000)}' "/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq")"
-fi
-if ! grep -q "x86" "/etc/openwrt_release" && [ -e "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq" ]; then
-	big_cpu_freq="$(awk '{printf("%.fMHz ", $0 / 1000)}' "/sys/devices/system/cpu/cpufreq/policy4/cpuinfo_cur_freq")"
-fi
+CPUINFO_PATH="/proc/cpuinfo"
+CPUFREQ_PATH="/sys/devices/system/cpu/cpufreq"
+THERMAL_PATH="/sys/class/thermal"
 
-if grep -q "bcm27xx" "/etc/openwrt_release"; then
-	cpu_temp="$(vcgencmd measure_temp | awk -F '=' '{print $2}' | awk -F "'" '{print $1}')°C"
-elif grep -q "x86" "/etc/openwrt_release"; then
+cpu_arch="$(awk -F ': ' '/model name/ {print $2}' "$CPUINFO_PATH" | head -n1)"
+[ -n "${cpu_arch}" ] || cpu_arch="?"
+
+case "$DISTRIB_TARGET" in
+"x86"/*)
+	cpu_cores="$(grep "core id" "$CPUINFO_PATH" | sort -u | wc -l)C $(grep -c "processor" "$CPUINFO_PATH")T" ;;
+*)
+	cpu_cores="$(grep -c "processor" "$CPUINFO_PATH")" ;;
+esac
+
+case "$DISTRIB_TARGET" in
+"bcm27xx"/*)
+	cpu_freq="$(( $(vcgencmd measure_clock arm | awk -F '=' '{print $2}') / 1000000 ))Mhz" ;;
+"bcm53xx"/*)
+	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz" ;;
+"mvebu"/*)
+	cpu_freq="$(awk -F ': ' '/BogoMIPS/ {print $2}' "$CPUINFO_PATH" | head -n1)MHz" ;;
+"x86"/*)
+	cpu_freq="$(awk -F ': ' '/MHz/ {print $2}' "$CPUINFO_PATH" | head -n1)MHz"
+	;;
+*)
+	[ ! -e "$CPUFREQ_PATH/policy0/cpuinfo_cur_freq" ] || \
+		cpu_freq="$(awk '{printf("%.fMHz", $0 / 1000)}' "$CPUFREQ_PATH/policy0/cpuinfo_cur_freq")"
+	[ ! -e "$CPUFREQ_PATH/policy4/cpuinfo_cur_freq" ] || \
+		big_cpu_freq="$(awk '{printf("%.fMHz ", $0 / 1000)}' "$CPUFREQ_PATH/policy4/cpuinfo_cur_freq")"
+	;;
+esac
+
+case "$DISTRIB_TARGET" in
+"bcm27xx"/*)
+	cpu_temp="$(vcgencmd measure_temp | awk -F '=' '{print $2}' | awk -F "'" '{print $1}')°C" ;;
+"x86"/*)
 	# Intel
 	cpu_temp="$(sensors "coretemp-*" 2>"/dev/null" | grep -E "(Package id |Core )" | grep -Eo "\+[0-9.]*°C" | head -n1 | tr -d "+")"
 	# AMD
-	[ -z "${cpu_temp}" ] && cpu_temp="$(sensors "k*temp-*" 2>"/dev/null" | grep "Tdie" | head -n1 | awk '{print $2}' | tr -d "+")"
-else
-	[ -e "/sys/class/thermal/thermal_zone0/temp" ] && \
-		cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' /sys/class/thermal/thermal_zone0/temp)"
-fi
+	[ -n "${cpu_temp}" ] || cpu_temp="$(sensors "k*temp-*" 2>"/dev/null" | awk '/Tdie/ {print $2}' | head -n1 | tr -d "+")"
+	;;
+*)
+	[ ! -e "$THERMAL_PATH/thermal_zone0/temp" ] || \
+		cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' "$THERMAL_PATH/thermal_zone0/temp")"
+	;;
+esac
 
-if [ -z "${cpu_freq}" ] && [ -z "${cpu_temp}" ]; then
-	echo -n "${cpu_arch} x ${cpu_cores}"
-elif [ -z "${cpu_temp}" ] || grep -q "ipq" "/etc/openwrt_release"; then
-	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq})"
-elif [ -z "${cpu_freq}" ]; then
-	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_temp})"
+if [ -z "$big_cpu_freq$cpu_freq" ] && [ -n "$cpu_temp" ]; then
+	echo -n "$cpu_arch x $cpu_cores ($cpu_temp)"
+elif [ -z "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ] || \
+		grep -Eq "ipq|mt7622" "/etc/openwrt_release"; then
+	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq)"
+elif [ -n "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ]; then
+	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq, ${cpu_temp})"
 else
-	echo -n "${cpu_arch} x ${cpu_cores} (${big_cpu_freq}${cpu_freq}, ${cpu_temp})"
+	echo -n "$cpu_arch x $cpu_cores"
 fi

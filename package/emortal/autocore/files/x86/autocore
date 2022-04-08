@@ -7,24 +7,24 @@ start() {
 	rfc=4096
 	threads="$(grep -c "processor" "/proc/cpuinfo")"
 
-	sysctl -w net.core.rps_sock_flow_entries="$(expr "$rfc" \* "$threads")" >"/dev/null" 2>&1
+	sysctl -w net.core.rps_sock_flow_entries="$(( rfc * threads ))"
 
 	for fileRps in /sys/class/net/eth*/queues/rx-*/rps_cpus
 	do
-		echo "$threads" > "$fileRps" >"/dev/null" 2>&1
+		echo "$threads" > "$fileRps"
 	done
 
 	for fileRfc in /sys/class/net/eth*/queues/rx-*/rps_flow_cnt
 	do
-		echo "$rfc" > "$fileRfc" >"/dev/null" 2>&1
+		echo "$rfc" > "$fileRfc"
 	done
 
 	uci set network.@globals[0].packet_steering="1"
 	uci commit network
 
-	for i in $(ip address | grep -E 'eth[0-9]+' | awk -F ': ' '{print $2}' | xargs)
+	for i in $(ip address | awk -F ': ' '/eth[0-9]+/ {print $2}' | xargs)
 	do
-		(
+		{
 			ethtool -K "$i" rx-checksum on
 			ethtool -K "$i" tx-checksum-ip-generic on || {
 				ethtool -K "$i" tx-checksum-ipv4 on
@@ -34,6 +34,6 @@ start() {
 			ethtool -K "$i" gso on
 			ethtool -K "$i" tso on
 			ethtool -K "$i" ufo on
-		) >"/dev/null" 2>&1
+		}
 	done
-}
+} >"/dev/null" 2>&1
