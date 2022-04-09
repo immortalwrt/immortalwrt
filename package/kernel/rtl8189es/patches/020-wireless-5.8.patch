@@ -1,8 +1,6 @@
-diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
-index b5eb513..901501a 100644
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -5573,7 +5573,7 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+@@ -5569,7 +5569,7 @@ static void cfg80211_rtw_mgmt_frame_regi
  #else
  	struct net_device *ndev,
  #endif
@@ -11,7 +9,7 @@ index b5eb513..901501a 100644
  	struct mgmt_frame_regs *upd)
  #else
  	u16 frame_type, bool reg)
-@@ -5583,7 +5583,7 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+@@ -5579,7 +5579,7 @@ static void cfg80211_rtw_mgmt_frame_regi
  	struct net_device *ndev = wdev_to_ndev(wdev);
  #endif
  	_adapter *adapter;
@@ -20,7 +18,7 @@ index b5eb513..901501a 100644
  	u16 frame_type = BIT(upd->global_stypes << 4);
  	bool reg = false;
  #endif
-@@ -6516,7 +6516,7 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
+@@ -6510,7 +6510,7 @@ static struct cfg80211_ops rtw_cfg80211_
  	.action = cfg80211_rtw_mgmt_tx,
  #endif
  
