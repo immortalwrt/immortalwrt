@@ -68,15 +68,13 @@ endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/shortcut-fe
-	$(CP) -rf $(PKG_BUILD_DIR)/sfe.h $(1)/usr/include/shortcut-fe
+	$(CP) -rf $(PKG_BUILD_DIR)/*.h $(1)/usr/include/shortcut-fe
 endef
 
-#define KernelPackage/shortcut-fe/install
-#	$(INSTALL_DIR) $(1)/etc/init.d
-#	$(INSTALL_BIN) ./files/etc/init.d/shortcut-fe $(1)/etc/init.d
-#	$(INSTALL_DIR) $(1)/usr/bin
-#	$(INSTALL_BIN) ./files/usr/bin/sfe_dump $(1)/usr/bin
-#endef
+define KernelPackage/shortcut-fe/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) ./files/usr/bin/sfe_dump $(1)/usr/bin
+endef
 
 $(eval $(call KernelPackage,shortcut-fe))
 $(eval $(call KernelPackage,shortcut-fe-cm))
