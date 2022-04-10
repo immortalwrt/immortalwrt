@@ -15,7 +15,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/include/uapi/linux/qrtr.h
 +++ b/include/uapi/linux/qrtr.h
-@@ -5,6 +5,9 @@
+@@ -4,6 +4,9 @@
  #include <linux/socket.h>
  #include <linux/types.h>
  

@@ -19,7 +19,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/include/uapi/linux/qrtr.h
 +++ b/include/uapi/linux/qrtr.h
-@@ -14,4 +14,36 @@ struct sockaddr_qrtr {
+@@ -13,4 +13,36 @@ struct sockaddr_qrtr {
  	__u32 sq_port;
  };
  
