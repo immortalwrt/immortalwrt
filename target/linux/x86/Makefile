@@ -10,7 +10,7 @@ ARCH:=i386
 BOARD:=x86
 BOARDNAME:=x86
 FEATURES:=squashfs ext4 vdi vmdk vhdx pcmcia targz fpu boot-part rootfs-part
-SUBTARGETS:=64 generic zen legacy geode 
+SUBTARGETS:=64 generic legacy geode
 MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 KERNEL_PATCHVER:=4.19
