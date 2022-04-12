@@ -14,10 +14,11 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
 --- a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
 +++ b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-@@ -78,6 +78,14 @@ allOf:
+@@ -77,6 +77,14 @@ Optional properties:
+           description:
              Must contain the ADM data type CRCI block instance number
              specified for the NAND controller on the given platform
- 
++
 +        qcom,boot_pages_size:
 +          description:
 +            Should contain the size of the total boot partitions
@@ -25,11 +26,10 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 +            should be used. The boot layout is considered from the
 +            start of the nand to the value set in this binding.
 +            Only used in combination with 'nand-is-boot-medium'.
-+
+ 
    - if:
        properties:
-         compatible:
-@@ -135,6 +143,9 @@ examples:
+@@ -135,6 +135,9 @@ nand-controller@1ac00000 {
          nand-ecc-strength = <4>;
          nand-bus-width = <8>;
  
@@ -38,4 +38,3 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 +
          partitions {
            compatible = "fixed-partitions";
-           #address-cells = <1>;
