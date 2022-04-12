@@ -200,6 +200,9 @@ foreach my $mirror (@ARGV) {
 		# use OpenWrt source server directly
 	} elsif ($mirror =~ /^\@DEBIAN\/(.+)$/) {
 		push @mirrors, "https://mirrors.tencent.com/debian/$1";
+		push @mirrors, "https://mirrors.aliyun.com/debian/$1";
+		# push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/debian/$1";
+		# push @mirrors, "https://mirrors.ustc.edu.cn/debian/$1";
 		push @mirrors, "https://ftp.debian.org/debian/$1";
 		push @mirrors, "https://mirror.leaseweb.com/debian/$1";
 		push @mirrors, "https://mirror.netcologne.de/debian/$1";
@@ -259,6 +262,7 @@ foreach my $mirror (@ARGV) {
 		}
 		foreach my $dir (@extra) {
 			# push @mirrors, "https://mirrors.ustc.edu.cn/kernel.org/$dir";
+			# push @mirrors, "https://mirror.iscas.ac.cn/kernel.org/$dir";
 			push @mirrors, "https://cdn.kernel.org/pub/$dir";
 			push @mirrors, "https://download.xs4all.nl/ftp.kernel.org/pub/$dir";
 			push @mirrors, "https://mirrors.mit.edu/kernel/$dir";
@@ -268,8 +272,8 @@ foreach my $mirror (@ARGV) {
 			push @mirrors, "ftp://www.mirrorservice.org/sites/ftp.kernel.org/pub/$dir";
 		}
 	} elsif ($mirror =~ /^\@GNOME\/(.+)$/) {
+		# push @mirrors, "https://mirrors.ustc.edu.cn/gnome/sources/$1";
 		push @mirrors, "https://download.gnome.org/sources/$1";
-		push @mirrors, "https://mirrors.ustc.edu.cn/gnome/sources/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/gnome/sources/$1";
 		push @mirrors, "http://ftp.acc.umu.se/pub/GNOME/sources/$1";
 		push @mirrors, "http://ftp.kaist.ac.kr/gnome/sources/$1";
