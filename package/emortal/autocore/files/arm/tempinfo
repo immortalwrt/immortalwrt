@@ -1,19 +1,21 @@
 #!/bin/sh
 
-mt76_path="/sys/class/ieee80211/phy0/hwmon0/temp1_input"
-if [ -e "${mt76_path}" ]; then
-	mt76_temp=" $(awk -F ': ' '{print $2}' "${mt76_path}")°C"
-fi
+IEEE_PATH="/sys/class/ieee80211"
+THERMAL_PATH="/sys/class/thermal"
 
 if grep -Eq "ipq40xx|ipq806x" "/etc/openwrt_release"; then
-	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
+	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
 else
-	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' /sys/class/ieee80211/phy*/hwmon*/temp1_input | awk '$1=$1')"
+	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/phy*/hwmon*/temp1_input | awk '$1=$1')"
 fi
 
 if grep -q "ipq40xx" "/etc/openwrt_release"; then
+	if [ -e "$IEEE_PATH/phy0/hwmon0/temp1_input" ]; then
+		mt76_temp=" $(awk -F ': ' '{print $2}' "$IEEE_PATH/phy0/hwmon0/temp1_input")°C"
+	fi
+
 	echo -n "WiFi:${mt76_temp} ${wifi_temp}"
 else
-	cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' /sys/class/thermal/thermal_zone0/temp)"
+	cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' "$THERMAL_PATH/thermal_zone0/temp")"
 	echo -n "CPU: ${cpu_temp}, WiFi: ${wifi_temp}"
 fi
