@@ -244,30 +244,35 @@ menu "Target Images"
 		bool "Build LiveCD image (ISO)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
+		default y if BUILDBOT
 
 	config QCOW2_IMAGES
 		bool "Build PVE/KVM image files (QCOW2)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
+		default y if BUILDBOT
 
 	config VDI_IMAGES
 		bool "Build VirtualBox image files (VDI)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
+		default y if BUILDBOT
 
 	config VHDX_IMAGES
 		bool "Build Hyper-V image files (VHDX)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-tulip
+		default y if BUILDBOT
 
 	config VMDK_IMAGES
 		bool "Build VMware image files (VMDK)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
+		default y if BUILDBOT
 
 	config TARGET_IMAGES_GZIP
 		bool "GZip images"
@@ -288,6 +293,7 @@ menu "Target Images"
 	config TARGET_ROOTFS_PARTSIZE
 		int "Root filesystem partition size (in MiB)"
 		depends on USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS || TARGET_mvebu || TARGET_rb532 || TARGET_sunxi || TARGET_uml
+		default 800 if BUILDBOT
 		default 160
 		help
 		  Select the root filesystem partition size.
