@@ -53,12 +53,12 @@ define Build/edimax-headers
 	$(eval edimax_model=$(word 2,$(1)))
 
 	$(STAGING_DIR_HOST)/bin/edimax_fw_header -M $(edimax_magic) -m $(edimax_model)\
-		-v $(VERSION_DIST)$(firstword $(subst +, , $(firstword $(subst -, ,$(REVISION))))) \
+		-v Emortal$(firstword $(subst +, , $(firstword $(subst -, ,$(REVISION))))) \
 		-n "uImage" \
 		-i $(KDIR)/loader-$(DEVICE_NAME).uImage \
 		-o $@.uImage
 	$(STAGING_DIR_HOST)/bin/edimax_fw_header -M $(edimax_magic) -m $(edimax_model)\
-		-v $(VERSION_DIST)$(firstword $(subst +, , $(firstword $(subst -, ,$(REVISION))))) \
+		-v Emortal$(firstword $(subst +, , $(firstword $(subst -, ,$(REVISION))))) \
 		-n "rootfs" \
 		-i $@ \
 		-o $@.rootfs
@@ -70,7 +70,7 @@ define Build/mkdapimg2
 	$(STAGING_DIR_HOST)/bin/mkdapimg2 \
 		-i $@ -o $@.new \
 		-s $(DAP_SIGNATURE) \
-		-v $(VERSION_DIST)-$(firstword $(subst +, , \
+		-v Emortal-$(firstword $(subst +, , \
 			$(firstword $(subst -, ,$(REVISION))))) \
 		-r Default \
 		$(if $(1),-k $(1))
