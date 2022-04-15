@@ -1,0 +1,11 @@
+diff -Naur a/wolfcrypt/src/port/devcrypto/devcrypto_aes.c b/wolfcrypt/src/port/devcrypto/devcrypto_aes.c
+--- a/wolfcrypt/src/port/devcrypto/devcrypto_aes.c	2022-02-22 00:09:58.000000000 +0700
++++ b/wolfcrypt/src/port/devcrypto/devcrypto_aes.c	2022-04-15 01:50:09.892330032 +0700
+@@ -205,7 +205,6 @@
+ 
+ int wc_AesCtrEncrypt(Aes* aes, byte* out, const byte* in, word32 sz)
+ {
+-    int ret;
+     struct crypt_op crt;
+     byte* tmp;
+     int ret;
