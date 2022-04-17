@@ -1389,6 +1389,18 @@ define Device/hak5_wifi-pineapple-nano
 endef
 TARGET_DEVICES += hak5_wifi-pineapple-nano
 
+define Device/hiwifi_hc6361
+  SOC := ar9331
+  DEVICE_VENDOR := HiWiFi
+  DEVICE_MODEL := HC6361
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-chipidea2 kmod-usb-storage \
+	kmod-fs-ext4 kmod-nls-iso8859-1 e2fsprogs
+  BOARDNAME := HiWiFi-HC6361
+  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma | pad-to $$(BLOCKSIZE)
+  IMAGE_SIZE := 16128k
+endef
+TARGET_DEVICES += hiwifi_hc6361
+
 define Device/iodata_etg3-r
   SOC := ar9342
   DEVICE_VENDOR := I-O DATA
@@ -2366,6 +2378,42 @@ define Device/sitecom_wlr-8100
   IMAGE_SIZE := 15424k
 endef
 TARGET_DEVICES += sitecom_wlr-8100
+
+define Device/sophos_ap55
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP55
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap55
+
+define Device/sophos_ap55c
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP55C
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap55c
+
+define Device/sophos_ap100
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP100
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap100
+
+define Device/sophos_ap100c
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP100C
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap100c
 
 define Device/telco_t1
   SOC := qca9531
