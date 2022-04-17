@@ -258,7 +258,6 @@ define Device/netgear_dm200
   IMAGE_SIZE := 7872k
   NETGEAR_BOARD_ID := DM200
   NETGEAR_HW_ID := 29765233+8+0+64+0+0
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_dm200
 
