@@ -75,7 +75,6 @@ define Device/ubnt_picostation-2
   DEVICE_VENDOR := Ubiquiti
   DEVICE_MODEL := Picostation 2 (XS2-8)
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 128k | mkfwimage XS2-8 -v XS2.ar2316
-  DEFAULT := n
 endef
 TARGET_DEVICES += ubnt_picostation-2
 
