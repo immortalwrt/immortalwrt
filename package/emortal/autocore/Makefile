@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
-PKG_VERSION:=2
+PKG_FLAGS:=nonshared
 PKG_RELEASE:=$(COMMITCOUNT)
 
 PKG_CONFIG_DEPENDS:= \

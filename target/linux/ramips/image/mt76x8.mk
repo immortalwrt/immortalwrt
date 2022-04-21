@@ -118,6 +118,7 @@ define Device/elecom_wrc-1167fs
 	xor-image -p 29944A25 -x | elecom-header 00228000 | \
 	elecom-product-header WRC-1167FS
   DEVICE_PACKAGES := kmod-mt76x2
+  DEFAULT := n
 endef
 TARGET_DEVICES += elecom_wrc-1167fs
 
