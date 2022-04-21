@@ -1,0 +1,198 @@
+From 980594ee7bcb0bcded95731bb12cf118d7f48951 Mon Sep 17 00:00:00 2001
+From: Syrone Wong <wong.syrone@gmail.com>
+Date: Sat, 9 Apr 2022 13:24:19 +0800
+Subject: [PATCH] firewall4: add fullcone support
+
+fullcone is drop-in replacement of masq for non-udp traffic
+
+add runtime fullcone rule check, disable it globally if fullcone expr is
+invalid
+---
+ root/etc/config/firewall                      |  2 +
+ root/usr/share/firewall4/templates/ruleset.uc | 13 +++++-
+ .../firewall4/templates/zone-fullcone.uc      |  4 ++
+ root/usr/share/ucode/fw4.uc                   | 44 ++++++++++++++++++-
+ 4 files changed, 60 insertions(+), 3 deletions(-)
+ create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
+
+diff --git a/root/etc/config/firewall b/root/etc/config/firewall
+index f4a3322..2f17ad2 100644
+--- a/root/etc/config/firewall
++++ b/root/etc/config/firewall
+@@ -5,6 +5,7 @@ config defaults
+ 	option forward		REJECT
+ # Uncomment this line to disable ipv6 rules
+ #	option disable_ipv6	1
++	option fullcone '1'
+ 
+ config zone
+ 	option name		lan
+@@ -20,6 +21,7 @@ config zone
+ 	option input		REJECT
+ 	option output		ACCEPT
+ 	option forward		REJECT
++	option fullcone '1'
+ 	option masq		1
+ 	option mtu_fix		1
+ 
+diff --git a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
+index b402315..aae698f 100644
+--- a/root/usr/share/firewall4/templates/ruleset.uc
++++ b/root/usr/share/firewall4/templates/ruleset.uc
+@@ -1,3 +1,4 @@
++{# /usr/share/firewall4/templates/ruleset.uc #}
+ {% let flowtable_devices = fw4.resolve_offload_devices(); -%}
+ 
+ table inet fw4
+@@ -237,6 +238,10 @@ table inet fw4 {
+ {%   for (let redirect in fw4.redirects("dstnat_"+zone.name)): %}
+ 		{%+ include("redirect.uc", { fw4, redirect }) %}
+ {%   endfor %}
++{%   if (zone.fullcone): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, direction: "dstnat" }) %}
++{%   endif %}
++
+ 	}
+ 
+ {%  endif %}
+@@ -245,20 +250,24 @@ table inet fw4 {
+ {%   for (let redirect in fw4.redirects("srcnat_"+zone.name)): %}
+ 		{%+ include("redirect.uc", { fw4, redirect }) %}
+ {%   endfor %}
+-{%   if (zone.masq): %}
++{%   if (zone.masq && !zone.fullcone): %}
+ {%    for (let saddrs in zone.masq4_src_subnets): %}
+ {%     for (let daddrs in zone.masq4_dest_subnets): %}
+ 		{%+ include("zone-masq.uc", { fw4, zone, family: 4, saddrs, daddrs }) %}
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
+-{%   if (zone.masq6): %}
++{%   if (zone.masq6 && !zone.fullcone): %}
+ {%    for (let saddrs in zone.masq6_src_subnets): %}
+ {%     for (let daddrs in zone.masq6_dest_subnets): %}
+ 		{%+ include("zone-masq.uc", { fw4, zone, family: 6, saddrs, daddrs }) %}
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
++{%   if (zone.fullcone): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, direction: "srcnat" }) %}
++{%   endif %}
++
+ 	}
+ 
+ {%  endif %}
+diff --git a/root/usr/share/firewall4/templates/zone-fullcone.uc b/root/usr/share/firewall4/templates/zone-fullcone.uc
+new file mode 100644
+index 0000000..f0647da
+--- /dev/null
++++ b/root/usr/share/firewall4/templates/zone-fullcone.uc
+@@ -0,0 +1,4 @@
++{# /usr/share/firewall4/templates/zone-fullcone.uc #}
++		fullcone comment "!fw4: Handle {{
++		zone.name
++}} IPv4/IPv6 fullcone NAT traffic"
+diff --git a/root/usr/share/ucode/fw4.uc b/root/usr/share/ucode/fw4.uc
+index b81f9ad..ec5958e 100644
+--- a/root/usr/share/ucode/fw4.uc
++++ b/root/usr/share/ucode/fw4.uc
+@@ -1,3 +1,5 @@
++// /usr/share/ucode/fw4.uc
++
+ let fs = require("fs");
+ let uci = require("uci");
+ let ubus = require("ubus");
+@@ -419,6 +421,25 @@ function nft_try_hw_offload(devices) {
+ 	return (rc == 0);
+ }
+ 
++function nft_try_fullcone() {
++	let nft_test =
++		'add table inet fw4-fullcone-test; ' +
++		'add chain inet fw4-fullcone-test dstnat { ' +
++			'type nat hook prerouting priority -100; policy accept; ' +
++			'fullcone; ' +
++		'}; ' +
++		'add chain inet fw4-fullcone-test srcnat { ' +
++			'type nat hook postrouting priority -100; policy accept; ' +
++			'fullcone; ' +
++		'}; ';
++	let cmd = sprintf("/usr/sbin/nft -c '%s' 2>/dev/null", replace(nft_test, "'", "'\\''"));
++	let ok = system(cmd) == 0;
++	if (!ok) {
++		warn("nft_try_fullcone: cmd "+ cmd + "\n");
++	}
++	return ok;
++}
++
+ 
+ return {
+ 	read_kernel_version: function() {
+@@ -1382,6 +1403,7 @@ return {
+ 			"dnat",
+ 			"snat",
+ 			"masquerade",
++			"fullcone",
+ 			"accept",
+ 			"reject",
+ 			"drop"
+@@ -1787,6 +1809,7 @@ return {
+ 		}
+ 
+ 		let defs = this.parse_options(data, {
++			fullcone: [ "bool", "0" ],
+ 			input: [ "policy", "drop" ],
+ 			output: [ "policy", "drop" ],
+ 			forward: [ "policy", "drop" ],
+@@ -1819,6 +1842,11 @@ return {
+ 
+ 		delete defs.syn_flood;
+ 
++		if (!nft_try_fullcone()) {
++			delete defs.fullcone;
++			warn("nft_try_fullcone failed, disable fullcone globally\n");
++		}
++
+ 		this.state.defaults = defs;
+ 	},
+ 
+@@ -1843,6 +1871,7 @@ return {
+ 			masq_dest: [ "network", null, PARSE_LIST ],
+ 
+ 			masq6: [ "bool" ],
++			fullcone: [ "bool", "0" ],
+ 
+ 			extra: [ "string", null, UNSUPPORTED ],
+ 			extra_src: [ "string", null, UNSUPPORTED ],
+@@ -1873,6 +1902,14 @@ return {
+ 			return;
+ 		}
+ 
++		if (this.state.defaults && !this.state.defaults.fullcone) {
++			this.warn_section(data, "fullcone in defaults not enabled, ignore zone fullcone setting");
++			zone.fullcone = false;
++		}
++		if (zone.fullcone) {
++			this.warn_section(data, "fullcone enabled for zone '" + zone.name + "'");
++		}
++
+ 		if (zone.mtu_fix && this.kernel < 0x040a0000) {
+ 			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
+ 			return;
+@@ -2041,10 +2078,15 @@ return {
+ 		zone.related_subnets = related_subnets;
+ 		zone.related_physdevs = related_physdevs;
+ 
++		if (zone.fullcone) {
++			zone.dflags.snat = true;
++			zone.dflags.dnat = true;
++		}
++
+ 		if (zone.masq || zone.masq6)
+ 			zone.dflags.snat = true;
+ 
+-		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
++		if ((zone.auto_helper && !(zone.masq || zone.masq6 || zone.fullcone)) || length(zone.helper)) {
+ 			zone.dflags.helper = true;
+ 
+ 			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
