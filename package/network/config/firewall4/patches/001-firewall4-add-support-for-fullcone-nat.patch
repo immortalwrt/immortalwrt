@@ -7,16 +7,16 @@ fullcone is drop-in replacement of masq for non-udp traffic
 
 add runtime fullcone rule check, disable it globally if fullcone expr is
 invalid
+
+Renew: ZiMing Mo <msylgj@immortalwrt.org>
 ---
- root/etc/config/firewall                      |  2 +
+ root/etc/config/firewall                      |  1 +
  root/usr/share/firewall4/templates/ruleset.uc | 13 +++++-
  .../firewall4/templates/zone-fullcone.uc      |  4 ++
- root/usr/share/ucode/fw4.uc                   | 44 ++++++++++++++++++-
- 4 files changed, 60 insertions(+), 3 deletions(-)
+ root/usr/share/ucode/fw4.uc                   | 38 ++++++++++++++++++-
+ 4 files changed, 53 insertions(+), 3 deletions(-)
  create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
 
-diff --git a/root/etc/config/firewall b/root/etc/config/firewall
-index f4a3322..2f17ad2 100644
 --- a/root/etc/config/firewall
 +++ b/root/etc/config/firewall
 @@ -5,6 +5,7 @@ config defaults
@@ -27,16 +27,6 @@ index f4a3322..2f17ad2 100644
  
  config zone
  	option name		lan
-@@ -20,6 +21,7 @@ config zone
- 	option input		REJECT
- 	option output		ACCEPT
- 	option forward		REJECT
-+	option fullcone '1'
- 	option masq		1
- 	option mtu_fix		1
- 
-diff --git a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
-index b402315..aae698f 100644
 --- a/root/usr/share/firewall4/templates/ruleset.uc
 +++ b/root/usr/share/firewall4/templates/ruleset.uc
 @@ -1,3 +1,4 @@
@@ -48,7 +38,7 @@ index b402315..aae698f 100644
  {%   for (let redirect in fw4.redirects("dstnat_"+zone.name)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
-+{%   if (zone.fullcone): %}
++{%   if (fw4.default_option("fullcone")): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, direction: "dstnat" }) %}
 +{%   endif %}
 +
@@ -60,7 +50,7 @@ index b402315..aae698f 100644
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
 -{%   if (zone.masq): %}
-+{%   if (zone.masq && !zone.fullcone): %}
++{%   if (zone.masq && !fw4.default_option("fullcone")): %}
  {%    for (let saddrs in zone.masq4_src_subnets): %}
  {%     for (let daddrs in zone.masq4_dest_subnets): %}
  		{%+ include("zone-masq.uc", { fw4, zone, family: 4, saddrs, daddrs }) %}
@@ -68,23 +58,20 @@ index b402315..aae698f 100644
  {%    endfor %}
  {%   endif %}
 -{%   if (zone.masq6): %}
-+{%   if (zone.masq6 && !zone.fullcone): %}
++{%   if (zone.masq6 && !fw4.default_option("fullcone")): %}
  {%    for (let saddrs in zone.masq6_src_subnets): %}
  {%     for (let daddrs in zone.masq6_dest_subnets): %}
  		{%+ include("zone-masq.uc", { fw4, zone, family: 6, saddrs, daddrs }) %}
  {%     endfor %}
  {%    endfor %}
  {%   endif %}
-+{%   if (zone.fullcone): %}
++{%   if (fw4.default_option("fullcone")): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, direction: "srcnat" }) %}
 +{%   endif %}
 +
  	}
  
  {%  endif %}
-diff --git a/root/usr/share/firewall4/templates/zone-fullcone.uc b/root/usr/share/firewall4/templates/zone-fullcone.uc
-new file mode 100644
-index 0000000..f0647da
 --- /dev/null
 +++ b/root/usr/share/firewall4/templates/zone-fullcone.uc
 @@ -0,0 +1,4 @@
@@ -92,8 +79,6 @@ index 0000000..f0647da
 +		fullcone comment "!fw4: Handle {{
 +		zone.name
 +}} IPv4/IPv6 fullcone NAT traffic"
-diff --git a/root/usr/share/ucode/fw4.uc b/root/usr/share/ucode/fw4.uc
-index b81f9ad..ec5958e 100644
 --- a/root/usr/share/ucode/fw4.uc
 +++ b/root/usr/share/ucode/fw4.uc
 @@ -1,3 +1,5 @@
@@ -144,7 +129,7 @@ index b81f9ad..ec5958e 100644
  			input: [ "policy", "drop" ],
  			output: [ "policy", "drop" ],
  			forward: [ "policy", "drop" ],
-@@ -1819,6 +1842,11 @@ return {
+@@ -1819,6 +1842,14 @@ return {
  
  		delete defs.syn_flood;
  
@@ -152,38 +137,18 @@ index b81f9ad..ec5958e 100644
 +			delete defs.fullcone;
 +			warn("nft_try_fullcone failed, disable fullcone globally\n");
 +		}
++		if (this.state.defaults && !this.state.defaults.fullcone) {
++			this.warn_section(data, "fullcone enabled");
++		}
 +
  		this.state.defaults = defs;
  	},
  
-@@ -1843,6 +1871,7 @@ return {
- 			masq_dest: [ "network", null, PARSE_LIST ],
- 
- 			masq6: [ "bool" ],
-+			fullcone: [ "bool", "0" ],
- 
- 			extra: [ "string", null, UNSUPPORTED ],
- 			extra_src: [ "string", null, UNSUPPORTED ],
-@@ -1873,6 +1902,14 @@ return {
- 			return;
- 		}
- 
-+		if (this.state.defaults && !this.state.defaults.fullcone) {
-+			this.warn_section(data, "fullcone in defaults not enabled, ignore zone fullcone setting");
-+			zone.fullcone = false;
-+		}
-+		if (zone.fullcone) {
-+			this.warn_section(data, "fullcone enabled for zone '" + zone.name + "'");
-+		}
-+
- 		if (zone.mtu_fix && this.kernel < 0x040a0000) {
- 			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
- 			return;
-@@ -2041,10 +2078,15 @@ return {
+@@ -2041,10 +2072,15 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  
-+		if (zone.fullcone) {
++		if (this.state.defaults.fullcone) {
 +			zone.dflags.snat = true;
 +			zone.dflags.dnat = true;
 +		}
@@ -192,7 +157,7 @@ index b81f9ad..ec5958e 100644
  			zone.dflags.snat = true;
  
 -		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
-+		if ((zone.auto_helper && !(zone.masq || zone.masq6 || zone.fullcone)) || length(zone.helper)) {
++		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone)) || length(zone.helper)) {
  			zone.dflags.helper = true;
  
  			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
