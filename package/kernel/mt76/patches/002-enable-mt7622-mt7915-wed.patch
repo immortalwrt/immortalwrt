@@ -6,7 +6,7 @@
  #include "../trace.h"
  
 -static bool wed_enable = false;
-+static bool wed_enable = enable;
++static bool wed_enable = true;
  module_param(wed_enable, bool, 0644);
  
  static LIST_HEAD(hif_list);
