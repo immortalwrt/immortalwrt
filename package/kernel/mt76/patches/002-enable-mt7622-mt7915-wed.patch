@@ -1,0 +1,12 @@
+
+--- a/mt7915/pci.c	2022-04-24 14:37:08.160691673 +0800
++++ b/mt7915/pci.c	2022-04-24 14:38:09.077303621 +0800
+@@ -12,7 +12,7 @@
+ #include "mac.h"
+ #include "../trace.h"
+ 
+-static bool wed_enable = false;
++static bool wed_enable = enable;
+ module_param(wed_enable, bool, 0644);
+ 
+ static LIST_HEAD(hif_list);
