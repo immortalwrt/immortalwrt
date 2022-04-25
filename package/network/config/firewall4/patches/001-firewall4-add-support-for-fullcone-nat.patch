@@ -34,7 +34,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  {% let flowtable_devices = fw4.resolve_offload_devices(); -%}
  
  table inet fw4
-@@ -237,6 +238,10 @@ table inet fw4 {
+@@ -238,6 +239,10 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects("dstnat_"+zone.name)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
@@ -45,7 +45,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	}
  
  {%  endif %}
-@@ -245,20 +250,24 @@ table inet fw4 {
+@@ -246,20 +251,24 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects("srcnat_"+zone.name)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}

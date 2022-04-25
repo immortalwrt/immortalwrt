@@ -17,6 +17,7 @@ ramips_setup_interfaces()
 	tplink,re350-v1|\
 	tplink,re500-v1|\
 	tplink,re650-v1|\
+	tplink,re650-v2|\
 	ubnt,unifi-6-lite|\
 	ubnt,unifi-nanohd)
 		ucidef_set_interface_lan "lan"
@@ -89,6 +90,7 @@ ramips_setup_interfaces()
 	ubnt,usw-flex)
 		ucidef_set_interface_lan "lan1 lan2 lan3 lan4 lan5"
 		;;
+	yuncore,ax820|\
 	zyxel,nr7101)
 		ucidef_set_interfaces_lan_wan "lan" "wan"
 		;;
@@ -193,6 +195,9 @@ ramips_setup_macs()
 		lan_mac=$(mtd_get_mac_ascii Config protest_lan_mac)
 		wan_mac=$(mtd_get_mac_ascii Config protest_wan_mac)
 		label_mac=$lan_mac
+		;;
+	yuncore,ax820)
+		label_mac=$(mtd_get_mac_binary Factory 0x4)
 		;;
 	esac
 
