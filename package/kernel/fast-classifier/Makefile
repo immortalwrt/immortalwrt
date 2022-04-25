@@ -36,6 +36,7 @@ define Package/fast-classifier-example/description
 endef
 
 SFE_MAKE_OPTS:=SFE_SUPPORT_IPV6=y
+EXTRA_CFLAGS+=-I$(STAGING_DIR)/usr/include/shortcut-fe
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" $(strip $(SFE_MAKE_OPTS)) \
