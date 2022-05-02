@@ -340,7 +340,9 @@ group_add_user() {
 	[ -n "$(echo $grp | grep ":$")" ] && delim=""
 	[ -n "$IPKG_INSTROOT" ] || lock /var/lock/passwd
 	sed -i "s/$grp/$grp$delim$2/g" ${IPKG_INSTROOT}/etc/group
-	selinuxenabled 2>/dev/null && restorecon /etc/group
+	if [ -x /usr/sbin/selinuxenabled ] && selinuxenabled; then
+		selinuxenabled 2>/dev/null && restorecon ${IPKG_INSTROOT}/etc/group
+	fi
 	[ -n "$IPKG_INSTROOT" ] || lock -u /var/lock/passwd
 }
 
