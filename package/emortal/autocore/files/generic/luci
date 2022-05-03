@@ -223,7 +223,7 @@ local methods = {
 			rv.dropbear      = fs.access("/usr/sbin/dropbear")
 			rv.cabundle      = fs.access("/etc/ssl/certs/ca-certificates.crt")
 			rv.relayd        = fs.access("/usr/sbin/relayd")
-			rv.dsl           = fs.access("/sbin/vdsl_cpe_control")
+			rv.dsl           = fs.access("/sbin/dsl_cpe_control") or fs.access("/sbin/vdsl_cpe_control")
 
 			local wifi_features = { "eap", "11n", "11ac", "11r", "acs", "sae", "owe", "suiteb192", "wep", "wps" }
 
