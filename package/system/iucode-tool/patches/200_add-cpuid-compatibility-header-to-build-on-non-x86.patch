@@ -11,17 +11,13 @@ Signed-off-by: Sergey V. Lobanov <sergey@lobanov.in>
 
 --- /dev/null
 +++ b/cpuid-compat/cpuid.h
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,13 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + *  cpuid compatibility header to build iucode-tool on non-x86 hosts
 + *
 + *  Copyright (C) 2022       Sergey V. Lobanov <sergey@lobanov.in>
 + */
-+
-+#ifdef __APPLE__
-+# include <limits.h>
-+#endif
 +
 +static __inline int __get_cpuid (unsigned int leaf,
 +              unsigned int *eax, unsigned int *ebx,
