@@ -1608,7 +1608,7 @@ define Device/nec_wg800hp
 	append-rootfs | pad-rootfs | check-size | \
 	xor-image -p 6A57190601121E4C004C1E1201061957 -x | nec-fw LASER_ATERM
   DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct-full-htt
-  DEFAULT: = n
+  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wg800hp
 
