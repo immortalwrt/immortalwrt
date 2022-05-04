@@ -1189,8 +1189,12 @@ dnsmasq_start()
 	config_get_bool dns_redirect "$cfg" dns_redirect 0
 	config_get dns_port "$cfg" port 53
 	if [ "$dns_redirect" = 1 ]; then
-		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
-		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
+		cat > /etc/nftables.d/11-dnsmasq-dns-redirect.nft <<EOF
+		chain dstnat_lan{
+			udp dport 53 counter redirect to :$dns_port comment "!fw4: DNSMASQ"
+		}
+EOF
+		fw4 reload
 	fi
 }
 
@@ -1209,11 +1213,10 @@ dnsmasq_stop()
 	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
 }
 
-iptables_clear()
+nftables_clear()
 {
-	config_get dns_port "$cfg" port 53
-	iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
-	[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
+	[ -f "/etc/nftables.d/11-dnsmasq-dns-redirect.nft" ] && rm -f /etc/nftables.d/11-dnsmasq-dns-redirect.nft
+	fw4 reload
 }
 
 add_interface_trigger()
@@ -1286,7 +1289,7 @@ start_service() {
 }
 
 reload_service() {
-	iptables_clear
+	nftables_clear
 	rc_procd start_service "$@"
 	procd_send_signal dnsmasq "$@"
 }
@@ -1313,5 +1316,5 @@ stop_service() {
 	else
 		config_foreach dnsmasq_stop dnsmasq
 	fi
-	iptables_clear
+	nftables_clear
 }
