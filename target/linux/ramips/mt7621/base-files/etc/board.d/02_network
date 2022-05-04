@@ -42,6 +42,7 @@ ramips_setup_interfaces()
 	jdcloud,re-sp-01b|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
+	mts,wg430223|\
 	oraybox,x3a|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3g-v2|\
@@ -156,7 +157,8 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii u-boot-env et1macaddr)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
-	beeline,smartbox-flash)
+	beeline,smartbox-flash|\
+	mts,wg430223)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env eth2macaddr)
 		wan_mac=$(mtd_get_mac_ascii u-boot-env eth3macaddr)
 		label_mac=$lan_mac
