@@ -820,7 +820,7 @@ dnsmasq_ipset_add() {
 dnsmasq_start()
 {
 	local cfg="$1"
-	local disabled user_dhcpscript
+	local disabled user_dhcpscript logfacility
 	local resolvfile resolvdir localuse=0
 
 	config_get_bool disabled "$cfg" disabled 0
@@ -938,6 +938,7 @@ dnsmasq_start()
 
 	append_parm "$cfg" mini_ttl "--min-ttl"
 
+	config_get logfacility "$cfg" "logfacility"
 	append_parm "$cfg" cachesize "--cache-size"
 	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
 	append_parm "$cfg" port "--port"
@@ -976,7 +977,14 @@ dnsmasq_start()
 	config_list_foreach "$cfg" "addnhosts" append_addnhosts
 	config_list_foreach "$cfg" "bogusnxdomain" append_bogusnxdomain
 	append_parm "$cfg" "leasefile" "--dhcp-leasefile" "/tmp/dhcp.leases"
-	append_parm "$cfg" "serversfile" "--servers-file"
+
+	local serversfile
+	config_get serversfile "$cfg" "serversfile"
+	[ -n "$serversfile" ] && {
+		xappend "--servers-file=$serversfile"
+		append EXTRA_MOUNT "$serversfile"
+	}
+
 	append_parm "$cfg" "tftp_root" "--tftp-root"
 	append_parm "$cfg" "dhcp_boot" "--dhcp-boot"
 	append_parm "$cfg" "local_ttl" "--local-ttl"
@@ -1171,6 +1179,10 @@ dnsmasq_start()
 	procd_add_jail_mount $dnsmasqconffile $dnsmasqconfdir $resolvdir $user_dhcpscript
 	procd_add_jail_mount /etc/passwd /etc/group /etc/TZ /etc/hosts /etc/ethers
 	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
+	case "$logfacility" in */*)
+		[ ! -e "$logfacility" ] && touch "$logfacility"
+		procd_add_jail_mount_rw "$logfacility"
+	esac
 
 	procd_close_instance
 
