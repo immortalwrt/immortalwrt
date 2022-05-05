@@ -36,7 +36,7 @@ Link: https://lore.kernel.org/r/20210516163523.9484-2-amadeus@jmu.edu.cn
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-orangepi-zero-plus.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-@@ -0,0 +1,190 @@
+@@ -0,0 +1,191 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (C) 2021 Chukun Pan <amadeus@jmu.edu.cn>
@@ -48,6 +48,7 @@ Link: https://lore.kernel.org/r/20210516163523.9484-2-amadeus@jmu.edu.cn
 +
 +/dts-v1/;
 +#include "sun50i-h5.dtsi"
++#include "sun50i-h5-cpu-opp.dtsi"
 +
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/input/input.h>

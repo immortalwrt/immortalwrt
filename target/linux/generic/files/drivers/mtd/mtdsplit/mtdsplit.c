@@ -40,7 +40,7 @@ int mtd_get_squashfs_len(struct mtd_info *master,
 
 	err = mtd_read(master, offset, sizeof(sb), &retlen, (void *)&sb);
 	if (err || (retlen != sizeof(sb))) {
-		pr_alert("error occured while reading from \"%s\"\n",
+		pr_alert("error occurred while reading from \"%s\"\n",
 			 master->name);
 		return -EIO;
 	}
