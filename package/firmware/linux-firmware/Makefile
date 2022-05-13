@@ -26,6 +26,7 @@ define Package/firmware-default
   CATEGORY:=Firmware
   URL:=http://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
   TITLE:=$(1)
+  DEPENDS:=$(2)
 endef
 
 define Build/Compile
