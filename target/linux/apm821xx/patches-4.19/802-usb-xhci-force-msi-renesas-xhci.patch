@@ -23,7 +23,7 @@ produce a noisy warning.
  		xhci->quirks |= XHCI_RESET_ON_RESUME;
 --- a/drivers/usb/host/xhci.c
 +++ b/drivers/usb/host/xhci.c
-@@ -426,10 +426,14 @@ static int xhci_try_enable_msi(struct us
+@@ -424,10 +424,14 @@ static int xhci_try_enable_msi(struct us
  		free_irq(hcd->irq, hcd);
  	hcd->irq = 0;
  
@@ -43,7 +43,7 @@ produce a noisy warning.
  		hcd->msi_enabled = 1;
 --- a/drivers/usb/host/xhci.h
 +++ b/drivers/usb/host/xhci.h
-@@ -1885,6 +1885,7 @@ struct xhci_hcd {
+@@ -1888,6 +1888,7 @@ struct xhci_hcd {
  	/* support xHCI 0.96 spec USB2 software LPM */
  	unsigned		sw_lpm_support:1;
  	/* support xHCI 1.0 spec USB2 hardware LPM */

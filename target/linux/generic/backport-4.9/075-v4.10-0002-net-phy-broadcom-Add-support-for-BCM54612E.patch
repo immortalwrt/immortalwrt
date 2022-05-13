@@ -13,7 +13,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -337,6 +337,41 @@ static int bcm5481_config_aneg(struct ph
+@@ -338,6 +338,41 @@ static int bcm5481_config_aneg(struct ph
  	return ret;
  }
  
@@ -55,7 +55,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  static int brcm_phy_setbits(struct phy_device *phydev, int reg, int set)
  {
  	int val;
-@@ -485,6 +520,18 @@ static struct phy_driver broadcom_driver
+@@ -506,6 +541,18 @@ static struct phy_driver broadcom_driver
  	.ack_interrupt	= bcm_phy_ack_intr,
  	.config_intr	= bcm_phy_config_intr,
  }, {
@@ -74,7 +74,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	.phy_id		= PHY_ID_BCM54616S,
  	.phy_id_mask	= 0xfffffff0,
  	.name		= "Broadcom BCM54616S",
-@@ -600,6 +647,7 @@ static struct mdio_device_id __maybe_unu
+@@ -621,6 +668,7 @@ static struct mdio_device_id __maybe_unu
  	{ PHY_ID_BCM5411, 0xfffffff0 },
  	{ PHY_ID_BCM5421, 0xfffffff0 },
  	{ PHY_ID_BCM5461, 0xfffffff0 },

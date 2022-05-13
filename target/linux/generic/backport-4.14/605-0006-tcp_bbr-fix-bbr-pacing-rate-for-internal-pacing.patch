@@ -23,7 +23,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
 
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -1233,6 +1233,17 @@ static inline bool tcp_is_cwnd_limited(c
+@@ -1234,6 +1234,17 @@ static inline bool tcp_is_cwnd_limited(c
  	return tp->is_cwnd_limited;
  }
  
@@ -58,7 +58,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  	rate *= USEC_PER_SEC;
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -949,17 +949,6 @@ enum hrtimer_restart tcp_pace_kick(struc
+@@ -950,17 +950,6 @@ enum hrtimer_restart tcp_pace_kick(struc
  	return HRTIMER_NORESTART;
  }
  
@@ -76,7 +76,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
  {
  	u64 len_ns;
-@@ -971,9 +960,6 @@ static void tcp_internal_pacing(struct s
+@@ -972,9 +961,6 @@ static void tcp_internal_pacing(struct s
  	if (!rate || rate == ~0U)
  		return;
  

@@ -138,7 +138,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  #define rcu_dereference_sk_user_data(sk)	rcu_dereference(__sk_user_data((sk)))
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -584,6 +584,7 @@ void tcp_fin(struct sock *sk);
+@@ -585,6 +585,7 @@ void tcp_check_space(struct sock *sk);
  void tcp_init_xmit_timers(struct sock *);
  static inline void tcp_clear_xmit_timers(struct sock *sk)
  {
@@ -146,7 +146,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  	inet_csk_clear_xmit_timers(sk);
  }
  
-@@ -1970,4 +1971,6 @@ static inline void tcp_listendrop(const
+@@ -1971,4 +1972,6 @@ static inline void tcp_listendrop(const
  	__NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENDROPS);
  }
  
@@ -193,7 +193,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  static u32 bbr_sndbuf_expand(struct sock *sk)
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -913,6 +913,72 @@ out:
+@@ -914,6 +914,72 @@ out:
  	sk_free(sk);
  }
  
@@ -266,7 +266,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  /* This routine actually transmits TCP packets queued in by
   * tcp_do_sendmsg().  This is used by both the initial
   * transmission and possible later retransmissions.
-@@ -1034,6 +1100,7 @@ static int __tcp_transmit_skb(struct soc
+@@ -1035,6 +1101,7 @@ static int __tcp_transmit_skb(struct soc
  	if (skb->len != tcp_header_size) {
  		tcp_event_data_sent(tp, sk);
  		tp->data_segs_out += tcp_skb_pcount(skb);
@@ -274,7 +274,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  	}
  
  	if (after(tcb->end_seq, tp->snd_nxt) || tcb->seq == tcb->end_seq)
-@@ -2126,6 +2193,12 @@ static int tcp_mtu_probe(struct sock *sk
+@@ -2127,6 +2194,12 @@ static int tcp_mtu_probe(struct sock *sk
  	return -1;
  }
  
@@ -287,7 +287,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  /* TCP Small Queues :
   * Control number of packets in qdisc/devices to two packets / or ~1 ms.
   * (These limits are doubled for retransmits)
-@@ -2209,6 +2282,9 @@ static bool tcp_write_xmit(struct sock *
+@@ -2210,6 +2283,9 @@ static bool tcp_write_xmit(struct sock *
  	while ((skb = tcp_send_head(sk))) {
  		unsigned int limit;
  
@@ -297,7 +297,7 @@ Signed-off-by: Albert I <kras@raphielgang.org>
  		tso_segs = tcp_init_tso_segs(skb, mss_now);
  		BUG_ON(!tso_segs);
  
-@@ -2933,6 +3009,10 @@ void tcp_xmit_retransmit_queue(struct so
+@@ -2934,6 +3010,10 @@ void tcp_xmit_retransmit_queue(struct so
  
  		if (skb == tcp_send_head(sk))
  			break;

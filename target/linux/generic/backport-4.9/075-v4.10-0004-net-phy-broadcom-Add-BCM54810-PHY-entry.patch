@@ -17,7 +17,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -18,7 +18,7 @@
+@@ -19,7 +19,7 @@
  #include <linux/module.h>
  #include <linux/phy.h>
  #include <linux/brcmphy.h>
@@ -26,7 +26,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  #define BRCM_PHY_MODEL(phydev) \
  	((phydev)->drv->phy_id & (phydev)->drv->phy_id_mask)
-@@ -45,6 +45,34 @@ static int bcm54xx_auxctl_write(struct p
+@@ -46,6 +46,34 @@ static int bcm54xx_auxctl_write(struct p
  	return phy_write(phydev, MII_BCM54XX_AUX_CTL, regnum | val);
  }
  
@@ -61,7 +61,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  /* Needs SMDSP clock enabled via bcm54xx_phydsp_config() */
  static int bcm50610_a0_workaround(struct phy_device *phydev)
  {
-@@ -217,6 +245,12 @@ static int bcm54xx_config_init(struct ph
+@@ -218,6 +246,12 @@ static int bcm54xx_config_init(struct ph
  	    (phydev->dev_flags & PHY_BRCM_AUTO_PWRDWN_ENABLE))
  		bcm54xx_adjust_rxrefclk(phydev);
  
@@ -74,7 +74,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	bcm54xx_phydsp_config(phydev);
  
  	return 0;
-@@ -314,6 +348,7 @@ static int bcm5482_read_status(struct ph
+@@ -315,6 +349,7 @@ static int bcm5482_read_status(struct ph
  
  static int bcm5481_config_aneg(struct phy_device *phydev)
  {
@@ -82,7 +82,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	int ret;
  
  	/* Aneg firsly. */
-@@ -344,6 +379,14 @@ static int bcm5481_config_aneg(struct ph
+@@ -345,6 +380,14 @@ static int bcm5481_config_aneg(struct ph
  		phy_write(phydev, 0x18, reg);
  	}
  
@@ -97,7 +97,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	return ret;
  }
  
-@@ -578,6 +621,18 @@ static struct phy_driver broadcom_driver
+@@ -599,6 +642,18 @@ static struct phy_driver broadcom_driver
  	.ack_interrupt	= bcm_phy_ack_intr,
  	.config_intr	= bcm_phy_config_intr,
  }, {
@@ -116,7 +116,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	.phy_id		= PHY_ID_BCM5482,
  	.phy_id_mask	= 0xfffffff0,
  	.name		= "Broadcom BCM5482",
-@@ -661,6 +716,7 @@ static struct mdio_device_id __maybe_unu
+@@ -682,6 +737,7 @@ static struct mdio_device_id __maybe_unu
  	{ PHY_ID_BCM54616S, 0xfffffff0 },
  	{ PHY_ID_BCM5464, 0xfffffff0 },
  	{ PHY_ID_BCM5481, 0xfffffff0 },

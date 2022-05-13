@@ -68,7 +68,7 @@ Signed-off-by: Andy Gross <andy.gross@linaro.org>
  	};
  
  	pmu {
-@@ -292,22 +301,22 @@
+@@ -293,22 +302,22 @@
  		};
  
                  acc0: clock-controller@b088000 {

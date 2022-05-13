@@ -23,7 +23,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		};
  	};
  
-@@ -344,6 +345,12 @@
+@@ -345,6 +346,12 @@
                          regulator;
                  };
  

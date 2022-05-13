@@ -18,7 +18,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -52,6 +52,21 @@ static int bcm54210e_config_init(struct
+@@ -53,6 +53,21 @@ static int bcm54210e_config_init(struct
  	return 0;
  }
  
@@ -40,7 +40,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
  static int bcm54612e_config_init(struct phy_device *phydev)
  {
  	int reg;
-@@ -310,6 +325,8 @@ static int bcm54xx_config_init(struct ph
+@@ -311,6 +326,8 @@ static int bcm54xx_config_init(struct ph
  		err = bcm54210e_config_init(phydev);
  		if (err)
  			return err;

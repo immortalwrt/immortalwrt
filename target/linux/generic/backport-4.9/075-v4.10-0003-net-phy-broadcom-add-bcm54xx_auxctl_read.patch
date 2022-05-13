@@ -12,7 +12,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -30,6 +30,16 @@ MODULE_DESCRIPTION("Broadcom PHY driver"
+@@ -31,6 +31,16 @@ MODULE_DESCRIPTION("Broadcom PHY driver"
  MODULE_AUTHOR("Maciej W. Rozycki");
  MODULE_LICENSE("GPL");
  

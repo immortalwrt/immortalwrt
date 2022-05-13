@@ -1132,7 +1132,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -3981,6 +3986,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3983,6 +3988,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  

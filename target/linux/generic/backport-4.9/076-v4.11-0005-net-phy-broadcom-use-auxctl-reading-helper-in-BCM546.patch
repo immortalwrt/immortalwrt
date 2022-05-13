@@ -20,7 +20,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -395,10 +395,8 @@ static int bcm54612e_config_aneg(struct
+@@ -396,10 +396,8 @@ static int bcm54612e_config_aneg(struct
  	    (phydev->interface != PHY_INTERFACE_MODE_RGMII_RXID)) {
  		u16 reg;
  

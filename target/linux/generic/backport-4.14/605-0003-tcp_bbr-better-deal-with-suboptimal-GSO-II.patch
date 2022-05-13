@@ -39,7 +39,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
  			       int nonagle);
  int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs);
-@@ -1025,8 +1023,8 @@ struct tcp_congestion_ops {
+@@ -1026,8 +1024,8 @@ struct tcp_congestion_ops {
  	u32  (*undo_cwnd)(struct sock *sk);
  	/* hook for packet ack accounting (optional) */
  	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
@@ -99,7 +99,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  };
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1696,8 +1696,8 @@ static bool tcp_nagle_check(bool partial
+@@ -1697,8 +1697,8 @@ static bool tcp_nagle_check(bool partial
  /* Return how many segs we'd like on a TSO packet,
   * to send one TSO packet per ms
   */
@@ -110,7 +110,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  {
  	u32 bytes, segs;
  
-@@ -1713,7 +1713,6 @@ u32 tcp_tso_autosize(const struct sock *
+@@ -1714,7 +1714,6 @@ u32 tcp_tso_autosize(const struct sock *
  
  	return segs;
  }
@@ -118,7 +118,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
  
  /* Return the number of segments we want in the skb we are transmitting.
   * See if congestion control module wants to decide; otherwise, autosize.
-@@ -1721,11 +1720,13 @@ EXPORT_SYMBOL(tcp_tso_autosize);
+@@ -1722,11 +1721,13 @@ EXPORT_SYMBOL(tcp_tso_autosize);
  static u32 tcp_tso_segs(struct sock *sk, unsigned int mss_now)
  {
  	const struct tcp_congestion_ops *ca_ops = inet_csk(sk)->icsk_ca_ops;

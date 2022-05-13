@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -392,7 +392,7 @@
+@@ -393,7 +393,7 @@
  			dma-names = "rx", "tx";
  		};
  
@@ -9,7 +9,7 @@
  			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
  			reg = <0x78b0000 0x200>;
  			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
-@@ -596,7 +596,7 @@
+@@ -597,7 +597,7 @@
  			status = "disabled";
  		};
  

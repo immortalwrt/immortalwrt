@@ -20,7 +20,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -345,6 +345,19 @@ static int bcm54xx_config_init(struct ph
+@@ -346,6 +346,19 @@ static int bcm54xx_config_init(struct ph
  
  	bcm54xx_phydsp_config(phydev);
  

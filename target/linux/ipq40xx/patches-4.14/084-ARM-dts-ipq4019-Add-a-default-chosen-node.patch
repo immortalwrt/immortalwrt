@@ -34,7 +34,7 @@ Signed-off-by: Andy Gross <andy.gross@linaro.org>
  			status = "ok";
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -350,7 +350,7 @@
+@@ -351,7 +351,7 @@
  			regulator;
  		};
  

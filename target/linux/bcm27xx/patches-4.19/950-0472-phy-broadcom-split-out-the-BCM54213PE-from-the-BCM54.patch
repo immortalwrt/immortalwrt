@@ -16,7 +16,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -222,7 +222,8 @@ static void bcm54xx_adjust_rxrefclk(stru
+@@ -223,7 +223,8 @@ static void bcm54xx_adjust_rxrefclk(stru
  	/* Abort if we are using an untested phy. */
  	if (BRCM_PHY_MODEL(phydev) != PHY_ID_BCM57780 &&
  	    BRCM_PHY_MODEL(phydev) != PHY_ID_BCM50610 &&
@@ -26,7 +26,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
  		return;
  
  	val = bcm_phy_read_shadow(phydev, BCM54XX_SHD_SCR3);
-@@ -604,7 +605,7 @@ static struct phy_driver broadcom_driver
+@@ -625,7 +626,7 @@ static struct phy_driver broadcom_driver
  	.config_intr	= bcm_phy_config_intr,
  }, {
  	.phy_id		= PHY_ID_BCM54210E,
@@ -35,7 +35,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
  	.name		= "Broadcom BCM54210E",
  	.features	= PHY_GBIT_FEATURES,
  	.flags		= PHY_HAS_INTERRUPT,
-@@ -612,6 +613,15 @@ static struct phy_driver broadcom_driver
+@@ -633,6 +634,15 @@ static struct phy_driver broadcom_driver
  	.ack_interrupt	= bcm_phy_ack_intr,
  	.config_intr	= bcm_phy_config_intr,
  }, {
@@ -51,7 +51,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
  	.phy_id		= PHY_ID_BCM5461,
  	.phy_id_mask	= 0xfffffff0,
  	.name		= "Broadcom BCM5461",
-@@ -748,7 +758,8 @@ module_phy_driver(broadcom_drivers);
+@@ -769,7 +779,8 @@ module_phy_driver(broadcom_drivers);
  static struct mdio_device_id __maybe_unused broadcom_tbl[] = {
  	{ PHY_ID_BCM5411, 0xfffffff0 },
  	{ PHY_ID_BCM5421, 0xfffffff0 },

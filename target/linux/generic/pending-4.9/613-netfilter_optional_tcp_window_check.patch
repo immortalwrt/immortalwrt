@@ -28,7 +28,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	/*
  	 * Get the required data from the packet.
  	 */
-@@ -1479,6 +1485,13 @@ static struct ctl_table tcp_sysctl_table
+@@ -1488,6 +1494,13 @@ static struct ctl_table tcp_sysctl_table
  		.mode		= 0644,
  		.proc_handler	= proc_dointvec,
  	},

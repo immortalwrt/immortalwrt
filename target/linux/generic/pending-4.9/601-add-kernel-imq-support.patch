@@ -1411,7 +1411,7 @@
 +
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -3695,6 +3695,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3697,6 +3697,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  

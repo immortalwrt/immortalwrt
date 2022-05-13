@@ -5808,7 +5808,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
  	struct pci_epc		*epc;
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1947,6 +1947,7 @@ void pcibios_release_device(struct pci_d
+@@ -1948,6 +1948,7 @@ void pcibios_release_device(struct pci_d
  void pcibios_penalize_isa_irq(int irq, int active);
  int pcibios_alloc_irq(struct pci_dev *dev);
  void pcibios_free_irq(struct pci_dev *dev);

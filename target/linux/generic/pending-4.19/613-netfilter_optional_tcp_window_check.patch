@@ -28,7 +28,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	/*
  	 * Get the required data from the packet.
  	 */
-@@ -1066,7 +1072,7 @@ static int tcp_packet(struct nf_conn *ct
+@@ -1075,7 +1081,7 @@ static int tcp_packet(struct nf_conn *ct
  		 IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED &&
  		 timeouts[new_state] > timeouts[TCP_CONNTRACK_UNACK])
  		timeout = timeouts[TCP_CONNTRACK_UNACK];
@@ -37,7 +37,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		 timeouts[new_state] > timeouts[TCP_CONNTRACK_RETRANS])
  		timeout = timeouts[TCP_CONNTRACK_RETRANS];
  	else
-@@ -1515,6 +1521,13 @@ static struct ctl_table tcp_sysctl_table
+@@ -1524,6 +1530,13 @@ static struct ctl_table tcp_sysctl_table
  		.mode		= 0644,
  		.proc_handler	= proc_dointvec,
  	},

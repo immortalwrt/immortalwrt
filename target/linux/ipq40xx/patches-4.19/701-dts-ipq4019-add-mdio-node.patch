@@ -15,7 +15,7 @@ so the info might change.
 
 --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -593,6 +593,34 @@
+@@ -594,6 +594,34 @@
  			status = "disabled";
  		};
  

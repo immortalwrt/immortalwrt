@@ -28,7 +28,7 @@ Signed-off-by: UtsavisGreat <utsavbalar1231@gmail.com>
 
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -998,6 +998,7 @@ struct rate_sample {
+@@ -999,6 +999,7 @@ struct rate_sample {
  	u32  prior_in_flight;	/* in flight before this ACK */
  	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
  	bool is_retrans;	/* is sample from retransmission? */

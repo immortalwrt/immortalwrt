@@ -25,7 +25,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  	};
  
  	cpus {
-@@ -618,6 +620,64 @@
+@@ -619,6 +621,64 @@
  			status = "disabled";
  		};
  

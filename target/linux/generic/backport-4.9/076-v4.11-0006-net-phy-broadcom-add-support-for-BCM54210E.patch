@@ -15,7 +15,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/phy/broadcom.c
 +++ b/drivers/net/phy/broadcom.c
-@@ -30,6 +30,22 @@ MODULE_DESCRIPTION("Broadcom PHY driver"
+@@ -31,6 +31,22 @@ MODULE_DESCRIPTION("Broadcom PHY driver"
  MODULE_AUTHOR("Maciej W. Rozycki");
  MODULE_LICENSE("GPL");
  
@@ -38,7 +38,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  static int bcm54810_config(struct phy_device *phydev)
  {
  	int rc, val;
-@@ -230,7 +246,11 @@ static int bcm54xx_config_init(struct ph
+@@ -231,7 +247,11 @@ static int bcm54xx_config_init(struct ph
  	    (phydev->dev_flags & PHY_BRCM_AUTO_PWRDWN_ENABLE))
  		bcm54xx_adjust_rxrefclk(phydev);
  
@@ -51,7 +51,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		err = bcm54810_config(phydev);
  		if (err)
  			return err;
-@@ -544,6 +564,17 @@ static struct phy_driver broadcom_driver
+@@ -565,6 +585,17 @@ static struct phy_driver broadcom_driver
  	.ack_interrupt	= bcm_phy_ack_intr,
  	.config_intr	= bcm_phy_config_intr,
  }, {
@@ -69,7 +69,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	.phy_id		= PHY_ID_BCM5461,
  	.phy_id_mask	= 0xfffffff0,
  	.name		= "Broadcom BCM5461",
-@@ -694,6 +725,7 @@ module_phy_driver(broadcom_drivers);
+@@ -715,6 +746,7 @@ module_phy_driver(broadcom_drivers);
  static struct mdio_device_id __maybe_unused broadcom_tbl[] = {
  	{ PHY_ID_BCM5411, 0xfffffff0 },
  	{ PHY_ID_BCM5421, 0xfffffff0 },
