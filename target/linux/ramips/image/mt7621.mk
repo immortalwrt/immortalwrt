@@ -1357,6 +1357,7 @@ endef
 TARGET_DEVICES += raisecom_msg1500-x-00
 
 define Device/samknows_whitebox-v8
+  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := SamKnows
   DEVICE_MODEL := Whitebox 8
