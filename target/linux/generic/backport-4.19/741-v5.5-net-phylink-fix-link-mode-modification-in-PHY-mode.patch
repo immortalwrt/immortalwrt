@@ -25,7 +25,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -1215,7 +1215,13 @@ int phylink_ethtool_ksettings_set(struct
+@@ -1210,7 +1210,13 @@ int phylink_ethtool_ksettings_set(struct
  	pl->link_config.duplex = our_kset.base.duplex;
  	pl->link_config.an_enabled = our_kset.base.autoneg != AUTONEG_DISABLE;
  
@@ -40,7 +40,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  		phylink_mac_config(pl, &pl->link_config);
  		phylink_mac_an_restart(pl);
  	}
-@@ -1295,14 +1301,16 @@ int phylink_ethtool_set_pauseparam(struc
+@@ -1290,14 +1296,16 @@ int phylink_ethtool_set_pauseparam(struc
  	if (pause->tx_pause)
  		config->pause |= MLO_PAUSE_TX;
  

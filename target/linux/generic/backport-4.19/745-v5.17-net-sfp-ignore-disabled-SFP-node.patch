@@ -1,0 +1,38 @@
+From 2148927e6ed43a1667baf7c2ae3e0e05a44b51a0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Date: Wed, 19 Jan 2022 17:44:55 +0100
+Subject: net: sfp: ignore disabled SFP node
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Commit ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices
+and sfp cages") added code which finds SFP bus DT node even if the node
+is disabled with status = "disabled". Because of this, when phylink is
+created, it ends with non-null .sfp_bus member, even though the SFP
+module is not probed (because the node is disabled).
+
+We need to ignore disabled SFP bus node.
+
+Fixes: ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices and sfp cages")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Cc: stable@vger.kernel.org # 2203cbf2c8b5 ("net: sfp: move fwnode parsing into sfp-bus layer")
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/phy/sfp-bus.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -557,6 +557,11 @@ struct sfp_bus *sfp_bus_find_fwnode(stru
+ 	else if (ret < 0)
+ 		return ERR_PTR(ret);
+ 
++	if (!fwnode_device_is_available(ref.fwnode)) {
++		fwnode_handle_put(ref.fwnode);
++		return NULL;
++	}
++
+ 	bus = sfp_bus_get(ref.fwnode);
+ 	fwnode_handle_put(ref.fwnode);
+ 	if (!bus)

@@ -36,7 +36,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  };
  
  static inline void linkmode_zero(unsigned long *dst)
-@@ -1638,7 +1641,7 @@ static void phylink_sfp_detach(void *ups
+@@ -1633,7 +1636,7 @@ static void phylink_sfp_detach(void *ups
  	pl->netdev->sfp_bus = NULL;
  }
  
@@ -45,7 +45,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  			      const unsigned long *supported,
  			      const unsigned long *advertising)
  {
-@@ -1712,7 +1715,7 @@ static int phylink_sfp_config(struct phy
+@@ -1707,7 +1710,7 @@ static int phylink_sfp_config(struct phy
  			    phy_modes(config.interface));
  	}
  
@@ -54,7 +54,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  
  	if (changed && !test_bit(PHYLINK_DISABLE_STOPPED,
  				 &pl->phylink_disable_state))
-@@ -1725,15 +1728,20 @@ static int phylink_sfp_module_insert(voi
+@@ -1720,15 +1723,20 @@ static int phylink_sfp_module_insert(voi
  				     const struct sfp_eeprom_id *id)
  {
  	struct phylink *pl = upstream;
@@ -79,7 +79,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  }
  
  static int phylink_sfp_module_start(void *upstream)
-@@ -1741,10 +1749,19 @@ static int phylink_sfp_module_start(void
+@@ -1736,10 +1744,19 @@ static int phylink_sfp_module_start(void
  	struct phylink *pl = upstream;
  
  	/* If this SFP module has a PHY, start the PHY now. */
@@ -102,7 +102,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  }
  
  static void phylink_sfp_module_stop(void *upstream)
-@@ -1778,10 +1795,30 @@ static void phylink_sfp_link_up(void *up
+@@ -1773,10 +1790,30 @@ static void phylink_sfp_link_up(void *up
  static int phylink_sfp_connect_phy(void *upstream, struct phy_device *phy)
  {
  	struct phylink *pl = upstream;
