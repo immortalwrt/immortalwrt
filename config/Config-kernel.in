@@ -625,7 +625,7 @@ endif
 
 config KERNEL_NAMESPACES
 	bool "Enable kernel namespaces"
-	default y
+	default y if !SMALL_FLASH
 
 if KERNEL_NAMESPACES
 
