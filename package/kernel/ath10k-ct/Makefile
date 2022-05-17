@@ -30,7 +30,7 @@ define KernelPackage/ath10k-ct
   SUBMENU:=Wireless Drivers
   TITLE:=ath10k-ct driver optimized for CT ath10k firmware
   DEPENDS:=+kmod-mac80211 +kmod-ath +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT \
-    +@DRIVER_11W_SUPPORT @PCI_SUPPORT +kmod-hwmon-core +PACKAGE_kmod-thermal:kmod-thermal
+    +@DRIVER_11W_SUPPORT @PCI_SUPPORT +kmod-hwmon-core +kmod-thermal
   FILES:=\
 	$(PKG_BUILD_DIR)/ath10k$(CT_KVER)/ath10k_pci.ko \
 	$(PKG_BUILD_DIR)/ath10k$(CT_KVER)/ath10k_core.ko
