@@ -625,7 +625,7 @@ endif
 
 config KERNEL_NAMESPACES
 	bool "Enable kernel namespaces"
-	default n
+	default y
 
 if KERNEL_NAMESPACES
 
