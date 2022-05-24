@@ -1189,12 +1189,21 @@ dnsmasq_start()
 	config_get_bool dns_redirect "$cfg" dns_redirect 0
 	config_get dns_port "$cfg" port 53
 	if [ "$dns_redirect" = 1 ]; then
-		cat > /etc/nftables.d/11-dnsmasq-dns-redirect.nft <<EOF
-		chain dstnat_lan{
-			udp dport 53 counter redirect to :$dns_port comment "!fw4: DNSMASQ"
-		}
+		cat > /tmp/dnsmasq-dns-redirect.nft <<EOF
+table ip dnsmasq {
+	chain prerouting {
+		type nat hook prerouting priority dstnat; policy accept;
+		udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
+	}
+}
+table ip6 dnsmasq {
+	chain prerouting {
+		type nat hook prerouting priority dstnat; policy accept;
+		udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
+	}
+}
 EOF
-		fw4 reload
+		nft -f /tmp/dnsmasq-dns-redirect.nft
 	fi
 }
 
@@ -1215,8 +1224,12 @@ dnsmasq_stop()
 
 nftables_clear()
 {
-	[ -f "/etc/nftables.d/11-dnsmasq-dns-redirect.nft" ] && rm -f /etc/nftables.d/11-dnsmasq-dns-redirect.nft
-	fw4 reload
+	nft --check list table ip dnsmasq > /dev/null 2>&1
+	if [ $? -eq "0" ]; then
+		echo "Remove dnsmasq nat table"
+		nft delete table ip dnsmasq
+		nft delete table ip6 dnsmasq
+	fi
 }
 
 add_interface_trigger()
