@@ -17,6 +17,6 @@ endef
 
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES += wpad-basic-wolfssl kmod-ath5k swconfig kmod-gpio-button-hotplug
+DEFAULT_PACKAGES += wpad-basic-openssl kmod-ath5k swconfig kmod-gpio-button-hotplug
 
 $(eval $(call BuildTarget))
