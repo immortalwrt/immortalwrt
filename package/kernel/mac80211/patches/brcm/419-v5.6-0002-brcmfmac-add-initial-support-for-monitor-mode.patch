@@ -24,7 +24,14 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -11,6 +11,7 @@
+@@ -5,12 +5,14 @@
+ 
+ /* Toplevel file. Relies on dhd_linux.c to send commands to the dongle. */
+ 
++#include <linux/version.h>
+ #include <linux/kernel.h>
+ #include <linux/etherdevice.h>
+ #include <linux/module.h>
  #include <linux/vmalloc.h>
  #include <net/cfg80211.h>
  #include <net/netlink.h>
@@ -32,7 +39,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  
  #include <brcmu_utils.h>
  #include <defs.h>
-@@ -619,6 +620,82 @@ static bool brcmf_is_ibssmode(struct brc
+@@ -619,6 +621,86 @@ static bool brcmf_is_ibssmode(struct brc
  	return vif->wdev.iftype == NL80211_IFTYPE_ADHOC;
  }
  
@@ -69,8 +76,12 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 +	}
 +	ndev->type = ARPHRD_IEEE80211_RADIOTAP;
 +	ndev->ieee80211_ptr = &vif->wdev;
++#if LINUX_VERSION_IS_GEQ(4, 13, 0)
 +	ndev->needs_free_netdev = true;
 +	ndev->priv_destructor = brcmf_cfg80211_free_netdev;
++#else
++	ndev->destructor = brcmf_cfg80211_free_netdev;
++#endif
 +	SET_NETDEV_DEV(ndev, wiphy_dev(cfg->wiphy));
 +
 +	ifp = netdev_priv(ndev);
@@ -115,7 +126,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  static struct wireless_dev *brcmf_cfg80211_add_iface(struct wiphy *wiphy,
  						     const char *name,
  						     unsigned char name_assign_type,
-@@ -641,9 +718,10 @@ static struct wireless_dev *brcmf_cfg802
+@@ -641,9 +723,10 @@ static struct wireless_dev *brcmf_cfg802
  	case NL80211_IFTYPE_STATION:
  	case NL80211_IFTYPE_AP_VLAN:
  	case NL80211_IFTYPE_WDS:
@@ -127,7 +138,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	case NL80211_IFTYPE_AP:
  		wdev = brcmf_ap_add_vif(wiphy, name, params);
  		break;
-@@ -826,9 +904,10 @@ int brcmf_cfg80211_del_iface(struct wiph
+@@ -826,9 +909,10 @@ int brcmf_cfg80211_del_iface(struct wiph
  	case NL80211_IFTYPE_STATION:
  	case NL80211_IFTYPE_AP_VLAN:
  	case NL80211_IFTYPE_WDS:
@@ -139,7 +150,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	case NL80211_IFTYPE_AP:
  		return brcmf_cfg80211_del_ap_iface(wiphy, wdev);
  	case NL80211_IFTYPE_P2P_CLIENT:
-@@ -6477,9 +6556,10 @@ static int brcmf_setup_ifmodes(struct wi
+@@ -6477,9 +6561,10 @@ static int brcmf_setup_ifmodes(struct wi
  	struct ieee80211_iface_limit *c0_limits = NULL;
  	struct ieee80211_iface_limit *p2p_limits = NULL;
  	struct ieee80211_iface_limit *mbss_limits = NULL;
@@ -152,7 +163,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	mbss = brcmf_feat_is_enabled(ifp, BRCMF_FEAT_MBSS);
  	p2p = brcmf_feat_is_enabled(ifp, BRCMF_FEAT_P2P);
  	rsdb = brcmf_feat_is_enabled(ifp, BRCMF_FEAT_RSDB);
-@@ -6493,6 +6573,8 @@ static int brcmf_setup_ifmodes(struct wi
+@@ -6493,6 +6578,8 @@ static int brcmf_setup_ifmodes(struct wi
  	wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) |
  				 BIT(NL80211_IFTYPE_ADHOC) |
  				 BIT(NL80211_IFTYPE_AP);
@@ -161,7 +172,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	if (p2p)
  		wiphy->interface_modes |= BIT(NL80211_IFTYPE_P2P_CLIENT) |
  					  BIT(NL80211_IFTYPE_P2P_GO) |
-@@ -6500,18 +6582,18 @@ static int brcmf_setup_ifmodes(struct wi
+@@ -6500,18 +6587,18 @@ static int brcmf_setup_ifmodes(struct wi
  
  	c = 0;
  	i = 0;
@@ -186,7 +197,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	if (p2p) {
  		c0_limits[i].max = 1;
  		c0_limits[i++].types = BIT(NL80211_IFTYPE_P2P_DEVICE);
-@@ -6560,14 +6642,20 @@ static int brcmf_setup_ifmodes(struct wi
+@@ -6560,14 +6647,20 @@ static int brcmf_setup_ifmodes(struct wi
  	if (mbss) {
  		c++;
  		i = 0;
