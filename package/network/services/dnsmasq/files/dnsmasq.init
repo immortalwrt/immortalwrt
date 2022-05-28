@@ -1189,14 +1189,14 @@ dnsmasq_start()
 	config_get_bool dns_redirect "$cfg" dns_redirect 0
 	config_get dns_port "$cfg" port 53
 	if [ "$dns_redirect" = 1 ]; then
-		cat > /tmp/dnsmasq-dns-redirect.nft <<EOF
-table inet dnsmasq {
-	chain prerouting {
-		type nat hook prerouting priority -105; policy accept;
-		meta nfproto {ipv4, ipv6} udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
-	}
-}
-EOF
+		cat <<-EOF > /tmp/dnsmasq-dns-redirect.nft
+			table inet dnsmasq {
+				chain prerouting {
+					type nat hook prerouting priority -105; policy accept;
+					meta nfproto {ipv4, ipv6} udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
+				}
+			}
+		EOF
 		nft -f /tmp/dnsmasq-dns-redirect.nft
 	fi
 }
