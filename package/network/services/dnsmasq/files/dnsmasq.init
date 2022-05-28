@@ -1193,7 +1193,7 @@ dnsmasq_start()
 table inet dnsmasq {
 	chain prerouting {
 		type nat hook prerouting priority -105; policy accept;
-		udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
+		meta nfproto {ipv4, ipv6} udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
 	}
 }
 EOF
