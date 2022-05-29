@@ -64,7 +64,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
  #include <linux/rtnetlink.h>
  #include <linux/slab.h>
  
-@@ -519,45 +520,63 @@ static void sfp_upstream_clear(struct sf
+@@ -519,45 +520,68 @@ static void sfp_upstream_clear(struct sf
  }
  
  /**
@@ -121,6 +121,11 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 +		return NULL;
 +	else if (ret < 0)
 +		return ERR_PTR(ret);
++
++	if (!fwnode_device_is_available(ref.fwnode)) {
++		fwnode_handle_put(ref.fwnode);
++		return NULL;
++	}
 +
 +	bus = sfp_bus_get(ref.fwnode);
 +	fwnode_handle_put(ref.fwnode);
