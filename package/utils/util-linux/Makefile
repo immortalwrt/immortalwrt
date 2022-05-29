@@ -261,6 +261,18 @@ define Package/hwclock/description
  hwclock is a tool for accessing the Hardware Clock
 endef
 
+define Package/ipcs
+$(call Package/util-linux/Default)
+  TITLE:=show information on IPC facilities
+endef
+
+define Package/ipcs/description
+  ipcs shows information on the inter-process communication facilities for
+  which the calling process has read access. By default it shows information
+  about all three resources: shared memory segments, message queues, and
+  semaphore arrays.
+endef
+
 define Package/logger
 $(call Package/util-linux/Default)
   TITLE:=a shell command interface to the syslog system log module
@@ -311,6 +323,26 @@ endef
 
 define Package/lscpu/description
  lscpu displays information about the CPU architecture
+endef
+
+define Package/lslocks
+$(call Package/util-linux/Default)
+  TITLE:=list local system locks
+  DEPENDS:= +libmount +libsmartcols
+endef
+
+define Package/lslocks/description
+ lslocks lists information about all the currently held file locks in a Linux system
+endef
+
+define Package/lsns
+$(call Package/util-linux/Default)
+  TITLE:=list system namespaces
+  DEPENDS:= +libblkid +libmount +libsmartcols
+endef
+
+define Package/lsns/description
+ lsns lists information about all namespaces and their processes
 endef
 
 define Package/more
@@ -437,6 +469,15 @@ endef
 
 define Package/swap-utils/description
  contains: mkswap, swaplabel
+endef
+
+define Package/taskset
+$(call Package/util-linux/Default)
+  TITLE:=set or retrieve a process's CPU affinity
+endef
+
+define Package/taskset/description
+ contains: taskset
 endef
 
 define Package/unshare
@@ -686,6 +727,11 @@ define Package/hwclock/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/hwclock $(1)/usr/sbin/
 endef
 
+define Package/ipcs/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ipcs $(1)/usr/bin/
+endef
+
 define Package/logger/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/logger $(1)/usr/bin/util-linux-logger
@@ -709,6 +755,16 @@ endef
 define Package/lscpu/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lscpu $(1)/usr/bin/
+endef
+
+define Package/lslocks/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lslocks $(1)/usr/bin/
+endef
+
+define Package/lsns/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lsns $(1)/usr/bin/
 endef
 
 define Package/more/install
@@ -777,6 +833,11 @@ define Package/swap-utils/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/swaplabel $(1)/usr/sbin/
 endef
 
+define Package/taskset/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/taskset $(1)/usr/bin/
+endef
+
 define Package/unshare/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/unshare $(1)/usr/bin/
@@ -828,11 +889,14 @@ $(eval $(call BuildPackage,flock))
 $(eval $(call BuildPackage,fstrim))
 $(eval $(call BuildPackage,getopt))
 $(eval $(call BuildPackage,hwclock))
+$(eval $(call BuildPackage,ipcs))
 $(eval $(call BuildPackage,logger))
 $(eval $(call BuildPackage,look))
 $(eval $(call BuildPackage,losetup))
 $(eval $(call BuildPackage,lsblk))
 $(eval $(call BuildPackage,lscpu))
+$(eval $(call BuildPackage,lslocks))
+$(eval $(call BuildPackage,lsns))
 $(eval $(call BuildPackage,more))
 $(eval $(call BuildPackage,mcookie))
 $(eval $(call BuildPackage,mount-utils))
@@ -845,6 +909,7 @@ $(eval $(call BuildPackage,script-utils))
 $(eval $(call BuildPackage,setterm))
 $(eval $(call BuildPackage,sfdisk))
 $(eval $(call BuildPackage,swap-utils))
+$(eval $(call BuildPackage,taskset))
 $(eval $(call BuildPackage,unshare))
 $(eval $(call BuildPackage,uuidd))
 $(eval $(call BuildPackage,uuidgen))

@@ -44,7 +44,7 @@ define Device/friendlyarm_nanopi-r1s-h5
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := Nanopi R1S H5
   DEVICE_PACKAGES := kmod-gpio-button-hotplug kmod-rtl8189es \
-	kmod-usb2 kmod-usb-net-rtl8152 wpad-basic
+	kmod-usb2 kmod-usb-net-rtl8152 wpad-basic-openssl
   SUPPORTED_DEVICES:=nanopi-r1s-h5
   $(Device/sun50i-h5)
 endef

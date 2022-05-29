@@ -26,7 +26,7 @@ define Device/tplink_tdw8970
   TPLINK_HWID := 0x89700001
   TPLINK_HWREV := 1
   IMAGE_SIZE := 7680k
-  DEVICE_PACKAGES:= kmod-ath9k wpad-basic kmod-usb-dwc2 kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES:= kmod-ath9k wpad-basic-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += TDW8970
   DEFAULT := n
 endef
@@ -41,7 +41,7 @@ define Device/tplink_tdw8980
   TPLINK_HWID := 0x89800001
   TPLINK_HWREV := 14
   IMAGE_SIZE := 7680k
-  DEVICE_PACKAGES:= kmod-ath9k kmod-owl-loader wpad-basic kmod-usb-dwc2 kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES:= kmod-ath9k kmod-owl-loader wpad-basic-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += TDW8980
   DEFAULT := n
 endef
@@ -56,7 +56,7 @@ define Device/tplink_vr200
   TPLINK_HWID := 0x63e64801
   TPLINK_HWREV := 0x53
   IMAGE_SIZE := 15808k
-  DEVICE_PACKAGES:= kmod-mt76x0e wpad-basic kmod-usb-dwc2 kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES:= kmod-mt76x0e wpad-basic-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += VR200
 endef
 TARGET_DEVICES += tplink_vr200
@@ -70,7 +70,7 @@ define Device/tplink_vr200v
   TPLINK_HWID := 0x73b70801
   TPLINK_HWREV := 0x2f
   IMAGE_SIZE := 15808k
-  DEVICE_PACKAGES:= kmod-mt76x0e wpad-basic kmod-usb-dwc2 kmod-usb-ledtrig-usbport kmod-ltq-tapi kmod-ltq-vmmc
+  DEVICE_PACKAGES:= kmod-mt76x0e wpad-basic-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport kmod-ltq-tapi kmod-ltq-vmmc
   SUPPORTED_DEVICES += VR200v
 endef
 TARGET_DEVICES += tplink_vr200v
