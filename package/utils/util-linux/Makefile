@@ -552,7 +552,6 @@ MESON_ARGS += \
 	-Dsystemd=disabled \
 	-Dtinfo=disabled \
 	-Dcryptsetup=disabled \
-	-Dlibutil=disabled \
 	-Dlibutempter=disabled \
 	-Dlibpcre2-posix=disabled \
 	-Dlibuser=disabled \
