@@ -22,7 +22,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -1127,10 +1127,6 @@ static int sun8i_dwmac_probe(struct plat
+@@ -1128,10 +1128,6 @@ static int sun8i_dwmac_probe(struct plat
  	if (ret)
  		return ret;
  
@@ -33,7 +33,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	gmac = devm_kzalloc(dev, sizeof(*gmac), GFP_KERNEL);
  	if (!gmac)
  		return -ENOMEM;
-@@ -1194,11 +1190,15 @@ static int sun8i_dwmac_probe(struct plat
+@@ -1195,11 +1191,15 @@ static int sun8i_dwmac_probe(struct plat
  	ret = of_get_phy_mode(dev->of_node);
  	if (ret < 0)
  		return -EINVAL;
@@ -50,7 +50,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	plat_dat->rx_coe = STMMAC_RX_COE_TYPE2;
  	plat_dat->tx_coe = 1;
  	plat_dat->has_sun8i = true;
-@@ -1211,7 +1211,7 @@ static int sun8i_dwmac_probe(struct plat
+@@ -1212,7 +1212,7 @@ static int sun8i_dwmac_probe(struct plat
  
  	ret = sun8i_dwmac_init(pdev, plat_dat->bsp_priv);
  	if (ret)
@@ -59,7 +59,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
  	if (ret)
-@@ -1234,7 +1234,7 @@ static int sun8i_dwmac_probe(struct plat
+@@ -1235,7 +1235,7 @@ static int sun8i_dwmac_probe(struct plat
  	} else {
  		ret = sun8i_dwmac_reset(priv);
  		if (ret)
@@ -68,7 +68,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	}
  
  	return ret;
-@@ -1242,9 +1242,14 @@ dwmac_mux:
+@@ -1243,9 +1243,14 @@ dwmac_mux:
  	reset_control_put(gmac->rst_ephy);
  	clk_put(gmac->ephy_clk);
  	sun8i_dwmac_unset_syscon(gmac);

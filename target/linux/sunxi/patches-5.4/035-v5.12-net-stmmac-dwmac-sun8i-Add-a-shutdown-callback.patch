@@ -16,7 +16,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -1270,6 +1270,15 @@ static int sun8i_dwmac_remove(struct pla
+@@ -1271,6 +1271,15 @@ static int sun8i_dwmac_remove(struct pla
  	return 0;
  }
  
@@ -32,7 +32,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  static const struct of_device_id sun8i_dwmac_match[] = {
  	{ .compatible = "allwinner,sun8i-h3-emac",
  		.data = &emac_variant_h3 },
-@@ -1290,6 +1299,7 @@ MODULE_DEVICE_TABLE(of, sun8i_dwmac_matc
+@@ -1291,6 +1300,7 @@ MODULE_DEVICE_TABLE(of, sun8i_dwmac_matc
  static struct platform_driver sun8i_dwmac_driver = {
  	.probe  = sun8i_dwmac_probe,
  	.remove = sun8i_dwmac_remove,

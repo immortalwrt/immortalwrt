@@ -36,7 +36,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -882,22 +882,23 @@ static int sun8i_dwmac_register_mdio_mux
+@@ -883,22 +883,23 @@ static int sun8i_dwmac_register_mdio_mux
  	return ret;
  }
  
@@ -65,7 +65,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  			 "Current syscon value is not the default %x (expect %x)\n",
  			 val, reg);
  
-@@ -910,9 +911,9 @@ static int sun8i_dwmac_set_syscon(struct
+@@ -911,9 +912,9 @@ static int sun8i_dwmac_set_syscon(struct
  		/* Force EPHY xtal frequency to 24MHz. */
  		reg |= H3_EPHY_CLK_SEL;
  
@@ -77,7 +77,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  			return ret;
  		}
  		/* of_mdio_parse_addr returns a valid (0 ~ 31) PHY
-@@ -928,17 +929,17 @@ static int sun8i_dwmac_set_syscon(struct
+@@ -929,17 +930,17 @@ static int sun8i_dwmac_set_syscon(struct
  
  	if (!of_property_read_u32(node, "allwinner,tx-delay-ps", &val)) {
  		if (val % 100) {
@@ -98,7 +98,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  				val);
  			return -EINVAL;
  		}
-@@ -946,17 +947,17 @@ static int sun8i_dwmac_set_syscon(struct
+@@ -947,17 +948,17 @@ static int sun8i_dwmac_set_syscon(struct
  
  	if (!of_property_read_u32(node, "allwinner,rx-delay-ps", &val)) {
  		if (val % 100) {
@@ -119,7 +119,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  				val);
  			return -EINVAL;
  		}
-@@ -967,7 +968,7 @@ static int sun8i_dwmac_set_syscon(struct
+@@ -968,7 +969,7 @@ static int sun8i_dwmac_set_syscon(struct
  	if (gmac->variant->support_rmii)
  		reg &= ~SYSCON_RMII_EN;
  
@@ -128,7 +128,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	case PHY_INTERFACE_MODE_MII:
  		/* default */
  		break;
-@@ -981,8 +982,8 @@ static int sun8i_dwmac_set_syscon(struct
+@@ -982,8 +983,8 @@ static int sun8i_dwmac_set_syscon(struct
  		reg |= SYSCON_RMII_EN | SYSCON_ETCS_EXT_GMII;
  		break;
  	default:
@@ -139,7 +139,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		return -EINVAL;
  	}
  
-@@ -1007,8 +1008,6 @@ static void sun8i_dwmac_exit(struct plat
+@@ -1008,8 +1009,6 @@ static void sun8i_dwmac_exit(struct plat
  			sun8i_dwmac_unpower_internal_phy(gmac);
  	}
  
@@ -148,7 +148,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	clk_disable_unprepare(gmac->tx_clk);
  
  	if (gmac->regulator)
-@@ -1043,16 +1042,11 @@ static struct mac_device_info *sun8i_dwm
+@@ -1044,16 +1043,11 @@ static struct mac_device_info *sun8i_dwm
  {
  	struct mac_device_info *mac;
  	struct stmmac_priv *priv = ppriv;
@@ -165,7 +165,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	mac->pcsr = priv->ioaddr;
  	mac->mac = &sun8i_dwmac_ops;
  	mac->dma = &sun8i_dwmac_dma_ops;
-@@ -1209,10 +1203,14 @@ static int sun8i_dwmac_probe(struct plat
+@@ -1210,10 +1204,14 @@ static int sun8i_dwmac_probe(struct plat
  	plat_dat->tx_fifo_size = 4096;
  	plat_dat->rx_fifo_size = 16384;
  
@@ -181,7 +181,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
  	if (ret)
  		goto dwmac_exit;
-@@ -1241,11 +1239,12 @@ static int sun8i_dwmac_probe(struct plat
+@@ -1242,11 +1240,12 @@ static int sun8i_dwmac_probe(struct plat
  dwmac_mux:
  	reset_control_put(gmac->rst_ephy);
  	clk_put(gmac->ephy_clk);
@@ -195,7 +195,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  dwmac_deconfig:
  	stmmac_remove_config_dt(pdev, plat_dat);
  
-@@ -1266,6 +1265,7 @@ static int sun8i_dwmac_remove(struct pla
+@@ -1267,6 +1266,7 @@ static int sun8i_dwmac_remove(struct pla
  	}
  
  	stmmac_pltfr_remove(pdev);

@@ -50,3 +50,4 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 +				regulator-ramp-delay = <2500>;
  				regulator-name = "vdd-gpu";
  			};
+ 

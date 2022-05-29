@@ -164,7 +164,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  struct rtnl_link {
  	rtnl_doit_func		doit;
-@@ -4373,7 +4373,9 @@ int ndo_dflt_bridge_getlink(struct sk_bu
+@@ -4375,7 +4375,9 @@ int ndo_dflt_bridge_getlink(struct sk_bu
  	    brport_nla_put_flag(skb, flags, mask,
  				IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD) ||
  	    brport_nla_put_flag(skb, flags, mask,
