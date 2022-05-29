@@ -1,6 +1,6 @@
---- a/net/netfilter/xt_FLOWOFFLOAD.c	2022-04-20 07:17:12.515991000 +0800
-+++ b/net/netfilter/xt_FLOWOFFLOAD.c	2022-04-20 07:45:03.874095949 +0800
-@@ -222,13 +222,31 @@
+--- a/net/netfilter/xt_FLOWOFFLOAD.c
++++ b/net/netfilter/xt_FLOWOFFLOAD.c
+@@ -222,13 +222,31 @@ xt_flowoffload_skip(struct sk_buff *skb,
  	return false;
  }
  
@@ -37,7 +37,7 @@
  }
  
  static void
-@@ -242,9 +260,7 @@
+@@ -242,9 +260,7 @@ xt_flowoffload_route_check_path(struct n
  	struct net_device_path_stack stack;
  	enum net_device_path_type prev_type;
  	struct net_device *dev = dst->dev;
@@ -47,7 +47,7 @@
  	int i;
  
  	route->tuple[!dir].in.ifindex = dev->ifindex;
-@@ -253,24 +269,10 @@
+@@ -253,24 +269,10 @@ xt_flowoffload_route_check_path(struct n
  	if (route->tuple[dir].xmit_type == FLOW_OFFLOAD_XMIT_XFRM)
  		return;
  
@@ -74,7 +74,7 @@
  	if (dev_fill_forward_path(dev, route->tuple[dir].out.h_dest, &stack) ||
  	    !stack.num_paths)
  		return;
-@@ -281,14 +283,12 @@
+@@ -281,14 +283,12 @@ xt_flowoffload_route_check_path(struct n
  		int n_encaps = route->tuple[!dir].in.num_encaps;
  
  		dev = (struct net_device *)path->dev;
@@ -89,7 +89,7 @@
  
  		switch (path->type) {
  		case DEV_PATH_PPPOE:
-@@ -302,9 +302,10 @@
+@@ -302,9 +302,10 @@ xt_flowoffload_route_check_path(struct n
  			route->tuple[!dir].in.num_encaps++;
  			route->tuple[!dir].in.encap[n_encaps].id = path->encap.id;
  			route->tuple[!dir].in.encap[n_encaps].proto = path->encap.proto;
@@ -103,10 +103,9 @@
  			break;
  		case DEV_PATH_BRIDGE:
  			switch (path->bridge.vlan_mode) {
- 			 			
---- a/drivers/net/ppp/pppoe.c	2022-04-18 12:53:13.150031000 +0800
-+++ b/drivers/net/ppp/pppoe.c	2022-04-18 14:42:40.856174129 +0800
-@@ -987,6 +987,7 @@
+--- a/drivers/net/ppp/pppoe.c
++++ b/drivers/net/ppp/pppoe.c
+@@ -987,6 +987,7 @@ static int pppoe_fill_forward_path(struc
  	path->type = DEV_PATH_PPPOE;
  	path->encap.proto = htons(ETH_P_PPP_SES);
  	path->encap.id = be16_to_cpu(po->num);
@@ -114,10 +113,9 @@
  	memcpy(path->encap.h_dest, po->pppoe_pa.remote, ETH_ALEN);
  	path->dev = ctx->dev;
  	ctx->dev = dev;
-
---- a/include/linux/netdevice.h	2022-04-18 12:53:16.722194000 +0800
-+++ b/include/linux/netdevice.h	2022-04-18 15:05:42.459170231 +0800
-@@ -843,6 +843,7 @@
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -842,6 +842,7 @@ struct net_device_path {
  		struct {
  			u16		id;
  			__be16		proto;

@@ -47,7 +47,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  	struct reset_control *rst_ephy;
  	const struct emac_variant *variant;
  	struct regmap_field *regmap_field;
-@@ -549,9 +549,9 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+@@ -549,9 +551,9 @@ static int sun8i_dwmac_init(struct platf
  	struct sunxi_priv_data *gmac = priv;
  	int ret;
  
@@ -59,7 +59,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  		return ret;
  	}
  
-@@ -1024,7 +1024,7 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+@@ -1025,7 +1027,7 @@ static void sun8i_dwmac_exit(struct plat
  
  	clk_disable_unprepare(gmac->tx_clk);
  
@@ -68,7 +68,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  }
  
  static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
-@@ -1152,9 +1152,9 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+@@ -1153,9 +1155,9 @@ static int sun8i_dwmac_probe(struct plat
  	}
  
  	/* Optional regulator for PHY */

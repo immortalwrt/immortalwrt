@@ -15,7 +15,7 @@
  	depends on MFD_SYSCON
 --- a/drivers/gpio/Makefile
 +++ b/drivers/gpio/Makefile
-@@ -127,6 +127,7 @@ obj-$(CONFIG_GPIO_RDC321X)		+= gpio-rdc3
+@@ -128,6 +128,7 @@ obj-$(CONFIG_GPIO_RDC321X)		+= gpio-rdc3
  obj-$(CONFIG_GPIO_REALTEK_OTTO)		+= gpio-realtek-otto.o
  obj-$(CONFIG_GPIO_REG)			+= gpio-reg.o
  obj-$(CONFIG_GPIO_RTL8231)		+= gpio-rtl8231.o

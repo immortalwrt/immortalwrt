@@ -22,7 +22,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
 
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -549,12 +549,10 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+@@ -549,12 +549,10 @@ static int sun8i_dwmac_init(struct platf
  	struct sunxi_priv_data *gmac = priv;
  	int ret;
  
@@ -39,7 +39,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  	}
  
  	ret = clk_prepare_enable(gmac->tx_clk);
-@@ -1026,8 +1024,7 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+@@ -1027,8 +1025,7 @@ static void sun8i_dwmac_exit(struct plat
  
  	clk_disable_unprepare(gmac->tx_clk);
  
@@ -49,7 +49,7 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  }
  
  static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
-@@ -1155,12 +1152,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+@@ -1156,12 +1153,12 @@ static int sun8i_dwmac_probe(struct plat
  	}
  
  	/* Optional regulator for PHY */

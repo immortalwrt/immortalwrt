@@ -28,8 +28,6 @@ Signed-off-by: Ondrej Jirman <megous@megous.com>
  .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 40 +++++++++++++++++++
  1 file changed, 40 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-index 15c9dd8c447955..e9c7cadf8b21c2 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
 @@ -15,6 +15,7 @@
