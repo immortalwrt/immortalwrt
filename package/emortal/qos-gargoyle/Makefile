@@ -24,6 +24,8 @@ endef
 define Build/Configure
 endef
 
+TARGET_LDFLAGS+= -lmnl
+
 define Build/Compile
 	-$(MAKE) -C $(PKG_BUILD_DIR) clean
 	$(MAKE) -C $(PKG_BUILD_DIR) \
@@ -48,9 +50,11 @@ define Package/qos-gargoyle/install
 endef
 
 define Package/qos-gargoyle/prerm
-	$${IPKG_INSTROOT}/etc/init.d/qos_gargoyle stop 2>/dev/null
-	$${IPKG_INSTROOT}/etc/init.d/qos_gargoyle disable 2>/dev/null
-	ls >/dev/null 2>&1
+[ -n $${PKG_INSTROOT} ] || {
+	/etc/init.d/qos_gargoyle stop 2>/dev/null
+	/etc/init.d/qos_gargoyle disable 2>/dev/null
+	exit 0
+}
 endef
 
 $(eval $(call BuildPackage,qos-gargoyle))
