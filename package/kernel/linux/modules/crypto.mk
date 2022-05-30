@@ -466,7 +466,7 @@ define KernelPackage/crypto-lib-blake2s
   FILES:= \
 	$(LINUX_DIR)/lib/crypto/libblake2s.ko \
 	$(LINUX_DIR)/lib/crypto/libblake2s-generic.ko
-  $(call AddDepends/crypto,+PACKAGE_kmod-crypto-hash:kmod-crypto-hash)
+  $(call AddDepends/crypto,+PACKAGE_kmod-crypto-hash:kmod-crypto-hash @KERNEL_5_4)
 endef
 
 define KernelPackage/crypto-lib-blake2s/config
