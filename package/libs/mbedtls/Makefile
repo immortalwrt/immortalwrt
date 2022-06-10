@@ -45,6 +45,7 @@ $(call Package/mbedtls/Default)
   CATEGORY:=Libraries
   SUBMENU:=SSL
   TITLE+= (library)
+  PKGFLAGS:=nonshared
   ABI_VERSION:=12
 endef
 
@@ -71,8 +72,6 @@ config LIBMBEDTLS_HAVE_ARMV8CE_AES
 	 Use of the ARMv8 Crypto Extensions greatly increase performance
 	 (up to 4x faster on AES-GCM while 10x faster on raw AES).
 
-	 Related instructions should be included in all modern Aarch64
-	 devices, except some wastes like Broadcom.
 	 If you don't sure, say Y here.
 
 config LIBMBEDTLS_HAVE_SSE2
