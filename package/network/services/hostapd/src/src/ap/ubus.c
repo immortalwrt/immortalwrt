@@ -445,6 +445,12 @@ hostapd_bss_get_status(struct ubus_context *ctx, struct ubus_object *obj,
 	blobmsg_add_u32(&b, "channel", channel);
 	blobmsg_add_u32(&b, "op_class", op_class);
 	blobmsg_add_u32(&b, "beacon_interval", hapd->iconf->beacon_int);
+#ifdef CONFIG_IEEE80211AX
+	blobmsg_add_u32(&b, "bss_color", hapd->iface->conf->he_op.he_bss_color_disabled ? -1 :
+					 hapd->iface->conf->he_op.he_bss_color);
+#else
+	blobmsg_add_u32(&b, "bss_color", -1);
+#endif
 
 	snprintf(phy_name, 17, "%s", hapd->iface->phy);
 	blobmsg_add_string(&b, "phy", phy_name);
@@ -888,10 +894,13 @@ hostapd_switch_chan(struct ubus_context *ctx, struct ubus_object *obj,
 				css.freq_params.ht_enabled,
 				css.freq_params.vht_enabled,
 				css.freq_params.he_enabled,
+				css.freq_params.eht_enabled,
 				css.freq_params.sec_channel_offset,
 				chwidth, seg0, seg1,
 				iconf->vht_capab,
 				mode ? &mode->he_capab[IEEE80211_MODE_AP] :
+				NULL,
+				mode ? &mode->eht_capab[IEEE80211_MODE_AP] :
 				NULL);
 
 	for (i = 0; i < hapd->iface->num_bss; i++) {
