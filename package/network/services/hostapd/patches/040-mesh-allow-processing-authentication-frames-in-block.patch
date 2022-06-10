@@ -16,7 +16,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/src/ap/ieee802_11.c
 +++ b/src/ap/ieee802_11.c
-@@ -2527,15 +2527,6 @@ static void handle_auth(struct hostapd_d
+@@ -3761,15 +3761,6 @@ static void handle_auth(struct hostapd_d
  				       seq_ctrl);
  			return;
  		}
@@ -29,6 +29,6 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 -			return;
 -		}
 -#endif /* CONFIG_MESH */
- 	} else {
- #ifdef CONFIG_MESH
- 		if (hapd->conf->mesh & MESH_ENABLED) {
+ #ifdef CONFIG_PASN
+ 		if (auth_alg == WLAN_AUTH_PASN &&
+ 		    (sta->flags & WLAN_STA_ASSOC)) {
