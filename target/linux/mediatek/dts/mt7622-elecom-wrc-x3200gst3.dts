@@ -273,110 +273,100 @@
 	};
 };
 
-&bch {
-	status = "okay";
-};
-
-&snfi {
+&snand {
+	mediatek,quad-spi;
 	pinctrl-names = "default";
 	pinctrl-0 = <&serial_nand_pins>;
 	status = "okay";
 
-	flash@0 {
-		compatible = "spi-nand";
-		reg = <0>;
-		spi-tx-bus-width = <4>;
-		spi-rx-bus-width = <4>;
-		nand-ecc-engine = <&snfi>;
-		mediatek,bmt-v2;
-		mediatek,bmt-table-size = <0x1000>;
-		mediatek,bmt-remap-range = <0x0 0x8c0000>,
-					   <0x1bc0000 0x30c0000>;
+	mediatek,bmt-v2;
+	mediatek,bmt-table-size = <0x1000>;
+	mediatek,bmt-remap-range = <0x0 0x8c0000>,
+				   <0x1bc0000 0x30c0000>;
 
-		partitions {
-			compatible = "fixed-partitions";
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		partition@0 {
+			label = "Preloader";
+			reg = <0x0 0x80000>;
+			read-only;
+		};
+
+		partition@80000 {
+			label = "ATF";
+			reg = <0x80000 0x40000>;
+			read-only;
+		};
+
+		partition@c0000 {
+			label = "u-boot";
+			reg = <0xc0000 0x80000>;
+			read-only;
+		};
+
+		partition@140000 {
+			label = "u-boot-env";
+			reg = <0x140000 0x80000>;
+			read-only;
+		};
+
+		factory: partition@1c0000 {
+			label = "factory";
+			reg = <0x1c0000 0x100000>;
+			read-only;
+
+			compatible = "nvmem-cells";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partition@0 {
-				label = "Preloader";
-				reg = <0x0 0x80000>;
-				read-only;
+			macaddr_factory_4: macaddr@4 {
+			reg = <0x4 0x6>;
 			};
 
-			partition@80000 {
-				label = "ATF";
-				reg = <0x80000 0x40000>;
-				read-only;
+			macaddr_factory_7fff4: macaddr@7fff4 {
+				reg = <0x7fff4 0x6>;
 			};
 
-			partition@c0000 {
-				label = "u-boot";
-				reg = <0xc0000 0x80000>;
-				read-only;
+			macaddr_factory_7fffa: macaddr@7fffa {
+				reg = <0x7fffa 0x6>;
 			};
+		};
 
-			partition@140000 {
-				label = "u-boot-env";
-				reg = <0x140000 0x80000>;
-				read-only;
-			};
+		partition@2c0000 {
+			label = "kernel";
+			reg = <0x2c0000 0x600000>;
+		};
 
-			factory: partition@1c0000 {
-				label = "factory";
-				reg = <0x1c0000 0x100000>;
-				read-only;
+		partition@8c0000 {
+			label = "ubi";
+			reg = <0x8c0000 0x1300000>;
+		};
 
-				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
+		partition@1bc0000 {
+			label = "tm_pattern";
+			reg = <0x1bc0000 0x500000>;
+			read-only;
+		};
 
-				macaddr_factory_4: macaddr@4 {
-					reg = <0x4 0x6>;
-				};
+		partition@20c0000 {
+			label = "tm_key";
+			reg = <0x20c0000 0x100000>;
+			read-only;
+		};
 
-				macaddr_factory_7fff4: macaddr@7fff4 {
-					reg = <0x7fff4 0x6>;
-				};
+		partition@21c0000 {
+			label = "user_data";
+			reg = <0x21c0000 0xf00000>;
+			read-only;
+		};
 
-				macaddr_factory_7fffa: macaddr@7fffa {
-					reg = <0x7fffa 0x6>;
-				};
-			};
-
-			partition@2c0000 {
-				label = "kernel";
-				reg = <0x2c0000 0x600000>;
-			};
-
-			partition@8c0000 {
-				label = "ubi";
-				reg = <0x8c0000 0x1300000>;
-			};
-
-			partition@1bc0000 {
-				label = "tm_pattern";
-				reg = <0x1bc0000 0x500000>;
-				read-only;
-			};
-
-			partition@20c0000 {
-				label = "tm_key";
-				reg = <0x20c0000 0x100000>;
-				read-only;
-			};
-
-			partition@21c0000 {
-				label = "user_data";
-				reg = <0x21c0000 0xf00000>;
-				read-only;
-			};
-
-			partition@30c0000 {
-				label = "reserved";
-				reg = <0x30c0000 0x4f40000>;
-				read-only;
-			};
+		partition@30c0000 {
+			label = "reserved";
+			reg = <0x30c0000 0x4f40000>;
+			read-only;
 		};
 	};
 };
