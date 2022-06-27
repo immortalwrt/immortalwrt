@@ -209,7 +209,7 @@ define Device/adtran_bsap1880
   IMAGE_SIZE := 11200k
   IMAGES += kernel.bin rootfs.bin
   IMAGE/kernel.bin := append-kernel
-  IMAGE/rootfs.bin := append-rootfs | pad-rootfs
+  IMAGE/rootfs.bin := append-rootfs | pad-rootfs | pad-to $$(BLOCKSIZE)
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | \
 	check-size | sysupgrade-tar rootfs=$$$$@ | append-metadata
 endef
@@ -863,7 +863,8 @@ define Device/dlink_dap-2xxx
   IMAGE/factory.img := append-kernel | pad-offset 6144k 160 | \
 	append-rootfs | wrgg-pad-rootfs | mkwrggimg | check-size
   IMAGE/sysupgrade.bin := append-kernel | mkwrggimg | \
-	pad-to $$$$(BLOCKSIZE) | append-rootfs | check-size | append-metadata
+	pad-to $$$$(BLOCKSIZE) | append-rootfs | wrgg-pad-rootfs | \
+	check-size | append-metadata
   KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma
   KERNEL_INITRAMFS := $$(KERNEL) | mkwrggimg
 endef
@@ -1465,16 +1466,25 @@ define Device/jjplus_ja76pf2
   SOC := ar7161
   DEVICE_VENDOR := jjPlus
   DEVICE_MODEL := JA76PF2
-  DEVICE_PACKAGES += -kmod-ath9k -swconfig -wpad-basic-wolfssl -uboot-envtools fconfig
-  IMAGES += kernel.bin rootfs.bin
-  IMAGE/kernel.bin := append-kernel
-  IMAGE/rootfs.bin := append-rootfs | pad-rootfs
-  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | combined-image | \
-	check-size | append-metadata
-  KERNEL := kernel-bin | append-dtb | lzma | pad-to $$(BLOCKSIZE)
+  DEVICE_PACKAGES += -kmod-ath9k -swconfig -wpad-basic-wolfssl -uboot-envtools fconfig kmod-hwmon-lm75
+  LOADER_TYPE := bin
+  LOADER_FLASH_OFFS := 0x60000
+  COMPILE := loader-$(1).bin
+  COMPILE/loader-$(1).bin := loader-okli-compile | lzma | pad-to 128k
+  ARTIFACTS := loader.bin
+  ARTIFACT/loader.bin := append-loader-okli $(1)
+  IMAGES += firmware.bin
+  IMAGE/firmware.bin := append-kernel | uImage lzma -M 0x4f4b4c49 | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | pad-to $$$$(BLOCKSIZE) | check-size
+  IMAGE/sysupgrade.bin := $$(IMAGE/firmware.bin) | \
+	sysupgrade-tar kernel=$$$$(KDIR)/loader-$(1).bin rootfs=$$$$@ | append-metadata
+  KERNEL := kernel-bin | append-dtb | lzma
   KERNEL_INITRAMFS := kernel-bin | append-dtb
-  IMAGE_SIZE := 16000k
-  SUPPORTED_DEVICES += ja76pf2
+  IMAGE_SIZE := 15872k
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := Partition design has changed compared to older versions (19.07 and 21.02) \
+	due to kernel drivers restrictions. Upgrade via sysupgrade mechanism is one way operation. \
+	Downgrading OpenWrt version will involve usage of bootloader command line interface.
 endef
 TARGET_DEVICES += jjplus_ja76pf2
 

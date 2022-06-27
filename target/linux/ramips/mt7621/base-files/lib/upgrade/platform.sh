@@ -53,6 +53,7 @@ platform_do_upgrade() {
 	ampedwireless,ally-r1900k|\
 	asus,rt-ac65p|\
 	asus,rt-ac85p|\
+	asus,rt-ax53u|\
 	beeline,smartbox-flash|\
 	dlink,dir-1960-a1|\
 	dlink,dir-2640-a1|\
@@ -114,6 +115,7 @@ platform_do_upgrade() {
 	zyxel,nr7101)
 		fw_setenv CheckBypass 0
 		fw_setenv Image1Stable 0
+		[ "$(fw_printenv -n BootingFlag)" = "0" ] || fw_setenv BootingFlag 0
 		CI_KERNPART="Kernel"
 		nand_do_upgrade "$1"
 		;;
