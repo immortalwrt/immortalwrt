@@ -1,4 +1,4 @@
-From b6e3ad4c0bb845a05d73ef1be46ffb73517d1565 Mon Sep 17 00:00:00 2001
+From 58c89e8768711a959fdc6e953df3ea2254ff93c1 Mon Sep 17 00:00:00 2001
 From: Syrone Wong <wong.syrone@gmail.com>
 Date: Sat, 9 Apr 2022 00:38:51 +0800
 Subject: [PATCH] nftables: add fullcone expression support
@@ -42,7 +42,7 @@ index 75df968..beab9d8 100644
   * enum nft_redir_attributes - nf_tables redirect expression netlink attributes
   *
 diff --git a/include/statement.h b/include/statement.h
-index 0622104..481cc3b 100644
+index 2a2d300..cbd48dd 100644
 --- a/include/statement.h
 +++ b/include/statement.h
 @@ -122,6 +122,7 @@ enum nft_nat_etypes {
@@ -54,10 +54,10 @@ index 0622104..481cc3b 100644
  };
  
 diff --git a/src/netlink_delinearize.c b/src/netlink_delinearize.c
-index 6619b41..6d9a262 100644
+index 068c3bb..8513113 100644
 --- a/src/netlink_delinearize.c
 +++ b/src/netlink_delinearize.c
-@@ -1365,6 +1365,53 @@ static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
+@@ -1369,6 +1369,53 @@ static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
  	stmt_free(stmt);
  }
  
@@ -111,7 +111,7 @@ index 6619b41..6d9a262 100644
  static void netlink_parse_redir(struct netlink_parse_ctx *ctx,
  				const struct location *loc,
  				const struct nftnl_expr *nle)
-@@ -1783,6 +1830,7 @@ static const struct expr_handler netlink_parsers[] = {
+@@ -1787,6 +1834,7 @@ static const struct expr_handler netlink_parsers[] = {
  	{ .name = "tproxy",	.parse = netlink_parse_tproxy },
  	{ .name = "notrack",	.parse = netlink_parse_notrack },
  	{ .name = "masq",	.parse = netlink_parse_masq },
@@ -120,7 +120,7 @@ index 6619b41..6d9a262 100644
  	{ .name = "dup",	.parse = netlink_parse_dup },
  	{ .name = "queue",	.parse = netlink_parse_queue },
 diff --git a/src/netlink_linearize.c b/src/netlink_linearize.c
-index 34a6e1a..261dc75 100644
+index c8bbcb7..505eafa 100644
 --- a/src/netlink_linearize.c
 +++ b/src/netlink_linearize.c
 @@ -1140,6 +1140,13 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
@@ -138,7 +138,7 @@ index 34a6e1a..261dc75 100644
  		nle = alloc_nft_expr("redir");
  
 diff --git a/src/parser_bison.y b/src/parser_bison.y
-index d67d16b..f8d8d22 100644
+index ca5c488..ec9fc9b 100644
 --- a/src/parser_bison.y
 +++ b/src/parser_bison.y
 @@ -571,6 +571,7 @@ int nft_lex(void *, void *, void *);
@@ -160,15 +160,15 @@ index d67d16b..f8d8d22 100644
  %type <val>			nf_nat_flags nf_nat_flag offset_opt
  %type <stmt>			tproxy_stmt
  %destructor { stmt_free($$); }	tproxy_stmt
-@@ -2821,6 +2822,7 @@ stmt			:	verdict_stmt
+@@ -2853,6 +2854,7 @@ stmt			:	verdict_stmt
  			|	queue_stmt
  			|	ct_stmt
- 			|	masq_stmt
-+			|	fullcone_stmt
- 			|	redir_stmt
- 			|	dup_stmt
- 			|	fwd_stmt
-@@ -3720,6 +3722,28 @@ masq_stmt_args		:	TO 	COLON	stmt_expr
+ 			|	masq_stmt	close_scope_nat
++			|	fullcone_stmt	close_scope_nat
+ 			|	redir_stmt	close_scope_nat
+ 			|	dup_stmt	close_scope_dup
+ 			|	fwd_stmt	close_scope_fwd
+@@ -3753,6 +3755,28 @@ masq_stmt_args		:	TO 	COLON	stmt_expr
  			}
  			;
  
@@ -198,25 +198,26 @@ index d67d16b..f8d8d22 100644
  			|	redir_stmt_alloc
  			;
 diff --git a/src/scanner.l b/src/scanner.l
-index 9a189ec..929ed0f 100644
+index 2154281..c389860 100644
 --- a/src/scanner.l
 +++ b/src/scanner.l
-@@ -409,6 +409,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
- "snat"			{ return SNAT; }
- "dnat"			{ return DNAT; }
- "masquerade"		{ return MASQUERADE; }
-+"fullcone"		{ return FULLCONE; }
- "redirect"		{ return REDIRECT; }
+@@ -453,6 +453,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
+ "snat"			{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return SNAT; }
+ "dnat"			{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return DNAT; }
+ "masquerade"		{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return MASQUERADE; }
++"fullcone"		{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return FULLCONE; }
+ "redirect"		{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return REDIRECT; }
  "random"		{ return RANDOM; }
- "fully-random"		{ return FULLY_RANDOM; }
+ <SCANSTATE_STMT_NAT>{
 diff --git a/src/statement.c b/src/statement.c
-index 03c0acf..1d57323 100644
+index 30caf9c..f4866c2 100644
 --- a/src/statement.c
 +++ b/src/statement.c
-@@ -649,6 +649,7 @@ const char *nat_etype2str(enum nft_nat_etypes type)
+@@ -650,6 +650,7 @@ const char *nat_etype2str(enum nft_nat_etypes type)
  		[NFT_NAT_SNAT]	= "snat",
  		[NFT_NAT_DNAT]	= "dnat",
  		[NFT_NAT_MASQ]	= "masquerade",
 +		[NFT_NAT_FULLCONE] = "fullcone",
  		[NFT_NAT_REDIR]	= "redirect",
  	};
+ 
