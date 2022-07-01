@@ -19,6 +19,7 @@ ath79_setup_interfaces()
 	araknis,an-700-ap-i-ac|\
 	arduino,yun|\
 	aruba,ap-105|\
+	asus,rp-ac51|\
 	asus,rp-ac66|\
 	avm,fritz1750e|\
 	avm,fritz300e|\
@@ -126,6 +127,11 @@ ath79_setup_interfaces()
 	ocedo,ursus|\
 	ubnt,unifi-ap-outdoor-plus)
 		ucidef_set_interface_lan "eth0 eth1"
+		;;
+	asus,pl-ac56)
+		# port 6 (internal) is the power-line port
+		ucidef_add_switch "switch0" \
+			"0@eth0" "1:lan:1" "2:lan:2" "3:lan:3" "6:lan:4"
 		;;
 	atheros,db120)
 		ucidef_add_switch "switch0" \
