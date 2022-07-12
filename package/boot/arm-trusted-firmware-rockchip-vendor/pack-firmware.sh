@@ -25,7 +25,7 @@ esac
 
 set -x
 if [ "$ACTION" == "build" ]; then
-	mkimage -n "$VARIANT" -T "rksd" -d "$PKG_BUILD_DIR/bin/$DDR" "$PKG_BUILD_DIR/$VARIANT-idbloader.bin"
+	"$PKG_BUILD_DIR"/tools/mkimage -n "$VARIANT" -T "rksd" -d "$PKG_BUILD_DIR/bin/$DDR" "$PKG_BUILD_DIR/$VARIANT-idbloader.bin"
 	cat "$PKG_BUILD_DIR/bin/$LOADER" >> "$PKG_BUILD_DIR/$VARIANT-idbloader.bin"
 	"$PKG_BUILD_DIR/tools/trust_merger" --replace "bl31.elf" "$PKG_BUILD_DIR/bin/$ATF" "$PKG_BUILD_DIR/trust.ini"
 elif [ "$ACTION" == "install" ]; then
