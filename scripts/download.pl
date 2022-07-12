@@ -198,6 +198,8 @@ foreach my $mirror (@ARGV) {
 		}
 	} elsif ($mirror =~ /^\@OPENWRT$/) {
 		# use OpenWrt source server directly
+	} elsif ($mirror =~ /^\@IMMORTALWRT$/) {
+		# use ImmortalWrt source server directly
 	} elsif ($mirror =~ /^\@DEBIAN\/(.+)$/) {
 		push @mirrors, "https://mirrors.tencent.com/debian/$1";
 		push @mirrors, "https://mirrors.aliyun.com/debian/$1";
