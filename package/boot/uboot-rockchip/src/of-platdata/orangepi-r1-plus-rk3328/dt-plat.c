@@ -20,8 +20,9 @@
  *   0: clock_controller_at_ff440000 rockchip_rk3328_cru
  *   1: dmc                  rockchip_rk3328_dmc
  *   2: mmc_at_ff500000      rockchip_rk3288_dw_mshc
- *   3: serial_at_ff130000   ns16550_serial
- *   4: syscon_at_ff100000   rockchip_rk3328_grf
+ *   3: serial_at_ff130000   rockchip_uart
+ *   4: spi_at_ff190000      rockchip_rk3328_spi
+ *   5: syscon_at_ff100000   rockchip_rk3328_grf
  * ---  -------------------- --------------------
  */
 
@@ -114,11 +115,8 @@ U_BOOT_DRVINFO(mmc_at_ff500000) = {
 	.parent_idx	= -1,
 };
 
-/*
- * Node /serial@ff130000 index 3
- * driver ns16550_serial parent None
- */
-static struct dtd_ns16550_serial dtv_serial_at_ff130000 = {
+/* Node /serial@ff130000 index 3 */
+static struct dtd_rockchip_uart dtv_serial_at_ff130000 = {
 	.clock_frequency	= 0x16e3600,
 	.clocks			= {
 			{0, {40}},
@@ -133,14 +131,33 @@ static struct dtd_ns16550_serial dtv_serial_at_ff130000 = {
 	.reg_shift		= 0x2,
 };
 U_BOOT_DRVINFO(serial_at_ff130000) = {
-	.name		= "ns16550_serial",
+	.name		= "rockchip_uart",
 	.plat		= &dtv_serial_at_ff130000,
 	.plat_size	= sizeof(dtv_serial_at_ff130000),
 	.parent_idx	= -1,
 };
 
+/* Node /spi@ff190000 index 4 */
+static struct dtd_rockchip_rk3328_spi dtv_spi_at_ff190000 = {
+	.clocks			= {
+			{0, {32}},
+			{0, {209}},},
+	.dma_names		= {"tx", "rx"},
+	.dmas			= {0x10, 0x8, 0x10, 0x9},
+	.interrupts		= {0x0, 0x31, 0x4},
+	.pinctrl_0		= {0x2e, 0x2f, 0x30, 0x31},
+	.pinctrl_names		= "default",
+	.reg			= {0xff190000, 0x1000},
+};
+U_BOOT_DRVINFO(spi_at_ff190000) = {
+	.name		= "rockchip_rk3328_spi",
+	.plat		= &dtv_spi_at_ff190000,
+	.plat_size	= sizeof(dtv_spi_at_ff190000),
+	.parent_idx	= -1,
+};
+
 /*
- * Node /syscon@ff100000 index 4
+ * Node /syscon@ff100000 index 5
  * driver rockchip_rk3328_grf parent None
  */
 static struct dtd_rockchip_rk3328_grf dtv_syscon_at_ff100000 = {

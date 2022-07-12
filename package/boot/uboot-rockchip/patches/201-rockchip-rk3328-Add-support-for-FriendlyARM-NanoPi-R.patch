@@ -1,8 +1,6 @@
-diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index d3e89ca3ba..d5f64ac432 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -108,6 +108,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -124,6 +124,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
@@ -10,9 +8,6 @@ index d3e89ca3ba..d5f64ac432 100644
  	rk3328-nanopi-r2s.dtb \
  	rk3328-orangepi-r1-plus.dtb \
  	rk3328-roc-cc.dtb \
-diff --git a/arch/arm/dts/rk3328-nanopi-r2c-u-boot.dtsi b/arch/arm/dts/rk3328-nanopi-r2c-u-boot.dtsi
-new file mode 100644
-index 0000000000..c2e86d0f0e
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2c-u-boot.dtsi
 @@ -0,0 +1,7 @@
@@ -23,9 +18,6 @@ index 0000000000..c2e86d0f0e
 + */
 +
 +#include "rk3328-nanopi-r2s-u-boot.dtsi"
-diff --git a/arch/arm/dts/rk3328-nanopi-r2c.dts b/arch/arm/dts/rk3328-nanopi-r2c.dts
-new file mode 100644
-index 0000000000..adf91a0306
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2c.dts
 @@ -0,0 +1,47 @@
@@ -76,14 +68,15 @@ index 0000000000..adf91a0306
 +&wan_led {
 +	label = "nanopi-r2c:green:wan";
 +};
-diff --git a/configs/nanopi-r2c-rk3328_defconfig b/configs/nanopi-r2c-rk3328_defconfig
-new file mode 100644
-index 0000000000..7bc7a3274f
 --- /dev/null
 +++ b/configs/nanopi-r2c-rk3328_defconfig
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,103 @@
 +CONFIG_ARM=y
++CONFIG_SKIP_LOWLEVEL_INIT=y
++CONFIG_HAS_CUSTOM_SYS_INIT_SP_ADDR=y
++CONFIG_CUSTOM_SYS_INIT_SP_ADDR=0x300000
 +CONFIG_ARCH_ROCKCHIP=y
++CONFIG_COUNTER_FREQUENCY=24000000
 +CONFIG_SYS_TEXT_BASE=0x00200000
 +CONFIG_SPL_GPIO_SUPPORT=y
 +CONFIG_NR_DRAM_BANKS=1
@@ -99,6 +92,7 @@ index 0000000000..7bc7a3274f
 +CONFIG_DEBUG_UART_CLOCK=24000000
 +CONFIG_DEBUG_UART=y
 +CONFIG_TPL_SYS_MALLOC_F_LEN=0x800
++CONFIG_SYS_LOAD_ADDR=0x800800
 +# CONFIG_ANDROID_BOOT_IMAGE is not set
 +CONFIG_FIT=y
 +CONFIG_FIT_VERBOSE=y

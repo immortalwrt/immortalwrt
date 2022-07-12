@@ -17,7 +17,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 
 --- a/scripts/Makefile.spl
 +++ b/scripts/Makefile.spl
-@@ -354,8 +354,6 @@ $(platdata-hdr) $(u-boot-spl-platdata_c)
+@@ -364,8 +364,6 @@ $(platdata-hdr) $(u-boot-spl-platdata_c)
  	@# of OF_PLATDATA_INST and this might change between builds. Leaving old
  	@# ones around is confusing and it is possible that switching the
  	@# setting again will use the old one instead of regenerating it.

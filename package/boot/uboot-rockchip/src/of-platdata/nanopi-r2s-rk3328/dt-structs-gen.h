@@ -7,18 +7,6 @@
 
 #include <stdbool.h>
 #include <linux/libfdt.h>
-struct dtd_ns16550_serial {
-	fdt32_t		clock_frequency;
-	struct phandle_1_arg clocks[2];
-	const char *	dma_names[2];
-	fdt32_t		dmas[4];
-	fdt32_t		interrupts[3];
-	fdt32_t		pinctrl_0;
-	const char *	pinctrl_names;
-	fdt64_t		reg[2];
-	fdt32_t		reg_io_width;
-	fdt32_t		reg_shift;
-};
 struct dtd_rockchip_rk3288_dw_mshc {
 	fdt32_t		bus_width;
 	bool		cap_sd_highspeed;
@@ -48,4 +36,16 @@ struct dtd_rockchip_rk3328_dmc {
 };
 struct dtd_rockchip_rk3328_grf {
 	fdt64_t		reg[2];
+};
+struct dtd_rockchip_uart {
+	fdt32_t		clock_frequency;
+	struct phandle_1_arg clocks[2];
+	const char *	dma_names[2];
+	fdt32_t		dmas[4];
+	fdt32_t		interrupts[3];
+	fdt32_t		pinctrl_0;
+	const char *	pinctrl_names;
+	fdt64_t		reg[2];
+	fdt32_t		reg_io_width;
+	fdt32_t		reg_shift;
 };
