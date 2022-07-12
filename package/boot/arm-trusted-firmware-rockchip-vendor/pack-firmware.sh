@@ -8,13 +8,13 @@ STAGING_DIR_IMAGE="$4"
 
 case "$VARIANT" in
 "rk3328")
-	ATF="rk33/rk322xh_bl31_v1.46.elf"
-	DDR="rk33/rk3328_ddr_333MHz_v1.17.bin"
+	ATF="rk33/rk322xh_bl31_v1.49.elf"
+	DDR="rk33/rk3328_ddr_333MHz_v1.19.bin"
 	LOADER="rk33/rk322xh_miniloader_v2.50.bin"
 	;;
 "rk3399")
 	ATF="rk33/rk3399_bl31_v1.35.elf"
-	DDR="rk33/rk3399_ddr_800MHz_v1.25.bin"
+	DDR="rk33/rk3399_ddr_800MHz_v1.27.bin"
 	LOADER="rk33/rk3399_miniloader_v1.26.bin"
 	;;
 *)
