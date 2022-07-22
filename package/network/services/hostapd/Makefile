@@ -153,7 +153,7 @@ define Package/hostapd-openssl
 $(call Package/hostapd/Default,$(1))
   TITLE+= (full)
   VARIANT:=full-openssl
-  DEPENDS+=+libopenssl
+  DEPENDS+=+PACKAGE_hostapd-openssl:libopenssl
 endef
 
 Package/hostapd-openssl/description = $(Package/hostapd/description)
@@ -162,7 +162,7 @@ define Package/hostapd-wolfssl
 $(call Package/hostapd/Default,$(1))
   TITLE+= (full)
   VARIANT:=full-wolfssl
-  DEPENDS+=+libwolfssl
+  DEPENDS+=+PACKAGE_hostapd-wolfssl:libwolfssl
 endef
 
 Package/hostapd-wolfssl/description = $(Package/hostapd/description)
@@ -216,7 +216,7 @@ define Package/wpad-openssl
 $(call Package/wpad/Default,$(1))
   TITLE+= (full)
   VARIANT:=wpad-full-openssl
-  DEPENDS+=+libopenssl
+  DEPENDS+=+PACKAGE_wpad-openssl:libopenssl
 endef
 
 Package/wpad-openssl/description = $(Package/wpad/description)
@@ -225,7 +225,7 @@ define Package/wpad-wolfssl
 $(call Package/wpad/Default,$(1))
   TITLE+= (full)
   VARIANT:=wpad-full-wolfssl
-  DEPENDS+=+libwolfssl
+  DEPENDS+=+PACKAGE_wpad-wolfssl:libwolfssl
 endef
 
 Package/wpad-wolfssl/description = $(Package/wpad/description)
@@ -244,7 +244,7 @@ define Package/wpad-basic-wolfssl
 $(call Package/wpad/Default,$(1))
   TITLE+= (wolfSSL, 11r, 11w)
   VARIANT:=wpad-basic-wolfssl
-  DEPENDS+=+libwolfssl
+  DEPENDS+=+PACKAGE_wpad-basic-wolfssl:libwolfssl
 endef
 
 define Package/wpad-basic-wolfssl/description
@@ -275,14 +275,14 @@ endef
 define Package/wpad-mesh-openssl
 $(call Package/wpad-mesh,$(1))
   DEPENDS+=+libopenssl
-  VARIANT:=wpad-mesh-openssl
+  VARIANT:=PACKAGE_wpad-mesh-openssl:wpad-mesh-openssl
 endef
 
 Package/wpad-mesh-openssl/description = $(Package/wpad-mesh/description)
 
 define Package/wpad-mesh-wolfssl
 $(call Package/wpad-mesh,$(1))
-  DEPENDS+=+libwolfssl
+  DEPENDS+=+PACKAGE_wpad-mesh-wolfssl:libwolfssl
   VARIANT:=wpad-mesh-wolfssl
 endef
 
@@ -309,13 +309,13 @@ endef
 define Package/wpa-supplicant-openssl
 $(call Package/wpa-supplicant/Default,$(1))
   VARIANT:=supplicant-full-openssl
-  DEPENDS+=+libopenssl
+  DEPENDS+=+PACKAGE_wpa-supplicant-openssl:libopenssl
 endef
 
 define Package/wpa-supplicant-wolfssl
 $(call Package/wpa-supplicant/Default,$(1))
   VARIANT:=supplicant-full-wolfssl
-  DEPENDS+=+libwolfssl
+  DEPENDS+=+PACKAGE_wpa-supplicant-wolfssl:libwolfssl
 endef
 
 define Package/wpa-supplicant/config
@@ -339,13 +339,13 @@ endef
 define Package/wpa-supplicant-mesh-openssl
 $(call Package/wpa-supplicant-mesh/Default,$(1))
   VARIANT:=supplicant-mesh-openssl
-  DEPENDS+=+libopenssl
+  DEPENDS+=+PACKAGE_wpa-supplicant-mesh-openssl:libopenssl
 endef
 
 define Package/wpa-supplicant-mesh-wolfssl
 $(call Package/wpa-supplicant-mesh/Default,$(1))
   VARIANT:=supplicant-mesh-wolfssl
-  DEPENDS+=+libwolfssl
+  DEPENDS+=+PACKAGE_wpa-supplicant-mesh-wolfssl:libwolfssl
 endef
 
 define Package/wpa-supplicant-basic
@@ -408,7 +408,7 @@ define Package/eapol-test-openssl
   SUBMENU:=WirelessAPD
   VARIANT:=supplicant-full-openssl
   CONFLICTS:=$(filter-out eapol-test-openssl ,$(EAPOL_TEST_PROVIDERS))
-  DEPENDS:=$(DRV_DEPENDS) +libubus +libopenssl
+  DEPENDS:=$(DRV_DEPENDS) +libubus +PACKAGE_eapol-test-openssl:libopenssl
   PROVIDES:=eapol-test
 endef
 
@@ -419,7 +419,7 @@ define Package/eapol-test-wolfssl
   SUBMENU:=WirelessAPD
   VARIANT:=supplicant-full-wolfssl
   CONFLICTS:=$(filter-out eapol-test-openssl ,$(filter-out eapol-test-wolfssl ,$(EAPOL_TEST_PROVIDERS)))
-  DEPENDS:=$(DRV_DEPENDS) +libubus +libwolfssl
+  DEPENDS:=$(DRV_DEPENDS) +libubus +PACKAGE_eapol-test-wolfssl:libwolfssl
   PROVIDES:=eapol-test
 endef
 
