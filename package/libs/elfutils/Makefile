@@ -81,7 +81,7 @@ HOST_CONFIGURE_VARS += \
 CONFIGURE_VARS += \
 	ac_cv_search__obstack_free=yes
 
-TARGET_CFLAGS += -D_GNU_SOURCE -Wno-unused-result -Wno-format-nonliteral
+TARGET_CFLAGS += -D_GNU_SOURCE -Wno-use-after-free -Wno-unused-result -Wno-format-nonliteral
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
