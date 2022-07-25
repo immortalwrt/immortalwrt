@@ -3,7 +3,7 @@ FEATURES += minor nand
 KERNELNAME := vmlinux vmlinuz
 IMAGES_DIR := ../../..
 
-DEFAULT_PACKAGES += wpad-basic-wolfssl
+DEFAULT_PACKAGES += wpad-basic-openssl
 
 KERNEL_TESTING_PATCHVER:=5.15
 

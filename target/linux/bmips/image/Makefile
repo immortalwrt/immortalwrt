@@ -249,8 +249,8 @@ define Device/Default
   DEVICE_LOADADDR :=
 endef
 
-ATH9K_PACKAGES := kmod-ath9k wpad-basic-wolfssl
-B43_PACKAGES := kmod-b43 wpad-basic-wolfssl
+ATH9K_PACKAGES := kmod-ath9k wpad-basic-openssl
+B43_PACKAGES := kmod-b43 wpad-basic-openssl
 USB1_PACKAGES := kmod-usb-ohci kmod-ledtrig-usbdev
 USB2_PACKAGES := $(USB1_PACKAGES) kmod-usb2
 

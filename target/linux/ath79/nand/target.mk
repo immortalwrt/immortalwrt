@@ -2,7 +2,7 @@ BOARDNAME := Generic devices with NAND flash
 
 FEATURES += nand
 
-DEFAULT_PACKAGES += wpad-basic-wolfssl
+DEFAULT_PACKAGES += wpad-basic-openssl
 
 KERNEL_TESTING_PATCHVER:=5.15
 
