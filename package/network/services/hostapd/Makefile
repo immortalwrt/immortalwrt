@@ -189,7 +189,7 @@ define Package/hostapd-basic-openssl
 $(call Package/hostapd/Default,$(1))
   TITLE+= (WPA-PSK, 11r and 11w)
   VARIANT:=basic-openssl
-  DEPENDS+=+PACKAGE_hostapd-openssl:libopenssl
+  DEPENDS+=+PACKAGE_hostapd-basic-openssl:libopenssl
 endef
 
 define Package/hostapd-basic-openssl/description
