@@ -32,6 +32,7 @@ PKG_CONFIG_DEPENDS:=\
 	CONFIG_WOLFSSL_HAS_DH \
 	CONFIG_WOLFSSL_HAS_DTLS \
 	CONFIG_WOLFSSL_HAS_ECC25519 \
+	CONFIG_WOLFSSL_HAS_ECC448 \
 	CONFIG_WOLFSSL_HAS_OCSP \
 	CONFIG_WOLFSSL_HAS_OPENVPN CONFIG_WOLFSSL_ALT_NAMES \
 	CONFIG_WOLFSSL_HAS_SESSION_TICKET \
@@ -60,7 +61,6 @@ endef
 define Package/libwolfssl
 $(call Package/libwolfssl/Default)
   TITLE:=wolfSSL library
-  PKGFLAGS:=nonshared
   MENU:=1
   PROVIDES:=libcyassl
   DEPENDS:=+WOLFSSL_HAS_DEVCRYPTO:kmod-cryptodev +WOLFSSL_HAS_AFALG:kmod-crypto-user
@@ -119,6 +119,7 @@ CONFIGURE_ARGS += \
 	--$(if $(CONFIG_WOLFSSL_HAS_SESSION_TICKET),enable,disable)-session-ticket \
 	--$(if $(CONFIG_WOLFSSL_HAS_DTLS),enable,disable)-dtls \
 	--$(if $(CONFIG_WOLFSSL_HAS_ECC25519),enable,disable)-curve25519 \
+	--$(if $(CONFIG_WOLFSSL_HAS_ECC448),enable,disable)-curve448 \
 	--$(if $(CONFIG_WOLFSSL_HAS_AFALG),enable,disable)-afalg \
 	--$(if $(CONFIG_WOLFSSL_HAS_OPENVPN),enable,disable)-openvpn \
 	--enable-devcrypto=$(if $(CONFIG_WOLFSSL_HAS_DEVCRYPTO_CBC),cbc\
