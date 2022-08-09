@@ -189,6 +189,22 @@ define Device/asiarf_ap7621-nv1
 endef
 TARGET_DEVICES += asiarf_ap7621-nv1
 
+define Device/asus_rp-ac56
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := ASUS
+  DEVICE_MODEL := RP-AC56
+  IMAGE_SIZE := 16000k
+  BLOCKSIZE := 64k
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 \
+	kmod-i2c-ralink kmod-sound-mt7620
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | append-rootfs | pad-rootfs | check-size
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
+        check-size | append-metadata
+endef
+TARGET_DEVICES += asus_rp-ac56
+
 define Device/asus_rp-ac87
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
@@ -2243,6 +2259,25 @@ define Device/zio_freezio
 	kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += zio_freezio
+
+define Device/zyxel_lte3301-plus
+  $(Device/dsa-migration)
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  DEVICE_VENDOR := ZyXEL
+  DEVICE_MODEL := LTE3301-PLUS
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3 \
+	uboot-envtools kmod-usb-ledtrig-usbport kmod-usb-net-qmi-wwan \
+	kmod-usb-serial-option uqmi
+  KERNEL := $(KERNEL_DTB) | uImage lzma | \
+	zytrx-header $$(DEVICE_MODEL) $$(VERSION_DIST)-$$(REVISION)
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | uImage lzma | \
+	zytrx-header $$(DEVICE_MODEL) 9.99(ABQU.1)$$(VERSION_DIST)-recovery
+  KERNEL_INITRAMFS_SUFFIX := -recovery.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += zyxel_lte3301-plus
 
 define Device/zyxel_nr7101
   $(Device/dsa-migration)

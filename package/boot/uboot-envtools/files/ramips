@@ -47,7 +47,8 @@ zte,mf283plus)
 h3c,tx1800-plus|\
 h3c,tx1801-plus|\
 h3c,tx1806|\
-jcg,q20)
+jcg,q20|\
+netgear,wax202)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
 	;;
 hootoo,ht-tm05|\
@@ -80,6 +81,9 @@ xiaomi,redmi-router-ac2100)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x20000"
 	ubootenv_add_uci_sys_config "/dev/mtd2" "0x0" "0x4000" "0x20000"
 	;;
+zyxel,lte3301-plus)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x80000"
+	;;
 zyxel,nr7101)
 	idx="$(find_mtd_index Config)"
 	[ -n "$idx" ] && \
@@ -94,6 +98,6 @@ xiaomi,mi-router-cr6609)
 esac
 
 config_load ubootenv
-config_foreach ubootenv_add_app_config ubootenv
+config_foreach ubootenv_add_app_config
 
 exit 0
