@@ -1,0 +1,155 @@
+From 0666ae3d27fd831e46ee9d984f4271b4ec330f5f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20Men=C5=A1=C3=ADk?= <pemensik@redhat.com>
+Date: Mon, 18 Jul 2022 13:30:07 +0200
+Subject: [PATCH 1/4] Introduce whine_realloc
+
+Move few patters with whine_malloc, if (successful) copy+free, to a new
+whine_realloc. It should do the same thing, but with a help from OS it
+can avoid unnecessary copy and free if allocation of more data after
+current data is possible.
+
+Added few setting remanining space to 0, because realloc does not use
+calloc like whine_malloc does. There is no advantage of zeroing what we
+will immediately overwrite. Zero only remaining space.
+---
+ src/cache.c    |  4 +---
+ src/dnsmasq.h  |  1 +
+ src/lease.c    |  8 +-------
+ src/poll.c     |  9 +++++----
+ src/rrfilter.c | 16 ++++++----------
+ src/util.c     | 10 ++++++++++
+ 6 files changed, 24 insertions(+), 24 deletions(-)
+
+diff --git a/src/cache.c b/src/cache.c
+index a99d70d..8ed4740 100644
+--- a/src/cache.c
++++ b/src/cache.c
+@@ -1676,10 +1676,8 @@ int cache_make_stat(struct txt_record *t)
+ 	      {
+ 		/* expand buffer if necessary */
+ 		newlen = bytes_needed + 1 + bufflen - bytes_avail;
+-		if (!(new = whine_malloc(newlen)))
++		if (!(new = whine_realloc(buff, newlen)))
+ 		  return 0;
+-		memcpy(new, buff, bufflen);
+-		free(buff);
+ 		p = new + (p - buff);
+ 		lenp = p - 1;
+ 		buff = new;
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index a8937ce..990d27f 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -1396,6 +1396,7 @@ void *safe_malloc(size_t size);
+ void safe_strncpy(char *dest, const char *src, size_t size);
+ void safe_pipe(int *fd, int read_noblock);
+ void *whine_malloc(size_t size);
++void *whine_realloc(void *ptr, size_t size);
+ int sa_len(union mysockaddr *addr);
+ int sockaddr_isequal(const union mysockaddr *s1, const union mysockaddr *s2);
+ int hostname_order(const char *a, const char *b);
+diff --git a/src/lease.c b/src/lease.c
+index 81477d5..8a7b975 100644
+--- a/src/lease.c
++++ b/src/lease.c
+@@ -1180,17 +1180,11 @@ void lease_add_extradata(struct dhcp_lease *lease, unsigned char *data, unsigned
+   if ((lease->extradata_size - lease->extradata_len) < (len + 1))
+     {
+       size_t newsz = lease->extradata_len + len + 100;
+-      unsigned char *new = whine_malloc(newsz);
++      unsigned char *new = whine_realloc(lease->extradata, newsz);
+   
+       if (!new)
+ 	return;
+       
+-      if (lease->extradata)
+-	{
+-	  memcpy(new, lease->extradata, lease->extradata_len);
+-	  free(lease->extradata);
+-	}
+-
+       lease->extradata = new;
+       lease->extradata_size = newsz;
+     }
+diff --git a/src/poll.c b/src/poll.c
+index 29b33a0..0e5964d 100644
+--- a/src/poll.c
++++ b/src/poll.c
+@@ -105,14 +105,15 @@ void poll_listen(int fd, short event)
+ 
+ 	   arrsize = (arrsize == 0) ? 64 : arrsize * 2;
+ 
+-	   if (!(new = whine_malloc(arrsize * sizeof(struct pollfd))))
++	   if (!(new = whine_realloc(pollfds, arrsize * sizeof(struct pollfd))))
+ 	     return;
+ 
+ 	   if (pollfds)
+ 	     {
+-	       memcpy(new, pollfds, i * sizeof(struct pollfd));
+-	       memcpy(&new[i+1], &pollfds[i], (nfds - i) * sizeof(struct pollfd));
+-	       free(pollfds);
++	       memmove(&new[i+1], &new[i], (nfds - i) * sizeof(struct pollfd));
++	       /* clear remaining space with zeroes. */
++	       if (nfds+1 < arrsize)
++	         memset(new+nfds+1, 0, arrsize-nfds-1);
+ 	     }
+ 	   
+ 	   pollfds = new;
+diff --git a/src/rrfilter.c b/src/rrfilter.c
+index f02f5a5..42d9c21 100644
+--- a/src/rrfilter.c
++++ b/src/rrfilter.c
+@@ -159,7 +159,7 @@ static int check_rrs(unsigned char *p, struct dns_header *header, size_t plen, i
+ /* mode may be remove EDNS0 or DNSSEC RRs or remove A or AAAA from answer section. */
+ size_t rrfilter(struct dns_header *header, size_t plen, int mode)
+ {
+-  static unsigned char **rrs;
++  static unsigned char **rrs = NULL;
+   static int rr_sz = 0;
+ 
+   unsigned char *p = (unsigned char *)(header+1);
+@@ -339,15 +339,11 @@ int expand_workspace(unsigned char ***wkspc, int *szp, int new)
+     return 0;
+ 
+   new += 5;
+-  
+-  if (!(p = whine_malloc(new * sizeof(unsigned char *))))
+-    return 0;  
+-  
+-  if (old != 0 && *wkspc)
+-    {
+-      memcpy(p, *wkspc, old * sizeof(unsigned char *));
+-      free(*wkspc);
+-    }
++
++  if (!(p = whine_realloc(*wkspc, new * sizeof(unsigned char *))))
++    return 0;
++
++  memset(p+old, 0, new-old);
+   
+   *wkspc = p;
+   *szp = new;
+diff --git a/src/util.c b/src/util.c
+index ae514d2..140a354 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -336,6 +336,16 @@ void *whine_malloc(size_t size)
+   return ret;
+ }
+ 
++void *whine_realloc(void *ptr, size_t size)
++{
++  void *ret = realloc(ptr, size);
++
++  if (!ret)
++    my_syslog(LOG_ERR, _("failed to reallocate %d bytes"), (int) size);
++
++  return ret;
++}
++
+ int sockaddr_isequal(const union mysockaddr *s1, const union mysockaddr *s2)
+ {
+   if (s1->sa.sa_family == s2->sa.sa_family)
+-- 
+2.37.1
+
