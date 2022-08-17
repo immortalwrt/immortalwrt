@@ -431,10 +431,7 @@ define KernelPackage/usb-dwc2
   TITLE:=DWC2 USB controller driver
   DEPENDS:=+USB_GADGET_SUPPORT:kmod-usb-gadget +kmod-usb-roles
   KCONFIG:= \
-	CONFIG_USB_PCI=y \
 	CONFIG_USB_DWC2 \
-	CONFIG_USB_DWC2_PCI \
-	CONFIG_USB_DWC2_PLATFORM \
 	CONFIG_USB_DWC2_DEBUG=n \
 	CONFIG_USB_DWC2_VERBOSE=n \
 	CONFIG_USB_DWC2_TRACK_MISSED_SOFS=n \
@@ -451,6 +448,26 @@ define KernelPackage/usb-dwc2/description
 endef
 
 $(eval $(call KernelPackage,usb-dwc2))
+
+
+define KernelPackage/usb-dwc2-pci
+  TITLE:=DWC2 USB controller driver (PCI)
+  DEPENDS:=@PCI_SUPPORT +kmod-usb-dwc2 +kmod-usb-phy-nop
+  KCONFIG:= \
+	CONFIG_USB_PCI=y \
+	CONFIG_USB_DWC2_PCI
+  FILES:= \
+	$(LINUX_DIR)/drivers/usb/dwc2/dwc2_pci.ko
+  AUTOLOAD:=$(call AutoLoad,54,dwc2_pci,1)
+  $(call AddDepends/usb)
+endef
+
+define KernelPackage/usb-dwc2-pci/description
+  The Designware USB2.0 PCI interface module for controllers
+  connected to a PCI bus.
+endef
+
+$(eval $(call KernelPackage,usb-dwc2-pci))
 
 
 define KernelPackage/usb-dwc3
@@ -1139,7 +1156,7 @@ $(eval $(call KernelPackage,usb-net-aqc111))
 
 define KernelPackage/usb-net-asix
   TITLE:=Kernel module for USB-to-Ethernet Asix convertors
-  DEPENDS:=+kmod-libphy +LINUX_5_15:kmod-net-selftests +LINUX_5_15:kmod-mdio-devres
+  DEPENDS:=+kmod-libphy +LINUX_5_15:kmod-net-selftests +LINUX_5_15:kmod-mdio-devres +kmod-phy-ax88796b
   KCONFIG:=CONFIG_USB_NET_AX8817X
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/asix.ko
   AUTOLOAD:=$(call AutoProbe,asix)
@@ -1267,7 +1284,7 @@ $(eval $(call KernelPackage,usb-net-smsc75xx))
 
 define KernelPackage/usb-net-smsc95xx
   TITLE:=SMSC LAN95XX based USB 2.0 10/100 ethernet devices
-  DEPENDS:=+kmod-libphy
+  DEPENDS:=+kmod-libphy +kmod-phy-smsc
   KCONFIG:=CONFIG_USB_NET_SMSC95XX
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/smsc95xx.ko
   AUTOLOAD:=$(call AutoProbe,smsc95xx)
