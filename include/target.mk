@@ -55,6 +55,8 @@ DEFAULT_PACKAGES.nas:=\
 DEFAULT_PACKAGES.router:=\
 	dnsmasq-full \
 	firewall4 \
+	nftables \
+	kmod-nft-offload \
 	ppp \
 	ppp-mod-pppoe
 # For easy usage
@@ -68,7 +70,6 @@ DEFAULT_PACKAGES.tweak:=\
 	kmod-nf-nathelper-extra \
 	luci \
 	luci-app-cpufreq \
-	luci-app-turboacc \
 	luci-compat \
 	luci-lib-base \
 	luci-lib-fs \

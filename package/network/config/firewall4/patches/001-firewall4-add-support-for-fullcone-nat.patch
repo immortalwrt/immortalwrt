@@ -22,12 +22,13 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
 
 --- a/root/etc/config/firewall
 +++ b/root/etc/config/firewall
-@@ -5,6 +5,8 @@ config defaults
+@@ -5,6 +5,9 @@ config defaults
  	option forward		REJECT
  # Uncomment this line to disable ipv6 rules
  #	option disable_ipv6	1
-+	option fullcone '1'
-+	option fullcone6 '0'
++	option flow_offloading 1
++	option fullcone 1
++	option fullcone6 0
  
  config zone
  	option name		lan
