@@ -49,18 +49,6 @@
 	};
 };
 
-&lan_led {
-	label = "orangepi-r1-plus-lts:green:lan";
-};
-
 &rtl8153 {
 	realtek,led-data = <0x78>;
-};
-
-&sys_led {
-	label = "orangepi-r1-plus-lts:red:sys";
-};
-
-&wan_led {
-	label = "orangepi-r1-plus-lts:green:wan";
 };

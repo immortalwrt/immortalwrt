@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
 #include "rk3328-nanopi-r2s.dts"
 
 / {
 	model = "Xunlong Orange Pi R1 Plus";
 	compatible = "xunlong,orangepi-r1-plus", "rockchip,rk3328";
-};
-
-&lan_led {
-	label = "orangepi-r1-plus:green:lan";
 };
 
 &spi0 {
@@ -23,7 +20,6 @@
 
 &sys_led {
 	gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-	label = "orangepi-r1-plus:red:sys";
 };
 
 &sys_led_pin {
@@ -32,8 +28,4 @@
 
 &uart1 {
 	status = "okay";
-};
-
-&wan_led {
-	label = "orangepi-r1-plus:green:wan";
 };
