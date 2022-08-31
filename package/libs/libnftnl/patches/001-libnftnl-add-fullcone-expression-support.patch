@@ -240,7 +240,7 @@ index 0000000..aaedd83
 +	.get		= nftnl_expr_fullcone_get,
 +	.parse		= nftnl_expr_fullcone_parse,
 +	.build		= nftnl_expr_fullcone_build,
-+	.snprintf	= nftnl_expr_fullcone_snprintf,
++	.output		= nftnl_expr_fullcone_snprintf,
 +};
 diff --git a/src/expr_ops.c b/src/expr_ops.c
 index 7248e4f..9dee9f8 100644
