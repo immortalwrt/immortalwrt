@@ -226,11 +226,6 @@ ipq40xx_setup_macs()
 		lan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		label_mac="$lan_mac"
 		;;
-	p2w,r619ac|\
-	p2w,r619ac-128m)
-		wan_mac=$(cat /sys/class/net/eth0/address)
-		lan_mac=$(macaddr_add "$wan_mac" 1)
-		;;
 	pakedge,wr-1)
 		wan_mac=$(macaddr_add $(get_mac_label) 1)
 		;;
