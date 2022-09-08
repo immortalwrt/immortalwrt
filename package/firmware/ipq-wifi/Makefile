@@ -29,10 +29,12 @@ ALLWIFIBOARDS:= \
 	devolo_magic-2-wifi-next \
 	edgecore_ecw5410 \
 	edgecore_oap100 \
+	extreme-networks_ws-ap3915i \
 	glinet_gl-ap1300 \
 	glinet_gl-s1300 \
 	linksys_ea8300 \
 	p2w_r619ac \
+	pakedge_wr-1 \
 	qxwlan_e2600ac-c1 \
 	qxwlan_e2600ac-c2 \
 	teltonika_rutx
@@ -100,10 +102,12 @@ $(eval $(call generate-ipq-wifi-package,aruba_ap-365,Aruba AP-365))
 $(eval $(call generate-ipq-wifi-package,devolo_magic-2-wifi-next,devolo Magic 2 WiFi next))
 $(eval $(call generate-ipq-wifi-package,edgecore_ecw5410,Edgecore ECW5410))
 $(eval $(call generate-ipq-wifi-package,edgecore_oap100,Edgecore OAP100))
+$(eval $(call generate-ipq-wifi-package,extreme-networks_ws-ap3915i,Edgecore OAP100))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-ap1300,GL.iNet GL-AP1300))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-s1300,GL.iNet GL-S1300))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
+$(eval $(call generate-ipq-wifi-package,pakedge_wr-1,Pakedge WR-1))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac-c1,Qxwlan E2600AC C1))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac-c2,Qxwlan E2600AC C2))
 $(eval $(call generate-ipq-wifi-package,teltonika_rutx,Teltonika RUTX))
