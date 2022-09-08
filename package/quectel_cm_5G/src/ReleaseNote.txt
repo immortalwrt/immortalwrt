@@ -1,0 +1,69 @@
+Release Notes
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.5.3]
+Date:   2019/12/11
+enhancement:
+1. support show SignalInfo, controlled by macro CONFIG_SIGNALINFO
+2. support show 5G_NSA/5G_NA
+3. support Microsoft Extend MBIM message
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.2.1]
+Date:   2019/02/26
+enhancement:
+1. Implement help message.
+
+root@ubuntu:# ./quectel-CM -h
+[02-26_10:39:21:353] Usage: ./quectel-CM [options]
+[02-26_10:39:21:353] -s [apn [user password auth]]          Set apn/user/password/auth get from your network provider
+[02-26_10:39:21:353] -p pincode                             Verify sim card pin if sim card is locked
+[02-26_10:39:21:353] -f logfilename                         Save log message of this program to file
+[02-26_10:39:21:353] -i interface                           Specify network interface(default auto-detect)
+[02-26_10:39:21:353] -4                                     IPv4 protocol
+[02-26_10:39:21:353] -6                                     IPv6 protocol
+[02-26_10:39:21:353] -m muxID                               Specify muxid when set multi-pdn data connection.
+[02-26_10:39:21:353] -n channelID                           Specify channelID when set multi-pdn data connection(default 1).
+[02-26_10:39:21:353] [Examples]
+[02-26_10:39:21:353] Example 1: ./quectel-CM
+[02-26_10:39:21:353] Example 2: ./quectel-CM -s 3gnet
+[02-26_10:39:21:353] Example 3: ./quectel-CM -s 3gnet carl 1234 0 -p 1234 -f gobinet_log.txt
+root@ubuntu:#
+2. Support bridge mode when set multi-pdn data connections.
+3. Host device can access network in bridge mode.
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.46]
+Date:   2019/02/18
+enhancement:
+1. support only IPV6 data call. quectel-CM now support three dialing methods: IPV4 only, IPV6 only, IPV4V6.
+	./quectel-CM  -4(or no argument)  only IPV4
+				  -6	        only IPV6
+				  -4 -6               IPV4 && IPV6
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.45]
+Date:   2018/09/13
+enhancement:
+1. support EG12 PCIE interface
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.44]
+Date:   2018/09/10
+enhancement:
+1. support setup IPV4&IPV6 data call.
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.43]
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.42]
+Date:   2018/08/29
+enhancement:
+1. support QMI_WWAN's QMAP fucntion and bridge mode, please contact Quectel FAE to get qmi_wwan.c patch.
+   when enable QMI_WWAN's QMAP IP Mux function, must run 'quectel-qmi-proxy -d /dev/cdc-wdmX' before quectel-CM
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.41]
+Date:   2018/05/24
+enhancement:
+1. fix a cdma data call error
+
+[WCDMA&LTE_QConnectManager_Linux&Android_V1.1.40]
+Date:   2018/05/12
+enhancement:
+1. support GobiNet's QMAP fucntion and bridge mode.
+	 'Quectel_WCDMA&LTE_Linux&Android_GobiNet_Driver_V1.3.5' and later version is required to use QMAP and bridge mode.
+	 for detail, please refer to GobiNet Driver
+	 

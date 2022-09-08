@@ -1,0 +1,67 @@
+Release Notes
+
+[V1.3.1]
+Date:   9/26/2021
+enhancement:
+fix:
+
+[V1.3.0.19]
+Date:   9/18/2021
+enhancement:
+  1. support sdx62 (17cb:0308)
+	2. support IPQ5018's NSS
+	3. use 'qsdk/qca/src/data-kernel/drivers/rmnet-nss/rmnet_nss.c' instead myself rmnet_nss.c
+	   and pcie_mhi.ko must load after then rmnet_nss.ko
+	4. allow bhi irq is not 0 (for ipq5018)
+fix:
+
+[V1.3.0.18]
+Date:   4/14/2021
+enhancement:
+  1. support mbim multiple call, usage:
+     # insmod pcie_mhi.ko mhi_mbim_enabeld=1 qmap_mode=4
+     # quectel-mbim-proxy -d /dev/mhi_MBIM &
+     # quectel-CM -n X
+fix:
+
+[V1.3.0.17]
+Date:   3/11/2021
+enhancement:
+fix:
+  1. fix CPU loading very high when TPUT test when only one MSI interrupt
+  2. fix error on latest X24 modem
+
+[V1.3.0.16]
+Date:   11/18/2020
+enhancement:
+fix:
+  1. add ring size to 32, for in-bound chan, if one ring is full, modem will not generate MSI interrupt for all chan
+ 
+[V1.3.0.15]
+Date:   10/30/2020
+enhancement:
+	1. support multi-modems, named as /dev/mhi_<chan_name>X
+fix:
+  1. fix compile error on kernel v5.8
+ 
+[V1.3.0.14]
+Date:   10/9/2020
+enhancement:
+  1. suppport EM120&EM160
+fix:
+  1. fix compile error on kernel v5.6
+  2. support runtime suspend
+
+[V1.3.0.13]
+Date:   9/7/2020 
+enhancement:
+  1. suppport EM120&EM160
+fix:
+  1. fix error on X55 + PCIE2.0(e.g IPQ4019)
+  2. support runtime suspend
+
+[V1.3.0.12]
+Date:   7/7/2020 
+enhancement:
+  1. suppport create only none netcard (enabled by marco MHI_NETDEV_ONE_CARD_MODE),
+fix:
