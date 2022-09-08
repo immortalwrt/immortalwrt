@@ -1,0 +1,222 @@
+--- a/drivers/net/usb/qmi_wwan.c	
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1025,8 +1025,18 @@
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0620)},	/* Quectel EM160R-GL */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
+ 	{QMI_MATCH_FF_FF_FF(0x05c6, 0xf601)},   /* MeigLink SLM750 */
+-
++	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0900)},	/* Quectel RM500U-CN */
++	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x030b)},	/* Quectel EM060 */
++	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0801)},	/* Quectel RM520 */
++	{QMI_MATCH_FF_FF_FF(0x2dee, 0x4D22)},	/* MeigLink SRM815  */
++	/*{QMI_MATCH_FF_FF_FF(0x05c6, 0x9091)},	/* CEI SDX55 */
++	
+ 	/* 3. Combined interface devices matching on interface number */
++	{QMI_QUIRK_SET_DTR(0x05c6, 0x9091, 2)},	/* CEI SDX55 */
++	/*{QMI_QUIRK_SET_DTR(0x2dee, 0x4D22, 5)},*/
++	{QMI_QUIRK_SET_DTR(0x1c9e, 0x9b3c, 4)},
++	{QMI_QUIRK_SET_DTR(0x1c9e, 0x9b05, 4)},
++	{QMI_QUIRK_SET_DTR(0x2020, 0x2040, 4)}, /* BroadMobi 817C */
+ 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x6001, 3)},	/* 4G LTE usb-modem U901 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x7000, 0)},
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -90,6 +90,16 @@
+ #define QUANTA_PRODUCT_GKE			0xEA05
+ #define QUANTA_PRODUCT_GLE			0xEA06
+ 
++/*[MEIG-zhaopf-2019-11-04]add for meig modem supported {*/
++#define MEIG_VENDOR_ID				0x2DEE
++#define MEIG_PRODUCT_SRM815			0x4D22
++#define MEIG_PRODUCT_SRM815_ECM		0x4D23
++#define MEIG_PRODUCT_SLM790			0x4D20
++#define MEIG_QCM_VENDOR_ID			0x05C6
++#define MEIG_QCM_PRODUCT_SLM750_SRM815_SLM868	0xF601
++#define MEIG_QCM_PRODUCT_SRM815_WWAN	        0x90E5
++
++
+ #define NOVATELWIRELESS_VENDOR_ID		0x1410
+ 
+ /* YISO PRODUCTS */
+@@ -258,7 +268,10 @@
+ #define QUECTEL_PRODUCT_EC200S_CN		0x6002
+ #define QUECTEL_PRODUCT_EC200T			0x6026
+ #define QUECTEL_PRODUCT_RM500K			0x7001
+-
++#define QUECTEL_PRODUCT_EM20			0x0620
++#define QUECTEL_PRODUCT_RM500QCN		0x0900
++#define QUECTEL_PRODUCT_RM520			0x0801
++#define QUECTEL_PRODUCT_EM060			0x030b
+ #define CMOTECH_VENDOR_ID			0x16d8
+ #define CMOTECH_PRODUCT_6001			0x6001
+ #define CMOTECH_PRODUCT_CMU_300			0x6002
+@@ -390,7 +403,9 @@
+  * Mobidata, etc sell under their own brand names.
+  */
+ #define LONGCHEER_VENDOR_ID			0x1c9e
+-
++#define LONGSUNG_VENDOR_ID			0x1c9e
++#define LONGSUNG_U9300_PRODUCT_ID		0x9b3c
++#define LONGSUNG_U8300_PRODUCT_ID		0x9b05
+ /* 4G Systems products */
+ /* This is the 4G XS Stick W14 a.k.a. Mobilcom Debitel Surf-Stick *
+  * It seems to contain a Qualcomm QSC6240/6290 chipset            */
+@@ -593,6 +608,9 @@
+ 
+ 
+ static const struct usb_device_id option_ids[] = {
++	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U9300_PRODUCT_ID) }, /* LongSung U9300 LTE modem */
++	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U8300_PRODUCT_ID) }, /* LongSung U8300 LTE modem */
++	{ USB_DEVICE( 0x2020, 0x2040 ) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -1141,6 +1159,23 @@
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0xff, 0xff),
+ 	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0, 0) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM520, 0xff, 0xff, 0x30)},
++ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM520, 0xff, 0x00, 0x40) },
++ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM520, 0xff, 0, 0)},
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM520, 0xff, 0xff, 0xff),
++ 	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM060, 0xff, 0xff, 0x30)},
++ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM060, 0xff, 0xff, 0x40) },
++ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM060, 0xff, 0xff, 0x60),
++ 	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM20, 0xff, 0xff, 0x30) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM20, 0xff, 0, 0) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM20, 0xff, 0xff, 0xff),
++	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500QCN, 0xff, 0, 0) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500QCN, 0xff, 0xff, 0x30) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500QCN, 0xff, 0xff, 0x10),
++	  .driver_info = ZLP },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0xff, 0x30) },	/* EM160R-GL */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0, 0) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, 0x0700, 0xff), /* BG95 */
+@@ -1153,6 +1188,18 @@
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500K, 0xff, 0x00, 0x00) },
+ 
++	  /*[MEIG-zhaopf-2019-11-04]add for meig modem supported {*/
++        { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM815),         
++         .driver_info = RSVD(4) | RSVD(5) },
++        { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM815_ECM),
++         .driver_info = RSVD(4) | RSVD(5) },
++        { USB_DEVICE(MEIG_QCM_VENDOR_ID, MEIG_QCM_PRODUCT_SRM815_WWAN),
++         .driver_info = RSVD(5) | RSVD(6) | RSVD(7) },
++        { USB_DEVICE(MEIG_QCM_VENDOR_ID, MEIG_QCM_PRODUCT_SLM750_SRM815_SLM868),
++         .driver_info = RSVD(4) | RSVD(5) },
++        { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SLM790),
++         .driver_info = RSVD(0) | RSVD(5) | RSVD(6) | RSVD(7) },
++        /*[MEIG-zhaopf-2019-11-04]add for meig modem supported }*/
+ 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6001) },
+ 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_CMU_300) },
+ 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6003),
+@@ -2190,6 +2237,9 @@
+ #ifdef CONFIG_PM
+ 	.suspend           = usb_wwan_suspend,
+ 	.resume            = usb_wwan_resume,
++#if 1 //Added by Quectel
++	.reset_resume      = usb_wwan_resume,
++#endif
+ #endif
+ };
+ 
+@@ -2217,6 +2267,32 @@
+ 	/* Never bind to the CD-Rom emulation interface	*/
+ 	if (iface_desc->bInterfaceClass == USB_CLASS_MASS_STORAGE)
+ 		return -ENODEV;
++	if(serial->dev->descriptor.idVendor == cpu_to_le16(LONGSUNG_VENDOR_ID) &&
++			serial->dev->descriptor.idProduct == cpu_to_le16(LONGSUNG_U9300_PRODUCT_ID) &&
++			serial->interface->cur_altsetting->desc.bInterfaceNumber == 0){
++		printk("GZZ Discover the 0th interface for 9300 ndis\n");
++		return -ENODEV;
++	}
++
++	if (serial->dev->descriptor.idVendor == cpu_to_le16(LONGSUNG_VENDOR_ID) &&
++			serial->dev->descriptor.idProduct == cpu_to_le16(LONGSUNG_U9300_PRODUCT_ID) &&
++			serial->interface->cur_altsetting->desc.bInterfaceNumber == 4){
++		printk(KERN_INFO"Discover the 4th interface for U9300 NDIS\n");
++		return -ENODEV;
++	}
++
++	if(serial->dev->descriptor.idVendor == cpu_to_le16(LONGSUNG_VENDOR_ID) &&
++			serial->dev->descriptor.idProduct == cpu_to_le16(LONGSUNG_U8300_PRODUCT_ID) &&
++			serial->interface->cur_altsetting->desc.bInterfaceNumber == 4){
++		printk("GZZ Discover the 0th interface for 8300 ndis\n");
++		return -ENODEV;
++	}
++	if(serial->dev->descriptor.idVendor == cpu_to_le16(0x2020) &&
++			serial->dev->descriptor.idProduct == cpu_to_le16(0x2040) &&
++			serial->interface->cur_altsetting->desc.bInterfaceNumber == 4){
++		printk(KERN_INFO"BM817C Ethernet Adapter");
++		return -ENODEV;
++	}
+ 
+ 	/*
+ 	 * Don't bind reserved interfaces (like network ones) which often have
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -26,6 +26,7 @@
+ 	QCSERIAL_G1K = 1,	/* Gobi 1000 */
+ 	QCSERIAL_SWI = 2,	/* Sierra Wireless */
+ 	QCSERIAL_HWI = 3,	/* Huawei */
++	QCSERIAL_CEI = 4,	/* CEI */
+ };
+ 
+ #define DEVICE_G1K(v, p) \
+@@ -34,7 +35,10 @@
+ 	USB_DEVICE(v, p), .driver_info = QCSERIAL_SWI
+ #define DEVICE_HWI(v, p) \
+ 	USB_DEVICE(v, p), .driver_info = QCSERIAL_HWI
++#define DEVICE_CEI(v, p) \
++	USB_DEVICE(v, p), .driver_info = QCSERIAL_CEI
+ 
++	
+ static const struct usb_device_id id_table[] = {
+ 	/* Gobi 1000 devices */
+ 	{DEVICE_G1K(0x05c6, 0x9211)},	/* Acer Gobi QDL device */
+@@ -186,7 +190,7 @@
+ 
+ 	/* Huawei devices */
+ 	{DEVICE_HWI(0x03f0, 0x581d)},	/* HP lt4112 LTE/HSPA+ Gobi 4G Modem (Huawei me906e) */
+-
++	{DEVICE_CEI(0x05c6, 0x9091)},	/* CEI SDX55 */
+ 	{ }				/* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, id_table);
+@@ -398,6 +402,30 @@
+ 				intf->desc.bInterfaceProtocol);
+ 		}
+ 		break;
++	case QCSERIAL_CEI:
++        /*
++         * CEI layout:
++         * 0: DIAG (use libqcdm from ModemManager for communication)
++         * 1: modem
++         * 2: QMI/net
++         * 3: ADB
++        */
++        switch (ifnum) {
++        case 0:
++            dev_err(dev, "DM/DIAG interface found\n");
++            break;
++        case 1:
++            dev_err(dev, "Modem port found\n");
++            sendsetup = true;
++            break;
++        default:
++            /* don't claim any unsupported interface */
++            dev_err(dev, "unsupported port found%d\n",ifnum);
++            altsetting = -1;
++            break;
++        }
++        break; 
++
+ 	default:
+ 		dev_err(dev, "unsupported device layout type: %lu\n",
+ 			id->driver_info);
+ 
