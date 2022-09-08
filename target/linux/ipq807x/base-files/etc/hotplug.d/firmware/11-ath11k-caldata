@@ -17,7 +17,8 @@ case "$FIRMWARE" in
 	redmi,ax6-stock|\
 	xiaomi,ax3600|\
 	xiaomi,ax3600-stock|\
-	xiaomi,ax9000)
+	xiaomi,ax9000|\
+	zte,mf269)
 		caldata_extract "0:art" 0x1000 0x20000
 		;;
 	esac
