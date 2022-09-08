@@ -1,0 +1,27 @@
+#!/bin/sh /etc/rc.common
+
+. /lib/functions.sh
+
+START=99
+
+log() {
+	logger -t "Z-Hotspot " "$@"
+}
+
+start()
+{
+	PRO=$(uci get network.wwan.proto)
+	if [ -z $PRO ]; then
+		uci set network.wwan=interface
+		uci set network.wwan.proto=dhcp 
+		uci set network.wwan.metric='2'
+		uci set network.wwan6=interface
+		uci set network.wwan6.proto=dhcpv6 
+		uci commit network
+	fi
+	
+	uci set travelmate.global.lost="0"
+	uci set travelmate.global.delay="30"
+	uci commit travelmate
+	/usr/lib/hotspot/travelmate.sh &
+}

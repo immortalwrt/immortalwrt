@@ -1,0 +1,17 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=60
+
+start() {
+	WW=$(uci -q get bwmon.general.enabled)
+	WX=$(uci -q get custom.bwallocate.lock)
+	if [ "$WW" = "1" -o "$WX" = "1" ]; then
+		/usr/lib/bwmon/wrtbwmon.sh &
+		/usr/lib/bwmon/create.sh &
+	fi
+}
+
+stop() {
+	rmdir -f /tmp/WRTbmon
+}

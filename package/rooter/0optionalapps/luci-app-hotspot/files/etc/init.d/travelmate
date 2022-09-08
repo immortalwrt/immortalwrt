@@ -1,0 +1,41 @@
+#!/bin/sh /etc/rc.common
+
+. /lib/functions.sh
+
+START=98
+
+log() {
+	logger -t "Hotspot Initialize" "$@"
+}
+
+do_zone() {
+	local config=$1
+	local name
+	local network
+
+	config_get name $1 name
+	config_get network $1 network
+	newnet="$network"
+	if [ $name = wan ]; then
+		WWAN=$(echo "$network" | grep "wwan")
+		if [ -z "$WWAN" ]; then
+			newnet="$newnet wwan"
+			uci_set firewall "$config" network "$newnet"
+			uci_commit firewall
+			/etc/init.d/firewall restart
+		fi
+	fi
+}
+
+start()
+{
+log "Hotspot Firewall"
+
+	config_load firewall
+	config_foreach do_zone zone
+	uci set travelmate.global.lost="0"
+	uci set travelmate.global.delay="30"
+	uci commit travelmate
+}
+
+
