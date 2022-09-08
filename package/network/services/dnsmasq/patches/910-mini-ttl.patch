@@ -1,6 +1,6 @@
 --- a/src/dnsmasq.h
 +++ b/src/dnsmasq.h
-@@ -1139,7 +1139,7 @@ extern struct daemon {
+@@ -1141,7 +1141,7 @@ extern struct daemon {
    int max_logs;  /* queue limit */
    int cachesize, ftabsize;
    int port, query_port, min_port, max_port;
