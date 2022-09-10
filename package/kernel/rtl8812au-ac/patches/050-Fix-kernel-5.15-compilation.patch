@@ -1,0 +1,72 @@
+From 47a38b7c736dd9e9baac9eb07a6dceb83429fb49 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Carlos=20Garc=C3=A9s?= <CGarces@users.noreply.github.com>
+Date: Sun, 10 Oct 2021 12:39:42 +0200
+Subject: [PATCH] Fix kernel 5.15 compilation Remove IPX support from driver,
+ set as obsolete in Jan 2018. IPX is not supported by the linux kernel since
+ v5.15-rc1 see commit 6c9b40844751ea30c72f7a2f92f4d704bc6b2927
+
+---
+ core/rtw_br_ext.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/core/rtw_br_ext.c
++++ b/core/rtw_br_ext.c
+@@ -17,7 +17,10 @@
+ #ifdef __KERNEL__
+ 	#include <linux/if_arp.h>
+ 	#include <net/ip.h>
++	#include <linux/version.h>
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
+ 	#include <net/ipx.h>
++#endif
+ 	#include <linux/atalk.h>
+ 	#include <linux/udp.h>
+ 	#include <linux/if_pppox.h>
+@@ -169,6 +172,7 @@ static __inline__ void __nat25_generate_
+ }
+ 
+ 
++#ifdef _NET_INET_IPX_H_
+ static __inline__ void __nat25_generate_ipx_network_addr_with_node(unsigned char *networkAddr,
+ 		unsigned int *ipxNetAddr, unsigned char *ipxNodeAddr)
+ {
+@@ -189,6 +193,7 @@ static __inline__ void __nat25_generate_
+ 	memcpy(networkAddr + 1, (unsigned char *)ipxNetAddr, 4);
+ 	memcpy(networkAddr + 5, (unsigned char *)ipxSocketAddr, 2);
+ }
++#endif
+ 
+ 
+ static __inline__ void __nat25_generate_apple_network_addr(unsigned char *networkAddr,
+@@ -330,6 +335,7 @@ static __inline__ int __nat25_network_ha
+ 		x = networkAddr[7] ^ networkAddr[8] ^ networkAddr[9] ^ networkAddr[10];
+ 
+ 		return x & (NAT25_HASH_SIZE - 1);
++#ifdef _NET_INET_IPX_H_
+ 	} else if (networkAddr[0] == NAT25_IPX) {
+ 		unsigned long x;
+ 
+@@ -337,6 +343,7 @@ static __inline__ int __nat25_network_ha
+ 		    networkAddr[6] ^ networkAddr[7] ^ networkAddr[8] ^ networkAddr[9] ^ networkAddr[10];
+ 
+ 		return x & (NAT25_HASH_SIZE - 1);
++#endif
+ 	} else if (networkAddr[0] == NAT25_APPLE) {
+ 		unsigned long x;
+ 
+@@ -889,6 +896,7 @@ int nat25_db_handle(_adapter *priv, stru
+ 		}
+ 	}
+ 
++#ifdef _NET_INET_IPX_H_
+ 	/*---------------------------------------------------*/
+ 	/*         Handle IPX and Apple Talk frame          */
+ 	/*---------------------------------------------------*/
+@@ -1109,6 +1117,7 @@ int nat25_db_handle(_adapter *priv, stru
+ 
+ 		return -1;
+ 	}
++#endif
+ 
+ 	/*---------------------------------------------------*/
+ 	/*                Handle PPPoE frame                */
