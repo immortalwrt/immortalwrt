@@ -488,9 +488,11 @@ define KernelPackage/fs-ntfs3
   FILES:=$(LINUX_DIR)/fs/ntfs3/ntfs3.ko
   AUTOLOAD:=$(call AutoLoad,30,ntfs3)
 endef
+
 define KernelPackage/fs-ntfs3/description
  Kernel module for NTFS3 filesystem support
 endef
+
 $(eval $(call KernelPackage,fs-ntfs3))
 
 
