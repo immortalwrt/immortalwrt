@@ -25,7 +25,7 @@ define Package/automount
     +!TARGET_ramips:kmod-usb-storage-uas \
     +kmod-fs-ext4 \
     +kmod-fs-exfat \
-    +kmod-fs-vfat
+    +kmod-fs-vfat \
     +ntfs3-mount
   PKGARCH:=all
 endef
