@@ -2,7 +2,7 @@
 /*
  * Rockchip PCIE3.0 phy driver
  *
- * Copyright (C) 2020 Rockchip Electronics Co., Ltd.
+ * Copyright (C) 2022 Rockchip Electronics Co., Ltd.
  */
 
 #include <linux/clk.h>
@@ -20,10 +20,11 @@
 
 /* Register for RK3568 */
 #define GRF_PCIE30PHY_CON1			0x4
-#define GRF_PCIE30PHY_CON4			0x10
 #define GRF_PCIE30PHY_CON6			0x18
 #define GRF_PCIE30PHY_CON9			0x24
+#define GRF_PCIE30PHY_DA_OCM			(BIT(15) | BIT(31))
 #define GRF_PCIE30PHY_STATUS0			0x80
+#define GRF_PCIE30PHY_WR_EN			(0xf << 16)
 #define SRAM_INIT_DONE(reg)			(reg & BIT(14))
 
 #define RK3568_BIFURCATION_LANE_0_1		BIT(0)
@@ -62,10 +63,6 @@ struct rockchip_p3phy_ops {
 	int (*phy_init)(struct rockchip_p3phy_priv *priv);
 };
 
-static u16 phy_fw[] = {
-	#include "p3phy.fw"
-};
-
 static int rockchip_p3phy_set_mode(struct phy *phy, enum phy_mode mode, int submode)
 {
 	struct rockchip_p3phy_priv *priv = phy_get_drvdata(phy);
@@ -91,13 +88,12 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
 	struct phy *phy = priv->phy;
 	bool bifurcation = false;
 	int ret;
-	int i;
 	u32 reg;
 
 	/* Deassert PCIe PMA output clamp mode */
-	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9, BIT(15) | BIT(31));
+	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9, GRF_PCIE30PHY_DA_OCM);
 
-	for (i = 0; i < priv->num_lanes; i++) {
+	for (int i = 0; i < priv->num_lanes; i++) {
 		dev_info(&phy->dev, "lane number %d, val %d\n", i, priv->lanes[i]);
 		if (priv->lanes[i] > 1)
 			bifurcation = true;
@@ -107,19 +103,14 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
 	if (bifurcation) {
 		dev_info(&phy->dev, "bifurcation enabled\n");
 		regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON6,
-			     (0xf << 16) | RK3568_BIFURCATION_LANE_0_1);
+			     GRF_PCIE30PHY_WR_EN | RK3568_BIFURCATION_LANE_0_1);
 		regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON1,
-			     BIT(15) | BIT(31));
+			     GRF_PCIE30PHY_DA_OCM);
 	} else {
-		dev_info(&phy->dev, "bifurcation disabled\n");
+		dev_dbg(&phy->dev, "bifurcation disabled\n");
 		regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON6,
-			     (0xf << 16) & ~RK3568_BIFURCATION_LANE_0_1);
+			     GRF_PCIE30PHY_WR_EN & ~RK3568_BIFURCATION_LANE_0_1);
 	}
-
-	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON4,
-		     (0x0 << 14) | (0x1 << (14 + 16))); //sdram_ld_done
-	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON4,
-		     (0x0 << 13) | (0x1 << (13 + 16))); //sdram_bypass
 
 	reset_control_deassert(priv->p30phy);
 
@@ -127,24 +118,10 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
 				       GRF_PCIE30PHY_STATUS0,
 				       reg, SRAM_INIT_DONE(reg),
 				       0, 500);
-	if (ret) {
+	if (ret)
 		dev_err(&priv->phy->dev, "%s: lock failed 0x%x, check input refclk and power supply\n",
 		       __func__, reg);
-		return ret;
-	}
-
-	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9,
-		     (0x3 << 8) | (0x3 << (8 + 16))); //map to access sram
-	for (i = 0; i < 8192; i++)
-		writel(phy_fw[i], priv->mmio + (i<<2));
-
-	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9,
-		     (0x0 << 8) | (0x3 << (8 + 16)));
-	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON4,
-		     (0x1 << 14) | (0x1 << (14 + 16))); //sdram_ld_done
-
-	dev_info(&priv->phy->dev, "p3phy (fw-d54d0eb) initialized\n");
-	return 0;
+	return ret;
 }
 
 static const struct rockchip_p3phy_ops rk3568_ops = {
@@ -156,13 +133,12 @@ static int rockchip_p3phy_rk3588_init(struct rockchip_p3phy_priv *priv)
 	u32 reg = 0;
 	u8 mode = 0;
 	int ret;
-	int i;
 
 	/* Deassert PCIe PMA output clamp mode */
 	regmap_write(priv->phy_grf, RK3588_PCIE3PHY_GRF_CMN_CON0, BIT(8) | BIT(24));
 
 	/* Set bifurcation if needed */
-	for (i = 0; i < priv->num_lanes; i++) {
+	for (int i = 0; i < priv->num_lanes; i++) {
 		if (!priv->lanes[i])
 			mode |= (BIT(i) << 3);
 
@@ -201,8 +177,8 @@ static int rockchip_p3phy_rk3588_init(struct rockchip_p3phy_priv *priv)
 					reg, RK3588_SRAM_INIT_DONE(reg),
 					0, 500);
 	if (ret)
-		pr_err("%s: lock failed 0x%x, check input refclk and power supply\n",
-		       __func__, reg);
+		dev_err(&priv->phy->dev, "lock failed 0x%x, check input refclk and power supply\n",
+			reg);
 	return ret;
 }
 
@@ -217,7 +193,7 @@ static int rochchip_p3phy_init(struct phy *phy)
 
 	ret = clk_bulk_prepare_enable(priv->num_clks, priv->clks);
 	if (ret) {
-		pr_err("failed to enable PCIe bulk clks %d\n", ret);
+		dev_err(&priv->phy->dev, "failed to enable PCIe bulk clks %d\n", ret);
 		return ret;
 	}
 
@@ -271,7 +247,7 @@ static int rockchip_p3phy_probe(struct platform_device *pdev)
 
 	priv->ops = of_device_get_match_data(&pdev->dev);
 	if (!priv->ops) {
-		dev_err(&pdev->dev, "no of match data provided\n");
+		dev_err(dev, "no of match data provided\n");
 		return -EINVAL;
 	}
 
