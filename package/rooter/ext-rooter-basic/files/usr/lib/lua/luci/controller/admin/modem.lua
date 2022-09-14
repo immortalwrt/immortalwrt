@@ -7,12 +7,8 @@ function index()
 	entry({"admin", "modem"}, firstchild(), translate("移动数据"), 25).dependent=false
 	entry({"admin", "modem", "prof"}, cbi("rooter/profiles"), translate("DNS / APN / 监控配置"), 2)
 	entry({"admin", "modem", "nets"}, template("rooter/net_status"), translate("信号状态 / 模块状态"), 30)
-	local multilock = uci:get("custom", "multiuser", "multi") or "0"
-	local rootlock = uci:get("custom", "multiuser", "root") or "0"
-	if (multilock == "0") or (multilock == "1" and rootlock == "1") then
-		entry({"admin", "modem", "debug"}, template("rooter/debug"), translate("后台AT调试信息"), 50)
-		entry({"admin", "modem", "cust"}, cbi("rooter/customize"), translate("自定义模块端口配置"), 55)
-	end
+	entry({"admin", "modem", "debug"}, template("rooter/debug"), translate("后台AT调试信息"), 50)
+	entry({"admin", "modem", "cust"}, cbi("rooter/customize"), translate("自定义模块端口配置"), 55)
 	entry({"admin", "modem", "log"}, template("rooter/log"), translate("连接日志"), 60)
 	entry({"admin", "modem", "misc"}, template("rooter/misc"), translate("锁频段 / 锁PCI / 切协议"), 40)
 	
@@ -478,9 +474,9 @@ function action_get_csq()
 	end
 
 	if not nixio.fs.access("/etc/netspeed") then
-		rv["crate"] = translate("Fast (updated every 10 seconds)")
+		rv["crate"] = translate("快速(每10秒更新一次)")
 	else
-		rv["crate"] = translate("Slow (updated every 60 seconds)")
+		rv["crate"] = translate("缓慢(每60秒更新一次)")
 	end
 
 	stat = "/tmp/msimdata" .. modnum
