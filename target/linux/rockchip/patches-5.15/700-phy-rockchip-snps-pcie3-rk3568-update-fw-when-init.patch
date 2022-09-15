@@ -36,7 +36,23 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
  static int rockchip_p3phy_set_mode(struct phy *phy, enum phy_mode mode, int submode)
  {
  	struct rockchip_p3phy_priv *priv = phy_get_drvdata(phy);
-@@ -112,16 +117,35 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
+@@ -87,13 +92,14 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
+ {
+ 	struct phy *phy = priv->phy;
+ 	bool bifurcation = false;
++	int i;
+ 	int ret;
+ 	u32 reg;
+ 
+ 	/* Deassert PCIe PMA output clamp mode */
+ 	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9, GRF_PCIE30PHY_DA_OCM);
+ 
+-	for (int i = 0; i < priv->num_lanes; i++) {
++	for (i = 0; i < priv->num_lanes; i++) {
+ 		dev_info(&phy->dev, "lane number %d, val %d\n", i, priv->lanes[i]);
+ 		if (priv->lanes[i] > 1)
+ 			bifurcation = true;
+@@ -112,16 +118,35 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
  			     GRF_PCIE30PHY_WR_EN & ~RK3568_BIFURCATION_LANE_0_1);
  	}
  
@@ -61,7 +77,7 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
 +
 +	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9,
 +		     (0x3 << 8) | (0x3 << (8 + 16))); //map to access sram
-+	for (int i = 0; i < 8192; i++)
++	for (i = 0; i < 8192; i++)
 +		writel(phy_fw[i], priv->mmio + (i<<2));
 +
 +	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9,
@@ -74,3 +90,19 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
  }
  
  static const struct rockchip_p3phy_ops rk3568_ops = {
+@@ -132,13 +157,14 @@ static int rockchip_p3phy_rk3588_init(struct rockchip_p3phy_priv *priv)
+ {
+ 	u32 reg = 0;
+ 	u8 mode = 0;
++	int i;
+ 	int ret;
+ 
+ 	/* Deassert PCIe PMA output clamp mode */
+ 	regmap_write(priv->phy_grf, RK3588_PCIE3PHY_GRF_CMN_CON0, BIT(8) | BIT(24));
+ 
+ 	/* Set bifurcation if needed */
+-	for (int i = 0; i < priv->num_lanes; i++) {
++	for (i = 0; i < priv->num_lanes; i++) {
+ 		if (!priv->lanes[i])
+ 			mode |= (BIT(i) << 3);
+ 
