@@ -1,0 +1,43 @@
+From c4b9bc63e0029cf1beaf8bdcbd92fa09f33b599d Mon Sep 17 00:00:00 2001
+From: Simon Kelley <simon@thekelleys.org.uk>
+Date: Fri, 9 Sep 2022 12:53:49 +0100
+Subject: [PATCH] Fix a problem in overload handling.
+
+Sending the same query repeatedly to a dnsmasq instance which
+doesn't get replies from upstream will eventually hit the
+hard limit on frec_src structures and start gettin REFUSED
+replies. This is OK, except that since the queries are no longer
+being forwarded, an upstream server coming back doesn't reset the
+situation. If there is any other traffic, frec allocation will
+eventually delete the timed-out frec and get things moving again,
+but that's not guaranteed.
+
+To fix this we explicitly delete the frec once timed out in this case.
+
+Thanks to Filip Jenicek for noticing and characterising this problem.
+---
+ src/forward.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/forward.c b/src/forward.c
+index 8562b2d..fa80251 100644
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -244,6 +244,14 @@ static int forward_query(int udpfd, union mysockaddr *udpaddr,
+ 	  if (!daemon->free_frec_src)
+ 	    {
+ 	      query_full(now, NULL);
++	      /* This is tricky; if we're blasted with the same query
++		 over and over, we'll end up taking this path each time
++		 and never resetting until the frec gets deleted by
++		 aging followed by the receipt of a different query. This
++		 is a bit of a DoS vuln. Avoid by explicitly deleting the
++		 frec once it expires. */
++	      if (difftime(now, forward->time) >= TIMEOUT)
++		free_frec(forward);
+ 	      goto reply;
+ 	    }
+ 	  
+-- 
+2.37.3
+
