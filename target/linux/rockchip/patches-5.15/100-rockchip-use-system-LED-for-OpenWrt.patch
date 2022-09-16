@@ -29,7 +29,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	chosen {
  		stdout-path = "serial2:1500000n8";
  	};
-@@ -49,18 +49,18 @@
+@@ -49,18 +56,18 @@
  
  		lan_led: led-0 {
  			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
