@@ -23,7 +23,7 @@ DEFAULT_PACKAGES += alsa-utils partx-utils mkf2fs fdisk e2fsprogs kmod-button-ho
 		    kmod-ac97 kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via \
 		    kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 \
 		    kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 \
-		    kmod-usb-net-rtl8150 kmod-usb-net-rtl8152-vendor automount
+		    kmod-usb-net-rtl8150 kmod-usb-net-rtl8152-vendor grub2-bios-setup automount
 
 $(eval $(call BuildTarget))
 
