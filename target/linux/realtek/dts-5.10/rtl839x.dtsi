@@ -29,6 +29,13 @@
 		reg = <##n>; \
 	};
 
+#define EXTERNAL_SFP_PHY_FULL(n, s) \
+	phy##n: ethernet-phy@##n { \
+		compatible = "ethernet-phy-ieee802.3-c22"; \
+		sfp = <&sfp##s>; \
+		reg = <##n>; \
+	};
+
 #define SWITCH_PORT(n, s, m) \
 	port@##n { \
 		reg = <##n>; \
@@ -246,6 +253,10 @@
 
 		enable_uart1: pinmux_enable_uart1 {
 			pinctrl-single,bits = <0x0 0x1 0x3>;
+		};
+
+		disable_jtag: pinmux_disable_jtag {
+			pinctrl-single,bits = <0x0 0x2 0x3>;
 		};
 	};
 
