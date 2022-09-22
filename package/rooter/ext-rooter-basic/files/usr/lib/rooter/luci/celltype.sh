@@ -194,7 +194,7 @@ quectel_type() {
 	if [ $EM20 ]; then
 		idVidP=$idV":"$idP"0"
 	fi
-	if [ "$idVidP" == "2c7c:0800" -o "$idVidP" == "2c7c:0620" -o "$idVidP" == "2c7c:030b" ]; then
+	if [ "$idVidP" == "2c7c:0800" -o "$idVidP" == "2c7c:0620" -o "$idVidP" == "2c7c:030b" -o "$idVidP" == "2c7c:0801"  -o "$idVidP" == "2c7c:0900" ]; then
 		ATCMDD="AT+QNWPREFCFG=\"mode_pref\""
 		OX=$($ROOTER/gcom/gcom-locked "$COMMPORT" "run-at.gcom" "$CURRMODEM" "$ATCMDD")
 		QNSM=$(echo $OX | grep -o ",[AUTOLENR5GWCDM:]\+" | tr ',' ' ')
