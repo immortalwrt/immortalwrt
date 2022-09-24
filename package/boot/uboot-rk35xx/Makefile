@@ -14,7 +14,7 @@ PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/radxa/u-boot.git
 PKG_SOURCE_DATE:=2022-04-21
 PKG_SOURCE_VERSION:=19cefea3b8a7e22fa29b39367b04a8ab90c5c765
-PKG_MIRROR_HASH:=ba0f33b68ff4325d496e7ac1bb8f512b7d7b94a80070a1fdbda6e0dc9dc9c3e2
+PKG_MIRROR_HASH:=2f94d879a4fe9d25fbcba9f6f282edc9dc50f193be52f2c3073e2bf2ac0bd477
 
 include $(INCLUDE_DIR)/u-boot.mk
 include $(INCLUDE_DIR)/package.mk
