@@ -1,5 +1,5 @@
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
+--- option.c	2022-09-07 21:26:28.763774121 -0700
++++ option2.c	2022-09-30 07:53:09.582094401 -0700
 @@ -613,6 +613,8 @@
  	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U9300_PRODUCT_ID) }, /* LongSung U9300 LTE modem */
  	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U8300_PRODUCT_ID) }, /* LongSung U8300 LTE modem */
