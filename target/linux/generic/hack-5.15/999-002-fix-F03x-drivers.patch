@@ -1,0 +1,32 @@
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -613,6 +613,8 @@
+ 	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U9300_PRODUCT_ID) }, /* LongSung U9300 LTE modem */
+ 	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U8300_PRODUCT_ID) }, /* LongSung U8300 LTE modem */
+ 	{ USB_DEVICE( 0x2020, 0x2040 ) },
++	{ USB_DEVICE( 0x05c6, 0x9091 ) },/*FO3X 5Gmodem  QMI*/
++	{ USB_DEVICE( 0x05c6, 0x90D5 ) },/*FO3X 5Gmodem  MBIM*/
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -2298,7 +2300,20 @@
+ 		printk(KERN_INFO"BM817C Ethernet Adapter");
+ 		return -ENODEV;
+ 	}
++	
++	if(serial->dev->descriptor.idVendor == cpu_to_le16(0x05c6) &&
++			serial->dev->descriptor.idProduct == cpu_to_le16(0x9091) &&
++			serial->interface->cur_altsetting->desc.bInterfaceNumber == 2){
++		printk(KERN_INFO"ChinaMobile F03X Ethernet Adapter");
++		return -ENODEV;
++	}
+ 
++	if(serial->dev->descriptor.idVendor == cpu_to_le16(0x05c6) &&
++			serial->dev->descriptor.idProduct == cpu_to_le16(0x90D5) &&
++			serial->interface->cur_altsetting->desc.bInterfaceNumber == 2){
++		printk(KERN_INFO"ChinaMobile F03X Ethernet Adapter");
++		return -ENODEV;
++	}
+ 	/*
+ 	 * Don't bind reserved interfaces (like network ones) which often have
+ 	 * the same class/subclass/protocol as the serial interfaces.  Look at
