@@ -1,5 +1,4 @@
 config service
 	option tool 'quectel-CM'
-	option device '/dev/cdc-wdm0'
 	option enabled '0'
 
