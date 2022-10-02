@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=Modem Server
+LUCI_TITLE:=PCI Modem Server
 LUCI_DEPENDS:=
 
 include $(TOPDIR)/feeds/luci/luci.mk
