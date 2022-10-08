@@ -5,7 +5,7 @@
 ImmortalWrt is a fork of [OpenWrt](https://openwrt.org), with more packages ported, more devices supported, better performance, and special optimizations for mainland China users.<br/>
 Compared the official one, we allow to use hacks or non-upstreamable patches / modifications to achieve our purpose. Source from anywhere.
 
-Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: __password__.
+Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: _none_.
 
 ## Development
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
