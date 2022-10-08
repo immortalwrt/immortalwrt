@@ -7,6 +7,13 @@ Compared the official one, we allow to use hacks or non-upstreamable patches / m
 
 Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: __password__.
 
+## Download
+Built firmware images are available for many architectures and come with a package selection to be used as WiFi home router. To quickly find a factory image usable to migrate from a vendor stock firmware to ImmortalWrt, try the *Firmware Selector*.
+
+- [ImmortalWrt Firmware Selector](https://firmware-selector.immortalwrt.org/)
+
+If your device is supported, please follow the **Info** link to see install instructions or consult the support resources listed below.
+
 ## Development
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
 
@@ -118,10 +125,8 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
   - [LuCI Web Interface](https://github.com/immortalwrt/luci): Modern and modular interface to control the device via a web browser.
   - [ImmortalWrt Packages](https://github.com/immortalwrt/packages): Community repository of ported packages.
   - [OpenWrt Routing](https://github.com/openwrt/routing): Packages specifically focused on (mesh) routing.
+  - [OpenWrt Video](https://github.com/openwrt/video): Packages specifically focused on display servers and clients (Xorg and Wayland).
   - [CONTRIBUTED.md](https://github.com/immortalwrt/immortalwrt/blob/master/CONTRIBUTED.md): the 3rd-party packages we introduced.
-
-* [OpenWrt Video](https://github.com/openwrt/video): Packages specifically
-  focused on display servers and clients (Xorg and Wayland).
 
 ## Support Information
 For a list of supported devices see the [OpenWrt Hardware Database](https://openwrt.org/supported_devices)
