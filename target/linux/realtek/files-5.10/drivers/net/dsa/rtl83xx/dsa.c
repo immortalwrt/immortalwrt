@@ -864,7 +864,20 @@ static void rtl83xx_phylink_mac_link_down(struct dsa_switch *ds, int port,
 				     phy_interface_t interface)
 {
 	struct rtl838x_switch_priv *priv = ds->priv;
-	u32 v;
+
+	/* Stop TX/RX to port */
+	sw_w32_mask(0x3, 0, priv->r->mac_port_ctrl(port));
+
+	// No longer force link
+	sw_w32_mask(0x3, 0, priv->r->mac_force_mode_ctrl(port));
+}
+
+static void rtl93xx_phylink_mac_link_down(struct dsa_switch *ds, int port,
+				     unsigned int mode,
+				     phy_interface_t interface)
+{
+	struct rtl838x_switch_priv *priv = ds->priv;
+	u32 v = 0;
 
 	/* Stop TX/RX to port */
 	sw_w32_mask(0x3, 0, priv->r->mac_port_ctrl(port));
@@ -874,19 +887,7 @@ static void rtl83xx_phylink_mac_link_down(struct dsa_switch *ds, int port,
 		v = RTL930X_FORCE_EN | RTL930X_FORCE_LINK_EN;
 	else if (priv->family_id == RTL9310_FAMILY_ID)
 		v = RTL931X_FORCE_EN | RTL931X_FORCE_LINK_EN;
-	sw_w32_mask(v, 0, priv->r->mac_port_ctrl(port));
-}
-
-static void rtl93xx_phylink_mac_link_down(struct dsa_switch *ds, int port,
-				     unsigned int mode,
-				     phy_interface_t interface)
-{
-	struct rtl838x_switch_priv *priv = ds->priv;
-	/* Stop TX/RX to port */
-	sw_w32_mask(0x3, 0, priv->r->mac_port_ctrl(port));
-
-	// No longer force link
-	sw_w32_mask(3, 0, priv->r->mac_force_mode_ctrl(port));
+	sw_w32_mask(v, 0, priv->r->mac_force_mode_ctrl(port));
 }
 
 static void rtl83xx_phylink_mac_link_up(struct dsa_switch *ds, int port,
@@ -1689,8 +1690,8 @@ static int rtl83xx_port_fdb_del(struct dsa_switch *ds, int port,
 
 	idx = rtl83xx_find_l2_hash_entry(priv, seed, true, &e);
 
-	pr_info("Found entry index %d, key %d and bucket %d\n", idx, idx >> 2, idx & 3);
 	if (idx >= 0) {
+		pr_info("Found entry index %d, key %d and bucket %d\n", idx, idx >> 2, idx & 3);
 		e.valid = false;
 		dump_l2_entry(&e);
 		priv->r->write_l2_entry_using_hash(idx >> 2, idx & 0x3, &e);
@@ -1870,8 +1871,8 @@ int rtl83xx_port_mdb_del(struct dsa_switch *ds, int port,
 
 	idx = rtl83xx_find_l2_hash_entry(priv, seed, true, &e);
 
-	pr_debug("Found entry index %d, key %d and bucket %d\n", idx, idx >> 2, idx & 3);
 	if (idx >= 0) {
+		pr_debug("Found entry index %d, key %d and bucket %d\n", idx, idx >> 2, idx & 3);
 		portmask = rtl83xx_mc_group_del_port(priv, e.mc_portmask_index, port);
 		if (!portmask) {
 			e.valid = false;
