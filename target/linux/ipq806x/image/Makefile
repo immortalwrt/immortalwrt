@@ -393,10 +393,10 @@ define Device/ubnt_unifi-ac-hd
 endef
 TARGET_DEVICES += ubnt_unifi-ac-hd
 
-define Device/xiaomi_r3d
+define Device/xiaomi_mi-router-hd
 	$(call Device/LegacyImage)
 	DEVICE_VENDOR := Xiaomi
-	DEVICE_MODEL := R3D
+	DEVICE_MODEL := Mi Router HD
 	SOC := qcom-ipq8064
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
@@ -408,7 +408,7 @@ define Device/xiaomi_r3d
 	DEVICE_PACKAGES := kmod-i2c-gpio kmod-hwmon-lm75 hwmon-drivetemp \
 		kmod-usb-storage-uas ath10k-firmware-qca9984-ct ath10k-firmware-qca99x0-ct
 endef
-TARGET_DEVICES += xiaomi_r3d
+TARGET_DEVICES += xiaomi_mi-router-hd
 
 define Device/zyxel_nbg6817
 	DEVICE_VENDOR := ZyXEL

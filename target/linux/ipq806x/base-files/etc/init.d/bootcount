@@ -16,7 +16,7 @@ boot() {
 	linksys,ea8500)
 		mtd resetbc s_env || true
 		;;
-	xiaomi,r3d)
+	xiaomi,mi-router-hd)
 		local boot_wait=$( fw_printenv boot_wait | cut -d = -f 2 )
 		[ "$boot_wait" != "on" ] && fw_setenv boot_wait on
 		local bootdelay=$( fw_printenv bootdelay | cut -d = -f 2 )

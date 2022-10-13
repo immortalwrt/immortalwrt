@@ -23,7 +23,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 +	qcom-ipq8064-ea7500-v1.dtb \
 +	qcom-ipq8064-ea8500.dtb \
 +	qcom-ipq8064-g10.dtb \
-+	qcom-ipq8064-r3d.dtb \
++	qcom-ipq8064-mi-router-hd.dtb \
 +	qcom-ipq8064-r7500.dtb \
 +	qcom-ipq8064-r7500v2.dtb \
 +	qcom-ipq8064-unifi-ac-hd.dtb \
