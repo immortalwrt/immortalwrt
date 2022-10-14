@@ -206,7 +206,7 @@ detect_mac80211() {
 			set wireless.default_${name}.device=${name}
 			set wireless.default_${name}.network=lan
 			set wireless.default_${name}.mode=ap
-			set wireless.default_${name}.ssid=OpenWrt
+			set wireless.default_${name}.ssid=ImmortalWrt
 			set wireless.default_${name}.encryption=none
 			set wireless.default_${name}.iw_qos_map_set=none
 EOF
