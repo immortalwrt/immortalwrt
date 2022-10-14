@@ -19,12 +19,12 @@
 #include <termios.h>
 #include <stdio.h>
 #include <ctype.h>
-typedef unsigned short sa_family_t;
-#include <linux/un.h>
 #include "QMIThread.h"
 
 #ifdef CONFIG_QMIWWAN
 static int cdc_wdm_fd = -1;
+static UCHAR qmiclientId[QMUX_TYPE_ALL];
+
 static UCHAR GetQCTLTransactionId(void) {
     static int TransactionId = 0;
     if (++TransactionId > 0xFF)
@@ -65,11 +65,13 @@ static PQCQMIMSG ComposeQCTLMsg(USHORT QMICTLType, CUSTOMQCTL customQctlMsgFunct
     return pRequest;
 }
 
-static USHORT CtlGetVersionReq(PQMICTL_MSG QCTLMsg, void *arg) {
-   QCTLMsg->GetVersionReq.TLVType       = QCTLV_TYPE_REQUIRED_PARAMETER;
-   QCTLMsg->GetVersionReq.TLVLength     = cpu_to_le16(0x0001);
-   QCTLMsg->GetVersionReq.QMUXTypes     = QMUX_TYPE_ALL;
-   return sizeof(QMICTL_GET_VERSION_REQ_MSG);
+static USHORT CtlGetVersionReq(PQMICTL_MSG QCTLMsg, void *arg)
+{
+    (void)arg;
+    QCTLMsg->GetVersionReq.TLVType = QCTLV_TYPE_REQUIRED_PARAMETER;
+    QCTLMsg->GetVersionReq.TLVLength = cpu_to_le16(0x0001);
+    QCTLMsg->GetVersionReq.QMUXTypes = QMUX_TYPE_ALL;
+    return sizeof(QMICTL_GET_VERSION_REQ_MSG);
 }
 
 static USHORT CtlGetClientIdReq(PQMICTL_MSG QCTLMsg, void *arg) {
@@ -87,6 +89,39 @@ static USHORT CtlReleaseClientIdReq(PQMICTL_MSG QCTLMsg, void *arg) {
    return sizeof(QMICTL_RELEASE_CLIENT_ID_REQ_MSG);
 }
 
+static USHORT CtlLibQmiProxyOpenReq(PQMICTL_MSG QCTLMsg, void *arg)
+{
+    (void)arg;
+    const char *device_path = (const char *)(arg);
+    QCTLMsg->LibQmiProxyOpenReq.TLVType = 0x01;
+    QCTLMsg->LibQmiProxyOpenReq.TLVLength = cpu_to_le16(strlen(device_path));
+    //strcpy(QCTLMsg->LibQmiProxyOpenReq.device_path, device_path);
+    //__builtin___strcpy_chk
+    memcpy(QCTLMsg->LibQmiProxyOpenReq.device_path, device_path, strlen(device_path));
+    return sizeof(QMICTL_LIBQMI_PROXY_OPEN_MSG) + (strlen(device_path));
+}
+
+static int libqmi_proxy_open(const char *cdc_wdm) {
+    int ret;
+    PQCQMIMSG pResponse;
+
+    ret = QmiThreadSendQMI(ComposeQCTLMsg(QMI_MESSAGE_CTL_INTERNAL_PROXY_OPEN,
+        CtlLibQmiProxyOpenReq, (void *)cdc_wdm), &pResponse);
+    if (!ret && pResponse
+        && pResponse->CTLMsg.QMICTLMsgHdrRsp.QMUXResult == 0
+        && pResponse->CTLMsg.QMICTLMsgHdrRsp.QMUXError == 0) {
+        ret = 0;
+    }
+    else {
+        return -1;
+    }
+
+    if (pResponse)
+            free(pResponse);
+
+    return ret;
+}
+
 static int QmiWwanSendQMI(PQCQMIMSG pRequest) {
     struct pollfd pollfds[]= {{cdc_wdm_fd, POLLOUT, 0}};
     int ret;
@@ -96,8 +131,16 @@ static int QmiWwanSendQMI(PQCQMIMSG pRequest) {
         return -ENODEV;
     }
 
-    if (pRequest->QMIHdr.QMIType == QMUX_TYPE_WDS_IPV6)
-        pRequest->QMIHdr.QMIType = QMUX_TYPE_WDS;
+    if (pRequest->QMIHdr.QMIType != QMUX_TYPE_CTL) {
+        pRequest->QMIHdr.ClientId = qmiclientId[pRequest->QMIHdr.QMIType];
+        if (pRequest->QMIHdr.ClientId == 0) {
+            dbg_time("QMIType %d has no clientID", pRequest->QMIHdr.QMIType);
+            return -ENODEV;
+        }
+
+        if (pRequest->QMIHdr.QMIType == QMUX_TYPE_WDS_IPV6)
+            pRequest->QMIHdr.QMIType = QMUX_TYPE_WDS;
+    }
 
     do {
         ret = poll(pollfds, sizeof(pollfds)/sizeof(pollfds[0]), 5000);
@@ -118,7 +161,7 @@ static int QmiWwanSendQMI(PQCQMIMSG pRequest) {
     return ret;
 }
 
-static int QmiWwanGetClientID(UCHAR QMIType) {
+static UCHAR QmiWwanGetClientID(UCHAR QMIType) {
     PQCQMIMSG pResponse;
 
     QmiThreadSendQMI(ComposeQCTLMsg(QMICTL_GET_CLIENT_ID_REQ, CtlGetClientIdReq, &QMIType), &pResponse);
@@ -138,6 +181,7 @@ static int QmiWwanGetClientID(UCHAR QMIType) {
                 case QMUX_TYPE_WMS: dbg_time("Get clientWMS = %d", ClientId); break;
                 case QMUX_TYPE_PDS: dbg_time("Get clientPDS = %d", ClientId); break;
                 case QMUX_TYPE_UIM: dbg_time("Get clientUIM = %d", ClientId); break;
+                case QMUX_TYPE_COEX: dbg_time("Get clientCOEX = %d", ClientId); break;
                 case QMUX_TYPE_WDS_ADMIN: dbg_time("Get clientWDA = %d", ClientId);
                 break;
                 default: break;
@@ -159,10 +203,15 @@ static int QmiWwanInit(PROFILE_T *profile) {
     int ret;
     PQCQMIMSG pResponse;
 
-    if (profile->qmap_mode == 0 || profile->qmap_mode == 1)
-    {
+    if (profile->proxy[0] && !strcmp(profile->proxy, LIBQMI_PROXY)) {
+        ret = libqmi_proxy_open(profile->qmichannel);
+        if (ret)
+            return ret;
+    }
+
+    if (!profile->proxy[0]) {
         for (i = 0; i < 10; i++) {
-            ret = QmiThreadSendQMITimeout(ComposeQCTLMsg(QMICTL_SYNC_REQ, NULL, NULL), NULL, 1 * 1000);
+            ret = QmiThreadSendQMITimeout(ComposeQCTLMsg(QMICTL_SYNC_REQ, NULL, NULL), NULL, 1 * 1000, __func__);
             if (!ret)
                 break;
             sleep(1);
@@ -197,8 +246,14 @@ static int QmiWwanInit(PROFILE_T *profile) {
     qmiclientId[QMUX_TYPE_DMS] = QmiWwanGetClientID(QMUX_TYPE_DMS);
     qmiclientId[QMUX_TYPE_NAS] = QmiWwanGetClientID(QMUX_TYPE_NAS);
     qmiclientId[QMUX_TYPE_UIM] = QmiWwanGetClientID(QMUX_TYPE_UIM);
-    if (profile->qmap_mode == 0 || profile->qmap_mode == 1)
-        qmiclientId[QMUX_TYPE_WDS_ADMIN] = QmiWwanGetClientID(QMUX_TYPE_WDS_ADMIN);
+    qmiclientId[QMUX_TYPE_WDS_ADMIN] = QmiWwanGetClientID(QMUX_TYPE_WDS_ADMIN);
+#ifdef CONFIG_COEX_WWAN_STATE
+    qmiclientId[QMUX_TYPE_COEX] = QmiWwanGetClientID(QMUX_TYPE_COEX);
+#endif
+#ifdef CONFIG_ENABLE_QOS
+    qmiclientId[QMUX_TYPE_QOS] = QmiWwanGetClientID(QMUX_TYPE_QOS);
+#endif
+    profile->wda_client = qmiclientId[QMUX_TYPE_WDS_ADMIN];
 
     return 0;
 }
@@ -217,61 +272,74 @@ static int QmiWwanDeInit(void) {
     return 0;
 }
 
-#define QUECTEL_QMI_PROXY "quectel-qmi-proxy"
-static int qmi_proxy_open(const char *name) {
-    int sockfd = -1;
-    int reuse_addr = 1;
-    struct sockaddr_un sockaddr;
-    socklen_t alen;
-
-    /*Create server socket*/
-    (sockfd = socket(AF_LOCAL, SOCK_STREAM, 0));
-    if (sockfd < 0)
-        return sockfd;
-
-    memset(&sockaddr, 0, sizeof(sockaddr));
-    sockaddr.sun_family = AF_LOCAL;
-    sockaddr.sun_path[0] = 0;
-    memcpy(sockaddr.sun_path + 1, name, strlen(name) );
-
-    alen = strlen(name) + offsetof(struct sockaddr_un, sun_path) + 1;
-    if(connect(sockfd, (struct sockaddr *)&sockaddr, alen) < 0) {
-        close(sockfd);
-        dbg_time("%s connect %s errno: %d (%s)\n", __func__, name, errno, strerror(errno));
-        return -1;
-    }
-    (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse_addr,sizeof(reuse_addr)));
-
-    dbg_time("connect to %s sockfd = %d\n", name, sockfd);
-
-    return sockfd;
-}
-
 static ssize_t qmi_proxy_read (int fd, void *buf, size_t size) {
     ssize_t nreads;
     PQCQMI_HDR pHdr = (PQCQMI_HDR)buf;
 
     nreads = read(fd, pHdr, sizeof(QCQMI_HDR));
-    if (nreads == sizeof(QCQMI_HDR)) {
+    if (nreads == sizeof(QCQMI_HDR) && le16_to_cpu(pHdr->Length) < size) {
         nreads += read(fd, pHdr+1, le16_to_cpu(pHdr->Length) + 1 - sizeof(QCQMI_HDR));
     }
 
     return nreads;
 }
 
+#ifdef QUECTEL_QMI_MERGE
+static int QmiWwanMergeQmiRsp(void *buf, ssize_t *src_size) {
+    static QMI_MSG_PACKET s_QMIPacket;
+    QMI_MSG_HEADER *header = NULL;
+    ssize_t size = *src_size;
+
+    if((uint16_t)size < sizeof(QMI_MSG_HEADER))
+        return -1;
+
+    header = (QMI_MSG_HEADER *)buf;
+    if(le16_to_cpu(header->idenity) != MERGE_PACKET_IDENTITY || le16_to_cpu(header->version) != MERGE_PACKET_VERSION || le16_to_cpu(header->cur_len) > le16_to_cpu(header->total_len)) 
+        return -1;
+
+    if(le16_to_cpu(header->cur_len) == le16_to_cpu(header->total_len)) {
+        *src_size = le16_to_cpu(header->total_len);
+        memcpy(buf, buf + sizeof(QMI_MSG_HEADER), *src_size);
+        s_QMIPacket.len = 0;  
+        return 0;
+    } 
+
+    memcpy(s_QMIPacket.buf + s_QMIPacket.len, buf + sizeof(QMI_MSG_HEADER), le16_to_cpu(header->cur_len));
+    s_QMIPacket.len += le16_to_cpu(header->cur_len);
+
+    if (le16_to_cpu(header->cur_len) < MERGE_PACKET_MAX_PAYLOAD_SIZE || s_QMIPacket.len >= le16_to_cpu(header->total_len)) { 
+       memcpy(buf, s_QMIPacket.buf, s_QMIPacket.len);      
+       *src_size = s_QMIPacket.len;
+       s_QMIPacket.len = 0;
+       return 0;           
+    }
+
+    return -1;
+}
+#endif
+
 static void * QmiWwanThread(void *pData) {
     PROFILE_T *profile = (PROFILE_T *)pData;
     const char *cdc_wdm = (const char *)profile->qmichannel;
     int wait_for_request_quit = 0;
-    char servername[32];
-    int num = profile->usbnet_adapter[strlen(profile->usbnet_adapter)-1] - '0';
+    char num = cdc_wdm[strlen(cdc_wdm)-1];
 	
-    sprintf(servername, QUECTEL_QMI_PROXY"%d", num);
+    if (profile->proxy[0]) {
+         if (!strncmp(profile->proxy, QUECTEL_QMI_PROXY, strlen(QUECTEL_QMI_PROXY))) {
+            snprintf(profile->proxy, sizeof(profile->proxy), "%s%c", QUECTEL_QMI_PROXY, num);
+         }
+    }
+    else if (!strncmp(cdc_wdm, "/dev/mhi_IPCR", strlen("/dev/mhi_IPCR"))) {
+        snprintf(profile->proxy, sizeof(profile->proxy), "%s%c", QUECTEL_QRTR_PROXY, num);
+    }
+    else if (profile->qmap_mode > 1) {
+        snprintf(profile->proxy, sizeof(profile->proxy), "%s%c", QUECTEL_QMI_PROXY, num);
+    }
     
-    if (profile->qmap_mode == 0 || profile->qmap_mode == 1)
-        cdc_wdm_fd = open(cdc_wdm, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    if (profile->proxy[0])
+        cdc_wdm_fd = cm_open_proxy(profile->proxy);
     else
-        cdc_wdm_fd = qmi_proxy_open(servername);
+        cdc_wdm_fd = cm_open_dev(cdc_wdm);
 
     if (cdc_wdm_fd == -1) {
         dbg_time("%s Failed to open %s, errno: %d (%s)", __func__, cdc_wdm, errno, strerror(errno));
@@ -279,9 +347,6 @@ static void * QmiWwanThread(void *pData) {
         pthread_exit(NULL);
         return NULL;
     }
-
-    fcntl(cdc_wdm_fd, F_SETFL, fcntl(cdc_wdm_fd,F_GETFL) | O_NONBLOCK);
-    fcntl(cdc_wdm_fd, F_SETFD, FD_CLOEXEC);
 
     dbg_time("cdc_wdm_fd = %d", cdc_wdm_fd);
 
@@ -342,19 +407,21 @@ static void * QmiWwanThread(void *pData) {
 
             if (fd == cdc_wdm_fd) {
                 ssize_t nreads;
-                static UCHAR QMIBuf[4096];
-                PQCQMIMSG pResponse = (PQCQMIMSG)QMIBuf;
+                PQCQMIMSG pResponse = (PQCQMIMSG)cm_recv_buf;
                 
-                if (profile->qmap_mode == 0 || profile->qmap_mode == 1)
-                    nreads = read(fd, QMIBuf, sizeof(QMIBuf));
+                if (!profile->proxy[0])
+                    nreads = read(fd, cm_recv_buf, sizeof(cm_recv_buf));
                 else
-                    nreads = qmi_proxy_read(fd, QMIBuf, sizeof(QMIBuf));
+                    nreads = qmi_proxy_read(fd, cm_recv_buf, sizeof(cm_recv_buf));
                 //dbg_time("%s read=%d errno: %d (%s)",  __func__, (int)nreads, errno, strerror(errno));
                 if (nreads <= 0) {
                     dbg_time("%s read=%d errno: %d (%s)",  __func__, (int)nreads, errno, strerror(errno));
                     break;
                 }
-
+#ifdef QUECTEL_QMI_MERGE
+                if((profile->qmap_mode == 0 || profile->qmap_mode == 1) && QmiWwanMergeQmiRsp(cm_recv_buf, &nreads))
+                    continue;             
+#endif
                 if (nreads != (le16_to_cpu(pResponse->QMIHdr.Length) + 1)) {
                     dbg_time("%s nreads=%d,  pQCQMI->QMIHdr.Length = %d",  __func__, (int)nreads, le16_to_cpu(pResponse->QMIHdr.Length));
                     continue;
@@ -374,16 +441,19 @@ __QmiWwanThread_quit:
     return NULL;
 }
 
-#else
-static int QmiWwanSendQMI(PQCQMIMSG pRequest) {return -1;}
-static int QmiWwanInit(PROFILE_T *profile) {return -1;}
-static int QmiWwanDeInit(void) {return -1;}
-static void * QmiWwanThread(void *pData) {dbg_time("please set CONFIG_QMIWWAN"); return NULL;}
-#endif
-
 const struct qmi_device_ops qmiwwan_qmidev_ops = {
     .init = QmiWwanInit,
     .deinit = QmiWwanDeInit,
     .send = QmiWwanSendQMI,
     .read = QmiWwanThread,
 };
+
+uint8_t qmi_over_mbim_get_client_id(uint8_t QMIType) {
+    return QmiWwanGetClientID(QMIType);
+}
+
+uint8_t qmi_over_mbim_release_client_id(uint8_t QMIType, uint8_t ClientId) {
+    return QmiWwanReleaseClientID(QMIType, ClientId);
+}
+#endif
+

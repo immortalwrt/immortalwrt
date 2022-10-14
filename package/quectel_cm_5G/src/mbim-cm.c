@@ -27,12 +27,10 @@
 #include <getopt.h>
 #include <poll.h>
 #include <sys/time.h>
-#include <endian.h>
 #include <time.h>
 #include <sys/types.h>
 #include <limits.h>
 #include <inttypes.h>
-
 #include "QMIThread.h"
 
 #define mbim_debug dbg_time
@@ -49,12 +47,13 @@
 #define uuid_ext_qmux "d1a30bc2-f97a-6e43-bf65-c7e24fb0f0d3"
 #define uuid_mshsd "883b7c26-985f-43fa-9804-27d7fb80959c"
 #define uuid_qmbe "2d0c12c9-0e6a-495a-915c-8d174fe5d63c"
-#define UUID_MSFWID "e9f7dea2-feaf-4009-93ce-90a3694103b6"  
+#define UUID_MSFWID "e9f7dea2-feaf-4009-93ce-90a3694103b6"
 #define uuid_atds "5967bdcc-7fd2-49a2-9f5c-b2e70e527db3"
 #define uuid_qdu "6427015f-579d-48f5-8c54-f43ed1e76f83"
 #define UUID_MS_UICC_LOW_LEVEL "c2f6588e-f037-4bc9-8665-f4d44bd09367"
-#define UUID_MS_SARControl "68223D04-9F6C-4E0F-822D-28441FB72340"		 
+#define UUID_MS_SARControl "68223D04-9F6C-4E0F-822D-28441FB72340"
 #define UUID_VOICEEXTENSIONS	"8d8b9eba-37be-449b-8f1e-61cb034a702e"
+#define UUID_LIBMBIM_PROXY "838cf7fb-8d0d-4d7f-871e-d71dbefbb39b"
 
 #define UUID_MBIMContextTypeInternet "7E5E2A7E-4E6F-7272-736B-656E7E5E2A7E"
 
@@ -63,83 +62,53 @@ typedef unsigned short UINT16;
 typedef unsigned int UINT32;
 typedef unsigned long long UINT64;
 
-#define STRINGFY(v) #v
-/* The function name will be _ENUM_NAMEStr */
-#define enumstrfunc(_ENUM_NAME, _ENUM_MEMS) \
-static const char *_ENUM_NAME##Str(int _val) { \
-    struct { int val;char *name;} _enumstr[] = { _ENUM_MEMS }; \
-    int idx; for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) { \
-        if (_val == _enumstr[idx].val) return _enumstr[idx].name;} \
-    return STRINGFY(_ENUM_NAME##Unknow); \
-}
-
 #pragma pack(4)
 typedef enum {
     MBIM_CID_CMD_TYPE_QUERY = 0,
     MBIM_CID_CMD_TYPE_SET = 1,
 } MBIM_CID_CMD_TYPE_E;
 
-//Set Query Notification
-#define UUID_BASIC_CONNECT_CIDs \
-    MBIM_ENUM_HELPER(MBIM_CID_DEVICE_CAPS, 1) \
-    MBIM_ENUM_HELPER(MBIM_CID_SUBSCRIBER_READY_STATUS, 2) \
-    MBIM_ENUM_HELPER(MBIM_CID_RADIO_STATE, 3) \
-    MBIM_ENUM_HELPER(MBIM_CID_PIN, 4) \
-    MBIM_ENUM_HELPER(MBIM_CID_PIN_LIS, 5) \
-    MBIM_ENUM_HELPER(MBIM_CID_HOME_PROVIDER, 6) \
-    MBIM_ENUM_HELPER(MBIM_CID_PREFERRED_PROVIDERS, 7) \
-    MBIM_ENUM_HELPER(MBIM_CID_VISIBLE_PROVIDERS, 8) \
-    MBIM_ENUM_HELPER(MBIM_CID_REGISTER_STATE, 9) \
-    MBIM_ENUM_HELPER(MBIM_CID_PACKET_SERVICE, 10) \
-    MBIM_ENUM_HELPER(MBIM_CID_SIGNAL_STATE, 11) \
-    MBIM_ENUM_HELPER(MBIM_CID_CONNECT, 12) \
-    MBIM_ENUM_HELPER(MBIM_CID_PROVISIONED_CONTEXTS, 13) \
-    MBIM_ENUM_HELPER(MBIM_CID_SERVICE_ACTIVATION, 14) \
-    MBIM_ENUM_HELPER(MBIM_CID_IP_CONFIGURATION, 15) \
-    MBIM_ENUM_HELPER(MBIM_CID_DEVICE_SERVICES, 16) \
-    MBIM_ENUM_HELPER(MBIM_CID_DEVICE_SERVICE_SUBSCRIBE_LIST, 19) \
-    MBIM_ENUM_HELPER(MBIM_CID_PACKET_STATISTICS, 20) \
-    MBIM_ENUM_HELPER(MBIM_CID_NETWORK_IDLE_HINT, 21) \
-    MBIM_ENUM_HELPER(MBIM_CID_EMERGENCY_MODE, 22) \
-    MBIM_ENUM_HELPER(MBIM_CID_IP_PACKET_FILTERS, 23) \
-    MBIM_ENUM_HELPER(MBIM_CID_MULTICARRIER_PROVIDERS, 24)
-
-#define MBIM_ENUM_HELPER(k, v) k = v,
-typedef enum{
-    UUID_BASIC_CONNECT_CIDs
+typedef enum {
+     MBIM_CID_DEVICE_CAPS = 1, 
+     MBIM_CID_SUBSCRIBER_READY_STATUS = 2, 
+     MBIM_CID_RADIO_STATE = 3, MBIM_CID_PIN = 4,
+     MBIM_CID_PIN_LIS = 5,
+     MBIM_CID_HOME_PROVIDER = 6,
+     MBIM_CID_PREFERRED_PROVIDERS = 7,
+     MBIM_CID_VISIBLE_PROVIDERS = 8,
+     MBIM_CID_REGISTER_STATE = 9,
+     MBIM_CID_PACKET_SERVICE = 10,
+     MBIM_CID_SIGNAL_STATE = 11,
+     MBIM_CID_CONNECT = 12,
+     MBIM_CID_PROVISIONED_CONTEXTS = 13,
+     MBIM_CID_SERVICE_ACTIVATION = 14,
+     MBIM_CID_IP_CONFIGURATION =       15,
+     MBIM_CID_DEVICE_SERVICES = 16,
+     MBIM_CID_DEVICE_SERVICE_SUBSCRIBE_LIST = 19, 
+     MBIM_CID_PACKET_STATISTICS = 20, 
+     MBIM_CID_NETWORK_IDLE_HINT = 21,
+     MBIM_CID_EMERGENCY_MODE = 22,
+     MBIM_CID_IP_PACKET_FILTERS = 23, 
+     MBIM_CID_MULTICARRIER_PROVIDERS = 24,
 } UUID_BASIC_CONNECT_CID_E;
-#undef MBIM_ENUM_HELPER
-#define MBIM_ENUM_HELPER(k, v) {k, #k},
-enumstrfunc(CID2, UUID_BASIC_CONNECT_CIDs);
-#undef MBIM_ENUM_HELPER
 
-static int mbim_ms_version = 1;
-
-#define UUID_BASIC_CONNECT_EXT_CIDs \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_PROVISIONED_CONTEXT_V2, 1) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_NETWORK_BLACKLIST, 2) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_LTE_ATTACH_CONFIG, 3) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_LTE_ATTACH_STATUS , 4) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_SYS_CAPS , 5) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_DEVICE_CAPS_V2, 6) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_DEVICE_SLOT_MAPPING, 7) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_SLOT_INFO_STATUS, 8) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_PCO, 9) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_DEVICE_RESET, 10) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_BASE_STATIONS_INFO, 11) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_LOCATION_INFO_STATUS, 12) \
-    MBIM_ENUM_HELPER(MBIM_CID_NOT_DEFINED, 13) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_PIN_EX, 14) \
-    MBIM_ENUM_HELPER(MBIM_CID_MS_VERSION , 15)
-
-#define MBIM_ENUM_HELPER(k, v) k = v,
 typedef enum{
-    UUID_BASIC_CONNECT_EXT_CIDs
+    MBIM_CID_MS_PROVISIONED_CONTEXT_V2 = 1, 
+    MBIM_CID_MS_NETWORK_BLACKLIST = 2,
+    MBIM_CID_MS_LTE_ATTACH_CONFIG = 3, 
+    MBIM_CID_MS_LTE_ATTACH_STATUS = 4, 
+    MBIM_CID_MS_SYS_CAPS = 5, 
+    MBIM_CID_MS_DEVICE_CAPS_V2 = 6, 
+    MBIM_CID_MS_DEVICE_SLOT_MAPPING = 7, 
+    MBIM_CID_MS_SLOT_INFO_STATUS = 8, 
+    MBIM_CID_MS_PCO = 9, 
+    MBIM_CID_MS_DEVICE_RESET = 10, 
+    MBIM_CID_MS_BASE_STATIONS_INFO = 11, 
+    MBIM_CID_MS_LOCATION_INFO_STATUS = 12, 
+    MBIM_CID_NOT_DEFINED = 13, 
+    MBIM_CID_MS_PIN_EX = 14, 
+    MBIM_CID_MS_VERSION = 15,
 } UUID_BASIC_CONNECT_EXT_CID_E;
-#undef MBIM_ENUM_HELPER
-#define MBIM_ENUM_HELPER(k, v) {k, #k},
-enumstrfunc(MS_CID2, UUID_BASIC_CONNECT_EXT_CIDs);
-#undef MBIM_ENUM_HELPER
 
 typedef enum {
     MBIM_CID_SMS_CONFIGURATION = 1, // Y Y Y
@@ -153,26 +122,32 @@ typedef enum {
     MBIM_CID_DSS_CONNECT = 1, // Y N N
 } UUID_DSS_CID_E;
 
-#define MBIM_MSGS \
-    MBIM_ENUM_HELPER(MBIM_OPEN_MSG, 1) \
-    MBIM_ENUM_HELPER(MBIM_CLOSE_MSG, 2) \
-    MBIM_ENUM_HELPER(MBIM_COMMAND_MSG, 3) \
-    MBIM_ENUM_HELPER(MBIM_HOST_ERROR_MSG, 4) \
-    \
-    MBIM_ENUM_HELPER(MBIM_OPEN_DONE, 0x80000001) \
-    MBIM_ENUM_HELPER(MBIM_CLOSE_DONE, 0x80000002) \
-    MBIM_ENUM_HELPER(MBIM_COMMAND_DONE, 0x80000003) \
-    MBIM_ENUM_HELPER(MBIM_FUNCTION_ERROR_MSG, 0x80000004) \
-    MBIM_ENUM_HELPER(MBIM_INDICATE_STATUS_MSG, 0x80000007)
-
-#define MBIM_ENUM_HELPER(k, v) k = v,
 typedef enum{
-    MBIM_MSGS
+    MBIM_OPEN_MSG = 1, 
+    MBIM_CLOSE_MSG = 2, 
+    MBIM_COMMAND_MSG = 3, 
+    MBIM_HOST_ERROR_MSG = 4,
+    MBIM_OPEN_DONE = 0x80000001, 
+    MBIM_CLOSE_DONE = 0x80000002, 
+    MBIM_COMMAND_DONE = 0x80000003, 
+    MBIM_FUNCTION_ERROR_MSG = 0x80000004,       
+    MBIM_INDICATE_STATUS_MSG = 0x80000007,
 } MBIM_MSG_Type_E;
-#undef MBIM_ENUM_HELPER
-#define MBIM_ENUM_HELPER(k, v) {k, #k},
-enumstrfunc(MBIMMSGType, MBIM_MSGS);
-#undef MBIM_ENUM_HELPER
+ 
+typedef enum { /*< since=1.10 >*/
+    MBIM_CID_PROXY_CONTROL_UNKNOWN       = 0,
+    MBIM_CID_PROXY_CONTROL_CONFIGURATION = 1
+} UUID_LIBMBIM_PROXY_CID_E;
+
+typedef enum {
+    MBIM_CID_MS_UICC_ATR = 1,
+    MBIM_CID_MS_UICC_OPEN_CHANNEL = 2,
+    MBIM_CID_MS_UICC_CLOSE_CHANNEL  = 3,
+    MBIM_CID_MS_UICC_APDU = 4,
+    MBIM_CID_MS_UICC_TERMINAL_CAPABILITY = 5,
+    MBIM_CID_MS_UICC_RESET = 6,
+    MBIM_CID_MS_APP_LIST = 7,
+} UUID_MS_UICC_CID_E;
 
 typedef enum {
     MBIM_ERROR_TIMEOUT_FRAGMENT = 1,
@@ -222,12 +197,12 @@ static const char *MBIMPacketServiceStateStr(int _val) {
         {MBIMPacketServiceStateDetaching, "Detaching"},
         {MBIMPacketServiceStateDetached, "Detached"},
     };
-    int idx; 
+    int idx;
 
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) {
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
         if (_val == _enumstr[idx].val)
             return _enumstr[idx].name;
-    } 
+    }
 
     return "Undefined";
 };
@@ -274,11 +249,11 @@ static const char *MBIMDataClassStr(int _val) {
     };
     int idx;
 
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) {
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
         if (_val == _enumstr[idx].val)
             return _enumstr[idx].name;
     }
-    
+
     return "Unknow";
 };
 
@@ -295,37 +270,37 @@ typedef struct {
     UINT32 PacketServiceState; //MBIM_PACKET_SERVICE_STATE_E
     UINT32 CurrentDataClass; //MBIM_DATA_CLASS_E
     UINT64 UplinkSpeed;
-    UINT64 DownlinkSpeed;    
+    UINT64 DownlinkSpeed;
     UINT32 FrequencyRange;
 } MBIM_PACKET_SERVICE_INFO_V2_T;
 
 typedef enum {
-    MBIMSubscriberReadyStateNotInitialized = 0, 
-    MBIMSubscriberReadyStateInitialized = 1, 
-    MBIMSubscriberReadyStateSimNotInserted = 2, 
-    MBIMSubscriberReadyStateBadSim = 3, 
-    MBIMSubscriberReadyStateFailure = 4, 
-    MBIMSubscriberReadyStateNotActivated = 5, 
+    MBIMSubscriberReadyStateNotInitialized = 0,
+    MBIMSubscriberReadyStateInitialized = 1,
+    MBIMSubscriberReadyStateSimNotInserted = 2,
+    MBIMSubscriberReadyStateBadSim = 3,
+    MBIMSubscriberReadyStateFailure = 4,
+    MBIMSubscriberReadyStateNotActivated = 5,
     MBIMSubscriberReadyStateDeviceLocked = 6,
 }MBIM_SUBSCRIBER_READY_STATE_E;
 
-static const char *MBIMSubscriberReadyStateStr(int _val) { 
-    struct { int val;char *name;} _enumstr[] = { 
+static const char *MBIMSubscriberReadyStateStr(int _val) {
+    struct { int val;char *name;} _enumstr[] = {
         {MBIMSubscriberReadyStateNotInitialized, "NotInitialized"},
         {MBIMSubscriberReadyStateInitialized, "Initialized"},
-        {MBIMSubscriberReadyStateSimNotInserted, "NotInserted"}, 
-        {MBIMSubscriberReadyStateBadSim, "BadSim"}, 
-        {MBIMSubscriberReadyStateFailure, "Failure"}, 
-        {MBIMSubscriberReadyStateNotActivated, "NotActivated"}, 
-        {MBIMSubscriberReadyStateDeviceLocked, "DeviceLocked"}, 
-    }; 
+        {MBIMSubscriberReadyStateSimNotInserted, "NotInserted"},
+        {MBIMSubscriberReadyStateBadSim, "BadSim"},
+        {MBIMSubscriberReadyStateFailure, "Failure"},
+        {MBIMSubscriberReadyStateNotActivated, "NotActivated"},
+        {MBIMSubscriberReadyStateDeviceLocked, "DeviceLocked"},
+    };
     int idx;
-    
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) { 
+
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
         if (_val == _enumstr[idx].val)
             return _enumstr[idx].name;
     }
-    
+
     return "Undefined";
 };
 
@@ -388,15 +363,15 @@ typedef enum {
 typedef enum {
     MBIMRegisterStateUnknown = 0,
     MBIMRegisterStateDeregistered = 1,
-    MBIMRegisterStateSearching = 2, 
-    MBIMRegisterStateHome = 3, 
+    MBIMRegisterStateSearching = 2,
+    MBIMRegisterStateHome = 3,
     MBIMRegisterStateRoaming = 4,
     MBIMRegisterStatePartner = 5,
     MBIMRegisterStateDenied = 6,
 }MBIM_REGISTER_STATE_E;
 
 typedef enum {
-    MBIMRegisterModeUnknown = 0, 
+    MBIMRegisterModeUnknown = 0,
     MBIMRegisterModeAutomatic = 1,
     MBIMRegisterModeManual = 2,
 }MBIM_REGISTER_MODE_E;
@@ -404,37 +379,37 @@ typedef enum {
 static const char *MBIMRegisterStateStr(int _val) {
     struct { int val;char *name;} _enumstr[] ={
         {MBIMRegisterStateUnknown, "Unknown"},
-        {MBIMRegisterStateDeregistered, "Deregistered"}, 
-        {MBIMRegisterStateSearching, "Searching"}, 
-        {MBIMRegisterStateHome, "Home"}, 
-        {MBIMRegisterStateRoaming, "Roaming"}, 
-        {MBIMRegisterStatePartner, "Partner"}, 
-        {MBIMRegisterStateDenied, "Denied"}, 
-    }; 
-    int idx; 
-    
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) {
-        if (_val == _enumstr[idx].val) 
+        {MBIMRegisterStateDeregistered, "Deregistered"},
+        {MBIMRegisterStateSearching, "Searching"},
+        {MBIMRegisterStateHome, "Home"},
+        {MBIMRegisterStateRoaming, "Roaming"},
+        {MBIMRegisterStatePartner, "Partner"},
+        {MBIMRegisterStateDenied, "Denied"},
+    };
+    int idx;
+
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
+        if (_val == _enumstr[idx].val)
             return _enumstr[idx].name;
-    } 
+    }
 
     return "Undefined";
 };
 
-static const char *MBIMRegisterModeStr(int _val) { 
+static const char *MBIMRegisterModeStr(int _val) {
     struct { int val;char *name;} _enumstr[] = {
-        {MBIMRegisterModeUnknown, "Unknown"}, 
-        {MBIMRegisterModeAutomatic, "Automatic"}, 
-        {MBIMRegisterModeManual, "Manual"}, 
-    }; 
-    int idx; 
+        {MBIMRegisterModeUnknown, "Unknown"},
+        {MBIMRegisterModeAutomatic, "Automatic"},
+        {MBIMRegisterModeManual, "Manual"},
+    };
+    int idx;
 
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) { 
-        if (_val == _enumstr[idx].val) 
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
+        if (_val == _enumstr[idx].val)
             return _enumstr[idx].name;
-    } 
+    }
 
-    return "Undefined"; 
+    return "Undefined";
 };
 
 typedef enum {
@@ -477,16 +452,16 @@ typedef struct {
 } MBIM_REGISTRATION_STATE_INFO_V2_T;
 
 typedef struct {
-    UINT32 MessageType; //Specifies the MBIM message type. 
+    UINT32 MessageType; //Specifies the MBIM message type.
     UINT32 MessageLength; //Specifies the total length of this MBIM message in bytes.
-    /* Specifies the MBIM message id value.  This value is used to match host sent messages with function responses. 
-    This value must be unique among all outstanding transactions.    
+    /* Specifies the MBIM message id value.  This value is used to match host sent messages with function responses.
+    This value must be unique among all outstanding transactions.
     For notifications, the TransactionId must be set to 0 by the function */
     UINT32 TransactionId;
 } MBIM_MESSAGE_HEADER;
 
 typedef struct {
-    UINT32 TotalFragments; //this field indicates how many fragments there are intotal. 
+    UINT32 TotalFragments; //this field indicates how many fragments there are intotal.
     UINT32 CurrentFragment; //This field indicates which fragment this message is.  Values are 0 to TotalFragments?\1
 } MBIM_FRAGMENT_HEADER;
 
@@ -497,7 +472,7 @@ typedef struct {
 
 typedef struct {
     MBIM_MESSAGE_HEADER MessageHeader;
-    UINT32 Status;
+    UINT32 Status; //MBIM_STATUS_CODES_E
 } MBIM_OPEN_DONE_T;
 
 typedef struct {
@@ -516,7 +491,7 @@ typedef struct {
 typedef struct {
     MBIM_MESSAGE_HEADER MessageHeader;
     MBIM_FRAGMENT_HEADER FragmentHeader;
-    UUID_T DeviceServiceId; //A 16 byte UUID that identifies the device service the following CID value applies. 
+    UUID_T DeviceServiceId; //A 16 byte UUID that identifies the device service the following CID value applies.
     UINT32 CID; //Specifies the CID that identifies the parameter being queried for
     UINT32 CommandType; //0 for a query operation, 1 for a Set operation
     UINT32 InformationBufferLength; //Size of the Total InformationBuffer, may be larger than current message if fragmented.
@@ -526,7 +501,7 @@ typedef struct {
 typedef struct {
     MBIM_MESSAGE_HEADER MessageHeader;
     MBIM_FRAGMENT_HEADER FragmentHeader;
-    UUID_T DeviceServiceId; //A 16 byte UUID that identifies the device service the following CID value applies. 
+    UUID_T DeviceServiceId; //A 16 byte UUID that identifies the device service the following CID value applies.
     UINT32 CID; //Specifies the CID that identifies the parameter being queried for
     UINT32 Status;
     UINT32 InformationBufferLength; //Size of the Total InformationBuffer, may be larger than current message if fragmented.
@@ -546,7 +521,7 @@ typedef struct {
 typedef struct {
     MBIM_MESSAGE_HEADER MessageHeader;
     MBIM_FRAGMENT_HEADER FragmentHeader;
-    UUID_T DeviceServiceId; //A 16 byte UUID that identifies the device service the following CID value applies. 
+    UUID_T DeviceServiceId; //A 16 byte UUID that identifies the device service the following CID value applies.
     UINT32 CID; //Specifies the CID that identifies the parameter being queried for
     UINT32 InformationBufferLength; //Size of the Total InformationBuffer, may be larger than current message if fragmented.
     UINT8 InformationBuffer[0]; //Data supplied to device specific to the CID
@@ -588,69 +563,156 @@ typedef enum {
     MBIMAuthProtocolMsChapV2 = 3,
 } MBIM_AUTH_PROTOCOL_E;
 
-#define MBIMContextIPTypes \
-    MBIM_ENUM_HELPER(MBIMContextIPTypeDefault, 0) \
-    MBIM_ENUM_HELPER(MBIMContextIPTypeIPv4, 1) \
-    MBIM_ENUM_HELPER(MBIMContextIPTypeIPv6, 2) \
-    MBIM_ENUM_HELPER(MBIMContextIPTypeIPv4v6, 3) \
-    MBIM_ENUM_HELPER(MBIMContextIPTypeIPv4AndIPv6, 4)
-
-#define MBIM_ENUM_HELPER(k, v) k = v,
 typedef enum {
-    MBIMContextIPTypes
+    MBIMContextIPTypeDefault = 0, 
+    MBIMContextIPTypeIPv4 = 1, 
+    MBIMContextIPTypeIPv6 = 2, 
+    MBIMContextIPTypeIPv4v6 = 3, 
+    MBIMContextIPTypeIPv4AndIPv6 = 4,
 } MBIM_CONTEXT_IP_TYPE_E;
-#undef MBIM_ENUM_HELPER
-#define MBIM_ENUM_HELPER(k, v) {k, #k},
-enumstrfunc(MBIMContextIPType, MBIMContextIPTypes);
-#undef MBIM_ENUM_HELPER
 
 typedef enum {
     MBIMActivationStateUnknown = 0,
-        MBIMActivationStateActivated = 1,
-        MBIMActivationStateActivating = 2,
-        MBIMActivationStateDeactivated = 3,
-        MBIMActivationStateDeactivating = 4,
+    MBIMActivationStateActivated = 1,
+    MBIMActivationStateActivating = 2,
+    MBIMActivationStateDeactivated = 3,
+    MBIMActivationStateDeactivating = 4,
 } MBIM_ACTIVATION_STATE_E;
 
 typedef enum {
     MBIMVoiceCallStateNone = 0,
-        MBIMVoiceCallStateInProgress = 1,
-        MBIMVoiceCallStateHangUp = 2,
+    MBIMVoiceCallStateInProgress = 1,
+    MBIMVoiceCallStateHangUp = 2,
 } MBIM_VOICECALL_STATE_E;
 
-static const char *MBIMActivationStateStr(int _val) {
-    struct { int val;char *name;} _enumstr[] = {
-        {MBIMActivationStateUnknown, "Unknown"}, 
-        {MBIMActivationStateActivated, "Activated"},
-        {MBIMActivationStateActivating, "Activating"}, 
-        {MBIMActivationStateDeactivated, "Deactivated"}, 
-        {MBIMActivationStateDeactivating, "Deactivating"}, 
+static const char *MBIMMSGTypeStr(int _val) {
+    struct { int val;char *name;} _enumstr[] = { 
+        {MBIM_OPEN_MSG, "MBIM_OPEN_MSG"}, 
+        {MBIM_CLOSE_MSG, "MBIM_CLOSE_MSG"}, 
+        {MBIM_COMMAND_MSG, "MBIM_COMMAND_MSG"}, 
+        {MBIM_HOST_ERROR_MSG, "MBIM_HOST_ERROR_MSG"}, 
+        {MBIM_OPEN_DONE, "MBIM_OPEN_DONE"}, 
+        {MBIM_CLOSE_DONE, "MBIM_CLOSE_DONE"}, 
+        {MBIM_COMMAND_DONE, "MBIM_COMMAND_DONE"}, 
+        {MBIM_FUNCTION_ERROR_MSG, "MBIM_FUNCTION_ERROR_MSG"}, 
+        {MBIM_INDICATE_STATUS_MSG, "MBIM_INDICATE_STATUS_MSG"}, 
     }; 
     int idx;
 
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) {
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) { 
         if (_val == _enumstr[idx].val) 
             return _enumstr[idx].name;
     } 
 
-    return "Undefined"; 
+    return "MBIMMSGTypeUnknow"; 
 };
 
-static const char *MBIMVoiceCallStateStr(int _val) { 
+static const char *MBIMContextIPTypeStr(int _val) { 
     struct { int val;char *name;} _enumstr[] = { 
+        {MBIMContextIPTypeDefault, "MBIMContextIPTypeDefault"}, 
+        {MBIMContextIPTypeIPv4, "MBIMContextIPTypeIPv4"}, 
+        {MBIMContextIPTypeIPv6, "MBIMContextIPTypeIPv6"}, 
+        {MBIMContextIPTypeIPv4v6, "MBIMContextIPTypeIPv4v6"}, 
+        {MBIMContextIPTypeIPv4AndIPv6, "MBIMContextIPTypeIPv4AndIPv6"}, 
+    }; 
+    int idx; 
+
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
+        if (_val == _enumstr[idx].val)
+            return _enumstr[idx].name;
+    } 
+
+    return "MBIMContextIPTypeUnknow"; 
+}
+
+static const char *MBIMActivationStateStr(int _val) {
+    struct { int val;char *name;} _enumstr[] = {
+        {MBIMActivationStateUnknown, "Unknown"},
+        {MBIMActivationStateActivated, "Activated"},
+        {MBIMActivationStateActivating, "Activating"},
+        {MBIMActivationStateDeactivated, "Deactivated"},
+        {MBIMActivationStateDeactivating, "Deactivating"},
+    };
+    int idx;
+
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
+        if (_val == _enumstr[idx].val)
+            return _enumstr[idx].name;
+    }
+
+    return "Undefined";
+};
+
+static const char *MBIMVoiceCallStateStr(int _val) {
+    struct { int val;char *name;} _enumstr[] = {
         {MBIMVoiceCallStateNone, "None"},
-        {MBIMVoiceCallStateInProgress, "InProgress"}, 
+        {MBIMVoiceCallStateInProgress, "InProgress"},
         {MBIMVoiceCallStateHangUp, "HangUp"},
     };
     int idx;
 
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) {
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
         if (_val == _enumstr[idx].val)
         return _enumstr[idx].name;
     }
 
     return "Undefined";
 };
+
+typedef struct {
+    const char *uuid;
+    UINT32 cid;
+    const char *name;
+} UUID_CID_STR;
+
+static const  UUID_CID_STR uuid_cid_string[] = { 
+    {UUID_BASIC_CONNECT, MBIM_CID_DEVICE_CAPS, "MBIM_CID_DEVICE_CAPS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_SUBSCRIBER_READY_STATUS, "MBIM_CID_SUBSCRIBER_READY_STATUS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_RADIO_STATE, "MBIM_CID_RADIO_STATE"},
+    {UUID_BASIC_CONNECT, MBIM_CID_PIN, "MBIM_CID_PIN"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_PIN_LIS, "MBIM_CID_PIN_LIS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_HOME_PROVIDER, "MBIM_CID_HOME_PROVIDER"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_PREFERRED_PROVIDERS, "MBIM_CID_PREFERRED_PROVIDERS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_VISIBLE_PROVIDERS, "MBIM_CID_VISIBLE_PROVIDERS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_REGISTER_STATE, "MBIM_CID_REGISTER_STATE"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_PACKET_SERVICE, "MBIM_CID_PACKET_SERVICE"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_SIGNAL_STATE, "MBIM_CID_SIGNAL_STATE"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_CONNECT, "MBIM_CID_CONNECT"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_PROVISIONED_CONTEXTS, "MBIM_CID_PROVISIONED_CONTEXTS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_SERVICE_ACTIVATION, "MBIM_CID_SERVICE_ACTIVATION"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_IP_CONFIGURATION, "MBIM_CID_IP_CONFIGURATION"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_DEVICE_SERVICES, "MBIM_CID_DEVICE_SERVICES"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_DEVICE_SERVICE_SUBSCRIBE_LIST, "MBIM_CID_DEVICE_SERVICE_SUBSCRIBE_LIST"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_PACKET_STATISTICS, "MBIM_CID_PACKET_STATISTICS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_NETWORK_IDLE_HINT, "MBIM_CID_NETWORK_IDLE_HINT"},
+    {UUID_BASIC_CONNECT, MBIM_CID_EMERGENCY_MODE, "MBIM_CID_EMERGENCY_MODE"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_IP_PACKET_FILTERS, "MBIM_CID_IP_PACKET_FILTERS"}, 
+    {UUID_BASIC_CONNECT, MBIM_CID_MULTICARRIER_PROVIDERS, "MBIM_CID_MULTICARRIER_PROVIDERS"},
+
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_PROVISIONED_CONTEXT_V2, "MBIM_CID_MS_PROVISIONED_CONTEXT_V2"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_NETWORK_BLACKLIST, "MBIM_CID_MS_NETWORK_BLACKLIST"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_LTE_ATTACH_CONFIG, "MBIM_CID_MS_LTE_ATTACH_CONFIG"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_LTE_ATTACH_STATUS, "MBIM_CID_MS_LTE_ATTACH_STATUS"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_SYS_CAPS, "MBIM_CID_MS_SYS_CAPS"},
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_DEVICE_CAPS_V2, "MBIM_CID_MS_DEVICE_CAPS_V2"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_DEVICE_SLOT_MAPPING, "MBIM_CID_MS_DEVICE_SLOT_MAPPING"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_SLOT_INFO_STATUS, "MBIM_CID_MS_SLOT_INFO_STATUS"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_PCO, "MBIM_CID_MS_PCO"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_DEVICE_RESET, "MBIM_CID_MS_DEVICE_RESET"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_BASE_STATIONS_INFO, "MBIM_CID_MS_BASE_STATIONS_INFO"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_LOCATION_INFO_STATUS, "MBIM_CID_MS_LOCATION_INFO_STATUS"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_NOT_DEFINED, "MBIM_CID_NOT_DEFINED"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_PIN_EX, "MBIM_CID_MS_PIN_EX"}, 
+    {UUID_BASIC_CONNECT_EXT, MBIM_CID_MS_VERSION, "MBIM_CID_MS_VERSION"}, 
+
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_UICC_ATR, "MBIM_CID_MS_UICC_ATR"}, 
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_UICC_OPEN_CHANNEL, "MBIM_CID_MS_UICC_OPEN_CHANNEL"}, 
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_UICC_CLOSE_CHANNEL, "MBIM_CID_MS_UICC_CLOSE_CHANNEL"}, 
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_UICC_APDU, "MBIM_CID_MS_UICC_APDU"}, 
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_UICC_TERMINAL_CAPABILITY, "MBIM_CID_MS_UICC_TERMINAL_CAPABILITY"}, 
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_UICC_RESET, "MBIM_CID_MS_UICC_RESET"}, 
+    {UUID_MS_UICC_LOW_LEVEL, MBIM_CID_MS_APP_LIST, "MBIM_CID_MS_APP_LIST"}, 
+}; 
 
 typedef struct {
     UINT32 SessionId;
@@ -724,7 +786,7 @@ typedef struct {
     UINT32 ErrorRate;
     UINT32 SignalStrengthInterval;
     UINT32 RssiThreshold;
-    UINT32 ErrorRateThreshold;    
+    UINT32 ErrorRateThreshold;
 } MBIM_SIGNAL_STATE_INFO_T;
 
 typedef struct {
@@ -744,202 +806,42 @@ typedef struct {
     UINT32 ErrorRateThreshold;
 } MBIM_SET_SIGNAL_STATE_T;
 
+typedef struct {
+    UINT32 DevicePathOffset;
+    UINT32 DevicePathSize;
+    UINT32 Timeout;
+    UINT8 DataBuffer[];
+} MBIM_LIBQMI_PROXY_CONFIG_T;
+
+typedef struct {
+    UINT32 AtrSize;
+    UINT32 AtrOffset;
+    UINT8 DataBuffer[];
+} MBIM_MS_ATR_INFO_T;
+
 #pragma pack()
 
-static pthread_t read_tid = 0;
+static pthread_t s_tid_reader = 0;
 static int mbim_verbose = 0;
 static UINT32 TransactionId = 1;
-static unsigned mbim_default_timeout  = 10000;
-static const char *mbim_netcard = "wwan0";
-static const char *real_netcard = NULL;
-static const char *mbim_dev = "/dev/cdc-wdm0";
+static unsigned mbim_default_timeout  = 30000;
 static const char *mbim_apn = NULL;
 static const char *mbim_user = NULL;
 static const char *mbim_passwd = NULL;
 static int mbim_iptype = MBIMContextIPTypeDefault;
 static int mbim_auth = MBIMAuthProtocolNone;
+static int mbim_sessionID = 0;
 static int mbim_fd = -1;
-static pthread_mutex_t mbim_command_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t mbim_command_cond = PTHREAD_COND_INITIALIZER;
-static pthread_mutex_t mbim_state_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t mbim_state_cond = PTHREAD_COND_INITIALIZER;
 static MBIM_MESSAGE_HEADER *mbim_pRequest;
 static MBIM_MESSAGE_HEADER *mbim_pResponse;
-static int bridge_mode;
-extern int ql_ifconfig(int argc, char *argv[]);
 
-static int mysystem(const char *cmd)
-{
-    int status = system(cmd);
-    mbim_debug("system(%s)=%d", cmd, status);
-
-    return status;
-}
-
-static void prefix_to_addr(int prefix, char *buf)
-{
-    UINT32 _addr = 0xffffffff - (1 << (32 - prefix)) + 1;
-    sprintf(buf, "%d.%d.%d.%d",
-        ((unsigned char*)&_addr)[3], ((unsigned char*)&_addr)[2],
-        ((unsigned char*)&_addr)[1], ((unsigned char*)&_addr)[0]);
-}
-
-static int file_get_value(const char *fname)
-{
-    FILE *fp = NULL;
-    int hexnum;
-    char buff[32 + 1] = {'\0'};
-    char *endptr = NULL;
-
-    fp = fopen(fname, "r");
-    if (!fp) goto error;
-    if (fgets(buff, sizeof(buff), fp) == NULL)
-        goto error;
-    fclose(fp);
-
-    hexnum = strtol(buff, &endptr, 16);
-    if (errno == ERANGE && (hexnum == LONG_MAX || hexnum == LONG_MIN))
-        goto error;
-    /* if there is no digit in buff */
-    if (endptr == buff)
-        goto error;
-    return (int)hexnum;
-
-error:
-    if (fp) fclose(fp);
-    return 0;
-}
-
-static int bridge_mode_detect()
-{
-    char path[128] = {'\0'};
-    int val;
-
-    snprintf(path, sizeof(path), "/sys/class/net/%s/mbim/bridge_mode", mbim_netcard);
-    val = file_get_value(path);
-    if (val) {
-        mbim_debug("mbim interface %s works in bridge mode", mbim_netcard);
-    }
-
-    return !!val;
-}
-
-static void bridge_set_kernel_attr(const unsigned char *ipaddr, const unsigned char *gw, const unsigned char *dns, UINT32 prefix)
-{
-    char cmd[256] = {'\0'};
-    char ipstr[32] = {'\0'};
-    char maskstr[32] = {'\0'};
-    char gwstr[32] = {'\0'};
-    char dnsstr[32] = {'\0'};
-
-    if (ipaddr)
-        snprintf(ipstr, sizeof(ipstr), "%d.%d.%d.%d", ipaddr[0], ipaddr[1], ipaddr[2], ipaddr[3]);
-    if (gw)
-        snprintf(gwstr, sizeof(gwstr), "%d.%d.%d.%d", gw[0], gw[1], gw[2], gw[3]);
-    if (dns)
-        snprintf(dnsstr, sizeof(dnsstr), "%d.%d.%d.%d", dns[0], dns[1], dns[2], dns[3]);
-    prefix_to_addr(prefix, maskstr);
-    
-    /* srv ip mask router dns */
-    snprintf(cmd, sizeof(cmd), "echo \"%s %s %s %s\" > /sys/class/net/%s/mbim/bridge_dhcp_info",
-        ipstr, maskstr, gwstr, dnsstr, mbim_netcard);
-    mysystem(cmd);
-}
-
-static void mbim_ifconfig(int iptype, const char *ifname, const unsigned char *ipaddr, const unsigned char *gw,
-    const unsigned char *dns1, const unsigned char *dns2, UINT32 prefix, UINT32 mtu) {
-    char shell_cmd[256] = {'\0'};
-    char dns1str[128], dns2str[128];
-
-    bridge_mode = bridge_mode_detect();
-    if (ipaddr) {
-        snprintf(shell_cmd, sizeof(shell_cmd), "echo 1 > /sys/class/net/%s/mbim/link_state", ifname);
-        mysystem(shell_cmd);
-        if (bridge_mode)
-            bridge_set_kernel_attr(ipaddr, gw, dns1, prefix);
-
-        if(real_netcard) {
-            snprintf(shell_cmd, sizeof(shell_cmd), "ip link set dev %s up", real_netcard);
-            mysystem(shell_cmd);
-        }
-        snprintf(shell_cmd, sizeof(shell_cmd), "ip link set dev %s up", ifname);
-        mysystem(shell_cmd);
-        if (bridge_mode)
-            return;
-    } else {
-        snprintf(shell_cmd, sizeof(shell_cmd), "echo 0 > /sys/class/net/%s/mbim/link_state", ifname);
-        mysystem(shell_cmd);
-        /* remove all address */
-        snprintf(shell_cmd, sizeof(shell_cmd), "ip address flush dev %s", ifname);
-        mysystem(shell_cmd);
-        snprintf(shell_cmd, sizeof(shell_cmd), "ip link set dev %s down", ifname);
-        mysystem(shell_cmd);
-
-        if(real_netcard) {
-            snprintf(shell_cmd, sizeof(shell_cmd), "ip link set dev %s down", real_netcard);
-            mysystem(shell_cmd);
-        }
-        update_resolv_conf(4, ifname, NULL, NULL);
-        update_resolv_conf(6, ifname, NULL, NULL);
-        return;
-    }
-
-    if (ipaddr) {
-        const unsigned char *d = ipaddr;
-        snprintf(shell_cmd, sizeof(shell_cmd), "ip -%d address flush dev %s", iptype, ifname);
-        mysystem(shell_cmd);
-        if (iptype == 4)
-            snprintf(shell_cmd, sizeof(shell_cmd), "ip -%d address add %u.%u.%u.%u/%u dev %s",
-                iptype, d[0], d[1], d[2], d[3], prefix, ifname);
-        if (iptype == 6)
-            snprintf(shell_cmd, sizeof(shell_cmd),
-                "ip -%d address add %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x/%u dev %s",
-                iptype, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15],
-                prefix, ifname);
-        mysystem(shell_cmd);
-    }
-
-    if (gw) {
-        const unsigned char *d = gw;
-        if (iptype == 4)
-            snprintf(shell_cmd, sizeof(shell_cmd), "ip -%d route add default via %d.%d.%d.%d dev %s",
-                iptype, d[0], d[1], d[2], d[3], ifname);
-        if (iptype == 6)
-            snprintf(shell_cmd, sizeof(shell_cmd),
-                "ip -%d route add default via %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x dev %s",
-                iptype, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15],
-                ifname);
-        mysystem(shell_cmd);
-    } else {
-        snprintf(shell_cmd, sizeof(shell_cmd), "ip -%d route add default dev %s", iptype, ifname);
-        mysystem(shell_cmd);
-    }
-
-    if (mtu) {
-        snprintf(shell_cmd, sizeof(shell_cmd), "ip -%d link set dev %s mtu %u", iptype, ifname, mtu);
-        mysystem(shell_cmd);
-    }
-
-    if (dns1) {
-        const unsigned char *d = dns1;
-        if (iptype == 4)
-            snprintf(dns1str, sizeof(dns1str), "%d.%d.%d.%d", d[0], d[1], d[2], d[3]);
-        if (iptype == 6)
-            snprintf(dns1str, sizeof(dns1str), "%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
-                d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
-    }
-
-    if (dns2) {
-        const unsigned char *d = dns2;
-        if (iptype == 4)
-            snprintf(dns2str, sizeof(dns2str), "%d.%d.%d.%d", d[0], d[1], d[2], d[3]);
-        if (iptype == 6)
-            snprintf(dns2str, sizeof(dns2str), "%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
-                d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
-    }
-    
-    update_resolv_conf(iptype, ifname, dns1 ? dns1str : NULL, dns2 ? dns2str : NULL);
-}
+static unsigned int qmi_over_mbim_support = 0;
+static int qmi_over_mbim_sk[2] = {-1, -1};
+static pthread_mutex_t mbim_command_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t mbim_command_cond = PTHREAD_COND_INITIALIZER;
+static int mbim_ms_version = 1;
+static uint8_t qmi_over_mbim_nas = 0;
+int qmi_over_mbim_qmidev_send(PQCQMIMSG pQMI);
 
 static const UUID_T * str2uuid(const char *str) {
     static UUID_T uuid;
@@ -952,7 +854,7 @@ static const UUID_T * str2uuid(const char *str) {
         i++;
     }
     tmp[i] = '\0';
-    
+
     sscanf(tmp, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
         &d[0], &d[1], &d[2], &d[3], &d[4], &d[5], &d[6], &d[7],
         &d[8], &d[9], &d[10], &d[11], &d[12], &d[13], &d[14], &d[15]);
@@ -960,14 +862,35 @@ static const UUID_T * str2uuid(const char *str) {
     for (i = 0; i < 16; i++) {
         uuid.uuid[i] = d[i]&0xFF;
     }
-    
+
     return &uuid;
+}
+
+static void wchar2char(const char *src, size_t src_size, char *dst, size_t dst_len) {
+    size_t i;
+    
+    for (i = 0; i < (dst_len-1) && i < (src_size/2); i++)
+        dst[i] = src[i*2];
+    dst[i] = 0;
+}
+
+static size_t char2wchar(const char *src, size_t src_len, uint8_t *dst, size_t dst_len) {
+    size_t i;
+
+    if (src_len > (dst_len/2))
+        src_len = (dst_len/2);
+
+    for (i = 0; i < src_len; i++) {
+        *dst++ = *src++;
+        *dst++ = 0;
+    }
+
+    return i*2;
 }
 
 #define mbim_alloc( _size)  malloc(_size)
 #define mbim_free(_mem) do { if (_mem) { free(_mem); _mem = NULL;}} while(0)
 
-static int mbim_quit = 0;
 static int mbim_open_state = 0;
 static MBIM_SUBSCRIBER_READY_STATE_E ReadyState = MBIMSubscriberReadyStateNotInitialized;
 static MBIM_REGISTER_STATE_E RegisterState = MBIMRegisterStateUnknown;
@@ -977,24 +900,18 @@ static MBIM_SUBSCRIBER_READY_STATE_E oldReadyState = MBIMSubscriberReadyStateNot
 static MBIM_REGISTER_STATE_E oldRegisterState = MBIMRegisterStateUnknown;
 static MBIM_PACKET_SERVICE_STATE_E oldPacketServiceState = MBIMPacketServiceStateUnknown;
 static MBIM_ACTIVATION_STATE_E oldActivationState = MBIMActivationStateUnknown;
+static int mbim_update_state(void);
 
-static void _notify_state_chage(void) {
-    pthread_mutex_lock(&mbim_state_mutex);
-    pthread_cond_signal(&mbim_state_cond);
-    pthread_mutex_unlock(&mbim_state_mutex);
+static __inline uint32_t mbim2qmi_ipv4addr(uint32_t addr) {
+    return (addr>>24) | (addr>>8&0xff00) | (addr<<8&0xff0000) | (addr<<24);
 }
 
-#define notify_state_chage(_var, _new) do {if (_var != _new) {_var = _new; _notify_state_chage();}} while (0)
+static __inline void mbim2qmi_ipv6addr(const unsigned char *src, unsigned char *dst) {
+    int i;
 
-static int wait_state_change(uint32_t seconds) {
-    int retval = 0;
-
-    pthread_mutex_lock(&mbim_state_mutex);
-    retval = pthread_cond_timeout_np(&mbim_state_cond, &mbim_state_mutex, seconds*1000);
-    pthread_mutex_unlock(&mbim_state_mutex);
-
-    if (retval !=0 && retval != ETIMEDOUT) mbim_debug("seconds=%u, retval=%d", seconds, retval);
-    return retval;
+    for (i = 0; i < 16 ; i++) {
+        dst[i] = src[i];
+    }
 }
 
 static MBIM_MESSAGE_HEADER *compose_open_command(UINT32 MaxControlTransfer)
@@ -1005,7 +922,7 @@ static MBIM_MESSAGE_HEADER *compose_open_command(UINT32 MaxControlTransfer)
         return NULL;
 
     pRequest->MessageHeader.MessageType = htole32(MBIM_OPEN_MSG);
-    pRequest->MessageHeader.MessageLength = htole32(sizeof(MBIM_COMMAND_MSG_T));
+    pRequest->MessageHeader.MessageLength = htole32(sizeof(MBIM_OPEN_MSG_T));
     pRequest->MessageHeader.TransactionId = htole32(TransactionId++);
     pRequest->MaxControlTransfer = htole32(MaxControlTransfer);
 
@@ -1032,7 +949,7 @@ static MBIM_MESSAGE_HEADER *compose_basic_connect_command(UINT32 CID, UINT32 Com
 
     if (!pRequest)
         return NULL;
-    
+
     pRequest->MessageHeader.MessageType = htole32(MBIM_COMMAND_MSG);
     pRequest->MessageHeader.MessageLength = htole32((sizeof(MBIM_COMMAND_MSG_T) + InformationBufferLength));
     pRequest->MessageHeader.TransactionId = htole32(TransactionId++);
@@ -1041,7 +958,7 @@ static MBIM_MESSAGE_HEADER *compose_basic_connect_command(UINT32 CID, UINT32 Com
     pRequest->FragmentHeader.CurrentFragment= htole32(0);
 
     memcpy(pRequest->DeviceServiceId.uuid, str2uuid(UUID_BASIC_CONNECT), 16);
-    
+
     pRequest->CID = htole32(CID);
     pRequest->CommandType = htole32(CommandType);
     if (InformationBufferLength && pInformationBuffer) {
@@ -1062,6 +979,18 @@ static MBIM_MESSAGE_HEADER *compose_basic_connect_ext_command(UINT32 CID, UINT32
         return NULL;
 
     memcpy(pRequest->DeviceServiceId.uuid, str2uuid(UUID_BASIC_CONNECT_EXT), 16);
+
+    return &pRequest->MessageHeader;
+}
+
+static MBIM_MESSAGE_HEADER *compose_qmi_over_mbim_command(UINT32 CID, UINT32 CommandType, void *pInformationBuffer, UINT32 InformationBufferLength)
+{
+    MBIM_COMMAND_MSG_T *pRequest = (MBIM_COMMAND_MSG_T *)compose_basic_connect_command(CID, CommandType, pInformationBuffer, InformationBufferLength);
+
+    if (!pRequest)
+        return NULL;
+
+    memcpy(pRequest->DeviceServiceId.uuid, str2uuid(uuid_ext_qmux), 16);
 
     return &pRequest->MessageHeader;
 }
@@ -1098,14 +1027,15 @@ static const char *DeviceServiceId2str(const UUID_T *pUUID) {
         {UUID_MS_UICC_LOW_LEVEL, "UUID_MS_UICC_LOW_LEVEL"},
         {UUID_MS_SARControl, "UUID_MS_SARControl"},
         {UUID_VOICEEXTENSIONS, "UUID_VOICEEXTENSIONS"},
+        {UUID_LIBMBIM_PROXY, "UUID_LIBMBIM_PROXY"},
     };
     int idx;
 
-    for (idx = 0; idx < sizeof(_enumstr)/sizeof(_enumstr[0]); idx++) {
+    for (idx = 0; idx < (int)(sizeof(_enumstr)/sizeof(_enumstr[0])); idx++) {
         if (!strcasecmp(str, _enumstr[idx].val))
             return _enumstr[idx].name;
     }
-    
+
     return str;
 }
 
@@ -1115,7 +1045,7 @@ static const char *mbim_get_segment(void *_pMsg, UINT32 offset, UINT32 len)
     static char buff[256] = {'\0'};
     UINT8 *pMsg = (UINT8*)_pMsg;
 
-    for (idx = 0; idx < len/2; idx++)
+    for (idx = 0; idx < (int)(len/2); idx++)
         buff[idx] = pMsg[offset+idx*2];
     buff[idx] = '\0';
     return buff;
@@ -1129,26 +1059,36 @@ static void mbim_dump_header(MBIM_MESSAGE_HEADER *pMsg, const char *direction) {
     mbim_debug("%s Contents:", direction);
 }
 
+static void mbim_dump_uuid_cid(const UUID_T *pUUID, UINT32 CID, const char *direction) {
+    size_t idx;
+    const char *uuidStr = uuid2str(pUUID);
+    const char *cidStr = "unknow";
+
+    for (idx = 0; idx < (sizeof(uuid_cid_string)/sizeof(uuid_cid_string[0])); idx++) {
+        if (!strcmp(uuidStr, uuid_cid_string[idx].uuid) && uuid_cid_string[idx].cid == CID) {
+            cidStr = uuid_cid_string[idx].name;
+        }
+    }
+
+    mbim_debug("%s DeviceServiceId = %s (%s)", direction, DeviceServiceId2str(pUUID), uuidStr);
+    mbim_debug("%s CID = %s (%u)", direction, cidStr, le32toh(CID));
+}
+
+
 static void mbim_dump_command_msg(MBIM_COMMAND_MSG_T *pCmdMsg, const char *direction) {
-    mbim_debug("%s DeviceServiceId = %s (%s)", direction, DeviceServiceId2str(&pCmdMsg->DeviceServiceId), uuid2str(&pCmdMsg->DeviceServiceId));
-    mbim_debug("%s CID = %s (%u)", direction, CID2Str(le32toh(pCmdMsg->CID)), le32toh(pCmdMsg->CID));
+    mbim_dump_uuid_cid(&pCmdMsg->DeviceServiceId, le32toh(pCmdMsg->CID), direction);
     mbim_debug("%s CommandType = %s (%u)", direction, le32toh(pCmdMsg->CommandType) ? "set" : "query", le32toh(pCmdMsg->CommandType));
     mbim_debug("%s InformationBufferLength = %u", direction, le32toh(pCmdMsg->InformationBufferLength));
 }
 
 static void mbim_dump_command_done(MBIM_COMMAND_DONE_T *pCmdDone, const char *direction) {
-    mbim_debug("%s DeviceServiceId = %s (%s)", direction, DeviceServiceId2str(&pCmdDone->DeviceServiceId), uuid2str(&pCmdDone->DeviceServiceId));
-    mbim_debug("%s CID = %s (%u)", direction, CID2Str(le32toh(pCmdDone->CID)), le32toh(pCmdDone->CID));
+    mbim_dump_uuid_cid(&pCmdDone->DeviceServiceId, le32toh(pCmdDone->CID), direction);
     mbim_debug("%s Status = %u", direction, le32toh(pCmdDone->Status));
     mbim_debug("%s InformationBufferLength = %u", direction, le32toh(pCmdDone->InformationBufferLength));
 }
 
 static void mbim_dump_indicate_msg(MBIM_INDICATE_STATUS_MSG_T *pIndMsg, const char *direction) {
-    mbim_debug("%s DeviceServiceId = %s (%s)", direction, DeviceServiceId2str(&pIndMsg->DeviceServiceId), uuid2str(&pIndMsg->DeviceServiceId));
-    if (!memcmp(pIndMsg->DeviceServiceId.uuid, str2uuid(UUID_BASIC_CONNECT_EXT), 16))
-        mbim_debug("%s CID = %s (%u)", direction, MS_CID2Str(le32toh(pIndMsg->CID)), le32toh(pIndMsg->CID));
-    else
-        mbim_debug("%s CID = %s (%u)", direction, CID2Str(le32toh(pIndMsg->CID)), le32toh(pIndMsg->CID));
+    mbim_dump_uuid_cid(&pIndMsg->DeviceServiceId, le32toh(pIndMsg->CID), direction);
     mbim_debug("%s InformationBufferLength = %u", direction, le32toh(pIndMsg->InformationBufferLength));
 }
 
@@ -1185,7 +1125,7 @@ static void mbim_dump_subscriber_status(MBIM_SUBSCRIBER_READY_STATUS_T *pInfo, c
     mbim_debug("%s SIMICCID = %s", direction, mbim_get_segment(pInfo, le32toh(pInfo->SimIccIdOffset), le32toh(pInfo->SimIccIdSize)));
     mbim_debug("%s SubscriberID = %s", direction, mbim_get_segment(pInfo, le32toh(pInfo->SubscriberIdOffset), le32toh(pInfo->SubscriberIdSize)));
     /* maybe more than one number */
-    int idx;
+    uint32_t idx;
     for (idx = 0; idx < le32toh(pInfo->ElementCount); idx++) {
         UINT32 offset = ((UINT32*)((UINT8*)pInfo+offsetof(MBIM_SUBSCRIBER_READY_STATUS_T, TelephoneNumbersRefList)))[0];
         UINT32 length = ((UINT32*)((UINT8*)pInfo+offsetof(MBIM_SUBSCRIBER_READY_STATUS_T, TelephoneNumbersRefList)))[1];
@@ -1265,19 +1205,25 @@ static void mbim_dump_ipconfig(MBIM_IP_CONFIGURATION_INFO_T *pInfo, const char *
 
 static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
     unsigned char *data = (unsigned char *)pMsg;
-    const char *direction = (pMsg->MessageType & 0x80000000) ? "<" : ">";
+    const char *direction = (le32toh(pMsg->MessageType) & 0x80000000) ? "<" : ">";
 
     if (!mbim_verbose)
         return;
 
     if (mbim_verbose) {
         unsigned i;
-        static char _tmp[4096] = {'\0'};
-        _tmp[0] = (le32toh(pMsg->MessageType) & 0x80000000) ? '<' : '>';
-        _tmp[1] = '\0';
-        for (i = 0; i < le32toh(pMsg->MessageLength) && i < 4096; i++)
-            snprintf(_tmp + strlen(_tmp), 4096 - strlen(_tmp), "%02X:", data[i]);
-        mbim_debug("%s", _tmp);
+        static char *_tmp = NULL;
+
+        if (!_tmp)
+            _tmp = (char *)malloc(4096);
+
+        if (_tmp) {
+            _tmp[0] = (le32toh(pMsg->MessageType) & 0x80000000) ? '<' : '>';
+            _tmp[1] = '\0';
+            for (i = 0; i < le32toh(pMsg->MessageLength) && i < 4096; i++)
+                snprintf(_tmp + strlen(_tmp), 4096 - strlen(_tmp), "%02X:", data[i]);
+            mbim_debug("%s", _tmp);
+        }
     }
 
     mbim_dump_header(pMsg, direction);
@@ -1330,7 +1276,7 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
         mbim_dump_command_done(pCmdDone, direction);
         if (le32toh(pCmdDone->InformationBufferLength) == 0)
             return;
-        
+
         if (!memcmp(pCmdDone->DeviceServiceId.uuid, str2uuid(UUID_BASIC_CONNECT), 16)) {
             switch (le32toh(pCmdDone->CID)) {
                 case MBIM_CID_CONNECT: {
@@ -1339,8 +1285,8 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
                 }
                 break;
                 case MBIM_CID_IP_CONFIGURATION: {
-                    MBIM_IP_CONFIGURATION_INFO_T *pInfo = (MBIM_IP_CONFIGURATION_INFO_T *)pCmdDone->InformationBuffer;
-                    mbim_dump_ipconfig(pInfo, direction);
+                    //MBIM_IP_CONFIGURATION_INFO_T *pInfo = (MBIM_IP_CONFIGURATION_INFO_T *)pCmdDone->InformationBuffer;
+                    //mbim_dump_ipconfig(pInfo, direction);
                 }
                 break;
                 case MBIM_CID_PACKET_SERVICE: {
@@ -1350,7 +1296,7 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
                 break;
                 case MBIM_CID_SUBSCRIBER_READY_STATUS: {
                     MBIM_SUBSCRIBER_READY_STATUS_T *pInfo = (MBIM_SUBSCRIBER_READY_STATUS_T *)pCmdDone->InformationBuffer;
-                    mbim_dump_subscriber_status(pInfo, direction);    
+                    mbim_dump_subscriber_status(pInfo, direction);
                 }
                 break;
                 case MBIM_CID_REGISTER_STATE: {
@@ -1366,11 +1312,11 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
     break;
     case MBIM_INDICATE_STATUS_MSG: {
         MBIM_INDICATE_STATUS_MSG_T *pIndMsg = (MBIM_INDICATE_STATUS_MSG_T *)pMsg;
-        
+
         mbim_dump_indicate_msg(pIndMsg, direction);
         if (le32toh(pIndMsg->InformationBufferLength) == 0)
             return;
-        
+
         if (!memcmp(pIndMsg->DeviceServiceId.uuid, str2uuid(UUID_BASIC_CONNECT), 16)) {
             switch (le32toh(pIndMsg->CID)) {
                 case MBIM_CID_CONNECT: {
@@ -1385,7 +1331,7 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
                 break;
                 case MBIM_CID_SUBSCRIBER_READY_STATUS: {
                     MBIM_SUBSCRIBER_READY_STATUS_T *pInfo = (MBIM_SUBSCRIBER_READY_STATUS_T *)pIndMsg->InformationBuffer;
-                    mbim_dump_subscriber_status(pInfo, direction);    
+                    mbim_dump_subscriber_status(pInfo, direction);
                 }
                 break;
                 case MBIM_CID_REGISTER_STATE: {
@@ -1403,7 +1349,7 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
             }
         }
         else if (!memcmp(pIndMsg->DeviceServiceId.uuid, str2uuid(UUID_BASIC_CONNECT_EXT), 16)) {
-        }        
+        }
     }
     break;
     case MBIM_FUNCTION_ERROR_MSG: {
@@ -1417,12 +1363,13 @@ static void mbim_dump(MBIM_MESSAGE_HEADER *pMsg, int mbim_verbose) {
 }
 
 static void mbim_recv_command(MBIM_MESSAGE_HEADER *pResponse, unsigned size)
-{    
+{
+    (void)size;
     pthread_mutex_lock(&mbim_command_mutex);
 
     if (pResponse)
         mbim_dump(pResponse, mbim_verbose);
-    
+
     if (pResponse == NULL) {
         pthread_cond_signal(&mbim_command_cond);
     }
@@ -1440,23 +1387,34 @@ static void mbim_recv_command(MBIM_MESSAGE_HEADER *pResponse, unsigned size)
             switch (le32toh(pIndMsg->CID)) {
                 case MBIM_CID_SUBSCRIBER_READY_STATUS: {
                     MBIM_SUBSCRIBER_READY_STATUS_T *pInfo = (MBIM_SUBSCRIBER_READY_STATUS_T *)pIndMsg->InformationBuffer;
-                    notify_state_chage(ReadyState, le32toh(pInfo->ReadyState));
+                    if (oldReadyState != le32toh(pInfo->ReadyState))
+                        qmidevice_send_event_to_main(RIL_UNSOL_RESPONSE_VOICE_NETWORK_STATE_CHANGED);
                 }
                 break;
                 case MBIM_CID_REGISTER_STATE: {
                     MBIM_REGISTRATION_STATE_INFO_T *pInfo = (MBIM_REGISTRATION_STATE_INFO_T *)pIndMsg->InformationBuffer;
-                    notify_state_chage(RegisterState, le32toh(pInfo->RegisterState));
+                    if (oldRegisterState != le32toh(pInfo->RegisterState))
+                        qmidevice_send_event_to_main(RIL_UNSOL_RESPONSE_VOICE_NETWORK_STATE_CHANGED);
                 }
+                break;
                 case MBIM_CID_PACKET_SERVICE: {
                     MBIM_PACKET_SERVICE_INFO_T *pInfo = (MBIM_PACKET_SERVICE_INFO_T *)pIndMsg->InformationBuffer;
-                    notify_state_chage(PacketServiceState, le32toh(pInfo->PacketServiceState));
+                    MBIM_PACKET_SERVICE_STATE_E state = le32toh(pInfo->PacketServiceState);
+
+                    if (oldPacketServiceState != state
+                            && (1 || MBIMPacketServiceStateAttached == state || MBIMPacketServiceStateDetached == state))
+                        qmidevice_send_event_to_main(RIL_UNSOL_RESPONSE_VOICE_NETWORK_STATE_CHANGED);
                 }
                 break;
                 case MBIM_CID_CONNECT: {
                     MBIM_CONNECT_T *pInfo = (MBIM_CONNECT_T *)pIndMsg->InformationBuffer;
-                    if (le32toh(pInfo->ActivationState) == MBIMActivationStateDeactivated || le32toh(pInfo->ActivationState) == MBIMActivationStateDeactivating)
-                        mbim_ifconfig(4, mbim_netcard, NULL, NULL, NULL, NULL, 0, 0);
-                    notify_state_chage(ActivationState, le32toh(pInfo->ActivationState));
+                    if (pInfo->SessionId == (uint32_t)mbim_sessionID) {
+                        MBIM_ACTIVATION_STATE_E state = le32toh(pInfo->ActivationState);
+
+                        if (oldActivationState != state
+                            && (1 || MBIMActivationStateActivated == state || MBIMActivationStateDeactivated == state))
+                            qmidevice_send_event_to_main(RIL_UNSOL_DATA_CALL_LIST_CHANGED);
+                    }
                 }
                 break;
                 default:
@@ -1477,20 +1435,28 @@ static int mbim_send_command(MBIM_MESSAGE_HEADER *pRequest, MBIM_COMMAND_DONE_T 
     if (mbim_fd <= 0)
         return -ENODEV;
 
+   if (s_tid_reader == 0)
+      return -EINVAL;
+
     if (!pRequest)
         return -ENOMEM;
 
     pthread_mutex_lock(&mbim_command_mutex);
 
-    if (pRequest)
+    if (pRequest) {
+        if (pRequest->TransactionId == (0xFFFFFF + 1)) { //quectel-mbim-proxy need 0xFF000000 to indicat client
+            TransactionId = 1;
+            pRequest->TransactionId = htole32(TransactionId++);
+        }
         mbim_dump(pRequest, mbim_verbose);
+    }
 
     mbim_pRequest = pRequest;
     mbim_pResponse = NULL;
 
     ret = write(mbim_fd, pRequest, le32toh(pRequest->MessageLength));
 
-    if (ret == le32toh(pRequest->MessageLength)) {
+    if (ret > 0 && (uint32_t)ret == le32toh(pRequest->MessageLength)) {
         ret = pthread_cond_timeout_np(&mbim_command_cond, &mbim_command_mutex, msecs);
         if (!ret) {
             if (mbim_pResponse && ppCmdDone) {
@@ -1508,18 +1474,62 @@ static int mbim_send_command(MBIM_MESSAGE_HEADER *pRequest, MBIM_COMMAND_DONE_T 
     return ret;
 }
 
-static UINT32 mbim_recv_buf[1024];
+static ssize_t mbim_proxy_read (int fd, MBIM_MESSAGE_HEADER *pResponse, size_t size) {
+    ssize_t nreads;
+
+    nreads = read(fd, pResponse, sizeof(MBIM_MESSAGE_HEADER));
+    if (nreads == sizeof(MBIM_MESSAGE_HEADER) && le32toh(pResponse->MessageLength) <= size) {
+        nreads += read(fd, pResponse+1, le32toh(pResponse->MessageLength) - sizeof(MBIM_MESSAGE_HEADER));
+    }
+
+    return nreads;
+}
+
 static void * mbim_read_thread(void *param) {
-    mbim_debug("%s is created", __func__); 
+    PROFILE_T *profile = (PROFILE_T *)param;
+    const char *cdc_wdm = (const char *)profile->qmichannel;
+    int wait_for_request_quit = 0;
+
+    mbim_verbose = debug_qmi;
+    s_tid_reader = pthread_self();
+
+    if (profile->qmap_mode > 1 && profile->qmapnet_adapter[0]) {
+        if (!profile->proxy[0])
+             sprintf(profile->proxy, "%s", QUECTEL_MBIM_PROXY);
+        mbim_sessionID = profile->pdp;
+    }
+
+    if (profile->proxy[0]) {
+        mbim_fd = cm_open_proxy(profile->proxy);
+    } 
+    else {
+        mbim_fd = cm_open_dev(cdc_wdm);
+    }
+
+    if (mbim_fd <= 0) {
+        mbim_debug("fail to open (%s), errno: %d (%s)", cdc_wdm, errno, strerror(errno));
+        goto __quit;
+    }
+
+    dbg_time("cdc_wdm_fd = %d", mbim_fd);
+
+    qmidevice_send_event_to_main(RIL_INDICATE_DEVICE_CONNECTED);
 
     while (mbim_fd > 0) {
-        struct pollfd pollfds[] = {{mbim_fd, POLLIN, 0}};
-        int ne, ret, nevents = 1;
+        struct pollfd pollfds[] = {{mbim_fd, POLLIN, 0}, {qmidevice_control_fd[1], POLLIN, 0}, {qmi_over_mbim_sk[1], POLLIN, 0}};
+        int ne, ret, nevents = 2;
 
-        ret = poll(pollfds, nevents, -1);
+        if (pollfds[nevents].fd != -1)
+            nevents++;
 
-        if (ret <= 0) {
-            if (mbim_quit == 0) mbim_debug("%s poll=%d, errno: %d (%s)", __func__, ret, errno, strerror(errno));
+        ret = poll(pollfds, nevents, wait_for_request_quit ? 1000 : -1);
+
+        if (ret == 0 && wait_for_request_quit) {
+            break;
+        }
+
+        if (ret < 0) {
+            mbim_debug("%s poll=%d, errno: %d (%s)", __func__, ret, errno, strerror(errno));
             break;
         }
 
@@ -1539,9 +1549,13 @@ static void * mbim_read_thread(void *param) {
 
             if (mbim_fd == fd) {
                 ssize_t nreads;
-                MBIM_MESSAGE_HEADER *pResponse = (MBIM_MESSAGE_HEADER *) mbim_recv_buf;
+                MBIM_MESSAGE_HEADER *pResponse = (MBIM_MESSAGE_HEADER *) cm_recv_buf;
 
-                nreads = read(fd, pResponse, sizeof(mbim_recv_buf));
+                if (profile->proxy[0])
+                    nreads = mbim_proxy_read(fd, pResponse, sizeof(cm_recv_buf));
+                else
+                    nreads = read(fd, pResponse, sizeof(cm_recv_buf));
+
                 if (nreads <= 0) {
                     mbim_debug("%s read=%d errno: %d (%s)",  __func__, (int)nreads, errno, strerror(errno));
                     break;
@@ -1549,15 +1563,36 @@ static void * mbim_read_thread(void *param) {
 
                 mbim_recv_command(pResponse, nreads);
             }
+            else if (fd == qmidevice_control_fd[1]) {
+                int triger_event;
+                if (read(fd, &triger_event, sizeof(triger_event)) == sizeof(triger_event)) {
+                    //mbim_debug("triger_event = 0x%x", triger_event);
+                    switch (triger_event) {
+                        case RIL_REQUEST_QUIT:
+                            goto __quit;
+                        break;
+                        case SIG_EVENT_STOP:
+                            wait_for_request_quit = 1;
+                        break;
+                        default:
+                        break;
+                    }
+                }
+            }
+            else if (fd == qmi_over_mbim_sk[1]) {
+                    ssize_t nreads = read(fd, cm_recv_buf, sizeof(cm_recv_buf));
+                    if (nreads > 0)
+                        QmiThreadRecvQMI((PQCQMIMSG)cm_recv_buf);
+            }
         }
     }
 
 __quit:
-    mbim_quit++;
+    if (mbim_fd != -1) { close(mbim_fd); mbim_fd = -1; }
     mbim_recv_command(NULL, 0);
+    qmidevice_send_event_to_main(RIL_INDICATE_DEVICE_DISCONNECTED);
     mbim_debug("%s exit", __func__);
-    _notify_state_chage();
-    read_tid = 0;
+    s_tid_reader = 0;
 
     return NULL;
 }
@@ -1568,7 +1603,7 @@ static int mbim_status_code(MBIM_MESSAGE_HEADER *pMsgHdr) {
     if (!pMsgHdr)
         return 0;
 
-    switch (pMsgHdr->MessageType) {
+    switch (le32toh(pMsgHdr->MessageType)) {
         case MBIM_OPEN_DONE: {
             MBIM_OPEN_DONE_T *pOpenDone = (MBIM_OPEN_DONE_T *)pMsgHdr;
             status = le32toh(pOpenDone->Status);
@@ -1599,24 +1634,29 @@ static int mbim_status_code(MBIM_MESSAGE_HEADER *pMsgHdr) {
 }
 
 #define mbim_check_err(err, pRequest, pCmdDone) do { \
-    int _status = mbim_status_code(&pCmdDone->MessageHeader); \
-    if ((err || _status) && pCmdDone) { mbim_dump(&pCmdDone->MessageHeader, (mbim_verbose == 0)); } \
-    if (err || _status) {mbim_debug("%s:%d err=%d, Status=%d", __func__, __LINE__, err, _status); } \
-    if (err || pCmdDone == NULL) { mbim_free(pRequest); mbim_free(pCmdDone); return (err ? err : 8888);} \
+    int _status = mbim_status_code(pCmdDone ? &pCmdDone->MessageHeader : NULL); \
+    if (err || _status || !pCmdDone) { \
+        if (pCmdDone) { mbim_dump(&pCmdDone->MessageHeader, (mbim_verbose == 0)); } \
+        mbim_free(pRequest); mbim_free(pCmdDone); \
+        mbim_debug("%s:%d err=%d, Status=%d", __func__, __LINE__, err, _status); \
+        if (err) return err; \
+        if (_status) return _status; \
+        return 8888; \
+    } \
 } while(0)
 
-/* 
+/*
  * MBIM device can be open repeatly without error
  * So, we can call the function, no matter it have been opened or not
  */
 static int mbim_open_device(uint32_t MaxControlTransfer) {
     MBIM_MESSAGE_HEADER *pRequest = NULL;
     MBIM_OPEN_DONE_T *pOpenDone = NULL;
-    int err;
+    int err = 0;
 
     mbim_debug("%s()", __func__);
     pRequest = compose_open_command(MaxControlTransfer);
-    err = mbim_send_command(pRequest, (MBIM_COMMAND_DONE_T **)&pOpenDone, mbim_default_timeout);
+    err = mbim_send_command(pRequest, (MBIM_COMMAND_DONE_T **)&pOpenDone, 3*1000); //EM06ELAR03A09M4G take about 2.5 seconds
     mbim_check_err(err, pRequest, pOpenDone);
 
     err = le32toh(pOpenDone->Status);
@@ -1634,7 +1674,7 @@ static int mbim_close_device(void) {
     pRequest = compose_close_command();
     err = mbim_send_command(pRequest, (MBIM_COMMAND_DONE_T **)&pCloseDone, mbim_default_timeout);
     mbim_check_err(err, pRequest, pCloseDone);
-    
+
     err = le32toh(pCloseDone->Status);
     mbim_free(pRequest); mbim_free(pCloseDone);
 
@@ -1647,16 +1687,18 @@ static int mbim_query_connect(int sessionID) {
     MBIM_SET_CONNECT_T set_connect;
     int err;
 
-    mbim_debug("%s(sessionID=%d)", __func__, sessionID);
+    if (ActivationState != MBIMActivationStateActivated  || mbim_verbose)
+        mbim_debug("%s(sessionID=%d)", __func__, sessionID); //avoid two many log
     set_connect.SessionId = htole32(sessionID);
     pRequest = compose_basic_connect_command(MBIM_CID_CONNECT, MBIM_CID_CMD_TYPE_QUERY, &set_connect, sizeof(set_connect));
     err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout);
     mbim_check_err(err, pRequest, pCmdDone);
-    
+
     if (le32toh(pCmdDone->InformationBufferLength))
     {
         MBIM_CONNECT_T *pInfo = (MBIM_CONNECT_T *)pCmdDone->InformationBuffer;
         ActivationState = le32toh(pInfo->ActivationState);
+        mbim_update_state();
     }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
@@ -1677,7 +1719,7 @@ static int mbim_ms_version_query(void) {
     bc_ext_version.ver_major = 1;
     bc_ext_version.ver_minor = 0;
     bc_ext_version.ext_ver_major = 2;
-    bc_ext_version.ext_ver_minor = 0;	
+    bc_ext_version.ext_ver_minor = 0;
 
     pRequest = compose_basic_connect_ext_command(MBIM_CID_MS_VERSION, MBIM_CID_CMD_TYPE_QUERY, &bc_ext_version, sizeof(bc_ext_version));
     err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout);
@@ -1713,6 +1755,7 @@ static int mbim_device_services_query(void) {
             UINT32 offset = le32toh(pInfo->DeviceServicesRefList[i].offset);
             MBIM_DEVICE_SERVICE_ELEMENT_T *pSrvEle = (MBIM_DEVICE_SERVICE_ELEMENT_T *)((void *)pInfo + offset);
 
+            //mbim_debug("\t[%2d] %s (%s)", i, DeviceServiceId2str(&pSrvEle->DeviceServiceId), uuid2str(&pSrvEle->DeviceServiceId));
             if (!strcasecmp(UUID_BASIC_CONNECT_EXT, uuid2str(&pSrvEle->DeviceServiceId))) {
                 UINT32 cid = 0;
 
@@ -1722,8 +1765,11 @@ static int mbim_device_services_query(void) {
                     }
                 }
             }
+            else if (!strcasecmp(uuid_ext_qmux, uuid2str(&pSrvEle->DeviceServiceId))) {
+                qmi_over_mbim_support = 1;
+            }
         }
-    }    
+    }
     mbim_free(pRequest); mbim_free(pCmdDone);
 
     if (mbim_v2_support) {
@@ -1733,7 +1779,7 @@ static int mbim_device_services_query(void) {
     return err;
 }
 
-static int mbim_device_caps_query(void) {
+static int mbim_device_caps_query(PROFILE_T *profile) {
     MBIM_MESSAGE_HEADER *pRequest = NULL;
     MBIM_COMMAND_DONE_T *pCmdDone = NULL;
     int err;
@@ -1746,27 +1792,21 @@ static int mbim_device_caps_query(void) {
     if (le32toh(pCmdDone->InformationBufferLength)) {
          MBIM_DEVICE_CAPS_INFO_T *pInfo = (MBIM_DEVICE_CAPS_INFO_T *)pCmdDone->InformationBuffer;
          char tmp[32];
-         UINT32 i;
 
          if (le32toh(pInfo->DeviceIdOffset) && le32toh(pInfo->DeviceIdSize)) {
-            for (i = 0; i < 32 && i < (le32toh(pInfo->DeviceIdSize)/2); i++)
-            tmp[i] = pInfo->DataBuffer[le32toh(pInfo->DeviceIdOffset) - sizeof(MBIM_DEVICE_CAPS_INFO_T) + i*2];
-            tmp[i] = '\0';
+            wchar2char((const char *)pInfo + le32toh(pInfo->DeviceIdOffset), le32toh(pInfo->DeviceIdSize), tmp, sizeof(tmp));
             mbim_debug("DeviceId:     %s", tmp);
          }
          if (le32toh(pInfo->FirmwareInfoOffset) && le32toh(pInfo->FirmwareInfoSize)) {
-            for (i = 0; i < 32 && i < (le32toh(pInfo->FirmwareInfoSize)/2); i++)
-                tmp[i] = pInfo->DataBuffer[le32toh(pInfo->FirmwareInfoOffset) - sizeof(MBIM_DEVICE_CAPS_INFO_T) + i*2];
-             tmp[i] = '\0';
+            wchar2char((const char *)pInfo + le32toh(pInfo->FirmwareInfoOffset), le32toh(pInfo->FirmwareInfoSize), tmp, sizeof(tmp));
+            strncpy(profile->BaseBandVersion, tmp, sizeof(profile->BaseBandVersion));
             mbim_debug("FirmwareInfo: %s", tmp);
          }
          if (le32toh(pInfo->HardwareInfoOffset) && le32toh(pInfo->HardwareInfoSize)) {
-            for (i = 0; i < 32 && i < (le32toh(pInfo->HardwareInfoSize)/2); i++)
-                tmp[i] = pInfo->DataBuffer[le32toh(pInfo->HardwareInfoOffset) - sizeof(MBIM_DEVICE_CAPS_INFO_T) + i*2];
-             tmp[i] = '\0';
+            wchar2char((const char *)pInfo + le32toh(pInfo->HardwareInfoOffset), le32toh(pInfo->HardwareInfoSize), tmp, sizeof(tmp));
             mbim_debug("HardwareInfo: %s", tmp);
          }
-    }    
+    }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
 }
@@ -1785,7 +1825,7 @@ static int mbim_radio_state_query(void) {
     if (pCmdDone->InformationBufferLength) {
          MBIM_RADIO_STATE_INFO_T *pInfo = (MBIM_RADIO_STATE_INFO_T *)pCmdDone->InformationBuffer;
         mbim_debug("HwRadioState: %d, SwRadioState: %d", pInfo->HwRadioState, pInfo->SwRadioState);
-    }    
+    }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
 }
@@ -1805,7 +1845,7 @@ static int mbim_set_radio_state(MBIM_RADIO_SWITCH_STATE_E RadioState) {
     if (le32toh(pCmdDone->InformationBufferLength)) {
          MBIM_RADIO_STATE_INFO_T *pInfo = (MBIM_RADIO_STATE_INFO_T *)pCmdDone->InformationBuffer;
         mbim_debug("HwRadioState: %d, SwRadioState: %d", le32toh(pInfo->HwRadioState), le32toh(pInfo->SwRadioState));
-    }    
+    }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
 }
@@ -1822,8 +1862,15 @@ static int mbim_subscriber_status_query(void) {
 
     if (le32toh(pCmdDone->InformationBufferLength)) {
          MBIM_SUBSCRIBER_READY_STATUS_T *pInfo = (MBIM_SUBSCRIBER_READY_STATUS_T *)pCmdDone->InformationBuffer;
+         char tmp[32];
+
+        wchar2char((const char *)pInfo + le32toh(pInfo->SubscriberIdOffset), le32toh(pInfo->SubscriberIdSize), tmp, sizeof(tmp));
+        mbim_debug("SubscriberId: %s", tmp);
+        wchar2char((const char *)pInfo + le32toh(pInfo->SimIccIdOffset), le32toh(pInfo->SimIccIdSize), tmp, sizeof(tmp));
+        mbim_debug("SimIccId:     %s", tmp);
         ReadyState = le32toh(pInfo->ReadyState);
-    }    
+        mbim_update_state();
+    }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
 }
@@ -1841,7 +1888,8 @@ static int mbim_register_state_query(void) {
     if (le32toh(pCmdDone->InformationBufferLength)) {
         MBIM_REGISTRATION_STATE_INFO_T *pInfo = (MBIM_REGISTRATION_STATE_INFO_T *)pCmdDone->InformationBuffer;;
         RegisterState = le32toh(pInfo->RegisterState);
-    }    
+        mbim_update_state();
+    }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
 }
@@ -1859,6 +1907,7 @@ static int mbim_packet_service_query(void) {
     if (le32toh(pCmdDone->InformationBufferLength)) {
         MBIM_PACKET_SERVICE_INFO_T *pInfo = (MBIM_PACKET_SERVICE_INFO_T *)pCmdDone->InformationBuffer;
         PacketServiceState = le32toh(pInfo->PacketServiceState);
+        mbim_update_state();
 
         if (le32toh(pCmdDone->InformationBufferLength) == sizeof(MBIM_PACKET_SERVICE_INFO_V2_T)) {
             MBIM_PACKET_SERVICE_INFO_V2_T *pInfo = (MBIM_PACKET_SERVICE_INFO_V2_T *)pCmdDone->InformationBuffer;
@@ -1874,7 +1923,7 @@ static int mbim_packet_service_set(MBIM_PACKET_SERVICE_ACTION_E action) {
     MBIM_COMMAND_DONE_T *pCmdDone = NULL;
     UINT32 value = htole32(action);
     int err;
-    
+
     mbim_debug("%s()", __func__);
     pRequest = compose_basic_connect_command(MBIM_CID_PACKET_SERVICE, MBIM_CID_CMD_TYPE_SET, &value, sizeof(value));
     err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout);
@@ -1883,6 +1932,7 @@ static int mbim_packet_service_set(MBIM_PACKET_SERVICE_ACTION_E action) {
     if (le32toh(pCmdDone->InformationBufferLength)) {
         MBIM_PACKET_SERVICE_INFO_T *pInfo = (MBIM_PACKET_SERVICE_INFO_T *)pCmdDone->InformationBuffer;
         PacketServiceState = le32toh(pInfo->PacketServiceState);
+        mbim_update_state();
     }
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
@@ -1892,7 +1942,6 @@ static int mbim_packet_service_set(MBIM_PACKET_SERVICE_ACTION_E action) {
 static int mbim_populate_connect_data(MBIM_SET_CONNECT_T **connect_req_ptr) {
     int offset;
     int buflen = 0;
-    int i;
 
     if (mbim_apn && strlen(mbim_apn) > 0) buflen += 2*strlen(mbim_apn) ;
     _align_32(buflen);
@@ -1912,32 +1961,21 @@ static int mbim_populate_connect_data(MBIM_SET_CONNECT_T **connect_req_ptr) {
     if (mbim_apn && strlen(mbim_apn) > 0) {
         (*connect_req_ptr)->AccessStringSize = htole32(2*strlen(mbim_apn));
         (*connect_req_ptr)->AccessStringOffset = htole32(offset + sizeof(MBIM_SET_CONNECT_T));
-        for (i = 0; i < strlen(mbim_apn); i++) {
-            (*connect_req_ptr)->DataBuffer[offset + i*2] = mbim_apn[i];
-            (*connect_req_ptr)->DataBuffer[offset + i*2 + 1] = 0;
-        }
-        offset += 2 * strlen(mbim_apn);
+        offset = char2wchar(mbim_apn, strlen(mbim_apn), &(*connect_req_ptr)->DataBuffer[offset], buflen - offset);
         _align_32(offset);
     }
 
     if (mbim_user && strlen(mbim_user) > 0) {
         (*connect_req_ptr)->UserNameSize = htole32(2*strlen(mbim_user));
         (*connect_req_ptr)->UserNameOffset = htole32(offset + sizeof(MBIM_SET_CONNECT_T));
-        for (i = 0; i < strlen(mbim_user); i++) {
-            (*connect_req_ptr)->DataBuffer[offset + i*2] = mbim_user[i];
-            (*connect_req_ptr)->DataBuffer[offset + i*2 + 1] = 0;
-        }
-        offset += 2 * strlen(mbim_user);
+        offset = char2wchar(mbim_user, strlen(mbim_user), &(*connect_req_ptr)->DataBuffer[offset], buflen - offset);
         _align_32(offset);
     }
 
     if (mbim_passwd && strlen(mbim_passwd) > 0) {
         (*connect_req_ptr)->PasswordSize = htole32(2*strlen(mbim_passwd));
         (*connect_req_ptr)->PasswordOffset = htole32(offset + sizeof(MBIM_SET_CONNECT_T));
-        for (i = 0; i < strlen(mbim_passwd); i++) {
-            (*connect_req_ptr)->DataBuffer[offset + i*2] = mbim_passwd[i];
-            (*connect_req_ptr)->DataBuffer[offset + i*2 + 1] = 0;
-        }
+        offset = char2wchar(mbim_passwd, strlen(mbim_passwd), &(*connect_req_ptr)->DataBuffer[offset], buflen - offset);
     }
 
     return buflen;
@@ -1948,7 +1986,7 @@ static int mbim_set_connect(int onoff, int sessionID) {
     MBIM_COMMAND_DONE_T *pCmdDone = NULL;
     MBIM_SET_CONNECT_T *set_connect = NULL;
     int err;
-    
+
     mbim_debug("%s(onoff=%d, sessionID=%d)", __func__, onoff, sessionID);
     /* alloc memory then populate APN USERNAME PASSWORD */
     int buflen = mbim_populate_connect_data(&set_connect);
@@ -1961,13 +1999,13 @@ static int mbim_set_connect(int onoff, int sessionID) {
         set_connect->ActivationCommand = htole32(MBIMActivationCommandDeactivate);
     else
         set_connect->ActivationCommand = htole32(MBIMActivationCommandActivate);
-        
+
     set_connect->Compression = htole32(MBIMCompressionNone);
     set_connect->AuthProtocol = htole32(mbim_auth);
     set_connect->IPType = htole32(mbim_iptype);
     memcpy(set_connect->ContextType.uuid, str2uuid(UUID_MBIMContextTypeInternet), 16);
-    
-    pRequest = compose_basic_connect_command(MBIM_CID_CONNECT, MBIM_CID_CMD_TYPE_SET, set_connect, sizeof(MBIM_SET_CONNECT_T) + buflen);        
+
+    pRequest = compose_basic_connect_command(MBIM_CID_CONNECT, MBIM_CID_CMD_TYPE_SET, set_connect, sizeof(MBIM_SET_CONNECT_T) + buflen);
     mbim_free(set_connect);
     err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout*10);
     mbim_check_err(err, pRequest, pCmdDone);
@@ -1975,19 +2013,21 @@ static int mbim_set_connect(int onoff, int sessionID) {
     if (le32toh(pCmdDone->InformationBufferLength)) {
         MBIM_CONNECT_T *pInfo = (MBIM_CONNECT_T *)pCmdDone->InformationBuffer;
         ActivationState = le32toh(pInfo->ActivationState);
+        mbim_update_state();
     }
 
     mbim_free(pRequest); mbim_free(pCmdDone);
     return err;
 }
 
-static int mbim_ip_config(int sessionID) {
+static int mbim_ip_config(PROFILE_T *profile, int sessionID) {
     MBIM_MESSAGE_HEADER *pRequest = NULL;
     MBIM_COMMAND_DONE_T *pCmdDone = NULL;
     MBIM_IP_CONFIGURATION_INFO_T ip_info;
     int err;
 
-    mbim_debug("%s(sessionID=%d)", __func__, sessionID);
+    if (profile->ipv4.Address == 0 || mbim_verbose)
+        mbim_debug("%s(sessionID=%d)", __func__, sessionID);
     ip_info.SessionId = htole32(sessionID);
     pRequest = compose_basic_connect_command(MBIM_CID_IP_CONFIGURATION, MBIM_CID_CMD_TYPE_QUERY, &ip_info, sizeof(ip_info));
     err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout);
@@ -1997,8 +2037,6 @@ static int mbim_ip_config(int sessionID) {
         UINT8 prefix, *ipv4=NULL, *ipv6=NULL, *gw=NULL, *dns1=NULL, *dns2=NULL;
         UINT32 mtu = 1500;
         MBIM_IP_CONFIGURATION_INFO_T *pInfo = (MBIM_IP_CONFIGURATION_INFO_T *)pCmdDone->InformationBuffer;
-
-        if (mbim_verbose == 0) mbim_dump_ipconfig(pInfo, "<");
 
         /* IPv4 network configration */
         if (le32toh(pInfo->IPv4ConfigurationAvailable)&0x1) {
@@ -2018,11 +2056,24 @@ static int mbim_ip_config(int sessionID) {
             if (le32toh(pInfo->IPv4ConfigurationAvailable)&0x8)
                 mtu =  le32toh(pInfo->IPv4Mtu);
 
-            mbim_ifconfig(4, mbim_netcard, ipv4, gw, dns1, dns2, prefix, mtu);
+            if (profile->ipv4.Address != mbim2qmi_ipv4addr(*(uint32_t *)ipv4) || mbim_verbose) {
+                mbim_dump_ipconfig(pInfo, "<");
+                profile->ipv4.Address = mbim2qmi_ipv4addr(*(uint32_t *)ipv4);
+            }
+
+			if(gw != NULL)
+            	profile->ipv4.Gateway = mbim2qmi_ipv4addr(*(uint32_t *)gw);
+            profile->ipv4.SubnetMask = mbim2qmi_ipv4addr(0xFFFFFFFF>>(32-prefix)<<(32-prefix));
+			if(dns1 != NULL)
+            	profile->ipv4.DnsPrimary = mbim2qmi_ipv4addr(*(uint32_t *)dns1);
+			if(dns2 != NULL)
+            	profile->ipv4.DnsSecondary = mbim2qmi_ipv4addr(*(uint32_t *)dns2);
+            profile->ipv4.Mtu = mbim2qmi_ipv4addr(mtu);
         }
 
         /* IPv6 network configration */
         if (le32toh(pInfo->IPv6ConfigurationAvailable)&0x1) {
+			gw = NULL; dns1 = NULL; dns2 = NULL;
             MBIM_IPV6_ELEMENT_T *pAddress = (MBIM_IPV6_ELEMENT_T *)(&pInfo->DataBuffer[le32toh(pInfo->IPv6AddressOffset)-sizeof(MBIM_IP_CONFIGURATION_INFO_T)]);
             prefix = le32toh(pAddress->OnLinkPrefixLength);
             ipv6 = pAddress->IPv6Address;
@@ -2039,31 +2090,52 @@ static int mbim_ip_config(int sessionID) {
             if (le32toh(pInfo->IPv6ConfigurationAvailable)&0x8)
                 mtu =  le32toh(pInfo->IPv6Mtu);
 
-            mbim_ifconfig(6, mbim_netcard, ipv6, gw, dns1, dns2, prefix, mtu);
+            if(ipv6 != NULL)
+            	mbim2qmi_ipv6addr(ipv6, profile->ipv6.Address);
+			if(gw != NULL)
+            	mbim2qmi_ipv6addr(gw, profile->ipv6.Gateway);
+			if(dns1 != NULL)
+            	mbim2qmi_ipv6addr(dns1, profile->ipv6.DnsPrimary);
+			if(dns2 != NULL)
+            	mbim2qmi_ipv6addr(dns2, profile->ipv6.DnsSecondary);
+            profile->ipv6.PrefixLengthIPAddr = prefix;
+            profile->ipv6.PrefixLengthGateway = prefix;
+            profile->ipv6.Mtu = mbim2qmi_ipv4addr(mtu);
         }
     }
     return err;
 }
 
-static void ql_sigaction(int signo) {
-    mbim_debug("MBIM catch signo %d", signo);
-    if (SIGTERM == signo || SIGHUP == signo || SIGINT == signo) {
-        mbim_quit++;
-        _notify_state_chage();
+int mbim_proxy_configure(const char *dev) {
+    MBIM_MESSAGE_HEADER *pRequest = NULL;
+    MBIM_COMMAND_DONE_T *pCmdDone = NULL;
+    MBIM_LIBQMI_PROXY_CONFIG_T *cfg;
+    int err;
+
+    pRequest = compose_basic_connect_command(
+                                                    MBIM_CID_PROXY_CONTROL_CONFIGURATION,
+                                                    MBIM_CID_CMD_TYPE_SET,
+                                                    NULL,
+                                                    sizeof(*cfg) + strlen(dev)*2);
+    if (pRequest) {
+        memcpy(((MBIM_COMMAND_MSG_T *)pRequest)->DeviceServiceId.uuid, str2uuid(UUID_LIBMBIM_PROXY), 16);
+        cfg = (MBIM_LIBQMI_PROXY_CONFIG_T *)((MBIM_COMMAND_MSG_T *)pRequest)->InformationBuffer;
+
+        cfg->DevicePathOffset = sizeof(*cfg);
+        cfg->DevicePathSize = char2wchar(dev, strlen(dev), cfg->DataBuffer, strlen(dev)*2);
+        cfg->Timeout = 15;
     }
+
+    err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout);
+    mbim_check_err(err, pRequest, pCmdDone);
+
+    mbim_free(pRequest); mbim_free(pCmdDone);
+    return err;
 }
 
-static void mbim_reset_state(void) {
-    ReadyState = oldReadyState = MBIMSubscriberReadyStateNotInitialized;
-    RegisterState = oldRegisterState = MBIMRegisterStateUnknown;
-    PacketServiceState = oldPacketServiceState = MBIMPacketServiceStateUnknown;
-    ActivationState = oldActivationState = MBIMActivationStateUnknown;
-    mbim_ms_version = 1;
-}
-
-static int mbim_update_state(PROFILE_T *profile) {
+static int mbim_update_state(void) {
     int chages = 0;
-    
+
     if (oldReadyState != ReadyState) {
         mbim_debug("SubscriberReadyState %s -> %s ", MBIMSubscriberReadyStateStr(oldReadyState), MBIMSubscriberReadyStateStr(ReadyState));
         oldReadyState = ReadyState; chages++;
@@ -2075,9 +2147,8 @@ static int mbim_update_state(PROFILE_T *profile) {
     if (oldPacketServiceState != PacketServiceState) {
         mbim_debug("PacketServiceState %s -> %s ", MBIMPacketServiceStateStr(oldPacketServiceState), MBIMPacketServiceStateStr(PacketServiceState));
         oldPacketServiceState = PacketServiceState; chages++;
-    } 
-    if (ActivationState != oldActivationState) {
-        ql_set_driver_link_state(profile, ActivationState == MBIMActivationStateActivated);
+    }
+    if (oldActivationState != ActivationState) {
         mbim_debug("ActivationState %s -> %s ", MBIMActivationStateStr(oldActivationState), MBIMActivationStateStr(ActivationState));
         oldActivationState = ActivationState; chages++;
     }
@@ -2085,25 +2156,146 @@ static int mbim_update_state(PROFILE_T *profile) {
     return chages;
 }
 
-int mbim_main(PROFILE_T *profile) 
+static int mbim_init(PROFILE_T *profile) {
+    int retval;
+    int t = 0;
+
+    if (profile->proxy[0] && !strcmp(profile->proxy, LIBMBIM_PROXY)) {
+        retval = mbim_proxy_configure(profile->qmichannel);
+        if (retval) goto exit;
+    }
+
+    while (t++ < 10) {
+        retval = mbim_open_device(4096);
+        if (retval != ETIMEDOUT)
+            break;
+    }
+    if (retval) goto exit;
+    retval = mbim_device_caps_query(profile);
+    if (retval) goto exit;
+    mbim_update_state();
+    retval = mbim_device_services_query();
+    if (retval) goto exit;
+    mbim_update_state();
+    retval = mbim_set_radio_state(MBIMRadioOn);
+    if (retval) goto exit;
+    mbim_update_state();
+
+    if (qmi_over_mbim_support) {
+        if (!socketpair( AF_LOCAL, SOCK_STREAM, 0, qmi_over_mbim_sk)) {
+            qmidev_send = qmi_over_mbim_qmidev_send;
+#ifdef CONFIG_CELLINFO //by now, only this function need QMI OVER MBIM
+            qmi_over_mbim_nas = qmi_over_mbim_get_client_id(QMUX_TYPE_NAS);
+#endif
+        }
+    }
+
+    return 0;
+
+exit:
+    return retval;
+}
+
+static int mbim_deinit(void) {
+    if (qmi_over_mbim_nas) {
+        qmi_over_mbim_release_client_id(QMUX_TYPE_NAS, qmi_over_mbim_nas);
+        qmi_over_mbim_nas = 0;
+    }
+    
+    mbim_close_device();
+
+    if (qmi_over_mbim_sk[0] != -1) {
+        close(qmi_over_mbim_sk[0]);
+        close(qmi_over_mbim_sk[1]);
+    }
+
+    return 0;
+}
+
+const struct qmi_device_ops mbim_dev_ops = {
+    .init = mbim_init,
+    .deinit = mbim_deinit,
+    .read = mbim_read_thread,
+};
+
+static int requestBaseBandVersion(PROFILE_T *profile) {
+    (void)profile;
+    return 0;
+}
+
+static int requestGetSIMStatus(SIM_Status *pSIMStatus)
 {
     int retval;
-    int sessionID = 0;
 
-    signal(SIGINT, ql_sigaction);
-    signal(SIGTERM, ql_sigaction);
-    signal(SIGHUP, ql_sigaction);
-    
-    profile->qmap_mode = 1;
-    
-    if (profile->qmichannel)
-        mbim_dev = profile->qmichannel;
-    if (profile->qmapnet_adapter) {
-        mbim_netcard = profile->qmapnet_adapter;
-        real_netcard = profile->usbnet_adapter;
-    } else if(profile->usbnet_adapter) {
-        mbim_netcard = profile->usbnet_adapter;
+    *pSIMStatus = SIM_ABSENT;
+    retval = mbim_subscriber_status_query();
+    if (retval)
+        goto exit;
+    mbim_update_state();
+
+     switch(ReadyState) {
+        case MBIMSubscriberReadyStateNotInitialized: *pSIMStatus = SIM_NOT_READY; break;
+        case MBIMSubscriberReadyStateInitialized: *pSIMStatus = SIM_READY; break;
+        case MBIMSubscriberReadyStateSimNotInserted: *pSIMStatus = SIM_ABSENT; break;
+        case MBIMSubscriberReadyStateBadSim: *pSIMStatus = SIM_BAD; break;
+        case MBIMSubscriberReadyStateFailure: *pSIMStatus = SIM_ABSENT; break;
+        case MBIMSubscriberReadyStateNotActivated: *pSIMStatus = SIM_ABSENT; break;
+        case MBIMSubscriberReadyStateDeviceLocked: *pSIMStatus = SIM_PIN; break;
+        default: *pSIMStatus = SIM_ABSENT; break;
     }
+
+exit:
+    return retval;
+}
+
+static int requestRegistrationState(UCHAR *pPSAttachedState) {
+    int retval;
+
+    *pPSAttachedState = 0;
+    retval = mbim_register_state_query();
+    if (retval)
+        goto exit;
+    mbim_update_state();
+
+    switch (RegisterState) {
+        case MBIMRegisterStateUnknown: *pPSAttachedState = 0; break;
+        case MBIMRegisterStateDeregistered: *pPSAttachedState = 0; break;
+        case MBIMRegisterStateSearching: *pPSAttachedState = 0; break;
+        case MBIMRegisterStateHome: *pPSAttachedState = 1; break;
+        case MBIMRegisterStateRoaming: *pPSAttachedState = 1; break;
+        case MBIMRegisterStatePartner: *pPSAttachedState = 0; break;
+        case MBIMRegisterStateDenied: *pPSAttachedState = 0; break;
+        default: *pPSAttachedState = 0; break;
+    }
+
+    if (*pPSAttachedState == 0)
+        goto exit;
+
+    retval =  mbim_packet_service_query();
+    if (retval)
+        goto exit;
+
+    switch (PacketServiceState) {
+        case MBIMPacketServiceStateUnknown: *pPSAttachedState = 0; break;
+        case MBIMPacketServiceStateAttaching: *pPSAttachedState = 0; break;
+        case MBIMPacketServiceStateAttached: *pPSAttachedState = 1; break;
+        case MBIMPacketServiceStateDetaching: *pPSAttachedState = 0; break;
+        case MBIMPacketServiceStateDetached: *pPSAttachedState = 0; break;
+        default: *pPSAttachedState = 0; break;
+    }
+
+    if (*pPSAttachedState == 0)
+        mbim_packet_service_set(MBIMPacketServiceActionAttach);
+
+exit:
+    return retval;
+}
+
+static int requestSetupDataCall(PROFILE_T *profile, int curIpFamily) {
+    int retval;
+
+    (void)curIpFamily;
+
     if (profile->apn)
         mbim_apn = profile->apn;
     if (profile->user)
@@ -2118,115 +2310,117 @@ int mbim_main(PROFILE_T *profile)
         mbim_iptype = MBIMContextIPTypeIPv6;
     if (profile->enable_ipv4 && profile->enable_ipv6)
         mbim_iptype = MBIMContextIPTypeIPv4AndIPv6;
-    mbim_verbose = debug_qmi;
-    mbim_debug("apn %s, user %s, passwd %s, auth %d", mbim_apn, mbim_user, mbim_passwd, mbim_auth);
-    mbim_debug("IP Proto %s", MBIMContextIPTypeStr(mbim_iptype));
 
-    /* set relative time, for pthread_cond_timedwait */
-    cond_setclock_attr(&mbim_state_cond, CLOCK_MONOTONIC);
-    cond_setclock_attr(&mbim_command_cond, CLOCK_MONOTONIC);
-
-    mbim_fd = open(mbim_dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
-    if (mbim_fd  <= 0) {
-        mbim_debug("fail to open (%s), errno: %d (%s)", mbim_dev, errno, strerror(errno));
+    retval = mbim_set_connect(1, mbim_sessionID);
+    if (retval)
         goto exit;
-    }
-    pthread_create(&read_tid, NULL, mbim_read_thread, (void *)mbim_dev);
-    mbim_open_state = 0;
-    
-    while (mbim_quit == 0 && read_tid != 0) {
-        uint32_t wait_time = 24*60*60;
-        
-        if (mbim_open_state == 0) {
-            mbim_ifconfig(4, mbim_netcard, NULL, NULL, NULL, NULL, 0, 0);
-            TransactionId = 1;
-            retval = mbim_open_device(4096);
-            if (retval) goto exit;
-            mbim_open_state = 1;
-            mbim_reset_state();
-            retval = mbim_device_caps_query();
-            if (retval) goto exit;
-            retval = mbim_device_services_query();
-            if (retval) goto exit;
-            retval = mbim_set_radio_state(MBIMRadioOn);
-            if (retval) goto exit;
-        }
-        
-        if (ReadyState != MBIMSubscriberReadyStateInitialized) {
-            retval = mbim_subscriber_status_query();
-            if (retval) goto exit;
-            mbim_update_state(profile);
-        }
-        if (ReadyState != MBIMSubscriberReadyStateInitialized) goto _wait_state_change;
 
-        if (RegisterState != MBIMRegisterStateHome && RegisterState != MBIMRegisterStateRoaming) {
-            retval = mbim_register_state_query();
-            if (retval) goto exit;
-            mbim_update_state(profile);
-        }
-        if (RegisterState != MBIMRegisterStateHome && RegisterState != MBIMRegisterStateRoaming)  goto _wait_state_change;
-            
-        if (PacketServiceState != MBIMPacketServiceStateAttached) {
-            retval = mbim_packet_service_query();
-            if (retval) goto exit;
-            mbim_update_state(profile);
-            if ((PacketServiceState == MBIMPacketServiceStateUnknown || PacketServiceState == MBIMPacketServiceStateDetached)
-                && (RegisterState == MBIMRegisterStateHome || RegisterState == MBIMRegisterStateRoaming)) {
-                retval = mbim_packet_service_set(MBIMPacketServiceActionAttach); //at+cgatt=0/1
-                if (retval) goto exit;
-            }
-            mbim_update_state(profile);
-        }
-        if (PacketServiceState != MBIMPacketServiceStateAttached) goto _wait_state_change;
+exit:
+    return retval;
+}
 
-        if (ActivationState == MBIMActivationStateUnknown) {
-            retval = mbim_query_connect(sessionID);
-            if (retval) goto exit;
-            mbim_update_state(profile);
-        }
+static int requestQueryDataCall(UCHAR  *pConnectionStatus, int curIpFamily) {
+    int retval;
 
-        if (ActivationState != MBIMActivationStateActivated && ActivationState != MBIMActivationStateActivating) {
-            retval = mbim_set_connect(1, sessionID);
-            if (retval) goto exit;
-            mbim_update_state(profile);
-            if (ActivationState == MBIMActivationStateActivated) {
-                retval = mbim_ip_config(sessionID);
-                if (retval) goto exit;
-                mbim_update_state(profile);
-            }
-            else {
-                wait_time = 30; //retry call mbim_set_connect 30 seconds later
-            }
-        }   
-        if (ActivationState != MBIMActivationStateActivated) goto _wait_state_change;
-    
-_wait_state_change:
-        wait_state_change(wait_time);
-        do {
-            mbim_update_state(profile);
-        } while (mbim_quit == 0 && read_tid != 0 && wait_state_change(1) != ETIMEDOUT);
+    (void)curIpFamily;
+
+    *pConnectionStatus = QWDS_PKT_DATA_DISCONNECTED;
+
+    retval = mbim_query_connect(mbim_sessionID);
+    if (retval)
+        goto exit;
+
+    switch(ActivationState) {
+        case MBIMActivationStateUnknown: *pConnectionStatus = QWDS_PKT_DATA_UNKNOW; break;
+        case MBIMActivationStateActivated: *pConnectionStatus = QWDS_PKT_DATA_CONNECTED; break;
+        case MBIMActivationStateActivating: *pConnectionStatus = QWDS_PKT_DATA_DISCONNECTED; break;
+        case MBIMActivationStateDeactivated: *pConnectionStatus = QWDS_PKT_DATA_DISCONNECTED; break;
+        case MBIMActivationStateDeactivating: *pConnectionStatus = QWDS_PKT_DATA_DISCONNECTED; break;
+        default: *pConnectionStatus = QWDS_PKT_DATA_DISCONNECTED; break;
     }
 
 exit:
-    if (read_tid > 0) {
-        if (ActivationState == MBIMActivationStateActivated || ActivationState == MBIMActivationStateActivating)
-            mbim_set_connect(0, sessionID);
-        mbim_close_device();
-        while (read_tid) {
-            pthread_kill(read_tid, SIGTERM);
-            usleep(10*1000);
-        }
-       mbim_ifconfig(4, mbim_netcard, NULL, NULL, NULL, NULL, 0, 0);
-  }
+    return retval;
+}
 
-    if (mbim_fd > 0) {
-        close(mbim_fd);
+static int requestDeactivateDefaultPDP(PROFILE_T *profile, int curIpFamily) {
+    int retval;
+    
+    (void)profile;
+    (void)curIpFamily;
+
+    retval = mbim_set_connect(0, mbim_sessionID);
+    if (retval)
+        goto exit;
+
+exit:
+    return retval;
+}
+
+static int requestGetIPAddress(PROFILE_T *profile, int curIpFamily) {
+    int retval;
+    
+    (void)curIpFamily;
+    retval = mbim_ip_config(profile, mbim_sessionID);
+    if (retval)
+        goto exit;
+
+exit:
+    return retval;
+}
+
+#ifdef CONFIG_CELLINFO
+static int requestGetCellInfoList(void) {
+    if (qmi_over_mbim_nas) {
+        if (qmi_request_ops.requestGetCellInfoList)
+            return qmi_request_ops.requestGetCellInfoList();
     }
-    pthread_mutex_destroy(&mbim_command_mutex);
-    pthread_mutex_destroy(&mbim_state_mutex);
-    pthread_cond_destroy(&mbim_command_cond);
-    pthread_cond_destroy(&mbim_state_cond);
 
-    mbim_debug("MBIM CM exit...\n");
-    return 0;    
+    return 0;
+}
+#endif
+
+const struct request_ops mbim_request_ops = {
+    .requestBaseBandVersion = requestBaseBandVersion,
+    .requestGetSIMStatus = requestGetSIMStatus,
+    .requestRegistrationState = requestRegistrationState,
+    .requestSetupDataCall = requestSetupDataCall,
+    .requestQueryDataCall = requestQueryDataCall,
+    .requestDeactivateDefaultPDP = requestDeactivateDefaultPDP,
+    .requestGetIPAddress = requestGetIPAddress,
+#ifdef CONFIG_CELLINFO
+    .requestGetCellInfoList = requestGetCellInfoList,
+#endif
+};
+
+int qmi_over_mbim_qmidev_send(PQCQMIMSG pQMI) {
+    MBIM_MESSAGE_HEADER *pRequest = NULL;
+    MBIM_COMMAND_DONE_T *pCmdDone = NULL;
+    int err;
+    size_t len = le16toh(pQMI->QMIHdr.Length) + 1;
+
+    if (pQMI->QMIHdr.QMIType != QMUX_TYPE_CTL) {
+        if (pQMI->QMIHdr.QMIType == QMUX_TYPE_NAS)
+            pQMI->QMIHdr.ClientId = qmi_over_mbim_nas;
+
+        if (pQMI->QMIHdr.ClientId == 0) {
+            dbg_time("QMIType %d has no clientID", pQMI->QMIHdr.QMIType);
+            return -ENODEV;
+        }
+    }
+
+    pRequest = compose_qmi_over_mbim_command(1, MBIM_CID_CMD_TYPE_SET, pQMI, len);
+    err = mbim_send_command(pRequest, &pCmdDone, mbim_default_timeout);
+    mbim_check_err(err, pRequest, pCmdDone);
+
+    err = -1;
+    len = le32toh(pCmdDone->InformationBufferLength);
+    if (len) {
+        if (write(qmi_over_mbim_sk[0], pCmdDone->InformationBuffer, len) == (long)len) {
+            err = 0;
+        };
+    }
+
+    mbim_free(pRequest); mbim_free(pCmdDone);
+    return err;
 }

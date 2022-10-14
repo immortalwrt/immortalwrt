@@ -22,7 +22,14 @@ when        who    what, where, why
 #ifndef USBQMI_H
 #define USBQMI_H
 
-typedef char    CHAR;
+typedef uint8_t uint8;
+typedef int8_t int8;
+typedef uint16_t uint16;
+typedef int16_t int16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+
+typedef signed char    CHAR;
 typedef unsigned char   UCHAR;
 typedef short   SHORT;
 typedef unsigned short   USHORT;
@@ -31,7 +38,7 @@ typedef unsigned int   UINT;
 typedef long    LONG;
 typedef unsigned int   ULONG;
 typedef unsigned long long   ULONG64;
-typedef char   *PCHAR;
+typedef signed char   *PCHAR;
 typedef unsigned char   *PUCHAR;
 typedef int   *PINT;
 typedef int   BOOL;
@@ -80,6 +87,7 @@ typedef enum _QMI_SERVICE_TYPE
    QMUX_TYPE_UIM  = 0x0B,
    QMUX_TYPE_WDS_IPV6  = 0x11,
    QMUX_TYPE_WDS_ADMIN  = 0x1A,
+   QMUX_TYPE_COEX  = 0x22,
    QMUX_TYPE_MAX  = 0xFF,
    QMUX_TYPE_ALL  = 0xFF
 } QMI_SERVICE_TYPE;
@@ -287,6 +295,21 @@ typedef struct _QMI_TLV_HDR
    UCHAR  TLVType;
    USHORT TLVLength;
 } __attribute__ ((packed)) QMI_TLV_HDR, *PQMI_TLV_HDR;
+
+typedef struct _QMI_TLV
+{
+   UCHAR  TLVType;
+   USHORT TLVLength;
+   union {
+        int8_t s8;
+        uint8_t u8;
+        int16_t s16;
+        uint16_t u16;
+        int32_t s32;
+        uint32_t u32;
+        uint64_t u64;
+   };
+} __attribute__ ((packed)) QMI_TLV, *PQMI_TLV;
 
 // QMUX Message Definitions -- QMI SDU
 #define QMUX_CTL_FLAG_SINGLE_MSG    0x00

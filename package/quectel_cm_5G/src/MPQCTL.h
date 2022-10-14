@@ -94,6 +94,7 @@ typedef struct _QCQMICTL_TLV_HDR
 #define QMICTL_SYNC_REQ               0x0027
 #define QMICTL_SYNC_RESP              0x0027
 #define QMICTL_SYNC_IND               0x0027
+#define QMI_MESSAGE_CTL_INTERNAL_PROXY_OPEN 0xFF00
 
 #define QMICTL_FLAG_REQUEST    0x00
 #define QMICTL_FLAG_RESPONSE   0x01
@@ -346,6 +347,17 @@ typedef struct _QMICTL_SYNC_IND_MSG
    USHORT Length;
 } __attribute__ ((packed)) QMICTL_SYNC_IND_MSG, *PQMICTL_SYNC_IND_MSG;
 
+typedef struct _QMICTL_LIBQMI_PROXY_OPEN_MSG
+{
+   UCHAR  CtlFlags;        // QMICTL_FLAG_RESPONSE
+   UCHAR  TransactionId;
+   USHORT QMICTLType;      // QMICTL_SET_DATA_FORMAT_RESP
+   USHORT Length;
+   UCHAR  TLVType;         // QCTLV_TYPE_RESULT_CODE
+   USHORT TLVLength;       // 0x0004
+   char device_path[0];       // result code
+} __attribute__ ((packed)) QMICTL_LIBQMI_PROXY_OPEN_MSG, *PQMICTL_LIBQMI_PROXY_OPEN_MSG;
+
 typedef struct _QMICTL_MSG
 {
    union
@@ -370,6 +382,7 @@ typedef struct _QMICTL_MSG
       QMICTL_SYNC_REQ_MSG                          SyncReq;
       QMICTL_SYNC_RESP_MSG                         SyncRsp;
       QMICTL_SYNC_IND_MSG                          SyncInd;
+      QMICTL_LIBQMI_PROXY_OPEN_MSG          LibQmiProxyOpenReq;
    };
 } __attribute__ ((packed)) QMICTL_MSG, *PQMICTL_MSG;
 #pragma pack(pop)

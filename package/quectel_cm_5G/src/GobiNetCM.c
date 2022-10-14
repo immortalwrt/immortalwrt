@@ -21,6 +21,7 @@
 #include "QMIThread.h"
 
 #ifdef CONFIG_GOBINET
+static int qmiclientId[QMUX_TYPE_ALL];
 
 // IOCTL to generate a client ID for this service type
 #define IOCTL_QMI_GET_SERVICE_FILE 0x8BE0 + 1
@@ -35,6 +36,7 @@ static int GobiNetSendQMI(PQCQMIMSG pRequest) {
     int ret, fd;
 
     fd = qmiclientId[pRequest->QMIHdr.QMIType];
+    pRequest->QMIHdr.ClientId = (fd&0xFF) ? fd&0xFF : pRequest->QMIHdr.QMIType;
 
     if (fd <= 0) {
         dbg_time("%s QMIType: %d has no clientID", __func__, pRequest->QMIHdr.QMIType);
@@ -59,7 +61,7 @@ static int GobiNetSendQMI(PQCQMIMSG pRequest) {
 
 static int GobiNetGetClientID(const char *qcqmi, UCHAR QMIType) {
     int ClientId;
-    ClientId = open(qcqmi, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    ClientId = cm_open_dev(qcqmi);
     if (ClientId == -1) {
         dbg_time("failed to open %s, errno: %d (%s)", qcqmi, errno, strerror(errno));
         return -1;
@@ -79,6 +81,7 @@ static int GobiNetGetClientID(const char *qcqmi, UCHAR QMIType) {
         case QMUX_TYPE_WMS: dbg_time("Get clientWMS = %d", ClientId); break;
         case QMUX_TYPE_PDS: dbg_time("Get clientPDS = %d", ClientId); break;
         case QMUX_TYPE_UIM: dbg_time("Get clientUIM = %d", ClientId); break;
+        case QMUX_TYPE_COEX: dbg_time("Get clientCOEX = %d", ClientId); break;
         case QMUX_TYPE_WDS_ADMIN: dbg_time("Get clientWDA = %d", ClientId);
         break;
         default: break;
@@ -112,8 +115,13 @@ static void * GobiNetThread(void *pData) {
     qmiclientId[QMUX_TYPE_DMS] = GobiNetGetClientID(qcqmi, QMUX_TYPE_DMS);
     qmiclientId[QMUX_TYPE_NAS] = GobiNetGetClientID(qcqmi, QMUX_TYPE_NAS);
     qmiclientId[QMUX_TYPE_UIM] = GobiNetGetClientID(qcqmi, QMUX_TYPE_UIM);
-    if (profile->qmap_mode == 0) //when QMAP enabled, set data format in GobiNet Driver
+#ifdef CONFIG_COEX_WWAN_STATE
+    qmiclientId[QMUX_TYPE_COEX] = GobiNetGetClientID(qcqmi, QMUX_TYPE_COEX);
+#endif
+    if (profile->qmap_mode == 0 || profile->loopback_state) {//when QMAP enabled, set data format in GobiNet Driver
         qmiclientId[QMUX_TYPE_WDS_ADMIN] = GobiNetGetClientID(qcqmi, QMUX_TYPE_WDS_ADMIN);
+        profile->wda_client = qmiclientId[QMUX_TYPE_WDS_ADMIN];
+    }
 
     //donot check clientWDA, there is only one client for WDA, if quectel-CM is killed by SIGKILL, i cannot get client ID for WDA again!
     if (qmiclientId[QMUX_TYPE_WDS] == 0)  /*|| (clientWDA == -1)*/ {
@@ -193,10 +201,9 @@ static void * GobiNetThread(void *pData) {
 
             {
                 ssize_t nreads;
-                static UCHAR QMIBuf[4096];
-                PQCQMIMSG pResponse = (PQCQMIMSG)QMIBuf;
+                PQCQMIMSG pResponse = (PQCQMIMSG)cm_recv_buf;
 
-                nreads = read(fd, &pResponse->MUXMsg, sizeof(QMIBuf) - sizeof(QCQMI_HDR));
+                nreads = read(fd, &pResponse->MUXMsg, sizeof(cm_recv_buf) - sizeof(QCQMI_HDR));
                 if (nreads <= 0)
                 {
                     dbg_time("%s read=%d errno: %d (%s)",  __func__, (int)nreads, errno, strerror(errno));
@@ -214,7 +221,7 @@ static void * GobiNetThread(void *pData) {
                 pResponse->QMIHdr.IFType = USB_CTL_MSG_TYPE_QMI;
                 pResponse->QMIHdr.Length = cpu_to_le16(nreads + sizeof(QCQMI_HDR)  - 1);
                 pResponse->QMIHdr.CtlFlags = 0x00;
-                pResponse->QMIHdr.ClientId = fd & 0xFF;
+                pResponse->QMIHdr.ClientId = (fd&0xFF) ? fd&0xFF : pResponse->QMIHdr.QMIType;;
 
                 QmiThreadRecvQMI(pResponse);
             }
@@ -230,13 +237,10 @@ __GobiNetThread_quit:
     return NULL;
 }
 
-#else
-static int GobiNetSendQMI(PQCQMIMSG pRequest) {return -1;}
-static void * GobiNetThread(void *pData) {dbg_time("please set CONFIG_GOBINET"); return NULL;}
-#endif
-
 const struct qmi_device_ops gobi_qmidev_ops = {
 	.deinit = GobiNetDeInit,
 	.send = GobiNetSendQMI,
 	.read = GobiNetThread,
 };
+#endif
+

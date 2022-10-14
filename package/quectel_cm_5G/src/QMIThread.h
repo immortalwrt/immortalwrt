@@ -6,10 +6,29 @@
 #define CONFIG_SIM
 #define CONFIG_APN
 #define CONFIG_VERSION
-// #define CONFIG_SIGNALINFO
+//#define CONFIG_SIGNALINFO
+//#define CONFIG_CELLINFO
+//#define CONFIG_COEX_WWAN_STATE
 #define CONFIG_DEFAULT_PDP 1
 //#define CONFIG_IMSI_ICCID
 #define QUECTEL_UL_DATA_AGG
+//#define QUECTEL_QMI_MERGE
+//#define REBOOT_SIM_CARD_WHEN_APN_CHANGE
+//#define REBOOT_SIM_CARD_WHEN_LONG_TIME_NO_PS 60 //unit is seconds
+//#define CONFIG_QRTR
+//#define CONFIG_ENABLE_QOS
+//#define CONFIG_REG_QOS_IND
+//#define CONFIG_GET_QOS_INFO
+//#define CONFIG_GET_QOS_DATA_RATE
+
+#if (defined(CONFIG_REG_QOS_IND) || defined(CONFIG_GET_QOS_INFO) || defined(CONFIG_GET_QOS_DATA_RATE))
+#ifndef CONFIG_REG_QOS_IND
+#define CONFIG_REG_QOS_IND
+#endif
+#ifndef CONFIG_ENABLE_QOS
+#define CONFIG_ENABLE_QOS
+#endif
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -33,6 +52,7 @@
 #include <sys/socket.h>
 #include <stddef.h>
 
+#include "qendian.h"
 #include "MPQMI.h"
 #include "MPQCTL.h"
 #include "MPQMUX.h"
@@ -62,19 +82,10 @@
 
 struct wwan_data_class_str {
     ULONG class;
-    CHAR *str;
+    const char *str;
 };
 
 #pragma pack(push, 1)
-
-typedef struct _QCQMIMSG {
-    QCQMI_HDR QMIHdr;
-    union {
-        QMICTL_MSG CTLMsg;
-        QMUX_MSG MUXMsg;
-    };
-} __attribute__ ((packed)) QCQMIMSG, *PQCQMIMSG;
-
 typedef struct __IPV4 {
     uint32_t Address;
     uint32_t Gateway;
@@ -139,61 +150,123 @@ struct qmi_device_ops {
 	int (*deinit)(void);
 	int (*send)(PQCQMIMSG pRequest);
 	void* (*read)(void *pData);
-
-    
-    // int (*thread_read)(struct __PROFILE *profile);
-    // int (*init)(struct __PROFILE *profile);
-    // int (*open)(struct __PROFILE *profile);
-    // int (*close)(struct __PROFILE *profile);
-    // int (*reopen)(struct __PROFILE *profile);
-    // int (*start_network)(struct __PROFILE *profile);
-    // int (*stop_network)(struct __PROFILE *profile);
-    // int (*query_network)(struct __PROFILE *profile);
 };
+#ifdef CONFIG_QRTR
+extern const struct qmi_device_ops qrtr_qmidev_ops;
+#endif
+extern const struct qmi_device_ops gobi_qmidev_ops;
+extern const struct qmi_device_ops qmiwwan_qmidev_ops;
+extern const struct qmi_device_ops mbim_dev_ops;
+extern const struct qmi_device_ops atc_dev_ops;
 extern int (*qmidev_send)(PQCQMIMSG pRequest);
+
+struct usb_device_info {
+    int idVendor;
+    int idProduct;
+    int  busnum;
+    int devnum;
+    int bNumInterfaces;
+};
+
+struct usb_interface_info {
+    int bNumEndpoints;
+    int bInterfaceClass;
+    int bInterfaceSubClass;
+    int bInterfaceProtocol;
+    char driver[32];
+};
+
+#define LIBQMI_PROXY "qmi-proxy" //src/libqmi-glib/qmi-proxy.h
+#define LIBMBIM_PROXY "mbim-proxy"
+#define QUECTEL_QMI_PROXY "quectel-qmi-proxy"
+#define QUECTEL_MBIM_PROXY "quectel-mbim-proxy"
+#define QUECTEL_ATC_PROXY "quectel-atc-proxy"
+#define QUECTEL_QRTR_PROXY "quectel-qrtr-proxy"
 
 #ifndef bool
 #define bool uint8_t
 #endif
+struct request_ops;
 typedef struct __PROFILE {
-    char *qmichannel;
-    char *usbnet_adapter;
-    char *qmapnet_adapter;
-    char *driver_name;
-    int qmap_mode;
-    int qmap_size;
-    int qmap_version;
+    //user input start
     const char *apn;
     const char *user;
     const char *password;
-    const char *pincode;
     int auth;
+    int iptype;
+    const char *pincode;
+    char proxy[32];
     int pdp;
+    int enable_bridge;
+    bool enable_ipv4;
+    bool enable_ipv6;
+    const char *logfile;
+    const char *usblogfile;
+    char expect_adapter[32];
+    int kill_pdp;
+    int replication_factor;
+    //user input end
+
+    char qmichannel[32];
+    char usbnet_adapter[32];
+    char qmapnet_adapter[32];
+    char driver_name[32];
+    int qmap_mode;
+    int qmap_size;
+    int qmap_version;
     int curIpFamily;
     int rawIP;
     int muxid;
-    int enable_bridge;
+#ifdef CONFIG_ENABLE_QOS
+    UINT qos_id;
+#endif
+    int wda_client;
     IPV4_T ipv4;
     IPV6_T ipv6;
     UINT PCSCFIpv4Addr1;
     UINT PCSCFIpv4Addr2;
     UCHAR PCSCFIpv6Addr1[16];
     UCHAR PCSCFIpv6Addr2[16];
-    bool enable_ipv4;
-    bool enable_ipv6;
-    int  apntype;
     bool reattach_flag;
     int hardware_interface;
     int software_interface;
-    int busnum;
-    int devnum;
+
+    struct usb_device_info usb_dev;
+    struct usb_interface_info usb_intf;
+
     int usbmon_fd;
-    int usbmon_logfile_fd;
+    FILE  *usbmon_logfile_fp;
     bool loopback_state;
-    int replication_factor;
+
+    char BaseBandVersion[64];
+    char old_apn[64];
+    char old_user[64];
+    char old_password[64];
+    int old_auth;
+    int old_iptype;
+
     const struct qmi_device_ops *qmi_ops;
+    const struct request_ops *request_ops;
     RMNET_INFO rmnet_info;
 } PROFILE_T;
+
+#ifdef QUECTEL_QMI_MERGE
+#define MERGE_PACKET_IDENTITY 0x2c7c
+#define MERGE_PACKET_VERSION 0x0001
+#define MERGE_PACKET_MAX_PAYLOAD_SIZE 56
+typedef struct __QMI_MSG_HEADER {
+    uint16_t idenity;
+    uint16_t version;
+    uint16_t cur_len;
+    uint16_t total_len;
+} QMI_MSG_HEADER;
+
+typedef struct __QMI_MSG_PACKET {
+    QMI_MSG_HEADER header;
+    uint16_t len;
+    char buf[4096];
+} QMI_MSG_PACKET;
+#endif
 
 typedef enum {
     SIM_ABSENT = 0,
@@ -215,10 +288,18 @@ typedef enum {
 #define RIL_UNSOL_DATA_CALL_LIST_CHANGED    0x1005
 #define MODEM_REPORT_RESET_EVENT 0x1006
 #define RIL_UNSOL_LOOPBACK_CONFIG_IND 0x1007
+#ifdef CONFIG_REG_QOS_IND
+#define RIL_UNSOL_GLOBAL_QOS_FLOW_IND_QOS_ID 0x1008
+#endif
 
+extern pthread_mutex_t cm_command_mutex;
+extern pthread_cond_t cm_command_cond;
+extern unsigned int cm_recv_buf[1024];
+extern int cm_open_dev(const char *dev);
+extern int cm_open_proxy(const char *name);
 extern int pthread_cond_timeout_np(pthread_cond_t *cond, pthread_mutex_t * mutex, unsigned msecs);
-extern int QmiThreadSendQMI(PQCQMIMSG pRequest, PQCQMIMSG *ppResponse);
-extern int QmiThreadSendQMITimeout(PQCQMIMSG pRequest, PQCQMIMSG *ppResponse, unsigned msecs);
+extern int QmiThreadSendQMITimeout(PQCQMIMSG pRequest, PQCQMIMSG *ppResponse, unsigned msecs, const char *funcname);
+#define QmiThreadSendQMI(pRequest, ppResponse) QmiThreadSendQMITimeout(pRequest, ppResponse, 30 * 1000, __func__)
 extern void QmiThreadRecvQMI(PQCQMIMSG pResponse);
 extern void udhcpc_start(PROFILE_T *profile);
 extern void udhcpc_stop(PROFILE_T *profile);
@@ -228,34 +309,52 @@ extern void ql_get_driver_rmnet_info(PROFILE_T *profile, RMNET_INFO *rmnet_info)
 extern void dump_qmi(void *dataBuffer, int dataLen);
 extern void qmidevice_send_event_to_main(int triger_event);
 extern void qmidevice_send_event_to_main_ext(int triger_event, void *data, unsigned len);
-extern int requestSetEthMode(PROFILE_T *profile);
-extern int requestGetSIMStatus(SIM_Status *pSIMStatus);
-extern int requestEnterSimPin(const CHAR *pPinCode);
-extern int requestGetICCID(void);
-extern int requestGetIMSI(void);
-extern int requestRegistrationState(UCHAR *pPSAttachedState);
-extern int requestQueryDataCall(UCHAR  *pConnectionStatus, int curIpFamily);
-extern int requestSetupDataCall(PROFILE_T *profile, int curIpFamily);
-extern int requestDeactivateDefaultPDP(PROFILE_T *profile, int curIpFamily);
-extern int requestSetProfile(PROFILE_T *profile);
-extern int requestGetProfile(PROFILE_T *profile);
-extern int requestGetSignalInfo(void);
-extern int requestBaseBandVersion(const char **pp_reversion);
-extern int requestGetIPAddress(PROFILE_T *profile, int curIpFamily);
-extern int requestSetOperatingMode(UCHAR OperatingMode);
-extern int requestSetLoopBackState(UCHAR loopback_state, ULONG replication_factor);
+extern uint8_t qmi_over_mbim_get_client_id(uint8_t QMIType);
+extern uint8_t qmi_over_mbim_release_client_id(uint8_t QMIType, uint8_t ClientId);
+#ifdef CONFIG_REG_QOS_IND
+extern UCHAR ql_get_global_qos_flow_ind_qos_id(PQCQMIMSG pResponse, UINT *qos_id);
+#endif
+#ifdef CONFIG_GET_QOS_DATA_RATE
+extern UCHAR ql_get_global_qos_flow_ind_data_rate(PQCQMIMSG pResponse, void *max_data_rate);
+#endif
 
-extern void cond_setclock_attr(pthread_cond_t *cond, clockid_t clock);
-extern int mbim_main(PROFILE_T *profile);
+struct request_ops {
+    int (*requestBaseBandVersion)(PROFILE_T *profile);
+    int (*requestSetEthMode)(PROFILE_T *profile);
+    int (*requestSetLoopBackState)(UCHAR loopback_state, ULONG replication_factor);
+    int (*requestGetSIMStatus)(SIM_Status *pSIMStatus);
+    int (*requestEnterSimPin)(const char *pPinCode);
+    int (*requestSetProfile)(PROFILE_T *profile); // 1 ~ success and apn change, 0 ~ success and no apn change, -1 ~ fail
+    int (*requestGetProfile)(PROFILE_T *profile);
+    int (*requestRegistrationState)(UCHAR *pPSAttachedState);
+    int (*requestSetupDataCall)(PROFILE_T *profile, int curIpFamily);
+    int (*requestQueryDataCall)(UCHAR  *pConnectionStatus, int curIpFamily);
+    int (*requestDeactivateDefaultPDP)(PROFILE_T *profile, int curIpFamily);
+    int (*requestGetIPAddress)(PROFILE_T *profile, int curIpFamily);
+    int (*requestGetSignalInfo)(void);
+    int (*requestGetCellInfoList)(void);
+    int (*requestGetICCID)(void);
+    int (*requestGetIMSI)(void);
+    int (*requestRadioPower)(int state);
+    int (*requestRegisterQos)(PROFILE_T *profile);
+    int (*requestGetQosInfo)(PROFILE_T *profile);
+    int (*requestGetCoexWWANState)(void);
+};
+extern const struct request_ops qmi_request_ops;
+extern const struct request_ops mbim_request_ops;
+extern const struct request_ops atc_request_ops;
+
 extern int get_driver_type(PROFILE_T *profile);
-extern BOOL qmidevice_detect(char *qmichannel, char *usbnet_adapter, unsigned bufsize, int *pbusnum, int *pdevnum);
+extern BOOL qmidevice_detect(char *qmichannel, char *usbnet_adapter, unsigned bufsize, PROFILE_T *profile);
 int mhidevice_detect(char *qmichannel, char *usbnet_adapter, PROFILE_T *profile);
+int atdevice_detect(char *atchannel, char *usbnet_adapter, PROFILE_T *profile);
 extern int ql_bridge_mode_detect(PROFILE_T *profile);
 extern int ql_enable_qmi_wwan_rawip_mode(PROFILE_T *profile);
-extern int ql_driver_type_detect(PROFILE_T *profile);
 extern int ql_qmap_mode_detect(PROFILE_T *profile);
-extern const struct qmi_device_ops gobi_qmidev_ops;
-extern const struct qmi_device_ops qmiwwan_qmidev_ops;
+#ifdef CONFIG_QRTR
+extern int rtrmnet_ctl_create_vnd(char *devname, char *vndname, uint8_t muxid,
+		       uint32_t qmap_version, uint32_t ul_agg_cnt, uint32_t ul_agg_size);
+#endif
 
 #define qmidev_is_gobinet(_qmichannel) (strncmp(_qmichannel, "/dev/qcqmi", strlen("/dev/qcqmi")) == 0)
 #define qmidev_is_qmiwwan(_qmichannel) (strncmp(_qmichannel, "/dev/cdc-wdm", strlen("/dev/cdc-wdm")) == 0)
@@ -267,20 +366,20 @@ extern const struct qmi_device_ops qmiwwan_qmidev_ops;
 extern FILE *logfilefp;
 extern int debug_qmi;
 extern int qmidevice_control_fd[2];
-extern int qmiclientId[QMUX_TYPE_WDS_ADMIN + 1];
-extern USHORT le16_to_cpu(USHORT v16);
-extern UINT  le32_to_cpu (UINT v32);
-extern UINT  ql_swap32(UINT v32);
-extern USHORT cpu_to_le16(USHORT v16);
-extern UINT cpu_to_le32(UINT v32);
+extern int g_donot_exit_when_modem_hangup;
 extern void update_resolv_conf(int iptype, const char *ifname, const char *dns1, const char *dns2);
+void update_ipv4_address(const char *ifname, const char *ip, const char *gw, unsigned prefix);
+void update_ipv6_address(const char *ifname, const char *ip, const char *gw, unsigned prefix);
 int reattach_driver(PROFILE_T *profile);
+extern void no_trunc_strncpy(char *dest, const char *src, size_t dest_size);
 
 enum
 {
 	DRV_INVALID,
 	SOFTWARE_QMI,
 	SOFTWARE_MBIM,
+	SOFTWARE_ECM_RNDIS_NCM,
+	SOFTWARE_QRTR,
 	HARDWARE_PCIE,
 	HARDWARE_USB,
 };
@@ -292,18 +391,29 @@ enum
     SIG_EVENT_STOP,
 };
 
-#define CM_MAX_BUFF 256
-#define strset(k, v) {if (k) free(k); k = strdup(v);}
-#define mfree(v) {if (v) {free(v); v = NULL;}
+typedef enum
+{
+    DMS_OP_MODE_ONLINE,
+    DMS_OP_MODE_LOW_POWER,
+    DMS_OP_MODE_FACTORY_TEST_MODE,
+    DMS_OP_MODE_OFFLINE,
+    DMS_OP_MODE_RESETTING,
+    DMS_OP_MODE_SHUTTING_DOWN,
+    DMS_OP_MODE_PERSISTENT_LOW_POWER,
+    DMS_OP_MODE_MODE_ONLY_LOW_POWER,
+    DMS_OP_MODE_NET_TEST_GW,
+}Device_operating_mode;
 
 #ifdef CM_DEBUG
 #define dbg_time(fmt, args...) do { \
     fprintf(stdout, "[%15s-%04d: %s] " fmt "\n", __FILE__, __LINE__, get_time(), ##args); \
+	fflush(stdout);\
     if (logfilefp) fprintf(logfilefp, "[%s-%04d: %s] " fmt "\n", __FILE__, __LINE__, get_time(), ##args); \
 } while(0)
 #else
 #define dbg_time(fmt, args...) do { \
     fprintf(stdout, "[%s] " fmt "\n", get_time(), ##args); \
+	fflush(stdout);\
     if (logfilefp) fprintf(logfilefp, "[%s] " fmt "\n", get_time(), ##args); \
 } while(0)
 #endif

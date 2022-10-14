@@ -45,7 +45,7 @@ static int ql_raw_ip_mode_check(const char *ifname)
     return mode_change;
 }
 
-static void ql_set_driver_link_state(PROFILE_T *profile, int link_state)
+void ql_set_driver_link_state(PROFILE_T *profile, int link_state)
 {
     char link_file[128];
     int fd;

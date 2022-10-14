@@ -7,14 +7,14 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=pciemhi
+PKG_NAME:=pcie_mhi
 PKG_VERSION:=3.2
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/pciemhi
+define KernelPackage/pcie_mhi
   SUBMENU:=PCIE Support
   TITLE:=Kernel pcie driver for MHI device
   DEPENDS:=+kmod-usb-net
@@ -22,7 +22,7 @@ define KernelPackage/pciemhi
   AUTOLOAD:=$(call AutoLoad,41,pcie_mhi)
 endef
 
-define KernelPackage/pciemhi/description
+define KernelPackage/pcie_mhi/description
   Kernel module for register a custom pciemhi platform device.
 endef
 
@@ -44,4 +44,4 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,pciemhi))
+$(eval $(call KernelPackage,pcie_mhi))
