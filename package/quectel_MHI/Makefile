@@ -19,7 +19,7 @@ define KernelPackage/pcie_mhi
   TITLE:=Kernel pcie driver for MHI device
   DEPENDS:=+kmod-usb-net
   FILES:=$(PKG_BUILD_DIR)/pcie_mhi.ko
-  AUTOLOAD:=$(call AutoLoad,41,pcie_mhi)
+  AUTOLOAD:=$(call AutoLoad,90,pcie_mhi)
 endef
 
 define KernelPackage/pcie_mhi/description
