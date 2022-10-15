@@ -456,7 +456,7 @@ int mhidevice_detect(char *qmichannel, char *usbnet_adapter, PROFILE_T *profile)
             if (access(path, F_OK))
                 continue;
 
-            strncat(path, "/mhi_uci_q", sizeof(path));
+            strncat(path, "/mhi_uci_q", sizeof(path)-1);
             dir_get_child(path, devname, sizeof(devname), NULL);
             if (!devname[0])
                 continue;      
