@@ -2,7 +2,7 @@
 -- Licensed to the public under the Apache License 2.0.
 
 
-mp=Map("spdmodem",translate("[SPD Modem Server"))
+mp=Map("spdmodem",translate("SPD Modem Server"))
 mp.description=translate("Modem Server For OpenWrt")
 
 s=mp:section(TypedSection,"service", "Base Setting")

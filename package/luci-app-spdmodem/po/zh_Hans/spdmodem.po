@@ -14,8 +14,8 @@ msgstr ""
 msgid "Base Setting"
 msgstr "基本设置"
 
-msgid "PCI Modem Server"
-msgstr "PCI移动网络拨号服务"
+msgid "SPD Modem Server"
+msgstr "SPD移动网络拨号服务"
 
 msgid "Modem Server For OpenWrt"
 msgstr "OpenWrt移动网络拨号服务"
