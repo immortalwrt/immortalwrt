@@ -17,7 +17,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/pcie_mhi
   SUBMENU:=PCIE Support
   TITLE:=Kernel pcie driver for MHI device
-  DEPENDS:=+kmod-usb-net
+  DEPENDS:=+pciids +pciutils +quectel-CM-5G
   FILES:=$(PKG_BUILD_DIR)/pcie_mhi.ko
   AUTOLOAD:=$(call AutoLoad,90,pcie_mhi)
 endef
