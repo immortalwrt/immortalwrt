@@ -1,0 +1,179 @@
+From aba67dd60f603313f58b8a1faaf1d8da9e932757 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 01:29:59 -0600
+Subject: [PATCH] BACKPORT: mm: don't pass "enum lru_list" to lru list
+ addition functions
+
+The "enum lru_list" parameter to add_page_to_lru_list() and
+add_page_to_lru_list_tail() is redundant in the sense that it can
+be extracted from the "struct page" parameter by page_lru().
+
+A caveat is that we need to make sure PageActive() or
+PageUnevictable() is correctly set or cleared before calling
+these two functions. And they are indeed.
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-4-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-4-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Cc: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 3a9c9788a3149d9745b7eb2eae811e57ef3b127c)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: Ib58324f3641a83a43d752af5177c40f47a42d8e1
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940113
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm_inline.h |  8 ++++++--
+ mm/memcontrol.c           |  2 +-
+ mm/swap.c                 | 18 ++++++++----------
+ mm/vmscan.c               |  6 ++----
+ 4 files changed, 17 insertions(+), 17 deletions(-)
+
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -105,15 +105,19 @@ static __always_inline enum lru_list pag
+ }
+ 
+ static __always_inline void add_page_to_lru_list(struct page *page,
+-				struct lruvec *lruvec, enum lru_list lru)
++				struct lruvec *lruvec)
+ {
++	enum lru_list lru = page_lru(page);
++
+ 	update_lru_size(lruvec, lru, page_zonenum(page), hpage_nr_pages(page));
+ 	list_add(&page->lru, &lruvec->lists[lru]);
+ }
+ 
+ static __always_inline void add_page_to_lru_list_tail(struct page *page,
+-				struct lruvec *lruvec, enum lru_list lru)
++				struct lruvec *lruvec)
+ {
++	enum lru_list lru = page_lru(page);
++
+ 	update_lru_size(lruvec, lru, page_zonenum(page), hpage_nr_pages(page));
+ 	list_add_tail(&page->lru, &lruvec->lists[lru]);
+ }
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -2757,7 +2757,7 @@ static void unlock_page_lru(struct page
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+ 		VM_BUG_ON_PAGE(PageLRU(page), page);
+ 		SetPageLRU(page);
+-		add_page_to_lru_list(page, lruvec, page_lru(page));
++		add_page_to_lru_list(page, lruvec);
+ 	}
+ 	spin_unlock_irq(&pgdat->lru_lock);
+ }
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -224,7 +224,7 @@ static void pagevec_move_tail_fn(struct
+ 	if (PageLRU(page) && !PageUnevictable(page)) {
+ 		del_page_from_lru_list(page, lruvec, page_lru(page));
+ 		ClearPageActive(page);
+-		add_page_to_lru_list_tail(page, lruvec, page_lru(page));
++		add_page_to_lru_list_tail(page, lruvec);
+ 		(*pgmoved)++;
+ 	}
+ }
+@@ -281,8 +281,7 @@ static void __activate_page(struct page
+ 
+ 		del_page_from_lru_list(page, lruvec, lru);
+ 		SetPageActive(page);
+-		lru += LRU_ACTIVE;
+-		add_page_to_lru_list(page, lruvec, lru);
++		add_page_to_lru_list(page, lruvec);
+ 		trace_mm_lru_activate(page);
+ 
+ 		__count_vm_event(PGACTIVATE);
+@@ -523,14 +522,14 @@ static void lru_deactivate_file_fn(struc
+ 		 * It can make readahead confusing.  But race window
+ 		 * is _really_ small and  it's non-critical problem.
+ 		 */
+-		add_page_to_lru_list(page, lruvec, lru);
++		add_page_to_lru_list(page, lruvec);
+ 		SetPageReclaim(page);
+ 	} else {
+ 		/*
+ 		 * The page's writeback ends up during pagevec
+ 		 * We moves tha page into tail of inactive.
+ 		 */
+-		add_page_to_lru_list_tail(page, lruvec, lru);
++		add_page_to_lru_list_tail(page, lruvec);
+ 		__count_vm_event(PGROTATED);
+ 	}
+ 
+@@ -549,7 +548,7 @@ static void lru_deactivate_fn(struct pag
+ 		del_page_from_lru_list(page, lruvec, lru + LRU_ACTIVE);
+ 		ClearPageActive(page);
+ 		ClearPageReferenced(page);
+-		add_page_to_lru_list(page, lruvec, lru);
++		add_page_to_lru_list(page, lruvec);
+ 
+ 		__count_vm_events(PGDEACTIVATE, hpage_nr_pages(page));
+ 		update_page_reclaim_stat(lruvec, file, 0);
+@@ -573,7 +572,7 @@ static void lru_lazyfree_fn(struct page
+ 		 * pages
+ 		 */
+ 		ClearPageSwapBacked(page);
+-		add_page_to_lru_list(page, lruvec, LRU_INACTIVE_FILE);
++		add_page_to_lru_list(page, lruvec);
+ 
+ 		__count_vm_events(PGLAZYFREE, hpage_nr_pages(page));
+ 		count_memcg_page_event(page, PGLAZYFREE);
+@@ -891,8 +890,7 @@ void lru_add_page_tail(struct page *page
+ 		 * Put page_tail on the list at the correct position
+ 		 * so they all end up in order.
+ 		 */
+-		add_page_to_lru_list_tail(page_tail, lruvec,
+-					  page_lru(page_tail));
++		add_page_to_lru_list_tail(page_tail, lruvec);
+ 	}
+ 
+ 	if (!PageUnevictable(page))
+@@ -951,7 +949,7 @@ static void __pagevec_lru_add_fn(struct
+ 			count_vm_event(UNEVICTABLE_PGCULLED);
+ 	}
+ 
+-	add_page_to_lru_list(page, lruvec, lru);
++	add_page_to_lru_list(page, lruvec);
+ 	trace_mm_lru_insertion(page, lru);
+ }
+ 
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1898,7 +1898,7 @@ static unsigned noinline_for_stack move_
+ 
+ 		SetPageLRU(page);
+ 		lru = page_lru(page);
+-		add_page_to_lru_list(page, lruvec, lru);
++		add_page_to_lru_list(page, lruvec);
+ 
+ 		if (put_page_testzero(page)) {
+ 			__ClearPageLRU(page);
+@@ -4379,12 +4379,10 @@ void check_move_unevictable_pages(struct
+ 			continue;
+ 
+ 		if (page_evictable(page)) {
+-			enum lru_list lru = page_lru_base_type(page);
+-
+ 			VM_BUG_ON_PAGE(PageActive(page), page);
+ 			ClearPageUnevictable(page);
+ 			del_page_from_lru_list(page, lruvec, LRU_UNEVICTABLE);
+-			add_page_to_lru_list(page, lruvec, lru);
++			add_page_to_lru_list(page, lruvec);
+ 			pgrescued++;
+ 		}
+ 	}

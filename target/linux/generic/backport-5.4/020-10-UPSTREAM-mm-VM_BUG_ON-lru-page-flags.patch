@@ -1,0 +1,86 @@
+From b135b6b637ee1035d2f69187ed38d8c85ff45ba2 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 02:08:58 -0600
+Subject: [PATCH] UPSTREAM: mm: VM_BUG_ON lru page flags
+
+Move scattered VM_BUG_ONs to two essential places that cover all
+lru list additions and deletions.
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-8-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-8-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Cc: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit bc7112719e1e80e4208eef3fc9bd8d2b6c263e7d)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I46712058a18b740251a7c1c80b9dcbcc42dac457
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940117
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm_inline.h | 4 ++++
+ mm/swap.c                 | 2 --
+ mm/vmscan.c               | 1 -
+ 3 files changed, 4 insertions(+), 3 deletions(-)
+
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -65,6 +65,8 @@ static inline enum lru_list page_lru_bas
+  */
+ static __always_inline void __clear_page_lru_flags(struct page *page)
+ {
++	VM_BUG_ON_PAGE(!PageLRU(page), page);
++
+ 	__ClearPageLRU(page);
+ 
+ 	/* this shouldn't happen, so leave the flags to bad_page() */
+@@ -86,6 +88,8 @@ static __always_inline enum lru_list pag
+ {
+ 	enum lru_list lru;
+ 
++	VM_BUG_ON_PAGE(PageActive(page) && PageUnevictable(page), page);
++
+ 	if (PageUnevictable(page))
+ 		lru = LRU_UNEVICTABLE;
+ 	else {
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -66,7 +66,6 @@ static void __page_cache_release(struct
+ 
+ 		spin_lock_irqsave(&pgdat->lru_lock, flags);
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+-		VM_BUG_ON_PAGE(!PageLRU(page), page);
+ 		del_page_from_lru_list(page, lruvec);
+ 		__clear_page_lru_flags(page);
+ 		spin_unlock_irqrestore(&pgdat->lru_lock, flags);
+@@ -817,7 +816,6 @@ void release_pages(struct page **pages,
+ 			}
+ 
+ 			lruvec = mem_cgroup_page_lruvec(page, locked_pgdat);
+-			VM_BUG_ON_PAGE(!PageLRU(page), page);
+ 			del_page_from_lru_list(page, lruvec);
+ 			__clear_page_lru_flags(page);
+ 		}
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -4375,7 +4375,6 @@ void check_move_unevictable_pages(struct
+ 			continue;
+ 
+ 		if (page_evictable(page)) {
+-			VM_BUG_ON_PAGE(PageActive(page), page);
+ 			del_page_from_lru_list(page, lruvec);
+ 			ClearPageUnevictable(page);
+ 			add_page_to_lru_list(page, lruvec);

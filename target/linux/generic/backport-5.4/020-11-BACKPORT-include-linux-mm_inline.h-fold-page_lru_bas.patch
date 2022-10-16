@@ -1,0 +1,78 @@
+From 02323fd32189b0912bab89b9cb7d863e7d11a394 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 02:11:33 -0600
+Subject: [PATCH] BACKPORT: include/linux/mm_inline.h: fold
+ page_lru_base_type() into its sole caller
+
+We've removed all other references to this function.
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-9-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-9-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Reviewed-by: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit c1770e34f3e7640887d8129fc05d13fe17101301)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I26244fd85e60f46f74281add8138a0a9d65a6916
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940118
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm_inline.h | 27 ++++++---------------------
+ 1 file changed, 6 insertions(+), 21 deletions(-)
+
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -45,21 +45,6 @@ static __always_inline void update_lru_s
+ }
+ 
+ /**
+- * page_lru_base_type - which LRU list type should a page be on?
+- * @page: the page to test
+- *
+- * Used for LRU list index arithmetic.
+- *
+- * Returns the base LRU type - file or anon - @page should be on.
+- */
+-static inline enum lru_list page_lru_base_type(struct page *page)
+-{
+-	if (page_is_file_cache(page))
+-		return LRU_INACTIVE_FILE;
+-	return LRU_INACTIVE_ANON;
+-}
+-
+-/**
+  * __clear_page_lru_flags - clear page lru flags before releasing a page
+  * @page: the page that was on lru and now has a zero reference
+  */
+@@ -91,12 +76,12 @@ static __always_inline enum lru_list pag
+ 	VM_BUG_ON_PAGE(PageActive(page) && PageUnevictable(page), page);
+ 
+ 	if (PageUnevictable(page))
+-		lru = LRU_UNEVICTABLE;
+-	else {
+-		lru = page_lru_base_type(page);
+-		if (PageActive(page))
+-			lru += LRU_ACTIVE;
+-	}
++		return LRU_UNEVICTABLE;
++
++	lru = page_is_file_cache(page) ? LRU_INACTIVE_FILE : LRU_INACTIVE_ANON;
++	if (PageActive(page))
++		lru += LRU_ACTIVE;
++
+ 	return lru;
+ }
+ 

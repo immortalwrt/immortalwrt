@@ -1,0 +1,36 @@
+From ddfe84b424ff3de54e131f78b3581ee60a6954f6 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Mon, 14 Dec 2020 17:51:32 -0700
+Subject: [PATCH] FROMLIST: include/linux/nodemask.h: define next_memory_node()
+ if !CONFIG_NUMA
+
+Currently next_memory_node only exists when CONFIG_NUMA=y. This patch
+adds the macro for !CONFIG_NUMA.
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+(am from https://lore.kernel.org/patchwork/patch/1432177/)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: Iab6316f6a4cc5a2508b80d1b9a28f2c1504580b1
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2951283
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/nodemask.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/include/linux/nodemask.h
++++ b/include/linux/nodemask.h
+@@ -484,6 +484,7 @@ static inline int num_node_state(enum no
+ #define first_online_node	0
+ #define first_memory_node	0
+ #define next_online_node(nid)	(MAX_NUMNODES)
++#define next_memory_node(nid)	(MAX_NUMNODES)
+ #define nr_node_ids		1U
+ #define nr_online_nodes		1U
+ 

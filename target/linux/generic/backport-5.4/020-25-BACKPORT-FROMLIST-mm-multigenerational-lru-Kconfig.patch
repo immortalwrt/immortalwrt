@@ -1,0 +1,90 @@
+From 8c987beaae2bdfa3fb35468fe681a9b57f064fc8 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Mon, 25 Jan 2021 21:47:24 -0700
+Subject: [PATCH] BACKPORT: FROMLIST: mm: multigenerational lru: Kconfig
+
+Add configuration options for the multigenerational lru.
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+(am from https://lore.kernel.org/patchwork/patch/1432188/)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: Ic74ea07f8fb5f56e6904a1b80c3c286bc2911635
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2987192
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ mm/Kconfig | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -723,4 +723,63 @@ config ARCH_HAS_PTE_SPECIAL
+ config ARCH_HAS_HUGEPD
+ 	bool
+ 
++# the multigenerational lru {
++config LRU_GEN
++	bool "Multigenerational LRU"
++	depends on MMU
++	# the following options may consume too many bits in page flags
++	depends on !MAXSMP && (64BIT || !SPARSEMEM || SPARSEMEM_VMEMMAP)
++	help
++	  A high performance LRU implementation to heavily overcommit workloads
++	  that are not IO bound. See Documentation/vm/multigen_lru.rst for
++	  details.
++
++	  Warning: do not enable this option unless you plan to use it because
++	  it introduces a small per-process and per-memcg and per-node memory
++	  overhead.
++
++config LRU_GEN_ENABLED
++	bool "Turn on by default"
++	depends on LRU_GEN
++	help
++	  The default value of /sys/kernel/mm/lru_gen/enabled is 0. This option
++	  changes it to 1.
++
++	  Warning: the default value is the fast path. See
++	  Documentation/static-keys.txt for details.
++
++config LRU_GEN_STATS
++	bool "Full stats for debugging"
++	depends on LRU_GEN
++	help
++	  This option keeps full stats for each generation, which can be read
++	  from /sys/kernel/debug/lru_gen_full.
++
++	  Warning: do not enable this option unless you plan to use it because
++	  it introduces an additional small per-process and per-memcg and
++	  per-node memory overhead.
++
++config NR_LRU_GENS
++	int "Max number of generations"
++	depends on LRU_GEN
++	range 4 31
++	default 7
++	help
++	  This will use order_base_2(N+1) spare bits from page flags.
++
++	  Warning: do not use numbers larger than necessary because each
++	  generation introduces a small per-node and per-memcg memory overhead.
++
++config TIERS_PER_GEN
++	int "Number of tiers per generation"
++	depends on LRU_GEN
++	range 2 5
++	default 4
++	help
++	  This will use N-2 spare bits from page flags.
++
++	  Larger values generally offer better protection to active pages under
++	  heavy buffered I/O workloads.
++# }
++
+ endmenu

@@ -1,0 +1,102 @@
+From 9aa0ad973ffdb49292d8aa288f81351d3e711df7 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 01:32:40 -0600
+Subject: [PATCH] UPSTREAM: mm/swap.c: don't pass "enum lru_list" to
+ trace_mm_lru_insertion()
+
+The parameter is redundant in the sense that it can be extracted
+from the "struct page" parameter by page_lru() correctly.
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-5-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-5-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Reviewed-by: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 861404536a3af3c39f1b10959a40def3d8efa2dd)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I06661696d32705a0753b45d5886ae87a59953ee7
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940114
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/trace/events/pagemap.h | 11 ++++-------
+ mm/swap.c                      |  5 +----
+ 2 files changed, 5 insertions(+), 11 deletions(-)
+
+--- a/include/trace/events/pagemap.h
++++ b/include/trace/events/pagemap.h
+@@ -27,24 +27,21 @@
+ 
+ TRACE_EVENT(mm_lru_insertion,
+ 
+-	TP_PROTO(
+-		struct page *page,
+-		int lru
+-	),
++	TP_PROTO(struct page *page),
+ 
+-	TP_ARGS(page, lru),
++	TP_ARGS(page),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(struct page *,	page	)
+ 		__field(unsigned long,	pfn	)
+-		__field(int,		lru	)
++		__field(enum lru_list,	lru	)
+ 		__field(unsigned long,	flags	)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->page	= page;
+ 		__entry->pfn	= page_to_pfn(page);
+-		__entry->lru	= lru;
++		__entry->lru	= page_lru(page);
+ 		__entry->flags	= trace_pagemap_flags(page);
+ 	),
+ 
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -901,7 +901,6 @@ void lru_add_page_tail(struct page *page
+ static void __pagevec_lru_add_fn(struct page *page, struct lruvec *lruvec,
+ 				 void *arg)
+ {
+-	enum lru_list lru;
+ 	int was_unevictable = TestClearPageUnevictable(page);
+ 
+ 	VM_BUG_ON_PAGE(PageLRU(page), page);
+@@ -936,13 +935,11 @@ static void __pagevec_lru_add_fn(struct
+ 	smp_mb();
+ 
+ 	if (page_evictable(page)) {
+-		lru = page_lru(page);
+ 		update_page_reclaim_stat(lruvec, page_is_file_cache(page),
+ 					 PageActive(page));
+ 		if (was_unevictable)
+ 			count_vm_event(UNEVICTABLE_PGRESCUED);
+ 	} else {
+-		lru = LRU_UNEVICTABLE;
+ 		ClearPageActive(page);
+ 		SetPageUnevictable(page);
+ 		if (!was_unevictable)
+@@ -950,7 +947,7 @@ static void __pagevec_lru_add_fn(struct
+ 	}
+ 
+ 	add_page_to_lru_list(page, lruvec);
+-	trace_mm_lru_insertion(page, lru);
++	trace_mm_lru_insertion(page);
+ }
+ 
+ /*
