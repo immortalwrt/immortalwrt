@@ -1,0 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * (C) Copyright 2018-2019 Rockchip Electronics Co., Ltd
+ * (C) Copyright 2021 Tianling Shen
+ */
+
+#include "rk3328-nanopi-r2s-u-boot.dtsi"

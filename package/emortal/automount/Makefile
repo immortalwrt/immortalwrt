@@ -12,9 +12,7 @@ PKG_FLAGS:=nonshared
 PKG_RELEASE:=$(COMMITCOUNT)
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_LINUX_5_4 \
 	CONFIG_LINUX_5_10 \
-	CONFIG_LINUX_5_15 \
 	CONFIG_TARGET_ramips
 
 include $(INCLUDE_DIR)/package.mk
@@ -28,11 +26,10 @@ define Package/automount
     +kmod-usb-storage-extras \
     +!TARGET_ramips:kmod-usb-storage-uas \
     +kmod-fs-ext4 \
-    +!LINUX_5_4:kmod-fs-exfat \
-    +LINUX_5_4:kmod-fs-exfat0 \
+    +kmod-fs-exfat \
     +kmod-fs-vfat \
-    +!LINUX_5_15:ntfs-3g \
-    +LINUX_5_15:ntfs3-mount
+    +LINUX_5_10:ntfs-3g \
+    +!LINUX_5_10:ntfs3-mount
   PKGARCH:=all
 endef
 
