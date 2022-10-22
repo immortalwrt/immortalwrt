@@ -183,7 +183,6 @@ detect_mac80211() {
 			set wireless.default_radio${devidx}.mode=ap
 			set wireless.default_radio${devidx}.ssid=ImmortalWrt
 			set wireless.default_radio${devidx}.encryption=none
-			set wireless.default_radio${devidx}.iw_qos_map_set=none
 EOF
 		uci -q commit wireless
 
