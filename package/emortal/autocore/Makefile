@@ -38,11 +38,8 @@ define Build/Compile
 endef
 
 define Package/autocore/install/Default
-	$(INSTALL_DIR) $(1)/etc
-	$(CP) ./files/generic/10_system.js $(1)/etc/rpcd_10_system.js
-
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/generic/090-cover-index_files $(1)/etc/uci-defaults/
+	$(INSTALL_BIN) ./files/generic/60-autocore-reload-rpcd $(1)/etc/uci-defaults/
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/generic/cpuinfo $(1)/sbin/
