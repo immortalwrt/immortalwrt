@@ -1,39 +1,51 @@
-#!/usr/bin/lua
--- Copyright (C) 2022 Tianling Shen <cnsztl@immortalwrt.org>
+#!/usr/bin/ucode
+/* Copyright (C) 2022 ImmortalWrt.org */
 
-local util = require "luci.util"
-local jsonc = require "luci.jsonc"
+'use strict';
 
-local eth_info = {}
-local ifname, stat
-for ifname, stat in pairs(util.ubus("network.device", "status")) do
-        if ifname:match("^(eth%d+)$") == ifname then
-                local status, speed, duplex
+import { connect } from 'ubus';
 
-                status = stat.carrier and "yes" or "no"
+const ubus = connect();
+const stat = ubus.call('network.device', 'status', {});
+if (!stat) {
+	print('{}');
+	exit(1);
+}
 
-                if stat.speed:sub(1, 1) == "-" then
-                        speed = "-"
-                else
-                        speed = stat.speed:sub(1, -2) .. "Mb/s"
-                end
+let eth_info = [];
+for (let ifname in stat) {
+	if (!ifname || match(ifname, /^(eth\d+)$/)?.[1] != ifname)
+		continue;
 
-                if not stat.carrier then
-			duplex = "-"
-		elseif stat.speed:sub(-1) == "F" then
-                        duplex = "Full"
-                else
-                        duplex = "Half"
-                end
+	let status, speed, duplex;
 
-		eth_info[#eth_info+1] = { name = ifname, status = status,
-					speed = speed, duplex = duplex }
-        end
-end
+	if (stat[ifname]?.carrier)
+		status = 'yes';
+	else
+		status = 'no';
 
-table.sort(eth_info,
-        function(a, b)
-                return a.name < b.name
-        end)
+	if (!stat[ifname]?.carrier || !stat[ifname]?.speed || substr(stat[ifname]?.speed, 0, 1) == '-')
+		speed = '-';
+	else
+		speed = substr(stat[ifname]?.speed, 0, -1) + 'Mb/s';
 
-print(jsonc.stringify(eth_info))
+	if (speed == '-')
+		duplex = '-';
+	else if (substr(stat[ifname]?.speed, -1) == 'F')
+		duplex = 'Full';
+	else
+		duplex = 'Half';
+
+	push(eth_info, {
+		name: ifname,
+		status: status,
+		speed: speed,
+		duplex: duplex,
+	});
+}
+
+sort(eth_info, (a, b) => {
+	return a?.name > b?.name;
+});
+
+print(eth_info);
