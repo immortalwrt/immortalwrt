@@ -12,13 +12,13 @@ for ifname, stat in pairs(util.ubus("network.device", "status")) do
 
                 status = stat.carrier and "yes" or "no"
 
-                if stat.speed:sub(1, 1) == "-" then
+                if not stat.carrier or not stat.speed or stat.speed:sub(1, 1) == "-" then
                         speed = "-"
                 else
                         speed = stat.speed:sub(1, -2) .. "Mb/s"
                 end
 
-                if not stat.carrier then
+                if speed == '-' then
 			duplex = "-"
 		elseif stat.speed:sub(-1) == "F" then
                         duplex = "Full"
