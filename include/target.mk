@@ -57,6 +57,8 @@ DEFAULT_PACKAGES.router:=\
 	firewall4 \
 	nftables \
 	kmod-nft-offload \
+	odhcp6c \
+	odhcpd-ipv6only \
 	ppp \
 	ppp-mod-pppoe
 # For easy usage
@@ -65,6 +67,7 @@ DEFAULT_PACKAGES.tweak:=\
 	block-mount \
 	default-settings-chn \
 	iptables-nft \
+	ip6tables-nft \
 	ipv6helper \
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
