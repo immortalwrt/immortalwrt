@@ -2273,6 +2273,7 @@ static const struct usb_device_id products[] = {
 	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0620, 4, mdm9x40) },  /* Quectel EG20 */
 	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0800, 4, sdx55) },  /* Quectel RG500 */
 	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0801, 4, sdx55) },  /* Quectel RG520 */
+	{ QMI_FIXED_RAWIP_INTF(0x05c6, 0x9025, 4, sdx55) },  /* ChinaMobile F03X */
 	{ }					/* END */
 };
 MODULE_DEVICE_TABLE(usb, products);
