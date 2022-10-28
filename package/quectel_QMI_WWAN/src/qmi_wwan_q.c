@@ -59,7 +59,7 @@ struct rmnet_nss_cb {
         int (*nss_tx)(struct sk_buff *skb);
 };
 static struct rmnet_nss_cb __read_mostly *nss_cb = NULL;
-#if defined(CONFIG_PINCTRL_IPQ807x) || defined(CONFIG_PINCTRL_IPQ5018)
+#if defined(CONFIG_PINCTRL_IPQ807x) || defined(CONFIG_PINCTRL_IPQ5018) || defined(CONFIG_PINCTRL_IPQ6018)
 #ifdef CONFIG_RMNET_DATA
 #define CONFIG_QCA_NSS_DRV
 /* define at qsdk/qca/src/linux-4.4/net/rmnet_data/rmnet_data_main.c */
@@ -1953,7 +1953,7 @@ static int qmi_wwan_bind(struct usbnet *dev, struct usb_interface *intf)
 			int qmap_version = (dev->driver_info->data>>8)&0xFF;
 			int qmap_size = (dev->driver_info->data)&0xFF;
 			int idProduct = le16_to_cpu(dev->udev->descriptor.idProduct);
-			int lte_a = (idProduct == 0x0306 || idProduct == 0x030B || idProduct == 0x0512 || idProduct == 0x0620 || idProduct == 0x0800 || idProduct == 0x0801);
+			int lte_a = (idProduct == 0x0306 || idProduct == 0x030B || idProduct == 0x0512 || idProduct == 0x0620 || idProduct == 0x0800 || idProduct == 0x0801|| idProduct == 0x9025|| idProduct == 0x9091);
 
 			if (qmap_size > 4096 || dev->udev->speed >= USB_SPEED_SUPER) { //if meet this requirements, must be LTE-A or 5G
 				lte_a = 1;
@@ -1975,7 +1975,7 @@ static int qmi_wwan_bind(struct usbnet *dev, struct usb_interface *intf)
 
 				if (pQmapDev->qmap_mode > 1)
 					pQmapDev->use_rmnet_usb = 1;
-				else if (idProduct == 0x0800 || idProduct == 0x0801)
+				else if (idProduct == 0x0800 || idProduct == 0x0801|| idProduct == 0x9025|| idProduct == 0x9091)
 					pQmapDev->use_rmnet_usb = 1; //benefit for ul data agg		
 				pQmapDev->rmnet_info.size = sizeof(RMNET_INFO);
 				pQmapDev->rmnet_info.rx_urb_size = pQmapDev->qmap_size;
@@ -2273,7 +2273,8 @@ static const struct usb_device_id products[] = {
 	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0620, 4, mdm9x40) },  /* Quectel EG20 */
 	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0800, 4, sdx55) },  /* Quectel RG500 */
 	{ QMI_FIXED_RAWIP_INTF(0x2C7C, 0x0801, 4, sdx55) },  /* Quectel RG520 */
-	{ QMI_FIXED_RAWIP_INTF(0x05c6, 0x9025, 4, sdx55) },  /* ChinaMobile F03X */
+	{ QMI_FIXED_RAWIP_INTF(0x05C6, 0x9025, 4, sdx55) }, 
+	{ QMI_FIXED_RAWIP_INTF(0x05C6, 0x9091, 2, sdx55) },  
 	{ }					/* END */
 };
 MODULE_DEVICE_TABLE(usb, products);
