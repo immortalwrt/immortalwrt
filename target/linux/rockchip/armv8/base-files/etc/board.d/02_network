@@ -49,7 +49,7 @@ rockchip_setup_macs()
 		;;
 	friendlyarm,nanopi-r4s)
 		wan_mac=$(generate_mac_from_mmc_cid mmcblk1)
-		lan_mac=$(macaddr_add "$address" 1)
+		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
 	friendlyarm,nanopi-r4s-enterprise)
 		wan_mac=$(get_mac_binary "/sys/bus/i2c/devices/2-0051/eeprom" 0xfa)
