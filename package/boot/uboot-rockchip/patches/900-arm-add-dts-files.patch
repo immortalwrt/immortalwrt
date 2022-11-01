@@ -11,3 +11,12 @@
  	rk3328-roc-cc.dtb \
  	rk3328-rock64.dtb \
  	rk3328-rock-pi-e.dtb
+@@ -164,6 +167,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+ 	rk3399pro-rock-pi-n10.dtb
+ 
+ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
++	rk3568-fastrhino-r66s.dtb \
++	rk3568-fastrhino-r68s.dtb \
+ 	rk3568-evb.dtb
+ 
+ dtb-$(CONFIG_ROCKCHIP_RV1108) += \
