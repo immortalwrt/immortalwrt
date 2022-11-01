@@ -1,0 +1,95 @@
+From: Peter Geis <pgwipeout@gmail.com>
+To: Simon Glass <sjg@chromium.org>,
+	Philipp Tomsich <philipp.tomsich@vrull.eu>,
+	Kever Yang <kever.yang@rock-chips.com>
+Cc: Peter Geis <pgwipeout@gmail.com>, u-boot@lists.denx.de
+Subject: [PATCH v1 06/11] rockchip: handle bootrom recovery mode in spl
+Date: Mon, 21 Feb 2022 20:31:25 -0500	[thread overview]
+Message-ID: <20220222013131.3114990-7-pgwipeout@gmail.com> (raw)
+In-Reply-To: <20220222013131.3114990-1-pgwipeout@gmail.com>
+
+Fixup the bootrom recovery mode code to function in spl, so we can
+handle recovery mode in case u-boot loading is broken.
+
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+---
+ arch/arm/mach-rockchip/Makefile        |  6 +++---
+ arch/arm/mach-rockchip/boot_mode.c     |  4 +++-
+ arch/arm/mach-rockchip/rk3568/rk3568.c | 23 +++++++++++++++++++++++
+ 3 files changed, 29 insertions(+), 4 deletions(-)
+
+--- a/arch/arm/mach-rockchip/Makefile
++++ b/arch/arm/mach-rockchip/Makefile
+@@ -15,13 +15,13 @@ obj-tpl-$(CONFIG_ROCKCHIP_PX30) += px30-
+ 
+ obj-spl-$(CONFIG_ROCKCHIP_RK3036) += rk3036-board-spl.o
+ 
+-ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_TPL_BUILD),)
+-
+ # Always include boot_mode.o, as we bypass it (i.e. turn it off)
+ # inside of boot_mode.c when CONFIG_BOOT_MODE_REG is 0.  This way,
+ # we can have the preprocessor correctly recognise both 0x0 and 0
+ # meaning "turn it off".
+-obj-y += boot_mode.o
++obj-$(CONFIG_ARCH_ROCKCHIP) += boot_mode.o
++
++ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_TPL_BUILD),)
+ obj-$(CONFIG_ROCKCHIP_COMMON_BOARD) += board.o
+ obj-$(CONFIG_MISC_INIT_R) += misc.o
+ endif
+--- a/arch/arm/mach-rockchip/boot_mode.c
++++ b/arch/arm/mach-rockchip/boot_mode.c
+@@ -51,7 +51,7 @@ __weak int rockchip_dnl_key_pressed(void
+ 	ret = -ENODEV;
+ 	uclass_foreach_dev(dev, uc) {
+ 		if (!strncmp(dev->name, "saradc", 6)) {
+-			ret = adc_channel_single_shot(dev->name, 1, &val);
++			ret = adc_channel_single_shot(dev->name, 0, &val);
+ 			break;
+ 		}
+ 	}
+@@ -89,6 +89,7 @@ int setup_boot_mode(void)
+ 	boot_mode = readl(reg);
+ 	debug("%s: boot mode 0x%08x\n", __func__, boot_mode);
+ 
++#if !defined(CONFIG_SPL_BUILD) && !defined(CONFIG_TPL_BUILD)
+ 	/* Clear boot mode */
+ 	writel(BOOT_NORMAL, reg);
+ 
+@@ -102,6 +103,7 @@ int setup_boot_mode(void)
+ 		env_set("preboot", "setenv preboot; ums mmc 0");
+ 		break;
+ 	}
++#endif
+ 
+ 	return 0;
+ }
+--- a/arch/arm/mach-rockchip/rk3568/rk3568.c
++++ b/arch/arm/mach-rockchip/rk3568/rk3568.c
+@@ -104,3 +104,26 @@ int arch_cpu_init(void)
+ #endif
+ 	return 0;
+ }
++
++#ifdef CONFIG_SPL_BUILD
++
++void __weak led_setup(void)
++{
++}
++
++void spl_board_init(void)
++{
++	led_setup();
++
++#if (CONFIG_IS_ENABLED(DM_REGULATOR))
++	/*
++	 * Turning the eMMC and SPI back on (if disabled via the Qseven
++	 * BIOS_ENABLE) signal is done through a always-on regulator).
++	 */
++	if (regulators_enable_boot_on(false))
++		debug("%s: Cannot enable boot on regulator\n", __func__);
++#endif
++
++	setup_boot_mode();
++}
++#endif

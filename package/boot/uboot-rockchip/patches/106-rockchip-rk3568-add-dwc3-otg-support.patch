@@ -1,0 +1,53 @@
+From: Peter Geis <pgwipeout@gmail.com>
+To: Simon Glass <sjg@chromium.org>,
+	Philipp Tomsich <philipp.tomsich@vrull.eu>,
+	Kever Yang <kever.yang@rock-chips.com>
+Cc: Peter Geis <pgwipeout@gmail.com>, u-boot@lists.denx.de
+Subject: [PATCH v1 10/11] rockchip: rk3568: add dwc3 otg support
+Date: Mon, 21 Feb 2022 20:31:29 -0500	[thread overview]
+Message-ID: <20220222013131.3114990-11-pgwipeout@gmail.com> (raw)
+In-Reply-To: <20220222013131.3114990-1-pgwipeout@gmail.com>
+
+Add the required platform data to the rk3568 chip config, in order to
+support dwc3 otg on this chip.
+
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+---
+ arch/arm/mach-rockchip/rk3568/rk3568.c | 29 ++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+--- a/arch/arm/mach-rockchip/rk3568/rk3568.c
++++ b/arch/arm/mach-rockchip/rk3568/rk3568.c
+@@ -158,3 +158,32 @@ void spl_board_init(void)
+ 	setup_boot_mode();
+ }
+ #endif
++
++#if defined(CONFIG_USB_GADGET)
++#include <usb.h>
++
++#if defined(CONFIG_USB_DWC3_GADGET) && !defined(CONFIG_DM_USB_GADGET)
++#include <dwc3-uboot.h>
++
++static struct dwc3_device dwc3_device_data = {
++	.maximum_speed = USB_SPEED_HIGH,
++	.base = 0xfcc00000,
++	.dr_mode = USB_DR_MODE_PERIPHERAL,
++	.index = 0,
++	.dis_u2_susphy_quirk = 1,
++	.hsphy_mode = USBPHY_INTERFACE_MODE_UTMIW,
++};
++
++int usb_gadget_handle_interrupts(int index)
++{
++	dwc3_uboot_handle_interrupt(0);
++	return 0;
++}
++
++int board_usb_init(int index, enum usb_init_type init)
++{
++	return dwc3_uboot_init(&dwc3_device_data);
++}
++#endif /* CONFIG_USB_DWC3_GADGET */
++
++#endif /* CONFIG_USB_GADGET */
