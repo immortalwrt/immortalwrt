@@ -1,6 +1,8 @@
 #!/bin/bash
 # Copyright (C) 2021 ImmortalWrt.org
 
+set -e
+
 ACTION="$1"
 VARIANT="$2"
 PKG_BUILD_DIR="$3"
@@ -18,7 +20,7 @@ case "$VARIANT" in
 	LOADER="rk33/rk3399_miniloader_v1.26.bin"
 	;;
 "rk3568")
-	ATF="rk35/rk3568_bl31_v1.34.elf"
+	ATF="rk35/rk3568_bl31_v1.28.elf"
 	DDR="rk35/rk3568_ddr_1560MHz_v1.13.bin"
 	;;
 "rk3588")
