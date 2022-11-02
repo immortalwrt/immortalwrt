@@ -103,6 +103,31 @@ define U-Boot/rockpro64-rk3399
   ATF:=rk3399_bl31.elf
 endef
 
+
+# RK3568 boards
+
+define U-Boot/fastrhino-r66s-rk3568
+  BUILD_SUBTARGET:=armv8
+  NAME:=Lunzn FastRhino R66S
+  BUILD_DEVICES:= \
+    lunzn_fastrhino-r66s
+  DEPENDS:=+PACKAGE_u-boot-fastrhino-r66s-rk3568:arm-trusted-firmware-rk3568
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk3568_bl31_v1.28.elf
+  DDR:=rk3568_ddr_1560MHz_v1.13.bin
+endef
+
+define U-Boot/fastrhino-r68s-rk3568
+  BUILD_SUBTARGET:=armv8
+  NAME:=Lunzn FastRhino R68S
+  BUILD_DEVICES:= \
+    lunzn_fastrhino-r68s
+  DEPENDS:=+PACKAGE_u-boot-fastrhino-r68s-rk3568:arm-trusted-firmware-rk3568
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk3568_bl31_v1.28.elf
+  DDR:=rk3568_ddr_1560MHz_v1.13.bin
+endef
+
 UBOOT_TARGETS := \
   nanopi-r4s-rk3399 \
   rock-pi-4-rk3399 \
@@ -110,7 +135,9 @@ UBOOT_TARGETS := \
   nanopi-r2c-rk3328 \
   nanopi-r2s-rk3328 \
   orangepi-r1-plus-rk3328 \
-  orangepi-r1-plus-lts-rk3328
+  orangepi-r1-plus-lts-rk3328 \
+  fastrhino-r66s-rk3568 \
+  fastrhino-r68s-rk3568
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
@@ -121,6 +148,11 @@ define Build/Configure
 	$(call Build/Configure/U-Boot)
 
 	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
+
+ifneq ($(DDR),)
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)/tpl
+	$(CP) $(STAGING_DIR_IMAGE)/$(DDR) $(PKG_BUILD_DIR)/tpl/u-boot-tpl.bin
+endif
 endef
 
 define Build/InstallDev

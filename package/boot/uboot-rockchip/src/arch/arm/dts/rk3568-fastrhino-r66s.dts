@@ -7,8 +7,6 @@
 	compatible = "lunzn,fastrhino-r66s", "rockchip,rk3568";
 
 	aliases {
-		ethernet0 = &rtl8125_1;
-		ethernet1 = &rtl8125_2;
 		mmc0 = &sdmmc0;
 	};
 };

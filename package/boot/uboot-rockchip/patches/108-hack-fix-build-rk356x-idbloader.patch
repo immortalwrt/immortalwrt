@@ -1,0 +1,11 @@
+--- a/arch/arm/dts/rockchip-u-boot.dtsi
++++ b/arch/arm/dts/rockchip-u-boot.dtsi
+@@ -20,7 +20,7 @@
+ 		mkimage {
+ 			filename = "idbloader.img";
+ 			args = "-n", CONFIG_SYS_SOC, "-T", "rksd";
+-#ifdef CONFIG_TPL
++#if defined(CONFIG_TPL) || defined(CONFIG_ROCKCHIP_RK3566) || defined(CONFIG_ROCKCHIP_RK3568)
+ 			multiple-data-files;
+ 
+ 			u-boot-tpl {
