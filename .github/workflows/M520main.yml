@@ -1,1 +1,215 @@
+###########################################################
+#   Description: Compile OpenWrt by GitHub Actions        #
+#   Based on: https://github.com/P3TERX/Actions-OpenWrt   #
+#   Author: Hyy2001X                                      #
+###########################################################
 
+name: Ruijie M520
+
+### 以下内容请保持不变 ( 请修改下方的 [环境变量设置] )
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      Tempoary_IP:
+        description: 'Firmware IP address [optional]'
+        default: ''
+      Tempoary_CONFIG:
+        description: 'Config file [optional]'
+        default: ''
+      Tempoary_FLAG:
+        description: 'Firmware label [optional]'
+        default: ''
+### 控制部分结束 ( 以上内容请保持不变 )
+
+  #push:
+  #  branches: 
+  #    - master
+
+  #schedule:
+  #  - cron: 0 8 * * 5
+
+  #watch:
+  #  types: [started]
+
+### 环境变量设置
+env:
+# 编译时调用的 [.config] 文件名称
+  CONFIG_FILE: ruijie-rg-mtfi-m520
+# 源码仓库:分支
+  DEFAULT_SOURCE: GenzPN/x-wrt:master
+# 上传固件到 Github Releases
+  UPLOAD_RELEASES: true
+# 上传固件到 Github Artifacts
+  UPLOAD_ARTIFACTS: false
+# 上传 bin 文件夹到 Github Artifacts
+  UPLOAD_BIN_ARTIFACTS: false
+# 删除无用文件以增加编译空间
+  DELETE_USELESS_FILES: true
+# 删除早期的 workflow 任务
+  DELETE_OLD_WORKFLOW: false
+### 结束
+
+jobs:
+  Compile:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+
+    steps:
+    - name: Maximize Build Space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 5120
+        swap-size-mb: 512
+        remove-dotnet: 'true'
+        remove-android: 'true'
+
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Initialization Variables
+      run: |
+        echo "Free space:"
+        df -h
+        if [ -n "${{ github.event.inputs.Tempoary_CONFIG }}" ]
+        then
+            if [ -f "$GITHUB_WORKSPACE/Configs/${{ github.event.inputs.Tempoary_CONFIG }}" ]
+            then
+                CONFIG_FILE=${{ github.event.inputs.Tempoary_CONFIG }}
+            else
+                CONFIG_FILE=${{ env.CONFIG_FILE }}
+            fi
+        else
+            CONFIG_FILE=${{ env.CONFIG_FILE }}
+        fi
+        if [ ! -f "$GITHUB_WORKSPACE/Configs/$CONFIG_FILE" ]
+        then
+            echo "CONFIG_FILE: [/Config/$CONFIG_FILE] is not detected !"
+            exit 1
+        else
+            echo "CONFIG_FILE: [/Config/$CONFIG_FILE]"
+            echo "CONFIG_FILE=$CONFIG_FILE" >> $GITHUB_ENV
+        fi
+        if [ -n "${{ github.event.inputs.Tempoary_IP }}" ]
+        then
+            echo "IP: [${{ github.event.inputs.Tempoary_IP }}]"
+            echo "Tempoary_IP=${{ github.event.inputs.Tempoary_IP }}" >> $GITHUB_ENV
+        fi
+        if [ -n "${{ github.event.inputs.Tempoary_FLAG }}" ]
+        then
+            echo "FLAG: [${{ github.event.inputs.Tempoary_FLAG }}]"
+            echo "Tempoary_FLAG=${{ github.event.inputs.Tempoary_FLAG }}" >> $GITHUB_ENV
+        else
+            echo "env Tempoary_FLAG is not detected !"
+        fi
+        REPO_URL="https://github.com/$(echo ${{ env.DEFAULT_SOURCE }} | cut -d \: -f 1)"
+        REPO_BRANCH=$(echo ${{ env.DEFAULT_SOURCE }} | cut -d \: -f 2)
+        echo "REPO_URL=$REPO_URL" >> $GITHUB_ENV
+        echo "REPO_BRANCH=$REPO_BRANCH" >> $GITHUB_ENV
+        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+        echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
+
+    - name: Initialization Environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E apt-get update
+        sudo -E apt-get -y install busybox build-essential cmake asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python2.7 python3 python3-pip python3-ply haveged lrzsz device-tree-compiler scons antlr3 gperf intltool mkisofs rsync
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        if [ "${{ env.DELETE_USELESS_FILES }}" == true ]
+        then
+            docker rmi $(docker images -q)
+            sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php
+            sudo -E apt-get -y autoremove --purge
+            sudo -E apt-get clean
+        fi
+
+    - name: Clone Openwrt Source Code
+      run: |
+        git clone -b $REPO_BRANCH $REPO_URL openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: Run AutoBuild_DiyScript.sh
+      run: |
+        chmod +x Scripts/AutoBuild_*.sh
+        cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE openwrt/.config
+        cd openwrt
+        make defconfig
+        source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
+        source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
+        Firmware_Diy_Before
+        rm .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
+        Firmware_Diy_Main
+        Firmware_Diy
+
+    - name: Compile
+      run: |
+        cd openwrt
+        source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
+        Firmware_Diy_Other
+        ./scripts/feeds install -a > /dev/null 2>&1
+        make defconfig
+        make download -j$(nproc) V=s
+        make -j$(nproc) || make -j1 V=s
+        [ $? == 0 ] && echo "Result=true" >> $GITHUB_ENV || echo "Result=false" >> $GITHUB_ENV
+
+    - name: Process Firmware
+      if: env.Result == 'true' && !cancelled()
+      run: |
+        cd openwrt
+        source $GITHUB_WORKSPACE/Scripts/AutoBuild_Function.sh
+        Firmware_Diy_End
+
+    - name: Upload Firmware to Artifacts
+      uses: actions/upload-artifact@main
+      if: env.UPLOAD_ARTIFACTS == 'true' && env.Result == 'true' && !cancelled()
+      with:
+        name: ${{ env.CONFIG_FILE }}_firmware_${{ env.Compile_Date }}
+        path: openwrt/bin/Firmware
+
+    - name: Upload bin to Artifacts
+      uses: actions/upload-artifact@main
+      if: env.UPLOAD_BIN_ARTIFACTS == 'true' && env.Result == 'true' && !cancelled()
+      with:
+        name: ${{ env.CONFIG_FILE }}_bin_${{ env.Compile_Date }}
+        path: openwrt/bin
+
+    - name: Upload Firmware to Github Release
+      uses: svenstaro/upload-release-action@v2
+      if: env.UPLOAD_RELEASES == 'true' && env.Result == 'true' && !cancelled()
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: openwrt/bin/Firmware/*
+        file_glob: true
+        tag: AutoUpdate
+        overwrite: true
+        
+    - name: Download Github Release API
+      if: env.UPLOAD_RELEASES == 'true' && env.Result == 'true' && !cancelled()
+      run: |
+        wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
+        
+    - name: Upload API to Github Release
+      if: env.UPLOAD_RELEASES == 'true' && env.Result == 'true' && !cancelled()
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./API
+        file_glob: true
+        tag: AutoUpdate
+        overwrite: true
+
+    - name: Delete old Workflow Runs
+      uses: GitRML/delete-workflow-runs@main
+      if: env.DELETE_OLD_WORKFLOW == 'true' && !cancelled()
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
