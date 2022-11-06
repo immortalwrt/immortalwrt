@@ -1,45 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-
 #include "mt7621.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 / {
-	compatible = "youku,yk-l2", "mediatek,mt7621-soc";
-	model = "Youku YK-L2";
+	compatible = "zbtlink,zbt-wg1602", "mediatek,mt7621-soc";
 
 	aliases {
-		led-boot = &led_power;
-		led-failsafe = &led_power;
-		led-running = &led_power;
-		led-upgrade = &led_wps;
+		led-boot = &led_sm;
+		led-failsafe = &led_sm;
+		led-running = &led_sm;
+		led-upgrade = &led_sm;
+		label-mac-device = &gmac0;
 	};
 
 	chosen {
 		bootargs = "console=ttyS0,115200";
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_power: power {
-			label = "blue:power";
-			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
-			default-state = "on";
-		};
-
-		led_wps: wps {
-			label = "blue:wps";
-			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
-		};
-
-		usb {
-			label = "blue:usb";
-			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&xhci_ehci_port1>, <&ehci_port2>;
-			linux,default-trigger = "usbport";
-		};
 	};
 
 	keys {
@@ -50,11 +27,56 @@
 			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
+	};
 
-		wps {
-			label = "wps";
-			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
+	leds {
+		compatible = "gpio-leds";
+
+		led_sm: sm {
+			label = "green:sm";
+			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+		};
+
+		4g1 {
+			label = "green:4g1";
+			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
+		};
+
+		4g2 {
+			label = "green:4g2";
+			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	watchdog {
+		compatible = "linux,wdt-gpio";
+		gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+		hw_algo = "toggle";
+		/* hw_margin_ms is actually ~120s but driver limits it to 60s */
+		hw_margin_ms = <60000>;
+		always-running;
+	};
+
+	gpio-export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		4g1-pwr {
+			gpio-export,name = "4g1-pwr";
+			gpio-export,output = <1>;
+			gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
+		};
+
+		4g2-pwr {
+			gpio-export,name = "4g2-pwr";
+			gpio-export,output = <1>;
+			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
+		};
+
+		ext-usb {
+			gpio-export,name = "ext-usb";
+			gpio-export,output = <1>;
+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		};
 	};
 };
@@ -94,11 +116,9 @@
 				read-only;
 			};
 
-			partition@50000 {
-				compatible = "openwrt,uimage", "denx,uimage";
+			firmware: partition@50000 {
+				compatible = "denx,uimage";
 				label = "firmware";
-				openwrt,ih-magic = <0x12291000>;
-				reg = <0x50000 0xfb0000>;
 			};
 		};
 	};
@@ -109,26 +129,22 @@
 };
 
 &pcie0 {
-	wifi@0,0 {
+	wifi0: wifi@0,0 {
 		compatible = "pci14c3,7603";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&factory 0x0000>;
-		ieee80211-freq-limit = <2400000 2500000>;
-		led {
-			led-active-low;
-		};
 	};
 };
 
 &pcie1 {
-	wifi@0,0 {
+	wifi1: wifi@0,0 {
 		compatible = "pci14c3,7662";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
+
 		led {
 			led-sources = <2>;
-			led-active-low;
 		};
 	};
 };
@@ -179,7 +195,7 @@
 
 &state_default {
 	gpio {
-		groups = "jtag", "wdt";
+		groups = "i2c", "uart2", "wdt";
 		function = "gpio";
 	};
 };
