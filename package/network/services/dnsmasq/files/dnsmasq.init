@@ -539,6 +539,15 @@ dhcp_add() {
 	# Override interface netmask with dhcp config if applicable
 	config_get netmask "$cfg" netmask "${subnet##*/}"
 
+	#check for an already active dhcp server on the interface, unless 'force' is set
+	config_get_bool force "$cfg" force 0
+	[ $force -gt 0 ] || dhcp_check "$ifname" || {
+		logger -t dnsmasq \
+			"found already running DHCP-server on interface '$ifname'" \
+			"refusing to start, use 'option force 1' to override"
+		return 0
+	}
+
 	config_get start "$cfg" start 100
 	config_get limit "$cfg" limit 150
 	config_get leasetime "$cfg" leasetime 12h
@@ -795,14 +804,17 @@ dnsmasq_ipset_add() {
 	add_nftset() {
 		local IFS=,
 		for set in $1; do
-			local family=$(echo "$set" | sed -nre 's#^.*[^0-9]([46])$#\1#p')
-			[ -n "$family" ] || \
-				family=$(nft -t list set inet "$table" "$set" 2>&1 | sed -nre 's#^\t\ttype .*\bipv([46])_addr\b.*$#\1#p')
+			local fam="$family"
+			[ -n "$fam" ] || fam=$(echo "$set" | sed -nre \
+				's#^.*[^0-9]([46])$|^.*[-_]([46])[-_].*$|^([46])[^0-9].*$#\1\2\3#p')
+			[ -n "$fam" ] || \
+				fam=$(nft -t list set "$table_family" "$table" "$set" 2>&1 | sed -nre \
+				's#^\t\ttype .*\bipv([46])_addr\b.*$#\1#p')
 
-			[ -n "$family" ] || \
+			[ -n "$fam" ] || \
 				logger -t dnsmasq "Cannot infer address family from non-existent nftables set '$set'"
 
-			nftsets="${nftsets:+$nftsets,}${family:+$family#}inet#$table#$set"
+			nftsets="${nftsets:+$nftsets,}${fam:+$fam#}$table_family#$table#$set"
 		done
 	}
 
@@ -810,7 +822,17 @@ dnsmasq_ipset_add() {
 		# leading '/' is expected
 		domains="$domains/$1"
 	}
+
 	config_get table "$cfg" table 'fw4'
+	config_get table_family "$cfg" table_family 'inet'
+	if [ "$table_family" = "ip" ] ; then
+		family="4"
+	elif [ "$table_family" = "ip6" ] ; then
+		family="6"
+	else
+		config_get family "$cfg" family
+	fi
+
 	config_list_foreach "$cfg" "name" add_ipset
 	config_list_foreach "$cfg" "name" add_nftset
 	config_list_foreach "$cfg" "domain" add_domain
@@ -862,12 +884,6 @@ dnsmasq_start()
 	# if we did this last, we could override auto-generated config
 	[ -f "${dnsmasqconffile}" ] && {
 		xappend "--conf-file=${dnsmasqconffile}"
-	}
-
-	config_get_bool boguspriv "$cfg" boguspriv 1
-	[ "$boguspriv" -gt 0 ] && {
-		xappend "--bogus-priv"
-		[ -r "$RFC6761FILE" ] && xappend "--conf-file=$RFC6761FILE"
 	}
 
 	$PROG --version | grep -osqE "^Compile time options:.* DHCPv6( |$)" && DHCPv6CAPABLE=1 || DHCPv6CAPABLE=0
@@ -946,11 +962,9 @@ dnsmasq_start()
 
 	append_bool "$cfg" filter_a "--filter-A"
 	append_bool "$cfg" filter_aaaa "--filter-AAAA"
-
-	append_parm "$cfg" logfacility "--log-facility"
-
 	append_parm "$cfg" mini_ttl "--min-ttl"
 
+	append_parm "$cfg" logfacility "--log-facility"
 	config_get logfacility "$cfg" "logfacility"
 	append_parm "$cfg" cachesize "--cache-size"
 	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
@@ -983,8 +997,8 @@ dnsmasq_start()
 		xappend "--addn-hosts=$HOSTFILE"
 		append EXTRA_MOUNT "$HOSTFILE"
 	else
-		xappend "--addn-hosts=$(dirname $HOSTFILE)"
-		append EXTRA_MOUNT "$(dirname $HOSTFILE)"
+		xappend "--addn-hosts=$HOSTFILE_DIR"
+		append EXTRA_MOUNT "$HOSTFILE_DIR"
 	fi
 	config_list_foreach "$cfg" "addnhosts" append_addnhosts
 	config_list_foreach "$cfg" "bogusnxdomain" append_bogusnxdomain
@@ -1088,6 +1102,7 @@ dnsmasq_start()
 
 	xappend "--dhcp-broadcast=tag:needs-broadcast"
 
+
 	config_get dnsmasqconfdir "$cfg" confdir "/tmp/dnsmasq.d"
 	xappend "--conf-dir=$dnsmasqconfdir"
 	dnsmasqconfdir="${dnsmasqconfdir%%,*}"
@@ -1129,6 +1144,11 @@ dnsmasq_start()
 	config_foreach filter_dnsmasq mxhost dhcp_mx_add "$cfg"
 	echo >> $CONFIGFILE_TMP
 
+	config_get_bool boguspriv "$cfg" boguspriv 1
+	[ "$boguspriv" -gt 0 ] && {
+		xappend "--bogus-priv"
+		[ -r "$RFC6761FILE" ] && xappend "--conf-file=$RFC6761FILE"
+	}
 
 	if [ "$DNSMASQ_DHCP_VER" -gt 4 ] ; then
 		# Enable RA feature for when/if it is constructed,
@@ -1152,7 +1172,6 @@ dnsmasq_start()
 	config_foreach filter_dnsmasq ipset dnsmasq_ipset_add "$cfg"
 	echo >> $CONFIGFILE_TMP
 
-	echo >> $CONFIGFILE_TMP
 	mv -f $CONFIGFILE_TMP $CONFIGFILE
 	mv -f $HOSTFILE_TMP $HOSTFILE
 
@@ -1328,5 +1347,6 @@ stop_service() {
 	else
 		config_foreach dnsmasq_stop dnsmasq
 	fi
+
 	nftables_clear
 }

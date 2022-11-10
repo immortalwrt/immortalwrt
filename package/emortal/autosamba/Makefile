@@ -25,12 +25,11 @@ define Package/autosamba/description
 endef
 
 define Build/Compile
-	true
 endef
 
 define Package/autosamba/install
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
-	$(INSTALL_BIN) ./files/20-smb $(1)/etc/hotplug.d/block/20-smb
+	$(INSTALL_BIN) ./files/20-smb $(1)/etc/hotplug.d/block/
 endef
 
 $(eval $(call BuildPackage,autosamba))
