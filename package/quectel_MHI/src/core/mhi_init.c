@@ -12,6 +12,13 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/wait.h>
+#include <asm/uaccess.h>
+#include <linux/version.h>
+#if (LINUX_VERSION_CODE > KERNEL_VERSION( 4,11,0 ))
+#include <linux/sched/signal.h>
+#else
+#include <linux/signal.h>
+#endif
 #include "mhi.h"
 #include "mhi_internal.h"
 
@@ -287,10 +294,373 @@ static const struct file_operations debugfs_chan_ops = {
 DEFINE_SIMPLE_ATTRIBUTE(debugfs_trigger_reset_fops, NULL,
 			 mhi_debugfs_trigger_reset, "%llu\n");
 
+#ifdef ENABLE_MHI_MON
+struct mon_event_text {
+	struct list_head e_link;
+	int type;		/* submit, complete, etc. */
+	unsigned int tstamp;
+	u32 chan;
+	dma_addr_t wp;
+	struct mhi_tre mhi_tre;
+	u8 data[32];
+	size_t len;
+};
+
+#define EVENT_MAX  (16*PAGE_SIZE / sizeof(struct mon_event_text))
+#define PRINTF_DFL  250
+#define SLAB_NAME_SZ  30
+
+struct mon_reader_text {
+	struct kmem_cache *e_slab;
+	int nevents;
+	struct list_head e_list;
+	struct mon_reader r;	/* In C, parent class can be placed anywhere */
+
+	wait_queue_head_t wait;
+	int printf_size;
+	char *printf_buf;
+	int left_size;
+	int left_pos;
+	struct mutex printf_lock;
+
+	char slab_name[SLAB_NAME_SZ];
+};
+
+struct mon_text_ptr {
+	int cnt, limit;
+	char *pbuf;
+};
+
+static DEFINE_MUTEX(mon_lock);
+
+static inline unsigned int mon_get_timestamp(void)
+{
+	struct timespec64 now;
+	unsigned int stamp;
+
+	ktime_get_ts64(&now);
+	stamp = now.tv_sec & 0xFFF;  /* 2^32 = 4294967296. Limit to 4096s. */
+	stamp = stamp * USEC_PER_SEC + now.tv_nsec / NSEC_PER_USEC;
+	return stamp;
+}
+
+static void mon_text_event(struct mon_reader_text *rp,
+    u32 chan, dma_addr_t wp, struct mhi_tre *mhi_tre, void *buf, size_t len,
+    char ev_type)
+{
+	struct mon_event_text *ep;	
+
+	if (rp->nevents >= EVENT_MAX ||
+	    (ep = kmem_cache_alloc(rp->e_slab, GFP_ATOMIC)) == NULL) {
+		rp->r.m_bus->cnt_text_lost++;
+		return;
+	}
+
+	ep->type = ev_type;
+	ep->tstamp = mon_get_timestamp();
+	ep->chan = chan;
+	ep->wp = wp;
+	ep->mhi_tre = *mhi_tre;
+	if (len > sizeof(ep->data))
+		len = sizeof(ep->data);
+	memcpy(ep->data, buf, len);
+	ep->len = len;
+	rp->nevents++;
+	list_add_tail(&ep->e_link, &rp->e_list);
+	wake_up(&rp->wait);
+}
+
+static void mon_text_submit(void *data, u32 chan, dma_addr_t wp, struct mhi_tre *mhi_tre, void *buf, size_t len)
+{
+	struct mon_reader_text *rp = data;
+	mon_text_event(rp, chan, wp, mhi_tre, buf, len, 'W');
+}
+
+static void mon_text_receive(void *data, u32 chan, dma_addr_t wp, struct mhi_tre *mhi_tre, void *buf, size_t len)
+{
+	struct mon_reader_text *rp = data;
+	mon_text_event(rp, chan, wp, mhi_tre, buf, len, 'R');
+}
+
+static void mon_text_complete(void *data, u32 chan, dma_addr_t wp, struct mhi_tre *mhi_tre)
+{
+	struct mon_reader_text *rp = data;
+	mon_text_event(rp, chan, wp, mhi_tre, NULL, 0, 'E');
+}
+
+void mon_reader_add(struct mhi_controller *mbus, struct mon_reader *r)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&mbus->lock, flags);
+	mbus->nreaders++;
+	list_add_tail(&r->r_link, &mbus->r_list);
+	spin_unlock_irqrestore(&mbus->lock, flags);
+
+	kref_get(&mbus->ref);
+}
+
+static void mon_bus_drop(struct kref *r)
+{
+	struct mhi_controller *mbus = container_of(r, struct mhi_controller, ref);
+	kfree(mbus);
+}
+
+static void mon_reader_del(struct mhi_controller *mbus, struct mon_reader *r)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&mbus->lock, flags);
+	list_del(&r->r_link);
+	--mbus->nreaders;
+	spin_unlock_irqrestore(&mbus->lock, flags);
+
+	kref_put(&mbus->ref, mon_bus_drop);
+}
+
+static void mon_text_ctor(void *mem)
+{
+	/*
+	 * Nothing to initialize. No, really!
+	 * So, we fill it with garbage to emulate a reused object.
+	 */
+	memset(mem, 0xe5, sizeof(struct mon_event_text));
+}
+
+static int mon_text_open(struct inode *inode, struct file *file)
+{
+	struct mhi_controller *mbus;
+	struct mon_reader_text *rp;
+	int rc;
+
+	mutex_lock(&mon_lock);
+	mbus = inode->i_private;
+
+	rp = kzalloc(sizeof(struct mon_reader_text), GFP_KERNEL);
+	if (rp == NULL) {
+		rc = -ENOMEM;
+		goto err_alloc;
+	}
+	INIT_LIST_HEAD(&rp->e_list);
+	init_waitqueue_head(&rp->wait);
+	mutex_init(&rp->printf_lock);
+
+	rp->printf_size = PRINTF_DFL;
+	rp->printf_buf = kmalloc(rp->printf_size, GFP_KERNEL);
+	if (rp->printf_buf == NULL) {
+		rc = -ENOMEM;
+		goto err_alloc_pr;
+	}
+
+	rp->r.m_bus = mbus;
+	rp->r.r_data = rp;
+	rp->r.rnf_submit = mon_text_submit;
+	rp->r.rnf_receive = mon_text_receive;
+	rp->r.rnf_complete = mon_text_complete;
+
+	snprintf(rp->slab_name, SLAB_NAME_SZ, "mon_text_%p", rp);
+	rp->e_slab = kmem_cache_create(rp->slab_name,
+	    sizeof(struct mon_event_text), sizeof(long), 0,
+	    mon_text_ctor);
+	if (rp->e_slab == NULL) {
+		rc = -ENOMEM;
+		goto err_slab;
+	}
+
+	mon_reader_add(mbus, &rp->r);
+
+	file->private_data = rp;
+	mutex_unlock(&mon_lock);
+	return 0;
+
+// err_busy:
+//	kmem_cache_destroy(rp->e_slab);
+err_slab:
+	kfree(rp->printf_buf);
+err_alloc_pr:
+	kfree(rp);
+err_alloc:
+	mutex_unlock(&mon_lock);
+	return rc;
+}
+
+static struct mon_event_text *mon_text_fetch(struct mon_reader_text *rp,
+    struct mhi_controller *mbus)
+{
+	struct list_head *p;
+	unsigned long flags;
+
+	spin_lock_irqsave(&mbus->lock, flags);
+	if (list_empty(&rp->e_list)) {
+		spin_unlock_irqrestore(&mbus->lock, flags);
+		return NULL;
+	}
+	p = rp->e_list.next;
+	list_del(p);
+	--rp->nevents;
+	spin_unlock_irqrestore(&mbus->lock, flags);
+	return list_entry(p, struct mon_event_text, e_link);
+}
+
+static struct mon_event_text *mon_text_read_wait(struct mon_reader_text *rp,
+    struct file *file)
+{
+	struct mhi_controller *mbus = rp->r.m_bus;
+	DECLARE_WAITQUEUE(waita, current);
+	struct mon_event_text *ep;
+
+	add_wait_queue(&rp->wait, &waita);
+	set_current_state(TASK_INTERRUPTIBLE);
+	while ((ep = mon_text_fetch(rp, mbus)) == NULL) {
+		if (file->f_flags & O_NONBLOCK) {
+			set_current_state(TASK_RUNNING);
+			remove_wait_queue(&rp->wait, &waita);
+			return ERR_PTR(-EWOULDBLOCK);
+		}
+		/*
+		 * We do not count nwaiters, because ->release is supposed
+		 * to be called when all openers are gone only.
+		 */
+		schedule();
+		if (signal_pending(current)) {
+			remove_wait_queue(&rp->wait, &waita);
+			return ERR_PTR(-EINTR);
+		}
+		set_current_state(TASK_INTERRUPTIBLE);
+	}
+	set_current_state(TASK_RUNNING);
+	remove_wait_queue(&rp->wait, &waita);
+	return ep;
+}
+
+static ssize_t mon_text_read_u(struct file *file, char __user *buf,
+				size_t nbytes, loff_t *ppos)
+{
+	struct mon_reader_text *rp = file->private_data;
+	struct mon_event_text *ep;
+	struct mon_text_ptr ptr;
+
+	if (rp->left_size) {
+		int cnt = rp->left_size;
+
+		if (cnt > nbytes)
+			cnt = nbytes;
+		if (copy_to_user(buf, rp->printf_buf + rp->left_pos, cnt))
+			return -EFAULT;
+		rp->left_pos += cnt;
+		rp->left_size -= cnt;
+		return cnt;
+	}
+
+	if (IS_ERR(ep = mon_text_read_wait(rp, file)))
+		return PTR_ERR(ep);
+	mutex_lock(&rp->printf_lock);
+	ptr.cnt = 0;
+	ptr.pbuf = rp->printf_buf;
+	ptr.limit = rp->printf_size;
+
+	ptr.cnt += snprintf(ptr.pbuf + ptr.cnt, ptr.limit - ptr.cnt,
+	    "%u %c %03d WP:%llx TRE: %llx %08x %08x",
+	    ep->tstamp, ep->type, ep->chan, ep->wp,
+	    ep->mhi_tre.ptr, ep->mhi_tre.dword[0], ep->mhi_tre.dword[1]);
+
+	if (ep->len) {
+		struct mon_text_ptr *p = &ptr;
+		size_t i = 0;
+
+		for (i = 0; i < ep->len; i++) {
+			if (i % 4 == 0) {
+				p->cnt += snprintf(p->pbuf + p->cnt,
+				    p->limit - p->cnt,
+				    " ");
+			}
+			p->cnt += snprintf(p->pbuf + p->cnt,
+			    p->limit - p->cnt,
+			    "%02x", ep->data[i]);
+		}
+
+	}
+
+	ptr.cnt += snprintf(ptr.pbuf +ptr.cnt, ptr.limit - ptr.cnt, "\n");
+
+	if (ptr.cnt > nbytes) {
+		rp->left_pos = nbytes;
+		rp->left_size = ptr.cnt - nbytes;
+		ptr.cnt = nbytes;
+	}
+
+	if (copy_to_user(buf, rp->printf_buf, ptr.cnt))
+		ptr.cnt = -EFAULT;
+	mutex_unlock(&rp->printf_lock);
+	kmem_cache_free(rp->e_slab, ep);
+	return ptr.cnt;
+}
+
+static int mon_text_release(struct inode *inode, struct file *file)
+{
+	struct mon_reader_text *rp = file->private_data;
+	struct mhi_controller *mbus;
+	/* unsigned long flags; */
+	struct list_head *p;
+	struct mon_event_text *ep;
+
+	mutex_lock(&mon_lock);
+	mbus = inode->i_private;
+
+	if (mbus->nreaders <= 0) {
+		mutex_unlock(&mon_lock);
+		return 0;
+	}
+	mon_reader_del(mbus, &rp->r);
+
+	/*
+	 * In theory, e_list is protected by mbus->lock. However,
+	 * after mon_reader_del has finished, the following is the case:
+	 *  - we are not on reader list anymore, so new events won't be added;
+	 *  - whole mbus may be dropped if it was orphaned.
+	 * So, we better not touch mbus.
+	 */
+	/* spin_lock_irqsave(&mbus->lock, flags); */
+	while (!list_empty(&rp->e_list)) {
+		p = rp->e_list.next;
+		ep = list_entry(p, struct mon_event_text, e_link);
+		list_del(p);
+		--rp->nevents;
+		kmem_cache_free(rp->e_slab, ep);
+	}
+	/* spin_unlock_irqrestore(&mbus->lock, flags); */
+
+	kmem_cache_destroy(rp->e_slab);
+	kfree(rp->printf_buf);
+	kfree(rp);
+
+	mutex_unlock(&mon_lock);
+	return 0;
+}
+
+
+static const struct file_operations mon_fops_text_u = {
+	.owner =	THIS_MODULE,
+	.open =		mon_text_open,
+	.llseek =	no_llseek,
+	.read =		mon_text_read_u,
+	.release =	mon_text_release,
+};
+#endif
+
 void mhi_init_debugfs(struct mhi_controller *mhi_cntrl)
 {
 	struct dentry *dentry;
 	char node[32];
+
+#ifdef ENABLE_MHI_MON
+	struct mhi_controller *mbus = mhi_cntrl;
+
+	mbus->nreaders = 0;
+	kref_init(&mbus->ref);
+	spin_lock_init(&mbus->lock);
+	INIT_LIST_HEAD(&mbus->r_list);
+#endif
 
 	if (!mhi_cntrl->parent)
 	snprintf(node, sizeof(node), "mhi_%04x_%02u:%02u.%02u",
@@ -313,6 +683,10 @@ void mhi_init_debugfs(struct mhi_controller *mhi_cntrl)
 				   &debugfs_chan_ops);
 	debugfs_create_file("reset", 0444, dentry, mhi_cntrl,
 				   &debugfs_trigger_reset_fops);
+#ifdef ENABLE_MHI_MON
+	debugfs_create_file("mhimon", 0444, dentry, mhi_cntrl,
+				   &mon_fops_text_u);
+#endif
 	mhi_cntrl->dentry = dentry;
 }
 
@@ -810,6 +1184,16 @@ int mhi_init_chan_ctxt(struct mhi_controller *mhi_cntrl,
 		tre_ring->pre_aligned = &mhi_cntrl->mhi_ctxt->ctrl_seg->hw_out_chan_ring[mhi_chan->ring];
 		tre_ring->dma_handle = mhi_cntrl->mhi_ctxt->ctrl_seg_addr + offsetof(struct mhi_ctrl_seg, hw_out_chan_ring[mhi_chan->ring]);
 	}
+#ifdef ENABLE_IP_SW0
+	else if (MHI_CLIENT_IP_SW_0_IN == mhi_chan->chan) {
+		tre_ring->pre_aligned = &mhi_cntrl->mhi_ctxt->ctrl_seg->sw_in_chan_ring[mhi_chan->ring];
+		tre_ring->dma_handle = mhi_cntrl->mhi_ctxt->ctrl_seg_addr + offsetof(struct mhi_ctrl_seg, sw_in_chan_ring[mhi_chan->ring]);
+	}
+	else if (MHI_CLIENT_IP_SW_0_OUT == mhi_chan->chan) {
+		tre_ring->pre_aligned = &mhi_cntrl->mhi_ctxt->ctrl_seg->sw_out_chan_ring[mhi_chan->ring];
+		tre_ring->dma_handle = mhi_cntrl->mhi_ctxt->ctrl_seg_addr + offsetof(struct mhi_ctrl_seg, sw_out_chan_ring[mhi_chan->ring]);
+	}
+#endif
 	else if (MHI_CLIENT_DIAG_IN == mhi_chan->chan) {
 		tre_ring->pre_aligned = &mhi_cntrl->mhi_ctxt->ctrl_seg->diag_in_chan_ring[mhi_chan->ring];
 		tre_ring->dma_handle = mhi_cntrl->mhi_ctxt->ctrl_seg_addr + offsetof(struct mhi_ctrl_seg, diag_in_chan_ring[mhi_chan->ring]);
@@ -1222,6 +1606,8 @@ static int of_parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 		mhi_event->er_index = i;
 
 		mhi_event->ring.elements = NUM_MHI_EVT_RING_ELEMENTS; //Event ring length in elements
+		if (i == PRIMARY_EVENT_RING || i == ADPL_EVT_RING)
+			mhi_event->ring.elements = 256; //256 is enough, and 1024 some times make driver fail to open channel (reason is x6x fail to malloc) 
 
 		mhi_event->intmod = 1; //Interrupt moderation time in ms
 
@@ -1232,12 +1618,23 @@ static int of_parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 		if (i == IPA_IN_EVENT_RING)
 			mhi_event->intmod = 5;
 
+#ifdef ENABLE_IP_SW0
+		if (i == SW_0_IN_EVT_RING)
+			mhi_event->intmod = 5;
+#endif
+
 		mhi_event->msi = 1 + i + mhi_cntrl->msi_irq_base;  //MSI associated with this event ring
 
 		if (i == IPA_OUT_EVENT_RING)
 			mhi_event->chan = MHI_CLIENT_IP_HW_0_OUT; //Dedicated channel number, if it's a dedicated event ring
 		else if (i == IPA_IN_EVENT_RING)
 			mhi_event->chan = MHI_CLIENT_IP_HW_0_IN; //Dedicated channel number, if it's a dedicated event ring
+#ifdef ENABLE_IP_SW0
+		else if (i == SW_0_OUT_EVT_RING)
+			mhi_event->chan = MHI_CLIENT_IP_SW_0_OUT;
+		else if (i == SW_0_IN_EVT_RING)
+			mhi_event->chan = MHI_CLIENT_IP_SW_0_IN;
+#endif
 		else
 			mhi_event->chan = 0;
 
@@ -1258,6 +1655,10 @@ static int of_parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 
 		if (i == IPA_OUT_EVENT_RING || i == IPA_IN_EVENT_RING)
 			mhi_event->data_type = MHI_ER_DATA_ELEMENT_TYPE;
+#ifdef ENABLE_IP_SW0
+		else if (i == SW_0_OUT_EVT_RING || i == SW_0_IN_EVT_RING)
+			mhi_event->data_type = MHI_ER_DATA_ELEMENT_TYPE;
+#endif
 		else
 			mhi_event->data_type = MHI_ER_CTRL_ELEMENT_TYPE;
 
@@ -1284,7 +1685,7 @@ static int of_parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 			mhi_cntrl->sw_ev_rings++;
 
 		mhi_event->cl_manage = false;
-		if (mhi_event->chan == MHI_CLIENT_IP_HW_0_IN)
+		if (mhi_event->chan == MHI_CLIENT_IP_HW_0_IN || mhi_event->chan == MHI_CLIENT_IP_SW_0_IN)
 			mhi_event->cl_manage = true;
 		mhi_event->offload_ev = false;
 		mhi_event++;
@@ -1344,10 +1745,10 @@ static struct chan_cfg_t chan_cfg[] = {
 //"Qualcomm EDL "
 	{"EDL", MHI_CLIENT_EDL_OUT, NUM_MHI_CHAN_RING_ELEMENTS},
 	{"EDL", MHI_CLIENT_EDL_IN, NUM_MHI_CHAN_RING_ELEMENTS},
-#if 0 //AG15
+#ifdef ENABLE_IP_SW0
 //"Qualcomm PCIe LOCAL Adapter"
-	{"IP_SW0", MHI_CLIENT_IP_SW_0_OUT, NUM_MHI_CHAN_RING_ELEMENTS},
-	{"IP_SW0", MHI_CLIENT_IP_SW_0_IN, NUM_MHI_CHAN_RING_ELEMENTS},
+	{"IP_SW0", MHI_CLIENT_IP_SW_0_OUT, NUM_MHI_SW_IP_RING_ELEMENTS},
+	{"IP_SW0", MHI_CLIENT_IP_SW_0_IN, NUM_MHI_SW_IP_RING_ELEMENTS},
 #endif
 //"Qualcomm PCIe WWAN Adapter"
 	{"IP_HW0", MHI_CLIENT_IP_HW_0_OUT, NUM_MHI_IPA_OUT_RING_ELEMENTS},
@@ -1404,7 +1805,8 @@ static int of_parse_ch_cfg(struct mhi_controller *mhi_cntrl,
 		 */
 		mhi_chan->buf_ring.elements = mhi_chan->tre_ring.elements;
 
-		if (chan == MHI_CLIENT_IP_HW_0_OUT || chan == MHI_CLIENT_IP_HW_0_IN || chan == MHI_CLIENT_DIAG_IN) {
+		if (chan == MHI_CLIENT_IP_HW_0_OUT || chan == MHI_CLIENT_IP_HW_0_IN || chan == MHI_CLIENT_DIAG_IN
+			|| chan == MHI_CLIENT_IP_SW_0_OUT || chan == MHI_CLIENT_IP_SW_0_IN) {
 			mhi_chan->ring = 0;
 		}
 		else {
@@ -1416,6 +1818,12 @@ static int of_parse_ch_cfg(struct mhi_controller *mhi_cntrl,
 			mhi_chan->er_index = IPA_OUT_EVENT_RING;
 		else if (chan == MHI_CLIENT_IP_HW_0_IN)
 			mhi_chan->er_index = IPA_IN_EVENT_RING;
+#ifdef ENABLE_IP_SW0
+		else if (chan == MHI_CLIENT_IP_SW_0_OUT)
+			mhi_chan->er_index = SW_0_OUT_EVT_RING;
+		else if (chan == MHI_CLIENT_IP_SW_0_IN)
+			mhi_chan->er_index = SW_0_IN_EVT_RING;
+#endif
 		else
 			mhi_chan->er_index = PRIMARY_EVENT_RING;
 
@@ -2051,6 +2459,7 @@ struct mhi_device *mhi_alloc_device(struct mhi_controller *mhi_cntrl)
 	dev->release = mhi_release_device;
 	dev->parent = mhi_cntrl->dev;
 	mhi_dev->mhi_cntrl = mhi_cntrl;
+	mhi_dev->vendor = mhi_cntrl->vendor;
 	mhi_dev->dev_id = mhi_cntrl->dev_id;
 	mhi_dev->domain = mhi_cntrl->domain;
 	mhi_dev->bus = mhi_cntrl->bus;

@@ -53,6 +53,8 @@ struct uci_dev {
 	struct mhi_device *mhi_dev;
 	const char *chan;
 	struct mutex mutex; /* sync open and close */
+	struct mutex r_mutex;
+	struct mutex w_mutex;
 	struct uci_chan ul_chan;
 	struct uci_chan dl_chan;
 	size_t mtu;
@@ -491,7 +493,7 @@ static ssize_t mhi_uci_read(struct file *file,
 			ret = -ERESTARTSYS;
 
 		if (ret) {
-			MSG_ERR("Failed to recycle element, ret=%d\n", ret);
+			MSG_ERR("Failed to recycle element for chan:%d , ret=%d\n", mhi_dev->ul_chan_id, ret);
 #if 0
 			kfree(uci_buf->data);
 #endif
@@ -507,6 +509,42 @@ static ssize_t mhi_uci_read(struct file *file,
 
 read_error:
 	spin_unlock_bh(&uci_chan->lock);
+
+	return ret;
+}
+
+static ssize_t mhi_uci_write_mutex(struct file *file,
+			     const char __user *buf,
+			     size_t count,
+			     loff_t *offp)
+{
+	struct uci_dev *uci_dev = file->private_data;
+	int ret;
+
+	ret = mutex_lock_interruptible(&uci_dev->w_mutex); /*concurrent writes */
+	if (ret < 0)
+		return -ERESTARTSYS;
+
+	ret = mhi_uci_write(file, buf, count, offp);
+	mutex_unlock(&uci_dev->w_mutex);
+
+	return ret;
+}
+
+static ssize_t mhi_uci_read_mutex(struct file *file,
+			    char __user *buf,
+			    size_t count,
+			    loff_t *ppos)
+{
+	struct uci_dev *uci_dev = file->private_data;
+	int ret;
+
+	ret = mutex_lock_interruptible(&uci_dev->r_mutex); /*concurrent reads */
+	if (ret < 0)
+		return -ERESTARTSYS;
+
+	ret = mhi_uci_read(file, buf, count, ppos);
+	mutex_unlock(&uci_dev->r_mutex);
 
 	return ret;
 }
@@ -588,8 +626,8 @@ error_exit:
 static const struct file_operations mhidev_fops = {
 	.open = mhi_uci_open,
 	.release = mhi_uci_release,
-	.read = mhi_uci_read,
-	.write = mhi_uci_write,
+	.read = mhi_uci_read_mutex,
+	.write = mhi_uci_write_mutex,
 	.poll = mhi_uci_poll,
 	.unlocked_ioctl = mhi_uci_ioctl,
 };
@@ -652,6 +690,8 @@ static int mhi_uci_probe(struct mhi_device *mhi_dev,
 		return -ENOMEM;
 
 	mutex_init(&uci_dev->mutex);
+	mutex_init(&uci_dev->r_mutex);
+	mutex_init(&uci_dev->w_mutex);
 	uci_dev->mhi_dev = mhi_dev;
 
 	minor = find_first_zero_bit(uci_minors, MAX_UCI_DEVICES);

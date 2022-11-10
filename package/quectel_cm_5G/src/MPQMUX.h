@@ -2786,7 +2786,7 @@ typedef struct _QMIWMS_EVENT_REPORT_IND_MSG
 #define QUECTEL_PACKET_TRANSFER_END_IND 0X101
 #define QMINAS_GET_SYS_INFO_REQ                 0x004D
 #define QMINAS_GET_SYS_INFO_RESP                0x004D
-#define QMINAS_SYS_INFO_IND                     0x004D
+#define QMINAS_SYS_INFO_IND                     0x004E
 #define QMINAS_GET_SIG_INFO_REQ                 0x004F
 #define QMINAS_GET_SIG_INFO_RESP                0x004F
 

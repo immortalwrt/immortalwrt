@@ -597,6 +597,32 @@ void udhcpc_start(PROFILE_T *profile) {
                 //no udhcpc's default.script exist, directly set ip and dns
                 update_ip_address_by_qmi(ifname, &profile->ipv4, NULL);
             }
+            //Add by Demon. check default route 
+            FILE *rt_fp = NULL;
+            char rt_cmd[128] = {0};
+            
+            //Check if there is a default route. 
+            snprintf(rt_cmd, sizeof(rt_cmd), "route -n | grep %s | awk '{print $1}' | grep 0.0.0.0", ifname);
+            rt_fp = popen((const char *)rt_cmd, "r");
+            if (rt_fp != NULL) {
+              char buf[20] = {0};
+              int found_default_rt = 0;
+
+              if (fgets(buf, sizeof(buf), rt_fp) != NULL) {
+                //Find the specified interface
+                found_default_rt = 1;
+              }
+
+              if (1 == found_default_rt) {
+                //dbg_time("Route items found for %s", ifname);
+              }
+              else {
+                dbg_time("Warning: No route items found for %s", ifname);
+              }
+
+              pclose(rt_fp);
+            }
+            //End by Demon.
 #endif
     }
 

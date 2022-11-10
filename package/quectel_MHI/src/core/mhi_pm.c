@@ -436,6 +436,7 @@ static int mhi_pm_mission_mode_transition(struct mhi_controller *mhi_cntrl)
 	struct mhi_event *mhi_event;
 
 	MHI_LOG("Processing Mission Mode Transition\n");
+	mhi_cntrl->status_cb(mhi_cntrl, mhi_cntrl->priv_data, MHI_CB_EE_MISSION_MODE);
 
 	/* force MHI to be in M0 state before continuing */
 	ret = __mhi_device_get_sync(mhi_cntrl);
@@ -566,12 +567,13 @@ static void mhi_pm_disable_transition(struct mhi_controller *mhi_cntrl,
 
 		/* Set the numbers of Event Rings supported */
 		mhi_write_reg_field(mhi_cntrl, mhi_cntrl->regs, MHICFG, MHICFG_NER_MASK, MHICFG_NER_SHIFT, NUM_MHI_EVT_RINGS);
+		mhi_write_reg_field(mhi_cntrl, mhi_cntrl->regs, MHICFG, MHICFG_NHWER_MASK, MHICFG_NHWER_SHIFT, NUM_MHI_HW_EVT_RINGS);
 
 		/*
 		 * device cleares INTVEC as part of RESET processing,
 		 * re-program it
 		 */
-		mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, 0);
+		mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, mhi_cntrl->msi_irq_base);
 	}
 
 	MHI_LOG("Waiting for all pending event ring processing to complete\n");
@@ -734,7 +736,7 @@ void mhi_pm_ready_worker(struct work_struct *work)
 							ready_worker.work);
 	enum mhi_ee ee = MHI_EE_MAX;
 
-	if (mhi_cntrl->ee != MHI_EE_PTHRU)
+	if (mhi_cntrl->dev_state != MHI_STATE_RESET)
 		return;
 
 	write_lock_irq(&mhi_cntrl->pm_lock);
@@ -744,7 +746,7 @@ void mhi_pm_ready_worker(struct work_struct *work)
 
 	if (ee == MHI_EE_PTHRU)
 		schedule_delayed_work(&mhi_cntrl->ready_worker, msecs_to_jiffies(10));
-	else if (ee == MHI_EE_AMSS)
+	else if (ee == MHI_EE_AMSS || ee == MHI_EE_SBL)
 		mhi_queue_state_transition(mhi_cntrl, MHI_ST_TRANSITION_READY);
 }
 
@@ -777,8 +779,6 @@ void mhi_pm_st_worker(struct work_struct *work)
 			write_unlock_irq(&mhi_cntrl->pm_lock);
 			if (MHI_IN_PBL(mhi_cntrl->ee))
 				wake_up_all(&mhi_cntrl->state_event);
-			if (mhi_cntrl->ee == MHI_EE_PTHRU)
-				schedule_delayed_work(&mhi_cntrl->ready_worker, msecs_to_jiffies(10));
 			break;
 		case MHI_ST_TRANSITION_SBL:
 			write_lock_irq(&mhi_cntrl->pm_lock);
@@ -856,6 +856,7 @@ int mhi_async_power_up(struct mhi_controller *mhi_cntrl)
 
 	mutex_lock(&mhi_cntrl->pm_mutex);
 	mhi_cntrl->pm_state = MHI_PM_DISABLE;
+	mhi_cntrl->dev_state = MHI_STATE_RESET;
 
 	if (!mhi_cntrl->pre_init) {
 		/* setup device context */
@@ -919,7 +920,10 @@ int mhi_async_power_up(struct mhi_controller *mhi_cntrl)
 	//if (next_state == MHI_ST_TRANSITION_PBL)
 	//	schedule_work(&mhi_cntrl->fw_worker);
 
-	mhi_queue_state_transition(mhi_cntrl, next_state);
+	if (next_state == MHI_ST_TRANSITION_PBL)
+		schedule_delayed_work(&mhi_cntrl->ready_worker, msecs_to_jiffies(10));
+	else
+		mhi_queue_state_transition(mhi_cntrl, next_state);
 
 	mhi_init_debugfs(mhi_cntrl);
 

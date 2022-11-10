@@ -18,7 +18,7 @@
 #include <linux/hashtable.h>
 #include <linux/if_ether.h>
 #include <linux/ip.h>
-#include <nss_api_if.h>
+#include <qca-nss-drv/nss_api_if.h>
 
 #include <linux/rmnet_nss.h>
 

@@ -854,12 +854,16 @@ struct state_transition {
 /* Control Segment */
 struct mhi_ctrl_seg
 {
-   struct __packed mhi_tre hw_in_chan_ring[NUM_MHI_IPA_IN_RING_ELEMENTS]  __aligned(NUM_MHI_IPA_IN_RING_ELEMENTS*16);
-   struct __packed mhi_tre hw_out_chan_ring[NUM_MHI_IPA_OUT_RING_ELEMENTS]  __aligned(NUM_MHI_IPA_OUT_RING_ELEMENTS*16);
-   struct __packed mhi_tre diag_in_chan_ring[NUM_MHI_DIAG_IN_RING_ELEMENTS]  __aligned(NUM_MHI_IPA_OUT_RING_ELEMENTS*16);
-   struct __packed mhi_tre chan_ring[NUM_MHI_CHAN_RING_ELEMENTS*2*12]  __aligned(NUM_MHI_CHAN_RING_ELEMENTS*16);
-   struct __packed mhi_tre event_ring[NUM_MHI_EVT_RINGS][NUM_MHI_EVT_RING_ELEMENTS]  __aligned(NUM_MHI_EVT_RING_ELEMENTS*16);
-   struct __packed mhi_tre cmd_ring[NR_OF_CMD_RINGS][CMD_EL_PER_RING]  __aligned(CMD_EL_PER_RING*16);
+   struct mhi_tre hw_in_chan_ring[NUM_MHI_IPA_IN_RING_ELEMENTS]  __packed __aligned(NUM_MHI_IPA_IN_RING_ELEMENTS*16);
+   struct mhi_tre hw_out_chan_ring[NUM_MHI_IPA_OUT_RING_ELEMENTS]  __packed __aligned(NUM_MHI_IPA_OUT_RING_ELEMENTS*16);
+#ifdef ENABLE_IP_SW0
+   struct mhi_tre sw_in_chan_ring[NUM_MHI_SW_IP_RING_ELEMENTS]  __packed __aligned(NUM_MHI_IPA_IN_RING_ELEMENTS*16);
+   struct mhi_tre sw_out_chan_ring[NUM_MHI_SW_IP_RING_ELEMENTS]  __packed __aligned(NUM_MHI_IPA_OUT_RING_ELEMENTS*16);
+#endif
+   struct mhi_tre diag_in_chan_ring[NUM_MHI_DIAG_IN_RING_ELEMENTS]  __packed __aligned(NUM_MHI_IPA_OUT_RING_ELEMENTS*16);
+   struct mhi_tre chan_ring[NUM_MHI_CHAN_RING_ELEMENTS*2*12]  __packed __aligned(NUM_MHI_CHAN_RING_ELEMENTS*16);
+   struct mhi_tre event_ring[NUM_MHI_EVT_RINGS][NUM_MHI_EVT_RING_ELEMENTS]  __packed __aligned(NUM_MHI_EVT_RING_ELEMENTS*16);
+   struct mhi_tre cmd_ring[NR_OF_CMD_RINGS][CMD_EL_PER_RING]  __packed __aligned(CMD_EL_PER_RING*16);
 
    struct mhi_chan_ctxt chan_ctxt[NUM_MHI_XFER_RINGS] __aligned(128);
    struct mhi_event_ctxt er_ctxt[NUM_MHI_EVT_RINGS]  __aligned(128);

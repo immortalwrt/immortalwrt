@@ -899,7 +899,7 @@ int main(int argc, char *argv[])
     int ret;
     PROFILE_T *ctx = &s_profile;
 
-    dbg_time("QConnectManager_Linux_V1.6.3.2");
+    dbg_time("QConnectManager_Linux_V1.6.4");
 
     ret = parse_user_input(argc, argv, ctx);
     if (!ret)

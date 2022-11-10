@@ -57,13 +57,13 @@ static int atc_init(PROFILE_T *profile) {
     ATResponse *p_response = NULL;
 
     if (profile->proxy[0])  {
-	    s_pdp = profile->pdp;
-	    err = at_send_command_singleline("AT+QNETDEVSTATUS=?", "+QNETDEVSTATUS:", &p_response);
+        s_pdp = profile->pdp;
+        err = at_send_command_singleline("AT+QNETDEVSTATUS=?", "+QNETDEVSTATUS:", &p_response);
         if (at_response_error(err, p_response))
             asr_style_atc = 1; //EC200T/EC100Y do not support this AT, but RG801/RG500U support
         safe_at_response_free(p_response);
 		
-		return err;
+        return err;
     }
 
     err = at_handshake();
@@ -341,7 +341,6 @@ static int requestEnterSimPin(const char *pPinCode) {
     return retVal;
 }
 
-static int QICSGP_C;
 static int requestSetProfile(PROFILE_T *profile) {
     int err;
     ATResponse *p_response = NULL;
@@ -364,15 +363,8 @@ static int requestSetProfile(PROFILE_T *profile) {
         return 0;
     }
 
-    if (QICSGP_C == 5)
-        asprintf(&cmd, "AT+QICSGP=%d,%d,\"%s\",\"%s\",\"%s\",%d",
-            profile->pdp, profile->iptype, new_apn, new_user, new_password, profile->auth);
-    else if (QICSGP_C == 4)
-        asprintf(&cmd, "AT+QICSGP=%d,\"%s\",\"%s\",\"%s\",%d",
-            profile->pdp, new_apn, new_user, new_password, profile->auth);
-    else
-        goto _error;
-
+    asprintf(&cmd, "AT+QICSGP=%d,%d,\"%s\",\"%s\",\"%s\",%d",
+        profile->pdp, profile->iptype, new_apn, new_user, new_password, profile->auth);
     err = at_send_command(cmd, &p_response);
     safe_free(cmd);
     if (at_response_error(err, p_response)) {
@@ -382,7 +374,6 @@ static int requestSetProfile(PROFILE_T *profile) {
         safe_free(cmd);
     }
 
-_error:
     safe_at_response_free(p_response);
     return 1;
 }
@@ -422,20 +413,10 @@ _re_check:
     }
 
     if (!at_response_error(err, p_response)) {
-        QICSGP_C = at_tok_count(p_response->p_intermediates->line);
-        if (QICSGP_C > 5)
-            QICSGP_C = 5;
+        err = at_tok_scanf(p_response->p_intermediates->line,
+            "%d%s%s%s%d", &old_iptype, &old_apn,  &old_user, &old_password, &old_auth);
 
-        if (QICSGP_C == 5)
-            err = at_tok_scanf(p_response->p_intermediates->line,
-                "%d%d%s%s%s%d", &pdp, &old_iptype, &old_apn,  &old_user, &old_password, &old_auth);
-        else if (QICSGP_C == 4)
-            err = at_tok_scanf(p_response->p_intermediates->line,
-                "%d%s%s%s%d", &pdp, &old_apn,  &old_user, &old_password, &old_auth);
-        else
-            goto _error;
-
-        if (err != (QICSGP_C + 1) || pdp != profile->pdp)
+        if (err != 4 || pdp != profile->pdp)
             goto _error;
     }
     else {
