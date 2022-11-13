@@ -31,14 +31,14 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
 
 --- a/arch/arm64/include/asm/cpucaps.h
 +++ b/arch/arm64/include/asm/cpucaps.h
-@@ -56,7 +56,8 @@
- #define ARM64_WORKAROUND_CAVIUM_TX2_219_PRFM	46
+@@ -57,7 +57,8 @@
  #define ARM64_WORKAROUND_1542419		47
  #define ARM64_SPECTRE_BHB			48
-+#define ARM64_HW_AF				49
+ #define ARM64_WORKAROUND_1742098		49
++#define ARM64_HW_AF				50
  
--#define ARM64_NCAPS				49
-+#define ARM64_NCAPS				50
+-#define ARM64_NCAPS				50
++#define ARM64_NCAPS				51
  
  #endif /* __ASM_CPUCAPS_H */
 --- a/arch/arm64/include/asm/cpufeature.h
@@ -81,7 +81,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  /*
 --- a/arch/arm64/kernel/cpufeature.c
 +++ b/arch/arm64/kernel/cpufeature.c
-@@ -1475,6 +1475,16 @@ static const struct arm64_cpu_capabiliti
+@@ -1484,6 +1484,16 @@ static const struct arm64_cpu_capabiliti
  		.matches = has_hw_dbm,
  		.cpu_enable = cpu_enable_hw_dbm,
  	},
