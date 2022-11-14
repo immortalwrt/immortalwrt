@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ipv6helper
   SECTION:=ipv6
   TITLE:=IPv6 Helper and Dynamic Update he.net of ip
-  DEPENDS:=+luci-proto-ipv6 +odhcpd-ipv6only +odhcp6c +6in4
+  DEPENDS:=+odhcpd-ipv6only +odhcp6c +6in4
   PKGARCH:=all
 endef
 
