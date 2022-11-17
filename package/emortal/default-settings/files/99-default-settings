@@ -14,17 +14,16 @@ rm -f /www/luci-static/resources/view/status/include/80_upnp.js
 ln -sf /sbin/ip /usr/bin/ip
 
 [ -f '/bin/bash' ] && sed -i 's|root:x:0:0:root:/root:/bin/ash|root:x:0:0:root:/root:/bin/bash|g' /etc/passwd
+[ -f '/etc/openwrt_banner' ] && mv '/etc/openwrt_banner' '/etc/banner'
 
 sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 wifi up
 
 sed -i '/log-facility/d' /etc/dnsmasq.conf
-echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
+echo 'log-facility=/dev/null' >> /etc/dnsmasq.conf
 
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
-
-mv /etc/openwrt_banner /etc/banner
 
 exit 0
