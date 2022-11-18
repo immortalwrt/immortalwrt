@@ -958,8 +958,7 @@ define Device/plasmacloud_pa1200
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | openmesh-image ce_type=PA1200
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
 endef
-# Missing DSA Setup
-#TARGET_DEVICES += plasmacloud_pa1200
+TARGET_DEVICES += plasmacloud_pa1200
 
 define Device/plasmacloud_pa2200
 	$(call Device/FitImageLzma)
@@ -975,8 +974,7 @@ define Device/plasmacloud_pa2200
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct
 endef
-# Missing DSA Setup
-#TARGET_DEVICES += plasmacloud_pa2200
+TARGET_DEVICES += plasmacloud_pa2200
 
 define Device/qcom_ap-dk01.1-c1
 	DEVICE_VENDOR := Qualcomm Atheros

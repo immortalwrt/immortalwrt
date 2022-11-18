@@ -3,15 +3,15 @@
 #include "mt7621_sercomm_dxx_nand_256m.dtsi"
 
 / {
-	compatible = "beeline,smartbox-turbo", "mediatek,mt7621-soc";
-	model = "Beeline SmartBox TURBO";
+	compatible = "rostelecom,rt-sf-1", "mediatek,mt7621-soc";
+	model = "Rostelecom RT-SF-1";
 };
 
 &pcie0 {
 	wifi@0,0 {
 		nvmem-cells = <&macaddr_factory_21000>;
 		nvmem-cell-names = "mac-address";
-		mac-address-increment = <(5)>;
+		mac-address-increment = <(3)>;
 	};
 };
 
@@ -19,12 +19,12 @@
 	wifi@0,0 {
 		nvmem-cells = <&macaddr_factory_21000>;
 		nvmem-cell-names = "mac-address";
-		mac-address-increment = <(4)>;
+		mac-address-increment = <(2)>;
 	};
 };
 
 &gmac1 {
 	nvmem-cells = <&macaddr_factory_21000>;
 	nvmem-cell-names = "mac-address";
-	mac-address-increment = <(1)>;
+	mac-address-increment = <(11)>;
 };

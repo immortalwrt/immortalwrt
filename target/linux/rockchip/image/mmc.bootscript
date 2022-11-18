@@ -10,11 +10,6 @@ fi;
 
 setenv bootargs "console=ttyS2,1500000 console=tty1 earlycon=uart8250,mmio32${serial_addr} swiotlb=1 root=PARTUUID=${uuid} rw rootwait";
 
-load mmc ${devnum}:1 ${fdt_addr_r} rockchip.dtb
 load mmc ${devnum}:1 ${kernel_addr_r} kernel.img
 
-echo "Uncompress lzma kernel into memory..."
-setexpr kernel_addr_dec ${filesize} + ${kernel_addr_r} || kernel_addr_dec=0x03000000
-lzmadec ${kernel_addr_r} ${kernel_addr_dec}
-
-booti ${kernel_addr_dec} - ${fdt_addr_r}
+bootm ${kernel_addr_r}
