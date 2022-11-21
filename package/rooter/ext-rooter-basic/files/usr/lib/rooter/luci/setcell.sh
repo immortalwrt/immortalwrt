@@ -3,15 +3,17 @@
 ROOTER=/usr/lib/rooter
 
 log() {
-	logger -t "Lock Cell" "$@"
+	modlog "Lock Cell $CURRMODEM" "$@"
 }
 
 dat="$1"
 
+CURRMODEM=$(uci -q get modem.general.miscnum)
+
 dat1=$(echo $dat | tr "|" ",")
 dat2=$(echo $dat1 | cut -d, -f1)
 if [ $dat2 = "0" ]; then
-	uci set custom.bandlock.cenable='0'
+	uci set custom.bandlock.cenable$CURRMODEM='0'
 else
 	ear=$(echo $dat1 | cut -d, -f2)
 	pc=$(echo $dat1 | cut -d, -f3)
@@ -21,15 +23,15 @@ else
 	pc2=$(echo $dat1 | cut -d, -f7)
 	ear3=$(echo $dat1 | cut -d, -f8)
 	pc3=$(echo $dat1 | cut -d, -f9)
-	uci set custom.bandlock.cenable='1'
-	uci set custom.bandlock.earfcn=$ear
-	uci set custom.bandlock.pci=$pc
-	uci set custom.bandlock.earfcn1=$ear1
-	uci set custom.bandlock.pci1=$pc1
-	uci set custom.bandlock.earfcn2=$ear2
-	uci set custom.bandlock.pci2=$pc2
-	uci set custom.bandlock.earfcn3=$ear3
-	uci set custom.bandlock.pci3=$pc3
+	uci set custom.bandlock.cenable$CURRMODEM='1'
+	uci set custom.bandlock.earfcn$CURRMODEM=$ear
+	uci set custom.bandlock.pci$CURRMODEM=$pc
+	uci set custom.bandlock.earfcn1$CURRMODEM=$ear1
+	uci set custom.bandlock.pci1$CURRMODEM=$pc1
+	uci set custom.bandlock.earfcn2$CURRMODEM=$ear2
+	uci set custom.bandlock.pci2$CURRMODEM=$pc2
+	uci set custom.bandlock.earfcn3$CURRMODEM=$ear3
+	uci set custom.bandlock.pci3$CURRMODEM=$pc3
 fi
 uci commit custom
 

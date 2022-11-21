@@ -297,14 +297,15 @@ end
 					document.getElementById('encrypted').innerHTML="";
 				}
 				reconn = rv.reconn;
-				if ( reconn == "0" )
+				document.getElementById('reconn').value=reconn
+			/*	if ( reconn == "0" )
 				{
 					document.getElementById('reconn').checked=false;
 				}
 				else
 				{
 					document.getElementById('reconn').checked=true;
-				}
+				} */
 
 				dual = rv.dual;
 				freq = rv.freq
@@ -896,11 +897,8 @@ end
 	
 	function reconnenable(btn)
 	{
-		dx = "0";
-		if ( btn.checked == true )
-		{
-			dx = "1";
-		}
+		dx = document.getElementById('reconn').value;
+
 		XHR.get('<%=luci.dispatcher.build_url("admin", "services", "reconn")%>',
 			{ set: dx },
 			function()
@@ -908,6 +906,8 @@ end
 			}
 		);
 	}
+
+//		document.getElementById("attxt").value=dx;
 	
 //]]></script>
 
@@ -956,11 +956,25 @@ end
 	
 	<table width="550"  border="0">
   	<tr>
-		<td width="17%"><strong><%:Allow One Reconnect Attempt on Dropped Connection%></strong></td>
-		<td width="5%">
-			<input type="checkbox" id="reconn" onclick="reconnenable(this)" />
+		<td width="17%"><strong><%:Reconnection Attempts on Dropped Connection%></strong></td>
+		<td width="25%">
+			<select style="auto" name="reconn" id="reconn" onchange="reconnenable(this)">
+			<option value="0" selected="selected"><%:None%></option>
+			<option value="1"><%:1%></option>
+			<option value="5"><%:5%></option>
+			<option value="99"><%:Continuous%></option>
+			</select>
+		<!--	<input type="checkbox" id="reconn" onclick="reconnenable(this)" /> -->
 		</td>
-		<td width="78%">&nbsp;</td>
+		<td width="58%">&nbsp;</td>
+	</tr>
+	</table>
+	
+	<table id="cmdtxt" width="700"  border="0" style="display:table;visibility:hidden;display:none">
+  	<tr>
+    		<td width="100%">
+		<textarea readonly="readonly" name="attxt" id="attxt" rows="6" style="width: 600px;" maxlength="160"></textarea>
+		</td>
 	</tr>
 	</table>
 
@@ -1085,7 +1099,7 @@ end
 	
 	<table width="15%"  border="0">
   	<tr>
-    		<td width="100%"><big><strong>Available Networks : <%=numnet%></strong></big></td>
+    		<td width="100%"><big><strong><%:Available Networks : %><%=numnet%></strong></big></td>
   	</tr>
 	</table>
 	<% if numnet > 0 then 

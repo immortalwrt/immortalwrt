@@ -3,7 +3,7 @@
 ROOTER=/usr/lib/rooter
 
 log() {
-	logger -t "QMI Connect" "$@"
+	modlog "QMI Connect $CURRMODEM" "$@"
 }
 
 	. /lib/functions.sh
@@ -120,7 +120,6 @@ while uqmi -s -d "$device" --get-serving-system | grep '"searching"' > /dev/null
 	fi
 done
 
-log "Starting network $NAPN"
 cid=`uqmi -s -d "$device" --get-client-id wds`
 [ $? -ne 0 ] && {
 	log "Unable to obtain client ID"
@@ -129,12 +128,76 @@ cid=`uqmi -s -d "$device" --get-client-id wds`
 
 uqmi -s -d "$device" --set-client-id wds,"$cid" --set-ip-family ipv4 > /dev/null
 
-ST=$(uqmi -s -d "$device" --set-client-id wds,"$cid" --start-network ${NAPN:+--apn $NAPN} ${auth:+--auth-type $auth} \
-	${username:+--username $username} ${password:+--password $password})
-log "Connection returned : $ST"
-
-CONN=$(uqmi -s -d "$device" --get-data-status)
-log "Status is $CONN"
+isplist=$(uci -q get modem.modeminfo$CURRMODEM.isplist)
+apn2=$(uci -q get modem.modeminfo$CURRMODEM.apn2)
+for isp in $isplist 
+	do
+		NAPN=$(echo $isp | cut -d, -f2)
+		NPASS=$(echo $isp | cut -d, -f4)
+		CID=$(echo $isp | cut -d, -f5)
+		NUSER=$(echo $isp | cut -d, -f6)
+		NAUTH=$(echo $isp | cut -d, -f7)
+		if [ "$NPASS" = "nil" ]; then
+			NPASS="NIL"
+		fi
+		if [ "$NUSER" = "nil" ]; then
+			NUSER="NIL"
+		fi
+		if [ "$NAUTH" = "nil" ]; then
+			NAUTH="0"
+		fi
+		username="$NUSER"
+		password="$NPASS"
+		auth=$NAUTH
+		case $auth in
+			"0" )
+				auth="none"
+			;;
+			"1" )
+				auth="pap"
+			;;
+			"2" )
+				auth="chap"
+			;;
+			"*" )
+				auth="none"
+			;;
+		esac
+		
+		if [ ! -e /etc/config/isp ]; then
+			log "Connect to network using $NAPN"
+		else
+			log "Connect to network"
+		fi
+		
+		if [ ! -e /etc/config/isp ]; then
+			log "$NAPN $auth $username $password"
+		fi
+		
+		conn=0
+		tidd=0
+		tcnt=4
+		while true; do
+			ST=$(uqmi -s -d "$device" --set-client-id wds,"$cid" --start-network ${NAPN:+--apn $NAPN} ${auth:+--auth-type $auth} \
+			${username:+--username $username} ${password:+--password $password})
+			log "Connection returned : $ST"
+			CONN=$(uqmi -s -d "$device" --get-data-status)
+			log "Status is $CONN"
+			if [[ $(echo "$CONN" | grep -o "disconnected") ]]; then
+				sleep 1
+				tidd=$((tidd + 1))
+				if [ $tidd -gt $tcnt ]; then
+					break
+				fi
+			else
+				conn=1
+				break
+			fi
+		done
+		if [ $conn -eq 1 ]; then
+			break;
+		fi
+	done
 
 if [[ -z $(echo "$CONN" | grep -o "disconnected") ]]; then
 	ret=0

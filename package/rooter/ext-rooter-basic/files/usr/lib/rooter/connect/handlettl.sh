@@ -1,7 +1,7 @@
 #!/bin/sh 
 
 log() {
-	logger -t "TTL Settings" "$@"
+	modlog "TTL Settings $CURRMODEM" "$@"
 }
 
 delTTL() {

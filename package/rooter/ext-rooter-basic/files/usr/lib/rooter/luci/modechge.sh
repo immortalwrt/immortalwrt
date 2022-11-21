@@ -6,7 +6,7 @@ MODEMTYPE=$1
 NETMODE=$2
 
 # log() {
-	logger -t "ModeChange" "$@"
+	modlog "ModeChange $CURRMODEM" "$@"
 # }
 
 CURRMODEM=$(uci get modem.general.modemnum)
@@ -121,7 +121,7 @@ if [ $MODEMTYPE -eq 6 ]; then
 	fi
 	NEWFMT=false
 	if [ "$idV" = "2c7c" ]; then
-		if [ "$idP" = "0800" -o "$idP" = "0620" -o "$idP" = "030b" ]; then
+		if [ "$idP" = "0800" -o "$idP" = "0620" -o "$idP" = "030b" -o "$idP" = "0801" -o "$idP" = "0900" ]; then
 			NEWFMT=true
 		fi
 	fi
@@ -273,4 +273,4 @@ $ROOTER/luci/celltype.sh $CURRMODEM
 uci set modem.modem$CURRMODEM.cmode="1"
 uci commit modem
 
-$ROOTER/luci/mask.sh
+$ROOTER/luci/restart.sh $CURRMODEM

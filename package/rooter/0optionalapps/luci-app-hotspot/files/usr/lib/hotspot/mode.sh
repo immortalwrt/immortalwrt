@@ -10,7 +10,7 @@ if [ $SET = "1" ]; then
 	result=`ps | grep -i "travelmate.sh" | grep -v "grep" | wc -l`
 	if [ $result -ge 1 ]
    	then
-		logger -t TRAVELMATE-DEBUG "Travelmate already running"
+		wifilog "HOTSPOT" "Travelmate already running"
 	else
 		/usr/lib/hotspot/travelmate.sh &
 	fi

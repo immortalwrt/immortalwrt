@@ -170,6 +170,12 @@ repeat
 			retval = 2
 			break
 		end
+
+		if drv[i] == "qmi_wwan_q" then
+			retval = 88
+			break
+		end
+
 		if drv[i] == "cdc_mbim" then
 			retval = 3
 			break
@@ -223,7 +229,7 @@ until drv[i] == nil
 
 if retval == 0 then
 	if checkserial() == 1 then
-		retval = 11
+		retval = 88
 		k = 1
 		vendor = special[k]
 		while vendor ~= nil do
@@ -245,3 +251,4 @@ if retval == 0 then
 end
 
 os.exit(retval)
+

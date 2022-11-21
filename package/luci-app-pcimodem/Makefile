@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=PCI Modem Server
-LUCI_DEPENDS:=+kmod-pcie_mhi +pciids +pciutils +quectel-CM-5G
+LUCI_DEPENDS:=+kmod-pcie_mhi +pciutils +quectel-CM-5G
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

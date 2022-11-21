@@ -10,7 +10,7 @@ logger -t "Custom Ping Test " "$@"
 }
 
 tping() {
-	hp=$(httping -c 3 -s $1)
+	hp=$(httping $2 -c 3 -s $1)
 	pingg=$(echo $hp" " | grep -o "round-trip .\+ ms ")
 	if [ -z "$pingg" ]; then
 		tmp=0
@@ -30,12 +30,12 @@ TYPE=$(uci get ping.ping.type)
 if [ $TYPE = "1" ]; then
 log "Curl"
 	RETURN_CODE_1=$(curl -m 10 -s -o /dev/null -w "%{http_code}" http://www.google.com/)
-	RETURN_CODE_2=$(curl -m 10 -s -o /dev/null -w "%{http_code}" http://www.example.org/)
+	RETURN_CODE_2=$(curl --ipv6 -m 10 -s -o /dev/null -w "%{http_code}" http://www.example.org/)
 	RETURN_CODE_3=$(curl -m 10 -s -o /dev/null -w "%{http_code}" https://github.com)
 else
 log "Ping"
 	tping "http://www.google.com/"; RETURN_CODE_1=$tmp
-	tping "http://www.example.org/"; RETURN_CODE_2=$tmp
+	tping "http://www.example.org/" "-6"; RETURN_CODE_2=$tmp
 	tping "https://github.com"; RETURN_CODE_3=$tmp
 fi
 
@@ -43,11 +43,11 @@ if [[ "$RETURN_CODE_1" != "200" &&  "$RETURN_CODE_2" != "200" &&  "$RETURN_CODE_
 	log "Bad Ping Test"
 	if [ $TYPE = "1" ]; then
 		tping "http://www.google.com/"; RETURN_CODE_1=$tmp
-		tping "http://www.example.org/"; RETURN_CODE_2=$tmp
+		tping "http://www.example.org/" "-6"; RETURN_CODE_2=$tmp
 		tping "https://github.com"; RETURN_CODE_3=$tmp
 	else
 		RETURN_CODE_1=$(curl -m 10 -s -o /dev/null -w "%{http_code}" http://www.google.com/)
-		RETURN_CODE_2=$(curl -m 10 -s -o /dev/null -w "%{http_code}" http://www.example.org/)
+		RETURN_CODE_2=$(curl --ipv6 -m 10 -s -o /dev/null -w "%{http_code}" http://www.example.org/)
 		RETURN_CODE_3=$(curl -m 10 -s -o /dev/null -w "%{http_code}" https://github.com)
 	fi
 	if [[ "$RETURN_CODE_1" != "200" &&  "$RETURN_CODE_2" != "200" &&  "$RETURN_CODE_3" != "200" ]]; then
@@ -67,12 +67,12 @@ if [[ "$RETURN_CODE_1" != "200" &&  "$RETURN_CODE_2" != "200" &&  "$RETURN_CODE_
 				if [ $TYPE = "1" ]; then
 				log "Curl"
 					RETURN_CODE_1=$(curl -m 10 -s -o /dev/null -w "%{http_code}" http://www.google.com/)
-					RETURN_CODE_2=$(curl -m 10 -s -o /dev/null -w "%{http_code}" http://www.example.org/)
+					RETURN_CODE_2=$(curl --ipv6 -m 10 -s -o /dev/null -w "%{http_code}" http://www.example.org/)
 					RETURN_CODE_3=$(curl -m 10 -s -o /dev/null -w "%{http_code}" https://github.com)
 				else
 				log "Ping"
 					tping "http://www.google.com/"; RETURN_CODE_1=$tmp
-					tping "http://www.example.org/"; RETURN_CODE_2=$tmp
+					tping "http://www.example.org/" "-6"; RETURN_CODE_2=$tmp
 					tping "https://github.com"; RETURN_CODE_3=$tmp
 				fi
 				if [[ "$RETURN_CODE_1" != "200" &&  "$RETURN_CODE_2" != "200" &&  "$RETURN_CODE_3" != "200" ]]; then

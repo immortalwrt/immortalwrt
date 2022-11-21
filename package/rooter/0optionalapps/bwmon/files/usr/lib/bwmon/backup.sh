@@ -23,14 +23,19 @@ echo "start day $cDay" >> $monthlyUsageDB".bk"
 cat $dailyUsageDB".bk" >> $monthlyUsageDB".bk"
 echo "end day $cDay" >> $monthlyUsageDB".bk"
 
+enb=$(uci -q get bwmon.general.enabled)
 
 if [ $btype = "backup" ]; then
-	cp -f $monthlyUsageDB".bk" $monthlyUsageBack
-	cp -f $dailyUsageDB".bk" $dailyUsageBack 
+	if [ "$enb" = "1" ]; then
+		cp -f $monthlyUsageDB".bk" $monthlyUsageBack
+		cp -f $dailyUsageDB".bk" $dailyUsageBack 
+	fi
 else
 	if [ $btype = "daily" ]; then
 		cp -f $monthlyUsageDB".bk" $monthlyUsageDB
-		cp -f $monthlyUsageDB".bk" $monthlyUsageBack
+		if [ "$enb" = "1" ]; then
+			cp -f $monthlyUsageDB".bk" $monthlyUsageBack
+		fi
 	fi
 fi
 

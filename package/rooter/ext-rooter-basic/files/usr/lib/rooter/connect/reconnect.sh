@@ -3,7 +3,7 @@
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Reconnect Modem" "$@"
+	modlog "Reconnect Modem $CURRMODEM" "$@"
 }
 
 CURRMODEM=$1

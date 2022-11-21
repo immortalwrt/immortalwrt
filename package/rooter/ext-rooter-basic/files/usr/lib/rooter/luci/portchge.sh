@@ -3,7 +3,7 @@
 DIR=$1
 
 log() {
-	logger -t "port change" "$@"
+	modlog "Port change $CURRMODEM" "$@"
 }
 
 

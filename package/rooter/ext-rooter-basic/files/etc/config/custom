@@ -33,9 +33,9 @@ config atcmd 'atcmd'
 	
 config bandlock 'bandlock'
 	option enabled '1'
-	option cenable '0'
-	option earfcn '0'
-	option pci '0'
+	option cenable1 '0'
+	option earfcn1 '0'
+	option pci1 '0'
 
 config zerotier 'zerotier'
 	option password '1234'
@@ -43,7 +43,7 @@ config zerotier 'zerotier'
 	option networkid 'xxxxxxxxxxxxxxxx'
 	
 config logo 'logo'
-	option size 'small'
+	option size 'large'
 	
 config connect 'connect'
 	option ipv6 '1'

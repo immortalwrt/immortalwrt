@@ -4,7 +4,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Modem Restart/Diisconnect" "$@"
+	modlog "Modem Restart/Diisconnect $CURRMODEM" "$@"
 }
 
 ifname1="ifname"

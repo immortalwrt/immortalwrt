@@ -4,7 +4,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Create iPhone Connection" "$@"
+	modlog "Create iPhone Connection $CURRMODEM" "$@"
 }
 
 

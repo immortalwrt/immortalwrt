@@ -6,7 +6,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Get Profile" "$@"
+	modlog "Get Profile $CURRMODEM" "$@"
 }
 
 CURRMODEM=$1
@@ -161,6 +161,8 @@ do_custom() {
 					uci set modem.modeminfo$CURRMODEM.apn2=$apn2
 					config_get mtu $1 mtu
 					uci set modem.modeminfo$CURRMODEM.mtu=$mtu
+					config_get context $1 context
+					uci set modem.modeminfo$CURRMODEM.context=$context
 					config_get user $1 user
 					uci set modem.modeminfo$CURRMODEM.user=$user
 					config_get passw $1 passw
@@ -273,24 +275,45 @@ do_custom() {
 	fi
 }
 
-autod=$(uci -q get profile.disable.enabled)
-if [ $autod = "1" ]; then
+autoapn=$(uci -q get profile.disable.autoapn)
+apd=0
+if [ -e /usr/lib/autoapn/apn.data ]; then
+	apd=1
+fi
+
+if [ $autoapn = "1" -a $apd -eq 1 ]; then
 	MATCH=0
 else
-	config_load profile
-	config_foreach do_custom custom
+	autod=$(uci -q get profile.disable.enabled)
+	if [ $autod = "1" ]; then
+		MATCH=0
+	else
+		config_load profile
+		config_foreach do_custom custom
+	fi
 fi
 
 if [ $MATCH = 0 ]; then
-	apn=$(uci -q get profile.default.apn)
-	dapn=$(echo "$apn" | grep "|")
-	if [ -z $dapn ]; then
+	if [ $autod = "1" ]; then
+		if [ -e /etc/config/isp ]; then
+			MATCH=1
+		fi
+	fi
+	if [ $MATCH = 1 ]; then
+		isp=$(uci -q get isp.general.current)
+		apn=$(uci -q get isp.$isp.apn)
 		apn2=""
 	else
-		fapn=$apn"|"
-		fapn=$(echo $fapn" " | tr "|" ",")
-		apn=$(echo $fapn | cut -d, -f1)
-		apn2=$(echo $fapn | cut -d, -f2)
+		apn=$(uci -q get profile.default.apn)
+		dapn=$(echo "$apn" | grep "|")
+		if [ -z $dapn ]; then
+			apn2=""
+		else
+			fapn=$apn"|"
+			fapn=$(echo $fapn" " | tr "|" ",")
+			apn=$(echo $fapn | cut -d, -f1)
+			apn2=$(echo $fapn | cut -d, -f2)
+		fi
 	fi
 	uci set modem.modeminfo$CURRMODEM.apn=$apn
 	uci set modem.modeminfo$CURRMODEM.apn2=$apn2
@@ -307,6 +330,7 @@ if [ $MATCH = 0 ]; then
 	uci set modem.modeminfo$CURRMODEM.user=$(uci -q get profile.default.user)
 	uci set modem.modeminfo$CURRMODEM.passw=$(uci -q get profile.default.passw)
 	uci set modem.modeminfo$CURRMODEM.pincode=$(uci -q get profile.default.pincode)
+	uci set modem.modeminfo$CURRMODEM.context=$(uci -q get profile.default.context)
 	uci set modem.modeminfo$CURRMODEM.auth=$(uci get profile.default.auth)
 	uci set modem.modeminfo$CURRMODEM.ppp=$(uci get profile.default.ppp)
 	uci set modem.modeminfo$CURRMODEM.inter=0
@@ -381,15 +405,19 @@ if [ $MATCH = 0 ]; then
 	fi
 
 	uci commit modem
-	log "Default Profile Used"
-	[ -n "$(uci -q get profile.default.apn)" ] || log "Default profile has no APN configured"
+	if [ "$autoapn" = "1" -a $apd -eq 1 ]; then
+		log "Automatic APN Used"
+	else
+		log "Default Profile Used"
+		[ -n "$(uci -q get profile.default.apn)" ] || log "Default profile has no APN configured"
+	fi
 fi
 
-APN=$(uci -q get modem.modeminfo$CURRMODEM.apn)
-log "APN of profile used is $APN"
+if [ ! -e /etc/config/isp ]; then
+	if [ "$autoapn" != "1" -a $apd -eq 1 ]; then
+		APN=$(uci -q get modem.modeminfo$CURRMODEM.apn)
+		log "APN of profile used is $APN"
+	fi
+fi
 
 touch /tmp/profile$CURRMODEM
-
-if [ -e /usr/lib/rooter/autoapn.sh ]; then
-	/usr/lib/rooter/autoapn.sh $CURRMODEM
-fi

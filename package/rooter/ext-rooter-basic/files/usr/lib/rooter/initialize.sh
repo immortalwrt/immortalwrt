@@ -16,7 +16,7 @@ MAX_MODEMS=2
 MODCNT=$MAX_MODEMS
 
 log() {
-	logger -t "ROOter Initialize" "$@"
+	modlog "ROOter Initialize" "$@"
 }
 
 do_zone() {
@@ -46,11 +46,11 @@ firstboot() {
 	HO=$(uci get system.@system[-1].hostname)
 	if [ $HO = "OpenWrt" ]; then
 		uci set system.@system[-1].hostname="OpenWrt"
-		echo "ROOter" > /proc/sys/kernel/hostname
+		echo "OpenWrt" > /proc/sys/kernel/hostname
 	fi
 	if [ $HO = "LEDE" ]; then
-		uci set system.@system[-1].hostname="OpenWrt"
-		echo "ROOter" > /proc/sys/kernel/hostname
+		uci set system.@system[-1].hostname="LEDE"
+		echo "LEDE" > /proc/sys/kernel/hostname
 	fi
 	uci set system.@system[-1].cronloglevel="9"
 	uci commit system

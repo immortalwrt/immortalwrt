@@ -5,7 +5,7 @@ ROOTER_LINK="/tmp/links"
 TIMEOUT=10
 
 log() {
-	logger -t "Disconnect Modem" "$@"
+	modlog "Disconnect Modem $CURRMODEM" "$@"
 }
 
 handle_timeout(){

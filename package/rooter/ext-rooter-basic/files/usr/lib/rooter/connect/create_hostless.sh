@@ -4,7 +4,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Create Hostless Connection" "$@"
+	modlog "Create Hostless Connection $CURRMODEM" "$@"
 }
 
 ifname1="ifname"
@@ -215,19 +215,19 @@ addv6() {
 
 CURRMODEM=$1
 
-MAN=$(uci get modem.modem$CURRMODEM.manuf)
-MOD=$(uci get modem.modem$CURRMODEM.model)
+MAN=$(uci -q get modem.modem$CURRMODEM.manuf)
+MOD=$(uci -q get modem.modem$CURRMODEM.model)
 $ROOTER/signal/status.sh $CURRMODEM "$MAN $MOD" "Connecting"
 $ROOTER/log/logger "Attempting to Connect Modem #$CURRMODEM ($MAN $MOD)"
 
 BASEP=$(uci -q get modem.modem$CURRMODEM.baseport)
-idV=$(uci get modem.modem$CURRMODEM.idV)
-idP=$(uci get modem.modem$CURRMODEM.idP)
+idV=$(uci -q get modem.modem$CURRMODEM.idV)
+idP=$(uci -q get modem.modem$CURRMODEM.idP)
 log " "
 log "Hostless ID $idV:$idP"
 log " "
 
-MATCH="$(uci get modem.modem$CURRMODEM.maxcontrol | cut -d/ -f3- | xargs dirname)"
+MATCH="$(uci -q get modem.modem$CURRMODEM.maxcontrol | cut -d/ -f3- | xargs dirname)"
 OX=$(for a in /sys/class/tty/*; do readlink $a; done | grep "$MATCH" | tr '\n' ' ' | xargs -r -n1 basename)
 TTYDEVS=$(echo "$OX" | grep -o ttyUSB[0-9])
 if [ $? -ne 0 ]; then
@@ -297,53 +297,55 @@ if [ $SP -gt 0 ]; then
 	uci commit modem
 
 	$ROOTER/sms/check_sms.sh $CURRMODEM &
-	$ROOTER/common/gettype.sh $CURRMODEM
 
 	if [ -e $ROOTER/connect/preconnect.sh ]; then
 		$ROOTER/connect/preconnect.sh $CURRMODEM
 	fi
 
 	if [ $SP = 5 ]; then
-		clck=$(uci -q get custom.bandlock.cenable)
-		if [ $clck = "1" ]; then
-			ear=$(uci -q get custom.bandlock.earfcn)
-			pc=$(uci -q get custom.bandlock.pci)
-			ear1=$(uci -q get custom.bandlock.earfcn1)
-			pc1=$(uci -q get custom.bandlock.pci1)
-			ear2=$(uci -q get custom.bandlock.earfcn2)
-			pc2=$(uci -q get custom.bandlock.pci2)
-			ear3=$(uci -q get custom.bandlock.earfcn3)
-			pc3=$(uci -q get custom.bandlock.pci3)
+		clck=$(uci -q get custom.bandlock.cenable$CURRMODEM)
+		if [ "$clck" = "1" ]; then
+			ear=$(uci -q get custom.bandlock.earfcn$CURRMODEM)
+			pc=$(uci -q get custom.bandlock.pci$CURRMODEM)
+			ear1=$(uci -q get custom.bandlock.earfcn1$CURRMODEM)
+			pc1=$(uci -q get custom.bandlock.pci1$CURRMODEM)
+			ear2=$(uci -q get custom.bandlock.earfcn2$CURRMODEM)
+			pc2=$(uci -q get custom.bandlock.pci2$CURRMODEM)
+			ear3=$(uci -q get custom.bandlock.earfcn3$CURRMODEM)
+			pc3=$(uci -q get custom.bandlock.pci3$CURRMODEM)
 			cnt=1
 			earcnt=$ear","$pc
-			if [ $ear1 != "0" -a $pc1 != "0" ]; then
+			if [ "$ear1" != "0" -a $pc1 != "0" ]; then
 				earcnt=$earcnt","$ear1","$pc1
 				let cnt=cnt+1
 			fi
-			if [ $ear2 != "0" -a $pc2 != "0" ]; then
+			if [ "$ear2" != "0" -a $pc2 != "0" ]; then
 				earcnt=$earcnt","$ear2","$pc2
 				let cnt=cnt+1
 			fi
-			if [ $ear3 != "0" -a $pc3 != "0" ]; then
+			if [ "$ear3" != "0" -a $pc3 != "0" ]; then
 				earcnt=$earcnt","$ear3","$pc3
 				let cnt=cnt+1
 			fi
 			earcnt=$cnt","$earcnt
 			ATCMDD="at+qnwlock=\"common/4g\""
 			OX=$($ROOTER/gcom/gcom-locked "/dev/ttyUSB$CPORT" "run-at.gcom" "$CURRMODEM" "$ATCMDD")
+			log "$OX"
 			if `echo $OX | grep "ERROR" 1>/dev/null 2>&1`
-		then
-			ATCMDD="at+qnwlock=\"common/lte\",2,$ear,$pc"
-		else
-			ATCMDD=$ATCMDD","$earcnt
-		fi
+			then
+				ATCMDD="at+qnwlock=\"common/lte\",2,$ear,$pc"
+			else
+				ATCMDD=$ATCMDD","$earcnt
+			fi
 			OX=$($ROOTER/gcom/gcom-locked "/dev/ttyUSB$CPORT" "run-at.gcom" "$CURRMODEM" "$ATCMDD")
 			log "Cell Lock $OX"
+			sleep 10
+		fi
 	fi
 
-		$ROOTER/connect/bandmask $CURRMODEM 1
-		uci commit modem
-	fi
+	$ROOTER/connect/bandmask $CURRMODEM 1
+	uci commit modem
+
 	if [ $SP = 4 ]; then
 		if [ -e /etc/interwave ]; then
 			idP=$(uci -q get modem.modem$CURRMODEM.idP)
@@ -359,19 +361,25 @@ if [ $SP -gt 0 ]; then
 		uci commit modem
 	fi
 fi
+$ROOTER/common/gettype.sh $CURRMODEM
 $ROOTER/connect/get_profile.sh $CURRMODEM
-if [ -e $ROOTER/simlockc.sh ]; then
-	$ROOTER/simlockc.sh $CURRMODEM
-fi
-if [ -e /usr/lib/gps/gps.sh ]; then
-	/usr/lib/gps/gps.sh $CURRMODEM
+if [ -e $ROOTER/simlock.sh ]; then
+	$ROOTER/simlock.sh $CURRMODEM
 fi
 
-INTER=$(uci get modem.modeminfo$CURRMODEM.inter)
-if [ -z $INTER ]; then
+if [ -e /tmp/simpin$CURRMODEM ]; then
+	log " SIM Error"
+	exit 0
+fi
+if [ -e /usr/lib/gps/gps.sh ]; then
+	/usr/lib/gps/gps.sh $CURRMODEM &
+fi
+
+INTER=$(uci -q get modem.modeminfo$CURRMODEM.inter)
+if [ -z "$INTER" ]; then
 	INTER=$CURRMODEM
 else
-	if [ $INTER = 0 ]; then
+	if [ "$INTER" = 0 ]; then
 		INTER=$CURRMODEM
 	fi
 fi
@@ -380,13 +388,13 @@ OTHER=1
 if [ $CURRMODEM = 1 ]; then
 	OTHER=2
 fi
-EMPTY=$(uci get modem.modem$OTHER.empty)
-if [ $EMPTY = 0 ]; then
-	OINTER=$(uci get modem.modem$OTHER.inter)
-	if [ ! -z $OINTER ]; then
+EMPTY=$(uci -q get modem.modem$OTHER.empty)
+if [ "$EMPTY" = 0 ]; then
+	OINTER=$(uci -q get modem.modem$OTHER.inter)
+	if [ ! -z "$OINTER" ]; then
 		if [ $INTER = $OINTER ]; then
 			INTER=1
-			if [ $OINTER = 1 ]; then
+			if [ "$OINTER" = 1 ]; then
 				INTER=2
 			fi
 			log "Switched Modem $CURRMODEM to WAN$INTER as Modem $OTHER is using WAN$OINTER"
@@ -397,12 +405,7 @@ uci set modem.modem$CURRMODEM.inter=$INTER
 uci commit modem
 log "Modem $CURRMODEM is using WAN$INTER"
 
-if [ -s /tmp/wan$INTER.cid ]; then
-	CID=$(cat /tmp/wan$INTER.cid 2>/dev/null)
-	CID=$(echo $CID | grep -o "[[:digit:]]")
-	[ -n "$CID" ] && log "User selected PDP Context $CID"
-fi
-
+CID=$(uci -q get modem.modeminfo$CURRMODEM.context)
 [ -z "$CID" ] && CID=1
 
 log "Checking Network Interface"
@@ -593,7 +596,7 @@ if [ $SP -gt 1 ]; then
 	ln -s $ROOTER/signal/modemsignal.sh $ROOTER_LINK/getsignal$CURRMODEM
 	$ROOTER_LINK/getsignal$CURRMODEM $CURRMODEM $PROT &
 else
-	VENDOR=$(uci get modem.modem$CURRMODEM.idV)
+	VENDOR=$(uci -q get modem.modem$CURRMODEM.idV)
 	case $VENDOR in
 	"19d2" )
 		TIMEOUT=3
@@ -651,8 +654,8 @@ fi
 CLB=$(uci -q get modem.modeminfo$CURRMODEM.lb)
 if [ -e /etc/config/mwan3 ]; then
 	ENB=$(uci -q get mwan3.wan$INTER.enabled)
-	if [ ! -z $ENB ]; then
-		if [ $CLB = "1" ]; then
+	if [ ! -z "$ENB" ]; then
+		if [ "$CLB" = "1" ]; then
 			uci set mwan3.wan$INTER.enabled=1
 		else
 			uci set mwan3.wan$INTER.enabled=0

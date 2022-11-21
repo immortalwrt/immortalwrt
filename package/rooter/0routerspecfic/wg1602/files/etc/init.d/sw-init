@@ -10,8 +10,6 @@ log() {
 
 start_service()
 {
-	dis=486
-	echo $dis > /sys/class/gpio/export
-	echo out > /sys/class/gpio/gpio$dis/direction
-	echo 0 >/sys/class/gpio/gpio$dis/value
+	log "WG1602 USB Hub switch to USB3.0 infterface"
+	echo 0 > /sys/class/gpio/ext-usb/value
 }

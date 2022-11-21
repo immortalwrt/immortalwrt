@@ -9,7 +9,7 @@ ROOTER_LINK="/tmp/links"
 modeswitch="/usr/bin/usb_modeswitch"
 
 log() {
-	logger -t "usb-modeswitch" "$@"
+	modlog "usb-modeswitch $CURRMODEM" "$@"
 }
 
 sanitize() {
@@ -239,14 +239,19 @@ if [ "$ACTION" = add ]; then
 		fi
 	fi
 
+	DELAY=1
 	if [ -f /tmp/usbwait ]; then
 		log "Delay for previous modem"
 		while [ -f /tmp/usbwait ]; do
 			sleep 1
+			let DELAY=$DELAY+1
+			if [ $DELAY -gt 15 ]; then
+				break
+			fi
 		done
 	fi
 	echo "1" > /tmp/usbwait
-
+	
 	source /tmp/variable.file
 	source /tmp/modcnt
 	MODCNT=$MODCNTX
@@ -454,6 +459,12 @@ if [ "$ACTION" = add ]; then
 		ln -s $ROOTER/connect/create_connect.sh $ROOTER_LINK/create_proto$CURRMODEM
 		$ROOTER_LINK/create_proto$CURRMODEM $CURRMODEM &
 		;;
+	"88" )
+		log "Connecting a Quectel Rmnet Modem"
+		ln -s $ROOTER/connect/create_connect.sh $ROOTER_LINK/create_proto$CURRMODEM
+		$ROOTER_LINK/create_proto$CURRMODEM $CURRMODEM &
+		;;
+
 	"3" )
 		log "Connecting a MBIM Modem"
 		ln -s $ROOTER/connect/create_connect.sh $ROOTER_LINK/create_proto$CURRMODEM
@@ -602,3 +613,4 @@ fi
 if [ "$ACTION" = "motion" ]; then
 	logger webcam motion event
 fi
+

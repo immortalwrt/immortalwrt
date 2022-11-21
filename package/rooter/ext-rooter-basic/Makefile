@@ -20,8 +20,8 @@ define Package/ext-rooter-basic
 	    +kmod-usb-net-qmi-wwan  +kmod-usb-net-rndis +kmod-usb-serial-qualcomm \
 	    +kmod-usb-net-sierrawireless +kmod-usb-ohci +kmod-usb-serial +kmod-nls-utf8 \
 	    +kmod-usb-serial-option +kmod-usb-serial-sierrawireless +luci-proto-3x \
-	    +kmod-usb-uhci +kmod-usb2 +luci-proto-3g +luci-theme-openwrt-2020 \
-	    +usb-modeswitch +wireless-tools +rmbim +rqmi +ext-sms +ext-buttons +kmod-rt2800-usb 
+	    +kmod-usb-uhci +kmod-usb2 +luci-proto-3g \
+	    +usb-modeswitch +wireless-tools +rmbim +rqmi +ext-sms +ext-buttons  +luci-app-pcimodem +luci-app-usbmodem
   TITLE:=ROOter support for usbmodems
   PKGARCH:=all
 endef

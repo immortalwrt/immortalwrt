@@ -1,6 +1,7 @@
 local utl = require "luci.util"
 local uci = require "luci.model.uci".cursor()
 local sys   = require "luci.sys"
+local fs = require "nixio.fs" 							  
 
 local maxmodem = luci.model.uci.cursor():get("modem", "general", "max")  
 local profsave = luci.model.uci.cursor():get("custom", "profile", "save")  
@@ -10,7 +11,7 @@ end
 local multilock = luci.model.uci.cursor():get("custom", "multiuser", "multi") or "0"
 local rootlock = luci.model.uci.cursor():get("custom", "multiuser", "root") or "0"
 
-m = Map("profile", translate("模块DNS / APN 配置"),translate(""))
+m = Map("profile", translate("模块DNS / APN 配置"),translate(""))									 
 
 m.on_after_commit = function(self)
 	if profsave == "1" then
@@ -71,6 +72,12 @@ pt:value("IPV6", "IPv6")
 pt:value("IPV4V6", "IPv4+IPv6")
 pt:value("0", "默认")
 pt.default = "0"
+
+cmcc = di:taboption(this_tab, Value, "context", translate("PDP Context for APN :"));
+cmcc.optional=false; 
+cmcc.rmempty = true;
+cmcc.datatype = "and(uinteger,min(1),max(10))"
+cmcc.default = "1"
 
 mu = di:taboption(this_tab, Value, "user", translate("用户名 :")); 
 mu.optional=false; 
@@ -364,6 +371,14 @@ if (multilock == "0") or (multilock == "1" and rootlock == "1") then
 	bwdelay:value("12", translate("12 小时"))
 end
 
+if fs.stat("/usr/lib/autoapn/apn.data") then
+	dda = m:section(TypedSection, "disable", translate("Use Automatic APN"), translate("Enable the use of the Automatic APN selection. This disables Custom Profiles."))
+	dda.anonymous = true
+	aenabled = dda:option(Flag, "autoapn", translate("Enabled"))
+	aenabled.default="0"
+	aenabled.optional=false;
+end
+
 dd = m:section(TypedSection, "disable", translate("禁用自动APN :"), translate("禁用自动APN后，所有4G/5G通信模块将会使用默认配置文件，不勾选就是默认启用"))
 dd.anonymous = true
 
@@ -502,6 +517,12 @@ pt:value("IPv6", "IPv6")
 pt:value("IPV4V6", "IPv4+IPv6")
 pt:value("0", "Default")
 pt.default = "0"
+
+cmcc = s:taboption(this_ctab, Value, "context", translate("PDP Context for APN :"));
+cmcc.optional=false; 
+cmcc.rmempty = true;
+cmcc.datatype = "and(uinteger,min(1),max(10))"
+cmcc.default = "1"
 
 cmu = s:taboption(this_ctab, Value, "user", translate("用户名 :")); 
 cmu.optional=false; 
@@ -803,4 +824,5 @@ end
 
 return m
 
+		
 

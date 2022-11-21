@@ -3,7 +3,7 @@
 ROOTER=/usr/lib/rooter
 
 log() {
-	logger -t "Scan Command" "$@"
+	modlog "Scan Command $CURRMODEM" "$@"
 }
 
 fibdecode() {
@@ -128,7 +128,17 @@ case $uVid in
 				M4='AT+QCFG="band",0,'$M3',0'
 			;;
 			"0512" ) # EM12-G
-				M3="2000001E0BB1F39DF"
+				EM12=$(echo $model | grep "EG18")
+				if [ -z "$EM12" ]; then
+					M3="2000001E0BB1F39DF"
+				else # EG18
+					EM12=$(echo $model | grep "EA")
+					if [ -z "$EM12" ]; then # NA
+						M3="4200000100330138A"
+					else # EA
+						M3="1A0080800C5"
+					fi
+				fi
 				M4='AT+QCFG="band",0,'$M3',0'
 			;;
 			"0620" ) # EM20-G
@@ -140,11 +150,7 @@ case $uVid in
 						mask="42000087E2BB0F38DF"
 						fibdecode $mask 1 1
 						M4F='AT+QNWPREFCFG="lte_band",'$lst
-						#mask5='7042000081A0090808D7'
-						#fibdecode $mask5 1 1
-						#M5F='AT+QNWPREFCFG="nsa_nr5g_band",'$lst
 						log "Fake RM500 $M4F"
-						#log "Fake Scan to All $M5F"
 					fi
 					
 				else # EM160
@@ -153,7 +159,7 @@ case $uVid in
 					M4='AT+QNWPREFCFG="lte_band",'$lst
 				fi
 			;;
-			"0800"|"0900" )
+			"0800"|"0900"|"0801" )
 
 			;;
 			* )

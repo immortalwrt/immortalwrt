@@ -3,7 +3,7 @@
 ROOTER=/usr/lib/rooter
 
 log() {
-	logger -t "Cell type" "$@"
+	modlog "Cell type $CURRMODEM" "$@"
 }
 
 zte_type() {

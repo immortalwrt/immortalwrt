@@ -4,7 +4,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Lock Band" "$@"
+	modlog "Lock Band $CURRMODEM" "$@"
 }
 
 RESTART="1"
@@ -119,22 +119,27 @@ encode() {
 maskx=$1
 mask64=$(echo "$maskx""," | cut -c1-64 | cut -d, -f1)
 maskl2=$(echo ${maskx:64}"," | cut -d, -f1)
-maskc=$(echo $maskx | grep -o ",")
-if [ ! -z $maskc ]; then
+maskc=$(echo "$maskx" | grep ",")
+if [ ! -z "$maskc" ]; then
 	mask=$(echo $maskx"," | cut -d, -f1)
 	mask5g=$(echo $maskx"," | cut -d, -f2)
+	mask5gsa=$(echo $maskx"," | cut -d, -f3)
 else
 	mask=$maskx
 	mask5g=""
+	mask5gsa=""
 fi
 
-log "$mask"
-log "$mask5g"
+#log "$mask"
+#log "$mask5g"
+#log "$mask5gsa"
 
 encode $mask
 mask=$maskz
 encode $mask5g
 mask5g=$maskz
+encode $mask5gsa
+mask5gsa=$maskz
 encode $mask64
 mask64=$maskz
 encode $maskl2
@@ -164,7 +169,7 @@ case $uVid in
 	"2c7c" )
 		MODT="1"
 		if [ -z "$2" ]; then
-			RESTART="0"
+			RESTART="1"
 		fi
 		M5=""
 		M2='AT+QCFG="band",0,'$mask',0,1'
@@ -216,35 +221,43 @@ case $uVid in
 			RESTART="1"
 		fi
 		if [ $uPid = 0800 -o $uPid = 0900 -o $uPid = 0801 ]; then
-			if [ ! -z $mask ]; then
+			if [ ! -z "$mask" ]; then
 				fibdecode $mask 1 1
 			else
 				lst="0"
 			fi
 			M2='AT+QNWPREFCFG="lte_band",'$lst
-			if [ ! -z $mask5g ]; then
+			if [ ! -z "$mask5g" ]; then
 				fibdecode $mask5g 1 1
 			else
 				lst="0"
 			fi
 			M5='AT+QNWPREFCFG="nsa_nr5g_band",'$lst
-			NET=$(uci -q get modem.modem$CURRMODEM.netmode)
-			if [ $NET = "9" ]; then
-				M5='AT+QNWPREFCFG="nr5g_band",'$lst
+			if [ ! -z "$mask5gsa" ]; then
+				fibdecode $mask5gsa 1 1
+			else
+				lst="0"
 			fi
+			M6='AT+QNWPREFCFG="nr5g_band",'$lst
 		fi
 		log " "
 		log "Locking Cmd : $M2"
 		log "Locking Cmd : $M5"
+		log "Locking Cmd : $M6"
 		log " "
+		
 		ATCMDD="AT"
 		NOCFUN=$uVid
 		OX=$($ROOTER/gcom/gcom-locked "$COMMPORT" "run-at.gcom" "$CURRMODEM" "$M2")
-		if [ ! -z $M5 ]; then
+		if [ ! -z "$M5" ]; then
 			OX5=$($ROOTER/gcom/gcom-locked "$COMMPORT" "run-at.gcom" "$CURRMODEM" "$M5")
+		fi
+		if [ ! -z "$M6" ]; then
+			OX6=$($ROOTER/gcom/gcom-locked "$COMMPORT" "run-at.gcom" "$CURRMODEM" "$M6")
 		fi
 		log "Locking Cmd Response : $OX"
 		log "Locking Cmd Response : $OX5"
+		log "Locking Cmd Response : $OX6"
 		log " "
 		if [ $RESTART = "1" ]; then
 			OX=$($ROOTER/gcom/gcom-locked "$COMMPORT" "run-at.gcom" "$CURRMODEM" "$ATCMDD")

@@ -16,6 +16,7 @@ function index()
 	entry({"admin", "nlbw", "change_bwenable"}, call("action_change_bwenable"))
 	entry({"admin", "nlbw", "change_backup"}, call("action_change_backup"))
 	entry({"admin", "nlbw", "change_external"}, call("action_change_external"))
+	entry({"admin", "nlbw", "change_bwwan"}, call("action_change_bwwan"))
 end
 
 function action_check_bw()
@@ -69,6 +70,7 @@ function action_check_bw()
 	rv['bwenabled'] = luci.model.uci.cursor():get("bwmon", "general", "enabled")
 	rv['backup'] = luci.model.uci.cursor():get("bwmon", "general", "backup")
 	rv['external'] = luci.model.uci.cursor():get("bwmon", "general", "external")
+	rv['bwwan'] = luci.model.uci.cursor():get("bwmon", "bwwan", "wan")
 	
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(rv)
@@ -107,5 +109,11 @@ end
 function action_change_external()
 	local set = luci.http.formvalue("set")
 	os.execute("/usr/lib/bwmon/external.sh " .. set)
+	
+end
+
+function action_change_bwwan()
+	local set = luci.http.formvalue("set")
+	os.execute("uci set bwmon.bwwan.wan=" .. set .. "; uci commit bwmon")
 	
 end

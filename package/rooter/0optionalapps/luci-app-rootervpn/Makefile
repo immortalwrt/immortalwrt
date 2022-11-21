@@ -13,7 +13,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/luci-app-rootervpn
   SECTION:=luci
   CATEGORY:=LuCI
-  DEPENDS:=+openvpn-easy-rsa +openvpn-openssl
+  DEPENDS:=+openvpn-easy-rsa +openvpn-openssl +eoip
   SUBMENU:=3. Applications
   TITLE:=support for modified OpenVPN
   PKGARCH:=all

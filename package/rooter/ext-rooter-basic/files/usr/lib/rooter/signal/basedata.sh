@@ -52,6 +52,9 @@ case $pval in
 "2" )
 	PROTO="QMI"
 	;;
+"88" )
+	PROTO="QUECTEL  RMNET"
+	;;
 "3"|"30" )
 	PROTO="MBIM"
 	;;
@@ -73,3 +76,4 @@ echo 'MODEM="'"$MODEM"'"' >> /tmp/base$CURRMODEM.file
 echo 'DOWN="'"$DOWN"'"' >> /tmp/base$CURRMODEM.file
 echo 'UP="'"$UP"'"' >> /tmp/base$CURRMODEM.file
 echo 'PROTO="'"$PROTO"'"' >> /tmp/base$CURRMODEM.file
+

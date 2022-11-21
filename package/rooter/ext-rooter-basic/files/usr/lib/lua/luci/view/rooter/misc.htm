@@ -42,16 +42,21 @@ end
 	sca = 0;
 	selectall = 1 ;
 	selectall5g = 1 ;
+	selectall5gsa = 1 ;				
 	var sierra = new Array();
 	var uVid ;
 	var chkbox = new Array() ;
 	var chkbox5g = new Array() ;
+	var chkbox5gsa = new Array() ;						   
 	var checkbox = new Array() ;
 	var checkbox5g = new Array() ;
+	var checkbox5gsa = new Array() ;							 
 	var bx ;
 	var bx5g ;
 	var blen ;
 	var blen5g ;
+	var bx5gsa ;		 
+	var blen5gsa ;		   
 	var inr ;
 	var bndid = new Array() ;
 	var bndb1 ;
@@ -117,7 +122,7 @@ end
 			elem.options['1'].disabled=false;
 			return "MBIM"
 		}
-		if ( pro == "2" )
+		if ( pro == "2"|| pro == "88" )
 		{
 			elem.options['1'].disabled=true;
 			if ( mod == "1" )
@@ -125,7 +130,7 @@ end
 				elem.options['3'].disabled=false;
 			}
 			elem.options['2'].disabled=false;
-			return "QMI";
+			return "QMI（RMNET）警告:如模块在PCIE 通道时此选项无效！！";
 		}
 		if ( pro == "5" )
 		{
@@ -643,8 +648,8 @@ end
 							model = modelx + "<%: ***未选择 5G 频段 - 无法连接***%>";
 							document.getElementById("mdl").style.color = "red";
 						}
-						document.getElementById("5gbnd").innerHTML="<%:5G NSA Bands%>";
-						document.getElementById("5gbnd").style.fontWeight = "bold" ;
+						//document.getElementById("5gbnd").innerHTML="<%:5G NSA Bands%>";
+						//document.getElementById("5gbnd").style.fontWeight = "bold" ;
 					}
 					else
 					{
@@ -656,8 +661,8 @@ end
 								model = model + "<%: ***未选择 5G 频段 - 无法连接***%>";
 								document.getElementById("mdl").style.color = "red";
 							}
-							document.getElementById("5gbnd").innerHTML="<%:5G SA 频段%>";
-							document.getElementById("5gbnd").style.fontWeight = "bold" ;
+							//document.getElementById("5gbnd").innerHTML="<%:5G SA 频段%>";
+							//document.getElementById("5gbnd").style.fontWeight = "bold" ;
 						}
 					}
 				}
@@ -690,7 +695,9 @@ end
 					document.getElementById("tab14").style.display = "none";
 					document.getElementById("dym1").style.display = "none";
 					document.getElementById("dym5g1").style.display = "none";
+					document.getElementById("dym5gsa1").style.display = "none";											
 					document.getElementById("tab5g").style.display = "none";
+					document.getElementById("tab5gsa").style.display = "none";										   
 					document.getElementById("tab4g").style.display = "none";
 					document.getElementById("dym2").style.display = "none";
 					document.getElementById("dym3").style.display = "none";
@@ -903,6 +910,8 @@ end
 					//
 					// Supported 5G bands
 					//
+			  
+	   
 					if ( rv.bndsup5g != 'x' )
 					{
 						bx5g = rv.bndsup5g ;
@@ -966,7 +975,7 @@ end
 						row2.style.width = "'" + wd.toString() + "%'" ;
 
 						//
-						// Selected 5G bands
+						// Selected 5G NSA bands
 						//
 						bndstr = rv.bndstr5g ;
 						blen5gx = bndstr.length ;
@@ -992,6 +1001,98 @@ end
 						document.getElementById("tab5g").style.display = "";
 					}	
 					
+					//
+					// 5G SA
+					//
+					if ( rv.bndsup5gsa != 'x' )
+					{
+						bx5gsa = rv.bndsup5gsa ;
+						blen5gsa = bx5gsa.length ;
+						ix = -1;
+						j = 1;
+						tbl = document.getElementById('dym5gsa1');
+						while (tbl.rows.length > 1)
+							tbl.deleteRow(1);
+						
+						tr = tbl.insertRow(-1);
+						max = 0 ;
+						first = 0 ;
+						for (io = 0; io < blen5gsa; io++) {
+							bm = bx5gsa.substr(io, 1) ;
+							if ( bm == "1" )
+							{
+								if ( max >= 7 )
+								{
+									row2 = tr.insertCell(-1);
+									if ( first == 0 )
+									{
+										row2.innerHTML = '<input type="button" align="right" id="selectc" class="cbi-button cbi-button-apply" value="<%:全选%>" onclick="return selectcell5gsa(this)" />'
+										first = 1 ;
+										row2.style.width = '10%' ;
+										row2 = tr.insertCell(-1);
+										wd = 100-(max*5) - 10 ;
+									}
+									else
+									{
+										wd = 100-(max*5) ;
+									}
+									row2.style.width = "'" + wd.toString() + "%'" ;
+									tr = tbl.insertRow(-1);
+									max = 0 ;
+								}
+								tr.className = 'cbi-section-table-row cbi-rowstyle-' + (((io + ix) % 2) + 1) ;
+								dex = io+1 ;
+								row = tr.insertCell(-1);
+								row.innerHTML = '<div align="right"><strong>n' + dex.toString() + '</strong></div>' ;
+								row.style.width = '3%' ;
+								row1 = tr.insertCell(-1);
+								row1.innerHTML = '<div align="bottom"><input type="checkbox" id="cs'+ dex.toString() +'" onclick="selectbnd5gsa(this)" /></div>'
+								row1.style.width = '2%' ;
+								max = max + 1 ;
+							}
+						}
+						row2 = tr.insertCell(-1);
+						if ( first == 0 )
+						{
+							row2.innerHTML = '<input type="button" align="right" id="selectc" class="cbi-button cbi-button-apply" value="<%:全选%>" onclick="return selectcell5gsa(this)" />'
+							first = 1 ;
+							row2.style.width = '10%' ;
+							row2 = tr.insertCell(-1);
+							wd = 100-(max*5) - 10 ;
+						}
+						else
+						{
+							wd = 100-(max*5) ;
+						}
+						row2.style.width = "'" + wd.toString() + "%'" ;
+
+						//
+						// Selected 5G SA bands
+						//
+						bndstrsa = rv.bndstr5gsa ;
+						blen5gx = bndstrsa.length ;
+						
+						for (i = 0; i < blen5gx; i++) {
+							bm = bndstrsa.substr(i, 1) ;
+							checkbox5gsa[i+1] = 0;
+							if ( bm == "1" )
+							{
+								dex = i+1 ;
+								idc = 'cs' + dex.toString() ;
+								
+								myEle = document.getElementById(idc);
+								if(myEle){
+									document.getElementById(idc).checked = true ;
+									checkbox5gsa[i+1] = 1;
+								}
+							}
+							chkbox5gsa[i+1] = parseInt(bm) ; 
+						}	
+						
+						document.getElementById("dym5gsa1").style.display = "";
+						document.getElementById("tab5gsa").style.display = "";
+					}	
+
 					//
 					// 2xCA
 					//
@@ -1127,11 +1228,13 @@ end
 				document.getElementById("tab14").style.display = "none";
 				document.getElementById("tab13").style.display = "";
 				document.getElementById("tab5g").style.display = "none";
+				document.getElementById("tab5gsa").style.display = "none";											  
 				document.getElementById("tab4g").style.display = "none";
 				document.getElementById("dym1").style.display = "none";
 				document.getElementById("dym2").style.display = "none";
 				document.getElementById("dym3").style.display = "none";
 				document.getElementById("dym5g1").style.display = "none";
+				document.getElementById("dym5gsa1").style.display = "none";											   
 				document.getElementById("celllock1").style.display = "none";
 				document.getElementById("celllock2").style.display = "none";
 				document.getElementById("celllock3").style.display = "none";
@@ -1461,6 +1564,37 @@ end
 		return false;
 	}
 	
+function selectcell5gsa(btn)
+	{
+		if ( selectall5gsa == 1 )
+		{
+			btn.value    = '<%:清空%>';
+			selectall5gsa = 0 ;
+			check = true ;
+			
+		}else
+		{
+			btn.value    = '<%:全选%>';
+			selectall5gsa = 1 ;
+			check = false ;
+		}
+		for (io = 0; io < blen5gsa; io++) {
+			bm = bx5gsa.substr(io, 1) ;
+			if ( bm == "1" )
+			{
+				dex = io +1 ;
+				cellid = "cs" + dex.toString() ;
+				document.getElementById(cellid).checked = check ;
+				checkbox5gsa[dex] = 0 ;
+				if ( check == true )
+				{
+					checkbox5gsa[dex] = 1 ;
+				}
+			}
+		}
+		return false;
+	}
+	
 	function scanbnd()
 	{
 		s = " " ;
@@ -1490,10 +1624,18 @@ end
 			}
 			rstr = rstr + ',' + rstr5g ;
 		}
+		if ( bx5gsa != 'x' )
+		{
+			rstr5gsa = "" ;
+			for ( jo = blen5gsa; jo > 0; jo-- ) {
+				rstr5gsa = checkbox5gsa[jo].toString() + rstr5gsa ;
+			}
+			rstr = rstr + ',' + rstr5gsa ;
+		}
 
 		if ( confirm("<%:通信模块将锁定到选定的频段，继续操作吗？%>") )
 		{
-			   
+			locking = 1;
 			s = rstr ;
 			XHR.get('<%=luci.dispatcher.build_url("admin", "modem", "send_lockcmd")%>',
 				{ set: s },
@@ -1564,6 +1706,21 @@ end
 		if ( chk == true )
 		{
 			checkbox5g[bindx] = 1 ;
+		}
+		return false;
+	}
+	
+	function selectbnd5gsa(btn)
+	{
+		id = btn.id ;
+		band = id.substr(2) ;
+		
+		bindx = parseInt(band) ;
+		chk = document.getElementById(id).checked ;
+		checkbox5gsa[bindx] = 0 ;
+		if ( chk == true )
+		{
+			checkbox5gsa[bindx] = 1 ;
 		}
 		return false;
 	}
@@ -1982,12 +2139,25 @@ end
 	<table width="500" border="0" id="tab5g">
 		<tr>
 			<td width="8%">&nbsp;</td>
-			<td width="25%"><div align="left" id="5gbnd" style="font-size : 15px; width: 100%; height: 25px;"><strong><%:5G NR频段%></strong></div></td>
+			<td width="25%"><div align="left" id="5gbnd" style="font-size : 15px; width: 100%; height: 25px;"><strong><%:5G NSA频段%></strong></div></td>
 			<td width="20%">&nbsp;</td>
 		</tr>
 	</table>
 	
 	<table width="800"  border="0" id="dym5g1">
+		<tr>
+		</tr>
+	</table>
+	
+	<table width="500" border="0" id="tab5gsa">
+		<tr>
+			<td width="8%">&nbsp;</td>
+			<td width="25%"><div align="left" id="5gsabnd" style="font-size : 15px; width: 100%; height: 25px;"><strong><%:5G SA 频段%></strong></div></td>
+			<td width="20%">&nbsp;</td>
+		</tr>
+	</table>
+	
+	<table width="800"  border="0" id="dym5gsa1">
 		<tr>
 		</tr>
 	</table>
@@ -2174,7 +2344,6 @@ end
 			<option value="3"><%:锁定 2G%></option>
 			<option value="4"><%:优先 3G%></option>
 			<option value="5"><%:锁定 3G%></option>
-			<option value="6"><%:优先 4G%></option>
 			<option value="6"><%:优先 4G%></option>
 			<option value="7"><%:锁定 4G%></option>
 		</select>

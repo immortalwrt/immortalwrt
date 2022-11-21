@@ -62,7 +62,7 @@ level2txt() {
 	
 	namez=$namev
 	cindex=1
-	nindex=0
+	nindex=6
 	namev="-"
 
 	while [ true ]
@@ -72,12 +72,12 @@ level2txt() {
 			namev="-"
 			break
 		fi
-		if [ "$tmp" -ge "$levelv" ]; then
+		if [ "$tmp" -lt "$levelv" ]; then
 			namev=$(echo "$namez" | cut -d, -f$nindex)
 			break
 		fi
 		cindex=$((${cindex}+1))
-		nindex=$((${nindex}+1))
+		nindex=$((${nindex}-1))
 	done
 
 	css="level_"$nindex

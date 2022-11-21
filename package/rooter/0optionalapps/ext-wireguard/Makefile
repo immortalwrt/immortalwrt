@@ -15,7 +15,7 @@ define Package/ext-wireguard
   CATEGORY:=ROOter
   SUBMENU:=Optional Applications
   DEPENDS:=+wireguard-tools +kmod-wireguard \
-		+luci-proto-wireguard +udp-tunnel 
+		+luci-proto-wireguard +udp-tunnel +eoip
   TITLE:=Install scripts for Wireguard
   PKGARCH:=all
 endef

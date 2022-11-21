@@ -3,17 +3,13 @@
 ROOTER=/usr/lib/rooter
 
 log() {
-	logger -t "Band Mask " "$@"
+	modlog "Band Mask $CURRMODEM" "$@"
 }
 
 CURRMODEM=$1
 MODTYPE=$2
 
 CPORT=$(uci get modem.modem$CURRMODEM.commport)
-
-if [ -e $ROOTER/simlock.sh ]; then
-	$ROOTER/simlock.sh $CURRMODEM
-fi
 
 sierrabandmask() {
 	enb=$(uci -q get custom.bandlock.enabled)
@@ -103,7 +99,7 @@ quebandmask() {
 		log "Modem Model : $model"
 		log " "
 	fi
-	if [ $idP = "0620" -o $idP = "0800" -o $idP = "030b" -o $idP = "0900" ]; then
+	if [ $idP = "0620" -o $idP = "0800" -o $idP = "030b" -o $idP = "0900" -o $idP = "0801" ]; then
 		EM20=$(echo $model | grep "EM20")
 		if [ -z "$EM20" ]; then
 			EM160=1
@@ -152,7 +148,7 @@ quebandmask() {
 		GW="0"
 		EMT=0800
 
-		if [ $idP = $EMT -o $idP = 0900 ]; then
+		if [ $idP = $EMT -o $idP = 0900 -o $idP = "0801" ]; then
 			ATCMDD='AT+QNWPREFCFG="nsa_nr5g_band"'
 			OX=$($ROOTER/gcom/gcom-locked "/dev/ttyUSB$CPORT" "run-at.gcom" "$CURRMODEM" "$ATCMDD")
 			qm=$(echo $OX" " | grep "+QNWPREFCFG:" | tr -d '"' | tr " " ":" | tr "," ":")

@@ -2,7 +2,7 @@
 . "/lib/functions.sh"
 
 log() {
-	logger -t "In Range" "$@"
+	wifilog "In Range" "$@"
 }
 
 rm -f /tmp/hot1
@@ -19,7 +19,8 @@ do
         sleep 1
 done
 
-RADIO=$(uci get wireless.wwan.device)
+wif=$(uci -q get travelmate.global.freq)
+RADIO=$(uci get wireless.wwan$wif.device)
 ap_list="$(ubus -S call network.wireless status | jsonfilter -e "@.$RADIO.interfaces[@.config.mode=\"ap\"].ifname")"
 
 trm_scanner="$(which iw)"

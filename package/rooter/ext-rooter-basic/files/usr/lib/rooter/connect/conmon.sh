@@ -5,7 +5,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-	logger -t "Connection Monitor" "$@"
+	modlog "Connection Monitor $CURRMODEM" "$@"
 }
 
 CURRMODEM=$1

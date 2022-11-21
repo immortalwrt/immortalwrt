@@ -31,6 +31,14 @@ var backflg = "0";
 		rollover = rv.rollover;
 		enabled = rv.enabled;
 		bwenabled = rv.bwenabled;
+		if ( rv.bwwan == "0" )
+		{
+			document.getElementById('wwanf').checked=false;
+		}
+		else
+		{
+			document.getElementById('wwanf').checked=true;
+		}
 			if ( days !== "0" )
 			{
 				document.getElementById("totalb").style.visibility="visible";
@@ -374,7 +382,19 @@ var backflg = "0";
 		);
 	}
 	
-	
+	function wwanenable(btn) {
+		dx = 0;
+		if ( btn.checked == true )
+		{
+			dx = 1;
+		}
+		XHR.get('<%=luci.dispatcher.build_url("admin", "nlbw", "change_bwwan")%>',
+			{ set: dx },
+			function()
+			{
+			}
+		);
+	}
 
 //]]></script>
 
@@ -382,6 +402,7 @@ var backflg = "0";
 <div class="cbi-map" id="cbi-modem">
 <h2><a id="content" name="content"><%:Bandwidth Monitor%></a></h2>
 <div class="cbi-map-descr"> </div>
+<h3><%:Note : Bandwidth Monitor will not turn on until there is Internet Available%></h3>
 <head>
      <style>
 	  #popup {
@@ -401,8 +422,21 @@ var backflg = "0";
 	}
     </style>
 </head>
+<fieldset class="cbi-section" id="cbi-modw">
+	<legend><%:Extra Internet Sources%></legend>
+	<table border="0" id="totalw">
+		<tr>
+			<td width="20%"><div align="right" style="font-size : 17px" id="wwan"><strong><%:Include WAN and Hotspot%></strong></div></td>
+			<td width="15%"><div align="center" id="wwane"><input type="checkbox" id="wwanf" onclick="wwanenable(this)" /></div></td>
+			<td width="15%"></td>
+			<td width="15%"></td>
+			<td width="35%"></td>
+		</tr>
+	</table>
+</fieldset>
+
 <fieldset class="cbi-section" id="cbi-modx">
-	<legend><%:Configuration%></legend>
+	<legend><%:Data Backup Configuration%></legend>
 		
 	<table style="visibility:hidden" width="700" border="0" id="atpass">
 	<tr>
@@ -426,7 +460,7 @@ var backflg = "0";
 	
 	<table border="0" id="totalc">
 		<tr>
-			<td width="20%"><div align="right" style="font-size : 17px" id="enablebw"><strong><%:Enable Bandwidth Monitor%></strong></div></td>
+			<td width="20%"><div align="right" style="font-size : 17px" id="enablebw"><strong><%:Enable Data Backup%></strong></div></td>
 			<td width="15%"><div align="center" id="bwflag"><input type="checkbox" id="bwenb" onclick="bwenable(this)" /></div></td>
 			<td width="15%"></td>
 			<td width="15%"></td>

@@ -5,7 +5,7 @@ ROOTER=/usr/lib/rooter
 NEWMOD=$1
 
  log() {
-	logger -t "ProtoChange" "$@"
+	modlog "ProtoChange $CURRMODEM" "$@"
  }
  
 ifname1="ifname"

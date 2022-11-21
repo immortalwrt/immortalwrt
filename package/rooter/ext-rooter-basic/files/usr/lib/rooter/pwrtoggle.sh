@@ -4,7 +4,7 @@ ROOTER=/usr/lib/rooter
 ROOTER_LINK="/tmp/links"
 
 log() {
-        logger -t "Power Toggle" "$@"
+        modlog "Power Toggle $CURRMODEM" "$@"
 }
 
 ifname1="ifname"
