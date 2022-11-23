@@ -15,7 +15,7 @@
 
 #SFE connection manager has a lower priority, it should be started after other connection manager
 #to detect the existence of connection manager with higher priority
-START=72
+START=70
 
 have_cm() {
 	[ -d "/sys/kernel/debug/ecm" ] && echo 1 && return
@@ -23,27 +23,29 @@ have_cm() {
 	echo 0
 }
 
-#load shortcut-fe connection manager
-load_sfe_cm() {
+#load shortcut-fe and connection manager
+load_sfe() {
 	local kernel_version=$(uname -r)
 
-	#shortcut-fe-drv.ko is not needed because other connection manager is not enabled
-	[ -d "/sys/module/shortcut_fe_drv" ] && rmmod shortcut_fe_drv
-
-	[ -e "/lib/modules/$kernel_version/fast-classifier.ko" ] && {
-		[ -d /sys/module/fast_classifier ] || insmod /lib/modules/$kernel_version/fast-classifier.ko && return
-	}
+	[ -d "/sys/module/shortcut_fe" ] || insmod /lib/modules/$kernel_version/shortcut-fe.ko
+	[ -d "/sys/module/shortcut_fe_ipv6" ] || insmod /lib/modules/$kernel_version/shortcut-fe-ipv6.ko
 
 	[ -e "/lib/modules/$kernel_version/shortcut-fe-cm.ko" ] && {
-		[ -d /sys/module/shortcut_fe_cm ] || insmod /lib/modules/$kernel_version/shortcut-fe-cm.ko && return
+		[ -d /sys/module/shortcut_fe_cm ] || insmod /lib/modules/$kernel_version/shortcut-fe-cm.ko
+	}
+	[ -e "/lib/modules/$kernel_version/fast-classifier.ko" ] && {
+		[ -d /sys/module/fast_classifier ] || insmod /lib/modules/$kernel_version/fast-classifier.ko
 	}
 }
 
 start() {
-	[ "$(have_cm)" = "1" ] || load_sfe_cm
+	[ "$(have_cm)" = "0" ] && load_sfe
 }
 
 stop() {
-	[ -d /sys/module/shortcut_fe_cm ] && rmmod shortcut_fe_cm
-	[ -d /sys/module/fast_classifier ] && rmmod fast_classifier
+	[ -d "/sys/module/shortcut_fe_cm" ] && rmmod shortcut_fe_cm
+	[ -d "/sys/module/shortcut_fe_ipv6" ] && rmmod shortcut_fe_ipv6
+	[ -d "/sys/module/shortcut_fe" ] && rmmod shortcut_fe
+	[ -d "/sys/module/shortcut_fe_drv" ] && rmmod shortcut_fe_drv
+	[ -d "/sys/module/fast_classifier" ] && rmmod fast_classifier
 }

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014 The Linux Foundation. All rights reserved.
+# Copyright (c) 2013-2018, 2020 The Linux Foundation. All rights reserved.
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
 # above copyright notice and this permission notice appear in all copies.
@@ -11,11 +11,12 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
 # OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
+
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=shortcut-fe
-PKG_RELEASE:=3
+PKG_RELEASE:=8
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -23,7 +24,7 @@ define KernelPackage/shortcut-fe
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Support
-  DEPENDS:=
+  DEPENDS:=@IPV6 +kmod-nf-conntrack
   TITLE:=Kernel driver for SFE
   FILES:= \
 	   $(PKG_BUILD_DIR)/shortcut-fe.ko \
@@ -33,7 +34,7 @@ define KernelPackage/shortcut-fe
 	   CONFIG_NF_CONNTRACK_TIMEOUT=y \
 	   CONFIG_SHORTCUT_FE=y \
 	   CONFIG_XFRM=y
-  AUTOLOAD:=$(call AutoLoad,09,shortcut-fe shortcut-fe-ipv6)
+  # AUTOLOAD:=$(call AutoLoad,09,shortcut-fe shortcut-fe-ipv6)
 endef
 
 define KernelPackage/shortcut-fe/Description
@@ -47,7 +48,11 @@ define KernelPackage/shortcut-fe-cm
   DEPENDS:=+kmod-ipt-conntrack +kmod-shortcut-fe
   TITLE:=Kernel driver for SFE
   FILES:=$(PKG_BUILD_DIR)/shortcut-fe-cm.ko
-  KCONFIG:=CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y
+  KCONFIG:= \
+	   CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
+	   CONFIG_NF_CONNTRACK_EVENTS=y \
+	   CONFIG_XFRM=y
+  # AUTOLOAD:=$(call AutoLoad,10,shortcut-fe-cm)
 endef
 
 define KernelPackage/shortcut-fe-cm/Description
@@ -57,18 +62,15 @@ endef
 EXTRA_CFLAGS+= -DSFE_SUPPORT_IPV6
 
 define Build/Compile
-	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(KERNEL_MAKE_FLAGS) \
-		$(PKG_MAKE_FLAGS) \
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M="$(PKG_BUILD_DIR)" \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-		SFE_SUPPORT_IPV6=1 \
 		modules
 endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/shortcut-fe
-	$(CP) -rf $(PKG_BUILD_DIR)/*.h $(1)/usr/include/shortcut-fe
+	$(CP) $(PKG_BUILD_DIR)/sfe.h $(1)/usr/include/shortcut-fe
 endef
 
 define KernelPackage/shortcut-fe/install

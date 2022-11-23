@@ -16,7 +16,6 @@ define KernelPackage/fast-classifier
 	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
 	CONFIG_NF_CONNTRACK_MARK=y
   DEPENDS:=+kmod-ipt-conntrack +kmod-shortcut-fe
-  PROVIDES:=fast-classifier
 endef
 
 define KernelPackage/fast-classifier/description
@@ -35,25 +34,22 @@ define Package/fast-classifier-example/description
   classifier kernel module.
 endef
 
-SFE_MAKE_OPTS:=SFE_SUPPORT_IPV6=y
-EXTRA_CFLAGS+=-I$(STAGING_DIR)/usr/include/shortcut-fe
+EXTRA_CFLAGS+= -I$(STAGING_DIR)/usr/include/shortcut-fe
 
 define Build/Compile
-	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" $(strip $(SFE_MAKE_OPTS)) \
-		$(KERNEL_MAKE_FLAGS) \
-		$(PKG_MAKE_FLAGS) \
-		M="$(PKG_BUILD_DIR)" \
+	+$(KERNEL_MAKE) $(PKG_JOBS) M="$(PKG_BUILD_DIR)" \
 		CONFIG_FAST_CLASSIFIER=m \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+		SFE_SUPPORT_IPV6=y \
 		modules
 
 ifneq ($(CONFIG_PACKAGE_fast-classifier-example),)
-	$(TARGET_CC) -o $(PKG_BUILD_DIR)/userspace_fast_classifier \
-		-I $(PKG_BUILD_DIR) \
+	$(TARGET_CC) $(TARGET_CFLAGS) $(TARGET_LDFLAGS) \
 		-I$(STAGING_DIR)/usr/include/libnl \
 		-I$(STAGING_DIR)/usr/include/libnl3 \
 		-lnl-genl-3 -lnl-3 \
-		$(PKG_BUILD_DIR)/nl_classifier_test.c
+		$(PKG_BUILD_DIR)/nl_classifier_test.c \
+		-o $(PKG_BUILD_DIR)/userspace_fast_classifier
 endif
 endef
 
