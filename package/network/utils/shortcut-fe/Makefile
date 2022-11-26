@@ -65,6 +65,7 @@ define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M="$(PKG_BUILD_DIR)" \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+		SFE_SUPPORT_IPV6=1 \
 		modules
 endef
 

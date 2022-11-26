@@ -16,6 +16,7 @@ define KernelPackage/fast-classifier
 	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
 	CONFIG_NF_CONNTRACK_MARK=y
   DEPENDS:=+kmod-ipt-conntrack +kmod-shortcut-fe
+  # AUTOLOAD:=$(call AutoLoad,10,fast-classifier)
 endef
 
 define KernelPackage/fast-classifier/description
