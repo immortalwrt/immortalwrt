@@ -18,7 +18,7 @@ If your device is supported, please follow the **Info** link to see install inst
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
 
   ### Requirements
-  To build with this project, Ubuntu 18.04 LTS is preferred. And you need use the CPU based on AMD64 architecture, with at least 4GB RAM and 25 GB available disk space. Make sure the __Internet__ is accessible.
+  To build with this project, Ubuntu 20.04 LTS is preferred. And you need use the CPU based on AMD64 architecture, with at least 4GB RAM and 25 GB available disk space. Make sure the __Internet__ is accessible.
 
   The following tools are needed to compile ImmortalWrt, the package names vary between distributions.
 
@@ -44,9 +44,6 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
       sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
       ```
 
-  - You can also download and use prebuilt container directly:<br/>
-    See #Quickstart - Build image via OPDE
-
   Note:
   - For the for love of god please do __not__ use ROOT user to build your image.
   - Using CPUs based on other architectures should be fine to compile ImmortalWrt, but more hacks are needed - No warranty at all.
@@ -56,69 +53,12 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
   - For more details, please see [Build system setup](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem) documentation.
 
   ### Quickstart
-  - Method 1:
-    1. Run `git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt` to clone the source code.
-    2. Run `cd immortalwrt` to enter source directory.
-    3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
-    4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
-    5. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
-    6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
-
-  - Method 2:
-    <details>
-      <summary>Build image via OPDE</summary>
-
-      - Pull the prebuilt container:
-        ```bash
-        docker pull immortalwrt/opde:base
-        # docker run --rm -it immortalwrt/opde:base
-        ```
-
-      - For Linux User:
-        ```bash
-        git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt && cd immortalwrt
-        docker run --rm -it \
-            -v $PWD:/openwrt \
-          immortalwrt/opde:base zsh
-        ./scripts/feeds update -a && ./scripts/feeds install -a
-        ```
-
-      - For Windows User:
-        1. Create a volume 'immortalwrt' and clone ImmortalWrt source into volume.
-          ```bash
-          docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt .
-          ```
-        2. Enter docker container and update feeds.
-          ```bash
-          docker run --rm -it -v immortalwrt:/openwrt immortalwrt/opde:base
-          ./scripts/feeds update -a && ./scripts/feeds install -a
-          ```
-        - Tips: ImmortalWrt source code can not be cloned into NTFS filesystem (symbol link problem during compilation), but docker volume is fine.
-
-      - Proxy Support:
-        ```bash
-        docker run --rm -it \
-          -e   all_proxy=http://example.com:1081 \
-          -e  http_proxy=http://example.com:1081 \
-          -e https_proxy=http://example.com:1081 \
-          -e   ALL_PROXY=http://example.com:1081 \
-          -e  HTTP_PROXY=http://example.com:1081 \
-          -e HTTPS_PROXY=http://example.com:1081 \
-          -v $PWD:/openwrt \
-          immortalwrt/opde:base zsh
-        ```
-
-        > Recommand `http` rather `socks5` protocol
-        >
-        > IP can not be `localhost` or `127.0.0.1`
-
-      - For Windows User, binary is still in volume. It can be copied to outside via followed command:
-        ```bash
-        docker run --rm -v <D:\path\to\dir>:/dst -v openwrt:/openwrt -w /dst immortalwrt:base cp /openwrt/bin /dst
-        ```
-        > Make sure `D:\path\to\dir` has been appended in [File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing).
-
-    </details>
+  1. Run `git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt` to clone the source code.
+  2. Run `cd immortalwrt` to enter source directory.
+  3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
+  4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
+  5. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
+  6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
   ### Related Repositories
   The main repository uses multiple sub-repositories to manage packages of different categories. All packages are installed via the ImmortalWrt package manager called opkg. If you're looking to develop the web interface or port packages to ImmortalWrt, please find the fitting repository below.
