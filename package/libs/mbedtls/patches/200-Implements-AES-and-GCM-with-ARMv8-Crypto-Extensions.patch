@@ -142,7 +142,7 @@ Then run normal make or cmake etc.
 + *
 + * This module adds support for Armv8 Cryptography Extensions for AES and GCM.
 + */
-+#define MBEDTLS_ARMV8CE_AES_C
++//#define MBEDTLS_ARMV8CE_AES_C
 +
 +/**
   * \def MBEDTLS_AES_C
