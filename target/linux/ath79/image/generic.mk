@@ -2644,6 +2644,7 @@ define Device/trendnet_tew-673gru
   IMAGE/factory.bin = append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs | check-size $$$$(FACTORY_SIZE) | pad-to $$$$(FACTORY_SIZE) | \
 	append-string AP94-AR7161-RT-080619-01
+  DEFAULT := n
 endef
 TARGET_DEVICES += trendnet_tew-673gru
 
