@@ -1023,6 +1023,7 @@ define Device/dlink_dir-825-b1
   IMAGE/factory.bin = append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs | check-size $$$$(FACTORY_SIZE) | pad-to $$$$(FACTORY_SIZE) | \
 	append-string 01AP94-AR7161-RT-080619-00
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dir-825-b1
 
