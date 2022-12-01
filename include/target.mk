@@ -67,7 +67,6 @@ DEFAULT_PACKAGES.tweak:=\
 	default-settings-chn \
 	iptables-nft \
 	ip6tables-nft \
-	ipv6helper \
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
 	luci \
