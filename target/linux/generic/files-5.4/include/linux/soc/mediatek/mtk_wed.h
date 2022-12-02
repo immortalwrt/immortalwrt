@@ -64,5 +64,8 @@ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
 #define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
 #define mtk_wed_device_irq_get(_dev, _mask) 0
 #define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
+#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) -ENODEV
+#define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash)  do {} while (0)
+#define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
 
 #endif
