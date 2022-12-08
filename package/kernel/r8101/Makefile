@@ -28,7 +28,7 @@ define KernelPackage/r8101
   AUTOLOAD:=$(call AutoProbe,r8101)
 endef
 
-define Package/r8101/description
+define KernelPackage/r8101/description
   This package contains a driver for Realtek r8101 chipsets.
 endef
 
