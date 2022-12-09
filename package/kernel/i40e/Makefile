@@ -7,12 +7,11 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=i40e
 PKG_VERSION:=2.22.8
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@IMMORTALWRT
 PKG_HASH:=938eac24067e385d6e7e47788c7a1c47987bbe0ed36f3360809cbaa8caf85c6b
-PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
@@ -26,7 +25,7 @@ define KernelPackage/i40e-vendor
   SUBMENU:=Network Devices
   TITLE:=Intel(R) Ethernet Controller XL710 Family support (vendor driver)
   VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
-  DEPENDS:=@PCI_SUPPORT
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-libphy
   CONFLICTS:=kmod-i40e
   FILES:= \
 	$(PKG_BUILD_DIR)/src/intel_auxiliary.ko \
