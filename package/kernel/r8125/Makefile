@@ -29,7 +29,7 @@ define KernelPackage/r8125
   AUTOLOAD:=$(call AutoProbe,r8125)
 endef
 
-define Package/r8125/description
+define KernelPackage/r8125/description
   This package contains a driver for Realtek r8125 chipsets.
 endef
 
