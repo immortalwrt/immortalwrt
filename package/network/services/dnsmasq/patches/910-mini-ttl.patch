@@ -15,7 +15,7 @@
  #define LOPT_TAG_IF        294
  #define LOPT_PROXY         295
  #define LOPT_GEN_NAMES     296
-+#define LOPT_MINTTL        375
++#define LOPT_MINTTL        400
  #define LOPT_MAXTTL        297
  #define LOPT_NO_REBIND     298
  #define LOPT_LOC_REBND     299
