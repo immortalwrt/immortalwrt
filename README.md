@@ -80,4 +80,4 @@ For a list of supported devices see the [OpenWrt Hardware Database](https://open
   - Support Chat: group [#immortalwrt](https://matrix.to/#/#immortalwrt:matrix.org) on [Matrix](https://matrix.org/).
 
 ## License
-ImmortalWrt is licensed under [GPL-3.0-only](https://spdx.org/licenses/GPL-3.0-only.html).
+ImmortalWrt is licensed under [GPL-2.0-only](https://spdx.org/licenses/GPL-2.0-only.html).
