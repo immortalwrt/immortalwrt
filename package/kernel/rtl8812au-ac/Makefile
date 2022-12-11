@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2020 stepheny
 # <https://github.com/aircrack-ng/rtl8812au/pull/619>
