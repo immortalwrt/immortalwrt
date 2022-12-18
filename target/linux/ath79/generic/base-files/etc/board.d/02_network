@@ -77,6 +77,7 @@ ath79_setup_interfaces()
 	tplink,cpe210-v3|\
 	tplink,cpe510-v2|\
 	tplink,cpe510-v3|\
+	tplink,cpe605-v1|\
 	tplink,cpe610-v1|\
 	tplink,cpe610-v2|\
 	tplink,cpe710-v1|\
@@ -345,6 +346,11 @@ ath79_setup_interfaces()
 		ucidef_set_interface_wan "eth1"
 		ucidef_add_switch "switch0" \
 			"0@eth0" "2:lan:3" "3:lan:2" "4:lan:1"
+		;;
+	kuwfi,c910)
+		ucidef_set_interface_wan "eth1"
+		ucidef_add_switch "switch0" \
+			"0@eth0" "1:lan:2" "4:lan:1"
 		;;
 	letv,lba-047-ch)
 		ucidef_set_interface_wan "eth0"
