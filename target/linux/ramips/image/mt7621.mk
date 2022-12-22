@@ -38,15 +38,13 @@ define Build/h3c-blank-header
 endef
 
 define Build/haier-sim_wr1800k-factory
-  -[ -e $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) ] && \
-  mkdir -p "$(1).tmp" && \
-  $(CP) $(KDIR)/tmp/$(KERNEL_INITRAMFS_IMAGE) "$(1).tmp/UploadBrush-bin.img" && \
-  $(MKHASH) md5 "$(1).tmp/UploadBrush-bin.img" | head -c32 > "$(1).tmp/check_MD5.txt" && \
-  $(TAR) -czf $(1).tmp.tgz -C "$(1).tmp" UploadBrush-bin.img check_MD5.txt && \
-  $(STAGING_DIR_HOST)/bin/openssl aes-256-cbc -e -salt -in $(1).tmp.tgz -out "$(1)" -k QiLunSmartWL && \
-  printf %32s "$(DEVICE_MODEL)" >> "$(1)" && \
-  rm -rf "$(1).tmp" $(1).tmp.tgz && \
-  $(CP) $(1) $(BIN_DIR)/
+  mkdir -p "$@.tmp"
+  mv "$@" "$@.tmp/UploadBrush-bin.img"
+  $(MKHASH) md5 "$@.tmp/UploadBrush-bin.img" | head -c32 > "$@.tmp/check_MD5.txt"
+  $(TAR) -czf "$@.tmp.tgz" -C "$@.tmp" UploadBrush-bin.img check_MD5.txt
+  $(STAGING_DIR_HOST)/bin/openssl aes-256-cbc -e -salt -in "$@.tmp.tgz" -out "$@" -k QiLunSmartWL
+  printf %32s $(DEVICE_MODEL) >> "$@"
+  rm -rf "$@.tmp" "$@.tmp.tgz"
 endef
 
 define Build/iodata-mstc-header
@@ -799,6 +797,19 @@ define Device/elecom_wrc-2533gst2
 endef
 TARGET_DEVICES += elecom_wrc-2533gst2
 
+define Device/etisalat_s3
+  $(Device/sercomm_dxx)
+  IMAGE_SIZE := 32768k
+  SERCOMM_HWID := DDK
+  SERCOMM_HWVER := 10000
+  SERCOMM_SWVER := 4009
+  DEVICE_VENDOR := Etisalat
+  DEVICE_MODEL := S3
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware \
+	kmod-usb3 uboot-envtools
+endef
+TARGET_DEVICES += etisalat_s3
+
 define Device/firefly_firewrt
   $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
@@ -892,8 +903,11 @@ define Device/haier-sim_wr1800k
   KERNEL_LOADADDR := 0x82000000
   KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
-  KERNEL_INITRAMFS := $$(KERNEL) | \
-	haier-sim_wr1800k-factory $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.bin
+ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+  ARTIFACTS := initramfs-factory.bin
+  ARTIFACT/initramfs-factory.bin := append-image-stage initramfs-kernel.bin | \
+	haier-sim_wr1800k-factory
+endif
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   DEVICE_PACKAGES := kmod-mt7915e uboot-envtools
 endef
