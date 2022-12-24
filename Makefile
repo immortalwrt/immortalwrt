@@ -50,16 +50,13 @@ printdb:
 
 prepare: $(target/stamp-compile)
 
-_clean: FORCE
+clean: FORCE
 	rm -rf $(BUILD_DIR) $(STAGING_DIR) $(BIN_DIR) $(OUTPUT_DIR)/packages/$(ARCH_PACKAGES) $(BUILD_LOG_DIR) $(TOPDIR)/staging_dir/packages
 
-clean: _clean
-	rm -rf $(BUILD_LOG_DIR)
-
-targetclean: _clean
+targetclean: clean
 	rm -rf $(TOOLCHAIN_DIR) $(BUILD_DIR_BASE)/hostpkg $(BUILD_DIR_TOOLCHAIN)
 
-dirclean: targetclean clean
+dirclean: targetclean
 	rm -rf $(STAGING_DIR_HOST) $(STAGING_DIR_HOSTPKG) $(BUILD_DIR_BASE)/host
 	rm -rf $(TMP_DIR)
 	$(MAKE) -C $(TOPDIR)/scripts/config clean

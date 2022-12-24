@@ -5,7 +5,11 @@
 ImmortalWrt is a fork of [OpenWrt](https://openwrt.org), with more packages ported, more devices supported, better performance, and special optimizations for mainland China users.<br/>
 Compared the official one, we allow to use hacks or non-upstreamable patches / modifications to achieve our purpose. Source from anywhere.
 
-Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: __password__.
+Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: _none_.
+
+## Deprecation notice
+
+Support for the ImmortalWrt 18.06 is EoL. Please consider upgrading to ImmortalWrt 21.02 stable release.
 
 ## Development
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
@@ -133,4 +137,4 @@ For a list of supported devices see the [OpenWrt Hardware Database](https://open
   - Support Chat: group [#immortalwrt](https://matrix.to/#/#immortalwrt:matrix.org) on [Matrix](https://matrix.org/).
 
 ## License
-ImmortalWrt is licensed under [GPL-3.0-only](https://spdx.org/licenses/GPL-3.0-only.html).
+ImmortalWrt is licensed under [GPL-2.0-only](https://spdx.org/licenses/GPL-2.0-only.html).
