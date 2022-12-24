@@ -31,7 +31,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/rtl8821cu
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek RTL8811CU/RTL8821CU support
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11AC_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/rtl8821cu.ko
   AUTOLOAD:=$(call AutoProbe,rtl8821cu)
   PROVIDES:=kmod-rtl8821cu

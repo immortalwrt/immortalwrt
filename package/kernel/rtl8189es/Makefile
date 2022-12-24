@@ -24,7 +24,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/rtl8189es
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek RTL8189ETV SDIO WiFi
-  DEPENDS:=+kmod-cfg80211 +kmod-mmc +@DRIVER_11N_SUPPORT
+  DEPENDS:=+kmod-cfg80211 +kmod-mmc
   FILES:=$(PKG_BUILD_DIR)/rtl8189es.ko
   AUTOLOAD:=$(call AutoProbe,rtl8189es)
 endef

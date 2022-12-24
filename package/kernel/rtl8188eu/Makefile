@@ -26,7 +26,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/rtl8188eu
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek 8188EU(S)/8188ETV support
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core
   FILES:=$(PKG_BUILD_DIR)/rtl8188eu.ko
   AUTOLOAD:=$(call AutoProbe,rtl8188eu)
 endef
