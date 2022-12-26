@@ -137,6 +137,8 @@ static int ws2812b_probe(struct spi_device *spi)
 			LED_COLOR_ID_RED,
 			LED_COLOR_ID_BLUE,
 		};
+
+		u32 color_intensity[WS2812B_NUM_COLORS] = { 255, 255, 255, };
 		u32 cascade;
 
 		ret = fwnode_property_read_u32(led_node, "reg", &cascade);
@@ -157,6 +159,11 @@ static int ws2812b_probe(struct spi_device *spi)
 			fwnode_property_read_u32_array(led_node, "color-index",
 						       color_idx, (size_t)cnt);
 
+		cnt = fwnode_property_count_u32(led_node, "color-intensity");
+		if (cnt > 0 && cnt <= WS2812B_NUM_COLORS)
+			fwnode_property_read_u32_array(led_node, "color-intensity",
+							   color_intensity, (size_t)cnt);
+
 		priv->leds[cur_led].mc_cdev.subled_info =
 			priv->leds[cur_led].subled;
 		priv->leds[cur_led].mc_cdev.num_colors = WS2812B_NUM_COLORS;
@@ -165,7 +172,7 @@ static int ws2812b_probe(struct spi_device *spi)
 
 		for (i = 0; i < WS2812B_NUM_COLORS; i++) {
 			priv->leds[cur_led].subled[i].color_index = color_idx[i];
-			priv->leds[cur_led].subled[i].intensity = 255;
+			priv->leds[cur_led].subled[i].intensity = color_intensity[i];
 		}
 
 		priv->leds[cur_led].cascade = cascade;
