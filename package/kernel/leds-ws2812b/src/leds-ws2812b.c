@@ -22,7 +22,7 @@
 #define WS2812B_BYTES_PER_COLOR 3
 #define WS2812B_NUM_COLORS 3
 /* A continuous 0 for 50us+ as the 'reset' signal */
-#define WS2812B_RESET_LEN 18
+#define WS2812B_RESET_LEN 14
 
 struct ws2812b_led {
 	struct led_classdev_mc mc_cdev;
