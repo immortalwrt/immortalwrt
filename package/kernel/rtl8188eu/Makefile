@@ -29,6 +29,7 @@ define KernelPackage/rtl8188eu
 endef
 
 NOSTDINC_FLAGS:= \
+	$(KERNEL_NOSTDINC_FLAGS) \
 	-I$(PKG_BUILD_DIR) \
 	-I$(PKG_BUILD_DIR)/include \
 	-I$(PKG_BUILD_DIR)/platform \
