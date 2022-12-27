@@ -1,6 +1,6 @@
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -7094,7 +7094,7 @@ exit:
+@@ -7106,7 +7123,7 @@ exit:
  	return ret;
  }
  
@@ -9,7 +9,7 @@
  static void cfg80211_rtw_update_mgmt_frame_register(struct wiphy *wiphy,
                                               struct wireless_dev *wdev,
                                               struct mgmt_frame_regs *upd)
-@@ -9430,7 +9430,7 @@ static struct cfg80211_ops rtw_cfg80211_
+@@ -9442,7 +9459,7 @@ static struct cfg80211_ops rtw_cfg80211_
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	.mgmt_tx = cfg80211_rtw_mgmt_tx,
