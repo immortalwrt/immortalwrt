@@ -1,0 +1,170 @@
+From ced770c458ec56e00c9a60e487292f9c83bb2bf4 Mon Sep 17 00:00:00 2001
+From: Shiwei Zhang <ylxdzsw@gmail.com>
+Date: Fri, 23 Dec 2022 14:27:38 +0800
+Subject: [PATCH 3/3] fix for linux 6.1
+
+---
+ os_dep/linux/ioctl_cfg80211.c | 14 +++++++-------
+ os_dep/linux/os_intfs.c       |  2 +-
+ os_dep/osdep_service.c        | 18 +++++++++---------
+ 3 files changed, 17 insertions(+), 17 deletions(-)
+
+--- a/include/ieee80211.h
++++ b/include/ieee80211.h
+@@ -1529,18 +1529,18 @@ enum ieee80211_state {
+ 	(((Addr[2]) & 0xff) == 0xff) && (((Addr[3]) & 0xff) == 0xff) && (((Addr[4]) & 0xff) == 0xff) && \
+ 				     (((Addr[5]) & 0xff) == 0xff))
+ #else
+-extern __inline int is_multicast_mac_addr(const u8 *addr)
++__inline int is_multicast_mac_addr(const u8 *addr)
+ {
+ 	return (addr[0] != 0xff) && (0x01 & addr[0]);
+ }
+ 
+-extern __inline int is_broadcast_mac_addr(const u8 *addr)
++__inline int is_broadcast_mac_addr(const u8 *addr)
+ {
+ 	return ((addr[0] == 0xff) && (addr[1] == 0xff) && (addr[2] == 0xff) &&   \
+ 		(addr[3] == 0xff) && (addr[4] == 0xff) && (addr[5] == 0xff));
+ }
+ 
+-extern __inline int is_zero_mac_addr(const u8 *addr)
++__inline int is_zero_mac_addr(const u8 *addr)
+ {
+ 	return ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) &&   \
+ 		(addr[3] == 0x00) && (addr[4] == 0x00) && (addr[5] == 0x00));
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -417,7 +417,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+ 	if (ret != _SUCCESS)
+ 		goto exit;
+ 
+-	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef);
++	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
+ 
+ #else
+ 	int freq = rtw_ch2freq(ch);
+@@ -1085,7 +1085,7 @@ check_bss:
+ 		#endif
+ 
+ 		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+-		roam_info.bssid = cur_network->network.MacAddress;
++		roam_info.links[0].bssid = cur_network->network.MacAddress;
+ 		roam_info.req_ie = pmlmepriv->assoc_req + sizeof(struct rtw_ieee80211_hdr_3addr) + 2;
+ 		roam_info.req_ie_len = pmlmepriv->assoc_req_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 2;
+ 		roam_info.resp_ie = pmlmepriv->assoc_rsp + sizeof(struct rtw_ieee80211_hdr_3addr) + 6;
+@@ -1635,8 +1635,8 @@ exit:
+ 	return ret;
+ }
+ 
+-static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
+-	, u8 key_index
++static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
++ int link_id, u8 key_index
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
+ 	, bool pairwise
+ #endif
+@@ -1779,8 +1779,8 @@ addkey_end:
+ 
+ }
+ 
+-static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
+-	, u8 keyid
++static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev,
++ int link_id, u8 keyid
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
+ 	, bool pairwise
+ #endif
+@@ -1944,7 +1944,7 @@ exit:
+ 	return ret;
+ }
+ 
+-static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
++static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev, int link_id,
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
+ 				u8 key_index, bool pairwise, const u8 *mac_addr)
+ #else	/* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) */
+@@ -1965,7 +1965,7 @@ static int cfg80211_rtw_del_key(struct w
+ }
+ 
+ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
+-	struct net_device *ndev, u8 key_index
++	struct net_device *ndev, int link_id, u8 key_index
+ 	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)) || defined(COMPAT_KERNEL_RELEASE)
+ 	, bool unicast, bool multicast
+ 	#endif
+@@ -2013,7 +2013,7 @@ static int cfg80211_rtw_set_default_key(
+ 
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
+ int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
+-	struct net_device *ndev, u8 key_index)
++	struct net_device *ndev, int link_id,  u8 key_index)
+ {
+ #define SET_DEF_KEY_PARAM_FMT " key_index=%d"
+ #define SET_DEF_KEY_PARAM_ARG , key_index
+@@ -4929,7 +4929,7 @@ static int cfg80211_rtw_change_beacon(st
+ 	return ret;
+ }
+ 
+-static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
++static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
+ {
+ 	_adapter *adapter = (_adapter *)rtw_netdev_priv(ndev);
+ 
+@@ -9678,12 +9678,12 @@ void rtw_wdev_unregister(struct wireless
+ 
+ 	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
+ 
+-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
+-	if (wdev->current_bss) {
+-		RTW_INFO(FUNC_ADPT_FMT" clear current_bss by cfg80211_disconnected\n", FUNC_ADPT_ARG(adapter));
+-		rtw_cfg80211_indicate_disconnect(adapter, 0, 1);
+-	}
+-	#endif
++	// #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
++	// if (wdev->current_bss) {
++	// 	RTW_INFO(FUNC_ADPT_FMT" clear current_bss by cfg80211_disconnected\n", FUNC_ADPT_ARG(adapter));
++	// 	rtw_cfg80211_indicate_disconnect(adapter, 0, 1);
++	// }
++	// #endif
+ 
+ 	if (pwdev_priv->pmon_ndev) {
+ 		RTW_INFO("%s, unregister monitor interface\n", __func__);
+--- a/os_dep/linux/os_intfs.c
++++ b/os_dep/linux/os_intfs.c
+@@ -1652,7 +1652,7 @@ int rtw_os_ndev_register(_adapter *adapt
+ 	u8 rtnl_lock_needed = rtw_rtnl_lock_needed(dvobj);
+ 
+ #ifdef CONFIG_RTW_NAPI
+-	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
++	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll);
+ #endif /* CONFIG_RTW_NAPI */
+ 
+ #if defined(CONFIG_IOCTL_CFG80211)
+--- a/os_dep/osdep_service.c
++++ b/os_dep/osdep_service.c
+@@ -2614,15 +2614,15 @@ u64 rtw_division64(u64 x, u64 y)
+ inline u32 rtw_random32(void)
+ {
+ #ifdef PLATFORM_LINUX
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+-	return prandom_u32();
+-#elif (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 18))
+-	u32 random_int;
+-	get_random_bytes(&random_int , 4);
+-	return random_int;
+-#else
+-	return random32();
+-#endif
++// #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
++// 	return prandom_u32();
++// #elif (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 18))
++// 	u32 random_int;
++// 	get_random_bytes(&random_int , 4);
++// 	return random_int;
++// #else
++	return get_random_u32();
++// #endif
+ #elif defined(PLATFORM_WINDOWS)
+ #error "to be implemented\n"
+ #elif defined(PLATFORM_FREEBSD)
