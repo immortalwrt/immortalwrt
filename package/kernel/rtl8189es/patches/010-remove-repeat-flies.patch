@@ -18,8 +18,8 @@ diff --git a/include/drv_conf.h b/include/drv_conf.h
 index 0d20a7e..f0a9f88 100644
 --- a/include/drv_conf.h
 +++ b/include/drv_conf.h
-@@ -19,7 +19,9 @@
-  ******************************************************************************/
+@@ -14,7 +14,9 @@
+  *****************************************************************************/
  #ifndef __DRV_CONF_H__
  #define __DRV_CONF_H__
 -#include "autoconf.h"
@@ -28,7 +28,7 @@ index 0d20a7e..f0a9f88 100644
 +#include "rtl_autoconf.h"
  #include "hal_ic_cfg.h"
  
- #if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
+ #define CONFIG_RSSI_PRIORITY
 diff --git a/include/linux/wireless.h b/include/linux/old_unused_rtl_wireless.h
 similarity index 100%
 rename from include/linux/wireless.h

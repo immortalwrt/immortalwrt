@@ -1,29 +1,29 @@
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -5569,7 +5569,7 @@ static void cfg80211_rtw_mgmt_frame_regi
+@@ -7609,7 +7609,7 @@ static void cfg80211_rtw_mgmt_frame_regi
  #else
  	struct net_device *ndev,
  #endif
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)) || defined(BUILD_OPENWRT)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0) || defined(BUILD_OPENWRT))
  	struct mgmt_frame_regs *upd)
  #else
  	u16 frame_type, bool reg)
-@@ -5579,7 +5579,7 @@ static void cfg80211_rtw_mgmt_frame_regi
+@@ -7619,7 +7619,7 @@ static void cfg80211_rtw_mgmt_frame_regi
  	struct net_device *ndev = wdev_to_ndev(wdev);
  #endif
  	_adapter *adapter;
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)) || defined(BUILD_OPENWRT)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0) || defined(BUILD_OPENWRT))
  	u16 frame_type = BIT(upd->global_stypes << 4);
  	bool reg = false;
  #endif
-@@ -6510,7 +6510,7 @@ static struct cfg80211_ops rtw_cfg80211_
+@@ -10047,7 +10047,7 @@ static struct cfg80211_ops rtw_cfg80211_
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34) && LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
  	.action = cfg80211_rtw_mgmt_tx,
  #endif
- 
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)) || defined(BUILD_OPENWRT)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0) || defined(BUILD_OPENWRT))
  	.update_mgmt_frame_registrations = cfg80211_rtw_mgmt_frame_register,
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	.mgmt_frame_register = cfg80211_rtw_mgmt_frame_register,
