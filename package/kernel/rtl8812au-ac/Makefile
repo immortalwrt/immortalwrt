@@ -1,22 +1,22 @@
-# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2020 stepheny
 # <https://github.com/aircrack-ng/rtl8812au/pull/619>
 #
-# Copyright (C) 2021 ImmortalWrt.org
+# Copyright (C) 2021-2022 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8812au-ac
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8812au.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-06-27
-PKG_SOURCE_VERSION:=b8167e66b4ac046b3b76c2c40008d84528e91594
-PKG_MIRROR_HASH:=f3608afb663ccfc796e776bd26b99d9f9cb8dd053bd302eab5c077e498010ce9
+PKG_SOURCE_DATE:=2022-12-23
+PKG_SOURCE_VERSION:=ee299797bcd54d5b8c58d2da8576c54cea1a03a2
+PKG_MIRROR_HASH:=fb72b28e123f9dead470a0b94ef9d56e59c10e4f0baf09ba820e5c34a743decc
 
-PKG_LICENSE:=GPL-2.0
+PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Marty Jones <mj8263788@gmail.com>
 
@@ -30,13 +30,14 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/rtl8812au-ac
   SUBMENU:=Wireless Drivers
   TITLE:=Realtek RTL8812AU/21AU wireless drivers
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11AC_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/rtl8812au.ko
   AUTOLOAD:=$(call AutoProbe,rtl8812au)
   CONFLICTS:=kmod-rtl8812au-ct
 endef
 
-NOSTDINC_FLAGS = \
+NOSTDINC_FLAGS:= \
+	$(KERNEL_NOSTDINC_FLAGS) \
 	-I$(PKG_BUILD_DIR) \
 	-I$(PKG_BUILD_DIR)/include \
 	-I$(STAGING_DIR)/usr/include/mac80211-backport \
@@ -46,33 +47,24 @@ NOSTDINC_FLAGS = \
 	-include backport/autoconf.h \
 	-include backport/backport.h
 
-EXTRA_KCONFIG:= \
-	CONFIG_88XXAU=m \
-	USER_MODULE_NAME=rtl8812au
-
-EXTRA_CFLAGS:= \
+NOSTDINC_FLAGS+= \
 	-DRTW_SINGLE_WIPHY \
 	-DRTW_USE_CFG80211_STA_EVENT \
 	-DCONFIG_IOCTL_CFG80211 \
-	-DCONFIG_CONCURRENT_MODE \
 	-DBUILD_OPENWRT
 
 ifeq ($(CONFIG_BIG_ENDIAN),y)
-EXTRA_CFLAGS += -DCONFIG_BIG_ENDIAN
+NOSTDINC_FLAGS+= -DCONFIG_BIG_ENDIAN
 else
-EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+NOSTDINC_FLAGS+= -DCONFIG_LITTLE_ENDIAN
 endif
 
-MAKE_OPTS:= \
-	$(KERNEL_MAKE_FLAGS) \
-	M="$(PKG_BUILD_DIR)" \
-	NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
-	USER_EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-	$(EXTRA_KCONFIG)
-
 define Build/Compile
-	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(MAKE_OPTS) \
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		M="$(PKG_BUILD_DIR)" \
+		NOSTDINC_FLAGS="$(NOSTDINC_FLAGS)" \
+		CONFIG_88XXAU=m \
+		USER_MODULE_NAME=rtl8812au \
 		modules
 endef
 

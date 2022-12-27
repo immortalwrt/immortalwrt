@@ -4,7 +4,7 @@
 # Copyright (C) 2021 ImmortalWrt
 # <https://immortalwrt.org>
 #
-# This is free software, licensed under the GNU General Public License v3.
+# This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 
