@@ -63,7 +63,7 @@ define Device/pine64_rockpro64
   DEVICE_MODEL := RockPro64
   SOC := rk3399
   UBOOT_DEVICE_NAME := rockpro64-rk3399
-  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
 endef
 TARGET_DEVICES += pine64_rockpro64
 
@@ -73,7 +73,7 @@ define Device/radxa_rock-pi-4a
   SOC := rk3399
   SUPPORTED_DEVICES := radxa,rockpi4a radxa,rockpi4
   UBOOT_DEVICE_NAME := rock-pi-4-rk3399
-  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
 endef
 TARGET_DEVICES += radxa_rock-pi-4a
 
