@@ -1,19 +1,20 @@
-From ce6d3614888e6358466f0e84e248177a6bca5258 Mon Sep 17 00:00:00 2001
+From 764e893ee82321938fc6f4349e9e7caf06a04410 Mon Sep 17 00:00:00 2001
 From: Tang Yun ping <typ@rock-chips.com>
 Date: Thu, 4 May 2017 20:49:58 +0800
 Subject: [PATCH] clk: rockchip: support setting ddr clock via SIP Version 2
  APIs
 
-commit 764e893ee82321938fc6f4349e9e7caf06a04410 rockchip.
+1. Add support setting ddr clock via SIP Version 2 APIs
+2. RK3288 using SIP Vision 2.
 
+Change-Id: I935e43b1885a96650dc86e3eb6d79de6795062a9
 Signed-off-by: Tang Yun ping <typ@rock-chips.com>
 Signed-off-by: hmz007 <hmz007@gmail.com>
 ---
- drivers/clk/rockchip/clk-ddr.c      | 130 ++++++++++++++++++++++++++++
- drivers/clk/rockchip/clk-rk3328.c   |   7 +-
- drivers/clk/rockchip/clk.h          |   3 +-
- include/soc/rockchip/rockchip_sip.h |  11 +++
- 4 files changed, 147 insertions(+), 4 deletions(-)
+ drivers/clk/rockchip/clk-ddr.c    | 159 ++++++++++++++++++++++++++++++
+ drivers/clk/rockchip/clk-rk3288.c |   2 +-
+ drivers/clk/rockchip/clk.h        |   1 +
+ 3 files changed, 161 insertions(+), 1 deletion(-)
 
 --- a/drivers/clk/rockchip/clk-ddr.c
 +++ b/drivers/clk/rockchip/clk-ddr.c
