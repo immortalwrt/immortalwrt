@@ -12,55 +12,43 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
 
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2359,8 +2359,10 @@ retry_baser:
- 	its_write_baser(its, baser, val);
+@@ -2360,7 +2360,8 @@ retry_baser:
  	tmp = baser->val;
  
--	if (of_machine_is_compatible("rockchip,rk3568") ||
+ 	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566")) {
-+	if (IS_ENABLED(CONFIG_NO_GKI) &&
-+	    (of_machine_is_compatible("rockchip,rk3568") ||
-+	     of_machine_is_compatible("rockchip,rk3566") ||
-+	     of_machine_is_compatible("rockchip,rk3588"))) {
++	    of_machine_is_compatible("rockchip,rk3566") ||
++	    of_machine_is_compatible("rockchip,rk3588")) {
  		if (tmp & GITS_BASER_SHAREABILITY_MASK)
  			tmp &= ~GITS_BASER_SHAREABILITY_MASK;
  		else
-@@ -3108,8 +3110,10 @@ static void its_cpu_init_lpis(void)
- 	gicr_write_propbaser(val, rbase + GICR_PROPBASER);
+@@ -3109,7 +3110,8 @@ static void its_cpu_init_lpis(void)
  	tmp = gicr_read_propbaser(rbase + GICR_PROPBASER);
  
--	if (of_machine_is_compatible("rockchip,rk3568") ||
+ 	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566"))
-+	if (IS_ENABLED(CONFIG_NO_GKI) &&
-+	    (of_machine_is_compatible("rockchip,rk3568") ||
-+	     of_machine_is_compatible("rockchip,rk3566") ||
-+	     of_machine_is_compatible("rockchip,rk3588")))
++	    of_machine_is_compatible("rockchip,rk3566") ||
++	    of_machine_is_compatible("rockchip,rk3588"))
  		tmp &= ~GICR_PROPBASER_SHAREABILITY_MASK;
  
  	if ((tmp ^ val) & GICR_PROPBASER_SHAREABILITY_MASK) {
-@@ -3136,8 +3140,10 @@ static void its_cpu_init_lpis(void)
- 	gicr_write_pendbaser(val, rbase + GICR_PENDBASER);
+@@ -3137,7 +3139,8 @@ static void its_cpu_init_lpis(void)
  	tmp = gicr_read_pendbaser(rbase + GICR_PENDBASER);
  
--	if (of_machine_is_compatible("rockchip,rk3568") ||
+ 	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566"))
-+	if (IS_ENABLED(CONFIG_NO_GKI) &&
-+	    (of_machine_is_compatible("rockchip,rk3568") ||
-+	     of_machine_is_compatible("rockchip,rk3566") ||
-+	     of_machine_is_compatible("rockchip,rk3588")))
++	    of_machine_is_compatible("rockchip,rk3566") ||
++	    of_machine_is_compatible("rockchip,rk3588"))
  		tmp &= ~GICR_PENDBASER_SHAREABILITY_MASK;
  
  	if (!(tmp & GICR_PENDBASER_SHAREABILITY_MASK)) {
-@@ -5109,8 +5115,10 @@ static int __init its_probe_one(struct r
- 	gits_write_cbaser(baser, its->base + GITS_CBASER);
+@@ -5110,7 +5113,8 @@ static int __init its_probe_one(struct r
  	tmp = gits_read_cbaser(its->base + GITS_CBASER);
  
--	if (of_machine_is_compatible("rockchip,rk3568") ||
+ 	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566"))
-+	if (IS_ENABLED(CONFIG_NO_GKI) &&
-+	    (of_machine_is_compatible("rockchip,rk3568") ||
-+	     of_machine_is_compatible("rockchip,rk3566") ||
-+	     of_machine_is_compatible("rockchip,rk3588")))
++	    of_machine_is_compatible("rockchip,rk3566") ||
++	    of_machine_is_compatible("rockchip,rk3588"))
  		tmp &= ~GITS_CBASER_SHAREABILITY_MASK;
  
  	if ((tmp ^ baser) & GITS_CBASER_SHAREABILITY_MASK) {
