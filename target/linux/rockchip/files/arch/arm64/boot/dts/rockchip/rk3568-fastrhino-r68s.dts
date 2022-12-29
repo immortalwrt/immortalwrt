@@ -20,10 +20,10 @@
 		io-channel-names = "buttons";
 		keyup-threshold-microvolt = <1800000>;
 
-		recovery {
+		button-recovery {
 			label = "Recovery";
 			linux,code = <KEY_VENDOR>;
-			press-threshold-microvolt = <9>;
+			press-threshold-microvolt = <1750>;
 		};
 	};
 };
