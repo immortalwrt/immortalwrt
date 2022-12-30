@@ -25,7 +25,7 @@ define KernelPackage/i40e-vendor
   SUBMENU:=Network Devices
   TITLE:=Intel(R) Ethernet Controller XL710 Family support (vendor driver)
   VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-libphy
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-libphy @TARGET_x86
   CONFLICTS:=kmod-i40e
   FILES:= \
 	$(PKG_BUILD_DIR)/src/intel_auxiliary.ko \
