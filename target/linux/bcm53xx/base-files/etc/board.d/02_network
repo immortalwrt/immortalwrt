@@ -32,7 +32,8 @@ bcm53xx_setup_interfaces()
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "5t@eth0"
 		;;
 	asus,rt-ac88u)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 extsw" "wan"
+		ucidef_add_switch "switch0" \
+			"0:lan:4" "1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "7t@eth1"
 		;;
 	linksys,panamera)
 		ucidef_add_switch "switch1" \
