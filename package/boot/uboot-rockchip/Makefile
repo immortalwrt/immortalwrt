@@ -30,9 +30,8 @@ define U-Boot/nanopi-r2c-rk3328
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r2c
   DEPENDS:=+PACKAGE_u-boot-nanopi-r2c-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/nanopi-r2s-rk3328
@@ -41,9 +40,8 @@ define U-Boot/nanopi-r2s-rk3328
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r2s
   DEPENDS:=+PACKAGE_u-boot-nanopi-r2s-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/orangepi-r1-plus-rk3328
@@ -52,9 +50,8 @@ define U-Boot/orangepi-r1-plus-rk3328
   BUILD_DEVICES:= \
     xunlong_orangepi-r1-plus
   DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/orangepi-r1-plus-lts-rk3328
@@ -63,9 +60,8 @@ define U-Boot/orangepi-r1-plus-lts-rk3328
   BUILD_DEVICES:= \
     xunlong_orangepi-r1-plus-lts
   DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-lts-rk3328:arm-trusted-firmware-rk3328
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk322xh_bl31_v1.49.elf
-  USE_RKBIN:=1
 endef
 
 
@@ -78,9 +74,8 @@ define U-Boot/nanopi-r4s-rk3399
     friendlyarm_nanopi-r4s \
     friendlyarm_nanopi-r4s-enterprise
   DEPENDS:=+PACKAGE_u-boot-nanopi-r4s-rk3399:arm-trusted-firmware-rk3399
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3399_bl31_v1.35.elf
-  USE_RKBIN:=1
 endef
 
 define U-Boot/rock-pi-4-rk3399
@@ -88,9 +83,9 @@ define U-Boot/rock-pi-4-rk3399
   NAME:=Rock Pi 4
   BUILD_DEVICES:= \
     radxa_rock-pi-4a
-  DEPENDS:=+PACKAGE_u-boot-rock-pi-4-rk3399:arm-trusted-firmware-rockchip
+  DEPENDS:=+PACKAGE_u-boot-rock-pi-4-rk3399:arm-trusted-firmware-rk3399
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3399_bl31.elf
+  ATF:=rk3399_bl31_v1.35.elf
 endef
 
 define U-Boot/rockpro64-rk3399
@@ -98,9 +93,9 @@ define U-Boot/rockpro64-rk3399
   NAME:=RockPro64
   BUILD_DEVICES:= \
     pine64_rockpro64
-  DEPENDS:=+PACKAGE_u-boot-rockpro64-rk3399:arm-trusted-firmware-rockchip
+  DEPENDS:=+PACKAGE_u-boot-rockpro64-rk3399:arm-trusted-firmware-rk3399
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3399_bl31.elf
+  ATF:=rk3399_bl31_v1.35.elf
 endef
 
 
@@ -112,7 +107,7 @@ define U-Boot/fastrhino-r66s-rk3568
   BUILD_DEVICES:= \
     lunzn_fastrhino-r66s
   DEPENDS:=+PACKAGE_u-boot-fastrhino-r66s-rk3568:arm-trusted-firmware-rk3568
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3568_bl31_v1.28.elf
   DDR:=rk3568_ddr_1560MHz_v1.13.bin
 endef
@@ -123,7 +118,7 @@ define U-Boot/fastrhino-r68s-rk3568
   BUILD_DEVICES:= \
     lunzn_fastrhino-r68s
   DEPENDS:=+PACKAGE_u-boot-fastrhino-r68s-rk3568:arm-trusted-firmware-rk3568
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3568_bl31_v1.28.elf
   DDR:=rk3568_ddr_1560MHz_v1.13.bin
 endef
@@ -157,7 +152,7 @@ endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
-ifneq ($(USE_RKBIN),)
+ifeq ($(DDR),)
 	$(STAGING_DIR_IMAGE)/loaderimage --pack --uboot $(PKG_BUILD_DIR)/u-boot-dtb.bin $(PKG_BUILD_DIR)/uboot.img 0x200000
 	$(CP) $(PKG_BUILD_DIR)/uboot.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-uboot.img
 else

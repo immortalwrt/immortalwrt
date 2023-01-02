@@ -26,7 +26,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-4-s.h
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
-@@ -255,6 +255,39 @@ static struct platform_driver *rockchip_
+@@ -263,6 +263,39 @@ static struct platform_driver *rockchip_
  static int num_rockchip_sub_drivers;
  
  /*
@@ -68,7 +68,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-4-s.h
   * to ensure that all subdrivers are probed.
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.h
-@@ -53,6 +53,7 @@ struct rockchip_drm_private {
+@@ -54,6 +54,7 @@ struct rockchip_drm_private {
  };
  
  struct rockchip_encoder {
@@ -76,9 +76,9 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-4-s.h
  	struct drm_encoder encoder;
  };
  
-@@ -61,7 +62,8 @@ int rockchip_drm_dma_attach_device(struc
- void rockchip_drm_dma_detach_device(struct drm_device *drm_dev,
- 				    struct device *dev);
+@@ -64,7 +65,8 @@ void rockchip_drm_dma_detach_device(stru
+ void rockchip_drm_dma_init_device(struct drm_device *drm_dev,
+ 				  struct device *dev);
  int rockchip_drm_wait_vact_end(struct drm_crtc *crtc, unsigned int mstimeout);
 -
 +int rockchip_drm_encoder_set_crtc_endpoint_id(struct rockchip_encoder *rencoder,

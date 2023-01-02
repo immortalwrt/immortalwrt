@@ -54,7 +54,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-22-s.
  rockchipdrm-$(CONFIG_ROCKCHIP_DW_HDMI) += dw_hdmi-rockchip.o
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
-@@ -502,7 +502,7 @@ static int __init rockchip_drm_init(void
+@@ -494,7 +494,7 @@ static int __init rockchip_drm_init(void
  	int ret;
  
  	num_rockchip_sub_drivers = 0;
