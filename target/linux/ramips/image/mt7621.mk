@@ -307,7 +307,8 @@ define Device/asus_rt-ax53u
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
 	check-size
-  DEVICE_PACKAGES := kmod-mt7915e kmod-usb3 uboot-envtools
+  DEVICE_PACKAGES := kmod-mt7915e kmod-usb3 uboot-envtools \
+	kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += asus_rt-ax53u
 
@@ -1961,6 +1962,24 @@ define Device/tplink_eap615-wall-v1
 endef
 TARGET_DEVICES += tplink_eap615-wall-v1
 
+define Device/tplink_er605-v2
+  $(Device/dsa-migration)
+  DEVICE_VENDOR := TP-Link
+  DEVICE_MODEL := ER605
+  DEVICE_VARIANT := v2
+  DEVICE_PACKAGES := -wpad-basic-wolfssl kmod-usb3
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  KERNEL_IN_UBI := 1
+  KERNEL_LOADADDR := 0x82000000
+  KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  IMAGES += sysupgrade.tar
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE_SIZE := 127744k
+endef
+TARGET_DEVICES += tplink_er605-v2
+
 define Device/tplink_mr600-v2-eu
   $(Device/dsa-migration)
   $(Device/tplink-v2)
@@ -2128,6 +2147,18 @@ define Device/unielec_u7621-06-16m
   SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
 endef
 TARGET_DEVICES += unielec_u7621-06-16m
+
+define Device/unielec_u7621-06-32m
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := UniElec
+  DEVICE_MODEL := U7621-06
+  DEVICE_VARIANT := 32M
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 -wpad-basic-wolfssl
+  SUPPORTED_DEVICES += unielec,u7621-06-32m
+endef
+TARGET_DEVICES += unielec_u7621-06-32m
 
 define Device/unielec_u7621-06-64m
   $(Device/dsa-migration)
