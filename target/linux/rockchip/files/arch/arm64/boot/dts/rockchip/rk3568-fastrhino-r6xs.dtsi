@@ -25,7 +25,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&reset_button_pin>;
 
-		reset {
+		button-reset {
 			debounce-interval = <50>;
 			gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
 			label = "reset";
