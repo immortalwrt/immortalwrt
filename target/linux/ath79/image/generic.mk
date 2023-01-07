@@ -1325,6 +1325,22 @@ define Device/extreme-networks_ws-ap3805i
 endef
 TARGET_DEVICES += extreme-networks_ws-ap3805i
 
+define Device/fortinet_fap-221-b
+  $(Device/senao_loader_okli)
+  SOC := ar9344
+  DEVICE_VENDOR := Fortinet
+  DEVICE_MODEL := FAP-221-B
+  FACTORY_IMG_NAME := FP221B-9.99-AP-build999-999999-patch99
+  IMAGE_SIZE := 9216k
+  LOADER_FLASH_OFFS := 0x040000
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | \
+	check-size | pad-to $$$$(IMAGE_SIZE) | \
+	append-loader-okli-uimage $(1) | pad-to 10944k | \
+	gzip-filename $$$$(FACTORY_IMG_NAME)
+endef
+TARGET_DEVICES += fortinet_fap-221-b
+
 define Device/glinet_6408
   $(Device/tplink-8mlzma)
   SOC := ar9331
@@ -1893,7 +1909,7 @@ define Device/ocedo_koala
   DEVICE_MODEL := Koala
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   SUPPORTED_DEVICES += koala
-  IMAGE_SIZE := 7424k
+  IMAGE_SIZE := 14848k
 endef
 TARGET_DEVICES += ocedo_koala
 
@@ -1901,7 +1917,7 @@ define Device/ocedo_raccoon
   SOC := ar9344
   DEVICE_VENDOR := Ocedo
   DEVICE_MODEL := Raccoon
-  IMAGE_SIZE := 7424k
+  IMAGE_SIZE := 14848k
 endef
 TARGET_DEVICES += ocedo_raccoon
 
@@ -1910,7 +1926,7 @@ define Device/ocedo_ursus
   DEVICE_VENDOR := Ocedo
   DEVICE_MODEL := Ursus
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
-  IMAGE_SIZE := 7424k
+  IMAGE_SIZE := 14848k
 endef
 TARGET_DEVICES += ocedo_ursus
 

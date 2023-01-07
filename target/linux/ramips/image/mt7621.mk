@@ -427,6 +427,16 @@ define Device/bolt_arion
 endef
 TARGET_DEVICES += bolt_arion
 
+define Device/cudy_m1800
+  $(Device/dsa-migration)
+  DEVICE_VENDOR := Cudy
+  DEVICE_MODEL := M1800
+  IMAGE_SIZE := 16064k
+  UIMAGE_NAME := R17
+  DEVICE_PACKAGES := kmod-mt7915e
+endef
+TARGET_DEVICES += cudy_m1800
+
 define Device/cudy_wr1300-v1
   $(Device/dsa-migration)
   IMAGE_SIZE := 15872k
@@ -2121,7 +2131,7 @@ define Device/ubnt_usw-flex
   DEVICE_DTS_CONFIG := config@1
   DEVICE_DTS_LOADADDR := 0x87000000
   KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
-  IMAGE_SIZE := 7360k
+  IMAGE_SIZE := 14720k
 endef
 TARGET_DEVICES += ubnt_usw-flex
 
