@@ -7,7 +7,7 @@ define Device/d-link_dgs-1210
   KERNEL := \
 	kernel-bin | \
 	append-dtb | \
-	gzip | \
+	libdeflate-gzip | \
 	uImage gzip | \
 	dlink-cameo
   CAMEO_KERNEL_PART := 2
@@ -34,14 +34,12 @@ define Device/hpe_1920
   KERNEL := \
 	kernel-bin | \
 	append-dtb | \
-	relocate-kernel | \
 	7z | \
 	h3c-image | \
 	h3c-vfs
   KERNEL_INITRAMFS := \
 	kernel-bin | \
 	append-dtb | \
-	relocate-kernel | \
 	7z | \
 	h3c-image
   IMAGE/sysupgrade.bin := \
@@ -60,7 +58,7 @@ define Device/zyxel_gs1900
   KERNEL_INITRAMFS := \
 	kernel-bin | \
 	append-dtb | \
-	gzip | \
+	libdeflate-gzip | \
 	zyxel-vers | \
 	uImage gzip
 endef

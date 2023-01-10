@@ -265,6 +265,7 @@ foreach my $mirror (@ARGV) {
 		push @mirrors, "https://mirrors.aliyun.com/apache/$1";
 		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/apache/$1";
 		push @mirrors, "https://mirrors.ustc.edu.cn/apache/$1";
+		push @mirrors, "https://dlcdn.apache.org/$1";
 		push @mirrors, "https://mirror.netcologne.de/apache.org/$1";
 		push @mirrors, "https://mirror.aarnet.edu.au/pub/apache/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/apache/$1";
