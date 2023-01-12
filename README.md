@@ -81,3 +81,12 @@ For a list of supported devices see the [OpenWrt Hardware Database](https://open
 
 ## License
 ImmortalWrt is licensed under [GPL-2.0-only](https://spdx.org/licenses/GPL-2.0-only.html).
+
+## Acknowledgements
+<table>
+  <tr>
+    <td><a href="https://dlercloud.com/"><img src="https://user-images.githubusercontent.com/22235437/111103249-f9ec6e00-8588-11eb-9bfc-67cc55574555.png" width="183" height="52" border="0" alt="Dler Cloud"></a></td>
+    <td><a href="https://www.jetbrains.com/"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.png" width="120" height="120" border="0" alt="JetBrains Black Box Logo logo"></a></td>
+    <td><a href="https://osdn.net/"><img src="https://osdn.net/sflogo.php?group_id=13647&type=2" width="125" height="39" border="0" alt="OSDN"></a></td>
+  </tr>
+</table>
