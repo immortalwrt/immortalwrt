@@ -15,21 +15,19 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -18,6 +18,13 @@
+@@ -16,6 +16,11 @@
+ 	aliases {
+ 		ethernet1 = &rtl8153;
  		mmc0 = &sdmmc;
- 	};
- 
-+	aliases {
++
 +		led-boot = &sys_led;
 +		led-failsafe = &sys_led;
 +		led-running = &sys_led;
 +		led-upgrade = &sys_led;
-+	};
-+
- 	chosen {
- 		stdout-path = "serial2:1500000n8";
  	};
-@@ -49,18 +56,18 @@
+ 
+ 	chosen {
+@@ -49,18 +54,18 @@
  
  		lan_led: led-0 {
  			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
@@ -47,6 +45,47 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		wan_led: led-2 {
  			gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
 -			label = "nanopi-r2s:green:wan";
++			label = "green:wan";
+ 		};
+ 	};
+ 
+--- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
+@@ -17,6 +17,11 @@
+ 	aliases {
+ 		ethernet1 = &rtl8153;
+ 		mmc0 = &sdmmc;
++
++		led-boot = &sys_led;
++		led-failsafe = &sys_led;
++		led-running = &sys_led;
++		led-upgrade = &sys_led;
+ 	};
+ 
+ 	chosen {
+@@ -36,22 +41,18 @@
+ 		pinctrl-names = "default";
+ 
+ 		led-0 {
+-			function = LED_FUNCTION_LAN;
+-			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
++			label = "green:lan";
+ 		};
+ 
+-		led-1 {
+-			function = LED_FUNCTION_STATUS;
+-			color = <LED_COLOR_ID_RED>;
++		sys_led: led-1 {
+ 			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
++			label = "red:sys";
+ 		};
+ 
+ 		led-2 {
+-			function = LED_FUNCTION_WAN;
+-			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
 +			label = "green:wan";
  		};
  	};

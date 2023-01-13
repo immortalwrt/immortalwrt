@@ -32,7 +32,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  
  enum rk_pdm_version {
  	RK_PDM_RK3229,
-@@ -539,8 +540,36 @@ static const struct of_device_id rockchi
+@@ -540,8 +541,36 @@ static const struct of_device_id rockchi
  };
  MODULE_DEVICE_TABLE(of, rockchip_pdm_match);
  
@@ -69,7 +69,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  	const struct of_device_id *match;
  	struct rk_pdm_dev *pdm;
  	struct resource *res;
-@@ -606,6 +635,11 @@ static int rockchip_pdm_probe(struct pla
+@@ -607,6 +636,11 @@ static int rockchip_pdm_probe(struct pla
  	}
  
  	rockchip_pdm_rxctrl(pdm, 0);

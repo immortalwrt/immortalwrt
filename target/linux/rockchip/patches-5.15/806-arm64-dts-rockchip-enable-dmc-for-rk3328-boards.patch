@@ -16,7 +16,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -139,10 +139,19 @@
+@@ -137,10 +137,19 @@
  	cpu-supply = <&vdd_arm>;
  };
  
@@ -36,7 +36,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &gmac2io {
  	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
  	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
-@@ -208,6 +217,7 @@
+@@ -206,6 +215,7 @@
  				regulator-name = "vdd_log";
  				regulator-always-on;
  				regulator-boot-on;
@@ -44,7 +44,45 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
-@@ -222,6 +232,7 @@
+@@ -220,6 +230,7 @@
+ 				regulator-name = "vdd_arm";
+ 				regulator-always-on;
+ 				regulator-boot-on;
++				regulator-init-microvolt = <1225000>;
+ 				regulator-min-microvolt = <712500>;
+ 				regulator-max-microvolt = <1450000>;
+ 				regulator-ramp-delay = <12500>;
+--- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
+@@ -104,10 +104,19 @@
+ 	cpu-supply = <&vdd_arm>;
+ };
+ 
++&dfi {
++	status = "okay";
++};
++
+ &display_subsystem {
+ 	status = "disabled";
+ };
+ 
++&dmc {
++	center-supply = <&vdd_log>;
++	status = "okay";
++};
++
+ &gmac2io {
+ 	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
+ 	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
+@@ -167,6 +176,7 @@
+ 				regulator-name = "vdd_log";
+ 				regulator-always-on;
+ 				regulator-boot-on;
++				regulator-init-microvolt = <1075000>;
+ 				regulator-min-microvolt = <712500>;
+ 				regulator-max-microvolt = <1450000>;
+ 				regulator-ramp-delay = <12500>;
+@@ -181,6 +191,7 @@
  				regulator-name = "vdd_arm";
  				regulator-always-on;
  				regulator-boot-on;

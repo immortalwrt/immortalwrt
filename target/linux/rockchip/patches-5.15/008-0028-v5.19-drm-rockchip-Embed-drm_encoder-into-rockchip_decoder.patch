@@ -438,7 +438,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
 +	struct rk3066_hdmi *hdmi = encoder_to_rk3066_hdmi(encoder);
  
  	/* Store the display mode for plugin/DPMS poweron events. */
- 	memcpy(&hdmi->previous_mode, adj_mode, sizeof(hdmi->previous_mode));
+ 	drm_mode_copy(&hdmi->previous_mode, adj_mode);
 @@ -388,7 +398,7 @@ rk3066_hdmi_encoder_mode_set(struct drm_
  
  static void rk3066_hdmi_encoder_enable(struct drm_encoder *encoder)
@@ -577,7 +577,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  static inline void rk3288_writel(struct rockchip_lvds *lvds, u32 offset,
  				 u32 val)
  {
-@@ -600,7 +606,7 @@ static int rockchip_lvds_bind(struct dev
+@@ -604,7 +610,7 @@ static int rockchip_lvds_bind(struct dev
  		goto err_put_remote;
  	}
  
@@ -586,7 +586,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  	encoder->possible_crtcs = drm_of_find_possible_crtcs(drm_dev,
  							     dev->of_node);
  
-@@ -665,10 +671,10 @@ static void rockchip_lvds_unbind(struct
+@@ -669,10 +675,10 @@ static void rockchip_lvds_unbind(struct
  	const struct drm_encoder_helper_funcs *encoder_funcs;
  
  	encoder_funcs = lvds->soc_data->helper_funcs;
