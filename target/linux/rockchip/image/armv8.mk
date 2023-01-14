@@ -35,6 +35,7 @@ TARGET_DEVICES += friendlyarm_nanopi-r4s
 define Device/friendlyarm_nanopi-r4s-enterprise
   $(Device/friendlyarm_nanopi-r4s)
   DEVICE_MODEL := NanoPi R4S Enterprise Edition
+  UBOOT_DEVICE_NAME := nanopi-r4s-enterprise-rk3399
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r4s-enterprise
 
