@@ -65,7 +65,6 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
   - [LuCI Web Interface](https://github.com/immortalwrt/luci): Modern and modular interface to control the device via a web browser.
   - [ImmortalWrt Packages](https://github.com/immortalwrt/packages): Community repository of ported packages.
   - [OpenWrt Routing](https://github.com/openwrt/routing): Packages specifically focused on (mesh) routing.
-  - [CONTRIBUTED.md](https://github.com/immortalwrt/immortalwrt/blob/master/CONTRIBUTED.md): the 3rd-party packages we introduced.
 
 ## Support Information
 For a list of supported devices see the [OpenWrt Hardware Database](https://openwrt.org/supported_devices)
