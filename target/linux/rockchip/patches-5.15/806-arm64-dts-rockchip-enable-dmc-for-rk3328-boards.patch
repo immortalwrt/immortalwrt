@@ -1,0 +1,92 @@
+From f9ae6e992d3d9e80357fee7d65ba0fe2dd37ae1f Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Tue, 19 Nov 2019 14:21:51 +0800
+Subject: [PATCH] arm64: dts: nanopi-r2: add rk3328-dmc relate node
+
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ .../rockchip/rk3328-dram-default-timing.dtsi  | 311 ++++++++++++++++++
+ .../dts/rockchip/rk3328-nanopi-r2-common.dtsi |  85 ++++-
+ include/dt-bindings/clock/rockchip-ddr.h      |  63 ++++
+ include/dt-bindings/memory/rk3328-dram.h      | 159 +++++++++
+ 4 files changed, 617 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-dram-default-timing.dtsi
+ create mode 100644 include/dt-bindings/clock/rockchip-ddr.h
+ create mode 100644 include/dt-bindings/memory/rk3328-dram.h
+
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
+@@ -137,10 +137,19 @@
+ 	cpu-supply = <&vdd_arm>;
+ };
+ 
++&dfi {
++	status = "okay";
++};
++
+ &display_subsystem {
+ 	status = "disabled";
+ };
+ 
++&dmc {
++	center-supply = <&vdd_log>;
++	status = "okay";
++};
++
+ &gmac2io {
+ 	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
+ 	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
+@@ -206,6 +215,7 @@
+ 				regulator-name = "vdd_log";
+ 				regulator-always-on;
+ 				regulator-boot-on;
++				regulator-init-microvolt = <1075000>;
+ 				regulator-min-microvolt = <712500>;
+ 				regulator-max-microvolt = <1450000>;
+ 				regulator-ramp-delay = <12500>;
+@@ -220,6 +230,7 @@
+ 				regulator-name = "vdd_arm";
+ 				regulator-always-on;
+ 				regulator-boot-on;
++				regulator-init-microvolt = <1225000>;
+ 				regulator-min-microvolt = <712500>;
+ 				regulator-max-microvolt = <1450000>;
+ 				regulator-ramp-delay = <12500>;
+--- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
+@@ -104,10 +104,19 @@
+ 	cpu-supply = <&vdd_arm>;
+ };
+ 
++&dfi {
++	status = "okay";
++};
++
+ &display_subsystem {
+ 	status = "disabled";
+ };
+ 
++&dmc {
++	center-supply = <&vdd_log>;
++	status = "okay";
++};
++
+ &gmac2io {
+ 	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
+ 	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
+@@ -167,6 +176,7 @@
+ 				regulator-name = "vdd_log";
+ 				regulator-always-on;
+ 				regulator-boot-on;
++				regulator-init-microvolt = <1075000>;
+ 				regulator-min-microvolt = <712500>;
+ 				regulator-max-microvolt = <1450000>;
+ 				regulator-ramp-delay = <12500>;
+@@ -181,6 +191,7 @@
+ 				regulator-name = "vdd_arm";
+ 				regulator-always-on;
+ 				regulator-boot-on;
++				regulator-init-microvolt = <1225000>;
+ 				regulator-min-microvolt = <712500>;
+ 				regulator-max-microvolt = <1450000>;
+ 				regulator-ramp-delay = <12500>;

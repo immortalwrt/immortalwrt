@@ -33,15 +33,3 @@
 		};
 	};
 };
-
-&lan_led {
-	label = "orangepi-r1-plus-lts:green:lan";
-};
-
-&sys_led {
-	label = "orangepi-r1-plus-lts:red:sys";
-};
-
-&wan_led {
-	label = "orangepi-r1-plus-lts:green:wan";
-};

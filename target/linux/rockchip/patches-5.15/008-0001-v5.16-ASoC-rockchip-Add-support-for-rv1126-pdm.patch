@@ -111,7 +111,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  	regmap_update_bits(pdm->regmap, PDM_HPF_CTRL,
  			   PDM_HPF_CF_MSK, PDM_HPF_60HZ);
  	regmap_update_bits(pdm->regmap, PDM_HPF_CTRL,
-@@ -441,9 +502,10 @@ static bool rockchip_pdm_precious_reg(st
+@@ -442,9 +503,10 @@ static bool rockchip_pdm_precious_reg(st
  }
  
  static const struct reg_default rockchip_pdm_reg_defaults[] = {
@@ -125,7 +125,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  };
  
  static const struct regmap_config rockchip_pdm_regmap_config = {
-@@ -469,6 +531,8 @@ static const struct of_device_id rockchi
+@@ -470,6 +532,8 @@ static const struct of_device_id rockchi
  	  .data = (void *)RK_PDM_RK3308 },
  	{ .compatible = "rockchip,rk3308-pdm",
  	  .data = (void *)RK_PDM_RK3308 },

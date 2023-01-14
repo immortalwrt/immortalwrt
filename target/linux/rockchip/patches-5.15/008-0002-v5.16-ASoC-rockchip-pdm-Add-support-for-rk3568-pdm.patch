@@ -15,7 +15,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
 
 --- a/sound/soc/rockchip/rockchip_pdm.c
 +++ b/sound/soc/rockchip/rockchip_pdm.c
-@@ -531,6 +531,8 @@ static const struct of_device_id rockchi
+@@ -532,6 +532,8 @@ static const struct of_device_id rockchi
  	  .data = (void *)RK_PDM_RK3308 },
  	{ .compatible = "rockchip,rk3308-pdm",
  	  .data = (void *)RK_PDM_RK3308 },
