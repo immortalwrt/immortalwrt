@@ -81,7 +81,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  	GPIO_PULL_NORMAL = 0,
 --- a/drivers/gpio/Kconfig
 +++ b/drivers/gpio/Kconfig
-@@ -341,6 +341,19 @@ config ROCKCHIP_GPIO
+@@ -340,6 +340,19 @@ config ROCKCHIP_GPIO
  	  The GPIOs for a device are defined in the device tree with one node
  	  for each bank.
  

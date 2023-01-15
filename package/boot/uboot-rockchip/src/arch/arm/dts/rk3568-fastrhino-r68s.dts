@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include "rk3568-fastrhino-r6xs.dtsi"
 
@@ -18,10 +18,10 @@
 		io-channel-names = "buttons";
 		keyup-threshold-microvolt = <1800000>;
 
-		recovery {
+		button-recovery {
 			label = "Recovery";
 			linux,code = <KEY_VENDOR>;
-			press-threshold-microvolt = <9>;
+			press-threshold-microvolt = <1750>;
 		};
 	};
 };

@@ -1,0 +1,3 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
+#include "rk3399-nanopi-r4s-u-boot.dtsi"
