@@ -21,7 +21,6 @@ QL_CM_DHCP=udhcpc_netlink.c
 QL_CM_DHCP+=${LIBMNL}
 endif
 
-CFLAGS += -Wall -Wextra -Werror -O1 #-s
 LDFLAGS += -lpthread -ldl -lrt
 
 release: clean qmi-proxy mbim-proxy atc-proxy #qrtr-proxy
