@@ -720,6 +720,23 @@ define Device/linksys_mr8300
 endef
 TARGET_DEVICES += linksys_mr8300
 
+define Device/linksys_whw03v2
+	$(call Device/FitzImage)
+	DEVICE_VENDOR := Linksys
+	DEVICE_MODEL := WHW03
+	DEVICE_VARIANT := V2
+	SOC := qcom-ipq4019
+	KERNEL_SIZE := 6144k
+	IMAGE_SIZE := 158720k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
+	IMAGES += factory.bin
+	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=WHW03v2
+	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct ipq-wifi-linksys_whw03v2 kmod-leds-pca963x kmod-spi-dev kmod-bluetooth
+endef
+TARGET_DEVICES += linksys_whw03v2
+
 define Device/linksys_whw01
 	$(call Device/FitzImage)
 	DEVICE_VENDOR := Linksys
@@ -1105,6 +1122,19 @@ define Device/unielec_u4019-32m
 endef
 # Missing DSA Setup
 #TARGET_DEVICES += unielec_u4019-32m
+
+define Device/zte_mf18a
+	$(call Device/FitImage)
+	DEVICE_VENDOR := ZTE
+	DEVICE_MODEL := MF18A
+	SOC := qcom-ipq4019
+	DEVICE_DTS_CONFIG := config@ap.dk04.1-c1
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	KERNEL_IN_UBI := 1
+	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct ipq-wifi-zte_mf18a
+endef
+TARGET_DEVICES += zte_mf18a
 
 define Device/zte_mf28x_common
 	$(call Device/FitzImage)
