@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "ipq8071-ax6.dts"
+
+/ {
+	model = "Redmi AX6 (stock layout)";
+	compatible = "redmi,ax6-stock", "qcom,ipq8074";
+
+	aliases {
+		/* Aliases as required by u-boot to patch MAC addresses */
+		ethernet1 = &dp2;
+		ethernet2 = &dp3;
+		ethernet3 = &dp4;
+		ethernet4 = &dp5;
+	};
+
+	chosen {
+		bootargs-append = " root=/dev/ubiblock0_1";
+	};
+};
+
+&qpic_nand {
+	/delete-node/ partitions;
+	/delete-node/ nand@0;
+
+	nand@0 {
+		reg = <0>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "qcom,smem-part";
+		};
+	};
+};
+
+&dp2 {
+	/delete-property/ nvmem-cells;
+	/delete-property/ nvmem-cell-names;
+};
+
+&dp3 {
+	/delete-property/ nvmem-cells;
+	/delete-property/ nvmem-cell-names;
+};
+
+&dp4 {
+	/delete-property/ nvmem-cells;
+	/delete-property/ nvmem-cell-names;
+};
+
+&dp5 {
+	/delete-property/ nvmem-cells;
+	/delete-property/ nvmem-cell-names;
+};
