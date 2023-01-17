@@ -14,7 +14,7 @@ if (!stat) {
 
 let eth_info = [];
 for (let ifname in stat) {
-	if (!ifname || stat[ifname]?.devtype !== 'ethernet')
+	if (!ifname || stat[ifname]?.devtype !== 'ethernet' || !length(stat[ifname]['link-advertising']))
 		continue;
 
 	let status, speed, duplex;
