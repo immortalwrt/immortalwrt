@@ -10,7 +10,8 @@ edgecore,eap102)
 	ucidef_set_led_netdev "wan" "WAN" "green:wanpoe" "wan"
 	;;
 redmi,ax6|\
-xiaomi,ax3600)
+xiaomi,ax3600|\
+xiaomi,ax3600-stock)
 	ucidef_set_led_netdev "wan" "WAN" "blue:network" "wan"
 	;;
 qnap,301w)
