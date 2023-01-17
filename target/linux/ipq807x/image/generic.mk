@@ -76,7 +76,7 @@ define Device/redmi_ax6
 	$(call Device/xiaomi_ax3600)
 	DEVICE_VENDOR := Redmi
 	DEVICE_MODEL := AX6
-	DEVICE_PACKAGES := ipq-wifi-redmi_ax6
+	DEVICE_PACKAGES := ipq-wifi-redmi_ax6 -kmod-usb3 -kmod-usb-dwc3 -kmod-usb-dwc3-qcom
 endef
 TARGET_DEVICES += redmi_ax6
 
@@ -98,7 +98,8 @@ define Device/xiaomi_ax3600
 	DEVICE_DTS_CONFIG := config@ac04
 	SOC := ipq8071
 	KERNEL_SIZE := 36608k
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
+	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct \
+		-kmod-usb3 -kmod-usb-dwc3 -kmod-usb-dwc3-qcom
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
