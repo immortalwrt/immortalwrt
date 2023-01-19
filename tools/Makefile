@@ -42,7 +42,6 @@ tools-y += findutils
 tools-y += firmware-utils
 tools-y += flex
 tools-y += gengetopt
-tools-y += libdeflate
 tools-y += libressl
 tools-y += libtool
 tools-y += lzma
@@ -100,7 +99,6 @@ $(curdir)/gengetopt/compile := $(curdir)/libtool/compile
 $(curdir)/gmp/compile := $(curdir)/libtool/compile
 $(curdir)/gptfdisk/compile += $(curdir)/e2fsprogs/compile $(curdir)/popt/compile
 $(curdir)/isl/compile := $(curdir)/gmp/compile
-$(curdir)/libdeflate/compile := $(curdir)/cmake/compile
 $(curdir)/liblzo/compile := $(curdir)/cmake/compile
 $(curdir)/libressl/compile := $(curdir)/pkgconf/compile
 $(curdir)/libtool/compile := $(curdir)/automake/compile $(curdir)/missing-macros/compile
@@ -149,8 +147,11 @@ $(foreach tool, $(tools-y), $(if $(wildcard $(curdir)/$(tool)/patches),$(eval $(
 
 $(foreach tool, $(filter-out xz,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/xz/compile))
 
-# make any tool depend on tar, xz and patch to ensure that archives can be unpacked and patched properly
-tools-core := tar xz patch
+# make any tool depend on the following to ensure that archives can be unpacked and patched properly
+tools-core += libdeflate
+tools-core += patch
+tools-core += tar
+tools-core += xz
 
 $(foreach tool, $(tools-y), $(eval $(curdir)/$(tool)/compile += $(patsubst %,$(curdir)/%/compile,$(tools-core))))
 tools-y += $(tools-core)
