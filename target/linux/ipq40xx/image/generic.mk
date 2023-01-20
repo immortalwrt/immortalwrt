@@ -274,7 +274,7 @@ define Device/avm_fritzbox-7530
 	DEVICE_ALT0_VENDOR := AVM
 	DEVICE_ALT0_MODEL := FRITZ!Box 7520
 	SOC := qcom-ipq4019
-	DEVICE_PACKAGES := fritz-caldata fritz-tffs-nand
+	DEVICE_PACKAGES := fritz-caldata fritz-tffs-nand ltq-vdsl-vr11-app
 endef
 TARGET_DEVICES += avm_fritzbox-7530
 
@@ -542,8 +542,7 @@ define Device/extreme-networks_ws-ap3915i
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | check-size | append-metadata
 	DEVICE_PACKAGES := ipq-wifi-extreme-networks_ws-ap3915i
 endef
-# Missing DSA Setup
-#TARGET_DEVICES += extreme-networks_ws-ap3915i
+TARGET_DEVICES += extreme-networks_ws-ap3915i
 
 define Device/ezviz_cs-w3-wd1200g-eup
 	$(call Device/FitImage)

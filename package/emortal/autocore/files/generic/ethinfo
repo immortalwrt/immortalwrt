@@ -14,7 +14,7 @@ if (!stat) {
 
 let eth_info = [];
 for (let ifname in stat) {
-	if (!ifname || match(ifname, /^(eth\d+)$/)?.[1] != ifname)
+	if (!ifname || stat[ifname]?.devtype !== 'ethernet' || !length(stat[ifname]['link-advertising']))
 		continue;
 
 	let status, speed, duplex;
@@ -24,14 +24,14 @@ for (let ifname in stat) {
 	else
 		status = 'no';
 
-	if (!stat[ifname]?.carrier || !stat[ifname]?.speed || substr(stat[ifname]?.speed, 0, 1) == '-')
+	if (!stat[ifname]?.carrier || !stat[ifname]?.speed || substr(stat[ifname]?.speed, 0, 1) === '-')
 		speed = '-';
 	else
 		speed = substr(stat[ifname]?.speed, 0, -1) + 'Mb/s';
 
 	if (speed == '-')
 		duplex = '-';
-	else if (substr(stat[ifname]?.speed, -1) == 'F')
+	else if (substr(stat[ifname]?.speed, -1) === 'F')
 		duplex = 'Full';
 	else
 		duplex = 'Half';

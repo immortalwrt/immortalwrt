@@ -1,0 +1,212 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq8074-512m.dtsi"
+#include "ipq8074-ac-cpu.dtsi"
+#include "ipq8074-ess.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	model = "ZTE MF269";
+	compatible = "zte,mf269", "qcom,ipq8074";
+
+	aliases {
+		serial0 = &blsp1_uart5;
+		led-boot = &led_system_white;
+		led-failsafe = &led_system_white;
+		led-running = &led_system_white;
+		led-upgrade = &led_system_white;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_1";
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 46 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+
+		wps {
+			label = "wps";
+			gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_system_white: system-white {
+			label = "white:system";
+			gpio = <&tlmm 56 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&tlmm {
+	mdio_pins: mdio-pins {
+		mdc {
+			pins = "gpio68";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mido {
+			pins = "gpio69";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+
+	usb_vbus_pins: usb-vbus-pins {
+		usb-pins {
+			pins = "gpio29";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-disable;
+			output-high;
+		};
+	};
+};
+
+&blsp1_spi1 {
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+	cs-select = <0>;
+	status = "okay";
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0>;
+		spi-max-frequency = <50000000>;
+	};
+};
+
+&blsp1_uart5 {
+	status = "okay";
+};
+
+&prng {
+	status = "okay";
+};
+
+&cryptobam {
+	status = "okay";
+};
+
+&crypto {
+	status = "okay";
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&qpic_nand {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "qcom,smem-part";
+		};
+	};
+};
+
+&qusb_phy_0 {
+	status = "okay";
+};
+
+&ssphy_0 {
+	status = "okay";
+};
+
+&usb_0 {
+	pinctrl-0 = <&usb_vbus_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+
+	qca8075_24: ethernet-phy@24 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <24>;
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+	};
+
+	qca8075_28: ethernet-phy@28 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <28>;
+		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&switch {
+	status = "okay";
+
+	switch_cpu_bmp = <0x1>;  /* cpu port bitmap */
+	switch_lan_bmp = <0x3e>; /* lan port bitmap */
+	switch_wan_bmp = <0x40>; /* wan port bitmap */
+	switch_mac_mode = <0x0>; /* mac mode for uniphy instance0*/
+	switch_mac_mode1 = <0xf>; /* mac mode for uniphy instance1*/
+	switch_mac_mode2 = <0xf>; /* mac mode for uniphy instance2*/
+	bm_tick_mode = <0>; /* bm tick mode */
+	tm_tick_mode = <0>; /* tm tick mode */
+
+	qcom,port_phyinfo {
+		port@4 {
+			port_id = <5>;
+			phy_address = <24>;
+			port_mac_sel = "QGMAC_PORT";
+		};
+		port@5 {
+			port_id = <6>;
+			phy_address = <28>;
+			port_mac_sel = "QGMAC_PORT";
+		};
+	};
+};
+
+&edma {
+	status = "okay";
+};
+
+&dp5_syn {
+	status = "okay";
+	phy-handle = <&qca8075_24>;
+	label = "lan";
+};
+
+&dp6_syn {
+	status = "okay";
+	phy-handle = <&qca8075_28>;
+	label = "wan";
+};
+
+&wifi {
+	status = "okay";
+
+	qcom,ath11k-calibration-variant = "ZTE-MF269";
+	qcom,ath11k-fw-memory-mode = <1>;
+};
