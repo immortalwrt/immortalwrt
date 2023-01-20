@@ -836,6 +836,7 @@ define Device/elecom_wrc-2533ghbk2-t
 	elx-header 0107003b 8844A2D168B45A2D | \
 	elecom-product-header WRC-2533GHBK2-T
   DEVICE_PACKAGES := kmod-mt7615-firmware
+  DEFAULT := n
 endef
 TARGET_DEVICES += elecom_wrc-2533ghbk2-t
 
