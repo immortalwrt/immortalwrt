@@ -278,7 +278,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -5087,6 +5087,7 @@ static void __mem_cgroup_free(struct mem
+@@ -5098,6 +5098,7 @@ static void __mem_cgroup_free(struct mem
  		free_mem_cgroup_per_node_info(memcg, node);
  	free_percpu(memcg->vmstats_percpu);
  	free_percpu(memcg->vmstats_local);
@@ -286,7 +286,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	kfree(memcg);
  }
  
-@@ -5137,6 +5138,9 @@ static struct mem_cgroup *mem_cgroup_all
+@@ -5148,6 +5149,9 @@ static struct mem_cgroup *mem_cgroup_all
  		if (alloc_mem_cgroup_per_node_info(memcg, node))
  			goto fail;
  
@@ -296,7 +296,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	if (memcg_wb_domain_init(memcg, GFP_KERNEL))
  		goto fail;
  
-@@ -6055,6 +6059,29 @@ static void mem_cgroup_move_task(void)
+@@ -6066,6 +6070,29 @@ static void mem_cgroup_move_task(void)
  }
  #endif
  
@@ -326,7 +326,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  /*
   * Cgroup retains root cgroups across [un]mount cycles making it necessary
   * to verify whether we're attached to the default hierarchy on each mount
-@@ -6355,6 +6382,7 @@ struct cgroup_subsys memory_cgrp_subsys
+@@ -6366,6 +6393,7 @@ struct cgroup_subsys memory_cgrp_subsys
  	.css_free = mem_cgroup_css_free,
  	.css_reset = mem_cgroup_css_reset,
  	.can_attach = mem_cgroup_can_attach,

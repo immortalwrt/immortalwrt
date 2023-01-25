@@ -169,13 +169,13 @@
 +               } else { /* no previous expect */
 +                       u_int16_t newport, tmpport, orgport;
 +
-+                       minport = range->min_proto.all == 0? 
++                       minport = range->min_proto.all == 0?
 +                               ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.src.
 +                               u.udp.port : range->min_proto.all;
-+                       maxport = range->max_proto.all == 0? 
++                       maxport = range->max_proto.all == 0?
 +                               htons(65535) : range->max_proto.all;
 +                        orgport = ntohs(minport);
-+                       for (newport = ntohs(minport),tmpport = ntohs(maxport); 
++                       for (newport = ntohs(minport),tmpport = ntohs(maxport);
 +                            newport <= tmpport; newport++) {
 +                               if (CHECK_PORT_PARITY(orgport, newport) && !find_exp(newsrc, htons(newport), ct)) {
 +                                        pr_debug("bcm_nat: new mapped port = "

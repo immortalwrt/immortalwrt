@@ -12,7 +12,7 @@ Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
 
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-@@ -21,6 +21,11 @@
+@@ -22,6 +22,11 @@
  		ethernet0 = &emac;
  		ethernet1 = &rtl8189etv;
  		serial0 = &uart0;
@@ -24,7 +24,7 @@ Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
  	};
  
  	chosen {
-@@ -30,7 +35,7 @@
+@@ -31,7 +36,7 @@
  	leds {
  		compatible = "gpio-leds";
  

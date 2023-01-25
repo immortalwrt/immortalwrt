@@ -27,7 +27,7 @@ Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 +	/* If this SFP module has a PHY, start the PHY now. */
 +	if (pl->phydev)
 +		phy_start(pl->phydev);
-+		
++
 +	return 0;
 +}
 +

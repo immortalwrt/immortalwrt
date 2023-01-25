@@ -20,7 +20,7 @@ Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 
 --- a/include/linux/mmzone.h
 +++ b/include/linux/mmzone.h
-@@ -358,33 +358,40 @@ struct per_cpu_nodestat {
+@@ -481,33 +481,40 @@ struct per_cpu_nodestat {
  #endif /* !__GENERATING_BOUNDS.H */
  
  enum zone_type {

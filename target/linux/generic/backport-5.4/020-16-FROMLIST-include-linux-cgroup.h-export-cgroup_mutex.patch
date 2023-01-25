@@ -24,7 +24,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
 
 --- a/include/linux/cgroup.h
 +++ b/include/linux/cgroup.h
-@@ -426,6 +426,18 @@ static inline void cgroup_put(struct cgr
+@@ -427,6 +427,18 @@ static inline void cgroup_put(struct cgr
  	css_put(&cgrp->self);
  }
  
@@ -43,7 +43,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
  /**
   * task_css_set_check - obtain a task's css_set with extra access conditions
   * @task: the task to obtain css_set for
-@@ -440,7 +452,6 @@ static inline void cgroup_put(struct cgr
+@@ -441,7 +453,6 @@ static inline void cgroup_put(struct cgr
   * as locks used during the cgroup_subsys::attach() methods.
   */
  #ifdef CONFIG_PROVE_RCU
@@ -51,7 +51,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
  extern spinlock_t css_set_lock;
  #define task_css_set_check(task, __c)					\
  	rcu_dereference_check((task)->cgroups,				\
-@@ -703,6 +714,8 @@ struct cgroup;
+@@ -704,6 +715,8 @@ struct cgroup;
  
  static inline void css_get(struct cgroup_subsys_state *css) {}
  static inline void css_put(struct cgroup_subsys_state *css) {}

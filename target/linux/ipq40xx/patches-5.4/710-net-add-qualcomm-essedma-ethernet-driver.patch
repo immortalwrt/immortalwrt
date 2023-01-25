@@ -35,10 +35,9 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
 +obj-$(CONFIG_ESSEDMA) += essedma/
  
  obj-$(CONFIG_RMNET) += rmnet/
-
 --- a/drivers/net/ethernet/qualcomm/essedma/edma.c
 +++ b/drivers/net/ethernet/qualcomm/essedma/edma.c
-@@ -1493,7 +1493,7 @@
+@@ -1489,7 +1489,7 @@ int edma_rx_flow_steer(struct net_device
  	int res;
  
  	if (skb->protocol == htons(ETH_P_IPV6)) {
