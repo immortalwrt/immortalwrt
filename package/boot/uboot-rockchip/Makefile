@@ -14,6 +14,7 @@ PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
 include $(INCLUDE_DIR)/u-boot.mk
 include $(INCLUDE_DIR)/package.mk
+include ../arm-trusted-firmware-rockchip/atf-version.mk
 
 define U-Boot/Default
   BUILD_TARGET:=rockchip
@@ -26,8 +27,8 @@ endef
 
 define U-Boot/Default/rk3328
   BUILD_SUBTARGET:=armv8
-  DEPENDS:=+PACKAGE_u-boot-$(1):arm-trusted-firmware-rk3328
-  ATF:=rk322xh_bl31_v1.49.elf
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3328
+  ATF:=$(RK3328_ATF)
 endef
 
 define U-Boot/nanopi-r2c-rk3328
@@ -63,8 +64,8 @@ endef
 
 define U-Boot/Default/rk3399
   BUILD_SUBTARGET:=armv8
-  DEPENDS:=+PACKAGE_u-boot-$(1):arm-trusted-firmware-rk3399
-  ATF:=rk3399_bl31_v1.35.elf
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3399
+  ATF:=$(RK3399_ATF)
 endef
 
 define U-Boot/nanopi-r4s-rk3399
@@ -100,9 +101,9 @@ endef
 
 define U-Boot/Default/rk3568
   BUILD_SUBTARGET:=armv8
-  DEPENDS:=+PACKAGE_u-boot-$(1):arm-trusted-firmware-rk3568
-  ATF:=rk3568_bl31_v1.28.elf
-  DDR:=rk3568_ddr_1560MHz_v1.15.bin
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3568
+  ATF:=$(RK3568_ATF)
+  DDR:=$(RK3568_DDR)
 endef
 
 define U-Boot/fastrhino-r66s-rk3568
