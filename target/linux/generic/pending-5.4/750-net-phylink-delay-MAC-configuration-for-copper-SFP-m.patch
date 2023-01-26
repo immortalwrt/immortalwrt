@@ -87,11 +87,10 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 -	if (pl->phydev)
 +	if (pl->phydev) {
  		phy_start(pl->phydev);
--		
--	return 0;
 +		return 0;
 +	}
-+
+ 
+-	return 0;
 +	/* If the module may have a PHY but we didn't detect one we
 +	 * need to configure the MAC here.
 +	 */
