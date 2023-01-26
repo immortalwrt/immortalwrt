@@ -96,7 +96,6 @@ $(call Package/mbedtls/Default)
   CATEGORY:=Libraries
   SUBMENU:=SSL
   TITLE+= (library)
-  PKGFLAGS:=nonshared
   ABI_VERSION:=12
   MENU:=1
 endef
