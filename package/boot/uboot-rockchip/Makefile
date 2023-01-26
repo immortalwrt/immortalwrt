@@ -102,7 +102,7 @@ define U-Boot/Default/rk3568
   BUILD_SUBTARGET:=armv8
   DEPENDS:=+PACKAGE_u-boot-$(1):arm-trusted-firmware-rk3568
   ATF:=rk3568_bl31_v1.28.elf
-  DDR:=rk3568_ddr_1560MHz_v1.13.bin
+  DDR:=rk3568_ddr_1560MHz_v1.15.bin
 endef
 
 define U-Boot/fastrhino-r66s-rk3568

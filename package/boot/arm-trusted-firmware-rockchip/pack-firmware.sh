@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) 2021 ImmortalWrt.org
+# Copyright (C) 2021-2023 ImmortalWrt.org
 
 set -e
 
@@ -16,19 +16,19 @@ case "$VARIANT" in
 	;;
 "rk3399")
 	ATF="rk33/rk3399_bl31_v1.35.elf"
-	DDR="rk33/rk3399_ddr_800MHz_v1.27.bin"
+	DDR="rk33/rk3399_ddr_800MHz_v1.28.bin"
 	LOADER="rk33/rk3399_miniloader_v1.26.bin"
 	;;
 "rk3568")
 	ATF="rk35/rk3568_bl31_v1.28.elf"
-	DDR="rk35/rk3568_ddr_1560MHz_v1.13.bin"
+	DDR="rk35/rk3568_ddr_1560MHz_v1.15.bin"
 	;;
 "rk3588")
-	ATF="rk35/rk3588_bl31_v1.27.elf"
-	DDR="rk35/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin"
+	ATF="rk35/rk3588_bl31_v1.32.elf"
+	DDR="rk35/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin"
 	;;
 *)
-	echo -e "Not compatible with your platform: $VARIANT."
+	echo -e "Unsupported platform: $VARIANT."
 	exit 1
 	;;
 esac

@@ -1,21 +1,19 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2021 ImmortalWrt.org
+# Copyright (C) 2021-2023 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=arm-trusted-firmware-rockchip
+PKG_VERSION:=linux-5.10-gen-rkr3.5
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL=https://github.com/rockchip-linux/rkbin.git
-PKG_SOURCE_DATE:=2022-08-01
-PKG_SOURCE_VERSION:=b0c100f1a260d807df450019774993c761beb79d
-PKG_MIRROR_HASH:=bdf84d7ce55294591dfe491cb87d8ecda939fea984a050762b2537e121ee57e0
+PKG_SOURCE:=rkbin-$(PKG_VERSION).tar.bz2
+PKG_SOURCE_URL=https://gitlab.com/rk3588_linux/rk/rkbin/-/archive/$(PKG_VERSION)/
+PKG_HASH:=012b0d7bdc269480f38ccc06d6f2e88fd794e05f2227184989aa9863279c90ca
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/rkbin-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
-
-MAKE_PATH:=$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
