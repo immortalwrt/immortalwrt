@@ -36,7 +36,7 @@ ramips_setup_interfaces()
 	alfa-network,r36m-e4g|\
 	zbtlink,zbt-we1026-h-32m)
 		ucidef_add_switch "switch0" \
-			"3:lan" "4:wan" "6@eth0"
+			"0:lan" "4:wan" "6@eth0"
 		;;
 	alfa-network,tube-e4g|\
 	buffalo,wmr-300|\
