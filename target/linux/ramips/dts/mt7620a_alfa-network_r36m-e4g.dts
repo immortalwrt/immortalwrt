@@ -92,7 +92,7 @@
 
 		led_system: system {
 			label = "green:system";
-			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
 
@@ -115,7 +115,7 @@
 
 		wlan {
 			label = "orange:wlan";
-			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0radio";
 		};
 	};
