@@ -55,16 +55,13 @@ TFA_TARGETS:= \
 	rk3568 \
 	rk3588
 
-define Build/Configure
-	$(SED) 's,$$$$(PKG_BUILD_DIR),$(PKG_BUILD_DIR),g' $(PKG_BUILD_DIR)/trust.ini
-	$(SED) 's,$$$$(VARIANT),$(BUILD_VARIANT),g' $(PKG_BUILD_DIR)/trust.ini
-endef
-
 define Build/Compile
 	# This comment is the workaround for "extraneous 'endif'" error
 ifneq ($(filter rk33%,$(BUILD_VARIANT)),)
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
+		$(SED) 's,$$$$(PKG_BUILD_DIR),$(PKG_BUILD_DIR),g' trust.ini ; \
+		$(SED) 's,$$$$(VARIANT),$(BUILD_VARIANT),g' trust.ini ; \
 		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(DDR) \
 			$(BUILD_VARIANT)-idbloader.bin ; \
 		cat bin/$(LOADER) >> $(BUILD_VARIANT)-idbloader.bin ; \
