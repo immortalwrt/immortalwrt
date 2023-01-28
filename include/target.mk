@@ -69,8 +69,9 @@ DEFAULT_PACKAGES.tweak:=\
 	ip6tables-nft \
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
-	luci \
+	luci-light \
 	luci-app-cpufreq \
+	luci-app-opkg \
 	luci-compat \
 	luci-lib-base \
 	luci-lib-fs \
