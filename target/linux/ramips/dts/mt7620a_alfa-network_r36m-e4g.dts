@@ -7,7 +7,7 @@
 
 / {
 	compatible = "alfa-network,r36m-e4g", "ralink,mt7620a-soc";
-	model = "ALFA Network R36M-E4G";
+	model = "BI4PCS-4G";
 
 	aliases {
 		label-mac-device = &wmac;
@@ -18,7 +18,7 @@
 	};
 
 	chosen {
-		bootargs = "console=ttyS1,115200";
+		bootargs = "console=ttyS0,115200";
 	};
 
 	gpio-export {
@@ -149,9 +149,13 @@
 	status = "okay";
 };
 
+&pcie {
+	status = "okay";
+};
+
 &state_default {
 	gpio {
-		groups = "ephy", "pcie", "rgmii1", "wled";
+		groups = "ephy", "pcie", "rgmii1", "wled", "uartf";
 		function = "gpio";
 	};
 };
