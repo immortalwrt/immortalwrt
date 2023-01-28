@@ -65,10 +65,10 @@ define Build/Compile
 ifneq ($(filter rk33%,$(BUILD_VARIANT)),)
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
-		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(ATF_DIR)/$(DDR) \
+		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(DDR) \
 			$(BUILD_VARIANT)-idbloader.bin ; \
-		cat bin/$(ATF_DIR)/$(LOADER) >> $(BUILD_VARIANT)-idbloader.bin ; \
-		./tools/trust_merger --replace bl31.elf bin/$(ATF_DIR)/$(ATF) trust.ini ; \
+		cat bin/$(LOADER) >> $(BUILD_VARIANT)-idbloader.bin ; \
+		./tools/trust_merger --replace bl31.elf bin/$(ATF) trust.ini ; \
 		popd ; \
 	)
 endif
@@ -77,13 +77,13 @@ endef
 define Package/trusted-firmware-a/install
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 
-	$(CP) $(PKG_BUILD_DIR)/bin/$(ATF_DIR)/$(ATF) $(STAGING_DIR_IMAGE)/
+	$(CP) $(PKG_BUILD_DIR)/bin/$(ATF) $(STAGING_DIR_IMAGE)/
 ifneq ($(filter rk33%,$(BUILD_VARIANT)),)
 	$(CP) $(PKG_BUILD_DIR)/tools/loaderimage $(STAGING_DIR_IMAGE)/
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-idbloader.bin $(STAGING_DIR_IMAGE)/
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-trust.bin $(STAGING_DIR_IMAGE)/
 else ifneq ($(filter rk35%,$(BUILD_VARIANT)),)
-	$(CP) $(PKG_BUILD_DIR)/bin/$(ATF_DIR)/$(DDR) $(STAGING_DIR_IMAGE)/
+	$(CP) $(PKG_BUILD_DIR)/bin/$(DDR) $(STAGING_DIR_IMAGE)/
 endif
 endef
 
