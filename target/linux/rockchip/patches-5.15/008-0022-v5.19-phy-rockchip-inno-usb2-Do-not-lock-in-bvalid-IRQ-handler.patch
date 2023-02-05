@@ -15,7 +15,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
 --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
 +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -913,13 +913,9 @@ static irqreturn_t rockchip_usb2phy_bval
+@@ -915,13 +915,9 @@ static irqreturn_t rockchip_usb2phy_bval
  	if (!property_enabled(rphy->grf, &rport->port_cfg->bvalid_det_st))
  		return IRQ_NONE;
  

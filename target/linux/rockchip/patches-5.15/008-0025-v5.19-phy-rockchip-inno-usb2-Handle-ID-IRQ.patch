@@ -85,7 +85,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  			schedule_delayed_work(&rport->otg_sm_work,
  					      OTG_SCHEDULE_DELAY * 3);
  		} else {
-@@ -921,11 +944,30 @@ static irqreturn_t rockchip_usb2phy_bval
+@@ -923,11 +946,30 @@ static irqreturn_t rockchip_usb2phy_bval
  	return IRQ_HANDLED;
  }
  
@@ -116,7 +116,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  
  	return ret;
  }
-@@ -1023,6 +1065,25 @@ static int rockchip_usb2phy_port_irq_ini
+@@ -1025,6 +1067,25 @@ static int rockchip_usb2phy_port_irq_ini
  					"failed to request otg-bvalid irq handle\n");
  				return ret;
  			}
@@ -142,7 +142,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  		}
  		break;
  	default:
-@@ -1297,10 +1358,14 @@ static const struct rockchip_usb2phy_cfg
+@@ -1299,10 +1360,14 @@ static const struct rockchip_usb2phy_cfg
  				.bvalid_det_en	= { 0x0680, 3, 3, 0, 1 },
  				.bvalid_det_st	= { 0x0690, 3, 3, 0, 1 },
  				.bvalid_det_clr	= { 0x06a0, 3, 3, 0, 1 },
@@ -157,7 +157,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  				.utmi_ls	= { 0x0480, 3, 2, 0, 1 },
  			},
  			[USB2PHY_PORT_HOST] = {
-@@ -1356,11 +1421,15 @@ static const struct rockchip_usb2phy_cfg
+@@ -1358,11 +1423,15 @@ static const struct rockchip_usb2phy_cfg
  				.bvalid_det_en	= { 0x3020, 3, 2, 0, 3 },
  				.bvalid_det_st	= { 0x3024, 3, 2, 0, 3 },
  				.bvalid_det_clr = { 0x3028, 3, 2, 0, 3 },
@@ -173,7 +173,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  				.utmi_ls	= { 0x0120, 5, 4, 0, 1 },
  			},
  			[USB2PHY_PORT_HOST] = {
-@@ -1399,11 +1468,15 @@ static const struct rockchip_usb2phy_cfg
+@@ -1401,11 +1470,15 @@ static const struct rockchip_usb2phy_cfg
  				.bvalid_det_en	= { 0x0110, 3, 2, 0, 3 },
  				.bvalid_det_st	= { 0x0114, 3, 2, 0, 3 },
  				.bvalid_det_clr = { 0x0118, 3, 2, 0, 3 },
@@ -189,7 +189,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  				.utmi_ls	= { 0x0120, 5, 4, 0, 1 },
  			},
  			[USB2PHY_PORT_HOST] = {
-@@ -1461,8 +1534,12 @@ static const struct rockchip_usb2phy_cfg
+@@ -1463,8 +1536,12 @@ static const struct rockchip_usb2phy_cfg
  				.bvalid_det_en	= { 0xe3c0, 3, 3, 0, 1 },
  				.bvalid_det_st	= { 0xe3e0, 3, 3, 0, 1 },
  				.bvalid_det_clr	= { 0xe3d0, 3, 3, 0, 1 },
@@ -202,7 +202,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  			},
  			[USB2PHY_PORT_HOST] = {
  				.phy_sus	= { 0xe458, 1, 0, 0x2, 0x1 },
-@@ -1496,8 +1573,12 @@ static const struct rockchip_usb2phy_cfg
+@@ -1498,8 +1575,12 @@ static const struct rockchip_usb2phy_cfg
  				.bvalid_det_en  = { 0xe3c0, 8, 8, 0, 1 },
  				.bvalid_det_st  = { 0xe3e0, 8, 8, 0, 1 },
  				.bvalid_det_clr = { 0xe3d0, 8, 8, 0, 1 },
@@ -215,7 +215,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
  			},
  			[USB2PHY_PORT_HOST] = {
  				.phy_sus	= { 0xe468, 1, 0, 0x2, 0x1 },
-@@ -1523,8 +1604,12 @@ static const struct rockchip_usb2phy_cfg
+@@ -1525,8 +1606,12 @@ static const struct rockchip_usb2phy_cfg
  				.bvalid_det_en	= { 0x0080, 3, 2, 0, 3 },
  				.bvalid_det_st	= { 0x0084, 3, 2, 0, 3 },
  				.bvalid_det_clr = { 0x0088, 3, 2, 0, 3 },

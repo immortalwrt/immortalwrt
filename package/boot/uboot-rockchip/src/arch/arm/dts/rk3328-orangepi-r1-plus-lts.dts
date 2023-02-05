@@ -28,7 +28,7 @@
 				     "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
 
-			motorcomm,clk-out-frequency = <125000000>;
+			motorcomm,clk-out-frequency-hz = <125000000>;
 			motorcomm,keep-pll-enabled;
 			motorcomm,auto-sleep-disabled;
 

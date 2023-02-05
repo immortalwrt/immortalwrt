@@ -23,7 +23,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
 --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
 +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -986,7 +986,9 @@ static irqreturn_t rockchip_usb2phy_irq(
+@@ -988,7 +988,9 @@ static irqreturn_t rockchip_usb2phy_irq(
  
  		switch (rport->port_id) {
  		case USB2PHY_PORT_OTG:

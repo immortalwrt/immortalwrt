@@ -18,7 +18,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
 --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
 +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -1172,6 +1172,12 @@ static int rockchip_usb2phy_otg_port_ini
+@@ -1174,6 +1174,12 @@ static int rockchip_usb2phy_otg_port_ini
  					EXTCON_USB_HOST, &rport->event_nb);
  		if (ret)
  			dev_err(rphy->dev, "register USB HOST notifier failed\n");
