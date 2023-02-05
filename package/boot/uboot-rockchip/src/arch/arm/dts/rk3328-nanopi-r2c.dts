@@ -31,11 +31,6 @@
 			compatible = "ethernet-phy-id0000.011a",
 				     "ethernet-phy-ieee802.3-c22";
 			reg = <3>;
-
-			motorcomm,clk-out-frequency-hz = <125000000>;
-			motorcomm,keep-pll-enabled;
-			motorcomm,auto-sleep-disabled;
-
 			pinctrl-0 = <&eth_phy_reset_pin>;
 			pinctrl-names = "default";
 			reset-assert-us = <10000>;
