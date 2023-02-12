@@ -1,6 +1,6 @@
 --- a/xt_FULLCONENAT.c
 +++ b/xt_FULLCONENAT.c
-@@ -1336,10 +1336,13 @@ static struct xt_target tg_reg[] __read_
+@@ -1344,10 +1344,13 @@ static struct xt_target tg_reg[] __read_
  
  static int __init fullconenat_tg_init(void)
  {
