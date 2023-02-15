@@ -38,13 +38,13 @@ rockchip_setup_macs()
 	case "$board" in
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
+	friendlyarm,nanopi-r5c|\
 	lunzn,fastrhino-r66s|\
 	lunzn,fastrhino-r68s)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk0)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
-	friendlyarm,nanopi-r4s|\
-	friendlyarm,nanopi-r5c)
+	friendlyarm,nanopi-r4s)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk1)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
