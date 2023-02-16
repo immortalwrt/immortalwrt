@@ -51,6 +51,7 @@
 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
 	assigned-clock-rates = <0>, <125000000>;
 	clock_in_out = "output";
+	phy-handle = <&rgmii_phy1>;
 	phy-mode = "rgmii-id";
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac1m1_miim
@@ -60,7 +61,6 @@
 		     &gmac1m1_rgmii_bus>;
 	tx_delay = <0x4f>;
 	rx_delay = <0x26>;
-	phy-handle = <&rgmii_phy1>;
 	status = "okay";
 };
 

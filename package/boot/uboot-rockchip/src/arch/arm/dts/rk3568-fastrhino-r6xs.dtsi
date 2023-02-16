@@ -366,10 +366,6 @@
 	};
 };
 
-&gic {
-	mbi-ranges = <94 31>, <229 31>, <289 31>;
-};
-
 &pinctrl {
 	gpio-leds {
 		status_led_pin: status-led-pin {
