@@ -49,6 +49,13 @@ define Device/friendlyarm_nanopi-r5c
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r5c
 
+define Device/friendlyarm_nanopi-r5s
+  $(Device/friendlyarm_nanopi-r5c)
+  DEVICE_MODEL := NanoPi R5S
+  UBOOT_DEVICE_NAME := nanopi-r5s-rk3568
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r5s
+
 define Device/lunzn_fastrhino-r66s
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R66S
