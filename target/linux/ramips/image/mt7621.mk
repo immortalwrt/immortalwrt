@@ -343,13 +343,11 @@ define Device/asus_rt-ax54
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := RT-AX54
   DEVICE_ALT0_VENDOR := ASUS
-  DEVICE_ALT0_MODEL := RT-AX54
+  DEVICE_ALT0_MODEL := RT-AX54HP
   DEVICE_ALT1_VENDOR := ASUS
-  DEVICE_ALT1_MODEL := RT-AX54HP
+  DEVICE_ALT1_MODEL := RT-AX1800HP
   DEVICE_ALT2_VENDOR := ASUS
-  DEVICE_ALT2_MODEL := RT-AX1800HP
-  DEVICE_ALT3_VENDOR := ASUS
-  DEVICE_ALT3_MODEL := RT-AX1800S
+  DEVICE_ALT2_MODEL := RT-AX1800S
   IMAGE_SIZE := 51200k
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -1071,6 +1069,18 @@ define Device/humax_e10
   DEVICE_PACKAGES := kmod-mt7615-firmware kmod-usb3
 endef
 TARGET_DEVICES += humax_e10
+
+define Device/huasifei_ws1208v2
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Huasifei
+  DEVICE_MODEL := WS1208V2
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
+	kmod-usb3 kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan \
+	kmod-usb-serial-option
+endef
+TARGET_DEVICES += huasifei_ws1208v2
 
 define Device/iodata_wn-ax1167gr
   $(Device/dsa-migration)
