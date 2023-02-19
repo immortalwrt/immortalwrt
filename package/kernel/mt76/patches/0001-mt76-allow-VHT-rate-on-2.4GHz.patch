@@ -1,4 +1,4 @@
-From fcddb155b538beb0ca7614260a1323d64bfc656a Mon Sep 17 00:00:00 2001
+From 62468f0b5a72e506915cf50176b701626767e353 Mon Sep 17 00:00:00 2001
 From: DENG Qingfang <dengqf6@mail2.sysu.edu.cn>
 Date: Mon, 23 Nov 2020 10:46:37 +0800
 Subject: [PATCH] mt76: allow VHT rate on 2.4GHz
@@ -7,13 +7,14 @@ Allow chips that support 11ac to use 256QAM on 2.4GHz
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- mac80211.c    | 10 +++++-----
- mt7615/init.c |  2 ++
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ mac80211.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/mac80211.c b/mac80211.c
+index 30c1bc56..125bcff5 100644
 --- a/mac80211.c
 +++ b/mac80211.c
-@@ -275,7 +275,7 @@ static void mt76_init_stream_cap(struct
+@@ -275,7 +275,7 @@ static void mt76_init_stream_cap(struct mt76_phy *phy,
  void mt76_set_stream_caps(struct mt76_phy *phy, bool vht)
  {
  	if (phy->cap.has_2ghz)
@@ -22,7 +23,7 @@ Signed-off-by: DENG Qingfang <dqfext@gmail.com>
  	if (phy->cap.has_5ghz)
  		mt76_init_stream_cap(phy, &phy->sband_5g.sband, vht);
  	if (phy->cap.has_6ghz)
-@@ -342,13 +342,13 @@ mt76_init_sband(struct mt76_phy *phy, st
+@@ -342,13 +342,13 @@ mt76_init_sband(struct mt76_phy *phy, struct mt76_sband *msband,
  
  static int
  mt76_init_sband_2g(struct mt76_phy *phy, struct ieee80211_rate *rates,
@@ -38,7 +39,7 @@ Signed-off-by: DENG Qingfang <dqfext@gmail.com>
  }
  
  static int
-@@ -496,7 +496,7 @@ int mt76_register_phy(struct mt76_phy *p
+@@ -500,7 +500,7 @@ int mt76_register_phy(struct mt76_phy *phy, bool vht,
  		return ret;
  
  	if (phy->cap.has_2ghz) {
@@ -47,7 +48,7 @@ Signed-off-by: DENG Qingfang <dqfext@gmail.com>
  		if (ret)
  			return ret;
  	}
-@@ -621,7 +621,7 @@ int mt76_register_device(struct mt76_dev
+@@ -625,7 +625,7 @@ int mt76_register_device(struct mt76_dev *dev, bool vht,
  		return ret;
  
  	if (phy->cap.has_2ghz) {
@@ -56,14 +57,3 @@ Signed-off-by: DENG Qingfang <dqfext@gmail.com>
  		if (ret)
  			return ret;
  	}
---- a/mt7615/init.c
-+++ b/mt7615/init.c
-@@ -409,6 +409,8 @@ mt7615_init_wiphy(struct ieee80211_hw *h
- 		hw->max_tx_fragments = MT_HW_TXP_MAX_BUF_NUM;
- 
- 	phy->mt76->sband_2g.sband.ht_cap.cap |= IEEE80211_HT_CAP_LDPC_CODING;
-+	phy->mt76->sband_2g.sband.vht_cap.cap |=
-+			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
- 	phy->mt76->sband_5g.sband.ht_cap.cap |= IEEE80211_HT_CAP_LDPC_CODING;
- 	phy->mt76->sband_5g.sband.vht_cap.cap |=
- 			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
