@@ -221,7 +221,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	}
  
 -	return 0;
-+	if (of_property_read_u32(node, "motorcomm,clk-out-frequency-hz-hz", &freq))
++	if (of_property_read_u32(node, "motorcomm,clk-out-frequency-hz", &freq))
 +		freq = YTPHY_DTS_OUTPUT_CLK_DIS;
 +
 +	if (phydev->drv->phy_id == PHY_ID_YT8521) {
