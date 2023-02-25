@@ -52,6 +52,12 @@ mtk_wed_device_attach(struct mtk_wed_device *dev)
 	return ret;
 }
 
+static inline bool
+mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
+{
+	return false;
+}
+
 static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
 {
 	return false;
