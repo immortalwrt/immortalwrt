@@ -10,11 +10,9 @@ Signed-off-by: DENG Qingfang <dqfext@gmail.com>
  mac80211.c | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/mac80211.c b/mac80211.c
-index 30c1bc56..125bcff5 100644
 --- a/mac80211.c
 +++ b/mac80211.c
-@@ -275,7 +275,7 @@ static void mt76_init_stream_cap(struct mt76_phy *phy,
+@@ -281,7 +281,7 @@ static void mt76_init_stream_cap(struct
  void mt76_set_stream_caps(struct mt76_phy *phy, bool vht)
  {
  	if (phy->cap.has_2ghz)
@@ -23,7 +21,7 @@ index 30c1bc56..125bcff5 100644
  	if (phy->cap.has_5ghz)
  		mt76_init_stream_cap(phy, &phy->sband_5g.sband, vht);
  	if (phy->cap.has_6ghz)
-@@ -342,13 +342,13 @@ mt76_init_sband(struct mt76_phy *phy, struct mt76_sband *msband,
+@@ -348,13 +348,13 @@ mt76_init_sband(struct mt76_phy *phy, st
  
  static int
  mt76_init_sband_2g(struct mt76_phy *phy, struct ieee80211_rate *rates,
@@ -39,7 +37,7 @@ index 30c1bc56..125bcff5 100644
  }
  
  static int
-@@ -500,7 +500,7 @@ int mt76_register_phy(struct mt76_phy *phy, bool vht,
+@@ -506,7 +506,7 @@ int mt76_register_phy(struct mt76_phy *p
  		return ret;
  
  	if (phy->cap.has_2ghz) {
@@ -48,7 +46,7 @@ index 30c1bc56..125bcff5 100644
  		if (ret)
  			return ret;
  	}
-@@ -625,7 +625,7 @@ int mt76_register_device(struct mt76_dev *dev, bool vht,
+@@ -644,7 +644,7 @@ int mt76_register_device(struct mt76_dev
  		return ret;
  
  	if (phy->cap.has_2ghz) {
