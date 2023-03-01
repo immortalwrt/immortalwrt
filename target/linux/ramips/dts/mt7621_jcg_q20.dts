@@ -1,55 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include "mt7621.dtsi"
-
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/input/input.h>
+#include "mt7621_jcg_q20.dtsi"
 
 / {
 	compatible = "jcg,q20", "mediatek,mt7621-soc";
 	model = "JCG Q20";
-
-	aliases {
-		led-boot = &led_status_red;
-		led-failsafe = &led_status_red;
-		led-running = &led_status_blue;
-		led-upgrade = &led_status_blue;
-		label-mac-device = &gmac0;
-	};
-
-	chosen {
-		bootargs = "console=ttyS0,115200";
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_status_red: status_red {
-			label = "red:status";
-			gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
-		};
-
-		led_status_blue: status_blue {
-			label = "blue:status";
-			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
-		};
-	};
-
-	keys {
-		compatible = "gpio-keys";
-
-		reset {
-			label = "reset";
-			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
-		};
-	};
 
 	ubi-concat {
 		compatible = "mtd-concat";
@@ -69,8 +24,6 @@
 };
 
 &nand {
-	status = "okay";
-
 	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;
@@ -128,73 +81,5 @@
 		/*
 		 * last 512 KiB are for the bad block table
 		 */
-	};
-};
-
-&pcie {
-	status = "okay";
-};
-
-&pcie1 {
-	wifi@0,0 {
-		compatible = "mediatek,mt76";
-		reg = <0x0000 0 0 0 0>;
-		mediatek,mtd-eeprom = <&factory 0x0>;
-		mediatek,disable-radar-background;
-	};
-};
-
-&gmac0 {
-	nvmem-cells = <&macaddr_factory_3fff4>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy0>;
-
-	nvmem-cells = <&macaddr_factory_3fffa>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy0: ethernet-phy@0 {
-		reg = <0>;
-	};
-};
-
-&switch0 {
-	ports {
-		port@1 {
-			status = "okay";
-			label = "lan1";
-		};
-
-		port@4 {
-			status = "okay";
-			label = "lan2";
-		};
-	};
-};
-
-&state_default {
-	gpio {
-		groups = "jtag", "wdt";
-		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_3fff4: macaddr@3fff4 {
-		reg = <0x3fff4 0x6>;
-	};
-
-	macaddr_factory_3fffa: macaddr@3fffa {
-		reg = <0x3fffa 0x6>;
 	};
 };

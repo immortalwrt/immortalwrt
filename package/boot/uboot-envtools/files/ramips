@@ -62,6 +62,7 @@ h3c,tx1800-plus|\
 h3c,tx1801-plus|\
 h3c,tx1806|\
 jcg,q20|\
+jcg,q20-pb-boot|\
 linksys,e7350|\
 netgear,wax202|\
 zyxel,wsm20)

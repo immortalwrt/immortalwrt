@@ -1320,6 +1320,12 @@ define Device/jcg_q20
 endef
 TARGET_DEVICES += jcg_q20
 
+define Device/jcg_q20-pb-boot
+  $(Device/jcg_q20)
+  DEVICE_MODEL += (pb-boot)
+endef
+TARGET_DEVICES += jcg_q20-pb-boot
+
 define Device/jcg_y2
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
