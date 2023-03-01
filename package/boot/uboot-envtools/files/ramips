@@ -47,7 +47,9 @@ zte,mf283plus)
 h3c,tx1800-plus|\
 h3c,tx1801-plus|\
 h3c,tx1806|\
-jcg,q20)
+jcg,q20|\
+jcg,q20-lzma-loader|\
+jcg,q20-pb-boot)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
 	;;
 hootoo,ht-tm05|\
