@@ -22,18 +22,18 @@
  
 +static int rtl8169_led_configuration(struct rtl8169_private *tp)
 +{
-+        u32 led_data;
-+        int ret;
++	u32 led_data;
++	int ret;
 +
-+        ret = of_property_read_u32(tp->pci_dev->dev.of_node,
-+                                  "realtek,led-data", &led_data);
++	ret = of_property_read_u32(tp->pci_dev->dev.of_node,
++				  "realtek,led-data", &led_data);
 +
-+        if (ret)
-+                return ret;
++	if (ret)
++		return ret;
 +
-+        RTL_W16(tp, CustomLED, led_data);
++	RTL_W16(tp, CustomLED, led_data);
 +
-+        return 0;
++	return 0;
 +}
 +
  static void rtl8168_config_eee_mac(struct rtl8169_private *tp)
