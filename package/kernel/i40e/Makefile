@@ -37,6 +37,17 @@ define KernelPackage/i40e-vendor/description
   Kernel modules for Intel(R) Ethernet Controller XL710 Family 40 Gigabit Ethernet adapters.
 endef
 
+define Build/Configure
+	( \
+		pushd $(PKG_BUILD_DIR)/src ; \
+		KSRC=$(LINUX_DIR) \
+		OUT=kcompat_generated_defs.h \
+		CONFFILE=$(LINUX_DIR)/include/generated/autoconf.h \
+		bash kcompat-generator.sh ; \
+		popd ; \
+	)
+endef
+
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M=$(PKG_BUILD_DIR)/src \
