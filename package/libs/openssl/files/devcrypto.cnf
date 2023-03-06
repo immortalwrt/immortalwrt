@@ -26,6 +26,6 @@ default_algorithms = ALL
 # is poor, and there are many cases in which they will not work,
 # especially when calling fork with open crypto contexts.  Openssh,
 # for example, does this, and you may not be able to login.
-#DIGESTS = NONE
+DIGESTS = NONE
 
 
