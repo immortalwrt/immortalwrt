@@ -12,6 +12,6 @@ uci -q batch <<-EOF
 EOF
 uci commit system
 
-sed -i 's,downloads.immortalwrt.org,mirrors.vsean.net/openwrt,g' /etc/opkg/distfeeds.conf
+sed -i 's,downloads.immortalwrt.org,mirrors.pku.edu.cn/immortalwrt,g' /etc/opkg/distfeeds.conf
 
 exit 0
