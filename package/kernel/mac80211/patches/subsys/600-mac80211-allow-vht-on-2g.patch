@@ -5,7 +5,7 @@
  	for (i = 0; i < sband->n_channels; i++) {
  		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
 -						IEEE80211_CHAN_NO_80MHZ))
-+						IEEE80211_CHAN_NO_80MHZ) &&
++						IEEE80211_CHAN_NO_80MHZ) &
 +						(sband->band != NL80211_BAND_2GHZ))
  			continue;
  
@@ -17,7 +17,7 @@
  	for (i = 0; i < sband->n_channels; i++) {
  		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
 -						IEEE80211_CHAN_NO_80MHZ))
-+						IEEE80211_CHAN_NO_80MHZ) &&
++						IEEE80211_CHAN_NO_80MHZ) &
 +						(sband->band != NL80211_BAND_2GHZ))
  			continue;
  
@@ -29,7 +29,7 @@
  	for (i = 0; i < sband->n_channels; i++) {
  		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
 -						IEEE80211_CHAN_NO_80MHZ))
-+						IEEE80211_CHAN_NO_80MHZ) &&
++						IEEE80211_CHAN_NO_80MHZ) &
 +						(sband->band != NL80211_BAND_2GHZ))
  			continue;
  
