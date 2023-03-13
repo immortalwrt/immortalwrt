@@ -210,7 +210,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  				unsigned long start, unsigned long end);
 --- a/kernel/exit.c
 +++ b/kernel/exit.c
-@@ -423,6 +423,7 @@ assign_new_owner:
+@@ -470,6 +470,7 @@ assign_new_owner:
  		goto retry;
  	}
  	WRITE_ONCE(mm->owner, c);
@@ -268,7 +268,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  
  		if (!prev->mm) {                        // from kernel
  			/* will mmdrop() in finish_task_switch(). */
-@@ -6284,6 +6285,7 @@ void idle_task_exit(void)
+@@ -6283,6 +6284,7 @@ void idle_task_exit(void)
  
  	if (mm != &init_mm) {
  		switch_mm(mm, &init_mm, current);
@@ -278,7 +278,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -5098,6 +5098,7 @@ static void __mem_cgroup_free(struct mem
+@@ -5102,6 +5102,7 @@ static void __mem_cgroup_free(struct mem
  		free_mem_cgroup_per_node_info(memcg, node);
  	free_percpu(memcg->vmstats_percpu);
  	free_percpu(memcg->vmstats_local);
@@ -286,7 +286,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	kfree(memcg);
  }
  
-@@ -5148,6 +5149,9 @@ static struct mem_cgroup *mem_cgroup_all
+@@ -5152,6 +5153,9 @@ static struct mem_cgroup *mem_cgroup_all
  		if (alloc_mem_cgroup_per_node_info(memcg, node))
  			goto fail;
  
@@ -296,7 +296,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	if (memcg_wb_domain_init(memcg, GFP_KERNEL))
  		goto fail;
  
-@@ -6066,6 +6070,29 @@ static void mem_cgroup_move_task(void)
+@@ -6070,6 +6074,29 @@ static void mem_cgroup_move_task(void)
  }
  #endif
  
@@ -326,7 +326,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  /*
   * Cgroup retains root cgroups across [un]mount cycles making it necessary
   * to verify whether we're attached to the default hierarchy on each mount
-@@ -6366,6 +6393,7 @@ struct cgroup_subsys memory_cgrp_subsys
+@@ -6370,6 +6397,7 @@ struct cgroup_subsys memory_cgrp_subsys
  	.css_free = mem_cgroup_css_free,
  	.css_reset = mem_cgroup_css_reset,
  	.can_attach = mem_cgroup_can_attach,

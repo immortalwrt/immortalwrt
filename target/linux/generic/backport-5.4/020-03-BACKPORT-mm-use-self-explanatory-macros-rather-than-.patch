@@ -71,7 +71,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  #endif
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -3980,8 +3980,8 @@ static int memcg_stat_show(struct seq_fi
+@@ -3984,8 +3984,8 @@ static int memcg_stat_show(struct seq_fi
  		pg_data_t *pgdat;
  		struct mem_cgroup_per_node *mz;
  		struct zone_reclaim_stat *rstat;
