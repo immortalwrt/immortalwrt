@@ -10,7 +10,7 @@ PKG_VERSION:=5.13.16
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://sourceforge.net/projects/e1000/files/igb%20stable/$(PKG_VERSION)/
+PKG_SOURCE_URL:=@SF/e1000/igb%20stable/$(PKG_VERSION)/
 PKG_HASH:=23731b9d3630e20ecdbe6c5db06475f07c8b2d080a374635550957747db96183
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
