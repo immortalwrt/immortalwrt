@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=igb
-PKG_VERSION:=5.13.7
+PKG_VERSION:=5.13.16
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@IMMORTALWRT
-PKG_HASH:=4ccae73110f3c871a17b7cc6df7dbdf6295fc90f4941e8b2978a471c2fec83cb
+PKG_SOURCE_URL:=https://sourceforge.net/projects/e1000/files/igb%20stable/$(PKG_VERSION)/
+PKG_HASH:=23731b9d3630e20ecdbe6c5db06475f07c8b2d080a374635550957747db96183
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
@@ -33,6 +33,17 @@ endef
 
 define KernelPackage/igb-vendor/description
   Kernel modules for Intel(R) 82575/82576 PCI-Express Gigabit Ethernet adapters.
+endef
+
+define Build/Configure
+	( \
+		pushd $(PKG_BUILD_DIR)/src ; \
+		KSRC=$(LINUX_DIR) \
+		OUT=kcompat_generated_defs.h \
+		CONFFILE=$(LINUX_DIR)/include/generated/autoconf.h \
+		bash kcompat-generator.sh ; \
+		popd ; \
+	)
 endef
 
 define Build/Compile
