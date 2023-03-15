@@ -363,7 +363,7 @@ config KERNEL_DEBUG_INFO
 config KERNEL_DEBUG_INFO_BTF
 
 	bool "Enable additional BTF type information"
-	default y if aarch64||arm||i386||i686||x86_64
+	default y if (aarch64 && !TARGET_mediatek_mt7622) || i386 || i686 || x86_64
 	depends on !HOST_OS_MACOS
 	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
 	select DWARVES
@@ -376,7 +376,7 @@ config KERNEL_DEBUG_INFO_BTF
 
 config KERNEL_DEBUG_INFO_REDUCED
 	bool "Reduce debugging information"
-	default y if !(aarch64||arm||i386||i686||x86_64)
+	default y if !(aarch64||i386||i686||x86_64) || TARGET_mediatek_mt7622
 	depends on KERNEL_DEBUG_INFO
 	help
 	  If you say Y here gcc is instructed to generate less debugging
