@@ -25,7 +25,7 @@ define KernelPackage/igb-vendor
   SUBMENU:=Network Devices
   TITLE:=Intel(R) 82575/82576 PCI-Express Gigabit Ethernet support (vendor driver)
   VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
-  DEPENDS:=@PCI_SUPPORT +kmod-i2c-core +kmod-i2c-algo-bit +kmod-ptp +kmod-hwmon-core
+  DEPENDS:=@PCI_SUPPORT +kmod-i2c-core +kmod-i2c-algo-bit +kmod-ptp +kmod-hwmon-core @TARGET_x86
   CONFLICTS:=kmod-igb
   FILES:=$(PKG_BUILD_DIR)/src/igb.ko
   AUTOLOAD:=$(call AutoProbe,igb)
