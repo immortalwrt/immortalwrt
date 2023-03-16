@@ -127,7 +127,7 @@ static int ptm_stop(struct net_device *);
   static int ptm_napi_poll(struct napi_struct *, int);
 static int ptm_hard_start_xmit(struct sk_buff *, struct net_device *);
 static int ptm_ioctl(struct net_device *, struct ifreq *, int);
-static void ptm_tx_timeout(struct net_device *, unsigned int txqueue);
+static void ptm_tx_timeout(struct net_device *);
 
 /*
  *  DSL Data LED
@@ -511,7 +511,7 @@ static int ptm_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
     return 0;
 }
 
-static void ptm_tx_timeout(struct net_device *dev, unsigned int txqueue)
+static void ptm_tx_timeout(struct net_device *dev)
 {
     int ndev;
 
