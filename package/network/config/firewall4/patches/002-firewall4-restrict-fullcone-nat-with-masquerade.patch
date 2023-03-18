@@ -1,0 +1,63 @@
+From 4ac129145717a5c07722f8d1bfe0f795b3c905b1
+From: arimitx <zyc199847@gmail.com>
+Date: Sun, 19 Mar 2023 01:57:19 +0800
+Subject: [PATCH] firewall4: restrict fullcone nat with masquerade
+
+This patch restricts the scope of fullcone nat to
+
+the zones with masquerade or masquerade6 flag.
+---
+ root/usr/share/firewall4/templates/ruleset.uc |  8 ++++----
+ root/usr/share/ucode/fw4.uc                   | 11 +++++------
+ 2 files changed, 9 insertions(+), 10 deletions(-)
+
+--- a/root/usr/share/firewall4/templates/ruleset.uc
++++ b/root/usr/share/firewall4/templates/ruleset.uc
+@@ -316,10 +316,10 @@
+ {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
+ 		{%+ include("redirect.uc", { fw4, redirect }) %}
+ {%   endfor %}
+-{%   if (fw4.default_option("fullcone")): %}
++{%   if (zone.masq && fw4.default_option("fullcone")): %}
+ 		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
+ {%   endif %}
+-{%   if (fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
+ 		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
+ {%   endif %}
+ {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
+@@ -346,10 +346,10 @@
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
+-{%   if (fw4.default_option("fullcone")): %}
++{%   if (zone.masq && fw4.default_option("fullcone")): %}
+ 		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
+ {%   endif %}
+-{%   if (fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
+ 		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
+ {%   endif %}
+ {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
+
+--- a/root/usr/share/ucode/fw4.uc
++++ b/root/usr/share/ucode/fw4.uc
+@@ -2187,13 +2187,12 @@
+ 		zone.related_subnets = related_subnets;
+ 		zone.related_physdevs = related_physdevs;
+ 
+-		if (this.state.defaults.fullcone || this.state.defaults.fullcone6) {
+-			zone.dflags.snat = true;
+-			zone.dflags.dnat = true;
+-		}
+-
+ 		if (zone.masq || zone.masq6)
+-			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone || this.state.defaults.fullcone6) {
++				zone.dflags.snat = true;
++				zone.dflags.dnat = true;
++			} else
++				zone.dflags.snat = true;
+ 
+ 		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
+ 			zone.dflags.helper = true;
