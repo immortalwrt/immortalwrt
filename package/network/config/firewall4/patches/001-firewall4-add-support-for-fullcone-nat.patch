@@ -34,7 +34,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	option name		lan
 --- a/root/usr/share/firewall4/templates/ruleset.uc
 +++ b/root/usr/share/firewall4/templates/ruleset.uc
-@@ -310,6 +310,12 @@ table inet fw4 {
+@@ -316,6 +316,12 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
@@ -47,7 +47,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
  	}
  
-@@ -320,20 +326,26 @@ table inet fw4 {
+@@ -326,20 +326,26 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
@@ -187,32 +187,27 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  		this.state.defaults = defs;
  	},
  
-@@ -1955,6 +2011,13 @@ return {
- 			}
- 		}
- 
-+		if (this.state.defaults.fullcone) {
-+			this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
-+		}
-+		if (this.state.defaults.fullcone6) {
-+			this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
-+		}
-+
- 		if (zone.mtu_fix && this.kernel < 0x040a0000) {
- 			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
- 			return;
-@@ -2124,10 +2187,14 @@ return {
+@@ -2124,10 +2180,23 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  
- 		if (zone.masq || zone.masq6)
--			zone.dflags.snat = true;
-+			if (this.state.defaults.fullcone || this.state.defaults.fullcone6) {
-+				zone.dflags.snat = true;
+-		if (zone.masq || zone.masq6)
++		if (zone.masq) {
+ 			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone) {
 +				zone.dflags.dnat = true;
-+			} else
-+				zone.dflags.snat = true;
- 
++				this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
++			}
++		}
++
++		if (zone.masq6) {
++			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone6) {
++				zone.dflags.dnat = true;
++				this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
++			}
++		}
+
 -		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
 +		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
  			zone.dflags.helper = true;
