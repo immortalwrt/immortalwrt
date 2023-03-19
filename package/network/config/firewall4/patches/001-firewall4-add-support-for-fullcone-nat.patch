@@ -201,18 +201,23 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  		if (zone.mtu_fix && this.kernel < 0x040a0000) {
  			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
  			return;
-@@ -2124,10 +2187,14 @@ return {
+@@ -2124,10 +2187,19 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  
- 		if (zone.masq || zone.masq6)
--			zone.dflags.snat = true;
-+			if (this.state.defaults.fullcone || this.state.defaults.fullcone6) {
-+				zone.dflags.snat = true;
+-		if (zone.masq || zone.masq6)
++		if (zone.masq) {
+ 			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone)
 +				zone.dflags.dnat = true;
-+			} else
-+				zone.dflags.snat = true;
- 
++		}
++
++		if (zone.masq6) {
++			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone6)
++				zone.dflags.dnat = true;
++		}
+
 -		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
 +		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
  			zone.dflags.helper = true;
