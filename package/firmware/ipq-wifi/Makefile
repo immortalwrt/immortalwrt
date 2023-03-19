@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2023-02-12
-PKG_SOURCE_VERSION:=c3ece63d6879e14c8d65a8dc3e32f47e0f891f27
-PKG_MIRROR_HASH:=7637fb1df3ad577650284b526ffaa4c038e1ba6b196a88724d63e4d1c1ab3c53
+PKG_SOURCE_DATE:=2023-03-18
+PKG_SOURCE_VERSION:=86180c4c07330e303edf0afd6c017932903ee080
+PKG_MIRROR_HASH:=283d6651f8a9088981065d476c01c7c0794279e108a96377468d5fcdc3882a12
 
 PKG_FLAGS:=nonshared
 
@@ -28,6 +28,8 @@ endef
 # <https://wireless.wiki.kernel.org/en/users/drivers/ath10k/boardfiles>
 
 ALLWIFIBOARDS:= \
+	8dev_habanero \
+	8dev_jalapeno \
 	aruba_ap-365 \
 	buffalo_wxr-5950ax12 \
 	devolo_magic-2-wifi-next \
@@ -129,6 +131,8 @@ endef
 # Place files in this directory as board-<devicename>.<qca4019|qca9888|qca9889|qca9984|qca99x0|ipq8074>
 # Add $(eval $(call generate-ipq-wifi-package,<devicename>,<display name>))
 
+$(eval $(call generate-ipq-wifi-package,8dev_habanero,8devices Habanero))
+$(eval $(call generate-ipq-wifi-package,8dev_jalapeno,8devices Jalapeno))
 $(eval $(call generate-ipq-wifi-package,aruba_ap-365,Aruba AP-365))
 $(eval $(call generate-ipq-wifi-package,buffalo_wxr-5950ax12,Buffalo WXR-5950AX12))
 $(eval $(call generate-ipq-wifi-package,devolo_magic-2-wifi-next,devolo Magic 2 WiFi next))
