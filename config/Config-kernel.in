@@ -453,6 +453,7 @@ config KERNEL_KPROBE_EVENTS
 config KERNEL_BPF_EVENTS
 	bool "Compile the kernel with BPF event support"
 	select KERNEL_KPROBES
+	default y if KERNEL_DEBUG_INFO_BTF
 	help
 	  Allows to attach BPF programs to kprobe, uprobe and tracepoint events.
 	  This is required to use BPF maps of type BPF_MAP_TYPE_PERF_EVENT_ARRAY
