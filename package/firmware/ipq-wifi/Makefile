@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2023-03-19
-PKG_SOURCE_VERSION:=31ff96d9f99f993cb43d79f0c411fe6bf55633bb
-PKG_MIRROR_HASH:=8005a884059925a627024b9022ed06a36ebf4ed7a20e8aab191585afbdd6895f
+PKG_SOURCE_DATE:=2023-03-20
+PKG_SOURCE_VERSION:=f9cece02724b8ca2c1a166a46f0afa89e632d431
+PKG_MIRROR_HASH:=89c20798c7ec83114aa69467f2467fe32cbb74ebeca277c60a033af960ca6c04
 
 PKG_FLAGS:=nonshared
 
@@ -54,6 +54,7 @@ ALLWIFIBOARDS:= \
 	redmi_ax6 \
 	sony_ncp-hg100-cellular \
 	teltonika_rutx \
+	wallys_dr40x9 \
 	xiaomi_ax3600 \
 	xiaomi_ax9000 \
 	zte_mf18a \
@@ -159,6 +160,7 @@ $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac-c2,Qxwlan E2600AC C2))
 $(eval $(call generate-ipq-wifi-package,redmi_ax6,Redmi AX6))
 $(eval $(call generate-ipq-wifi-package,sony_ncp-hg100-cellular,Sony NCP-HG100/Cellular))
 $(eval $(call generate-ipq-wifi-package,teltonika_rutx,Teltonika RUTX))
+$(eval $(call generate-ipq-wifi-package,wallys_dr40x9,Wallys DR40X9))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax3600,Xiaomi AX3600))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax9000,Xiaomi AX9000))
 $(eval $(call generate-ipq-wifi-package,zte_mf18a,ZTE MF18A))

@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=mbedtls
 PKG_VERSION:=2.28.2
 PKG_RELEASE:=2
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16 gc-sections no-lto
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ARMmbed/mbedtls/tar.gz/v$(PKG_VERSION)?
@@ -123,7 +123,6 @@ This package contains mbedtls helper programs for private key and
 CSR generation (gen_key, cert_req)
 endef
 
-TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
 ifneq ($(CONFIG_MBEDTLS_ARMV8CE_AES_C),)
   TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto

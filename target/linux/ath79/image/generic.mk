@@ -2532,6 +2532,36 @@ define Device/ruckus_zf7025
 endef
 TARGET_DEVICES += ruckus_zf7025
 
+define Device/ruckus_gd11_common
+  $(Device/ruckus_common)
+  SOC := ar7161
+  IMAGE_SIZE := 15616k
+  BLOCKSIZE := 256k
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-chipidea2
+endef
+
+define Device/ruckus_zf7341
+  $(Device/ruckus_gd11_common)
+  DEVICE_MODEL := ZoneFlex 7341[-U]
+  DEVICE_PACKAGES += -swconfig
+endef
+TARGET_DEVICES += ruckus_zf7341
+
+define Device/ruckus_zf7351
+  $(Device/ruckus_gd11_common)
+  DEVICE_MODEL := ZoneFlex 7351[-U]
+  DEVICE_PACKAGES += -swconfig
+endef
+TARGET_DEVICES += ruckus_zf7351
+
+define Device/ruckus_zf7363
+  $(Device/ruckus_gd11_common)
+  DEVICE_MODEL := ZoneFlex 7363[-U]
+  DEVICE_ALT0_VENDOR := Ruckus
+  DEVICE_ALT0_MODEL := ZoneFlex 7343[-U]
+endef
+TARGET_DEVICES += ruckus_zf7363
+
 define Device/ruckus_zf73xx_common
   $(Device/ruckus_common)
   DEVICE_PACKAGES := -swconfig kmod-usb2 kmod-usb-chipidea2
