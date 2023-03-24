@@ -340,6 +340,22 @@ endef
 $(eval $(call KernelPackage,phy-smsc))
 
 
+define KernelPackage/phy-aquantia
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Aquantia Ethernet PHYs
+  DEPENDS:=+kmod-libphy +kmod-hwmon-core
+  KCONFIG:=CONFIG_AQUANTIA_PHY
+  FILES:=$(LINUX_DIR)/drivers/net/phy/aquantia.ko
+  AUTOLOAD:=$(call AutoLoad,18,aquantia,1)
+endef
+
+define KernelPackage/phy-aquantia/description
+  Kernel modules for Aquantia Ethernet PHYs
+endef
+
+$(eval $(call KernelPackage,phy-aquantia))
+
+
 define KernelPackage/swconfig
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=switch configuration API
@@ -1288,28 +1304,6 @@ endef
 
 $(eval $(call KernelPackage,be2net))
 
-define KernelPackage/sfc
-  SUBMENU:=$(NETWORK_DEVICES_MENU)
-  TITLE:=Solarflare SFC9000/SFC9100-family 10Gbps NIC support
-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-i2c-core +kmod-i2c-algo-bit +kmod-hwmon-core +kmod-ptp +kmod-lib-crc32c
-# add PCI_IOV
-  KCONFIG:= \
-    CONFIG_NET_VENDOR_SOLARFLARE=y \
-    CONFIG_SFC=y \
-    CONFIG_MTD=y \
-    CONFIG_MCDI_MON=y \
-    CONFIG_SRIOV=n \
-    CONFIG_MCDI_LOGGING=n \
-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/sfc.ko
-  AUTOLOAD:=$(call AutoProbe, sfc)
-endef
-
-define KernelPackage/sfc/description
-  Solarflare SFC9000/SFC9100-family 10Gbps NIC support
-endef
-
-$(eval $(call KernelPackage,sfc))
-
 define KernelPackage/mlx4-core
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Mellanox ConnectX(R) mlx4 core Network Driver
@@ -1548,4 +1542,20 @@ define KernelPackage/atlantic/description
 endef
 
 $(eval $(call KernelPackage,atlantic))
+
+
+define KernelPackage/lan743x
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Microchip LAN743x PCI Express Gigabit Ethernet NIC
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-mdio-devres
+  KCONFIG:=CONFIG_LAN743X
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/microchip/lan743x.ko
+  AUTOLOAD:=$(call AutoProbe,lan743x)
+endef
+
+define KernelPackage/lan743x/description
+  Kernel module for Microchip LAN743x PCI Express Gigabit Ethernet NIC
+endef
+
+$(eval $(call KernelPackage,lan743x))
 

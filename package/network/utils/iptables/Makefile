@@ -20,6 +20,7 @@ PKG_FIXUP:=autoreconf
 PKG_FLAGS:=nonshared
 
 PKG_INSTALL:=1
+PKG_BUILD_FLAGS:=gc-sections
 PKG_BUILD_PARALLEL:=1
 PKG_LICENSE:=GPL-2.0
 PKG_CPE_ID:=cpe:/a:netfilter_core_team:iptables
@@ -150,7 +151,7 @@ Extra iptables nftables nft binaries.
 endef
 
 define Package/iptables-mod-conntrack-extra
-$(call Package/iptables/Module, +kmod-ipt-conntrack-extra +kmod-ipt-raw)
+$(call Package/iptables/Module, +kmod-ipt-conntrack-extra)
   TITLE:=Extra connection tracking extensions
 endef
 
@@ -591,11 +592,7 @@ TARGET_CPPFLAGS := \
 TARGET_CFLAGS += \
 	-I$(PKG_BUILD_DIR)/include \
 	-I$(LINUX_DIR)/user_headers/include \
-	-ffunction-sections -fdata-sections \
 	-DNO_LEGACY
-
-TARGET_LDFLAGS += \
-	-Wl,--gc-sections
 
 CONFIGURE_ARGS += \
 	--enable-shared \

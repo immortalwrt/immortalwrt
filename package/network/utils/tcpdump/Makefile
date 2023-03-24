@@ -8,18 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tcpdump
-PKG_VERSION:=4.99.2
+PKG_VERSION:=4.99.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.tcpdump.org/release/
-PKG_HASH:=f4304357d34b79d46f4e17e654f1f91f9ce4e3d5608a1badbd53295a26fb44d5
+PKG_HASH:=ad75a6ed3dc0d9732945b2e5483cb41dc8b4b528a169315e499c6861952e73b3
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-3-Clause
 PKG_CPE_ID:=cpe:/a:tcpdump:tcpdump
 
 PKG_INSTALL:=1
+PKG_BUILD_FLAGS:=gc-sections
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -47,9 +48,6 @@ CONFIGURE_ARGS += \
 	--without-cap-ng \
 	--without-crypto \
 	$(call autoconf_bool,CONFIG_IPV6,ipv6)
-
-TARGET_CFLAGS += -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(BUILD_VARIANT),mini)
   TARGET_CFLAGS += -DTCPDUMP_MINI

@@ -163,7 +163,6 @@ define Device/linksys_ea7500-v1
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
 		append-ubi | pad-to $$$$(PAGESIZE)
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
-	DEFAULT := n
 endef
 TARGET_DEVICES += linksys_ea7500-v1
 
@@ -185,7 +184,6 @@ define Device/linksys_ea8500
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
 		append-ubi
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
-	DEFAULT := n
 endef
 TARGET_DEVICES += linksys_ea8500
 
@@ -336,6 +334,20 @@ define Device/netgear_xr500
 	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ramoops
 endef
 TARGET_DEVICES += netgear_xr500
+
+define Device/nokia_ac400i
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Nokia
+	DEVICE_MODEL := AC400i
+	SOC := qcom-ipq8065
+	DEVICE_DTS := qcom-ipq8065-ac400i
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	BOARD_NAME := ac400i
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct ipq-wifi-nokia-ac400i
+endef
+TARGET_DEVICES += nokia_ac400i
 
 define Device/qcom_ipq8064-ap148
 	$(call Device/FitImage)

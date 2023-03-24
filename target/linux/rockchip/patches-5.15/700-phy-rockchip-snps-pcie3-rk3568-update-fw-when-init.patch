@@ -90,19 +90,3 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
  }
  
  static const struct rockchip_p3phy_ops rk3568_ops = {
-@@ -132,13 +157,14 @@ static int rockchip_p3phy_rk3588_init(st
- {
- 	u32 reg = 0;
- 	u8 mode = 0;
-+	int i;
- 	int ret;
- 
- 	/* Deassert PCIe PMA output clamp mode */
- 	regmap_write(priv->phy_grf, RK3588_PCIE3PHY_GRF_CMN_CON0, BIT(8) | BIT(24));
- 
- 	/* Set bifurcation if needed */
--	for (int i = 0; i < priv->num_lanes; i++) {
-+	for (i = 0; i < priv->num_lanes; i++) {
- 		if (!priv->lanes[i])
- 			mode |= (BIT(i) << 3);
- 

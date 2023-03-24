@@ -196,7 +196,6 @@
 
 				port@6 {
 					reg = <6>;
-					label = "cpu";
 					ethernet = <&gmac0>;
 					phy-mode = "2500base-x";
 
@@ -295,7 +294,6 @@
 			 */
 			partition@2c0000 {
 				label = "kernel";
-				compatible = "denx,fit";
 				reg = <0x2c0000 0x400000>;
 			};
 

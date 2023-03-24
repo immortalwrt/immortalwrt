@@ -9,9 +9,11 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath11k/IPQ8074/hw2.0/cal-ahb-c000000.wifi.bin")
 	case "$board" in
+	buffalo,wxr-5950ax12|\
 	edgecore,eap102|\
 	edimax,cax1800|\
 	dynalink,dl-wrx36|\
+	netgear,wax218|\
 	qnap,301w|\
 	redmi,ax6|\
 	redmi,ax6-stock|\

@@ -55,6 +55,8 @@ define Device/asus_rt-ac1200-v2
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := RT-AC1200
   DEVICE_VARIANT := V2
+  DEVICE_ALT0_VENDOR := ASUS
+  DEVICE_ALT0_MODEL := RT-AC750L
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs
@@ -1032,7 +1034,7 @@ endef
 TARGET_DEVICES += zbtlink_zbt-we1226
 
 define Device/zyxel_keenetic-extra-ii
-  IMAGE_SIZE := 14912k
+  IMAGE_SIZE := 29824k
   BLOCKSIZE := 64k
   DEVICE_VENDOR := ZyXEL
   DEVICE_MODEL := Keenetic Extra II

@@ -66,6 +66,9 @@ TAR_OPTIONS += \
 	--exclude-from='$(CURDIR)/../exclude-testsuite' --exclude=gcc/ada/*.ad* \
 	--exclude=libjava
 
+# this needs to be without -L/-lzstd flags or other parts fail to build
+# use an absolute path to ensure it really picks up our version
+export ac_cv_search_ZSTD_compress=$(STAGING_DIR_HOST)/lib/libzstd.a -pthread
 export libgcc_cv_fixed_point=no
 ifdef CONFIG_INSTALL_GCCGO
   export libgo_cv_c_split_stack_supported=no
@@ -79,10 +82,6 @@ endif
 
 GCC_CONFIGURE:= \
 	SHELL="$(BASH)" \
-	$(if $(shell gcc --version 2>&1 | grep -E "Apple.(LLVM|clang)"), \
-		CFLAGS="-O2 -fbracket-depth=512 -pipe" \
-		CXXFLAGS="-O2 -fbracket-depth=512 -pipe" \
-	) \
 	$(HOST_SOURCE_DIR)/configure \
 		--with-bugurl=$(BUGURL) \
 		--with-pkgversion="$(PKGVERSION)" \
@@ -106,6 +105,8 @@ GCC_CONFIGURE:= \
 			--with-abi=$(call qstrip,$(CONFIG_MIPS64_ABI))) \
 		$(if $(CONFIG_arc),--with-cpu=$(CONFIG_CPU_TYPE)) \
 		$(if $(CONFIG_powerpc64), $(if $(CONFIG_USE_MUSL),--with-abi=elfv2)) \
+		--with-system-zlib=$(STAGING_DIR_HOST) \
+		--with-zstd=$(STAGING_DIR_HOST) \
 		--with-gmp=$(STAGING_DIR_HOST) \
 		--with-mpfr=$(STAGING_DIR_HOST) \
 		--with-mpc=$(STAGING_DIR_HOST) \
@@ -164,13 +165,21 @@ ifeq ($(CONFIG_TARGET_x86)$(CONFIG_USE_GLIBC)$(CONFIG_INSTALL_GCCGO),yyy)
   TARGET_CFLAGS+=-fno-split-stack
 endif
 
+CFLAGS:=$(HOST_CFLAGS) -pipe
+ifneq ($(shell gcc --version 2>&1 | grep -E "Apple.(LLVM|clang)"),)
+  CFLAGS+= -fbracket-depth=512
+endif
+
+GCC_CONFIGURE+= \
+	CFLAGS="$(CFLAGS)" \
+	CXXFLAGS="$(CFLAGS)" \
+	CFLAGS_FOR_TARGET="$(TARGET_CFLAGS)" \
+	CXXFLAGS_FOR_TARGET="$(TARGET_CFLAGS)" \
+	GOCFLAGS_FOR_TARGET="$(TARGET_CFLAGS)"
+
 GCC_MAKE:= \
 	export SHELL="$(BASH)"; \
-	$(MAKE) \
-		CFLAGS="$(HOST_CFLAGS)" \
-		CFLAGS_FOR_TARGET="$(TARGET_CFLAGS)" \
-		CXXFLAGS_FOR_TARGET="$(TARGET_CFLAGS)" \
-		GOCFLAGS_FOR_TARGET="$(TARGET_CFLAGS)"
+	$(MAKE)
 
 define Host/SetToolchainInfo
 	$(SED) 's,TARGET_CROSS=.*,TARGET_CROSS=$(REAL_GNU_TARGET_NAME)-,' $(TOOLCHAIN_DIR)/info.mk

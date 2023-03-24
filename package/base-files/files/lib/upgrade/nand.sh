@@ -28,7 +28,7 @@ ubi_mknod() {
 
 nand_find_volume() {
 	local ubidevdir ubivoldir
-	ubidevdir="/sys/devices/virtual/ubi/$1"
+	ubidevdir="/sys/class/ubi/"
 	[ ! -d "$ubidevdir" ] && return 1
 	for ubivoldir in $ubidevdir/${1}_*; do
 		[ ! -d "$ubivoldir" ] && continue
@@ -41,13 +41,12 @@ nand_find_volume() {
 }
 
 nand_find_ubi() {
-	local ubidevdir ubidev mtdnum
+	local ubidevdir ubidev mtdnum cmtdnum
 	mtdnum="$( find_mtd_index $1 )"
 	[ ! "$mtdnum" ] && return 1
-	for ubidevdir in /sys/devices/virtual/ubi/ubi*; do
-		[ ! -d "$ubidevdir" ] && continue
+	for ubidevdir in /sys/class/ubi/ubi*; do
+		[ ! -e "$ubidevdir/mtd_num" ] && continue
 		cmtdnum="$( cat $ubidevdir/mtd_num )"
-		[ ! "$mtdnum" ] && continue
 		if [ "$mtdnum" = "$cmtdnum" ]; then
 			ubidev=$( basename $ubidevdir )
 			ubi_mknod "$ubidevdir"
@@ -65,40 +64,12 @@ get_magic_long_tar() {
 	(tar xO${3}f "$1" "$2" | dd bs=4 count=1 | hexdump -v -n 4 -e '1/1 "%02x"') 2> /dev/null
 }
 
-identify_magic() {
-	local magic=$1
-	case "$magic" in
-		"55424923")
-			echo "ubi"
-			;;
-		"31181006")
-			echo "ubifs"
-			;;
-		"68737173")
-			echo "squashfs"
-			;;
-		"d00dfeed")
-			echo "fit"
-			;;
-		"4349"*)
-			echo "combined"
-			;;
-		"1f8b"*)
-			echo "gzip"
-			;;
-		*)
-			echo "unknown $magic"
-			;;
-	esac
-}
-
-
 identify() {
-	identify_magic $(nand_get_magic_long "$@")
+	identify_magic_long $(nand_get_magic_long "$@")
 }
 
 identify_tar() {
-	identify_magic $(get_magic_long_tar "$@")
+	identify_magic_long $(get_magic_long_tar "$@")
 }
 
 identify_if_gzip() {
@@ -481,7 +452,11 @@ nand_do_platform_check() {
 
 	local gz="$(identify_if_gzip "$file")"
 	local file_type="$(identify "$file" "" "$gz")"
-	local control_length=$( (tar xO${gz}f "$file" "sysupgrade-$board_name/CONTROL" | wc -c) 2> /dev/null)
+	local control_length=$( (tar xO${gz}f "$file" "sysupgrade-${board_name//,/_}/CONTROL" | wc -c) 2> /dev/null)
+
+	if [ "$control_length" = 0 ]; then
+		control_length=$( (tar xO${gz}f "$file" "sysupgrade-${board_name//_/,}/CONTROL" | wc -c) 2> /dev/null)
+	fi
 
 	if [ "$control_length" != 0 ]; then
 		nand_verify_tar_file "$file" "$gz" || return 1

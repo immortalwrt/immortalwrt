@@ -23,7 +23,6 @@ define Package/default-settings
   CATEGORY:=LuCI
   TITLE:=LuCI support for Default Settings
   PKGARCH:=all
-  DEPENDS:=+luci-lib-base
 endef
 
 define Package/default-settings-chn
@@ -36,9 +35,6 @@ define Build/Compile
 endef
 
 define Package/default-settings/install
-	# $(INSTALL_DIR) $(1)/etc
-	# $(INSTALL_DATA) ./files/openwrt_banner $(1)/etc/openwrt_banner
-
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/99-default-settings $(1)/etc/uci-defaults/
 endef

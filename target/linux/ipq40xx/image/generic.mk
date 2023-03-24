@@ -132,6 +132,7 @@ define Device/8dev_habanero-dvk
 	IMAGE_SIZE := 30976k
 	SOC := qcom-ipq4019
 	IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | append-rootfs | pad-rootfs | check-size | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-8dev_habanero
 endef
 TARGET_DEVICES += 8dev_habanero-dvk
 
@@ -141,6 +142,7 @@ define Device/8dev_jalapeno-common
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	SOC := qcom-ipq4018
+	DEVICE_PACKAGES := ipq-wifi-8dev_jalapeno
 endef
 
 define Device/8dev_jalapeno
@@ -336,7 +338,7 @@ define Device/cilab_meshpoint-one
 	$(call Device/8dev_jalapeno-common)
 	DEVICE_VENDOR := Crisis Innovation Lab
 	DEVICE_MODEL := MeshPoint.One
-	DEVICE_PACKAGES := kmod-i2c-gpio kmod-iio-bmp280-i2c kmod-hwmon-ina2xx kmod-rtc-pcf2127
+	DEVICE_PACKAGES += kmod-i2c-gpio kmod-iio-bmp280-i2c kmod-hwmon-ina2xx kmod-rtc-pcf2127
 endef
 # Missing DSA Setup
 #TARGET_DEVICES += cilab_meshpoint-one
@@ -814,16 +816,14 @@ define Device/netgear_ex6100v2
 	DEVICE_MODEL := EX6100
 	DEVICE_VARIANT := v2
 endef
-# Missing DSA Setup
-#TARGET_DEVICES += netgear_ex6100v2
+TARGET_DEVICES += netgear_ex6100v2
 
 define Device/netgear_ex6150v2
 	$(call Device/netgear_ex61x0v2)
 	DEVICE_MODEL := EX6150
 	DEVICE_VARIANT := v2
 endef
-# Missing DSA Setup
-#TARGET_DEVICES += netgear_ex6150v2
+TARGET_DEVICES += netgear_ex6150v2
 
 define Device/netgear_orbi
 	$(call Device/DniImage)
@@ -1121,6 +1121,19 @@ define Device/unielec_u4019-32m
 endef
 # Missing DSA Setup
 #TARGET_DEVICES += unielec_u4019-32m
+
+define Device/wallys_dr40x9
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Wallys
+	DEVICE_MODEL := DR40X9
+	SOC := qcom-ipq40x9
+	DEVICE_DTS_CONFIG := config@ap.dk07.1-c1
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := ipq-wifi-wallys_dr40x9
+endef
+TARGET_DEVICES += wallys_dr40x9
 
 define Device/zte_mf18a
 	$(call Device/FitImage)

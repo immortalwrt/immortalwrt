@@ -16,9 +16,12 @@ endef
 TARGET_DEVICES += friendlyarm_nanopi-r2c
 
 define Device/friendlyarm_nanopi-r2s
-  $(Device/friendlyarm_nanopi-r2c)
+  DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2S
+  SOC := rk3328
   UBOOT_DEVICE_NAME := nanopi-r2s-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r2s
 
@@ -33,11 +36,34 @@ endef
 TARGET_DEVICES += friendlyarm_nanopi-r4s
 
 define Device/friendlyarm_nanopi-r4s-enterprise
-  $(Device/friendlyarm_nanopi-r4s)
+  DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R4S Enterprise Edition
+  SOC := rk3399
   UBOOT_DEVICE_NAME := nanopi-r4s-enterprise-rk3399
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-r8168
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r4s-enterprise
+
+define Device/friendlyarm_nanopi-r5c
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R5C
+  SOC := rk3568
+  UBOOT_DEVICE_NAME := nanopi-r5c-rk3568
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-r8125 kmod-rtw88 rtl8822ce-firmware wpad-basic-openssl
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r5c
+
+define Device/friendlyarm_nanopi-r5s
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R5S
+  SOC := rk3568
+  UBOOT_DEVICE_NAME := nanopi-r5s-rk3568
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r5s
 
 define Device/lunzn_fastrhino-r66s
   DEVICE_VENDOR := Lunzn
@@ -89,8 +115,11 @@ endef
 TARGET_DEVICES += xunlong_orangepi-r1-plus
 
 define Device/xunlong_orangepi-r1-plus-lts
-  $(Device/xunlong_orangepi-r1-plus)
+  DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi R1 Plus LTS
+  SOC := rk3328
   UBOOT_DEVICE_NAME := orangepi-r1-plus-lts-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
 TARGET_DEVICES += xunlong_orangepi-r1-plus-lts

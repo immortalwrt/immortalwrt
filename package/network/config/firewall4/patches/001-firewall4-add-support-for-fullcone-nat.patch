@@ -16,8 +16,8 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  root/etc/config/firewall                      |  2 ++
  root/usr/share/firewall4/templates/ruleset.uc | 16 ++++++++++++++--
  .../firewall4/templates/zone-fullcone.uc      |  4 ++++
- root/usr/share/ucode/fw4.uc                   | 70 ++++++++++++++++++-
- 4 files changed, 89 insertions(+), 3 deletions(-)
+ root/usr/share/ucode/fw4.uc                   | 69 ++++++++++++++++++-
+ 4 files changed, 89 insertions(+), 4 deletions(-)
  create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
 
 --- a/root/etc/config/firewall
@@ -34,20 +34,20 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	option name		lan
 --- a/root/usr/share/firewall4/templates/ruleset.uc
 +++ b/root/usr/share/firewall4/templates/ruleset.uc
-@@ -310,6 +310,12 @@ table inet fw4 {
+@@ -316,6 +316,12 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
-+{%   if (fw4.default_option("fullcone")): %}
++{%   if (zone.masq && fw4.default_option("fullcone")): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
 +{%   endif %}
-+{%   if (fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
 +{%   endif %}
  {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
  	}
  
-@@ -320,20 +326,26 @@ table inet fw4 {
+@@ -326,20 +326,26 @@ table inet fw4 {
  {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
  		{%+ include("redirect.uc", { fw4, redirect }) %}
  {%   endfor %}
@@ -67,10 +67,10 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  {%     endfor %}
  {%    endfor %}
  {%   endif %}
-+{%   if (fw4.default_option("fullcone")): %}
++{%   if (zone.masq && fw4.default_option("fullcone")): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
 +{%   endif %}
-+{%   if (fw4.default_option("fullcone6")): %}
++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
 +		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
 +{%   endif %}
  {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
@@ -187,32 +187,27 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  		this.state.defaults = defs;
  	},
  
-@@ -1955,6 +2011,13 @@ return {
- 			}
- 		}
- 
-+		if (this.state.defaults.fullcone) {
-+			this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
-+		}
-+		if (this.state.defaults.fullcone6) {
-+			this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
-+		}
-+
- 		if (zone.mtu_fix && this.kernel < 0x040a0000) {
- 			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
- 			return;
-@@ -2124,10 +2187,15 @@ return {
+@@ -2124,10 +2180,23 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  
-+		if (this.state.defaults.fullcone || this.state.defaults.fullcone6) {
-+			zone.dflags.snat = true;
-+			zone.dflags.dnat = true;
+-		if (zone.masq || zone.masq6)
++		if (zone.masq) {
+ 			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone) {
++				zone.dflags.dnat = true;
++				this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
++			}
 +		}
 +
- 		if (zone.masq || zone.masq6)
- 			zone.dflags.snat = true;
- 
++		if (zone.masq6) {
++			zone.dflags.snat = true;
++			if (this.state.defaults.fullcone6) {
++				zone.dflags.dnat = true;
++				this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
++			}
++		}
+
 -		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
 +		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
  			zone.dflags.helper = true;

@@ -59,6 +59,7 @@ HOST_CONFIGURE_ARGS = \
 	--target=$(GNU_HOST_NAME) \
 	--host=$(GNU_HOST_NAME) \
 	--build=$(GNU_HOST_NAME) \
+	--disable-dependency-tracking \
 	--program-prefix="" \
 	--program-suffix="" \
 	--prefix=$(HOST_BUILD_PREFIX) \
@@ -206,5 +207,9 @@ endif
 
 define HostBuild
   $(HostBuild/Core)
-  $(if $(if $(PKG_HOST_ONLY),,$(if $(and $(filter host-%,$(MAKECMDGOALS)),$(PKG_SKIP_DOWNLOAD)),,$(STAMP_PREPARED))),,$(if $(strip $(PKG_SOURCE_URL)),$(call Download,default)))
+  $(if $(if $(PKG_HOST_ONLY),,$(if $(and $(filter host-%,$(MAKECMDGOALS)),$(PKG_SKIP_DOWNLOAD)),,$(STAMP_PREPARED))),,
+	$(if $(and $(CONFIG_AUTOREMOVE), $(wildcard $(HOST_STAMP_INSTALLED), $(wildcard $(HOST_STAMP_BUILT)))),,
+		$(if $(strip $(PKG_SOURCE_URL)),$(call Download,default))
+	)
+  )
 endef

@@ -584,18 +584,17 @@ dhcp_add() {
 		limit=$((limit-1))
 	fi
 
-	eval "$(ipcalc.sh "${subnet%%/*}" $netmask $start $limit)"
+	# make sure the DHCP range is not empty
+	if [ "$dhcpv4" != "disabled" ] && eval "$(ipcalc.sh "${subnet%%/*}" "$netmask" "$start" "$limit")" ; then
+		[ "$dynamicdhcp" = "0" ] && END="static"
+
+		xappend "--dhcp-range=$tags$nettag$START,$END,$NETMASK,$leasetime${options:+ $options}"
+	fi
 
 	if [ "$dynamicdhcp" = "0" ] ; then
-		END="static"
 		dhcp6range="::,static"
 	else
 		dhcp6range="::1000,::ffff"
-	fi
-
-
-	if [ "$dhcpv4" != "disabled" ] ; then
-		xappend "--dhcp-range=$tags$nettag$START,$END,$NETMASK,$leasetime${options:+ $options}"
 	fi
 
 
@@ -1220,15 +1219,9 @@ dnsmasq_start()
 	config_get_bool dns_redirect "$cfg" dns_redirect 0
 	config_get dns_port "$cfg" port 53
 	if [ "$dns_redirect" = 1 ]; then
-		cat <<-EOF > /tmp/dnsmasq-dns-redirect.nft
-			table inet dnsmasq {
-				chain prerouting {
-					type nat hook prerouting priority -105; policy accept;
-					meta nfproto {ipv4, ipv6} udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
-				}
-			}
-		EOF
-		nft -f /tmp/dnsmasq-dns-redirect.nft
+		nft add table inet dnsmasq
+		nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
+		nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
 	fi
 }
 
@@ -1249,11 +1242,8 @@ dnsmasq_stop()
 
 nftables_clear()
 {
-	nft --check list table inet dnsmasq > /dev/null 2>&1
-	if [ $? -eq "0" ]; then
-		echo "Remove dnsmasq nat table"
+	! nft --check list table inet dnsmasq > "/dev/null" 2>&1 || \
 		nft delete table inet dnsmasq
-	fi
 }
 
 add_interface_trigger()

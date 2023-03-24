@@ -18,6 +18,8 @@ define Device/tplink_tl-wdr4900-v1
   DEVICE_VENDOR := TP-Link
   DEVICE_MODEL := TL-WDR4900
   DEVICE_VARIANT := v1
+  DEVICE_COMPAT_VERSION := 1.1
+  DEVICE_COMPAT_MESSAGE := Config cannot be migrated from swconfig to DSA
   TPLINK_HEADER_VERSION := 1
   TPLINK_HWID := 0x49000001
   TPLINK_HWREV := 1
@@ -37,6 +39,16 @@ define Device/tplink_tl-wdr4900-v1
   IMAGE/factory.bin := tplink-v1-image factory
 endef
 TARGET_DEVICES += tplink_tl-wdr4900-v1
+
+define Device/watchguard_firebox-t10
+  DEVICE_VENDOR := Watchguard
+  DEVICE_MODEL := Firebox T10
+  DEVICE_PACKAGES := kmod-rtc-s35390a kmod-eeprom-at24
+  KERNEL = kernel-bin | gzip | fit gzip $(KDIR)/image-$$(DEVICE_DTS).dtb
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += watchguard_firebox-t10
 
 define Device/sophos_red-15w-rev1
   DEVICE_VENDOR := Sophos
