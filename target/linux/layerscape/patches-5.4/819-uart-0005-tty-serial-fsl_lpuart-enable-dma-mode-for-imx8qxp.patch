@@ -536,7 +536,7 @@ Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
  		lpuart_dma_rx_free(&sport->port);
  	}
  
-@@ -2503,6 +2659,10 @@ static int lpuart_probe(struct platform_
+@@ -2509,6 +2665,10 @@ static int lpuart_probe(struct platform_
  	sport->port.dev = &pdev->dev;
  	sport->port.type = PORT_LPUART;
  	sport->devtype = sdata->devtype;
@@ -547,7 +547,7 @@ Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
  	ret = platform_get_irq(pdev, 0);
  	if (ret < 0)
  		return ret;
-@@ -2653,7 +2813,7 @@ static int lpuart_suspend(struct device
+@@ -2659,7 +2819,7 @@ static int lpuart_suspend(struct device
  		 * Rx DMA path before suspend and start Rx DMA path on resume.
  		 */
  		if (irq_wake) {
