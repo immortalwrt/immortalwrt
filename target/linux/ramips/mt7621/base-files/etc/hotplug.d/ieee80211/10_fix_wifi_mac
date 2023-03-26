@@ -45,6 +45,10 @@ case "$board" in
 			macaddr_setbit_la "$(mtd_get_mac_ascii Config protest_lan_mac)" \
 				> /sys${DEVPATH}/macaddress
 		;;
+	totolink,x5000r)
+		hw_mac_addr="$(mtd_get_mac_binary factory 0x4)"
+		[ "$PHYNBR" = "1" ] &&  macaddr_add $hw_mac_addr 4 > /sys${DEVPATH}/macaddress
+		;;
 	yuncore,ax820)
 		[ "$PHYNBR" = "1" ] && \
 			macaddr_setbit_la "$(mtd_get_mac_binary Factory 0xe000)" > /sys${DEVPATH}/macaddress
