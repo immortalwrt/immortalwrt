@@ -19,6 +19,7 @@ ath79_setup_interfaces()
 	araknis,an-700-ap-i-ac|\
 	arduino,yun|\
 	aruba,ap-105|\
+	aruba,ap-175|\
 	asus,rp-ac51|\
 	asus,rp-ac66|\
 	avm,fritz1750e|\
@@ -634,7 +635,6 @@ ath79_setup_macs()
 	dlink,dir-629-a1)
 		wan_mac=$(mtd_get_mac_text "mfcdata" 0x6a)
 		;;
-	dlink,dir-825-b1|\
 	trendnet,tew-673gru)
 		lan_mac=$(mtd_get_mac_text "caldata" 0xffa0)
 		wan_mac=$(mtd_get_mac_text "caldata" 0xffb4)
