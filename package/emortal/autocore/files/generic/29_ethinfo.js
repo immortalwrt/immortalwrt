@@ -313,7 +313,7 @@ return baseclass.extend({
 			return L.naturalCompare(a.device, b.device);
 		});
 
-		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));margin-bottom:1em;justify-items:center' }, known_ports.map(function(port) {
+		return E('div', { 'style': 'display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:1em;align-items:center;justify-items:center;text-align:center' }, known_ports.map(function(port) {
 			var speed = port.netdev.getSpeed(),
 			    duplex = port.netdev.getDuplex(),
 			    pmap = port_map[port.netdev.getName()],
