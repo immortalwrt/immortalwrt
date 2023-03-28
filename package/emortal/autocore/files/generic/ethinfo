@@ -12,40 +12,14 @@ if (!stat) {
 	exit(1);
 }
 
-let eth_info = [];
-for (let ifname in stat) {
-	if (!ifname || stat[ifname]?.devtype !== 'ethernet' || !length(stat[ifname]['link-advertising']))
-		continue;
-
-	let status, speed, duplex;
-
-	if (stat[ifname]?.carrier)
-		status = 'yes';
-	else
-		status = 'no';
-
-	if (!stat[ifname]?.carrier || !stat[ifname]?.speed || substr(stat[ifname]?.speed, 0, 1) === '-')
-		speed = '-';
-	else
-		speed = substr(stat[ifname]?.speed, 0, -1) + 'Mb/s';
-
-	if (speed == '-')
-		duplex = '-';
-	else if (substr(stat[ifname]?.speed, -1) === 'F')
-		duplex = 'Full';
-	else
-		duplex = 'Half';
-
-	push(eth_info, {
-		name: ifname,
-		status: status,
-		speed: speed,
-		duplex: duplex,
-	});
-}
-
-sort(eth_info, (a, b) => {
-	return a?.name > b?.name;
+let device_list = [];
+map(keys(stat), (ifname) => {
+	if (ifname && stat[ifname]?.devtype === 'ethernet' && length(stat[ifname]['link-advertising']))
+		push(device_list, ifname);
 });
 
-print(eth_info);
+sort(device_list, (a, b) => {
+	return a > b;
+});
+
+print(device_list);

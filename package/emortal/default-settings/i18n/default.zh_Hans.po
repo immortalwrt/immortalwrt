@@ -69,32 +69,60 @@ msgid ""
 "option does not comply with IEEE 802.11n-2009!"
 msgstr "强制启用 40MHz 频宽并忽略辅助信道重叠。此选项可能不兼容某些无线硬件导致无法启用!"
 
+msgid "(no interfaces attached)"
+msgstr "（未连接到接口）"
+
+msgid "Collisions seen"
+msgstr "检测到冲突"
+
 msgid "Ethernet Information"
 msgstr "网口信息"
 
-msgid "Ethernet Name"
-msgstr "网口名"
+msgid "No zone assigned"
+msgstr "未分配区域"
 
-msgid "Link Status"
-msgstr "连接状态"
+msgid "Part of network:"
+msgid_plural "Part of networks:"
+msgstr[0] "属于以下网络："
 
-msgid "Speed"
-msgstr "速率"
+msgid "Part of zone %q"
+msgstr "属于区域 %q"
 
-msgid "Duplex"
-msgstr "双工模式"
+msgid "Port is not part of any network"
+msgstr "端口不属于任何网络"
 
-msgid "Link Up"
-msgstr "已连接"
+msgid "Receive dropped"
+msgstr "接收丢弃"
 
-msgid "Link Down"
-msgstr "已断开"
+msgid "Receive errors"
+msgstr "接收错误"
 
-msgid "Full Duplex"
-msgstr "全双工"
+msgid "Received bytes"
+msgstr "接收字节"
 
-msgid "Half Duplex"
-msgstr "半双工"
+msgid "Received multicast"
+msgstr "接收组播"
+
+msgid "Received packets"
+msgstr "接收数据包"
+
+msgid "Speed: %d Mbit/s, Duplex: %s"
+msgstr "速率：%d Mbit/s，双工模式：%s"
+
+msgid "Transmit dropped"
+msgstr "传输丢弃"
+
+msgid "Transmit errors"
+msgstr "传输错误"
+
+msgid "Transmitted bytes"
+msgstr "传输字节"
+
+msgid "Transmitted packets"
+msgstr "传输数据包"
+
+msgid "no link"
+msgstr "未连接"
 
 msgid "Allow AP mode to disconnect STAs based on low ACK condition"
 msgstr "允许 AP 模式基于低 ACK 条件判断剔除弱信号的客户端"
