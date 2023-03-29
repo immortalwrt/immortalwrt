@@ -225,17 +225,15 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
  	for_each_uvc_urb(uvc_urb, stream) {
 --- a/drivers/media/usb/uvc/uvcvideo.h
 +++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -200,7 +200,9 @@
+@@ -200,6 +200,8 @@
  #define UVC_QUIRK_FORCE_Y8		0x00000800
  #define UVC_QUIRK_FORCE_BPP		0x00001000
  #define UVC_QUIRK_WAKE_AUTOSUSPEND	0x00002000
--
-+#define UVC_QUIRK_MOTION		0x00001000
-+#define UVC_QUIRK_SINGLE_ISO		0x00002000
-+ 
++#define UVC_QUIRK_MOTION		0x00004000
++#define UVC_QUIRK_SINGLE_ISO		0x00008000
+ 
  /* Format flags */
  #define UVC_FMT_FLAG_COMPRESSED		0x00000001
- #define UVC_FMT_FLAG_STREAM		0x00000002
 @@ -668,6 +670,7 @@ struct uvc_device {
  	u8 *status;
  	struct input_dev *input;
