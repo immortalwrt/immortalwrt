@@ -90,3 +90,27 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
+--- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
+@@ -14,6 +14,21 @@
+ 	compatible = "xunlong,orangepi-r1-plus-lts", "rockchip,rk3328";
+ };
+ 
++&dmc_opp_table {
++	opp-798000000 {
++		status = "disabled";
++	};
++	opp-840000000 {
++		status = "disabled";
++	};
++	opp-924000000 {
++		status = "disabled";
++	};
++	opp-1056000000 {
++		status = "disabled";
++	};
++};
++
+ &gmac2io {
+ 	phy-handle = <&yt8531c>;
+ 	tx_delay = <0x19>;

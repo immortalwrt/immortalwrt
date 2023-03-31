@@ -1,13 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /*
  * Copyright (c) 2016 Xunlong Software. Co., Ltd.
  * (http://www.orangepi.org)
  *
- * Copyright (c) 2021 Tianling Shen <cnsztl@immortalwrt.org>
+ * Copyright (c) 2021-2023 Tianling Shen <cnsztl@gmail.com>
  */
 
 /dts-v1/;
-
 #include "rk3328-orangepi-r1-plus.dts"
 
 / {
@@ -24,8 +23,7 @@
 		/delete-node/ ethernet-phy@1;
 
 		yt8531c: ethernet-phy@0 {
-			compatible = "ethernet-phy-id4f51.e91b",
-				     "ethernet-phy-ieee802.3-c22";
+			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
 
 			motorcomm,clk-out-frequency-hz = <125000000>;

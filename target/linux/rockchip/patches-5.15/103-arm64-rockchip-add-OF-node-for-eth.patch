@@ -12,6 +12,16 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts | 7 +++++++
  1 file changed, 7 insertions(+)
 
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2c.dts
+@@ -38,3 +38,7 @@
+ 		};
+ 	};
+ };
++
++&rtl8153 {
++	realtek,led-data = <0x78>;
++};
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 @@ -401,9 +401,11 @@
@@ -44,6 +54,16 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
+--- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
+@@ -38,3 +38,7 @@
+ 		};
+ 	};
+ };
++
++&rtl8153 {
++	realtek,led-data = <0x78>;
++};
 --- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 @@ -83,6 +83,19 @@
