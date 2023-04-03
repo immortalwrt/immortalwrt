@@ -59,6 +59,12 @@ define U-Boot/orangepi-r1-plus-lts-rk3328
     xunlong_orangepi-r1-plus-lts
 endef
 
+define U-Boot/roc-cc-rk3328
+  $(U-Boot/Default/rk3328)
+  NAME:=ROC-RK3328-CC
+  BUILD_DEVICES:= \
+    firefly_roc-cc
+endef
 
 # RK3399 boards
 
@@ -143,6 +149,7 @@ UBOOT_TARGETS := \
   nanopi-r2s-rk3328 \
   orangepi-r1-plus-rk3328 \
   orangepi-r1-plus-lts-rk3328 \
+  roc-cc-rk3328 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   nanopi-r5c-rk3568 \
