@@ -72,6 +72,18 @@ define U-Boot/orangepi-r1-plus-lts-rk3328
   USE_RKBIN:=1
 endef
 
+define U-Boot/roc-cc-rk3328
+  BUILD_SUBTARGET:=armv8
+  NAME:=ROC-RK3328-CC
+  BUILD_DEVICES:= \
+    firefly_roc-cc
+  DEPENDS:=+PACKAGE_u-boot-roc-cc-rk3328:arm-trusted-firmware-rk3328
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk322xh_bl31_v1.46.elf
+  OF_PLATDATA:=$(1)
+  USE_RKBIN:=1
+endef
+
 
 # RK3399 boards
 
@@ -113,7 +125,8 @@ UBOOT_TARGETS := \
   nanopi-r2c-rk3328 \
   nanopi-r2s-rk3328 \
   orangepi-r1-plus-rk3328 \
-  orangepi-r1-plus-lts-rk3328
+  orangepi-r1-plus-lts-rk3328 \
+  roc-cc-rk3328
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
