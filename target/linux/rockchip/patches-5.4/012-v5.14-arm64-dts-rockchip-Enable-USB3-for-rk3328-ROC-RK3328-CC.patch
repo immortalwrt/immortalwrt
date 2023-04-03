@@ -1,0 +1,36 @@
+From 75f95927334dea863f16f4ecd29cc709edc3c6ad Mon Sep 17 00:00:00 2001
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Tue, 4 May 2021 16:36:14 +0800
+Subject: [PATCH] arm64: dts: rockchip: Enable USB3 for rk3328 ROC-RK3328-CC
+
+Enable USB3 nodes for the ROC-RK3328-CC board.
+
+The separate power regulator is not added as it is controlled by the
+same GPIO line as the existing VBUS regulators, so it is already
+enabled. Also there is no port representation to tie the regulator to.
+
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+Link: https://lore.kernel.org/r/20210504083616.9654-3-wens@kernel.org
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+@@ -336,6 +336,15 @@
+ 	status = "okay";
+ };
+ 
++&usbdrd3 {
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
++	dr_mode = "host";
++	status = "okay";
++};
++
+ &usb_host0_ehci {
+ 	status = "okay";
+ };

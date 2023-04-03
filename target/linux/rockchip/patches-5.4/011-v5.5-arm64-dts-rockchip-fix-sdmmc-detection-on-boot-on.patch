@@ -1,0 +1,28 @@
+From 75aa567803b15e679432655badf95cd30b66b930 Mon Sep 17 00:00:00 2001
+From: Peter Geis <pgwipeout@gmail.com>
+Date: Wed, 16 Oct 2019 18:59:46 +0000
+Subject: [PATCH] arm64: dts: rockchip: fix sdmmc detection on boot on
+ rk3328-roc-cc
+
+With working GPIO, during init the GPIO state s reset.
+This causes the sdmmc regulator to shut down, preventing detection.
+Removing and replacing the card will allow it to be detected, but that should not be necessary.
+Fix this by setting the regulator on at boot.
+
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Link: https://lore.kernel.org/r/20191016185945.1962-1-pgwipeout@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+@@ -35,6 +35,7 @@
+ 		gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_LOW>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&sdmmc0m1_gpio>;
++		regulator-boot-on;
+ 		regulator-name = "vcc_sd";
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;

@@ -45,3 +45,32 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	/delete-node/ display-subsystem;
  
  	gpio-leds {
+--- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+@@ -10,6 +10,13 @@
+ 	model = "Firefly roc-rk3328-cc";
+ 	compatible = "firefly,roc-rk3328-cc", "rockchip,rk3328";
+ 
++	aliases {
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
++	};
++
+ 	chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+@@ -86,11 +93,9 @@
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		power {
++		power_led: power {
+ 			label = "firefly:blue:power";
+-			linux,default-trigger = "heartbeat";
+ 			gpios = <&rk805 1 GPIO_ACTIVE_LOW>;
+-			default-state = "on";
+ 		};
+ 
+ 		user {
