@@ -90,6 +90,30 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
+--- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+@@ -13,6 +13,11 @@
+ 	aliases {
+ 		mmc0 = &sdmmc;
+ 		mmc1 = &emmc;
++
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen {
+@@ -93,9 +98,7 @@
+ 
+ 		power_led: led-0 {
+ 			label = "firefly:blue:power";
+-			linux,default-trigger = "heartbeat";
+ 			gpios = <&rk805 1 GPIO_ACTIVE_LOW>;
+-			default-state = "on";
+ 		};
+ 
+ 		user_led: led-1 {
 --- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 @@ -19,6 +19,13 @@

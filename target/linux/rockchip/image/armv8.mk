@@ -5,6 +5,15 @@
 # FIT will be loaded at 0x02080000. Leave 16M for that, align it to 2M and load the kernel after it.
 KERNEL_LOADADDR := 0x03200000
 
+define Device/firefly_roc-cc
+  DEVICE_VENDOR := Firefly
+  DEVICE_MODEL := ROC-RK3328-CC
+  SOC := rk3328
+  UBOOT_DEVICE_NAME := roc-cc-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
+endef
+TARGET_DEVICES += firefly_roc-cc
+
 define Device/friendlyarm_nanopi-r2c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2C
