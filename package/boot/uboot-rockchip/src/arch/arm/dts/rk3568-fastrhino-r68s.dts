@@ -9,6 +9,8 @@
 	aliases {
 		ethernet0 = &gmac0;
 		ethernet1 = &gmac1;
+		ethernet2 = &rtl8125_1;
+		ethernet3 = &rtl8125_2;
 		mmc0 = &sdhci;
 	};
 

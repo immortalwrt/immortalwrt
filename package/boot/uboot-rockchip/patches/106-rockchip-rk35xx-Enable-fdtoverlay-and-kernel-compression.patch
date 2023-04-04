@@ -1,0 +1,74 @@
+From af7274e5d84deb2c2ec4526f755b01907b3f1d76 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 21 Mar 2023 21:43:08 +0000
+Subject: [PATCH] rockchip: rk35xx: Enable fdtoverlay and kernel compression
+
+Add fdtoverlay_addr_r, kernel_comp_addr_r and imply use of
+OF_LIBFDT_OVERLAY on RK3568 and RK3588 to support fdtoverlay
+and kernel compression.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+Link: https://patchwork.ozlabs.org/project/uboot/patch/20230321214301.2590326-5-jonas@kwiboo.se/
+---
+ arch/arm/mach-rockchip/Kconfig  | 2 ++
+ include/configs/rk3568_common.h | 7 ++++++-
+ include/configs/rk3588_common.h | 7 ++++++-
+ 3 files changed, 14 insertions(+), 2 deletions(-)
+
+--- a/arch/arm/mach-rockchip/Kconfig
++++ b/arch/arm/mach-rockchip/Kconfig
+@@ -290,6 +290,7 @@ config ROCKCHIP_RK3568
+ 	select DM_RESET
+ 	imply SPL_ATF_NO_PLATFORM_PARAM if SPL_ATF
+ 	imply ROCKCHIP_COMMON_BOARD
++	imply OF_LIBFDT_OVERLAY
+ 	imply ROCKCHIP_OTP
+ 	imply MISC_INIT_R
+ 	help
+@@ -312,6 +313,7 @@ config ROCKCHIP_RK3588
+ 	select BOARD_LATE_INIT
+ 	imply SPL_ATF_NO_PLATFORM_PARAM if SPL_ATF
+ 	imply ROCKCHIP_COMMON_BOARD
++	imply OF_LIBFDT_OVERLAY
+ 	imply ROCKCHIP_OTP
+ 	imply MISC_INIT_R
+ 	help
+--- a/include/configs/rk3568_common.h
++++ b/include/configs/rk3568_common.h
+@@ -17,10 +17,15 @@
+ 
+ #define ENV_MEM_LAYOUT_SETTINGS		\
+ 	"scriptaddr=0x00c00000\0"	\
++	"script_offset_f=0xffe000\0"	\
++	"script_size_f=0x2000\0"	\
+ 	"pxefile_addr_r=0x00e00000\0"	\
+ 	"fdt_addr_r=0x0a100000\0"	\
++	"fdtoverlay_addr_r=0x02000000\0"	\
+ 	"kernel_addr_r=0x02080000\0"	\
+-	"ramdisk_addr_r=0x0a200000\0"
++	"ramdisk_addr_r=0x0a200000\0"	\
++	"kernel_comp_addr_r=0x08000000\0"	\
++	"kernel_comp_size=0x2000000\0"
+ 
+ #include <config_distro_bootcmd.h>
+ #define CFG_EXTRA_ENV_SETTINGS		\
+--- a/include/configs/rk3588_common.h
++++ b/include/configs/rk3588_common.h
+@@ -16,10 +16,15 @@
+ 
+ #define ENV_MEM_LAYOUT_SETTINGS		\
+ 	"scriptaddr=0x00c00000\0"	\
++	"script_offset_f=0xffe000\0"	\
++	"script_size_f=0x2000\0"	\
+ 	"pxefile_addr_r=0x00e00000\0"	\
+ 	"fdt_addr_r=0x0a100000\0"	\
++	"fdtoverlay_addr_r=0x02000000\0"	\
+ 	"kernel_addr_r=0x02080000\0"	\
+-	"ramdisk_addr_r=0x0a200000\0"
++	"ramdisk_addr_r=0x0a200000\0"	\
++	"kernel_comp_addr_r=0x08000000\0"	\
++	"kernel_comp_size=0x2000000\0"
+ 
+ #include <config_distro_bootcmd.h>
+ #define CFG_EXTRA_ENV_SETTINGS \

@@ -3,7 +3,7 @@
  * Copyright (c) 2022 FriendlyElec Computer Tech. Co., Ltd.
  * (http://www.friendlyelec.com)
  *
- * Copyright (c) 2023 Tianling Shen <cnsztl@immortalwrt.org>
+ * Copyright (c) 2023 Tianling Shen <cnsztl@gmail.com>
  */
 
 /dts-v1/;
@@ -32,22 +32,27 @@
 		pinctrl-0 = <&lan_led_pin>, <&power_led_pin>, <&wan_led_pin>, <&wlan_led_pin>;
 
 		led-lan {
-			label = "green:lan";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_LAN;
 			gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
 		};
 
 		power_led: led-power {
-			label = "red:power";
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_POWER;
+			linux,default-trigger = "heartbeat";
 			gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_HIGH>;
 		};
 
 		led-wan {
-			label = "green:wan";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WAN;
 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
 		};
 
 		led-wlan {
-			label = "green:wlan";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WLAN;
 			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -57,6 +62,20 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie20_reset_pin>;
 	reset-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&pcie3x1 {
+	num-lanes = <1>;
+	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_pcie>;
+	status = "okay";
+};
+
+&pcie3x2 {
+	num-lanes = <1>;
+	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_pcie>;
 	status = "okay";
 };
 

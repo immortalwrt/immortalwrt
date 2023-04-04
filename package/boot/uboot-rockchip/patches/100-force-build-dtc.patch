@@ -9,7 +9,7 @@
  DTC		?= $(DTC_INTREE)
  DTC_MIN_VERSION	:= 010406
  
-@@ -2028,7 +2028,7 @@ endif
+@@ -2000,7 +2000,7 @@ endif
  # Check dtc and pylibfdt, if DTC is provided, else build them
  PHONY += scripts_dtc
  scripts_dtc: scripts_basic

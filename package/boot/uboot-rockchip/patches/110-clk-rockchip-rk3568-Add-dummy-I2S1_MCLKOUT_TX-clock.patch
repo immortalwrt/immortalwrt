@@ -1,0 +1,30 @@
+From 8a894773cb87645f5bfe3315f79935f50bd011f4 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 2 Apr 2023 15:58:18 +0000
+Subject: [PATCH] clk: rockchip: rk3568: Add dummy I2S1_MCLKOUT_TX clock
+ support
+
+A RK3568 device tree pmic node can reference the I2S1_MCLKOUT_TX clock
+in assigned-clocks, add dummy support to set parent of this clock to the
+rk3568 cru driver.
+
+Fixes probe of pmic driver and missing regulators on affected boards,
+rk3568-evb and rk3568-rock-3a.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Link: https://patchwork.ozlabs.org/project/uboot/patch/20230402155816.1312383-1-jonas@kwiboo.se/
+---
+ drivers/clk/rockchip/clk_rk3568.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/clk/rockchip/clk_rk3568.c
++++ b/drivers/clk/rockchip/clk_rk3568.c
+@@ -2838,6 +2838,8 @@ static int rk3568_clk_set_parent(struct
+ 	case ACLK_RKVDEC_PRE:
+ 	case CLK_RKVDEC_CORE:
+ 		return rk3568_rkvdec_set_parent(clk, parent);
++	case I2S1_MCLKOUT_TX:
++		break;
+ 	default:
+ 		return -ENOENT;
+ 	}

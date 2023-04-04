@@ -17,7 +17,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 
 --- a/common/spl/Kconfig
 +++ b/common/spl/Kconfig
-@@ -586,6 +586,11 @@ config SPL_FIT_IMAGE_TINY
+@@ -587,6 +587,11 @@ config SPL_FIT_IMAGE_TINY
  	  ensure this information is available to the next image
  	  invoked).
  

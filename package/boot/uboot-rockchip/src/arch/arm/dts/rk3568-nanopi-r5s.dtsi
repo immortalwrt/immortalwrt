@@ -3,7 +3,7 @@
  * Copyright (c) 2022 FriendlyElec Computer Tech. Co., Ltd.
  * (http://www.friendlyelec.com)
  *
- * Copyright (c) 2023 Tianling Shen <cnsztl@immortalwrt.org>
+ * Copyright (c) 2023 Tianling Shen <cnsztl@gmail.com>
  */
 
 /dts-v1/;
@@ -11,17 +11,13 @@
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/rockchip.h>
+#include <dt-bindings/soc/rockchip,vop2.h>
 #include "rk3568.dtsi"
 
 / {
 	aliases {
 		mmc0 = &sdmmc0;
 		mmc1 = &sdhci;
-
-		led-boot = &power_led;
-		led-failsafe = &power_led;
-		led-running = &power_led;
-		led-upgrade = &power_led;
 	};
 
 	chosen: chosen {
@@ -36,21 +32,6 @@
 			hdmi_con_in: endpoint {
 				remote-endpoint = <&hdmi_out_con>;
 			};
-		};
-	};
-
-	rk809-sound {
-		compatible = "simple-audio-card";
-		simple-audio-card,format = "i2s";
-		simple-audio-card,name = "Analog RK809";
-		simple-audio-card,mclk-fs = <256>;
-
-		simple-audio-card,cpu {
-			sound-dai = <&i2s1_8ch>;
-		};
-
-		simple-audio-card,codec {
-			sound-dai = <&rk809>;
 		};
 	};
 
@@ -151,6 +132,18 @@
 	};
 };
 
+&combphy0 {
+	status = "okay";
+};
+
+&combphy1 {
+	status = "okay";
+};
+
+&combphy2 {
+	status = "okay";
+};
+
 &cpu0 {
 	cpu-supply = <&vdd_cpu>;
 };
@@ -176,6 +169,12 @@
 	avdd-0v9-supply = <&vdda0v9_image>;
 	avdd-1v8-supply = <&vcca1v8_image>;
 	status = "okay";
+};
+
+&hdmi_in {
+	hdmi_in_vp0: endpoint {
+		remote-endpoint = <&vp0_out_hdmi>;
+	};
 };
 
 &hdmi_out {
@@ -331,7 +330,6 @@
 
 			vccio_acodec: LDO_REG4 {
 				regulator-name = "vccio_acodec";
-				regulator-always-on;
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
 
@@ -442,8 +440,8 @@
 	status = "okay";
 };
 
-&i2s1_8ch {
-	rockchip,trcm-sync-tx-only;
+&pcie30phy {
+	data-lanes = <1 2>;
 	status = "okay";
 };
 
@@ -582,4 +580,11 @@
 
 &vop_mmu {
 	status = "okay";
+};
+
+&vp0 {
+	vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
+		reg = <ROCKCHIP_VOP2_EP_HDMI0>;
+		remote-endpoint = <&hdmi_in_vp0>;
+	};
 };

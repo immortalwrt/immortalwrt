@@ -49,7 +49,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 -
  #endif /* CONFIG_USB_GADGET */
  
- #if CONFIG_IS_ENABLED(FASTBOOT)
+ #if IS_ENABLED(CONFIG_FASTBOOT)
 --- a/arch/arm/mach-rockchip/rk3399/rk3399.c
 +++ b/arch/arm/mach-rockchip/rk3399/rk3399.c
 @@ -292,3 +292,32 @@ void spl_board_init(void)

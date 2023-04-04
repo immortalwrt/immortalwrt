@@ -18,17 +18,15 @@
 +	rk3399-nanopi-r4s-enterprise.dtb \
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
- 	rk3399-puma-haikou.dtb \
-@@ -164,7 +168,11 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
- 	rk3399pro-rock-pi-n10.dtb
+ 	rk3399-pinephone-pro.dtb \
+@@ -166,6 +170,10 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3568) += \
--	rk3568-evb.dtb
-+	rk3568-evb.dtb \
+ 	rk3568-evb.dtb \
 +	rk3568-fastrhino-r66s.dtb \
 +	rk3568-fastrhino-r68s.dtb \
 +	rk3568-nanopi-r5c.dtb \
-+	rk3568-nanopi-r5s.dtb
++	rk3568-nanopi-r5s.dtb \
+ 	rk3566-radxa-cm3-io.dtb \
+ 	rk3568-rock-3a.dtb
  
- dtb-$(CONFIG_ROCKCHIP_RV1108) += \
- 	rv1108-elgin-r1.dtb \
