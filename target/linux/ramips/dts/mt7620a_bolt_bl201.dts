@@ -9,6 +9,11 @@
 
 	chosen {
 		bootargs = "console=ttyS0,115200";
+
+		led-boot = &power_red;
+		led-failsafe = &power_red;
+		led-running = &power_blue;
+		led-upgrade = &power_red;
 	};
 
 	leds {
