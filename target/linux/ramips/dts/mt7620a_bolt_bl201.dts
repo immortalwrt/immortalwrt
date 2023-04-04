@@ -14,6 +14,7 @@
 		led-failsafe = &power_red;
 		led-running = &power_blue;
 		led-upgrade = &power_red;
+		label-mac-device = &ethernet;
 	};
 
 	leds {
