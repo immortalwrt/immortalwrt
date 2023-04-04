@@ -63,7 +63,7 @@ define U-Boot/roc-cc-rk3328
   $(U-Boot/Default/rk3328)
   NAME:=ROC-RK3328-CC
   BUILD_DEVICES:= \
-    firefly_roc-cc
+    firefly_roc-rk3328-cc
 endef
 
 # RK3399 boards
