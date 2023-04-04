@@ -76,7 +76,7 @@ define U-Boot/roc-cc-rk3328
   BUILD_SUBTARGET:=armv8
   NAME:=ROC-RK3328-CC
   BUILD_DEVICES:= \
-    firefly_roc-cc
+    firefly_roc-rk3328-cc
   DEPENDS:=+PACKAGE_u-boot-roc-cc-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
   ATF:=rk322xh_bl31_v1.46.elf
