@@ -358,7 +358,7 @@ define Device/ruijie_rg-mtfi-m520
 	IMAGE/factory.bin := qsdk-ipq-factory-mmc
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to $$$$(BLOCKSIZE) | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	DEVICE_PACKAGES := ath10k-firmware-qca988x-ct e2fsprogs kmod-hwmon-lm75 \
-	kmod-fs-ext4 kmod-fs-f2fs kmod-rtc-pcf8563 losetup mkf2fs
+		kmod-fs-f2fs kmod-rtc-pcf8563 losetup mkf2fs
 endef
 TARGET_DEVICES += ruijie_rg-mtfi-m520
 

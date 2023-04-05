@@ -19,7 +19,6 @@ DEFAULT_PACKAGES += \
 	kmod-leds-gpio kmod-gpio-button-hotplug swconfig \
 	kmod-ath10k-ct wpad-openssl \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019-ct \
-	e2fsprogs uboot-envtools \
-	autocore-arm luci-app-cpufreq
+	uboot-envtools automount autocore-arm luci-app-cpufreq
 
 $(eval $(call BuildTarget))
