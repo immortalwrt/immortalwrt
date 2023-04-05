@@ -22,6 +22,7 @@ define Package/automount
   MAINTAINER:=Lean
   DEPENDS:= \
     +block-mount \
+    +e2fsprogs \
     +kmod-usb-storage \
     +kmod-usb-storage-extras \
     +!TARGET_ramips:kmod-usb-storage-uas \
