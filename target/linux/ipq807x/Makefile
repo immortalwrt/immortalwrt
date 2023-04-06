@@ -15,7 +15,7 @@ DEFAULT_PACKAGES += \
 	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
 	kmod-qca-nss-dp qca-ssdk-shell kmod-phy-aquantia \
-	ath11k-firmware-ipq8074 kmod-ath11k-ahb \
-	wpad-openssl uboot-envtools
+	ath11k-firmware-ipq8074 kmod-ath11k-ahb wpad-openssl \
+	uboot-envtools automount
 
 $(eval $(call BuildTarget))

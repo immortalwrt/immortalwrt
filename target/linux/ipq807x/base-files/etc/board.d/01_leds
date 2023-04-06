@@ -18,7 +18,7 @@ redmi,ax6|\
 redmi,ax6-stock|\
 xiaomi,ax3600|\
 xiaomi,ax3600-stock)
-	ucidef_set_led_netdev "wan" "WAN" "blue:network" "wan"
+	ucidef_set_led_netdev "wan" "WAN" "blue:network" "wan" "link"
 	;;
 qnap,301w)
 	ucidef_set_led_netdev "lan1" "LAN1" "green:lan1" "lan1"
