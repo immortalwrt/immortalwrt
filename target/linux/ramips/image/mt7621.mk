@@ -380,7 +380,7 @@ define Device/beeline_smartbox-flash
   IMAGES += factory.trx
   IMAGE/factory.trx := append-kernel | append-ubi | check-size
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615-firmware uencrypt-mbedtls
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7615-firmware uencrypt-openssl
 endef
 TARGET_DEVICES += beeline_smartbox-flash
 
@@ -1614,7 +1614,7 @@ define Device/mts_wg430223
   IMAGES += factory.trx
   IMAGE/factory.trx := append-kernel | append-ubi | check-size
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  DEVICE_PACKAGES := kmod-mt7615-firmware uencrypt-mbedtls
+  DEVICE_PACKAGES := kmod-mt7615-firmware uencrypt-openssl
 endef
 TARGET_DEVICES += mts_wg430223
 
