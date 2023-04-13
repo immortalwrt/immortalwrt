@@ -52,6 +52,9 @@ platform_do_upgrade() {
 		CI_KERNPART="bootkernel2"
 		nand_do_upgrade "$1"
 		;;
+	ruijie,rg-mtfi-m520)
+		ruijie_do_upgrade "$1"
+		;;
 	tplink,ad7200 |\
 	tplink,c2600)
 		PART_NAME="os-image:rootfs"
@@ -70,6 +73,9 @@ platform_do_upgrade() {
 	tplink,vr2600v)
 		MTD_CONFIG_ARGS="-s 0x200000"
 		default_do_upgrade "$1"
+		;;
+	xiaomi,mi-router-hd)
+		platform_do_upgrade_xiaomi "$1" 0x2800000
 		;;
 	zyxel,nbg6817)
 		zyxel_do_upgrade "$1"

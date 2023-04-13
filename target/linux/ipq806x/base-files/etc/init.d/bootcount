@@ -16,5 +16,10 @@ boot() {
 	linksys,ea8500)
 		mtd resetbc s_env || true
 		;;
+	xiaomi,mi-router-hd)
+		fw_setenv boot_wait on
+		fw_setenv bootdelay 3
+		fw_setenv uart_en 1
+		;;
 	esac
 }
