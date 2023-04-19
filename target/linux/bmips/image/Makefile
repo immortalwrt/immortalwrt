@@ -324,7 +324,7 @@ define Device/sercomm-nand
 endef
 
 ### Package helpers ###
-ATH9K_PACKAGES := kmod-ath9k wpad-basic-openssl
+ATH9K_PACKAGES := kmod-ath9k kmod-owl-loader wpad-basic-openssl
 B43_PACKAGES := kmod-b43 wpad-basic-openssl
 USB1_PACKAGES := kmod-usb-ohci kmod-usb-ledtrig-usbport
 USB2_PACKAGES := $(USB1_PACKAGES) kmod-usb2
