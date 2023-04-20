@@ -96,6 +96,7 @@ platform_do_upgrade() {
 		esac
 		;;
 	cmcc,rax3000m-emmc-ubootmod|\
+	glinet,gl-mt2500|\
 	glinet,gl-mt6000)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
@@ -173,6 +174,7 @@ platform_copy_config() {
 	case "$(board_name)" in
 	acer,predator-w6|\
 	cmcc,rax3000m-emmc-ubootmod|\
+	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
 	ubnt,unifi-6-plus)
 		emmc_copy_config
