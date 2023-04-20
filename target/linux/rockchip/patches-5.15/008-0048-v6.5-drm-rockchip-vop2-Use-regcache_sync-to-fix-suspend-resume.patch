@@ -1,0 +1,53 @@
+From b63a553e8f5aa6574eeb535a551817a93c426d8c Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Mon, 17 Apr 2023 14:37:47 +0200
+Subject: [PATCH] drm/rockchip: vop2: Use regcache_sync() to fix suspend/resume
+
+afa965a45e01 ("drm/rockchip: vop2: fix suspend/resume") uses
+regmap_reinit_cache() to fix the suspend/resume issue with the VOP2
+driver. During discussion it came up that we should rather use
+regcache_sync() instead. As the original patch is already applied
+fix this up in this follow-up patch.
+
+Fixes: afa965a45e01 ("drm/rockchip: vop2: fix suspend/resume")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20230417123747.2179695-1-s.hauer@pengutronix.de
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -214,8 +214,6 @@ struct vop2 {
+ 	struct vop2_win win[];
+ };
+ 
+-static const struct regmap_config vop2_regmap_config;
+-
+ static struct vop2_video_port *to_vop2_video_port(struct drm_crtc *crtc)
+ {
+ 	return container_of(crtc, struct vop2_video_port, crtc);
+@@ -840,11 +838,7 @@ static void vop2_enable(struct vop2 *vop
+ 		return;
+ 	}
+ 
+-	ret = regmap_reinit_cache(vop2->map, &vop2_regmap_config);
+-	if (ret) {
+-		drm_err(vop2->drm, "failed to reinit cache: %d\n", ret);
+-		return;
+-	}
++	regcache_sync(vop2->map);
+ 
+ 	if (vop2->data->soc_id == 3566)
+ 		vop2_writel(vop2, RK3568_OTP_WIN_EN, 1);
+@@ -874,6 +868,8 @@ static void vop2_disable(struct vop2 *vo
+ 
+ 	pm_runtime_put_sync(vop2->dev);
+ 
++	regcache_mark_dirty(vop2->map);
++
+ 	clk_disable_unprepare(vop2->aclk);
+ 	clk_disable_unprepare(vop2->hclk);
+ }
