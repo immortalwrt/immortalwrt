@@ -14,6 +14,7 @@
 		led-failsafe = &led_red;
 		led-running = &led_green;
 		led-upgrade = &led_blue;
+		label-mac-device = &gmac0;
 	};
 
 	chosen {
@@ -51,6 +52,11 @@
 	};
 };
 
+&gmac0 {
+	nvmem-cells = <&macaddr_config_4429>;
+	nvmem-cell-names = "mac-address-ascii";
+}
+
 &gmac1 {
 	status = "okay";
 	label = "wan";
@@ -86,7 +92,7 @@
 				read-only;
 			};
 
-			partition@30000 {
+			config: partition@30000 {
 				label = "config";
 				reg = <0x30000 0x10000>;
 				read-only;
@@ -140,6 +146,8 @@
 &pcie0 {
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		nvmem-cells = <&macaddr_config_4429>;
+		nvmem-cell-names = "mac-address-ascii";
 		mediatek,mtd-eeprom = <&factory 0x0>;
 	};
 };
@@ -147,6 +155,10 @@
 &pcie1 {
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		nvmem-cells = <&macaddr_config_4429>;
+		nvmem-cell-names = "mac-address-ascii";
+		mac-address-increment-byte = <3>;
+		mac-address-increment = <0x80>;
 		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
@@ -156,5 +168,15 @@
 	gpio {
 		groups = "uart2", "uart3", "wdt";
 		function = "gpio";
+	};
+};
+
+&config {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_config_4429: macaddr@4429 {
+		reg = <0x4429 0x11>;
 	};
 };
