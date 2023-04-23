@@ -55,7 +55,7 @@
 &gmac0 {
 	nvmem-cells = <&macaddr_config_4429>;
 	nvmem-cell-names = "mac-address-ascii";
-}
+};
 
 &gmac1 {
 	status = "okay";
