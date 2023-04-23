@@ -15,7 +15,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
 
 --- a/drivers/net/ethernet/marvell/mvneta.c
 +++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1913,6 +1913,23 @@ static void mvneta_rxq_drop_pkts(struct
+@@ -1925,6 +1925,23 @@ static void mvneta_rxq_drop_pkts(struct
  	}
  }
  
@@ -39,7 +39,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  static inline
  int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
  {
-@@ -2093,14 +2110,8 @@ static int mvneta_rx_swbm(struct napi_st
+@@ -2105,14 +2122,8 @@ static int mvneta_rx_swbm(struct napi_st
  		rxq->left_size = 0;
  	}
  
@@ -56,7 +56,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  	/* return some buffers to hardware queue, one at a time is too slow */
  	refill = mvneta_rx_refill_queue(pp, rxq);
-@@ -2223,14 +2234,8 @@ err_drop_frame:
+@@ -2235,14 +2246,8 @@ err_drop_frame:
  		napi_gro_receive(napi, skb);
  	}
  
@@ -73,7 +73,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  	/* Update rxq management counters */
  	mvneta_rxq_desc_num_update(pp, rxq, rx_done, rx_done);
-@@ -2476,7 +2481,6 @@ static netdev_tx_t mvneta_tx(struct sk_b
+@@ -2497,7 +2502,6 @@ static netdev_tx_t mvneta_tx(struct sk_b
  
  out:
  	if (frags > 0) {
@@ -81,7 +81,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		struct netdev_queue *nq = netdev_get_tx_queue(dev, txq_id);
  
  		netdev_tx_sent_queue(nq, len);
-@@ -2491,10 +2495,7 @@ out:
+@@ -2512,10 +2516,7 @@ out:
  		else
  			txq->pending += frags;
  

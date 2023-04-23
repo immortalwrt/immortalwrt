@@ -232,7 +232,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
  			SetPageWorkingset(new_page);
 --- a/mm/swapfile.c
 +++ b/mm/swapfile.c
-@@ -715,6 +715,7 @@ static void add_to_avail_list(struct swa
+@@ -716,6 +716,7 @@ static void add_to_avail_list(struct swa
  static void swap_range_free(struct swap_info_struct *si, unsigned long offset,
  			    unsigned int nr_entries)
  {
@@ -240,7 +240,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
  	unsigned long end = offset + nr_entries - 1;
  	void (*swap_slot_free_notify)(struct block_device *, unsigned long);
  
-@@ -740,6 +741,7 @@ static void swap_range_free(struct swap_
+@@ -741,6 +742,7 @@ static void swap_range_free(struct swap_
  			swap_slot_free_notify(si->bdev, offset);
  		offset++;
  	}

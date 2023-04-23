@@ -75,7 +75,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	/* Core clock */
  	struct clk *clk;
  	/* AXI clock */
-@@ -1965,10 +1975,50 @@ int mvneta_rx_refill_queue(struct mvneta
+@@ -1977,10 +1987,50 @@ int mvneta_rx_refill_queue(struct mvneta
  }
  
  static int
@@ -127,7 +127,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  {
  	unsigned char *data = page_address(page);
  	int data_len = -MVNETA_MH_SIZE, len;
-@@ -1988,7 +2038,26 @@ mvneta_swbm_rx_frame(struct mvneta_port
+@@ -2000,7 +2050,26 @@ mvneta_swbm_rx_frame(struct mvneta_port
  				rx_desc->buf_phys_addr,
  				len, dma_dir);
  
@@ -155,7 +155,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	if (unlikely(!rxq->skb)) {
  		netdev_err(dev,
  			   "Can't allocate skb on queue %d\n",
-@@ -1999,8 +2068,9 @@ mvneta_swbm_rx_frame(struct mvneta_port
+@@ -2011,8 +2080,9 @@ mvneta_swbm_rx_frame(struct mvneta_port
  	}
  	page_pool_release_page(rxq->page_pool, page);
  
@@ -167,7 +167,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	mvneta_rx_csum(pp, rx_desc->status, rxq->skb);
  
  	rxq->left_size = rx_desc->data_size - len;
-@@ -2034,7 +2104,7 @@ mvneta_swbm_add_rx_fragment(struct mvnet
+@@ -2046,7 +2116,7 @@ mvneta_swbm_add_rx_fragment(struct mvnet
  		/* refill descriptor with new buffer later */
  		skb_add_rx_frag(rxq->skb,
  				skb_shinfo(rxq->skb)->nr_frags,
@@ -176,7 +176,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  				PAGE_SIZE);
  	}
  	page_pool_release_page(rxq->page_pool, page);
-@@ -2049,11 +2119,18 @@ static int mvneta_rx_swbm(struct napi_st
+@@ -2061,11 +2131,18 @@ static int mvneta_rx_swbm(struct napi_st
  {
  	int rcvd_pkts = 0, rcvd_bytes = 0, rx_proc = 0;
  	struct net_device *dev = pp->dev;
@@ -195,7 +195,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	/* Fairness NAPI loop */
  	while (rx_proc < budget && rx_proc < rx_todo) {
  		struct mvneta_rx_desc *rx_desc = mvneta_rxq_next_desc_get(rxq);
-@@ -2081,7 +2158,8 @@ static int mvneta_rx_swbm(struct napi_st
+@@ -2093,7 +2170,8 @@ static int mvneta_rx_swbm(struct napi_st
  				continue;
  			}
  
@@ -205,7 +205,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  			if (err)
  				continue;
  		} else {
-@@ -2116,6 +2194,10 @@ static int mvneta_rx_swbm(struct napi_st
+@@ -2128,6 +2206,10 @@ static int mvneta_rx_swbm(struct napi_st
  		/* clean uncomplete skb pointer in queue */
  		rxq->skb = NULL;
  	}
@@ -216,7 +216,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  
  	if (rcvd_pkts)
  		mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes, false);
-@@ -2857,13 +2939,14 @@ static int mvneta_poll(struct napi_struc
+@@ -2878,13 +2960,14 @@ static int mvneta_poll(struct napi_struc
  static int mvneta_create_page_pool(struct mvneta_port *pp,
  				   struct mvneta_rx_queue *rxq, int size)
  {
@@ -232,7 +232,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	};
  	int err;
  
-@@ -3366,6 +3449,11 @@ static int mvneta_change_mtu(struct net_
+@@ -3386,6 +3469,11 @@ static int mvneta_change_mtu(struct net_
  		mtu = ALIGN(MVNETA_RX_PKT_SIZE(mtu), 8);
  	}
  
@@ -244,7 +244,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	dev->mtu = mtu;
  
  	if (!netif_running(dev)) {
-@@ -4036,6 +4124,47 @@ static int mvneta_ioctl(struct net_devic
+@@ -4056,6 +4144,47 @@ static int mvneta_ioctl(struct net_devic
  	return phylink_mii_ioctl(pp->phylink, ifr, cmd);
  }
  
@@ -292,7 +292,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  /* Ethtool methods */
  
  /* Set link ksettings (phy address, speed) for ethtools */
-@@ -4432,6 +4561,7 @@ static const struct net_device_ops mvnet
+@@ -4452,6 +4581,7 @@ static const struct net_device_ops mvnet
  	.ndo_fix_features    = mvneta_fix_features,
  	.ndo_get_stats64     = mvneta_get_stats64,
  	.ndo_do_ioctl        = mvneta_ioctl,
@@ -300,7 +300,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  };
  
  static const struct ethtool_ops mvneta_eth_tool_ops = {
-@@ -4720,7 +4850,7 @@ static int mvneta_probe(struct platform_
+@@ -4740,7 +4870,7 @@ static int mvneta_probe(struct platform_
  	SET_NETDEV_DEV(dev, &pdev->dev);
  
  	pp->id = global_port_id++;

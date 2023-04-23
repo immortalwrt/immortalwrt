@@ -260,7 +260,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	/* forking complete and child started to run, tell ptracer */
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3468,6 +3468,7 @@ context_switch(struct rq *rq, struct tas
+@@ -3471,6 +3471,7 @@ context_switch(struct rq *rq, struct tas
  		 * finish_task_switch()'s mmdrop().
  		 */
  		switch_mm_irqs_off(prev->active_mm, next->mm, next);
@@ -268,7 +268,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  
  		if (!prev->mm) {                        // from kernel
  			/* will mmdrop() in finish_task_switch(). */
-@@ -6283,6 +6284,7 @@ void idle_task_exit(void)
+@@ -6286,6 +6287,7 @@ void idle_task_exit(void)
  
  	if (mm != &init_mm) {
  		switch_mm(mm, &init_mm, current);
