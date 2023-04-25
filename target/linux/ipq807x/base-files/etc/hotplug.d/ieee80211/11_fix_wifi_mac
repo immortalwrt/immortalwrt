@@ -12,7 +12,7 @@ board=$(board_name)
 case "$board" in
 	zte,mf269)
 		mac_addr="$(mtd_get_mac_binary mac 0x0)"
-		[ -n "$mac_addr" ] || mac_addr="$(get_mac_binary "$(find_mtd_chardev mac)" 0x20000)"
+		[ "$mac_addr" != "00:00:00:00:00:00" ] || mac_addr="$(get_mac_binary "$(find_mtd_chardev mac)" 0x20000)"
 		[ "$PHYNBR" = "0" ] && macaddr_add "$mac_addr" 2 > "/sys${DEVPATH}/macaddress"
 		[ "$PHYNBR" = "1" ] && macaddr_add "$mac_addr" 3 > "/sys${DEVPATH}/macaddress"
 	;;
