@@ -9,5 +9,5 @@ RK3399_LOADER:=rk3399_miniloader_v1.26.bin
 RK3568_ATF:=rk3568_bl31_v1.36.elf
 RK3568_DDR:=rk3568_ddr_1560MHz_v1.15.bin
 
-RK3588_ATF:=rk3588_bl31_v1.32.elf
+RK3588_ATF:=rk3588_bl31_v1.33.elf
 RK3588_DDR:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
