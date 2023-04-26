@@ -48,8 +48,7 @@ struct ssb_fbs {
 	struct ssb_sprom sprom;
 	u32 pci_bus;
 	u32 pci_dev;
-	u8 mac[ETH_ALEN];
-	int devid_override;
+	bool devid_override;
 };
 
 static DEFINE_SPINLOCK(ssb_fbs_lock);
@@ -57,9 +56,14 @@ static struct list_head ssb_fbs_list = LIST_HEAD_INIT(ssb_fbs_list);
 
 int ssb_get_fallback_sprom(struct ssb_bus *bus, struct ssb_sprom *out)
 {
-	const u32 pci_bus = bus->host_pci->bus->number;
-	const u32 pci_dev = PCI_SLOT(bus->host_pci->devfn);
 	struct ssb_fbs *pos;
+	u32 pci_bus, pci_dev;
+
+	if (bus->bustype != SSB_BUSTYPE_PCI)
+		return -ENOENT;
+
+	pci_bus = bus->host_pci->bus->number;
+	pci_dev = PCI_SLOT(bus->host_pci->devfn);
 
 	list_for_each_entry(pos, &ssb_fbs_list, list) {
 		if (pos->pci_bus != pci_bus ||
@@ -119,16 +123,6 @@ static void sprom_extract_r23(struct ssb_sprom *out, const u16 *in)
 
 static void sprom_extract_r123(struct ssb_sprom *out, const u16 *in)
 {
-	u16 loc[3];
-
-	if (out->revision == 3)			/* rev 3 moved MAC */
-		loc[0] = SSB_SPROM3_IL0MAC;
-	else {
-		loc[0] = SSB_SPROM1_IL0MAC;
-		loc[1] = SSB_SPROM1_ET0MAC;
-		loc[2] = SSB_SPROM1_ET1MAC;
-	}
-
 	SPEX(et0phyaddr, SSB_SPROM1_ETHPHY, SSB_SPROM1_ETHPHY_ET0A, 0);
 	SPEX(et1phyaddr, SSB_SPROM1_ETHPHY, SSB_SPROM1_ETHPHY_ET1A,
 	     SSB_SPROM1_ETHPHY_ET1A_SHIFT);
@@ -557,8 +551,6 @@ static int sprom_extract(struct ssb_fbs *priv, const u16 *in, u16 size)
 	memset(out, 0, sizeof(*out));
 
 	out->revision = in[size - 1] & 0x00FF;
-	memset(out->et0mac, 0xFF, 6);
-	memset(out->et1mac, 0xFF, 6);
 
 	switch (out->revision) {
 	case 1:
@@ -624,8 +616,8 @@ static void ssb_fbs_fixup(struct ssb_fbs *priv, u16 *sprom)
 	}
 }
 
-static int sprom_override_devid(struct ssb_fbs *priv, struct ssb_sprom *out,
-				const u16 *in)
+static bool sprom_override_devid(struct ssb_fbs *priv, struct ssb_sprom *out,
+				 const u16 *in)
 {
 	SPEX(dev_id, SSB_SPROM1_PID, 0xFFFF, 0);
 	return !!out->dev_id;
@@ -668,7 +660,7 @@ static int ssb_fbs_set(struct ssb_fbs *priv, struct device_node *node)
 		sprom->itssi_bg = 0x00;
 		sprom->boardflags_lo = 0x2848;
 		sprom->boardflags_hi = 0x0000;
-		priv->devid_override = 0;
+		priv->devid_override = false;
 
 		dev_warn(priv->dev, "using basic SPROM\n");
 	} else {
@@ -696,6 +688,7 @@ static int ssb_fbs_probe(struct platform_device *pdev)
 	struct device_node *node = dev->of_node;
 	struct ssb_fbs *priv;
 	unsigned long flags;
+	u8 mac[ETH_ALEN];
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -708,18 +701,18 @@ static int ssb_fbs_probe(struct platform_device *pdev)
 	of_property_read_u32(node, "pci-bus", &priv->pci_bus);
 	of_property_read_u32(node, "pci-dev", &priv->pci_dev);
 
-	of_get_mac_address(node, priv->mac);
-	if (is_valid_ether_addr(priv->mac)) {
-		dev_info(dev, "mtd mac %pM\n", priv->mac);
+	of_get_mac_address(node, mac);
+	if (is_valid_ether_addr(mac)) {
+		dev_info(dev, "mtd mac %pM\n", mac);
 	} else {
-		random_ether_addr(priv->mac);
-		dev_info(dev, "random mac %pM\n", priv->mac);
+		random_ether_addr(mac);
+		dev_info(dev, "random mac %pM\n", mac);
 	}
 
-	memcpy(priv->sprom.il0mac, priv->mac, ETH_ALEN);
- 	memcpy(priv->sprom.et0mac, priv->mac, ETH_ALEN);
- 	memcpy(priv->sprom.et1mac, priv->mac, ETH_ALEN);
-	memcpy(priv->sprom.et2mac, priv->mac, ETH_ALEN);
+	memcpy(priv->sprom.il0mac, mac, ETH_ALEN);
+ 	memcpy(priv->sprom.et0mac, mac, ETH_ALEN);
+ 	memcpy(priv->sprom.et1mac, mac, ETH_ALEN);
+	memcpy(priv->sprom.et2mac, mac, ETH_ALEN);
 
 	spin_lock_irqsave(&ssb_fbs_lock, flags);
 	list_add(&priv->list, &ssb_fbs_list);
