@@ -44,7 +44,7 @@
 		};
 	};
 
-	dc_12v: dc-12v {
+	dc_12v: dc-12v-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "dc_12v";
 		regulator-always-on;
@@ -53,7 +53,7 @@
 		regulator-max-microvolt = <12000000>;
 	};
 
-	vcc3v3_pcie: vcc3v3-pcie {
+	vcc3v3_pcie: vcc3v3-pcie-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_pcie";
 		regulator-always-on;
@@ -63,7 +63,7 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
-	vcc3v3_sys: vcc3v3-sys {
+	vcc3v3_sys: vcc3v3-sys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_sys";
 		regulator-always-on;
@@ -73,7 +73,7 @@
 		vin-supply = <&dc_12v>;
 	};
 
-	vcc5v0_sys: vcc5v0-sys {
+	vcc5v0_sys: vcc5v0-sys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc5v0_sys";
 		regulator-always-on;
@@ -83,7 +83,7 @@
 		vin-supply = <&dc_12v>;
 	};
 
-	vcc5v0_usb_host: vcc5v0-usb-host {
+	vcc5v0_usb_host: vcc5v0-usb-host-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc5v0_usb_host";
 		regulator-always-on;
@@ -92,7 +92,7 @@
 		regulator-max-microvolt = <5000000>;
 	};
 
-	vcc5v0_usb_otg: vcc5v0-usb-otg {
+	vcc5v0_usb_otg: vcc5v0-usb-otg-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
@@ -377,19 +377,6 @@
 	reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
 	status = "okay";
-
-	pcie@10 {
-		reg = <0x00100000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-
-		rtl8125_1: pcie-eth@10,0 {
-			compatible = "pci10ec,8125";
-			reg = <0x000000 0 0 0 0>;
-
-			realtek,led-data = <0x78>;
-		};
-	};
 };
 
 &pcie3x2 {
@@ -397,19 +384,6 @@
 	reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
 	status = "okay";
-
-	pcie@20 {
-		reg = <0x00200000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-
-		rtl8125_2: pcie-eth@20,0 {
-			compatible = "pci10ec,8125";
-			reg = <0x000000 0 0 0 0>;
-
-			realtek,led-data = <0x78>;
-		};
-	};
 };
 
 &pinctrl {
@@ -432,7 +406,7 @@
 	};
 
 	usb {
-		vcc5v0_usb_otg_en: vcc5v0_usb_otg_en {
+		vcc5v0_usb_otg_en: vcc5v0-usb-otg-en {
 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
@@ -447,10 +421,6 @@
 	vccio5-supply = <&vcc_3v3>;
 	vccio6-supply = <&vcc_1v8>;
 	vccio7-supply = <&vcc_3v3>;
-	status = "okay";
-};
-
-&rng {
 	status = "okay";
 };
 
