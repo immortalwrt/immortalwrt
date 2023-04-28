@@ -126,6 +126,13 @@ define U-Boot/fastrhino-r68s-rk3568
     lunzn_fastrhino-r68s
 endef
 
+define U-Boot/mrkaio-m68s-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Mrkaio M68S
+  BUILD_DEVICES:= \
+    ezpro_mrkaio-m68s
+endef
+
 define U-Boot/nanopi-r5c-rk3568
   $(U-Boot/Default/rk3568)
   NAME:=FriendlyARM NanoPi R5C
@@ -152,6 +159,7 @@ UBOOT_TARGETS := \
   roc-cc-rk3328 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
+  mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568
 

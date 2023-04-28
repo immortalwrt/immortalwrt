@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "rk356x-u-boot.dtsi"
+
+/ {
+	chosen {
+		stdout-path = &uart2;
+		u-boot,spl-boot-order = "same-as-spl", &sdmmc0, &sdhci;
+	};
+};
+
+&sdmmc0 {
+	bus-width = <4>;
+	u-boot,dm-spl;
+	u-boot,spl-fifo-mode;
+};
+
+&uart2 {
+	clock-frequency = <24000000>;
+	u-boot,dm-spl;
+	status = "okay";
+};
