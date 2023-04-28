@@ -39,7 +39,9 @@
 		pinctrl-0 = <&status_led_pin>;
 
 		status_led: led-status {
-			label = "blue:status";
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_STATUS;
+			linux,default-trigger = "heartbeat";
 			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -394,7 +396,7 @@
 	};
 
 	pmic {
-		pmic_int: pmic_int {
+		pmic_int: pmic-int {
 			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
