@@ -205,7 +205,7 @@ define DownloadMethod/rawgit
 	[ \! -d $(SUBDIR) ] && \
 	git clone --filter=blob:none $(OPTS) $(URL) $(SUBDIR) && \
 	(cd $(SUBDIR) && git checkout $(VERSION) && \
-	git submodule update --init --recursive --filter=blob:none) && \
+	git submodule update --init --recursive) && \
 	echo "Packing checkout..." && \
 	export TAR_TIMESTAMP=`cd $(SUBDIR) && git log -1 --format='@%ct'` && \
 	rm -rf $(SUBDIR)/.git && \
