@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/trusted-firmware-a.mk
 
 PKG_NAME:=rkbin
-PKG_VERSION:=linux-5.10-gen-rkr3.6
+PKG_VERSION:=linux-5.10-gen-rkr4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://gitlab.com/rk3588_linux/rk/rkbin/-/archive/$(PKG_VERSION)/
-PKG_HASH:=ab2cfa417554e949b9bbac051a5fca1d1b1668d7c9cbd1af51320b9970ceb49a
+PKG_HASH:=06e17b198d8e77008dbe188ee9cc5ec4ca2b03a8a998c66677e0b23db0a7bed9
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
