@@ -16,7 +16,8 @@ xunlong,orangepi-r1-plus-lts)
 	ucidef_set_led_netdev "wan" "WAN" "$boardname:green:wan" "eth0"
 	ucidef_set_led_netdev "lan" "LAN" "$boardname:green:lan" "eth1"
 	;;
-friendlyarm,nanopi-r4s)
+friendlyarm,nanopi-r4s|\
+friendlyarm,nanopi-r4se)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth0"
 	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth1"
 	;;
