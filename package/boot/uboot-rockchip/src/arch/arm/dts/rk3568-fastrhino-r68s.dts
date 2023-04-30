@@ -91,13 +91,13 @@
 &pinctrl {
 	gmac0 {
 		eth_phy0_reset_pin: eth-phy0-reset-pin {
-			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_down>;
+			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
 	gmac1 {
 		eth_phy1_reset_pin: eth-phy1-reset-pin {
-			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_down>;
+			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 };

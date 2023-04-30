@@ -11,15 +11,16 @@
  	rk3328-roc-cc.dtb \
  	rk3328-rock64.dtb \
  	rk3328-rock-pi-e.dtb
-@@ -151,6 +154,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -151,6 +154,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-nanopi-m4b.dtb \
  	rk3399-nanopi-neo4.dtb \
  	rk3399-nanopi-r4s.dtb \
++	rk3399-nanopi-r4se.dtb \
 +	rk3399-nanopi-r4s-enterprise.dtb \
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -166,6 +170,11 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -166,6 +171,11 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3568-evb.dtb \
