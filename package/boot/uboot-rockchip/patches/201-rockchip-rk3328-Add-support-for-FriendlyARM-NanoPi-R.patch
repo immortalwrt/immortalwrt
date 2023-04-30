@@ -1,5 +1,3 @@
-diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index d3e89ca3ba..d5f64ac432 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
 @@ -108,6 +108,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
@@ -10,9 +8,6 @@ index d3e89ca3ba..d5f64ac432 100644
  	rk3328-nanopi-r2s.dtb \
  	rk3328-orangepi-r1-plus.dtb \
  	rk3328-roc-cc.dtb \
-diff --git a/arch/arm/dts/rk3328-nanopi-r2c-u-boot.dtsi b/arch/arm/dts/rk3328-nanopi-r2c-u-boot.dtsi
-new file mode 100644
-index 0000000000..c2e86d0f0e
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2c-u-boot.dtsi
 @@ -0,0 +1,7 @@
@@ -23,9 +18,6 @@ index 0000000000..c2e86d0f0e
 + */
 +
 +#include "rk3328-nanopi-r2s-u-boot.dtsi"
-diff --git a/arch/arm/dts/rk3328-nanopi-r2c.dts b/arch/arm/dts/rk3328-nanopi-r2c.dts
-new file mode 100644
-index 0000000000..adf91a0306
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-nanopi-r2c.dts
 @@ -0,0 +1,47 @@
@@ -76,9 +68,6 @@ index 0000000000..adf91a0306
 +&wan_led {
 +	label = "nanopi-r2c:green:wan";
 +};
-diff --git a/configs/nanopi-r2c-rk3328_defconfig b/configs/nanopi-r2c-rk3328_defconfig
-new file mode 100644
-index 0000000000..7bc7a3274f
 --- /dev/null
 +++ b/configs/nanopi-r2c-rk3328_defconfig
 @@ -0,0 +1,98 @@

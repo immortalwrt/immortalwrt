@@ -10,7 +10,7 @@
  	rk3328-rock-pi-e.dtb
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-orangepi-r1-plus-u-boot.dtsi
-@@ -0,0 +1,1 @@
+@@ -0,0 +1 @@
 +#include "rk3328-nanopi-r2s-u-boot.dtsi"
 --- /dev/null
 +++ b/arch/arm/dts/rk3328-orangepi-r1-plus.dts
@@ -55,7 +55,7 @@
 +};
 --- a/board/rockchip/evb_rk3328/MAINTAINERS
 +++ b/board/rockchip/evb_rk3328/MAINTAINERS
-@@ -12,6 +12,13 @@ F:      configs/nanopi-r2s-rk3328_defconfig
+@@ -12,6 +12,13 @@ F:      configs/nanopi-r2s-rk3328_defcon
  F:      arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
  F:      arch/arm/dts/rk3328-nanopi-r2s.dts
  
