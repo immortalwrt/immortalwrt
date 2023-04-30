@@ -4,8 +4,6 @@
 
 / {
 	smbios {
-		compatible = "u-boot,sysinfo-smbios";
-
 		smbios {
 			system {
 				product = "NanoPi R4SE";
