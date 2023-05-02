@@ -301,13 +301,14 @@ menu "Target Images"
 		int "Kernel partition size (in MiB)"
 		depends on USES_BOOT_PART
 		default 8 if TARGET_apm821xx_sata
+		default 16 if TARGET_rockchip
 		default 64 if TARGET_bcm27xx
 		default 32
 
 	config TARGET_ROOTFS_PARTSIZE
 		int "Root filesystem partition size (in MiB)"
 		depends on USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS
-		default 800 if BUILDBOT
+		default 300 if BUILDBOT
 		default 160
 		help
 		  Select the root filesystem partition size.
