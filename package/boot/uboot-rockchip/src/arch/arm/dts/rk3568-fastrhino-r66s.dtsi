@@ -34,8 +34,8 @@
 		status_led: led-status {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_STATUS;
-			linux,default-trigger = "heartbeat";
 			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
 		};
 	};
 
@@ -358,7 +358,6 @@
 				};
 			};
 		};
-
 	};
 };
 
@@ -424,21 +423,6 @@
 	status = "okay";
 };
 
-&sdmmc0 {
-	max-frequency = <150000000>;
-	no-sdio;
-	no-mmc;
-	bus-width = <4>;
-	cap-mmc-highspeed;
-	cap-sd-highspeed;
-	disable-wp;
-	vmmc-supply = <&vcc3v3_sd>;
-	vqmmc-supply = <&vccio_sd>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
-	status = "okay";
-};
-
 &tsadc {
 	rockchip,hw-tshut-mode = <1>;
 	rockchip,hw-tshut-polarity = <0>;
@@ -458,8 +442,8 @@
 };
 
 &usb_host0_xhci {
-	extcon = <&usb2phy0>;
 	dr_mode = "host";
+	extcon = <&usb2phy0>;
 	status = "okay";
 };
 
