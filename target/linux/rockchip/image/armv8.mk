@@ -9,7 +9,6 @@ define Device/ezpro_mrkaio-m68s
   DEVICE_VENDOR := EZPRO
   DEVICE_MODEL := Mrkaio M68S
   SOC := rk3568
-  UBOOT_DEVICE_NAME := mrkaio-m68s-rk3568
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
   DEVICE_PACKAGES := kmod-ata-ahci kmod-ata-ahci-platform
 endef
@@ -29,7 +28,6 @@ define Device/friendlyarm_nanopi-r2c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2C
   SOC := rk3328
-  UBOOT_DEVICE_NAME := nanopi-r2c-rk3328
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
@@ -39,7 +37,6 @@ define Device/friendlyarm_nanopi-r2s
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2S
   SOC := rk3328
-  UBOOT_DEVICE_NAME := nanopi-r2s-rk3328
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
@@ -49,7 +46,6 @@ define Device/friendlyarm_nanopi-r4s
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R4S
   SOC := rk3399
-  UBOOT_DEVICE_NAME := nanopi-r4s-rk3399
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8168
 endef
@@ -59,7 +55,6 @@ define Device/friendlyarm_nanopi-r4se
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R4SE
   SOC := rk3399
-  UBOOT_DEVICE_NAME := nanopi-r4se-rk3399
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8168
 endef
@@ -69,7 +64,6 @@ define Device/friendlyarm_nanopi-r4s-enterprise
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R4S Enterprise Edition
   SOC := rk3399
-  UBOOT_DEVICE_NAME := nanopi-r4s-enterprise-rk3399
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8168
 endef
@@ -79,7 +73,6 @@ define Device/friendlyarm_nanopi-r5c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R5C
   SOC := rk3568
-  UBOOT_DEVICE_NAME := nanopi-r5c-rk3568
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8125 kmod-rtw88 rtl8822ce-firmware wpad-basic-openssl
 endef
@@ -89,7 +82,6 @@ define Device/friendlyarm_nanopi-r5s
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R5S
   SOC := rk3568
-  UBOOT_DEVICE_NAME := nanopi-r5s-rk3568
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8125
 endef
@@ -109,7 +101,6 @@ define Device/lunzn_fastrhino-r68s
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R68S
   SOC := rk3568
-  UBOOT_DEVICE_NAME := fastrhino-r68s-rk3568
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8125
 endef
@@ -119,7 +110,6 @@ define Device/pine64_rockpro64
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := RockPro64
   SOC := rk3399
-  UBOOT_DEVICE_NAME := rockpro64-rk3399
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
 endef
 TARGET_DEVICES += pine64_rockpro64
@@ -138,7 +128,6 @@ define Device/xunlong_orangepi-r1-plus
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi R1 Plus
   SOC := rk3328
-  UBOOT_DEVICE_NAME := orangepi-r1-plus-rk3328
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
@@ -148,7 +137,6 @@ define Device/xunlong_orangepi-r1-plus-lts
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi R1 Plus LTS
   SOC := rk3328
-  UBOOT_DEVICE_NAME := orangepi-r1-plus-lts-rk3328
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-bin | gzip | append-metadata
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef

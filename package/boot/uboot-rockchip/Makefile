@@ -16,6 +16,8 @@ include $(INCLUDE_DIR)/u-boot.mk
 include $(INCLUDE_DIR)/package.mk
 include ../arm-trusted-firmware-rockchip/atf-version.mk
 
+DTC:=
+
 define U-Boot/Default
   BUILD_TARGET:=rockchip
   UENV:=default
@@ -177,12 +179,6 @@ UBOOT_MAKE_FLAGS += \
   PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
   $(if $(DDR),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(DDR))
-
-define Build/Configure
-	$(call Build/Configure/U-Boot)
-
-	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
-endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
