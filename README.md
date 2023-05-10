@@ -46,15 +46,15 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
       ```
 
   Note:
-  - For the for love of god please do __not__ use ROOT user to build your image.
+  - Do everything as an unprivileged user, not root, without sudo.
   - Using CPUs based on other architectures should be fine to compile ImmortalWrt, but more hacks are needed - No warranty at all.
-  - You must __not__ have spaces in PATH or in the work folders on the drive.
+  - You must __not__ have spaces or non-ascii characters in PATH or in the work folders on the drive.
   - If you're using Windows Subsystem for Linux (or WSL), removing Windows folders from PATH is required, please see [Build system setup WSL](https://openwrt.org/docs/guide-developer/build-system/wsl) documentation.
   - Using macOS as the host build OS is __not__ recommended. No warranty at all. You can get tips from [Build system setup macOS](https://openwrt.org/docs/guide-developer/build-system/buildroot.exigence.macosx) documentation.
   - For more details, please see [Build system setup](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem) documentation.
 
   ### Quickstart
-  1. Run `git clone -b <branch> --single-branch https://github.com/immortalwrt/immortalwrt` to clone the source code.
+  1. Run `git clone -b <branch> --single-branch --filter=blob:none https://github.com/immortalwrt/immortalwrt` to clone the source code.
   2. Run `cd immortalwrt` to enter source directory.
   3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
   4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
