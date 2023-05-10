@@ -1,17 +1,18 @@
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -123,7 +123,10 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -123,7 +123,11 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
 +	rk3328-nanopi-r2c.dtb \
++	rk3328-nanopi-r2c-plus.dtb \
  	rk3328-nanopi-r2s.dtb \
 +	rk3328-orangepi-r1-plus.dtb \
 +	rk3328-orangepi-r1-plus-lts.dtb \
  	rk3328-roc-cc.dtb \
  	rk3328-rock64.dtb \
  	rk3328-rock-pi-e.dtb
-@@ -151,6 +154,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -151,6 +155,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-nanopi-m4b.dtb \
  	rk3399-nanopi-neo4.dtb \
  	rk3399-nanopi-r4s.dtb \
@@ -20,7 +21,7 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -166,6 +171,11 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -166,6 +172,11 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  
  dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3568-evb.dtb \
