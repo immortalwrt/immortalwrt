@@ -10,6 +10,10 @@
 / {
 	model = "FriendlyElec NanoPi R2C Plus";
 	compatible = "friendlyarm,nanopi-r2c-plus", "rockchip,rk3328";
+
+	aliases {
+		mmc1 = &emmc;
+	};
 };
 
 &emmc {

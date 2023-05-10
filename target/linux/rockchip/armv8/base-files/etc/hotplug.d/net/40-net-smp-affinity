@@ -36,6 +36,7 @@ lunzn,fastrhino-r66s)
 	set_interface_core 4 "eth1"
 	;;
 friendlyarm,nanopi-r2c|\
+friendlyarm,nanopi-r2c-plus|\
 friendlyarm,nanopi-r2s|\
 xunlong,orangepi-r1-plus|\
 xunlong,orangepi-r1-plus-lts)

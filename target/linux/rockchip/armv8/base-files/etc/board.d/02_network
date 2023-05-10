@@ -9,6 +9,7 @@ rockchip_setup_interfaces()
 	case "$board" in
 	ezpro,mrkaio-m68s|\
 	friendlyarm,nanopi-r2c|\
+	friendlyarm,nanopi-r2c-plus|\
 	friendlyarm,nanopi-r2s|\
 	friendlyarm,nanopi-r4s|\
 	friendlyarm,nanopi-r4se|\
@@ -49,6 +50,7 @@ rockchip_setup_macs()
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk0)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
+	friendlyarm,nanopi-r2c-plus|\
 	friendlyarm,nanopi-r4s|\
 	friendlyarm,nanopi-r5c|\
 	friendlyarm,nanopi-r5s)
