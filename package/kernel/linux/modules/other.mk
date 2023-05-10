@@ -901,7 +901,7 @@ define KernelPackage/serial-8250-exar
   KCONFIG:= CONFIG_SERIAL_8250_EXAR
   FILES:=$(LINUX_DIR)/drivers/tty/serial/8250/8250_exar.ko
   AUTOLOAD:=$(call AutoProbe,8250 8250_base 8250_exar)
-  DEPENDS:=+kmod-serial-8250
+  DEPENDS:=@PCI_SUPPORT +kmod-serial-8250
 endef
 
 define KernelPackage/serial-8250-exar/description
@@ -1352,7 +1352,7 @@ $(eval $(call KernelPackage,mhi-bus))
 define KernelPackage/mhi-pci-generic
   SUBMENU:=$(OTHER_MENU)
   TITLE:=MHI PCI controller driver
-  DEPENDS:=@LINUX_5_15 +kmod-mhi-bus
+  DEPENDS:=@LINUX_5_15 @PCI_SUPPORT +kmod-mhi-bus
   KCONFIG:=CONFIG_MHI_BUS_PCI_GENERIC
   FILES:=$(LINUX_DIR)/drivers/bus/mhi/mhi_pci_generic.ko
   AUTOLOAD:=$(call AutoProbe,mhi_pci_generic)
