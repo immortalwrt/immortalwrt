@@ -22,6 +22,7 @@ define Package/default-settings
   SECTION:=luci
   CATEGORY:=LuCI
   TITLE:=LuCI support for Default Settings
+  DEPENDS:=+luci
   PKGARCH:=all
 endef
 
