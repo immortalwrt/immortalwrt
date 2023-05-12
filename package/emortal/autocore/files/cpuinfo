@@ -21,6 +21,7 @@ case "$DISTRIB_TARGET" in
 	cpu_freq="$(( $(vcgencmd measure_clock arm | awk -F '=' '{print $2}') / 1000000 ))Mhz" ;;
 "bcm53xx"/*)
 	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz" ;;
+"mediatek/filogic"|\
 "mvebu"/*)
 	cpu_freq="$(mhz | awk -F 'cpu_MHz=' '{printf("%.fMHz",$2)}')" ;;
 "rockchip"/*)
@@ -55,7 +56,7 @@ esac
 if [ -z "$big_cpu_freq$cpu_freq" ] && [ -n "$cpu_temp" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($cpu_temp)"
 elif [ -z "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ] || \
-		grep -Eq "ipq|mt7622" "/etc/openwrt_release"; then
+		grep -Eq "ipq|mediatek" "/etc/openwrt_release"; then
 	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq)"
 elif [ -n "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq, ${cpu_temp})"
