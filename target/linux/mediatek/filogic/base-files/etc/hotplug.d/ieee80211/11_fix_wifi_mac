@@ -28,6 +28,11 @@ case "$board" in
 		addr=$(mtd_get_mac_ascii config2 wifi5gmac)
 		[ "$PHYNBR" = "1" ] && echo $macaddr > /sys${DEVPATH}/macaddress
 		;;
+	qihoo,360-t7-stock|\
+	qihoo,360-t7-ubootmod)
+		addr=$(macaddr_add $(cat /sys/class/net/eth0/address) 2)
+		[ "$PHYNBR" = "1" ] && macaddr_setbit $addr 6 > /sys${DEVPATH}/macaddress
+		;;
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088)

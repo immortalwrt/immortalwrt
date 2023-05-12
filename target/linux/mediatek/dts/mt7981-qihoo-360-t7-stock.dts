@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "mt7981-qihoo-360-t7.dtsi"
+
+/ {
+	model = "Qihoo 360 T7 (stock layout)";
+	compatible = "qihoo,360-t7-stock", "mediatek,mt7981";
+};
+
+&partitions {
+	partition@580000 {
+		label = "ubi";
+		reg = <0x580000 0x2400000>;
+	};
+
+	partition@2980000 {
+		label = "firmware-1";
+		reg = <0x2980000 0x2400000>;
+	};
+
+	partition@4D80000 {
+		label = "plugin";
+		reg = <0x4d80000 0x2400000>;
+	};
+};
