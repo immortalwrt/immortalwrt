@@ -133,31 +133,3 @@ define KernelPackage/sound-mt7620/description
 endef
 
 $(eval $(call KernelPackage,sound-mt7620))
-
-define KernelPackage/crypto-hw-eip93
-  SECTION:=kernel
-  CATEGORY:=Kernel modules
-  SUBMENU:=Cryptographic API modules
-  TITLE:=MediaTek EIP93 crypto module
-  DEPENDS:= \
-	  @TARGET_ramips_mt7621 \
-	  +kmod-crypto-aead \
-	  +kmod-crypto-authenc \
-	  +kmod-crypto-des \
-	  +kmod-crypto-md5 \
-	  +kmod-crypto-sha1 \
-	  +kmod-crypto-sha256
-  KCONFIG:= \
-	  CONFIG_CRYPTO_DEV_EIP93 \
-	  CONFIG_CRYPTO_DEV_EIP93_AES=y \
-	  CONFIG_CRYPTO_DEV_EIP93_DES=y \
-	  CONFIG_CRYPTO_DEV_EIP93_AEAD=y
-  FILES:=$(LINUX_DIR)/drivers/crypto/mtk-eip93/crypto-hw-eip93.ko
-  AUTOLOAD:=$(call AutoProbe,crypto-hw-eip93)
-endef
-
-define KernelPackage/crypto-hw-eip93/description
- Kernel module to enable EIP-93 Crypto engine as found in the Mediatek MT7621 SoC.
-endef
-
-$(eval $(call KernelPackage,crypto-hw-eip93))
