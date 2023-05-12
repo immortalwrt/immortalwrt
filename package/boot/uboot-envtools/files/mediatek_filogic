@@ -37,6 +37,9 @@ bananapi,bpi-r3)
 		;;
 	esac
 	;;
+livinet,zr-3020)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "1"
+	;;
 xiaomi,redmi-router-ax6000|\
 xiaomi,redmi-router-ax6000-stock)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x20000"

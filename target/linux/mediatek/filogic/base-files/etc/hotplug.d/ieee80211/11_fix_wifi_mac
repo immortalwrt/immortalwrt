@@ -24,6 +24,10 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && macaddr_unsetbit $addr 6 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_setbit $addr 6 > /sys${DEVPATH}/macaddress
 		;;
+	livinet,zr-3020)
+		addr=$(mtd_get_mac_ascii config2 wifi5gmac)
+		[ "$PHYNBR" = "1" ] && echo $macaddr > /sys${DEVPATH}/macaddress
+		;;
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088)
