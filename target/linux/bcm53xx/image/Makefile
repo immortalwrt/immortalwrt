@@ -462,7 +462,7 @@ define Device/phicomm_k3
   DEVICE_VENDOR := PHICOMM
   DEVICE_MODEL := K3
   DEVICE_PACKAGES := $(BRCMFMAC_4366C0) $(USB3_PACKAGES) \
-	-brcmfmac-firmware-4366c0-pcie brcmfmac-firmware-4366c0-pcie-vendor
+	-brcmfmac-firmware-4366c0-pcie brcmfmac-firmware-4366c0-pcie-k3
   IMAGES := trx
 endef
 TARGET_DEVICES += phicomm_k3
