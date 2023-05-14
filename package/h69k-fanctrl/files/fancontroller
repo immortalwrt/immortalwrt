@@ -1,0 +1,38 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+  . /lib/functions.sh
+  
+
+  
+  case $(board_name) in
+		hinlink,opc-h69k)
+	  if lsmod | grep -q pwm_fan
+	  then
+	     rmmod pwm_fan
+	  fi
+      echo 0 > /sys/class/pwm/pwmchip0/export
+      echo 40000 > /sys/class/pwm/pwmchip0/pwm0/period
+      echo 20000 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+      echo normal > /sys/class/pwm/pwmchip0/pwm0/polarity
+      echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+			;;
+	esac
+  
+  a=$(ls /sys/class/net/*/device/uevent | grep eth | awk -F '/' '{print $5}')
+  b=$(echo "$a" | wc -l)
+  for i in $(seq 1 $b)
+  do
+    c=$(echo "$a" | sed -n ${i}p)
+    ethtool -K $c rx-checksum on >/dev/null 2>&1
+    ethtool -K $c tx-checksum-ip-generic on >/dev/null 2>&1 || (
+    ethtool -K $c tx-checksum-ipv4 on >/dev/null 2>&1
+    ethtool -K $c tx-checksum-ipv6 on >/dev/null 2>&1)
+    ethtool -K $c tx-scatter-gather on >/dev/null 2>&1
+    ethtool -K $c gso on >/dev/null 2>&1
+    ethtool -K $c tso on >/dev/null 2>&1
+    ethtool -K $c ufo on >/dev/null 2>&1
+  done
+}
