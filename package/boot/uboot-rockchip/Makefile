@@ -163,6 +163,22 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/xgp-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=XGP Board
+  BUILD_DEVICES:= \
+    nlnet_xgp
+endef
+
+define U-Boot/opc-h68k-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=HINLINK OPC-H68K Board
+  BUILD_DEVICES:= \
+    hinlink_opc-h66k \
+    hinlink_opc-h68k \
+    hinlink_opc-h69k
+endef
+
 UBOOT_TARGETS := \
   nanopi-r4s-rk3399 \
   nanopi-r4se-rk3399 \
@@ -179,7 +195,10 @@ UBOOT_TARGETS := \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
-  nanopi-r5s-rk3568
+  nanopi-r5s-rk3568 \
+  xgp-rk3568 \
+  opc-h68k-rk3568
+
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 

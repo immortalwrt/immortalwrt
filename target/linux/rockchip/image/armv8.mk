@@ -115,6 +115,46 @@ define Device/lunzn_fastrhino-r68s
 endef
 TARGET_DEVICES += lunzn_fastrhino-r68s
 
+define Device/nlnet_xgp
+  DEVICE_VENDOR := NLnet
+  SOC := rk3568
+  DEVICE_MODEL := XiGuaPi
+  UBOOT_DEVICE_NAME := xgp-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-mt7921e
+endef
+TARGET_DEVICES += nlnet_xgp
+
+define Device/hinlink_opc-h66k
+  DEVICE_VENDOR := HINLINK
+  SOC := rk3568
+  DEVICE_MODEL := OPC H66K
+  UBOOT_DEVICE_NAME := opc-h68k-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform kmod-mt7921e wpad-openssl kmod-usb-serial-option
+endef
+TARGET_DEVICES += hinlink_opc-h66k
+
+define Device/hinlink_opc-h68k
+  DEVICE_VENDOR := HINLINK
+  SOC := rk3568
+  DEVICE_MODEL := OPC H68K
+  UBOOT_DEVICE_NAME := opc-h68k-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform kmod-mt7921e wpad-openssl kmod-usb-serial-option
+endef
+TARGET_DEVICES += hinlink_opc-h68k
+
+define Device/hinlink_opc-h69k
+  DEVICE_VENDOR := HINLINK
+  SOC := rk3568
+  DEVICE_MODEL := OPC H69K
+  UBOOT_DEVICE_NAME := opc-h68k-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform kmod-mt7921e wpad-openssl kmod-usb-serial-option
+endef
+TARGET_DEVICES += hinlink_opc-h69k
+
 define Device/pine64_rockpro64
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := RockPro64
