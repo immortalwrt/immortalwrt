@@ -1,13 +1,12 @@
 --- a/xt_FULLCONENAT.c
 +++ b/xt_FULLCONENAT.c
-@@ -1344,10 +1344,13 @@ static struct xt_target tg_reg[] __read_
- 
+@@ -1344,9 +1344,12 @@ static struct xt_target tg_reg[] __read_
  static int __init fullconenat_tg_init(void)
  {
+   int ret;
 +  printk(KERN_INFO "xt_FULLCONENAT: RFC3489 Full Cone NAT module\n"
 +    "xt_FULLCONENAT: Copyright (C) 2018 Chion Tang <tech@chionlab.moe>\n");
 +
-   int ret;
    wq = create_singlethread_workqueue("xt_FULLCONENAT");
    if (wq == NULL) {
 -    printk("xt_FULLCONENAT: warning: failed to create workqueue\n");
