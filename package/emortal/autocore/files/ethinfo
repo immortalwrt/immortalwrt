@@ -14,7 +14,7 @@ if (!stat) {
 
 let device_list = [];
 map(keys(stat), (ifname) => {
-	if (ifname && stat[ifname]?.devtype === 'ethernet' && length(stat[ifname]['link-advertising']))
+	if (ifname && stat[ifname]?.devtype in ['ethernet', 'dsa'] && length(stat[ifname]['link-advertising']))
 		push(device_list, ifname);
 });
 
