@@ -98,10 +98,6 @@ define Package/libf2fs-selinux
   VARIANT:=selinux
 endef
 
-ifneq ($(CONFIG_USE_MUSL),)
- TARGET_CFLAGS += -D_LARGEFILE64_SOURCE
-endif
-
 CONFIGURE_ARGS += \
 	--disable-static \
 	--without-blkid \
