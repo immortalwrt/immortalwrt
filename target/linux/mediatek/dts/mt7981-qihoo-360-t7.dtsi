@@ -110,8 +110,8 @@
 			label = "lan3";
 		};
 
-		port@4 {
-			reg = <4>;
+		port@3 {
+			reg = <3>;
 			label = "wan";
 		};
 
