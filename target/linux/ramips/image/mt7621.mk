@@ -775,8 +775,8 @@ define Device/d-team_newifi-d2
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 32448k
-  DEVICE_VENDOR := Newifi
-  DEVICE_MODEL := D2
+  DEVICE_VENDOR := D-Team
+  DEVICE_MODEL := Newifi D2
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
 	kmod-usb-ledtrig-usbport -uboot-envtools
 endef
@@ -1437,8 +1437,8 @@ define Device/lenovo_newifi-d1
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 32448k
-  DEVICE_VENDOR := Newifi
-  DEVICE_MODEL := D1
+  DEVICE_VENDOR := Lenovo
+  DEVICE_MODEL := Newifi D1
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-sdhci-mt7620 \
 	kmod-usb-ledtrig-usbport -uboot-envtools
   SUPPORTED_DEVICES += newifi-d1
@@ -2147,6 +2147,16 @@ define Device/totolink_x5000r
   DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
 endef
 TARGET_DEVICES += totolink_x5000r
+
+define Device/tozed_zlt-s12-pro
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := TOZED
+  DEVICE_MODEL := ZLT S12 PRO
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 comgt-ncm -uboot-envtools
+endef
+TARGET_DEVICES += tozed_zlt-s12-pro
 
 define Device/tplink_archer-ax23-v1
   $(Device/dsa-migration)
