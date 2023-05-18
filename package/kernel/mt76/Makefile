@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mt76
-PKG_RELEASE=5
+PKG_RELEASE=1
 
 PKG_LICENSE:=GPLv2
 PKG_LICENSE_FILES:=
@@ -503,6 +503,15 @@ define KernelPackage/mt7916-firmware/install
 		$(1)/lib/firmware/mediatek
 endef
 
+define KernelPackage/mt7981-firmware/install
+	$(INSTALL_DIR) $(1)/lib/firmware/mediatek
+	cp \
+		$(PKG_BUILD_DIR)/firmware/mt7981_wa.bin \
+		$(PKG_BUILD_DIR)/firmware/mt7981_wm.bin \
+		$(PKG_BUILD_DIR)/firmware/mt7981_rom_patch.bin \
+		$(1)/lib/firmware/mediatek
+endef
+
 define KernelPackage/mt7986-firmware/install
 	$(INSTALL_DIR) $(1)/lib/firmware/mediatek
 	cp \
@@ -513,15 +522,6 @@ define KernelPackage/mt7986-firmware/install
 		$(PKG_BUILD_DIR)/firmware/mt7986_rom_patch.bin \
 		$(PKG_BUILD_DIR)/firmware/mt7986_eeprom_mt7975_dual.bin \
 		$(PKG_BUILD_DIR)/firmware/mt7986_eeprom_mt7976_dual.bin \
-		$(1)/lib/firmware/mediatek
-endef
-
-define KernelPackage/mt7981-firmware/install
-	$(INSTALL_DIR) $(1)/lib/firmware/mediatek
-	cp \
-		$(PKG_BUILD_DIR)/firmware/mt7981_wa.bin \
-		$(PKG_BUILD_DIR)/firmware/mt7981_wm.bin \
-		$(PKG_BUILD_DIR)/firmware/mt7981_rom_patch.bin \
 		$(1)/lib/firmware/mediatek
 endef
 
