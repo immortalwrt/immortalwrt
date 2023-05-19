@@ -27,8 +27,8 @@ Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
 
 --- a/drivers/firmware/raspberrypi.c
 +++ b/drivers/firmware/raspberrypi.c
-@@ -29,6 +29,8 @@ struct rpi_firmware {
- 	u32 enabled;
+@@ -32,6 +32,8 @@ struct rpi_firmware {
+ 	struct kref consumers;
  };
  
 +static struct platform_device *g_pdev;
@@ -36,32 +36,32 @@ Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
  static DEFINE_MUTEX(transaction_lock);
  
  static void response_callback(struct mbox_client *cl, void *msg)
-@@ -238,6 +240,7 @@ static int rpi_firmware_probe(struct pla
- 	init_completion(&fw->c);
+@@ -269,6 +271,7 @@ static int rpi_firmware_probe(struct pla
+ 	kref_init(&fw->consumers);
  
  	platform_set_drvdata(pdev, fw);
 +	g_pdev = pdev;
  
  	rpi_firmware_print_firmware_revision(fw);
  	rpi_register_hwmon_driver(dev, fw);
-@@ -265,6 +268,7 @@ static int rpi_firmware_remove(struct pl
- 	platform_device_unregister(rpi_clk);
+@@ -297,6 +300,7 @@ static int rpi_firmware_remove(struct pl
  	rpi_clk = NULL;
- 	mbox_free_channel(fw->chan);
+ 
+ 	rpi_firmware_put(fw);
 +	g_pdev = NULL;
  
  	return 0;
  }
-@@ -277,7 +281,7 @@ static int rpi_firmware_remove(struct pl
+@@ -311,7 +315,7 @@ static int rpi_firmware_remove(struct pl
   */
  struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
  {
 -	struct platform_device *pdev = of_find_device_by_node(firmware_node);
 +	struct platform_device *pdev = g_pdev;
+ 	struct rpi_firmware *fw;
  
  	if (!pdev)
- 		return NULL;
-@@ -301,7 +305,18 @@ static struct platform_driver rpi_firmwa
+@@ -365,7 +369,18 @@ static struct platform_driver rpi_firmwa
  	.shutdown	= rpi_firmware_shutdown,
  	.remove		= rpi_firmware_remove,
  };

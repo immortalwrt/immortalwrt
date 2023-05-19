@@ -15,11 +15,10 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
 
 --- a/Documentation/media/uapi/v4l/subdev-formats.rst
 +++ b/Documentation/media/uapi/v4l/subdev-formats.rst
-@@ -7794,3 +7794,36 @@ formats.
-       - 0x5001
-       - Interleaved raw UYVY and JPEG image format with embedded meta-data
- 	used by Samsung S3C73MX camera sensors.
-+
+@@ -7821,3 +7821,35 @@ The following table lists the existing m
+ 	both sides of the link and the bus format is a fixed
+ 	metadata format that is not configurable from userspace.
+ 	Width and height will be set to 0 for this format.
 +
 +
 +.. _v4l2-mbus-sensor-data:
@@ -54,11 +53,11 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
 +
 --- a/include/uapi/linux/media-bus-format.h
 +++ b/include/uapi/linux/media-bus-format.h
-@@ -155,4 +155,7 @@
- /* HSV - next is	0x6002 */
- #define MEDIA_BUS_FMT_AHSV8888_1X32		0x6001
+@@ -163,4 +163,7 @@
+  */
+ #define MEDIA_BUS_FMT_METADATA_FIXED		0x7001
  
 +/* Sensor ancillary metadata formats - next is 0x7002 */
-+#define MEDIA_BUS_FMT_SENSOR_DATA		0x7001
++#define MEDIA_BUS_FMT_SENSOR_DATA		0x7002
 +
  #endif /* __LINUX_MEDIA_BUS_FORMAT_H */

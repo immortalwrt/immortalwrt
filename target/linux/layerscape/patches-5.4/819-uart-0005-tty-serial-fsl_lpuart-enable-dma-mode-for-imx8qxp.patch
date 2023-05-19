@@ -299,7 +299,7 @@ Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
  	struct tty_port *port = &sport->port.state->port;
  	struct tty_struct *tty = port->tty;
 @@ -1183,6 +1308,18 @@ static inline int lpuart_start_rx_dma(st
- 	sport->rx_dma_rng_buf_len = (1 << (fls(sport->rx_dma_rng_buf_len) - 1));
+ 	sport->rx_dma_rng_buf_len = (1 << fls(sport->rx_dma_rng_buf_len));
  	if (sport->rx_dma_rng_buf_len < 16)
  		sport->rx_dma_rng_buf_len = 16;
 +}

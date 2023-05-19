@@ -18,7 +18,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 
 --- a/drivers/firmware/raspberrypi.c
 +++ b/drivers/firmware/raspberrypi.c
-@@ -21,7 +21,6 @@
+@@ -22,7 +22,6 @@
  #define MBOX_CHAN_PROPERTY		8
  
  static struct platform_device *rpi_hwmon;
@@ -26,7 +26,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
  
  struct rpi_firmware {
  	struct mbox_client cl;
-@@ -299,12 +298,6 @@ rpi_register_hwmon_driver(struct device
+@@ -302,12 +301,6 @@ rpi_register_hwmon_driver(struct device
  	}
  }
  
@@ -36,10 +36,10 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 -						-1, NULL, 0);
 -}
 -
- static int rpi_firmware_probe(struct platform_device *pdev)
+ static void rpi_firmware_delete(struct kref *kref)
  {
- 	struct device *dev = &pdev->dev;
-@@ -334,7 +327,6 @@ static int rpi_firmware_probe(struct pla
+ 	struct rpi_firmware *fw = container_of(kref, struct rpi_firmware,
+@@ -365,7 +358,6 @@ static int rpi_firmware_probe(struct pla
  	rpi_firmware_print_firmware_revision(fw);
  	rpi_firmware_print_firmware_hash(fw);
  	rpi_register_hwmon_driver(dev, fw);
@@ -47,12 +47,12 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
  
  	return 0;
  }
-@@ -355,8 +347,6 @@ static int rpi_firmware_remove(struct pl
+@@ -386,8 +378,6 @@ static int rpi_firmware_remove(struct pl
  
  	platform_device_unregister(rpi_hwmon);
  	rpi_hwmon = NULL;
 -	platform_device_unregister(rpi_clk);
 -	rpi_clk = NULL;
- 	mbox_free_channel(fw->chan);
- 	g_pdev = NULL;
  
+ 	rpi_firmware_put(fw);
+ 	g_pdev = NULL;

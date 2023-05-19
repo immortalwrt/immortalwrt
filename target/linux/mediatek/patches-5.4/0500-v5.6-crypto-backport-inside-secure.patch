@@ -362,7 +362,7 @@
  		       EIP197_HIA_RDR(priv, ring) + EIP197_HIA_xDR_PROC_COUNT);
  
  	/* If the number of requests overflowed the counter, try to proceed more
-@@ -1171,6 +1216,44 @@ static struct safexcel_alg_template *saf
+@@ -1176,6 +1221,44 @@ static struct safexcel_alg_template *saf
  	&safexcel_alg_xts_aes,
  	&safexcel_alg_gcm,
  	&safexcel_alg_ccm,
@@ -407,7 +407,7 @@
  };
  
  static int safexcel_register_algorithms(struct safexcel_crypto_priv *priv)
-@@ -1240,30 +1323,30 @@ static void safexcel_unregister_algorith
+@@ -1245,30 +1328,30 @@ static void safexcel_unregister_algorith
  
  static void safexcel_configure(struct safexcel_crypto_priv *priv)
  {
@@ -457,7 +457,7 @@
  }
  
  static void safexcel_init_register_offsets(struct safexcel_crypto_priv *priv)
-@@ -1309,7 +1392,7 @@ static int safexcel_probe_generic(void *
+@@ -1314,7 +1397,7 @@ static int safexcel_probe_generic(void *
  				  int is_pci_dev)
  {
  	struct device *dev = priv->dev;
@@ -466,7 +466,7 @@
  	int i, ret, hwctg;
  
  	priv->context_pool = dmam_pool_create("safexcel-context", dev,
-@@ -1371,13 +1454,16 @@ static int safexcel_probe_generic(void *
+@@ -1376,13 +1459,16 @@ static int safexcel_probe_generic(void *
  	 */
  	version = readl(EIP197_GLOBAL(priv) + EIP197_VERSION);
  	if (((priv->flags & SAFEXCEL_HW_EIP197) &&
@@ -484,7 +484,7 @@
  		return -ENODEV;
  	}
  
-@@ -1385,6 +1471,14 @@ static int safexcel_probe_generic(void *
+@@ -1390,6 +1476,14 @@ static int safexcel_probe_generic(void *
  	hwctg = version >> 28;
  	peid = version & 255;
  
@@ -499,7 +499,7 @@
  	/* Detect EIP96 packet engine and version */
  	version = readl(EIP197_PE(priv) + EIP197_PE_EIP96_VERSION(0));
  	if (EIP197_REG_LO16(version) != EIP96_VERSION_LE) {
-@@ -1393,10 +1487,13 @@ static int safexcel_probe_generic(void *
+@@ -1398,10 +1492,13 @@ static int safexcel_probe_generic(void *
  	}
  	priv->hwconfig.pever = EIP197_VERSION_MASK(version);
  
@@ -513,7 +513,7 @@
  		priv->hwconfig.hwdataw  = (hiaopt >> EIP197_HWDATAW_OFFSET) &
  					  EIP197_HWDATAW_MASK;
  		priv->hwconfig.hwcfsize = ((hiaopt >> EIP197_CFSIZE_OFFSET) &
-@@ -1405,6 +1502,19 @@ static int safexcel_probe_generic(void *
+@@ -1410,6 +1507,19 @@ static int safexcel_probe_generic(void *
  		priv->hwconfig.hwrfsize = ((hiaopt >> EIP197_RFSIZE_OFFSET) &
  					   EIP197_RFSIZE_MASK) +
  					  EIP197_RFSIZE_ADJUST;
@@ -533,7 +533,7 @@
  	} else {
  		/* EIP97 */
  		priv->hwconfig.hwdataw  = (hiaopt >> EIP197_HWDATAW_OFFSET) &
-@@ -1413,6 +1523,23 @@ static int safexcel_probe_generic(void *
+@@ -1418,6 +1528,23 @@ static int safexcel_probe_generic(void *
  					  EIP97_CFSIZE_MASK;
  		priv->hwconfig.hwrfsize = (hiaopt >> EIP97_RFSIZE_OFFSET) &
  					  EIP97_RFSIZE_MASK;
@@ -557,7 +557,7 @@
  	}
  
  	/* Get supported algorithms from EIP96 transform engine */
-@@ -1420,10 +1547,12 @@ static int safexcel_probe_generic(void *
+@@ -1425,10 +1552,12 @@ static int safexcel_probe_generic(void *
  				    EIP197_PE_EIP96_OPTIONS(0));
  
  	/* Print single info line describing what we just detected */
@@ -574,7 +574,7 @@
  		 priv->hwconfig.algo_flags);
  
  	safexcel_configure(priv);
-@@ -1547,7 +1676,6 @@ static void safexcel_hw_reset_rings(stru
+@@ -1571,7 +1700,6 @@ static void safexcel_hw_reset_rings(stru
  	}
  }
  
@@ -582,15 +582,15 @@
  /* for Device Tree platform driver */
  
  static int safexcel_probe(struct platform_device *pdev)
-@@ -1625,6 +1753,7 @@ static int safexcel_remove(struct platfo
+@@ -1649,6 +1777,7 @@ static int safexcel_remove(struct platfo
  	safexcel_unregister_algorithms(priv);
  	safexcel_hw_reset_rings(priv);
  
 +	clk_disable_unprepare(priv->reg_clk);
  	clk_disable_unprepare(priv->clk);
  
- 	for (i = 0; i < priv->config.rings; i++)
-@@ -1668,9 +1797,7 @@ static struct platform_driver  crypto_sa
+ 	for (i = 0; i < priv->config.rings; i++) {
+@@ -1694,9 +1823,7 @@ static struct platform_driver  crypto_sa
  		.of_match_table = safexcel_of_match_table,
  	},
  };
@@ -600,7 +600,7 @@
  /* PCIE devices - i.e. Inside Secure development boards */
  
  static int safexcel_pci_probe(struct pci_dev *pdev,
-@@ -1761,7 +1888,7 @@ static int safexcel_pci_probe(struct pci
+@@ -1787,7 +1914,7 @@ static int safexcel_pci_probe(struct pci
  	return rc;
  }
  
@@ -609,7 +609,7 @@
  {
  	struct safexcel_crypto_priv *priv = pci_get_drvdata(pdev);
  	int i;
-@@ -1791,54 +1918,32 @@ static struct pci_driver safexcel_pci_dr
+@@ -1817,54 +1944,32 @@ static struct pci_driver safexcel_pci_dr
  	.probe         = safexcel_pci_probe,
  	.remove        = safexcel_pci_remove,
  };
@@ -3371,7 +3371,7 @@
  };
  
  struct safexcel_work_data {
-@@ -654,6 +721,12 @@ enum safexcel_eip_version {
+@@ -657,6 +724,12 @@ enum safexcel_eip_version {
  /* Priority we use for advertising our algorithms */
  #define SAFEXCEL_CRA_PRIORITY		300
  
@@ -3384,7 +3384,7 @@
  /* EIP algorithm presence flags */
  enum safexcel_eip_algorithms {
  	SAFEXCEL_ALG_BC0      = BIT(5),
-@@ -697,16 +770,23 @@ struct safexcel_register_offsets {
+@@ -700,16 +773,23 @@ struct safexcel_register_offsets {
  enum safexcel_flags {
  	EIP197_TRC_CACHE	= BIT(0),
  	SAFEXCEL_HW_EIP197	= BIT(1),
@@ -3408,7 +3408,7 @@
  };
  
  struct safexcel_crypto_priv {
-@@ -778,7 +858,7 @@ struct safexcel_inv_result {
+@@ -781,7 +861,7 @@ struct safexcel_inv_result {
  
  void safexcel_dequeue(struct safexcel_crypto_priv *priv, int ring);
  int safexcel_rdesc_check_errors(struct safexcel_crypto_priv *priv,
@@ -3417,7 +3417,7 @@
  void safexcel_complete(struct safexcel_crypto_priv *priv, int ring);
  int safexcel_invalidate_cache(struct crypto_async_request *async,
  			      struct safexcel_crypto_priv *priv,
-@@ -797,7 +877,8 @@ struct safexcel_command_desc *safexcel_a
+@@ -800,7 +880,8 @@ struct safexcel_command_desc *safexcel_a
  						 bool first, bool last,
  						 dma_addr_t data, u32 len,
  						 u32 full_data_len,
@@ -3427,7 +3427,7 @@
  struct safexcel_result_desc *safexcel_add_rdesc(struct safexcel_crypto_priv *priv,
  						 int ring_id,
  						bool first, bool last,
-@@ -853,5 +934,43 @@ extern struct safexcel_alg_template safe
+@@ -856,5 +937,43 @@ extern struct safexcel_alg_template safe
  extern struct safexcel_alg_template safexcel_alg_xts_aes;
  extern struct safexcel_alg_template safexcel_alg_gcm;
  extern struct safexcel_alg_template safexcel_alg_ccm;

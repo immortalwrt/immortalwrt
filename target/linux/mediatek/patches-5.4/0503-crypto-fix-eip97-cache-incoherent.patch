@@ -1,6 +1,6 @@
 --- a/drivers/crypto/inside-secure/safexcel.h
 +++ b/drivers/crypto/inside-secure/safexcel.h
-@@ -722,6 +722,9 @@ enum safexcel_eip_version {
+@@ -725,6 +725,9 @@ enum safexcel_eip_version {
  /* Priority we use for advertising our algorithms */
  #define SAFEXCEL_CRA_PRIORITY		300
  
