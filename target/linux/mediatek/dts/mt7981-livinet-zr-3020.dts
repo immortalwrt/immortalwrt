@@ -131,6 +131,9 @@
 		port@0 {
 			reg = <0>;
 			label = "wan";
+
+			nvmem-cells = <&macaddr_config_50787>;
+			nvmem-cell-names = "mac-address-ascii";
 		};
 
 		port@2 {
@@ -235,6 +238,10 @@
 
 				macaddr_config_50707: macaddr@50707 {
 					reg = <0x50707 0x11>;
+				};
+
+				macaddr_config_50787: macaddr@50787 {
+					reg = <0x50787 0x11>;
 				};
 			};
 		};

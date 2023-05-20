@@ -66,9 +66,6 @@ mediatek_setup_macs()
 	bananapi,bpi-r3)
 		wan_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) 1)
 		;;
-	livinet,zr-3020)
-		wan_mac=$(mtd_get_mac_ascii config2 wanmac)
-		;;
 	xiaomi,redmi-router-ax6000|\
 	xiaomi,redmi-router-ax6000-stock|\
 	xiaomi,redmi-router-ax6000-ubootmod)
