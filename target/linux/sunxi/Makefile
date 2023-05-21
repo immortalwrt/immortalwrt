@@ -26,5 +26,6 @@ include $(INCLUDE_DIR)/target.mk
 
 DEFAULT_PACKAGES += uboot-envtools
 DEFAULT_PACKAGES += partx-utils mkf2fs automount
+DEFAULT_PACKAGES += autocore luci-app-cpufreq
 
 $(eval $(call BuildTarget))
