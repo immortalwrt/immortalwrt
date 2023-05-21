@@ -108,8 +108,6 @@
 	rgmii_phy0: ethernet-phy@0 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0>;
-		pinctrl-0 = <&eth_phy0_reset_pin>;
-		pinctrl-names = "default";
 	};
 };
 
@@ -117,24 +115,10 @@
 	rgmii_phy1: ethernet-phy@0 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0>;
-		pinctrl-0 = <&eth_phy1_reset_pin>;
-		pinctrl-names = "default";
 	};
 };
 
 &pinctrl {
-	gmac0 {
-		eth_phy0_reset_pin: eth-phy0-reset-pin {
-			rockchip,pins = <3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
-
-	gmac1 {
-		eth_phy1_reset_pin: eth-phy1-reset-pin {
-			rockchip,pins = <3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
-
 	leds {
 		power_led_pin: power-led-pin {
 			rockchip,pins = <4 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
