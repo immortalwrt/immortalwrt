@@ -222,6 +222,7 @@ define Device/tplink_archer-d50-v1
   TPLINK_FLASHLAYOUT := 8Mqca
   KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | \
 	tplink-v2-header -s -V "ver. 1.0"
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-d50-v1
 
