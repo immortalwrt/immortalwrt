@@ -9,9 +9,10 @@ uci -q batch <<-EOF
 	add_list system.ntp.server='ntp1.aliyun.com'
 	add_list system.ntp.server='ntp.ntsc.ac.cn'
 	add_list system.ntp.server='cn.ntp.org.cn'
-EOF
-uci commit system
 
-sed -i 's,downloads.immortalwrt.org,mirrors.pku.edu.cn/immortalwrt,g' /etc/opkg/distfeeds.conf
+	commit system
+EOF
+
+sed -i 's,downloads.immortalwrt.org,mirrors.vsean.net/openwrt,g' /etc/opkg/distfeeds.conf
 
 exit 0
