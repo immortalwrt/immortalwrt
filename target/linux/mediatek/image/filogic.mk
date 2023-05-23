@@ -168,7 +168,7 @@ TARGET_DEVICES += glinet_gl-mt3000
 define Device/livinet_zr-3020
   DEVICE_VENDOR := Livinet
   DEVICE_MODEL := ZR-3020
-  DEVICE_DTS := mt7981-livinet-zr-3020
+  DEVICE_DTS := mt7981b-livinet-zr-3020
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
@@ -247,14 +247,14 @@ endef
 
 define Device/qihoo_360-t7-stock
   DEVICE_MODEL := 360 T7 (stock layout)
-  DEVICE_DTS := mt7981-qihoo-360-t7-stock
+  DEVICE_DTS := mt7981b-qihoo-360-t7-stock
   $(call Device/qihoo_360-t7-common)
 endef
 TARGET_DEVICES += qihoo_360-t7-stock
 
 define Device/qihoo_360-t7-ubootmod
   DEVICE_MODEL := 360 T7 (modified U-Boot layout)
-  DEVICE_DTS := mt7981-qihoo-360-t7-ubootmod
+  DEVICE_DTS := mt7981b-qihoo-360-t7-ubootmod
   $(call Device/qihoo_360-t7-common)
 endef
 TARGET_DEVICES += qihoo_360-t7-ubootmod
