@@ -24,7 +24,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +};
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -401,9 +401,11 @@
+@@ -405,9 +405,11 @@
  	#size-cells = <0>;
  
  	/* Second port is for USB 3.0 */
