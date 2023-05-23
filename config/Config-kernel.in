@@ -476,6 +476,11 @@ config KERNEL_BPF_KPROBE_OVERRIDE
 	depends on KERNEL_KPROBES
 	default n
 
+config KERNEL_BPF_STREAM_PARSER
+	bool "Allow a TCP stream parser to be used with BPF_MAP_TYPE_SOCKMAP"
+	depends on KERNEL_CGROUP_BPF
+	default y if KERNEL_DEBUG_INFO_BTF
+
 config KERNEL_AIO
 	bool "Compile the kernel with asynchronous IO support"
 	default y if !SMALL_FLASH
