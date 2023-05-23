@@ -63,7 +63,7 @@ Signed-off-by: CanYang He <hcy@rock-chips.com>
  
  	/* enable count, use software mode */
  	writel_relaxed(SOFTWARE_EN, dfi_regs + DDRMON_CTRL);
-@@ -547,9 +552,40 @@ static __init int rockchip_dfi_init(stru
+@@ -546,9 +551,40 @@ static __init int rockchip_dfi_init(stru
  	return 0;
  }
  

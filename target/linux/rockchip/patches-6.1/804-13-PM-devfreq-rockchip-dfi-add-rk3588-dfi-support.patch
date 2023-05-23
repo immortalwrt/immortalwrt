@@ -219,7 +219,7 @@ Change-Id: I0bebfd16aa4897f770f70aca70b0e9a88808446f
  static __init int px30_dfi_init(struct platform_device *pdev,
  				  struct rockchip_dfi *data,
  				  struct devfreq_event_desc *desc)
-@@ -641,6 +729,7 @@ static const struct of_device_id rockchi
+@@ -640,6 +728,7 @@ static const struct of_device_id rockchi
  	{ .compatible = "rockchip,rk3368-dfi", .data = rk3368_dfi_init },
  	{ .compatible = "rockchip,rk3399-dfi", .data = rockchip_dfi_init },
  	{ .compatible = "rockchip,rk3568-dfi", .data = px30_dfi_init },

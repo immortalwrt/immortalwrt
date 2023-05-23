@@ -104,7 +104,7 @@ Signed-off-by: YouMin Chen <cym@rock-chips.com>
  static __init int rk3128_dfi_init(struct platform_device *pdev,
  				  struct rockchip_dfi *data,
  				  struct devfreq_event_desc *desc)
-@@ -583,6 +617,7 @@ static __init int rk3328_dfi_init(struct
+@@ -582,6 +616,7 @@ static __init int rk3328_dfi_init(struct
  }
  
  static const struct of_device_id rockchip_dfi_id_match[] = {

@@ -8,7 +8,7 @@
  #include <linux/tcp.h>
  #include <linux/interrupt.h>
  #include <linux/dma-mapping.h>
-@@ -183,6 +184,7 @@ enum rtl_registers {
+@@ -171,6 +172,7 @@ enum rtl_registers {
  	MAR0		= 8,	/* Multicast filter. */
  	CounterAddrLow		= 0x10,
  	CounterAddrHigh		= 0x14,
@@ -16,7 +16,7 @@
  	TxDescStartAddrLow	= 0x20,
  	TxDescStartAddrHigh	= 0x24,
  	TxHDescStartAddrLow	= 0x28,
-@@ -2140,6 +2142,22 @@ void r8169_apply_firmware(struct rtl8169
+@@ -2096,6 +2098,22 @@ void r8169_apply_firmware(struct rtl8169
  	}
  }
  
@@ -39,7 +39,7 @@
  static void rtl8168_config_eee_mac(struct rtl8169_private *tp)
  {
  	/* Adjust EEE LED frequency */
-@@ -3243,6 +3261,8 @@ static void rtl_hw_start_8168h_1(struct
+@@ -3238,6 +3256,8 @@ static void rtl_hw_start_8168h_1(struct
  	r8168_mac_ocp_write(tp, 0xc094, 0x0000);
  	r8168_mac_ocp_write(tp, 0xc09e, 0x0000);
  
@@ -48,7 +48,7 @@
  	rtl_hw_aspm_clkreq_enable(tp, true);
  }
  
-@@ -3695,6 +3715,8 @@ static void rtl_hw_start_8125b(struct rt
+@@ -3610,6 +3630,8 @@ static void rtl_hw_start_8125b(struct rt
  	rtl_ephy_init(tp, e_info_8125b);
  	rtl_hw_start_8125_common(tp);
  

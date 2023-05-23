@@ -24,7 +24,7 @@ Signed-off-by: Sumit Gupta <sumitg@nvidia.com>
 
 --- a/arch/arm64/kernel/cpuinfo.c
 +++ b/arch/arm64/kernel/cpuinfo.c
-@@ -151,9 +151,8 @@ static int c_show(struct seq_file *m, vo
+@@ -170,9 +170,8 @@ static int c_show(struct seq_file *m, vo
  		 * "processor".  Give glibc what it expects.
  		 */
  		seq_printf(m, "processor\t: %d\n", i);

@@ -14,7 +14,7 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
 
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
-@@ -385,6 +385,19 @@ config HW_RANDOM_STM32
+@@ -372,6 +372,19 @@ config HW_RANDOM_STM32
  
  	  If unsure, say N.
  
@@ -36,7 +36,7 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
  	depends on HW_RANDOM && MACH_PIC32
 --- a/drivers/char/hw_random/Makefile
 +++ b/drivers/char/hw_random/Makefile
-@@ -35,6 +35,7 @@ obj-$(CONFIG_HW_RANDOM_IPROC_RNG200) +=
+@@ -34,6 +34,7 @@ obj-$(CONFIG_HW_RANDOM_IPROC_RNG200) +=
  obj-$(CONFIG_HW_RANDOM_ST) += st-rng.o
  obj-$(CONFIG_HW_RANDOM_XGENE) += xgene-rng.o
  obj-$(CONFIG_HW_RANDOM_STM32) += stm32-rng.o

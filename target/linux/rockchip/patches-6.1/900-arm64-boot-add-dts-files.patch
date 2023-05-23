@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -41,6 +41,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-na
+@@ -45,6 +45,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-na
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-m4b.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-neo4.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s.dtb
@@ -8,10 +8,11 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s-enterprise.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
-@@ -59,5 +60,6 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro
+@@ -77,6 +78,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bp
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r66s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r68s.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-mrkaio-m68s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5c.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb

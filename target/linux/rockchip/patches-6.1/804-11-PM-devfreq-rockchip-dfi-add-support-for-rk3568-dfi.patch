@@ -11,7 +11,7 @@ Signed-off-by: YouMin Chen <cym@rock-chips.com>
 
 --- a/drivers/devfreq/event/rockchip-dfi.c
 +++ b/drivers/devfreq/event/rockchip-dfi.c
-@@ -632,6 +632,7 @@ static const struct of_device_id rockchi
+@@ -631,6 +631,7 @@ static const struct of_device_id rockchi
  	{ .compatible = "rockchip,rk3328-dfi", .data = rk3328_dfi_init },
  	{ .compatible = "rockchip,rk3368-dfi", .data = rk3368_dfi_init },
  	{ .compatible = "rockchip,rk3399-dfi", .data = rockchip_dfi_init },

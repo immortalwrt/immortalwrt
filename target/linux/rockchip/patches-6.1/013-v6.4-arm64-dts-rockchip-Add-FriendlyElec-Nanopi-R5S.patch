@@ -30,11 +30,12 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -54,3 +54,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sa
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sapphire-excavator.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rock-pi-n10.dtb
+@@ -72,4 +72,5 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-ro
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-soquartz-cm4.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 @@ -0,0 +1,713 @@

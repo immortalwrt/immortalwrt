@@ -11,7 +11,7 @@ Signed-off-by: YouMin Chen <cym@rock-chips.com>
 
 --- a/drivers/devfreq/event/rockchip-dfi.c
 +++ b/drivers/devfreq/event/rockchip-dfi.c
-@@ -618,6 +618,7 @@ static __init int rk3328_dfi_init(struct
+@@ -617,6 +617,7 @@ static __init int rk3328_dfi_init(struct
  
  static const struct of_device_id rockchip_dfi_id_match[] = {
  	{ .compatible = "rockchip,px30-dfi", .data = px30_dfi_init },
