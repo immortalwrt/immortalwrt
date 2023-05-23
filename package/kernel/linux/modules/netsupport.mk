@@ -92,7 +92,9 @@ define KernelPackage/vxlan
 	+kmod-udptunnel4 \
 	+IPV6:kmod-udptunnel6
   KCONFIG:=CONFIG_VXLAN
-  FILES:=$(LINUX_DIR)/drivers/net/vxlan.ko
+  FILES:= \
+	$(LINUX_DIR)/drivers/net/vxlan.ko@lt5.18 \
+	$(LINUX_DIR)/drivers/net/vxlan/vxlan.ko@ge5.18
   AUTOLOAD:=$(call AutoLoad,13,vxlan)
 endef
 
@@ -1314,7 +1316,8 @@ define KernelPackage/9pnet
 	CONFIG_NET_9P \
 	CONFIG_NET_9P_DEBUG=n \
 	CONFIG_NET_9P_XEN=n \
-	CONFIG_NET_9P_VIRTIO
+	CONFIG_NET_9P_VIRTIO \
+	CONFIG_NET_9P_FD=n@ge5.17
   FILES:= \
 	$(LINUX_DIR)/net/9p/9pnet.ko \
 	$(LINUX_DIR)/net/9p/9pnet_virtio.ko
