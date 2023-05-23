@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 /dts-v1/;
-#include "mt7981-qihoo-360-t7.dtsi"
+#include "mt7981b-qihoo-360-t7.dtsi"
 
 / {
 	model = "Qihoo 360 T7 (stock layout)";
