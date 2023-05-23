@@ -1,0 +1,46 @@
+From 1f1992c51a3f44352253204a11fc34738b739d20 Mon Sep 17 00:00:00 2001
+From: Lin Jinhan <troy.lin@rock-chips.com>
+Date: Fri, 24 Aug 2018 09:15:03 +0800
+Subject: [PATCH] hwrng: rockchip - add support for Rockchip HW RNG
+
+Change-Id: Ia14bd624716eb6531ef8674843ccfbada3197d8e
+Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
+---
+ drivers/char/hw_random/Kconfig        |  12 ++
+ drivers/char/hw_random/Makefile       |   1 +
+ drivers/char/hw_random/rockchip-rng.c | 214 ++++++++++++++++++++++++++
+ 3 files changed, 227 insertions(+)
+ create mode 100644 drivers/char/hw_random/rockchip-rng.c
+
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -385,6 +385,19 @@ config HW_RANDOM_STM32
+ 
+ 	  If unsure, say N.
+ 
++config HW_RANDOM_ROCKCHIP
++	tristate "Rockchip Random Number Generator support"
++	depends on ARCH_ROCKCHIP
++	default HW_RANDOM
++	help
++	  This driver provides kernel-side support for the Random Number
++	  Generator hardware found on Rockchip cpus.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called rockchip-rng.
++
++	  If unsure, say Y.
++
+ config HW_RANDOM_PIC32
+ 	tristate "Microchip PIC32 Random Number Generator support"
+ 	depends on HW_RANDOM && MACH_PIC32
+--- a/drivers/char/hw_random/Makefile
++++ b/drivers/char/hw_random/Makefile
+@@ -35,6 +35,7 @@ obj-$(CONFIG_HW_RANDOM_IPROC_RNG200) +=
+ obj-$(CONFIG_HW_RANDOM_ST) += st-rng.o
+ obj-$(CONFIG_HW_RANDOM_XGENE) += xgene-rng.o
+ obj-$(CONFIG_HW_RANDOM_STM32) += stm32-rng.o
++obj-$(CONFIG_HW_RANDOM_ROCKCHIP) += rockchip-rng.o
+ obj-$(CONFIG_HW_RANDOM_PIC32) += pic32-rng.o
+ obj-$(CONFIG_HW_RANDOM_MESON) += meson-rng.o
+ obj-$(CONFIG_HW_RANDOM_CAVIUM) += cavium-rng.o cavium-rng-vf.o

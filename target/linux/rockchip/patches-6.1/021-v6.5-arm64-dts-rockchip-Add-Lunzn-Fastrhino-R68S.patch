@@ -1,0 +1,145 @@
+From 5a9447fd17668c34449052e4f77eebc7a98eccf3 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Sat, 6 May 2023 14:11:08 +0800
+Subject: [PATCH] arm64: dts: rockchip: Add Lunzn Fastrhino R68S
+
+It's similar to Fastrhino R66S with the following changes:
++ 2/4GB LPDDR4 RAM
++ 2x 1000 Base-T (native, RTL8211f)
++ ADC button
++ 16GB eMMC on-board
+- No SD card slot
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+Link: https://lore.kernel.org/r/20230506061108.17658-3-cnsztl@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/Makefile              |   1 +
+ .../boot/dts/rockchip/rk3568-fastrhino-r68s.dts    | 112 +++++++++++++++++++++
+ 2 files changed, 113 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
+
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -57,5 +57,6 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sa
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rock-pi-n10.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r66s.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r68s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5c.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5s.dtb
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
+@@ -0,0 +1,112 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++
++#include "rk3568-fastrhino-r66s.dtsi"
++
++/ {
++	model = "Lunzn FastRhino R68S";
++	compatible = "lunzn,fastrhino-r68s", "rockchip,rk3568";
++
++	aliases {
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		mmc0 = &sdhci;
++	};
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1800000>;
++
++		button-recovery {
++			label = "Recovery";
++			linux,code = <KEY_VENDOR>;
++			press-threshold-microvolt = <1750>;
++		};
++	};
++};
++
++&gmac0 {
++	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
++	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
++	assigned-clock-rates = <0>, <125000000>;
++	clock_in_out = "output";
++	phy-handle = <&rgmii_phy0>;
++	phy-mode = "rgmii-id";
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac0_miim
++		     &gmac0_tx_bus2
++		     &gmac0_rx_bus2
++		     &gmac0_rgmii_clk
++		     &gmac0_rgmii_bus>;
++	snps,reset-gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	/* Reset time is 15ms, 50ms for rtl8211f */
++	snps,reset-delays-us = <0 15000 50000>;
++	tx_delay = <0x3c>;
++	rx_delay = <0x2f>;
++	status = "okay";
++};
++
++&gmac1 {
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
++	assigned-clock-rates = <0>, <125000000>;
++	clock_in_out = "output";
++	phy-handle = <&rgmii_phy1>;
++	phy-mode = "rgmii-id";
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac1m1_miim
++		     &gmac1m1_tx_bus2
++		     &gmac1m1_rx_bus2
++		     &gmac1m1_rgmii_clk
++		     &gmac1m1_rgmii_bus>;
++	snps,reset-gpio = <&gpio0 RK_PB1 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	/* Reset time is 15ms, 50ms for rtl8211f */
++	snps,reset-delays-us = <0 15000 50000>;
++	tx_delay = <0x4f>;
++	rx_delay = <0x26>;
++	status = "okay";
++};
++
++&mdio0 {
++	rgmii_phy0: ethernet-phy@0 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++		pinctrl-0 = <&eth_phy0_reset_pin>;
++		pinctrl-names = "default";
++	};
++};
++
++&mdio1 {
++	rgmii_phy1: ethernet-phy@0 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++		pinctrl-0 = <&eth_phy1_reset_pin>;
++		pinctrl-names = "default";
++	};
++};
++
++&pinctrl {
++	gmac0 {
++		eth_phy0_reset_pin: eth-phy0-reset-pin {
++			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
++	gmac1 {
++		eth_phy1_reset_pin: eth-phy1-reset-pin {
++			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++};
++
++&sdhci {
++	bus-width = <8>;
++	max-frequency = <200000000>;
++	non-removable;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
++	status = "okay";
++};

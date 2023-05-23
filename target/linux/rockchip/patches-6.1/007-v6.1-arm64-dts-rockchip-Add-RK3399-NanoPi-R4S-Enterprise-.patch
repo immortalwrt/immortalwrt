@@ -1,0 +1,60 @@
+From fd573b2bf2d2cf61e835ea68bbaa34c71d4a70d7 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Thu, 15 Sep 2022 10:25:11 +0800
+Subject: [PATCH] arm64: dts: rockchip: Add RK3399 NanoPi R4S Enterprise
+ Edition
+
+The only diffrence against the standrard edition is that the enterprise
+one has a built-in EEPROM chip which stores a globally unique MAC address.
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+Link: https://lore.kernel.org/r/20220915022511.4267-2-cnsztl@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/Makefile         |  1 +
+ .../rockchip/rk3399-nanopi-r4s-enterprise.dts | 29 +++++++++++++++++++
+ 2 files changed, 30 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s-enterprise.dts
+
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -37,6 +37,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-na
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-m4b.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-neo4.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s-enterprise.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-puma-haikou.dtb
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s-enterprise.dts
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++#include "rk3399-nanopi-r4s.dts"
++
++/ {
++	model = "FriendlyElec NanoPi R4S Enterprise Edition";
++	compatible = "friendlyarm,nanopi-r4s-enterprise", "rockchip,rk3399";
++};
++
++&gmac {
++	nvmem-cells = <&mac_address>;
++	nvmem-cell-names = "mac-address";
++};
++
++&i2c2 {
++	eeprom@51 {
++		compatible = "microchip,24c02", "atmel,24c02";
++		reg = <0x51>;
++		pagesize = <16>;
++		size = <256>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		mac_address: mac-address@fa {
++			reg = <0xfa 0x06>;
++		};
++	};
++};

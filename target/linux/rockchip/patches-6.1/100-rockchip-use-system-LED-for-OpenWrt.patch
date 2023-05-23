@@ -1,0 +1,232 @@
+From 6731d2c9039fbe1ecf21915eab3acee0a999508a Mon Sep 17 00:00:00 2001
+From: David Bauer <mail@david-bauer.net>
+Date: Fri, 10 Jul 2020 21:38:20 +0200
+Subject: [PATCH] rockchip: use system LED for OpenWrt
+
+Use the SYS LED on the casing for showing system status.
+
+This patch is kept separate from the NanoPi R2S support patch, as i plan
+on submitting the device support upstream.
+
+Signed-off-by: David Bauer <mail@david-bauer.net>
+---
+ arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
+@@ -16,6 +16,11 @@
+ 	aliases {
+ 		ethernet1 = &rtl8153;
+ 		mmc0 = &sdmmc;
++
++		led-boot = &sys_led;
++		led-failsafe = &sys_led;
++		led-running = &sys_led;
++		led-upgrade = &sys_led;
+ 	};
+ 
+ 	chosen {
+@@ -49,18 +54,18 @@
+ 
+ 		lan_led: led-0 {
+ 			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
+-			label = "nanopi-r2s:green:lan";
++			label = "green:lan";
+ 		};
+ 
+ 		sys_led: led-1 {
+ 			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
+-			label = "nanopi-r2s:red:sys";
++			label = "red:sys";
+ 			default-state = "on";
+ 		};
+ 
+ 		wan_led: led-2 {
+ 			gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
+-			label = "nanopi-r2s:green:wan";
++			label = "green:wan";
+ 		};
+ 	};
+ 
+--- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
+@@ -17,6 +17,11 @@
+ 	aliases {
+ 		ethernet1 = &rtl8153;
+ 		mmc0 = &sdmmc;
++
++		led-boot = &sys_led;
++		led-failsafe = &sys_led;
++		led-running = &sys_led;
++		led-upgrade = &sys_led;
+ 	};
+ 
+ 	chosen {
+@@ -36,22 +41,18 @@
+ 		pinctrl-names = "default";
+ 
+ 		led-0 {
+-			function = LED_FUNCTION_LAN;
+-			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
++			label = "green:lan";
+ 		};
+ 
+-		led-1 {
+-			function = LED_FUNCTION_STATUS;
+-			color = <LED_COLOR_ID_RED>;
++		sys_led: led-1 {
+ 			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
++			label = "red:sys";
+ 		};
+ 
+ 		led-2 {
+-			function = LED_FUNCTION_WAN;
+-			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
++			label = "green:wan";
+ 		};
+ 	};
+ 
+--- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+@@ -13,6 +13,11 @@
+ 	aliases {
+ 		mmc0 = &sdmmc;
+ 		mmc1 = &emmc;
++
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen {
+@@ -93,9 +98,7 @@
+ 
+ 		power_led: led-0 {
+ 			label = "firefly:blue:power";
+-			linux,default-trigger = "heartbeat";
+ 			gpios = <&rk805 1 GPIO_ACTIVE_LOW>;
+-			default-state = "on";
+ 		};
+ 
+ 		user_led: led-1 {
+--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
+@@ -19,6 +19,13 @@
+ 	model = "FriendlyElec NanoPi R4S";
+ 	compatible = "friendlyarm,nanopi-r4s", "rockchip,rk3399";
+ 
++	aliases {
++		led-boot = &sys_led;
++		led-failsafe = &sys_led;
++		led-running = &sys_led;
++		led-upgrade = &sys_led;
++	};
++
+ 	/delete-node/ display-subsystem;
+ 
+ 	gpio-leds {
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
+@@ -9,6 +9,13 @@
+ #include "rk3568.dtsi"
+ 
+ / {
++	aliases {
++		led-boot = &status_led;
++		led-failsafe = &status_led;
++		led-running = &status_led;
++		led-upgrade = &status_led;
++	};
++
+ 	chosen: chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+@@ -32,27 +32,22 @@
+ 		pinctrl-0 = <&lan_led_pin>, <&power_led_pin>, <&wan_led_pin>, <&wlan_led_pin>;
+ 
+ 		led-lan {
+-			color = <LED_COLOR_ID_GREEN>;
+-			function = LED_FUNCTION_LAN;
++			label = "green:lan";
+ 			gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+ 		power_led: led-power {
+-			color = <LED_COLOR_ID_RED>;
+-			function = LED_FUNCTION_POWER;
+-			linux,default-trigger = "heartbeat";
++			label = "red:power";
+ 			gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+ 		led-wan {
+-			color = <LED_COLOR_ID_GREEN>;
+-			function = LED_FUNCTION_WAN;
++			label = "green:wan";
+ 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+ 		led-wlan {
+-			color = <LED_COLOR_ID_GREEN>;
+-			function = LED_FUNCTION_WLAN;
++			label = "green:wlan";
+ 			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
+ 		};
+ 	};
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
+@@ -23,29 +23,22 @@
+ 		pinctrl-0 = <&lan1_led_pin>, <&lan2_led_pin>, <&power_led_pin>, <&wan_led_pin>;
+ 
+ 		led-lan1 {
+-			color = <LED_COLOR_ID_GREEN>;
+-			function = LED_FUNCTION_LAN;
+-			function-enumerator = <1>;
++			label = "green:lan1";
+ 			gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+ 		led-lan2 {
+-			color = <LED_COLOR_ID_GREEN>;
+-			function = LED_FUNCTION_LAN;
+-			function-enumerator = <2>;
++			label = "green:lan2";
+ 			gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+ 		power_led: led-power {
+-			color = <LED_COLOR_ID_RED>;
+-			function = LED_FUNCTION_POWER;
+-			linux,default-trigger = "heartbeat";
++			label = "red:power";
+ 			gpios = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
+ 		};
+ 
+ 		led-wan {
+-			color = <LED_COLOR_ID_GREEN>;
+-			function = LED_FUNCTION_WAN;
++			label = "green:wan";
+ 			gpios = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
+ 		};
+ 	};
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
+@@ -18,6 +18,11 @@
+ 	aliases {
+ 		mmc0 = &sdmmc0;
+ 		mmc1 = &sdhci;
++
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen: chosen {
