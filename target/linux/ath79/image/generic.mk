@@ -1571,7 +1571,7 @@ define Device/hak5_lan-turtle
   TPLINK_HWID := 0x5348334c
   IMAGES := sysupgrade.bin
   DEVICE_PACKAGES := kmod-usb-chipidea2 -iwinfo -kmod-ath9k -swconfig \
-	-uboot-envtools -wpad-basic-openssl
+	-uboot-envtools -wpad-openssl
   SUPPORTED_DEVICES += lan-turtle
 endef
 TARGET_DEVICES += hak5_lan-turtle
@@ -1584,7 +1584,7 @@ define Device/hak5_packet-squirrel
   TPLINK_HWID := 0x5351524c
   IMAGES := sysupgrade.bin
   DEVICE_PACKAGES := kmod-usb-chipidea2 -iwinfo -kmod-ath9k -swconfig \
-	-uboot-envtools -wpad-basic-openssl
+	-uboot-envtools -wpad-openssl
   SUPPORTED_DEVICES += packet-squirrel
 endef
 TARGET_DEVICES += hak5_packet-squirrel
@@ -1619,7 +1619,7 @@ define Device/iodata_etg3-r
   DEVICE_VENDOR := I-O DATA
   DEVICE_MODEL := ETG3-R
   IMAGE_SIZE := 7680k
-  DEVICE_PACKAGES := -iwinfo -kmod-ath9k -wpad-basic-openssl
+  DEVICE_PACKAGES := -iwinfo -kmod-ath9k -wpad-openssl
 endef
 TARGET_DEVICES += iodata_etg3-r
 
@@ -1679,7 +1679,7 @@ define Device/jjplus_ja76pf2
   SOC := ar7161
   DEVICE_VENDOR := jjPlus
   DEVICE_MODEL := JA76PF2
-  DEVICE_PACKAGES += -kmod-ath9k -swconfig -wpad-basic-openssl -uboot-envtools fconfig kmod-hwmon-lm75
+  DEVICE_PACKAGES += -kmod-ath9k -swconfig -wpad-openssl -uboot-envtools fconfig kmod-hwmon-lm75
   LOADER_TYPE := bin
   LOADER_FLASH_OFFS := 0x60000
   COMPILE := loader-$(1).bin
@@ -2779,7 +2779,7 @@ define Device/teltonika_rut300
   DEVICE_VENDOR := Teltonika
   DEVICE_MODEL := RUT300
   SUPPORTED_TELTONIKA_DEVICES := teltonika,rut30x
-  DEVICE_PACKAGES := -kmod-ath9k -uboot-envtools -wpad-basic-openssl kmod-usb2
+  DEVICE_PACKAGES := -kmod-ath9k -uboot-envtools -wpad-openssl kmod-usb2
   IMAGE_SIZE := 15552k
   IMAGES += factory.bin
   IMAGE/factory.bin = append-kernel | pad-to $$$$(BLOCKSIZE) | \
