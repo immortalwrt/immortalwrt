@@ -1410,7 +1410,7 @@ $(eval $(call KernelPackage,qlcnic))
 
 define KernelPackage/qede
   SUBMENU:=$(NETWORK_DEVICES_MENU)
-  DEPENDS:=@PCI_SUPPORT +kmod-ptp
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-lib-crc8
   TITLE:=QLogic FastLinQ 10/25/40/100Gb Ethernet NIC device support
   KCONFIG:= \
 	CONFIG_QED \
