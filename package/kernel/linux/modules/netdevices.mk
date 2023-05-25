@@ -1415,7 +1415,9 @@ define KernelPackage/qede
   KCONFIG:= \
 	CONFIG_QED \
 	CONFIG_QED_SRIOV=y \
-	CONFIG_QEDE
+	CONFIG_QEDE \
+	CONFIG_QEDF=n \
+	CONFIG_QEDI=n
   FILES:= \
 	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qed/qed.ko \
 	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qede/qede.ko
