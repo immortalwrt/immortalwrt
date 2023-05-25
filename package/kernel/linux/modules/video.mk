@@ -291,7 +291,7 @@ $(eval $(call KernelPackage,drm-display-helper))
 define KernelPackage/drm-gem-shmem-helper
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=GEM shmem helper functions
-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm @!LINUX_5_15
   KCONFIG:=CONFIG_DRM_GEM_SHMEM_HELPER
   FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko
   AUTOLOAD:=$(call AutoProbe,drm_shmem_helper)
