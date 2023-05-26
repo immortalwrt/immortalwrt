@@ -133,6 +133,7 @@ setup_interface () {
 
 		if [ -z "$gw" -o "$duplicate" = 1 ]; then
 			proto_add_ipv6_route "$addr" "$mask" "$gw" "$metric" "$valid"
+			env -i ACTION="ifup" INTERFACE="$INTERFACE" DEVICE="$DEVICE" ADDR="$addr" MASK="$mask" "GW"="$gw" METRIC="$metric" VALID="$valid" /sbin/hotplug-call dhcpv6
 		else
 			for prefix in $PREFIXES $ADDRESSES; do
 				local paddr="${prefix%%,*}"
