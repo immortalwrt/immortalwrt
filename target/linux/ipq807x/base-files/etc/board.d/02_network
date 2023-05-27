@@ -29,6 +29,7 @@ ipq807x_setup_interfaces()
 	qnap,301w)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 10g-2" "10g-1"
 		;;
+	compex,wpq873|\
 	redmi,ax6|\
 	redmi,ax6-stock|\
 	xiaomi,ax3600|\
