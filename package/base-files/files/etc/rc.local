@@ -1,4 +1,9 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
-
+iptables -F
+iptables -t nat -F -t mangle -F
+iptables -t nat -A POSTROUTING -o wwan0 -j MASQUERADE
+iptables -t mangle -A PREROUTING -j TTL --ttl-inc 1
+iptables -A FORWARD -i wwan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i eth0 -o wwan0 -j ACCEPT
 exit 0
