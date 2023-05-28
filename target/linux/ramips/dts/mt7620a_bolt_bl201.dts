@@ -81,10 +81,22 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 26 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&gpio2 {
+	status = "okay";
 };
 
 &gpio3 {
@@ -107,12 +119,12 @@
 			partition@0 {
 				label = "u-boot";
 				reg = <0x0 0x30000>;
+				read-only;
 			};
 
 			partition@30000 {
 				label = "u-boot-env";
 				reg = <0x30000 0x10000>;
-				read-only;
 			};
 
 			factory: partition@40000 {
@@ -126,15 +138,36 @@
 				label = "firmware";
 				reg = <0x50000 0xf80000>;
 			};
+
+			partition@fd0000 {
+				label = "crash";
+				reg = <0xfd0000 0x10000>;
+			};
+
+			partition@fe0000 {
+				label = "reserved";
+				reg = <0xfe0000 0x10000>;
+				read-only;
+			};
+
+			partition@ff0000 {
+				label = "Bdata";
+				reg = <0xff0000 0x10000>;
+			};
 		};
 	};
 };
 
-&ethernet {
-	pinctrl-names = "default";
-	pinctrl-0 = <&ephy_pins>;
+&ehci {
+	status = "okay";
+};
 
-	nvmem-cells = <&macaddr_factory_4>;
+&ohci {
+	status = "okay";
+};
+
+&ethernet {
+	nvmem-cells = <&macaddr_factory_28>;
 	nvmem-cell-names = "mac-address";
 
 	mediatek,portmap = "llllw";
@@ -160,7 +193,7 @@
 
 &state_default {
 	gpio {
-		groups = "wled", "i2c", "uartf", "wdt";
+		groups = "i2c", "uartf", "rgmii1", "rgmii2", "ephy", "wled", "nd_sd";
 		function = "gpio";
 	};
 };
@@ -170,7 +203,7 @@
 	#address-cells = <1>;
 	#size-cells = <1>;
 
-	macaddr_factory_4: macaddr@4 {
-		reg = <0x4 0x6>;
+	macaddr_factory_28: macaddr@28 {
+		reg = <0x28 0x6>;
 	};
 };
