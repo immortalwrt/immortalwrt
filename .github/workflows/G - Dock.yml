@@ -2,7 +2,7 @@
 # Copyright (c) 2023
 #
 
-name: Build Immor Ruijie M520
+name: Build Immor G-dock
 
 on:
   release:
