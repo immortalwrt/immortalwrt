@@ -166,6 +166,35 @@ detect_mac80211() {
 		else
 			dev_id="set wireless.radio${devidx}.macaddr=$(cat /sys/class/ieee80211/${dev}/macaddress)"
 		fi
+		
+		SSID="TPT Lam"
+		SSID5G="TPT Lam"
+		PASSW="TPTlam011205@!"
+		if [ -e /etc/customwifi ]; then
+			I=0
+			while IFS=$'\n' read -r line
+			do
+				if [ $I = 0 ];then
+					SSID="$line"
+					I=1
+				else
+					if [ $I = 1 ];then
+						SSID5G="$line"
+						I=2
+					else
+						PASSW="$line"
+						break
+					fi
+				fi
+
+			done < /etc/customwifi
+		fi
+		if [ $channel -lt 15 ]; then
+			SSID="$SSID"
+		else
+			SSID="$SSID5G"
+			channel='44'
+		fi
 
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device
@@ -174,15 +203,18 @@ detect_mac80211() {
 			set wireless.radio${devidx}.channel=${channel}
 			set wireless.radio${devidx}.band=${mode_band}
 			set wireless.radio${devidx}.htmode=$htmode
-			set wireless.radio${devidx}.country=US
 			set wireless.radio${devidx}.disabled=0
+			set wireless.radio${devidx}.noscan=0
+			set wireless.radio${devidx}.country='US'
 
 			set wireless.default_radio${devidx}=wifi-iface
 			set wireless.default_radio${devidx}.device=radio${devidx}
 			set wireless.default_radio${devidx}.network=lan
 			set wireless.default_radio${devidx}.mode=ap
-			set wireless.default_radio${devidx}.ssid=ImmortalWrt
-			set wireless.default_radio${devidx}.encryption=none
+			set wireless.default_radio${devidx}.ssid="$SSID"
+			set wireless.default_radio${devidx}.encryption=psk2
+			set wireless.default_radio${devidx}.key="$PASSW"
+
 EOF
 		uci -q commit wireless
 
