@@ -22,7 +22,7 @@
 	compatible = "friendlyarm,nanopi-r6s", "rockchip,rk3588";
 
 	aliases {
-		ethernet2 = &gmac1;
+		ethernet0 = &gmac1;
 		mmc0 = &sdmmc;
 		mmc2 = &sdhci;
 		serial2 = &uart2;

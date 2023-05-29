@@ -105,6 +105,16 @@ define Device/friendlyarm_nanopi-r6s
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r6s
 
+
+define Device/huake_guangmiao-g4c
+  DEVICE_VENDOR := Huake-Cloud
+  DEVICE_MODEL := GuangMiao G4C
+  SOC := rk3399
+  BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-r8168
+endef
+TARGET_DEVICES += huake_guangmiao-g4c
+
 define Device/lunzn_fastrhino-r66s
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R66S
