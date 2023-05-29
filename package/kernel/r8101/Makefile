@@ -7,7 +7,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=r8101
 PKG_VERSION:=1.038.02
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@IMMORTALWRT
@@ -16,6 +16,8 @@ PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
+
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -33,7 +35,7 @@ define KernelPackage/r8101/description
 endef
 
 define Build/Compile
-	+$(KERNEL_MAKE) M=$(PKG_BUILD_DIR)/src modules
+	+$(KERNEL_MAKE) $(PKG_JOBS) M=$(PKG_BUILD_DIR)/src modules
 endef
 
 $(eval $(call KernelPackage,r8101))
