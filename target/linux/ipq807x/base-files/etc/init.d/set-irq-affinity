@@ -7,7 +7,7 @@ start() {
 		[ -e "$eth/device" ] || continue
 		for i in "$eth"/queues/rx-*/rps_cpus; do echo "f" > "$i"; done
 		for i in "$eth"/queues/rx-*/rps_flow_cnt; do echo "4096" > "$i"; done
-		for i in "$eth"/queues/rx-*/xps_cpus; do echo "f" > "$i"; done
+		for i in "$eth"/queues/tx-*/xps_cpus; do echo "f" > "$i"; done
 	done
 
 	echo "32768" > "/proc/sys/net/core/rps_sock_flow_entries"
