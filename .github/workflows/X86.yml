@@ -5,6 +5,8 @@
 name: Build Immor X86
 
 on:
+  schedule:
+    - cron: '0 8 * * 0'
   release:
     types: [published]
   push:
@@ -12,8 +14,6 @@ on:
       - master
   repository_dispatch:
   workflow_dispatch: 
-    schedule:
-     - cron: 0 06 * * 0
     inputs:
       ssh:
         description: "SSH connection to Actions"
@@ -30,7 +30,7 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
+  CONFIG_FILE: .config_1900acv1
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
