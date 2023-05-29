@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtl8189es
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=3
 
 PKG_SOURCE_URL:=https://github.com/jwrdegoede/rtl8189ES_linux.git
 PKG_SOURCE_PROTO:=git
