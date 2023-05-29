@@ -166,6 +166,23 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+
+# RK3588 boards
+
+define U-Boot/Default/rk3588
+  BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3588
+  ATF:=$(RK3588_ATF)
+  DDR:=$(RK3588_DDR)
+endef
+
+define U-Boot/nanopi-r6s-rk3588s
+  $(U-Boot/Default/rk3588)
+  NAME:=FriendlyARM NanoPi R6S
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r6s
+endef
+
 UBOOT_TARGETS := \
   nanopi-r4s-rk3399 \
   nanopi-r4se-rk3399 \
@@ -182,7 +199,8 @@ UBOOT_TARGETS := \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
-  nanopi-r5s-rk3568
+  nanopi-r5s-rk3568 \
+  nanopi-r6s-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
