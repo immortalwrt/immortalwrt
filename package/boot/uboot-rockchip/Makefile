@@ -86,6 +86,13 @@ define U-Boot/Default/rk3399
   ATF:=$(RK3399_ATF)
 endef
 
+define U-Boot/guangmiao-g4c-rk3399
+  $(U-Boot/Default/rk3399)
+  NAME:=GuangMiao G4C
+  BUILD_DEVICES:= \
+    huake_guangmiao-g4c
+endef
+
 define U-Boot/nanopi-r4s-rk3399
   $(U-Boot/Default/rk3399)
   NAME:=NanoPi R4S
@@ -184,6 +191,7 @@ define U-Boot/nanopi-r6s-rk3588s
 endef
 
 UBOOT_TARGETS := \
+  guangmiao-g4c-rk3399 \
   nanopi-r4s-rk3399 \
   nanopi-r4se-rk3399 \
   nanopi-r4s-enterprise-rk3399 \
