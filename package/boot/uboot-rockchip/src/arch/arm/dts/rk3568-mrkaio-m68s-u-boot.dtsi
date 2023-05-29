@@ -11,12 +11,12 @@
 
 &sdmmc0 {
 	bus-width = <4>;
-	u-boot,dm-spl;
+	bootph-pre-ram;
 	u-boot,spl-fifo-mode;
 };
 
 &uart2 {
 	clock-frequency = <24000000>;
-	u-boot,dm-spl;
+	bootph-pre-ram;
 	status = "okay";
 };
