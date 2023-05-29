@@ -5,6 +5,8 @@
 name: Build Immor Linksys 1900acv1
 
 on:
+  schedule:
+    - cron: '0 12 * * 1'
   release:
     types: [published]
   push:
@@ -12,8 +14,6 @@ on:
       - master
   repository_dispatch:
   workflow_dispatch: 
-    schedule:
-     - cron: 0 2 * * 1
     inputs:
       ssh:
         description: "SSH connection to Actions"
