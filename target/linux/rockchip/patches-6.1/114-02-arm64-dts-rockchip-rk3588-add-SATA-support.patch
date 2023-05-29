@@ -1,0 +1,122 @@
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	linux-ide@vger.kernel.org, linux-phy@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v2 6/6] arm64: dts: rockchip: rk3588: add SATA support
+Date: Mon, 22 May 2023 19:34:23 +0200	[thread overview]
+Message-ID: <20230522173423.64691-7-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20230522173423.64691-1-sebastian.reichel@collabora.com>
+
+Add all three SATA IP blocks to the RK3588 DT.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 23 +++++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 48 +++++++++++++++++++++++
+ 2 files changed, 71 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
+@@ -129,6 +129,29 @@
+ 		};
+ 	};
+ 
++	sata1: sata@fe220000 {
++		compatible = "rockchip,rk3588-dwc-ahci", "snps,dwc-ahci";
++		reg = <0 0xfe220000 0 0x1000>;
++		clocks = <&cru ACLK_SATA1>, <&cru CLK_PMALIVE1>,
++			 <&cru CLK_RXOOB1>, <&cru CLK_PIPEPHY1_REF>,
++			 <&cru CLK_PIPEPHY1_PIPE_ASIC_G>;
++		clock-names = "sata", "pmalive", "rxoob", "ref", "asic";
++		interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH 0>;
++		ports-implemented = <0x1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		status = "disabled";
++
++		sata-port@0 {
++			reg = <0>;
++			hba-port-cap = <HBA_PORT_FBSCP>;
++			phys = <&combphy1_ps PHY_TYPE_SATA>;
++			phy-names = "sata-phy";
++			snps,rx-ts-max = <32>;
++			snps,tx-ts-max = <32>;
++		};
++	};
++
+ 	combphy1_ps: phy@fee10000 {
+ 		compatible = "rockchip,rk3588-naneng-combphy";
+ 		reg = <0x0 0xfee10000 0x0 0x100>;
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -9,6 +9,8 @@
+ #include <dt-bindings/power/rk3588-power.h>
+ #include <dt-bindings/reset/rockchip,rk3588-cru.h>
+ #include <dt-bindings/thermal/thermal.h>
++#include <dt-bindings/phy/phy.h>
++#include <dt-bindings/ata/ahci.h>
+ 
+ / {
+ 	compatible = "rockchip,rk3588";
+@@ -1717,6 +1719,52 @@
+ 		};
+ 	};
+ 
++	sata0: sata@fe210000 {
++		compatible = "rockchip,rk3588-dwc-ahci", "snps,dwc-ahci";
++		reg = <0 0xfe210000 0 0x1000>;
++		clocks = <&cru ACLK_SATA0>, <&cru CLK_PMALIVE0>,
++			 <&cru CLK_RXOOB0>, <&cru CLK_PIPEPHY0_REF>,
++			 <&cru CLK_PIPEPHY0_PIPE_ASIC_G>;
++		clock-names = "sata", "pmalive", "rxoob", "ref", "asic";
++		interrupts = <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH 0>;
++		ports-implemented = <0x1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		status = "disabled";
++
++		sata-port@0 {
++			reg = <0>;
++			hba-port-cap = <HBA_PORT_FBSCP>;
++			phys = <&combphy0_ps PHY_TYPE_SATA>;
++			phy-names = "sata-phy";
++			snps,rx-ts-max = <32>;
++			snps,tx-ts-max = <32>;
++		};
++	};
++
++	sata2: sata@fe230000 {
++		compatible = "rockchip,rk3588-dwc-ahci", "snps,dwc-ahci";
++		reg = <0 0xfe230000 0 0x1000>;
++		clocks = <&cru ACLK_SATA2>, <&cru CLK_PMALIVE2>,
++			 <&cru CLK_RXOOB2>, <&cru CLK_PIPEPHY2_REF>,
++			 <&cru CLK_PIPEPHY2_PIPE_ASIC_G>;
++		clock-names = "sata", "pmalive", "rxoob", "ref", "asic";
++		interrupts = <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH 0>;
++		ports-implemented = <0x1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		status = "disabled";
++
++		sata-port@0 {
++			reg = <0>;
++			hba-port-cap = <HBA_PORT_FBSCP>;
++			phys = <&combphy2_psu PHY_TYPE_SATA>;
++			phy-names = "sata-phy";
++			snps,rx-ts-max = <32>;
++			snps,tx-ts-max = <32>;
++		};
++	};
++
+ 	sdmmc: mmc@fe2c0000 {
+ 		compatible = "rockchip,rk3588-dw-mshc", "rockchip,rk3288-dw-mshc";
+ 		reg = <0x0 0xfe2c0000 0x0 0x4000>;

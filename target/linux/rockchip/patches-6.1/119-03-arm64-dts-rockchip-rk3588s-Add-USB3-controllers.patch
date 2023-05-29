@@ -1,0 +1,129 @@
+From 05f5bff9db6d1c8a8513ccd588102a758d13ec37 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Tue, 25 Apr 2023 18:17:19 +0200
+Subject: [PATCH 82/85] arm64: dts: rockchip: rk3588s: Add USB3 controllers
+
+Add all USB3 controllers.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 29 +++++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 62 +++++++++++++++++++++++
+ 2 files changed, 91 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
+@@ -7,6 +7,35 @@
+ #include "rk3588-pinctrl.dtsi"
+ 
+ / {
++	usbdrd3_1: usbdrd3_1 {
++		compatible = "rockchip,rk3588-dwc3", "rockchip,rk3399-dwc3";
++		clocks = <&cru REF_CLK_USB3OTG1>, <&cru SUSPEND_CLK_USB3OTG1>,
++			 <&cru ACLK_USB3OTG1>;
++		clock-names = "ref", "suspend", "bus";
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		status = "disabled";
++
++		usbdrd_dwc3_1: usb@fc400000 {
++			compatible = "snps,dwc3";
++			reg = <0x0 0xfc400000 0x0 0x400000>;
++			interrupts = <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&power RK3588_PD_USB>;
++			resets = <&cru SRST_A_USB3OTG1>;
++			reset-names = "usb3-otg";
++			dr_mode = "host";
++			phys = <&u2phy1_otg>, <&usbdp_phy1_u3>;
++			phy-names = "usb2-phy", "usb3-phy";
++			phy_type = "utmi_wide";
++			snps,dis_enblslpm_quirk;
++			snps,dis-u2-freeclk-exists-quirk;
++			snps,dis-del-phy-power-chg-quirk;
++			snps,dis-tx-ipgap-linecheck-quirk;
++			status = "disabled";
++		};
++	};
++
+ 	pipe_phy1_grf: syscon@fd5c0000 {
+ 		compatible = "rockchip,rk3588-pipe-phy-grf", "syscon";
+ 		reg = <0x0 0xfd5c0000 0x0 0x100>;
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -832,6 +832,38 @@
+ 		};
+ 	};
+ 
++	usbdrd3_0: usbdrd3_0 {
++		compatible = "rockchip,rk3588-dwc3", "rockchip,rk3399-dwc3";
++		clocks = <&cru REF_CLK_USB3OTG0>, <&cru SUSPEND_CLK_USB3OTG0>,
++			 <&cru ACLK_USB3OTG0>;
++		clock-names = "ref", "suspend", "bus";
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		status = "disabled";
++
++		usbdrd_dwc3_0: usb@fc000000 {
++			compatible = "snps,dwc3";
++			reg = <0x0 0xfc000000 0x0 0x400000>;
++			interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&power RK3588_PD_USB>;
++			resets = <&cru SRST_A_USB3OTG0>;
++			reset-names = "usb3-otg";
++			dr_mode = "otg";
++			phys = <&u2phy0_otg>, <&usbdp_phy0_u3>;
++			phy-names = "usb2-phy", "usb3-phy";
++			phy_type = "utmi_wide";
++			snps,dis_enblslpm_quirk;
++			snps,dis-u1-entry-quirk;
++			snps,dis-u2-entry-quirk;
++			snps,dis-u2-freeclk-exists-quirk;
++			snps,dis-del-phy-power-chg-quirk;
++			snps,dis-tx-ipgap-linecheck-quirk;
++			quirk-skip-phy-init;
++			status = "disabled";
++		};
++	};
++
+ 	usb_host0_ehci: usb@fc800000 {
+ 		compatible = "rockchip,rk3588-ehci", "generic-ehci";
+ 		reg = <0x0 0xfc800000 0x0 0x40000>;
+@@ -876,6 +908,36 @@
+ 		status = "disabled";
+ 	};
+ 
++	usbhost3_0: usbhost3_0 {
++		compatible = "rockchip,rk3588-dwc3", "rockchip,rk3399-dwc3";
++		clocks = <&cru REF_CLK_USB3OTG2>, <&cru SUSPEND_CLK_USB3OTG2>,
++			 <&cru ACLK_USB3OTG2>, <&cru CLK_UTMI_OTG2>,
++			 <&cru PCLK_PHP_ROOT>, <&cru CLK_PIPEPHY2_PIPE_U3_G>;
++		clock-names = "ref", "suspend", "bus", "utmi", "php", "pipe";
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		status = "disabled";
++
++		usbhost_dwc3_0: usb@fcd00000 {
++			compatible = "snps,dwc3";
++			reg = <0x0 0xfcd00000 0x0 0x400000>;
++			interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH 0>;
++			resets = <&cru SRST_A_USB3OTG2>;
++			reset-names = "usb3-host";
++			dr_mode = "host";
++			phys = <&combphy2_psu PHY_TYPE_USB3>;
++			phy-names = "usb3-phy";
++			phy_type = "utmi_wide";
++			snps,dis_enblslpm_quirk;
++			snps,dis-u2-freeclk-exists-quirk;
++			snps,dis-del-phy-power-chg-quirk;
++			snps,dis-tx-ipgap-linecheck-quirk;
++			snps,dis_rxdet_inp3_quirk;
++			status = "disabled";
++		};
++	};
++
+ 	sys_grf: syscon@fd58c000 {
+ 		compatible = "rockchip,rk3588-sys-grf", "syscon";
+ 		reg = <0x0 0xfd58c000 0x0 0x1000>;

@@ -1,0 +1,108 @@
+From dc6a92371915067b5f8880bacae21498eaab69dd Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Thu, 12 Jan 2023 19:23:27 +0100
+Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add USB2
+
+Enable USB2 (EHCI and OCHI mode) support for the Rockchip RK3588 EVB1.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 76 +++++++++++++++++++
+ 1 file changed, 76 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
+@@ -47,6 +47,40 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		vin-supply = <&vcc12v_dcin>;
+ 	};
++
++	vcc5v0_usbdcin: vcc5v0-usbdcin {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_usbdcin";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc12v_dcin>;
++	};
++
++	vcc5v0_usb: vcc5v0-usb {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_usb";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usbdcin>;
++	};
++
++	vcc5v0_host: vcc5v0-host {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_host";
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++		gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
++		vin-supply = <&vcc5v0_usb>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_host_en>;
++	};
+ };
+ 
+ &cpu_l0 {
+@@ -64,6 +98,40 @@
+ 	mem-supply = <&vdd_cpu_big1_mem_s0>;
+ };
+ 
++&u2phy2 {
++	status = "okay";
++};
++
++&u2phy3 {
++	status = "okay";
++};
++
++&u2phy2_host {
++	phy-supply = <&vcc5v0_host>;
++	status = "okay";
++};
++
++&u2phy3_host {
++	phy-supply = <&vcc5v0_host>;
++	status = "okay";
++};
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usb_host1_ehci {
++	status = "okay";
++};
++
++&usb_host1_ohci {
++	status = "okay";
++};
++
+ &gmac0 {
+ 	clock_in_out = "output";
+ 	phy-handle = <&rgmii_phy>;
+@@ -886,3 +954,11 @@
+ 	pinctrl-0 = <&uart2m0_xfer>;
+ 	status = "okay";
+ };
++
++&pinctrl {
++	usb {
++		vcc5v0_host_en: vcc5v0-host-en {
++			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};

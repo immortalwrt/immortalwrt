@@ -1,0 +1,28 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -149,6 +149,12 @@
+ 					<925000 925000 1000000>;
+ 			clock-latency-ns = <40000>;
+ 		};
++		opp-2400000000 {
++			opp-hz = /bits/ 64 <2400000000>;
++			opp-microvolt = <1000000 1000000 1000000>,
++					<1000000 1000000 1000000>;
++			clock-latency-ns = <40000>;
++		};
+ 	};
+ 
+ 	cluster2_opp_table: opp-table-cluster2 {
+@@ -226,6 +232,12 @@
+ 					<925000 925000 1000000>;
+ 			clock-latency-ns = <40000>;
+ 		};
++		opp-2400000000 {
++			opp-hz = /bits/ 64 <2400000000>;
++			opp-microvolt = <1000000 1000000 1000000>,
++					<1000000 1000000 1000000>;
++			clock-latency-ns = <40000>;
++		};
+ 	};
+ 
+ 	cpus {

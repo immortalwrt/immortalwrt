@@ -1,0 +1,196 @@
+From 4007f264822a4dc2528e9612900699d59616e00e Mon Sep 17 00:00:00 2001
+From: Lucas Tanure <lucas.tanure@collabora.com>
+Date: Mon, 9 Jan 2023 16:37:23 +0000
+Subject: [PATCH] arm64: dts: rockchip: Add RK806 regulator config
+
+Add support for rk806 single configuration PMIC in Rock Pi 5A and 5B.
+
+Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ .../dts/rockchip/rk3588-rk806-single.dtsi     | 179 ++++++++++++++++++
+ 1 file changed, 179 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3588-rk806-single.dtsi
+
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rk806-single.dtsi
+@@ -0,0 +1,179 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
++ *
++ */
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++
++&spi2 {
++	status = "okay";
++	assigned-clocks = <&cru CLK_SPI2>;
++	assigned-clock-rates = <200000000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi2m2_cs0 &spi2m2_pins>;
++	num-cs = <1>;
++
++	rk806single: rk806single@0 {
++		compatible = "rockchip,rk806";
++		spi-max-frequency = <1000000>;
++		reg = <0x0>;
++
++		interrupt-parent = <&gpio0>;
++		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&pmic_pins>, <&rk806_dvs1_null>, <&rk806_dvs2_null>, <&rk806_dvs3_null>;
++
++		vcc1-supply = <&vcc5v0_sys>;
++		vcc2-supply = <&vcc5v0_sys>;
++		vcc3-supply = <&vcc5v0_sys>;
++		vcc4-supply = <&vcc5v0_sys>;
++		vcc5-supply = <&vcc5v0_sys>;
++		vcc6-supply = <&vcc5v0_sys>;
++		vcc7-supply = <&vcc5v0_sys>;
++		vcc8-supply = <&vcc5v0_sys>;
++		vcc9-supply = <&vcc5v0_sys>;
++		vcc10-supply = <&vcc5v0_sys>;
++		vcc11-supply = <&vcc_2v0_pldo_s3>;
++		vcc12-supply = <&vcc5v0_sys>;
++		vcc13-supply = <&vcc_1v1_nldo_s3>;
++		vcc14-supply = <&vcc_1v1_nldo_s3>;
++		vcca-supply = <&vcc5v0_sys>;
++
++		gpio-controller;
++		#gpio-cells = <2>;
++
++		rk806_dvs1_null: dvs1-null-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun0";
++		};
++
++		rk806_dvs1_slp: dvs1-slp-pins {
++			pins = "gpio_pwrctrl1";
++			function = "pin_fun1";
++		};
++
++		rk806_dvs1_pwrdn: dvs1-pwrdn-pins {
++			pins = "gpio_pwrctrl1";
++			function = "pin_fun2";
++		};
++
++		rk806_dvs1_rst: dvs1-rst-pins {
++			pins = "gpio_pwrctrl1";
++			function = "pin_fun3";
++		};
++
++		rk806_dvs2_null: dvs2-null-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun0";
++		};
++
++		rk806_dvs2_slp: dvs2-slp-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun1";
++		};
++
++		rk806_dvs2_pwrdn: dvs2-pwrdn-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun2";
++		};
++
++		rk806_dvs2_rst: dvs2-rst-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun3";
++		};
++
++		rk806_dvs2_dvs: dvs2-dvs-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun4";
++		};
++
++		rk806_dvs2_gpio: dvs2-gpio-pins {
++			pins = "gpio_pwrctrl2";
++			function = "pin_fun5";
++		};
++
++		rk806_dvs3_null: dvs3-null-pins {
++			pins = "gpio_pwrctrl3";
++			function = "pin_fun0";
++		};
++
++		rk806_dvs3_slp: dvs3-slp-pins {
++			pins = "gpio_pwrctrl3";
++			function = "pin_fun1";
++		};
++
++		rk806_dvs3_pwrdn: dvs3-pwrdn-pins {
++			pins = "gpio_pwrctrl3";
++			function = "pin_fun2";
++		};
++
++		rk806_dvs3_rst: dvs3-rst-pins {
++			pins = "gpio_pwrctrl3";
++			function = "pin_fun3";
++		};
++
++		rk806_dvs3_dvs: dvs3-dvs-pins {
++			pins = "gpio_pwrctrl3";
++			function = "pin_fun4";
++		};
++
++		rk806_dvs3_gpio: dvs3-gpio-pins {
++			pins = "gpio_pwrctrl3";
++			function = "pin_fun5";
++		};
++
++		regulators {
++			vcc_2v0_pldo_s3: dcdc-reg7 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <2000000>;
++				regulator-max-microvolt = <2000000>;
++				regulator-ramp-delay = <12500>;
++				regulator-name = "vdd_2v0_pldo_s3";
++				regulator-state-mem {
++					regulator-on-in-suspend;
++					regulator-suspend-microvolt = <2000000>;
++				};
++			};
++
++			vcc_3v3_s3: dcdc-reg8 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vcc_3v3_s3";
++				regulator-state-mem {
++					regulator-on-in-suspend;
++					regulator-suspend-microvolt = <3300000>;
++				};
++			};
++
++			vcc_3v3_s0: pldo-reg4 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-ramp-delay = <12500>;
++				regulator-name = "vcc_3v3_s0";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vccio_sd_s0: pldo-reg5 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-ramp-delay = <12500>;
++				regulator-name = "vccio_sd_s0";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++		};
++	};
++};

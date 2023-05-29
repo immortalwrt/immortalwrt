@@ -1,0 +1,65 @@
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+	linux-phy@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v3 6/7] phy: phy-rockchip-inno-usb2: simplify getting match data
+Date: Mon, 22 May 2023 19:03:23 +0200	[thread overview]
+Message-ID: <20230522170324.61349-7-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20230522170324.61349-1-sebastian.reichel@collabora.com>
+
+Simplify the code by directly getting the match data via
+device_get_match_data() instead of open coding its functionality.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -1305,7 +1305,6 @@ static int rockchip_usb2phy_probe(struct
+ 	struct phy_provider *provider;
+ 	struct rockchip_usb2phy *rphy;
+ 	const struct rockchip_usb2phy_cfg *phy_cfgs;
+-	const struct of_device_id *match;
+ 	unsigned int reg;
+ 	int index, ret;
+ 
+@@ -1313,12 +1312,6 @@ static int rockchip_usb2phy_probe(struct
+ 	if (!rphy)
+ 		return -ENOMEM;
+ 
+-	match = of_match_device(dev->driver->of_match_table, dev);
+-	if (!match || !match->data) {
+-		dev_err(dev, "phy configs are not assigned!\n");
+-		return -EINVAL;
+-	}
+-
+ 	if (!dev->parent || !dev->parent->of_node) {
+ 		rphy->grf = syscon_regmap_lookup_by_phandle(np, "rockchip,usbgrf");
+ 		if (IS_ERR(rphy->grf)) {
+@@ -1359,12 +1352,15 @@ static int rockchip_usb2phy_probe(struct
+ 	}
+ 
+ 	rphy->dev = dev;
+-	phy_cfgs = match->data;
++	phy_cfgs = device_get_match_data(dev);
+ 	rphy->chg_state = USB_CHG_STATE_UNDEFINED;
+ 	rphy->chg_type = POWER_SUPPLY_TYPE_UNKNOWN;
+ 	rphy->irq = platform_get_irq_optional(pdev, 0);
+ 	platform_set_drvdata(pdev, rphy);
+ 
++	if (!phy_cfgs)
++		return dev_err_probe(dev, -EINVAL, "phy configs are not assigned!\n");
++
+ 	ret = rockchip_usb2phy_extcon_register(rphy);
+ 	if (ret)
+ 		return ret;

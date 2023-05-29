@@ -1,0 +1,24 @@
+From eb587e7611e9c61f5a8af5d9bfc4f994e9e1fda2 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Wed, 29 Mar 2023 18:54:49 +0200
+Subject: [PATCH] usb: host: ohci-platform: increase max clock number to 4
+
+Rockchip RK3588 OHCI requires 4 clocks to be enabled.
+
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/usb/host/ohci-platform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/usb/host/ohci-platform.c
++++ b/drivers/usb/host/ohci-platform.c
+@@ -33,7 +33,7 @@
+ #include "ohci.h"
+ 
+ #define DRIVER_DESC "OHCI generic platform driver"
+-#define OHCI_MAX_CLKS 3
++#define OHCI_MAX_CLKS 4
+ #define hcd_to_ohci_priv(h) ((struct ohci_platform_priv *)hcd_to_ohci(h)->priv)
+ 
+ struct ohci_platform_priv {

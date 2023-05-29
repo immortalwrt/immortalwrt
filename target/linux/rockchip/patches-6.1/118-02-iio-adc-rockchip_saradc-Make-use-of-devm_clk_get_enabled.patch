@@ -1,0 +1,145 @@
+From: Shreeya Patel <shreeya.patel@collabora.com>
+To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	sebastian.reichel@collabora.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kernel@collabora.com, gustavo.padovan@collabora.com,
+	serge.broslavsky@collabora.com,
+	Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH 2/7] iio: adc: rockchip_saradc: Make use of devm_clk_get_enabled
+Date: Wed, 17 May 2023 04:30:46 +0530	[thread overview]
+Message-ID: <20230516230051.14846-3-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+
+Use devm_clk_get_enabled() to avoid manually disabling the
+clock.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ drivers/iio/adc/rockchip_saradc.c | 77 +++++--------------------------
+ 1 file changed, 11 insertions(+), 66 deletions(-)
+
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -336,20 +336,6 @@ static void rockchip_saradc_reset_contro
+ 	reset_control_deassert(reset);
+ }
+ 
+-static void rockchip_saradc_clk_disable(void *data)
+-{
+-	struct rockchip_saradc *info = data;
+-
+-	clk_disable_unprepare(info->clk);
+-}
+-
+-static void rockchip_saradc_pclk_disable(void *data)
+-{
+-	struct rockchip_saradc *info = data;
+-
+-	clk_disable_unprepare(info->pclk);
+-}
+-
+ static void rockchip_saradc_regulator_disable(void *data)
+ {
+ 	struct rockchip_saradc *info = data;
+@@ -483,16 +469,6 @@ static int rockchip_saradc_probe(struct
+ 		return ret;
+ 	}
+ 
+-	info->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
+-	if (IS_ERR(info->pclk))
+-		return dev_err_probe(&pdev->dev, PTR_ERR(info->pclk),
+-				     "failed to get pclk\n");
+-
+-	info->clk = devm_clk_get(&pdev->dev, "saradc");
+-	if (IS_ERR(info->clk))
+-		return dev_err_probe(&pdev->dev, PTR_ERR(info->clk),
+-				     "failed to get adc clock\n");
+-
+ 	info->vref = devm_regulator_get(&pdev->dev, "vref");
+ 	if (IS_ERR(info->vref))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(info->vref),
+@@ -501,6 +477,16 @@ static int rockchip_saradc_probe(struct
+ 	if (info->reset)
+ 		rockchip_saradc_reset_controller(info->reset);
+ 
++	info->pclk = devm_clk_get_enabled(&pdev->dev, "apb_pclk");
++	if (IS_ERR(info->pclk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(info->pclk),
++				     "failed to get pclk\n");
++
++	info->clk = devm_clk_get_enabled(&pdev->dev, "saradc");
++	if (IS_ERR(info->clk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(info->clk),
++				     "failed to get adc clock\n");
++
+ 	/*
+ 	 * Use a default value for the converter clock.
+ 	 * This may become user-configurable in the future.
+@@ -530,32 +516,6 @@ static int rockchip_saradc_probe(struct
+ 
+ 	info->uv_vref = ret;
+ 
+-	ret = clk_prepare_enable(info->pclk);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to enable pclk\n");
+-		return ret;
+-	}
+-	ret = devm_add_action_or_reset(&pdev->dev,
+-				       rockchip_saradc_pclk_disable, info);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to register devm action, %d\n",
+-			ret);
+-		return ret;
+-	}
+-
+-	ret = clk_prepare_enable(info->clk);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to enable converter clock\n");
+-		return ret;
+-	}
+-	ret = devm_add_action_or_reset(&pdev->dev,
+-				       rockchip_saradc_clk_disable, info);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to register devm action, %d\n",
+-			ret);
+-		return ret;
+-	}
+-
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	indio_dev->name = dev_name(&pdev->dev);
+@@ -589,8 +549,6 @@ static int rockchip_saradc_suspend(struc
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct rockchip_saradc *info = iio_priv(indio_dev);
+ 
+-	clk_disable_unprepare(info->clk);
+-	clk_disable_unprepare(info->pclk);
+ 	regulator_disable(info->vref);
+ 
+ 	return 0;
+@@ -600,21 +558,8 @@ static int rockchip_saradc_resume(struct
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct rockchip_saradc *info = iio_priv(indio_dev);
+-	int ret;
+-
+-	ret = regulator_enable(info->vref);
+-	if (ret)
+-		return ret;
+-
+-	ret = clk_prepare_enable(info->pclk);
+-	if (ret)
+-		return ret;
+-
+-	ret = clk_prepare_enable(info->clk);
+-	if (ret)
+-		clk_disable_unprepare(info->pclk);
+ 
+-	return ret;
++	return regulator_enable(info->vref);
+ }
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,

@@ -1,0 +1,31 @@
+From 0af5c1ec425427c0c49b8185e2ca301262062ce2 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Thu, 6 Apr 2023 17:32:02 +0200
+Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add SATA
+
+Add support for the SATA0_0 port found on the RK3588 EVB1. The
+second port (SATA0_1) does not work, which matches the downstream
+behaviour.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
+@@ -946,6 +946,14 @@
+ 	};
+ };
+ 
++&combphy0_ps {
++	status = "okay";
++};
++
++&sata0 {
++	status = "okay";
++};
++
+ &tsadc {
+ 	status = "okay";
+ };

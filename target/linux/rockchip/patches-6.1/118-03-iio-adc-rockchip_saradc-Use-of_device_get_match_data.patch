@@ -1,0 +1,53 @@
+From: Shreeya Patel <shreeya.patel@collabora.com>
+To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	sebastian.reichel@collabora.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kernel@collabora.com, gustavo.padovan@collabora.com,
+	serge.broslavsky@collabora.com,
+	Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH 3/7] iio: adc: rockchip_saradc: Use of_device_get_match_data
+Date: Wed, 17 May 2023 04:30:47 +0530	[thread overview]
+Message-ID: <20230516230051.14846-4-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+
+Use of_device_get_match_data() to simplify the code.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ drivers/iio/adc/rockchip_saradc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -405,10 +405,10 @@ static void rockchip_saradc_regulator_un
+ 
+ static int rockchip_saradc_probe(struct platform_device *pdev)
+ {
++	const struct rockchip_saradc_data *match_data;
+ 	struct rockchip_saradc *info = NULL;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct iio_dev *indio_dev = NULL;
+-	const struct of_device_id *match;
+ 	int ret;
+ 	int irq;
+ 
+@@ -422,13 +422,13 @@ static int rockchip_saradc_probe(struct
+ 	}
+ 	info = iio_priv(indio_dev);
+ 
+-	match = of_match_device(rockchip_saradc_match, &pdev->dev);
+-	if (!match) {
++	match_data = of_device_get_match_data(&pdev->dev);
++	if (!match_data) {
+ 		dev_err(&pdev->dev, "failed to match device\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	info->data = match->data;
++	info->data = match_data;
+ 
+ 	/* Sanity check for possible later IP variants with more channels */
+ 	if (info->data->num_channels > SARADC_MAX_CHANNELS) {

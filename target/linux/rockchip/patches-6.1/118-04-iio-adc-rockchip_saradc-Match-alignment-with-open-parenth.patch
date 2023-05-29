@@ -1,0 +1,44 @@
+From: Shreeya Patel <shreeya.patel@collabora.com>
+To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	sebastian.reichel@collabora.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kernel@collabora.com, gustavo.padovan@collabora.com,
+	serge.broslavsky@collabora.com,
+	Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH 4/7] iio: adc: rockchip_saradc: Match alignment with open parenthesis
+Date: Wed, 17 May 2023 04:30:48 +0530	[thread overview]
+Message-ID: <20230516230051.14846-5-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+
+Match alignment with open parenthesis for improving the code
+readability.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ drivers/iio/adc/rockchip_saradc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -141,7 +141,7 @@ static void rockchip_saradc_power_down(s
+ }
+ 
+ static int rockchip_saradc_conversion(struct rockchip_saradc *info,
+-				   struct iio_chan_spec const *chan)
++				      struct iio_chan_spec const *chan)
+ {
+ 	reinit_completion(&info->completion);
+ 
+@@ -384,8 +384,7 @@ out:
+ }
+ 
+ static int rockchip_saradc_volt_notify(struct notifier_block *nb,
+-						   unsigned long event,
+-						   void *data)
++				       unsigned long event, void *data)
+ {
+ 	struct rockchip_saradc *info =
+ 			container_of(nb, struct rockchip_saradc, nb);

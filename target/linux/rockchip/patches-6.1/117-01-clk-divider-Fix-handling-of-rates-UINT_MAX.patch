@@ -1,0 +1,43 @@
+From cb57f471ea551d1d19bdd3a6f2a82fbf84287a1b Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Thu, 18 May 2023 05:19:48 +0200
+Subject: [PATCH] clk: divider: Fix handling of rates > UINT_MAX
+
+Fix handling of rates that exceed UINT_MAX (4.29 GHz) to do something
+reasonably sensible. Right now asking for UINT_MAX+1 will effectively
+return the smallest rate available instead of the biggest one.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/clk/clk-divider.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/drivers/clk/clk-divider.c
++++ b/drivers/clk/clk-divider.c
+@@ -220,7 +220,7 @@ static int _div_round_up(const struct cl
+ 			 unsigned long parent_rate, unsigned long rate,
+ 			 unsigned long flags)
+ {
+-	int div = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
++	int div = DIV_ROUND_UP_ULL((u64)parent_rate, rate > UINT_MAX ? UINT_MAX : rate);
+ 
+ 	if (flags & CLK_DIVIDER_POWER_OF_TWO)
+ 		div = __roundup_pow_of_two(div);
+@@ -237,7 +237,7 @@ static int _div_round_closest(const stru
+ 	int up, down;
+ 	unsigned long up_rate, down_rate;
+ 
+-	up = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
++	up = DIV_ROUND_UP_ULL((u64)parent_rate, rate > UINT_MAX ? UINT_MAX : rate);
+ 	down = parent_rate / rate;
+ 
+ 	if (flags & CLK_DIVIDER_POWER_OF_TWO) {
+@@ -473,7 +473,7 @@ int divider_get_val(unsigned long rate,
+ {
+ 	unsigned int div, value;
+ 
+-	div = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
++	div = DIV_ROUND_UP_ULL((u64)parent_rate, rate > UINT_MAX ? UINT_MAX : rate);
+ 
+ 	if (!_is_valid_div(table, div, flags))
+ 		return -EINVAL;

@@ -1,0 +1,43 @@
+From: Shreeya Patel <shreeya.patel@collabora.com>
+To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	sebastian.reichel@collabora.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kernel@collabora.com, gustavo.padovan@collabora.com,
+	serge.broslavsky@collabora.com,
+	Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH 6/7] arm64: dts: rockchip: Add DT node for ADC support in RK3588
+Date: Wed, 17 May 2023 04:30:50 +0530	[thread overview]
+Message-ID: <20230516230051.14846-7-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+
+Add DT node for ADC support in RK3588.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -2648,6 +2648,18 @@
+ 		status = "disabled";
+ 	};
+ 
++	saradc: saradc@fec10000 {
++		compatible = "rockchip,rk3588-saradc";
++		reg = <0x0 0xfec10000 0x0 0x10000>;
++		interrupts = <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH 0>;
++		#io-channel-cells = <1>;
++		clocks = <&cru CLK_SARADC>, <&cru PCLK_SARADC>;
++		clock-names = "saradc", "apb_pclk";
++		resets = <&cru SRST_P_SARADC>;
++		reset-names = "saradc-apb";
++		status = "disabled";
++	};
++
+ 	system_sram2: sram@ff001000 {
+ 		compatible = "mmio-sram";
+ 		reg = <0x0 0xff001000 0x0 0xef000>;
