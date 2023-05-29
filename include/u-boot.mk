@@ -1,3 +1,5 @@
+include $(INCLUDE_DIR)/prereq.mk
+
 PKG_NAME ?= u-boot
 
 ifndef PKG_SOURCE_PROTO
@@ -17,6 +19,22 @@ PKG_LICENSE:=GPL-2.0 GPL-2.0+
 PKG_LICENSE_FILES:=Licenses/README
 
 PKG_BUILD_PARALLEL:=1
+
+ifdef UBOOT_USE_BINMAN
+  $(eval $(call TestHostCommand,python3-pyelftools, \
+    Please install the Python3 elftools module, \
+    $(STAGING_DIR_HOST)/bin/python3 -c 'import elftools'))
+endif
+
+ifdef UBOOT_USE_INTREE_DTC
+  $(eval $(call SetupHostCommand,swig,Please install 'swig', \
+    swig -version))
+
+  $(eval $(call TestHostCommand,libpython3-dev, \
+    Please install the libpython3-dev package, \
+    $(STAGING_DIR_HOST)/bin/python3 -c 'import os; import sysconfig; \
+      os.path.exists(sysconfig.get_paths()["include"] + "/Python.h") or exit(1)'))
+endif
 
 export GCC_HONOUR_COPTS=s
 
@@ -85,7 +103,9 @@ define Build/Configure/U-Boot
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) $(UBOOT_CONFIGURE_VARS) $(UBOOT_CONFIG)_config
 endef
 
-DTC=$(wildcard $(LINUX_DIR)/scripts/dtc/dtc)
+ifndef UBOOT_USE_INTREE_DTC
+  DTC=$(wildcard $(LINUX_DIR)/scripts/dtc/dtc)
+endif
 
 define Build/Compile/U-Boot
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
