@@ -79,6 +79,17 @@ jobs:
           git fetch origin --tags
           git describe --tags $(git rev-list --tags --max-count=1) > immortalwrt_version
           git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))
+          cd feeds/luci/applications/
+          git clone https://github.com/4IceG/luci-app-3ginfo-lite.git
+          git clone https://github.com/4IceG/luci-app-atcommands.git
+          git clone https://github.com/4IceG/luci-app-modemband.git
+          git clone https://github.com/4IceG/luci-app-sms-tool.git
+          cd ../../..
+          ./scripts/feeds update -a; ./scripts/feeds install -a
+          sed -i '$a src-git modemfeed https://github.com/koshev-msk/modemfeed.git' feeds.conf.default
+          sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
+          sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default
+
       - name: Update feeds
         run: cd openwrt && ./scripts/feeds update -a
 
