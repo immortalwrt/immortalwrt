@@ -1,0 +1,72 @@
+From ff94c8660dac444081f2f650fae36a283c55b117 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Tue, 18 Oct 2022 17:14:05 +0200
+Subject: [PATCH] clk: rockchip: simplify rockchip_clk_add_lookup
+
+rockchip_clk_add_lookup is only called from within the file,
+so it can be made static. The additional checks are removed
+with the following reasoning:
+
+1. The data structure is initialized by rockchip_clk_init(),
+   which is called by all rockchip platforms before the clocks
+   are registered. Not doing so would result in an incomplete
+   clock tree at the moment, which is a fatal error. In other
+   parts of the kernel these kind of checks are usually
+   omitted, so this was done here. The alternative is adding
+   a pr_err to inform the kernel programmer adding a new platform
+   about his incorrect code. Apart from that we are also not
+   checking if the clock id is within the array boundings.
+
+2. While not used so far by any rockchip platform, 0 is a valid
+   clock identifier. To align rockchip closer to other ARM
+   platforms we will start using it with rk3588.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20221018151407.63395-8-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ drivers/clk/rockchip/clk.c | 14 ++++++--------
+ drivers/clk/rockchip/clk.h |  2 --
+ 2 files changed, 6 insertions(+), 10 deletions(-)
+
+--- a/drivers/clk/rockchip/clk.c
++++ b/drivers/clk/rockchip/clk.c
+@@ -198,6 +198,12 @@ static void rockchip_fractional_approxim
+ 	clk_fractional_divider_general_approximation(hw, rate, parent_rate, m, n);
+ }
+ 
++static void rockchip_clk_add_lookup(struct rockchip_clk_provider *ctx,
++				    struct clk *clk, unsigned int id)
++{
++	ctx->clk_data.clks[id] = clk;
++}
++
+ static struct clk *rockchip_clk_register_frac_branch(
+ 		struct rockchip_clk_provider *ctx, const char *name,
+ 		const char *const *parent_names, u8 num_parents,
+@@ -401,14 +407,6 @@ void rockchip_clk_of_add_provider(struct
+ }
+ EXPORT_SYMBOL_GPL(rockchip_clk_of_add_provider);
+ 
+-void rockchip_clk_add_lookup(struct rockchip_clk_provider *ctx,
+-			     struct clk *clk, unsigned int id)
+-{
+-	if (ctx->clk_data.clks && id)
+-		ctx->clk_data.clks[id] = clk;
+-}
+-EXPORT_SYMBOL_GPL(rockchip_clk_add_lookup);
+-
+ void rockchip_clk_register_plls(struct rockchip_clk_provider *ctx,
+ 				struct rockchip_pll_clock *list,
+ 				unsigned int nr_pll, int grf_lock_offset)
+--- a/drivers/clk/rockchip/clk.h
++++ b/drivers/clk/rockchip/clk.h
+@@ -928,8 +928,6 @@ struct rockchip_clk_provider *rockchip_c
+ 			void __iomem *base, unsigned long nr_clks);
+ void rockchip_clk_of_add_provider(struct device_node *np,
+ 				struct rockchip_clk_provider *ctx);
+-void rockchip_clk_add_lookup(struct rockchip_clk_provider *ctx,
+-			     struct clk *clk, unsigned int id);
+ void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
+ 				    struct rockchip_clk_branch *list,
+ 				    unsigned int nr_clk);

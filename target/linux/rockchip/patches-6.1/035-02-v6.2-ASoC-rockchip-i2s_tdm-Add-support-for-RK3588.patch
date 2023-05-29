@@ -1,0 +1,33 @@
+From c619bd4268ff9895760dab303b4eb15ed3d0f7e9 Mon Sep 17 00:00:00 2001
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Date: Tue, 25 Oct 2022 14:41:32 +0200
+Subject: [PATCH] ASoC: rockchip: i2s_tdm: Add support for RK3588
+
+This adds support for the RK3588 SoC to the I2S/TDM driver.
+
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Link: https://lore.kernel.org/r/20221025124132.399729-5-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ sound/soc/rockchip/rockchip_i2s_tdm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -1318,6 +1318,7 @@ static const struct of_device_id rockchi
+ 	{ .compatible = "rockchip,rk1808-i2s-tdm", .data = &rk1808_i2s_soc_data },
+ 	{ .compatible = "rockchip,rk3308-i2s-tdm", .data = &rk3308_i2s_soc_data },
+ 	{ .compatible = "rockchip,rk3568-i2s-tdm", .data = &rk3568_i2s_soc_data },
++	{ .compatible = "rockchip,rk3588-i2s-tdm" },
+ 	{ .compatible = "rockchip,rv1126-i2s-tdm", .data = &rv1126_i2s_soc_data },
+ 	{},
+ };
+@@ -1556,7 +1557,7 @@ static int rockchip_i2s_tdm_probe(struct
+ 	i2s_tdm->dev = &pdev->dev;
+ 
+ 	of_id = of_match_device(rockchip_i2s_tdm_match, &pdev->dev);
+-	if (!of_id || !of_id->data)
++	if (!of_id)
+ 		return -EINVAL;
+ 
+ 	spin_lock_init(&i2s_tdm->lock);

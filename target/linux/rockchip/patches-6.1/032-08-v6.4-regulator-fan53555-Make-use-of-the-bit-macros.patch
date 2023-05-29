@@ -1,0 +1,53 @@
+From d25016618c0845b2a0f9ae64d084a66efd39b03c Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Thu, 6 Apr 2023 22:41:55 +0300
+Subject: [PATCH] regulator: fan53555: Make use of the bit macros
+
+For consistency and improved clarity, use BIT() and GENMASK() macros for
+defining the bitfields inside the registers. No functional changes
+intended.
+
+While here, also fix DIE_{ID,REV} inconsistent indentation.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Link: https://lore.kernel.org/r/20230406194158.963352-6-cristian.ciocaltea@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/fan53555.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+--- a/drivers/regulator/fan53555.c
++++ b/drivers/regulator/fan53555.c
+@@ -41,23 +41,23 @@
+ #define FAN53555_MONITOR	0x05
+ 
+ /* VSEL bit definitions */
+-#define VSEL_BUCK_EN	(1 << 7)
+-#define VSEL_MODE		(1 << 6)
++#define VSEL_BUCK_EN		BIT(7)
++#define VSEL_MODE		BIT(6)
+ /* Chip ID and Verison */
+-#define DIE_ID		0x0F	/* ID1 */
+-#define DIE_REV		0x0F	/* ID2 */
++#define DIE_ID			0x0F	/* ID1 */
++#define DIE_REV			0x0F	/* ID2 */
+ /* Control bit definitions */
+-#define CTL_OUTPUT_DISCHG	(1 << 7)
+-#define CTL_SLEW_MASK		(0x7 << 4)
+-#define CTL_RESET			(1 << 2)
++#define CTL_OUTPUT_DISCHG	BIT(7)
++#define CTL_SLEW_MASK		GENMASK(6, 4)
++#define CTL_RESET		BIT(2)
+ #define CTL_MODE_VSEL0_MODE	BIT(0)
+ #define CTL_MODE_VSEL1_MODE	BIT(1)
+ 
+ #define FAN53555_NVOLTAGES	64	/* Numbers of voltages */
+ #define FAN53526_NVOLTAGES	128
+ 
+-#define TCS_VSEL0_MODE		(1 << 7)
+-#define TCS_VSEL1_MODE		(1 << 6)
++#define TCS_VSEL0_MODE		BIT(7)
++#define TCS_VSEL1_MODE		BIT(6)
+ 
+ #define TCS_SLEW_MASK		GENMASK(4, 3)
+ 

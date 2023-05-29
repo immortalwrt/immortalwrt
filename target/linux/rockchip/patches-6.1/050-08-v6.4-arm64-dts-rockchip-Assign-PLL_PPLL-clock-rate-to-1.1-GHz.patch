@@ -1,0 +1,29 @@
+From b46a22dea7530cf530a45c6b84c03300083b813d Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Sun, 2 Apr 2023 12:50:51 +0300
+Subject: [PATCH] arm64: dts: rockchip: Assign PLL_PPLL clock rate to 1.1 GHz
+ on rk3588s
+
+The clock rate for PLL_PPLL has been wrongly initialized to 100 MHz
+instead of 1.1 GHz. Fix it.
+
+Fixes: c9211fa2602b ("arm64: dts: rockchip: Add base DT for rk3588 SoC")
+Reported-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Link: https://lore.kernel.org/r/20230402095054.384739-3-cristian.ciocaltea@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -425,7 +425,7 @@
+ 			<&cru ACLK_BUS_ROOT>, <&cru CLK_150M_SRC>,
+ 			<&cru CLK_GPU>;
+ 		assigned-clock-rates =
+-			<100000000>, <786432000>,
++			<1100000000>, <786432000>,
+ 			<850000000>, <1188000000>,
+ 			<702000000>,
+ 			<400000000>, <500000000>,

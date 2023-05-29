@@ -1,0 +1,31 @@
+From 09d5fef31f9058e3b39e3a6b8870b6fb9f28091d Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 19 Apr 2023 21:13:09 +0300
+Subject: [PATCH] arm64: dts: rockchip: Add rk3588 timer
+
+Add DT node for Rockchip RK3588/RK3588S SoC timer.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Link: https://lore.kernel.org/r/20230419181309.338354-4-cristian.ciocaltea@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -1417,6 +1417,14 @@
+ 		status = "disabled";
+ 	};
+ 
++	timer0: timer@feae0000 {
++		compatible = "rockchip,rk3588-timer", "rockchip,rk3288-timer";
++		reg = <0x0 0xfeae0000 0x0 0x20>;
++		interrupts = <GIC_SPI 289 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru PCLK_BUSTIMER0>, <&cru CLK_BUSTIMER0>;
++		clock-names = "pclk", "timer";
++	};
++
+ 	wdt: watchdog@feaf0000 {
+ 		compatible = "rockchip,rk3588-wdt", "snps,dw-wdt";
+ 		reg = <0x0 0xfeaf0000 0x0 0x100>;

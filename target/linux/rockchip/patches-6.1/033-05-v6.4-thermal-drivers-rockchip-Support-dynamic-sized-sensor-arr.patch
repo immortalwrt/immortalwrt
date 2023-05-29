@@ -1,0 +1,53 @@
+From 267f596585abc78efbdda51a80dd36c65c0f6ad0 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Wed, 8 Mar 2023 12:22:51 +0100
+Subject: [PATCH] thermal/drivers/rockchip: Support dynamic sized sensor array
+
+Dynamically allocate the sensors array based on the amount
+of platform sensors in preparation for rk3588 support, which
+needs 7 sensors.
+
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Link: https://lore.kernel.org/r/20230308112253.15659-6-sebastian.reichel@collabora.com
+---
+ drivers/thermal/rockchip_thermal.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+--- a/drivers/thermal/rockchip_thermal.c
++++ b/drivers/thermal/rockchip_thermal.c
+@@ -52,12 +52,6 @@ enum adc_sort_mode {
+ #include "thermal_hwmon.h"
+ 
+ /**
+- * The max sensors is two in rockchip SoCs.
+- * Two sensors: CPU and GPU sensor.
+- */
+-#define SOC_MAX_SENSORS	2
+-
+-/**
+  * struct chip_tsadc_table - hold information about chip-specific differences
+  * @id: conversion table
+  * @length: size of conversion table
+@@ -147,7 +141,7 @@ struct rockchip_thermal_data {
+ 	struct platform_device *pdev;
+ 	struct reset_control *reset;
+ 
+-	struct rockchip_thermal_sensor sensors[SOC_MAX_SENSORS];
++	struct rockchip_thermal_sensor *sensors;
+ 
+ 	struct clk *clk;
+ 	struct clk *pclk;
+@@ -1367,6 +1361,11 @@ static int rockchip_thermal_probe(struct
+ 	if (!thermal->chip)
+ 		return -EINVAL;
+ 
++	thermal->sensors = devm_kcalloc(&pdev->dev, thermal->chip->chn_num,
++					sizeof(*thermal->sensors), GFP_KERNEL);
++	if (!thermal->sensors)
++		return -ENOMEM;
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	thermal->regs = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(thermal->regs))

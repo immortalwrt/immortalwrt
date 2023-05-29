@@ -1,0 +1,49 @@
+From 1e9c2404d8870ec08bfc338ae7113c3f7fe0b171 Mon Sep 17 00:00:00 2001
+From: Shreeya Patel <shreeya.patel@collabora.com>
+Date: Wed, 5 Apr 2023 13:57:11 +0530
+Subject: [PATCH] arm64: dts: rockchip: Enable RTC support for Rock 5B
+
+Add DT node to enable RTC support for Rock 5B board.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Reviewed-by: Christopher Obbard <chris.obbard@collabora.com>
+Link: https://lore.kernel.org/r/20230405082711.46303-1-shreeya.patel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -27,6 +27,31 @@
+ 	};
+ };
+ 
++&i2c6 {
++	status = "okay";
++
++	hym8563: rtc@51 {
++		compatible = "haoyu,hym8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++		clock-frequency = <32768>;
++		clock-output-names = "hym8563";
++		pinctrl-names = "default";
++		pinctrl-0 = <&hym8563_int>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
++		wakeup-source;
++	};
++};
++
++&pinctrl {
++	hym8563 {
++		hym8563_int: hym8563-int {
++			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
+ &sdhci {
+ 	bus-width = <8>;
+ 	no-sdio;

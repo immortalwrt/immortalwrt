@@ -1,0 +1,68 @@
+From 87810bda8a8472a9a106c6de34a032fb6a4b425b Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Sun, 2 Apr 2023 12:50:50 +0300
+Subject: [PATCH] arm64: dts: rockchip: Fix SCMI assigned clocks on rk3588s
+
+Since commit df4fdd0db475 ("dt-bindings: firmware: arm,scmi: Restrict
+protocol child node properties") the following dtbs_check warning is
+shown:
+
+  rk3588-rock-5b.dtb: scmi: protocol@14: Unevaluated properties are not
+  allowed ('assigned-clock-rates', 'assigned-clocks' were unexpected)
+
+Because adding the missing properties to firmware/arm,scmi.yaml binding
+document was not an acceptable solution, move SCMI_CLK_CPUB01 and
+SCMI_CLK_CPUB23 assigned clocks to the related CPU nodes and also add
+the missing SCMI_CLK_CPUL.
+
+Additionally, adjust frequency to 816 MHz for all the above mentioned
+assigned clocks, in order to match the firmware defaults.
+
+Suggested-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Link: https://lore.kernel.org/r/20230402095054.384739-2-cristian.ciocaltea@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -60,6 +60,8 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <530>;
+ 			clocks = <&scmi_clk SCMI_CLK_CPUL>;
++			assigned-clocks = <&scmi_clk SCMI_CLK_CPUL>;
++			assigned-clock-rates = <816000000>;
+ 			cpu-idle-states = <&CPU_SLEEP>;
+ 			i-cache-size = <32768>;
+ 			i-cache-line-size = <64>;
+@@ -136,6 +138,8 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <1024>;
+ 			clocks = <&scmi_clk SCMI_CLK_CPUB01>;
++			assigned-clocks = <&scmi_clk SCMI_CLK_CPUB01>;
++			assigned-clock-rates = <816000000>;
+ 			cpu-idle-states = <&CPU_SLEEP>;
+ 			i-cache-size = <65536>;
+ 			i-cache-line-size = <64>;
+@@ -174,6 +178,8 @@
+ 			enable-method = "psci";
+ 			capacity-dmips-mhz = <1024>;
+ 			clocks = <&scmi_clk SCMI_CLK_CPUB23>;
++			assigned-clocks = <&scmi_clk SCMI_CLK_CPUB23>;
++			assigned-clock-rates = <816000000>;
+ 			cpu-idle-states = <&CPU_SLEEP>;
+ 			i-cache-size = <65536>;
+ 			i-cache-line-size = <64>;
+@@ -313,10 +319,6 @@
+ 
+ 			scmi_clk: protocol@14 {
+ 				reg = <0x14>;
+-				assigned-clocks = <&scmi_clk SCMI_CLK_CPUB01>,
+-						  <&scmi_clk SCMI_CLK_CPUB23>;
+-				assigned-clock-rates = <1200000000>,
+-						       <1200000000>;
+ 				#clock-cells = <1>;
+ 			};
+ 

@@ -1,0 +1,82 @@
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	Shreeya Patel <shreeya.patel@collabora.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	Finley Xiao <finley.xiao@rock-chips.com>,
+	Vincent Legoll <vincent.legoll@gmail.com>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kernel@collabora.com
+Subject: [PATCH v2 6/8] nvmem: rockchip-otp: Improve probe error handling
+Date: Thu,  4 May 2023 23:06:46 +0300	[thread overview]
+Message-ID: <20230504200648.1119866-7-cristian.ciocaltea@collabora.com> (raw)
+In-Reply-To: <20230504200648.1119866-1-cristian.ciocaltea@collabora.com>
+
+Enhance error handling in the probe function by making use of
+dev_err_probe(), which ensures the error code is always printed, in
+addition to the specified error message.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Tested-by: Vincent Legoll <vincent.legoll@gmail.com>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+---
+ drivers/nvmem/rockchip-otp.c | 21 ++++++++++++---------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
+
+--- a/drivers/nvmem/rockchip-otp.c
++++ b/drivers/nvmem/rockchip-otp.c
+@@ -235,10 +235,8 @@ static int rockchip_otp_probe(struct pla
+ 	int ret, i;
+ 
+ 	data = of_device_get_match_data(dev);
+-	if (!data) {
+-		dev_err(dev, "failed to get match data\n");
+-		return -EINVAL;
+-	}
++	if (!data)
++		return dev_err_probe(dev, -EINVAL, "failed to get match data\n");
+ 
+ 	otp = devm_kzalloc(&pdev->dev, sizeof(struct rockchip_otp),
+ 			   GFP_KERNEL);
+@@ -249,7 +247,8 @@ static int rockchip_otp_probe(struct pla
+ 	otp->dev = dev;
+ 	otp->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(otp->base))
+-		return PTR_ERR(otp->base);
++		return dev_err_probe(dev, PTR_ERR(otp->base),
++				     "failed to ioremap resource\n");
+ 
+ 	otp->clks = devm_kcalloc(dev, data->num_clks, sizeof(*otp->clks),
+ 				 GFP_KERNEL);
+@@ -261,18 +260,22 @@ static int rockchip_otp_probe(struct pla
+ 
+ 	ret = devm_clk_bulk_get(dev, data->num_clks, otp->clks);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(dev, ret, "failed to get clocks\n");
+ 
+ 	otp->rst = devm_reset_control_array_get_exclusive(dev);
+ 	if (IS_ERR(otp->rst))
+-		return PTR_ERR(otp->rst);
++		return dev_err_probe(dev, PTR_ERR(otp->rst),
++				     "failed to get resets\n");
+ 
+ 	otp_config.size = data->size;
+ 	otp_config.priv = otp;
+ 	otp_config.dev = dev;
+-	nvmem = devm_nvmem_register(dev, &otp_config);
+ 
+-	return PTR_ERR_OR_ZERO(nvmem);
++	nvmem = devm_nvmem_register(dev, &otp_config);
++	if (IS_ERR(nvmem))
++		return dev_err_probe(dev, PTR_ERR(nvmem),
++				     "failed to register nvmem device\n");
++	return 0;
+ }
+ 
+ static struct platform_driver rockchip_otp_driver = {

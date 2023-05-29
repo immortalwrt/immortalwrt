@@ -1,0 +1,40 @@
+From dbe406d1397ffccd4a0f85daef456291f265505a Mon Sep 17 00:00:00 2001
+From: Lucas Tanure <lucas.tanure@collabora.com>
+Date: Tue, 28 Feb 2023 10:36:10 +0000
+Subject: [PATCH] arm64: dts: rockchip: Add sdmmc node to rk3588
+
+Add SD Card node for RK3588s and RK3588.
+
+Co-developed-by: Shawn Lin <shawn.lin@rock-chips.com>
+Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
+Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
+Link: https://lore.kernel.org/r/20230228103610.25108-1-lucas.tanure@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -1099,6 +1099,21 @@
+ 		};
+ 	};
+ 
++	sdmmc: mmc@fe2c0000 {
++		compatible = "rockchip,rk3588-dw-mshc", "rockchip,rk3288-dw-mshc";
++		reg = <0x0 0xfe2c0000 0x0 0x4000>;
++		interrupts = <GIC_SPI 203 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&scmi_clk SCMI_HCLK_SD>, <&scmi_clk SCMI_CCLK_SD>,
++			 <&cru SCLK_SDMMC_DRV>, <&cru SCLK_SDMMC_SAMPLE>;
++		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
++		fifo-depth = <0x100>;
++		max-frequency = <200000000>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_det &sdmmc_bus4>;
++		power-domains = <&power RK3588_PD_SDMMC>;
++		status = "disabled";
++	};
++
+ 	sdhci: mmc@fe2e0000 {
+ 		compatible = "rockchip,rk3588-dwcmshc";
+ 		reg = <0x0 0xfe2e0000 0x0 0x10000>;

@@ -1,0 +1,263 @@
+From a27e71a66ee0f887fefcc31b85a804b0905fa865 Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Thu, 6 Apr 2023 22:41:58 +0300
+Subject: [PATCH] regulator: fan53555: Add support for RK860X
+
+Extend the existing fan53555 driver to support the Rockchip RK860X
+regulators.
+
+RK8600/RK8601 are pretty similar to the FAN53555 regulators.
+
+RK8602/RK8603 are a bit different, having a wider output voltage
+selection range, from 0.5 V to 1.5 V in 6.25 mV steps. They also use
+additional VSEL0/VSEL1 registers for the voltage selector, but the
+enable and mode bits are still located in the original FAN53555 specific
+VSEL0/VSEL1 registers.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20230406194158.963352-9-cristian.ciocaltea@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/fan53555.c | 121 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 118 insertions(+), 3 deletions(-)
+
+--- a/drivers/regulator/fan53555.c
++++ b/drivers/regulator/fan53555.c
+@@ -26,6 +26,9 @@
+ #define FAN53555_VSEL0		0x00
+ #define FAN53555_VSEL1		0x01
+ 
++#define RK8602_VSEL0		0x06
++#define RK8602_VSEL1		0x07
++
+ #define TCS4525_VSEL0		0x11
+ #define TCS4525_VSEL1		0x10
+ #define TCS4525_TIME		0x13
+@@ -55,6 +58,7 @@
+ 
+ #define FAN53555_NVOLTAGES	64	/* Numbers of voltages */
+ #define FAN53526_NVOLTAGES	128
++#define RK8602_NVOLTAGES	160
+ 
+ #define TCS_VSEL0_MODE		BIT(7)
+ #define TCS_VSEL1_MODE		BIT(6)
+@@ -64,6 +68,8 @@
+ enum fan53555_vendor {
+ 	FAN53526_VENDOR_FAIRCHILD = 0,
+ 	FAN53555_VENDOR_FAIRCHILD,
++	FAN53555_VENDOR_ROCKCHIP,	/* RK8600, RK8601 */
++	RK8602_VENDOR_ROCKCHIP,		/* RK8602, RK8603 */
+ 	FAN53555_VENDOR_SILERGY,
+ 	FAN53526_VENDOR_TCS,
+ };
+@@ -88,6 +94,14 @@ enum {
+ };
+ 
+ enum {
++	RK8600_CHIP_ID_08 = 8,		/* RK8600, RK8601 */
++};
++
++enum {
++	RK8602_CHIP_ID_10 = 10,		/* RK8602, RK8603 */
++};
++
++enum {
+ 	TCS4525_CHIP_ID_12 = 12,
+ };
+ 
+@@ -117,6 +131,8 @@ struct fan53555_device_info {
+ 	/* Voltage setting register */
+ 	unsigned int vol_reg;
+ 	unsigned int sleep_reg;
++	unsigned int en_reg;
++	unsigned int sleep_en_reg;
+ 	/* Voltage range and step(linear) */
+ 	unsigned int vsel_min;
+ 	unsigned int vsel_step;
+@@ -159,7 +175,7 @@ static int fan53555_set_suspend_enable(s
+ {
+ 	struct fan53555_device_info *di = rdev_get_drvdata(rdev);
+ 
+-	return regmap_update_bits(rdev->regmap, di->sleep_reg,
++	return regmap_update_bits(rdev->regmap, di->sleep_en_reg,
+ 				  VSEL_BUCK_EN, VSEL_BUCK_EN);
+ }
+ 
+@@ -167,7 +183,7 @@ static int fan53555_set_suspend_disable(
+ {
+ 	struct fan53555_device_info *di = rdev_get_drvdata(rdev);
+ 
+-	return regmap_update_bits(rdev->regmap, di->sleep_reg,
++	return regmap_update_bits(rdev->regmap, di->sleep_en_reg,
+ 				  VSEL_BUCK_EN, 0);
+ }
+ 
+@@ -317,6 +333,50 @@ static int fan53555_voltages_setup_fairc
+ 	return 0;
+ }
+ 
++static int fan53555_voltages_setup_rockchip(struct fan53555_device_info *di)
++{
++	/* Init voltage range and step */
++	switch (di->chip_id) {
++	case RK8600_CHIP_ID_08:
++		di->vsel_min = 712500;
++		di->vsel_step = 12500;
++		break;
++	default:
++		dev_err(di->dev,
++			"Chip ID %d not supported!\n", di->chip_id);
++		return -EINVAL;
++	}
++	di->slew_reg = FAN53555_CONTROL;
++	di->slew_mask = CTL_SLEW_MASK;
++	di->ramp_delay_table = slew_rates;
++	di->n_ramp_values = ARRAY_SIZE(slew_rates);
++	di->vsel_count = FAN53555_NVOLTAGES;
++
++	return 0;
++}
++
++static int rk8602_voltages_setup_rockchip(struct fan53555_device_info *di)
++{
++	/* Init voltage range and step */
++	switch (di->chip_id) {
++	case RK8602_CHIP_ID_10:
++		di->vsel_min = 500000;
++		di->vsel_step = 6250;
++		break;
++	default:
++		dev_err(di->dev,
++			"Chip ID %d not supported!\n", di->chip_id);
++		return -EINVAL;
++	}
++	di->slew_reg = FAN53555_CONTROL;
++	di->slew_mask = CTL_SLEW_MASK;
++	di->ramp_delay_table = slew_rates;
++	di->n_ramp_values = ARRAY_SIZE(slew_rates);
++	di->vsel_count = RK8602_NVOLTAGES;
++
++	return 0;
++}
++
+ static int fan53555_voltages_setup_silergy(struct fan53555_device_info *di)
+ {
+ 	/* Init voltage range and step */
+@@ -377,6 +437,7 @@ static int fan53555_device_setup(struct
+ 	switch (di->vendor) {
+ 	case FAN53526_VENDOR_FAIRCHILD:
+ 	case FAN53555_VENDOR_FAIRCHILD:
++	case FAN53555_VENDOR_ROCKCHIP:
+ 	case FAN53555_VENDOR_SILERGY:
+ 		switch (pdata->sleep_vsel_id) {
+ 		case FAN53555_VSEL_ID_0:
+@@ -391,6 +452,27 @@ static int fan53555_device_setup(struct
+ 			dev_err(di->dev, "Invalid VSEL ID!\n");
+ 			return -EINVAL;
+ 		}
++		di->sleep_en_reg = di->sleep_reg;
++		di->en_reg = di->vol_reg;
++		break;
++	case RK8602_VENDOR_ROCKCHIP:
++		switch (pdata->sleep_vsel_id) {
++		case FAN53555_VSEL_ID_0:
++			di->sleep_reg = RK8602_VSEL0;
++			di->vol_reg = RK8602_VSEL1;
++			di->sleep_en_reg = FAN53555_VSEL0;
++			di->en_reg = FAN53555_VSEL1;
++			break;
++		case FAN53555_VSEL_ID_1:
++			di->sleep_reg = RK8602_VSEL1;
++			di->vol_reg = RK8602_VSEL0;
++			di->sleep_en_reg = FAN53555_VSEL1;
++			di->en_reg = FAN53555_VSEL0;
++			break;
++		default:
++			dev_err(di->dev, "Invalid VSEL ID!\n");
++			return -EINVAL;
++		}
+ 		break;
+ 	case FAN53526_VENDOR_TCS:
+ 		switch (pdata->sleep_vsel_id) {
+@@ -406,6 +488,8 @@ static int fan53555_device_setup(struct
+ 			dev_err(di->dev, "Invalid VSEL ID!\n");
+ 			return -EINVAL;
+ 		}
++		di->sleep_en_reg = di->sleep_reg;
++		di->en_reg = di->vol_reg;
+ 		break;
+ 	default:
+ 		dev_err(di->dev, "vendor %d not supported!\n", di->vendor);
+@@ -427,10 +511,23 @@ static int fan53555_device_setup(struct
+ 		}
+ 		break;
+ 	case FAN53555_VENDOR_FAIRCHILD:
++	case FAN53555_VENDOR_ROCKCHIP:
+ 	case FAN53555_VENDOR_SILERGY:
+ 		di->mode_reg = di->vol_reg;
+ 		di->mode_mask = VSEL_MODE;
+ 		break;
++	case RK8602_VENDOR_ROCKCHIP:
++		di->mode_mask = VSEL_MODE;
++
++		switch (pdata->sleep_vsel_id) {
++		case FAN53555_VSEL_ID_0:
++			di->mode_reg = FAN53555_VSEL1;
++			break;
++		case FAN53555_VSEL_ID_1:
++			di->mode_reg = FAN53555_VSEL0;
++			break;
++		}
++		break;
+ 	case FAN53526_VENDOR_TCS:
+ 		di->mode_reg = TCS4525_COMMAND;
+ 
+@@ -456,6 +553,12 @@ static int fan53555_device_setup(struct
+ 	case FAN53555_VENDOR_FAIRCHILD:
+ 		ret = fan53555_voltages_setup_fairchild(di);
+ 		break;
++	case FAN53555_VENDOR_ROCKCHIP:
++		ret = fan53555_voltages_setup_rockchip(di);
++		break;
++	case RK8602_VENDOR_ROCKCHIP:
++		ret = rk8602_voltages_setup_rockchip(di);
++		break;
+ 	case FAN53555_VENDOR_SILERGY:
+ 		ret = fan53555_voltages_setup_silergy(di);
+ 		break;
+@@ -481,7 +584,7 @@ static int fan53555_regulator_register(s
+ 	rdesc->ops = &fan53555_regulator_ops;
+ 	rdesc->type = REGULATOR_VOLTAGE;
+ 	rdesc->n_voltages = di->vsel_count;
+-	rdesc->enable_reg = di->vol_reg;
++	rdesc->enable_reg = di->en_reg;
+ 	rdesc->enable_mask = VSEL_BUCK_EN;
+ 	rdesc->min_uV = di->vsel_min;
+ 	rdesc->uV_step = di->vsel_step;
+@@ -532,6 +635,12 @@ static const struct of_device_id __maybe
+ 		.compatible = "fcs,fan53555",
+ 		.data = (void *)FAN53555_VENDOR_FAIRCHILD
+ 	}, {
++		.compatible = "rockchip,rk8600",
++		.data = (void *)FAN53555_VENDOR_ROCKCHIP
++	}, {
++		.compatible = "rockchip,rk8602",
++		.data = (void *)RK8602_VENDOR_ROCKCHIP
++	}, {
+ 		.compatible = "silergy,syr827",
+ 		.data = (void *)FAN53555_VENDOR_SILERGY,
+ 	}, {
+@@ -638,6 +747,12 @@ static const struct i2c_device_id fan535
+ 		.name = "fan53555",
+ 		.driver_data = FAN53555_VENDOR_FAIRCHILD
+ 	}, {
++		.name = "rk8600",
++		.driver_data = FAN53555_VENDOR_ROCKCHIP
++	}, {
++		.name = "rk8602",
++		.driver_data = RK8602_VENDOR_ROCKCHIP
++	}, {
+ 		.name = "syr827",
+ 		.driver_data = FAN53555_VENDOR_SILERGY
+ 	}, {

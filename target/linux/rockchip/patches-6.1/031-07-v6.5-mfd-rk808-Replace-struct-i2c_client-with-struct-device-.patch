@@ -1,0 +1,59 @@
+From 049449976f549605a6913d468b61356a9950a6a2 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Thu, 4 May 2023 19:36:08 +0200
+Subject: [PATCH] mfd: rk808: Replace 'struct i2c_client' with 'struct device'
+
+Put 'struct device' pointer into the MFD platform_data instead
+of the 'struct i2c_client' pointer. This simplifies the code
+and prepares the MFD for SPI support.
+
+Tested-by: Diederik de Haas <didi.debian@cknow.org> # Rock64, Quartz64 Model A + B
+Tested-by: Vincent Legoll <vincent.legoll@gmail.com> # Pine64 QuartzPro64
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230504173618.142075-5-sebastian.reichel@collabora.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/mfd/rk808.c       | 6 +++---
+ include/linux/mfd/rk808.h | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+--- a/drivers/mfd/rk808.c
++++ b/drivers/mfd/rk808.c
+@@ -576,7 +576,7 @@ static int rk808_power_off(struct sys_of
+ 	}
+ 	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
+ 	if (ret)
+-		dev_err(&rk808->i2c->dev, "Failed to shutdown device!\n");
++		dev_err(rk808->dev, "Failed to shutdown device!\n");
+ 
+ 	return NOTIFY_DONE;
+ }
+@@ -599,7 +599,7 @@ static int rk808_restart(struct sys_off_
+ 	}
+ 	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
+ 	if (ret)
+-		dev_err(&rk808->i2c->dev, "Failed to restart device!\n");
++		dev_err(rk808->dev, "Failed to restart device!\n");
+ 
+ 	return NOTIFY_DONE;
+ }
+@@ -719,7 +719,7 @@ static int rk808_probe(struct i2c_client
+ 		return -EINVAL;
+ 	}
+ 
+-	rk808->i2c = client;
++	rk808->dev = &client->dev;
+ 	i2c_set_clientdata(client, rk808);
+ 
+ 	rk808->regmap = devm_regmap_init_i2c(client, rk808->regmap_cfg);
+--- a/include/linux/mfd/rk808.h
++++ b/include/linux/mfd/rk808.h
+@@ -787,7 +787,7 @@ enum {
+ };
+ 
+ struct rk808 {
+-	struct i2c_client		*i2c;
++	struct device			*dev;
+ 	struct regmap_irq_chip_data	*irq_data;
+ 	struct regmap			*regmap;
+ 	long				variant;

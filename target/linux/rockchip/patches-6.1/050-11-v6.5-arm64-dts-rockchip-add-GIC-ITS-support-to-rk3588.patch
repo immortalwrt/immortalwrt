@@ -1,0 +1,45 @@
+From 06cdac8e840767f801bbd94ed991354a206adf1f Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Tue, 18 Apr 2023 16:21:09 +0200
+Subject: [PATCH] arm64: dts: rockchip: add GIC ITS support to rk3588
+
+Add the two Interrupt Translation Service (ITS) IPs that are part of the
+GIC-600. They are mainly required for PCIe Message Signalled Interrupts
+(MSI).
+
+Co-developed-by: Kever Yang <kever.yang@rock-chips.com>
+Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230418142109.49762-3-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -1300,7 +1300,24 @@
+ 		mbi-alias = <0x0 0xfe610000>;
+ 		mbi-ranges = <424 56>;
+ 		msi-controller;
++		ranges;
++		#address-cells = <2>;
+ 		#interrupt-cells = <4>;
++		#size-cells = <2>;
++
++		its0: msi-controller@fe640000 {
++			compatible = "arm,gic-v3-its";
++			reg = <0x0 0xfe640000 0x0 0x20000>;
++			msi-controller;
++			#msi-cells = <1>;
++		};
++
++		its1: msi-controller@fe660000 {
++			compatible = "arm,gic-v3-its";
++			reg = <0x0 0xfe660000 0x0 0x20000>;
++			msi-controller;
++			#msi-cells = <1>;
++		};
+ 
+ 		ppi-partitions {
+ 			ppi_partition0: interrupt-partition-0 {

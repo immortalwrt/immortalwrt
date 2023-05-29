@@ -1,0 +1,78 @@
+From a1d3281450ab24108631a8b0f7cd9f27de717e0e Mon Sep 17 00:00:00 2001
+From: Christopher Obbard <chris.obbard@collabora.com>
+Date: Mon, 9 Jan 2023 16:58:01 +0100
+Subject: [PATCH] arm64: dts: rockchip: Add rock-5b board
+
+Add board file for the RK3588 Rock 5B board. This is a basic
+implementation which just brings up the eMMC and UART which is
+enough to successfully boot Linux.
+
+The ethernet controller is connected via PCIe so support will
+come in a follow-up patch.
+
+Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
+Reviewed-by: Michael Riesch <michael.riesch@wolfvision.net>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230109155801.51642-8-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/Makefile         |  1 +
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 44 +++++++++++++++++++
+ 2 files changed, 45 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -81,4 +81,5 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-na
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-evb1-v10.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-rock-5b.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-rock-5a.dtb
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -0,0 +1,44 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++
++#include "rk3588.dtsi"
++
++/ {
++	model = "Radxa ROCK 5 Model B";
++	compatible = "radxa,rock-5b", "rockchip,rk3588";
++
++	aliases {
++		mmc1 = &sdhci;
++		serial2 = &uart2;
++	};
++
++	chosen {
++		stdout-path = "serial2:1500000n8";
++	};
++
++	vcc5v0_sys: vcc5v0-sys-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_sys";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++};
++
++&sdhci {
++	bus-width = <8>;
++	no-sdio;
++	no-sd;
++	non-removable;
++	max-frequency = <200000000>;
++	mmc-hs400-1_8v;
++	mmc-hs400-enhanced-strobe;
++	status = "okay";
++};
++
++&uart2 {
++	pinctrl-0 = <&uart2m0_xfer>;
++	status = "okay";
++};

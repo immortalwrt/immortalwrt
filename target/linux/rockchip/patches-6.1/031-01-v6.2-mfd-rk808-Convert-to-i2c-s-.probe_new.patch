@@ -1,0 +1,39 @@
+From 8416360935b9b632a517503eac6e320cbd5f310a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Date: Fri, 18 Nov 2022 23:43:07 +0100
+Subject: [PATCH] mfd: rk808: Convert to i2c's .probe_new()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The probe function doesn't make use of the i2c_device_id * parameter so it
+can be trivially converted.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Lee Jones <lee@kernel.org>
+Link: https://lore.kernel.org/r/20221118224540.619276-454-uwe@kleine-koenig.org
+---
+ drivers/mfd/rk808.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/drivers/mfd/rk808.c
++++ b/drivers/mfd/rk808.c
+@@ -640,8 +640,7 @@ static const struct of_device_id rk808_o
+ };
+ MODULE_DEVICE_TABLE(of, rk808_of_match);
+ 
+-static int rk808_probe(struct i2c_client *client,
+-		       const struct i2c_device_id *id)
++static int rk808_probe(struct i2c_client *client)
+ {
+ 	struct device_node *np = client->dev.of_node;
+ 	struct rk808 *rk808;
+@@ -861,7 +860,7 @@ static struct i2c_driver rk808_i2c_drive
+ 		.of_match_table = rk808_of_match,
+ 		.pm = &rk8xx_pm_ops,
+ 	},
+-	.probe    = rk808_probe,
++	.probe_new = rk808_probe,
+ 	.remove   = rk808_remove,
+ 	.shutdown = rk8xx_shutdown,
+ };
