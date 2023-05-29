@@ -85,7 +85,6 @@ jobs:
           git clone https://github.com/4IceG/luci-app-modemband.git
           git clone https://github.com/4IceG/luci-app-sms-tool.git
           cd ../../..
-          ./scripts/feeds update -a; ./scripts/feeds install -a
           sed -i '$a src-git modemfeed https://github.com/koshev-msk/modemfeed.git' feeds.conf.default
           sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
           sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default
