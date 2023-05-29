@@ -288,7 +288,7 @@ TARGET_DEVICES += qihoo_360-t7-ubootmod
 
 define Device/qihoo_360t7
   DEVICE_VENDOR := Qihoo
-  DEVICE_MODEL := 360T7 (OpenWrt U-Boot layout)
+  DEVICE_MODEL := 360 T7 (OpenWrt U-Boot layout)
   DEVICE_DTS := mt7981b-qihoo-360t7
   DEVICE_DTS_DIR := ../dts
   UBINIZE_OPTS := -E 5
