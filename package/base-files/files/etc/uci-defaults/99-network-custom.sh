@@ -1,10 +1,15 @@
 
-cat << EOI >> /etc/firewall.include
+cat << EOI >> /etc/nftables.d/10-custom-filter-chains.nft
 
-nft add rule inet fw4 mangle_prerouting iifname wwan0 ip ttl set 65
-nft add rule inet fw4 mangle_postrouting oifname wwan0 ip ttl set 64
-nft add rule inet fw4 mangle_prerouting iifname wwan1 ip ttl set 65
-nft add rule inet fw4 mangle_postrouting oifname wwan1 ip ttl set 64
+chain mangle_ttl_out { 
+    type filter hook postrouting priority mangle; 
+ oifname eth1 ip ttl set 65 
+    oifname eth0.2 ip ttl set 65
+    oifname usb0 ip ttl set 65
+    oifname wan ip ttl set 65 
+    oifname usb1 ip ttl set 65 
+    oifname wwan0 ip ttl set 64     
+}
 
 EOI
 
