@@ -1360,6 +1360,7 @@ define KernelPackage/mlx5-core
 	CONFIG_MLX5_FPGA_TLS=n \
 	CONFIG_MLX5_MPFS=y \
 	CONFIG_MLX5_SW_STEERING=n \
+	CONFIG_MLX5_CLS_ACT=n \
 	CONFIG_MLX5_TC_CT=n \
 	CONFIG_MLX5_TLS=n
   AUTOLOAD:=$(call AutoProbe,mlx5_core)
