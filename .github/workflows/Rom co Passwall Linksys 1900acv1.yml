@@ -2,7 +2,7 @@
 # Copyright (c) 2023
 #
 
-name: Build Immor Linksys 1900acv1
+name: Build Immor Passwall Linksys 1900acv1
 
 on:
   schedule:
