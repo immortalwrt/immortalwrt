@@ -2,7 +2,7 @@
 # Copyright (c) 2023
 #
 
-name: Build X-wrt Linksys 1900acv1
+name: Build Immor Linksys 1900acv1
 
 on:
   schedule:
@@ -27,10 +27,10 @@ permissions:
   contents: write
 
 env:
-  REPO_URL: https://github.com/x-wrt/x-wrt.git
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config-1900acv1
+  CONFIG_FILE: .config_1900acv1
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -77,8 +77,9 @@ jobs:
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
           git fetch origin --tags
-          git checkout -f 22.10_b202304222337
-          
+          git describe --tags $(git rev-list --tags --max-count=1) > immortalwrt_version
+          git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))
+
       - name: Update feeds
         run: cd openwrt && ./scripts/feeds update -a
 
@@ -89,7 +90,7 @@ jobs:
         run: |
           [ -e files ] && mv files openwrt/files
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          sed -i 's/CONFIG_VERSION_NUMBER\s*=.*/CONFIG_VERSION_NUMBER=$x-wrt_version/g' openwrt/.config
+          sed -i 's/CONFIG_VERSION_NUMBER\s*=.*/CONFIG_VERSION_NUMBER=$immortalwrt_version/g' openwrt/.config
           chmod +x $DIY_P2_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P2_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
