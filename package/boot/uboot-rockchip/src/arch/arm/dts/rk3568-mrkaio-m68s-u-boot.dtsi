@@ -9,14 +9,13 @@
 	};
 };
 
-&sdmmc0 {
-	bus-width = <4>;
-	bootph-pre-ram;
-	u-boot,spl-fifo-mode;
+&sdhci {
+	cap-mmc-highspeed;
+	mmc-hs200-1_8v;
 };
 
 &uart2 {
 	clock-frequency = <24000000>;
-	bootph-pre-ram;
+	bootph-all;
 	status = "okay";
 };
