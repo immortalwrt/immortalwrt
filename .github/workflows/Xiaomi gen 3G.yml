@@ -33,6 +33,7 @@ env:
   CONFIG_FILE: .config_3G
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
+  custom_99: 99-network-custom.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -91,6 +92,8 @@ jobs:
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
           sed -i 's/CONFIG_VERSION_NUMBER\s*=.*/CONFIG_VERSION_NUMBER=$immortalwrt_version/g' openwrt/.config
           chmod +x $DIY_P2_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P2_SH
+          mkdir -p openwrt/files/etc/uci-defaults
+          mv $custom_99 openwrt/files/etc/uci-defaults/99-custom
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
       - name: SSH connection to Actions
