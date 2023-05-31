@@ -42,13 +42,6 @@ uci commit base_config
 
 uci commit wireless
 
-# uci set wireless.radio0.disabled="0"
-# uci set wireless.radio1.disabled="0"
-# uci set wireless.wifinet0.disabled="0"
-# uci set wireless.wifinet1.disabled="0"
-# uci commit wireless
-# uci commit 
-# uci commit base_config
 wifi reload
 /sbin/wifi reload
 
@@ -74,6 +67,12 @@ nft add rule inet fw4 mangle_postrouting oifname wwan0 ip ttl set 64
 nft add rule inet fw4 mangle_prerouting iifname wwan1 ip ttl set 65
 nft add rule inet fw4 mangle_postrouting oifname wwan1 ip ttl set 64
 
+EOI
+
+cat << EOI >> /etc/firewall.user
+iptables -t mangle -I POSTROUTING -o wwan0 -j TTL --ttl-set 64
+iptables -t mangle -I POSTROUTING -o wwan1 -j TTL --ttl-set 64
+iptables -t mangle -I POSTROUTING -o usb0 -j TTL --ttl-set 65
 EOI
 
 # /etc/init.d/network restart
