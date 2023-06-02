@@ -6,7 +6,7 @@ name: Build Immor Passwall Linksys 1900acv1
 
 on:
   schedule:
-    - cron: '0 8 * * 5'
+    - cron: '0 7 * * 5'
   release:
     types: [published]
   push:
