@@ -27,7 +27,7 @@ permissions:
   contents: write
 
 env:
-  REPO_URL: https://github.com/Doanduy09/Immortalwrt.git
+  REPO_URL: https://github.com/Doanduy09/Immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config_1900acv1
