@@ -6,7 +6,7 @@ name: Build Immor Xiaomi Gen 3G
 
 on:
   schedule:
-    - cron: '0 12 * * 5'
+    - cron: '13 7 * * 5'
   release:
     types: [published]
   push:
