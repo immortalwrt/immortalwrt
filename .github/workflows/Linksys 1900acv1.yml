@@ -6,7 +6,7 @@ name: Build Immor Linksys 1900acv1
 
 on:
   schedule:
-    - cron: '0 1 * * 5'
+    - cron: '0 6 * * 5'
   release:
     types: [published]
   push:
