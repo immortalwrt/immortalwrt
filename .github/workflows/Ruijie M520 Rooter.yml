@@ -2,11 +2,11 @@
 # Copyright (c) 2023
 #
 
-name: Build Immor Passwall Linksys 1900acv1 test
+name: Build Immor Ruijei M520 Rooter
 
 on:
   schedule:
-    - cron: '0 8 * * 5'
+    - cron: '0 10 * * 5'
   release:
     types: [published]
   push:
@@ -27,10 +27,10 @@ permissions:
   contents: write
 
 env:
-  REPO_URL: https://github.com/Doanduy09/Immortalwrt
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config_1900acv1
+  CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -41,7 +41,6 @@ env:
   TZ: Asia/Ho_Chi_Minh
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   custom_99: 99-network-custom.sh
-
 
 jobs:
   build:
@@ -81,7 +80,6 @@ jobs:
           git fetch origin --tags
           git describe --tags $(git rev-list --tags --max-count=1) > immortalwrt_version
           git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))
-
       - name: Update feeds
         run: cd openwrt && ./scripts/feeds update -a
 
