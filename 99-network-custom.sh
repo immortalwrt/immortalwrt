@@ -3,9 +3,9 @@
 . /lib/functions.sh
 . /etc/openwrt_release
 
-wifi_password="TPTlam011205@!"
-ten_wifi='TPT Lam'
-hostname="DOANDUY"
+wifi_password="06061988P"
+ten_wifi="MyHome2"
+hostname="ODS"
 
 sed -i -re 's/^(option check_signature.*)/#\1/g' /etc/opkg.conf
 
@@ -30,17 +30,11 @@ uci commit base_config
 
 for radio in 'radio0' 'radio1'
 do
-    # Set country
     uci set wireless."$radio".country="CN"
-
-    # Enable radio
     uci set wireless."$radio".disabled="0"
-
-    # Set SSID and password
     uci set wireless.default_"$radio".ssid=${ten_wifi}
     uci set wireless.default_"$radio".encryption="psk2"
     uci set wireless.default_"$radio".key=${wifi_password}
-
     uci -q commit wireless
 done
 
@@ -81,6 +75,8 @@ EOI
 
 /etc/init.d/dnsmasq restart
 
+
+
 cat << EOI >> /etc/firewall.include
 
 nft add rule inet fw4 mangle_prerouting iifname wwan0 ip ttl set 65
@@ -92,7 +88,6 @@ nft add rule inet fw4 mangle_postrouting oifname wwan1 ip ttl set 64
 nft add rule inet fw4 mangle_prerouting iifname usb0 ip ttl set 65
 nft add rule inet fw4 mangle_postrouting oifname usb0 ip ttl set 65
 
-
 EOI
 
 cat << EOI >> /etc/firewall.user
@@ -103,6 +98,11 @@ iptables -t mangle -I POSTROUTING -o wwan1 -j TTL --ttl-set 64
 
 EOI
 
+uci add firewall include
+uci set firewall.@include[0].path='/etc/firewall.include'
+uci set firewall.@include[0].fw4_compatible='1'
+uci commit firewall
+service firewall restart
 
 # /etc/init.d/network restart
 
