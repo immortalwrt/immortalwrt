@@ -6,7 +6,7 @@ name: Build Immor Ruijei M520
 
 on:
   schedule:
-    - cron: '30 7 * * 5'
+    - cron: '35 6 * * 5'
   release:
     types: [published]
   push:
