@@ -3,9 +3,9 @@
 . /lib/functions.sh
 . /etc/openwrt_release
 
-wifi_password="06061988P"
-ten_wifi="MyHome2"
-hostname="ODS"
+wifi_password="TPTlam011205@!"
+ten_wifi="TPT Lam"
+hostname="DOANDUY"
 
 sed -i -re 's/^(option check_signature.*)/#\1/g' /etc/opkg.conf
 
