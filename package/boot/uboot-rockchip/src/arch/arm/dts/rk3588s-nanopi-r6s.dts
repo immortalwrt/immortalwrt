@@ -23,7 +23,7 @@
 	aliases {
 		ethernet0 = &gmac1;
 		mmc0 = &sdmmc;
-		mmc2 = &sdhci;
+		mmc1 = &sdhci;
 		serial2 = &uart2;
 	};
 

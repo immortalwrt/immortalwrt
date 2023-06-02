@@ -14,7 +14,7 @@ Change-Id: I49994529fcc209c2bc173c1abc497536fb920302
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -2015,7 +2015,7 @@
+@@ -2033,7 +2033,7 @@
  		compatible = "rockchip,trngv1";
  		reg = <0x0 0xfe378000 0x0 0x200>;
  		interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>;

@@ -1,0 +1,46 @@
+From: Chris Morgan <macroalpha82@gmail.com>
+To: linux-rockchip@lists.infradead.org
+Cc: devicetree@vger.kernel.org, lucas.tanure@collabora.com,
+	kever.yang@rock-chips.com, yifeng.zhao@rock-chips.com,
+	sebastian.reichel@collabora.com, andyshrk@163.com,
+	jagan@amarulasolutions.com, heiko@sntech.de, conor+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+	broonie@kernel.org, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V2 2/5] arm64: dts: rockchip: Add sdio node to rk3588
+Date: Wed, 31 May 2023 11:12:17 -0500	[thread overview]
+Message-ID: <20230531161220.280744-3-macroalpha82@gmail.com> (raw)
+In-Reply-To: <20230531161220.280744-1-macroalpha82@gmail.com>
+
+From: Chris Morgan <macromorgan@hotmail.com>
+
+Add SDIO node for rk3588/rk3588s.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -1993,6 +1993,21 @@
+ 		status = "disabled";
+ 	};
+ 
++	sdio: mmc@fe2d0000 {
++		compatible = "rockchip,rk3588-dw-mshc", "rockchip,rk3288-dw-mshc";
++		reg = <0x00 0xfe2d0000 0x00 0x4000>;
++		interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru HCLK_SDIO>, <&cru CCLK_SRC_SDIO>,
++			 <&cru SCLK_SDIO_DRV>, <&cru SCLK_SDIO_SAMPLE>;
++		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
++		fifo-depth = <0x100>;
++		max-frequency = <200000000>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&sdiom1_pins>;
++		power-domains = <&power RK3588_PD_SDIO>;
++		status = "disabled";
++	};
++
+ 	sdhci: mmc@fe2e0000 {
+ 		compatible = "rockchip,rk3588-dwcmshc";
+ 		reg = <0x0 0xfe2e0000 0x0 0x10000>;
