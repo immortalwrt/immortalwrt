@@ -2,10 +2,4 @@ src-git-full packages https://github.com/immortalwrt/packages.git;openwrt-21.02
 src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02
 src-git-full routing https://github.com/openwrt/routing.git;openwrt-21.02
 src-git-full telephony https://github.com/openwrt/telephony.git;openwrt-21.02
-src-git passwall https://github.com/xiaorouji/openwrt-passwall.git
-src-git modemfeed https://github.com/koshev-msk/modemfeed.git
-src-git kenzo https://github.com/kenzok8/openwrt-packages.git
-src-git small https://github.com/kenzok8/small.git
-src-git 3Ginfo https://github.com/4IceG/luci-app-3ginfo-lite.git
-src-git Modem https://github.com/4IceG/luci-app-modemband.git
-src-git SMS https://github.com/4IceG/luci-app-sms-tool.git
+src-git atinout https://github.com/koshev-msk/luci-app-atinout.git^38a7298736e05b6cf3b5f61862e8d534a690c972
