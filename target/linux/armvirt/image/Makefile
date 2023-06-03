@@ -79,6 +79,7 @@ define Device/efi-default
   IMAGE/rootfs.img.gz := append-rootfs | pad-to $(ROOTFS_PARTSIZE) | gzip
   IMAGE/combined.img := grub-config efi | combined efi | grub-install efi | append-metadata
   IMAGE/combined.img.gz := grub-config efi | combined efi | grub-install efi | gzip | append-metadata
+  IMAGE/combined.qcow2 := grub-config efi | combined efi | grub-install efi | qemu-image qcow2
   IMAGE/combined.vmdk := grub-config efi | combined efi | grub-install efi | qemu-image vmdk
  ifeq ($(CONFIG_TARGET_IMAGES_GZIP),y)
     IMAGES-y := rootfs.img.gz
@@ -86,6 +87,9 @@ define Device/efi-default
   else
     IMAGES-y := rootfs.img
     IMAGES-y += combined.img
+  endif
+  ifeq ($(CONFIG_QCOW2_IMAGES),y)
+    IMAGES-y += combined.qcow2
   endif
   ifeq ($(CONFIG_VMDK_IMAGES),y)
     IMAGES-y += combined.vmdk
