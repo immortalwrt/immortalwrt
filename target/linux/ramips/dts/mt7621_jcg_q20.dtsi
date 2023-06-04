@@ -51,6 +51,19 @@
 
 &nand {
 	status = "okay";
+
+	partitions: partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		factory: partition@100000 {
+			label = "Factory";
+			reg = <0x100000 0x80000>;
+			read-only;
+		};
+
+	};
 };
 
 &pcie {
