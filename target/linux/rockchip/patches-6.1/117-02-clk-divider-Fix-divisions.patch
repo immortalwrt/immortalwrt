@@ -1,11 +1,20 @@
-From cb57f471ea551d1d19bdd3a6f2a82fbf84287a1b Mon Sep 17 00:00:00 2001
+From dd6d843b8fbad84cc585a1379bffd99004c83b79 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Thu, 18 May 2023 05:19:48 +0200
-Subject: [PATCH] clk: divider: Fix handling of rates > UINT_MAX
+Subject: [PATCH] clk: divider: Fix divisions
 
-Fix handling of rates that exceed UINT_MAX (4.29 GHz) to do something
-reasonably sensible. Right now asking for UINT_MAX+1 will effectively
-return the smallest rate available instead of the biggest one.
+The clock framework handles clock rates as "unsigned long", so u32 on
+32-bit architectures and u64 on 64-bit architectures.
+
+The current code pointlessly casts the dividend to u64 on 32-bit
+architectures and thus pointlessly reducing the performance.
+
+On the other hand on 64-bit architectures the divisor is masked and only
+the lower 32-bit are used. Thus requesting a frequency >= 4.3GHz results
+in incorrect values. For example requesting 4300000000 (4.3 GHz) will
+effectively request ca. 5 MHz. Requesting clk_round_rate(clk, ULONG_MAX)
+is a bit of a special case, since that still returns correct values as
+long as the parent clock is below 8.5 GHz.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
@@ -19,7 +28,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			 unsigned long flags)
  {
 -	int div = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
-+	int div = DIV_ROUND_UP_ULL((u64)parent_rate, rate > UINT_MAX ? UINT_MAX : rate);
++	int div = DIV_ROUND_UP(parent_rate, rate);
  
  	if (flags & CLK_DIVIDER_POWER_OF_TWO)
  		div = __roundup_pow_of_two(div);
@@ -28,7 +37,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	unsigned long up_rate, down_rate;
  
 -	up = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
-+	up = DIV_ROUND_UP_ULL((u64)parent_rate, rate > UINT_MAX ? UINT_MAX : rate);
++	up = DIV_ROUND_UP(parent_rate, rate);
  	down = parent_rate / rate;
  
  	if (flags & CLK_DIVIDER_POWER_OF_TWO) {
@@ -37,7 +46,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	unsigned int div, value;
  
 -	div = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
-+	div = DIV_ROUND_UP_ULL((u64)parent_rate, rate > UINT_MAX ? UINT_MAX : rate);
++	div = DIV_ROUND_UP(parent_rate, rate);
  
  	if (!_is_valid_div(table, div, flags))
  		return -EINVAL;

@@ -5,13 +5,13 @@ To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kernel@collabora.com, gustavo.padovan@collabora.com,
+	gustavo.padovan@collabora.com, kernel@collabora.com,
 	serge.broslavsky@collabora.com,
 	Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH 5/7] iio: adc: rockchip_saradc: Use dev_err_probe
-Date: Wed, 17 May 2023 04:30:49 +0530	[thread overview]
-Message-ID: <20230516230051.14846-6-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+Subject: [PATCH v3 6/8] iio: adc: rockchip_saradc: Use dev_err_probe
+Date: Sun,  4 Jun 2023 00:23:38 +0530	[thread overview]
+Message-ID: <20230603185340.13838-7-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
 
 Use dev_err_probe instead of dev_err in probe function,
 which simplifies code a little bit and prints the error
@@ -19,12 +19,19 @@ code.
 
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 ---
+
+Changes in v3
+  - No change
+
+Changes in v2
+  - No change
+
  drivers/iio/adc/rockchip_saradc.c | 45 ++++++++++++++-----------------
  1 file changed, 20 insertions(+), 25 deletions(-)
 
 --- a/drivers/iio/adc/rockchip_saradc.c
 +++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -415,25 +415,23 @@ static int rockchip_saradc_probe(struct
+@@ -422,25 +422,23 @@ static int rockchip_saradc_probe(struct
  		return -ENODEV;
  
  	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
@@ -60,7 +67,7 @@ Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
  
  	info->regs = devm_platform_ioremap_resource(pdev, 0);
  	if (IS_ERR(info->regs))
-@@ -491,23 +489,20 @@ static int rockchip_saradc_probe(struct
+@@ -488,23 +486,20 @@ static int rockchip_saradc_probe(struct
  	 * This may become user-configurable in the future.
  	 */
  	ret = clk_set_rate(info->clk, info->data->clk_rate);

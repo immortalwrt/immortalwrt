@@ -5,18 +5,25 @@ To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kernel@collabora.com, gustavo.padovan@collabora.com,
+	gustavo.padovan@collabora.com, kernel@collabora.com,
 	serge.broslavsky@collabora.com,
 	Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH 6/7] arm64: dts: rockchip: Add DT node for ADC support in RK3588
-Date: Wed, 17 May 2023 04:30:50 +0530	[thread overview]
-Message-ID: <20230516230051.14846-7-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+Subject: [PATCH v3 7/8] arm64: dts: rockchip: Add DT node for ADC support in RK3588
+Date: Sun,  4 Jun 2023 00:23:39 +0530	[thread overview]
+Message-ID: <20230603185340.13838-8-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
 
 Add DT node for ADC support in RK3588.
 
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 ---
+
+Changes in v3
+  - No change
+
+Changes in v2
+  - No change
+
  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 12 ++++++++++++
  1 file changed, 12 insertions(+)
 

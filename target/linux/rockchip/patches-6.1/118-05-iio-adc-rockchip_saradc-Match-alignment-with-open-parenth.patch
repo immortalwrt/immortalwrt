@@ -5,25 +5,35 @@ To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kernel@collabora.com, gustavo.padovan@collabora.com,
+	gustavo.padovan@collabora.com, kernel@collabora.com,
 	serge.broslavsky@collabora.com,
-	Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH 4/7] iio: adc: rockchip_saradc: Match alignment with open parenthesis
-Date: Wed, 17 May 2023 04:30:48 +0530	[thread overview]
-Message-ID: <20230516230051.14846-5-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+	Shreeya Patel <shreeya.patel@collabora.com>,
+	AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 5/8] iio: adc: rockchip_saradc: Match alignment with open parenthesis
+Date: Sun,  4 Jun 2023 00:23:37 +0530	[thread overview]
+Message-ID: <20230603185340.13838-6-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
 
 Match alignment with open parenthesis for improving the code
 readability.
 
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
+
+Changes in v3
+  - No change
+
+Changes in v2
+  - Add a Reviewed-by tag.
+
  drivers/iio/adc/rockchip_saradc.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 --- a/drivers/iio/adc/rockchip_saradc.c
 +++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -141,7 +141,7 @@ static void rockchip_saradc_power_down(s
+@@ -148,7 +148,7 @@ static void rockchip_saradc_power_down(s
  }
  
  static int rockchip_saradc_conversion(struct rockchip_saradc *info,
@@ -32,7 +42,7 @@ Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
  {
  	reinit_completion(&info->completion);
  
-@@ -384,8 +384,7 @@ out:
+@@ -391,8 +391,7 @@ out:
  }
  
  static int rockchip_saradc_volt_notify(struct notifier_block *nb,

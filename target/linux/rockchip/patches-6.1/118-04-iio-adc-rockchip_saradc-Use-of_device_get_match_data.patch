@@ -5,24 +5,34 @@ To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kernel@collabora.com, gustavo.padovan@collabora.com,
+	gustavo.padovan@collabora.com, kernel@collabora.com,
 	serge.broslavsky@collabora.com,
-	Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH 3/7] iio: adc: rockchip_saradc: Use of_device_get_match_data
-Date: Wed, 17 May 2023 04:30:47 +0530	[thread overview]
-Message-ID: <20230516230051.14846-4-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230516230051.14846-1-shreeya.patel@collabora.com>
+	Shreeya Patel <shreeya.patel@collabora.com>,
+	AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 4/8] iio: adc: rockchip_saradc: Use of_device_get_match_data
+Date: Sun,  4 Jun 2023 00:23:36 +0530	[thread overview]
+Message-ID: <20230603185340.13838-5-shreeya.patel@collabora.com> (raw)
+In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
 
 Use of_device_get_match_data() to simplify the code.
 
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
+
+Changes in v3
+  - No change
+
+Changes in v2
+  - Add a Reviewed-by tag.
+
  drivers/iio/adc/rockchip_saradc.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 --- a/drivers/iio/adc/rockchip_saradc.c
 +++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -405,10 +405,10 @@ static void rockchip_saradc_regulator_un
+@@ -412,10 +412,10 @@ static void rockchip_saradc_regulator_un
  
  static int rockchip_saradc_probe(struct platform_device *pdev)
  {
@@ -34,7 +44,7 @@ Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
  	int ret;
  	int irq;
  
-@@ -422,13 +422,13 @@ static int rockchip_saradc_probe(struct
+@@ -429,13 +429,13 @@ static int rockchip_saradc_probe(struct
  	}
  	info = iio_priv(indio_dev);
  
