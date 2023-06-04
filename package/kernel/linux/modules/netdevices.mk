@@ -744,6 +744,22 @@ endef
 $(eval $(call KernelPackage,iavf))
 
 
+define KernelPackage/ice
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Intel(R) Ethernet Controller E810 Series support
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp
+  KCONFIG:=CONFIG_ICE
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
+  AUTOLOAD:=$(call AutoProbe,ice)
+endef
+
+define KernelPackage/ice/description
+  Kernel modules for Intel(R) Ethernet Controller E810 Series
+endef
+
+$(eval $(call KernelPackage,ice))
+
+
 define KernelPackage/b44
   TITLE:=Broadcom 44xx driver
   KCONFIG:=CONFIG_B44
@@ -1180,12 +1196,13 @@ define KernelPackage/mlx5-core
 	CONFIG_MLX5_EN_IPSEC=n \
 	CONFIG_MLX5_EN_RXNFC=y \
 	CONFIG_MLX5_EN_TLS=n \
-	CONFIG_MLX5_ESWITCH=n \
+	CONFIG_MLX5_ESWITCH=y \
 	CONFIG_MLX5_FPGA=n \
 	CONFIG_MLX5_FPGA_IPSEC=n \
 	CONFIG_MLX5_FPGA_TLS=n \
 	CONFIG_MLX5_MPFS=y \
 	CONFIG_MLX5_SW_STEERING=n \
+	CONFIG_MLX5_CLS_ACT=n \
 	CONFIG_MLX5_TC_CT=n \
 	CONFIG_MLX5_TLS=n
   AUTOLOAD:=$(call AutoProbe,mlx5_core)
@@ -1196,6 +1213,50 @@ define KernelPackage/mlx5-core/description
 endef
 
 $(eval $(call KernelPackage,mlx5-core))
+
+
+define KernelPackage/qlcnic
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core
+  TITLE:=QLogic QLE8240 and QLE8242 device support
+  KCONFIG:= \
+	CONFIG_QLCNIC \
+	CONFIG_QLCNIC_HWMON=y \
+	CONFIG_QLCNIC_SRIOV=y
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/qlogic/qlcnic/qlcnic.ko
+  AUTOLOAD:=$(call AutoProbe,qlcnic)
+endef
+
+define KernelPackage/qlcnic/description
+  This driver supports QLogic QLE8240 and QLE8242 Converged Ethernet
+  devices.
+endef
+
+$(eval $(call KernelPackage,qlcnic))
+
+
+define KernelPackage/qede
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-lib-crc8 +kmod-lib-zlib-inflate
+  TITLE:=QLogic FastLinQ 10/25/40/100Gb Ethernet NIC device support
+  KCONFIG:= \
+	CONFIG_QED \
+	CONFIG_QED_SRIOV=y \
+	CONFIG_QEDE \
+	CONFIG_QEDF=n \
+	CONFIG_QEDI=n
+  FILES:= \
+	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qed/qed.ko \
+	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qede/qede.ko
+  AUTOLOAD:=$(call AutoProbe,qed qede)
+endef
+
+define KernelPackage/qede/description
+  This driver supports QLogic FastLinQ 25/40/100Gb Ethernet NIC
+  devices.
+endef
+
+$(eval $(call KernelPackage,qede))
 
 
 define KernelPackage/sfp
