@@ -1,0 +1,25 @@
+From 24f6bc4322754a753e4e3e413659d542fa798c7b Mon Sep 17 00:00:00 2001
+From: Philipp Meier <philipp.meier@westermo.com>
+Date: Tue, 8 Nov 2022 14:38:37 +0100
+Subject: [PATCH] jail: correctly check for null pointer
+
+Handle case where opts.sysctl is not used.
+
+Signed-off-by: Philipp Meier <philipp.meier@westermo.com>
+---
+ jail/jail.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+--- a/jail/jail.c
++++ b/jail/jail.c
+@@ -213,6 +213,10 @@ static void free_hooklist(struct hook_ex
+ 
+ static void free_sysctl(void) {
+ 	struct sysctl_val *cur;
++
++	if (!opts.sysctl)
++		return;
++
+ 	cur = *opts.sysctl;
+ 
+ 	while (cur) {

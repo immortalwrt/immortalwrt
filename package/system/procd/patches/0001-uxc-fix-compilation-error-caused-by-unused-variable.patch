@@ -10,8 +10,6 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  uxc.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/uxc.c b/uxc.c
-index eb40eb2..b22d838 100644
 --- a/uxc.c
 +++ b/uxc.c
 @@ -80,6 +80,8 @@ static struct blob_buf conf;
@@ -31,6 +29,3 @@ index eb40eb2..b22d838 100644
  	int signal = SIGTERM;
  	int c;
  
--- 
-2.37.2
-

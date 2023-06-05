@@ -1,0 +1,45 @@
+From 93b2c2d5ed4ca369a9ea48163024125b958212b5 Mon Sep 17 00:00:00 2001
+From: Yuteng Zhong <zonyitoo@qq.com>
+Date: Sun, 9 Oct 2022 22:53:27 +0800
+Subject: [PATCH] jail: ignore missing .dynamic sect
+
+A static-linked binary doesn't have a .dynamic section, but when
+starting ujail with -r or -w will automatically search for PT_DYNAMIC in
+ELF and exit with failure if it is not found.
+
+github issue: https://github.com/openwrt/openwrt/issues/10933
+
+Signed-off-by: Yuteng Zhong <zonyitoo@qq.com>
+---
+ jail/elf.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+--- a/jail/elf.c
++++ b/jail/elf.c
+@@ -240,18 +240,18 @@ int elf_load_deps(const char *path, cons
+ 
+ 	gcc_mips64_bug_work_around = 1;
+ #endif
+-	if (elf_find_section(map, PT_LOAD, &load_offset, NULL, &load_vaddr)) {
+-		ERROR("failed to load the .load section from %s\n", path);
+-		return -1;
++	if (elf_find_section(map, PT_INTERP, &interp_offset, NULL, NULL) == 0) {
++		add_path_and_deps(map+interp_offset, 1, -1, 0);
+ 	}
+ 
+-	if (elf_find_section(map, PT_DYNAMIC, &dyn_offset, &dyn_size, NULL)) {
+-		ERROR("failed to load the .dynamic section from %s\n", path);
+-		return -1;
++	if (elf_find_section(map, PT_LOAD, &load_offset, NULL, &load_vaddr)) {
++		DEBUG("failed to load the .load section from %s\n", path);
++		return 0;
+ 	}
+ 
+-	if (elf_find_section(map, PT_INTERP, &interp_offset, NULL, NULL) == 0) {
+-		add_path_and_deps(map+interp_offset, 1, -1, 0);
++	if (elf_find_section(map, PT_DYNAMIC, &dyn_offset, &dyn_size, NULL)) {
++		DEBUG("failed to load the .dynamic section from %s\n", path);
++		return 0;
+ 	}
+ 
+ 	int clazz = map[EI_CLASS];
