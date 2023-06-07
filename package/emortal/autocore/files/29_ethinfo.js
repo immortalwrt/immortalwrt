@@ -7,9 +7,9 @@
 'require network';
 'require firewall';
 
-var callLuciETHInfo = rpc.declare({
-	object: 'luci',
-	method: 'getETHInfo',
+var callNetworkStatus = rpc.declare({
+	object: 'network.device',
+	method: 'status',
 	expect: { '': {} }
 });
 
@@ -292,7 +292,7 @@ return baseclass.extend({
 
 	load: function() {
 		return Promise.all([
-			L.resolveDefault(callLuciETHInfo(), {}),
+			L.resolveDefault(callNetworkStatus(), {}),
 			firewall.getZones(),
 			network.getNetworks(),
 			uci.load('network')
@@ -303,11 +303,13 @@ return baseclass.extend({
 		var known_ports = [],
 		    port_map = buildInterfaceMapping(data[1], data[2]);
 
-		if (Array.isArray(data[0].ethinfo))
-			data[0].ethinfo.forEach((k) => known_ports.push({
-				device: k,
-				netdev: network.instantiateDevice(k)
-			}));
+		Object.keys(data[0]).forEach((k) => {
+			if (['dsa', 'ethernet'].includes(data[0][k].devtype) && data[0][k]['link-advertising'].length)
+				known_ports.push({
+					device: k,
+					netdev: network.instantiateDevice(k)
+				});
+		});
 
 		known_ports.sort(function(a, b) {
 			return L.naturalCompare(a.device, b.device);
