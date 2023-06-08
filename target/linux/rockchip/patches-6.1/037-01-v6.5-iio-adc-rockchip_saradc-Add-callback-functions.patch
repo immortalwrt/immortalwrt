@@ -1,20 +1,7 @@
-From: Shreeya Patel <shreeya.patel@collabora.com>
-To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	sebastian.reichel@collabora.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	gustavo.padovan@collabora.com, kernel@collabora.com,
-	serge.broslavsky@collabora.com,
-	Shreeya Patel <shreeya.patel@collabora.com>,
-	Simon Xue <xxm@rock-chips.com>
-Subject: [PATCH v3 1/8] iio: adc: rockchip_saradc: Add callback functions
-Date: Sun,  4 Jun 2023 00:23:33 +0530	[thread overview]
-Message-ID: <20230603185340.13838-2-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
-
+From fb1c13d595857ccff49cbb69ddcdc08594a832e7 Mon Sep 17 00:00:00 2001
 From: Simon Xue <xxm@rock-chips.com>
+Date: Sun, 4 Jun 2023 00:23:33 +0530
+Subject: [PATCH] iio: adc: rockchip_saradc: Add callback functions
 
 Add start, read and power_down callback functions,
 which will help in adding new rockchip device support
@@ -22,17 +9,11 @@ cleanly.
 
 Signed-off-by: Simon Xue <xxm@rock-chips.com>
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20230603185340.13838-2-shreeya.patel@collabora.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
-
-Changes in v3
-  - no change
-
-Changes in v2
-  - Add a from address.
-  - Create a separate patch for changes done in the code for old
-    devices.
-
- drivers/iio/adc/rockchip_saradc.c | 64 +++++++++++++++++++++++++------
+ drivers/iio/adc/rockchip_saradc.c | 64 +++++++++++++++++++++++++++++++--------
  1 file changed, 52 insertions(+), 12 deletions(-)
 
 --- a/drivers/iio/adc/rockchip_saradc.c

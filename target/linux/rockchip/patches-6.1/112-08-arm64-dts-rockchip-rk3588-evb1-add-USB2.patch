@@ -52,8 +52,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
  };
  
- &cpu_l0 {
-@@ -64,6 +98,40 @@
+ &cpu_b0 {
+@@ -96,6 +130,40 @@
  	mem-supply = <&vdd_cpu_big1_mem_s0>;
  };
  
@@ -94,7 +94,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &gmac0 {
  	clock_in_out = "output";
  	phy-handle = <&rgmii_phy>;
-@@ -886,3 +954,11 @@
+@@ -783,3 +851,11 @@
  	pinctrl-0 = <&uart2m0_xfer>;
  	status = "okay";
  };

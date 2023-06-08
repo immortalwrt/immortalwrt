@@ -1,32 +1,18 @@
+From 5e63d7a260ea5536c22fda7b852f54eeee6d7c98 Mon Sep 17 00:00:00 2001
 From: Shreeya Patel <shreeya.patel@collabora.com>
-To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	sebastian.reichel@collabora.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	gustavo.padovan@collabora.com, kernel@collabora.com,
-	serge.broslavsky@collabora.com,
-	Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH v3 6/8] iio: adc: rockchip_saradc: Use dev_err_probe
-Date: Sun,  4 Jun 2023 00:23:38 +0530	[thread overview]
-Message-ID: <20230603185340.13838-7-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
+Date: Sun, 4 Jun 2023 00:23:38 +0530
+Subject: [PATCH] iio: adc: rockchip_saradc: Use dev_err_probe
 
 Use dev_err_probe instead of dev_err in probe function,
 which simplifies code a little bit and prints the error
 code.
 
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20230603185340.13838-7-shreeya.patel@collabora.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
-
-Changes in v3
-  - No change
-
-Changes in v2
-  - No change
-
- drivers/iio/adc/rockchip_saradc.c | 45 ++++++++++++++-----------------
+ drivers/iio/adc/rockchip_saradc.c | 45 +++++++++++++++++----------------------
  1 file changed, 20 insertions(+), 25 deletions(-)
 
 --- a/drivers/iio/adc/rockchip_saradc.c

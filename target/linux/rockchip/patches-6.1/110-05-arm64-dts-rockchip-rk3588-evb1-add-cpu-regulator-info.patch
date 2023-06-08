@@ -13,8 +13,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -49,6 +49,21 @@
- 	};
+@@ -81,6 +81,21 @@
+ 	cpu-supply = <&vdd_cpu_lit_s0>;
  };
  
 +&cpu_l0 {
@@ -35,7 +35,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &gmac0 {
  	clock_in_out = "output";
  	phy-handle = <&rgmii_phy>;
-@@ -863,6 +878,10 @@
+@@ -760,6 +775,10 @@
  	};
  };
  

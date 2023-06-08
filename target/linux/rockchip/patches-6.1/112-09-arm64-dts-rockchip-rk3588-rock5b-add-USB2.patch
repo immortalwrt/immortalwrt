@@ -25,9 +25,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #include "rk3588.dtsi"
  
  / {
-@@ -51,6 +52,20 @@
- 		regulator-min-microvolt = <5000000>;
- 		regulator-max-microvolt = <5000000>;
+@@ -61,6 +62,20 @@
+ 		regulator-max-microvolt = <1100000>;
+ 		vin-supply = <&vcc5v0_sys>;
  	};
 +
 +	vcc5v0_host: vcc5v0-host-regulator {
@@ -46,7 +46,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &cpu_b0 {
-@@ -194,3 +209,46 @@
+@@ -558,3 +573,46 @@
  	pinctrl-0 = <&uart2m0_xfer>;
  	status = "okay";
  };

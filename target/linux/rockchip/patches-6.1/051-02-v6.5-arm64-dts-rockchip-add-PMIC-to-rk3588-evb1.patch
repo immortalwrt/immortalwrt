@@ -1,20 +1,61 @@
-From e7b9bfa6608f131c2575094b3e9c65394227b115 Mon Sep 17 00:00:00 2001
+From ec5d218e1e443dd6fea7e77983c3f97b9e09a74a Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 12 Jul 2022 15:17:33 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add pmic
+Date: Fri, 26 May 2023 19:22:55 +0200
+Subject: [PATCH] arm64: dts: rockchip: add PMIC to rk3588-evb1
 
 This adds PMIC support for the RK3588 EVB.
 
-Signed-off-by: shengfei Xu <xsf@rock-chips.com>
 Co-developed-by: shengfei Xu <xsf@rock-chips.com>
+Signed-off-by: shengfei Xu <xsf@rock-chips.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230526172255.68236-1-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 740 ++++++++++++++++++
- 1 file changed, 740 insertions(+)
+ .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 637 ++++++++++++++++++
+ 1 file changed, 637 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -123,6 +123,746 @@
+@@ -49,6 +49,38 @@
+ 	};
+ };
+ 
++&cpu_b0 {
++	cpu-supply = <&vdd_cpu_big0_s0>;
++};
++
++&cpu_b1 {
++	cpu-supply = <&vdd_cpu_big0_s0>;
++};
++
++&cpu_b2 {
++	cpu-supply = <&vdd_cpu_big1_s0>;
++};
++
++&cpu_b3 {
++	cpu-supply = <&vdd_cpu_big1_s0>;
++};
++
++&cpu_l0 {
++	cpu-supply = <&vdd_cpu_lit_s0>;
++};
++
++&cpu_l1 {
++	cpu-supply = <&vdd_cpu_lit_s0>;
++};
++
++&cpu_l2 {
++	cpu-supply = <&vdd_cpu_lit_s0>;
++};
++
++&cpu_l3 {
++	cpu-supply = <&vdd_cpu_lit_s0>;
++};
++
+ &gmac0 {
+ 	clock_in_out = "output";
+ 	phy-handle = <&rgmii_phy>;
+@@ -123,6 +155,611 @@
  	status = "okay";
  };
  
@@ -26,15 +67,15 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +	pmic@0 {
 +		compatible = "rockchip,rk806";
-+		spi-max-frequency = <1000000>;
 +		reg = <0x0>;
-+
++		#gpio-cells = <2>;
++		gpio-controller;
 +		interrupt-parent = <&gpio0>;
 +		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-+
-+		pinctrl-names = "default", "pmic-power-off";
-+		pinctrl-0 = <&pmic_pins>, <&rk806_dvs1_null>, <&rk806_dvs2_null>, <&rk806_dvs3_null>;
-+		pinctrl-1 = <&rk806_dvs1_pwrdn>;
++		pinctrl-0 = <&pmic_pins>, <&rk806_dvs1_null>,
++			    <&rk806_dvs2_null>, <&rk806_dvs3_null>;
++		pinctrl-names = "default";
++		spi-max-frequency = <1000000>;
 +
 +		vcc1-supply = <&vcc5v0_sys>;
 +		vcc2-supply = <&vcc5v0_sys>;
@@ -52,27 +93,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		vcc14-supply = <&vcc_1v1_nldo_s3>;
 +		vcca-supply = <&vcc5v0_sys>;
 +
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+
 +		rk806_dvs1_null: dvs1-null-pins {
 +			pins = "gpio_pwrctrl1";
 +			function = "pin_fun0";
-+		};
-+
-+		rk806_dvs1_slp: dvs1-slp-pins {
-+			pins = "gpio_pwrctrl1";
-+			function = "pin_fun1";
-+		};
-+
-+		rk806_dvs1_pwrdn: dvs1-pwrdn-pins {
-+			pins = "gpio_pwrctrl1";
-+			function = "pin_fun2";
-+		};
-+
-+		rk806_dvs1_rst: dvs1-rst-pins {
-+			pins = "gpio_pwrctrl1";
-+			function = "pin_fun3";
 +		};
 +
 +		rk806_dvs2_null: dvs2-null-pins {
@@ -80,60 +103,11 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			function = "pin_fun0";
 +		};
 +
-+		rk806_dvs2_slp: dvs2-slp-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun1";
-+		};
-+
-+		rk806_dvs2_pwrdn: dvs2-pwrdn-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun2";
-+		};
-+
-+		rk806_dvs2_rst: dvs2-rst-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun3";
-+		};
-+
-+		rk806_dvs2_dvs: dvs2-dvs-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun4";
-+		};
-+
-+		rk806_dvs2_gpio: dvs2-gpio-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun5";
-+		};
-+
 +		rk806_dvs3_null: dvs3-null-pins {
 +			pins = "gpio_pwrctrl3";
 +			function = "pin_fun0";
 +		};
 +
-+		rk806_dvs3_slp: dvs3-slp-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun1";
-+		};
-+
-+		rk806_dvs3_pwrdn: dvs3-pwrdn-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun2";
-+		};
-+
-+		rk806_dvs3_rst: dvs3-rst-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun3";
-+		};
-+
-+		rk806_dvs3_dvs: dvs3-dvs-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun4";
-+		};
-+
-+		rk806_dvs3_gpio: dvs3-gpio-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun5";
-+		};
 +
 +		regulators {
 +			vdd_gpu_s0: dcdc-reg1 {
@@ -396,15 +370,15 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +	pmic@1 {
 +		compatible = "rockchip,rk806";
-+		spi-max-frequency = <1000000>;
 +		reg = <0x01>;
-+
++		#gpio-cells = <2>;
++		gpio-controller;
 +		interrupt-parent = <&gpio0>;
 +		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-+
-+		pinctrl-names = "default", "pmic-sleep";
-+		pinctrl-0 = <&rk806_slave_dvs1_null>, <&rk806_slave_dvs2_null>, <&rk806_slave_dvs3_null>;
-+		pinctrl-1 = <&rk806_slave_dvs1_slp>, <&rk806_slave_dvs2_null>, <&rk806_slave_dvs3_null>;
++		pinctrl-0 = <&rk806_slave_dvs1_null>, <&rk806_slave_dvs2_null>,
++			    <&rk806_slave_dvs3_null>;
++		pinctrl-names = "default";
++		spi-max-frequency = <1000000>;
 +
 +		vcc1-supply = <&vcc5v0_sys>;
 +		vcc2-supply = <&vcc5v0_sys>;
@@ -422,27 +396,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		vcc14-supply = <&vcc_2v0_pldo_s3>;
 +		vcca-supply = <&vcc5v0_sys>;
 +
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+
 +		rk806_slave_dvs1_null: dvs1-null-pins {
 +			pins = "gpio_pwrctrl1";
 +			function = "pin_fun0";
-+		};
-+
-+		rk806_slave_dvs1_slp: dvs1-slp-pins {
-+			pins = "gpio_pwrctrl1";
-+			function = "pin_fun1";
-+		};
-+
-+		rk806_slave_dvs1_pwrdn: dvs1-pwrdn-pins {
-+			pins = "gpio_pwrctrl1";
-+			function = "pin_fun2";
-+		};
-+
-+		rk806_slave_dvs1_rst: dvs1-rst-pins {
-+			pins = "gpio_pwrctrl1";
-+			function = "pin_fun3";
 +		};
 +
 +		rk806_slave_dvs2_null: dvs2-null-pins {
@@ -450,59 +406,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			function = "pin_fun0";
 +		};
 +
-+		rk806_slave_dvs2_slp: dvs2-slp-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun1";
-+		};
-+
-+		rk806_slave_dvs2_pwrdn: dvs2-pwrdn-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun2";
-+		};
-+
-+		rk806_slave_dvs2_rst: dvs2-rst-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun3";
-+		};
-+
-+		rk806_slave_dvs2_dvs: dvs2-dvs-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun4";
-+		};
-+
-+		rk806_slave_dvs2_gpio: dvs2-gpio-pins {
-+			pins = "gpio_pwrctrl2";
-+			function = "pin_fun5";
-+		};
-+
 +		rk806_slave_dvs3_null: dvs3-null-pins {
 +			pins = "gpio_pwrctrl3";
 +			function = "pin_fun0";
-+		};
-+
-+		rk806_slave_dvs3_slp: dvs3-slp-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun1";
-+		};
-+
-+		rk806_slave_dvs3_pwrdn: dvs3-pwrdn-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun2";
-+		};
-+
-+		rk806_slave_dvs3_rst: dvs3-rst-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun3";
-+		};
-+
-+		rk806_slave_dvs3_dvs: dvs3-dvs-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun4";
-+		};
-+
-+		rk806_slave_dvs3_gpio: dvs3-gpio-pins {
-+			pins = "gpio_pwrctrl3";
-+			function = "pin_fun5";
 +		};
 +
 +		regulators {

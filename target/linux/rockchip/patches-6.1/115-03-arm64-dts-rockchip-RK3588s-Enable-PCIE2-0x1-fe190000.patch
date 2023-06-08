@@ -13,7 +13,7 @@ Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -66,6 +66,15 @@
+@@ -76,6 +76,15 @@
  		pinctrl-0 = <&vcc5v0_host_en>;
  		vin-supply = <&vcc5v0_sys>;
  	};
@@ -29,7 +29,7 @@ Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
  };
  
  &cpu_b0 {
-@@ -252,3 +261,14 @@
+@@ -616,3 +625,14 @@
  		};
  	};
  };

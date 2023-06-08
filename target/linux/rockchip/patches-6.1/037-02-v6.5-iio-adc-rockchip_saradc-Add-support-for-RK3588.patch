@@ -1,43 +1,19 @@
-From: Shreeya Patel <shreeya.patel@collabora.com>
-To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	sebastian.reichel@collabora.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	gustavo.padovan@collabora.com, kernel@collabora.com,
-	serge.broslavsky@collabora.com,
-	Shreeya Patel <shreeya.patel@collabora.com>,
-	Simon Xue <xxm@rock-chips.com>,
-	AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 2/8] iio: adc: rockchip_saradc: Add support for RK3588
-Date: Sun,  4 Jun 2023 00:23:34 +0530	[thread overview]
-Message-ID: <20230603185340.13838-3-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
-
+From 757953f8ec6916084e0c22218d1d0482e9fc6682 Mon Sep 17 00:00:00 2001
 From: Simon Xue <xxm@rock-chips.com>
+Date: Sun, 4 Jun 2023 00:23:34 +0530
+Subject: [PATCH] iio: adc: rockchip_saradc: Add support for RK3588
 
 Add new start and read functions to support rk3588 device.
 Also, add a device compatible string for the same.
 
 Signed-off-by: Simon Xue <xxm@rock-chips.com>
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20230603185340.13838-3-shreeya.patel@collabora.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
-
-Changes in v3
-  - Add bitfield.h header file.
-  - Add a Reviewed-by tag.
-
-Changes in v2
-  - Add a from address.
-  - Create separate patches for adding new device support and changes to
-    the old device code.
-  - Make use of FIELD_PREP.
-
-
- drivers/iio/adc/rockchip_saradc.c | 70 +++++++++++++++++++++++++++++++
+ drivers/iio/adc/rockchip_saradc.c | 70 +++++++++++++++++++++++++++++++++++++++
  1 file changed, 70 insertions(+)
 
 --- a/drivers/iio/adc/rockchip_saradc.c
@@ -55,9 +31,9 @@ Changes in v2
  #define SARADC_MAX_CHANNELS		8
  
 +/* v2 registers */
-+#define SARADC2_CONV_CON		0x0
-+#define SARADC_T_PD_SOC			0x4
-+#define SARADC_T_DAS_SOC		0xc
++#define SARADC2_CONV_CON		0x000
++#define SARADC_T_PD_SOC			0x004
++#define SARADC_T_DAS_SOC		0x00c
 +#define SARADC2_END_INT_EN		0x104
 +#define SARADC2_ST_CON			0x108
 +#define SARADC2_STATUS			0x10c

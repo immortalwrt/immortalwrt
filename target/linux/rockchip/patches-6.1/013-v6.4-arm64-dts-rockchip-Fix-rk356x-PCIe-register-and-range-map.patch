@@ -1,20 +1,7 @@
-From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-To: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Peter Geis <pgwipeout@gmail.com>
-Cc: Andrew Powers-Holmes <aholmes@omnom.net>,
-	Ondrej Jirman <megi@xff.cz>,
-	stable@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
-	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] arm64: dts: rockchip: rk356x: Fix PCIe register and range mappings
-Date: Thu,  1 Jun 2023 15:25:16 +0200	[thread overview]
-Message-ID: <20230601132516.153934-1-frattaroli.nicolas@gmail.com> (raw)
-
+From 568a67e742dfa90b19a23305317164c5c350b71e Mon Sep 17 00:00:00 2001
 From: Andrew Powers-Holmes <aholmes@omnom.net>
+Date: Thu, 1 Jun 2023 15:25:16 +0200
+Subject: [PATCH] arm64: dts: rockchip: Fix rk356x PCIe register and range mappings
 
 The register and range mappings for the PCIe controller in Rockchip's
 RK356x SoCs are incorrect. Replace them with corrected values from the
@@ -27,19 +14,10 @@ Cc: stable@vger.kernel.org
 Signed-off-by: Andrew Powers-Holmes <aholmes@omnom.net>
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Tested-by: Diederik de Haas <didi.debian@cknow.org>
+Link: https://lore.kernel.org/r/20230601132516.153934-1-frattaroli.nicolas@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
-
-Since nobody else was gonna submit this fix on a fix, I decided
-to do it myself, based on the u-boot patch Jonas Karlman wrote.
-
-Please test that this does not break the PCIe 3 controller on
-RK3568 hardware, I don't have the right setup to easily test it
-on there.
-
-Changes since v1:
- - Fix copy-paste error on second reg property from 0xf2000000
-   to 0xf0000000
-
  arch/arm64/boot/dts/rockchip/rk3568.dtsi | 14 ++++++++------
  arch/arm64/boot/dts/rockchip/rk356x.dtsi |  7 ++++---
  2 files changed, 12 insertions(+), 9 deletions(-)

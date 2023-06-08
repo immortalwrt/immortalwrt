@@ -79,7 +79,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	ioc: syscon@fd5f0000 {
  		compatible = "rockchip,rk3588-ioc", "syscon";
  		reg = <0x0 0xfd5f0000 0x0 0x10000>;
-@@ -2450,6 +2460,38 @@
+@@ -2480,6 +2490,38 @@
  		#dma-cells = <1>;
  	};
  

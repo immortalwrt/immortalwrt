@@ -1,32 +1,16 @@
+From 47902344c8c35c1c08147df08879ef75a3ff86c1 Mon Sep 17 00:00:00 2001
 From: Shreeya Patel <shreeya.patel@collabora.com>
-To: jic23@kernel.org, lars@metafoo.de, heiko@sntech.de,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	sebastian.reichel@collabora.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	gustavo.padovan@collabora.com, kernel@collabora.com,
-	serge.broslavsky@collabora.com,
-	Shreeya Patel <shreeya.patel@collabora.com>,
-	AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 4/8] iio: adc: rockchip_saradc: Use of_device_get_match_data
-Date: Sun,  4 Jun 2023 00:23:36 +0530	[thread overview]
-Message-ID: <20230603185340.13838-5-shreeya.patel@collabora.com> (raw)
-In-Reply-To: <20230603185340.13838-1-shreeya.patel@collabora.com>
+Date: Sun, 4 Jun 2023 00:23:36 +0530
+Subject: [PATCH] iio: adc: rockchip_saradc: Use of_device_get_match_data
 
 Use of_device_get_match_data() to simplify the code.
 
 Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20230603185340.13838-5-shreeya.patel@collabora.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
-
-Changes in v3
-  - No change
-
-Changes in v2
-  - Add a Reviewed-by tag.
-
  drivers/iio/adc/rockchip_saradc.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 

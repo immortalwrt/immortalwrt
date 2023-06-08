@@ -42,8 +42,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
  };
  
- &cpu_l0 {
-@@ -963,10 +983,27 @@
+ &cpu_b0 {
+@@ -860,10 +880,27 @@
  	status = "okay";
  };
  
