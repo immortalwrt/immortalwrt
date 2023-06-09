@@ -2910,6 +2910,7 @@ CONFIG_IP_VS_MH_TAB_INDEX=10
 # CONFIG_IR_LIRC_CODEC is not set
 # CONFIG_IR_MCE_KBD_DECODER is not set
 # CONFIG_IR_MCEUSB is not set
+# CONFIG_IR_MTK is not set
 # CONFIG_IR_NEC_DECODER is not set
 # CONFIG_IR_NUVOTON is not set
 # CONFIG_IR_PWM_TX is not set
