@@ -2,7 +2,7 @@
 # Copyright (c) 2023
 #
 
-name: Build Immor Ruijei M520
+name: Build Immor Ruijei M520 rooter
 
 on:
   schedule:
