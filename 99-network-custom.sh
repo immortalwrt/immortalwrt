@@ -7,13 +7,24 @@ wifi_password="TPTlam011205@!"
 ten_wifi="TPT Lam"
 hostname="DOANDUY"
 
+uci set dropbear.@dropbear[0].PasswordAuth='on'
+uci set dropbear.@dropbear[0].RootPasswordAuth='on'
+hmod -R u=rwX,go= /etc/dropbear
+uci commit dropbear
+/etc/init.d/dropbear restart
+
 sed -i -re 's/^(option check_signature.*)/#\1/g' /etc/opkg.conf
+
+uci set network.lan.ipaddr="192.168.1.1"
+uci commit network
+/etc/init.d/network restart
 
 uci set 'network.lan.ipv6=0'
 uci set 'network.wan.ipv6=0'
 uci set 'dhcp.lan.dhcpv6=disabled'
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
+uci commit
 
 uci -q delete dhcp.lan.dhcpv6
 uci -q delete dhcp.lan.ra
@@ -22,24 +33,22 @@ uci commit dhcp
 
 uci set network.lan.delegate="0"
 uci commit network
+/etc/init.d/network restart
 
-uci set base_config.@status[0].SSID=${ten_wifi}
+uci set base_config.@status[0].SSID='TPT Lam'
 uci set base_config.@status[0].SSID_PASSWD=${wifi_password}
 uci set base_config.@status[0].country="CN"
 uci commit base_config
 
-for radio in 'radio0' 'radio1'
-do
-    uci set wireless."$radio".country="CN"
-    uci set wireless."$radio".disabled="0"
-    uci set wireless.default_"$radio".ssid=${ten_wifi}
-    uci set wireless.default_"$radio".encryption="psk2"
-    uci set wireless.default_"$radio".key=${wifi_password}
-    uci -q commit wireless
-done
-
 uci commit wireless
 
+# uci set wireless.radio0.disabled="0"
+# uci set wireless.radio1.disabled="0"
+# uci set wireless.wifinet0.disabled="0"
+# uci set wireless.wifinet1.disabled="0"
+# uci commit wireless
+# uci commit 
+# uci commit base_config
 wifi reload
 /sbin/wifi reload
 
@@ -53,28 +62,9 @@ uci add_list system.ntp.server='222.255.146.26'
 
 uci set system.@system[0]=system 
 uci set system.@system[0].hostname="${hostname}"
-uci set system.@system[0].zonename='Asia/Ho Chi Minh'
+uci set system.@system[0].zonename='Asia/Ho_Chi_Minh'
 uci set system.@system[0].timezone='<+07>-7'
 uci commit system
-
-cat << EOI >> /etc/dnsmasq.conf
-
-ipset=/youtube.com/youtube
-ipset=/googlevideo.com/youtube
-ipset=/ytimg.com/youtube
-ipset=/zalo.vn/zalo
-ipset=/zaloapp.com/zalo
-ipset=/zalo.me/zalo
-ipset=/zadn.vn/zalo
-ipset=/tiktok.com/tiktok
-ipset=/tiktokv.com/tiktok
-ipset=/tiktokcdn.com/tiktok
-ipset=/byteicdn.com/tiktok
-
-EOI
-
-/etc/init.d/dnsmasq restart
-
 
 
 cat << EOI >> /etc/firewall.include
@@ -104,6 +94,35 @@ uci set firewall.@include[0].fw4_compatible='1'
 uci commit firewall
 service firewall restart
 
+cat << EOI >> /etc/init.d/disable_interface.sh
+
+#!/bin/sh
+
+. /lib/functions.sh
+. /etc/openwrt_release
+
+tencardmang="$1"
+
+action="$2"
+
+if [[ "$action" == "1" ]]
+then
+    uci set network."$tencardmang".auto='0'
+    uci commit network
+    /etc/init.d/network reload
+else
+    uci delete network."$tencardmang".auto='0'
+    uci commit network
+    /etc/init.d/network reload
+fi
+
+EOI
+
+chmod 755 /etc/init.d/disable_interface.sh
+
+
 # /etc/init.d/network restart
 
 exit 0
+
+
