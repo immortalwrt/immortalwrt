@@ -4,7 +4,7 @@
 . /etc/openwrt_release
 
 wifi_password="TPTlam011205@!"
-ten_wifi='TPT Lam'
+ten_wifi="TPT Lam"
 hostname="DOANDUY"
 
 uci set dropbear.@dropbear[0].PasswordAuth='on'
@@ -42,6 +42,13 @@ uci commit base_config
 
 uci commit wireless
 
+# uci set wireless.radio0.disabled="0"
+# uci set wireless.radio1.disabled="0"
+# uci set wireless.wifinet0.disabled="0"
+# uci set wireless.wifinet1.disabled="0"
+# uci commit wireless
+# uci commit 
+# uci commit base_config
 wifi reload
 /sbin/wifi reload
 
@@ -64,17 +71,58 @@ cat << EOI >> /etc/firewall.include
 
 nft add rule inet fw4 mangle_prerouting iifname wwan0 ip ttl set 65
 nft add rule inet fw4 mangle_postrouting oifname wwan0 ip ttl set 64
+
 nft add rule inet fw4 mangle_prerouting iifname wwan1 ip ttl set 65
 nft add rule inet fw4 mangle_postrouting oifname wwan1 ip ttl set 64
+
+nft add rule inet fw4 mangle_prerouting iifname usb0 ip ttl set 65
+nft add rule inet fw4 mangle_postrouting oifname usb0 ip ttl set 65
 
 EOI
 
 cat << EOI >> /etc/firewall.user
+
+iptables -t mangle -I POSTROUTING -o usb0 -j TTL --ttl-set 65
 iptables -t mangle -I POSTROUTING -o wwan0 -j TTL --ttl-set 64
 iptables -t mangle -I POSTROUTING -o wwan1 -j TTL --ttl-set 64
-iptables -t mangle -I POSTROUTING -o usb0 -j TTL --ttl-set 65
+
 EOI
+
+uci add firewall include
+uci set firewall.@include[0].path='/etc/firewall.include'
+uci set firewall.@include[0].fw4_compatible='1'
+uci commit firewall
+service firewall restart
+
+cat << EOI >> /etc/init.d/disable_interface.sh
+
+#!/bin/sh
+
+. /lib/functions.sh
+. /etc/openwrt_release
+
+tencardmang="$1"
+
+action="$2"
+
+if [[ "$action" == "1" ]]
+then
+    uci set network."$tencardmang".auto='0'
+    uci commit network
+    /etc/init.d/network reload
+else
+    uci delete network."$tencardmang".auto='0'
+    uci commit network
+    /etc/init.d/network reload
+fi
+
+EOI
+
+chmod 755 /etc/init.d/disable_interface.sh
+
 
 # /etc/init.d/network restart
 
 exit 0
+
+
