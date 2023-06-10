@@ -209,19 +209,15 @@ UBOOT_TARGETS := \
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
+UBOOT_CUSTOMIZE_CONFIG := \
+	--disable SPL_FIT_SIGNATURE \
+	--disable TOOLS_MKEFICAPSULE \
+	--set-val MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc
+
 UBOOT_MAKE_FLAGS += \
   PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
   $(if $(DDR),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(DDR))
-
-define Build/Configure
-	$(call Build/Configure/U-Boot)
-
-	sed -i $(PKG_BUILD_DIR)/.config \
-	    -e 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' \
-	    -e 's|CONFIG_SPL_FIT_SIGNATURE=y|# CONFIG_SPL_FIT_SIGNATURE is not set|g' \
-	    -e 's|CONFIG_TOOLS_MKEFICAPSULE=y|# CONFIG_TOOLS_MKEFICAPSULE is not set|g'
-endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
