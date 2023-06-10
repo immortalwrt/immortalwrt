@@ -41,8 +41,7 @@ glinet,gl-mt3000)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
 	;;
 livinet,zr-3020|\
-qihoo,360-t7-stock|\
-qihoo,360-t7-ubootmod)
+qihoo,360t7-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "1"
 	;;
 xiaomi,redmi-router-ax6000|\
