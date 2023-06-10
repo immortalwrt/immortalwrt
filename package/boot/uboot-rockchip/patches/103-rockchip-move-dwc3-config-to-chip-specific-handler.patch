@@ -19,7 +19,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 
 --- a/arch/arm/mach-rockchip/board.c
 +++ b/arch/arm/mach-rockchip/board.c
-@@ -280,30 +280,6 @@ int board_usb_cleanup(int index, enum us
+@@ -287,30 +287,6 @@ int board_usb_cleanup(int index, enum us
  }
  #endif /* CONFIG_USB_GADGET_DWC2_OTG */
  
