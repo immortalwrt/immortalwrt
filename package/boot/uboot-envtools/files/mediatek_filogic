@@ -37,6 +37,9 @@ bananapi,bpi-r3)
 		;;
 	esac
 	;;
+glinet,gl-mt3000)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
+	;;
 livinet,zr-3020|\
 qihoo,360-t7-stock|\
 qihoo,360-t7-ubootmod)
