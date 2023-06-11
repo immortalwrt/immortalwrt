@@ -3,6 +3,9 @@
 #include "bcm6368.dtsi"
 
 / {
+	model = "Comtrend WAP-5813n";
+	compatible = "comtrend,wap-5813n", "brcm,bcm6369", "brcm,bcm6368";
+
 	aliases {
 		led-boot = &led_power_green;
 		led-failsafe = &led_power_red;
@@ -14,16 +17,16 @@
 		compatible = "gpio-keys-polled";
 		poll-interval = <100>;
 
-		rfkill {
-			label = "rfkill";
-			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RFKILL>;
+		wlan {
+			label = "wlan";
+			gpios = <&gpio 32 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WLAN>;
 			debounce-interval = <60>;
 		};
 
 		reset {
 			label = "reset";
-			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio 34 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 			debounce-interval = <60>;
 		};
@@ -39,63 +42,55 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led@2 {
-			label = "green:dsl";
-			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
-		};
-
-		led@4 {
-			label = "red:wan";
-			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
-		};
-
 		led@5 {
-			label = "green:wan";
-			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
-		};
-
-		led@11 {
-			label = "green:wps";
-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
-		};
-
-		led@13 {
-			/* Front USB port */
-			label = "green:usb2";
-			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			label = "green:internet";
+			gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
 		};
 
 		led@14 {
-			/* Back USB port */
-			label = "green:usb1";
+			label = "green:usb";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 		};
 
-		led_power_red: led@22 {
-			label = "red:power";
-			gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
-			panic-indicator;
+		led_power_green: led@22 {
+			label = "green:power";
+			gpios = <&gpio 22 GPIO_ACTIVE_HIGH>;
 		};
 
 		led@23 {
-			label = "green:lan";
+			label = "green:wps";
 			gpios = <&gpio 23 GPIO_ACTIVE_LOW>;
 		};
 
-		led_power_green: led@24 {
-			label = "green:power";
-			gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
+		led_power_red: led@24 {
+			label = "red:power";
+			gpios = <&gpio 24 GPIO_ACTIVE_HIGH>;
+			panic-indicator;
 		};
 
-		led@26 {
-			label = "green:wifi2g";
-			gpios = <&gpio 26 GPIO_ACTIVE_LOW>;
+		led@31 {
+			label = "red:internet";
+			gpios = <&gpio 31 GPIO_ACTIVE_HIGH>;
 		};
+	};
 
-		led@27 {
-			label = "blue:wifi5g";
-			gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
-		};
+	bcm4322-sprom {
+		compatible = "brcm,ssb-sprom";
+
+		pci-bus = <0>;
+		pci-dev = <1>;
+
+		nvmem-cells = <&macaddr_cfe_6a0>;
+		nvmem-cell-names = "mac-address";
+		mac-address-increment = <1>;
+
+		brcm,sprom = "brcm/bcm4322-sprom.bin";
+		brcm,sprom-fixups = <97 0xfeed>,
+				    <98 0x15d1>,
+				    <99 0xfb0d>,
+				    <113 0xfef7>,
+				    <114 0x15f7>,
+				    <115 0xfb1a>;
 	};
 };
 
@@ -113,9 +108,9 @@
 &lsspi {
 	status = "okay";
 
-	switch@1 {
+	switch@0 {
 		compatible = "brcm,bcm53115";
-		reg = <1>;
+		reg = <0>;
 		spi-max-frequency = <781000>;
 		dsa,member = <1 0>;
 
@@ -123,36 +118,36 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 
-			wan@0 {
+			port@0 {
 				reg = <0>;
-				label = "wan";
+				label = "lan4";
 			};
 
 			port@1 {
 				reg = <1>;
-				label = "lan4";
+				label = "lan3";
 			};
 
 			port@2 {
 				reg = <2>;
-				label = "lan3";
+				label = "lan2";
 			};
 
 			port@3 {
 				reg = <3>;
-				label = "lan2";
+				label = "lan1";
 			};
 
 			port@4 {
 				reg = <4>;
-				label = "lan1";
+				label = "wan";
 			};
 
-			port@8 {
-				reg = <8>;
+			port@5 {
+				reg = <5>;
 
 				phy-mode = "rgmii";
-				ethernet = <&switch0port5>;
+				ethernet = <&switch0port4>;
 
 				fixed-link {
 					speed = <1000>;
@@ -161,38 +156,6 @@
 			};
 		};
 	};
-};
-
-&nflash {
-	status = "okay";
-
-	nandcs@0 {
-		compatible = "brcm,nandcs";
-		reg = <0>;
-		nand-ecc-step-size = <512>;
-		nand-ecc-strength = <15>;
-		nand-on-flash-bbt;
-		brcm,nand-oob-sector-size = <64>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			partition@0 {
-				label = "storage";
-				reg = <0 0>; /* autodetected size */
-			};
-		};
-	};
-};
-
-&ohci {
-	status = "okay";
-};
-
-&pci {
-	status = "okay";
 };
 
 &pflash {
@@ -205,35 +168,37 @@
 
 		cfe: partition@0 {
 			label = "CFE";
-			reg = <0x0000000 0x0020000>;
+			reg = <0x000000 0x010000>;
 			read-only;
 		};
 
 		partition@20000 {
-			compatible = "brcm,bcm963xx-imagetag";
 			label = "firmware";
-			reg = <0x0020000 0x1e20000>;
+			reg = <0x010000 0x7e0000>;
+			compatible = "brcm,bcm963xx-imagetag";
 		};
 
-		partition@1e40000 {
-			label = "board_data";
-			reg = <0x1e40000 0x1a0000>;
-			read-only;
-		};
-
-		partition@1fe0000 {
+		partition@fe0000 {
 			label = "nvram";
-			reg = <0x1fe0000 0x020000>;
+			reg = <0x7f0000 0x010000>;
 		};
 	};
+};
+
+&ohci {
+	status = "okay";
+};
+
+&pci {
+	status = "okay";
 };
 
 &switch0 {
 	dsa,member = <0 0>;
 
 	ports {
-		switch0port5: port@5 {
-			reg = <5>;
+		switch0port4: port@4 {
+			reg = <4>;
 			label = "extsw";
 
 			phy-mode = "rgmii";
