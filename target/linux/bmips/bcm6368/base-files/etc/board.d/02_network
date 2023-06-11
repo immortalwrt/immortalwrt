@@ -5,9 +5,15 @@
 board_config_update
 
 case "$(board_name)" in
-comtrend,vr-3025u)
+comtrend,vr-3025u |\
+observa,vh4032n)
 	ucidef_set_bridge_device switch
 	ucidef_set_interface_lan "lan1 lan2 lan3 lan4"
+	;;
+netgear,dgnd3700-v1 |\
+netgear,dgnd3800b)
+	ucidef_set_bridge_device switch
+	ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
 	;;
 esac
 
