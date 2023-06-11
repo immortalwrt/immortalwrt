@@ -14,7 +14,6 @@ define Device/EmmcImage
 	IMAGES += factory.bin sysupgrade.bin
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | pad-to 64k
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | sysupgrade-tar rootfs=$$$$@ | append-metadata
-	DEVICE_PACKAGES := e2fsprogs kmod-fs-ext4 losetup
 endef
 
 define Device/UbiFit
@@ -107,6 +106,17 @@ define Device/netgear_wax218
 		ipq-wifi-netgear_wax218
 endef
 TARGET_DEVICES += netgear_wax218
+
+define Device/prpl_haze
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := prpl Foundation
+	DEVICE_MODEL := Haze
+	DEVICE_DTS_CONFIG := config@hk09
+	SOC := ipq8072
+	DEVICE_PACKAGES += ath11k-firmware-qcn9074 ipq-wifi-prpl_haze kmod-ath11k-pci
+endef
+TARGET_DEVICES += prpl_haze
 
 define Device/qnap_301w
 	$(call Device/FitImage)
