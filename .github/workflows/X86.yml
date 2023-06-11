@@ -6,7 +6,7 @@ name: Build Immor X86
 
 on:
   schedule:
-    - cron: '0 8 * * 5'
+    - cron: '015 1 * * 0'
   release:
     types: [published]
   push:
