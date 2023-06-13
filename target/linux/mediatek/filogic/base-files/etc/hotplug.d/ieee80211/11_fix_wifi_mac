@@ -36,9 +36,13 @@ case "$board" in
 		addr=$(mtd_get_mac_ascii config2 wifi5gmac)
 		[ "$PHYNBR" = "1" ] && echo $macaddr > /sys${DEVPATH}/macaddress
 		;;
-	qihoo,360t7|\
-	qihoo,360t7-ubootmod)
+	qihoo,360t7)
 		addr=$(mtd_get_mac_ascii factory lanMac)
+		[ "$PHYNBR" = "0" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
+		;;
+	qihoo,360t7-ubootmod)
+		addr=$(cat /sys/class/net/eth0/address)
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
 		;;

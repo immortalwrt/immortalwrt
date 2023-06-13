@@ -249,8 +249,4 @@
 	status = "okay";
 
 	mediatek,mtd-eeprom = <&factory 0x0>;
-
-	nvmem-cells = <&macaddr_factory_14>;
-	nvmem-cell-names = "mac-address-ascii";
-	mac-address-increment = <2>;
 };
