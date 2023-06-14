@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2023-04-12
-PKG_SOURCE_VERSION:=b22487d729362feaff7d06354353d005a3a9d6b7
-PKG_MIRROR_HASH:=94eea9db636b2cbf6782ec17d8b8fe36770c61ff283702ec418df1a1b09f54ef
+PKG_SOURCE_DATE:=2023-06-03
+PKG_SOURCE_VERSION:=cd9c30ca47b8e5388b770c523a7f6b8b969e2f92
+PKG_MIRROR_HASH:=45e623fcc512b514ade0f22e217275536aa8de4afba7dfdb11696482b8fa71a2
 
 PKG_FLAGS:=nonshared
 
@@ -29,10 +29,12 @@ endef
 
 ALLWIFIBOARDS:= \
 	buffalo_wxr-5950ax12 \
+	compex_wpq873 \
 	dynalink_dl-wrx36 \
 	edgecore_eap102 \
 	edimax_cax1800 \
 	netgear_wax218 \
+	prpl_haze \
 	qnap_301w \
 	redmi_ax6 \
 	wallys_dr40x9 \
@@ -114,11 +116,13 @@ endef
 # Add $(eval $(call generate-ipq-wifi-package,<devicename>,<display name>))
 
 $(eval $(call generate-ipq-wifi-package,buffalo_wxr-5950ax12,Buffalo WXR-5950AX12))
+$(eval $(call generate-ipq-wifi-package,compex_wpq873,Compex WPQ-873))
 $(eval $(call generate-ipq-wifi-package,dynalink_dl-wrx36,Dynalink DL-WRX36))
 $(eval $(call generate-ipq-wifi-package,edgecore_eap102,Edgecore EAP102))
 $(eval $(call generate-ipq-wifi-package,edimax_cax1800,Edimax CAX1800))
 $(eval $(call generate-ipq-wifi-package,netgear_wax218,Netgear WAX218))
 $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))
+$(eval $(call generate-ipq-wifi-package,prpl_haze,prpl Haze))
 $(eval $(call generate-ipq-wifi-package,redmi_ax6,Redmi AX6))
 $(eval $(call generate-ipq-wifi-package,wallys_dr40x9,Wallys DR40X9))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax3600,Xiaomi AX3600))
