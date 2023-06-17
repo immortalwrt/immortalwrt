@@ -114,6 +114,29 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  
  		user_led: led-1 {
+--- a/arch/arm64/boot/dts/rockchip/rk3328-rock-pi-e.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-rock-pi-e.dts
+@@ -23,6 +23,11 @@
+ 	aliases {
+ 		mmc0 = &sdmmc;
+ 		mmc1 = &emmc;
++
++		led-boot = &status_led;
++		led-failsafe = &status_led;
++		led-running = &status_led;
++		led-upgrade = &status_led;
+ 	};
+ 
+ 	chosen {
+@@ -55,7 +60,7 @@
+ 		pinctrl-0 = <&led_pin>;
+ 		pinctrl-names = "default";
+ 
+-		led-0 {
++		status_led: led-0 {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_LOW>;
+ 			linux,default-trigger = "heartbeat";
 --- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 @@ -19,6 +19,13 @@
