@@ -29,7 +29,7 @@ Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
  };
  
  &cpu_b0 {
-@@ -616,3 +625,14 @@
+@@ -623,3 +632,14 @@
  		};
  	};
  };

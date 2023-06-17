@@ -1,6 +1,6 @@
-From 80299d07e63d41bffcf6bb38b0339e22e3ad87da Mon Sep 17 00:00:00 2001
+From 814f5a42520ebf0bf26a06e2d0ddd1c7d08f32c2 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
-Date: Tue, 12 Jul 2022 09:20:43 +0200
+Date: Mon, 3 Apr 2023 21:32:50 +0200
 Subject: [PATCH] soc: rockchip: power-domain: add rk3588 mem module support
 
 On RK3588 it's also possible to power down the memory used by the
@@ -12,6 +12,8 @@ Co-Developed-by: Finley Xiao <finley.xiao@rock-chips.com>
 Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
 Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230403193250.108693-3-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  drivers/soc/rockchip/pm_domains.c | 160 +++++++++++++++++++++++-------
  1 file changed, 125 insertions(+), 35 deletions(-)

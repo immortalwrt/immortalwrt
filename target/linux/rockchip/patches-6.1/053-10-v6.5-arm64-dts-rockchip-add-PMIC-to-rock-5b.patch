@@ -56,7 +56,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &i2c0 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c0m2_xfer>;
-@@ -190,6 +216,330 @@
+@@ -192,6 +218,330 @@
  	status = "okay";
  };
  

@@ -1,0 +1,28 @@
+From a68e1aec587a75a51496f1b207272b6034cca190 Mon Sep 17 00:00:00 2001
+From: Shreeya Patel <shreeya.patel@collabora.com>
+Date: Sat, 10 Jun 2023 19:18:41 +0530
+Subject: [PATCH] arm64: dts: rockchip: Add saradc node to rock5b
+
+Add ADC support for ROCK 5B.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Link: https://lore.kernel.org/r/20230610134841.172313-1-shreeya.patel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -207,6 +207,11 @@
+ 	status = "okay";
+ };
+ 
++&saradc {
++	vref-supply = <&avcc_1v8_s0>;
++	status = "okay";
++};
++
+ &sdhci {
+ 	bus-width = <8>;
+ 	no-sdio;

@@ -46,7 +46,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &cpu_b0 {
-@@ -558,3 +573,46 @@
+@@ -565,3 +580,46 @@
  	pinctrl-0 = <&uart2m0_xfer>;
  	status = "okay";
  };
