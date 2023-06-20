@@ -6,6 +6,7 @@ ImmortalWrt is a fork of [OpenWrt](https://openwrt.org), with more packages port
 Compared the official one, we allow to use hacks or non-upstreamable patches / modifications to achieve our purpose. Source from anywhere.
 
 Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: _none_.
+To quickly set up the IP address, enter the command `init_ip` in the command line terminal.
 
 ## Download
 Built firmware images are available for many architectures and come with a package selection to be used as WiFi home router. To quickly find a factory image usable to migrate from a vendor stock firmware to ImmortalWrt, try the *Firmware Selector*.
