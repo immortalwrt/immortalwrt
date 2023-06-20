@@ -36,8 +36,9 @@ define Build/Compile
 endef
 
 define Package/default-settings/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_DIR) $(1)/etc/uci-defaults $(1)/usr/bin
 	$(INSTALL_BIN) ./files/99-default-settings $(1)/etc/uci-defaults/
+	$(INSTALL_BIN) ./files/usr/bin/init_ip $(1)/usr/bin/
 endef
 
 define Package/default-settings-chn/install

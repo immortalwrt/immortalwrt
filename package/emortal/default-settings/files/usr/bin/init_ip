@@ -1,0 +1,35 @@
+#!/bin/sh
+
+echo "IP is:"`uci get network.lan.ipaddr`
+echo "netmask is:"`uci get network.lan.netmask`
+echo "gateway is:"`uci get network.lan.gateway`
+
+read -p "Enter the IP to set: " set_ipaddr
+
+read -p "Enter the mask to set. Enter is 255.255.255.0: " set_netmask
+
+ip_gateway="`echo $set_ipaddr|grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.'`1"
+read -p "Enter the gateway to be set, Enter is ${ip_gateway}" set_gateway
+
+[ -z $set_netmask ] && set_netmask="255.255.255.0"
+[ -z $set_gateway ] && set_gateway=$ip_gateway
+
+[ -z `echo $set_ipaddr | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'` ] && echo "IP is: $set_ipaddr，Invalid input!" && exit
+[ -z `echo $set_netmask | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'` ] && echo "netmask is:$set_netmask，Invalid input!" && exit
+[ -z `echo $set_gateway | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'` ] && echo "gateway is:$set_gateway，Invalid input!" && exit
+
+echo "The current IP to be set is: $set_ipaddr"
+echo "The current mask to set is:$set_netmask"
+echo "The current gateway to be set is:$set_gateway"
+echo "Network settings...."
+
+uci set network.lan.ipaddr=$set_ipaddr
+uci set network.lan.netmask=$set_netmask
+uci set network.lan.gateway=$set_gateway
+uci commit network
+/etc/init.d/network restart
+
+echo "IP is:"`uci get network.lan.ipaddr`
+echo "netmask is:"`uci get network.lan.netmask`
+echo "gateway is:"`uci get network.lan.gateway`
+
