@@ -99,7 +99,7 @@
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (!dev->eth_mangle_tx ||
  	    (skb = dev->eth_mangle_tx(dev, skb)) != NULL)
-@@ -4758,6 +4766,11 @@ void netdev_rx_handler_unregister(struct
+@@ -4760,6 +4768,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -111,7 +111,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -4808,6 +4821,10 @@ static int __netif_receive_skb_core(stru
+@@ -4810,6 +4823,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -122,7 +122,7 @@
  	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
  
  	trace_netif_receive_skb(skb);
-@@ -4847,6 +4864,16 @@ another_round:
+@@ -4849,6 +4866,16 @@ another_round:
  			goto out;
  	}
  
@@ -141,7 +141,7 @@
  
 --- a/net/Kconfig
 +++ b/net/Kconfig
-@@ -473,3 +473,6 @@ config HAVE_CBPF_JIT
+@@ -471,3 +471,6 @@ config HAVE_CBPF_JIT
  # Extended BPF JIT (eBPF)
  config HAVE_EBPF_JIT
  	bool

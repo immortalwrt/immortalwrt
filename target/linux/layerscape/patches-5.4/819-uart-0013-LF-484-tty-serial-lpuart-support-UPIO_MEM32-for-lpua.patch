@@ -24,7 +24,7 @@ Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2649,7 +2649,9 @@ static int __init lpuart32_early_console
+@@ -2651,7 +2651,9 @@ static int __init lpuart32_early_console
  	if (!device->port.membase)
  		return -ENODEV;
  

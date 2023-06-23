@@ -54,7 +54,7 @@ Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
  			wake_up_process(thread);
  			return;
  		}
-@@ -6086,7 +6088,8 @@ bool napi_complete_done(struct napi_stru
+@@ -6088,7 +6090,8 @@ bool napi_complete_done(struct napi_stru
  
  		WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
  
@@ -64,7 +64,7 @@ Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
  
  		/* If STATE_MISSED was set, leave STATE_SCHED set,
  		 * because we will call napi->poll() one more time.
-@@ -6519,16 +6522,25 @@ static int napi_poll(struct napi_struct
+@@ -6521,16 +6524,25 @@ static int napi_poll(struct napi_struct
  
  static int napi_thread_wait(struct napi_struct *napi)
  {

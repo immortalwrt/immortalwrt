@@ -16,7 +16,7 @@ Cc: Robert Marko <robert.marko@sartura.hr>
 
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -7929,6 +7929,22 @@ F:	include/net/cfg802154.h
+@@ -7922,6 +7922,22 @@ F:	include/net/cfg802154.h
  F:	include/net/ieee802154_netdev.h
  F:	Documentation/networking/ieee802154.rst
  

@@ -58,7 +58,7 @@ Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
  	0 - disabled (default)
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -2418,26 +2418,24 @@ int nf_conntrack_init_start(void)
+@@ -2421,26 +2421,24 @@ int nf_conntrack_init_start(void)
  		spin_lock_init(&nf_conntrack_locks[i]);
  
  	if (!nf_conntrack_htable_size) {
