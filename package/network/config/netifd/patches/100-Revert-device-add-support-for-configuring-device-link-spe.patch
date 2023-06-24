@@ -20,10 +20,10 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
  	[DEV_ATTR_AUTH] = { .name = "auth", .type = BLOBMSG_TYPE_BOOL },
 -	[DEV_ATTR_SPEED] = { .name = "speed", .type = BLOBMSG_TYPE_INT32 },
 -	[DEV_ATTR_DUPLEX] = { .name = "duplex", .type = BLOBMSG_TYPE_BOOL },
+ 	[DEV_ATTR_VLAN] = { .name = "vlan", .type = BLOBMSG_TYPE_ARRAY },
  };
  
- const struct uci_blob_param_list device_attr_list = {
-@@ -278,8 +276,6 @@ device_merge_settings(struct device *dev
+@@ -279,8 +277,6 @@ device_merge_settings(struct device *dev
  	n->arp_accept = s->flags & DEV_OPT_ARP_ACCEPT ?
  		s->arp_accept : os->arp_accept;
  	n->auth = s->flags & DEV_OPT_AUTH ? s->auth : os->auth;
@@ -32,7 +32,7 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
  	n->flags = s->flags | os->flags | os->valid_flags;
  }
  
-@@ -454,16 +450,6 @@ device_init_settings(struct device *dev,
+@@ -496,15 +492,6 @@ device_init_settings(struct device *dev,
  		s->flags |= DEV_OPT_AUTH;
  	}
  
@@ -45,10 +45,9 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
 -		s->duplex = blobmsg_get_bool(cur);
 -		s->flags |= DEV_OPT_DUPLEX;
 -	}
--
+ 	device_set_extra_vlans(dev, tb[DEV_ATTR_VLAN]);
  	device_set_disabled(dev, disabled);
  }
- 
 --- a/device.h
 +++ b/device.h
 @@ -60,8 +60,6 @@ enum {
@@ -57,10 +56,10 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
  	DEV_ATTR_AUTH,
 -	DEV_ATTR_SPEED,
 -	DEV_ATTR_DUPLEX,
+ 	DEV_ATTR_VLAN,
  	__DEV_ATTR_MAX,
  };
- 
-@@ -124,8 +122,6 @@ enum {
+@@ -125,8 +123,6 @@ enum {
  	DEV_OPT_DROP_GRATUITOUS_ARP	= (1ULL << 27),
  	DEV_OPT_DROP_UNSOLICITED_NA	= (1ULL << 28),
  	DEV_OPT_ARP_ACCEPT		= (1ULL << 29),
@@ -69,7 +68,7 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
  };
  
  /* events broadcasted to all users of a device */
-@@ -201,8 +197,6 @@ struct device_settings {
+@@ -202,8 +198,6 @@ struct device_settings {
  	bool drop_unsolicited_na;
  	bool arp_accept;
  	bool auth;
@@ -77,10 +76,10 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
 -	bool duplex;
  };
  
- /*
+ struct device_vlan_range {
 --- a/system-linux.c
 +++ b/system-linux.c
-@@ -1691,57 +1691,6 @@ int system_vlandev_del(struct device *vl
+@@ -1702,57 +1702,6 @@ int system_vlandev_del(struct device *vl
  	return system_link_del(vlandev->ifname);
  }
  
@@ -138,7 +137,7 @@ This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
  void
  system_if_get_settings(struct device *dev, struct device_settings *s)
  {
-@@ -1965,7 +1914,6 @@ system_if_apply_settings(struct device *
+@@ -1976,7 +1925,6 @@ system_if_apply_settings(struct device *
  		system_set_drop_unsolicited_na(dev, s->drop_unsolicited_na ? "1" : "0");
  	if (apply_mask & DEV_OPT_ARP_ACCEPT)
  		system_set_arp_accept(dev, s->arp_accept ? "1" : "0");
