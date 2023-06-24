@@ -44,6 +44,9 @@ livinet,zr-3020|\
 qihoo,360t7-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "1"
 	;;
+netgear,wax220)
+	ubootenv_add_uci_config "/dev/mtd5" "0x0" "0x20000" "0x20000"
+	;;
 xiaomi,redmi-router-ax6000|\
 xiaomi,redmi-router-ax6000-stock)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x20000"
