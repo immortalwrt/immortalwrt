@@ -1,0 +1,8 @@
+
+config turboacc 'config'
+	option sw_flow '1'
+	option hw_flow '1'
+	option sfe_flow '1'
+	option fullcone_nat '1'
+	option hw_wed '0'
+	option bbr_cca '1'
