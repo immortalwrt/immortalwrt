@@ -177,6 +177,14 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/opc-h68k-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=HINLINK OPC-H68K Board
+  BUILD_DEVICES:= \
+    hinlink_opc-h66k \
+    hinlink_opc-h68k \
+    hinlink_opc-h69k
+endef
 
 # RK3588 boards
 
@@ -213,6 +221,7 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
+  opc-h68k-rk3568 \
   nanopi-r6s-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
