@@ -32,7 +32,8 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && echo "$addr" > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $(macaddr_add $addr 1) > /sys${DEVPATH}/macaddress
 	;;
-	livinet,zr-3020)
+	livinet,zr-3020|\
+	livinet,zr-3020-ubootmod)
 		addr=$(mtd_get_mac_ascii config2 wifi5gmac)
 		[ "$PHYNBR" = "1" ] && echo $macaddr > /sys${DEVPATH}/macaddress
 		;;

@@ -38,6 +38,7 @@ bananapi,bpi-r3)
 	esac
 	;;
 livinet,zr-3020|\
+livinet,zr-3020-ubootmod|\
 qihoo,360t7-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "1"
 	;;
