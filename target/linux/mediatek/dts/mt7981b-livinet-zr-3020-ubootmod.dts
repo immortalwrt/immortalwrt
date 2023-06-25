@@ -6,7 +6,7 @@
 / {
 	model = "Livinet ZR-3020 (custom U-Boot layout)";
 	compatible = "livinet,zr-3020-ubootmod", "mediatek,mt7981";
-}
+};
 
 &partitions {
 	partition@580000 {
