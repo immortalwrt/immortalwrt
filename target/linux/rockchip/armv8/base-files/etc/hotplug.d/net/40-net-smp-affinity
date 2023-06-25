@@ -30,6 +30,7 @@ set_interface_core() {
 
 case "$(board_name)" in
 ezpro,mrkaio-m68s|\
+hinlink,opc-h66k|\
 friendlyarm,nanopi-r5c|\
 lunzn,fastrhino-r66s)
 	set_interface_core 2 "eth0"
@@ -56,6 +57,8 @@ friendlyarm,nanopi-r6s)
 	set_interface_core 4 "eth1"
 	set_interface_core 8 "eth2"
 	;;
+hinlink,opc-h68k|\
+hinlink,opc-h69k|\
 lunzn,fastrhino-r68s)
 	set_interface_core 1 "eth0"
 	set_interface_core 2 "eth1"

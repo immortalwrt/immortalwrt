@@ -8,6 +8,7 @@ rockchip_setup_interfaces()
 
 	case "$board" in
 	ezpro,mrkaio-m68s|\
+	hinlink,opc-h66k|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2c-plus|\
 	friendlyarm,nanopi-r2s|\
@@ -18,6 +19,10 @@ rockchip_setup_interfaces()
 	xunlong,orangepi-r1-plus|\
 	xunlong,orangepi-r1-plus-lts)
 		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
+		;;
+	hinlink,opc-h68k|\
+	hinlink,opc-h69k)
+		ucidef_set_interfaces_lan_wan 'eth1 eth2 eth3' 'eth0'
 		;;
 	friendlyarm,nanopi-r5c|\
 	lunzn,fastrhino-r66s)
@@ -47,6 +52,9 @@ rockchip_setup_macs()
 
 	case "$board" in
 	ezpro,mrkaio-m68s|\
+	hinlink,opc-h66k|\
+	hinlink,opc-h68k|\
+	hinlink,opc-h69k|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
 	lunzn,fastrhino-r66s|\

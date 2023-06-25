@@ -133,6 +133,36 @@ define Device/lunzn_fastrhino-r68s
 endef
 TARGET_DEVICES += lunzn_fastrhino-r68s
 
+define Device/hinlink_opc-h66k
+  DEVICE_VENDOR := HINLINK
+  DEVICE_MODEL := OPC H66K
+  SOC := rk3568
+  UBOOT_DEVICE_NAME := opc-h68k-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES :=kmod-r8125 kmod-mt7921e wpad-openssl kmod-ata-ahci-platform
+endef
+TARGET_DEVICES += hinlink_opc-h66k
+
+define Device/hinlink_opc-h68k
+  DEVICE_VENDOR := HINLINK
+  DEVICE_MODEL := OPC H68K
+  SOC := rk3568
+  UBOOT_DEVICE_NAME := opc-h68k-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES :=kmod-r8125 kmod-mt7921e wpad-openssl kmod-ata-ahci-platform
+endef
+TARGET_DEVICES += hinlink_opc-h68k
+
+define Device/hinlink_opc-h69k
+  DEVICE_VENDOR := HINLINK
+  DEVICE_MODEL := OPC H69K
+  SOC := rk3568
+  UBOOT_DEVICE_NAME := opc-h68k-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES :=kmod-r8125 kmod-mt7921e wpad-openssl kmod-ata-ahci-platform
+endef
+TARGET_DEVICES += hinlink_opc-h69k
+
 define Device/pine64_rockpro64
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := RockPro64
