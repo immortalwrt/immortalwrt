@@ -19,7 +19,7 @@ include $(INCLUDE_DIR)/package.mk
 include ./atf-version.mk
 
 define Trusted-Firmware-A/Default
-  NAME:=Rockchip $(1)
+  NAME:=Rockchip $(1) SoCs
   BUILD_TARGET:=rockchip
 endef
 
