@@ -10,7 +10,6 @@
 	model = "Qihoo 360T7 (custom U-Boot layout)";
 	compatible = "qihoo,360t7-ubootmod", "mediatek,mt7981";
 
-
 	aliases {
 		led-boot = &red_led;
 		led-failsafe = &red_led;
