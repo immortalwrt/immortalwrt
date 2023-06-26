@@ -18,6 +18,7 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "eth1 wan"
 		;;
 	cudy,wr3000-v1|\
+	jcg,q30-ubootmod|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
 	qihoo,360t7|\
