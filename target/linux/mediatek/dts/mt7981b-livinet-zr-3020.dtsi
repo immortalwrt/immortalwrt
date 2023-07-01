@@ -176,10 +176,6 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 
-				macaddr_config_5068a: macaddr@5068a {
-					reg = <0x5068a 0x11>;
-				};
-
 				macaddr_config_50707: macaddr@50707 {
 					reg = <0x50707 0x11>;
 				};
@@ -316,7 +312,4 @@
 	status = "okay";
 
 	mediatek,mtd-eeprom = <&factory 0x0>;
-
-	nvmem-cells = <&macaddr_config_5068a>;
-	nvmem-cell-names = "mac-address-ascii";
 };
