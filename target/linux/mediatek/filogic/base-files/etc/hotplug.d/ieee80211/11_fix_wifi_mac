@@ -38,8 +38,8 @@ case "$board" in
 		;;
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod)
-		addr=$(mtd_get_mac_ascii config2 wifi5gmac)
-		[ "$PHYNBR" = "1" ] && echo $macaddr > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "0" ] && mtd_get_mac_ascii config2 wifi2gmac > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && mtd_get_mac_ascii config2 wifi5gmac > /sys${DEVPATH}/macaddress
 		;;
 	netgear,wax220)
 		hw_mac_addr=$(mtd_get_mac_ascii u-boot-env mac)
