@@ -81,7 +81,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
 +++ b/root/usr/share/firewall4/templates/zone-fullcone.uc
 @@ -0,0 +1,4 @@
 +{# /usr/share/firewall4/templates/zone-fullcone.uc #}
-+		meta nfproto {{ fw4.nfproto(family) }} fullcone comment "!fw4: Handle {{
++		meta nfproto {{ fw4.nfproto(family) }} meta l4proto udp fullcone comment "!fw4: Handle {{
 +		zone.name
 +}} {{ fw4.nfproto(family, true) }} fullcone NAT {{ direction }} traffic"
 --- a/root/usr/share/ucode/fw4.uc
