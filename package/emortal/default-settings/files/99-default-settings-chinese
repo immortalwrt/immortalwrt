@@ -12,6 +12,12 @@ uci -q batch <<-EOF
 EOF
 uci commit system
 
+if [ -f "/etc/config/wireless" ];then
+	uci set wireless.@wifi-device[0].country='CN'
+	uci set wireless.@wifi-device[1].country='CN'
+	uci commit wireless
+fi
+
 sed -i 's,downloads.immortalwrt.org,mirrors.vsean.net/openwrt,g' /etc/opkg/distfeeds.conf
 
 exit 0
