@@ -1,9 +1,15 @@
 #!/bin/sh
 
-uci set dhcp.lan.ra='hybrid'
-uci set dhcp.lan.ndp='hybrid'
-uci set dhcp.lan.dhcpv6='hybrid'
-uci set dhcp.lan.ra_management='1'
-uci commit dhcp
+uci -q get system.@imm_init[0] > "/dev/null" || uci -q add system imm_init > "/dev/null"
+uci -q get system.@imm_init[0].ipv6 > "/dev/null" && exit 0
+
+uci -q set dhcp.lan.ra="hybrid"
+uci -q set dhcp.lan.ndp="hybrid"
+uci -q set dhcp.lan.dhcpv6="hybrid"
+uci -q set dhcp.lan.ra_management="1"
+uci -q commit dhcp
+
+uci -q set system.@imm_init[0].ipv6="1"
+uci -q commit system
 
 exit 0
