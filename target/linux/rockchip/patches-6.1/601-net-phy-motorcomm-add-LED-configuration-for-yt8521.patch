@@ -1,6 +1,6 @@
 --- a/drivers/net/phy/motorcomm.c
 +++ b/drivers/net/phy/motorcomm.c
-@@ -1487,6 +1487,13 @@ static int yt8521_config_init(struct phy
+@@ -1488,6 +1488,13 @@ static int yt8521_config_init(struct phy
  		if (ret < 0)
  			goto err_restore_page;
  	}
