@@ -13,7 +13,7 @@
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
-@@ -425,6 +425,10 @@
+@@ -423,6 +423,10 @@
  	status = "okay";
  };
  
