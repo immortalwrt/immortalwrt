@@ -144,14 +144,14 @@ endef
 
 define U-Boot/fastrhino-r66s-rk3568
   $(U-Boot/Default/rk3568)
-  NAME:=Lunzn FastRhino R66S
+  NAME:=FastRhino R66S
   BUILD_DEVICES:= \
     lunzn_fastrhino-r66s
 endef
 
 define U-Boot/fastrhino-r68s-rk3568
   $(U-Boot/Default/rk3568)
-  NAME:=Lunzn FastRhino R68S
+  NAME:=FastRhino R68S
   BUILD_DEVICES:= \
     lunzn_fastrhino-r68s
 endef
@@ -165,14 +165,14 @@ endef
 
 define U-Boot/nanopi-r5c-rk3568
   $(U-Boot/Default/rk3568)
-  NAME:=FriendlyARM NanoPi R5C
+  NAME:=NanoPi R5C
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r5c
 endef
 
 define U-Boot/nanopi-r5s-rk3568
   $(U-Boot/Default/rk3568)
-  NAME:=FriendlyARM NanoPi R5S
+  NAME:=NanoPi R5S
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r5s
 endef
@@ -189,7 +189,7 @@ endef
 
 define U-Boot/rock5b-rk3588
   $(U-Boot/Default/rk3588)
-  NAME:=Radxa Rock 5B
+  NAME:=Rock 5B
   BUILD_DEVICES:= \
     radxa_rock-5b
 endef
@@ -199,7 +199,7 @@ endef
 
 define U-Boot/nanopi-r6s-rk3588s
   $(U-Boot/Default/rk3588)
-  NAME:=FriendlyARM NanoPi R6S
+  NAME:=NanoPi R6S
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r6s
 endef
