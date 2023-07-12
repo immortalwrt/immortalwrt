@@ -177,6 +177,13 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/roc-pc-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Station P2
+  BUILD_DEVICES:= \
+    firefly_roc-rk3568-pc
+endef
+
 UBOOT_TARGETS := \
   guangmiao-g4c-rk3399 \
   nanopi-r4s-rk3399 \
@@ -195,7 +202,8 @@ UBOOT_TARGETS := \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
-  nanopi-r5s-rk3568
+  nanopi-r5s-rk3568 \
+  roc-pc-rk3568
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
