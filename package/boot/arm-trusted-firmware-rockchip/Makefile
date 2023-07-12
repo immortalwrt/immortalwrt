@@ -43,17 +43,10 @@ define Trusted-Firmware-A/rk3568
   DDR:=rk35/$(RK3568_DDR)
 endef
 
-define Trusted-Firmware-A/rk3588
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk35/$(RK3588_ATF)
-  DDR:=rk35/$(RK3588_DDR)
-endef
-
 TFA_TARGETS:= \
 	rk3328 \
 	rk3399 \
-	rk3568 \
-	rk3588
+	rk3568
 
 define Build/Compile
 	# This comment is the workaround for "extraneous 'endif'" error
