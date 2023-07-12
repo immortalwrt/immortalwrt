@@ -187,6 +187,16 @@ define U-Boot/Default/rk3588
   DDR:=$(RK3588_DDR)
 endef
 
+define U-Boot/rock5b-rk3588
+  $(U-Boot/Default/rk3588)
+  NAME:=Radxa Rock 5B
+  BUILD_DEVICES:= \
+    radxa_rock-5b
+endef
+
+
+# RK3588S boards
+
 define U-Boot/nanopi-r6s-rk3588s
   $(U-Boot/Default/rk3588)
   NAME:=FriendlyARM NanoPi R6S
@@ -213,6 +223,7 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
+  rock5b-rk3588 \
   nanopi-r6s-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
