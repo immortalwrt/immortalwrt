@@ -1,25 +1,14 @@
+From 6ebd55b3bba383e0523b0c014f17c97f3ce80708 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko Stuebner <heiko@sntech.de>
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	linux-ide@vger.kernel.org, linux-phy@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v2 5/6] arm64: dts: rockchip: rk3588: add combo PHYs
-Date: Mon, 22 May 2023 19:34:22 +0200	[thread overview]
-Message-ID: <20230522173423.64691-6-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20230522173423.64691-1-sebastian.reichel@collabora.com>
+Date: Mon, 12 Jun 2023 19:13:36 +0200
+Subject: [PATCH] arm64: dts: rockchip: add combo PHYs to rk3588
 
 Add all 3 combo PHYs that can be found in RK3588.
 They are used for SATA, PCIe or USB3.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230612171337.74576-5-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 21 ++++++++++++
  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 42 +++++++++++++++++++++++
@@ -47,12 +36,12 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	combphy1_ps: phy@fee10000 {
 +		compatible = "rockchip,rk3588-naneng-combphy";
 +		reg = <0x0 0xfee10000 0x0 0x100>;
-+		#phy-cells = <1>;
 +		clocks = <&cru CLK_REF_PIPE_PHY1>, <&cru PCLK_PCIE_COMBO_PIPE_PHY1>,
 +			 <&cru PCLK_PHP_ROOT>;
 +		clock-names = "ref", "apb", "pipe";
 +		assigned-clocks = <&cru CLK_REF_PIPE_PHY1>;
 +		assigned-clock-rates = <100000000>;
++		#phy-cells = <1>;
 +		resets = <&cru SRST_REF_PIPE_PHY1>, <&cru SRST_P_PCIE2_PHY1>;
 +		reset-names = "phy", "apb";
 +		rockchip,pipe-grf = <&php_grf>;
@@ -62,7 +51,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -944,6 +944,16 @@
+@@ -398,6 +398,16 @@
  		reg = <0x0 0xfd5b0000 0x0 0x1000>;
  	};
  
@@ -79,19 +68,19 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	ioc: syscon@fd5f0000 {
  		compatible = "rockchip,rk3588-ioc", "syscon";
  		reg = <0x0 0xfd5f0000 0x0 0x10000>;
-@@ -2480,6 +2490,38 @@
+@@ -1934,6 +1944,38 @@
  		#dma-cells = <1>;
  	};
  
 +	combphy0_ps: phy@fee00000 {
 +		compatible = "rockchip,rk3588-naneng-combphy";
 +		reg = <0x0 0xfee00000 0x0 0x100>;
-+		#phy-cells = <1>;
 +		clocks = <&cru CLK_REF_PIPE_PHY0>, <&cru PCLK_PCIE_COMBO_PIPE_PHY0>,
 +			 <&cru PCLK_PHP_ROOT>;
 +		clock-names = "ref", "apb", "pipe";
 +		assigned-clocks = <&cru CLK_REF_PIPE_PHY0>;
 +		assigned-clock-rates = <100000000>;
++		#phy-cells = <1>;
 +		resets = <&cru SRST_REF_PIPE_PHY0>, <&cru SRST_P_PCIE2_PHY0>;
 +		reset-names = "phy", "apb";
 +		rockchip,pipe-grf = <&php_grf>;
@@ -102,12 +91,12 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	combphy2_psu: phy@fee20000 {
 +		compatible = "rockchip,rk3588-naneng-combphy";
 +		reg = <0x0 0xfee20000 0x0 0x100>;
-+		#phy-cells = <1>;
 +		clocks = <&cru CLK_REF_PIPE_PHY2>, <&cru PCLK_PCIE_COMBO_PIPE_PHY2>,
 +			 <&cru PCLK_PHP_ROOT>;
 +		clock-names = "ref", "apb", "pipe";
 +		assigned-clocks = <&cru CLK_REF_PIPE_PHY2>;
 +		assigned-clock-rates = <100000000>;
++		#phy-cells = <1>;
 +		resets = <&cru SRST_REF_PIPE_PHY2>, <&cru SRST_P_PCIE2_PHY2>;
 +		reset-names = "phy", "apb";
 +		rockchip,pipe-grf = <&php_grf>;

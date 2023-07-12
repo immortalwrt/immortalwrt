@@ -1,13 +1,11 @@
-From 871085534221b58ff5ed26c5852618decd83a1a4 Mon Sep 17 00:00:00 2001
+From ee48c5b7edb4ff3b8a23e7c32cbf33ae892e7cc1 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Mon, 17 Apr 2023 21:13:03 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add PCIe2 support
+Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add PCIe2 network
+ controller
 
 The RK3588 EVB1 has a second network card, which is connected
-via a PCIe2 block. This adds support for that.
-
-The patch also enables the first PCIe2 block. I did not test
-its functionality, but the board boots up properly.
+via PCIe2. This adds support for that.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
@@ -42,7 +40,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
  };
  
- &cpu_b0 {
+ &combphy0_ps {
 @@ -860,10 +880,27 @@
  	status = "okay";
  };

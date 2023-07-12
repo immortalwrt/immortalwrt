@@ -1,4 +1,4 @@
-From dc6a92371915067b5f8880bacae21498eaab69dd Mon Sep 17 00:00:00 2001
+From 71c7890f2ecefdcd2fd4afeb0d1c0c0b97fe833d Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Thu, 12 Jan 2023 19:23:27 +0100
 Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add USB2
@@ -52,8 +52,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
  };
  
- &cpu_b0 {
-@@ -96,6 +130,40 @@
+ &combphy0_ps {
+@@ -100,6 +134,40 @@
  	mem-supply = <&vdd_cpu_big1_mem_s0>;
  };
  
@@ -94,7 +94,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &gmac0 {
  	clock_in_out = "output";
  	phy-handle = <&rgmii_phy>;
-@@ -783,3 +851,11 @@
+@@ -791,3 +859,11 @@
  	pinctrl-0 = <&uart2m0_xfer>;
  	status = "okay";
  };

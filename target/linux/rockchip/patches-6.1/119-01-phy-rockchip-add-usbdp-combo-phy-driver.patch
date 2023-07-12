@@ -1,7 +1,7 @@
-From 7575bee7ee718cae56720eb1cd137df3aea65c73 Mon Sep 17 00:00:00 2001
+From 76dce9a4e101c5f961f91a3ddef99660081cadd5 Mon Sep 17 00:00:00 2001
 From: Frank Wang <frank.wang@rock-chips.com>
 Date: Tue, 25 Apr 2023 15:55:54 +0200
-Subject: [PATCH 80/85] phy: rockchip: add usbdp combo phy driver
+Subject: [PATCH] phy: rockchip: add usbdp combo phy driver
 
 This adds a new USBDP combo PHY with Samsung IP block driver.
 
@@ -12,21 +12,21 @@ the property "rockchip,dp-lane-mux" provide the DP mux and mapping info.
 When do DP link training, need to set lane number, link rate, swing, and
 pre-emphasis via PHY configure interface.
 
-Co-Developed-by: Zhang Yubing <yubing.zhang@rock-chips.com>
+Co-developed-by: Zhang Yubing <yubing.zhang@rock-chips.com>
 Signed-off-by: Zhang Yubing <yubing.zhang@rock-chips.com>
-Co-Developed-by: Frank Wang <frank.wang@rock-chips.com>
+Co-developed-by: Frank Wang <frank.wang@rock-chips.com>
 Signed-off-by: Frank Wang <frank.wang@rock-chips.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- drivers/phy/rockchip/Kconfig              |    9 +
+ drivers/phy/rockchip/Kconfig              |   12 +
  drivers/phy/rockchip/Makefile             |    1 +
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 1728 +++++++++++++++++++++
- 3 files changed, 1738 insertions(+)
+ 3 files changed, 1741 insertions(+)
  create mode 100644 drivers/phy/rockchip/phy-rockchip-usbdp.c
 
 --- a/drivers/phy/rockchip/Kconfig
 +++ b/drivers/phy/rockchip/Kconfig
-@@ -107,3 +107,12 @@ config PHY_ROCKCHIP_USB
+@@ -107,3 +107,15 @@ config PHY_ROCKCHIP_USB
  	select GENERIC_PHY
  	help
  	  Enable this to support the Rockchip USB 2.0 PHY.
@@ -37,8 +37,11 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	select GENERIC_PHY
 +	select TYPEC
 +	help
-+	  Enable this to support the Rockchip USB3.0/DP
-+	  combo PHY with Samsung IP block.
++	  Enable this to support the Rockchip USB3.0/DP combo PHY with
++	  Samsung IP block. This is required for USB3 support on RK3588.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called phy-rockchip-usbdp
 --- a/drivers/phy/rockchip/Makefile
 +++ b/drivers/phy/rockchip/Makefile
 @@ -11,3 +11,4 @@ obj-$(CONFIG_PHY_ROCKCHIP_PCIE)		+= phy-
@@ -1308,7 +1311,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		id = 0;
 +	udphy->id = id;
 +
-+	phy_cfgs = of_device_get_match_data(dev);
++	phy_cfgs = device_get_match_data(dev);
 +	if (!phy_cfgs) {
 +		dev_err(dev, "no OF data can be matched with %p node\n", np);
 +		return -EINVAL;
@@ -1347,7 +1350,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			return ret;
 +	}
 +
-+	if (device_property_present(dev, "svid")) {
++	if (device_property_present(dev, "mode-switch")) {
 +		ret = udphy_setup_typec_mux(udphy);
 +		if (ret)
 +			return ret;
@@ -1776,4 +1779,4 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +MODULE_AUTHOR("Frank Wang <frank.wang@rock-chips.com>");
 +MODULE_AUTHOR("Zhang Yubing <yubing.zhang@rock-chips.com>");
 +MODULE_DESCRIPTION("Rockchip USBDP Combo PHY driver");
-+MODULE_LICENSE("GPL v2");
++MODULE_LICENSE("GPL");

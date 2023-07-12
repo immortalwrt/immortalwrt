@@ -1,4 +1,4 @@
-From ec584a8d73148b9c936edbea13b4badc1de41069 Mon Sep 17 00:00:00 2001
+From 8c64d17408c023fcb23133bd74c436f991a6f4f9 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Thu, 30 Mar 2023 15:44:36 +0200
 Subject: [PATCH] arm64: dts: rockchip: rk3588-rock5b: add USB2

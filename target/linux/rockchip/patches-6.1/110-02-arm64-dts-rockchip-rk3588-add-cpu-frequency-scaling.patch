@@ -17,15 +17,15 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -8,6 +8,7 @@
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/power/rk3588-power.h>
+@@ -10,6 +10,7 @@
  #include <dt-bindings/reset/rockchip,rk3588-cru.h>
+ #include <dt-bindings/phy/phy.h>
+ #include <dt-bindings/ata/ahci.h>
 +#include <dt-bindings/thermal/thermal.h>
  
  / {
  	compatible = "rockchip,rk3588";
-@@ -16,6 +17,215 @@
+@@ -18,6 +19,215 @@
  	#address-cells = <2>;
  	#size-cells = <2>;
  
@@ -241,7 +241,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	cpus {
  		#address-cells = <1>;
  		#size-cells = <0>;
-@@ -62,6 +272,7 @@
+@@ -64,6 +274,7 @@
  			clocks = <&scmi_clk SCMI_CLK_CPUL>;
  			assigned-clocks = <&scmi_clk SCMI_CLK_CPUL>;
  			assigned-clock-rates = <816000000>;
@@ -249,7 +249,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <32768>;
  			i-cache-line-size = <64>;
-@@ -81,6 +292,7 @@
+@@ -83,6 +294,7 @@
  			enable-method = "psci";
  			capacity-dmips-mhz = <530>;
  			clocks = <&scmi_clk SCMI_CLK_CPUL>;
@@ -257,7 +257,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <32768>;
  			i-cache-line-size = <64>;
-@@ -100,6 +312,7 @@
+@@ -102,6 +314,7 @@
  			enable-method = "psci";
  			capacity-dmips-mhz = <530>;
  			clocks = <&scmi_clk SCMI_CLK_CPUL>;
@@ -265,7 +265,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <32768>;
  			i-cache-line-size = <64>;
-@@ -119,6 +332,7 @@
+@@ -121,6 +334,7 @@
  			enable-method = "psci";
  			capacity-dmips-mhz = <530>;
  			clocks = <&scmi_clk SCMI_CLK_CPUL>;
@@ -273,7 +273,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <32768>;
  			i-cache-line-size = <64>;
-@@ -140,6 +354,7 @@
+@@ -142,6 +356,7 @@
  			clocks = <&scmi_clk SCMI_CLK_CPUB01>;
  			assigned-clocks = <&scmi_clk SCMI_CLK_CPUB01>;
  			assigned-clock-rates = <816000000>;
@@ -281,7 +281,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <65536>;
  			i-cache-line-size = <64>;
-@@ -159,6 +374,7 @@
+@@ -161,6 +376,7 @@
  			enable-method = "psci";
  			capacity-dmips-mhz = <1024>;
  			clocks = <&scmi_clk SCMI_CLK_CPUB01>;
@@ -289,7 +289,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <65536>;
  			i-cache-line-size = <64>;
-@@ -180,6 +396,7 @@
+@@ -182,6 +398,7 @@
  			clocks = <&scmi_clk SCMI_CLK_CPUB23>;
  			assigned-clocks = <&scmi_clk SCMI_CLK_CPUB23>;
  			assigned-clock-rates = <816000000>;
@@ -297,7 +297,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <65536>;
  			i-cache-line-size = <64>;
-@@ -199,6 +416,7 @@
+@@ -201,6 +418,7 @@
  			enable-method = "psci";
  			capacity-dmips-mhz = <1024>;
  			clocks = <&scmi_clk SCMI_CLK_CPUB23>;
@@ -305,7 +305,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			cpu-idle-states = <&CPU_SLEEP>;
  			i-cache-size = <65536>;
  			i-cache-line-size = <64>;
-@@ -351,6 +569,230 @@
+@@ -353,6 +571,230 @@
  		#clock-cells = <0>;
  	};
  
@@ -536,7 +536,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	timer {
  		compatible = "arm,armv8-timer";
  		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH 0>,
-@@ -393,6 +835,16 @@
+@@ -395,6 +837,16 @@
  		reg = <0x0 0xfd58c000 0x0 0x1000>;
  	};
  

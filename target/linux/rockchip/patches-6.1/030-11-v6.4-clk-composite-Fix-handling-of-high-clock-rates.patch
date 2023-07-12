@@ -1,6 +1,6 @@
-From 3ef7ead7ba37665e0b197f6ae5c2e1f4e043f334 Mon Sep 17 00:00:00 2001
+From d54fb4b25a0261bf2f2bb7093fdf11a36718bf25 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Thu, 18 May 2023 05:28:17 +0200
+Date: Fri, 26 May 2023 19:10:56 +0200
 Subject: [PATCH] clk: composite: Fix handling of high clock rates
 
 ULONG_MAX is used by a few drivers to figure out the highest available
@@ -34,6 +34,9 @@ Cc: stable@vger.kernel.org
 Fixes: 49502408007b ("mmc: sdhci-of-dwcmshc: properly determine max clock on Rockchip")
 Tested-by: Christopher Obbard <chris.obbard@collabora.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230526171057.66876-2-sebastian.reichel@collabora.com
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 ---
  drivers/clk/clk-composite.c | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)

@@ -1,12 +1,14 @@
-From eb587e7611e9c61f5a8af5d9bfc4f994e9e1fda2 Mon Sep 17 00:00:00 2001
+From fba985aaf46391066773f3bf3a08fb6e75b37673 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Wed, 29 Mar 2023 18:54:49 +0200
+Date: Mon, 22 May 2023 18:29:37 +0200
 Subject: [PATCH] usb: host: ohci-platform: increase max clock number to 4
 
 Rockchip RK3588 OHCI requires 4 clocks to be enabled.
 
 Acked-by: Alan Stern <stern@rowland.harvard.edu>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230522162937.53190-4-sebastian.reichel@collabora.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  drivers/usb/host/ohci-platform.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

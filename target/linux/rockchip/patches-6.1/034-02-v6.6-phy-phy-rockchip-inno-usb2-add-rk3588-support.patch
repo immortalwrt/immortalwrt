@@ -1,25 +1,15 @@
+From 52b99b871eb79637342660b46c900642483d4412 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Vinod Koul <vkoul@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: Heiko Stuebner <heiko@sntech.de>,
-	linux-phy@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com, William Wu <william.wu@rock-chips.com>
-Subject: [PATCH v3 2/7] phy: phy-rockchip-inno-usb2: add rk3588 support
-Date: Mon, 22 May 2023 19:03:19 +0200	[thread overview]
-Message-ID: <20230522170324.61349-3-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20230522170324.61349-1-sebastian.reichel@collabora.com>
+Date: Mon, 22 May 2023 19:03:19 +0200
+Subject: [PATCH] phy: phy-rockchip-inno-usb2: add rk3588 support
 
 Add basic support for the USB2 PHY found in the Rockchip RK3588.
 
 Co-developed-by: William Wu <william.wu@rock-chips.com>
 Signed-off-by: William Wu <william.wu@rock-chips.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Message-ID: <20230522170324.61349-3-sebastian.reichel@collabora.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 226 ++++++++++++++++--
  1 file changed, 211 insertions(+), 15 deletions(-)

@@ -1,4 +1,4 @@
-From 734459837fe67a306f7fe63ab03c0c2c0042bf7c Mon Sep 17 00:00:00 2001
+From c10b7b902f6d8d1b550c6b4ccd8615f407ca85a3 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Thu, 12 Jan 2023 19:20:37 +0100
 Subject: [PATCH] arm64: dts: rockchip: rk3588: add USB2 support
@@ -13,7 +13,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -830,11 +830,105 @@
+@@ -832,11 +832,105 @@
  		};
  	};
  
