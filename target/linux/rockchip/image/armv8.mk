@@ -139,6 +139,8 @@ define Device/radxa_rock-pi-4a
   SUPPORTED_DEVICES := radxa,rockpi4a radxa,rockpi4
   UBOOT_DEVICE_NAME := rock-pi-4-rk3399
   BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-brcmfmac wpad-basic-openssl \
+	brcmfmac-firmware-43456-sdio brcmfmac-nvram-43456-sdio
 endef
 TARGET_DEVICES += radxa_rock-pi-4a
 
