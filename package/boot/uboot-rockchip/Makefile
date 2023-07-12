@@ -177,6 +177,12 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/roc-pc-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Station P2
+  BUILD_DEVICES:= \
+    firefly_roc-rk3568-pc
+endef
 
 # RK3588 boards
 
@@ -223,6 +229,7 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
+  roc-pc-rk3568 \
   rock5b-rk3588 \
   nanopi-r6s-rk3588s
 
