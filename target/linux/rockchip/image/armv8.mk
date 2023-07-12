@@ -24,6 +24,21 @@ define Device/firefly_roc-rk3328-cc
 endef
 TARGET_DEVICES += firefly_roc-rk3328-cc
 
+define Device/firefly_roc-rk3568-pc
+  DEVICE_VENDOR := Firefly
+  DEVICE_MODEL := Station P2
+  DEVICE_ALT0_VENDOR := Firefly
+  DEVICE_ALT0_MODEL := ROC-RK3568-PC
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-roc-pc
+  SUPPORTED_DEVICES := firefly,rk3568-roc-pc
+  UBOOT_DEVICE_NAME := roc-pc-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-brcmfmac wpad-basic-openssl \
+	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
+endef
+TARGET_DEVICES += firefly_roc-rk3568-pc
+
 define Device/friendlyarm_nanopi-r2c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2C

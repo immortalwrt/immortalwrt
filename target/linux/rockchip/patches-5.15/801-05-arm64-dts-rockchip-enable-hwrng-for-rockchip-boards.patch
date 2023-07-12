@@ -37,3 +37,16 @@
  &saradc {
  	vref-supply = <&vcca_1v8>;
  	status = "okay";
+--- a/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
+@@ -546,6 +546,10 @@
+ 	status = "okay";
+ };
+ 
++&rng {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcca_1v8>;
+ 	status = "okay";
