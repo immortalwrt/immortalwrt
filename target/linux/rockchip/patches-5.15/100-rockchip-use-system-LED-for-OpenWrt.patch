@@ -289,22 +289,21 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		compatible = "gpio-leds";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&power_led_pin>, <&user_led_pin>;
++
++		power_led: led-power {
++			label = "red:power";
++			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
++		};
  
--		led-user {
+ 		led-user {
 -			label = "user-led";
 -			default-state = "on";
-+		power_led: led-power {
-+			label = "blue:power";
++			label = "blue:user";
  			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
 -			linux,default-trigger = "heartbeat";
 -			pinctrl-names = "default";
 -			pinctrl-0 = <&user_led_enable_h>;
 -			retain-state-suspended;
-+		};
-+
-+		led-user {
-+			label = "red:user";
-+			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
  		};
  	};
  
@@ -314,7 +313,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	leds {
 -		user_led_enable_h: user-led-enable-h {
 +		power_led_pin: power-led-pin {
-+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +
 +		user_led_pin: user-led-pin {
