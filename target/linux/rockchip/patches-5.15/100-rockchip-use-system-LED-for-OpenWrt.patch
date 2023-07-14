@@ -303,7 +303,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		};
 +
 +		led-user {
-+			label = "yellow:user";
++			label = "red:user";
 +			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
  		};
  	};
