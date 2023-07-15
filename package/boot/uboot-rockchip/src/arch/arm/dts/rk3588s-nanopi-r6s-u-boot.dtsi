@@ -21,11 +21,6 @@
 	status = "okay";
 };
 
-&sdmmc {
-	bus-width = <4>;
-	status = "okay";
-};
-
 &sdhci {
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;

@@ -203,6 +203,13 @@ endef
 
 # RK3588S boards
 
+define U-Boot/nanopi-r6c-rk3588s
+  $(U-Boot/Default/rk3588)
+  NAME:=NanoPi R6C
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r6c
+endef
+
 define U-Boot/nanopi-r6s-rk3588s
   $(U-Boot/Default/rk3588)
   NAME:=NanoPi R6S
@@ -231,6 +238,7 @@ UBOOT_TARGETS := \
   nanopi-r5s-rk3568 \
   roc-pc-rk3568 \
   rock5b-rk3588 \
+  nanopi-r6c-rk3588s \
   nanopi-r6s-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes

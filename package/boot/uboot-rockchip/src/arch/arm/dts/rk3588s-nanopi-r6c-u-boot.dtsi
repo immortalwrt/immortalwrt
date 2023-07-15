@@ -1,0 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "rk3588s-nanopi-r6s-u-boot.dtsi"
+
