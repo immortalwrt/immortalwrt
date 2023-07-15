@@ -265,12 +265,12 @@
 	vpcie3v3-supply = <&vcc_3v3_pcie20>;
 	status = "okay";
 
-	pcie@30 {
+	pcie@0,0 {
 		reg = <0x00300000 0 0 0 0>;
 		#address-cells = <3>;
 		#size-cells = <2>;
 
-		r8125_u25: pcie@30,0 {
+		rtl8125_2: pcie@30,0 {
 			reg = <0x000000 0 0 0 0>;
 			label = "eth2";
 		};
@@ -282,12 +282,12 @@
 	vpcie3v3-supply = <&vcc_3v3_pcie20>;
 	status = "okay";
 
-	pcie@40 {
+	pcie@0,0 {
 		reg = <0x00400000 0 0 0 0>;
 		#address-cells = <3>;
 		#size-cells = <2>;
 
-		r8125_u40: pcie@40,0 {
+		rtl8125_1: pcie@40,0 {
 			reg = <0x000000 0 0 0 0>;
 			label = "eth1";
 		};

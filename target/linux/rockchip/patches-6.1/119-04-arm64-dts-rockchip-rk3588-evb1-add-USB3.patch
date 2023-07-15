@@ -40,7 +40,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &combphy0_ps {
-@@ -899,8 +912,144 @@
+@@ -234,6 +247,16 @@
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
  	};
@@ -56,7 +56,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
  };
  
- &combphy2_psu {
+ &pwm2 {
+@@ -902,3 +925,129 @@
+ &usb_host1_ohci {
  	status = "okay";
  };
 +

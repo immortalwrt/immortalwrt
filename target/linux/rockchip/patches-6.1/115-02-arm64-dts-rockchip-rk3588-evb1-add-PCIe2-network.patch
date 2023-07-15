@@ -14,9 +14,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -81,6 +81,26 @@
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&vcc5v0_host_en>;
+@@ -81,12 +81,36 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		vin-supply = <&vcc5v0_usbdcin>;
  	};
 +
 +	pcie20_avdd0v85: pcie20-avdd0v85 {
@@ -41,8 +41,18 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &combphy0_ps {
-@@ -860,10 +880,27 @@
  	status = "okay";
+ };
+ 
++&combphy2_psu {
++	status = "okay";
++};
++
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_big0_s0>;
+ };
+@@ -178,7 +202,20 @@
+ 	};
  };
  
 +&pcie2x1l1 {
@@ -59,13 +69,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		};
 +	};
 +
- 	usb {
- 		vcc5v0_host_en: vcc5v0-host-en {
- 			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
- 	};
- };
-+
-+&combphy2_psu {
-+	status = "okay";
-+};
+ 	rtl8211f {
+ 		rtl8211f_rst: rtl8211f-rst {
+ 			rockchip,pins = <4 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;

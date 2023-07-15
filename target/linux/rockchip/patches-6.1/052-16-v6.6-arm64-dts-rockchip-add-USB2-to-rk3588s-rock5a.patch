@@ -1,0 +1,123 @@
+From 1642bf66e270d8de7ba27068d1a5ecdbdba14d3b Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Wed, 12 Jul 2023 18:51:06 +0200
+Subject: [PATCH] arm64: dts: rockchip: add USB2 to rk3588s-rock5a
+
+Enable USB2 (EHCI and OCHI mode) support for the Radxa ROCK 5 Model A.
+This adds USB support for the on-board WLAN/BT chip, the two USB2
+ports, the USB available from the 2x20 connector and the lower USB3
+port (in USB2 mode).
+
+The upper USB3 (further away from the PCB) uses the RK3588S USB TypeC
+OTG controller for USB2 and USB3 and thus is not supported at all at
+the moment.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230712165106.65603-5-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts | 78 ++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
+@@ -64,6 +64,20 @@
+ 		regulator-max-microvolt = <12000000>;
+ 	};
+ 
++	vcc5v0_host: vcc5v0-host-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_host";
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++		gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_host_en>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
+ 	vcc5v0_sys: vcc5v0-sys-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc5v0_sys";
+@@ -292,6 +306,34 @@
+ 			rockchip,pins = <3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
++
++	usb {
++		vcc5v0_host_en: vcc5v0-host-en {
++			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	wifibt {
++		wl_reset: wl-reset {
++			rockchip,pins = <0 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++
++		wl_dis: wl-dis {
++			rockchip,pins = <0 RK_PD5 RK_FUNC_GPIO &pcfg_output_high>;
++		};
++
++		wl_wake_host: wl-wake-host {
++			rockchip,pins = <0 RK_PC7 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++
++		bt_dis: bt-dis {
++			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_output_high>;
++		};
++
++		bt_wake_host: bt-wake-host {
++			rockchip,pins = <0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
+ };
+ 
+ &pwm3 {
+@@ -651,7 +693,43 @@
+ 	};
+ };
+ 
++&u2phy2 {
++	status = "okay";
++};
++
++&u2phy2_host {
++	status = "okay";
++	phy-supply = <&vcc5v0_host>;
++};
++
++&u2phy3 {
++	status = "okay";
++};
++
++&u2phy3_host {
++	phy-supply = <&vcc5v0_host>;
++	status = "okay";
++};
++
+ &uart2 {
+ 	pinctrl-0 = <&uart2m0_xfer>;
+ 	status = "okay";
+ };
++
++&usb_host0_ehci {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&wl_reset &wl_dis &wl_wake_host &bt_dis &bt_wake_host>;
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usb_host1_ehci {
++	status = "okay";
++};
++
++&usb_host1_ohci {
++	status = "okay";
++};

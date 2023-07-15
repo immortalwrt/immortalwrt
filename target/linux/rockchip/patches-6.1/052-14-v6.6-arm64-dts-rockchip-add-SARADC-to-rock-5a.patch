@@ -1,0 +1,35 @@
+From 43465c67518c3d2e6293e9d97e577de434ad682b Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Mon, 10 Jul 2023 18:52:27 +0200
+Subject: [PATCH] arm64: dts: rockchip: add SARADC to rock-5a
+
+Enable ADC support for Rock 5A, which has the following ADC channels:
+
+Channel 0 = Boot Mode Config
+Channel 1 = Recovery Key
+Channel 2 = PWM Fan
+Channel 3 = Headphone Hook
+Channel 4 = System Input Voltage
+Channel 5 = Board ID Config
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230710165228.105983-13-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
+@@ -286,6 +286,11 @@
+ 	};
+ };
+ 
++&saradc {
++	vref-supply = <&avcc_1v8_s0>;
++	status = "okay";
++};
++
+ &sdhci {
+ 	bus-width = <8>;
+ 	no-sdio;

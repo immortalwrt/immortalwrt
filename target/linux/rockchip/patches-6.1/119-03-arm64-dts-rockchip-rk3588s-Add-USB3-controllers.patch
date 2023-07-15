@@ -131,7 +131,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	sys_grf: syscon@fd58c000 {
  		compatible = "rockchip,rk3588-sys-grf", "syscon";
  		reg = <0x0 0xfd58c000 0x0 0x1000>;
-@@ -898,7 +957,6 @@
+@@ -923,7 +982,6 @@
  			clock-names = "phyclk";
  			clock-output-names = "usb480m_phy0";
  			#clock-cells = <0>;

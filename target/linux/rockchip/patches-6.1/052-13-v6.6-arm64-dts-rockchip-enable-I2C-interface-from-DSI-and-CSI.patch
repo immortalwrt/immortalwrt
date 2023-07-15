@@ -1,0 +1,36 @@
+From aa00cf88bd8c5ac22f4da9ae390790268b111f97 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Mon, 10 Jul 2023 18:52:26 +0200
+Subject: [PATCH] arm64: dts: rockchip: enable I2C interface from DSI and CSI
+ connectors on rock-5a
+
+I2C3 is routed to the Camera connector and I2C5 is routed to the LCD
+connector. On I2C5 additionally there is an unpopulated footprint for
+a HYM8563TS RTC.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230710165228.105983-12-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
+@@ -190,6 +190,16 @@
+ 	};
+ };
+ 
++&i2c3 {
++	status = "okay";
++};
++
++&i2c5 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c5m2_xfer>;
++};
++
+ &i2c7 {
+ 	status = "okay";
+ 

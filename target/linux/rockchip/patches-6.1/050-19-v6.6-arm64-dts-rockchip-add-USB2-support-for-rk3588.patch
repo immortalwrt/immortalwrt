@@ -1,19 +1,21 @@
-From c10b7b902f6d8d1b550c6b4ccd8615f407ca85a3 Mon Sep 17 00:00:00 2001
+From a684cb416414fdd2b2a33e691119608c0e2eba9f Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Thu, 12 Jan 2023 19:20:37 +0100
-Subject: [PATCH] arm64: dts: rockchip: rk3588: add USB2 support
+Date: Wed, 12 Jul 2023 18:51:03 +0200
+Subject: [PATCH] arm64: dts: rockchip: add USB2 support for rk3588
 
 This adds USB2 (EHCI & OHCI) ports including the related PHYs
 and GRF modules to the rk3588(s) device tree.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230712165106.65603-2-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 94 +++++++++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 94 +++++++++++++++++++++++++++++++
  1 file changed, 94 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -832,11 +832,105 @@
+@@ -390,6 +390,50 @@
  		};
  	};
  
@@ -64,6 +66,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	sys_grf: syscon@fd58c000 {
  		compatible = "rockchip,rk3588-sys-grf", "syscon";
  		reg = <0x0 0xfd58c000 0x0 0x1000>;
+@@ -410,6 +454,56 @@
+ 		reg = <0x0 0xfd5c4000 0x0 0x100>;
  	};
  
 +	usb2phy2_grf: syscon@fd5d8000 {
@@ -116,6 +120,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		};
 +	};
 +
- 	bigcore0_grf: syscon@fd590000 {
- 		compatible = "rockchip,rk3588-bigcore0-grf", "syscon";
- 		reg = <0x0 0xfd590000 0x0 0x100>;
+ 	ioc: syscon@fd5f0000 {
+ 		compatible = "rockchip,rk3588-ioc", "syscon";
+ 		reg = <0x0 0xfd5f0000 0x0 0x10000>;
