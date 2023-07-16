@@ -97,6 +97,13 @@ define U-Boot/guangmiao-g4c-rk3399
     huake_guangmiao-g4c
 endef
 
+define U-Boot/nanopc-t4-rk3399
+  $(U-Boot/rk3399/Default)
+  NAME:=NanoPC T4
+  BUILD_DEVICES:= \
+    friendlyarm_nanopc-t4
+endef
+
 define U-Boot/nanopi-r4s-rk3399
   $(U-Boot/Default/rk3399)
   NAME:=NanoPi R4S
@@ -186,6 +193,7 @@ endef
 
 UBOOT_TARGETS := \
   guangmiao-g4c-rk3399 \
+  nanopc-t4-rk3399 \
   nanopi-r4s-rk3399 \
   nanopi-r4se-rk3399 \
   nanopi-r4s-enterprise-rk3399 \
