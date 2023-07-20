@@ -13,32 +13,27 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  5 files changed, 192 insertions(+)
  create mode 100644 src/expr/fullcone.c
 
-diff --git a/include/libnftnl/expr.h b/include/libnftnl/expr.h
-index 00c63ab..7dcf403 100644
 --- a/include/libnftnl/expr.h
 +++ b/include/libnftnl/expr.h
-@@ -244,6 +244,12 @@ enum {
- 	NFTNL_EXPR_MASQ_REG_PROTO_MAX,
+@@ -245,6 +245,12 @@ enum {
  };
  
-+enum {
+ enum {
 +	NFTNL_EXPR_FULLCONE_FLAGS		= NFTNL_EXPR_BASE,
 +	NFTNL_EXPR_FULLCONE_REG_PROTO_MIN,
 +	NFTNL_EXPR_FULLCONE_REG_PROTO_MAX,
 +};
 +
- enum {
++enum {
  	NFTNL_EXPR_REDIR_REG_PROTO_MIN	= NFTNL_EXPR_BASE,
  	NFTNL_EXPR_REDIR_REG_PROTO_MAX,
-diff --git a/include/linux/netfilter/nf_tables.h b/include/linux/netfilter/nf_tables.h
-index 0ae9120..8b8ae38 100644
+ 	NFTNL_EXPR_REDIR_FLAGS,
 --- a/include/linux/netfilter/nf_tables.h
 +++ b/include/linux/netfilter/nf_tables.h
-@@ -1433,6 +1433,22 @@ enum nft_masq_attributes {
- };
+@@ -1464,6 +1464,22 @@ enum nft_masq_attributes {
  #define NFTA_MASQ_MAX		(__NFTA_MASQ_MAX - 1)
  
-+/**
+ /**
 + * enum nft_fullcone_attributes - nf_tables fullcone expression attributes
 + *
 + * @NFTA_FULLCONE_FLAGS: NAT flags (see NF_NAT_RANGE_* in linux/netfilter/nf_nat.h) (NLA_U32)
@@ -54,14 +49,13 @@ index 0ae9120..8b8ae38 100644
 +};
 +#define NFTA_FULLCONE_MAX		(__NFTA_FULLCONE_MAX - 1)
 +
- /**
++/**
   * enum nft_redir_attributes - nf_tables redirect expression netlink attributes
   *
-diff --git a/src/Makefile.am b/src/Makefile.am
-index c3b0ab9..2718218 100644
+  * @NFTA_REDIR_REG_PROTO_MIN: source register of proto range start (NLA_U32: nft_registers)
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -54,6 +54,7 @@ libnftnl_la_SOURCES = utils.c		\
+@@ -55,6 +55,7 @@ libnftnl_la_SOURCES = utils.c		\
  		      expr/target.c	\
  		      expr/tunnel.c	\
  		      expr/masq.c	\
@@ -69,9 +63,6 @@ index c3b0ab9..2718218 100644
  		      expr/redir.c	\
  		      expr/hash.c	\
  		      expr/socket.c	\
-diff --git a/src/expr/fullcone.c b/src/expr/fullcone.c
-new file mode 100644
-index 0000000..aaedd83
 --- /dev/null
 +++ b/src/expr/fullcone.c
 @@ -0,0 +1,167 @@
@@ -242,11 +233,9 @@ index 0000000..aaedd83
 +	.build		= nftnl_expr_fullcone_build,
 +	.output		= nftnl_expr_fullcone_snprintf,
 +};
-diff --git a/src/expr_ops.c b/src/expr_ops.c
-index 7248e4f..9dee9f8 100644
 --- a/src/expr_ops.c
 +++ b/src/expr_ops.c
-@@ -19,6 +19,7 @@ extern struct expr_ops expr_ops_limit;
+@@ -20,6 +20,7 @@ extern struct expr_ops expr_ops_limit;
  extern struct expr_ops expr_ops_log;
  extern struct expr_ops expr_ops_lookup;
  extern struct expr_ops expr_ops_masq;
@@ -254,7 +243,7 @@ index 7248e4f..9dee9f8 100644
  extern struct expr_ops expr_ops_match;
  extern struct expr_ops expr_ops_meta;
  extern struct expr_ops expr_ops_ng;
-@@ -63,6 +64,7 @@ static struct expr_ops *expr_ops[] = {
+@@ -65,6 +66,7 @@ static struct expr_ops *expr_ops[] = {
  	&expr_ops_log,
  	&expr_ops_lookup,
  	&expr_ops_masq,
