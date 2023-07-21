@@ -96,7 +96,7 @@
 		phy-mode = "2500base-x";
 
 		nvmem-cells = <&macaddr_config_50707 0>;
-		nvmem-cell-names = "mac-address-ascii";
+		nvmem-cell-names = "mac-address";
 
 		fixed-link {
 			speed = <2500>;
@@ -205,7 +205,7 @@
 			label = "wan";
 
 			nvmem-cells = <&macaddr_config_50787 0>;
-			nvmem-cell-names = "mac-address-ascii";
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@2 {
