@@ -44,6 +44,8 @@ define Device/friendlyarm_nanopc-t4
   DEVICE_MODEL := NanoPC T4
   SOC := rk3399
   BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-brcmfmac wpad-basic-openssl \
+	brcmfmac-firmware-4356-sdio brcmfmac-nvram-4356-sdio
 endef
 TARGET_DEVICES += friendlyarm_nanopc-t4
 
