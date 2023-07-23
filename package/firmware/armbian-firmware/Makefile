@@ -25,6 +25,21 @@ endef
 define Build/Compile
 endef
 
+Package/brcmfmac-firmware-4356-sdio = $(call Package/armbian-firmware-default,Broadcom BCM4356 FullMac SDIO firmware)
+define Package/brcmfmac-firmware-4356-sdio/install
+	$(INSTALL_DIR) $(1)/lib/firmware/brcm
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/brcm/BCM4356A2.hcd \
+		$(1)/lib/firmware/brcm/
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/brcm/brcmfmac4356-sdio.bin \
+		$(1)/lib/firmware/brcm/
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/brcm/brcmfmac4356-sdio.clm_blob \
+		$(1)/lib/firmware/brcm/
+endef
+$(eval $(call BuildPackage,brcmfmac-firmware-4356-sdio))
+
 Package/brcmfmac-firmware-43456-sdio = $(call Package/armbian-firmware-default,Broadcom BCM43456 FullMac SDIO firmware)
 define Package/brcmfmac-firmware-43456-sdio/install
 	$(INSTALL_DIR) $(1)/lib/firmware/brcm
@@ -51,6 +66,18 @@ define Package/brcmfmac-firmware-43752-sdio/install
 		$(1)/lib/firmware/brcm/
 endef
 $(eval $(call BuildPackage,brcmfmac-firmware-43752-sdio))
+
+Package/brcmfmac-nvram-4356-sdio = $(call Package/armbian-firmware-default,Broadcom BCM4356 NVRAM firmware)
+define Package/brcmfmac-nvram-4356-sdio/install
+	$(INSTALL_DIR) $(1)/lib/firmware/brcm
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/brcm/brcmfmac4356-sdio.txt \
+		$(1)/lib/firmware/brcm/
+	$(LN) \
+		brcmfmac4356-sdio.txt \
+		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopc-t4.txt
+endef
+$(eval $(call BuildPackage,brcmfmac-nvram-4356-sdio))
 
 Package/brcmfmac-nvram-43456-sdio = $(call Package/armbian-firmware-default,Broadcom BCM43456 NVRAM firmware)
 define Package/brcmfmac-nvram-43456-sdio/install
