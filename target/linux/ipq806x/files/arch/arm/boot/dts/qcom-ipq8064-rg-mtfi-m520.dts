@@ -309,12 +309,10 @@
 	};
 };
 
-&amba {
-	sdcc1: sdcc@12400000 {
-		status = "okay";
-		pinctrl-0 = <&sdcc1_pins>;
-		pinctrl-names = "default";
-	};
+&sdcc1 {
+	status = "okay";
+	pinctrl-0 = <&sdcc1_pins>;
+	pinctrl-names = "default";
 };
 
 &adm_dma {
