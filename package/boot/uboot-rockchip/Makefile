@@ -98,7 +98,7 @@ define U-Boot/guangmiao-g4c-rk3399
 endef
 
 define U-Boot/nanopc-t4-rk3399
-  $(U-Boot/rk3399/Default)
+  $(U-Boot/Default/rk3399)
   NAME:=NanoPC T4
   BUILD_DEVICES:= \
     friendlyarm_nanopc-t4
