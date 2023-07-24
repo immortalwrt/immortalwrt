@@ -27,13 +27,18 @@ ifdef UBOOT_USE_BINMAN
 endif
 
 ifdef UBOOT_USE_INTREE_DTC
-  $(eval $(call SetupHostCommand,swig,Please install 'swig', \
+  $(eval $(call TestHostCommand,swig, \
+    Please install the swig package, \
     swig -version))
 
-  $(eval $(call TestHostCommand,libpython3-dev, \
-    Please install the libpython3-dev package, \
-    $(STAGING_DIR_HOST)/bin/python3 -c 'import os; import sysconfig; \
-      os.path.exists(sysconfig.get_paths()["include"] + "/Python.h") or exit(1)'))
+  $(eval $(call TestHostCommand,python3-dev, \
+    Please install the python3-dev package, \
+    python3.11-config --includes 2>&1 | grep 'python3', \
+    python3.10-config --includes 2>&1 | grep 'python3', \
+    python3.9-config --includes 2>&1 | grep 'python3', \
+    python3.8-config --includes 2>&1 | grep 'python3', \
+    python3.7-config --includes 2>&1 | grep 'python3', \
+    python3-config --includes 2>&1 | grep -E 'python3\.([7-9]|[0-9][0-9])\.?'))
 endif
 
 export GCC_HONOUR_COPTS=s
