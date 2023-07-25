@@ -925,6 +925,7 @@ define Device/nexx_wt3020-8m
   DEVICE_VARIANT := 8M
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
   SUPPORTED_DEVICES += wt3020 wt3020-8M
+  DEFAULT := n
 endef
 TARGET_DEVICES += nexx_wt3020-8m
 
@@ -1498,6 +1499,7 @@ define Device/zyxel_keenetic-omni
   IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
 	zyimage -d 4882 -v "ZyXEL Keenetic Omni"
   SUPPORTED_DEVICES += kn_rc
+  DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_keenetic-omni
 
@@ -1511,6 +1513,7 @@ define Device/zyxel_keenetic-omni-ii
   IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
 	zyimage -d 2102034 -v "ZyXEL Keenetic Omni II"
   SUPPORTED_DEVICES += kn_rf
+  DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_keenetic-omni-ii
 
