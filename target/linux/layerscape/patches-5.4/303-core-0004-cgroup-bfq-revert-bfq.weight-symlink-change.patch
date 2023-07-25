@@ -89,7 +89,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
  }
  
  /**
-@@ -4010,7 +3994,6 @@ static int cgroup_add_file(struct cgroup
+@@ -4024,7 +4008,6 @@ static int cgroup_add_file(struct cgroup
  {
  	char name[CGROUP_FILE_NAME_MAX];
  	struct kernfs_node *kn;
@@ -97,7 +97,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
  	struct lock_class_key *key = NULL;
  	int ret;
  
-@@ -4041,14 +4024,6 @@ static int cgroup_add_file(struct cgroup
+@@ -4055,14 +4038,6 @@ static int cgroup_add_file(struct cgroup
  		spin_unlock_irq(&cgroup_file_kn_lock);
  	}
  
