@@ -156,6 +156,7 @@ define Device/cudy_wr1000
   DEVICE_MODEL := WR1000
   DEVICE_PACKAGES := kmod-mt76x2
   SUPPORTED_DEVICES += wr1000
+  DEFAULT := n
 endef
 TARGET_DEVICES += cudy_wr1000
 
@@ -577,6 +578,7 @@ define Device/tplink_archer-c50-v3
   IMAGES := sysupgrade.bin tftp-recovery.bin
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
   SUPPORTED_DEVICES += tplink,c50-v3
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c50-v3
 
