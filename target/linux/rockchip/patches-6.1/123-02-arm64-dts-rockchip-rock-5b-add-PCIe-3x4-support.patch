@@ -1,0 +1,71 @@
+From 72ec5f3a720b860f62d43a82924e75ea5e3cacb0 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Fri, 14 Jul 2023 19:19:29 +0200
+Subject: [PATCH] arm64: dts: rockchip: rock-5b: add PCIe 3x4 support
+
+The Radxa Rock 5B has PCIe 3x4 routed to its M.2 M-key connector
+on the board's back.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 35 +++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -60,6 +60,19 @@
+ 		vin-supply = <&vcc_3v3_s3>;
+ 	};
+ 
++	vcc3v3_pcie30: vcc3v3-pcie30 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie30";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <5000>;
++		vin-supply = <&vcc5v0_sys>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pcie3_vcc3v3_en>;
++	};
++
+ 	vcc5v0_host: vcc5v0-host-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc5v0_host";
+@@ -231,6 +244,18 @@
+ 	};
+ };
+ 
++&pcie30phy {
++	status = "okay";
++};
++
++&pcie3x4 {
++	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie30>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie3_rst>;
++	status = "okay";
++};
++
+ &pinctrl {
+ 	hym8563 {
+ 		hym8563_int: hym8563-int {
+@@ -250,6 +275,16 @@
+ 		};
+ 	};
+ 
++	pcie3 {
++		pcie3_rst: pcie3-rst {
++			rockchip,pins = <4 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		pcie3_vcc3v3_en: pcie3-vcc3v3-en {
++			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	usb {
+ 		vcc5v0_host_en: vcc5v0-host-en {
+ 			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;

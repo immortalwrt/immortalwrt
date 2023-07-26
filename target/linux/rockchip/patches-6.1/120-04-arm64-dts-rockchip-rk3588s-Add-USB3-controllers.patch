@@ -45,10 +45,10 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		};
 +	};
 +
- 	pipe_phy1_grf: syscon@fd5c0000 {
- 		compatible = "rockchip,rk3588-pipe-phy-grf", "syscon";
- 		reg = <0x0 0xfd5c0000 0x0 0x100>;
-@@ -34,7 +62,6 @@
+ 	pcie30_phy_grf: syscon@fd5b8000 {
+ 		compatible = "rockchip,rk3588-pcie3-phy-grf", "syscon";
+ 		reg = <0x0 0xfd5b8000 0x0 0x10000>;
+@@ -39,7 +67,6 @@
  			clock-names = "phyclk";
  			clock-output-names = "usb480m_phy1";
  			#clock-cells = <0>;

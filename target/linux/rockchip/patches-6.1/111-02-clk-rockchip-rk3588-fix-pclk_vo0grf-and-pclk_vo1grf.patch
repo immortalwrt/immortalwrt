@@ -1,4 +1,4 @@
-From a5f467748264d9a337cb40083efde04c748d8c3e Mon Sep 17 00:00:00 2001
+From a8dc483b1653a2b99f9b63803b4575ba4a91d8d8 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Tue, 13 Jun 2023 16:45:05 +0200
 Subject: [PATCH] clk: rockchip: rk3588: fix pclk_vo0grf and pclk_vo1grf

@@ -13,7 +13,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
-@@ -12,6 +12,38 @@
+@@ -17,6 +17,38 @@
  		reg = <0x0 0xfd5c0000 0x0 0x100>;
  	};
  
@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	i2s8_8ch: i2s@fddc8000 {
  		compatible = "rockchip,rk3588-i2s-tdm";
  		reg = <0x0 0xfddc8000 0x0 0x1000>;
-@@ -206,6 +238,37 @@
+@@ -313,6 +345,37 @@
  		};
  	};
  

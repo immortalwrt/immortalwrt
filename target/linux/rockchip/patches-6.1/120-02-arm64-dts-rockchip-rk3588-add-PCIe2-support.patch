@@ -16,8 +16,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
-@@ -80,6 +80,60 @@
- 		status = "disabled";
+@@ -187,6 +187,60 @@
+ 		};
  	};
  
 +	pcie2x1l0: pcie@fe170000 {
