@@ -3,8 +3,7 @@
 		"description": "Grant access to autocore",
 		"read": {
 			"ubus": {
-				"luci": [ "getCPUInfo", "getTempInfo" ],
-				"network.device": [ "status" ]
+				"luci": [ "getCPUInfo", "getTempInfo" ]
 			}
 		}
 	}
