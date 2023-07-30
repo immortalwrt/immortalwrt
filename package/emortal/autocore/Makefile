@@ -48,11 +48,6 @@ endif
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
-
-ifeq ($(filter ipq806x%, $(TARGETID)),)
-	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
-	$(INSTALL_DATA) ./files/29_ethinfo.js $(1)/www/luci-static/resources/view/status/include/
-endif
 endef
 
 $(eval $(call BuildPackage,autocore))

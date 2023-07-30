@@ -75,8 +75,8 @@ msgstr "（未连接到接口）"
 msgid "Collisions seen"
 msgstr "检测到冲突"
 
-msgid "Ethernet Information"
-msgstr "网口信息"
+msgid "Port status"
+msgstr "端口状态"
 
 msgid "No zone assigned"
 msgstr "未分配区域"
