@@ -1,0 +1,54 @@
+From d56de8c9a17d8f5202d0f37dd06ce186cc512586 Mon Sep 17 00:00:00 2001
+From: Li Jun <jun.li@nxp.com>
+Date: Tue, 28 Mar 2023 16:23:04 +0800
+Subject: [PATCH] usb: typec: tcpm: try to get role switch from tcpc fwnode
+
+Try to get usb role switch from tcpc fwnode if failed to
+get role switch from port dev, this is for case the port
+for role switch endpoint is located in connector node,
+as per connector binding doc, port@0 for HS is required.
+
+ptn5110: tcpc@50 {
+	compatible = "nxp,ptn5110";
+	...
+	status = "okay";
+
+	connector {
+		compatible = "usb-c-connector";
+		label = "USB-C";
+		...
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+
+				typec_conn: endpoint {
+					remote-endpoint = <&usb2_controller>;
+				};
+			};
+		};
+	};
+};
+
+Signed-off-by: Li Jun <jun.li@nxp.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/1679991784-25500-1-git-send-email-jun.li@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/typec/tcpm/tcpm.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/usb/typec/tcpm/tcpm.c
++++ b/drivers/usb/typec/tcpm/tcpm.c
+@@ -6541,6 +6541,8 @@ struct tcpm_port *tcpm_register_port(str
+ 	port->port_type = port->typec_caps.type;
+ 
+ 	port->role_sw = usb_role_switch_get(port->dev);
++	if (!port->role_sw)
++		port->role_sw = fwnode_usb_role_switch_get(tcpc->fwnode);
+ 	if (IS_ERR(port->role_sw)) {
+ 		err = PTR_ERR(port->role_sw);
+ 		goto out_destroy_wq;

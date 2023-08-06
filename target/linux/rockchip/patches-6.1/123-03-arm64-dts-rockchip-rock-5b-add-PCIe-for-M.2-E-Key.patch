@@ -1,0 +1,78 @@
+From 93900c0c70cf280330fa5e7c6e727f77d0677065 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Fri, 21 Jul 2023 17:43:58 +0200
+Subject: [PATCH] arm64: dts: rockchip: rock-5b: add PCIe for M.2 E-Key
+
+Enable PCIe2_0 controller and its voltage supply, which is routed
+to the M.2 E-Key on the upper side of the Radxa Rock 5B.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 35 +++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -51,6 +51,21 @@
+ 		#cooling-cells = <2>;
+ 	};
+ 
++	vcc3v3_pcie2x1l0: vcc3v3-pcie2x1l0-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie2x1l0";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++		regulator-boot-on;
++		regulator-always-on;
++		gpios = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pcie2_0_vcc3v3_en>;
++		startup-delay-us = <50000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
+ 	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3_pcie2x1l2";
+@@ -122,6 +137,10 @@
+ 	status = "okay";
+ };
+ 
++&combphy1_ps {
++	status = "okay";
++};
++
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_big0_s0>;
+ };
+@@ -248,6 +267,14 @@
+ 	};
+ };
+ 
++&pcie2x1l0 {
++	reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie2_0_rst>;
++	status = "okay";
++};
++
+ &pcie2x1l2 {
+ 	reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
+@@ -288,6 +315,14 @@
+ 	};
+ 
+ 	pcie2 {
++		pcie2_0_rst: pcie2-0-rst {
++			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		pcie2_0_vcc3v3_en: pcie2-0-vcc-en {
++			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
+ 		pcie2_2_rst: pcie2-2-rst {
+ 			rockchip,pins = <3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};

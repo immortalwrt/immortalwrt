@@ -1,4 +1,4 @@
-From 3a0dbc8a3fc183503f847fc21976026044021285 Mon Sep 17 00:00:00 2001
+From 9d2a342309d3a880b9b6fe53bbb0b563f8aad671 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Tue, 28 Feb 2023 14:40:59 +0000
 Subject: [PATCH] arm64: dts: rockchip: rock-5b: add PCIe network controller
@@ -8,8 +8,8 @@ PCIe.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- .../boot/dts/rockchip/rk3588-rock-5b.dts      | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
@@ -29,18 +29,42 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -646,3 +655,14 @@
- &usb_host1_ohci {
- 	status = "okay";
+@@ -96,6 +105,10 @@
+ 	};
  };
-+
+ 
 +&combphy0_ps {
 +	status = "okay";
 +};
 +
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_big0_s0>;
+ };
+@@ -222,6 +235,14 @@
+ 	};
+ };
+ 
 +&pcie2x1l2 {
 +	reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
 +	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie2_2_rst>;
 +	status = "okay";
-+
 +};
++
+ &pinctrl {
+ 	hym8563 {
+ 		hym8563_int: hym8563-int {
+@@ -241,6 +262,12 @@
+ 		};
+ 	};
+ 
++	pcie2 {
++		pcie2_2_rst: pcie2-2-rst {
++			rockchip,pins = <3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	usb {
+ 		vcc5v0_host_en: vcc5v0-host-en {
+ 			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;

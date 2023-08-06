@@ -1,4 +1,4 @@
-From 3a68da76b9f07f81f59e61e4c21d405373bbd1fa Mon Sep 17 00:00:00 2001
+From b4174689243599ca10187ec1c98c9e045c9d19d5 Mon Sep 17 00:00:00 2001
 From: Frank Wang <frank.wang@rock-chips.com>
 Date: Tue, 25 Apr 2023 15:55:54 +0200
 Subject: [PATCH] phy: rockchip: add usbdp combo phy driver

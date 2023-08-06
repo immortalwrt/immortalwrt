@@ -1,4 +1,4 @@
-From a32960824f10bab122fa0f4cdadce8a2f6a6286c Mon Sep 17 00:00:00 2001
+From e6253fdf8d3cdc70424fb8f53929b013a0cc60b3 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Tue, 11 Jul 2023 17:20:47 +0200
 Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add PCIe3 bus
@@ -12,8 +12,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -49,6 +49,26 @@
- 		vin-supply = <&avcc_1v8_s0>;
+@@ -29,6 +29,26 @@
+ 		pwms = <&pwm2 0 25000 0>;
  	};
  
 +	pcie30_avdd0v75: pcie30-avdd0v75-regulator {
@@ -39,8 +39,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc12v_dcin: vcc12v-dcin-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc12v_dcin";
-@@ -71,6 +91,19 @@
- 		pinctrl-0 = <&vcc3v3_pcie30_en>;
+@@ -38,6 +58,19 @@
+ 		regulator-max-microvolt = <12000000>;
  	};
  
 +	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
@@ -59,7 +59,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -254,6 +287,18 @@
+@@ -209,6 +242,18 @@
  	status = "okay";
  };
  
@@ -78,7 +78,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &pinctrl {
  	rtl8111 {
  		rtl8111_isolate: rtl8111-isolate {
-@@ -274,6 +319,16 @@
+@@ -229,6 +274,16 @@
  		};
  	};
  
@@ -92,6 +92,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		};
 +	};
 +
- 	pcie3 {
- 		pcie3_reset: pcie3-reset {
- 			rockchip,pins = <4 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
+ 	usb {
+ 		vcc5v0_host_en: vcc5v0-host-en {
+ 			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;

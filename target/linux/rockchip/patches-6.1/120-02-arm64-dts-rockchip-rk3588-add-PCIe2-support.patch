@@ -1,4 +1,4 @@
-From 9afd072bbcb97efccf1be82515cbe4ba682cce38 Mon Sep 17 00:00:00 2001
+From 28ecb034639296ac27116d4d021ad0ece172cab1 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Mon, 17 Apr 2023 20:03:08 +0200
 Subject: [PATCH] arm64: dts: rockchip: rk3588: add PCIe2 support
@@ -8,15 +8,17 @@ also has two PCIe3 IP blocks, that will be handled separately.
 
 Co-developed-by: Kever Yang <kever.yang@rock-chips.com>
 Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
+Tested-by: Jagan Teki <jagan@edgeble.ai> # edgeble-neu6a, 6b
+Reviewed-by: Jagan Teki <jagan@edgeble.ai>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3588.dtsi  |  54 +++++++++++
- arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 108 ++++++++++++++++++++++
- 2 files changed, 162 insertions(+)
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi  |  51 +++++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 102 ++++++++++++++++++++++
+ 2 files changed, 153 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
-@@ -187,6 +187,60 @@
+@@ -187,6 +187,57 @@
  		};
  	};
  
@@ -45,9 +47,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +				<0 0 0 3 &pcie2x1l0_intc 2>,
 +				<0 0 0 4 &pcie2x1l0_intc 3>;
 +		linux,pci-domain = <2>;
-+		num-ib-windows = <8>;
-+		num-ob-windows = <8>;
-+		num-viewport = <4>;
 +		max-link-speed = <2>;
 +		msi-map = <0x2000 &its0 0x2000 0x1000>;
 +		num-lanes = <1>;
@@ -79,7 +78,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		reg = <0x0 0xfe1b0000 0x0 0x10000>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -1670,6 +1670,114 @@
+@@ -1670,6 +1670,108 @@
  		reg = <0x0 0xfdf82200 0x0 0x20>;
  	};
  
@@ -108,9 +107,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +				<0 0 0 3 &pcie2x1l1_intc 2>,
 +				<0 0 0 4 &pcie2x1l1_intc 3>;
 +		linux,pci-domain = <3>;
-+		num-ib-windows = <8>;
-+		num-ob-windows = <8>;
-+		num-viewport = <4>;
 +		max-link-speed = <2>;
 +		msi-map = <0x3000 &its0 0x3000 0x1000>;
 +		num-lanes = <1>;
@@ -162,9 +158,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +				<0 0 0 3 &pcie2x1l2_intc 2>,
 +				<0 0 0 4 &pcie2x1l2_intc 3>;
 +		linux,pci-domain = <4>;
-+		num-ib-windows = <8>;
-+		num-ob-windows = <8>;
-+		num-viewport = <4>;
 +		max-link-speed = <2>;
 +		msi-map = <0x4000 &its0 0x4000 0x1000>;
 +		num-lanes = <1>;
