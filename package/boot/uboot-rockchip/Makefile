@@ -200,6 +200,13 @@ define U-Boot/Default/rk3588
   DDR:=$(RK3588_DDR)
 endef
 
+define U-Boot/nanopc-t6-rk3588
+  $(U-Boot/Default/rk3588)
+  NAME:=NanoPC T6
+  BUILD_DEVICES:= \
+    friendlyarm_nanopc-t6
+endef
+
 define U-Boot/rock5b-rk3588
   $(U-Boot/Default/rk3588)
   NAME:=Rock 5B
@@ -245,6 +252,7 @@ UBOOT_TARGETS := \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
   roc-pc-rk3568 \
+  nanopc-t6-rk3588 \
   rock5b-rk3588 \
   nanopi-r6c-rk3588s \
   nanopi-r6s-rk3588s

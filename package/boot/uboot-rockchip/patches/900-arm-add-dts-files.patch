@@ -28,7 +28,7 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -169,12 +175,20 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+@@ -169,12 +175,21 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-anbernic-rgxx3.dtb \
  	rk3566-radxa-cm3-io.dtb \
  	rk3568-evb.dtb \
@@ -44,6 +44,7 @@
  	rk3588-edgeble-neu6a-io.dtb \
  	rk3588-evb1-v10.dtb \
 -	rk3588-rock-5b.dtb
++	rk3588-nanopc-t6.dtb \
 +	rk3588-rock-5b.dtb \
 +	rk3588s-nanopi-r6c.dtb \
 +	rk3588s-nanopi-r6s.dtb
