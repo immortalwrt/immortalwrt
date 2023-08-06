@@ -91,14 +91,14 @@
 
 	vcc5v0_host_20: vcc5v0-host-20-regulator {
 		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_host20_en>;
 		regulator-name = "vcc5v0_host_20";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc5v0_usb>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_host20_en>;
 	};
 
 	vcc_3v3_pcie20: vcc3v3-pcie20-regulator {
@@ -123,28 +123,28 @@
 
 	vcc_3v3_sd_s0: vcc-3v3-sd-s0-regulator {
 		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc3v3_sd_en>;
 		regulator-always-on;
 		regulator-boot-on;
 		regulator-max-microvolt = <3000000>;
 		regulator-min-microvolt = <3000000>;
 		regulator-name = "vcc_3v3_sd_s0";
+		enable-active-high;
+		gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc_3v3_s3>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc3v3_sd_en>;
 	};
 
 	vbus5v0_typec: vbus5v0-typec-regulator {
 		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vbus5v0_typec_en>;
 		regulator-name = "vbus5v0_typec";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc5v0_usb>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vbus5v0_typec_en>;
 	};
 };
 

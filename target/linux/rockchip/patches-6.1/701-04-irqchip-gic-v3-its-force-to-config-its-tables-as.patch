@@ -12,43 +12,47 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
 
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2366,7 +2366,8 @@ retry_baser:
+@@ -2366,7 +2366,9 @@ retry_baser:
  	tmp = baser->val;
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566")) {
 +	    of_machine_is_compatible("rockchip,rk3566") ||
-+	    of_machine_is_compatible("rockchip,rk3588")) {
++	    of_machine_is_compatible("rockchip,rk3588") ||
++	    of_machine_is_compatible("rockchip,rk3588s")) {
  		if (tmp & GITS_BASER_SHAREABILITY_MASK)
  			tmp &= ~GITS_BASER_SHAREABILITY_MASK;
  		else
-@@ -3113,7 +3114,8 @@ static void its_cpu_init_lpis(void)
+@@ -3113,7 +3115,9 @@ static void its_cpu_init_lpis(void)
  	tmp = gicr_read_propbaser(rbase + GICR_PROPBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566"))
 +	    of_machine_is_compatible("rockchip,rk3566") ||
-+	    of_machine_is_compatible("rockchip,rk3588"))
++	    of_machine_is_compatible("rockchip,rk3588") ||
++	    of_machine_is_compatible("rockchip,rk3588s"))
  		tmp &= ~GICR_PROPBASER_SHAREABILITY_MASK;
  
  	if ((tmp ^ val) & GICR_PROPBASER_SHAREABILITY_MASK) {
-@@ -3141,7 +3143,8 @@ static void its_cpu_init_lpis(void)
+@@ -3141,7 +3145,9 @@ static void its_cpu_init_lpis(void)
  	tmp = gicr_read_pendbaser(rbase + GICR_PENDBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566"))
 +	    of_machine_is_compatible("rockchip,rk3566") ||
-+	    of_machine_is_compatible("rockchip,rk3588"))
++	    of_machine_is_compatible("rockchip,rk3588") ||
++	    of_machine_is_compatible("rockchip,rk3588s"))
  		tmp &= ~GICR_PENDBASER_SHAREABILITY_MASK;
  
  	if (!(tmp & GICR_PENDBASER_SHAREABILITY_MASK)) {
-@@ -5132,7 +5135,8 @@ static int __init its_probe_one(struct r
+@@ -5132,7 +5138,9 @@ static int __init its_probe_one(struct r
  	tmp = gits_read_cbaser(its->base + GITS_CBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
 -	    of_machine_is_compatible("rockchip,rk3566"))
 +	    of_machine_is_compatible("rockchip,rk3566") ||
-+	    of_machine_is_compatible("rockchip,rk3588"))
++	    of_machine_is_compatible("rockchip,rk3588") ||
++	    of_machine_is_compatible("rockchip,rk3588s"))
  		tmp &= ~GITS_CBASER_SHAREABILITY_MASK;
  
  	if ((tmp ^ baser) & GITS_CBASER_SHAREABILITY_MASK) {
