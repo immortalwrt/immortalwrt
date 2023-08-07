@@ -25,7 +25,8 @@ ln -sf "/sbin/ip" "/usr/bin/ip"
 sed -i "/log-facility/d" "/etc/dnsmasq.conf"
 echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
 
-rm -rf "/tmp/luci-modulecache"
+rm -f "/www/luci-static/resources/view/status/include/29_ethinfo.js"
 rm -f "/tmp/luci-indexcache"
+rm -rf "/tmp/luci-modulecache"
 
 exit 0
