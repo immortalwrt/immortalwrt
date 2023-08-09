@@ -1,17 +1,14 @@
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -124,7 +124,10 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -125,6 +125,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
  	rk3328-nanopi-r2c.dtb \
 +	rk3328-nanopi-r2c-plus.dtb \
  	rk3328-nanopi-r2s.dtb \
-+	rk3328-orangepi-r1-plus.dtb \
-+	rk3328-orangepi-r1-plus-lts.dtb \
- 	rk3328-roc-cc.dtb \
- 	rk3328-rock64.dtb \
- 	rk3328-rock-pi-e.dtb
-@@ -142,6 +145,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+ 	rk3328-orangepi-r1-plus.dtb \
+ 	rk3328-orangepi-r1-plus-lts.dtb \
+@@ -145,6 +146,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-firefly.dtb \
  	rk3399-gru-bob.dtb \
  	rk3399-gru-kevin.dtb \
@@ -19,7 +16,7 @@
  	rk3399-khadas-edge.dtb \
  	rk3399-khadas-edge-captain.dtb \
  	rk3399-khadas-edge-v.dtb \
-@@ -152,6 +156,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -155,6 +157,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-nanopi-m4b.dtb \
  	rk3399-nanopi-neo4.dtb \
  	rk3399-nanopi-r4s.dtb \
@@ -28,26 +25,31 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -169,12 +175,21 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
- 	rk3566-anbernic-rgxx3.dtb \
- 	rk3566-radxa-cm3-io.dtb \
+@@ -178,18 +182,25 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+ 	rk3566-soquartz-cm4.dtb \
+ 	rk3566-soquartz-model-a.dtb \
  	rk3568-evb.dtb \
 +	rk3568-fastrhino-r66s.dtb \
 +	rk3568-fastrhino-r68s.dtb \
 +	rk3568-mrkaio-m68s.dtb \
-+	rk3568-nanopi-r5c.dtb \
-+	rk3568-nanopi-r5s.dtb \
+ 	rk3568-nanopi-r5c.dtb \
+ 	rk3568-nanopi-r5s.dtb \
+ 	rk3568-odroid-m1.dtb \
+ 	rk3568-radxa-e25.dtb \
 +	rk3568-roc-pc.dtb \
  	rk3568-rock-3a.dtb
  
  dtb-$(CONFIG_ROCKCHIP_RK3588) += \
  	rk3588-edgeble-neu6a-io.dtb \
+ 	rk3588-edgeble-neu6b-io.dtb \
  	rk3588-evb1-v10.dtb \
+-	rk3588s-rock-5a.dtb \
 -	rk3588-rock-5b.dtb
 +	rk3588-nanopc-t6.dtb \
 +	rk3588-rock-5b.dtb \
 +	rk3588s-nanopi-r6c.dtb \
-+	rk3588s-nanopi-r6s.dtb
++	rk3588s-nanopi-r6s.dtb \
++	rk3588s-rock-5a.dtb
  
  dtb-$(CONFIG_ROCKCHIP_RV1108) += \
  	rv1108-elgin-r1.dtb \

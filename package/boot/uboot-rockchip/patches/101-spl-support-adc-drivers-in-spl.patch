@@ -17,7 +17,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 
 --- a/common/spl/Kconfig
 +++ b/common/spl/Kconfig
-@@ -587,6 +587,11 @@ config SPL_FIT_IMAGE_TINY
+@@ -564,6 +564,11 @@ config SPL_FIT_IMAGE_TINY
  	  ensure this information is available to the next image
  	  invoked).
  
@@ -35,6 +35,6 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  # SPDX-License-Identifier: GPL-2.0+
  
 +obj-$(CONFIG_$(SPL_)ADC) += adc/
+ obj-$(CONFIG_$(SPL_TPL_)BIOSEMU) += bios_emulator/
  obj-$(CONFIG_$(SPL_TPL_)BLK) += block/
  obj-$(CONFIG_$(SPL_TPL_)BOOTCOUNT_LIMIT) += bootcount/
- obj-$(CONFIG_$(SPL_TPL_)BUTTON) += button/
