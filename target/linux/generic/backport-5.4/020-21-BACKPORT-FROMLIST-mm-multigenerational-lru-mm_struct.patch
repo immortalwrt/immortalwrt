@@ -244,7 +244,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	mmdrop(mm);
  }
  
-@@ -2399,6 +2402,13 @@ long _do_fork(struct kernel_clone_args *
+@@ -2394,6 +2397,13 @@ long _do_fork(struct kernel_clone_args *
  		get_task_struct(p);
  	}
  

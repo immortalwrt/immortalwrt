@@ -38,7 +38,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
 
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -599,6 +599,15 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
+@@ -602,6 +602,15 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
  config HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
  	bool
  
@@ -56,7 +56,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
  
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -145,6 +145,7 @@ config X86
+@@ -146,6 +146,7 @@ config X86
  	select HAVE_ARCH_TRACEHOOK
  	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
  	select HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD if X86_64

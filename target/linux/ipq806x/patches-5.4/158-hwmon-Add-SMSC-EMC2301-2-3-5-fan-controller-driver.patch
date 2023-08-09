@@ -21,7 +21,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/drivers/hwmon/Kconfig
 +++ b/drivers/hwmon/Kconfig
-@@ -1601,6 +1601,17 @@ config SENSORS_EMC2103
+@@ -1459,6 +1459,17 @@ config SENSORS_EMC2103
  	  This driver can also be built as a module. If so, the module
  	  will be called emc2103.
  
@@ -41,7 +41,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	depends on I2C
 --- a/drivers/hwmon/Makefile
 +++ b/drivers/hwmon/Makefile
-@@ -66,6 +66,7 @@ obj-$(CONFIG_SENSORS_DS620)	+= ds620.o
+@@ -61,6 +61,7 @@ obj-$(CONFIG_SENSORS_DS620)	+= ds620.o
  obj-$(CONFIG_SENSORS_DS1621)	+= ds1621.o
  obj-$(CONFIG_SENSORS_EMC1403)	+= emc1403.o
  obj-$(CONFIG_SENSORS_EMC2103)	+= emc2103.o

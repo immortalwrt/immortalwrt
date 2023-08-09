@@ -313,7 +313,7 @@ Signed-off-by: Yaroslav Rosomakho <yaroslavros@gmail.com>
  		return NULL;
 --- a/drivers/mmc/core/quirks.h
 +++ b/drivers/mmc/core/quirks.h
-@@ -99,6 +99,14 @@ static const struct mmc_fixup mmc_blk_fi
+@@ -113,6 +113,14 @@ static const struct mmc_fixup mmc_blk_fi
  	MMC_FIXUP("V10016", CID_MANFID_KINGSTON, CID_OEMID_ANY, add_quirk_mmc,
  		  MMC_QUIRK_TRIM_BROKEN),
  

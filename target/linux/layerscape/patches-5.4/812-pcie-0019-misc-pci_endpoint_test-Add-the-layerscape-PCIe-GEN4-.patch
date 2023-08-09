@@ -22,7 +22,7 @@ Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
  
  #define is_am654_pci_dev(pdev)		\
  		((pdev)->device == PCI_DEVICE_ID_TI_AM654)
-@@ -799,6 +800,7 @@ static const struct pci_device_id pci_en
+@@ -803,6 +804,7 @@ static const struct pci_device_id pci_en
  	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_DRA74x) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_DRA72x) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, 0x81c0) },
