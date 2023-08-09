@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=i40e
-PKG_VERSION:=2.22.18
+PKG_VERSION:=2.23.17
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/e1000/i40e%20stable/$(PKG_VERSION)/
-PKG_HASH:=ba3fed07b178bc78bfeab3ba309f812243cbc88032333edca891eb74022468f6
+PKG_HASH:=7d5a107a49e0c2cede2facba93086dde6fa5cbf529a92dbe57c5407b62d3c31d
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
