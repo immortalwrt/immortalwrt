@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ixgbe
-PKG_VERSION:=5.18.11
+PKG_VERSION:=5.19.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/e1000/ixgbe%20stable/$(PKG_VERSION)/
-PKG_HASH:=4ca9cc8d9041b8c9b4fdbbab4fe079e5da422fa1697ca5a58ebfa95d21e62daa
+PKG_HASH:=a844f1fea8064e30b276792455c3b286c1d7af26731e8f865d4a4e9ed1dcf4ab
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
