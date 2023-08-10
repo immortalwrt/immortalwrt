@@ -1,0 +1,17 @@
+--- a/include/osdep_service_linux.h
++++ b/include/osdep_service_linux.h
+@@ -217,14 +217,6 @@ typedef void *timer_hdl_context;
+ 
+ typedef unsigned long systime;
+ 
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+-/* Porting from linux kernel v5.15-rc1 48eab831ae8b9f7002a533fa4235eed63ea1f1a3 */
+-static inline void eth_hw_addr_set(struct net_device *dev, const u8 *addr)
+-{
+-	memcpy(dev->dev_addr, addr, ETH_ALEN);
+-}
+-#endif
+-
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 22))
+ /* Porting from linux kernel, for compatible with old kernel. */
+ static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
