@@ -390,3 +390,38 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	sound {
  		hp_detect: hp-detect {
  			rockchip,pins = <1 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
+@@ -9,12 +9,17 @@
+ 
+ / {
+ 	model = "Radxa ROCK 5 Model A";
+-	compatible = "radxa,rock-5a", "rockchip,rk3588s";
++	compatible = "radxa,rock-5a", "rockchip,rk3588";
+ 
+ 	aliases {
+ 		mmc0 = &sdhci;
+ 		mmc1 = &sdmmc;
+ 		serial2 = &uart2;
++
++		led-boot = &status_led;
++		led-failsafe = &status_led;
++		led-running = &status_led;
++		led-upgrade = &status_led;
+ 	};
+ 
+ 	analog-sound {
+@@ -40,11 +45,9 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&io_led>;
+ 
+-		io-led {
+-			color = <LED_COLOR_ID_BLUE>;
+-			function = LED_FUNCTION_STATUS;
++		status_led: io-led {
++			label = "blue:status";
+ 			gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 
