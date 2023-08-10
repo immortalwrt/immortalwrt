@@ -9,6 +9,11 @@ case $board in
 cudy,wr3000-v1)
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan"
 	;;
+imou,lc-hx3001)
+	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1" "link"
+	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0" "link"
+	ucidef_set_led_netdev "wlan" "WLAN" "green:wlan" "phy1-ap0" "link"
+	;;
 livinet,zr-3020|\
 livinet,zr-3020-ubootmod)
 	ucidef_set_led_netdev "internet" "INTERNET" "blue:internet" "wan"
