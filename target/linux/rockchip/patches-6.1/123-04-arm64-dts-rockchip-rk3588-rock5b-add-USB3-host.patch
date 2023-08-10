@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -743,3 +747,7 @@
+@@ -742,3 +746,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };

@@ -13,7 +13,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
-@@ -120,34 +120,42 @@
+@@ -123,34 +123,42 @@
  
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;

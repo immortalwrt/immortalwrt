@@ -28,7 +28,7 @@ Link: https://lore.kernel.org/bpf/20220223012814.1898677-1-connoro@google.com
 
 --- a/kernel/bpf/btf.c
 +++ b/kernel/bpf/btf.c
-@@ -6076,7 +6076,8 @@ static int btf_module_notify(struct noti
+@@ -6072,7 +6072,8 @@ static int btf_module_notify(struct noti
  			pr_warn("failed to validate module [%s] BTF: %ld\n",
  				mod->name, PTR_ERR(btf));
  			kfree(btf_mod);
