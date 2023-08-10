@@ -231,6 +231,13 @@ define U-Boot/nanopi-r6s-rk3588s
     friendlyarm_nanopi-r6s
 endef
 
+define U-Boot/rock5a-rk3588s
+  $(U-Boot/Default/rk3588)
+  NAME:=Rock 5A
+  BUILD_DEVICES:= \
+    radxa_rock-5a
+endef
+
 UBOOT_TARGETS := \
   guangmiao-g4c-rk3399 \
   nanopc-t4-rk3399 \
@@ -255,7 +262,8 @@ UBOOT_TARGETS := \
   nanopc-t6-rk3588 \
   rock5b-rk3588 \
   nanopi-r6c-rk3588s \
-  nanopi-r6s-rk3588s
+  nanopi-r6s-rk3588s \
+  rock5a-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
