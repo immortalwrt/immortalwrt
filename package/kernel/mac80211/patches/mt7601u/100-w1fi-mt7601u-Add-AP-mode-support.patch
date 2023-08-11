@@ -1,0 +1,36 @@
+From: Chukun Pan <amadeus@jmu.edu.cn>
+To: Jakub Kicinski <kubakici@wp.pl>
+Cc: Kalle Valo <kvalo@kernel.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Lintel Huang <lintel.huang@gmail.com>,
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Chukun Pan <amadeus@jmu.edu.cn>
+Subject: [PATCH] wifi: mt7601u: Add AP mode support
+Date: Tue, 26 Jul 2022 00:16:03 +0800	[thread overview]
+Message-ID: <20220725161603.15201-1-amadeus@jmu.edu.cn> (raw)
+
+Add AP mode support to mt7601u chipset.
+Simply tested it with firmware version
+201302052146 and it seems working fine.
+
+Run-tested-by: Lintel Huang <lintel.huang@gmail.com>
+Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+---
+ drivers/net/wireless/mediatek/mt7601u/init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/mediatek/mt7601u/init.c
++++ b/drivers/net/wireless/mediatek/mt7601u/init.c
+@@ -609,7 +609,8 @@ int mt7601u_register_device(struct mt760
+ 	SET_IEEE80211_PERM_ADDR(hw, dev->macaddr);
+ 
+ 	wiphy->features |= NL80211_FEATURE_ACTIVE_MONITOR;
+-	wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
++	wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) |
++				 BIT(NL80211_IFTYPE_AP);
+ 	wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS;
+ 
+ 	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
