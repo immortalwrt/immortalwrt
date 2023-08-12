@@ -33,6 +33,7 @@ ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
 friendlyarm,nanopi-r5c|\
 friendlyarm,nanopi-r6c|\
+hinlink,opc-h66k|\
 lunzn,fastrhino-r66s)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
@@ -57,12 +58,14 @@ friendlyarm,nanopi-r4s-enterprise)
 	set_interface_core 20 "eth1"
 	;;
 friendlyarm,nanopi-r5s|\
-friendlyarm,nanopi-r6s)
+friendlyarm,nanopi-r6s|\
+hinlink,opc-h69k)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	set_interface_core 8 "eth2"
 	;;
-lunzn,fastrhino-r68s)
+lunzn,fastrhino-r68s|\
+hinlink,opc-h68k)
 	set_interface_core 1 "eth0"
 	set_interface_core 2 "eth1"
 	set_interface_core 4 "eth2"
