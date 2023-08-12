@@ -11,7 +11,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
 
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2366,8 +2366,12 @@ retry_baser:
+@@ -2391,8 +2391,12 @@ retry_baser:
  	tmp = baser->val;
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||

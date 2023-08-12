@@ -12,7 +12,7 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
 
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2366,7 +2366,9 @@ retry_baser:
+@@ -2391,7 +2391,9 @@ retry_baser:
  	tmp = baser->val;
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
@@ -23,7 +23,7 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
  		if (tmp & GITS_BASER_SHAREABILITY_MASK)
  			tmp &= ~GITS_BASER_SHAREABILITY_MASK;
  		else
-@@ -3113,7 +3115,9 @@ static void its_cpu_init_lpis(void)
+@@ -3138,7 +3140,9 @@ static void its_cpu_init_lpis(void)
  	tmp = gicr_read_propbaser(rbase + GICR_PROPBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
@@ -34,7 +34,7 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
  		tmp &= ~GICR_PROPBASER_SHAREABILITY_MASK;
  
  	if ((tmp ^ val) & GICR_PROPBASER_SHAREABILITY_MASK) {
-@@ -3141,7 +3145,9 @@ static void its_cpu_init_lpis(void)
+@@ -3166,7 +3170,9 @@ static void its_cpu_init_lpis(void)
  	tmp = gicr_read_pendbaser(rbase + GICR_PENDBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||
@@ -45,7 +45,7 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
  		tmp &= ~GICR_PENDBASER_SHAREABILITY_MASK;
  
  	if (!(tmp & GICR_PENDBASER_SHAREABILITY_MASK)) {
-@@ -5132,7 +5138,9 @@ static int __init its_probe_one(struct r
+@@ -5149,7 +5155,9 @@ static int __init its_probe_one(struct r
  	tmp = gits_read_cbaser(its->base + GITS_CBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||

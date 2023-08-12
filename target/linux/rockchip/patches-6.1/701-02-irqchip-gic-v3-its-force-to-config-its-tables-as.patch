@@ -12,7 +12,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
 
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2365,6 +2365,10 @@ retry_baser:
+@@ -2390,6 +2390,10 @@ retry_baser:
  	its_write_baser(its, baser, val);
  	tmp = baser->val;
  
@@ -23,7 +23,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if ((val ^ tmp) & GITS_BASER_SHAREABILITY_MASK) {
  		/*
  		 * Shareability didn't stick. Just use
-@@ -3104,6 +3108,10 @@ static void its_cpu_init_lpis(void)
+@@ -3129,6 +3133,10 @@ static void its_cpu_init_lpis(void)
  	gicr_write_propbaser(val, rbase + GICR_PROPBASER);
  	tmp = gicr_read_propbaser(rbase + GICR_PROPBASER);
  
@@ -34,7 +34,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if ((tmp ^ val) & GICR_PROPBASER_SHAREABILITY_MASK) {
  		if (!(tmp & GICR_PROPBASER_SHAREABILITY_MASK)) {
  			/*
-@@ -3128,6 +3136,10 @@ static void its_cpu_init_lpis(void)
+@@ -3153,6 +3161,10 @@ static void its_cpu_init_lpis(void)
  	gicr_write_pendbaser(val, rbase + GICR_PENDBASER);
  	tmp = gicr_read_pendbaser(rbase + GICR_PENDBASER);
  
@@ -45,7 +45,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if (!(tmp & GICR_PENDBASER_SHAREABILITY_MASK)) {
  		/*
  		 * The HW reports non-shareable, we must remove the
-@@ -5115,6 +5127,10 @@ static int __init its_probe_one(struct r
+@@ -5132,6 +5144,10 @@ static int __init its_probe_one(struct r
  	gits_write_cbaser(baser, its->base + GITS_CBASER);
  	tmp = gits_read_cbaser(its->base + GITS_CBASER);
  
