@@ -70,7 +70,10 @@ rockchip_setup_macs()
 	friendlyarm,nanopi-r5c|\
 	friendlyarm,nanopi-r5s|\
 	friendlyarm,nanopi-r6c|\
-	friendlyarm,nanopi-r6s)
+	friendlyarm,nanopi-r6s|\
+	hinlink,opc-h66k|\
+	hinlink,opc-h68k|\
+	hinlink,opc-h69k)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk1)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
