@@ -119,7 +119,12 @@ uc_value_t *uc_wpa_freq_info(uc_vm_t *vm, size_t nargs)
 	if (!sec_channel)
 		return ret;
 
-	center_ofs = freq_val >= 5900 ? 0 : 3;
+	if (freq_val >= 5900)
+		center_ofs = 0;
+	else if (freq_val >= 5745)
+		center_ofs = 20;
+	else
+		center_ofs = 35;
 	tmp_channel = channel - center_ofs;
 	tmp_channel &= ~((8 << width) - 1);
 	center_idx = tmp_channel + center_ofs + (4 << width) - 1;
@@ -266,21 +271,7 @@ uc_value_t *wpa_ucode_global_init(const char *name, uc_resource_type_t *global_t
 	return global;
 }
 
-static uc_value_t *wpa_ucode_prototype_clone(uc_value_t *uval)
-{
-	uc_value_t *proto, *proto_new;
-
-	proto = ucv_prototype_get(uval);
-	proto_new = ucv_object_new(&vm);
-
-	ucv_object_foreach(proto, key, val)
-		ucv_object_add(proto_new, key, ucv_get(val));
-	ucv_prototype_set(uval, ucv_get(proto));
-
-	return proto;
-}
-
-void wpa_ucode_registry_add(uc_value_t *reg, uc_value_t *val, int *idx)
+int wpa_ucode_registry_add(uc_value_t *reg, uc_value_t *val)
 {
 	uc_value_t *data;
 	int i = 0;
@@ -290,10 +281,7 @@ void wpa_ucode_registry_add(uc_value_t *reg, uc_value_t *val, int *idx)
 
 	ucv_array_set(reg, i, ucv_get(val));
 
-	data = ucv_object_new(&vm);
-	ucv_object_add(wpa_ucode_prototype_clone(val), "data", ucv_get(data));
-
-	*idx = i + 1;
+	return i + 1;
 }
 
 uc_value_t *wpa_ucode_registry_get(uc_value_t *reg, int idx)
