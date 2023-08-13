@@ -147,7 +147,7 @@ define Device/hinlink_opc-h69k
   SOC := rk3568
   BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-hwmon-pwmfan kmod-mt7916-firmware \
-	kmod-mt7921e kmod-r8125 kmod-usb-serial-option uqmi wpad-openssl
+	kmod-mt7921e kmod-r8125 kmod-usb-serial-option luci-app-oled uqmi wpad-openssl
 endef
 TARGET_DEVICES += hinlink_opc-h69k
 
