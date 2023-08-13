@@ -203,7 +203,6 @@ detect_mac80211() {
 			set wireless.${name}.channel=${channel}
 			set wireless.${name}.band=${mode_band}
 			set wireless.${name}.htmode=$htmode
-			set wireless.${name}.country=CN
 			set wireless.${name}.disabled=0
 
 			set wireless.default_${name}=wifi-iface
