@@ -28,14 +28,12 @@ rockchip_setup_interfaces()
 	friendlyarm,nanopi-r5s)
 		ucidef_set_interfaces_lan_wan 'eth1 eth2' 'eth0'
 		;;
-	hinlink,opc-h68k)
+	hinlink,opc-h68k|\
+	lunzn,fastrhino-r68s)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth2' 'eth3'
 		;;
 	hinlink,opc-h69k)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1' 'eth2'
-		;;
-	lunzn,fastrhino-r68s)
-		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth3' 'eth2'
 		;;
 	*)
 		ucidef_set_interface_lan 'eth0'

@@ -86,3 +86,56 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pinctrl {
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
+@@ -31,6 +31,7 @@
+ 	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
+ 	assigned-clock-rates = <0>, <125000000>;
+ 	clock_in_out = "output";
++	label = "eth0";
+ 	phy-handle = <&rgmii_phy0>;
+ 	phy-mode = "rgmii-id";
+ 	pinctrl-names = "default";
+@@ -53,6 +54,7 @@
+ 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
+ 	assigned-clock-rates = <0>, <125000000>;
+ 	clock_in_out = "output";
++	label = "eth1";
+ 	phy-handle = <&rgmii_phy1>;
+ 	phy-mode = "rgmii-id";
+ 	pinctrl-names = "default";
+@@ -88,6 +90,34 @@
+ 	};
+ };
+ 
++&pcie3x1 {
++	pcie@0,0 {
++		reg = <0x00100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		pcie-eth@10,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++			label = "eth3";
++		};
++	};
++};
++
++&pcie3x2 {
++	pcie@0,0 {
++		reg = <0x00100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		pcie-eth@10,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++			label = "eth2";
++		};
++	};
++};
++
+ &pinctrl {
+ 	gmac0 {
+ 		eth_phy0_reset_pin: eth-phy0-reset-pin {
