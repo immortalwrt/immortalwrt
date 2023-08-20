@@ -5,6 +5,11 @@
 # FIT will be loaded at 0x02080000. Leave 16M for that, align it to 2M and load the kernel after it.
 KERNEL_LOADADDR := 0x03200000
 
+define Device/IfnameMigration
+  DEVICE_COMPAT_VERSION := 1.1
+  DEVICE_COMPAT_MESSAGE := Network interface names have been changed
+endef
+
 define Device/ezpro_mrkaio-m68s
   DEVICE_VENDOR := EZPRO
   DEVICE_MODEL := Mrkaio M68S
@@ -198,6 +203,7 @@ endef
 TARGET_DEVICES += lunzn_fastrhino-r66s
 
 define Device/lunzn_fastrhino-r68s
+  $(Device/IfnameMigration)
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R68S
   SOC := rk3568
