@@ -128,7 +128,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		#address-cells = <3>;
 +		#size-cells = <2>;
 +
-+		pcie-eth@10,0 {
++		pcie-eth@20,0 {
 +			compatible = "pci10ec,8125";
 +			reg = <0x000000 0 0 0 0>;
 +			label = "eth2";
