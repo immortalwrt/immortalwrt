@@ -14,7 +14,15 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2c.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2c.dts
-@@ -38,3 +38,7 @@
+@@ -29,6 +29,7 @@
+ 			motorcomm,clk-out-frequency-hz = <125000000>;
+ 			motorcomm,keep-pll-enabled;
+ 			motorcomm,auto-sleep-disabled;
++			motorcomm,led-data = <0xe004 0x0 0x2600 0x0070 0x000a>;
+ 
+ 			pinctrl-0 = <&eth_phy_reset_pin>;
+ 			pinctrl-names = "default";
+@@ -38,3 +39,7 @@
  		};
  	};
  };
@@ -56,7 +64,15 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
-@@ -38,3 +38,7 @@
+@@ -29,6 +29,7 @@
+ 			motorcomm,clk-out-frequency-hz = <125000000>;
+ 			motorcomm,keep-pll-enabled;
+ 			motorcomm,auto-sleep-disabled;
++			motorcomm,led-data = <0xe004 0x0 0x2600 0x0070 0x000a>;
+ 
+ 			pinctrl-0 = <&eth_phy_reset_pin>;
+ 			pinctrl-names = "default";
+@@ -38,3 +39,7 @@
  		};
  	};
  };
