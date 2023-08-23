@@ -1,16 +1,40 @@
 --- a/drivers/net/phy/motorcomm.c
 +++ b/drivers/net/phy/motorcomm.c
-@@ -1488,6 +1488,13 @@ static int yt8521_config_init(struct phy
+@@ -224,6 +224,12 @@
+ #define YTPHY_WCR_INTR_SEL			BIT(6)
+ #define YTPHY_WCR_ENABLE			BIT(3)
+ 
++#define YTPHY_LED_NUM_CONFIG			5
++/* LED_GENERAL_CFG: 0xA00B, LED0_CFG: 0xA00C, LED1_CFG: 0xA00D
++ * LED2_CFG: 0xA00E, LED_BLINK_CFG: 0xA00F
++ */
++#define YTPHY_LED_CONFIG_REG(x)			(0xA00B + x)
++
+ /* 2b00 84ms
+  * 2b01 168ms  *default*
+  * 2b10 336ms
+@@ -1459,6 +1465,7 @@ static int yt8521_resume(struct phy_devi
+ static int yt8521_config_init(struct phy_device *phydev)
+ {
+ 	struct device_node *node = phydev->mdio.dev.of_node;
++	u32 led_data[YTPHY_LED_NUM_CONFIG];
+ 	int old_page;
+ 	int ret = 0;
+ 
+@@ -1488,6 +1495,16 @@ static int yt8521_config_init(struct phy
  		if (ret < 0)
  			goto err_restore_page;
  	}
 +
-+	/* LED0: Unused/Off, LED1: Link, LED2: Activity, 8Hz */
-+	ytphy_write_ext(phydev, 0xa00b, 0xe004);
-+	ytphy_write_ext(phydev, 0xa00c, 0);
-+	ytphy_write_ext(phydev, 0xa00d, 0x2600);
-+	ytphy_write_ext(phydev, 0xa00e, 0x0070);
-+	ytphy_write_ext(phydev, 0xa00f, 0x000a);
++	if (!of_property_read_u32_array(node, "motorcomm,led-data",
++				       led_data, YTPHY_LED_NUM_CONFIG)) {
++		for (int i = 0; i < YTPHY_LED_NUM_CONFIG; i++) {
++			ret = ytphy_write_ext(phydev, YTPHY_LED_CONFIG_REG(i),
++					      led_data[i]);
++			if (ret < 0)
++				goto err_restore_page;
++		}
++	}
  err_restore_page:
  	return phy_restore_page(phydev, old_page, ret);
  }
