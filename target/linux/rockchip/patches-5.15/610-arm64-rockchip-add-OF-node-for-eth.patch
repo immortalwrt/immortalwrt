@@ -148,3 +148,13 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
+@@ -72,6 +72,7 @@
+ 		reg = <1>;
+ 		pinctrl-0 = <&eth_phy0_reset_pin>;
+ 		pinctrl-names = "default";
++		realtek,led-data = <0x6d60>;
+ 	};
+ };
+ 
