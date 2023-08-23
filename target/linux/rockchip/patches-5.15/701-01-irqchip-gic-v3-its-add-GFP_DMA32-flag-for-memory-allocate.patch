@@ -12,7 +12,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
 
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2172,6 +2172,8 @@ static struct page *its_allocate_prop_ta
+@@ -2197,6 +2197,8 @@ static struct page *its_allocate_prop_ta
  {
  	struct page *prop_page;
  
@@ -21,7 +21,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	prop_page = alloc_pages(gfp_flags, get_order(LPI_PROPBASE_SZ));
  	if (!prop_page)
  		return NULL;
-@@ -2295,6 +2297,7 @@ static int its_setup_baser(struct its_no
+@@ -2320,6 +2322,7 @@ static int its_setup_baser(struct its_no
  	u32 alloc_pages, psz;
  	struct page *page;
  	void *base;
@@ -29,7 +29,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  
  	psz = baser->psz;
  	alloc_pages = (PAGE_ORDER_TO_SIZE(order) / psz);
-@@ -2306,7 +2309,10 @@ static int its_setup_baser(struct its_no
+@@ -2331,7 +2334,10 @@ static int its_setup_baser(struct its_no
  		order = get_order(GITS_BASER_PAGES_MAX * psz);
  	}
  
@@ -41,7 +41,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if (!page)
  		return -ENOMEM;
  
-@@ -2935,6 +2941,8 @@ static struct page *its_allocate_pending
+@@ -2960,6 +2966,8 @@ static struct page *its_allocate_pending
  {
  	struct page *pend_page;
  
@@ -50,7 +50,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	pend_page = alloc_pages(gfp_flags | __GFP_ZERO,
  				get_order(LPI_PENDBASE_SZ));
  	if (!pend_page)
-@@ -3278,7 +3286,11 @@ static bool its_alloc_table_entry(struct
+@@ -3303,7 +3311,11 @@ static bool its_alloc_table_entry(struct
  
  	/* Allocate memory for 2nd level table */
  	if (!table[idx]) {
@@ -63,7 +63,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  					get_order(baser->psz));
  		if (!page)
  			return false;
-@@ -3367,6 +3379,7 @@ static struct its_device *its_create_dev
+@@ -3392,6 +3404,7 @@ static struct its_device *its_create_dev
  	int nr_lpis;
  	int nr_ites;
  	int sz;
@@ -71,7 +71,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  
  	if (!its_alloc_device_table(its, dev_id))
  		return NULL;
-@@ -3382,7 +3395,10 @@ static struct its_device *its_create_dev
+@@ -3407,7 +3420,10 @@ static struct its_device *its_create_dev
  	nr_ites = max(2, nvecs);
  	sz = nr_ites * (FIELD_GET(GITS_TYPER_ITT_ENTRY_SIZE, its->typer) + 1);
  	sz = max(sz, ITS_ITT_ALIGN) + ITS_ITT_ALIGN - 1;
@@ -83,7 +83,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if (alloc_lpis) {
  		lpi_map = its_lpi_alloc(nvecs, &lpi_base, &nr_lpis);
  		if (lpi_map)
-@@ -4974,6 +4990,7 @@ static int __init its_probe_one(struct r
+@@ -4991,6 +5007,7 @@ static int __init its_probe_one(struct r
  	u64 baser, tmp, typer;
  	struct page *page;
  	int err;
@@ -91,7 +91,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  
  	its_base = ioremap(res->start, SZ_64K);
  	if (!its_base) {
-@@ -5042,7 +5059,10 @@ static int __init its_probe_one(struct r
+@@ -5059,7 +5076,10 @@ static int __init its_probe_one(struct r
  
  	its->numa_node = numa_node;
  

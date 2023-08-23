@@ -36,7 +36,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
 --- a/drivers/usb/dwc3/core.h
 +++ b/drivers/usb/dwc3/core.h
-@@ -258,6 +258,7 @@
+@@ -255,6 +255,7 @@
  /* Global User Control 1 Register */
  #define DWC3_GUCTL1_DEV_DECOUPLE_L1L2_EVT	BIT(31)
  #define DWC3_GUCTL1_TX_IPGAP_LINECHECK_DIS	BIT(28)
