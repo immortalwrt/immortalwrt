@@ -43,7 +43,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/usb/typec/tcpm/tcpm.c
 +++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -6541,6 +6541,8 @@ struct tcpm_port *tcpm_register_port(str
+@@ -6548,6 +6548,8 @@ struct tcpm_port *tcpm_register_port(str
  	port->port_type = port->typec_caps.type;
  
  	port->role_sw = usb_role_switch_get(port->dev);
