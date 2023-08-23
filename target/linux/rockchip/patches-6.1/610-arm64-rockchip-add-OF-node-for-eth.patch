@@ -104,10 +104,22 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-handle = <&rgmii_phy1>;
  	phy-mode = "rgmii-id";
  	pinctrl-names = "default";
-@@ -88,6 +90,34 @@
+@@ -76,6 +78,7 @@
+ 		reg = <0>;
+ 		pinctrl-0 = <&eth_phy0_reset_pin>;
+ 		pinctrl-names = "default";
++		realtek,led-data = <0x6d60>;
  	};
  };
  
+@@ -85,6 +88,35 @@
+ 		reg = <0>;
+ 		pinctrl-0 = <&eth_phy1_reset_pin>;
+ 		pinctrl-names = "default";
++		realtek,led-data = <0x6d60>;
++	};
++};
++
 +&pcie3x1 {
 +	pcie@0,0 {
 +		reg = <0x00100000 0 0 0 0>;
@@ -133,9 +145,6 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +			reg = <0x000000 0 0 0 0>;
 +			label = "eth2";
 +		};
-+	};
-+};
-+
- &pinctrl {
- 	gmac0 {
- 		eth_phy0_reset_pin: eth-phy0-reset-pin {
+ 	};
+ };
+ 
