@@ -52,7 +52,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  #if IS_ENABLED(CONFIG_FASTBOOT)
 --- a/arch/arm/mach-rockchip/rk3399/rk3399.c
 +++ b/arch/arm/mach-rockchip/rk3399/rk3399.c
-@@ -292,3 +292,32 @@ void spl_board_init(void)
+@@ -282,3 +282,32 @@ void spl_board_init(void)
  	}
  }
  #endif

@@ -25,12 +25,13 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -178,18 +182,28 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+@@ -178,19 +182,29 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-soquartz-cm4.dtb \
  	rk3566-soquartz-model-a.dtb \
  	rk3568-evb.dtb \
 +	rk3568-fastrhino-r66s.dtb \
 +	rk3568-fastrhino-r68s.dtb \
+ 	rk3568-lubancat-2.dtb \
 +	rk3568-mrkaio-m68s.dtb \
  	rk3568-nanopi-r5c.dtb \
  	rk3568-nanopi-r5s.dtb \
