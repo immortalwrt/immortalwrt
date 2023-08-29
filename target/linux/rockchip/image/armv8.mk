@@ -212,6 +212,14 @@ define Device/lunzn_fastrhino-r68s
 endef
 TARGET_DEVICES += lunzn_fastrhino-r68s
 
+define Device/pine64_rock64
+  DEVICE_VENDOR := Pine64
+  DEVICE_MODEL := Rock64
+  SOC := rk3328
+  BOOT_FLOW := pine64-bin
+endef
+TARGET_DEVICES += pine64_rock64
+
 define Device/pine64_rockpro64
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := RockPro64

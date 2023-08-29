@@ -82,6 +82,13 @@ define U-Boot/rock-pi-e-rk3328
     radxa_rock-pi-e
 endef
 
+define U-Boot/rock64-rk3328
+  $(U-Boot/Default/rk3328)
+  NAME:=Rock64
+  BUILD_DEVICES:= \
+    pine64_rock64
+endef
+
 # RK3399 boards
 
 define U-Boot/Default/rk3399
@@ -274,6 +281,7 @@ UBOOT_TARGETS := \
   orangepi-r1-plus-lts-rk3328 \
   roc-cc-rk3328 \
   rock-pi-e-rk3328 \
+  rock64-rk3328 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \
