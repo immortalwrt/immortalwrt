@@ -40,7 +40,7 @@ bananapi,bpi-r3)
 glinet,gl-mt3000)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
 	;;
-imou,lc-hx3001)
+imou,lc-hx3001-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x80000" "1"
 	;;
 livinet,zr-3020|\

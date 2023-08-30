@@ -266,12 +266,13 @@ define Device/h3c_magic-nx30-pro-nmbm
 endef
 TARGET_DEVICES += h3c_magic-nx30-pro-nmbm
 
-define Device/imou_lc-hx3001
+define Device/imou_lc-hx3001-ubootmod
   DEVICE_VENDOR := Imou
-  DEVICE_MODEL := LC-HX3001
-  DEVICE_DTS := mt7981b-imou-lc-hx3001
+  DEVICE_MODEL := LC-HX3001 (custom U-Boot layout)
+  DEVICE_DTS := mt7981b-imou-lc-hx3001-ubootmod
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  SUPPORTED_DEVICES += imou,lc-hx3001
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -285,7 +286,7 @@ define Device/imou_lc-hx3001
   KERNEL_INITRAMFS = kernel-bin | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
 endef
-TARGET_DEVICES += imou_lc-hx3001
+TARGET_DEVICES += imou_lc-hx3001-ubootmod
 
 define Device/jcg_q30-ubootmod
   DEVICE_VENDOR := JCG
