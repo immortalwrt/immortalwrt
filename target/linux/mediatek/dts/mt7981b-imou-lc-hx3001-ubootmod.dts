@@ -10,8 +10,8 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "Imou LC-HX3001";
-	compatible = "imou,lc-hx3001", "mediatek,mt7981";
+	model = "Imou LC-HX3001 (custom U-Boot layout)";
+	compatible = "imou,lc-hx3001-ubootmod", "mediatek,mt7981";
 
 	aliases {
 		led-boot = &power_led;

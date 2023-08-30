@@ -49,7 +49,7 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
 		;;
-	imou,lc-hx3001)
+	imou,lc-hx3001-ubootmod)
 		addr=$(mtd_get_mac_ascii u-boot-env mac)
 		[ -n "$addr" ] || addr=$(macaddr_add $(mtd_get_mac_binary Factory 0x4) -1)
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
