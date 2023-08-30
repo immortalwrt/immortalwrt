@@ -246,7 +246,7 @@ endef
 TARGET_DEVICES += h3c_magic-nx30-pro
 
 define Device/h3c_magic-nx30-pro-nmbm
-  DEVICE_VENDOR := H3X
+  DEVICE_VENDOR := H3C
   DEVICE_MODEL := Magic NX30 Pro (NMBM layout)
   DEVICE_DTS := mt7981b-h3c-magic-nx30-pro-nmbm
   DEVICE_DTS_DIR := ../dts
