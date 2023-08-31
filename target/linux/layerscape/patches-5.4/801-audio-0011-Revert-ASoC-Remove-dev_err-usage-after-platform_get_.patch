@@ -168,7 +168,7 @@ This reverts commit cf9441adb1a35506d7606866c382b9d8614169b5.
  	if (ret) {
 --- a/sound/soc/fsl/fsl_spdif.c
 +++ b/sound/soc/fsl/fsl_spdif.c
-@@ -1248,8 +1248,10 @@ static int fsl_spdif_probe(struct platfo
+@@ -1250,8 +1250,10 @@ static int fsl_spdif_probe(struct platfo
  	}
  
  	irq = platform_get_irq(pdev, 0);

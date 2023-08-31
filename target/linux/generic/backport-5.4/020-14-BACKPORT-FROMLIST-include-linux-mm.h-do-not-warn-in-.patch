@@ -47,7 +47,7 @@ Tested-by: Yu Zhao <yuzhao@chromium.org>
 
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -1327,7 +1327,6 @@ static inline struct mem_cgroup *page_me
+@@ -1329,7 +1329,6 @@ static inline struct mem_cgroup *page_me
  }
  static inline struct mem_cgroup *page_memcg_rcu(struct page *page)
  {

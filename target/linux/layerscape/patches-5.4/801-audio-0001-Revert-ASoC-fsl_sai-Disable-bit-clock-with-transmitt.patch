@@ -1,0 +1,32 @@
+From 4eb89c73f32d3c87a6938065bd230b3a93619e3e Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Thu, 31 Aug 2023 11:04:59 +0800
+Subject: [PATCH] Revert "ASoC: fsl_sai: Disable bit clock with transmitter"
+
+This reverts commit 94239d1830a1f30c30cd0e14efcad47a4379563b.
+---
+ sound/soc/fsl/fsl_sai.c | 2 +-
+ sound/soc/fsl/fsl_sai.h | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -548,7 +548,7 @@ static void fsl_sai_config_disable(struc
+ 	u32 xcsr, count = 100;
+ 
+ 	regmap_update_bits(sai->regmap, FSL_SAI_xCSR(tx, ofs),
+-			   FSL_SAI_CSR_TERE | FSL_SAI_CSR_BCE, 0);
++			   FSL_SAI_CSR_TERE, 0);
+ 
+ 	/* TERE will remain set till the end of current frame */
+ 	do {
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -87,7 +87,6 @@
+ /* SAI Transmit/Receive Control Register */
+ #define FSL_SAI_CSR_TERE	BIT(31)
+ #define FSL_SAI_CSR_SE		BIT(30)
+-#define FSL_SAI_CSR_BCE		BIT(28)
+ #define FSL_SAI_CSR_FR		BIT(25)
+ #define FSL_SAI_CSR_SR		BIT(24)
+ #define FSL_SAI_CSR_xF_SHIFT	16

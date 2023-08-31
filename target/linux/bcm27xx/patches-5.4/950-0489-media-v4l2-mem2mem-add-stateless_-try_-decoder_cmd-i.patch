@@ -83,7 +83,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
   * for the output and the capture buffer queue.
 --- a/include/media/v4l2-mem2mem.h
 +++ b/include/media/v4l2-mem2mem.h
-@@ -701,6 +701,10 @@ int v4l2_m2m_ioctl_try_encoder_cmd(struc
+@@ -715,6 +715,10 @@ int v4l2_m2m_ioctl_try_encoder_cmd(struc
  				   struct v4l2_encoder_cmd *ec);
  int v4l2_m2m_ioctl_try_decoder_cmd(struct file *file, void *fh,
  				   struct v4l2_decoder_cmd *dc);

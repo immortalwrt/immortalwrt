@@ -54,11 +54,12 @@ Signed-off-by: Li Jun <jun.li@nxp.com>
 
 --- a/drivers/usb/dwc3/core.c
 +++ b/drivers/usb/dwc3/core.c
-@@ -1045,6 +1045,21 @@ static int dwc3_core_init(struct dwc3 *d
- 		reg |= DWC3_GUCTL_HSTINAUTORETRY;
+@@ -1031,6 +1031,24 @@ static int dwc3_core_init(struct dwc3 *d
+ 		dwc3_writel(dwc->regs, DWC3_GUCTL1, reg);
+ 	}
  
- 		dwc3_writel(dwc->regs, DWC3_GUCTL, reg);
-+
++	if (dwc->dr_mode == USB_DR_MODE_HOST ||
++	    dwc->dr_mode == USB_DR_MODE_OTG) {
 +		/*
 +		 * Disable Park Mode for super speed:
 +		 * Park mode is used in host mode when only a single async
@@ -73,16 +74,8 @@ Signed-off-by: Li Jun <jun.li@nxp.com>
 +		reg = dwc3_readl(dwc->regs, DWC3_GUCTL1);
 +		reg |= DWC3_GUCTL1_PARKMODE_DISABLE_SS;
 +		dwc3_writel(dwc->regs, DWC3_GUCTL1, reg);
- 	}
- 
++	}
++
  	/*
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -255,6 +255,7 @@
- #define DWC3_GUCTL1_PARKMODE_DISABLE_SS	BIT(17)
- #define DWC3_GUCTL1_TX_IPGAP_LINECHECK_DIS	BIT(28)
- #define DWC3_GUCTL1_DEV_L1_EXIT_BY_HW	BIT(24)
-+#define DWC3_GUCTL1_PARKMODE_DISABLE_SS	BIT(17)
- 
- /* Global Status Register */
- #define DWC3_GSTS_OTG_IP	BIT(10)
+ 	 * Must config both number of packets and max burst settings to enable
+ 	 * RX and/or TX threshold.

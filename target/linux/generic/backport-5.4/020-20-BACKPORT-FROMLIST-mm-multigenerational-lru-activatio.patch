@@ -104,7 +104,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	return false;
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -1513,6 +1513,23 @@ void unmap_mapping_pages(struct address_
+@@ -1515,6 +1515,23 @@ void unmap_mapping_pages(struct address_
  		pgoff_t start, pgoff_t nr, bool even_cows);
  void unmap_mapping_range(struct address_space *mapping,
  		loff_t const holebegin, loff_t const holelen, int even_cows);
@@ -128,7 +128,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  #else
  static inline vm_fault_t handle_mm_fault(struct vm_area_struct *vma,
  		unsigned long address, unsigned int flags)
-@@ -1534,6 +1551,19 @@ static inline void unmap_mapping_pages(s
+@@ -1536,6 +1553,19 @@ static inline void unmap_mapping_pages(s
  		pgoff_t start, pgoff_t nr, bool even_cows) { }
  static inline void unmap_mapping_range(struct address_space *mapping,
  		loff_t const holebegin, loff_t const holelen, int even_cows) { }
