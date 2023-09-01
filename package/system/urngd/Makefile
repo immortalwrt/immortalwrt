@@ -38,6 +38,11 @@ define Package/urngd/description
   Jitter RNGd provides a source of sufficient entropy.
 endef
 
+ifdef CONFIG_USE_GLIBC
+  TARGET_CFLAGS += -U_FORTIFY_SOURCE
+  TARGET_LDFLAGS += -lpthread
+endif
+
 define Package/urngd/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/init.d/$(PKG_NAME)
