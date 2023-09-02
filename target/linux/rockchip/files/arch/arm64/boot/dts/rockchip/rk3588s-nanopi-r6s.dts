@@ -178,6 +178,7 @@
 
 &gmac1 {
 	clock_in_out = "output";
+	label = "eth0";
 	phy-handle = <&rgmii_phy1>;
 	phy-mode = "rgmii-rxid";
 	pinctrl-names = "default";
