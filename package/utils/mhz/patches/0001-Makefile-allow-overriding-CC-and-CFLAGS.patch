@@ -1,0 +1,29 @@
+From d55f7b578eb2126d2e4a7f045321f6ba7df3800a Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Wed, 30 Aug 2023 20:31:07 +0200
+Subject: [PATCH] Makefile: allow overriding CC and CFLAGS
+
+For OpenWrt and Buildroot which support really large amount of different
+architectures and cores it is sometimes required to pass our own CFLAGS.
+This is especially true if hardening options are to be respected.
+
+Also, for cross-compiling CC should be respected as currently it is
+working since both OpenWrt and Buildroot symlink gcc to the cross compiler.
+
+So, lets set the current values as defaults but allow them to be overriden.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+-CC         := gcc
+-CFLAGS     := -O3 -Wall -fomit-frame-pointer
++CC         ?= gcc
++CFLAGS     ?= -O3 -Wall -fomit-frame-pointer
+ 
+ all: mhz
+ 
