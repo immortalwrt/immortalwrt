@@ -152,7 +152,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +&pcie3x2 {
 +	pcie@0,0 {
-+		reg = <0x00100000 0 0 0 0>;
++		reg = <0x00200000 0 0 0 0>;
 +		#address-cells = <3>;
 +		#size-cells = <2>;
 +
