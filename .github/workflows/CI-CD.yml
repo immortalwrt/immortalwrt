@@ -1,0 +1,172 @@
+name: immortalwrt-e8820s 5.4 firmware
+
+on: 
+  workflow_dispatch:
+  release:
+    types: [published]
+  push:
+    branches:
+      - master
+
+#  schedule:
+#    - cron: 0 20 * * 6
+
+  watch:
+    types: started
+
+env:
+  REPO_URL: https://github.com/RouterBucket/immortalwrt
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: config/e8820s.config
+  MODEL: ZTE-E8820S
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_TRANSFERSH: true
+  UPLOAD_RELEASE: true
+  TZ: America/Sao_Paulo
+
+jobs:
+  build:
+    name: Compile immortalwrt firmware
+    runs-on: ubuntu-20.04
+    env:
+      images_dir: /workdir/immortalwrt/bin/targets/*/*
+    steps:
+    - name: Starting
+      uses: actions/checkout@main
+
+    - name: Start installing the system required for compilation
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        
+    - name: Download firmware source code
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone -b $REPO_BRANCH --single-branch --filter=blob:none $REPO_URL
+        ln -sf /workdir/immortalwrt $GITHUB_WORKSPACE/immortalwrt
+
+    - name: Download and install feeds
+      run: |
+        cd immortalwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: Load .config settings
+      run: |
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE immortalwrt/.config
+        
+    - name: Download package
+      id: package
+      run: |
+        cd immortalwrt
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+        
+    - name: Start compiling the firmware
+      id: compile
+      run: |
+        cd immortalwrt
+        do make -j1 V=sc; \
+          if [ $? = 0 ]; then cp -f immortalwrt/bin/* ${images_dir}; else exit 1; fi; \
+          make clean >/dev/null 2>&1; done
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: Upload the bin folder
+      uses: actions/upload-artifact@main
+      if: ${{ steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true' }}
+      with:
+        name: immortalwrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: immortalwrt/bin
+
+    - name: Organize the firmware folder
+      id: organize
+      if: ${{ env.UPLOAD_FIRMWARE == 'true' && !cancelled() }}
+      run: |
+        cd immortalwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        
+    - name: Upload the .config configuration file in the github space  
+      if: ${{ success() && env.UPLOAD_CONFIG == 'true' }}
+      uses: actions/upload-artifact@main
+      with:
+        name: config.buildinfo_${{ env.FILE_DATE }}
+        path: ./config    
+    
+    - name: Upload firmware in github space
+      uses: actions/upload-artifact@main
+      if: ${{ success() && !cancelled() }}
+      with:
+        name: ${{ env.MODEL }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: Upload firmware to Transfer.sh
+      id: transfersh
+      if: ${{ success() && env.UPLOAD_TRANSFERSH == 'true' && !cancelled() }}
+      run: |
+        curl -fsSL git.io/file-transfer | sh 
+        ./transfer trs --no-progress /opt/images/*.trx 2>&1 | tee log.log 
+        echo "::warning file=transfer.sh::$(cat log.log | grep https)"
+        echo "download_link=$(cat log.log | grep https)" >> $GITHUB_ENV
+        echo "::set-output name=url::$(cat transfersh.log | grep https | cut -f3 -d" ")"
+        
+    - name: Create release tags
+      id: tag
+      if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() && success() }}
+      run: |
+        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        touch release.txt
+        [ $UPLOAD_TRANSFERSH = true ] && echo "🔗 [Transfer.sh](${{ steps.transfersh.outputs.url }})" >> release.txt
+
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      if: ${{ success() && !cancelled() }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
+
+    - name: remove old files
+      uses: c-hive/gha-remove-artifacts@v1.2.0
+      with:
+        age: '1 day'
+        skip-recent: 3
+
+    - name: Remove previous Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: ${{ env.UPLOAD_RELEASE == 'true' && !cancelled() }}
+      with:
+        keep_latest: 3
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Send Download link to Telegram ✉️
+      if: ${{ github.event_name != 'release' && success() }} 
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            Repository: https://github.com/${{ github.repository }}
+            Releases: https://github.com/${{ github.repository }}/releases
+            
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            
+            ${{ env.download_link }}
