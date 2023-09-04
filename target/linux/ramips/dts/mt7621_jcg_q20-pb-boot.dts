@@ -25,6 +25,12 @@
 		read-only;
 	};
 
+	factory: partition@100000 {
+		label = "Factory";
+		reg = <0x100000 0x80000>;
+		read-only;
+	};
+
 	partition@180000 {
 		label = "crash";
 		reg = <0x180000 0x40000>;
