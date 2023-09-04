@@ -54,7 +54,7 @@
 
 &gmac0 {
 	nvmem-cells = <&macaddr_config_4429 0>;
-	nvmem-cell-names = "mac-address-ascii";
+	nvmem-cell-names = "mac-address";
 };
 
 &gmac1 {
@@ -63,7 +63,7 @@
 	phy-handle = <&ethphy0>;
 
 	nvmem-cells = <&macaddr_config_4429 0>;
-	nvmem-cell-names = "mac-address-ascii";
+	nvmem-cell-names = "mac-address";
 };
 
 &mdio {
@@ -163,7 +163,7 @@
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
 		nvmem-cells = <&macaddr_config_4429 0>;
-		nvmem-cell-names = "mac-address-ascii";
+		nvmem-cell-names = "mac-address";
 		mediatek,mtd-eeprom = <&factory 0x0>;
 	};
 };
@@ -172,7 +172,7 @@
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
 		nvmem-cells = <&macaddr_config_4429 0x800000>;
-		nvmem-cell-names = "mac-address-ascii";
+		nvmem-cell-names = "mac-address";
 		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
