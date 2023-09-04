@@ -35,6 +35,12 @@
 		reg = <0x80000 0x80000>;
 	};
 
+	factory: partition@100000 {
+		label = "Factory";
+		reg = <0x100000 0x80000>;
+		read-only;
+	};
+
 	partition@180000 {
 		label = "kernel";
 		reg = <0x180000 0x400000>;
