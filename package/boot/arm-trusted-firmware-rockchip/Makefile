@@ -3,18 +3,19 @@
 # Copyright (C) 2021-2023 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
-include $(INCLUDE_DIR)/trusted-firmware-a.mk
 
 PKG_NAME:=rkbin
-PKG_VERSION:=linux-5.10-gen-rkr4
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=https://gitlab.com/rk3588_linux/rk/rkbin/-/archive/$(PKG_VERSION)/
-PKG_HASH:=06e17b198d8e77008dbe188ee9cc5ec4ca2b03a8a998c66677e0b23db0a7bed9
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://gitlab.com/rk3588_linux/rk/rkbin.git
+PKG_SOURCE_DATE:=2023-08-17
+PKG_SOURCE_VERSION:=1a417bbf7d05c3491ee9613be12a9905fbb8ccb7
+PKG_MIRROR_HASH:=8145efc2463baf4a5777f5f6ae3ecececb98f570dbdc090ad5a1412dda8b2e14
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
+include $(INCLUDE_DIR)/trusted-firmware-a.mk
 include $(INCLUDE_DIR)/package.mk
 include ./atf-version.mk
 
