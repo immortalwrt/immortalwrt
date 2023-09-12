@@ -260,9 +260,9 @@ define KernelPackage/mt7986-firmware
   TITLE:=MediaTek MT7986 firmware
 endef
 
-define KernelPackage/mt7921-firmware
+define KernelPackage/mt792x-firmware
   $(KernelPackage/mt76-default)
-  TITLE:=MediaTek MT7921 firmware
+  TITLE:=MediaTek MT792x firmware
 endef
 
 define KernelPackage/mt792x-common
@@ -285,7 +285,7 @@ define KernelPackage/mt7921-common
   $(KernelPackage/mt76-default)
   TITLE:=MediaTek MT7921 wireless driver common code
   HIDDEN:=1
-  DEPENDS+=+kmod-mt792x-common +kmod-mt7921-firmware +@DRIVER_11AX_SUPPORT +kmod-hwmon-core
+  DEPENDS+=+kmod-mt792x-common +kmod-mt792x-firmware +@DRIVER_11AX_SUPPORT +kmod-hwmon-core
   FILES:= $(PKG_BUILD_DIR)/mt7921/mt7921-common.ko
 endef
 
@@ -550,11 +550,13 @@ define KernelPackage/mt7986-firmware/install
 		$(1)/lib/firmware/mediatek
 endef
 
-define KernelPackage/mt7921-firmware/install
+define KernelPackage/mt792x-firmware/install
 	$(INSTALL_DIR) $(1)/lib/firmware/mediatek
 	cp \
 		$(PKG_BUILD_DIR)/firmware/WIFI_MT7961_patch_mcu_1_2_hdr.bin \
 		$(PKG_BUILD_DIR)/firmware/WIFI_RAM_CODE_MT7961_1.bin \
+		$(PKG_BUILD_DIR)/firmware/WIFI_MT7922_patch_mcu_1_1_hdr.bin \
+		$(PKG_BUILD_DIR)/firmware/WIFI_RAM_CODE_MT7922_1.bin \
 		$(1)/lib/firmware/mediatek
 endef
 
@@ -590,7 +592,7 @@ $(eval $(call KernelPackage,mt7915e))
 $(eval $(call KernelPackage,mt7916-firmware))
 $(eval $(call KernelPackage,mt7981-firmware))
 $(eval $(call KernelPackage,mt7986-firmware))
-$(eval $(call KernelPackage,mt7921-firmware))
+$(eval $(call KernelPackage,mt792x-firmware))
 $(eval $(call KernelPackage,mt792x-common))
 $(eval $(call KernelPackage,mt792x-usb))
 $(eval $(call KernelPackage,mt7921-common))
