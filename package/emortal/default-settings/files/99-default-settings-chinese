@@ -18,6 +18,13 @@ if ! uci -q get system.@imm_init[0].system_chn > "/dev/null"; then
 	EOF
 fi
 
-sed -i.bak "s,downloads.immortalwrt.org,mirrors.vsean.net/openwrt,g" "/etc/opkg/distfeeds.conf"
+opkg_mirror="$(uci -q get system.@imm_init[0].opkg_mirror)"
+if [ -z "$opkg_mirror" ]; then
+	opkg_mirror="https://mirrors.vsean.net/openwrt"
+	uci -q set system.@imm_init[0].opkg_mirror="$opkg_mirror"
+	uci -q commit system
+fi
+
+sed -i.bak "s,https://downloads.immortalwrt.org,$opkg_mirror,g" "/etc/opkg/distfeeds.conf"
 
 exit 0
