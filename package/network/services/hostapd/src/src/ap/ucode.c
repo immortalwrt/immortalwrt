@@ -8,6 +8,7 @@
 #include "hw_features.h"
 #include "ap_drv_ops.h"
 #include "dfs.h"
+#include "acs.h"
 #include <libubox/uloop.h>
 
 static uc_resource_type_t *global_type, *bss_type, *iface_type;
@@ -119,6 +120,7 @@ uc_hostapd_bss_set_config(uc_vm_t *vm, size_t nargs)
 	struct hostapd_config *conf;
 	uc_value_t *file = uc_fn_arg(0);
 	uc_value_t *index = uc_fn_arg(1);
+	uc_value_t *files_only = uc_fn_arg(2);
 	unsigned int i, idx = 0;
 	int ret = -1;
 
@@ -130,8 +132,26 @@ uc_hostapd_bss_set_config(uc_vm_t *vm, size_t nargs)
 
 	iface = hapd->iface;
 	conf = interfaces->config_read_cb(ucv_string_get(file));
-	if (!conf || idx > conf->num_bss || !conf->bss[idx])
+	if (!conf)
 		goto out;
+
+	if (idx > conf->num_bss || !conf->bss[idx])
+		goto free;
+
+	if (ucv_boolean_get(files_only)) {
+		struct hostapd_bss_config *bss = conf->bss[idx];
+		struct hostapd_bss_config *old_bss = hapd->conf;
+
+#define swap_field(name)				\
+	do {								\
+		void *ptr = old_bss->name;		\
+		old_bss->name = bss->name;		\
+		bss->name = ptr;				\
+	} while (0)
+
+		swap_field(ssid.wpa_psk_file);
+		goto done;
+	}
 
 	hostapd_bss_deinit_no_free(hapd);
 	hostapd_drv_stop_ap(hapd);
@@ -143,12 +163,14 @@ uc_hostapd_bss_set_config(uc_vm_t *vm, size_t nargs)
 			iface->conf->bss[i] = conf->bss[idx];
 	hapd->conf = conf->bss[idx];
 	conf->bss[idx] = old_bss;
-	hostapd_config_free(conf);
 
-	hostapd_setup_bss(hapd, hapd == iface->bss[0], !iface->conf->mbssid);
+	hostapd_setup_bss(hapd, hapd == iface->bss[0], true);
+	hostapd_ucode_update_interfaces();
 
+done:
 	ret = 0;
-
+free:
+	hostapd_config_free(conf);
 out:
 	return ucv_int64_new(ret);
 }
@@ -179,10 +201,15 @@ uc_hostapd_bss_delete(uc_vm_t *vm, size_t nargs)
 	struct hostapd_iface *iface;
 	int i, idx;
 
-	if (!hapd || hapd == hapd->iface->bss[0])
+	if (!hapd)
 		return NULL;
 
 	iface = hapd->iface;
+	if (iface->num_bss == 1) {
+		wpa_printf(MSG_ERROR, "trying to delete last bss of an iface: %s\n", hapd->conf->iface);
+		return NULL;
+	}
+
 	for (idx = 0; idx < iface->num_bss; idx++)
 		if (iface->bss[idx] == hapd)
 			break;
@@ -192,7 +219,12 @@ uc_hostapd_bss_delete(uc_vm_t *vm, size_t nargs)
 
 	for (i = idx + 1; i < iface->num_bss; i++)
 		iface->bss[i - 1] = iface->bss[i];
+
 	iface->num_bss--;
+
+	iface->bss[0]->interface_added = 0;
+	hostapd_drv_set_first_bss(iface->bss[0]);
+	hapd->interface_added = 1;
 
 	hostapd_drv_stop_ap(hapd);
 	hostapd_bss_deinit(hapd);
@@ -268,6 +300,58 @@ out:
 }
 
 static uc_value_t *
+uc_hostapd_iface_set_bss_order(uc_vm_t *vm, size_t nargs)
+{
+	struct hostapd_iface *iface = uc_fn_thisval("hostapd.iface");
+	uc_value_t *bss_list = uc_fn_arg(0);
+	struct hostapd_data **new_bss;
+	struct hostapd_bss_config **new_conf;
+
+	if (!iface)
+		return NULL;
+
+	if (ucv_type(bss_list) != UC_ARRAY ||
+	    ucv_array_length(bss_list) != iface->num_bss)
+		return NULL;
+
+	new_bss = calloc(iface->num_bss, sizeof(*new_bss));
+	new_conf = calloc(iface->num_bss, sizeof(*new_conf));
+	for (size_t i = 0; i < iface->num_bss; i++) {
+		struct hostapd_data *bss;
+
+		bss = ucv_resource_data(ucv_array_get(bss_list, i), "hostapd.bss");
+		if (bss->iface != iface)
+			goto free;
+
+		for (size_t k = 0; k < i; k++)
+			if (new_bss[k] == bss)
+				goto free;
+
+		new_bss[i] = bss;
+		new_conf[i] = bss->conf;
+	}
+
+	new_bss[0]->interface_added = 0;
+	for (size_t i = 1; i < iface->num_bss; i++)
+		new_bss[i]->interface_added = 1;
+
+	free(iface->bss);
+	iface->bss = new_bss;
+
+	free(iface->conf->bss);
+	iface->conf->bss = new_conf;
+	iface->conf->num_bss = iface->num_bss;
+	hostapd_drv_set_first_bss(iface->bss[0]);
+
+	return ucv_boolean_new(true);
+
+free:
+	free(new_bss);
+	free(new_conf);
+	return NULL;
+}
+
+static uc_value_t *
 uc_hostapd_bss_ctrl(uc_vm_t *vm, size_t nargs)
 {
 	struct hostapd_data *hapd = uc_fn_thisval("hostapd.bss");
@@ -298,12 +382,22 @@ uc_hostapd_iface_stop(uc_vm_t *vm, size_t nargs)
 	struct hostapd_iface *iface = uc_fn_thisval("hostapd.iface");
 	int i;
 
+#ifdef CONFIG_ACS
+	if (iface->state == HAPD_IFACE_ACS) {
+		acs_cleanup(iface);
+		iface->scan_cb = NULL;
+		hostapd_disable_iface(iface);
+	}
+#endif
+
 	for (i = 0; i < iface->num_bss; i++) {
 		struct hostapd_data *hapd = iface->bss[i];
 
 		hostapd_drv_stop_ap(hapd);
-		hapd->started = 0;
+		hapd->beacon_set_done = 0;
 	}
+
+	return NULL;
 }
 
 static uc_value_t *
@@ -318,6 +412,7 @@ uc_hostapd_iface_start(uc_vm_t *vm, size_t nargs)
 	if (!iface)
 		return NULL;
 
+	iface->freq = 0;
 	if (!info)
 		goto out;
 
@@ -346,13 +441,30 @@ uc_hostapd_iface_start(uc_vm_t *vm, size_t nargs)
 	if (!errno)
 		hostapd_set_oper_chwidth(conf, intval);
 
+	intval = ucv_int64_get(ucv_object_get(info, "frequency", NULL));
+	if (!errno)
+		iface->freq = intval;
+	conf->acs = 0;
+
 out:
-	if (conf->channel)
+	switch (iface->state) {
+	case HAPD_IFACE_DISABLED:
+		break;
+	case HAPD_IFACE_ENABLED:
+		if (!hostapd_is_dfs_required(iface) ||
+			hostapd_is_dfs_chan_available(iface))
+			break;
+		wpa_printf(MSG_INFO, "DFS CAC required on new channel, restart interface");
+		/* fallthrough */
+	default:
+		hostapd_disable_iface(iface);
+		break;
+	}
+
+	if (conf->channel && !iface->freq)
 		iface->freq = hostapd_hw_get_freq(iface->bss[0], conf->channel);
 
-	if (hostapd_is_dfs_required(iface) && !hostapd_is_dfs_chan_available(iface)) {
-		wpa_printf(MSG_INFO, "DFS CAC required on new channel, restart interface");
-		hostapd_disable_iface(iface);
+	if (iface->state != HAPD_IFACE_ENABLED) {
 		hostapd_enable_iface(iface);
 		return ucv_boolean_new(true);
 	}
@@ -361,7 +473,6 @@ out:
 		struct hostapd_data *hapd = iface->bss[i];
 		int ret;
 
-		hapd->started = 1;
 		hapd->conf->start_disabled = 0;
 		hostapd_set_freq(hapd, conf->hw_mode, iface->freq,
 				 conf->channel,
@@ -428,6 +539,55 @@ uc_hostapd_iface_switch_channel(uc_vm_t *vm, size_t nargs)
 	return ucv_boolean_new(!ret);
 }
 
+static uc_value_t *
+uc_hostapd_bss_rename(uc_vm_t *vm, size_t nargs)
+{
+	struct hostapd_data *hapd = uc_fn_thisval("hostapd.bss");
+	uc_value_t *ifname_arg = uc_fn_arg(0);
+	char prev_ifname[IFNAMSIZ + 1];
+	struct sta_info *sta;
+	const char *ifname;
+	int ret;
+
+	if (!hapd || ucv_type(ifname_arg) != UC_STRING)
+		return NULL;
+
+	os_strlcpy(prev_ifname, hapd->conf->iface, sizeof(prev_ifname));
+	ifname = ucv_string_get(ifname_arg);
+
+	hostapd_ubus_free_bss(hapd);
+	if (interfaces->ctrl_iface_deinit)
+		interfaces->ctrl_iface_deinit(hapd);
+
+	ret = hostapd_drv_if_rename(hapd, WPA_IF_AP_BSS, NULL, ifname);
+	if (ret)
+		goto out;
+
+	for (sta = hapd->sta_list; sta; sta = sta->next) {
+		char cur_name[IFNAMSIZ + 1], new_name[IFNAMSIZ + 1];
+
+		if (!(sta->flags & WLAN_STA_WDS) || sta->pending_wds_enable)
+			continue;
+
+		snprintf(cur_name, sizeof(cur_name), "%s.sta%d", prev_ifname, sta->aid);
+		snprintf(new_name, sizeof(new_name), "%s.sta%d", ifname, sta->aid);
+		hostapd_drv_if_rename(hapd, WPA_IF_AP_VLAN, cur_name, new_name);
+	}
+
+	if (!strncmp(hapd->conf->ssid.vlan, hapd->conf->iface, sizeof(hapd->conf->ssid.vlan)))
+		os_strlcpy(hapd->conf->ssid.vlan, ifname, sizeof(hapd->conf->ssid.vlan));
+	os_strlcpy(hapd->conf->iface, ifname, sizeof(hapd->conf->iface));
+	hostapd_ubus_add_bss(hapd);
+
+	hostapd_ucode_update_interfaces();
+out:
+	if (interfaces->ctrl_iface_init)
+		interfaces->ctrl_iface_init(hapd);
+
+	return ret ? NULL : ucv_boolean_new(true);
+}
+
+
 int hostapd_ucode_init(struct hapd_interfaces *ifaces)
 {
 	static const uc_function_list_t global_fns[] = {
@@ -441,9 +601,11 @@ int hostapd_ucode_init(struct hapd_interfaces *ifaces)
 	static const uc_function_list_t bss_fns[] = {
 		{ "ctrl", uc_hostapd_bss_ctrl },
 		{ "set_config", uc_hostapd_bss_set_config },
+		{ "rename", uc_hostapd_bss_rename },
 		{ "delete", uc_hostapd_bss_delete },
 	};
 	static const uc_function_list_t iface_fns[] = {
+		{ "set_bss_order", uc_hostapd_iface_set_bss_order },
 		{ "add_bss", uc_hostapd_iface_add_bss },
 		{ "stop", uc_hostapd_iface_stop },
 		{ "start", uc_hostapd_iface_start },
