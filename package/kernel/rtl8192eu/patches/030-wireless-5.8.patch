@@ -1,38 +1,24 @@
---- a/include/osdep_service_linux.h
-+++ b/include/osdep_service_linux.h
-@@ -217,7 +217,7 @@ typedef void *timer_hdl_context;
- 
- typedef unsigned long systime;
- 
--#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
-+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0) && !defined(BUILD_OPENWRT))
- /* Porting from linux kernel v5.15-rc1 48eab831ae8b9f7002a533fa4235eed63ea1f1a3 */
- static inline void eth_hw_addr_set(struct net_device *dev, const u8 *addr)
- {
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -439,9 +439,9 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -439,7 +439,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
  	if (started) {
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) || defined(BUILD_OPENWRT))
+ 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false, 0);
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
  		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false);
--#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0))
-+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0) || defined(BUILD_OPENWRT))
- 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, false);
- #else
- 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0);
-@@ -453,7 +453,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -454,7 +454,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+ 
  	if (!rtw_cfg80211_allow_ch_switch_notify(adapter))
  		goto exit;
- 
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) || defined(BUILD_OPENWRT))
+ 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
- #else
- 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef);
-@@ -1129,7 +1129,7 @@ check_bss:
+@@ -1132,7 +1132,7 @@ check_bss:
  		#endif
  
  		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
@@ -41,7 +27,7 @@
  		roam_info.links[0].bssid = cur_network->network.MacAddress;
  #else
  		roam_info.bssid = cur_network->network.MacAddress;
-@@ -1695,7 +1695,7 @@ exit:
+@@ -1698,7 +1698,7 @@ exit:
  }
  
  static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
@@ -50,7 +36,7 @@
  	,int link_id
  #endif
  	, u8 key_index
-@@ -1842,7 +1842,7 @@ addkey_end:
+@@ -1845,7 +1845,7 @@ addkey_end:
  }
  
  static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
@@ -59,7 +45,7 @@
  	,int link_id
  #endif
  	, u8 keyid
-@@ -2010,7 +2010,7 @@ exit:
+@@ -2013,7 +2013,7 @@ exit:
  }
  
  static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
@@ -68,7 +54,7 @@
  	int link_id,
  #endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
-@@ -2034,7 +2034,7 @@ static int cfg80211_rtw_del_key(struct w
+@@ -2037,7 +2037,7 @@ static int cfg80211_rtw_del_key(struct w
  
  static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
  	struct net_device *ndev, 
@@ -77,7 +63,7 @@
  	int link_id,
  #endif	 	
  	u8 key_index
-@@ -2086,7 +2086,7 @@ static int cfg80211_rtw_set_default_key(
+@@ -2089,7 +2089,7 @@ static int cfg80211_rtw_set_default_key(
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
  int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
  	struct net_device *ndev, 
@@ -86,7 +72,7 @@
  	int link_id,
  #endif	
  	u8 key_index)
-@@ -5099,7 +5099,7 @@ static int cfg80211_rtw_change_beacon(st
+@@ -5102,7 +5102,7 @@ static int cfg80211_rtw_change_beacon(st
  	return ret;
  }
  
@@ -95,7 +81,7 @@
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
  #else
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -10160,7 +10160,7 @@ void rtw_wdev_unregister(struct wireless
+@@ -10163,7 +10163,7 @@ void rtw_wdev_unregister(struct wireless
  	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
  
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
@@ -106,12 +92,12 @@
  	if (wdev->current_bss) {
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -1674,7 +1674,7 @@ int rtw_os_ndev_register(_adapter *adapt
+@@ -1673,7 +1673,7 @@ int rtw_os_ndev_register(_adapter *adapt
+ 	u8 rtnl_lock_needed = rtw_rtnl_lock_needed(dvobj);
  
  #ifdef CONFIG_RTW_NAPI
- 	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll
--#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0) && !defined(BUILD_OPENWRT))
- 	, RTL_NAPI_WEIGHT
- #endif
- 	);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+ 	netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT
+ #else
+ 	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT
