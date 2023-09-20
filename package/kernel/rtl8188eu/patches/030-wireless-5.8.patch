@@ -11,16 +11,18 @@
  	return (addr[0] != 0xff) && (0x01 & addr[0]);
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -417,7 +417,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -417,7 +417,9 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
  	if (ret != _SUCCESS)
  		goto exit;
  
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0) || defined(BUILD_OPENWRT))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) || defined(BUILD_OPENWRT))
++        cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
++#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
  #else
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef);
-@@ -1103,7 +1103,7 @@ check_bss:
+@@ -1103,7 +1105,7 @@ check_bss:
  		#endif
  
  		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0) || defined(RHEL79))
@@ -29,7 +31,7 @@
  		roam_info.links[0].bssid = cur_network->network.MacAddress;
  		#else
  		roam_info.bssid = cur_network->network.MacAddress;
-@@ -1660,6 +1660,9 @@ exit:
+@@ -1660,6 +1662,9 @@ exit:
  }
  
  static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
@@ -39,7 +41,7 @@
  	, u8 key_index
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	, bool pairwise
-@@ -1804,6 +1807,9 @@ addkey_end:
+@@ -1804,6 +1809,9 @@ addkey_end:
  }
  
  static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
@@ -49,7 +51,7 @@
  	, u8 keyid
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	, bool pairwise
-@@ -1969,6 +1975,9 @@ exit:
+@@ -1969,6 +1977,9 @@ exit:
  }
  
  static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
@@ -59,7 +61,7 @@
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  				u8 key_index, bool pairwise, const u8 *mac_addr)
  #else	/* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) */
-@@ -1989,7 +1998,11 @@ static int cfg80211_rtw_del_key(struct w
+@@ -1989,7 +2000,11 @@ static int cfg80211_rtw_del_key(struct w
  }
  
  static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
@@ -72,7 +74,7 @@
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)) || defined(COMPAT_KERNEL_RELEASE)
  	, bool unicast, bool multicast
  	#endif
-@@ -2037,7 +2050,11 @@ static int cfg80211_rtw_set_default_key(
+@@ -2037,7 +2052,11 @@ static int cfg80211_rtw_set_default_key(
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
  int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
@@ -85,7 +87,7 @@
  {
  #define SET_DEF_KEY_PARAM_FMT " key_index=%d"
  #define SET_DEF_KEY_PARAM_ARG , key_index
-@@ -4884,7 +4901,7 @@ static int cfg80211_rtw_change_beacon(st
+@@ -4884,7 +4903,7 @@ static int cfg80211_rtw_change_beacon(st
  	return ret;
  }
  
@@ -94,7 +96,7 @@
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
  #else
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -7106,7 +7123,7 @@ exit:
+@@ -7106,7 +7125,7 @@ exit:
  	return ret;
  }
  
@@ -103,7 +105,7 @@
  static void cfg80211_rtw_update_mgmt_frame_register(struct wiphy *wiphy,
                                               struct wireless_dev *wdev,
                                               struct mgmt_frame_regs *upd)
-@@ -9442,7 +9459,7 @@ static struct cfg80211_ops rtw_cfg80211_
+@@ -9442,7 +9461,7 @@ static struct cfg80211_ops rtw_cfg80211_
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	.mgmt_tx = cfg80211_rtw_mgmt_tx,
@@ -112,7 +114,7 @@
  	.update_mgmt_frame_registrations = cfg80211_rtw_update_mgmt_frame_register,
  #else
  	.mgmt_frame_register = cfg80211_rtw_mgmt_frame_register,
-@@ -9646,7 +9663,7 @@ void rtw_wdev_unregister(struct wireless
+@@ -9646,7 +9665,7 @@ void rtw_wdev_unregister(struct wireless
  	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
  
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
