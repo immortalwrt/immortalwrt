@@ -25,7 +25,7 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -178,19 +182,29 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+@@ -178,19 +182,26 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-soquartz-cm4.dtb \
  	rk3566-soquartz-model-a.dtb \
  	rk3568-evb.dtb \
@@ -36,9 +36,6 @@
  	rk3568-nanopi-r5c.dtb \
  	rk3568-nanopi-r5s.dtb \
  	rk3568-odroid-m1.dtb \
-+	rk3568-opc-h66k.dtb \
-+	rk3568-opc-h68k.dtb \
-+	rk3568-opc-h69k.dtb \
  	rk3568-radxa-e25.dtb \
 +	rk3568-roc-pc.dtb \
  	rk3568-rock-3a.dtb

@@ -191,27 +191,6 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
-define U-Boot/opc-h66k-rk3568
-  $(U-Boot/Default/rk3568)
-  NAME:=OPC-H66K
-  BUILD_DEVICES:= \
-    hinlink_opc-h66k
-endef
-
-define U-Boot/opc-h68k-rk3568
-  $(U-Boot/Default/rk3568)
-  NAME:=OPC-H68K
-  BUILD_DEVICES:= \
-    hinlink_opc-h68k
-endef
-
-define U-Boot/opc-h69k-rk3568
-  $(U-Boot/Default/rk3568)
-  NAME:=OPC-H69K
-  BUILD_DEVICES:= \
-    hinlink_opc-h69k
-endef
-
 define U-Boot/roc-pc-rk3568
   $(U-Boot/Default/rk3568)
   NAME:=Station P2
@@ -287,9 +266,6 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
-  opc-h66k-rk3568 \
-  opc-h68k-rk3568 \
-  opc-h69k-rk3568 \
   roc-pc-rk3568 \
   nanopc-t6-rk3588 \
   rock5b-rk3588 \
