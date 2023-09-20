@@ -1,126 +1,130 @@
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -454,7 +454,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
- 
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
- 	if (started) {
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0) || defined(RHEL8))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0) || defined(RHEL8) || defined(BUILD_OPENWRT))
- 
- 		/* --- cfg80211_ch_switch_started_notfiy() ---
- 		 *  A new parameter, bool quiet, is added from Linux kernel v5.11,
-@@ -464,7 +464,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -464,8 +464,8 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
  		 *  called by others with block-tx.
  		 */
  
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
- 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) || defined(BUILD_OPENWRT))
+ 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false, 0);
  #else
- 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, false);
-@@ -479,7 +479,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+ 		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false);
+@@ -483,8 +483,8 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
  	if (!rtw_cfg80211_allow_ch_switch_notify(adapter))
  		goto exit;
  
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
- 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88) || defined(BUILD_OPENWRT))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) || defined(BUILD_OPENWRT))
+ 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
  #else
- 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef);
-@@ -498,7 +498,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+ 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
+@@ -506,7 +506,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
  	}
  
  	ctype = rtw_chbw_to_nl80211_channel_type(ch, bw, offset, ht);
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	cfg80211_ch_switch_notify(adapter->pnetdev, freq, ctype, 0);
  #else
  	cfg80211_ch_switch_notify(adapter->pnetdev, freq, ctype);
-@@ -1151,7 +1151,7 @@ check_bss:
+@@ -1159,7 +1159,7 @@ check_bss:
  		#endif
  
  		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
  		roam_info.links[0].bssid = cur_network->network.MacAddress;
  #else
  		roam_info.bssid = cur_network->network.MacAddress;
-@@ -1915,7 +1915,7 @@ exit:
+@@ -1923,7 +1923,7 @@ exit:
  }
  
  static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	, int link_id
  #endif
  	, u8 key_index
-@@ -2080,7 +2080,7 @@ addkey_end:
+@@ -2088,7 +2088,7 @@ addkey_end:
  }
  
  static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	, int link_id
  #endif
  	, u8 keyid
-@@ -2271,7 +2271,7 @@ exit:
+@@ -2279,7 +2279,7 @@ exit:
  }
  
  static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	int link_id,
  #endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
-@@ -2295,7 +2295,7 @@ static int cfg80211_rtw_del_key(struct w
+@@ -2303,7 +2303,7 @@ static int cfg80211_rtw_del_key(struct w
  
  static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
  	struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	int link_id,
  #endif
  	u8 key_index
-@@ -2347,7 +2347,7 @@ static int cfg80211_rtw_set_default_key(
+@@ -2355,7 +2355,7 @@ static int cfg80211_rtw_set_default_key(
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
  int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
  	struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	int link_id,
  #endif
  	u8 key_index)
-@@ -5408,7 +5408,7 @@ static int cfg80211_rtw_change_beacon(st
+@@ -5418,7 +5418,7 @@ static int cfg80211_rtw_change_beacon(st
  	return ret;
  }
  
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88) || defined(BUILD_OPENWRT))
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev,
  		unsigned int link_id)
  #else
-@@ -6789,7 +6789,7 @@ exit:
+@@ -6803,7 +6803,7 @@ exit:
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
  static int cfg80211_rtw_get_channel(struct wiphy *wiphy,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	struct wireless_dev *wdev, unsigned int link_id,
  #else
  	struct wireless_dev *wdev,
-@@ -10728,7 +10728,7 @@ void rtw_wdev_unregister(struct wireless
+@@ -8448,7 +8448,7 @@ static int cfg80211_rtw_tdls_mgmt(struct
+ #else
+ 	u8 *peer,
+ #endif
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 5, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 5, 0) || defined(BUILD_OPENWRT))
+ 	int link_id,
+ #endif
+ 	u8 action_code,
+@@ -10745,7 +10745,7 @@ void rtw_wdev_unregister(struct wireless
  	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
  
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
--	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
+-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88))
++	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(RHEL88) || defined(BUILD_OPENWRT))
  	if (wdev->links[0].client.current_bss) {
  	#else
  	if (wdev->current_bss) {
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -2157,7 +2157,7 @@ int rtw_os_ndev_register(_adapter *adapt
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+@@ -2166,7 +2166,7 @@ int rtw_os_ndev_register(_adapter *adapt
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
  	netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
  #else
 -	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
