@@ -1383,7 +1383,8 @@ define KernelPackage/mlx5-core
 	CONFIG_MLX5_SW_STEERING=n \
 	CONFIG_MLX5_CLS_ACT=n \
 	CONFIG_MLX5_TC_CT=n \
-	CONFIG_MLX5_TLS=n
+	CONFIG_MLX5_TLS=n \
+	CONFIG_MLX5_VFIO_PCI=n
   AUTOLOAD:=$(call AutoProbe,mlx5_core)
 endef
 

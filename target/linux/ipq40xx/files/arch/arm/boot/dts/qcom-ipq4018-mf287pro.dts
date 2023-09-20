@@ -3,22 +3,11 @@
 // Copyright (c) 2022, Giammarco Marzano <stich86@gmail.com>.
 // Copyright (c) 2023, Andreas Böhler <dev@aboehler.at>
 
-#include "qcom-ipq4018-mf287.dtsi"
+#include "qcom-ipq4018-mf287_common.dtsi"
 
 / {
 	model = "ZTE MF287Pro";
 	compatible = "zte,mf287pro";
-
-	gpio_export {
-		compatible = "gpio-export";
-		#size-cells = <0>;
-
-		modem {
-			gpio-export,name = "modem-reset";
-			gpio-export,output = <0>;
-			gpios = <&tlmm 8 GPIO_ACTIVE_HIGH>;
-		};
-	};
 
 	regulator-usb-vbus {
 		compatible = "regulator-fixed";
@@ -29,6 +18,10 @@
 		regulator-boot-on;
 		gpio = <&tlmm 25 GPIO_ACTIVE_LOW>;
 	};
+};
+
+&gpio_modem_reset {
+	gpios = <&tlmm 8 GPIO_ACTIVE_HIGH>;
 };
 
 &key_reset {
@@ -262,4 +255,14 @@
 			output-high;
 		};
 	};
+};
+
+/* The MF287Plus and MF287Pro share the same board data file */
+&wifi0 {
+	qcom,ath10k-calibration-variant = "zte,mf287plus";
+};
+
+/* The MF287Plus and MF287Pro share the same board data file */
+&wifi1{
+	qcom,ath10k-calibration-variant = "zte,mf287plus";
 };
