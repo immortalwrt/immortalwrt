@@ -107,14 +107,14 @@
  	hostapd_ubus_free_bss(hapd);
  	accounting_deinit(hapd);
  	hostapd_deinit_wpa(hapd);
-@@ -599,6 +602,7 @@ void hostapd_cleanup_iface_partial(struc
- static void hostapd_cleanup_iface(struct hostapd_iface *iface)
+@@ -570,6 +573,7 @@ static void sta_track_deinit(struct host
+ void hostapd_cleanup_iface_partial(struct hostapd_iface *iface)
  {
  	wpa_printf(MSG_DEBUG, "%s(%p)", __func__, iface);
 +	hostapd_ucode_free_iface(iface);
  	eloop_cancel_timeout(channel_list_update_timeout, iface, NULL);
- 	eloop_cancel_timeout(hostapd_interface_setup_failure_handler, iface,
- 			     NULL);
+ #ifdef NEED_AP_MLME
+ 	hostapd_stop_setup_timers(iface);
 @@ -1189,6 +1193,7 @@ static int hostapd_start_beacon(struct h
  		hapd->driver->set_operstate(hapd->drv_priv, 1);
  
@@ -142,6 +142,16 @@
  {
  	if (!hapd)
  		return;
+@@ -3491,7 +3495,8 @@ int hostapd_remove_iface(struct hapd_int
+ 		hapd_iface = interfaces->iface[i];
+ 		if (hapd_iface == NULL)
+ 			return -1;
+-		if (!os_strcmp(hapd_iface->conf->bss[0]->iface, buf)) {
++		if (!os_strcmp(hapd_iface->phy, buf) ||
++		    !os_strcmp(hapd_iface->conf->bss[0]->iface, buf)) {
+ 			wpa_printf(MSG_INFO, "Remove interface '%s'", buf);
+ 			hapd_iface->driver_ap_teardown =
+ 				!!(hapd_iface->drv_flags &
 --- a/wpa_supplicant/Makefile
 +++ b/wpa_supplicant/Makefile
 @@ -195,8 +195,20 @@ endif
