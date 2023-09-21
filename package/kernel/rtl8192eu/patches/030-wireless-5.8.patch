@@ -92,12 +92,15 @@
  	if (wdev->current_bss) {
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -1673,7 +1673,7 @@ int rtw_os_ndev_register(_adapter *adapt
- 	u8 rtnl_lock_needed = rtw_rtnl_lock_needed(dvobj);
- 
- #ifdef CONFIG_RTW_NAPI
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
+@@ -1676,7 +1676,10 @@ int rtw_os_ndev_register(_adapter *adapt
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
  	netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT
  #else
- 	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT
+-	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT
++	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll
++#ifndef BUILD_OPENWRT
++		,RTL_NAPI_WEIGHT
++#endif
+ #endif
+ 	);
+ #endif /* CONFIG_RTW_NAPI */
