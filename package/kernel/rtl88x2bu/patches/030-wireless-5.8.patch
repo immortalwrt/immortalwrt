@@ -123,12 +123,27 @@
  	if (wdev->current_bss) {
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -2166,7 +2166,7 @@ int rtw_os_ndev_register(_adapter *adapt
+@@ -2166,7 +2166,11 @@ int rtw_os_ndev_register(_adapter *adapt
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(RHEL88))
  	netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
  #else
 -	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
-+	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll);
++	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll
++#ifndef BUILD_OPENWRT
++		, RTL_NAPI_WEIGHT
++#endif
++	);
  #endif
  #endif /* CONFIG_RTW_NAPI */
+ 
+--- a/os_dep/linux/wifi_regd.c
++++ b/os_dep/linux/wifi_regd.c
+@@ -405,7 +405,7 @@ int rtw_regd_init(struct wiphy *wiphy)
+ 	wiphy->regulatory_flags &= ~REGULATORY_DISABLE_BEACON_HINTS;
+ #endif
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 39))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 39) && !defined(BUILD_OPENWRT))
+ 	wiphy->regulatory_flags |= REGULATORY_IGNORE_STALE_KICKOFF;
+ #endif
  
