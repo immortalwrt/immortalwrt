@@ -1,0 +1,181 @@
+From 0e41fb05fbb2896f1c6f000b0c880e837760ccce Mon Sep 17 00:00:00 2001
+Date: Sat, 16 Sep 2023 15:04:12 +0000
+Subject: [PATCH] odhcpd: RFC 9096 compliance
+
+and allow configuring upper limit for preferred and valid lifetime.
+---
+ README          |  5 +++--
+ src/config.c    | 32 ++++++++++++++++++++++++++++++++
+ src/dhcpv6-ia.c |  8 ++++++++
+ src/odhcpd.h    |  6 ++++++
+ src/router.c    | 16 ++++++++++++----
+ 5 files changed, 61 insertions(+), 6 deletions(-)
+
+diff --git a/README b/README
+index 243ae24..c13d9b8 100644
+--- a/README
++++ b/README
+@@ -131,8 +131,9 @@ ra_maxinterval		integer	600			Maximum time allowed between
+ 							sending unsolicited RA
+ ra_mininterval		integer	200			Minimum time allowed between
+ 							sending unsolicited RA
+-ra_lifetime		integer	1800			Value to be placed in Router
+-							Lifetime field of RA
++ra_lifetime		integer	2700			Value to be placed in Router
++							Lifetime field of RA. Not recommended to be
++							more than 2700 (RFC9096).
+ ra_useleasetime		bool	0			Use configured leasetime as
+ 							limit for the preferred and
+ 							valid lifetime of a prefix
+diff --git a/src/config.c b/src/config.c
+index 1cd4608..e193a94 100644
+--- a/src/config.c
++++ b/src/config.c
+@@ -92,6 +92,8 @@ enum {
+ 	IFACE_ATTR_NDPROXY_SLAVE,
+ 	IFACE_ATTR_PREFIX_FILTER,
+ 	IFACE_ATTR_PREFERRED_LIFETIME,
++	IFACE_ATTR_MAX_PREFERRED_LIFETIME,
++	IFACE_ATTR_MAX_VALID_LIFETIME,
+ 	IFACE_ATTR_NTP,
+ 	IFACE_ATTR_MAX
+ };
+@@ -145,6 +147,8 @@ static const struct blobmsg_policy iface_attrs[IFACE_ATTR_MAX] = {
+ 	[IFACE_ATTR_NDPROXY_SLAVE] = { .name = "ndproxy_slave", .type = BLOBMSG_TYPE_BOOL },
+ 	[IFACE_ATTR_PREFIX_FILTER] = { .name = "prefix_filter", .type = BLOBMSG_TYPE_STRING },
+ 	[IFACE_ATTR_PREFERRED_LIFETIME] = { .name = "preferred_lifetime", .type = BLOBMSG_TYPE_STRING },
++	[IFACE_ATTR_MAX_PREFERRED_LIFETIME] = { .name = "max_preferred_lifetime", .type = BLOBMSG_TYPE_STRING },
++	[IFACE_ATTR_MAX_VALID_LIFETIME] = { .name = "max_valid_lifetime", .type = BLOBMSG_TYPE_STRING },
+ 	[IFACE_ATTR_NTP] = { .name = "ntp", .type = BLOBMSG_TYPE_ARRAY },
+ };
+ 
+@@ -658,6 +662,34 @@ int config_parse_interface(void *data, size_t len, const char *name, bool overwr
+ 
+ 	}
+ 
++	if ((c = tb[IFACE_ATTR_MAX_PREFERRED_LIFETIME])) {
++		double time = parse_leasetime(c);
++
++		if (time >= 0) {
++			iface->max_preferred_lifetime = time;
++		} else {
++			iface->max_preferred_lifetime = ND_PREFERRED_LIMIT;
++			syslog(LOG_ERR, "Invalid %s value configured for interface '%s'",
++			       iface_attrs[IFACE_ATTR_MAX_PREFERRED_LIFETIME].name, iface->name);
++		}
++	} else {
++		iface->max_preferred_lifetime = ND_PREFERRED_LIMIT;
++	}
++
++	if ((c = tb[IFACE_ATTR_MAX_VALID_LIFETIME])) {
++		double time = parse_leasetime(c);
++
++		if (time >= 0) {
++			iface->max_valid_lifetime = time;
++		} else {
++			iface->max_valid_lifetime = ND_VALID_LIMIT;
++			syslog(LOG_ERR, "Invalid %s value configured for interface '%s'",
++			       iface_attrs[IFACE_ATTR_MAX_VALID_LIFETIME].name, iface->name);
++		}
++	} else {
++		iface->max_valid_lifetime = ND_VALID_LIMIT;
++	}
++
+ 	if ((c = tb[IFACE_ATTR_START])) {
+ 		iface->dhcpv4_start.s_addr = htonl(blobmsg_get_u32(c));
+ 		iface->dhcpv4_end.s_addr = htonl(ntohl(iface->dhcpv4_start.s_addr) +
+diff --git a/src/dhcpv6-ia.c b/src/dhcpv6-ia.c
+index 1fbed44..b4d88d7 100644
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1141,6 +1141,14 @@ static size_t build_ia(uint8_t *buf, size_t buflen, uint16_t status,
+ 			}
+ 		}
+ 
++		if (iface->max_preferred_lifetime) {
++			pref = min(pref, iface->max_preferred_lifetime);
++		}
++
++		if (iface->max_valid_lifetime) {
++			valid = min(valid, iface->max_valid_lifetime);
++		}
++
+ 		if (!INFINITE_VALID(a->valid_until))
+ 			/* UINT32_MAX is considered as infinite leasetime */
+ 			a->valid_until = (valid == UINT32_MAX) ? 0 : valid + now;
+diff --git a/src/odhcpd.h b/src/odhcpd.h
+index 02b6ac0..e409caf 100644
+--- a/src/odhcpd.h
++++ b/src/odhcpd.h
+@@ -37,6 +37,10 @@
+ // RFC 8781 defines PREF64 option
+ #define ND_OPT_PREF64 38
+ 
++// RFC9096 defines recommended option lifetimes configuration values
++#define ND_PREFERRED_LIMIT 2700
++#define ND_VALID_LIMIT 5400
++
+ #define INFINITE_VALID(x) ((x) == 0)
+ 
+ #define _unused __attribute__((unused))
+@@ -320,6 +324,8 @@ struct interface {
+ 	uint32_t ra_hoplimit;
+ 	int ra_mtu;
+ 	uint32_t preferred_lifetime;
++	uint32_t max_preferred_lifetime;
++	uint32_t max_valid_lifetime;
+ 
+ 	// DHCP
+ 	uint32_t dhcp_leasetime;
+diff --git a/src/router.c b/src/router.c
+index d5ef7f8..c80358b 100644
+--- a/src/router.c
++++ b/src/router.c
+@@ -371,7 +371,7 @@ static int calc_adv_interval(struct interface *iface, uint32_t minvalid,
+ 
+ static uint32_t calc_ra_lifetime(struct interface *iface, uint32_t maxival)
+ {
+-	uint32_t lifetime = 3*maxival;
++	uint32_t lifetime = maxival * 3;
+ 
+ 	if (iface->ra_lifetime >= 0) {
+ 		lifetime = iface->ra_lifetime;
+@@ -602,6 +602,14 @@ static int send_router_advert(struct interface *iface, const struct in6_addr *fr
+ 				valid = iface->dhcp_leasetime;
+ 		}
+ 
++		if (iface->max_preferred_lifetime) {
++			preferred = min(preferred, iface->max_preferred_lifetime);
++		}
++
++		if (iface->max_valid_lifetime) {
++			valid = min(valid, iface->max_valid_lifetime);
++		}
++
+ 		if (minvalid > valid)
+ 			minvalid = valid;
+ 
+@@ -643,9 +651,9 @@ static int send_router_advert(struct interface *iface, const struct in6_addr *fr
+ 
+ 		if (default_route) {
+ 			syslog(LOG_WARNING, "A default route is present but there is no public prefix "
+-					    "on %s thus we don't announce a default route by overriding ra_lifetime!", iface->name);
++					    "on %s thus we don't announce a default route by setting ra_lifetime to zero!", iface->name);
+ 		} else {
+-			syslog(LOG_WARNING, "No default route present, overriding ra_lifetime!");
++			syslog(LOG_WARNING, "No default route present, setting ra_lifetime to zero!");
+ 		}
+ 	}
+ 
+@@ -710,7 +718,7 @@ static int send_router_advert(struct interface *iface, const struct in6_addr *fr
+ 
+ 	if (iface->pref64_length) {
+ 		/* RFC 8781 § 4.1 rounding up lifetime to multiply of 8 */
+-		uint16_t pref64_lifetime = lifetime < (UINT16_MAX - 7) ? lifetime + 7 : UINT16_MAX;
++		uint16_t pref64_lifetime = lifetime < (UINT16_MAX - 7) ? lifetime + 7 : (UINT16_MAX - 7);
+ 		uint8_t prefix_length_code;
+ 		uint32_t mask_a1, mask_a2;
+ 
+-- 
+2.42.1
+
