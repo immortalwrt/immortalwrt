@@ -548,6 +548,7 @@ define Device/tplink_archer-c20-v4
   IMAGES := sysupgrade.bin tftp-recovery.bin
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
   SUPPORTED_DEVICES += tplink,c20-v4
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c20-v4
 
