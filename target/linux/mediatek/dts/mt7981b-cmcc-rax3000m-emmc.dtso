@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "cmcc,rax3000m", "mediatek,mt7981";
+
+	fragment@0 {
+		target-path = "/";
+		__overlay__ {
+			reg_1p8v: regulator-1p8v {
+				compatible = "regulator-fixed";
+				regulator-name = "fixed-1.8V";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <&mmc0>;
+		__overlay__ {
+			bus-width = <8>;
+			max-frequency = <26000000>;
+			no-sd;
+			no-sdio;
+			non-removable;
+			pinctrl-names = "default", "state_uhs";
+			pinctrl-0 = <&mmc0_pins_default>;
+			pinctrl-1 = <&mmc0_pins_uhs>;
+			vmmc-supply = <&reg_3p3v>;
+			vqmmc-supply = <&reg_1p8v>;
+			status = "okay";
+		};
+	};
+
+	fragment@2 {
+		target = <&pio>;
+		__overlay__ {
+			mmc0_pins_default: mmc0-pins {
+				mux {
+					function = "flash";
+					groups = "emmc_45";
+				};
+			};
+
+			mmc0_pins_uhs: mmc0-uhs-pins {
+				mux {
+					function = "flash";
+					groups = "emmc_45";
+				};
+			};
+		};
+	};
+};
