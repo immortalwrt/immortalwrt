@@ -410,10 +410,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-xiaomi_mi-router-wr30u-ubootmod-squashfs-sysupgrade.itb
 +bootled_pwr=yellow:system
 +bootled_rec=yellow:network
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60

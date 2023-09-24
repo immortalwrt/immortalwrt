@@ -151,8 +151,8 @@
 +part_recovery=2
 +bootcmd=run boot_mmc
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7623-bananapi_bpi-r2-initramfs-recovery.itb
-+bootfile_upg=openwrt-mediatek-mt7623-bananapi_bpi-r2-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7623-bananapi_bpi-r2-initramfs-recovery.itb
++bootfile_upg=immortalwrt-mediatek-mt7623-bananapi_bpi-r2-squashfs-sysupgrade.itb
 +bootled_pwr=bpi-r2:pio:green
 +bootled_rec=bpi-r2:pio:blue
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
