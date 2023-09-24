@@ -362,10 +362,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7622-linksys_e8450-ubi-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-mt7622-linksys_e8450-ubi-preloader.bin
-+bootfile_fip=openwrt-mediatek-mt7622-linksys_e8450-ubi-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-mt7622-linksys_e8450-ubi-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7622-linksys_e8450-ubi-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-mt7622-linksys_e8450-ubi-preloader.bin
++bootfile_fip=immortalwrt-mediatek-mt7622-linksys_e8450-ubi-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-mt7622-linksys_e8450-ubi-squashfs-sysupgrade.itb
 +bootled_pwr=power:blue
 +bootled_rec=inet:orange on
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60

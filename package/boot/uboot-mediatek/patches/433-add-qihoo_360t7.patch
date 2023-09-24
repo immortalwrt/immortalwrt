@@ -374,10 +374,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-qihoo_360t7-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-qihoo_360t7-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-qihoo_360t7-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-qihoo_360t7-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-qihoo_360t7-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-qihoo_360t7-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-qihoo_360t7-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-qihoo_360t7-squashfs-sysupgrade.itb
 +bootled_pwr=green:status
 +bootled_rec=red:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60

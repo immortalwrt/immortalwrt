@@ -154,8 +154,8 @@
 +part_recovery=2
 +bootcmd=run boot_mmc
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7623-unielec_u7623-02-initramfs-recovery.itb
-+bootfile_upg=openwrt-mediatek-mt7623-unielec_u7623-02-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7623-unielec_u7623-02-initramfs-recovery.itb
++bootfile_upg=immortalwrt-mediatek-mt7623-unielec_u7623-02-squashfs-sysupgrade.itb
 +bootled_rec=u7623-01:green:led3
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0

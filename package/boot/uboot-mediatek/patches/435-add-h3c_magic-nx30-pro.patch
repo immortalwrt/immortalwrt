@@ -394,10 +394,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-h3c_magic-nx30-pro-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-h3c_magic-nx30-pro-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-h3c_magic-nx30-pro-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-h3c_magic-nx30-pro-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-h3c_magic-nx30-pro-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-h3c_magic-nx30-pro-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-h3c_magic-nx30-pro-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-h3c_magic-nx30-pro-squashfs-sysupgrade.itb
 +bootled_pwr=green:status
 +bootled_rec=red:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
