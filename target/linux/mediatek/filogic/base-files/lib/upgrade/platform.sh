@@ -93,7 +93,8 @@ platform_do_upgrade() {
 			;;
 		esac
 		;;
-	cmcc,rax3000m-emmc-ubootmod)
+	cmcc,rax3000m-emmc-ubootmod|\
+	glinet,gl-mt6000)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
@@ -163,7 +164,8 @@ platform_copy_config() {
 			;;
 		esac
 		;;
-	cmcc,rax3000m-emmc-ubootmod)
+	cmcc,rax3000m-emmc-ubootmod|\
+	glinet,gl-mt6000)
 		emmc_copy_config
 		;;
 	esac

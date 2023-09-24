@@ -60,6 +60,10 @@ cmcc,rax3000m-emmc-ubootmod)
 glinet,gl-mt3000)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
 	;;
+glinet,gl-mt6000)
+	local envdev=$(find_mmc_part "u-boot-env")
+	ubootenv_add_uci_config "$envdev" "0x0" "0x80000"
+	;;
 imou,lc-hx3001-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x80000" "1"
 	;;

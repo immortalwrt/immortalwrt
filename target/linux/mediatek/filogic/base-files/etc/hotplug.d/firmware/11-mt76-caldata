@@ -19,7 +19,7 @@ case "$FIRMWARE" in
 	cmcc,rax3000m)
 		case "$(cmdline_get_var root)" in
 		/dev/mmc*)
-			caldata_extract_mmc "factory" 0x0 0xA0000
+			caldata_extract_mmc "factory" 0x0 0x1000
 			;;
 		esac
 		;;
@@ -40,6 +40,13 @@ case "$FIRMWARE" in
 	asus,tuf-ax4200)
 		CI_UBIPART="UBI_DEV"
 		caldata_extract_ubi "Factory" 0x0 0x1000
+		;;
+	esac
+	;;
+"mediatek/mt7986_eeprom_mt7976_dual.bin")
+	case "$board" in
+	glinet,gl-mt6000)
+		caldata_extract_mmc "factory" 0x0 0x1000
 		;;
 	esac
 	;;
