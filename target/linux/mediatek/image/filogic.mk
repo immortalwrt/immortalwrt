@@ -173,7 +173,7 @@ endef
 TARGET_DEVICES += bananapi_bpi-r3
 
 define Device/cetron_ct3003-ubootmod
-  DEVICE_VENDOR := CETRON
+  DEVICE_VENDOR := Cetron
   DEVICE_MODEL := CT3003 (custom U-Boot layout)
   DEVICE_DTS := mt7981b-cetron-ct3003-ubootmod
   DEVICE_DTS_DIR := ../dts
