@@ -93,6 +93,11 @@ platform_do_upgrade() {
 			;;
 		esac
 		;;
+	cmcc,rax3000m-emmc-ubootmod)
+		CI_KERNPART="kernel"
+		CI_ROOTPART="rootfs"
+		emmc_do_upgrade "$1"
+		;;
 	cudy,wr3000-v1)
 		default_do_upgrade "$1"
 		;;
@@ -164,6 +169,7 @@ platform_copy_config() {
 			;;
 		esac
 		;;
+	cmcc,rax3000m-emmc-ubootmod|\
 	ubnt,unifi-6-plus)
 		emmc_copy_config
 		;;
