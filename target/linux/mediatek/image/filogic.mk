@@ -195,7 +195,7 @@ TARGET_DEVICES += cetron_ct3003-ubootmod
 
 define Device/cmcc_rax3000m
   DEVICE_VENDOR := CMCC
-  DEVICE_MODEL := RAX3000M
+  DEVICE_MODEL := RAX3000M (OpenWrt U-Boot layout)
   DEVICE_DTS := mt7981b-cmcc-rax3000m
   DEVICE_DTS_OVERLAY := mt7981b-cmcc-rax3000m-emmc mt7981b-cmcc-rax3000m-nand
   DEVICE_DTS_DIR := ../dts
