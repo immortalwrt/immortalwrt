@@ -86,12 +86,12 @@ define Package/rtl8723bu-firmware/install
 endef
 $(eval $(call BuildPackage,rtl8723bu-firmware))
 
-Package/rtl8723du-firmware = $(call Package/firmware-default,RealTek RTL8723DU firmware)
-define Package/rtl8723du-firmware/install
+Package/rtl8723de-firmware = $(call Package/firmware-default,RealTek RTL8723DE firmware)
+define Package/rtl8723de-firmware/install
 	$(INSTALL_DIR) $(1)/lib/firmware/rtw88
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rtw88/rtw8723d_fw.bin $(1)/lib/firmware/rtw88
 endef
-$(eval $(call BuildPackage,rtl8723du-firmware))
+$(eval $(call BuildPackage,rtl8723de-firmware))
 
 Package/rtl8761a-firmware = $(call Package/firmware-default,RealTek RTL8761A firmware)
 define Package/rtl8761a-firmware/install
