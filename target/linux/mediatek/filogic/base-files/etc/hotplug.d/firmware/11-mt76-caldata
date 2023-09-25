@@ -23,6 +23,9 @@ case "$FIRMWARE" in
 			;;
 		esac
 		;;
+	cmcc,rax3000m-emmc-ubootmod)
+		caldata_extract_mmc "factory" 0x0 0x1000
+		;;
 	esac
 	;;
 "mediatek/mt7986_eeprom_mt7976.bin")

@@ -34,6 +34,7 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan eth1 eth0
 		;;
 	cmcc,rax3000m|\
+	cmcc,rax3000m-emmc-ubootmod|\
 	cmcc,rax3000m-nand-ubootmod|\
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm|\
@@ -98,6 +99,11 @@ mediatek_setup_macs()
 			label_mac=$wan_mac
 		;;
 		esac
+		;;
+	cmcc,rax3000m-emmc-ubootmod)
+		wan_mac=$(mmc_get_mac_binary factory 0x2a)
+		lan_mac=$(mmc_get_mac_binary factory 0x24)
+		label=$wan_mac
 		;;
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm)

@@ -46,6 +46,9 @@ case "$board" in
 		esac
 		[ "$PHYNBR" = "1" ] && echo "$addr" > /sys${DEVPATH}/macaddress
 		;;
+	cmcc,rax3000m-emmc-ubootmod)
+		[ "$PHYNBR" = "1" ] && mmc_get_mac_binary factory 0xa > /sys${DEVPATH}/macaddress
+		;;
 	cmcc,rax3000m-nand-ubootmod)
 		[ "$PHYNBR" = "1" ] && mtd_get_mac_binary Factory 0xa > /sys${DEVPATH}/macaddress
 		;;

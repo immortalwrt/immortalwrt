@@ -226,6 +226,20 @@ define Device/cmcc_rax3000m
 endef
 TARGET_DEVICES += cmcc_rax3000m
 
+define Device/cmcc_rax3000m-emmc-ubootmod
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := RAX3000M eMMC version (custom U-Boot layout)
+  DEVICE_DTS := mt7981b-cmcc-rax3000m-emmc-ubootmod
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware kmod-usb3 \
+	automount f2fsck mkf2fs
+  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += cmcc_rax3000m-emmc-ubootmod
+
 define Device/cmcc_rax3000m-nand-ubootmod
   DEVICE_VENDOR := CMCC
   DEVICE_MODEL := RAX3000M NAND version (custom U-Boot layout)
