@@ -54,6 +54,9 @@ cmcc,rax3000m)
 		;;
 	esac
 	;;
+cmcc,rax3000m-emmc-ubootmod)
+	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
+	;;
 glinet,gl-mt3000)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
 	;;
@@ -69,6 +72,8 @@ mercusys,mr90x-v1)
 	local envdev=/dev/mtd$(find_mtd_index "u-boot-env")
 	ubootenv_add_uci_config "$envdev" "0x0" "0x20000" "0x20000" "1"
 	;;
+cetron,ct3003-ubootmod|\
+cmcc,rax3000m-nand-ubootmod|\
 netgear,wax220)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
 	;;
