@@ -10,15 +10,6 @@
 	chosen {
 		bootargs = "root=PARTLABEL=rootfs rootwait rootfstype=squashfs,f2fs";
 	};
-
-	reg_1p8v: regulator-1p8v {
-		compatible = "regulator-fixed";
-		regulator-name = "fixed-1.8V";
-		regulator-min-microvolt = <1800000>;
-		regulator-max-microvolt = <1800000>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
 };
 
 &mmc0 {
@@ -31,7 +22,6 @@
 	pinctrl-0 = <&mmc0_pins_default>;
 	pinctrl-1 = <&mmc0_pins_uhs>;
 	vmmc-supply = <&reg_3p3v>;
-	vqmmc-supply = <&reg_1p8v>;
 	status = "okay";
 };
 
