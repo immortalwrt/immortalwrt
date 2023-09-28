@@ -444,7 +444,7 @@
 +};
 --- /dev/null
 +++ b/arch/arm/dts/mt7981-cmcc-rax3000m-emmc.dts
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,53 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +
 +/dts-v1/;
