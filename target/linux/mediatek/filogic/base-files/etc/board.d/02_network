@@ -56,6 +56,7 @@ mediatek_setup_interfaces()
 	mercusys,mr90x-v1)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2" eth1
 		;;
+	glinet,gl-mt6000|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6088)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
@@ -107,6 +108,11 @@ mediatek_setup_macs()
 		wan_mac=$(mmc_get_mac_binary factory 0x2a)
 		lan_mac=$(mmc_get_mac_binary factory 0x24)
 		label=$wan_mac
+		;;
+	glinet,gl-mt6000)
+		label_mac=$(mmc_get_mac_binary factory 0x0a)
+		wan_mac=$label_mac
+		lan_mac=$(macaddr_add "$label_mac" 2)
 		;;
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm)
