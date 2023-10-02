@@ -347,7 +347,7 @@ TARGET_DEVICES += glinet_gl-mt6000
 
 define Device/h3c_magic-nx30-pro
   DEVICE_VENDOR := H3C
-  DEVICE_MODEL := Magic NX30 Pro
+  DEVICE_MODEL := Magic NX30 Pro (OpenWrt U-Boot layout)
   DEVICE_DTS := mt7981b-h3c-magic-nx30-pro
   DEVICE_DTS_DIR := ../dts
   UBINIZE_OPTS := -E 5
