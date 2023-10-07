@@ -1,19 +1,21 @@
-From 9d2a342309d3a880b9b6fe53bbb0b563f8aad671 Mon Sep 17 00:00:00 2001
+From 42145b7a823530f57983fb6e6897f40c0be278d5 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 28 Feb 2023 14:40:59 +0000
-Subject: [PATCH] arm64: dts: rockchip: rock-5b: add PCIe network controller
+Date: Mon, 18 Sep 2023 16:14:49 +0200
+Subject: [PATCH] arm64: dts: rockchip: add PCIe network controller to rock-5b
 
 Enable the RTL8125 network controller, which is connected via
 PCIe.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230918141451.131247-2-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  .../boot/dts/rockchip/rk3588-rock-5b.dts      | 27 +++++++++++++++++++
  1 file changed, 27 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -51,6 +51,15 @@
+@@ -44,6 +44,15 @@
  		#cooling-cells = <2>;
  	};
  
@@ -29,7 +31,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -96,6 +105,10 @@
+@@ -78,6 +87,10 @@
  	};
  };
  
@@ -40,22 +42,22 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -222,6 +235,14 @@
+@@ -204,6 +217,14 @@
  	};
  };
  
 +&pcie2x1l2 {
-+	reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pcie2_2_rst>;
++	reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
 +	status = "okay";
 +};
 +
  &pinctrl {
  	hym8563 {
  		hym8563_int: hym8563-int {
-@@ -241,6 +262,12 @@
+@@ -217,6 +238,12 @@
  		};
  	};
  

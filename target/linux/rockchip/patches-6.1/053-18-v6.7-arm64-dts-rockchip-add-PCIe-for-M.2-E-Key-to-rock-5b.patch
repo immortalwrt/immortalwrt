@@ -1,33 +1,35 @@
-From 93900c0c70cf280330fa5e7c6e727f77d0677065 Mon Sep 17 00:00:00 2001
+From da447ec387800bdf2df1fb1d8c1522991d025952 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Fri, 21 Jul 2023 17:43:58 +0200
-Subject: [PATCH] arm64: dts: rockchip: rock-5b: add PCIe for M.2 E-Key
+Date: Mon, 18 Sep 2023 16:14:51 +0200
+Subject: [PATCH] arm64: dts: rockchip: add PCIe for M.2 E-Key to rock-5b
 
 Enable PCIe2_0 controller and its voltage supply, which is routed
 to the M.2 E-Key on the upper side of the Radxa Rock 5B.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230918141451.131247-4-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  .../boot/dts/rockchip/rk3588-rock-5b.dts      | 35 +++++++++++++++++++
  1 file changed, 35 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -51,6 +51,21 @@
+@@ -44,6 +44,21 @@
  		#cooling-cells = <2>;
  	};
  
 +	vcc3v3_pcie2x1l0: vcc3v3-pcie2x1l0-regulator {
 +		compatible = "regulator-fixed";
-+		regulator-name = "vcc3v3_pcie2x1l0";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
 +		enable-active-high;
-+		regulator-boot-on;
-+		regulator-always-on;
 +		gpios = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&pcie2_0_vcc3v3_en>;
++		regulator-name = "vcc3v3_pcie2x1l0";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
 +		startup-delay-us = <50000>;
 +		vin-supply = <&vcc5v0_sys>;
 +	};
@@ -35,7 +37,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc3v3_pcie2x1l2";
-@@ -122,6 +137,10 @@
+@@ -104,6 +119,10 @@
  	status = "okay";
  };
  
@@ -46,22 +48,22 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -248,6 +267,14 @@
+@@ -230,6 +249,14 @@
  	};
  };
  
 +&pcie2x1l0 {
-+	reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie2x1l0>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pcie2_0_rst>;
++	reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie2x1l0>;
 +	status = "okay";
 +};
 +
  &pcie2x1l2 {
- 	reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
- 	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
-@@ -288,6 +315,14 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pcie2_2_rst>;
+@@ -264,6 +291,14 @@
  	};
  
  	pcie2 {

@@ -1,26 +1,28 @@
-From e6253fdf8d3cdc70424fb8f53929b013a0cc60b3 Mon Sep 17 00:00:00 2001
+From 46bb398ea1d81302e3735087ceb4b5763d5afc29 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 11 Jul 2023 17:20:47 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add PCIe3 bus
+Date: Mon, 18 Sep 2023 16:13:27 +0200
+Subject: [PATCH] arm64: dts: rockchip: add PCIe3 bus to rk3588-evb1
 
 Enable PCIe3 support, which is exposed via a PCIe3 connector.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230918141327.131108-3-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 55 +++++++++++++++++++
  1 file changed, 55 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -29,6 +29,26 @@
- 		pwms = <&pwm2 0 25000 0>;
+@@ -49,6 +49,26 @@
+ 		vin-supply = <&avcc_1v8_s0>;
  	};
  
 +	pcie30_avdd0v75: pcie30-avdd0v75-regulator {
 +		compatible = "regulator-fixed";
 +		regulator-name = "pcie30_avdd0v75";
-+		regulator-boot-on;
 +		regulator-always-on;
++		regulator-boot-on;
 +		regulator-min-microvolt = <750000>;
 +		regulator-max-microvolt = <750000>;
 +		vin-supply = <&avdd_0v75_s0>;
@@ -29,8 +31,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	pcie30_avdd1v8: pcie30-avdd1v8-regulator {
 +		compatible = "regulator-fixed";
 +		regulator-name = "pcie30_avdd1v8";
-+		regulator-boot-on;
 +		regulator-always-on;
++		regulator-boot-on;
 +		regulator-min-microvolt = <1800000>;
 +		regulator-max-microvolt = <1800000>;
 +		vin-supply = <&avcc_1v8_s0>;
@@ -39,7 +41,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc12v_dcin: vcc12v-dcin-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc12v_dcin";
-@@ -38,6 +58,19 @@
+@@ -58,6 +78,19 @@
  		regulator-max-microvolt = <12000000>;
  	};
  
@@ -59,7 +61,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -209,6 +242,18 @@
+@@ -194,6 +227,18 @@
  	status = "okay";
  };
  
@@ -78,7 +80,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &pinctrl {
  	rtl8111 {
  		rtl8111_isolate: rtl8111-isolate {
-@@ -229,6 +274,16 @@
+@@ -220,6 +265,16 @@
  		};
  	};
  

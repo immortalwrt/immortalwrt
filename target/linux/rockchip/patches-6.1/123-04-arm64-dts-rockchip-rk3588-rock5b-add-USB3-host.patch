@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -141,6 +141,10 @@
+@@ -157,6 +157,10 @@
  	status = "okay";
  };
  
@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -742,3 +746,7 @@
+@@ -784,3 +788,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };

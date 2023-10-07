@@ -1,7 +1,7 @@
-From 28ecb034639296ac27116d4d021ad0ece172cab1 Mon Sep 17 00:00:00 2001
+From 8d81b77f4c49f8ee1432c20c22bf0f03c2937a88 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Mon, 17 Apr 2023 20:03:08 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588: add PCIe2 support
+Date: Mon, 31 Jul 2023 18:57:23 +0200
+Subject: [PATCH] arm64: dts: rockchip: add rk3588 PCIe2 support
 
 Add all three PCIe2 IP blocks to the RK3588 DT. Note, that RK3588
 also has two PCIe3 IP blocks, that will be handled separately.
@@ -11,6 +11,8 @@ Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
 Tested-by: Jagan Teki <jagan@edgeble.ai> # edgeble-neu6a, 6b
 Reviewed-by: Jagan Teki <jagan@edgeble.ai>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230731165723.53069-6-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  arch/arm64/boot/dts/rockchip/rk3588.dtsi  |  51 +++++++++++
  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 102 ++++++++++++++++++++++
@@ -24,8 +26,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
 +	pcie2x1l0: pcie@fe170000 {
 +		compatible = "rockchip,rk3588-pcie", "rockchip,rk3568-pcie";
-+		#address-cells = <3>;
-+		#size-cells = <2>;
 +		bus-range = <0x20 0x2f>;
 +		clocks = <&cru ACLK_PCIE_1L0_MSTR>, <&cru ACLK_PCIE_1L0_SLV>,
 +			 <&cru ACLK_PCIE_1L0_DBI>, <&cru PCLK_PCIE_1L0>,
@@ -62,6 +62,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		reg-names = "dbi", "apb", "config";
 +		resets = <&cru SRST_PCIE2_POWER_UP>, <&cru SRST_P_PCIE2>;
 +		reset-names = "pwr", "pipe";
++		#address-cells = <3>;
++		#size-cells = <2>;
 +		status = "disabled";
 +
 +		pcie2x1l0_intc: legacy-interrupt-controller {
@@ -78,14 +80,12 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		reg = <0x0 0xfe1b0000 0x0 0x10000>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -1670,6 +1670,108 @@
+@@ -1218,6 +1218,108 @@
  		reg = <0x0 0xfdf82200 0x0 0x20>;
  	};
  
 +	pcie2x1l1: pcie@fe180000 {
 +		compatible = "rockchip,rk3588-pcie", "rockchip,rk3568-pcie";
-+		#address-cells = <3>;
-+		#size-cells = <2>;
 +		bus-range = <0x30 0x3f>;
 +		clocks = <&cru ACLK_PCIE_1L1_MSTR>, <&cru ACLK_PCIE_1L1_SLV>,
 +			 <&cru ACLK_PCIE_1L1_DBI>, <&cru PCLK_PCIE_1L1>,
@@ -122,6 +122,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		reg-names = "dbi", "apb", "config";
 +		resets = <&cru SRST_PCIE3_POWER_UP>, <&cru SRST_P_PCIE3>;
 +		reset-names = "pwr", "pipe";
++		#address-cells = <3>;
++		#size-cells = <2>;
 +		status = "disabled";
 +
 +		pcie2x1l1_intc: legacy-interrupt-controller {
@@ -135,8 +137,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +	pcie2x1l2: pcie@fe190000 {
 +		compatible = "rockchip,rk3588-pcie", "rockchip,rk3568-pcie";
-+		#address-cells = <3>;
-+		#size-cells = <2>;
 +		bus-range = <0x40 0x4f>;
 +		clocks = <&cru ACLK_PCIE_1L2_MSTR>, <&cru ACLK_PCIE_1L2_SLV>,
 +			 <&cru ACLK_PCIE_1L2_DBI>, <&cru PCLK_PCIE_1L2>,
@@ -173,6 +173,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		reg-names = "dbi", "apb", "config";
 +		resets = <&cru SRST_PCIE4_POWER_UP>, <&cru SRST_P_PCIE4>;
 +		reset-names = "pwr", "pipe";
++		#address-cells = <3>;
++		#size-cells = <2>;
 +		status = "disabled";
 +
 +		pcie2x1l2_intc: legacy-interrupt-controller {

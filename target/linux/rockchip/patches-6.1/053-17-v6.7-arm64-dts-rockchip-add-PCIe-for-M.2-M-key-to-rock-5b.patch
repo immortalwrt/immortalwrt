@@ -1,39 +1,41 @@
-From 94b8daf5572058c8be8ea9445c91d5ea54a1fd2d Mon Sep 17 00:00:00 2001
+From 199cbd5f195adbc0e70ad218cdba82f45750f11b Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Fri, 14 Jul 2023 19:19:29 +0200
-Subject: [PATCH] arm64: dts: rockchip: rock-5b: add PCIe for M.2 M-key
+Date: Mon, 18 Sep 2023 16:14:50 +0200
+Subject: [PATCH] arm64: dts: rockchip: add PCIe for M.2 M-key to rock-5b
 
 The Radxa Rock 5B has PCIe 3x4 routed to its M.2 M-key connector
 on the board's back.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230918141451.131247-3-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  .../boot/dts/rockchip/rk3588-rock-5b.dts      | 35 +++++++++++++++++++
  1 file changed, 35 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -60,6 +60,19 @@
+@@ -53,6 +53,19 @@
  		vin-supply = <&vcc_3v3_s3>;
  	};
  
 +	vcc3v3_pcie30: vcc3v3-pcie30-regulator {
 +		compatible = "regulator-fixed";
++		enable-active-high;
++		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pcie3_vcc3v3_en>;
 +		regulator-name = "vcc3v3_pcie30";
 +		regulator-min-microvolt = <3300000>;
 +		regulator-max-microvolt = <3300000>;
-+		enable-active-high;
-+		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
 +		startup-delay-us = <5000>;
 +		vin-supply = <&vcc5v0_sys>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pcie3_vcc3v3_en>;
 +	};
 +
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -243,6 +256,18 @@
+@@ -225,6 +238,18 @@
  	status = "okay";
  };
  
@@ -42,17 +44,17 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +};
 +
 +&pcie3x4 {
-+	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie30>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pcie3_rst>;
++	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie30>;
 +	status = "okay";
 +};
 +
  &pinctrl {
  	hym8563 {
  		hym8563_int: hym8563-int {
-@@ -268,6 +293,16 @@
+@@ -244,6 +269,16 @@
  		};
  	};
  

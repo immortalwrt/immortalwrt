@@ -347,9 +347,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  #include "rk3588.dtsi"
  
  / {
-@@ -13,6 +15,11 @@
- 		mmc0 = &sdhci;
+@@ -14,6 +16,11 @@
  		mmc1 = &sdmmc;
+ 		mmc2 = &sdio;
  		serial2 = &uart2;
 +
 +		led-boot = &status_led;
@@ -359,7 +359,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -58,6 +65,17 @@
+@@ -96,6 +103,17 @@
  		vin-supply = <&vcc5v0_sys>;
  	};
  
@@ -377,7 +377,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	vcc5v0_sys: vcc5v0-sys-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_sys";
-@@ -211,6 +229,12 @@
+@@ -300,6 +318,12 @@
  		};
  	};
  

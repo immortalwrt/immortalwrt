@@ -60,7 +60,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	backlight: backlight {
  		compatible = "pwm-backlight";
  		power-supply = <&vcc12v_dcin>;
-@@ -423,6 +456,11 @@
+@@ -374,6 +407,11 @@
  	status = "okay";
  };
  
