@@ -3,7 +3,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openwrt-keyring
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/immortalwrt/keyring.git
@@ -32,6 +32,8 @@ Build/Compile=
 
 define Package/openwrt-keyring/install
 	$(INSTALL_DIR) $(1)/etc/opkg/keys/
+	# Public usign key for unattended snapshot builds
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/b5043e70f9a75cde $(1)/etc/opkg/keys/
 	# Public usign key for 23.05 release builds
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/682970064b87a917 $(1)/etc/opkg/keys/
 endef
