@@ -126,7 +126,7 @@ Then run normal make or cmake etc.
   *      library/aria.c
   *      library/timing.c
   *      include/mbedtls/bn_mul.h
-@@ -2374,6 +2375,21 @@
+@@ -2471,6 +2472,21 @@
  #define MBEDTLS_AESNI_C
  
  /**
@@ -161,7 +161,7 @@ Then run normal make or cmake etc.
  #include "mbedtls/platform.h"
  
  #if !defined(MBEDTLS_AES_ALT)
-@@ -1040,6 +1042,11 @@ int mbedtls_aes_crypt_ecb(mbedtls_aes_co
+@@ -1076,6 +1078,11 @@ int mbedtls_aes_crypt_ecb(mbedtls_aes_co
      }
  #endif
  
@@ -170,7 +170,7 @@ Then run normal make or cmake etc.
 +	return mbedtls_armv8ce_aes_crypt_ecb( ctx, mode, input, output );
 +#endif
 +
- #if defined(MBEDTLS_PADLOCK_C) && defined(MBEDTLS_HAVE_X86)
+ #if defined(MBEDTLS_VIA_PADLOCK_HAVE_CODE)
      if (aes_padlock_ace) {
          return mbedtls_padlock_xcryptecb(ctx, mode, input, output);
 --- /dev/null
@@ -330,7 +330,7 @@ Then run normal make or cmake etc.
      base64.c
 --- a/library/gcm.c
 +++ b/library/gcm.c
-@@ -42,6 +42,10 @@
+@@ -43,6 +43,10 @@
  #include "mbedtls/aesni.h"
  #endif
  
@@ -341,7 +341,7 @@ Then run normal make or cmake etc.
  #if !defined(MBEDTLS_GCM_ALT)
  
  /* Parameter validation macros */
-@@ -80,6 +84,12 @@ static int gcm_gen_table(mbedtls_gcm_con
+@@ -81,6 +85,12 @@ static int gcm_gen_table(mbedtls_gcm_con
          return ret;
      }
  
@@ -354,7 +354,7 @@ Then run normal make or cmake etc.
      /* pack h as two 64-bits ints, big-endian */
      hi = MBEDTLS_GET_UINT32_BE(h,  0);
      lo = MBEDTLS_GET_UINT32_BE(h,  4);
-@@ -190,6 +200,11 @@ static void gcm_mult(mbedtls_gcm_context
+@@ -191,6 +201,11 @@ static void gcm_mult(mbedtls_gcm_context
      unsigned char lo, hi, rem;
      uint64_t zh, zl;
  
@@ -378,7 +378,7 @@ Then run normal make or cmake etc.
  	     blowfish.o \
 --- a/library/version_features.c
 +++ b/library/version_features.c
-@@ -624,6 +624,9 @@ static const char * const features[] = {
+@@ -636,6 +636,9 @@ static const char * const features[] = {
  #if defined(MBEDTLS_AESNI_C)
      "MBEDTLS_AESNI_C",
  #endif /* MBEDTLS_AESNI_C */
