@@ -14,9 +14,9 @@
 	compatible = "abt,asr3000-ubootmod", "mediatek,mt7981";
 
 	aliases {
-		led-boot = &wps_led;
-		led-failsafe = &wps_led;
-		led-upgrade = &wps_led;
+		led-boot = &mesh_led;
+		led-failsafe = &mesh_led;
+		led-upgrade = &mesh_led;
 		serial0 = &uart0;
 		label-mac-device = &gmac1;
 	};
@@ -38,9 +38,10 @@
 			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 		};
 
-		button-wps {
-			label = "wps";
-			linux,code = <KEY_WPS_BUTTON>;
+		button-mesh {
+			label = "mesh";
+			linux,code = <BTN_9>;
+			linux,input-type = <EV_SW>;
 			gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -58,8 +59,8 @@
 			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
 		};
 
-		wps_led: led-2 {
-			label = "green:wps";
+		mesh_led: led-2 {
+			label = "green:mesh";
 			gpios = <&pio 15 GPIO_ACTIVE_LOW>;
 		};
 
