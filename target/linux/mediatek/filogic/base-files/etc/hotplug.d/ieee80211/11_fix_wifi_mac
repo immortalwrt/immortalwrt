@@ -10,6 +10,11 @@ PHYNBR=${DEVPATH##*/phy}
 board=$(board_name)
 
 case "$board" in
+	abt,asr3000-ubootmod)
+		addr=$(get_mac_label)
+		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $(macaddr_add $addr 1) > /sys${DEVPATH}/macaddress
+		;;
 	acer,predator-w6)
 		key_path="/var/qcidata/data"
 		[ "$PHYNBR" = "0" ] && cat $key_path/2gMAC > /sys${DEVPATH}/macaddress
