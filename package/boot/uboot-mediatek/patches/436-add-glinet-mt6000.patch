@@ -246,7 +246,7 @@
 +CONFIG_LMB_MAX_REGIONS=64
 --- /dev/null
 +++ b/glinet_gl-mt6000_env
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,25 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
@@ -263,7 +263,8 @@
 +bootmenu_4=Reboot.=reset
 +bootmenu_5=Reset all settings to factory defaults.=run reset_factory ; reset
 +filesize_to_blk=setexpr cnt $filesize + 0x1ff && setexpr cnt $cnt / 0x200
-+boot_system=part start mmc 0 kernel part_addr && part size mmc 0 kernel part_size && mmc read $loadaddr $part_addr $part_size && bootm
++mmc_read_kernel=mmc read $loadaddr $part_addr 0x100 && imszb $loadaddr image_size && test 0x$image_size -le 0x$part_size && mmc read $loadaddr $part_addr $image_size
++boot_system=part start mmc 0 kernel part_addr && part size mmc 0 kernel part_size && run mmc_read_kernel && bootm
 +boot_tftp_firmware=tftpboot $loadaddr $bootfile_firmware && run emmc_write_firmware
 +boot_tftp_write_fip=tftpboot $loadaddr $bootfile_fip && run emmc_write_fip
 +boot_tftp_write_bl2=tftpboot $loadaddr $bootfile_bl2 && run emmc_write_bl2
