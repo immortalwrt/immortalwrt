@@ -66,4 +66,4 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
 +	return rtl8221b_config_led(phydev);
  }
  
- static struct phy_driver realtek_drvs[] = {
+ static int rtl8221b_ack_interrupt(struct phy_device *phydev)
