@@ -12,7 +12,8 @@ touch /etc/config/ubootenv
 board=$(board_name)
 
 case "$board" in
-bananapi,bpi-r3)
+bananapi,bpi-r3|\
+bananapi,bpi-r3-mini)
 	rootdev="$(cmdline_get_var root)"
 	rootdev="${rootdev##*/}"
 	rootdev="${rootdev%%p[0-9]*}"
