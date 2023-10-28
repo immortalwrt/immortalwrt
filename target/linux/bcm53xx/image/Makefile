@@ -137,6 +137,7 @@ USB2_PACKAGES += kmod-usb-ledtrig-usbport automount
 USB3_PACKAGES := $(USB2_PACKAGES) kmod-usb3 kmod-phy-bcm-ns-usb3
 
 define Device/Default
+  PROFILES = Generic $$(DEVICE_NAME)
   # .dtb files are prefixed by SoC type, e.g. bcm4708- which is not included in device/image names
   # extract the full dtb name based on the device info
   DEVICE_DTS := $(patsubst %.dtb,%,$(notdir $(wildcard $(if $(IB),$(KDIR),$(DTS_DIR))/*-$(subst _,-,$(1)).dtb)))
@@ -158,6 +159,14 @@ define Device/asus
   IMAGES := trx
   IMAGE/trx := append-ubi | trx-nand | asus-trx
 endef
+
+define Device/asus_rt-ac3100
+  $(call Device/asus)
+  DEVICE_MODEL := RT-AC3100
+  DEVICE_PACKAGES := $(BRCMFMAC_4366B1) $(BRCMFMAC_4366C0) $(USB3_PACKAGES)
+  ASUS_PRODUCTID := RT-AC3100
+endef
+TARGET_DEVICES += asus_rt-ac3100
 
 define Device/asus_rt-ac56u
   $(call Device/asus)
@@ -461,8 +470,16 @@ TARGET_DEVICES += smartrg_sr400ac
 define Device/phicomm_k3
   DEVICE_VENDOR := PHICOMM
   DEVICE_MODEL := K3
+<<<<<<< HEAD
   DEVICE_PACKAGES := $(BRCMFMAC_4366C0) $(USB3_PACKAGES) \
 	-brcmfmac-firmware-4366c0-pcie brcmfmac-firmware-4366c0-pcie-k3
+=======
+  DEVICE_ALT0_VENDOR := Wavlink
+  DEVICE_ALT0_MODEL := QUANTUM DAX
+  DEVICE_ALT1_VENDOR := Wavlink
+  DEVICE_ALT1_MODEL := WL-WN538A8
+  DEVICE_PACKAGES := $(BRCMFMAC_4366C0) $(USB3_PACKAGES)
+>>>>>>> op-of/openwrt-23.05
   IMAGES := trx
 endef
 TARGET_DEVICES += phicomm_k3
