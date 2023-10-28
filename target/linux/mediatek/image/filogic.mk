@@ -488,6 +488,10 @@ TARGET_DEVICES += imou_lc-hx3001-ubootmod
 define Device/jcg_q30-ubootmod
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := Q30 (custom U-Boot layout)
+  DEVICE_ALT0_VENDOR := JCG
+  DEVICE_ALT0_MODEL := Q30 Pro (custom U-Boot layout)
+  DEVICE_ALT1_VENDOR := CMCC
+  DEVICE_ALT1_MODEL := MR3000D-CIq (custom U-Boot layout)
   DEVICE_DTS := mt7981b-jcg-q30-ubootmod
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
