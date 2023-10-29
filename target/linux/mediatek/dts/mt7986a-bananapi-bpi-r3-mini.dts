@@ -147,7 +147,7 @@
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
-			paus;
+			pause;
 		};
 	};
 
