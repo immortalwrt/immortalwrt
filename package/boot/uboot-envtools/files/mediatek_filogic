@@ -93,6 +93,11 @@ zyxel,ex5601-t0-ubootmod)
 imou,lc-hx3001-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x80000" "1"
 	;;
+jdcloud,re-cp-03)
+	local envdev=$(find_mmc_part "ubootenv" "mmcblk0")
+	ubootenv_add_uci_config "$envdev" "0x0" "0x40000" "0x40000" "1"
+	ubootenv_add_uci_config "$envdev" "0x40000" "0x40000" "0x40000" "1"
+	;;
 livinet,zr-3020|\
 livinet,zr-3020-ubootmod|\
 qihoo,360t7-ubootmod)
