@@ -120,7 +120,7 @@ mediatek_setup_macs()
 	cmcc,rax3000m-emmc-ubootmod)
 		wan_mac=$(mmc_get_mac_binary factory 0x2a)
 		lan_mac=$(mmc_get_mac_binary factory 0x24)
-		label=$wan_mac
+		label_mac=$wan_mac
 		;;
 	glinet,gl-mt6000)
 		label_mac=$(mmc_get_mac_binary factory 0x0a)
