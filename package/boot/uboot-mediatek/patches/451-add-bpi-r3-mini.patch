@@ -141,7 +141,7 @@
 +CONFIG_LMB_MAX_REGIONS=64
 --- /dev/null
 +++ b/configs/mt7986a_bpi-r3-mini-snand_defconfig
-@@ -0,0 +1,137 @@
+@@ -0,0 +1,138 @@
 +CONFIG_ARM=y
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
 +CONFIG_POSITION_INDEPENDENT=y
