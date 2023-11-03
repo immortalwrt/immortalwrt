@@ -122,6 +122,7 @@ platform_do_upgrade() {
 	h3c,magic-nx30-pro|\
 	jcg,q30|\
 	mediatek,mt7981-rfb|\
+	netcore,n60|\
 	nokia,ea0326gmp|\
 	qihoo,360t7|\
 	tplink,tl-xdr4288|\

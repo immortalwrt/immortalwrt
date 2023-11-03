@@ -42,6 +42,7 @@ mediatek_setup_interfaces()
 	asus,tuf-ax4200|\
 	jdcloud,re-cp-03|\
 	mediatek,mt7981-rfb|\
+	netcore,n60|\
 	unielec,u7981-01*|\
 	zbtlink,zbt-z8102ax|\
 	zyxel,ex5601-t0-stock|\
