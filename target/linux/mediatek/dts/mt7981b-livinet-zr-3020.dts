@@ -98,8 +98,8 @@
 		reg = <0>;
 		phy-mode = "2500base-x";
 
-		nvmem-cells = <&macaddr_config_50707>;
-		nvmem-cell-names = "mac-address-ascii";
+		nvmem-cells = <&macaddr_config_50707 0>;
+		nvmem-cell-names = "mac-address";
 
 		fixed-link {
 			speed = <2500>;
@@ -186,15 +186,22 @@
 				read-only;
 
 				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
-				macaddr_config_50707: macaddr@50707 {
-					reg = <0x50707 0x11>;
-				};
+					macaddr_config_50707: macaddr@50707 {
+						compatible = "mac-base";
+						reg = <0x50707 0x11>;
+						#nvmem-cell-cells = <1>;
+					};
 
-				macaddr_config_50787: macaddr@50787 {
-					reg = <0x50787 0x11>;
+					macaddr_config_50787: macaddr@50787 {
+						compatible = "mac-base";
+						reg = <0x50787 0x11>;
+						#nvmem-cell-cells = <1>;
+					};
 				};
 			};
 		};
@@ -210,8 +217,8 @@
 			reg = <0>;
 			label = "wan";
 
-			nvmem-cells = <&macaddr_config_50787>;
-			nvmem-cell-names = "mac-address-ascii";
+			nvmem-cells = <&macaddr_config_50787 0>;
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@2 {

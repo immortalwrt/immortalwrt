@@ -68,7 +68,7 @@
 		reg = <0>;
 		phy-mode = "2500base-x";
 
-		nvmem-cells = <&macaddr_factory_14>;
+		nvmem-cells = <&macaddr_factory_14 0>;
 		nvmem-cell-names = "mac-address-ascii";
 
 		fixed-link {
@@ -158,13 +158,17 @@
 				read-only;
 
 				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
-				macaddr_factory_14: macaddr@14 {
-					reg = <0x14 0x11>;
+					macaddr_factory_14: macaddr@14 {
+						compatible = "mac-base";
+						reg = <0x14 0x11>;
+						#nvmem-cell-cells = <1>;
+					};
 				};
-
 			};
 
 			partition@7300000 {
@@ -200,9 +204,8 @@
 			reg = <3>;
 			label = "wan";
 
-			nvmem-cells = <&macaddr_factory_14>;
+			nvmem-cells = <&macaddr_factory_14 1>;
 			nvmem-cell-names = "mac-address-ascii";
-			mac-address-increment = <1>;
 		};
 
 		port@6 {

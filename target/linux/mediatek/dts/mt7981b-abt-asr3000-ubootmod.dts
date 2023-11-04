@@ -87,8 +87,8 @@
 		reg = <0>;
 		phy-mode = "2500base-x";
 
-		nvmem-cells = <&macaddr_art_7c>;
-		nvmem-cell-names = "mac-address-ascii";
+		nvmem-cells = <&macaddr_art_7c 0>;
+		nvmem-cell-names = "mac-address";
 
 		fixed-link {
 			speed = <2500>;
@@ -103,8 +103,8 @@
 		phy-mode = "gmii";
 		phy-handle = <&int_gbe_phy>;
 
-		nvmem-cells = <&macaddr_art_7c>;
-		nvmem-cell-names = "mac-address-ascii";
+		nvmem-cells = <&macaddr_art_7c 0>;
+		nvmem-cell-names = "mac-address";
 	};
 };
 
@@ -167,11 +167,16 @@
 				read-only;
 
 				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
-				macaddr_art_7c: macaddr@7c {
-					reg = <0x7c 0x11>;
+					macaddr_art_7c: macaddr@7c {
+						compatible = "mac-base";
+						reg = <0x7c 0x11>;
+						#nvmem-cell-cells = <1>;
+					};
 				};
 			};
 
