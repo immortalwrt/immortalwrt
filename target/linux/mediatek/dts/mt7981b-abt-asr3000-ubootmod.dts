@@ -61,7 +61,7 @@
 
 		mesh_led: led-2 {
 			label = "green:mesh";
-			gpios = <&pio 15 GPIO_ACTIVE_LOW>;
+			gpios = <&pio 15 GPIO_ACTIVE_HIGH>;
 		};
 
 		led-3 {
