@@ -105,6 +105,27 @@ define Build/cetron-header
 	rm $@.tmp
 endef
 
+define Device/abt_asr3000-ubootmod
+  DEVICE_VENDOR := ABT
+  DEVICE_MODEL := ASR3000 (custom U-Boot layout)
+  DEVICE_DTS := mt7981b-abt-asr3000-ubootmod
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 113152k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  KERNEL = kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS = kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
+endef
+TARGET_DEVICES += abt_asr3000-ubootmod
+
 define Device/asus_tuf-ax4200
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := TUF-AX4200
@@ -120,6 +141,22 @@ define Device/asus_tuf-ax4200
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += asus_tuf-ax4200
+
+define Device/asus_tuf-ax6000
+  DEVICE_VENDOR := ASUS
+  DEVICE_MODEL := TUF-AX6000
+  DEVICE_DTS := mt7986a-asus-tuf-ax6000
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_DTS_LOADADDR := 0x47000000
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7986-firmware mt7986-wo-firmware
+  IMAGES := sysupgrade.bin
+  KERNEL := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += asus_tuf-ax6000
 
 define Device/acer_predator-w6
   DEVICE_VENDOR := Acer
@@ -187,6 +224,36 @@ define Device/bananapi_bpi-r3
 endef
 TARGET_DEVICES += bananapi_bpi-r3
 
+define Device/bananapi_bpi-r3-mini
+  DEVICE_VENDOR := Bananapi
+  DEVICE_MODEL := BPi-R3 Mini
+  DEVICE_DTS := mt7986a-bananapi-bpi-r3-mini
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_DTC_FLAGS := --pad 4096
+  DEVICE_DTS_LOADADDR := 0x43f00000
+  DEVICE_PACKAGES := kmod-hwmon-pwmfan kmod-mt7986-firmware mt7986-wo-firmware \
+	kmod-usb3 automount f2fsck mkf2fs
+  KERNEL_LOADADDR := 0x44000000
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  IMAGES := sysupgrade.itb
+  IMAGE_SIZE := $$(shell expr 64 + $$(CONFIG_TARGET_ROOTFS_PARTSIZE))m
+  IMAGE/sysupgrade.itb := append-kernel | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | \
+	pad-rootfs | append-metadata
+  ARTIFACTS := \
+       emmc-gpt.bin emmc-preloader.bin emmc-bl31-uboot.fip \
+       snand-preloader.bin snand-bl31-uboot.fip
+  ARTIFACT/emmc-gpt.bin := mt798x-gpt emmc
+  ARTIFACT/emmc-preloader.bin := mt7986-bl2 emmc-ddr4
+  ARTIFACT/emmc-bl31-uboot.fip := mt7986-bl31-uboot bananapi_bpi-r3-mini-emmc
+  ARTIFACT/snand-preloader.bin := mt7986-bl2 spim-nand-ddr4
+  ARTIFACT/snand-bl31-uboot.fip := mt7986-bl31-uboot bananapi_bpi-r3-mini-snand
+endef
+TARGET_DEVICES += bananapi_bpi-r3-mini
+
 define Device/cetron_ct3003-stock
   DEVICE_VENDOR := Cetron
   DEVICE_MODEL := CT3003 (stock layout)
@@ -226,6 +293,27 @@ define Device/cetron_ct3003-ubootmod
 endef
 TARGET_DEVICES += cetron_ct3003-ubootmod
 
+define Device/cmcc_a10-ubootmod
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := A10 (custom U-Boot layout)
+  DEVICE_DTS := mt7981b-cmcc-a10-ubootmod
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  KERNEL = kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS = kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
+endef
+TARGET_DEVICES += cmcc_a10-ubootmod
+
 define Device/cmcc_rax3000m
   DEVICE_VENDOR := CMCC
   DEVICE_MODEL := RAX3000M (OpenWrt U-Boot layout)
@@ -246,7 +334,7 @@ define Device/cmcc_rax3000m
   IMAGES := sysupgrade.itb
   IMAGE_SIZE := $$(shell expr 64 + $$(CONFIG_TARGET_ROOTFS_PARTSIZE))m
   IMAGE/sysupgrade.itb := append-kernel | \
-	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-with-rootfs | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | \
 	pad-rootfs | append-metadata
   ARTIFACTS := \
 	emmc-gpt.bin emmc-preloader.bin emmc-bl31-uboot.fip \
@@ -416,6 +504,10 @@ TARGET_DEVICES += imou_lc-hx3001-ubootmod
 define Device/jcg_q30-ubootmod
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := Q30 (custom U-Boot layout)
+  DEVICE_ALT0_VENDOR := JCG
+  DEVICE_ALT0_MODEL := Q30 Pro (custom U-Boot layout)
+  DEVICE_ALT1_VENDOR := CMCC
+  DEVICE_ALT1_MODEL := MR3000D-CIq (custom U-Boot layout)
   DEVICE_DTS := mt7981b-jcg-q30-ubootmod
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
@@ -644,7 +736,7 @@ endef
 TARGET_DEVICES += mediatek_mt7988a-rfb
 
 define Device/mercusys_mr90x-v1
-  DEVICE_VENDOR := Mercusys
+  DEVICE_VENDOR := MERCUSYS
   DEVICE_MODEL := MR90X v1
   DEVICE_DTS := mt7986b-mercusys-mr90x-v1
   DEVICE_DTS_DIR := ../dts

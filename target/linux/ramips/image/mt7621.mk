@@ -1635,10 +1635,21 @@ define Device/mediatek_mt7621-eval-board
 endef
 TARGET_DEVICES += mediatek_mt7621-eval-board
 
+define Device/meig_slt866
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 15104k
+  DEVICE_VENDOR := MeiG
+  DEVICE_MODEL := SLT866
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
+	kmod-usb-net-qmi-wwan kmod-usb-serial-option kmod-usb3 \
+	kmod-usb-net-rndis
+endef
+TARGET_DEVICES += meig_slt866
+
 define Device/mercusys_mr70x-v1
   $(Device/dsa-migration)
   $(Device/tplink-safeloader)
-  DEVICE_VENDOR := Mercusys
+  DEVICE_VENDOR := MERCUSYS
   DEVICE_MODEL := MR70X
   DEVICE_VARIANT := v1
   DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
@@ -2147,7 +2158,7 @@ define Device/telco-electronics_x1
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Telco Electronics
   DEVICE_MODEL := X1
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt76 -uboot-envtools
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7603 kmod-mt76x2 -uboot-envtools
 endef
 TARGET_DEVICES += telco-electronics_x1
 
@@ -3011,6 +3022,21 @@ define Device/zyxel_lte3301-plus
   KERNEL_INITRAMFS_SUFFIX := -recovery.bin
 endef
 TARGET_DEVICES += zyxel_lte3301-plus
+
+define Device/zyxel_lte5398-m904
+  $(Device/nand)
+  DEVICE_VENDOR := ZyXEL
+  DEVICE_MODEL := LTE5398-M904
+  KERNEL_SIZE := 31488k
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615-firmware kmod-usb3 uqmi \
+  kmod-usb-net-qmi-wwan kmod-usb-serial-option kmod-usb-ledtrig-usbport
+  KERNEL := $(KERNEL_DTB) | uImage lzma | \
+	zytrx-header $$(DEVICE_MODEL) $$(VERSION_DIST)-$$(REVISION)
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | uImage lzma | \
+	zytrx-header $$(DEVICE_MODEL) 9.99(ABQU.1)$$(VERSION_DIST)-recovery
+  KERNEL_INITRAMFS_SUFFIX := -recovery.bin
+endef
+TARGET_DEVICES += zyxel_lte5398-m904
 
 define Device/zyxel_nr7101
   $(Device/nand)

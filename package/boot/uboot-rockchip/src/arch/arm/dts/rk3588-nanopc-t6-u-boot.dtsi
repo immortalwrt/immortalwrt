@@ -6,13 +6,7 @@
 #include "rk3588-u-boot.dtsi"
 
 / {
-	aliases {
-		mmc0 = &sdmmc;
-		mmc1 = &sdhci;
-	};
-
 	chosen {
-		stdout-path = &uart2;
 		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &sdhci;
 	};
 };
@@ -25,6 +19,4 @@
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;
 	mmc-hs200-1_8v;
-	pinctrl-names = "default";
-	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_data_strobe &emmc_rstnout>;
 };
