@@ -27,6 +27,10 @@
 		serial2 = &uart2;
 	};
 
+	chosen {
+		stdout-path = "serial2:1500000n8";
+	};
+
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
@@ -64,10 +68,6 @@
 			label = "green:wan";
 			gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
 		};
-	};
-
-	chosen {
-		stdout-path = "serial2:1500000n8";
 	};
 
 	vcc5v0_sys: vcc5v0-sys-regulator {
@@ -146,6 +146,14 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&vbus5v0_typec_en>;
 	};
+};
+
+&combphy0_ps {
+	status = "okay";
+};
+
+&combphy2_psu {
+	status = "okay";
 };
 
 &cpu_l0 {
@@ -292,6 +300,11 @@
 			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
+};
+
+&saradc {
+	vref-supply = <&avcc_1v8_s0>;
+	status = "okay";
 };
 
 &sdhci {
@@ -707,7 +720,32 @@
 	};
 };
 
+&tsadc {
+	status = "okay";
+};
+
 &uart2 {
 	pinctrl-0 = <&uart2m0_xfer>;
+	status = "okay";
+};
+
+&u2phy2 {
+	status = "okay";
+};
+
+&u2phy2_host {
+	phy-supply = <&vcc5v0_host_20>;
+	status = "okay";
+};
+
+&u2phy3 {
+	status = "okay";
+};
+
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
 	status = "okay";
 };

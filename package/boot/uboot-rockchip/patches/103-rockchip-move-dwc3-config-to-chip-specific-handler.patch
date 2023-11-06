@@ -35,9 +35,9 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 -	.hsphy_mode = USBPHY_INTERFACE_MODE_UTMIW,
 -};
 -
--int usb_gadget_handle_interrupts(int index)
+-int dm_usb_gadget_handle_interrupts(struct udevice *dev)
 -{
--	dwc3_uboot_handle_interrupt(0);
+-	dwc3_uboot_handle_interrupt(dev);
 -	return 0;
 -}
 -
@@ -52,7 +52,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  #if IS_ENABLED(CONFIG_FASTBOOT)
 --- a/arch/arm/mach-rockchip/rk3399/rk3399.c
 +++ b/arch/arm/mach-rockchip/rk3399/rk3399.c
-@@ -282,3 +282,32 @@ void spl_board_init(void)
+@@ -283,3 +283,32 @@ void spl_board_init(void)
  	}
  }
  #endif
@@ -72,9 +72,9 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 +	.hsphy_mode = USBPHY_INTERFACE_MODE_UTMIW,
 +};
 +
-+int usb_gadget_handle_interrupts(int index)
++int dm_usb_gadget_handle_interrupts(struct udevice *dev)
 +{
-+	dwc3_uboot_handle_interrupt(0);
++	dwc3_uboot_handle_interrupt(dev);
 +	return 0;
 +}
 +

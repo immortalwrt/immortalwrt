@@ -26,6 +26,29 @@
 		serial2 = &uart2;
 	};
 
+	chosen {
+		stdout-path = "serial2:1500000n8";
+	};
+
+	analog-sound {
+		compatible = "audio-graph-card";
+		label = "realtek,rt5616-codec";
+
+
+		widgets = "Headphone", "Headphones",
+			  "Microphone", "Mic Jack";
+
+		routing = "Headphones", "HPOL",
+			  "Headphones", "HPOR",
+			  "MIC1", "Mic Jack",
+			  "Mic Jack", "MICBIAS1";
+
+		dais = <&i2s0_8ch_p0>;
+		hp-det-gpio = <&gpio1 RK_PC4 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&hp_detect>;
+	};
+
 	gpio-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
@@ -40,10 +63,6 @@
 			label = "green:wan";
 			gpios = <&gpio2 RK_PC0 GPIO_ACTIVE_HIGH>;
 		};
-	};
-
-	chosen {
-		stdout-path = "serial2:1500000n8";
 	};
 
 	vcc5v0_sys: vcc5v0-sys-regulator {
@@ -159,6 +178,18 @@
 		startup-delay-us = <10000>;
 		vin-supply = <&vcc5v0_sys>;
 	};
+};
+
+&combphy0_ps {
+	status = "okay";
+};
+
+&combphy1_ps {
+	status = "okay";
+};
+
+&combphy2_psu {
+	status = "okay";
 };
 
 &cpu_l0 {
@@ -292,6 +323,7 @@
 };
 
 &i2c6 {
+	clock-frequency = <200000>;
 	status = "okay";
 
 	hym8563: rtc@51 {
@@ -349,6 +381,12 @@
 		};
 	};
 
+	sound {
+		hp_detect: hp-detect {
+			rockchip,pins = <1 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
 	usb {
 		usbc0_int: usbc0-int {
 			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
@@ -363,6 +401,11 @@
 		};
 
 	};
+};
+
+&saradc {
+	vref-supply = <&avcc_1v8_s0>;
+	status = "okay";
 };
 
 &sdhci {
@@ -778,7 +821,43 @@
 	};
 };
 
+&tsadc {
+	status = "okay";
+};
+
 &uart2 {
 	pinctrl-0 = <&uart2m0_xfer>;
+	status = "okay";
+};
+
+&u2phy2 {
+	status = "okay";
+};
+
+&u2phy2_host {
+	status = "okay";
+};
+
+&u2phy3 {
+	status = "okay";
+};
+
+&u2phy3_host {
+	status = "okay";
+};
+
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
 	status = "okay";
 };
