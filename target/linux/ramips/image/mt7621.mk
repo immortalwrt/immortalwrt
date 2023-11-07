@@ -2990,21 +2990,18 @@ endef
 TARGET_DEVICES += zio_freezio
 
 define Device/zte_e8820s
-  $(Device/dsa-migration)
+  $(Device/nand)
   $(Device/uimage-lzma-loader)
-  BLOCKSIZE := 128k
-  PAGESIZE := 2048
-  KERNEL_SIZE := 4096k
-  UBINIZE_OPTS := -E 5
-  IMAGE_SIZE := 32768k
-  IMAGES += factory.bin
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size
   DEVICE_VENDOR := ZTE
   DEVICE_MODEL := E8820S
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
-	kmod-usb-ledtrig-usbport
+	kmod-usb-ledtrig-usbport automount
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := Partition table has changed to fit the new U-Boot
+  IMAGE_SIZE := 121728k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
+	check-size
 endef
 TARGET_DEVICES += zte_e8820s
 
