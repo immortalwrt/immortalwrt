@@ -254,6 +254,18 @@
 	};
 };
 
+&pcie2x1l1 {
+	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc_3v3_pcie20>;
+	status = "okay";
+};
+
+&pcie2x1l2 {
+	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc_3v3_pcie20>;
+	status = "okay";
+};
+
 &pinctrl {
 	gpio-leds {
 		lan1_led_pin: lan1-led-pin {
