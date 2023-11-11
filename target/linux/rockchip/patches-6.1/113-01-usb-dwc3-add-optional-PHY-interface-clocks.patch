@@ -15,7 +15,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/drivers/usb/dwc3/core.c
 +++ b/drivers/usb/dwc3/core.c
-@@ -821,8 +821,20 @@ static int dwc3_clk_enable(struct dwc3 *
+@@ -858,8 +858,20 @@ static int dwc3_clk_enable(struct dwc3 *
  	if (ret)
  		goto disable_ref_clk;
  
@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  disable_ref_clk:
  	clk_disable_unprepare(dwc->ref_clk);
  disable_bus_clk:
-@@ -832,6 +844,8 @@ disable_bus_clk:
+@@ -869,6 +881,8 @@ disable_bus_clk:
  
  static void dwc3_clk_disable(struct dwc3 *dwc)
  {
@@ -45,7 +45,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	clk_disable_unprepare(dwc->susp_clk);
  	clk_disable_unprepare(dwc->ref_clk);
  	clk_disable_unprepare(dwc->bus_clk);
-@@ -1838,6 +1852,18 @@ static int dwc3_probe(struct platform_de
+@@ -1875,6 +1889,18 @@ static int dwc3_probe(struct platform_de
  				goto put_usb_psy;
  			}
  		}

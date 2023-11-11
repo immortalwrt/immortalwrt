@@ -1,12 +1,14 @@
-From 5ebbc365e6a30a5d0b36b82dc67cfc12b5aeaeb4 Mon Sep 17 00:00:00 2001
+From afa933c208e5ea9ddf8adb460e273b2b1aba85e5 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Fri, 21 Jul 2023 15:47:00 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add ADC buttons
+Date: Thu, 5 Oct 2023 15:43:57 +0200
+Subject: [PATCH] arm64: dts: rockchip: add ADC buttons to rk3588-evb1
 
 The Rockchip EVB1 has a couple of buttons connected via an ADC
 line. Let's add them to its devicetree.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20231005134357.37171-1-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 38 +++++++++++++++++++
  1 file changed, 38 insertions(+)
@@ -19,9 +21,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/input/input.h>
  #include <dt-bindings/pinctrl/rockchip.h>
- #include <dt-bindings/usb/pd.h>
  #include "rk3588.dtsi"
-@@ -24,6 +25,38 @@
+ 
+@@ -23,6 +24,38 @@
  		stdout-path = "serial2:1500000n8";
  	};
  
@@ -60,7 +62,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	backlight: backlight {
  		compatible = "pwm-backlight";
  		power-supply = <&vcc12v_dcin>;
-@@ -374,6 +407,11 @@
+@@ -286,6 +319,11 @@
  	status = "okay";
  };
  

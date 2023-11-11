@@ -91,7 +91,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		reg = <0x0 0xfee10000 0x0 0x100>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -927,6 +927,37 @@
+@@ -932,6 +932,37 @@
  		reg = <0x0 0xfd5c4000 0x0 0x100>;
  	};
  
@@ -129,7 +129,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	usb2phy2_grf: syscon@fd5d8000 {
  		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
  		reg = <0x0 0xfd5d8000 0x0 0x4000>;
-@@ -952,6 +983,17 @@
+@@ -957,6 +988,17 @@
  		};
  	};
  
@@ -147,7 +147,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	usb2phy3_grf: syscon@fd5dc000 {
  		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
  		reg = <0x0 0xfd5dc000 0x0 0x4000>;
-@@ -2661,6 +2703,37 @@
+@@ -2688,6 +2730,37 @@
  		#dma-cells = <1>;
  	};
  
