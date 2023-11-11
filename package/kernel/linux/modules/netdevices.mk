@@ -933,6 +933,7 @@ define KernelPackage/ice
   DEPENDS:=@PCI_SUPPORT +kmod-ptp
   KCONFIG:=\
 	CONFIG_ICE \
+	CONFIG_ICE_HWTS=y \
 	CONFIG_ICE_SWITCHDEV=y
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
   AUTOLOAD:=$(call AutoProbe,ice)
