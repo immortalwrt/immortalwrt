@@ -10,10 +10,10 @@
 	model = "ZTE E8820S";
 
 	aliases {
-		led-boot = &led_sys;
-		led-failsafe = &led_sys;
-		led-running = &led_power;
-		led-upgrade = &led_power;
+		led-boot = &power_led;
+		led-failsafe = &system_led;
+		led-running = &system_led;
+		led-upgrade = &system_led;
 		label-mac-device = &gmac0;
 	};
 
@@ -21,66 +21,60 @@
 		bootargs = "console=ttyS0,115200";
 	};
 
-	leds {
+	gpio-leds {
 		compatible = "gpio-leds";
 
-		led_power: power {
+		power_led: led-power {
 			label = "white:power";
 			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 		};
 
-		led_sys: sys {
-			label = "white:sys";
+		system_led: led-system {
+			label = "white:system";
 			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
-		};
-
-		wlan2g {
-			label = "white:wlan2g";
-			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
-		};
-
-		wlan5g {
-			label = "white:wlan5g";
-			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
 		};
 	};
 
-	keys {
+	gpio-keys {
 		compatible = "gpio-keys";
 
-		reset {
+		button-reset {
 			label = "reset";
-			gpios = <&gpio 18 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 
-		wps {
-			label = "wps";
-			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
-		};
-
-		wifi {
+		button-wifi {
 			label = "wifi";
 			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RFKILL>;
 		};
-	};
 
-	ubi-concat {
-		compatible = "mtd-concat";
-		devices = <&ubipart0 &ubipart1>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			ubi@0 {
-				label = "ubi";
-				reg = <0x0 0x79c0000>;
-			};
+		button-wps {
+			label = "wps";
+			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
 		};
+	};
+};
+
+&gmac0 {
+	nvmem-cells = <&macaddr_config_12 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy4>;
+
+	nvmem-cells = <&macaddr_config_12 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&mdio {
+	ethphy4: ethernet-phy@4 {
+		reg = <4>;
 	};
 };
 
@@ -93,66 +87,66 @@
 		#size-cells = <1>;
 
 		partition@0 {
-			label = "u-boot";
-			reg = <0x0 0x80000>;
+			label = "Bootloader";
+			reg = <0x0 0x220000>;
 			read-only;
 		};
 
 		partition@80000 {
-			label = "debug";
-			reg = <0x80000 0x80000>;
+			compatible = "nvmem-cells";
+			label = "config";
+			reg = <0x220000 0x140000>;
 			read-only;
+
+			nvmem-layout {
+				compatible = "fixed-layout";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				macaddr_config_12: macaddr@12 {
+					compatible = "mac-base";
+					reg = <0x12 0x6>;
+					#nvmem-cell-cells = <1>;
+				};
+			};
 		};
 
-		factory: partition@100000 {
+		factory: partition@360000 {
 			compatible = "nvmem-cells";
 			label = "factory";
-			reg = <0x100000 0x40000>;
-			#address-cells = <1>;
-			#size-cells = <1>;
+			reg = <0x360000 0x140000>;
 			read-only;
 
-			eeprom_factory_0: eeprom@0 {
-				reg = <0x0 0x400>;
-			};
+			nvmem-layout {
+				compatible = "fixed-layout";
+				#address-cells = <1>;
+				#size-cells = <1>;
 
-			eeprom_factory_8000: eeprom@8000 {
-				reg = <0x8000 0x200>;
-			};
+				eeprom_factory_f000: eeprom@f000 {
+					reg = <0xf000 0x400>;
+				};
 
-			macaddr_factory_e000: macaddr@e000 {
-				reg = <0xe000 0x6>;
-			};
-
-			macaddr_factory_e006: macaddr@e006 {
-				reg = <0xe006 0x6>;
+				eeprom_factory_f800: eeprom@f800 {
+					reg = <0xf800 0x200>;
+				};
 			};
 		};
 
-		partition@140000 {
+		partition@4a0000 {
 			label = "kernel";
-			reg = <0x140000 0x400000>;
+			reg = <0x4a0000 0x400000>;
 		};
 
-		ubipart0: partition@540000 {
-			label = "ubipart0";
-			reg = <0x540000 0x1c80000>;
-		};
-
-		partition@21c0000 {
-			label = "bdinfo";
-			reg = <0x21c0000 0x80000>;
-			read-only;
-		};
-
-		ubipart1: partition@2240000 {
-			label = "ubipart1";
-			reg = <0x2240000 0x5d40000>;
+		partition@8a0000 {
+			label = "ubi";
+			reg = <0x8a0000 0x76e0000>;
 		};
 	};
 };
 
 &pcie {
+	reset-gpios = <&gpio 19 GPIO_ACTIVE_LOW>,
+		      <&gpio 4 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
 
@@ -160,9 +154,13 @@
 	wifi@0,0 {
 		compatible = "pci14c3,7603";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_0>;
-		nvmem-cell-names = "eeprom";
+		nvmem-cells = <&eeprom_factory_f000>, <&macaddr_config_12 0>;
+		nvmem-cell-names = "eeprom", "mac-address";
 		ieee80211-freq-limit = <2400000 2500000>;
+
+		led {
+			led-active-low;
+		};
 	};
 };
 
@@ -170,29 +168,14 @@
 	wifi@0,0 {
 		compatible = "pci14c3,7662";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		nvmem-cells = <&eeprom_factory_f800>, <&macaddr_config_12 1>;
+		nvmem-cell-names = "eeprom", "mac-address";
 		ieee80211-freq-limit = <5000000 6000000>;
-	};
-};
 
-&gmac0 {
-	nvmem-cells = <&macaddr_factory_e006>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
+		led {
+			led-active-low;
+			led-sources = <2>;
+		};
 	};
 };
 

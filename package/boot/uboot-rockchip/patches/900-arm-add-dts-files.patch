@@ -1,6 +1,6 @@
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -125,6 +125,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
+@@ -126,6 +126,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3308) += \
  dtb-$(CONFIG_ROCKCHIP_RK3328) += \
  	rk3328-evb.dtb \
  	rk3328-nanopi-r2c.dtb \
@@ -8,7 +8,7 @@
  	rk3328-nanopi-r2s.dtb \
  	rk3328-orangepi-r1-plus.dtb \
  	rk3328-orangepi-r1-plus-lts.dtb \
-@@ -145,6 +146,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -146,6 +147,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-firefly.dtb \
  	rk3399-gru-bob.dtb \
  	rk3399-gru-kevin.dtb \
@@ -16,7 +16,7 @@
  	rk3399-khadas-edge.dtb \
  	rk3399-khadas-edge-captain.dtb \
  	rk3399-khadas-edge-v.dtb \
-@@ -155,6 +157,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+@@ -156,6 +158,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
  	rk3399-nanopi-m4b.dtb \
  	rk3399-nanopi-neo4.dtb \
  	rk3399-nanopi-r4s.dtb \
@@ -25,9 +25,9 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -178,19 +182,26 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
- 	rk3566-soquartz-cm4.dtb \
+@@ -180,11 +184,15 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-soquartz-model-a.dtb \
+ 	rk3568-bpi-r2-pro.dtb \
  	rk3568-evb.dtb \
 +	rk3568-fastrhino-r66s.dtb \
 +	rk3568-fastrhino-r68s.dtb \
@@ -41,16 +41,14 @@
  	rk3568-rock-3a.dtb
  
  dtb-$(CONFIG_ROCKCHIP_RK3588) += \
- 	rk3588-edgeble-neu6a-io.dtb \
- 	rk3588-edgeble-neu6b-io.dtb \
- 	rk3588-evb1-v10.dtb \
--	rk3588s-rock-5a.dtb \
+@@ -195,7 +203,9 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
+ 	rk3588s-orangepi-5.dtb \
+ 	rk3588-orangepi-5-plus.dtb \
+ 	rk3588s-rock-5a.dtb \
 -	rk3588-rock-5b.dtb
-+	rk3588-nanopc-t6.dtb \
 +	rk3588-rock-5b.dtb \
 +	rk3588s-nanopi-r6c.dtb \
-+	rk3588s-nanopi-r6s.dtb \
-+	rk3588s-rock-5a.dtb
++	rk3588s-nanopi-r6s.dtb
  
  dtb-$(CONFIG_ROCKCHIP_RV1108) += \
  	rv1108-elgin-r1.dtb \

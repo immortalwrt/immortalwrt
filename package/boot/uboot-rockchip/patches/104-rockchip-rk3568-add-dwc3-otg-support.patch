@@ -38,9 +38,9 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 +	.hsphy_mode = USBPHY_INTERFACE_MODE_UTMIW,
 +};
 +
-+int usb_gadget_handle_interrupts(int index)
++int dm_usb_gadget_handle_interrupts(struct udevice *dev)
 +{
-+	dwc3_uboot_handle_interrupt(0);
++	dwc3_uboot_handle_interrupt(dev);
 +	return 0;
 +}
 +

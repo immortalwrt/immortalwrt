@@ -17,6 +17,7 @@ ipq807x_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
 		;;
 	edgecore,eap102|\
+	yuncore,ax880|\
 	zte,mf269)
 		ucidef_set_interfaces_lan_wan "lan" "wan"
 		;;

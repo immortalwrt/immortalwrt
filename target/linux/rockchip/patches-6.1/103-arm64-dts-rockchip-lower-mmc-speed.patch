@@ -36,7 +36,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -382,8 +382,7 @@
+@@ -360,8 +360,7 @@
  	no-sd;
  	non-removable;
  	max-frequency = <200000000>;
@@ -46,7 +46,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -394,9 +393,8 @@
+@@ -372,9 +371,8 @@
  	bus-width = <4>;
  	cap-mmc-highspeed;
  	cap-sd-highspeed;

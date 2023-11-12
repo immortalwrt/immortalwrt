@@ -1,6 +1,6 @@
-From 78432c7d9799a549c185482ac65f08d671098d4c Mon Sep 17 00:00:00 2001
+From bbd3778da16b3d448832b843f80bcde1aff26290 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 18 Jul 2023 18:57:15 +0200
+Date: Fri, 20 Oct 2023 16:11:42 +0200
 Subject: [PATCH] arm64: dts: rockchip: rk3588s: Add USB3 host controller
 
 RK3588 has three USB3 controllers. This adds the host-only controller,
@@ -10,14 +10,16 @@ The other two are dual-role and using a different PHY that is not yet
 supported upstream.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20231020150022.48725-4-sebastian.reichel@collabora.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 21 +++++++++++++++++++++
  1 file changed, 21 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -876,6 +876,27 @@
- 		status = "disabled";
+@@ -439,6 +439,27 @@
+ 		reg = <0x0 0xfd58a000 0x0 0x10000>;
  	};
  
 +	usb_host2_xhci: usb@fcd00000 {

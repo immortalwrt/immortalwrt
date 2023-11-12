@@ -1,4 +1,4 @@
-From 691e7aaeca265abd4fdadef3e407c16bebec0ca6 Mon Sep 17 00:00:00 2001
+From 5c242dd9ee6e94c1f19248a48792ad0ce0bd7b4a Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Tue, 25 Jul 2023 18:35:56 +0200
 Subject: [PATCH] arm64: dts: rockchip: rk3588-rock5b: add USB-C support
@@ -13,15 +13,15 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -5,6 +5,7 @@
+@@ -4,6 +4,7 @@
+ 
  #include <dt-bindings/gpio/gpio.h>
  #include <dt-bindings/leds/common.h>
- #include <dt-bindings/pinctrl/rockchip.h>
 +#include <dt-bindings/usb/pd.h>
  #include "rk3588.dtsi"
  
  / {
-@@ -52,6 +53,15 @@
+@@ -62,6 +63,15 @@
  		#cooling-cells = <2>;
  	};
  
@@ -37,7 +37,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc3v3_pcie2x1l0: vcc3v3-pcie2x1l0-regulator {
  		compatible = "regulator-fixed";
  		enable-active-high;
-@@ -121,6 +131,7 @@
+@@ -120,6 +130,7 @@
  		regulator-boot-on;
  		regulator-min-microvolt = <5000000>;
  		regulator-max-microvolt = <5000000>;
@@ -45,7 +45,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	};
  
  	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3-regulator {
-@@ -241,6 +252,61 @@
+@@ -225,6 +236,61 @@
  	};
  };
  
@@ -107,7 +107,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &i2c6 {
  	status = "okay";
  
-@@ -370,6 +436,10 @@
+@@ -354,6 +420,10 @@
  		vcc5v0_host_en: vcc5v0-host-en {
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
@@ -116,9 +116,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			rockchip,pins = <3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
  	};
+ };
  
- 	m2e {
-@@ -762,6 +832,14 @@
+@@ -746,6 +816,14 @@
  	status = "okay";
  };
  
@@ -133,7 +133,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy1 {
  	status = "okay";
  };
-@@ -797,6 +875,33 @@
+@@ -781,6 +859,33 @@
  	status = "okay";
  };
  
@@ -167,7 +167,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -805,6 +910,20 @@
+@@ -789,6 +894,20 @@
  	status = "okay";
  };
  

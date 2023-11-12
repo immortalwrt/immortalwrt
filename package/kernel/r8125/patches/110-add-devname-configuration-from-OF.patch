@@ -1,6 +1,6 @@
 --- a/src/r8125_n.c
 +++ b/src/r8125_n.c
-@@ -11481,6 +11481,23 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
+@@ -14820,6 +14820,23 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
  }
  
  static int
@@ -24,7 +24,7 @@
  rtl8125_led_configuration(struct rtl8125_private *tp)
  {
          u32 led_data;
-@@ -11975,6 +11992,7 @@ rtl8125_init_software_variable(struct ne
+@@ -15402,6 +15419,7 @@ rtl8125_init_software_variable(struct ne
          if (tp->InitRxDescType == RX_DESC_RING_TYPE_3)
                  tp->rtl8125_rx_config |= EnableRxDescV3;
  
