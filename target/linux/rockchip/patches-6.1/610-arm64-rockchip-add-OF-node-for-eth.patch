@@ -174,3 +174,41 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
+--- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
+@@ -505,6 +505,17 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pcie2_0_rst>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00200000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8125_2: pcie@20,0 {
++			reg = <0x000000 0 0 0 0>;
++			label = "eth2";
++		};
++	};
+ };
+ 
+ &pcie2x1l1 {
+@@ -521,6 +532,17 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pcie2_2_rst>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00400000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8125_1: pcie@40,0 {
++			reg = <0x000000 0 0 0 0>;
++			label = "eth1";
++		};
++	};
+ };
+ 
+ &pcie30phy {

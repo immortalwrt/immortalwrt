@@ -50,9 +50,35 @@
  &saradc {
  	vref-supply = <&vcca_1v8>;
  	status = "okay";
+--- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
+@@ -620,6 +620,10 @@
+ 	status = "okay";
+ };
+ 
++&rng {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&avcc_1v8_s0>;
+ 	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 @@ -431,6 +431,10 @@
+ 	status = "okay";
+ };
+ 
++&rng {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&avcc_1v8_s0>;
+ 	status = "okay";
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
+@@ -358,6 +358,10 @@
  	status = "okay";
  };
  
