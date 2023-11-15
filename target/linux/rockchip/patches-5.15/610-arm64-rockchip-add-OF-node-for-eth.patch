@@ -72,9 +72,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
  			pinctrl-0 = <&eth_phy_reset_pin>;
  			pinctrl-names = "default";
-@@ -38,3 +39,7 @@
- 		};
- 	};
+@@ -42,3 +43,7 @@
+ &io_domains {
+ 	vccio4-supply = <&vcc_18>;
  };
 +
 +&rtl8153 {
