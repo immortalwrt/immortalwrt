@@ -38,3 +38,28 @@
  err_restore_page:
  	return phy_restore_page(phydev, old_page, ret);
  }
+@@ -1495,6 +1512,7 @@ err_restore_page:
+ static int yt8531_config_init(struct phy_device *phydev)
+ {
+ 	struct device_node *node = phydev->mdio.dev.of_node;
++	u32 led_data[YTPHY_LED_NUM_CONFIG];
+ 	int ret;
+ 
+ 	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
+@@ -1519,6 +1537,16 @@ static int yt8531_config_init(struct phy
+ 			return ret;
+ 	}
+ 
++	if (!of_property_read_u32_array(node, "motorcomm,led-data",
++				       led_data, YTPHY_LED_NUM_CONFIG)) {
++		for (int i = 0; i < YTPHY_LED_NUM_CONFIG; i++) {
++			ret = ytphy_write_ext(phydev, YTPHY_LED_CONFIG_REG(i),
++					      led_data[i]);
++			if (ret < 0)
++				return ret;
++		}
++	}
++
+ 	return 0;
+ }
+ 
