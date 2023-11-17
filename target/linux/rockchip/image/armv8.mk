@@ -122,7 +122,7 @@ define Device/friendlyarm_nanopi-r5c
   DEVICE_MODEL := NanoPi R5C
   SOC := rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-rtw88 rtl8822ce-firmware wpad-basic-openssl
+  DEVICE_PACKAGES := kmod-r8125 kmod-rtw88-8822ce rtl8822ce-firmware wpad-basic-openssl
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r5c
 
