@@ -235,7 +235,7 @@ define Device/bananapi_bpi-r3-mini
   DEVICE_DTS_LOADADDR := 0x43f00000
   DEVICE_PACKAGES := kmod-hwmon-pwmfan kmod-mt7986-firmware mt7986-wo-firmware \
 	kmod-usb3 automount f2fsck mkf2fs \
-	kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+	kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
   KERNEL_LOADADDR := 0x44000000
   KERNEL := kernel-bin | gzip
   KERNEL_INITRAMFS := kernel-bin | lzma | \
@@ -503,6 +503,35 @@ define Device/imou_lc-hx3001-ubootmod
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
 endef
 TARGET_DEVICES += imou_lc-hx3001-ubootmod
+
+define Device/jcg_q30
+  DEVICE_VENDOR := JCG
+  DEVICE_MODEL := Q30 (OpenWrt U-Boot layout)
+  DEVICE_ALT0_VENDOR := JCG
+  DEVICE_ALT0_MODEL := Q30 Pro (OpenWrt U-Boot layout)
+  DEVICE_ALT1_VENDOR := CMCC
+  DEVICE_ALT1_MODEL := MR3000D-CIq (OpenWrt U-Boot layout)
+  SUPPORTED_DEVICES += jcg,q30-pro
+  DEVICE_DTS := mt7981b-jcg-q30
+  DEVICE_DTS_DIR := ../dts
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_IN_UBI := 1
+  UBOOTENV_IN_UBI := 1
+  IMAGES := sysupgrade.itb
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+        fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.itb := append-kernel | \
+        fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot jcg_q30
+endef
+TARGET_DEVICES += jcg_q30
 
 define Device/jcg_q30-ubootmod
   DEVICE_VENDOR := JCG

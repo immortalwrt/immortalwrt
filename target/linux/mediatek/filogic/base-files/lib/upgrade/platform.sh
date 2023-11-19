@@ -114,6 +114,7 @@ platform_do_upgrade() {
 		emmc_do_upgrade "$1"
 		;;
 	h3c,magic-nx30-pro|\
+	jcg,q30|\
 	mediatek,mt7981-rfb|\
 	qihoo,360t7|\
 	tplink,tl-xdr4288|\

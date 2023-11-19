@@ -18,7 +18,7 @@ PKG_FLAGS:=nonshared
 PKG_LICENSE:=GPL-2.0 GPL-2.0+
 PKG_LICENSE_FILES:=Licenses/README
 
-PKG_BUILD_PARALLEL:=1
+PKG_BUILD_PARALLEL ?= 1
 
 ifdef UBOOT_USE_BINMAN
   $(eval $(call TestHostCommand,python3-pyelftools, \

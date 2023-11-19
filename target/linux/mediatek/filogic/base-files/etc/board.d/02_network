@@ -42,6 +42,7 @@ mediatek_setup_interfaces()
 	cetron,ct3003-ubootmod|\
 	cmcc,a10-ubootmod|\
 	cudy,wr3000-v1|\
+	jcg,q30|\
 	jcg,q30-ubootmod|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
