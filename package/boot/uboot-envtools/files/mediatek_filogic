@@ -79,7 +79,8 @@ mercusys,mr90x-v1)
 	;;
 cetron,ct3003-ubootmod|\
 cmcc,rax3000m-nand-ubootmod|\
-netgear,wax220)
+netgear,wax220|\
+zbtlink,zbt-z8102ax)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
 	;;
 xiaomi,mi-router-wr30u-112m-nmbm|\
