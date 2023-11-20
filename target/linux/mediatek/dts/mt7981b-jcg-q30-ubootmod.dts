@@ -4,7 +4,7 @@
  */
 
 /dts-v1/;
-#include "mt7981-jcg-q30.dts"
+#include "mt7981b-jcg-q30.dts"
 
 / {
 	model = "JCG Q30 (custom U-Boot layout)";
