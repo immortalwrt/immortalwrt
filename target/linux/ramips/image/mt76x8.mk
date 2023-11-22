@@ -606,6 +606,7 @@ define Device/tplink_archer-c50-v6
   TPLINK_HWREVADD := 0x6
   DEVICE_PACKAGES := kmod-mt7615e kmod-mt7663-firmware-ap
   IMAGES := sysupgrade.bin
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c50-v6
 
