@@ -3,19 +3,23 @@
 uci -q get system.@imm_init[0] > "/dev/null" || uci -q add system imm_init > "/dev/null"
 
 if ! uci -q get system.@imm_init[0].lang > "/dev/null"; then
-	uci -q set luci.main.lang="auto"
-	uci -q commit luci
+	uci -q batch <<-EOF
+		set luci.main.lang="auto"
+		commit luci
 
-	uci -q set system.@imm_init[0].lang="1"
-	uci -q commit system
+		set system.@imm_init[0].lang="1"
+		commit system
+	EOF
 fi
 
 if ! uci -q get system.@imm_init[0].anon_mount > "/dev/null"; then
-	uci -q set fstab.@global[0].anon_mount="1"
-	uci -q commit fstab
+	uci -q batch <<-EOF
+		set fstab.@global[0].anon_mount="1"
+		commit fstab
 
-	uci -q set system.@imm_init[0].anon_mount="1"
-	uci -q commit system
+		set system.@imm_init[0].anon_mount="1"
+		commit system
+	EOF
 fi
 
 ln -sf "/sbin/ip" "/usr/bin/ip"
