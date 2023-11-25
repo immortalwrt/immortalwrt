@@ -172,8 +172,8 @@ Signed-off-by: CanYang He <hcy@rock-chips.com>
  	data->regs = devm_platform_ioremap_resource(pdev, 0);
  	if (IS_ERR(data->regs))
 @@ -524,6 +537,10 @@ static __init int rockchip_dfi_init(stru
- 			return PTR_ERR(data->regmap_pmu);
- 	}
+ 	if (IS_ERR(data->regmap_pmu))
+ 		return PTR_ERR(data->regmap_pmu);
  
 +	regmap_read(data->regmap_pmu, PMUGRF_OS_REG2, &val);
 +	data->dram_type = READ_DRAMTYPE_INFO(val);

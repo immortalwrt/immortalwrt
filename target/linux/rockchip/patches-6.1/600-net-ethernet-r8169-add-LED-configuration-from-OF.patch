@@ -39,7 +39,7 @@
  static void rtl8168_config_eee_mac(struct rtl8169_private *tp)
  {
  	/* Adjust EEE LED frequency */
-@@ -3238,6 +3256,8 @@ static void rtl_hw_start_8168h_1(struct
+@@ -3242,6 +3260,8 @@ static void rtl_hw_start_8168h_1(struct
  	r8168_mac_ocp_write(tp, 0xc094, 0x0000);
  	r8168_mac_ocp_write(tp, 0xc09e, 0x0000);
  
@@ -48,7 +48,7 @@
  	rtl_hw_aspm_clkreq_enable(tp, true);
  }
  
-@@ -3610,6 +3630,8 @@ static void rtl_hw_start_8125b(struct rt
+@@ -3614,6 +3634,8 @@ static void rtl_hw_start_8125b(struct rt
  	rtl_ephy_init(tp, e_info_8125b);
  	rtl_hw_start_8125_common(tp);
  

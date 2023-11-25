@@ -23,7 +23,7 @@
  static int rtl8169_led_configuration(struct rtl8169_private *tp)
  {
  	u32 led_data;
-@@ -3630,6 +3646,7 @@ static void rtl_hw_start_8125b(struct rt
+@@ -3634,6 +3650,7 @@ static void rtl_hw_start_8125b(struct rt
  	rtl_ephy_init(tp, e_info_8125b);
  	rtl_hw_start_8125_common(tp);
  

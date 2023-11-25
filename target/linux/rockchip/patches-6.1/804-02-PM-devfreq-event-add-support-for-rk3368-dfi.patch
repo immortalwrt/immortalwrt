@@ -174,12 +174,11 @@ Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
  	data->regs = devm_platform_ioremap_resource(pdev, 0);
  	if (IS_ERR(data->regs))
  		return PTR_ERR(data->regs);
-@@ -204,23 +289,59 @@ static int rockchip_dfi_probe(struct pla
- 		if (IS_ERR(data->regmap_pmu))
- 			return PTR_ERR(data->regmap_pmu);
- 	}
+@@ -205,23 +290,58 @@ static int rockchip_dfi_probe(struct pla
+ 	if (IS_ERR(data->regmap_pmu))
+ 		return PTR_ERR(data->regmap_pmu);
+ 
 -	data->dev = dev;
-+
 +	desc->ops = &rockchip_dfi_ops;
 +
 +	return 0;
