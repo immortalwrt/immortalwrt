@@ -80,7 +80,8 @@ mercusys,mr90x-v1)
 cetron,ct3003-stock|\
 cetron,ct3003-ubootmod|\
 cmcc,rax3000m-nand-ubootmod|\
-netgear,wax220)
+netgear,wax220|\
+zbtlink,zbt-z8102ax)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
 	;;
 ubnt,unifi-6-plus)
