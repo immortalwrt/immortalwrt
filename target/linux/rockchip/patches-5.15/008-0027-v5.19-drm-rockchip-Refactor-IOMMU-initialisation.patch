@@ -192,7 +192,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/94eee7ab434fe11eb0787f691e9f
  int rockchip_drm_endpoint_is_subdriver(struct device_node *ep);
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -2177,6 +2177,8 @@ static int vop_bind(struct device *dev,
+@@ -2181,6 +2181,8 @@ static int vop_bind(struct device *dev,
  		}
  	}
  
