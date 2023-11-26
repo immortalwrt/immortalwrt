@@ -41,9 +41,9 @@
  	rk3568-rock-3a.dtb
  
  dtb-$(CONFIG_ROCKCHIP_RK3588) += \
-@@ -195,7 +203,9 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
- 	rk3588s-orangepi-5.dtb \
+@@ -196,7 +204,9 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
  	rk3588-orangepi-5-plus.dtb \
+ 	rk3588-quartzpro64.dtb \
  	rk3588s-rock-5a.dtb \
 -	rk3588-rock-5b.dtb
 +	rk3588-rock-5b.dtb \

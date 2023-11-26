@@ -5,9 +5,9 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2024.01-rc2
+PKG_VERSION:=2024.01-rc3
 PKG_RELEASE:=1
-PKG_HASH:=7585328ee545bd0566a90965ef02c3a8d1c828f56a92548a03e88e7644dd76bd
+PKG_HASH:=0269372d0dade58a24dac1d82be43f592cc8262ead5a9a9a22c06ea5a7f981ea
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
