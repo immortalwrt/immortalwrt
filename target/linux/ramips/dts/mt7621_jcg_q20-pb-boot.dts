@@ -31,19 +31,26 @@
 		read-only;
 
 		compatible = "nvmem-cells";
-		#address-cells = <1>;
-		#size-cells = <1>;
+		nvmem-layout {
+			compatible = "fixed-layout";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
-		eeprom_factory_0: eeprom@0 {
-			reg = <0x0 0xe00>;
-		};
+			eeprom_factory_0: eeprom@0 {
+				reg = <0x0 0xe00>;
+			};
 
-		macaddr_factory_3fff4: macaddr@3fff4 {
-			reg = <0x3fff4 0x6>;
-		};
+			macaddr_factory_3fff4: macaddr@3fff4 {
+				compatible = "mac-base";
+				reg = <0x3fff4 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
 
-		macaddr_factory_3fffa: macaddr@3fffa {
-			reg = <0x3fffa 0x6>;
+			macaddr_factory_3fffa: macaddr@3fffa {
+				compatible = "mac-base";
+				reg = <0x3fffa 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
 		};
 	};
 
