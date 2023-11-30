@@ -385,7 +385,7 @@ define Device/glinet_gl-mt2500
   DEVICE_DTS := mt7981b-glinet-gl-mt2500
   DEVICE_DTS_DIR := ../dts
   DEVICE_DTS_LOADADDR := 0x47000000
-  DEVICE_PACKAGES := kmod-usb3
+  DEVICE_PACKAGES := kmod-usb3 automount
   SUPPORTED_DEVICES += glinet,mt2500-emmc
   IMAGES := sysupgrade.bin
   KERNEL := kernel-bin | lzma | \
@@ -1026,7 +1026,8 @@ define Device/zbtlink_zbt-z8102ax
   DEVICE_MODEL := ZBT-Z8102AX
   DEVICE_DTS := mt7981b-zbtlink-zbt-z8102ax
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware kmod-usb-net-qmi-wwan kmod-usb-serial-option
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware kmod-usb3 \
+	kmod-usb-net-qmi-wwan kmod-usb-serial-option automount
   KERNEL_IN_UBI := 1
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
