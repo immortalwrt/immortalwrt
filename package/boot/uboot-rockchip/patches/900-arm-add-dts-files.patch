@@ -25,7 +25,7 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -180,11 +184,15 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+@@ -180,11 +184,17 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-soquartz-model-a.dtb \
  	rk3568-bpi-r2-pro.dtb \
  	rk3568-evb.dtb \
@@ -39,6 +39,9 @@
  	rk3568-radxa-e25.dtb \
 +	rk3568-roc-pc.dtb \
  	rk3568-rock-3a.dtb
++	rk3568-opc-h66k.dtb \
++	rk3568-opc-h68k.dtb \
++	rk3568-opc-h69k.dtb \
  
  dtb-$(CONFIG_ROCKCHIP_RK3588) += \
 @@ -196,7 +204,9 @@ dtb-$(CONFIG_ROCKCHIP_RK3588) += \
