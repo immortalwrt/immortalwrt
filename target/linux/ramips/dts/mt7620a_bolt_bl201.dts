@@ -151,6 +151,7 @@
 						reg = <0x28 0x6>;
 						#nvmem-cell-cells = <1>;
 					};
+				};
 			};
 
 			partition@50000 {
