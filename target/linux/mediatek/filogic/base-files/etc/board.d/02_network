@@ -39,6 +39,7 @@ mediatek_setup_interfaces()
 	cetron,ct3003-stock|\
 	cetron,ct3003-ubootmod|\
 	cmcc,a10-ubootmod|\
+	confiabits,mt7981|\
 	cudy,wr3000-v1|\
 	jcg,q30|\
 	jcg,q30-ubootmod|\
