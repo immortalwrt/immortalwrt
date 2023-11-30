@@ -47,6 +47,9 @@ define Build/Compile
 endef
 
 define Package/automount/install
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/11-anonmount $(1)/etc/uci-defaults/
+
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
 	$(INSTALL_BIN) ./files/15-automount $(1)/etc/hotplug.d/block/
 endef
