@@ -16,6 +16,7 @@ rockchip_setup_interfaces()
 	friendlyarm,nanopi-r4se|\
 	friendlyarm,nanopi-r4s-enterprise|\
 	friendlyarm,nanopi-r6c|\
+	hinlink,opc-h66k|\
 	radxa,rockpi-e|\
 	xunlong,orangepi-r1-plus|\
 	xunlong,orangepi-r1-plus-lts)
@@ -32,16 +33,11 @@ rockchip_setup_interfaces()
 		ucidef_set_interfaces_lan_wan 'eth1 eth2' 'eth0'
 		;;
 	friendlyarm,nanopi-r6s|\
-	friendlyarm,nanopi-r6s)
+	hinlink,opc-h69k)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1' 'eth2'
 		;;
-	hinlink,opc-h66k)
-		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth2' 'eth3'
-		;;
-	hinlink,opc-h68k)
-		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth2' 'eth3'
-		;;
-	hinlink,opc-h69k)
+	hinlink,opc-h68k|\
+	lunzn,fastrhino-r68s)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth2' 'eth3'
 		;;
 	*)
@@ -56,8 +52,10 @@ rockchip_setup_macs()
 	local lan_mac=""
 	local wan_mac=""
 	local label_mac=""
+
 	case "$board" in
 	ezpro,mrkaio-m68s|\
+	friendlyarm,nanopc-t6|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
 	lunzn,fastrhino-r66s|\
@@ -75,7 +73,6 @@ rockchip_setup_macs()
 	hinlink,opc-h66k|\
 	hinlink,opc-h68k|\
 	hinlink,opc-h69k)
-	friendlyarm,nanopi-r6s)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk1)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
@@ -93,6 +90,7 @@ rockchip_setup_macs()
 		wan_mac=$(macaddr_add "$lan_mac" -1)
 		;;
 	esac
+
 	[ -n "$lan_mac" ] && ucidef_set_interface_macaddr "lan" $lan_mac
 	[ -n "$wan_mac" ] && ucidef_set_interface_macaddr "wan" $wan_mac
 	[ -n "$label_mac" ] && ucidef_set_label_macaddr $label_mac
