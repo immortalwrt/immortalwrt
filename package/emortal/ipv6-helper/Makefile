@@ -23,9 +23,9 @@ endef
 
 define Package/ipv6helper/install
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
-	$(INSTALL_BIN) ./files/60-6in4 $(1)/etc/hotplug.d/iface/60-6in4
+	$(INSTALL_BIN) ./files/60-6in4 $(1)/etc/hotplug.d/iface/
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/60-ipv6-hybrid $(1)/etc/uci-defaults/60-ipv6-hybrid
+	$(INSTALL_BIN) ./files/60-ipv6-lifetime $(1)/etc/uci-defaults/
 endef
 
 $(eval $(call BuildPackage,ipv6helper))
