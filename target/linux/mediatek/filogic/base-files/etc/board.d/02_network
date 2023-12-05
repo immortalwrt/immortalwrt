@@ -8,6 +8,9 @@ mediatek_setup_interfaces()
 	local board="$1"
 
 	case $board in
+	acelink,ew-7886cax)
+		ucidef_set_interface_lan "eth0" "dhcp"
+		;;
 	abt,asr3000-ubootmod|\
 	cmcc,rax3000m|\
 	cmcc,rax3000m-emmc-ubootmod|\
