@@ -38,6 +38,7 @@ bananapi,bpi-r3-mini)
 		;;
 	esac
 	;;
+cetron,ct3003-stock|\
 cetron,ct3003-ubootmod|\
 cmcc,rax3000m-nand-ubootmod|\
 netgear,wax220|\

@@ -36,6 +36,7 @@ mediatek_setup_interfaces()
 	bananapi,bpi-r3-mini)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		;;
+	cetron,ct3003-stock|\
 	cetron,ct3003-ubootmod|\
 	cmcc,a10-ubootmod|\
 	cudy,wr3000-v1|\
