@@ -3,7 +3,7 @@ define Device/generic
   DEVICE_MODEL := x86/64
   DEVICE_PACKAGES += \
 	kmod-amazon-ena kmod-amd-xgbe kmod-bnx2 kmod-e1000 \
-	kmod-forcedeth kmod-fs-vfat kmod-tg3 \
+	kmod-dwmac-intel kmod-forcedeth kmod-fs-vfat kmod-tg3 \
 	kmod-mlxsw-core kmod-mlxsw-pci kmod-mlxsw-i2c \
 	kmod-mlxsw-spectrum kmod-mlxsw-minimal kmod-mlxfw \
 	kmod-leds-mlxcpld kmod-lib-objagg kmod-lib-parman \
