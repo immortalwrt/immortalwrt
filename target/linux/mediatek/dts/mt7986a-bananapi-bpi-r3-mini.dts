@@ -97,6 +97,16 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
+
+	usb_vbus: regulator-usb-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpios = <&pio 20 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+	};
 };
 
 &cpu_thermal {
@@ -391,12 +401,6 @@
 		};
 	};
 
-	usb_pwwr_en: usb-pwwr-en {
-		pins = "GPIO_15";
-		drive-strength = <8>;
-		mediatek,pull-down-adv = <1>;
-	};
-
 	wf_2g_5g_pins: wf-2g-5g-pins {
 		mux {
 			function = "wifi";
@@ -496,10 +500,9 @@
 
 &ssusb {
 	pinctrl-names = "default";
-	pinctrl-0 = <&usb_pwwr_en>;
-	pinctrl-1 = <&usb_ngff_pins>;
+	pinctrl-0 = <&usb_ngff_pins>;
 	vusb33-supply = <&reg_3p3v>;
-	vbus-supply = <&reg_5v>;
+	vbus-supply = <&usb_vbus>;
 	status = "okay";
 };
 
