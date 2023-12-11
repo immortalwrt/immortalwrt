@@ -65,7 +65,7 @@
 		reg = <0>;
 		phy-mode = "2500base-x";
 
-		nvmem-cells = <&macaddr_art_7b 0>;
+		nvmem-cells = <&macaddr_art_0 0>;
 		nvmem-cell-names = "mac-address";
 
 		fixed-link {
@@ -140,9 +140,9 @@
 					#address-cells = <1>;
 					#size-cells = <1>;
 
-					macaddr_art_7b: macaddr@7b {
+					macaddr_art_0: macaddr@0 {
 						compatible = "mac-base";
-						reg = <0x7b 0x11>;
+						reg = <0x0 0x6>;
 						#nvmem-cell-cells = <1>;
 					};
 				};
@@ -185,7 +185,7 @@
 			reg = <3>;
 			label = "wan";
 
-			nvmem-cells = <&macaddr_art_7b 3>;
+			nvmem-cells = <&macaddr_art_0 3>;
 			nvmem-cell-names = "mac-address";
 		};
 
