@@ -1,0 +1,29 @@
+From 1af27671f62ce919f1fb76082ed81f71cb090989 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 18 Oct 2023 10:33:55 -0500
+Subject: [PATCH] clk: rockchip: rk3568: Add PLL rate for 292.5MHz
+
+Add support for a PLL rate of 292.5MHz so that the Powkiddy RGB30 panel
+can run at a requested 60hz (59.96, close enough).
+
+I have confirmed this rate fits with all the constraints
+listed in the TRM for the VPLL (as an integer PLL) in Part 1 "Chapter
+2 Clock & Reset Unit (CRU)."
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Link: https://lore.kernel.org/r/20231018153357.343142-2-macroalpha82@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ drivers/clk/rockchip/clk-rk3568.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/clk/rockchip/clk-rk3568.c
++++ b/drivers/clk/rockchip/clk-rk3568.c
+@@ -72,6 +72,7 @@ static struct rockchip_pll_rate_table rk
+ 	RK3036_PLL_RATE(408000000, 1, 68, 2, 2, 1, 0),
+ 	RK3036_PLL_RATE(312000000, 1, 78, 6, 1, 1, 0),
+ 	RK3036_PLL_RATE(297000000, 2, 99, 4, 1, 1, 0),
++	RK3036_PLL_RATE(292500000, 1, 195, 4, 4, 1, 0),
+ 	RK3036_PLL_RATE(241500000, 2, 161, 4, 2, 1, 0),
+ 	RK3036_PLL_RATE(216000000, 1, 72, 4, 2, 1, 0),
+ 	RK3036_PLL_RATE(200000000, 1, 100, 3, 4, 1, 0),
