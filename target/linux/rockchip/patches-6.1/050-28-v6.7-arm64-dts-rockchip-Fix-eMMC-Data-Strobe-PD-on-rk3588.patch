@@ -1,0 +1,53 @@
+From 37f3d6108730713c411827ab4af764909f4dfc78 Mon Sep 17 00:00:00 2001
+From: Sam Edwards <cfsworks@gmail.com>
+Date: Tue, 5 Dec 2023 12:29:00 -0800
+Subject: [PATCH] arm64: dts: rockchip: Fix eMMC Data Strobe PD on rk3588
+
+JEDEC standard JESD84-B51 defines the eMMC Data Strobe line, which is
+currently used only in HS400 mode, as a device->host clock signal that
+"is used only in read operation. The Data Strobe is always High-Z (not
+driven by the device and pulled down by RDS) or Driven Low in write
+operation, except during CRC status response." RDS is a pull-down
+resistor specified in the 10K-100K ohm range. Thus per the standard, the
+Data Strobe is always pulled to ground (by the eMMC and/or RDS) during
+write operations.
+
+Evidently, the eMMC host controller in the RK3588 considers an active
+voltage on the eMMC-DS line during a write to be an error.
+
+The default (i.e. hardware reset, and Rockchip BSP) behavior for the
+RK3588 is to activate the eMMC-DS pin's builtin pull-down. As a result,
+many RK3588 board designers do not bother adding a dedicated RDS
+resistor, instead relying on the RK3588's internal bias. The current
+devicetree, however, disables this bias (`pcfg_pull_none`), breaking
+HS400-mode writes for boards without a dedicated RDS, but with an eMMC
+chip that chooses to High-Z (instead of drive-low) the eMMC-DS line.
+(The Turing RK1 is one such board.)
+
+Fix this by changing the bias in the (common) emmc_data_strobe case to
+reflect the expected hardware/BSP behavior. This is unlikely to cause
+regressions elsewhere: the pull-down is only relevant for High-Z eMMCs,
+and if this is redundant with a (dedicated) RDS resistor, the effective
+result is only a lower resistance to ground -- where the range of
+tolerance is quite high. If it does, it's better fixed in the specific
+devicetrees.
+
+Fixes: d85f8a5c798d5 ("arm64: dts: rockchip: Add rk3588 pinctrl data")
+Signed-off-by: Sam Edwards <CFSworks@gmail.com>
+Link: https://lore.kernel.org/r/20231205202900.4617-2-CFSworks@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
+@@ -369,7 +369,7 @@
+ 		emmc_data_strobe: emmc-data-strobe {
+ 			rockchip,pins =
+ 				/* emmc_data_strobe */
+-				<2 RK_PA2 1 &pcfg_pull_none>;
++				<2 RK_PA2 1 &pcfg_pull_down>;
+ 		};
+ 	};
+ 
