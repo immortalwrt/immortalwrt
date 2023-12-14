@@ -130,6 +130,9 @@ TARGET_DEVICES += redmi_ax6
 define Device/redmi_ax6-stock
 	$(call Device/redmi_ax6)
 	DEVICE_VARIANT := (stock layout)
+	DEVICE_ALT0_VENDOR := Redmi
+	DEVICE_ALT0_MODEL := AX6
+	DEVICE_ALT0_VARIANT := (custom U-Boot layout)
 	KERNEL_SIZE :=
 	ARTIFACTS :=
 endef
@@ -140,6 +143,7 @@ define Device/xiaomi_ax3600
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := Xiaomi
 	DEVICE_MODEL := AX3600
+	DEVICE_VARIANT := (OpenWrt expand layout)
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@ac04
@@ -157,6 +161,9 @@ TARGET_DEVICES += xiaomi_ax3600
 define Device/xiaomi_ax3600-stock
 	$(call Device/xiaomi_ax3600)
 	DEVICE_VARIANT := (stock layout)
+	DEVICE_ALT0_VENDOR := Xiaomi
+	DEVICE_ALT0_MODEL := AX3600
+	DEVICE_ALT0_VARIANT := (custom U-Boot layout)
 	KERNEL_SIZE :=
 	ARTIFACTS :=
 endef
@@ -167,6 +174,7 @@ define Device/xiaomi_ax9000
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := Xiaomi
 	DEVICE_MODEL := AX9000
+	DEVICE_VARIANT := (OpenWrt expand layout)
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@hk14
