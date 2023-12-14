@@ -36,7 +36,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
 +		reg = <0x00 0xff790000 0x00 0x400>;
 +		compatible = "rockchip,rk3328-dfi";
 +		rockchip,grf = <&grf>;
-+		status = "disabled";
++		status = "okay";
 +	};
 +
 +	dmc: dmc {
