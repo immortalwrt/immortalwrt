@@ -9,7 +9,7 @@ get_device_irq() {
 
 	# wait up to 10 seconds for the irq/device to appear
 	while [ "${seconds}" -le 10 ]; do
-		line=$(grep -m 1 "${device}\$" /proc/interrupts) && break
+		line=$(grep -E -m 1 "${device}\$" /proc/interrupts) && break
 		seconds="$(( seconds + 2 ))"
 		sleep 2
 	done
@@ -48,7 +48,7 @@ radxa,rockpi-e|\
 xunlong,orangepi-r1-plus|\
 xunlong,orangepi-r1-plus-lts)
 	set_interface_core 2 "eth0"
-	set_interface_core 4 "eth1" "xhci-hcd:usb1"
+	set_interface_core 4 "eth1" "xhci-hcd:usb[0-9]+"
 	;;
 friendlyarm,nanopi-r4s|\
 friendlyarm,nanopi-r4se|\

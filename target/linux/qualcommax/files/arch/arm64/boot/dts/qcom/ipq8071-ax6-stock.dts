@@ -21,13 +21,9 @@
 
 &qpic_nand {
 	/delete-node/ partitions;
-	/delete-node/ nand@0;
 
 	nand@0 {
-		reg = <0>;
-		nand-ecc-strength = <4>;
-		nand-ecc-step-size = <512>;
-		nand-bus-width = <8>;
+		/delete-node/ partitions;
 
 		partitions {
 			compatible = "qcom,smem-part";

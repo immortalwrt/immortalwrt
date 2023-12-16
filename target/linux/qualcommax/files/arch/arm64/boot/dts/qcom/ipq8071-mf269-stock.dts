@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "ipq8071-mf269.dts"
+
+/ {
+	model = "ZTE MF269 (stock layout)";
+	compatible = "zte,mf269-stock", "qcom,ipq8074";
+
+	aliases {
+		/delete-property/ label-mac-device;
+	};
+
+	chosen {
+		bootargs-append = " root=/dev/ubiblock0_1";
+	};
+};
+
+&blsp1_spi1 {
+	flash@0 {
+		/delete-node/ partitions;
+	};
+};
+
+&qpic_nand {
+	/delete-node/ partitions;
+
+	nand@0 {
+		/delete-node/ partitions;
+
+		partitions {
+			compatible = "qcom,smem-part";
+		};
+	};
+};
+
+&dp5_syn {
+	/delete-property/ nvmem-cell-names;
+	/delete-property/ nvmem-cells;
+};
+
+&dp6_syn {
+	/delete-property/ nvmem-cell-names;
+	/delete-property/ nvmem-cells;
+};
