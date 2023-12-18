@@ -1,0 +1,88 @@
+From: Andre Przywara <andre.przywara@arm.com>
+To: Vasily Khoruzhick <anarsoul@gmail.com>,
+	Yangtao Li <tiny.windzz@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>
+Cc: "Rafael J . Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Martin Botka <martin.botka@somainline.org>,
+	Maksim Kiselev <bigunclemax@gmail.com>,
+	Bob McChesney <bob@electricworry.net>,
+	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev
+Subject: [PATCH v4 4/7] thermal: sun8i: extend H6 calibration to support 4 sensors
+Date: Fri,  9 Feb 2024 14:42:18 +0000	[thread overview]
+Message-ID: <20240209144221.3602382-5-andre.przywara@arm.com> (raw)
+In-Reply-To: <20240209144221.3602382-1-andre.przywara@arm.com>
+
+From: Maksim Kiselev <bigunclemax@gmail.com>
+
+The H616 SoC resembles the H6 thermal sensor controller, with a few
+changes like four sensors.
+
+Extend sun50i_h6_ths_calibrate() function to support calibration of
+these sensors.
+
+Signed-off-by: Maksim Kiselev <bigunclemax@gmail.com>
+Co-developed-by: Martin Botka <martin.botka@somainline.org>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/thermal/sun8i_thermal.c | 28 ++++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 8 deletions(-)
+
+--- a/drivers/thermal/sun8i_thermal.c
++++ b/drivers/thermal/sun8i_thermal.c
+@@ -224,16 +224,21 @@ static int sun50i_h6_ths_calibrate(struc
+ 	struct device *dev = tmdev->dev;
+ 	int i, ft_temp;
+ 
+-	if (!caldata[0] || callen < 2 + 2 * tmdev->chip->sensor_num)
++	if (!caldata[0])
+ 		return -EINVAL;
+ 
+ 	/*
+ 	 * efuse layout:
+ 	 *
+-	 *	0   11  16	 32
+-	 *	+-------+-------+-------+
+-	 *	|temp|  |sensor0|sensor1|
+-	 *	+-------+-------+-------+
++	 * 0      11  16     27   32     43   48    57
++	 * +----------+-----------+-----------+-----------+
++	 * |  temp |  |sensor0|   |sensor1|   |sensor2|   |
++	 * +----------+-----------+-----------+-----------+
++	 *                      ^           ^           ^
++	 *                      |           |           |
++	 *                      |           |           sensor3[11:8]
++	 *                      |           sensor3[7:4]
++	 *                      sensor3[3:0]
+ 	 *
+ 	 * The calibration data on the H6 is the ambient temperature and
+ 	 * sensor values that are filled during the factory test stage.
+@@ -246,9 +251,16 @@ static int sun50i_h6_ths_calibrate(struc
+ 	ft_temp = (caldata[0] & FT_TEMP_MASK) * 100;
+ 
+ 	for (i = 0; i < tmdev->chip->sensor_num; i++) {
+-		int sensor_reg = caldata[i + 1] & TEMP_CALIB_MASK;
+-		int cdata, offset;
+-		int sensor_temp = tmdev->chip->calc_temp(tmdev, i, sensor_reg);
++		int sensor_reg, sensor_temp, cdata, offset;
++
++		if (i == 3)
++			sensor_reg = (caldata[1] >> 12)
++				     | ((caldata[2] >> 12) << 4)
++				     | ((caldata[3] >> 12) << 8);
++		else
++			sensor_reg = caldata[i + 1] & TEMP_CALIB_MASK;
++
++		sensor_temp = tmdev->chip->calc_temp(tmdev, i, sensor_reg);
+ 
+ 		/*
+ 		 * Calibration data is CALIBRATE_DEFAULT - (calculated
