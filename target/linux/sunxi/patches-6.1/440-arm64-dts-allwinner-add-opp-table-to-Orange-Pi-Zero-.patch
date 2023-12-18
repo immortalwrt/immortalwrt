@@ -1,0 +1,51 @@
+From b8ccd547c4515dc01df6a7ca6063e338c5c9f1c6 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Mon, 18 Dec 2023 12:17:54 +0800
+Subject: [PATCH] arm64: dts: allwinner: add opp table to Orange Pi Zero series
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi | 3 +++
+ arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts | 4 ++++
+ arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts | 4 ++++
+ 3 files changed, 11 insertions(+)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
+@@ -6,7 +6,10 @@
+  * Excludes PMIC nodes and properties, since they are different between the two.
+  */
+ 
++/dts-v1/;
++
+ #include "sun50i-h616.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+@@ -12,6 +12,10 @@
+ 	compatible = "xunlong,orangepi-zero2", "allwinner,sun50i-h616";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdca>;
++};
++
+ &emac0 {
+ 	allwinner,rx-delay-ps = <3100>;
+ 	allwinner,tx-delay-ps = <700>;
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+@@ -12,6 +12,10 @@
+ 	compatible = "xunlong,orangepi-zero3", "allwinner,sun50i-h618";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &emac0 {
+ 	allwinner,tx-delay-ps = <700>;
+ 	phy-mode = "rgmii-rxid";

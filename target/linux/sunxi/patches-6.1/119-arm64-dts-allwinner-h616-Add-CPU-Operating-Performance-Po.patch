@@ -1,0 +1,155 @@
+From: Martin Botka <martin.botka@somainline.org>
+To: Mark Rutland <mark.rutland@arm.com>,
+	 Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	 Sudeep Holla <sudeep.holla@arm.com>,
+	 "Rafael J. Wysocki" <rafael@kernel.org>,
+	 Viresh Kumar <viresh.kumar@linaro.org>,
+	Yangtao Li <tiny.windzz@gmail.com>,  Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	 Samuel Holland <samuel@sholland.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	 Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	 Conor Dooley <conor+dt@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,  linux-pm@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,  devicetree@vger.kernel.org,
+	Andre Przywara <andre.przywara@arm.com>,
+	 Alan Ma <tech@biqu3d.com>,
+	Luke Harrison <bttuniversity@biqu3d.com>,
+	 Marijn Suijten <marijn.suijten@somainline.org>,
+	 AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@somainline.org>,
+	 Konrad Dybcio <konrad.dybcio@somainline.org>,
+	 Rogerio Goncalves <rogerlz@gmail.com>,
+	Martin Botka <martin@biqu3d.com>,
+	 Martin Botka <martin.botka@somainline.org>
+Subject: [PATCH 5/6] arm64: dts: allwinner: h616: Add CPU Operating Performance Points table
+Date: Mon, 04 Sep 2023 17:57:05 +0200	[thread overview]
+Message-ID: <20230904-cpufreq-h616-v1-5-b8842e525c43@somainline.org> (raw)
+In-Reply-To: <20230904-cpufreq-h616-v1-0-b8842e525c43@somainline.org>
+
+Add an Operating Performance Points table for the CPU cores to
+enable Dynamic Voltage & Frequency Scaling on the H616.
+
+Also add the needed cpu_speed_grade nvmem cell.
+
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+---
+ .../boot/dts/allwinner/sun50i-h616-cpu-opp.dtsi    | 129 +++++++++++++++++++++
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi     |   4 +
+ 2 files changed, 133 insertions(+)
+
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-cpu-opp.dtsi
+@@ -0,0 +1,98 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++// Copyright (C) 2023 Martin Botka <martin@somainline.org>
++
++/ {
++	cpu_opp_table: cpu-opp-table {
++		compatible = "allwinner,sun50i-h616-operating-points";
++		nvmem-cells = <&cpu_speed_grade>;
++		opp-shared;
++
++		opp-480000000 {
++			opp-hz = /bits/ 64 <480000000>;
++			opp-microvolt = <900000 900000 900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-600000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <900000 900000 900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-720000000 {
++			opp-hz = /bits/ 64 <720000000>;
++			opp-microvolt = <900000 900000 900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-792000000 {
++			opp-hz = /bits/ 64 <792000000>;
++			opp-microvolt = <900000 900000 940000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-936000000 {
++			opp-hz = /bits/ 64 <936000000>;
++			opp-microvolt = <900000 900000 900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1008000000 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <950000 940000 1020000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1104000000 {
++			opp-hz = /bits/ 64 <1104000000>;
++			opp-microvolt = <1000000 1000000 1000000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1200000000 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <1050000 1020000 1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1320000000 {
++			opp-hz = /bits/ 64 <1320000000>;
++			opp-microvolt = <1100000 1100000 1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1416000000 {
++			opp-hz = /bits/ 64 <1416000000>;
++			opp-microvolt = <1100000 1100000 1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1512000000 {
++			opp-hz = /bits/ 64 <1512000000>;
++			opp-microvolt = <1100000 1100000 1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1608000000 {
++			opp-hz = /bits/ 64 <1608000000>;
++			opp-microvolt = <1100000 1100000 1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++	};
++};
++
++&cpu0 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
++
++&cpu1 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
++
++&cpu2 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
++
++&cpu3 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -143,6 +143,10 @@
+ 			ths_calibration: thermal-sensor-calibration@14 {
+ 				reg = <0x14 0x8>;
+ 			};
++
++			cpu_speed_grade: cpu_speed_grade@0 {
++				reg = <0x0 2>;
++			};
+ 		};
+ 
+ 		watchdog: watchdog@30090a0 {
