@@ -45,7 +45,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		serial2 = &uart2;
  	};
  
-@@ -362,6 +363,7 @@
+@@ -366,6 +367,7 @@
  	bus-width = <4>;
  	cap-mmc-highspeed;
  	cap-sd-highspeed;

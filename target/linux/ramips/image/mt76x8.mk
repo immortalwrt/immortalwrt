@@ -872,6 +872,7 @@ define Device/tplink_tl-wr902ac-v4
 	kmod-usb-ledtrig-usbport
   IMAGES := sysupgrade.bin tftp-recovery.bin
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
+  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_tl-wr902ac-v4
 

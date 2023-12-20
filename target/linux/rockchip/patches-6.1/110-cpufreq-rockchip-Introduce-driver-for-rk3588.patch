@@ -1,4 +1,4 @@
-From 8da601637e2ed438b83fe56e49dacea84fd3b056 Mon Sep 17 00:00:00 2001
+From 8baebef8be9691a28f8efa284dfce9a5b9395130 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Thu, 18 Aug 2022 14:21:30 +0200
 Subject: [PATCH] cpufreq: rockchip: Introduce driver for rk3588
@@ -18,8 +18,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  drivers/cpufreq/Kconfig.arm          |  10 +
  drivers/cpufreq/Makefile             |   1 +
  drivers/cpufreq/cpufreq-dt-platdev.c |   2 +
- drivers/cpufreq/rockchip-cpufreq.c   | 640 +++++++++++++++++++++++++++
- 4 files changed, 653 insertions(+)
+ drivers/cpufreq/rockchip-cpufreq.c   | 645 +++++++++++++++++++++++++++
+ 4 files changed, 658 insertions(+)
  create mode 100644 drivers/cpufreq/rockchip-cpufreq.c
 
 --- a/drivers/cpufreq/Kconfig.arm
@@ -64,7 +64,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	{ .compatible = "st,stih418", },
 --- /dev/null
 +++ b/drivers/cpufreq/rockchip-cpufreq.c
-@@ -0,0 +1,640 @@
+@@ -0,0 +1,645 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Rockchip CPUFreq Driver. This is similar to the generic DT
@@ -674,6 +674,11 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +static int __init rockchip_cpufreq_driver_init(void)
 +{
 +	int ret;
++
++	if (!of_machine_is_compatible("rockchip,rk3588") &&
++	    !of_machine_is_compatible("rockchip,rk3588s")) {
++		return -ENODEV;
++	}
 +
 +	ret = platform_driver_register(&rockchip_cpufreq_platdrv);
 +	if (ret)

@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -149,6 +149,12 @@
+@@ -181,6 +181,12 @@
  					<925000 925000 1000000>;
  			clock-latency-ns = <40000>;
  		};
@@ -13,7 +13,7 @@
  	};
  
  	cluster2_opp_table: opp-table-cluster2 {
-@@ -226,6 +232,12 @@
+@@ -258,6 +264,12 @@
  					<925000 925000 1000000>;
  			clock-latency-ns = <40000>;
  		};
