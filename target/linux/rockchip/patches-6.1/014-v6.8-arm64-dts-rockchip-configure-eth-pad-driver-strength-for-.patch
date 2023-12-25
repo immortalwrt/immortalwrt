@@ -1,16 +1,17 @@
-From f37aefd97d9c1abdba497b9af978f85754b0be8f Mon Sep 17 00:00:00 2001
+From fc5a80a432607d05e85bba37971712405f75c546 Mon Sep 17 00:00:00 2001
 From: Tianling Shen <cnsztl@gmail.com>
-Date: Wed, 13 Dec 2023 20:45:27 +0800
-Subject: [PATCH] arm64: dts: rockchip: configure pad driver strength for
- orangepi r1 plus lts
+Date: Sat, 16 Dec 2023 12:07:23 +0800
+Subject: [PATCH] arm64: dts: rockchip: configure eth pad driver strength
+ for orangepi r1 plus lts
 
 The default strength is not enough to provide stable connection
 under 3.3v LDO voltage.
 
 Fixes: 387b3bbac5ea ("arm64: dts: rockchip: Add Xunlong OrangePi R1 Plus LTS")
-
 Cc: stable@vger.kernel.org # 6.6+
 Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+Link: https://lore.kernel.org/r/20231216040723.17864-1-cnsztl@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)

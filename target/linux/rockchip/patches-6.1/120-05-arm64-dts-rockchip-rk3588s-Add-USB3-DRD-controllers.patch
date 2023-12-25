@@ -42,7 +42,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		reg = <0x0 0xfd5b8000 0x0 0x10000>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -864,6 +864,28 @@
+@@ -869,6 +869,28 @@
  		};
  	};
  
