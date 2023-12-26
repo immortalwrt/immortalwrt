@@ -17,7 +17,8 @@ mediatek_setup_interfaces()
 	cmcc,rax3000m-nand-ubootmod|\
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm|\
-	imou,lc-hx3001-ubootmod)
+	imou,lc-hx3001-ubootmod|\
+	zbtlink,zbt-z8103ax)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
 		;;
 	acer,predator-w6)
