@@ -64,17 +64,17 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
-@@ -29,6 +29,7 @@
- 			motorcomm,clk-out-frequency-hz = <125000000>;
+@@ -31,6 +31,7 @@
  			motorcomm,keep-pll-enabled;
- 			motorcomm,auto-sleep-disabled;
+ 			motorcomm,rx-clk-drv-microamp = <5020>;
+ 			motorcomm,rx-data-drv-microamp = <5020>;
 +			motorcomm,led-data = <0xe004 0x0 0x2600 0x0070 0x000a>;
  
  			pinctrl-0 = <&eth_phy_reset_pin>;
  			pinctrl-names = "default";
-@@ -42,3 +43,7 @@
- &io_domains {
- 	vccio4-supply = <&vcc_18>;
+@@ -40,3 +41,7 @@
+ 		};
+ 	};
  };
 +
 +&rtl8153 {
