@@ -938,6 +938,7 @@ define Device/qihoo_360t7
 endef
 TARGET_DEVICES += qihoo_360t7
 
+<<<<<<< HEAD
 define Device/qihoo_360t7-ubootmod
   DEVICE_VENDOR := Qihoo
   DEVICE_MODEL := 360T7
@@ -960,6 +961,17 @@ define Device/qihoo_360t7-ubootmod
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
 endef
 TARGET_DEVICES += qihoo_360t7-ubootmod
+
+define Device/routerich_ax3000
+  DEVICE_VENDOR := Routerich
+  DEVICE_MODEL := AX3000
+  DEVICE_DTS := mt7981b-routerich-ax3000
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware kmod-usb3
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  SUPPORTED_DEVICES += mediatek,mt7981-spim-snand-rfb
+endef
+TARGET_DEVICES += routerich_ax3000
 
 define Device/tplink_tl-xdr-common
   DEVICE_VENDOR := TP-Link
