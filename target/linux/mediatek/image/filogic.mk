@@ -938,7 +938,6 @@ define Device/qihoo_360t7
 endef
 TARGET_DEVICES += qihoo_360t7
 
-<<<<<<< HEAD
 define Device/qihoo_360t7-ubootmod
   DEVICE_VENDOR := Qihoo
   DEVICE_MODEL := 360T7
