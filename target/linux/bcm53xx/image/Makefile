@@ -126,6 +126,7 @@ USB2_PACKAGES += kmod-usb-ledtrig-usbport
 USB3_PACKAGES := $(USB2_PACKAGES) kmod-usb3 kmod-phy-bcm-ns-usb3
 
 define Device/Default
+  PROFILES = Generic $$(DEVICE_NAME)
   # .dtb files are prefixed by SoC type, e.g. bcm4708- which is not included in device/image names
   # extract the full dtb name based on the device info
   DEVICE_DTS := $(patsubst %.dtb,%,$(notdir $(wildcard $(if $(IB),$(KDIR),$(DTS_DIR))/*-$(subst _,-,$(1)).dtb)))
@@ -148,6 +149,15 @@ define Device/asus
   IMAGES := trx
   IMAGE/trx := append-ubi | trx-nand | asus-trx
 endef
+
+define Device/asus_rt-ac3100
+  $(call Device/asus)
+  DEVICE_MODEL := RT-AC3100
+  DEVICE_PACKAGES := $(BRCMFMAC_4366B1) $(BRCMFMAC_4366C0) $(USB3_PACKAGES)
+  ASUS_PRODUCTID := RT-AC3100
+  DEFAULT := n
+endef
+TARGET_DEVICES += asus_rt-ac3100
 
 define Device/asus_rt-ac56u
   $(call Device/asus)
