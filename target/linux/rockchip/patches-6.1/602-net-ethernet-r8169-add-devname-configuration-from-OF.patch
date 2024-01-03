@@ -1,6 +1,6 @@
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2113,6 +2113,22 @@ void r8169_apply_firmware(struct rtl8169
+@@ -2114,6 +2114,22 @@ void r8169_apply_firmware(struct rtl8169
  	}
  }
  
@@ -23,7 +23,7 @@
  static int rtl8169_led_configuration(struct rtl8169_private *tp)
  {
  	u32 led_data;
-@@ -3647,6 +3663,7 @@ static void rtl_hw_start_8125b(struct rt
+@@ -3652,6 +3668,7 @@ static void rtl_hw_start_8125b(struct rt
  	rtl_ephy_init(tp, e_info_8125b);
  	rtl_hw_start_8125_common(tp);
  

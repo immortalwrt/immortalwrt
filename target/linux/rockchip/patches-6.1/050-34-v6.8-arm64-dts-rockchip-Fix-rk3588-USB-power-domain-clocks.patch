@@ -1,0 +1,44 @@
+From 44de8996ed5a10f08f2fe947182da6535edcfae5 Mon Sep 17 00:00:00 2001
+From: Sam Edwards <cfsworks@gmail.com>
+Date: Fri, 15 Dec 2023 19:10:19 -0700
+Subject: [PATCH] arm64: dts: rockchip: Fix rk3588 USB power-domain clocks
+
+The QoS blocks saved/restored when toggling the PD_USB power domain are
+clocked by ACLK_USB. Attempting to access these memory regions without
+that clock running will result in an indefinite CPU stall.
+
+The PD_USB node wasn't specifying this clock dependency, resulting in
+hangs when trying to toggle the power domain (either on or off), unless
+we get "lucky" and have ACLK_USB running for another reason at the time.
+This "luck" can result from the bootloader leaving USB powered/clocked,
+and if no built-in driver wants USB, Linux will disable the unused
+PD+CLK on boot when {pd,clk}_ignore_unused aren't given. This can also
+be unlucky because the two cleanup tasks run in parallel and race: if
+the CLK is disabled first, the PD deactivation stalls the boot. In any
+case, the PD cannot then be reenabled (if e.g. the driver loads later)
+once the clock has been stopped.
+
+Fix this by specifying a dependency on ACLK_USB, instead of only
+ACLK_USB_ROOT. The child-parent relationship means the former implies
+the latter anyway.
+
+Fixes: c9211fa2602b8 ("arm64: dts: rockchip: Add base DT for rk3588 SoC")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sam Edwards <CFSworks@gmail.com>
+Link: https://lore.kernel.org/r/20231216021019.1543811-1-CFSworks@gmail.com
+[changed to only include the missing clock, not dropping the root-clocks]
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -1022,6 +1022,7 @@
+ 				reg = <RK3588_PD_USB>;
+ 				clocks = <&cru PCLK_PHP_ROOT>,
+ 					 <&cru ACLK_USB_ROOT>,
++					 <&cru ACLK_USB>,
+ 					 <&cru HCLK_USB_ROOT>,
+ 					 <&cru HCLK_HOST0>,
+ 					 <&cru HCLK_HOST_ARB0>,
