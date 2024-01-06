@@ -28,8 +28,7 @@ mediatek_setup_interfaces()
 	cmcc,a10-ubootmod|\
 	confiabits,mt7981|\
 	cudy,wr3000-v1|\
-	jcg,q30|\
-	jcg,q30-ubootmod|\
+	jcg,q30-pro|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
 	qihoo,360t7|\

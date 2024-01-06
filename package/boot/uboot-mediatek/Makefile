@@ -238,11 +238,11 @@ define U-Boot/mt7981_h3c_magic-nx30-pro
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
 endef
 
-define U-Boot/mt7981_jcg_q30
-  NAME:=JCG Q30
+define U-Boot/mt7981_jcg_q30-pro
+  NAME:=JCG Q30 PRO
   BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=jcg_q30
-  UBOOT_CONFIG:=mt7981_jcg_q30
+  BUILD_DEVICES:=jcg_q30-pro
+  UBOOT_CONFIG:=mt7981_jcg_q30-pro
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=spim-nand
   BL2_SOC:=mt7981
@@ -597,7 +597,7 @@ UBOOT_TARGETS := \
 	mt7981_cmcc_rax3000m-emmc \
 	mt7981_cmcc_rax3000m-nand \
 	mt7981_h3c_magic-nx30-pro \
-	mt7981_jcg_q30 \
+	mt7981_jcg_q30-pro \
 	mt7981_rfb-spim-nand \
 	mt7981_rfb-emmc \
 	mt7981_rfb-nor \

@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/configs/mt7981_jcg_q30_defconfig
++++ b/configs/mt7981_jcg_q30-pro_defconfig
 @@ -0,0 +1,175 @@
 +CONFIG_ARM=y
 +CONFIG_POSITION_INDEPENDENT=y
@@ -9,9 +9,9 @@
 +CONFIG_SYS_MALLOC_F_LEN=0x4000
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
 +CONFIG_NR_DRAM_BANKS=1
-+CONFIG_DEFAULT_DEVICE_TREE="mt7981_jcg_q30"
-+CONFIG_DEFAULT_ENV_FILE="jcg_q30_env"
-+CONFIG_DEFAULT_FDT_FILE="mediatek/mt7981_jcg_q30.dtb"
++CONFIG_DEFAULT_DEVICE_TREE="mt7981_jcg_q30-pro"
++CONFIG_DEFAULT_ENV_FILE="jcg_q30-pro_env"
++CONFIG_DEFAULT_FDT_FILE="mediatek/mt7981_jcg_q30-pro.dtb"
 +CONFIG_OF_LIBFDT_OVERLAY=y
 +CONFIG_DEBUG_UART_BASE=0x11002000
 +CONFIG_DEBUG_UART_CLOCK=40000000
@@ -177,7 +177,7 @@
 +CONFIG_USE_SERVERIP=y
 +CONFIG_SERVERIP="192.168.1.254"
 --- /dev/null
-+++ b/arch/arm/dts/mt7981_jcg_q30.dts
++++ b/arch/arm/dts/mt7981_jcg_q30-pro.dts
 @@ -0,0 +1,179 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
@@ -193,7 +193,7 @@
 +/ {
 +	#address-cells = <1>;
 +	#size-cells = <1>;
-+	model = "JCG Q30";
++	model = "JCG Q30 PRO";
 +	compatible = "mediatek,mt7981", "mediatek,mt7981-rfb";
 +
 +	chosen {
@@ -359,7 +359,7 @@
 +	status = "disabled";
 +};
 --- /dev/null
-+++ b/jcg_q30_env
++++ b/jcg_q30-pro_env
 @@ -0,0 +1,57 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
@@ -368,10 +368,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=immortalwrt-mediatek-filogic-jcg_q30-initramfs-recovery.itb
-+bootfile_bl2=immortalwrt-mediatek-filogic-jcg_q30-preloader.bin
-+bootfile_fip=immortalwrt-mediatek-filogic-jcg_q30-bl31-uboot.fip
-+bootfile_upg=immortalwrt-mediatek-filogic-jcg_q30-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-jcg_q30-pro-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-jcg_q30-pro-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-jcg_q30-pro-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-jcg_q30-pro-squashfs-sysupgrade.itb
 +bootled_pwr=blue:status
 +bootled_rec=red:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
