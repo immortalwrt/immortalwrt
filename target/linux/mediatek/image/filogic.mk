@@ -856,7 +856,6 @@ TARGET_DEVICES += netgear_wax220
 define Device/qihoo_360t7
   DEVICE_VENDOR := Qihoo
   DEVICE_MODEL := 360T7
-  DEVICE_VARIANT := (OpenWrt U-Boot layout)
   DEVICE_DTS := mt7981b-qihoo-360t7
   DEVICE_DTS_DIR := ../dts
   UBINIZE_OPTS := -E 5
@@ -877,29 +876,6 @@ define Device/qihoo_360t7
   ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot qihoo_360t7
 endef
 TARGET_DEVICES += qihoo_360t7
-
-define Device/qihoo_360t7-ubootmod
-  DEVICE_VENDOR := Qihoo
-  DEVICE_MODEL := 360T7
-  DEVICE_VARIANT := (custom U-Boot layout)
-  DEVICE_DTS := mt7981b-qihoo-360t7-ubootmod
-  DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
-  SUPPORTED_DEVICES += qihoo,360-t7-ubootmod
-  UBINIZE_OPTS := -E 5
-  BLOCKSIZE := 128k
-  PAGESIZE := 2048
-  IMAGE_SIZE := 65536k
-  KERNEL_IN_UBI := 1
-  IMAGES += factory.bin
-  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  KERNEL = kernel-bin | lzma | \
-	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
-  KERNEL_INITRAMFS = kernel-bin | lzma | \
-	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
-endef
-TARGET_DEVICES += qihoo_360t7-ubootmod
 
 define Device/routerich_ax3000
   DEVICE_VENDOR := Routerich
