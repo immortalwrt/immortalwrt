@@ -12,7 +12,6 @@ PKG_RELEASE:=42
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_TARGET_bcm27xx \
 	CONFIG_TARGET_bcm53xx \
-	CONFIG_TARGET_mvebu \
 	CONFIG_TARGET_x86
 
 include $(INCLUDE_DIR)/package.mk
@@ -23,7 +22,6 @@ define Package/autocore
   DEPENDS:=@(aarch64||arm||i386||i686||x86_64) \
     +TARGET_bcm27xx:bcm27xx-userland \
     +TARGET_bcm53xx:nvram \
-    +(TARGET_mediatek_filogic||TARGET_mvebu):mhz \
     +TARGET_x86:ethtool \
     +TARGET_x86:lm-sensors
 endef
