@@ -58,8 +58,7 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
 		;;
-	cmcc,a10-ubootmod|\
-	cmcc,rax3000m-nand-ubootmod)
+	cmcc,a10-ubootmod)
 		[ "$PHYNBR" = "1" ] && mtd_get_mac_binary Factory 0xa > /sys${DEVPATH}/macaddress
 		;;
 	cmcc,rax3000m)
@@ -72,10 +71,6 @@ case "$board" in
 			;;
 		esac
 		[ "$PHYNBR" = "1" ] && echo "$addr" > /sys${DEVPATH}/macaddress
-		;;
-	cmcc,rax3000m-emmc-ubootmod|\
-	jdcloud,re-cp-03)
-		[ "$PHYNBR" = "1" ] && mmc_get_mac_binary factory 0xa > /sys${DEVPATH}/macaddress
 		;;
 	cudy,wr3000-v1)
 		addr=$(mtd_get_mac_binary bdinfo 0xde00)
@@ -107,6 +102,9 @@ case "$board" in
 		# Originally, phy1 is phy0 mac with LA bit set. However, this would conflict
 		# addresses on multiple VIFs with the other radio. Use label mac to set LA bit.
 		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $(get_mac_label) > /sys${DEVPATH}/macaddress
+		;;
+	jdcloud,re-cp-03)
+		[ "$PHYNBR" = "1" ] && mmc_get_mac_binary factory 0xa > /sys${DEVPATH}/macaddress
 		;;
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod)

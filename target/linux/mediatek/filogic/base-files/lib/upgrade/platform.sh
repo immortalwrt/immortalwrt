@@ -111,15 +111,14 @@ platform_do_upgrade() {
 			;;
 		esac
 		;;
-	cmcc,rax3000m-emmc-ubootmod|\
+	cudy,wr3000-v1)
+		default_do_upgrade "$1"
+		;;
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
-		;;
-	cudy,wr3000-v1)
-		default_do_upgrade "$1"
 		;;
 	h3c,magic-nx30-pro|\
 	jcg,q30|\
@@ -193,7 +192,6 @@ platform_check_image() {
 platform_copy_config() {
 	case "$(board_name)" in
 	acer,predator-w6|\
-	cmcc,rax3000m-emmc-ubootmod|\
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
 	jdcloud,re-cp-03|\

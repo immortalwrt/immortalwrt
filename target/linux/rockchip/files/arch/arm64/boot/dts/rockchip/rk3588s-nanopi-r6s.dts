@@ -24,7 +24,6 @@
 		ethernet0 = &gmac1;
 		mmc0 = &sdmmc;
 		mmc1 = &sdhci;
-		serial2 = &uart2;
 
 		led-boot = &power_led;
 		led-failsafe = &power_led;

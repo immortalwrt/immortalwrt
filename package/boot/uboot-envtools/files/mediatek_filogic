@@ -43,7 +43,6 @@ bananapi,bpi-r3-mini)
 	;;
 cetron,ct3003-stock|\
 cetron,ct3003-ubootmod|\
-cmcc,rax3000m-nand-ubootmod|\
 h3c,magic-nx30-pro-nmbm|\
 netgear,wax220|\
 zbtlink,zbt-z8102ax|\
@@ -66,9 +65,6 @@ cmcc,rax3000m)
 		ubootenv_add_uci_config "$envdev2" "0x0" "0x1f000" "0x1f000" "1"
 		;;
 	esac
-	;;
-cmcc,rax3000m-emmc-ubootmod)
-	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
 	;;
 glinet,gl-mt2500|\
 glinet,gl-mt6000)
