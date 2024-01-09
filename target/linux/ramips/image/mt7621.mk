@@ -3078,6 +3078,13 @@ define Device/zte_e8820s
 endef
 TARGET_DEVICES += zte_e8820s
 
+define Device/zte_e8820s-breed
+  $(Device/zte_e8820s)
+  DEVICE_MODEL += (MTK SDK Partition)
+  IMAGE_SIZE := 129280k
+endef
+TARGET_DEVICES += zte_e8820s-breed
+
 define Device/zyxel_lte3301-plus
   $(Device/nand)
   DEVICE_VENDOR := ZyXEL

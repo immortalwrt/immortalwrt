@@ -1,0 +1,59 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "mt7621_zte_e8820s.dtsi"
+
+/ {
+	compatible = "zte,e8820s-breed", "mediatek,mt7621-soc";
+	model = "ZTE E8820S (MTK SDK Partition)";
+};
+
+&partitions {
+	partition@0 {
+		label = "u-boot";
+		reg = <0x0 0x80000>;
+		read-only;
+	};
+
+	partition@80000 {
+		label = "u-boot-env";
+		reg = <0x80000 0x80000>;
+		read-only;
+	};
+
+	factory: partition@100000 {
+		compatible = "nvmem-cells";
+		label = "factory";
+		reg = <0x100000 0x40000>;
+		read-only;
+
+		nvmem-layout {
+			compatible = "fixed-layout";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			macaddr_config_12: macaddr@e000 {
+				compatible = "mac-base";
+				reg = <0xe000 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+
+			eeprom_factory_f000: eeprom@0 {
+				reg = <0x0 0x400>;
+			};
+
+			eeprom_factory_f800: eeprom@8000 {
+				reg = <0x8000 0x200>;
+			};
+		};
+	};
+
+	partition@140000 {
+		label = "kernel";
+		reg = <0x140000 0x400000>;
+	};
+
+	partition@8a0000 {
+		label = "ubi";
+		reg = <0x540000 0x7a40000>;
+	};
+};
