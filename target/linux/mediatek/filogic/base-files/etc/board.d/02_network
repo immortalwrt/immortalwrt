@@ -81,12 +81,15 @@ mediatek_setup_interfaces()
 		ucidef_set_interface_lan "eth0"
 		;;
 	smartrg,sdg-8622|\
-	smartrg,sdg-8632)
+	smartrg,sdg-8632|\
+	yuncore,ax835)
 		ucidef_set_interfaces_lan_wan lan wan
 		;;
 	tplink,tl-xdr6086)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
 		;;
+	xiaomi,mi-router-ax3000t|\
+	xiaomi,mi-router-ax3000t-ubootmod|\
 	xiaomi,mi-router-wr30u-112m-nmbm|\
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,mi-router-wr30u-ubootmod|\
@@ -180,6 +183,8 @@ mediatek_setup_macs()
 		wan_mac=$label_mac
 		lan_mac=$(macaddr_add "$label_mac" 1)
 		;;
+	xiaomi,mi-router-ax3000t|\
+	xiaomi,mi-router-ax3000t-ubootmod|\
 	xiaomi,mi-router-wr30u-112m-nmbm|\
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,mi-router-wr30u-ubootmod|\
@@ -188,6 +193,9 @@ mediatek_setup_macs()
 	xiaomi,redmi-router-ax6000-ubootmod)
 		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
 		label_mac=$wan_mac
+		;;
+	yuncore,ax835)
+		label_mac=$(mtd_get_mac_binary "Factory" 0x4)
 		;;
 	esac
 
