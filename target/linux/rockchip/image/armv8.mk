@@ -112,6 +112,7 @@ define Device/friendlyarm_nanopi-r4s-enterprise
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R4S Enterprise Edition
   SOC := rk3399
+  UBOOT_DEVICE_NAME := nanopi-r4s-rk3399
   BOOT_FLOW := pine64-bin
   DEVICE_PACKAGES := kmod-r8168
 endef
@@ -166,7 +167,6 @@ define Device/lunzn_fastrhino-r66s
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R66S
   SOC := rk3568
-  UBOOT_DEVICE_NAME := fastrhino-r66s-rk3568
   BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := kmod-r8125
 endef
