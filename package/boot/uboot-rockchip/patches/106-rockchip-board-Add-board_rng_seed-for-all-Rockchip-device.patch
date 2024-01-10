@@ -1,0 +1,104 @@
+From: Chris Morgan <macroalpha82@gmail.com>
+To: u-boot@lists.denx.de
+Cc: andre.przywara@arm.com, kever.yang@rock-chips.com,
+	philipp.tomsich@vrull.eu, sjg@chromium.org, jagan@edgeble.ai,
+	jonas@kwiboo.se, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V4 5/7] rockchip: board: Add board_rng_seed() for all Rockchip devices
+Date: Tue,  2 Jan 2024 09:46:52 -0600	[thread overview]
+Message-ID: <20240102154654.191055-6-macroalpha82@gmail.com> (raw)
+In-Reply-To: <20240102154654.191055-1-macroalpha82@gmail.com>
+
+From: Chris Morgan <macromorgan@hotmail.com>
+
+Allow all rockchip devices to use the hardware RNG to seed Linux
+RNG.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm/mach-rockchip/board.c             | 32 ++++++++++++++++++++++
+ board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c | 29 --------------------
+ 2 files changed, 32 insertions(+), 29 deletions(-)
+
+--- a/arch/arm/mach-rockchip/board.c
++++ b/arch/arm/mach-rockchip/board.c
+@@ -320,3 +320,35 @@ __weak int misc_init_r(void)
+ 	return ret;
+ }
+ #endif
++
++#if IS_ENABLED(CONFIG_BOARD_RNG_SEED) && IS_ENABLED(CONFIG_RNG_ROCKCHIP)
++#include <rng.h>
++
++/* Use hardware rng to seed Linux random. */
++__weak int board_rng_seed(struct abuf *buf)
++{
++	struct udevice *dev;
++	size_t len = 0x8;
++	u64 *data;
++
++	data = malloc(len);
++	if (!data) {
++		printf("Out of memory\n");
++		return -ENOMEM;
++	}
++
++	if (uclass_get_device(UCLASS_RNG, 0, &dev) || !dev) {
++		printf("No RNG device\n");
++		return -ENODEV;
++	}
++
++	if (dm_rng_read(dev, data, len)) {
++		printf("Reading RNG failed\n");
++		return -EIO;
++	}
++
++	abuf_init_set(buf, data, len);
++
++	return 0;
++}
++#endif
+--- a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
++++ b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+@@ -16,7 +16,6 @@
+ #include <mmc.h>
+ #include <panel.h>
+ #include <pwm.h>
+-#include <rng.h>
+ #include <stdlib.h>
+ #include <video_bridge.h>
+ 
+@@ -117,34 +116,6 @@ void spl_board_init(void)
+ 	       (GPIO0_BASE + GPIO_SWPORT_DR_H));
+ }
+ 
+-/* Use hardware rng to seed Linux random. */
+-int board_rng_seed(struct abuf *buf)
+-{
+-	struct udevice *dev;
+-	size_t len = 0x8;
+-	u64 *data;
+-
+-	data = malloc(len);
+-	if (!data) {
+-		printf("Out of memory\n");
+-		return -ENOMEM;
+-	}
+-
+-	if (uclass_get_device(UCLASS_RNG, 0, &dev) || !dev) {
+-		printf("No RNG device\n");
+-		return -ENODEV;
+-	}
+-
+-	if (dm_rng_read(dev, data, len)) {
+-		printf("Reading RNG failed\n");
+-		return -EIO;
+-	}
+-
+-	abuf_init_set(buf, data, len);
+-
+-	return 0;
+-}
+-
+ /*
+  * Buzz the buzzer so the user knows something is going on. Make it
+  * optional in case PWM is disabled.

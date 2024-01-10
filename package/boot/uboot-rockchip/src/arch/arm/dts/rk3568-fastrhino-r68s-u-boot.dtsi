@@ -8,6 +8,18 @@
 	};
 };
 
+&i2c0 {
+	bootph-pre-ram;
+};
+
+&rk809 {
+	bootph-pre-ram;
+
+	regulators {
+		bootph-pre-ram;
+	};
+};
+
 &sdhci {
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;

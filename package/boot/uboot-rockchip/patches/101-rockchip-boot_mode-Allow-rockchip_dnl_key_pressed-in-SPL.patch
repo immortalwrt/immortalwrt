@@ -1,22 +1,24 @@
-From: Peter Geis <pgwipeout@gmail.com>
-To: Simon Glass <sjg@chromium.org>,
-	Philipp Tomsich <philipp.tomsich@vrull.eu>,
-	Kever Yang <kever.yang@rock-chips.com>
-Cc: Peter Geis <pgwipeout@gmail.com>, u-boot@lists.denx.de
-Subject: [PATCH v1 06/11] rockchip: handle bootrom recovery mode in spl
-Date: Mon, 21 Feb 2022 20:31:25 -0500	[thread overview]
-Message-ID: <20220222013131.3114990-7-pgwipeout@gmail.com> (raw)
-In-Reply-To: <20220222013131.3114990-1-pgwipeout@gmail.com>
+From: Chris Morgan <macroalpha82@gmail.com>
+To: u-boot@lists.denx.de
+Cc: andre.przywara@arm.com, kever.yang@rock-chips.com,
+	philipp.tomsich@vrull.eu, sjg@chromium.org, jagan@edgeble.ai,
+	jonas@kwiboo.se, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V4 3/7] rockchip: boot_mode: Allow rockchip_dnl_key_pressed() in SPL
+Date: Tue,  2 Jan 2024 09:46:50 -0600	[thread overview]
+Message-ID: <20240102154654.191055-4-macroalpha82@gmail.com> (raw)
+In-Reply-To: <20240102154654.191055-1-macroalpha82@gmail.com>
 
-Fixup the bootrom recovery mode code to function in spl, so we can
-handle recovery mode in case u-boot loading is broken.
+From: Chris Morgan <macromorgan@hotmail.com>
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Update the rockchip_dnl_key_pressed() so that it can run in
+SPL. Also change the ADC channel to a define that can be
+overridden by a board specific option.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 ---
- arch/arm/mach-rockchip/Makefile        |  6 +++---
- arch/arm/mach-rockchip/boot_mode.c     |  4 +++-
- arch/arm/mach-rockchip/rk3568/rk3568.c | 23 +++++++++++++++++++++++
- 3 files changed, 29 insertions(+), 4 deletions(-)
+ arch/arm/mach-rockchip/Makefile    |  4 ++--
+ arch/arm/mach-rockchip/boot_mode.c | 11 ++++++++++-
+ 2 files changed, 12 insertions(+), 3 deletions(-)
 
 --- a/arch/arm/mach-rockchip/Makefile
 +++ b/arch/arm/mach-rockchip/Makefile
@@ -30,8 +32,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  # inside of boot_mode.c when CONFIG_ROCKCHIP_BOOT_MODE_REG is 0.  This way,
  # we can have the preprocessor correctly recognise both 0x0 and 0
  # meaning "turn it off".
--obj-y += boot_mode.o
-+obj-$(CONFIG_ARCH_ROCKCHIP) += boot_mode.o
+ obj-y += boot_mode.o
 +
 +ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_TPL_BUILD),)
  obj-$(CONFIG_ROCKCHIP_COMMON_BOARD) += board.o
@@ -39,16 +40,42 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  endif
 --- a/arch/arm/mach-rockchip/boot_mode.c
 +++ b/arch/arm/mach-rockchip/boot_mode.c
-@@ -52,7 +52,7 @@ __weak int rockchip_dnl_key_pressed(void
+@@ -38,6 +38,10 @@ void set_back_to_bootrom_dnl_flag(void)
+ #define KEY_DOWN_MIN_VAL	0
+ #define KEY_DOWN_MAX_VAL	30
+ 
++#ifndef RK_DNL_ADC_CHAN
++#define RK_DNL_ADC_CHAN		0
++#endif
++
+ __weak int rockchip_dnl_key_pressed(void)
+ {
+ 	unsigned int val;
+@@ -52,7 +56,8 @@ __weak int rockchip_dnl_key_pressed(void
  	ret = -ENODEV;
  	uclass_foreach_dev(dev, uc) {
  		if (!strncmp(dev->name, "saradc", 6)) {
 -			ret = adc_channel_single_shot(dev->name, 1, &val);
-+			ret = adc_channel_single_shot(dev->name, 0, &val);
++			ret = adc_channel_single_shot(dev->name,
++						      RK_DNL_ADC_CHAN, &val);
  			break;
  		}
  	}
-@@ -90,6 +90,7 @@ int setup_boot_mode(void)
+@@ -73,11 +78,13 @@ __weak int rockchip_dnl_key_pressed(void
+ 
+ void rockchip_dnl_mode_check(void)
+ {
++#if CONFIG_IS_ENABLED(ADC)
+ 	if (rockchip_dnl_key_pressed()) {
+ 		printf("download key pressed, entering download mode...");
+ 		set_back_to_bootrom_dnl_flag();
+ 		do_reset(NULL, 0, 0, NULL);
+ 	}
++#endif
+ }
+ 
+ int setup_boot_mode(void)
+@@ -90,6 +97,7 @@ int setup_boot_mode(void)
  	boot_mode = readl(reg);
  	debug("%s: boot mode 0x%08x\n", __func__, boot_mode);
  
@@ -56,7 +83,7 @@ Signed-off-by: Peter Geis <pgwipeout@gmail.com>
  	/* Clear boot mode */
  	writel(BOOT_NORMAL, reg);
  
-@@ -103,6 +104,7 @@ int setup_boot_mode(void)
+@@ -103,6 +111,7 @@ int setup_boot_mode(void)
  		env_set("preboot", "setenv preboot; ums mmc 0");
  		break;
  	}
