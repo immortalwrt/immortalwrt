@@ -34,6 +34,7 @@ esac
 case "$DISTRIB_TARGET" in
 "bcm27xx"/*)
 	cpu_temp="$(vcgencmd measure_temp | awk -F '=' '{print $2}' | awk -F "'" '{print $1}')°C" ;;
+"ipq40xx"/*|"ipq806x"/*|"mediatek"/*|"qualcommax"/*) ;;
 "x86"/*)
 	if [ -n "$(uci -q get "wechatpush.config.server_host")" ]; then
 		cpu_temp="$(/usr/share/wechatpush/wechatpush soc)°C"
@@ -49,11 +50,9 @@ case "$DISTRIB_TARGET" in
 	;;
 esac
 
-if grep -Eq "mediatek" "/etc/openwrt_release"; then
-	echo -n "$cpu_arch x $cpu_cores"
-elif [ -z "$cpu_freq" ] && [ -n "$cpu_temp" ]; then
+if [ -z "$cpu_freq" ] && [ -n "$cpu_temp" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($cpu_temp)"
-elif [ -z "$cpu_temp" ] && [ -n "$cpu_freq" ] || grep -Eq "ipq" "/etc/openwrt_release"; then
+elif [ -z "$cpu_temp" ] && [ -n "$cpu_freq" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($cpu_freq)"
 elif [ -n "$cpu_temp" ] && [ -n "$cpu_freq" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($cpu_freq, ${cpu_temp})"
