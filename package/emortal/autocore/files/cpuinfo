@@ -34,7 +34,7 @@ esac
 case "$DISTRIB_TARGET" in
 "bcm27xx"/*)
 	cpu_temp="$(vcgencmd measure_temp | awk -F '=' '{print $2}' | awk -F "'" '{print $1}')°C" ;;
-"ipq40xx"/*|"ipq806x"/*|"ipq807x"/*|"mediatek"/*|) ;;
+"ipq40xx"/*|"ipq806x"/*|"ipq807x"/*|"mediatek"/*) ;;
 "x86"/*)
 	if [ -n "$(uci -q get "wechatpush.config.server_host")" ]; then
 		cpu_temp="$(/usr/share/wechatpush/wechatpush soc)°C"
