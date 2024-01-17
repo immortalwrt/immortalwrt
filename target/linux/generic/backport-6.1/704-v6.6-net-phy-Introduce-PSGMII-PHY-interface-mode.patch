@@ -52,7 +52,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		return 0;
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -192,6 +192,7 @@ static int phylink_interface_max_speed(p
+@@ -187,6 +187,7 @@ static int phylink_interface_max_speed(p
  	case PHY_INTERFACE_MODE_RGMII_RXID:
  	case PHY_INTERFACE_MODE_RGMII_ID:
  	case PHY_INTERFACE_MODE_RGMII:
@@ -60,7 +60,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	case PHY_INTERFACE_MODE_QSGMII:
  	case PHY_INTERFACE_MODE_QUSGMII:
  	case PHY_INTERFACE_MODE_SGMII:
-@@ -453,6 +454,7 @@ unsigned long phylink_get_capabilities(p
+@@ -448,6 +449,7 @@ unsigned long phylink_get_capabilities(p
  	case PHY_INTERFACE_MODE_RGMII_RXID:
  	case PHY_INTERFACE_MODE_RGMII_ID:
  	case PHY_INTERFACE_MODE_RGMII:
@@ -68,7 +68,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	case PHY_INTERFACE_MODE_QSGMII:
  	case PHY_INTERFACE_MODE_QUSGMII:
  	case PHY_INTERFACE_MODE_SGMII:
-@@ -819,6 +821,7 @@ static int phylink_parse_mode(struct phy
+@@ -814,6 +816,7 @@ static int phylink_parse_mode(struct phy
  
  		switch (pl->link_config.interface) {
  		case PHY_INTERFACE_MODE_SGMII:
@@ -78,7 +78,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  		case PHY_INTERFACE_MODE_RGMII:
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -104,6 +104,7 @@ extern const int phy_10gbit_features_arr
+@@ -103,6 +103,7 @@ extern const int phy_10gbit_features_arr
   * @PHY_INTERFACE_MODE_XGMII: 10 gigabit media-independent interface
   * @PHY_INTERFACE_MODE_XLGMII:40 gigabit media-independent interface
   * @PHY_INTERFACE_MODE_MOCA: Multimedia over Coax
@@ -86,7 +86,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
   * @PHY_INTERFACE_MODE_QSGMII: Quad SGMII
   * @PHY_INTERFACE_MODE_TRGMII: Turbo RGMII
   * @PHY_INTERFACE_MODE_100BASEX: 100 BaseX
-@@ -141,6 +142,7 @@ typedef enum {
+@@ -140,6 +141,7 @@ typedef enum {
  	PHY_INTERFACE_MODE_XGMII,
  	PHY_INTERFACE_MODE_XLGMII,
  	PHY_INTERFACE_MODE_MOCA,
@@ -94,7 +94,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	PHY_INTERFACE_MODE_QSGMII,
  	PHY_INTERFACE_MODE_TRGMII,
  	PHY_INTERFACE_MODE_100BASEX,
-@@ -248,6 +250,8 @@ static inline const char *phy_modes(phy_
+@@ -247,6 +249,8 @@ static inline const char *phy_modes(phy_
  		return "xlgmii";
  	case PHY_INTERFACE_MODE_MOCA:
  		return "moca";
