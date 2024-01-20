@@ -20,7 +20,7 @@ include $(INCLUDE_DIR)/target.mk
 define Package/autocore
   TITLE:=auto core loadbalance script.
   DEPENDS:=@(aarch64||arm||i386||i686||x86_64) \
-    +TARGET_bcm27xx:bcm27xx-userland \
+    +TARGET_bcm27xx:bcm27xx-utils \
     +TARGET_bcm53xx:nvram \
     +TARGET_x86:ethtool \
     +TARGET_x86:lm-sensors
