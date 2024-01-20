@@ -103,6 +103,11 @@ livinet,zr-3020|\
 livinet,zr-3020-ubootmod)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "1"
 	;;
+jdcloud,re-cp-03)
+	local envdev=$(find_mmc_part "ubootenv" "mmcblk0")
+	ubootenv_add_uci_config "$envdev" "0x0" "0x40000" "0x40000" "1"
+	ubootenv_add_uci_config "$envdev" "0x40000" "0x40000" "0x40000" "1"
+	;;
 mercusys,mr90x-v1|\
 routerich,ax3000)
 	local envdev=/dev/mtd$(find_mtd_index "u-boot-env")

@@ -115,7 +115,7 @@
 +CONFIG_LMB_MAX_REGIONS=64
 --- /dev/null
 +++ b/arch/arm/dts/mt7986a-jdcloud_re-cp-03.dts
-@@ -0,0 +1,145 @@
+@@ -0,0 +1,148 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +
 +/dts-v1/;
@@ -161,16 +161,19 @@
 +		led-0 {
 +			label = "blue:status";
 +			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
 +		};
 +
-+		red_led: led-1 {
++		led-1 {
 +			label = "red:status";
 +			gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
 +		};
 +
-+		green_led: led-2 {
++		led-2 {
 +			label = "green:status";
 +			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
++			default-state = "off";
 +		};
 +	};
 +
