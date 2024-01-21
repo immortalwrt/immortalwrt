@@ -128,7 +128,7 @@ define Device/linksys_mx4200v1
 	NAND_SIZE := 512m
 	KERNEL_IN_UBI :=
 	SOC := ipq8174
-	IMAGES := factory.bin
+	IMAGES += factory.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MX4200
 	DEVICE_PACKAGES := kmod-leds-pca963x ipq-wifi-linksys_mx4200 kmod-bluetooth
 endef
@@ -316,7 +316,7 @@ define Device/yuncore_ax880
 	DEVICE_DTS_CONFIG := config@hk09
 	SOC := ipq8072
 	DEVICE_PACKAGES := ipq-wifi-yuncore_ax880
-	IMAGES := factory.bin
+	IMAGES += factory.bin
 	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand
 endef
 TARGET_DEVICES += yuncore_ax880
