@@ -1000,6 +1000,7 @@ TARGET_DEVICES += ubnt_unifi-6-plus
 define Device/xiaomi_mi-router-ax3000t
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router AX3000T
+  DEVICE_VARIANT := (stock layout)
   DEVICE_DTS := mt7981b-xiaomi-mi-router-ax3000t
   DEVICE_DTS_DIR := ../dts
   UBINIZE_OPTS := -E 5
@@ -1016,7 +1017,8 @@ TARGET_DEVICES += xiaomi_mi-router-ax3000t
 
 define Device/xiaomi_mi-router-ax3000t-ubootmod
   DEVICE_VENDOR := Xiaomi
-  DEVICE_MODEL := Mi Router AX3000T (OpenWrt U-Boot layout)
+  DEVICE_MODEL := Mi Router AX3000T
+  DEVICE_VARIANT := (OpenWrt U-Boot layout)
   DEVICE_DTS := mt7981b-xiaomi-mi-router-ax3000t-ubootmod
   DEVICE_DTS_DIR := ../dts
   UBINIZE_OPTS := -E 5
