@@ -987,28 +987,6 @@ endif
 endef
 TARGET_DEVICES += xiaomi_mi-router-ax3000t-ubootmod
 
-define Device/xiaomi_mi-router-wr30u-112m-nmbm
-  DEVICE_VENDOR := Xiaomi
-  DEVICE_MODEL := Mi Router WR30U
-  DEVICE_VARIANT := (custom U-Boot layout)
-  DEVICE_DTS := mt7981b-xiaomi-mi-router-wr30u-112m-nmbm
-  DEVICE_DTS_DIR := ../dts
-  UBINIZE_OPTS := -E 5
-  BLOCKSIZE := 128k
-  PAGESIZE := 2048
-  IMAGE_SIZE := 114688k
-  KERNEL_IN_UBI := 1
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
-ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
-  ARTIFACTS := initramfs-factory.ubi
-  ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-kernel.bin | ubinize-kernel
-endif
-  IMAGES += factory.bin
-  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-endef
-TARGET_DEVICES += xiaomi_mi-router-wr30u-112m-nmbm
-
 define Device/xiaomi_mi-router-wr30u-stock
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router WR30U
