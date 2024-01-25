@@ -11,7 +11,7 @@ define Device/FitImageLzma
 endef
 
 define Device/EmmcImage
-	IMAGES += factory.bin sysupgrade.bin
+	IMAGES := factory.bin sysupgrade.bin
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | pad-to 64k
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | sysupgrade-tar rootfs=$$$$@ | append-metadata
 endef
@@ -103,7 +103,8 @@ define Device/prpl_haze
 	DEVICE_MODEL := Haze
 	DEVICE_DTS_CONFIG := config@hk09
 	SOC := ipq8072
-	DEVICE_PACKAGES += ath11k-firmware-qcn9074 ipq-wifi-prpl_haze kmod-ath11k-pci
+	DEVICE_PACKAGES := ath11k-firmware-qcn9074 ipq-wifi-prpl_haze kmod-ath11k-pci \
+		mkf2fs f2fsck kmod-fs-f2fs kmod-leds-lp5562
 endef
 TARGET_DEVICES += prpl_haze
 
@@ -115,7 +116,7 @@ define Device/qnap_301w
 	DEVICE_DTS_CONFIG := config@hk01
 	KERNEL_SIZE := 16384k
 	SOC := ipq8072
-	DEVICE_PACKAGES += ipq-wifi-qnap_301w
+	DEVICE_PACKAGES := ipq-wifi-qnap_301w
 endef
 TARGET_DEVICES += qnap_301w
 
@@ -181,7 +182,7 @@ define Device/xiaomi_ax9000
 	SOC := ipq8072
 	KERNEL_SIZE := 57344k
 	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath11k-pci ath11k-firmware-qcn9074 \
-	kmod-ath10k-ct ath10k-firmware-qca9887-ct
+		kmod-ath10k-ct ath10k-firmware-qca9887-ct
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
@@ -209,7 +210,7 @@ define Device/zyxel_nbg7815
 	DEVICE_MODEL := NBG7815
 	DEVICE_DTS_CONFIG := config@nbg7815
 	SOC := ipq8074
-	DEVICE_PACKAGES += ipq-wifi-zyxel_nbg7815 kmod-ath11k-pci kmod-hwmon-tmp103 \
-		kmod-bluetooth
+	DEVICE_PACKAGES := ipq-wifi-zyxel_nbg7815 kmod-ath11k-pci \
+		kmod-bluetooth kmod-hwmon-tmp103
 endef
 TARGET_DEVICES += zyxel_nbg7815
