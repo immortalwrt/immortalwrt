@@ -239,6 +239,23 @@ define Device/radxa_rock-pi-e
 endef
 TARGET_DEVICES += radxa_rock-pi-e
 
+define Device/xunlong_orangepi-5
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi 5
+  SOC := rk3588s
+  BOOT_FLOW := pine64-img
+endef
+TARGET_DEVICES += xunlong_orangepi-5
+
+define Device/xunlong_orangepi-5-plus
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi 5 Plus
+  SOC := rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += xunlong_orangepi-5-plus
+
 define Device/xunlong_orangepi-r1-plus
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi R1 Plus
