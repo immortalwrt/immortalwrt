@@ -1,0 +1,31 @@
+From 5d69b181cd0db10dc8327d28ce837b3623cd531a Mon Sep 17 00:00:00 2001
+From: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
+Date: Mon, 2 Jan 2023 22:11:47 +1100
+Subject: [PATCH] mfd: rk808: Re-add rk808-clkout to RK818
+
+Fixes RK818 (e.g. on Pinephone Pro) to register its clock, without which
+dependent devices (e.g. wifi/BT, via sdio-wifi-pwrseq) fail to probe.
+
+This line was removed in commit 3633daacea2e
+("mfd: rk808: Permit having multiple PMIC instances"), but only from RK818.
+
+Fixes: 3633daacea2e ("mfd: rk808: Permit having multiple PMIC instances")
+Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
+Signed-off-by: Lee Jones <lee@kernel.org>
+Link: https://lore.kernel.org/r/20230102111147.2580861-1-tom@tom-fitzhenry.me.uk
+---
+ drivers/mfd/rk808.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/mfd/rk808.c
++++ b/drivers/mfd/rk808.c
+@@ -189,6 +189,7 @@ static const struct mfd_cell rk817s[] =
+ };
+ 
+ static const struct mfd_cell rk818s[] = {
++	{ .name = "rk808-clkout", .id = PLATFORM_DEVID_NONE, },
+ 	{ .name = "rk808-regulator", .id = PLATFORM_DEVID_NONE, },
+ 	{
+ 		.name = "rk808-rtc",

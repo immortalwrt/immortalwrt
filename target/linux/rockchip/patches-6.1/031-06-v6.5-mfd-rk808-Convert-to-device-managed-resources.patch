@@ -16,7 +16,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
 
 --- a/drivers/mfd/rk808.c
 +++ b/drivers/mfd/rk808.c
-@@ -547,13 +547,11 @@ static const struct regmap_irq_chip rk81
+@@ -548,13 +548,11 @@ static const struct regmap_irq_chip rk81
  	.init_ack_masked = true,
  };
  
@@ -32,7 +32,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  
  	switch (rk808->variant) {
  	case RK805_ID:
-@@ -574,16 +572,18 @@ static void rk808_pm_power_off(void)
+@@ -575,16 +573,18 @@ static void rk808_pm_power_off(void)
  		bit = DEV_OFF;
  		break;
  	default:
@@ -55,7 +55,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	unsigned int reg, bit;
  	int ret;
  
-@@ -599,16 +599,11 @@ static int rk808_restart_notify(struct n
+@@ -600,16 +600,11 @@ static int rk808_restart_notify(struct n
  	}
  	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
  	if (ret)
@@ -73,7 +73,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static void rk8xx_shutdown(struct i2c_client *client)
  {
  	struct rk808 *rk808 = i2c_get_clientdata(client);
-@@ -744,9 +739,9 @@ static int rk808_probe(struct i2c_client
+@@ -745,9 +740,9 @@ static int rk808_probe(struct i2c_client
  		return -EINVAL;
  	}
  
@@ -86,7 +86,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	if (ret) {
  		dev_err(&client->dev, "Failed to add irq_chip %d\n", ret);
  		return ret;
-@@ -770,17 +765,23 @@ static int rk808_probe(struct i2c_client
+@@ -771,17 +766,23 @@ static int rk808_probe(struct i2c_client
  			      regmap_irq_get_domain(rk808->irq_data));
  	if (ret) {
  		dev_err(&client->dev, "failed to add MFD devices %d\n", ret);
@@ -114,7 +114,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  			if (ret)
  				dev_warn(&client->dev, "failed to register rst handler, %d\n", ret);
  			break;
-@@ -791,26 +792,6 @@ static int rk808_probe(struct i2c_client
+@@ -792,26 +793,6 @@ static int rk808_probe(struct i2c_client
  	}
  
  	return 0;
@@ -141,7 +141,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  }
  
  static int __maybe_unused rk8xx_suspend(struct device *dev)
-@@ -867,7 +848,6 @@ static struct i2c_driver rk808_i2c_drive
+@@ -868,7 +849,6 @@ static struct i2c_driver rk808_i2c_drive
  		.pm = &rk8xx_pm_ops,
  	},
  	.probe_new = rk808_probe,

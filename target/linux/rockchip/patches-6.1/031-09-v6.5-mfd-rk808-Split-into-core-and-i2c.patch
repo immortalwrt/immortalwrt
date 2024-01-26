@@ -86,7 +86,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  obj-$(CONFIG_MFD_SYSCON)	+= syscon.o
 --- a/drivers/mfd/rk808.c
 +++ /dev/null
-@@ -1,844 +0,0 @@
+@@ -1,845 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0-only
 -/*
 - * MFD core driver for Rockchip RK808/RK818
@@ -278,6 +278,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
 -};
 -
 -static const struct mfd_cell rk818s[] = {
+-	{ .name = "rk808-clkout", .id = PLATFORM_DEVID_NONE, },
 -	{ .name = "rk808-regulator", .id = PLATFORM_DEVID_NONE, },
 -	{
 -		.name = "rk808-rtc",
@@ -933,7 +934,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
 -MODULE_DESCRIPTION("RK808/RK818 PMIC driver");
 --- /dev/null
 +++ b/drivers/mfd/rk8xx-core.c
-@@ -0,0 +1,705 @@
+@@ -0,0 +1,706 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * MFD core driver for Rockchip RK8XX
@@ -1036,6 +1037,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
 +};
 +
 +static const struct mfd_cell rk818s[] = {
++	{ .name = "rk808-clkout", .id = PLATFORM_DEVID_NONE, },
 +	{ .name = "rk808-regulator", .id = PLATFORM_DEVID_NONE, },
 +	{
 +		.name = "rk808-rtc",

@@ -87,7 +87,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct mfd_cell rk808s[] = {
  	{ .name = "rk808-clkout", .id = PLATFORM_DEVID_NONE, },
  	{ .name = "rk808-regulator", .id = PLATFORM_DEVID_NONE, },
-@@ -122,6 +138,12 @@ static const struct rk808_reg_data rk805
+@@ -123,6 +139,12 @@ static const struct rk808_reg_data rk805
  	{RK805_THERMAL_REG, TEMP_HOTDIE_MSK, TEMP115C},
  };
  
@@ -100,7 +100,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct rk808_reg_data rk808_pre_init_reg[] = {
  	{ RK808_BUCK3_CONFIG_REG, BUCK_ILMIN_MASK,  BUCK_ILMIN_150MA },
  	{ RK808_BUCK4_CONFIG_REG, BUCK_ILMIN_MASK,  BUCK_ILMIN_200MA },
-@@ -272,6 +294,27 @@ static const struct regmap_irq rk805_irq
+@@ -273,6 +295,27 @@ static const struct regmap_irq rk805_irq
  	},
  };
  
@@ -128,7 +128,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_irq rk808_irqs[] = {
  	/* INT_STS */
  	[RK808_IRQ_VOUT_LO] = {
-@@ -422,6 +465,18 @@ static struct regmap_irq_chip rk805_irq_
+@@ -423,6 +466,18 @@ static struct regmap_irq_chip rk805_irq_
  	.init_ack_masked = true,
  };
  
@@ -147,7 +147,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_irq_chip rk808_irq_chip = {
  	.name = "rk808",
  	.irqs = rk808_irqs,
-@@ -548,6 +603,7 @@ int rk8xx_probe(struct device *dev, int
+@@ -549,6 +604,7 @@ int rk8xx_probe(struct device *dev, int
  	struct rk808 *rk808;
  	const struct rk808_reg_data *pre_init_reg;
  	const struct mfd_cell *cells;
@@ -155,7 +155,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	int nr_pre_init_regs;
  	int nr_cells;
  	int ret;
-@@ -569,6 +625,14 @@ int rk8xx_probe(struct device *dev, int
+@@ -570,6 +626,14 @@ int rk8xx_probe(struct device *dev, int
  		cells = rk805s;
  		nr_cells = ARRAY_SIZE(rk805s);
  		break;
@@ -170,7 +170,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	case RK808_ID:
  		rk808->regmap_irq_chip = &rk808_irq_chip;
  		pre_init_reg = rk808_pre_init_reg;
-@@ -600,7 +664,7 @@ int rk8xx_probe(struct device *dev, int
+@@ -601,7 +665,7 @@ int rk8xx_probe(struct device *dev, int
  		return dev_err_probe(dev, -EINVAL, "No interrupt support, no core IRQ\n");
  
  	ret = devm_regmap_add_irq_chip(dev, rk808->regmap, irq,
@@ -179,7 +179,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  				       rk808->regmap_irq_chip, &rk808->irq_data);
  	if (ret)
  		return dev_err_probe(dev, ret, "Failed to add irq_chip\n");
-@@ -615,8 +679,7 @@ int rk8xx_probe(struct device *dev, int
+@@ -616,8 +680,7 @@ int rk8xx_probe(struct device *dev, int
  					     pre_init_reg[i].addr);
  	}
  

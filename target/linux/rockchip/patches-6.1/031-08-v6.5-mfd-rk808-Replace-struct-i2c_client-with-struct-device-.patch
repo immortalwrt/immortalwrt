@@ -19,7 +19,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
 
 --- a/drivers/mfd/rk808.c
 +++ b/drivers/mfd/rk808.c
-@@ -576,7 +576,7 @@ static int rk808_power_off(struct sys_of
+@@ -577,7 +577,7 @@ static int rk808_power_off(struct sys_of
  	}
  	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
  	if (ret)
@@ -28,7 +28,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  
  	return NOTIFY_DONE;
  }
-@@ -599,7 +599,7 @@ static int rk808_restart(struct sys_off_
+@@ -600,7 +600,7 @@ static int rk808_restart(struct sys_off_
  	}
  	ret = regmap_update_bits(rk808->regmap, reg, bit, bit);
  	if (ret)
@@ -37,7 +37,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  
  	return NOTIFY_DONE;
  }
-@@ -719,7 +719,7 @@ static int rk808_probe(struct i2c_client
+@@ -720,7 +720,7 @@ static int rk808_probe(struct i2c_client
  		return -EINVAL;
  	}
  
