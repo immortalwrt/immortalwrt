@@ -21,8 +21,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #include "rk3588.dtsi"
  
  / {
-@@ -62,6 +63,15 @@
- 		#cooling-cells = <2>;
+@@ -69,6 +70,15 @@
+ 		shutdown-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
  	};
  
 +	vcc12v_dcin: vcc12v-dcin-regulator {
@@ -37,7 +37,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	vcc3v3_pcie2x1l0: vcc3v3-pcie2x1l0-regulator {
  		compatible = "regulator-fixed";
  		enable-active-high;
-@@ -120,6 +130,7 @@
+@@ -127,6 +137,7 @@
  		regulator-boot-on;
  		regulator-min-microvolt = <5000000>;
  		regulator-max-microvolt = <5000000>;
@@ -45,7 +45,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	};
  
  	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3-regulator {
-@@ -225,6 +236,61 @@
+@@ -232,6 +243,61 @@
  	};
  };
  
@@ -107,7 +107,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &i2c6 {
  	status = "okay";
  
-@@ -354,6 +420,10 @@
+@@ -361,6 +427,10 @@
  		vcc5v0_host_en: vcc5v0-host-en {
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
@@ -118,7 +118,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	};
  };
  
-@@ -746,6 +816,14 @@
+@@ -755,6 +825,14 @@
  	status = "okay";
  };
  
@@ -133,7 +133,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy1 {
  	status = "okay";
  };
-@@ -781,6 +859,33 @@
+@@ -790,6 +868,33 @@
  	status = "okay";
  };
  
@@ -167,7 +167,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -789,6 +894,20 @@
+@@ -798,6 +903,20 @@
  	status = "okay";
  };
  

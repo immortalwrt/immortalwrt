@@ -114,7 +114,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &pwm2 {
-@@ -959,6 +1032,22 @@
+@@ -960,6 +1033,22 @@
  	status = "okay";
  };
  
@@ -137,7 +137,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy2 {
  	status = "okay";
  };
-@@ -1001,3 +1090,58 @@
+@@ -1002,3 +1091,58 @@
  &usb_host1_ohci {
  	status = "okay";
  };

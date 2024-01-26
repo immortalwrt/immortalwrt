@@ -29,7 +29,7 @@
  	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc-1v1-nldo-s3";
-@@ -522,6 +544,10 @@
+@@ -549,6 +571,10 @@
  		usbc0_int: usbc0-int {
  			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
  		};
@@ -40,7 +40,7 @@
  	};
  };
  
-@@ -894,6 +920,11 @@
+@@ -920,6 +946,11 @@
  	status = "okay";
  };
  
@@ -50,9 +50,9 @@
 +};
 +
  &u2phy2_host {
+ 	phy-supply = <&vdd_4g_3v3>;
  	status = "okay";
- };
-@@ -902,6 +933,10 @@
+@@ -929,6 +960,10 @@
  	status = "okay";
  };
  
@@ -63,7 +63,7 @@
  &u2phy2 {
  	status = "okay";
  };
-@@ -910,6 +945,14 @@
+@@ -937,6 +972,14 @@
  	status = "okay";
  };
  
@@ -78,7 +78,7 @@
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -925,3 +968,7 @@
+@@ -952,3 +995,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };
