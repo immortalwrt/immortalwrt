@@ -378,6 +378,11 @@
 	};
 
 	usb_ngff_pins: usb-ngff-pins {
+		ngff-gnss-off {
+			pins = "GPIO_6";
+			drive-strength = <8>;
+			mediatek,pull-up-adv = <1>;
+		};
 		ngff-pe-rst {
 			pins = "GPIO_7";
 			drive-strength = <8>;
@@ -395,6 +400,11 @@
 		};
 		ngff-rst {
 			pins = "GPIO_10";
+			drive-strength = <8>;
+			mediatek,pull-up-adv = <1>;
+		};
+		ngff-coex {
+			pins = "SPI1_CS";
 			drive-strength = <8>;
 			mediatek,pull-up-adv = <1>;
 		};
@@ -494,7 +504,8 @@
 &spi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spic_pins>;
-	status = "okay";
+	/* conflicts with M.2 pin */
+	status = "disabled";
 };
 
 &ssusb {
