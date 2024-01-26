@@ -1,0 +1,23 @@
+From fb7ba4ede6ab6c37bc1146f7fa1f07a7810439ab Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Wed, 13 Dec 2023 19:02:57 +0100
+Subject: [PATCH] dt-bindings: clock: rk3588: add missing PCLK_VO1GRF
+
+Add PCLK_VO1GRF to complement PCLK_VO0GRF. This will be needed
+for HDMI support.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ include/dt-bindings/clock/rockchip,rk3588-cru.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/include/dt-bindings/clock/rockchip,rk3588-cru.h
++++ b/include/dt-bindings/clock/rockchip,rk3588-cru.h
+@@ -733,6 +733,7 @@
+ #define ACLK_AV1_PRE			718
+ #define PCLK_AV1_PRE			719
+ #define HCLK_SDIO_PRE			720
++#define PCLK_VO1GRF			721
+ 
+ #define CLK_NR_CLKS			(HCLK_SDIO_PRE + 1)
+ 

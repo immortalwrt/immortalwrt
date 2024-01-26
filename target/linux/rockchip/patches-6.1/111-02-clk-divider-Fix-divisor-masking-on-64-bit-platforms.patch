@@ -1,6 +1,6 @@
-From 80094450f857ce8e5e00c1952f072eede3902f64 Mon Sep 17 00:00:00 2001
+From b55f69688803c3c7d8fd51d8c833002591dd271b Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Thu, 18 May 2023 05:19:48 +0200
+Date: Tue, 24 Oct 2023 16:13:50 +0200
 Subject: [PATCH] clk: divider: Fix divisor masking on 64 bit platforms
 
 The clock framework handles clock rates as "unsigned long", so u32 on
@@ -19,16 +19,14 @@ effectively request ca. 5 MHz. Requesting clk_round_rate(clk, ULONG_MAX)
 is a bit of a special case, since that still returns correct values as
 long as the parent clock is below 8.5 GHz.
 
-Fix this by introducing a new helper, which avoids the overflow
-by using a modulo operation instead of math tricks. This avoids
-any requirements on the arguments (except that divisor should not
-be 0 obviously).
+Fix this by switching to DIV_ROUND_UP_NO_OVERFLOW, which cannot
+overflow. This avoids any requirements on the arguments (except
+that divisor should not be 0 obviously).
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- drivers/clk/clk-divider.c |  6 +++---
- include/linux/math.h      | 11 +++++++++++
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/clk/clk-divider.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 --- a/drivers/clk/clk-divider.c
 +++ b/drivers/clk/clk-divider.c
@@ -59,23 +57,3 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
  	if (!_is_valid_div(table, div, flags))
  		return -EINVAL;
---- a/include/linux/math.h
-+++ b/include/linux/math.h
-@@ -36,6 +36,17 @@
- 
- #define DIV_ROUND_UP __KERNEL_DIV_ROUND_UP
- 
-+/**
-+ * DIV_ROUND_UP_NO_OVERFLOW - divide two numbers and always round up
-+ * @n: numerator / dividend
-+ * @d: denominator / divisor
-+ *
-+ * This functions does the same as DIV_ROUND_UP, but internally uses a
-+ * division and a modulo operation instead of math tricks. This way it
-+ * avoids overflowing when handling big numbers.
-+ */
-+#define DIV_ROUND_UP_NO_OVERFLOW(n, d) (((n) / (d)) + !!((n) % (d)))
-+
- #define DIV_ROUND_DOWN_ULL(ll, d) \
- 	({ unsigned long long _tmp = (ll); do_div(_tmp, d); _tmp; })
- 
