@@ -33,7 +33,8 @@ ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
 friendlyarm,nanopi-r5c|\
 friendlyarm,nanopi-r6c|\
-lunzn,fastrhino-r66s)
+lunzn,fastrhino-r66s|\
+xunlong,orangepi-5-plus)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	;;
