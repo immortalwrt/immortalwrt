@@ -66,6 +66,9 @@ cmcc,rax3000m)
 		;;
 	esac
 	;;
+comfast,cf-e393ax)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x80000"
+	;;
 glinet,gl-mt2500|\
 glinet,gl-mt6000)
 	local envdev=$(find_mmc_part "u-boot-env")
