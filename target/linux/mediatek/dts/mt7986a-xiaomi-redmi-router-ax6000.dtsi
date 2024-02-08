@@ -202,14 +202,12 @@
 
 		led_status_rgb: led@0 {
 			reg = <0>;
-			label = "rgb:status";
 			color-index = <LED_COLOR_ID_RED LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE>;
 			color-intensity = <0 255 0>; /* GREEN */
 		};
 
 		led_network_rgb: led@1 {
 			reg = <1>;
-			label = "rgb:network";
 			color-index = <LED_COLOR_ID_RED LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE>;
 			color-intensity = <0 0 255>; /* BLUE */
 		};

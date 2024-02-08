@@ -542,7 +542,7 @@ define KernelPackage/video-core
 	CONFIG_MEDIA_PLATFORM_DRIVERS=y@ge6.1
   FILES:= \
 	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
-  AUTOLOAD:=$(call AutoLoad,60, videodev v4l2-common)
+  AUTOLOAD:=$(call AutoLoad,60,videodev)
 endef
 
 define KernelPackage/video-core/description
@@ -574,6 +574,7 @@ define KernelPackage/video-videobuf2
   KCONFIG:= \
 	CONFIG_VIDEOBUF2_CORE \
 	CONFIG_VIDEOBUF2_MEMOPS \
+	CONFIG_VIDEOBUF2_V4L2 \
 	CONFIG_VIDEOBUF2_VMALLOC
   FILES:= \
 	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-common.ko \
@@ -1183,7 +1184,9 @@ define KernelPackage/video-mem2mem
   TITLE:=Memory 2 Memory device support
   HIDDEN:=1
   DEPENDS:=+kmod-video-videobuf2
-  KCONFIG:= CONFIG_V4L_MEM2MEM_DRIVERS=y
+  KCONFIG:= \
+    CONFIG_V4L_MEM2MEM_DRIVERS=y \
+    CONFIG_V4L2_MEM2MEM_DEV
   FILES:= $(LINUX_DIR)/drivers/media/$(V4L2_DIR)/v4l2-mem2mem.ko
   AUTOLOAD:=$(call AutoLoad,66,v4l2-mem2mem)
   $(call AddDepends/video)

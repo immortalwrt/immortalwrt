@@ -6,17 +6,18 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 #include "mt7981.dtsi"
 
 / {
 	aliases {
-		label-mac-device =&gmac0;
-		led-boot = &status_red_led;
-		led-failsafe = &status_red_led;
-		led-running = &status_green_led;
-		led-upgrade = &status_green_led;
 		serial0 = &uart0;
+		label-mac-device = &gmac0;
+		led-boot = &led_status_red;
+		led-failsafe = &led_status_red;
+		led-running = &led_status_green;
+		led-upgrade = &led_status_green;
 	};
 
 	chosen {
@@ -46,13 +47,15 @@
 	gpio-leds {
 		compatible = "gpio-leds";
 
-		status_red_led: led-0 {
-			label = "red:status";
+		led_status_red: led_status_red {
+			function = LED_FUNCTION_STATUS;
+			color = <LED_COLOR_ID_RED>;
 			gpios = <&pio 3 GPIO_ACTIVE_LOW>;
 		};
 
-		status_green_led: led-1 {
-			label = "green:status";
+		led_status_green: led_status_green {
+			function = LED_FUNCTION_STATUS;
+			color = <LED_COLOR_ID_GREEN>;
 			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
 		};
 	};

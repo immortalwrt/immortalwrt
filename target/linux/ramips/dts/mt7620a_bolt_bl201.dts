@@ -2,6 +2,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "bolt,bl201", "ralink,mt7620a-soc";
@@ -21,17 +22,20 @@
 		compatible = "gpio-leds";
 
 		wan {
-			label = "blue:wan";
+			function = LED_FUNCTION_WAN;
+			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
 		};
 
 		power_red: power_red {
-			label = "red:power";
+			function = LED_FUNCTION_POWER;
+			color = <LED_COLOR_ID_RED>;
 			gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
 		};
 
 		power_blue: power_blue {
-			label = "blue:power";
+			function = LED_FUNCTION_POWER;
+			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
 		};
 
@@ -56,7 +60,8 @@
 		};
 
 		wps_blue {
-			label = "blue:wps";
+			function = LED_FUNCTION_WPS;
+			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&gpio2 22 GPIO_ACTIVE_LOW>;
 		};
 
@@ -71,7 +76,8 @@
 		};
 
 		wlan_blue {
-			label = "blue:wlan";
+			function = LED_FUNCTION_WLAN;
+			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 		};
 	};

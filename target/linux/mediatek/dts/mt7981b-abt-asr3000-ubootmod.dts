@@ -6,6 +6,7 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 #include "mt7981.dtsi"
 
@@ -50,12 +51,14 @@
 		compatible = "gpio-leds";
 
 		led-0 {
-			label = "red:wan";
+			function = LED_FUNCTION_WAN;
+			color = <LED_COLOR_ID_RED>;
 			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
 		};
 
 		led-1 {
-			label = "green:wan";
+			function = LED_FUNCTION_WAN;
+			color = <LED_COLOR_ID_GREEN>;
 			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
 		};
 

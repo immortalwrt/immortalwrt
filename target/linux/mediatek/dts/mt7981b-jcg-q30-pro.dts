@@ -3,6 +3,7 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 #include "mt7981.dtsi"
 
@@ -11,12 +12,12 @@
 	compatible = "jcg,q30-pro", "mediatek,mt7981";
 
 	aliases {
-		led-boot = &status_red_led;
-		led-failsafe = &status_red_led;
-		led-running = &status_blue_led;
-		led-upgrade = &status_blue_led;
 		serial0 = &uart0;
 		label-mac-device = &gmac0;
+		led-boot = &led_status_red;
+		led-failsafe = &led_status_red;
+		led-running = &led_status_blue;
+		led-upgrade = &led_status_blue;
 	};
 
 	chosen {
@@ -46,13 +47,15 @@
 	gpio-leds {
 		compatible = "gpio-leds";
 
-		status_red_led: led-0 {
-			label = "red:status";
+		led_status_red: red {
+			function = LED_FUNCTION_STATUS;
+			color = <LED_COLOR_ID_RED>;
 			gpios = <&pio 8 GPIO_ACTIVE_HIGH>;
 		};
 
-		status_blue_led: led-1 {
-			label = "blue:status";
+		led_status_blue: blue {
+			function = LED_FUNCTION_STATUS;
+			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
 		};
 	};
