@@ -23,17 +23,19 @@
 	gpio-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
-		pinctrl-0 = <&power_led_pin>, <&sata_led_pin>;
+		pinctrl-0 = <&disk_led_pin>, <&power_led_pin>;
 
-		power_led: led-power {
-			label = "red:power";
-			gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
-		};
-
-		led-sata {
-			label = "blue:sata";
+		led-disk {
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_DISK;
 			gpios = <&gpio0 RK_PC2 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "disk-activity";
+		};
+
+		power_led: led-power {
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_POWER;
+			gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -122,12 +124,12 @@
 
 &pinctrl {
 	leds {
-		power_led_pin: power-led-pin {
-			rockchip,pins = <4 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		disk_led_pin: disk-led-pin {
+			rockchip,pins = <0 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-		sata_led_pin: sata-led-pin {
-			rockchip,pins = <0 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+		power_led_pin: power-led-pin {
+			rockchip,pins = <4 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 

@@ -9,11 +9,12 @@
 
 	gpio-leds {
 		led-lan1 {
-			label = "green:lan";
+			/delete-property/ function-enumerator;
 		};
 
 		led-lan2 {
-			label = "green:user";
+			/delete-property/ function-enumerator;
+			function = LED_FUNCTION_PROGRAMMING;
 		};
 	};
 };

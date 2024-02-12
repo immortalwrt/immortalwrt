@@ -48,7 +48,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
-@@ -359,9 +359,11 @@
+@@ -362,9 +362,11 @@
  	#size-cells = <0>;
  
  	/* Second port is for USB 3.0 */
@@ -166,7 +166,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
-@@ -72,6 +72,7 @@
+@@ -78,6 +78,7 @@
  		reg = <1>;
  		pinctrl-0 = <&eth_phy0_reset_pin>;
  		pinctrl-names = "default";
@@ -176,7 +176,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -528,6 +528,17 @@
+@@ -530,6 +530,17 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_0_rst>;
  	status = "okay";
@@ -194,7 +194,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie2x1l1 {
-@@ -544,6 +555,17 @@
+@@ -546,6 +557,17 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_2_rst>;
  	status = "okay";

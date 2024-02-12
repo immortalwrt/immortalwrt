@@ -56,40 +56,26 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		ethernet1 = &rtl8153;
  		mmc0 = &sdmmc;
 +
-+		led-boot = &sys_led;
-+		led-failsafe = &sys_led;
-+		led-running = &sys_led;
-+		led-upgrade = &sys_led;
++		led-boot = &status_led;
++		led-failsafe = &status_led;
++		led-running = &status_led;
++		led-upgrade = &status_led;
  	};
  
  	chosen {
-@@ -36,22 +41,18 @@
- 		pinctrl-names = "default";
- 
- 		led-0 {
--			function = LED_FUNCTION_LAN;
--			color = <LED_COLOR_ID_GREEN>;
+@@ -41,11 +46,10 @@
  			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
-+			label = "green:lan";
  		};
  
 -		led-1 {
--			function = LED_FUNCTION_STATUS;
--			color = <LED_COLOR_ID_RED>;
-+		sys_led: led-1 {
++		status_led: led-1 {
+ 			function = LED_FUNCTION_STATUS;
+ 			color = <LED_COLOR_ID_RED>;
  			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
 -			linux,default-trigger = "heartbeat";
-+			label = "red:sys";
  		};
  
  		led-2 {
--			function = LED_FUNCTION_WAN;
--			color = <LED_COLOR_ID_GREEN>;
- 			gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
-+			label = "green:wan";
- 		};
- 	};
- 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 @@ -13,6 +13,11 @@
@@ -189,13 +175,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	chosen: chosen {
  		stdout-path = "serial2:1500000n8";
  	};
-@@ -32,10 +39,8 @@
- 		pinctrl-0 = <&status_led_pin>;
- 
- 		status_led: led-status {
--			color = <LED_COLOR_ID_BLUE>;
--			function = LED_FUNCTION_STATUS;
-+			label = "blue:status";
+@@ -35,7 +42,6 @@
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_STATUS;
  			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
 -			linux,default-trigger = "heartbeat";
  		};
@@ -203,74 +185,24 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
-@@ -32,27 +32,22 @@
- 		pinctrl-0 = <&lan_led_pin>, <&power_led_pin>, <&wan_led_pin>, <&wlan_led_pin>;
- 
- 		led-lan {
--			color = <LED_COLOR_ID_GREEN>;
--			function = LED_FUNCTION_LAN;
-+			label = "green:lan";
- 			gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
- 		};
- 
+@@ -40,7 +40,6 @@
  		power_led: led-power {
--			color = <LED_COLOR_ID_RED>;
--			function = LED_FUNCTION_POWER;
+ 			color = <LED_COLOR_ID_RED>;
+ 			function = LED_FUNCTION_POWER;
 -			linux,default-trigger = "heartbeat";
-+			label = "red:power";
  			gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_HIGH>;
  		};
  
- 		led-wan {
--			color = <LED_COLOR_ID_GREEN>;
--			function = LED_FUNCTION_WAN;
-+			label = "green:wan";
- 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
- 		};
- 
- 		led-wlan {
--			color = <LED_COLOR_ID_GREEN>;
--			function = LED_FUNCTION_WLAN;
-+			label = "green:wlan";
- 			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
- 		};
- 	};
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
-@@ -23,29 +23,22 @@
- 		pinctrl-0 = <&lan1_led_pin>, <&lan2_led_pin>, <&power_led_pin>, <&wan_led_pin>;
- 
- 		led-lan1 {
--			color = <LED_COLOR_ID_GREEN>;
--			function = LED_FUNCTION_LAN;
--			function-enumerator = <1>;
-+			label = "green:lan1";
- 			gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_HIGH>;
- 		};
- 
- 		led-lan2 {
--			color = <LED_COLOR_ID_GREEN>;
--			function = LED_FUNCTION_LAN;
--			function-enumerator = <2>;
-+			label = "green:lan2";
- 			gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_HIGH>;
- 		};
- 
+@@ -39,7 +39,6 @@
  		power_led: led-power {
--			color = <LED_COLOR_ID_RED>;
--			function = LED_FUNCTION_POWER;
+ 			color = <LED_COLOR_ID_RED>;
+ 			function = LED_FUNCTION_POWER;
 -			linux,default-trigger = "heartbeat";
-+			label = "red:power";
  			gpios = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
  		};
  
- 		led-wan {
--			color = <LED_COLOR_ID_GREEN>;
--			function = LED_FUNCTION_WAN;
-+			label = "green:wan";
- 			gpios = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
- 		};
- 	};
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
 @@ -18,6 +18,11 @@
@@ -350,7 +282,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -28,20 +33,17 @@
+@@ -28,20 +33,19 @@
  
  	leds {
  		compatible = "gpio-leds";
@@ -358,7 +290,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		pinctrl-0 = <&sys_led_pin>, <&usr_led_pin>;
  
  		sys_led: led-0 {
-+			label = "red:system";
++			color = <LED_COLOR_ID_RED>;
++			function = LED_FUNCTION_SYSTEM;
  			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
 -			label = "system-led";
 -			linux,default-trigger = "heartbeat";
@@ -367,7 +300,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  
  		usr_led: led-1 {
-+			label = "green:wan";
++			color = <LED_COLOR_ID_GREEN>;
++			function = LED_FUNCTION_WAN;
  			gpios = <&gpio2 RK_PC0 GPIO_ACTIVE_HIGH>;
 -			label = "user-led";
 -			pinctrl-names = "default";
@@ -412,15 +346,14 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -43,11 +48,9 @@
+@@ -43,11 +48,10 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&led_rgb_b>;
  
 -		led_rgb_b {
--			function = LED_FUNCTION_STATUS;
--			color = <LED_COLOR_ID_BLUE>;
 +		status_led: led_rgb_b {
-+			label = "blue:status";
+ 			function = LED_FUNCTION_STATUS;
+ 			color = <LED_COLOR_ID_BLUE>;
  			gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
 -			linux,default-trigger = "heartbeat";
  		};
@@ -479,15 +412,14 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	analog-sound {
-@@ -40,11 +45,9 @@
+@@ -40,11 +45,10 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&io_led>;
  
 -		io-led {
--			color = <LED_COLOR_ID_BLUE>;
--			function = LED_FUNCTION_STATUS;
 +		status_led: io-led {
-+			label = "blue:status";
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_STATUS;
  			gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
 -			linux,default-trigger = "heartbeat";
  		};

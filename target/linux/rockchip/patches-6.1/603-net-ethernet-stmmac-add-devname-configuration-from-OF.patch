@@ -1,6 +1,6 @@
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7114,6 +7114,7 @@ int stmmac_dvr_probe(struct device *devi
+@@ -7115,6 +7115,7 @@ int stmmac_dvr_probe(struct device *devi
  {
  	struct net_device *ndev = NULL;
  	struct stmmac_priv *priv;
@@ -8,7 +8,7 @@
  	u32 rxq;
  	int i, ret = 0;
  
-@@ -7122,6 +7123,9 @@ int stmmac_dvr_probe(struct device *devi
+@@ -7123,6 +7124,9 @@ int stmmac_dvr_probe(struct device *devi
  	if (!ndev)
  		return -ENOMEM;
  

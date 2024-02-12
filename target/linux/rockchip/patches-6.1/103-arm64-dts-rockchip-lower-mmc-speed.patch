@@ -36,7 +36,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -560,8 +560,7 @@
+@@ -562,8 +562,7 @@
  	no-sd;
  	non-removable;
  	max-frequency = <200000000>;
@@ -46,7 +46,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -572,7 +571,7 @@
+@@ -574,7 +573,7 @@
  	disable-wp;
  	no-mmc;
  	no-sdio;
@@ -57,7 +57,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -371,8 +371,7 @@
+@@ -372,8 +372,7 @@
  	no-sd;
  	non-removable;
  	max-frequency = <200000000>;
@@ -67,7 +67,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -383,9 +382,8 @@
+@@ -384,9 +383,8 @@
  	bus-width = <4>;
  	cap-mmc-highspeed;
  	cap-sd-highspeed;
@@ -80,7 +80,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
-@@ -361,8 +361,7 @@
+@@ -362,8 +362,7 @@
  	no-sd;
  	non-removable;
  	max-frequency = <200000000>;
@@ -90,7 +90,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -370,12 +369,11 @@
+@@ -371,12 +370,11 @@
  	bus-width = <4>;
  	cap-mmc-highspeed;
  	cap-sd-highspeed;

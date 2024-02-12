@@ -13,7 +13,7 @@
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
-@@ -423,6 +423,10 @@
+@@ -424,6 +424,10 @@
  	status = "okay";
  };
  
@@ -52,7 +52,7 @@
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -647,6 +647,10 @@
+@@ -649,6 +649,10 @@
  	status = "okay";
  };
  
@@ -65,7 +65,7 @@
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -438,6 +438,10 @@
+@@ -439,6 +439,10 @@
  	status = "okay";
  };
  
@@ -78,7 +78,7 @@
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
-@@ -358,6 +358,10 @@
+@@ -359,6 +359,10 @@
  	status = "okay";
  };
  

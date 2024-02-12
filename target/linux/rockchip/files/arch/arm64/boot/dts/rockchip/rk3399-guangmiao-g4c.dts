@@ -96,18 +96,21 @@
 		pinctrl-0 = <&lan_led_pin>, <&status_led_pin>, <&wan_led_pin>;
 
 		lan_led: led-lan {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_LAN;
 			gpios = <&gpio0 RK_PA3 GPIO_ACTIVE_HIGH>;
-			label = "green:lan";
 		};
 
 		status_led: led-status {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
-			label = "green:status";
 		};
 
 		wan_led: led-wan {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WAN;
 			gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
-			label = "green:wan";
 		};
 	};
 };
