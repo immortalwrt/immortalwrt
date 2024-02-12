@@ -87,7 +87,7 @@ int air_mii_cl22_write(struct mii_bus *ebus, int addr,
 	return ret;
 }
 
-static int __air_mii_cl45_read(struct phy_device *phydev, int devad, u16 reg)
+int __air_mii_cl45_read(struct phy_device *phydev, int devad, u16 reg)
 {
 	int ret = 0;
 	int data;
@@ -107,7 +107,7 @@ static int __air_mii_cl45_read(struct phy_device *phydev, int devad, u16 reg)
 	return data;
 }
 
-static int __air_mii_cl45_write(struct phy_device *phydev,
+int __air_mii_cl45_write(struct phy_device *phydev,
 					int devad, u16 reg, u16 write_data)
 {
 	int ret = 0;
@@ -334,6 +334,40 @@ int air_buckpbus_reg_write(struct phy_device *phydev,
 	}
 	return ret;
 }
+#if defined(CONFIG_OF)
+int en8811h_of_init(struct phy_device *phydev)
+{
+	struct device *dev = phydev_dev(phydev);
+	struct device_node *of_node = dev->of_node;
+	struct en8811h_priv *priv = phydev->priv;
+	u32 val = 0;
+
+	dev_info(dev, "%s: start\n", __func__);
+	if (of_find_property(of_node, "airoha,polarity", NULL)) {
+		if (of_property_read_u32(of_node, "airoha,polarity",
+					 &val) != 0) {
+			phydev_err(phydev, "airoha,polarity value is invalid.");
+			return -EINVAL;
+		}
+		if (val < AIR_POL_TX_REV_RX_NOR ||
+		    val > AIR_POL_TX_NOR_RX_REV) {
+			phydev_err(phydev,
+				   "airoha,polarity value %u out of range.",
+				   val);
+			return -EINVAL;
+		}
+		priv->pol = val;
+	} else
+		priv->pol = AIR_POL_TX_NOR_RX_NOR;
+
+	return 0;
+}
+#else
+int en8811h_of_init(struct phy_device *phydev)
+{
+	return -ESRCH;
+}
+#endif /* CONFIG_OF */
 
 static int air_resolve_an_speed(struct phy_device *phydev)
 {
@@ -588,29 +622,19 @@ static int air_set_mode(struct phy_device *phydev, int dbg_mode)
 		if (unlikely(ret < 0))
 			break;
 		break;
-	case AIR_PORT_MODE_FC_DIS:
-		pr_notice("\nFlow Control Disabled\n");
-		pbus_data = air_buckpbus_reg_read(phydev, 0xe0008);
-		pbus_data &= ~(BIT(6) | BIT(7));
-		ret = air_buckpbus_reg_write(phydev, 0xe0008, pbus_data);
-		if (unlikely(ret < 0))
-			break;
-		pbus_data = air_buckpbus_reg_read(phydev, 0xe000c);
-		pbus_data &= ~(BIT(0) | BIT(1));
-		ret = air_buckpbus_reg_write(phydev, 0xe000c, pbus_data);
+	case AIR_PORT_MODE_SSC_DISABLE:
+		pr_notice("\nSSC Disabled\n");
+		pbus_data = air_buckpbus_reg_read(phydev, 0xca000);
+		pbus_data &= ~BIT(21);
+		ret = air_buckpbus_reg_write(phydev, 0xca000, pbus_data);
 		if (unlikely(ret < 0))
 			break;
 		break;
-	case AIR_PORT_MODE_FC_EN:
-		pr_notice("\nFlow Control Enabled\n");
-		pbus_data = air_buckpbus_reg_read(phydev, 0xe0008);
-		pbus_data |= (BIT(6) | BIT(7));
-		ret = air_buckpbus_reg_write(phydev, 0xe0008, pbus_data);
-		if (unlikely(ret < 0))
-			break;
-		pbus_data = air_buckpbus_reg_read(phydev, 0xe000c);
-		pbus_data |= (BIT(0) | BIT(1));
-		ret = air_buckpbus_reg_write(phydev, 0xe000c, pbus_data);
+	case AIR_PORT_MODE_SSC_ENABLE:
+		pr_notice("\nSSC Enabled\n");
+		pbus_data = air_buckpbus_reg_read(phydev, 0xca000);
+		pbus_data |= BIT(21);
+		ret = air_buckpbus_reg_write(phydev, 0xca000, pbus_data);
 		if (unlikely(ret < 0))
 			break;
 		break;
@@ -645,7 +669,6 @@ static int airphy_info_show(struct seq_file *seq, void *v)
 	val = (air_buckpbus_reg_read(phydev, 0xca0f8) & 0x3);
 	seq_printf(seq, "| Tx, Rx Polarity      : %s(%02d)\n",
 						tx_rx_string[val], val);
-
 	seq_puts(seq, "\n");
 
 	return 0;
@@ -714,7 +737,7 @@ static int airphy_ss_counter_show(struct phy_device *phydev,
 	seq_printf(seq, "%010u |\n", pkt_cnt);
 	seq_puts(seq, "| RX Terminal              :");
 	pkt_cnt = air_buckpbus_reg_read(phydev, 0xC60C0);
-	seq_printf(seq, "%010u |\n\n", pkt_cnt);
+	seq_printf(seq, "%010u |\n", pkt_cnt);
 	ret = air_buckpbus_reg_write(phydev, 0xC602C, 0x4);
 	if (ret < 0)
 		return ret;
@@ -732,9 +755,29 @@ static int airphy_counter_show(struct seq_file *seq, void *v)
 	if (ret < 0)
 		return ret;
 	seq_puts(seq, "==========AIR PHY COUNTER==========\n");
+	if (phydev->link) {
+		ret = airphy_ss_counter_show(phydev, seq);
+		if (ret < 0)
+			return ret;
+	}
 	ret = airphy_fcm_counter_show(phydev, seq);
 	if (ret < 0)
 		return ret;
+	if (phydev->link) {
+		seq_puts(seq, "|\t<<MAC Counter>>\n");
+		seq_puts(seq, "| Tx Error from System side:");
+		pkt_cnt = air_buckpbus_reg_read(phydev, 0x131000);
+		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_puts(seq, "| Rx Error to System side  :");
+		pkt_cnt = air_buckpbus_reg_read(phydev, 0x132000);
+		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_puts(seq, "| Tx from System side      :");
+		pkt_cnt = air_buckpbus_reg_read(phydev, 0x131004);
+		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_puts(seq, "| Rx to System Side        :");
+		pkt_cnt = air_buckpbus_reg_read(phydev, 0x132004);
+		seq_printf(seq, "%010u |\n", pkt_cnt);
+	}
 	if (phydev->link && phydev->speed == SPEED_2500) {
 		seq_puts(seq, "|\t<<LS Counter>>\n");
 		ret = air_buckpbus_reg_write(phydev, 0x30718, 0x10);
@@ -744,37 +787,37 @@ static int airphy_counter_show(struct seq_file *seq, void *v)
 		if (ret < 0)
 			return ret;
 		seq_puts(seq, "|\tBefore EF\n");
-		seq_puts(seq, "| TX to Line side_S        :");
+		seq_puts(seq, "| Tx to Line side_S        :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x3071c);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| TX to Line side_T        :");
+		seq_puts(seq, "| Tx to Line side_T        :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30720);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX from Line side_S      :");
-		pkt_cnt = air_buckpbus_reg_read(phydev, 0x3072c);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX from Line side_T      :");
-		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30730);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| TX_ENC                   :");
+		seq_puts(seq, "| Tx_ENC                   :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30724);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX_DEC                   :");
+		seq_puts(seq, "| Rx from Line side_S      :");
+		pkt_cnt = air_buckpbus_reg_read(phydev, 0x3072c);
+		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_puts(seq, "| Rx from Line side_T      :");
+		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30730);
+		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_puts(seq, "| Rx_DEC                   :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30728);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
 		seq_puts(seq, "|\tAfter EF\n");
-		seq_puts(seq, "| TX to Line side_S        :");
+		seq_puts(seq, "| Tx to Line side_S        :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30734);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| TX to Line side_T        :");
+		seq_puts(seq, "| Tx to Line side_T        :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30738);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX from Line side_S      :");
+		seq_puts(seq, "| Rx from Line side_S      :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30764);
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX from Line side_T      :");
+		seq_puts(seq, "| Rx from Line side_T      :");
 		pkt_cnt = air_buckpbus_reg_read(phydev, 0x30768);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_printf(seq, "%010u |\n\n", pkt_cnt);
 		ret = air_buckpbus_reg_write(phydev, 0x30718, 0x13);
 		if (ret < 0)
 			return ret;
@@ -787,29 +830,16 @@ static int airphy_counter_show(struct seq_file *seq, void *v)
 		ret = air_buckpbus_reg_write(phydev, 0x30718, 0x0);
 		if (ret < 0)
 			return ret;
-		seq_puts(seq, "|\t<<MAC Counter>>\n");
-		seq_puts(seq, "| TX Error from System side:");
-		pkt_cnt = air_buckpbus_reg_read(phydev, 0x131000);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX Error to System side  :");
-		pkt_cnt = air_buckpbus_reg_read(phydev, 0x132000);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| TX from System side      :");
-		pkt_cnt = air_buckpbus_reg_read(phydev, 0x131004);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX to System Side        :");
-		pkt_cnt = air_buckpbus_reg_read(phydev, 0x132004);
-		seq_printf(seq, "%010u |\n", pkt_cnt);
 	}
 	if (phydev->link && ((phydev->speed != SPEED_2500))) {
 		seq_puts(seq, "|\t<<LS Counter>>\n");
 		ret = air_mii_cl22_write(mbus, addr, 0x1f, 1);
 		if (ret < 0)
 			return ret;
-		seq_puts(seq, "| RX from Line side        :");
+		seq_puts(seq, "| Rx from Line side        :");
 		pkt_cnt = air_mii_cl22_read(mbus, addr, 0x12) & 0x7fff;
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| RX Error from Line side  :");
+		seq_puts(seq, "| Rx Error from Line side  :");
 		pkt_cnt = air_mii_cl22_read(mbus, addr, 0x17) & 0xff;
 		seq_printf(seq, "%010u |\n", pkt_cnt);
 		ret = air_mii_cl22_write(mbus, addr, 0x1f, 0);
@@ -821,19 +851,14 @@ static int airphy_counter_show(struct seq_file *seq, void *v)
 		ret = air_mii_cl22_write(mbus, addr, 0x10, 0xBF92);
 		if (ret < 0)
 			return ret;
-		seq_puts(seq, "| TX to Line side          :");
+		seq_puts(seq, "| Tx to Line side          :");
 		pkt_cnt = (air_mii_cl22_read(mbus, addr, 0x11) & 0x7ffe) >> 1;
 		seq_printf(seq, "%010u |\n", pkt_cnt);
-		seq_puts(seq, "| TX Error to Line side    :");
+		seq_puts(seq, "| Tx Error to Line side    :");
 		pkt_cnt = air_mii_cl22_read(mbus, addr, 0x12);
 		pkt_cnt &= 0x7f;
-		seq_printf(seq, "%010u |\n", pkt_cnt);
+		seq_printf(seq, "%010u |\n\n", pkt_cnt);
 		ret = air_mii_cl22_write(mbus, addr, 0x1f, 0);
-		if (ret < 0)
-			return ret;
-	}
-	if (phydev->link) {
-		ret = airphy_ss_counter_show(phydev, seq);
 		if (ret < 0)
 			return ret;
 	}
@@ -901,6 +926,7 @@ static void airphy_port_mode_help(void)
 			"echo 2500 > /[debugfs]/port_mode\n"
 			"echo 1000 > /[debugfs]/port_mode\n"
 			"echo 100 > /[debugfs]/port_mode\n"
+			"echo ssc ena/dis > /[debugfs]/port_mode\n"
 			"echo power up/down >  /[debugfs]/port_mode\n");
 }
 
@@ -941,9 +967,11 @@ static ssize_t airphy_port_mode(struct file *file, const char __user *ptr,
 			ret = air_set_mode(phydev, AIR_PORT_MODE_POWER_DOWN);
 		else if (!strncmp("up", param, strlen("up")))
 			ret = air_set_mode(phydev, AIR_PORT_MODE_POWER_UP);
-	} else if (!strncmp("int_sw_release", cmd, strlen("int_sw_release"))) {
-		ret = air_pbus_reg_write(phydev, 0xcf928, 0x0);
-		pr_notice("\ninternal sw reset released\n");
+	} else if (!strncmp("ssc", cmd, strlen("ssc"))) {
+		if (!strncmp("dis", param, strlen("dis")))
+			ret = air_set_mode(phydev, AIR_PORT_MODE_SSC_DISABLE);
+		else if (!strncmp("ena", param, strlen("ena")))
+			ret = air_set_mode(phydev, AIR_PORT_MODE_SSC_ENABLE);
 	} else if (!strncmp("help", cmd, strlen("help"))) {
 		airphy_port_mode_help();
 	}
@@ -1088,10 +1116,24 @@ static int dbg_regs_show(struct seq_file *seq, void *v)
 	int addr = phydev_addr(phydev);
 
 	seq_puts(seq, "\t<<DEBUG REG DUMP>>\n");
+	seq_printf(seq, "| RG_MII_BMCR           : 0x%08x |\n",
+		   air_mii_cl22_read(mbus, addr, MII_BMCR));
 	seq_printf(seq, "| RG_MII_BMSR           : 0x%08x |\n",
 		   air_mii_cl22_read(mbus, addr, MII_BMSR));
+	seq_printf(seq, "| RG_MII_ADVERTISE      : 0x%08x |\n",
+		   air_mii_cl22_read(mbus, addr, MII_ADVERTISE));
+	seq_printf(seq, "| RG_MII_LPA            : 0x%08x |\n",
+		   air_mii_cl22_read(mbus, addr, MII_LPA));
+	seq_printf(seq, "| RG_MII_CTRL1000       : 0x%08x |\n",
+		   air_mii_cl22_read(mbus, addr, MII_CTRL1000));
+	seq_printf(seq, "| RG_MII_STAT1000       : 0x%08x |\n",
+		   air_mii_cl22_read(mbus, addr, MII_STAT1000));
 	seq_printf(seq, "| RG_MII_REF_CLK        : 0x%08x |\n",
 		   air_mii_cl22_read(mbus, addr, 0x1d));
+	seq_printf(seq, "| RG_HW_STRAP1          : 0x%08x |\n",
+		   air_buckpbus_reg_read(phydev, 0xcf910));
+	seq_printf(seq, "| RG_HW_STRAP2          : 0x%08x |\n",
+		   air_buckpbus_reg_read(phydev, 0xcf914));
 	seq_printf(seq, "| RG_SYS_LINK_MODE      : 0x%08x |\n",
 		   air_buckpbus_reg_read(phydev, 0xe0004));
 	seq_printf(seq, "| RG_FCM_CTRL           : 0x%08x |\n",
@@ -1119,11 +1161,144 @@ static int airphy_dbg_regs_show_open(struct inode *inode, struct file *file)
 	return single_open(file, dbg_regs_show, inode->i_private);
 }
 
+
+static int airphy_temp_show(struct seq_file *seq, void *v)
+{
+	struct phy_device *phydev = seq->private;
+	int ret = 0;
+	u32 pbus_value = 0;
+
+	seq_puts(seq, "<<AIR EN8811H Temp>>\n");
+	air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1100);
+	air_mii_cl45_write(phydev, 0x1e, 0x800f, 0xe5);
+	pbus_value = air_buckpbus_reg_read(phydev, 0x3B38);
+	seq_printf(seq, "| Temperature  : %dC |\n",
+						pbus_value);
+	seq_puts(seq, "\n");
+
+	return 0;
+}
+
+static int airphy_temp_show_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, airphy_temp_show, inode->i_private);
+}
+
+
+static unsigned int air_read_lp_speed(struct phy_device *phydev)
+{
+	int val = 0, an = AUTONEG_DISABLE;
+	unsigned int ret = 0;
+	int count = 15, i, lpa, lpagb;
+	struct air_lp_speed *m;
+	struct device *dev = phydev_dev(phydev);
+	struct mii_bus *mbus = phydev_mdio_bus(phydev);
+	int addr = phydev_addr(phydev);
+
+	val = air_mii_cl22_read(mbus, addr, MII_BMCR) | BIT(9);
+	ret = air_mii_cl22_write(mbus, addr, MII_BMCR, val);
+	if (unlikely(ret < 0))
+		return ret;
+	msleep(1500);
+	do {
+		msleep(100);
+		ret = air_mii_cl45_read(phydev, MDIO_MMD_AN, 0x21);
+		ret &= BIT(5);
+		if (ret)
+			break;
+		count--;
+	} while (count);
+
+	count = 10;
+	do {
+		msleep(500);
+		val = air_mii_cl22_read(mbus, addr, MII_BMSR);
+		if (val < 0) {
+			dev_err(dev, "MII_BMSR reg 0x%x!\n", val);
+			return val;
+		}
+		val = air_mii_cl22_read(mbus, addr, MII_BMSR);
+		if (val < 0) {
+			dev_err(dev, "MII_BMSR reg 0x%x!\n", val);
+			return val;
+		}
+		dev_dbg(dev, "val 0x%x\n", val);
+		if (val & BMSR_LSTATUS) {
+			val = air_mii_cl22_read(mbus, addr, MII_LPA);
+			if (val < 0)
+				return val;
+			lpa = (val & (BIT(5) | BIT(6) | BIT(7) | BIT(8))) >> 5;
+			val = air_mii_cl22_read(mbus, addr, MII_STAT1000);
+			if (val < 0)
+				return val;
+			lpagb = GET_BIT(val, 11) << 4;
+			ret |= (lpagb | lpa);
+			return ret;
+		}
+	} while (count--);
+
+	return 0;
+}
+
+static int airphy_lp_speed(struct seq_file *seq, void *v)
+{
+	unsigned int ret = 0, val = 0, did1 = 0, i;
+	struct phy_device *phydev = seq->private;
+	static const struct {
+		unsigned int bit_index;
+		const char *name;
+	} mode_defs[] = {
+		{ AIR_LINK_MODE_10baseT_Half_BIT,
+		"10baseT/Half" },
+		{ AIR_LINK_MODE_10baseT_Full_BIT,
+		"10baseT/Full" },
+		{ AIR_LINK_MODE_100baseT_Half_BIT,
+		"100baseT/Half" },
+		{ AIR_LINK_MODE_100baseT_Full_BIT,
+		"100baseT/Full" },
+		{ AIR_LINK_MODE_1000baseT_Full_BIT,
+		"1000baseT/Full" },
+		{ AIR_LINK_MODE_2500baseT_Full_BIT,
+		"2500baseT/Full" }
+	};
+
+	seq_printf(seq, "%s Link Partner Ability:\n",
+			dev_name(phydev_dev(phydev)));
+	ret = air_read_lp_speed(phydev);
+	if (val < 0)
+		return val;
+	for (i = 0; i < ARRAY_SIZE(mode_defs); i++) {
+		if (ret & BIT(mode_defs[i].bit_index)) {
+			seq_printf(seq, "\t\t\t %s\n",
+						mode_defs[i].name);
+			did1++;
+		}
+	}
+	if (did1 == 0)
+		seq_puts(seq, "\t\t\t Not reported\n");
+
+	return 0;
+}
+
+static int airphy_lp_speed_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, airphy_lp_speed, inode->i_private);
+}
+
+static const struct file_operations airphy_lp_speed_fops = {
+	.owner = THIS_MODULE,
+	.open = airphy_lp_speed_open,
+	.read = seq_read,
+	.llseek = noop_llseek,
+	.release = single_release,
+};
+
 static const struct file_operations airphy_info_fops = {
 	.owner = THIS_MODULE,
 	.open = airphy_info_open,
 	.read = seq_read,
 	.llseek = noop_llseek,
+	.release = single_release,
 };
 
 static const struct file_operations airphy_counter_fops = {
@@ -1131,6 +1306,7 @@ static const struct file_operations airphy_counter_fops = {
 	.open = airphy_counter_open,
 	.read = seq_read,
 	.llseek = noop_llseek,
+	.release = single_release,
 };
 
 static const struct file_operations airphy_debugfs_buckpbus_fops = {
@@ -1166,6 +1342,7 @@ static const struct file_operations airphy_link_status_fops = {
 	.open = airphy_link_status_open,
 	.read = seq_read,
 	.llseek = noop_llseek,
+	.release = single_release,
 };
 
 static const struct file_operations airphy_dbg_reg_show_fops = {
@@ -1173,6 +1350,15 @@ static const struct file_operations airphy_dbg_reg_show_fops = {
 	.open = airphy_dbg_regs_show_open,
 	.read = seq_read,
 	.llseek = noop_llseek,
+	.release = single_release,
+};
+
+static const struct file_operations airphy_temp_fops = {
+	.owner = THIS_MODULE,
+	.open = airphy_temp_show_open,
+	.read = seq_read,
+	.llseek = noop_llseek,
+	.release = single_release,
 };
 
 int airphy_debugfs_init(struct phy_device *phydev)
@@ -1212,12 +1398,18 @@ int airphy_debugfs_init(struct phy_device *phydev)
 	debugfs_create_file(DEBUGFS_DBG_REG_SHOW, S_IFREG | 0444,
 					dir, phydev,
 					&airphy_dbg_reg_show_fops);
+	debugfs_create_file(DEBUGFS_TEMPERATURE, S_IFREG | 0444,
+					dir, phydev,
+					&airphy_temp_fops);
+	debugfs_create_file(DEBUGFS_LP_SPEED, S_IFREG | 0444,
+					dir, phydev,
+					&airphy_lp_speed_fops);
 
 	priv->debugfs_root = dir;
 	return ret;
 }
 
-void air_debugfs_remove(struct phy_device *phydev)
+void airphy_debugfs_remove(struct phy_device *phydev)
 {
 	struct en8811h_priv *priv = phydev->priv;
 
