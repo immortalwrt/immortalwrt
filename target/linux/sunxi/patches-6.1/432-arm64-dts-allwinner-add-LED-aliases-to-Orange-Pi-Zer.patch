@@ -1,0 +1,40 @@
+From ca7c68681b0b375f88aaeb1498c98553f9d0772b Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Mon, 18 Dec 2023 12:11:57 +0800
+Subject: [PATCH] arm64: dts: allwinner: add LED aliases to Orange Pi Zero
+ series
+
+Add OpenWrt's LED aliases for showing system status.
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+---
+ .../boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi     | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
+@@ -16,6 +16,11 @@
+ 	aliases {
+ 		ethernet0 = &emac0;
+ 		serial0 = &uart0;
++
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen {
+@@ -25,11 +30,10 @@
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		led-0 {
++		power_led: led-0 {
+ 			function = LED_FUNCTION_POWER;
+ 			color = <LED_COLOR_ID_RED>;
+ 			gpios = <&pio 2 12 GPIO_ACTIVE_HIGH>; /* PC12 */
+-			default-state = "on";
+ 		};
+ 
+ 		led-1 {
