@@ -20,7 +20,6 @@
 #include <linux/ethtool.h>
 #include <linux/delay.h>
 #include <linux/debugfs.h>
-#include <linux/of.h>
 #include "air_en8811h_api.h"
 #include "air_en8811h_fw.h"
 #include "air_en8811h.h"
@@ -113,15 +112,16 @@ static int en8811h_load_firmware(struct phy_device *phydev)
 	struct device *dev = phydev_dev(phydev);
 	int ret = 0;
 	u32 pbus_value = 0;
-#ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
 	struct en8811h_priv *priv = phydev->priv;
-#endif
-	ret = air_buckpbus_reg_write(phydev, 0x0f0018, 0x0);
+
+	ret = air_buckpbus_reg_write(phydev,
+					0x0f0018, 0x0);
 	if (ret < 0)
 		return ret;
 	pbus_value = air_buckpbus_reg_read(phydev, 0x800000);
 	pbus_value |= BIT(11);
-	ret = air_buckpbus_reg_write(phydev, 0x800000, pbus_value);
+	ret = air_buckpbus_reg_write(phydev,
+					0x800000, pbus_value);
 	if (ret < 0)
 		return ret;
 	/* Download DM */
@@ -131,6 +131,7 @@ static int en8811h_load_firmware(struct phy_device *phydev)
 			"MDIOWriteBuf 0x00000000 fail, ret: %d\n", ret);
 		return ret;
 	}
+
 	/* Download PM */
 	ret = MDIOWriteBuf(phydev, 0x00100000, EthMD32_pm_size, EthMD32_pm);
 	if (ret < 0) {
@@ -304,26 +305,21 @@ static int en8811h_probe(struct phy_device *phydev)
 	struct mii_bus *mbus = phydev_mdio_bus(phydev);
 	int addr = phydev_addr(phydev);
 
-#ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
 	struct en8811h_priv *priv;
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 	phydev->priv = priv;
-#endif /*CONFIG_AIROHA_EN8811H_PHY_DEBUGFS*/
 	ret = air_pbus_reg_write(phydev, 0xcf928, 0x0);
 	if (ret < 0)
-		return ret;
+		goto priv_free;
 	pid1 = air_mii_cl22_read(mbus, addr, MII_PHYSID1);
-	if (pid1 < 0)
-		return pid1;
 	pid2 = air_mii_cl22_read(mbus, addr, MII_PHYSID2);
-	if (pid2 < 0)
-		return pid2;
 	dev_info(dev, "PHY = %x - %x\n", pid1, pid2);
 	if ((pid1 != EN8811H_PHY_ID1) || (pid2 != EN8811H_PHY_ID2)) {
-		dev_err(dev, "EN8811H does not exist !\n");
+		dev_err(dev, "EN8811H dose not exist!!\n");
+		kfree(priv);
 		return -ENODEV;
 	}
 	pbus_value = air_buckpbus_reg_read(phydev, 0xcf914);
@@ -333,15 +329,14 @@ static int en8811h_probe(struct phy_device *phydev)
 	ret = en8811h_load_firmware(phydev);
 	if (ret < 0) {
 		dev_err(dev, "EN8811H load firmware fail.\n");
-		return ret;
+		goto priv_free;
 	}
 #ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
 	ret = airphy_debugfs_init(phydev);
 	if (ret < 0) {
 		dev_err(dev, "air_debug_procfs_init fail. (ret=%d)\n", ret);
-		air_debugfs_remove(phydev);
-		kfree(priv);
-		return ret;
+		airphy_debugfs_remove(phydev);
+		goto priv_free;
 	}
 #endif /* CONFIG_AIROHA_EN8811H_PHY_DEBUGFS */
 	retry = MAX_RETRY;
@@ -361,32 +356,36 @@ static int en8811h_probe(struct phy_device *phydev)
 			"Check MD32 FW Version(0x3b3c) : %08x\n", pbus_value);
 		dev_err(dev,
 			"EN8811H initialize fail!\n");
-		return 0;
+		goto priv_free;
 	}
 	/* Mode selection*/
 	dev_info(dev, "EN8811H Mode 1 !\n");
 	ret = air_mii_cl45_write(phydev, 0x1e, 0x800c, 0x0);
 	if (ret < 0)
-		return ret;
+		goto priv_free;
 	ret = air_mii_cl45_write(phydev, 0x1e, 0x800d, 0x0);
 	if (ret < 0)
-		return ret;
+		goto priv_free;
 	ret = air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1101);
 	if (ret < 0)
-		return ret;
+		goto priv_free;
 	ret = air_mii_cl45_write(phydev, 0x1e, 0x800f, 0x0002);
 	if (ret < 0)
-		return ret;
+		goto priv_free;
 	/* Serdes polarity */
+	ret = en8811h_of_init(phydev);
+	if (ret < 0)
+		goto priv_free;
 	pbus_value = air_buckpbus_reg_read(phydev, 0xca0f8);
 	pbus_value &= ~0x3;
-	pbus_value |= ((device_property_read_bool(dev, "airoha,rx-pol-reverse") ?
-				EN8811H_RX_POL_REVERSE : EN8811H_RX_POL_NORMAL) |
-			(device_property_read_bool(dev, "airoha,tx-pol-reverse") ?
-				EN8811H_TX_POL_REVERSE : EN8811H_TX_POL_NORMAL));
+#if defined(CONFIG_OF)
+	pbus_value |= priv->pol;
+#else
+	pbus_value |= (EN8811H_RX_POL_NORMAL | EN8811H_TX_POL_NORMAL);
+#endif
 	ret = air_buckpbus_reg_write(phydev, 0xca0f8, pbus_value);
 	if (ret < 0)
-		return ret;
+		goto priv_free;
 	pbus_value = air_buckpbus_reg_read(phydev, 0xca0f8);
 	dev_info(dev, "Tx, Rx Polarity : %08x\n", pbus_value);
 	pbus_value = air_buckpbus_reg_read(phydev, 0x3b3c);
@@ -395,25 +394,29 @@ static int en8811h_probe(struct phy_device *phydev)
 	ret = en8811h_led_init(phydev);
 	if (ret < 0) {
 		dev_err(dev, "en8811h_led_init fail. (ret=%d)\n", ret);
-		return ret;
+		goto priv_free;
 	}
 #endif
 	dev_info(dev, "EN8811H initialize OK! (%s)\n", EN8811H_DRIVER_VERSION);
 	return 0;
+priv_free:
+	kfree(priv);
+	return ret;
 }
 void en8811h_remove(struct phy_device *phydev)
 {
-#ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
+
 	struct en8811h_priv *priv = phydev->priv;
 	struct device *dev = phydev_dev(phydev);
 
 	dev_dbg(dev, "%s: start\n", __func__);
 	if (priv) {
-		dev_info(dev, "%s: air_debugfs_remove\n", __func__);
-		air_debugfs_remove(phydev);
+		dev_info(dev, "%s: airphy_debugfs_remove\n", __func__);
+#ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
+		airphy_debugfs_remove(phydev);
+#endif /*CONFIG_AIROHA_EN8811H_PHY_DEBUGFS*/
 		kfree(priv);
 	}
-#endif /*CONFIG_AIROHA_EN8811H_PHY_DEBUGFS*/
 }
 
 static struct phy_driver en8811h_driver[] = {
@@ -425,8 +428,8 @@ static struct phy_driver en8811h_driver[] = {
 	.remove         = en8811h_remove,
 #if (KERNEL_VERSION(4, 5, 0) < LINUX_VERSION_CODE)
 	.get_features   = en8811h_get_features,
-	.read_mmd       = air_mii_cl45_read,
-	.write_mmd      = air_mii_cl45_write,
+	.read_mmd       = __air_mii_cl45_read,
+	.write_mmd      = __air_mii_cl45_write,
 #endif
 } };
 

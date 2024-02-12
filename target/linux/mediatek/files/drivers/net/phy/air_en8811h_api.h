@@ -21,8 +21,6 @@
 #define phydev_dev(_dev) (&_dev->mdio.dev)
 #endif
 
-#define BUFFER_LENGTH 512
-
 #define DEBUGFS_COUNTER		        "counter"
 #define DEBUGFS_DRIVER_INFO	        "drvinfo"
 #define DEBUGFS_PORT_MODE           "port_mode"
@@ -31,6 +29,8 @@
 #define DEBUGFS_POLARITY            "polarity"
 #define DEBUGFS_LINK_STATUS         "link_status"
 #define DEBUGFS_DBG_REG_SHOW        "dbg_regs_show"
+#define DEBUGFS_TEMPERATURE         "temp"
+#define DEBUGFS_LP_SPEED            "lp_speed"
 
 enum air_port_mode {
 	AIR_PORT_MODE_FORCE_100,
@@ -39,10 +39,8 @@ enum air_port_mode {
 	AIR_PORT_MODE_AUTONEGO,
 	AIR_PORT_MODE_POWER_DOWN,
 	AIR_PORT_MODE_POWER_UP,
-	AIR_PORT_MODE_FC_UNSUPPORT,
-	AIR_PORT_MODE_FC_SUPPORT,
-	AIR_PORT_MODE_FC_DIS,
-	AIR_PORT_MODE_FC_EN,
+	AIR_PORT_MODE_SSC_DISABLE,
+	AIR_PORT_MODE_SSC_ENABLE,
 	AIR_PORT_MODE_LAST = 0xFF,
 };
 
@@ -73,6 +71,9 @@ int air_mii_cl22_write(struct mii_bus *ebus, int addr,
 	unsigned int phy_register, unsigned int write_data);
 int air_mii_cl22_read(struct mii_bus *ebus,
 	int addr, unsigned int phy_register);
+int __air_mii_cl45_read(struct phy_device *phydev, int devad, u16 reg);
+int __air_mii_cl45_write(struct phy_device *phydev,
+	int devad, u16 reg, u16 write_data);
 int air_mii_cl45_read(struct phy_device *phydev, int devad, u16 reg);
 int air_mii_cl45_write(struct phy_device *phydev,
 	int devad, u16 reg, u16 write_data);
@@ -80,8 +81,9 @@ unsigned int air_buckpbus_reg_read(struct phy_device *phydev,
 	unsigned int pbus_address);
 int air_buckpbus_reg_write(struct phy_device *phydev,
 	unsigned int pbus_address, unsigned int pbus_data);
+int en8811h_of_init(struct phy_device *phydev);
 #ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
 int airphy_debugfs_init(struct phy_device *phydev);
-void air_debugfs_remove(struct phy_device *phydev);
+void airphy_debugfs_remove(struct phy_device *phydev);
 #endif /*CONFIG_AIROHA_EN8811H_PHY_DEBUGFS*/
 #endif /* End of __EN8811H_API_H */
