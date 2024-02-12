@@ -4,6 +4,7 @@
  */
 
 /dts-v1/;
+#include <dt-bindings/leds/common.h>
 #include "rk3568-mrkaio-m68s.dtsi"
 
 / {
