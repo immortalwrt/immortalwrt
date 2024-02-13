@@ -16,7 +16,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -141,6 +141,11 @@
+@@ -145,6 +145,11 @@
  	status = "disabled";
  };
  
@@ -28,7 +28,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &gmac2io {
  	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
  	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
-@@ -206,6 +211,7 @@
+@@ -210,6 +215,7 @@
  				regulator-name = "vdd_log";
  				regulator-always-on;
  				regulator-boot-on;
@@ -36,7 +36,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
-@@ -220,6 +226,7 @@
+@@ -224,6 +230,7 @@
  				regulator-name = "vdd_arm";
  				regulator-always-on;
  				regulator-boot-on;

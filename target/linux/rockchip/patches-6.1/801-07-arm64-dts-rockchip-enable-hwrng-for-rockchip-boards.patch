@@ -52,7 +52,7 @@
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -649,6 +649,10 @@
+@@ -650,6 +650,10 @@
  	status = "okay";
  };
  
