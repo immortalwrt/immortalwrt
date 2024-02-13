@@ -16,6 +16,7 @@ DEFAULT_PACKAGES += \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
 	kmod-qca-nss-dp qca-ssdk-shell \
 	kmod-ath11k-ahb wpad-openssl \
-	uboot-envtools automount losetup
+	uboot-envtools losetup \
+	automount cpufreq
 
 $(eval $(call BuildTarget))

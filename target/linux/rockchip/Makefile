@@ -16,7 +16,7 @@ endef
 include $(INCLUDE_DIR)/target.mk
 
 DEFAULT_PACKAGES += uboot-envtools partx-utils mkf2fs kmod-gpio-button-hotplug \
-		    automount fdisk
+		    fdisk automount cpufreq
 
 KERNELNAME:=Image dtbs
 
