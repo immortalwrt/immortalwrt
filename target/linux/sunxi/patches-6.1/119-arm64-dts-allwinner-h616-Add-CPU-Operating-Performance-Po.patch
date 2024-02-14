@@ -119,7 +119,7 @@ Signed-off-by: Martin Botka <martin.botka@somainline.org>
 +
 +		opp-1608000000 {
 +			opp-hz = /bits/ 64 <1608000000>;
-+			opp-microvolt = <1100000 1100000 1100000>;
++			opp-microvolt = <1100000 1100000 1200000>;
 +			clock-latency-ns = <244144>; /* 8 32k periods */
 +		};
 +	};
