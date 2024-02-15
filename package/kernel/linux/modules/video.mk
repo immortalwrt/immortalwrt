@@ -271,8 +271,7 @@ define KernelPackage/drm
 	CONFIG_DRM_FBDEV_EMULATION=y \
 	CONFIG_DRM_FBDEV_OVERALLOC=100 \
 	CONFIG_HDMI
-  FILES:= \
-	$(LINUX_DIR)/drivers/gpu/drm/drm.ko
+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm.ko
   AUTOLOAD:=$(call AutoLoad,05,drm)
 endef
 
@@ -1199,8 +1198,7 @@ define KernelPackage/drm-i915
 	CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS=n \
 	CONFIG_DRM_I915_USERPTR=y \
 	CONFIG_DRM_I915_WERROR=n
-  FILES:= \
-      $(LINUX_DIR)/drivers/gpu/drm/i915/i915.ko
+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/i915/i915.ko
   AUTOLOAD:=$(call AutoProbe,i915)
 endef
 
