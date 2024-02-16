@@ -1,0 +1,64 @@
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	linux-rockchip@lists.infradead.org,
+	linux-phy@lists.infradead.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Frank Wang <frank.wang@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v2 07/12] arm64: dts: rockchip: reorder usb2phy properties for rk3588
+Date: Tue, 13 Feb 2024 17:32:41 +0100	[thread overview]
+Message-ID: <20240213163609.44930-8-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
+
+Reorder common DT properties alphabetically for usb2phy, according
+to latest DT style rules.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -536,13 +536,13 @@
+ 		u2phy2: usb2phy@8000 {
+ 			compatible = "rockchip,rk3588-usb2phy";
+ 			reg = <0x8000 0x10>;
+-			interrupts = <GIC_SPI 391 IRQ_TYPE_LEVEL_HIGH 0>;
+-			resets = <&cru SRST_OTGPHY_U2_0>, <&cru SRST_P_USB2PHY_U2_0_GRF0>;
+-			reset-names = "phy", "apb";
++			#clock-cells = <0>;
+ 			clocks = <&cru CLK_USB2PHY_HDPTXRXPHY_REF>;
+ 			clock-names = "phyclk";
+ 			clock-output-names = "usb480m_phy2";
+-			#clock-cells = <0>;
++			interrupts = <GIC_SPI 391 IRQ_TYPE_LEVEL_HIGH 0>;
++			resets = <&cru SRST_OTGPHY_U2_0>, <&cru SRST_P_USB2PHY_U2_0_GRF0>;
++			reset-names = "phy", "apb";
+ 			status = "disabled";
+ 
+ 			u2phy2_host: host-port {
+@@ -561,13 +561,13 @@
+ 		u2phy3: usb2phy@c000 {
+ 			compatible = "rockchip,rk3588-usb2phy";
+ 			reg = <0xc000 0x10>;
+-			interrupts = <GIC_SPI 392 IRQ_TYPE_LEVEL_HIGH 0>;
+-			resets = <&cru SRST_OTGPHY_U2_1>, <&cru SRST_P_USB2PHY_U2_1_GRF0>;
+-			reset-names = "phy", "apb";
++			#clock-cells = <0>;
+ 			clocks = <&cru CLK_USB2PHY_HDPTXRXPHY_REF>;
+ 			clock-names = "phyclk";
+ 			clock-output-names = "usb480m_phy3";
+-			#clock-cells = <0>;
++			interrupts = <GIC_SPI 392 IRQ_TYPE_LEVEL_HIGH 0>;
++			resets = <&cru SRST_OTGPHY_U2_1>, <&cru SRST_P_USB2PHY_U2_1_GRF0>;
++			reset-names = "phy", "apb";
+ 			status = "disabled";
+ 
+ 			u2phy3_host: host-port {
