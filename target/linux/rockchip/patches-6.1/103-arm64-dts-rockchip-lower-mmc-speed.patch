@@ -67,11 +67,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -384,9 +383,8 @@
- 	bus-width = <4>;
+@@ -385,7 +384,7 @@
  	cap-mmc-highspeed;
  	cap-sd-highspeed;
--	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
  	disable-wp;
 -	sd-uhs-sdr104;
 +	sd-uhs-sdr50;
@@ -90,12 +88,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -371,12 +370,11 @@
- 	bus-width = <4>;
- 	cap-mmc-highspeed;
- 	cap-sd-highspeed;
--	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
- 	disable-wp;
+@@ -375,7 +374,7 @@
  	max-frequency = <150000000>;
  	no-sdio;
  	no-mmc;
