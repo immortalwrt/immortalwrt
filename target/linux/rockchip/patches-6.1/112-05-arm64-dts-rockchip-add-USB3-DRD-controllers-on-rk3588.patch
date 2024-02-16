@@ -1,7 +1,20 @@
-From 2ec7b70a0fa910b0d86636193b1d405ec778aba4 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 18 Jul 2023 19:05:38 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588s: Add USB3 DRD controllers
+To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	linux-rockchip@lists.infradead.org,
+	linux-phy@lists.infradead.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Frank Wang <frank.wang@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v2 09/12] arm64: dts: rockchip: add USB3 DRD controllers on rk3588
+Date: Tue, 13 Feb 2024 17:32:43 +0100	[thread overview]
+Message-ID: <20240213163609.44930-10-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
 
 Add both USB3 dual-role controllers to the RK3588 devicetree.
 
@@ -24,7 +37,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		clocks = <&cru REF_CLK_USB3OTG1>, <&cru SUSPEND_CLK_USB3OTG1>,
 +			 <&cru ACLK_USB3OTG1>;
 +		clock-names = "ref_clk", "suspend_clk", "bus_clk";
-+		dr_mode = "host";
++		dr_mode = "otg";
 +		phys = <&u2phy1_otg>, <&usbdp_phy1_u3>;
 +		phy-names = "usb2-phy", "usb3-phy";
 +		phy_type = "utmi_wide";
@@ -42,7 +55,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		reg = <0x0 0xfd5b8000 0x0 0x10000>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -869,6 +869,28 @@
+@@ -427,6 +427,28 @@
  		};
  	};
  

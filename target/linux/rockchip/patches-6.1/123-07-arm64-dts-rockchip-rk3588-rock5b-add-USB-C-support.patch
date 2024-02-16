@@ -1,10 +1,16 @@
-From 5c242dd9ee6e94c1f19248a48792ad0ce0bd7b4a Mon Sep 17 00:00:00 2001
+From 152b46f9ad81fe60f2845c87b0298db84bbecdc9 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Tue, 25 Jul 2023 18:35:56 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588-rock5b: add USB-C support
+Subject: [PATCH] [BROKEN] arm64: dts: rockchip: rk3588-rock5b: add USB-C
+ support
 
 Add support for using the Radxa Rock 5 Model B USB-C port for USB in
 OHCI, EHCI or XHCI mode. Displayport AltMode is not yet supported.
+
+Note: Enabling support for the USB-C port results in a board reset
+when the system is supplied with a PD capable power-supply. Until
+this has been analyzed and fixed, let's disable support for the
+Type-C port.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
@@ -62,7 +68,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&usbc0_int>;
 +		vbus-supply = <&vcc12v_dcin>;
-+		status = "okay";
++		status = "disabled";
 +
 +		usb_con: connector {
 +			compatible = "usb-c-connector";

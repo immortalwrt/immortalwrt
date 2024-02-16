@@ -1,15 +1,28 @@
-From 712da43d72dd301f8a6f3fcf6b39031558cb288f Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Wed, 26 Apr 2023 21:18:43 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588-evb1: add USB3
+To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	linux-rockchip@lists.infradead.org,
+	linux-phy@lists.infradead.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Frank Wang <frank.wang@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v2 10/12] arm64: dts: rockchip: add USB3 to rk3588-evb1
+Date: Tue, 13 Feb 2024 17:32:44 +0100	[thread overview]
+Message-ID: <20240213163609.44930-11-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
 
-Add support for the boards USB3 type A, as well as its Type-C
-connector.
+Add support for the board's USB3 connectors. It has 1x USB Type-A
+and 1x USB Type-C.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 144 ++++++++++++++++++
- 1 file changed, 144 insertions(+)
+ .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 151 ++++++++++++++++++
+ 1 file changed, 151 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
@@ -40,7 +53,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &combphy0_ps {
-@@ -242,6 +255,56 @@
+@@ -227,6 +240,56 @@
  &i2c2 {
  	status = "okay";
  
@@ -59,7 +72,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			label = "USB-C";
 +			data-role = "dual";
 +			power-role = "dual";
-+			try-power-role = "sink";
++			try-power-role = "source";
 +			op-sink-microwatt = <1000000>;
 +			sink-pdos =
 +				<PDO_FIXED(5000, 1000, PDO_FIXED_USB_COMM)>;
@@ -97,7 +110,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	hym8563: rtc@51 {
  		compatible = "haoyu,hym8563";
  		reg = <0x51>;
-@@ -328,6 +391,16 @@
+@@ -313,6 +376,16 @@
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
  	};
@@ -114,7 +127,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  };
  
  &pwm2 {
-@@ -960,6 +1033,22 @@
+@@ -945,6 +1018,22 @@
  	status = "okay";
  };
  
@@ -137,7 +150,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy2 {
  	status = "okay";
  };
-@@ -1002,3 +1091,58 @@
+@@ -983,3 +1072,65 @@
  &usb_host1_ohci {
  	status = "okay";
  };
@@ -170,6 +183,12 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +};
 +
 +&usbdp_phy1 {
++	/*
++	 * USBDP PHY1 is wired to a female USB3 Type-A connector. Additionally
++	 * the differential pairs 2+3 and the aux channel are wired to a RTD2166,
++	 * which converts the DP signal into VGA. This is exposed on the
++	 * board via a female VGA connector.
++	 */
 +	rockchip,dp-lane-mux = <2 3>;
 +	status = "okay";
 +};
@@ -194,5 +213,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +};
 +
 +&usb_host1_xhci {
++	dr_mode = "host";
 +	status = "okay";
 +};

@@ -1,19 +1,32 @@
-From 7406ff837bff290c20e7b69fd08b1ec853e41a7f Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 25 Apr 2023 17:49:04 +0200
-Subject: [PATCH] arm64: dts: rockchip: rk3588s: Add USBDP phy nodes
+To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	linux-rockchip@lists.infradead.org,
+	linux-phy@lists.infradead.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Frank Wang <frank.wang@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v2 08/12] arm64: dts: rockchip: add USBDP phys on rk3588
+Date: Tue, 13 Feb 2024 17:32:42 +0100	[thread overview]
+Message-ID: <20240213163609.44930-9-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
 
-Add both USB3-Displayport PHYs from RK3588.
+Add both USB3-DisplayPort PHYs to RK3588 SoC DT.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 62 +++++++++++++++++++
- arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 73 +++++++++++++++++++++++
- 2 files changed, 135 insertions(+)
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 61 +++++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 72 +++++++++++++++++++++++
+ 2 files changed, 133 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
-@@ -17,6 +17,37 @@
+@@ -17,6 +17,36 @@
  		reg = <0x0 0xfd5c0000 0x0 0x100>;
  	};
  
@@ -23,22 +36,21 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
 +
 +	usb2phy1_grf: syscon@fd5d4000 {
-+		compatible = "rockchip,rk3588-usb2phy-grf", "syscon",
-+			     "simple-mfd";
++		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
 +		reg = <0x0 0xfd5d4000 0x0 0x4000>;
 +		#address-cells = <1>;
 +		#size-cells = <1>;
 +
-+		u2phy1: usb2-phy@4000 {
++		u2phy1: usb2phy@4000 {
 +			compatible = "rockchip,rk3588-usb2phy";
 +			reg = <0x4000 0x10>;
-+			interrupts = <GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH 0>;
-+			resets = <&cru SRST_OTGPHY_U3_1>, <&cru SRST_P_USB2PHY_U3_1_GRF0>;
-+			reset-names = "phy", "apb";
++			#clock-cells = <0>;
 +			clocks = <&cru CLK_USB2PHY_HDPTXRXPHY_REF>;
 +			clock-names = "phyclk";
 +			clock-output-names = "usb480m_phy1";
-+			#clock-cells = <0>;
++			interrupts = <GIC_SPI 394 IRQ_TYPE_LEVEL_HIGH 0>;
++			resets = <&cru SRST_OTGPHY_U3_1>, <&cru SRST_P_USB2PHY_U3_1_GRF0>;
++			reset-names = "phy", "apb";
 +			status = "disabled";
 +
 +			u2phy1_otg: otg-port {
@@ -51,17 +63,13 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	i2s8_8ch: i2s@fddc8000 {
  		compatible = "rockchip,rk3588-i2s-tdm";
  		reg = <0x0 0xfddc8000 0x0 0x1000>;
-@@ -310,6 +341,37 @@
+@@ -310,6 +340,37 @@
  		};
  	};
  
 +	usbdp_phy1: phy@fed90000 {
 +		compatible = "rockchip,rk3588-usbdp-phy";
 +		reg = <0x0 0xfed90000 0x0 0x10000>;
-+		rockchip,u2phy-grf = <&usb2phy1_grf>;
-+		rockchip,usb-grf = <&usb_grf>;
-+		rockchip,usbdpphy-grf = <&usbdpphy1_grf>;
-+		rockchip,vo-grf = <&vo0_grf>;
 +		clocks = <&cru CLK_USBDPPHY_MIPIDCPPHY_REF>,
 +			 <&cru CLK_USBDP_PHY1_IMMORTAL>,
 +			 <&cru PCLK_USBDPPHY1>,
@@ -73,6 +81,10 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			 <&cru SRST_USBDP_COMBO_PHY1_PCS>,
 +			 <&cru SRST_P_USBDPPHY1>;
 +		reset-names = "init", "cmn", "lane", "pcs_apb", "pma_apb";
++		rockchip,u2phy-grf = <&usb2phy1_grf>;
++		rockchip,usb-grf = <&usb_grf>;
++		rockchip,usbdpphy-grf = <&usbdpphy1_grf>;
++		rockchip,vo-grf = <&vo0_grf>;
 +		status = "disabled";
 +
 +		usbdp_phy1_dp: dp-port {
@@ -91,7 +103,30 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		reg = <0x0 0xfee10000 0x0 0x100>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -979,6 +979,37 @@
+@@ -507,11 +507,22 @@
+ 		reg = <0x0 0xfd5a4000 0x0 0x2000>;
+ 	};
+ 
++	vo0_grf: syscon@fd5a6000 {
++		compatible = "rockchip,rk3588-vo-grf", "syscon";
++		reg = <0x0 0xfd5a6000 0x0 0x2000>;
++		clocks = <&cru PCLK_VO0GRF>;
++	};
++
+ 	vo1_grf: syscon@fd5a8000 {
+ 		compatible = "rockchip,rk3588-vo-grf", "syscon";
+ 		reg = <0x0 0xfd5a8000 0x0 0x100>;
+ 	};
+ 
++	usb_grf: syscon@fd5ac000 {
++		compatible = "rockchip,rk3588-usb-grf", "syscon";
++		reg = <0x0 0xfd5ac000 0x0 0x4000>;
++	};
++
+ 	php_grf: syscon@fd5b0000 {
+ 		compatible = "rockchip,rk3588-php-grf", "syscon";
+ 		reg = <0x0 0xfd5b0000 0x0 0x1000>;
+@@ -527,6 +538,36 @@
  		reg = <0x0 0xfd5c4000 0x0 0x100>;
  	};
  
@@ -101,22 +136,21 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
 +
 +	usb2phy0_grf: syscon@fd5d0000 {
-+		compatible = "rockchip,rk3588-usb2phy-grf", "syscon",
-+			     "simple-mfd";
++		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
 +		reg = <0x0 0xfd5d0000 0x0 0x4000>;
 +		#address-cells = <1>;
 +		#size-cells = <1>;
 +
-+		u2phy0: usb2-phy@0 {
++		u2phy0: usb2phy@0 {
 +			compatible = "rockchip,rk3588-usb2phy";
 +			reg = <0x0 0x10>;
-+			interrupts = <GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH 0>;
-+			resets = <&cru SRST_OTGPHY_U3_0>, <&cru SRST_P_USB2PHY_U3_0_GRF0>;
-+			reset-names = "phy", "apb";
++			#clock-cells = <0>;
 +			clocks = <&cru CLK_USB2PHY_HDPTXRXPHY_REF>;
 +			clock-names = "phyclk";
 +			clock-output-names = "usb480m_phy0";
-+			#clock-cells = <0>;
++			interrupts = <GIC_SPI 393 IRQ_TYPE_LEVEL_HIGH 0>;
++			resets = <&cru SRST_OTGPHY_U3_0>, <&cru SRST_P_USB2PHY_U3_0_GRF0>;
++			reset-names = "phy", "apb";
 +			status = "disabled";
 +
 +			u2phy0_otg: otg-port {
@@ -129,35 +163,13 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	usb2phy2_grf: syscon@fd5d8000 {
  		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
  		reg = <0x0 0xfd5d8000 0x0 0x4000>;
-@@ -1004,6 +1035,17 @@
- 		};
- 	};
- 
-+	vo0_grf: syscon@fd5a6000 {
-+		compatible = "rockchip,rk3588-vo-grf", "syscon";
-+		reg = <0x0 0xfd5a6000 0x0 0x2000>;
-+		clocks = <&cru PCLK_VO0GRF>;
-+	};
-+
-+	usb_grf: syscon@fd5ac000 {
-+		compatible = "rockchip,rk3588-usb-grf", "syscon";
-+		reg = <0x0 0xfd5ac000 0x0 0x4000>;
-+	};
-+
- 	usb2phy3_grf: syscon@fd5dc000 {
- 		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
- 		reg = <0x0 0xfd5dc000 0x0 0x4000>;
-@@ -2804,6 +2846,37 @@
+@@ -2352,6 +2393,37 @@
  		#dma-cells = <1>;
  	};
  
 +	usbdp_phy0: phy@fed80000 {
 +		compatible = "rockchip,rk3588-usbdp-phy";
 +		reg = <0x0 0xfed80000 0x0 0x10000>;
-+		rockchip,u2phy-grf = <&usb2phy0_grf>;
-+		rockchip,usb-grf = <&usb_grf>;
-+		rockchip,usbdpphy-grf = <&usbdpphy0_grf>;
-+		rockchip,vo-grf = <&vo0_grf>;
 +		clocks = <&cru CLK_USBDPPHY_MIPIDCPPHY_REF>,
 +			 <&cru CLK_USBDP_PHY0_IMMORTAL>,
 +			 <&cru PCLK_USBDPPHY0>,
@@ -169,6 +181,10 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			 <&cru SRST_USBDP_COMBO_PHY0_PCS>,
 +			 <&cru SRST_P_USBDPPHY0>;
 +		reset-names = "init", "cmn", "lane", "pcs_apb", "pma_apb";
++		rockchip,u2phy-grf = <&usb2phy0_grf>;
++		rockchip,usb-grf = <&usb_grf>;
++		rockchip,usbdpphy-grf = <&usbdpphy0_grf>;
++		rockchip,vo-grf = <&vo0_grf>;
 +		status = "disabled";
 +
 +		usbdp_phy0_dp: dp-port {

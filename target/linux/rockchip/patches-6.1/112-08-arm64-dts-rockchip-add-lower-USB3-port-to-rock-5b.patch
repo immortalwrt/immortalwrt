@@ -1,0 +1,70 @@
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	linux-rockchip@lists.infradead.org,
+	linux-phy@lists.infradead.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Frank Wang <frank.wang@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v2 12/12] arm64: dts: rockchip: add lower USB3 port to rock-5b
+Date: Tue, 13 Feb 2024 17:32:46 +0100	[thread overview]
+Message-ID: <20240213163609.44930-13-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
+
+Enable full support (XHCI, EHCI, OHCI) for the lower USB3 port from
+Radxa Rock 5 Model B. The upper one is already supported.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -748,6 +748,14 @@
+ 	status = "okay";
+ };
+ 
++&u2phy1 {
++	status = "okay";
++};
++
++&u2phy1_otg {
++	status = "okay";
++};
++
+ &u2phy2 {
+ 	status = "okay";
+ };
+@@ -767,6 +775,14 @@
+ 	status = "okay";
+ };
+ 
++&usbdp_phy1 {
++	status = "okay";
++};
++
++&usbdp_phy1_u3 {
++	status = "okay";
++};
++
+ &usb_host0_ehci {
+ 	status = "okay";
+ };
+@@ -783,6 +799,11 @@
+ 	status = "okay";
+ };
+ 
++&usb_host1_xhci {
++	dr_mode = "host";
++	status = "okay";
++};
++
+ &usb_host2_xhci {
+ 	status = "okay";
+ };
