@@ -27,27 +27,27 @@ endef
 define Trusted-Firmware-A/rk3328
   BUILD_SUBTARGET:=armv8
   ATF:=rk33/$(RK3328_ATF)
-  DDR:=rk33/$(RK3328_DDR)
+  TPL:=rk33/$(RK3328_TPL)
   LOADER:=rk33/$(RK3328_LOADER)
 endef
 
 define Trusted-Firmware-A/rk3399
   BUILD_SUBTARGET:=armv8
   ATF:=rk33/$(RK3399_ATF)
-  DDR:=rk33/$(RK3399_DDR)
+  TPL:=rk33/$(RK3399_TPL)
   LOADER:=rk33/$(RK3399_LOADER)
 endef
 
 define Trusted-Firmware-A/rk3568
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3568_ATF)
-  DDR:=rk35/$(RK3568_DDR)
+  TPL:=rk35/$(RK3568_TPL)
 endef
 
 define Trusted-Firmware-A/rk3588
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3588_ATF)
-  DDR:=rk35/$(RK3588_DDR)
+  TPL:=rk35/$(RK3588_TPL)
 endef
 
 TFA_TARGETS:= \
@@ -63,7 +63,7 @@ ifneq ($(LOADER),)
 		pushd $(PKG_BUILD_DIR) ; \
 		$(SED) 's,$$$$(PKG_BUILD_DIR),$(PKG_BUILD_DIR),g' trust.ini ; \
 		$(SED) 's,$$$$(VARIANT),$(BUILD_VARIANT),g' trust.ini ; \
-		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(DDR) \
+		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(TPL) \
 			$(BUILD_VARIANT)-idbloader.bin ; \
 		cat bin/$(LOADER) >> $(BUILD_VARIANT)-idbloader.bin ; \
 		./tools/trust_merger --replace bl31.elf bin/$(ATF) trust.ini ; \
@@ -81,7 +81,7 @@ ifneq ($(LOADER),)
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-idbloader.bin $(STAGING_DIR_IMAGE)/
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-trust.bin $(STAGING_DIR_IMAGE)/
 else
-	$(CP) $(PKG_BUILD_DIR)/bin/$(DDR) $(STAGING_DIR_IMAGE)/
+	$(CP) $(PKG_BUILD_DIR)/bin/$(TPL) $(STAGING_DIR_IMAGE)/
 endif
 endef
 
