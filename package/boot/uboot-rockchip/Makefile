@@ -146,7 +146,7 @@ define U-Boot/Default/rk3568
   BUILD_SUBTARGET:=armv8
   DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3568
   ATF:=$(RK3568_ATF)
-  DDR:=$(RK3568_DDR)
+  TPL:=$(RK3568_TPL)
 endef
 
 define U-Boot/fastrhino-r66s-rk3568
@@ -223,11 +223,11 @@ UBOOT_CUSTOMIZE_CONFIG := \
 UBOOT_MAKE_FLAGS += \
   PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
-  $(if $(DDR),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(DDR))
+  $(if $(TPL),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(TPL))
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
-ifneq ($(DDR),)
+ifneq ($(TPL),)
 	$(CP) $(PKG_BUILD_DIR)/idbloader.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-idbloader.img
 	$(CP) $(PKG_BUILD_DIR)/u-boot.itb $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-u-boot.itb
 else
