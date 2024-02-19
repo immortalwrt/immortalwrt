@@ -5,8 +5,9 @@
 board_config_update
 
 case "$(board_name)" in
-	bananapi,bpi-r3)
-		ucidef_set_compat_version "1.1"
+	bananapi,bpi-r3|\
+	bananapi,bpi-r3-mini)
+		ucidef_set_compat_version "1.2"
 		;;
 esac
 

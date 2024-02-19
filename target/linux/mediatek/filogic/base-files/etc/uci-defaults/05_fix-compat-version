@@ -1,8 +1,9 @@
 . /lib/functions.sh
 
 case "$(board_name)" in
-	bananapi,bpi-r3)
-	uci set system.@system[0].compat_version="1.1"
+	bananapi,bpi-r3|\
+	bananapi,bpi-r3-mini)
+	uci set system.@system[0].compat_version="1.2"
 	uci commit system
 	;;
 esac

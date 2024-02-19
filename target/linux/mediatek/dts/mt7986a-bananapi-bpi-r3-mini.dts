@@ -28,9 +28,11 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
+		rootdisk-emmc = <&emmc_rootdisk>;
+		rootdisk-spim-nand = <&nand_rootdisk>;
 	};
 
-	memory@40000000 {
+	memory {
 		reg = <0 0x40000000 0 0x80000000>;
 	};
 
@@ -54,12 +56,16 @@
 		};
 
 		led-1 {
-			label = "blue:wlan2g";
+			function = LED_FUNCTION_WLAN;
+			color = <LED_COLOR_ID_BLUE>;
+			function-enumerator = <1>;
 			gpios = <&pio 1 GPIO_ACTIVE_HIGH>;
 		};
 
 		led-2 {
-			label = "blue:wlan5g";
+			function = LED_FUNCTION_WLAN;
+			color = <LED_COLOR_ID_BLUE>;
+			function-enumerator = <2>;
 			gpios = <&pio 2 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -67,7 +73,7 @@
 	fan: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
-		cooling-levels = <0 128 255>;
+		cooling-levels = <255 128 80 0>;
 		pwms = <&pwm 0 10000 0>;
 		status = "okay";
 	};
@@ -109,20 +115,24 @@
 	};
 };
 
+&auxadc {
+	status = "okay";
+};
+
 &cpu_thermal {
 	cooling-maps {
 		cpu-active-low {
-			cooling-device = <&fan 0 0>;
+			cooling-device = <&fan 1 1>;
 			trip = <&cpu_trip_active_low>;
 		};
 
 		cpu-active-med {
-			cooling-device = <&fan 1 1>;
+			cooling-device = <&fan 2 2>;
 			trip = <&cpu_trip_active_med>;
 		};
 
 		cpu-active-high {
-			cooling-device = <&fan 2 2>;
+			cooling-device = <&fan 3 3>;
 			trip = <&cpu_trip_active_high>;
 		};
 	};
@@ -140,67 +150,91 @@
 	gmac0: mac@0 {
 		compatible = "mediatek,eth-mac";
 		reg = <0>;
+		phy-handle = <&phy14>;
 		phy-mode = "2500base-x";
-
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-			pause;
-		};
 	};
 
 	gmac1: mac@1 {
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
+		phy-handle = <&phy15>;
 		phy-mode = "2500base-x";
-
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-			pause;
-		};
 	};
 
 	mdio: mdio-bus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		phy14: phy@14 {
+		phy14: phy@e {
 			compatible = "ethernet-phy-id03a2.a411";
 			reg = <14>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&en8811_pwr_a>;
 
-			airoha,polarity = <3>;
+			airoha,pnswap-rx;
 
 			interrupt-parent = <&pio>;
-			interrupts = <48 IRQ_TYPE_LEVEL_HIGH>;
-			reset-gpios = <&pio 49 1>;
+			interrupts = <48 IRQ_TYPE_EDGE_FALLING>;
+			reset-gpios = <&pio 49 GPIO_ACTIVE_LOW>;
 			reset-assert-us = <10000>;
 			reset-deassert-us = <20000>;
 
 			phy-mode = "2500base-x";
 			full-duplex;
 			pause;
+
+			leds {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 {
+					reg = <0>;
+					function = LED_FUNCTION_LAN;
+					color = <LED_COLOR_ID_YELLOW>;
+				};
+
+				led@1 {
+					reg = <1>;
+					function = LED_FUNCTION_LAN;
+					color = <LED_COLOR_ID_GREEN>;
+				};
+			};
 		};
 
-		phy15: phy@15 {
+		phy15: phy@f {
 			compatible = "ethernet-phy-id03a2.a411";
 			reg = <15>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&en8811_pwr_b>;
 
-			airoha,polarity = <3>;
+			airoha,pnswap-rx;
 
 			interrupt-parent = <&pio>;
-			interrupts = <46 IRQ_TYPE_LEVEL_HIGH>;
-			reset-gpios = <&pio 47 1>;
+			interrupts = <46 IRQ_TYPE_EDGE_FALLING>;
+			reset-gpios = <&pio 47 GPIO_ACTIVE_LOW>;
 			reset-assert-us = <10000>;
 			reset-deassert-us = <20000>;
 
 			phy-mode = "2500base-x";
 			full-duplex;
 			pause;
+
+			leds {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 {
+					reg = <0>;
+					function = LED_FUNCTION_WAN;
+					color = <LED_COLOR_ID_YELLOW>;
+				};
+
+				led@1 {
+					reg = <1>;
+					function = LED_FUNCTION_WAN;
+					color = <LED_COLOR_ID_GREEN>;
+				};
+			};
 		};
 	};
 };
@@ -234,6 +268,20 @@
 	no-sd;
 	no-sdio;
 	status = "okay";
+
+	card@0 {
+		compatible = "mmc-card";
+		reg = <0>;
+
+		block {
+			compatible = "block-device";
+			partitions {
+				emmc_rootdisk: block-partition-production {
+					partname = "production";
+				};
+			};
+		};
+	};
 };
 
 &pcie {
@@ -474,29 +522,20 @@
 
 			partition@0 {
 				label = "bl2";
-				reg = <0x00000 0x100000>;
+				reg = <0x0 0x200000>;
 				read-only;
 			};
 
-			partition@100000 {
-				label = "u-boot-env";
-				reg = <0x100000 0x80000>;
-			};
-
-			partition@180000 {
-				label = "factory";
-				reg = <0x180000 0x200000>;
-			};
-
-			partition@380000 {
-				label = "fip";
-				reg = <0x380000 0x200000>;
-				read-only;
-			};
-
-			partition@580000 {
+			partition@200000 {
 				label = "ubi";
-				reg = <0x580000 0x7a80000>;
+				reg = <0x200000 0x7e00000>;
+				compatible = "linux,ubi";
+
+				volumes {
+					nand_rootdisk: ubi-volume-fit {
+						volname = "fit";
+					};
+				};
 			};
 		};
 	};
