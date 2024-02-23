@@ -16,7 +16,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s-enterprise.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
-@@ -77,6 +79,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bp
+@@ -78,6 +80,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bp
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r66s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r68s.dtb
@@ -24,7 +24,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5c.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi-r5s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-roc-pc.dtb
-@@ -85,5 +88,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-ev
+@@ -86,5 +89,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-ev
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nanopc-t6.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-orangepi-5-plus.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-rock-5b.dtb

@@ -142,6 +142,23 @@ define U-Boot/rockpro64-rk3399
 endef
 
 
+# RK3566 boards
+
+define U-Boot/Default/rk3566
+  BUILD_SUBTARGET:=armv8
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3566
+  ATF:=$(RK3566_ATF)
+  TPL:=$(RK3566_TPL)
+endef
+
+define U-Boot/radxa-cm3-io-rk3566
+  $(U-Boot/Default/rk3566)
+  NAME:=CM3 IO
+  BUILD_DEVICES:= \
+    radxa_cm3-io
+endef
+
+
 # RK3568 boards
 
 define U-Boot/Default/rk3568
@@ -270,6 +287,7 @@ UBOOT_TARGETS := \
   roc-cc-rk3328 \
   rock-pi-e-rk3328 \
   rock64-rk3328 \
+  radxa-cm3-io-rk3566 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \

@@ -30,8 +30,6 @@ define Device/buffalo_wxr-5950ax12
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@hk01
 	SOC := ipq8074
-	IMAGES := sysupgrade.bin
-	IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 	DEVICE_PACKAGES := ipq-wifi-buffalo_wxr-5950ax12
 endef
 TARGET_DEVICES += buffalo_wxr-5950ax12
@@ -45,7 +43,7 @@ define Device/cmcc_rm2-6
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@ac02
 	SOC := ipq8070
-	IMAGES := factory.bin sysupgrade.bin
+	IMAGES += factory.bin
 	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand
 	DEVICE_PACKAGES := ipq-wifi-cmcc_rm2-6 kmod-hwmon-gpiofan
 endef
@@ -107,7 +105,6 @@ TARGET_DEVICES += edimax_cax1800
 
 define Device/linksys_mx4200v1
 	$(call Device/FitImage)
-	$(call Device/UbiFit)
 	DEVICE_VENDOR := Linksys
 	DEVICE_MODEL := MX4200
 	DEVICE_VARIANT := v1
@@ -116,7 +113,6 @@ define Device/linksys_mx4200v1
 	KERNEL_SIZE := 6144k
 	IMAGE_SIZE := 147456k
 	NAND_SIZE := 512m
-	KERNEL_IN_UBI :=
 	SOC := ipq8174
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MX4200
@@ -129,6 +125,23 @@ define Device/linksys_mx4200v2
 	DEVICE_VARIANT := v2
 endef
 TARGET_DEVICES += linksys_mx4200v2
+
+define Device/linksys_mx5300
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Linksys
+	DEVICE_MODEL := MX5300
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	KERNEL_SIZE := 6144k
+	IMAGE_SIZE := 147456k
+	NAND_SIZE := 512m
+	SOC := ipq8072
+	IMAGES += factory.bin
+	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MX5300
+	DEVICE_PACKAGES := kmod-leds-pca963x kmod-rtc-ds1307 \
+		ipq-wifi-linksys_mx5300 kmod-ath10k-ct ath10k-firmware-qca9984-ct
+endef
+TARGET_DEVICES += linksys_mx5300
 
 define Device/netgear_rax120v2
 	$(call Device/FitImage)
@@ -144,7 +157,7 @@ define Device/netgear_rax120v2
 	NETGEAR_HW_ID := 29765589+0+512+1024+4x4+8x8
 	DEVICE_PACKAGES := ipq-wifi-netgear_rax120v2 kmod-spi-gpio \
 		kmod-spi-bitbang kmod-gpio-nxp-74hc164 kmod-hwmon-g761
-	IMAGES := web-ui-factory.img sysupgrade.bin
+	IMAGES += web-ui-factory.img
 	IMAGE/web-ui-factory.img := append-image initramfs-uImage.itb | \
 		pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | \
 		netgear-dni
@@ -196,7 +209,7 @@ define Device/netgear_wax630
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	SOC := ipq8074
-	IMAGES := ui-factory.tar factory.ubi sysupgrade.bin
+	IMAGES += ui-factory.tar
 	IMAGE/ui-factory.tar := append-ubi | wax6xx-netgear-tar
 	DEVICE_PACKAGES := kmod-spi-gpio ipq-wifi-netgear_wax630
 endef

@@ -114,7 +114,7 @@
 			};
 		};
 
-		factory: partition@360000 {
+		partition@360000 {
 			compatible = "nvmem-cells";
 			label = "factory";
 			reg = <0x360000 0x140000>;

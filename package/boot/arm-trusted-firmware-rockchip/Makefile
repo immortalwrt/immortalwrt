@@ -38,6 +38,12 @@ define Trusted-Firmware-A/rk3399
   LOADER:=rk33/$(RK3399_LOADER)
 endef
 
+define Trusted-Firmware-A/rk3566
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk35/$(RK3566_ATF)
+  TPL:=rk35/$(RK3566_TPL)
+endef
+
 define Trusted-Firmware-A/rk3568
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3568_ATF)
@@ -53,6 +59,7 @@ endef
 TFA_TARGETS:= \
 	rk3328 \
 	rk3399 \
+	rk3566 \
 	rk3568 \
 	rk3588
 
