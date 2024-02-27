@@ -218,6 +218,16 @@ define Device/radxa_cm3-io
 endef
 TARGET_DEVICES += radxa_cm3-io
 
+define Device/radxa_e25
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := E25
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-radxa-e25
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform
+endef
+TARGET_DEVICES += radxa_e25
+
 define Device/radxa_rock-3a
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK 3A

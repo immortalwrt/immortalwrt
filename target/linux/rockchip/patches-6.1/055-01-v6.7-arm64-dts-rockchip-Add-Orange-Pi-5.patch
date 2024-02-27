@@ -21,7 +21,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -86,3 +86,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-ev
+@@ -87,3 +87,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-ev
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-nanopc-t6.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-rock-5b.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-rock-5a.dtb

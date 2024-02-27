@@ -1,0 +1,37 @@
+From 421c059d413812444318d27c1b4d6e71f1c1134c Mon Sep 17 00:00:00 2001
+From: Jagan Teki <jagan@amarulasolutions.com>
+Date: Mon, 23 Jan 2023 12:46:52 +0530
+Subject: [PATCH] arm64: dts: rockchip: Drop unneeded model for Radxa CM3i
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+With module and carrier board topology, carrier board dts will include
+module dtsi files for creating complete platform.
+
+The carrier board dts will have final model name and compatible string
+so any model name added in module dtsi will eventually replaced.
+
+This happened for any devicetree property if the same property is updated
+or added twice.
+
+So, drop this unneeded model name from module dtsi.
+
+Cc: Chukun Pan <amadeus@jmu.edu.cn>
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Link: https://lore.kernel.org/r/20230123071654.73139-3-jagan@amarulasolutions.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3568-radxa-cm3i.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-radxa-cm3i.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568-radxa-cm3i.dtsi
+@@ -6,7 +6,6 @@
+ #include "rk3568.dtsi"
+ 
+ / {
+-	model = "Radxa CM3 Industrial Board";
+ 	compatible = "radxa,cm3i", "rockchip,rk3568";
+ 
+ 	aliases {
