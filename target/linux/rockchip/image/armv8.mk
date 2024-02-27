@@ -218,6 +218,15 @@ define Device/radxa_cm3-io
 endef
 TARGET_DEVICES += radxa_cm3-io
 
+define Device/radxa_rock-3a
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 3A
+  SOC := rk3568
+  SUPPORTED_DEVICES := radxa,rock3a
+  BOOT_FLOW := pine64-img
+endef
+TARGET_DEVICES += radxa_rock-3a
+
 define Device/radxa_rock-5a
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK 5A

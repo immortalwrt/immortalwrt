@@ -63,6 +63,19 @@
  &saradc {
  	vref-supply = <&vcca_1v8>;
  	status = "okay";
+--- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
+@@ -714,6 +714,10 @@
+ 	status = "okay";
+ };
+ 
++&rng {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcca_1v8>;
+ 	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 @@ -650,6 +650,10 @@

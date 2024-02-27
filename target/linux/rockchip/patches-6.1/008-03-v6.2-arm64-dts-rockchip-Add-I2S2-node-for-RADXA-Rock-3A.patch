@@ -1,0 +1,30 @@
+From 3a6dcf61d542fb1f4fbd546a9df91938440ece3a Mon Sep 17 00:00:00 2001
+From: Shengyu Qu <wiagn233@outlook.com>
+Date: Sun, 30 Oct 2022 01:09:06 +0800
+Subject: [PATCH] arm64: dts: rockchip: Add I2S2 node for RADXA Rock 3A
+
+This patch adds I2S2 node for Radxa Rock 3A's M.2 E key slot for
+Bluetooth PCM input. I2S2 is not used now, but could be configured
+for Bluetooth HFP over PCM in future patches.
+
+Signed-off-by: Shengyu Qu <wiagn233@outlook.com>
+Link: https://lore.kernel.org/r/OS3P286MB259791E603F96942F51332D098359@OS3P286MB2597.JPNP286.PROD.OUTLOOK.COM
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
+@@ -558,6 +558,11 @@
+ 	status = "okay";
+ };
+ 
++&i2s2_2ch {
++	rockchip,trcm-sync-tx-only;
++	status = "okay";
++};
++
+ &mdio1 {
+ 	rgmii_phy1: ethernet-phy@0 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";

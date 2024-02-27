@@ -1,0 +1,54 @@
+From ef9f4b4a50206bedd931f45dd9fd57fd4c1714a6 Mon Sep 17 00:00:00 2001
+From: Anand Moon <linux.amoon@gmail.com>
+Date: Wed, 16 Nov 2022 20:01:44 +0000
+Subject: [PATCH] arm64: dts: rockchip: Add support of external clock to
+ ethernet node on Rock 3A SBC
+
+Add support of external clock gmac1_clkin which is used as input clock
+to ethernet node.
+
+Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+Reviewed-by: Michael Riesch <michael.riesch@wolfvision.net>
+Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
+Link: https://lore.kernel.org/r/20221116200150.4657-3-linux.amoon@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
+@@ -32,6 +32,13 @@
+ 		};
+ 	};
+ 
++	gmac1_clkin: external-gmac1-clock {
++		compatible = "fixed-clock";
++		clock-frequency = <125000000>;
++		clock-output-names = "gmac1_clkin";
++		#clock-cells = <0>;
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -249,9 +256,8 @@
+ 
+ &gmac1 {
+ 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
+-	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
+-	assigned-clock-rates = <0>, <125000000>;
+-	clock_in_out = "output";
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&gmac1_clkin>;
++	clock_in_out = "input";
+ 	phy-handle = <&rgmii_phy1>;
+ 	phy-mode = "rgmii-id";
+ 	pinctrl-names = "default";
+@@ -259,6 +265,7 @@
+ 		     &gmac1m1_tx_bus2
+ 		     &gmac1m1_rx_bus2
+ 		     &gmac1m1_rgmii_clk
++		     &gmac1m1_clkinout
+ 		     &gmac1m1_rgmii_bus>;
+ 	status = "okay";
+ };
