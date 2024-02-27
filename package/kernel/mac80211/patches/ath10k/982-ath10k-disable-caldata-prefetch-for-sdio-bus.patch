@@ -1,0 +1,24 @@
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -3534,7 +3534,8 @@ int ath10k_core_register(struct ath10k *
+ 	 * Forcing the work to be done immediately works around this problem
+ 	 * but may also delay the boot when firmware images cannot be found.
+ 	 */
+-	flush_workqueue(ar->workqueue);
++	if (ar->hif.bus != ATH10K_BUS_SDIO)
++		flush_workqueue(ar->workqueue);
+ 
+ 	return 0;
+ }
+--- a/drivers/net/wireless/ath/ath10k/debug.c
++++ b/drivers/net/wireless/ath/ath10k/debug.c
+@@ -1261,6 +1261,9 @@ static int ath10k_debug_cal_data_fetch(s
+ 	if (ar->hw_params.cal_data_len == 0)
+ 		return -EOPNOTSUPP;
+ 
++	if (ar->hif.bus == ATH10K_BUS_SDIO)
++		return -EINVAL;
++
+ 	hi_addr = host_interest_item_address(HI_ITEM(hi_board_data));
+ 
+ 	ret = ath10k_hif_diag_read(ar, hi_addr, &addr, sizeof(addr));
