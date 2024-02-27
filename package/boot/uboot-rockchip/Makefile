@@ -203,6 +203,13 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/photonicat-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Ariaboard Photonicat
+  BUILD_DEVICES:= \
+    ariaboard_photonicat
+endef
+
 define U-Boot/roc-pc-rk3568
   $(U-Boot/Default/rk3568)
   NAME:=Station P2
@@ -293,6 +300,7 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
+  photonicat-rk3568 \
   roc-pc-rk3568 \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
