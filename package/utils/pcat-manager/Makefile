@@ -23,7 +23,7 @@ define Package/pcat-manager
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=PCat System Manager
-  DEPENDS:=+glib2 +libgpiod +libjson-c +libusb-1.0
+  DEPENDS:=@TARGET_rockchip +glib2 +libgpiod +libjson-c +libusb-1.0
   URL:=https://photonicat.com
 endef
 
